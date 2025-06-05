@@ -720,6 +720,16 @@ theorem compactSpace_of_finite_subfamily_closed
     CompactSpace X where
   isCompact_univ := isCompact_of_finite_subfamily_closed fun t => by simpa using h t
 
+/--
+Given a family of closed sets `t i` in a compact space, if they satisfy the Finite Intersection
+Property, then the intersection of all `t i` is nonempty.
+-/
+lemma CompactSpace.iInter_nonempty {ι : Type v} [CompactSpace X] {t : ι → Set X}
+    (htc : ∀ i, IsClosed (t i))
+    (hst : ∀ s : Finset ι, (⋂ i ∈ s, t i).Nonempty) :
+    (⋂ i, t i).Nonempty := by
+  simpa using IsCompact.inter_iInter_nonempty isCompact_univ t htc (by simpa using hst)
+
 omit [TopologicalSpace X] in
 /--
 The `CompactSpace` version of **Alexander's subbasis theorem**. If `X` is a topological space with a

@@ -44,7 +44,7 @@ variable {α : Type u'}
 
 open FirstOrder Cardinal
 
-open Computability List Structure Cardinal Fin
+open Computability List Structure Fin
 
 namespace Term
 
@@ -122,7 +122,8 @@ theorem card_sigma : #(Σ n, L.Term (α ⊕ (Fin n))) = max ℵ₀ #(α ⊕ (Σ 
       rw [one_le_iff_ne_zero, mk_ne_zero_iff]
       exact ⟨var (Sum.inr 0)⟩
   · rw [max_le_iff, ← infinite_iff]
-    refine ⟨Infinite.of_injective (fun i => ⟨i + 1, var (Sum.inr i)⟩) fun i j ij => ?_, ?_⟩
+    refine ⟨Infinite.of_injective
+        (fun i => ⟨i + 1, var (Sum.inr (Fin.ofNat _ i))⟩) fun i j ij => ?_, ?_⟩
     · cases ij
       rfl
     · rw [Cardinal.le_def]

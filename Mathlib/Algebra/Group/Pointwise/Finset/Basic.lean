@@ -654,9 +654,6 @@ end Div
 
 /-! ### Instances -/
 
-
-open Pointwise
-
 section Instances
 
 variable [DecidableEq α] [DecidableEq β]
@@ -927,8 +924,6 @@ protected noncomputable def commMonoid : CommMonoid (Finset α) :=
 scoped[Pointwise] attribute [instance] Finset.commMonoid Finset.addCommMonoid
 
 end CommMonoid
-
-open Pointwise
 
 section DivisionMonoid
 

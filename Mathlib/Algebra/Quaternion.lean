@@ -1212,9 +1212,9 @@ instance instInv : Inv ℍ[R] :=
 instance instGroupWithZero : GroupWithZero ℍ[R] :=
   { Quaternion.instNontrivial with
     inv := Inv.inv
-    inv_zero := by rw [instInv_inv, star_zero, smul_zero]
+    inv_zero := by rw [inv_def, star_zero, smul_zero]
     mul_inv_cancel := fun a ha => by
-      rw [instInv_inv, Algebra.mul_smul_comm (normSq a)⁻¹ a (star a), self_mul_star, smul_coe,
+      rw [inv_def, Algebra.mul_smul_comm (normSq a)⁻¹ a (star a), self_mul_star, smul_coe,
         inv_mul_cancel₀ (normSq_ne_zero.2 ha), coe_one] }
 
 @[norm_cast, simp]

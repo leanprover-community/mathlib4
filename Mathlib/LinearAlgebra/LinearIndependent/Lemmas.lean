@@ -351,6 +351,20 @@ alias LinearIndependent.linear_combination_pair_of_det_ne_zero :=
   nontriviality R
   simpa using pair_add_smul_add_smul_iff (x := x) (y := y) 1 b 0 1
 
+@[simp] lemma LinearIndependent.pair_add_right_iff :
+    LinearIndependent R ![x, x + y] ↔ LinearIndependent R ![x, y] := by
+  suffices ∀ x y : M, LinearIndependent R ![x, x + y] → LinearIndependent R ![x, y] from
+    ⟨this x y, fun h ↦ by simpa using this (-x) (x + y) (by simpa)⟩
+  simp only [LinearIndependent.pair_iff]
+  intro x y h s t h'
+  obtain ⟨h₁, h₂⟩ := h (s - t) t (by rw [sub_smul, smul_add, ← h']; abel)
+  rw [h₂, sub_zero] at h₁
+  tauto
+
+@[simp] lemma LinearIndependent.pair_add_left_iff :
+    LinearIndependent R ![x + y, y] ↔ LinearIndependent R ![x, y] := by
+  rw [← pair_symm_iff, add_comm, pair_add_right_iff, pair_symm_iff]
+
 end Pair
 
 end Module
