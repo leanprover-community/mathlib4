@@ -1258,7 +1258,7 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
       rw [list_prod_eq, p_mul_eq]
 
 
-  have s_n_bound: ∀ a ∈ three_two_S_n (S := {s}) φ γ N, ∃ l: List S, l.unattach.prod = a ∧ l.length ≤ 3*N := by
+  have s_n_bound: ∀ a ∈ three_two_S_n (S := {s}) φ γ N, ∃ l: List S, l.unattach.prod = a ∧ l.length ≤ 4*N^2 := by
     intro a ha
     simp [three_two_S_n, gamma_m_helper, e_i_regular_helper] at ha
     obtain ⟨m, m_bound, s_m_eq⟩ := ha
@@ -1311,10 +1311,7 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
               nlinarith
             _ = 4 * N * N := by
               nlinarith
-
-          refine ⟨by simp [s_m_eq], ?_⟩
-          rw [List.length_replicate, List.length_replicate]
-          omega
+            _ = 4 * N^2 := by nlinarith
 
 
   have b_n_subset_s_n_squared: three_two_B_n (S := {s}) φ γ N ⊆ S ^ (N * (3 * N)) := by
