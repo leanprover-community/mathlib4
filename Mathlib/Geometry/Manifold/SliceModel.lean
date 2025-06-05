@@ -117,7 +117,7 @@ lemma prodSingle_coe {y : G} :
     (prodSingleton 𝕜 E (y := y)) = ((·, y) : E → E × G) := rfl
 -/
 
-section
+section prodAssoc
 
 variable (R M₁ M₂ M₃ : Type*) [Semiring R]
   [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [Module R M₁] [Module R M₂] [Module R M₃]
@@ -140,7 +140,37 @@ lemma prodAssoc_toLinearEquiv :
 lemma prodAssoc_toEquiv :
   (prodAssoc 𝕜 E E' E'').toEquiv = Equiv.prodAssoc E E' E'' := rfl
 
-end
+end prodAssoc
+
+section prodCongr
+
+variable {R M₁ M₂ M₃ M₄ : Type*} [Semiring R]
+  [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
+  [Module R M₁] [Module R M₂] [Module R M₃] [Module R M₄]
+  [TopologicalSpace M₁] [TopologicalSpace M₂] [TopologicalSpace M₃] [TopologicalSpace M₄]
+
+/-- Product of continuous linear equivalences; the maps come from `Equiv.prodCongr`.
+This is `LinearEquiv.prodCongr` as a continuous linear equivalence. -/
+def prodCongr (e₁ : M₁ ≃L[R] M₂) (e₂ : M₃ ≃L[R] M₄) : (M₁ × M₃) ≃L[R] M₂ × M₄  where
+  toLinearEquiv := LinearEquiv.prodCongr e₁ e₂
+  continuous_toFun := e₁.continuous_toFun.prodMap e₂.continuous_toFun
+  continuous_invFun := e₁.continuous_invFun.prodMap e₂.continuous_invFun
+
+theorem prodCongr_symm (e₁ : M₁ ≃L[R] M₂) (e₂ : M₃ ≃L[R] M₄) :
+    (e₁.prodCongr e₂).symm = e₁.symm.prodCongr e₂.symm :=
+  rfl
+
+@[simp]
+theorem prodCongr_apply (e₁ : M₁ ≃L[R] M₂) (e₂ : M₃ ≃L[R] M₄) (p) :
+    e₁.prodCongr e₂ p = (e₁ p.1, e₂ p.2) :=
+  rfl
+
+@[simp, norm_cast]
+lemma coe_prodCongr (e₁ : M₁ ≃L[R] M₂) (e₂ : M₃ ≃L[R] M₄) :
+    (e₁.prodCongr e₂ : (M₁ × M₃) →L[R] M₂ × M₄) = (e₁ : M₁ →L[R] M₂).prodMap (e₂ : M₃ →L[R] M₄) :=
+  rfl
+
+end prodCongr
 
 end ContinuousLinearEquiv
 
