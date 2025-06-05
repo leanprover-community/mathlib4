@@ -41,7 +41,7 @@ instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n) where
 
 namespace NatCast
 
-/---
+/--
 This is not a global instance, but can introduced locally using `open Fin.NatCast in ...`.
 
 This is not an instance because the `binop%` elaborator assumes that
