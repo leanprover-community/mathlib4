@@ -79,7 +79,6 @@ theorem CharP.isUnit_intCast_iff {z : ℤ} (hp : p.Prime) : IsUnit (z : R) ↔ �
 end Ring
 
 section Semifield
-
 variable [Semifield K]
 
 /-- A natural number `t` is invertible in a semifield `K` if the characteristic of `K` does not
@@ -104,7 +103,6 @@ instance invertibleOfPos [CharZero K] (n : ℕ) [NeZero n] : Invertible (n : K) 
 end Semifield
 
 section DivisionSemiring
-
 variable [DivisionSemiring K] [CharZero K]
 
 instance invertibleSucc (n : ℕ) : Invertible (n.succ : K) :=
