@@ -223,7 +223,7 @@ variable (C) in
 def opId : (𝟭 C).op ≅ 𝟭 (Cᵒᵖ) := Iso.refl _
 
 variable (C) in
-/-- Functor.unop transforms identity functors to identity functors. -/
+/-- `Functor.unop` transforms identity functors to identity functors. -/
 @[simps!]
 def unopId : (𝟭 Cᵒᵖ).unop ≅ 𝟭 C := Iso.refl _
 
