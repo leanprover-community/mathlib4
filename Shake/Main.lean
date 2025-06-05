@@ -247,7 +247,7 @@ def parseHeader (srcSearchPath : SearchPath) (mod : Name) :
   parseHeaderFromString text path.toString
 
 /-- Gets the name `Foo` in `import Foo`. -/
-def importId (stx : TSyntax ``Parser.Module.import) : Name := stx.raw[3].getId
+def importId (stx : TSyntax ``Parser.Module.import) : Name := stx.raw[4].getId
 
 /-- Analyze and report issues from module `i`. Arguments:
 
