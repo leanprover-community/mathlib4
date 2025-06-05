@@ -1518,6 +1518,23 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
     rhs
     equals 4 * M^3 => ring
 
+
+  -- #(B_n) grows exponentially, at least from N onword
+  have b_n_card_exp: ∀ M: ℕ, N ≤ M → 2^(M - N) ≤ #(three_two_B_n (S := {s}) φ γ M) := by
+    intro M hM
+    induction M, hM using Nat.le_induction with
+    | base =>
+      simp [three_two_B_n, list_len_n]
+      use [⟨(gamma_m_helper φ γ 0 ⟨s, s_mem⟩), ?_⟩]
+      . simp [N]
+      .
+        simp [three_two_S_n]
+        use 0
+        refine ⟨by omega, ?_⟩
+        simp [gamma_m_helper, e_i_regular_helper]
+
+    | succ i j k => sorry
+
   have card_le := Finset.card_le_card (union_subset_n_succ N (by simp))
   rw [Finset.card_union_of_disjoint ?_] at card_le
   .
