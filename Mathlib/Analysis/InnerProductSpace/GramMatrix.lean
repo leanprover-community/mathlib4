@@ -14,7 +14,7 @@ Results require `RCLike 𝕜`.
 ## Main definition
 
 * `Matrix.gram` : the `Matrix n n 𝕜` with `⟪v i, v j⟫` at `i j : n`, where `v : n → E` for an
-`Inner 𝕜 E`.
+  `Inner 𝕜 E`.
 
 ## Main results
 

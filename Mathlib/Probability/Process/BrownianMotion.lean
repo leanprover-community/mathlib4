@@ -42,9 +42,13 @@ local notation "⟪" x ", " y "⟫" => @inner ℝ _ _ x y
 
 /-- In an `L2` space, the matrix of intersections of pairs of sets is positive semi-definite. -/
 theorem posSemidef_interMatrix [Fintype n] {μ : Measure α} {v : n → (Set α)}
-    (hv₁ : ∀ j, MeasurableSet (v j)) (hv₂ : ∀ j, μ (v j) ≠ ∞) :
+    (hv₁ : ∀ j, MeasurableSet (v j)) (hv₂ : ∀ j, μ (v j) ≠ ∞ := by finiteness) :
     PosSemidef (of fun i j : n ↦ μ.real (v i ∩ v j)) := by
-  simp only [hv₁, ne_eq, hv₂, not_false_eq_true, ← inner_indicatorConstLp_one_indicatorConstLp_one]
+  conv =>
+    right; right; intro i j;
+    rw [← id_eq (μ.real (v i ∩ v j)), ← RCLike.ofReal_real_eq_id,
+      ← inner_indicatorConstLp_one_indicatorConstLp_one (hv₁ i) (hv₁ j) (hv₂ i) (hv₂ j)]
+  rw [← gram]
   exact gram_posSemidef
 
 end L2
