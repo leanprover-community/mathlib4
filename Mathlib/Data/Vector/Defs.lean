@@ -88,7 +88,7 @@ def get (l : Vector α n) (i : Fin n) : α :=
   l.1.get <| i.cast l.2.symm
 
 instance {n m : Nat} : HAppend (Vector α n) (Vector α m) (Vector α (n + m)) where
-  hAppend := fun | ⟨l₁, h₁⟩, ⟨l₂, h₂⟩ => ⟨l₁ ++ l₂, by simp [*]⟩
+  hAppend | ⟨l₁, h₁⟩, ⟨l₂, h₂⟩ => ⟨l₁ ++ l₂, by simp [*]⟩
 
 lemma append_def {n m : Nat}:
     (HAppend.hAppend : Vector α n → Vector α m → Vector α (n + m)) =
