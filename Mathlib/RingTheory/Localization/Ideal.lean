@@ -6,6 +6,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 import Mathlib.GroupTheory.MonoidLocalization.Away
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Localization.Defs
+import Mathlib.RingTheory.Spectrum.Prime.Defs
 import Mathlib.Algebra.Algebra.Tower
 
 /-!
@@ -178,7 +179,7 @@ theorem disjoint_comap_iff (J : Ideal S) :
 
 /-- If `R` is a ring, then prime ideals in the localization at `M`
 correspond to prime ideals in the original ring `R` that are disjoint from `M` -/
-def orderIsoOfPrime :
+@[simps] def orderIsoOfPrime :
     { p : Ideal S // p.IsPrime } ≃o { p : Ideal R // p.IsPrime ∧ Disjoint (M : Set R) ↑p } where
   toFun p := ⟨Ideal.comap (algebraMap R S) p.1, (isPrime_iff_isPrime_disjoint M S p.1).1 p.2⟩
   invFun p := ⟨Ideal.map (algebraMap R S) p.1, isPrime_of_isPrime_disjoint M S p.1 p.2.1 p.2.2⟩
@@ -189,6 +190,14 @@ def orderIsoOfPrime :
     · exact fun h => show I.val ≤ I'.val from map_comap M S I.val ▸
         map_comap M S I'.val ▸ Ideal.map_mono h
     exact fun h x hx => h hx
+
+/-- The prime spectrum of the localization of a ring at a submonoid `M` are in
+order-preserving bijection with subset of the prime spectrum of the ring consisting of
+prime ideals disjoint from `M`. -/
+@[simps!] def primeSpectrumOrderIso :
+    PrimeSpectrum S ≃o {p : PrimeSpectrum R // Disjoint (M : Set R) p.asIdeal} :=
+  (PrimeSpectrum.equivSubtype S).trans <| (orderIsoOfPrime M S).trans
+    ⟨⟨fun p ↦ ⟨⟨p, p.2.1⟩, p.2.2⟩, fun p ↦ ⟨p.1.1, p.1.2, p.2⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
 
 include M in
 lemma map_radical (I : Ideal R) :
