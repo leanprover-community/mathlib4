@@ -107,6 +107,19 @@ lemma lipschitzWith_iff [PseudoEMetricSpace β] [PseudoEMetricSpace γ] {f : γ 
     LipschitzWith K f ↔ ∀ c, LipschitzWith K (fun x ↦ toFun (f x) c) := by
   simp [LipschitzWith, edist_def, forall_comm (α := α), toFun, ofFun]
 
+lemma lipschitzWith_ofFun_iff [PseudoEMetricSpace β] [PseudoEMetricSpace γ] {f : γ → α → β}
+    {K : ℝ≥0} : LipschitzWith K (fun x ↦ ofFun (f x)) ↔ ∀ c, LipschitzWith K (f · c) :=
+  lipschitzWith_iff
+
+/-- If `f : α → γ → β` is a family of a functions, all of which are Lipschitz with the
+same constant, then the family is uniformly equicontinuous. -/
+lemma _root_.LipschitzWith.uniformEquicontinuous [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
+    (f : α → γ → β) (K : ℝ≥0) (h : ∀ c, LipschitzWith K (f c)) :
+    UniformEquicontinuous f := by
+  rw [uniformEquicontinuous_iff_uniformContinuous]
+  rw [← lipschitzWith_ofFun_iff] at h
+  exact h.uniformContinuous
+
 lemma lipschitzOnWith_iff [PseudoEMetricSpace β] [PseudoEMetricSpace γ] {f : γ → α →ᵤ β} {K : ℝ≥0}
     {s : Set γ} : LipschitzOnWith K f s ↔ ∀ c, LipschitzOnWith K (fun x ↦ toFun (f x) c) s := by
   simp [lipschitzOnWith_iff_restrict, lipschitzWith_iff]
