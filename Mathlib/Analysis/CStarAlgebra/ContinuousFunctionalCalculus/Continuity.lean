@@ -129,6 +129,9 @@ variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricS
 variable (R) in
 open UniformOnFun in
 open scoped ContinuousFunctionalCalculus in
+/-- The function `f ↦ cfc f a` is Lipschitz with constant with constant 1 with respect to
+supremum metric (on `R →ᵤ[{spectrum R a}] R`) on those functions which are continuous on
+the spectrum. -/
 lemma lipschitzOnWith_cfc_fun (a : A) :
     LipschitzOnWith 1 (fun f ↦ cfc (toFun {spectrum R a} f) a)
       {f | ContinuousOn (toFun {spectrum R a} f) (spectrum R a)} := by
@@ -142,6 +145,9 @@ lemma lipschitzOnWith_cfc_fun (a : A) :
 
 open UniformOnFun in
 open scoped ContinuousFunctionalCalculus in
+/-- The function `f ↦ cfc f a` is Lipschitz with constant with constant 1 with respect to
+supremum metric (on `R →ᵤ[{s}] R`) on those functions which are continuous on a set `s` containing
+the spectrum. -/
 lemma lipschitzOnWith_cfc_fun_of_subset (a : A) {s : Set R} (hs : spectrum R a ⊆ s) :
     LipschitzOnWith 1 (fun f ↦ cfc (toFun {s} f) a)
       {f | ContinuousOn (toFun {s} f) (s)} := by
@@ -208,6 +214,12 @@ theorem continuousOn_cfc {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜)
     congr!
 
 open UniformOnFun in
+/-- Let `s : Set 𝕜` be a compact set and consider pairs `(f, a) : (𝕜 → 𝕜) × A` where `f` is
+continuous on `s` and `spectrum 𝕜 a ⊆ s` and `a` satisfies the predicate `p a` for the continuous
+functional calculus.
+
+Then `cfc` is jointly continuous in both variables (i.e., continuous in its uncurried form) on this
+set of pairs when the function space is equipped with the topology of uniform convergence on `s`. -/
 theorem continuousOn_cfc_setProd {s : Set 𝕜} (hs : IsCompact s) :
     ContinuousOn (fun fa : (𝕜 →ᵤ[{s}] 𝕜) × A ↦ cfc (toFun {s} fa.1) fa.2)
       ({f | ContinuousOn (toFun {s} f) s} ×ˢ {a | p a ∧ spectrum 𝕜 a ⊆ s}) :=
@@ -299,6 +311,11 @@ theorem continuousOn_cfc_nnreal {s : Set ℝ≥0} (hs : IsCompact s)
   exact Set.image_mono ha.2
 
 open UniformOnFun in
+/-- Let `s : Set ℝ≥0` be a compact set and consider pairs `(f, a) : (ℝ≥0 → ℝ≥0) × A` where `f` is
+continuous on `s` and `spectrum ℝ≥0 a ⊆ s` and `0 ≤ a`.
+
+Then `cfc` is jointly continuous in both variables (i.e., continuous in its uncurried form) on this
+set of pairs when the function space is equipped with the topology of uniform convergence on `s`. -/
 theorem continuousOn_cfc_nnreal_setProd {s : Set ℝ≥0} (hs : IsCompact s) :
     ContinuousOn (fun fa : (ℝ≥0 →ᵤ[{s}] ℝ≥0) × A ↦ cfc (toFun {s} fa.1) fa.2)
       ({f | ContinuousOn (toFun {s} f) s} ×ˢ {a | 0 ≤ a ∧ spectrum ℝ≥0 a ⊆ s}) :=
@@ -468,10 +485,12 @@ variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricS
     [MetricSpace A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
     [NonUnitalIsometricContinuousFunctionalCalculus R A p]
 
-
 variable (R) in
 open UniformOnFun in
 open scoped NonUnitalContinuousFunctionalCalculus in
+/-- The function `f ↦ cfcₙ f a` is Lipschitz with constant with constant 1 with respect to
+supremum metric (on `R →ᵤ[{quasispectrum R a}] R`) on those functions which are continuous on
+the quasispectrum and map zero to itself. -/
 lemma lipschitzOnWith_cfcₙ_fun (a : A) :
     LipschitzOnWith 1 (fun f ↦ cfcₙ (toFun {quasispectrum R a} f) a)
       {f | ContinuousOn (toFun {quasispectrum R a} f) (quasispectrum R a) ∧ f 0 = 0} := by
@@ -485,6 +504,9 @@ lemma lipschitzOnWith_cfcₙ_fun (a : A) :
 
 open UniformOnFun in
 open scoped ContinuousFunctionalCalculus in
+/-- The function `f ↦ cfcₙ f a` is Lipschitz with constant with constant 1 with respect to
+supremum metric (on `R →ᵤ[{s}] R`) on those functions which are continuous on a set `s` containing
+the quasispectrum and map zero to itself. -/
 lemma lipschitzOnWith_cfcₙ_fun_of_subset (a : A) {s : Set R} (hs : quasispectrum R a ⊆ s) :
     LipschitzOnWith 1 (fun f ↦ cfcₙ (toFun {s} f) a)
       {f | ContinuousOn (toFun {s} f) (s) ∧ f 0 = 0} := by
@@ -552,6 +574,12 @@ theorem continuousOn_cfcₙ {s : Set 𝕜} (hs : IsCompact s) (f : 𝕜 → 𝕜
     exact fun a ha ↦ hs0 <| ha.2 <| quasispectrum.zero_mem 𝕜 a
 
 open UniformOnFun in
+/-- Let `s : Set 𝕜` be a compact set and consider pairs `(f, a) : (𝕜 → 𝕜) × A` where `f` is
+continuous on `s`, maps zero itself, and `quasispectrum 𝕜 a ⊆ s` and `a` satisfies the predicate
+`p a` for the continuous functional calculus.
+
+Then `cfcₙ` is jointly continuous in both variables (i.e., continuous in its uncurried form) on this
+set of pairs when the function space is equipped with the topology of uniform convergence on `s`. -/
 theorem continuousOn_cfcₙ_setProd {s : Set 𝕜} (hs : IsCompact s) :
     ContinuousOn (fun fa : (𝕜 →ᵤ[{s}] 𝕜) × A ↦ cfcₙ (toFun {s} fa.1) fa.2)
       ({f | ContinuousOn (toFun {s} f) s ∧ f 0 = 0} ×ˢ {a | p a ∧ quasispectrum 𝕜 a ⊆ s}) :=
@@ -662,6 +690,11 @@ theorem continuousOn_cfcₙ_nnreal {s : Set ℝ≥0} (hs : IsCompact s) (f : ℝ
   exact Set.image_mono ha.2
 
 open UniformOnFun in
+/-- Let `s : Set ℝ≥0` be a compact set and consider pairs `(f, a) : (ℝ≥0 → ℝ≥0) × A` where `f` is
+continuous on `s`, maps zero to itself, `spectrum ℝ≥0 a ⊆ s` and `0 ≤ a`.
+
+Then `cfcₙ` is jointly continuous in both variables (i.e., continuous in its uncurried form) on this
+set of pairs when the function space is equipped with the topology of uniform convergence on `s`. -/
 theorem continuousOn_cfcₙ_nnreal_setProd {s : Set ℝ≥0} (hs : IsCompact s) :
     ContinuousOn (fun fa : (ℝ≥0 →ᵤ[{s}] ℝ≥0) × A ↦ cfcₙ (toFun {s} fa.1) fa.2)
       ({f | ContinuousOn (toFun {s} f) s ∧ f 0 = 0} ×ˢ {a | 0 ≤ a ∧ quasispectrum ℝ≥0 a ⊆ s}) :=
