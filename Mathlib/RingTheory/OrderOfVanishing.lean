@@ -179,14 +179,14 @@ def ordFrac : K →*₀ ℤₘ₀ :=
     intro y
     simp only [ Equiv.toFun_as_coe, MonoidWithZeroHom.coe_comp, MonoidWithZeroHom.coe_mk,
       ZeroHom.coe_mk, Function.comp_apply, isUnit_iff_ne_zero, ne_eq]
-    simp[ordMonoidWithZeroHom, ord]
+    simp [ordMonoidWithZeroHom, ord]
     have := Module.length_ne_top_iff.mpr <| isFiniteLength_quotient_span_singleton R y.2
-    have lem : ∀ k,
+    have : ∀ k,
       (WithZero.map' (AddMonoidHom.toMultiplicative (Nat.castAddMonoidHom ℤ))) k = 0 ↔ k = 0 := by
         intro k
         cases k
         all_goals simp
-    simpa [lem]
+    simpa [this]
   f this
 
 lemma ordFrac_eq_ord (x : nonZeroDivisors R) : ordFrac R (algebraMap R K x) =
@@ -197,6 +197,6 @@ lemma ordFrac_eq_ord (x : nonZeroDivisors R) : ordFrac R (algebraMap R K x) =
 
 lemma ordFrac_eq_frac (a : nonZeroDivisors R) (b : nonZeroDivisors R) :
   ordFrac R (IsLocalization.mk' K a.1 b) = ordMonoidWithZeroHom R a / ordMonoidWithZeroHom R b := by
-  simp[ordFrac_eq_ord]
+  simp [ordFrac_eq_ord]
 
 end Ring
