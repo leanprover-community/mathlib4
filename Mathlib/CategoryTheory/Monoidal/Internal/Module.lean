@@ -176,7 +176,8 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgCat R where
                 ext : 1
                 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
                 refine TensorProduct.ext ?_
-                rfl }
+                rfl
+              one_hom := by rfl } -- simp fails with an error "maximum recursion depth reached"
           inv :=
             { hom := ofHom
                 { toFun := _root_.id
@@ -186,7 +187,8 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgCat R where
                 ext : 1
                 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
                 refine TensorProduct.ext ?_
-                rfl } })
+                rfl
+              one_hom := by rfl } }) -- simp fails with an error "maximum recursion depth reached"
   counitIso :=
     NatIso.ofComponents
       (fun A =>
