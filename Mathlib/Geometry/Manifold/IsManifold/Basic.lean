@@ -141,15 +141,15 @@ model vector space `E` over the field `𝕜`. This is all what is needed to
 define a `C^n` manifold with model space `H`, and model vector space `E`.
 
 We require three conditions `uniqueDiffOn'`, `target_subset_closure_interior` and
-`convex_interior_range`, which are satisfied in the relevant cases
-(where `range I = univ` or a half space or a quadrant) and useful for technical reasons.
+`convex_range`, which are satisfied in the relevant cases (where `range I = univ` or a half space or
+a quadrant) and useful for technical reasons.
 The former makes sure that manifold derivatives are uniquely defined,
 the second condition ensures that for `C^2` maps the second derivatives are symmetric even for
 points on the boundary, as these are limit points of interior points where symmetry holds.
 The last condition is required for a more subtle reason: a complex model with corners should also
 be a real model; since unique differentiability over `ℂ` is stronger than over `ℝ`, asking for just
-unique differentiability is too weak for this. At the same time, condition `convex_interior_range`
-is satisfied by all examples in practice, and also implies the other two conditions over `ℝ` or `ℂ`.
+unique differentiability is too weak for this. At the same time, condition `convex_range` is
+satisfied by all examples in practice, and also implies the other two conditions over `ℝ` or `ℂ`.
   XXX is that actually true??? I think not!
 If further conditions turn out to be useful, they can be added here.
 -/
@@ -160,10 +160,10 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
   source_eq : source = univ
   uniqueDiffOn' : UniqueDiffOn 𝕜 toPartialEquiv.target
   target_subset_closure_interior : toPartialEquiv.target ⊆ closure (interior toPartialEquiv.target)
-  convex_interior_range: ∀ h: IsRCLikeNormedField 𝕜,
+  convex_range: ∀ h: IsRCLikeNormedField 𝕜,
     letI := h.rclike 𝕜;
     letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
-    Convex ℝ (interior (range toPartialEquiv))
+    Convex ℝ (range toPartialEquiv)
   continuous_toFun : Continuous toFun := by continuity
   continuous_invFun : Continuous invFun := by continuity
 
@@ -181,7 +181,7 @@ def ModelWithCorners.of_range_univ (𝕜 : Type*) [NontriviallyNormedField 𝕜]
   source_eq := hsource
   uniqueDiffOn' := by rw [htarget]; exact uniqueDiffOn_univ
   target_subset_closure_interior := by simp [htarget]
-  convex_interior_range := by
+  convex_range := by
     intro h
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
     simp only [this, htarget, interior_univ]
@@ -430,16 +430,14 @@ def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Ty
     target_subset_closure_interior := by
       simp only [PartialEquiv.prod_target, target_eq, interior_prod_eq, closure_prod_eq]
       exact Set.prod_mono I.range_subset_closure_interior I'.range_subset_closure_interior
-    convex_interior_range h := by
-      dsimp only [PartialEquiv.prod_target]
+    convex_range h := by
       -- Without this lemma, only `erw` works...
       -- XXX: is there a more conceptual proof? what's a good name?
       have : range (fun (x : ModelProd H H') ↦ (I x.1, I' x.2)) = range (Prod.map I I') := rfl
-      rw [this]
-      rw [Set.range_prod_map, interior_prod_eq]
+      rw [this, Set.range_prodMap]
       letI := h.rclike;
       letI := NormedSpace.restrictScalars ℝ 𝕜 E; letI := NormedSpace.restrictScalars ℝ 𝕜 E'
-      exact (I.convex_interior_range h).prod (I'.convex_interior_range h)
+      exact (I.convex_range h).prod (I'.convex_range h)
     continuous_toFun := I.continuous_toFun.prodMap I'.continuous_toFun
     continuous_invFun := I.continuous_invFun.prodMap I'.continuous_invFun }
 
@@ -456,12 +454,11 @@ def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Typ
   target_subset_closure_interior := by
     simp only [PartialEquiv.pi_target, target_eq, finite_univ, interior_pi_set, closure_pi_set]
     exact Set.pi_mono (fun i _ ↦ (I i).range_subset_closure_interior)
-  convex_interior_range h := by
-    dsimp only [PartialEquiv.pi_apply, toPartialEquiv_coe]
-    rw [Set.range_piMap, interior_pi_set finite_univ]
+  convex_range h := by
+    rw [PartialEquiv.pi_apply, Set.range_piMap]
     letI := h.rclike;
     letI := fun i ↦ NormedSpace.restrictScalars ℝ 𝕜 (E i);
-    exact convex_pi fun i _hi ↦ (I i).convex_interior_range h
+    exact convex_pi fun i _hi ↦ (I i).convex_range h
   continuous_toFun := continuous_pi fun i => (I i).continuous.comp (continuous_apply i)
   continuous_invFun := continuous_pi fun i => (I i).continuous_symm.comp (continuous_apply i)
 
