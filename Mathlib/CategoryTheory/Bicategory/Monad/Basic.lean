@@ -118,40 +118,42 @@ namespace ComonadBicat
 
 open scoped Oplax.OplaxTrans.OplaxFunctor in
 /-- The bicategory of comonads in `B`. -/
-scoped instance : Bicategory (ComonadBicat B) :=
-  inferInstanceAs <| Bicategory (OplaxFunctor (LocallyDiscrete (Discrete PUnit.{u₀ + 1})) B)
+scoped instance : Bicategory (ComonadBicat.{u₀} B) :=
+  inferInstanceAs <| Bicategory (OplaxFunctor (LocallyDiscrete (Discrete PUnit)) B)
 
 /-- The oplax functor from the trivial bicategory to `B` associated with the comonad. -/
-def toOplax (m : ComonadBicat B) : OplaxFunctor (LocallyDiscrete (Discrete PUnit.{u₀ + 1})) B :=
+def toOplax (m : ComonadBicat.{u₀} B) : OplaxFunctor (LocallyDiscrete (Discrete PUnit)) B :=
   m
 
 /-- The object in `B` associated with the comonad. -/
-def obj (m : ComonadBicat B) :=
-  m.toOplax.obj ⟨⟨PUnit.unit.{u₀ + 1}⟩⟩
+def obj (m : ComonadBicat.{u₀} B) :=
+  m.toOplax.obj ⟨⟨PUnit.unit⟩⟩
 
 /-- The morphism in `B` associated with the comonad. -/
-def hom (m : ComonadBicat B) : ComonadBicat.obj.{u₀} m ⟶ ComonadBicat.obj.{u₀} m :=
-  m.toOplax.map (𝟙 (⟨⟨PUnit.unit.{u₀ + 1}⟩⟩ : LocallyDiscrete (Discrete PUnit.{u₀ + 1})))
+def hom (m : ComonadBicat.{u₀} B) : m.obj  ⟶ m.obj :=
+  m.toOplax.map (𝟙 (⟨⟨PUnit.unit⟩⟩ : LocallyDiscrete (Discrete PUnit)))
 
 instance (m : ComonadBicat B) : Comonad m.hom :=
   Comonad.ofOplaxFromPUnit <| ComonadBicat.toOplax.{u₀} m
+instance (m : ComonadBicat.{u₀} B) : Comonad m.hom :=
+  Comonad.ofOplaxFromPUnit <| m.toOplax
 
 /-- Construct a comonad as an object in `ComonadBicat B`. -/
-def mkOfComonad {a : B} (g : a ⟶ a) [Comonad g] : ComonadBicat B :=
-  Comonad.toOplax.{u₀} g
+def mkOfComonad {a : B} (t : a ⟶ a) [Comonad t] : ComonadBicat B :=
+  Comonad.toOplax.{u₀} t
 
 open Comonad
 
 section
 
-variable {a : B} (g : a ⟶ a) [Comonad g]
+variable {a : B} (t : a ⟶ a) [Comonad t]
 
-theorem mkOfComonad_hom : (mkOfComonad.{u₀} g).hom = g := rfl
+theorem mkOfComonad_hom : (mkOfComonad.{u₀} t).hom = t := rfl
 
-theorem mkOfComonad_counit : ε[(mkOfComonad.{u₀} g).hom] = ε[g] := rfl
+theorem mkOfComonad_counit : ε[(mkOfComonad.{u₀} t).hom] = ε[t] := rfl
 
-theorem mkOfComonad_comul : Δ[(mkOfComonad.{u₀} g).hom] = Δ[g] := by
-  change 𝟙 g ≫ Δ = Δ
+theorem mkOfComonad_comul : Δ[(mkOfComonad.{u₀} t).hom] = Δ[t] := by
+  change 𝟙 t ≫ Δ = Δ
   apply Category.id_comp
 
 end
