@@ -133,11 +133,11 @@ variable {B C : Type*} [Bicategory B] [Strict B] [Bicategory C]
 (F : Pseudofunctor B (Adj C))
 
 variable {X₁ X₂ Y₁ Y₂ Z₁ Z₂ : B} {t : X₁ ⟶ Y₁} {t' : Y₁ ⟶ Z₁}
-{l : X₁ ⟶ X₂} {m : Y₁ ⟶ Y₂} {r : Z₁ ⟶ Z₂}
-{b : X₂ ⟶ Y₂} {b' : Y₂ ⟶ Z₂}
-(sq : CommSq t l m b) (sq' : CommSq t' m r b')
-{t'' : X₁ ⟶ Z₁} {b'' : X₂ ⟶ Z₂}
-(ht : t ≫ t' = t'') (hb : b ≫ b' = b'')
+  {l : X₁ ⟶ X₂} {m : Y₁ ⟶ Y₂} {r : Z₁ ⟶ Z₂}
+  {b : X₂ ⟶ Y₂} {b' : Y₂ ⟶ Z₂}
+  (sq : CommSq t l m b) (sq' : CommSq t' m r b')
+  {t'' : X₁ ⟶ Z₁} {b'' : X₂ ⟶ Z₂}
+  (ht : t ≫ t' = t'') (hb : b ≫ b' = b'')
 
 lemma baseChange_horiz_comp' :
   baseChange F (sq.horiz_comp' sq' ht hb) =
@@ -338,6 +338,25 @@ lemma whiskerRight_whiskerBaseChange_triple :
       (α_ _ _ _).inv ≫
       (F.whiskerBaseChange sq₂₃) ▷ (F.map p₂₃).l ≫
       ((F.comp Adj.forget₁).isoMapOfCommSq h₃₂₃₁).hom := by
+  sorry
+
+lemma baseChange_triple :
+    F.baseChange sq₁₃ ≫
+      (F.map u₃₁).l ◁ (λ_ _).inv ≫ (F.map u₃₁).l ◁ ((F.map p₁₃).adj.unit ▷ (F.map u₁₃).r) ≫
+      (F.map u₃₁).l ◁ (α_ _ _ _).hom =
+    (F.map f₃).r ◁ (λ_ _).inv ≫ (F.map f₃).r ◁ ((F.map f₂).adj.unit ▷ (F.map f₁).l) ≫
+      (F.map f₃).r ◁ (α_ _ _ _).hom ≫
+      (F.map f₃).r ◁ (F.map f₂).l ◁ F.baseChange sq₁₂ ≫
+      (α_ _ _ _).inv ≫
+      (F.baseChange sq₂₃) ▷ ((F.map u₂₁).l ≫ (F.map u₁₂).r) ≫
+      (α_ _ _ _).hom ≫
+      (F.map u₃₂).l ◁ (α_ _ _ _).inv ≫
+      (F.map u₃₂).l ◁ (F.baseChange h₂₁₂₃ ▷ (F.map u₁₂).r) ≫
+      (F.map u₃₂).l ◁ (α_ _ _ _).hom ≫
+      (α_ _ _ _).inv ≫
+      (F.isoMapOfCommSq h₃₂₃₁).hom.τl ▷ _ ≫
+      (α_ _ _ _).hom ≫
+      _ ◁ _ ◁ (F.isoMapOfCommSq h₁₃₁₂).hom.τr :=
   sorry
 
 end Triple

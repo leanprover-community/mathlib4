@@ -17,6 +17,30 @@ namespace CategoryTheory
 
 open Opposite Limits Bicategory
 
+@[reassoc (attr := simp)]
+lemma Bicategory.Adj.hom_inv_id_τl_app {C D : Adj Cat} {f g : C ⟶ D} (u : f ≅ g) (M) :
+    u.hom.τl.app M ≫ u.inv.τl.app M = 𝟙 _ := by
+  rw [← NatTrans.comp_app, Adj.hom_inv_id_τl]
+  simp
+
+@[reassoc (attr := simp)]
+lemma Bicategory.Adj.inv_hom_id_τl_app {C D : Adj Cat} {f g : C ⟶ D} (u : f ≅ g) (M) :
+    u.inv.τl.app M ≫ u.hom.τl.app M = 𝟙 _ := by
+  rw [← NatTrans.comp_app, Adj.inv_hom_id_τl]
+  simp
+
+@[reassoc (attr := simp)]
+lemma Bicategory.Adj.hom_inv_id_τr_app {C D : Adj Cat} {f g : C ⟶ D} (u : f ≅ g) (M) :
+    u.hom.τr.app M ≫ u.inv.τr.app M = 𝟙 _ := by
+  rw [← NatTrans.comp_app, Adj.hom_inv_id_τr]
+  simp
+
+@[reassoc (attr := simp)]
+lemma Bicategory.Adj.inv_hom_id_τr_app {C D : Adj Cat} {f g : C ⟶ D} (u : f ≅ g) (M) :
+    u.inv.τr.app M ≫ u.hom.τr.app M = 𝟙 _ := by
+  rw [← NatTrans.comp_app, Adj.inv_hom_id_τr]
+  simp
+
 namespace Pseudofunctor
 
 open LocallyDiscreteOpToCat
@@ -433,17 +457,49 @@ private lemma homComp_correction (i₁ i₂ i₃ : ι) :
   rw [← NatIso.isIso_inv_app]
   exact (inv (F.baseChange (sq i₁ i₂).isPullback.toCommSq.flip.op.toLoc)).naturality _
 
+set_option maxHeartbeats 202000 in
+-- TODO: this proof needs improvement
 private lemma pullHom''_correction (i₁ i₂ i₃ : ι) :
     pullHom'' (hom i₁ i₃) (sq₃ i₁ i₂ i₃).p₁₃ (sq₃ i₁ i₂ i₃).p₁ (sq₃ i₁ i₂ i₃).p₃ ≫
         correction sq₃ obj i₁ i₂ i₃ =
     dataEquivCoalgebra hom i₁ i₃ ≫
       (F.map (f i₁).op.toLoc).l.map ((F.map (f i₂).op.toLoc).adj.unit.app
         ((F.map (f i₃).op.toLoc).r.toPrefunctor.1 (obj i₃))) := by
-  dsimp [dataEquivCoalgebra, pullHom'']
+  dsimp only [pullHom'', Cat.comp_obj, Adj.comp_r, Adj.rIso_inv, Adj.comp_l, Adj.lIso_inv,
+    dataEquivCoalgebra, Equiv.piCongrRight_apply, Pi.map_apply, Iso.homCongr_apply, Iso.refl_inv,
+    Iso.app_hom, Iso.symm_hom, asIso_inv]
   simp only [Category.assoc, NatIso.isIso_inv_app, Cat.comp_obj, Category.id_comp]
   congr 1
+  simp only [correction, Adj.comp_l, Cat.comp_obj, Adj.comp_r, Functor.map_inv,
+    NatTrans.naturality_assoc, Cat.comp_map, IsIso.eq_inv_comp]
+  have h := F.baseChange_triple (sq i₁ i₂).isPullback.toCommSq.flip.op.toLoc
+    (sq i₂ i₃).isPullback.toCommSq.flip.op.toLoc
+    (sq i₁ i₃).isPullback.toCommSq.flip.op.toLoc
+    (sq₃ i₁ i₂ i₃).isPullback₁.op.toLoc
+    (sq₃ i₁ i₂ i₃).isPullback₂.flip.op.toLoc
+    (sq₃ i₁ i₂ i₃).isPullback₃.op.toLoc
+  have h' := congr($(h).app (obj i₃))
+  simp only [Cat.comp_obj, Cat.comp_app, Cat.id_obj, Cat.whiskerLeft_app, Cat.leftUnitor_inv_app,
+    eqToHom_refl, Cat.whiskerRight_app, Cat.associator_hom_app, Category.comp_id, Category.id_comp,
+    Adj.comp_r, Bicategory.whiskerRight_comp, Adj.comp_l, Category.assoc,
+    pentagon_hom_inv_inv_inv_inv_assoc, pentagon_hom_hom_inv_hom_hom_assoc, Cat.associator_inv_app,
+    Functor.map_id] at h'
+  rw [reassoc_of% h', F.isoMapOfCommSq_eq _ (sq₃ i₁ i₂ i₃).p₁.op.toLoc (by aesoptoloc),
+    F.isoMapOfCommSq_eq _ (sq₃ i₁ i₂ i₃).p₃.op.toLoc (by aesoptoloc)]
+  simp only [Iso.trans_hom, Iso.symm_hom, Adj.comp_τl, Adj.comp_l, Cat.comp_app, Cat.comp_obj,
+    Functor.map_comp, Adj.comp_τr, Adj.comp_r, Category.assoc, Adj.inv_hom_id_τr_app_assoc,
+    Adj.hom_inv_id_τr_app_assoc]
+  nth_rw 4 [← (F.map (sq i₁ i₂).p₁.op.toLoc).r.map_comp_assoc]
+  rw [← (F.map (sq₃ i₁ i₂ i₃).p₁₂.op.toLoc).r.map_comp]
+  simp only [Adj.hom_inv_id_τl_app, Functor.map_id, Category.id_comp]
+  nth_rw 3 [← (F.map (sq i₁ i₂).p₁.op.toLoc).r.map_comp_assoc]
+  rw [← (F.map (sq₃ i₁ i₂ i₃).p₁₂.op.toLoc).r.map_comp]
+  simp only [Adj.inv_hom_id_τl_app, Functor.map_id, Category.comp_id]
+  simp only [Adj.comp_l, Cat.comp_obj, Functor.map_id, Category.id_comp, IsIso.hom_inv_id_assoc]
+  erw [← NatTrans.naturality_assoc]
+  simp only [Cat.comp_obj, Cat.comp_map]
+  rw [CategoryTheory.NatIso.isIso_inv_app]
   simp
-  sorry
 
 lemma hom_comp_iff_dataEquivCoalgebra (i₁ i₂ i₃ : ι) :
     homComp sq₃ hom i₁ i₂ i₃ = pullHom'' (hom i₁ i₃) (sq₃ i₁ i₂ i₃).p₁₃ _ _ ↔
