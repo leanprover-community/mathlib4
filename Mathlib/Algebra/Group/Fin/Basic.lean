@@ -45,7 +45,7 @@ namespace NatCast
 This is not a global instance, but can introduced locally using `open Fin.NatCast in ...`.
 
 This is not an instance because the `binop%` elaborator assumes that
-here are no non-trivial coercion loops,
+there are no non-trivial coercion loops,
 but this instance  would introduce a coercion from `Nat` to `Fin n` and back.
 Non-trivial loops lead to undesirable and counterintuitive elaboration behavior.
 
