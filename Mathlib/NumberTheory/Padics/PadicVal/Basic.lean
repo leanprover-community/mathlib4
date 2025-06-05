@@ -510,7 +510,7 @@ lemma Nat.log_ne_padicValNat_succ {n : ℕ} (hn : n ≠ 0) : log 2 n ≠ padicVa
   -- TODO(kmill): Why is this `p := 2` necessary?
   exact pow_succ_padicValNat_not_dvd (p := 2) n.succ_ne_zero ∘ dvd_of_eq
 
-lemma Nat.max_log_padicValNat_succ_eq_log_succ (n : ℕ) [hp : Fact (p.Prime)] :
+lemma Nat.max_log_padicValNat_succ_eq_log_succ (n : ℕ) [hp : Fact p.Prime] :
     max (log p n) (padicValNat p (n + 1)) = log p (n + 1) := by
   apply le_antisymm (max_le (le_log_of_pow_le hp.out.one_lt (pow_log_le_add_one p n))
     (padicValNat_le_nat_log (n + 1)))
