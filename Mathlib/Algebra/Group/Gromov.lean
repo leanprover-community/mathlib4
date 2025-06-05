@@ -1564,6 +1564,89 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
         exact disjoint_smul
 
 
+  have M: ℕ := sorry
+  have m_le_n: N ≤ M := sorry
+
+
+  specialize b_n_card_exp M m_le_n
+  specialize b_n_subset_s_n_squared
+  have b_n_subset_n := Finset.card_le_card (b_n_subset_s_n_squared M (m_le_n))
+
+  have m_ge_one: 1 ≤ M := by
+    omega
+
+  have m_cubed: 1 ≤ M^3 := by
+    apply Nat.one_le_pow
+    omega
+
+  have other_poly := hG (4 * M ^ 3) (by
+    omega
+  )
+
+
+  have eventually_lt_double: (4 * M ^ 3) ^ d < 2 ^ (M - N) := by
+    sorry
+
+  omega
+
+  -- TODO - make M large enough for this to happen
+  have cube_lt_double: (((M - N) + 1)^3) < (2 * (M - N)^3) := by
+    sorry
+
+  have succ_card_le: #(S ^ (4 * ((M - N) + 1) ^ 3)) ≤ #(S^(4 * (2 * (M - N)^3))) := by
+    apply Finset.card_le_card
+    apply Finset.pow_subset_pow_right
+    . exact hGS.one_mem
+    . omega
+
+
+  have succ_card_lt: #(S ^ (4 * (N + 1) ^ 3)) < #(S ^ (2 * N^3)) := by
+    sorry
+
+  have b_n_succ_subset_next: #(three_two_B_n (S := {s}) φ γ (N + 1)) ≤ #(S ^ (2 * N^3)) := by omega
+  have double_cube_poly := hG ((2 * M^3)) (by
+    simp
+    omega
+  )
+
+  ring_nf at b_n_succ_subset
+  rw [add_comm] at b_n_succ_subset
+  conv at b_n_succ_subset =>
+    rhs
+    rw [add_comm]
+    rw [mul_comm]
+
+
+  have other_double_le: #(three_two_B_n (S := {s}) φ γ N) * 2 ≤ #(S ^ (4 * (2 * N ^ 3))) := by omega
+
+
+  have n_pow_gt: 0 < (N + 1) ^ 3 := by
+    simp
+
+  have poly_bound := hG ((4 * (N + 1) ^ 3)) (by
+    nlinarith
+  )
+
+  -- TODO - make N large enough for this to happen
+  have eventual_poly_d_bound: ((N + 1) ^ 3) ^ d < (2 * N^3) ^ d := by
+    sorry
+
+  have eventually_poly_mul_four: (4 * (N + 1) ^ 3) ^ d < (4 * (2 * N^3)) ^d := by
+    rw [mul_pow]
+    rw [mul_pow]
+    simp
+    exact eventual_poly_d_bound
+
+  have n_succ_pow_d_gt: #(three_two_B_n (S := {s}) φ γ N) * 2 ≤ (4 * (N + 1) ^ 3) ^ d := by omega
+
+  omega
+  ring_nf at b_n_succ_subset
+  conv at b_n_succ_subset =>
+    pattern 1 + N
+    rw [add_comm]
+
+
+
 
   have card_le := Finset.card_le_card (union_subset_n_succ N (by simp))
   rw [Finset.card_union_of_disjoint ?_] at card_le
@@ -1576,67 +1659,6 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
     simp at b_n_succ_subset
 
 
-
-
-
-    -- TODO - make N large enough for this to happen
-    have cube_lt_double: ((N + 1)^3) < (2 * N^3) := by
-      sorry
-
-
-
-
-    have succ_card_le: #(S ^ (4 * (N + 1) ^ 3)) ≤ #(S^(4 * (2 * N^3))) := by
-      apply Finset.card_le_card
-      apply Finset.pow_subset_pow_right
-      . exact hGS.one_mem
-      . omega
-
-
-    have succ_card_lt: #(S ^ (4 * (N + 1) ^ 3)) < #(S ^ (2 * N^3)) := by
-      sorry
-
-    have b_n_succ_subset_next: #(three_two_B_n (S := {s}) φ γ (N + 1)) ≤ #(S ^ (2 * N^3)) := by omega
-    have double_cube_poly := hG ((2 * N^3)) (by
-      simp
-      omega
-    )
-
-    ring_nf at b_n_succ_subset
-    rw [add_comm] at b_n_succ_subset
-    conv at b_n_succ_subset =>
-      rhs
-      rw [add_comm]
-      rw [mul_comm]
-
-
-    have other_double_le: #(three_two_B_n (S := {s}) φ γ N) * 2 ≤ #(S ^ (4 * (2 * N ^ 3))) := by omega
-
-
-    have n_pow_gt: 0 < (N + 1) ^ 3 := by
-      simp
-
-    have poly_bound := hG ((4 * (N + 1) ^ 3)) (by
-      nlinarith
-    )
-
-    -- TODO - make N large enough for this to happen
-    have eventual_poly_d_bound: ((N + 1) ^ 3) ^ d < (2 * N^3) ^ d := by
-      sorry
-
-    have eventually_poly_mul_four: (4 * (N + 1) ^ 3) ^ d < (4 * (2 * N^3)) ^d := by
-      rw [mul_pow]
-      rw [mul_pow]
-      simp
-      exact eventual_poly_d_bound
-
-    have n_succ_pow_d_gt: #(three_two_B_n (S := {s}) φ γ N) * 2 ≤ (4 * (N + 1) ^ 3) ^ d := by omega
-
-    omega
-    ring_nf at b_n_succ_subset
-    conv at b_n_succ_subset =>
-      pattern 1 + N
-      rw [add_comm]
 
 
 
