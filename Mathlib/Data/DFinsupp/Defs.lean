@@ -474,7 +474,7 @@ theorem single_eq_of_ne {i i' b} (h : i ≠ i') : (single i b : Π₀ i, β i) i
   simp only [single_apply, dif_neg h]
 
 theorem single_injective {i} : Function.Injective (single i : β i → Π₀ i, β i) := fun _ _ H =>
-  Pi.single_injective i <| DFunLike.coe_injective.eq_iff.mpr H
+  Pi.single_injective _ i <| DFunLike.coe_injective.eq_iff.mpr H
 
 /-- Like `Finsupp.single_eq_single_iff`, but with a `HEq` due to dependent types -/
 theorem single_eq_single_iff (i j : ι) (xi : β i) (xj : β j) :
