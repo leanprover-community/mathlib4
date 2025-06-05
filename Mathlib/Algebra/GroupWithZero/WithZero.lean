@@ -35,6 +35,11 @@ instance one : One (WithZero α) where
 
 @[simp, norm_cast] lemma coe_one : ((1 : α) : WithZero α) = 1 := rfl
 
+@[simp]
+lemma recZeroCoe_one {M N : Type*} [One M] (f : M → N) (z : N) :
+    recZeroCoe z f 1 = f 1 :=
+  rfl
+
 end One
 
 section Mul
@@ -74,6 +79,12 @@ def coeMonoidHom : α →* WithZero α where
   toFun        := (↑)
   map_one'     := rfl
   map_mul' _ _ := rfl
+
+@[simp]
+lemma MonoidWithZeroHom.trivial_apply_val_unit {M N : Type*} [MonoidWithZero M] [MulZeroOneClass N]
+    [DecidablePred fun x : M ↦ x = 0] [Nontrivial M] [NoZeroDivisors M] (x : Mˣ) :
+    MonoidWithZeroHom.trivial M N x = 1 :=
+  MonoidWithZeroHom.trivial_apply_of_ne_zero x.ne_zero
 
 section lift
 variable [MulZeroOneClass β]
