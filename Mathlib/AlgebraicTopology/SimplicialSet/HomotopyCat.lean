@@ -355,11 +355,15 @@ end
 end
 section
 
+/-- Since `⦋0⦌ : SimplexCategory` is terminal, `Δ[0]` has a unique point and thus
+`OneTruncation₂ ((truncation 2).obj Δ[0])` has a unique inhabitant. -/
 instance instUniqueOneTruncation₂DeltaZero : Unique (OneTruncation₂ ((truncation 2).obj Δ[0])) :=
   letI : Unique (⦋0⦌ ⟶ ⦋0⦌) :=
     Limits.isTerminalEquivUnique _ _ |>.toFun SimplexCategory.isTerminalZero _
   inferInstanceAs (Unique (ULift.{_, 0} (⦋0⦌ ⟶ ⦋0⦌)))
 
+/-- Since `⦋0⦌ : SimplexCategory` is terminal, `Δ[0]` has a unique edge and thus the homs of
+`OneTruncation₂ ((truncation 2).obj Δ[0])` have unique inhabitants. -/
 instance (x y : OneTruncation₂ ((truncation 2).obj Δ[0])) : Unique (x ⟶ y) where
   default := by
     obtain rfl : x = default := Unique.uniq _ _
@@ -373,7 +377,8 @@ instance (x y : OneTruncation₂ ((truncation 2).obj Δ[0])) : Unique (x ⟶ y) 
     ext
     exact this.allEq _ _
 
-def goal : IsTerminal (hoFunctor.obj (Δ[0])) := by
+/-- The homotopy category functor preserves terminal objects. -/
+def hoFunctorDeltaZeroIsTerminal : IsTerminal (hoFunctor.obj (Δ[0])) := by
   letI : Unique ((truncation 2).obj Δ[0]).HomotopyCategory :=
     inferInstanceAs (Unique <| CategoryTheory.Quotient Truncated.HoRel₂)
   letI sub : Subsingleton ((truncation 2).obj Δ[0]).HomotopyCategory := by infer_instance
