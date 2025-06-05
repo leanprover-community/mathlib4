@@ -67,7 +67,6 @@ lemma depth_eq_dim_quotient_associated_prime_of_isCohenMacaulay (M : ModuleCat.{
   exact ringKrullDim_le_of_surjective _ (Ideal.Quotient.factor_surjective
     (le_of_eq_of_le Submodule.annihilator_top.symm (AssociatePrimes.mem_iff.mp mem).annihilator_le))
 
---will update the two sets are equal when done with works about `Ass(M)`
 lemma associated_prime_minimal_of_isCohenMacaulay (M : ModuleCat.{v} R)
     [M.IsCohenMacaulay] [Module.Finite R M] [Nontrivial M]
     (mem : p ∈ associatedPrimes R M) : p ∈ (Module.annihilator R M).minimalPrimes := by
@@ -112,6 +111,12 @@ lemma associated_prime_minimal_of_isCohenMacaulay (M : ModuleCat.{v} R)
     rw [← hm, not_le, ← ENat.coe_one, ← ENat.coe_add, ENat.coe_lt_coe]
     exact lt_add_one m
   · simpa [← eq] using hp'
+
+lemma associated_prime_eq_minimalPrimes_isCohenMacaulay (M : ModuleCat.{v} R)
+    [M.IsCohenMacaulay] [Module.Finite R M] [Nontrivial M] :
+    associatedPrimes R M = (Module.annihilator R M).minimalPrimes :=
+  le_antisymm (fun p hp ↦ associated_prime_minimal_of_isCohenMacaulay p M hp)
+    Module.associatedPrimes.minimalPrimes_annihilator_mem_associatedPrimes
 
 lemma ENat.add_right_cancel_iff (a b c : ℕ∞) (netop : c ≠ ⊤) : a + c = b + c ↔ a = b :=
   ⟨fun h ↦ ENat.add_left_injective_of_ne_top netop h, fun h ↦ by rw [h]⟩
@@ -465,6 +470,15 @@ lemma isCohenMacaulayLocalRing_def [IsLocalRing R] : IsCohenMacaulayLocalRing R 
     ringKrullDim R = IsLocalRing.depth (ModuleCat.of R R) :=
   ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
+--may be able to remove noetherian condition here by modify `IsLocalRing.depth_eq_of_ringEquiv`
+lemma isCohenMacaulayLocalRing_of_ringEquiv (R R' : Type*) [CommRing R] [CommRing R']
+    [IsNoetherianRing R] (e : R ≃+* R') [CM : IsCohenMacaulayLocalRing R] :
+    IsCohenMacaulayLocalRing R' := by
+  let _ := e.isLocalRing
+  let _ : IsNoetherianRing R' := isNoetherianRing_of_ringEquiv R e
+  simp only [isCohenMacaulayLocalRing_def] at CM ⊢
+  rw [← ringKrullDim_eq_of_ringEquiv e, ← IsLocalRing.depth_eq_of_ringEquiv e, CM]
+
 lemma isCohenMacaulayLocalRing_iff [IsLocalRing R] : IsCohenMacaulayLocalRing R ↔
     (ModuleCat.of R R).IsCohenMacaulay := by
   have ntr : Nontrivial R := inferInstance
@@ -512,6 +526,21 @@ lemma isCohenMacaulayRing_iff [IsNoetherianRing R] : IsCohenMacaulayRing R ↔
     (ModuleCat.of Rₘ Rₘ) (ModuleCat.of Rₚ Rₚ) (Algebra.linearMap Rₘ Rₚ))
 
 open Ideal
+
+open Pointwise in
+lemma quotient_regular_smul_top_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing R]
+    [IsNoetherianRing R] (x : R) (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
+    IsCohenMacaulayLocalRing R ↔ IsCohenMacaulayLocalRing (R ⧸ x • (⊤ : Ideal R)) := by
+  let _ : IsLocalRing (R ⧸ x • (⊤ : Ideal R)) :=
+    have : Nontrivial (R ⧸ x • (⊤ : Ideal R)) :=
+      Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
+    have : IsLocalHom (Ideal.Quotient.mk (x • (⊤ : Ideal R))) :=
+      IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
+    IsLocalRing.of_surjective (Ideal.Quotient.mk (x • (⊤ : Ideal R))) Ideal.Quotient.mk_surjective
+  simp only [isCohenMacaulayLocalRing_def,
+    ← ringKrullDim_quotSMulTop_succ_eq_ringKrullDim reg mem,
+    ← depth_quotient_regular_succ_eq_depth x reg mem, WithBot.coe_add, WithBot.coe_one]
+  exact withBotENat_add_coe_cancel _ _ 1
 
 lemma quotient_span_regular_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing R] [IsNoetherianRing R]
     (x : R) (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
