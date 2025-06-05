@@ -604,16 +604,6 @@ variable [CommSemiring R]
 variable [Semiring A] [Algebra R A]
 variable [CommSemiring B] [Algebra R B]
 
--- abbrev rightAlgebra.smul (b : B) (ab : A ⊗[R] B) : (A ⊗[R] B) :=
---   TensorProduct.comm _ _ _ (b • (TensorProduct.comm _ _ _ ab))
-
--- @[simp]
-
--- lemma smul_def (b : B) (ab : A ⊗[R] B) :
---     rightAlgebra.smul b ab =
---     (TensorProduct.comm _ _ _).symm (b • (TensorProduct.comm _ _ _ ab)) := rfl
-
-
 /-- `S ⊗[R] T` has a `T`-algebra structure. This is not a global instance or else the action of
 `S` on `S ⊗[R] S` would be ambiguous. -/
 abbrev rightAlgebra : Algebra B (A ⊗[R] B) where
@@ -632,19 +622,19 @@ abbrev rightAlgebra : Algebra B (A ⊗[R] B) where
           Algebra.TensorProduct.includeRight_apply, mul_add, add_mul]
   smul_def' b ab := by
     induction ab with
-    | zero => simp only [smul_zero, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
-      Algebra.TensorProduct.includeRight_apply, mul_zero]; rfl
-    | tmul a b =>
-        simp only [smul_def, TensorProduct.comm_tmul, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
-          Algebra.TensorProduct.includeRight_apply, Algebra.TensorProduct.tmul_mul_tmul, one_mul]
-        simp only [HSMul.hSMul]
-        simp
-    | add x y hx hy =>
+    | zero =>
         change (TensorProduct.comm R B A) _ = _
-        simp_all only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, includeRight_apply, map_add,
-          smul_add, mul_add]
-        rw [← hx, ← hy]
-        rfl
+        simp only [map_zero, smul_zero, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
+          includeRight_apply, mul_zero]
+    | tmul a b =>
+        change (TensorProduct.comm R B A) _ = _
+        simp only [smul_def, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
+          Algebra.TensorProduct.includeRight_apply,
+          algebraMap_apply, id.map_eq_id, RingHom.id_apply, comm_tmul,
+          tmul_mul_tmul]
+    | add x y hx hy =>
+        change (TensorProduct.comm R B A) _ = _ at ⊢ hx hy
+        simp only [map_add, smul_add, mul_add, ← hx, ← hy]
 
 attribute [local instance] TensorProduct.rightAlgebra
 
