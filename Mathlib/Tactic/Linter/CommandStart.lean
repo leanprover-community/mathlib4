@@ -141,6 +141,9 @@ def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError 
   if L.take 2 == "--" then
     let newL := L.dropWhile (· != '\n')
     let diff := L.length - newL.length
+    -- Assumption: if L contains an embedded inline comment, so does M (modulo additional whitespace).
+    -- This holds because we call this function with M being a pretty-printed version of L.
+    -- If the pretty-printer changes in the future, this code should be adjusted.
     let newM := M.dropWhile (· != '-') |>.drop diff
     parallelScanAux as newL.trimLeft newM.trimLeft else
   if L.take 2 == "-/" then
