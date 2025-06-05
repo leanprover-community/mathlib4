@@ -1191,15 +1191,9 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
   -- push_neg at p_not_prod
 
 
-  have disjoint_smul: ∀ M, N ≤ M → ∃ p ∈ three_two_S_n (S := {s}) φ γ (M + 1), (p • three_two_B_n (S := {s}) φ γ M) ∩ (three_two_B_n (S := {s}) φ γ M) = ∅ := by
-    intro M hM
-    specialize this M
-    rw [Finset.not_subset] at this
-    obtain ⟨p, ⟨p_mem, p_not_prod⟩⟩ := this
+  have disjoint_smul (M: ℕ) (hM: N ≤ M) (p: G) (p_mem: p ∈ three_two_S_n (S := {s}) φ γ (M + 1)) (p_not_prod: p ∉ three_two_B_n (S := {s}) φ γ M * (three_two_B_n (S := {s}) φ γ M)⁻¹): (p • three_two_B_n (S := {s}) φ γ M) ∩ (three_two_B_n (S := {s}) φ γ M) = ∅ := by
     rw [Finset.mem_mul.not] at p_not_prod
     push_neg at p_not_prod
-    use p
-    refine ⟨p_mem, ?_⟩
 
     ext a
     simp only [Finset.mem_inter, Finset.not_mem_empty, iff_false, not_and]
@@ -1515,12 +1509,6 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
     rw [filled_list_prod]
     exact flat_list_prod
 
-  have union_subset_n_succ (M: ℕ) (hM: N ≤ M): three_two_B_n (S := {s}) φ γ M ∪ (p • three_two_B_n (S := {s}) φ γ M) ⊆ three_two_B_n (S := {s}) φ γ (M + 1) := by
-    apply Finset.union_subset
-    . exact b_n_subset_b_n_succ M hM
-    . exact smul_subset M hM
-
-
   conv at b_n_subset_s_n_squared =>
     intro M hM
     rhs
@@ -1543,16 +1531,31 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
         simp [gamma_m_helper, e_i_regular_helper]
 
     | succ k hk ih =>
-      rw [← tsub_add_eq_add_tsub (by simp)]
+      rw [← tsub_add_eq_add_tsub hk]
       rw [pow_succ']
 
-      have card_le := Finset.card_le_card (union_subset_n_succ k hk)
+      --specialize hN N (by simp [N])
+      specialize this k
+      rw [Finset.not_subset] at this
+      obtain ⟨p, ⟨p_mem, p_not_prod⟩⟩ := this
+      --rw [Finset.mem_mul.not] at p_not_prod
+      --push_neg at p_not_prod
+
+      have union_subset_n_succ: three_two_B_n (S := {s}) φ γ k ∪ (p • three_two_B_n (S := {s}) φ γ k) ⊆ three_two_B_n (S := {s}) φ γ (k + 1) := by
+        apply Finset.union_subset
+        . exact b_n_subset_b_n_succ k hk
+        . exact smul_subset k hk p p_mem
+
+
+      have card_le := Finset.card_le_card (union_subset_n_succ)
       rw [Finset.card_union_of_disjoint ?_] at card_le
       . sorry
       .
+        specialize disjoint_smul  k hk p p_mem p_not_prod
         rw [Finset.inter_comm] at disjoint_smul
         rw [Finset.disjoint_iff_inter_eq_empty]
         exact disjoint_smul
+
 
 
   have card_le := Finset.card_le_card (union_subset_n_succ N (by simp))
