@@ -66,8 +66,9 @@ lemma hasProdUniformlyOn_iff_tendstoUniformlyOn : HasProdUniformlyOn f g 𝔖 �
 
 @[to_additive]
 lemma HasProdUniformlyOn.congr {f' : ι → β → α}
-    (h : HasProdUniformlyOn f g 𝔖) (hff' : ∀ s ∈ 𝔖, ∀ᶠ (n : Finset ι) in atTop,
-    Set.EqOn (fun b ↦ ∏ i ∈ n, f i b) (fun b ↦ ∏ i ∈ n, f' i b) s)  :
+    (h : HasProdUniformlyOn f g 𝔖)
+    (hff' : ∀ s ∈ 𝔖, ∀ᶠ (n : Finset ι) in atTop,
+      Set.EqOn (fun b ↦ ∏ i ∈ n, f i b) (fun b ↦ ∏ i ∈ n, f' i b) s) :
     HasProdUniformlyOn f' g 𝔖 := by
   rw [hasProdUniformlyOn_iff_tendstoUniformlyOn] at *
   refine fun s hs ↦ TendstoUniformlyOn.congr (h s hs) (hff' s hs)
