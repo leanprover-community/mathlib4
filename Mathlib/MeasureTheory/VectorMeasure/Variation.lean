@@ -409,27 +409,51 @@ theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) : ‖μ E
   have := le_biSup (fun P ↦ ∑ p ∈ P, ‖μ p‖ₑ) h
   simp_all [variation, variation', var_aux]
 
+lemma monotone_of_ENNReal  {s₁ s₂ : Set X} (hs₁ : MeasurableSet s₁) (hs₂ : MeasurableSet s₂)
+    (h : s₁ ⊆ s₂) (μ : VectorMeasure X ℝ≥0∞) : μ s₁ ≤ μ s₂ := by
+  simp [← VectorMeasure.of_add_of_diff (v := μ) hs₁ hs₂ h]
+
+open Classical in
+lemma biUnion_Finset (μ : VectorMeasure X ℝ≥0∞) {S : Finset (Set X)} (hS : ∀ s ∈ S, MeasurableSet s)
+    (hS' : S.toSet.PairwiseDisjoint id) : ∑ s ∈ S, μ s = μ (⋃ s ∈ S, s) := by
+  induction S using Finset.induction_on with
+  | empty =>
+    simp
+  | insert a s ha ih =>
+    simp
+    have : μ (a ∪ ⋃ x ∈ s, x) = μ a + μ (⋃ x ∈ s, x) := by
+      rw [MeasureTheory.VectorMeasure.of_union]
+      · sorry
+      · sorry
+      · sorry
+    rw [this]
+    have h : ∀ s_1 ∈ s, MeasurableSet s_1 := by sorry
+    have h' : s.toSet.PairwiseDisjoint id := by sorry
+    have := ih h h'
+    rw [← this]
+    exact Finset.sum_insert ha
+
+
+  -- have := MeasureTheory.VectorMeasure.of_union (v := μ)
+
+  -- have := μ.m_iUnion'
+
 lemma variation_of_ENNReal (μ : VectorMeasure X ℝ≥0∞) : variation μ = μ := by
-  --   ext s hs
-  --   simp only [variation, variation', var_aux, hs, reduceIte]
-  --   apply eq_of_le_of_le
-  --   · simp only [enorm_eq_self, iSup_le_iff]
-  --     intro P hP
-  --     have : ∑ x ∈ P, μ x  =  μ (⋃ p ∈ P, p) := by
-  --       have := μ.m_iUnion'
-  --       -- need to move from m_iUnion' to union over a Finset
-  --       sorry
-  --     rw [this]
-  --     have hP' : ⋃ p ∈ P, p ⊆ s := Set.iUnion₂_subset hP.1
-  --     -- ENNReal-valued measure is monotone
-  --     sorry
-  --   · by_cases hc : s ≠ ∅
-  --     · have h : {s} ∈ {P | IsInnerPart s P} := by simpa using isInnerPart_self s hs (by simpa)
-  --       have := le_biSup (fun P ↦ ∑ x ∈ P, μ x) h
-  --       simp_all
-  --     · push_neg at hc
-  --       simp [hc]
-  sorry
+  ext s hs
+  simp only [variation, variation', var_aux, hs, reduceIte]
+  apply eq_of_le_of_le
+  · simp only [enorm_eq_self, iSup_le_iff]
+    intro P hP
+    have : ∑ x ∈ P, μ x  =  μ (⋃ p ∈ P, p) := by
+      exact biUnion_Finset μ hP.2.1 hP.2.2.1
+    rw [this]
+    apply monotone_of_ENNReal (Finset.measurableSet_biUnion P hP.2.1) (hs) (Set.iUnion₂_subset hP.1)
+  · by_cases hc : s ≠ ∅
+    · have h : {s} ∈ {P | IsInnerPart s P} := by simpa using isInnerPart_self s hs hc
+      have := le_biSup (fun P ↦ ∑ x ∈ P, μ x) h
+      simp_all
+    · push_neg at hc
+      simp [hc]
 
 open VectorMeasure SignedMeasure in
 /-- For signed measures, variation defined by the Hahn–Jordan decomposition coincides with variation
