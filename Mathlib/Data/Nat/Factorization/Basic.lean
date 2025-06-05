@@ -63,7 +63,6 @@ lemma prod_primeFactors_prod_factorization {β : Type*} [CommMonoid β] (f : ℕ
 
 
 /-- The multiplicity of prime `p` in `p` is `1` -/
-@[simp]
 theorem Prime.factorization_self {p : ℕ} (hp : Prime p) : p.factorization p = 1 := by simp [hp]
 
 /-- If the factorization of `n` contains just one number `p` then `n` is a power of `p` -/
@@ -88,15 +87,13 @@ theorem factorizationEquiv_inv_apply {f : ℕ →₀ ℕ} (hf : ∀ p ∈ f.supp
     (factorizationEquiv.symm ⟨f, hf⟩).1 = f.prod (· ^ ·) :=
   rfl
 
-@[simp]
 theorem ordProj_of_not_prime (n p : ℕ) (hp : ¬p.Prime) : ordProj[p] n = 1 := by
-  simp [factorization_eq_zero_of_non_prime n hp]
+  simp [hp]
 
 @[deprecated (since := "2024-10-24")] alias ord_proj_of_not_prime := ordProj_of_not_prime
 
-@[simp]
 theorem ordCompl_of_not_prime (n p : ℕ) (hp : ¬p.Prime) : ordCompl[p] n = n := by
-  simp [factorization_eq_zero_of_non_prime n hp]
+  simp [hp]
 
 @[deprecated (since := "2024-10-24")] alias ord_compl_of_not_prime := ordCompl_of_not_prime
 
