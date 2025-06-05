@@ -5,13 +5,15 @@ Authors: Antoine Chambert-Loir, Filippo A. E. Nuccio
 -/
 
 import Mathlib.Algebra.Group.Submonoid.Defs
+import Mathlib.Algebra.Group.WithOne.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Tactic.NthRewrite
+import Mathlib.Algebra.Group.Submonoid.Basic
 
 /-! # The range of a `MonoidHom`,
   when the codomain is a `GroupWithZero`, turned into a `GroupWithZero`.
 
-If `f : A →* B` is a monoid hom, where `B` is a `CommGroupWithZero`,
+If `f : A →* B` is a multiplicative map, where `B` is a `CommGroupWithZero`,
 then `f.range₀` is the smallest submonoid of `B`
 containing the image of `f` which is a `CommGroupWithZero`.
 -/
@@ -23,6 +25,22 @@ variable {A B : Type*} [MonoidWithZero A] [CommGroupWithZero B]
 namespace MonoidHomWithZero
 
 open Set
+
+open Submonoid in
+def frange₀ : Submonoid B where
+  carrier := closure (range f) ∪ {0}
+  mul_mem' {b b'} hb hb' := by
+    simp only [mem_union, SetLike.mem_coe, mem_singleton_iff] at hb hb' ⊢
+    rcases hb' with hb' | hb'; all_goals rcases hb with hb | hb';
+    · left
+      exact Submonoid.mul_mem _ hb hb'
+    all_goals
+      right
+      simp [hb', zero_mul, mul_zero]
+  one_mem' := by
+    simpa only [union_singleton, mem_insert_iff, one_ne_zero, SetLike.mem_coe, false_or] using
+      one_mem <| closure _
+
 
 /-- The range of a morphism of monoids with codomain a `CommGroupWithZero`,
 as a `CommGroupWithZero` -/
