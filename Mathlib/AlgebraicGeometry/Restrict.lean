@@ -282,18 +282,6 @@ def Scheme.restrictFunctor : X.Opens ⥤ Over X where
     ext1
     exact (X.homOfLE_homOfLE i.le j.le).symm
 
-@[deprecated (since := "2024-10-20")]
-alias Scheme.restrictFunctor_map_ofRestrict := Scheme.homOfLE_ι
-@[deprecated (since := "2024-10-20")]
-alias Scheme.restrictFunctor_map_ofRestrict_assoc := Scheme.homOfLE_ι_assoc
-
-@[deprecated (since := "2024-10-20")]
-alias Scheme.restrictFunctor_map_base := Scheme.homOfLE_base
-@[deprecated (since := "2024-10-20")]
-alias Scheme.restrictFunctor_map_app_aux := Scheme.ι_image_homOfLE_le_ι_image
-@[deprecated (since := "2024-10-20")]
-alias Scheme.restrictFunctor_map_app := Scheme.homOfLE_app
-
 /-- The functor that restricts to open subschemes and then takes global section is
 isomorphic to the structure sheaf. -/
 @[simps!]
@@ -334,16 +322,20 @@ lemma Scheme.Hom.isoImage_inv_ι
     (f.isoImage U).inv ≫ U.ι ≫ f = (f ''ᵁ U).ι :=
   IsOpenImmersion.isoOfRangeEq_inv_fac _ _ _
 
-@[deprecated (since := "2024-10-20")]
-alias Scheme.restrictRestrict := Scheme.Hom.isoImage
-@[deprecated (since := "2024-10-20")]
-alias Scheme.restrictRestrict_hom_restrict := Scheme.Hom.isoImage_hom_ι
-@[deprecated (since := "2024-10-20")]
-alias Scheme.restrictRestrict_inv_restrict_restrict := Scheme.Hom.isoImage_inv_ι
-@[deprecated (since := "2024-10-20")]
-alias Scheme.restrictRestrict_hom_restrict_assoc := Scheme.Hom.isoImage_hom_ι_assoc
-@[deprecated (since := "2024-10-20")]
-alias Scheme.restrictRestrict_inv_restrict_restrict_assoc := Scheme.Hom.isoImage_inv_ι_assoc
+/-- If `f : X ⟶ Y` is an open immersion, then `X` is isomorphic to its image in `Y`. -/
+def Scheme.Hom.isoOpensRange {X Y : Scheme.{u}} (f : X.Hom Y) [IsOpenImmersion f] :
+    X ≅ f.opensRange :=
+  IsOpenImmersion.isoOfRangeEq f f.opensRange.ι (by simp)
+
+@[reassoc (attr := simp)]
+lemma Scheme.Hom.isoOpensRange_hom_ι {X Y : Scheme.{u}} (f : X.Hom Y) [IsOpenImmersion f] :
+    f.isoOpensRange.hom ≫ f.opensRange.ι = f := by
+  simp [isoOpensRange]
+
+@[reassoc (attr := simp)]
+lemma Scheme.Hom.isoOpensRange_inv_comp {X Y : Scheme.{u}} (f : X.Hom Y) [IsOpenImmersion f] :
+    f.isoOpensRange.inv ≫ f = f.opensRange.ι := by
+  simp [isoOpensRange]
 
 /-- `(⊤ : X.Opens)` as a scheme is isomorphic to `X`. -/
 @[simps hom]
@@ -382,8 +374,6 @@ lemma Scheme.isoOfEq_rfl (X : Scheme.{u}) (U : X.Opens) : X.isoOfEq (refl U) = I
   ext1
   rw [← cancel_mono U.ι, Scheme.isoOfEq_hom_ι, Iso.refl_hom, Category.id_comp]
 
-@[deprecated (since := "2024-10-20")] alias Scheme.restrictIsoOfEq := Scheme.isoOfEq
-
 end
 
 /-- The restriction of an isomorphism onto an open set. -/
@@ -403,8 +393,6 @@ lemma Scheme.Hom.preimageIso_hom_ι {X Y : Scheme.{u}} (f : X.Hom Y) [IsIso (C :
 lemma Scheme.Hom.preimageIso_inv_ι {X Y : Scheme.{u}} (f : X.Hom Y) [IsIso (C := Scheme) f]
     (U : Y.Opens) : (f.preimageIso U).inv ≫ (f ⁻¹ᵁ U).ι ≫ f = U.ι :=
   IsOpenImmersion.isoOfRangeEq_inv_fac _ _ _
-
-@[deprecated (since := "2024-10-20")] alias Scheme.restrictMapIso := Scheme.Hom.preimageIso
 
 /-- If `U ≤ V` are opens of `X`, the restriction of `U` to `V` is isomorphic to `U`. -/
 noncomputable def Scheme.Opens.isoOfLE {X : Scheme.{u}} {U V : X.Opens}
@@ -444,11 +432,6 @@ theorem pullbackRestrictIsoRestrict_hom_ι {X Y : Scheme.{u}} (f : X ⟶ Y) (U :
     (pullbackRestrictIsoRestrict f U).hom ≫ (f ⁻¹ᵁ U).ι = pullback.fst f _ := by
   delta pullbackRestrictIsoRestrict; simp
 
-@[deprecated (since := "2024-10-20")]
-alias pullbackRestrictIsoRestrict_hom_restrict := pullbackRestrictIsoRestrict_hom_ι
-@[deprecated (since := "2024-10-20")]
-alias pullbackRestrictIsoRestrict_hom_restrict_assoc := pullbackRestrictIsoRestrict_hom_ι_assoc
-
 /-- The restriction of a morphism `X ⟶ Y` onto `X |_{f ⁻¹ U} ⟶ Y |_ U`. -/
 def morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) : (f ⁻¹ᵁ U).toScheme ⟶ U :=
   (pullbackRestrictIsoRestrict f U).inv ≫ pullback.snd _ _
@@ -474,8 +457,8 @@ theorem isPullback_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Open
   refine
     (IsPullback.of_horiz_isIso ⟨?_⟩).paste_horiz
       (IsPullback.of_hasPullback f (Y.ofRestrict U.isOpenEmbedding)).flip
-  -- Porting note: changed `rw` to `erw`
-  erw [pullbackRestrictIsoRestrict_inv_fst]; rw [Category.comp_id]
+  erw [pullbackRestrictIsoRestrict_inv_fst]
+  rw [Category.comp_id]
 
 lemma isPullback_opens_inf_le {X : Scheme} {U V W : X.Opens} (hU : U ≤ W) (hV : V ≤ W) :
     IsPullback (X.homOfLE inf_le_left) (X.homOfLE inf_le_right) (X.homOfLE hU) (X.homOfLE hV) := by
@@ -529,8 +512,6 @@ theorem image_morphismRestrict_preimage {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.
   constructor
   · rintro ⟨⟨x, hx⟩, hx' : (f ∣_ U).base _ ∈ V, rfl⟩
     refine ⟨⟨_, hx⟩, ?_, rfl⟩
-    -- Porting note: this rewrite was not necessary
-    rw [SetLike.mem_coe]
     convert hx'
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext1` is not compiling
     refine Subtype.ext ?_
@@ -538,7 +519,7 @@ theorem image_morphismRestrict_preimage {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.
   · rintro ⟨⟨x, hx⟩, hx' : _ ∈ V.1, rfl : x = _⟩
     refine ⟨⟨_, hx⟩, (?_ : (f ∣_ U).base ⟨x, hx⟩ ∈ V.1), rfl⟩
     convert hx'
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext1` is compiling
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext1` is not compiling
     refine Subtype.ext ?_
     exact morphismRestrict_base_coe f U ⟨x, hx⟩
 
@@ -636,8 +617,7 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Op
   have e := Scheme.preimage_basicOpen U.ι r
   rw [Scheme.Opens.ι_app] at e
   rw [← U.toScheme.basicOpen_res_eq _ (eqToHom U.inclusion'_map_eq_top).op]
-  erw [← CommRingCat.comp_apply]
-  erw [← Y.presheaf.map_comp]
+  erw [← elementwise_of% Y.presheaf.map_comp]
   rw [eqToHom_op, eqToHom_op, eqToHom_map, eqToHom_trans]
   erw [← e]
   ext1
@@ -758,8 +738,8 @@ def Scheme.OpenCover.restrict {X : Scheme.{u}} (𝒰 : X.OpenCover) (U : Opens X
     U.toScheme.OpenCover := by
   refine Cover.copy (𝒰.pullbackCover U.ι) 𝒰.J _ (𝒰.map · ∣_ U) (Equiv.refl _)
     (fun i ↦ IsOpenImmersion.isoOfRangeEq (Opens.ι _) (pullback.snd _ _) ?_) ?_
-  · erw [IsOpenImmersion.range_pullback_snd_of_left U.ι (𝒰.map i)]
-    rw [Opens.opensRange_ι]
+  · dsimp only [Cover.pullbackCover_obj, Cover.pullbackCover_J, Equiv.refl_apply]
+    rw [IsOpenImmersion.range_pullback_snd_of_left U.ι (𝒰.map i), Opens.opensRange_ι]
     exact Subtype.range_val
   · intro i
     rw [← cancel_mono U.ι]

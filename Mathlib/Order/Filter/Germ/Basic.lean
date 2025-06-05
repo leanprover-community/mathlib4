@@ -53,6 +53,7 @@ filter, germ
 
 assert_not_exists OrderedSemiring
 
+open scoped Relator
 namespace Filter
 
 variable {α β γ δ : Type*} {l : Filter α} {f g h : α → β}
@@ -99,7 +100,6 @@ end Product
 
 namespace Germ
 
--- Porting note: added
 @[coe]
 def ofFun : (α → β) → (Germ l β) := @Quotient.mk' _ (germSetoid _ _)
 
@@ -240,6 +240,7 @@ theorem coe_compTendsto (f : α → β) {lc : Filter γ} {g : γ → α} (hg : T
 
 -- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
 -- simp can't match the LHS.
+-- It seems the side condition `hg` is not applied by `simpNF`.
 @[simp, nolint simpNF]
 theorem compTendsto'_coe (f : Germ l β) {lc : Filter γ} {g : γ → α} (hg : Tendsto g lc l) :
     f.compTendsto' _ hg.germ_tendsto = f.compTendsto g hg :=

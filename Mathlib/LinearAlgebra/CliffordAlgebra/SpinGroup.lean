@@ -122,7 +122,7 @@ theorem involute_act_ι_mem_range_ι [Invertible (2 : R)]
     simp_rw [← hz', ← hy', LinearMap.mem_range_self]
 
 /-- If x is in `lipschitzGroup Q`, then `(ι Q).range` is closed under twisted conjugation.
-The reverse statement presumably is true only in finite dimensions.-/
+The reverse statement presumably is true only in finite dimensions. -/
 theorem conjAct_smul_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lipschitzGroup Q)
     [Invertible (2 : R)] :
     ConjAct.toConjAct x • LinearMap.range (ι Q) = LinearMap.range (ι Q) := by
@@ -188,7 +188,7 @@ theorem involute_act_ι_mem_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ 
   lipschitzGroup.involute_act_ι_mem_range_ι (units_mem_lipschitzGroup hx) y
 
 /-- If x is in `pinGroup Q`, then `(ι Q).range` is closed under twisted conjugation. The reverse
-statement presumably being true only in finite dimensions.-/
+statement presumably being true only in finite dimensions. -/
 theorem conjAct_smul_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ pinGroup Q)
     [Invertible (2 : R)] : ConjAct.toConjAct x • LinearMap.range (ι Q) = LinearMap.range (ι Q) :=
   lipschitzGroup.conjAct_smul_range_ι (units_mem_lipschitzGroup hx)
@@ -307,7 +307,7 @@ theorem units_mem_lipschitzGroup {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spin
     x ∈ lipschitzGroup Q :=
   pinGroup.units_mem_lipschitzGroup (mem_pin hx)
 
-/-- If x is in `spinGroup Q`, then `involute x` is equal to x.-/
+/-- If x is in `spinGroup Q`, then `involute x` is equal to x. -/
 theorem involute_eq {x : CliffordAlgebra Q} (hx : x ∈ spinGroup Q) : involute x = x :=
   involute_eq_of_mem_even (mem_even hx)
 
@@ -320,13 +320,13 @@ theorem conjAct_smul_ι_mem_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ 
     [Invertible (2 : R)] (y : M) : ConjAct.toConjAct x • ι Q y ∈ LinearMap.range (ι Q) :=
   lipschitzGroup.conjAct_smul_ι_mem_range_ι (units_mem_lipschitzGroup hx) y
 
-/- This is another version of `conjAct_smul_ι_mem_range_ι` which uses `involute`.-/
+/- This is another version of `conjAct_smul_ι_mem_range_ι` which uses `involute`. -/
 theorem involute_act_ι_mem_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spinGroup Q)
     [Invertible (2 : R)] (y : M) : involute (Q := Q) ↑x * ι Q y * ↑x⁻¹ ∈ LinearMap.range (ι Q) :=
   lipschitzGroup.involute_act_ι_mem_range_ι (units_mem_lipschitzGroup hx) y
 
 /- If x is in `spinGroup Q`, then `(ι Q).range` is closed under twisted conjugation. The reverse
-statement presumably being true only in finite dimensions.-/
+statement presumably being true only in finite dimensions. -/
 theorem conjAct_smul_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : ↑x ∈ spinGroup Q)
     [Invertible (2 : R)] : ConjAct.toConjAct x • LinearMap.range (ι Q) = LinearMap.range (ι Q) :=
   lipschitzGroup.conjAct_smul_range_ι (units_mem_lipschitzGroup hx)

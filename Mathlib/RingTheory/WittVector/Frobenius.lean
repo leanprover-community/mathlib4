@@ -202,16 +202,12 @@ theorem coeff_frobeniusFun (x : 𝕎 R) (n : ℕ) :
     coeff (frobeniusFun x) n = MvPolynomial.aeval x.coeff (frobeniusPoly p n) := by
   rw [frobeniusFun, coeff_mk]
 
-variable (p)
-
+variable (p) in
 /-- `frobeniusFun` is tautologically a polynomial function.
 
 See also `frobenius_isPoly`. -/
--- Porting note: replaced `@[is_poly]` with `instance`.
 instance frobeniusFun_isPoly : IsPoly p fun R _ Rcr => @frobeniusFun p R _ Rcr :=
   ⟨⟨frobeniusPoly p, by intros; funext n; apply coeff_frobeniusFun⟩⟩
-
-variable {p}
 
 @[ghost_simps]
 theorem ghostComponent_frobeniusFun (n : ℕ) (x : 𝕎 R) :
@@ -242,8 +238,8 @@ def frobenius : 𝕎 R →+* 𝕎 R where
         (@IsPoly.comp p _ _ WittVector.oneIsPoly (frobeniusFun_isPoly p)) ?_ _ 0
     simp only [Function.comp_apply, map_one, forall_const]
     ghost_simp
-  map_add' := by dsimp only; ghost_calc _ _; ghost_simp
-  map_mul' := by dsimp only; ghost_calc _ _; ghost_simp
+  map_add' := by ghost_calc _ _; ghost_simp
+  map_mul' := by ghost_calc _ _; ghost_simp
 
 theorem coeff_frobenius (x : 𝕎 R) (n : ℕ) :
     coeff (frobenius x) n = MvPolynomial.aeval x.coeff (frobeniusPoly p n) :=
@@ -257,7 +253,6 @@ theorem ghostComponent_frobenius (n : ℕ) (x : 𝕎 R) :
 variable (p)
 
 /-- `frobenius` is tautologically a polynomial function. -/
--- Porting note: replaced `@[is_poly]` with `instance`.
 instance frobenius_isPoly : IsPoly p fun R _Rcr => @frobenius p R _ _Rcr :=
   frobeniusFun_isPoly _
 
@@ -293,7 +288,7 @@ theorem frobenius_zmodp (x : 𝕎 (ZMod p)) : frobenius x = x := by
 variable (R)
 
 /-- `WittVector.frobenius` as an equiv. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def frobeniusEquiv [PerfectRing R p] : WittVector p R ≃+* WittVector p R :=
   { (WittVector.frobenius : WittVector p R →+* WittVector p R) with
     toFun := WittVector.frobenius

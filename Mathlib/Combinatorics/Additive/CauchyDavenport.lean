@@ -204,7 +204,7 @@ lemma ZMod.cauchy_davenport {p : ℕ} (hp : p.Prime) {s t : Finset (ZMod p)} (hs
 @[to_additive
 "The **Cauchy-Davenport theorem** for linearly ordered additive cancellative semigroups. The size of
 `s + t` is lower-bounded by `|s| + |t| - 1`."]
-lemma cauchy_davenport_mul_of_linearOrder_isCancelMul [LinearOrder α] [Semigroup α] [IsCancelMul α]
+lemma cauchy_davenport_mul_of_linearOrder_isCancelMul [LinearOrder α] [Mul α] [IsCancelMul α]
     [MulLeftMono α] [MulRightMono α]
     {s t : Finset α} (hs : s.Nonempty) (ht : t.Nonempty) : #s + #t - 1 ≤ #(s * t) := by
   suffices s * {t.min' ht} ∩ ({s.max' hs} * t) = {s.max' hs * t.min' ht} by

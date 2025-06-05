@@ -14,24 +14,24 @@ Given a sequence `f: ℕ → ℂ`, we define the corresponding L-series.
 
 ## Main Definitions
 
- * `LSeries.term f s n` is the `n`th term of the L-series of the sequence `f` at `s : ℂ`.
+* `LSeries.term f s n` is the `n`th term of the L-series of the sequence `f` at `s : ℂ`.
     We define it to be zero when `n = 0`.
 
- * `LSeries f` is the L-series with a given sequence `f` as its
+* `LSeries f` is the L-series with a given sequence `f` as its
     coefficients. This is not the analytic continuation (which does not necessarily exist),
     just the sum of the infinite series if it exists and zero otherwise.
 
- * `LSeriesSummable f s` indicates that the L-series of `f` converges at `s : ℂ`.
+* `LSeriesSummable f s` indicates that the L-series of `f` converges at `s : ℂ`.
 
- * `LSeriesHasSum f s a` expresses that the L-series of `f` converges (absolutely)
+* `LSeriesHasSum f s a` expresses that the L-series of `f` converges (absolutely)
     at `s : ℂ` to `a : ℂ`.
 
 ## Main Results
 
- * `LSeriesSummable_of_isBigO_rpow`: the `LSeries` of a sequence `f` such that
+* `LSeriesSummable_of_isBigO_rpow`: the `LSeries` of a sequence `f` such that
     `f = O(n^(x-1))` converges at `s` when `x < s.re`.
 
- * `LSeriesSummable.isBigO_rpow`: if the `LSeries` of `f` is summable at `s`,
+* `LSeriesSummable.isBigO_rpow`: if the `LSeries` of `f` is summable at `s`,
     then `f = O(n^(re s))`.
 
 ## Notation
@@ -40,6 +40,13 @@ We introduce `L` as notation for `LSeries` and `↗f` as notation for `fun n : �
 both scoped to `LSeries.notation`. The latter makes it convenient to use arithmetic functions
 or Dirichlet characters (or anything that coerces to a function `N → R`, where `ℕ` coerces
 to `N` and `R` coerces to `ℂ`) as arguments to `LSeries` etc.
+
+## Reference
+
+For some background on the design decisions made when implementing L-series in Mathlib
+(and applications motivating the development), see the paper
+[Formalizing zeta and L-functions in Lean](https://arxiv.org/abs/2503.00959)
+by David Loeffler and Michael Stoll.
 
 ## Tags
 
@@ -173,7 +180,7 @@ then so does that of `g`. -/
 lemma LSeriesSummable.congr' {f g : ℕ → ℂ} (s : ℂ) (h : f =ᶠ[atTop] g) (hf : LSeriesSummable f s) :
     LSeriesSummable g s := by
   rw [← Nat.cofinite_eq_atTop] at h
-  refine (summable_norm_iff.mpr hf).of_norm_bounded_eventually _ ?_
+  refine (summable_norm_iff.mpr hf).of_norm_bounded_eventually ?_
   have : term f s =ᶠ[cofinite] term g s := by
     rw [eventuallyEq_iff_exists_mem] at h ⊢
     obtain ⟨S, hS, hS'⟩ := h
@@ -312,7 +319,7 @@ lemma LSeriesSummable.le_const_mul_rpow {f : ℕ → ℂ} {s : ℂ} (h : LSeries
   replace h := h.norm
   by_contra! H
   obtain ⟨n, hn₀, hn⟩ := H (tsum fun n ↦ ‖term f s n‖)
-  have := le_tsum h n fun _ _ ↦ norm_nonneg _
+  have := h.le_tsum n fun _ _ ↦ norm_nonneg _
   rw [norm_term_eq, if_neg hn₀,
     div_le_iff₀ <| Real.rpow_pos_of_pos (Nat.cast_pos.mpr <| Nat.pos_of_ne_zero hn₀) _] at this
   exact (this.trans_lt hn).false.elim
@@ -337,7 +344,7 @@ lemma LSeriesSummable_of_le_const_mul_rpow {f : ℕ → ℂ} {x : ℝ} {s : ℂ}
     simp_rw [div_eq_mul_inv, norm_mul, ← cpow_neg]
     have hsx : -s.re + x - 1 < -1 := by linarith only [hs]
     refine Summable.mul_left _ <|
-      Summable.of_norm_bounded_eventually_nat (fun n ↦ (n : ℝ) ^ (-s.re + x - 1)) ?_ ?_
+      Summable.of_norm_bounded_eventually_nat (g := fun n ↦ (n : ℝ) ^ (-s.re + x - 1)) ?_ ?_
     · simpa
     · simp only [norm_norm, Filter.eventually_atTop]
       refine ⟨1, fun n hn ↦ le_of_eq ?_⟩
@@ -348,7 +355,7 @@ lemma LSeriesSummable_of_le_const_mul_rpow {f : ℕ → ℂ} {x : ℝ} {s : ℂ}
   · simpa only [term_zero, norm_zero] using norm_nonneg _
   have hn' : 0 < (n : ℝ) ^ s.re := Real.rpow_pos_of_pos (Nat.cast_pos.mpr hn) _
   simp_rw [term_of_ne_zero hn.ne', norm_div, norm_natCast_cpow_of_pos hn, div_le_iff₀ hn',
-    norm_eq_abs (C : ℂ), abs_ofReal, abs_of_nonneg hC₀, div_eq_mul_inv, mul_assoc,
+    norm_real, Real.norm_of_nonneg hC₀, div_eq_mul_inv, mul_assoc,
     ← Real.rpow_neg <| Nat.cast_nonneg _, ← Real.rpow_add <| Nat.cast_pos.mpr hn]
   simpa using hC n <| Nat.pos_iff_ne_zero.mp hn
 
@@ -376,12 +383,12 @@ lemma LSeriesSummable_of_isBigO_rpow {f : ℕ → ℂ} {x : ℝ} {s : ℂ} (hs :
 
 /-- If `f` is bounded, then its `LSeries` is summable at `s` when `re s > 1`. -/
 theorem LSeriesSummable_of_bounded_of_one_lt_re {f : ℕ → ℂ} {m : ℝ}
-    (h : ∀ n ≠ 0, Complex.abs (f n) ≤ m) {s : ℂ} (hs : 1 < s.re) :
+    (h : ∀ n ≠ 0, ‖f n‖ ≤ m) {s : ℂ} (hs : 1 < s.re) :
     LSeriesSummable f s :=
   LSeriesSummable_of_le_const_mul_rpow hs ⟨m, fun n hn ↦ by simp [h n hn]⟩
 
 /-- If `f` is bounded, then its `LSeries` is summable at `s : ℝ` when `s > 1`. -/
 theorem LSeriesSummable_of_bounded_of_one_lt_real {f : ℕ → ℂ} {m : ℝ}
-    (h : ∀ n ≠ 0, Complex.abs (f n) ≤ m) {s : ℝ} (hs : 1 < s) :
+    (h : ∀ n ≠ 0, ‖f n‖ ≤ m) {s : ℝ} (hs : 1 < s) :
     LSeriesSummable f s :=
   LSeriesSummable_of_bounded_of_one_lt_re h <| by simp [hs]

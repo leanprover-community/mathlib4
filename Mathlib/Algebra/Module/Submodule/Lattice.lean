@@ -10,6 +10,7 @@ import Mathlib.Algebra.Module.Submodule.Defs
 import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Algebra.Module.PUnit
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
@@ -201,6 +202,7 @@ instance completeLattice : CompleteLattice (Submodule R M) :=
     le_inf := fun _ _ _ ↦ Set.subset_inter
     inf_le_left := fun _ _ ↦ Set.inter_subset_left
     inf_le_right := fun _ _ ↦ Set.inter_subset_right
+    sSup S := sInf {sm | ∀ s ∈ S, s ≤ sm}
     le_sSup := fun _ _ hs ↦ le_sInf' fun _ hq ↦ by exact hq _ hs
     sSup_le := fun _ _ hs ↦ sInf_le' hs
     le_sInf := fun _ _ ↦ le_sInf'
@@ -294,17 +296,16 @@ theorem toAddSubmonoid_sSup (s : Set (Submodule R M)) :
     { toAddSubmonoid := sSup (toAddSubmonoid '' s)
       smul_mem' := fun t {m} h ↦ by
         simp_rw [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, sSup_eq_iSup'] at h ⊢
-        refine AddSubmonoid.iSup_induction' _
-          (C := fun x _ ↦ t • x ∈ ⨆ p : toAddSubmonoid '' s, (p : AddSubmonoid M)) ?_ ?_
-          (fun x y _ _ ↦ ?_) h
-        · rintro ⟨-, ⟨p : Submodule R M, hp : p ∈ s, rfl⟩⟩ x (hx : x ∈ p)
+        induction h using AddSubmonoid.iSup_induction' with
+        | mem p x hx =>
+          obtain ⟨-, ⟨p : Submodule R M, hp : p ∈ s, rfl⟩⟩ := p
           suffices p.toAddSubmonoid ≤ ⨆ q : toAddSubmonoid '' s, (q : AddSubmonoid M) by
             exact this (smul_mem p t hx)
           apply le_sSup
           rw [Subtype.range_coe_subtype]
           exact ⟨p, hp, rfl⟩
-        · simpa only [smul_zero] using zero_mem _
-        · simp_rw [smul_add]; exact add_mem }
+        | one => simpa only [smul_zero] using zero_mem _
+        | mul _ _ _ _ mx my => revert mx my; simp_rw [smul_add]; exact add_mem }
   refine le_antisymm (?_ : sSup s ≤ p) ?_
   · exact sSup_le fun q hq ↦ le_sSup <| Set.mem_image_of_mem toAddSubmonoid hq
   · exact sSup_le fun _ ⟨q, hq, hq'⟩ ↦ hq'.symm ▸ le_sSup hq

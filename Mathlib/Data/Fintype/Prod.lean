@@ -3,8 +3,8 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Prod
+import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # fintype instance for the product of two fintypes.
@@ -18,7 +18,7 @@ universe u v
 
 variable {α β γ : Type*}
 
-open Finset Function
+open Finset
 
 namespace Set
 

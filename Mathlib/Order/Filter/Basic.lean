@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Notation.Pi
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Filter.Defs
 
@@ -142,6 +142,8 @@ namespace Filter
 variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type*} {ι : Sort x}
 
 theorem mem_principal_self (s : Set α) : s ∈ 𝓟 s := Subset.rfl
+
+theorem eventually_mem_principal (s : Set α) : ∀ᶠ x in 𝓟 s, x ∈ s := mem_principal_self s
 
 section Lattice
 
@@ -348,13 +350,17 @@ theorem NeBot.nonempty_of_mem {f : Filter α} (hf : NeBot f) {s : Set α} (hs : 
   @Filter.nonempty_of_mem α f hf s hs
 
 @[simp]
-theorem empty_not_mem (f : Filter α) [NeBot f] : ¬∅ ∈ f := fun h => (nonempty_of_mem h).ne_empty rfl
+theorem empty_notMem (f : Filter α) [NeBot f] : ∅ ∉ f := fun h => (nonempty_of_mem h).ne_empty rfl
+
+@[deprecated (since := "2025-05-23")] alias empty_not_mem := empty_notMem
 
 theorem nonempty_of_neBot (f : Filter α) [NeBot f] : Nonempty α :=
-  nonempty_of_exists <| nonempty_of_mem (univ_mem : univ ∈ f)
+  Exists.nonempty <| nonempty_of_mem (univ_mem : univ ∈ f)
 
-theorem compl_not_mem {f : Filter α} {s : Set α} [NeBot f] (h : s ∈ f) : sᶜ ∉ f := fun hsc =>
+theorem compl_notMem {f : Filter α} {s : Set α} [NeBot f] (h : s ∈ f) : sᶜ ∉ f := fun hsc =>
   (nonempty_of_mem (inter_mem h hsc)).ne_empty <| inter_compl_self s
+
+@[deprecated (since := "2025-05-23")] alias compl_not_mem := compl_notMem
 
 theorem filter_eq_bot_of_isEmpty [IsEmpty α] (f : Filter α) : f = ⊥ :=
   empty_mem_iff_bot.mp <| univ_mem' isEmptyElim
@@ -392,9 +398,11 @@ theorem forall_mem_nonempty_iff_neBot {f : Filter α} :
     (∀ s : Set α, s ∈ f → s.Nonempty) ↔ NeBot f :=
   ⟨fun h => ⟨fun hf => not_nonempty_empty (h ∅ <| hf.symm ▸ mem_bot)⟩, @nonempty_of_mem _ _⟩
 
+instance instNeBotTop [Nonempty α] : NeBot (⊤ : Filter α) :=
+  forall_mem_nonempty_iff_neBot.1 fun s hs => by rwa [mem_top.1 hs, ← nonempty_iff_univ_nonempty]
+
 instance instNontrivialFilter [Nonempty α] : Nontrivial (Filter α) :=
-  ⟨⟨⊤, ⊥, NeBot.ne <| forall_mem_nonempty_iff_neBot.1
-    fun s hs => by rwa [mem_top.1 hs, ← nonempty_iff_univ_nonempty]⟩⟩
+  ⟨⟨⊤, ⊥, instNeBotTop.ne⟩⟩
 
 theorem nontrivial_iff_nonempty : Nontrivial (Filter α) ↔ Nonempty α :=
   ⟨fun _ =>
@@ -432,8 +440,7 @@ theorem iInf_sets_eq {f : ι → Filter α} (h : Directed (· ≥ ·) f) [ne : N
         rcases h a b with ⟨c, ha, hb⟩
         exact ⟨c, inter_mem (ha hx) (hb hy)⟩ }
   have : u = iInf f := eq_iInf_of_mem_iff_exists_mem mem_iUnion
-  -- Porting note: it was just `congr_arg filter.sets this.symm`
-  (congr_arg Filter.sets this.symm).trans <| by simp only [u]
+  congr_arg Filter.sets this.symm
 
 theorem mem_iInf_of_directed {f : ι → Filter α} (h : Directed (· ≥ ·) f) [Nonempty ι] (s) :
     s ∈ iInf f ↔ ∃ i, s ∈ f i := by
@@ -591,8 +598,6 @@ protected theorem Eventually.and {p q : α → Prop} {f : Filter α} :
 theorem Eventually.of_forall {p : α → Prop} {f : Filter α} (hp : ∀ x, p x) : ∀ᶠ x in f, p x :=
   univ_mem' hp
 
-@[deprecated (since := "2024-08-02")] alias eventually_of_forall := Eventually.of_forall
-
 @[simp]
 theorem eventually_false_iff_eq_bot {f : Filter α} : (∀ᶠ _ in f, False) ↔ f = ⊥ :=
   empty_mem_iff_bot
@@ -696,13 +701,11 @@ theorem eventually_iff_all_subsets {f : Filter α} {p : α → Prop} :
 
 theorem Eventually.frequently {f : Filter α} [NeBot f] {p : α → Prop} (h : ∀ᶠ x in f, p x) :
     ∃ᶠ x in f, p x :=
-  compl_not_mem h
+  compl_notMem h
 
 theorem Frequently.of_forall {f : Filter α} [NeBot f] {p : α → Prop} (h : ∀ x, p x) :
     ∃ᶠ x in f, p x :=
   Eventually.frequently (Eventually.of_forall h)
-
-@[deprecated (since := "2024-08-02")] alias frequently_of_forall := Frequently.of_forall
 
 theorem Frequently.mp {p q : α → Prop} {f : Filter α} (h : ∃ᶠ x in f, p x)
     (hpq : ∀ᶠ x in f, p x → q x) : ∃ᶠ x in f, q x :=
@@ -928,12 +931,15 @@ instance {l : Filter α} :
     Trans ((· =ᶠ[l] ·) : (α → β) → (α → β) → Prop) (· =ᶠ[l] ·) (· =ᶠ[l] ·) where
   trans := EventuallyEq.trans
 
-theorem EventuallyEq.prod_mk {l} {f f' : α → β} (hf : f =ᶠ[l] f') {g g' : α → γ} (hg : g =ᶠ[l] g') :
+theorem EventuallyEq.prodMk {l} {f f' : α → β} (hf : f =ᶠ[l] f') {g g' : α → γ} (hg : g =ᶠ[l] g') :
     (fun x => (f x, g x)) =ᶠ[l] fun x => (f' x, g' x) :=
   hf.mp <|
     hg.mono <| by
       intros
       simp only [*]
+
+@[deprecated (since := "2025-03-10")]
+alias EventuallyEq.prod_mk := EventuallyEq.prodMk
 
 -- See `EventuallyEq.comp_tendsto` further below for a similar statement w.r.t.
 -- composition on the right.
@@ -943,7 +949,7 @@ theorem EventuallyEq.fun_comp {f g : α → β} {l : Filter α} (H : f =ᶠ[l] g
 
 theorem EventuallyEq.comp₂ {δ} {f f' : α → β} {g g' : α → γ} {l} (Hf : f =ᶠ[l] f') (h : β → γ → δ)
     (Hg : g =ᶠ[l] g') : (fun x => h (f x) (g x)) =ᶠ[l] fun x => h (f' x) (g' x) :=
-  (Hf.prod_mk Hg).fun_comp (uncurry h)
+  (Hf.prodMk Hg).fun_comp (uncurry h)
 
 @[to_additive]
 theorem EventuallyEq.mul [Mul β] {f f' g g' : α → β} {l : Filter α} (h : f =ᶠ[l] g)
@@ -1107,7 +1113,7 @@ theorem Eventually.ne_of_lt [Preorder β] {l : Filter α} {f g : α → β} (h :
     ∀ᶠ x in l, f x ≠ g x :=
   h.mono fun _ hx => hx.ne
 
-theorem Eventually.ne_top_of_lt [PartialOrder β] [OrderTop β] {l : Filter α} {f g : α → β}
+theorem Eventually.ne_top_of_lt [Preorder β] [OrderTop β] {l : Filter α} {f g : α → β}
     (h : ∀ᶠ x in l, f x < g x) : ∀ᶠ x in l, f x ≠ ⊤ :=
   h.mono fun _ hx => hx.ne_top
 

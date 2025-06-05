@@ -8,7 +8,9 @@ set_option autoImplicit true
 -- We deliberately mock R here so that we don't have to import the deps
 axiom Real : Type
 notation "ℝ" => Real
-@[instance] axiom Real.linearOrderedRing : LinearOrderedField ℝ
+@[instance] axiom Real.field : Field ℝ
+@[instance] axiom Real.linearOrder : LinearOrder ℝ
+@[instance] axiom Real.isStrictOrderedRing : IsStrictOrderedRing ℝ
 
 example (x y : ℕ) : x + y = y + x := by ring
 example (x y : ℕ) : x + y + y = 2 * y + x := by ring
@@ -23,17 +25,17 @@ example (x y : ℝ) : (x + y) ^ 3 = x ^ 3 + y ^ 3 + 3 * (x * y ^ 2 + x ^ 2 * y) 
 example {α} [CommSemiring α] (x : α) : (x + 1) ^ 6 = (1 + x) ^ 6 := by ring
 example (n : ℕ) : (n / 2) + (n / 2) = 2 * (n / 2) := by ring
 example {α} [Field α] [CharZero α] (a : α) : a / 2 = a / 2 := by ring
-example {α} [LinearOrderedField α] (a b c : α) :
+example {α} [Field α] [LinearOrder α] [IsStrictOrderedRing α] (a b c : α) :
   a * (-c / b) * (-c / b) + -c + c = a * (c / b * (c / b)) := by ring
-example {α} [LinearOrderedField α] (a b c : α) :
+example {α} [Field α] [LinearOrder α] [IsStrictOrderedRing α] (a b c : α) :
   b ^ 2 - 4 * c * a = -(4 * c * a) + b ^ 2 := by ring
 example {α} [CommSemiring α] (x : α) : x ^ (2 + 2) = x^4 := by ring1
 example {α} [CommSemiring α] (x : α) : x ^ (2 + 2) = x^4 := by ring
 example {α} [CommRing α] (x : α) : x ^ 2 = x * x := by ring
 -- example {α} [CommRing α] (x : α) : x ^ (2 : ℤ) = x * x := by ring
-example {α} [LinearOrderedField α] (a b c : α) :
+example {α} [Field α] [LinearOrder α] [IsStrictOrderedRing α] (a b c : α) :
   b ^ 2 - 4 * c * a = -(4 * c * a) + b ^ 2 := by ring
-example {α} [LinearOrderedField α] (a b c : α) :
+example {α} [Field α] [LinearOrder α] [IsStrictOrderedRing α] (a b c : α) :
   b ^ 2 - 4 * a * c = 4 * a * 0 + b * b - 4 * a * c := by ring
 example {α} [CommSemiring α] (x y z : α) (n : ℕ) :
   (x + y) * (z * (y * y) + (x * x ^ n + (1 + ↑n) * x ^ n * y)) =
@@ -106,9 +108,8 @@ example : 22 + 7 * 4 + 3 * 8 = 0 + 7 * 4 + 46 := by
   trivial -- FIXME: not needed in lean 3
 
 -- Example with ring failing to discharge, to normalizing the goal
-/--
-info: Try this: ring_nf
--/
+
+/-- info: Try this: ring_nf -/
 #guard_msgs in
 example : (22 + 7 * 4 + 3 * 8 = 0 + 7 * 4 + 47) = (74 = 75) := by
   conv => ring
@@ -120,9 +121,8 @@ example (x : ℕ) : 22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 := by
   trivial
 
 -- Example with ring failing to discharge, to normalizing the goal
-/--
-info: Try this: ring_nf
--/
+
+/-- info: Try this: ring_nf -/
 #guard_msgs in
 example (x : ℕ) : (22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 + 1)
                     = (7 * x + 46 = 7 * x + 47) := by
@@ -149,15 +149,15 @@ example (X : ℤ) : (X^5 + 1) * (X^2^3 + X) = X^13 + X^8 + X^6 + X := by ring
 def R : Type u → Type v → Sort (max (u+1) (v+1)) := test_sorry
 noncomputable instance : CommRing (R a b) := test_sorry
 
-example (p : R PUnit.{u+1} PUnit.{v+1}) : p + 0 = p := by
+example (p : R PUnit.{u + 1} PUnit.{v + 1}) : p + 0 = p := by
   ring
-example (p q : R PUnit.{u+1} PUnit.{v+1}) : p + q = q + p := by
+example (p q : R PUnit.{u + 1} PUnit.{v + 1}) : p + q = q + p := by
   ring
 
 
-example (p : R PUnit.{u+1} PUnit.{v+1}) : p + 0 = p := by
+example (p : R PUnit.{u + 1} PUnit.{v + 1}) : p + 0 = p := by
   ring_nf
-example (p q : R PUnit.{u+1} PUnit.{v+1}) : p + q = q + p := by
+example (p q : R PUnit.{u + 1} PUnit.{v + 1}) : p + q = q + p := by
   ring_nf
 
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring_nf.20returns.20ugly.20literals/near/400988184
@@ -169,11 +169,11 @@ example {n : ℝ} :
 -- We can't use `guard_target =ₛ` here, as while it does detect stray `OfNat`s, it also complains
 -- about differing instance paths.
 /--
-info: n : ℝ
+trace: n : ℝ
 _hn : 0 ≤ n
 ⊢ 1 / 3 + n * (19 / 12) + n ^ 2 * (7 / 3) + n ^ 3 ≤ 1 / 3 + n * (5 / 3) + n ^ 2 * (7 / 3) + n ^ 3
 -/
-#guard_msgs (info) in
+#guard_msgs (trace) in
 example {n : ℝ} (_hn : 0 ≤ n) : (n + 1 / 2) ^ 2 * (n + 1 + 1 / 3) ≤ (n + 1 / 3) * (n + 1) ^ 2 := by
   ring_nf
   trace_state
@@ -190,12 +190,12 @@ We can't use `guard_hyp h :ₛ` here, as while it does tell apart `x` and `myId 
 about differing instance paths.
 -/
 /--
-info: x : ℤ
+trace: x : ℤ
 R : ℤ → ℤ → Prop
 h : R (myId x * 2) (myId x * 2)
 ⊢ True
 -/
-#guard_msgs (info) in
+#guard_msgs (trace) in
 example (x : ℤ) (R : ℤ → ℤ → Prop) : True := by
   have h : R (myId x + x) (x + myId x) := test_sorry
   ring_nf at h
@@ -203,3 +203,29 @@ example (x : ℤ) (R : ℤ → ℤ → Prop) : True := by
   trivial
 
 end
+
+-- Test that `ring_nf` doesn't unfold local let expressions, and `ring_nf!` does
+set_option linter.unusedTactic false in
+example (x : ℝ) (f : ℝ → ℝ) : True := by
+  let y := x
+  /-
+  Two of these fail, and two of these succeed in rewriting the instance, so it's not a good idea
+  to use `fail_if_success` since the instances could change without warning.
+  -/
+  have : x = y := by
+    ring_nf -failIfUnchanged
+    ring_nf!
+  have : x - y = 0 := by
+    ring_nf -failIfUnchanged
+    ring_nf!
+  have : f x = f y := by
+    ring_nf -failIfUnchanged
+    ring_nf!
+  have : f x - f y = 0 := by
+    ring_nf -failIfUnchanged
+    ring_nf!
+  trivial
+
+-- Test that `ring_nf` doesn't get confused about bound variables
+example : (fun x : ℝ => x * x^2) = (fun y => y^2 * y) := by
+  ring_nf

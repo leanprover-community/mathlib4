@@ -100,8 +100,8 @@ theorem Γ₀_obj_termwise_mapMono_comp_PInfty (X : SimplicialObject C) {Δ Δ' 
     rw [Finset.sum_eq_single (0 : Fin (n + 2))]
     rotate_left
     · intro b _ hb
-      rw [Preadditive.comp_zsmul]
-      erw [PInfty_comp_map_mono_eq_zero X (SimplexCategory.δ b) h
+      rw [Preadditive.comp_zsmul, SimplicialObject.δ,
+        PInfty_comp_map_mono_eq_zero X (SimplexCategory.δ b) h
           (by
             rw [Isδ₀.iff]
             exact hb),
@@ -207,15 +207,10 @@ theorem identity_N₂_objectwise (P : Karoubi (SimplicialObject C)) :
     rw [Γ₂N₂ToKaroubiIso_hom_app, assoc, Splitting.ι_desc_assoc, assoc, assoc]
     dsimp [toKaroubi]
     rw [Splitting.ι_desc_assoc]
-    dsimp
-    simp only [assoc, Splitting.ι_desc_assoc, unop_op, Splitting.IndexSet.id_fst,
-      len_mk, NatTrans.naturality, PInfty_f_idem_assoc,
-      PInfty_f_naturality_assoc, app_idem_assoc]
-    erw [P.X.map_id, comp_id]
+    simp [Splitting.IndexSet.e]
   simp only [Karoubi.comp_f, HomologicalComplex.comp_f, Karoubi.id_f, N₂_obj_p_f, assoc,
     eq₁, eq₂, PInfty_f_naturality_assoc, app_idem, PInfty_f_idem_assoc]
 
--- Porting note: `Functor.associator` was added to the statement in order to prevent a timeout
 theorem identity_N₂ :
     (𝟙 (N₂ : Karoubi (SimplicialObject C) ⥤ _) ◫ N₂Γ₂.inv) ≫
     (Functor.associator _ _ _).inv ≫ Γ₂N₂.natTrans ◫ 𝟙 (@N₂ C _ _) = 𝟙 N₂ := by
@@ -229,7 +224,8 @@ instance : IsIso (Γ₂N₂.natTrans : (N₂ : Karoubi (SimplicialObject C) ⥤ 
     intro P
     have : IsIso (N₂.map (Γ₂N₂.natTrans.app P)) := by
       have h := identity_N₂_objectwise P
-      erw [hom_comp_eq_id] at h
+      dsimp only [Functor.id_obj, Functor.comp_obj] at h
+      rw [hom_comp_eq_id] at h
       rw [h]
       infer_instance
     exact isIso_of_reflects_iso _ N₂

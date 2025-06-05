@@ -3,12 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Order.Hom.Basic
 import Mathlib.Logic.Equiv.Set
-import Mathlib.Data.Set.Monotone
-import Mathlib.Data.Set.Image
-import Mathlib.Order.WellFounded
+import Mathlib.Order.Hom.Basic
 import Mathlib.Order.Interval.Set.Defs
+import Mathlib.Order.WellFounded
+import Mathlib.Tactic.MinImports
 
 /-!
 # Order homomorphisms and sets
@@ -18,6 +17,19 @@ import Mathlib.Order.Interval.Set.Defs
 open OrderDual Set
 
 variable {α β : Type*}
+
+namespace Set
+
+/-- Sets on sum types are order-equivalent to pairs of sets on each summand. -/
+def sumEquiv : Set (α ⊕ β) ≃o Set α × Set β where
+  toFun s := (Sum.inl ⁻¹' s, Sum.inr ⁻¹' s)
+  invFun s := Sum.inl '' s.1 ∪ Sum.inr '' s.2
+  left_inv s := image_preimage_inl_union_image_preimage_inr s
+  right_inv s := by
+    simp [preimage_image_eq _ Sum.inl_injective, preimage_image_eq _ Sum.inr_injective]
+  map_rel_iff' := by simp [subset_def]
+
+end Set
 
 namespace OrderIso
 

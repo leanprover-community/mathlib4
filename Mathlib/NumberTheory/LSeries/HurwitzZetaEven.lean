@@ -255,7 +255,9 @@ def hurwitzEvenFEPair (a : UnitAddCircle) : WeakFEPair ℂ where
     measurableSet_Ioi
   hg_int := (continuous_ofReal.comp_continuousOn (continuousOn_cosKernel a)).locallyIntegrableOn
     measurableSet_Ioi
+  k := 1 / 2
   hk := one_half_pos
+  ε := 1
   hε := one_ne_zero
   f₀ := if a = 0 then 1 else 0
   hf_top r := by
@@ -267,8 +269,7 @@ def hurwitzEvenFEPair (a : UnitAddCircle) : WeakFEPair ℂ where
   g₀ := 1
   hg_top r := by
     obtain ⟨p, hp, hp'⟩ := isBigO_atTop_cosKernel_sub a
-    rw [← isBigO_norm_left] at hp' ⊢
-    simpa [← abs_ofReal] using hp'.trans (isLittleO_exp_neg_mul_rpow_atTop hp _).isBigO
+    simpa using isBigO_ofReal_left.mpr <| hp'.trans (isLittleO_exp_neg_mul_rpow_atTop hp r).isBigO
   h_feq x hx := by simp [← ofReal_mul, evenKernel_functional_equation, inv_rpow (le_of_lt hx)]
 
 @[simp]
@@ -575,7 +576,7 @@ lemma differentiableAt_update_of_residue
     · exact eventually_of_mem self_mem_nhdsWithin fun x hx hx' ↦ (hx <| inv_eq_zero.mp hx').elim
 
 /-- The even part of the Hurwitz zeta function, i.e. the meromorphic function of `s` which agrees
-with `1 / 2 * ∑' (n : ℤ), 1 / |n + a| ^ s` for `1 < re s`-/
+with `1 / 2 * ∑' (n : ℤ), 1 / |n + a| ^ s` for `1 < re s` -/
 noncomputable def hurwitzZetaEven (a : UnitAddCircle) :=
   Function.update (fun s ↦ completedHurwitzZetaEven a s / Gammaℝ s)
   0 (if a = 0 then -1 / 2 else 0)

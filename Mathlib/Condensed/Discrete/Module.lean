@@ -63,27 +63,27 @@ namespace CondensedMod.LocallyConstant
 
 open Condensed
 
-variable (R : Type (u+1)) [Ring R]
+variable (R : Type (u + 1)) [Ring R]
 
 /-- `functorToPresheaves` in the case of `CompHaus`. -/
-abbrev functorToPresheaves : ModuleCat.{u+1} R ⥤ (CompHaus.{u}ᵒᵖ ⥤ ModuleCat R) :=
-  CompHausLike.LocallyConstantModule.functorToPresheaves.{u+1, u} R
+abbrev functorToPresheaves : ModuleCat.{u + 1} R ⥤ (CompHaus.{u}ᵒᵖ ⥤ ModuleCat R) :=
+  CompHausLike.LocallyConstantModule.functorToPresheaves.{u + 1, u} R
 
 /-- `functorToPresheaves` as a functor to condensed modules. -/
 abbrev functor : ModuleCat R ⥤ CondensedMod.{u} R :=
-  CompHausLike.LocallyConstantModule.functor.{u+1, u} R
+  CompHausLike.LocallyConstantModule.functor.{u + 1, u} R
     (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
 
 /-- Auxiliary definition for `functorIsoDiscrete`. -/
-noncomputable def functorIsoDiscreteAux₁ (M : ModuleCat.{u+1} R) :
-    M ≅ (ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u+1}) M)) where
+noncomputable def functorIsoDiscreteAux₁ (M : ModuleCat.{u + 1} R) :
+    M ≅ (ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u + 1}) M)) where
   hom := ModuleCat.ofHom (constₗ R)
   inv := ModuleCat.ofHom (evalₗ R PUnit.unit)
 
 /-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteAux₂ (M : ModuleCat R) :
     (discrete _).obj M ≅ (discrete _).obj
-      (ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u+1}) M)) :=
+      (ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u + 1}) M)) :=
   (discrete _).mapIso (functorIsoDiscreteAux₁ R M)
 
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
@@ -98,7 +98,7 @@ instance (M : ModuleCat R) : IsIso ((forget R).map
     inferInstanceAs (discrete _).Full
   rw [← Sheaf.isConstant_iff_isIso_counit_app]
   constructor
-  change _ ∈ (discrete _).essImage
+  change (discrete _).essImage _
   rw [essImage_eq_of_natIso CondensedSet.LocallyConstant.iso.symm]
   exact obj_mem_essImage CondensedSet.LocallyConstant.functor M
 
@@ -114,7 +114,7 @@ noncomputable def functorIsoDiscreteComponents (M : ModuleCat R) :
 /--
 `CondensedMod.LocallyConstant.functor` is naturally isomorphic to the constant sheaf functor from
 `R`-modules to condensed `R`-modules.
- -/
+-/
 noncomputable def functorIsoDiscrete : functor R ≅ discrete _ :=
   NatIso.ofComponents (fun M ↦ (functorIsoDiscreteComponents R M).symm) fun f ↦ by
     dsimp
@@ -186,14 +186,14 @@ abbrev functor : ModuleCat R ⥤ LightCondMod.{u} R :=
 
 /-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteAux₁ (M : ModuleCat.{u} R) :
-    M ≅ (ModuleCat.of R (LocallyConstant (LightProfinite.of PUnit.{u+1}) M)) where
+    M ≅ (ModuleCat.of R (LocallyConstant (LightProfinite.of PUnit.{u + 1}) M)) where
   hom := ModuleCat.ofHom (constₗ R)
   inv := ModuleCat.ofHom (evalₗ R PUnit.unit)
 
 /-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteAux₂ (M : ModuleCat.{u} R) :
     (discrete _).obj M ≅ (discrete _).obj
-      (ModuleCat.of R (LocallyConstant (LightProfinite.of PUnit.{u+1}) M)) :=
+      (ModuleCat.of R (LocallyConstant (LightProfinite.of PUnit.{u + 1}) M)) :=
   (discrete _).mapIso (functorIsoDiscreteAux₁ R M)
 
 -- Not stating this explicitly causes timeouts below.
@@ -214,7 +214,7 @@ instance (M : ModuleCat R) :
     inferInstanceAs (discrete _).Full
   rw [← Sheaf.isConstant_iff_isIso_counit_app]
   constructor
-  change _ ∈ (discrete _).essImage
+  change (discrete _).essImage _
   rw [essImage_eq_of_natIso LightCondSet.LocallyConstant.iso.symm]
   exact obj_mem_essImage LightCondSet.LocallyConstant.functor M
 
@@ -230,7 +230,7 @@ noncomputable def functorIsoDiscreteComponents (M : ModuleCat R) :
 /--
 `LightCondMod.LocallyConstant.functor` is naturally isomorphic to the constant sheaf functor from
 `R`-modules to light condensed `R`-modules.
- -/
+-/
 noncomputable def functorIsoDiscrete : functor R ≅ discrete _ :=
   NatIso.ofComponents (fun M ↦ (functorIsoDiscreteComponents R M).symm) fun f ↦ by
     dsimp
@@ -248,7 +248,7 @@ noncomputable def functorIsoDiscrete : functor R ≅ discrete _ :=
 /--
 `LightCondMod.LocallyConstant.functor` is left adjoint to the forgetful functor from light condensed
 `R`-modules to `R`-modules.
- -/
+-/
 noncomputable def adjunction : functor R ⊣ underlying (ModuleCat R) :=
   Adjunction.ofNatIsoLeft (discreteUnderlyingAdj _) (functorIsoDiscrete R).symm
 

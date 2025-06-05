@@ -11,7 +11,7 @@ import Mathlib.Data.Finset.Lattice.Fold
 /-!
 # The lattice of subobjects
 
-We provide the `SemilatticeInf` with `OrderTop (subobject X)` instance when `[HasPullback C]`,
+We provide the `SemilatticeInf` with `OrderTop (Subobject X)` instance when `[HasPullback C]`,
 and the `SemilatticeSup (Subobject X)` instance when `[HasImages C] [HasBinaryCoproducts C]`.
 -/
 
@@ -242,6 +242,11 @@ theorem mk_eq_top_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] : mk f = ⊤ :=
 theorem eq_top_of_isIso_arrow {Y : C} (P : Subobject Y) [IsIso P.arrow] : P = ⊤ :=
   (isIso_arrow_iff_eq_top P).mp inferInstance
 
+lemma epi_iff_mk_eq_top [Balanced C] (f : X ⟶ Y) [Mono f] :
+    Epi f ↔ Subobject.mk f = ⊤ := by
+  rw [← isIso_iff_mk_eq_top]
+  exact ⟨fun _ ↦ isIso_of_mono_of_epi f, fun _ ↦ inferInstance⟩
+
 section
 
 variable [HasPullbacks C]
@@ -382,7 +387,7 @@ theorem finset_inf_factors {I : Type*} {A B : C} {s : Finset I} {P : I → Subob
   classical
   induction s using Finset.induction_on with
   | empty => simp [top_factors]
-  | insert _ ih => simp [ih]
+  | insert _ _ _ ih => simp [ih]
 
 -- `i` is explicit here because often we'd like to defer a proof of `m`
 theorem finset_inf_arrow_factors {I : Type*} {B : C} (s : Finset I) (P : I → Subobject B) (i : I)
@@ -391,7 +396,7 @@ theorem finset_inf_arrow_factors {I : Type*} {B : C} (s : Finset I) (P : I → S
   revert i m
   induction s using Finset.induction_on with
   | empty => rintro _ ⟨⟩
-  | insert _ ih =>
+  | insert _ _ _ ih =>
     intro _ m
     rw [Finset.inf_insert]
     simp only [Finset.mem_insert] at m
@@ -476,7 +481,7 @@ theorem finset_sup_factors {I : Type*} {A B : C} {s : Finset I} {P : I → Subob
   revert h
   induction s using Finset.induction_on with
   | empty => rintro ⟨_, ⟨⟨⟩, _⟩⟩
-  | insert _ ih =>
+  | insert _ _ _ ih =>
     rintro ⟨j, ⟨m, h⟩⟩
     simp only [Finset.sup_insert]
     simp only [Finset.mem_insert] at m
@@ -653,6 +658,21 @@ instance {B : C} : CompleteLattice (Subobject B) :=
 
 end CompleteLattice
 
+lemma subsingleton_of_isInitial {X : C} (hX : IsInitial X) : Subsingleton (Subobject X) := by
+  suffices ∀ (S : Subobject X), S = .mk (𝟙 _) from ⟨by simp [this]⟩
+  intro S
+  obtain ⟨A, i, _, rfl⟩ := S.mk_surjective
+  have fac : hX.to A ≫ i = 𝟙 X := hX.hom_ext _ _
+  let e : A ≅ X :=
+    { hom := i
+      inv := hX.to A
+      hom_inv_id := by rw [← cancel_mono i, assoc, fac, id_comp, comp_id]
+      inv_hom_id := fac }
+  exact mk_eq_mk_of_comm i (𝟙 X) e (by simp [e])
+
+lemma subsingleton_of_isZero {X : C} (hX : IsZero X) : Subsingleton (Subobject X) :=
+  subsingleton_of_isInitial hX.isInitial
+
 section ZeroObject
 
 variable [HasZeroMorphisms C] [HasZeroObject C]
@@ -674,9 +694,7 @@ def subobjectOrderIso {X : C} (Y : Subobject X) : Subobject (Y : C) ≃o Set.Iic
       Set.mem_Iic.mpr (le_of_comm ((underlyingIso _).hom ≫ Z.arrow) (by simp))⟩
   invFun Z := Subobject.mk (ofLE _ _ Z.2)
   left_inv Z := mk_eq_of_comm _ (underlyingIso _) (by aesop_cat)
-  right_inv Z := Subtype.ext (mk_eq_of_comm _ (underlyingIso _) (by
-          dsimp
-          simp [← Iso.eq_inv_comp]))
+  right_inv Z := Subtype.ext (mk_eq_of_comm _ (underlyingIso _) (by simp [← Iso.eq_inv_comp]))
   map_rel_iff' {W Z} := by
     dsimp
     constructor

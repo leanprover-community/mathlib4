@@ -205,7 +205,6 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
         gcongr
         exact mem_closedBall'.1 hy
       _ = ε * (1 - c * f'symm.nnnorm) := by field_simp; ring
-
   /- Main inductive control: `f (u n)` becomes exponentially close to `y`, and therefore
     `dist (u (n+1)) (u n)` becomes exponentally small, making it possible to get an inductive
     bound on `dist (u n) b`, from which one checks that `u n` remains in the ball on which we
@@ -267,7 +266,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
 
 theorem open_image (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRightInverse)
     (hs : IsOpen s) (hc : Subsingleton F ∨ c < f'symm.nnnorm⁻¹) : IsOpen (f '' s) := by
-  cases' hc with hE hc
+  rcases hc with hE | hc
   · exact isOpen_discrete _
   simp only [isOpen_iff_mem_nhds, nhds_basis_closedBall.mem_iff, forall_mem_image] at hs ⊢
   intro x hx
@@ -304,7 +303,7 @@ local notation "N" => ‖(f'.symm : F →L[𝕜] E)‖₊
 
 protected theorem antilipschitz (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) : AntilipschitzWith (N⁻¹ - c)⁻¹ (s.restrict f) := by
-  cases' hc with hE hc
+  rcases hc with hE | hc
   · exact AntilipschitzWith.of_subsingleton
   convert (f'.antilipschitz.restrict s).add_lipschitzWith hf.lipschitz_sub hc
   simp [restrict]
@@ -319,7 +318,7 @@ protected theorem injOn (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
 
 protected theorem surjective [CompleteSpace E] (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) univ c)
     (hc : Subsingleton E ∨ c < N⁻¹) : Surjective f := by
-  cases' hc with hE hc
+  rcases hc with hE | hc
   · haveI : Subsingleton F := (Equiv.subsingleton_congr f'.toEquiv).1 hE
     exact surjective_to_subsingleton _
   · apply forall_of_forall_mem_closedBall (fun y : F => ∃ a, f a = y) (f 0) _

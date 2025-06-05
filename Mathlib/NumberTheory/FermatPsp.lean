@@ -3,6 +3,7 @@ Copyright (c) 2022 Niels Voss. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Niels Voss
 -/
+import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.Order.Filter.Cofinite
 
@@ -196,7 +197,6 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
   have hi_b : 0 < b := by omega
   have hi_p : 1 ≤ p := Nat.one_le_of_lt p_gt_two
   have hi_bsquared : 0 < b ^ 2 - 1 := by
-    -- Porting note: was `by nlinarith [Nat.one_le_pow 2 b hi_b]`
     have := Nat.pow_le_pow_left b_ge_two 2
     omega
   have hi_bpowtwop : 1 ≤ b ^ (2 * p) := Nat.one_le_pow (2 * p) b hi_b
@@ -222,7 +222,6 @@ private theorem psp_from_prime_psp {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_p
   -- If `b` is even, then `b^p` is also even, so `2 ∣ b^p + b`
   -- If `b` is odd, then `b^p` is also odd, so `2 ∣ b^p + b`
   have ha₂ : 2 ∣ b ^ p + b := by
-    -- Porting note: golfed
     rw [← even_iff_two_dvd, Nat.even_add, Nat.even_pow' p_prime.ne_zero]
   -- Since `b` isn't divisible by `p`, `b` is coprime with `p`. we can use Fermat's Little Theorem
   -- to prove this.

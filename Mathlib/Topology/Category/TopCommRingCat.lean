@@ -26,7 +26,7 @@ structure TopCommRingCat where
   α : Type u
   [isCommRing : CommRing α]
   [isTopologicalSpace : TopologicalSpace α]
-  [isTopologicalRing : TopologicalRing α]
+  [isTopologicalRing : IsTopologicalRing α]
 
 namespace TopCommRingCat
 
@@ -58,10 +58,10 @@ instance : ConcreteCategory TopCommRingCat.{u} fun R S => { f : R →+* S // Con
 
 /-- Construct a bundled `TopCommRingCat` from the underlying type and the appropriate typeclasses.
 -/
-abbrev of (X : Type u) [CommRing X] [TopologicalSpace X] [TopologicalRing X] : TopCommRingCat :=
+abbrev of (X : Type u) [CommRing X] [TopologicalSpace X] [IsTopologicalRing X] : TopCommRingCat :=
   ⟨X⟩
 
-theorem coe_of (X : Type u) [CommRing X] [TopologicalSpace X] [TopologicalRing X] :
+theorem coe_of (X : Type u) [CommRing X] [TopologicalSpace X] [IsTopologicalRing X] :
     (of X : Type u) = X := rfl
 
 instance hasForgetToCommRingCat : HasForget₂ TopCommRingCat CommRingCat :=
@@ -81,7 +81,7 @@ instance forgetToTopCatCommRing (R : TopCommRingCat) :
   R.isCommRing
 
 instance forgetToTopCatTopologicalRing (R : TopCommRingCat) :
-    TopologicalRing ((forget₂ TopCommRingCat TopCat).obj R) :=
+    IsTopologicalRing ((forget₂ TopCommRingCat TopCat).obj R) :=
   R.isTopologicalRing
 
 /-- The forgetful functors to `Type` do not reflect isomorphisms,

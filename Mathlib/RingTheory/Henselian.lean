@@ -29,8 +29,7 @@ In this case the first condition is automatic, and in the second condition we ma
 
 * `HenselianRing`: a typeclass on commutative rings,
   asserting that the ring is Henselian at the ideal `I`.
-* `HenselianLocalRing`: a typeclass on commutative rings,
-   asserting that the ring is local Henselian.
+* `HenselianLocalRing`: a typeclass on commutative rings, asserting that the ring is local Henselian
 * `Field.henselian`: fields are Henselian local rings
 * `Henselian.TFAE`: equivalent ways of expressing the Henselian property for local rings
 * `IsAdicComplete.henselianRing`:
@@ -58,7 +57,7 @@ noncomputable section
 
 universe u v
 
-open Polynomial IsLocalRing Polynomial Function List
+open Polynomial IsLocalRing Function List
 
 theorem isLocalHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
     (h : I ≤ Ideal.jacobson ⊥) : IsLocalHom (Ideal.Quotient.mk I) := by
@@ -78,9 +77,6 @@ theorem isLocalHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
   specialize h1 1
   simp? at h1 says simp only [mul_one, sub_add_cancel, IsUnit.mul_iff] at h1
   exact h1.1
-
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_of_le_jacobson_bot := isLocalHom_of_le_jacobson_bot
 
 /-- A ring `R` is *Henselian* at an ideal `I` if the following condition holds:
 for every polynomial `f` over `R`, with a *simple* root `a₀` over the quotient ring `R/I`,
@@ -104,7 +100,7 @@ there exists a lift `a : R` of `a₀` that is a root of `f`.
 
 In other words, `R` is local Henselian if it is Henselian at the ideal `I`,
 in the sense of `HenselianRing`. -/
-class HenselianLocalRing (R : Type*) [CommRing R] extends IsLocalRing R : Prop where
+class HenselianLocalRing (R : Type*) [CommRing R] : Prop extends IsLocalRing R where
   is_henselian :
     ∀ (f : R[X]) (_ : f.Monic) (a₀ : R) (_ : f.eval a₀ ∈ maximalIdeal R)
       (_ : IsUnit (f.derivative.eval a₀)), ∃ a : R, f.IsRoot a ∧ a - a₀ ∈ maximalIdeal R
@@ -212,8 +208,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         · intro i
           rw [zero_mul]
         refine Ideal.add_mem _ ?_ ?_
-        · erw [Finset.sum_range_succ]
-          rw [Finset.range_one, Finset.sum_singleton,
+        · rw [← one_add_one_eq_two, Finset.sum_range_succ, Finset.range_one, Finset.sum_singleton,
             taylor_coeff_zero, taylor_coeff_one, pow_zero, pow_one, mul_one, mul_neg,
             mul_left_comm, Ring.mul_inverse_cancel _ (hf'c n), mul_one, add_neg_cancel]
           exact Ideal.zero_mem _

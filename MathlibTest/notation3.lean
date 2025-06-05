@@ -1,5 +1,5 @@
 import Mathlib.Util.Notation3
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Basic
 
 set_option linter.style.setOption false
 set_option pp.unicode.fun true
@@ -84,8 +84,12 @@ notation3 "∀ᶠᶠ " (...) " in " f ": "
 #guard_msgs in #check foobar (fun y ↦ Eq y 1) (Filter.atTop.eventually fun x ↦ LT.lt x 3)
 
 notation3 "∃' " (...) ", " r:(scoped p => Exists p) => r
-/-- info: ∃' (x : ℕ) (_ : x < 3), x < 3 : Prop -/
-#guard_msgs in #check ∃' x < 3, x < 3
+/-- info: ∃' (a : ℕ) (_ : a < 3), a < 3 : Prop -/
+#guard_msgs in #check ∃' a < 3, a < 3
+/-- info: ∃' (x : ℕ) (_ : x < 3), True : Prop -/
+#guard_msgs in #check ∃' _ < 3, True
+/-- info: ∃' (x : ℕ) (_ : x < 1) (x_1 : ℕ) (_ : x_1 < 2), x = 0 : Prop -/
+#guard_msgs in #check ∃' (x < 1) (_ < 2), x = 0
 
 def func (x : α) : α := x
 notation3 "func! " (...) ", " r:(scoped p => func p) => r
@@ -163,20 +167,16 @@ end
 def idStr : String → String := id
 
 /--
-error: application type mismatch
+error: Application type mismatch: In the application
   idStr Nat.zero
-argument
+the argument
   Nat.zero
 has type
   ℕ : Type
 but is expected to have type
   String : Type
 ---
-warning: Was not able to generate a pretty printer for this notation. If you do not expect it to be
-pretty printable, then you can use `notation3 (prettyPrint := false)`. If the notation expansion
-refers to section variables, be sure to do `local notation3`. Otherwise, you might be able to adjust
-the notation expansion to make it matchable; pretty printing relies on deriving an expression
-matcher from the expansion. (Use `set_option trace.notation3 true` to get some debug information.)
+warning: Was not able to generate a pretty printer for this notation. If you do not expect it to be pretty printable, then you can use `notation3 (prettyPrint := false)`. If the notation expansion refers to section variables, be sure to do `local notation3`. Otherwise, you might be able to adjust the notation expansion to make it matchable; pretty printing relies on deriving an expression matcher from the expansion. (Use `set_option trace.notation3 true` to get some debug information.)
 -/
 #guard_msgs in
 notation3 "error" => idStr Nat.zero
@@ -226,16 +226,17 @@ Verifying that delaborator does not match the exact `Inhabited` instance.
 Instead, it matches that it's an application of `Inhabited.default` whose first argument is `Nat`.
 -/
 /--
-info: [notation3] syntax declaration has name Test.termδNat
-[notation3] Generating matcher for pattern default
+trace: [notation3] syntax declaration has name Test.termδNat
+---
+trace: [notation3] Generating matcher for pattern default
 [notation3] Matcher creation succeeded; assembling delaborator
 [notation3] matcher:
-      matchApp✝ (matchApp✝ (matchExpr✝ (Expr.isConstOf✝ · `Inhabited.default))
-(matchExpr✝ (Expr.isConstOf✝ · `Nat)))
+      matchApp✝ (matchApp✝ (matchExpr✝ (Expr.isConstOf✝ · `Inhabited.default)) (matchExpr✝ (Expr.isConstOf✝ · `Nat)))
           pure✝ >=>
         pure✝
 [notation3] Creating delaborator for key Mathlib.Notation3.DelabKey.app (some `Inhabited.default) 2
-[notation3] Defined delaborator Test.termδNat.«delab_app.Inhabited.default»
+---
+trace: [notation3] Defined delaborator Test.termδNat.«delab_app.Inhabited.default»
 -/
 #guard_msgs in
 set_option trace.notation3 true in
