@@ -3,9 +3,10 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.GroupWithZero.ProdHom
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Data.Prod.Lex
+import Mathlib.Order.Prod.Lex.Monoid
 
 /-!
 # Order homomorphisms for products of linearly ordered groups with zero
@@ -22,87 +23,131 @@ TODO: Create the "LinOrdCommGrpWithZero" category.
 
 -/
 
+-- TODO: find a better place
+/-- `toLex` as a monoid isomorphism. -/
+def toLexMulEquiv (G H : Type*) [MulOneClass G] [MulOneClass H] : G × H ≃* G ×ₗ H where
+  toFun := toLex
+  invFun := ofLex
+  left_inv := ofLex_toLex
+  right_inv := toLex_ofLex
+  map_mul' := toLex_mul
+
+@[simp]
+lemma coe_toLexMulEquiv (G H : Type*) [MulOneClass G] [MulOneClass H] :
+    ⇑(toLexMulEquiv G H) = toLex :=
+  rfl
+
+@[simp]
+lemma coe_symm_toLexMulEquiv (G H : Type*) [MulOneClass G] [MulOneClass H] :
+    ⇑(toLexMulEquiv G H).symm = ofLex :=
+  rfl
+
+@[simp]
+lemma coe_toEquiv_toLexMulEquiv (G H : Type*) [MulOneClass G] [MulOneClass H] :
+    ⇑(toLexMulEquiv G H : G × H ≃ G ×ₗ H) = toLex :=
+  rfl
+
+@[simp]
+lemma coe_symm_toEquiv_toLexMulEquiv (G H : Type*) [MulOneClass G] [MulOneClass H] :
+    ⇑((toLexMulEquiv G H).symm : G ×ₗ H ≃ G × H) = ofLex :=
+  rfl
+
+namespace MonoidWithZeroHom
+
+variable {M₀ N₀ : Type*}
+
+lemma inl_mono [LinearOrderedCommGroupWithZero M₀] [GroupWithZero N₀] [Preorder N₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] : Monotone (MonoidWithZeroHom.inl M₀ N₀) := by
+  refine (WithZero.map'_mono MonoidHom.inl_mono).comp ?_
+  intro x y
+  obtain rfl | ⟨x, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
+  obtain rfl | ⟨y, rfl⟩ := GroupWithZero.eq_zero_or_unit y <;>
+  · simp [WithZero.zero_le, WithZero.withZeroUnitsEquiv]
+
+lemma inl_strictMono [LinearOrderedCommGroupWithZero M₀] [GroupWithZero N₀] [PartialOrder N₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] : StrictMono (MonoidWithZeroHom.inl M₀ N₀) :=
+  inl_mono.strictMono_of_injective inl_injective
+
+lemma inr_mono [GroupWithZero M₀] [Preorder M₀] [LinearOrderedCommGroupWithZero N₀]
+    [DecidablePred fun x : N₀ ↦ x = 0] : Monotone (MonoidWithZeroHom.inr M₀ N₀) := by
+  refine (WithZero.map'_mono MonoidHom.inr_mono).comp ?_
+  intro x y
+  obtain rfl | ⟨x, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
+  obtain rfl | ⟨y, rfl⟩ := GroupWithZero.eq_zero_or_unit y <;>
+  · simp [WithZero.zero_le, WithZero.withZeroUnitsEquiv]
+
+lemma inr_strictMono [GroupWithZero M₀] [PartialOrder M₀] [LinearOrderedCommGroupWithZero N₀]
+    [DecidablePred fun x : N₀ ↦ x = 0] : StrictMono (MonoidWithZeroHom.inr M₀ N₀) :=
+  inr_mono.strictMono_of_injective inr_injective
+
+lemma fst_mono [LinearOrderedCommGroupWithZero M₀] [GroupWithZero N₀] [Preorder N₀] :
+    Monotone (MonoidWithZeroHom.fst M₀ N₀) := by
+  intro x y
+  cases x <;> cases y
+  · simp
+  · simp
+  · simp [WithZero.coe_le_iff]
+  · simp +contextual [fst, Prod.le_def]
+
+lemma snd_mono [GroupWithZero M₀] [Preorder M₀] [LinearOrderedCommGroupWithZero N₀] :
+    Monotone (MonoidWithZeroHom.snd M₀ N₀) := by
+  intro x y
+  cases x <;> cases y
+  · simp
+  · simp
+  · simp [WithZero.coe_le_iff]
+  · simp +contextual [snd, Prod.le_def]
+
+end MonoidWithZeroHom
+
 namespace LinearOrderedCommGroupWithZero
 
 variable (α β : Type*) [LinearOrderedCommGroupWithZero α] [LinearOrderedCommGroupWithZero β]
+
+open MonoidWithZeroHom
 
 /-- Given linearly ordered groups with zero M, N, the natural inclusion ordered homomorphism from
 M to `WithZero (Mˣ ×ₗ Nˣ)`, which is the linearly ordered group with zero that can be identified
 as their product. -/
 @[simps!]
-def inl : α →*₀o WithZero (αˣ ×ₗ βˣ) where
-  toFun a := if ha : a = 0 then 0 else WithZero.coe (toLex ⟨Units.mk0 _ ha, 1⟩)
-  map_one' := by simp [← Prod.one_eq_mk]
-  map_mul' x y := by
-    simp only [mul_eq_zero, Units.mk0_mul, mul_dite, mul_zero, dite_mul, zero_mul]
-    split_ifs with hxy
-    · simp
-    · simp_all
-    · simp_all
-    · simp [*] at hxy
-    · simp [*] at hxy
-    · simp [← WithZero.coe_mul, ← toLex_mul]
-  map_zero' := by simp
-  monotone' x y hxy := by
-    dsimp only
-    split_ifs
-    · exact WithZero.zero_le _
-    · exact WithZero.zero_le _
-    · simp [*] at hxy
-    · simp [Prod.Lex.toLex_le_toLex, ← Units.val_lt_val, lt_or_eq_of_le hxy]
+nonrec def inl : α →*₀o WithZero (αˣ ×ₗ βˣ) where
+  __ := (WithZero.map' (toLexMulEquiv ..).toMonoidHom).comp (inl α β)
+  monotone' := by simpa using (WithZero.map'_mono (Prod.Lex.toLex_mono)).comp inl_mono
 
 /-- Given linearly ordered groups with zero M, N, the natural inclusion ordered homomorphism from
 N to `WithZero (Mˣ ×ₗ Nˣ)`, which is the linearly ordered group with zero that can be identified
 as their product. -/
 @[simps!]
-def inr : β →*₀o WithZero (αˣ ×ₗ βˣ) where
-  toFun a := if ha : a = 0 then 0 else WithZero.coe (toLex ⟨1, Units.mk0 _ ha⟩)
-  map_one' := by simp [← Prod.one_eq_mk]
-  map_mul' x y := by
-    simp only [mul_eq_zero, Units.mk0_mul, mul_dite, mul_zero, dite_mul, zero_mul]
-    split_ifs with hxy
-    · simp
-    · simp_all
-    · simp_all
-    · simp [*] at hxy
-    · simp [*] at hxy
-    · simp [← WithZero.coe_mul, ← toLex_mul]
-  map_zero' := by simp
-  monotone' x y hxy := by
-    dsimp only
-    split_ifs
-    · exact WithZero.zero_le _
-    · exact WithZero.zero_le _
-    · simp [*] at hxy
-    · simp [Prod.Lex.toLex_le_toLex, ← Units.val_le_val, hxy]
+nonrec def inr : β →*₀o WithZero (αˣ ×ₗ βˣ) where
+  __ := (WithZero.map' (toLexMulEquiv ..).toMonoidHom).comp (inr α β)
+  monotone' := by simpa using (WithZero.map'_mono (Prod.Lex.toLex_mono)).comp inr_mono
 
 /-- Given linearly ordered groups with zero M, N, the natural projection ordered homomorphism from
 `WithZero (Mˣ ×ₗ Nˣ)` to M, which is the linearly ordered group with zero that can be identified
 as their product. -/
 @[simps!]
-def fst : WithZero (αˣ ×ₗ βˣ) →*₀o α where
-  toFun a := WithZero.recZeroCoe 0 (fun p ↦ (ofLex p).fst) a
-  map_one' := by simp [← WithZero.coe_one]
-  map_mul' x y := by cases x <;> cases y <;> simp [← WithZero.coe_mul]
-  map_zero' := by simp
-  monotone' x y hxy := by
-    cases x <;> cases y
+nonrec def fst : WithZero (αˣ ×ₗ βˣ) →*₀o α where
+  __ := (fst α β).comp (WithZero.map' (toLexMulEquiv ..).symm.toMonoidHom)
+  monotone' := by
+    -- this can't rely on `Monotone.comp` since `ofLex` is not monotone
+    intro x y
+    cases x <;>
+    cases y
     · simp
     · simp
-    · simp [(WithZero.zero_lt_coe _).not_le] at hxy
-    · simp only [WithZero.coe_le_coe, Prod.Lex.le_iff] at hxy
-      simp only [WithZero.recZeroCoe_coe, le_iff_lt_or_eq, Units.val_lt_val]
-      exact hxy.imp_right (by simp +contextual)
+    · simp [WithZero.zero_lt_coe]
+    · simpa using Prod.Lex.monotone_fst _ _
 
 @[simp]
 theorem fst_comp_inl : (fst _ _).comp (inl α β) = .id α := by
   ext x
-  simp only [OrderMonoidWithZeroHom.comp_apply, inl_apply, fst_apply]
-  split_ifs <;>
-  simp_all
+  obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
+  simp
 
 theorem inlₗ_mul_inrₗ_eq_coe_toLex {m : α} {n : β} (hm : m ≠ 0) (hn : n ≠ 0) :
     (inl α β m * inr α β n) = toLex (Units.mk0 _ hm, Units.mk0 _ hn) := by
-  simp [← WithZero.coe_mul, ← toLex_mul, hm, hn]
+  lift m to αˣ using isUnit_iff_ne_zero.mpr hm
+  lift n to βˣ using isUnit_iff_ne_zero.mpr hn
+  simp [← toLex_mul, ← WithZero.coe_mul]
 
 end LinearOrderedCommGroupWithZero
