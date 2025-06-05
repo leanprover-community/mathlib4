@@ -499,9 +499,8 @@ lemma nat_log_eq_padicValNat_iff {n : ℕ} [hp : Fact (Nat.Prime p)] (hn : 0 < n
   rw [Nat.log_eq_iff (Or.inr ⟨(Nat.Prime.one_lt' p).out, by omega⟩), and_iff_right_iff_imp]
   exact fun _ => Nat.le_of_dvd hn pow_padicValNat_dvd
 
-/- This is false for prime numbers other than 2 :
-    for p = 3, n = 1, one has
-    log 3 1 = padicValNat 3 2 = 0. -/
+/-- This is false for prime numbers other than 2:
+for `p = 3`, `n = 1`, one has `log 3 1 = padicValNat 3 2 = 0`. -/
 lemma Nat.log_ne_padicValNat_succ {n : ℕ} (hn : n ≠ 0) : log 2 n ≠ padicValNat 2 (n + 1) := by
   rw [Ne, log_eq_iff (by simp [hn])]
   rintro ⟨h1, h2⟩
