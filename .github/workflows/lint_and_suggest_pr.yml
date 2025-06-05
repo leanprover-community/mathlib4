@@ -19,7 +19,7 @@ jobs:
           printf '%s\n' "${exc}"
           if [ -n "${exc}" ];
           then
-            printf $'There are files whose extension is neither \'.lean\' nor \'.md\' in Mathlib/:\n\n%s\n' "${exc}"
-            printf $'\nPlease, make sure that this is really what you want!\n'
+            printf $'The Mathlib files above have an extension that is neither \'.lean\' nor \'.md\'\n'
+            printf $'Please, make sure that this is really what you want!\n'
             exit 1
           fi
