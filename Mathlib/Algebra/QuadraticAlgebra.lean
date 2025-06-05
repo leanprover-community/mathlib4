@@ -48,6 +48,7 @@ end SMul
 
 variable [CommSemiring R] {a b : R}
 
+/-- TODO: Add docstring -/
 def ofInt (n : R) : QuadraticAlgebra R a b :=
   ⟨n, 0⟩
 
