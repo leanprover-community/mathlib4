@@ -100,7 +100,7 @@ theorem monoidWithZeroHom_ext ⦃f g : WithZero α →*₀ β⦄
 
 /-- The (multiplicative) universal property of `WithZero`. -/
 @[simps! symm_apply_apply]
-noncomputable nonrec def lift' : (α →* β) ≃ (WithZero α →*₀ β) where
+nonrec def lift' : (α →* β) ≃ (WithZero α →*₀ β) where
   toFun f :=
     { toFun := fun
         | 0 => 0
@@ -128,7 +128,7 @@ variable [MulOneClass β] [MulOneClass γ]
 
 /-- The `MonoidWithZero` homomorphism `WithZero α →* WithZero β` induced by a monoid homomorphism
   `f : α →* β`. -/
-noncomputable def map' (f : α →* β) : WithZero α →*₀ WithZero β := lift' (coeMonoidHom.comp f)
+def map' (f : α →* β) : WithZero α →*₀ WithZero β := lift' (coeMonoidHom.comp f)
 
 lemma map'_zero (f : α →* β) : map' f 0 = 0 := rfl
 
