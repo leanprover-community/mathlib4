@@ -15,7 +15,7 @@ jobs:
           lint-bib-file: true
       - name: All Mathlib files have lean or md extension
         run: |
-          exc="$(git ls-files 'Mathlib/*' | grep -v "\.\(lean\|md\)$")"
+          exc="$(git ls-files 'Mathlib/*' | grep -v "\.\(lean\|md\)$" || true)"
           printf '%s\n' "${exc}"
           if [ -n "${exc}" ];
           then
