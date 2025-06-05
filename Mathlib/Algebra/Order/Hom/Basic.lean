@@ -47,13 +47,13 @@ Finitary versions of the current lemmas.
 
 library_note "out-param inheritance"/--
 Diamond inheritance cannot depend on `outParam`s in the following circumstances:
- * there are three classes `Top`, `Middle`, `Bottom`
- * all of these classes have a parameter `(α : outParam _)`
- * all of these classes have an instance parameter `[Root α]` that depends on this `outParam`
- * the `Root` class has two child classes: `Left` and `Right`, these are siblings in the hierarchy
- * the instance `Bottom.toMiddle` takes a `[Left α]` parameter
- * the instance `Middle.toTop` takes a `[Right α]` parameter
- * there is a `Leaf` class that inherits from both `Left` and `Right`.
+* there are three classes `Top`, `Middle`, `Bottom`
+* all of these classes have a parameter `(α : outParam _)`
+* all of these classes have an instance parameter `[Root α]` that depends on this `outParam`
+* the `Root` class has two child classes: `Left` and `Right`, these are siblings in the hierarchy
+* the instance `Bottom.toMiddle` takes a `[Left α]` parameter
+* the instance `Middle.toTop` takes a `[Right α]` parameter
+* there is a `Leaf` class that inherits from both `Left` and `Right`.
 In that case, given instances `Bottom α` and `Leaf α`, Lean cannot synthesize a `Top α` instance,
 even though the hypotheses of the instances `Bottom.toMiddle` and `Middle.toTop` are satisfied.
 
@@ -139,7 +139,7 @@ theorem le_map_div_add_map_div [Group α] [Add β] [LE β] [MulLEAddHomClass F �
 
 namespace Mathlib.Meta.Positivity
 
-open Lean Meta Qq Function
+open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: nonnegative maps take nonnegative values. -/
 @[positivity DFunLike.coe _ _]

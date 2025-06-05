@@ -57,7 +57,7 @@ Related files are:
 colex, colexicographic, binary
 -/
 
-open Finset Function
+open Function
 
 variable {α β : Type*}
 
@@ -104,15 +104,15 @@ private lemma trans_aux (hst : toColex s ≤ toColex t) (htu : toColex t ≤ toC
     (has : a ∈ s) (hat : a ∉ t) : ∃ b, b ∈ u ∧ b ∉ s ∧ a ≤ b := by
   classical
   let s' : Finset α := {b ∈ s | b ∉ t ∧ a ≤ b}
-  have ⟨b, hb, hbmax⟩ := exists_maximal s' ⟨a, by simp [s', has, hat]⟩
+  have ⟨b, hb, hbmax⟩ := s'.exists_maximal ⟨a, by simp [s', has, hat]⟩
   simp only [s', mem_filter, and_imp] at hb hbmax
   have ⟨c, hct, hcs, hbc⟩ := hst hb.1 hb.2.1
   by_cases hcu : c ∈ u
   · exact ⟨c, hcu, hcs, hb.2.2.trans hbc⟩
   have ⟨d, hdu, hdt, hcd⟩ := htu hct hcu
   have had : a ≤ d := hb.2.2.trans <| hbc.trans hcd
-  refine ⟨d, hdu, fun hds ↦ ?_, had⟩
-  exact hbmax d hds hdt had <| hbc.trans_lt <| hcd.lt_of_ne <| ne_of_mem_of_not_mem hct hdt
+  refine ⟨d, hdu, fun hds ↦ not_lt_iff_le_imp_le.2 (hbmax hds hdt had) ?_, had⟩
+  exact hbc.trans_lt <| hcd.lt_of_ne <| ne_of_mem_of_not_mem hct hdt
 
 private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ toColex s) : s ⊆ t := by
   intro a has
@@ -245,7 +245,7 @@ lemma toColex_sdiff_lt_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
   simpa using toColex_sdiff_le_toColex_sdiff (inter_subset_left (s₁ := s)) inter_subset_right
 
 @[simp] lemma toColex_sdiff_lt_toColex_sdiff' :
- toColex (s \ t) < toColex (t \ s) ↔ toColex s < toColex t := by
+    toColex (s \ t) < toColex (t \ s) ↔ toColex s < toColex t := by
   simpa using toColex_sdiff_lt_toColex_sdiff (inter_subset_left (s₁ := s)) inter_subset_right
 
 end DecidableEq
@@ -376,7 +376,7 @@ lemma erase_le_erase_min' (hst : toColex s ≤ toColex t) (hcard : #s ≤ #t) (h
   -- If `w < a`, then `a` is the colex witness for `s \ {a} < t \ {m}`
   · have hma : m < a := (min'_le _ _ hwt).trans_lt hwa
     refine (lt_iff_exists_forall_lt.2 ⟨a, mem_erase.2 ⟨hma.ne', (hw hwa).1 ha⟩,
-      not_mem_erase _ _, fun b hbs hbt ↦ ?_⟩).le
+      notMem_erase _ _, fun b hbs hbt ↦ ?_⟩).le
     change b ∉ t.erase m at hbt
     rw [mem_erase, not_and_or, not_ne_iff] at hbt
     obtain rfl | hbt := hbt
@@ -495,8 +495,6 @@ lemma isInitSeg_iff_exists_initSeg :
   exact ⟨isInitSeg_initSeg, initSeg_nonempty⟩
 
 end Colex
-
-open Colex
 
 /-!
 ### Colex on `ℕ`

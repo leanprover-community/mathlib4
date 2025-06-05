@@ -196,7 +196,7 @@ theorem HasLines.pointCount_le_lineCount [HasLines P L] {p : P} {l : L} (h : p �
       fun p₁ p₂ hp =>
       Subtype.ext ((eq_or_eq p₁.2 p₂.2 (mkLine_ax (this p₁)).2
             ((congr_arg (_ ∈ ·) (Subtype.ext_iff.mp hp)).mpr (mkLine_ax (this p₂)).2)).resolve_right
-          fun h' => (congr_arg (¬p ∈ ·) h').mp h (mkLine_ax (this p₁)).1)
+          fun h' => (congr_arg (p ∉ ·) h').mp h (mkLine_ax (this p₁)).1)
 
 theorem HasPoints.lineCount_le_pointCount [HasPoints P L] {p : P} {l : L} (h : p ∉ l)
     [hf : Finite { p : P // p ∈ l }] : lineCount L p ≤ pointCount P l :=
@@ -300,7 +300,7 @@ noncomputable def HasLines.hasPoints [HasLines P L] [Fintype P] [Fintype L]
       have hf : Function.Injective f := fun q₁ q₂ hq =>
         Subtype.ext ((eq_or_eq q₁.2 q₂.2 (mkLine_ax (this q₁)).2
             ((congr_arg (_ ∈ ·) (Subtype.ext_iff.mp hq)).mpr (mkLine_ax (this q₂)).2)).resolve_right
-            fun h => (congr_arg (¬p ∈ ·) h).mp hl₂ (mkLine_ax (this q₁)).1)
+            fun h => (congr_arg (p ∉ ·) h).mp hl₂ (mkLine_ax (this q₁)).1)
       have key' := ((Fintype.bijective_iff_injective_and_card f).mpr ⟨hf, key'⟩).2
       obtain ⟨q, hq⟩ := key' ⟨l₁, hl₁⟩
       exact ⟨q, (congr_arg (_ ∈ ·) (Subtype.ext_iff.mp hq)).mp (mkLine_ax (this q)).2, q.2⟩
@@ -475,8 +475,8 @@ lemma mem_iff (v w : ℙ K (Fin 3 → K)) : v ∈ w ↔ orthogonal v w :=
   Iff.rfl
 
 -- This lemma can't be moved to the crossProduct file due to heavy imports
-lemma crossProduct_eq_zero_of_dotProduct_eq_zero {a b c d : Fin 3 → K} (hac : dotProduct a c = 0)
-    (hbc : dotProduct b c = 0) (had : dotProduct a d = 0) (hbd : dotProduct b d = 0) :
+lemma crossProduct_eq_zero_of_dotProduct_eq_zero {a b c d : Fin 3 → K} (hac : a ⬝ᵥ c = 0)
+    (hbc : b ⬝ᵥ c = 0) (had : a ⬝ᵥ d = 0) (hbd : b ⬝ᵥ d = 0) :
     crossProduct a b = 0 ∨ crossProduct c d = 0 := by
   by_contra h
   simp_rw [not_or, ← ne_eq, crossProduct_ne_zero_iff_linearIndependent] at h

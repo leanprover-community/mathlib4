@@ -11,13 +11,13 @@ import Mathlib.LinearAlgebra.Quotient.Basic
 /-! # Exactness of a pair
 
 * For two maps `f : M → N` and `g : N → P`, with `Zero P`,
-`Function.Exact f g` says that `Set.range f = Set.preimage g {0}`
+  `Function.Exact f g` says that `Set.range f = Set.preimage g {0}`
 
 * For additive maps `f : M →+ N`  and `g : N →+ P`,
-`Exact f g` says that `range f = ker g`
+  `Exact f g` says that `range f = ker g`
 
 * For linear maps `f : M →ₗ[R] N`  and `g : N →ₗ[R] P`,
-`Exact f g` says that `range f = ker g`
+  `Exact f g` says that `range f = ker g`
 
 ## TODO :
 
@@ -74,10 +74,9 @@ may not apply if the zero of `Set.range g` is not definitionally equal to `⟨0,
 lemma iff_rangeFactorization [Zero P] (hg : 0 ∈ Set.range g) :
     letI : Zero (Set.range g) := ⟨⟨0, hg⟩⟩
     Exact f g ↔ Exact ((↑) : Set.range f → N) (Set.rangeFactorization g) := by
-  rw [Exact, Exact, Subtype.range_coe]
-  congr! 2
-  rw [Set.rangeFactorization]
-  exact ⟨fun _ ↦ by rwa [Subtype.ext_iff], fun h ↦ by rwa [Subtype.ext_iff] at h⟩
+  letI : Zero (Set.range g) := ⟨⟨0, hg⟩⟩
+  have : ((0 : Set.range g) : P) = 0 := rfl
+  simp [Exact, Subtype.range_coe, Set.rangeFactorization, Subtype.ext_iff, this]
 
 /-- If two maps `f : M → N` and `g : N → P` are exact, then the induced maps
 `Set.range f → N → Set.range g` are exact.
@@ -117,7 +116,7 @@ lemma exact_of_comp_of_mem_range
 such that the left vertical map is surjective, the middle vertical map is bijective and the right
 vertical map is injective, then the upper row is exact iff the lower row is.
 See `ShortComplex.exact_iff_of_epi_of_isIso_of_mono` in the file
-`Mathlib.Algebra.Homology.ShortComplex.Exact` for the categorical version of this result. -/
+`Mathlib/Algebra/Homology/ShortComplex/Exact.lean` for the categorical version of this result. -/
 lemma exact_iff_of_surjective_of_bijective_of_injective
     {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
     [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
@@ -479,7 +478,7 @@ namespace LinearMap
 such that the left vertical map is surjective, the middle vertical map is bijective and the right
 vertical map is injective, then the upper row is exact iff the lower row is.
 See `ShortComplex.exact_iff_of_epi_of_isIso_of_mono` in the file
-`Mathlib.Algebra.Homology.ShortComplex.Exact` for the categorical version of this result. -/
+`Mathlib/Algebra/Homology/ShortComplex/Exact.lean` for the categorical version of this result. -/
 lemma exact_iff_of_surjective_of_bijective_of_injective
     {M₁ M₂ M₃ N₁ N₂ N₃ : Type*} [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
     [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]

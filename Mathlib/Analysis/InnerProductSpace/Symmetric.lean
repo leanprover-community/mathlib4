@@ -19,7 +19,7 @@ doesn't rely on the definition of the adjoint, which allows it to be stated in n
 ## Main definitions
 
 * `LinearMap.IsSymmetric`: a (not necessarily bounded) operator on an inner product space is
-symmetric, if for all `x`, `y`, we have `⟪T x, y⟫ = ⟪x, T y⟫`
+  symmetric, if for all `x`, `y`, we have `⟪T x, y⟫ = ⟪x, T y⟫`
 
 ## Main statements
 
@@ -126,6 +126,26 @@ theorem IsSymmetric.restrictScalars {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) 
     letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
     (T.restrictScalars ℝ).IsSymmetric :=
   fun x y => by simp [hT x y, real_inner_eq_re_inner, LinearMap.coe_restrictScalars ℝ]
+
+@[simp]
+theorem IsSymmetric.im_inner_apply_self {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (x : E) :
+    im ⟪T x, x⟫ = 0 :=
+  conj_eq_iff_im.mp <| hT.conj_inner_sym x x
+
+@[simp]
+theorem IsSymmetric.im_inner_self_apply {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (x : E) :
+    im ⟪x, T x⟫ = 0 := by
+  simp [← hT x x, hT]
+
+@[simp]
+theorem IsSymmetric.coe_re_inner_apply_self {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (x : E) :
+    re ⟪T x, x⟫ = ⟪T x, x⟫ :=
+  conj_eq_iff_re.mp <| hT.conj_inner_sym x x
+
+@[simp]
+theorem IsSymmetric.coe_re_inner_self_apply {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (x : E) :
+    re ⟪x, T x⟫ = ⟪x, T x⟫ := by
+  simp [← hT x x, hT]
 
 section Complex
 

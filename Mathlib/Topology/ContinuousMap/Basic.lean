@@ -50,21 +50,24 @@ protected theorem continuousAt (f : C(α, β)) (x : α) : ContinuousAt f x :=
 theorem map_specializes (f : C(α, β)) {x y : α} (h : x ⤳ y) : f x ⤳ f y :=
   h.map f.2
 
-section
-
-variable (α β)
+section DiscreteTopology
+variable [DiscreteTopology α]
 
 /--
 The continuous functions from `α` to `β` are the same as the plain functions when `α` is discrete.
 -/
 @[simps]
-def equivFnOfDiscrete [DiscreteTopology α] : C(α, β) ≃ (α → β) :=
+def equivFnOfDiscrete : C(α, β) ≃ (α → β) :=
   ⟨fun f => f,
     fun f => ⟨f, continuous_of_discreteTopology⟩,
     fun _ => by ext; rfl,
     fun _ => by ext; rfl⟩
 
-end
+@[simp] lemma coe_equivFnOfDiscrete : ⇑equivFnOfDiscrete = (DFunLike.coe : C(α, β) → α → β) := rfl
+
+@[simp] lemma equivFnOfDiscrete_symm_apply (f : α → β) : equivFnOfDiscrete.symm f = f := rfl
+
+end DiscreteTopology
 
 variable (α)
 

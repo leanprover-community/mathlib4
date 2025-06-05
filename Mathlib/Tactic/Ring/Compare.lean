@@ -38,8 +38,8 @@ namespace Mathlib.Tactic.Ring
 
 open Lean Qq Meta
 
-/-! Rather than having the metaprograms `Mathlib.Tactic.Ring.evalLE` and
-`Mathlib.Tactic.Ring.evalLT` perform all type class inference at the point of use, we record in
+/-! Rather than having the metaprograms `Mathlib.Tactic.Ring.evalLE.lean` and
+`Mathlib.Tactic.Ring.evalLT.lean` perform all type class inference at the point of use, we record in
 advance, as `abbrev`s, a few type class deductions which will certainly be necessary.  They add no
 new information (they can already be proved by `inferInstance`).
 
@@ -63,8 +63,8 @@ end Typeclass
 /-! The lemmas like `add_le_add_right` in the root namespace are stated under minimal type classes,
 typically just `[AddRightMono α]` or similar.  Here we restate these
 lemmas under stronger type class assumptions (`[OrderedCommSemiring α]` or similar), which helps in
-speeding up the metaprograms in this file (`Mathlib.Tactic.Ring.proveLT` and
-`Mathlib.Tactic.Ring.proveLE`) substantially -- about a 50% reduction in heartbeat count in
+speeding up the metaprograms in this file (`Mathlib.Tactic.Ring.proveLT.lean` and
+`Mathlib.Tactic.Ring.proveLE.lean`) substantially -- about a 50% reduction in heartbeat count in
 representative test cases -- since otherwise a substantial fraction of their runtime is devoted to
 type class inference.
 
@@ -108,7 +108,7 @@ theorem lt_add_of_pos_left {α : Type*} [CommSemiring α] [PartialOrder α] [IsS
 end Lemma
 
 /-- Inductive type carrying the two kinds of errors which can arise in the metaprograms
-`Mathlib.Tactic.Ring.evalLE` and `Mathlib.Tactic.Ring.evalLT`. -/
+`Mathlib.Tactic.Ring.evalLE.lean` and `Mathlib.Tactic.Ring.evalLT.lean`. -/
 inductive ExceptType | tooSmall | notComparable
 export ExceptType (tooSmall notComparable)
 

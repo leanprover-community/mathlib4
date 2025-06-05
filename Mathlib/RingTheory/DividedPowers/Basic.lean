@@ -30,12 +30,12 @@ this is the binomial theorem without binomial coefficients.
 * `DividedPowers.dpow_comp` : `dpow m (dpow n x) = uniformBell m n * dpow (m * n) x`
 * `DividedPowers.dividedPowersBot` : the trivial divided powers structure on the zero ideal
 * `DividedPowers.prod_dpow`: a product of divided powers is a multinomial coefficients
-times a divided power
+  times a divided power
 * `DividedPowers.dpow_sum`: the multinomial theorem for divided powers,
-without multinomial coefficients.
+  without multinomial coefficients.
 * `DividedPowers.ofRingEquiv`: transfer divided powers along `RingEquiv`
 * `DividedPowers.equiv`: the equivalence `DividedPowers I ≃ DividedPowers J`,
-for `e : R ≃+* S`, and `I : Ideal R`,  `J : Ideal S` such that `I.map e = J`
+  for `e : R ≃+* S`, and `I : Ideal R`, `J : Ideal S` such that `I.map e = J`
 * `DividedPowers.exp`: the power series `Σ (dpow n a) X ^n`
 * `DividedPowers.exp_add`: its multiplicativity
 
@@ -89,8 +89,8 @@ structure DividedPowers where
 
 variable (A) in
 /-- The canonical `DividedPowers` structure on the zero ideal -/
-def dividedPowersBot [DecidableEq A] : DividedPowers (⊥ : Ideal A) where
-  dpow n a := ite (a = 0 ∧ n = 0) 1 0
+noncomputable def dividedPowersBot : DividedPowers (⊥ : Ideal A) where
+  dpow n a := open Classical in ite (a = 0 ∧ n = 0) 1 0
   dpow_null {n a} ha := by
     simp only [mem_bot] at ha
     rw [if_neg]
@@ -138,7 +138,12 @@ def dividedPowersBot [DecidableEq A] : DividedPowers (⊥ : Ideal A) where
     · simp [hm, uniformBell_zero_left, hn]
     · simp only [hm, and_false, ite_false, false_or, if_neg hn]
 
-instance [DecidableEq A] : Inhabited (DividedPowers (⊥ : Ideal A)) :=
+lemma dividedPowersBot_dpow_eq [DecidableEq A] (n : ℕ) (a : A) :
+    (dividedPowersBot A).dpow n a =
+      if a = 0 ∧ n = 0 then 1 else 0 := by
+  simp [dividedPowersBot]
+
+noncomputable instance : Inhabited (DividedPowers (⊥ : Ideal A)) :=
   ⟨dividedPowersBot A⟩
 
 /-- The coercion from the divided powers structures to functions -/
