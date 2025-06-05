@@ -26,30 +26,47 @@ variable (M₀ N₀ : Type*) [GroupWithZero M₀] [GroupWithZero N₀]
 /-- Given groups with zero `M₀`, `N₀`, the natural inclusion ordered homomorphism from
 `M₀` to `WithZero (M₀ˣ × N₀ˣ)`, which is the group with zero that can be identified
 as their product. -/
-noncomputable def inl [DecidablePred fun x : M₀ ↦ x = 0] : M₀ →*₀ WithZero (M₀ˣ × N₀ˣ) :=
+def inl [DecidablePred fun x : M₀ ↦ x = 0] : M₀ →*₀ WithZero (M₀ˣ × N₀ˣ) :=
   (WithZero.map' (MonoidHom.inl _ _)).comp
     (MonoidWithZeroHomClass.toMonoidWithZeroHom (WithZero.withZeroUnitsEquiv.symm))
 
 /-- Given groups with zero `M₀`, `N₀`, the natural inclusion ordered homomorphism from
 `N₀` to `WithZero (M₀ˣ × N₀ˣ)`, which is the group with zero that can be identified
 as their product. -/
-noncomputable def inr [DecidablePred fun x : N₀ ↦ x = 0] : N₀ →*₀ WithZero (M₀ˣ × N₀ˣ) :=
+def inr [DecidablePred fun x : N₀ ↦ x = 0] : N₀ →*₀ WithZero (M₀ˣ × N₀ˣ) :=
   (WithZero.map' (MonoidHom.inr _ _)).comp
     (MonoidWithZeroHomClass.toMonoidWithZeroHom (WithZero.withZeroUnitsEquiv.symm))
 
 /-- Given groups with zero `M₀`, `N₀`, the natural projection homomorphism from
 `WithZero (M₀ˣ × N₀ˣ)` to `M₀`, which is the group with zero that can be identified
 as their product. -/
-noncomputable def fst : WithZero (M₀ˣ × N₀ˣ) →*₀ M₀ :=
+def fst : WithZero (M₀ˣ × N₀ˣ) →*₀ M₀ :=
   WithZero.lift' ((Units.coeHom _).comp (MonoidHom.fst ..))
 
 /-- Given groups with zero `M₀`, `N₀`, the natural projection homomorphism from
 `WithZero (M₀ˣ × N₀ˣ)` to `N₀`, which is the group with zero that can be identified
 as their product. -/
-noncomputable def snd : WithZero (M₀ˣ × N₀ˣ) →*₀ N₀ :=
+def snd : WithZero (M₀ˣ × N₀ˣ) →*₀ N₀ :=
   WithZero.lift' ((Units.coeHom _).comp (MonoidHom.snd ..))
 
 variable {M₀ N₀}
+
+@[simp]
+lemma inl_apply_unit [DecidablePred fun x : M₀ ↦ x = 0] (x : M₀ˣ) :
+    inl M₀ N₀ x = ((x, (1 : N₀ˣ)) : WithZero (M₀ˣ × N₀ˣ)) := by
+  simp [inl]
+@[simp]
+lemma inr_apply_unit [DecidablePred fun x : N₀ ↦ x = 0] (x : N₀ˣ) :
+    inr M₀ N₀ x = (((1 : M₀ˣ), x) : WithZero (M₀ˣ × N₀ˣ)) := by
+  simp [inr]
+@[simp]
+lemma fst_apply_coe (x : M₀ˣ × N₀ˣ) :
+    fst M₀ N₀ x = x.fst := by
+  rfl
+@[simp]
+lemma snd_apply_coe (x : M₀ˣ × N₀ˣ) :
+    snd M₀ N₀ x = x.snd := by
+  rfl
 
 @[simp]
 theorem fst_inl [DecidablePred fun x : M₀ ↦ x = 0] (x : M₀) :
@@ -103,6 +120,15 @@ lemma fst_surjective [DecidablePred fun x : M₀ ↦ x = 0] :
 lemma snd_surjective [DecidablePred fun x : N₀ ↦ x = 0] :
     Function.Surjective (snd M₀ N₀) :=
   Function.HasRightInverse.surjective ⟨inr .., fun _ ↦ by simp⟩
+
+@[simp]
+lemma fst_eq_zero_iff (x : WithZero (M₀ˣ × N₀ˣ)) :
+    fst M₀ N₀ x = 0 ↔ x = 0 := by
+  cases x <;> simp
+@[simp]
+lemma snd_eq_zero_iff (x : WithZero (M₀ˣ × N₀ˣ)) :
+    snd M₀ N₀ x = 0 ↔ x = 0 := by
+  cases x <;> simp
 
 variable [DecidablePred fun x : M₀ ↦ x = 0] [DecidablePred fun x : N₀ ↦ x = 0]
 
