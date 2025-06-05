@@ -18,8 +18,6 @@ We connect `Ideal.ramificationIdx` to the commutative algebra notion predicate o
   Let `R` be a domain of characteristic 0, finite rank over `ℤ`, `S ⊇ R` be a dedekind domain
   that is a finite `R`-algebra. Let `p` be a prime of `S`, then `p` is unramifed iff `e(p) = 1`.
 
-
-
 -/
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
