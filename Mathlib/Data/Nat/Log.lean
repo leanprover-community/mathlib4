@@ -343,7 +343,7 @@ theorem clog_lt_clog_succ_iff {b n : ℕ} (hb : 1 < b) :
     exact n.lt_add_one
 
 theorem clog_eq_clog_succ_iff {b n : ℕ} (hb : 1 < b) :
-    clog b n = clog b (n + 1) ↔ n ≠ b ^ (clog b n) := by
+    clog b n = clog b (n + 1) ↔ n ≠ b ^ clog b n := by
   rw [ne_eq, ← clog_lt_clog_succ_iff hb, not_lt]
   simp only [le_antisymm_iff, and_iff_right_iff_imp]
   exact fun _ ↦ clog_monotone b (le_add_right n 1)
