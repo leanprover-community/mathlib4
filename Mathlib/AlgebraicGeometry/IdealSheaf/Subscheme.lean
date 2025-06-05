@@ -715,15 +715,15 @@ open IdealSheafData in
 noncomputable
 def kerAdjunction (Y : Scheme.{u}) : (subschemeFunctor Y).rightOp ⊣ Y.kerFunctor where
   unit.app I := eqToHom (by simp)
+  unit.naturality _ _ _ := rfl
   counit.app f := (Over.homMk f.unop.hom.toImage f.unop.hom.toImage_imageι).op
   counit.naturality _ _ _ := Quiver.Hom.unop_inj (by ext1; simp [← cancel_mono (subschemeι _)])
   left_triangle_components I := Quiver.Hom.unop_inj (by ext1; simp [← cancel_mono (subschemeι _)])
-  right_triangle_components I := by aesop_cat
 
 instance : (IdealSheafData.subschemeFunctor Y).Full :=
-  sorry /-have : IsIso Y.kerAdjunction.rightOp.counit := by
+  have : IsIso Y.kerAdjunction.rightOp.counit := by
     simp [NatTrans.isIso_iff_isIso_app, CategoryTheory.instIsIsoEqToHom]
-  Y.kerAdjunction.rightOp.fullyFaithfulROfIsIsoCounit.full -/
+  Y.kerAdjunction.rightOp.fullyFaithfulROfIsIsoCounit.full
 
 end image
 
