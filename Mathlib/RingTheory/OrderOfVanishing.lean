@@ -187,7 +187,7 @@ def ordFrac : K →*₀ ℤₘ₀ :=
     simpa [this]
   f this
 
-lemma ordFrac_eq_ord (x : nonZeroDivisors R) : ordFrac R (algebraMap R K x) =
+lemma ordFrac_eq_ord (x : R) (hx : x ≠ 0) : ordFrac R (algebraMap R K x) =
   ordMonoidWithZeroHom R x := by
   have := (FaithfulSMul.algebraMap_injective R K).isDomain
   refine (Submonoid.LocalizationMap.lift_eq ..).trans ?_
