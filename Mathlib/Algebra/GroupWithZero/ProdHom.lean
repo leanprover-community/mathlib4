@@ -87,7 +87,7 @@ theorem snd_comp_inl [DecidablePred fun x : M₀ ↦ x = 0] :
   simp_all [WithZero.withZeroUnitsEquiv, snd, inl]
 theorem snd_inl_apply_of_ne_zero [DecidablePred fun x : M₀ ↦ x = 0] {x : M₀} (hx : x ≠ 0) :
     snd _ _ (inl _ N₀ x) = 1 := by
-  rw [← MonoidWithZeroHom.comp_apply, snd_comp_inl, trivial_apply_of_ne_zero hx]
+  rw [← MonoidWithZeroHom.comp_apply, snd_comp_inl, one_apply_of_ne_zero hx]
 
 @[simp]
 theorem fst_comp_inr [DecidablePred fun x : N₀ ↦ x = 0] :
@@ -97,7 +97,7 @@ theorem fst_comp_inr [DecidablePred fun x : N₀ ↦ x = 0] :
   simp_all [WithZero.withZeroUnitsEquiv, fst, inr]
 theorem fst_inr_apply_of_ne_zero [DecidablePred fun x : N₀ ↦ x = 0] {x : N₀} (hx : x ≠ 0) :
     fst _ _ (inr M₀ _ x) = 1 := by
-  rw [← MonoidWithZeroHom.comp_apply, fst_comp_inr, trivial_apply_of_ne_zero hx]
+  rw [← MonoidWithZeroHom.comp_apply, fst_comp_inr, one_apply_of_ne_zero hx]
 
 @[simp]
 theorem snd_inr [DecidablePred fun x : N₀ ↦ x = 0] (x : N₀) :
