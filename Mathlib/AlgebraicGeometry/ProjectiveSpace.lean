@@ -320,7 +320,62 @@ def openCover : Scheme.OpenCover.{v} ℙ(n; S) where
   covers x := let ⟨y, hy⟩ := (openCover' n S).covers x
     ⟨ConcreteCategory.hom (inv (remap S (((openCover' n S).f x).down))).base y,
     by rwa [← ConcreteCategory.comp_apply, Scheme.comp_base, ← Category.assoc, ← Scheme.comp_base,
-        IsIso.inv_hom_id, Scheme.id.base, Category.id_comp]⟩
+      IsIso.inv_hom_id, Scheme.id.base, Category.id_comp]⟩
+
+@[simp] lemma openCover_J : (openCover n S).J = n := rfl
+@[simp] lemma openCover_obj (i : n) : (openCover n S).obj i = 𝔸({j // j ≠ i}; S) := rfl
+
+@[simp] lemma openCover_map (i : n) : (openCover n S).map i =
+    remap S i ≫ (openCover' n S).map (ULift.up.{u} i) :=
+  rfl
+
+variable {S₁ S₂ S₃ : Scheme.{max u v}}
+
+/-- Given a morphism `S₁ ⟶ S₂` of schemes, construct a morphism `ℙ(n; S₁) ⟶ ℙ(n; S₂)`. -/
+def map (f : S₁ ⟶ S₂) : ℙ(n; S₁) ⟶ ℙ(n; S₂) :=
+  pullback.map _ _ _ _ f (𝟙 _) (𝟙 _) (terminal.hom_ext ..) (terminal.hom_ext ..)
+
+lemma map_id : map n (𝟙 S) = 𝟙 ℙ(n; S) := pullback.map_id
+
+lemma map_comp (f : S₁ ⟶ S₂) (g : S₂ ⟶ S₃) : map n (f ≫ g) = map n f ≫ map n g := by
+  unfold map; rw [pullback.map_comp]; rfl
+
+/-- Given an isomorphism `S₁ ≅ S₂` of schemes, construct an isomorphism `ℙ(n; S₁) ≅ ℙ(n; S₂)`. -/
+def mapIso (f : S₁ ≅ S₂) : ℙ(n; S₁) ≅ ℙ(n; S₂) :=
+  ⟨map n f.hom, map n f.inv, by rw [← map_comp, f.hom_inv_id, map_id],
+    by rw [← map_comp, f.inv_hom_id, map_id]⟩
+
+/-- `ℙ(n; Spec R)` is isomorphic to `Proj R[n]`. -/
+def SpecIso (R : Type max u v) [CommRing R] :
+    ℙ(n; Spec (.of R)) ≅ Proj (homogeneousSubmodule n R) where
+  hom := Scheme.Cover.glueMorphisms (openCover n _)
+    (fun i ↦ (AffineSpace.SpecIso {j // j ≠ i} (.of R)).hom ≫
+      Spec.map (CommRingCat.ofHom (by exact (algEquivAway R i).symm.toRingHom)) ≫
+      Proj.awayι _ (.X i) (MvPolynomial.isHomogeneous_X R i) zero_lt_one)
+    (fun i j ↦ by simp [-openCover_map])
+  inv := Scheme.Cover.glueMorphisms
+    (Proj.openCoverOfISupEqTop
+      (homogeneousSubmodule n R) (.X) (fun _ ↦ isHomogeneous_X _ _) (fun _ ↦ zero_lt_one)
+      (by rw [homogeneous_eq_span, Ideal.span_le, Set.range_subset_iff]; exact
+        fun i ↦ Ideal.subset_span <| Set.mem_range_self _)).openCover
+    (fun i : n ↦ _ ≫ (openCover n _).map i)
+    _
+  hom_inv_id := _
+  inv_hom_id := _
+
+#check Scheme.OpenCover
+#check Scheme.Hom
+#check Scheme.Cover.glueMorphisms
+#check Scheme.Cover.ι_glueMorphisms
+#check Scheme.Cover.hom_ext
+#check AffineSpace.SpecIso
+#check Proj.awayι
+
+/- GOALS
+* S affine
+* Subspace cut out by a polynomial
+* Locally (i.e. at stalk) points given by [x₀ : ... : xₙ]
+-/
 
 end ProjectiveSpace
 
