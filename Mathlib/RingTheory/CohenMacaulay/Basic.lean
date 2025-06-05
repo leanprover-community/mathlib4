@@ -485,6 +485,12 @@ lemma isCohenMacaulayLocalRing_iff [IsLocalRing R] : IsCohenMacaulayLocalRing R 
   simp [isCohenMacaulayLocalRing_def, isCohenMacaulay_iff,
     not_subsingleton_iff_nontrivial.mpr ntr, Module.supportDim_self_eq_ringKrullDim]
 
+lemma associatedPrimes_self_eq_minimalPrimes [IsCohenMacaulayLocalRing R] [IsNoetherianRing R] :
+    associatedPrimes R R = minimalPrimes R := by
+  let _ := (isCohenMacaulayLocalRing_iff R).mp (by assumption)
+  have : Module.annihilator R R = ⊥ := Module.annihilator_eq_bot.mpr inferInstance
+  simp [associated_prime_eq_minimalPrimes_isCohenMacaulay (ModuleCat.of R R), this, minimalPrimes]
+
 class IsCohenMacaulayRing : Prop where
   CM_localize : ∀ p : Ideal R, ∀ (_ : p.IsPrime), IsCohenMacaulayLocalRing (Localization.AtPrime p)
 
