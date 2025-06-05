@@ -66,13 +66,14 @@ def MonsterData.monsterCells (m : MonsterData N) :
 def Adjacent (x y : Cell N) : Prop :=
   Nat.dist x.1 y.1 + Nat.dist x.2 y.2 = 1
 
+open Fin.NatCast in -- TODO: can this be refactor to avoid using a cast from `Nat` to `Fin (N + 1)`?
 /-- A valid path from the first to the last row. -/
 structure Path (N : ℕ) where
   /-- The cells on the path. -/
   cells : List (Cell N)
   nonempty : cells ≠ []
   head_first_row : (cells.head nonempty).1 = 0
-  last_last_row : (cells.getLast nonempty).1 = N + 1
+  last_last_row : (cells.getLast nonempty).1 = (N : Fin (N + 1)) + 1
   valid_move_seq : cells.Chain' Adjacent
 
 /-- The first monster on a path, or `none`. -/
