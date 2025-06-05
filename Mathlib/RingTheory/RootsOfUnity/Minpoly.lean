@@ -60,7 +60,7 @@ theorem minpoly_dvd_x_pow_sub_one : minpoly ℤ μ ∣ X ^ n - 1 := by
 theorem separable_minpoly_mod {p : ℕ} [Fact p.Prime] (hdiv : ¬p ∣ n) :
     Separable (map (Int.castRingHom (ZMod p)) (minpoly ℤ μ)) := by
   have hdvd : map (Int.castRingHom (ZMod p)) (minpoly ℤ μ) ∣ X ^ n - 1 := by
-    convert map_dvd (mapRingHom (Int.castRingHom (ZMod p)))
+    convert _root_.map_dvd (mapRingHom (Int.castRingHom (ZMod p)))
         (minpoly_dvd_x_pow_sub_one h)
     simp only [map_sub, map_pow, coe_mapRingHom, map_X, map_one]
   refine Separable.of_dvd (separable_X_pow_sub_C 1 ?_ one_ne_zero) hdvd
@@ -94,7 +94,7 @@ theorem minpoly_dvd_pow_mod {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n)
     map (Int.castRingHom (ZMod p)) Q ^ p = map (Int.castRingHom (ZMod p)) (expand ℤ p Q) := by
     rw [← ZMod.expand_card, map_expand]
   rw [hfrob]
-  apply map_dvd (mapRingHom (Int.castRingHom (ZMod p)))
+  apply _root_.map_dvd (mapRingHom (Int.castRingHom (ZMod p)))
   exact minpoly_dvd_expand h hdiv
 
 /-- Let `P` be the minimal polynomial of a root of unity `μ` and `Q` be the minimal polynomial of
@@ -136,7 +136,7 @@ theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
       exact minpoly_dvd_x_pow_sub_one h
     · apply (map_dvd_map (Int.castRingHom ℚ) Int.cast_injective Qmonic).2
       exact minpoly_dvd_x_pow_sub_one (pow_of_prime h hprime.1 hdiv)
-  replace prod := map_dvd (mapRingHom (Int.castRingHom (ZMod p))) prod
+  replace prod := _root_.map_dvd (mapRingHom (Int.castRingHom (ZMod p))) prod
   rw [coe_mapRingHom, Polynomial.map_mul, Polynomial.map_sub, Polynomial.map_one,
     Polynomial.map_pow, map_X] at prod
   obtain ⟨R, hR⟩ := minpoly_dvd_mod_p h hdiv
