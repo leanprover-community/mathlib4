@@ -1518,10 +1518,25 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
     have b_n_subset_n := Finset.card_le_card (b_n_subset_s_n_squared N (by simp))
     have b_n_succ_subset := Finset.card_le_card (b_n_subset_s_n_squared (N + 1) (by simp))
     simp at b_n_succ_subset
-    have three_eq: 3 = 2 + 1 := by simp
-    rw [three_eq] at b_n_succ_subset
-    rw [pow_succ] at b_n_succ_subset
-    rw [add_sq] at b_n_succ_subset
+
+
+    -- TODO - make N large enough for this to happen
+    have cube_lt_double: ((N + 1)^3) < (2 * N^3) := by
+      sorry
+
+
+    have succ_card_lt: #(S ^ (4 * (N + 1) ^ 3)) ≤ #(S^(4 * (2 * N^3))) := by
+      apply Finset.card_le_card
+      apply Finset.pow_subset_pow_right
+      . exact hGS.one_mem
+      . omega
+
+
+    ring_nf at b_n_succ_subset
+    conv at b_n_succ_subset =>
+      pattern 1 + N
+      rw [add_comm]
+
 
 
 
@@ -1874,7 +1889,7 @@ lemma three_poly_poly_growth_all_s_n (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGro
   let all_n_vals := { n : ℕ | three_two_S_n (S := {s}) φ γ (n + 1) ⊆ ((three_two_B_n (S := {s}) φ γ n) * (three_two_B_n (S := {s}) φ γ n)⁻¹)}
   let n := sInf all_n_vals
   have set_nonempty: all_n_vals.Nonempty := by
-    exact new_three_two_poly_growth (G := G) (S := S) d hd hG γ φ hφ hγ s
+    exact new_three_two_poly_growth (G := G) (S := S) d hd hG γ φ hφ hγ s hs
   have temp_s_n_subset := Nat.sInf_mem set_nonempty
   have s_n_subset: n ∈ all_n_vals := by
     exact temp_s_n_subset
