@@ -43,17 +43,6 @@ All definitions and lemmas for Weierstrass curves in Jacobian coordinates live i
 abbreviation for `WeierstrassCurve` that can be converted using `WeierstrassCurve.toJacobian`. This
 can be converted into `WeierstrassCurve.Affine` using `WeierstrassCurve.Jacobian.toAffine`.
 
-A point representative is implemented as a term `P` of type `Fin 3 → R`, which allows for the vector
-notation `![x, y, z]`. However, `P` is not syntactically equivalent to the expanded vector
-`![P x, P y, P z]`, so the lemmas `fin3_def` and `fin3_def_ext` can be used to convert between the
-two forms. The equivalence of two point representatives `P` and `Q` is implemented as an equivalence
-of orbits of the action of `Rˣ`, or equivalently that there is some unit `u` of `R` such that
-`P = u • Q`. However, `u • Q` is not syntactically equal to `![u² * Q x, u³ * Q y, u * Q z]`, so the
-lemmas `smul_fin3` and `smul_fin3_ext` can be used to convert between the two forms. Files in
-`Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian` make extensive use of `erw` to get around this.
-While `erw` is often an indication of a problem, in this case it is self-contained and should not
-cause any issues. It would alternatively be possible to add some automation to assist here.
-
 Whenever possible, all changes to documentation and naming of definitions and theorems should be
 mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Basic.lean`.
 
@@ -66,11 +55,13 @@ mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Basic.lean`.
 elliptic curve, Jacobian, Weierstrass equation, nonsingular
 -/
 
-local notation3 "x" => (0 : Fin 3)
+local notation3 P " x" => Prod.fst P
 
-local notation3 "y" => (1 : Fin 3)
+local notation3 P " y" => Prod.fst (Prod.snd P)
 
-local notation3 "z" => (2 : Fin 3)
+local notation3 P " z" => Prod.snd (Prod.snd P)
+
+local notation3 f " ∘ " P:51 => Prod.map f (Prod.map f f) P
 
 open MvPolynomial
 
@@ -79,17 +70,13 @@ local macro "eval_simp" : tactic =>
 
 local macro "map_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_C, map_X, map_neg, map_add, map_sub, map_mul, map_pow,
-    map_div₀, WeierstrassCurve.map, Function.comp_apply])
-
-local macro "matrix_simp" : tactic =>
-  `(tactic| simp only [Matrix.head_cons, Matrix.tail_cons, Matrix.smul_empty, Matrix.smul_cons,
-    Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_two])
+    map_div₀, Prod.map_snd, Prod.map_fst, WeierstrassCurve.map])
 
 local macro "pderiv_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, pderiv_mul, pderiv_pow,
     pderiv_C, pderiv_X_self, pderiv_X_of_ne one_ne_zero, pderiv_X_of_ne one_ne_zero.symm,
-    pderiv_X_of_ne (by decide : z ≠ x), pderiv_X_of_ne (by decide : x ≠ z),
-    pderiv_X_of_ne (by decide : z ≠ y), pderiv_X_of_ne (by decide : y ≠ z)])
+    pderiv_X_of_ne (by decide : (2 : Fin 3) ≠ 0), pderiv_X_of_ne (by decide : 0 ≠ (2 : Fin 3)),
+    pderiv_X_of_ne (by decide : (2 : Fin 3) ≠ 1), pderiv_X_of_ne (by decide : 1 ≠ (2 : Fin 3))])
 
 universe r s u v
 
@@ -114,132 +101,123 @@ namespace Jacobian
 abbrev toAffine (W' : Jacobian R) : Affine R :=
   W'
 
-lemma fin3_def (P : Fin 3 → R) : ![P x, P y, P z] = P := by
-  ext n; fin_cases n <;> rfl
+lemma map_eq (f : R → S) (P : R × R × R) : f ∘ P = (f (P x), f (P y), f (P z)) := by
+  rfl
 
-lemma fin3_def_ext (X Y Z : R) : ![X, Y, Z] x = X ∧ ![X, Y, Z] y = Y ∧ ![X, Y, Z] z = Z :=
-  ⟨rfl, rfl, rfl⟩
-
-lemma comp_fin3 (f : R → S) (X Y Z : R) : f ∘ ![X, Y, Z] = ![f X, f Y, f Z] :=
-  (FinVec.map_eq ..).symm
+lemma map_fin3 (f : R → S) (P : R × R × R) :
+    f ∘ ![P x, P y, P z] = ![f (P x), f (P y), f (P z)] := by
+  ext n; fin_cases n <;> simp
 
 variable [CommRing R] [CommRing S] [CommRing A] [CommRing B] [Field F] [Field K] {W' : Jacobian R}
   {W : Jacobian F}
 
 /-- The scalar multiplication for a Jacobian point representative on a Weierstrass curve. -/
-scoped instance : SMul R <| Fin 3 → R :=
-  ⟨fun u P => ![u ^ 2 * P x, u ^ 3 * P y, u * P z]⟩
+scoped instance : SMul R <| R × R × R :=
+  ⟨fun u P => (u ^ 2 * P x, u ^ 3 * P y, u * P z)⟩
 
-lemma smul_fin3 (P : Fin 3 → R) (u : R) : u • P = ![u ^ 2 * P x, u ^ 3 * P y, u * P z] :=
+lemma smul_eq (P : R × R × R) (u : R) : u • P = (u ^ 2 * P x, u ^ 3 * P y, u * P z) :=
   rfl
 
-lemma smul_fin3_ext (P : Fin 3 → R) (u : R) :
-    (u • P) x = u ^ 2 * P x ∧ (u • P) y = u ^ 3 * P y ∧ (u • P) z = u * P z :=
-  ⟨rfl, rfl, rfl⟩
-
-lemma comp_smul (f : R →+* S) (P : Fin 3 → R) (u : R) : f ∘ (u • P) = f u • f ∘ P := by
-  ext n; fin_cases n <;> simp only [smul_fin3, comp_fin3] <;> map_simp
-
-@[deprecated (since := "2025-01-30")] alias map_smul := comp_smul
+protected lemma map_smul (f : R →* S) (P : R × R × R) (u : R) : f ∘ u • P = f u • f ∘ P := by
+  simp_rw [map_eq, smul_eq, map_mul, map_pow]
 
 /-- The multiplicative action for a Jacobian point representative on a Weierstrass curve. -/
-scoped instance : MulAction R <| Fin 3 → R where
-  one_smul _ := by simp only [smul_fin3, one_pow, one_mul, fin3_def]
-  mul_smul _ _ _ := by simp only [smul_fin3, mul_pow, mul_assoc, fin3_def_ext]
+scoped instance : MulAction R <| R × R × R where
+  one_smul _ := by simp_rw [smul_eq, one_pow, one_mul]
+  mul_smul _ _ _ := by simp_rw [smul_eq, mul_pow, mul_assoc]
 
 /-- The equivalence setoid for a Jacobian point representative on a Weierstrass curve. -/
 @[reducible]
-scoped instance : Setoid <| Fin 3 → R :=
-  MulAction.orbitRel Rˣ <| Fin 3 → R
+scoped instance : Setoid <| R × R × R :=
+  MulAction.orbitRel Rˣ <| R × R × R
 
 variable (R) in
 /-- The equivalence class of a Jacobian point representative on a Weierstrass curve. -/
 abbrev PointClass : Type r :=
-  MulAction.orbitRel.Quotient Rˣ <| Fin 3 → R
+  MulAction.orbitRel.Quotient Rˣ <| R × R × R
 
-lemma smul_equiv (P : Fin 3 → R) {u : R} (hu : IsUnit u) : u • P ≈ P :=
+lemma smul_equiv (P : R × R × R) {u : R} (hu : IsUnit u) : u • P ≈ P :=
   ⟨hu.unit, rfl⟩
 
-@[simp]
-lemma smul_eq (P : Fin 3 → R) {u : R} (hu : IsUnit u) : (⟦u • P⟧ : PointClass R) = ⟦P⟧ :=
+lemma mk_smul (P : R × R × R) {u : R} (hu : IsUnit u) : (⟦u • P⟧ : PointClass R) = ⟦P⟧ :=
   Quotient.eq.mpr <| smul_equiv P hu
 
-lemma smul_equiv_smul (P Q : Fin 3 → R) {u v : R} (hu : IsUnit u) (hv : IsUnit v) :
+lemma smul_equiv_smul (P Q : R × R × R) {u v : R} (hu : IsUnit u) (hv : IsUnit v) :
     u • P ≈ v • Q ↔ P ≈ Q := by
-  rw [← Quotient.eq_iff_equiv, ← Quotient.eq_iff_equiv, smul_eq P hu, smul_eq Q hv]
+  rw [← Quotient.eq_iff_equiv, ← Quotient.eq_iff_equiv, mk_smul P hu, mk_smul Q hv]
 
-lemma equiv_iff_eq_of_Z_eq {P Q : Fin 3 → R} (hz : P z = Q z) (hQz : IsUnit <| Q z) :
+lemma equiv_iff_eq_of_Z_eq {P Q : R × R × R} (hz : P z = Q z) (hQz : IsUnit <| Q z) :
     P ≈ Q ↔ P = Q := by
   refine ⟨?_, Quotient.exact.comp <| congrArg _⟩
-  rintro ⟨u, rfl⟩
+  rintro ⟨_, rfl⟩
   simp_rw [Units.smul_def, hQz.mul_eq_right.mp hz, one_smul]
 
 @[deprecated (since := "2025-05-26")] alias equiv_iff_eq_of_Z_eq' := equiv_iff_eq_of_Z_eq
 
-lemma Z_eq_zero_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : P z = 0 ↔ Q z = 0 := by
+lemma Z_eq_zero_of_equiv {P Q : R × R × R} (h : P ≈ Q) : P z = 0 ↔ Q z = 0 := by
+  rcases h with ⟨u, rfl⟩
+  exact u.mul_right_eq_zero
+
+lemma X_eq_of_equiv {P Q : R × R × R} (h : P ≈ Q) : P x * Q z ^ 2 = Q x * P z ^ 2 := by
   rcases h with ⟨_, rfl⟩
-  simp only [Units.smul_def, smul_fin3_ext, Units.mul_right_eq_zero]
-
-lemma X_eq_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : P x * Q z ^ 2 = Q x * P z ^ 2 := by
-  rcases h with ⟨u, rfl⟩
-  simp only [Units.smul_def, smul_fin3_ext]
+  simp_rw [Units.smul_def, smul_eq]
   ring1
 
-lemma Y_eq_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : P y * Q z ^ 3 = Q y * P z ^ 3 := by
-  rcases h with ⟨u, rfl⟩
-  simp only [Units.smul_def, smul_fin3_ext]
+lemma Y_eq_of_equiv {P Q : R × R × R} (h : P ≈ Q) : P y * Q z ^ 3 = Q y * P z ^ 3 := by
+  rcases h with ⟨_, rfl⟩
+  simp_rw [Units.smul_def, smul_eq]
   ring1
 
-lemma not_equiv_of_Z_eq_zero_left {P Q : Fin 3 → R} (hPz : P z = 0) (hQz : Q z ≠ 0) : ¬P ≈ Q :=
+lemma not_equiv_of_Z_eq_zero_left {P Q : R × R × R} (hPz : P z = 0) (hQz : Q z ≠ 0) : ¬P ≈ Q :=
   fun h => hQz <| (Z_eq_zero_of_equiv h).mp hPz
 
-lemma not_equiv_of_Z_eq_zero_right {P Q : Fin 3 → R} (hPz : P z ≠ 0) (hQz : Q z = 0) : ¬P ≈ Q :=
+lemma not_equiv_of_Z_eq_zero_right {P Q : R × R × R} (hPz : P z ≠ 0) (hQz : Q z = 0) : ¬P ≈ Q :=
   fun h => hPz <| (Z_eq_zero_of_equiv h).mpr hQz
 
-lemma not_equiv_of_X_ne {P Q : Fin 3 → R} (hx : P x * Q z ^ 2 ≠ Q x * P z ^ 2) : ¬P ≈ Q :=
+lemma not_equiv_of_X_ne {P Q : R × R × R} (hx : P x * Q z ^ 2 ≠ Q x * P z ^ 2) : ¬P ≈ Q :=
   hx.comp X_eq_of_equiv
 
-lemma not_equiv_of_Y_ne {P Q : Fin 3 → R} (hy : P y * Q z ^ 3 ≠ Q y * P z ^ 3) : ¬P ≈ Q :=
+lemma not_equiv_of_Y_ne {P Q : R × R × R} (hy : P y * Q z ^ 3 ≠ Q y * P z ^ 3) : ¬P ≈ Q :=
   hy.comp Y_eq_of_equiv
 
-lemma equiv_of_X_eq_of_Y_eq {P Q : Fin 3 → R} (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z)
+lemma equiv_of_X_eq_of_Y_eq {P Q : R × R × R} (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z)
     (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 = Q y * P z ^ 3) : P ≈ Q := by
   use hPz.unit * hQz.unit⁻¹
-  simp_rw [Units.smul_def, smul_fin3, Units.val_mul, mul_pow, mul_comm, ← mul_assoc, hPz.unit_spec,
+  simp_rw [Units.smul_def, smul_eq, Units.val_mul, mul_pow, mul_comm, ← mul_assoc, hPz.unit_spec,
     ← hx, ← hy, mul_assoc, ← mul_pow, hQz.mul_val_inv, one_pow, mul_one, mul_comm <| Q z, mul_assoc,
-    hQz.val_inv_mul, mul_one, fin3_def]
+    hQz.val_inv_mul, mul_one]
 
-lemma equiv_some_of_isUnit_Z {P : Fin 3 → R} (hPz : IsUnit <| P z) :
-    P ≈ ![P x * hPz.unit⁻¹ ^ 2, P y * hPz.unit⁻¹ ^ 3, 1] := by
+lemma equiv_some_of_isUnit_Z {P : R × R × R} (hPz : IsUnit <| P z) :
+    P ≈ (P x * hPz.unit⁻¹ ^ 2, P y * hPz.unit⁻¹ ^ 3, 1) := by
   simp_rw [← Units.inv_pow_eq_pow_inv, ← hPz.unit_pow]
   exact equiv_of_X_eq_of_Y_eq hPz isUnit_one
-    (by linear_combination (norm := (matrix_simp; ring1)) -P x * (hPz.pow 2).mul_val_inv)
-    (by linear_combination (norm := (matrix_simp; ring1)) -P y * (hPz.pow 3).mul_val_inv)
+    (by linear_combination (norm := ring1) -P x * (hPz.pow 2).mul_val_inv)
+    (by linear_combination (norm := ring1) -P y * (hPz.pow 3).mul_val_inv)
 
-lemma equiv_some_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
-    P ≈ ![P x / P z ^ 2, P y / P z ^ 3, 1] := by
+lemma equiv_some_of_Z_ne_zero {P : F × F × F} (hPz : P z ≠ 0) :
+    P ≈ (P x / P z ^ 2, P y / P z ^ 3, 1) := by
   convert equiv_some_of_isUnit_Z hPz.isUnit using 1
   simp_rw [Units.val_inv_eq_inv_val, IsUnit.unit_spec, inv_pow, div_eq_mul_inv]
 
-lemma X_eq_iff_of_isUnit_Z {P Q : Fin 3 → R} (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z) :
+lemma X_eq_of_isUnit_Z {P Q : R × R × R} (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z) :
     P x * Q z ^ 2 = Q x * P z ^ 2 ↔ P x * hPz.unit⁻¹ ^ 2 = Q x * hQz.unit⁻¹ ^ 2 := by
   simp_rw [← (hPz.pow 2).mul_val_inv_eq_mul_val_inv <| hQz.pow 2, hPz.unit_pow, hQz.unit_pow,
     Units.inv_pow_eq_pow_inv]
 
-@[deprecated (since := "2025-05-26")] alias X_eq_iff := X_eq_iff_of_isUnit_Z
+@[deprecated (since := "2025-05-26")] alias X_eq_iff := X_eq_of_isUnit_Z
 
-lemma X_eq_iff_of_Z_ne_zero {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
+lemma X_eq_of_Z_ne_zero {P Q : F × F × F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
     P x * Q z ^ 2 = Q x * P z ^ 2 ↔ P x / P z ^ 2 = Q x / Q z ^ 2 :=
   (div_eq_div_iff (pow_ne_zero 2 hPz) (pow_ne_zero 2 hQz)).symm
 
-lemma Y_eq_iff_of_isUnit_Z {P Q : Fin 3 → R} (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z) :
+lemma Y_eq_of_isUnit_Z {P Q : R × R × R} (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z) :
     P y * Q z ^ 3 = Q y * P z ^ 3 ↔ P y * hPz.unit⁻¹ ^ 3 = Q y * hQz.unit⁻¹ ^ 3 := by
   simp_rw [← (hPz.pow 3).mul_val_inv_eq_mul_val_inv <| hQz.pow 3, hPz.unit_pow, hQz.unit_pow,
     Units.inv_pow_eq_pow_inv]
 
-@[deprecated (since := "2025-05-26")] alias Y_eq_iff := Y_eq_iff_of_isUnit_Z
+@[deprecated (since := "2025-05-26")] alias Y_eq_iff := Y_eq_of_isUnit_Z
 
-lemma Y_eq_iff_of_Z_ne_zero {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
+lemma Y_eq_of_Z_ne_zero {P Q : F × F × F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
     P y * Q z ^ 3 = Q y * P z ^ 3 ↔ P y / P z ^ 3 = Q y / Q z ^ 3 :=
   (div_eq_div_iff (pow_ne_zero 3 hPz) (pow_ne_zero 3 hQz)).symm
 
@@ -255,26 +233,28 @@ noncomputable def polynomial : MvPolynomial (Fin 3) R :=
   X 1 ^ 2 + C W'.a₁ * X 0 * X 1 * X 2 + C W'.a₃ * X 1 * X 2 ^ 3
     - (X 0 ^ 3 + C W'.a₂ * X 0 ^ 2 * X 2 ^ 2 + C W'.a₄ * X 0 * X 2 ^ 4 + C W'.a₆ * X 2 ^ 6)
 
-lemma eval_polynomial (P : Fin 3 → R) : eval P W'.polynomial =
+lemma eval_polynomial (P : R × R × R) : eval ![P x, P y, P z] W'.polynomial =
     P y ^ 2 + W'.a₁ * P x * P y * P z + W'.a₃ * P y * P z ^ 3
       - (P x ^ 3 + W'.a₂ * P x ^ 2 * P z ^ 2 + W'.a₄ * P x * P z ^ 4 + W'.a₆ * P z ^ 6) := by
   rw [polynomial]
   eval_simp
+  rfl
 
-lemma eval_polynomial_of_isUnit_Z {P : Fin 3 → R} (hPz : IsUnit <| P z) :
-    eval P W'.polynomial * hPz.unit⁻¹ ^ 6 =
-      W'.toAffine.polynomial.evalEval (P x * hPz.unit⁻¹ ^ 2) (P y * hPz.unit⁻¹ ^ 3) := by
+lemma eval_polynomial_of_isUnit_Z {P : R × R × R} (hPz : IsUnit <| P z) :
+    eval ![P x, P y, P z] W'.polynomial =
+      W'.toAffine.polynomial.evalEval (P x * hPz.unit⁻¹ ^ 2) (P y * hPz.unit⁻¹ ^ 3) * P z ^ 6 := by
   rw [eval_polynomial, Affine.evalEval_polynomial]
   linear_combination (norm := (simp_rw [hPz.unit_pow, Units.inv_pow_eq_pow_inv]; ring1))
-    W'.a₁ * P x * P y * hPz.unit⁻¹ ^ 5 * hPz.mul_val_inv
-      + W'.a₃ * P y * hPz.unit⁻¹ ^ 3 * (hPz.pow 3).mul_val_inv
-      - W'.a₂ * P x ^ 2 * hPz.unit⁻¹ ^ 4 * (hPz.pow 2).mul_val_inv
-      - W'.a₄ * P x * hPz.unit⁻¹ ^ 2 * (hPz.pow 4).mul_val_inv - W'.a₆ * (hPz.pow 6).mul_val_inv
+    -P y ^ 2 * (hPz.pow 6).mul_val_inv - W'.a₁ * P x * P y * P z * (hPz.pow 5).mul_val_inv
+      - W'.a₃ * P y * P z ^ 3 * (hPz.pow 3).mul_val_inv + P x ^ 3 * (hPz.pow 6).mul_val_inv
+      + W'.a₂ * P x ^ 2 * P z ^ 2 * (hPz.pow 4).mul_val_inv
+      + W'.a₄ * P x * P z ^ 4 * (hPz.pow 2).mul_val_inv
 
-lemma eval_polynomial_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) : eval P W.polynomial / P z ^ 6 =
-    W.toAffine.polynomial.evalEval (P x / P z ^ 2) (P y / P z ^ 3) := by
+lemma eval_polynomial_of_Z_ne_zero {P : F × F × F} (hPz : P z ≠ 0) :
+    eval ![P x, P y, P z] W.polynomial =
+      W.toAffine.polynomial.evalEval (P x / P z ^ 2) (P y / P z ^ 3) * P z ^ 6 := by
   simp_rw [div_eq_mul_inv, ← inv_pow]
-  convert eval_polynomial_of_isUnit_Z hPz.isUnit using 4 <;>
+  convert eval_polynomial_of_isUnit_Z hPz.isUnit using 5 <;>
     exact hPz.isUnit.unit.val_inv_eq_inv_val.symm
 
 variable (W') in
@@ -282,39 +262,39 @@ variable (W') in
 `W`.
 
 In other words, it satisfies the `(2, 3, 1)`-homogeneous Weierstrass equation `W(X, Y, Z) = 0`. -/
-def Equation (P : Fin 3 → R) : Prop :=
-  eval P W'.polynomial = 0
+def Equation (P : R × R × R) : Prop :=
+  eval ![P x, P y, P z] W'.polynomial = 0
 
-lemma equation_iff (P : Fin 3 → R) : W'.Equation P ↔
+lemma equation_iff (P : R × R × R) : W'.Equation P ↔
     P y ^ 2 + W'.a₁ * P x * P y * P z + W'.a₃ * P y * P z ^ 3
       - (P x ^ 3 + W'.a₂ * P x ^ 2 * P z ^ 2 + W'.a₄ * P x * P z ^ 4 + W'.a₆ * P z ^ 6) = 0 := by
   rw [Equation, eval_polynomial]
 
-lemma equation_smul (P : Fin 3 → R) {u : R} (hu : IsUnit u) : W'.Equation (u • P) ↔ W'.Equation P :=
-  have hP (u : R) {P : Fin 3 → R} (hP : W'.Equation P) : W'.Equation <| u • P := by
+lemma equation_smul (P : R × R × R) {u : R} (hu : IsUnit u) : W'.Equation (u • P) ↔ W'.Equation P :=
+  have hP (u : R) {P : R × R × R} (hP : W'.Equation P) : W'.Equation <| u • P := by
     rw [equation_iff] at hP ⊢
-    linear_combination (norm := (simp only [smul_fin3_ext]; ring1)) u ^ 6 * hP
+    linear_combination (norm := (rw [smul_eq]; ring1)) u ^ 6 * hP
   ⟨fun h => by convert hP ↑hu.unit⁻¹ h; rw [smul_smul, hu.val_inv_mul, one_smul], hP u⟩
 
-lemma equation_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.Equation P ↔ W'.Equation Q := by
+lemma equation_of_equiv {P Q : R × R × R} (h : P ≈ Q) : W'.Equation P ↔ W'.Equation Q := by
   rcases h with ⟨u, rfl⟩
   exact equation_smul Q u.isUnit
 
-lemma equation_of_Z_eq_zero {P : Fin 3 → R} (hPz : P z = 0) :
+lemma equation_of_Z_eq_zero {P : R × R × R} (hPz : P z = 0) :
     W'.Equation P ↔ P y ^ 2 = P x ^ 3 := by
-  simp only [equation_iff, hPz, add_zero, mul_zero, zero_pow <| OfNat.ofNat_ne_zero _, sub_eq_zero]
+  simp_rw [equation_iff, hPz, sub_eq_zero, zero_pow <| OfNat.ofNat_ne_zero _, mul_zero, add_zero]
 
-lemma equation_zero : W'.Equation ![1, 1, 0] := by
-  simp only [equation_of_Z_eq_zero, fin3_def_ext, one_pow]
+lemma equation_zero : W'.Equation (1, 1, 0) := by
+  simp_rw [equation_of_Z_eq_zero, one_pow]
 
-lemma equation_some (X Y : R) : W'.Equation ![X, Y, 1] ↔ W'.toAffine.Equation X Y := by
-  simp only [equation_iff, Affine.equation_iff', fin3_def_ext, one_pow, mul_one]
+lemma equation_some (X Y : R) : W'.Equation (X, Y, 1) ↔ W'.toAffine.Equation X Y := by
+  simp_rw [equation_iff, Affine.equation_iff', one_pow, mul_one]
 
-lemma equation_of_isUnit_Z {P : Fin 3 → R} (hPz : IsUnit <| P z) :
+lemma equation_of_isUnit_Z {P : R × R × R} (hPz : IsUnit <| P z) :
     W'.Equation P ↔ W'.toAffine.Equation (P x * hPz.unit⁻¹ ^ 2) (P y * hPz.unit⁻¹ ^ 3) :=
   (equation_of_equiv <| equiv_some_of_isUnit_Z hPz).trans <| equation_some ..
 
-lemma equation_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
+lemma equation_of_Z_ne_zero {P : F × F × F} (hPz : P z ≠ 0) :
     W.Equation P ↔ W.toAffine.Equation (P x / P z ^ 2) (P y / P z ^ 3) := by
   simp_rw [div_eq_mul_inv, ← inv_pow]
   convert equation_of_isUnit_Z hPz.isUnit using 4 <;> exact hPz.isUnit.unit.val_inv_eq_inv_val.symm
@@ -325,7 +305,7 @@ variable (W') in
 /-- The partial derivative `W_X(X, Y, Z)` with respect to `X` of the polynomial `W(X, Y, Z)`
 associated to a Weierstrass curve `W` in Jacobian coordinates. -/
 noncomputable def polynomialX : MvPolynomial (Fin 3) R :=
-  pderiv x W'.polynomial
+  pderiv 0 W'.polynomial
 
 lemma polynomialX_eq : W'.polynomialX =
     C W'.a₁ * X 1 * X 2 - (C 3 * X 0 ^ 2 + C (2 * W'.a₂) * X 0 * X 2 ^ 2 + C W'.a₄ * X 2 ^ 4) := by
@@ -333,61 +313,63 @@ lemma polynomialX_eq : W'.polynomialX =
   pderiv_simp
   ring1
 
-lemma eval_polynomialX (P : Fin 3 → R) : eval P W'.polynomialX =
+lemma eval_polynomialX (P : R × R × R) : eval ![P x, P y, P z] W'.polynomialX =
     W'.a₁ * P y * P z - (3 * P x ^ 2 + 2 * W'.a₂ * P x * P z ^ 2 + W'.a₄ * P z ^ 4) := by
   rw [polynomialX_eq]
   eval_simp
+  rfl
 
-lemma eval_polynomialX_of_isUnit_Z {P : Fin 3 → R} (hPz : IsUnit <| P z) :
-    eval P W'.polynomialX * hPz.unit⁻¹ ^ 4 =
-      W'.toAffine.polynomialX.evalEval (P x * hPz.unit⁻¹ ^ 2) (P y * hPz.unit⁻¹ ^ 3) := by
+lemma eval_polynomialX_of_isUnit_Z {P : R × R × R} (hPz : IsUnit <| P z) :
+    eval ![P x, P y, P z] W'.polynomialX =
+      W'.toAffine.polynomialX.evalEval (P x * hPz.unit⁻¹ ^ 2) (P y * hPz.unit⁻¹ ^ 3) * P z ^ 4 := by
   rw [eval_polynomialX, Affine.evalEval_polynomialX]
   linear_combination (norm := (simp_rw [hPz.unit_pow, Units.inv_pow_eq_pow_inv]; ring1))
-    W'.a₁ * P y * hPz.unit⁻¹ ^ 3 * hPz.mul_val_inv
-      - 2 * W'.a₂ * P x * hPz.unit⁻¹ ^ 2 * (hPz.pow 2).mul_val_inv - W'.a₄ * (hPz.pow 4).mul_val_inv
+    -W'.a₁ * P y * P z * (hPz.pow 3).mul_val_inv + 3 * P x ^ 2 * (hPz.pow 4).mul_val_inv
+      + 2 * W'.a₂ * P x * P z ^ 2 * (hPz.pow 2).mul_val_inv
 
-lemma eval_polynomialX_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
-    eval P W.polynomialX / P z ^ 4 =
-      W.toAffine.polynomialX.evalEval (P x / P z ^ 2) (P y / P z ^ 3) := by
+lemma eval_polynomialX_of_Z_ne_zero {P : F × F × F} (hPz : P z ≠ 0) :
+    eval ![P x, P y, P z] W.polynomialX =
+      W.toAffine.polynomialX.evalEval (P x / P z ^ 2) (P y / P z ^ 3) * P z ^ 4 := by
   simp_rw [div_eq_mul_inv, ← inv_pow]
-  convert eval_polynomialX_of_isUnit_Z hPz.isUnit using 4 <;>
+  convert eval_polynomialX_of_isUnit_Z hPz.isUnit using 5 <;>
     exact hPz.isUnit.unit.val_inv_eq_inv_val.symm
 
 variable (W') in
 /-- The partial derivative `W_Y(X, Y, Z)` with respect to `Y` of the polynomial `W(X, Y, Z)`
 associated to a Weierstrass curve `W` in Jacobian coordinates. -/
 noncomputable def polynomialY : MvPolynomial (Fin 3) R :=
-  pderiv y W'.polynomial
+  pderiv 1 W'.polynomial
 
 lemma polynomialY_eq : W'.polynomialY = C 2 * X 1 + C W'.a₁ * X 0 * X 2 + C W'.a₃ * X 2 ^ 3 := by
   rw [polynomialY, polynomial]
   pderiv_simp
   ring1
 
-lemma eval_polynomialY (P : Fin 3 → R) :
-    eval P W'.polynomialY = 2 * P y + W'.a₁ * P x * P z + W'.a₃ * P z ^ 3 := by
+lemma eval_polynomialY (P : R × R × R) :
+    eval ![P x, P y, P z] W'.polynomialY = 2 * P y + W'.a₁ * P x * P z + W'.a₃ * P z ^ 3 := by
   rw [polynomialY_eq]
   eval_simp
+  rfl
 
-lemma eval_polynomialY_of_isUnit_Z {P : Fin 3 → R} (hPz : IsUnit <| P z) :
-    eval P W'.polynomialY * hPz.unit⁻¹ ^ 3 =
-      W'.toAffine.polynomialY.evalEval (P x * hPz.unit⁻¹ ^ 2) (P y * hPz.unit⁻¹ ^ 3) := by
+lemma eval_polynomialY_of_isUnit_Z {P : R × R × R} (hPz : IsUnit <| P z) :
+    eval ![P x, P y, P z] W'.polynomialY =
+      W'.toAffine.polynomialY.evalEval (P x * hPz.unit⁻¹ ^ 2) (P y * hPz.unit⁻¹ ^ 3) * P z ^ 3 := by
   rw [eval_polynomialY, Affine.evalEval_polynomialY]
   linear_combination (norm := (simp_rw [hPz.unit_pow, Units.inv_pow_eq_pow_inv]; ring1))
-    W'.a₁ * P x * hPz.unit⁻¹ ^ 2 * hPz.mul_val_inv + W'.a₃ * (hPz.pow 3).mul_val_inv
+    -2 * P y * (hPz.pow 3).mul_val_inv - W'.a₁ * P x * P z * (hPz.pow 2).mul_val_inv
 
-lemma eval_polynomialY_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
-    eval P W.polynomialY / P z ^ 3 =
-      W.toAffine.polynomialY.evalEval (P x / P z ^ 2) (P y / P z ^ 3) := by
+lemma eval_polynomialY_of_Z_ne_zero {P : F × F × F} (hPz : P z ≠ 0) :
+    eval ![P x, P y, P z] W.polynomialY =
+      W.toAffine.polynomialY.evalEval (P x / P z ^ 2) (P y / P z ^ 3) * P z ^ 3 := by
   simp_rw [div_eq_mul_inv, ← inv_pow]
-  convert eval_polynomialY_of_isUnit_Z hPz.isUnit using 4 <;>
+  convert eval_polynomialY_of_isUnit_Z hPz.isUnit using 5 <;>
     exact hPz.isUnit.unit.val_inv_eq_inv_val.symm
 
 variable (W') in
 /-- The partial derivative `W_Z(X, Y, Z)` with respect to `Z` of the polynomial `W(X, Y, Z)`
 associated to a Weierstrass curve `W` in Jacobian coordinates. -/
 noncomputable def polynomialZ : MvPolynomial (Fin 3) R :=
-  pderiv z W'.polynomial
+  pderiv 2 W'.polynomial
 
 lemma polynomialZ_eq : W'.polynomialZ = C W'.a₁ * X 0 * X 1 + C (3 * W'.a₃) * X 1 * X 2 ^ 2 -
     (C (2 * W'.a₂) * X 0 ^ 2 * X 2 + C (4 * W'.a₄) * X 0 * X 2 ^ 3 + C (6 * W'.a₆) * X 2 ^ 5) := by
@@ -395,16 +377,18 @@ lemma polynomialZ_eq : W'.polynomialZ = C W'.a₁ * X 0 * X 1 + C (3 * W'.a₃) 
   pderiv_simp
   ring1
 
-lemma eval_polynomialZ (P : Fin 3 → R) : eval P W'.polynomialZ =
+lemma eval_polynomialZ (P : R × R × R) : eval ![P x, P y, P z] W'.polynomialZ =
     W'.a₁ * P x * P y + 3 * W'.a₃ * P y * P z ^ 2 -
       (2 * W'.a₂ * P x ^ 2 * P z + 4 * W'.a₄ * P x * P z ^ 3 + 6 * W'.a₆ * P z ^ 5) := by
   rw [polynomialZ_eq]
   eval_simp
+  rfl
 
 /-- Euler's homogeneous function theorem in Jacobian coordinates. -/
-theorem polynomial_relation (P : Fin 3 → R) : 6 * eval P W'.polynomial =
-    2 * P x * eval P W'.polynomialX + 3 * P y * eval P W'.polynomialY +
-      P z * eval P W'.polynomialZ := by
+theorem polynomial_relation (P : R × R × R) : 6 * eval ![P x, P y, P z] W'.polynomial =
+    2 * P x * eval ![P x, P y, P z] W'.polynomialX +
+      3 * P y * eval ![P x, P y, P z] W'.polynomialY +
+      P z * eval ![P x, P y, P z] W'.polynomialZ := by
   rw [eval_polynomial, eval_polynomialX, eval_polynomialY, eval_polynomialZ]
   ring1
 
@@ -416,80 +400,79 @@ In other words, the ideal spanned by `W_X(x, y, z)`, `W_Y(x, y, z)`, and `W_z(x,
 
 Note that this definition is only mathematically accurate for certain rings `R` whose Picard group
 has trivial 12-torsion, such as a field or a PID. -/
-def Nonsingular (P : Fin 3 → R) : Prop :=
-  W'.Equation P ∧
-    Ideal.span {eval P W'.polynomialX, eval P W'.polynomialY, eval P W'.polynomialZ} = ⊤
+def Nonsingular (P : R × R × R) : Prop :=
+  W'.Equation P ∧ Ideal.span {eval ![P x, P y, P z] W'.polynomialX,
+    eval ![P x, P y, P z] W'.polynomialY, eval ![P x, P y, P z] W'.polynomialZ} = ⊤
 
-lemma nonsingular_iff (P : Fin 3 → R) : W'.Nonsingular P ↔ W'.Equation P ∧ Ideal.span
+lemma nonsingular_iff (P : R × R × R) : W'.Nonsingular P ↔ W'.Equation P ∧ Ideal.span
     {W'.a₁ * P y * P z - (3 * P x ^ 2 + 2 * W'.a₂ * P x * P z ^ 2 + W'.a₄ * P z ^ 4),
       2 * P y + W'.a₁ * P x * P z + W'.a₃ * P z ^ 3,
       W'.a₁ * P x * P y + 3 * W'.a₃ * P y * P z ^ 2
         - (2 * W'.a₂ * P x ^ 2 * P z + 4 * W'.a₄ * P x * P z ^ 3 + 6 * W'.a₆ * P z ^ 5)} = ⊤ := by
   rw [Nonsingular, eval_polynomialX, eval_polynomialY, eval_polynomialZ]
 
-lemma nonsingular_smul (P : Fin 3 → R) {u : R} (hu : IsUnit u) :
+lemma nonsingular_smul (P : R × R × R) {u : R} (hu : IsUnit u) :
     W'.Nonsingular (u • P) ↔ W'.Nonsingular P :=
-  have hP {u : R} (hu : IsUnit u) {P : Fin 3 → R} (hP : W'.Nonsingular <| u • P) :
+  have hP {u : R} (hu : IsUnit u) {P : R × R × R} (hP : W'.Nonsingular <| u • P) :
       W'.Nonsingular P := by
     rcases (nonsingular_iff _).mp hP with ⟨hP, hP'⟩
     refine (nonsingular_iff P).mpr ⟨(equation_smul P hu).mp hP, ?_⟩
     simp_rw [Ideal.span_insert, ← Ideal.span_singleton_mul_left_unit (hu.pow 4) <| _ * _ - _,
       ← Ideal.span_singleton_mul_left_unit (hu.pow 3) <| _ + _,
-      ← Ideal.span_singleton_mul_left_unit (hu.pow 5) <| _ - _, ← hP', Ideal.span_insert,
-      smul_fin3_ext]
+      ← Ideal.span_singleton_mul_left_unit (hu.pow 5) <| _ - _, ← hP', smul_eq, Ideal.span_insert]
     ring_nf
   ⟨hP hu, fun h => hP hu.unit⁻¹.isUnit <| by rwa [smul_smul, hu.val_inv_mul, one_smul]⟩
 
-lemma nonsingular_of_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.Nonsingular P ↔ W'.Nonsingular Q := by
+lemma nonsingular_of_equiv {P Q : R × R × R} (h : P ≈ Q) : W'.Nonsingular P ↔ W'.Nonsingular Q := by
   rcases h with ⟨u, rfl⟩
   exact nonsingular_smul Q u.isUnit
 
-lemma nonsingular_of_Z_eq_zero {P : Fin 3 → R} (hPz : P z = 0) : W'.Nonsingular P ↔
+lemma nonsingular_of_Z_eq_zero {P : R × R × R} (hPz : P z = 0) : W'.Nonsingular P ↔
     W'.Equation P ∧ Ideal.span {3 * P x ^ 2, 2 * P y, W'.a₁ * P x * P y} = ⊤ := by
   simp_rw [nonsingular_iff, hPz, zero_pow <| OfNat.ofNat_ne_zero _, mul_zero, zero_sub, add_zero,
     sub_zero, Ideal.span_insert, Ideal.span_singleton_neg]
 
-lemma nonsingular_zero : W'.Nonsingular ![1, 1, 0] := by
-  rw [nonsingular_of_Z_eq_zero rfl]
-  simp_rw [fin3_def_ext, Ideal.eq_top_iff_one, Ideal.mem_span_insert', Ideal.mem_span_singleton']
+lemma nonsingular_zero : W'.Nonsingular (1, 1, 0) := by
+  simp_rw [nonsingular_of_Z_eq_zero, Ideal.eq_top_iff_one, Ideal.mem_span_insert',
+    Ideal.mem_span_singleton']
   exact ⟨equation_zero, ⟨-1, 1, 0, by ring1⟩⟩
 
-lemma nonsingular_some (X Y : R) : W'.Nonsingular ![X, Y, 1] ↔ W'.toAffine.Nonsingular X Y := by
+lemma nonsingular_some (X Y : R) : W'.Nonsingular (X, Y, 1) ↔ W'.toAffine.Nonsingular X Y := by
   simp_rw [nonsingular_iff, equation_some, Affine.nonsingular_iff, Affine.equation_iff',
-    and_congr_right_iff, Ideal.span_insert, ← sup_assoc, ← Ideal.span_insert, fin3_def_ext, one_pow,
-    mul_one]
+    and_congr_right_iff, Ideal.span_insert, ← sup_assoc, ← Ideal.span_insert, one_pow, mul_one]
   intro h
   congr! 1
   rw [sup_eq_left, Ideal.span_singleton_le_iff_mem, Ideal.mem_span_pair]
   exact ⟨-2 * X, -3 * Y, by linear_combination (norm := ring1) -6 * h⟩
 
-lemma nonsingular_of_isUnit_Z {P : Fin 3 → R} (hPz : IsUnit <| P z) :
+lemma nonsingular_of_isUnit_Z {P : R × R × R} (hPz : IsUnit <| P z) :
     W'.Nonsingular P ↔ W'.toAffine.Nonsingular (P x * hPz.unit⁻¹ ^ 2) (P y * hPz.unit⁻¹ ^ 3) :=
   (nonsingular_of_equiv <| equiv_some_of_isUnit_Z hPz).trans <| nonsingular_some ..
 
-lemma nonsingular_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
+lemma nonsingular_of_Z_ne_zero {P : F × F × F} (hPz : P z ≠ 0) :
     W.Nonsingular P ↔ W.toAffine.Nonsingular (P x / P z ^ 2) (P y / P z ^ 3) := by
   simp_rw [div_eq_mul_inv, ← inv_pow]
   convert nonsingular_of_isUnit_Z hPz.isUnit using 4 <;>
     exact hPz.isUnit.unit.val_inv_eq_inv_val.symm
 
-lemma nonsingular_iff_of_isUnit_Z {P : Fin 3 → R} (hPz : IsUnit <| P z) : W'.Nonsingular P ↔
-    W'.Equation P ∧ Ideal.span {eval P W'.polynomialX, eval P W'.polynomialY} = ⊤ := by
+lemma nonsingular_iff_of_isUnit_Z {P : R × R × R} (hPz : IsUnit <| P z) : W'.Nonsingular P ↔
+    W'.Equation P ∧ Ideal.span {eval ![P x, P y, P z] W'.polynomialX,
+      eval ![P x, P y, P z] W'.polynomialY} = ⊤ := by
   simp_rw [nonsingular_of_isUnit_Z hPz, Affine.Nonsingular, ← equation_of_isUnit_Z hPz,
-    Ideal.span_insert, ← eval_polynomialX_of_isUnit_Z hPz, ← eval_polynomialY_of_isUnit_Z hPz,
-    Ideal.span_singleton_mul_right_unit <| (Units.isUnit _).pow _]
+    eval_polynomialX_of_isUnit_Z hPz, eval_polynomialY_of_isUnit_Z hPz, Ideal.span_insert,
+    Ideal.span_singleton_mul_right_unit <| hPz.pow _]
 
 @[deprecated (since := "2025-05-26")] alias nonsingular_iff_of_Z_ne_zero :=
   nonsingular_iff_of_isUnit_Z
 
-lemma isCoprime_X_Y_of_Z_eq_zero {P : Fin 3 → R} (hP : W'.Nonsingular P) (hPz : P z = 0) :
+lemma isCoprime_X_Y_of_Z_eq_zero {P : R × R × R} (hP : W'.Nonsingular P) (hPz : P z = 0) :
     IsCoprime (P x) (P y) := by
   simp_rw [nonsingular_of_Z_eq_zero hPz, equation_of_Z_eq_zero hPz, Ideal.eq_top_iff_one,
     Ideal.mem_span_insert, Ideal.mem_span_singleton'] at hP
   rcases hP with ⟨h, a, _, ⟨b, _, ⟨c, rfl⟩, rfl⟩, h'⟩
   exact ⟨3 * P x * a, 2 * b + W'.a₁ * P x * c, by linear_combination (norm := ring1) -h'⟩
 
-lemma isUnit_X_of_Z_eq_zero {P : Fin 3 → R} (hP : W'.Nonsingular P) (hPz : P z = 0) :
+lemma isUnit_X_of_Z_eq_zero {P : R × R × R} (hP : W'.Nonsingular P) (hPz : P z = 0) :
     IsUnit <| P x := by
   rw [← isCoprime_self, ← IsCoprime.pow_right_iff three_pos,
     ← (equation_of_Z_eq_zero hPz).mp ((nonsingular_of_Z_eq_zero hPz).mp hP).left]
@@ -497,7 +480,7 @@ lemma isUnit_X_of_Z_eq_zero {P : Fin 3 → R} (hP : W'.Nonsingular P) (hPz : P z
 
 @[deprecated (since := "2025-05-26")] alias X_ne_zero_of_Z_eq_zero := isUnit_X_of_Z_eq_zero
 
-lemma isUnit_Y_of_Z_eq_zero {P : Fin 3 → R} (hP : W'.Nonsingular P) (hPz : P z = 0) :
+lemma isUnit_Y_of_Z_eq_zero {P : R × R × R} (hP : W'.Nonsingular P) (hPz : P z = 0) :
     IsUnit <| P y := by
   rw [← isCoprime_self, ← IsCoprime.pow_left_iff two_pos,
     (equation_of_Z_eq_zero hPz).mp ((nonsingular_of_Z_eq_zero hPz).mp hP).left]
@@ -505,25 +488,25 @@ lemma isUnit_Y_of_Z_eq_zero {P : Fin 3 → R} (hP : W'.Nonsingular P) (hPz : P z
 
 @[deprecated (since := "2025-05-26")] alias Y_ne_zero_of_Z_eq_zero := isUnit_Y_of_Z_eq_zero
 
-lemma equiv_of_Z_eq_zero {P Q : Fin 3 → R} (hP : W'.Nonsingular P) (hQ : W'.Nonsingular Q)
+lemma equiv_of_Z_eq_zero {P Q : R × R × R} (hP : W'.Nonsingular P) (hQ : W'.Nonsingular Q)
     (hPz : P z = 0) (hQz : Q z = 0) : P ≈ Q := by
   use (isUnit_Y_of_Z_eq_zero hP hPz).unit * (isUnit_X_of_Z_eq_zero hP hPz).unit⁻¹
     * ((isUnit_Y_of_Z_eq_zero hQ hQz).unit⁻¹ * (isUnit_X_of_Z_eq_zero hQ hQz).unit)
   simp only [nonsingular_of_Z_eq_zero, equation_of_Z_eq_zero, hPz, hQz] at hP hQ
-  simp_rw [Units.smul_def, smul_fin3, Units.val_mul, IsUnit.unit_spec, mul_pow, hQz, mul_zero]
-  conv_rhs => rw [← fin3_def P, hPz]
+  simp_rw [Units.smul_def, smul_eq, Units.val_mul, IsUnit.unit_spec, mul_pow, hQz, mul_zero]
   congr! 2
   · rw [hP.left, pow_succ', mul_assoc <| P x, ← mul_pow, IsUnit.mul_val_inv, one_pow, mul_one,
       mul_assoc, mul_assoc, ← pow_succ, ← hQ.left, ← mul_pow, IsUnit.val_inv_mul, one_pow, mul_one]
   · rw [pow_succ', hP.left, mul_assoc <| P y, ← mul_pow, IsUnit.mul_val_inv, one_pow, mul_one,
       mul_assoc, mul_assoc, ← hQ.left, ← pow_succ, ← mul_pow, IsUnit.val_inv_mul, one_pow, mul_one]
+  · exact hPz.symm
 
-lemma equiv_zero_of_Z_eq_zero {P : Fin 3 → R} (hP : W'.Nonsingular P) (hPz : P z = 0) :
-    P ≈ ![1, 1, 0] :=
+lemma equiv_zero_of_Z_eq_zero {P : R × R × R} (hP : W'.Nonsingular P) (hPz : P z = 0) :
+    P ≈ (1, 1, 0) :=
   equiv_of_Z_eq_zero hP nonsingular_zero hPz rfl
 
-lemma comp_equiv_comp (f : F →+* K) {P Q : Fin 3 → F} (hP : W.Nonsingular P)
-    (hQ : W.Nonsingular Q) : f ∘ P ≈ f ∘ Q ↔ P ≈ Q := by
+lemma map_equiv_map (f : F →+* K) {P Q : F × F × F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) :
+    f ∘ P ≈ f ∘ Q ↔ P ≈ Q := by
   refine ⟨fun h => ?_, fun h => ?_⟩
   · by_cases hz : f (P z) = 0
     · exact equiv_of_Z_eq_zero hP hQ ((map_eq_zero_iff f f.injective).mp hz) <|
@@ -533,7 +516,7 @@ lemma comp_equiv_comp (f : F →+* K) {P Q : Fin 3 → F} (hP : W.Nonsingular P)
       all_goals apply f.injective; map_simp
       exacts [X_eq_of_equiv h, Y_eq_of_equiv h]
   · rcases h with ⟨u, rfl⟩
-    exact ⟨Units.map f u, (comp_smul ..).symm⟩
+    exact ⟨Units.map f u, (WeierstrassCurve.Jacobian.map_smul ..).symm⟩
 
 variable (W') in
 /-- The proposition that a Jacobian point class on a Weierstrass curve `W` is nonsingular.
@@ -546,52 +529,53 @@ has trivial 12-torsion, such as a field or a PID. -/
 def NonsingularLift (P : PointClass R) : Prop :=
   P.lift W'.Nonsingular fun _ _ => propext ∘ nonsingular_of_equiv
 
-lemma nonsingularLift_iff (P : Fin 3 → R) : W'.NonsingularLift ⟦P⟧ ↔ W'.Nonsingular P :=
+lemma nonsingularLift_iff (P : R × R × R) : W'.NonsingularLift ⟦P⟧ ↔ W'.Nonsingular P :=
   Iff.rfl
 
-lemma nonsingularLift_zero [Nontrivial R] : W'.NonsingularLift ⟦![1, 1, 0]⟧ :=
+lemma nonsingularLift_zero : W'.NonsingularLift ⟦(1, 1, 0)⟧ :=
   nonsingular_zero
 
 lemma nonsingularLift_some (X Y : R) :
-    W'.NonsingularLift ⟦![X, Y, 1]⟧ ↔ W'.toAffine.Nonsingular X Y :=
+    W'.NonsingularLift ⟦(X, Y, 1)⟧ ↔ W'.toAffine.Nonsingular X Y :=
   nonsingular_some X Y
 
 /-! ## Maps and base changes -/
 
-variable (f : R →+* S) (P : Fin 3 → R)
+variable (f : R →+* S) (P : R × R × R)
 
 @[simp]
 lemma map_polynomial : (W'.map f).toJacobian.polynomial = W'.polynomial.map f := by
-  simp only [polynomial]
+  simp_rw [polynomial]
   map_simp
 
 variable {P} in
 lemma Equation.map (h : W'.Equation P) : (W'.map f).toJacobian.Equation <| f ∘ P := by
-  rw [Equation, map_polynomial, eval_map, ← eval₂_comp, h, map_zero]
+  rw [Equation, map_polynomial, eval_map, map_eq, ← map_fin3, ← eval₂_comp, h, map_zero]
 
 variable {f} in
 @[simp]
 lemma map_equation (hf : Function.Injective f) :
     (W'.map f).toJacobian.Equation (f ∘ P) ↔ W'.Equation P := by
-  simp only [Equation, map_polynomial, eval_map, ← eval₂_comp, map_eq_zero_iff f hf]
+  simp_rw [Equation, map_polynomial, eval_map, map_eq, ← map_fin3, ← eval₂_comp,
+    map_eq_zero_iff f hf]
 
 @[simp]
 lemma map_polynomialX : (W'.map f).toJacobian.polynomialX = W'.polynomialX.map f := by
-  simp only [polynomialX, map_polynomial, pderiv_map]
+  simp_rw [polynomialX, map_polynomial, pderiv_map]
 
 @[simp]
 lemma map_polynomialY : (W'.map f).toJacobian.polynomialY = W'.polynomialY.map f := by
-  simp only [polynomialY, map_polynomial, pderiv_map]
+  simp_rw [polynomialY, map_polynomial, pderiv_map]
 
 @[simp]
 lemma map_polynomialZ : (W'.map f).toJacobian.polynomialZ = W'.polynomialZ.map f := by
-  simp only [polynomialZ, map_polynomial, pderiv_map]
+  simp_rw [polynomialZ, map_polynomial, pderiv_map]
 
 variable {P} in
 lemma Nonsingular.map (h : W'.Nonsingular P) : (W'.map f).toJacobian.Nonsingular <| f ∘ P := by
   simp_rw [Nonsingular, h.left.map f, true_and, map_polynomialX, map_polynomialY, map_polynomialZ,
-    eval_map, ← eval₂_comp, ← Set.image_pair f, ← Set.image_insert_eq, ← Ideal.map_span, h.right,
-    Ideal.map_top]
+    eval_map, map_eq, ← map_fin3, ← eval₂_comp, ← Set.image_pair f, ← Set.image_insert_eq,
+    ← Ideal.map_span, h.right, Ideal.map_top]
 
 variable {f} in
 @[simp]
@@ -599,11 +583,11 @@ lemma map_nonsingular (hf : Function.Bijective f) :
     (W'.map f).toJacobian.Nonsingular (f ∘ P) ↔ W'.Nonsingular P := by
   refine ⟨?_, fun h => h.map f⟩
   simp_rw [Nonsingular, map_equation _ hf.left, map_polynomialX, map_polynomialY, map_polynomialZ,
-    eval_map, ← eval₂_comp, ← Set.image_pair f, ← Set.image_insert_eq, ← Ideal.map_span,
-    Ideal.map_span_triple_eq_top hf, imp_self]
+    eval_map, map_eq, ← map_fin3, ← eval₂_comp, ← Set.image_pair f, ← Set.image_insert_eq,
+    ← Ideal.map_span, Ideal.map_span_triple_eq_top hf, imp_self]
 
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B] [Algebra S B]
-  [IsScalarTower R S B] (f : A →ₐ[S] B) (P : Fin 3 → A)
+  [IsScalarTower R S B] (f : A →ₐ[S] B) (P : A × A × A)
 
 lemma baseChange_polynomial :
     (W'.baseChange B).toJacobian.polynomial = (W'.baseChange A).toJacobian.polynomial.map f := by
