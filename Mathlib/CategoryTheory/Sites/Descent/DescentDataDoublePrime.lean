@@ -207,6 +207,64 @@ structure DescentData'' where
 
 namespace DescentData''
 
+section Category
+
+variable {F sq sq₃}
+
+@[ext]
+structure Hom (D₁ D₂ : F.DescentData'' sq sq₃) where
+  hom (i : ι) : D₁.obj i ⟶ D₂.obj i
+  comm (i₁ i₂ : ι) :
+    D₁.hom i₁ i₂ ≫ (F.map (sq i₁ i₂).p₁.op.toLoc).r.map
+      ((F.map (sq i₁ i₂).p₂.op.toLoc).l.map (hom i₂)) = hom i₁ ≫ D₂.hom i₁ i₂ := by aesop_cat
+
+attribute [reassoc (attr := simp)] Hom.comm
+
+@[simps]
+def Hom.id (D : F.DescentData'' sq sq₃) : Hom D D where
+  hom _ := 𝟙 _
+
+@[simps]
+def Hom.comp {D₁ D₂ D₃ : F.DescentData'' sq sq₃} (f : Hom D₁ D₂) (g : Hom D₂ D₃) : Hom D₁ D₃ where
+  hom i := f.hom i ≫ g.hom i
+
+instance : Category (F.DescentData'' sq sq₃) where
+  Hom := Hom
+  id := Hom.id
+  comp := Hom.comp
+
+@[ext]
+lemma hom_ext {D₁ D₂ : F.DescentData'' sq sq₃} {f g : D₁ ⟶ D₂}
+    (h : ∀ i, f.hom i = g.hom i) : f = g :=
+  Hom.ext (funext h)
+
+@[reassoc, simp]
+lemma comp_hom {D₁ D₂ D₃ : F.DescentData'' sq sq₃} (f : D₁ ⟶ D₂) (g : D₂ ⟶ D₃) (i : ι) :
+    (f ≫ g).hom i = f.hom i ≫ g.hom i :=
+  rfl
+
+@[simp]
+lemma id_hom (D : F.DescentData'' sq sq₃) (i : ι) :
+    Hom.hom (𝟙 D) i = 𝟙 _ :=
+  rfl
+
+@[simps]
+def isoMk {D₁ D₂ : F.DescentData'' sq sq₃} (e : ∀ (i : ι), D₁.obj i ≅ D₂.obj i)
+    (comm : ∀ (i₁ i₂ : ι), D₁.hom i₁ i₂ ≫ (F.map (sq i₁ i₂).p₁.op.toLoc).r.map
+      ((F.map (sq i₁ i₂).p₂.op.toLoc).l.map (e i₂).hom) =
+        (e i₁).hom ≫ D₂.hom i₁ i₂ := by aesop_cat) :
+    D₁ ≅ D₂ where
+  hom :=
+    { hom i := (e i).hom
+      comm := comm }
+  inv :=
+    { hom i := (e i).inv
+      comm i₁ i₂ := by
+        rw [← cancel_epi (e i₁).hom, ← reassoc_of% comm i₁ i₂]
+        simp [← Functor.map_comp] }
+
+end Category
+
 variable {F} {sq} {obj : ∀ (i : ι), (F.obj (.mk (op (X i)))).obj}
   (hom : ∀ i₁ i₂, obj i₁ ⟶ (F.map (sq i₁ i₂).p₁.op.toLoc).r.obj
     ((F.map (sq i₁ i₂).p₂.op.toLoc).l.obj (obj i₂)))
@@ -360,13 +418,76 @@ lemma hom_comp_iff_dataEquivDescentData' (i₁ i₂ i₃ : ι) :
   rw [← homEquiv_symm_pullHom''_eq_pullHom'_dataEquivDescentData', ← homEquiv_symm_homComp]
   simp
 
+variable
+  (obj₁ obj₂ : (i : ι) → (F.obj { as := op (X i) }).obj)
+  (hom₁ : (i₁ i₂ : ι) → obj₁ i₁ ⟶
+    (F.map (sq i₁ i₂).p₁.op.toLoc).r.obj ((F.map (sq i₁ i₂).p₂.op.toLoc).l.obj (obj₁ i₂)))
+  (hom₂ : (i₁ i₂ : ι) → obj₂ i₁ ⟶
+    (F.map (sq i₁ i₂).p₁.op.toLoc).r.obj ((F.map (sq i₁ i₂).p₂.op.toLoc).l.obj (obj₂ i₂)))
+  (hom : (i : ι) → obj₁ i ⟶ obj₂ i)
+
+lemma hom_comm_iff_dataEquivDescentData' (i₁ i₂ : ι) :
+    hom₁ i₁ i₂ ≫ (F.map (sq i₁ i₂).p₁.op.toLoc).r.map
+      ((F.map (sq i₁ i₂).p₂.op.toLoc).l.map (hom i₂)) = hom i₁ ≫ hom₂ i₁ i₂ ↔
+    (F.map (sq i₁ i₂).p₁.op.toLoc).l.map (hom i₁) ≫ dataEquivDescentData' hom₂ i₁ i₂ =
+      dataEquivDescentData' hom₁ i₁ i₂ ≫ (F.map (sq i₁ i₂).p₂.op.toLoc).l.map (hom i₂) :=
+  sorry
+
+@[simps]
+def toDescentData' : F.DescentData'' sq sq₃ ⥤ (F.comp Adj.forget₁).DescentData' sq sq₃ where
+  obj D :=
+    { obj := D.obj
+      hom := dataEquivDescentData' D.hom
+      pullHom'_hom_self i := by
+        obtain ⟨δ⟩ := inferInstanceAs (Nonempty (sq i i).Diagonal)
+        rw [← hom_self_iff_dataEquivDescentData']
+        exact D.hom_self i δ
+      pullHom'_hom_comp i₁ i₂ i₃ := by
+        rw [← hom_comp_iff_dataEquivDescentData']
+        exact D.hom_comp i₁ i₂ i₃ }
+  map {D₁ D₂} f :=
+    { hom i := f.hom i
+      comm i₁ i₂ := by
+        dsimp
+        rw [← hom_comm_iff_dataEquivDescentData']
+        exact f.comm i₁ i₂ }
+
+@[simps]
+def fromDescentData' : (F.comp Adj.forget₁).DescentData' sq sq₃ ⥤ F.DescentData'' sq sq₃ where
+  obj D :=
+    { obj := D.obj
+      hom := dataEquivDescentData'.symm D.hom
+      hom_self i δ := by
+        rw [hom_self_iff_dataEquivDescentData']
+        simp
+      hom_comp i₁ i₂ i₃ := by
+        rw [hom_comp_iff_dataEquivDescentData']
+        simp }
+  map {D₁ D₂} f :=
+    { hom i := f.hom i
+      comm i₁ i₂ := by
+        dsimp
+        rw [hom_comm_iff_dataEquivDescentData']
+        simpa using f.comm i₁ i₂ }
+
+set_option maxHeartbeats 240000 in
+-- TODO: automation is slow here
+@[simps]
+def equivDescentData' :
+    F.DescentData'' sq sq₃ ≌ (F.comp Adj.forget₁).DescentData' sq sq₃ where
+  functor := toDescentData' sq₃
+  inverse := fromDescentData' sq₃
+  unitIso := NatIso.ofComponents
+    (fun D ↦ isoMk (fun i ↦ Iso.refl _) (fun i₁ i₂ ↦ by simp [toDescentData']))
+  counitIso := NatIso.ofComponents
+    (fun D ↦ DescentData'.isoMk (fun i ↦ Iso.refl _) (fun i₁ i₂ ↦ by simp [fromDescentData']))
+
 end
 
 section
 
 variable [∀ i₁ i₂, IsIso (F.baseChange (sq i₁ i₂).isPullback.toCommSq.flip.op.toLoc)]
   [∀ i₁ i₂ i₃, IsIso (F.baseChange (sq₃ i₁ i₂ i₃).isPullback₂.toCommSq.flip.op.toLoc)]
--- should require the same for `(sq₃ i₁ i₂ i₃).isPullback₂`.
 
 noncomputable def dataEquivCoalgebra
   [∀ i₁ i₂, IsIso (F.baseChange (sq i₁ i₂).isPullback.toCommSq.flip.op.toLoc)] :
@@ -509,6 +630,71 @@ lemma hom_comp_iff_dataEquivCoalgebra (i₁ i₂ i₃ : ι) :
       (F.map (f i₁).op.toLoc).l.map ((F.map (f i₂).op.toLoc).adj.unit.app _) := by
   conv_lhs => rw [← cancel_mono (correction sq₃ obj i₁ i₂ i₃)]
   rw [homComp_correction, pullHom''_correction]
+
+variable
+  (obj₁ obj₂ : (i : ι) → (F.obj { as := op (X i) }).obj)
+  (hom₁ : (i₁ i₂ : ι) → obj₁ i₁ ⟶
+    (F.map (sq i₁ i₂).p₁.op.toLoc).r.obj ((F.map (sq i₁ i₂).p₂.op.toLoc).l.obj (obj₁ i₂)))
+  (hom₂ : (i₁ i₂ : ι) → obj₂ i₁ ⟶
+    (F.map (sq i₁ i₂).p₁.op.toLoc).r.obj ((F.map (sq i₁ i₂).p₂.op.toLoc).l.obj (obj₂ i₂)))
+  (hom : (i : ι) → obj₁ i ⟶ obj₂ i)
+
+lemma hom_comm_iff_dataEquivCoalgebra (i₁ i₂ : ι) :
+    hom₁ i₁ i₂ ≫ (F.map (sq i₁ i₂).p₁.op.toLoc).r.map
+      ((F.map (sq i₁ i₂).p₂.op.toLoc).l.map (hom i₂)) = hom i₁ ≫ hom₂ i₁ i₂ ↔
+    dataEquivCoalgebra hom₁ i₁ i₂ ≫
+        (F.map (f i₁).op.toLoc).l.map ((F.map (f i₂).op.toLoc).r.map (hom i₂)) =
+      hom i₁ ≫ dataEquivCoalgebra hom₂ i₁ i₂ :=
+  sorry
+
+@[simps]
+noncomputable
+def toDescentDataAsCoalgebra : F.DescentData'' sq sq₃ ⥤ F.DescentDataAsCoalgebra f where
+  obj D :=
+    { obj := D.obj
+      hom := dataEquivCoalgebra D.hom
+      counit i := by
+        obtain ⟨δ⟩ := inferInstanceAs (Nonempty (sq i i).Diagonal)
+        rw [← hom_self_iff_dataEquivCoalgebra _ δ]
+        exact D.hom_self i δ
+      coassoc i₁ i₂ i₃ := by
+        rw [← hom_comp_iff_dataEquivCoalgebra sq₃]
+        exact D.hom_comp i₁ i₂ i₃ }
+  map {D₁ D₂} g :=
+    { hom := g.hom
+      comm i₁ i₂ := by
+        rw [← hom_comm_iff_dataEquivCoalgebra]
+        exact g.comm i₁ i₂ }
+
+set_option maxHeartbeats 400000 in
+-- TODO: automation is slow here
+@[simps]
+noncomputable
+def fromDescentDataAsCoalgebra : F.DescentDataAsCoalgebra f ⥤ F.DescentData'' sq sq₃ where
+  obj D :=
+    { obj := D.obj
+      hom := dataEquivCoalgebra.symm D.hom
+      hom_self i δ := by
+        rw [hom_self_iff_dataEquivCoalgebra _ δ]
+        simp
+      hom_comp i₁ i₂ i₃ := by
+        rw [hom_comp_iff_dataEquivCoalgebra sq₃]
+        simp }
+  map {D₁ D₂} g :=
+    { hom := g.hom
+      comm i₁ i₂ := by
+        rw [hom_comm_iff_dataEquivCoalgebra]
+        simp }
+
+noncomputable
+def equivDescentDataAsCoalgebra : F.DescentData'' sq sq₃ ≌ F.DescentDataAsCoalgebra f where
+  functor := toDescentDataAsCoalgebra sq₃
+  inverse := fromDescentDataAsCoalgebra sq₃
+  unitIso := NatIso.ofComponents
+    (fun D ↦ isoMk (fun i ↦ Iso.refl _) (fun i₁ i₂ ↦ by simp [toDescentDataAsCoalgebra]))
+  counitIso := NatIso.ofComponents
+    (fun D ↦ DescentDataAsCoalgebra.isoMk (fun i ↦ Iso.refl _)
+    (fun i₁ i₂ ↦ by simp [fromDescentDataAsCoalgebra]))
 
 end
 
