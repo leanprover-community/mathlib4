@@ -35,7 +35,6 @@ variable
 If `f` is real-meromorphic on a compact interval, then `log ‖f ·‖` is interval integrable on this
 interval.
 -/
-@[simp]
 theorem intervalIntegrable_log_norm_meromorphicOn (hf : MeromorphicOn f [[a, b]]) :
     IntervalIntegrable (log ‖f ·‖) volume a b := by
   by_cases t₀ : ∀ u : [[a, b]], meromorphicOrderAt f u ≠ ⊤
@@ -69,10 +68,9 @@ theorem intervalIntegrable_log_norm_meromorphicOn (hf : MeromorphicOn f [[a, b]]
     tauto
 
 /--
-If `f` is real-meromorphic on a compact interval, then `log ‖f⁺ ·‖` is interval integrable on this
+If `f` is real-meromorphic on a compact interval, then `log ‖f ·‖` is interval integrable on this
 interval.
 -/
-@[simp]
 theorem intervalIntegrable_posLog_norm_meromorphicOn (hf : MeromorphicOn f [[a, b]]) :
     IntervalIntegrable (log⁺ ‖f ·‖) volume a b := by
   simp_rw [← half_mul_log_add_log_abs, mul_add]
@@ -84,9 +82,7 @@ theorem intervalIntegrable_posLog_norm_meromorphicOn (hf : MeromorphicOn f [[a, 
 If `f` is real-meromorphic on a compact interval, then `log ∘ f` is interval integrable on this
 interval.
 -/
-@[simp]
-theorem _root_.MeromorphicOn.intervalIntegrable_log {f : ℝ → ℝ}
-    (hf : MeromorphicOn f [[a, b]]) :
+theorem _root_.MeromorphicOn.intervalIntegrable_log {f : ℝ → ℝ} (hf : MeromorphicOn f [[a, b]]) :
     IntervalIntegrable (log ∘ f) volume a b := by
   rw [(by aesop : log ∘ f = (log ‖f ·‖))]
   exact intervalIntegrable_log_norm_meromorphicOn hf
@@ -95,7 +91,6 @@ theorem _root_.MeromorphicOn.intervalIntegrable_log {f : ℝ → ℝ}
 Special case of `MeromorphicOn.intervalIntegrable_log`: The function `log ∘ sin` is interval
 integrable over every interval.
 -/
-@[simp]
 theorem intervalIntegrable_log_sin : IntervalIntegrable (log ∘ sin) volume a b :=
   analyticOnNhd_sin.meromorphicOn.intervalIntegrable_log
 
@@ -115,7 +110,6 @@ variable
 If `f` is complex meromorphic on a circle in the complex plane, then `log ‖f ·‖` is circle
 integrable over that circle.
 -/
-@[simp]
 theorem circleIntegrable_log_norm_meromorphicOn (hf : MeromorphicOn f (sphere c |R|)) :
     CircleIntegrable (log ‖f ·‖) c R := by
   by_cases t₀ : ∀ u : (sphere c |R|), meromorphicOrderAt f u ≠ ⊤
@@ -156,7 +150,6 @@ theorem circleIntegrable_log_norm_meromorphicOn (hf : MeromorphicOn f (sphere c 
 If `f` is complex meromorphic on a circle in the complex plane, then `log⁺ ‖f ·‖` is circle
 integrable over that circle.
 -/
-@[simp]
 theorem circleIntegrable_posLog_norm_meromorphicOn (hf : MeromorphicOn f (sphere c |R|)) :
     CircleIntegrable (log⁺ ‖f ·‖) c R := by
   simp_rw [← half_mul_log_add_log_abs, mul_add]
