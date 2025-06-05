@@ -766,7 +766,7 @@ lemma head_take (p : RelSeries r) (i : Fin (p.length + 1)) :
 lemma last_take (p : RelSeries r) (i : Fin (p.length + 1)) :
     (p.take i).last = p i := by simp [take, last, Fin.last]
 
-/-- Given the series `a₀ -r→ … -r→ aᵢ -r→ … -r→ aₙ`, the series `aᵢ₊₁ -r→ … -r→ aᵢ`. -/
+/-- Given the series `a₀ -r→ … -r→ aᵢ -r→ … -r→ aₙ`, the series `aᵢ₊₁ -r→ … -r→ aₙ`. -/
 @[simps! length]
 def drop (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
   length := p.length - i

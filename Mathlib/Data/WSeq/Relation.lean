@@ -550,9 +550,15 @@ theorem join_join (SS : WSeq (WSeq (WSeq α))) : join (join SS) ~ʷ join (map jo
       · simpa using ⟨s, S, SS, rfl, rfl⟩
 
 @[simp]
+theorem bind_assoc_comp (s : WSeq α) (f : α → WSeq β) (g : β → WSeq γ) :
+    bind (bind s f) g ~ʷ bind s ((fun y : WSeq β => bind y g) ∘ f) := by
+  simp only [bind, map_join]
+  rw [← map_comp f (map g), ← Function.comp_def, comp_assoc, map_comp (map g ∘ f) join s]
+  exact join_join (map (map g ∘ f) s)
+
+@[simp]
 theorem bind_assoc (s : WSeq α) (f : α → WSeq β) (g : β → WSeq γ) :
     bind (bind s f) g ~ʷ bind s fun x : α => bind (f x) g := by
-  simp only [bind, map_join]; erw [← map_comp f (map g), map_comp (map g ∘ f) join]
-  apply join_join
+  exact bind_assoc_comp s f g
 
 end Stream'.WSeq

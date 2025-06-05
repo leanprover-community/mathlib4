@@ -1153,7 +1153,7 @@ simplification using `succAbove_zero` or `succ_succAbove_zero`. -/
 
 @[simp] lemma one_succAbove_one {n : ℕ} : (1 : Fin (n + 3)).succAbove 1 = 2 := by
   simpa only [succ_zero_eq_one, val_zero, zero_succAbove, succ_one_eq_two]
-    using succ_succAbove_succ (0 : Fin (n + 2)) (0 : Fin (n + 2))
+    using succ_succAbove_succ (0 : Fin (n + 2)) (0 : Fin (n + 1))
 
 end SuccAbove
 
@@ -1305,6 +1305,52 @@ lemma predAbove_succAbove (p : Fin n) (i : Fin n) : p.predAbove ((castSucc p).su
   · rw [predAbove_of_castSucc_lt _ _ h, predAbove_castSucc_of_lt _ _ h,
       castSucc_pred_eq_pred_castSucc]
   · rw [predAbove_of_le_castSucc _ _ h, predAbove_castSucc_of_le _ _ h, castSucc_castPred]
+
+theorem predAbove_predAbove_succAbove {n : ℕ} (i : Fin (n + 1)) (j : Fin n) :
+    (j.predAbove i).predAbove (i.succAbove j) = j := by
+  cases j.castSucc.lt_or_le i with
+  | inl h =>
+    rw [predAbove_of_castSucc_lt _ _ h, succAbove_of_castSucc_lt _ _ h, predAbove_of_le_castSucc,
+      castPred_castSucc]
+    rwa [le_castSucc_iff, succ_pred]
+  | inr h =>
+    rw [predAbove_of_le_castSucc _ _ h, succAbove_of_le_castSucc _ _ h, predAbove_of_castSucc_lt,
+      pred_succ]
+    rwa [castSucc_castPred, ← le_castSucc_iff]
+
+theorem succAbove_succAbove_predAbove {n : ℕ} (i : Fin (n + 1)) (j : Fin n) :
+    (i.succAbove j).succAbove (j.predAbove i) = i := by
+  cases Fin.lt_or_le j.castSucc i with
+  | inl h => rw [succAbove_of_castSucc_lt _ _ h, succAbove_predAbove (Fin.ne_of_gt h)]
+  | inr h =>
+    rw [succAbove_of_le_castSucc _ _ h,
+      succ_succAbove_predAbove (Fin.ne_of_lt <| le_castSucc_iff.mp h)]
+
+/-- Given `i : Fin (n + 2)` and `j : Fin (n + 1)`,
+there are two ways to represent the order embedding `Fin n → Fin (n + 2)`
+leaving holes at `i` and `i.succAbove j`.
+
+One is `i.succAbove ∘ j.succAbove`.
+It corresponds to embedding `Fin n` to `Fin (n + 1)` leaving a hole at `j`,
+then embedding the result to `Fin (n + 2)` leaving a hole at `i`.
+The other one is `(i.succAbove j).succAbove ∘ (j.predAbove i).succAbove`.
+It corresponds to swapping the roles of `i` and `j`.
+
+This lemma says that these two ways are equal.
+It is used in `Fin.removeNth_removeNth_eq_swap`
+to show that two ways of removing 2 elements from a sequence give the same answer.
+-/
+theorem succAbove_succAbove_succAbove_predAbove {n : ℕ}
+    (i : Fin (n + 2)) (j : Fin (n + 1)) (k : Fin n) :
+    (i.succAbove j).succAbove ((j.predAbove i).succAbove k) = i.succAbove (j.succAbove k) := by
+  /- While it is possible to give a "morally correct" proof
+  by saying that both functions are strictly monotone and have the same range `{i, i.succAbove j}ᶜ`,
+  we give a direct proof by case analysis to avoid extra dependencies. -/
+  ext
+  simp? [succAbove, predAbove, lt_def, apply_dite Fin.val, apply_ite Fin.val] says
+    simp only [succAbove, predAbove, lt_def, coe_castSucc, apply_dite Fin.val, coe_pred,
+      coe_castPred, dite_eq_ite, apply_ite Fin.val, val_succ]
+  split_ifs <;> omega
 
 end PredAbove
 
