@@ -1491,6 +1491,9 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
     simp at card_le
     ring_nf at card_le
     rw [add_comm] at card_le
+    have b_n_subset_n := Finset.card_le_card b_n_subset_s_n_squared
+
+
     sorry
 
   .
