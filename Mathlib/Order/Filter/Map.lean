@@ -596,7 +596,7 @@ theorem comap_sumElim_eq (l : Filter γ) (m₁ : α → γ) (m₂ : β → γ) :
     comap (Sum.elim m₁ m₂) l = map inl (comap m₁ l) ⊔ map inr (comap m₂ l) := by
   ext s
   simp_rw [mem_sup, mem_map, mem_comap_iff_compl]
-  simp [image_sumElim_eq]
+  simp [image_sumElim]
 
 theorem map_comap_inl_sup_map_comap_inr (l : Filter (α ⊕ β)) :
     map inl (comap inl l) ⊔ map inr (comap inr l) = l := by
