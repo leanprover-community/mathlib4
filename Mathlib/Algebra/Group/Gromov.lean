@@ -1261,7 +1261,7 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
       rw [list_prod_eq, p_mul_eq]
 
 
-  have s_n_bound: ∀ M: ℕ, N ≤ M → ∀ a ∈ three_two_S_n (S := {s}) φ γ N, ∃ l: List S, l.unattach.prod = a ∧ l.length ≤ 4*M^2 := by
+  have s_n_bound: ∀ M: ℕ, N ≤ M → ∀ a ∈ three_two_S_n (S := {s}) φ γ M, ∃ l: List S, l.unattach.prod = a ∧ l.length ≤ 4*M^2 := by
     intro M hM a ha
     simp [three_two_S_n, gamma_m_helper, e_i_regular_helper] at ha
     obtain ⟨m, m_bound, s_m_eq⟩ := ha
@@ -1409,13 +1409,13 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
         _ = 4 * M^2 := by nlinarith
 
 
-  have b_n_subset_s_n_squared: three_two_B_n (S := {s}) φ γ N ⊆ S ^ (N * (4 * N^2)) := by
-    intro a ha
+  have b_n_subset_s_n_squared: ∀ M, N ≤ M → three_two_B_n (S := {s}) φ γ M ⊆ S ^ (M * (4 * M^2)) := by
+    intro M hM a ha
     have orig_ha := ha
     rw [Finset.mem_pow]
     simp [three_two_B_n] at ha
     obtain ⟨l, l_len, l_prod⟩ := ha
-    let nested_list := l.map (fun s => ((s_n_bound s.val s.property).choose))
+    let nested_list := l.map (fun s => ((s_n_bound M hM s.val s.property).choose))
     have flat_list_prod: nested_list.flatten.unattach.prod = a := by
       simp [nested_list]
       rw [← l_prod]
@@ -1442,7 +1442,7 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
         simp [nested_list] at h_s_prod
         obtain ⟨gamma_n, gamma_n_mem, gamma_n_mem_l, s_prod_eq⟩ := h_s_prod
         have s_prod_prop: s_list.unattach.prod = gamma_n ∧ s_list.length ≤ 4*N^2 := by
-          have my_spec := Exists.choose_spec ((s_n_bound gamma_n gamma_n_mem))
+          have my_spec := Exists.choose_spec ((s_n_bound N (by simp) gamma_n gamma_n_mem))
           rw [s_prod_eq] at my_spec
           exact my_spec
         rw [← s_len]
@@ -1497,6 +1497,7 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
     ring_nf at card_le
     rw [add_comm] at card_le
     have b_n_subset_n := Finset.card_le_card b_n_subset_s_n_squared
+
 
 
     sorry
