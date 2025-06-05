@@ -605,7 +605,7 @@ variable [CommSemiring B] [Algebra R B]
 /-- `S ⊗[R] T` has a `T`-algebra structure. This is not a global instance or else the action of
 `S` on `S ⊗[R] S` would be ambiguous. -/
 abbrev rightAlgebra : Algebra B (A ⊗[R] B) where
-  smul s e := TensorProduct.comm _ _ _ (s • (TensorProduct.comm _ _ _ e))
+  smul b ab := TensorProduct.comm _ _ _ (b • (TensorProduct.comm _ _ _ ab))
   algebraMap := Algebra.TensorProduct.includeRight.toRingHom
   commutes' s bs := by
     induction bs with
@@ -633,6 +633,8 @@ abbrev rightAlgebra : Algebra B (A ⊗[R] B) where
         sorry
 
 attribute [local instance] TensorProduct.rightAlgebra
+
+@[simp] lemma rightAlgebra.algebraMap_apply (b : B) : algebraMap B (A ⊗[R] B) b = 1 ⊗ₜ b := rfl
 
 instance right_isScalarTower : IsScalarTower R B (A ⊗[R] B) :=
   IsScalarTower.of_algebraMap_eq fun r => (Algebra.TensorProduct.includeRight.commutes r).symm
