@@ -78,7 +78,7 @@ lemma HasProdUniformlyOn.congr_right {g' : β → α}
     (h : HasProdUniformlyOn f g 𝔖) (hgg' : ∀ s ∈ 𝔖, Set.EqOn g g' s) :
     HasProdUniformlyOn f g' 𝔖 := by
   rw [hasProdUniformlyOn_iff_tendstoUniformlyOn] at *
-  refine fun s hs ↦ TendstoUniformlyOn.congr_right  (h s hs) (hgg' s hs)
+  exact fun s hs ↦ TendstoUniformlyOn.congr_right (h s hs) (hgg' s hs)
 
 @[to_additive]
 lemma HasProdUniformlyOn.tendstoUniformlyOn_finset_range
