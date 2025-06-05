@@ -295,8 +295,6 @@ namespace Matrix
 
 section Transpose
 
-open Matrix
-
 @[simp]
 theorem transpose_eq_diagonal [DecidableEq n] [Zero α] {M : Matrix n n α} {v : n → α} :
     Mᵀ = diagonal v ↔ M = diagonal v :=
