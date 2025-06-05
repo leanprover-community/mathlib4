@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Christian Merten
 -/
 import Mathlib.CategoryTheory.Sites.Descent.DescentDataPrime
-import Mathlib.CategoryTheory.Sites.Descent.DescentDataAsCoalgebra
+--import Mathlib.CategoryTheory.Sites.Descent.DescentDataAsCoalgebra
 import Mathlib.CategoryTheory.Sites.Descent.IsStack
 import Mathlib.CategoryTheory.Bicategory.Adjunction.Adj
+import Mathlib.CategoryTheory.Bicategory.Adjunction.BaseChange
 
 /-!
 # Descent data ...
@@ -14,6 +15,21 @@ import Mathlib.CategoryTheory.Bicategory.Adjunction.Adj
 -/
 
 namespace CategoryTheory
+
+@[simps]
+def Bicategory.Adjunction.toCategory {C D : Cat} {F : C ⟶ D} {G : D ⟶ C}
+    (adj : Bicategory.Adjunction F G) :
+    CategoryTheory.Adjunction F G where
+  unit := adj.unit
+  counit := adj.counit
+  left_triangle_components X := by
+    have := congr_app adj.left_triangle X
+    dsimp [leftZigzag, bicategoricalComp] at this
+    simpa [Cat.associator_hom_app, Cat.leftUnitor_hom_app, Cat.rightUnitor_inv_app] using this
+  right_triangle_components X := by
+    have := congr_app adj.right_triangle X
+    dsimp [rightZigzag, bicategoricalComp] at this
+    simpa [Cat.associator_inv_app, Cat.leftUnitor_inv_app] using this
 
 open Opposite Limits Bicategory
 
@@ -664,55 +680,6 @@ lemma hom_comm_iff_dataEquivCoalgebra (i₁ i₂ : ι) :
   simp_rw [Category.assoc]
   congr! 2
   exact ((F.baseChange (sq i₁ i₂).isPullback.toCommSq.flip.op.toLoc).naturality _).symm
-
-@[simps]
-noncomputable
-def toDescentDataAsCoalgebra : F.DescentData'' sq sq₃ ⥤ F.DescentDataAsCoalgebra f where
-  obj D :=
-    { obj := D.obj
-      hom := dataEquivCoalgebra D.hom
-      counit i := by
-        obtain ⟨δ⟩ := inferInstanceAs (Nonempty (sq i i).Diagonal)
-        rw [← hom_self_iff_dataEquivCoalgebra _ δ]
-        exact D.hom_self i δ
-      coassoc i₁ i₂ i₃ := by
-        rw [← hom_comp_iff_dataEquivCoalgebra sq₃]
-        exact D.hom_comp i₁ i₂ i₃ }
-  map {D₁ D₂} g :=
-    { hom := g.hom
-      comm i₁ i₂ := by
-        rw [← hom_comm_iff_dataEquivCoalgebra]
-        exact g.comm i₁ i₂ }
-
-set_option maxHeartbeats 400000 in
--- TODO: automation is slow here
-@[simps]
-noncomputable
-def fromDescentDataAsCoalgebra : F.DescentDataAsCoalgebra f ⥤ F.DescentData'' sq sq₃ where
-  obj D :=
-    { obj := D.obj
-      hom := dataEquivCoalgebra.symm D.hom
-      hom_self i δ := by
-        rw [hom_self_iff_dataEquivCoalgebra _ δ]
-        simp
-      hom_comp i₁ i₂ i₃ := by
-        rw [hom_comp_iff_dataEquivCoalgebra sq₃]
-        simp }
-  map {D₁ D₂} g :=
-    { hom := g.hom
-      comm i₁ i₂ := by
-        rw [hom_comm_iff_dataEquivCoalgebra]
-        simp }
-
-noncomputable
-def equivDescentDataAsCoalgebra : F.DescentData'' sq sq₃ ≌ F.DescentDataAsCoalgebra f where
-  functor := toDescentDataAsCoalgebra sq₃
-  inverse := fromDescentDataAsCoalgebra sq₃
-  unitIso := NatIso.ofComponents
-    (fun D ↦ isoMk (fun i ↦ Iso.refl _) (fun i₁ i₂ ↦ by simp [toDescentDataAsCoalgebra]))
-  counitIso := NatIso.ofComponents
-    (fun D ↦ DescentDataAsCoalgebra.isoMk (fun i ↦ Iso.refl _)
-    (fun i₁ i₂ ↦ by simp [fromDescentDataAsCoalgebra]))
 
 end
 
