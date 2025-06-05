@@ -34,6 +34,8 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
 
 -/
 
+set_option linter.style.longFile 1700
+
 assert_not_exists Equiv.Perm.cycleType
 
 suppress_compilation
