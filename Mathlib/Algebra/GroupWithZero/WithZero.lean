@@ -277,6 +277,12 @@ def withZeroUnitsEquiv {G : Type*} [GroupWithZero G]
   right_inv _ := by simp only; split <;> simp_all
   map_mul' := (by induction · <;> induction · <;> simp [← WithZero.coe_mul])
 
+@[simp]
+lemma withZeroUnitsEquiv_symm_apply_coe {G : Type*} [GroupWithZero G]
+    [DecidablePred (fun a : G ↦ a = 0)] (a : Gˣ) :
+    WithZero.withZeroUnitsEquiv.symm (a : G) = a := by
+  simp [WithZero.withZeroUnitsEquiv]
+
 /-- A version of `Equiv.optionCongr` for `WithZero`. -/
 noncomputable def _root_.MulEquiv.withZero [Group β] (e : α ≃* β) :
     WithZero α ≃* WithZero β where
