@@ -17,7 +17,7 @@ coefficients in `R`, whose supports are partially well-ordered. With further str
 `HahnSeries Γ R` also has addition by adding coefficients.
 
 ## Main Definitions
-  * If `R` is a (commutative) additive monoid or group, then so is `HahnSeries Γ R`.
+* If `R` is a (commutative) additive monoid or group, then so is `HahnSeries Γ R`.
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
