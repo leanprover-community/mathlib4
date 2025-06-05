@@ -63,9 +63,7 @@ theorem projectSubobject_factors [HasFiniteLimits C] [PreservesFiniteLimits T]
     {A : StructuredArrow S T} :
     ∀ P : Subobject A, ∃ q, q ≫ T.map (projectSubobject P).arrow = A.hom :=
   Subobject.ind _ fun P f hf =>
-    ⟨P.hom ≫ T.map (Subobject.underlyingIso _).inv, by
-      dsimp
-      simp [← T.map_comp]⟩
+    ⟨P.hom ≫ T.map (Subobject.underlyingIso _).inv, by simp [← T.map_comp]⟩
 
 /-- A subobject of the underlying object of a structured arrow can be lifted to a subobject of
     the structured arrow, provided that there is a morphism making the subobject into a structured
@@ -88,7 +86,7 @@ theorem lift_projectSubobject [HasFiniteLimits C] [PreservesFiniteLimits T]
       · fapply isoMk
         · exact Subobject.underlyingIso _
         · exact (cancel_mono (T.map f.right)).1 (by dsimp; simpa [← T.map_comp] using hq)
-      · exact ext _ _ (by dsimp; simp))
+      · exact ext _ _ (by simp))
 
 /-- If `A : S → T.obj B` is a structured arrow for `S : D` and `T : C ⥤ D`, then we can explicitly
     describe the subobjects of `A` as the subobjects `P` of `B` in `C` for which `A.hom` factors
