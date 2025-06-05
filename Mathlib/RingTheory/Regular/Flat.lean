@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yongle Hu, Nailin Guan
 -/
 import Mathlib.RingTheory.Flat.Localization
+import Mathlib.RingTheory.Localization.Finiteness
 import Mathlib.RingTheory.Regular.RegularSequence
 
 /-!
@@ -15,7 +16,7 @@ import Mathlib.RingTheory.Regular.RegularSequence
   `M`-sequence, then its image in `M ⊗[R] S` is a weakly regular `M ⊗[R] S`-sequence.
 -/
 
-open RingTheory.Sequence Pointwise Module TensorProduct QuotSMulTop
+open RingTheory.Sequence Pointwise Module TensorProduct
 
 @[simp]
 theorem Submodule.Quotient.mk_out {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
@@ -144,6 +145,30 @@ theorem RingTheory.Sequence.IsWeaklyRegular.of_isLocalizedModule
   have : Flat R R' := IsLocalization.flat R' S
   reg.of_flat_isBaseChange (IsLocalizedModule.isBaseChange S R' f)
 
--- https://github.com/leanprover-community/mathlib4/blob/bb80dd8fff3f75646541780f2b7713c0e9c715c4/Mathlib/RingTheory/CohenMacaulay/Basic.lean#L281
-
 end IsLocalizedModule
+
+section AtPrime
+
+theorem RingTheory.Sequence.IsRegular.of_isLocalizedModule_of_mem_prime
+    {R : Type*} [CommRing R] (p : Ideal R) [p.IsPrime] (Rₚ : Type*) [CommRing Rₚ] [Algebra R Rₚ]
+    [IsLocalization.AtPrime Rₚ p]
+    {M Mₚ : Type*} [AddCommGroup M] [Module R M] [Nontrivial Mₚ] [AddCommGroup Mₚ] [Module Rₚ Mₚ]
+    [Module.Finite Rₚ Mₚ] [Module R Mₚ] [IsScalarTower R Rₚ Mₚ]
+    (f : M →ₗ[R] Mₚ) [IsLocalizedModule.AtPrime p f] {rs : List R} (reg : IsRegular M rs)
+    (mem : ∀ r ∈ rs, r ∈ p) : IsRegular Mₚ (rs.map (algebraMap R Rₚ)) := by
+  have : IsLocalRing Rₚ := IsLocalization.AtPrime.isLocalRing Rₚ p
+  have mem : ∀ r ∈ List.map (algebraMap R Rₚ) rs, r ∈ IsLocalRing.maximalIdeal Rₚ := by
+    intro r hr
+    rcases List.mem_map.mp hr with ⟨r', hr', eq⟩
+    rw [← eq, IsLocalization.AtPrime.to_map_mem_maximal_iff Rₚ p]
+    exact mem r' hr'
+  have : Ideal.ofList (List.map (⇑(algebraMap R Rₚ)) rs) • (⊤ : Submodule Rₚ Mₚ) ≤
+      IsLocalRing.maximalIdeal Rₚ • (⊤ : Submodule Rₚ Mₚ) := by
+    apply Submodule.smul_mono _ fun _ a ↦ a
+    simpa only [Ideal.ofList, Ideal.span_le] using mem
+  refine ⟨reg.1.of_isLocalizedModule p.primeCompl Rₚ f, ?_⟩
+  apply (ne_top_of_lt (b := ⊤) (lt_of_le_of_lt this (Ne.lt_top (Ne.symm _)))).symm
+  exact Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
+    (IsLocalRing.maximalIdeal_le_jacobson _)
+
+end AtPrime
