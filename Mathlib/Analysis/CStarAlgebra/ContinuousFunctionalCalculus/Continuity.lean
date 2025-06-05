@@ -39,14 +39,6 @@ results in the variable `a` come in two flavors: those for `RCLike 𝕜` and tho
 open scoped UniformConvergence NNReal
 open Filter Topology
 
-namespace ContinuousMapZero
-
-lemma isometry_toContinuousMap {α R : Type*} [TopologicalSpace α] [CompactSpace α] [Zero α]
-    [MetricSpace R] [Zero R] : Isometry (toContinuousMap : C(α, R)₀ → C(α, R)) :=
-  fun _ _ ↦ rfl
-
-end ContinuousMapZero
-
 section Unital
 
 section Left
