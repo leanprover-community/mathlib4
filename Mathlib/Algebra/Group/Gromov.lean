@@ -1142,6 +1142,9 @@ noncomputable def three_two_B_n (φ: (Additive G) →+ ℤ) (γ: G) (n: ℕ): Fi
 noncomputable def three_two_B_n_single_s (φ: (Additive G) →+ ℤ) (γ: G) (n: ℕ) (s: G): Finset G := Finset.image (fun l => l.unattach.prod) (list_len_n φ γ n (S := {s}))
 
 
+
+set_option maxHeartbeats 600000
+
 -- If G has polynomial growth, than we can find an N such that S_n ⊆ B_n * B_n⁻¹
 lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (γ: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ) (hγ: φ γ = 1) (s: G) (s_mem: s ∈ S): ∃ n, three_two_S_n (S := {s}) φ γ (n + 1) ⊆ ((three_two_B_n (S := {s}) φ γ n) * (three_two_B_n (S := {s}) φ γ n)⁻¹)  := by
   by_contra!
@@ -1258,8 +1261,8 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
       rw [list_prod_eq, p_mul_eq]
 
 
-  have s_n_bound: ∀ a ∈ three_two_S_n (S := {s}) φ γ N, ∃ l: List S, l.unattach.prod = a ∧ l.length ≤ 4*N^2 := by
-    intro a ha
+  have s_n_bound: ∀ M: ℕ, N ≤ M → ∀ a ∈ three_two_S_n (S := {s}) φ γ N, ∃ l: List S, l.unattach.prod = a ∧ l.length ≤ 4*M^2 := by
+    intro M hM a ha
     simp [three_two_S_n, gamma_m_helper, e_i_regular_helper] at ha
     obtain ⟨m, m_bound, s_m_eq⟩ := ha
     let gamma_inv_list: List S := (gamma_list.map (fun s => ⟨s.val⁻¹, hGS.has_inv s.val s.property⟩)).reverse
@@ -1371,37 +1374,39 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
 
       simp [m_list_choice, m_list_choice_inv]
       simp_rw [apply_ite]
-      have m_natabs_le: m.natAbs ≤ N := by omega
+      have m_natabs_le: m.natAbs ≤ M := by omega
       have gamma_list_len_le: gamma_list.length ≤ N := by omega
       have inv_list_len_eq: gamma_inv_list.length = gamma_list.length := by
         simp [gamma_inv_list]
       simp [inv_list_len_eq]
       have n_squared_pos: 1 ≤ N * N := by
         simp [N]
+      have m_squared_pos: 1 ≤ M * M := by
+        nlinarith
       have phi_choice_len: phi_list_choice.length = gamma_list.length := by
         simp [phi_list_choice]
         simp_rw [apply_ite]
         simp [inv_list_len_eq]
       rw [phi_choice_len]
-      have phi_s_le_: (φ (ofMul s)).natAbs ≤ N := by omega
+      have phi_s_le_: (φ (ofMul s)).natAbs ≤ M := by omega
       calc
-        _ ≤ N * N + ((φ (ofMul s)).natAbs * gamma_list.length + N * N + 1) := by
+        _ ≤ M * M + ((φ (ofMul s)).natAbs * gamma_list.length + M * M + 1) := by
           nlinarith
-        _ ≤ 2 * N * N + ((φ (ofMul s)).natAbs * gamma_list.length) + 1 := by
+        _ ≤ 2 * M * M + ((φ (ofMul s)).natAbs * gamma_list.length) + 1 := by
           nlinarith
         -- Extremely crude upper bound, but we only need to show a polynomial bound,
         -- so it's fine to use '1 <= N * N'
-        _ ≤ 2 * N * N + ((φ (ofMul s)).natAbs * gamma_list.length) + N*N := by
+        _ ≤ 2 * M * M + ((φ (ofMul s)).natAbs * gamma_list.length) + M*M := by
           nlinarith
-        _ ≤ 3 * N * N + ((φ (ofMul s)).natAbs * gamma_list.length) := by
+        _ ≤ 3 * M * M + ((φ (ofMul s)).natAbs * gamma_list.length) := by
           nlinarith
-        _ ≤ 3 * N * N + (N * gamma_list.length) := by
+        _ ≤ 3 * M * M + (M * gamma_list.length) := by
           nlinarith
-        _ ≤ 3 * N * N + (N * N) := by
+        _ ≤ 3 * M * M + (M * M) := by
           nlinarith
-        _ = 4 * N * N := by
+        _ = 4 * M * M := by
           nlinarith
-        _ = 4 * N^2 := by nlinarith
+        _ = 4 * M^2 := by nlinarith
 
 
   have b_n_subset_s_n_squared: three_two_B_n (S := {s}) φ γ N ⊆ S ^ (N * (4 * N^2)) := by
@@ -1502,8 +1507,6 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
     exact disjoint_smul
 
 
-
-set_option maxHeartbeats 600000
 
 
 lemma closure_iterate_mulact {T: Type*} [Group T] [DecidableEq T] (a b: T) (n: ℤ)
