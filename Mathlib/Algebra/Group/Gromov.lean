@@ -1185,7 +1185,6 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
   let N := max N' (max gamma_list.length (max (φ (ofMul s)).natAbs 2))
   specialize hN N (by simp [N])
   specialize this N
-  specialize hG N (by simp [N])
   rw [Finset.not_subset] at this
   obtain ⟨p, ⟨p_mem, p_not_prod⟩⟩ := this
   rw [Finset.mem_mul.not] at p_not_prod
@@ -1207,7 +1206,15 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
     contradiction
 
 
-  have s_n_subset: three_two_S_n (S := {s}) φ γ N ⊆ three_two_S_n (S := {s}) φ γ (N + 1) := by
+  have s_n_subset: ∀ M, N ≤ M → three_two_S_n (S := {s}) φ γ M ⊆ three_two_S_n (S := {s}) φ γ (M + 1) := by
+    intro m hM a ha
+    simp [three_two_S_n] at ha
+    simp [three_two_S_n]
+    obtain ⟨n, hn, s_n_eq⟩ := ha
+    use n
+    refine ⟨by omega, s_n_eq⟩
+
+  have s_n_subset_all (x y: ℕ) (hxy: x ≤ y): three_two_S_n (S := {s}) φ γ x ⊆ three_two_S_n (S := {s}) φ γ (y) := by
     intro a ha
     simp [three_two_S_n] at ha
     simp [three_two_S_n]
@@ -1216,15 +1223,14 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
     refine ⟨by omega, s_n_eq⟩
 
 
-
-  have b_n_subset_b_n_succ: three_two_B_n (S := {s}) φ γ N ⊆ three_two_B_n (S := {s}) φ γ (N + 1) := by
-    intro a ha
+  have b_n_subset_b_n_succ: ∀ M, N ≤ M → three_two_B_n (S := {s}) φ γ M ⊆ three_two_B_n (S := {s}) φ γ (M + 1) := by
+    intro M hM a ha
     simp [three_two_B_n] at ha
     simp [three_two_B_n]
     obtain ⟨l, l_len, l_prod⟩ := ha
     simp [list_len_n]
     use l.map (fun s => ⟨s.val, by (
-      exact s_n_subset s.property
+      exact s_n_subset M hM s.property
     )⟩)
     simp
     simp [list_len_n] at l_len
@@ -1236,19 +1242,22 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
         simp [List.unattach, -List.map_subtype]
     exact l_prod
 
-  have smul_subset: p • three_two_B_n (S := {s}) φ γ N ⊆ three_two_B_n (S := {s}) φ γ (N + 1) := by
-    intro a ha
+  have smul_subset: ∀ M, N ≤ M →  p • three_two_B_n (S := {s}) φ γ M ⊆ three_two_B_n (S := {s}) φ γ (M + 1) := by
+    intro M hM a ha
     simp [three_two_B_n] at ha
     simp [three_two_B_n]
     simp only [Finset.smul_finset_def, smul_eq_mul, Finset.mem_image] at ha
     obtain ⟨list_prod, ⟨list, list_mem, list_prod_eq⟩, p_mul_eq⟩ := ha
-    simp [list_len_n] at list_mem
-    use (⟨p, p_mem⟩ :: (list.map (fun s => ⟨s.val, by (
-      exact s_n_subset s.property
+    have new_p_mem := (s_n_subset_all (N + 1) (M + 1) (by omega)) p_mem
+    --have p_mem_M := s_n_subset M hM p_mem
+    use (⟨p, new_p_mem⟩ :: (list.map (fun s => ⟨s.val, by (
+      exact s_n_subset M hM s.property
     )⟩)))
     refine ⟨?_, ?_⟩
     .
       simp [list_len_n, list_mem]
+      simp [list_len_n] at list_mem
+      exact list_mem
 
     .
       simp
@@ -1520,18 +1529,63 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
     simp at b_n_succ_subset
 
 
+
+
+
     -- TODO - make N large enough for this to happen
     have cube_lt_double: ((N + 1)^3) < (2 * N^3) := by
       sorry
 
 
-    have succ_card_lt: #(S ^ (4 * (N + 1) ^ 3)) ≤ #(S^(4 * (2 * N^3))) := by
+
+
+    have succ_card_le: #(S ^ (4 * (N + 1) ^ 3)) ≤ #(S^(4 * (2 * N^3))) := by
       apply Finset.card_le_card
       apply Finset.pow_subset_pow_right
       . exact hGS.one_mem
       . omega
 
 
+    have succ_card_lt: #(S ^ (4 * (N + 1) ^ 3)) < #(S ^ (2 * N^3)) := by
+      sorry
+
+    have b_n_succ_subset_next: #(three_two_B_n (S := {s}) φ γ (N + 1)) ≤ #(S ^ (2 * N^3)) := by omega
+    have double_cube_poly := hG ((2 * N^3)) (by
+      simp
+      omega
+    )
+
+    ring_nf at b_n_succ_subset
+    rw [add_comm] at b_n_succ_subset
+    conv at b_n_succ_subset =>
+      rhs
+      rw [add_comm]
+      rw [mul_comm]
+
+
+    have other_double_le: #(three_two_B_n (S := {s}) φ γ N) * 2 ≤ #(S ^ (4 * (2 * N ^ 3))) := by omega
+
+
+    have n_pow_gt: 0 < (N + 1) ^ 3 := by
+      simp
+
+    have poly_bound := hG ((4 * (N + 1) ^ 3)) (by
+      nlinarith
+    )
+
+    -- TODO - make N large enough for this to happen
+    have eventual_poly_d_bound: ((N + 1) ^ 3) ^ d < (2 * N^3) ^ d := by
+      sorry
+
+    have eventually_poly_mul_four: (4 * (N + 1) ^ 3) ^ d < (4 * (2 * N^3)) ^d := by
+      rw [mul_pow]
+      rw [mul_pow]
+      simp
+      exact eventual_poly_d_bound
+
+    have n_succ_pow_d_gt: #(three_two_B_n (S := {s}) φ γ N) * 2 ≤ (4 * (N + 1) ^ 3) ^ d := by omega
+
+    omega
     ring_nf at b_n_succ_subset
     conv at b_n_succ_subset =>
       pattern 1 + N
