@@ -105,7 +105,7 @@ of vanishing of `b`.
 -/
 theorem ord_mul {a b : R} (hb : b ∈ nonZeroDivisors R) :
     Ring.ord R (a * b) = Ring.ord R a + Ring.ord R b := by
-  have :=  Module.length_eq_add_of_exact (Ideal.mulQuot b (Ideal.span {a}))
+  have := Module.length_eq_add_of_exact (Ideal.mulQuot b (Ideal.span {a}))
           (Ideal.quotOfMul b (Ideal.span {a})) (Ideal.mulQuotInjective (Ideal.span {a}) hb)
           (Ideal.quotOfMul_surjective (Ideal.span {a}))
           (Ideal.exact_mulQuot_quotOfMul (Ideal.span {a}))
