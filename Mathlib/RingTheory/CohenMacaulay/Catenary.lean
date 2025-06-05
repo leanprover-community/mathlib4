@@ -63,6 +63,7 @@ lemma Ideal.ofList_height_eq_length_of_isRegular [IsLocalRing R] (rs : List R)
     apply hp.1.2 (Ideal.subset_span _)
     simp
 
+omit [IsNoetherianRing R] in
 lemma IsLocalRing.height_eq_height_maximalIdea_of_maximalIdeal_mem_minimalPrimes [IsLocalRing R]
     (I : Ideal R) (mem : maximalIdeal R ∈ I.minimalPrimes) :
     I.height = (maximalIdeal R).height := by
@@ -155,7 +156,39 @@ lemma Ideal.maximalIdeal_mem_ofList_append_minimalPrimes_of_ofList_height_eq_len
       List.length_nil, zero_add]
     abel
 
+open Pointwise in
 lemma RingTheory.Sequence.isRegular_of_maximalIdeal_mem_ofList_minimalPrimes
     [IsCohenMacaulayLocalRing R] (rs : List R)
-    (mem : maximalIdeal R ∈ (Ideal.ofList rs).minimalPrimes) : IsWeaklyRegular R rs := by
-  sorry
+    (mem : maximalIdeal R ∈ (Ideal.ofList rs).minimalPrimes)
+    (dim : rs.length = ringKrullDim R) : IsRegular R rs := by
+  constructor
+  · generalize len : rs.length = n
+    induction' n with n hn generalizing R rs
+    · simp [List.length_eq_zero_iff.mp len]
+    · match rs with
+      | [] => simp at len
+      | x :: rs' =>
+        simp only [List.length_cons, Nat.add_right_cancel_iff] at len
+        have xreg : IsSMulRegular R x := by
+          by_contra nreg
+          have mem_ass : x ∈ {r : R | IsSMulRegular R r}ᶜ := nreg
+          simp only [← biUnion_associatedPrimes_eq_compl_regular, exists_prop,
+            associatedPrimes_self_eq_minimalPrimes, Set.mem_iUnion, SetLike.mem_coe] at mem_ass
+          rcases mem_ass with ⟨p, min, xmem⟩
+          --absurd xmem as `p` is minimal
+          sorry
+        have xmem : x ∈ maximalIdeal R := mem.1.2 (Ideal.subset_span (by simp))
+        simp only [isWeaklyRegular_cons_iff, xreg, true_and]
+        let R' := R ⧸ x • (⊤ : Ideal R)
+        let _ := (quotient_regular_smul_top_isCohenMacaulay_iff_isCohenMacaulay R x xreg xmem).mp
+            (by assumption)
+        rw [← RingTheory.Sequence.isWeaklyRegular_map_algebraMap_iff R' R' rs']
+        apply hn (rs'.map (algebraMap R R')) _ _ (by simpa using len)
+        · rw [← Ideal.map_ofList]
+          have surj : Function.Surjective (algebraMap R R') := Ideal.Quotient.mk_surjective
+
+          sorry
+        · simp only [List.length_cons, Nat.cast_add, Nat.cast_one, ←
+            ringKrullDim_quotSMulTop_succ_eq_ringKrullDim xreg xmem] at dim
+          simpa [List.length_map] using (withBotENat_add_coe_cancel _ _ 1).mp dim
+  · simpa using (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' mem.1.2).symm
