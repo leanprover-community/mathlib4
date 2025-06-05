@@ -65,8 +65,6 @@ lemma Ideal.mulQuotInjective {a : R} (I : Ideal R) (ha : a ∈ nonZeroDivisors R
       ext b
       exact (Submodule.mul_mem_smul_iff ha).symm
     simp [←m, ker_comp]
-
-
 /--
 The quotient map `(R ⧸ a • I) →ₗ[R] (R ⧸ Ideal.span {a})`.
 -/
