@@ -1179,7 +1179,7 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
 
 
   -- Choose our N large enough that we can apply all of the above conditions
-  let N := max N' (max gamma_list.length 2)
+  let N := max N' (max gamma_list.length (max (φ (ofMul s)).natAbs 2))
   specialize hN N (by simp [N])
   specialize this N
   specialize hG N (by simp [N])
@@ -1290,6 +1290,28 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
           group
 
         .
+          simp
+          have m_natabs_le: m.natAbs ≤ N := by omega
+          have gamma_list_len_le: gamma_list.length ≤ N := by omega
+          have phi_s_le_: (φ (ofMul s)).natAbs ≤ N := by omega
+          calc
+            _ ≤ N * N + ((φ (ofMul s)).natAbs * gamma_list.length + N * N + 1) := by
+              nlinarith
+            _ ≤ 2 * N * N + ((φ (ofMul s)).natAbs * gamma_list.length) + 1 := by
+              nlinarith
+            -- Extremely crude upper bound, but we only need to show a polynomial bound,
+            -- so it's fine to use '1 <= N * N'
+            _ ≤ 2 * N * N + ((φ (ofMul s)).natAbs * gamma_list.length) + N*N := by
+              nlinarith
+            _ ≤ 3 * N * N + ((φ (ofMul s)).natAbs * gamma_list.length) := by
+              nlinarith
+            _ ≤ 3 * N * N + (N * gamma_list.length) := by
+              nlinarith
+            _ ≤ 3 * N * N + (N * N) := by
+              nlinarith
+            _ = 4 * N * N := by
+              nlinarith
+
           refine ⟨by simp [s_m_eq], ?_⟩
           rw [List.length_replicate, List.length_replicate]
           omega
