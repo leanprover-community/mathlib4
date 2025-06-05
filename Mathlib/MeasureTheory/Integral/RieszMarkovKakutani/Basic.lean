@@ -154,7 +154,7 @@ section PartitionOfUnity
 
 variable [T2Space X] [LocallyCompactSpace X]
 
-open Fin.CommRing in
+open Fin.CommRing in -- TODO: can this be refactored to avoid using the ring structure in the proof?
 lemma exists_continuous_add_one_of_isCompact_nnreal
     {s₀ s₁ : Set X} {t : Set X} (s₀_compact : IsCompact s₀) (s₁_compact : IsCompact s₁)
     (t_compact : IsCompact t) (disj : Disjoint s₀ s₁) (hst : s₀ ∪ s₁ ⊆ t) :

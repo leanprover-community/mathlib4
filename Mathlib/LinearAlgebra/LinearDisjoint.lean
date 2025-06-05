@@ -483,7 +483,7 @@ section
 
 variable [Nontrivial R]
 
-open Fin.CommRing in
+open Fin.CommRing in -- TODO: can this be refactored to avoid using the ring structure in the proof?
 /-- If `M` and `N` are linearly disjoint, if `M` is flat, then any two commutative
 elements of `↥(M ⊓ N)` are not `R`-linearly independent (namely, their span is not `R ^ 2`). -/
 theorem not_linearIndependent_pair_of_commute_of_flat_left [Module.Flat R M]
