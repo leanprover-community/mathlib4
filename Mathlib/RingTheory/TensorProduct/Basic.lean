@@ -604,13 +604,23 @@ variable [CommSemiring R]
 variable [Semiring A] [Algebra R A]
 variable [CommSemiring B] [Algebra R B]
 
+-- abbrev rightAlgebra.smul (b : B) (ab : A ⊗[R] B) : (A ⊗[R] B) :=
+--   TensorProduct.comm _ _ _ (b • (TensorProduct.comm _ _ _ ab))
+
+-- @[simp]
+
+-- lemma smul_def (b : B) (ab : A ⊗[R] B) :
+--     rightAlgebra.smul b ab =
+--     (TensorProduct.comm _ _ _).symm (b • (TensorProduct.comm _ _ _ ab)) := rfl
+
+
 /-- `S ⊗[R] T` has a `T`-algebra structure. This is not a global instance or else the action of
 `S` on `S ⊗[R] S` would be ambiguous. -/
 abbrev rightAlgebra : Algebra B (A ⊗[R] B) where
   smul b ab := TensorProduct.comm _ _ _ (b • (TensorProduct.comm _ _ _ ab))
   algebraMap := Algebra.TensorProduct.includeRight.toRingHom
-  commutes' s bs := by
-    induction bs with
+  commutes' b ab := by
+    induction ab with
     | zero => simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
       Algebra.TensorProduct.includeRight_apply, mul_zero, zero_mul]
     | tmul x y =>
@@ -620,19 +630,21 @@ abbrev rightAlgebra : Algebra B (A ⊗[R] B) where
     | add x y _ _ =>
         simp_all only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
           Algebra.TensorProduct.includeRight_apply, mul_add, add_mul]
-  smul_def' s bs := by
-    induction bs with
-    | zero => simp; sorry
-    | tmul x y =>
+  smul_def' b ab := by
+    induction ab with
+    | zero => simp only [smul_zero, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
+      Algebra.TensorProduct.includeRight_apply, mul_zero]; rfl
+    | tmul a b =>
         simp only [smul_def, TensorProduct.comm_tmul, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
           Algebra.TensorProduct.includeRight_apply, Algebra.TensorProduct.tmul_mul_tmul, one_mul]
-        sorry
---        rw [TensorProduct.smul_tmul']
---        simp only [smul_eq_mul, TensorProduct.comm_symm_tmul]
+        simp only [HSMul.hSMul]
+        simp
     | add x y hx hy =>
-        simp_all only [smul_def, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
-          Algebra.TensorProduct.includeRight_apply, smul_add, ← hx, ← hy, mul_add]
-        sorry
+        change (TensorProduct.comm R B A) _ = _
+        simp_all only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, includeRight_apply, map_add,
+          smul_add, mul_add]
+        rw [← hx, ← hy]
+        rfl
 
 attribute [local instance] TensorProduct.rightAlgebra
 
