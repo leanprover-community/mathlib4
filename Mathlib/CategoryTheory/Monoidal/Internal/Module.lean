@@ -117,7 +117,7 @@ def inverseObj (A : AlgCat.{u} R) : Mon_Class (ModuleCat.of R A) where
     ext : 1
     dsimp
     ext
-    simp [mul_assoc]
+    simp [_root_.mul_assoc]
 
 /-- Converting a bundled algebra to a monoid object in `ModuleCat R`.
 -/
@@ -147,21 +147,13 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgCat R where
                 { toFun := _root_.id
                   map_add' := fun _ _ => rfl
                   map_smul' := fun _ _ => rfl }
-              mul_hom := by
-                ext : 1
-                dsimp
-                ext
-                rfl }
+              mul_hom := ModuleCat.hom_ext <| TensorProduct.ext rfl }
           inv :=
             { hom := ofHom
                 { toFun := _root_.id
                   map_add' := fun _ _ => rfl
                   map_smul' := fun _ _ => rfl }
-              mul_hom := by
-                ext : 1
-                dsimp
-                ext
-                rfl } })
+              mul_hom := ModuleCat.hom_ext <| TensorProduct.ext rfl } })
   counitIso :=
     NatIso.ofComponents
       (fun A =>
