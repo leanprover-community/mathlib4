@@ -144,4 +144,6 @@ theorem RingTheory.Sequence.IsWeaklyRegular.of_isLocalizedModule
   have : Flat R R' := IsLocalization.flat R' S
   reg.of_flat_isBaseChange (IsLocalizedModule.isBaseChange S R' f)
 
+-- https://github.com/leanprover-community/mathlib4/blob/bb80dd8fff3f75646541780f2b7713c0e9c715c4/Mathlib/RingTheory/CohenMacaulay/Basic.lean#L281
+
 end IsLocalizedModule
