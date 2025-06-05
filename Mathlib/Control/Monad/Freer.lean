@@ -232,27 +232,23 @@ def run {r α} : FreerCont r α → (α → r) → r
 
 end FreerCont
 
-/-! ### Basic Tests -/
+/-! ### Basic Examples -/
 
--- Test FreerState
-#eval FreerState.evalState (do
+-- Example FreerState computations
+example : FreerState.evalState (do
   let s ← FreerState.get
   FreerState.put (s + 1)
-  return s : FreerState Nat Nat) 5
--- Expected: 5 (returns original state value)
+  return s : FreerState Nat Nat) 5 = 5 := rfl
 
-#eval FreerState.execState (do
+example : FreerState.execState (do
   let s ← FreerState.get
   FreerState.put (s + 1)
-  return s : FreerState Nat Nat) 5
--- Expected: 6 (final state after increment)
+  return s : FreerState Nat Nat) 5 = 6 := rfl
 
-#eval FreerState.runState (do
+example : FreerState.runState (do
   let s ← FreerState.get
   FreerState.put (s + 1)
-  return s : FreerState Nat Nat) 5
--- Expected: (5, 6) (both result and final state)
+  return s : FreerState Nat Nat) 5 = (5, 6) := rfl
 
--- Test FreerCont
-#eval FreerCont.run (return 42 : FreerCont Nat Nat) id
--- Expected: 42
+-- Example FreerCont computation
+example : FreerCont.run (return 42 : FreerCont Nat Nat) id = 42 := rfl
