@@ -1269,17 +1269,16 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
     let phi_list_choice := if 0 < (-φ (ofMul s)) then gamma_list else gamma_inv_list
 
     let m_list_choice_inv := if 0 < m then gamma_inv_list else gamma_list
-    let phi_list_choice_inv := if 0 < (-φ (ofMul s)) then gamma_inv_list else gamma_list
 
       --
-    by_cases neg_phi_pos: 0 < (-φ (ofMul s))
+    by_cases foo: 1 = 1
     .
-      have phi_natabs: (φ (ofMul s)).natAbs = -φ (ofMul s) := by omega
-      use (List.replicate m.natAbs m_list_choice).flatten ++ [⟨s, s_mem⟩] ++ (List.replicate (-(φ (ofMul s))).natAbs gamma_list).flatten ++ (List.replicate m.natAbs m_list_choice_inv).flatten
+      --have phi_natabs: (φ (ofMul s)).natAbs = -φ (ofMul s) := by omega
+      use (List.replicate m.natAbs m_list_choice).flatten ++ [⟨s, s_mem⟩] ++ (List.replicate (-(φ (ofMul s))).natAbs phi_list_choice).flatten ++ (List.replicate m.natAbs m_list_choice_inv).flatten
       refine ⟨?_, ?_⟩
       .
-        simp
-        rw [gamma_list_prod]
+        simp [phi_list_choice]
+        --rw [gamma_list_prod]
         norm_cast
         rw [← s_m_eq]
         rw [← zpow_natCast]
@@ -1298,7 +1297,7 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
             rfl
 
 
-        rw [← zpow_natCast, phi_natabs]
+        --rw [← zpow_natCast, phi_natabs]
         simp
         simp_rw [m_list_choice, m_list_choice_inv]
         by_cases m_pos: 0 < m
@@ -1314,6 +1313,27 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
           rw [gamma_list_prod]
           rw [m_eq_abs]
           group
+          by_cases phi_neg: (φ (ofMul s)) < 0
+          .
+            have phi_abs: |(φ (ofMul s))| = -φ (ofMul s) := by
+              rw [Int.abs_eq_natAbs]
+              omega
+            rw [phi_abs]
+            simp_rw [phi_neg]
+            simp
+            rw [gamma_list_prod]
+            rw [m_eq_abs]
+            group
+          .
+            have phi_abs: |(φ (ofMul s))| = φ (ofMul s) := by
+              rw [Int.abs_eq_natAbs]
+              omega
+            rw [phi_abs]
+            simp_rw [phi_neg]
+            simp
+            rw [gamma_list_inv]
+            rw [m_eq_abs]
+            group
         .
           simp_rw [m_pos]
           simp
