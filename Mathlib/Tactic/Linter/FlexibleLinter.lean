@@ -295,7 +295,7 @@ def flexible : Std.HashSet Name :=
     `Mathlib.Tactic.normNum,
     `linarith,
     `nlinarith,
-    `linear_combination,
+    `Mathlib.Tactic.LinearCombination.linearCombination,
     ``Lean.Parser.Tactic.tacticNorm_cast__,
     `Aesop.Frontend.Parser.aesopTactic,
     `Mathlib.Tactic.Tauto.tauto,
