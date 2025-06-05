@@ -37,7 +37,7 @@ for commutative *semirings*.
 ## Implementation note
 
 Evaluation of a power series at adequate elements has been defined
-in `Mathlib.RingTheory.MvPowerSeries.Evaluation`.
+in `Mathlib/RingTheory/MvPowerSeries/Evaluation.lean`.
 The goal here is to check the relevant hypotheses:
 * The ring of coefficients is endowed the discrete topology.
 * The main condition rewrites as having nilpotent constant coefficient
@@ -189,7 +189,8 @@ theorem substAlgHom_eq_aeval
   exact DiscreteUniformity.eq_bot.symm
 
 @[simp]
-theorem coe_substAlgHom (ha : HasSubst a) : ⇑(substAlgHom ha) = subst (R := R) a := by
+theorem coe_substAlgHom (ha : HasSubst a) :
+    ⇑(substAlgHom ha) = subst (R := R) a := by
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
   rw [substAlgHom_eq_aeval, coe_aeval ha.hasEval, subst_eq_eval₂]

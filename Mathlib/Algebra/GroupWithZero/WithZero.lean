@@ -22,7 +22,7 @@ This file proves that one can adjoin a new zero element to a group and get a gro
   a monoid homomorphism `f : α →* β`.
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 namespace WithZero
 variable {α β γ : Type*}
@@ -34,6 +34,11 @@ instance one : One (WithZero α) where
   __ := ‹One α›
 
 @[simp, norm_cast] lemma coe_one : ((1 : α) : WithZero α) = 1 := rfl
+
+@[simp]
+lemma recZeroCoe_one {M N : Type*} [One M] (f : M → N) (z : N) :
+    recZeroCoe z f 1 = f 1 :=
+  rfl
 
 end One
 
@@ -74,6 +79,12 @@ def coeMonoidHom : α →* WithZero α where
   toFun        := (↑)
   map_one'     := rfl
   map_mul' _ _ := rfl
+
+@[simp]
+lemma MonoidWithZeroHom.trivial_apply_val_unit {M N : Type*} [MonoidWithZero M] [MulZeroOneClass N]
+    [DecidablePred fun x : M ↦ x = 0] [Nontrivial M] [NoZeroDivisors M] (x : Mˣ) :
+    MonoidWithZeroHom.trivial M N x = 1 :=
+  MonoidWithZeroHom.trivial_apply_of_ne_zero x.ne_zero
 
 section lift
 variable [MulZeroOneClass β]

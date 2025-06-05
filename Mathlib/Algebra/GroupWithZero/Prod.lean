@@ -6,6 +6,7 @@ Authors: Eric Wieser, Yaël Dillies
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Algebra.GroupWithZero.WithZero
 
 /-!
 # Products of monoids with zero, groups with zero
@@ -18,7 +19,7 @@ In this file we define `MonoidWithZero`, `GroupWithZero`, etc... instances for `
 * `divMonoidWithZeroHom`: Division bundled as a monoid with zero homomorphism.
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 variable {M₀ N₀ : Type*}
 
@@ -48,6 +49,14 @@ instance instCommMonoidWithZero [CommMonoidWithZero M₀] [CommMonoidWithZero N�
   mul_zero := by simp [Prod.mul_def]
 
 end Prod
+
+variable (M₀) in
+@[simp]
+lemma WithZero.toMonoidWithZeroHom_withZeroUnitsEquiv [GroupWithZero M₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] :
+    MonoidWithZeroHomClass.toMonoidWithZeroHom WithZero.withZeroUnitsEquiv =
+      WithZero.lift' (Units.coeHom M₀) :=
+  rfl
 
 /-! ### Multiplication and division as homomorphisms -/
 

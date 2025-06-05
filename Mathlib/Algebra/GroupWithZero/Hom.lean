@@ -31,7 +31,7 @@ can be inferred from the type it is faster to use this method than to use type c
 monoid homomorphism
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 open Function
 
@@ -213,6 +213,26 @@ instance {β} [CommMonoidWithZero β] : Mul (α →*₀ β) where
   mul f g :=
     { (f * g : α →* β) with
       map_zero' := by dsimp; rw [map_zero, zero_mul] }
+
+/-- The trivial homomorphism between monoids with zero, sending everything to 1 other than 0. -/
+noncomputable def trivial (M N : Type*) [MulZeroOneClass M] [MulZeroOneClass N]
+    [DecidablePred fun x : M ↦ x = 0] [Nontrivial M] [NoZeroDivisors M] :
+    M →*₀ N where
+  toFun x := if x = 0 then 0 else 1
+  map_zero' := by simp
+  map_one' := by simp
+  map_mul' x y := by split_ifs <;> simp_all
+
+@[simp]
+lemma trivial_apply_zero {M N : Type*} [MulZeroOneClass M] [MulZeroOneClass N]
+    [DecidablePred fun x : M ↦ x = 0] [Nontrivial M] [NoZeroDivisors M] :
+    trivial M N 0 = 0 :=
+  if_pos rfl
+
+lemma trivial_apply_of_ne_zero {M N : Type*} [MulZeroOneClass M] [MulZeroOneClass N]
+    [DecidablePred fun x : M ↦ x = 0] [Nontrivial M] [NoZeroDivisors M] {x : M} (hx : x ≠ 0) :
+    trivial M N x = 1 :=
+  if_neg hx
 
 end MonoidWithZeroHom
 
