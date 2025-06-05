@@ -68,7 +68,7 @@ instance : CommSemiring (BitVec w) :=
     (fun _ => rfl) /- toFin_natCast -/
 -- The statement in the new API would be: `n#(k.succ) = ((n / 2)#k).concat (n % 2 != 0)`
 
--- Variant of `Fin.intCast_def'` for when we are using the `Fin.CommRing` instance.
+-- Variant of `Fin.intCast_def` for when we are using the `Fin.CommRing` instance.
 open Fin.CommRing in
 theorem _root_.Fin.intCast_def' {n : Nat} [NeZero n] (x : Int) :
     (x : Fin n) = if 0 ≤ x then Fin.ofNat n x.natAbs else -Fin.ofNat n x.natAbs := by
