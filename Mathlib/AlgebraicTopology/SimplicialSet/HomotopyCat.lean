@@ -355,27 +355,32 @@ end
 end
 section
 
-instance instUniqueOneTruncation₂DeltaZero : Unique (OneTruncation₂ ((truncation 2).obj Δ[0])) where
-  default := stdSimplex.const _ 0 _
-  uniq := by
-    unfold OneTruncation₂ truncation SimplicialObject.truncation
-    dsimp
-    intro x
-    have f : ⦋0⦌ ⟶ ⦋0⦌ := sorry -- want this to be x
-    let eq := stdSimplex.objEquiv.{u} (n := ⦋0⦌) (m := op ⦋0⦌)
-    have := SimplexCategory.eq_const_to_zero f
-    -- morally the proof is this
-    sorry
+instance instUniqueOneTruncation₂DeltaZero : Unique (OneTruncation₂ ((truncation 2).obj Δ[0])) :=
+  letI : Unique (⦋0⦌ ⟶ ⦋0⦌) :=
+    Limits.isTerminalEquivUnique _ _ |>.toFun SimplexCategory.isTerminalZero _
+  inferInstanceAs (Unique (ULift.{_, 0} (⦋0⦌ ⟶ ⦋0⦌)))
 
 instance (x y : OneTruncation₂ ((truncation 2).obj Δ[0])) : Unique (x ⟶ y) where
   default := by
---    let ans := OneTruncation₂.Hom.edge (𝟙rq instUniqueOneTruncation₂DeltaZero.default)
-    sorry
-  uniq := sorry
+    obtain rfl : x = default := Unique.uniq _ _
+    obtain rfl : y = default := Unique.uniq _ _
+    exact 𝟙rq instUniqueOneTruncation₂DeltaZero.default
+  uniq _ := by
+    letI : Subsingleton (((truncation 2).obj Δ[0]).obj (.op ⦋1⦌₂)) :=
+      letI : Unique (⦋1⦌ ⟶ ⦋0⦌) :=
+        Limits.isTerminalEquivUnique _ _ |>.toFun SimplexCategory.isTerminalZero _
+      inferInstanceAs (Subsingleton (ULift.{_, 0} (⦋1⦌ ⟶ ⦋0⦌)))
+    ext
+    exact this.allEq _ _
 
 def goal : IsTerminal (hoFunctor.obj (Δ[0])) := by
-  letI : Unique ((truncation 2).obj Δ[0]).HomotopyCategory := by sorry
-  letI : IsDiscrete ((truncation 2).obj Δ[0]).HomotopyCategory := sorry
+  letI : Unique ((truncation 2).obj Δ[0]).HomotopyCategory :=
+    inferInstanceAs (Unique <| CategoryTheory.Quotient Truncated.HoRel₂)
+  letI sub : Subsingleton ((truncation 2).obj Δ[0]).HomotopyCategory :=  by infer_instance
+  letI : IsDiscrete ((truncation 2).obj Δ[0]).HomotopyCategory :=
+    { subsingleton X Y := by
+        exact inferInstanceAs <| Subsingleton ((_ : CategoryTheory.Quotient Truncated.HoRel₂) ⟶ _)
+      eq_of_hom f := sub.allEq _ _ }
   apply Cat.isDiscreteUnique.isTerminal
 
 end
