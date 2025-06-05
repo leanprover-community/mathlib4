@@ -584,23 +584,22 @@ theorem uniqueDiffOn_convex {s : Set G} (conv : Convex ℝ s) (hs : (interior s)
     UniqueDiffOn ℝ s :=
   fun _ xs => uniqueDiffWithinAt_convex conv hs (subset_closure xs)
 
-theorem UniqueDiffWithinAt.of_real [IsRCLikeNormedField 𝕜] [NormedSpace 𝕜 G]
+theorem UniqueDiffWithinAt.of_real [h𝕜 : IsRCLikeNormedField 𝕜] [NormedSpace 𝕜 G]
     {s : Set G} {x : G} (hs : UniqueDiffWithinAt ℝ s x) :
     UniqueDiffWithinAt 𝕜 s x := by
   refine ⟨?_, hs.mem_closure⟩
+  letI : RCLike 𝕜 := h𝕜.rclike
   apply hs.dense_tangentConeAt.mono
-  have : (Submodule.span ℝ (tangentConeAt ℝ s x) : Set E) ⊆ (Submodule.span 𝕜 (tangentConeAt ℝ s x)) := by
-    sorry
-  have :  (Submodule.span 𝕜 (tangentConeAt 𝕜 s x)) ≤ (Submodule.span 𝕜 (tangentConeAt ℝ s x)) := sorry
+  have : (Submodule.span ℝ (tangentConeAt ℝ s x) : Set G)
+      ⊆ (Submodule.span 𝕜 (tangentConeAt ℝ s x)) := Submodule.span_subset_span _ _ _
+  exact this.trans (Submodule.span_mono tangentConeAt_real_subset_isRCLikeNormedField)
 
-  refine Submodule.span_le.mp ?_
-  apply Submodule.span_mono
-
-
+theorem UniqueDiffOn.of_real [h𝕜 : IsRCLikeNormedField 𝕜] [NormedSpace 𝕜 G]
+    {s : Set G} (hs : UniqueDiffOn ℝ s) :
+    UniqueDiffOn 𝕜 s :=
+  fun x hx ↦ (hs x hx).of_real
 
 end RealNormed
-
-#exit
 
 section Real
 
