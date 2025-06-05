@@ -24,7 +24,7 @@ a bifunctor, along with structure natural isomorphisms
 * Equivalence between actions of `C` on `D` and pseudofunctors from the
   classifying bicategory of `C` to `Cat`.
 * Functors that respects left actions.
-* Actions as monoidal functors C ⥤ (D ⥤ D).
+* Actions as monoidal functors C ⥤ D ⥤ D.
 * Action of `(C ⥤ C)` on `C`.
 * Modules in `D` over a monoid object in `C`. Equivalence with `Mod_` when
   `D` is `C`.
@@ -73,18 +73,24 @@ export MonoidalLeftActionStruct
 
 -- infix priorities are aligned with the ones from `MonoidalCategoryStruct`.
 
-/-- Notation for `actionObj`, the action of `C` on `D`.
-so that `c ⊗ c' ⊙ d` means `(c ⊗ c') ⊙ d`. -/
+/-- Notation for `actionObj`, the action of `C` on `D`. -/
 scoped infixr:70 " ⊙ " => MonoidalLeftActionStruct.actionObj
 
+/-- Notation for `actionHomLeft`, the action of `C` on morphisms in `D`. -/
 scoped infixr:81 " ⊵ " => MonoidalLeftActionStruct.actionHomLeft
 
+/-- Notation for `actionHomRight`, the action of morphism in `C` on `D`. -/
 scoped infixr:81 " ⊴ " => MonoidalLeftActionStruct.actionHomRight
 
+/-- Notation for `actionHom`, the bifunctorial action of morphisms in `C` and
+`D` on `- ⊙ -`. -/
 scoped infixr:70 " ⊙ " => MonoidalLeftActionStruct.actionHom
 
+/-- Notation for `actionAssocIso`, the structural isomorphism
+`- ⊗ - ⊙ - ≅ - ⊙ - ⊙ -`. -/
 scoped notation "σ_ " => MonoidalLeftActionStruct.actionAssocIso
 
+/-- Notation for `actionUnitIso`, the structural isomorphism `𝟙_ C ⊙ - ≅ -`. -/
 scoped notation "υ_ " => MonoidalLeftActionStruct.actionUnitIso
 
 end MonoidalLeftAction
@@ -104,7 +110,8 @@ open scoped MonoidalLeftAction in
 Furthermore, we require identities that turn `- ⊙ -` into a bifunctor,
 ensure naturality of `σ_` and `υ_`, and ensure compatibilies with
 the associator and unitor isomorphisms in `C`. -/
-class MonoidalLeftAction [MonoidalCategory C] extends MonoidalLeftActionStruct C D where
+class MonoidalLeftAction [MonoidalCategory C] extends
+    MonoidalLeftActionStruct C D where
   actionHom_def {c c' : C} {d d' : D} (f : c ⟶ c') (g : d ⟶ d') :
       f ⊙ g = f ⊵ d ≫ c' ⊴ g := by
     aesop_cat
@@ -157,8 +164,8 @@ attribute [simp, reassoc] MonoidalLeftAction.actionHom_comp
 attribute [reassoc] MonoidalLeftAction.actionAssocIso_naturality
 attribute [reassoc] MonoidalLeftAction.actionUnitIso_naturality
 attribute [reassoc (attr := simp)] MonoidalLeftAction.associator_actionHom
-attribute [reassoc (attr := simp)] MonoidalLeftAction.leftUnitor_actionHom
-attribute [reassoc (attr := simp)] MonoidalLeftAction.rightUnitor_actionHom
+attribute [simp, reassoc] MonoidalLeftAction.leftUnitor_actionHom
+attribute [simp, reassoc] MonoidalLeftAction.rightUnitor_actionHom
 
 /-- A monoidal category acts on itself through the tensor product. -/
 instance [MonoidalCategory C] : MonoidalLeftAction C C where
