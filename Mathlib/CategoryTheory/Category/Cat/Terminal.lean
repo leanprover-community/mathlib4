@@ -14,6 +14,12 @@ We prove that a category is terminal if its underlying type has a `Unique` struc
 category has an `IsDiscrete` instance.
 
 We then use this to provide various examples of terminal categories.
+
+TODO: Show the converse: that terminal categories have a unique object and are discrete.
+
+TODO: Provide an analogous characterization of terminal categories as codiscrete categories
+with a unique object.
+
 -/
 
 universe v u v' u'
@@ -36,6 +42,7 @@ def toDiscreteUnique (X : Type u') [Category.{v'} X] : X ⥤ T where
 theorem toDiscreteUnique_ext {X : Type u'} [Category.{v'} X] (F G : X ⥤ T) : F = G :=
   Functor.ext fun X => by simp only [eq_iff_true_of_subsingleton]
 
+/-- A discrete category with a unique object is terminal. -/
 def isDiscreteUnique.isTerminal : IsTerminal (Cat.of T) :=
   IsTerminal.ofUniqueHom (fun X ↦ toDiscreteUnique (T := T) X)
     (fun _ _ ↦ toDiscreteUnique_ext (T := T) _ _)
