@@ -1271,134 +1271,132 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
     let m_list_choice_inv := if 0 < m then gamma_inv_list else gamma_list
 
       --
-    by_cases foo: 1 = 1
+    --have phi_natabs: (φ (ofMul s)).natAbs = -φ (ofMul s) := by omega
+    use (List.replicate m.natAbs m_list_choice).flatten ++ [⟨s, s_mem⟩] ++ (List.replicate (-(φ (ofMul s))).natAbs phi_list_choice).flatten ++ (List.replicate m.natAbs m_list_choice_inv).flatten
+    refine ⟨?_, ?_⟩
     .
-      --have phi_natabs: (φ (ofMul s)).natAbs = -φ (ofMul s) := by omega
-      use (List.replicate m.natAbs m_list_choice).flatten ++ [⟨s, s_mem⟩] ++ (List.replicate (-(φ (ofMul s))).natAbs phi_list_choice).flatten ++ (List.replicate m.natAbs m_list_choice_inv).flatten
-      refine ⟨?_, ?_⟩
+      simp [phi_list_choice]
+      --rw [gamma_list_prod]
+      norm_cast
+      rw [← s_m_eq]
+      rw [← zpow_natCast]
+      conv =>
+        rhs
+        arg 1
+        arg 2
+        -- TODO - is there a tactic that can normalize the 'ofMul' stuff for us?
+        equals s * γ^(-(φ (ofMul s))) =>
+          rw [← ofMul_zpow]
+          rw [← sub_eq_add_neg]
+          rw [← ofMul_div]
+          rw [div_eq_mul_inv]
+          rw [← inv_zpow]
+          rw [inv_zpow']
+          rfl
+
+
+      --rw [← zpow_natCast, phi_natabs]
+      simp
+      simp_rw [m_list_choice, m_list_choice_inv]
+      by_cases m_pos: 0 < m
       .
-        simp [phi_list_choice]
-        --rw [gamma_list_prod]
-        norm_cast
-        rw [← s_m_eq]
-        rw [← zpow_natCast]
-        conv =>
-          rhs
-          arg 1
-          arg 2
-          -- TODO - is there a tactic that can normalize the 'ofMul' stuff for us?
-          equals s * γ^(-(φ (ofMul s))) =>
-            rw [← ofMul_zpow]
-            rw [← sub_eq_add_neg]
-            rw [← ofMul_div]
-            rw [div_eq_mul_inv]
-            rw [← inv_zpow]
-            rw [inv_zpow']
-            rfl
-
-
-        --rw [← zpow_natCast, phi_natabs]
+        simp_rw [m_pos]
         simp
-        simp_rw [m_list_choice, m_list_choice_inv]
-        by_cases m_pos: 0 < m
+        have m_eq_abs : |m| = m := by
+          rw [Int.abs_eq_natAbs]
+          omega
+        rw [← zpow_natCast]
+        simp [gamma_inv_list]
+        rw [gamma_list_inv]
+        rw [gamma_list_prod]
+        rw [m_eq_abs]
+        group
+        by_cases phi_neg: (φ (ofMul s)) < 0
         .
-          simp_rw [m_pos]
-          simp
-          have m_eq_abs : |m| = m := by
+          have phi_abs: |(φ (ofMul s))| = -φ (ofMul s) := by
             rw [Int.abs_eq_natAbs]
             omega
-          rw [← zpow_natCast]
-          simp [gamma_inv_list]
-          rw [gamma_list_inv]
+          rw [phi_abs]
+          simp_rw [phi_neg]
+          simp
           rw [gamma_list_prod]
           rw [m_eq_abs]
           group
-          by_cases phi_neg: (φ (ofMul s)) < 0
-          .
-            have phi_abs: |(φ (ofMul s))| = -φ (ofMul s) := by
-              rw [Int.abs_eq_natAbs]
-              omega
-            rw [phi_abs]
-            simp_rw [phi_neg]
-            simp
-            rw [gamma_list_prod]
-            rw [m_eq_abs]
-            group
-          .
-            have phi_abs: |(φ (ofMul s))| = φ (ofMul s) := by
-              rw [Int.abs_eq_natAbs]
-              omega
-            rw [phi_abs]
-            simp_rw [phi_neg]
-            simp
-            rw [gamma_list_inv]
-            rw [m_eq_abs]
-            group
         .
-          simp_rw [m_pos]
-          simp
-          have neg_abs_m : |m| = - m := by
+          have phi_abs: |(φ (ofMul s))| = φ (ofMul s) := by
             rw [Int.abs_eq_natAbs]
             omega
-          rw [← zpow_natCast]
-          simp [gamma_inv_list]
+          rw [phi_abs]
+          simp_rw [phi_neg]
+          simp
           rw [gamma_list_inv]
-          rw [gamma_list_prod]
+          rw [m_eq_abs]
           group
+      .
+        simp_rw [m_pos]
+        simp
+        have neg_abs_m : |m| = - m := by
+          rw [Int.abs_eq_natAbs]
+          omega
+        rw [← zpow_natCast]
+        simp [gamma_inv_list]
+        rw [gamma_list_inv]
+        rw [gamma_list_prod]
+        group
+        rw [neg_abs_m]
+        group
+        -- TODO - this can be deduplicated
+        by_cases phi_neg: (φ (ofMul s)) < 0
+        .
+          have phi_abs: |(φ (ofMul s))| = -φ (ofMul s) := by
+            rw [Int.abs_eq_natAbs]
+            omega
+          rw [phi_abs]
+          simp_rw [phi_neg]
+          simp
+          rw [gamma_list_prod]
           rw [neg_abs_m]
           group
-          -- TODO - this can be deduplicated
-          by_cases phi_neg: (φ (ofMul s)) < 0
-          .
-            have phi_abs: |(φ (ofMul s))| = -φ (ofMul s) := by
-              rw [Int.abs_eq_natAbs]
-              omega
-            rw [phi_abs]
-            simp_rw [phi_neg]
-            simp
-            rw [gamma_list_prod]
-            rw [neg_abs_m]
-            group
-          .
-            have phi_abs: |(φ (ofMul s))| = φ (ofMul s) := by
-              rw [Int.abs_eq_natAbs]
-              omega
-            rw [phi_abs]
-            simp_rw [phi_neg]
-            simp
-            rw [gamma_list_inv]
-            rw [neg_abs_m]
-            group
-      .
+        .
+          have phi_abs: |(φ (ofMul s))| = φ (ofMul s) := by
+            rw [Int.abs_eq_natAbs]
+            omega
+          rw [phi_abs]
+          simp_rw [phi_neg]
+          simp
+          rw [gamma_list_inv]
+          rw [neg_abs_m]
+          group
+    .
 
-        simp [m_list_choice, m_list_choice_inv]
-        simp_rw [apply_ite]
-        have m_natabs_le: m.natAbs ≤ N := by omega
-        have gamma_list_len_le: gamma_list.length ≤ N := by omega
-        have inv_list_len_eq: gamma_inv_list.length = gamma_list.length := by
-          simp [gamma_inv_list]
-        simp [inv_list_len_eq]
-        have n_squared_pos: 1 ≤ N * N := by
-          simp [N]
-        have phi_s_le_: (φ (ofMul s)).natAbs ≤ N := by omega
-        calc
-          _ ≤ N * N + ((φ (ofMul s)).natAbs * gamma_list.length + N * N + 1) := by
-            nlinarith
-          _ ≤ 2 * N * N + ((φ (ofMul s)).natAbs * gamma_list.length) + 1 := by
-            nlinarith
-          -- Extremely crude upper bound, but we only need to show a polynomial bound,
-          -- so it's fine to use '1 <= N * N'
-          _ ≤ 2 * N * N + ((φ (ofMul s)).natAbs * gamma_list.length) + N*N := by
-            nlinarith
-          _ ≤ 3 * N * N + ((φ (ofMul s)).natAbs * gamma_list.length) := by
-            nlinarith
-          _ ≤ 3 * N * N + (N * gamma_list.length) := by
-            nlinarith
-          _ ≤ 3 * N * N + (N * N) := by
-            nlinarith
-          _ = 4 * N * N := by
-            nlinarith
-          _ = 4 * N^2 := by nlinarith
+      simp [m_list_choice, m_list_choice_inv]
+      simp_rw [apply_ite]
+      have m_natabs_le: m.natAbs ≤ N := by omega
+      have gamma_list_len_le: gamma_list.length ≤ N := by omega
+      have inv_list_len_eq: gamma_inv_list.length = gamma_list.length := by
+        simp [gamma_inv_list]
+      simp [inv_list_len_eq]
+      have n_squared_pos: 1 ≤ N * N := by
+        simp [N]
+      have phi_s_le_: (φ (ofMul s)).natAbs ≤ N := by omega
+      calc
+        _ ≤ N * N + ((φ (ofMul s)).natAbs * gamma_list.length + N * N + 1) := by
+          nlinarith
+        _ ≤ 2 * N * N + ((φ (ofMul s)).natAbs * gamma_list.length) + 1 := by
+          nlinarith
+        -- Extremely crude upper bound, but we only need to show a polynomial bound,
+        -- so it's fine to use '1 <= N * N'
+        _ ≤ 2 * N * N + ((φ (ofMul s)).natAbs * gamma_list.length) + N*N := by
+          nlinarith
+        _ ≤ 3 * N * N + ((φ (ofMul s)).natAbs * gamma_list.length) := by
+          nlinarith
+        _ ≤ 3 * N * N + (N * gamma_list.length) := by
+          nlinarith
+        _ ≤ 3 * N * N + (N * N) := by
+          nlinarith
+        _ = 4 * N * N := by
+          nlinarith
+        _ = 4 * N^2 := by nlinarith
 
 
   have b_n_subset_s_n_squared: three_two_B_n (S := {s}) φ γ N ⊆ S ^ (N * (3 * N)) := by
