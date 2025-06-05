@@ -160,8 +160,6 @@ theorem _root_.isFiniteLength_quotient_span_singleton [IsNoetherianRing R]
     ← WithBot.add_le_add_iff_right' (c := 1) (by simp) (WithBot.coe_eq_coe.not.mpr (by simp)),
     Nat.cast_zero, zero_add]
   exact (ringKrullDim_quotient_succ_le_of_nonZeroDivisor hx).trans (Order.KrullDimLE.krullDim_le)
-
-
 variable [Nontrivial R] [IsNoetherianRing R] [Ring.KrullDimLE 1 R]
 variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 /--
