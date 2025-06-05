@@ -16,6 +16,7 @@ jobs:
       - name: All Mathlib files have lean or md extension
         run: |
           exc="$(git ls-files 'Mathlib/*' | grep -v "\.\(lean\|md\)$")"
+          printf '%s\n' "${exc}"
           if [ -n "${exc}" ];
           then
             printf $'There are files whose extension is neither \'.lean\' nor \'.md\' in Mathlib/:\n\n%s\n' "${exc}"
