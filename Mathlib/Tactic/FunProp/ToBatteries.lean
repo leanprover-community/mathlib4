@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
 import Mathlib.Init
+import Qq
 
 /-!
 ## `funProp` missing function from standard library
@@ -45,6 +46,44 @@ def letTelescope {α n} [MonadControlT MetaM n] [Monad n] (e : Expr)
     (k : Array Expr → Expr → n α) : n α :=
   map2MetaM (fun k => letTelescopeImpl e k) k
 
+/-- Make local declarations is we have an array of names and types. -/
+def mkLocalDecls {n} [MonadControlT MetaM n] [Monad n]
+    (names : Array Name) (bi : BinderInfo) (types : Array Expr) :
+    Array (Name × BinderInfo × (Array Expr → n Expr)) :=
+  types.mapIdx (fun i type => (names[i]!, bi, fun _ : Array Expr => pure type))
+
+/-- Simpler version of `withLocalDecls` that can't deal with dependent types but has simpler
+signature -/
+def withLocalDecls' {α n} [Inhabited α] [MonadControlT MetaM n] [Monad n]
+  (names : Array Name) (bi : BinderInfo) (types : Array Expr) (k : Array Expr → n α) : n α :=
+  withLocalDecls (mkLocalDecls names bi types) k
+
+private partial def withLetDeclsImpl {α}
+  (names : Array Name) (vals : Array Expr) (k : Array Expr → MetaM α) : MetaM α :=
+  loop #[]
+where
+  loop (acc : Array Expr) : MetaM α := do
+    let i := acc.size
+    if h : i < vals.size then
+      let val := vals[i]
+      let type ← inferType val
+      withLetDecl names[i]! type val fun x => loop (acc.push x)
+    else
+      k acc
+
+/-- Append an array of let free variables `xs` to the local context and execute `k xs`.
+`declInfos` takes the form of an array consisting of:
+- the name of the variable
+- the binder info of the variable
+- a type constructor for the variable, where the array consists of all of the free variables
+  defined prior to this one. This is needed because the type of the variable may depend on prior variables.
+
+Same as `withLocalDecls` but for let bindings. -/
+def withLetDecls {n α} [MonadControlT MetaM n] [Monad n]
+  (names : Array Name) (vals : Array Expr) (k : Array Expr → n α) : n α :=
+  map1MetaM (fun k => withLetDeclsImpl names vals k) k
+
+
 /--
 Swaps bvars indices `i` and `j`
 
@@ -63,6 +102,17 @@ def _root_.Lean.Expr.swapBVars (e : Expr) (i j : Nat) : Expr :=
     a
 
   e.instantiate swapBVarArray
+
+/-- Size of product type, assuming it is right associated
+i.e. `prodSize (A×B×C) = 3` but `prodSize ((A×B)×C) = 2` -/
+def prodSize (e : Expr) : Nat :=
+  go e 1
+where
+  go (e : Expr) (n : Nat) :=
+    match e with
+    | mkApp2 (.const ``Prod _) _ Y =>
+      go Y (n+1)
+    | _ => n
 
 /--
 For `#[x₁, .., xₙ]` create `(x₁, .., xₙ)`.
@@ -111,6 +161,87 @@ def mkUncurryFun (n : Nat) (f : Expr) : MetaM Expr := do
       let xs' ← mkProdSplitElem xProd n
       mkLambdaFVars #[xProd] (← mkAppM' f xs').headBeta
 
+/-- Curry function `f` to `n` arguments.
+
+For example turns `fun x : Nat×Nat => x.1 + x.2 + x.1` into `fun x y : Nat => x + y + x` -/
+def mkCurryFun (n : Nat) (f : Expr) : MetaM Expr := do
+  if n ≤ 1 then
+    return f
+  else
+    let .forallE xName xType _ _ := (← inferType f)
+      | throwError "can't curry `{← ppExpr f}` not a function"
+
+    withLocalDecl xName .default xType fun x => do
+      let xs ← mkProdSplitElem x n
+      let xNames := xs.mapIdx fun i _ => xName.appendAfter (toString i)
+      let xTypes ← xs.mapM inferType
+      withLocalDecls' xNames .default xTypes fun xVars => do
+        let x' ← mkProdElem xVars
+        let b := (f.app x').headBeta
+
+        let b ← Meta.transform b
+          (post := fun e => do
+            if (← isType e)
+            then return .done e
+            else return .done (reduceProdProj e))
+
+        mkLambdaFVars xVars b
+where
+  reduceProdProj (e : Expr) : Expr :=
+  match e with
+  | .proj ``Prod 0 xy
+  | mkApp3 (.const ``Prod.fst _) _ _ xy =>
+    match reduceProdProj xy with
+    | (mkApp4 (.const ``Prod.mk _) _ _ x _) => x
+    | xy => .proj ``Prod 0 xy
+  | .proj ``Prod 1 xy
+  | mkApp3 (.const ``Prod.snd _) _ _ xy =>
+    match reduceProdProj xy with
+    | (mkApp4 (.const ``Prod.mk _) _ _ _ y) => y
+    | xy => .proj ``Prod 1 xy
+  | _ => e
+
+
+/-- Lamba telescope that curries the first argument of the input function `f`. -/
+def curryLambdaTelescope {α} (f : Expr) (k : Array Expr → Expr → MetaM α) : MetaM α := do
+  let .forallE _ xType _ _ := (← inferType f)
+    | throwError "can't curry `{← ppExpr f}` not a function"
+
+  let n := prodSize xType
+  let f ← mkCurryFun n f
+
+  lambdaBoundedTelescope f n k
+
+/-- Takes expression `b` with free vars `xs = #[x₁, ..., xₙ]` and returns lambda function in one
+argument of the form:
+```
+fun x =>
+  let x₁ := x.1
+  let x₂ := x.2.1
+  ...
+  let xₙ := x.2....2
+  b
+``` -/
+def mkUncurryLambdaFVars (xs : Array Expr) (b : Expr) (withLet:=true) : MetaM Expr := do
+
+  if xs.size = 1 then return ← mkLambdaFVars xs b
+
+  let x ← mkProdElem xs
+  let X ← inferType x
+
+  let xnames ← xs.mapM (fun x => x.fvarId!.getUserName)
+
+  withLocalDeclD `x X fun xvar => do
+
+    let xvals := mkProdSplitElem' xvar xs.size
+
+    if withLet then
+      withLetDecls xnames xvals fun xvars => do
+        let b := b.replaceFVars xs xvars
+        mkLambdaFVars (#[xvar] ++ xvars) b
+    else
+      let b := b.replaceFVars xs xvals
+      mkLambdaFVars #[xvar] b
 
 /-- Eta expand `f` in only one variable and reduce in others.
 
