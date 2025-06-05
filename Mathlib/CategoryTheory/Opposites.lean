@@ -218,7 +218,7 @@ def opComp (F : C ⥤ D) (G : D ⥤ E) : (F ⋙ G).op ≅ F.op ⋙ G.op := Iso.r
 def unopComp (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : Dᵒᵖ ⥤ Eᵒᵖ) : (F ⋙ G).unop ≅ F.unop ⋙ G.unop := Iso.refl _
 
 variable (C) in
-/-- Functor.op transforms identity functors to identity functors. -/
+/-- `Functor.op` transforms identity functors to identity functors. -/
 @[simps!]
 def opId : (𝟭 C).op ≅ 𝟭 (Cᵒᵖ) := Iso.refl _
 
