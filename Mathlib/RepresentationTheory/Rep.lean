@@ -464,14 +464,14 @@ variable {α}
 
 @[simp]
 lemma leftRegularTensorTrivialIsoFree_hom_hom_single_tmul_single (i : α) (g : G) (r s : k) :
-    DFunLike.coe (F := ↑(ModuleCat.of k (G →₀ k) ⊗ ModuleCat.of k (α →₀ k)) →ₗ[k] α →₀ G →₀ k)
+    DFunLike.coe (F := TensorProduct k (G →₀ k) (α →₀ k) →ₗ[k] α →₀ G →₀ k)
     (leftRegularTensorTrivialIsoFree k G α).hom.hom.hom (single g r ⊗ₜ[k] single i s) =
       single i (single g (r * s)) := by
   simp [leftRegularTensorTrivialIsoFree]
 
 @[simp]
 lemma leftRegularTensorTrivialIsoFree_inv_hom_single_single (i : α) (g : G) (r : k) :
-    DFunLike.coe (F := (α →₀ G →₀ k) →ₗ[k] ↑(ModuleCat.of k (G →₀ k) ⊗ ModuleCat.of k (α →₀ k)))
+    DFunLike.coe (F := (α →₀ G →₀ k) →ₗ[k] TensorProduct k (G →₀ k) (α →₀ k))
     (leftRegularTensorTrivialIsoFree k G α).inv.hom.hom (single i (single g r)) =
       single g r ⊗ₜ[k] single i 1 := by
   simp [leftRegularTensorTrivialIsoFree, finsuppTensorFinsupp'_symm_single_eq_tmul_single_one]
@@ -500,21 +500,18 @@ def diagonalSuccIsoTensorTrivial :
 
 @[simp]
 theorem diagonalSuccIsoTensorTrivial_hom_hom_single (f : Fin (n + 1) → G) (a : k) :
-    DFunLike.coe (F := ((Fin (n + 1) → G) →₀ k) →ₗ[k]
-      ↑(ModuleCat.of k (G →₀ k) ⊗ ModuleCat.of k ((Fin n → G) →₀ k)))
+    DFunLike.coe (F := ((Fin (n + 1) → G) →₀ k) →ₗ[k] TensorProduct k (G →₀ k) ((Fin n → G) →₀ k))
     (diagonalSuccIsoTensorTrivial k G n).hom.hom.hom (single f a) =
       single (f 0) 1 ⊗ₜ single (fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) a := by
-  simp [diagonalSuccIsoTensorTrivial, whiskerLeft_def, tensorObj_def,
-    ModuleCat.MonoidalCategory.whiskerLeft, types_tensorObj_def,
-    ModuleCat.MonoidalCategory.tensorObj, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul,
+  simp [diagonalSuccIsoTensorTrivial, types_tensorObj_def,
+    finsuppTensorFinsupp'_symm_single_eq_single_one_tmul,
     ModuleCat.hom_id (M := ((linearization k G).obj _).V), Action.ofMulAction_V]
 
 theorem diagonalSuccIsoTensorTrivial_inv_hom_single_single (g : G) (f : Fin n → G) (a b : k) :
     (diagonalSuccIsoTensorTrivial k G n).inv.hom (single g a ⊗ₜ single f b) =
       single (g • Fin.partialProd f) (a * b) := by
   have := Action.diagonalSuccIsoTensorTrivial_inv_hom_apply (G := G) (n := n)
-  simp_all [diagonalSuccIsoTensorTrivial, ModuleCat.MonoidalCategory.tensorHom_def,
-    tensorObj_def, ModuleCat.MonoidalCategory.tensorObj, types_tensorObj_def,
+  simp_all [diagonalSuccIsoTensorTrivial, types_tensorObj_def,
     ModuleCat.hom_id (M := ((linearization k G).obj _).V), Action.ofMulAction_V]
 
 theorem diagonalSuccIsoTensorTrivial_inv_hom_single_left (g : G) (f : (Fin n → G) →₀ k) (r : k) :
