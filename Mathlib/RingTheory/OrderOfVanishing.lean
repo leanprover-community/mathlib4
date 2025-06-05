@@ -32,6 +32,7 @@ def ord (x : R) : ℕ∞ := Module.length R (R ⧸ Ideal.span {x})
 /--
 The order of vanishing of `1` is `0`.
 -/
+@[simp]
 lemma ord_one : ord R 1 = 0 := by
   simp_all [ord, Module.length_eq_zero_iff,
     Ideal.span_singleton_one, Submodule.Quotient.subsingleton_iff]
@@ -128,8 +129,10 @@ meaning in this case `0` will not be mapped to `⊤`.
 -/
 @[stacks 02MD]
 noncomputable
-def ordMonoidWithZeroHom [Nontrivial R] : R →*₀ ℕₘ₀ where
-  toFun x := if x ∈ nonZeroDivisors R then Ring.ord R x else 0
+def ordMonoidWithZeroHom [Nontrivial R] : R →*₀ ℤₘ₀ where
+  toFun x := if x ∈ nonZeroDivisors R
+             then WithZero.map' (Nat.castAddMonoidHom ℤ).toMultiplicative (Ring.ord R x)
+             else 0
   map_zero' := by
     simp [nonZeroDivisors, exists_ne]
   map_one' := by
@@ -139,6 +142,8 @@ def ordMonoidWithZeroHom [Nontrivial R] : R →*₀ ℕₘ₀ where
     intro x y
     split_ifs
     · rename_i _ b
+      rw[← MonoidWithZeroHom.map_mul]
+      congr
       exact ord_mul R b
     all_goals simp_all [mul_mem_nonZeroDivisors]
 
@@ -169,70 +174,29 @@ Order of vanishing function for elements of the fraction field defined as the ex
 noncomputable
 def ordFrac : K →*₀ ℤₘ₀ :=
   letI f := Submonoid.LocalizationWithZeroMap.lift (toLocalizationWithZeroMap (nonZeroDivisors R) K)
-    (MonoidWithZeroHom.comp (WithZero.map' (Nat.castAddMonoidHom ℤ).toMultiplicative)
-    (ordMonoidWithZeroHom R))
-  haveI : (∀ (y : ↥(nonZeroDivisors R)),
-    IsUnit (((WithZero.map' (Nat.castAddMonoidHom ℤ).toMultiplicative).comp
-    (ordMonoidWithZeroHom R)) ↑y)) := by
+    (ordMonoidWithZeroHom R)
+  haveI : ∀ (y : ↥(nonZeroDivisors R)), IsUnit (ordMonoidWithZeroHom R ↑y) := by
     intro y
     simp only [ Equiv.toFun_as_coe, MonoidWithZeroHom.coe_comp, MonoidWithZeroHom.coe_mk,
       ZeroHom.coe_mk, Function.comp_apply, isUnit_iff_ne_zero, ne_eq]
-    intro a
-    have : ∃ a : Multiplicative ℕ, WithZero.coe a = ((ordMonoidWithZeroHom R) y.1) := by
-      simp only [ordMonoidWithZeroHom, Ring.ord, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
-        SetLike.coe_mem, ↓reduceIte, Multiplicative.exists]
-      have := Module.length_ne_top_iff.mpr <| _root_.isFiniteLength_quotient_span_singleton R y.2
-      exact ENat.ne_top_iff_exists.mp this
-    obtain ⟨m, hm⟩ := this
-    rw [← hm] at a
-    simp at a
+    simp[ordMonoidWithZeroHom, ord]
+    have := Module.length_ne_top_iff.mpr <| isFiniteLength_quotient_span_singleton R y.2
+    have lem : ∀ k,
+      (WithZero.map' (AddMonoidHom.toMultiplicative (Nat.castAddMonoidHom ℤ))) k = 0 ↔ k = 0 := by
+        intro k
+        cases k
+        all_goals simp
+    simpa [lem]
   f this
 
 lemma ordFrac_eq_ord (x : nonZeroDivisors R) : ordFrac R (algebraMap R K x) =
-  WithZero.map' (Nat.castAddMonoidHom ℤ).toMultiplicative (ord R x) := by
-
-  obtain ⟨val, property⟩ := x
-  simp only [ordFrac, ordMonoidWithZeroHom, Submonoid.LocalizationMap.sec_spec,
-    Submonoid.LocalizationWithZeroMap.lift_def, Submonoid.LocalizationMap.lift_spec,
-    toLocalizationMap_sec, MonoidHom.coe_coe, MonoidWithZeroHom.coe_comp,
-    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Function.comp_apply, SetLike.coe_mem, ite_true]
-
-  split
-  next h =>
-    rw [← MonoidWithZeroHom.map_mul]
-    congr
-    suffices ord R (sec (nonZeroDivisors R) ((algebraMap R K) val)).1 =
-             ord R ↑((sec (nonZeroDivisors R) ((algebraMap R K) val)).2 * val) by
-      rw[ord_mul] at this
-      · exact this
-      · exact property
-    congr
-    have ans := IsLocalization.sec_spec (R := R)
-                (M := nonZeroDivisors R) (S := K) (algebraMap R K val)
-    rw[← RingHom.map_mul] at ans
-    have : Function.Injective (algebraMap R K) := FaithfulSMul.algebraMap_injective R K
-    have := this ans
-    rw[← this]
-    exact mul_comm val ↑(sec (nonZeroDivisors R) ((algebraMap R K) val)).2
-  next h =>
-    have ans := IsLocalization.sec_spec (R := R)
-                (M := nonZeroDivisors R) (S := K) (algebraMap R K val)
-    rw[← RingHom.map_mul] at ans
-    have : Function.Injective (algebraMap R K) := FaithfulSMul.algebraMap_injective R K
-    have := this ans
-    have : (sec (nonZeroDivisors R) ((algebraMap R K) val)).1 ∈ nonZeroDivisors R := by
-      rw[← this]
-      rw[mul_mem_nonZeroDivisors]
-      constructor
-      · exact property
-      · exact SetLike.coe_mem (sec (nonZeroDivisors R) ((algebraMap R K) val)).2
-    exact False.elim (h this)
-
+  ordMonoidWithZeroHom R x := by
+  have := (FaithfulSMul.algebraMap_injective R K).isDomain
+  refine (Submonoid.LocalizationMap.lift_eq ..).trans ?_
+  simp [ordMonoidWithZeroHom, mem_nonZeroDivisors_iff_ne_zero.mp x.2]
 
 lemma ordFrac_eq_frac (a : nonZeroDivisors R) (b : nonZeroDivisors R) :
-  ordFrac R (IsLocalization.mk' K a.1 b) =
-  WithZero.map' (Nat.castAddMonoidHom ℤ).toMultiplicative (ord R a) /
-  WithZero.map' (Nat.castAddMonoidHom ℤ).toMultiplicative (ord R b) := by
+  ordFrac R (IsLocalization.mk' K a.1 b) = ordMonoidWithZeroHom R a / ordMonoidWithZeroHom R b := by
   simp[ordFrac_eq_ord]
 
 end Ring
