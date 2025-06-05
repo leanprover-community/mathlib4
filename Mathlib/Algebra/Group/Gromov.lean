@@ -1277,7 +1277,7 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
       by_cases neg_phi_pos: 0 < (-φ (ofMul s))
       .
         have phi_natabs: (φ (ofMul s)).natAbs = -φ (ofMul s) := by omega
-        use (List.replicate m.natAbs m_list_choice).flatten ++ [⟨s, s_mem⟩] ++ (List.replicate (-(φ (ofMul s))).natAbs gamma_list).flatten ++ (List.replicate m.natAbs gamma_inv_list).flatten
+        use (List.replicate m.natAbs m_list_choice).flatten ++ [⟨s, s_mem⟩] ++ (List.replicate (-(φ (ofMul s))).natAbs gamma_list).flatten ++ (List.replicate m.natAbs m_list_choice_inv).flatten
         refine ⟨?_, ?_⟩
         .
           simp
@@ -1303,14 +1303,14 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
           rw [← zpow_natCast, phi_natabs]
           simp
           rw [← zpow_natCast, m_eq_natabs]
-          simp_rw [m_list_choice, m_pos]
+          simp_rw [m_list_choice, m_list_choice_inv, m_pos]
           simp [gamma_inv_list]
           rw [gamma_list_inv]
           group
 
         .
 
-          simp [m_list_choice]
+          simp [m_list_choice, m_list_choice_inv]
           simp_rw [apply_ite]
           have m_natabs_le: m.natAbs ≤ N := by omega
           have gamma_list_len_le: gamma_list.length ≤ N := by omega
