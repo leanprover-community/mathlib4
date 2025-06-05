@@ -5,7 +5,6 @@ Authors: Robin Carlier, Emily Riehl
 -/
 import Mathlib.CategoryTheory.Category.Cat.Limit
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.CategoryTheory.PUnit
 
 /-!
 # Terminal categories
