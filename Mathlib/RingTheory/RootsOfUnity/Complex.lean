@@ -192,3 +192,13 @@ example : {z : ℂ | z^3 = 1} = {1, -(1/2)+√3/2*I, -(1/2)-√3/2*I} := by
   simp only [Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
   rw [← sub_eq_zero, H]
   simp only [mul_eq_zero, sub_eq_zero, or_assoc]
+
+example : {z : ℂ | z^4 = 1} = {1, I, -1, -I} := by
+  have H (z : ℂ) : z ^ 4 - 1 = (z - 1) * (z - I) * (z + 1) * (z + I) := by
+    ring_nf
+    rw [I_sq]
+    ring
+  ext z
+  simp only [Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
+  rw [← sub_eq_zero, H]
+  simp [mul_eq_zero, sub_eq_zero, or_assoc, ← sub_neg_eq_add]
