@@ -13,7 +13,7 @@ import Mathlib.MeasureTheory.Integral.CircleIntegral
 /-!
 # Integrability for Logarithms of Meromorphic Functions
 
-We establish integrability for functions of `log ‖meromorphic‖`. In the real setting, these
+We establish integrability for functions of the form `log ‖meromorphic‖`. In the real setting, these
 functions are interval integrable over every interval of the real line. This implies in particular
 that logarithms of trigonometric functions are interval integrable. In the complex setting, the
 functions are circle integrable over every circle in the complex plane.
@@ -96,11 +96,8 @@ Special case of `MeromorphicOn.intervalIntegrable_log`: The function `log ∘ si
 integrable over every interval.
 -/
 @[simp]
-theorem intervalIntegrable_log_sin : IntervalIntegrable (log ∘ sin) volume a b := by
-  apply MeromorphicOn.intervalIntegrable_log
-  apply AnalyticOnNhd.meromorphicOn
-  apply analyticOnNhd_sin.mono
-  tauto
+theorem intervalIntegrable_log_sin : IntervalIntegrable (log ∘ sin) volume a b := 
+  analyticOnNhd_sin.meromorphicOn.intervalIntegrable_log
 
 end intervalIntegral
 
@@ -129,7 +126,6 @@ theorem circleIntegrable_log_norm_meromorphicOn (hf : MeromorphicOn f (sphere c 
     apply CircleIntegrable.add
     · apply CircleIntegrable.finsum
       intro i
-      unfold CircleIntegrable
       apply IntervalIntegrable.const_mul
       apply intervalIntegral.intervalIntegrable_log_norm_meromorphicOn
       apply AnalyticOnNhd.meromorphicOn
