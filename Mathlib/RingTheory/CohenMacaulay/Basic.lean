@@ -162,7 +162,7 @@ lemma quotient_regular_isCohenMacaulay_iff_isCohenMacaulay
 
 variable [p.IsPrime] {Rₚ : Type u'} [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p]
   [IsLocalRing Rₚ]
-  -- This can be deduced from `IsLocalization.AtPrime Rₚ p`, but cannot be an
+  -- This can be deduced from `IsLocalization.AtPrime.isLocalRing Rₚ p`, but cannot be an
   -- `instance`, so we need to manually add this condition.
 
 abbrev SemiLinearMapAlgebraMapOfLinearMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
@@ -363,7 +363,7 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
       convert min
       simp only [Ideal.minimalPrimes, Set.mem_setOf_eq] at min
       exact min.eq_of_le ⟨by assumption, mem_supp⟩ (le.trans hp')
-    have : Module.support Rₚ Mₚ = {⟨maximalIdeal Rₚ, Ideal.IsMaximal.isPrime' _⟩} := by
+    have : Module.support Rₚ Mₚ = {closedPoint Rₚ} := by
       apply le_antisymm
       · intro I hI
         simp only [Module.support_eq_zeroLocus, PrimeSpectrum.mem_zeroLocus,
@@ -381,7 +381,7 @@ lemma isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay
             IsLocalization.AtPrime.comap_maximalIdeal Rₚ p] using min
         simp only [Ideal.minimalPrimes, Set.mem_setOf_eq] at this
         exact PrimeSpectrum.ext (this.eq_of_le ⟨I.2, le.trans hI⟩ (le_maximalIdeal_of_isPrime I.1))
-      · simpa using IsLocalRing.maximalIdeal_mem_support Rₚ Mₚ
+      · simpa using IsLocalRing.closedPoint_mem_support Rₚ Mₚ
     have : Unique (Module.support Rₚ Mₚ) := by
       simpa [this] using Set.uniqueSingleton _
     exact Order.krullDim_eq_zero_of_unique

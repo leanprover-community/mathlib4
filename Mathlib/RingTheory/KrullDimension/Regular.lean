@@ -35,20 +35,19 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
   rcases subsingleton_or_nontrivial M with h | h
   · rw [(supportDim_eq_bot_iff_subsingleton R M).mpr h]
     rw [(supportDim_eq_bot_iff_subsingleton R (QuotSMulTop x M)).mpr inferInstance, WithBot.bot_add]
-  have hm : closedPoint R ∈ support R M := maximalIdeal_mem_support R M
   refine iSup_le_iff.mpr (fun q ↦ ?_)
   let p : LTSeries (support R M) :=
-    if lt : (q.last).1.1 < 𝔪 then q.snoc ⟨closedPoint R, hm⟩ lt else q
+    if lt : (q.last).1.1 < 𝔪 then q.snoc ⟨closedPoint R, closedPoint_mem_support R M⟩ lt else q
   obtain ⟨hxp, le⟩ : x ∈ p.last.1.1 ∧ q.length ≤ p.length := by
     by_cases lt : (q.last).1.1 < 𝔪
-    · rw [show p = q.snoc ⟨⟨𝔪, IsMaximal.isPrime' 𝔪⟩, hm⟩ lt from dif_pos lt]
+    · rw [show p = q.snoc ⟨⟨𝔪, _⟩, _⟩ lt from dif_pos lt]
       simp [hx]
     · have hq : q.last.1.1 = 𝔪 := by
         contrapose! lt
         exact lt_of_le_of_ne (le_maximalIdeal_of_isPrime q.last.1.1) lt
-      simp only [show p = q from dif_neg lt, hq, hx, le_refl, and_self]
-  obtain ⟨q, hxq, hq, h0, _⟩ := PrimeSpectrum.exist_ltSeries_mem_one_of_mem_last
-    (p.map (fun a ↦ a.1) (fun ⦃_ _⦄ a ↦ a)) hxp
+      simp [show p = q from dif_neg lt, hq, hx]
+  obtain ⟨q, hxq, hq, h0, _⟩ :=
+    PrimeSpectrum.exist_ltSeries_mem_one_of_mem_last (p.map (fun a ↦ a.1) (fun ⦃_ _⦄ a ↦ a)) hxp
   refine (Nat.cast_le.mpr le).trans ?_
   by_cases h : p.length = 0
   · have hb : supportDim R (QuotSMulTop x M) ≠ ⊥ :=
@@ -64,23 +63,22 @@ theorem supportDim_le_supportDim_quotSMulTop_succ {x : R} (hx : x ∈ maximalIde
         Nat.succ_lt_succ (hi.trans_eq ((Nat.sub_add_cancel (Nat.pos_of_ne_zero h)).trans hq))
       refine ⟨q ⟨i + 1, hi⟩, ?_⟩
       simp only [support_quotSMulTop, Set.mem_inter_iff, mem_zeroLocus, Set.singleton_subset_iff]
-      refine ⟨?_, q.monotone
-        ((Fin.natCast_eq_mk (Nat.lt_of_add_left_lt hi)).trans_le (Nat.le_add_left 1 i)) hxq⟩
       have hp : p.head.1 ∈ support R M := p.head.2
       simp only [support_eq_zeroLocus, mem_zeroLocus, SetLike.coe_subset_coe] at hp ⊢
-      exact hp.trans (h0.trans_le (q.head_le _))
+      exact ⟨hp.trans (h0.trans_le (q.head_le _)), q.monotone
+        ((Fin.natCast_eq_mk (Nat.lt_of_add_left_lt hi)).trans_le (Nat.le_add_left 1 i)) hxq⟩
     step := fun ⟨i, _⟩ ↦ q.strictMono (i + 1).lt_add_one
   }
   calc
     (p.length : WithBot ℕ∞) ≤ (p.length - 1 + 1 : ℕ) := Nat.cast_le.mpr le_tsub_add
-    _ = (p.length - (1 : ℕ) : WithBot ℕ∞) + 1 := by simp only [Nat.cast_add, Nat.cast_one]
+    _ = (p.length - (1 : ℕ) : WithBot ℕ∞) + 1 := by simp
     _ ≤ _ := by
       refine add_le_add_right ?_ 1
       exact le_iSup_iff.mpr fun _ h ↦ h q'
 
 omit [IsNoetherianRing R] [IsLocalRing R] in
-/-- If $M$ is a finite module over a comm ring $R$, then $\dim M/xM + 1 \le \dim M$
-  for all $M$-regular element $x$. -/
+/-- If $M$ is a finite module over a comm ring $R$, $x \in M$ is not in any minimal prime of $M$,
+  then $\dim M/xM + 1 \le \dim M$. -/
 theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
     (hn : ∀ p ∈ (annihilator R M).minimalPrimes, x ∉ p) :
     supportDim R (QuotSMulTop x M) + 1 ≤ supportDim R M := by

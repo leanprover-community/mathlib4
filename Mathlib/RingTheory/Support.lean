@@ -3,10 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Exact
 import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.Localization.Finiteness
 import Mathlib.RingTheory.Nakayama
+import Mathlib.RingTheory.QuotSMulTop
 import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
@@ -71,6 +71,11 @@ lemma Module.mem_support_iff_exists_annihilator :
   rw [Module.mem_support_iff']
   simp_rw [not_imp_not, SetLike.le_def, Submodule.mem_annihilator_span_singleton]
 
+lemma Module.mem_support_mono {p q : PrimeSpectrum R} (H : p ≤ q) (hp : p ∈ Module.support R M) :
+    q ∈ Module.support R M := by
+  rw [Module.mem_support_iff_exists_annihilator] at hp ⊢
+  exact ⟨_, hp.choose_spec.trans H⟩
+
 lemma Module.mem_support_iff_of_span_eq_top {s : Set M} (hs : Submodule.span R s = ⊤) :
     p ∈ Module.support R M ↔ ∃ m ∈ s, (R ∙ m).annihilator ≤ p.asIdeal := by
   constructor
@@ -117,8 +122,13 @@ lemma Module.support_eq_empty_iff :
     subsingleton_iff_forall_eq 0]
   simp only [Submonoid.powers_one, Submonoid.mem_bot, exists_eq_left, one_smul]
 
-instance [Nontrivial M] : Nonempty (Module.support R M) :=
-  Set.nonempty_iff_ne_empty'.mpr ((Module.support_eq_empty_iff).not.mpr (not_subsingleton M))
+lemma Module.nonempty_support_iff :
+    (Module.support R M).Nonempty ↔ Nontrivial M := by
+  rw [Set.nonempty_iff_ne_empty, ne_eq,
+    Module.support_eq_empty_iff, ← not_subsingleton_iff_nontrivial]
+
+instance [h : Nontrivial M] : Nonempty (Module.support R M) :=
+  (Module.nonempty_support_iff.mpr h).to_subtype
 
 lemma Module.support_eq_empty [Subsingleton M] :
     Module.support R M = ∅ :=
@@ -250,7 +260,7 @@ theorem Module.support_quotient (I : Ideal R) :
 
 open Pointwise in
 theorem Module.support_quotSMulTop (x : R) :
-    Module.support R (M ⧸ x • (⊤ : Submodule R M)) = Module.support R M ∩ zeroLocus {x} := by
+    Module.support R (QuotSMulTop x M) = Module.support R M ∩ zeroLocus {x} := by
   refine (x • (⊤ : Submodule R M)).quotEquivOfEq (Ideal.span {x} • ⊤)
     ((⊤ : Submodule R M).ideal_span_singleton_smul x).symm |>.support_eq.trans <|
       (Module.support_quotient _).trans ?_
