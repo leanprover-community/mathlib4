@@ -21,6 +21,8 @@ open Fin
 
 namespace Fin
 
+open Fin.CommRing
+
 variable {n : ℕ} {k : Fin n}
 
 theorem even_succAbove_add_predAbove (i : Fin (n + 1)) (j : Fin n) :
@@ -38,25 +40,21 @@ lemma neg_one_pow_succAbove_add_predAbove {R : Type*} [Monoid R] [HasDistribNeg 
   rw [← neg_one_mul (_ ^ _), ← pow_succ', neg_one_pow_congr]
   rw [even_succAbove_add_predAbove, Nat.even_add_one, Nat.not_even_iff_odd]
 
-open Fin.NatCast in
 lemma even_of_val (h : Even k.val) : Even k := by
   have : NeZero n := ⟨k.pos.ne'⟩
   rw [← Fin.cast_val_eq_self k]
   exact h.natCast
 
-open Fin.CommRing in
 lemma odd_of_val [NeZero n] (h : Odd k.val) : Odd k := by
   rw [← Fin.cast_val_eq_self k]
   exact h.natCast
 
-open Fin.NatCast in
 lemma even_of_odd (hn : Odd n) (k : Fin n) : Even k := by
   have : NeZero n := ⟨k.pos.ne'⟩
   rcases k.val.even_or_odd with hk | hk
   · exact even_of_val hk
   · simpa using (hk.add_odd hn).natCast (α := Fin n)
 
-open Fin.CommRing in
 lemma odd_of_odd [NeZero n] (hn : Odd n) (k : Fin n) : Odd k := by
   rcases k.val.even_or_odd with hk | hk
   · simpa using (Even.add_odd hk hn).natCast (R := Fin n)
@@ -117,11 +115,9 @@ lemma not_even_iff_odd_of_even [NeZero n] (hn : Even n) : ¬Even k ↔ Odd k := 
   rw [even_iff_of_even hn, odd_iff_of_even hn]
   exact Nat.not_even_iff_odd
 
-open Fin.CommRing in
 lemma odd_add_one_iff_even [NeZero n] : Odd (k + 1) ↔ Even k :=
   ⟨fun ⟨k, hk⟩ ↦ add_right_cancel hk ▸ even_two_mul k, Even.add_one⟩
 
-open Fin.CommRing in
 lemma even_add_one_iff_odd [NeZero n] : Even (k + 1) ↔ Odd k :=
   ⟨fun ⟨k, hk⟩ ↦ eq_sub_iff_add_eq.mpr hk ▸ (Even.add_self k).sub_odd odd_one, Odd.add_one⟩
 
