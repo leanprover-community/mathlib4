@@ -185,17 +185,21 @@ instance : SliceModel (⊥ : Subspace 𝕜 E) I I where
   hmap := Topology.IsEmbedding.id
   compatible := by ext x; dsimp
 
--- apparently all missing: LinearEquiv.prodCongr, ContinuousLinearEquiv.prodCongr
-
+/-- If `I` is a slice model of `I'`, then `J.prod I` is a slice model of `J.prod I'`. -/
 instance [h : SliceModel F I I'] : SliceModel F (J.prod I) (J.prod I') where
-  equiv := by
-    let sdf := h.equiv
-    -- want h.equiv.prodCongr (.id), and probably re-associating...
-    sorry
+  equiv :=
+    -- The main step: apply h.equiv.
+    let aux := (ContinuousLinearEquiv.refl 𝕜 E''').prodCongr h.equiv
+    (ContinuousLinearEquiv.prodAssoc 𝕜 E''' E F).trans aux
   map := Prod.map id h.map
   hmap := IsEmbedding.id.prodMap h.hmap
-  compatible := sorry
+  compatible := by
+    dsimp
+    ext ⟨x, y⟩ <;> simp
+    · sorry
+    · sorry
 
+/-- If `I` is a slice model of `I'`, then `I.prod J` is a slice model of `I'.prod J`. -/
 -- a bit more cumbersome, as equiv needs some reordering
 instance [h : SliceModel F I I'] : SliceModel F (I.prod J) (I'.prod J) where
   equiv := sorry
@@ -203,18 +207,14 @@ instance [h : SliceModel F I I'] : SliceModel F (I.prod J) (I'.prod J) where
   hmap := h.hmap.prodMap IsEmbedding.id
   compatible := sorry
 
+/-- If `E' ≃ E × F`, then the trivial models with corners of `E` and `E'` form a slice model. -/
 instance (h : (E × F) ≃L[𝕜] E') : SliceModel F (𝓘(𝕜, E)) (𝓘(𝕜, E')) where
   equiv := h
   map := h ∘ (·, (0 : F))
   hmap := by
-    apply IsEmbedding.comp
-    · sorry -- apply ContinuousLinearEquiv.isEmbedding
-    have : IsEmbedding (@Prod.swap E F) := sorry -- missing, it seems
-    rw [← IsEmbedding.of_comp_iff this]
-    have : ((·, (0 : F)) : E → E × F) = Prod.swap ∘ Prod.mk 0 := by
-      ext x
-      simp_all; sorry
-    convert isEmbedding_prodMk (0 : F)
+    apply h.toHomeomorph.isEmbedding.comp
+    rw [← IsEmbedding.of_comp_iff (ContinuousLinearEquiv.prodComm 𝕜 E F).toHomeomorph.isEmbedding]
+    exact isEmbedding_prodMk (0 : F)
   compatible := by simp
 
 /-- *Any* model with corners on `E` which is an embedding is a slice model with the trivial model
