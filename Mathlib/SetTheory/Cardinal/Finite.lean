@@ -3,6 +3,7 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.Data.Finite.Prod
 import Mathlib.Data.ULift
 import Mathlib.Data.ZMod.Defs
 import Mathlib.SetTheory.Cardinal.ToNat
@@ -337,6 +338,10 @@ theorem card_le_one_iff_subsingleton (α : Type*) : card α ≤ 1 ↔ Subsinglet
   rw [← le_one_iff_subsingleton]
   simp [card]
 
+lemma card_eq_one_iff_unique {α : Type*} : card α = 1 ↔ Nonempty (Unique α) := by
+  rw [unique_iff_subsingleton_and_nonempty α, le_antisymm_iff, one_le_iff_ne_zero]
+  exact and_congr (card_le_one_iff_subsingleton α) (card_ne_zero_iff_nonempty α)
+
 theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α := by
   rw [← Cardinal.one_lt_iff_nontrivial]
   conv_rhs => rw [← Nat.cast_one]
@@ -346,5 +351,173 @@ theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α 
 @[simp]
 theorem card_prod (α β : Type*) : ENat.card (α × β) = .card α * .card β := by
   simp [ENat.card]
+
+
+
+
+lemma infinite_fun_toInfinite {α β : Type*} [Nonempty α] [Infinite β] : Infinite (α → β) :=
+  Infinite.of_injective (const α) const_injective
+
+lemma infinite_fun_ofInfinite {α β : Type*} [Infinite α] [Nontrivial β] : Infinite (α → β) := by
+  classical
+  obtain ⟨b, b', h_b⟩ := nontrivial_iff.1 (by assumption)
+  let f := fun y : α ↦ (Set.singleton y).piecewise (const α b) (const α b')
+  refine Infinite.of_injective f fun a a' h_a ↦ ?_
+  by_contra h_a'
+  replace h_a' := Set.notMem_singleton_iff.2 h_a'
+  simp only [f, funext_iff] at h_a
+  specialize h_a a
+  rw [(Set.singleton a).piecewise_eq_of_mem (const α b) (const α b') (Set.mem_singleton a),
+    (Set.singleton a').piecewise_eq_of_notMem (const α b) (const α b') h_a',
+    const_apply, const_apply] at h_a
+  exact h_b h_a
+
+lemma unique_fun_toUnique {α β : Type*} [Nonempty (Unique β)] : Nonempty (Unique (α → β)) := by
+  obtain ⟨_, _⟩ := (unique_iff_subsingleton_and_nonempty β).1 (by assumption)
+  exact (unique_iff_subsingleton_and_nonempty (α → β)).2 ⟨Pi.instSubsingleton, Pi.instNonempty⟩
+
+instance : NoZeroDivisors ℕ∞ :=
+  inferInstanceAs (NoZeroDivisors (WithTop ℕ))
+
+lemma one_lt_mul_iff {x y : ℕ∞} : 1 < x * y ↔ (1 < x ∧ 1 ≤ y) ∨ (1 ≤ x ∧ 1 < y) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rcases lt_trichotomy x 1 with x_0 | rfl | x_2
+    · rw [lt_one_iff_eq_zero.1 x_0, zero_mul] at h
+      contradiction
+    · rw [one_mul] at h
+      exact Or.inr ⟨le_refl 1, h⟩
+    · refine Or.inl ⟨x_2, le_of_not_lt fun y_0 ↦ ?_⟩
+      rw [lt_one_iff_eq_zero.1 y_0, mul_zero] at h
+      contradiction
+  · rcases h with h | h
+    · rw [mul_comm x y]
+      exact one_lt_mul h.2 h.1
+    · exact one_lt_mul h.1 h.2
+
+instance : Subsingleton ℕ∞ˣ := by
+  refine subsingleton_of_forall_eq 1 fun x ↦ ?_
+  rcases lt_trichotomy x 1 with x_0 | x_1 | x_2
+  · exact (x.ne_zero (lt_one_iff_eq_zero.1 x_0)).rec
+  · exact x_1
+  · have x_inv := x.val_inv
+    have := (not_iff_not.2 (@one_lt_mul_iff x x.inv)).1 x_inv.symm.not_lt
+    rw [← Units.val_lt_val, Units.val_one] at x_2
+    simp only [not_or, not_and, not_le, not_lt] at this
+    rw [lt_one_iff_eq_zero.1 (this.1 x_2), mul_zero] at x_inv
+    contradiction
+
+noncomputable def epow : ℕ∞ → ℕ∞ → ℕ∞
+  | x, some y => x ^ y
+  | x, ⊤ => if x = 0 then 0 else if x = 1 then 1 else ⊤
+
+@[simp]
+lemma epow_coe {x : ℕ∞} {y : ℕ} : x.epow y = x ^ y := rfl
+
+lemma epow_top_def {x : ℕ∞} : x.epow ⊤ = if x = 0 then 0 else if x = 1 then 1 else ⊤ := rfl
+
+@[simp]
+lemma zero_epow_top : (0 : ℕ∞).epow ⊤ = 0 := rfl
+
+@[simp]
+lemma one_epow {y : ℕ∞} : (1 : ℕ∞).epow y = 1 := by
+  induction y with
+  | top => rfl
+  | coe y => simp
+
+@[simp]
+lemma top_epow_top : (⊤ : ℕ∞).epow ⊤ = ⊤ := rfl
+
+lemma epow_top {x : ℕ∞} (h : 1 < x) : x.epow ⊤ = ⊤ := by
+  simp only [epow_top_def, (zero_le_one.trans_lt h).ne.symm, ↓reduceIte, h.ne.symm]
+
+lemma epow_top_eq_zero_iff {x : ℕ∞} : x.epow ⊤ = 0 ↔ x = 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.symm ▸ zero_epow_top⟩
+  rcases lt_trichotomy x 1 with x_0 | rfl | x_2
+  · exact lt_one_iff_eq_zero.1 x_0
+  · rwa [one_epow] at h
+  · rw [epow_top x_2] at h
+    contradiction
+
+@[simp]
+lemma epow_zero {x : ℕ∞} : x.epow 0 = 1 := by rw [← coe_zero, epow_coe, _root_.pow_zero]
+
+@[simp]
+lemma epow_one {x : ℕ∞} : x.epow 1 = x := by rw [← coe_one, epow_coe, _root_.pow_one]
+
+lemma zero_epow_pos {y : ℕ∞} (h : y ≠ 0) : (0 : ℕ∞).epow y = 0 := by
+  induction y with
+  | top => exact zero_epow_top
+  | coe y =>
+    rwa [epow_coe, pow_eq_zero_iff', eq_self 0, true_and, ← y.cast_ne_zero (R := ℕ∞)]
+
+lemma top_epow_pos {y : ℕ∞} (h : y ≠ 0) : (⊤ : ℕ∞).epow y = ⊤ := by
+  induction y with
+  | top => exact top_epow_top
+  | coe y =>
+    rwa [epow_coe, pow_eq_top_iff, eq_self ⊤, true_and, ← y.cast_ne_zero (R := ℕ∞)]
+
+lemma epow_eq_zero_iff {x y : ℕ∞} : x.epow y = 0 ↔ x = 0 ∧ y ≠ 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.1.symm ▸ zero_epow_pos h.2⟩
+  induction y with
+  | top =>
+    simp only [ne_eq, top_ne_zero, not_false_eq_true, and_true]
+    rcases lt_trichotomy x 1 with x_0 | x_1 | x_2
+    · exact lt_one_iff_eq_zero.1 x_0
+    · rw [x_1, one_epow] at h
+      contradiction
+    · rw [epow_top x_2] at h
+      contradiction
+  | coe y =>
+    rw [epow_coe, pow_eq_zero_iff'] at h
+    exact ⟨h.1, y.cast_ne_zero.2 h.2⟩
+
+lemma mul_epow {x y z : ℕ∞} : (x * y).epow z = (x.epow z) * (y.epow z) := by
+  induction z
+  · rcases lt_trichotomy (x * y) 1 with xy_0 | xy_1 | xy_2
+    · rw [lt_one_iff_eq_zero] at xy_0
+      rw [xy_0, zero_epow_top]
+      apply (mul_eq_zero.2 _).symm
+      rcases mul_eq_zero.1 xy_0 with h | h <;> rw [h]
+      · exact .inl zero_epow_top
+      · exact .inr zero_epow_top
+    · rw [xy_1, (mul_eq_one.1 xy_1).1, (mul_eq_one.1 xy_1).2, one_epow, one_mul]
+    · rw [epow_top xy_2]
+      rcases one_lt_mul_iff.1 xy_2 with h | h
+      · rw [epow_top h.1, mul_comm]
+        refine (mul_top fun y_0 ↦ ?_).symm
+        rw [epow_top_eq_zero_iff.1 y_0, mul_zero] at xy_2
+        contradiction
+      · rw [epow_top h.2]
+        refine (mul_top fun x_0 ↦ ?_).symm
+        rw [epow_top_eq_zero_iff.1 x_0, zero_mul] at xy_2
+        contradiction
+  · simp only [epow_coe]
+    exact _root_.mul_pow x y _
+
+lemma card_pow {α β : Type*} : ENat.card (α → β) = (ENat.card β).epow (ENat.card α) := by
+  classical
+  rcases finite_or_infinite α
+  · have _ := Fintype.ofFinite α
+    rcases finite_or_infinite β
+    · have _ := Fintype.ofFinite β
+      rw [card_eq_coe_fintype_card (α := α), card_eq_coe_fintype_card (α := β),
+        card_eq_coe_fintype_card (α := α → β), epow_coe, ← Nat.cast_pow, Fintype.card_fun]
+    · rw [card_eq_top_of_infinite (α := β)]
+      rcases isEmpty_or_nonempty α with _ | h
+      · simp
+      · rw [top_epow_pos ((card_ne_zero_iff_nonempty α).2 h), card_eq_top]
+        exact infinite_fun_toInfinite
+  · rw [card_eq_top_of_infinite (α := α)]
+    rcases lt_trichotomy (ENat.card β) 1 with b_0 | b_1 | b_2
+    · rw [lt_one_iff_eq_zero] at b_0
+      rw [b_0, zero_epow_top]
+      rw [card_eq_zero_iff_empty] at b_0 ⊢
+      simp only [isEmpty_pi, b_0, exists_const]
+    · rw [b_1, one_epow, card_eq_one_iff_unique]
+      rw [card_eq_one_iff_unique] at b_1
+      exact unique_fun_toUnique
+    · rw [epow_top b_2, card_eq_top]
+      rw [one_lt_card_iff_nontrivial β] at b_2
+      exact infinite_fun_ofInfinite
 
 end ENat
