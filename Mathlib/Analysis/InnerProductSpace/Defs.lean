@@ -422,8 +422,9 @@ def toNormedSpace : NormedSpace 𝕜 F where
 
 @[deprecated (since := "2025-06-03")] alias toSeminormedSpace := toNormedSpace
 
+omit c in
 /-- Seminormed space core structure constructed from a `PreInnerProductSpace.Core` structure -/
-lemma toSeminormedSpaceCore : SeminormedSpace.Core 𝕜 F where
+lemma toSeminormedSpaceCore (c : PreInnerProductSpace.Core 𝕜 F) : SeminormedSpace.Core 𝕜 F where
   norm_nonneg x := norm_nonneg x
   norm_smul c x := by
     letI : NormedSpace 𝕜 F := toNormedSpace
@@ -485,8 +486,9 @@ section
 
 attribute [local instance] toNormedAddCommGroup
 
+omit cd in
 /-- Normed space core structure constructed from an `InnerProductSpace.Core` structure -/
-lemma toNormedSpaceCore : NormedSpace.Core 𝕜 F where
+lemma toNormedSpaceCore (cd : InnerProductSpace.Core 𝕜 F) : NormedSpace.Core 𝕜 F where
   norm_nonneg x := norm_nonneg x
   norm_eq_zero_iff x := norm_eq_zero
   norm_smul c x := by

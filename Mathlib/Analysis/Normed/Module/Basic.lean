@@ -654,7 +654,7 @@ abbrev NormedAddCommGroup.ofCore (core : NormedSpace.Core 𝕜 E) : NormedAddCom
       rw [← sub_eq_zero, ← core.norm_eq_zero_iff]
       exact h }
 
-/-- Produces a `NormedAddCommGroup E` instance from a `NormedAddCommGroup.Core` on a type
+/-- Produces a `NormedAddCommGroup E` instance from a `NormedSpace.Core` on a type
 that already has an existing uniform space structure. This requires a proof that the uniformity
 induced by the norm is equal to the preexisting uniformity. See note [reducible non-instances]. -/
 abbrev NormedAddCommGroup.ofCoreReplaceUniformity [U : UniformSpace E] (core : NormedSpace.Core 𝕜 E)
@@ -667,8 +667,8 @@ abbrev NormedAddCommGroup.ofCoreReplaceUniformity [U : UniformSpace E] (core : N
       rw [← sub_eq_zero, ← core.norm_eq_zero_iff]
       exact h }
 
-/-- Produces a `NormedAddCommGroup E` instance from a `NormedAddCommGroup.Core` on a type
-that already has an existing uniform space structure. This requires a proof that the uniformity
+/-- Produces a `NormedAddCommGroup E` instance from a `NormedSpace.Core` on a type
+that already has an existing topology. This requires a proof that the uniformity
 induced by the norm is equal to the preexisting uniformity. See note [reducible non-instances]. -/
 abbrev NormedAddCommGroup.ofCoreReplaceTopology [T : TopologicalSpace E]
     (core : NormedSpace.Core 𝕜 E)
@@ -682,7 +682,7 @@ abbrev NormedAddCommGroup.ofCoreReplaceTopology [T : TopologicalSpace E]
       exact h }
 
 open Bornology in
-/-- Produces a `NormedAddCommGroup E` instance from a `NormedAddCommGroup.Core` on a type
+/-- Produces a `NormedAddCommGroup E` instance from a `NormedSpace.Core` on a type
 that already has a preexisting uniform space structure and a preexisting bornology. This requires
 proofs that the uniformity induced by the norm is equal to the preexisting uniformity, and likewise
 for the bornology. See note [reducible non-instances]. -/
