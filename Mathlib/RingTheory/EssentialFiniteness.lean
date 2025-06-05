@@ -164,9 +164,10 @@ instance EssFiniteType.baseChange [h : EssFiniteType R S] : EssFiniteType T (T �
   obtain ⟨σ, hσ⟩ := h
   use σ.image Algebra.TensorProduct.includeRight
   intro s
-  induction' s using TensorProduct.induction_on with x y x y hx hy
-  · exact ⟨1, one_mem _, isUnit_one, by simpa using zero_mem _⟩
-  · obtain ⟨t, h₁, h₂, h₃⟩ := hσ y
+  induction s using TensorProduct.induction_on with
+  | zero => exact ⟨1, one_mem _, isUnit_one, by simpa using zero_mem _⟩
+  | tmul x y =>
+    obtain ⟨t, h₁, h₂, h₃⟩ := hσ y
     have H (x : S) (hx : x ∈ Algebra.adjoin R (σ : Set S)) :
         1 ⊗ₜ[R] x ∈ Algebra.adjoin T
           ((σ.image Algebra.TensorProduct.includeRight : Finset (T ⊗[R] S)) : Set (T ⊗[R] S)) := by
@@ -182,7 +183,8 @@ instance EssFiniteType.baseChange [h : EssFiniteType R S] : EssFiniteType T (T �
     rw [← mul_one x, ← smul_eq_mul, ← TensorProduct.smul_tmul']
     apply Subalgebra.smul_mem
     exact H _ h₃
-  · obtain ⟨tx, hx₁, hx₂, hx₃⟩ := hx
+  | add x y hx hy =>
+    obtain ⟨tx, hx₁, hx₂, hx₃⟩ := hx
     obtain ⟨ty, hy₁, hy₂, hy₃⟩ := hy
     refine ⟨_, mul_mem hx₁ hy₁, hx₂.mul hy₂, ?_⟩
     rw [add_mul, ← mul_assoc, mul_comm tx ty, ← mul_assoc]

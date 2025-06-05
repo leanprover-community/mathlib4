@@ -14,7 +14,7 @@ If `C` has limits (of a given shape), so does `Mon_ C`,
 and the forgetful functor preserves these limits.
 
 (This could potentially replace many individual constructions for concrete categories,
-in particular `MonCat`, `SemiRingCat`, `RingCat`, and `AlgebraCat R`.)
+in particular `MonCat`, `SemiRingCat`, `RingCat`, and `AlgCat R`.)
 -/
 
 
@@ -65,7 +65,7 @@ def limitConeIsLimit (F : J ⥤ Mon_ C) : IsLimit (limitCone F) where
         dsimp
         simp only [Category.assoc, limit.lift_π, Functor.mapCone_pt, forget_obj,
           Functor.mapCone_π_app, forget_map, Hom.mul_hom, limMap_π, tensorObj_obj, Functor.comp_obj,
-          MonFunctorCategoryEquivalence.inverseObj_mul_app, lim_μ_π_assoc, lim_obj,
+          MonFunctorCategoryEquivalence.inverseObj_mon_mul_app, lim_μ_π_assoc, lim_obj,
           ← MonoidalCategory.tensor_comp_assoc]) }
   fac s h := by ext; simp
   uniq s m w := by

@@ -393,7 +393,7 @@ variable [IsIntegrallyClosed A] [IsDedekindDomain B]
 
 /-- The different ideal of an extension of integral domains `B/A` is the inverse of the dual of `A`
 as an ideal of `B`. See `coeIdeal_differentIdeal` and `coeSubmodule_differentIdeal`. -/
-def differentIdeal [NoZeroSMulDivisors A B] : Ideal B :=
+noncomputable def differentIdeal [NoZeroSMulDivisors A B] : Ideal B :=
   (1 / Submodule.traceDual A (FractionRing A) 1 : Submodule B (FractionRing B)).comap
     (Algebra.linearMap B (FractionRing B))
 
