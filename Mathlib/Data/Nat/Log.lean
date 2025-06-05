@@ -177,15 +177,15 @@ theorem log_mono_right {b n m : ℕ} (h : n ≤ m) : log b n ≤ log b m :=
   log_monotone h
 
 theorem log_lt_log_succ_iff {b n : ℕ} (hb : 1 < b) (hn : 1 ≤ n) :
-    log b n < Nat.log b (n + 1) ↔ n + 1 = b ^ (Nat.log b (n + 1)) := by
+    log b n < Nat.log b (n + 1) ↔ b ^ (Nat.log b (n + 1)) = n + 1:= by
   refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
-  · apply le_antisymm (Nat.lt_pow_of_log_lt hb H)
+  · apply le_antisymm _ (Nat.lt_pow_of_log_lt hb H)
     exact Nat.pow_log_le_self b (Ne.symm (Nat.zero_ne_add_one n))
   · apply Nat.log_lt_of_lt_pow (Nat.ne_zero_of_lt hn)
-    simp [← H]
+    simp [H]
 
 theorem log_eq_log_succ_iff {b n : ℕ} (hb : 1 < b) (hn : 1 ≤ n) :
-    log b n = log b (n + 1) ↔ n + 1 ≠ b ^ (log b (n + 1)) := by
+    log b n = log b (n + 1) ↔ b ^ (log b (n + 1)) ≠ n + 1 := by
   rw [ne_eq, ← log_lt_log_succ_iff hb hn, not_lt]
   simp only [le_antisymm_iff, and_iff_right_iff_imp]
   exact fun  _ ↦ log_monotone (le_add_right n 1)
@@ -337,16 +337,16 @@ theorem log_le_clog (b n : ℕ) : log b n ≤ clog b n := by
       ((pow_log_le_self b n.succ_ne_zero).trans <| le_pow_clog hb _)
 
 theorem clog_lt_clog_succ_iff {b n : ℕ} (hb : 1 < b) :
-    clog b n < clog b (n + 1) ↔ n  = b ^ (clog b n) := by
+    clog b n < clog b (n + 1) ↔ b ^ (clog b n) = n := by
   refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
-  · apply le_antisymm (le_pow_clog hb n)
+  · apply le_antisymm _ (le_pow_clog hb n)
     apply le_of_lt_succ
     exact (pow_lt_iff_lt_clog hb).mpr H
-  · rw [← pow_lt_iff_lt_clog hb, ← H]
+  · rw [← pow_lt_iff_lt_clog hb, H]
     exact n.lt_add_one
 
 theorem clog_eq_clog_succ_iff {b n : ℕ} (hb : 1 < b) :
-    clog b n = clog b (n + 1) ↔ n ≠ b ^ (clog b n) := by
+    clog b n = clog b (n + 1) ↔ b ^ (clog b n) ≠ n := by
   rw [ne_eq, ← clog_lt_clog_succ_iff hb, not_lt]
   simp only [le_antisymm_iff, and_iff_right_iff_imp]
   exact fun _ ↦ clog_monotone b (le_add_right n 1)
