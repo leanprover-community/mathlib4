@@ -183,6 +183,18 @@ there are points near `x` in `C` and different from `x`. -/
 theorem accPt_iff_frequently {x : X} {C : Set X} : AccPt x (𝓟 C) ↔ ∃ᶠ y in 𝓝 x, y ≠ x ∧ y ∈ C := by
   simp [accPt_principal_iff_clusterPt, clusterPt_principal_iff_frequently, and_comm]
 
+/--
+Variant of `accPt_iff_frequently`: A point `x` is an accumulation point of a set `C` iff points in
+punctured neighborhoods are frequently contained in `C`.
+-/
+theorem accPt_iff_frequently_nhdsNE {X : Type*} [TopologicalSpace X] {x : X} {C : Set X} :
+    AccPt x (𝓟 C) ↔ ∃ᶠ (y : X) in 𝓝[≠] x, y ∈ C := by
+  have : (∃ᶠ z in 𝓝[≠] x, z ∈ C) ↔ ∃ᶠ z in 𝓝 x, z ∈ C ∧ z ∈ ({x} : Set X)ᶜ :=
+    frequently_inf_principal.trans <| by simp only [and_comm]
+  rw [accPt_iff_frequently, this]
+  congr! 2
+  tauto
+
 theorem accPt_principal_iff_nhdsWithin : AccPt x (𝓟 s) ↔ (𝓝[s \ {x}] x).NeBot := by
   rw [accPt_principal_iff_clusterPt, ClusterPt, nhdsWithin]
 
