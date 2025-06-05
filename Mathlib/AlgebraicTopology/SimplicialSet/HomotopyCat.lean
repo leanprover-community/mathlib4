@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Emily Riehl, Joël Riou
 
 import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
+import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 import Mathlib.CategoryTheory.Category.Cat.Terminal
 import Mathlib.CategoryTheory.Category.ReflQuiv
 import Mathlib.Combinatorics.Quiver.ReflQuiver
@@ -377,7 +378,7 @@ instance (x y : OneTruncation₂ ((truncation 2).obj Δ[0])) : Unique (x ⟶ y) 
     ext
     exact this.allEq _ _
 
-/-- The homotopy category functor preserves terminal objects. -/
+/-- The category `hoFunctor.obj (Δ[0])` is terminal. -/
 def hoFunctorDeltaZeroIsTerminal : IsTerminal (hoFunctor.obj (Δ[0])) := by
   letI : Unique ((truncation 2).obj Δ[0]).HomotopyCategory :=
     inferInstanceAs (Unique <| CategoryTheory.Quotient Truncated.HoRel₂)
@@ -387,6 +388,18 @@ def hoFunctorDeltaZeroIsTerminal : IsTerminal (hoFunctor.obj (Δ[0])) := by
         inferInstanceAs <| Subsingleton ((_ : CategoryTheory.Quotient Truncated.HoRel₂) ⟶ _)
       eq_of_hom f := sub.allEq _ _ }
   apply Cat.isDiscreteUnique.isTerminal
+
+/-- The homotopy category functor preserves generic terminal objects. -/
+noncomputable def hoFunctor.terminalIso : (hoFunctor.obj (⊤_ SSet)) ≅ (⊤_ Cat) :=
+  hoFunctor.mapIso (terminalIsoIsTerminal SSet.isTerminalDeltaZero) ≪≫
+    (terminalIsoIsTerminal hoFunctorDeltaZeroIsTerminal).symm
+
+instance hoFunctor.preservesTerminal : PreservesLimit (empty.{0} SSet) hoFunctor :=
+  preservesTerminal_of_iso hoFunctor hoFunctor.terminalIso
+
+instance hoFunctor.preservesTerminal' :
+    PreservesLimitsOfShape (Discrete PEmpty.{1}) hoFunctor :=
+  preservesLimitsOfShape_pempty_of_preservesTerminal _
 
 end
 
