@@ -334,7 +334,7 @@ theorem log_le_clog (b n : ℕ) : log b n ≤ clog b n := by
       ((pow_log_le_self b n.succ_ne_zero).trans <| le_pow_clog hb _)
 
 theorem clog_lt_clog_succ_iff {b n : ℕ} (hb : 1 < b) :
-    clog b n < clog b (n + 1) ↔ n  = b ^ (clog b n) := by
+    clog b n < clog b (n + 1) ↔ n = b ^ clog b n := by
   refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
   · apply le_antisymm (le_pow_clog hb n)
     apply le_of_lt_succ
