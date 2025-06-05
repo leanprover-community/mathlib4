@@ -3,11 +3,8 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.GroupWithZero.Prod
-import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.Data.Prod.Lex
+import Mathlib.Algebra.GroupWithZero.WithZero
 
 /-!
 # Homomorphisms for products of groups with zero
@@ -93,6 +90,19 @@ theorem snd_inr [DecidablePred fun x : N₀ ↦ x = 0] (x : N₀) :
 theorem snd_comp_inr [DecidablePred fun x : N₀ ↦ x = 0] :
     (snd ..).comp (inr M₀ N₀) = MonoidWithZeroHom.id _ :=
   MonoidWithZeroHom.ext fun _ ↦ snd_inr _
+
+lemma inl_injective [DecidablePred fun x : M₀ ↦ x = 0] :
+    Function.Injective (inl M₀ N₀) :=
+  Function.HasLeftInverse.injective ⟨fst .., fun _ ↦ by simp⟩
+lemma inr_injective [DecidablePred fun x : N₀ ↦ x = 0] :
+    Function.Injective (inr M₀ N₀) :=
+  Function.HasLeftInverse.injective ⟨snd .., fun _ ↦ by simp⟩
+lemma fst_surjective [DecidablePred fun x : M₀ ↦ x = 0] :
+    Function.Surjective (fst M₀ N₀) :=
+  Function.HasRightInverse.surjective ⟨inl .., fun _ ↦ by simp⟩
+lemma snd_surjective [DecidablePred fun x : N₀ ↦ x = 0] :
+    Function.Surjective (snd M₀ N₀) :=
+  Function.HasRightInverse.surjective ⟨inr .., fun _ ↦ by simp⟩
 
 variable [DecidablePred fun x : M₀ ↦ x = 0] [DecidablePred fun x : N₀ ↦ x = 0]
 
