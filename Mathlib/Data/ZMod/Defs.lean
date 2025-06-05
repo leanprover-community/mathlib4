@@ -6,6 +6,7 @@ Authors: Eric Rodriguez
 import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Ring.GrindInstances
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Fintype.EquivFin
 
@@ -71,6 +72,7 @@ instance instDistrib (n : ℕ) : Distrib (Fin n) :=
 /-- Commutative ring structure on `Fin n`. -/
 instance instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
   { Fin.instAddMonoidWithOne n, Fin.addCommGroup n, Fin.instCommSemigroup n, Fin.instDistrib n with
+    intCast n := Fin.intCast n
     one_mul := Fin.one_mul'
     mul_one := Fin.mul_one',
     zero_mul := Fin.zero_mul'
@@ -176,5 +178,8 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
 
 instance inhabited (n : ℕ) : Inhabited (ZMod n) :=
   ⟨0⟩
+
+-- Verify that we can use `ZMod n` in `grind`.
+example (n : ℕ) : Lean.Grind.CommRing (ZMod n) := inferInstance
 
 end ZMod

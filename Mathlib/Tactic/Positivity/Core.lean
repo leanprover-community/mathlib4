@@ -47,6 +47,11 @@ def Strictness.toString {e : Q($α)} : Strictness zα pα e → String
   | nonzero _ => "nonzero"
   | none => "none"
 
+/-- Extract a proof that `e` is positive, if possible, from `Strictness` information about `e`. -/
+def Strictness.toPositive {e} : Strictness zα pα e → Option Q(0 < $e)
+  | .positive pf => some pf
+  | _ => .none
+
 /-- Extract a proof that `e` is nonnegative, if possible, from `Strictness` information about `e`.
 -/
 def Strictness.toNonneg {e} : Strictness zα pα e → Option Q(0 ≤ $e)
@@ -223,9 +228,9 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
 
 /-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAdd` monoid. -/
 def positivityCanon (e : Q($α)) : MetaM (Strictness zα pα e) := do
-  let _add ← synthInstanceQ (q(AddMonoid $α) : Q(Type u))
-  let _le ← synthInstanceQ (q(PartialOrder $α) : Q(Type u))
-  let _i ← synthInstanceQ (q(CanonicallyOrderedAdd $α) : Q(Prop))
+  let _add ← synthInstanceQ q(AddMonoid $α)
+  let _le ← synthInstanceQ q(PartialOrder $α)
+  let _i ← synthInstanceQ q(CanonicallyOrderedAdd $α)
   assumeInstancesCommute
   pure (.nonnegative q(zero_le $e))
 
@@ -400,7 +405,7 @@ def solve (t : Q(Prop)) : MetaM Expr := do
   | ~q(@LE.le $α $_a $z $e) => rest α z e .le
   | ~q(@LT.lt $α $_a $z $e) => rest α z e .lt
   | ~q($a ≠ ($b : ($α : Type _))) =>
-    let _zα ← synthInstanceQ (q(Zero $α) : Q(Type u_1))
+    let _zα ← synthInstanceQ q(Zero $α)
     if ← isDefEq b q((0 : $α)) then
       rest α b a .ne
     else
@@ -420,7 +425,7 @@ end Meta.Positivity
 
 namespace Tactic.Positivity
 
-open Lean Elab Tactic
+open Tactic
 
 /-- Tactic solving goals of the form `0 ≤ x`, `0 < x` and `x ≠ 0`.  The tactic works recursively
 according to the syntax of the expression `x`, if the atoms composing the expression all have
@@ -442,3 +447,9 @@ elab (name := positivity) "positivity" : tactic => do
 end Positivity
 
 end Mathlib.Tactic
+
+/-!
+We register `positivity` with the `hint` tactic.
+-/
+
+register_hint positivity

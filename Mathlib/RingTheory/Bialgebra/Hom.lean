@@ -16,7 +16,7 @@ This file defines bundled homomorphisms of `R`-bialgebras. We simply mimic
 
 * `BialgHom R A B`: the type of `R`-bialgebra morphisms from `A` to `B`.
 * `Bialgebra.counitBialgHom R A : A →ₐc[R] R`: the counit of a bialgebra as a bialgebra
-homomorphism.
+  homomorphism.
 
 ## Notations
 
@@ -24,7 +24,7 @@ homomorphism.
 
 -/
 
-open TensorProduct Bialgebra
+open TensorProduct Bialgebra Coalgebra
 
 universe u v w
 
@@ -127,6 +127,15 @@ def Simps.apply {R α β : Type*} [CommSemiring R]
 
 initialize_simps_projections BialgHom (toFun → apply)
 
+/-- Construct a bialgebra hom from an algebra hom respecting counit and comultiplication. -/
+@[simps] def ofAlgHom (f : A →ₐ[R] B) (counit_comp : counit ∘ₗ f.toLinearMap = counit)
+    (map_comp_comul : map f.toLinearMap f.toLinearMap ∘ₗ comul = comul ∘ₗ f.toLinearMap) :
+    A →ₐc[R] B where
+  __ := f
+  map_smul' := map_smul f
+  counit_comp := counit_comp
+  map_comp_comul := map_comp_comul
+
 @[simp]
 protected theorem coe_coe {F : Type*} [FunLike F A B] [BialgHomClass F R A B] (f : F) :
     ⇑(f : A →ₐc[R] B) = f :=
@@ -146,9 +155,11 @@ theorem coe_coalgHom_mk {f : A →ₗc[R] B} (h h₁) :
     ((⟨f, h, h₁⟩ : A →ₐc[R] B) : A →ₗc[R] B) = f := by
   rfl
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem coe_toCoalgHom (f : A →ₐc[R] B) : ⇑(f : A →ₗc[R] B) = f :=
   rfl
+
+lemma toCoalgHom_apply (f : A →ₐc[R] B) (a : A) : f.toCoalgHom a = f a := rfl
 
 @[simp, norm_cast]
 theorem coe_toLinearMap (f : A →ₐc[R] B) : ⇑(f : A →ₗ[R] B) = f :=
@@ -291,13 +302,16 @@ theorem mul_apply (φ ψ : A →ₐc[R] A) (x : A) : (φ * ψ) x = φ (ψ x) :=
 end BialgHom
 
 namespace Bialgebra
+variable {R A : Type*} [CommSemiring R] [Semiring A] [Bialgebra R A]
 
-variable (R : Type u) (A : Type v)
+variable (R A) in
+/-- The unit of a bialgebra as a `BialgHom`. -/
+noncomputable def unitBialgHom : R →ₐc[R] A :=
+  .ofAlgHom (Algebra.ofId R A) (by ext; simp) (by ext; simp [Algebra.TensorProduct.one_def])
 
-variable [CommSemiring R] [Semiring A] [Bialgebra R A]
-
+variable (R A) in
 /-- The counit of a bialgebra as a `BialgHom`. -/
-def counitBialgHom : A →ₐc[R] R :=
+noncomputable def counitBialgHom : A →ₐc[R] R :=
   { Coalgebra.counitCoalgHom R A, counitAlgHom R A with }
 
 @[simp]
@@ -307,8 +321,6 @@ theorem counitBialgHom_apply (x : A) :
 @[simp]
 theorem counitBialgHom_toCoalgHom :
     counitBialgHom R A = Coalgebra.counitCoalgHom R A := rfl
-
-variable {R}
 
 instance subsingleton_to_ring : Subsingleton (A →ₐc[R] R) :=
   ⟨fun _ _ => BialgHom.coe_coalgHom_injective (Subsingleton.elim _ _)⟩

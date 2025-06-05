@@ -80,7 +80,7 @@ theorem pow_ne_of_irreducible_X_pow_sub_C {n : ℕ} {a : K}
   rw [mul_comm, pow_mul, map_pow, hq] at H
   have : degree q = 0 := by
     simpa [isUnit_iff_degree_eq_zero, degree_X_pow_sub_C,
-      Nat.pos_iff_ne_zero, (mul_ne_zero_iff.mp hn).2] using H.2 _ q rfl
+      Nat.pos_iff_ne_zero, (mul_ne_zero_iff.mp hn).2] using H.2 rfl
   apply_fun degree at hq
   simp only [this, ← pow_mul, mul_comm k m, degree_X_pow_sub_C, Nat.pos_iff_ne_zero.mpr hn,
     Nat.pos_iff_ne_zero.mpr (mul_ne_zero_iff.mp hn).2, degree_mul, ← map_pow, add_zero,

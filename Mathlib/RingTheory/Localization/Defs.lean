@@ -30,23 +30,23 @@ variable [Algebra R S] [Algebra P Q] (M : Submonoid R) (T : Submonoid P)
 
 ## Main definitions
 
- * `IsLocalization (M : Submonoid R) (S : Type*)` is a typeclass expressing that `S` is a
-   localization of `R` at `M`, i.e. the canonical map `algebraMap R S : R →+* S` is a
-   localization map (satisfying the above properties).
- * `IsLocalization.mk' S` is a surjection sending `(x, y) : R × M` to `f x * (f y)⁻¹`
- * `IsLocalization.lift` is the ring homomorphism from `S` induced by a homomorphism from `R`
-   which maps elements of `M` to invertible elements of the codomain.
- * `IsLocalization.map S Q` is the ring homomorphism from `S` to `Q` which maps elements
-   of `M` to elements of `T`
- * `IsLocalization.ringEquivOfRingEquiv`: if `R` and `P` are isomorphic by an isomorphism
-   sending `M` to `T`, then `S` and `Q` are isomorphic
+* `IsLocalization (M : Submonoid R) (S : Type*)` is a typeclass expressing that `S` is a
+  localization of `R` at `M`, i.e. the canonical map `algebraMap R S : R →+* S` is a
+  localization map (satisfying the above properties).
+* `IsLocalization.mk' S` is a surjection sending `(x, y) : R × M` to `f x * (f y)⁻¹`
+* `IsLocalization.lift` is the ring homomorphism from `S` induced by a homomorphism from `R`
+  which maps elements of `M` to invertible elements of the codomain.
+* `IsLocalization.map S Q` is the ring homomorphism from `S` to `Q` which maps elements
+  of `M` to elements of `T`
+* `IsLocalization.ringEquivOfRingEquiv`: if `R` and `P` are isomorphic by an isomorphism
+  sending `M` to `T`, then `S` and `Q` are isomorphic
 
 ## Main results
 
- * `Localization M S`, a construction of the localization as a quotient type, defined in
-   `GroupTheory.MonoidLocalization`, has `CommRing`, `Algebra R` and `IsLocalization M`
-   instances if `R` is a ring. `Localization.Away`, `Localization.AtPrime` and `FractionRing`
-   are abbreviations for `Localization`s and have their corresponding `IsLocalization` instances
+* `Localization M S`, a construction of the localization as a quotient type, defined in
+  `GroupTheory.MonoidLocalization`, has `CommRing`, `Algebra R` and `IsLocalization M`
+  instances if `R` is a ring. `Localization.Away`, `Localization.AtPrime` and `FractionRing`
+  are abbreviations for `Localization`s and have their corresponding `IsLocalization` instances
 
 ## Implementation notes
 
@@ -148,6 +148,15 @@ theorem of_le_of_exists_dvd (N : Submonoid R) (h₁ : M ≤ N) (h₂ : ∀ n ∈
   of_le M N h₁ fun n hn ↦ have ⟨m, hm, dvd⟩ := h₂ n hn
     isUnit_of_dvd_unit (map_dvd _ dvd) (map_units S ⟨m, hm⟩)
 
+theorem algebraMap_isUnit_iff {x : R} : IsUnit (algebraMap R S x) ↔ ∃ m ∈ M, x ∣ m := by
+  refine ⟨fun h ↦ ?_, fun ⟨m, hm, dvd⟩ ↦ isUnit_of_dvd_unit (map_dvd _ dvd) (map_units S ⟨m, hm⟩)⟩
+  have ⟨s, hxs⟩ := isUnit_iff_dvd_one.mp h
+  have ⟨⟨r, m⟩, hrm⟩ := surj M s
+  apply_fun (algebraMap R S x * ·) at hrm
+  rw [← mul_assoc, ← hxs, one_mul, ← map_mul] at hrm
+  have ⟨m', eq⟩ := exists_of_eq (M := M) hrm
+  exact ⟨m' * m, mul_mem m'.2 m.2, _, mul_left_comm _ x _ ▸ eq⟩
+
 variable (S)
 
 /-- `IsLocalization.toLocalizationWithZeroMap M S` shows `S` is the monoid localization of
@@ -204,6 +213,10 @@ variable {M}
 
 /-- If `M` contains `0` then the localization at `M` is trivial. -/
 theorem subsingleton (h : 0 ∈ M) : Subsingleton S := (toLocalizationMap M S).subsingleton h
+
+protected theorem subsingleton_iff : Subsingleton S ↔ 0 ∈ M :=
+  ⟨fun _ ↦ have ⟨c, eq⟩ := exists_of_eq (M := M) (S := S) (x := 0) (y := 1) (Subsingleton.elim _ _)
+    by rw [mul_zero, mul_one] at eq; exact eq ▸ c.2, subsingleton⟩
 
 theorem map_right_cancel {x y} {c : M} (h : algebraMap R S (c * x) = algebraMap R S (c * y)) :
     algebraMap R S x = algebraMap R S y :=
@@ -414,7 +427,8 @@ theorem smul_mk' (x y : R) (m : M) : x • mk' S y m = mk' S (x * y) m := by
   rw [smul_mk', mk'_mul_cancel_left]
 
 @[simps]
-instance invertible_mk'_one (s : M) : Invertible (IsLocalization.mk' S (1 : R) s) where
+noncomputable instance invertible_mk'_one (s : M) :
+    Invertible (IsLocalization.mk' S (1 : R) s) where
   invOf := algebraMap R S s
   invOf_mul_self := by simp
   mul_invOf_self := by simp

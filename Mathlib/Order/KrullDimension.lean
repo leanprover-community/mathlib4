@@ -7,11 +7,8 @@ Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Algebra.Order.SuccPred.WithBot
 import Mathlib.Data.ENat.Lattice
-import Mathlib.Data.Int.Basic
 import Mathlib.Order.Atoms
-import Mathlib.Order.Minimal
 import Mathlib.Order.RelSeries
-import Mathlib.Order.LatticeIntervals
 import Mathlib.Tactic.FinCases
 
 /-!
@@ -131,11 +128,11 @@ lemma coheight_eq (a : α) :
 
 lemma height_le_iff {a : α} {n : ℕ∞} :
     height a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, p.last ≤ a → p.length ≤ n := by
- rw [height, iSup₂_le_iff]
+  rw [height, iSup₂_le_iff]
 
 lemma coheight_le_iff {a : α} {n : ℕ∞} :
     coheight a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, a ≤ p.head → p.length ≤ n := by
- rw [coheight_eq, iSup₂_le_iff]
+  rw [coheight_eq, iSup₂_le_iff]
 
 lemma height_le {a : α} {n : ℕ∞} (h : ∀ (p : LTSeries α), p.last = a → p.length ≤ n) :
     height a ≤ n := by
@@ -154,10 +151,10 @@ Variant of `height_le_iff` ranging only over those series that end exactly on `a
 -/
 lemma height_le_iff' {a : α} {n : ℕ∞} :
     height a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, p.last = a → p.length ≤ n := by
- constructor
- · rw [height_le_iff]
-   exact fun h p hlast => h (le_of_eq hlast)
- · exact height_le
+  constructor
+  · rw [height_le_iff]
+    exact fun h p hlast => h (le_of_eq hlast)
+  · exact height_le
 
 /--
 Alternative definition of height, with the supremum ranging only over those series that end at `a`.
@@ -563,6 +560,15 @@ lemma krullDim_nonneg [Nonempty α] : 0 ≤ krullDim α := krullDim_nonneg_iff.m
 
 @[deprecated (since := "2024-12-22")] alias krullDim_nonneg_of_nonempty := krullDim_nonneg
 
+theorem krullDim_ne_bot_iff : krullDim α ≠ ⊥ ↔ Nonempty α := by
+  rw [ne_eq, krullDim_eq_bot_iff, not_isEmpty_iff]
+
+theorem bot_lt_krullDim_iff : ⊥ < krullDim α ↔ Nonempty α := by
+  rw [bot_lt_iff_ne_bot, krullDim_ne_bot_iff]
+
+theorem bot_lt_krullDim [Nonempty α] : ⊥ < krullDim α :=
+  bot_lt_krullDim_iff.mpr ‹_›
+
 lemma krullDim_nonpos_iff_forall_isMax : krullDim α ≤ 0 ↔ ∀ x : α, IsMax x := by
   simp only [krullDim, iSup_le_iff, isMax_iff_forall_not_lt]
   refine ⟨fun H x y h ↦ (H ⟨1, ![x, y],
@@ -860,6 +866,8 @@ lemma KrullDimLE.mono {n m : ℕ} (e : n ≤ m) (α : Type*) [Preorder α] [Krul
     KrullDimLE m α :=
   ⟨KrullDimLE.krullDim_le (n := n).trans (Nat.cast_le.mpr e)⟩
 
+instance {α} [Preorder α] [Subsingleton α] : KrullDimLE 0 α := ⟨krullDim_nonpos_of_subsingleton⟩
+
 end typeclass
 
 /-!
@@ -944,7 +952,7 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
     let p' : LTSeries α := {
       length := p.length - 1
       toFun := fun ⟨i, hi⟩ => (p ⟨i+1, by omega⟩).unbot (by
-        apply LT.lt.ne_bot (a := p.head)
+        apply ne_bot_of_gt (a := p.head)
         apply p.strictMono
         exact compare_gt_iff_gt.mp rfl)
       step := fun i => by simpa [WithBot.unbot_lt_iff] using p.step ⟨i + 1, by omega⟩ }
@@ -1024,5 +1032,64 @@ lemma coheight_coe_enat (n : ℕ) : coheight (n : ℕ∞) = ⊤ := by
   simp only [Nat.cast_id, coheight_nat, top_add]
 
 end calculations
+
+section orderHom
+
+variable {α β : Type*} [Preorder α] [PartialOrder β]
+variable {m : ℕ} (f : α →o β) (h : ∀ (x : β), Order.krullDim (f ⁻¹' {x}) ≤ m)
+
+include h in
+lemma height_le_of_krullDim_preimage_le (x : α) :
+    Order.height x ≤ (m + 1) * Order.height (f x) + m := by
+  generalize h' : Order.height (f x) = n
+  cases n with | top => simp | coe n =>
+    induction n using Nat.strong_induction_on generalizing x with | h n ih =>
+    refine height_le_iff.mpr fun p hp ↦ le_of_not_lt fun h_len ↦ ?_
+    let i : Fin (p.length + 1) := ⟨p.length - (m + 1), Nat.sub_lt_succ p.length _⟩
+    suffices h'' : f (p i) < f x by
+      obtain ⟨n', hn'⟩ : ∃ (n' : ℕ), n' = height (f (p i)) := ENat.ne_top_iff_exists.mp
+        ((height_mono h''.le).trans_lt (h' ▸ ENat.coe_lt_top _)).ne
+      have h_lt : n' < n := ENat.coe_lt_coe.mp
+        (h' ▸ hn' ▸ height_strictMono h'' (hn' ▸ ENat.coe_lt_top _))
+      have := (length_le_height_last (p := p.take i)).trans <| ih n' h_lt (p i) hn'.symm
+      rw [RelSeries.take_length, ENat.coe_sub, Nat.cast_add, Nat.cast_one, tsub_le_iff_right,
+        add_assoc, add_comm _ (_ + 1), ← add_assoc, ← mul_add_one] at this
+      refine not_lt_of_le ?_ (h_len.trans_le this)
+      gcongr
+      rwa [← ENat.coe_one, ← ENat.coe_add, ENat.coe_le_coe]
+    refine (f.monotone ((p.monotone (Fin.le_last _)).trans hp)).lt_of_not_le fun h'' ↦ ?_
+    let q' : LTSeries α := p.drop i
+    let q : LTSeries (f ⁻¹' {f x}) := ⟨q'.length, fun j ↦ ⟨q' j, le_antisymm
+      (f.monotone (le_trans (b := q'.last) (q'.monotone (Fin.le_last _)) (p.last_drop _ ▸ hp)))
+      (le_trans (b := f q'.head) (p.head_drop _ ▸ h'')
+        (f.monotone (q'.monotone (Fin.zero_le _))))⟩, fun i ↦ q'.step i⟩
+    have := (LTSeries.length_le_krullDim q).trans (h (f x))
+    simp only [RelSeries.drop_length, Nat.cast_le, tsub_le_iff_right, q', i, q] at this
+    have : p.length > m := ENat.coe_lt_coe.mp ((le_add_left le_rfl).trans_lt h_len)
+    omega
+
+include h in
+lemma coheight_le_of_krullDim_preimage_le (x : α) :
+    Order.coheight x ≤ (m + 1) * Order.coheight (f x) + m := by
+  rw [Order.coheight, Order.coheight]
+  apply height_le_of_krullDim_preimage_le (f := f.dual)
+  exact fun x ↦ le_of_eq_of_le (krullDim_orderDual (α := f ⁻¹' {x})) (h x)
+
+include f h in
+lemma krullDim_le_of_krullDim_preimage_le :
+    Order.krullDim α ≤ (m + 1) * Order.krullDim β + m := by
+  rw [Order.krullDim_eq_iSup_height, Order.krullDim_eq_iSup_height]
+  apply iSup_le fun x ↦ (le_trans (WithBot.coe_mono (height_le_of_krullDim_preimage_le f h x)) ?_)
+  push_cast
+  apply add_le_add_right <| mul_le_mul_of_nonneg_left ?_ (right_eq_inf.mp rfl)
+  exact le_iSup_iff.mpr fun b a ↦ a (f x)
+
+/-- Another version when the `OrderHom` is unbundled -/
+lemma krullDim_le_of_krullDim_preimage_le' (f : α → β) (h_mono : Monotone f)
+    (h : ∀ (x : β), Order.krullDim (f ⁻¹' {x}) ≤ m) :
+    Order.krullDim α ≤ (m + 1) * Order.krullDim β + m :=
+  Order.krullDim_le_of_krullDim_preimage_le ⟨f, h_mono⟩ h
+
+end orderHom
 
 end Order

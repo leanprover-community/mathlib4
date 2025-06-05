@@ -36,7 +36,7 @@ prevent Lean from using `HolderTriple p q r` and `HolderTriple p q r'`
 within a single proof, as may be occasionally convenient. -/
 @[mk_iff]
 class HolderTriple (p q : ℝ≥0∞) (r : semiOutParam ℝ≥0∞) : Prop where
-  inv_add_inv' : p⁻¹ + q⁻¹ = r⁻¹
+  inv_add_inv_eq_inv (p q r) : p⁻¹ + q⁻¹ = r⁻¹
 
 /-- An abbreviation for `ENNReal.HolderTriple p q 1`, this class states `p⁻¹ + q⁻¹ = 1`. -/
 abbrev HolderConjugate (p q : ℝ≥0∞) := HolderTriple p q 1
@@ -51,32 +51,27 @@ namespace HolderTriple
 /-- This is not marked as an instance so that Lean doesn't always find this one
 and a more canonical value of `r` can be used. -/
 lemma of (p q : ℝ≥0∞) : HolderTriple p q (p⁻¹ + q⁻¹)⁻¹ where
-  inv_add_inv' := inv_inv _ |>.symm
+  inv_add_inv_eq_inv := inv_inv _ |>.symm
 
 /- This instance causes a trivial loop, but this is exactly the kind of loop that
 Lean should be able to detect and avoid. -/
 instance symm {p q r : ℝ≥0∞} [hpqr : HolderTriple p q r] : HolderTriple q p r where
-  inv_add_inv' := add_comm p⁻¹ q⁻¹ ▸ hpqr.inv_add_inv'
+  inv_add_inv_eq_inv := add_comm p⁻¹ q⁻¹ ▸ hpqr.inv_add_inv_eq_inv
 
 instance instInfty (p : ℝ≥0∞) : HolderTriple p ∞ p where
-  inv_add_inv' := by simp
+  inv_add_inv_eq_inv := by simp
 
 instance instZero (p : ℝ≥0∞) : HolderTriple p 0 0 where
-  inv_add_inv' := by simp
+  inv_add_inv_eq_inv := by simp
 
 variable (p q r : ℝ≥0∞) [HolderTriple p q r]
 
-lemma inv_add_inv_eq_inv : p⁻¹ + q⁻¹ = r⁻¹ :=
-  inv_add_inv'
-
-lemma inv_eq : r⁻¹ = p⁻¹ + q⁻¹ :=
-  inv_add_inv'.symm
+lemma inv_eq : r⁻¹ = p⁻¹ + q⁻¹ := (inv_add_inv_eq_inv ..).symm
 
 lemma unique (r' : ℝ≥0∞) [hr' : HolderTriple p q r'] : r = r' := by
   rw [← inv_inj, inv_eq p q r, inv_eq p q r']
 
-lemma one_div_add_one_div : 1 / p + 1 / q = 1 / r := by
-  simpa using inv_add_inv'
+lemma one_div_add_one_div : 1 / p + 1 / q = 1 / r := by simpa using inv_add_inv_eq_inv ..
 
 lemma one_div_eq : 1 / r = 1 / p + 1 / q :=
   one_div_add_one_div p q r |>.symm
@@ -115,6 +110,11 @@ variable {r} in
 lemma unique_of_ne_zero (q' : ℝ≥0∞) (hr : r ≠ 0) [HolderTriple p q' r] : q = q' := by
   rw [← inv_inj, ← inv_sub_inv_eq_inv q p hr, ← inv_sub_inv_eq_inv q' p hr]
 
+lemma holderConjugate_div_div (hr₀ : r ≠ 0) (hr : r ≠ ∞) : HolderConjugate (p / r) (q / r) where
+  inv_add_inv_eq_inv := by
+    rw [ENNReal.inv_div (.inl hr) (.inl hr₀), ENNReal.inv_div (.inl hr) (.inl hr₀), div_eq_mul_inv,
+      div_eq_mul_inv, ← mul_add, inv_add_inv_eq_inv p q r, ENNReal.mul_inv_cancel hr₀ hr, inv_one]
+
 end HolderTriple
 
 /-! ### Hölder conjugates -/
@@ -127,7 +127,7 @@ instance symm {p q : ℝ≥0∞} [hpq : HolderConjugate p q] : HolderConjugate q
   inferInstance
 
 instance instTwoTwo : HolderConjugate 2 2 where
-  inv_add_inv' := by
+  inv_add_inv_eq_inv := by
     rw [← two_mul, ENNReal.mul_inv_cancel]
     all_goals norm_num
 

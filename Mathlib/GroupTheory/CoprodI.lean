@@ -85,7 +85,7 @@ variable {ι : Type*} (M : ι → Type*) [∀ i, Monoid (M i)]
 
 /-- A relation on the free monoid on alphabet `Σ i, M i`,
 relating `⟨i, 1⟩` with `1` and `⟨i, x⟩ * ⟨i, y⟩` with `⟨i, x * y⟩`. -/
-inductive Monoid.CoprodI.Rel : FreeMonoid (Σi, M i) → FreeMonoid (Σi, M i) → Prop
+inductive Monoid.CoprodI.Rel : FreeMonoid (Σ i, M i) → FreeMonoid (Σ i, M i) → Prop
   | of_one (i : ι) : Monoid.CoprodI.Rel (FreeMonoid.of ⟨i, 1⟩) 1
   | of_mul {i : ι} (x y : M i) :
     Monoid.CoprodI.Rel (FreeMonoid.of ⟨i, x⟩ * FreeMonoid.of ⟨i, y⟩) (FreeMonoid.of ⟨i, x * y⟩)
@@ -394,7 +394,7 @@ def consRecOn {motive : Word M → Sort*} (w : Word M) (empty : motive empty)
   | cons m w ih =>
     refine cons m.1 m.2 ⟨w, fun _ hl => h1 _ (List.mem_cons_of_mem _ hl), h2.tail⟩ ?_ ?_ (ih _ _)
     · rw [List.chain'_cons'] at h2
-      simp only [fstIdx, ne_eq, Option.map_eq_some',
+      simp only [fstIdx, ne_eq, Option.map_eq_some_iff,
         Sigma.exists, exists_and_right, exists_eq_right, not_exists]
       intro m' hm'
       exact h2.1 _ hm' rfl
@@ -426,7 +426,7 @@ private def equivPairAux (i) (w : Word M) : { p : Pair M i // rcons p = w } :=
             tail := w
             fstIdx_ne := ij ▸ h1 }
           property := by subst ij; simp [rcons, h2] }
-      else ⟨⟨1, cons m w h1 h2, by simp [cons, fstIdx, Ne.symm ij]⟩,  by simp [rcons]⟩
+      else ⟨⟨1, cons m w h1 h2, by simp [cons, fstIdx, Ne.symm ij]⟩, by simp [rcons]⟩
 
 /-- The equivalence between words and pairs. Given a word, it decomposes it as a pair by removing
 the first letter if it comes from `M i`. Given a pair, it prepends the head to the tail. -/
@@ -463,7 +463,7 @@ theorem mem_of_mem_equivPair_tail {i j : ι} {w : Word M} (m : M i) :
   rw [mem_equivPair_tail_iff]
   rintro (h | h)
   · exact List.mem_of_mem_tail h
-  · revert h; cases w.toList <;> simp (config := {contextual := true})
+  · revert h; cases w.toList <;> simp +contextual
 
 theorem equivPair_head {i : ι} {w : Word M} :
     (equivPair i w).head =
@@ -536,16 +536,16 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
           · simp only [Sigma.ext_iff, heq_eq_eq, true_and] at h
             subst h
             rfl
-          · simp only [fstIdx, Option.map_eq_some', Sigma.exists,
+          · simp only [fstIdx, Option.map_eq_some_iff, Sigma.exists,
               exists_and_right, exists_eq_right, not_exists, ne_eq] at hm'
             exact (hm'.1 (w.toList.head hnil).2 (by rw [List.head?_eq_head])).elim
       · revert h
         rw [fstIdx]
         cases w.toList
         · simp
-        · simp (config := {contextual := true}) [Sigma.ext_iff]
+        · simp +contextual [Sigma.ext_iff]
   · rcases w with ⟨_ | _, _, _⟩ <;>
-    simp [or_comm, hij, Ne.symm hij]; rw [eq_comm]
+    simp [or_comm, hij, Ne.symm hij, eq_comm]
 
 theorem mem_smul_iff_of_ne {i j : ι} (hij : i ≠ j) {m₁ : M i} {m₂ : M j} {w : Word M} :
     ⟨_, m₁⟩ ∈ (of m₂ • w).toList ↔ ⟨i, m₁⟩ ∈ w.toList := by

@@ -65,7 +65,7 @@ theorem exp_eq_sum {a : A} {k : ℕ} (h : a ^ k = 0) :
 
 theorem exp_smul_eq_sum {M : Type*} [AddCommGroup M] [Module A M] [Module ℚ M] {a : A} {m : M}
     {k : ℕ} (h : (a ^ k) • m = 0) (hn : IsNilpotent a) :
-      exp a • m = ∑ i ∈ range k, (i.factorial : ℚ)⁻¹ • (a ^ i) • m := by
+    exp a • m = ∑ i ∈ range k, (i.factorial : ℚ)⁻¹ • (a ^ i) • m := by
   rcases le_or_lt (nilpotencyClass a) k with h₀ | h₀
   · simp_rw [exp_eq_sum (pow_eq_zero_of_le h₀ (pow_nilpotencyClass hn)), sum_smul, smul_assoc]
   rw [exp, sum_smul, ← sum_range_add_sum_Ico _ (Nat.le_of_succ_le h₀)]
@@ -220,7 +220,7 @@ theorem commute_exp_left_of_commute
   replace hfM : fM ^ kl = 0 := pow_eq_zero_of_le (by omega) hfM
   replace hfN : fN ^ kl = 0 := pow_eq_zero_of_le (by omega) hfN
   have (i : ℕ) : (fN ^ i) (g m) = g ((fM ^ i) m) := by
-    simpa using LinearMap.congr_fun (LinearMap.commute_pow_left_of_commute h i) m
+    simpa using LinearMap.congr_fun (Module.End.commute_pow_left_of_commute h i) m
   simp [exp_eq_sum hfM, exp_eq_sum hfN, this, map_rat_smul]
 
 theorem exp_mul_of_derivation (R B : Type*) [CommRing R] [NonUnitalNonAssocRing B]

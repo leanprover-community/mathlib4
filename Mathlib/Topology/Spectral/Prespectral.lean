@@ -69,6 +69,10 @@ lemma PrespectralSpace.of_isInducing [PrespectralSpace Y]
     rintro _ U h₁ h₂ rfl
     exact hf'.isCompact_preimage_of_isOpen h₁ h₂)
 
+lemma PrespectralSpace.of_isClosedEmbedding [PrespectralSpace Y]
+    (f : X → Y) (hf : IsClosedEmbedding f) : PrespectralSpace X :=
+  .of_isInducing f hf.isInducing hf.isProperMap.isSpectralMap
+
 /-- In a prespectral space, the lattice of opens is determined by its lattice of compact opens. -/
 def PrespectralSpace.opensEquiv [PrespectralSpace X] :
     Opens X ≃o Order.Ideal (CompactOpens X) where

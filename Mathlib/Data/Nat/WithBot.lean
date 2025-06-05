@@ -6,6 +6,7 @@ Authors: Chris Hughes
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Data.Nat.Cast.WithTop
+import Mathlib.Order.Nat
 
 /-!
 # `WithBot ℕ`
