@@ -1280,8 +1280,16 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
             rhs
             arg 1
             arg 2
+            -- TODO - is there a tactic that can normalize the 'ofMul' stuff for us?
             equals s * γ^(-(φ (ofMul s))) =>
-              sorry
+              rw [← ofMul_zpow]
+              rw [← sub_eq_add_neg]
+              rw [← ofMul_div]
+              rw [div_eq_mul_inv]
+              rw [← inv_zpow]
+              rw [inv_zpow']
+              rfl
+
 
           rw [← zpow_natCast, phi_natabs]
           simp
