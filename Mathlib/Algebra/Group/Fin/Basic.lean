@@ -41,7 +41,18 @@ instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n) where
 
 namespace NatCast
 
-/-- This isn't a global instance ... -/
+/---
+This is not a global instance, but can introduced locally using `open Fin.NatCast in ...`.
+
+This is not an instance because the `binop%` elaborator assumes that
+here are no non-trivial coercion loops,
+but this instance  would introduce a coercion from `Nat` to `Fin n` and back.
+Non-trivial loops lead to undesirable and counterintuitive elaboration behavior.
+
+For example, for `x : Fin k` and `n : Nat`,
+it causes `x < n` to be elaborated as `x < ↑n` rather than `↑x < n`,
+silently introducing wraparound arithmetic.
+-/
 def instAddMonoidWithOne (n) [NeZero n] : AddMonoidWithOne (Fin n) where
   __ := inferInstanceAs (AddCommMonoid (Fin n))
   natCast i := Fin.ofNat n i

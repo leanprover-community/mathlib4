@@ -56,9 +56,6 @@ end DivisionMonoid
 
 @[simp] lemma IsSquare.zero [MulZeroClass α] : IsSquare (0 : α) := ⟨0, (mul_zero _).symm⟩
 
-/-- An element `a` of a semiring is odd if there exists `k` such `a = 2*k + 1`. -/
-def Odd {α : Type*} [OfNat α 1] [OfNat α 2] [Add α] [Mul α] (a : α) : Prop := ∃ k, a = 2 * k + 1
-
 section Semiring
 variable [Semiring α] [Semiring β] {a b : α} {m n : ℕ}
 
@@ -88,6 +85,9 @@ lemma even_two_mul (a : α) : Even (2 * a) := ⟨a, two_mul _⟩
 
 lemma Even.pow_of_ne_zero (ha : Even a) : ∀ {n : ℕ}, n ≠ 0 → Even (a ^ n)
   | n + 1, _ => by rw [pow_succ]; exact ha.mul_left _
+
+/-- An element `a` of a semiring is odd if there exists `k` such `a = 2*k + 1`. -/
+def Odd (a : α) : Prop := ∃ k, a = 2 * k + 1
 
 lemma odd_iff_exists_bit1 : Odd a ↔ ∃ b, a = 2 * b + 1 := exists_congr fun b ↦ by rw [two_mul]
 
