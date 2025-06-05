@@ -1,13 +1,29 @@
+/-
+Copyright (c) 2025 Kenny Lau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kenny Lau
+-/
+
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Tactic.Ring.RingNF
+
+/-!
+
+# R[X] / (X² − a • X − b)
+
+TODO: Add module docstring
+
+-/
 
 universe u
 
 /-- `R[X]/(X^2−a*X−b)` -/
 @[ext]
 structure QuadraticAlgebra (R : Type u) (a b : R) : Type u where
+  /-- TODO: Add docstring -/
   re : R
+  /-- TODO: Add docstring -/
   im : R
 
 namespace QuadraticAlgebra
