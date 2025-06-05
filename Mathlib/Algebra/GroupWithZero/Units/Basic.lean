@@ -471,8 +471,3 @@ noncomputable def commGroupWithZeroOfIsUnitOrEqZero [hM : CommMonoidWithZero M]
   { groupWithZeroOfIsUnitOrEqZero h, hM with }
 
 end NoncomputableDefs
-
-lemma commute_zero_left {M₀ : Type*} [MulZeroClass M₀] (x : M₀) : Commute 0 x := by
-  simp [commute_iff_eq]
-lemma commute_zero_right {M₀ : Type*} [MulZeroClass M₀] (x : M₀) : Commute x 0 :=
-  (commute_zero_left _).symm

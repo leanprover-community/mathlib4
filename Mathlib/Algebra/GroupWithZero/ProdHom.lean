@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.WithZero
 
 /-!
@@ -138,9 +139,9 @@ theorem inl_mul_inr_eq_mk_of_unit (m : M₀ˣ) (n : N₀ˣ) :
 
 theorem commute_inl_inr (m : M₀) (n : N₀) : Commute (inl M₀ N₀ m) (inr M₀ N₀ n) := by
   obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit m
-  · simp [commute_zero_left]
+  · simp [Commute.zero_left]
   obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit n
-  · simp [commute_zero_right]
+  · simp [Commute.zero_right]
   simp [inl, inr, WithZero.withZeroUnitsEquiv, commute_iff_eq, ← WithZero.coe_mul]
 
 end MonoidWithZeroHom
