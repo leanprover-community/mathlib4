@@ -172,6 +172,51 @@ lemma ModelWithCorners.range_eq_target {𝕜 E H : Type*} [NontriviallyNormedFie
     range I.toPartialEquiv = I.target := by
   rw [← I.image_source_eq_target, I.source_eq, image_univ.symm]
 
+-- TODO: have an issue with instances, below
+def ModelWithCorners.of_real
+    {E : Type*} [NormedAddCommGroup E] [inst: NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
+    (φ : PartialEquiv H E) (hsource : φ.source = univ)
+    (hcont : Continuous φ) (hcont_inv: Continuous φ.symm)
+    (hrange : Convex ℝ (range φ)) (hrange' : (interior (range φ)).Nonempty) :
+    ModelWithCorners ℝ E H where
+  toPartialEquiv := φ
+  source_eq := hsource
+  uniqueDiffOn' := by
+    rw [← φ.image_source_eq_target, hsource, image_univ]
+    exact uniqueDiffOn_convex hrange hrange'
+  target_subset_closure_interior := by
+    rw [← φ.image_source_eq_target, hsource, image_univ]
+    -- if the interior is empty, this is false
+    sorry
+  convex_range h := by
+    --rw [← φ.image_source_eq_target, hsource, image_univ]
+    convert hrange
+    -- TODO: instances don't match...
+    sorry
+
+def ModelWithCorners.of_rclike (𝕜 : Type*) [RCLike 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [inst: NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+    (φ : PartialEquiv H E) (hsource : φ.source = univ)
+    (hcont : Continuous φ) (hcont_inv: Continuous φ.symm)
+    (hrange : haveI aux := NormedSpace.restrictScalars ℝ 𝕜 E; Convex ℝ (range φ))
+    (hrange' : (interior (range φ)).Nonempty) :
+    ModelWithCorners 𝕜 E H where
+  toPartialEquiv := φ
+  source_eq := hsource
+  target_subset_closure_interior := sorry
+  convex_range h := by -- need to think about the best fix!
+    convert hrange
+    dsimp
+    sorry
+  uniqueDiffOn' := by
+    haveI aux := NormedSpace.restrictScalars ℝ 𝕜 E
+    have : UniqueDiffOn ℝ (range φ) := by
+      refine uniqueDiffOn_convex ?_ hrange'
+      convert hrange
+      sorry -- instances mismatching
+    -- how can we obtain complex differentiability?
+    sorry
+
 /-- If a model with corners has full range, all three technical conditions are satisfied. -/
 def ModelWithCorners.of_range_univ (𝕜 : Type*) [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [inst: NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
