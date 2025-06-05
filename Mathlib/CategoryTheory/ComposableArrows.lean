@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Category.ULift
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Functor.Const
 import Mathlib.Order.Fin.Basic
@@ -884,46 +882,6 @@ def opEquivalence : (ComposableArrows C n)ᵒᵖ ≌ ComposableArrows Cᵒᵖ n 
     (Functor.leftOpRightOpEquiv (Fin (n + 1)) C)
 
 end ComposableArrows
-
-section
-
-universe u v
-
-/-- An alias for the underlying type of the category `Fin n` lifted to an object of `Cat.{v, u}`. -/
-def ULiftFin (n : ℕ) : Type u := (ULiftHom.{v,u} (ULift.{u} (Fin n)))
-
-instance {n : ℕ} : Category (ULiftFin n) := ULiftHom.category
-namespace ULiftFin
-
-variable {n : ℕ} {C : Type u} [Category.{v} C]
-
-/-- A functor `ULiftFin (n + 1) ⥤ C` defines a term of type `ComposableArrows C n`. -/
-def toComposableArrows (F : ULiftFin (n + 1) ⥤ C) : ComposableArrows C n :=
-  ULift.upFunctor ⋙ ULiftHom.up ⋙ F
-
-/-- A term of type `ComposableArrows C n` defines a functor `ULiftFin (n + 1) ⥤ C`. -/
-def ofComposableArrows (G : ComposableArrows C n) : (ULiftFin (n + 1) ⥤ C) :=
-  ULiftHom.down (C := ULift.{u} (Fin (n + 1))) ⋙ ULift.downFunctor ⋙ G
-
-@[simp]
-theorem to_ofComposableArrows :
-    Function.LeftInverse (toComposableArrows (C := C) (n := n)) ofComposableArrows := by
-  intro
-  apply ComposableArrows.ext (by rfl_cat)
-  · intros
-    simp only [ComposableArrows.map', homOfLE_leOfHom, eqToHom_refl, comp_id, id_comp]
-    rfl
-
-@[simp]
-theorem of_toComposableArrows :
-    Function.RightInverse (toComposableArrows (C := C) (n := n)) ofComposableArrows := by
-  intro G; unfold ofComposableArrows toComposableArrows
-  refine Functor.ext_of_iso (by rfl_cat) ?_ (by rfl_cat)
-  · rw (occs := .pos [2]) [← Functor.assoc]; rfl_cat
-
-end ULiftFin
-
-end
 
 variable {C}
 

@@ -3,11 +3,8 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Category.Cat.Limit
-import Mathlib.CategoryTheory.ComposableArrows
-import Mathlib.CategoryTheory.Discrete.Basic
 import Mathlib.CategoryTheory.Functor.Const
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Discrete.Basic
 
 /-!
 # The category `Discrete PUnit`
@@ -15,10 +12,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 We define `star : C ⥤ Discrete PUnit` sending everything to `PUnit.star`,
 show that any two functors to `Discrete PUnit` are naturally isomorphic,
 and construct the equivalence `(Discrete PUnit ⥤ C) ≌ C`.
-
-We show `Discrete PUnit` is the terminal category.
-
 -/
+
 
 universe w v u
 
@@ -94,23 +89,5 @@ theorem equiv_punit_iff_unique :
       NatIso.ofComponents fun _ =>
         { hom := default
           inv := default }
-
-open Limits Functor
-
-instance DiscretePUnit.isTerminal : IsTerminal (Cat.of (Discrete PUnit)) :=
-  IsTerminal.ofUniqueHom (fun C ↦ star C) (fun _ _ => punit_ext' _ _)
-
-/-- As a terminal object, `Discrete PUnit` is isomorphic to the terminal object in `Cat.` -/
-noncomputable def TerminalCatDiscretePUnitIso : ⊤_ Cat.{u,u} ≅ Cat.of (Discrete.{u} PUnit) :=
-  terminalIsoIsTerminal DiscretePUnit.isTerminal
-
-/-- An isomorphism between `ULiftFin 1` and `Discrete PUnit`. -/
-def ULiftFinDiscretePUnitIso : Cat.of (ULiftFin 1) ≅ Cat.of (Discrete PUnit) where
-  hom := toCatHom (star (ULiftFin 1))
-  inv := toCatHom (fromPUnit (ULift.up 0))
-  hom_inv_id := by
-    apply (Function.RightInverse.injective ULiftFin.of_toComposableArrows)
-    exact ComposableArrows.ext₀ rfl
-  inv_hom_id := rfl
 
 end CategoryTheory
