@@ -5,8 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Convex.Topology
 import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Analysis.Seminorm
 import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Topology.Instances.RealVectorSpace
 
 /-!
 # Tangent cone
@@ -401,6 +403,16 @@ theorem tangentConeAt_eq_univ {s : Set 𝕜} {x : 𝕜} (hx : AccPt x (𝓟 s)) 
 
 @[deprecated (since := "2025-04-27")] alias tangentCone_eq_univ := tangentConeAt_eq_univ
 
+theorem tangentConeAt_real_subset_isRCLikeNormedField [h𝕜 : IsRCLikeNormedField 𝕜]
+    [NormedSpace ℝ E] {s : Set E} {x : E} :
+    tangentConeAt ℝ s x ⊆ tangentConeAt 𝕜 s x := by
+  letI := h𝕜.rclike
+  rintro y ⟨c, d, d_mem, c_lim, hcd⟩
+  let c' : ℕ → 𝕜 := fun n ↦ c n
+  refine ⟨c', d, d_mem, by simpa [c'] using c_lim, ?_⟩
+  convert hcd using 2 with n
+  simp [c']
+
 end Normed
 
 end TangentCone
@@ -572,7 +584,23 @@ theorem uniqueDiffOn_convex {s : Set G} (conv : Convex ℝ s) (hs : (interior s)
     UniqueDiffOn ℝ s :=
   fun _ xs => uniqueDiffWithinAt_convex conv hs (subset_closure xs)
 
+theorem UniqueDiffWithinAt.of_real [IsRCLikeNormedField 𝕜] [NormedSpace 𝕜 G]
+    {s : Set G} {x : G} (hs : UniqueDiffWithinAt ℝ s x) :
+    UniqueDiffWithinAt 𝕜 s x := by
+  refine ⟨?_, hs.mem_closure⟩
+  apply hs.dense_tangentConeAt.mono
+  have : (Submodule.span ℝ (tangentConeAt ℝ s x) : Set E) ⊆ (Submodule.span 𝕜 (tangentConeAt ℝ s x)) := by
+    sorry
+  have :  (Submodule.span 𝕜 (tangentConeAt 𝕜 s x)) ≤ (Submodule.span 𝕜 (tangentConeAt ℝ s x)) := sorry
+
+  refine Submodule.span_le.mp ?_
+  apply Submodule.span_mono
+
+
+
 end RealNormed
+
+#exit
 
 section Real
 

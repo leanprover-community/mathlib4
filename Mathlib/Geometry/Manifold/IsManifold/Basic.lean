@@ -136,34 +136,29 @@ open scoped Manifold Topology ContDiff
 
 /-! ### Models with corners. -/
 
+open scoped Classical in
 /-- A structure containing information on the way a space `H` embeds in a
 model vector space `E` over the field `𝕜`. This is all what is needed to
 define a `C^n` manifold with model space `H`, and model vector space `E`.
 
-We require three conditions `uniqueDiffOn'`, `target_subset_closure_interior` and
-`convex_range`, which are satisfied in the relevant cases (where `range I = univ` or a half space or
-a quadrant) and useful for technical reasons.
-The former makes sure that manifold derivatives are uniquely defined,
-the second condition ensures that for `C^2` maps the second derivatives are symmetric even for
-points on the boundary, as these are limit points of interior points where symmetry holds.
-The last condition is required for a more subtle reason: a complex model with corners should also
-be a real model; since unique differentiability over `ℂ` is stronger than over `ℝ`, asking for just
-unique differentiability is too weak for this. At the same time, condition `convex_range` is
-satisfied by all examples in practice, and also implies the other two conditions over `ℝ` or `ℂ`.
-  XXX is that actually true??? I think not!
-If further conditions turn out to be useful, they can be added here.
+We require that, when the field is `ℝ` or `ℂ`, the range is `ℝ`-convex, as this is what is needed
+to do calculus and covers the standard examples of manifolds with boundary. Over other fields,
+we require that the range is `univ`, as there is no relevant notion of manifold of boundary there.
 -/
 @[ext]
 structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] extends
     PartialEquiv H E where
   source_eq : source = univ
-  uniqueDiffOn' : UniqueDiffOn 𝕜 toPartialEquiv.target
-  target_subset_closure_interior : toPartialEquiv.target ⊆ closure (interior toPartialEquiv.target)
-  convex_range: ∀ h: IsRCLikeNormedField 𝕜,
-    letI := h.rclike 𝕜;
-    letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
-    Convex ℝ (range toPartialEquiv)
+  -- uniqueDiffOn' : UniqueDiffOn 𝕜 toPartialEquiv.target
+  -- target_subset_closure_interior :
+  --  toPartialEquiv.target ⊆ closure (interior toPartialEquiv.target)
+  convex_range :
+    if h : IsRCLikeNormedField 𝕜 then
+      letI := h.rclike 𝕜;
+      letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
+      Convex ℝ (range toPartialEquiv)
+    else range toPartialEquiv = univ
   continuous_toFun : Continuous toFun := by continuity
   continuous_invFun : Continuous invFun := by continuity
 
@@ -172,19 +167,17 @@ lemma ModelWithCorners.range_eq_target {𝕜 E H : Type*} [NontriviallyNormedFie
     range I.toPartialEquiv = I.target := by
   rw [← I.image_source_eq_target, I.source_eq, image_univ.symm]
 
-/-- If a model with corners has full range, all three technical conditions are satisfied. -/
+/-- If a model with corners has full range, the `convex_range` condition is satisfied. -/
 def ModelWithCorners.of_range_univ (𝕜 : Type*) [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [inst: NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (φ : PartialEquiv H E) (hsource : φ.source = univ) (htarget : φ.target = univ)
     (hcont : Continuous φ) (hcont_inv: Continuous φ.symm) : ModelWithCorners 𝕜 E H where
   toPartialEquiv := φ
   source_eq := hsource
-  uniqueDiffOn' := by rw [htarget]; exact uniqueDiffOn_univ
-  target_subset_closure_interior := by simp [htarget]
   convex_range := by
-    intro h
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
-    simp only [this, htarget, interior_univ]
+    simp only [this, htarget, dite_else_true]
+    intro h
     letI := h.rclike 𝕜;
     letI := NormedSpace.restrictScalars ℝ 𝕜 E
     exact convex_univ
@@ -239,8 +232,8 @@ theorem toPartialEquiv_coe : (I.toPartialEquiv : H → E) = I :=
 
 
 @[simp, mfld_simps]
-theorem mk_coe (e : PartialEquiv H E) (a b c d f f') :
-    ((ModelWithCorners.mk e a b c d f f' : ModelWithCorners 𝕜 E H) : H → E) = (e : H → E) :=
+theorem mk_coe (e : PartialEquiv H E) (a b c d) :
+    ((ModelWithCorners.mk e a b c d : ModelWithCorners 𝕜 E H) : H → E) = (e : H → E) :=
   rfl
 
 @[simp, mfld_simps]
@@ -248,8 +241,8 @@ theorem toPartialEquiv_coe_symm : (I.toPartialEquiv.symm : E → H) = I.symm :=
   rfl
 
 @[simp, mfld_simps]
-theorem mk_symm (e : PartialEquiv H E) (a b c d f f') :
-    (ModelWithCorners.mk e a b c d f f' : ModelWithCorners 𝕜 E H).symm = e.symm :=
+theorem mk_symm (e : PartialEquiv H E) (a b c d) :
+    (ModelWithCorners.mk e a b c d : ModelWithCorners 𝕜 E H).symm = e.symm :=
   rfl
 
 @[continuity]
@@ -280,8 +273,19 @@ theorem target_eq : I.target = range (I : H → E) := by
   rw [← image_univ, ← I.source_eq]
   exact I.image_source_eq_target.symm
 
-protected theorem uniqueDiffOn : UniqueDiffOn 𝕜 (range I) :=
-  I.target_eq ▸ I.uniqueDiffOn'
+#check uniqueDiffOn_convex
+
+protected theorem uniqueDiffOn : UniqueDiffOn 𝕜 (range I) := by
+  by_cases h : IsRCLikeNormedField 𝕜
+  · letI := h.rclike 𝕜;
+    letI := NormedSpace.restrictScalars ℝ 𝕜 E
+    apply uniqueDiffOn_convex
+
+
+  --I.target_eq ▸ I.uniqueDiffOn'
+
+
+#exit
 
 theorem range_subset_closure_interior : range I ⊆ closure (interior (range I)) := by
   rw [← I.target_eq]
