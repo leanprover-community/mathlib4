@@ -1532,7 +1532,7 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
 
     | succ k hk ih =>
       rw [← tsub_add_eq_add_tsub hk]
-      rw [pow_succ']
+      rw [pow_succ]
 
       --specialize hN N (by simp [N])
       specialize this k
@@ -1549,7 +1549,14 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
 
       have card_le := Finset.card_le_card (union_subset_n_succ)
       rw [Finset.card_union_of_disjoint ?_] at card_le
-      . sorry
+      .
+        simp at card_le
+        ring_nf at card_le
+        rw [add_comm] at card_le
+        omega
+        --have b_n_subset_n := Finset.card_le_card (b_n_subset_s_n_squared N (by simp))
+        --have b_n_succ_subset := Finset.card_le_card (b_n_subset_s_n_squared (N + 1) (by simp))
+        --simp at b_n_succ_subset
       .
         specialize disjoint_smul  k hk p p_mem p_not_prod
         rw [Finset.inter_comm] at disjoint_smul
