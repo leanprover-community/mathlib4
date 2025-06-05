@@ -25,8 +25,8 @@ open Order InfHom Set
 variable {X : Type*}
 
 /-- A nucleus is an inflationary idempotent `inf`-preserving endomorphism of a semilattice.
-In a frame, nuclei correspond to sublocales. -/ -- TODO: Formalise that claim
-structure Nucleus (X : Type*) [SemilatticeInf X] extends InfHom X X where
+In a frame, nuclei correspond to sublocales. -/
+structure Nucleus (X : Type*) [CompleteLattice X] extends InfHom X X where
   /-- A `Nucleus` is idempotent.
 
   Do not use this directly. Instead use `NucleusClass.idempotent`. -/
@@ -37,7 +37,7 @@ structure Nucleus (X : Type*) [SemilatticeInf X] extends InfHom X X where
   le_apply' (x : X) : x ≤ toFun x
 
 /-- `NucleusClass F X` states that F is a type of nuclei. -/
-class NucleusClass (F X : Type*) [SemilatticeInf X] [FunLike F X X] : Prop
+class NucleusClass (F X : Type*) [CompleteLattice X] [FunLike F X X] : Prop
     extends InfHomClass F X X where
   /-- A nucleus is idempotent. -/
   idempotent (x : X) (f : F) : f (f x) ≤ f x
@@ -54,9 +54,14 @@ instance : FunLike (Nucleus X) X X where
   coe x := x.toFun
   coe_injective' f g h := by  obtain ⟨⟨_, _⟩, _⟩ := f; congr!
 
-lemma toFun_eq_coe (n : Nucleus X) : n.toFun = n := rfl
+/-- See Note [custom simps projection] -/
+def Simps.apply (n : Nucleus X) : X → X := n
+
+@[simp] lemma toFun_eq_coe (n : Nucleus X) : n.toFun = n := rfl
 @[simp] lemma coe_toInfHom (n : Nucleus X) : ⇑n.toInfHom = n := rfl
 @[simp] lemma coe_mk (f : InfHom X X) (h1 h2) : ⇑(mk f h1 h2) = f := rfl
+
+initialize_simps_projections Nucleus (toFun → apply)
 
 instance : NucleusClass (Nucleus X) X where
   idempotent _ _ := idempotent' ..
@@ -67,8 +72,7 @@ instance : NucleusClass (Nucleus X) X where
 def toClosureOperator (n : Nucleus X) : ClosureOperator X :=
   ClosureOperator.mk' n (OrderHomClass.mono n) n.le_apply' n.idempotent'
 
-lemma idempotent : n (n x) = n x :=
-  n.toClosureOperator.idempotent x
+@[simp] lemma idempotent (x : X) : n (n x) = n x := n.toClosureOperator.idempotent x
 
 lemma le_apply : x ≤ n x :=
   n.toClosureOperator.le_closure x
@@ -89,6 +93,11 @@ instance : PartialOrder (Nucleus X) := .lift (⇑) DFunLike.coe_injective
 
 @[simp, norm_cast] lemma coe_le_coe : ⇑m ≤ n ↔ m ≤ n := .rfl
 @[simp, norm_cast] lemma coe_lt_coe : ⇑m < n ↔ m < n := .rfl
+
+@[simp] lemma mk_le_mk (toInfHom₁ toInfHom₂ : InfHom X X)
+    (le_apply₁ le_apply₂ idempotent₁ idempotent₂) :
+    mk toInfHom₁ le_apply₁ idempotent₁ ≤ mk toInfHom₂ le_apply₂ idempotent₂ ↔
+      toInfHom₁ ≤ toInfHom₂ := .rfl
 
 /-- The smallest `Nucleus` is the identity. -/
 instance instBot : Bot (Nucleus X) where
@@ -123,7 +132,7 @@ instance : InfSet (Nucleus X) where
       · exact iInf₂_le_of_le f hf inf_le_left
       · exact iInf₂_le_of_le f hf inf_le_right
       · exact ⟨inf_le_of_left_le <| iInf₂_le f hf, inf_le_of_right_le <| iInf₂_le f hf⟩
-    idempotent' x := iInf₂_mono fun f hf ↦ (f.monotone <| iInf₂_le f hf).trans_eq f.idempotent
+    idempotent' x := iInf₂_mono fun f hf ↦ (f.monotone <| iInf₂_le f hf).trans_eq (f.idempotent _)
     le_apply' x := by simp [le_apply] }
 
 @[simp] theorem sInf_apply (s : Set (Nucleus X)) (x : X) : sInf s x = ⨅ j ∈ s, j x := rfl
@@ -196,7 +205,7 @@ instance : Order.Frame (Nucleus X) where
    __ := Nucleus.instCompleteLattice
 
 lemma mem_range : x ∈ range n ↔ n x = x where
-  mp := by rintro ⟨x, rfl⟩; exact idempotent
+  mp := by rintro ⟨x, rfl⟩; exact idempotent _
   mpr h := ⟨x, h⟩
 
 /-- See `Nucleus.giRestrict` for the public-facing version. -/
