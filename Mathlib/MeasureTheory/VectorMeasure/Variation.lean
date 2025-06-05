@@ -22,6 +22,8 @@ turns out that this function actually is a measure.
 ## Main definitions & statements
 
 * `VectorMeasure.variation` is the definition of the (total) variation measure.
+* `norm_measure_le_variation` shows, for any `μ`, `E`, that `‖μ E‖ₑ ≤ variation μ E`.
+* `variation_of_ENNReal` shows that, if `μ` is a `ℝ≥0∞`-valued measure, then `variation μ = μ`.
 
 ## Implementation notes
 
@@ -39,14 +41,13 @@ measures.
 
 ## To do
 
-* Total variation is a enorm on the space of vector-valued measures.
+* Total variation is an enorm on the space of vector-valued measures.
 * If `variation μ univ < ∞` for each `μ` then variation is a norm on the space of vector-valued
   measures.
-* If `μ` is a `SignedMeasure`, i.e., a `ℝ≥0∞`-valued `VectorMeasure`, then `variation μ = μ`.
 * Variation is equivalent to that defined via the Hahn–Jordan decomposition for signed measures.
 * If `μ` is a complex measure then `variation μ univ < ∞`.
-* Suppose that `μ` is a measure, that `g ∈ L¹(μ)` and `λ(E) = ∫_E g dμ` for each measureable `E`.
-  Then `variation μ E = ∫_E |g| dμ` (Rudin Theorem 6.13).
+* Suppose that `μ` is a measure, that `g ∈ L¹(μ)` and `λ(E) = ∫_E g dμ` for each measureable `E`,
+  then `variation μ E = ∫_E |g| dμ` (Rudin Theorem 6.13).
 -/
 
 open MeasureTheory BigOperators NNReal ENNReal Function Filter
