@@ -675,8 +675,7 @@ theorem not_subset_of_mem {x y : ZFSet} (h : x ∈ y) : ¬ y ⊆ x :=
   fun h' ↦ mem_irrefl _ (h' h)
 
 @[simp]
-theorem eq_empty_of_subset_empty (x : ZFSet) : x ⊆ ∅ → x = ∅ := by
-  intro h
+theorem eq_empty_of_subset_empty (x : ZFSet) (h : x ⊆ ∅) : x = ∅ := by
   ext z
   simp [subset_def] at h
   simp_all only [notMem_empty]
