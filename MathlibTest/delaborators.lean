@@ -296,3 +296,23 @@ set_option pp.fieldNotation false in
 #guard_msgs in
 #check x.2
 end prod
+
+set_option pp.mdata true in
+/-- info: no_index @& ℕ : Type -/
+#guard_msgs in
+#check no_index @& Nat
+
+-- The elaborator removes these during elaboration.
+/-- info: ℕ : Type -/
+#guard_msgs in
+#check no_implicit_lambda% .(Nat)
+
+open Qq in
+/-- info: no_implicit_lambda% ℕ -/
+#guard_msgs in
+run_meta Lean.logInfo <| Lean.Elab.Term.mkNoImplicitLambdaAnnotation q(Nat)
+
+open Qq in
+/-- info: .(ℕ) -/
+#guard_msgs in
+run_meta Lean.logInfo <| mkInaccessible q(Nat)
