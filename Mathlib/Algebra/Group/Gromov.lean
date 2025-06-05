@@ -1579,7 +1579,7 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
 
 
   --rw [Asymptotics.IsLittleO.tendsto_zero_of_tendsto] at little_o_poly
-  apply Asymptotics.IsLittleO.eventuallyLE at mul_four
+  apply Asymptotics.IsLittleO.def (c := (1 : ℝ)  / 2) (hc := by simp) at mul_four
   apply Filter.Eventually.natCast_atTop at mul_four
   simp at mul_four
   obtain ⟨M', hM⟩ := mul_four
@@ -1609,7 +1609,21 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
 
   have m_pow_lt := hM (M) (by omega)
   rw [pow_mul] at m_pow_lt
-  conv at m_pow_lt =>
+
+  -- apply_fun (fun (g: ℝ) => 2 * g) at m_pow_lt
+  -- .
+  --   simp at m_pow_lt
+
+  -- .
+  --   apply Monotone.const_mul
+  --   exact fun ⦃a b⦄ a ↦ a
+  --   simp
+
+
+  have strict_lt: 4 ^ d * (↑M ^ 3) ^ d < (((2 : ℝ) ^ N)⁻¹ * 2 ^ M) := by
+    omega
+
+  conv at strict_lt =>
     rhs
     equals 2^(M - N) =>
       have m_minu_n_pos: N ≤ M := by omega
@@ -1619,11 +1633,11 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
       omega
 
 
-  norm_cast at m_pow_lt
-  rw [← mul_pow] at m_pow_lt
+  norm_cast at strict_lt
+  rw [← mul_pow] at strict_lt
 
   have eventually_lt_double: (4 * M ^ 3) ^ d < 2 ^ (M - N) := by
-    sorry
+    exact strict_lt
 
   omega
 
