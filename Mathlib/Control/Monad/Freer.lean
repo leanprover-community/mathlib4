@@ -14,9 +14,9 @@ This file defines a general `Freer` monad construction and several canonical ins
 ## Main Definitions
 
 - `Freer`: The general Freer monad.
-- `FreeState`: State monad using the `Free` construction.
-- `FreeWriter`: Writer monad using the `Free` construction.
-- `FreeCont`: Continuation monad using the `Free` construction.
+- `FreerState`: State monad using the `Free` construction.
+- `FreerWriter`: Writer monad using the `Free` construction.
+- `FreerCont`: Continuation monad using the `Free` construction.
 
 ## Implementation Notes
 
@@ -24,7 +24,7 @@ The `Free` monad is defined using an inductive type with constructors `pure` and
 We implement `Functor` and `Monad` instances, and prove the corresponding `LawfulFunctor`
 and `LawfulMonad` instances.
 
-The monads `FreeState`, `FreeWriter`, and `FreeCont` are built by supplying appropriate functors
+The monads `FreerState`, `FreerWriter`, and `FreerCont` are built by supplying appropriate functors
 to the `Free` constructor. They are equipped with interpreters and helper functions.
 
 
@@ -131,27 +131,27 @@ instance {s : Type} : Functor (StateF s) where
   | StateF.put st a => StateF.put st (f a)
 
 /-- State monad via the `Free` monad. -/
-def FreeState (s : Type) := Freer (StateF s)
+def FreerState (s : Type) := Freer (StateF s)
 
-namespace FreeState
+namespace FreerState
 
-instance {s : Type} : Monad (FreeState s) := FreeMonad (StateF s)
-instance {s : Type} : LawfulMonad (FreeState s) := FreeLawfulMonad (StateF s)
+instance {s : Type} : Monad (FreerState s) := FreeMonad (StateF s)
+instance {s : Type} : LawfulMonad (FreerState s) := FreeLawfulMonad (StateF s)
 
 /-- Get the current state. -/
-def get {s : Type} : FreeState s s :=
+def get {s : Type} : FreerState s s :=
   Freer.bind s (StateF.get id) Freer.pure
 
 /-- Set the state. -/
-def put {s : Type} (newState : s) : FreeState s PUnit :=
+def put {s : Type} (newState : s) : FreerState s PUnit :=
   Freer.bind PUnit (StateF.put newState PUnit.unit) Freer.pure
 
 /-- Modify the state. -/
-def modify {s : Type} (f : s → s) : FreeState s PUnit :=
+def modify {s : Type} (f : s → s) : FreerState s PUnit :=
   bindFree (StateF s) get (fun s => put (f s))
 
 /-- Run a Freer state computation. -/
-def runState {s a : Type} (computation : FreeState s a) (initialState : s) : a × s :=
+def runState {s a : Type} (computation : FreerState s a) (initialState : s) : a × s :=
   match computation with
   | Freer.pure a => (a, initialState)
   | Freer.bind _ (StateF.get k) cont =>
@@ -160,14 +160,14 @@ def runState {s a : Type} (computation : FreeState s a) (initialState : s) : a �
       runState (cont p) newState
 
 /-- Evaluate a computation, returning the result. -/
-def evalState {s a : Type} (computation : FreeState s a) (initialState : s) : a :=
+def evalState {s a : Type} (computation : FreerState s a) (initialState : s) : a :=
   (runState computation initialState).1
 
 /-- Evaluate a computation, returning the final state. -/
-def execState {s a : Type} (computation : FreeState s a) (initialState : s) : s :=
+def execState {s a : Type} (computation : FreerState s a) (initialState : s) : s :=
   (runState computation initialState).2
 
-end FreeState
+end FreerState
 
 /-! ### Writer Monad via `Free` -/
 
@@ -180,19 +180,19 @@ instance {w : Type} : Functor (WriterF w) where
   | WriterF.tell log a => WriterF.tell log (f a)
 
 /-- Writer monad via the `Free` monad. -/
-def FreeWriter (w : Type) := Freer (WriterF w)
+def FreerWriter (w : Type) := Freer (WriterF w)
 
-namespace FreeWriter
+namespace FreerWriter
 
-instance {w : Type} : Monad (FreeWriter w) := FreeMonad (WriterF w)
-instance {w : Type} : LawfulMonad (FreeWriter w) := FreeLawfulMonad (WriterF w)
+instance {w : Type} : Monad (FreerWriter w) := FreeMonad (WriterF w)
+instance {w : Type} : LawfulMonad (FreerWriter w) := FreeLawfulMonad (WriterF w)
 
 /-- Append to the log. -/
-def tell {w : Type} (log : w) : FreeWriter w PUnit :=
+def tell {w : Type} (log : w) : FreerWriter w PUnit :=
   Freer.bind PUnit (WriterF.tell log PUnit.unit) Freer.pure
 
 /-- Run a writer computation, returning the result and log. -/
-def runWriter {w a : Type} [Monoid w] (computation : FreeWriter w a) : a × w :=
+def runWriter {w a : Type} [Monoid w] (computation : FreerWriter w a) : a × w :=
   match computation with
   | Freer.pure a => (a, 1)
   | Freer.bind _ (WriterF.tell log p) cont =>
@@ -200,14 +200,14 @@ def runWriter {w a : Type} [Monoid w] (computation : FreeWriter w a) : a × w :=
       (result, log * accLog)
 
 /-- Return only the result of a writer computation. -/
-def execWriter {w a : Type} [Monoid w] (computation : FreeWriter w a) : a :=
+def execWriter {w a : Type} [Monoid w] (computation : FreerWriter w a) : a :=
   (runWriter computation).1
 
 /-- Return result and log as a value inside the `Free` monad. -/
-def listen {w a : Type} [Monoid w] (computation : FreeWriter w a) : FreeWriter w (a × w) :=
+def listen {w a : Type} [Monoid w] (computation : FreerWriter w a) : FreerWriter w (a × w) :=
   Freer.pure (runWriter computation)
 
-end FreeWriter
+end FreerWriter
 
 /-! ### Continuation Monad via `Free` -/
 
@@ -216,17 +216,17 @@ end FreeWriter
 def ContF (r : Type) (α : Type) : Type := (α → r) → r
 
 /-- Continuation monad via the `Free` monad. -/
-abbrev FreeCont (r : Type) (α : Type) := Freer (ContF r) α
+abbrev FreerCont (r : Type) (α : Type) := Freer (ContF r) α
 
-namespace FreeCont
+namespace FreerCont
 
-instance {r : Type} : Monad (FreeCont r) := FreeMonad (ContF r)
-instance {r : Type} : LawfulMonad (FreeCont r) := FreeLawfulMonad (ContF r)
+instance {r : Type} : Monad (FreerCont r) := FreeMonad (ContF r)
+instance {r : Type} : LawfulMonad (FreerCont r) := FreeLawfulMonad (ContF r)
 
-/-- Run a `FreeCont` program with a final continuation. -/
+/-- Run a `FreerCont` program with a final continuation. -/
 @[simp, reducible]
-def run {r α} : FreeCont r α → (α → r) → r
+def run {r α} : FreerCont r α → (α → r) → r
 | .pure a => fun k => k a
 | .bind _ k cont => fun h => k (fun x => run (cont x) h)
 
-end FreeCont
+end FreerCont
