@@ -1620,8 +1620,30 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
   --   simp
 
 
+  have helper_lemma (a b c : ℝ) (ha: 0 < a) (hb: 0 < b) (hc: 0 < c) (habc: a ≤ b * c) (hb: b < 1): a < c := by
+    nlinarith
+
   have strict_lt: 4 ^ d * (↑M ^ 3) ^ d < (((2 : ℝ) ^ N)⁻¹ * 2 ^ M) := by
-    omega
+    apply helper_lemma (b := 2⁻¹)
+    .
+      field_simp
+    . simp
+    . simp
+    . exact m_pow_lt
+    . field_simp
+
+
+    -- apply lt_or_eq_of_le at m_pow_lt
+    -- match m_pow_lt with
+    -- | .inl strict =>
+    --   omega
+    -- | .inr eq =>
+    --   rw [eq]
+    --   rw [mul_comm]l
+    --   apply mul_lt_of_lt_one_right'
+    --   apply lt_mul_of_one_lt_right'
+    --   apply mul_lt_of_lt_of_le_one
+
 
   conv at strict_lt =>
     rhs
