@@ -96,7 +96,7 @@ Special case of `MeromorphicOn.intervalIntegrable_log`: The function `log ∘ si
 integrable over every interval.
 -/
 @[simp]
-theorem intervalIntegrable_log_sin : IntervalIntegrable (log ∘ sin) volume a b := 
+theorem intervalIntegrable_log_sin : IntervalIntegrable (log ∘ sin) volume a b :=
   analyticOnNhd_sin.meromorphicOn.intervalIntegrable_log
 
 end intervalIntegral
