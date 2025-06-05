@@ -1262,13 +1262,22 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
     intro a ha
     simp [three_two_S_n, gamma_m_helper, e_i_regular_helper] at ha
     obtain ⟨m, m_bound, s_m_eq⟩ := ha
+    let gamma_inv_list: List S := (gamma_list.map (fun s => ⟨s.val⁻¹, hGS.has_inv s.val s.property⟩)).reverse
+
+    -- Depending on whether these values are positive or negative, we either need to repeat γ or γ⁻¹ in the first list
+    let m_list_choice := if 0 < m then gamma_list else gamma_inv_list
+    let phi_list_choice := if 0 < (-φ (ofMul s)) then gamma_list else gamma_inv_list
+
+    let m_list_choice_inv := if 0 < m then gamma_inv_list else gamma_list
+    let phi_list_choice_inv := if 0 < (-φ (ofMul s)) then gamma_inv_list else gamma_list
+
     by_cases m_pos: 0 < m
     .
       have m_eq_natabs : m.natAbs = m := by omega
       by_cases neg_phi_pos: 0 < (-φ (ofMul s))
       .
         have phi_natabs: (φ (ofMul s)).natAbs = -φ (ofMul s) := by omega
-        use (List.replicate m.natAbs gamma_list).flatten ++ [⟨s, s_mem⟩] ++ (List.replicate (-(φ (ofMul s))).natAbs gamma_list).flatten ++ (List.replicate m.natAbs (gamma_list.map (fun s => ⟨s.val⁻¹, hGS.has_inv s.val s.property⟩)).reverse).flatten
+        use (List.replicate m.natAbs m_list_choice).flatten ++ [⟨s, s_mem⟩] ++ (List.replicate (-(φ (ofMul s))).natAbs gamma_list).flatten ++ (List.replicate m.natAbs gamma_inv_list).flatten
         refine ⟨?_, ?_⟩
         .
           simp
@@ -1294,13 +1303,20 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
           rw [← zpow_natCast, phi_natabs]
           simp
           rw [← zpow_natCast, m_eq_natabs]
+          simp_rw [m_list_choice, m_pos]
+          simp [gamma_inv_list]
           rw [gamma_list_inv]
           group
 
         .
-          simp
+
+          simp [m_list_choice]
+          simp_rw [apply_ite]
           have m_natabs_le: m.natAbs ≤ N := by omega
           have gamma_list_len_le: gamma_list.length ≤ N := by omega
+          have inv_list_len_eq: gamma_inv_list.length = gamma_list.length := by
+            simp [gamma_inv_list]
+          simp [inv_list_len_eq]
           have phi_s_le_: (φ (ofMul s)).natAbs ≤ N := by omega
           calc
             _ ≤ N * N + ((φ (ofMul s)).natAbs * gamma_list.length + N * N + 1) := by
