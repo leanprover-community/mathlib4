@@ -3016,3 +3016,4 @@ lemma three_two_ker_fg (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S
 -- * If the remaining list is just γ^n, then n must be 0 (since we maintained the invariant)
 
 #print axioms three_two_gamma_m_generates
+#print axioms three_two_ker_fg
