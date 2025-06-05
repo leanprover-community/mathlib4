@@ -201,9 +201,9 @@ variable (e' : Pretrivialization F (π F E)) {b : B} {y : E b}
 theorem coe_mem_source : ↑y ∈ e'.source ↔ b ∈ e'.baseSet :=
   e'.mem_source
 
-@[simp, mfld_simps]
-theorem coe_coe_fst (hb : b ∈ e'.baseSet) : (e' y).1 = b :=
-  e'.coe_fst (e'.mem_source.2 hb)
+@[mfld_simps]
+theorem coe_coe_fst (hb : b ∈ e'.baseSet) : (e' y).1 = b := by
+  simp [hb]
 
 theorem mk_mem_target {x : B} {y : F} : (x, y) ∈ e'.target ↔ x ∈ e'.baseSet :=
   e'.mem_target

@@ -31,8 +31,6 @@ filter, countable
 
 open Set Filter
 
-open Filter
-
 variable {ι : Sort*} {α β : Type*}
 
 /-- A filter `l` has the countable intersection property if for any countable collection
