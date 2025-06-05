@@ -341,6 +341,7 @@ end
 section
 
 variable [∀ i₁ i₂, IsIso (F.baseChange (sq i₁ i₂).isPullback.toCommSq.flip.op.toLoc)]
+  [∀ i₁ i₂ i₃, IsIso (F.baseChange (sq₃ i₁ i₂ i₃).isPullback₂.toCommSq.flip.op.toLoc)]
 -- should require the same for `(sq₃ i₁ i₂ i₃).isPullback₂`.
 
 noncomputable def dataEquivCoalgebra
@@ -379,13 +380,79 @@ lemma hom_self_iff_dataEquivCoalgebra ⦃i : ι⦄ (δ : (sq i i).Diagonal):
     rw [← Adj.lIso_hom, ← Adj.lIso_inv, Iso.hom_inv_id_app_assoc,
       ← Adj.lIso_hom, ← Adj.lIso_inv, Iso.hom_inv_id_app, Category.comp_id]
 
+variable (obj) in
+private noncomputable def correction (i₁ i₂ i₃ : ι) :
+    (F.map (sq₃ i₁ i₂ i₃).p₁.op.toLoc).r.obj
+      ((F.map (sq₃ i₁ i₂ i₃).p₃.op.toLoc).l.obj (obj i₃)) ⟶
+      (F.map (f i₁).op.toLoc).l.obj
+        ((F.map (f i₂).op.toLoc).r.obj
+          ((F.map (f i₂).op.toLoc).l.obj
+            ((F.map (f i₃).op.toLoc).r.obj (obj i₃)))) :=
+  (F.map (sq₃ i₁ i₂ i₃).p₁.op.toLoc).r.map
+    ((F.mapComp' (sq i₂ i₃).p₂.op.toLoc (sq₃ i₁ i₂ i₃).p₂₃.op.toLoc
+      (sq₃ i₁ i₂ i₃).p₃.op.toLoc (by aesoptoloc)).hom.τl.app _) ≫
+      (F.mapComp' (sq i₁ i₂).p₁.op.toLoc (sq₃ i₁ i₂ i₃).p₁₂.op.toLoc
+        (sq₃ i₁ i₂ i₃).p₁.op.toLoc (by aesoptoloc)).inv.τr.app _ ≫
+        (F.map (sq i₁ i₂).p₁.op.toLoc).r.map
+          (inv ((F.baseChange (sq₃ i₁ i₂ i₃).isPullback₂.toCommSq.flip.op.toLoc).app _)) ≫
+          (inv (F.baseChange (sq i₁ i₂).isPullback.toCommSq.flip.op.toLoc)).app _ ≫
+          (F.map (f i₁).op.toLoc).l.map ((F.map (f i₂).op.toLoc).r.map
+            (inv ((F.baseChange (sq i₂ i₃).isPullback.toCommSq.flip.op.toLoc).app _)))
+
+private instance (i₁ i₂ i₃ : ι) : IsIso (correction sq₃ obj i₁ i₂ i₃) := by
+  dsimp [correction]
+  -- TODO: does not work without these auxiliary instances
+  have : IsIso (F.mapComp' (sq i₁ i₂).p₁.op.toLoc (sq₃ i₁ i₂ i₃).p₁₂.op.toLoc
+    (sq₃ i₁ i₂ i₃).p₁.op.toLoc (by aesoptoloc)).inv.τr := inferInstance
+  have : IsIso (F.mapComp' (sq i₂ i₃).p₂.op.toLoc (sq₃ i₁ i₂ i₃).p₂₃.op.toLoc
+    (sq₃ i₁ i₂ i₃).p₃.op.toLoc (by aesoptoloc)).hom.τl := inferInstance
+  infer_instance
+
+private lemma homComp_correction (i₁ i₂ i₃ : ι) :
+    homComp sq₃ hom i₁ i₂ i₃ ≫ correction sq₃ obj i₁ i₂ i₃ = dataEquivCoalgebra hom i₁ i₂ ≫
+      (F.map (f i₁).op.toLoc).l.map
+        ((F.map (f i₂).op.toLoc).r.map (dataEquivCoalgebra hom i₂ i₃)) := by
+  simp only [homComp, Cat.comp_obj, Adj.comp_r, Adj.rIso_inv, Adj.comp_l, Adj.lIso_inv,
+    NatTrans.naturality_assoc, Cat.comp_map, Category.assoc, correction]
+  rw [← NatTrans.comp_app_assoc]
+  rw [Adj.hom_inv_id_τr]
+  simp only [Cat.comp_obj, Adj.comp_r, Cat.id_app, Category.id_comp]
+  nth_rw 3 [← (F.map (sq i₁ i₂).p₁.op.toLoc).r.map_comp_assoc]
+  rw [← (F.map (sq₃ i₁ i₂ i₃).p₁₂.op.toLoc).r.map_comp]
+  rw [← NatTrans.comp_app]
+  rw [Adj.inv_hom_id_τl]
+  simp only [Adj.comp_l, Cat.id_app, Cat.comp_obj, Functor.map_id, Category.id_comp]
+  nth_rw 2 [← (F.map (sq i₁ i₂).p₁.op.toLoc).r.map_comp_assoc]
+  simp only [IsIso.hom_inv_id, Functor.map_id, Functor.map_inv, Category.id_comp]
+  dsimp [dataEquivCoalgebra]
+  simp only [NatIso.isIso_inv_app, Cat.comp_obj, Category.id_comp, Functor.map_comp,
+    Functor.map_inv, Category.assoc]
+  congr 1
+  simp_rw [← Category.assoc]
+  congr 1
+  rw [← NatIso.isIso_inv_app]
+  exact (inv (F.baseChange (sq i₁ i₂).isPullback.toCommSq.flip.op.toLoc)).naturality _
+
+private lemma pullHom''_correction (i₁ i₂ i₃ : ι) :
+    pullHom'' (hom i₁ i₃) (sq₃ i₁ i₂ i₃).p₁₃ (sq₃ i₁ i₂ i₃).p₁ (sq₃ i₁ i₂ i₃).p₃ ≫
+        correction sq₃ obj i₁ i₂ i₃ =
+    dataEquivCoalgebra hom i₁ i₃ ≫
+      (F.map (f i₁).op.toLoc).l.map ((F.map (f i₂).op.toLoc).adj.unit.app
+        ((F.map (f i₃).op.toLoc).r.toPrefunctor.1 (obj i₃))) := by
+  dsimp [dataEquivCoalgebra, pullHom'']
+  simp only [Category.assoc, NatIso.isIso_inv_app, Cat.comp_obj, Category.id_comp]
+  congr 1
+  simp
+  sorry
+
 lemma hom_comp_iff_dataEquivCoalgebra (i₁ i₂ i₃ : ι) :
     homComp sq₃ hom i₁ i₂ i₃ = pullHom'' (hom i₁ i₃) (sq₃ i₁ i₂ i₃).p₁₃ _ _ ↔
     dataEquivCoalgebra hom i₁ i₂ ≫ (F.map (f i₁).op.toLoc).l.map
       ((F.map (f i₂).op.toLoc).r.map (dataEquivCoalgebra hom i₂ i₃)) =
     dataEquivCoalgebra hom i₁ i₃ ≫
       (F.map (f i₁).op.toLoc).l.map ((F.map (f i₂).op.toLoc).adj.unit.app _) := by
-  sorry
+  conv_lhs => rw [← cancel_mono (correction sq₃ obj i₁ i₂ i₃)]
+  rw [homComp_correction, pullHom''_correction]
 
 end
 

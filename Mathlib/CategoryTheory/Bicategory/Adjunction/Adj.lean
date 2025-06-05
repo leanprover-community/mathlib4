@@ -389,6 +389,9 @@ lemma inv_hom_id_τl :
     e.inv.τl ≫ e.hom.τl = 𝟙 _ :=
   (lIso e).inv_hom_id
 
+instance : IsIso e.hom.τl := ⟨e.inv.τl, by simp⟩
+instance : IsIso e.inv.τl := ⟨e.hom.τl, by simp⟩
+
 /-- Given an isomorphism between two 1-morphisms in `Adj B`, this is the
 underlying isomorphisms between the right adjoints. -/
 @[simps]
@@ -408,6 +411,8 @@ lemma inv_hom_id_τr :
     e.inv.τr ≫ e.hom.τr = 𝟙 _ :=
   (rIso e).hom_inv_id
 
+instance : IsIso e.hom.τr := ⟨e.inv.τr, by simp⟩
+instance : IsIso e.inv.τr := ⟨e.hom.τr, by simp⟩
 
 instance (φ : adj₁ ⟶ adj₂) [IsIso φ] : IsIso φ.τl := (lIso (asIso φ)).isIso_hom
 instance (φ : adj₁ ⟶ adj₂) [IsIso φ] : IsIso φ.τr := (rIso (asIso φ)).isIso_inv
