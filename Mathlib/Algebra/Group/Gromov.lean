@@ -1183,15 +1183,24 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
 
   -- Choose our N large enough that we can apply all of the above conditions
   let N := max N' (max gamma_list.length (max (φ (ofMul s)).natAbs 2))
-  specialize hN N (by simp [N])
-  specialize this N
-  rw [Finset.not_subset] at this
-  obtain ⟨p, ⟨p_mem, p_not_prod⟩⟩ := this
-  rw [Finset.mem_mul.not] at p_not_prod
-  push_neg at p_not_prod
+  -- specialize hN N (by simp [N])
+  -- specialize this N
+  -- rw [Finset.not_subset] at this
+  -- obtain ⟨p, ⟨p_mem, p_not_prod⟩⟩ := this
+  -- rw [Finset.mem_mul.not] at p_not_prod
+  -- push_neg at p_not_prod
 
 
-  have disjoint_smul: (p • three_two_B_n (S := {s}) φ γ N) ∩ (three_two_B_n (S := {s}) φ γ N) = ∅ := by
+  have disjoint_smul: ∀ M, N ≤ M → ∃ p ∈ three_two_S_n (S := {s}) φ γ (M + 1), (p • three_two_B_n (S := {s}) φ γ M) ∩ (three_two_B_n (S := {s}) φ γ M) = ∅ := by
+    intro M hM
+    specialize this M
+    rw [Finset.not_subset] at this
+    obtain ⟨p, ⟨p_mem, p_not_prod⟩⟩ := this
+    rw [Finset.mem_mul.not] at p_not_prod
+    push_neg at p_not_prod
+    use p
+    refine ⟨p_mem, ?_⟩
+
     ext a
     simp only [Finset.mem_inter, Finset.not_mem_empty, iff_false, not_and]
     intro ha
@@ -1242,15 +1251,15 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
         simp [List.unattach, -List.map_subtype]
     exact l_prod
 
-  have smul_subset: ∀ M, N ≤ M →  p • three_two_B_n (S := {s}) φ γ M ⊆ three_two_B_n (S := {s}) φ γ (M + 1) := by
-    intro M hM a ha
+  have smul_subset (M: ℕ) (hM: N ≤ M) (p: G) (p_mem: p ∈ three_two_S_n (S := {s}) φ γ (M + 1)): p • three_two_B_n (S := {s}) φ γ M ⊆ three_two_B_n (S := {s}) φ γ (M + 1) := by
+    intro a ha
     simp [three_two_B_n] at ha
     simp [three_two_B_n]
     simp only [Finset.smul_finset_def, smul_eq_mul, Finset.mem_image] at ha
     obtain ⟨list_prod, ⟨list, list_mem, list_prod_eq⟩, p_mul_eq⟩ := ha
-    have new_p_mem := (s_n_subset_all (N + 1) (M + 1) (by omega)) p_mem
+    --have new_p_mem := (s_n_subset_all (N + 1) (M + 1) (by omega)) p_mem
     --have p_mem_M := s_n_subset M hM p_mem
-    use (⟨p, new_p_mem⟩ :: (list.map (fun s => ⟨s.val, by (
+    use (⟨p, p_mem⟩ :: (list.map (fun s => ⟨s.val, by (
       exact s_n_subset M hM s.property
     )⟩)))
     refine ⟨?_, ?_⟩
@@ -1533,7 +1542,18 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
         refine ⟨by omega, ?_⟩
         simp [gamma_m_helper, e_i_regular_helper]
 
-    | succ i j k => sorry
+    | succ k hk ih =>
+      rw [← tsub_add_eq_add_tsub (by simp)]
+      rw [pow_succ']
+
+      have card_le := Finset.card_le_card (union_subset_n_succ k hk)
+      rw [Finset.card_union_of_disjoint ?_] at card_le
+      . sorry
+      .
+        rw [Finset.inter_comm] at disjoint_smul
+        rw [Finset.disjoint_iff_inter_eq_empty]
+        exact disjoint_smul
+
 
   have card_le := Finset.card_le_card (union_subset_n_succ N (by simp))
   rw [Finset.card_union_of_disjoint ?_] at card_le
