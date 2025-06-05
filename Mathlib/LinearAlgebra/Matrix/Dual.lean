@@ -43,7 +43,7 @@ theorem Matrix.toLin_transpose (M : Matrix ι₁ ι₂ K) : Matrix.toLin B₁.du
 end Transpose
 
 /-- The dot product as a linear equivalence to the dual. -/
-@[simps] def dotProductEquiv (R n : Type*) [CommRing R] [Fintype n] [DecidableEq n] :
+@[simps] def dotProductEquiv (R n : Type*) [CommSemiring R] [Fintype n] [DecidableEq n] :
     (n → R) ≃ₗ[R] Module.Dual R (n → R) where
   toFun v := ⟨⟨dotProduct v, dotProduct_add v⟩, fun t ↦ dotProduct_smul t v⟩
   map_add' v w := by ext; simp
