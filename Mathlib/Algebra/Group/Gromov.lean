@@ -1423,12 +1423,26 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
         lhs
         arg 1
         equals l.unattach =>
+          clear l_len l_prod nested_list
+          induction l with
+          | nil =>
+            simp
+          | cons h t ih =>
+            simp
+            rw [ih]
+            simp [List.unattach, -List.map_subtype]
+            simp at ih
+            have my_spec := Exists.choose_spec ((s_n_bound M hM h h.property))
+            have first_prop := my_spec.1
+            -- wtf
+            nth_rw 8 [← first_prop]
+            simp
 
-          sorry
 
-    have flat_list_len: nested_list.flatten.length ≤ nested_list.length • (4 * N^2) := by
+
+    have flat_list_len: nested_list.flatten.length ≤ nested_list.length • (4 * M^2) := by
       simp
-      have foo := List.sum_le_card_nsmul (l := (List.map List.length nested_list)) (4 * N^2) ?_
+      have foo := List.sum_le_card_nsmul (l := (List.map List.length nested_list)) (4 * M^2) ?_
       --simp only [List.length_map, smul_eq_mul, nested_list] at foo
       .
         conv at foo =>
@@ -1441,8 +1455,8 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
         obtain ⟨s_list, h_s_prod, s_len⟩ := hq
         simp [nested_list] at h_s_prod
         obtain ⟨gamma_n, gamma_n_mem, gamma_n_mem_l, s_prod_eq⟩ := h_s_prod
-        have s_prod_prop: s_list.unattach.prod = gamma_n ∧ s_list.length ≤ 4*N^2 := by
-          have my_spec := Exists.choose_spec ((s_n_bound N (by simp) gamma_n gamma_n_mem))
+        have s_prod_prop: s_list.unattach.prod = gamma_n ∧ s_list.length ≤ 4*M^2 := by
+          have my_spec := Exists.choose_spec ((s_n_bound M hM gamma_n gamma_n_mem))
           rw [s_prod_eq] at my_spec
           exact my_spec
         rw [← s_len]
@@ -1454,19 +1468,19 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
     rw [nested_len_eq] at flat_list_len
     simp [list_len_n] at l_len
     simp only [smul_eq_mul] at flat_list_len
-    have nested_list_le_n_squared: nested_list.flatten.length ≤ N * (4 * N^2) := by
+    have nested_list_le_n_squared: nested_list.flatten.length ≤ M * (4 * M^2) := by
       apply le_mul_of_le_mul_right (b := l.length)
       . omega
       . omega
 
 
-    let filled_list := nested_list.flatten ++ (List.replicate ((N * (4 * N^2)) - nested_list.flatten.length) ⟨1, hGS.one_mem⟩)
+    let filled_list := nested_list.flatten ++ (List.replicate ((M * (4 * M^2)) - nested_list.flatten.length) ⟨1, hGS.one_mem⟩)
 
     have filled_list_prod: filled_list.unattach.prod = nested_list.flatten.unattach.prod := by
       simp [filled_list]
 
 
-    have len_eq: filled_list.length = N * (4 * N^2) := by
+    have len_eq: filled_list.length = M * (4 * M^2) := by
       simp [filled_list]
       apply Nat.add_sub_of_le
       simp at nested_list_le_n_squared
@@ -1489,6 +1503,11 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
     . exact smul_subset
 
 
+  conv at b_n_subset_s_n_squared =>
+    intro M hM
+    rhs
+    rhs
+    equals 4 * M^3 => ring
 
   have card_le := Finset.card_le_card union_subset_n_succ
   rw [Finset.card_union_of_disjoint ?_] at card_le
@@ -1496,7 +1515,16 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
     simp at card_le
     ring_nf at card_le
     rw [add_comm] at card_le
-    have b_n_subset_n := Finset.card_le_card b_n_subset_s_n_squared
+    have b_n_subset_n := Finset.card_le_card (b_n_subset_s_n_squared N (by simp))
+    have b_n_succ_subset := Finset.card_le_card (b_n_subset_s_n_squared (N + 1) (by simp))
+    simp at b_n_succ_subset
+    have three_eq: 3 = 2 + 1 := by simp
+    rw [three_eq] at b_n_succ_subset
+    rw [pow_succ] at b_n_succ_subset
+    rw [add_sq] at b_n_succ_subset
+
+
+
 
 
 
