@@ -34,15 +34,15 @@ We then use this isomorphism to deduce that as a complex of `k`-modules, the sta
 of `k` as a trivial `G`-representation is homotopy equivalent to the complex with `k` at 0 and 0
 elsewhere.
 
-Putting this material together allows us to define `groupCohomology.projectiveResolution`, the
+Putting this material together allows us to define `Rep.standardResolution`, the
 standard projective resolution of `k` as a trivial `k`-linear `G`-representation.
 
 ## Main definitions
 
  * `groupCohomology.resolution.ofMulActionBasis`
  * `classifyingSpaceUniversalCover`
- * `groupCohomology.resolution.forget₂ToModuleCatHomotopyEquiv`
- * `groupCohomology.projectiveResolution`
+ * `Rep.standardComplex.forget₂ToModuleCatHomotopyEquiv`
+ * `Rep.standardResolution`
 
 ## Implementation notes
 
@@ -176,7 +176,6 @@ open groupCohomology.resolution
 
 /-- Given a `k`-linear `G`-representation `A`, the set of representation morphisms
 `Hom(k[Gⁿ⁺¹], A)` is `k`-linearly isomorphic to the set of functions `Gⁿ → A`. -/
-@[deprecated "We now favour `Rep.freeLiftEquiv`" (since := "2025-06-04")]
 noncomputable def diagonalHomEquiv :
     (Rep.diagonal k G (n + 1) ⟶ A) ≃ₗ[k] (Fin n → G) → A :=
   Linear.homCongr k
@@ -341,11 +340,11 @@ variable (k)
 
 /-- The standard resolution of `k` as a trivial representation, defined as the alternating
 face map complex of a simplicial `k`-linear `G`-representation. -/
-def groupCohomology.resolution [Monoid G] :=
+def Rep.standardComplex [Monoid G] :=
   (AlgebraicTopology.alternatingFaceMapComplex (Rep k G)).obj
     (classifyingSpaceUniversalCover G ⋙ Rep.linearization k G)
 
-namespace groupCohomology.resolution
+namespace Rep.standardComplex
 
 open classifyingSpaceUniversalCover AlgebraicTopology CategoryTheory.Limits
 
@@ -371,30 +370,26 @@ variable (k G)
 
 /-- The `n`th object of the standard resolution of `k` is definitionally isomorphic to `k[Gⁿ⁺¹]`
 equipped with the representation induced by the diagonal action of `G`. -/
-def xIso (n : ℕ) : (groupCohomology.resolution k G).X n ≅ Rep.ofMulAction k G (Fin (n + 1) → G) :=
+def xIso (n : ℕ) : (standardComplex k G).X n ≅ Rep.ofMulAction k G (Fin (n + 1) → G) :=
   Iso.refl _
 
-instance x_projective (G : Type u) [Group G] (n : ℕ) :
-    Projective ((groupCohomology.resolution k G).X n) :=
-  Rep.equivalenceModuleMonoidAlgebra.toAdjunction.projective_of_map_projective _ <|
-    @ModuleCat.projective_of_free.{u} _ _
-      (ModuleCat.of (MonoidAlgebra k G) (Representation.ofMulAction k G (Fin (n + 1) → G)).asModule)
-      _ (ofMulActionBasis k G n)
+instance x_projective (G : Type u) [Group G] [DecidableEq G] (n : ℕ) :
+    Projective ((standardComplex k G).X n) :=
+  inferInstanceAs <| Projective (Rep.diagonal k G (n + 1))
 
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
-theorem d_eq (n : ℕ) : ((groupCohomology.resolution k G).d (n + 1) n).hom =
+theorem d_eq (n : ℕ) : ((standardComplex k G).d (n + 1) n).hom =
     ModuleCat.ofHom (d k G (n + 1)) := by
   refine ModuleCat.hom_ext <| Finsupp.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
-  simp [Action.ofMulAction_V, groupCohomology.resolution, SimplicialObject.δ,
+  simp [Action.ofMulAction_V, standardComplex, SimplicialObject.δ,
     ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), SimplexCategory.δ, Fin.succAboveOrderEmb]
 
 section Exactness
 
 /-- The standard resolution of `k` as a trivial representation as a complex of `k`-modules. -/
 def forget₂ToModuleCat :=
-  ((forget₂ (Rep k G) (ModuleCat.{u} k)).mapHomologicalComplex _).obj
-    (groupCohomology.resolution k G)
+  ((forget₂ (Rep k G) (ModuleCat.{u} k)).mapHomologicalComplex _).obj (standardComplex k G)
 
 /-- If we apply the free functor `Type u ⥤ ModuleCat.{u} k` to the universal cover of the
 classifying space of `G` as a simplicial set, then take the alternating face map complex, the result
@@ -403,7 +398,7 @@ is isomorphic to the standard resolution of the trivial `G`-representation `k` a
 def compForgetAugmentedIso :
     AlternatingFaceMapComplex.obj
         (SimplicialObject.Augmented.drop.obj (compForgetAugmented.toModule k G)) ≅
-      groupCohomology.resolution.forget₂ToModuleCat k G :=
+      standardComplex.forget₂ToModuleCat k G :=
   eqToIso
     (Functor.congr_obj (map_alternatingFaceMapComplex (forget₂ (Rep k G) (ModuleCat.{u} k))).symm
       (classifyingSpaceUniversalCover G ⋙ Rep.linearization k G))
@@ -411,7 +406,7 @@ def compForgetAugmentedIso :
 /-- As a complex of `k`-modules, the standard resolution of the trivial `G`-representation `k` is
 homotopy equivalent to the complex which is `k` at 0 and 0 elsewhere. -/
 def forget₂ToModuleCatHomotopyEquiv :
-    HomotopyEquiv (groupCohomology.resolution.forget₂ToModuleCat k G)
+    HomotopyEquiv (standardComplex.forget₂ToModuleCat k G)
       ((ChainComplex.single₀ (ModuleCat k)).obj ((forget₂ (Rep k G) _).obj <| Rep.trivial k G k)) :=
   (HomotopyEquiv.ofIso (compForgetAugmentedIso k G).symm).trans <|
     (SimplicialObject.Augmented.ExtraDegeneracy.homotopyEquiv
@@ -424,42 +419,22 @@ def forget₂ToModuleCatHomotopyEquiv :
 /-- The hom of `k`-linear `G`-representations `k[G¹] → k` sending `∑ nᵢgᵢ ↦ ∑ nᵢ`. -/
 def ε : Rep.ofMulAction k G (Fin 1 → G) ⟶ Rep.trivial k G k where
   hom := ModuleCat.ofHom <| Finsupp.linearCombination _ fun _ => (1 : k)
-  comm g := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext_ring (by
-    show
-      Finsupp.linearCombination k (fun _ => (1 : k)) (Finsupp.mapDomain _ (Finsupp.single _ _)) =
-        Finsupp.linearCombination k (fun _ => (1 : k)) (Finsupp.single _ _)
-    simp only [Finsupp.mapDomain_single, Finsupp.linearCombination_single])
+  comm _ := ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext_ring
+    (by simp [ModuleCat.endRingEquiv])
 
 /-- The homotopy equivalence of complexes of `k`-modules between the standard resolution of `k` as
 a trivial `G`-representation, and the complex which is `k` at 0 and 0 everywhere else, acts as
 `∑ nᵢgᵢ ↦ ∑ nᵢ : k[G¹] → k` at 0. -/
 theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
     (forget₂ToModuleCatHomotopyEquiv k G).1.f 0 = (forget₂ (Rep k G) _).map (ε k G) := by
-  show (HomotopyEquiv.hom _ ≫ HomotopyEquiv.hom _ ≫ HomotopyEquiv.hom _).f 0 = _
-  simp only [HomologicalComplex.comp_f]
-  dsimp
-  convert Category.id_comp (X := (forget₂ToModuleCat k G).X 0) _
-  · dsimp only [HomotopyEquiv.ofIso, compForgetAugmentedIso]
-    simp only [Iso.symm_hom, eqToIso.inv, HomologicalComplex.eqToHom_f, eqToHom_refl]
-  ext : 1
-  trans (linearCombination _ fun _ => (1 : k)).comp ((ModuleCat.free k).map (terminal.from _)).hom
-  · erw [Finsupp.lmapDomain_linearCombination (α := Fin 1 → G) (R := k) (α' := ⊤_ Type u)
-        (v := fun _ => (1 : k)) (v' := fun _ => (1 : k))
-        (terminal.from
-          ((classifyingSpaceUniversalCover G).obj (Opposite.op (SimplexCategory.mk 0))).V)
-        LinearMap.id fun i => rfl,
-      LinearMap.id_comp]
-    rfl
-  · rw [ModuleCat.hom_comp]
-    congr
-    · ext x
-      dsimp +unfoldPartialApp [HomotopyEquiv.ofIso,
-        Finsupp.LinearEquiv.finsuppUnique]
-      rw [@Unique.eq_default _ Types.terminalIso.toEquiv.unique x]
-      simp
-    · exact @Subsingleton.elim _ (@Unique.instSubsingleton _ (Limits.uniqueToTerminal _)) _ _
+  refine ModuleCat.hom_ext <| Finsupp.lhom_ext fun (x : Fin 1 → G) r => ?_
+  show mapDomain _ _ _ = Finsupp.linearCombination _ _ _
+  simp only [HomotopyEquiv.ofIso, Iso.symm_hom, compForgetAugmented, compForgetAugmentedIso,
+    eqToIso.inv, HomologicalComplex.eqToHom_f]
+  show mapDomain _ (single x r) _ = _
+  simp [Unique.eq_default (terminal.from _), single_apply, if_pos (Subsingleton.elim _ _)]
 
-theorem d_comp_ε : (groupCohomology.resolution k G).d 1 0 ≫ ε k G = 0 := by
+theorem d_comp_ε : (standardComplex k G).d 1 0 ≫ ε k G = 0 := by
   ext : 1
   refine ModuleCat.hom_ext <| LinearMap.ext fun x => ?_
   have : (forget₂ToModuleCat k G).d 1 0
@@ -472,8 +447,8 @@ theorem d_comp_ε : (groupCohomology.resolution k G).d 1 0 ≫ ε k G = 0 := by
 /-- The chain map from the standard resolution of `k` to `k[0]` given by `∑ nᵢgᵢ ↦ ∑ nᵢ` in
 degree zero. -/
 def εToSingle₀ :
-    groupCohomology.resolution k G ⟶ (ChainComplex.single₀ _).obj (Rep.trivial k G k) :=
-  ((groupCohomology.resolution k G).toSingle₀Equiv _).symm ⟨ε k G, d_comp_ε k G⟩
+    standardComplex k G ⟶ (ChainComplex.single₀ _).obj (Rep.trivial k G k) :=
+  ((standardComplex k G).toSingle₀Equiv _).symm ⟨ε k G, d_comp_ε k G⟩
 
 theorem εToSingle₀_comp_eq :
     ((forget₂ _ (ModuleCat.{u} k)).mapHomologicalComplex _).map (εToSingle₀ k G) ≫
@@ -495,15 +470,15 @@ instance : QuasiIso (εToSingle₀ k G) := by
 
 end Exactness
 
-end groupCohomology.resolution
+end standardComplex
 
-open groupCohomology.resolution HomologicalComplex.Hom
+open standardComplex HomologicalComplex.Hom
 
-variable [Group G]
+variable [Group G] [DecidableEq G]
 
 /-- The standard projective resolution of `k` as a trivial `k`-linear `G`-representation. -/
-def groupCohomology.projectiveResolution : ProjectiveResolution (Rep.trivial k G k) where
-  complex := resolution k G
+def standardResolution : ProjectiveResolution (Rep.trivial k G k) where
+  complex := standardComplex k G
   π := εToSingle₀ k G
 
 instance : EnoughProjectives (Rep k G) :=
@@ -511,8 +486,10 @@ instance : EnoughProjectives (Rep k G) :=
 
 /-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is a trivial `k`-linear
 `G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
-standard resolution of `k` called `groupCohomology.resolution k G`. -/
-def groupCohomology.extIso (V : Rep k G) (n : ℕ) :
+standard resolution of `k` called `standardComplex k G`. -/
+def _root_.groupCohomology.extIso (V : Rep k G) (n : ℕ) :
     ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
-      ((groupCohomology.resolution k G).linearYonedaObj k V).homology n :=
-  (groupCohomology.projectiveResolution k G).isoExt n V
+      ((standardComplex k G).linearYonedaObj k V).homology n :=
+  (standardResolution k G).isoExt n V
+
+end Rep
