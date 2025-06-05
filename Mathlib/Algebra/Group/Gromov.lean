@@ -1271,9 +1271,9 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
     let m_list_choice_inv := if 0 < m then gamma_inv_list else gamma_list
     let phi_list_choice_inv := if 0 < (-φ (ofMul s)) then gamma_inv_list else gamma_list
 
-    by_cases m_pos: 0 < m
+    by_cases foo: 1 = 1
     .
-      have m_eq_natabs : m.natAbs = m := by omega
+      --
       by_cases neg_phi_pos: 0 < (-φ (ofMul s))
       .
         have phi_natabs: (φ (ofMul s)).natAbs = -φ (ofMul s) := by omega
@@ -1284,7 +1284,7 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
           rw [gamma_list_prod]
           norm_cast
           rw [← s_m_eq]
-          rw [← zpow_natCast, m_eq_natabs]
+          rw [← zpow_natCast]
           conv =>
             rhs
             arg 1
@@ -1302,12 +1302,33 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
 
           rw [← zpow_natCast, phi_natabs]
           simp
-          rw [← zpow_natCast, m_eq_natabs]
-          simp_rw [m_list_choice, m_list_choice_inv, m_pos]
-          simp [gamma_inv_list]
-          rw [gamma_list_inv]
-          group
-
+          simp_rw [m_list_choice, m_list_choice_inv]
+          by_cases m_pos: 0 < m
+          .
+            simp_rw [m_pos]
+            simp
+            have m_eq_abs : |m| = m := by
+              rw [Int.abs_eq_natAbs]
+              omega
+            rw [← zpow_natCast]
+            simp [gamma_inv_list]
+            rw [gamma_list_inv]
+            rw [gamma_list_prod]
+            rw [m_eq_abs]
+            group
+          .
+            simp_rw [m_pos]
+            simp
+            have neg_abs_m : |m| = - m := by
+              rw [Int.abs_eq_natAbs]
+              omega
+            rw [← zpow_natCast]
+            simp [gamma_inv_list]
+            rw [gamma_list_inv]
+            rw [gamma_list_prod]
+            group
+            rw [neg_abs_m]
+            group
         .
 
           simp [m_list_choice, m_list_choice_inv]
