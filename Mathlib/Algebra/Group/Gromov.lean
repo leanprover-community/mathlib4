@@ -1317,6 +1317,24 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
     rw [filled_list_prod]
     exact flat_list_prod
 
+  have union_subset_n_succ: three_two_B_n (S := {s}) φ γ N ∪ (p • three_two_B_n (S := {s}) φ γ N) ⊆ three_two_B_n (S := {s}) φ γ (N + 1) := by
+    apply Finset.union_subset
+    . exact b_n_subset_b_n_succ
+    . exact smul_subset
+
+
+
+  have card_le := Finset.card_le_card union_subset_n_succ
+  rw [Finset.card_union_of_disjoint ?_] at card_le
+  .
+    simp at card_le
+    ring_nf at card_le
+    rw [add_comm] at card_le
+
+  .
+    rw [Finset.inter_comm] at disjoint_smul
+    rw [Finset.disjoint_iff_inter_eq_empty]
+    exact disjoint_smul
 
 
 
