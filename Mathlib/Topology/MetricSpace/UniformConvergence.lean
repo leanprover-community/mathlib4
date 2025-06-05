@@ -11,20 +11,6 @@ import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
 /-! # Metric structure on `α →ᵤ β` -/
 
-theorem BoundedContinuousFunction.edist_eq_iSup {α β : Type*} [TopologicalSpace α]
-    [PseudoMetricSpace β] {f g : BoundedContinuousFunction α β} :
-    edist f g = ⨆ (x : α), edist (f x) (g x) := by
-  simp_rw [edist_nndist, nndist_eq_iSup]
-  refine ENNReal.coe_iSup ⟨nndist f g, ?_⟩
-  rintro - ⟨x, hx, rfl⟩
-  exact nndist_coe_le_nndist x
-
-theorem ContinuousMap.edist_eq_iSup {α β : Type*} [TopologicalSpace α] [CompactSpace α]
-    [PseudoMetricSpace β] {f g : C(α, β)} :
-    edist f g = ⨆ (x : α), edist (f x) (g x) := by
-  simp [← isometryEquivBoundedOfCompact α β |>.edist_eq f g,
-    BoundedContinuousFunction.edist_eq_iSup]
-
 variable {α β γ : Type*}
 
 open scoped UniformConvergence NNReal
