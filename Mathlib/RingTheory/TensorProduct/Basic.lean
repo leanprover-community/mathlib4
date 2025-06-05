@@ -604,12 +604,33 @@ variable [CommSemiring B] [Algebra R B]
 
 /-- `S ⊗[R] T` has a `T`-algebra structure. This is not a global instance or else the action of
 `S` on `S ⊗[R] S` would be ambiguous. -/
-abbrev rightAlgebra : Algebra B (A ⊗[R] B) :=
-  includeRight.toRingHom.toAlgebra' fun b x => by
-    suffices LinearMap.mulLeft R (includeRight b) = LinearMap.mulRight R (includeRight b) from
-      congr($this x)
-    ext xa xb
-    simp [mul_comm]
+abbrev rightAlgebra : Algebra B (A ⊗[R] B) where
+  smul s e := TensorProduct.comm _ _ _ (s • (TensorProduct.comm _ _ _ e))
+  algebraMap := Algebra.TensorProduct.includeRight.toRingHom
+  commutes' s bs := by
+    induction bs with
+    | zero => simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
+      Algebra.TensorProduct.includeRight_apply, mul_zero, zero_mul]
+    | tmul x y =>
+        simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
+          Algebra.TensorProduct.includeRight_apply, Algebra.TensorProduct.tmul_mul_tmul, one_mul,
+          mul_one, mul_comm]
+    | add x y _ _ =>
+        simp_all only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
+          Algebra.TensorProduct.includeRight_apply, mul_add, add_mul]
+  smul_def' s bs := by
+    induction bs with
+    | zero => simp; sorry
+    | tmul x y =>
+        simp only [smul_def, TensorProduct.comm_tmul, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
+          Algebra.TensorProduct.includeRight_apply, Algebra.TensorProduct.tmul_mul_tmul, one_mul]
+        sorry
+--        rw [TensorProduct.smul_tmul']
+--        simp only [smul_eq_mul, TensorProduct.comm_symm_tmul]
+    | add x y hx hy =>
+        simp_all only [smul_def, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
+          Algebra.TensorProduct.includeRight_apply, smul_add, ← hx, ← hy, mul_add]
+        sorry
 
 attribute [local instance] TensorProduct.rightAlgebra
 
