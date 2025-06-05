@@ -5,9 +5,6 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.GroupWithZero.Prod
 import Mathlib.Algebra.GroupWithZero.WithZero
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.Data.Prod.Lex
 
 /-!
 # Homomorphisms for products of groups with zero
