@@ -91,6 +91,19 @@ theorem snd_comp_inr [DecidablePred fun x : N₀ ↦ x = 0] :
     (snd ..).comp (inr M₀ N₀) = MonoidWithZeroHom.id _ :=
   MonoidWithZeroHom.ext fun _ ↦ snd_inr _
 
+lemma inl_injective [DecidablePred fun x : M₀ ↦ x = 0] :
+    Function.Injective (inl M₀ N₀) :=
+  Function.HasLeftInverse.injective ⟨fst .., fun _ ↦ by simp⟩
+lemma inr_injective [DecidablePred fun x : N₀ ↦ x = 0] :
+    Function.Injective (inr M₀ N₀) :=
+  Function.HasLeftInverse.injective ⟨snd .., fun _ ↦ by simp⟩
+lemma fst_surjective [DecidablePred fun x : M₀ ↦ x = 0] :
+    Function.Surjective (fst M₀ N₀) :=
+  Function.HasRightInverse.surjective ⟨inl .., fun _ ↦ by simp⟩
+lemma snd_surjective [DecidablePred fun x : N₀ ↦ x = 0] :
+    Function.Surjective (snd M₀ N₀) :=
+  Function.HasRightInverse.surjective ⟨inr .., fun _ ↦ by simp⟩
+
 variable [DecidablePred fun x : M₀ ↦ x = 0] [DecidablePred fun x : N₀ ↦ x = 0]
 
 theorem inl_mul_inr_eq_mk_of_unit (m : M₀ˣ) (n : N₀ˣ) :
