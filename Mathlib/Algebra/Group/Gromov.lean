@@ -1347,6 +1347,28 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
           group
           rw [neg_abs_m]
           group
+          -- TODO - this can be deduplicated
+          by_cases phi_neg: (φ (ofMul s)) < 0
+          .
+            have phi_abs: |(φ (ofMul s))| = -φ (ofMul s) := by
+              rw [Int.abs_eq_natAbs]
+              omega
+            rw [phi_abs]
+            simp_rw [phi_neg]
+            simp
+            rw [gamma_list_prod]
+            rw [neg_abs_m]
+            group
+          .
+            have phi_abs: |(φ (ofMul s))| = φ (ofMul s) := by
+              rw [Int.abs_eq_natAbs]
+              omega
+            rw [phi_abs]
+            simp_rw [phi_neg]
+            simp
+            rw [gamma_list_inv]
+            rw [neg_abs_m]
+            group
       .
 
         simp [m_list_choice, m_list_choice_inv]
