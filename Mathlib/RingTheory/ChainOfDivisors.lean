@@ -6,7 +6,6 @@ Authors: Anne Baanen, Paul Lezeau
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
-import Mathlib.Data.ZMod.Defs
 import Mathlib.Order.Atoms
 import Mathlib.Order.Hom.Bounded
 /-!
