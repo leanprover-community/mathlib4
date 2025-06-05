@@ -493,8 +493,8 @@ def limCompFlipIsoWhiskerLim [HasLimitsOfShape J C] :
     ext k
     apply limit_obj_ext
     intro j
-    simp [comp_evaluation, ← NatTrans.comp_app (limMap _)]
-  ).symm
+    simp [comp_evaluation, ← NatTrans.comp_app (limMap _)]).symm
+    
 /-- For a functor `G : J ⥤ K ⥤ C`, its limit `K ⥤ C` is given by `(G' : K ⥤ J ⥤ C) ⋙ lim`.
 Note that this does not require `K` to be small.
 -/
