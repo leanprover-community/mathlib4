@@ -376,10 +376,10 @@ instance (x y : OneTruncation₂ ((truncation 2).obj Δ[0])) : Unique (x ⟶ y) 
 def goal : IsTerminal (hoFunctor.obj (Δ[0])) := by
   letI : Unique ((truncation 2).obj Δ[0]).HomotopyCategory :=
     inferInstanceAs (Unique <| CategoryTheory.Quotient Truncated.HoRel₂)
-  letI sub : Subsingleton ((truncation 2).obj Δ[0]).HomotopyCategory :=  by infer_instance
+  letI sub : Subsingleton ((truncation 2).obj Δ[0]).HomotopyCategory := by infer_instance
   letI : IsDiscrete ((truncation 2).obj Δ[0]).HomotopyCategory :=
-    { subsingleton X Y := by
-        exact inferInstanceAs <| Subsingleton ((_ : CategoryTheory.Quotient Truncated.HoRel₂) ⟶ _)
+    { subsingleton X Y :=
+        inferInstanceAs <| Subsingleton ((_ : CategoryTheory.Quotient Truncated.HoRel₂) ⟶ _)
       eq_of_hom f := sub.allEq _ _ }
   apply Cat.isDiscreteUnique.isTerminal
 
