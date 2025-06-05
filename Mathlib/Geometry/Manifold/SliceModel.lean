@@ -220,7 +220,7 @@ instance (h : (E × F) ≃L[𝕜] E') : SliceModel F (𝓘(𝕜, E)) (𝓘(𝕜,
 /-- *Any* model with corners on `E` which is an embedding is a slice model with the trivial model
 on `E`. (The embedding condition excludes strange cases of submanifolds with boundary).
 For boundaryless models, that is always true. -/
-instance {I : ModelWithCorners 𝕜 E H} (hI : IsEmbedding I) :
+def SliceModel.ofEmbedding {I : ModelWithCorners 𝕜 E H} (hI : IsEmbedding I) :
     SliceModel (⊥ : Subspace 𝕜 E) I 𝓘(𝕜, E) where
   equiv := ContinuousLinearEquiv.prodUnique 𝕜 E
   map := I
@@ -232,6 +232,7 @@ instance {I : ModelWithCorners 𝕜 E H} (hI : IsEmbedding I) :
 
 open scoped Manifold
 
+/-- Euclidean half-space is a slice model w.r.t. Euclidean space. -/
 -- XXX: can this be golfed using the previous instance?
 noncomputable instance {n : ℕ} [NeZero n] :
     SliceModel (⊥ : Subspace ℝ ((Fin n → ℝ))) (𝓡∂ n) (𝓡 n) where
@@ -243,15 +244,14 @@ noncomputable instance {n : ℕ} [NeZero n] :
     simp only [modelWithCornersSelf_coe, comp_apply, id_eq, ContinuousLinearEquiv.prodUnique_apply]
     rfl
 
--- should be a not-too-hard exercise
+/-- The standard model on `ℝ^n` is a slice model for the standard model for `ℝ^m`, for `n < m`. -/
 noncomputable instance {n m : ℕ} [NeZero n] :
-    SliceModel (⊥ : Subspace ℝ ((Fin m → ℝ))) (𝓡 n) (𝓡 (n + m)) where
-  equiv := sorry -- see zulip! ContinuousLinearEquiv.prodUnique ℝ (EuclideanSpace ℝ (Fin n))
-  map := sorry -- easy from `equiv`
+    SliceModel ((EuclideanSpace ℝ (Fin m))) (𝓡 n) (𝓡 (n + m)) where
+  equiv := EuclideanSpace.finAddEquivProd |>.symm
+  map x := (EuclideanSpace.finAddEquivProd (𝕜 := ℝ) (n := n) (m := m)).symm (x, 0)
   hmap := sorry -- should be easy: `equiv` is an embedding, and prodMk{Left,Right} also are
-  compatible := by -- should be obvious then
-    ext x'
-    sorry
+  compatible := by ext; simp
+
 
 noncomputable instance {n : ℕ} [NeZero n] :
     SliceModel (⊥ : Subspace ℝ ((Fin n → ℝ))) (modelWithCornersEuclideanQuadrant n) (𝓡∂ n) where
