@@ -430,8 +430,16 @@ lemma hom_comm_iff_dataEquivDescentData' (i₁ i₂ : ι) :
     hom₁ i₁ i₂ ≫ (F.map (sq i₁ i₂).p₁.op.toLoc).r.map
       ((F.map (sq i₁ i₂).p₂.op.toLoc).l.map (hom i₂)) = hom i₁ ≫ hom₂ i₁ i₂ ↔
     (F.map (sq i₁ i₂).p₁.op.toLoc).l.map (hom i₁) ≫ dataEquivDescentData' hom₂ i₁ i₂ =
-      dataEquivDescentData' hom₁ i₁ i₂ ≫ (F.map (sq i₁ i₂).p₂.op.toLoc).l.map (hom i₂) :=
-  sorry
+      dataEquivDescentData' hom₁ i₁ i₂ ≫ (F.map (sq i₁ i₂).p₂.op.toLoc).l.map (hom i₂) := by
+  conv_lhs =>
+    rw [← Equiv.apply_eq_iff_eq
+      (((F.map (sq i₁ i₂).p₁.op.toLoc).adj.toCategory).homEquiv (obj₁ i₁) _).symm, Eq.comm]
+  congr!
+  · simp [dataEquivDescentData', Adjunction.homEquiv_symm_apply]
+  · simp only [Adjunction.homEquiv_symm_apply, Functor.map_comp, Adjunction.toCategory_counit,
+      Category.assoc, dataEquivDescentData', Equiv.piCongrRight_apply, Pi.map_apply]
+    congr 1
+    apply (F.map (sq i₁ i₂).p₁.op.toLoc).adj.counit.naturality
 
 @[simps]
 def toDescentData' : F.DescentData'' sq sq₃ ⥤ (F.comp Adj.forget₁).DescentData' sq sq₃ where
@@ -644,8 +652,18 @@ lemma hom_comm_iff_dataEquivCoalgebra (i₁ i₂ : ι) :
       ((F.map (sq i₁ i₂).p₂.op.toLoc).l.map (hom i₂)) = hom i₁ ≫ hom₂ i₁ i₂ ↔
     dataEquivCoalgebra hom₁ i₁ i₂ ≫
         (F.map (f i₁).op.toLoc).l.map ((F.map (f i₂).op.toLoc).r.map (hom i₂)) =
-      hom i₁ ≫ dataEquivCoalgebra hom₂ i₁ i₂ :=
-  sorry
+      hom i₁ ≫ dataEquivCoalgebra hom₂ i₁ i₂ := by
+  obtain ⟨hom₁, rfl⟩ := dataEquivCoalgebra.symm.surjective hom₁
+  obtain ⟨hom₂, rfl⟩ := dataEquivCoalgebra.symm.surjective hom₂
+  simp only [dataEquivCoalgebra, Equiv.piCongrRight_symm_apply, Pi.map_apply, Iso.homCongr_symm,
+    Iso.refl_symm, Iso.homCongr_apply, Iso.refl_inv, Iso.symm_hom, Iso.app_inv, Iso.symm_inv,
+    asIso_hom, Category.id_comp, Category.assoc, Equiv.piCongrRight_apply, Iso.app_hom, asIso_inv,
+    NatIso.isIso_inv_app, Cat.comp_obj, IsIso.hom_inv_id, Category.comp_id]
+  conv_rhs =>
+    rw [← cancel_mono ((F.baseChange (sq i₁ i₂).isPullback.toCommSq.flip.op.toLoc).app (obj₂ i₂))]
+  simp_rw [Category.assoc]
+  congr! 2
+  exact ((F.baseChange (sq i₁ i₂).isPullback.toCommSq.flip.op.toLoc).naturality _).symm
 
 @[simps]
 noncomputable
