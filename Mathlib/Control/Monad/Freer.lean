@@ -30,7 +30,7 @@ to the `Free` constructor. They are equipped with interpreters and helper functi
 
 ## Tags
 
-Freee monad, freer monad, state monad, writer monad, continuation monad
+Freer monad, freer monad, state monad, writer monad, continuation monad
 -/
 
 /-- The Freer monad over a functor `f`.
