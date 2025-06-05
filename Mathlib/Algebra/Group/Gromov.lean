@@ -1143,7 +1143,7 @@ noncomputable def three_two_B_n_single_s (φ: (Additive G) →+ ℤ) (γ: G) (n:
 
 
 -- If G has polynomial growth, than we can find an N such that S_n ⊆ B_n * B_n⁻¹
-lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (γ: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ) (hγ: φ γ = 1) (s: G): ∃ n, three_two_S_n (S := {s}) φ γ (n + 1) ⊆ ((three_two_B_n (S := {s}) φ γ n) * (three_two_B_n (S := {s}) φ γ n)⁻¹)  := by
+lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD d (S := S)) (γ: G) (φ: (Additive G) →+ ℤ) (hφ: Function.Surjective φ) (hγ: φ γ = 1) (s: G) (s_mem: s ∈ S): ∃ n, three_two_S_n (S := {s}) φ γ (n + 1) ⊆ ((three_two_B_n (S := {s}) φ γ n) * (three_two_B_n (S := {s}) φ γ n)⁻¹)  := by
   by_contra!
   simp [HasPolynomialGrowthD] at hG
   have little_o_poly := isLittleO_pow_exp_pos_mul_atTop d (b := Real.log 2) (Real.log_pos (by simp))
@@ -1160,6 +1160,23 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
   -- Write γ as a product of elements in S
   obtain ⟨gamma_list, gamma_list_prod⟩ := mem_S_prod_list γ
   simp [ProdS] at gamma_list_prod
+
+  have gamma_list_inv: ((gamma_list.unattach).map (fun x => x⁻¹)).reverse.prod = γ⁻¹ := by
+    rw [← List.prod_inv_reverse]
+    rw [gamma_list_prod]
+
+  have gamma_list_comm_inv: ((gamma_list.unattach).map (fun x => x⁻¹)) = (gamma_list.map (fun s => ⟨s.val⁻¹, hGS.has_inv s.val s.property⟩)).unattach := by
+    clear gamma_list_prod gamma_list_inv
+    induction gamma_list with
+    | nil =>
+      simp
+    | cons a b ih =>
+      simp
+      exact ih
+
+  rw [gamma_list_comm_inv] at gamma_list_inv
+
+
 
   -- Choose our N large enough that we can apply all of the above conditions
   let N := max N' (max gamma_list.length 2)
@@ -1242,7 +1259,41 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
 
 
   have s_n_bound: ∀ a ∈ three_two_S_n (S := {s}) φ γ N, ∃ l: List S, l.unattach.prod = a ∧ l.length ≤ 3*N := by
-    sorry
+    intro a ha
+    simp [three_two_S_n, gamma_m_helper, e_i_regular_helper] at ha
+    obtain ⟨m, m_bound, s_m_eq⟩ := ha
+    by_cases m_pos: 0 < m
+    .
+      have m_eq_natabs : m.natAbs = m := by omega
+      by_cases neg_phi_pos: 0 < (-φ (ofMul s))
+      .
+        have phi_natabs: (φ (ofMul s)).natAbs = -φ (ofMul s) := by omega
+        use (List.replicate m.natAbs gamma_list).flatten ++ [⟨s, s_mem⟩] ++ (List.replicate (-(φ (ofMul s))).natAbs gamma_list).flatten ++ (List.replicate m.natAbs (gamma_list.map (fun s => ⟨s.val⁻¹, hGS.has_inv s.val s.property⟩)).reverse).flatten
+        refine ⟨?_, ?_⟩
+        .
+          simp
+          rw [gamma_list_prod]
+          norm_cast
+          rw [← s_m_eq]
+          rw [← zpow_natCast, m_eq_natabs]
+          conv =>
+            rhs
+            arg 1
+            arg 2
+            equals s * γ^(-(φ (ofMul s))) =>
+              sorry
+
+          rw [← zpow_natCast, phi_natabs]
+          simp
+          rw [← zpow_natCast, m_eq_natabs]
+          rw [gamma_list_inv]
+          group
+
+        .
+          refine ⟨by simp [s_m_eq], ?_⟩
+          rw [List.length_replicate, List.length_replicate]
+          omega
+
 
   have b_n_subset_s_n_squared: three_two_B_n (S := {s}) φ γ N ⊆ S ^ (N * (3 * N)) := by
     intro a ha
@@ -1311,7 +1362,7 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
     conv =>
       lhs
       equals (List.ofFn (filled_list.get)).unattach.prod =>
-        sorry
+        simp
 
     simp
     rw [filled_list_prod]
@@ -1330,6 +1381,7 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
     simp at card_le
     ring_nf at card_le
     rw [add_comm] at card_le
+    sorry
 
   .
     rw [Finset.inter_comm] at disjoint_smul
