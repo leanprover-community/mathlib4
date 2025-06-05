@@ -231,6 +231,6 @@ lemma HasProdLocallyUniformlyOn.tendstoLocallyUniformlyOn_finset_range
   rw [hasProdLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn] at h
   intro v hv r hr
   obtain ⟨t, ht, htr⟩ := h v hv r hr
-  refine ⟨t, ht, Filter.tendsto_finset_range.eventually htr⟩
+  exact ⟨t, ht, Filter.tendsto_finset_range.eventually htr⟩
 
 end LocallyUniformlyOn
