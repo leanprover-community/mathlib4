@@ -54,7 +54,7 @@ def Ideal.mulQuot (a : R) (I : Ideal R) :
 The map `R ⧸ I →ₗ[R] R ⧸ (a • I)` defined by multiplication by `a` is injective if `a` is
 a nonzero divisor.
 -/
-lemma Ideal.mulQuotInjective {a : R} (I : Ideal R) (ha : a ∈ nonZeroDivisors R) :
+lemma Ideal.mulQuot_injective {a : R} (I : Ideal R) (ha : a ∈ nonZeroDivisors R) :
     Function.Injective (Ideal.mulQuot a I) := by
   simp only [mulQuot, Submodule.mapQ, ← ker_eq_bot]
   apply Submodule.ker_liftQ_eq_bot'
@@ -106,7 +106,7 @@ of vanishing of `b`.
 theorem ord_mul {a b : R} (hb : b ∈ nonZeroDivisors R) :
     Ring.ord R (a * b) = Ring.ord R a + Ring.ord R b := by
   have := Module.length_eq_add_of_exact (Ideal.mulQuot b (Ideal.span {a}))
-          (Ideal.quotOfMul b (Ideal.span {a})) (Ideal.mulQuotInjective (Ideal.span {a}) hb)
+          (Ideal.quotOfMul b (Ideal.span {a})) (Ideal.mulQuot_injective (Ideal.span {a}) hb)
           (Ideal.quotOfMul_surjective (Ideal.span {a}))
           (Ideal.exact_mulQuot_quotOfMul (Ideal.span {a}))
   simp only [Ring.ord, submodule_span_eq, ← this]
@@ -160,6 +160,7 @@ theorem _root_.isFiniteLength_quotient_span_singleton [IsNoetherianRing R]
     ← WithBot.add_le_add_iff_right' (c := 1) (by simp) (WithBot.coe_eq_coe.not.mpr (by simp)),
     Nat.cast_zero, zero_add]
   exact (ringKrullDim_quotient_succ_le_of_nonZeroDivisor hx).trans (Order.KrullDimLE.krullDim_le)
+
 variable [Nontrivial R] [IsNoetherianRing R] [Ring.KrullDimLE 1 R]
 variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 /--
@@ -189,9 +190,9 @@ lemma ordFrac_eq_ord (x : R) (hx : x ≠ 0) : ordFrac R (algebraMap R K x) =
   ordMonoidWithZeroHom R x := by
   have := (FaithfulSMul.algebraMap_injective R K).isDomain
   refine (Submonoid.LocalizationMap.lift_eq ..).trans ?_
-  simp [ordMonoidWithZeroHom, mem_nonZeroDivisors_iff_ne_zero.mp x.2]
+  simp [ordMonoidWithZeroHom, mem_nonZeroDivisors_iff_ne_zero.mpr hx]
 
-lemma ordFrac_eq_frac (a : nonZeroDivisors R) (b : nonZeroDivisors R) :
+lemma ordFrac_eq_div (a : nonZeroDivisors R) (b : nonZeroDivisors R) :
   ordFrac R (IsLocalization.mk' K a.1 b) = ordMonoidWithZeroHom R a / ordMonoidWithZeroHom R b := by
   simp [ordFrac_eq_ord]
 
