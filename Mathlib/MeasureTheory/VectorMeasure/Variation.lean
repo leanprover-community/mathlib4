@@ -353,7 +353,7 @@ lemma var_aux_iUnion_le (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
 lemma var_aux_iUnion (hf : IsSubadditive f) (hf' : f ∅ = 0) (s : ℕ → Set X)
     (hs : ∀ i, MeasurableSet (s i)) (hs' : Pairwise (Disjoint on s)) :
     HasSum (fun i ↦ var_aux f (s i)) (var_aux f (⋃ i, s i)) := by
-  refine (Summable.hasSum_iff ENNReal.summable).mpr (eq_of_le_of_le ?_ ?_)
+  refine ENNReal.summable.hasSum_iff.mpr (eq_of_le_of_le ?_ ?_)
   · exact le_var_aux_iUnion f s hs hs'
   · exact var_aux_iUnion_le f s hs hs' hf hf'
 
@@ -414,26 +414,17 @@ lemma monotone_of_ENNReal  {s₁ s₂ : Set X} (hs₁ : MeasurableSet s₁) (hs�
     (h : s₁ ⊆ s₂) (μ : VectorMeasure X ℝ≥0∞) : μ s₁ ≤ μ s₂ := by
   simp [← VectorMeasure.of_add_of_diff (v := μ) hs₁ hs₂ h]
 
--- TO DO: move this to a good home or incorporate in proof.
+-- TO DO: move this to a good home or do more mathlib style choices earlier make this redundant?
 open Classical in
-lemma biUnion_Finset (μ : VectorMeasure X ℝ≥0∞) {S : Finset (Set X)} (hS : ∀ s ∈ S, MeasurableSet s)
-    (hS' : S.toSet.PairwiseDisjoint id) : ∑ s ∈ S, μ s = μ (⋃ s ∈ S, s) := by
-  induction S using Finset.induction_on with
-  | empty =>
-    simp
-  | insert a s ha ih =>
-    simp
-    have : μ (a ∪ ⋃ x ∈ s, x) = μ a + μ (⋃ x ∈ s, x) := by
-      rw [MeasureTheory.VectorMeasure.of_union]
-      · sorry
-      · sorry
-      · sorry
-    rw [this]
-    have h : ∀ s_1 ∈ s, MeasurableSet s_1 := by sorry
-    have h' : s.toSet.PairwiseDisjoint id := by sorry
-    have := ih h h'
-    rw [← this]
-    exact Finset.sum_insert ha
+lemma biUnion_Finset {X : Type*} [MeasurableSpace X] (μ : VectorMeasure X ℝ≥0∞) {S : Finset (Set X)}
+    (hS : ∀ s ∈ S, MeasurableSet s) (hS' : S.toSet.PairwiseDisjoint id) :
+    ∑ s ∈ S, μ s = μ (⋃ s ∈ S, s) := by
+  have : ⋃ s ∈ S, s = ⋃ i : S, i.val := by apply Set.biUnion_eq_iUnion
+  rw [this, μ.of_disjoint_iUnion]
+  · simp
+  · simpa
+  · intro p q h
+    exact hS' p.property q.property (Subtype.coe_ne_coe.mpr h)
 
 lemma variation_of_ENNReal (μ : VectorMeasure X ℝ≥0∞) : variation μ = μ := by
   ext s hs
