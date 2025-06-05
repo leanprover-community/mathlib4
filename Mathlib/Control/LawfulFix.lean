@@ -116,8 +116,6 @@ open Fix
 variable {α : Type*}
 variable (f : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)
 
-open Part hiding ωSup
-
 theorem fix_eq_ωSup : Part.fix f = ωSup (approxChain f) := by
   apply le_antisymm
   · intro x
