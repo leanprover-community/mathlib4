@@ -18,6 +18,8 @@ variable {G : Type*} [hG: Group G] [DecidableEq G]
 -- * `set_option synthInstance.checkSynthOrder false`
 class Generates {S: outParam (Finset G)}: Prop where
   generates : ((closure (S : Set G) : Set G) = ⊤)
+  -- This should be fine, since the growth rate doesn't depend on the generating set
+  one_mem: (1 : G) ∈ S
   has_inv: ∀ g ∈ S, g⁻¹ ∈ S
 
 variable {S : Finset G} [hGS: Generates (G := G) (S := S)] [hS: Nonempty S]
@@ -1242,7 +1244,7 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
   have s_n_bound: ∀ a ∈ three_two_S_n (S := {s}) φ γ N, ∃ l: List S, l.unattach.prod = a ∧ l.length ≤ 3*N := by
     sorry
 
-  have b_n_subset_s_n_squared: three_two_B_n (S := {s}) φ γ N ⊆ S ^ (N^2) := by
+  have b_n_subset_s_n_squared: three_two_B_n (S := {s}) φ γ N ⊆ S ^ (N * (3 * N)) := by
     intro a ha
     have orig_ha := ha
     rw [Finset.mem_pow]
@@ -1280,8 +1282,40 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
         rw [← s_len]
         exact s_prod_prop.2
 
-    use flat_list.get
-    simp [three_two_S_n] at l
+    have nested_len_eq: nested_list.length = l.length := by
+      simp [nested_list]
+
+    rw [nested_len_eq] at flat_list_len
+    simp [list_len_n] at l_len
+    simp only [smul_eq_mul] at flat_list_len
+    have nested_list_le_n_squared: nested_list.flatten.length ≤ N * (3 * N) := by
+      apply le_mul_of_le_mul_right (b := l.length)
+      . omega
+      . omega
+
+
+    let filled_list := nested_list.flatten ++ (List.replicate ((N * (3 * N)) - nested_list.flatten.length) ⟨1, hGS.one_mem⟩)
+
+    have filled_list_prod: filled_list.unattach.prod = nested_list.flatten.unattach.prod := by
+      simp [filled_list]
+
+
+    have len_eq: filled_list.length = N * (3 * N) := by
+      simp [filled_list]
+      apply Nat.add_sub_of_le
+      simp at nested_list_le_n_squared
+      exact nested_list_le_n_squared
+
+    rw [← len_eq]
+    use filled_list.get
+    conv =>
+      lhs
+      equals (List.ofFn (filled_list.get)).unattach.prod =>
+        sorry
+
+    simp
+    rw [filled_list_prod]
+    exact flat_list_prod
 
 
 
