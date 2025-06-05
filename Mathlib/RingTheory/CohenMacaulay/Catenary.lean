@@ -173,90 +173,87 @@ lemma RingTheory.Sequence.isRegular_of_maximalIdeal_mem_ofList_minimalPrimes
     [IsCohenMacaulayLocalRing R] (rs : List R)
     (mem : maximalIdeal R ∈ (Ideal.ofList rs).minimalPrimes)
     (dim : rs.length = ringKrullDim R) : IsRegular R rs := by
-  constructor
-  · generalize len : rs.length = n
-    induction' n with n hn generalizing R rs
-    · simp [List.length_eq_zero_iff.mp len]
-    · match rs with
-      | [] => simp at len
-      | x :: rs' =>
-        simp only [List.length_cons, Nat.add_right_cancel_iff] at len
-        have xmem : x ∈ maximalIdeal R := mem.1.2 (Ideal.subset_span (by simp))
-        let R' := R ⧸ x • (⊤ : Ideal R)
-        have : Nontrivial R' :=
-            Ideal.Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
-        have : IsLocalHom (Ideal.Quotient.mk (x • (⊤ : Ideal R))) :=
+  refine ⟨?_, by simpa using (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' mem.1.2).symm⟩
+  generalize len : rs.length = n
+  induction' n with n hn generalizing R rs
+  · simp [List.length_eq_zero_iff.mp len]
+  · match rs with
+    | [] => simp at len
+    | x :: rs' =>
+      simp only [List.length_cons, Nat.add_right_cancel_iff] at len
+      have xmem : x ∈ maximalIdeal R := mem.1.2 (Ideal.subset_span (by simp))
+      let R' := R ⧸ x • (⊤ : Ideal R)
+      have : Nontrivial R' :=
+          Ideal.Quotient.nontrivial (by simpa [← Submodule.ideal_span_singleton_smul])
+      have : IsLocalHom (Ideal.Quotient.mk (x • (⊤ : Ideal R))) :=
+        IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
+      let _ : IsLocalRing R' := IsLocalRing.of_surjective _ Ideal.Quotient.mk_surjective
+      have xreg : IsSMulRegular R x := by
+        by_contra nreg
+        have mem_ass : x ∈ {r : R | IsSMulRegular R r}ᶜ := nreg
+        simp only [← biUnion_associatedPrimes_eq_compl_regular, Set.mem_iUnion, SetLike.mem_coe,
+          exists_prop] at mem_ass
+        rcases mem_ass with ⟨p, ass, xmem⟩
+        let _ := (isCohenMacaulayLocalRing_iff R).mp (by assumption)
+        have eq := ModuleCat.depth_eq_supportDim_of_cohenMacaulay (ModuleCat.of R R)
+        rw [depth_eq_dim_quotient_associated_prime_of_isCohenMacaulay p (ModuleCat.of R R) ass,
+          Module.supportDim_self_eq_ringKrullDim, WithBot.coe_unbot] at eq
+        have : Nontrivial (R ⧸ p) := Ideal.Quotient.nontrivial (Ideal.IsPrime.ne_top ass.1)
+        have : IsLocalHom (Ideal.Quotient.mk p) :=
           IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
-        let _ : IsLocalRing R' :=
-          IsLocalRing.of_surjective (Ideal.Quotient.mk _) Ideal.Quotient.mk_surjective
-        have xreg : IsSMulRegular R x := by
-          by_contra nreg
-          have mem_ass : x ∈ {r : R | IsSMulRegular R r}ᶜ := nreg
-          simp only [← biUnion_associatedPrimes_eq_compl_regular, Set.mem_iUnion, SetLike.mem_coe,
-            exists_prop] at mem_ass
-          rcases mem_ass with ⟨p, ass, xmem⟩
-          let _ := (isCohenMacaulayLocalRing_iff R).mp (by assumption)
-          have eq := ModuleCat.depth_eq_supportDim_of_cohenMacaulay (ModuleCat.of R R)
-          rw [depth_eq_dim_quotient_associated_prime_of_isCohenMacaulay p (ModuleCat.of R R) ass,
-            Module.supportDim_self_eq_ringKrullDim, WithBot.coe_unbot] at eq
-          have : Nontrivial (R ⧸ p) := Ideal.Quotient.nontrivial (Ideal.IsPrime.ne_top ass.1)
-          have : IsLocalHom (Ideal.Quotient.mk p) :=
-            IsLocalHom.of_surjective _ Ideal.Quotient.mk_surjective
-          let _ : IsLocalRing (R ⧸ p) :=
-            IsLocalRing.of_surjective (Ideal.Quotient.mk p) Ideal.Quotient.mk_surjective
-          have mem_max : ∀ r ∈ rs'.map (algebraMap R (R ⧸ p)), r ∈ maximalIdeal (R ⧸ p) := by
-            simp only [Ideal.Quotient.algebraMap_eq, List.mem_map,
-              forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-            intro r hr
-            exact map_nonunit (Ideal.Quotient.mk p) r (mem.1.2 (Ideal.subset_span (by simp [hr])))
-          have netop : Ideal.ofList (rs'.map (algebraMap R (R ⧸ p))) ≠ ⊤ :=
-            ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (Ideal.span_le.mpr mem_max)
-          have := Ideal.ofList_height_le_length (rs'.map (algebraMap R (R ⧸ p))) mem_max
-          have le : Ideal.ofList (x :: rs') ≤
-            (Ideal.ofList (rs'.map (algebraMap R (R ⧸ p)))).comap (Ideal.Quotient.mk p) := by
-            rw [Ideal.span_le]
-            intro r hr
-            rcases List.mem_cons.mp hr with eqx|mem_rs'
-            · apply Ideal.ker_le_comap
-              simpa [eqx] using xmem
-            · apply Ideal.subset_span
-              simp only [Ideal.Quotient.algebraMap_eq, List.mem_map, Set.mem_setOf_eq]
-              use r
-          have max_mem := maximalIdeal_mem_minimalPrimes_of_surjective (Ideal.Quotient.mk p)
-            Ideal.Quotient.mk_surjective le mem netop
-          have coe_eq : ((rs'.length + 1 : ℕ) : WithBot ℕ∞) = ((rs'.length + 1 : ℕ) : ℕ∞) := rfl
-          rw [height_eq_height_maximalIdeal_of_maximalIdeal_mem_minimalPrimes _ max_mem,
-            ← WithBot.coe_le_coe, List.length_map, maximalIdeal_height_eq_ringKrullDim,
-            ← eq, ← dim, List.length_cons, coe_eq, WithBot.coe_le_coe, ENat.coe_le_coe] at this
-          simp at this
-        simp only [isWeaklyRegular_cons_iff, xreg, true_and]
-        have min : maximalIdeal R' ∈ (Ideal.ofList (rs'.map (algebraMap R R'))).minimalPrimes := by
-          have surj : Function.Surjective (algebraMap R R') := Ideal.Quotient.mk_surjective
-          have le : Ideal.ofList (x :: rs') ≤
-            (Ideal.ofList (rs'.map (algebraMap R R'))).comap (algebraMap R R') := by
-            rw [Ideal.span_le]
-            intro r hr
-            rcases List.mem_cons.mp hr with eqx|mem_rs'
-            · apply Ideal.ker_le_comap
-              simpa [R', eqx, ← Submodule.ideal_span_singleton_smul x] using
-                Ideal.mem_span_singleton_self x
-            · apply Ideal.subset_span
-              simp only [Ideal.Quotient.algebraMap_eq, List.mem_map, Set.mem_setOf_eq]
-              use r
-          apply maximalIdeal_mem_minimalPrimes_of_surjective (algebraMap R R')
-            Ideal.Quotient.mk_surjective le mem
-          have mem_max : ∀ r ∈ rs'.map (algebraMap R R'), r ∈ maximalIdeal R' := by
-            simp only [Ideal.Quotient.algebraMap_eq, List.mem_map,
-              forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-            intro r hr
-            exact map_nonunit (Ideal.Quotient.mk (x • (⊤ : Ideal R))) r
-              (mem.1.2 (Ideal.subset_span (by simp [hr])))
-          exact ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (Ideal.span_le.mpr mem_max)
-        let _ := (quotient_regular_smul_top_isCohenMacaulay_iff_isCohenMacaulay R x xreg xmem).mp
-            (by assumption)
-        rw [← RingTheory.Sequence.isWeaklyRegular_map_algebraMap_iff R' R' rs']
-        apply hn (rs'.map (algebraMap R R')) min _ (by simpa using len)
-        simp only [List.length_cons, Nat.cast_add, Nat.cast_one, ←
-          ringKrullDim_quotSMulTop_succ_eq_ringKrullDim xreg xmem] at dim
-        simpa [List.length_map] using (withBotENat_add_coe_cancel _ _ 1).mp dim
-  · simpa using (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' mem.1.2).symm
+        let _ : IsLocalRing (R ⧸ p) :=
+          IsLocalRing.of_surjective (Ideal.Quotient.mk p) Ideal.Quotient.mk_surjective
+        have mem_max : ∀ r ∈ rs'.map (algebraMap R (R ⧸ p)), r ∈ maximalIdeal (R ⧸ p) := by
+          simp only [Ideal.Quotient.algebraMap_eq, List.mem_map,
+            forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+          intro r hr
+          exact map_nonunit (Ideal.Quotient.mk p) r (mem.1.2 (Ideal.subset_span (by simp [hr])))
+        have netop : Ideal.ofList (rs'.map (algebraMap R (R ⧸ p))) ≠ ⊤ :=
+          ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (Ideal.span_le.mpr mem_max)
+        have le : Ideal.ofList (x :: rs') ≤
+          (Ideal.ofList (rs'.map (algebraMap R (R ⧸ p)))).comap (Ideal.Quotient.mk p) := by
+          rw [Ideal.span_le]
+          intro r hr
+          rcases List.mem_cons.mp hr with eqx|mem_rs'
+          · apply Ideal.ker_le_comap
+            simpa [eqx] using xmem
+          · apply Ideal.subset_span
+            simp only [Ideal.Quotient.algebraMap_eq, List.mem_map, Set.mem_setOf_eq]
+            use r
+        have max_mem := maximalIdeal_mem_minimalPrimes_of_surjective (Ideal.Quotient.mk p)
+          Ideal.Quotient.mk_surjective le mem netop
+        have := Ideal.ofList_height_le_length (rs'.map (algebraMap R (R ⧸ p))) mem_max
+        have coe_eq : ((rs'.length + 1 : ℕ) : WithBot ℕ∞) = ((rs'.length + 1 : ℕ) : ℕ∞) := rfl
+        rw [height_eq_height_maximalIdeal_of_maximalIdeal_mem_minimalPrimes _ max_mem,
+          ← WithBot.coe_le_coe, List.length_map, maximalIdeal_height_eq_ringKrullDim,
+          ← eq, ← dim, List.length_cons, coe_eq, WithBot.coe_le_coe, ENat.coe_le_coe] at this
+        simp at this
+      simp only [isWeaklyRegular_cons_iff, xreg, true_and]
+      have min : maximalIdeal R' ∈ (Ideal.ofList (rs'.map (algebraMap R R'))).minimalPrimes := by
+        have le : Ideal.ofList (x :: rs') ≤
+          (Ideal.ofList (rs'.map (algebraMap R R'))).comap (algebraMap R R') := by
+          rw [Ideal.span_le]
+          intro r hr
+          rcases List.mem_cons.mp hr with eqx|mem_rs'
+          · apply Ideal.ker_le_comap
+            simpa [R', eqx, ← Submodule.ideal_span_singleton_smul x] using
+              Ideal.mem_span_singleton_self x
+          · apply Ideal.subset_span
+            simp only [Ideal.Quotient.algebraMap_eq, List.mem_map, Set.mem_setOf_eq]
+            use r
+        apply maximalIdeal_mem_minimalPrimes_of_surjective (algebraMap R R')
+          Ideal.Quotient.mk_surjective le mem
+        have mem_max : ∀ r ∈ rs'.map (algebraMap R R'), r ∈ maximalIdeal R' := by
+          simp only [Ideal.Quotient.algebraMap_eq, List.mem_map,
+            forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+          intro r hr
+          exact map_nonunit (Ideal.Quotient.mk (x • (⊤ : Ideal R))) r
+            (mem.1.2 (Ideal.subset_span (by simp [hr])))
+        exact ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (Ideal.span_le.mpr mem_max)
+      let _ := (quotient_regular_smul_top_isCohenMacaulay_iff_isCohenMacaulay R x xreg xmem).mp
+          (by assumption)
+      rw [← RingTheory.Sequence.isWeaklyRegular_map_algebraMap_iff R' R' rs']
+      apply hn (rs'.map (algebraMap R R')) min _ (by simpa using len)
+      simp only [List.length_cons, Nat.cast_add, Nat.cast_one, ←
+        ringKrullDim_quotSMulTop_succ_eq_ringKrullDim xreg xmem] at dim
+      simpa [List.length_map] using (withBotENat_add_coe_cancel _ _ 1).mp dim
