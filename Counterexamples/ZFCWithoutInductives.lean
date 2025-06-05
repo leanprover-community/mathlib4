@@ -413,6 +413,9 @@ theorem Quot.eq_mk {α : Type u} {r : α → α → Prop}
 
 def Quot.out {α : Type u} {r : α → α → Prop} (q : Quot r) : α := choose q.2
 
+theorem Quot.mk_out {α : Type u} {r : α → α → Prop} (q : Quot r) : ⟪_, q.out⟫ = q :=
+  Subtype.ext (choose_spec q.2).symm
+
 def Quot.lift {α : Type u} {r : α → α → Prop} {β : Sort v} (f : α → β) (q : Quot r) : β := f q.out
 
 theorem Quot.lift_mk {α : Type u} {r : α → α → Prop} {β : Sort v} (f : α → β)
@@ -474,24 +477,24 @@ def IsInverse {α β : Type*} (f : α → β) (g : β → α) :=
   (∀ x, f (g x) = x) ∧
   (∀ x, g (f x) = x)
 
-def WellOrder.Equiv' {α β} (r : α → α → Prop) (s : β → β → Prop) : Prop :=
+def WellOrder.Equiv {α β} (r : α → α → Prop) (s : β → β → Prop) : Prop :=
   ∃ f g, IsInverse f g ∧ IsRelEmbedding r s f
 
-protected theorem WellOrder.Equiv'.rfl {α} {r : α → α → Prop} : Equiv' r r :=
+protected theorem WellOrder.Equiv.rfl {α} {r : α → α → Prop} : Equiv r r :=
   ⟪id, id, ⟪fun _ => rfl, fun _ => rfl⟫, fun _ _ => id, .rfl⟫
 
 theorem LeftInverse.injective {α β} {g : β → α} {f : α → β} :
     Function.LeftInverse g f → Function.Injective f :=
   fun h a b faeqfb => (h a).symm.trans <| .trans (congrArg g faeqfb) (h b)
 
-theorem WellOrder.Equiv'.symm {α β} {r : α → α → Prop} {s : β → β → Prop}
-    (h : Equiv' r s) : Equiv' s r := by
+theorem WellOrder.Equiv.symm {α β} {r : α → α → Prop} {s : β → β → Prop}
+    (h : Equiv r s) : Equiv s r := by
   ex_cases h with f g h
   refine ⟪g, f, ⟪h.l.r, h.l.l⟫, LeftInverse.injective h.l.l, fun {a b} => ?_⟫
   exact h.r.r.symm.trans (h.l.l _ ▸ h.l.l _ ▸ .rfl)
 
-theorem WellOrder.Equiv'.trans {α β γ} {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
-    (h1 : Equiv' r s) (h2 : Equiv' s t) : Equiv' r t := by
+theorem WellOrder.Equiv.trans {α β γ} {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
+    (h1 : Equiv r s) (h2 : Equiv s t) : Equiv r t := by
   ex_cases h1 with f1 g1 h1; ex_cases h2 with f2 g2 h2
   refine ⟪f2 ∘ f1, g1 ∘ g2, ⟪?_, ?_⟫, ?_, ?_⟫
   · exact fun x => show f2 (f1 (g1 (g2 x))) = x from h1.l.l _ ▸ h2.l.l _
@@ -499,70 +502,137 @@ theorem WellOrder.Equiv'.trans {α β γ} {r : α → α → Prop} {s : β → �
   · exact Function.Injective.comp h2.r.l h1.r.l
   · exact h2.r.r.trans h1.r.r
 
-def WellOrder.Equiv (a b : WellOrder) : Prop := WellOrder.Equiv' a.snd.1 b.snd.1
+def WellOrder.Equiv' (a b : WellOrder) : Prop := WellOrder.Equiv a.snd.1 b.snd.1
 
-theorem WellOrder.Equiv.mk_iff
+theorem WellOrder.Equiv'.mk_iff
     {α} {r : α → α → Prop} {hr : IsWellOrder α r}
     {β} {s : β → β → Prop} {hs : IsWellOrder β s} :
-    WellOrder.Equiv (Sigma.mk α ⟨r, hr⟩) (Sigma.mk β ⟨s, hs⟩) ↔
-    WellOrder.Equiv' r s := by
-  show WellOrder.Equiv' .. ↔ _
+    WellOrder.Equiv' (Sigma.mk α ⟨r, hr⟩) (Sigma.mk β ⟨s, hs⟩) ↔
+    WellOrder.Equiv r s := by
+  show WellOrder.Equiv .. ↔ _
   refine Sigma.mk_snd .. ▸ Sigma.mk_snd .. ▸ ?_
   generalize_proofs p1 p2; revert p1 p2
   exact Sigma.mk_fst .. ▸ Sigma.mk_fst .. ▸ fun _ _ => .rfl
 
-protected theorem WellOrder.Equiv.rfl {a : WellOrder} : a.Equiv a := Equiv'.rfl
+protected theorem WellOrder.Equiv'.rfl {a : WellOrder} : a.Equiv' a := Equiv.rfl
 
-theorem WellOrder.Equiv.symm {a b : WellOrder} (h : a.Equiv b) : b.Equiv a := Equiv'.symm h
+theorem WellOrder.Equiv'.symm {a b : WellOrder} (h : a.Equiv' b) : b.Equiv' a := Equiv.symm h
 
-theorem WellOrder.Equiv.trans {a b c : WellOrder}
-    (h1 : a.Equiv b) (h2 : b.Equiv c) : a.Equiv c := Equiv'.trans h1 h2
+theorem WellOrder.Equiv'.trans {a b c : WellOrder}
+    (h1 : a.Equiv' b) (h2 : b.Equiv' c) : a.Equiv' c := Equiv.trans h1 h2
 
-theorem WellOrder.equivalence : Equivalence WellOrder.Equiv :=
+theorem WellOrder.equivalence : Equivalence WellOrder.Equiv' :=
   ⟪fun _ => .rfl, (·.symm), (·.trans)⟫
 
-theorem WellOrder.lt_equiv' {α β γ} {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
-    (h1 : lt' r s) (h2 : Equiv' s t) : lt' r t := by
-  ex_cases h1 with F top h1; ex_cases h2 with f g fg inj rel
+theorem WellOrder.lt_equiv {α β γ} {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
+    (h1 : lt' r s) (h2 : Equiv s t) : lt' r t := by
+  ex_cases h1 with F top hr htop; ex_cases h2 with f g fg inj rel
   refine ⟪f ∘ F, f top, ⟪?_, ?_⟫, fun x => ?_⟫
-  · exact Function.Injective.comp inj h1.l.l
-  · exact rel.trans h1.l.r
-  · refine .trans ⟪fun h => ?_, fun h => ?_⟫ <| .trans (h1.r (g x)) ?_
+  · exact Function.Injective.comp inj hr.l
+  · exact rel.trans hr.r
+  · refine .trans ⟪fun h => ?_, fun h => ?_⟫ <| .trans (htop (g x)) ?_
     · exact h _ fun y h => ⟪y, inj (h.trans (fg.l _).symm)⟫
     · exact h _ fun y h => ⟪y, (congrArg f h).trans (fg.l _)⟫
     · exact rel.symm.trans (fg.l _ ▸ .rfl)
 
+theorem WellOrder.Equiv.lt_r {α β γ} {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
+    (h : Equiv s t) : lt' r s ↔ lt' r t := ⟪(lt_equiv · h), (lt_equiv · h.symm)⟫
+
+theorem WellOrder.equiv_lt {α β γ} {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
+    (h1 : Equiv r s) (h2 :  lt' s t) : lt' r t := by
+  ex_cases h1 with f g fg inj rel; ex_cases h2 with F top hr htop
+  refine ⟪F ∘ f, top, ⟪?_, ?_⟫, fun x => ?_⟫
+  · exact Function.Injective.comp hr.l inj
+  · exact hr.r.trans rel
+  · refine .trans ⟪fun h => ?_, fun h => ?_⟫ (htop x)
+    · exact h _ fun y h => ⟪f y, h⟫
+    · exact h _ fun y h => ⟪g y, (congrArg F (fg.l _)).trans h⟫
+
+theorem WellOrder.Equiv.lt_l {α β γ} {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
+    (h : Equiv r s) : lt' r t ↔ lt' s t := ⟪equiv_lt h.symm, equiv_lt h⟫
+
 def Ordinal : Type (u + 1) :=
-  Quot WellOrder.Equiv
+  Quot WellOrder.Equiv'
 
 nonrec def Ordinal.mk (α) (r : α → α → Prop) (hr : IsWellOrder α r) : Ordinal := ⟪_, α, ⟨r, hr⟩⟫
+
+def Ordinal.Below (o : Ordinal) := o.out.fst
+def Ordinal.rel {o : Ordinal} : (x y : o.Below) → Prop := o.out.snd.1
+def Ordinal.rel_wo {o : Ordinal} : IsWellOrder o.Below rel := o.out.snd.2
+
+theorem Ordinal.mk_eq_mk
+    {α} {r : α → α → Prop} {hr : IsWellOrder α r}
+    {β} {s : β → β → Prop} {hs : IsWellOrder β s} :
+    mk α r hr = mk β s hs ↔ WellOrder.Equiv r s :=
+  .trans ⟪Quot.exact WellOrder.equivalence, Quot.sound⟫ WellOrder.Equiv'.mk_iff
+
+theorem Ordinal.mk_equiv {α r hr} : WellOrder.Equiv (mk α r hr).rel r := by
+  have := Quot.exact WellOrder.equivalence (mk α r hr).mk_out
+  conv at this =>
+    enter [1]; conv => exact (Sigma.fst_snd ..).symm
+    enter [2]; exact (Subtype.eta _ (mk α r hr).out.snd.2).symm
+  exact WellOrder.Equiv'.mk_iff.l this
+
+def Ordinal.lt (a b : Ordinal) : Prop := WellOrder.lt' a.rel b.rel
+
+def Ordinal.le (a b : Ordinal) : Prop := a.lt b ∨ a = b
+
+theorem Ordinal.mk_lt_mk {α r hr β s hs} : (mk α r hr).lt (mk β s hs) ↔ WellOrder.lt' r s :=
+  mk_equiv.lt_l.trans mk_equiv.lt_r
+
+def type.A {α : Type*} (r : α → α → Prop) (y : α) := {z // r z y}
+def type.R {α} (r : α → α → Prop) (y : α) (a b : A r y) := r a.1 b.1
+theorem type.wo {α} {r : α → α → Prop}
+    (H : IsWellOrder α r) (y : α) : IsWellOrder (A r y) (R r y) := by
+  refine ⟪?_, H.r.l, ?_⟫
+  · exact fun a b => H.l a.1 b.1 _ .inl fun h => .inr <| h _ (.inl ∘ Subtype.ext) .inr
+  · refine fun x C ih => H.r.r x.1 (fun y => ∀ h, C ⟨y, h⟩) ?_ _
+    exact fun z h1 hz => ih _ fun ⟨w, hw⟩ hr => h1 _ hr _
+
+theorem type.lt {α} {r : α → α → Prop}
+    (H : IsWellOrder α r) (y : α) : WellOrder.lt' (type.R r y) r := by
+  refine ⟪?_, H.r.l, ?_⟫
+  · exact fun a b => H.l a.1 b.1 _ .inl fun h => .inr <| h _ (.inl ∘ Subtype.ext) .inr
+  · refine fun x C ih => H.r.r x.1 (fun y => ∀ h, C ⟨y, h⟩) ?_ _
+    exact fun z h1 hz => ih _ fun ⟨w, hw⟩ hr => h1 _ hr _
+
+def type (α) (r : α → α → Prop) (H : IsWellOrder α r) (y : α) : Ordinal :=
+  .mk (type.A r y) (type.R r y) (type.wo H y)
+
+theorem Ordinal.type_lt_mk (α) (r : α → α → Prop) (H : IsWellOrder α r) (y : α) :
+    (type α r H y).lt (mk α r H) :=
+  mk_lt_mk.r _
+
+def Ordinal.Below.mk {o : Ordinal} (x : Ordinal) (h : x.lt o) : o.Below := sorry
+def Ordinal.Below.fst {o : Ordinal} : o.Below → Ordinal := type o.Below rel rel_wo
+def Ordinal.Below.snd {o : Ordinal} (x : o.Below) : x.fst.lt o := sorry
+def Ordinal.Below.mk_fst {o : Ordinal} (x : Ordinal) (h : x.lt o) : (mk x h).fst = x := sorry
+
+theorem Ordinal.Below.ext {o : Ordinal} {x y : o.Below} (h1 : x.fst = y.fst) : x = y := by
+  sorry
+
+theorem Ordinal.Below.fst_snd {o : Ordinal} (x : o.Below) : ⟪x.fst, x.snd⟫ = x := ext (mk_fst ..)
+
+@[elab_as_elim]
+theorem Ordinal.Below.casesOn {o : Ordinal} {C : o.Below → ∀ x : Ordinal, x.lt o → Prop}
+    (H : ∀ a b, C ⟪a, b⟫ a b) (x : o.Below) : C x x.fst x.snd :=
+  (fst_snd x ▸ H x.fst x.snd :)
 
 @[elab_as_elim]
 theorem Ordinal.casesOn {β : Ordinal → Prop}
     (ih : ∀ α r hr, β (.mk α r hr)) (o : Ordinal) : β o :=
   Quot.ind (Sigma.casesOn fun a b => ih a b.1 b.2) o
 
-def Ordinal.lt (a b : Ordinal) : Prop :=
-  ∃ α r hr β s hs, a = .mk α r hr ∧ b = .mk β s hs ∧ WellOrder.lt' r s
-
-def Ordinal.le (a b : Ordinal) : Prop := a.lt b ∨ a = b
-
 def Ordinal.succ : (a : Ordinal) → Ordinal := sorry
 def Ordinal.lt_succ_self (a : Ordinal) : a.lt a.succ := sorry
 def Ordinal.le_of_lt_succ {a b : Ordinal} (h : b.lt a.succ) : b.le a := sorry
 
-theorem Ordinal.mk_eq_mk
-    {α} {r : α → α → Prop} {hr : IsWellOrder α r}
-    {β} {s : β → β → Prop} {hs : IsWellOrder β s} :
-    mk α r hr = mk β s hs ↔ WellOrder.Equiv' r s :=
-  .trans ⟪Quot.exact WellOrder.equivalence, Quot.sound⟫ WellOrder.Equiv.mk_iff
-
-theorem Ordinal.lt.trans {a b c} (h1 : lt a b) (h2 : lt b c) : lt a c := by
-  ex_cases h1 with αa ra ha αb rb hb ea eb h1
-  ex_cases h2 with αb' rb' hb' αc rc hc eb' ec h2; subst ea eb ec
-  refine ⟪_, _, ha, _, _, hc, rfl, rfl, ?_⟫
-  have := WellOrder.lt_equiv' h1 <| Ordinal.mk_eq_mk.l eb'
-  exact this.trans hc h2
+nonrec theorem Ordinal.lt.trans {a b c} (h1 : lt a b) (h2 : lt b c) : lt a c := h1.trans c.rel_wo h2
+  -- ex_cases h1 with αa ra ha αb rb hb ea eb h1
+  -- ex_cases h2 with αb' rb' hb' αc rc hc eb' ec h2; subst ea eb ec
+  -- refine ⟪_, _, ha, _, _, hc, rfl, rfl, ?_⟫
+  -- have := WellOrder.lt_equiv' h1 <| Ordinal.mk_eq_mk.l eb'
+  -- exact this.trans hc h2
 
 theorem Ordinal.le_or_lt (a b : Ordinal) : le a b ∨ lt b a := by
   sorry
@@ -578,17 +648,8 @@ def Ordinal.max (a b : Ordinal) : Ordinal := if a.le b then b else a
 theorem Ordinal.le_max_left (a b : Ordinal) : a.le (a.max b) := sorry
 theorem Ordinal.le_max_right (a b : Ordinal) : b.le (a.max b) := sorry
 
-def type.A {α : Type*} (r : α → α → Prop) (y : α) := {z // r z y}
-def type.R {α} (r : α → α → Prop) (y : α) (a b : A r y) := r a.1 b.1
-theorem type.wo {α} {r : α → α → Prop}
-    (H : IsWellOrder α r) (y : α) : IsWellOrder (A r y) (R r y) := by
-  refine ⟪?_, H.r.l, ?_⟫
-  · exact fun a b => H.l a.1 b.1 _ .inl fun h => .inr <| h _ (.inl ∘ Subtype.ext) .inr
-  · refine fun x C ih => H.r.r x.1 (fun y => ∀ h, C ⟨y, h⟩) ?_ _
-    exact fun z h1 hz => ih _ fun ⟨w, hw⟩ hr => h1 _ hr _
-
 theorem IsPrincipalSeg.equiv {α β} {r : α → α → Prop} {s : β → β → Prop} {f : α → β} {top : β}
-    (hyt : IsPrincipalSeg r s f top) : WellOrder.Equiv' (type.R s top) r := by
+    (hyt : IsPrincipalSeg r s f top) : WellOrder.Equiv (type.R s top) r := by
   refine let F x := choose ((hyt.r _).r x.2); ⟪F, ?_⟫
   have hF (x : {z // s z top}) : f (F _) = _ := choose_spec ((hyt.r _).r x.2)
   refine ⟪fun x => ⟨f x, (hyt.r _).l ⟪_, rfl⟫⟩, ⟪?_, ?_⟫, ?_, ?_⟫
@@ -597,32 +658,10 @@ theorem IsPrincipalSeg.equiv {α β} {r : α → α → Prop} {s : β → β →
   · exact fun x y h => Subtype.ext <| (hF _).symm.trans <| (congrArg f h).trans (hF _)
   · exact hyt.l.r.symm.trans ((hF _).symm ▸ (hF _).symm ▸ .rfl)
 
-def type (α) (r : α → α → Prop) (H : IsWellOrder α r) (y : α) : Ordinal :=
-  .mk (type.A r y) (type.R r y) (type.wo H y)
-
-def Ordinal.Below (o : Ordinal) := o.out.fst
-def Ordinal.Below.lt {o : Ordinal} : (x y : o.Below) → Prop := o.out.snd.1
-def Ordinal.Below.wo {o : Ordinal} : IsWellOrder o.Below lt := o.out.snd.2
-
-def Ordinal.Below.mk {o : Ordinal} (x : Ordinal) (h : x.lt o) : o.Below := sorry
-def Ordinal.Below.fst {o : Ordinal} : o.Below → Ordinal := type o.Below lt wo
-def Ordinal.Below.snd {o : Ordinal} (x : o.Below) : x.fst.lt o := sorry
-def Ordinal.Below.mk_fst {o : Ordinal} (x : Ordinal) (h : x.lt o) : (mk x h).fst = x := sorry
-
-theorem Ordinal.Below.ext {o : Ordinal} {x y : o.Below} (h1 : x.fst = y.fst) : x = y := by
-  sorry
-
-theorem Ordinal.Below.fst_snd {o : Ordinal} (x : o.Below) : ⟪x.fst, x.snd⟫ = x := ext (mk_fst ..)
-
-@[elab_as_elim]
-theorem Ordinal.Below.casesOn {o : Ordinal} {C : o.Below → ∀ x : Ordinal, x.lt o → Prop}
-    (H : ∀ a b, C ⟪a, b⟫ a b) (x : o.Below) : C x x.fst x.snd :=
-  (fst_snd x ▸ H x.fst x.snd :)
-
 theorem Ordinal.wf : @WellFounded Ordinal Ordinal.lt := by
-  intro o C ih; ex_cases id ih with y αy ry hy αo ro ho rfl - yo yt hyt
-  refine (Ordinal.mk_eq_mk (hr := type.wo ho _)).r hyt.equiv ▸ ?_
-  refine ho.r.r yt (fun y => C (type _ _ ho y)) fun x hx => ih _ fun z zx => ?_
+  intro o C ih; --ex_cases id ih with y αy ry hy αo ro ho rfl - yo yt hyt
+  --refine (Ordinal.mk_eq_mk (hr := type.wo ho _)).r hyt.equiv ▸ ?_
+  refine Ordinal.rel_wo.r.r yt (fun y => C (type _ _ ho y)) fun x hx => ih _ fun z zx => ?_
   suffices tz : ∃ z', ro z' x ∧ .mk _ _ (type.wo ho z') = z from tz _ fun z' hz => hz.r ▸ hx _ hz.l
   ex_cases zx with αz rz hz αx' rx' hx' rfl zx1 zx2
   ex_cases WellOrder.lt_equiv' zx2 (Ordinal.mk_eq_mk.l zx1).symm with f' ⟨zt, zx⟩ hzt
@@ -637,9 +676,9 @@ def Ordinal.univ : Ordinal.{u+1} := .mk _ _ Ordinal.wo
 
 theorem Ordinal.lt_univ (a : Ordinal.{u}) : a.lt univ.{u} := by
   refine a.casesOn fun α r wo => ?_
-  refine ⟪_, _, _, _, _, _, rfl, rfl, type α r wo, .mk α r wo, ?_, ?_⟫
+  -- refine ⟪_, _, _, _, _, _, rfl, rfl, type α r wo, .mk α r wo, ?_, ?_⟫
   · sorry
-  · sorry
+  -- · sorry
 
 theorem exists_wellOrder (α : Type u) : ∃ r : α → α → Prop, IsWellOrder α r := by
   refine em (∃ β r f, @IsWellOrder.{u} β r ∧ Function.Injective (f : α → β)) _ ?_ ?_ <;> intro H
