@@ -3,9 +3,9 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
+import Mathlib.Algebra.BigOperators.Ring.Nat
 import Mathlib.NumberTheory.LSeries.SumCoeff
 import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
-import Mathlib.Algebra.BigOperators.Ring.Nat
 
 /-!
 # The Dedekind zeta function of a number field

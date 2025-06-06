@@ -72,7 +72,7 @@ theorem prod_pair [DecidableEq ι] {a b : ι} (h : a ≠ b) :
 
 @[to_additive (attr := simp)]
 theorem prod_image [DecidableEq ι] {s : Finset κ} {g : κ → ι} :
-    (∀ x ∈ s, ∀ y ∈ s, g x = g y → x = y) → ∏ x ∈ s.image g, f x = ∏ x ∈ s, f (g x) :=
+    Set.InjOn g s → ∏ x ∈ s.image g, f x = ∏ x ∈ s, f (g x) :=
   fold_image
 
 @[to_additive]
