@@ -14,19 +14,19 @@ This file defines archimedean classes of a given linearly ordered group.
 
 ## Main definitions
 
-* `archimedeanClass` are classes of elements in a ordered additive commutative group
+* `ArchimedeanClass` are classes of elements in a ordered additive commutative group
   that are archimedean equivelent. Two elements `a` and `b` are archimedean equivalent when there
   exists two positive integers `m` and `n` such that `|a| ≤ m • |b|` and `|b| ≤ n • |a|`.
-* `mulArchimedeanClass` is the multiplicative version of `archimedeanClass`.
+* `MulArchimedeanClass` is the multiplicative version of `ArchimedeanClass`.
   Two elements `a` and `b` are mul-archimedean equivalent when there
   exists two positive integers `m` and `n` such that `|a|ₘ ≤ |b|ₘ ^ m` and `|b|ₘ ≤ |a|ₘ ^ n`.
-* `archimedeanClass.orderHom` and `mulArchimedeanClass.orderHom` are `OrderHom` over
+* `ArchimedeanClass.orderHom` and `MulArchimedeanClass.orderHom` are `OrderHom` over
   archimedean classes lifted from ordered group homomorphisms.
 
 ## Main statements
-* `archimedeanClass.archimedean_of_mk_eq_mk` / `mulArchimedeanClass.mulArchimedean_of_mk_eq_mk`:
+* `ArchimedeanClass.archimedean_of_mk_eq_mk` / `MulArchimedeanClass.mulArchimedean_of_mk_eq_mk`:
   an ordered commutative group is (mul-)archimedean if
-  all non-identity elements belong to the same (mul-)archimedeanClass.
+  all non-identity elements belong to the same (`Mul`-)`ArchimedeanClass`.
 
 -/
 
@@ -39,32 +39,29 @@ variable (M) in
 @[to_additive archimedeanEquiv "Two elements are archimedean equivalent iff there exists
 two positive integers `m` and `n` such that `|a| ≤ m • |b|` and `|b| ≤ n • |a|`."]
 def mulArchimedeanEquiv : Setoid M where
-  r (a b) := (∃ m, m ≠ 0 ∧ |a|ₘ ≤ |b|ₘ ^ m) ∧ (∃ n, n ≠ 0 ∧ |b|ₘ ≤ |a|ₘ ^ n)
-  iseqv := {
-    refl (a) := ⟨⟨1, by simp, by simp⟩, ⟨1, by simp, by simp⟩⟩
-    symm (h) := h.symm
-    trans := by
-      intro a b c ⟨⟨m, hm0, hm⟩, ⟨n, hn0, hn⟩⟩ ⟨⟨m', hm0', hm'⟩, ⟨n', hn0', hn'⟩⟩
-      refine ⟨⟨m' * m, by simp [hm0, hm0'], ?_⟩, ⟨n * n', by simp [hn0, hn0'], ?_⟩⟩
-      · refine le_trans hm ?_
-        rw [pow_mul]
-        exact pow_le_pow_left' hm' m
-      · refine le_trans hn' ?_
-        rw [pow_mul]
-        exact pow_le_pow_left' hn n'
-  }
+  r a b := (∃ m, m ≠ 0 ∧ |a|ₘ ≤ |b|ₘ ^ m) ∧ (∃ n, n ≠ 0 ∧ |b|ₘ ≤ |a|ₘ ^ n)
+  iseqv.refl _ := ⟨⟨1, by simp, by simp⟩, ⟨1, by simp, by simp⟩⟩
+  iseqv.symm := And.symm
+  iseqv.trans {a b c} := by
+    intro ⟨⟨m, hm0, hm⟩, ⟨n, hn0, hn⟩⟩ ⟨⟨m', hm0', hm'⟩, ⟨n', hn0', hn'⟩⟩
+    refine ⟨⟨m' * m, mul_ne_zero hm0' hm0, hm.trans ?_⟩,
+      ⟨n * n', mul_ne_zero hn0 hn0', hn'.trans ?_⟩⟩
+    · rw [pow_mul]
+      exact pow_le_pow_left' hm' m
+    · rw [pow_mul]
+      exact pow_le_pow_left' hn n'
 
 variable (M) in
-/-- `mulArchimedeanClass` is the quotient of `M` over `mulArchimedeanEquiv M`. -/
-@[to_additive archimedeanClass "`archimedeanClass` is the quotient of `M`
+/-- `MulArchimedeanClass` is the quotient of `M` over `mulArchimedeanEquiv M`. -/
+@[to_additive ArchimedeanClass "`ArchimedeanClass` is the quotient of `M`
 over `archimedeanEquiv M`."]
-def mulArchimedeanClass := Quotient (mulArchimedeanEquiv M)
+def MulArchimedeanClass := Quotient (mulArchimedeanEquiv M)
 
-namespace mulArchimedeanClass
+namespace MulArchimedeanClass
 
 /-- The archimedean class of a given element. -/
 @[to_additive "The archimedean class of a given element."]
-def mk (a : M) : mulArchimedeanClass M := Quotient.mk'' a
+def mk (a : M) : MulArchimedeanClass M := Quotient.mk'' a
 
 variable (M) in
 @[to_additive]
@@ -77,10 +74,10 @@ theorem range_mk : Set.range (mk (M := M)) = Set.univ := Set.range_eq_univ.mpr (
 /-- Choose a representative element from a given archimedean class. -/
 @[to_additive "Choose a representative element from a given archimedean class."]
 noncomputable
-def out (A : mulArchimedeanClass M) : M := Quotient.out A
+def out (A : MulArchimedeanClass M) : M := Quotient.out A
 
 @[to_additive (attr := simp)]
-theorem out_eq (A : mulArchimedeanClass M) : mk A.out = A := Quotient.out_eq' A
+theorem out_eq (A : MulArchimedeanClass M) : mk A.out = A := Quotient.out_eq' A
 
 @[to_additive]
 theorem eq {a b : M} :
@@ -103,50 +100,40 @@ theorem mk_div_comm (a b : M) : mk (a / b) = mk (b / a) := by
 theorem mk_mabs (a : M) : mk |a|ₘ = mk a :=
   eq.mpr ⟨⟨1, by simp, by simp⟩, ⟨1, by simp, by simp⟩⟩
 
-variable (M) in
-/-- Following the definition of archimedean classes, the identity element is always
-in its own class. We denote it as the zero class. -/
-@[to_additive "Following the definition of archimedean classes, the identity element is always
-in its own class. We denote it as the zero class."]
-instance instZero : Zero (mulArchimedeanClass M) := ⟨mk 1⟩
-
-variable (M) in
 @[to_additive (attr := simp)]
-theorem mk_one : mk (1 : M) = 0 := rfl
-
-@[to_additive (attr := simp)]
-theorem mk_eq_zero_iff {a : M} : mk a = 0 ↔ a = 1 := by
+theorem mk_eq_mk_one_iff {a : M} : mk a = mk 1 ↔ a = 1 := by
   constructor
   · intro h
-    rw [← mk_one, eq] at h
+    rw [eq] at h
     obtain ⟨⟨_, _, hm⟩, _⟩ := h
     simpa using hm
   · intro h
-    rw [h, mk_one]
+    rw [h]
 
 variable (M) in
 @[to_additive (attr := simp)]
-theorem zero_out : (0 : mulArchimedeanClass M).out = 1 := by
-  rw [← mk_eq_zero_iff, out_eq]
-
-variable (M) in
-@[to_additive]
-instance instNontrivial [Nontrivial M]: Nontrivial (mulArchimedeanClass M) where
-  exists_pair_ne := by
-    obtain ⟨x, hx⟩ := exists_ne (1 : M)
-    exact ⟨mk x, 0, mk_eq_zero_iff.ne.mpr hx⟩
+theorem mk_one_out : (mk 1 : MulArchimedeanClass M).out = 1 := by
+  rw [← mk_eq_mk_one_iff, out_eq]
 
 variable (M) in
 /-- We equip archimedean classes with linear order using the absolute value of their
 representatives. By convention, elements with smaller absolute value are in *larger* classes.
 Ordering backwards this way simplifies formalization of theorems such as
-Hahn embedding theorem. -/
+Hahn embedding theorem.
+
+While the order is defined using `MulArchimedean.out`, it is equivalently characterized by
+`MulArchimedean.mk_le_mk` and `MulArchimedean.mk_lt_mk`, which are recommended to use to
+avoid using `MulArchimedean.out`. -/
 @[to_additive "We equip archimedean classes with linear order using the absolute value of their
 representatives. By convention, elements with smaller absolute value are in *larger* classes.
 Ordering backwards this way simplifies formalization of theorems such as
-Hahn embedding theorem."]
+Hahn embedding theorem.
+
+While the order is defined using `Archimedean.out`, it is equivalently characterized by
+`Archimedean.mk_le_mk` and `Archimedean.mk_lt_mk`, which are recommended to use to
+avoid using `Archimedean.out`."]
 noncomputable
-instance instLinearOrder : LinearOrder (mulArchimedeanClass M) :=
+instance instLinearOrder : LinearOrder (MulArchimedeanClass M) :=
   LinearOrder.lift' (OrderDual.toDual |·.out|ₘ) (by
     intro A B
     simp only [EmbeddingLike.apply_eq_iff_eq]
@@ -155,27 +142,15 @@ instance instLinearOrder : LinearOrder (mulArchimedeanClass M) :=
   )
 
 @[to_additive]
-theorem le (A B : mulArchimedeanClass M) : A ≤ B ↔ |B.out|ₘ ≤ |A.out|ₘ := by rfl
+theorem le (A B : MulArchimedeanClass M) : A ≤ B ↔ |B.out|ₘ ≤ |A.out|ₘ := by rfl
 
 @[to_additive]
-theorem lt (A B : mulArchimedeanClass M) : A < B ↔ |B.out|ₘ < |A.out|ₘ := by rfl
+theorem lt (A B : MulArchimedeanClass M) : A < B ↔ |B.out|ₘ < |A.out|ₘ := by rfl
 
-/-- The zero class is the largest class -/
-@[to_additive le_zero "The zero class is the largest class"]
-theorem le_zero (A : mulArchimedeanClass M) : A ≤ 0 := by
+@[to_additive]
+theorem le_mk_one (A : MulArchimedeanClass M) : A ≤ mk 1 := by
   rw [le]
   simp
-
-@[to_additive]
-theorem ne_zero_of_lt {A B : mulArchimedeanClass M} (h : A < B) : A ≠ 0 :=
-  lt_of_lt_of_le h (le_zero _) |>.ne
-
-variable (M) in
-@[to_additive]
-noncomputable
-instance instOrderTop : OrderTop (mulArchimedeanClass M) where
-  top := 0
-  le_top := le_zero
 
 @[to_additive]
 theorem mk_lt_mk {a b : M} : mk a < mk b ↔ ∀ n, |b|ₘ ^ n < |a|ₘ := by
@@ -188,7 +163,7 @@ theorem mk_lt_mk {a b : M} : mk a < mk b ↔ ∀ n, |b|ₘ ^ n < |a|ₘ := by
       simp only [pow_zero, one_lt_mabs]
       contrapose! h
       rw [h]
-      simpa using le_zero (mk b)
+      simpa using le_mk_one (mk b)
     · have hne : ¬ mk a = mk b := ne_of_lt h
       rw [eq] at hne
       simp only [not_and, not_exists, not_le, forall_exists_index] at hne
@@ -205,6 +180,42 @@ theorem mk_lt_mk {a b : M} : mk a < mk b ↔ ∀ n, |b|ₘ ^ n < |a|ₘ := by
     apply lt_of_le_of_lt hm'
     rw [← pow_mul]
     exact lt_of_lt_of_le (h (m' * n)) hn
+
+@[to_additive]
+theorem mk_le_mk {a b : M} : mk a ≤ mk b ↔ ∃ n, |b|ₘ ≤ |a|ₘ ^ n := by
+  simpa using mk_lt_mk.not
+
+variable (M) in
+/-- 1 is in its own class, which is also the largest class. -/
+@[to_additive "0 is in its own class, which is also the largest class."]
+noncomputable
+instance instOrderTop : OrderTop (MulArchimedeanClass M) where
+  top := mk 1
+  le_top := le_mk_one
+
+variable (M) in
+@[to_additive]
+theorem top_eq : (⊤ : MulArchimedeanClass M) = mk 1 := rfl
+
+variable (M) in
+@[to_additive (attr := simp)]
+theorem top_out : (⊤ : MulArchimedeanClass M).out = 1 := by
+  exact mk_one_out M
+
+@[to_additive (attr := simp)]
+theorem mk_eq_top_iff {a : M} : mk a = ⊤ ↔ a = 1 := by
+  exact mk_eq_mk_one_iff
+
+@[to_additive]
+theorem ne_top_of_lt {A B : MulArchimedeanClass M} (h : A < B) : A ≠ ⊤ :=
+  lt_of_lt_of_le h le_top |>.ne
+
+variable (M) in
+@[to_additive]
+instance [Nontrivial M] : Nontrivial (MulArchimedeanClass M) where
+  exists_pair_ne := by
+    obtain ⟨x, hx⟩ := exists_ne (1 : M)
+    exact ⟨mk x, ⊤, mk_eq_top_iff.ne.mpr hx⟩
 
 variable (M) in
 @[to_additive]
@@ -337,7 +348,7 @@ theorem mulArchimedean_of_mk_eq_mk (h : ∀ (a b : M), a ≠ 1 → b ≠ 1 → m
       simpa using hx
     · have hx : 1 < x := lt_of_not_ge hx
       have hxy : mk x = mk y := h x y hx.ne.symm hy.ne.symm
-      obtain ⟨⟨m, _, hm⟩, _⟩ := (mulArchimedeanClass.eq).mp hxy
+      obtain ⟨⟨m, _, hm⟩, _⟩ := (MulArchimedeanClass.eq).mp hxy
       rw [mabs_eq_self.mpr hx.le, mabs_eq_self.mpr hy.le] at hm
       exact ⟨m, hm⟩
 
@@ -351,7 +362,7 @@ over archimedean classes. -/
 @[to_additive "An ordered group homomorphism can be lifted to an OrderHom
 over archimedean classes."]
 noncomputable
-def orderHom (f : F) : mulArchimedeanClass M →o mulArchimedeanClass N where
+def orderHom (f : F) : MulArchimedeanClass M →o MulArchimedeanClass N where
   toFun := fun a ↦ mk (f a.out)
   monotone' := by
     intro a b h
@@ -366,7 +377,7 @@ def orderHom (f : F) : mulArchimedeanClass M →o mulArchimedeanClass N where
     exact h
 
 @[to_additive]
-theorem orderHom_apply (f : F) (A : mulArchimedeanClass M) : (orderHom f) A = mk (f A.out) := rfl
+theorem orderHom_apply (f : F) (A : MulArchimedeanClass M) : (orderHom f) A = mk (f A.out) := rfl
 
 @[to_additive]
 theorem map_mk (f : F) (a : M) : mk (f a) = (orderHom f) (mk a) := by
@@ -415,11 +426,10 @@ theorem orderHom_injective {f : F} (h : Function.Injective f) :
       exact (h hn).symm.le
 
 @[to_additive (attr := simp)]
-theorem orderHom_zero (f : F) :
-    (orderHom f) (0 : mulArchimedeanClass M) = (0 : mulArchimedeanClass N) := by
-  rw [← mk_one, ← mk_one, ← map_mk]
+theorem orderHom_top (f : F) : (orderHom f) ⊤ = ⊤ := by
+  rw [top_eq, top_eq, ← map_mk]
   simp
 
 end Hom
 
-end mulArchimedeanClass
+end MulArchimedeanClass
