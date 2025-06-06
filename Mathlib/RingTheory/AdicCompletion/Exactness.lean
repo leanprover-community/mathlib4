@@ -84,8 +84,6 @@ section Injectivity
 
 variable [IsNoetherianRing R] [Module.Finite R N] (I)
 
-open LinearMap
-
 /-- Adic completion preserves injectivity of finite modules over a Noetherian ring. -/
 theorem map_injective {f : M →ₗ[R] N} (hf : Function.Injective f) :
     Function.Injective (map I f) := by
@@ -147,25 +145,25 @@ private noncomputable def mapExactAuxDelta {n : ℕ} {d : N}
 open Submodule
 
 include hfg in
-/- Inductively construct preimage of cauchy sequence in kernel of `g.adicCompletion I`. -/
+/-- Inductively construct preimage of cauchy sequence in kernel of `g.adicCompletion I`. -/
 private noncomputable def mapExactAux :
     (n : ℕ) → { a : M | f a - x (k + n) ∈ (I ^ (k + n) • ⊤ : Submodule R N) }
   | .zero =>
-      let d := (h2 0).choose
-      let y := (h2 0).choose_spec.choose
-      have hdy : f y = x (k + 0) - d := (h2 0).choose_spec.choose_spec.right
-      have hdmem := (h2 0).choose_spec.choose_spec.left
-      ⟨y, by simpa [hdy]⟩
+    let d := (h2 0).choose
+    let y := (h2 0).choose_spec.choose
+    have hdy : f y = x (k + 0) - d := (h2 0).choose_spec.choose_spec.right
+    have hdmem := (h2 0).choose_spec.choose_spec.left
+    ⟨y, by simpa [hdy]⟩
   | .succ n =>
-      let d := (h2 <| n + 1).choose
-      let y := (h2 <| n + 1).choose_spec.choose
-      have hdy : f y = x (k + (n + 1)) - d := (h2 <| n + 1).choose_spec.choose_spec.right
-      have hdmem := (h2 <| n + 1).choose_spec.choose_spec.left
-      let ⟨yₙ, (hyₙ : f yₙ - x (k + n) ∈ (I ^ (k + n) • ⊤ : Submodule R N))⟩ :=
-        mapExactAux n
-      let ⟨d, hd⟩ := mapExactAuxDelta hf hkn x hdmem hdy hyₙ
-      ⟨yₙ + d, hd⟩
- where
+    let d := (h2 <| n + 1).choose
+    let y := (h2 <| n + 1).choose_spec.choose
+    have hdy : f y = x (k + (n + 1)) - d := (h2 <| n + 1).choose_spec.choose_spec.right
+    have hdmem := (h2 <| n + 1).choose_spec.choose_spec.left
+    let ⟨yₙ, (hyₙ : f yₙ - x (k + n) ∈ (I ^ (k + n) • ⊤ : Submodule R N))⟩ :=
+      mapExactAux n
+    let ⟨d, hd⟩ := mapExactAuxDelta hf hkn x hdmem hdy hyₙ
+    ⟨yₙ + d, hd⟩
+where
   h1 (n : ℕ) : g (x (k + n)) ∈ Submodule.map g (I ^ (k + n) • ⊤ : Submodule R N) := by
     rw [map_smul'', Submodule.map_top, range_eq_top.mpr hg]
     exact hker (k + n)

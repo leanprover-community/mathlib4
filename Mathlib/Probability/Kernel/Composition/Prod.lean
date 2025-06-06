@@ -121,7 +121,7 @@ theorem deterministic_prod_apply' {f : α → β} (mf : Measurable f) (κ : Kern
     [IsSFiniteKernel κ] (a : α) {s : Set (β × γ)} (hs : MeasurableSet s) :
     ((Kernel.deterministic f mf) ×ₖ κ) a s = κ a (Prod.mk (f a) ⁻¹' s) := by
   rw [prod_apply' _ _ _ hs, lintegral_deterministic']
-  exact measurable_measure_prod_mk_left hs
+  exact measurable_measure_prodMk_left hs
 
 theorem id_prod_apply' (κ : Kernel α β) [IsSFiniteKernel κ] (a : α) {s : Set (α × β)}
     (hs : MeasurableSet s) : (Kernel.id ×ₖ κ) a s = κ a (Prod.mk a ⁻¹' s) := by
@@ -162,7 +162,7 @@ lemma map_prod_map {ε} {mε : MeasurableSpace ε} (κ : Kernel α β) [IsSFinit
     (η : Kernel α δ) [IsSFiniteKernel η] {f : β → γ} (hf : Measurable f) {g : δ → ε}
     (hg : Measurable g) : (κ.map f) ×ₖ (η.map g) = (κ ×ₖ η).map (Prod.map f g) := by
   ext1 x
-  rw [map_apply _ (hf.prod_map hg), prod_apply κ, ← Measure.map_prod_map _ _ hf hg, prod_apply,
+  rw [map_apply _ (hf.prodMap hg), prod_apply κ, ← Measure.map_prod_map _ _ hf hg, prod_apply,
     map_apply _ hf, map_apply _ hg]
 
 lemma map_prod_eq (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel α γ) [IsSFiniteKernel η]
@@ -199,7 +199,7 @@ lemma swap_prod {κ : Kernel α β} [IsSFiniteKernel κ] {η : Kernel α γ} [Is
 lemma deterministic_prod_deterministic {f : α → β} {g : α → γ}
     (hf : Measurable f) (hg : Measurable g) :
     deterministic f hf ×ₖ deterministic g hg
-      = deterministic (fun a ↦ (f a, g a)) (hf.prod_mk hg) := by
+      = deterministic (fun a ↦ (f a, g a)) (hf.prodMk hg) := by
   ext; simp_rw [prod_apply, deterministic_apply, Measure.dirac_prod_dirac]
 
 lemma id_prod_eq : @Kernel.id (α × β) inferInstance =
@@ -233,7 +233,7 @@ lemma compProd_prodMkLeft_eq_comp
     prod_apply' _ _ _ hs, id_apply]
   congr with b
   rw [lintegral_dirac']
-  exact measurable_measure_prod_mk_left hs
+  exact measurable_measure_prodMk_left hs
 
 lemma prodAssoc_prod (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel α γ) [IsSFiniteKernel η]
     (ξ : Kernel α δ) [IsSFiniteKernel ξ] :
@@ -247,14 +247,14 @@ lemma prod_const_comp {δ} {mδ : MeasurableSpace δ} (κ : Kernel α β) [IsSFi
     (η ×ₖ (const β μ)) ∘ₖ κ = (η ∘ₖ κ) ×ₖ (const α μ) := by
   ext x s ms
   simp_rw [comp_apply' _ _ _ ms, prod_apply' _ _ _ ms, const_apply,
-  lintegral_comp _ _ _ (measurable_measure_prod_mk_left ms)]
+  lintegral_comp _ _ _ (measurable_measure_prodMk_left ms)]
 
 lemma const_prod_comp {δ} {mδ : MeasurableSpace δ} (κ : Kernel α β) [IsSFiniteKernel κ]
     (μ : Measure γ) [SFinite μ] (η : Kernel β δ) [IsSFiniteKernel η] :
     ((const β μ) ×ₖ η) ∘ₖ κ = (const α μ) ×ₖ (η ∘ₖ κ) := by
   ext x s ms
   simp_rw [comp_apply' _ _ _ ms, prod_apply, Measure.prod_apply_symm ms, const_apply,
-  lintegral_comp _ _ _ (measurable_measure_prod_mk_right ms)]
+  lintegral_comp _ _ _ (measurable_measure_prodMk_right ms)]
 
 end Kernel
 end ProbabilityTheory

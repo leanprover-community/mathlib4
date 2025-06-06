@@ -3,7 +3,7 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Compactification.OnePoint
+import Mathlib.Topology.Compactification.OnePoint.Basic
 import Mathlib.Topology.Category.LightProfinite.Basic
 /-!
 
@@ -44,9 +44,6 @@ lemma isClosedEmbedding_natUnionInftyEmbedding : IsClosedEmbedding natUnionInfty
         Nat.cast_inj] at h
       rw [h]
   · exact fun _ hC => (hC.isCompact.image natUnionInftyEmbedding.continuous).isClosed
-
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_natUnionInftyEmbedding := isClosedEmbedding_natUnionInftyEmbedding
 
 instance : MetrizableSpace (OnePoint ℕ) := isClosedEmbedding_natUnionInftyEmbedding.metrizableSpace
 

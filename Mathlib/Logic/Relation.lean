@@ -187,8 +187,7 @@ theorem _root_.Acc.of_downward_closed (dc : ∀ {a b}, rβ b (f a) → ∃ c, f 
     (ha : Acc (InvImage rβ f) a) : Acc rβ (f a) :=
   ha.of_fibration f fun a _ h ↦
     let ⟨a', he⟩ := dc h
-    -- Porting note: Lean 3 did not need the motive
-    ⟨a', he.substr (p := fun x ↦ rβ x (f a)) h, he⟩
+    ⟨a', by simp_all [InvImage], he⟩
 
 end Fibration
 
@@ -221,6 +220,34 @@ lemma map_apply_apply (hf : Injective f) (hg : Injective g) (r : α → β → P
 
 instance [Decidable (∃ a b, r a b ∧ f a = c ∧ g b = d)] : Decidable (Relation.Map r f g c d) :=
   ‹Decidable _›
+
+lemma map_reflexive {r : α → α → Prop} (hr : Reflexive r) {f : α → β} (hf : f.Surjective) :
+    Reflexive (Relation.Map r f f) := by
+  intro x
+  obtain ⟨y, rfl⟩ := hf x
+  exact ⟨y, y, hr y, rfl, rfl⟩
+
+lemma map_symmetric {r : α → α → Prop} (hr : Symmetric r) (f : α → β) :
+    Symmetric (Relation.Map r f f) := by
+  rintro _ _ ⟨x, y, hxy, rfl, rfl⟩; exact ⟨_, _, hr hxy, rfl, rfl⟩
+
+lemma map_transitive {r : α → α → Prop} (hr : Transitive r) {f : α → β}
+    (hf : ∀ x y, f x = f y → r x y) :
+    Transitive (Relation.Map r f f) := by
+  rintro _ _ _ ⟨x, y, hxy, rfl, rfl⟩ ⟨y', z, hyz, hy, rfl⟩
+  exact ⟨x, z, hr hxy <| hr (hf _ _ hy.symm) hyz, rfl, rfl⟩
+
+lemma map_equivalence {r : α → α → Prop} (hr : Equivalence r) (f : α → β)
+    (hf : f.Surjective) (hf_ker : ∀ x y, f x = f y → r x y) :
+    Equivalence (Relation.Map r f f) where
+  refl := map_reflexive hr.reflexive hf
+  symm := @(map_symmetric hr.symmetric _)
+  trans := @(map_transitive hr.transitive hf_ker)
+
+-- TODO: state this using `≤`, after adjusting imports.
+lemma map_mono {r s : α → β → Prop} {f : α → γ} {g : β → δ} (h : ∀ x y, r x y → s x y) :
+    ∀ x y, Relation.Map r f g x y → Relation.Map s f g x y :=
+  fun _ _ ⟨x, y, hxy, hx, hy⟩ => ⟨x, y, h _ _ hxy, hx, hy⟩
 
 end Map
 
@@ -455,7 +482,7 @@ theorem TransGen.lift {p : β → β → Prop} {a b : α} (f : α → β) (h : �
 theorem TransGen.lift' {p : β → β → Prop} {a b : α} (f : α → β)
     (h : ∀ a b, r a b → TransGen p (f a) (f b)) (hab : TransGen r a b) :
     TransGen p (f a) (f b) := by
-simpa [transGen_idem] using hab.lift f h
+  simpa [transGen_idem] using hab.lift f h
 
 theorem TransGen.closed {p : α → α → Prop} :
     (∀ a b, r a b → TransGen p a b) → TransGen r a b → TransGen p a b :=
@@ -598,10 +625,6 @@ theorem mono {r p : α → α → Prop} (hrp : ∀ a b, r a b → p a b) (h : Eq
   | refl => exact EqvGen.refl _
   | symm a b _ ih => exact EqvGen.symm _ _ ih
   | trans a b c _ _ hab hbc => exact EqvGen.trans _ _ _ hab hbc
-
-@[deprecated (since := "2024-09-01")] alias _root_.EqvGen.is_equivalence := is_equivalence
-@[deprecated (since := "2024-09-01")] alias _root_.EqvGen.Setoid := setoid
-@[deprecated (since := "2024-09-01")] alias _root_.EqvGen.mono := mono
 
 end EqvGen
 

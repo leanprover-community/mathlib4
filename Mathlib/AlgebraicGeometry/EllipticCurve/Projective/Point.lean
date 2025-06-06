@@ -3,7 +3,7 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Group
+import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Formula
 
 /-!
@@ -18,21 +18,21 @@ This file defines the group law on nonsingular projective points.
 
 ## Main definitions
 
- * `WeierstrassCurve.Projective.neg`: the negation of a point representative.
- * `WeierstrassCurve.Projective.negMap`: the negation of a point class.
- * `WeierstrassCurve.Projective.add`: the addition of two point representatives.
- * `WeierstrassCurve.Projective.addMap`: the addition of two point classes.
- * `WeierstrassCurve.Projective.Point`: a nonsingular projective point.
- * `WeierstrassCurve.Projective.Point.neg`: the negation of a nonsingular projective point.
- * `WeierstrassCurve.Projective.Point.add`: the addition of two nonsingular projective points.
- * `WeierstrassCurve.Projective.Point.toAffineAddEquiv`: the equivalence between the type of
+* `WeierstrassCurve.Projective.neg`: the negation of a point representative.
+* `WeierstrassCurve.Projective.negMap`: the negation of a point class.
+* `WeierstrassCurve.Projective.add`: the addition of two point representatives.
+* `WeierstrassCurve.Projective.addMap`: the addition of two point classes.
+* `WeierstrassCurve.Projective.Point`: a nonsingular projective point.
+* `WeierstrassCurve.Projective.Point.neg`: the negation of a nonsingular projective point.
+* `WeierstrassCurve.Projective.Point.add`: the addition of two nonsingular projective points.
+* `WeierstrassCurve.Projective.Point.toAffineAddEquiv`: the equivalence between the type of
     nonsingular projective points with the type of nonsingular points `W⟮F⟯` in affine coordinates.
 
 ## Main statements
 
- * `WeierstrassCurve.Projective.nonsingular_neg`: negation preserves the nonsingular condition.
- * `WeierstrassCurve.Projective.nonsingular_add`: addition preserves the nonsingular condition.
- * `WeierstrassCurve.Projective.Point.instAddCommGroup`: the type of nonsingular projective points
+* `WeierstrassCurve.Projective.nonsingular_neg`: negation preserves the nonsingular condition.
+* `WeierstrassCurve.Projective.nonsingular_add`: addition preserves the nonsingular condition.
+* `WeierstrassCurve.Projective.Point.instAddCommGroup`: the type of nonsingular projective points
     forms an abelian group under addition.
 
 ## Implementation notes
@@ -48,7 +48,7 @@ point in affine coordinates can be converted to a nonsingular projective point u
 `WeierstrassCurve.Projective.Point.fromAffine` or `WeierstrassCurve.Affine.Point.toProjective`.
 
 Whenever possible, all changes to documentation and naming of definitions and theorems should be
-mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian.lean`.
+mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Point.lean`.
 
 ## References
 
@@ -389,7 +389,7 @@ lemma fromAffine_some_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingu
     fromAffine (.some h) ≠ 0 :=
   mk_ne_zero <| (nonsingularLift_some ..).mpr h
 
-@[deprecated (since := "2025-02-01")] alias fromAffine_ne_zero := fromAffine_some_ne_zero
+@[deprecated (since := "2025-03-01")] alias fromAffine_ne_zero := fromAffine_some_ne_zero
 
 /-- The negation of a nonsingular projective point on a Weierstrass curve `W`.
 
@@ -611,8 +611,8 @@ lemma baseChange_add [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R 
 end Projective
 
 /-- An abbreviation for `WeierstrassCurve.Projective.Point.fromAffine` for dot notation. -/
-abbrev Affine.Point.toProjective {R : Type r} [CommRing R] [Nontrivial R] {W : Affine R}
-    (P : W.Point) : W.toProjective.Point :=
+abbrev Affine.Point.toProjective [Nontrivial R] {W : Affine R} (P : W.Point) :
+    W.toProjective.Point :=
   Projective.Point.fromAffine P
 
 end WeierstrassCurve

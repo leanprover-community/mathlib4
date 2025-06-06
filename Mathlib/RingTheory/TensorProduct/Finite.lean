@@ -122,7 +122,7 @@ lemma Module.exists_isPrincipal_quotient_of_finite  :
   have hs₂ : BddAbove s := ⟨n, fun x hx ↦ (hns x hx).le⟩
   have hs := Nat.sSup_mem hs₁ hs₂
   refine ⟨_, hs, ⟨⟨Submodule.mkQ _ (f ⟨_, hns _ hs⟩), ?_⟩⟩⟩
-  have := not_not.mp (not_mem_of_csSup_lt (Order.lt_succ _) hs₂)
+  have := not_not.mp (notMem_of_csSup_lt (Order.lt_succ _) hs₂)
   rw [← Set.image_singleton, ← Submodule.map_span,
     ← (Submodule.comap_injective_of_surjective (Submodule.mkQ_surjective _)).eq_iff,
     Submodule.comap_map_eq, Submodule.ker_mkQ, Submodule.comap_top, ← this, ← Submodule.span_union,
@@ -164,7 +164,7 @@ theorem Subalgebra.finite_sup {K L : Type*} [CommSemiring K] [CommSemiring L] [A
 
 open TensorProduct in
 lemma RingHom.surjective_of_tmul_eq_tmul_of_finite {R S}
-    [CommRing R] [CommRing S] [Algebra R S] [Module.Finite R S]
+    [CommRing R] [Ring S] [Algebra R S] [Module.Finite R S]
     (h₁ : ∀ s : S, s ⊗ₜ[R] 1 = 1 ⊗ₜ s) : Function.Surjective (algebraMap R S) := by
   let R' := LinearMap.range (Algebra.ofId R S).toLinearMap
   rcases subsingleton_or_nontrivial (S ⧸ R') with h | _

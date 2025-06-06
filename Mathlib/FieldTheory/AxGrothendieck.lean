@@ -22,11 +22,11 @@ then any injective polynomial map `K^n → K^n` is also surjective.
 `S : Set (ι → K)` is the `zeroLocus` of some ideal of `MvPolynomial ι K`, then any injective
 polynomial map `S → S` is also surjective on `S`.
 * `ax_grothendieck_univ`: Any injective polynomial map `K^n → K^n` is also surjective if `K` is an
-algebraically closed field.
+  algebraically closed field.
 * `ax_grothendieck_of_definable`: Any injective polynomial map `S → S` is also surjective on `S` if
 `K` is an algebraically closed field and `S` is a definable subset of `K^n`.
 * `ax_grothendieck_of_locally_finite`: any injective polynomial map `R^n → R^n` is also surjective
-whenever `R` is an algebraic extension of a finite field.
+  whenever `R` is an algebraic extension of a finite field.
 
 ## References
 
@@ -140,6 +140,7 @@ noncomputable def genericPolyMapSurjOnOfInjOn [Finite ι]
             (fun i => (Equiv.sumAssoc _ _ _).symm (Sum.inr i)))))
   Formula.iAlls (α ⊕ Σ i : ι, mons i) ((mapsTo.imp <| injOn.imp <| surjOn).relabel Sum.inr)
 
+open Fin.CommRing in -- TODO: can this be refactored to avoid using the ring structure in the proof?
 theorem realize_genericPolyMapSurjOnOfInjOn
     [Finite ι] (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
     (K ⊨ genericPolyMapSurjOnOfInjOn φ mons) ↔

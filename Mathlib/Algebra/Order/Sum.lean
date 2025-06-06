@@ -3,7 +3,7 @@ Copyright (c) 2024 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak
 -/
-import Mathlib.Algebra.Group.Pi.Notation
+import Mathlib.Algebra.Notation.Pi
 import Mathlib.Order.Basic
 
 /-!

@@ -12,7 +12,7 @@ import Mathlib.Logic.Embedding.Basic
 # More lemmas about group actions
 
 This file contains lemmas about group actions that require more imports than
-`Mathlib.Algebra.Group.Action.Defs` offers.
+`Mathlib/Algebra/Group/Action/Defs.lean` offers.
 -/
 
 assert_not_exists MonoidWithZero Equiv.Perm.permGroup
@@ -108,6 +108,18 @@ end Arrow
 
 namespace IsUnit
 variable [Monoid α] [MulAction α β]
+
+@[to_additive]
+theorem smul_bijective {m : α} (hm : IsUnit m) :
+    Function.Bijective (fun (a : β) ↦ m • a) := by
+  lift m to αˣ using hm
+  exact MulAction.bijective m
+
+@[deprecated (since := "2025-03-03")]
+alias _root_.AddAction.vadd_bijective_of_is_addUnit := IsAddUnit.vadd_bijective
+
+@[to_additive existing, deprecated (since := "2025-03-03")]
+alias _root_.MulAction.smul_bijective_of_is_unit := IsUnit.smul_bijective
 
 @[to_additive]
 lemma smul_left_cancel {a : α} (ha : IsUnit a) {x y : β} : a • x = a • y ↔ x = y :=

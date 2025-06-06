@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Data.Set.UnionLift
 
 /-!
@@ -12,9 +12,9 @@ import Mathlib.Data.Set.UnionLift
 
 ## Main results
 
- * `Subalgebra.coe_iSup_of_directed`: a directed supremum consists of the union of the algebras
- * `Subalgebra.iSupLift`: define an algebra homomorphism on a directed supremum of subalgebras by
-   defining it on each subalgebra, and proving that it agrees on the intersection of subalgebras.
+* `Subalgebra.coe_iSup_of_directed`: a directed supremum consists of the union of the algebras
+* `Subalgebra.iSupLift`: define an algebra homomorphism on a directed supremum of subalgebras by
+  defining it on each subalgebra, and proving that it agrees on the intersection of subalgebras.
 -/
 
 namespace Subalgebra

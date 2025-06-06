@@ -20,11 +20,11 @@ As opposed to `Even`, `Odd` does not have a multiplicative counterpart.
 
 Try to generalize `Even` lemmas further. For example, there are still a few lemmas whose `Semiring`
 assumptions I (DT) am not convinced are necessary. If that turns out to be true, they could be moved
-to `Mathlib.Algebra.Group.Even`.
+to `Mathlib/Algebra/Group/Even.lean`.
 
 ## See also
 
-`Mathlib.Algebra.Group.Even` for the definition of even elements.
+`Mathlib/Algebra/Group/Even.lean` for the definition of even elements.
 -/
 
 assert_not_exists DenselyOrdered OrderedRing
@@ -70,7 +70,8 @@ lemma Even.trans_dvd (ha : Even a) (hab : a ∣ b) : Even b :=
 
 lemma Dvd.dvd.even (hab : a ∣ b) (ha : Even a) : Even b := ha.trans_dvd hab
 
-@[simp] lemma range_two_mul (α) [Semiring α] : Set.range (fun x : α ↦ 2 * x) = {a | Even a} := by
+@[simp] lemma range_two_mul (α) [NonAssocSemiring α] :
+    Set.range (fun x : α ↦ 2 * x) = {a | Even a} := by
   ext x
   simp [eq_comm, two_mul, Even]
 
@@ -142,8 +143,7 @@ lemma Odd.pow (ha : Odd a) : ∀ {n : ℕ}, Odd (a ^ n)
 lemma Odd.pow_add_pow_eq_zero [IsCancelAdd α] (hn : Odd n) (hab : a + b = 0) :
     a ^ n + b ^ n = 0 := by
   obtain ⟨k, rfl⟩ := hn
-  induction' k with k ih
-  · simpa
+  induction k with | zero => simpa | succ k ih => ?_
   have : a ^ 2 = b ^ 2 := add_right_cancel <|
     calc
       a ^ 2 + a * b = 0 := by rw [sq, ← mul_add, hab, mul_zero]
@@ -154,7 +154,25 @@ lemma Odd.pow_add_pow_eq_zero [IsCancelAdd α] (hn : Odd n) (hab : a + b = 0) :
       rw [add_mul, ← pow_add, add_right_comm]; rfl
     _ = _ := by rw [ih, zero_mul, zero_add, zero_add, this, ← pow_add]
 
+theorem Even.of_isUnit_two (h : IsUnit (2 : α)) (a : α) : Even a :=
+  let ⟨u, hu⟩ := h; ⟨u⁻¹ * a, by rw [← mul_add, ← two_mul, ← hu, Units.inv_mul_cancel_left]⟩
+
+theorem isUnit_two_iff_forall_even : IsUnit (2 : α) ↔ ∀ a : α, Even a := by
+  refine ⟨Even.of_isUnit_two, fun h => ?_⟩
+  obtain ⟨a, ha⟩ := h 1
+  rw [← two_mul, eq_comm] at ha
+  exact ⟨⟨2, a, ha, .trans (Commute.ofNat_right _ _).eq ha⟩, rfl⟩
+
 end Semiring
+
+section Ring
+variable [Ring α]
+
+theorem Odd.of_isUnit_two (h : IsUnit (2 : α)) (a : α) : Odd a := by
+  rw [← sub_add_cancel a 1]
+  exact (Even.of_isUnit_two h _).add_one
+
+end Ring
 
 section Monoid
 variable [Monoid α] [HasDistribNeg α] {n : ℕ}
@@ -292,10 +310,6 @@ lemma div_two_mul_two_add_one_of_odd (h : Odd n) : n / 2 * 2 + 1 = n := by
 lemma one_add_div_two_mul_two_of_odd (h : Odd n) : 1 + n / 2 * 2 = n := by
   rw [← odd_iff.mp h, mod_add_div']
 
-section
-
-end
-
 -- Here are examples of how `parity_simps` can be used with `Nat`.
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
   simp [*, two_ne_zero, parity_simps]
@@ -343,14 +357,25 @@ lemma iterate_eq_id (hf : Involutive f) (hne : f ≠ id) : f^[n] = id ↔ Even n
 end Involutive
 end Function
 
-lemma neg_one_pow_eq_ite {R : Type*} [Monoid R] [HasDistribNeg R] {n : ℕ} :
-    (-1 : R) ^ n = ite (Even n) 1 (-1) := by
+section DistribNeg
+
+variable {R : Type*} [Monoid R] [HasDistribNeg R] {m n : ℕ}
+
+lemma neg_one_pow_eq_ite : (-1 : R) ^ n = if Even n then 1 else (-1) := by
   cases even_or_odd n with
   | inl h => rw [h.neg_one_pow, if_pos h]
   | inr h => rw [h.neg_one_pow, if_neg (by simpa using h)]
 
-lemma neg_one_pow_eq_one_iff_even {R : Type*} [Monoid R] [HasDistribNeg R] {n : ℕ}
-    (h : (-1 : R) ≠ 1) : (-1 : R) ^ n = 1 ↔ Even n := by simp [neg_one_pow_eq_ite, h]
+lemma neg_one_pow_congr (h : Even m ↔ Even n) : (-1 : R) ^ m = (-1) ^ n := by
+  simp [h, neg_one_pow_eq_ite]
+
+lemma neg_one_pow_eq_one_iff_even (h : (-1 : R) ≠ 1) :
+    (-1 : R) ^ n = 1 ↔ Even n := by simp [neg_one_pow_eq_ite, h]
+
+lemma neg_one_pow_eq_neg_one_iff_odd (h : (-1 : R) ≠ 1) :
+    (-1 : R) ^ n = -1 ↔ Odd n := by simp [neg_one_pow_eq_ite, h.symm]
+
+end DistribNeg
 
 section CharTwo
 

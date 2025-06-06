@@ -42,7 +42,7 @@ instance Closeds.emetricSpace : EMetricSpace (Closeds α) where
   edist_comm _ _ := hausdorffEdist_comm
   edist_triangle _ _ _ := hausdorffEdist_triangle
   eq_of_edist_eq_zero {s t} h :=
-    Closeds.ext <| (hausdorffEdist_zero_iff_eq_of_closed s.closed t.closed).1 h
+    Closeds.ext <| (hausdorffEdist_zero_iff_eq_of_closed s.isClosed t.isClosed).1 h
 
 /-- The edistance to a closed set depends continuously on the point and the set -/
 theorem continuous_infEdist_hausdorffEdist :
@@ -52,12 +52,12 @@ theorem continuous_infEdist_hausdorffEdist :
   calc
     infEdist x s ≤ infEdist x t + hausdorffEdist (t : Set α) s :=
       infEdist_le_infEdist_add_hausdorffEdist
-    _ ≤ infEdist y t + edist x y + hausdorffEdist (t : Set α) s :=
-      (add_le_add_right infEdist_le_infEdist_add_edist _)
+    _ ≤ infEdist y t + edist x y + hausdorffEdist (t : Set α) s := by
+      gcongr; apply infEdist_le_infEdist_add_edist
     _ = infEdist y t + (edist x y + hausdorffEdist (s : Set α) t) := by
       rw [add_assoc, hausdorffEdist_comm]
-    _ ≤ infEdist y t + (edist (x, s) (y, t) + edist (x, s) (y, t)) :=
-      (add_le_add_left (add_le_add (le_max_left _ _) (le_max_right _ _)) _)
+    _ ≤ infEdist y t + (edist (x, s) (y, t) + edist (x, s) (y, t)) := by
+      gcongr <;> apply_rules [le_max_left, le_max_right]
     _ = infEdist y t + 2 * edist (x, s) (y, t) := by rw [← mul_two, mul_comm]
 
 /-- Subsets of a given closed subset form a closed set -/
@@ -86,7 +86,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
     We use the shorthand `B n = 2^{-n}` in ennreal. -/
   let B : ℕ → ℝ≥0∞ := fun n => 2⁻¹ ^ n
   have B_pos : ∀ n, (0 : ℝ≥0∞) < B n := by simp [B, ENNReal.pow_pos]
-  have B_ne_top : ∀ n, B n ≠ ⊤ := by simp [B, ENNReal.pow_ne_top]
+  have B_ne_top : ∀ n, B n ≠ ⊤ := by finiteness
   /- Consider a sequence of closed sets `s n` with `edist (s n) (s (n+1)) < B n`.
     We will show that it converges. The limit set is `t0 = ⋂n, closure (⋃m≥n, s m)`.
     We will have to show that a point in `s n` is close to a point in `t0`, and a point
@@ -132,7 +132,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
           (by
             simp only [exists_prop, Set.mem_iUnion, Filter.eventually_atTop, Set.mem_preimage,
               Set.preimage_iUnion]
-            exact ⟨k, fun m hm => ⟨n + m, zero_add k ▸ add_le_add (zero_le n) hm, (z m).2⟩⟩)
+            exact ⟨k, fun m hm => ⟨n + m, by omega, (z m).2⟩⟩)
     use this
     -- Then, we check that `y` is close to `x = z n`. This follows from the fact that `y`
     -- is the limit of `z k`, and the distance between `z n` and `z k` has already been estimated.
@@ -157,7 +157,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
       ⟨y, hy,
         calc
           edist x y ≤ edist x z + edist z y := edist_triangle _ _ _
-          _ ≤ B n + B n := add_le_add (le_of_lt Dxz) (le_of_lt Dzy)
+          _ ≤ B n + B n := by gcongr
           _ = 2 * B n := (two_mul _).symm
           ⟩
   -- Deduce from the above inequalities that the distance between `s n` and `t0` is at most `2 B n`.
@@ -236,9 +236,6 @@ theorem NonemptyCompacts.ToCloseds.isUniformEmbedding :
     IsUniformEmbedding (@NonemptyCompacts.toCloseds α _ _) :=
   Isometry.isUniformEmbedding fun _ _ => rfl
 
-@[deprecated (since := "2024-10-01")]
-alias NonemptyCompacts.ToCloseds.uniformEmbedding := NonemptyCompacts.ToCloseds.isUniformEmbedding
-
 /-- The range of `NonemptyCompacts.toCloseds` is closed in a complete space -/
 theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
     IsClosed (range <| @NonemptyCompacts.toCloseds α _ _) := by
@@ -256,7 +253,7 @@ theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
     rw [edist_comm] at Dst
     -- since `t` is nonempty, so is `s`
     exact nonempty_of_hausdorffEdist_ne_top ht.1 (ne_of_lt Dst)
-  · refine isCompact_iff_totallyBounded_isComplete.2 ⟨?_, s.closed.isComplete⟩
+  · refine isCompact_iff_totallyBounded_isComplete.2 ⟨?_, s.isClosed.isComplete⟩
     refine totallyBounded_iff.2 fun ε (εpos : 0 < ε) => ?_
     -- we have to show that s is covered by finitely many eballs of radius ε
     -- pick a nonempty compact set t at distance at most ε/2 of s
@@ -397,11 +394,9 @@ theorem lipschitz_infDist_set (x : α) : LipschitzWith 1 fun s : NonemptyCompact
     exact infDist_le_infDist_add_hausdorffDist (edist_ne_top t s)
 
 theorem lipschitz_infDist : LipschitzWith 2 fun p : α × NonemptyCompacts α => infDist p.1 p.2 := by
-  -- Porting note: Changed tactic from `exact` to `convert`, because Lean had trouble with 2 = 1 + 1
-  convert @LipschitzWith.uncurry α (NonemptyCompacts α) ℝ _ _ _
-    (fun (x : α) (s : NonemptyCompacts α) => infDist x s) 1 1
-    (fun s => lipschitz_infDist_pt ↑s) lipschitz_infDist_set
-  norm_num
+  rw [← one_add_one_eq_two]
+  exact LipschitzWith.uncurry
+    (fun s : NonemptyCompacts α => lipschitz_infDist_pt (s : Set α)) lipschitz_infDist_set
 
 theorem uniformContinuous_infDist_Hausdorff_dist :
     UniformContinuous fun p : α × NonemptyCompacts α => infDist p.1 p.2 :=

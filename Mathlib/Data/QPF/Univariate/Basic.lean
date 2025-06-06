@@ -473,7 +473,7 @@ def comp : QPF (Functor.Comp F₂ F₁) where
     rcases h' : repr (f x) with ⟨b, g⟩
     dsimp; rw [← h', abs_repr]
   abs_map {α β} f := by
-    dsimp (config := { unfoldPartialApp := true }) [Functor.Comp, PFunctor.comp]
+    dsimp +unfoldPartialApp [Functor.Comp, PFunctor.comp]
     intro p
     obtain ⟨a, g⟩ := p; dsimp
     obtain ⟨b, h⟩ := a; dsimp
@@ -512,8 +512,8 @@ def quotientQPF (FG_abs_repr : ∀ {α} (x : G α), FG_abs (FG_repr x) = x)
   P := q.P
   abs {_} p := FG_abs (abs p)
   repr {_} x := repr (FG_repr x)
-  abs_repr {α} x := by simp only; rw [abs_repr, FG_abs_repr]
-  abs_map {α β} f x := by simp only; rw [abs_map, FG_abs_map]
+  abs_repr {α} x := by rw [abs_repr, FG_abs_repr]
+  abs_map {α β} f x := by rw [abs_map, FG_abs_map]
 
 end QPF
 

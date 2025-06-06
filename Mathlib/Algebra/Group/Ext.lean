@@ -78,7 +78,7 @@ theorem RightCancelMonoid.toMonoid_injective {M : Type u} :
 
 @[to_additive (attr := ext)]
 theorem RightCancelMonoid.ext {M : Type u} ⦃m₁ m₂ : RightCancelMonoid M⦄
-    (h_mul : (letI := m₁; HMul.hMul : M → M → M) = (letI := m₂; HMul.hMul : M → M → M))  :
+    (h_mul : (letI := m₁; HMul.hMul : M → M → M) = (letI := m₂; HMul.hMul : M → M → M)) :
     m₁ = m₂ :=
   RightCancelMonoid.toMonoid_injective <| Monoid.ext h_mul
 
@@ -134,7 +134,9 @@ lemma Group.toDivInvMonoid_injective {G : Type*} : Injective (@Group.toDivInvMon
   rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
 
 @[to_additive (attr := ext)]
-theorem Group.ext {G : Type*} ⦃g₁ g₂ : Group G⦄ (h_mul : g₁.mul = g₂.mul) : g₁ = g₂ := by
+theorem Group.ext {G : Type*} ⦃g₁ g₂ : Group G⦄
+    (h_mul : (letI := g₁; HMul.hMul : G → G → G) = (letI := g₂; HMul.hMul : G → G → G)) :
+    g₁ = g₂ := by
   have h₁ : g₁.one = g₂.one := congr_arg (·.one) (Monoid.ext h_mul)
   let f : @MonoidHom G G g₁.toMulOneClass g₂.toMulOneClass :=
     @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
@@ -149,5 +151,6 @@ lemma CommGroup.toGroup_injective {G : Type*} : Injective (@CommGroup.toGroup G)
   rintro ⟨⟩ ⟨⟩ ⟨⟩; rfl
 
 @[to_additive (attr := ext)]
-theorem CommGroup.ext {G : Type*} ⦃g₁ g₂ : CommGroup G⦄ (h_mul : g₁.mul = g₂.mul) : g₁ = g₂ :=
+theorem CommGroup.ext {G : Type*} ⦃g₁ g₂ : CommGroup G⦄
+    (h_mul : (letI := g₁; HMul.hMul : G → G → G) = (letI := g₂; HMul.hMul : G → G → G)) : g₁ = g₂ :=
   CommGroup.toGroup_injective <| Group.ext h_mul

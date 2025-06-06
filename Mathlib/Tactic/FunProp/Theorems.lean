@@ -8,7 +8,6 @@ import Mathlib.Tactic.FunProp.Types
 import Mathlib.Tactic.FunProp.FunctionData
 import Mathlib.Lean.Meta.RefinedDiscrTree
 import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
-import Batteries.Data.RBMap.Alter
 
 /-!
 ## `fun_prop` environment extensions storing theorems for `fun_prop`
@@ -16,6 +15,7 @@ import Batteries.Data.RBMap.Alter
 
 namespace Mathlib
 open Lean Meta
+open Std (TreeMap)
 
 namespace Meta.FunProp
 
@@ -168,11 +168,12 @@ structure FunctionTheorem where
 
 private local instance : Ord Name := ⟨Name.quickCmp⟩
 
+set_option linter.style.docString false in
 /-- -/
 structure FunctionTheorems where
   /-- map: function name → function property → function theorem -/
   theorems :
-    Batteries.RBMap Name (Batteries.RBMap Name (Array FunctionTheorem) compare) compare := {}
+    TreeMap Name (TreeMap Name (Array FunctionTheorem) compare) compare := {}
   deriving Inhabited
 
 
@@ -182,7 +183,7 @@ def FunctionTheorem.getProof (thm : FunctionTheorem) : MetaM Expr := do
   | .decl name => mkConstWithFreshMVarLevels name
   | .fvar id => return .fvar id
 
-
+set_option linter.style.docString false in
 /-- -/
 abbrev FunctionTheoremsExt := SimpleScopedEnvExtension FunctionTheorem FunctionTheorems
 
@@ -201,11 +202,12 @@ initialize functionTheoremsExt : FunctionTheoremsExt ←
               thms.push e}
   }
 
+set_option linter.style.docString false in
 /-- -/
 def getTheoremsForFunction (funName : Name) (funPropName : Name) :
     CoreM (Array FunctionTheorem) := do
-  return (functionTheoremsExt.getState (← getEnv)).theorems.findD funName {}
-    |>.findD funPropName #[]
+  return (functionTheoremsExt.getState (← getEnv)).theorems.getD funName {}
+    |>.getD funPropName #[]
 
 
 --------------------------------------------------------------------------------
@@ -213,13 +215,13 @@ def getTheoremsForFunction (funName : Name) (funPropName : Name) :
 /-- General theorem about a function property used for transition and morphism theorems -/
 structure GeneralTheorem where
   /-- function property name -/
-  funPropName   : Name
+  funPropName : Name
   /-- theorem name -/
-  thmName     : Name
+  thmName : Name
   /-- discrimination tree keys used to index this theorem -/
-  keys        : List RefinedDiscrTree.DTExpr
+  keys : List RefinedDiscrTree.DTExpr
   /-- priority -/
-  priority    : Nat  := eval_prio default
+  priority : Nat  := eval_prio default
   deriving Inhabited, BEq
 
 /-- Get proof of a theorem. -/
@@ -229,7 +231,7 @@ def GeneralTheorem.getProof (thm : GeneralTheorem) : MetaM Expr := do
 /-- Structure holding transition or morphism theorems for `fun_prop` tactic. -/
 structure GeneralTheorems where
   /-- Discrimination tree indexing theorems. -/
-  theorems     : RefinedDiscrTree GeneralTheorem := {}
+  theorems : RefinedDiscrTree GeneralTheorem := {}
   deriving Inhabited
 
 /-- Extendions for transition or morphism theorems -/

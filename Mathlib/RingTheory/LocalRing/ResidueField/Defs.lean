@@ -24,7 +24,9 @@ variable (R : Type*) [CommRing R] [IsLocalRing R]
 def ResidueField :=
   R ⧸ maximalIdeal R
 
--- Porting note: failed at `deriving` instances automatically
+-- The `CommRing, Inhabited` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
+
 instance ResidueFieldCommRing : CommRing (ResidueField R) :=
   show CommRing (R ⧸ maximalIdeal R) from inferInstance
 

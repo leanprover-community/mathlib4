@@ -29,8 +29,7 @@ namespace CategoryTheory
 namespace Cat
 
 /-- The category of small categories has all small colimits as a reflective subcategory of the
-category of simplicial sets, which has all small colimits.-/
-
+category of simplicial sets, which has all small colimits. -/
 instance : HasColimits Cat.{v, v} :=
   hasColimits_of_reflective nerveFunctor
 

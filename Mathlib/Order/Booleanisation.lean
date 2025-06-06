@@ -3,6 +3,7 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Order.BooleanAlgebra
 import Mathlib.Order.Hom.Lattice
 
 /-!
@@ -224,6 +225,7 @@ instance instSemilatticeInf : SemilatticeInf (Booleanisation α) where
     | comp a, comp b, comp c, LE.comp hba, LE.comp hca => LE.comp <| sup_le hba hca
 
 instance instDistribLattice : DistribLattice (Booleanisation α) where
+  inf x y := x ⊓ y
   inf_le_left _ _ := inf_le_left
   inf_le_right _ _ := inf_le_right
   le_inf _ _ _ := le_inf

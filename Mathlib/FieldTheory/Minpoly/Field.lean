@@ -85,7 +85,7 @@ theorem dvd_map_of_isScalarTower (A K : Type*) {R : Type*} [CommRing A] [Field K
   rw [aeval_map_algebraMap, minpoly.aeval]
 
 theorem dvd_map_of_isScalarTower' (R : Type*) {S : Type*} (K L : Type*) [CommRing R]
-    [CommRing S] [Field K] [CommRing L] [Algebra R S] [Algebra R K] [Algebra S L] [Algebra K L]
+    [CommRing S] [Field K] [Ring L] [Algebra R S] [Algebra R K] [Algebra S L] [Algebra K L]
     [Algebra R L] [IsScalarTower R K L] [IsScalarTower R S L] (s : S) :
     minpoly K (algebraMap S L s) ∣ map (algebraMap R K) (minpoly R s) := by
   apply minpoly.dvd K (algebraMap S L s)
@@ -135,7 +135,7 @@ theorem eq_of_irreducible_of_monic [Nontrivial B] {p : A[X]} (hp1 : Irreducible 
     mul_one (minpoly A x) ▸ hq.symm ▸ Associated.mul_left _
       (associated_one_iff_isUnit.2 <| (hp1.isUnit_or_isUnit hq).resolve_left <| not_isUnit A x)
 
-theorem eq_iff_aeval_eq_zero [Nontrivial B] {p : A[X]} (irr: Irreducible p) (monic: p.Monic) :
+theorem eq_iff_aeval_eq_zero [Nontrivial B] {p : A[X]} (irr : Irreducible p) (monic : p.Monic) :
     p = minpoly A x ↔ Polynomial.aeval x p = 0 :=
   ⟨(· ▸ aeval A x), (eq_of_irreducible_of_monic irr · monic)⟩
 
@@ -174,7 +174,7 @@ theorem sub_algebraMap {B : Type*} [CommRing B] [Algebra A B] (x : B)
     (a : A) : minpoly A (x - algebraMap A B a) = (minpoly A x).comp (X + C a) := by
   simpa [sub_eq_add_neg] using add_algebraMap x (-a)
 
-theorem neg {B : Type*} [CommRing B] [Algebra A B] (x : B) :
+theorem neg {B : Type*} [Ring B] [Algebra A B] (x : B) :
     minpoly A (- x) = (-1) ^ (natDegree (minpoly A x)) * (minpoly A x).comp (- X) := by
   by_cases hx : IsIntegral A x
   · refine (minpoly.unique _ _ ((minpoly.monic hx).neg_one_pow_natDegree_mul_comp_neg_X)
@@ -317,7 +317,7 @@ lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) 
     apply hq.ne_zero
     simpa using Fintype.linearIndependent_iff.mp
       (((linearIndependent_algHom_toLinearMap' K L L).comp _ AlgEquiv.coe_algHom_injective).comp _
-        (Subtype.val_injective.comp ((finEquivPowers σ hσ).injective)))
+        (Subtype.val_injective.comp ((finEquivPowers hσ).injective)))
       (q.coeff ∘ (↑)) hs ⟨_, H⟩
 
 /-- The minimal polynomial (over `K`) of `σ : Gal(L/K)` is `X ^ (orderOf σ) - 1`. -/
