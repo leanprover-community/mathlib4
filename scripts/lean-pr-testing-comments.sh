@@ -20,7 +20,7 @@ fi
 # env:
 #   TOKEN: ${{ secrets.LEAN_PR_TESTING }}
 #   GITHUB_CONTEXT: ${{ toJson(github) }}
-#   WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+#   WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}
 #   BUILD_OUTCOME: ${{ steps.build.outcome }}
 #   NOISY_OUTCOME: ${{ steps.noisy.outcome }}
 #   ARCHIVE_OUTCOME: ${{ steps.archive.outcome }}
