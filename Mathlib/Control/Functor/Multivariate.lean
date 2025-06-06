@@ -133,17 +133,11 @@ end LiftP'
 
 end MvFunctor
 
-open Nat
-
 namespace MvFunctor
-
-open TypeVec
 
 section LiftPLastPredIff
 
 variable {F : TypeVec.{u} (n + 1) → Type*} [MvFunctor F] [LawfulMvFunctor F] {α : TypeVec.{u} n}
-
-open MvFunctor
 
 variable {β : Type u}
 variable (pp : β → Prop)
@@ -176,8 +170,6 @@ theorem LiftP_PredLast_iff {β} (P : β → Prop) (x : F (α ::: β)) :
     suffices (fun i => Subtype.val) = (fun i x => (MvFunctor.f P n α i x).val) by rw [this]
     ext i ⟨x, _⟩
     cases i <;> rfl
-
-open Function
 
 variable (rr : β → β → Prop)
 

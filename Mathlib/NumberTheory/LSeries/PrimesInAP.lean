@@ -149,7 +149,7 @@ lemma abscissaOfAbsConv_residueClass_le_one :
   by_cases hn : (n : ZMod q) = a
   · simp +contextual only [term, Set.indicator, Set.mem_setOf_eq, hn, ↓reduceIte, apply_ite,
       ite_self]
-  · simp +contextual only [term, Set.mem_setOf_eq, hn, not_false_eq_true, Set.indicator_of_not_mem,
+  · simp +contextual only [term, Set.mem_setOf_eq, hn, not_false_eq_true, Set.indicator_of_notMem,
       ofReal_zero, zero_div, ite_self]
 
 /-- The set we are interested in (prime numbers in the residue class `a`) is the same as the support

@@ -79,13 +79,13 @@ theorem MeasureTheory.aemeasurable_of_exist_almost_disjoint_supersets {α : Type
       change μ _ = 0
       convert this
       ext y
-      simp only [not_exists, exists_prop, mem_setOf_eq, mem_compl_iff, not_not_mem]
+      simp only [not_exists, exists_prop, mem_setOf_eq, mem_compl_iff, not_notMem]
     filter_upwards [this] with x hx
     apply (iInf_eq_of_forall_ge_of_forall_gt_exists_lt _ _).symm
     · intro i
       by_cases H : x ∈ u' i
       swap
-      · simp only [H, le_top, not_false_iff, piecewise_eq_of_not_mem]
+      · simp only [H, le_top, not_false_iff, piecewise_eq_of_notMem]
       simp only [H, piecewise_eq_of_mem]
       contrapose! hx
       obtain ⟨r, ⟨xr, rq⟩, rs⟩ : ∃ r, r ∈ Ioo (i : β) (f x) ∩ s :=

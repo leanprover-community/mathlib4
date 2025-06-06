@@ -15,7 +15,8 @@ import Batteries.Control.OptionT
 
 Monad encapsulating continuation passing programming style, similar to
 Haskell's `Cont`, `ContT` and `MonadCont`:
-<http://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-Cont.html>
+<https://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-Cont.html>
+<https://hackage.haskell.org/package/transformers-0.6.2.0/docs/Control-Monad-Trans-Cont.html>
 -/
 
 universe u v w u₀ u₁ v₀ v₁
@@ -100,6 +101,21 @@ instance : LawfulMonadCont (ContT r m) where
   callCC_bind_left := by intros; ext; rfl
   callCC_dummy := by intros; ext; rfl
 
+/-- Note that `tryCatch` does not have correct behavior in this monad:
+```
+def foo : ContT Bool (Except String) Bool := do
+  let x ← try
+    pure true
+  catch _ =>
+    return false
+  throw s!"oh no {x}"
+#eval foo.run pure
+-- `Except.ok false`, no error
+```
+Here, the `throwError` is being run inside the `try`.
+See [Zulip](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/MonadExcept.20in.20the.20ContT.20monad/near/375341221)
+for further discussion.
+-/
 instance (ε) [MonadExcept ε m] : MonadExcept ε (ContT r m) where
   throw e _ := throw e
   tryCatch act h f := tryCatch (act f) fun e => h e f
@@ -158,8 +174,8 @@ instance [MonadCont m] : MonadCont (OptionT m) where
 instance [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (OptionT m) where
   callCC_bind_right := by
     refine fun _ _ => OptionT.ext ?_
-    simp [callCC, Option.elimM, callCC_bind_right]
-    exact bind_congr fun | some _ => rfl | none => by simp [@callCC_dummy m _]
+    simpa [callCC, Option.elimM, callCC_bind_right] using
+      bind_congr fun | some _ => rfl | none => by simp [@callCC_dummy m _]
   callCC_bind_left := by
     intros
     simp only [callCC, OptionT.callCC, OptionT.goto_mkLabel, bind_pure_comp, OptionT.run_bind,

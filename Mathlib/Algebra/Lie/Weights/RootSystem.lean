@@ -497,7 +497,7 @@ lemma eq_top_of_invtSubmodule_ne_bot
   let g := ⋃ i ∈ Φ, (rootSpace H i : Set L)
   let I := LieSubalgebra.lieSpan K L g
   have s₅ : I ≠ ⊤ := by
-    obtain ⟨j, hj⟩ := (Set.ne_univ_iff_exists_not_mem Φ).mp hc
+    obtain ⟨j, hj⟩ := (Set.ne_univ_iff_exists_notMem Φ).mp hc
     obtain ⟨z, hz₁, hz₂⟩ := exists_ne_zero (R := K) (L := H) (M := L) j
     by_contra! hI
     have center_element : z ∈ center K L := by

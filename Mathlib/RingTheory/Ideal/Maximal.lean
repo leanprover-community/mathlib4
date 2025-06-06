@@ -173,8 +173,8 @@ lemma isPrime_of_maximally_disjoint (I : Ideal α)
     aesop
   mem_or_mem' {x y} hxy := by
     by_contra! rid
-    have hx := maximally_disjoint (I ⊔ span {x}) (Submodule.lt_sup_iff_not_mem.mpr rid.1)
-    have hy := maximally_disjoint (I ⊔ span {y}) (Submodule.lt_sup_iff_not_mem.mpr rid.2)
+    have hx := maximally_disjoint (I ⊔ span {x}) (Submodule.lt_sup_iff_notMem.mpr rid.1)
+    have hy := maximally_disjoint (I ⊔ span {y}) (Submodule.lt_sup_iff_notMem.mpr rid.2)
     simp only [Set.not_disjoint_iff, mem_inter_iff, SetLike.mem_coe, Submodule.mem_sup,
       mem_span_singleton] at hx hy
     obtain ⟨s₁, ⟨i₁, hi₁, ⟨_, ⟨r₁, rfl⟩, hr₁⟩⟩, hs₁⟩ := hx
@@ -197,7 +197,7 @@ theorem exists_le_prime_disjoint (S : Submonoid α) (disjoint : Disjoint (I : Se
   have ⟨p, hp⟩ := (Submodule.mem_iSup_of_directed _ hc'.directed).mp (sSup_eq_iSup' c ▸ hx)
   exact Set.disjoint_left.mp (hc p.2) hp
 
-theorem exists_le_prime_nmem_of_isIdempotentElem (a : α) (ha : IsIdempotentElem a) (haI : a ∉ I) :
+theorem exists_le_prime_notMem_of_isIdempotentElem (a : α) (ha : IsIdempotentElem a) (haI : a ∉ I) :
     ∃ p : Ideal α, p.IsPrime ∧ I ≤ p ∧ a ∉ p :=
   have : Disjoint (I : Set α) (Submonoid.powers a) := Set.disjoint_right.mpr <| by
     rw [ha.coe_powers]
@@ -205,6 +205,9 @@ theorem exists_le_prime_nmem_of_isIdempotentElem (a : α) (ha : IsIdempotentElem
     exacts [I.ne_top_iff_one.mp (ne_of_mem_of_not_mem' Submodule.mem_top haI).symm, haI]
   have ⟨p, h1, h2, h3⟩ := exists_le_prime_disjoint _ _ this
   ⟨p, h1, h2, Set.disjoint_right.mp h3 (Submonoid.mem_powers a)⟩
+
+@[deprecated (since := "2025-05-24")]
+alias exists_le_prime_nmem_of_isIdempotentElem := exists_le_prime_notMem_of_isIdempotentElem
 
 end Ideal
 
