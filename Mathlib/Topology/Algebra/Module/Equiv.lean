@@ -291,7 +291,7 @@ protected def symm (e : M₁ ≃SL[σ₁₂] M₂) : M₂ ≃SL[σ₂₁] M₁ :
     continuous_invFun := e.continuous_toFun }
 
 @[simp]
-theorem symm_toLinearEquiv (e : M₁ ≃SL[σ₁₂] M₂) : e.symm.toLinearEquiv = e.toLinearEquiv.symm := by
+theorem symm_toLinearEquiv (e : M₁ ≃SL[σ₁₂] M₂) : e.toLinearEquiv.symm = e.symm.toLinearEquiv := by
   ext
   rfl
 
