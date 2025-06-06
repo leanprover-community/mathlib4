@@ -225,7 +225,7 @@ theorem HasProdLocallyUniformlyOn.tprod_eqOn [T2Space α]
   fun _ hx ↦ (h.hasProd hx).tprod_eq
 
 @[to_additive]
-lemma HasProdLocallyUniformlyOn.tendstoLocallyUniformlyOn_finset_range
+lemma HasProdLocallyUniformlyOn.tendstoLocallyUniformlyOn_finsetRange
     {f : ℕ → β → α} (h : HasProdLocallyUniformlyOn f g s)  :
     TendstoLocallyUniformlyOn (fun N b ↦ ∏ i ∈ Finset.range N, f i b) g atTop s := by
   rw [hasProdLocallyUniformlyOn_iff_tendstoLocallyUniformlyOn] at h
