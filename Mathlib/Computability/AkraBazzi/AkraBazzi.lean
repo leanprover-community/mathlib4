@@ -1310,6 +1310,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
                                               · exact le_of_lt <| h_smoothing_gt_half n hn
         _ = C * ((1 - ε n) * asympBound g a b n) := by ring
 
+
 /-- The main proof of the lower bound part of the Akra-Bazzi theorem. The factor
 `1 + ε n` does not change the asymptotic order, but is needed for the induction step to go
 through. -/

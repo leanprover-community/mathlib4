@@ -229,10 +229,10 @@ example :
       ZMod.commRing p := by
   with_reducible_and_instances rfl
 
--- We need `open Fin.CommRing`, as otherwise `Fin.CommRing.instCommRing` is not an instance,
+-- We need `open Fin.CommRing`, as otherwise `Fin.instCommRing` is not an instance,
 -- so `with_reducible_and_instances` doesn't have the desired effect.
 open Fin.CommRing in
-example (n : ℕ) : ZMod.commRing (n + 1) = Fin.CommRing.instCommRing (n + 1) := by
+example (n : ℕ) : ZMod.commRing (n + 1) = Fin.instCommRing (n + 1) := by
   with_reducible_and_instances rfl
 
 example : ZMod.commRing 0 = Int.instCommRing := by
