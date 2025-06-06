@@ -9,7 +9,7 @@ import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
 
 /-!
-# Variation and total variation for vector-valued measures
+# Total variation for vector-valued measures
 
 This file contains the definition of variation for `VectorMeasure` and proofs of some basic
 properities of variation.
@@ -46,13 +46,15 @@ measures.
   measures.
 * Variation is equivalent to that defined via the Hahn–Jordan decomposition for signed measures.
 * If `μ` is a complex measure then `variation μ univ < ∞`.
+* Polar representation of a complex measure `μ`: there exists a function `h` such that `|h(x)|=1`
+  and `dμ = h d(μ.variation)`.
 * Suppose that `μ` is a measure, that `g ∈ L¹(μ)` and `λ(E) = ∫_E g dμ` for each measureable `E`,
   then `variation μ E = ∫_E |g| dμ` (Rudin Theorem 6.13).
 -/
 
 open MeasureTheory BigOperators NNReal ENNReal Function Filter
 
-namespace VectorMeasure
+namespace MeasureTheory.VectorMeasure
 
 /-!
 ## Inner partitions
@@ -366,14 +368,14 @@ lemma isSubadditive_enorm_vectorMeasure (μ : VectorMeasure X V) [T2Space V] :
   intro _ hs hs'
   simpa [VectorMeasure.of_disjoint_iUnion hs hs'] using enorm_tsum_le_tsum_enorm
 
--- TO DO: define using `variation'` or directly?
+-- TO DO: define directly, not using using `variation'`.
 /-- The variation of a `VectorMeasure` as an `ℝ≥0∞`-valued `VectorMeasure`. -/
 noncomputable def variation [T2Space V] (μ : VectorMeasure X V) : VectorMeasure X ℝ≥0∞ :=
   variation' (isSubadditive_enorm_vectorMeasure μ) (by simp)
 
 end variation
 
-end VectorMeasure
+end MeasureTheory.VectorMeasure
 
 /-!
 ## Properties of variation
@@ -381,9 +383,34 @@ end VectorMeasure
 
 section properties
 
-namespace VectorMeasure
+namespace MeasureTheory.VectorMeasure
 
 variable {X V : Type*} [MeasurableSpace X] [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
+
+/-- Measure version of `le_var_aux` which was for subadditive functions. -/
+lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
+    (hP : IsInnerPart s P) : ∑ p ∈ P, ‖μ p‖ₑ ≤ μ.variation s := by
+  simpa [variation, variation'] using le_var_aux (fun s ↦ ‖μ s‖ₑ) hs hP
+
+open Classical Finset in
+/-- Measure version of `le_var_aux` which was for subadditive functions. -/
+lemma le_variation' (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
+    (hP₁ : ∀ t ∈ P, t ⊆ s) (hP₂ : ∀ t ∈ P, MeasurableSet t) (hP₃ : P.toSet.PairwiseDisjoint id) :
+    ∑ p ∈ P, ‖μ p‖ₑ ≤ μ.variation s := by
+  let Q := P.filter (· ≠ ∅)
+  have h : ∑ p ∈ P, ‖μ p‖ₑ = ∑ q ∈ Q, ‖μ q‖ₑ := by
+    -- the sums are identical except for zero terms
+    sorry
+  have h' (p) (hp : p ∈ Q ) : p ∈ P ∧ p ≠ ∅ := by
+    exact mem_filter.mp hp
+  have hQ : IsInnerPart s Q := by
+    refine ⟨fun p hp ↦ ?_, fun p hp ↦ ?_, fun p hp q hq hpq  ↦ ?_, fun p hp ↦ ?_⟩
+    · exact hP₁ p (mem_filter.mp hp).1
+    · exact hP₂ p (mem_filter.mp hp).1
+    · exact hP₃ (mem_filter.mp hp).1 (mem_filter.mp hq).1 hpq
+    · exact (mem_filter.mp hp).2
+  refine le_of_eq_of_le h ?_
+  simpa [variation, variation'] using le_var_aux (fun s ↦ ‖μ s‖ₑ) hs hQ
 
 theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) : ‖μ E‖ₑ ≤ variation μ E := by
   wlog hE' : E ≠ ∅
@@ -428,13 +455,73 @@ lemma variation_of_ENNReal (μ : VectorMeasure X ℝ≥0∞) : variation μ = μ
     · push_neg at hc
       simp [hc]
 
-open VectorMeasure SignedMeasure in
+open VectorMeasure SignedMeasure Classical in
 /-- For signed measures, variation defined by the Hahn–Jordan decomposition coincides with variation
 defined as a sup. -/
 lemma variation_SignedMeasure (μ : SignedMeasure X) :
-    totalVariation μ = ennrealToMeasure (variation μ) := by
-  sorry
+    totalVariation μ = μ.variation.ennrealToMeasure := by
+  obtain ⟨s, hsm, hs, hsc, hs', hsc'⟩ := μ.toJordanDecomposition_spec
+  ext r hr
+  wlog hr' : r ≠ ∅
+  · simp [not_ne_iff.mp hr']
+  apply eq_of_le_of_le
+  · rw [ennrealToMeasure_apply hr]
+    -- Jordan decomposition variation ≤ supremum variation.
+    -- `|μ (s ∩ r)| + |μ (sᶜ ∩ r)| ≤ μ.variation r` since `μ.variation` is defined as a sup over all
+    -- partitions so we consider the partition `{s ∩ r, sᶜ ∩ r}`.
+    let P : Finset (Set X) := {s ∩ r, sᶜ ∩ r}
+    have hd : Disjoint (s ∩ r) (sᶜ ∩ r) := by
+      refine Disjoint.inter_right ?_ <| Disjoint.inter_left ?_ ?_
+      exact Set.disjoint_compl_right_iff_subset.mpr fun ⦃a⦄ a ↦ a
+    have hsr : s ∩ r ≠ sᶜ ∩ r := by
+      obtain _ | _ : s ∩ r ≠ ∅ ∨ sᶜ ∩ r ≠ ∅ := by
+        by_cases hc : s ∩ r ≠ ∅
+        · left; exact hc
+        · right
+          replace hc : Disjoint r s := by
+            intro p hp hp'
+            have := Set.subset_inter hp' hp
+            simp_all
+          rw [← Set.nonempty_iff_ne_empty] at hr' ⊢
+          rw [Set.inter_comm, ← Set.diff_eq, sdiff_eq_left.mpr hc]
+          exact hr'
+      all_goals
+      · by_contra; simp_all
+    have hP₁ : ∀ t ∈ P, t ⊆ r := by simp [P]
+    have hP₂ : ∀ t ∈ P, MeasurableSet t := by simp [P, hsm, hr]
+    have hP₃ : P.toSet.PairwiseDisjoint id := by
+      -- Ridiculous case bashing, the must be a better way.
+      simp [P]
+      intro p hp q hq hpq
+      obtain hc | hc : p = s ∩ r ∨ p = sᶜ ∩ r := by exact hp
+      · obtain hc' | hc' : q = s ∩ r ∨ q = sᶜ ∩ r := by exact hq
+        · simp_all
+        · simpa [hc, hc']
+      · obtain hc' | hc' : q = s ∩ r ∨ q = sᶜ ∩ r := by exact hq
+        · simpa [hc, hc'] using Disjoint.symm hd
+        · simp_all
+    have hpos : μ.toJordanDecomposition.posPart r = ‖μ (s ∩ r)‖ₑ := by
+      rw [hs']
+      -- rw [toMeasureOfZeroLE_apply μ hs hsm hr]
+      rw [← toMeasureOfZeroLE_real_apply μ hs hsm hr]
+      sorry
+    have hneg : μ.toJordanDecomposition.negPart r = ‖μ (sᶜ ∩ r)‖ₑ := by
+      rw [hsc']
+      rw [toMeasureOfLEZero_apply μ hsc (MeasurableSet.compl hsm) hr]
+      sorry
+    have : μ.totalVariation r = ∑ p ∈ P, ‖μ p‖ₑ := by
+      dsimp [totalVariation]
+      rw [Finset.sum_pair hsr, hpos, hneg]
+    rw [this]
+    exact le_variation' μ hr hP₁ hP₂ hP₃
+  · -- Supremum variation ≤ Jordan decomposition variation.
+    -- By the Jordan decomposition, for any `p`, `|μ p| = |μ (s ∩ p) - μ (sᶜ ∩ p)|`. The positivity
+    -- of each part of the decomposition and triangle inequality implies that,
+    -- `|μ p| ≤ μ (s ∩ p) + μ (sᶜ ∩ p)`. Let `P` be a partition of `r`. To estimate variation
+    -- defined as the supremum requires estimating `∑ p ∈ P, |μ p|`. Using the additivity of the
+    -- measure and the above, `∑ p ∈ P, |μ p| ≤ μ (s ∩ r) + μ (sᶜ ∩ r)`.
+    sorry
 
-end VectorMeasure
+end MeasureTheory.VectorMeasure
 
 end properties
