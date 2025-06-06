@@ -60,7 +60,7 @@ EOF
 build_fork_yml() {
   header
   cat <<EOF
-# The jobs in this file run on GitHub-hosted workers and will only be run from external forks
+# The jobs in this file run on self-hosted workers and will be run from external forks
 
 on:
   pull_request_target:
