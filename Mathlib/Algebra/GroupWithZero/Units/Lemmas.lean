@@ -42,6 +42,8 @@ section GroupWithZero
 
 namespace Commute
 
+variable [GroupWithZero G₀] {a b c d : G₀}
+
 /-- The `MonoidWithZero` version of `div_eq_div_iff_mul_eq_mul`. -/
 protected lemma div_eq_div_iff (hbd : Commute b d) (hb : b ≠ 0) (hd : d ≠ 0) :
     a / b = c / d ↔ a * d = c * b :=

@@ -352,21 +352,6 @@ theorem isUnit_iff_mulRight_bijective {a : M} :
 
 end Monoid
 
-section CommMonoid
-
-variable [CommMonoid M] {a b c d : M} (hb : IsUnit b) (hd : IsUnit d)
-
-@[to_additive]
-theorem val_inv_mul_eq_val_inv_mul : hb.unit⁻¹ * a = hd.unit⁻¹ * c ↔ a * d = c * b := by
-  rw [← hb.mul_right_inj, ← mul_assoc, mul_val_inv, one_mul, mul_comm, mul_assoc,
-    ← hd.mul_right_inj, ← mul_assoc, mul_val_inv, one_mul, mul_comm]
-
-@[to_additive]
-theorem mul_val_inv_eq_mul_val_inv : a * hb.unit⁻¹ = c * hd.unit⁻¹ ↔ a * d = c * b := by
-  rw [mul_comm, mul_comm c, hb.val_inv_mul_eq_val_inv_mul hd]
-
-end CommMonoid
-
 section DivisionMonoid
 variable [DivisionMonoid α] {a b c : α}
 
@@ -501,16 +486,6 @@ protected lemma div_div_cancel (h : IsUnit a) : a / (a / b) = b := by
 @[to_additive]
 protected lemma div_div_cancel_left (h : IsUnit a) : a / b / a = b⁻¹ := by
   rw [div_eq_mul_inv, div_eq_mul_inv, mul_right_comm, h.mul_inv_cancel, one_mul]
-
-@[to_additive]
-protected lemma mul_inv_eq_mul_inv_iff (hb : IsUnit b) (hd : IsUnit d) :
-    a * b⁻¹ = c * d⁻¹ ↔ a * d = c * b := by
-  rw [← div_eq_mul_inv, ← div_eq_mul_inv, hb.div_eq_div_iff hd]
-
-@[to_additive]
-protected lemma inv_mul_eq_inv_mul_iff (hb : IsUnit b) (hd : IsUnit d) :
-    b⁻¹ * a = d⁻¹ * c ↔ a * d = c * b := by
-  rw [← div_eq_inv_mul, ← div_eq_inv_mul, hb.div_eq_div_iff hd]
 
 end DivisionCommMonoid
 end IsUnit

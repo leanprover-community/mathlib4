@@ -74,9 +74,10 @@ local macro "map_simp" : tactic =>
 
 local macro "pderiv_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, pderiv_mul, pderiv_pow,
-    pderiv_C, pderiv_X_self, pderiv_X_of_ne one_ne_zero, pderiv_X_of_ne one_ne_zero.symm,
-    pderiv_X_of_ne (by decide : (2 : Fin 3) ≠ 0), pderiv_X_of_ne (by decide : 0 ≠ (2 : Fin 3)),
-    pderiv_X_of_ne (by decide : (2 : Fin 3) ≠ 1), pderiv_X_of_ne (by decide : 1 ≠ (2 : Fin 3))])
+    pderiv_C, pderiv_X_self,
+    pderiv_X_of_ne (by decide : (0 : Fin 3) ≠ 1), pderiv_X_of_ne (by decide : (1 : Fin 3) ≠ 0),
+    pderiv_X_of_ne (by decide : (0 : Fin 3) ≠ 2), pderiv_X_of_ne (by decide : (2 : Fin 3) ≠ 0),
+    pderiv_X_of_ne (by decide : (1 : Fin 3) ≠ 2), pderiv_X_of_ne (by decide : (2 : Fin 3) ≠ 1)])
 
 universe r s u v
 
@@ -208,9 +209,8 @@ lemma equiv_some_of_Z_ne_zero {P : F × F × F} (hPz : P z ≠ 0) :
   simp_rw [Units.val_inv_eq_inv_val, IsUnit.unit_spec, inv_pow, div_eq_mul_inv]
 
 lemma X_eq_of_isUnit_Z {P Q : R × R × R} (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z) :
-    P x * Q z ^ 2 = Q x * P z ^ 2 ↔ P x * hPz.unit⁻¹ ^ 2 = Q x * hQz.unit⁻¹ ^ 2 := by
-  simp_rw [← (hPz.pow 2).mul_val_inv_eq_mul_val_inv <| hQz.pow 2, hPz.unit_pow, hQz.unit_pow,
-    Units.inv_pow_eq_pow_inv]
+    P x * Q z ^ 2 = Q x * P z ^ 2 ↔ P x * hPz.unit⁻¹ ^ 2 = Q x * hQz.unit⁻¹ ^ 2 :=
+  (Units.mul_inv_eq_mul_inv_iff _ _ (hPz.unit ^ 2) (hQz.unit ^ 2)).symm
 
 @[deprecated (since := "2025-05-26")] alias X_eq_iff := X_eq_of_isUnit_Z
 
@@ -219,9 +219,8 @@ lemma X_eq_of_Z_ne_zero {P Q : F × F × F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) 
   (div_eq_div_iff (pow_ne_zero 2 hPz) (pow_ne_zero 2 hQz)).symm
 
 lemma Y_eq_of_isUnit_Z {P Q : R × R × R} (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z) :
-    P y * Q z ^ 3 = Q y * P z ^ 3 ↔ P y * hPz.unit⁻¹ ^ 3 = Q y * hQz.unit⁻¹ ^ 3 := by
-  simp_rw [← (hPz.pow 3).mul_val_inv_eq_mul_val_inv <| hQz.pow 3, hPz.unit_pow, hQz.unit_pow,
-    Units.inv_pow_eq_pow_inv]
+    P y * Q z ^ 3 = Q y * P z ^ 3 ↔ P y * hPz.unit⁻¹ ^ 3 = Q y * hQz.unit⁻¹ ^ 3 :=
+  (Units.mul_inv_eq_mul_inv_iff _ _ (hPz.unit ^ 3) (hQz.unit ^ 3)).symm
 
 @[deprecated (since := "2025-05-26")] alias Y_eq_iff := Y_eq_of_isUnit_Z
 
@@ -315,7 +314,6 @@ associated to a Weierstrass curve `W` in Jacobian coordinates. -/
 noncomputable def polynomialX : MvPolynomial (Fin 3) R :=
   pderiv 0 W'.polynomial
 
-open Fin.CommRing in
 lemma polynomialX_eq : W'.polynomialX =
     C W'.a₁ * X 1 * X 2 - (C 3 * X 0 ^ 2 + C (2 * W'.a₂) * X 0 * X 2 ^ 2 + C W'.a₄ * X 2 ^ 4) := by
   rw [polynomialX, polynomial]
@@ -349,7 +347,6 @@ associated to a Weierstrass curve `W` in Jacobian coordinates. -/
 noncomputable def polynomialY : MvPolynomial (Fin 3) R :=
   pderiv 1 W'.polynomial
 
-open Fin.CommRing in
 lemma polynomialY_eq : W'.polynomialY = C 2 * X 1 + C W'.a₁ * X 0 * X 2 + C W'.a₃ * X 2 ^ 3 := by
   rw [polynomialY, polynomial]
   pderiv_simp
