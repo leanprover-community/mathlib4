@@ -30,14 +30,14 @@ variable (M₀ N₀ : Type*) [GroupWithZero M₀] [GroupWithZero N₀]
 as their product. -/
 def inl [DecidablePred fun x : M₀ ↦ x = 0] : M₀ →*₀ WithZero (M₀ˣ × N₀ˣ) :=
   (WithZero.map' (.inl _ _)).comp
-    (MonoidWithZeroHomClass.toMonoidWithZeroHom (WithZero.withZeroUnitsEquiv.symm))
+    (MonoidWithZeroHomClass.toMonoidWithZeroHom WithZero.withZeroUnitsEquiv.symm)
 
 /-- Given groups with zero `M₀`, `N₀`, the natural inclusion ordered homomorphism from
 `N₀` to `WithZero (M₀ˣ × N₀ˣ)`, which is the group with zero that can be identified
 as their product. -/
 def inr [DecidablePred fun x : N₀ ↦ x = 0] : N₀ →*₀ WithZero (M₀ˣ × N₀ˣ) :=
   (WithZero.map' (.inr _ _)).comp
-    (MonoidWithZeroHomClass.toMonoidWithZeroHom (WithZero.withZeroUnitsEquiv.symm))
+    (MonoidWithZeroHomClass.toMonoidWithZeroHom WithZero.withZeroUnitsEquiv.symm)
 
 /-- Given groups with zero `M₀`, `N₀`, the natural projection homomorphism from
 `WithZero (M₀ˣ × N₀ˣ)` to `M₀`, which is the group with zero that can be identified
