@@ -220,10 +220,9 @@ lemma cyclotomic_polynomial_5 (z : ℂ) :
   rw [Real.sq_sqrt zero_le_two]
   rw [Real.sq_sqrt (Left.add_nonneg (Nat.ofNat_nonneg' _) (Real.sqrt_nonneg _))]
   rw [Real.sq_sqrt (by
-    simp_all only [sub_nonneg]
-    rw [Real.sqrt_le_left (Nat.ofNat_nonneg' 5)]
-    rw [sq]
-    simp only [Nat.ofNat_pos, le_mul_iff_one_le_right, Nat.one_le_ofNat]
+    rw [sub_nonneg, Real.sqrt_le_left (Nat.ofNat_nonneg' 5), sq,
+      le_mul_iff_one_le_right  Nat.ofNat_pos']
+    exact Nat.one_le_ofNat
   )]
   rw [Real.sq_sqrt (Nat.ofNat_nonneg' 5)]
   rw [one_div, ofReal_add, ofReal_sub, ofReal_pow]
