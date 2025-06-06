@@ -12,11 +12,11 @@ import Mathlib.Data.Bracket
 # Semirings and rings
 
 This file gives lemmas about semirings, rings and domains.
-This is analogous to `Mathlib.Algebra.Group.Basic`,
+This is analogous to `Mathlib/Algebra/Group/Basic.lean`,
 the difference being that the former is about `+` and `*` separately, while
 the present file is about their interaction.
 
-For the definitions of semirings and rings see `Mathlib.Algebra.Ring.Defs`.
+For the definitions of semirings and rings see `Mathlib/Algebra/Ring/Defs.lean`.
 
 -/
 
@@ -163,13 +163,14 @@ lemma sq_ne_one_iff : a ^ 2 ≠ 1 ↔ a ≠ 1 ∧ a ≠ -1 := sq_eq_one_iff.not.
 end Ring
 
 /-- Representation of a difference of two squares in a commutative ring as a product. -/
-theorem mul_self_sub_mul_self [CommRing R] (a b : R) : a * a - b * b = (a + b) * (a - b) :=
+theorem mul_self_sub_mul_self [NonUnitalNonAssocCommRing R] (a b : R) :
+    a * a - b * b = (a + b) * (a - b) :=
   (Commute.all a b).mul_self_sub_mul_self_eq
 
 theorem mul_self_sub_one [NonAssocRing R] (a : R) : a * a - 1 = (a + 1) * (a - 1) := by
   rw [← (Commute.one_right a).mul_self_sub_mul_self_eq, mul_one]
 
-theorem mul_self_eq_mul_self_iff [CommRing R] [NoZeroDivisors R] {a b : R} :
+theorem mul_self_eq_mul_self_iff [NonUnitalNonAssocCommRing R] [NoZeroDivisors R] {a b : R} :
     a * a = b * b ↔ a = b ∨ a = -b :=
   (Commute.all a b).mul_self_eq_mul_self_iff
 

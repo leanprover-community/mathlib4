@@ -3,13 +3,10 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Jireh Loreaux
 -/
-import Mathlib.Algebra.Star.Center
-import Mathlib.Algebra.Star.NonUnitalSubalgebra
-import Mathlib.Algebra.Star.StarAlgHom
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.Star.Pointwise
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Star.Module
-import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.Algebra.Star.NonUnitalSubalgebra
 
 /-!
 # Star subalgebras
@@ -18,7 +15,6 @@ A *-subalgebra is a subalgebra of a *-algebra which is closed under *.
 
 The centralizer of a *-closed set is a *-subalgebra.
 -/
-
 
 universe u v
 
@@ -42,6 +38,33 @@ variable [Semiring C] [StarRing C] [Algebra R C] [StarModule R C]
 instance setLike : SetLike (StarSubalgebra R A) A where
   coe S := S.carrier
   coe_injective' p q h := by obtain ⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩ := p; cases q; congr
+
+/-- The actual `StarSubalgebra` obtained from an element of a type satisfying `SubsemiringClass`,
+`SMulMemClass` and `StarMemClass`. -/
+@[simps]
+def ofClass {S R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [StarRing R] [StarRing A]
+    [StarModule R A] [SetLike S A] [SubsemiringClass S A] [SMulMemClass S R A] [StarMemClass S A]
+    (s : S) : StarSubalgebra R A where
+  carrier := s
+  add_mem' := add_mem
+  zero_mem' := zero_mem _
+  mul_mem' := mul_mem
+  one_mem' := one_mem _
+  algebraMap_mem' := algebraMap_mem s
+  star_mem' := star_mem
+
+instance (priority := 100) : CanLift (Set A) (StarSubalgebra R A) (↑)
+    (fun s ↦ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ (∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) ∧
+      (∀ (r : R), algebraMap R A r ∈ s) ∧ ∀ {x}, x ∈ s → star x ∈ s) where
+  prf s h :=
+    ⟨ { carrier := s
+        zero_mem' := by simpa using h.2.2.1 0
+        add_mem' := h.1
+        one_mem' := by simpa using h.2.2.1 1
+        mul_mem' := h.2.1
+        algebraMap_mem' := h.2.2.1
+        star_mem' := h.2.2.2 },
+      rfl ⟩
 
 instance starMemClass : StarMemClass (StarSubalgebra R A) A where
   star_mem {s} := s.star_mem'
@@ -126,7 +149,7 @@ theorem copy_eq (S : StarSubalgebra R A) (s : Set A) (hs : s = ↑S) : S.copy s 
 
 variable (S : StarSubalgebra R A)
 
-theorem algebraMap_mem (r : R) : algebraMap R A r ∈ S :=
+protected theorem algebraMap_mem (r : R) : algebraMap R A r ∈ S :=
   S.algebraMap_mem' r
 
 theorem rangeS_le : (algebraMap R A).rangeS ≤ S.toSubalgebra.toSubsemiring := fun _x ⟨r, hr⟩ =>

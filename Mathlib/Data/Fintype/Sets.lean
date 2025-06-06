@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.BooleanAlgebra
+import Mathlib.Data.Finset.SymmDiff
 import Mathlib.Data.Fintype.OfMap
 
 /-!
@@ -187,7 +188,7 @@ theorem toFinset_range [DecidableEq α] [Fintype β] (f : β → α) [Fintype (S
   ext
   simp
 
-@[simp] -- Porting note: new attribute
+@[simp]
 theorem toFinset_singleton (a : α) [Fintype ({a} : Set α)] : ({a} : Set α).toFinset = {a} := by
   ext
   simp

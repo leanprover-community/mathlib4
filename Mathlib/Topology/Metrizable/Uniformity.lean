@@ -64,10 +64,9 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
       refine reverse_surjective.iInf_congr _ fun l ↦ ?_
       rw [← sum_reverse, reverse_zipWith, reverse_append, reverse_reverse,
         reverse_singleton, singleton_append, reverse_cons, reverse_reverse,
-        zipWith_comm_of_comm _ dist_comm]
+        zipWith_comm_of_comm dist_comm]
       simp only [length, length_append]
   dist_triangle x y z := by
-    unfold dist
     rw [← NNReal.coe_add, NNReal.coe_le_coe]
     refine NNReal.le_iInf_add_iInf fun lxy lyz ↦ ?_
     calc
@@ -151,7 +150,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       simp [dist_self, List.get]
     | succ M =>
       rw [Nat.succ_le_iff] at hMl
-      have hMl' : length (take M l) = M := (length_take _ _).trans (min_eq_left hMl.le)
+      have hMl' : length (take M l) = M := length_take.trans (min_eq_left hMl.le)
       refine (ihn _ hMl _ _ _ hMl').trans ?_
       convert hMs.1.out
       rw [take_zipWith, take, take_succ, getElem?_append_left hMl, getElem?_eq_getElem hMl,
@@ -160,7 +159,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
   · rcases hMl.eq_or_lt with (rfl | hMl)
     · simp only [getElem_append_right le_rfl, sub_self, getElem_singleton, dist_self, zero_le]
     rw [getElem_append_left hMl]
-    have hlen : length (drop (M + 1) l) = length l - (M + 1) := length_drop _ _
+    have hlen : length (drop (M + 1) l) = length l - (M + 1) := length_drop
     have hlen_lt : length l - (M + 1) < length l := Nat.sub_lt_of_pos_le M.succ_pos hMl
     refine (ihn _ hlen_lt _ y _ hlen).trans ?_
     rw [cons_getElem_drop_succ]
@@ -282,9 +281,19 @@ lemma TotallyBounded.isSeparable [UniformSpace X] [i : IsCountablyGenerated (�
   obtain ⟨t, _, htc, hts⟩ := EMetric.subset_countable_closure_of_almost_dense_set s h'
   exact ⟨t, htc, hts⟩
 
-open TopologicalSpace in
+variable {α : Type*}
+open TopologicalSpace
+
 instance (priority := 100) DiscreteTopology.metrizableSpace
-    {α} [TopologicalSpace α] [DiscreteTopology α] :
+    [TopologicalSpace α] [DiscreteTopology α] :
     MetrizableSpace α := by
   obtain rfl := DiscreteTopology.eq_bot (α := α)
   exact @UniformSpace.metrizableSpace α ⊥ (isCountablyGenerated_principal _) _
+
+instance (priority := 100) PseudoEMetricSpace.pseudoMetrizableSpace
+    [PseudoEMetricSpace α] : PseudoMetrizableSpace α :=
+  inferInstance
+
+instance (priority := 100) EMetricSpace.metrizableSpace
+    [EMetricSpace α] : MetrizableSpace α :=
+  inferInstance

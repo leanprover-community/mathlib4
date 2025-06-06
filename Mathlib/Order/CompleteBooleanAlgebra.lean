@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Order.CompleteLattice
-import Mathlib.Order.Directed
 import Mathlib.Logic.Equiv.Set
+import Mathlib.Order.CompleteLattice.Lemmas
+import Mathlib.Order.Directed
 import Mathlib.Order.GaloisConnection.Basic
 
 /-!
@@ -164,6 +164,7 @@ This sets `a ⇨ b := sSup {c | c ⊓ a ≤ b}` and `aᶜ := a ⇨ ⊥`. -/
 -- See note [reducible non instances]
 abbrev ofMinimalAxioms (minAx : MinimalAxioms α) : Frame α where
   __ := minAx
+  compl a := sSup {c | c ⊓ a ≤ ⊥}
   himp a b := sSup {c | c ⊓ a ≤ b}
   le_himp_iff _ b c :=
     ⟨fun h ↦ (inf_le_inf_right _ h).trans (by simp [minAx.sSup_inf_eq]), fun h ↦ le_sSup h⟩
@@ -202,6 +203,7 @@ This sets `a \ b := sInf {c | a ≤ b ⊔ c}` and `￢a := ⊤ \ a`. -/
 -- See note [reducible non instances]
 abbrev ofMinimalAxioms (minAx : MinimalAxioms α) : Coframe α where
   __ := minAx
+  hnot a := sInf {c | ⊤ ≤ a ⊔ c}
   sdiff a b := sInf {c | a ≤ b ⊔ c}
   sdiff_le_iff a b _ :=
     ⟨fun h ↦ (sup_le_sup_left h _).trans' (by simp [minAx.sup_sInf_eq]), fun h ↦ sInf_le h⟩

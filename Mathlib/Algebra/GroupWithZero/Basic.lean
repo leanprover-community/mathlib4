@@ -34,7 +34,7 @@ and require `0⁻¹ = 0`.
 
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 open Function
 
@@ -262,14 +262,14 @@ theorem GroupWithZero.mul_left_injective (h : x ≠ 0) :
     Function.Injective fun y => y * x := fun y y' w => by
   simpa only [mul_assoc, mul_inv_cancel₀ h, mul_one] using congr_arg (fun y => y * x⁻¹) w
 
-@[simp]
+@[simp high] -- should take priority over `IsUnit.mul_inv_cancel_right`
 theorem inv_mul_cancel_right₀ (h : b ≠ 0) (a : G₀) : a * b⁻¹ * b = a :=
   calc
     a * b⁻¹ * b = a * (b⁻¹ * b) := mul_assoc _ _ _
     _ = a := by simp [h]
 
 
-@[simp]
+@[simp high] -- should take priority over `IsUnit.mul_inv_cancel_left`
 theorem inv_mul_cancel_left₀ (h : a ≠ 0) (b : G₀) : a⁻¹ * (a * b) = b :=
   calc
     a⁻¹ * (a * b) = a⁻¹ * a * b := (mul_assoc _ _ _).symm
@@ -406,12 +406,12 @@ lemma zero_zpow_eq_one₀ {n : ℤ} : (0 : G₀) ^ n = 1 ↔ n = 0 := by
   rw [zero_zpow_eq, one_ne_zero.ite_eq_left_iff]
 
 lemma zpow_add_one₀ (ha : a ≠ 0) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
-  | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_natCast, pow_succ]
-  | .negSucc 0 => by simp [ha]
+  | (n : ℕ) => by simp only [← Int.natCast_succ, zpow_natCast, pow_succ]
+  | -1 => by simp [ha]
   | .negSucc (n + 1) => by
-    rw [Int.negSucc_eq, zpow_neg, Int.neg_add, Int.neg_add_cancel_right, zpow_neg, ← Int.ofNat_succ,
-      zpow_natCast, zpow_natCast, pow_succ' _ (n + 1), mul_inv_rev, mul_assoc, inv_mul_cancel₀ ha,
-      mul_one]
+    rw [Int.negSucc_eq, zpow_neg, Int.neg_add, Int.neg_add_cancel_right, zpow_neg,
+      ← Int.natCast_succ, zpow_natCast, zpow_natCast, pow_succ' _ (n + 1), mul_inv_rev, mul_assoc,
+      inv_mul_cancel₀ ha, mul_one]
 
 lemma zpow_sub_one₀ (ha : a ≠ 0) (n : ℤ) : a ^ (n - 1) = a ^ n * a⁻¹ :=
   calc

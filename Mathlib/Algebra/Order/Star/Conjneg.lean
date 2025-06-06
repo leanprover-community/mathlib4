@@ -16,7 +16,7 @@ open scoped ComplexConjugate
 variable {G R : Type*} [AddGroup G]
 
 section OrderedCommSemiring
-variable [OrderedCommSemiring R] [StarRing R] [StarOrderedRing R] {f : G → R}
+variable [CommSemiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R] {f : G → R}
 
 @[simp] lemma conjneg_nonneg : 0 ≤ conjneg f ↔ 0 ≤ f :=
   (Equiv.neg _).forall_congr' <| by simp [starRingEnd_apply]
@@ -27,7 +27,7 @@ variable [OrderedCommSemiring R] [StarRing R] [StarOrderedRing R] {f : G → R}
 end OrderedCommSemiring
 
 section OrderedCommRing
-variable [OrderedCommRing R] [StarRing R] [StarOrderedRing R] {f : G → R}
+variable [CommRing R] [PartialOrder R] [StarRing R] [StarOrderedRing R] {f : G → R}
 
 @[simp] lemma conjneg_nonpos : conjneg f ≤ 0 ↔ f ≤ 0 := by
   simp_rw [← neg_nonneg, ← conjneg_neg, conjneg_nonneg]

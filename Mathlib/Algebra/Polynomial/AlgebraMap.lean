@@ -5,7 +5,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.Polynomial.Eval.Algebra
@@ -169,7 +169,7 @@ theorem mapAlgHom_coe_ringHom (f : A →ₐ[R] B) :
   rfl
 
 @[simp]
-theorem mapAlgHom_comp (C : Type z) [Semiring C] [Algebra R C] (f : B →ₐ[R] C) (g : A →ₐ[R] B) :
+theorem mapAlgHom_comp (C : Type*) [Semiring C] [Algebra R C] (f : B →ₐ[R] C) (g : A →ₐ[R] B) :
     (mapAlgHom f).comp (mapAlgHom g) = mapAlgHom (f.comp g) := by
   apply AlgHom.ext
   intro x
@@ -200,7 +200,11 @@ theorem mapAlgEquiv_coe_ringHom (f : A ≃ₐ[R] B) :
   rfl
 
 @[simp]
-theorem mapAlgEquiv_comp (C : Type z) [Semiring C] [Algebra R C] (f : A ≃ₐ[R] B) (g : B ≃ₐ[R] C) :
+theorem mapAlgEquiv_toAlgHom (f : A ≃ₐ[R] B) :
+    (mapAlgEquiv f : Polynomial A →ₐ[R] Polynomial B) = mapAlgHom f := rfl
+
+@[simp]
+theorem mapAlgEquiv_comp (C : Type*) [Semiring C] [Algebra R C] (f : A ≃ₐ[R] B) (g : B ≃ₐ[R] C) :
     (mapAlgEquiv f).trans (mapAlgEquiv g) = mapAlgEquiv (f.trans g) := by
   apply AlgEquiv.ext
   intro x
@@ -513,13 +517,13 @@ theorem dvd_term_of_dvd_eval_of_dvd_terms {z p : S} {f : S[X]} (i : ℕ) (dvd_ev
     (dvd_terms : ∀ j ≠ i, p ∣ f.coeff j * z ^ j) : p ∣ f.coeff i * z ^ i := by
   by_cases hi : i ∈ f.support
   · rw [eval, eval₂_eq_sum, sum_def] at dvd_eval
-    rw [← Finset.insert_erase hi, Finset.sum_insert (Finset.not_mem_erase _ _)] at dvd_eval
+    rw [← Finset.insert_erase hi, Finset.sum_insert (Finset.notMem_erase _ _)] at dvd_eval
     refine (dvd_add_left ?_).mp dvd_eval
     apply Finset.dvd_sum
     intro j hj
     exact dvd_terms j (Finset.ne_of_mem_erase hj)
   · convert dvd_zero p
-    rw [not_mem_support_iff] at hi
+    rw [notMem_support_iff] at hi
     simp [hi]
 
 theorem dvd_term_of_isRoot_of_dvd_terms {r p : S} {f : S[X]} (i : ℕ) (hr : f.IsRoot r)
@@ -596,7 +600,7 @@ lemma dvd_comp_X_add_C_iff (p q : R[X]) (a : R) :
 
 lemma dvd_comp_neg_X_iff (p q : R[X]) : p ∣ q.comp (-X) ↔ p.comp (-X) ∣ q := by
   let _ := invertibleOne (α := R)
-  let _ := invertibleNeg (α := R) 1
+  let _ := invertibleNeg (R := R) 1
   simpa using dvd_comp_C_mul_X_add_C_iff p q (-1) 0
 
 variable [IsDomain R]
@@ -615,11 +619,13 @@ lemma aeval_apply_smul_mem_of_le_comap'
     [Semiring A] [Algebra R A] [Module A M] [IsScalarTower R A M] (hm : m ∈ q) (p : R[X]) (a : A)
     (hq : q ≤ q.comap (Algebra.lsmul R R M a)) :
     aeval a p • m ∈ q := by
-  refine p.induction_on (M := fun f ↦ aeval a f • m ∈ q) (by simpa) (fun f₁ f₂ h₁ h₂ ↦ ?_)
-    (fun n t hmq ↦ ?_)
-  · simp_rw [map_add, add_smul]
+  induction p using Polynomial.induction_on with
+  | C a => simpa using SMulMemClass.smul_mem a hm
+  | add f₁ f₂ h₁ h₂ =>
+    simp_rw [map_add, add_smul]
     exact Submodule.add_mem q h₁ h₂
-  · dsimp only at hmq ⊢
+  | monomial n t hmq =>
+    dsimp only at hmq ⊢
     rw [pow_succ', mul_left_comm, map_mul, aeval_X, mul_smul]
     rw [← q.map_le_iff_le_comap] at hq
     exact hq ⟨_, hmq, rfl⟩
@@ -664,20 +670,29 @@ theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 �
   · rw [← coeff_C_mul, ← smul_eq_C_mul, IH _ hi, coeff_zero]
 termination_by Q.natDegree
 
-open nonZeroDivisors in
+open nonZeroDivisors
+
 /-- *McCoy theorem*: a polynomial `P : R[X]` is a zerodivisor if and only if there is `a : R`
 such that `a ≠ 0` and `a • P = 0`. -/
-theorem nmem_nonZeroDivisors_iff {P : R[X]} : P ∉ R[X]⁰ ↔ ∃ a : R, a ≠ 0 ∧ a • P = 0 := by
+theorem notMem_nonZeroDivisors_iff {P : R[X]} : P ∉ R[X]⁰ ↔ ∃ a : R, a ≠ 0 ∧ a • P = 0 := by
   refine ⟨fun hP ↦ ?_, fun ⟨a, ha, h⟩ h1 ↦ ha <| C_eq_zero.1 <| (h1 _) <| smul_eq_C_mul a ▸ h⟩
   by_contra! h
-  obtain ⟨Q, hQ⟩ := _root_.nmem_nonZeroDivisors_iff.1 hP
+  obtain ⟨Q, hQ⟩ := _root_.notMem_nonZeroDivisors_iff.1 hP
   refine hQ.2 (eq_zero_of_mul_eq_zero_of_smul P (fun a ha ↦ ?_) Q (mul_comm P _ ▸ hQ.1))
   contrapose! ha
   exact h a ha
 
-open nonZeroDivisors in
+@[deprecated (since := "2025-05-24")] alias nmem_nonZeroDivisors_iff := notMem_nonZeroDivisors_iff
+
 protected lemma mem_nonZeroDivisors_iff {P : R[X]} : P ∈ R[X]⁰ ↔ ∀ a : R, a • P = 0 → a = 0 := by
-  simpa [not_imp_not] using (nmem_nonZeroDivisors_iff (P := P)).not
+  simpa [not_imp_not] using (notMem_nonZeroDivisors_iff (P := P)).not
+
+lemma mem_nonzeroDivisors_of_coeff_mem {p : R[X]} (n : ℕ) (hp : p.coeff n ∈ R⁰) :
+    p ∈ R[X]⁰ :=
+  Polynomial.mem_nonZeroDivisors_iff.mpr fun r hr ↦ hp _ (by simpa using congr(coeff $hr n))
+
+lemma X_mem_nonzeroDivisors : X ∈ R[X]⁰ :=
+  mem_nonzeroDivisors_of_coeff_mem 1 (by simp [one_mem])
 
 end CommSemiring
 

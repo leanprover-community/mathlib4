@@ -15,7 +15,7 @@ In this file we defined the type `Module.End.invtSubmodule`, associated to a lin
 a module. Its utility stems primarily from those occasions on which we wish to take advantage of the
 lattice structure of invariant submodules.
 
-See also `Mathlib.Algebra.Polynomial.Module.AEval`.
+See also `Mathlib/Algebra/Polynomial/Module/AEval.lean`.
 
 -/
 
@@ -46,11 +46,11 @@ variable {f}
 
 lemma inf_mem {p q : Submodule R M} (hp : p ∈ f.invtSubmodule) (hq : q ∈ f.invtSubmodule) :
     p ⊓ q ∈ f.invtSubmodule :=
-  ((⟨p, hp⟩ : f.invtSubmodule) ⊓ (⟨q, hq⟩ : f.invtSubmodule)).property
+  Sublattice.inf_mem hp hq
 
 lemma sup_mem {p q : Submodule R M} (hp : p ∈ f.invtSubmodule) (hq : q ∈ f.invtSubmodule) :
     p ⊔ q ∈ f.invtSubmodule :=
-  ((⟨p, hp⟩ : f.invtSubmodule) ⊔ (⟨q, hq⟩ : f.invtSubmodule)).property
+  Sublattice.sup_mem hp hq
 
 variable (f)
 
@@ -153,7 +153,7 @@ lemma _root_.LinearEquiv.map_mem_invtSubmodule_iff {R M N : Type*} [CommSemiring
     [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] {f : End R N}
     {e : M ≃ₗ[R] N} {p : Submodule R M} :
     p.map e ∈ f.invtSubmodule ↔ p ∈ (e.symm.conj f).invtSubmodule := by
-  simp [← e.map_mem_invtSubmodule_conj_iff, ← LinearEquiv.trans_apply, LinearEquiv.conj_trans]
+  simp [← e.map_mem_invtSubmodule_conj_iff]
 
 end invtSubmodule
 

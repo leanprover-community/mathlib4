@@ -17,7 +17,7 @@ lemma gaussSum_aux_of_mulShift (χ : DirichletCharacter R N) {d : ℕ}
     (hd : d ∣ N) (he : e.mulShift d = 1) {u : (ZMod N)ˣ} (hu : ZMod.unitsMap hd u = 1) :
     χ u * gaussSum χ e = gaussSum χ e := by
   suffices e.mulShift u = e by conv_lhs => rw [← this, gaussSum_mulShift]
-  rw [(by ring : u.val = (u - 1) + 1), ← mulShift_mul, mulShift_one, mul_left_eq_self]
+  rw [(by ring : u.val = (u - 1) + 1), ← mulShift_mul, mulShift_one, mul_eq_right]
   rsuffices ⟨a, ha⟩ : (d : ℤ) ∣ (u.val.val - 1 : ℤ)
   · have : u.val - 1 = ↑(u.val.val - 1 : ℤ) := by simp only [ZMod.natCast_val, Int.cast_sub,
       ZMod.intCast_cast, ZMod.cast_id', id_eq, Int.cast_one]

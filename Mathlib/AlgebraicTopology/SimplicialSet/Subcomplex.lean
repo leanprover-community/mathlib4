@@ -39,7 +39,7 @@ variable {X}
 abbrev Subcomplex.toSSet (A : X.Subcomplex) : SSet.{u} := A.toPresheaf
 
 instance : CoeOut X.Subcomplex SSet.{u} where
-  coe := fun S ↦ S.toPresheaf
+  coe := fun S ↦ S.toSSet
 
 /-- If `A : Subcomplex X`, this is the inclusion `A ⟶ X` in the category `SSet`. -/
 abbrev Subcomplex.ι (A : Subcomplex X) : Quiver.Hom (V := SSet) A X := Subpresheaf.ι A

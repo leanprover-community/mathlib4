@@ -285,7 +285,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
         · revert h x
           apply (IsOpen.continuousOn_iff _).mp
           · rw [continuousOn_iff_continuous_restrict]
-            convert_to Continuous (f ∘ (Homeomorph.ofIsEmbedding _ h₁.isEmbedding).symm)
+            convert_to Continuous (f ∘ h₁.isEmbedding.toHomeomorph.symm)
             · ext ⟨x, hx⟩
               exact dif_pos hx
             continuity
@@ -297,7 +297,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
               rintro a (h : a ∈ (Set.range c.inl)ᶜ)
               rwa [eq_compl_iff_isCompl.mpr h₃.symm]
             convert_to Continuous
-                (g ∘ (Homeomorph.ofIsEmbedding _ h₂.isEmbedding).symm ∘ Subtype.map _ this)
+                (g ∘ h₂.isEmbedding.toHomeomorph.symm ∘ Subtype.map _ this)
             · ext ⟨x, hx⟩
               exact dif_neg hx
             apply Continuous.comp

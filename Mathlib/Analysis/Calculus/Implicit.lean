@@ -324,15 +324,13 @@ theorem to_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' :
     (ker f').subtypeL _ _
   swap
   · ext
-    -- Porting note: added parentheses to help `simp`
     simp only [Classical.choose_spec hker, implicitFunctionDataOfComplemented,
       ContinuousLinearMap.comp_apply, Submodule.coe_subtypeL', Submodule.coe_subtype,
       ContinuousLinearMap.id_apply]
   swap
   · ext
-    -- Porting note: added parentheses to help `simp`
-    simp only [(ContinuousLinearMap.comp_apply), Submodule.coe_subtypeL', Submodule.coe_subtype,
-      LinearMap.map_coe_ker, (ContinuousLinearMap.zero_apply)]
+    simp only [ContinuousLinearMap.comp_apply, Submodule.coe_subtypeL', Submodule.coe_subtype,
+      LinearMap.map_coe_ker, ContinuousLinearMap.zero_apply]
   simp only [implicitFunctionDataOfComplemented, map_sub, sub_self]
 
 end Complemented
@@ -409,7 +407,7 @@ theorem tendsto_implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : range f'
   refine ((hf.implicitToPartialHomeomorph f f' hf').tendsto_symm
     (hf.mem_implicitToPartialHomeomorph_source hf')).comp ?_
   rw [implicitToPartialHomeomorph_self]
-  exact h₁.prod_mk_nhds h₂
+  exact h₁.prodMk_nhds h₂
 
 alias _root_.Filter.Tendsto.implicitFunction := tendsto_implicitFunction
 
