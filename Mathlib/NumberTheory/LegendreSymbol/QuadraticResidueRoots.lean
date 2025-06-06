@@ -135,7 +135,7 @@ theorem exists_sqrt_of_residue_mod8_eq5 {p : ℕ} [hp : Fact p.Prime] (hpne2 : p
 
   have two_pow_non_quadratic_residual : (2 ^ (4 * k + 2) : ZMod p) = (-1 : ZMod p) := by
     rw [half] at hleg2
-    rw [←hleg2, legendreSym.two_mod8_eq_5 hk]
+    rw [←hleg2, legendreSym.at_two_mod8_eq_5 hk]
     norm_cast
 
   cases r_cases with
