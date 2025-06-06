@@ -506,13 +506,23 @@ lemma variation_SignedMeasure (μ : SignedMeasure X) :
         · simp_all
     have hpos : μ.toJordanDecomposition.posPart r = ‖μ (s ∩ r)‖ₑ := by
       rw [hs']
-      -- rw [toMeasureOfZeroLE_apply μ hs hsm hr]
-      rw [← toMeasureOfZeroLE_real_apply μ hs hsm hr]
-      sorry
+      have : ‖μ (s ∩ r)‖ₑ = ENNReal.ofReal (μ (s ∩ r)) := by
+        refine Real.enorm_of_nonneg <| nonneg_of_zero_le_restrict μ ?_
+        exact zero_le_restrict_subset μ hsm (by simp) hs
+      rw [this, toMeasureOfZeroLE_apply μ hs hsm hr]
+      refine Eq.symm <| ofReal_eq_coe_nnreal <| nonneg_of_zero_le_restrict μ ?_
+      exact zero_le_restrict_subset μ hsm Set.inter_subset_left hs
     have hneg : μ.toJordanDecomposition.negPart r = ‖μ (sᶜ ∩ r)‖ₑ := by
       rw [hsc']
-      rw [toMeasureOfLEZero_apply μ hsc (MeasurableSet.compl hsm) hr]
-      sorry
+      have : ‖μ (sᶜ ∩ r)‖ₑ = ENNReal.ofReal (-μ (sᶜ ∩ r)) := by
+        rw [show ‖μ (sᶜ ∩ r)‖ₑ = ‖-μ (sᶜ ∩ r)‖ₑ by simp]
+        have : 0 ≤ -μ (sᶜ ∩ r) := by
+          refine Left.nonneg_neg_iff.mpr <| nonpos_of_restrict_le_zero μ ?_
+          have : MeasurableSet sᶜ := by exact MeasurableSet.compl_iff.mpr hsm
+          exact restrict_le_zero_subset μ this (by simp) hsc
+        exact Real.enorm_of_nonneg this
+      rw [this, toMeasureOfLEZero_apply μ hsc (MeasurableSet.compl hsm) hr]
+      exact Eq.symm <| ofReal_eq_coe_nnreal _
     have : μ.totalVariation r = ∑ p ∈ P, ‖μ p‖ₑ := by
       dsimp [totalVariation]
       rw [Finset.sum_pair hsr, hpos, hneg]
