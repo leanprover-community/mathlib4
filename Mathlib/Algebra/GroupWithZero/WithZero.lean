@@ -80,12 +80,6 @@ def coeMonoidHom : α →* WithZero α where
   map_one'     := rfl
   map_mul' _ _ := rfl
 
-@[simp]
-lemma MonoidWithZeroHom.trivial_apply_val_unit {M N : Type*} [MonoidWithZero M] [MulZeroOneClass N]
-    [DecidablePred fun x : M ↦ x = 0] [Nontrivial M] [NoZeroDivisors M] (x : Mˣ) :
-    MonoidWithZeroHom.trivial M N x = 1 :=
-  MonoidWithZeroHom.trivial_apply_of_ne_zero x.ne_zero
-
 section lift
 variable [MulZeroOneClass β]
 
@@ -322,3 +316,69 @@ instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero
   natCast_succ n := by cases n <;> simp
 
 end WithZero
+
+namespace MonoidWithZeroHom
+
+protected lemma map_eq_zero_iff {G₀ G₀' : Type*} [GroupWithZero G₀]
+    [MulZeroOneClass G₀'] [Nontrivial G₀']
+    {f : G₀ →*₀ G₀'} {x : G₀}:
+    f x = 0 ↔ x = 0 := by
+  refine ⟨?_, by simp +contextual⟩
+  contrapose!
+  intro hx H
+  lift x to G₀ˣ using isUnit_iff_ne_zero.mpr hx
+  apply one_ne_zero (α := G₀')
+  rw [← map_one f, ← Units.mul_inv x, map_mul, H, zero_mul]
+
+variable {M₀ N₀}
+
+@[simp]
+lemma one_apply_val_unit {M₀ N₀ : Type*} [MonoidWithZero M₀] [MulZeroOneClass N₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] [Nontrivial M₀] [NoZeroDivisors M₀] (x : M₀ˣ) :
+    (1 : M₀ →*₀ N₀) x = (1 : N₀) :=
+  one_apply_of_ne_zero x.ne_zero
+
+/-- The trivial group-with-zero hom is absorbing. -/
+@[simp]
+lemma apply_one_apply_eq {M₀ N₀ G₀ : Type*} [MulZeroOneClass M₀] [Nontrivial M₀] [NoZeroDivisors M₀]
+    [MulZeroOneClass N₀] [MulZeroOneClass G₀] [DecidablePred fun x : M₀ ↦ x = 0]
+    (f : N₀ →*₀ G₀) (x : M₀) :
+    f ((1 : M₀ →*₀ N₀) x) = (1 : M₀ →*₀ G₀) x := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
+  · rw [one_apply_of_ne_zero hx, one_apply_of_ne_zero hx, map_one]
+
+/-- The trivial group-with-zero hom is absorbing. -/
+@[simp]
+lemma one_apply_apply_eq {M₀ N₀ G₀ : Type*}
+    [GroupWithZero M₀]
+    [MulZeroOneClass N₀] [Nontrivial N₀] [NoZeroDivisors N₀]
+    [MulZeroOneClass G₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] [DecidablePred fun x : N₀ ↦ x = 0]
+    (f : M₀ →*₀ N₀) (x : M₀) :
+    (1 : N₀ →*₀ G₀) (f x) = (1 : M₀ →*₀ G₀) x := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
+  · rw [one_apply_of_ne_zero hx, one_apply_of_ne_zero]
+    simp [f.map_eq_zero_iff, hx]
+
+/-- The trivial group-with-zero hom is absorbing. -/
+@[simp]
+lemma comp_one {M₀ N₀ G₀ : Type*} [MulZeroOneClass M₀] [Nontrivial M₀] [NoZeroDivisors M₀]
+    [MulZeroOneClass N₀] [MulZeroOneClass G₀] [DecidablePred fun x : M₀ ↦ x = 0]
+    (f : N₀ →*₀ G₀) :
+    f.comp (1 : M₀ →*₀ N₀) = (1 : M₀ →*₀ G₀) :=
+  ext <| apply_one_apply_eq _
+
+/-- The trivial group-with-zero hom is absorbing. -/
+@[simp]
+lemma one_comp {M₀ N₀ G₀ : Type*}
+    [GroupWithZero M₀]
+    [MulZeroOneClass N₀] [Nontrivial N₀] [NoZeroDivisors N₀]
+    [MulZeroOneClass G₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] [DecidablePred fun x : N₀ ↦ x = 0]
+    (f : M₀ →*₀ N₀) :
+    (1 : N₀ →*₀ G₀).comp f = (1 : M₀ →*₀ G₀) :=
+  ext <| one_apply_apply_eq _
+
+end MonoidWithZeroHom

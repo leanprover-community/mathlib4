@@ -215,23 +215,23 @@ instance {β} [CommMonoidWithZero β] : Mul (α →*₀ β) where
       map_zero' := by dsimp; rw [map_zero, zero_mul] }
 
 /-- The trivial homomorphism between monoids with zero, sending everything to 1 other than 0. -/
-noncomputable def trivial (M N : Type*) [MulZeroOneClass M] [MulZeroOneClass N]
-    [DecidablePred fun x : M ↦ x = 0] [Nontrivial M] [NoZeroDivisors M] :
-    M →*₀ N where
-  toFun x := if x = 0 then 0 else 1
-  map_zero' := by simp
-  map_one' := by simp
-  map_mul' x y := by split_ifs <;> simp_all
+protected instance one (M₀ N₀ : Type*) [MulZeroOneClass M₀] [MulZeroOneClass N₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] [Nontrivial M₀] [NoZeroDivisors M₀] :
+    One (M₀ →*₀ N₀) where
+  one.toFun x := if x = 0 then 0 else 1
+  one.map_zero' := by simp
+  one.map_one' := by simp
+  one.map_mul' x y := by split_ifs <;> simp_all
 
 @[simp]
-lemma trivial_apply_zero {M N : Type*} [MulZeroOneClass M] [MulZeroOneClass N]
-    [DecidablePred fun x : M ↦ x = 0] [Nontrivial M] [NoZeroDivisors M] :
-    trivial M N 0 = 0 :=
+lemma one_apply_zero {M₀ N₀ : Type*} [MulZeroOneClass M₀] [MulZeroOneClass N₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] [Nontrivial M₀] [NoZeroDivisors M₀] :
+    (1 : M₀ →*₀ N₀) 0 = 0 :=
   if_pos rfl
 
-lemma trivial_apply_of_ne_zero {M N : Type*} [MulZeroOneClass M] [MulZeroOneClass N]
-    [DecidablePred fun x : M ↦ x = 0] [Nontrivial M] [NoZeroDivisors M] {x : M} (hx : x ≠ 0) :
-    trivial M N x = 1 :=
+lemma one_apply_of_ne_zero {M₀ N₀ : Type*} [MulZeroOneClass M₀] [MulZeroOneClass N₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] [Nontrivial M₀] [NoZeroDivisors M₀] {x : M₀} (hx : x ≠ 0) :
+    (1 : M₀ →*₀ N₀) x = 1 :=
   if_neg hx
 
 end MonoidWithZeroHom
