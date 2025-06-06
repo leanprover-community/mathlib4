@@ -73,7 +73,7 @@ on:
 
 name: continuous integration (mathlib forks)
 EOF
-  include "github.event.pull_request.head.sha" pr "github.event.pull_request.head.repo.fork" " (fork)" ubuntu-latest
+  include "github.event.pull_request.merge_commit_sha" pr "github.event.pull_request.head.repo.fork" " (fork)" ubuntu-latest
 }
 
 include() {
