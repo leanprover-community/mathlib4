@@ -76,6 +76,12 @@ instance instNonUnitalCommRing (n : ℕ) [NeZero n] : NonUnitalCommRing (Fin n) 
   zero_mul := Fin.zero_mul'
   mul_zero := Fin.mul_zero'
 
+/-- Note this is more general than `Fin.instCommRing` as it applies (vacuously) to `Fin 0` too. -/
+instance instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) where
+  toInvolutiveNeg := Fin.instInvolutiveNeg n
+  mul_neg := Nat.casesOn n finZeroElim fun _i => mul_neg
+  neg_mul := Nat.casesOn n finZeroElim fun _i => neg_mul
+
 /--
 Commutative ring structure on `Fin n`.
 
@@ -105,12 +111,8 @@ attribute [scoped instance] Fin.instCommRing
 
 end CommRing
 
-open Fin.CommRing in
-/-- Note this is more general than `Fin.instCommRing` as it applies (vacuously) to `Fin 0` too. -/
-def instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) :=
-  { toInvolutiveNeg := Fin.instInvolutiveNeg n
-    mul_neg := Nat.casesOn n finZeroElim fun _i => mul_neg
-    neg_mul := Nat.casesOn n finZeroElim fun _i => neg_mul }
+instance (n : ℕ) [NeZero n] : NeZero (1 : Fin (n + 1)) :=
+  open Fin.CommRing in inferInstance
 
 end Fin
 
