@@ -206,6 +206,11 @@ nonrec def OneHom.mulSingle [∀ i, One <| f i] (i : I) : OneHom (f i) (∀ i, f
 theorem OneHom.mulSingle_apply [∀ i, One <| f i] (i : I) (x : f i) :
     mulSingle f i x = Pi.mulSingle i x := rfl
 
+@[to_additive]
+theorem OneHom.mulSingle_injective [∀ i, MulOneClass <| f i] (i : I) :
+    Function.Injective (mulSingle f i) :=
+  Pi.mulSingle_injective i
+
 /-- The monoid homomorphism including a single monoid into a dependent family of additive monoids,
 as functions supported at a point.
 
@@ -222,6 +227,11 @@ def MonoidHom.mulSingle [∀ i, MulOneClass <| f i] (i : I) : f i →* ∀ i, f 
 theorem MonoidHom.mulSingle_apply [∀ i, MulOneClass <| f i] (i : I) (x : f i) :
     mulSingle f i x = Pi.mulSingle i x :=
   rfl
+
+@[to_additive]
+theorem MonoidHom.mulSingle_injective [∀ i, MulOneClass <| f i] (i : I) :
+    Function.Injective (mulSingle f i) :=
+  Pi.mulSingle_injective i
 
 variable {f}
 
