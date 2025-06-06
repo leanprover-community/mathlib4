@@ -98,9 +98,9 @@
   "Mathlib.Tactic.FailIfNoProgress",
   "Mathlib.Tactic.FastInstance",
   "Mathlib.Tactic.FieldSimp",
-  "Mathlib.Tactic.Finiteness",
   "Mathlib.Tactic.FinCases",
   "Mathlib.Tactic.Find",
+  "Mathlib.Tactic.Finiteness",
   "Mathlib.Tactic.GCongr",
   "Mathlib.Tactic.GCongr.CoreAttrs",
   "Mathlib.Tactic.Generalize",
@@ -193,7 +193,10 @@
   "Mathlib.Util.WithWeakNamespace",
   "Qq"],
  "ignoreAll":
- ["Batteries.Tactic.Basic", "Mathlib.Mathport.Syntax", "Mathlib.Tactic.Linter"],
+ ["Batteries.Tactic.Basic",
+  "Mathlib.Mathport.Syntax",
+  "Mathlib.Tactic.Linter",
+  "Mathlib.Init"],
  "ignore":
  {"Mathlib.Util.Notation3": ["Lean.Elab.BuiltinCommand"],
   "Mathlib.Topology.UniformSpace.Defs": ["Mathlib.Tactic.Monotonicity.Basic"],
@@ -373,11 +376,8 @@
   "Mathlib.NumberTheory.Harmonic.Defs": ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.NumberTheory.Cyclotomic.Basic": ["Mathlib.Init.Core"],
   "Mathlib.NumberTheory.ArithmeticFunction": ["Mathlib.Tactic.ArithMult"],
-  "Mathlib.MeasureTheory.Measure.Real": ["Mathlib.Tactic.Finiteness"],
   "Mathlib.MeasureTheory.MeasurableSpace.Embedding": ["Mathlib.Tactic.FunProp"],
   "Mathlib.MeasureTheory.MeasurableSpace.Defs": ["Mathlib.Tactic.FunProp.Attr"],
-  "Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp":
-  ["Mathlib.Tactic.Finiteness"],
   "Mathlib.Logic.Nontrivial.Defs": ["Mathlib.Init.Logic"],
   "Mathlib.Logic.Function.Defs": ["Mathlib.Tactic.AdaptationNote"],
   "Mathlib.Logic.Function.Basic": ["Batteries.Tactic.Init"],
@@ -481,6 +481,8 @@
   ["Mathlib.Tactic.CategoryTheory.Bicategory.Basic"],
   "Mathlib.Analysis.Normed.Operator.LinearIsometry":
   ["Mathlib.Algebra.Star.Basic"],
+  "Mathlib.Analysis.Normed.Group.AddCircle":
+  ["Mathlib.Topology.Instances.AddCircle.Real"],
   "Mathlib.Analysis.InnerProductSpace.PiL2": ["Mathlib.Util.Superscript"],
   "Mathlib.Analysis.InnerProductSpace.Defs": ["Mathlib.Data.Complex.Basic"],
   "Mathlib.Analysis.Distribution.SchwartzSpace": ["Mathlib.Tactic.MoveAdd"],
