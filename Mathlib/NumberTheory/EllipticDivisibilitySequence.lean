@@ -648,7 +648,7 @@ lemma complEDS'_odd (m : ℕ) : complEDS' b c d k (2 * (m + 1) + 1) =
   simpa only [Nat.mul_add_div two_pos] using by rfl
 
 /-- The complement sequence `Wᶜ : ℤ × ℤ → R` for a normalised EDS `W : ℤ → R` that witnesses
-`W(k) ∣ W(nk)`. In other words, `W(k)Wᶜ(k, n) = W(nk)` for any `k, n ∈ ℤ`.
+`W(k) ∣ W(n * k)`. In other words, `W(k) * Wᶜ(k, n) = W(n * k)` for any `k, n ∈ ℤ`.
 
 This extends `complEDS'` by defining its values at negative integers. -/
 def complEDS (n : ℤ) : R :=
