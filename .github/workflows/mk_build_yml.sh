@@ -39,7 +39,7 @@ on:
 
 name: continuous integration
 EOF
-  include 1 pr == "" ubuntu-latest
+  include 1 pr "true" "" ubuntu-latest
 }
 
 bors_yml() {
@@ -54,7 +54,7 @@ on:
 
 name: continuous integration (staging)
 EOF
-  include 1 bors == "" bors
+  include 1 bors "true" "" bors
 }
 
 build_fork_yml() {
@@ -73,7 +73,7 @@ on:
 
 name: continuous integration (mathlib forks)
 EOF
-  include 0 pr == " (fork)" ubuntu-latest
+  include 0 pr "github.event.pull_request.head.repo.fork" " (fork)" ubuntu-latest
 }
 
 # Note (2025-06-06): IS_SELF_HOSTED is no longer used in `build.in.yml`, and should be removed.
@@ -82,7 +82,7 @@ include() {
   sed "
     s/IS_SELF_HOSTED/$1/g;
     s/RUNS_ON/$2/g;
-    s/MAIN_OR_FORK/$3/g;
+    s/FORK_CONDITION/$3/g;
     s/JOB_NAME/$4/g;
     s/STYLE_LINT_RUNNER/$5/g;
     /^### NB/d
