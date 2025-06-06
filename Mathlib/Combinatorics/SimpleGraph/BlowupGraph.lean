@@ -216,7 +216,8 @@ lemma sum_card_embeddings_induce_eq (G : SimpleGraph α) (H : SimpleGraph β) [F
 The following version yields `(n + 1 - |V(H)|) * exᵢ(n + 1, H) ≤ (n + 1) * exᵢ(n, H)`, where
 `exᵢ(n, H)` is the maximum number of embeddings `H` into any `n`-vertex graph `G`.
 Which in turn implies that `{exᵢ(n + 1, H) / (n + 1).choose |V(H)|}`} is monotone decreasing in `n`.
-In particular if `H = K₂` is an edge this is the usual induced-Turan density.
+In particular if `H = K₂` is an edge this implies that the standard induced-Turan density is
+well-defined.
 (This doesn't use anything about graphs, it would work as well in hypergraphs/multigraphs etc.)
 -/
 lemma sum_card_embeddings_induce_n {n : ℕ} (G : SimpleGraph (Fin (n + 1))) (H : SimpleGraph β)
