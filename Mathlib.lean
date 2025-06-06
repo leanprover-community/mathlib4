@@ -4586,6 +4586,7 @@ import Mathlib.NumberTheory.NumberField.FractionalIdeal
 import Mathlib.NumberTheory.NumberField.House
 import Mathlib.NumberTheory.NumberField.Ideal
 import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
+import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
@@ -5174,6 +5175,7 @@ import Mathlib.RingTheory.Ideal.GoingDown
 import Mathlib.RingTheory.Ideal.GoingUp
 import Mathlib.RingTheory.Ideal.Height
 import Mathlib.RingTheory.Ideal.IdempotentFG
+import Mathlib.RingTheory.Ideal.Int
 import Mathlib.RingTheory.Ideal.IsPrimary
 import Mathlib.RingTheory.Ideal.IsPrincipal
 import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
@@ -5595,6 +5597,14 @@ import Mathlib.SetTheory.ZFC.Ordinal
 import Mathlib.SetTheory.ZFC.PSet
 import Mathlib.SetTheory.ZFC.Rank
 import Mathlib.Std.Data.HashMap
+import Mathlib.Stuff.Cyclotomic
+import Mathlib.Stuff.Eleven
+import Mathlib.Stuff.Factorization
+import Mathlib.Stuff.Inertia
+import Mathlib.Stuff.Minkowski
+import Mathlib.Stuff.OrderOf
+import Mathlib.Stuff.Seven
+import Mathlib.Stuff.Thirteen
 import Mathlib.Tactic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.AdaptationNote
