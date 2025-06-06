@@ -24,13 +24,6 @@ Create separate definitions for `sInf_mem` and `HImpClosed` (also useful for `Co
 * https://ncatlab.org/nlab/show/nucleus
 -/
 
-namespace OrderDual
-variable {α : Type*} {a b : αᵒᵈ}
-
-@[ext] lemma ext (h : a.ofDual = b.ofDual) : a = b := h
-
-end OrderDual
-
 variable {X : Type*} [Order.Frame X]
 open Set
 
