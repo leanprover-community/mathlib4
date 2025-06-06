@@ -12,6 +12,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       with:
+        ref: ${{ github.event.pull_request.head.sha }}
         fetch-depth: 0
         path: pr-branch
 
@@ -133,7 +134,7 @@ jobs:
         python ../master-branch/scripts/count-trans-deps.py "Mathlib/" > head.json
 
         # Checkout the merge base
-        git checkout "$(git merge-base master ${{ github.sha }})"
+        git checkout "$(git merge-base master ${{ github.event.pull_request.head.sha }})"
 
         # Compute the counts for the merge base
         python ../master-branch/scripts/count-trans-deps.py "Mathlib/" > base.json
