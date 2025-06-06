@@ -197,9 +197,20 @@ instance (c : E) : IsGaussian (μ.map (fun x ↦ x + c)) := by
   simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul, ofReal_add]
   ring
 
-instance (c : E) : IsGaussian (μ.map (fun x ↦ c + x)) := by simp_rw [add_comm c];  infer_instance
+instance (c : E) : IsGaussian (μ.map (fun x ↦ c + x)) := by simp_rw [add_comm c]; infer_instance
 
 instance (c : E) : IsGaussian (μ.map (fun x ↦ x - c)) := by simp_rw [sub_eq_add_neg]; infer_instance
+
+instance : IsGaussian (μ.map (fun x ↦ -x)) := by
+  change IsGaussian (μ.map (ContinuousLinearEquiv.neg ℝ))
+  infer_instance
+
+instance (c : E) : IsGaussian (μ.map (fun x ↦ c - x)) := by
+  simp_rw [sub_eq_add_neg]
+  suffices IsGaussian ((μ.map (fun x ↦ -x)).map (fun x ↦ c + x)) by
+    rw [Measure.map_map (by fun_prop) (by fun_prop)] at this
+    convert this using 1
+  infer_instance
 
 section Map
 

@@ -217,7 +217,7 @@ lemma charFun_map_add_const [BorelSpace E] (r t : E) :
 lemma charFun_map_const_add [BorelSpace E] (r t : E) :
     charFun (μ.map (r + ·)) t = charFun μ t * cexp (⟪r, t⟫ * I) := by
   simp_rw [add_comm r]
-  rw [charFun_map_add_const]
+  exact charFun_map_add_const _ _
 
 variable [BorelSpace E] [SecondCountableTopology E]
 
@@ -306,7 +306,7 @@ lemma charFunDual_map_add_const [BorelSpace E] (r : E) (L : Dual ℝ E) :
 lemma charFunDual_map_const_add [BorelSpace E] (r : E) (L : Dual ℝ E) :
     charFunDual (μ.map (r + ·)) L = charFunDual μ L * cexp (L r * I) := by
   simp_rw [add_comm r]
-  rw [charFunDual_map_add_const]
+  exact charFunDual_map_add_const _ _
 
 /-- The characteristic function of a product of measures is a product of
 characteristic functions. -/
