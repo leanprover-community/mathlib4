@@ -733,6 +733,6 @@ example (x : ℤ) : 0 ≤ x * tightlyWrapped x := by nlinarith
 
 end findSquares
 
--- `Expr.mdata` should be ignored by linraith
+-- `Expr.mdata` should be ignored by linarith
 example (x : Int) (h : x = -2) : x = no_index(-2) := by
   linarith [h]
