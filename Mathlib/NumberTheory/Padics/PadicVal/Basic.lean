@@ -499,6 +499,8 @@ lemma nat_log_eq_padicValNat_iff {n : ℕ} [hp : Fact (Nat.Prime p)] (hn : 0 < n
   rw [Nat.log_eq_iff (Or.inr ⟨(Nat.Prime.one_lt' p).out, by omega⟩), and_iff_right_iff_imp]
   exact fun _ => Nat.le_of_dvd hn pow_padicValNat_dvd
 
+/-- This is false for prime numbers other than 2:
+for `p = 3`, `n = 1`, one has `log 3 1 = padicValNat 3 2 = 0`. -/
 lemma Nat.log_ne_padicValNat_succ {n : ℕ} (hn : n ≠ 0) : log 2 n ≠ padicValNat 2 (n + 1) := by
   rw [Ne, log_eq_iff (by simp [hn])]
   rintro ⟨h1, h2⟩
@@ -508,14 +510,14 @@ lemma Nat.log_ne_padicValNat_succ {n : ℕ} (hn : n ≠ 0) : log 2 n ≠ padicVa
   -- TODO(kmill): Why is this `p := 2` necessary?
   exact pow_succ_padicValNat_not_dvd (p := 2) n.succ_ne_zero ∘ dvd_of_eq
 
-lemma Nat.max_log_padicValNat_succ_eq_log_succ (n : ℕ) :
-    max (log 2 n) (padicValNat 2 (n + 1)) = log 2 (n + 1) := by
-  apply le_antisymm (max_le (le_log_of_pow_le one_lt_two (pow_log_le_add_one 2 n))
+lemma Nat.max_log_padicValNat_succ_eq_log_succ (n : ℕ) [hp : Fact p.Prime] :
+    max (log p n) (padicValNat p (n + 1)) = log p (n + 1) := by
+  apply le_antisymm (max_le (le_log_of_pow_le hp.out.one_lt (pow_log_le_add_one p n))
     (padicValNat_le_nat_log (n + 1)))
   rw [le_max_iff, or_iff_not_imp_left, not_le]
   intro h
-  replace h := le_antisymm (add_one_le_iff.mpr (lt_pow_of_log_lt one_lt_two h))
-    (pow_log_le_self 2 n.succ_ne_zero)
+  replace h := le_antisymm (add_one_le_iff.mpr (lt_pow_of_log_lt hp.out.one_lt h))
+    (pow_log_le_self p n.succ_ne_zero)
   rw [h, padicValNat.prime_pow, ← h]
 
 theorem range_pow_padicValNat_subset_divisors {n : ℕ} (hn : n ≠ 0) :

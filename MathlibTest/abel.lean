@@ -153,7 +153,7 @@ We can't use `guard_hyp h :ₛ` here, as while it does tell apart `x` and `myId 
 about differing instance paths.
 -/
 /--
-info: α : Type _
+trace: α : Type _
 a b : α
 x : ℤ
 R : ℤ → ℤ → Prop
@@ -161,7 +161,7 @@ hR : Reflexive R
 h : R (2 • myId x) (2 • myId x)
 ⊢ True
 -/
-#guard_msgs (info) in
+#guard_msgs (trace) in
 set_option pp.mvars false in
 example (x : ℤ) (R : ℤ → ℤ → Prop) (hR : Reflexive R) : True := by
   have h : R (myId x + x) (x + myId x) := hR ..
