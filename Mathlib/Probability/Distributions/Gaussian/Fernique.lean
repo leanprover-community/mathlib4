@@ -269,8 +269,6 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self' {μ : Measure E} [IsProb
     calc a / (1 - √2)
     _ ≤ 0 := div_nonpos_of_nonneg_of_nonpos ha_pos.le (by simp)
     _ < a := ha_pos
-  have ht_nonneg n : 0 ≤ t n :=
-    todo_nonneg ht_succ_def one_lt_sqrt_two ht0 (by simp [t, ha_pos.le]) n
   have ht_mono : StrictMono t := todo_strictMono ht_succ_def one_lt_sqrt_two ht0
   have ht_tendsto : Tendsto t atTop atTop := tendsto_todo_atTop ht_succ_def one_lt_sqrt_two ht0
   -- first, compute bounds on `t (n + 1)`
