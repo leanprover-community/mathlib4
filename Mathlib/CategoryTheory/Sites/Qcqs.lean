@@ -26,19 +26,6 @@ open Category
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
   {A : Type u'} [Category.{v'} A] [HasWeakSheafify J A] [Limits.HasColimits A]
 
-/-lemma test : Limits.HasColimitsOfSize.{v', v'} (Sheaf J A) := inferInstance
-
-lemma yoneda_of_cover_yoneda {F : Sheaf J A} {I : Type v'} {X : I → Sheaf J A}
-    {f : ∐ ((Sheaf.canonicalTopology (Sheaf J A)).yoneda.obj ∘ X) ⟶ F}
-    (hf : Epi f) {Y : I → I → Sheaf J A} (hY : ∀ i j : I,
-    J.yoneda Y ≅ pullback (Limits.Sigma.ι (J.yoneda ∘ G) i) (Limits.Sigma.ι (J.yoneda ∘ G) j)) :
-    ∃ Z : C, F ≅ J.yoneda Z := by
-  sorry
-
-theorem chepa {F : Sheaf J A} (S : Presieve F) :
-    (Sheaf.canonicalTopology (Sheaf J A)).sieves F (Sieve.generate S)
-    ↔ Epi (Limits.colimit.desc S.diagram S.cocone) -/
-
 section Quasicompact
 
 /-- An object `X` of a site `(C, J)` is quasicompact if given any presieve `S` that generates a

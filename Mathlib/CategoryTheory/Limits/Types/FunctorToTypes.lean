@@ -7,11 +7,12 @@ import Mathlib.CategoryTheory.Limits.IndYoneda
 import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
-# Natural transformations of presheaves as limits
+# Isomorphism with a colimit of representable
 
-Let `C` be a category and `F, G : Cᵒᵖ ⥤ Type w` two presheaves over `C`.
+Let `C` be a category and `F, G : Cᵒᵖ ⥤ Type v` two presheaves over `C`.
 We give the natural isomorphism between natural transformations `F ⟶ G` and objects of the limit of
 sections of `G` over sections of `F`.
+We deduce an isomorphism between any presheaf `F` and a colimit of representable presheaves.
 -/
 
 universe u v w
@@ -121,7 +122,7 @@ def coyonedaOpNatIsoWhiskeringLeftOverCompSectionsFunctorSectionOver :
   hom := {app G := (homEquivOverCompSections' F G).toFun}
   inv := {app G := (homEquivOverCompSections' F G).invFun}
 
--- inutile
+-- useless
 noncomputable def homEquivLimitOverComp [UnivLE.{max w u, w}] :
     (F ⟶ G) ≃ limit (sectionOver.over F ⋙ G) :=
   (homEquivOverCompSections F G).trans
@@ -141,20 +142,20 @@ end sectionOver
 
 section presheaf
 
-variable {C : Type u} [Category.{v, u} C] (F : Cᵒᵖ ⥤ Type v)
+variable {C : Type u} [Category.{v, u} C] (F : Cᵒᵖ ⥤ Type w)
 
 @[simps]
 def overYoneda : (sectionOver F)ᵒᵖ ⥤ (Cᵒᵖ ⥤ Type v) where
   obj s := yoneda.obj s.unop.fst.unop
   map f := yoneda.map f.unop.fst.unop
 
--- inutile
+-- useless
 lemma overYonedaRightOpIso : (overYoneda F).rightOp = sectionOver.over F ⋙ yoneda.op := by
   rfl
 
-variable [UnivLE.{max v u, v}] {G : Cᵒᵖ ⥤ Type v} -- G inutile
+variable [UnivLE.{max u v, v}] (F : Cᵒᵖ ⥤ Type v) {G : Cᵒᵖ ⥤ Type v} -- G useless
 
--- inutole
+-- useless
 noncomputable def colimitOverYonedaHomIsoLimitOverComp :
     (colimit (overYoneda F) ⟶ G) ≅ limit (sectionOver.over F ⋙ G ⋙ uliftFunctor) :=
   (colimitHomIsoLimitYoneda' (overYoneda F) G).trans
@@ -211,18 +212,18 @@ noncomputable def coyonedaOpColimitOverYonedaNatIsoWhiskeringLeftOverLim :
     ((limitIsoFlipCompLim _).trans
     (isoWhiskerRight (overCompYonedaCompCoyonedaFlipNatIsoWhiskeringLeftOver F) _))
 
--- inutile
+-- useless
 noncomputable def colimitOverYonedaHomIsoLimitOverComp' :
     (colimit (overYoneda F) ⟶ G) ≅ ULift.{u, v} (limit (sectionOver.over F ⋙ G)) :=
   (colimitOverYonedaHomIsoLimitOverComp F).trans
     (preservesLimitIso uliftFunctor (sectionOver.over F ⋙ G)).symm
 
--- inutile
+-- useless
 noncomputable def colimitOverYonedaHomEquivLimitOverComp :
     (colimit (overYoneda F) ⟶ G) ≃ (limit (sectionOver.over F ⋙ G)) :=
   (colimitOverYonedaHomIsoLimitOverComp' F).toEquiv.trans Equiv.ulift
 
--- inutile
+-- useless
 noncomputable def homEquivHomColimitOverYoneda :
     (F ⟶ G) ≃ (colimit (overYoneda F) ⟶ G) :=
   (homEquivLimitOverComp F G).trans (colimitOverYonedaHomEquivLimitOverComp F).symm
@@ -235,6 +236,13 @@ noncomputable def coyonedaOpNatIsoCoyonedaOpColimitOverYoneda :
 noncomputable def isoColimitOverYoneda :
     F ≅ colimit (overYoneda F) :=
   (Coyoneda.fullyFaithful.preimageIso (coyonedaOpNatIsoCoyonedaOpColimitOverYoneda F).symm).unop
+
+/-
+noncomputable def isoColimitOverYoneda' [UnivLE.{max u w, v}] [UnivLE.{max u v w, max v w}]
+    (G : Cᵒᵖ ⥤ Type w) :
+    G ⋙ uliftFunctor.{v, w} ≅ colimit (overYoneda G) ⋙ uliftFunctor.{w, v} := by
+  #check isoColimitOverYoneda (ULiftHom.down.{v, u, w}.op ⋙ G ⋙ uliftFunctor.{v, w})
+-/
 
 end presheaf
 
