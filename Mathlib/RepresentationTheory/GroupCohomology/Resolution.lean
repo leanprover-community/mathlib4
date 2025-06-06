@@ -60,7 +60,6 @@ suppress_compilation
 noncomputable section
 
 universe u v w
-open CategoryTheory
 
 variable {k G : Type u} [CommRing k] {n : ℕ}
 
@@ -71,9 +70,16 @@ local notation "Gⁿ" => Fin n → G
 set_option quotPrecheck false
 local notation "Gⁿ⁺¹" => Fin (n + 1) → G
 
+namespace groupCohomology.resolution
+
 open Finsupp hiding lift
 open MonoidalCategory
 open Fin (partialProd)
+
+section Basis
+
+variable (k G n) [Group G]
+
 open scoped TensorProduct
 
 open Representation
@@ -335,6 +341,7 @@ namespace Rep.standardComplex
 open classifyingSpaceUniversalCover AlgebraicTopology CategoryTheory.Limits
 
 section Differentials
+variable [Monoid G]
 
 /-- The `k`-linear map underlying the differential in the standard resolution of `k` as a trivial
 `k`-linear `G`-representation. It sends `(g₀, ..., gₙ) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ)`. -/
