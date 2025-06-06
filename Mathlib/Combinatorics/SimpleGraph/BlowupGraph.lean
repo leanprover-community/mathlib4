@@ -1,5 +1,6 @@
 import Mathlib.Combinatorics.SimpleGraph.Coloring
-
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 namespace SimpleGraph
 
 variable {ι : Type*} (H : SimpleGraph ι) --[DecidableRel H.Adj]
@@ -85,11 +86,9 @@ noncomputable def blowupGraph_edgeSetIso (f : ∀ i, (V i)) :
 
 end Finite
 
-#check SimpleGraph.comap
-
 variable {α β ι : Type*} {k : ℕ}
 /--
-A `Flag α k` consists of `G : SimpleGraph α` and a labelling of `ι` vertices of `G` by an
+A `Flag α ι` consists of `G : SimpleGraph α` and a labelling of `ι` vertices of `G` by an
 injective map `θ : ι ↪ α`. (We call this a `σ`-flag if the labelled subgraph is
 `σ : SimpleGraph ι`).
 -/
@@ -97,22 +96,34 @@ structure Flag (α ι : Type*) where
   G : SimpleGraph α
   θ : ι ↪ α
 
-/-- An embedding of flags -/
-abbrev Embedding.Flag {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι }
-    (e : F₁.G ↪g F₂.G) : Prop := F₂.θ = e ∘ F₁.θ
-
+/-- Added to prove `Fintype` instance later -/
 def FlagIso (α ι : Type*) : Flag α ι ≃ (SimpleGraph α) × (ι ↪ α) where
   toFun := fun F => (F.G, F.θ)
   invFun := fun p => { G := p.1, θ := p.2 }
   left_inv := fun F => by cases F; rfl
   right_inv := fun p => by cases p; rfl
 
+/-- An embedding of flags -/
+abbrev Embedding.Flag {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι } (e : F₁.G ↪g F₂.G) :
+    Prop := F₂.θ = e ∘ F₁.θ
+
+/-- An isomorphism of flags -/
+abbrev Iso.Flag {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι } (e : F₁.G ≃g F₂.G) :
+    Prop := F₂.θ = e ∘ F₁.θ
+
+lemma Flag.Iso_symm {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι} (e : F₁.G ≃g F₂.G)
+    (he : e.Flag) : F₁.θ = e.symm ∘ F₂.θ := by
+  ext; simp [he]
+
+/--
+`F` is a `σ`-flag iff the labelled subgraph given by `θ` is `σ`
+-/
 def Flag.IsSigma (F : Flag α ι) (σ : SimpleGraph ι) : Prop :=
   F.G.comap F.θ = σ
 
-lemma Flag.IsSigma_self (F : Flag α ι) : F.IsSigma (F.G.comap F.θ) := rfl
+lemma Flag.isSigma_self (F : Flag α ι) : F.IsSigma (F.G.comap F.θ) := rfl
 
-lemma Flag.IsSigma_ofEmbedding {α β ι : Type*} {σ : SimpleGraph ι} {F₁ : Flag α ι}
+lemma Flag.isSigma_of_embedding {α β ι : Type*} {σ : SimpleGraph ι} {F₁ : Flag α ι}
     {F₂ : Flag β ι} (e : F₁.G ↪g F₂.G) (he : e.Flag) (h1 : F₁.IsSigma σ) : F₂.IsSigma σ := by
   rw [IsSigma, he, ← h1] at *
   ext; simp
@@ -126,8 +137,40 @@ open Classical in
 The Finset of all `σ`-flags with vertex type `α` (where both `α` and `ι` are finite).
 -/
 noncomputable def SigmaFlags (σ : SimpleGraph ι) : Finset (Flag α ι) := {F | F.IsSigma σ}
+#check Finset.card_eq_sum_card_fiberwise
+#check Finset.sum_comm' -- use this below
+variable {k m n : ℕ}
+local notation "‖" x "‖" => Fintype.card x
+open Finset
+lemma count_copies (G : SimpleGraph (Fin (n + m + k))) (H : SimpleGraph (Fin k)) :
+   ∑ t : Finset (Fin (n + m + k)) with t.card = m + k, ‖H ↪g (G.induce t)‖
+    = ‖H ↪g G‖ * Nat.choose (n + m) m :=
+  calc
+    _ = ∑ t : Finset (Fin (n + m + k)) with t.card = m + k, ∑ e : H ↪g (G.induce t), 1  := by
+        simp_rw [card_eq_sum_ones];congr; simp;
+    _ = _ := by rw [← card_univ, card_eq_sum_ones]; sorry
+  /-
+LHS : count each `e : H ↪g G` `choose (n + m) m` times.
+RHS : count each `e : H ↪g G` once for each set of size `m + k` its image lies in.
+
+So RHS = ∑ (e, t), where `e: H ↪g G` and `t` is a set of size `m + k` such that `image e ⊆ t`.
+
+-/
 
 
+
+  -- We count the number of pairs `(e, s)` where `e : H ↪g G` and `s` is a subset of
+  -- size `m` in `(image e)ᶜ`. The LHS is the number of such pairs.
+  -- The RHS also counts the pairs, `(t, e)` where `t` is a set of size `m + k` and `e` is an
+  -- embedding of `H` into `G` that lies inside `t`.
+  -- So given `e : H ↪g G`  we count
+  --  but it does so by first fixing `s` and then
+  -- counting the number of embeddings `e : H ↪g G.induce s` where the image of `e`
+
+  -- `Fin (n + m + k)` of size `m + k` such that the image of `e` is c
+  -- Given `e : H ↪g G` then the image of `e` in `Fin (n + m + k)` has size `k` so
+  -- its complement has size `n + m` s
+  sorry
 
 
 end SimpleGraph
