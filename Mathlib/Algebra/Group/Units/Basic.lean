@@ -470,14 +470,6 @@ protected lemma div_eq_div_iff (hb : IsUnit b) (hd : IsUnit d) :
     hd.div_mul_cancel]
 
 @[to_additive]
-protected lemma div_div_cancel (h : IsUnit a) : a / (a / b) = b := by
-  rw [div_div_eq_mul_div, h.mul_div_cancel_left]
-
-@[to_additive]
-protected lemma div_div_cancel_left (h : IsUnit a) : a / b / a = b⁻¹ := by
-  rw [div_eq_mul_inv, div_eq_mul_inv, mul_right_comm, h.mul_inv_cancel, one_mul]
-
-@[to_additive]
 protected lemma mul_inv_eq_mul_inv_iff (hb : IsUnit b) (hd : IsUnit d) :
     a * b⁻¹ = c * d⁻¹ ↔ a * d = c * b := by
   rw [← div_eq_mul_inv, ← div_eq_mul_inv, hb.div_eq_div_iff hd]
@@ -486,6 +478,14 @@ protected lemma mul_inv_eq_mul_inv_iff (hb : IsUnit b) (hd : IsUnit d) :
 protected lemma inv_mul_eq_inv_mul_iff (hb : IsUnit b) (hd : IsUnit d) :
     b⁻¹ * a = d⁻¹ * c ↔ a * d = c * b := by
   rw [← div_eq_inv_mul, ← div_eq_inv_mul, hb.div_eq_div_iff hd]
+
+@[to_additive]
+protected lemma div_div_cancel (h : IsUnit a) : a / (a / b) = b := by
+  rw [div_div_eq_mul_div, h.mul_div_cancel_left]
+
+@[to_additive]
+protected lemma div_div_cancel_left (h : IsUnit a) : a / b / a = b⁻¹ := by
+  rw [div_eq_mul_inv, div_eq_mul_inv, mul_right_comm, h.mul_inv_cancel, one_mul]
 
 end DivisionCommMonoid
 end IsUnit
