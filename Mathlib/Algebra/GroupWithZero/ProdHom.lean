@@ -82,7 +82,7 @@ theorem fst_comp_inl [DecidablePred fun x : M₀ ↦ x = 0] :
 
 @[simp]
 theorem snd_comp_inl [DecidablePred fun x : M₀ ↦ x = 0] :
-    (snd ..).comp (inl M₀ N₀) = .one .. := by
+    (snd ..).comp (inl M₀ N₀) = 1 := by
   ext x
   obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
   simp_all [WithZero.withZeroUnitsEquiv, snd, inl]
@@ -92,7 +92,7 @@ theorem snd_inl_apply_of_ne_zero [DecidablePred fun x : M₀ ↦ x = 0] {x : M�
 
 @[simp]
 theorem fst_comp_inr [DecidablePred fun x : N₀ ↦ x = 0] :
-    (fst ..).comp (inr M₀ N₀) = .one .. := by
+    (fst ..).comp (inr M₀ N₀) = 1 := by
   ext x
   obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
   simp_all [WithZero.withZeroUnitsEquiv, fst, inr]
