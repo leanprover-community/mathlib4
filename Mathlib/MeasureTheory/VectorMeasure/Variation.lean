@@ -50,6 +50,7 @@ measures.
   and `dμ = h d(μ.variation)`.
 * Suppose that `μ` is a measure, that `g ∈ L¹(μ)` and `λ(E) = ∫_E g dμ` for each measureable `E`,
   then `variation μ E = ∫_E |g| dμ` (Rudin Theorem 6.13).
+* Lemmas for the variation of `-μ` and `a • μ`.
 -/
 
 open MeasureTheory BigOperators NNReal ENNReal Function Filter
