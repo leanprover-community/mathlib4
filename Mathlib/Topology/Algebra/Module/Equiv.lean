@@ -359,6 +359,35 @@ def prodComm [Module R₁ M₂] : (M₁ × M₂) ≃L[R₁] M₂ × M₁ :=
 
 @[simp] lemma prodComm_symm [Module R₁ M₂] : (prodComm R₁ M₁ M₂).symm = prodComm R₁ M₂ M₁ := rfl
 
+section prodAssoc
+
+variable (R M₁ M₂ M₃ : Type*) [Semiring R]
+  [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [Module R M₁] [Module R M₂] [Module R M₃]
+  [TopologicalSpace M₁] [TopologicalSpace M₂] [TopologicalSpace M₃]
+
+/-- The product of topological modules is associative up to continuous linear isomorphism.
+This is `LinearEquiv.prodAssoc` prodAssoc as a continuous linear equivalence. -/
+def prodAssoc : ((M₁ × M₂) × M₃) ≃L[R] M₁ × M₂ × M₃ where
+  toLinearEquiv := LinearEquiv.prodAssoc R M₁ M₂ M₃
+  continuous_toFun := (continuous_fst.comp continuous_fst).prodMk
+    ((continuous_snd.comp continuous_fst).prodMk continuous_snd)
+  continuous_invFun := (continuous_fst.prodMk (continuous_fst.comp continuous_snd)).prodMk
+    (continuous_snd.comp continuous_snd)
+
+@[simp]
+lemma prodAssoc_toLinearEquiv :
+  (prodAssoc R M₁ M₂ M₃).toLinearEquiv = LinearEquiv.prodAssoc R M₁ M₂ M₃ := rfl
+
+-- not simp as the combination of existing lemmas
+lemma prodAssoc_toEquiv :
+  (prodAssoc R M₁ M₂ M₃).toEquiv = Equiv.prodAssoc M₁ M₂ M₃ := rfl
+
+@[simp]
+lemma coe_prodAssoc :
+  (prodAssoc R M₁ M₂ M₃ : (M₁ × M₂) × M₃ → M₁ × M₂ × M₃) = Equiv.prodAssoc M₁ M₂ M₃ := rfl
+
+end prodAssoc
+
 variable {R₁ M₁ M₂}
 
 protected theorem bijective (e : M₁ ≃SL[σ₁₂] M₂) : Function.Bijective e :=
