@@ -495,3 +495,24 @@ def aux : Nat := 1
 def aux' : Nat := 1
 
 end openClassical
+
+section finNatCast
+
+#guard_msgs in
+open Fin.NatCast
+example : True := trivial
+
+#guard_msgs in
+open Fin.NatCast in
+example : True := trivial
+
+#guard_msgs in
+open Fin.CommRing
+example : True := trivial
+
+/-- error: unknown namespace 'Fin.CommRing' -/
+#guard_msgs in
+open Fin.CommRing in
+example : True := trivial
+
+end finNatCast

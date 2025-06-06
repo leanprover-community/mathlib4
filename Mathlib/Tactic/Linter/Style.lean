@@ -502,11 +502,19 @@ register_option linter.style.openClassical : Bool := {
 returns an array of the syntax corresponding to the opened names,
 omitting any renamed or hidden items.
 
-This only checks independent `open` commands: for `open ... in ...` commands,
-this linter returns an empty array.
+This always checks independent `open` commands: `open ... in ...` commands
+are checked if `includeOpenIn` is true; otherwise, this returns an empty array for them.
 -/
-def extractOpenNames : Syntax → Array (TSyntax `ident)
-  | `(command|$_ in $_) => #[] -- redundant, for clarity
+def extractOpenNames (includeOpenIn: Bool) : Syntax → Array (TSyntax `ident)
+  | `(command|open $decl:openDecl in $_) =>
+    if !includeOpenIn then #[]
+    else match decl with
+    | `(openDecl| $arg hiding $_*)    => #[arg]
+    | `(openDecl| $arg renaming $_,*) => #[arg]
+    | `(openDecl| $arg ($_*))         => #[arg]
+    | `(openDecl| $args*)             => args
+    | `(openDecl| scoped $args*)      => args
+    | _ => unreachable!
   | `(command|open $decl:openDecl) => match decl with
     | `(openDecl| $arg hiding $_*)    => #[arg]
     | `(openDecl| $arg renaming $_,*) => #[arg]
@@ -536,13 +544,24 @@ def openClassicalLinter : Linter where run stx := do
     if (← get).messages.hasErrors then
       return
     -- If `stx` describes an `open` command, extract the list of opened namespaces.
-    for stxN in (extractOpenNames stx).filter (·.getId == `Classical) do
+    let allOpenStatements := extractOpenNames true stx
+    if allOpenStatements.isEmpty then return
+    -- TODO: reduce the duplication!
+    for stxN in (extractOpenNames false stx).filter (·.getId == `Classical) do
       Linter.logLint linter.style.openClassical stxN "\
       please avoid 'open (scoped) Classical' statements: this can hide theorem statements \
       which would be better stated with explicit decidability statements.\n\
       Instead, use `open Classical in` for definitions or instances, the `classical` tactic \
       for proofs.\nFor theorem statements, \
       either add missing decidability assumptions or use `open Classical in`."
+    for stxN in (extractOpenNames true stx).filter (·.getId == `Fin.NatCast) do
+      Linter.logLint linter.style.finNatCast stxN "\
+      please avoid 'open (scoped) Fin.NatCast' statements: TODO elaborate why!"
+    for stxN in (extractOpenNames true stx).filter (·.getId == `Fin.CommRing) do
+      Linter.logLint linter.style.finNatCast stxN "\
+      please avoid 'open (scoped) Fin.CommRing' statements: the 'CommRing' instance on 'Fin n' \
+      can lead to surprising behaviour (e.g., if `Fin n` is used for indexing), as addition wraps
+      around. To use the ring structure, use `ZMod n` instead, which makes the intention clearer."
 
 initialize addLinter openClassicalLinter
 
