@@ -76,6 +76,10 @@ instance instNonUnitalCommRing (n : ℕ) [NeZero n] : NonUnitalCommRing (Fin n) 
   zero_mul := Fin.zero_mul'
   mul_zero := Fin.mul_zero'
 
+instance instCommMonoid (n : ℕ) [NeZero n] : CommMonoid (Fin n) where
+  one_mul := Fin.one_mul'
+  mul_one := Fin.mul_one'
+
 /-- Note this is more general than `Fin.instCommRing` as it applies (vacuously) to `Fin 0` too. -/
 instance instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) where
   toInvolutiveNeg := Fin.instInvolutiveNeg n
@@ -101,9 +105,8 @@ def instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) where
   __ := Fin.addCommGroup n
   __ := Fin.instCommSemigroup n
   __ := Fin.instNonUnitalCommRing n
+  __ := Fin.instCommMonoid n
   intCast n := Fin.intCast n
-  one_mul := Fin.one_mul'
-  mul_one := Fin.mul_one'
 
 namespace CommRing
 
