@@ -29,27 +29,27 @@ variable (M₀ N₀ : Type*) [GroupWithZero M₀] [GroupWithZero N₀]
 `M₀` to `WithZero (M₀ˣ × N₀ˣ)`, which is the group with zero that can be identified
 as their product. -/
 def inl [DecidablePred fun x : M₀ ↦ x = 0] : M₀ →*₀ WithZero (M₀ˣ × N₀ˣ) :=
-  (WithZero.map' (MonoidHom.inl _ _)).comp
+  (WithZero.map' (.inl _ _)).comp
     (MonoidWithZeroHomClass.toMonoidWithZeroHom (WithZero.withZeroUnitsEquiv.symm))
 
 /-- Given groups with zero `M₀`, `N₀`, the natural inclusion ordered homomorphism from
 `N₀` to `WithZero (M₀ˣ × N₀ˣ)`, which is the group with zero that can be identified
 as their product. -/
 def inr [DecidablePred fun x : N₀ ↦ x = 0] : N₀ →*₀ WithZero (M₀ˣ × N₀ˣ) :=
-  (WithZero.map' (MonoidHom.inr _ _)).comp
+  (WithZero.map' (.inr _ _)).comp
     (MonoidWithZeroHomClass.toMonoidWithZeroHom (WithZero.withZeroUnitsEquiv.symm))
 
 /-- Given groups with zero `M₀`, `N₀`, the natural projection homomorphism from
 `WithZero (M₀ˣ × N₀ˣ)` to `M₀`, which is the group with zero that can be identified
 as their product. -/
 def fst : WithZero (M₀ˣ × N₀ˣ) →*₀ M₀ :=
-  WithZero.lift' ((Units.coeHom _).comp (MonoidHom.fst ..))
+  WithZero.lift' ((Units.coeHom _).comp (.fst ..))
 
 /-- Given groups with zero `M₀`, `N₀`, the natural projection homomorphism from
 `WithZero (M₀ˣ × N₀ˣ)` to `N₀`, which is the group with zero that can be identified
 as their product. -/
 def snd : WithZero (M₀ˣ × N₀ˣ) →*₀ N₀ :=
-  WithZero.lift' ((Units.coeHom _).comp (MonoidHom.snd ..))
+  WithZero.lift' ((Units.coeHom _).comp (.snd ..))
 
 variable {M₀ N₀}
 
@@ -103,7 +103,7 @@ theorem fst_inl [DecidablePred fun x : M₀ ↦ x = 0] (x : M₀) :
   simp [WithZero.withZeroUnitsEquiv, fst, inl]
 @[simp]
 theorem fst_comp_inl [DecidablePred fun x : M₀ ↦ x = 0] :
-    (fst ..).comp (inl M₀ N₀) = MonoidWithZeroHom.id _ :=
+    (fst ..).comp (inl M₀ N₀) = .id _ :=
   MonoidWithZeroHom.ext fun _ ↦ fst_inl _
 
 @[simp]
@@ -133,7 +133,7 @@ theorem snd_inr [DecidablePred fun x : N₀ ↦ x = 0] (x : N₀) :
   simp [WithZero.withZeroUnitsEquiv, snd, inr]
 @[simp]
 theorem snd_comp_inr [DecidablePred fun x : N₀ ↦ x = 0] :
-    (snd ..).comp (inr M₀ N₀) = MonoidWithZeroHom.id _ :=
+    (snd ..).comp (inr M₀ N₀) = .id _ :=
   MonoidWithZeroHom.ext fun _ ↦ snd_inr _
 
 lemma inl_injective [DecidablePred fun x : M₀ ↦ x = 0] :
