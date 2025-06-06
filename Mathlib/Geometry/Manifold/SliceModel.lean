@@ -83,12 +83,13 @@ lemma inverse_right_inv [Nonempty H] (h : SliceModel F I I') (z : H') (hz : z �
 
 end SliceModel
 
--- PRed in #23971
 section
 
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] [Unique G]
 
 namespace ContinuousLinearEquiv
+
+-- PRed in #23971
 
 variable (𝕜 E) in
 /-- The natural equivalence `E × G ≃L[𝕜] E` for any `Unique` type `G`.
@@ -111,13 +112,7 @@ lemma prodUnique_apply (x : E × G) : prodUnique 𝕜 E x = x.1 := rfl
 @[simp]
 lemma prodUnique_symm_apply (x : E) : (prodUnique 𝕜 E (G := G)).symm x = (x, default) := rfl
 
-/- do I want all/any of these lemma?
-@[simp]
-lemma prodSingle_coe {y : G} :
-    (prodSingleton 𝕜 E (y := y)) = ((·, y) : E → E × G) := rfl
--/
-
-section prodAssoc
+section prodAssoc -- PRed in #25522
 
 variable (R M₁ M₂ M₃ : Type*) [Semiring R]
   [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [Module R M₁] [Module R M₂] [Module R M₃]
@@ -142,7 +137,7 @@ lemma prodAssoc_toEquiv :
 
 end prodAssoc
 
-section prodCongr
+section prodCongr -- already present, but differently named: #25513 renames these
 
 variable {R M₁ M₂ M₃ M₄ : Type*} [Semiring R]
   [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
@@ -151,19 +146,14 @@ variable {R M₁ M₂ M₃ M₄ : Type*} [Semiring R]
 
 /-- Product of continuous linear equivalences; the maps come from `Equiv.prodCongr`.
 This is `LinearEquiv.prodCongr` as a continuous linear equivalence. -/
-def prodCongr (e₁ : M₁ ≃L[R] M₂) (e₂ : M₃ ≃L[R] M₄) : (M₁ × M₃) ≃L[R] M₂ × M₄  where
-  toLinearEquiv := LinearEquiv.prodCongr e₁ e₂
-  continuous_toFun := e₁.continuous_toFun.prodMap e₂.continuous_toFun
-  continuous_invFun := e₁.continuous_invFun.prodMap e₂.continuous_invFun
+def prodCongr (e₁ : M₁ ≃L[R] M₂) (e₂ : M₃ ≃L[R] M₄) : (M₁ × M₃) ≃L[R] M₂ × M₄ := e₁.prod e₂
 
 theorem prodCongr_symm (e₁ : M₁ ≃L[R] M₂) (e₂ : M₃ ≃L[R] M₄) :
-    (e₁.prodCongr e₂).symm = e₁.symm.prodCongr e₂.symm :=
-  rfl
+    (e₁.prodCongr e₂).symm = e₁.symm.prodCongr e₂.symm := prod_symm e₁ e₂
 
 @[simp]
 theorem prodCongr_apply (e₁ : M₁ ≃L[R] M₂) (e₂ : M₃ ≃L[R] M₄) (p) :
-    e₁.prodCongr e₂ p = (e₁ p.1, e₂ p.2) :=
-  rfl
+    e₁.prodCongr e₂ p = (e₁ p.1, e₂ p.2) := prod_apply e₁ e₂ p
 
 @[simp, norm_cast]
 lemma coe_prodCongr (e₁ : M₁ ≃L[R] M₂) (e₂ : M₃ ≃L[R] M₄) :
