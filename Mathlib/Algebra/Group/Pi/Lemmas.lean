@@ -187,8 +187,7 @@ variable [DecidableEq I]
 
 open Pi
 
-variable (f)
-
+variable (f) in
 /-- The one-preserving homomorphism including a single value
 into a dependent family of values, as functions supported at a point.
 
@@ -202,8 +201,6 @@ nonrec def OneHom.mulSingle [∀ i, One <| f i] (i : I) : OneHom (f i) (∀ i, f
   toFun := mulSingle i
   map_one' := mulSingle_one i
 
-variable {f}
-
 @[to_additive (attr := simp)]
 theorem OneHom.mulSingle_apply [∀ i, One <| f i] (i : I) (x : f i) :
     mulSingle f i x = Pi.mulSingle i x := rfl
@@ -213,8 +210,7 @@ theorem OneHom.mulSingle_injective [∀ i, MulOneClass <| f i] (i : I) :
     Function.Injective (mulSingle f i) :=
   Pi.mulSingle_injective i
 
-variable (f)
-
+variable (f) in
 /-- The monoid homomorphism including a single monoid into a dependent family of additive monoids,
 as functions supported at a point.
 
@@ -226,8 +222,6 @@ This is the `MonoidHom` version of `Pi.mulSingle`. -/
       This is the `AddMonoidHom` version of `Pi.single`."]
 def MonoidHom.mulSingle [∀ i, MulOneClass <| f i] (i : I) : f i →* ∀ i, f i :=
   { OneHom.mulSingle f i with map_mul' := mulSingle_op₂ (fun _ => (· * ·)) (fun _ => one_mul _) _ }
-
-variable {f}
 
 @[to_additive (attr := simp)]
 theorem MonoidHom.mulSingle_apply [∀ i, MulOneClass <| f i] (i : I) (x : f i) :
