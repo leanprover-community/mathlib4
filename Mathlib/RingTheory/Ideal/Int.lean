@@ -38,7 +38,7 @@ variable {R : Type*} [Ring R] {I : Ideal R}
 
 theorem cast_mem_ideal_iff {d : ℤ} :
     (d : R) ∈ I ↔ (absNorm (under ℤ I) : ℤ) ∣ d := by
-  rw [← mem_span_singleton, Int.ideal_span_absNorm_eq_self, under_def, mem_comap, eq_intCast]
+  rw [← mem_span_singleton, ideal_span_absNorm_eq_self, under_def, mem_comap, eq_intCast]
 
 variable (I)
 
@@ -52,8 +52,7 @@ theorem absNorm_under_eq_sInf :
   · have : {d : ℕ | 0 < d ∧ ↑d ∈ I} = ∅ := by
       refine Set.eq_empty_of_forall_notMem ?_
       intro x ⟨hx₁, hx₂⟩
-      rw [← Int.cast_natCast, Int.cast_mem_ideal_iff, h, Int.natCast_dvd_natCast,
-        Nat.zero_dvd] at hx₂
+      rw [← cast_natCast, cast_mem_ideal_iff, h, natCast_dvd_natCast, Nat.zero_dvd] at hx₂
       rw [Nat.pos_iff_ne_zero] at hx₁
       exact hx₁ hx₂
     rw [h, this, Nat.sInf_empty]
@@ -62,7 +61,7 @@ theorem absNorm_under_eq_sInf :
     refine le_antisymm ?_ (Nat.sInf_le h₁)
     by_contra! h₀
     have h₂ := (Nat.sInf_mem (Set.nonempty_of_mem h₁)).2
-    rw [← Int.cast_natCast, Int.cast_mem_ideal_iff, Int.natCast_dvd_natCast] at h₂
+    rw [← cast_natCast, cast_mem_ideal_iff, natCast_dvd_natCast] at h₂
     exact lt_iff_not_le.mp h₀ <| Nat.le_of_dvd (Nat.sInf_mem (Set.nonempty_of_mem h₁)).1 h₂
 
 theorem absNorm_under_dvd_absNorm {S : Type*} [CommRing S] [IsDedekindDomain S] [Module.Free ℤ S]
@@ -74,7 +73,7 @@ theorem absNorm_under_dvd_absNorm {S : Type*} [CommRing S] [IsDedekindDomain S] 
       simp_rw [nsmul_eq_mul, ← map_natCast (Ideal.Quotient.mk I), ← Quotient.eq_zero_iff_mem]
       exact ⟨fun h _ ↦ by simp [h], fun h ↦ by simpa using h 1⟩
     rw [Ideal.absNorm_apply I, Submodule.cardQuot_apply, Nat.card_eq_fintype_card]
-    simp_rw [Int.absNorm_under_eq_sInf, h_main, ← AddMonoid.exponent_eq_sInf]
+    simp_rw [absNorm_under_eq_sInf, h_main, ← AddMonoid.exponent_eq_sInf]
     exact AddGroup.exponent_dvd_card (G := S ⧸ I)
   · rw [show absNorm I = 0 by
       exact AddSubgroup.index_eq_zero_iff_infinite.mpr <| not_finite_iff_infinite.mp h]
