@@ -208,16 +208,6 @@ lemma cyclotomic_polynomial_5 (z : ℂ) :
                                   * (z - ((√5 -1)/4 - √2 * √(5 + √5)/4 * I))
                                   * (z - (-(√5 + 1)/4 + √2 * √(5 - √5) / 4 * I))
                                   * (z - (-(√5 +1)/4 - √2 * √(5 - √5) / 4 * I)) := by
-  have e1 : √(5 + √5) ^ 2 = (5 + √5) := by
-    rw [sq, Real.mul_self_sqrt (Left.add_nonneg (Nat.ofNat_nonneg' _) (Real.sqrt_nonneg _))]
-    --apply Left.add_nonneg (Nat.ofNat_nonneg' _) (Real.sqrt_nonneg _)
-  have e2 : √(5 - √5) ^ 2 = (5 - √5) := by
-    rw [sq, Real.mul_self_sqrt]
-    simp_all only [sub_nonneg]
-    rw [Real.sqrt_le_left]
-    rw [sq]
-    simp only [Nat.ofNat_pos, le_mul_iff_one_le_right, Nat.one_le_ofNat]
-    exact Nat.ofNat_nonneg' 5
   have ee2 (a : ℝ) : a ^ 4 = a * a * a * a := by
     rw [← two_add_two_eq_four]
     rw [pow_add _ 2 2]
