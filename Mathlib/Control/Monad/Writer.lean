@@ -37,7 +37,7 @@ class MonadWriter (ω : outParam (Type u)) (M : Type u → Type v) where
   /-- Capture the output produced by `f`, without intercepting. -/
   listen {α} (f : M α) : M (α × ω)
   /-- Buffer the output produced by `f` as `w`, then emit `(← f).2 w` in its place. -/
-  pass {α} (f : M (α × (ω → ω)) : M α
+  pass {α} (f : M (α × (ω → ω))) : M α
 
 export MonadWriter (tell listen pass)
 
