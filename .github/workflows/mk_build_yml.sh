@@ -73,7 +73,7 @@ on:
 
 name: continuous integration (mathlib forks)
 EOF
-  include 0 pr != " (fork)" ubuntu-latest
+  include 0 pr == " (fork)" ubuntu-latest
 }
 
 # Note (2025-06-06): IS_SELF_HOSTED is no longer used in `build.in.yml`, and should be removed.
