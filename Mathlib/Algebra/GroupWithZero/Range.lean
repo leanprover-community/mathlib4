@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Algebra.Group.WithOne.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Tactic.NthRewrite
+import Mathlib.Tactic.Abel
 import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Algebra.Group.Subgroup.Lattice
 
@@ -19,7 +20,7 @@ then `f.range₀` is the smallest submonoid of `B`
 containing the image of `f` which is a `CommGroupWithZero`.
 -/
 
-variable {A B : Type*} [MonoidWithZero A] [GroupWithZero B]--[CancelMonoidWithZero B] [Nontrivial B]
+variable {A B : Type*} [MonoidWithZero A] [CommGroupWithZero B]--[CancelMonoidWithZero B] [Nontrivial B]
   {F : Type*} [FunLike F A B] [MonoidHomClass F A B]
   (f : F)
 
@@ -111,6 +112,52 @@ def range₀ : Submonoid B where
     use 1
     rw [_root_.map_one]
     exact one_ne_zero
+
+
+example [ZeroHomClass F A B] : frange₀ f = range₀ f := by
+  ext y
+  refine ⟨fun hy ↦ ?_, fun hy ↦ ?_⟩
+  · simp [range₀]
+    simp [frange₀] at hy
+    rcases hy with hy | ⟨u, hu, huy⟩
+    · use 1
+      rw [map_one]
+      constructor
+      · exact one_ne_zero
+      use 0
+      rw [hy]
+      rw [mul_zero, map_zero]
+    have := @Subgroup.closure_induction (G := Bˣ) (k := ((↑)⁻¹' (range f))) _
+      (fun u hu ↦ ∃ a : A, ¬ f a = 0 ∧ ∃ x : A, f a * u = f x)
+      (x := u)
+    rw [huy] at this
+    apply this
+    · intro v hv_prop
+      obtain ⟨y, hy⟩ := hv_prop
+      rw [← hy]
+      use 1
+      constructor
+      · rw [map_one]
+        exact one_ne_zero
+      use y
+      rw [map_one, one_mul]
+    · use 1
+      rw [map_one]
+      constructor
+      · exact one_ne_zero
+      use 1
+      simp
+    · rintro a b ha hb ⟨t, ht₀, ⟨s, hs⟩⟩ ⟨t', ht'₀, ⟨s', hs'⟩⟩
+      use t * t'
+      constructor
+      · sorry
+      use s * s'
+      rw [map_mul, Units.val_mul, map_mul, ← hs, ← hs']
+      rw [mul_assoc (f t), mul_comm (f t'), mul_comm (f t'), mul_assoc (a : B),
+         mul_assoc _ (a : B)]
+    · sorry
+    · exact hu
+  sorry
 
 variable {f}
 
