@@ -188,11 +188,6 @@ noncomputable instance linearOrderedCommGroupWithZero :
       rintro ⟨a⟩ ⟨b⟩ ⟨c, rfl⟩ ⟨d⟩
       use c; simp only [Algebra.smul_def]; ring
     zero_le_one := ⟨0, by rw [zero_smul]⟩
-    exists_pair_ne := by
-      use 0, 1
-      intro c; obtain ⟨d, hd⟩ := Quotient.exact' c
-      apply_fun fun t => d⁻¹ • t at hd
-      simp only [inv_smul_smul, smul_zero, one_ne_zero] at hd
     bot := 0
     bot_le := by rintro ⟨a⟩; exact ⟨0, zero_smul ..⟩ }
 
