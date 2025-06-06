@@ -475,6 +475,7 @@ lemma variation_SignedMeasure (μ : SignedMeasure X) :
     -- to estimate `∑ p ∈ P, ‖μ p‖ₑ`. By definition this is bounded above by variation defined as a
     -- supremum.
     let P : Finset (Set X) := {s ∩ r, sᶜ ∩ r}
+    -- To do: tidy this, can be much more concise, several arguments are repeated.
     have hd : Disjoint (s ∩ r) (sᶜ ∩ r) := by
       refine Disjoint.inter_right ?_ <| Disjoint.inter_left ?_ ?_
       exact Set.disjoint_compl_right_iff_subset.mpr fun ⦃a⦄ a ↦ a
@@ -571,14 +572,32 @@ lemma variation_SignedMeasure (μ : SignedMeasure X) :
             exact abs_of_nonpos this
           simp [this]
         refine abs_of_nonneg ?_
-        simp
+        rw [Left.nonneg_neg_iff]
         refine nonpos_of_restrict_le_zero μ ?_
         have : MeasurableSet sᶜ := by exact MeasurableSet.compl_iff.mpr hsm
         exact restrict_le_zero_subset μ this (by simp) hsc
       nth_rw 2 [h5, h6]
       simpa using abs_add_le (μ (s ∩ p)) (μ (sᶜ ∩ p))
-
-    sorry
+    have h' p (hp : p ∈ P) : ‖μ p‖ₑ = ENNReal.ofReal |μ p| := by
+      sorry
+    calc ∑ p ∈ P, ‖μ p‖ₑ
+      _ = ∑ p ∈ P, ENNReal.ofReal |μ p| := by
+        exact Finset.sum_congr rfl h'
+      _ = ENNReal.ofReal  (∑ p ∈ P, |μ p|) := by
+        refine Eq.symm <| ofReal_sum_of_nonneg ?_
+        simp
+      _ ≤ ENNReal.ofReal  (∑ p ∈ P, (μ (s ∩ p) - μ (sᶜ ∩ p))) := by
+        gcongr with p hp
+        exact h p hp
+      _ = ENNReal.ofReal  (∑ p ∈ P, μ (s ∩ p) - ∑ p ∈ P, μ (sᶜ ∩ p)) := by
+        congr
+        exact Finset.sum_sub_distrib
+      _ ≤ ENNReal.ofReal  (μ (s ∩ r) - μ (sᶜ ∩ r)) := by
+        sorry
+      _ = μ.totalVariation r := by
+        dsimp [totalVariation]
+        -- Use estimate as above but swap `ENNReal.ofReal` for `.real` on the other side in places.
+        sorry
 
 end MeasureTheory.VectorMeasure
 
