@@ -71,8 +71,9 @@ theorem isConj_eq_isConj {φ ψ : K →+* ℂ} {σ τ : K ≃ₐ[F] K} (hφ : Is
   have : Fintype.card (K ≃ₐ[F] K) = 2 :=
     (IsQuadraticExtension.finrank_eq_two F K) ▸ IsGalois.card_aut_eq_finrank F K
   rw [← Nat.card_eq_fintype_card, Nat.card_eq_two_iff' 1] at this
-  exact ExistsUnique.unique this (IsTotallyComplex.isConj_ne_one hφ)
-    (IsTotallyComplex.isConj_ne_one hψ)
+  exact ExistsUnique.unique this
+    ((isConj_ne_one_iff hφ).mpr <| IsTotallyComplex.complexEmbedding_not_isReal φ)
+    ((isConj_ne_one_iff hψ).mpr <| IsTotallyComplex.complexEmbedding_not_isReal ψ)
 
 variable (K) in
 /--
@@ -93,8 +94,9 @@ theorem isConj_complexConj (φ : K →+* ℂ) :
 variable (K) in
 theorem complexConj_ne_one :
     complexConj F K ≠ (1 : K ≃ₐ[F] K) :=
-  IsTotallyComplex.isConj_ne_one
-    (exists_isConj F (Classical.choice (inferInstance : Nonempty _))).choose_spec
+  (isConj_ne_one_iff
+    (exists_isConj F (Classical.choice (inferInstance : Nonempty _))).choose_spec).mpr <|
+      IsTotallyComplex.complexEmbedding_not_isReal _
 
 @[simp]
 theorem complexEmbedding_complexConj (φ : K →+* ℂ) (x : K) :
