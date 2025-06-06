@@ -272,172 +272,52 @@ section Ideal
 
 local notation "𝓞" => _i.v.integer
 
-/-- The submodule of over the valuation subring whose valuation is less than or equal to a
-certain value. -/
-def leSubmodule (γ : Γ₀) : Submodule 𝓞 R where
-  __ := leAddSubgroup v γ
-  smul_mem' r x h := by
-    simpa [Subring.smul_def] using mul_le_of_le_one_of_le r.prop h
-
-/-- The submodule of over the valuation subring whose valuation is less than a certain unit. -/
-def ltSubmodule (γ : Γ₀ˣ) : Submodule 𝓞 R where
-  __ := ltAddSubgroup v γ
-  smul_mem' r x h := by
-    simpa [Subring.smul_def] using mul_lt_of_le_one_of_lt r.prop h
-
-lemma leSubmodule_mono : Monotone (leSubmodule R) :=
-  leAddSubgroup_mono v
-
-lemma ltSubmodule_mono : Monotone (ltSubmodule R) :=
-  ltAddSubgroup_mono v
-
-lemma ltSubmodule_le_leSubmodule (γ : Γ₀ˣ) :
-    ltSubmodule R γ ≤ leSubmodule R (γ : Γ₀) :=
-  ltAddSubgroup_le_leAddSubgroup v γ
-
 lemma isOpen_ltSubmodule (γ : Γ₀ˣ) :
-    IsOpen (ltSubmodule R γ : Set R) :=
+    IsOpen ((ltSubmodule v γ : Submodule 𝓞 R) : Set R) :=
   isOpen_ball _ _
 
 lemma isClosed_ltSubmodule (γ : Γ₀ˣ) :
-    IsClosed (ltSubmodule R γ : Set R) :=
+    IsClosed ((ltSubmodule v γ : Submodule 𝓞 R) : Set R) :=
   isClosed_ball _ _
 
 lemma isClopen_ltSubmodule (γ : Γ₀ˣ) :
-    IsClopen (ltSubmodule R γ : Set R) :=
+    IsClopen ((ltSubmodule v γ : Submodule 𝓞 R) : Set R) :=
   isClopen_ball _ _
 
 lemma isOpen_leSubmodule {γ : Γ₀} (hγ : γ ≠ 0) :
-    IsOpen (leSubmodule R γ : Set R) :=
+    IsOpen ((leSubmodule v γ : Submodule 𝓞 R) : Set R) :=
   isOpen_closedBall _ hγ
 
 lemma isClosed_leSubmodule (γ : Γ₀) :
-    IsClosed (leSubmodule R γ : Set R) :=
+    IsClosed ((leSubmodule v γ : Submodule 𝓞 R) : Set R) :=
   isClosed_closedBall _ _
 
 lemma isClopen_leSubmodule {γ : Γ₀} (hγ : γ ≠ 0) :
-    IsClopen (leSubmodule R γ : Set R) :=
+    IsClopen ((leSubmodule v γ : Submodule 𝓞 R) : Set R) :=
   isClopen_closedBall _ hγ
 
-variable {R} in
-@[simp]
-lemma mem_leSubmodule_iff {γ : Γ₀} {x : R} :
-    x ∈ leSubmodule R γ ↔ v x ≤ γ :=
-  Iff.rfl
-
-variable {R} in
-@[simp]
-lemma mem_ltSubmodule_iff {γ : Γ₀ˣ} {x : R} :
-    x ∈ ltSubmodule R γ ↔ v x < γ :=
-  Iff.rfl
-
-@[simp]
-lemma leSubmodule_zero (K : Type*) [Field K] [Valued K Γ₀] :
-    leSubmodule K (0 : Γ₀) = ⊥ := by
-  ext; simp
-
-lemma leSubmodule_v_le_of_mem {K : Type*} [Field K] [Valued K Γ₀]
-    {S : Submodule v.integer K} {x : K} (hx : x ∈ S) :
-    leSubmodule K (v x) ≤ S := by
-  rcases eq_or_ne x 0 with rfl | hx0
-  · simp
-  intro y hy
-  have : v ((y : K) / x) ≤ 1 := by simp [div_le_one_of_le₀ hy]
-  simpa [Subring.smul_def, div_mul_cancel₀ _ hx0] using S.smul_mem ⟨_, this⟩ hx
-
-lemma ltSubmodule_v_le_of_mem {K : Type*} [Field K] [Valued K Γ₀]
-    {S : Submodule v.integer K} {x : K} (hx : x ∈ S) (hxv : Valued.v x ≠ 0) :
-    ltSubmodule K (Units.mk0 _ hxv) ≤ S :=
-  (leSubmodule_v_le_of_mem hx).trans' (ltSubmodule_le_leSubmodule _ _)
-
--- the ideals do not use the submodules due to `Submodule.comap _ (Algebra.linearMap _ _)`
--- requiring commutativity
-
-/-- The ideal of elements of the valuation subring whose valuation is less than or equal to a
-certain value. -/
-def leIdeal (γ : Γ₀) : Ideal 𝓞 where
-  __ := AddSubgroup.addSubgroupOf (leAddSubgroup v γ) _i.v.integer.toAddSubgroup
-  smul_mem' r x h := by
-    change v ((r : R) * x) ≤ γ -- not sure why simp can't get us to here
-    simpa [Subring.smul_def] using mul_le_of_le_one_of_le r.prop h
-
-/-- The ideal of elements of the valuation subring whose valuation is less than a certain unit. -/
-def ltIdeal (γ : Γ₀ˣ) : Ideal 𝓞 where
-  __ := AddSubgroup.addSubgroupOf (ltAddSubgroup v γ) _i.v.integer.toAddSubgroup
-  smul_mem' r x h := by
-    change v ((r : R) * x) < γ -- not sure why simp can't get us to here
-    simpa [Subring.smul_def] using mul_lt_of_le_one_of_lt r.prop h
-
--- Can't use `leAddSubgroup` because `addSubgroupOf` is a dependent function
-lemma leIdeal_mono : Monotone (leIdeal R) :=
-  fun _ _ h _ ↦ h.trans'
-
-lemma ltIdeal_mono : Monotone (ltIdeal R) :=
-  fun _ _ h _ ↦ (Units.val_le_val.mpr h).trans_lt'
-
-lemma ltIdeal_le_leIdeal (γ : Γ₀ˣ) :
-    ltIdeal R γ ≤ leIdeal R (γ : Γ₀) :=
-  fun _ h ↦ h.le
-
-variable {R} in
-@[simp]
-lemma mem_leIdeal_iff {γ : Γ₀} {x : 𝓞} :
-    x ∈ leIdeal R γ ↔ v (x : R) ≤ γ :=
-  Iff.rfl
-
-variable {R} in
-@[simp]
-lemma mem_ltIdeal_iff {γ : Γ₀ˣ} {x : 𝓞} :
-    x ∈ ltIdeal R γ ↔ v (x : R) < γ :=
-  Iff.rfl
-
-@[simp]
-lemma leIdeal_zero (K : Type*) [Field K] [hv : Valued K Γ₀] :
-    leIdeal K (0 : Γ₀) = ⊥ := by
-  ext; simp
-
-lemma leSubmodule_comap_algebraMap_eq_leIdeal {K : Type*} [Field K] [Valued K Γ₀] (γ : Γ₀) :
-    (leSubmodule K γ).comap (Algebra.linearMap _ _) = leIdeal K γ :=
-  Submodule.ext fun _ ↦ Iff.rfl
-
--- Ideally, this would follow from `leSubmodule_v_le_of_mem`
-lemma leIdeal_v_le_of_mem {K : Type*} [Field K] [Valued K Γ₀]
-    {I : Ideal v.integer} {x : v.integer} (hx : x ∈ I) :
-    leIdeal K (v (x : K)) ≤ I := by
-  rcases eq_or_ne x 0 with rfl | hx0
-  · simp
-  intro y hy
-  have : v ((y : K) / x) ≤ 1 := by simpa using div_le_one_of_le₀ hy zero_le'
-  convert I.smul_mem ⟨_, this⟩ hx using 1
-  simp [Subtype.ext_iff, div_mul_cancel₀ _ (ZeroMemClass.coe_eq_zero.not.mpr hx0)]
-
-lemma ltIdeal_v_le_of_mem {K : Type*} [Field K] [Valued K Γ₀]
-    {I : Ideal v.integer} {x : v.integer} (hx : x ∈ I) (hxv : Valued.v (x : K) ≠ 0) :
-    ltIdeal K (Units.mk0 _ hxv) ≤ I :=
-  (leIdeal_v_le_of_mem hx).trans' (ltIdeal_le_leIdeal _ _)
-
 lemma isOpen_ltIdeal (γ : Γ₀ˣ) :
-    IsOpen (ltIdeal R γ : Set 𝓞) :=
+    IsOpen ((ltIdeal v γ : Ideal 𝓞) : Set 𝓞) :=
   isOpen_ball _ _ |>.preimage continuous_subtype_val
 
 lemma isClosed_ltIdeal (γ : Γ₀ˣ) :
-    IsClosed (ltIdeal R γ : Set 𝓞) :=
+    IsClosed ((ltIdeal v γ : Ideal 𝓞) : Set 𝓞) :=
   isClosed_ball _ _ |>.preimage continuous_subtype_val
 
 lemma isClopen_ltIdeal (γ : Γ₀ˣ) :
-    IsClopen (ltIdeal R γ : Set 𝓞) :=
+    IsClopen ((ltIdeal v γ : Ideal 𝓞) : Set 𝓞) :=
   isClopen_ball _ _ |>.preimage continuous_subtype_val
 
 lemma isOpen_leIdeal {γ : Γ₀} (hγ : γ ≠ 0) :
-    IsOpen (leIdeal R γ : Set 𝓞) :=
+    IsOpen ((leIdeal v γ : Ideal 𝓞) : Set 𝓞) :=
   isOpen_closedBall _ hγ |>.preimage continuous_subtype_val
 
 lemma isClosed_leIdeal (γ : Γ₀) :
-    IsClosed (leIdeal R γ : Set 𝓞) :=
+    IsClosed ((leIdeal v γ : Ideal 𝓞) : Set 𝓞) :=
   isClosed_closedBall _ _ |>.preimage continuous_subtype_val
 
 lemma isClopen_leIdeal {γ : Γ₀} (hγ : γ ≠ 0) :
-    IsClopen (leIdeal R γ : Set 𝓞) :=
+    IsClopen ((leIdeal v γ : Ideal 𝓞) : Set 𝓞) :=
   isClopen_closedBall _ hγ |>.preimage continuous_subtype_val
 
 end Ideal
