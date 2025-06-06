@@ -62,17 +62,14 @@ instance {F : Type u → Type v} : Functor (Freer F) where
   map := Freer.map F
 
 instance {F : Type u → Type v} : LawfulFunctor (Freer F) where
-  map_const := by
-    intro α β
+  map_const {α β} := by
     simp [Functor.mapConst, Functor.map]
-  id_map := by
-    intro α x
+  id_map x := by
     simp [Functor.map]
     induction x
     case pure a => simp [Freer.map]
     case impure ι op cont ih => simp [Freer.map, ih]
-  comp_map := by
-    intro α β γ g h x
+  comp_map g h x := by
     simp [Functor.map]
     induction x
     case pure a => simp [Freer.map]
@@ -89,40 +86,40 @@ instance {F : Type u → Type v} : Monad (Freer F) where
   bind := bindFree F
 
 instance FreeLawfulMonad {F : Type u → Type v} : LawfulMonad (Freer F) where
-  bind_pure_comp := by
-    intro α β x y; simp [Functor.map, bind, pure]; induction y
+  bind_pure_comp x y := by
+    simp [Functor.map, bind, pure]; induction y
     · case pure a => simp [bindFree, map, Pure.pure]
     · case impure X Fx k ih => simp [bindFree, Freer.map, ih]
-  bind_map := by
-    intro α β f x; simp [bind, Seq.seq]
-  pure_bind := by
-    intro α x a f; simp [bind, pure, bindFree]
-  bind_assoc := by
-    intro α β γ x f g; simp [bind]; induction x
+  bind_map f x := by
+    simp [bind, Seq.seq]
+  pure_bind a f := by
+    simp [bind, pure, bindFree]
+  bind_assoc x f g := by
+    simp [bind]; induction x
     case pure a => simp [bindFree, Freer.map]
     case impure X Fx k ih => simp [bindFree, Freer.map, ih]
-  seqLeft_eq := by
-    intro α β x y; simp [Functor.map, SeqLeft.seqLeft, Seq.seq]; induction x
+  seqLeft_eq x y := by
+    simp [Functor.map, SeqLeft.seqLeft, Seq.seq]; induction x
     case pure a =>
       simp [bindFree, Freer.map]
       induction y
       case pure b => simp [bindFree, Freer.map]
       case impure X Fy k ih => simp [bindFree, Freer.map, ih]
     case impure X Fx k ih => simp [bindFree, Freer.map, ih]
-  seqRight_eq := by
-    intro α β x y; simp [Functor.map, bindFree, Freer.map]; induction x
+  seqRight_eq x y := by
+    simp [Functor.map, bindFree, Freer.map]; induction x
     case pure a =>
       simp [bindFree, Freer.map]
       induction y
       case pure b => simp [SeqRight.seqRight, Seq.seq, Functor.map, bindFree, Freer.map]
       case impure X Fy k ih =>
         simp [SeqRight.seqRight, Seq.seq, Functor.map, bindFree, Freer.map, ih] at ih ⊢
-        apply funext; intro x; exact ih x
+        apply funext; exact ih
     case impure X Fx k ih =>
       simp [Freer.map, Seq.seq, bindFree, Functor.map, SeqRight.seqRight] at ih ⊢
-      apply funext; intro x; exact ih x
-  pure_seq := by
-    intro α β f x; simp [Seq.seq, Functor.map, pure, bindFree]
+      apply funext; exact ih
+  pure_seq f x := by
+    simp [Seq.seq, Functor.map, pure, bindFree]
 
 /-! ### State Monad via `Freer` -/
 
