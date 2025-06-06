@@ -1,7 +1,7 @@
 name: Post PR summary comment
 
 on:
-  pull_request:
+  pull_request_target:
 
 jobs:
   build:
@@ -12,6 +12,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       with:
+        ref: ${{ github.event.pull_request.head.sha }}
         fetch-depth: 0
         path: pr-branch
 
@@ -65,7 +66,8 @@ jobs:
         git fetch origin ${{ github.base_ref }}  # fetch the base branch
 
         # Get the list of all changed files.
-        git diff --name-only origin/${{ github.base_ref }}... > changed_files.txt
+        echo "Saving the changed files to 'changed_files.txt'..."
+        git diff --name-only origin/${{ github.base_ref }}... | tee changed_files.txt
 
         # Get all files which were removed or renamed.
         echo "Checking for removed files..."
@@ -128,18 +130,19 @@ jobs:
         git checkout master
         git checkout -
         currentHash="$(git rev-parse HEAD)"
+        printf 'currentHash=%s\n' "${currentHash}"
 
-        # Compute the counts for the HEAD of the PR
+        echo "Compute the counts for the HEAD of the PR"
         python ../master-branch/scripts/count-trans-deps.py "Mathlib/" > head.json
 
         # Checkout the merge base
-        git checkout "$(git merge-base master ${{ github.sha }})"
+        git checkout "$(git merge-base master ${{ github.event.pull_request.head.sha }})"
 
-        # Compute the counts for the merge base
+        echo "Compute the counts for the merge base"
         python ../master-branch/scripts/count-trans-deps.py "Mathlib/" > base.json
 
         # switch back to the current branch: the `declarations_diff` script should be here
-        git checkout "${currentHash}"
+        git checkout "${currentHash}" --
 
     - name: Post or update the summary comment
       env:
@@ -152,13 +155,13 @@ jobs:
 
         graphAndHighPercentReports=$(python ../master-branch/scripts/import-graph-report.py base.json head.json changed_files.txt)
 
-        ## Import count comment
+        echo "Produce import count comment"
         importCount=$(
           printf '%s\n' "${graphAndHighPercentReports}" | sed '/^Import changes exceeding/Q'
           ../master-branch/scripts/import_trans_difference.sh
         )
 
-        ## High percentage imports
+        echo "Produce high percentage imports"
         high_percentages=$(
           printf '%s\n' "${graphAndHighPercentReports}" | sed -n '/^Import changes exceeding/,$p'
         )
@@ -178,7 +181,7 @@ jobs:
           importCount="$(printf '#### Import changes for modified files\n\n%s\n' "${importCount}")"
         fi
 
-        ## Declarations' diff comment
+        echo "Compute Declarations' diff comment"
         declDiff=$(../master-branch/scripts/declarations_diff.sh)
         if [ "$(printf '%s' "${declDiff}" | wc -l)" -gt 15 ]
         then
@@ -189,14 +192,15 @@ jobs:
         git checkout "${BRANCH_NAME}"
         currentHash="$(git rev-parse HEAD)"
         hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/commits/${currentHash}"
+        printf 'hashURL: %s' "${hashURL}"
 
-        ## Technical debt changes
+        echo "Compute technical debt changes"
         techDebtVar="$(../master-branch/scripts/technical-debt-metrics.sh pr_summary)"
 
         # store in a file, to avoid "long arguments" error.
         printf '%s [%s](%s)%s\n\n%s\n\n---\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${high_percentages}" "${importCount}" "${declDiff}" "${techDebtVar}" > please_merge_master.md
 
-        # At the end, include any errors about removed or renamed files without deprecation.
+        echo "Include any errors about removed or renamed files without deprecation."
         if [ -s moved_without_deprecation.txt ]
         then
           printf '\n\n---\n\n' >> please_merge_master.md
