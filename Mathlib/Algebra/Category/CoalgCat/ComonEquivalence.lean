@@ -60,8 +60,8 @@ def toComon : CoalgCat R ⥤ Comon_ (ModuleCat R) where
   map f :=
     { hom := ModuleCat.ofHom f.1
       is_comon_hom :=
-      { hom_counit := ModuleCat.hom_ext f.1.counit_comp
-        hom_comul := ModuleCat.hom_ext f.1.map_comp_comul.symm } }
+        { hom_counit := ModuleCat.hom_ext f.1.counit_comp
+          hom_comul := ModuleCat.hom_ext f.1.map_comp_comul.symm } }
 
 /-- A comonoid object in the category of `R`-modules has a natural comultiplication
 and counit. -/

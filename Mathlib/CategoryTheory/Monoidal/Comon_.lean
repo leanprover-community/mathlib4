@@ -153,8 +153,6 @@ structure Hom (M N : Comon_ C) where
   /-- The underlying morphism of a morphism of comonoid objects. -/
   hom : M.X ⟶ N.X
   [is_comon_hom : IsComon_Hom hom]
-  -- hom_counit : hom ≫ ε[N.X] = ε[M.X] := by aesop_cat
-  -- hom_comul : hom ≫ Δ[N.X] = Δ[M.X] ≫ (hom ⊗ hom) := by aesop_cat
 
 /-- Construct a morphism `M ⟶ N` of `Comon_ C` from a map `f : M ⟶ N` and a `IsComon_Hom f`
 instance. -/
@@ -164,10 +162,6 @@ abbrev Hom.mk' {M N : Comon_ C} (f : M.X ⟶ N.X)
     Hom M N :=
   have : IsComon_Hom f := ⟨f_counit, f_comul⟩
   .mk f
-
--- attribute [reassoc] Hom.hom_counit Hom.hom_comul
-
--- instance {M N : Comon_ C} (f : Hom M N) : IsComon_Hom f.hom := ⟨f.2, f.3⟩
 
 attribute [instance] Hom.is_comon_hom
 

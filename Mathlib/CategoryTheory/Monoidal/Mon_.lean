@@ -150,8 +150,6 @@ structure Hom (M N : Mon_ C) where
   /-- The underlying morphism -/
   hom : M.X ⟶ N.X
   [is_mon_hom : IsMon_Hom hom]
-  -- one_hom : η ≫ hom = η := by aesop_cat
-  -- mul_hom : μ ≫ hom = (hom ⊗ hom) ≫ μ := by aesop_cat
 
 attribute [instance] Hom.is_mon_hom
 
@@ -162,17 +160,12 @@ abbrev Hom.mk' {M N : Mon_ C} (f : M.X ⟶ N.X)
   have : IsMon_Hom f := ⟨one_f, mul_f⟩
   .mk f
 
--- attribute [reassoc] Hom.one_hom Hom.mul_hom
-
 /-- The identity morphism on a monoid object. -/
 @[simps]
 def id (M : Mon_ C) : Hom M M := ⟨𝟙 M.X⟩
 
 instance homInhabited (M : Mon_ C) : Inhabited (Hom M M) :=
   ⟨id M⟩
-
--- instance {M N : Mon_ C} (f : Hom M N) : IsMon_Hom f.hom := ⟨f.2, f.3⟩
-
 
 /-- Composition of morphisms of monoid objects. -/
 @[simps]
