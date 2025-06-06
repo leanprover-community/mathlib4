@@ -202,6 +202,8 @@ nonrec def OneHom.mulSingle [∀ i, One <| f i] (i : I) : OneHom (f i) (∀ i, f
   toFun := mulSingle i
   map_one' := mulSingle_one i
 
+variable {f}
+
 @[to_additive (attr := simp)]
 theorem OneHom.mulSingle_apply [∀ i, One <| f i] (i : I) (x : f i) :
     mulSingle f i x = Pi.mulSingle i x := rfl
@@ -210,6 +212,8 @@ theorem OneHom.mulSingle_apply [∀ i, One <| f i] (i : I) (x : f i) :
 theorem OneHom.mulSingle_injective [∀ i, MulOneClass <| f i] (i : I) :
     Function.Injective (mulSingle f i) :=
   Pi.mulSingle_injective i
+
+variable (f)
 
 /-- The monoid homomorphism including a single monoid into a dependent family of additive monoids,
 as functions supported at a point.
@@ -223,6 +227,8 @@ This is the `MonoidHom` version of `Pi.mulSingle`. -/
 def MonoidHom.mulSingle [∀ i, MulOneClass <| f i] (i : I) : f i →* ∀ i, f i :=
   { OneHom.mulSingle f i with map_mul' := mulSingle_op₂ (fun _ => (· * ·)) (fun _ => one_mul _) _ }
 
+variable {f}
+
 @[to_additive (attr := simp)]
 theorem MonoidHom.mulSingle_apply [∀ i, MulOneClass <| f i] (i : I) (x : f i) :
     mulSingle f i x = Pi.mulSingle i x :=
@@ -232,8 +238,6 @@ theorem MonoidHom.mulSingle_apply [∀ i, MulOneClass <| f i] (i : I) (x : f i) 
 theorem MonoidHom.mulSingle_injective [∀ i, MulOneClass <| f i] (i : I) :
     Function.Injective (mulSingle f i) :=
   Pi.mulSingle_injective i
-
-variable {f}
 
 @[to_additive]
 theorem Pi.mulSingle_sup [∀ i, SemilatticeSup (f i)] [∀ i, One (f i)] (i : I) (x y : f i) :
