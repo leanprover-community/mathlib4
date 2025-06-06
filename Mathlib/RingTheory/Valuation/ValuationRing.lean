@@ -45,6 +45,17 @@ assert_not_exists IsDiscreteValuationRing
 
 universe u v w
 
+/-- `MulAction.orbitRel` as a congruence relation, when the action factors accordingly. -/
+@[to_additive (attr := simps!)
+  "`AddAction.orbitRel` as a congruence relation, when the action factors accordingly."]
+def MulAction.orbitRelCon (G α : Type*)
+    [CommGroup G] [Mul α] [MulAction G α] [IsScalarTower G α α] [SMulCommClass G α α] :
+    Con α where
+  toSetoid := MulAction.orbitRel G α
+  mul' := by
+    rintro _ _ a b ⟨c, rfl⟩ ⟨d, rfl⟩
+    exact ⟨c * d, smul_mul_smul_comm _ _ _ _ |>.symm⟩
+
 /-- A magma is called a `PreValuationRing` provided that for any pair
 of elements `a b : A`, either `a` divides `b` or vice versa. -/
 class PreValuationRing (A : Type u) [Mul A] : Prop where
@@ -69,7 +80,7 @@ variable (A : Type u) [CommRing A]
 variable (K : Type v) [Field K] [Algebra A K]
 
 /-- The value group of the valuation ring `A`. Note: this is actually a group with zero. -/
-def ValueGroup : Type v := Quotient (MulAction.orbitRel Aˣ K)
+abbrev ValueGroup : Type v := (MulAction.orbitRelCon Aˣ K).Quotient
 
 instance : Inhabited (ValueGroup A K) := ⟨Quotient.mk'' 0⟩
 
@@ -89,29 +100,12 @@ instance : LE (ValueGroup A K) :=
 
 instance : Zero (ValueGroup A K) := ⟨Quotient.mk'' 0⟩
 
-instance : One (ValueGroup A K) := ⟨Quotient.mk'' 1⟩
-
-instance : Mul (ValueGroup A K) :=
-  Mul.mk fun x y =>
-    Quotient.liftOn₂' x y (fun a b => Quotient.mk'' <| a * b)
-      (by
-        rintro _ _ a b ⟨c, rfl⟩ ⟨d, rfl⟩
-        apply Quotient.sound'
-        dsimp
-        use c * d
-        simp only [mul_smul, Algebra.smul_def, Units.smul_def, RingHom.map_mul, Units.val_mul]
-        ring)
-
-instance : Inv (ValueGroup A K) :=
-  Inv.mk fun x =>
-    Quotient.liftOn' x (fun a => Quotient.mk'' a⁻¹)
-      (by
-        rintro _ a ⟨b, rfl⟩
-        apply Quotient.sound'
-        use b⁻¹
-        dsimp
-        rw [Units.smul_def, Units.smul_def, Algebra.smul_def, Algebra.smul_def, mul_inv,
-          map_units_inv])
+instance : Inv (ValueGroup A K) where
+  inv := Quotient.map (fun a => a⁻¹) <| by
+    rintro _ a ⟨b, rfl⟩
+    use b⁻¹
+    dsimp
+    rw [Units.smul_def, Units.smul_def, Algebra.smul_def, Algebra.smul_def, mul_inv, map_units_inv]
 
 variable [IsDomain A] [ValuationRing A] [IsFractionRing A K]
 
@@ -156,12 +150,8 @@ noncomputable instance linearOrder : LinearOrder (ValueGroup A K) where
 
 instance commGroupWithZero :
     CommGroupWithZero (ValueGroup A K) :=
-  { mul_assoc := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; apply Quotient.sound'; rw [mul_assoc]
-    one_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [one_mul]
-    mul_one := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_one]
-    mul_comm := by rintro ⟨a⟩ ⟨b⟩; apply Quotient.sound'; rw [mul_comm]
-    zero_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [zero_mul]
-    mul_zero := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_zero]
+  { zero_mul := by rintro ⟨a⟩; apply Quotient.sound'; simp [zero_mul]
+    mul_zero := by rintro ⟨a⟩; apply Quotient.sound'; simp [mul_zero]
     exists_pair_ne := by
       use 0, 1
       intro c; obtain ⟨d, hd⟩ := Quotient.exact' c
@@ -186,11 +176,6 @@ noncomputable instance linearOrderedCommGroupWithZero :
       rintro ⟨a⟩ ⟨b⟩ ⟨c, rfl⟩ ⟨d⟩
       use c; simp only [Algebra.smul_def]; ring
     zero_le_one := ⟨0, by rw [zero_smul]⟩
-    exists_pair_ne := by
-      use 0, 1
-      intro c; obtain ⟨d, hd⟩ := Quotient.exact' c
-      apply_fun fun t => d⁻¹ • t at hd
-      simp only [inv_smul_smul, smul_zero, one_ne_zero] at hd
     bot := 0
     bot_le := by rintro ⟨a⟩; exact ⟨0, zero_smul ..⟩ }
 
