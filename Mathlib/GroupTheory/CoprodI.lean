@@ -695,9 +695,10 @@ theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i 
     ext
     rw [h]
   obtain ⟨l, hnot1, hchain⟩ := w
-  induction' l with x l hi
-  · contradiction
-  · rw [List.forall_mem_cons] at hnot1
+  induction l with
+  | nil => contradiction
+  | cons x l hi =>
+    rw [List.forall_mem_cons] at hnot1
     rcases l with - | ⟨y, l⟩
     · refine ⟨x.1, x.1, singleton x.2 hnot1.1, ?_⟩
       simp [toWord]
