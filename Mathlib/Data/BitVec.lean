@@ -72,7 +72,7 @@ instance : CommSemiring (BitVec w) :=
 open Fin.CommRing in
 theorem _root_.Fin.intCast_def' {n : Nat} [NeZero n] (x : Int) :
     (x : Fin n) = if 0 ≤ x then Fin.ofNat n x.natAbs else -Fin.ofNat n x.natAbs := by
-  unfold instCommRing
+  unfold Fin.instCommRing
   dsimp [Int.cast, IntCast.intCast, Int.castDef]
   split <;> (simp [Fin.intCast]; omega)
 
