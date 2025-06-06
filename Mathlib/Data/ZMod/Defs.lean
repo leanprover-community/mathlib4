@@ -69,6 +69,13 @@ instance instDistrib (n : ℕ) : Distrib (Fin n) :=
     right_distrib := fun a b c => by
       rw [mul_comm, left_distrib_aux, mul_comm _ b, mul_comm] }
 
+instance instNonUnitalCommRing (n : ℕ) [NeZero n] : NonUnitalCommRing (Fin n) where
+  __ := Fin.addCommGroup n
+  __ := Fin.instCommSemigroup n
+  __ := Fin.instDistrib n
+  zero_mul := Fin.zero_mul'
+  mul_zero := Fin.mul_zero'
+
 /--
 Commutative ring structure on `Fin n`.
 
@@ -83,14 +90,14 @@ For example, for `x : Fin k` and `n : Nat`,
 it causes `x < n` to be elaborated as `x < ↑n` rather than `↑x < n`,
 silently introducing wraparound arithmetic.
 -/
-def instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
-  { Fin.instAddMonoidWithOne n, Fin.addCommGroup n, Fin.instCommSemigroup n,
-      Fin.instDistrib n with
-    intCast n := Fin.intCast n
-    one_mul := Fin.one_mul'
-    mul_one := Fin.mul_one',
-    zero_mul := Fin.zero_mul'
-    mul_zero := Fin.mul_zero' }
+def instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) where
+  __ := Fin.instAddMonoidWithOne n
+  __ := Fin.addCommGroup n
+  __ := Fin.instCommSemigroup n
+  __ := Fin.instNonUnitalCommRing n
+  intCast n := Fin.intCast n
+  one_mul := Fin.one_mul'
+  mul_one := Fin.mul_one'
 
 namespace CommRing
 
