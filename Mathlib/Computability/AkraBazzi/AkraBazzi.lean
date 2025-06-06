@@ -1469,7 +1469,6 @@ theorem isBigO_asympBound : T =O[atTop] asympBound g a b := by
                 tendsto_natCast_atTop_atTop
          _ = asympBound g a b := by simp
 
-
 /-- The **Akra-Bazzi theorem**: `T ∈ Ω(n^p (1 + ∑_u^n g(u) / u^{p+1}))` -/
 theorem isBigO_symm_asympBound : asympBound g a b =O[atTop] T := by
   calc asympBound g a b = (fun n => 1 * asympBound g a b n) := by simp
