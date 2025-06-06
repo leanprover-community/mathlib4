@@ -49,10 +49,12 @@ protected lemma div_eq_div_iff (hbd : Commute b d) (hb : b ≠ 0) (hd : d ≠ 0)
     a / b = c / d ↔ a * d = c * b :=
   hbd.div_eq_div_iff_of_isUnit hb.isUnit hd.isUnit
 
+/-- The `MonoidWithZero` version of `mul_inv_eq_mul_inv_iff_mul_eq_mul`. -/
 protected lemma mul_inv_eq_mul_inv_iff (hbd : Commute b d) (hb : b ≠ 0) (hd : d ≠ 0) :
     a * b⁻¹ = c * d⁻¹ ↔ a * d = c * b :=
   hbd.mul_inv_eq_mul_inv_iff_of_isUnit hb.isUnit hd.isUnit
 
+/-- The `MonoidWithZero` version of `inv_mul_eq_inv_mul_iff_mul_eq_mul`. -/
 protected lemma inv_mul_eq_inv_mul_iff (hbd : Commute b d) (hb : b ≠ 0) (hd : d ≠ 0) :
     b⁻¹ * a = d⁻¹ * c ↔ d * a = b * c :=
   hbd.inv_mul_eq_inv_mul_iff_of_isUnit hb.isUnit hd.isUnit
