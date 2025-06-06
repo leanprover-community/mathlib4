@@ -193,7 +193,10 @@
   "Mathlib.Util.WithWeakNamespace",
   "Qq"],
  "ignoreAll":
- ["Batteries.Tactic.Basic", "Mathlib.Mathport.Syntax", "Mathlib.Tactic.Linter"],
+ ["Batteries.Tactic.Basic",
+  "Mathlib.Mathport.Syntax",
+  "Mathlib.Tactic.Linter",
+  "Mathlib.Init"],
  "ignore":
  {"Mathlib.Util.Notation3": ["Lean.Elab.BuiltinCommand"],
   "Mathlib.Topology.UniformSpace.Defs": ["Mathlib.Tactic.Monotonicity.Basic"],
@@ -396,20 +399,6 @@
   "Mathlib.Lean.Meta": ["Batteries.Logic"],
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Operations"],
   "Mathlib.Lean.Expr.Basic": ["Batteries.Logic"],
-  "Mathlib.Init":
-  ["Mathlib.Tactic.Linter.DeprecatedSyntaxLinter",
-   "Mathlib.Tactic.Linter.DirectoryDependency",
-   "Mathlib.Tactic.Linter.DocPrime",
-   "Mathlib.Tactic.Linter.DocString",
-   "Mathlib.Tactic.Linter.FlexibleLinter",
-   "Mathlib.Tactic.Linter.GlobalAttributeIn",
-   "Mathlib.Tactic.Linter.HashCommandLinter",
-   "Mathlib.Tactic.Linter.Lint",
-   "Mathlib.Tactic.Linter.Multigoal",
-   "Mathlib.Tactic.Linter.OldObtain",
-   "Mathlib.Tactic.Linter.Style",
-   "Mathlib.Tactic.Linter.UnusedTactic",
-   "Mathlib.Tactic.Linter.UnusedTacticExtension"],
   "Mathlib.GroupTheory.MonoidLocalization.Basic": ["Mathlib.Init.Data.Prod"],
   "Mathlib.Geometry.Manifold.Sheaf.Smooth":
   ["Mathlib.CategoryTheory.Sites.Whiskering"],
@@ -492,6 +481,8 @@
   ["Mathlib.Tactic.CategoryTheory.Bicategory.Basic"],
   "Mathlib.Analysis.Normed.Operator.LinearIsometry":
   ["Mathlib.Algebra.Star.Basic"],
+  "Mathlib.Analysis.Normed.Group.AddCircle":
+  ["Mathlib.Topology.Instances.AddCircle.Real"],
   "Mathlib.Analysis.InnerProductSpace.PiL2": ["Mathlib.Util.Superscript"],
   "Mathlib.Analysis.InnerProductSpace.Defs": ["Mathlib.Data.Complex.Basic"],
   "Mathlib.Analysis.Distribution.SchwartzSpace": ["Mathlib.Tactic.MoveAdd"],
