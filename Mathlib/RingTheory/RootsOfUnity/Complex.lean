@@ -210,15 +210,13 @@ lemma cyclotomic_polynomial_5 (z : ℂ) :
                                   * (z - (-(√5 +1)/4 - √2 * √(5 - √5) / 4 * I)) := by
   have two_mul_two : 2 * 2 = 4 := rfl
   ring_nf
-  simp only [I_sq, I_pow_four, ← ofReal_pow]
-  rw [Real.sq_sqrt zero_le_two]
-  rw [Real.sq_sqrt (Left.add_nonneg (Nat.ofNat_nonneg' _) (Real.sqrt_nonneg _))]
+  simp only [I_sq, I_pow_four, ← ofReal_pow, Real.sq_sqrt, zero_le_two, Nat.ofNat_nonneg',
+    Left.add_nonneg, Real.sqrt_nonneg]
   rw [Real.sq_sqrt (by
     rw [sub_nonneg, Real.sqrt_le_left (Nat.ofNat_nonneg' 5), sq,
       le_mul_iff_one_le_right  Nat.ofNat_pos']
     exact Nat.one_le_ofNat
   )]
-  rw [Real.sq_sqrt (Nat.ofNat_nonneg' 5)]
   rw [one_div, ofReal_add, ofReal_sub, ofReal_pow]
   ring_nf
   rw [← ofReal_pow]
