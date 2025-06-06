@@ -69,6 +69,7 @@ section IsInnerPart
 
 variable {X : Type*} [MeasurableSpace X]
 
+-- To do: this could be better as a stucture.
 /-- An inner partition is a finite collection of pairwise disjoint sets which are all contained
 within a given set. Different to `Setoid.IsPartition` there is no requirement for the union to be
 the entire set and the the number of partition elements is required to be finite. -/
