@@ -424,7 +424,7 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
   simp [Unique.eq_default (terminal.from _), single_apply, if_pos (Subsingleton.elim _ _)]
 
 theorem d_comp_ε : (standardComplex k G).d 1 0 ≫ ε k G = 0 := by
-  ext x : 3
+  ext : 3
   have : (forget₂ToModuleCat k G).d 1 0
       ≫ (forget₂ (Rep k G) (ModuleCat.{u} k)).map (ε k G) = 0 := by
     rw [← forget₂ToModuleCatHomotopyEquiv_f_0_eq,
@@ -468,13 +468,19 @@ def standardResolution : ProjectiveResolution (Rep.trivial k G k) where
   complex := standardComplex k G
   π := εToSingle₀ k G
 
-/-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is the trivial `k`-linear
+@[deprecated (since := "2025-06-06")]
+alias groupCohomology.projectiveResolution := Rep.standardResolution
+
+/-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is a trivial `k`-linear
 `G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
-standard resolution of `k`. -/
+standard resolution of `k` called `standardComplex k G`. -/
 def standardResolution.extIso (V : Rep k G) (n : ℕ) :
     ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
       ((standardComplex k G).linearYonedaObj k V).homology n :=
   (standardResolution k G).isoExt n V
+
+@[deprecated (since := "2025-06-06")]
+alias groupCohomology.extIso := Rep.standardResolution.extIso
 
 namespace barComplex
 
