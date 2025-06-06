@@ -128,30 +128,27 @@ theorem assoc_flip : A ⊴ γ ≫ γ = (σ_ A A M.X).inv ≫ μ ⊵ M.X ≫ γ :
 structure Hom (M N : Mod_ D A) where
   /-- The underlying morphism -/
   hom : M.X ⟶ N.X
-  [isMod_Hom : IsMod_Hom A hom]
+  smul_hom : γ[M.X] ≫ hom = A ⊴ hom ≫ γ[N.X] := by aesop_cat
 
+attribute [reassoc (attr := simp)] Hom.smul_hom
 
-attribute [instance] Hom.isMod_Hom
+instance Hom.isMod_Hom {M N : Mod_ D A} (f : Hom M N) : IsMod_Hom A f.hom where
 
-/-- An alternative constructor for `Hom`,
-taking a morphism without a [isMod_Hom] instance, as well as the relevant
-equality to put such an instance. -/
-@[simps!]
-def Hom.mk' {M N : Mod_ D A} (f : M.X ⟶ N.X)
-    (smul_hom : γ[M.X] ≫ f = A ⊴ f ≫ γ[N.X] := by aesop_cat) : Hom M N :=
-  letI : IsMod_Hom A f := ⟨smul_hom⟩
-  ⟨f⟩
+/-- An alternative constructor for `Mod_.Hom`, taking a morphism wit an
+`[IsMod_Hom]' instance. -/
+@[simps]
+def Hom.mk' {M N : Mod_ D A} (f : M.X ⟶ N.X) [IsMod_Hom A f] : Hom M N where
+  hom := f
 
-/-- An alternative constructor for `Hom`,
-taking a morphism without a [isMod_Hom] instance, between objects with
-a `Mod_Class` instance (rather than bundled as `Mod_`),
-as well as the relevant equality to put such an instance. -/
+/-- An alternative constructor for `Mod_.Hom`,
+taking a morphism with an `[IsMod_Hom]` instance between objects with
+a `Mod_Class` instance (rather than bundled as `Mod_`). -/
 @[simps!]
 def Hom.mk'' {M N : D} [Mod_Class A M] [Mod_Class A N] (f : M ⟶ N)
-    (smul_hom : γ[M] ≫ f = A ⊴ f ≫ γ[N] := by aesop_cat) :
+    [IsMod_Hom A f] :
     Hom (.mk (A := A) M) (.mk (A := A) N) :=
-  letI : IsMod_Hom A f := ⟨smul_hom⟩
-  ⟨f⟩
+  letI : IsMod_Hom A f := ⟨by simp⟩
+  .mk' f
 
 /-- The identity morphism on a module object. -/
 @[simps]
@@ -170,11 +167,6 @@ instance : Category (Mod_ D A) where
   Hom M N := Hom M N
   id := id
   comp f g := comp f g
-
-@[ext]
-lemma hom_ext {M N : Mod_ D A} (f₁ f₂ : M ⟶ N) (h : f₁.hom = f₂.hom) :
-    f₁ = f₂ :=
-  Hom.ext h
 
 @[simp]
 theorem id_hom' (M : Mod_ D A) : (𝟙 M : M ⟶ M).hom = 𝟙 M.X := by
@@ -256,7 +248,7 @@ def comap {A B : C} [Mon_Class A] [Mon_Class B] (f : A ⟶ B) [IsMon_Hom f] :
     ⟨M.X⟩
   map {M N} g :=
     letI := scalarRestriction_hom f M.X N.X g.hom
-    ⟨g.hom⟩
+    { hom := g.hom, smul_hom := this.smul_hom }
 
 -- Lots more could be said about `comap`, e.g. how it interacts with
 -- identities, compositions, and equalities of monoid object morphisms.
