@@ -9,6 +9,7 @@ import Mathlib.Algebra.Group.WithOne.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Algebra.Group.Submonoid.Basic
+import Mathlib.Algebra.Group.Subgroup.Lattice
 
 /-! # The range of a `MonoidHom`,
   when the codomain is a `GroupWithZero`, turned into a `GroupWithZero`.
@@ -18,7 +19,7 @@ then `f.range₀` is the smallest submonoid of `B`
 containing the image of `f` which is a `CommGroupWithZero`.
 -/
 
-variable {A B : Type*} [MonoidWithZero A] [CommGroupWithZero B]
+variable {A B : Type*} [MonoidWithZero A] [GroupWithZero B]--[CancelMonoidWithZero B] [Nontrivial B]
   {F : Type*} [FunLike F A B] [MonoidHomClass F A B]
   (f : F)
 
@@ -26,26 +27,76 @@ namespace MonoidHomWithZero
 
 open Set
 
-open Submonoid in
+-- open Submonoid in
+-- def frange₀ : Submonoid B where
+--   carrier := closure (range f) ∪ {0}
+--   mul_mem' {b b'} hb hb' := by
+--     simp only [mem_union, SetLike.mem_coe, mem_singleton_iff] at hb hb' ⊢
+--     rcases hb' with hb' | hb'; all_goals rcases hb with hb | hb';
+--     · left
+--       exact Submonoid.mul_mem _ hb hb'
+--     all_goals
+--       right
+--       simp [hb', zero_mul, mul_zero]
+--   one_mem' := by
+--     simpa only [union_singleton, mem_insert_iff, one_ne_zero, SetLike.mem_coe, false_or] using
+--       one_mem <| closure _
+
 def frange₀ : Submonoid B where
-  carrier := closure (range f) ∪ {0}
+  carrier := (↑)''(Subgroup.closure (G := Bˣ) ((↑)⁻¹' (range f))).carrier ∪ {0}
   mul_mem' {b b'} hb hb' := by
-    simp only [mem_union, SetLike.mem_coe, mem_singleton_iff] at hb hb' ⊢
-    rcases hb' with hb' | hb'; all_goals rcases hb with hb | hb';
-    · left
-      exact Submonoid.mul_mem _ hb hb'
-    all_goals
-      right
-      simp [hb', zero_mul, mul_zero]
+    simp only [union_singleton, mem_insert_iff, mul_eq_zero, mem_image, Subsemigroup.mem_carrier,
+      Submonoid.mem_toSubsemigroup, Subgroup.mem_toSubmonoid] at hb hb' ⊢
+    rcases hb with hb | ⟨a, ha, rfl⟩ <;> rcases hb' with hb' | ⟨a', ha', rfl⟩
+    rotate_right
+    · right
+      exact ⟨a * a', by simpa only [Units.val_mul, and_true] using Subgroup.mul_mem _ ha ha'⟩
+    all_goals tauto
   one_mem' := by
-    simpa only [union_singleton, mem_insert_iff, one_ne_zero, SetLike.mem_coe, false_or] using
-      one_mem <| closure _
+    simpa only [union_singleton, mem_insert_iff, one_ne_zero, mem_image, Subsemigroup.mem_carrier,
+      Submonoid.mem_toSubsemigroup, Subgroup.mem_toSubmonoid, Units.val_eq_one, exists_eq_right,
+      false_or] using Subgroup.one_mem ..
+
+theorem inv_mem_frange₀ {b : B} (hb : b ∈ frange₀ f) :
+    b⁻¹ ∈ frange₀ f := by
+  simp only [frange₀, union_singleton, inv_zero, Submonoid.mem_mk, Subsemigroup.mem_mk,
+    mem_insert_iff, mem_image, Units.ne_zero, and_false, exists_const, or_false] at hb ⊢
+  rcases hb with hb | ⟨a, ha, rfl⟩
+  · left
+    rw [hb, inv_zero]
+  right
+  use a⁻¹
+  simpa
+
+instance : GroupWithZero (frange₀ f) where
+  toMonoid := inferInstance
+  zero := ⟨0, by simp [frange₀]⟩
+  zero_mul a := by
+    rw [← Subtype.coe_inj, Submonoid.coe_mul]
+    exact zero_mul ..
+  mul_zero a := by
+    rw [← Subtype.coe_inj, Submonoid.coe_mul]
+    exact mul_zero ..
+  inv a := by
+    rcases a with ⟨a, ha⟩
+    exact ⟨a⁻¹, inv_mem_frange₀ _ ha⟩
+  exists_pair_ne := by
+    use 1, ⟨0, by simp [frange₀]⟩
+    rw [ne_eq, ← Subtype.coe_inj]
+    exact one_ne_zero
+  inv_zero := by
+    simp [← Subtype.coe_inj]
+    exact inv_zero
+  mul_inv_cancel a ha₀ := by
+    rw [Submonoid.mk_mul_mk, Submonoid.mk_eq_one, mul_inv_cancel₀]
+    rw [← Subtype.coe_ne_coe] at ha₀
+    exact ha₀
 
 
 /-- The range of a morphism of monoids with codomain a `CommGroupWithZero`,
 as a `CommGroupWithZero` -/
 def range₀ : Submonoid B where
-  carrier := { b | ∃ a c, f a ≠ 0 ∧  (f a * b = f c)}
+  carrier := { b | ∃ a c, f a ≠ 0 ∧ (f a * b = f c)}
   mul_mem' {b b'} hb hb' := by
     simp only [ne_eq, mem_setOf_eq] at hb hb' ⊢
     obtain ⟨a, c, ha, h⟩ := hb
