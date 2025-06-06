@@ -399,7 +399,7 @@ def compForgetAugmentedIso :
       standardComplex.forget₂ToModuleCat k G :=
   eqToIso
     (Functor.congr_obj (map_alternatingFaceMapComplex (forget₂ (Rep k G) (ModuleCat.{u} k))).symm
-      (classifyingSpaceUniversalCover G ⋙ Rep.linearization k G))
+      (classifyingSpaceUniversalCover G ⋙ linearization k G))
 
 /-- As a complex of `k`-modules, the standard resolution of the trivial `G`-representation `k` is
 homotopy equivalent to the complex which is `k` at 0 and 0 elsewhere. -/
@@ -433,8 +433,7 @@ theorem forget₂ToModuleCatHomotopyEquiv_f_0_eq :
   simp [Unique.eq_default (terminal.from _), single_apply, if_pos (Subsingleton.elim _ _)]
 
 theorem d_comp_ε : (standardComplex k G).d 1 0 ≫ ε k G = 0 := by
-  ext : 1
-  refine ModuleCat.hom_ext <| LinearMap.ext fun x => ?_
+  ext : 3
   have : (forget₂ToModuleCat k G).d 1 0
       ≫ (forget₂ (Rep k G) (ModuleCat.{u} k)).map (ε k G) = 0 := by
     rw [← forget₂ToModuleCatHomotopyEquiv_f_0_eq,
@@ -467,10 +466,9 @@ instance : QuasiIso (εToSingle₀ k G) := by
   apply quasiIso_forget₂_εToSingle₀
 
 end Exactness
-
 end standardComplex
 
-open standardComplex HomologicalComplex.Hom
+open HomologicalComplex.Hom standardComplex
 
 variable [Group G] [DecidableEq G]
 
@@ -482,15 +480,15 @@ def standardResolution : ProjectiveResolution (Rep.trivial k G k) where
 @[deprecated (since := "2025-06-06")]
 alias groupCohomology.projectiveResolution := Rep.standardResolution
 
-instance : EnoughProjectives (Rep k G) :=
-  Rep.equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2 ModuleCat.enoughProjectives
-
 /-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is a trivial `k`-linear
 `G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
 standard resolution of `k` called `standardComplex k G`. -/
-def _root_.groupCohomology.extIso (V : Rep k G) (n : ℕ) :
+def standardResolution.extIso (V : Rep k G) (n : ℕ) :
     ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
       ((standardComplex k G).linearYonedaObj k V).homology n :=
   (standardResolution k G).isoExt n V
+
+@[deprecated (since := "2025-06-06")]
+alias groupCohomology.extIso := Rep.standardResolution.extIso
 
 end Rep
