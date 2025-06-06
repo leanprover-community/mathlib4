@@ -277,13 +277,8 @@ def _root_.MulEquiv.withZero [Group β] :
   invFun e := ⟨⟨
     fun x ↦ unzero (x := e x) (by simp [ne_eq, ← e.eq_symm_apply]),
     fun x ↦ unzero (x := e.symm x) (by simp [e.symm_apply_eq]),
-    by intro; simp, by intro; simp⟩, by
-      intro _ _
-      simp only [coe_mul, map_mul]
-      generalize_proofs A B C
-      suffices ((unzero A : β) : WithZero β) = (unzero B) * (unzero C) by
-        rwa [← WithZero.coe_mul, WithZero.coe_inj] at this
-      simp⟩
+    by intro; simp, by intro; simp⟩,
+    by intro; simp [← coe_inj]⟩
   left_inv _ := by ext; simp
   right_inv _ := by ext x; cases x <;> simp
 
