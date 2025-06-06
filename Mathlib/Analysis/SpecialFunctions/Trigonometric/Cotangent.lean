@@ -55,26 +55,20 @@ theorem pi_mul_cot_pi_q_exp (z : ℍ) :
 
 section MittagLeffler
 
-open Filter Function Complex Real
+open Filter Function
 
-open scoped Interval Topology BigOperators Nat Complex
+open scoped Topology BigOperators Nat Complex
 
 local notation "ℂ_ℤ " => integerComplement
 
 /-- The main term in the infinite product for sine. -/
-noncomputable def sineTerm (x : ℂ) (n : ℕ) : ℂ := -x ^ 2 / (n + 1) ^ 2
+noncomputable abbrev sineTerm (x : ℂ) (n : ℕ) : ℂ := -x ^ 2 / (n + 1) ^ 2
 
 lemma sineTerm_ne_zero {x : ℂ} (hx : x ∈ ℂ_ℤ) (n : ℕ) : 1 + sineTerm x n ≠ 0 := by
   simp only [sineTerm, ne_eq]
-  intro h
-  rw [add_eq_zero_iff_eq_neg, neg_div', eq_div_iff] at h
-  · simp only [one_mul, neg_neg, sq_eq_sq_iff_eq_or_eq_neg] at h
-    rcases h with h1 | h2
-    · have := not_exists.mp hx (n + 1)
-      norm_cast at *
-    · have := not_exists.mp hx (-(n + 1))
-      rw [← neg_eq_iff_eq_neg ] at h2
-      norm_cast at *
+  rw [add_eq_zero_iff_eq_neg, neg_div', eq_div_iff]
+  · have := (integerComplement_pow_two_ne_pow_two hx ((n + 1) : ℤ))
+    aesop
   · simp [Nat.cast_add_one_ne_zero n]
 
 theorem tendsto_euler_sin_prod' (x : ℂ) (h0 : x ≠ 0) :
@@ -82,7 +76,7 @@ theorem tendsto_euler_sin_prod' (x : ℂ) (h0 : x ≠ 0) :
     (𝓝 (sin (π * x) / (π * x))) := by
   rw [show (sin (π * x) / (π * x)) = sin (π * x) * (1 / (π * x)) by ring]
   apply (Filter.Tendsto.mul_const (b := 1 / (π * x)) (tendsto_euler_sin_prod x)).congr
-  refine fun n => by field_simp [sineTerm, Real.pi_ne_zero, sub_eq_add_neg]
+  exact fun n ↦ by field_simp [sineTerm, Real.pi_ne_zero, sub_eq_add_neg]
 
 theorem multipliable_sineTerm (x : ℂ) : Multipliable fun i ↦ (1 + sineTerm x i) := by
   apply multipliable_one_add_of_summable
@@ -95,35 +89,28 @@ lemma euler_sineTerm_tprod (x : ℂ) (hx : x ∈ ℂ_ℤ) :
     Multipliable.hasProd_iff_tendsto_nat (multipliable_sineTerm x )]
   exact tendsto_euler_sin_prod' x (by apply integerComplement.ne_zero hx)
 
-@[fun_prop]
-theorem sineTerm_ContinuousOn (Z : Set ℂ) (n : ℕ) (m : WithTop ℕ∞) :
-    ContDiffOn ℂ m (fun z ↦ sineTerm z n) Z := by
-  simp only [sineTerm]
-  fun_prop
-
-private lemma one_add_sineTerm_bound_aux (Z : Set ℂ) (hZ : IsCompact Z) :
+private lemma sineTerm_bound_aux (Z : Set ℂ) (hZ : IsCompact Z) :
     ∃ u : ℕ → ℝ, Summable u ∧ ∀ j z, z ∈ Z → ‖sineTerm z j‖ ≤ u j := by
   have hf : ContinuousOn (fun x : ℂ => ‖-x ^ 2‖) Z := by
     fun_prop
   obtain ⟨s, hs⟩ := bddAbove_def.mp (IsCompact.bddAbove_image hZ hf)
-  use (fun n : ℕ => ‖((s : ℂ) / (n + 1) ^ 2)‖)
-  constructor
+  refine ⟨fun n : ℕ => ‖(s : ℂ) / (n + 1) ^ 2‖, ?_, ?_⟩
   · simpa using summable_pow_div_add (s : ℂ) 2 1 (Nat.one_lt_two)
   · simp only [norm_neg, norm_pow, Set.mem_image, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂, sineTerm, norm_div, norm_real, norm_eq_abs] at *
     intro n x hx
     gcongr
-    apply le_trans (hs x hx ) (le_abs_self s)
+    apply le_trans (hs x hx) (le_abs_self s)
 
 theorem multipliableUniformlyOn_euler_sin_prod_on_compact {Z : Set ℂ} (hZC : IsCompact Z) :
     MultipliableUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sineTerm z n)) {Z} := by
-  obtain ⟨u, hu, hu2⟩ := one_add_sineTerm_bound_aux Z hZC
+  obtain ⟨u, hu, hu2⟩ := sineTerm_bound_aux Z hZC
   refine Summable.multipliableUniformlyOn_nat_one_add hZC hu ?_ ?_
   · filter_upwards with n z hz using hu2 n z hz
   · fun_prop
 
-theorem HasProdUniformlyOn_euler_sin_prod_on_compact
-    {Z : Set ℂ} (hZ2 : Z ⊆ ℂ_ℤ) (hZC : IsCompact Z) :
+theorem HasProdUniformlyOn_sineTerm_prod_on_compact {Z : Set ℂ} (hZ2 : Z ⊆ ℂ_ℤ)
+    (hZC : IsCompact Z) :
     HasProdUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sineTerm z n))
     (fun x => (Complex.sin (↑π * x) / (↑π * x))) {Z} := by
   apply (multipliableUniformlyOn_euler_sin_prod_on_compact hZC).hasProdUniformlyOn.congr_right
@@ -133,9 +120,7 @@ theorem HasProdLocallyUniformlyOn_euler_sin_prod :
     HasProdLocallyUniformlyOn (fun n : ℕ => fun z : ℂ => (1 + sineTerm z n))
     (fun x => (Complex.sin (π * x) / (π * x))) ℂ_ℤ := by
   apply hasProdLocallyUniformlyOn_of_forall_compact (by apply isOpen_compl_range_intCast)
-  refine fun _ hZ hZC => HasProdUniformlyOn_euler_sin_prod_on_compact hZ hZC
-
-open Finset
+  refine fun _ hZ hZC => HasProdUniformlyOn_sineTerm_prod_on_compact hZ hZC
 
 theorem sin_pi_z_ne_zero {z : ℂ} (hz : z ∈ ℂ_ℤ) : Complex.sin (π * z) ≠ 0 := by
   apply Complex.sin_ne_zero_iff.2
@@ -152,7 +137,7 @@ theorem tendsto_logDeriv_euler_sin_div (x : ℂ) (hx : x ∈ ℂ_ℤ) :
   · simp only [Set.mem_setOf_eq, ne_eq, div_eq_zero_iff, mul_eq_zero, ofReal_eq_zero, not_or]
     refine ⟨sin_pi_z_ne_zero hx, Real.pi_ne_zero , integerComplement.ne_zero hx⟩
 
-theorem logDeriv_sin_div (z : ℂ) (hz : z ∈ ℂ_ℤ) :
+theorem logDeriv_sin_div_eq_cot (z : ℂ) (hz : z ∈ ℂ_ℤ) :
     logDeriv (fun t ↦ (Complex.sin (π * t) / (π * t))) z = π * cot (π * z) - 1 / z := by
   have : (fun t ↦ (Complex.sin (π * t)/ (π * t))) = fun z ↦
     (Complex.sin ∘ fun t ↦ π * t) z / (π * z) := by rfl
@@ -166,22 +151,21 @@ theorem logDeriv_sin_div (z : ℂ) (hz : z ∈ ℂ_ℤ) :
     refine ⟨Real.pi_ne_zero, integerComplement.ne_zero hz⟩
 
 /-- The term in the infinite series expansion of cot. -/
-noncomputable def cotTerm (x : ℂ) (n : ℕ) : ℂ := 1 / (x - (n + 1)) + 1 / (x + (n + 1))
+noncomputable abbrev cotTerm (x : ℂ) (n : ℕ) : ℂ := 1 / (x - (n + 1)) + 1 / (x + (n + 1))
 
 theorem logDeriv_sineTerm_eq_cotTerm (x : ℂ) (hx: x ∈ ℂ_ℤ) (i : ℕ) :
     logDeriv (fun (z : ℂ) ↦ 1 + sineTerm z i) x = cotTerm x i := by
-  simp only [sineTerm, logDeriv_apply, differentiableAt_const, deriv_const_add', deriv_div_const,
-    deriv.neg', differentiableAt_id', deriv_pow'', Nat.cast_ofNat, Nat.add_one_sub_one, pow_one,
-    deriv_id'', mul_one, cotTerm]
   have h1 := integerComplement_add_ne_zero hx (i + 1)
   have h2 : ((x : ℂ) - (i + 1)) ≠ 0 := by
     simpa [sub_eq_add_neg] using integerComplement_add_ne_zero hx (-(i + 1))
-  have h3 := sineTerm_ne_zero hx i
-  simp only [Int.cast_add, Int.cast_natCast, Int.cast_one, ne_eq, sineTerm, one_div] at *
-  have h4 : ((i + 1) ^ 2 * (1 + -x ^ 2 / (i + 1) ^ 2)) ≠ 0 := by
-    simp only [ne_eq, mul_eq_zero, OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff, h3,
-      or_false, Nat.cast_add_one_ne_zero i]
-  field_simp
+  have h3 : (i+1)^2 + -x^2 ≠ 0 := by
+      have := (integerComplement_pow_two_ne_pow_two hx ((i + 1) : ℤ)).symm
+      rw [← sub_eq_add_neg, sub_ne_zero]
+      aesop
+  simp only [Int.cast_add, Int.cast_natCast, Int.cast_one, ne_eq, sineTerm, logDeriv_apply,
+    differentiableAt_const, deriv_const_add', deriv_div_const, deriv.neg', differentiableAt_id',
+    deriv_pow'', Nat.cast_ofNat, Nat.add_one_sub_one, pow_one, deriv_id'', mul_one, cotTerm,
+    one_div] at *
   field_simp [Nat.cast_add_one_ne_zero i]
   ring
 
@@ -189,16 +173,14 @@ lemma logDeriv_prod_sineTerm_eq_sum_cotTerm {x : ℂ} (hx : x ∈ ℂ_ℤ) (n : 
     logDeriv (fun (z : ℂ) ↦ ∏ j ∈ Finset.range n, (1 + sineTerm z j)) x =
     ∑ j ∈ Finset.range n, cotTerm x j := by
   rw [logDeriv_prod]
-  · congr
-    ext i
-    apply logDeriv_sineTerm_eq_cotTerm x hx i
+  · simp_rw [logDeriv_sineTerm_eq_cotTerm x hx _]
   · exact fun i _ ↦ sineTerm_ne_zero hx i
-  · simp [sineTerm]
+  · fun_prop
 
 theorem tendsto_logDeriv_euler_cot_sub (x : ℂ) (hx : x ∈ ℂ_ℤ) :
     Tendsto (fun n : ℕ => ∑ j ∈ Finset.range n, cotTerm x j) atTop
     (𝓝 <| π * cot (π * x)- 1 / x) := by
-  simp_rw [← logDeriv_sin_div x hx, ← logDeriv_prod_sineTerm_eq_sum_cotTerm hx]
+  simp_rw [← logDeriv_sin_div_eq_cot x hx, ← logDeriv_prod_sineTerm_eq_sum_cotTerm hx]
   simpa using tendsto_logDeriv_euler_sin_div x hx
 
 lemma cotTerm_identity (z : ℂ) (hz : z ∈ ℂ_ℤ) (n : ℕ) :
@@ -209,7 +191,7 @@ lemma cotTerm_identity (z : ℂ) (hz : z ∈ ℂ_ℤ) (n : ℕ) :
   · simpa [sub_eq_add_neg] using integerComplement_add_ne_zero hz (-(n + 1) : ℤ)
   · simpa using (integerComplement_add_ne_zero hz ((n : ℤ) + 1))
 
-theorem Summable_cotTerm {z : ℂ} (hz : z ∈ ℂ_ℤ) : Summable fun n : ℕ ↦ cotTerm z n := by
+theorem Summable_cotTerm {z : ℂ} (hz : z ∈ ℂ_ℤ) : Summable fun n ↦ cotTerm z n := by
   rw [funext fun n ↦ cotTerm_identity z hz n]
   apply Summable.mul_left
   suffices Summable fun i : ℕ ↦ (z - (↑i : ℂ))⁻¹ * (z + (↑i : ℂ))⁻¹ by
@@ -228,10 +210,10 @@ theorem cot_series_rep' {z : ℂ} (hz : z ∈ ℂ_ℤ) : π * Complex.cot (π * 
 
 theorem cot_series_rep {z : ℂ} (hz : z ∈ ℂ_ℤ) :
     π * Complex.cot (π * z) = 1 / z + ∑' n : ℕ+, (1 / ((z : ℂ) - n) + 1 / (z + n)) := by
-  have := tsum_pnat_eq_tsum_succ fun n => 1 / ((z : ℂ) - n) + 1 / (z + n)
+  have h0 := tsum_pnat_eq_tsum_succ fun n ↦ 1 / ((z : ℂ) - n) + 1 / (z + n)
   have h1 := cot_series_rep' hz
   simp only [one_div, Nat.cast_add, Nat.cast_one] at *
-  rw [this, ← h1]
+  rw [h0, ← h1]
   ring
 
 end MittagLeffler
