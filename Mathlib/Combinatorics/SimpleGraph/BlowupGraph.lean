@@ -234,8 +234,10 @@ section IsExtremal
 variable {α γ : Type*} [Fintype α] [Fintype γ] {G : SimpleGraph α} [DecidableRel G.Adj]
 {H : SimpleGraph γ} [DecidableRel H.Adj]
 
-/-- `G` is an extremalInduced graph satisfying `p` if `G` has the maximum number of induced copies of `H`
-of any simple graph satisfying `p`. -/
+/--
+`G` is an extremalInduced graph satisfying `p` if `G` has the maximum number of induced copies of
+`H` of any simple graph satisfying `p`.
+-/
 def IsExtremalH (G : SimpleGraph α) (H : SimpleGraph γ) [DecidableRel H.Adj]
   [DecidableRel G.Adj] (p : SimpleGraph α → Prop) :=
   p G ∧ ∀ ⦃G' : SimpleGraph α⦄ [DecidableRel G'.Adj], p G' → ‖H ↪g G'‖ ≤ ‖H ↪g G‖
@@ -300,7 +302,9 @@ theorem extremalInduced_of_fintypeCard_eq (hc : card α = n) :
   convert @le_sup _ _ _ _ { G | F.Free G } (fun G ↦ ‖H ↪g G‖) G' h'
   exact Fintype.card_congr (Iso.embeddings_equiv_of_equiv (.map e G) (by rfl))
 
-/-- If `G` is `F`-free, then `G` has at most `extremalInduced (card V) F H` induced copies of `H`. -/
+/--
+If `G` is `F`-free, then `G` has at most `extremalInduced (card α) F H` induced copies of `H`.
+-/
 theorem card_embeddings_le_extremalInduced (h : F.Free G) :
      ‖H ↪g G‖ ≤ extremalInduced (card α) H F := by
   rw [extremalInduced_of_fintypeCard_eq rfl]
