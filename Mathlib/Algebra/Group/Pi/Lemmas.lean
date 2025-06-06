@@ -206,7 +206,11 @@ theorem OneHom.mulSingle_apply [∀ i, One <| f i] (i : I) (x : f i) :
     mulSingle f i x = Pi.mulSingle i x := rfl
 
 @[to_additive]
-theorem OneHom.mulSingle_injective [∀ i, MulOneClass <| f i] (i : I) :
+theorem OneHom.coe_mulSingle [∀ i, One <| f i] (i : I) :
+    mulSingle f i = Pi.mulSingle (M := f) i := rfl
+
+@[to_additive]
+theorem OneHom.mulSingle_injective [∀ i, One <| f i] (i : I) :
     Function.Injective (mulSingle f i) :=
   Pi.mulSingle_injective i
 
@@ -227,6 +231,10 @@ def MonoidHom.mulSingle [∀ i, MulOneClass <| f i] (i : I) : f i →* ∀ i, f 
 theorem MonoidHom.mulSingle_apply [∀ i, MulOneClass <| f i] (i : I) (x : f i) :
     mulSingle f i x = Pi.mulSingle i x :=
   rfl
+
+@[to_additive]
+theorem MonoidHom.coe_mulSingle [∀ i, MulOneClass <| f i] (i : I) :
+    mulSingle f i = Pi.mulSingle (M := f) i := rfl
 
 @[to_additive]
 theorem MonoidHom.mulSingle_injective [∀ i, MulOneClass <| f i] (i : I) :
