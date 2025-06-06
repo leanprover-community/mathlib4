@@ -409,10 +409,10 @@ noncomputable def ofInjectiveOfFinrankEq (f : V →ₗ[K] V') (hinj : Function.I
   (ofInjective f hinj).trans (ofTop (LinearMap.range f) this)
 
 @[simp]
-lemma ofInjectiveOfFinrankEq_coe (f : V →ₗ[K] V') (hinj : Function.Injective f)
+lemma coe_ofInjectiveOfFinrankEq (f : V →ₗ[K] V') (hinj : Function.Injective f)
     (hrank : Module.finrank K V = Module.finrank K V') :
-    (ofInjectiveOfFinrankEq f hinj hrank).toLinearMap = f := rfl
-
+    (ofInjectiveOfFinrankEq f hinj hrank).toLinearMap = f :=
+  rfl
 end LinearEquiv
 
 namespace LinearMap
