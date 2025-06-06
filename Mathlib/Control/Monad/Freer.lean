@@ -43,16 +43,16 @@ This construction provides a free monad for any type constructor `f`, allowing f
 effect descriptions that can be interpreted later. Unlike the traditional Free monad,
 this does not require `f` to be a functor. -/
 
-inductive Freer.{u, v} (f : Type u → Type v) (α : Type u) where
+inductive Freer.{u, v, w} (f : Type u → Type v) (α : Type w) where
   | pure : α → Freer f α
   | impure (ι : Type u) (op : f ι) (cont : ι → Freer f α) : Freer f α
 
-universe u v
+universe u v w
 
 namespace Freer
 
 /-- Map a function over a `Freer` monad. -/
-def map {α β : Type u} (F : Type u → Type v) (f : α → β) : Freer F α → Freer F β :=
+def map {α β : Type _} (F : Type u → Type v) (f : α → β) : Freer F α → Freer F β :=
 fun FFa =>
   match FFa with
   | .pure a => .pure (f a)
@@ -76,7 +76,7 @@ instance {F : Type u → Type v} : LawfulFunctor (Freer F) where
     case impure ι op cont ih => simp [Freer.map, ih]
 
 /-- Bind operation for the `Freer` monad. -/
-def bindFree {a b : Type u} (F : Type u → Type v) (x : Freer F a) (f : a → Freer F b) : Freer F b :=
+def bindFree {a b : Type _} (F : Type u → Type v) (x : Freer F a) (f : a → Freer F b) : Freer F b :=
   match x with
   | .pure a => f a
   | .impure ι op cont => .impure ι op (fun z => bindFree F (cont z) f)
@@ -124,11 +124,9 @@ instance FreeLawfulMonad {F : Type u → Type v} : LawfulMonad (Freer F) where
 /-! ### State Monad via `Freer` -/
 
 /-- Type constructor for state operations. -/
-inductive StateF (σ : Type u) : Type u → Type u where
-  /-- Get the current state-/
-  | get : StateF σ σ
-  /-- Set the state to a new value. -/
-  | set : σ → StateF σ PUnit
+inductive StateF (σ : Type u) : Type u → Type _ where
+  | get : StateF σ σ                   -- get the current state
+  | set : σ → StateF σ PUnit           -- set the state
 
 /-- State monad via the `Freer` monad. -/
 abbrev FreerState (σ : Type u) := Freer (StateF σ)
@@ -139,28 +137,29 @@ instance {σ : Type u} : Monad (FreerState σ) := inferInstance
 instance {σ : Type u} : LawfulMonad (FreerState σ) := inferInstance
 
 instance {σ : Type u} : MonadStateOf σ (FreerState σ) where
-  get := Freer.impure σ StateF.get Freer.pure
-  set newState := Freer.impure PUnit (StateF.set newState) Freer.pure
-  modifyGet f := Freer.impure σ StateF.get (fun s =>
-    let (a, s') := f s
-    Freer.impure PUnit (StateF.set s') (fun _ => Freer.pure a))
+  get := Freer.impure σ (StateF.get) Freer.pure
+  set newState := Freer.impure PUnit (StateF.set newState) (fun _ => Freer.pure PUnit.unit)
+  modifyGet f :=
+    Freer.impure σ StateF.get (fun s =>
+      let (a, s') := f s
+      Freer.impure PUnit (StateF.set s') (fun _ => Freer.pure a))
 
 instance {σ : Type u} : MonadState σ (FreerState σ) := inferInstance
 
 /-- Run a state computation, returning both the result and final state. -/
-def runState {σ : Type u} {α : Type u} (computation : FreerState σ α) (initialState : σ) : α × σ :=
-  match computation with
-  | Freer.pure a => (a, initialState)
-  | Freer.impure _ StateF.get cont => runState (cont initialState) initialState
-  | Freer.impure _ (StateF.set newState) cont => runState (cont PUnit.unit) newState
+def runState {σ : Type u} {α : Type v} (comp : FreerState σ α) (s₀ : σ) : α × σ :=
+  match comp with
+  | .pure a => (a, s₀)
+  | .impure _ StateF.get k     => runState (k s₀) s₀
+  | .impure _ (StateF.set s') k => runState (k PUnit.unit) s'
 
 /-- Run a state computation, returning only the result. -/
-def evalState {σ : Type u} {α : Type u} (computation : FreerState σ α) (initialState : σ) : α :=
-  (runState computation initialState).1
+def evalState {σ : Type u} {α : Type v} (c : FreerState σ α) (s₀ : σ) : α :=
+  (runState c s₀).1
 
 /-- Run a state computation, returning only the final state. -/
-def execState {σ : Type u} {α : Type u} (computation : FreerState σ α) (initialState : σ) : σ :=
-  (runState computation initialState).2
+def execState {σ : Type u} {α : Type v} (c : FreerState σ α) (s₀ : σ) : σ :=
+  (runState c s₀).2
 
 end FreerState
 
