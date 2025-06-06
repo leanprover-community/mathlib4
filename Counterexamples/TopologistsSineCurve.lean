@@ -17,7 +17,9 @@ closure of the set `{ (x, sin x⁻¹) | x ∈ Ioi 0 }`.
 * `TopologistsSineCurve.T_is_conn`: the set `T` is connected.
 * `TopologistsSineCurve.T_is_not_path_conn`: the set `T` is not path-connected.
 
-This formalization is part of the UniDistance Switzerland bachelor thesis of Daniele Bolla.
+This formalization is part of the UniDistance Switzerland bachelor thesis of Daniele Bolla. A
+similar result has also been independently formalized by Vlad Tsyrklevich
+(https://leanprover.zulipchat.com/#narrow/channel/113489-new-members/topic/golf.20request.3A.20Topologist's.20sine.20curve).
 -/
 
 open Topology Filter Set Real
