@@ -37,7 +37,7 @@ class LawfulFix (α : Type*) [OmegaCompletePartialOrder α] extends Fix α where
 
 namespace Part
 
-open Part Nat Nat.Upto
+open Nat Nat.Upto
 
 namespace Fix
 
@@ -115,14 +115,6 @@ open Fix
 
 variable {α : Type*}
 variable (f : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)
-
-open OmegaCompletePartialOrder
-
-open Part hiding ωSup
-
-open Nat
-
-open Nat.Upto OmegaCompletePartialOrder
 
 theorem fix_eq_ωSup : Part.fix f = ωSup (approxChain f) := by
   apply le_antisymm

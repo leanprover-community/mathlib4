@@ -155,6 +155,15 @@ theorem lmapDomain_comp (f : α → α') (g : α' → α'') :
     lmapDomain M R (g ∘ f) = (lmapDomain M R g).comp (lmapDomain M R f) :=
   LinearMap.ext fun _ => mapDomain_comp
 
+/-- `Finsupp.mapDomain` as a `LinearEquiv`. -/
+def mapDomain.linearEquiv (f : α ≃ α') : (α →₀ M) ≃ₗ[R] (α' →₀ M) where
+  __ := lmapDomain M R f.toFun
+  invFun := mapDomain f.symm
+  left_inv _ := by
+    simp [← mapDomain_comp]
+  right_inv _ := by
+    simp [← mapDomain_comp]
+
 end LMapDomain
 
 section LComapDomain

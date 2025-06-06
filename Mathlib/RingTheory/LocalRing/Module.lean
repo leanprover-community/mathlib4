@@ -9,7 +9,9 @@ import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Flat.EquationalCriterion
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 import Mathlib.RingTheory.Nakayama
+import Mathlib.RingTheory.Support
 
 /-!
 # Finite modules over local rings
@@ -98,6 +100,16 @@ theorem span_eq_top_of_tmul_eq_basis [Module.Finite R M] {ι}
   simp only [Function.comp_def, mk_apply, hb, Basis.span_eq]
 
 end IsLocalRing
+
+lemma Module.mem_support_iff_nontrivial_residueField_tensorProduct [Module.Finite R M]
+    (p : PrimeSpectrum R) :
+    p ∈ Module.support R M ↔ Nontrivial (p.asIdeal.ResidueField ⊗[R] M) := by
+  let K := p.asIdeal.ResidueField
+  let e := (AlgebraTensorModule.cancelBaseChange R (Localization.AtPrime p.asIdeal) K K M).symm
+  rw [e.nontrivial_congr, Module.mem_support_iff,
+    (LocalizedModule.equivTensorProduct p.asIdeal.primeCompl M).nontrivial_congr,
+    ← not_iff_not, not_nontrivial_iff_subsingleton, not_nontrivial_iff_subsingleton,
+    IsLocalRing.subsingleton_tensorProduct]
 
 @[deprecated (since := "2024-11-11")]
 alias LocalRing.map_mkQ_eq := IsLocalRing.map_mkQ_eq

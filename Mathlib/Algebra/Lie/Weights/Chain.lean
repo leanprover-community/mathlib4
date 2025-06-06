@@ -6,6 +6,7 @@ Authors: Oliver Nash
 import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.Algebra.Lie.Weights.Cartan
 import Mathlib.RingTheory.Finiteness.Nilpotent
+import Mathlib.Data.Int.Interval
 
 /-!
 # Chains of roots and weights
@@ -214,7 +215,7 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
     refine Finset.sum_pos' (fun _ _ ↦ zero_le _) ⟨0, Finset.mem_Ioo.mpr ⟨hp₀, hq₀⟩, ?_⟩
     rw [zero_smul, zero_add]
     exact finrank_pos
-  refine ⟨a, b, Int.ofNat_pos.mpr hb, fun x hx ↦ ?_⟩
+  refine ⟨a, b, Int.natCast_pos.mpr hb, fun x hx ↦ ?_⟩
   let N : ℤ → Submodule R M := fun k ↦ genWeightSpace M (k • α + χ)
   have h₁ : iSupIndep fun (i : Finset.Ioo p q) ↦ N i := by
     rw [LieSubmodule.iSupIndep_toSubmodule]

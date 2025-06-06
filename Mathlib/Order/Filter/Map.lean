@@ -566,6 +566,49 @@ theorem NeBot.comap_of_range_mem {f : Filter β} {m : α → β} (_ : NeBot f) (
     NeBot (comap m f) :=
   comap_neBot_iff_frequently.2 <| Eventually.frequently hm
 
+section Sum
+open Sum
+
+@[simp]
+theorem comap_inl_map_inr : comap inl (map (@inr α β) g) = ⊥ := by
+  ext
+  rw [mem_comap_iff_compl]
+  simp
+
+@[simp]
+theorem comap_inr_map_inl : comap inr (map (@inl α β) f) = ⊥ := by
+  ext
+  rw [mem_comap_iff_compl]
+  simp
+
+@[simp]
+theorem map_inl_inf_map_inr : map inl f ⊓ map inr g = ⊥ := by
+  apply le_bot_iff.mp
+  trans map inl ⊤ ⊓ map inr ⊤
+  · apply inf_le_inf <;> simp
+  · simp
+
+@[simp]
+theorem map_inr_inf_map_inl : map inr f ⊓ map inl g = ⊥ := by
+  rw [inf_comm, map_inl_inf_map_inr]
+
+theorem comap_sumElim_eq (l : Filter γ) (m₁ : α → γ) (m₂ : β → γ) :
+    comap (Sum.elim m₁ m₂) l = map inl (comap m₁ l) ⊔ map inr (comap m₂ l) := by
+  ext s
+  simp_rw [mem_sup, mem_map, mem_comap_iff_compl]
+  simp [image_sumElim]
+
+theorem map_comap_inl_sup_map_comap_inr (l : Filter (α ⊕ β)) :
+    map inl (comap inl l) ⊔ map inr (comap inr l) = l := by
+  rw [← comap_sumElim_eq, Sum.elim_inl_inr, comap_id]
+
+theorem map_sumElim_eq (l : Filter (α ⊕ β)) (m₁ : α → γ) (m₂ : β → γ) :
+    map (Sum.elim m₁ m₂) l = map m₁ (comap inl l) ⊔ map m₂ (comap inr l) := by
+  rw [← map_comap_inl_sup_map_comap_inr l]
+  simp [map_sup, map_map, comap_sup, (gc_map_comap _).u_l_u_eq_u]
+
+end Sum
+
 @[simp]
 theorem comap_fst_neBot_iff {f : Filter α} :
     (f.comap (Prod.fst : α × β → α)).NeBot ↔ f.NeBot ∧ Nonempty β := by
@@ -726,7 +769,6 @@ protected theorem push_pull (f : α → β) (F : Filter α) (G : Filter β) :
   · calc
       map f (F ⊓ comap f G) ≤ map f F ⊓ (map f <| comap f G) := map_inf_le
       _ ≤ map f F ⊓ G := inf_le_inf_left (map f F) map_comap_le
-
   · rintro U ⟨V, V_in, W, ⟨Z, Z_in, hZ⟩, h⟩
     apply mem_inf_of_inter (image_mem_map V_in) Z_in
     calc
