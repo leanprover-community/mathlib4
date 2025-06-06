@@ -8,22 +8,27 @@ import Mathlib.AlgebraicTopology.ExtraDegeneracy
 import Mathlib.CategoryTheory.Abelian.Ext
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RepresentationTheory.Rep
+import Mathlib.RingTheory.TensorProduct.Free
 import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
 /-!
-# The standard and bar resolutions of `k` as a trivial `k`-linear `G`-representation
+# The structure of the `k[G]`-module `k[Gⁿ]`
 
-Given a commutative ring `k` and a group `G`, this file defines two projective resolutions of `k`
-as a trivial `k`-linear `G`-representation.
+This file contains facts about an important `k[G]`-module structure on `k[Gⁿ]`, where `k` is a
+commutative ring and `G` is a group. The module structure arises from the representation
+`G →* End(k[Gⁿ])` induced by the diagonal action of `G` on `Gⁿ.`
 
-The first one, the standard resolution, has objects `k[Gⁿ⁺¹]` equipped with the diagonal
-representation, and differential defined by `(g₀, ..., gₙ) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ)`.
+In particular, we define an isomorphism of `k`-linear `G`-representations between `k[Gⁿ⁺¹]` and
+`k[G] ⊗ₖ k[Gⁿ]` (on which `G` acts by `ρ(g₁)(g₂ ⊗ x) = (g₁ * g₂) ⊗ x`).
 
-We define this as the alternating face map complex associated to an appropriate simplicial
-`k`-linear `G`-representation. This simplicial object is the `linearization` of the simplicial
-`G`-set given by the universal cover of the classifying space of `G`, `EG`. We prove this
-simplicial `G`-set `EG` is isomorphic to the Čech nerve of the natural arrow of `G`-sets
-`G ⟶ {pt}`.
+This allows us to define a `k[G]`-basis on `k[Gⁿ⁺¹]`, by mapping the natural `k[G]`-basis of
+`k[G] ⊗ₖ k[Gⁿ]` along the isomorphism.
+
+We then define the standard resolution of `k` as a trivial representation, by
+taking the alternating face map complex associated to an appropriate simplicial `k`-linear
+`G`-representation. This simplicial object is the `Rep.linearization` of the simplicial `G`-set
+given by the universal cover of the classifying space of `G`, `EG`. We prove this simplicial
+`G`-set `EG` is isomorphic to the Čech nerve of the natural arrow of `G`-sets `G ⟶ {pt}`.
 
 We then use this isomorphism to deduce that as a complex of `k`-modules, the standard resolution
 of `k` as a trivial `G`-representation is homotopy equivalent to the complex with `k` at 0 and 0
@@ -31,24 +36,6 @@ elsewhere.
 
 Putting this material together allows us to define `Rep.standardResolution`, the
 standard projective resolution of `k` as a trivial `k`-linear `G`-representation.
-
-We then construct the bar resolution. The `n`th object in this complex is the representation on
-`Gⁿ →₀ k[G]` defined pointwise by the left regular representation on `k[G]`. The differentials are
-defined by sending `(g₀, ..., gₙ)` to
-`g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
-`j = 0, ... , n - 1`.
-
-In `RepresentationTheory.Rep` we define an isomorphism `Rep.diagonalSuccIsoFree` between
-`k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])` sending `(g₀, ..., gₙ) ↦ g₀·(g₀⁻¹g₁, ..., gₙ₋₁⁻¹gₙ)`.
-
-We show that this isomorphism defines a commutative square with the bar resolution differential and
-the standard resolution differential, and thus conclude that the bar resolution differential
-squares to zero and that `Rep.diagonalSuccIsoFree` defines an isomorphism between the two
-complexes. We carry the exactness properties across this isomorphism to conclude the bar resolution
-is a projective resolution too, in `Rep.barResolution`.
-
-In `RepresentationTheory.GroupCohomology.Basic`, we then use `Rep.barResolution` to define the
-inhomogeneous cochains of a representation, useful for computing group cohomology.
 
 ## Main definitions
 
@@ -352,9 +339,6 @@ def Rep.standardComplex [Monoid G] :=
   (AlgebraicTopology.alternatingFaceMapComplex (Rep k G)).obj
     (classifyingSpaceUniversalCover G ⋙ Rep.linearization k G)
 
-@[deprecated (since := "2025-06-06")]
-alias groupCohomology.resolution := Rep.standardComplex
-
 namespace Rep.standardComplex
 
 open classifyingSpaceUniversalCover AlgebraicTopology CategoryTheory.Limits
@@ -491,9 +475,6 @@ variable [Group G] [DecidableEq G]
 def standardResolution : ProjectiveResolution (Rep.trivial k G k) where
   complex := standardComplex k G
   π := εToSingle₀ k G
-
-@[deprecated (since := "2025-06-06")]
-alias groupCohomology.projectiveResolution := Rep.standardResolution
 
 instance : EnoughProjectives (Rep k G) :=
   Rep.equivalenceModuleMonoidAlgebra.enoughProjectives_iff.2 ModuleCat.enoughProjectives
