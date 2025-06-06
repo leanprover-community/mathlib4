@@ -108,11 +108,19 @@ lemma map_fin3 (f : R → S) (P : R × R × R) :
     f ∘ ![P x, P y, P z] = ![f (P x), f (P y), f (P z)] := by
   ext n; fin_cases n <;> simp
 
+@[deprecated (since := "2025-05-04")] alias comp_fin3 := map_fin3
+@[deprecated (since := "2025-05-04")] alias comp_smul := map_fin3
+
 variable [CommRing R] [CommRing S] [CommRing A] [CommRing B] [Field F] [Field K] {W' : Projective R}
   {W : Projective F}
 
 lemma smul_eq (P : R × R × R) (u : R) : u • P = (u * P x, u * P y, u * P z) :=
   rfl
+
+@[deprecated (since := "2025-05-04")] alias fin3_def := smul_eq
+@[deprecated (since := "2025-05-04")] alias fin3_def_ext := smul_eq
+@[deprecated (since := "2025-05-04")] alias smul_fin3 := smul_eq
+@[deprecated (since := "2025-05-04")] alias smul_fin3_ext := smul_eq
 
 protected lemma map_smul (f : R →* S) (P : R × R × R) (u : R) : f ∘ u • P = f u • f ∘ P := by
   simp_rw [map_eq, smul_eq, map_mul]
@@ -441,6 +449,8 @@ lemma map_equiv_map (f : F →+* K) {P Q : F × F × F} (hP : W.Nonsingular P) (
   · rcases h with ⟨u, rfl⟩
     exact ⟨Units.map f u, (WeierstrassCurve.Projective.map_smul ..).symm⟩
 
+@[deprecated (since := "2025-05-04")] alias comp_equiv_comp := map_equiv_map
+
 variable (W') in
 /-- The proposition that a projective point class on a Weierstrass curve `W` is nonsingular.
 
@@ -466,12 +476,12 @@ lemma nonsingularLift_some (X Y : R) :
 variable (f : R →+* S) (P : R × R × R)
 
 @[simp]
-lemma map_polynomial : (W'.map f).toProjective.polynomial = MvPolynomial.map f W'.polynomial := by
+lemma map_polynomial : (W'.map f).toProjective.polynomial = W'.polynomial.map f := by
   simp_rw [polynomial]
   map_simp
 
 variable {P} in
-lemma Equation.map (h : W'.Equation P) : (W'.map f).toProjective.Equation (f ∘ P) := by
+lemma Equation.map (h : W'.Equation P) : (W'.map f).toProjective.Equation <| f ∘ P := by
   rw [Equation, map_polynomial, eval_map, map_eq, ← map_fin3, ← eval₂_comp, h, map_zero]
 
 variable {f} in
@@ -482,18 +492,15 @@ lemma map_equation (hf : Function.Injective f) :
     map_eq_zero_iff f hf]
 
 @[simp]
-lemma map_polynomialX :
-    (W'.map f).toProjective.polynomialX = MvPolynomial.map f W'.polynomialX := by
+lemma map_polynomialX : (W'.map f).toProjective.polynomialX = W'.polynomialX.map f := by
   simp_rw [polynomialX, map_polynomial, pderiv_map]
 
 @[simp]
-lemma map_polynomialY :
-    (W'.map f).toProjective.polynomialY = MvPolynomial.map f W'.polynomialY := by
+lemma map_polynomialY : (W'.map f).toProjective.polynomialY = W'.polynomialY.map f := by
   simp_rw [polynomialY, map_polynomial, pderiv_map]
 
 @[simp]
-lemma map_polynomialZ :
-    (W'.map f).toProjective.polynomialZ = MvPolynomial.map f W'.polynomialZ := by
+lemma map_polynomialZ : (W'.map f).toProjective.polynomialZ = W'.polynomialZ.map f := by
   simp_rw [polynomialZ, map_polynomial, pderiv_map]
 
 variable {f} in
@@ -507,13 +514,13 @@ variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebr
   [IsScalarTower R S B] (f : A →ₐ[S] B) (P : A × A × A)
 
 lemma baseChange_polynomial : (W'.baseChange B).toProjective.polynomial =
-    MvPolynomial.map f (W'.baseChange A).toProjective.polynomial := by
+    (W'.baseChange A).toProjective.polynomial.map f := by
   rw [← map_polynomial, map_baseChange]
 
 variable {P} in
 lemma Equation.baseChange (h : (W'.baseChange A).toProjective.Equation P) :
-    (W'.baseChange B).toProjective.Equation (f ∘ P) := by
-  convert Equation.map f.toRingHom h using 1
+    (W'.baseChange B).toProjective.Equation <| f ∘ P := by
+  convert h.map f.toRingHom using 1
   rw [AlgHom.toRingHom_eq_coe, map_baseChange]
 
 variable {f} in
@@ -523,15 +530,15 @@ lemma baseChange_equation (hf : Function.Injective f) :
   rw [← RingHom.coe_coe, ← map_equation P hf, AlgHom.toRingHom_eq_coe, map_baseChange]
 
 lemma baseChange_polynomialX : (W'.baseChange B).toProjective.polynomialX =
-    MvPolynomial.map f (W'.baseChange A).toProjective.polynomialX := by
+    (W'.baseChange A).toProjective.polynomialX.map f := by
   rw [← map_polynomialX, map_baseChange]
 
 lemma baseChange_polynomialY : (W'.baseChange B).toProjective.polynomialY =
-    MvPolynomial.map f (W'.baseChange A).toProjective.polynomialY := by
+    (W'.baseChange A).toProjective.polynomialY.map f := by
   rw [← map_polynomialY, map_baseChange]
 
 lemma baseChange_polynomialZ : (W'.baseChange B).toProjective.polynomialZ =
-    MvPolynomial.map f (W'.baseChange A).toProjective.polynomialZ := by
+    (W'.baseChange A).toProjective.polynomialZ.map f := by
   rw [← map_polynomialZ, map_baseChange]
 
 variable {f} in

@@ -87,6 +87,8 @@ Weierstrass curve. -/
 def negY (P : R × R × R) : R :=
   -P y - W'.a₁ * P x * P z - W'.a₃ * P z ^ 3
 
+@[deprecated (since := "2025-05-04")] alias negY_eq := negY
+
 lemma negY_smul (P : R × R × R) (u : R) : W'.negY (u • P) = u ^ 3 * W'.negY P := by
   simp_rw [negY, smul_eq]
   ring1
@@ -344,6 +346,10 @@ variable (W') in
 Weierstrass curve. -/
 noncomputable def dblXYZ (P : R × R × R) : R × R × R :=
   (W'.dblX P, W'.dblY P, W'.dblZ P)
+
+@[deprecated (since := "2025-05-04")] alias dblXYZ_X := dblXYZ
+@[deprecated (since := "2025-05-04")] alias dblXYZ_Y := dblXYZ
+@[deprecated (since := "2025-05-04")] alias dblXYZ_Z := dblXYZ
 
 lemma dblXYZ_smul (P : R × R × R) (u : R) : W'.dblXYZ (u • P) = u ^ 4 • W'.dblXYZ P := by
   simp_rw [dblXYZ, dblX_smul, dblY_smul, dblZ_smul, smul_eq]
@@ -650,6 +656,10 @@ representatives `P` and `Q` on a Weierstrass curve.
 If the representatives of `P` and `Q` are equal, then this returns the value `(0, 0, 0)`. -/
 noncomputable def addXYZ (P Q : R × R × R) : R × R × R :=
   (W'.addX P Q, W'.addY P Q, addZ P Q)
+
+@[deprecated (since := "2025-05-04")] alias addXYZ_X := addXYZ
+@[deprecated (since := "2025-05-04")] alias addXYZ_Y := addXYZ
+@[deprecated (since := "2025-05-04")] alias addXYZ_Z := addXYZ
 
 lemma addXYZ_smul (P Q : R × R × R) (u v : R) :
     W'.addXYZ (u • P) (v • Q) = (u * v) ^ 2 • W'.addXYZ P Q := by

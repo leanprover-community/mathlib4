@@ -89,6 +89,10 @@ variable (W') in
 def neg (P : R × R × R) : R × R × R :=
   (P x, W'.negY P, P z)
 
+@[deprecated (since := "2025-05-04")] alias neg_X := neg
+@[deprecated (since := "2025-05-04")] alias neg_Y := neg
+@[deprecated (since := "2025-05-04")] alias neg_Z := neg
+
 protected lemma neg_smul (P : R × R × R) (u : R) : W'.neg (u • P) = u • W'.neg P := by
   rw [neg, negY_smul]
   rfl

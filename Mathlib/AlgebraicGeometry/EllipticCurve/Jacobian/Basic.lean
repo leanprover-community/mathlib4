@@ -108,6 +108,9 @@ lemma map_fin3 (f : R → S) (P : R × R × R) :
     f ∘ ![P x, P y, P z] = ![f (P x), f (P y), f (P z)] := by
   ext n; fin_cases n <;> simp
 
+@[deprecated (since := "2025-05-04")] alias comp_fin3 := map_fin3
+@[deprecated (since := "2025-05-04")] alias comp_smul := map_fin3
+
 variable [CommRing R] [CommRing S] [CommRing A] [CommRing B] [Field F] [Field K] {W' : Jacobian R}
   {W : Jacobian F}
 
@@ -117,6 +120,11 @@ scoped instance : SMul R <| R × R × R :=
 
 lemma smul_eq (P : R × R × R) (u : R) : u • P = (u ^ 2 * P x, u ^ 3 * P y, u * P z) :=
   rfl
+
+@[deprecated (since := "2025-05-04")] alias fin3_def := smul_eq
+@[deprecated (since := "2025-05-04")] alias fin3_def_ext := smul_eq
+@[deprecated (since := "2025-05-04")] alias smul_fin3 := smul_eq
+@[deprecated (since := "2025-05-04")] alias smul_fin3_ext := smul_eq
 
 protected lemma map_smul (f : R →* S) (P : R × R × R) (u : R) : f ∘ u • P = f u • f ∘ P := by
   simp_rw [map_eq, smul_eq, map_mul, map_pow]
@@ -463,6 +471,8 @@ lemma map_equiv_map (f : F →+* K) {P Q : F × F × F} (hP : W.Nonsingular P) (
   · rcases h with ⟨u, rfl⟩
     exact ⟨Units.map f u, (WeierstrassCurve.Jacobian.map_smul ..).symm⟩
 
+@[deprecated (since := "2025-05-04")] alias comp_equiv_comp := map_equiv_map
+
 variable (W') in
 /-- The proposition that a Jacobian point class on a Weierstrass curve `W` is nonsingular.
 
@@ -488,12 +498,12 @@ lemma nonsingularLift_some (X Y : R) :
 variable (f : R →+* S) (P : R × R × R)
 
 @[simp]
-lemma map_polynomial : (W'.map f).toJacobian.polynomial = MvPolynomial.map f W'.polynomial := by
+lemma map_polynomial : (W'.map f).toJacobian.polynomial = W'.polynomial.map f := by
   simp_rw [polynomial]
   map_simp
 
 variable {P} in
-lemma Equation.map (h : W'.Equation P) : (W'.map f).toJacobian.Equation (f ∘ P) := by
+lemma Equation.map (h : W'.Equation P) : (W'.map f).toJacobian.Equation <| f ∘ P := by
   rw [Equation, map_polynomial, eval_map, map_eq, ← map_fin3, ← eval₂_comp, h, map_zero]
 
 variable {f} in
@@ -504,15 +514,15 @@ lemma map_equation (hf : Function.Injective f) :
     map_eq_zero_iff f hf]
 
 @[simp]
-lemma map_polynomialX : (W'.map f).toJacobian.polynomialX = MvPolynomial.map f W'.polynomialX := by
+lemma map_polynomialX : (W'.map f).toJacobian.polynomialX = W'.polynomialX.map f := by
   simp_rw [polynomialX, map_polynomial, pderiv_map]
 
 @[simp]
-lemma map_polynomialY : (W'.map f).toJacobian.polynomialY = MvPolynomial.map f W'.polynomialY := by
+lemma map_polynomialY : (W'.map f).toJacobian.polynomialY = W'.polynomialY.map f := by
   simp_rw [polynomialY, map_polynomial, pderiv_map]
 
 @[simp]
-lemma map_polynomialZ : (W'.map f).toJacobian.polynomialZ = MvPolynomial.map f W'.polynomialZ := by
+lemma map_polynomialZ : (W'.map f).toJacobian.polynomialZ = W'.polynomialZ.map f := by
   simp_rw [polynomialZ, map_polynomial, pderiv_map]
 
 variable {f} in
@@ -525,14 +535,14 @@ lemma map_nonsingular (hf : Function.Injective f) :
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B] [Algebra S B]
   [IsScalarTower R S B] (f : A →ₐ[S] B) (P : A × A × A)
 
-lemma baseChange_polynomial : (W'.baseChange B).toJacobian.polynomial =
-    MvPolynomial.map f (W'.baseChange A).toJacobian.polynomial := by
+lemma baseChange_polynomial :
+    (W'.baseChange B).toJacobian.polynomial = (W'.baseChange A).toJacobian.polynomial.map f := by
   rw [← map_polynomial, map_baseChange]
 
 variable {P} in
 lemma Equation.baseChange (h : (W'.baseChange A).toJacobian.Equation P) :
-    (W'.baseChange B).toJacobian.Equation (f ∘ P) := by
-  convert Equation.map f.toRingHom h using 1
+    (W'.baseChange B).toJacobian.Equation <| f ∘ P := by
+  convert h.map f.toRingHom using 1
   rw [AlgHom.toRingHom_eq_coe, map_baseChange]
 
 variable {f} in
@@ -540,16 +550,16 @@ lemma baseChange_equation (hf : Function.Injective f) :
     (W'.baseChange B).toJacobian.Equation (f ∘ P) ↔ (W'.baseChange A).toJacobian.Equation P := by
   rw [← RingHom.coe_coe, ← map_equation P hf, AlgHom.toRingHom_eq_coe, map_baseChange]
 
-lemma baseChange_polynomialX : (W'.baseChange B).toJacobian.polynomialX =
-    MvPolynomial.map f (W'.baseChange A).toJacobian.polynomialX := by
+lemma baseChange_polynomialX :
+    (W'.baseChange B).toJacobian.polynomialX = (W'.baseChange A).toJacobian.polynomialX.map f := by
   rw [← map_polynomialX, map_baseChange]
 
-lemma baseChange_polynomialY : (W'.baseChange B).toJacobian.polynomialY =
-    MvPolynomial.map f (W'.baseChange A).toJacobian.polynomialY := by
+lemma baseChange_polynomialY :
+    (W'.baseChange B).toJacobian.polynomialY = (W'.baseChange A).toJacobian.polynomialY.map f := by
   rw [← map_polynomialY, map_baseChange]
 
-lemma baseChange_polynomialZ : (W'.baseChange B).toJacobian.polynomialZ =
-    MvPolynomial.map f (W'.baseChange A).toJacobian.polynomialZ := by
+lemma baseChange_polynomialZ :
+    (W'.baseChange B).toJacobian.polynomialZ = (W'.baseChange A).toJacobian.polynomialZ.map f := by
   rw [← map_polynomialZ, map_baseChange]
 
 variable {f} in
