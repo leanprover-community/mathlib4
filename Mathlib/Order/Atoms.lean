@@ -658,10 +658,9 @@ export IsSimpleOrder (eq_bot_or_eq_top)
 
 theorem isSimpleOrder_iff_isSimpleOrder_orderDual [LE α] [BoundedOrder α] :
     IsSimpleOrder α ↔ IsSimpleOrder αᵒᵈ := by
-  constructor <;> intro i <;> haveI := i
+  constructor <;> intro i
   · exact
-      { exists_pair_ne := @exists_pair_ne α _
-        eq_bot_or_eq_top := fun a => Or.symm (eq_bot_or_eq_top (OrderDual.ofDual a) : _ ∨ _) }
+      { eq_bot_or_eq_top := fun a => Or.symm (eq_bot_or_eq_top (OrderDual.ofDual a) : _ ∨ _) }
   · exact
       { exists_pair_ne := @exists_pair_ne αᵒᵈ _
         eq_bot_or_eq_top := fun a => Or.symm (eq_bot_or_eq_top (OrderDual.toDual a)) }
