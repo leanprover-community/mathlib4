@@ -84,7 +84,7 @@ it causes `x < n` to be elaborated as `x < ↑n` rather than `↑x < n`,
 silently introducing wraparound arithmetic.
 -/
 def instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
-  { Fin.NatCast.instAddMonoidWithOne n, Fin.addCommGroup n, Fin.instCommSemigroup n,
+  { Fin.instAddMonoidWithOne n, Fin.addCommGroup n, Fin.instCommSemigroup n,
       Fin.instDistrib n with
     intCast n := Fin.intCast n
     one_mul := Fin.one_mul'
