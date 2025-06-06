@@ -20,9 +20,15 @@ concurrency:
   # cancel any running workflow with the same label
   cancel-in-progress: true
 
+# Limit permissions for GITHUB_TOKEN for the entire workflow
+permissions:
+  contents: read
+  pull-requests: write  # Only allow PR comments/labels
+  # All other permissions are implicitly 'none'
+
 jobs:
   build:
-    if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
+    if: FORK_CONDITION
     name: BuildJOB_NAME
     runs-on: RUNS_ON
     outputs:
@@ -505,7 +511,7 @@ jobs:
 
   final:
     name: Post-CI jobJOB_NAME
-    if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
+    if: FORK_CONDITION
     needs: [style_lint, build, post_steps]
     runs-on: ubuntu-latest
     steps:
