@@ -1,6 +1,7 @@
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Data.Finset.Powerset
 namespace SimpleGraph
 
 variable {ι : Type*} (H : SimpleGraph ι) --[DecidableRel H.Adj]
@@ -98,10 +99,10 @@ structure Flag (α ι : Type*) where
 
 /-- Added to prove `Fintype` instance later -/
 def FlagIso (α ι : Type*) : Flag α ι ≃ (SimpleGraph α) × (ι ↪ α) where
-  toFun := fun F => (F.G, F.θ)
-  invFun := fun p => { G := p.1, θ := p.2 }
-  left_inv := fun F => by cases F; rfl
-  right_inv := fun p => by cases p; rfl
+  toFun := fun F ↦ (F.G, F.θ)
+  invFun := fun p ↦ { G := p.1, θ := p.2 }
+  left_inv := fun F ↦ by cases F; rfl
+  right_inv := fun p ↦ by cases p; rfl
 
 /-- An embedding of flags -/
 abbrev Embedding.Flag {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι } (e : F₁.G ↪g F₂.G) :
@@ -141,36 +142,100 @@ noncomputable def SigmaFlags (σ : SimpleGraph ι) : Finset (Flag α ι) := {F |
 #check Finset.sum_comm' -- use this below
 variable {k m n : ℕ}
 local notation "‖" x "‖" => Fintype.card x
+
+#check SimpleGraph.induce
+#check Subtype.ext_iff_val
 open Finset
-lemma count_copies (G : SimpleGraph (Fin (n + m + k))) (H : SimpleGraph (Fin k)) :
-   ∑ t : Finset (Fin (n + m + k)) with t.card = m + k, ‖H ↪g (G.induce t)‖
-    = ‖H ↪g G‖ * Nat.choose (n + m) m :=
-  calc
-    _ = ∑ t : Finset (Fin (n + m + k)) with t.card = m + k, ∑ e : H ↪g (G.induce t), 1  := by
-        simp_rw [card_eq_sum_ones];congr; simp;
-    _ = _ := by rw [← card_univ, card_eq_sum_ones]; sorry
-  /-
-LHS : count each `e : H ↪g G` `choose (n + m) m` times.
-RHS : count each `e : H ↪g G` once for each set of size `m + k` its image lies in.
-
-So RHS = ∑ (e, t), where `e: H ↪g G` and `t` is a set of size `m + k` such that `image e ⊆ t`.
-
+/--
+Embeddings of `H` in `G[t]` are equivalent to embeddings of `H` in `G` that map into `t`.
 -/
+def induceEquiv (G : SimpleGraph α) (H : SimpleGraph β) (t : Set α) : H ↪g (G.induce t) ≃
+    {e : H ↪g G | Set.range e ⊆ t} where
+  toFun := fun e ↦ ⟨Embedding.induce _|>.comp e, by rintro x ⟨y , rfl⟩; simp⟩
+  invFun := fun e ↦ ⟨⟨(fun b ↦ ⟨_, e.2 ⟨b , rfl⟩⟩), fun _ _ _ ↦ e.1.inj' (by aesop)⟩,
+                     by simp, by simp⟩
+  left_inv := fun e ↦ by ext; simp
+  right_inv := fun e ↦ by ext; simp
+
+open Classical in
+lemma count_copies_aux (G : SimpleGraph (Fin (n + m + k))) (H : SimpleGraph (Fin k))
+    (t : Finset (Fin (n + m + k))) : ‖H ↪g (G.induce t)‖ = ‖{e : H ↪g G // Set.range e ⊆ t}‖ :=
+  Fintype.card_congr <| induceEquiv ..
 
 
+lemma card_superset {k m n : ℕ} {s t : Finset (Fin (n + m + k))} (hs : #s = k) (ht : #t = m + k) :
+    s ⊆ t ↔ #(t \ s) = m := by
+  constructor <;> intro h
+  · rw [card_sdiff h]; omega
+  · have : #(t \ s) + #s = #t := by omega
+    rw [card_sdiff_add_card] at this
+    have : t = t ∪ s := by apply eq_of_subset_of_card_le subset_union_left this.le
+    exact left_eq_union.mp this
 
-  -- We count the number of pairs `(e, s)` where `e : H ↪g G` and `s` is a subset of
-  -- size `m` in `(image e)ᶜ`. The LHS is the number of such pairs.
-  -- The RHS also counts the pairs, `(t, e)` where `t` is a set of size `m + k` and `e` is an
-  -- embedding of `H` into `G` that lies inside `t`.
-  -- So given `e : H ↪g G`  we count
-  --  but it does so by first fixing `s` and then
-  -- counting the number of embeddings `e : H ↪g G.induce s` where the image of `e`
+/--
+Given a `k`-set `s` in `[n + m + k]`, the number of `m + k` super-sets of `s` is `choose (n + m) m`
+-/
+lemma card_supersets (k m n : ℕ) (s : Finset (Fin (n + m + k))) (hs : s.card = k) :
+    #{t : Finset (Fin (n + m + k)) | #t = m + k ∧ s ⊆ t} = Nat.choose (n + m) m := by
+  have : #(sᶜ) = n + m := by rw [card_compl, Fintype.card_fin]; omega
+  simp_rw [← this]
+  rw [← card_powersetCard]
+  apply card_nbij (i := fun t ↦ (t \ s))
+  · intro t ht
+    simp only [mem_filter, mem_univ, true_and] at ht
+    simp only [mem_powersetCard]
+    exact ⟨fun _ ↦ by simp, (card_superset hs ht.1).1 ht.2⟩
+  · intro t₁ ht1 t₂ ht2 he
+    dsimp at he
+    simp only [coe_filter, mem_univ, true_and, Set.mem_setOf_eq] at ht1 ht2
+    rw [← sdiff_union_of_subset ht1.2, ← sdiff_union_of_subset ht2.2, he]
+  · intro t ht
+    simp only [mem_coe, mem_powersetCard] at ht
+    use (t ∪ s)
+    simp only [coe_filter, mem_univ, true_and, Set.mem_setOf_eq, subset_union_right, and_true]
+    refine ⟨?_,?_⟩
+    · simp_rw [← hs,← ht.2]
+      exact card_union_of_disjoint <| disjoint_left.2 fun _ ha hs ↦ (mem_compl.1 <| ht.1 ha) hs
+    · rw [union_sdiff_cancel_right]
+      exact disjoint_left.2 fun _ ha hs ↦ (mem_compl.1 <| ht.1 ha) hs
 
-  -- `Fin (n + m + k)` of size `m + k` such that the image of `e` is c
-  -- Given `e : H ↪g G` then the image of `e` in `Fin (n + m + k)` has size `k` so
-  -- its complement has size `n + m` s
+/-- **The principle of counting subgraphs by averaging**
+If `G` is a graph on `[n + m + k]` and `H` is a graph on `[k]`, then the number of embeddings
+`#(H ↪g G) * (choose (n + m) m)` is equal to the sum of the number of embeddings `H ↪g (G.induce t)`
+over subsets `t` of `[n + m + k]` of size `m + k`.
+-/
+lemma sum_embeddings_induce_eq (G : SimpleGraph (Fin (n + m + k))) (H : SimpleGraph (Fin k)) :
+   ∑ t : Finset (Fin (n + m + k)) with t.card = m + k, ‖H ↪g (G.induce t)‖
+     = ‖H ↪g G‖ * Nat.choose (n + m) m := by
+  classical
+  calc
+    _ = ∑ t : Finset (Fin (n + m + k)) with t.card = m + k, ‖{e : H ↪g G | Set.range e ⊆ t}‖  := by
+      simp_rw [Fintype.card_congr <| induceEquiv ..]
+    _ = ∑ t : Finset (Fin (n + m + k)) with t.card = m + k, ∑ e : H ↪g G,
+      ite (Set.range e ⊆ t) 1 0 := by
+      congr; simp only [Set.coe_setOf, sum_boole, Nat.cast_id]
+      ext t; apply Fintype.card_subtype
+    _ = ∑ e : H ↪g G, ∑ t : Finset (Fin (n + m + k)) with #t =  m + k,
+      ite (Set.range e ⊆ t) 1 0 := Finset.sum_comm
+    _ = ∑ e : H ↪g G, ∑ t : Finset (Fin (n + m + k)) with (#t =  m + k ∧ Set.range e ⊆ t), 1 := by
+      simp_rw [sum_ite, sum_const_zero, add_zero]
+      congr; ext e; congr 1;
+      ext s; simp
+    _ = _ := by
+      simp_rw [← card_eq_sum_ones]
+      rw [← card_univ, card_eq_sum_ones, sum_mul, one_mul]
+      congr; ext e
+      have hs : #((Set.range e).toFinset) = k := by
+        simp_rw [Set.toFinset_range, ← card_fin k]
+        apply card_image_of_injective _ (RelEmbedding.injective e)
+      rw [← card_supersets k m n _ hs]
+      congr
+      ext t
+      constructor <;> intro ⟨ht1, ht2⟩ <;> exact ⟨ht1, fun x hx ↦ ht2 (by simpa using hx)⟩
+
+lemma edges_eq {n : ℕ} (G : SimpleGraph (Fin n)) [DecidableRel G.Adj] :
+    2 * #G.edgeFinset = ‖(⊤ : SimpleGraph (Fin 2)) ↪g G‖ := by
+  
   sorry
-
 
 end SimpleGraph
