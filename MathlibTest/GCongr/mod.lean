@@ -33,3 +33,13 @@ example (hn : n ≡ 1 [ZMOD 2]) : 5 * n ^ 2 + 3 * n + 7 ≡ 5 * 1 ^ 2 + 3 * 1 + 
   gcongr
 
 example (hx : x ≡ 3 [ZMOD 5]) : x ^ 5 ≡ 3 ^ 5 [ZMOD 5] := by gcongr
+
+/-! Test that `gcongr` can deal with `_ ≡ _ [ZMOD _] → _ ≡ _ [ZMOD _]` -/
+variable {a b : ℤ}
+
+example (h1 : 0 ≡ a [ZMOD 7]) (h2 : 0 ≡ b [ZMOD 7]) : b ≡ a + 1 [ZMOD 7] → 0 ≡ 0 + 1 [ZMOD 7] := by
+  gcongr
+example (h1 : 0 ≡ a [ZMOD 7]) (_h2 : 0 ≡ b [ZMOD 7]) : b ≡ a + 1 [ZMOD 7] → b ≡ 0 + 1 [ZMOD 7] := by
+  gcongr
+example (_h1 : 0 ≡ a [ZMOD 7]) (h2 : 0 ≡ b [ZMOD 7]) : b ≡ a + 1 [ZMOD 7] → 0 ≡ a + 1 [ZMOD 7] := by
+  gcongr
