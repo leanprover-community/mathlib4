@@ -487,6 +487,7 @@ def limitFlipIsoCompLim [HasLimitsOfShape J C] (F : K ⥤ J ⥤ C) : limit F.fli
 
 /-- `limitFlipIsoCompLim` is natural in `F`. -/
 @[simps!]
+def limCompFlipIsoWhiskerLim [HasLimitsOfShape J C] :
     flipFunctor K J C ⋙ lim ≅ (whiskeringRight _ _ _).obj lim :=
   (NatIso.ofComponents (limitFlipIsoCompLim · |>.symm) fun {F G} η ↦ by
     ext k
