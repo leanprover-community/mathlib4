@@ -713,6 +713,8 @@ end HolderOnWith
 
 namespace LipschitzOnWith
 
+open Submodule
+
 variable {K : ℝ≥0} {f : X → Y} {s : Set X}
 
 /-- If `f : X → Y` is `K`-Lipschitz on `s`, then `μH[d] (f '' s) ≤ K ^ d * μH[d] s`. -/
@@ -733,6 +735,26 @@ theorem hausdorffMeasure_image_le (h : LipschitzWith K f) {d : ℝ} (hd : 0 ≤ 
   h.lipschitzOnWith.hausdorffMeasure_image_le hd
 
 end LipschitzWith
+
+/--
+Let `A` be a subset of `ℝⁿ` and `W` a `k`-dimensional subspace. Then the `s`-dimensional
+Hausdorff measure of the orthogonal projection of `A` onto `W` is less than or equal to the
+`s`-dimensional Hausdorff measure of `A`.
+-/
+theorem hausdorffMeasure_orthogonalProjection_le (n : ℕ) (s: ℝ)
+  (W : Submodule ℝ (EuclideanSpace ℝ (Fin n)))
+  (A : Set (EuclideanSpace ℝ (Fin n)))
+  (hW : BorelSpace W)
+  (hs : 0 ≤ s) :
+    μH[s] (Submodule.orthogonalProjection W '' A) ≤ μH[s] A := by
+  have h₁ : LipschitzWith 1 (Submodule.orthogonalProjection W) := by
+    apply Submodule.lipschitzWith_orthogonalProjection
+  have h₂ : μH[s] (Submodule.orthogonalProjection W '' A)
+      ≤ 1 ^ s * μH[s] A := by
+    apply LipschitzWith.hausdorffMeasure_image_le
+    exact h₁; exact hs
+  simp only [ENNReal.one_rpow, one_mul] at h₂
+  exact h₂
 
 open scoped Pointwise
 
