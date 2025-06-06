@@ -57,24 +57,21 @@ variable {M₀ N₀}
 lemma inl_apply_unit [DecidablePred fun x : M₀ ↦ x = 0] (x : M₀ˣ) :
     inl M₀ N₀ x = ((x, (1 : N₀ˣ)) : WithZero (M₀ˣ × N₀ˣ)) := by
   simp [inl]
+
 @[simp]
 lemma inr_apply_unit [DecidablePred fun x : N₀ ↦ x = 0] (x : N₀ˣ) :
     inr M₀ N₀ x = (((1 : M₀ˣ), x) : WithZero (M₀ˣ × N₀ˣ)) := by
   simp [inr]
-@[simp]
-lemma fst_apply_coe (x : M₀ˣ × N₀ˣ) :
-    fst M₀ N₀ x = x.fst := by
-  rfl
-@[simp]
-lemma snd_apply_coe (x : M₀ˣ × N₀ˣ) :
-    snd M₀ N₀ x = x.snd := by
-  rfl
+
+@[simp] lemma fst_apply_coe (x : M₀ˣ × N₀ˣ) : fst M₀ N₀ x = x.fst := by rfl
+@[simp] lemma snd_apply_coe (x : M₀ˣ × N₀ˣ) : snd M₀ N₀ x = x.snd := by rfl
 
 @[simp]
 theorem fst_inl [DecidablePred fun x : M₀ ↦ x = 0] (x : M₀) :
     fst _ N₀ (inl _ _ x) = x := by
   obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
   simp [WithZero.withZeroUnitsEquiv, fst, inl]
+
 @[simp]
 theorem fst_comp_inl [DecidablePred fun x : M₀ ↦ x = 0] :
     (fst ..).comp (inl M₀ N₀) = .id _ :=
@@ -86,6 +83,7 @@ theorem snd_comp_inl [DecidablePred fun x : M₀ ↦ x = 0] :
   ext x
   obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
   simp_all [WithZero.withZeroUnitsEquiv, snd, inl]
+
 theorem snd_inl_apply_of_ne_zero [DecidablePred fun x : M₀ ↦ x = 0] {x : M₀} (hx : x ≠ 0) :
     snd _ _ (inl _ N₀ x) = 1 := by
   rw [← MonoidWithZeroHom.comp_apply, snd_comp_inl, one_apply_of_ne_zero hx]
@@ -96,6 +94,7 @@ theorem fst_comp_inr [DecidablePred fun x : N₀ ↦ x = 0] :
   ext x
   obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
   simp_all [WithZero.withZeroUnitsEquiv, fst, inr]
+
 theorem fst_inr_apply_of_ne_zero [DecidablePred fun x : N₀ ↦ x = 0] {x : N₀} (hx : x ≠ 0) :
     fst _ _ (inr M₀ _ x) = 1 := by
   rw [← MonoidWithZeroHom.comp_apply, fst_comp_inr, one_apply_of_ne_zero hx]
@@ -105,6 +104,7 @@ theorem snd_inr [DecidablePred fun x : N₀ ↦ x = 0] (x : N₀) :
     snd _ _ (inr M₀ _ x) = x := by
   obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
   simp [WithZero.withZeroUnitsEquiv, snd, inr]
+
 @[simp]
 theorem snd_comp_inr [DecidablePred fun x : N₀ ↦ x = 0] :
     (snd ..).comp (inr M₀ N₀) = .id _ :=
@@ -127,6 +127,7 @@ lemma snd_surjective [DecidablePred fun x : N₀ ↦ x = 0] :
 lemma fst_eq_zero_iff (x : WithZero (M₀ˣ × N₀ˣ)) :
     fst M₀ N₀ x = 0 ↔ x = 0 := by
   cases x <;> simp
+
 @[simp]
 lemma snd_eq_zero_iff (x : WithZero (M₀ˣ × N₀ˣ)) :
     snd M₀ N₀ x = 0 ↔ x = 0 := by
@@ -139,10 +140,8 @@ theorem inl_mul_inr_eq_mk_of_unit (m : M₀ˣ) (n : N₀ˣ) :
   simp [inl, WithZero.withZeroUnitsEquiv, inr, ← WithZero.coe_mul]
 
 theorem commute_inl_inr (m : M₀) (n : N₀) : Commute (inl M₀ N₀ m) (inr M₀ N₀ n) := by
-  obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit m
-  · simp [Commute.zero_left]
-  obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit n
-  · simp [Commute.zero_right]
+  obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit m <;>
+  obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit n <;>
   simp [inl, inr, WithZero.withZeroUnitsEquiv, commute_iff_eq, ← WithZero.coe_mul]
 
 end MonoidWithZeroHom
