@@ -112,7 +112,7 @@ lemma CompletelyRegularSpace.isInducing_stoneCechUnit [CompletelyRegularSpace X]
   · simp_rw [le_nhds_iff, ((nhds_basis_opens _).comap _).mem_iff, and_assoc]
     intro U hxU hU
     obtain ⟨f, hf, efx, hfU⟩ :=
-      CompletelyRegularSpace.completely_regular x Uᶜ hU.isClosed_compl (not_mem_compl_iff.mpr hxU)
+      CompletelyRegularSpace.completely_regular x Uᶜ hU.isClosed_compl (notMem_compl_iff.mpr hxU)
     conv at hfU => equals Uᶜ ⊆ f ⁻¹' {1} => ext; simp [EqOn, subset_def]
     rw [← compl_subset_comm, ← preimage_compl, ← stoneCechExtend_extends hf, preimage_comp] at hfU
     refine ⟨stoneCechExtend hf ⁻¹' {1}ᶜ, ?_,
