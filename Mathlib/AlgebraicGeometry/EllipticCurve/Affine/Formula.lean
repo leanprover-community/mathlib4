@@ -67,7 +67,8 @@ local macro "derivative_simp" : tactic =>
     derivative_sub, derivative_mul, derivative_sq])
 
 local macro "eval_simp" : tactic =>
-  `(tactic| simp only [eval_C, eval_X, eval_neg, eval_add, eval_sub, eval_mul, eval_pow, evalEval])
+  `(tactic| simp only [eval_C, eval_X, eval_zero, eval_one, eval_neg, eval_add, eval_sub, eval_mul,
+    eval_pow, evalEval])
 
 local macro "map_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow, map_div₀,
@@ -110,7 +111,7 @@ def negY (x y : R) : R :=
   -y - W'.a₁ * x - W'.a₃
 
 lemma negY_negY (x y : R) : W'.negY x (W'.negY x y) = y := by
-  simp only [negY]
+  simp_rw [negY]
   ring1
 
 lemma evalEval_negPolynomial (x y : R) : W'.negPolynomial.evalEval x y = W'.negY x y := by
@@ -119,14 +120,14 @@ lemma evalEval_negPolynomial (x y : R) : W'.negPolynomial.evalEval x y = W'.negY
 
 @[deprecated (since := "2025-03-05")] alias eval_negPolynomial := evalEval_negPolynomial
 
-lemma Y_eq_of_X_eq {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
-    (hx : x₁ = x₂) : y₁ = y₂ ∨ y₁ = W.negY x₂ y₂ := by
+lemma Y_eq_of_X_eq [NoZeroDivisors R] {x₁ x₂ y₁ y₂ : R} (h₁ : W'.Equation x₁ y₁)
+    (h₂ : W'.Equation x₂ y₂) (hx : x₁ = x₂) : y₁ = y₂ ∨ y₁ = W'.negY x₂ y₂ := by
   rw [equation_iff] at h₁ h₂
   rw [← sub_eq_zero, ← sub_eq_zero (a := y₁), ← mul_eq_zero, negY]
   linear_combination (norm := (rw [hx]; ring1)) h₁ - h₂
 
-lemma Y_eq_of_Y_ne {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂) (hx : x₁ = x₂)
-    (hy : y₁ ≠ W.negY x₂ y₂) : y₁ = y₂ :=
+lemma Y_eq_of_Y_ne [NoZeroDivisors R] {x₁ x₂ y₁ y₂ : R} (h₁ : W'.Equation x₁ y₁)
+    (h₂ : W'.Equation x₂ y₂) (hx : x₁ = x₂) (hy : y₁ ≠ W'.negY x₂ y₂) : y₁ = y₂ :=
   (Y_eq_of_X_eq h₁ h₂ hx).resolve_right hy
 
 lemma equation_neg (x y : R) : W'.Equation x (W'.negY x y) ↔ W'.Equation x y := by
@@ -138,9 +139,9 @@ lemma equation_neg (x y : R) : W'.Equation x (W'.negY x y) ↔ W'.Equation x y :
 @[deprecated (since := "2025-02-01")] alias equation_neg_iff := equation_neg
 
 lemma nonsingular_neg (x y : R) : W'.Nonsingular x (W'.negY x y) ↔ W'.Nonsingular x y := by
-  rw [nonsingular_iff, equation_neg, ← negY, negY_negY, ← @ne_comm _ y, nonsingular_iff]
-  exact and_congr_right' <| (iff_congr not_and_or.symm not_and_or.symm).mpr <|
-    not_congr <| and_congr_left fun h => by rw [← h]
+  rw [nonsingular_iff, equation_neg, negY, ← Ideal.span_pair_add_right_mul _ _ <| -W'.a₁,
+    ← Ideal.span_pair_neg, nonsingular_iff]
+  ring_nf
 
 @[deprecated (since := "2025-02-01")] alias nonsingular_neg_of := nonsingular_neg
 @[deprecated (since := "2025-02-01")] alias nonsingular_neg_iff := nonsingular_neg
@@ -269,7 +270,7 @@ lemma addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁
     rw [negY, ← sub_ne_zero] at hy
     ext
     · rfl
-    · simp only [addX]
+    · simp_rw [addX]
       ring1
     · field_simp [hy]
       ring1
@@ -279,7 +280,7 @@ lemma addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁
     rw [← sub_eq_zero] at hx
     ext
     · rfl
-    · simp only [addX]
+    · simp_rw [addX]
       ring1
     · apply mul_right_injective₀ hx
       linear_combination (norm := (field_simp [hx]; ring1)) h₂ - h₁
@@ -301,9 +302,9 @@ lemma derivative_addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equatio
   derivative_simp
   ring1
 
-lemma nonsingular_negAdd_of_eval_derivative_ne_zero {x₁ x₂ y₁ ℓ : R}
+lemma nonsingular_negAdd_of_isUnit_eval_derivative {x₁ x₂ y₁ ℓ : R}
     (hx' : W'.Equation (W'.addX x₁ x₂ ℓ) (W'.negAddY x₁ x₂ y₁ ℓ))
-    (hx : (W'.addPolynomial x₁ y₁ ℓ).derivative.eval (W'.addX x₁ x₂ ℓ) ≠ 0) :
+    (hx : IsUnit <| (W'.addPolynomial x₁ y₁ ℓ).derivative.eval (W'.addX x₁ x₂ ℓ)) :
     W'.Nonsingular (W'.addX x₁ x₂ ℓ) (W'.negAddY x₁ x₂ y₁ ℓ) := by
   rw [Nonsingular, and_iff_right hx', negAddY, polynomialX, polynomialY]
   eval_simp
@@ -311,9 +312,13 @@ lemma nonsingular_negAdd_of_eval_derivative_ne_zero {x₁ x₂ y₁ ℓ : R}
   rw [addPolynomial, linePolynomial, polynomial]
   eval_simp
   derivative_simp
-  simp only [zero_add, add_zero, sub_zero, zero_mul, mul_one]
   eval_simp
-  linear_combination (norm := (norm_num1; ring1)) hx.left + ℓ * hx.right
+  rw [Nat.cast_ofNat]
+  contrapose! hx
+  exact Ideal.eq_top_of_isUnit_mem _ (Ideal.mem_span_pair.mpr ⟨1, ℓ, by ring1⟩) hx
+
+@[deprecated (since := "2025-05-26")] alias nonsingular_negAdd_of_eval_derivative_ne_zero :=
+  nonsingular_negAdd_of_isUnit_eval_derivative
 
 lemma equation_add_iff (x₁ x₂ y₁ ℓ : R) : W'.Equation (W'.addX x₁ x₂ ℓ) (W'.negAddY x₁ x₂ y₁ ℓ) ↔
     (W'.addPolynomial x₁ y₁ ℓ).eval (W'.addX x₁ x₂ ℓ) = 0 := by
@@ -343,11 +348,11 @@ lemma nonsingular_negAdd {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y�
         contradiction
       · rwa [negAddY, ← neg_sub, mul_neg, hx₂, slope_of_X_ne hx,
           div_mul_cancel₀ _ <| sub_ne_zero_of_ne hx, neg_sub, sub_add_cancel]
-    · apply nonsingular_negAdd_of_eval_derivative_ne_zero <| equation_negAdd h₁.left h₂.left hxy
+    · apply nonsingular_negAdd_of_isUnit_eval_derivative <| equation_negAdd h₁.left h₂.left hxy
       rw [derivative_addPolynomial_slope h₁.left h₂.left hxy]
       eval_simp
-      simp only [neg_ne_zero, sub_self, mul_zero, add_zero]
-      exact mul_ne_zero (sub_ne_zero_of_ne hx₁) (sub_ne_zero_of_ne hx₂)
+      simp_rw [sub_self, mul_zero, add_zero]
+      exact ((sub_ne_zero_of_ne hx₁).isUnit.mul (sub_ne_zero_of_ne hx₂).isUnit).neg
 
 lemma nonsingular_add {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁) (h₂ : W.Nonsingular x₂ y₂)
     (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
@@ -388,35 +393,34 @@ variable (f : R →+* S) (x y x₁ y₁ x₂ y₂ ℓ : R)
 
 lemma map_negPolynomial :
     (W'.map f).toAffine.negPolynomial = W'.negPolynomial.map (mapRingHom f) := by
-  simp only [negPolynomial]
+  simp_rw [negPolynomial]
   map_simp
 
 lemma map_negY : (W'.map f).toAffine.negY (f x) (f y) = f (W'.negY x y) := by
-  simp only [negY]
+  simp_rw [negY]
   map_simp
 
 lemma map_linePolynomial : linePolynomial (f x) (f y) (f ℓ) = (linePolynomial x y ℓ).map f := by
-  simp only [linePolynomial]
+  simp_rw [linePolynomial]
   map_simp
 
 lemma map_addPolynomial :
     (W'.map f).toAffine.addPolynomial (f x) (f y) (f ℓ) = (W'.addPolynomial x y ℓ).map f := by
-  rw [addPolynomial, map_polynomial, eval_map, linePolynomial, addPolynomial, ← coe_mapRingHom,
-    ← eval₂_hom, linePolynomial]
+  simp_rw [addPolynomial, map_polynomial, eval_map, linePolynomial, ← coe_mapRingHom, ← eval₂_hom]
   map_simp
 
 lemma map_addX : (W'.map f).toAffine.addX (f x₁) (f x₂) (f ℓ) = f (W'.addX x₁ x₂ ℓ) := by
-  simp only [addX]
+  simp_rw [addX]
   map_simp
 
 lemma map_negAddY :
     (W'.map f).toAffine.negAddY (f x₁) (f x₂) (f y₁) (f ℓ) = f (W'.negAddY x₁ x₂ y₁ ℓ) := by
-  simp only [negAddY, map_addX]
+  simp_rw [negAddY, map_addX]
   map_simp
 
 lemma map_addY :
     (W'.map f).toAffine.addY (f x₁) (f x₂) (f y₁) (f ℓ) = f (W'.toAffine.addY x₁ x₂ y₁ ℓ) := by
-  simp only [addY, map_negAddY, map_addX, map_negY]
+  simp_rw [addY, map_negAddY, map_addX, map_negY]
 
 lemma map_slope (f : F →+* K) (x₁ x₂ y₁ y₂ : F) :
     (W.map f).toAffine.slope (f x₁) (f x₂) (f y₁) (f y₂) = f (W.slope x₁ x₂ y₁ y₂) := by
