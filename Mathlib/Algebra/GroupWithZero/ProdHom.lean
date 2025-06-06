@@ -16,7 +16,8 @@ which is identified with the `WithZero` of the product of the units of the group
 The product of groups with zero `WithZero (αˣ × βˣ)` is a
 group with zero itself with natural inclusions.
 
-TODO: Create the "GrpWithZero" category.
+TODO: Give `GrpWithZero` instances of `HasBinaryProducts` and `HasBinaryCoproducts`,
+as well as a terminal object.
 
 -/
 
