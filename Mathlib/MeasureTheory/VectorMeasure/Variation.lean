@@ -540,22 +540,23 @@ lemma variation_SignedMeasure (μ : SignedMeasure X) :
     suffices ∀ P, IsInnerPart r P → ∑ p ∈ P, ‖μ p‖ₑ ≤ μ.totalVariation r by
       simpa [ennrealToMeasure_apply hr, variation, variation', var_aux, hr]
     intro P hP
-    have h p (hp : p ∈ P) : |μ p| ≤ μ (s ∩ p) + μ (sᶜ ∩ p) := by
+    have h p (hp : p ∈ P) : |μ p| ≤ μ (s ∩ p) - μ (sᶜ ∩ p) := by
+      -- To do: tidy this, can be much more concise, several arguments are repeated.
       have h1 : μ p = (μ.toJordanDecomposition.posPart p).toReal -
           (μ.toJordanDecomposition.negPart p).toReal := by
         nth_rw 1 [← toSignedMeasure_toJordanDecomposition μ]
-        -- There is a sign error in the statement
-        sorry
+        simp only [JordanDecomposition.toSignedMeasure, coe_sub, Pi.sub_apply,
+          Measure.toSignedMeasure_apply, hP.2.1 p hp, reduceIte]
+        exact rfl
       have h2 : (μ.toJordanDecomposition.posPart p).toReal = μ (s ∩ p) := by
         have := toMeasureOfZeroLE_apply μ hs hsm (hP.2.1 p hp)
         simp [hs', this]
-      have h3 : (μ.toJordanDecomposition.negPart p).toReal = μ (sᶜ ∩ p) := by
+      have h3 : (μ.toJordanDecomposition.negPart p).toReal = - μ (sᶜ ∩ p) := by
         have := toMeasureOfLEZero_apply μ hsc (MeasurableSet.compl hsm) (hP.2.1 p hp)
         simp [hsc', this]
-        -- There is a sign error in the statement
-        sorry
-      have h4 : μ p = μ (s ∩ p) - μ (sᶜ ∩ p) := by
+      have h4 : μ p = μ (s ∩ p) + μ (sᶜ ∩ p) := by
         rw [h1, h2, h3]
+        simp
       rw [h4]
       have h5 : μ (s ∩ p) = |μ (s ∩ p)| := by
         refine Eq.symm <| abs_of_nonneg <| nonneg_of_zero_le_restrict μ ?_
@@ -575,10 +576,8 @@ lemma variation_SignedMeasure (μ : SignedMeasure X) :
         have : MeasurableSet sᶜ := by exact MeasurableSet.compl_iff.mpr hsm
         exact restrict_le_zero_subset μ this (by simp) hsc
       nth_rw 2 [h5, h6]
-      simp
-      have := abs_add_le (μ (s ∩ p)) (μ (sᶜ ∩ p))
-      -- There is a sign error in the statement
-      sorry
+      simpa using abs_add_le (μ (s ∩ p)) (μ (sᶜ ∩ p))
+
     sorry
 
 end MeasureTheory.VectorMeasure
