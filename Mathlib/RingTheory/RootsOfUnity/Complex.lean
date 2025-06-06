@@ -232,24 +232,25 @@ lemma cyclotomic_polynomial_5 (z : ℂ) :
   rw [Real.sq_sqrt (Nat.ofNat_nonneg' 5)]
   rw [one_div, ofReal_add, ofReal_sub, ofReal_pow]
   ring_nf
-  rw [sq, sq]
+  rw [← ofReal_pow]
+  rw [← ofReal_pow]
+  rw [Real.sq_sqrt (Nat.ofNat_nonneg' 5)]
   rw [← ofReal_mul]
-  rw [Real.mul_self_sqrt (Nat.ofNat_nonneg' 5)]
   rw [one_div, ofReal_pow]
   rw [← ofReal_pow]
-  rw [← ofReal_pow]
-  rw [← ofReal_mul]
   rw [← ofReal_mul]
   rw [← ofReal_mul]
   rw [ee2]
   rw [ee2]
   rw [Real.mul_self_sqrt zero_le_two]
   rw [Real.mul_self_sqrt (Nat.ofNat_nonneg' 5)]
-  rw [mul_assoc]
-  rw [mul_assoc]
+  rw [mul_assoc 2]
+  rw [mul_assoc 5]
+  rw [Real.mul_self_sqrt zero_le_two]
+  rw [Real.mul_self_sqrt (Nat.ofNat_nonneg' 5)]
+  simp only [one_div, ofReal_ofNat, ofReal_mul]
   ring_nf
-  simp only [Nat.ofNat_nonneg, Real.sq_sqrt, ofReal_mul, ofReal_ofNat, one_div]
-  ring_nf
+
 
 example : {z : ℂ | z^5 = 1} = {1,
     (√5 -1)/4 + √2 * √(5 + √5)/4 * I,
