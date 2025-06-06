@@ -42,16 +42,19 @@ representing an operation from `f` followed by a continuation.
 This construction provides a free monad for any type constructor `f`, allowing for composable
 effect descriptions that can be interpreted later. Unlike the traditional Free monad,
 this does not require `f` to be a functor. -/
-inductive Freer (f : Type → Type) (a : Type) where
-| pure : a → Freer f a
-| impure : ∀ x, f x → (x → Freer f a) → Freer f a
 
-/-- Map a function over a `Free` monad. -/
-def Freer.map {α β : Type} (F : Type → Type) (f : α → β) : Freer F α → Freer F β :=
+inductive Freer (f : Type → Type) (α : Type) where
+  | pure : α → Freer f α
+  | impure (ι : Type) (op : f ι) (cont : ι → Freer f α) : Freer f α
+
+namespace Freer
+
+/-- Map a function over a `Freer` monad. -/
+def map {α β : Type} (F : Type → Type) (f : α → β) : Freer F α → Freer F β :=
 fun FFa =>
   match FFa with
-  | pure a => Freer.pure (f a)
-  | impure X Fx k => Freer.impure X Fx (fun z => Freer.map F f (k z))
+  | .pure a => .pure (f a)
+  | .impure ι op cont => .impure ι op (fun z => Freer.map F f (cont z))
 
 instance {F : Type → Type} : Functor (Freer F) where
   map := Freer.map F
@@ -65,28 +68,28 @@ instance {F : Type → Type} : LawfulFunctor (Freer F) where
     simp [Functor.map]
     induction x
     case pure a => simp [Freer.map]
-    case impure X Fx f ih => simp [Freer.map, ih]
+    case impure ι op cont ih => simp [Freer.map, ih]
   comp_map := by
     intro α β γ g h x
     simp [Functor.map]
     induction x
     case pure a => simp [Freer.map]
-    case impure X Fx f ih => simp [Freer.map, ih]
+    case impure ι op cont ih => simp [Freer.map, ih]
 
-/-- Bind operation for the `Free` monad. -/
+/-- Bind operation for the `Freer` monad. -/
 def bindFree {a b : Type} (F : Type → Type) (x : Freer F a) (f : a → Freer F b) : Freer F b :=
   match x with
   | .pure a => f a
-  | .impure X Fx k => .impure X Fx (fun z => bindFree F (k z) f)
+  | .impure ι op cont => .impure ι op (fun z => bindFree F (cont z) f)
 
-instance FreeMonad {F : Type → Type} : Monad (Freer F) where
+instance {F : Type → Type} : Monad (Freer F) where
   pure := Freer.pure
   bind := bindFree F
 
 instance FreeLawfulMonad {F : Type → Type} : LawfulMonad (Freer F) where
   bind_pure_comp := by
     intro α β x y; simp [Functor.map, bind, pure]; induction y
-    · case pure a => simp [bindFree, Freer.map]
+    · case pure a => simp [bindFree, map, Pure.pure]
     · case impure X Fx k ih => simp [bindFree, Freer.map, ih]
   bind_map := by
     intro α β f x; simp [bind, Seq.seq]
@@ -121,114 +124,121 @@ instance FreeLawfulMonad {F : Type → Type} : LawfulMonad (Freer F) where
 
 /-! ### State Monad via `Freer` -/
 
-/-- Functor for state operations. -/
-inductive StateF (s : Type) (a : Type) where
-| get : (s → a) → StateF s a
-| put : s → a → StateF s a
+/-- Type constructor for state operations. -/
+inductive StateF (σ : Type) (α : Type) where
+  /-- Get the current state, passing it to the continuation. -/
+  | get : (σ → α) → StateF σ α
+  /-- Set the state to a new value, continuing with the given result. -/
+  | put : σ → α → StateF σ α
 
-instance {s : Type} : Functor (StateF s) where
+instance {σ : Type} : Functor (StateF σ) where
   map f
-  | StateF.get k => StateF.get (f ∘ k)
-  | StateF.put st a => StateF.put st (f a)
+  | .get k => .get (f ∘ k)
+  | .put st a => .put st (f a)
 
 /-- State monad via the `Freer` monad. -/
-def FreerState (s : Type) := Freer (StateF s)
+abbrev FreerState (σ : Type) := Freer (StateF σ)
 
 namespace FreerState
 
-instance {s : Type} : Monad (FreerState s) := FreeMonad
-instance {s : Type} : LawfulMonad (FreerState s) := FreeLawfulMonad
+instance {σ : Type} : Monad (FreerState σ) := inferInstance
+instance {σ : Type} : LawfulMonad (FreerState σ) := inferInstance
 
-/-- Get the current state. -/
-def get {s : Type} : FreerState s s :=
-  Freer.impure s (StateF.get id) Freer.pure
+instance {σ : Type} : MonadStateOf σ (FreerState σ) where
+  get := Freer.impure σ (StateF.get id) Freer.pure
+  set newState := Freer.impure PUnit (StateF.put newState PUnit.unit) Freer.pure
+  modifyGet f := Freer.impure σ (StateF.get id) (fun s =>
+    let (a, s') := f s
+    Freer.impure PUnit (StateF.put s' PUnit.unit) (fun _ => Freer.pure a))
 
-/-- Set the state. -/
-def put {s : Type} (newState : s) : FreerState s PUnit :=
-  Freer.impure PUnit (StateF.put newState PUnit.unit) Freer.pure
+instance {σ : Type} : MonadState σ (FreerState σ) := inferInstance
 
-/-- Modify the state. -/
-def modify {s : Type} (f : s → s) : FreerState s PUnit :=
-  bindFree (StateF s) get (fun s => put (f s))
+/-- Modify the state using a function. -/
+def modify {σ : Type} (f : σ → σ) : FreerState σ PUnit := do
+  let s ← get
+  set (f s)
 
-/-- Run a Freer state computation. -/
-def runState {s a : Type} (computation : FreerState s a) (initialState : s) : a × s :=
+/-- Run a state computation, returning both the result and final state. -/
+def runState {σ α : Type} (computation : FreerState σ α) (initialState : σ) : α × σ :=
   match computation with
   | Freer.pure a => (a, initialState)
-  | Freer.impure _ (StateF.get k) cont =>
-      runState (cont (k initialState)) initialState
-  | Freer.impure _ (StateF.put newState p) cont =>
-      runState (cont p) newState
+  | Freer.impure _ (StateF.get k) cont => runState (cont (k initialState)) initialState
+  | Freer.impure _ (StateF.put newState p) cont => runState (cont p) newState
 
-/-- Evaluate a computation, returning the result. -/
-def evalState {s a : Type} (computation : FreerState s a) (initialState : s) : a :=
+/-- Run a state computation, returning only the result. -/
+def evalState {σ α : Type} (computation : FreerState σ α) (initialState : σ) : α :=
   (runState computation initialState).1
 
-/-- Evaluate a computation, returning the final state. -/
-def execState {s a : Type} (computation : FreerState s a) (initialState : s) : s :=
+/-- Run a state computation, returning only the final state. -/
+def execState {σ α : Type} (computation : FreerState σ α) (initialState : σ) : σ :=
   (runState computation initialState).2
 
 end FreerState
 
 /-! ### Writer Monad via `Freer` -/
 
-/-- Functor for writer operations. -/
-inductive WriterF (w : Type) (a : Type) where
-| tell : w → a → WriterF w a
+/-- Type constructor for writer operations. -/
+inductive WriterF (w : Type) (α : Type) where
+  /-- Append a value to the log, continuing with the given result. -/
+  | tell : w → α → WriterF w α
 
 instance {w : Type} : Functor (WriterF w) where
   map f
-  | WriterF.tell log a => WriterF.tell log (f a)
+  | .tell log a => .tell log (f a)
 
 /-- Writer monad via the `Freer` monad. -/
-def FreerWriter (w : Type) := Freer (WriterF w)
+abbrev FreerWriter (w : Type) := Freer (WriterF w)
 
 namespace FreerWriter
 
-instance {w : Type} : Monad (FreerWriter w) := FreeMonad
-instance {w : Type} : LawfulMonad (FreerWriter w) := FreeLawfulMonad
+instance {w : Type} : Monad (FreerWriter w) := inferInstance
+instance {w : Type} : LawfulMonad (FreerWriter w) := inferInstance
 
 /-- Append to the log. -/
 def tell {w : Type} (log : w) : FreerWriter w PUnit :=
   Freer.impure PUnit (WriterF.tell log PUnit.unit) Freer.pure
 
 /-- Run a writer computation, returning the result and log. -/
-def runWriter {w a : Type} [AddMonoid w] (computation : FreerWriter w a) : a × w :=
+def runWriter {w α : Type} [AddMonoid w] (computation : FreerWriter w α) : α × w :=
   match computation with
   | Freer.pure a => (a, 0)
   | Freer.impure _ (WriterF.tell log p) cont =>
       let (result, accLog) := runWriter (cont p)
       (result, log + accLog)
 
-/-- Return only the result of a writer computation. -/
-def execWriter {w a : Type} [AddMonoid w] (computation : FreerWriter w a) : a :=
-  (runWriter computation).1
+/-- Run a writer computation, returning only the log. -/
+def execWriter {w α : Type} [AddMonoid w] (computation : FreerWriter w α) : w :=
+  (runWriter computation).2
 
-/-- Return result and log as a value inside the `Freer` monad. -/
-def listen {w a : Type} [AddMonoid w] (computation : FreerWriter w a) : FreerWriter w (a × w) :=
+/-- Run a writer computation and return the result along with the log it produced. -/
+def listen {w α : Type} [AddMonoid w] (computation : FreerWriter w α) : FreerWriter w (α × w) :=
   Freer.pure (runWriter computation)
 
 end FreerWriter
 
 /-! ### Continuation Monad via `Freer` -/
 
-/-- CPS functor encoding one continuation-passing step. -/
-@[simp]
-def ContF (r : Type) (α : Type) : Type := (α → r) → r
+/-- Type constructor for continuation operations. -/
+inductive ContF (r : Type) (α : Type) where
+  /-- Call with current continuation: provides access to the current continuation. -/
+  | callCC : ((α → r) → r) → ContF r α
+
+instance {r : Type} : Functor (ContF r) where
+  map f
+  | .callCC g => .callCC (fun k => g (k ∘ f))
 
 /-- Continuation monad via the `Freer` monad. -/
-abbrev FreerCont (r : Type) (α : Type) := Freer (ContF r) α
+abbrev FreerCont (r : Type) := Freer (ContF r)
 
 namespace FreerCont
 
-instance {r : Type} : Monad (FreerCont r) := FreeMonad
-instance {r : Type} : LawfulMonad (FreerCont r) := FreeLawfulMonad
+instance {r : Type} : Monad (FreerCont r) := inferInstance
+instance {r : Type} : LawfulMonad (FreerCont r) := inferInstance
 
-/-- Run a `FreerCont` program with a final continuation. -/
-@[simp, reducible]
-def run {r α} : FreerCont r α → (α → r) → r
-| .pure a => fun k => k a
-| .impure _ k cont => fun h => k (fun x => run (cont x) h)
+/-- Run a continuation computation with the given continuation. -/
+def run {r α : Type} : FreerCont r α → (α → r) → r
+  | .pure a, k => k a
+  | .impure _ (ContF.callCC g) cont, k => g (fun a => run (cont a) k)
 
 end FreerCont
 
@@ -236,19 +246,21 @@ end FreerCont
 
 -- Example FreerState computations
 example : FreerState.evalState (do
-  let s ← FreerState.get
-  FreerState.put (s + 1)
+  let s ← get
+  set (s + 1)
   return s : FreerState Nat Nat) 5 = 5 := rfl
 
 example : FreerState.execState (do
-  let s ← FreerState.get
-  FreerState.put (s + 1)
+  let s ← get
+  set (s + 1)
   return s : FreerState Nat Nat) 5 = 6 := rfl
 
 example : FreerState.runState (do
-  let s ← FreerState.get
-  FreerState.put (s + 1)
+  let s ← get
+  set (s + 1)
   return s : FreerState Nat Nat) 5 = (5, 6) := rfl
 
 -- Example FreerCont computation
 example : FreerCont.run (return 42 : FreerCont Nat Nat) id = 42 := rfl
+
+end Freer
