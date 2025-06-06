@@ -1,6 +1,28 @@
+/-
+Copyright (c) 2025 Robert Maxton. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Robert Maxton
+-/
+
 import Mathlib.CategoryTheory.Category.Quiv
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Generator.Basic
+
+/-!# Shapes in Quiv
+
+In this file, we define a number of quivers, most of which have corresponding notations:
+* The `Empty` quiver, which is initial
+* The single-vertex zero-edge quiver `Vert`, with the notation `⋆`
+* The single-vertex single-edge quiver `Point`, with the notation `⭮`, which is terminal
+* The `Interval` quiver, with the notation `𝕀`
+
+All notations are duplicated: once for when universe levels can be inferred, and once to
+allow explicit universe levels to be given.
+
+## TODO
+* The subobject classifier in `Quiv`
+
+-/
 
 namespace CategoryTheory.Quiv
 universe v u v₁ u₁ v₂ u₂
@@ -21,17 +43,9 @@ def Vert := let _ := PUnit.{v}; PUnit.{u + 1}
 instance : Quiver.{v + 1} Vert.{v} where
   Hom _ _ := PEmpty
 
-@[inherit_doc] scoped notation "⋆" => Vert
+@[inherit_doc Vert] scoped notation "⋆" => Vert
 set_option quotPrecheck false in
 @[inherit_doc Vert] scoped notation "⋆.{" v ", " u "}" => Vert.{v, u}
-
-open Lean Meta Parser.Term PrettyPrinter.Delaborator SubExpr in
-@[app_delab Bundled.α]
-def delab_vert : Delab :=
-  whenPPOption getPPNotation <| do
-  let #[_, α] := (← getExpr).getAppArgs | failure
-  unless α.isConstOf ``Vert do failure
-  `(⋆)
 
 /-- Prefunctors out of `⋆` are just single objects. -/
 def Vert.prefunctor {V : Type u₂} [Quiver.{v₂} V] (v : V) : ⋆.{v₁, u₁} ⥤q V :=
@@ -61,17 +75,9 @@ instance : Quiver.{v + 1} Interval.{v} where
   | .up .left, .up .right => PUnit
   | _, _ => PEmpty
 
-@[inherit_doc] scoped notation "𝕀" => of Interval
+@[inherit_doc Interval] scoped notation "𝕀" => Interval
 set_option quotPrecheck false in
-@[inherit_doc Interval] scoped notation "𝕀.{" v ", " u "}" => of Interval.{v, u}
-
-open Lean Meta Parser.Term PrettyPrinter.Delaborator SubExpr in
-@[app_delab Bundled.α]
-def delab_interval : Delab :=
-  whenPPOption getPPNotation <| do
-  let #[_, α] := (← getExpr).getAppArgs | failure
-  unless α.isConstOf ``Interval do failure
-  `(𝕀)
+@[inherit_doc Interval] scoped notation "𝕀.{" v ", " u "}" => Interval.{v, u}
 
 /-- The left point of `𝕀`. -/
 @[match_pattern] def Interval.left : 𝕀 := .up .left
@@ -137,9 +143,9 @@ def Point := let _ := PUnit.{v}; PUnit.{u + 1}
 instance : Quiver.{v + 1} Point.{v} where
   Hom _ _ := PUnit
 
-scoped notation "⭮" => of Point
+@[inherit_doc Point] scoped notation "⭮" => Point
 set_option quotPrecheck false in
-scoped notation "⭮.{" v ", " u "}" => of Point.{v, u}
+@[inherit_doc Point] scoped notation "⭮.{" v ", " u "}" => Point.{v, u}
 
 /-- Prefunctors out of `⭮` are just single self-arrows. -/
 def Point.prefunctor {V : Type u₂} [Quiver.{v₂} V] {v : V} (α : v ⟶ v) : ⭮.{v₁, u₁} ⥤q V :=
@@ -186,7 +192,7 @@ noncomputable def initialIsoEmpty : ⊥_ Quiv ≅ of Empty :=
   initialIsoIsInitial emptyIsInitial
 
 /-- `⭮` is terminal in **Quiv**. -/
-def pointIsTerminal : IsTerminal ⭮ :=
+def pointIsTerminal : IsTerminal (of ⭮) :=
   IsTerminal.ofUniqueHom
     (fun X ↦ Prefunctor.mk (fun _ ↦ ⟨⟩) (fun _ ↦ ⟨⟩))
     fun X ⟨obj, map⟩ ↦ by congr
@@ -194,7 +200,7 @@ def pointIsTerminal : IsTerminal ⭮ :=
 instance : HasTerminal Quiv := pointIsTerminal.hasTerminal
 
 /-- The terminal object in **Quiv** is ⭮. -/
-noncomputable def terminalIsoPoint : ⊤_ Quiv ≅ (of Point) :=
+noncomputable def terminalIsoPoint : ⊤_ Quiv ≅ of ⭮ :=
   terminalIsoIsTerminal pointIsTerminal
 
 end Quiv
