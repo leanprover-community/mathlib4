@@ -32,7 +32,6 @@ This file also provides diffeomorphisms related to products and disjoint unions.
 * `Diffeomorph.sumComm`: `M ⊕ M'` is diffeomorphic to `M' × M`
 * `Diffeomorph.sumAssoc`: `(M ⊕ N) ⊕ P` is diffeomorphic to `M ⊕ (N ⊕ P)`
 * `Diffeomorph.sumEmpty`: `M ⊕ ∅` is diffeomorphic to `M`
-* `Diffeomorph.prodSumDistrib`: `(M × P) ⊕ (N × P)` is diffeomorphic to `(M⊕N) × P`
 
 ## Notations
 

@@ -38,6 +38,8 @@ at every `x ∈ s`, and a **local diffeomorphism** iff it is a local diffeomorph
 * `LocalDiffeomorph.mfderivToContinuousLinearEquiv`: if `f` is a local diffeomorphism,
   each differential `mfderiv I J n f x` is a continuous linear equivalence.
 
+* `Diffeomorph.prodSumDistrib`: `(M × P) ⊕ (N × P)` is diffeomorphic to `(M ⊕ N) × P`
+
 ## TODO
 * an injective local diffeomorphism is a diffeomorphism to its image
 * if `f` is `C^n` at `x` and `mfderiv I J n f x` is a linear isomorphism,
@@ -55,7 +57,7 @@ local diffeomorphism, manifold
 
 -/
 
-open Manifold Set TopologicalSpace
+open Manifold Function Set TopologicalSpace
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -324,9 +326,9 @@ lemma IsLocalDiffeomorph.image_coe (hf : IsLocalDiffeomorph I J n f) : hf.image.
 
 /-- A bijective local diffeomorphism is a diffeomorphism. -/
 noncomputable def IsLocalDiffeomorph.diffeomorph_of_bijective
-    (hf : IsLocalDiffeomorph I J n f) (hf' : Function.Bijective f) : Diffeomorph I J M N n := by
+    (hf : IsLocalDiffeomorph I J n f) (hf' : Bijective f) : Diffeomorph I J M N n := by
   -- Choose a right inverse `g` of `f`.
-  choose g hgInverse using (Function.bijective_iff_has_inverse).mp hf'
+  choose g hgInverse using bijective_iff_has_inverse.mp hf'
   -- Choose diffeomorphisms φ_x which coincide which `f` near `x`.
   choose Φ hyp using (fun x ↦ hf x)
   -- Two such diffeomorphisms (and their inverses!) coincide on their sources:
@@ -358,13 +360,13 @@ section IFT
 
 -- TODO: prove this, from the inverse function theorem for manifolds
 /-- If `f` has bijective differential at `x`, it is a local diffeomorphism at `x`. -/
-lemma IsLocalDiffeomorphAt.of_mfderiv_bijective (hdiff: Function.Bijective (mfderiv I J f x)) :
+lemma IsLocalDiffeomorphAt.of_mfderiv_bijective (hdiff: Bijective (mfderiv I J f x)) :
     IsLocalDiffeomorphAt I J n f x := sorry
 
 /-- If `f` has bijective differential everywhere, it is a local diffeomorphism. -/
-lemma IsLocalDiffeomorph.of_mfderiv_bijective (hdiff: ∀ x, Function.Bijective (mfderiv I J f x)) :
+lemma IsLocalDiffeomorph.of_mfderiv_bijective (hdiff: ∀ x, Bijective (mfderiv I J f x)) :
     IsLocalDiffeomorph I J n f :=
-  fun x ↦ IsLocalDiffeomorphAt.of_mfderiv_bijective (hdiff x)
+  fun x ↦ .of_mfderiv_bijective (hdiff x)
 
 end IFT
 
@@ -392,29 +394,27 @@ variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 E']
 variable (I J M M' N n) in
 noncomputable def prodSumDistrib :
     Diffeomorph (I.prod J) (I.prod J) ((M × N) ⊕ (M' × N)) ((M ⊕ M') × N) n := by
-  refine IslocalDiffeomorph.diffeomorph_of_bijective (f := (Equiv.sumProdDistrib M M' N).symm) ?_
-    (Equiv.bijective _)
-  apply IsLocalDiffeomorph.of_mfderiv_bijective
-  intro x
-  set f := (Equiv.sumProdDistrib M M' N).symm
-  have : ContMDiff (I.prod J) (I.prod J) n f := by
-    apply ContMDiff.sumElim
-    · exact ContMDiff.prod_map ContMDiff.inl contMDiff_id
-    · exact ContMDiff.prod_map ContMDiff.inr contMDiff_id
-  have hinj : Function.Injective (mfderiv (I.prod J) (I.prod J) f x) := by
-    -- two cases, depending on whether x is a left or right point
-    -- in each, it follows by computing the mfderiv of a product with the identity
-    sorry
-  -- The domain and co-domain have the same finite dimension, hence they are equivalent.
-  have : FiniteDimensional 𝕜 (TangentSpace (I.prod J) (f x)) := by
-    change FiniteDimensional 𝕜 (E × E')
-    infer_instance
-  -- Both tangent spaces are defeq to E.prod E', hence the proof by rfl...
-  have hrank : Module.finrank 𝕜 (TangentSpace (I.prod J) x) =
-    Module.finrank 𝕜 (TangentSpace (I.prod J) (f x)) := rfl
-  let aux := _root_.LinearEquiv.of_injective_finrank_eq
-    (mfderiv (I.prod J) (I.prod J) f x).toLinearMap hinj rfl
-  exact LinearEquiv.bijective aux
+  have (x) : Bijective (mfderiv (I.prod J) (I.prod J) (⇑(Equiv.sumProdDistrib M M' N).symm) x) := by
+    set f := (Equiv.sumProdDistrib M M' N).symm
+    have : ContMDiff (I.prod J) (I.prod J) n f := by
+      apply ContMDiff.sumElim
+      · exact ContMDiff.prodMap ContMDiff.inl contMDiff_id
+      · exact ContMDiff.prodMap ContMDiff.inr contMDiff_id
+    have hinj : Function.Injective (mfderiv (I.prod J) (I.prod J) f x) := by
+      -- two cases, depending on whether x is a left or right point
+      -- in each, it follows by computing the mfderiv of a product with the identity
+      sorry
+    -- The domain and co-domain have the same finite dimension, hence they are equivalent.
+    have : FiniteDimensional 𝕜 (TangentSpace (I.prod J) (f x)) := by
+      change FiniteDimensional 𝕜 (E × E')
+      infer_instance
+    -- Both tangent spaces are defeq to E.prod E', hence the proof by rfl...
+    have hrank : Module.finrank 𝕜 (TangentSpace (I.prod J) x) =
+      Module.finrank 𝕜 (TangentSpace (I.prod J) (f x)) := rfl
+    let aux := _root_.LinearEquiv.ofInjectiveOfFinrankEq
+      (mfderiv (I.prod J) (I.prod J) f x).toLinearMap hinj rfl
+    exact LinearEquiv.bijective aux
+  exact (IsLocalDiffeomorph.of_mfderiv_bijective this).diffeomorph_of_bijective (Equiv.bijective _)
 
 @[simp]
 theorem prodSumDistrib_toEquiv :
