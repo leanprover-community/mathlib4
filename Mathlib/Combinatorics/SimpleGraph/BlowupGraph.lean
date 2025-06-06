@@ -20,8 +20,7 @@ Given a family of vertex types indexed by `ι`, pulling back from `H : SimpleGra
 yields the blow-up graph on the family. Two vertices are adjacent if and only if their
 indices are adjacent in `H`.
 -/
-abbrev blowupGraph  : SimpleGraph (Σ i, V i) :=
-  SimpleGraph.comap Sigma.fst H
+abbrev blowupGraph  : SimpleGraph (Σ i, V i) := SimpleGraph.comap Sigma.fst H
 
 lemma blowupGraph_adj (x y : Σ i, V i) :
     (blowupGraph H V).Adj x y ↔ H.Adj (Sigma.fst x) (Sigma.fst y) := by rfl
@@ -70,32 +69,8 @@ lemma blowupGraph_colorable_iff {n : ℕ} (f : ∀ i, (V i)) :
   · exact ⟨fun x ↦ c x.fst, fun h1 h2 ↦ c.valid h1 h2⟩
   · exact ⟨fun x ↦ c ⟨x, f x⟩, by intro a b had; exact c.valid (by rwa [blowupGraph_adj])⟩
 
-section Finite
---variable [DecidableRel H.Adj] [Fintype ι] [∀ i, Fintype (V i)]
---#synth Fintype (blowupGraph H V).edgeSet
-noncomputable def blowupGraph_edgeSetIso (f : ∀ i, (V i)) :
-  (blowupGraph H V).edgeSet ≃ Σ e : H.edgeSet, (V e.val.out.1) × (V e.val.out.2) where
-  toFun := fun e ↦ by
-    refine ⟨?_, ?_, ?_⟩
-    · rw [blowupGraph_edgeSet] at e
-      rw [edgeSet_eq]
-      refine ⟨s(e.val.out.1.1, e.val.out.2.1), ?_⟩
-      rw [Set.mem_setOf_eq]
-      rw [adj_iff_exists_edge_coe]
-      simp only [Set.mem_setOf_eq, Prod.mk.eta, Quot.out_eq, Subtype.exists, exists_prop,
-        exists_eq_right, mem_edgeSet]
-      convert e.2
-    · convert e.val.out.1.2
-      simp_all
-      sorry
-    sorry
-  invFun := sorry
-  left_inv := sorry
-  right_inv := sorry
-
-end Finite
-
 variable {α β ι : Type*} {k : ℕ}
+
 /--
 A `Flag α ι` consists of `G : SimpleGraph α` and a labelling of `ι` vertices of `G` by an
 injective map `θ : ι ↪ α`. (We call this a `σ`-flag if the labelled subgraph is
