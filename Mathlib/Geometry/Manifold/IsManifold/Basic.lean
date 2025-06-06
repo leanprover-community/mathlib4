@@ -150,9 +150,8 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] extends
     PartialEquiv H E where
   source_eq : source = univ
-  -- uniqueDiffOn' : UniqueDiffOn 𝕜 toPartialEquiv.target
-  -- target_subset_closure_interior :
-  --  toPartialEquiv.target ⊆ closure (interior toPartialEquiv.target)
+  /-- To check this condition when the space already has a real normed space structure,
+  use `Convex.convex_isRCLikeNormedField` which eliminates the `letI`s below. -/
   convex_range' :
     if h : IsRCLikeNormedField 𝕜 then
       letI := h.rclike 𝕜;
@@ -284,6 +283,21 @@ theorem range_eq_univ_of_not_isRCLikeNormedField (h : ¬ IsRCLikeNormedField �
     range I = univ := by
   simpa [h] using I.convex_range'
 
+/-- If a set is `ℝ`-convex for some normed space structure, then it is `ℝ`-convex for the
+normed space structure coming from an `IsRCLikeNormedField 𝕜`. -/
+lemma Convex.convex_isRCLikeNormedField [NormedSpace ℝ E] [h : IsRCLikeNormedField 𝕜]
+    {s : Set E} (hs : Convex ℝ s) :
+    letI := h.rclike
+    letI := NormedSpace.restrictScalars ℝ 𝕜 E
+    Convex ℝ s := by
+  letI := h.rclike
+  letI := NormedSpace.restrictScalars ℝ 𝕜 E
+  simp only [Convex, StarConvex] at hs ⊢
+  intro u hu v hv a b ha hb hab
+  convert hs hu hv ha hb hab using 2
+  · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜), ← @algebraMap_smul (R := ℝ) (A := 𝕜)]
+  · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜), ← @algebraMap_smul (R := ℝ) (A := 𝕜)]
+
 theorem convex_range [NormedSpace ℝ E] : Convex ℝ (range I) := by
   by_cases h : IsRCLikeNormedField 𝕜
   · letI : RCLike 𝕜 := h.rclike
@@ -292,11 +306,9 @@ theorem convex_range [NormedSpace ℝ E] : Convex ℝ (range I) := by
     simp only [Convex, StarConvex] at W ⊢
     intro u hu v hv a b ha hb hab
     convert W hu hv ha hb hab using 2
-    · have : (a : 𝕜) • u = a • u := algebraMap_smul _ _ _
-      rw [← this]
+    · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜)]
       rfl
-    · have : (b : 𝕜) • v = b • v := algebraMap_smul _ _ _
-      rw [← this]
+    · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜)]
       rfl
   · simp [range_eq_univ_of_not_isRCLikeNormedField I h, convex_univ]
 
