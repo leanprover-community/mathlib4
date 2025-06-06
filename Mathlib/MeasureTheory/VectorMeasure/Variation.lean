@@ -508,7 +508,9 @@ lemma variation_SignedMeasure (μ : SignedMeasure X) :
     have hpos : μ.toJordanDecomposition.posPart r = ‖μ (s ∩ r)‖ₑ := by
       rw [hs']
       have : ‖μ (s ∩ r)‖ₑ = ENNReal.ofReal (μ (s ∩ r)) := by
-        refine Real.enorm_of_nonneg <| nonneg_of_zero_le_restrict μ ?_
+        refine Real.enorm_of_nonneg  ?_
+        -- Now show that `0 ≤ μ (s ∩ r)`
+        refine nonneg_of_zero_le_restrict μ ?_
         exact zero_le_restrict_subset μ hsm (by simp) hs
       rw [this, toMeasureOfZeroLE_apply μ hs hsm hr]
       refine Eq.symm <| ofReal_eq_coe_nnreal <| nonneg_of_zero_le_restrict μ ?_
@@ -535,6 +537,48 @@ lemma variation_SignedMeasure (μ : SignedMeasure X) :
     -- `|μ p| ≤ |μ (s ∩ p)| + |μ (sᶜ ∩ p)| = μ (s ∩ p) - μ (sᶜ ∩ p)`. Let `P` be a partition of `r`.
     -- To estimate variation defined as the supremum requires estimating `∑ p ∈ P, |μ p|`. Using the
     -- additivity of the measure and the above, `∑ p ∈ P, |μ p| ≤ μ (s ∩ r) - μ (sᶜ ∩ r)`.
+    suffices ∀ P, IsInnerPart r P → ∑ p ∈ P, ‖μ p‖ₑ ≤ μ.totalVariation r by
+      simpa [ennrealToMeasure_apply hr, variation, variation', var_aux, hr]
+    intro P hP
+    have h p (hp : p ∈ P) : |μ p| ≤ μ (s ∩ p) + μ (sᶜ ∩ p) := by
+      have h1 : μ p = (μ.toJordanDecomposition.posPart p).toReal -
+          (μ.toJordanDecomposition.negPart p).toReal := by
+        nth_rw 1 [← toSignedMeasure_toJordanDecomposition μ]
+        -- There is a sign error in the statement
+        sorry
+      have h2 : (μ.toJordanDecomposition.posPart p).toReal = μ (s ∩ p) := by
+        have := toMeasureOfZeroLE_apply μ hs hsm (hP.2.1 p hp)
+        simp [hs', this]
+      have h3 : (μ.toJordanDecomposition.negPart p).toReal = μ (sᶜ ∩ p) := by
+        have := toMeasureOfLEZero_apply μ hsc (MeasurableSet.compl hsm) (hP.2.1 p hp)
+        simp [hsc', this]
+        -- There is a sign error in the statement
+        sorry
+      have h4 : μ p = μ (s ∩ p) - μ (sᶜ ∩ p) := by
+        rw [h1, h2, h3]
+      rw [h4]
+      have h5 : μ (s ∩ p) = |μ (s ∩ p)| := by
+        refine Eq.symm <| abs_of_nonneg <| nonneg_of_zero_le_restrict μ ?_
+        exact zero_le_restrict_subset μ hsm (by simp) hs
+      have h6 : μ (sᶜ ∩ p) = - |μ (sᶜ ∩ p)| := by
+        suffices |- μ (sᶜ ∩ p)| = - μ (sᶜ ∩ p) by
+          have : μ (sᶜ ∩ p) ≤ 0 := by
+            refine nonpos_of_restrict_le_zero μ ?_
+            have : MeasurableSet sᶜ := by exact MeasurableSet.compl_iff.mpr hsm
+            exact restrict_le_zero_subset μ this (by simp) hsc
+          have : |μ (sᶜ ∩ p)| = - μ (sᶜ ∩ p) := by
+            exact abs_of_nonpos this
+          simp [this]
+        refine abs_of_nonneg ?_
+        simp
+        refine nonpos_of_restrict_le_zero μ ?_
+        have : MeasurableSet sᶜ := by exact MeasurableSet.compl_iff.mpr hsm
+        exact restrict_le_zero_subset μ this (by simp) hsc
+      nth_rw 2 [h5, h6]
+      simp
+      have := abs_add_le (μ (s ∩ p)) (μ (sᶜ ∩ p))
+      -- There is a sign error in the statement
+      sorry
     sorry
 
 end MeasureTheory.VectorMeasure
