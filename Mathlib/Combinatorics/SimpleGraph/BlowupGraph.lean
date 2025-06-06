@@ -175,7 +175,7 @@ lemma card_superset {k m n : ℕ} {s t : Finset (Fin (n + m + k))} (hs : #s = k)
 /--
 Given a `k`-set `s` in `[n + m + k]`, the number of `m + k` super-sets of `s` is `choose (n + m) m`
 -/
-lemma card_supersets (k m n : ℕ) (s : Finset (Fin (n + m + k))) (hs : s.card = k) :
+lemma card_supersets {k m n : ℕ} {s : Finset (Fin (n + m + k))} (hs : s.card = k) :
     #{t : Finset (Fin (n + m + k)) | #t = m + k ∧ s ⊆ t} = Nat.choose (n + m) m := by
   have : #(sᶜ) = n + m := by rw [card_compl, Fintype.card_fin]; omega
   simp_rw [← this]
@@ -219,8 +219,7 @@ lemma sum_embeddings_induce_eq (G : SimpleGraph (Fin (n + m + k))) (H : SimpleGr
       ite (Set.range e ⊆ t) 1 0 := Finset.sum_comm
     _ = ∑ e : H ↪g G, ∑ t : Finset (Fin (n + m + k)) with (#t =  m + k ∧ Set.range e ⊆ t), 1 := by
       simp_rw [sum_ite, sum_const_zero, add_zero]
-      congr; ext e; congr 1;
-      ext s; simp
+      congr; ext e; congr 1; ext s; simp
     _ = _ := by
       simp_rw [← card_eq_sum_ones]
       rw [← card_univ, card_eq_sum_ones, sum_mul, one_mul]
@@ -228,7 +227,7 @@ lemma sum_embeddings_induce_eq (G : SimpleGraph (Fin (n + m + k))) (H : SimpleGr
       have hs : #((Set.range e).toFinset) = k := by
         simp_rw [Set.toFinset_range, ← card_fin k]
         apply card_image_of_injective _ (RelEmbedding.injective e)
-      rw [← card_supersets k m n _ hs]
+      rw [← card_supersets hs]
       congr
       ext t
       constructor <;> intro ⟨ht1, ht2⟩ <;> exact ⟨ht1, fun x hx ↦ ht2 (by simpa using hx)⟩
