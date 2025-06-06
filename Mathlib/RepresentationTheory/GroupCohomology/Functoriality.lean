@@ -339,11 +339,11 @@ instance : Mono (H1InfRes A S).f := by
   simp_all only [H1InfRes_X₂, H1InfRes_X₁, H1InfRes_f, π_map_apply (QuotientGroup.mk' S),
     H1π_eq_zero_iff]
   rcases hx with ⟨y, hy⟩
-  refine ⟨⟨y, fun s => ?_⟩, funext fun g => Subtype.ext ?_⟩
-  · simpa [(QuotientGroup.eq_one_iff s.1).2 s.2, memOneCocycles_map_one x hx, sub_eq_zero] using
-      congr_fun hy s.1
-  · induction g using QuotientGroup.induction_on with | @H g =>
-    simpa [dZero] using congr_fun hy g
+  refine ⟨⟨y, fun s => ?_⟩, Subtype.ext <| funext fun g => Quotient.inductionOn' g
+    fun g => Subtype.ext <| congr_fun (Subtype.ext_iff.1 hy) g⟩
+  simpa [coe_mapOneCocycles (x := x), sub_eq_zero, moduleCatToCycles, shortComplexH1,
+    LinearMap.codRestrict, (QuotientGroup.eq_one_iff s.1).2 s.2]
+    using congr_fun (Subtype.ext_iff.1 hy) s.1
 
 /-- Given a `G`-representation `A` and a normal subgroup `S ≤ G`, the short complex
 `H¹(G ⧸ S, A^S) ⟶ H¹(G, A) ⟶ H¹(S, A)` is exact. -/
