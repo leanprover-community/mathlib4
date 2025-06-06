@@ -180,9 +180,12 @@ variable (n) (α)
 
 /-- `Matrix.specialUnitaryGroup` is the group of unitary `n` by `n` matrices where the determinant
 is 1. (This definition is only correct if 2 is invertible.) -/
-abbrev specialUnitaryGroup := unitaryGroup n α ⊓ MonoidHom.mker detMonoidHom
+def specialUnitaryGroup : Submonoid (Matrix n n α) := unitaryGroup n α ⊓ MonoidHom.mker detMonoidHom
 
 variable {n} {α}
+
+theorem specialUnitaryGroup_le_unitaryGroup : specialUnitaryGroup n α ≤ unitaryGroup n α :=
+  inf_le_left
 
 theorem mem_specialUnitaryGroup_iff :
     A ∈ specialUnitaryGroup n α ↔ A ∈ unitaryGroup n α ∧ A.det = 1 :=
@@ -237,7 +240,7 @@ attribute [local instance] starRingOfComm
 
 /-- `Matrix.specialOrthogonalGroup n` is the group of orthogonal `n` by `n` where the determinant
 is one. (This definition is only correct if 2 is invertible.) -/
-abbrev specialOrthogonalGroup := specialUnitaryGroup n β
+abbrev specialOrthogonalGroup : Submonoid (Matrix n n β) := specialUnitaryGroup n β
 
 variable {n} {β} {A : Matrix n n β}
 
