@@ -507,6 +507,7 @@ are checked if `includeOpenIn` is true; otherwise, this returns an empty array f
 -/
 def extractOpenNames (includeOpenIn: Bool) : Syntax → Array (TSyntax `ident)
   | `(command|open $decl:openDecl in $_) =>
+    dbg_trace decl
     if !includeOpenIn then #[]
     else match decl with
     | `(openDecl| $arg hiding $_*)    => #[arg]
@@ -546,6 +547,7 @@ def openClassicalLinter : Linter where run stx := do
     -- If `stx` describes an `open` command, extract the list of opened namespaces.
     let allOpenStatements := extractOpenNames true stx
     if allOpenStatements.isEmpty then return
+    dbg_trace allOpenStatements
     -- TODO: reduce the duplication!
     for stxN in (extractOpenNames false stx).filter (·.getId == `Classical) do
       Linter.logLint linter.style.openClassical stxN "\

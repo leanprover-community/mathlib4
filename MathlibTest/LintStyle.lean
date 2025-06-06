@@ -496,11 +496,13 @@ def aux' : Nat := 1
 
 end openClassical
 
+set_option linter.style.finNatCast true
+
 section finNatCast
 
 #guard_msgs in
 open Fin.NatCast
-example : True := trivial
+def A : True := trivial
 
 #guard_msgs in
 open Fin.NatCast in
