@@ -39,6 +39,16 @@ jobs:
     if: github.repository != 'leanprover-community/mathlib4'
     name: Build (fork)
     runs-on: ubuntu-latest
+    outputs:
+      build-outcome: ${{ steps.build.outcome }}
+      archive-outcome: ${{ steps.archive.outcome }}
+      counterexamples-outcome: ${{ steps.counterexamples.outcome }}
+      get-cache-outcome: ${{ steps.get.outcome }}
+      lint-outcome: ${{ steps.lint.outcome }}
+      mk_all-outcome: ${{ steps.mk_all.outcome }}
+      noisy-outcome: ${{ steps.noisy.outcome }}
+      shake-outcome: ${{ steps.shake.outcome }}
+      test-outcome: ${{ steps.test.outcome }}
     defaults: # On Hoskinson runners, landrun is already installed.
       run:
         shell: landrun --rox /usr --rw /dev --rox /home/lean/.elan --rox /home/lean/actions-runner/_work --rox /home/lean/.cache/mathlib/ --rw pr-branch/.lake/ --env PATH --env HOME --env GITHUB_OUTPUT -- bash -euxo pipefail {0}
@@ -308,11 +318,17 @@ jobs:
           ../master-branch/.lake/build/bin/cache get Archive.lean
           ../master-branch/.lake/build/bin/cache get Counterexamples.lean
 
-      - name: build archive and counterexamples
+      - name: build archive
         id: archive
         run: |
           cd pr-branch
-          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build Archive Counterexamples"
+          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build Archive"
+
+      - name: build counterexamples
+        id: counterexamples
+        run: |
+          cd pr-branch
+          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build Counterexamples"
 
       # The cache secrets are available here, so we must not run any untrusted code.
       - name: put archive and counterexamples cache
@@ -469,7 +485,7 @@ jobs:
       # https://leanprover.zulipchat.com/#narrow/stream/345428-mathlib-reviewers/topic/lean4checker
 
       - name: checkout lean4checker
-        if: ${{ (always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure') && contains(github.event.pull_request.changed_files, 'lean-toolchain') }}
+        if: ${{ (always() && needs.build.outputs.build-outcome == 'success' || needs.build.outputs.build-outcome == 'failure') && contains(github.event.pull_request.changed_files, 'lean-toolchain') }}
         shell: bash
         run: |
           git clone https://github.com/leanprover/lean4checker
@@ -484,7 +500,7 @@ jobs:
           fi
 
       - name: run leanchecker on itself
-        if: ${{ (always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure') && contains(github.event.pull_request.changed_files, 'lean-toolchain') }}
+        if: ${{ (always() && needs.build.outputs.build-outcome == 'success' || needs.build.outputs.build-outcome == 'failure') && contains(github.event.pull_request.changed_files, 'lean-toolchain') }}
         run: |
           cd lean4checker
           # Build lean4checker using the same toolchain
