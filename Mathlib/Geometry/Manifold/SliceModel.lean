@@ -135,6 +135,11 @@ lemma prodAssoc_toLinearEquiv :
 lemma prodAssoc_toEquiv :
   (prodAssoc 𝕜 E E' E'').toEquiv = Equiv.prodAssoc E E' E'' := rfl
 
+-- TODO: move up to Equiv.prodAssoc or so, then this one is implied...
+@[simp]
+lemma prodAssoc_apply (p₁ : E) (p₂ : E') (p₃ : E'') :
+  (prodAssoc 𝕜 E E' E'') ((p₁, p₂), p₃) = (p₁, (p₂, p₃)) := rfl
+
 end prodAssoc
 
 section prodCongr -- already present, but differently named: #25513 renames these
@@ -186,8 +191,7 @@ instance [h : SliceModel F I I'] : SliceModel F (J.prod I) (J.prod I') where
   compatible := by
     dsimp
     ext ⟨x, y⟩ <;> simp
-    · sorry
-    · sorry
+    sorry
 
 /-- If `I` is a slice model of `I'`, then `I.prod J` is a slice model of `I'.prod J`. -/
 -- a bit more cumbersome, as equiv needs some reordering
@@ -203,8 +207,7 @@ instance [h : SliceModel F I I'] : SliceModel F (I.prod J) (I'.prod J) where
   hmap := h.hmap.prodMap IsEmbedding.id
   compatible := by
     ext ⟨x, y⟩ <;> simp
-    · sorry
-    · sorry
+    sorry
 
 /-- If `E' ≃ E × F`, then the trivial models with corners of `E` and `E'` form a slice model. -/
 instance (h : (E × F) ≃L[𝕜] E') : SliceModel F (𝓘(𝕜, E)) (𝓘(𝕜, E')) where
