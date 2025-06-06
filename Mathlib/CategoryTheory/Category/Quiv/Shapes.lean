@@ -6,12 +6,18 @@ namespace CategoryTheory.Quiv
 universe v u v₁ u₁ v₂ u₂
 open Limits
 
-def Empty : Quiv.{v, u} := ⟨PEmpty, ⟨fun _ _ ↦ PEmpty⟩⟩
+def Empty := let _ := PUnit.{v}; PEmpty.{u + 1}
+
+instance : Quiver.{v + 1} Empty.{v} where
+  Hom _ _ := PEmpty
 
 instance : IsEmpty Empty where
   false := PEmpty.elim
 
-def Vert : Quiv.{v, u} := ⟨PUnit, ⟨fun _ _ ↦ PEmpty⟩⟩
+def Vert := let _ := PUnit.{v}; PUnit.{u + 1}
+
+instance : Quiver.{v + 1} Vert.{v} where
+  Hom _ _ := PEmpty
 
 scoped notation "⋆" => Vert
 set_option quotPrecheck false in
@@ -46,12 +52,12 @@ lemma Vert.prefunctor.ext {V : Type u₂} [Quiver.{v₂} V] {F G : ⋆.{v₁, u�
     rintro ⟨⟩
 
 
-def Interval : Quiv.{v, u} :=
-  ⟨ULift WalkingPair,
-    ⟨fun
-      | .up .left, .up .right => PUnit
-      | _, _ => PEmpty⟩
-  ⟩
+def Interval := let _ := PUnit.{v}; ULift.{u} WalkingPair
+
+instance : Quiver.{v + 1} Interval.{v} where
+  Hom
+  | .up .left, .up .right => PUnit
+  | _, _ => PEmpty
 
 scoped notation "𝕀" => Interval
 set_option quotPrecheck false in
@@ -90,7 +96,7 @@ def Interval.prefunctor {V : Type u₂} [Quiver.{v₂} V] {X Y : V} (f : X ⟶ Y
   { obj := fun | Interval.left => X | Interval.right => Y,
     map := @fun | Interval.left, Interval.right, Interval.hom => f }
 
-/--Prefunctors out of `𝕀` are equal if they point to the same hom.-/
+/-- Prefunctors out of `𝕀` are equal if they point to the same hom. -/
 @[ext (iff := false)]
 lemma Interval.prefunctor.ext {V : Type u₂} [Quiver.{v₂} V] {F G : 𝕀.{u₁, v₁} ⥤q V}
     (h₀ : F.obj 0 = G.obj 0) (h₁ : F.obj 1 = G.obj 1)
@@ -112,23 +118,25 @@ lemma Interval.prefunctor.ext {V : Type u₂} [Quiver.{v₂} V] {F G : 𝕀.{u�
     simp [h, Quiver.homOfEq_heq]
 
 lemma Interval.prefunctor.ext_iff {V : Type u₂} [Quiver.{v₂} V] {F G : 𝕀.{u₁, v₁} ⥤q V} :
-    F = G ↔ ∃ h₀ : F.obj 0 = G.obj 0, ∃ h₁ : F.obj 1 = G.obj 1,
+    F = G ↔ ∃ (h₀ : F.obj 0 = G.obj 0) (h₁ : F.obj 1 = G.obj 1),
       F.map Interval.hom = Quiver.homOfEq (G.map Interval.hom) h₀.symm h₁.symm := by
   refine ⟨fun h => ?_, fun ⟨h₀, h₁, h⟩ => Interval.prefunctor.ext h₀ h₁ h⟩
   subst h; simp
 
-def Point : Quiv.{v, u} :=
-  ⟨PUnit, ⟨fun _ _ ↦ PUnit⟩⟩
+def Point := let _ := PUnit.{v}; PUnit.{u + 1}
+
+instance : Quiver.{v + 1} Point.{v} where
+  Hom _ _ := PUnit
 
 scoped notation "⭮" => Point
 set_option quotPrecheck false in
 scoped notation "⭮.{" v ", " u "}" => Point.{v, u}
 
-/--Prefunctors out of `⭮` are just single self-loops.-/
+/-- Prefunctors out of `⭮` are just single self-arrows. -/
 def Point.prefunctor {V : Type u₂} [Quiver.{v₂} V] {v : V} (α : v ⟶ v) : ⭮.{v₁, u₁} ⥤q V :=
   {obj := fun _ ↦ v, map := fun _ => α}
 
-/--Prefunctors out of `⭮` are equal if they point to the same self-loop.-/
+/-- Prefunctors out of `⭮` are equal if they point to the same self-arrow. -/
 @[ext (iff := false)]
 lemma Point.prefunctor.ext {V : Type u₂} [Quiver.{v₂} V] {F G : ⭮.{v₁, u₁} ⥤q V}
     (h_obj : F.obj ⟨⟩ = G.obj ⟨⟩)
@@ -153,29 +161,30 @@ lemma Point.prefunctor.ext_iff {V : Type u₂} [Quiver.{v₂} V] {F G : ⭮.{v�
   refine ⟨fun h => ?_, fun ⟨h_obj, h_map⟩ => Point.prefunctor.ext h_obj h_map⟩
   subst h; simp
 
-def emptyIsInitial : IsInitial Empty := ⟨
-    fun ⟨pt, _⟩ ↦ Prefunctor.mk (PEmpty.elim) (PEmpty.elim),
-    by simp,
-    fun ⟨pt, _⟩ ⟨obj, map⟩ h ↦ by
+def emptyIsInitial : IsInitial (of Empty) :=
+  IsInitial.ofUniqueHom (fun X ↦ Prefunctor.mk PEmpty.elim PEmpty.elim)
+    fun X ⟨obj, map⟩ ↦ by
       congr
-      ext ⟨⟩
-      apply Function.hfunext rfl
-      simp
-  ⟩
+      · ext ⟨⟩
+      · apply Function.hfunext rfl
+        rintro ⟨⟩
 
 instance : HasInitial Quiv := emptyIsInitial.hasInitial
 
-noncomputable def initialIsoEmpty : ⊥_ Quiv ≅ Empty :=
+noncomputable def initialIsoEmpty : ⊥_ Quiv ≅ of Empty :=
   initialIsoIsInitial emptyIsInitial
 
 
-def pointIsTerminal : IsTerminal Point := ⟨
-    fun ⟨pt, _⟩ ↦ Prefunctor.mk (fun _ ↦ PUnit.unit) (fun _ => PUnit.unit),
-    by simp,
-    fun ⟨pt, _⟩ ⟨obj, map⟩ h ↦ by congr
-  ⟩
+def pointIsTerminal : IsTerminal (of Point) :=
+  IsTerminal.ofUniqueHom
+    (fun X ↦ Prefunctor.mk (fun _ ↦ ⟨⟩) (fun _ ↦ ⟨⟩))
+    fun X ⟨obj, map⟩ ↦ by congr
+
 
 instance : HasTerminal Quiv := pointIsTerminal.hasTerminal
 
-noncomputable def terminalIsoPoint : ⊤_ Quiv ≅ Point :=
+noncomputable def terminalIsoPoint : ⊤_ Quiv ≅ (of Point) :=
   terminalIsoIsTerminal pointIsTerminal
+
+end Quiv
+end CategoryTheory
