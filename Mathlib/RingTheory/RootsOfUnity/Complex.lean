@@ -203,13 +203,11 @@ example : {z : ℂ | z^4 = 1} = {1, I, -1, -I} := by
   rw [← sub_eq_zero, H]
   simp [mul_eq_zero, sub_eq_zero, or_assoc, ← sub_neg_eq_add]
 
--- (√5 -1)/4 + √(5 + √5) * I
-
-
-example (z : ℂ) : z ^ 4 + z ^ 3 + z ^ 2 + z + 1 = (z - ((√5 -1)/4 + √2 * √(5 + √5)/4 * I))
-                                            * (z - ((√5 -1)/4 - √2 * √(5 + √5)/4 * I))
-                                            * (z - (-(√5 + 1)/4 + √2 * √(5 - √5) / 4 * I))
-                                            * (z - (-(√5 +1)/4 - √2 * √(5 - √5) / 4 * I)) := by
+lemma cyclotomic_polynomial_5 (z : ℂ) :
+    z ^ 4 + z ^ 3 + z ^ 2 + z + 1 = (z - ((√5 -1)/4 + √2 * √(5 + √5)/4 * I))
+                                  * (z - ((√5 -1)/4 - √2 * √(5 + √5)/4 * I))
+                                  * (z - (-(√5 + 1)/4 + √2 * √(5 - √5) / 4 * I))
+                                  * (z - (-(√5 +1)/4 - √2 * √(5 - √5) / 4 * I)) := by
   have e1 : √(5 + √5) ^ 2 = (5 + √5) := by
     rw [sq, Real.mul_self_sqrt (Left.add_nonneg (Nat.ofNat_nonneg' _) (Real.sqrt_nonneg _))]
     --apply Left.add_nonneg (Nat.ofNat_nonneg' _) (Real.sqrt_nonneg _)
@@ -265,77 +263,23 @@ example (z : ℂ) : z ^ 4 + z ^ 3 + z ^ 2 + z + 1 = (z - ((√5 -1)/4 + √2 * �
   simp
   ring_nf
 
-/-
-example (z : ℂ) : z ^ 5 - 1 = (z - 1) * (z - ((√5 -1)/4 + √2 * √(5 + √5)/4 * I)) * (z - ((√5 -1)/4 - √2 * √(5 + √5)/4 * I)) * (z - (-(√5 + 1)/4 + √2 * √(5 - √5) / 4 * I)) * (z - (-(√5 +1)/4 - √(5 - √5) * I)) := by
-  have e1 : √(5 + √5) ^ 2 = (5 + √5) := by
-    rw [sq, Real.mul_self_sqrt (Left.add_nonneg (Nat.ofNat_nonneg' _) (Real.sqrt_nonneg _))]
-    --apply Left.add_nonneg (Nat.ofNat_nonneg' _) (Real.sqrt_nonneg _)
-  have e2 : √(5 - √5) ^ 2 = (5 - √5) := by
-    rw [sq, Real.mul_self_sqrt]
-    simp_all only [sub_nonneg]
-    rw [Real.sqrt_le_left]
-    rw [sq]
-    simp only [Nat.ofNat_pos, le_mul_iff_one_le_right, Nat.one_le_ofNat]
-    exact Nat.ofNat_nonneg' 5
-  have ee2 (a : ℝ) : a ^ 4 = a * a * a * a := by
-    rw [← two_add_two_eq_four]
-    rw [pow_add _ 2 2]
-    rw [sq]
-    rw [← mul_assoc]
-  have e3 : √5 ^ 4 = 25 := by
-    apply?
-  ring_nf
-  rw [I_sq, I_pow_four]
-  rw [← ofReal_pow]
-  --rw [e1]
-  rw [← ofReal_pow]
-  rw [e2]
-  ring_nf
-  rw [← ofReal_mul, ← ofReal_mul, ← ofReal_mul]
-  rw [← ofReal_pow, ← ofReal_pow]
-  rw [sq, sq]
-  rw [Real.mul_self_sqrt]
-  ring
-  rw [← ofReal_mul, ← ofReal_mul]
-  --ring
-  rw [mul_assoc z ↑(5 + √5) ↑(5 - √5)]
-  rw [← ofReal_mul]
-  ring
-  rw [sq, sq]
-  rw [Real.mul_self_sqrt]
-  ring
-  abel
-  simp
-  ring_nf
-  rw [mul_assoc]
-  rw [sq]
-  rw [← ofReal_mul]
-  rw [Real.mul_self_sqrt]
-  rw [← ofReal_pow]
-  rw [ee2]
-  rw [Real.mul_self_sqrt]
-  rw [mul_assoc 5]
-  rw [Real.mul_self_sqrt]
-  ring_nf
-  simp
-  abel_nf
-  simp
-  ring_nf
-  --simp only [Nat.ofNat_nonneg, Real.mul_self_sqrt]
-  sorry
-
-  --simp
-  simp_rw [pow_add _ 2 2]
-
-  norm_cast
-  rw [← ofReal_mul, ← ofReal_mul]
-  rw [mul_assoc z ↑(5 + √5) ↑(5 - √5)]
-  rw [← ofReal_mul]
-  --simp_all only [mul_neg, mul_one, neg_mul, one_div, neg_neg, sub_neg_eq_add, one_mul]
-
-  sorry
-  --norm_cast
-  rw [e1]
-  --rw [sq, Real.mul_self_sqrt (Left.add_nonneg (Nat.ofNat_nonneg' 5) (Real.sqrt_nonneg 5))]
-  ring
--/
+example : {z : ℂ | z^5 = 1} = {1,
+    (√5 -1)/4 + √2 * √(5 + √5)/4 * I,
+    (√5 -1)/4 - √2 * √(5 + √5)/4 * I,
+    -(√5 + 1)/4 + √2 * √(5 - √5) / 4 * I,
+    -(√5 +1)/4 - √2 * √(5 - √5) / 4 * I} := by
+  have H (z : ℂ) : z ^ 5 - 1 = (z - 1)
+                              * (z - ((√5 -1)/4 + √2 * √(5 + √5)/4 * I))
+                              * (z - ((√5 -1)/4 - √2 * √(5 + √5)/4 * I))
+                              * (z - (-(√5 + 1)/4 + √2 * √(5 - √5) / 4 * I))
+                              * (z - (-(√5 +1)/4 - √2 * √(5 - √5) / 4 * I)) := by
+    have e1 : z ^ 5 - 1 = (z - 1) * (z ^ 4 + z ^ 3 + z ^ 2 + z + 1) := by
+      ring
+    rw [e1]
+    rw [cyclotomic_polynomial_5]
+    ring_nf
+  ext z
+  simp only [Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
+  rw [← sub_eq_zero, H]
+  --simp [← sub_neg_eq_add, or_assoc]
+  simp [or_assoc, sub_eq_zero]
