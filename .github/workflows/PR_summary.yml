@@ -142,7 +142,7 @@ jobs:
         python ../master-branch/scripts/count-trans-deps.py "Mathlib/" > base.json
 
         # switch back to the current branch: the `declarations_diff` script should be here
-        git switch -
+        git checkout "${currentHash}" --
 
     - name: Post or update the summary comment
       env:
