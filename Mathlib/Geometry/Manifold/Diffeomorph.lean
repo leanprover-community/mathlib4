@@ -407,22 +407,25 @@ def transContinuousLinearEquiv : ModelWithCorners 𝕜 E' H where
       letI := NormedSpace.restrictScalars ℝ 𝕜 E'
       let eR : E →L[ℝ] E' := ContinuousLinearMap.restrictScalars ℝ (e : E →L[𝕜] E')
       change Convex ℝ (⇑eR '' range ↑I)
-      apply Convex.linear_image
-      apply I.convex_range
+      apply I.convex_range.linear_image
     · simp [range_eq_univ_of_not_isRCLikeNormedField I h, range_comp]
-  nonempty_interior' := by sorry
+  nonempty_interior' := by
+    simp only [PartialEquiv.coe_trans, Equiv.toPartialEquiv_apply, LinearEquiv.coe_toEquiv,
+      ContinuousLinearEquiv.coe_toLinearEquiv, toPartialEquiv_coe, range_comp,
+      ContinuousLinearEquiv.image_eq_preimage]
+    apply Nonempty.mono (preimage_interior_subset_interior_preimage e.symm.continuous)
+    rw [← ContinuousLinearEquiv.image_eq_preimage]
+    simpa using I.nonempty_interior
   continuous_toFun := e.continuous.comp I.continuous
   continuous_invFun := I.continuous_symm.comp e.symm.continuous
-
-#exit
 
 @[simp, mfld_simps]
 theorem coe_transContinuousLinearEquiv : ⇑(I.transContinuousLinearEquiv e) = e ∘ I :=
   rfl
 
 @[simp, mfld_simps]
-theorem coe_transContinuousLinearEquiv_symm : ⇑(I.transContinuousLinearEquiv e).symm = I.symm ∘ e.symm :=
-  rfl
+theorem coe_transContinuousLinearEquiv_symm :
+    ⇑(I.transContinuousLinearEquiv e).symm = I.symm ∘ e.symm := rfl
 
 theorem transContinuousLinearEquiv_range : range (I.transContinuousLinearEquiv e) = e '' range I :=
   range_comp e I
@@ -436,30 +439,35 @@ theorem coe_extChartAt_transContinuousLinearEquiv_symm (x : M) :
   rfl
 
 theorem extChartAt_transContinuousLinearEquiv_target (x : M) :
-    (extChartAt (I.transContinuousLinearEquiv e) x).target = e.symm ⁻¹' (extChartAt I x).target := by
-  simp only [e.range_comp, preimage_preimage, mfld_simps]; rfl
+    (extChartAt (I.transContinuousLinearEquiv e) x).target
+      = e.symm ⁻¹' (extChartAt I x).target := by
+  simp only [range_comp, preimage_preimage, ContinuousLinearEquiv.image_eq_preimage, mfld_simps]
+  rfl
 
 end ModelWithCorners
 
-namespace Diffeomorph
+namespace ContinuousLinearEquiv
 
-section
+variable (e : E ≃L[𝕜] F)
 
-variable [NeZero n] (e : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, F)⟯ F)
+/-- TODO: streamline simp normal form. -/
+@[simp] lemma coe_toEquiv_symm : e.toEquiv.symm = e.symm := rfl
 
 instance instIsManifoldtransContinuousLinearEquiv [IsManifold I n M] :
     IsManifold (I.transContinuousLinearEquiv e) n M := by
   refine isManifold_of_contDiffOn (I.transContinuousLinearEquiv e) n M fun e₁ e₂ h₁ h₂ => ?_
   refine e.contDiff.comp_contDiffOn
       (((contDiffGroupoid n I).compatible h₁ h₂).1.comp e.symm.contDiff.contDiffOn ?_)
-  simp only [mapsTo_iff_subset_preimage]
-  mfld_set_tac
+  simp only [mapsTo_iff_subset_preimage, mfld_simps, preimage_comp,
+    coe_toEquiv_symm, range_comp, EquivLike.coe_coe]
+  gcongr
+  rw [ContinuousLinearEquiv.image_eq_preimage]
 
 variable (I M)
 
 /-- The identity diffeomorphism between a manifold with model `I` and the same manifold
 with model `I.trans_diffeomorph e`. -/
-def totransContinuousLinearEquiv (e : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, F)⟯ F) : M ≃ₘ^n⟮I, I.transContinuousLinearEquiv e⟯ M where
+def totransContinuousLinearEquiv (e : E ≃L[𝕜] F) : M ≃ₘ^n⟮I, I.transContinuousLinearEquiv e⟯ M where
   toEquiv := Equiv.refl M
   contMDiff_toFun x := by
     refine contMDiffWithinAt_iff'.2 ⟨continuousWithinAt_id, ?_⟩
@@ -481,7 +489,8 @@ variable {I M}
 
 @[simp]
 theorem contMDiffWithinAt_transContinuousLinearEquiv_right {f : M' → M} {x s} :
-    ContMDiffWithinAt I' (I.transContinuousLinearEquiv e) n f s x ↔ ContMDiffWithinAt I' I n f s x :=
+    ContMDiffWithinAt I' (I.transContinuousLinearEquiv e) n f s x
+      ↔ ContMDiffWithinAt I' I n f s x :=
   (totransContinuousLinearEquiv I M e).contMDiffWithinAt_diffeomorph_comp_iff le_rfl
 
 @[simp]
@@ -504,7 +513,8 @@ alias smooth_transContinuousLinearEquiv_right := contMDiff_transContinuousLinear
 
 @[simp]
 theorem contMDiffWithinAt_transContinuousLinearEquiv_left {f : M → M'} {x s} :
-    ContMDiffWithinAt (I.transContinuousLinearEquiv e) I' n f s x ↔ ContMDiffWithinAt I I' n f s x :=
+    ContMDiffWithinAt (I.transContinuousLinearEquiv e) I' n f s x
+      ↔ ContMDiffWithinAt I I' n f s x :=
   ((totransContinuousLinearEquiv I M e).contMDiffWithinAt_comp_diffeomorph_iff le_rfl).symm
 
 @[simp]
@@ -525,7 +535,9 @@ theorem contMDiff_transContinuousLinearEquiv_left {f : M → M'} :
 @[deprecated (since := "2024-11-21")]
 alias smooth_transContinuousLinearEquiv_left := contMDiff_transContinuousLinearEquiv_left
 
-end
+end ContinuousLinearEquiv
+
+namespace Diffeomorph
 
 section Constructions
 
