@@ -22,7 +22,7 @@ instance IsLinearTopology.of_valued :
     IsLinearTopology 𝒪[K] K := by
   rw [isLinearTopology_iff_hasBasis_open_submodule]
   apply (hasBasis_nhds_zero K Γ₀).to_hasBasis
-  · exact fun r _ ↦ ⟨ltSubmodule K r, isOpen_ltSubmodule _ _, subset_rfl⟩
+  · exact fun r _ ↦ ⟨v.ltSubmodule r, isOpen_ltSubmodule _ _, subset_rfl⟩
   · intro I hI
     simpa [mem_nhds_zero] using hI.mem_nhds I.zero_mem
 
