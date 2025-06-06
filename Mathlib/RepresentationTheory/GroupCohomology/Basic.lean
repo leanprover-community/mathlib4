@@ -252,4 +252,4 @@ abbrev groupCohomologyπ [Group G] (A : Rep k G) (n : ℕ) :
 def groupCohomologyIsoExt [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ) :
     groupCohomology A n ≅ ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj A :=
   isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousCochainsIso A)).hom n ≪≫
-    (extIso k G A n).symm
+    (Rep.standardResolution.extIso k G A n).symm
