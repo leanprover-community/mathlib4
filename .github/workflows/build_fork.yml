@@ -5,7 +5,7 @@
 # .github/workflows/mk_build_yml.sh to update.
 
 # Forks of mathlib and other projects should be able to use build_fork.yml directly
-# The jobs in this file run on GitHub-hosted workers and will only be run from external forks
+# The jobs in this file run on self-hosted workers and will be run from external forks
 
 on:
   pull_request_target:
@@ -34,7 +34,7 @@ concurrency:
   # cancel any running workflow with the same label
   cancel-in-progress: true
 
-# Limit permissions for the entire workflow
+# Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
   contents: read
   pull-requests: write  # Only allow PR comments/labels
