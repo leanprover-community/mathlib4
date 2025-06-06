@@ -192,10 +192,19 @@ instance [h : SliceModel F I I'] : SliceModel F (J.prod I) (J.prod I') where
 /-- If `I` is a slice model of `I'`, then `I.prod J` is a slice model of `I'.prod J`. -/
 -- a bit more cumbersome, as equiv needs some reordering
 instance [h : SliceModel F I I'] : SliceModel F (I.prod J) (I'.prod J) where
-  equiv := sorry
+  equiv := by
+    letI pre := (ContinuousLinearEquiv.prodComm 𝕜 E E''').prodCongr (.refl 𝕜 F)
+    letI post := ContinuousLinearEquiv.prodComm 𝕜 E' E'''
+    letI main : ((E''' × E) × F) ≃L[𝕜] E''' × E' :=
+      (ContinuousLinearEquiv.prodAssoc 𝕜 E''' E F).trans <|
+      (ContinuousLinearEquiv.refl 𝕜 E''').prodCongr h.equiv
+    apply pre.trans (main.trans post.symm)
   map := Prod.map h.map id
   hmap := h.hmap.prodMap IsEmbedding.id
-  compatible := sorry
+  compatible := by
+    ext ⟨x, y⟩ <;> simp
+    · sorry
+    · sorry
 
 /-- If `E' ≃ E × F`, then the trivial models with corners of `E` and `E'` form a slice model. -/
 instance (h : (E × F) ≃L[𝕜] E') : SliceModel F (𝓘(𝕜, E)) (𝓘(𝕜, E')) where
