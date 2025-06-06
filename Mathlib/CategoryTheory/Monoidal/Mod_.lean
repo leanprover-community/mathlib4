@@ -108,8 +108,8 @@ instance (f : M ≅ N) [IsMod_Hom A f.hom] :
   smul_hom := by simp [Iso.comp_inv_eq]
 
 variable (D) in
-/-- A module object for a monoid object in a monoidal category acting on the
-ambient category. -/
+/-- A (bundled) module object for a monoid object in a monoidal category acting
+on the ambient category. -/
 structure Mod_ (A : C) [Mon_Class A] where
   /-- The underlying object in the ambient category -/
   X : D
