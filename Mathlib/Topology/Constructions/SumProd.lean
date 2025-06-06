@@ -875,6 +875,116 @@ lemma IsClosedEmbedding.sumElim {f : X → Z} {g : Y → Z}
   rw [IsClosedEmbedding.isClosedEmbedding_iff_continuous_injective_isClosedMap] at hf hg ⊢
   exact ⟨hf.1.sumElim hg.1, h, hf.2.2.sumElim hg.2.2⟩
 
+-- Homeomorphisms between the various constructions: sums of two homeomorphisms,
+-- as well as commutativity, associativity and distributivity with products.
+namespace Homeomorph
+
+variable {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
+
+/-- Sum of two homeomorphisms. -/
+def sumCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X ⊕ Y ≃ₜ X' ⊕ Y' where
+  continuous_toFun := h₁.continuous.sumMap h₂.continuous
+  continuous_invFun := h₁.symm.continuous.sumMap h₂.symm.continuous
+  toEquiv := h₁.toEquiv.sumCongr h₂.toEquiv
+
+@[simp]
+lemma sumCongr_symm (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') :
+  (sumCongr h₁ h₂).symm = sumCongr h₁.symm h₂.symm := rfl
+
+@[simp]
+theorem sumCongr_refl : sumCongr (.refl X) (.refl Y) = .refl (X ⊕ Y) := by
+  ext i
+  cases i <;> rfl
+
+@[simp]
+theorem sumCongr_trans {X'' Y'' : Type*} [TopologicalSpace X''] [TopologicalSpace Y'']
+    (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') (h₃ : X' ≃ₜ X'') (h₄ : Y' ≃ₜ Y'') :
+    (sumCongr h₁ h₂).trans (sumCongr h₃ h₄) = sumCongr (h₁.trans h₃) (h₂.trans h₄) := by
+  ext i
+  cases i <;> rfl
+
+variable (W X Y Z)
+
+/-- `X ⊕ Y` is homeomorphic to `Y ⊕ X`. -/
+def sumComm : X ⊕ Y ≃ₜ Y ⊕ X where
+  toEquiv := Equiv.sumComm X Y
+  continuous_toFun := continuous_sum_swap
+  continuous_invFun := continuous_sum_swap
+
+@[simp]
+theorem sumComm_symm : (sumComm X Y).symm = sumComm Y X :=
+  rfl
+
+@[simp]
+theorem coe_sumComm : ⇑(sumComm X Y) = Sum.swap :=
+  rfl
+
+@[continuity, fun_prop]
+lemma continuous_sumAssoc : Continuous (Equiv.sumAssoc X Y Z) :=
+  Continuous.sumElim (by fun_prop) (by fun_prop)
+
+@[continuity, fun_prop]
+lemma continuous_sumAssoc_symm : Continuous (Equiv.sumAssoc X Y Z).symm :=
+  Continuous.sumElim (by fun_prop) (by fun_prop)
+
+/-- `(X ⊕ Y) ⊕ Z` is homeomorphic to `X ⊕ (Y ⊕ Z)`. -/
+def sumAssoc : (X ⊕ Y) ⊕ Z ≃ₜ X ⊕ Y ⊕ Z where
+  toEquiv := Equiv.sumAssoc X Y Z
+  continuous_toFun := continuous_sumAssoc X Y Z
+  continuous_invFun := continuous_sumAssoc_symm X Y Z
+
+@[simp]
+lemma sumAssoc_toEquiv : (sumAssoc X Y Z).toEquiv = Equiv.sumAssoc X Y Z := rfl
+
+/-- Four-way commutativity of the disjoint union. The name matches `add_add_add_comm`. -/
+def sumSumSumComm : (X ⊕ Y) ⊕ W ⊕ Z ≃ₜ (X ⊕ W) ⊕ Y ⊕ Z where
+  toEquiv := Equiv.sumSumSumComm X Y W Z
+  continuous_toFun := by
+    unfold Equiv.sumSumSumComm
+    dsimp only
+    have : Continuous (Sum.map (Sum.map (@id X) ⇑(Equiv.sumComm Y W)) (@id Z)) := by continuity
+    fun_prop
+  continuous_invFun := by
+    unfold Equiv.sumSumSumComm
+    dsimp only
+    have : Continuous (Sum.map (Sum.map (@id X) (Equiv.sumComm Y W).symm) (@id Z)) := by continuity
+    fun_prop
+
+@[simp]
+lemma sumSumSumComm_toEquiv : (sumSumSumComm W X Y Z).toEquiv = (Equiv.sumSumSumComm W X Y Z) := rfl
+
+@[simp]
+lemma sumSumSumComm_symm : (sumSumSumComm X Y W Z).symm = (sumSumSumComm X W Y Z) := rfl
+
+/-- The sum of `X` with any empty topological space is homeomorphic to `X`. -/
+@[simps! -fullyApplied apply]
+def sumEmpty [IsEmpty Y] : X ⊕ Y ≃ₜ X where
+  toEquiv := Equiv.sumEmpty X Y
+  continuous_toFun := Continuous.sumElim continuous_id (by fun_prop)
+  continuous_invFun := continuous_inl
+
+/-- The sum of `X` with any empty topological space is homeomorphic to `X`. -/
+def emptySum [IsEmpty Y] : Y ⊕ X ≃ₜ X := (sumComm Y X).trans (sumEmpty X Y)
+
+@[simp] theorem coe_emptySum [IsEmpty Y] : (emptySum X Y).toEquiv = Equiv.emptySum Y X := rfl
+
+variable {W X Y Z}
+
+/-- `(X ⊕ Y) × Z` is homeomorphic to `X × Z ⊕ Y × Z`. -/
+@[simps!]
+def sumProdDistrib : (X ⊕ Y) × Z ≃ₜ (X × Z) ⊕ (Y × Z) :=
+  Homeomorph.symm <|
+    (Equiv.sumProdDistrib X Y Z).symm.toHomeomorphOfContinuousOpen
+        ((continuous_inl.prodMap continuous_id).sumElim
+          (continuous_inr.prodMap continuous_id)) <|
+      (isOpenMap_inl.prodMap IsOpenMap.id).sumElim (isOpenMap_inr.prodMap IsOpenMap.id)
+
+/-- `X × (Y ⊕ Z)` is homeomorphic to `X × Y ⊕ X × Z`. -/
+def prodSumDistrib : X × (Y ⊕ Z) ≃ₜ (X × Y) ⊕ (X × Z) :=
+  (prodComm _ _).trans <| sumProdDistrib.trans <| sumCongr (prodComm _ _) (prodComm _ _)
+
+end Homeomorph
+
 section IsInducing
 
 variable {f : X → Z} {g : Y → Z}
@@ -982,114 +1092,3 @@ lemma Topology.IsEmbedding.sumElim_of_separatedNhds
 end IsInducing
 
 end Sum
-
--- Homeomorphisms between the various constructions: sums of two homeomorphisms,
--- as well as commutativity, associativity and distributivity with products.
-namespace Homeomorph
-
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace W] [TopologicalSpace Z]
-  {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
-
-/-- Sum of two homeomorphisms. -/
-def sumCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X ⊕ Y ≃ₜ X' ⊕ Y' where
-  continuous_toFun := h₁.continuous.sumMap h₂.continuous
-  continuous_invFun := h₁.symm.continuous.sumMap h₂.symm.continuous
-  toEquiv := h₁.toEquiv.sumCongr h₂.toEquiv
-
-@[simp]
-lemma sumCongr_symm (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') :
-  (sumCongr h₁ h₂).symm = sumCongr h₁.symm h₂.symm := rfl
-
-@[simp]
-theorem sumCongr_refl : sumCongr (.refl X) (.refl Y) = .refl (X ⊕ Y) := by
-  ext i
-  cases i <;> rfl
-
-@[simp]
-theorem sumCongr_trans {X'' Y'' : Type*} [TopologicalSpace X''] [TopologicalSpace Y'']
-    (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') (h₃ : X' ≃ₜ X'') (h₄ : Y' ≃ₜ Y'') :
-    (sumCongr h₁ h₂).trans (sumCongr h₃ h₄) = sumCongr (h₁.trans h₃) (h₂.trans h₄) := by
-  ext i
-  cases i <;> rfl
-
-variable (W X Y Z)
-
-/-- `X ⊕ Y` is homeomorphic to `Y ⊕ X`. -/
-def sumComm : X ⊕ Y ≃ₜ Y ⊕ X where
-  toEquiv := Equiv.sumComm X Y
-  continuous_toFun := continuous_sum_swap
-  continuous_invFun := continuous_sum_swap
-
-@[simp]
-theorem sumComm_symm : (sumComm X Y).symm = sumComm Y X :=
-  rfl
-
-@[simp]
-theorem coe_sumComm : ⇑(sumComm X Y) = Sum.swap :=
-  rfl
-
-@[continuity, fun_prop]
-lemma continuous_sumAssoc : Continuous (Equiv.sumAssoc X Y Z) :=
-  Continuous.sumElim (by fun_prop) (by fun_prop)
-
-@[continuity, fun_prop]
-lemma continuous_sumAssoc_symm : Continuous (Equiv.sumAssoc X Y Z).symm :=
-  Continuous.sumElim (by fun_prop) (by fun_prop)
-
-/-- `(X ⊕ Y) ⊕ Z` is homeomorphic to `X ⊕ (Y ⊕ Z)`. -/
-def sumAssoc : (X ⊕ Y) ⊕ Z ≃ₜ X ⊕ Y ⊕ Z where
-  toEquiv := Equiv.sumAssoc X Y Z
-  continuous_toFun := continuous_sumAssoc X Y Z
-  continuous_invFun := continuous_sumAssoc_symm X Y Z
-
-@[simp]
-lemma sumAssoc_toEquiv : (sumAssoc X Y Z).toEquiv = Equiv.sumAssoc X Y Z := rfl
-
-/-- Four-way commutativity of the disjoint union. The name matches `add_add_add_comm`. -/
-def sumSumSumComm : (X ⊕ Y) ⊕ W ⊕ Z ≃ₜ (X ⊕ W) ⊕ Y ⊕ Z where
-  toEquiv := Equiv.sumSumSumComm X Y W Z
-  continuous_toFun := by
-    unfold Equiv.sumSumSumComm
-    dsimp only
-    have : Continuous (Sum.map (Sum.map (@id X) ⇑(Equiv.sumComm Y W)) (@id Z)) := by continuity
-    fun_prop
-  continuous_invFun := by
-    unfold Equiv.sumSumSumComm
-    dsimp only
-    have : Continuous (Sum.map (Sum.map (@id X) (Equiv.sumComm Y W).symm) (@id Z)) := by continuity
-    fun_prop
-
-@[simp]
-lemma sumSumSumComm_toEquiv : (sumSumSumComm W X Y Z).toEquiv = (Equiv.sumSumSumComm W X Y Z) := rfl
-
-@[simp]
-lemma sumSumSumComm_symm : (sumSumSumComm X Y W Z).symm = (sumSumSumComm X W Y Z) := rfl
-
-/-- The sum of `X` with any empty topological space is homeomorphic to `X`. -/
-@[simps! -fullyApplied apply]
-def sumEmpty [IsEmpty Y] : X ⊕ Y ≃ₜ X where
-  toEquiv := Equiv.sumEmpty X Y
-  continuous_toFun := Continuous.sumElim continuous_id (by fun_prop)
-  continuous_invFun := continuous_inl
-
-/-- The sum of `X` with any empty topological space is homeomorphic to `X`. -/
-def emptySum [IsEmpty Y] : Y ⊕ X ≃ₜ X := (sumComm Y X).trans (sumEmpty X Y)
-
-@[simp] theorem coe_emptySum [IsEmpty Y] : (emptySum X Y).toEquiv = Equiv.emptySum Y X := rfl
-
-variable {W X Y Z}
-
-/-- `(X ⊕ Y) × Z` is homeomorphic to `X × Z ⊕ Y × Z`. -/
-@[simps!]
-def sumProdDistrib : (X ⊕ Y) × Z ≃ₜ (X × Z) ⊕ (Y × Z) :=
-  Homeomorph.symm <|
-    (Equiv.sumProdDistrib X Y Z).symm.toHomeomorphOfContinuousOpen
-        ((continuous_inl.prodMap continuous_id).sumElim
-          (continuous_inr.prodMap continuous_id)) <|
-      (isOpenMap_inl.prodMap IsOpenMap.id).sumElim (isOpenMap_inr.prodMap IsOpenMap.id)
-
-/-- `X × (Y ⊕ Z)` is homeomorphic to `X × Y ⊕ X × Z`. -/
-def prodSumDistrib : X × (Y ⊕ Z) ≃ₜ (X × Y) ⊕ (X × Z) :=
-  (prodComm _ _).trans <| sumProdDistrib.trans <| sumCongr (prodComm _ _) (prodComm _ _)
-
-end Homeomorph
