@@ -127,6 +127,26 @@ lemma whiskerBaseChange_eq_whiskerRight_baseChange :
       (α_ _ _ _).hom ≫ (F.map b).l ◁ (F.map r).adj.counit ≫ (ρ_ _).hom := by
   rw [whiskerBaseChange_eq, Adjunction.homEquiv₂_symm_apply]-/
 
+section Unit
+
+variable {B C : Type*} [Bicategory B] [Strict B] [Bicategory C]
+  (F : Pseudofunctor B (Adj C))
+
+variable {X Y : B} (f : X ⟶ Y)
+
+lemma baseChange_id_id_eq_unit :
+    F.baseChange (t := 𝟙 X) (l := 𝟙 X) (b := f) (r := f) ⟨rfl⟩ =
+      (F.map (𝟙 X)).r ◁ (F.mapId _).hom.τl ≫
+      (ρ_ _).hom ≫
+      (F.mapId _).inv.τr ≫
+      (F.map f).adj.unit := by
+  rw [baseChange]
+  simp only [isoMapOfCommSq_self_self, Iso.refl_hom, Adj.id_τl, Adj.comp_l, Adj.id_l, Adj.id_r]
+  rw [mateEquiv_id]
+  sorry
+
+end Unit
+
 section Horizontal
 
 variable {B C : Type*} [Bicategory B] [Strict B] [Bicategory C]
@@ -179,6 +199,54 @@ lemma baseChange_vert_comp' :
 
 end Vertical
 
+section Square
+
+variable {B C : Type*} [Bicategory B] [Strict B] [Bicategory C]
+  (F : Pseudofunctor B (Adj C))
+
+-- 3 by 3 square from left to right `X` -> `Y` -> `Z` and from
+-- top to bottom `_₁` -> `_₂` -> `_₃`
+variable {X₁ X₂ X₃ Y₁ Y₂ Y₃ Z₁ Z₂ Z₃ : B}
+  {tl : X₁ ⟶ Y₁} {tr : Y₁ ⟶ Z₁}
+  {ml : X₂ ⟶ Y₂} {mr : Y₂ ⟶ Z₂}
+  {bl : X₃ ⟶ Y₃} {br : Y₃ ⟶ Z₃}
+  {lt : X₁ ⟶ X₂} {lb : X₂ ⟶ X₃}
+  {mt : Y₁ ⟶ Y₂} {mb : Y₂ ⟶ Y₃}
+  {rt : Z₁ ⟶ Z₂} {rb : Z₂ ⟶ Z₃}
+  {t : X₁ ⟶ Z₁} {l : X₁ ⟶ X₃} {r : Z₁ ⟶ Z₃} {b : X₃ ⟶ Z₃}
+  (sqtl : CommSq tl lt mt ml)
+  (sqtr : CommSq tr mt rt mr)
+  (sqbl : CommSq ml lb mb bl)
+  (sqbr : CommSq mr mb rb br)
+  (sq : CommSq t l r b)
+  (ht : tl ≫ tr = t)
+  (hl : lt ≫ lb = l)
+  (hr : rt ≫ rb = r)
+  (hb : bl ≫ br = b)
+
+lemma baseChange_square :
+    F.baseChange sq =
+      (F.mapComp' lt lb l hl).inv.τr ▷ _ ≫
+      (α_ _ _ _).hom ≫
+      (F.map lb).r ◁ _ ◁ (F.mapComp' tl tr t ht).hom.τl ≫
+      (F.map lb).r ◁ (α_ _ _ _).inv ≫
+      (F.map lb).r ◁ F.baseChange sqtl ▷ _ ≫
+      (F.map lb).r ◁ (α_ _ _ _).hom ≫
+      (F.map lb).r ◁ (F.map ml).l ◁ F.baseChange sqtr ≫
+      (α_ _ _ _).inv ≫
+      (α_ _ _ _).inv ≫
+      F.baseChange sqbl ▷ (F.map mr).l ▷ (F.map rt).r ≫
+      (α_ _ _ _).hom ▷ (F.map rt).r ≫
+      (α_ _ _ _).hom ≫
+      (F.map bl).l ◁ F.baseChange sqbr ▷ (F.map rt).r ≫
+      (F.map bl).l ◁ (α_ _ _ _).hom ≫
+      (F.map bl).l ◁ (F.map br).l ◁ (F.mapComp' rt rb r hr).hom.τr ≫
+      (α_ _ _ _).inv ≫
+      (F.mapComp' bl br b hb).inv.τl ▷ (F.map r).r := by
+  sorry
+
+end Square
+
 section
 
 lemma baseChange_self_self {S X Y : B} (f : S ⟶ X) (g : X ⟶ Y) :
@@ -193,6 +261,16 @@ lemma whiskerBaseChange_self_self {S X Y : B} (f : S ⟶ X) (g : X ⟶ Y) :
 
 variable {Z : B} (b' : X₂ ⟶ Z) (r' : Y₁ ⟶ Z) (d : Y₂ ⟶ Z)
   (hbd : b ≫ d = b') (hrd : r ≫ d = r')
+
+lemma baseChange_id_left (b' : X₁ ⟶ Y₂) (hlb : l ≫ b = b') :
+    F.baseChange (t := t) (l := 𝟙 _) (r := r) (b := b') ⟨by simpa [hlb] using sq.1⟩ =
+      (F.mapId _).inv.τr ▷ _ ≫
+      (F.map l).adj.unit ▷ _ ≫
+      (α_ _ _ _).hom ≫
+      _ ◁ F.baseChange sq ≫
+      (α_ _ _ _).inv ≫
+      (F.mapComp' l b b' hlb).inv.τl ▷ _ :=
+  sorry
 
 lemma baseChange_id_comp :
     F.baseChange (t := 𝟙 Y₁) (l := r) (r := r ≫ d) (b := d) (by simp) =
@@ -304,7 +382,7 @@ end Codiag
 section Triple
 
 variable {S X₁ X₂ X₃ : B} {f₁ : S ⟶ X₁} {f₂ : S ⟶ X₂} {f₃ : S ⟶ X₃}
-  {P₁₂ P₂₃ P₁₃ P₁₂₃ : B} {p₁ : X₁ ⟶ P₁₂₃} {p₂ : X₂ ⟶ P₁₂₃} {p₃ : X₃ ⟶ P₁₂₃}
+  {P₁₂ P₂₃ P₁₃ P₁₂₃ : B}
   {u₁₂ : X₁ ⟶ P₁₂} {u₂₁ : X₂ ⟶ P₁₂} {u₂₃ : X₂ ⟶ P₂₃} {u₃₂ : X₃ ⟶ P₂₃}
   {u₁₃ : X₁ ⟶ P₁₃} {u₃₁ : X₃ ⟶ P₁₃}
   {p₁₂ : P₁₂ ⟶ P₁₂₃} {p₂₃ : P₂₃ ⟶ P₁₂₃} {p₁₃ : P₁₃ ⟶ P₁₂₃}
@@ -314,6 +392,10 @@ variable {S X₁ X₂ X₃ : B} {f₁ : S ⟶ X₁} {f₂ : S ⟶ X₂} {f₃ : 
   (h₁₃₁₂ : CommSq u₁₃ u₁₂ p₁₃ p₁₂)
   (h₂₁₂₃ : CommSq u₂₁ u₂₃ p₁₂ p₂₃)
   (h₃₂₃₁ : CommSq u₃₂ u₃₁ p₂₃ p₁₃)
+  (p₁ : X₁ ⟶ P₁₂₃) (p₂ : X₂ ⟶ P₁₂₃) (p₃ : X₃ ⟶ P₁₂₃)
+  (hp₁ : u₁₂ ≫ p₁₂ = p₁)
+  (hp₂ : u₂₃ ≫ p₂₃ = p₂)
+  (hp₃ : u₃₂ ≫ p₂₃ = p₃)
 
 lemma whiskerRight_whiskerBaseChange_triple :
     F.whiskerBaseChange sq₁₃ ▷ (F.map p₁₃).l =
@@ -340,6 +422,100 @@ lemma whiskerRight_whiskerBaseChange_triple :
       ((F.comp Adj.forget₁).isoMapOfCommSq h₃₂₃₁).hom := by
   sorry
 
+-- TODO: this lemma should not be needed, but `bicategory` can't prove this
+omit [Strict B] in
+@[reassoc]
+private lemma aux (x : (F.map f₃).r ≫ (F.map f₁).l ⟶ (F.map u₃₁).l ≫ (F.map u₁₃).r) :
+    (ρ_ (F.map f₃)).hom.τr ▷ (F.map f₁).l ≫
+      (F.map f₃ ◁ (F.mapId X₃).hom).τr ▷ (F.map f₁).l ≫
+        (α_ (F.map (𝟙 X₃)).r (F.map f₃).r (F.map f₁).l).hom ≫
+          (F.map (𝟙 X₃)).r ◁ x = x ≫ (λ_ _).inv ≫
+            (F.mapId _).hom.τr ▷ _ := by
+  have : (ρ_ (F.map f₃)).hom.τr = (λ_ _).inv := rfl
+  rw [this]
+  dsimp
+  simp only [Bicategory.whiskerRight_comp]
+  rw [← cancel_mono (α_ (F.map (𝟙 X₃)).r (F.map u₃₁).l (F.map u₁₃).r).inv]
+  simp only [Category.assoc, Iso.hom_inv_id, Category.comp_id]
+  rw [whiskerRight_comp_symm]
+  simp_rw [Category.assoc]
+  rw [Iso.inv_hom_id_assoc, whiskerRight_comp_symm, Iso.inv_hom_id_assoc, ← whisker_exchange_assoc]
+  simp
+
+lemma baseChange_triple' :
+    F.baseChange sq₁₃ ≫
+      (F.map u₃₁).l ◁ (λ_ _).inv ≫ (F.map u₃₁).l ◁ ((F.map p₁₃).adj.unit ▷ (F.map u₁₃).r) ≫
+      (F.map u₃₁).l ◁ (α_ _ _ _).hom ≫
+      (α_ _ _ _).inv ≫
+      (F.mapComp' u₃₁ p₁₃ p₃ (hp₃ ▸ h₃₂₃₁.1.symm)).inv.τl ▷ _ ≫
+      _ ◁ (F.mapComp' u₁₃ p₁₃ p₁ (hp₁ ▸ h₁₃₁₂.1)).hom.τr =
+    (F.map f₃).r ◁ (λ_ _).inv ≫ (F.map f₃).r ◁ ((F.map f₂).adj.unit ▷ (F.map f₁).l) ≫
+      (F.map f₃).r ◁ (α_ _ _ _).hom ≫
+      (F.map f₃).r ◁ (F.map f₂).l ◁ F.baseChange sq₁₂ ≫
+      (α_ _ _ _).inv ≫
+      (F.baseChange sq₂₃) ▷ ((F.map u₂₁).l ≫ (F.map u₁₂).r) ≫
+      (α_ _ _ _).hom ≫
+      (F.map u₃₂).l ◁ (α_ _ _ _).inv ≫
+      (F.map u₃₂).l ◁ (F.baseChange h₂₁₂₃ ▷ (F.map u₁₂).r) ≫
+      (F.map u₃₂).l ◁ (α_ _ _ _).hom ≫
+      (F.map u₃₂).l ◁ (F.map p₂₃).l ◁ (F.mapComp' u₁₂ p₁₂ p₁ hp₁).hom.τr ≫
+      (α_ _ _ _).inv ≫
+      (F.mapComp' u₃₂ p₂₃ p₃ hp₃).inv.τl ▷ (F.map p₁).r := by
+  let sq₃₁₃ : CommSq u₃₁ (𝟙 X₃) p₁₃ p₃ := ⟨by simp [← hp₃, h₃₂₃₁.1]⟩
+  let bigsq : CommSq f₁ f₃ p₁ p₃ := sq₁₃.vert_comp' sq₃₁₃ (by simp) (by simp [← hp₁, h₁₃₁₂.1])
+  trans F.baseChange bigsq
+  · rw [F.baseChange_vert_comp' (sq := sq₁₃) (sq' := sq₃₁₃) (l'' := f₃) (r'' := p₁) (by simp)
+      (by simp [← hp₁, h₁₃₁₂.1])]
+    simp only [Adj.forget₂_obj, Adj.forget₂_map, Quiver.Hom.unop_op', Adj.comp_r, Adj.forget₂_map₂,
+      Quiver.Hom.unop_op]
+    rw [mapComp'_comp_id]
+    simp only [Iso.trans_inv, whiskerLeftIso_inv, Iso.symm_inv, Adj.comp_τr, Adj.comp_r, Adj.id_r,
+      comp_whiskerRight, Category.assoc]
+    rw [F.baseChange_id_left (t := u₃₁) (b' := p₃) (r := p₁₃) (l := u₃₁) (b := p₁₃) (by simp)
+      (by simp [← hp₃, h₃₂₃₁.1])]
+    rw [F.baseChange_self_self]
+    simp only [Adj.comp_l, Bicategory.whiskerRight_comp, Category.assoc,
+      pentagon_hom_inv_inv_inv_inv_assoc, Adj.id_r, Bicategory.whiskerLeft_comp,
+      Adjunction.whiskerRight_unit_associator_whiskerLeft_counit_assoc, comp_whiskerRight,
+      leftUnitor_whiskerRight, whisker_assoc, triangle_assoc_comp_right_inv_assoc]
+    rw [aux_assoc]
+    simp [← comp_whiskerRight_assoc, ← comp_whiskerRight]
+  · let sqtl : CommSq (𝟙 _) (𝟙 _) f₂ f₂ := ⟨rfl⟩
+    have := F.baseChange_square sqtl sq₁₂ sq₂₃ h₂₁₂₃ bigsq (by simp) (by simp) hp₁ hp₃
+    rw [this]
+    rw [baseChange_id_id_eq_unit]
+    simp only [Adj.comp_r, mapComp'_id_comp, Iso.trans_inv, whiskerRightIso_inv, Iso.symm_inv,
+      Adj.comp_τr, Adj.id_r, Adj.whiskerRight_τr', comp_whiskerRight, whisker_assoc, Adj.comp_l,
+      Iso.trans_hom, Iso.symm_hom, whiskerRightIso_hom, Adj.comp_τl, Adj.id_l, Adj.whiskerRight_τl',
+      Bicategory.whiskerLeft_comp, Category.assoc, triangle_assoc_comp_right_assoc,
+      whiskerLeft_inv_hom_assoc, Iso.inv_hom_id_assoc, Bicategory.whiskerRight_comp,
+      pentagon_hom_inv_inv_inv_inv_assoc, pentagon_hom_hom_inv_hom_hom_assoc]
+    have :
+      (λ_ (F.map f₃)).hom.τr ▷ (F.map f₁).l ≫
+        (α_ (F.map f₃).r (𝟙 (F.obj S).obj) (F.map f₁).l).hom ≫
+        (F.map f₃).r ◁ (F.mapId S).hom.τr ▷ (F.map f₁).l ≫
+        (F.map f₃).r ◁ (F.map (𝟙 S)).r ◁ (λ_ (F.map f₁)).inv.τl ≫
+        (F.map f₃).r ◁ (F.map (𝟙 S)).r ◁ (F.mapId S).inv.τl ▷ (F.map f₁).l ≫
+        (F.map f₃).r ◁ (F.map (𝟙 S)).r ◁ (F.mapId S).hom.τl ▷ (F.map f₁).l ≫
+        (F.map f₃).r ◁ (F.map (𝟙 S)).r ◁ (λ_ (F.map f₁).l).hom ≫
+        (F.map f₃).r ◁ (F.mapId S).inv.τr ▷ (F.map f₁).l =
+        (F.map f₃).r ◁ (λ_ (F.map f₁).l).inv := by
+      nth_rw 3 [← Bicategory.whiskerLeft_comp_assoc (F.map f₃).r]
+      rw [← Bicategory.whiskerLeft_comp (F.map (𝟙 S)).r]
+      rw [← Bicategory.comp_whiskerRight, Adj.inv_hom_id_τl]
+      have : (λ_ (F.map f₁)).inv.τl = (λ_ _).inv := rfl
+      simp only [Adj.id_r, Adj.comp_r, Adj.comp_l, Adj.id_l, this, id_whiskerRight,
+        Bicategory.whiskerLeft_id, Category.id_comp]
+      nth_rw 2 [← Bicategory.whiskerLeft_comp_assoc (F.map f₃).r]
+      rw [← Bicategory.whiskerLeft_comp (F.map (𝟙 S)).r]
+      simp only [Iso.inv_hom_id, Bicategory.whiskerLeft_id, Category.id_comp]
+      nth_rw 1 [← Bicategory.whiskerLeft_comp (F.map f₃).r]
+      rw [← Bicategory.comp_whiskerRight]
+      have : (λ_ (F.map f₃)).hom.τr = (ρ_ _).inv := rfl
+      simp [this]
+    rw [reassoc_of% this]
+
+-- TODO: improve this, intentionally ungolfed for now
 lemma baseChange_triple :
     F.baseChange sq₁₃ ≫
       (F.map u₃₁).l ◁ (λ_ _).inv ≫ (F.map u₃₁).l ◁ ((F.map p₁₃).adj.unit ▷ (F.map u₁₃).r) ≫
@@ -356,8 +532,79 @@ lemma baseChange_triple :
       (α_ _ _ _).inv ≫
       (F.isoMapOfCommSq h₃₂₃₁).hom.τl ▷ _ ≫
       (α_ _ _ _).hom ≫
-      _ ◁ _ ◁ (F.isoMapOfCommSq h₁₃₁₂).hom.τr :=
-  sorry
+      _ ◁ _ ◁ (F.isoMapOfCommSq h₁₃₁₂).hom.τr := by
+  let p₁ : X₁ ⟶ P₁₂₃ := u₁₂ ≫ p₁₂
+  let p₃ : X₃ ⟶ P₁₂₃ := u₃₂ ≫ p₂₃
+  rw [← cancel_mono (α_ _ _ _).inv, ← cancel_mono ((F.mapComp' _ _ p₃ (h₃₂₃₁.1.symm)).inv.τl ▷ _)]
+  rw [← cancel_mono (_ ◁ (F.mapComp' _ _ p₁ (h₁₃₁₂.1)).hom.τr)]
+  simp_rw [Category.assoc]
+  rw [F.baseChange_triple' sq₁₂ sq₂₃ sq₁₃ h₁₃₁₂ h₂₁₂₃ h₃₂₃₁ p₁ p₃ rfl rfl]
+  rw [isoMapOfCommSq_eq _ _ p₁ h₁₃₁₂.1]
+  rw [isoMapOfCommSq_eq _ _ p₃ rfl]
+  simp only [Bicategory.whiskerRight_comp, Adj.comp_l, Category.assoc,
+    pentagon_hom_hom_inv_hom_hom_assoc, Iso.trans_hom, Iso.symm_hom, Adj.comp_τl, comp_whiskerRight,
+    Adj.comp_r, Adj.comp_τr, Bicategory.whiskerLeft_comp, pentagon_hom_inv_inv_inv_inv_assoc]
+  congr 10
+  rw [← pentagon_inv_assoc]
+  rw [← pentagon_assoc]
+  have :
+      (F.map u₃₁).l ◁ (F.map p₁₃).l ◁ (F.mapComp' u₁₃ p₁₃ p₁ h₁₃₁₂.1).inv.τr ≫
+      (α_ (F.map u₃₁).l (F.map p₁₃).l ((F.map p₁₃).r ≫ (F.map u₁₃).r)).inv ≫
+      (α_ ((F.map u₃₁).l ≫ (F.map p₁₃).l) (F.map p₁₃).r (F.map u₁₃).r).inv ≫
+      (F.mapComp' u₃₁ p₁₃ p₃ (h₃₂₃₁.1.symm)).inv.τl ▷ (F.map p₁₃).r ▷ (F.map u₁₃).r =
+      (α_ _ _ _).inv ≫
+      (F.mapComp' u₃₁ p₁₃ p₃ (h₃₂₃₁.1.symm)).inv.τl ▷ (F.map p₁).r ≫
+      (F.map p₃).l ◁ (F.mapComp' u₁₃ p₁₃ p₁ h₁₃₁₂.1).inv.τr ≫
+      (α_ _ _ _).inv := by
+    rw [← whisker_exchange_assoc]
+    simp
+  have : (F.mapComp' u₃₁ p₁₃ p₃ (h₃₂₃₁.1.symm)).hom.τl ▷ (F.map p₁₂).r ▷ (F.map u₁₂).r ≫
+          (α_ (F.map u₃₁).l (F.map p₁₃).l (F.map p₁₂).r).hom ▷ (F.map u₁₂).r ≫
+          (α_ (F.map u₃₁).l ((F.map p₁₃).l ≫ (F.map p₁₂).r) (F.map u₁₂).r).hom ≫
+          (F.map u₃₁).l ◁ (α_ (F.map p₁₃).l (F.map p₁₂).r (F.map u₁₂).r).hom ≫
+          (F.map u₃₁).l ◁ (F.map p₁₃).l ◁ (F.mapComp' u₁₂ p₁₂ p₁ rfl).hom.τr ≫
+          (F.map u₃₁).l ◁ (F.map p₁₃).l ◁ (F.mapComp' u₁₃ p₁₃ p₁ h₁₃₁₂.1).inv.τr ≫
+          (F.map u₃₁).l ◁ (α_ (F.map p₁₃).l (F.map p₁₃).r (F.map u₁₃).r).inv ≫
+          (α_ (F.map u₃₁).l ((F.map p₁₃).l ≫ (F.map p₁₃).r) (F.map u₁₃).r).inv ≫
+          (α_ (F.map u₃₁).l (F.map p₁₃).l (F.map p₁₃).r).inv ▷ (F.map u₁₃).r ≫
+          (F.mapComp' u₃₁ p₁₃ p₃ (h₃₂₃₁.1.symm)).inv.τl ▷ (F.map p₁₃).r ▷ (F.map u₁₃).r =
+          (F.mapComp' u₃₁ p₁₃ p₃ (h₃₂₃₁.1.symm)).hom.τl ▷ (F.map p₁₂).r ▷ (F.map u₁₂).r ≫
+          (F.mapComp' u₃₁ p₁₃ p₃ (h₃₂₃₁.1.symm)).inv.τl ▷ _ ▷ _ ≫
+          (α_ _ _ _).hom ≫
+          (F.map p₃).l ◁ (F.mapComp' u₁₂ p₁₂ p₁ rfl).hom.τr ≫
+          (F.map p₃).l ◁ (F.mapComp' u₁₃ p₁₃ p₁ h₁₃₁₂.1).inv.τr ≫
+          (α_ _ _ _).inv := by
+    congr 1
+    simp only [Adj.comp_l, Adj.comp_r, pentagon_inv_assoc, pentagon_assoc]
+    rw [this]
+    have :
+        (F.map u₃₁).l ◁ (F.map p₁₃).l ◁ (F.mapComp' u₁₂ p₁₂ p₁ rfl).hom.τr ≫
+          (α_ _ _ _).inv ≫
+          (F.mapComp' u₃₁ p₁₃ p₃ h₃₂₃₁.1.symm).inv.τl ▷ (F.map p₁).r =
+          (α_ _ _ _).inv ≫
+          (F.mapComp' u₃₁ p₁₃ p₃ h₃₂₃₁.1.symm).inv.τl ▷ _ ≫
+          _ ◁ (F.mapComp' u₁₂ p₁₂ p₁ rfl).hom.τr := by
+      rw [← whisker_exchange]
+      simp
+    rw [reassoc_of% this]
+    simp
+  rw [reassoc_of% this]
+  nth_rw 3 [← Bicategory.comp_whiskerRight_assoc]
+  rw [← Bicategory.comp_whiskerRight]
+  simp only [Adj.comp_l, Adj.hom_inv_id_τl, id_whiskerRight, Adj.comp_r, Iso.inv_hom_id_assoc,
+    Category.id_comp]
+  rw [← Bicategory.whiskerLeft_comp]
+  simp only [Adj.inv_hom_id_τr, Bicategory.whiskerLeft_id, Category.comp_id]
+  have :
+      (F.mapComp' u₃₂ p₂₃ p₃ rfl).inv.τl ▷ (F.map p₁₂).r ▷ (F.map u₁₂).r ≫
+        (α_ (F.map p₃).l (F.map p₁₂).r (F.map u₁₂).r).hom ≫
+        (F.map p₃).l ◁ (F.mapComp' u₁₂ p₁₂ p₁ rfl).hom.τr =
+        (α_ _ _ _).hom ≫
+        (F.map u₃₂ ≫ F.map p₂₃).l ◁ (F.mapComp' u₁₂ p₁₂ p₁ rfl).hom.τr ≫
+        (F.mapComp' u₃₂ p₂₃ p₃ rfl).inv.τl ▷ (F.map p₁).r := by
+    rw [whisker_exchange]
+    simp
+  simp [this]
 
 end Triple
 

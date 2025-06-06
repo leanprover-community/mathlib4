@@ -347,6 +347,12 @@ instance : Bicategory (Adj B) where
 @[simp] lemma whiskerRight_τl' {α α' : a ⟶ b} (x : α ⟶ α') (β : b ⟶ c) :
     (x ▷ β).τl = x.τl ▷ β.l := rfl
 
+@[simp] lemma whiskerLeft_τl' (α : a ⟶ b) {β β' : b ⟶ c} (y : β ⟶ β') :
+    (α ◁ y).τl = α.l ◁ y.τl := rfl
+
+@[simp] lemma whiskerLeft_τr' (α : a ⟶ b) {β β' : b ⟶ c} (y : β ⟶ β') :
+    (α ◁ y).τr = y.τr ▷ α.r := rfl
+
 /-- The forget pseudofunctor from `Adj B` to `B`. -/
 @[simps obj map map₂ mapId mapComp]
 def forget₁ : Pseudofunctor (Adj B) B where
