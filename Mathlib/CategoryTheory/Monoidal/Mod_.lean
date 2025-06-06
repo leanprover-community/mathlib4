@@ -134,7 +134,7 @@ attribute [reassoc (attr := simp)] Hom.smul_hom
 
 instance Hom.isMod_Hom {M N : Mod_ D A} (f : Hom M N) : IsMod_Hom A f.hom where
 
-/-- An alternative constructor for `Mod_.Hom`, taking a morphism wit an
+/-- An alternative constructor for `Mod_.Hom`, taking a morphism with an
 `[IsMod_Hom]' instance. -/
 @[simps]
 def Hom.mk' {M N : Mod_ D A} (f : M.X ⟶ N.X) [IsMod_Hom A f] : Hom M N where
@@ -224,7 +224,7 @@ open MonoidalLeftAction in
 `A`-linear morphism when `M` and `N` have an `A`-module structure obtained
 by restricting scalars along a monoid morphism `A ⟶ B`. -/
 @[simps!]
-lemma scalarRestriction_hom
+lemma scalarRestriction_isMod_Hom
     (M N : D) [Mod_Class B M] [Mod_Class B N] (g : M ⟶ N) [IsMod_Hom B g] :
     letI := scalarRestriction f M
     letI := scalarRestriction f N
@@ -247,7 +247,7 @@ def comap {A B : C} [Mon_Class A] [Mon_Class B] (f : A ⟶ B) [IsMon_Hom f] :
     letI := scalarRestriction f M.X
     ⟨M.X⟩
   map {M N} g :=
-    letI := scalarRestriction_hom f M.X N.X g.hom
+    letI := scalarRestriction_isMod_Hom f M.X N.X g.hom
     { hom := g.hom, smul_hom := this.smul_hom }
 
 -- Lots more could be said about `comap`, e.g. how it interacts with
