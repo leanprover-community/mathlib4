@@ -430,7 +430,8 @@ theorem memOneCocycles_of_addMonoidHom [A.IsTrivial] (f : Additive G →+ A) :
       add_comm (f (Additive.ofMul g))]
 
 variable (A)
-
+/-- When `A : Rep k G` is a trivial representation of `G`, `Z¹(G, A)` is isomorphic to the
+group homs `G → A`. -/
 @[simps! hom_hom_apply_apply inv_hom_apply]
 def cocyclesIsoOfIsTrivial₁ [hA : A.IsTrivial] :
     cocycles A 1 ≅ ModuleCat.of k (Additive G →+ A) :=
@@ -1183,3 +1184,4 @@ end H2
 end groupCohomologyIso
 
 end groupCohomology
+#lint
