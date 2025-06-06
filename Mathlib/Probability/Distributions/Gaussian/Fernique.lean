@@ -5,6 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Distributions.Fernique
 import Mathlib.Probability.Distributions.Gaussian.Basic
+import Mathlib.Probability.Moments.Covariance
 
 /-!
 # Fernique's theorem for Gaussian measures
@@ -26,39 +27,51 @@ import Mathlib.Probability.Distributions.Gaussian.Basic
 open MeasureTheory ProbabilityTheory Complex NormedSpace
 open scoped ENNReal NNReal Real Topology
 
+namespace MeasureTheory
+
+variable {α β F : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+  [SeminormedAddCommGroup F] {mF : MeasurableSpace F}
+  {μ : Measure α} {ν : Measure β}
+  {p : ℝ≥0∞}
+
+lemma MemLp.comp_fst_prod {f : α → F} (hf : MemLp f p μ) (ν : Measure β) [IsFiniteMeasure ν] :
+    MemLp (fun x ↦ f x.1) p (μ.prod ν) := by
+  have hf' : MemLp f p (ν .univ • μ) := hf.smul_measure (by simp)
+  change MemLp (f ∘ Prod.fst) p (μ.prod ν)
+  rw [← memLp_map_measure_iff ?_ (by fun_prop)]
+  · simpa using hf'
+  · simpa using hf'.1
+
+lemma MemLp.comp_snd_prod {f : β → F} (hf : MemLp f p ν) (μ : Measure α) [IsFiniteMeasure μ]
+    [SFinite ν] :
+    MemLp (fun x ↦ f x.2) p (μ.prod ν) := by
+  have hf' : MemLp f p (μ .univ • ν) := hf.smul_measure (by simp)
+  change MemLp (f ∘ Prod.snd) p (μ.prod ν)
+  rw [← memLp_map_measure_iff ?_ (by fun_prop)]
+  · simpa using hf'
+  · simpa using hf'.1
+
+end MeasureTheory
+
 namespace ProbabilityTheory
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
-  {μ : Measure E} [IsGaussian μ]
+variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
+  [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
+  {μ : Measure E} [IsGaussian μ] {ν : Measure F} [IsGaussian ν]
 
-section Rotation
-
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
-  {ν : Measure F} [IsGaussian ν]
+section Prod
 
 omit [BorelSpace F] in
-lemma memLp_comp_inl_prod (L : E × F →L[ℝ] ℝ) {p : ℝ≥0∞} (hp : p ≠ ∞) :
-    MemLp (fun x ↦ (L.comp (.inl ℝ E F) x.1)) p (μ.prod ν) := by
-  change MemLp ((L.comp (.inl ℝ E F) ∘ Prod.fst)) p (μ.prod ν)
-  rw [← memLp_map_measure_iff]
-  · simp only [Measure.map_fst_prod, measure_univ, one_smul]
-    exact IsGaussian.memLp_dual μ (L.comp (.inl ℝ E F)) p hp
-  · simp only [Measure.map_fst_prod, measure_univ, one_smul]
-    exact (IsGaussian.integrable_dual μ (L.comp (.inl ℝ E F))).1
-  · fun_prop
+lemma memLp_comp_inl_prod (L : Dual ℝ (E × F)) {p : ℝ≥0∞} (hp : p ≠ ∞) :
+    MemLp (fun x ↦ (L.comp (.inl ℝ E F) x.1)) p (μ.prod ν) :=
+  (IsGaussian.memLp_dual μ (L.comp (.inl ℝ E F)) p hp).comp_fst_prod ν
 
 omit [BorelSpace E] in
-lemma memLp_comp_inr_prod (L : E × F →L[ℝ] ℝ) {p : ℝ≥0∞} (hp : p ≠ ∞) :
-    MemLp (fun x ↦ (L.comp (.inr ℝ E F) x.2)) p (μ.prod ν) := by
-  change MemLp ((L.comp (.inr ℝ E F) ∘ Prod.snd)) p (μ.prod ν)
-  rw [← memLp_map_measure_iff]
-  · simp only [Measure.map_snd_prod, measure_univ, one_smul]
-    exact IsGaussian.memLp_dual _ (L.comp (.inr ℝ E F)) p hp
-  · simp only [Measure.map_snd_prod, measure_univ, one_smul]
-    exact (IsGaussian.integrable_dual _ (L.comp (.inr ℝ E F))).1
-  · fun_prop
+lemma memLp_comp_inr_prod (L : Dual ℝ (E × F)) {p : ℝ≥0∞} (hp : p ≠ ∞) :
+    MemLp (fun x ↦ (L.comp (.inr ℝ E F) x.2)) p (μ.prod ν) :=
+  (IsGaussian.memLp_dual ν (L.comp (.inr ℝ E F)) p hp).comp_snd_prod μ
 
-lemma memLp_prod (L : E × F →L[ℝ] ℝ) {p : ℝ≥0∞} (hp : p ≠ ∞) :
+lemma memLp_dual_prod (L : Dual ℝ (E × F)) {p : ℝ≥0∞} (hp : p ≠ ∞) :
     MemLp L p (μ.prod ν) := by
   suffices MemLp (fun v ↦ L.comp (.inl ℝ E F) v.1 + L.comp (.inr ℝ E F) v.2) p (μ.prod ν) by
     simp_rw [L.comp_inl_add_comp_inr] at this
@@ -66,69 +79,49 @@ lemma memLp_prod (L : E × F →L[ℝ] ℝ) {p : ℝ≥0∞} (hp : p ≠ ∞) :
   exact MemLp.add (memLp_comp_inl_prod L hp) (memLp_comp_inr_prod L hp)
 
 omit [BorelSpace F] in
-lemma integrable_comp_inl_prod (L : E × F →L[ℝ] ℝ) :
-    Integrable (fun x ↦ (L.comp (.inl ℝ E F) x.1)) (μ.prod ν) := by
-  rw [← memLp_one_iff_integrable]
-  exact memLp_comp_inl_prod L (by simp)
+lemma integrable_comp_inl_prod (L : Dual ℝ (E × F)) :
+    Integrable (fun x ↦ (L.comp (.inl ℝ E F) x.1)) (μ.prod ν) :=
+  memLp_one_iff_integrable.mp (memLp_comp_inl_prod L (by simp))
 
 omit [BorelSpace E] in
-lemma integrable_comp_inr_prod (L : E × F →L[ℝ] ℝ) :
-    Integrable (fun x ↦ (L.comp (.inr ℝ E F) x.2)) (μ.prod ν) := by
-  rw [← memLp_one_iff_integrable]
-  exact memLp_comp_inr_prod L (by simp)
+lemma integrable_comp_inr_prod (L : Dual ℝ (E × F)) :
+    Integrable (fun x ↦ (L.comp (.inr ℝ E F) x.2)) (μ.prod ν) :=
+  memLp_one_iff_integrable.mp (memLp_comp_inr_prod L (by simp))
 
-lemma integral_continuousLinearMap_prod (L : E × F →L[ℝ] ℝ) :
+lemma integral_dual_prod (L : Dual ℝ (E × F)) :
     (μ.prod ν)[L] = μ[L.comp (.inl ℝ E F)] + ν[L.comp (.inr ℝ E F)] := by
   simp_rw [← L.comp_inl_add_comp_inr]
-  rw [integral_add (integrable_comp_inl_prod L) (integrable_comp_inr_prod L)]
-  · congr
-    · rw [integral_prod _ (integrable_comp_inl_prod L)]
-      simp
-    · rw [integral_prod _ (integrable_comp_inr_prod L)]
-      simp
+  rw [integral_add (integrable_comp_inl_prod L) (integrable_comp_inr_prod L),
+    integral_prod _ (integrable_comp_inl_prod L), integral_prod _ (integrable_comp_inr_prod L)]
+  simp
 
-lemma variance_continuousLinearMap_prod (L : E × F →L[ℝ] ℝ) :
+lemma variance_dual_prod (L : Dual ℝ (E × F)) :
     Var[L; μ.prod ν] = Var[L.comp (.inl ℝ E F); μ] + Var[L.comp (.inr ℝ E F); ν] := by
-  rw [variance_def' (memLp_prod L (by simp)), integral_continuousLinearMap_prod L,
-    variance_def', variance_def']
-  rotate_left
-  · exact IsGaussian.memLp_dual _ _ _ (by simp)
-  · exact IsGaussian.memLp_dual _ _ _ (by simp)
+  rw [variance_def' (memLp_dual_prod L (by simp)), integral_dual_prod L,
+    variance_def' (IsGaussian.memLp_dual _ _ _ (by simp)),
+    variance_def' (IsGaussian.memLp_dual _ _ _ (by simp))]
   let L₁ := L.comp (.inl ℝ E F)
   let L₂ := L.comp (.inr ℝ E F)
-  simp only [Pi.pow_apply, Function.comp_apply,
-    ContinuousLinearMap.inl_apply, ContinuousLinearMap.inr_apply]
+  simp only [Pi.pow_apply, Function.comp_apply, ContinuousLinearMap.inl_apply,
+    ContinuousLinearMap.inr_apply]
   suffices h_sq : ∫ v, L v ^ 2 ∂(μ.prod ν)
       = ∫ x, L₁ x ^ 2 ∂μ + ∫ x, L₂ x ^ 2 ∂ν + 2 * μ[L₁] * ν[L₂] by rw [h_sq]; ring
   calc ∫ v, L v ^ 2 ∂μ.prod ν
   _ = ∫ v, (L₁ v.1 + L₂ v.2) ^ 2 ∂μ.prod ν := by simp_rw [← L.comp_inl_add_comp_inr]; simp [L₁, L₂]
-  _ = ∫ v, L₁ v.1 ^ 2 + L₂ v.2 ^ 2 + 2 * L₁ v.1 * L₂ v.2 ∂μ.prod ν := by
-    congr with v; ring
+  _ = ∫ v, L₁ v.1 ^ 2 + L₂ v.2 ^ 2 + 2 * L₁ v.1 * L₂ v.2 ∂μ.prod ν := by congr with v; ring
   _ = ∫ v, L₁ v.1 ^ 2 ∂μ.prod ν + ∫ v, L₂ v.2 ^ 2 ∂μ.prod ν
       + 2 * ∫ v, L₁ v.1 * L₂ v.2 ∂μ.prod ν := by
-    have h_int1 : Integrable (fun a ↦ L₁ a.1 ^ 2) (μ.prod ν) := by
-      rw [← integrable_norm_iff]
-      swap; · exact Measurable.aestronglyMeasurable <| by fun_prop
-      simp only [norm_pow]
-      refine MemLp.integrable_norm_pow ?_ (by simp)
-      exact memLp_comp_inl_prod L (by simp)
-    have h_int2 : Integrable (fun a ↦ L₂ a.2 ^ 2) (μ.prod ν) := by
-      rw [← integrable_norm_iff]
-      swap; · exact Measurable.aestronglyMeasurable <| by fun_prop
-      simp only [norm_pow]
-      refine MemLp.integrable_norm_pow ?_ (by simp)
-      exact memLp_comp_inr_prod L (by simp)
-    rw [integral_add, integral_add]
+    have h_int1 : Integrable (fun a ↦ L₁ a.1 ^ 2) (μ.prod ν) :=
+      (memLp_comp_inl_prod L (by simp)).integrable_sq
+    have h_int2 : Integrable (fun a ↦ L₂ a.2 ^ 2) (μ.prod ν) :=
+      (memLp_comp_inr_prod L (by simp)).integrable_sq
+    rw [integral_add (h_int1.add'' h_int2), integral_add h_int1 h_int2]
     · simp_rw [mul_assoc]
       rw [integral_const_mul]
-    · exact h_int1
-    · exact h_int2
-    · exact Integrable.add h_int1 h_int2
     · simp_rw [mul_assoc]
       refine Integrable.const_mul ?_ _
-      refine MemLp.integrable_mul (p := 2) (q := 2) ?_ ?_
-      · exact memLp_comp_inl_prod L (by simp)
-      · exact memLp_comp_inr_prod L (by simp)
+      exact (memLp_comp_inl_prod L (by simp)).integrable_mul (memLp_comp_inr_prod L (by simp))
+        (p := 2) (q := 2)
   _ = ∫ x, L₁ x ^ 2 ∂μ + ∫ x, L₂ x ^ 2 ∂ν + 2 * μ[L₁] * ν[L₂] := by
     simp_rw [mul_assoc]
     congr
@@ -147,16 +140,20 @@ instance [SecondCountableTopologyEither E F] : IsGaussian (μ.prod ν) := by
   congr
   let L₁ := L.comp (.inl ℝ E F)
   let L₂ := L.comp (.inr ℝ E F)
-  suffices μ[L₁] * I - Var[L₁; μ] / 2 +(ν[L₂] * I - Var[L₂; ν] / 2)
+  suffices μ[L₁] * I - Var[L₁; μ] / 2 + (ν[L₂] * I - Var[L₂; ν] / 2)
       = (μ.prod ν)[L] * I - Var[L; μ.prod ν] / 2 by convert this
   rw [sub_add_sub_comm, ← add_mul]
   congr
   · simp_rw [integral_complex_ofReal]
-    rw [integral_continuousLinearMap_prod L]
+    rw [integral_dual_prod L]
     norm_cast
   · field_simp
-    rw [variance_continuousLinearMap_prod]
+    rw [variance_dual_prod]
     norm_cast
+
+end Prod
+
+section Rotation
 
 /-- The hypothesis `∀ L : Dual ℝ E, μ[L] = 0` can be simplified to `μ[id] = 0`, but at this point
 we don't know yet that `μ` has a first moment. -/
@@ -211,9 +208,7 @@ lemma IsGaussian.map_rotation_eq_self [SecondCountableTopology E] [CompleteSpace
   · exact IsGaussian.memLp_dual _ _ _ (by simp)
   · exact IsGaussian.memLp_dual _ _ _ (by simp)
   · exact IsGaussian.memLp_dual _ _ _ (by simp)
-  · refine MemLp.add ?_ ?_
-    · exact IsGaussian.memLp_dual _ _ _ (by simp)
-    · exact IsGaussian.memLp_dual _ _ _ (by simp)
+  · exact (IsGaussian.memLp_dual _ _ _ (by simp)).add (IsGaussian.memLp_dual _ _ _ (by simp))
   · exact IsGaussian.memLp_dual _ _ _ (by simp)
   · exact IsGaussian.memLp_dual _ _ _ (by simp)
   · exact IsGaussian.memLp_dual _ _ _ (by simp)
@@ -222,9 +217,7 @@ lemma IsGaussian.map_rotation_eq_self [SecondCountableTopology E] [CompleteSpace
   · exact IsGaussian.memLp_dual _ _ _ (by simp)
   · exact IsGaussian.memLp_dual _ _ _ (by simp)
   · exact IsGaussian.memLp_dual _ _ _ (by simp)
-  · refine MemLp.sub ?_ ?_
-    · exact IsGaussian.memLp_dual _ _ _ (by simp)
-    · exact IsGaussian.memLp_dual _ _ _ (by simp)
+  · exact (IsGaussian.memLp_dual _ _ _ (by simp)).sub (IsGaussian.memLp_dual _ _ _ (by simp))
   simp only [ContinuousLinearMap.coe_smul', ContinuousLinearMap.coe_comp', covariance_smul_right,
     covariance_smul_left]
   -- todo: `have h := Real.cos_sq_add_sin_sq θ; grind` works here.
