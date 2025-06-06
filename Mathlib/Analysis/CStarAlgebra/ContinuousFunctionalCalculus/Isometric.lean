@@ -396,7 +396,7 @@ end NonUnital
 /-! ### Instances of isometric continuous functional calculi
 
 The instances for `ℝ` and `ℂ` can be found in
-`Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic`, as those require an actual
+`Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Basic.lean`, as those require an actual
 `CStarAlgebra` instance on `A`, whereas the one for `ℝ≥0` is simply inherited from an existing
 instance for `ℝ`.
 -/

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Category.Grp.Limits
-import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Monoidal.Grp_
 
 /-!
@@ -15,10 +14,10 @@ by constructing the yoneda embedding `Grp_ C ⥤ Cᵒᵖ ⥤ Grp.{v}` and
 showing that it is fully faithful and its (essential) image is the representable functors.
 -/
 
-open CategoryTheory MonoidalCategory Limits Opposite ChosenFiniteProducts Mon_Class
+open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory Mon_Class
 
 universe w v u
-variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
+variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
   {G H X Y : C} [Grp_Class G] [Grp_Class H]
 
 variable (X) in
@@ -105,7 +104,7 @@ def yonedaGrpFullyFaithful : yonedaGrp (C := C).FullyFaithful where
   preimage {G H} α := yonedaMonFullyFaithful.preimage (whiskerRight α (forget₂ Grp MonCat))
   map_preimage {G H} α := by
     ext X : 3
-    exact congr(($(yonedaMonFullyFaithful.map_preimage
+    exact congr(($(yonedaMonFullyFaithful.map_preimage (X := G.toMon_) (Y := H.toMon_)
       (whiskerRight α (forget₂ Grp MonCat))).app X).hom)
   preimage_map := yonedaMonFullyFaithful.preimage_map
 
@@ -128,6 +127,6 @@ lemma Grp_Class.comp_inv (f : X ⟶ Y) (g : Y ⟶ G) : f ≫ g⁻¹ = (f ≫ g)�
 
 @[reassoc]
 lemma Grp_Class.inv_comp (f : X ⟶ G) (g : G ⟶ H) [IsMon_Hom g] : f⁻¹ ≫ g = (f ≫ g)⁻¹ := by
-  simp [Hom.inv_def,IsMon_Hom.inv_hom]
+  simp [Hom.inv_def]
 
 lemma Grp_Class.inv_eq_inv : ι = (𝟙 G)⁻¹ := by simp [Hom.inv_def]

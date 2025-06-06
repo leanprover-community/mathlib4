@@ -6,6 +6,7 @@ Authors: Shing Tak Lam, Frédéric Dupuis
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Algebra.Spectrum.Basic
+import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Unitary elements of a star monoid
@@ -135,12 +136,36 @@ theorem _root_.IsUnit.mem_unitary_iff_mul_star_self {u : R} (hu : IsUnit u) :
 alias ⟨_, _root_.IsUnit.mem_unitary_of_star_mul_self⟩ := IsUnit.mem_unitary_iff_star_mul_self
 alias ⟨_, _root_.IsUnit.mem_unitary_of_mul_star_self⟩ := IsUnit.mem_unitary_iff_mul_star_self
 
+lemma mul_inv_mem_iff {G : Type*} [Group G] [StarMul G] (a b : G) :
+    a * b⁻¹ ∈ unitary G ↔ star a * a = star b * b := by
+  rw [(Group.isUnit _).mem_unitary_iff_star_mul_self, star_mul, star_inv, mul_assoc,
+    inv_mul_eq_iff_eq_mul, mul_one, ← mul_assoc, mul_inv_eq_iff_eq_mul]
+
+lemma inv_mul_mem_iff {G : Type*} [Group G] [StarMul G] (a b : G) :
+    a⁻¹ * b ∈ unitary G ↔ a * star a = b * star b := by
+  simpa [← mul_inv_rev] using mul_inv_mem_iff a⁻¹ b⁻¹
+
+theorem _root_.Units.unitary_eq : unitary Rˣ = (unitary R).comap (Units.coeHom R) := by
+  ext
+  simp [unitary.mem_iff, Units.ext_iff]
+
+/-- In a star monoid, the product `a * b⁻¹` of units is unitary if `star a * a = star b * b`. -/
+protected lemma _root_.Units.mul_inv_mem_unitary (a b : Rˣ) :
+    (a * b⁻¹ : R) ∈ unitary R ↔ star a * a = star b * b := by
+  simp [← mul_inv_mem_iff, Units.unitary_eq]
+
+/-- In a star monoid, the product `a⁻¹ * b` of units is unitary if `a * star a = b * star b`. -/
+protected lemma _root_.Units.inv_mul_mem_unitary (a b : Rˣ) :
+    (a⁻¹ * b : R) ∈ unitary R ↔ a * star a = b * star b := by
+  simp [← inv_mul_mem_iff, Units.unitary_eq]
+
 instance instIsStarNormal (u : unitary R) : IsStarNormal u where
   star_comm_self := star_mul_self u |>.trans <| (mul_star_self u).symm
 
 instance coe_isStarNormal (u : unitary R) : IsStarNormal (u : R) where
   star_comm_self := congr(Subtype.val $(star_comm_self' u))
 
+@[aesop 10% apply (rule_sets := [CStarAlgebra])]
 lemma _root_.isStarNormal_of_mem_unitary {u : R} (hu : u ∈ unitary R) : IsStarNormal u :=
   coe_isStarNormal ⟨u, hu⟩
 

@@ -214,8 +214,6 @@ namespace MonoidHom
 
 variable {M : Type*} [Monoid M]
 
-open Multiplicative
-
 @[ext]
 theorem ext_mint {f g : Multiplicative ℤ →* M} (h1 : f (ofAdd 1) = g (ofAdd 1)) : f = g :=
   MonoidHom.toAdditive''.injective <| AddMonoidHom.ext_int <| Additive.toMul.injective h1
@@ -272,19 +270,17 @@ def zmultiplesHom : β ≃ (ℤ →+ β) where
 
 /-- Monoid homomorphisms from `Multiplicative ℤ` are defined by the image
 of `Multiplicative.ofAdd 1`. -/
-@[to_additive existing]
 def zpowersHom : α ≃ (Multiplicative ℤ →* α) :=
   ofMul.trans <| (zmultiplesHom _).trans <| AddMonoidHom.toMultiplicative''
 
-lemma zmultiplesHom_apply (x : β) (n : ℤ) : zmultiplesHom β x n = n • x := rfl
+@[simp] lemma zmultiplesHom_apply (x : β) (n : ℤ) : zmultiplesHom β x n = n • x := rfl
 
-lemma zmultiplesHom_symm_apply (f : ℤ →+ β) : (zmultiplesHom β).symm f = f 1 := rfl
+@[simp] lemma zmultiplesHom_symm_apply (f : ℤ →+ β) : (zmultiplesHom β).symm f = f 1 := rfl
 
-@[to_additive existing (attr := simp)]
-lemma zpowersHom_apply (x : α) (n : Multiplicative ℤ) : zpowersHom α x n = x ^ n.toAdd := rfl
+@[simp] lemma zpowersHom_apply (x : α) (n : Multiplicative ℤ) :
+    zpowersHom α x n = x ^ n.toAdd := rfl
 
-@[to_additive existing (attr := simp)]
-lemma zpowersHom_symm_apply (f : Multiplicative ℤ →* α) :
+@[simp] lemma zpowersHom_symm_apply (f : Multiplicative ℤ →* α) :
     (zpowersHom α).symm f = f (ofAdd 1) := rfl
 
 lemma MonoidHom.apply_mint (f : Multiplicative ℤ →* α) (n : Multiplicative ℤ) :

@@ -5,7 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Analysis.Normed.Group.Quotient
 import Mathlib.Analysis.NormedSpace.Pointwise
-import Mathlib.Topology.Instances.AddCircle
+import Mathlib.Topology.Instances.AddCircle.Real
 
 /-!
 # The additive circle as a normed group
@@ -169,7 +169,7 @@ theorem coe_real_preimage_closedBall_inter_eq {x ε : ℝ} (s : Set ℝ)
     simp only [Real.closedBall_eq_Icc, zero_sub, zero_add] at hs ⊢
     rcases eq_or_ne z 0 with (rfl | hz)
     · simp
-    simp only [hz, zsmul_eq_mul, if_false, eq_empty_iff_forall_not_mem]
+    simp only [hz, zsmul_eq_mul, if_false, eq_empty_iff_forall_notMem]
     rintro y ⟨⟨hy₁, hy₂⟩, hy₀⟩
     obtain ⟨hy₃, hy₄⟩ := hs hy₀
     rcases lt_trichotomy 0 p with (hp | (rfl : 0 = p) | hp)

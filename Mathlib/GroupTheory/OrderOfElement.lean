@@ -657,8 +657,8 @@ theorem smul_eq_self_of_mem_zpowers {α : Type*} [MulAction G α] (hx : x ∈ Su
     MulAction.toPermHom_apply]
   exact Function.IsFixedPt.perm_zpow (by exact hs) k -- Porting note: help elab'n with `by exact`
 
-theorem vadd_eq_self_of_mem_zmultiples {α G : Type*} [AddGroup G] [AddAction G α] {x y : G}
-    (hx : x ∈ AddSubgroup.zmultiples y) {a : α} (hs : y +ᵥ a = a) : x +ᵥ a = a :=
+theorem vadd_eq_self_of_mem_zmultiples {G : Type*} [AddGroup G] {x y : G} {α : Type*}
+    [AddAction G α] (hx : x ∈ AddSubgroup.zmultiples y) {a : α} (hs : y +ᵥ a = a) : x +ᵥ a = a :=
   @smul_eq_self_of_mem_zpowers (Multiplicative G) _ _ _ α _ hx a hs
 
 attribute [to_additive existing] smul_eq_self_of_mem_zpowers
@@ -914,12 +914,10 @@ theorem orderOf_dvd_card : orderOf x ∣ Fintype.card G := by
           congr_arg (@Fintype.card _) <| Subsingleton.elim _ _
         _ = @Fintype.card _ ft_cosets * @Fintype.card _ ft_s :=
           @Fintype.card_prod _ _ ft_cosets ft_s
-
     have eq₂ : orderOf x = @Fintype.card _ ft_s :=
       calc
         orderOf x = _ := Fintype.card_zpowers.symm
         _ = _ := congr_arg (@Fintype.card _) <| Subsingleton.elim _ _
-
     exact Dvd.intro (@Fintype.card (G ⧸ Subgroup.zpowers x) ft_cosets) (by rw [eq₁, eq₂, mul_comm])
 
 @[to_additive]
@@ -1204,6 +1202,6 @@ section single
 lemma orderOf_piMulSingle {ι : Type*} [DecidableEq ι] {M : ι → Type*} [(i : ι) → Monoid (M i)]
     (i : ι) (g : M i) :
     orderOf (Pi.mulSingle i g) = orderOf g :=
-  orderOf_injective (MonoidHom.mulSingle M i) (Pi.mulSingle_injective M i) g
+  orderOf_injective (MonoidHom.mulSingle M i) (Pi.mulSingle_injective i) g
 
 end single

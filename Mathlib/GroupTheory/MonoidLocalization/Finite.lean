@@ -11,7 +11,7 @@ import Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup
 
 ## TODO
 
-If `Mathlib.GroupTheory.Finiteness` wasn't so heavy, this could move earlier.
+If `Mathlib/GroupTheory/Finiteness.lean` wasn't so heavy, this could move earlier.
 -/
 
 open Localization

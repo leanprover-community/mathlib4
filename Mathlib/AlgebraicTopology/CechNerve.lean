@@ -122,11 +122,9 @@ def equivalenceLeftToRight (X : SimplicialObject.Augmented C) (F : Arrow C)
         intro x y f
         dsimp
         ext
-        · dsimp
-          simp only [WidePullback.lift_π, Category.assoc, ← X.left.map_comp_assoc]
+        · simp only [WidePullback.lift_π, Category.assoc, ← X.left.map_comp_assoc]
           rfl
-        · dsimp
-          simp }
+        · simp }
   right := G.right
 
 /-- A helper function used in defining the Čech adjunction. -/
@@ -152,8 +150,7 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
     intro A
     ext x : 2
     · refine WidePullback.hom_ext _ _ _ (fun j => ?_) ?_
-      · dsimp
-        simp
+      · simp
         rfl
       · simpa using congr_app A.w.symm x
     · rfl
@@ -274,8 +271,7 @@ def equivalenceRightToLeft (F : Arrow C) (X : CosimplicialObject.Augmented C)
           simp only [WidePushout.ι_desc_assoc, WidePushout.ι_desc]
           rw [Category.assoc, ← X.right.map_comp]
           rfl
-        · dsimp
-          simp [← NatTrans.naturality] }
+        · simp [← NatTrans.naturality] }
 
 /-- A helper function used in defining the Čech conerve adjunction. -/
 @[simps]
@@ -343,7 +339,7 @@ def wideCospan.limitCone [Finite ι] (X : C) : LimitCone (wideCospan ι X) where
           naturality := fun i j f => by
             cases f
             · cases i
-              all_goals dsimp; simp
+              all_goals simp
             · simp only [Functor.const_obj_obj, Functor.const_obj_map, terminal.comp_from]
               subsingleton } }
   isLimit :=
