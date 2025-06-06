@@ -878,8 +878,7 @@ lemma IsClosedEmbedding.sumElim {f : X → Z} {g : Y → Z}
 -- as well as commutativity, associativity and distributivity with products.
 namespace Homeomorph
 
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace W] [TopologicalSpace Z]
-  {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
+variable {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
 
 /-- Sum of two homeomorphisms. -/
 def sumCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X ⊕ Y ≃ₜ X' ⊕ Y' where
