@@ -7,6 +7,10 @@ import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Finset.Powerset
+import Mathlib.Algebra.Order.Floor.Defs
+import Mathlib.Algebra.Order.Floor.Semiring
+import Mathlib.Combinatorics.SimpleGraph.Operations
+import Mathlib.Combinatorics.SimpleGraph.Copy
 /-!
   # Blow-up graphs and counting induced subgraphs
 -/
@@ -175,7 +179,7 @@ lemma card_supersets {α : Type*} [Fintype α] [DecidableEq α] {s : Finset α} 
     have hd := disjoint_left.2 fun _ ha hs ↦ (mem_compl.1 <| ht.1 ha) hs
     exact ⟨by rw [card_union_of_disjoint hd]; omega, union_sdiff_cancel_right hd⟩
 
-/-- **The principle of counting subgraphs by averaging**
+/-- **The principle of counting induced subgraphs by averaging**
 If `G` is a graph on `α` and `H` is a graph on `β`, then
 `#(H ↪g G) * (choose (‖α‖ - ‖β‖) (k - ‖β‖))` is equal to the sum of the number of embeddings
 `H ↪g (G.induce t)` over subsets `t` of `α` of size `k`, for any `‖β‖ ≤ k`.
@@ -207,6 +211,196 @@ lemma sum_card_embeddings_induce_eq (G : SimpleGraph α) (H : SimpleGraph β) [F
       congr
       ext t
       constructor <;> intro ⟨ht1, ht2⟩ <;> exact ⟨ht1, fun x hx ↦ ht2 (by simpa using hx)⟩
+
+/--
+The following version yields `(n + 1 - |V(H)|) * exᵢ(n + 1, H) ≤ (n + 1) * exᵢ(n, H)`, where
+`exᵢ(n, H)` is the maximum number of embeddings `H` into any `n`-vertex graph `G`.
+Which in turn implies that `{exᵢ(n + 1, H) / (n + 1).choose |V(H)|}`} is monotone decreasing in `n`.
+In particular if `H = K₂` is an edge this is the usual induced-Turan density.
+(This doesn't use anything about graphs, it would work as well in hypergraphs/multigraphs etc.)
+-/
+lemma sum_card_embeddings_induce_n {n : ℕ} (G : SimpleGraph (Fin (n + 1))) (H : SimpleGraph β)
+  [Fintype β] (hk : ‖β‖ ≤ n) : ∑ t : Finset (Fin (n + 1)) with t.card = n , ‖H ↪g (G.induce t)‖
+                              = ‖H ↪g G‖ *(n + 1 - ‖β‖) := by
+  rw [sum_card_embeddings_induce_eq G H hk, Fintype.card_fin]
+  have : n + 1 - ‖β‖ = n - ‖β‖ + 1 := by omega
+  rw [this, Nat.choose_succ_self_right]
+
+open Finset Fintype
+
+
+section IsExtremal
+
+variable {α γ : Type*} [Fintype α] [Fintype γ] {G : SimpleGraph α} [DecidableRel G.Adj]
+{H : SimpleGraph γ} [DecidableRel H.Adj]
+
+/-- `G` is an extremalInduced graph satisfying `p` if `G` has the maximum number of induced copies of `H`
+of any simple graph satisfying `p`. -/
+def IsExtremalH (G : SimpleGraph α) (H : SimpleGraph γ) [DecidableRel H.Adj]
+  [DecidableRel G.Adj] (p : SimpleGraph α → Prop) :=
+  p G ∧ ∀ ⦃G' : SimpleGraph α⦄ [DecidableRel G'.Adj], p G' → ‖H ↪g G'‖ ≤ ‖H ↪g G‖
+
+lemma IsExtremal.prop {p : SimpleGraph α → Prop} (h : G.IsExtremalH H p) : p G := h.1
+
+open Classical in
+/-- If one simple graph satisfies `p`, then there exists an extremal graph satisfying `p`. -/
+theorem exists_isExtremalH_iff_exists (p : SimpleGraph α → Prop) :
+    (∃ G : SimpleGraph α, ∃ _ : DecidableRel G.Adj, G.IsExtremalH H p) ↔ ∃ G, p G := by
+  refine ⟨fun ⟨_, _, h⟩ ↦ ⟨_, h.1⟩, fun ⟨G, hp⟩ ↦ ?_⟩
+  obtain ⟨G', hp', h⟩ := by
+    apply exists_max_image { G | p G } (fun G ↦ ‖H ↪g G‖)
+    use G, by simpa using hp
+  use G', inferInstanceAs (DecidableRel G'.Adj)
+  exact ⟨by simpa using hp', fun _ _ hp ↦ by convert h _ (by simpa using hp)⟩
+
+/-- If `H` has at least one edge, then there exists an extremal `H.Free` graph. -/
+theorem exists_isExtremalH_free {β : Type*} {F : SimpleGraph β} (h : F ≠ ⊥) :
+    ∃ G : SimpleGraph α, ∃ _ : DecidableRel G.Adj, G.IsExtremalH H F.Free :=
+  (exists_isExtremalH_iff_exists F.Free).mpr ⟨⊥, free_bot h⟩
+
+end IsExtremal
+
+section ExtremalNumber
+
+open Classical in
+/--
+The `extremalInduced H F` is the the maximum number of embeddings of `H` in an `F`-free graph on `n`
+vertices.
+If `H` is contained in all simple graphs on `n` vertices, then this is `0`.
+-/
+noncomputable def extremalInduced (n : ℕ) {β γ : Type*} (H : SimpleGraph γ) (F : SimpleGraph β)
+  [Fintype γ] : ℕ :=
+  sup { G : SimpleGraph (Fin n) | F.Free G } (fun G ↦ ‖H ↪g G‖)
+
+variable {n : ℕ} {β γ : Type*} [Fintype γ] {G : SimpleGraph α} {F : SimpleGraph β}
+{H : SimpleGraph γ}
+
+def Iso.embeddings_equiv_of_equiv {α' γ' : Type*} {G' : SimpleGraph α'} {H' : SimpleGraph γ'}
+    (e : G ≃g G') (e' : H ≃g H') : (H ↪g G) ≃ (H' ↪g G') where
+  toFun := fun f ↦ (e.toEmbedding.comp f).comp e'.symm.toEmbedding
+  invFun := fun f ↦ (e.symm.toEmbedding.comp f).comp e'.toEmbedding
+  left_inv := fun _ ↦ by ext; simp
+  right_inv := fun _ ↦ by ext; simp
+
+open Classical in
+theorem extremalInduced_of_fintypeCard_eq (hc : card α = n) :
+    extremalInduced n H F = sup { G : SimpleGraph α | F.Free G } (fun G ↦ ‖H ↪g G‖) := by
+  let e := Fintype.equivFinOfCardEq hc
+  rw [extremalInduced, le_antisymm_iff]
+  and_intros
+  on_goal 1 =>
+    replace e := e.symm
+  all_goals
+  rw [Finset.sup_le_iff]
+  intro G h
+  let G' := G.map e.toEmbedding
+  replace h' : G' ∈ univ.filter (F.Free ·) := by
+    rw [mem_filter, ← free_congr .refl (.map e G)]
+    simpa using h
+  convert @le_sup _ _ _ _ { G | F.Free G } (fun G ↦ ‖H ↪g G‖) G' h'
+  exact Fintype.card_congr (Iso.embeddings_equiv_of_equiv (.map e G) (by rfl))
+
+/-- If `G` is `F`-free, then `G` has at most `extremalInduced (card V) F H` induced copies of `H`. -/
+theorem card_embeddings_le_extremalInduced (h : F.Free G) :
+     ‖H ↪g G‖ ≤ extremalInduced (card α) H F := by
+  rw [extremalInduced_of_fintypeCard_eq rfl]
+  convert @le_sup _ _ _ _ { G | F.Free G } (fun G ↦ ‖H ↪g G‖) G (by simpa using h)
+
+/-- If `G` has more than `extremalNumber (card V) H` edges, then `G` contains a copy of `H`. -/
+theorem IsContained.of_extremalInduced_lt_card_embeddings
+    (h : extremalInduced (card α) H F <  ‖H ↪g G‖) : F ⊑ G := by
+  contrapose! h
+  exact card_embeddings_le_extremalInduced h
+
+/-- `extremalNumber (card V) H` is at most `x` if and only if every `H`-free simple graph `G` has
+at most `x` edges. -/
+theorem extremalInduced_le_iff (F : SimpleGraph β) (m : ℕ) :
+    extremalInduced (card α) H F ≤ m ↔
+      ∀ ⦃G : SimpleGraph α⦄ [DecidableRel G.Adj], F.Free G →  ‖H ↪g G‖ ≤ m := by
+  simp_rw [extremalInduced_of_fintypeCard_eq rfl, Finset.sup_le_iff, mem_filter, mem_univ, true_and]
+  classical
+  exact ⟨fun h _ _ h' ↦ by convert h _ h', fun h _ h' ↦ h h'⟩
+
+/-- `extremalInduced (card V) F H` is greater than `x` if and only if there exists a `F`-free simple
+graph `G` with more than `x` embeddings of `H`. -/
+theorem lt_extremalInduced_iff (F : SimpleGraph β) (m : ℕ) :
+    m < extremalInduced (card α) H F ↔
+      ∃ G : SimpleGraph α, ∃ _ : DecidableRel G.Adj, F.Free G ∧ m < ‖H ↪g G‖ := by
+  simp_rw [extremalInduced_of_fintypeCard_eq rfl, Finset.lt_sup_iff, mem_filter, mem_univ, true_and]
+  exact ⟨fun ⟨_, h, h'⟩ ↦ ⟨_, Classical.decRel _, h, h'⟩, fun ⟨_, _, h, h'⟩ ↦ ⟨_, h, by convert h'⟩⟩
+
+variable {R : Type*} [Semiring R] [LinearOrder R] [FloorSemiring R]
+
+@[inherit_doc extremalInduced_le_iff]
+theorem extremalInduced_le_iff_of_nonneg (F : SimpleGraph β) {m : R} (h : 0 ≤ m) :
+    extremalInduced (card α) H F ≤ m ↔
+      ∀ ⦃G : SimpleGraph α⦄ [DecidableRel G.Adj], F.Free G → ‖H ↪g G‖ ≤ m := by
+  simp_rw [← Nat.le_floor_iff h]
+  exact extremalInduced_le_iff F ⌊m⌋₊
+
+@[inherit_doc lt_extremalInduced_iff]
+theorem lt_extremalInduced_iff_of_nonneg (F : SimpleGraph β) {m : R} (h : 0 ≤ m) :
+    m < extremalInduced (card α) H F ↔
+      ∃ G : SimpleGraph α, ∃ _ : DecidableRel G.Adj, F.Free G ∧ m < ‖H ↪g G‖ := by
+  simp_rw [← Nat.floor_lt h]
+  exact lt_extremalInduced_iff F ⌊m⌋₊
+
+theorem IsContained.extremalNumber_le {β' : Type*} {F' : SimpleGraph β'} (h : F' ⊑ F) :
+    extremalInduced n H F' ≤ extremalInduced n H F := by
+  rw [← Fintype.card_fin n, extremalInduced_le_iff]
+  intro _ _ h'
+  contrapose! h'
+  rw [not_not]
+  exact h.trans (IsContained.of_extremalInduced_lt_card_embeddings h')
+
+@[congr]
+theorem extremalInduced_congr {n₁ n₂ : ℕ} {β₁ β₂ : Type*} {F₁ : SimpleGraph β₁}
+    {F₂ : SimpleGraph β₂} (h : n₁ = n₂) (e₁ : F₁ ≃g F₂) :
+    extremalInduced n₁ H F₁  = extremalInduced n₂ H F₂ := by
+  rw [h, le_antisymm_iff]
+  and_intros
+  on_goal 2 =>
+    replace e₁ := e₁.symm
+  all_goals
+    rw [← Fintype.card_fin n₂, extremalInduced_le_iff]
+    intro G _ h
+    apply card_embeddings_le_extremalInduced
+    contrapose! h
+    rw [not_free] at h ⊢
+    exact h.trans' ⟨e₁.toCopy⟩
+
+/-- If `H₁ ≃g H₂`, then `extremalInduced n H₁ F` equals `extremalInduced n H₂ F`. -/
+theorem extremalNumber_congr_left {γ₁ γ₂ : Type*} {F : SimpleGraph β} {H₁ : SimpleGraph γ₁}
+    {H₂ : SimpleGraph γ₂} [Fintype γ₁] [Fintype γ₂] (e : H₁ ≃g H₂) :
+    extremalInduced n H₁ F = extremalInduced n H₂ F := by
+  apply le_antisymm
+  all_goals
+    rw [← Fintype.card_fin n, extremalInduced_le_iff]
+    intro G _ h
+    classical
+    apply (card_embeddings_le_extremalInduced h).trans'
+    rw [Fintype.card_congr (Iso.embeddings_equiv_of_equiv (by rfl) (e.symm))]
+
+/-- If `F₁ ≃g F₂`, then `extremalNumber n F₁ H` equals `extremalNumber n F₂ H`. -/
+theorem extremalNumber_congr_right {β₁ β₂ : Type*} {F₁ : SimpleGraph β₁}
+    {F₂ : SimpleGraph β₂} (e : F₁ ≃g F₂) : extremalInduced n H F₁ = extremalInduced n H F₂ :=
+  extremalInduced_congr rfl e
+
+variable [DecidableRel H.Adj] [DecidableRel G.Adj]
+/-- `H`-free extremal graphs are `H`-free simple graphs having `extremalNumber (card V) H` many
+edges. -/
+theorem isExtremalH_free_iff :
+    G.IsExtremalH H F.Free ↔ F.Free G ∧ ‖H ↪g G‖ = extremalInduced (card α) H F := by
+  rw [IsExtremalH, and_congr_right_iff, ← extremalInduced_le_iff]
+  exact fun h ↦ ⟨eq_of_le_of_le (card_embeddings_le_extremalInduced h), ge_of_eq⟩
+
+lemma card_embeddings_of_isExtremalH_free (h : G.IsExtremalH H F.Free) :
+    ‖H ↪g G‖ = extremalInduced (card α) H F:= (isExtremalH_free_iff.mp h).2
+
+end ExtremalNumber
+
+
+
 
 end SimpleGraph
 
