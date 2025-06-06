@@ -15,8 +15,13 @@ the group cohomology of a `k`-linear `G`-representation `A` in degrees 0, 1 and 
 
 In `RepresentationTheory.GroupCohomology.Basic`, we define the `n`th group cohomology of `A` to be
 the cohomology of a complex `inhomogeneousCochains A`, whose objects are `(Fin n → G) → A`; this is
-unnecessarily unwieldy in low degree. Moreover, cohomology of a complex is defined as an abstract
-cokernel, whereas the definitions here are explicit quotients of cocycles by coboundaries.
+unnecessarily unwieldy in low degree.
+
+Moreover, cohomology of a complex is defined as an abstract cokernel, whereas the definitions here
+are currently explicit quotients of cocycles by coboundaries. However, we are currently moving away
+from this approach, and instead defining more convenient constructors for the existing definitions
+of cocycles and cohomology, in order to streamline API. So far the new API is in the sections
+`oneCocycles'` and `twoCocycles'`.
 
 We also show that when the representation on `A` is trivial, `H¹(G, A) ≃ Hom(G, A)`.
 
@@ -262,6 +267,8 @@ def twoCocycles : Submodule k (G × G → A) := LinearMap.ker (dTwo A).hom
 
 variable {A}
 
+section oneCocycles
+
 instance : FunLike (oneCocycles A) G A := ⟨Subtype.val, Subtype.val_injective⟩
 
 @[simp]
@@ -330,21 +337,19 @@ def oneCocyclesIsoOfIsTrivial [hA : A.IsTrivial] :
 @[deprecated (since := "2025-05-09")]
 noncomputable alias oneCocyclesLequivOfIsTrivial := oneCocyclesIsoOfIsTrivial
 
-section cocycles₁
-
-variable (A)
+end oneCocycles
+section oneCocycles'
 
 instance : FunLike (cocycles A 1) G A :=
   ⟨iCocycles A 1 ≫ (oneCochainsIso A).hom, (ModuleCat.mono_iff_injective _).1 inferInstance⟩
 
+variable (A) in
 /-- The natural inclusion `cocycles A 1 ⟶ (inhomogeneousCochains A).X 1`, defined to be
 `(Fin 1 → G) → A`, composed with an isomorphism to `G → A`. -/
 def iOneCocycles : cocycles A 1 ⟶ ModuleCat.of k (G → A) :=
   iCocycles A 1 ≫ (oneCochainsIso A).hom
 
 instance : Mono (iOneCocycles A) := by unfold iOneCocycles; infer_instance
-
-variable {A}
 
 @[simp]
 lemma iOneCocycles_apply (f : cocycles A 1) : iOneCocycles A f = f := rfl
@@ -378,7 +383,7 @@ theorem coe_mkOneCocycles (f : G → A) (hf) :
     (mkOneCocycles f hf : G → A) = f := iOneCocycles_mkOneCocycles _ _
 
 @[ext]
-theorem cocycles_ext₁ {f₁ f₂ : cocycles A 1} (h : ∀ g : G, f₁ g = f₂ g) : f₁ = f₂ :=
+theorem oneCocycles_ext' {f₁ f₂ : cocycles A 1} (h : ∀ g : G, f₁ g = f₂ g) : f₁ = f₂ :=
   DFunLike.ext f₁ f₂ h
 
 @[simp]
@@ -400,7 +405,7 @@ theorem memOneCocycles_map_one (f : G → A) (hf : MemOneCocycles f) : f 1 = 0 :
   simpa only [map_one, Module.End.one_apply, mul_one, sub_self, zero_add] using this
 
 @[simp]
-theorem cocycles_map_one₁ (f : cocycles A 1) : f 1 = 0 :=
+theorem oneCocycles_map_one' (f : cocycles A 1) : f 1 = 0 :=
   memOneCocycles_map_one f (memOneCocycles f)
 
 theorem memOneCocycles_map_inv (f : G → A) (hf : MemOneCocycles f) (g : G) :
@@ -409,7 +414,7 @@ theorem memOneCocycles_map_inv (f : G → A) (hf : MemOneCocycles f) (g : G) :
     (memOneCocycles_iff f).1 hf g g⁻¹]
 
 @[simp]
-theorem cocycles_map_inv₁ (f : cocycles A 1) (g : G) :
+theorem oneCocycles_map_inv' (f : cocycles A 1) (g : G) :
     A.ρ g (f g⁻¹) = - f g :=
   memOneCocycles_map_inv f (memOneCocycles f) g
 
@@ -430,9 +435,10 @@ theorem memOneCocycles_of_addMonoidHom [A.IsTrivial] (f : Additive G →+ A) :
       add_comm (f (Additive.ofMul g))]
 
 variable (A)
-
+/-- When `A : Rep k G` is a trivial representation of `G`, `Z¹(G, A)` is isomorphic to the
+group homs `G → A`. -/
 @[simps! hom_hom_apply_apply inv_hom_apply]
-def cocyclesIsoOfIsTrivial₁ [hA : A.IsTrivial] :
+def oneCocyclesIsoOfIsTrivial' [hA : A.IsTrivial] :
     cocycles A 1 ≅ ModuleCat.of k (Additive G →+ A) :=
   LinearEquiv.toModuleIso
   { toFun (f : cocycles A 1) :=
@@ -442,10 +448,11 @@ def cocyclesIsoOfIsTrivial₁ [hA : A.IsTrivial] :
     map_add' _ _ := by ext; simp [← iOneCocycles_apply]
     map_smul' _ _ := by ext; simp [← iOneCocycles_apply]
     invFun f := mkOneCocycles (f ∘ Additive.ofMul) (memOneCocycles_of_addMonoidHom f)
-    left_inv _ := cocycles_ext₁ <| fun _ => by simp
+    left_inv _ := oneCocycles_ext' <| fun _ => by simp
     right_inv _ := by ext; simp }
 
-end cocycles₁
+end oneCocycles'
+section twoCocycles
 
 instance : FunLike (twoCocycles A) (G × G) A := ⟨Subtype.val, Subtype.val_injective⟩
 
@@ -495,7 +502,8 @@ theorem dOne_apply_mem_twoCocycles (x : G → A) :
     dOne A x ∈ twoCocycles A :=
   dOne_comp_dTwo_apply _ _
 
-section cocycles₂
+end twoCocycles
+section twoCocycles'
 
 instance : FunLike (cocycles A 2) (G × G) A :=
   ⟨iCocycles A 2 ≫ (twoCochainsIso A).hom, (ModuleCat.mono_iff_injective _).1 inferInstance⟩
@@ -539,7 +547,7 @@ theorem coe_mkTwoCocycles (f : G × G → A) (hf) :
     (mkTwoCocycles f hf : G × G → A) = f := iTwoCocycles_mkTwoCocycles _ _
 
 @[ext]
-theorem cocycles_ext₂ {f₁ f₂ : cocycles A 2} (h : ∀ g h : G, f₁ (g, h) = f₂ (g, h)) : f₁ = f₂ :=
+theorem twoCocycles_ext' {f₁ f₂ : cocycles A 2} (h : ∀ g h : G, f₁ (g, h) = f₂ (g, h)) : f₁ = f₂ :=
   DFunLike.ext f₁ f₂ (Prod.forall.2 h)
 
 @[simp]
@@ -581,7 +589,7 @@ theorem memTwoCocycles_dOne_apply (x : G → A) :
     MemTwoCocycles (dOne A x) :=
   congr($(dOne_comp_dTwo A) x)
 
-end cocycles₂
+end twoCocycles'
 
 end Cocycles
 
