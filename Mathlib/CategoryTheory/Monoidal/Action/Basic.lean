@@ -92,6 +92,9 @@ scoped notation "σ_ " => MonoidalLeftActionStruct.actionAssocIso
 
 /-- Notation for `actionUnitIso`, the structural isomorphism `𝟙_ C ⊙ - ≅ -`. -/
 scoped notation "υ_ " => MonoidalLeftActionStruct.actionUnitIso
+/-- Notation for `actionUnitIso`, the structural isomorphism `𝟙_ C ⊙ - ≅ -`,
+allowing one to specify the acting category. -/
+scoped notation "υ_["J"]" => MonoidalLeftActionStruct.actionUnitIso (C := J)
 
 end MonoidalLeftAction
 
@@ -168,7 +171,8 @@ attribute [simp, reassoc] MonoidalLeftAction.leftUnitor_actionHom
 attribute [simp, reassoc] MonoidalLeftAction.rightUnitor_actionHom
 
 /-- A monoidal category acts on itself through the tensor product. -/
-instance [MonoidalCategory C] : MonoidalLeftAction C C where
+@[simps!]
+instance selfAction [MonoidalCategory C] : MonoidalLeftAction C C where
   actionObj x y := x ⊗ y
   actionHom f g := f ⊗ g
   actionUnitIso x := λ_ x
