@@ -69,8 +69,6 @@ instance instDistrib (n : ℕ) : Distrib (Fin n) :=
     right_distrib := fun a b c => by
       rw [mul_comm, left_distrib_aux, mul_comm _ b, mul_comm] }
 
-namespace CommRing
-
 /--
 Commutative ring structure on `Fin n`.
 
@@ -94,7 +92,9 @@ def instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
     zero_mul := Fin.zero_mul'
     mul_zero := Fin.mul_zero' }
 
-attribute [scoped instance] Fin.CommRing.instCommRing
+namespace CommRing
+
+attribute [scoped instance] Fin.instCommRing
 
 end CommRing
 

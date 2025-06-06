@@ -39,8 +39,6 @@ instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n) where
   nsmul := nsmulRec
   __ := Fin.addCommSemigroup n
 
-namespace NatCast
-
 /--
 This is not a global instance, but can introduced locally using `open Fin.NatCast in ...`.
 
@@ -59,7 +57,9 @@ def instAddMonoidWithOne (n) [NeZero n] : AddMonoidWithOne (Fin n) where
   natCast_zero := rfl
   natCast_succ _ := Fin.ext (add_mod _ _ _)
 
-attribute [scoped instance] instAddMonoidWithOne
+namespace NatCast
+
+attribute [scoped instance] Fin.instAddMonoidWithOne
 
 end NatCast
 
