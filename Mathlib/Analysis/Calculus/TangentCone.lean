@@ -599,6 +599,21 @@ theorem UniqueDiffOn.of_real [h𝕜 : IsRCLikeNormedField 𝕜] [NormedSpace �
     UniqueDiffOn 𝕜 s :=
   fun x hx ↦ (hs x hx).of_real
 
+/-- In a real or complex vector space, a convex set with nonempty interior is a set of unique
+differentiability. -/
+theorem uniqueDiffWithinAt_convex_of_isRCLikeNormedField [h𝕜 : IsRCLikeNormedField 𝕜]
+    [NormedSpace 𝕜 G] {s : Set G} {x : G} (conv : Convex ℝ s) (hs : (interior s).Nonempty)
+    (hx : x ∈ closure s) :
+    UniqueDiffWithinAt 𝕜 s x :=
+  UniqueDiffWithinAt.of_real (uniqueDiffWithinAt_convex conv hs hx)
+
+/-- In a real or complex vector space, a convex set with nonempty interior is a set of unique
+differentiability. -/
+theorem uniqueDiffOn_convex_of_isRCLikeNormedField [h𝕜 : IsRCLikeNormedField 𝕜]
+    [NormedSpace 𝕜 G] {s : Set G} (conv : Convex ℝ s) (hs : (interior s).Nonempty) :
+    UniqueDiffOn 𝕜 s :=
+  UniqueDiffOn.of_real (uniqueDiffOn_convex conv hs)
+
 end RealNormed
 
 section Real
