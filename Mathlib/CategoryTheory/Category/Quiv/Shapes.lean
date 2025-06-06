@@ -6,6 +6,7 @@ namespace CategoryTheory.Quiv
 universe v u v₁ u₁ v₂ u₂
 open Limits
 
+/-- The empty quiver, with no vertices and no edges. -/
 def Empty := let _ := PUnit.{v}; PEmpty.{u + 1}
 
 instance : Quiver.{v + 1} Empty.{v} where
@@ -14,14 +15,15 @@ instance : Quiver.{v + 1} Empty.{v} where
 instance : IsEmpty Empty where
   false := PEmpty.elim
 
+/-- The single-vertex quiver, with one vertex and no edges. -/
 def Vert := let _ := PUnit.{v}; PUnit.{u + 1}
 
 instance : Quiver.{v + 1} Vert.{v} where
   Hom _ _ := PEmpty
 
-scoped notation "⋆" => Vert
+@[inherit_doc] scoped notation "⋆" => Vert
 set_option quotPrecheck false in
-scoped notation "⋆.{" v ", " u "}" => Vert.{v, u}
+@[inherit_doc Vert] scoped notation "⋆.{" v ", " u "}" => Vert.{v, u}
 
 open Lean Meta Parser.Term PrettyPrinter.Delaborator SubExpr in
 @[app_delab Bundled.α]
@@ -51,7 +53,7 @@ lemma Vert.prefunctor.ext {V : Type u₂} [Quiver.{v₂} V] {F G : ⋆.{v₁, u�
     apply Function.hfunext rfl
     rintro ⟨⟩
 
-
+/-- The interval quiver, with two points and a single edge `.left ⟶ .right`. -/
 def Interval := let _ := PUnit.{v}; ULift.{u} WalkingPair
 
 instance : Quiver.{v + 1} Interval.{v} where
@@ -59,9 +61,9 @@ instance : Quiver.{v + 1} Interval.{v} where
   | .up .left, .up .right => PUnit
   | _, _ => PEmpty
 
-scoped notation "𝕀" => Interval
+@[inherit_doc] scoped notation "𝕀" => of Interval
 set_option quotPrecheck false in
-scoped notation "𝕀.{" v ", " u "}" => Interval.{v, u}
+@[inherit_doc Interval] scoped notation "𝕀.{" v ", " u "}" => of Interval.{v, u}
 
 open Lean Meta Parser.Term PrettyPrinter.Delaborator SubExpr in
 @[app_delab Bundled.α]
@@ -71,7 +73,9 @@ def delab_interval : Delab :=
   unless α.isConstOf ``Interval do failure
   `(𝕀)
 
+/-- The left point of `𝕀`. -/
 @[match_pattern] def Interval.left : 𝕀 := .up .left
+/-- The right point of `𝕀`. -/
 @[match_pattern] def Interval.right : 𝕀 := .up .right
 
 @[match_pattern] alias 𝕀.left := Interval.left
@@ -80,11 +84,14 @@ def delab_interval : Delab :=
 @[simps] instance : Zero 𝕀 := ⟨Interval.left⟩
 @[simps] instance : One 𝕀 := ⟨Interval.right⟩
 
-@[simp, match_pattern]
-def Interval.hom : (0 : 𝕀.{v, u}) ⟶ 1 := ⟨⟩
+/-- The single edge of `𝕀`. -/
+@[simp, match_pattern] def Interval.hom : (0 : 𝕀.{v, u}) ⟶ 1 := ⟨⟩
 
 alias 𝕀.hom := Interval.hom
 
+/-- Convenience eliminator for building data on `𝕀.hom`.
+
+Can't be a `cases_eliminator` or Lean will try to use it on every morphism in every quiver. -/
 @[elab_as_elim]
 def Interval.casesOn_hom {motive : {X Y : 𝕀} → (X ⟶ Y) → Sort*}
     {X Y : 𝕀} (f : X ⟶ Y) (hom : motive Interval.hom) : motive f :=
@@ -123,14 +130,16 @@ lemma Interval.prefunctor.ext_iff {V : Type u₂} [Quiver.{v₂} V] {F G : 𝕀.
   refine ⟨fun h => ?_, fun ⟨h₀, h₁, h⟩ => Interval.prefunctor.ext h₀ h₁ h⟩
   subst h; simp
 
+/-- The topos-theory point as a quiver, with a single point (vertex with a self-loop) and no other
+vertices or edges. -/
 def Point := let _ := PUnit.{v}; PUnit.{u + 1}
 
 instance : Quiver.{v + 1} Point.{v} where
   Hom _ _ := PUnit
 
-scoped notation "⭮" => Point
+scoped notation "⭮" => of Point
 set_option quotPrecheck false in
-scoped notation "⭮.{" v ", " u "}" => Point.{v, u}
+scoped notation "⭮.{" v ", " u "}" => of Point.{v, u}
 
 /-- Prefunctors out of `⭮` are just single self-arrows. -/
 def Point.prefunctor {V : Type u₂} [Quiver.{v₂} V] {v : V} (α : v ⟶ v) : ⭮.{v₁, u₁} ⥤q V :=
@@ -161,6 +170,7 @@ lemma Point.prefunctor.ext_iff {V : Type u₂} [Quiver.{v₂} V] {F G : ⭮.{v�
   refine ⟨fun h => ?_, fun ⟨h_obj, h_map⟩ => Point.prefunctor.ext h_obj h_map⟩
   subst h; simp
 
+/-- `Empty` is initial in **`Quiv`**. -/
 def emptyIsInitial : IsInitial (of Empty) :=
   IsInitial.ofUniqueHom (fun X ↦ Prefunctor.mk PEmpty.elim PEmpty.elim)
     fun X ⟨obj, map⟩ ↦ by
@@ -171,18 +181,19 @@ def emptyIsInitial : IsInitial (of Empty) :=
 
 instance : HasInitial Quiv := emptyIsInitial.hasInitial
 
+/-- The initial object in **Quiv** is `Empty`. -/
 noncomputable def initialIsoEmpty : ⊥_ Quiv ≅ of Empty :=
   initialIsoIsInitial emptyIsInitial
 
-
-def pointIsTerminal : IsTerminal (of Point) :=
+/-- `⭮` is terminal in **Quiv**. -/
+def pointIsTerminal : IsTerminal ⭮ :=
   IsTerminal.ofUniqueHom
     (fun X ↦ Prefunctor.mk (fun _ ↦ ⟨⟩) (fun _ ↦ ⟨⟩))
     fun X ⟨obj, map⟩ ↦ by congr
 
-
 instance : HasTerminal Quiv := pointIsTerminal.hasTerminal
 
+/-- The terminal object in **Quiv** is ⭮. -/
 noncomputable def terminalIsoPoint : ⊤_ Quiv ≅ (of Point) :=
   terminalIsoIsTerminal pointIsTerminal
 
