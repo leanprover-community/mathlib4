@@ -50,8 +50,8 @@ inhomogeneous cochains of a representation, useful for computing group cohomolog
 
  * `groupCohomology.resolution.ofMulActionBasis`
  * `classifyingSpaceUniversalCover`
- * `groupCohomology.resolution.forget₂ToModuleCatHomotopyEquiv`
- * `groupCohomology.projectiveResolution`
+ * `Rep.standardComplex.forget₂ToModuleCatHomotopyEquiv`
+ * `Rep.standardResolution`
 
 -/
 
@@ -76,35 +76,168 @@ open MonoidalCategory
 open Fin (partialProd)
 open scoped TensorProduct
 
-@[deprecated (since := "2025-02-06")]
+open Representation
+
+@[deprecated (since := "2025-06-02")]
 alias groupCohomology.resolution.actionDiagonalSucc := Action.diagonalSuccIsoTensorTrivial
 
-@[deprecated (since := "2025-02-06")]
+@[deprecated (since := "2025-06-02")]
 alias groupCohomology.resolution.actionDiagonalSucc_hom_apply :=
   Action.diagonalSuccIsoTensorTrivial_hom_hom_apply
 
-@[deprecated (since := "2025-02-06")]
+@[deprecated (since := "2025-06-02")]
 alias groupCohomology.resolution.actionDiagonalSucc_inv_apply :=
   Action.diagonalSuccIsoTensorTrivial_inv_hom_apply
 
-@[deprecated (since := "2025-02-06")]
+@[deprecated (since := "2025-06-02")]
 alias groupCohomology.resolution.diagonalSucc := Rep.diagonalSuccIsoTensorTrivial
 
-@[deprecated (since := "2025-02-06")]
+@[deprecated (since := "2025-06-02")]
 alias groupCohomology.resolution.diagonalSucc_hom_single :=
   Rep.diagonalSuccIsoTensorTrivial_hom_hom_single
 
-@[deprecated (since := "2025-02-06")]
+@[deprecated (since := "2025-06-02")]
 alias groupCohomology.resolution.diagonalSucc_inv_single_single :=
   Rep.diagonalSuccIsoTensorTrivial_inv_hom_single_single
 
-@[deprecated (since := "2025-02-06")]
+@[deprecated (since := "2025-06-02")]
 alias groupCohomology.resolution.diagonalSucc_inv_single_left :=
   Rep.diagonalSuccIsoTensorTrivial_inv_hom_single_left
 
-@[deprecated (since := "2025-02-06")]
+@[deprecated (since := "2025-06-02")]
 alias groupCohomology.resolution.diagonalSucc_inv_single_right :=
   Rep.diagonalSuccIsoTensorTrivial_inv_hom_single_right
+
+/-- The `k[G]`-linear isomorphism `k[G] ⊗ₖ k[Gⁿ] ≃ k[Gⁿ⁺¹]`, where the `k[G]`-module structure on
+the lefthand side is `TensorProduct.leftModule`, whilst that of the righthand side comes from
+`Representation.asModule`. Allows us to use `Algebra.TensorProduct.basis` to get a `k[G]`-basis
+of the righthand side. -/
+@[deprecated "We now favour `Representation.finsuppLEquivFreeAsModule`" (since := "2025-06-04")]
+def ofMulActionBasisAux :
+    MonoidAlgebra k G ⊗[k] ((Fin n → G) →₀ k) ≃ₗ[MonoidAlgebra k G]
+      (ofMulAction k G (Fin (n + 1) → G)).asModule :=
+  haveI e := (Rep.equivalenceModuleMonoidAlgebra.1.mapIso
+    (Rep.diagonalSuccIsoTensorTrivial k G n).symm).toLinearEquiv
+  { e with
+    map_smul' := fun r x => by
+      rw [RingHom.id_apply, LinearEquiv.toFun_eq_coe, ← LinearEquiv.map_smul e]
+      congr 1
+      /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
+      refine' x.induction_on _ (fun x y => _) fun y z hy hz => _
+      · simp only [smul_zero]
+      · simp only [TensorProduct.smul_tmul']
+        show (r * x) ⊗ₜ y = _
+        rw [← ofMulAction_self_smul_eq_mul, smul_tprod_one_asModule]
+      · rw [smul_add, hz, hy, smul_add] -/
+      show _ = Representation.asAlgebraHom (tensorObj (Rep.leftRegular k G)
+        (Rep.trivial k G ((Fin n → G) →₀ k))).ρ r _
+      refine x.induction_on ?_ (fun x y => ?_) fun y z hy hz => ?_
+      · rw [smul_zero, map_zero]
+      · rw [TensorProduct.smul_tmul', smul_eq_mul, ← ofMulAction_self_smul_eq_mul]
+        exact (smul_tprod_one_asModule (Representation.ofMulAction k G G) r x y).symm
+      · rw [smul_add, hz, hy, map_add] }
+
+/-- A `k[G]`-basis of `k[Gⁿ⁺¹]`, coming from the `k[G]`-linear isomorphism
+`k[G] ⊗ₖ k[Gⁿ] ≃ k[Gⁿ⁺¹].` -/
+@[deprecated "We now favour `Representation.freeAsModuleBasis`; the old definition can be derived
+from this and `Rep.diagonalSuccIsoFree" (since := "2025-06-05")]
+alias ofMulActionBasis := Representation.freeAsModuleBasis
+
+@[deprecated "We now favour `Representation.free_asModule_free`; the old theorem can be derived
+from this and `Rep.diagonalSuccIsoFree" (since := "2025-06-05")]
+alias ofMulAction_free := Representation.free_asModule_free
+
+end Basis
+
+end groupCohomology.resolution
+
+namespace Rep
+
+variable (n) [Group G] (A : Rep k G)
+
+open groupCohomology.resolution
+
+/-- Given a `k`-linear `G`-representation `A`, the set of representation morphisms
+`Hom(k[Gⁿ⁺¹], A)` is `k`-linearly isomorphic to the set of functions `Gⁿ → A`. -/
+noncomputable def diagonalHomEquiv :
+    (Rep.diagonal k G (n + 1) ⟶ A) ≃ₗ[k] (Fin n → G) → A :=
+  Linear.homCongr k
+        ((diagonalSuccIsoTensorTrivial k G n).trans
+          ((Representation.ofMulAction k G G).repOfTprodIso 1))
+        (Iso.refl _) ≪≫ₗ
+      (Rep.MonoidalClosed.linearHomEquivComm _ _ _ ≪≫ₗ Rep.leftRegularHomEquiv _) ≪≫ₗ
+    (Finsupp.llift A k k (Fin n → G)).symm
+
+variable {n A}
+
+/-- Given a `k`-linear `G`-representation `A`, `diagonalHomEquiv` is a `k`-linear isomorphism of
+the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. This lemma says that this
+sends a morphism of representations `f : k[Gⁿ⁺¹] ⟶ A` to the function
+`(g₁, ..., gₙ) ↦ f(1, g₁, g₁g₂, ..., g₁g₂...gₙ).` -/
+theorem diagonalHomEquiv_apply (f : Rep.diagonal k G (n + 1) ⟶ A) (x : Fin n → G) :
+    diagonalHomEquiv n A f x = f.hom (Finsupp.single (Fin.partialProd x) 1) := by
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
+  unfold diagonalHomEquiv
+  simpa only [LinearEquiv.trans_apply, Rep.leftRegularHomEquiv_apply,
+    MonoidalClosed.linearHomEquivComm_hom, Finsupp.llift_symm_apply, TensorProduct.curry_apply,
+    Linear.homCongr_apply, Iso.refl_hom, Iso.trans_inv, Action.comp_hom, ModuleCat.comp_def,
+    LinearMap.comp_apply, Representation.repOfTprodIso_inv_apply,
+    diagonalSucc_inv_single_single (1 : G) x, one_smul, one_mul] -/
+  change f.hom ((diagonalSuccIsoTensorTrivial k G n).inv.hom
+    (Finsupp.single 1 1 ⊗ₜ[k] Finsupp.single x 1)) = _
+  rw [diagonalSuccIsoTensorTrivial_inv_hom_single_single, one_smul, one_mul]
+
+/-- Given a `k`-linear `G`-representation `A`, `diagonalHomEquiv` is a `k`-linear isomorphism of
+the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. This lemma says that the
+inverse map sends a function `f : Gⁿ → A` to the representation morphism sending
+`(g₀, ... gₙ) ↦ ρ(g₀)(f(g₀⁻¹g₁, g₁⁻¹g₂, ..., gₙ₋₁⁻¹gₙ))`, where `ρ` is the representation attached
+to `A`. -/
+theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) → G) :
+    ((diagonalHomEquiv n A).symm f).hom (Finsupp.single x 1) =
+      A.ρ (x 0) (f fun i : Fin n => (x (Fin.castSucc i))⁻¹ * x i.succ) := by
+  unfold diagonalHomEquiv
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
+  simp only [LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
+    Rep.leftRegularHomEquiv_symm_apply, Linear.homCongr_symm_apply, Action.comp_hom, Iso.refl_inv,
+    Category.comp_id, Rep.MonoidalClosed.linearHomEquivComm_symm_hom, Iso.trans_hom,
+    ModuleCat.comp_def, LinearMap.comp_apply, Representation.repOfTprodIso_apply,
+    diagonalSucc_hom_single x (1 : k), TensorProduct.uncurry_apply, Rep.leftRegularHom_hom,
+    Finsupp.lift_apply, ihom_obj_ρ_def, Rep.ihom_obj_ρ_apply, Finsupp.sum_single_index, zero_smul,
+    one_smul, Rep.of_ρ, Rep.Action_ρ_eq_ρ, Rep.trivial_def (x 0)⁻¹, Finsupp.llift_apply A k k] -/
+  simp only [LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
+    leftRegularHomEquiv_symm_apply, Linear.homCongr_symm_apply, Iso.trans_hom, Iso.refl_inv,
+    Category.comp_id, Action.comp_hom, MonoidalClosed.linearHomEquivComm_symm_hom,
+    ModuleCat.hom_comp, LinearMap.comp_apply, Action.tensorObj_V,
+    diagonalSuccIsoTensorTrivial_hom_hom_single x 1]
+  -- The prototype linter that checks if `erw` could be replaced with `rw` would time out
+  -- if it replaces the next `erw`s with `rw`s. So we focus down on the relevant part.
+  conv_lhs =>
+    erw [TensorProduct.uncurry_apply, Finsupp.lift_apply, Finsupp.sum_single_index]
+    · simp only [one_smul]
+      erw [Representation.linHom_apply]
+      simp only [LinearMap.comp_apply, MonoidHom.one_apply, Module.End.one_apply]
+      erw [Finsupp.llift_apply]
+      rw [Finsupp.lift_apply]
+      erw [Finsupp.sum_single_index]
+      · rw [one_smul]
+      · rw [zero_smul]
+    · rw [zero_smul]
+
+/-- Auxiliary lemma for defining group cohomology, used to show that the isomorphism
+`diagonalHomEquiv` commutes with the differentials in two complexes which compute
+group cohomology. -/
+theorem diagonalHomEquiv_symm_partialProd_succ (f : (Fin n → G) → A) (g : Fin (n + 1) → G)
+    (a : Fin (n + 1)) :
+    ((diagonalHomEquiv n A).symm f).hom (Finsupp.single (Fin.partialProd g ∘ a.succ.succAbove) 1)
+      = f (Fin.contractNth a (· * ·) g) := by
+  rw [diagonalHomEquiv_symm_apply]
+  simp only [Function.comp_apply, Fin.succ_succAbove_zero, Fin.partialProd_zero, map_one,
+    Fin.succ_succAbove_succ, Module.End.one_apply, Fin.partialProd_succ]
+  congr
+  ext
+  rw [← Fin.partialProd_succ, Fin.inv_partialProd_mul_eq_contractNth]
+
+end Rep
 
 variable (G)
 
@@ -194,6 +327,9 @@ def Rep.standardComplex [Monoid G] :=
   (AlgebraicTopology.alternatingFaceMapComplex (Rep k G)).obj
     (classifyingSpaceUniversalCover G ⋙ linearization k G)
 
+@[deprecated (since := "2025-06-06")]
+alias groupCohomology.resolution := Rep.standardComplex
+
 namespace Rep.standardComplex
 
 open classifyingSpaceUniversalCover AlgebraicTopology CategoryTheory.Limits
@@ -220,19 +356,19 @@ variable (k G)
 
 /-- The `n`th object of the standard resolution of `k` is definitionally isomorphic to `k[Gⁿ⁺¹]`
 equipped with the representation induced by the diagonal action of `G`. -/
-def xIso [Monoid G] : (standardComplex k G).X n ≅ Rep.ofMulAction k G Gⁿ⁺¹ :=
+def xIso (n : ℕ) : (standardComplex k G).X n ≅ Rep.ofMulAction k G (Fin (n + 1) → G) :=
   Iso.refl _
 
-instance x_projective [Group G] [DecidableEq (Fin n → G)] :
+instance x_projective (G : Type u) [Group G] [DecidableEq G] (n : ℕ) :
     Projective ((standardComplex k G).X n) :=
   inferInstanceAs <| Projective (Rep.diagonal k G (n + 1))
 
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
-theorem d_eq [Monoid G] (n : ℕ) : ((Rep.standardComplex k G).d (n + 1) n).hom =
+theorem d_eq (n : ℕ) : ((standardComplex k G).d (n + 1) n).hom =
     ModuleCat.ofHom (d k G (n + 1)) := by
   refine ModuleCat.hom_ext <| Finsupp.lhom_ext' fun (x : Fin (n + 2) → G) => LinearMap.ext_ring ?_
-  simp [Action.ofMulAction_V, Rep.standardComplex, SimplicialObject.δ,
+  simp [Action.ofMulAction_V, standardComplex, SimplicialObject.δ,
     ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), SimplexCategory.δ, Fin.succAboveOrderEmb]
 
 end Differentials

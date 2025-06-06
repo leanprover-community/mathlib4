@@ -73,7 +73,23 @@ universe u
 
 variable {k G : Type u} [CommRing k]
 
-open CategoryTheory Rep
+open CategoryTheory
+
+namespace groupCohomology
+
+variable [Monoid G]
+
+/-- The complex `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `k`-linear
+`G`-representation. -/
+abbrev linearYonedaObjResolution (A : Rep k G) : CochainComplex (ModuleCat.{u} k) ℕ :=
+  (Rep.standardComplex k G).linearYonedaObj k A
+
+theorem linearYonedaObjResolution_d_apply
+    {A : Rep k G} (i j : ℕ) (x : (Rep.standardComplex k G).X i ⟶ A) :
+    (linearYonedaObjResolution A).d i j x = (Rep.standardComplex k G).d j i ≫ x :=
+  rfl
+
+end groupCohomology
 
 namespace inhomogeneousCochains
 
