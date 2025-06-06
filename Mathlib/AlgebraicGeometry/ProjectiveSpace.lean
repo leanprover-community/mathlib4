@@ -8,6 +8,8 @@ import Mathlib.AlgebraicGeometry.AffineSpace
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Proper
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
+universe v w u
+
 section MOVE
 
 namespace HomogeneousLocalization
@@ -29,7 +31,7 @@ instance {ι R A : Type*} [CommRing R] [CommRing A] [Algebra R A] [DecidableEq �
     IsScalarTower R (𝒜 0) (HomogeneousLocalization 𝒜 S) :=
   .of_algebraMap_eq' rfl
 
-theorem algebraMap_eq' {ι R A : Type*} [CommRing R] [CommRing A] [Algebra R A] [DecidableEq ι]
+@[simp] lemma algebraMap_eq' {ι R A : Type*} [CommRing R] [CommRing A] [Algebra R A] [DecidableEq ι]
       [AddCommMonoid ι] (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜] (S : Submonoid A) :
     algebraMap R (HomogeneousLocalization 𝒜 S) = (fromZeroRingHom 𝒜 S).comp (algebraMap _ _) := rfl
 
@@ -58,6 +60,12 @@ theorem mk_smul {ι R A : Type*} [CommRing R] [CommRing A] [Algebra R A] [Decida
 end Away
 
 end HomogeneousLocalization
+
+@[simp] theorem IsLocalization.Away.map_eq {R S P Q : Type*} [CommSemiring R] [CommSemiring S]
+      [Algebra R S] [CommSemiring P] [CommSemiring Q] [Algebra P Q] {f : R →+* P} {r : R}
+      [IsLocalization.Away r S] [IsLocalization.Away (f r) Q] (x : R) :
+    IsLocalization.Away.map S Q f r (algebraMap R S x) = algebraMap P Q (f x) := by
+  rw [IsLocalization.Away.map, IsLocalization.map_eq]
 
 namespace MvPolynomial
 
@@ -123,7 +131,7 @@ theorem dehomogenise_C {σ R : Type*} [CommSemiring R] (i : σ) (r : R) :
     dehomogenise i (C r) = C r :=
   aeval_C ..
 
-@[simp] theorem dehomogenise_X_self {σ R : Type*} [CommSemiring R] (i : σ) :
+theorem dehomogenise_X_self {σ R : Type*} [CommSemiring R] (i : σ) :
     dehomogenise (R:=R) i (X i) = 1 := by
   rw [dehomogenise, aeval_X, dif_pos rfl]
 
@@ -135,18 +143,17 @@ theorem dehomogenise_C {σ R : Type*} [CommSemiring R] (i : σ) (r : R) :
     dehomogenise (R:=R) i (X j) = X ⟨j, h⟩ := by
   rw [dehomogenise, aeval_X, dif_neg]
 
-@[simp] theorem dehomogenise_X_powers {σ R : Type*} [CommSemiring R] (i : σ)
-    (d : Submonoid.powers (X i)) : dehomogenise (R:=R) i d.val = 1 := by
-  rcases d with ⟨_, _, rfl⟩; rw [map_pow, dehomogenise_X_self, one_pow]
-
 @[simp] theorem dehomogenise_of_mem_X_powers {σ R : Type*} [CommSemiring R] {i : σ} {d}
-    (hd : d ∈ Submonoid.powers (X i)) : dehomogenise (R:=R) i d = 1 :=
-  dehomogenise_X_powers _ ⟨d, hd⟩
+    (hd : d ∈ Submonoid.powers (X (R:=R) i)) : dehomogenise (R:=R) i d = 1 := by
+  rcases hd with ⟨_, _, rfl⟩; rw [map_pow, dehomogenise_X_self, one_pow]
+
+theorem dehomogenise_X_powers {σ R : Type*} [CommSemiring R] (i : σ)
+    (d : Submonoid.powers (X (R:=R) i)) : dehomogenise (R:=R) i d = 1 :=
+  dehomogenise_of_mem_X_powers d.2
 
 /-- Map `Xⱼ/Xᵢ` to `Xⱼ`, contracting away the variable `Xᵢ`. -/
 noncomputable def contract {σ : Type*} (R : Type*) [CommRing R] (i : σ) :
-    Away (homogeneousSubmodule σ R) (X i) →ₐ[R]
-      MvPolynomial { j // j ≠ i } R where
+    Away (homogeneousSubmodule σ R) (X i) →ₐ[R] MvPolynomial { j // j ≠ i } R where
   toFun p := Quotient.liftOn p (fun q ↦ q.num.val.dehomogenise i) fun q₁ q₂ hq ↦
     let ⟨x, hx⟩ := r_iff_exists.1 (mk_eq_mk_iff.1 hq)
     have := congr_arg (dehomogenise i) hx
@@ -169,8 +176,7 @@ noncomputable def contract {σ : Type*} (R : Type*) [CommRing R] (i : σ) :
 
 /-- Map `Xⱼ` to `Xⱼ/Xᵢ`, expanding to the variable `Xᵢ`. -/
 noncomputable def expand {σ : Type*} (R : Type*) [CommRing R] (i : σ) :
-    MvPolynomial { j // j ≠ i } R →ₐ[R]
-      Away (homogeneousSubmodule σ R) (X i) :=
+    MvPolynomial { j // j ≠ i } R →ₐ[R] Away (homogeneousSubmodule σ R) (X i) :=
   aeval fun j ↦ .mk _ (isHomogeneous_X ..) 1 (X j) (isHomogeneous_X ..)
 
 theorem expand_C {σ R : Type*} [CommRing R] (i : σ) (r : R) :
@@ -225,33 +231,166 @@ theorem expand_dehomogenise_of_homogeneous {σ R : Type*} [CommRing R] (i : σ) 
   · rw [hp.coeff_eq_zero hs, monomial_zero, Localization.mk_zero, Localization.mk_zero]
 
 /-- Map `Xⱼ` to `Xⱼ/Xᵢ`. -/
-noncomputable def algEquivAway {σ : Type*} (R : Type*) [CommRing R] (i : σ) :
-    MvPolynomial { j // j ≠ i } R ≃ₐ[R] Away (homogeneousSubmodule σ R) (X i) where
-  invFun := contract R i
+@[simps!] noncomputable def algEquivAway {σ : Type*} (R : Type*) [CommRing R] (i : σ) :
+    Away (homogeneousSubmodule σ R) (X i) ≃ₐ[R] MvPolynomial { j // j ≠ i } R where
+  invFun := expand R i
   left_inv p := by
+    change expand R i (contract R i p) = p
+    rcases Away.mk_surjective _ (isHomogeneous_X ..) p with ⟨d, r, hr, rfl⟩
+    rw [contract_mk, expand_dehomogenise_of_homogeneous _ (by rwa [nsmul_one, Nat.cast_id] at hr)]
+  right_inv p := by
     change contract R i (aeval _ p) = p
     induction p using induction_on
     · rw [aeval_C, algebraMap_apply', contract_mk',
         SetLike.GradeZero.coe_algebraMap, algebraMap_eq, dehomogenise_C]
     · simp only [map_add, *]
     · simp only [map_mul, *, aeval_X, contract_mk, dehomogenise_X]
-  right_inv p := by
-    change expand R i (contract R i p) = p
-    rcases Away.mk_surjective _ (isHomogeneous_X ..) p with ⟨d, r, hr, rfl⟩
-    rw [contract_mk, expand_dehomogenise_of_homogeneous _ (by rwa [nsmul_one, Nat.cast_id] at hr)]
-  __ := expand R i
+  __ := contract R i
+
+@[simp] lemma coe_algEquivAway {σ R : Type*} [CommRing R] (i : σ) :
+    (algEquivAway R i : _ →ₐ[R] _) = contract R i :=
+  rfl
+
+@[simp] lemma coe_algEquivAway_symm {σ R : Type*} [CommRing R] (i : σ) :
+    ((algEquivAway R i).symm : _ →ₐ[R] _) = expand R i :=
+  rfl
+
+@[simp] lemma coe_algEquivAway_toRingEquiv_symm {σ R : Type*} [CommRing R] (i : σ) :
+    ⇑(algEquivAway R i : _ ≃+* _).symm = expand R i :=
+  rfl
+
+@[simp] theorem contract_expand {σ R : Type*} [CommRing R] (i : σ) (p) :
+    contract R i (expand R i p) = p :=
+  (algEquivAway R i).apply_symm_apply _
+
+@[simp] theorem expand_contract {σ R : Type*} [CommRing R] (i : σ) (p) :
+    expand R i (contract R i p) = p :=
+  (algEquivAway R i).symm_apply_apply _
+
+noncomputable instance {σ : Type*} (R : Type*) [CommRing R] (i j : σ) :
+    Algebra (Away (homogeneousSubmodule σ R) (X i)) (Away (homogeneousSubmodule σ R) (X i * X j)) :=
+  (HomogeneousLocalization.awayMap _ (isHomogeneous_X R j) rfl).toAlgebra
+
+lemma algebraMap_away {σ : Type*} (R : Type*) [CommRing R] (i j : σ) :
+    algebraMap (Away (homogeneousSubmodule σ R) (X i))
+        (Away (homogeneousSubmodule σ R) (X i * X j)) =
+      HomogeneousLocalization.awayMap _ (isHomogeneous_X R j) rfl :=
+  rfl
+
+noncomputable instance {σ : Type*} (R : Type*) [CommRing R] (i j : σ) :
+    IsScalarTower R (Away (homogeneousSubmodule σ R) (X i))
+      (Away (homogeneousSubmodule σ R) (X i * X j)) :=
+  .of_algebraMap_eq fun r ↦ by ext; simp [algebraMap_away, awayMap_fromZeroRingHom]
+
+instance isLocalization_away_X_mul_X {σ : Type*} (R : Type*) [CommRing R] (i j : σ) :
+    IsLocalization.Away (expand R i (dehomogenise i (X j)))
+      (Away (homogeneousSubmodule σ R) (X i * X j)) := by
+  convert Away.isLocalization_mul (𝒜 := homogeneousSubmodule σ R) (isHomogeneous_X R i)
+    (isHomogeneous_X R j) rfl one_ne_zero
+  rw [expand_dehomogenise_of_homogeneous i (isHomogeneous_X R j)]
+  ext; unfold Away.isLocalizationElem; congr 2; rw [pow_one]
+
+instance isLocalization_away_X_mul_X' {σ : Type*} (R : Type*) [CommRing R] (i j : σ) :
+    IsLocalization.Away ((expand R i).toRingHom (dehomogenise i (X j)))
+      (Away (homogeneousSubmodule σ R) (X i * X j)) :=
+  isLocalization_away_X_mul_X R i j
+
+instance isLocalization_away_dehomogenise {σ : Type*} (R : Type*) [CommRing R] (i j : σ) :
+    IsLocalization.Away ((contract R i).toRingHom (expand R i (dehomogenise i (X j))))
+      (Localization.Away (dehomogenise (R:=R) i (X j))) := by
+  simp; infer_instance
+
+instance isLocalization_away_dehomogenise' {σ : Type*} (R : Type*) [CommRing R] (i j : σ) :
+    IsLocalization.Away ((algEquivAway R i :
+        Away (homogeneousSubmodule σ R) (X i) →+*
+          MvPolynomial { j // j ≠ i } R) (expand R i (dehomogenise i (X j))))
+      (Localization.Away (dehomogenise (R:=R) i (X j))) :=
+  isLocalization_away_dehomogenise ..
+
+instance isLocalization_away_contract_expand {σ : Type*} (R : Type*) [CommRing R] (i : σ) (p) :
+    IsLocalization.Away ((contract R i) (expand R i p)) (Localization.Away p) := by
+  simp [contract_expand]; infer_instance
+
+@[simps!] noncomputable def ringEquivAwayMul {σ : Type*} (R : Type*) [CommRing R] (i j : σ) :
+    Away (homogeneousSubmodule σ R) (X i * X j) ≃+*
+      Localization.Away (dehomogenise (R:=R) i (X j)) :=
+  RingEquiv.ofRingHom
+    (IsLocalization.Away.map (Away (homogeneousSubmodule σ R) (X i * X j))
+      (Localization.Away (dehomogenise (R:=R) i (X j))) (contract R i).toRingHom
+      (expand R i (dehomogenise i (X j))))
+    (IsLocalization.Away.map (Localization.Away (dehomogenise (R:=R) i (X j)))
+      (Away (homogeneousSubmodule σ R) (X i * X j)) (expand R i).toRingHom
+      (dehomogenise (R:=R) i (X j)))
+    (IsLocalization.ringHom_ext (Submonoid.powers (dehomogenise (R:=R) i (X j))) <|
+      RingHom.ext <| by simp)
+    (IsLocalization.ringHom_ext (Submonoid.powers (expand R i (dehomogenise i (X j)))) <|
+      RingHom.ext <| by simp)
+
+noncomputable def algEquivAwayMul {σ : Type*} (R : Type*) [CommRing R] (i j : σ) :
+    Away (homogeneousSubmodule σ R) (X i * X j) ≃ₐ[R]
+      Localization.Away (dehomogenise (R:=R) i (X j)) :=
+  .ofRingEquiv (f := ringEquivAwayMul R i j) fun x ↦ by
+    rw [ringEquivAwayMul_apply,
+      IsScalarTower.algebraMap_apply _ (Away (homogeneousSubmodule σ R) (X i)),
+      @IsLocalization.Away.map_eq, RingHom.coe_coe, AlgHom.map_algebraMap,
+      ← IsScalarTower.algebraMap_apply]
 
 end MvPolynomial
 
+open CategoryTheory
+
+/-- Re-index an affine open cover along an equivalence `e : ι ≃ C.J` and equivalences
+`new_obj i ≅ C.obj (e i)`. -/
+noncomputable def AlgebraicGeometry.Scheme.AffineOpenCover.equiv {X : Scheme.{u}}
+      (C : AffineOpenCover.{w} X) {ι : Type v} (e : ι ≃ C.J)
+      (new_obj : ι → CommRingCat.{u}) (new_e : (i : ι) → C.obj (e i) ≅ new_obj i) :
+    AffineOpenCover.{v} X where
+  J := ι
+  obj := new_obj
+  map i := (Scheme.Spec.mapIso (new_e i).op).hom ≫ C.map (e i)
+  f := (e.symm <| C.f ·)
+  covers x := let ⟨y, hy⟩ := C.covers x
+    ⟨ConcreteCategory.hom (eqToHom (by simp) ≫ Spec.map (new_e _).inv).base y, by
+      rw [← ConcreteCategory.comp_apply, ← Scheme.comp_base, Category.assoc,
+        ← Category.assoc (Spec.map _), Functor.mapIso_hom, Spec_map, Iso.op_hom, Quiver.Hom.unop_op,
+        ← Spec.map_comp, Iso.hom_inv_id, Spec.map_id, Category.id_comp]
+      convert hy
+      exact eq_of_heq <| (eqToHom_comp_heq ..).trans <| by rw [e.apply_symm_apply]
+    ⟩
+
+/-- Re-index an affine open cover along an equivalence `ι ≃ C.J`. -/
+def AlgebraicGeometry.Scheme.OpenCover.equiv {X : Scheme.{u}}
+    (C : OpenCover.{w} X) {ι : Type v} (e : ι ≃ C.J) : OpenCover.{v} X where
+  J := ι
+  obj := (C.obj <| e ·)
+  map := (C.map <| e ·)
+  f := (e.symm <| C.f ·)
+  covers := (by rw [e.apply_symm_apply]; exact C.covers ·)
+
+namespace CategoryTheory.Limits
+
+noncomputable def pullback.iso {C : Type u} [Category.{v} C] [HasPullbacks C] {X₁ X₂ S₁ S₂ T : C}
+      (f₁ : S₁ ⟶ T) (f₂ : S₂ ⟶ T) (e₁ : X₁ ≅ S₁) (e₂ : X₂ ≅ S₂) :
+    pullback (e₁.hom ≫ f₁) (e₂.hom ≫ f₂) ≅ pullback f₁ f₂ where
+  hom := pullback.map _ _ _ _ e₁.hom e₂.hom (𝟙 T) (Category.comp_id _) (Category.comp_id _)
+  inv := pullback.map _ _ _ _ e₁.inv e₂.inv (𝟙 T) (by aesop) (by aesop)
+
+noncomputable def pullback.iso' {C : Type u} [Category.{v} C] [HasPullbacks C] {X₁ X₂ S₁ S₂ T : C}
+      {f₁ : S₁ ⟶ T} {f₂ : S₂ ⟶ T} {g₁ : X₁ ⟶ T} {g₂ : X₂ ⟶ T} (e₁ : X₁ ≅ S₁) (e₂ : X₂ ≅ S₂)
+      (h₁ : e₁.hom ≫ f₁ = g₁) (h₂ : e₂.hom ≫ f₂ = g₂) :
+    pullback g₁ g₂ ≅ pullback f₁ f₂ where
+  hom := pullback.map _ _ _ _ e₁.hom e₂.hom (𝟙 T) (by aesop) (by aesop)
+  inv := pullback.map _ _ _ _ e₁.inv e₂.inv (𝟙 T) (by aesop) (by aesop)
+
+end CategoryTheory.Limits
+
 end MOVE
 
-open CategoryTheory Limits MvPolynomial
+open CategoryTheory Limits MvPolynomial HomogeneousLocalization
 
 noncomputable section
 
 namespace AlgebraicGeometry
-
-universe v u
 
 variable (n : Type v) (S : Scheme.{max u v})
 
@@ -261,6 +400,24 @@ attribute [local instance] gradedAlgebra
 Note that `n` is an arbitrary index type (e.g. `Fin m`). -/
 def ProjectiveSpace (n : Type v) (S : Scheme.{max u v}) : Scheme.{max u v} :=
   pullback (terminal.from S) (terminal.from (Proj (homogeneousSubmodule n (ULift.{max u v} ℤ))))
+
+/-- The canonical affine open cover of `Proj (MvPolynomial σ R)`. The cover is indexed by `σ`,
+and each `i : σ` corresponds to `Spec (MvPolynomial {j // j ≠ i} R)`. -/
+@[simps! -isSimp] def Proj.openCoverMvPolynomial (σ : Type*) (R : Type*) [CommRing R] :
+    (Proj (homogeneousSubmodule σ R)).AffineOpenCover :=
+  (Proj.openCoverOfISupEqTop
+      (homogeneousSubmodule σ R) .X (fun _ ↦ isHomogeneous_X _ _) (fun _ ↦ zero_lt_one)
+      (by rw [homogeneous_eq_span, Ideal.span_le, Set.range_subset_iff]; exact
+        fun i ↦ Ideal.subset_span <| Set.mem_range_self _)).equiv
+    (Equiv.refl σ) (.of <| MvPolynomial {j // j ≠ ·} R) (algEquivAway R · |>.toCommRingCatIso)
+
+/-- The intersection (i.e. pullback) of the basic opens on `ℙ(n; R)` defined by `Xᵢ` and `Xⱼ` is
+`Spec R[n,1/Xⱼ]`. -/
+def Proj.pullbackOpenCoverMvPolynomial {σ : Type*} (R : Type*) [CommRing R] (i j : σ) :
+    pullback (openCoverMvPolynomial σ R |>.map i) (openCoverMvPolynomial σ R |>.map j) ≅
+      Spec (CommRingCat.of (Localization.Away (dehomogenise i (X (R:=R) j)))) :=
+  pullback.iso _ _ _ _ ≪≫ pullbackAwayιIso _ _ _ _ _ rfl ≪≫
+    Scheme.Spec.mapIso (algEquivAwayMul R i j).symm.toCommRingCatIso.op
 
 namespace ProjectiveSpace
 
@@ -281,18 +438,15 @@ def chart (i : n) : ℙ(n; S).Opens :=
 def affineToProjective (i : n) : 𝔸(n; S) ⟶ ℙ(n; S) :=
   pullback.map _ _ _ _ (𝟙 _) _ (𝟙 _) (by simp) _
 
--- set_option pp.universes true
-/-- The canonical open cover of `ℙ(n; S)` formed by removing each coordinate `i : n`. -/
-def openCover' : Scheme.OpenCover.{max u v} ℙ(n; S) :=
-  Scheme.Pullback.openCoverOfRight (Proj.openCoverOfISupEqTop
-      (homogeneousSubmodule n (ULift.{max u v} ℤ))
-      (fun i : ULift n ↦ .X i.down) (fun _ ↦ isHomogeneous_X _ _) (fun _ ↦ zero_lt_one)
-      (by rw [homogeneous_eq_span, Ideal.span_le, Set.range_subset_iff]; exact
-        fun i ↦ Ideal.subset_span <| Set.mem_range_self _)).openCover _ _
+/-- An open cover of `ℙ(n; S)` formed by removing each coordinate `i : n`. See `openCover` for a
+better version. -/
+def openCover' : Scheme.OpenCover.{v} ℙ(n; S) :=
+  (Scheme.Pullback.openCoverOfRight ((Proj.affineOpenCoverMvPolynomial n
+      (ULift.{max u v} ℤ)).openCover.equiv Equiv.ulift) _ _).equiv Equiv.ulift.symm
 
 variable {n} in
-/-- Map `𝔸({j // j ≠ i}; S)` isomorphically to `S × Spec ℤ[n, 1/Xᵢ]`. -/
-def remap (i : n) : 𝔸({j // j ≠ i}; S) ⟶ (openCover' n S).obj (ULift.up i) :=
+/-- Map `𝔸({j // j ≠ i}; S)` isomorphically to `S × Spec (ℤ[n]_Xᵢ)₀`. -/
+def remap (i : n) : 𝔸({j // j ≠ i}; S) ⟶ (openCover' n S).obj i :=
   pullback.map _ _ _ _ (𝟙 _)
     (Spec.map <| CommRingCat.ofHom <| (algEquivAway (ULift.{max u v} ℤ) i).symm.toRingHom)
     (𝟙 _) (terminal.hom_ext ..) (terminal.hom_ext ..)
@@ -312,22 +466,18 @@ instance {C : Type*} [Category C] [HasInitial C] (f : ⊥_ C ⟶ ⊥_ C) : IsIso
 instance (i : n) : IsIso (remap S i) :=
   pullback.map_isIso _ _ _ _ (𝟙 _) _ (𝟙 _) (terminal.hom_ext ..) (terminal.hom_ext ..)
 
-def openCover : Scheme.OpenCover.{v} ℙ(n; S) where
+/-- The canonical open cover of `ℙ(n; S)` indexed by `n`, where each coordinate `i : n` corresponds
+to the scheme `𝔸({j // j ≠ i}; S)`. -/
+@[simps! -isSimp J obj map] def openCover : Scheme.OpenCover.{v} ℙ(n; S) where
   J := n
   obj i := 𝔸({j // j ≠ i}; S)
-  map i := remap S i ≫ (openCover' n S).map (ULift.up.{u} i)
-  f x := ((openCover' n S).f x).down
+  map i := remap S i ≫ (openCover' n S).map i
+  f x := (openCover' n S).f x
   covers x := let ⟨y, hy⟩ := (openCover' n S).covers x
-    ⟨ConcreteCategory.hom (inv (remap S (((openCover' n S).f x).down))).base y,
-    by rwa [← ConcreteCategory.comp_apply, Scheme.comp_base, ← Category.assoc, ← Scheme.comp_base,
-      IsIso.inv_hom_id, Scheme.id.base, Category.id_comp]⟩
-
-@[simp] lemma openCover_J : (openCover n S).J = n := rfl
-@[simp] lemma openCover_obj (i : n) : (openCover n S).obj i = 𝔸({j // j ≠ i}; S) := rfl
-
-@[simp] lemma openCover_map (i : n) : (openCover n S).map i =
-    remap S i ≫ (openCover' n S).map (ULift.up.{u} i) :=
-  rfl
+    ⟨ConcreteCategory.hom (inv (remap S ((openCover' n S).f x))).base y,
+    (ConcreteCategory.comp_apply ..).symm.trans <| by
+      rwa [Scheme.comp_base, ← Category.assoc, ← Scheme.comp_base, IsIso.inv_hom_id,
+        Scheme.id.base, Category.id_comp]⟩
 
 variable {S₁ S₂ S₃ : Scheme.{max u v}}
 
