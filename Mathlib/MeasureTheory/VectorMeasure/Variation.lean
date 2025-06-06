@@ -399,8 +399,9 @@ lemma le_variation' (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) 
     ∑ p ∈ P, ‖μ p‖ₑ ≤ μ.variation s := by
   let Q := P.filter (· ≠ ∅)
   have h : ∑ p ∈ P, ‖μ p‖ₑ = ∑ q ∈ Q, ‖μ q‖ₑ := by
-    -- the sums are identical except for zero terms
-    sorry
+    refine Eq.symm (sum_filter_of_ne fun p hp h ↦ ?_)
+    by_contra! hc
+    simp_all [hc]
   have h' (p) (hp : p ∈ Q ) : p ∈ P ∧ p ≠ ∅ := by
     exact mem_filter.mp hp
   have hQ : IsInnerPart s Q := by
