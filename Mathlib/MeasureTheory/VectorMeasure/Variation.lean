@@ -468,9 +468,11 @@ lemma variation_SignedMeasure (μ : SignedMeasure X) :
   · simp [not_ne_iff.mp hr']
   apply eq_of_le_of_le
   · rw [ennrealToMeasure_apply hr]
-    -- Jordan decomposition variation ≤ supremum variation.
-    -- `|μ (s ∩ r)| + |μ (sᶜ ∩ r)| ≤ μ.variation r` since `μ.variation` is defined as a sup over all
-    -- partitions so we consider the partition `{s ∩ r, sᶜ ∩ r}`.
+    -- *Jordan decomposition variation ≤ variation defined as a supremum.*
+    -- The Jordan decomposition variation is, by definition, equal to `|μ (s ∩ r)| + |μ (sᶜ ∩ r)|`.
+    -- Considering the partition of `r` defined as `P := {s ∩ r, sᶜ ∩ r}` implies that it suffices
+    -- to estimate `∑ p ∈ P, ‖μ p‖ₑ`. By definition this is bounded above by variation defined as a
+    -- supremum.
     let P : Finset (Set X) := {s ∩ r, sᶜ ∩ r}
     have hd : Disjoint (s ∩ r) (sᶜ ∩ r) := by
       refine Disjoint.inter_right ?_ <| Disjoint.inter_left ?_ ?_
@@ -516,7 +518,7 @@ lemma variation_SignedMeasure (μ : SignedMeasure X) :
       rw [Finset.sum_pair hsr, hpos, hneg]
     rw [this]
     exact le_variation' μ hr hP₁ hP₂ hP₃
-  · -- Supremum variation ≤ Jordan decomposition variation.
+  · -- *Variation defined as a supremum ≤ Jordan decomposition variation.*
     -- By the Jordan decomposition, for any `p`, `|μ p| = |μ (s ∩ p) - μ (sᶜ ∩ p)|`. The positivity
     -- of each part of the decomposition and triangle inequality implies that,
     -- `|μ p| ≤ μ (s ∩ p) + μ (sᶜ ∩ p)`. Let `P` be a partition of `r`. To estimate variation
