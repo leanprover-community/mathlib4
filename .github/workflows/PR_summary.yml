@@ -28,6 +28,9 @@ jobs:
       run: |
         cd pr-branch
         printf 'PR number: "%s"\n' "${{ github.event.pull_request.number }}"
+        git config user.name "leanprover-community-mathlib4-bot"
+        git config user.email "leanprover-community-mathlib4-bot@users.noreply.github.com"
+
         if git merge origin/master --no-ff --no-commit
         then
           git merge --abort || true
