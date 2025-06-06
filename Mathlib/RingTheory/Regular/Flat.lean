@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yongle Hu, Nailin Guan
 -/
 import Mathlib.RingTheory.Flat.Localization
-import Mathlib.RingTheory.Localization.Finiteness
 import Mathlib.RingTheory.Regular.RegularSequence
 
 /-!
@@ -30,7 +29,7 @@ variable {R S M N: Type*} [CommRing R] [CommRing S] [Algebra R S] [Flat R S]
   [IsScalarTower R S N] {f : M →ₗ[R] N} (hf : IsBaseChange S f) (x : R)
 
 /-- If `M` is isomorphic to `N` as `R`-modules, then `M/xM` is isomorphic to `N/xN`. -/
-def QuotSMulTop.congr (e : M ≃ₗ[R] N) : QuotSMulTop x M ≃ₗ[R] QuotSMulTop x N :=
+protected def QuotSMulTop.congr (e : M ≃ₗ[R] N) : QuotSMulTop x M ≃ₗ[R] QuotSMulTop x N :=
   Submodule.Quotient.equiv (x • ⊤) (x • ⊤) e <|
     (Submodule.map_pointwise_smul x _ e.toLinearMap).trans (by simp)
 
