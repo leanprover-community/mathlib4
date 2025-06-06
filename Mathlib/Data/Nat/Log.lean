@@ -185,7 +185,7 @@ theorem log_lt_log_succ_iff {b n : ℕ} (hb : 1 < b) (hn : n ≠ 0) :
     simp [H]
 
 theorem log_eq_log_succ_iff {b n : ℕ} (hb : 1 < b) (hn : n ≠ 0) :
-    log b n = log b (n + 1) ↔ b ^ (log b (n + 1)) ≠ n + 1 := by
+    log b n = log b (n + 1) ↔ b ^ log b (n + 1) ≠ n + 1 := by
   rw [ne_eq, ← log_lt_log_succ_iff hb hn, not_lt]
   simp only [le_antisymm_iff, and_iff_right_iff_imp]
   exact fun  _ ↦ log_monotone (le_add_right n 1)
