@@ -284,8 +284,9 @@ theorem range_eq_univ_of_not_isRCLikeNormedField (h : ¬ IsRCLikeNormedField �
   simpa [h] using I.convex_range'
 
 /-- If a set is `ℝ`-convex for some normed space structure, then it is `ℝ`-convex for the
-normed space structure coming from an `IsRCLikeNormedField 𝕜`. -/
-lemma Convex.convex_isRCLikeNormedField [NormedSpace ℝ E] [h : IsRCLikeNormedField 𝕜]
+normed space structure coming from an `IsRCLikeNormedField 𝕜`. Useful when constructing model
+spaces to avoid diamond issues when populating the field `convex_range'`. -/
+lemma _root_.Convex.convex_isRCLikeNormedField [NormedSpace ℝ E] [h : IsRCLikeNormedField 𝕜]
     {s : Set E} (hs : Convex ℝ s) :
     letI := h.rclike
     letI := NormedSpace.restrictScalars ℝ 𝕜 E
