@@ -48,6 +48,8 @@ open Set
 --     simpa only [union_singleton, mem_insert_iff, one_ne_zero, SetLike.mem_coe, false_or] using
 --       one_mem <| closure _
 
+/-- For a morphism of monoids with codomain a `GroupWithZero`,
+this is a smallest `GroupWithZero` that contains the image. -/
 def frange₀ : Submonoid B where
   carrier := (↑)''(Subgroup.closure (G := Bˣ) ((↑)⁻¹' (range f))).carrier ∪ {0}
   mul_mem' {b b'} hb hb' := by
@@ -183,10 +185,68 @@ example [MonoidWithZero A] [MonoidWithZeroHomClass G A C] :
 
 /- Ce qui est au-dessus prouve l'égalité de `frange₀` et `range₀`
 quand les deux sont définis.
-À mon sens, il faudrait se contenter de la définition de `frange₀`
-qu'on peut renommer `range₀`
-et changer l'`example` ci-dessus en un
-`mem_range₀_iff`  -/
+À mon sens, on peut se contenter de la définition de `frange₀`
+qu'on pourra renommer `range₀`
+et du théorème suivant -/
+
+theorem mem_frange₀_iff_of_comm
+    [MonoidWithZero A] [MonoidWithZeroHomClass G A C] (y : C) :
+    y ∈ frange₀ g ↔ ∃ a, g a ≠ 0 ∧ ∃ x, g a * y = g x := by
+  refine ⟨fun hy ↦ ?_, fun ⟨a, ha, ⟨x, hy⟩⟩ ↦ ?_⟩
+  · simp [frange₀] at hy
+    rcases hy with hy | ⟨u, hu, huy⟩
+    · use 1
+      simp [map_one, one_ne_zero]
+      use 0
+      rw [hy, map_zero]
+    induction hu using Subgroup.closure_induction generalizing y with
+    | mem c hc =>
+      simp only [mem_preimage, mem_range] at hc
+      obtain ⟨a, ha⟩ := hc
+      use 1
+      simp [← huy]
+      use a, ha.symm
+    | one =>
+      simp [← huy]
+      use 1
+      simp
+    | mul c d hc hd hcy hdy =>
+      simp only [Units.val_mul] at huy
+      obtain ⟨u, hu, ⟨a, ha⟩⟩ := hcy c (refl _)
+      obtain ⟨v, hv, ⟨b, hb⟩⟩ := hdy d (refl _)
+      use u * v
+      simp [hu, hv]
+      use a * b
+      simp [← ha, ← hb, ← huy]
+      exact mul_mul_mul_comm (g u) (g v) ↑c ↑d
+    | inv c hc hcy  =>
+      obtain ⟨u, hu, ⟨a, ha⟩⟩ := hcy _ (refl _)
+      use a
+      simp [← ha, hu]
+      use u
+      simp [← huy]
+  · simp [frange₀]
+    rcases GroupWithZero.eq_zero_or_unit y with h | h
+    · simp [h]
+    · right
+      obtain ⟨c, rfl⟩ := h
+      use c
+      simp
+      set u := (Ne.isUnit ha).unit
+      have hu : g a = u := by simp [u]
+      have hv : IsUnit (g x) := by simp [← hy, hu]
+      set v := hv.unit
+      replace hv : g x = v := by simp [v]
+      suffices c = v / u by
+        rw [this]
+        apply Subgroup.div_mem
+        · apply Subgroup.subset_closure
+          simp [← hv]
+        · apply Subgroup.subset_closure
+          simp [← hu]
+      rw [eq_div_iff_mul_eq', mul_comm, ← Units.eq_iff,
+        Units.val_mul, ← hu, ← hv, hy]
+
 
 variable {f}
 
