@@ -30,21 +30,23 @@ instance Int.ideal_span_isMaximal_of_prime (p : ℕ) [Fact (Nat.Prime p)] :
   Ideal.Quotient.maximal_of_isField _ <|
     (Int.quotientSpanNatEquivZMod p).toMulEquiv.isField _ (Field.toIsField _)
 
-section Int
+namespace Int
 
 open Ideal
 
-variable {R : Type*} [Ring R] [Algebra ℤ R] {I : Ideal R}
+variable {R : Type*} [Ring R] {I : Ideal R}
 
-theorem Int.cast_mem_ideal_iff  {d : ℤ} :
+theorem cast_mem_ideal_iff {d : ℤ} :
     (d : R) ∈ I ↔ (absNorm (under ℤ I) : ℤ) ∣ d := by
   rw [← mem_span_singleton, Int.ideal_span_absNorm_eq_self, under_def, mem_comap, eq_intCast]
 
-theorem Int.absNorm_under_mem {R : Type*} [Ring R] [Algebra ℤ R] (I : Ideal R) :
-    (absNorm (under ℤ I) : R) ∈ I := by
-  rw [← Int.cast_natCast, Int.cast_mem_ideal_iff]
+variable (I)
 
-theorem Int.absNorm_under_eq_sInf {R : Type*} [Ring R] [Algebra ℤ R] (I : Ideal R) :
+theorem absNorm_under_mem :
+    (absNorm (under ℤ I) : R) ∈ I := by
+  rw [← cast_natCast, cast_mem_ideal_iff]
+
+theorem absNorm_under_eq_sInf :
     absNorm (under ℤ I) = sInf {d : ℕ | 0 < d ∧ (d : R) ∈ I} := by
   by_cases h : absNorm (under ℤ I) = 0
   · have : {d : ℕ | 0 < d ∧ ↑d ∈ I} = ∅ := by
@@ -56,15 +58,15 @@ theorem Int.absNorm_under_eq_sInf {R : Type*} [Ring R] [Algebra ℤ R] (I : Idea
       exact hx₁ hx₂
     rw [h, this, Nat.sInf_empty]
   · have h₁ : absNorm (under ℤ I) ∈ {d : ℕ | 0 < d ∧ ↑d ∈ I} :=
-      ⟨Nat.pos_of_ne_zero h, Int.absNorm_under_mem I⟩
+      ⟨Nat.pos_of_ne_zero h, absNorm_under_mem I⟩
     refine le_antisymm ?_ (Nat.sInf_le h₁)
     by_contra! h₀
     have h₂ := (Nat.sInf_mem (Set.nonempty_of_mem h₁)).2
     rw [← Int.cast_natCast, Int.cast_mem_ideal_iff, Int.natCast_dvd_natCast] at h₂
     exact lt_iff_not_le.mp h₀ <| Nat.le_of_dvd (Nat.sInf_mem (Set.nonempty_of_mem h₁)).1 h₂
 
-theorem Int.absNorm_under_dvd_absNorm {S : Type*} [CommRing S] [IsDedekindDomain S]
-    [Module.Free ℤ S] (I : Ideal S) :
+theorem absNorm_under_dvd_absNorm {S : Type*} [CommRing S] [IsDedekindDomain S] [Module.Free ℤ S]
+    (I : Ideal S) :
     absNorm (under ℤ I) ∣ absNorm I := by
   by_cases h : Finite (S ⧸ I)
   · have : Fintype (S ⧸ I) := Fintype.ofFinite (S ⧸ I)
