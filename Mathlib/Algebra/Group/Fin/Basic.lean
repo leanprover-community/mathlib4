@@ -39,11 +39,29 @@ instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n) where
   nsmul := nsmulRec
   __ := Fin.addCommSemigroup n
 
-instance instAddMonoidWithOne (n) [NeZero n] : AddMonoidWithOne (Fin n) where
+/--
+This is not a global instance, but can introduced locally using `open Fin.NatCast in ...`.
+
+This is not an instance because the `binop%` elaborator assumes that
+there are no non-trivial coercion loops,
+but this instance  would introduce a coercion from `Nat` to `Fin n` and back.
+Non-trivial loops lead to undesirable and counterintuitive elaboration behavior.
+
+For example, for `x : Fin k` and `n : Nat`,
+it causes `x < n` to be elaborated as `x < ↑n` rather than `↑x < n`,
+silently introducing wraparound arithmetic.
+-/
+def instAddMonoidWithOne (n) [NeZero n] : AddMonoidWithOne (Fin n) where
   __ := inferInstanceAs (AddCommMonoid (Fin n))
   natCast i := Fin.ofNat n i
   natCast_zero := rfl
   natCast_succ _ := Fin.ext (add_mod _ _ _)
+
+namespace NatCast
+
+attribute [scoped instance] Fin.instAddMonoidWithOne
+
+end NatCast
 
 instance addCommGroup (n : ℕ) [NeZero n] : AddCommGroup (Fin n) where
   __ := addCommMonoid n
@@ -131,6 +149,7 @@ lemma sub_one_lt_iff {k : Fin (n + 1)} : k - 1 < k ↔ 0 < k :=
 
 @[simp] lemma neg_last (n : ℕ) : -Fin.last n = 1 := by simp [neg_eq_iff_add_eq_zero]
 
+open Fin.NatCast in
 lemma neg_natCast_eq_one (n : ℕ) : -(n : Fin (n + 1)) = 1 := by
   simp only [natCast_eq_last, neg_last]
 

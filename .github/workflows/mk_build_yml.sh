@@ -39,7 +39,7 @@ on:
 
 name: continuous integration
 EOF
-  include 1 pr == "" ubuntu-latest
+  include 1 pr "true" "" ubuntu-latest
 }
 
 bors_yml() {
@@ -54,16 +54,16 @@ on:
 
 name: continuous integration (staging)
 EOF
-  include 1 bors == "" bors
+  include 1 bors "true" "" bors
 }
 
 build_fork_yml() {
   header
   cat <<EOF
-# The jobs in this file run on GitHub-hosted workers and will only be run from external forks
+# The jobs in this file run on self-hosted workers and will be run from external forks
 
 on:
-  push:
+  pull_request_target:
     branches-ignore:
       # ignore tmp branches used by bors
       - 'staging.tmp*'
@@ -73,14 +73,16 @@ on:
 
 name: continuous integration (mathlib forks)
 EOF
-  include 0 ubuntu-latest != " (fork)" ubuntu-latest
+  include 0 pr "github.event.pull_request.head.repo.fork" " (fork)" ubuntu-latest
 }
+
+# Note (2025-06-06): IS_SELF_HOSTED is no longer used in `build.in.yml`, and should be removed.
 
 include() {
   sed "
     s/IS_SELF_HOSTED/$1/g;
     s/RUNS_ON/$2/g;
-    s/MAIN_OR_FORK/$3/g;
+    s/FORK_CONDITION/$3/g;
     s/JOB_NAME/$4/g;
     s/STYLE_LINT_RUNNER/$5/g;
     /^### NB/d
