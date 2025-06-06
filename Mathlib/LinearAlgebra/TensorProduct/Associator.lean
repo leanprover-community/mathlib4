@@ -283,13 +283,22 @@ variable {N}
 
 variable (g : P →ₗ[R] Q) (f : N →ₗ[R] P)
 
+open TensorProduct (assoc lid rid)
+
+lemma lTensor_tensor (f : P →ₗ[R] Q) :
+    lTensor (M ⊗[R] N) f = (assoc R M N Q).symm ∘ₗ (f.lTensor N).lTensor M ∘ₗ assoc R M N P :=
+  TensorProduct.ext <| TensorProduct.ext rfl
+
 theorem rTensor_tensor : rTensor (M ⊗[R] N) g =
-    TensorProduct.assoc R Q M N ∘ₗ rTensor N (rTensor M g) ∘ₗ (TensorProduct.assoc R P M N).symm :=
+    assoc R Q M N ∘ₗ rTensor N (rTensor M g) ∘ₗ (assoc R P M N).symm :=
   TensorProduct.ext <| LinearMap.ext fun _ ↦ TensorProduct.ext rfl
 
 open TensorProduct
 
 theorem lid_comp_rTensor (f : N →ₗ[R] R) :
-    (TensorProduct.lid R M).comp (rTensor M f) = lift ((lsmul R M).comp f) := ext' fun _ _ ↦ rfl
+    (lid R M).comp (rTensor M f) = lift ((lsmul R M).comp f) := ext' fun _ _ ↦ rfl
+
+lemma rid_comp_lTensor (f : M →ₗ[R] R) :
+    (rid R N).comp (lTensor N f) = lift ((lsmul R N).flip.compl₂ f) := ext' fun _ _ ↦ rfl
 
 end LinearMap
