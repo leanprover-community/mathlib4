@@ -141,6 +141,34 @@ lemma MeromorphicAt.meromorphicTrailingCoeffAt_ne_zero (h₁ : MeromorphicAt f x
   obtain ⟨g, h₁g, h₂g, h₃g⟩ := (meromorphicOrderAt_ne_top_iff h₁).1 h₂
   simpa [h₁g.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g h₃g] using h₂g
 
+/--
+The trailing coefficient of a constant function is the constant.
+-/
+theorem meromorphicTrailingCoeffAt_const {x : 𝕜} {e : 𝕜} :
+    meromorphicTrailingCoeffAt (fun _ ↦ e) x = e := by
+  by_cases he : e = 0
+  · rw [he]
+    apply MeromorphicAt.meromorphicTrailingCoeffAt_of_order_eq_top
+    rw [meromorphicOrderAt_eq_top_iff]
+    simp
+  · exact analyticAt_const.meromorphicTrailingCoeffAt_of_ne_zero he
+
+open Classical in
+/--
+The trailing coefficient of `fun z ↦ z - constant` at `z₀` equals one if `z₀ = constant`, or else
+`z₀ - constant`.
+-/
+theorem meromorphicTrailingCoeffAt_id_sub_const {x y : 𝕜} :
+    meromorphicTrailingCoeffAt (· - y) x = if x = y then 1 else x - y := by
+  by_cases h : x = y
+  · simp_all only [sub_self, ite_true]
+    apply AnalyticAt.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE (n := 1) (by fun_prop)
+      (by apply one_ne_zero)
+    simp_all
+  · simp_all only [ite_false]
+    apply AnalyticAt.meromorphicTrailingCoeffAt_of_ne_zero (by fun_prop)
+    simp_all [sub_ne_zero]
+
 /-!
 ## Congruence Lemma
 -/
@@ -195,6 +223,22 @@ lemma MeromorphicAt.meromorphicTrailingCoeffAt_mul {f₁ f₂ : 𝕜 → 𝕜} (
     meromorphicTrailingCoeffAt (f₁ * f₂) x =
       (meromorphicTrailingCoeffAt f₁ x) * (meromorphicTrailingCoeffAt f₂ x) :=
   meromorphicTrailingCoeffAt_smul hf₁ hf₂
+
+/--
+The trailing coefficient of a product is the product of the trailing coefficients.
+-/
+theorem meromorphicTrailingCoeffAt_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜} {x : 𝕜}
+    (h : ∀ σ, MeromorphicAt (f σ) x) :
+    meromorphicTrailingCoeffAt (∏ n ∈ s, f n) x = ∏ n ∈ s, meromorphicTrailingCoeffAt (f n) x := by
+  classical
+  apply Finset.induction
+    (motive := fun b' ↦ (meromorphicTrailingCoeffAt (∏ n ∈ b' , f n) x =
+      ∏ n ∈ b', meromorphicTrailingCoeffAt (f n) x))
+  · simp only [Finset.univ_eq_empty, Finset.prod_empty, forall_const]
+    apply meromorphicTrailingCoeffAt_const
+  · intro σ s₁ hσ hind
+    rw [Finset.prod_insert hσ, Finset.prod_insert hσ, (h σ).meromorphicTrailingCoeffAt_mul
+      (MeromorphicAt.prod h), hind]
 
 /--
 The trailing coefficient of the inverse function is the inverse of the trailing coefficient.
