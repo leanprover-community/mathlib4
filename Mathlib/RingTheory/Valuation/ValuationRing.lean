@@ -113,6 +113,13 @@ instance : Inv (ValueGroup A K) :=
         rw [Units.smul_def, Units.smul_def, Algebra.smul_def, Algebra.smul_def, mul_inv,
           map_units_inv])
 
+instance : Nontrivial (ValueGroup A K) where
+  exists_pair_ne := ⟨0, 1, fun c => by
+    obtain ⟨d, hd⟩ := Quotient.exact' c
+    apply_fun fun t => d⁻¹ • t at hd
+    dsimp at hd
+    simp only [inv_smul_smul, smul_zero, one_ne_zero] at hd⟩
+
 variable [IsDomain A] [ValuationRing A] [IsFractionRing A K]
 
 protected theorem le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a := by
@@ -162,11 +169,6 @@ instance commGroupWithZero :
     mul_comm := by rintro ⟨a⟩ ⟨b⟩; apply Quotient.sound'; rw [mul_comm]
     zero_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [zero_mul]
     mul_zero := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_zero]
-    exists_pair_ne := by
-      use 0, 1
-      intro c; obtain ⟨d, hd⟩ := Quotient.exact' c
-      apply_fun fun t => d⁻¹ • t at hd
-      simp only [inv_smul_smul, smul_zero, one_ne_zero] at hd
     inv_zero := by apply Quotient.sound'; rw [inv_zero]
     mul_inv_cancel := by
       rintro ⟨a⟩ ha
