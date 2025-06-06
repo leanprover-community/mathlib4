@@ -1039,10 +1039,10 @@ theorem Topology.IsInducing.disjoint_of_sumElim_aux (h : IsInducing (Sum.elim f 
   simpa only [map_inl_inf_map_inr, inf_sup_left, sup_bot_eq, ← map_inf, inl_injective, top_inf_eq,
     map_eq_bot_iff] using congr(map inl ⊤ ⊓ $h)
 
--- has a one-line proof, except for an import cycle: (Homeomorph.sumComm X Y).isOpenEmbedding
-theorem IsOpenEmbedding.sumSwap : IsOpenEmbedding (@Sum.swap Y X) := sorry
+theorem IsOpenEmbedding.sumSwap : IsOpenEmbedding (@Sum.swap X Y) :=
+  (Homeomorph.sumComm X Y).isOpenEmbedding
 
-theorem IsInducing.sumSwap : IsInducing (@Sum.swap Y X) := IsOpenEmbedding.sumSwap.isInducing
+theorem IsInducing.sumSwap : IsInducing (@Sum.swap X Y) := IsOpenEmbedding.sumSwap.isInducing
 
 theorem isInducing_sumElim :
     IsInducing (Sum.elim f g) ↔ IsInducing f ∧ IsInducing g ∧
