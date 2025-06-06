@@ -249,12 +249,14 @@ noncomputable instance {n : ℕ} [NeZero n] :
     simp only [modelWithCornersSelf_coe, comp_apply, id_eq, ContinuousLinearEquiv.prodUnique_apply]
     rfl
 
-/-- The standard model on `ℝ^n` is a slice model for the standard model for `ℝ^m`, for `n < m`. -/
+/-- The standard model on `ℝ^n` is a slice model for the standard model for `ℝ^m`, for `n ≤ m`. -/
 noncomputable instance {n m : ℕ} [NeZero n] :
     SliceModel ((EuclideanSpace ℝ (Fin m))) (𝓡 n) (𝓡 (n + m)) where
   equiv := EuclideanSpace.finAddEquivProd |>.symm
   map x := (EuclideanSpace.finAddEquivProd (𝕜 := ℝ) (n := n) (m := m)).symm (x, 0)
-  hmap := sorry -- should be easy: `equiv` is an embedding, and prodMk{Left,Right} also are
+  hmap := by
+    apply (EuclideanSpace.finAddEquivProd.symm).toHomeomorph.isEmbedding.comp
+    sorry -- easy: prodMkLeft is an embedding
   compatible := by ext; simp
 
 
