@@ -1006,7 +1006,8 @@ theorem mu_conv_eq_sum (m: ℕ) (g: G): muConv m g = (((1 : ℝ) / (#(S) : ℝ))
 
 
 -- Based on https://github.com/YaelDillies/LeanCamCombi/blob/b6312bee17293272af6bdcdb47b3ffe98fca46a4/LeanCamCombi/GrowthInGroups/Lecture1.lean#L41
-def HasPolynomialGrowthD (d: ℕ): Prop := ∀ n ≥ 2, #(S ^ n) ≤ n ^ d
+-- and the Vikman paper
+def HasPolynomialGrowthD (d: ℕ): Prop := ∃ a: ℕ+, ∀ n ≥ 2, #(S ^ n) ≤ a * n ^ d
 def HasPolynomialGrowth: Prop := ∃ d, HasPolynomialGrowthD (S := S) d
 
 
@@ -1629,7 +1630,10 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
   simp_rw [Real.exp_mul] at little_o_poly
   rw [Real.exp_log (by simp)] at little_o_poly
 
-  have mul_four := Asymptotics.IsLittleO.const_mul_left little_o_poly (4^d)
+
+  obtain ⟨a, hG⟩ := hG
+
+  have mul_four := Asymptotics.IsLittleO.const_mul_left little_o_poly (a * 4^d)
   rw [← Asymptotics.isLittleO_const_mul_right_iff (c := 2^(-N : ℤ)) (hc := (by simp))] at mul_four
   --have mul_four := little_o_poly
 
@@ -1659,6 +1663,7 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
     apply Nat.one_le_pow
     omega
 
+
   have other_poly := hG (4 * M ^ 3) (by
     omega
   )
@@ -1679,7 +1684,7 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
   have helper_lemma (a b c : ℝ) (ha: 0 < a) (hb: 0 < b) (hc: 0 < c) (habc: a ≤ b * c) (hb: b < 1): a < c := by
     nlinarith
 
-  have strict_lt: 4 ^ d * (↑M ^ 3) ^ d < (((2 : ℝ) ^ N)⁻¹ * 2 ^ M) := by
+  have strict_lt: a * 4 ^ d * (↑M ^ 3) ^ d < (((2 : ℝ) ^ N)⁻¹ * 2 ^ M) := by
     apply helper_lemma (b := 2⁻¹)
     .
       field_simp
@@ -1712,9 +1717,9 @@ lemma new_three_two_poly_growth (d: ℕ) (hd: d >= 1) (hG: HasPolynomialGrowthD 
 
 
   norm_cast at strict_lt
-  rw [← mul_pow] at strict_lt
+  rw [mul_assoc, ← mul_pow] at strict_lt
 
-  have eventually_lt_double: (4 * M ^ 3) ^ d < 2 ^ (M - N) := by
+  have eventually_lt_double: a * (4 * M ^ 3) ^ d < 2 ^ (M - N) := by
     exact strict_lt
 
   omega
