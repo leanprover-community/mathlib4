@@ -52,9 +52,10 @@ variable (α : Type v) [CommRing α] [StarRing α]
 /-- `Matrix.unitaryGroup n` is the group of `n` by `n` matrices where the star-transpose is the
 inverse.
 -/
-abbrev unitaryGroup :=
+abbrev unitaryGroup : Submonoid (Matrix n n α) :=
   unitary (Matrix n n α)
 
+-- the group and star structure is already defined in another file
 example : Group (unitaryGroup n α) := inferInstance
 example : StarMul (unitaryGroup n α) := inferInstance
 
@@ -244,6 +245,7 @@ abbrev specialOrthogonalGroup : Submonoid (Matrix n n β) := specialUnitaryGroup
 
 variable {n} {β} {A : Matrix n n β}
 
+-- the group and star structure is automatic from `specialUnitaryGroup`
 example : Group (specialOrthogonalGroup n β) := inferInstance
 example : StarMul (specialOrthogonalGroup n β) := inferInstance
 
