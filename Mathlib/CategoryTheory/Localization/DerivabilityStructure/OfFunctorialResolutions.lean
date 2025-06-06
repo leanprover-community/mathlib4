@@ -100,22 +100,21 @@ lemma isConnected_rightResolution_of_functorial_resolutions (X₂ : C₂) :
   have : W₁.IsMultiplicative := by rw [hW₁]; infer_instance
   have : Nonempty (Φ.RightResolution X₂) := ⟨{ hw := hi X₂, .. }⟩
   have : IsPreconnected (Φ.RightResolution X₂) :=
-    zigzag_isPreconnected (fun R₀ R₄ ↦ by
-      let R₁ : Φ.RightResolution X₂ := { hw := W₂.comp_mem _ _ R₀.hw (hi _), .. }
-      let R₂ : Φ.RightResolution X₂ := { hw := hi X₂, .. }
-      let R₃ : Φ.RightResolution X₂ := { hw := W₂.comp_mem _ _ R₄.hw (hi _), .. }
-      let f₀ : R₀ ⟶ R₁ := { hf := W₁_ι_app hi hW₁ R₀.X₁, .. }
-      let f₁ : R₂ ⟶ R₁ :=
-        { f := ρ.map R₀.w
-          comm := (i.naturality R₀.w).symm
-          hf := (localizerMorphismInv hi hW₁).map _ R₀.hw }
-      let f₂ : R₂ ⟶ R₃ :=
-        { f := ρ.map R₄.w
-          comm := (i.naturality R₄.w).symm
-          hf := (localizerMorphismInv hi hW₁).map _ R₄.hw }
-      let f₃ : R₄ ⟶ R₃ := { hf := W₁_ι_app hi hW₁ R₄.X₁, .. }
-      exact (Zigzag.of_hom f₀).trans ((Zigzag.of_inv f₁).trans
-        ((Zigzag.of_hom f₂).trans (Zigzag.of_inv f₃))))
+    zigzag_isPreconnected (fun R₀ R₄ ↦
+      calc
+        Zigzag R₀ { hw := W₂.comp_mem _ _ R₀.hw (hi _), .. } :=
+          Zigzag.of_hom { hf := W₁_ι_app hi hW₁ R₀.X₁, .. }
+        Zigzag (J := Φ.RightResolution X₂) _ { hw := hi X₂, .. } := Zigzag.of_inv
+          { f := ρ.map R₀.w
+            comm := (i.naturality R₀.w).symm
+            hf := (localizerMorphismInv hi hW₁).map _ R₀.hw }
+        Zigzag (J := Φ.RightResolution X₂) _ { hw := W₂.comp_mem _ _ R₄.hw (hi _), .. } :=
+            Zigzag.of_hom
+          { f := ρ.map R₄.w
+            comm := (i.naturality R₄.w).symm
+            hf := (localizerMorphismInv hi hW₁).map _ R₄.hw }
+        Zigzag _ R₄ :=
+          Zigzag.of_inv { hf := W₁_ι_app hi hW₁ R₄.X₁, .. })
   constructor
 
 lemma isRightDerivabilityStructure_of_functorial_resolutions :
