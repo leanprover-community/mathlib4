@@ -7,8 +7,10 @@ import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Algebra.Ring.AddAut
 import Mathlib.Data.Nat.Totient
 import Mathlib.GroupTheory.Divisible
+import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.IsLocalHomeomorph
-import Mathlib.Topology.Instances.ZMultiples
+import Mathlib.Topology.Order.T5
 
 /-!
 # The additive circle
@@ -366,13 +368,16 @@ theorem coe_equivIco_mk_apply (x : 𝕜) :
 
 instance : DivisibleBy (AddCircle p) ℤ where
   div x n := (↑((n : 𝕜)⁻¹ * (equivIco p 0 x : 𝕜)) : AddCircle p)
-  div_zero x := by
-    simp only [algebraMap.coe_zero, Int.cast_zero, inv_zero, zero_mul, QuotientAddGroup.mk_zero]
+  div_zero x := by simp
   div_cancel {n} x hn := by
     replace hn : (n : 𝕜) ≠ 0 := by norm_cast
     change n • QuotientAddGroup.mk' _ ((n : 𝕜)⁻¹ * ↑(equivIco p 0 x)) = x
     rw [← map_zsmul, ← smul_mul_assoc, zsmul_eq_mul, mul_inv_cancel₀ hn, one_mul]
     exact (equivIco p 0).symm_apply_apply x
+
+omit [IsStrictOrderedRing 𝕜] in
+@[simp] lemma coe_fract (x : 𝕜) : (↑(Int.fract x) : AddCircle (1 : 𝕜)) = x := by
+  simp [← Int.self_sub_floor]
 
 end FloorRing
 
@@ -628,9 +633,6 @@ theorem liftIco_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f a = f (
 theorem liftIco_zero_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f 0 = f p)
     (hc : ContinuousOn f <| Icc 0 p) : Continuous (liftIco p 0 f) :=
   liftIco_continuous (by rwa [zero_add] : f 0 = f (0 + p)) (by rwa [zero_add])
-
-@[simp] lemma coe_fract (x : ℝ) : (↑(Int.fract x) : AddCircle (1 : ℝ)) = x := by
-  simp [← Int.self_sub_floor]
 
 end AddCircle
 

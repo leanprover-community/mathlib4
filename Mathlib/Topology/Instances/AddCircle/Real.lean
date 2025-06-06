@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Instances.AddCircle.Defs
+import Mathlib.Topology.Instances.ZMultiples
 
 /-!
 # The additive circle over `ℝ`
