@@ -3,6 +3,7 @@ Copyright (c) 2025 Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Horner
 -/
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
@@ -244,50 +245,34 @@ theorem isBipartiteWith_sum_degrees_eq_card_edges' (h : G.IsBipartiteWith s t) :
     ∑ v ∈ t, G.degree v = #G.edgeFinset := isBipartiteWith_sum_degrees_eq_card_edges h.symm
 
 end IsBipartiteWith
-variable {V : Type*} (G : SimpleGraph V)
+
+section IsBipartite
 
 /-- The predicate for a simple graph to be bipartite. -/
 abbrev IsBipartite (G : SimpleGraph V) : Prop := G.Colorable 2
 
 /-- If a simple graph `G` is bipartite, then there exist disjoint sets `s` and `t`
 such that all edges in `G` connect a vertex in `s` to a vertex in `t`. -/
-lemma IsBipartite.exists_isBipartiteWith (h : G.IsBipartite) :
-    ∃ s t, G.IsBipartiteWith s t := by
-  rcases h with ⟨c, hc_adj⟩
-  let s := { v | c v = 0 }
-  let t := { v | c v = 1 }
-  have h₁ : Disjoint s t := by
-    rw [Set.disjoint_iff]
-    intro v hv
-    simp only [Set.mem_inter_iff, Set.mem_setOf_eq] at hv
-    have hv' : c v = 0 := hv.1
-    have hv'' : c v = 1 := hv.2
-    omega
-  have h₂ ⦃v w : V⦄ (h_adj : G.Adj v w) : v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s := by
-    have h_color := hc_adj h_adj
-    simp [s, t, Set.mem_setOf_eq, Fin.forall_fin_two] at h_color ⊢
-    omega
-  exact ⟨s, t, h₁, h₂⟩
-
+lemma IsBipartite.exists_isBipartiteWith (h : G.IsBipartite) : ∃ s t, G.IsBipartiteWith s t := by
+  obtain ⟨c, hc⟩ := h
+  refine ⟨{v | c v = 0}, {v | c v = 1}, by aesop (add simp [Set.disjoint_left]), ?_⟩
+  rintro v w hvw
+  apply hc at hvw
+  simp [Set.mem_setOf_eq, Fin.forall_fin_two] at hvw ⊢
+  omega
 
 /-- If a simple graph `G` has a bipartition, then it is bipartite. -/
-lemma IsBipartiteWith.isBipartite {s t : Set V} (h : G.IsBipartiteWith s t) :
-    G.IsBipartite := by
+lemma IsBipartiteWith.isBipartite {s t : Set V} (h : G.IsBipartiteWith s t) : G.IsBipartite := by
   classical
-  have h_disj  : Disjoint s t := h.1
-  have h_edges : ∀ v w, G.Adj v w → v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s := h.2
-  use fun v => if v ∈ s then 0 else 1
-  intro v w hw
-  obtain (⟨hv_s, hw_t⟩ | ⟨hv_t, hw_s⟩) := h_edges v w hw
-  · have hw_not_s : w ∉ s := h_disj.subset_compl_left hw_t
-    simp [hv_s, hw_not_s]
-  · have hv_not_s : v ∉ s := h_disj.subset_compl_left hv_t
-    simp [hv_not_s, hw_s]
+  refine ⟨s.indicator 1, fun {v w} hw ↦ ?_⟩
+  obtain (⟨hs, ht⟩ | ⟨ht, hs⟩) := h.2 hw <;>
+    { replace ht : _ ∉ s := h.1.subset_compl_left ht; simp [hs, ht] }
 
 /-- `G.IsBipartite` if and only if `G.IsBipartiteWith s t`. -/
 theorem isBipartite_iff_exists_isBipartiteWith :
-  G.IsBipartite ↔ ∃ s t : Set V, G.IsBipartiteWith s t where
-  mp := IsBipartite.exists_isBipartiteWith G
-  mpr := by rintro ⟨s, t, h⟩; exact h.isBipartite
+    G.IsBipartite ↔ ∃ s t : Set V, G.IsBipartiteWith s t :=
+  ⟨IsBipartite.exists_isBipartiteWith, fun ⟨_, _, h⟩ ↦ h.isBipartite⟩
+
+end IsBipartite
 
 end SimpleGraph
