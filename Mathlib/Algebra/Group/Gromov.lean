@@ -1011,13 +1011,15 @@ theorem mu_conv_eq_sum (m: ℕ) (g: G): muConv m g = (((1 : ℝ) / (#(S) : ℝ))
 def HasPolynomialGrowthD (d: ℕ): Prop := ∃ a: ℕ+, ∀ n ≥ 2, #(S ^ n) ≤ a * n ^ d
 def HasPolynomialGrowth: Prop := ∃ d, HasPolynomialGrowthD (S := S) d
 
+-- TODO - upstream to mathlib
 lemma s_pow_inv (n: ℕ): (S^n)⁻¹ = (S⁻¹)^n := by
   induction n with
   | zero =>
-    simp
+    simp only [pow_zero, inv_one]
   | succ n ih =>
-    simp
+    simp only [inv_pow]
 
+-- TODO - upstream to mathlib
 lemma mem_closure_iff_mem_pow (g: G): g ∈ Subgroup.closure S ↔ ∃ n, g ∈ S^n := by
   refine ⟨?_, ?_⟩
   .
@@ -1050,13 +1052,51 @@ lemma mem_closure_iff_mem_pow (g: G): g ∈ Subgroup.closure S ↔ ∃ n, g ∈ 
     apply mem_closure g
 
 lemma poly_growth_implies (d: ℕ) (hd: HasPolynomialGrowthD (S := S) d): HasPolynomialGrowthD (S := S') d := by
+
   simp [HasPolynomialGrowthD] at hd
   obtain ⟨a, s_poly⟩ := hd
   simp [HasPolynomialGrowthD]
   have b: ℕ+ := 1
-  use b
+  have C: ℕ := 0
+  use ⟨#(S ^ C) * ↑a, (by
+    simp only [PNat.pos, mul_pos_iff_of_pos_right, Finset.card_pos]
+    refine Finset.Nonempty.pow ?_
+    exact Finset.nonempty_coe_sort.mp hS
+  )⟩
   intro n hn
-  sorry
+  --have inject_s_card := Finset.card_le_card_of_injOn (s := S') (t := S ^ C) sorry sorry sorry
+  specialize s_poly n hn
+  have le_pow := Finset.card_pow_le (s := S') (n := n)
+
+  calc
+    #(S' ^ n) ≤ #((S ^ C) * S^n) := sorry
+    _ ≤ #((S ^ C)) * #(S ^ n) := by
+      exact Finset.card_mul_le
+    _ ≤ #((S ^ C)) * (↑a * n ^ d) := by
+      exact Nat.mul_le_mul_left (#(S ^ C)) s_poly
+
+    -- _ = #((S ^ n) ^ C) := by
+    --   rw [← pow_mul]
+    --   rw [mul_comm]
+    --   rw [pow_mul]
+    -- _ ≤ #(S ^ n)^C := by exact Finset.card_pow_le
+    -- _ ≤ (↑a * n ^ d)^C := by
+    --   exact Nat.pow_le_pow_left s_poly C
+
+  rw [← mul_assoc]
+  simp
+  -- calc
+  --   #(S' ^ n) ≤ #(S') ^ n := by apply Finset.card_pow_le
+  --   _ ≤ #(S ^ C) ^ n := by exact Nat.pow_le_pow_left inject_s_card n
+  --   _ ≤ (↑a * C ^ d)^n := by exact Nat.pow_le_pow_left s_poly n
+
+
+#print axioms poly_growth_implies
+
+
+
+
+
 
 
 lemma S_nonempty: S.Nonempty := by
