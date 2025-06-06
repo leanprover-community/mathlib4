@@ -80,12 +80,6 @@ def coeMonoidHom : α →* WithZero α where
   map_one'     := rfl
   map_mul' _ _ := rfl
 
-@[simp]
-lemma MonoidWithZeroHom.trivial_apply_val_unit {M N : Type*} [MonoidWithZero M] [MulZeroOneClass N]
-    [DecidablePred fun x : M ↦ x = 0] [Nontrivial M] [NoZeroDivisors M] (x : Mˣ) :
-    MonoidWithZeroHom.trivial M N x = 1 :=
-  one_apply_of_ne_zero x.ne_zero
-
 section lift
 variable [MulZeroOneClass β]
 

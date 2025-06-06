@@ -53,6 +53,32 @@ def snd : WithZero (M₀ˣ × N₀ˣ) →*₀ N₀ :=
 variable {M₀ N₀}
 
 @[simp]
+lemma one_apply_val_unit {M₀ N₀ : Type*} [MonoidWithZero M₀] [MulZeroOneClass N₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] [Nontrivial M₀] [NoZeroDivisors M₀] (x : M₀ˣ) :
+    MonoidWithZeroHom.one M₀ N₀ x = (1 : N₀) :=
+  one_apply_of_ne_zero x.ne_zero
+
+protected lemma map_eq_zero_iff {G₀ G₀' : Type*} [GroupWithZero G₀]
+    [MulZeroOneClass G₀'] [Nontrivial G₀']
+    {f : G₀ →*₀ G₀'} {x : G₀}:
+    f x = 0 ↔ x = 0 := by
+  refine ⟨?_, by simp +contextual⟩
+  contrapose!
+  intro hx H
+  lift x to G₀ˣ using isUnit_iff_ne_zero.mpr hx
+  apply one_ne_zero (α := G₀')
+  rw [← map_one f, ← Units.mul_inv x, map_mul, H, zero_mul]
+
+/-- The trivial group-with-zero hom is absorbing. -/
+lemma one_apply_hom_eq {M₀ N₀ G₀ : Type*} [MulZeroOneClass M₀] [Nontrivial M₀] [NoZeroDivisors M₀]
+    [MulZeroOneClass N₀] [MulZeroOneClass G₀] [DecidablePred fun x : M₀ ↦ x = 0]
+    (f : N₀ →*₀ G₀) (x : M₀) :
+    (MonoidWithZeroHom.one M₀ G₀) x = f (MonoidWithZeroHom.one M₀ N₀ x) := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
+  · rw [one_apply_of_ne_zero hx, one_apply_of_ne_zero hx, map_one]
+
+@[simp]
 lemma inl_apply_unit [DecidablePred fun x : M₀ ↦ x = 0] (x : M₀ˣ) :
     inl M₀ N₀ x = ((x, (1 : N₀ˣ)) : WithZero (M₀ˣ × N₀ˣ)) := by
   simp [inl]
@@ -81,7 +107,7 @@ theorem fst_comp_inl [DecidablePred fun x : M₀ ↦ x = 0] :
 
 @[simp]
 theorem snd_comp_inl [DecidablePred fun x : M₀ ↦ x = 0] :
-    (snd ..).comp (inl M₀ N₀) = trivial .. := by
+    (snd ..).comp (inl M₀ N₀) = .one .. := by
   ext x
   obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
   simp_all [WithZero.withZeroUnitsEquiv, snd, inl]
@@ -91,7 +117,7 @@ theorem snd_inl_apply_of_ne_zero [DecidablePred fun x : M₀ ↦ x = 0] {x : M�
 
 @[simp]
 theorem fst_comp_inr [DecidablePred fun x : N₀ ↦ x = 0] :
-    (fst ..).comp (inr M₀ N₀) = trivial .. := by
+    (fst ..).comp (inr M₀ N₀) = .one .. := by
   ext x
   obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
   simp_all [WithZero.withZeroUnitsEquiv, fst, inr]
