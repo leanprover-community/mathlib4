@@ -26,7 +26,9 @@ simplicial `G`-set `EG` is isomorphic to the Čech nerve of the natural arrow of
 
 We then use this isomorphism to deduce that as a complex of `k`-modules, the standard resolution
 of `k` as a trivial `G`-representation is homotopy equivalent to the complex with `k` at 0 and 0
-elsewhere. Putting this material together allows us to define `Rep.standardResolution`, the
+elsewhere.
+
+Putting this material together allows us to define `Rep.standardResolution`, the
 standard projective resolution of `k` as a trivial `k`-linear `G`-representation.
 
 We then construct the bar resolution. The `n`th object in this complex is the representation on
@@ -340,7 +342,6 @@ namespace Rep.standardComplex
 
 open classifyingSpaceUniversalCover AlgebraicTopology CategoryTheory.Limits
 
-section Differentials
 variable [Monoid G]
 
 /-- The `k`-linear map underlying the differential in the standard resolution of `k` as a trivial
@@ -378,10 +379,7 @@ theorem d_eq (n : ℕ) : ((standardComplex k G).d (n + 1) n).hom =
   simp [Action.ofMulAction_V, standardComplex, SimplicialObject.δ,
     ← Int.cast_smul_eq_zsmul k ((-1) ^ _ : ℤ), SimplexCategory.δ, Fin.succAboveOrderEmb]
 
-end Differentials
 section Exactness
-
-variable [Monoid G]
 
 /-- The standard resolution of `k` as a trivial representation as a complex of `k`-modules. -/
 def forget₂ToModuleCat :=

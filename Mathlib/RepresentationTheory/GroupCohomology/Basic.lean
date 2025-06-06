@@ -71,7 +71,7 @@ noncomputable section
 
 universe u
 
-variable {k G : Type u} [CommRing k]
+variable {k G : Type u} [CommRing k] {n : ℕ}
 
 open CategoryTheory
 
@@ -92,6 +92,7 @@ theorem linearYonedaObjResolution_d_apply
 end groupCohomology
 
 namespace inhomogeneousCochains
+open Rep
 
 /-- The differential in the complex of inhomogeneous cochains used to
 calculate group cohomology. -/
@@ -125,9 +126,9 @@ end inhomogeneousCochains
 
 namespace groupCohomology
 
-variable [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ)
+variable [Group G] [DecidableEq G] (n) (A : Rep k G)
 
-open inhomogeneousCochains
+open inhomogeneousCochains Rep
 
 /-- Given a `k`-linear `G`-representation `A`, this is the complex of inhomogeneous cochains
 $$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots$$
