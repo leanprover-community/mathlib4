@@ -261,13 +261,12 @@ lemma isRegular_of_maximalIdeal_mem_ofList_minimalPrimes
 lemma isRegular_of_ofList_height_eq_length_of_isCohenMacaulayLocalRing [IsCohenMacaulayLocalRing R]
     (rs : List R) (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) (ht : (Ideal.ofList rs).height = rs.length) :
     IsRegular R rs := by
-  rcases maximalIdeal_mem_ofList_append_minimalPrimes_of_ofList_height_eq_length rs mem ht with
-    ⟨rs', min, len⟩
-  rw [← Nat.cast_add, ← List.length_append] at len
-  have reg := isRegular_of_maximalIdeal_mem_ofList_minimalPrimes _ min len
-  refine ⟨⟨fun i hi ↦ ?_⟩,
-    by simpa using (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (span_le.mpr mem)).symm⟩
-  have := (isRegular_of_maximalIdeal_mem_ofList_minimalPrimes _ min len).1.1 i
-    (lt_of_lt_of_eq (Nat.lt_add_right rs'.length hi) List.length_append.symm)
-  rw [List.take_append_of_le_length (le_of_lt hi)] at this
-  simpa [List.getElem_append_left' hi rs'] using this
+  refine ⟨⟨fun i hi ↦ ?_⟩, ?_⟩
+  · rcases maximalIdeal_mem_ofList_append_minimalPrimes_of_ofList_height_eq_length rs mem ht with
+      ⟨rs', min, len⟩
+    rw [← Nat.cast_add, ← List.length_append] at len
+    have := (isRegular_of_maximalIdeal_mem_ofList_minimalPrimes _ min len).1.1 i
+      (lt_of_lt_of_eq (Nat.lt_add_right rs'.length hi) List.length_append.symm)
+    rw [List.take_append_of_le_length (le_of_lt hi)] at this
+    simpa [List.getElem_append_left' hi rs'] using this
+  · simpa using (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (span_le.mpr mem)).symm
