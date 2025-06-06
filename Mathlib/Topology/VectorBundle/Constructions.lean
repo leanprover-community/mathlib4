@@ -138,7 +138,7 @@ theorem Trivialization.continuousLinearEquivAt_prod {e₁ : Trivialization F₁ 
     {e₂ : Trivialization F₂ (π F₂ E₂)} [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] {x : B}
     (hx : x ∈ (e₁.prod e₂).baseSet) :
     (e₁.prod e₂).continuousLinearEquivAt 𝕜 x hx =
-      (e₁.continuousLinearEquivAt 𝕜 x hx.1).prod (e₂.continuousLinearEquivAt 𝕜 x hx.2) := by
+      (e₁.continuousLinearEquivAt 𝕜 x hx.1).prodCongr (e₂.continuousLinearEquivAt 𝕜 x hx.2) := by
   ext v : 2
   obtain ⟨v₁, v₂⟩ := v
   rw [(e₁.prod e₂).continuousLinearEquivAt_apply 𝕜, Trivialization.prod]
