@@ -199,9 +199,10 @@ variable {n : ℕ}
 
 open Classical in
 theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
-  induction' n with n IH
-  · simp [Subsingleton.elim (α := Q 0) p q, ε, e]
-  · dsimp [ε, e]
+  induction n with
+  | zero => simp [Subsingleton.elim (α := Q 0) p q, ε, e]
+  | succ n IH =>
+    dsimp [ε, e]
     cases hp : p 0 <;> cases hq : q 0
     all_goals
       simp only [Bool.cond_true, Bool.cond_false, LinearMap.fst_apply, LinearMap.snd_apply,
@@ -210,9 +211,10 @@ theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
 
 /-- Any vector in `V n` annihilated by all `ε p`'s is zero. -/
 theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
-  induction' n with n ih
-  · dsimp [ε] at h; exact h fun _ => true
-  · obtain ⟨v₁, v₂⟩ := v
+  induction n with
+  | zero => dsimp [ε] at h; exact h fun _ => true
+  | succ n ih =>
+    obtain ⟨v₁, v₂⟩ := v
     ext <;> change _ = (0 : V n) <;> simp only <;> apply ih <;> intro p <;>
       [let q : Q n.succ := fun i => if h : i = 0 then true else p (i.pred h);
       let q : Q n.succ := fun i => if h : i = 0 then false else p (i.pred h)]
@@ -292,13 +294,13 @@ theorem f_squared (v : V n) : (f n) (f n v) = (n : ℝ) • v := by
 `q` the column index). -/
 
 open Classical in
-theorem f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if p ∈ q.adjacent then 1 else 0 := by
-  induction' n with n IH
-  · intro p q
+theorem f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if p ∈ q.adjacent then 1 else 0 := fun p q ↦ by
+  induction n with
+  | zero =>
     dsimp [f]
     simp [Q.not_adjacent_zero]
     rfl
-  · intro p q
+  | succ n IH =>
     have ite_nonneg : ite (π q = π p) (1 : ℝ) 0 ≥ 0 := by split_ifs <;> norm_num
     dsimp only [e, ε, f, V]; rw [LinearMap.prod_apply]; dsimp; cases hp : p 0 <;> cases hq : q 0
     all_goals
