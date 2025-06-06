@@ -7,9 +7,9 @@ import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.NormLeOne
 import Mathlib.NumberTheory.NumberField.ClassNumber
 
 /-!
-# Integral ideals of a number field
+# Asymptotics on integral ideals of a number field
 
-We prove several results about integral ideals of a number field.
+We prove several asymptotics involving integral ideals of a number field.
 
 ## Main results
 

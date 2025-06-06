@@ -41,22 +41,12 @@ theorem abs_le_left_of_norm (m n : ℤ) : |n| ≤ ‖![n, m]‖ := by
   rw [Int.abs_eq_natAbs]
   rfl
 
-theorem le_left_of_norm (m n : ℤ) : n ≤ ‖![n, m]‖ := by
-  apply le_trans _ (abs_le_left_of_norm m n)
-  norm_cast
-  exact le_abs_self n
-
 theorem abs_le_right_of_norm (m n : ℤ) : |m| ≤ ‖![n, m]‖ := by
   simp only [EisensteinSeries.norm_eq_max_natAbs, Fin.isValue, Matrix.cons_val_zero,
     Matrix.cons_val_one, Matrix.cons_val_fin_one, Nat.cast_max, le_sup_iff]
   right
   rw [Int.abs_eq_natAbs]
   rfl
-
-theorem le_right_of_norm (m n : ℤ) : m ≤ ‖![n, m]‖ := by
-  apply le_trans _ (abs_le_right_of_norm m n)
-  norm_cast
-  exact le_abs_self m
 
 section bounding_functions
 
@@ -218,12 +208,12 @@ lemma linear_right_summable (z : ℂ) (c k : ℤ) (hk : 2 ≤ k) :
 lemma linear_left_summable (z : ℂ) (hz : z ≠ 0) (d k : ℤ) (hk : 2 ≤ k) :
   Summable fun c : ℤ ↦ (((c : ℂ) * z + d) ^ k)⁻¹ := by
   apply summable_inv_of_isBigO_rpow_inv (a := k) (by norm_cast)
-  lift k to ℕ using (by linarith)
+  lift k to ℕ using (by omega)
   simp only [zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow, ← abs_inv]
   apply Asymptotics.IsBigO.pow (Asymptotics.IsBigO.abs_right (linear_inv_isBigO_left d hz))
 
 lemma summable_diff (z : ℂ) (c₁ c₂ : ℤ) :
-    Summable fun (n : ℤ) => ((c₁ * (z : ℂ) - n) * (c₂ * z + n))⁻¹  := by
+    Summable fun n : ℤ ↦ ((c₁ * (z : ℂ) - n) * (c₂ * z + n))⁻¹  := by
   apply summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
   simp only [Real.rpow_two, sq_abs, abs_mul_abs_self, ← mul_inv, pow_two]
   simpa [sub_eq_add_neg] using Asymptotics.IsBigO.mul (linear_inv_isBigO_right c₂ z)

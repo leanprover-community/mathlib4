@@ -584,7 +584,7 @@ theorem prod_div_divisors {α : Type*} [CommMonoid α] (n : ℕ) (f : ℕ → α
   rw [← prod_image]
   · exact prod_congr (image_div_divisors_eq_divisors n) (by simp)
   · intro x hx y hy h
-    rw [mem_divisors] at hx hy
+    rw [mem_coe, mem_divisors] at hx hy
     exact (div_eq_iff_eq_of_dvd_dvd hn hx.1 hy.1).mp h
 
 theorem disjoint_divisors_filter_isPrimePow {a b : ℕ} (hab : a.Coprime b) :

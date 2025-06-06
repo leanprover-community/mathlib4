@@ -915,17 +915,8 @@ theorem Measurable.limsup {f : ℕ → δ → α} (hf : ∀ i, Measurable (f i))
 
 end ConditionallyCompleteLinearOrder
 
-/-- Convert a `Homeomorph` to a `MeasurableEquiv`. -/
-def Homemorph.toMeasurableEquiv (h : α ≃ₜ β) : α ≃ᵐ β where
-  toEquiv := h.toEquiv
-  measurable_toFun := h.continuous_toFun.measurable
-  measurable_invFun := h.continuous_invFun.measurable
-
-protected theorem IsFiniteMeasureOnCompacts.map (μ : Measure α) [IsFiniteMeasureOnCompacts μ]
-    (f : α ≃ₜ β) : IsFiniteMeasureOnCompacts (Measure.map f μ) := by
-  refine ⟨fun K hK ↦ ?_⟩
-  rw [← Homeomorph.toMeasurableEquiv_coe, MeasurableEquiv.map_apply]
-  exact IsCompact.measure_lt_top (f.isCompact_preimage.2 hK)
+@[deprecated (since := "2025-05-30")]
+alias Homemorph.toMeasurableEquiv := Homeomorph.toMeasurableEquiv
 
 end BorelSpace
 
