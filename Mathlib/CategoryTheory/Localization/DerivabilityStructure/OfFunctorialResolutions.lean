@@ -104,15 +104,16 @@ lemma isConnected_rightResolution_of_functorial_resolutions (X₂ : C₂) :
       calc
         Zigzag R₀ { hw := W₂.comp_mem _ _ R₀.hw (hi _), .. } :=
           Zigzag.of_hom { hf := W₁_ι_app hi hW₁ R₀.X₁, .. }
-        Zigzag (J := Φ.RightResolution X₂) _ { hw := hi X₂, .. } := Zigzag.of_inv
-          { f := ρ.map R₀.w
-            comm := (i.naturality R₀.w).symm
-            hf := (localizerMorphismInv hi hW₁).map _ R₀.hw }
+        Zigzag (J := Φ.RightResolution X₂) _ { hw := hi X₂, .. } :=
+          Zigzag.of_inv
+            { f := ρ.map R₀.w
+              comm := (i.naturality R₀.w).symm
+              hf := (localizerMorphismInv hi hW₁).map _ R₀.hw }
         Zigzag (J := Φ.RightResolution X₂) _ { hw := W₂.comp_mem _ _ R₄.hw (hi _), .. } :=
-            Zigzag.of_hom
-          { f := ρ.map R₄.w
-            comm := (i.naturality R₄.w).symm
-            hf := (localizerMorphismInv hi hW₁).map _ R₄.hw }
+          Zigzag.of_hom
+            { f := ρ.map R₄.w
+              comm := (i.naturality R₄.w).symm
+              hf := (localizerMorphismInv hi hW₁).map _ R₄.hw }
         Zigzag _ R₄ :=
           Zigzag.of_inv { hf := W₁_ι_app hi hW₁ R₄.X₁, .. })
   constructor
