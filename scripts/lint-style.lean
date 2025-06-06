@@ -78,7 +78,7 @@ Moreover, every file imported in `Mathlib.Init` should in turn import the `Heade
 (except for the header linter itself, of course).
 Return the number of modules which violated one of these rules.
 -/
-def missingInitImports (opts : Lean.Options) : IO Nat := do
+def missingInitImports (opts : LinterOptions) : IO Nat := do
   unless getLinterValue linter.checkInitImports opts do return 0
 
   -- Find any file in the Mathlib directory which does not contain any Mathlib import.
@@ -126,7 +126,7 @@ register_option linter.allScriptsDocumented : Bool := { defValue := false }
 
 /-- Verifies that every file in the `scripts` directory is documented in `scripts/README.md`.
 Return the number of undocumented scripts. -/
-def undocumentedScripts (opts : Lean.Options) : IO Nat := do
+def undocumentedScripts (opts : LinterOptions) : IO Nat := do
   unless getLinterValue linter.allScriptsDocumented opts do return 0
 
   -- Retrieve all scripts (except for the `bench` directory).
@@ -148,7 +148,15 @@ def undocumentedScripts (opts : Lean.Options) : IO Nat := do
 
 /-- Implementation of the `lint-style` command line program. -/
 def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
-  let opts ← getLakefileLeanOptions
+  -- Use the environment declared in Mathlib.Tactic.Linter.TextBased to determine the linter sets.
+  Lean.initSearchPath (← Lean.findSysroot)
+  let sets ← unsafe Lean.withImportModules #[{module := `Mathlib.Tactic.Linter.TextBased}] {}
+    fun env => pure <| linterSetsExt.getState env
+
+  let opts : LinterOptions := {
+    toOptions := ← getLakefileLeanOptions,
+    linterSets := sets,
+  }
 
   let style : ErrorFormat := match args.hasFlag "github" with
     | true => ErrorFormat.github

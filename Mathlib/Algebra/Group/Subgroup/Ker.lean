@@ -471,9 +471,10 @@ theorem map_subtype_le_map_subtype {G' : Subgroup G} {H K : Subgroup G'} :
     H.map G'.subtype ≤ K.map G'.subtype ↔ H ≤ K :=
   map_le_map_iff_of_injective G'.subtype_injective
 
-/-- Subgroups of the subgroup `H` is considered as a subgroup which is less or equal than `H`. -/
-@[to_additive (attr := simps apply_coe) "Additive subgroups of the additive subgroup `H` is
-considered as an additive subgroup which is less or equal than `H`."]
+/-- Subgroups of the subgroup `H` are considered as subgroups that are less than or equal to
+`H`. -/
+@[to_additive (attr := simps apply_coe) "Additive subgroups of the subgroup `H` are considered as
+additive subgroups that are less than or equal to `H`."]
 def MapSubtype.orderIso (H : Subgroup G) : Subgroup ↥H ≃o { H' : Subgroup G // H' ≤ H } where
   toFun H' := ⟨H'.map H.subtype, map_subtype_le H'⟩
   invFun sH' := sH'.1.subgroupOf H
