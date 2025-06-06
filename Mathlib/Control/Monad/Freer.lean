@@ -125,12 +125,9 @@ instance FreeLawfulMonad {F : Type u → Type v} : LawfulMonad (Freer F) where
 
 /-- Type constructor for state operations. -/
 inductive StateF (σ : Type u) (α : Type v) where
-  /-- Get the current state, passing it to the continuation.
-  - `k : σ → α`: continuation that receives the current state -/
-  | get : (σ → α) → StateF σ α
-  /-- Set the state to a new value, continuing with the given result.
-  - `newState : σ`: the new state to set
-  - `result : α`: the result to continue with -/
+  /-- Get the current state, passing it to the continuation-/
+  | get (cont : σ → α) : StateF σ α
+  /-- Set the state to a new value, continuing with the given result. -/
   | put : σ → α → StateF σ α
 
 instance {σ : Type u} : Functor (StateF σ) where
