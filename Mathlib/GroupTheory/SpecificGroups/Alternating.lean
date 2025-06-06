@@ -29,11 +29,11 @@ consisting of the even permutations.
 
 * `alternatingGroup.isSimpleGroup_five` shows that the alternating group on `Fin 5` is simple.
   The proof shows that the normal closure of any non-identity element of this group contains a
-  3-cycle, this theorem is used in `alternatingGroup.isSimpleGroup_of_five_le` as the induction
-  base.
+  3-cycle, this theorem is used in `alternatingGroup.isSimpleGroup_of_five_le` as the base case for
+  induction.
 
-* `alternatingGroup.isSimpleGroup_of_five_le` shows that the alternating group on
-  `Fin n (5 ≤ n)` is simple.
+* `alternatingGroup.isSimpleGroup_of_five_le` shows that the alternating group on `Fin n` for
+  `5 ≤ n` is simple.
 
 * `alternatingGroup.isSimpleGroup_iff_card_eq_three_or_card_ge_five` shows that the alternating
   group on `α` is simple if and only if `card α = 3 ∨ 5 ≤ card α`.
@@ -111,7 +111,7 @@ theorem alternatingGroup.index_eq_one [Subsingleton α] : (alternatingGroup α).
   rw [Subgroup.index_eq_one]; apply Subsingleton.elim
 
 /-- The group isomorphism between `alternatingGroup (Fin n)` and `alternatingGroup (Fin (n + 1))`
-  which fixes one element. -/
+that fixes one element. -/
 @[simps apply_coe symm_apply_coe]
 def Fin.altExtendSuccAboveMulEquiv {n} (i : Fin (n + 1)) :
     ↥(alternatingGroup (Fin n)) ≃*
@@ -188,7 +188,7 @@ theorem isThreeCycle_isConj (h5 : 5 ≤ Fintype.card α) {σ τ : alternatingGro
 
 end alternatingGroup
 
-/-- The normal proper subgroup of $A_4$, used to prove that $A_4$ is not simple. -/
+/-- The proper normal subgroup of $A_4$, used to show that $A_4$ is not simple. -/
 def kleinFour : Subgroup (Perm (Fin 4)) where
   carrier := {1, swap 0 1 * swap 2 3, swap 0 2 * swap 1 3, swap 0 3 * swap 1 2}
   mul_mem' := by simp_rw [← forall_cond_comm, SetCoe.forall']; decide
@@ -297,14 +297,14 @@ theorem isThreeCycle_sq_of_three_mem_cycleType_five {g : Perm (Fin 5)} (h : 3 �
   rw [← hd.card_support_mul, h3]
   exact (c * g').support.card_le_univ
 
-/-- A key lemma to prove $A_n(5 \leq n)$ is simple. Shows that any nontrivial normal subgroup of an
-  alternating group on at least 6 elements contains an nontrivial element which fixes the specific
-  element. -/
+/-- A key lemma to prove $A_n(5 \leq n)$ is simple. It shows that any nontrivial normal subgroup of
+an alternating group on at least 6 elements contains a nontrivial element that fixes a specific
+element. -/
 theorem normal_alternating_subgroup_inf_stabilizer_ne_bot (h6 : 6 ≤ Fintype.card α)
     {H : Subgroup (Perm α)} (hH : H ≤ alternatingGroup α)
     [iH : (H.subgroupOf (alternatingGroup α)).Normal] (nH : H ≠ ⊥) (a : α) :
     H ⊓ stabilizer (Perm α) a ≠ ⊥ := by
-  -- The proof method is from https://arbital.com/p/alternating_group_is_simple/
+  -- The proof method is based on: https://arbital.com/p/alternating_group_is_simple/
   rw [← nontrivial_iff_ne_bot, nontrivial_iff_exists_ne_one] at nH ⊢
   simp_rw [mem_inf, mem_stabilizer_iff, Perm.smul_def, and_assoc]
   obtain ⟨σ, hσH, hσ⟩ := nH
@@ -503,8 +503,9 @@ theorem not_isSimpleGroup_of_card_eq_four (h4 : card α = 4) :
   rw [h4] at e; rw [e.isSimpleGroup_congr]; exact not_isSimpleGroup_four
 
 /-- Shows that $A_5$ is simple by taking an arbitrary non-identity element and showing by casework
-  on its cycle type that its normal closure is all of $A_5$.
-  This theorem is used in `isSimpleGroup_of_five_le` as the induction base. -/
+on its cycle type that its normal closure is all of $A_5$.
+This theorem is used in `alternatingGroup.isSimpleGroup_of_five_le` as the base case for
+induction. -/
 theorem isSimpleGroup_five : IsSimpleGroup ↥(alternatingGroup (Fin 5)) :=
   ⟨fun H => by
     intro Hn
