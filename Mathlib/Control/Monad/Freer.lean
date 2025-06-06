@@ -128,12 +128,12 @@ inductive StateF (σ : Type u) (α : Type v) where
   /-- Get the current state, passing it to the continuation-/
   | get (cont : σ → α) : StateF σ α
   /-- Set the state to a new value, continuing with the given result. -/
-  | put : σ → α → StateF σ α
+  | set : σ → α → StateF σ α
 
 instance {σ : Type u} : Functor (StateF σ) where
   map f
   | .get k => .get (f ∘ k)
-  | .put st a => .put st (f a)
+  | .set st a => .set st (f a)
 
 /-- State monad via the `Freer` monad. -/
 abbrev FreerState (σ : Type u) := Freer (StateF σ)
@@ -145,10 +145,10 @@ instance {σ : Type u} : LawfulMonad (FreerState σ) := inferInstance
 
 instance {σ : Type u} : MonadStateOf σ (FreerState σ) where
   get := Freer.impure σ (StateF.get id) Freer.pure
-  set newState := Freer.impure PUnit (StateF.put newState PUnit.unit) Freer.pure
+  set newState := Freer.impure PUnit (StateF.set newState PUnit.unit) Freer.pure
   modifyGet f := Freer.impure σ (StateF.get id) (fun s =>
     let (a, s') := f s
-    Freer.impure PUnit (StateF.put s' PUnit.unit) (fun _ => Freer.pure a))
+    Freer.impure PUnit (StateF.set s' PUnit.unit) (fun _ => Freer.pure a))
 
 instance {σ : Type u} : MonadState σ (FreerState σ) := inferInstance
 
@@ -157,7 +157,7 @@ def runState {σ : Type u} {α : Type v} (computation : FreerState σ α) (initi
   match computation with
   | Freer.pure a => (a, initialState)
   | Freer.impure _ (StateF.get k) cont => runState (cont (k initialState)) initialState
-  | Freer.impure _ (StateF.put newState p) cont => runState (cont p) newState
+  | Freer.impure _ (StateF.set newState p) cont => runState (cont p) newState
 
 /-- Run a state computation, returning only the result. -/
 def evalState {σ : Type u} {α : Type v} (computation : FreerState σ α) (initialState : σ) : α :=
