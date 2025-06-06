@@ -41,8 +41,8 @@ variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
 /-- A vertex operator over a commutative ring `R` is an `R`-linear map from an `R`-module `V` to
 Laurent series with coefficients in `V`.  We write this as a specialization of the heterogeneous
 case. -/
-abbrev VertexOperator (R : Type*) (V : Type*) [CommRing R] [AddCommGroup V]
-    [Module R V] := HVertexOperator ℤ R V V
+abbrev VertexOperator (R : Type*) (V : Type*) [CommRing R] [AddCommGroup V] [Module R V] :=
+  HVertexOperator ℤ R V V
 
 namespace VertexOperator
 
@@ -53,27 +53,20 @@ theorem ext (A B : VertexOperator R V) (h : ∀ v : V, A v = B v) :
     A = B := LinearMap.ext h
 
 /-- The coefficient of a vertex operator under normalized indexing. -/
-def ncoeff {R} [CommRing R] [AddCommGroup V] [Module R V] (A : VertexOperator R V) (n : ℤ) :
-    Module.End R V := HVertexOperator.coeff A (-n - 1)
+def ncoeff {R} [CommRing R] [AddCommGroup V] [Module R V] :
+    VertexOperator R V →ₗ[R] ℤ → Module.End R V where
+  toFun A n := HVertexOperator.coeff A (-n - 1)
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
 
 /-- In the literature, the `n`th normalized coefficient of a vertex operator `A` is written as
 either `Aₙ` or `A(n)`. -/
 scoped[VertexOperator] notation A "[[" n "]]" => ncoeff A n
 
-@[simp]
+@[simp] -- simp normal form for coefficients uses ncoeff.
 theorem coeff_eq_ncoeff (A : VertexOperator R V)
     (n : ℤ) : HVertexOperator.coeff A n = A [[-n - 1]] := by
-  rw [ncoeff, neg_sub, sub_neg_eq_add, add_sub_cancel_left]
-
-@[simp]
-theorem ncoeff_add (A B : VertexOperator R V) (n : ℤ) :
-    (A + B) [[n]] = A [[n]] + B [[n]] := by
-  rw [ncoeff, ncoeff, ncoeff, coeff_add, Pi.add_apply]
-
-@[simp]
-theorem ncoeff_smul (A : VertexOperator R V) (r : R) (n : ℤ) :
-    (r • A) [[n]] = r • (A [[n]]) := by
-  rw [ncoeff, ncoeff, coeff_smul, Pi.smul_apply]
+  simp [ncoeff]
 
 theorem ncoeff_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
     (h : -n - 1 < HahnSeries.order (A x)) : (A [[n]]) x = 0 := by
@@ -105,7 +98,7 @@ theorem ncoeff_of_coeff (f : ℤ → Module.End R V)
     (hf : ∀ (x : V), ∃ (n : ℤ), ∀ (m : ℤ), m < n → (f m) x = 0) (n : ℤ) :
     (of_coeff f hf) [[n]] = f (-n - 1) := by
   ext v
-  rw [ncoeff, coeff_apply, of_coeff_apply_coeff]
+  dsimp [ncoeff]
 
 instance [CommRing R] [AddCommGroup V] [Module R V] : One (VertexOperator R V) :=
   ⟨(HahnModule.lof R (Γ := ℤ) (V := V)) ∘ₗ HahnSeries.single.linearMap (0 : ℤ)⟩
@@ -118,8 +111,8 @@ theorem one_apply (x : V) :
 @[simp]
 theorem one_ncoeff_neg_one : (1 : VertexOperator R V) [[-1]] = LinearMap.id := by
   ext
-  rw [show -1 = - 0 - 1 by omega, ← coeff_eq_ncoeff, coeff_apply, one_apply, Equiv.symm_apply_apply,
-    HahnSeries.coeff_single_same, LinearMap.id_apply]
+  rw [show -1 = - 0 - 1 by omega, ← coeff_eq_ncoeff, coeff_apply_apply, one_apply,
+    Equiv.symm_apply_apply, HahnSeries.coeff_single_same, LinearMap.id_apply]
 
 theorem one_coeff_zero : HVertexOperator.coeff (1 : VertexOperator R V) 0 = LinearMap.id := by
   ext; simp
@@ -128,7 +121,7 @@ theorem one_coeff_zero : HVertexOperator.coeff (1 : VertexOperator R V) 0 = Line
 theorem one_ncoeff_ne_neg_one {n : ℤ} (hn : n ≠ -1) :
     (1 : VertexOperator R V) [[n]] = 0 := by
   ext
-  rw [LinearMap.zero_apply, show n = -(-n - 1) - 1 by omega, ← coeff_eq_ncoeff, coeff_apply,
+  rw [LinearMap.zero_apply, show n = -(-n - 1) - 1 by omega, ← coeff_eq_ncoeff, coeff_apply_apply,
     one_apply, Equiv.symm_apply_apply, HahnSeries.coeff_single_of_ne (show -n - 1 ≠ 0 by omega)]
 
 theorem one_coeff_of_ne {n : ℤ} (hn : n ≠ 0) :
@@ -165,7 +158,8 @@ theorem hasseDeriv_coeff (k : ℕ) (A : VertexOperator R V) (n : ℤ) :
 
 theorem hasseDeriv_ncoeff (k : ℕ) (A : VertexOperator R V) (n : ℤ) :
     (hasseDeriv k A) [[n]] = (Ring.choose (-n - 1 + k) k) • A [[n - k]] := by
-  simp only [ncoeff, hasseDeriv_coeff, show -n - 1 + k = -(n - k) - 1 by omega]
+  dsimp [ncoeff]
+  rw [hasseDeriv_coeff, show -n - 1 + k = -(n - k) - 1 by omega]
 
 @[simp]
 theorem hasseDeriv_zero : hasseDeriv 0 = LinearMap.id (M := VertexOperator R V) := by
@@ -250,24 +244,40 @@ open HVertexOperator
 def binomCompLeft (n : ℤ) : HVertexOperator (ℤ ×ₗ ℤ) R V V :=
   HahnSeries.binomialPow R (toLex (0, 1) : ℤ ×ₗ ℤ) (toLex (1, 0)) n • (lexComp A B)
 
+@[simp]
+theorem binomialPow_smul_binomCompLeft (m n : ℤ) :
+    HahnSeries.binomialPow R (toLex (0, 1) : ℤ ×ₗ ℤ) (toLex (1, 0)) m • binomCompLeft A B n =
+      binomCompLeft A B (m + n) := by
+  rw [binomCompLeft, binomCompLeft, ← mul_smul, HahnSeries.binomialPow_add]
+
 theorem binomCompLeft_apply_coeff (k l n : ℤ) (v : V) :
     (binomCompLeft A B n).coeff (toLex (k, l)) v =
       ∑ᶠ (m : ℕ), Int.negOnePow m • Ring.choose n m • A.coeff (l - n + m) (B.coeff (k - m) v) := by
-  rw [binomCompLeft, coeff_apply, LinearMap.smul_apply, binomialPow_smul_coeff _ lex_basis_lt]
+  rw [binomCompLeft, coeff_apply_apply, LinearMap.smul_apply, binomialPow_smul_coeff _ lex_basis_lt]
   exact finsum_congr fun _ ↦ by congr 2; simp; abel_nf
 
 /-- `(X - Y)^n B(Y) A(X)` as a linear map from `V` to `V((Y))((X))` -/
 def binomCompRight (n : ℤ) : HVertexOperator (ℤ ×ₗ ℤ) R V V :=
   (Int.negOnePow n : R) •
-    HahnSeries.binomialPow R (toLex (1 ,0) : ℤ ×ₗ ℤ) (toLex (0, 1)) n • (lexComp B A)
+    HahnSeries.binomialPow R (toLex (0, 1) : ℤ ×ₗ ℤ) (toLex (1, 0)) n • (lexComp B A)
 
-/-!
+@[simp]
+theorem binomialPow_smul_binomCompRight (m n : ℤ) :
+    (Int.negOnePow m : R) • HahnSeries.binomialPow R (toLex (0, 1) : ℤ ×ₗ ℤ) (toLex (1, 0)) m •
+      binomCompRight A B n = binomCompRight A B (m + n) := by
+  rw [binomCompRight, binomCompRight, SMulCommClass.smul_comm, smul_smul, ← Int.cast_mul,
+    ← Units.val_mul, ← Int.negOnePow_add, ← SMulCommClass.smul_comm, smul_smul,
+    HahnSeries.binomialPow_add]
+
 theorem binomCompRight_apply_coeff (k l n : ℤ) (v : V) :
     (binomCompRight A B n).coeff (toLex (k, l)) v =
-      ∑ᶠ (m : ℕ), Int.negOnePow m • Ring.choose n m • A.coeff (l - n + m) (B.coeff (k - m) v) := by
-  rw [binomCompLeft, coeff_apply, LinearMap.smul_apply, binomialPow_smul_coeff _ lex_basis_lt]
-  exact finsum_congr fun _ ↦ by congr 2; simp; abel_nf
--/
+      Int.negOnePow n • ∑ᶠ (m : ℕ),
+        Int.negOnePow m • Ring.choose n m • B.coeff (l - n + m) (A.coeff (k - m) v) := by
+  rw [binomCompRight, coeff_apply_apply, LinearMap.smul_apply, LinearMap.smul_apply,
+    HahnModule.of_symm_smul, HahnSeries.coeff_smul, binomialPow_smul_coeff _ lex_basis_lt,
+    Int.cast_smul_eq_zsmul, Units.smul_def]
+  congr 1
+  refine finsum_congr fun m ↦ by congr 2; simp; abel_nf
 
 /-- Two vertex operators commute if composition in the opposite order yields switched
 coefficients. This should be replaced with locality at order zero. -/
@@ -298,30 +308,30 @@ since `BA` takes values in the opposite-order Hahn series. -/
 def IsLocalToOrderLeq (n : ℕ) : Prop :=
   ∀ (k l : ℤ), (binomCompLeft A B n).coeff (toLex (k, l)) =
     (binomCompRight A B n).coeff (toLex (l, k))
-/-!
+
 theorem isLocalToOrderLeqAdd (m n : ℕ) (h : IsLocalToOrderLeq A B n) :
     IsLocalToOrderLeq A B (n + m) := by
   induction m with
   | zero => exact h
   | succ m ih =>
     intro k l
-    rw [IsLocalToOrderLeq, binomCompLeft] at ih
-    rw [binomCompLeft, ← add_assoc, Nat.cast_add, ← HahnSeries.binomialPow_add, mul_comm, mul_smul]
-    ext v
-    rw [coeff_apply]
-    rw [binomialPow_smul_coeff]
+    rw [IsLocalToOrderLeq] at ih
+    rw [← add_assoc, add_comm _ 1, Nat.cast_add, ← binomialPow_smul_binomCompLeft,
+      ← binomialPow_smul_binomCompRight, HahnSeries.binomialPow_one R lex_basis_lt, sub_smul,
+      LinearMap.map_sub, Pi.sub_apply]
+    simp_rw [coeff_single_smul, one_smul, vadd_eq_add, neg_add_eq_sub, ← toLex_sub, Prod.mk_sub_mk,
+      Int.sub_zero]
+    rw [ih k (l-1), ih (k-1) l, coeff_smul, sub_smul]
+    simp [coeff_single_smul, neg_add_eq_sub, ← toLex_sub]
 
-theorem toLex_zero_one_lt : (toLex (0, 1) : ℤ ×ₗ ℤ) < (toLex (1, 0)) := by
-  exact lex_basis_lt
-
-
-def isLocal_symm (h : IsLocalToOrderLeq R V A B n) : IsLocalToOrderLeq R V B A n := by
+/-!
+def isLocal_symm (n : ℕ) (h : IsLocalToOrderLeq A B n) : IsLocalToOrderLeq B A n := by
   intro k l
 
   sorry
 
 theorem isLocal_with_hasseDeriv_left (m : ℕ) (h : IsLocalToOrderLeq R V A B n) :
-    IsLocalToOrderLeq R V (hasseDeriv m A) B (n + m) := by
+    IsLocalToOrderLeq (hasseDeriv m A) B (n + m) := by
   sorry
 -/
 --show `A` and `B` local to order `n` implies `∂^[k]A` and `B` are local to order `n+k`.

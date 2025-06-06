@@ -128,7 +128,8 @@ instance isOrderedCancelMonoid [CommMonoid α] [PartialOrder α] [IsOrderedCance
     (fun hxy => left _ _ <| lt_of_mul_lt_mul_left' hxy)
     (fun hxy => le_iff.2 <| Or.inr ⟨mul_left_cancel hxy.1, le_of_mul_le_mul_left' hxy.2⟩)
 
-@[to_additive]
+/-- An ordered multiplicative isomorphism given by `lexEquiv`. -/
+@[to_additive "An ordered additive isomorphism given by `lexEquiv`."]
 def lexEquivMulHom (α β) [PartialOrder α] [Monoid α] [PartialOrder β] [Monoid β] :
     α ×ₗ β ≃*o β ×ᵣ α :=
   ⟨⟨lexEquiv α β, by simp [lexEquiv, ← toRevLex_mul]⟩, OrderIso.le_iff_le (lexEquiv α β)⟩

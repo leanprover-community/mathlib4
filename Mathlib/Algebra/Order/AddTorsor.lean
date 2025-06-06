@@ -392,7 +392,7 @@ instance [PartialOrder G] [PartialOrder G₁] [PartialOrder P₁] [SMul G P₁]
         (ofRevLex a).1 (ofRevLex b).1 (ofRevLex c).1 h₃
 
 /-- An ordered equivariant isomorphism given by `lexEquiv`. -/
-@[to_additive]
+@[to_additive "An ordered additive-equivariant isomorphism given by `lexEquiv`."]
 def lexEquivSMul  (G G₁ P₁ P₂) [PartialOrder G] [PartialOrder G₁] [PartialOrder P₁] [SMul G P₁]
     [PartialOrder P₂] [SMul G₁ P₂] :
     (P₁ ×ₗ P₂) ≃oₑ[(Prod.RevLex.lexEquiv G G₁).toEquiv] (P₂ ×ᵣ P₁) where

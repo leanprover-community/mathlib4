@@ -108,7 +108,6 @@ def binomialPow (g g' : Γ) (r : R) : HahnSeries Γ A :=
   single (r • g) (1 : A) *
     (PowerSeries.heval ((single (g' - g)) (-1 : A)) (PowerSeries.binomialSeries A r))
 
-@[simp]
 theorem binomialPow_apply (g g' : Γ) (r : R) :
     binomialPow A g g' r = single (r • g) 1 *
       (PowerSeries.heval ((single (g' - g)) (-1 : A)) (PowerSeries.binomialSeries A r)) :=
@@ -142,7 +141,7 @@ theorem binomialPow_one {g g' : Γ} (h : g < g') :
 theorem binomialPow_nat {g g' : Γ} (h : g < g') (n : ℕ) :
     binomialPow A g g' (n : R) = ((single g (1 : A)) - single g' 1) ^ n := by
   induction n with
-  | zero => simp [PowerSeries.binomialSeries_zero, map_one]
+  | zero => simp [PowerSeries.binomialSeries_zero, map_one, binomialPow_apply]
   | succ n ih =>
     rw [Nat.cast_add, ← binomialPow_add, pow_add, ih, binomialPow_one A h, pow_one]
 
