@@ -79,11 +79,11 @@ lemma Algebra.IsUnramifiedAt.of_liesOver
   IsUnramifiedAt.of_liesOver_of_ne_bot R p P P.primeCompl_le_nonZeroDivisors
     (Ideal.ne_bot_of_liesOver_of_ne_bot · P)
 
-/-- Let `R` be a domain of characteristic 0, finite rank over `ℤ`, `S ⊇ R` be a dedekind domain
+/-- Let `R` be a domain of characteristic 0, finite rank over `ℤ`, `S` be a dedekind domain
 that is a finite `R`-algebra. Let `p` be a prime of `S`, then `p` is unramifed iff `e(p) = 1`. -/
 lemma Algebra.isUnramifiedAt_iff_of_isDedekindDomain
     {p : Ideal S} [p.IsPrime] [IsDedekindDomain S] [EssFiniteType R S] [IsDomain R]
-    [Module.Finite ℤ R] [CharZero R] [Algebra.IsIntegral R S] [NoZeroSMulDivisors R S]
+    [Module.Finite ℤ R] [CharZero R] [Algebra.IsIntegral R S]
     (hp : p ≠ ⊥) :
     Algebra.IsUnramifiedAt R p ↔ e(p|R) = 1 := by
   rw [isUnramifiedAt_iff_map_eq R (p.under R) p, and_iff_right,
