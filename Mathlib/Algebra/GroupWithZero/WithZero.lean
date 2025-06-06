@@ -344,35 +344,10 @@ lemma apply_one_apply_eq {M₀ N₀ G₀ : Type*} [MulZeroOneClass M₀] [Nontri
 
 /-- The trivial group-with-zero hom is absorbing for composition. -/
 @[simp]
-lemma one_apply_apply_eq {M₀ N₀ G₀ : Type*}
-    [GroupWithZero M₀]
-    [MulZeroOneClass N₀] [Nontrivial N₀] [NoZeroDivisors N₀]
-    [MulZeroOneClass G₀]
-    [DecidablePred fun x : M₀ ↦ x = 0] [DecidablePred fun x : N₀ ↦ x = 0]
-    (f : M₀ →*₀ N₀) (x : M₀) :
-    (1 : N₀ →*₀ G₀) (f x) = (1 : M₀ →*₀ G₀) x := by
-  rcases eq_or_ne x 0 with rfl | hx
-  · simp
-  · rw [one_apply_of_ne_zero hx, one_apply_of_ne_zero]
-    simp [f.map_eq_zero_iff, hx]
-
-/-- The trivial group-with-zero hom is absorbing for composition. -/
-@[simp]
 lemma comp_one {M₀ N₀ G₀ : Type*} [MulZeroOneClass M₀] [Nontrivial M₀] [NoZeroDivisors M₀]
     [MulZeroOneClass N₀] [MulZeroOneClass G₀] [DecidablePred fun x : M₀ ↦ x = 0]
     (f : N₀ →*₀ G₀) :
     f.comp (1 : M₀ →*₀ N₀) = (1 : M₀ →*₀ G₀) :=
   ext <| apply_one_apply_eq _
-
-/-- The trivial group-with-zero hom is absorbing for composition. -/
-@[simp]
-lemma one_comp {M₀ N₀ G₀ : Type*}
-    [GroupWithZero M₀]
-    [MulZeroOneClass N₀] [Nontrivial N₀] [NoZeroDivisors N₀]
-    [MulZeroOneClass G₀]
-    [DecidablePred fun x : M₀ ↦ x = 0] [DecidablePred fun x : N₀ ↦ x = 0]
-    (f : M₀ →*₀ N₀) :
-    (1 : N₀ →*₀ G₀).comp f = (1 : M₀ →*₀ G₀) :=
-  ext <| one_apply_apply_eq _
 
 end MonoidWithZeroHom

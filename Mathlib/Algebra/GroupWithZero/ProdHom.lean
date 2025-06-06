@@ -5,6 +5,7 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.GroupWithZero.Commute
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.GroupWithZero.WithZero
 
 /-!
@@ -22,6 +23,31 @@ as well as a terminal object.
 -/
 
 namespace MonoidWithZeroHom
+
+/-- The trivial group-with-zero hom is absorbing for composition. -/
+@[simp]
+lemma one_apply_apply_eq {M₀ N₀ G₀ : Type*}
+    [GroupWithZero M₀]
+    [MulZeroOneClass N₀] [Nontrivial N₀] [NoZeroDivisors N₀]
+    [MulZeroOneClass G₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] [DecidablePred fun x : N₀ ↦ x = 0]
+    (f : M₀ →*₀ N₀) (x : M₀) :
+    (1 : N₀ →*₀ G₀) (f x) = (1 : M₀ →*₀ G₀) x := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
+  · rw [one_apply_of_ne_zero hx, one_apply_of_ne_zero]
+    rwa [map_ne_zero f]
+
+/-- The trivial group-with-zero hom is absorbing for composition. -/
+@[simp]
+lemma one_comp {M₀ N₀ G₀ : Type*}
+    [GroupWithZero M₀]
+    [MulZeroOneClass N₀] [Nontrivial N₀] [NoZeroDivisors N₀]
+    [MulZeroOneClass G₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] [DecidablePred fun x : N₀ ↦ x = 0]
+    (f : M₀ →*₀ N₀) :
+    (1 : N₀ →*₀ G₀).comp f = (1 : M₀ →*₀ G₀) :=
+  ext <| one_apply_apply_eq _
 
 variable (M₀ N₀ : Type*) [GroupWithZero M₀] [GroupWithZero N₀]
 
@@ -122,16 +148,6 @@ lemma fst_surjective [DecidablePred fun x : M₀ ↦ x = 0] :
 lemma snd_surjective [DecidablePred fun x : N₀ ↦ x = 0] :
     Function.Surjective (snd M₀ N₀) :=
   Function.HasRightInverse.surjective ⟨inr .., fun _ ↦ by simp⟩
-
-@[simp]
-lemma fst_eq_zero_iff (x : WithZero (M₀ˣ × N₀ˣ)) :
-    fst M₀ N₀ x = 0 ↔ x = 0 := by
-  cases x <;> simp
-
-@[simp]
-lemma snd_eq_zero_iff (x : WithZero (M₀ˣ × N₀ˣ)) :
-    snd M₀ N₀ x = 0 ↔ x = 0 := by
-  cases x <;> simp
 
 variable [DecidablePred fun x : M₀ ↦ x = 0] [DecidablePred fun x : N₀ ↦ x = 0]
 
