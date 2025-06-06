@@ -21,7 +21,7 @@ Moreover, cohomology of a complex is defined as an abstract cokernel, whereas th
 are currently explicit quotients of cocycles by coboundaries. However, we are currently moving away
 from this approach, and instead defining more convenient constructors for the existing definitions
 of cocycles and cohomology, in order to streamline API. So far the new API is in the sections
-`oneCocycles'` and `twoCocycles'`.
+`oneCocycles', twoCocycles', oneCoboundaries'` and `twoCoboundaries'`.
 
 We also show that when the representation on `A` is trivial, `H¹(G, A) ≃ Hom(G, A)`.
 
@@ -607,6 +607,8 @@ def twoCoboundaries : Submodule k (G × G → A) :=
 
 variable {A}
 
+section oneCoboundaries
+
 instance : FunLike (oneCoboundaries A) G A := ⟨Subtype.val, Subtype.val_injective⟩
 
 @[simp]
@@ -643,9 +645,12 @@ lemma oneCoboundaries_memOneCocycles (x : oneCoboundaries A) : MemOneCocycles x 
   rcases x with ⟨_, ⟨x, rfl⟩⟩
   exact memOneCocycles_dZero_apply x
 
+end oneCoboundaries
+section oneCoboundaries'
+
 variable (A) in
 /-- Natural inclusion `B¹(G, A) →ₗ[k] Z¹(G, A)`. -/
-abbrev oneCoboundariesToCocycles₁ :
+abbrev oneCoboundariesToOneCocycles' :
     ModuleCat.of k (oneCoboundaries A) ⟶ cocycles A 1 :=
   ((inhomogeneousCochains A).sc 1).liftCycles
     (ModuleCat.ofHom (Submodule.subtype _) ≫ (oneCochainsIso A).inv) <| by
@@ -658,18 +663,21 @@ abbrev oneCoboundariesToCocycles₁ :
     simp_all [-HomologicalComplex.d_comp_XIsoOfEq_hom, oneCoboundaries_memOneCocycles x]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-theorem oneCoboundariesToCocycles₁_iOneCocycles :
-    oneCoboundariesToCocycles₁ A ≫ iOneCocycles A =
+theorem oneCoboundariesToOneCocycles_iOneCocycles :
+    oneCoboundariesToOneCocycles' A ≫ iOneCocycles A =
       ModuleCat.ofHom (Submodule.subtype _) := by
   ext x : 2
   apply (ModuleCat.mono_iff_injective (oneCochainsIso A).inv).1 inferInstance
-  simpa [oneCoboundariesToCocycles₁, iOneCocycles, -ShortComplex.liftCycles_i] using
+  simpa [oneCoboundariesToOneCocycles', iOneCocycles, -ShortComplex.liftCycles_i] using
     (congr($(((inhomogeneousCochains A).sc 1).liftCycles_i _ _) x))
 
 @[simp]
-lemma oneCoboundariesToCocycles₁_apply (x : oneCoboundaries A) :
+lemma oneCoboundariesToOneCocycles_apply' (x : oneCoboundaries A) :
     oneCoboundariesToOneCocycles A x = x.1 := by
   simp [← iOneCocycles_apply]
+
+end oneCoboundaries'
+section twoCoboundaries
 
 instance : FunLike (twoCoboundaries A) (G × G) A := ⟨Subtype.val, Subtype.val_injective⟩
 
@@ -703,9 +711,12 @@ lemma twoCoboundaries_memTwoCocycles (x : twoCoboundaries A) : MemTwoCocycles x 
   rcases x with ⟨_, ⟨x, rfl⟩⟩
   exact memTwoCocycles_dOne_apply x
 
+end twoCoboundaries
+section twoCoboundaries'
+
 variable (A) in
 /-- Natural inclusion `B²(G, A) →ₗ[k] Z²(G, A)`. -/
-abbrev twoCoboundariesToCocycles₂ :
+abbrev twoCoboundariesToTwoCocycles' :
     ModuleCat.of k (twoCoboundaries A) ⟶ cocycles A 2 :=
   ((inhomogeneousCochains A).sc 2).liftCycles
     (ModuleCat.ofHom (Submodule.subtype _) ≫ (twoCochainsIso A).inv) <| by
@@ -718,8 +729,8 @@ abbrev twoCoboundariesToCocycles₂ :
     simp_all [-HomologicalComplex.d_comp_XIsoOfEq_hom, twoCoboundaries_memTwoCocycles x]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-theorem twoCoboundariesToCocycles₂_iTwoCocycles :
-    twoCoboundariesToCocycles₂ A ≫ iTwoCocycles A =
+theorem twoCoboundariesToTwoCocycles_iTwoCocycles :
+    twoCoboundariesToTwoCocycles' A ≫ iTwoCocycles A =
       ModuleCat.ofHom (Submodule.subtype _) := by
   ext x : 2
   apply (ModuleCat.mono_iff_injective (twoCochainsIso A).inv).1 inferInstance
@@ -727,10 +738,11 @@ theorem twoCoboundariesToCocycles₂_iTwoCocycles :
     (congr($(((inhomogeneousCochains A).sc 2).liftCycles_i _ _) x))
 
 @[simp]
-lemma twoCoboundariesToCocycles₂_apply (x : twoCoboundaries A) :
-    twoCoboundariesToCocycles₂ A x = x.1 := by
+lemma twoCoboundariesToTwoCocycles_apply' (x : twoCoboundaries A) :
+    twoCoboundariesToTwoCocycles' A x = x.1 := by
   simp [← iTwoCocycles_apply]
 
+end twoCoboundaries'
 end Coboundaries
 
 section IsCocycle
