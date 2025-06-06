@@ -42,7 +42,7 @@ permissions:
 
 jobs:
   build:
-    if: github.repository != 'leanprover-community/mathlib4'
+    if: github.event.pull_request.head.repo.fork
     name: Build (fork)
     runs-on: pr
     outputs:
@@ -525,7 +525,7 @@ jobs:
 
   final:
     name: Post-CI job (fork)
-    if: github.repository != 'leanprover-community/mathlib4'
+    if: github.event.pull_request.head.repo.fork
     needs: [style_lint, build, post_steps]
     runs-on: ubuntu-latest
     steps:
