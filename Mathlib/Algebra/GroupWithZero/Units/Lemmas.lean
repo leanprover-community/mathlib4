@@ -43,16 +43,18 @@ section GroupWithZero
 namespace Commute
 
 /-- The `MonoidWithZero` version of `div_eq_div_iff_mul_eq_mul`. -/
-protected lemma div_eq_div_iff [GroupWithZero G₀] {a b c d : G₀} (hbd : Commute b d) (hb : b ≠ 0)
-    (hd : d ≠ 0) : a / b = c / d ↔ a * d = c * b :=
+protected lemma div_eq_div_iff (hbd : Commute b d) (hb : b ≠ 0) (hd : d ≠ 0) :
+    a / b = c / d ↔ a * d = c * b :=
   hbd.div_eq_div_iff_of_isUnit hb.isUnit hd.isUnit
 
-protected lemma mul_inv_eq_mul_inv_iff [GroupWithZero G₀] {a b c d : G₀} (hbd : Commute b d)
-    (hb : b ≠ 0) (hd : d ≠ 0) : a * b⁻¹ = c * d⁻¹ ↔ a * d = c * b :=
+/-- The `MonoidWithZero` version of `mul_inv_eq_mul_inv_iff_mul_eq_mul`. -/
+protected lemma mul_inv_eq_mul_inv_iff (hbd : Commute b d) (hb : b ≠ 0) (hd : d ≠ 0) :
+    a * b⁻¹ = c * d⁻¹ ↔ a * d = c * b :=
   hbd.mul_inv_eq_mul_inv_iff_of_isUnit hb.isUnit hd.isUnit
 
-protected lemma inv_mul_eq_inv_mul_iff [CommGroupWithZero G₀] {a b c d : G₀} (hbd : Commute b d)
-    (hb : b ≠ 0) (hd : d ≠ 0) : b⁻¹ * a = d⁻¹ * c ↔ a * d = c * b :=
+/-- The `MonoidWithZero` version of `inv_mul_eq_inv_mul_iff_mul_eq_mul`. -/
+protected lemma inv_mul_eq_inv_mul_iff (hbd : Commute b d) (hb : b ≠ 0) (hd : d ≠ 0) :
+    b⁻¹ * a = d⁻¹ * c ↔ d * a = b * c :=
   hbd.inv_mul_eq_inv_mul_iff_of_isUnit hb.isUnit hd.isUnit
 
 end Commute
@@ -62,7 +64,6 @@ section MonoidWithZero
 variable [GroupWithZero G₀] [Nontrivial M₀] [MonoidWithZero M₀'] [FunLike F G₀ M₀]
   [MonoidWithZeroHomClass F G₀ M₀] [FunLike F' G₀ M₀']
   (f : F) {a : G₀}
-
 
 theorem map_ne_zero : f a ≠ 0 ↔ a ≠ 0 :=
   ⟨fun hfa ha => hfa <| ha.symm ▸ map_zero f, fun ha => ((IsUnit.mk0 a ha).map f).ne_zero⟩

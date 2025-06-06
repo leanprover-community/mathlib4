@@ -399,6 +399,7 @@ lemma mk_XYIdeal'_mul_mk_XYIdeal' {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingula
 
 /-! ## Norms on the affine coordinate ring -/
 
+open Fin.CommRing in -- TODO: should this be refactored to avoid needing the coercion?
 lemma norm_smul_basis (p q : R[X]) : Algebra.norm R[X] (p • (1 : W'.CoordinateRing) + q • mk W' Y) =
     p ^ 2 - p * q * (C W'.a₁ * X + C W'.a₃) -
       q ^ 2 * (X ^ 3 + C W'.a₂ * X ^ 2 + C W'.a₄ * X + C W'.a₆) := by
@@ -545,12 +546,12 @@ lemma add_of_Y_eq {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h�
     (hx : x₁ = x₂) (hy : y₁ = W.negY x₂ y₂) : some h₁ + some h₂ = 0 := by
   simpa only [add_def, add] using dif_pos ⟨hx, hy⟩
 
-@[simp]
+-- Removing `@[simp]`, because `hy` causes a maximum recursion depth error in the simpNF linter.
 lemma add_self_of_Y_eq {x₁ y₁ : F} {h₁ : W.Nonsingular x₁ y₁} (hy : y₁ = W.negY x₁ y₁) :
     some h₁ + some h₁ = 0 :=
   add_of_Y_eq rfl hy
 
-@[simp]
+-- @[simp] -- Not a good simp lemma, since `hy` is not in simp normal form.
 lemma add_of_Y_ne {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
     (hy : y₁ ≠ W.negY x₂ y₂) :
     some h₁ + some h₂ = some (nonsingular_add h₁ h₂ fun hxy => hy hxy.right) :=
@@ -561,7 +562,7 @@ lemma add_of_Y_ne' {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h
     some h₁ + some h₂ = -some (nonsingular_negAdd h₁ h₂ fun hxy => hy hxy.right) :=
   add_of_Y_ne hy
 
-@[simp]
+-- @[simp] -- Not a good simp lemma, since `hy` is not in simp normal form.
 lemma add_self_of_Y_ne {x₁ y₁ : F} {h₁ : W.Nonsingular x₁ y₁} (hy : y₁ ≠ W.negY x₁ y₁) :
     some h₁ + some h₁ = some (nonsingular_add h₁ h₁ fun hxy => hy hxy.right) :=
   add_of_Y_ne hy

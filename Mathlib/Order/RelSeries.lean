@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Data.Fintype.Sigma
-import Mathlib.Data.Rel
 import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.Fintype.Pi
+import Mathlib.Data.Fintype.Pigeonhole
+import Mathlib.Data.Rel
 import Mathlib.Order.OrderIsoNat
 
 /-!
@@ -58,6 +57,7 @@ instance [Nonempty α] : Nonempty (RelSeries r) :=
 
 variable {r}
 
+set_option backward.dsimp.proofs true in
 @[ext (iff := false)]
 lemma ext {x y : RelSeries r} (length_eq : x.length = y.length)
     (toFun_eq : x.toFun = y.toFun ∘ Fin.cast (by rw [length_eq])) : x = y := by
@@ -314,6 +314,7 @@ lemma append_apply_left (p q : RelSeries r) (connect : r p.last q.head)
   simp only [Function.comp_apply]
   convert Fin.append_left _ _ _
 
+open Fin.NatCast in -- TODO: can this be removed?
 lemma append_apply_right (p q : RelSeries r) (connect : r p.last q.head)
     (i : Fin (q.length + 1)) :
     p.append q connect (i.natAdd p.length + 1) = q i := by
@@ -619,12 +620,14 @@ def inductionOn (motive : RelSeries r → Sort*)
       motive (p.cons x hx)) (p : RelSeries r) :
     motive p := by
   let this {n : ℕ} (heq : p.length = n) : motive p := by
-    induction' n with d hd generalizing p
-    · convert singleton p.head
+    induction n generalizing p with
+    | zero =>
+      convert singleton p.head
       ext n
       exact heq
       simp [show n = 0 by omega, apply_zero]
-    · have lq := p.tail_length (heq ▸ d.zero_ne_add_one.symm)
+    | succ d hd =>
+      have lq := p.tail_length (heq ▸ d.zero_ne_add_one.symm)
       nth_rw 3 [heq] at lq
       convert cons (p.tail (heq ▸ d.zero_ne_add_one.symm)) p.head
         (p.3 ⟨0, heq ▸ d.zero_lt_succ⟩) (hd _ lq)
@@ -682,12 +685,14 @@ def inductionOn' (motive : RelSeries r → Sort*)
       motive (p.snoc x hx)) (p : RelSeries r) :
     motive p := by
   let this {n : ℕ} (heq : p.length = n) : motive p := by
-    induction' n with d hd generalizing p
-    · convert singleton p.head
+    induction n generalizing p with
+    | zero =>
+      convert singleton p.head
       ext n
-      exact heq
-      simp [show n = 0 by omega, apply_zero]
-    · have ne0 : p.length ≠ 0 := by simp [heq]
+      · exact heq
+      · simp [show n = 0 by omega, apply_zero]
+    | succ d hd =>
+      have ne0 : p.length ≠ 0 := by simp [heq]
       have len : p.eraseLast.length = d := by simp [heq]
       convert snoc p.eraseLast p.last (p.eraseLast_last_rel_last ne0)
         (hd _ len)
@@ -762,7 +767,7 @@ lemma head_take (p : RelSeries r) (i : Fin (p.length + 1)) :
 lemma last_take (p : RelSeries r) (i : Fin (p.length + 1)) :
     (p.take i).last = p i := by simp [take, last, Fin.last]
 
-/-- Given the series `a₀ -r→ … -r→ aᵢ -r→ … -r→ aₙ`, the series `aᵢ₊₁ -r→ … -r→ aᵢ`. -/
+/-- Given the series `a₀ -r→ … -r→ aᵢ -r→ … -r→ aₙ`, the series `aᵢ₊₁ -r→ … -r→ aₙ`. -/
 @[simps! length]
 def drop (p : RelSeries r) (i : Fin (p.length + 1)) : RelSeries r where
   length := p.length - i
@@ -905,8 +910,10 @@ lemma strictMono (x : LTSeries α) : StrictMono x :=
 lemma monotone (x : LTSeries α) : Monotone x :=
   x.strictMono.monotone
 
-lemma head_le_last (x : LTSeries α) : x.head ≤ x.last :=
-  LTSeries.monotone x (Fin.zero_le _)
+lemma head_le (x : LTSeries α) (n : Fin (x.length + 1)) : x.head ≤ x n :=
+  x.monotone (Fin.zero_le n)
+
+lemma head_le_last (x : LTSeries α) : x.head ≤ x.last := x.head_le _
 
 /-- An alternative constructor of `LTSeries` from a strictly monotone function. -/
 @[simps]

@@ -108,6 +108,9 @@ lemma map_fin3 (f : R → S) (P : R × R × R) :
     f ∘ ![P x, P y, P z] = ![f (P x), f (P y), f (P z)] := by
   ext n; fin_cases n <;> simp
 
+@[deprecated (since := "2025-05-04")] alias comp_fin3 := map_fin3
+@[deprecated (since := "2025-05-04")] alias comp_smul := map_fin3
+
 variable [CommRing R] [CommRing S] [CommRing A] [CommRing B] [Field F] [Field K] {W' : Jacobian R}
   {W : Jacobian F}
 
@@ -117,6 +120,11 @@ scoped instance : SMul R <| R × R × R :=
 
 lemma smul_eq (P : R × R × R) (u : R) : u • P = (u ^ 2 * P x, u ^ 3 * P y, u * P z) :=
   rfl
+
+@[deprecated (since := "2025-05-04")] alias fin3_def := smul_eq
+@[deprecated (since := "2025-05-04")] alias fin3_def_ext := smul_eq
+@[deprecated (since := "2025-05-04")] alias smul_fin3 := smul_eq
+@[deprecated (since := "2025-05-04")] alias smul_fin3_ext := smul_eq
 
 protected lemma map_smul (f : R →* S) (P : R × R × R) (u : R) : f ∘ u • P = f u • f ∘ P := by
   simp_rw [map_eq, smul_eq, map_mul, map_pow]
@@ -307,6 +315,7 @@ associated to a Weierstrass curve `W` in Jacobian coordinates. -/
 noncomputable def polynomialX : MvPolynomial (Fin 3) R :=
   pderiv 0 W'.polynomial
 
+open Fin.CommRing in
 lemma polynomialX_eq : W'.polynomialX =
     C W'.a₁ * X 1 * X 2 - (C 3 * X 0 ^ 2 + C (2 * W'.a₂) * X 0 * X 2 ^ 2 + C W'.a₄ * X 2 ^ 4) := by
   rw [polynomialX, polynomial]
@@ -340,6 +349,7 @@ associated to a Weierstrass curve `W` in Jacobian coordinates. -/
 noncomputable def polynomialY : MvPolynomial (Fin 3) R :=
   pderiv 1 W'.polynomial
 
+open Fin.CommRing in
 lemma polynomialY_eq : W'.polynomialY = C 2 * X 1 + C W'.a₁ * X 0 * X 2 + C W'.a₃ * X 2 ^ 3 := by
   rw [polynomialY, polynomial]
   pderiv_simp
@@ -517,6 +527,8 @@ lemma map_equiv_map (f : F →+* K) {P Q : F × F × F} (hP : W.Nonsingular P) (
       exacts [X_eq_of_equiv h, Y_eq_of_equiv h]
   · rcases h with ⟨u, rfl⟩
     exact ⟨Units.map f u, (WeierstrassCurve.Jacobian.map_smul ..).symm⟩
+
+@[deprecated (since := "2025-05-04")] alias comp_equiv_comp := map_equiv_map
 
 variable (W') in
 /-- The proposition that a Jacobian point class on a Weierstrass curve `W` is nonsingular.
