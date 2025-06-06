@@ -397,8 +397,8 @@ variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
 open OplaxMonoidal Comon_Class IsComon_Hom
 
-@[simps]
-instance (A : C) [Comon_Class A] (F : C ⥤ D) [F.OplaxMonoidal] :
+/-- The image of a comonoid object under a oplax monoidal functor is a comonoid object. -/
+abbrev obj.instComon_Class (A : C) [Comon_Class A] (F : C ⥤ D) [F.OplaxMonoidal] :
     Comon_Class (F.obj A) where
   counit := F.map ε[A] ≫ η F
   comul := F.map Δ[A] ≫ δ F _ _
@@ -413,6 +413,25 @@ instance (A : C) [Comon_Class A] (F : C ⥤ D) [F.OplaxMonoidal] :
       MonoidalCategory.whiskerLeft_comp, δ_natural_right_assoc,
       ← F.map_comp_assoc, comul_assoc, F.map_comp, Category.assoc, associativity]
 
+attribute [local instance] obj.instComon_Class
+
+@[reassoc, simp] lemma obj.ε_def (F : C ⥤ D) [F.OplaxMonoidal] (X : C) [Comon_Class X] :
+    ε[F.obj X] = F.map ε ≫ η F :=
+  rfl
+
+@[reassoc, simp] lemma obj.Δ_def (F : C ⥤ D) [F.OplaxMonoidal] (X : C) [Comon_Class X] :
+    Δ[F.obj X] = F.map Δ ≫ δ F _ _ :=
+  rfl
+
+instance map.instIsComon_Hom
+    (F : C ⥤ D) [F.OplaxMonoidal]
+    {X Y : C} [Comon_Class X] [Comon_Class Y] (f : X ⟶ Y) [IsComon_Hom f] :
+    IsComon_Hom (F.map f) where
+  hom_counit := by dsimp; rw [← F.map_comp_assoc, hom_counit]
+  hom_comul := by
+    dsimp
+    rw [Category.assoc, δ_natural, ← F.map_comp_assoc, ← F.map_comp_assoc, hom_comul]
+
 /-- A oplax monoidal functor takes comonoid objects to comonoid objects.
 
 That is, a oplax monoidal functor `F : C ⥤ D` induces a functor `Comon_ C ⥤ Comon_ D`.
@@ -422,12 +441,7 @@ def mapComon (F : C ⥤ D) [F.OplaxMonoidal] : Comon_ C ⥤ Comon_ D where
   obj A :=
     { X := F.obj A.X }
   map f :=
-    { hom := F.map f.hom
-      is_comon_hom :=
-        { hom_counit := by dsimp; rw [← F.map_comp_assoc, hom_counit]
-          hom_comul := by
-            dsimp
-            rw [Category.assoc, δ_natural, ← F.map_comp_assoc, ← F.map_comp_assoc, hom_comul] } }
+    { hom := F.map f.hom }
   map_id A := by ext; simp
   map_comp f g := by ext; simp
 
