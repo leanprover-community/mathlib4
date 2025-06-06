@@ -255,7 +255,7 @@ def comap {A B : C} [Mon_Class A] [Mon_Class B] (f : A ⟶ B) [IsMon_Hom f] :
     letI := scalarRestriction f M.X
     ⟨M.X⟩
   map {M N} g :=
-    letI := scalarRestriction_hom f M.X N.X g.hom
+    letI := scalarRestriction_isMod_Hom f M.X N.X g.hom
     ⟨g.hom⟩
 
 -- Lots more could be said about `comap`, e.g. how it interacts with
