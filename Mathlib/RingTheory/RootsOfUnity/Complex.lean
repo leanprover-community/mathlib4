@@ -210,8 +210,8 @@ lemma cyclotomic_polynomial_5 (z : ℂ) :
                                   * (z - (-(√5 +1)/4 - √2 * √(5 - √5) / 4 * I)) := by
   have two_mul_two : 2 * 2 = 4 := rfl
   ring_nf
-  simp only [I_sq, I_pow_four, ← ofReal_pow, Real.sq_sqrt, zero_le_two, Nat.ofNat_nonneg',
-    Left.add_nonneg, Real.sqrt_nonneg]
+  simp only [I_sq, I_pow_four, ← ofReal_pow, Real.sq_sqrt, Nat.ofNat_nonneg', Left.add_nonneg,
+    Real.sqrt_nonneg]
   rw [Real.sq_sqrt (by
     rw [sub_nonneg, Real.sqrt_le_left (Nat.ofNat_nonneg' 5), sq,
       le_mul_iff_one_le_right  Nat.ofNat_pos']
@@ -219,23 +219,11 @@ lemma cyclotomic_polynomial_5 (z : ℂ) :
   )]
   rw [one_div, ofReal_add, ofReal_sub, ofReal_pow]
   ring_nf
-  rw [← ofReal_pow]
-  rw [← ofReal_pow]
-  rw [Real.sq_sqrt (Nat.ofNat_nonneg' 5)]
-  rw [← ofReal_mul]
-  rw [one_div, ofReal_pow]
-  rw [← ofReal_pow]
-  rw [← ofReal_mul]
-  rw [← ofReal_mul]
+  simp only [← ofReal_pow, Real.sq_sqrt, Nat.ofNat_nonneg', ← ofReal_mul, one_div]
   conv_rhs => rw [← two_mul_two]
-  rw [pow_mul' _ 2 2]
-  rw [pow_mul' _ 2 2]
-  rw [pow_mul' _ 2 2]
-  rw [Real.sq_sqrt zero_le_two]
-  rw [Real.sq_sqrt (Nat.ofNat_nonneg' 5)]
-  simp only [one_div, ofReal_ofNat, ofReal_mul, ofReal_pow]
+  simp only [pow_mul, Real.sq_sqrt, Nat.ofNat_nonneg', one_div, ofReal_ofNat, ofReal_mul,
+    ofReal_pow]
   ring_nf
-
 
 example : {z : ℂ | z^5 = 1} = {1,
     (√5 -1)/4 + √2 * √(5 + √5)/4 * I,
