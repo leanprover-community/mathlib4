@@ -11,7 +11,7 @@ import Batteries.Tactic.Alias
 # Extra definitions on `Option`
 
 This file defines more operations involving `Option α`. Lemmas about them are located in other
-files under `Mathlib.Data.Option`.
+files under `Mathlib/Data/Option.lean`.
 Other basic operations on `Option` are defined in the core library.
 -/
 

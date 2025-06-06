@@ -130,6 +130,7 @@ theorem cycleType_finRotate_of_le {n : ℕ} (h : 2 ≤ n) : cycleType (finRotate
 
 namespace Fin
 
+open Fin.NatCast in -- TODO: refactor to avoid needing this
 /-- `Fin.cycleRange i` is the cycle `(0 1 2 ... i)` leaving `(i+1 ... (n-1))` unchanged. -/
 def cycleRange {n : ℕ} (i : Fin n) : Perm (Fin n) :=
   (finRotate (i + 1)).extendDomain
@@ -142,7 +143,7 @@ def cycleRange {n : ℕ} (i : Fin n) : Perm (Fin n) :=
 theorem cycleRange_of_gt {n : ℕ} {i j : Fin n} (h : i < j) : cycleRange i j = j := by
   rw [cycleRange, ofLeftInverse'_eq_ofInjective,
     ← Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding,
-    viaFintypeEmbedding_apply_not_mem_range]
+    viaFintypeEmbedding_apply_notMem_range]
   simpa
 
 theorem cycleRange_of_le {n : ℕ} [NeZero n] {i j : Fin n} (h : j ≤ i) :
@@ -197,7 +198,7 @@ theorem cycleRange_apply {n : ℕ} [NeZero n] (i j : Fin n) :
 @[simp]
 theorem cycleRange_zero (n : ℕ) [NeZero n] : cycleRange (0 : Fin n) = 1 := by
   ext j
-  rcases (Fin.zero_le' j).eq_or_lt with rfl | hj
+  rcases (Fin.zero_le j).eq_or_lt with rfl | hj
   · simp
   · rw [cycleRange_of_gt hj, one_apply]
 
@@ -255,6 +256,29 @@ theorem cycleRange_symm_zero {n : ℕ} [NeZero n] (i : Fin n) : i.cycleRange.sym
 theorem cycleRange_symm_succ {n : ℕ} (i : Fin (n + 1)) (j : Fin n) :
     i.cycleRange.symm j.succ = i.succAbove j :=
   i.cycleRange.injective (by simp)
+
+@[simp]
+theorem insertNth_apply_cycleRange_symm {n : ℕ} {α : Type*} (p : Fin (n + 1)) (a : α)
+    (x : Fin n → α) (j : Fin (n + 1)) :
+    (p.insertNth a x : _ → α) (p.cycleRange.symm j) = (Fin.cons a x : _ → α) j := by
+  cases j using Fin.cases <;> simp
+
+@[simp]
+theorem insertNth_comp_cycleRange_symm {n : ℕ} {α : Type*} (p : Fin (n + 1)) (a : α)
+    (x : Fin n → α) : (p.insertNth a x ∘ p.cycleRange.symm : _ → α) = Fin.cons a x := by
+  ext j
+  simp
+
+@[simp]
+theorem cons_apply_cycleRange {n : ℕ} {α : Type*} (a : α) (x : Fin n → α)
+    (p : Fin (n + 1)) (j : Fin (n + 1)) :
+    (Fin.cons a x : _ → α) (p.cycleRange j) = (p.insertNth a x : _ → α) j := by
+  rw [← insertNth_apply_cycleRange_symm, Equiv.symm_apply_apply]
+
+@[simp]
+theorem cons_comp_cycleRange {n : ℕ} {α : Type*} (a : α) (x : Fin n → α) (p : Fin (n + 1)) :
+    (Fin.cons a x : _ → α) ∘ p.cycleRange = p.insertNth a x := by
+  ext; simp
 
 theorem isCycle_cycleRange {n : ℕ} [NeZero n] {i : Fin n} (h0 : i ≠ 0) :
     IsCycle (cycleRange i) := by

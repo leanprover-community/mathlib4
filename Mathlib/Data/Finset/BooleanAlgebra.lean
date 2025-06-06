@@ -104,7 +104,9 @@ theorem compl_eq_univ_sdiff (s : Finset α) : sᶜ = univ \ s :=
 @[simp]
 theorem mem_compl : a ∈ sᶜ ↔ a ∉ s := by simp [compl_eq_univ_sdiff]
 
-theorem not_mem_compl : a ∉ sᶜ ↔ a ∈ s := by rw [mem_compl, not_not]
+theorem notMem_compl : a ∉ sᶜ ↔ a ∈ s := by rw [mem_compl, not_not]
+
+@[deprecated (since := "2025-05-23")] alias not_mem_compl := notMem_compl
 
 @[simp, norm_cast]
 theorem coe_compl (s : Finset α) : ↑sᶜ = (↑s : Set α)ᶜ :=

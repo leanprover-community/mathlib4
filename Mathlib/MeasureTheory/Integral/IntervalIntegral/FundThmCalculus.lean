@@ -998,7 +998,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
         _ ≤ ∫ w in t..u, (G' w).toReal := by
           rw [intervalIntegral.integral_of_le hu.1.le, ← integral_Icc_eq_integral_Ioc]
           apply setIntegral_mono_ae_restrict
-          · simp only [integrableOn_const, Real.volume_Icc, ENNReal.ofReal_lt_top, or_true]
+          · simp
           · exact IntegrableOn.mono_set G'int I
           · have C1 : ∀ᵐ x : ℝ ∂volume.restrict (Icc t u), G' x < ∞ :=
               ae_mono (Measure.restrict_mono I le_rfl) G'lt_top
@@ -1014,7 +1014,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
     -- bound from above the increase of `g u - g a` on the right of `t`, using the derivative at `t`
     have I2 : ∀ᶠ u in 𝓝[>] t, g u - g t ≤ (u - t) * y := by
       have g'_lt_y : g' t < y := EReal.coe_lt_coe_iff.1 g'_lt_y'
-      filter_upwards [(hderiv t ⟨ht.2.1, ht.2.2⟩).limsup_slope_le' (not_mem_Ioi.2 le_rfl) g'_lt_y,
+      filter_upwards [(hderiv t ⟨ht.2.1, ht.2.2⟩).limsup_slope_le' (notMem_Ioi.2 le_rfl) g'_lt_y,
         self_mem_nhdsWithin] with u hu t_lt_u
       have := mul_le_mul_of_nonneg_left hu.le (sub_pos.2 t_lt_u.out).le
       rwa [← smul_eq_mul, sub_smul_slope] at this
