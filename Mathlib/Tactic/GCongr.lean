@@ -22,6 +22,11 @@ register_hint gcongr
 
 namespace Mathlib.Tactic.GCongr
 
+/-!
+Tag the relevant transitivity lemmas for `<` and `≤` with `@[gcongr]`.
+The tags for `≤` aren't strictly necessary, but they help avoid an `IsTrans` type class search.
+-/
+
 attribute [gcongr] lt_of_le_of_lt lt_of_le_of_lt' le_trans le_trans'
 
 variable {α : Type} [Preorder α]

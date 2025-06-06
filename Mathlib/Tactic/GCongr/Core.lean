@@ -6,9 +6,9 @@ Authors: Mario Carneiro, Heather Macbeth
 import Lean
 import Batteries.Lean.Except
 import Batteries.Tactic.Exact
-import Mathlib.Tactic.Core
 import Mathlib.Tactic.GCongr.ForwardAttr
 import Mathlib.Order.Defs.PartialOrder
+import Mathlib.Order.Defs.Unbundled
 
 /-!
 # The `gcongr` ("generalized congruence") tactic
@@ -359,6 +359,46 @@ def containsHole (template : Expr) : MetaM Bool := do
       false
   return hasMVar.isSome
 
+section Trans
+
+/-!
+The lemmas `rel_imp_rel`, `rel_trans` and `rel_trans'` are too general to be tagged with
+`@[gcongr]`, so instead we use `getTransLemma?` to look up these lemmas.
+-/
+
+variable {α : Sort*} {r : α → α → Prop} [IsTrans α r] {a b c d : α}
+
+lemma rel_imp_rel (h₁ : r c a) (h₂ : r b d) : r a b → r c d :=
+  fun h => IsTrans.trans c b d (IsTrans.trans c a b h₁ h) h₂
+
+lemma rel_trans (h : r a b) : r b c → r a c := IsTrans.trans a b c h
+lemma rel_trans' (h : r b c) : r a b → r a c := fun h' => rel_trans h' h
+
+/--
+`getTransLemma?` constructs a `GCongrLemma` for `gcongr` goals of the form `a ≺ b → c ≺ d`.
+This will be tried if there is no other available `@[gcongr]` lemma.
+For example, the relation `a ≡ b [ZMOD n]` has an instance of `IsTrans`, so a congruence of the form
+`a ≡ b [ZMOD n] → c ≡ d [ZMOD n]` can be solved with `rel_imp_rel`, `rel_trans` or `rel_trans'`.
+-/
+def getTransLemma? (key : GCongrKey) : Array GCongrLemma := Id.run do
+  -- check that the relation is an implication
+  if key.relName != `_Implies then #[] else
+  let num := key.varyingArgs.size
+  if h : 2 ≤ num then
+    if key.varyingArgs.any id (stop := num - 2) then #[] else
+    match key.varyingArgs[num - 2], key.varyingArgs[num - 1] with
+    | true, true =>
+      #[{ declName := ``rel_imp_rel, mainSubgoals := #[(7, num - 2, 0), (8, num - 1, 0)] }]
+    | true, false =>
+      #[{ declName := ``rel_trans, mainSubgoals := #[(6, num - 2, 0)] }]
+    | false, true =>
+      #[{ declName := ``rel_trans', mainSubgoals := #[(6, num - 1, 0)] }]
+    | _, _ => #[]
+  else
+    #[]
+
+end Trans
+
 /-- The core of the `gcongr` tactic. Parse a goal into the form `(f _ ... _) ∼ (f _ ... _)`,
 look up any relevant @[gcongr] lemmas, try to apply them, recursively run the tactic itself on
 "main" goals which are generated, and run the discharger on side goals which are generated. If there
@@ -431,7 +471,8 @@ partial def _root_.Lean.MVarId.gcongr
   -- Look up the `@[gcongr]` lemmas whose conclusion has the same relation and head function as
   -- the goal and whether the boolean-array of varying/nonvarying arguments of such
   -- a lemma matches `varyingArgs`.
-  for lem in (gcongrExt.getState (← getEnv)).getD { relName, head := lhsHead, varyingArgs } #[] do
+  let key := { relName, head := lhsHead, varyingArgs }
+  for lem in ((gcongrExt.getState (← getEnv)).get? key).getD (getTransLemma? key) do
     let gs ← try
       -- Try `apply`-ing such a lemma to the goal.
       Except.ok <$> withReducibleAndInstances (g.apply (← mkConstWithFreshMVarLevels lem.declName))
@@ -535,7 +576,7 @@ side goal `0 ≤ x ^ 2` in the above application of `mul_le_mul_of_nonneg_left`)
 `gcongr_discharger`, which wraps `positivity` but can also be extended. Side goals not discharged
 in this way are left for the user. -/
 elab "gcongr" template:(colGt term)?
-    withArg:((" with " (colGt binderIdent)+)?) : tactic => do
+    withArg:((" with" (ppSpace colGt binderIdent)+)?) : tactic => do
   let g ← getMainGoal
   g.withContext do
   let some (_rel, lhs, _rhs) := getRel (← withReducible g.getType')

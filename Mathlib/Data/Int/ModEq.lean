@@ -49,7 +49,7 @@ instance : IsRefl _ (ModEq n) :=
 protected theorem symm : a ≡ b [ZMOD n] → b ≡ a [ZMOD n] :=
   Eq.symm
 
-@[trans, gcongr]
+@[trans]
 protected theorem trans : a ≡ b [ZMOD n] → b ≡ c [ZMOD n] → a ≡ c [ZMOD n] :=
   Eq.trans
 
@@ -265,19 +265,3 @@ theorem mod_mul_left_mod (a b c : ℤ) : a % (b * c) % c = a % c :=
   (mod_modEq _ _).of_mul_left _
 
 end Int
-
-namespace Mathlib.Tactic.GCongr
-
-variable {n a b c d : ℤ}
-
-@[gcongr]
-theorem intModEq_imp_intModEq (h₁ : a ≡ c [ZMOD n]) (h₂ : b ≡ d [ZMOD n]) :
-    a ≡ b [ZMOD n] → c ≡ d [ZMOD n] :=
-  fun h => (h₁.symm.trans h).trans h₂
-
-@[gcongr]
-protected theorem intModEq_imp_intModEq_left (h : b ≡ c [ZMOD n]) :
-    a ≡ b [ZMOD n] → a ≡ c [ZMOD n] :=
-  fun h' => h'.trans h
-
-end Mathlib.Tactic.GCongr
