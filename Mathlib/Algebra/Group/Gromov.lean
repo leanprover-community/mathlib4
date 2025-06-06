@@ -22,7 +22,8 @@ class Generates {S: outParam (Finset G)}: Prop where
   one_mem: (1 : G) ∈ S
   has_inv: ∀ g ∈ S, g⁻¹ ∈ S
 
-variable {S : Finset G} [hGS: Generates (G := G) (S := S)] [hS: Nonempty S]
+variable {S S' : Finset G} [hGS: Generates (G := G) (S := S)] [hS: Nonempty S]
+-- [hGS': Generates (G := G) (S := S')] [hS': Nonempty S]
 
 lemma s_union_sinv : (S: Set G) ∪ (S: Set G)⁻¹ = S := by
   ext a
@@ -1010,6 +1011,56 @@ theorem mu_conv_eq_sum (m: ℕ) (g: G): muConv m g = (((1 : ℝ) / (#(S) : ℝ))
 def HasPolynomialGrowthD (d: ℕ): Prop := ∃ a: ℕ+, ∀ n ≥ 2, #(S ^ n) ≤ a * n ^ d
 def HasPolynomialGrowth: Prop := ∃ d, HasPolynomialGrowthD (S := S) d
 
+lemma s_pow_inv (n: ℕ): (S^n)⁻¹ = (S⁻¹)^n := by
+  induction n with
+  | zero =>
+    simp
+  | succ n ih =>
+    simp
+
+lemma mem_closure_iff_mem_pow (g: G): g ∈ Subgroup.closure S ↔ ∃ n, g ∈ S^n := by
+  refine ⟨?_, ?_⟩
+  .
+    intro hg
+    induction hg using Subgroup.closure_induction with
+    | one =>
+      use 1
+      simp
+      exact hGS.one_mem
+    | inv a ha a_mem =>
+      obtain ⟨n, hn⟩ := a_mem
+      use n
+      rw [← Finset.mem_inv']
+      rw [s_pow_inv]
+      rw [← S_eq_Sinv]
+      exact hn
+    | mem s hs =>
+      use 1
+      simp
+      exact hs
+    | mul a b ha hb iha ihb =>
+      obtain ⟨p, hp⟩ := iha
+      obtain ⟨q, hq⟩ := ihb
+      use (p + q)
+      rw [pow_add]
+      rw [Finset.mem_mul]
+      refine ⟨a, hp, b, hq, rfl⟩
+  .
+    intro _
+    apply mem_closure g
+
+lemma poly_growth_implies (d: ℕ) (hd: HasPolynomialGrowthD (S := S) d): HasPolynomialGrowthD (S := S') d := by
+  simp [HasPolynomialGrowthD] at hd
+  obtain ⟨a, s_poly⟩ := hd
+  simp [HasPolynomialGrowthD]
+  have b: ℕ+ := 1
+  use b
+  intro n hn
+  sorry
+
+
+lemma S_nonempty: S.Nonempty := by
+  exact Finset.nonempty_coe_sort.mp hS
 
 -- TODO - get rid of this, since all groups must be inhabited
 variable [Inhabited G]
