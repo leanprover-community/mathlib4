@@ -208,11 +208,7 @@ lemma cyclotomic_polynomial_5 (z : ℂ) :
                                   * (z - ((√5 -1)/4 - √2 * √(5 + √5)/4 * I))
                                   * (z - (-(√5 + 1)/4 + √2 * √(5 - √5) / 4 * I))
                                   * (z - (-(√5 +1)/4 - √2 * √(5 - √5) / 4 * I)) := by
-  have ee2 (a : ℝ) : a ^ 4 = a * a * a * a := by
-    rw [← two_add_two_eq_four]
-    rw [pow_add _ 2 2]
-    rw [sq]
-    rw [← mul_assoc]
+  have two_mul_two : 2 * 2 = 4 := rfl
   ring_nf
   rw [I_sq, I_pow_four]
   rw [← ofReal_pow]
@@ -240,15 +236,13 @@ lemma cyclotomic_polynomial_5 (z : ℂ) :
   rw [← ofReal_pow]
   rw [← ofReal_mul]
   rw [← ofReal_mul]
-  rw [ee2]
-  rw [ee2]
-  rw [Real.mul_self_sqrt zero_le_two]
-  rw [Real.mul_self_sqrt (Nat.ofNat_nonneg' 5)]
-  rw [mul_assoc 2]
-  rw [mul_assoc 5]
-  rw [Real.mul_self_sqrt zero_le_two]
-  rw [Real.mul_self_sqrt (Nat.ofNat_nonneg' 5)]
-  simp only [one_div, ofReal_ofNat, ofReal_mul]
+  conv_rhs => rw [← two_mul_two]
+  rw [pow_mul' _ 2 2]
+  rw [pow_mul' _ 2 2]
+  rw [pow_mul' _ 2 2]
+  rw [Real.sq_sqrt zero_le_two]
+  rw [Real.sq_sqrt (Nat.ofNat_nonneg' 5)]
+  simp only [one_div, ofReal_ofNat, ofReal_mul, ofReal_pow]
   ring_nf
 
 
