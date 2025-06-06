@@ -314,6 +314,7 @@ lemma append_apply_left (p q : RelSeries r) (connect : r p.last q.head)
   simp only [Function.comp_apply]
   convert Fin.append_left _ _ _
 
+open Fin.NatCast in -- TODO: can this be removed?
 lemma append_apply_right (p q : RelSeries r) (connect : r p.last q.head)
     (i : Fin (q.length + 1)) :
     p.append q connect (i.natAdd p.length + 1) = q i := by

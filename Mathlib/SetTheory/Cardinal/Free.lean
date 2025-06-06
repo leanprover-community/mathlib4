@@ -105,6 +105,7 @@ end Cardinal
 
 section Nonempty
 
+open Fin.CommRing in
 /-- A commutative ring can be constructed on any non-empty type.
 
 See also `Infinite.nonempty_field`. -/

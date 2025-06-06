@@ -422,6 +422,7 @@ theorem unifIntegrable_subsingleton [Subsingleton ι] (hp_one : 1 ≤ p) (hp_top
     convert hδ s hs hμs
   · exact ⟨1, zero_lt_one, fun i => False.elim <| hι <| Nonempty.intro i⟩
 
+open Fin.NatCast -- TODO: refactor the proof to avoid needing this
 /-- This lemma is less general than `MeasureTheory.unifIntegrable_finite` which applies to
 all sequences indexed by a finite type. -/
 theorem unifIntegrable_fin (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α → β}

@@ -140,6 +140,7 @@ noncomputable def genericPolyMapSurjOnOfInjOn [Finite ι]
             (fun i => (Equiv.sumAssoc _ _ _).symm (Sum.inr i)))))
   Formula.iAlls (α ⊕ Σ i : ι, mons i) ((mapsTo.imp <| injOn.imp <| surjOn).relabel Sum.inr)
 
+open Fin.CommRing in -- TODO: can this be refactored to avoid using the ring structure in the proof?
 theorem realize_genericPolyMapSurjOnOfInjOn
     [Finite ι] (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
     (K ⊨ genericPolyMapSurjOnOfInjOn φ mons) ↔
