@@ -207,6 +207,21 @@ theorem induction {C : CliffordAlgebra Q → Prop}
   rw [← AlgHom.id_apply (R := R) a, ← of_id]
   exact (lift Q of a).prop
 
+@[simp]
+theorem adjoin_range_ι : Algebra.adjoin R (Set.range (ι Q)) = ⊤ := by
+  refine top_unique fun x hx => ?_; clear hx
+  induction x using induction with
+  | algebraMap => exact algebraMap_mem _ _
+  | add x y hx hy => exact add_mem hx hy
+  | mul x y hx hy => exact mul_mem hx hy
+  | ι x => exact Algebra.subset_adjoin (Set.mem_range_self _)
+
+@[simp]
+theorem range_lift (f : M →ₗ[R] A) (cond : ∀ m, f m * f m = algebraMap _ _ (Q m)) :
+    (lift Q ⟨f, cond⟩).range = Algebra.adjoin R (Set.range f) := by
+  simp_rw [← Algebra.map_top, ← adjoin_range_ι, AlgHom.map_adjoin, ← Set.range_comp,
+    Function.comp_def, lift_ι_apply]
+
 theorem mul_add_swap_eq_polar_of_forall_mul_self_eq {A : Type*} [Ring A] [Algebra R A]
     (f : M →ₗ[R] A) (hf : ∀ x, f x * f x = algebraMap _ _ (Q x)) (a b : M) :
     f a * f b + f b * f a = algebraMap R _ (QuadraticMap.polar Q a b) :=

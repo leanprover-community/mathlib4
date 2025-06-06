@@ -103,7 +103,7 @@ lemma LSeries.abscissaOfAbsConv_logMul {f : ℕ → ℂ} :
   apply le_antisymm <;> refine abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable' fun s hs ↦ ?_
   · exact LSeriesSummable_logMul_of_lt_re <| by simp [hs]
   · refine (LSeriesSummable_of_abscissaOfAbsConv_lt_re <| by simp [hs])
-      |>.norm.of_norm_bounded_eventually_nat (‖term (logMul f) s ·‖) ?_
+      |>.norm.of_norm_bounded_eventually_nat (g := fun n ↦ ‖term (logMul f) s n‖) ?_
     filter_upwards [Filter.eventually_ge_atTop <| max 1 (Nat.ceil (Real.exp 1))] with n hn
     simp only [term_of_ne_zero (show n ≠ 0 by omega), logMul, norm_mul, mul_div_assoc,
       ← natCast_log, norm_real]
