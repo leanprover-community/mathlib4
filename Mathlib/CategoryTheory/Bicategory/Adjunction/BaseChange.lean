@@ -168,7 +168,7 @@ lemma baseChange_horiz_comp' :
     (F.map b).l ◁ baseChange F sq' ≫
     (α_ _ _ _).inv ≫
     ((F.comp Adj.forget₁).mapComp' b b' b'' hb).inv ▷ (F.map r).r :=
-sorry
+  sorry
 
 end Horizontal
 
@@ -224,6 +224,27 @@ variable {X₁ X₂ X₃ Y₁ Y₂ Y₃ Z₁ Z₂ Z₃ : B}
   (hr : rt ≫ rb = r)
   (hb : bl ≫ br = b)
 
+lemma mapComp'_comp_adjForget₁_hom {a b c : B} (f : a ⟶ b) (g : b ⟶ c) (fg : a ⟶ c)
+    (hfg : f ≫ g = fg := by aesop_cat) :
+    ((F.comp Adj.forget₁).mapComp' f g fg hfg).hom = (F.mapComp' f g fg hfg).hom.τl :=
+  sorry
+
+lemma mapComp'_comp_adjForget₁_inv {a b c : B} (f : a ⟶ b) (g : b ⟶ c) (fg : a ⟶ c)
+    (hfg : f ≫ g = fg := by aesop_cat) :
+    ((F.comp Adj.forget₁).mapComp' f g fg hfg).inv = (F.mapComp' f g fg hfg).inv.τl :=
+  sorry
+
+@[reassoc]
+lemma _root_.CategoryTheory.Bicategory.whiskerLeft_whiskerLeft_associator_whiskerRight
+    {x y z u v : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z)
+    (g' : z ⟶ u) (f' : u ⟶ v) (h' : z ⟶ v)
+    (α : f ≫ g ⟶ h) (β : g' ≫ f' ⟶ h') :
+    f ◁ g ◁ β ≫ (α_ _ _ _).inv ≫ α ▷ _ =
+      (α_ _ _ _).inv ≫
+      α ▷ _ ≫ _ ◁ β := by
+  rw [← whisker_exchange]
+  simp
+
 lemma baseChange_square :
     F.baseChange sq =
       (F.mapComp' lt lb l hl).inv.τr ▷ _ ≫
@@ -243,7 +264,24 @@ lemma baseChange_square :
       (F.map bl).l ◁ (F.map br).l ◁ (F.mapComp' rt rb r hr).hom.τr ≫
       (α_ _ _ _).inv ≫
       (F.mapComp' bl br b hb).inv.τl ▷ (F.map r).r := by
-  sorry
+  let sqt : CommSq t lt rt (ml ≫ mr) := ⟨by simp [← ht, sqtr.1, reassoc_of% sqtl.1]⟩
+  let sqb : CommSq (ml ≫ mr) lb rb b := ⟨by simp [← hb, sqbr.1, reassoc_of% sqbl.1]⟩
+  rw [F.baseChange_vert_comp' sqt sqb hl hr]
+  rw [F.baseChange_horiz_comp' sqtl sqtr ht rfl]
+  rw [F.baseChange_horiz_comp' sqbl sqbr rfl hb]
+  simp only [Adj.forget₂_obj, Adj.forget₂_map, Quiver.Hom.unop_op', Adj.comp_r, Adj.forget₂_map₂,
+    Quiver.Hom.unop_op, comp_toPrelaxFunctor, PrelaxFunctor.comp_toPrelaxFunctorStruct,
+    PrelaxFunctorStruct.comp_toPrefunctor, Prefunctor.comp_obj, Adj.forget₁_obj,
+    Prefunctor.comp_map, Adj.forget₁_map, mapComp'_comp_adjForget₁_hom,
+    mapComp'_comp_adjForget₁_inv, Bicategory.whiskerLeft_comp, comp_whiskerRight, whisker_assoc,
+    Category.assoc, Iso.inv_hom_id_assoc, Adj.comp_l]
+  congr 7
+  slice_lhs 2 3 =>
+    rw [← Bicategory.whiskerLeft_comp, ← Bicategory.comp_whiskerRight]
+    simp only [Adj.inv_hom_id_τl, Adj.comp_l, id_whiskerRight, Bicategory.whiskerLeft_id]
+  simp only [Category.id_comp, Category.assoc, pentagon_inv_assoc, Iso.cancel_iso_inv_left]
+  congr 4
+  simp [whiskerLeft_whiskerLeft_associator_whiskerRight]
 
 end Square
 
