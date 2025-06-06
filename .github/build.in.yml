@@ -73,8 +73,7 @@ jobs:
       - name: Checkout PR branch
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          # need to specify this explicitly for pull_request_target
-          ref: "${{ github.event.pull_request.merge_commit_sha }}"
+          ref: "${{ PR_BRANCH_REF }}"
           path: pr-branch
 
       - name: Prepare DownstreamTest directory
