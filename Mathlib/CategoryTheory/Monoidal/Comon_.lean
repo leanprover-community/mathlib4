@@ -154,6 +154,8 @@ structure Hom (M N : Comon_ C) where
   hom : M.X ⟶ N.X
   [is_comon_hom : IsComon_Hom hom]
 
+attribute [instance] Hom.is_comon_hom
+
 /-- Construct a morphism `M ⟶ N` of `Comon_ C` from a map `f : M ⟶ N` and a `IsComon_Hom f`
 instance. -/
 abbrev Hom.mk' {M N : Comon_ C} (f : M.X ⟶ N.X)
@@ -162,8 +164,6 @@ abbrev Hom.mk' {M N : Comon_ C} (f : M.X ⟶ N.X)
     Hom M N :=
   have : IsComon_Hom f := ⟨f_counit, f_comul⟩
   .mk f
-
-attribute [instance] Hom.is_comon_hom
 
 /-- The identity morphism on a comonoid object. -/
 @[simps]

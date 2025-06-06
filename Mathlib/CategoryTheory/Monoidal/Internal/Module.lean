@@ -102,7 +102,7 @@ def functor : Mon_ (ModuleCat.{u} R) ⥤ AlgCat R where
 /-- Converting a bundled algebra to a monoid object in `ModuleCat R`.
 -/
 @[simps]
-instance inverseObj (A : AlgCat.{u} R) : Mon_Class (ModuleCat.of R A) where
+def inverseObj (A : AlgCat.{u} R) : Mon_Class (ModuleCat.of R A) where
   one := ofHom <| Algebra.linearMap R A
   mul := ofHom <| LinearMap.mul' R A
   one_mul' := by
@@ -146,7 +146,7 @@ instance inverseObj (A : AlgCat.{u} R) : Mon_Class (ModuleCat.of R A) where
     erw [TensorProduct.mk_apply, TensorProduct.mk_apply, mul'_apply, LinearMap.id_apply, mul'_apply]
     simp only [LinearMap.mul'_apply, _root_.mul_assoc]
 
-
+attribute [local instance] inverseObj
 
 /-- Converting a bundled algebra to a monoid object in `ModuleCat R`.
 -/

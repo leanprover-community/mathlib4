@@ -143,7 +143,7 @@ def functorObjObj (A : C ⥤ D) [Comon_Class A] (X : C) : Comon_ D where
 /--
 A comonoid object in a functor category induces a functor to the category of comonoid objects.
 -/
-@[simps obj map_hom]
+@[simps]
 def functorObj (A : (C ⥤ D)) [Comon_Class A] : C ⥤ Comon_ D where
   obj := functorObjObj A
   map f :=
