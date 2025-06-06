@@ -498,8 +498,6 @@ register_option linter.style.openClassical : Bool := {
   descr := "enable the openClassical linter"
 }
 
-namespace Style.openClassical
-
 /-- If `stx` is syntax describing an `open` command, `extractOpenNames stx`
 returns an array of the syntax corresponding to the opened names,
 omitting any renamed or hidden items.
@@ -518,6 +516,19 @@ def extractOpenNames : Syntax → Array (TSyntax `ident)
     | _ => unreachable!
   | _ => #[]
 
+/-- The "finNatCast" linter flags uses of the `NatCast` instance from `ℕ` to `Fin n`:
+this is a subtle foot-gun (TODO elaborate further!),
+as well as the the `CommRing (Fin n)` instance (as the ring structure is surprising,
+addition wraps around, which can lead to surprising behaviour if `Fin n` is used for e.g. indexing.
+Users looking for a ring structure should use `ZMod n` instead.
+-/
+register_option linter.style.finNatCast : Bool := {
+  defValue := false
+  descr := "enable the finNatCast linter"
+}
+
+namespace Style.finNatCast
+
 @[inherit_doc Mathlib.Linter.linter.style.openClassical]
 def openClassicalLinter : Linter where run stx := do
     unless getLinterValue linter.style.openClassical (← getLinterOptions) do
@@ -535,6 +546,6 @@ def openClassicalLinter : Linter where run stx := do
 
 initialize addLinter openClassicalLinter
 
-end Style.openClassical
+end Style.finNatCast
 
 end Mathlib.Linter
