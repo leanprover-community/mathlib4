@@ -15,8 +15,13 @@ the group cohomology of a `k`-linear `G`-representation `A` in degrees 0, 1 and 
 
 In `RepresentationTheory.GroupCohomology.Basic`, we define the `n`th group cohomology of `A` to be
 the cohomology of a complex `inhomogeneousCochains A`, whose objects are `(Fin n → G) → A`; this is
-unnecessarily unwieldy in low degree. Moreover, cohomology of a complex is defined as an abstract
-cokernel, whereas the definitions here are explicit quotients of cocycles by coboundaries.
+unnecessarily unwieldy in low degree.
+
+Moreover, cohomology of a complex is defined as an abstract cokernel, whereas the definitions here
+are currently explicit quotients of cocycles by coboundaries. However, we are currently moving away
+from this approach, and instead defining more convenient constructors for the existing definitions
+of cocycles and cohomology, in order to streamline API. So far the new API is in the sections
+`oneCocycles'` and `twoCocycles'`.
 
 We also show that when the representation on `A` is trivial, `H¹(G, A) ≃ Hom(G, A)`.
 
