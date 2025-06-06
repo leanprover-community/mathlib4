@@ -60,10 +60,10 @@ EOF
 build_fork_yml() {
   header
   cat <<EOF
-# The jobs in this file run on GitHub-hosted workers and will only be run from external forks
+# The jobs in this file run on self-hosted workers and will be run from external forks
 
 on:
-  push:
+  pull_request_target:
     branches-ignore:
       # ignore tmp branches used by bors
       - 'staging.tmp*'
@@ -73,8 +73,10 @@ on:
 
 name: continuous integration (mathlib forks)
 EOF
-  include 0 ubuntu-latest != " (fork)" ubuntu-latest
+  include 0 pr != " (fork)" ubuntu-latest
 }
+
+# Note (2025-06-06): IS_SELF_HOSTED is no longer used in `build.in.yml`, and should be removed.
 
 include() {
   sed "

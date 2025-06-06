@@ -5,10 +5,10 @@
 # .github/workflows/mk_build_yml.sh to update.
 
 # Forks of mathlib and other projects should be able to use build_fork.yml directly
-# The jobs in this file run on GitHub-hosted workers and will only be run from external forks
+# The jobs in this file run on self-hosted workers and will be run from external forks
 
 on:
-  push:
+  pull_request_target:
     branches-ignore:
       # ignore tmp branches used by bors
       - 'staging.tmp*'
@@ -34,11 +34,17 @@ concurrency:
   # cancel any running workflow with the same label
   cancel-in-progress: true
 
+# Limit permissions for GITHUB_TOKEN for the entire workflow
+permissions:
+  contents: read
+  pull-requests: write  # Only allow PR comments/labels
+  # All other permissions are implicitly 'none'
+
 jobs:
   build:
     if: github.repository != 'leanprover-community/mathlib4'
     name: Build (fork)
-    runs-on: ubuntu-latest
+    runs-on: pr
     outputs:
       build-outcome: ${{ steps.build.outcome }}
       archive-outcome: ${{ steps.archive.outcome }}
