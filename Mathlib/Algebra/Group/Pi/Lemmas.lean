@@ -205,7 +205,7 @@ nonrec def OneHom.mulSingle [∀ i, One <| f i] (i : I) : OneHom (f i) (∀ i, f
 theorem OneHom.mulSingle_apply [∀ i, One <| f i] (i : I) (x : f i) :
     mulSingle f i x = Pi.mulSingle i x := rfl
 
-@[to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem OneHom.coe_mulSingle [∀ i, One <| f i] (i : I) :
     mulSingle f i = Pi.mulSingle (M := f) i := rfl
 
@@ -232,7 +232,7 @@ theorem MonoidHom.mulSingle_apply [∀ i, MulOneClass <| f i] (i : I) (x : f i) 
     mulSingle f i x = Pi.mulSingle i x :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem MonoidHom.coe_mulSingle [∀ i, MulOneClass <| f i] (i : I) :
     mulSingle f i = Pi.mulSingle (M := f) i := rfl
 
