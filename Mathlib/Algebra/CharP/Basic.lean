@@ -10,6 +10,7 @@ import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Cast.Prod
 import Mathlib.Data.ULift
 import Mathlib.Order.Interval.Set.Defs
+import Mathlib.Algebra.Ring.GrindInstances
 
 /-!
 # Characteristic of semirings
@@ -184,6 +185,8 @@ end CharZero
 
 namespace Fin
 
+open Fin.NatCast
+
 /-- The characteristic of `F_p` is `p`. -/
 @[stacks 09FS "First part. We don't require `p` to be a prime in mathlib."]
 instance charP (n : ℕ) [NeZero n] : CharP (Fin n) n where cast_eq_zero_iff _ := natCast_eq_zero
@@ -201,3 +204,17 @@ instance (S : Type*) [Semiring S] (p) [ExpChar R p] [ExpChar S p] : ExpChar (R �
   · have := Prod.charP R S p; exact .prime hp
 
 end AddMonoidWithOne
+
+section CommRing
+
+#adaptation_note
+/-- 2025-04-19 `IsCharP` has `n` as an outparam, but `CharP` does not.
+Remove after https://github.com/leanprover-community/mathlib4/pull/24216 is merged.
+-/
+set_option synthInstance.checkSynthOrder false in
+instance (α : Type*) [CommRing α] (n : ℕ) [CharP α n] : Lean.Grind.IsCharP α n where
+  ofNat_eq_zero_iff m := by
+    rw [CommRing.toGrindCommRing_ofNat]
+    simpa [← Nat.dvd_iff_mod_eq_zero] using CharP.cast_eq_zero_iff α n m
+
+end CommRing

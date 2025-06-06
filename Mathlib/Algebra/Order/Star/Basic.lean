@@ -31,10 +31,10 @@ It is important to note that while a `StarOrderedRing` is an `OrderedAddCommMono
 ## TODO
 
 * In a Banach star algebra without a well-defined square root, the natural ordering is given by the
-positive cone which is the _closure_ of the sums of elements `star r * r`. A weaker version of
-`StarOrderedRing` could be defined for this case (again, see
-[*The positive cone in Banach algebras*][kelleyVaught1953]). Note that the current definition has
-the advantage of not requiring a topology.
+  positive cone which is the _closure_ of the sums of elements `star r * r`. A weaker version of
+  `StarOrderedRing` could be defined for this case (again, see
+  [*The positive cone in Banach algebras*][kelleyVaught1953]). Note that the current definition has
+  the advantage of not requiring a topology.
 -/
 
 open Set
@@ -58,8 +58,8 @@ class StarOrderedRing (R : Type u) [NonUnitalSemiring R] [PartialOrder R]
 namespace StarOrderedRing
 
 -- see note [lower instance priority]
-instance (priority := 100) toOrderedAddCommMonoid [NonUnitalSemiring R] [PartialOrder R]
-    [StarRing R] [StarOrderedRing R] : OrderedAddCommMonoid R where
+instance (priority := 100) toIsOrderedAddMonoid [NonUnitalSemiring R] [PartialOrder R]
+    [StarRing R] [StarOrderedRing R] : IsOrderedAddMonoid R where
   add_le_add_left := fun x y hle z ↦ by
     rw [StarOrderedRing.le_iff] at hle ⊢
     refine hle.imp fun s hs ↦ ?_
@@ -72,11 +72,6 @@ instance (priority := 100) toExistsAddOfLE [NonUnitalSemiring R] [PartialOrder R
   exists_add_of_le h :=
     match (le_iff _ _).mp h with
     | ⟨p, _, hp⟩ => ⟨p, hp⟩
-
--- see note [lower instance priority]
-instance (priority := 100) toOrderedAddCommGroup [NonUnitalRing R] [PartialOrder R]
-    [StarRing R] [StarOrderedRing R] : OrderedAddCommGroup R where
-  add_le_add_left := @add_le_add_left _ _ _ _
 
 /-- To construct a `StarOrderedRing` instance it suffices to show that `x ≤ y` if and only if
 `y = x + star s * s` for some `s : R`.

@@ -139,7 +139,7 @@ instance instSemigroupWithZero [SemigroupWithZero α] [NoZeroDivisors α] :
     simp only [← coe_mul, mul_assoc]
 
 section MonoidWithZero
-variable [MonoidWithZero α] [NoZeroDivisors α] [Nontrivial α]
+variable [MonoidWithZero α] [NoZeroDivisors α] [Nontrivial α] {x : WithTop α} {n : ℕ}
 
 instance instMonoidWithZero : MonoidWithZero (WithTop α) where
   __ := instMulZeroOneClass
@@ -153,9 +153,19 @@ instance instMonoidWithZero : MonoidWithZero (WithTop α) where
 
 @[simp, norm_cast] lemma coe_pow (a : α) (n : ℕ) : (↑(a ^ n) : WithTop α) = a ^ n := rfl
 
-theorem top_pow {n : ℕ} (n_pos : 0 < n) : (⊤ : WithTop α) ^ n = ⊤ :=
-  Nat.le_induction (pow_one _) (fun m _ hm => by rw [pow_succ, hm, top_mul_top]) _
-    (Nat.succ_le_of_lt n_pos)
+@[simp] lemma top_pow : ∀ {n : ℕ}, n ≠ 0 → (⊤ : WithTop α) ^ n = ⊤ | _ + 1, _ => rfl
+
+@[simp] lemma pow_eq_top_iff : x ^ n = ⊤ ↔ x = ⊤ ∧ n ≠ 0 := by
+  induction x <;> cases n <;> simp [← coe_pow]
+
+lemma pow_ne_top_iff : x ^ n ≠ ⊤ ↔ x ≠ ⊤ ∨ n = 0 := by simp [pow_eq_top_iff, or_iff_not_imp_left]
+
+@[simp] lemma pow_lt_top_iff [Preorder α] : x ^ n < ⊤ ↔ x < ⊤ ∨ n = 0 := by
+  simp_rw [WithTop.lt_top_iff_ne_top, pow_ne_top_iff]
+
+lemma eq_top_of_pow (n : ℕ) (hx : x ^ n = ⊤) : x = ⊤ := (pow_eq_top_iff.1 hx).1
+lemma pow_ne_top (hx : x ≠ ⊤) : x ^ n ≠ ⊤ := pow_ne_top_iff.2 <| .inl hx
+lemma pow_lt_top [Preorder α] (hx : x < ⊤) : x ^ n < ⊤ := pow_lt_top_iff.2 <| .inl hx
 
 end MonoidWithZero
 
@@ -205,9 +215,9 @@ instance instCommSemiring [CommSemiring α] [PartialOrder α] [CanonicallyOrdere
   toSemiring := WithTop.instSemiring
   __ := WithTop.instCommMonoidWithZero
 
-instance instOrderedCommSemiring [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
-    [NoZeroDivisors α] [Nontrivial α] : OrderedCommSemiring (WithTop α) :=
-  CanonicallyOrderedAdd.toOrderedCommSemiring
+instance instIsOrderedRing [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
+    [NoZeroDivisors α] [Nontrivial α] : IsOrderedRing (WithTop α) :=
+  CanonicallyOrderedAdd.toIsOrderedRing
 
 /-- A version of `WithTop.map` for `RingHom`s. -/
 @[simps -fullyApplied]
@@ -219,7 +229,8 @@ protected def _root_.RingHom.withTopMap {R S : Type*}
     (f : R →+* S) (hf : Function.Injective f) : WithTop R →+* WithTop S :=
   {MonoidWithZeroHom.withTopMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.withTopMap with}
 
-variable [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α] [PosMulStrictMono α]
+variable [CommSemiring α] [PartialOrder α] [OrderBot α]
+  [CanonicallyOrderedAdd α] [PosMulStrictMono α]
   {a a₁ a₂ b₁ b₂ : WithTop α}
 
 @[gcongr]
@@ -465,13 +476,10 @@ instance [MulZeroClass α] [Preorder α] [MulPosReflectLE α] : MulPosReflectLE 
     norm_cast at x0
     exact le_of_mul_le_mul_right h x0
 
-instance instOrderedCommSemiring [OrderedCommSemiring α] [CanonicallyOrderedAdd α]
-    [NoZeroDivisors α] [Nontrivial α] :
-    OrderedCommSemiring (WithBot α) where
-  __ := WithBot.instCommSemiring
-  __ := WithBot.zeroLEOneClass
-  __ := WithBot.orderedAddCommMonoid
-  mul_le_mul_of_nonneg_left  := fun _ _ _ => mul_le_mul_of_nonneg_left
-  mul_le_mul_of_nonneg_right := fun _ _ _ => mul_le_mul_of_nonneg_right
+instance instIsOrderedRing [CommSemiring α] [PartialOrder α] [IsOrderedRing α]
+    [CanonicallyOrderedAdd α] [NoZeroDivisors α] [Nontrivial α] :
+    IsOrderedRing (WithBot α) where
+  mul_le_mul_of_nonneg_left  _ _ _ := mul_le_mul_of_nonneg_left
+  mul_le_mul_of_nonneg_right _ _ _ := mul_le_mul_of_nonneg_right
 
 end WithBot

@@ -167,7 +167,7 @@ variable {h : ℝ} {f : ℂ → ℂ}
 
 theorem boundedAtFilter_cuspFunction (hh : 0 < h) (h_bd : BoundedAtFilter I∞ f) :
     BoundedAtFilter (𝓝[≠] 0) (cuspFunction h f) := by
-  refine (h_bd.comp_tendsto <| invQParam_tendsto hh).congr' ?_ (by rfl)
+  refine (h_bd.comp_tendsto <| invQParam_tendsto hh).congr' ?_ (by simp)
   refine eventually_nhdsWithin_of_forall fun q hq ↦ ?_
   rw [cuspFunction_eq_of_nonzero _ _ hq, comp_def]
 

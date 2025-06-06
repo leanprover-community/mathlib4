@@ -38,7 +38,7 @@ scoped[ProbabilityTheory] notation:100 κ:101 " ∘ₘ " μ:100 => MeasureTheory
 
 @[simp]
 lemma comp_apply_univ [IsMarkovKernel κ] : (κ ∘ₘ μ) Set.univ = μ Set.univ := by
-  simp [bind_apply .univ κ.measurable]
+  simp [bind_apply .univ κ.aemeasurable]
 
 lemma deterministic_comp_eq_map {f : α → β} (hf : Measurable f) :
     Kernel.deterministic f hf ∘ₘ μ = μ.map f :=

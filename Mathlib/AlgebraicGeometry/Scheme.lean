@@ -53,6 +53,22 @@ namespace Scheme
 instance : CoeSort Scheme Type* where
   coe X := X.carrier
 
+open Lean PrettyPrinter.Delaborator SubExpr in
+/-- Pretty printer for coercing schemes to types. -/
+@[app_delab TopCat.carrier]
+partial def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
+  guard <| (← getExpr).isAppOfArity ``TopCat.carrier 1
+  withNaryArg 0 do
+  guard <| (← getExpr).isAppOfArity ``PresheafedSpace.carrier 3
+  withNaryArg 2 do
+  guard <| (← getExpr).isAppOfArity ``SheafedSpace.toPresheafedSpace 3
+  withNaryArg 2 do
+  guard <| (← getExpr).isAppOfArity ``LocallyRingedSpace.toSheafedSpace 1
+  withNaryArg 0 do
+  guard <| (← getExpr).isAppOfArity ``Scheme.toLocallyRingedSpace 1
+  withNaryArg 0 do
+  `(↥$(← delab))
+
 /-- The type of open sets of a scheme. -/
 abbrev Opens (X : Scheme) : Type* := TopologicalSpace.Opens X
 
@@ -166,7 +182,6 @@ lemma appLE_congr (e : V ≤ f ⁻¹ᵁ U) (e₁ : U = U') (e₂ : V = V')
 def stalkMap (x : X) : Y.presheaf.stalk (f.base x) ⟶ X.presheaf.stalk x :=
   f.toLRSHom.stalkMap x
 
-@[ext (iff := false)]
 protected lemma ext {f g : X ⟶ Y} (h_base : f.base = g.base)
     (h_app : ∀ U, f.app U ≫ X.presheaf.map
       (eqToHom congr((Opens.map $h_base.symm).obj U)).op = g.app U) : f = g := by
@@ -222,10 +237,17 @@ noncomputable def homeoOfIso {X Y : Scheme.{u}} (e : X ≅ Y) : X ≃ₜ Y :=
   TopCat.homeoOfIso (forgetToTop.mapIso e)
 
 @[simp]
+lemma coe_homeoOfIso {X Y : Scheme.{u}} (e : X ≅ Y) :
+    ⇑(homeoOfIso e) = e.hom.base := rfl
+
+@[simp]
+lemma coe_homeoOfIso_symm {X Y : Scheme.{u}} (e : X ≅ Y) :
+    ⇑(homeoOfIso e.symm) = e.inv.base := rfl
+
+@[simp]
 lemma homeoOfIso_symm {X Y : Scheme} (e : X ≅ Y) :
     (homeoOfIso e).symm = homeoOfIso e.symm := rfl
 
-@[simp]
 lemma homeoOfIso_apply {X Y : Scheme} (e : X ≅ Y) (x : X) :
     homeoOfIso e x = e.hom.base x := rfl
 
@@ -305,7 +327,7 @@ theorem comp_appLE {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U V e) :
 
 theorem congr_app {X Y : Scheme} {f g : X ⟶ Y} (e : f = g) (U) :
     f.app U = g.app U ≫ X.presheaf.map (eqToHom (by subst e; rfl)).op := by
-  subst e; dsimp; simp
+  subst e; simp
 
 theorem app_eq {X Y : Scheme} (f : X ⟶ Y) {U V : Y.Opens} (e : U = V) :
     f.app U =
@@ -352,6 +374,23 @@ theorem inv_appTop {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
     (inv f).appTop = inv (f.appTop) := by simp
 
 @[deprecated (since := "2024-11-23")] alias inv_app_top := inv_appTop
+
+/-- Copies a morphism with a different underlying map -/
+def Hom.copyBase {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) : X ⟶ Y where
+  base := TopCat.ofHom ⟨g, h ▸ f.base.1.2⟩
+  c := f.c ≫ (TopCat.Presheaf.pushforwardEq (by subst h; rfl) _).hom
+  prop x := by
+    subst h
+    convert f.prop x using 4
+    aesop_cat
+
+lemma Hom.copyBase_eq {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) :
+    f.copyBase g h = f := by
+  subst h
+  obtain ⟨⟨⟨f₁, f₂⟩, f₃⟩, f₄⟩ := f
+  simp only [Hom.copyBase, LocallyRingedSpace.Hom.toShHom_mk]
+  congr
+  aesop_cat
 
 end Scheme
 
@@ -424,6 +463,12 @@ instance {A : CommRingCat} [Nontrivial A] : Nonempty (Spec A) :=
 end
 
 namespace Scheme
+
+theorem isEmpty_of_commSq {W X Y S : Scheme.{u}} {f : X ⟶ S} {g : Y ⟶ S}
+    {i : W ⟶ X} {j : W ⟶ Y} (h : CommSq i j f g)
+    (H : Disjoint (Set.range f.base) (Set.range g.base)) : IsEmpty W :=
+  ⟨fun x ↦ (Set.disjoint_iff_inter_eq_empty.mp H).le
+    ⟨⟨i.base x, congr($(h.w).base x)⟩, ⟨j.base x, rfl⟩⟩⟩
 
 /-- The empty scheme. -/
 @[simps]
@@ -673,6 +718,15 @@ lemma zeroLocus_univ {U : X.Opens} :
     SetLike.mem_coe, ← not_exists, not_iff_not]
   exact ⟨fun ⟨f, hf⟩ ↦ X.basicOpen_le f hf, fun _ ↦ ⟨1, by rwa [X.basicOpen_of_isUnit isUnit_one]⟩⟩
 
+lemma zeroLocus_radical {U : X.Opens} (I : Ideal Γ(X, U)) :
+    X.zeroLocus (U := U) I.radical = X.zeroLocus (U := U) I := by
+  refine (X.zeroLocus_mono I.le_radical).antisymm ?_
+  simp only [Set.subset_def, mem_zeroLocus_iff, SetLike.mem_coe]
+  rintro x H f ⟨n, hn⟩ hx
+  rcases n.eq_zero_or_pos with rfl | hn'
+  · exact H f (by simpa using I.mul_mem_left f hn) hx
+  · exact H _ hn (X.basicOpen_pow f hn' ▸ hx)
+
 end ZeroLocus
 
 end Scheme
@@ -696,7 +750,7 @@ theorem basicOpen_eq_of_affine' {R : CommRingCat} (f : Γ(Spec R, ⊤)) :
   exact (Iso.hom_inv_id_apply (Scheme.ΓSpecIso R) f).symm
 
 theorem Scheme.Spec_map_presheaf_map_eqToHom {X : Scheme} {U V : X.Opens} (h : U = V) (W) :
-    (Spec.map (X.presheaf.map (eqToHom h).op)).app W = eqToHom (by cases h; dsimp; simp) := by
+    (Spec.map (X.presheaf.map (eqToHom h).op)).app W = eqToHom (by cases h; simp) := by
   have : Scheme.Spec.map (X.presheaf.map (𝟙 (op U))).op = 𝟙 _ := by
     rw [X.presheaf.map_id, op_id, Scheme.Spec.map_id]
   cases h

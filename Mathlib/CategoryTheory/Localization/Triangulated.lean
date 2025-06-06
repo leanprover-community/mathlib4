@@ -216,7 +216,7 @@ instance (n : ℤ) : (shiftFunctor (W.Localization) n).Additive := by
   rw [Localization.functor_additive_iff W.Q W]
   exact Functor.additive_of_iso (W.Q.commShiftIso n)
 
-instance : Pretriangulated W.Localization := pretriangulated W.Q W
+noncomputable instance : Pretriangulated W.Localization := pretriangulated W.Q W
 
 instance [IsTriangulated C] : IsTriangulated W.Localization := isTriangulated W.Q W
 
@@ -228,7 +228,7 @@ instance (n : ℤ) : (shiftFunctor (W.Localization') n).Additive := by
   rw [Localization.functor_additive_iff W.Q' W]
   exact Functor.additive_of_iso (W.Q'.commShiftIso n)
 
-instance : Pretriangulated W.Localization' := pretriangulated W.Q' W
+noncomputable instance : Pretriangulated W.Localization' := pretriangulated W.Q' W
 
 instance [IsTriangulated C] : IsTriangulated W.Localization' := isTriangulated W.Q' W
 

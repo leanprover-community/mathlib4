@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzza
 Amelia Livingston, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Submonoid.Basic
+import Mathlib.Algebra.Group.Support
 import Mathlib.Data.Finset.NoncommProd
 
 /-!

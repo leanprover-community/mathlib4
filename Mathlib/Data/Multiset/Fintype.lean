@@ -118,7 +118,7 @@ theorem mem_of_mem_toEnumFinset {p : α × ℕ} (h : p ∈ m.toEnumFinset) : p.1
   obtain ⟨n, han, hn⟩ : ∃ n ≥ card (s.1.filter fun x ↦ a = x.1) - 1, (a, n) ∈ s := by
     by_contra! h
     replace h : {x ∈ s | x.1 = a} ⊆ {a} ×ˢ .range (card (s.1.filter fun x ↦ a = x.1) - 1) := by
-      simpa (config := { contextual := true }) [forall_swap (β := _ = a), Finset.subset_iff,
+      simpa +contextual [forall_swap (β := _ = a), Finset.subset_iff,
         imp_not_comm, not_le, Nat.lt_sub_iff_add_lt] using h
     have : card (s.1.filter fun x ↦ a = x.1) ≤ card (s.1.filter fun x ↦ a = x.1) - 1 := by
       simpa [Finset.card, eq_comm] using Finset.card_mono h
@@ -189,10 +189,15 @@ theorem map_univ_coe (m : Multiset α) :
   simpa only [Finset.map_val, Multiset.coeEmbedding_apply, Multiset.map_map,
     Function.comp_apply] using this
 
+theorem map_univ_comp_coe {β : Type*} (m : Multiset α) (f : α → β) :
+    ((Finset.univ : Finset m).val.map (f ∘ (fun x : m ↦ (x : α)))) = m.map f := by
+  rw [← Multiset.map_map, Multiset.map_univ_coe]
+
 @[simp]
 theorem map_univ {β : Type*} (m : Multiset α) (f : α → β) :
     ((Finset.univ : Finset m).val.map fun (x : m) ↦ f (x : α)) = m.map f := by
-  erw [← Multiset.map_map, Multiset.map_univ_coe]
+  simp_rw [← Function.comp_apply (f := f)]
+  exact map_univ_comp_coe m f
 
 @[simp]
 theorem card_toEnumFinset (m : Multiset α) : m.toEnumFinset.card = Multiset.card m := by

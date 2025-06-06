@@ -35,10 +35,10 @@ compact, then `Πʳ i, [R i, A i]` is a locally compact topological ring.
 ## Main definitions
 
 * `RestrictedProduct`: the restricted product of a family `R` of types, relative to a family `A` of
-subsets and a filter `𝓕` on the indexing set. This is denoted `Πʳ i, [R i, A i]_[𝓕]`,
-or simply `Πʳ i, [R i, A i]` when `𝓕 = cofinite`.
+  subsets and a filter `𝓕` on the indexing set. This is denoted `Πʳ i, [R i, A i]_[𝓕]`,
+  or simply `Πʳ i, [R i, A i]` when `𝓕 = cofinite`.
 * `RestrictedProduct.instDFunLike`: interpret an element of `Πʳ i, [R i, A i]_[𝓕]` as an element
-of `Π i, R i` using the `DFunLike` machinery.
+  of `Π i, R i` using the `DFunLike` machinery.
 * `RestrictedProduct.structureMap`: the inclusion map from `Π i, A i` to `Πʳ i, [R i, A i]_[𝓕]`.
 * `RestrictedProduct.topologicalSpace`: the `TopologicalSpace` instance on `Πʳ i, [R i, A i]_[𝓕]`.
 
@@ -54,9 +54,9 @@ inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where
 
 In particular:
 * On the classical restricted product, with respect to the cofinite filter, this corresponds to
-taking the inductive limit of the `Πʳ i, [R i, A i]_[𝓟 s]` over all *cofinite* sets `s : Set ι`.
+  taking the inductive limit of the `Πʳ i, [R i, A i]_[𝓟 s]` over all *cofinite* sets `s : Set ι`.
 * If `𝓕 = 𝓟 s` is a principal filter, this second step clearly does not change the topology, since
-`s` belongs to the indexing set of the inductive limit.
+  `s` belongs to the indexing set of the inductive limit.
 
 Taking advantage of that second remark, we do not actually declare an instance specific to
 principal filters. Instead, we provide directly the general instance (corresponding to step 2 above)
@@ -68,10 +68,10 @@ and that the topology for a general `𝓕` is indeed the expected inductive limi
 ## Main statements
 
 * `RestrictedProduct.isEmbedding_coe_of_principal`: for any set `S`, `Πʳ i, [R i, A i]_[𝓟 S]`
-is endowed with the subset topology coming from `Π i, R i`.
+  is endowed with the subset topology coming from `Π i, R i`.
 * `RestrictedProduct.topologicalSpace_eq_iSup`: the topology on `Πʳ i, [R i, A i]_[𝓕]` is the
-inductive limit / final topology associated to the natural maps
-`Πʳ i, [R i, A i]_[𝓟 S] → Πʳ i, [R i, A i]_[𝓕]`, where `𝓕 ≤ 𝓟 S`.
+  inductive limit / final topology associated to the natural maps
+  `Πʳ i, [R i, A i]_[𝓟 S] → Πʳ i, [R i, A i]_[𝓕]`, where `𝓕 ≤ 𝓟 S`.
 * `RestrictedProduct.continuous_dom`: a map from `Πʳ i, [R i, A i]_[𝓕]` is continuous
 *if and only if* its restriction to each `Πʳ i, [R i, A i]_[𝓟 s]` (with `𝓕 ≤ 𝓟 s`) is continuous.
 * `RestrictedProduct.continuous_dom_prod_left`: assume that each `A i` is an **open** subset of
@@ -80,20 +80,20 @@ inductive limit / final topology associated to the natural maps
 is continuous.
 
 * `RestrictedProduct.isTopologicalGroup`: if each `R i` is a topological group and each `A i` is an
-open subgroup of `R i`, then `Πʳ i, [R i, A i]` is a topological group.
+  open subgroup of `R i`, then `Πʳ i, [R i, A i]` is a topological group.
 * `RestrictedProduct.isTopologicalRing`: if each `R i` is a topological ring and each `A i` is an
-open subring of `R i`, then `Πʳ i, [R i, A i]` is a topological ring.
+  open subring of `R i`, then `Πʳ i, [R i, A i]` is a topological ring.
 * `RestrictedProduct.continuousSMul`: if some topological monoid `G` acts on each `M i`, and each
-`A i` is stable for that action, then the natural action of `G` on `Πʳ i, [M i, A i]` is also
-continuous. In particular, if each `M i` is a topological `R`-module and each `A i` is an open
-sub-`R`-module of `M i`, then `Πʳ i, [M i, A i]` is a topological `R`-module.
+  `A i` is stable for that action, then the natural action of `G` on `Πʳ i, [M i, A i]` is also
+  continuous. In particular, if each `M i` is a topological `R`-module and each `A i` is an open
+  sub-`R`-module of `M i`, then `Πʳ i, [M i, A i]` is a topological `R`-module.
 
 * `RestrictedProduct.weaklyLocallyCompactSpace_of_cofinite`:  if each `R i` is weakly locally
-compact, each `A i` is open, and all but finitely many `A i`s are also compact, then the
-restricted product `Πʳ i, [R i, A i]` is weakly locally compact.
+  compact, each `A i` is open, and all but finitely many `A i`s are also compact, then the
+  restricted product `Πʳ i, [R i, A i]` is weakly locally compact.
 * `RestrictedProduct.locallyCompactSpace_of_group`: assume that each `R i` is a locally compact
-group with `A i` an open subgroup. Assume also that all but finitely many `A i`s are compact.
-Then the restricted product `Πʳ i, [R i, A i]` is a locally compact group.
+  group with `A i` an open subgroup. Assume also that all but finitely many `A i`s are compact.
+  Then the restricted product `Πʳ i, [R i, A i]` is a locally compact group.
 
 ## Notation
 
@@ -149,19 +149,25 @@ namespace RestrictedProduct
 
 open scoped RestrictedProduct
 
-variable {𝓕 𝓖 : Filter ι} {S T : Set ι}
+variable {𝓕 𝓖 : Filter ι}
 
 instance : DFunLike (Πʳ i, [R i, A i]_[𝓕]) ι R where
   coe x i := x.1 i
   coe_injective' _ _ := Subtype.ext
 
+@[ext]
+lemma ext {x y :  Πʳ i, [R i, A i]_[𝓕]} (h : ∀ i, x i = y i) : x = y :=
+  Subtype.ext <| funext h
+
 lemma range_coe :
     range ((↑) : Πʳ i, [R i, A i]_[𝓕] → Π i, R i) = {x | ∀ᶠ i in 𝓕, x i ∈ A i} :=
   Subtype.range_val_subtype
 
-lemma range_coe_principal :
+lemma range_coe_principal {S : Set ι} :
     range ((↑) : Πʳ i, [R i, A i]_[𝓟 S] → Π i, R i) = S.pi A :=
   range_coe R A
+
+@[simp] lemma eventually (x : Πʳ i, [R i, A i]_[𝓕]) : ∀ᶠ i in 𝓕, x i ∈ A i := x.2
 
 variable (𝓕) in
 /-- The *structure map* of the restricted product is the obvious inclusion from `Π i, A i`
@@ -236,6 +242,16 @@ instance [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
     Pow (Πʳ i, [R i, B i]_[𝓕]) ℕ where
   pow x n := ⟨fun i ↦ x i ^ n, x.2.mono fun _ hi ↦ pow_mem hi n⟩
 
+instance [Π i, AddMonoid (R i)] [∀ i, AddSubmonoidClass (S i) (R i)] :
+    AddMonoid (Πʳ i, [R i, B i]_[𝓕]) :=
+  haveI : ∀ i, SMulMemClass (S i) ℕ (R i) := fun _ ↦ AddSubmonoidClass.nsmulMemClass
+  DFunLike.coe_injective.addMonoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+@[to_additive existing]
+instance [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
+    Monoid (Πʳ i, [R i, B i]_[𝓕]) :=
+  DFunLike.coe_injective.monoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
 instance [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)] :
     Pow (Πʳ i, [R i, B i]_[𝓕]) ℤ where
   pow x n := ⟨fun i ↦ x i ^ n, x.2.mono fun _ hi ↦ zpow_mem hi n⟩
@@ -266,7 +282,141 @@ instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
   DFunLike.coe_injective.ring _ rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
+instance [Π i, CommRing (R i)] [∀ i, SubringClass (S i) (R i)] :
+    CommRing (Πʳ i, [R i, B i]_[𝓕]) where
+  mul_comm _ _ := DFunLike.coe_injective <| funext (fun _ ↦ mul_comm _ _)
+
 end Algebra
+
+section eval
+
+variable {S : ι → Type*}
+variable [Π i, SetLike (S i) (R i)]
+variable {B : Π i, S i}
+
+/-- `RestrictedProduct.evalMonoidHom j` is the monoid homomorphism from the restricted
+product `Πʳ i, [R i, B i]_[𝓕]` to the component `R j`.
+-/
+@[to_additive "`RestrictedProduct.evalAddMonoidHom j` is the monoid homomorphism from the restricted
+product `Πʳ i, [R i, B i]_[𝓕]` to the component `R j`."]
+def evalMonoidHom (j : ι) [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
+    (Πʳ i, [R i, B i]_[𝓕]) →* R j where
+  toFun x := x j
+  map_one' := rfl
+  map_mul' _ _ := rfl
+
+@[simp]
+lemma evalMonoidHom_apply [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)]
+    (x : Πʳ i, [R i, B i]_[𝓕]) (j : ι) : evalMonoidHom R j x = x j :=
+  rfl
+
+/-- `RestrictedProduct.evalRingHom j` is the ring homomorphism from the restricted
+product `Πʳ i, [R i, B i]_[𝓕]` to the component `R j`.
+-/
+def evalRingHom (j : ι) [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
+    (Πʳ i, [R i, B i]_[𝓕]) →+* R j where
+  __ := evalMonoidHom R j
+  __ := evalAddMonoidHom R j
+
+@[simp]
+lemma evalRingHom_apply [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)]
+    (x : Πʳ i, [R i, B i]_[𝓕]) (j : ι) : evalRingHom R j x = x j :=
+  rfl
+
+end eval
+
+section map
+
+variable {ι₁ ι₂ : Type*}
+variable (R₁ : ι₁ → Type*) (R₂ : ι₂ → Type*)
+variable {𝓕₁ : Filter ι₁} {𝓕₂ : Filter ι₂}
+variable {A₁ : (i : ι₁) → Set (R₁ i)} {A₂ : (i : ι₂) → Set (R₂ i)}
+variable {S₁ : ι₁ → Type*} {S₂ : ι₂ → Type*}
+variable [Π i, SetLike (S₁ i) (R₁ i)] [Π j, SetLike (S₂ j) (R₂ j)]
+variable {B₁ : Π i, S₁ i} {B₂ : Π j, S₂ j}
+variable (f : ι₂ → ι₁) (hf : Tendsto f 𝓕₂ 𝓕₁)
+
+section set
+
+variable (φ : ∀ j, R₁ (f j) → R₂ j) (hφ : ∀ᶠ j in 𝓕₂, MapsTo (φ j) (A₁ (f j)) (A₂ j))
+
+/--
+Given two restricted products `Πʳ (i : ι₁), [R₁ i, A₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, A₂ j]_[𝓕₂]`,
+`RestrictedProduct.map` gives a function between them. The data needed is a function `f : ι₂ → ι₁`
+such that `𝓕₂` tends to `𝓕₁` along `f`, and functions `φ j : R₁ (f j) → R₂ j`
+sending `A₁ (f j)` into `A₂ j` for an `𝓕₂`-large set of `j`'s.
+
+See also `mapMonoidHom`, `mapAddMonoidHom` and `mapRingHom` for variants.
+-/
+def map (x : Πʳ i, [R₁ i, A₁ i]_[𝓕₁]) : Πʳ j, [R₂ j, A₂ j]_[𝓕₂] := ⟨fun j ↦ φ j (x (f j)), by
+  filter_upwards [hf.eventually x.2, hφ] using fun _ h1 h2 ↦ h2 h1⟩
+
+@[simp]
+lemma map_apply (x : Πʳ i, [R₁ i, A₁ i]_[𝓕₁]) (j : ι₂) :
+    x.map R₁ R₂ f hf φ hφ j = φ j (x (f j)) :=
+  rfl
+
+end set
+
+section monoid
+
+variable [Π i, Monoid (R₁ i)] [Π i, Monoid (R₂ i)] [∀ i, SubmonoidClass (S₁ i) (R₁ i)]
+    [∀ i, SubmonoidClass (S₂ i) (R₂ i)] (φ : ∀ j, R₁ (f j) →* R₂ j)
+    (hφ : ∀ᶠ j in 𝓕₂, MapsTo (φ j) (B₁ (f j)) (B₂ j))
+
+/--
+Given two restricted products `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, B₂ j]_[𝓕₂]`,
+`RestrictedProduct.mapMonoidHom` gives a monoid homomorphism between them. The data needed is a
+function `f : ι₂ → ι₁` such that `𝓕₂` tends to `𝓕₁` along `f`, and monoid homomorphisms
+`φ j : R₁ (f j) → R₂ j` sending `B₁ (f j)` into `B₂ j` for an `𝓕₂`-large set of `j`'s.
+-/
+@[to_additive "
+Given two restricted products `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, B₂ j]_[𝓕₂]`,
+`RestrictedProduct.mapAddMonoidHom` gives a additive monoid homomorphism between them. The data
+needed is a function `f : ι₂ → ι₁` such that `𝓕₂` tends to `𝓕₁` along `f`, and
+additive monoid homomorphisms `φ j : R₁ (f j) → R₂ j` sending `B₁ (f j)` into `B₂ j` for
+an `𝓕₂`-large set of `j`'s.
+"]
+def mapMonoidHom : Πʳ i, [R₁ i, B₁ i]_[𝓕₁] →* Πʳ j, [R₂ j, B₂ j]_[𝓕₂] where
+  toFun := map R₁ R₂ f hf (fun j r ↦ φ j r) hφ
+  map_one' := by
+    ext i
+    exact map_one (φ i)
+  map_mul' x y := by
+    ext i
+    exact map_mul (φ i) _ _
+
+@[to_additive (attr := simp)]
+lemma mapMonoidHom_apply (x : Πʳ i, [R₁ i, B₁ i]_[𝓕₁]) (j : ι₂) :
+    x.mapMonoidHom R₁ R₂ f hf φ hφ j = φ j (x (f j)) :=
+  rfl
+
+end monoid
+
+section ring
+
+variable [Π i, Ring (R₁ i)] [Π i, Ring (R₂ i)] [∀ i, SubringClass (S₁ i) (R₁ i)]
+    [∀ i, SubringClass (S₂ i) (R₂ i)] (φ : ∀ j, R₁ (f j) →+* R₂ j)
+    (hφ : ∀ᶠ j in 𝓕₂, MapsTo (φ j) (B₁ (f j)) (B₂ j))
+
+/--
+Given two restricted products `Πʳ (i : ι₁), [R₁ i, B₁ i]_[𝓕₁]` and `Πʳ (j : ι₂), [R₂ j, B₂ j]_[𝓕₂]`,
+`RestrictedProduct.mapRingHom` gives a ring homomorphism between them. The data needed is a
+function `f : ι₂ → ι₁` such that `𝓕₂` tends to `𝓕₁` along `f`, and ring homomorphisms
+`φ j : R₁ (f j) → R₂ j` sending `B₁ (f j)` into `B₂ j` for an `𝓕₂`-large set of `j`'s.
+-/
+def mapRingHom : Πʳ i, [R₁ i, B₁ i]_[𝓕₁] →+* Πʳ j, [R₂ j, B₂ j]_[𝓕₂] where
+  __ := mapMonoidHom R₁ R₂ f hf (fun j ↦ φ j) hφ
+  __ := mapAddMonoidHom R₁ R₂ f hf (fun j ↦ φ j) hφ
+
+@[simp]
+lemma mapRingHom_apply (x : Πʳ i, [R₁ i, B₁ i]_[𝓕₁]) (j : ι₂) :
+    x.mapRingHom R₁ R₂ f hf φ hφ j = φ j (x (f j)) :=
+  rfl
+
+end ring
+
+end map
 
 section Topology
 /-!
@@ -282,9 +432,9 @@ inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where
 
 In particular:
 * On the classical restricted product, with respect to the cofinite filter, this corresponds to
-taking the inductive limit of the `Πʳ i, [R i, A i]_[𝓟 s]` over all *cofinite* sets `s : Set ι`.
+  taking the inductive limit of the `Πʳ i, [R i, A i]_[𝓟 s]` over all *cofinite* sets `s : Set ι`.
 * If `𝓕 = 𝓟 s` is a principal filter, this second step clearly does not change the topology, since
-`s` belongs to the indexing set of the inductive limit.
+  `s` belongs to the indexing set of the inductive limit.
 
 Taking advantage of that second remark, we do not actually declare an instance specific to
 principal filters. Instead, we provide directly the general instance (corresponding to step 2 above)
@@ -312,11 +462,18 @@ instance topologicalSpace : TopologicalSpace (Πʳ i, [R i, A i]_[𝓕]) :=
   ⨆ (S : Set ι) (hS : 𝓕 ≤ 𝓟 S), .coinduced (inclusion R A hS)
     (.induced ((↑) : Πʳ i, [R i, A i]_[𝓟 S] → Π i, R i) inferInstance)
 
+@[fun_prop]
 theorem continuous_coe :
     Continuous ((↑) : Πʳ i, [R i, A i]_[𝓕] → Π i, R i) :=
   continuous_iSup_dom.mpr fun _ ↦ continuous_iSup_dom.mpr fun _ ↦
     continuous_coinduced_dom.mpr continuous_induced_dom
 
+@[fun_prop]
+theorem continuous_eval (i : ι) :
+    Continuous (fun (x : Πʳ i, [R i, A i]_[𝓕]) ↦ x i) :=
+  continuous_apply _ |>.comp continuous_coe
+
+@[fun_prop]
 theorem continuous_inclusion {𝓖 : Filter ι} (h : 𝓕 ≤ 𝓖) :
     Continuous (inclusion R A h) := by
   simp_rw [continuous_iff_coinduced_le, topologicalSpace, coinduced_iSup, coinduced_compose]
@@ -382,14 +539,18 @@ theorem continuous_rng_of_bot {X : Type*} [TopologicalSpace X]
     Continuous f ↔ Continuous ((↑) ∘ f : X → Π i, R i) :=
   isEmbedding_coe_of_bot.continuous_iff
 
+lemma continuous_rng_of_principal_iff_forall {X : Type*} [TopologicalSpace X]
+    {f : X → Πʳ (i : ι), [R i, A i]_[𝓟 S]} :
+    Continuous f ↔ ∀ i : ι, Continuous ((fun x ↦ x i) ∘ f) :=
+  continuous_rng_of_principal.trans continuous_pi_iff
+
 /-- The obvious bijection between `Πʳ i, [R i, A i]_[⊤]` and `Π i, A i` is a homeomorphism. -/
 def homeoTop : (Π i, A i) ≃ₜ (Πʳ i, [R i, A i]_[⊤]) where
   toFun f := ⟨fun i ↦ f i, fun i ↦ (f i).2⟩
   invFun f i := ⟨f i, f.2 i⟩
   continuous_toFun := continuous_rng_of_top.mpr <| continuous_pi fun i ↦
-      continuous_subtype_val.comp <| continuous_apply i
-  continuous_invFun := continuous_pi fun i ↦ continuous_induced_rng.mpr <|
-    (continuous_apply i).comp continuous_coe
+    continuous_subtype_val.comp <| continuous_apply i
+  continuous_invFun := continuous_pi fun i ↦ continuous_induced_rng.mpr <| continuous_eval i
   left_inv _ := rfl
   right_inv _ := rfl
 
@@ -398,7 +559,7 @@ def homeoBot : (Π i, R i) ≃ₜ (Πʳ i, [R i, A i]_[⊥]) where
   toFun f := ⟨fun i ↦ f i, eventually_bot⟩
   invFun f i := f i
   continuous_toFun := continuous_rng_of_bot.mpr <| continuous_pi fun i ↦ continuous_apply i
-  continuous_invFun := continuous_pi fun i ↦ (continuous_apply i).comp continuous_coe
+  continuous_invFun := continuous_pi continuous_eval
   left_inv _ := rfl
   right_inv _ := rfl
 
@@ -545,13 +706,13 @@ theorem isOpenEmbedding_structureMap :
 include hAopen in
 theorem nhds_eq_map_inclusion {S : Set ι} (hS : cofinite ≤ 𝓟 S)
     (x : Πʳ i, [R i, A i]_[𝓟 S]) :
-    (𝓝 (inclusion R A hS x)) = map (inclusion R A hS) (𝓝 x) := by
+    (𝓝 (inclusion R A hS x)) = .map (inclusion R A hS) (𝓝 x) := by
   rw [isOpenEmbedding_inclusion_principal hAopen hS |>.map_nhds_eq x]
 
 include hAopen in
 theorem nhds_eq_map_structureMap
     (x : Π i, A i) :
-    (𝓝 (structureMap R A cofinite x)) = map (structureMap R A cofinite) (𝓝 x) := by
+    (𝓝 (structureMap R A cofinite x)) = .map (structureMap R A cofinite) (𝓝 x) := by
   rw [isOpenEmbedding_structureMap hAopen |>.map_nhds_eq x]
 
 include hAopen in
@@ -594,7 +755,7 @@ theorem continuous_dom_prod_right {X Y : Type*} [TopologicalSpace X] [Topologica
   have hxS : ∀ i ∈ S, x i ∈ A i := fun i hi ↦ hi
   rcases exists_inclusion_eq_of_eventually R A hS hxS with ⟨x', hxx'⟩
   rw [← hxx', nhds_prod_eq, nhds_eq_map_inclusion hAopen hS x',
-    ← map_id (f := 𝓝 y), prod_map_map_eq, ← nhds_prod_eq, tendsto_map'_iff]
+    ← Filter.map_id (f := 𝓝 y), prod_map_map_eq, ← nhds_prod_eq, tendsto_map'_iff]
   exact H S hS |>.tendsto ⟨x', y⟩
 
 -- TODO: get from the previous one instead of copy-pasting
@@ -615,7 +776,7 @@ theorem continuous_dom_prod_left {X Y : Type*} [TopologicalSpace X] [Topological
   have hxS : ∀ i ∈ S, x i ∈ A i := fun i hi ↦ hi
   rcases exists_inclusion_eq_of_eventually R A hS hxS with ⟨x', hxx'⟩
   rw [← hxx', nhds_prod_eq, nhds_eq_map_inclusion hAopen hS x',
-    ← map_id (f := 𝓝 y), prod_map_map_eq, ← nhds_prod_eq, tendsto_map'_iff]
+    ← Filter.map_id (f := 𝓝 y), prod_map_map_eq, ← nhds_prod_eq, tendsto_map'_iff]
   exact H S hS |>.tendsto ⟨y, x'⟩
 
 include hAopen in
@@ -637,6 +798,29 @@ theorem continuous_dom_prod {R' : ι → Type*} {A' : (i : ι) → Set (R' i)}
   have hSU : 𝓟 U ≤ 𝓟 S := principal_mono.mpr inter_subset_left
   have hTU : 𝓟 U ≤ 𝓟 T := principal_mono.mpr inter_subset_right
   exact (H U hU).comp ((continuous_inclusion hSU).prodMap (continuous_inclusion hTU))
+
+/-- A finitary (instead of binary) version of `continuous_dom_prod`. -/
+theorem continuous_dom_pi {n : Type*} [Fintype n] {X : Type*}
+    [TopologicalSpace X] {A : n → ι → Type*}
+    [∀ j i, TopologicalSpace (A j i)]
+    {C : (j : n) → (i : ι) → Set (A j i)}
+    (hCopen : ∀ j i, IsOpen (C j i))
+    {f : (Π j : n, Πʳ i : ι, [A j i, C j i]) → X} :
+    Continuous f ↔
+      ∀ (S : Set ι) (hS : cofinite ≤ 𝓟 S), Continuous (f ∘ Pi.map fun _ ↦ inclusion _ _ hS) := by
+  refine ⟨by fun_prop, fun H ↦ ?_⟩
+  simp_rw [continuous_iff_continuousAt, ContinuousAt]
+  intro x
+  set S : Set ι := {i | ∀ j, x j i ∈ C j i}
+  have hS : cofinite ≤ 𝓟 S := by
+    rw [le_principal_iff]
+    change ∀ᶠ i in cofinite, ∀ j : n, x j i ∈ C j i
+    simp [- eventually_cofinite]
+  let x' (j : n) : Πʳ i : ι, [A j i, C j i]_[𝓟 S] := .mk (fun i ↦ x j i) (fun i hi ↦ hi _)
+  have hxx' : Pi.map (fun j ↦ inclusion _ _ hS) x' = x := rfl
+  simp_rw [← hxx', nhds_pi, Pi.map_apply, nhds_eq_map_inclusion (hCopen _), ← map_piMap_pi_finite,
+    tendsto_map'_iff, ← nhds_pi]
+  exact (H _ _).tendsto _
 
 end cofinite
 
@@ -707,13 +891,13 @@ section cofinite
 
 theorem nhds_zero_eq_map_ofPre [Π i, Zero (R i)] [∀ i, ZeroMemClass (S i) (R i)]
     (hBopen : ∀ i, IsOpen (B i : Set (R i))) (hT : cofinite ≤ 𝓟 T) :
-    (𝓝 (inclusion R (fun i ↦ B i) hT 0)) = map (inclusion R (fun i ↦ B i) hT) (𝓝 0) :=
+    (𝓝 (inclusion R (fun i ↦ B i) hT 0)) = .map (inclusion R (fun i ↦ B i) hT) (𝓝 0) :=
   nhds_eq_map_inclusion hBopen hT 0
 
 theorem nhds_zero_eq_map_structureMap [Π i, Zero (R i)] [∀ i, ZeroMemClass (S i) (R i)]
     (hBopen : ∀ i, IsOpen (B i : Set (R i))) :
     (𝓝 (structureMap R (fun i ↦ B i) cofinite 0)) =
-      map (structureMap R (fun i ↦ B i) cofinite) (𝓝 0) :=
+      .map (structureMap R (fun i ↦ B i) cofinite) (𝓝 0) :=
   nhds_eq_map_structureMap hBopen 0
 
 -- TODO: Make `IsOpen` a class like `IsClosed` ?
@@ -772,5 +956,34 @@ instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, IsTopolo
 end cofinite
 
 end Compatibility
+
+section map_continuous
+
+variable {ι₁ ι₂ : Type*}
+variable (R₁ : ι₁ → Type*) (R₂ : ι₂ → Type*)
+variable [∀ i, TopologicalSpace (R₁ i)] [∀ i, TopologicalSpace (R₂ i)]
+variable {𝓕₁ : Filter ι₁} {𝓕₂ : Filter ι₂}
+variable {A₁ : (i : ι₁) → Set (R₁ i)} {A₂ : (i : ι₂) → Set (R₂ i)}
+variable (f : ι₂ → ι₁) (hf : Tendsto f 𝓕₂ 𝓕₁)
+
+variable (φ : ∀ j, R₁ (f j) → R₂ j) (hφ : ∀ᶠ j in 𝓕₂, MapsTo (φ j) (A₁ (f j)) (A₂ j))
+
+theorem map_continuous (φ_cont : ∀ j, Continuous (φ j)) : Continuous (map R₁ R₂ f hf φ hφ) := by
+  rw [continuous_dom]
+  intro S hS
+  set T := f ⁻¹' S ∩ {j | MapsTo (φ j) (A₁ (f j)) (A₂ j)}
+  have hT : 𝓕₂ ≤ 𝓟 T := by
+    rw [le_principal_iff] at hS ⊢
+    exact inter_mem (hf hS) hφ
+  have hf' : Tendsto f (𝓟 T) (𝓟 S) := by aesop
+  have hφ' : ∀ᶠ j in 𝓟 T, MapsTo (φ j) (A₁ (f j)) (A₂ j) := by aesop
+  have key : map R₁ R₂ f hf φ hφ ∘ inclusion R₁ A₁ hS =
+      inclusion R₂ A₂ hT ∘ map R₁ R₂ f hf' φ hφ' := rfl
+  rw [key]
+  exact continuous_inclusion _ |>.comp <|
+    continuous_rng_of_principal.mpr <|
+    continuous_pi fun j ↦ φ_cont j |>.comp <| continuous_eval (f j)
+
+end map_continuous
 
 end RestrictedProduct

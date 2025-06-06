@@ -10,8 +10,8 @@ import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
 # Hilbert's Theorem 90
 
 Let `L/K` be a finite extension of fields. Then this file proves Noether's generalization of
-Hilbert's Theorem 90: that the 1st group cohomology $H^1(Aut_K(L), Lˣ)$ is trivial. We state it
-both in terms of $H^1$ and in terms of cocycles being coboundaries.
+Hilbert's Theorem 90: that the 1st group cohomology $H^1(Aut_K(L), L^\times)$ is trivial. We state
+it both in terms of $H^1$ and in terms of cocycles being coboundaries.
 
 Hilbert's original statement was that if $L/K$ is Galois, and $Gal(L/K)$ is cyclic, generated
 by an element `σ`, then for every `x : L` such that $N_{L/K}(x) = 1,$ there exists `y : L` such
@@ -24,8 +24,8 @@ Noether's generalization also holds for infinite Galois extensions.
 ## Main statements
 
 * `groupCohomology.isMulOneCoboundary_of_isMulOneCocycle_of_aut_to_units`: Noether's generalization
-of Hilbert's Theorem 90: for all $f: Aut_K(L) \to L^\times$ satisfying the 1-cocycle
-condition, there exists `β : Lˣ` such that $g(β)/β = f(g)$ for all `g : Aut_K(L)`.
+  of Hilbert's Theorem 90: for all $f: Aut_K(L) \to L^\times$ satisfying the 1-cocycle
+  condition, there exists `β : Lˣ` such that $g(β)/β = f(g)$ for all `g : Aut_K(L)`.
 * `groupCohomology.H1ofAutOnUnitsUnique`: Noether's generalization of Hilbert's Theorem 90:
 $H^1(Aut_K(L), L^\times)$ is trivial.
 
@@ -42,7 +42,7 @@ statement is clearer.
 * The original Hilbert's Theorem 90, deduced from the cohomology of general finite cyclic groups.
 * Develop Galois cohomology to extend Noether's result to infinite Galois extensions.
 * "Additive Hilbert 90": let `L/K` be a finite Galois extension. Then $H^n(Gal(L/K), L)$ is trivial
-for all $1 ≤ n.$
+  for all $1 ≤ n.$
 
 -/
 

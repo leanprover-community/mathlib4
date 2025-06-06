@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
 import Mathlib.Algebra.MvPolynomial.PDeriv
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
+import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
 import Mathlib.Data.Fin.Tuple.Reflection
 
 /-!
@@ -28,13 +28,13 @@ group operations in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Formula.le
 
 ## Main definitions
 
- * `WeierstrassCurve.Jacobian.PointClass`: the equivalence class of a point representative.
- * `WeierstrassCurve.Jacobian.Nonsingular`: the nonsingular condition on a point representative.
- * `WeierstrassCurve.Jacobian.NonsingularLift`: the nonsingular condition on a point class.
+* `WeierstrassCurve.Jacobian.PointClass`: the equivalence class of a point representative.
+* `WeierstrassCurve.Jacobian.Nonsingular`: the nonsingular condition on a point representative.
+* `WeierstrassCurve.Jacobian.NonsingularLift`: the nonsingular condition on a point class.
 
 ## Main statements
 
- * `WeierstrassCurve.Jacobian.polynomial_relation`: Euler's homogeneous function theorem.
+* `WeierstrassCurve.Jacobian.polynomial_relation`: Euler's homogeneous function theorem.
 
 ## Implementation notes
 
@@ -110,9 +110,8 @@ abbrev toJacobian (W : WeierstrassCurve R) : Jacobian R :=
 
 namespace Jacobian
 
-variable (W') in
 /-- The conversion from a Weierstrass curve in Jacobian coordinates to affine coordinates. -/
-abbrev toAffine : Affine R :=
+abbrev toAffine (W' : Jacobian R) : Affine R :=
   W'
 
 lemma fin3_def (P : Fin 3 → R) : ![P x, P y, P z] = P := by
@@ -297,6 +296,7 @@ associated to a Weierstrass curve `W` in Jacobian coordinates. -/
 noncomputable def polynomialX : MvPolynomial (Fin 3) R :=
   pderiv x W'.polynomial
 
+open Fin.CommRing in
 lemma polynomialX_eq : W'.polynomialX =
     C W'.a₁ * X 1 * X 2 - (C 3 * X 0 ^ 2 + C (2 * W'.a₂) * X 0 * X 2 ^ 2 + C W'.a₄ * X 2 ^ 4) := by
   rw [polynomialX, polynomial]
@@ -321,6 +321,7 @@ associated to a Weierstrass curve `W` in Jacobian coordinates. -/
 noncomputable def polynomialY : MvPolynomial (Fin 3) R :=
   pderiv y W'.polynomial
 
+open Fin.CommRing in
 lemma polynomialY_eq : W'.polynomialY = C 2 * X 1 + C W'.a₁ * X 0 * X 2 + C W'.a₃ * X 2 ^ 3 := by
   rw [polynomialY, polynomial]
   pderiv_simp

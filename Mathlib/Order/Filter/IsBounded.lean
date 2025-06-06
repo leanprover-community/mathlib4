@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel, Johannes Hölzl, Rémy Degenne
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Order.Filter.Cofinite
 
@@ -522,7 +522,6 @@ theorem isBoundedUnder_le_abs [AddCommGroup α] [LinearOrder α] [IsOrderedAddMo
 in complete and conditionally complete lattices but let automation fill automatically the
 boundedness proofs in complete lattices, we use the tactic `isBoundedDefault` in the statements,
 in the form `(hf : f.IsBounded (≥) := by isBoundedDefault)`. -/
-
 macro "isBoundedDefault" : tactic =>
   `(tactic| first
     | apply isCobounded_le_of_bot
