@@ -63,7 +63,7 @@ theorem at_neg_two (hp : p ≠ 2) : legendreSym p (-2) = χ₈' p := by
   rw [legendreSym, ← this, quadraticChar_neg_two ((ringChar_zmod_n p).substr hp), card p]
 
 /-- If `p = 8*k + 5` is prime, then `legendreSym p 2 = -1`. -/
-theorem two_mod8_eq_5 {p : ℕ} [Fact p.Prime] {k : ℕ} (hk : p = 8 * k + 5) :
+theorem at_two_mod8_eq_5 {p : ℕ} [Fact p.Prime] {k : ℕ} (hk : p = 8 * k + 5) :
     legendreSym p 2 = -1 := by
   rw [legendreSym.eq_neg_one_iff]
   norm_cast
