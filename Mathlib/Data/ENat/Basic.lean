@@ -50,6 +50,7 @@ deriving instance Zero, CommSemiring, Nontrivial,
 namespace ENat
 
 instance : IsOrderedRing ℕ∞ := WithTop.instIsOrderedRing
+instance : NoZeroDivisors ℕ∞ := inferInstanceAs (NoZeroDivisors (WithTop ℕ))
 instance : CanonicallyOrderedAdd ℕ∞ := WithTop.canonicallyOrderedAdd
 instance : OrderBot ℕ∞ := WithTop.orderBot
 instance : OrderTop ℕ∞ := WithTop.orderTop
