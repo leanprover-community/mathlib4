@@ -228,7 +228,6 @@ lemma atomRel_abs₃ (odd : ∀ n : ℤ, W (-n) = -W n) (p q r s : ℤ) :
 lemma atomRel_abs₄ (p q r s : ℤ) : atomRel W p q r |s| = atomRel W p q r s := by
   simp_rw [atomRel, atom_abs_right]
 
-@[simp]
 lemma atomRel_avg_sub {p q r s : ℤ} (parity : s % 2 = p % 2 ∧ s % 2 = q % 2 ∧ s % 2 = r % 2) :
     atomRel W ((p + q + r + s) / 2 - s) ((p + q + r + s) / 2 - r) ((p + q + r + s) / 2 - q)
       ((p + q + r + s) / 2 - p) = atomRel W p q r s := by
