@@ -51,7 +51,7 @@ variable (C) in
 @[simps]
 def monadToMon : Monad C ⥤ Mon_ (C ⥤ C) where
   obj := toMon
-  map f := { hom := f.toNatTrans }
+  map f := .mk' f.toNatTrans
 
 /-- To every monoid object in `C ⥤ C` we associate a `Monad C`. -/
 @[simps «η» «μ»]
@@ -78,9 +78,9 @@ def monToMonad : Mon_ (C ⥤ C) ⥤ Monad C where
   map {X Y} f :=
     { f.hom with
       app_η X := by
-        simpa [-IsMon_Hom.one_hom] using congrArg (fun t ↦ t.app X) f.one_hom
+        simpa [-IsMon_Hom.one_hom] using congrArg (fun t ↦ t.app X) (IsMon_Hom.one_hom f.hom)
       app_μ Z := by
-        simpa [-IsMon_Hom.mul_hom] using congrArg (fun t ↦ t.app Z) f.mul_hom }
+        simpa [-IsMon_Hom.mul_hom] using congrArg (fun t ↦ t.app Z) (IsMon_Hom.mul_hom f.hom) }
 
 /-- Oh, monads are just monoids in the category of endofunctors (equivalence of categories). -/
 @[simps]

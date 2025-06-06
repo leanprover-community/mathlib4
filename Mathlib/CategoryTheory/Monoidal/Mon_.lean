@@ -89,6 +89,8 @@ class IsMon_Hom (f : M ⟶ N) : Prop where
 
 attribute [reassoc (attr := simp)] IsMon_Hom.one_hom IsMon_Hom.mul_hom
 
+instance : IsMon_Hom (𝟙 M) where
+
 instance (f : M ⟶ N) (g : N ⟶ O) [IsMon_Hom f] [IsMon_Hom g] : IsMon_Hom (f ≫ g) where
 
 instance {M N : C} [Mon_Class M] [Mon_Class N] (f : M ≅ N) [IsMon_Hom f.hom] :
@@ -147,24 +149,30 @@ namespace Mon_
 structure Hom (M N : Mon_ C) where
   /-- The underlying morphism -/
   hom : M.X ⟶ N.X
-  one_hom : η ≫ hom = η := by aesop_cat
-  mul_hom : μ ≫ hom = (hom ⊗ hom) ≫ μ := by aesop_cat
+  [is_mon_hom : IsMon_Hom hom]
+  -- one_hom : η ≫ hom = η := by aesop_cat
+  -- mul_hom : μ ≫ hom = (hom ⊗ hom) ≫ μ := by aesop_cat
+
+attribute [instance] Hom.is_mon_hom
 
 /-- Construct a morphism `M ⟶ N` of `Mon_ C` from a map `f : M ⟶ N` and a `IsMon_Hom f` instance. -/
-abbrev Hom.mk' {M N : C} [Mon_Class M] [Mon_Class N] (f : M ⟶ N) [IsMon_Hom f] :
-    Hom (.mk M) (.mk N) := .mk f
+abbrev Hom.mk' {M N : Mon_ C} (f : M.X ⟶ N.X)
+    (one_f : η ≫ f = η := by aesop_cat)
+    (mul_f : μ ≫ f = (f ⊗ f) ≫ μ := by aesop_cat) : Hom M N :=
+  have : IsMon_Hom f := ⟨one_f, mul_f⟩
+  .mk f
 
-attribute [reassoc] Hom.one_hom Hom.mul_hom
+-- attribute [reassoc] Hom.one_hom Hom.mul_hom
 
 /-- The identity morphism on a monoid object. -/
 @[simps]
-def id (M : Mon_ C) : Hom M M where
-  hom := 𝟙 M.X
+def id (M : Mon_ C) : Hom M M := ⟨𝟙 M.X⟩
 
 instance homInhabited (M : Mon_ C) : Inhabited (Hom M M) :=
   ⟨id M⟩
 
-instance {M N : Mon_ C} (f : Hom M N) : IsMon_Hom f.hom := ⟨f.2, f.3⟩
+-- instance {M N : Mon_ C} (f : Hom M N) : IsMon_Hom f.hom := ⟨f.2, f.3⟩
+
 
 /-- Composition of morphisms of monoid objects. -/
 @[simps]
@@ -176,7 +184,7 @@ instance : Category (Mon_ C) where
   id := id
   comp f g := comp f g
 
-instance {M N : Mon_ C} (f : M ⟶ N) : IsMon_Hom f.hom := ⟨f.2, f.3⟩
+instance {M N : Mon_ C} (f : M ⟶ N) : IsMon_Hom f.hom := f.is_mon_hom
 
 @[ext]
 lemma Hom.ext' {X Y : Mon_ C} {f g : X ⟶ Y} (w : f.hom = g.hom) : f = g :=
@@ -210,15 +218,15 @@ instance {A B : Mon_ C} (f : A ⟶ B) [e : IsIso ((forget C).map f)] : IsIso f.h
 
 /-- The forgetful functor from monoid objects to the ambient category reflects isomorphisms. -/
 instance : (forget C).ReflectsIsomorphisms where
-  reflects f e := ⟨⟨{ hom := inv f.hom }, by aesop_cat⟩⟩
+  reflects f e := ⟨⟨.mk' (inv f.hom), by aesop_cat⟩⟩
 
 /-- Construct an isomorphism of monoids by giving an isomorphism between the underlying objects
 and checking compatibility with unit and multiplication only in the forward direction.
 -/
 @[simps]
 def mkIso' {M N : Mon_ C} (f : M.X ≅ N.X) [IsMon_Hom f.hom] : M ≅ N where
-  hom := Hom.mk' f.hom
-  inv := Hom.mk' f.inv
+  hom := Hom.mk f.hom
+  inv := Hom.mk f.inv
 
 /-- Construct an isomorphism of monoids by giving an isomorphism between the underlying objects
 and checking compatibility with unit and multiplication only in the forward direction.
@@ -232,13 +240,14 @@ def mkIso {M N : Mon_ C} (f : M.X ≅ N.X) (one_f : η[M.X] ≫ f.hom = η[N.X] 
 @[simps]
 instance uniqueHomFromTrivial (A : Mon_ C) : Unique (trivial C ⟶ A) where
   default :=
-  { hom := η[A.X]
-    mul_hom := by simp [one_mul, unitors_equal] }
+    { hom := η[A.X]
+      is_mon_hom :=
+        { mul_hom := by simp [one_mul, unitors_equal] } }
   uniq f := by
     ext
-    simp only [trivial_X]
     rw [← Category.id_comp f.hom]
-    erw [f.one_hom]
+    dsimp only [trivial_X]
+    rw [← trivial_mon_one, IsMon_Hom.one_hom]
 
 open CategoryTheory.Limits
 
@@ -292,7 +301,7 @@ That is, a lax monoidal functor `F : C ⥤ D` induces a functor `Mon_ C ⥤ Mon_
 @[simps]
 def mapMon : Mon_ C ⥤ Mon_ D where
   obj A := .mk (F.obj A.X)
-  map f := .mk' (F.map f.hom)
+  map f := .mk (F.map f.hom)
 
 @[simp]
 theorem id_mapMon_one (X : Mon_ C) : η[((𝟭 C).mapMon.obj X).X] = 𝟙 _ ≫ η[X.X] := rfl
@@ -326,7 +335,7 @@ protected instance Faithful.mapMon [F.Faithful] : F.mapMon.Faithful where
 /-- Natural transformations between functors lift to monoid objects. -/
 @[simps!]
 noncomputable def mapMonNatTrans (f : F ⟶ F') [NatTrans.IsMonoidal f] : F.mapMon ⟶ F'.mapMon where
-  app X := .mk (f.app _)
+  app X := .mk' (f.app _)
 
 /-- Natural isomorphisms between functors lift to monoid objects. -/
 @[simps!]
@@ -345,8 +354,9 @@ protected instance Full.mapMon [F.Full] [F.Faithful] : F.mapMon.Full where
     let ⟨g, hg⟩ := F.map_surjective f.hom
     ⟨{
       hom := g
-      one_hom := F.map_injective <| by simpa [← hg, cancel_epi] using f.one_hom
-      mul_hom := F.map_injective <| by simpa [← hg, cancel_epi] using f.mul_hom
+      is_mon_hom :=
+        { one_hom := F.map_injective <| by simpa [← hg, cancel_epi] using IsMon_Hom.one_hom f.hom
+          mul_hom := F.map_injective <| by simpa [← hg, cancel_epi] using IsMon_Hom.mul_hom f.hom }
     }, Mon_.Hom.ext hg⟩
 
 instance FullyFaithful.isMon_Hom_preimage (hF : F.FullyFaithful) {X Y : C}
@@ -368,7 +378,7 @@ variable (C D) in
 @[simps] -- Porting note: added this, not sure how it worked previously without.
 def mapMonFunctor : LaxMonoidalFunctor C D ⥤ Mon_ C ⥤ Mon_ D where
   obj F := F.mapMon
-  map α := { app A := { hom := α.hom.app A.X } }
+  map α := { app A := .mk' (α.hom.app A.X) }
   map_comp _ _ := rfl
 
 end Functor
@@ -687,9 +697,9 @@ variable [BraidedCategory C]
 @[simps! tensorObj_X tensorHom_hom]
 instance monMonoidalStruct : MonoidalCategoryStruct (Mon_ C) where
   tensorObj M N := ⟨M.X ⊗ N.X⟩
-  tensorHom f g := Hom.mk' (f.hom ⊗ g.hom)
-  whiskerRight f Y := Hom.mk' (f.hom ▷ Y.X)
-  whiskerLeft X _ _ g := Hom.mk' (X.X ◁ g.hom)
+  tensorHom f g := Hom.mk (f.hom ⊗ g.hom)
+  whiskerRight f Y := Hom.mk (f.hom ▷ Y.X)
+  whiskerLeft X _ _ g := Hom.mk (X.X ◁ g.hom)
   tensorUnit := ⟨𝟙_ C⟩
   associator M N P := mkIso' <| associator M.X N.X P.X
   leftUnitor M := mkIso' <| leftUnitor M.X

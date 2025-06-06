@@ -37,8 +37,8 @@ noncomputable def functor : Mon_ (Type u) ⥤ MonCat.{u} where
   obj A := MonCat.of A.X
   map f := MonCat.ofHom
     { toFun := f.hom
-      map_one' := congr_fun f.one_hom PUnit.unit
-      map_mul' := fun x y => congr_fun f.mul_hom (x, y) }
+      map_one' := congr_fun (IsMon_Hom.one_hom f.hom) PUnit.unit
+      map_mul' x y := congr_fun (IsMon_Hom.mul_hom f.hom) (x, y) }
 
 /-- Converting a bundled monoid to a monoid object in `Type`.
 -/
@@ -51,7 +51,7 @@ noncomputable def inverse : MonCat.{u} ⥤ Mon_ (Type u) where
           one_mul' := by ext ⟨_, _⟩; simp
           mul_one' := by ext ⟨_, _⟩; simp
           mul_assoc' := by ext ⟨⟨x, y⟩, z⟩; simp [_root_.mul_assoc] } }
-  map f := { hom := f }
+  map f := .mk' f
 
 end MonTypeEquivalenceMon
 

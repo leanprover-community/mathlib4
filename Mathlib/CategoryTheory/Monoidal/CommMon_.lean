@@ -197,14 +197,14 @@ variable (C D) in
 @[simps]
 def mapCommMonFunctor : LaxBraidedFunctor C D ⥤ CommMon_ C ⥤ CommMon_ D where
   obj F := F.mapCommMon
-  map α := { app := fun A => { hom := α.hom.app A.X } }
+  map α := { app := fun A => .mk' (α.hom.app A.X) }
   map_comp _ _ := rfl
 
 /-- Natural transformations between functors lift to monoid objects. -/
 @[simps!]
 noncomputable def mapCommMonNatTrans (f : F ⟶ F') [NatTrans.IsMonoidal f] :
     F.mapCommMon ⟶ F'.mapCommMon where
-  app X := .mk (f.app _)
+  app X := .mk' (f.app _)
 
 /-- Natural isomorphisms between functors lift to monoid objects. -/
 @[simps!]

@@ -116,17 +116,17 @@ variable {C} in
 def toMon_Comon_obj (M : Bimon_ C) : Mon_ (Comon_ C) where
   X := (toComon_ C).obj M
   mon :=
-    { one := { hom := η[M.X.X] }
+    { one := .mk' η[M.X.X]
       mul :=
-        { hom := μ[M.X.X],
-          hom_comul := by simp [tensor_μ] } }
+        { hom := μ[M.X.X]
+          is_comon_hom :=
+            { hom_comul := by simp [tensor_μ] } } }
 
 /-- The forward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
 @[simps]
 def toMon_Comon_ : Bimon_ C ⥤ Mon_ (Comon_ C) where
   obj := toMon_Comon_obj
-  map f :=
-  { hom := (toComon_ C).map f }
+  map f := .mk' ((toComon_ C).map f)
 
 variable {C}
 
@@ -149,19 +149,18 @@ theorem ofMon_Comon_ObjX_mul (M : Mon_ (Comon_ C)) :
 def ofMon_Comon_Obj (M : Mon_ (Comon_ C)) : Bimon_ C where
   X := ofMon_Comon_ObjX M
   comon :=
-    { counit :=
-        { hom := ε[M.X.X] }
+    { counit := .mk' ε[M.X.X]
       comul :=
         { hom := Δ[M.X.X]
-          mul_hom := by simp [tensorμ] } }
+          is_mon_hom :=
+            { mul_hom := by simp [tensor_μ] } } }
 
 variable (C) in
 /-- The backward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
 @[simps]
 def ofMon_Comon_ : Mon_ (Comon_ C) ⥤ Bimon_ C where
   obj := ofMon_Comon_Obj
-  map f :=
-  { hom := (Comon_.forget C).mapMon.map f }
+  map f := .mk' ((Comon_.forget C).mapMon.map f)
 
 @[simp]
 theorem toMon_Comon_ofMon_Comon_obj_one (M : Bimon_ C) :
@@ -244,7 +243,7 @@ def trivial : Bimon_ C := Comon_.trivial (Mon_ C)
 /-- The bimonoid morphism from the trivial bimonoid to any bimonoid. -/
 @[simps]
 def trivialTo (A : Bimon_ C) : trivial C ⟶ A :=
-  { hom := (default : Mon_.trivial C ⟶ A.X), }
+  .mk' (default : Mon_.trivial C ⟶ A.X)
 
 @[deprecated (since := "2024-12-07")] alias trivial_to := trivialTo
 @[deprecated (since := "2024-12-07")] alias trivial_to_hom := trivialTo_hom
@@ -306,7 +305,7 @@ def mk'X (X : C) [Bimon_Class X] : Mon_ C := { X := X }
 def mk' (X : C) [Bimon_Class X] : Bimon_ C where
   X := mk'X X
   comon :=
-    { counit := { hom := (ε : X ⟶ 𝟙_ C) }
-      comul := { hom := (Δ : X ⟶ X ⊗ X) } }
+    { counit := .mk' (ε : X ⟶ 𝟙_ C)
+      comul := .mk' (Δ : X ⟶ X ⊗ X) }
 
 end Bimon_
