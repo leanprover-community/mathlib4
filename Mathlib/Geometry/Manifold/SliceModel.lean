@@ -182,16 +182,17 @@ instance : SliceModel (⊥ : Subspace 𝕜 E) I I where
 
 /-- If `I` is a slice model of `I'`, then `J.prod I` is a slice model of `J.prod I'`. -/
 instance [h : SliceModel F I I'] : SliceModel F (J.prod I) (J.prod I') where
-  equiv :=
-    -- The main step: apply h.equiv.
-    let aux := (ContinuousLinearEquiv.refl 𝕜 E''').prodCongr h.equiv
-    (ContinuousLinearEquiv.prodAssoc 𝕜 E''' E F).trans aux
+  -- Up to the obvious maps, we just apply h.equiv.
+  equiv := (ContinuousLinearEquiv.prodAssoc 𝕜 E''' E F).trans <|
+    (ContinuousLinearEquiv.refl 𝕜 E''').prodCongr h.equiv
   map := Prod.map id h.map
   hmap := IsEmbedding.id.prodMap h.hmap
   compatible := by
     dsimp
     ext ⟨x, y⟩ <;> simp
-    sorry
+    -- XXX: is there a better tactic for this?
+    change (I' ∘ SliceModel.map F I I') y = ((SliceModel.equiv I I') ∘ ((·, 0) : E → E × F) ∘ I) y
+    rw [h.compatible]
 
 /-- If `I` is a slice model of `I'`, then `I.prod J` is a slice model of `I'.prod J`. -/
 -- a bit more cumbersome, as equiv needs some reordering
@@ -207,7 +208,9 @@ instance [h : SliceModel F I I'] : SliceModel F (I.prod J) (I'.prod J) where
   hmap := h.hmap.prodMap IsEmbedding.id
   compatible := by
     ext ⟨x, y⟩ <;> simp
-    sorry
+    -- XXX: is there a better tactic for this?
+    change (I' ∘ SliceModel.map F I I') x = ((SliceModel.equiv I I') ∘ ((·, 0) : E → E × F) ∘ I) x
+    rw [h.compatible]
 
 /-- If `E' ≃ E × F`, then the trivial models with corners of `E` and `E'` form a slice model. -/
 instance (h : (E × F) ≃L[𝕜] E') : SliceModel F (𝓘(𝕜, E)) (𝓘(𝕜, E')) where
@@ -235,7 +238,7 @@ def SliceModel.ofEmbedding {I : ModelWithCorners 𝕜 E H} (hI : IsEmbedding I) 
 open scoped Manifold
 
 /-- Euclidean half-space is a slice model w.r.t. Euclidean space. -/
--- XXX: can this be golfed using the previous instance?
+-- NB. Golfing this using the previous instance is not as obvious because of instance mismatches.
 noncomputable instance {n : ℕ} [NeZero n] :
     SliceModel (⊥ : Subspace ℝ ((Fin n → ℝ))) (𝓡∂ n) (𝓡 n) where
   equiv := ContinuousLinearEquiv.prodUnique ℝ (EuclideanSpace ℝ (Fin n))
