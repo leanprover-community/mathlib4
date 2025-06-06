@@ -530,11 +530,11 @@ lemma variation_SignedMeasure (μ : SignedMeasure X) :
     rw [this]
     exact le_variation' μ hr hP₁ hP₂ hP₃
   · -- *Variation defined as a supremum ≤ Jordan decomposition variation.*
-    -- By the Jordan decomposition, for any `p`, `|μ p| = |μ (s ∩ p) - μ (sᶜ ∩ p)|`. The positivity
+    -- By the Jordan decomposition, for any `p`, `|μ p| = |μ (s ∩ p) + μ (sᶜ ∩ p)|`. The positivity
     -- of each part of the decomposition and triangle inequality implies that,
-    -- `|μ p| ≤ μ (s ∩ p) + μ (sᶜ ∩ p)`. Let `P` be a partition of `r`. To estimate variation
-    -- defined as the supremum requires estimating `∑ p ∈ P, |μ p|`. Using the additivity of the
-    -- measure and the above, `∑ p ∈ P, |μ p| ≤ μ (s ∩ r) + μ (sᶜ ∩ r)`.
+    -- `|μ p| ≤ |μ (s ∩ p)| + |μ (sᶜ ∩ p)| = μ (s ∩ p) - μ (sᶜ ∩ p)`. Let `P` be a partition of `r`.
+    -- To estimate variation defined as the supremum requires estimating `∑ p ∈ P, |μ p|`. Using the
+    -- additivity of the measure and the above, `∑ p ∈ P, |μ p| ≤ μ (s ∩ r) - μ (sᶜ ∩ r)`.
     sorry
 
 end MeasureTheory.VectorMeasure
