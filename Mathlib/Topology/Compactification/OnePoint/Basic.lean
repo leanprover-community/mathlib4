@@ -458,9 +458,7 @@ noncomputable def continuousMapNatEquiv (Y : Type*) [TopologicalSpace Y] [T2Spac
     C(OnePoint ℕ, Y) ≃ { f : ℕ → Y // ∃ L, Tendsto (f ·) atTop (𝓝 L) } := by
   refine (continuousMapDiscreteEquiv ℕ Y).trans {
     toFun := fun ⟨f, hf⟩ ↦ ⟨f, by rwa [← Nat.cofinite_eq_atTop]⟩
-    invFun := fun ⟨f, hf⟩ ↦ ⟨f, by rwa [Nat.cofinite_eq_atTop]⟩
-    left_inv := fun _ ↦ rfl
-    right_inv := fun _ ↦ rfl }
+    invFun := fun ⟨f, hf⟩ ↦ ⟨f, by rwa [Nat.cofinite_eq_atTop]⟩ }
 
 /-- If `X` is not a compact space, then the natural embedding `X → OnePoint X` has dense range.
 -/
