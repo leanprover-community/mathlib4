@@ -341,7 +341,7 @@ theorem self_le_power (a : Cardinal) {b : Cardinal} (hb : 1 ≤ b) : a ≤ a ^ b
 
 /-- **Cantor's theorem** -/
 theorem cantor (a : Cardinal.{u}) : a < 2 ^ a := by
-  induction' a using Cardinal.inductionOn with α
+  induction a using Cardinal.inductionOn with | _ α
   rw [← mk_set]
   refine ⟨⟨⟨singleton, fun a b => singleton_eq_singleton_iff.1⟩⟩, ?_⟩
   rintro ⟨⟨f, hf⟩⟩

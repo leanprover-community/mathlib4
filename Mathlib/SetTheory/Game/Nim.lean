@@ -174,7 +174,7 @@ theorem nim_one_equiv : nim 1 ≈ star :=
 
 @[simp]
 theorem nim_birthday (o : Ordinal) : (nim o).birthday = o := by
-  induction' o using Ordinal.induction with o IH
+  induction o using Ordinal.induction with | _ o IH
   rw [nim, birthday_def]
   dsimp
   rw [max_eq_right le_rfl]
@@ -183,11 +183,11 @@ theorem nim_birthday (o : Ordinal) : (nim o).birthday = o := by
 
 @[simp]
 theorem neg_nim (o : Ordinal) : -nim o = nim o := by
-  induction' o using Ordinal.induction with o IH
+  induction o using Ordinal.induction with | _ o IH
   rw [nim]; dsimp; congr <;> funext i <;> exact IH _ (Ordinal.typein_lt_self i)
 
 instance impartial_nim (o : Ordinal) : Impartial (nim o) := by
-  induction' o using Ordinal.induction with o IH
+  induction o using Ordinal.induction with | _ o IH
   rw [impartial_def, neg_nim]
   refine ⟨equiv_rfl, fun i => ?_, fun i => ?_⟩ <;> simpa using IH _ (typein_lt_self _)
 

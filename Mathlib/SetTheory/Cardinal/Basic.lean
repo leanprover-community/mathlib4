@@ -451,9 +451,9 @@ theorem nsmul_lt_aleph0_iff {n : ℕ} {a : Cardinal} : n • a < ℵ₀ ↔ n = 
   | zero => simpa using nat_lt_aleph0 0
   | succ n =>
       simp only [Nat.succ_ne_zero, false_or]
-      induction' n with n ih
-      · simp
-      rw [succ_nsmul, add_lt_aleph0_iff, ih, and_self_iff]
+      induction n with
+      | zero => simp
+      | succ n ih => rw [succ_nsmul, add_lt_aleph0_iff, ih, and_self_iff]
 
 /-- See also `Cardinal.nsmul_lt_aleph0_iff` for a hypothesis-free version. -/
 theorem nsmul_lt_aleph0_iff_of_ne_zero {n : ℕ} {a : Cardinal} (h : n ≠ 0) : n • a < ℵ₀ ↔ a < ℵ₀ :=

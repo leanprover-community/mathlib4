@@ -301,9 +301,9 @@ theorem succ_nadd : succ a ♯ b = succ (a ♯ b) := by rw [← one_nadd (a ♯ 
 
 @[simp]
 theorem nadd_nat (n : ℕ) : a ♯ n = a + n := by
-  induction' n with n hn
-  · simp
-  · rw [Nat.cast_succ, add_one_eq_succ, nadd_succ, add_succ, hn]
+  induction n with
+  | zero => simp
+  | succ n hn => rw [Nat.cast_succ, add_one_eq_succ, nadd_succ, add_succ, hn]
 
 @[simp]
 theorem nat_nadd (n : ℕ) : ↑n ♯ a = a + n := by rw [nadd_comm, nadd_nat]
@@ -364,9 +364,10 @@ instance : AddMonoidWithOne NatOrdinal :=
 
 @[simp]
 theorem toOrdinal_natCast (n : ℕ) : toOrdinal n = n := by
-  induction' n with n hn
-  · rfl
-  · change (toOrdinal n) ♯ 1 = n + 1
+  induction n with
+  | zero => rfl
+  | succ n hn =>
+    change (toOrdinal n) ♯ 1 = n + 1
     rw [hn]; exact nadd_one n
 
 instance : CharZero NatOrdinal where
