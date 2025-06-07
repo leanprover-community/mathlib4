@@ -242,7 +242,7 @@ def InjOn (f : α → β) (s : Set α) : Prop :=
   ∀ ⦃x₁ : α⦄, x₁ ∈ s → ∀ ⦃x₂ : α⦄, x₂ ∈ s → f x₁ = f x₂ → x₁ = x₂
 
 /-- The graph of a function `f : α → β` on a set `s`. -/
-def graphOn (f : α → β) (s : Set α) : Set (α × β) := (fun x ↦ (x, f x)) '' s
+def graphOn (f : α → β) (s : Set α) : Set (α × β) := {x | x.1 ∈ s ∧ f x.1 = x.2}
 
 /-- `f` is surjective from `s` to `t` if `t` is contained in the image of `s`. -/
 def SurjOn (f : α → β) (s : Set α) (t : Set β) : Prop := t ⊆ f '' s
