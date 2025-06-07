@@ -125,6 +125,11 @@ theorem eqToHom_naturality {f g : β → C} (z : ∀ b, f b ⟶ g b) {j j' : β}
   cases w
   simp
 
+@[reassoc (attr := simp)]
+theorem eqToHom_comp_eq_self {X : C} {f : β → C} (z : ∀ b, f b ⟶ X) {j j' : β} (w : j = j') :
+    eqToHom (by simp [w]) ≫ z j' = z j := by
+  simp [← eqToHom_naturality, *]
+
 /-- A variant on `eqToHom_naturality` that helps Lean identify the families `f` and `g`. -/
 @[reassoc (attr := simp)]
 theorem eqToHom_iso_hom_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j j' : β} (w : j = j') :
@@ -132,12 +137,24 @@ theorem eqToHom_iso_hom_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j 
   cases w
   simp
 
+@[reassoc (attr := simp)]
+theorem eqToHom_comp_iso_hom_eq_self
+    {X : C} {f : β → C} (z : ∀ b, f b ≅ X) {j j' : β} (w : j = j') :
+    eqToHom (by simp [w]) ≫ (z j').hom = (z j).hom := by
+  simp [← eqToHom_iso_hom_naturality, *]
+
 /-- A variant on `eqToHom_naturality` that helps Lean identify the families `f` and `g`. -/
 @[reassoc (attr := simp)]
 theorem eqToHom_iso_inv_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j j' : β} (w : j = j') :
     (z j).inv ≫ eqToHom (by simp [w]) = eqToHom (by simp [w]) ≫ (z j').inv := by
   cases w
   simp
+
+@[reassoc (attr := simp)]
+theorem eqToHom_comp_iso_inv_eq_self
+    {X : C} {f : β → C} (z : ∀ b, f b ≅ X) {j j' : β} (w : j = j') :
+    eqToHom (by simp [w]) ≫ (z j').hom = (z j).hom := by
+  simp [← eqToHom_iso_hom_naturality, *]
 
 /-- Reducible form of congrArg_mpr_hom_left -/
 @[simp]

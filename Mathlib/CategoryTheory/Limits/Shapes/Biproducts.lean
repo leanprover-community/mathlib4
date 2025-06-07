@@ -439,12 +439,10 @@ theorem biproduct.ι_π_self (f : J → C) [HasBiproduct f] (j : J) :
 theorem biproduct.ι_π_ne (f : J → C) [HasBiproduct f] {j j' : J} (h : j ≠ j') :
     biproduct.ι f j ≫ biproduct.π f j' = 0 := by simp [h]
 
--- TODO: why can this lemma not be proven by `simp [*]`? It breaks symmetry with the lemma below
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem biproduct.eqToHom_comp_ι (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
     eqToHom (by simp [w]) ≫ biproduct.ι f j' = biproduct.ι f j := by
-  cases w
-  simp
+  simp [*]
 
 @[reassoc]
 theorem biproduct.π_comp_eqToHom (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
