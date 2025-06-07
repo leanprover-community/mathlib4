@@ -203,8 +203,8 @@ lemma cubic_roots_of_unity_of_sq_eq {K : Type*} [Field K] [NeZero (2 : K)] {s : 
   simp only [Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
   rw [← sub_eq_zero, H, ← cyclotomic_polynomial_3_roots hs, mul_eq_zero, sub_eq_zero]
 
-lemma cubic_roots_of_unity_of_sq_ne {K : Type*} [Field K] [NeZero (2 : K)]
-    (h : ∀ s : K, s^2 ≠ -3) : {z : K | z^3 = 1} = {1} := by
+lemma cubic_roots_of_unity_of_sq_ne {K : Type*} [Field K] (h : ∀ s : K, s^2 ≠ -3) :
+    {z : K | z^3 = 1} = {1} := by
   have H (z : K) : z ^ 3 - 1 = (z - 1) * (z ^ 2 + z + 1) := by ring
   ext1 z
   simp only [Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
