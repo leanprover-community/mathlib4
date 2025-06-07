@@ -123,9 +123,9 @@ lemma binEntropy_nonpos_of_one_le (hp : 1 ≤ p) : binEntropy p ≤ 0 := by
 lemma binEntropy_eq_zero : binEntropy p = 0 ↔ p = 0 ∨ p = 1 := by
   refine ⟨fun h ↦ ?_, by rintro (rfl | rfl) <;> simp⟩
   contrapose! h
-  obtain hp₀ | hp₀ := h.1.lt_or_lt
+  obtain hp₀ | hp₀ := h.1.lt_or_gt
   · exact (binEntropy_neg_of_neg hp₀).ne
-  obtain hp₁ | hp₁ := h.2.lt_or_lt.symm
+  obtain hp₁ | hp₁ := h.2.lt_or_gt.symm
   · exact (binEntropy_neg_of_one_lt hp₁).ne
   · exact (binEntropy_pos hp₀ hp₁).ne'
 

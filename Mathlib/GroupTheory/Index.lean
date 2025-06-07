@@ -452,7 +452,7 @@ lemma exists_pow_mem_of_index_ne_zero (h : H.index ≠ 0) (a : G) :
   suffices ∃ n₁ n₂, n₁ ≠ n₂ ∧ n₁ ≤ H.index ∧ n₂ ≤ H.index ∧
       ((a ^ n₂ : G) : G ⧸ H) = ((a ^ n₁ : G) : G ⧸ H) by
     rcases this with ⟨n₁, n₂, hne, hle₁, hle₂, he⟩
-    rcases hne.lt_or_lt with hlt | hlt
+    rcases hne.lt_or_gt with hlt | hlt
     · exact ⟨n₁, n₂, hlt, hle₂, he⟩
     · exact ⟨n₂, n₁, hlt, hle₁, he.symm⟩
   by_contra hc

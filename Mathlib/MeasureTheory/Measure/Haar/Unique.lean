@@ -84,7 +84,7 @@ lemma IsCompact.measure_eq_biInf_integral_hasCompactSupport
     apply (f_cont.integrable_of_hasCompactSupport f_comp).measure_le_integral
     · exact Eventually.of_forall f_nonneg
     · exact fun x hx ↦ by simp [fk hx]
-  · apply le_of_forall_lt' (fun r hr ↦ ?_)
+  · apply le_of_forall_gt (fun r hr ↦ ?_)
     simp only [iInf_lt_iff, exists_prop, exists_and_left]
     obtain ⟨U, kU, U_open, mu_U⟩ : ∃ U, k ⊆ U ∧ IsOpen U ∧ μ U < r :=
       hk.exists_isOpen_lt_of_lt r hr

@@ -182,7 +182,7 @@ theorem Iic_union_Ici_of_le (h : a ≤ b) : Iic b ∪ Ici a = univ :=
   eq_univ_of_forall fun x => (h.ge_or_le x).symm
 
 theorem Iio_union_Ioi_of_lt (h : a < b) : Iio b ∪ Ioi a = univ :=
-  eq_univ_of_forall fun x => (h.lt_or_lt x).symm
+  eq_univ_of_forall fun x => (h.gt_or_lt x).symm
 
 @[simp]
 theorem Iic_union_Ici : Iic a ∪ Ici a = univ :=

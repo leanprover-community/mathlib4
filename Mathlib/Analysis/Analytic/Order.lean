@@ -234,7 +234,7 @@ lemma analyticOrderAt_add_eq_right_of_lt (hgf : analyticOrderAt g z₀ < analyti
 of the orders of the summands. -/
 lemma analyticOrderAt_add_of_ne (hfg : analyticOrderAt f z₀ ≠ analyticOrderAt g z₀) :
     analyticOrderAt (f + g) z₀ = min (analyticOrderAt f z₀) (analyticOrderAt g z₀) := by
-  obtain hfg | hgf := hfg.lt_or_lt
+  obtain hfg | hgf := hfg.lt_or_gt
   · simpa [hfg.le] using analyticOrderAt_add_eq_left_of_lt hfg
   · simpa [hgf.le] using analyticOrderAt_add_eq_right_of_lt hgf
 
