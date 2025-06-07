@@ -75,8 +75,8 @@ theorem sin_angle_mul_norm_eq_sin_angle_mul_norm (x y : V) :
       cases eq_or_ne x y with
       | inl hxy => rw [hxy, sub_self, norm_zero, mul_zero, angle_self hyr, Real.sin_zero, zero_mul]
       | inr hxy =>
-        have hsub: x - y ≠ 0 := by exact sub_ne_zero_of_ne hxy
-        have h_sin (x y: V) (hx: x ≠ 0) (hy: y ≠ 0) :
+        have hsub: x - y ≠ 0 := sub_ne_zero_of_ne hxy
+        have h_sin (x y : V) (hx: x ≠ 0) (hy: y ≠ 0) :
             Real.sin (angle x y) = √(⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) / (‖x‖ * ‖y‖) := by
           field_simp [sin_angle_mul_norm_mul_norm]
         rw [h_sin x y hxr hyr, h_sin y (x - y) hyr hsub]
@@ -316,10 +316,10 @@ theorem sin_angle_div_dist_eq_sin_angle_div_dist {p₁ p₂ p₃ : P} (h23: p₂
   field_simp [dist_ne_zero.mpr h23, dist_ne_zero.mpr h31]
   exact law_sin
 
-/-- A variant of the law of sines, require not collinear. -/
+/-- A variant of the law of sines, requiring that the points not be collinear. -/
 theorem dist_eq_dist_mul_sin_angle_div_sin_angle {p₁ p₂ p₃ : P}
-    (h: AffineIndependent ℝ ![p₁,p₂,p₃]) :
-    dist p₁ p₂ = dist p₃ p₁ * Real.sin (∠ p₂ p₃ p₁) / Real.sin (∠ p₁ p₂ p₃) :=by
+    (h : AffineIndependent ℝ ![p₁,p₂,p₃]) :
+    dist p₁ p₂ = dist p₃ p₁ * Real.sin (∠ p₂ p₃ p₁) / Real.sin (∠ p₁ p₂ p₃) := by
   have sin_gt_zero: Real.sin (∠ p₁ p₂ p₃) > 0 := by
     apply sin_pos_of_not_collinear
     rw [← affineIndependent_iff_not_collinear_set]
