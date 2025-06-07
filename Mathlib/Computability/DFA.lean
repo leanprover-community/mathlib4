@@ -31,7 +31,7 @@ a `Fintype` instance must be supplied for true DFAs.
 ## Main theorems
 
 - `DFA.pumping_lemma` : every sufficiently long string accepted by the DFA has a substring that can
-  be repeated arbitrarily many times
+  be repeated arbitrarily many times (and have the overall string still be accepted)
 
 ## Implementation notes
 
@@ -154,9 +154,10 @@ theorem evalFrom_of_pow {x y : List α} {s : σ} (hx : M.evalFrom s x = s)
     (hy : y ∈ ({x} : Language α)∗) : M.evalFrom s y = s := by
   rw [Language.mem_kstar] at hy
   rcases hy with ⟨S, rfl, hS⟩
-  induction' S with a S ih
-  · rfl
-  · have ha := hS a List.mem_cons_self
+  induction S with
+  | nil => rfl
+  | cons a S ih =>
+    have ha := hS a List.mem_cons_self
     rw [Set.mem_singleton_iff] at ha
     rw [List.flatten, evalFrom_of_append, ha, hx]
     apply ih

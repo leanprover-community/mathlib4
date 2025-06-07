@@ -587,7 +587,8 @@ open Matrix
 namespace Matrix
 
 /-- For two vectors `w` and `v`, `vecMulVec w v i j` is defined to be `w i * v j`.
-    Put another way, `vecMulVec w v` is exactly `col w * row v`. -/
+Put another way, `vecMulVec w v` is exactly `replicateCol ι w * replicateRow ι v` for
+`Unique ι`; see `vecMulVec_eq`. -/
 def vecMulVec [Mul α] (w : m → α) (v : n → α) : Matrix m n α :=
   of fun x y => w x * v y
 
