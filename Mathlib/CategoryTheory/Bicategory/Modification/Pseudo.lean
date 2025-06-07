@@ -76,6 +76,15 @@ def mkOfOplax (Γ : Oplax.StrongTrans.Modification η.toOplax θ.toOplax) : Modi
   app a := Γ.app a
   naturality f := Γ.naturality f
 
+/-- Modifications between strong transformations of pseudofunctors are equivalent to modifications
+between the underlying strong transformations of oplax functors. -/
+@[simps]
+def equivOplax : (Oplax.StrongTrans.Modification η.toOplax θ.toOplax) ≃ Modification η θ where
+  toFun := mkOfOplax
+  invFun := toOplax
+  left_inv _ := rfl
+  right_inv _ := rfl
+
 section
 
 variable {a b c : B} {a' : C}
