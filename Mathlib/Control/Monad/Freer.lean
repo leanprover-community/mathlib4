@@ -22,7 +22,7 @@ and a generalization.
 
 In this construction, computations are represented as **trees of effects**. Each node (`impure`)
 represents a request to perform an effect, accompanied by a continuation specifying how the
-computationproceeds after the effect.
+computation proceeds after the effect.
 The leaves (`pure`) represent completed computations with final results.
 To execute or interpret these computations, an interpreter walks this tree, handling effects
 step-by-step.
