@@ -3,12 +3,13 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Analysis.Convex.Basic
+
+import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
 import Mathlib.Analysis.InnerProductSpace.Symmetric
 import Mathlib.Analysis.NormedSpace.RCLike
 import Mathlib.Analysis.RCLike.Lemmas
-import Mathlib.Algebra.DirectSum.Decomposition
+
 
 /-!
 # The orthogonal projection
@@ -585,6 +586,23 @@ variable (K)
 /-- The orthogonal projection has norm `≤ 1`. -/
 theorem orthogonalProjection_norm_le : ‖K.orthogonalProjection‖ ≤ 1 :=
   LinearMap.mkContinuous_norm_le _ (by norm_num) _
+
+/-- The orthogonal projection onto a closed subspace is norm non-increasing. -/
+theorem norm_orthogonalProjection_le (v : E) :
+    ‖orthogonalProjection K v‖ ≤ ‖v‖ := by calc
+  ‖orthogonalProjection K v‖ ≤ ‖orthogonalProjection K‖ * ‖v‖ := K.orthogonalProjection.le_opNorm _
+  _ ≤ 1 * ‖v‖ := by gcongr; exact orthogonalProjection_norm_le K
+  _ = _ := by simp
+
+/-- The orthogonal projection onto a closed subspace is a `1`-Lipschitz map. -/
+theorem lipschitzWith_orthogonalProjection :
+    LipschitzWith 1 (orthogonalProjection K) := by
+  apply LipschitzWith.mk_one
+  intro x y
+  calc
+    _ = ‖orthogonalProjection K (x - y)‖ := by simp [dist_eq_norm]
+    _ ≤ ‖x - y‖ := norm_orthogonalProjection_le _ _
+    _ = dist x y := by simp [dist_eq_norm]
 
 variable (𝕜)
 
