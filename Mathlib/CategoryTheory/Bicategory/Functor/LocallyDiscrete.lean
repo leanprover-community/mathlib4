@@ -100,6 +100,22 @@ def oplaxFunctorOfIsLocallyDiscrete
 
 section
 
+end
+
+variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+
+/--
+If `B` is a strict bicategory and `I` is a (1-)category, any functor (of 1-categories) `I ⥤ B` can
+be promoted to a pseudofunctor from `LocallyDiscrete I` to `B`.
+-/
+@[simps! obj map mapId mapComp]
+def Functor.toPseudoFunctor' : Pseudofunctor (LocallyDiscrete C) (LocallyDiscrete D) :=
+  pseudofunctorOfIsLocallyDiscrete
+    (fun ⟨X⟩ ↦.mk <| F.obj X) (fun ⟨f⟩ ↦ (F.map f).toLoc)
+    (fun ⟨X⟩ ↦ eqToIso (by simp)) (fun f g ↦ eqToIso (by simp))
+
+section
+
 variable {I B : Type*} [Category I] [Bicategory B] [Strict B] (F : I ⥤ B)
 
 attribute [local simp]
