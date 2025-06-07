@@ -239,8 +239,8 @@ lemma quartic_roots_of_unity_of_sq_eq {K : Type*} [Field K] {s : K} (hs : s * s 
   rw [← sub_eq_zero, H]
   simp only [← sub_neg_eq_add, mul_eq_zero, sub_eq_zero, or_assoc]
 
-lemma quartic_roots_of_unity_of_sq_ne {K : Type*} [Field K] [NeZero (2 : K)]
-    (h : ∀ s : K, s^2 ≠ -1) : {z : K | z^4 = 1} = {1, -1} := by
+lemma quartic_roots_of_unity_of_sq_ne {K : Type*} [Field K] (h : ∀ s : K, s^2 ≠ -1) :
+    {z : K | z^4 = 1} = {1, -1} := by
   have H (z : K) : z ^ 4 - 1 = (z - 1) * (z + 1) * (z ^ 2 + 1) := by
     ring_nf
   ext z
@@ -262,7 +262,10 @@ example : {z : ℝ | z ^ 4 = 1} = {1, -1} := by
     rw [← sq_nonpos_iff, hc]
     simp [Left.neg_nonpos_iff, zero_le_one]
   rw [e2] at hc
+  subst e2
   simp_all only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, zero_eq_neg, one_ne_zero]
+
+
 
 lemma factorize_cyclotomic_polynomial_5 (z : ℂ) :
     z ^ 4 + z ^ 3 + z ^ 2 + z + 1 = (z - ((√5 -1)/4 + √2 * √(5 + √5)/4 * I))
