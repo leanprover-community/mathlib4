@@ -38,7 +38,7 @@ namespace StrongTrans
 
 variable (η θ : F ⟶ G)
 
-/-- A modification `Γ` between strong transformations `η` and `θ` (of pseudofunctors) consists of a
+/-- A modification `Γ` between strong transformations (of pseudofunctors) `η` and `θ` consists of a
 family of 2-morphisms `Γ.app a : η.app a ⟶ θ.app a`, which satisfies the equation
 `(F.map f ◁ app b) ≫ (θ.naturality f).hom = (η.naturality f).hom ≫ (app a ▷ G.map f)`
 for each 1-morphism `f : a ⟶ b`.
@@ -75,6 +75,15 @@ between the underlying strong transformations of oplax functors. -/
 def mkOfOplax (Γ : Oplax.StrongTrans.Modification η.toOplax θ.toOplax) : Modification η θ where
   app a := Γ.app a
   naturality f := Γ.naturality f
+
+/-- Modifications between strong transformations of pseudofunctors are equivalent to modifications
+between the underlying strong transformations of oplax functors. -/
+@[simps]
+def equivOplax : (Oplax.StrongTrans.Modification η.toOplax θ.toOplax) ≃ Modification η θ where
+  toFun := mkOfOplax
+  invFun := toOplax
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 section
 
@@ -123,8 +132,7 @@ def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
   inv :=
     { app := fun a => (app a).inv
       naturality := fun {a b} f => by
-        simpa using
-          congr_arg (fun f => _ ◁ (app b).inv ≫ f ≫ (app a).inv ▷ _) (naturality f).symm }
+        simpa using _ ◁ (app b).inv ≫= (naturality f).symm =≫ (app a).inv ▷ _ }
 
 end StrongTrans
 

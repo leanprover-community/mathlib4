@@ -118,8 +118,7 @@ def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
   inv :=
     { app := fun a => (app a).inv
       naturality := fun {a b} f => by
-        simpa using congr_arg (fun f => _ ◁ (app b).inv ≫ f ≫ (app a).inv ▷ _)
-          (naturality f).symm }
+        simpa using _ ◁ (app b).inv ≫= (naturality f).symm =≫ (app a).inv ▷ _ }
 
 end OplaxTrans
 
@@ -165,6 +164,15 @@ def mkOfOplax (Γ : OplaxTrans.Modification η.toOplax θ.toOplax) : Modificatio
   app a := Γ.app a
   naturality f := by simpa using Γ.naturality f
 
+/-- Modifications between strong transformations of oplax functors are equivalent to modifications
+between the underlying oplax transformations. -/
+@[simps]
+def equivOplax : (OplaxTrans.Modification η.toOplax θ.toOplax) ≃ Modification η θ where
+  toFun := mkOfOplax
+  invFun := toOplax
+  left_inv _ := rfl
+  right_inv _ := rfl
+
 section
 
 variable (Γ : Modification η θ) {a b c : B} {a' : C}
@@ -185,7 +193,7 @@ end
 
 end Modification
 
-/-- Category structure on the oplax natural transformations between oplax functors. -/
+/-- Category structure on the strong natural transformations between oplax functors. -/
 @[simps]
 scoped instance homCategory : Category (F ⟶ G) where
   Hom := Modification
@@ -207,13 +215,12 @@ def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
     (naturality :
       ∀ {a b} (f : a ⟶ b),
         F.map f ◁ (app b).hom ≫ (θ.naturality f).hom =
-          (η.naturality f).hom ≫ (app a).hom ▷ G.map f) : η ≅ θ where
+          (η.naturality f).hom ≫ (app a).hom ▷ G.map f := by aesop_cat) : η ≅ θ where
   hom := { app := fun a => (app a).hom }
   inv :=
     { app := fun a => (app a).inv
       naturality := fun {a b} f => by
-        simpa using congr_arg (fun f => _ ◁ (app b).inv ≫ f ≫ (app a).inv ▷ _)
-          (naturality f).symm }
+        simpa using _ ◁ (app b).inv ≫= (naturality f).symm =≫ (app a).inv ▷ _ }
 
 end StrongTrans
 
