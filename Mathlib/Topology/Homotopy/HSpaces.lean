@@ -53,7 +53,7 @@ noncomputable section
 
 open scoped unitInterval
 
-open Path ContinuousMap Set.Icc TopologicalSpace
+open ContinuousMap Set.Icc TopologicalSpace
 
 /-- A topological space `X` is an H-space if it behaves like a (potentially non-associative)
 topological group, but where the axioms for a group only hold up to homotopy.
