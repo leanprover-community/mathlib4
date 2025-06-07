@@ -107,6 +107,25 @@ theorem mul_charP_coeff_succ [CharP R p] (x : 𝕎 R) (i : ℕ) :
     (x * p).coeff (i + 1) = x.coeff i ^ p := by
   rw [← frobenius_verschiebung, coeff_frobenius_charP, verschiebung_coeff_succ]
 
+theorem mul_pow_charP_coeff_zero [CharP R p] (x : 𝕎 R) {m n : ℕ} (h : m < n) :
+    (x * p ^ n).coeff m = 0 := by
+  induction' n with n ih generalizing m
+  · contradiction
+  · rw [pow_succ, ← mul_assoc]
+    cases m with
+    | zero => exact mul_charP_coeff_zero _
+    | succ m' =>
+      rw [mul_charP_coeff_succ, ih, zero_pow hp.out.ne_zero]
+      simpa using h
+
+theorem mul_pow_charP_coeff_succ [CharP R p] (x : 𝕎 R) {m n : ℕ} :
+    (x * p ^ n).coeff (m + n) = x.coeff m ^ (p ^ n) := by
+  induction' n with n ih generalizing m
+  · simp
+  · rw [pow_succ, ← mul_assoc, ← add_assoc,mul_charP_coeff_succ, pow_succ, pow_mul]
+    congr
+    exact ih
+
 theorem verschiebung_frobenius [CharP R p] (x : 𝕎 R) : verschiebung (frobenius x) = x * p := by
   ext ⟨i⟩
   · rw [mul_charP_coeff_zero, verschiebung_coeff_zero]
@@ -122,6 +141,17 @@ theorem verschiebung_frobenius_comm [CharP R p] :
 
 
 open Function
+
+theorem iterate_verschiebung_coeff_eq_zero (x : 𝕎 R) {n : ℕ} {m : ℕ} (h : m < n) :
+    (verschiebung^[n] x).coeff m = 0 := by
+  induction' n with n ih generalizing m
+  · contradiction
+  · rw [iterate_succ_apply']
+    cases m with
+    | zero => exact verschiebung_coeff_zero _
+    | succ m' =>
+      rw [verschiebung_coeff_succ, ih]
+      simpa using h
 
 theorem iterate_verschiebung_coeff (x : 𝕎 R) (n k : ℕ) :
     (verschiebung^[n] x).coeff (k + n) = x.coeff k := by
@@ -157,12 +187,11 @@ theorem iterate_verschiebung_mul (x y : 𝕎 R) (i j : ℕ) :
   · rw [iterate_add_apply]
   · rw [mul_comm]
 
--- Porting note: `ring_nf` doesn't handle powers yet; needed to add `Nat.pow_succ` rewrite
 theorem iterate_frobenius_coeff (x : 𝕎 R) (i k : ℕ) :
     (frobenius^[i] x).coeff k = x.coeff k ^ p ^ i := by
   induction' i with i ih
   · simp
-  · rw [iterate_succ_apply', coeff_frobenius_charP, ih, Nat.pow_succ]
+  · rw [iterate_succ_apply', coeff_frobenius_charP, ih]
     ring_nf
 
 /-- This is a slightly specialized form of [Hazewinkel, *Witt Vectors*][Haze09] 6.2 equation 5. -/
@@ -179,6 +208,14 @@ theorem iterate_verschiebung_mul_coeff (x y : 𝕎 R) (i j : ℕ) :
     rw [zero_add]
   · apply mul_coeff_zero
   · simp only [iterate_frobenius_coeff]
+
+theorem iterate_verschiebung_iterate_frobenius (x : 𝕎 R) (n : ℕ) :
+    verschiebung^[n] (frobenius^[n] x) = x * (p ^ n) := by
+  rw [← comp_apply (f := verschiebung^[n]),
+      ← Function.Commute.comp_iterate verschiebung_frobenius_comm]
+  induction' n with n ih
+  · simp
+  · rw [iterate_succ_apply', ih, pow_succ, comp_apply, verschiebung_frobenius, mul_assoc]
 
 end CharP
 

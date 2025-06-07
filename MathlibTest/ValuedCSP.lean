@@ -1,4 +1,4 @@
-import Mathlib.Algebra.Order.AbsoluteValue
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
 import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Combinatorics.Optimization.ValuedCSP
 import Mathlib.Data.Fin.Tuple.Curry
@@ -13,12 +13,12 @@ This file shows two simple examples of General-Valued Constraint Satisfaction Pr
 The first example is an optimization problem. The second example is a decision problem.
 -/
 
-def ValuedCSP.unaryTerm {D C : Type} [OrderedAddCommMonoid C]
+def ValuedCSP.unaryTerm {D C : Type} [AddCommMonoid C] [PartialOrder C] [IsOrderedAddMonoid C]
     {Γ : ValuedCSP D C} {ι : Type*} {f : D → C}
     (ok : ⟨1, Function.OfArity.uncurry f⟩ ∈ Γ) (i : ι) : Γ.Term ι :=
   ⟨1, Function.OfArity.uncurry f, ok, ![i]⟩
 
-def ValuedCSP.binaryTerm {D C : Type} [OrderedAddCommMonoid C]
+def ValuedCSP.binaryTerm {D C : Type} [AddCommMonoid C] [PartialOrder C] [IsOrderedAddMonoid C]
     {Γ : ValuedCSP D C} {ι : Type*} {f : D → D → C}
     (ok : ⟨2, Function.OfArity.uncurry f⟩ ∈ Γ) (i j : ι) : Γ.Term ι :=
   ⟨2, Function.OfArity.uncurry f, ok, ![i, j]⟩
@@ -60,14 +60,15 @@ private instance crispCodomainZero : Zero Bool where zero := false
 
 private instance crispCodomainAdd : Add Bool where add a b := a || b
 
-private instance crispCodomain : LinearOrderedAddCommMonoid Bool where
-  __ := Bool.linearOrder
+private instance crispCodomainAddCommMonoid : AddCommMonoid Bool where
   add_assoc := Bool.or_assoc
   zero_add (_ : Bool) := rfl
   add_zero := Bool.or_false
   add_comm := Bool.or_comm
-  add_le_add_left := Bool_add_le_add_left
   nsmul := nsmulRec
+
+private instance crispCodomain : IsOrderedAddMonoid Bool where
+  add_le_add_left := Bool_add_le_add_left
 
 private def beqBool : (Fin 2 → Fin 3) → Bool :=
   Function.OfArity.uncurry (fun (a b : Fin 3) => a == b)

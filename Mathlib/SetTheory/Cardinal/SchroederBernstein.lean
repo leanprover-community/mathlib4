@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Data.Set.Piecewise
 import Mathlib.Order.FixedPoints
 import Mathlib.Order.Zorn
 
@@ -42,22 +43,21 @@ Given injections `α → β` and `β → α`, we can get a bijection `α → β`
 theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injective f)
     (hg : Function.Injective g) : ∃ h : α → β, Bijective h := by
   classical
-  cases' isEmpty_or_nonempty β with hβ hβ
+  rcases isEmpty_or_nonempty β with hβ | hβ
   · have : IsEmpty α := Function.isEmpty f
     exact ⟨_, ((Equiv.equivEmpty α).trans (Equiv.equivEmpty β).symm).bijective⟩
   set F : Set α →o Set α :=
     { toFun := fun s => (g '' (f '' s)ᶜ)ᶜ
       monotone' := fun s t hst =>
         compl_subset_compl.mpr <| image_subset _ <| compl_subset_compl.mpr <| image_subset _ hst }
-  -- Porting note: dot notation `F.lfp` doesn't work here
-  set s : Set α := OrderHom.lfp F
+  set s : Set α := F.lfp
   have hs : (g '' (f '' s)ᶜ)ᶜ = s := F.map_lfp
   have hns : g '' (f '' s)ᶜ = sᶜ := compl_injective (by simp [hs])
   set g' := invFun g
   have g'g : LeftInverse g' g := leftInverse_invFun hg
   have hg'ns : g' '' sᶜ = (f '' s)ᶜ := by rw [← hns, g'g.image_image]
   set h : α → β := s.piecewise f g'
-  have : Surjective h := by rw [← range_iff_surjective, range_piecewise, hg'ns, union_compl_self]
+  have : Surjective h := by rw [← range_eq_univ, range_piecewise, hg'ns, union_compl_self]
   have : Injective h := by
     refine (injective_piecewise_iff _).2 ⟨hf.injOn, ?_, ?_⟩
     · intro x hx y hy hxy
@@ -105,7 +105,7 @@ theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j)
         let ⟨f, hf⟩ := Classical.axiom_of_choice h
         have : f ∈ s :=
           have : insert f s ∈ sets β := fun i x hx y hy => by
-            cases' hx with hx hx <;> cases' hy with hy hy; · simp [hx, hy]
+            rcases hx with hx | hx <;> rcases hy with hy | hy; · simp [hx, hy]
             · subst x
               exact fun e => (hf i y hy e.symm).elim
             · subst y

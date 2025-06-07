@@ -3,7 +3,7 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.RingTheory.Noetherian.Defs
+import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Finiteness of `IsScalarTower`
@@ -47,6 +47,7 @@ theorem left [Nontrivial A] : Module.Finite F K :=
 
 variable [Semiring F] [Semiring K] [Module F K]
   [AddCommMonoid A] [Module K A] [Module F A] [IsScalarTower F K A] in
+@[stacks 09G5]
 theorem right [hf : Module.Finite F A] : Module.Finite K A :=
   let ⟨⟨b, hb⟩⟩ := hf
   ⟨⟨b, Submodule.restrictScalars_injective F _ _ <| by

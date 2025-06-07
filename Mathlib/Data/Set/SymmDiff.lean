@@ -3,7 +3,6 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Data.Set.Operations
 import Mathlib.Order.Basic
 import Mathlib.Order.BooleanAlgebra
@@ -16,10 +15,12 @@ import Mathlib.Data.Set.Basic
 
 /-! # Symmetric differences of sets -/
 
+assert_not_exists RelIso
+
 namespace Set
 
-universe u v
-variable {α : Type u} {β : Type v} {a b : α} {s s₁ s₂ t t₁ t₂ u : Set α}
+universe u
+variable {α : Type u} {a : α} {s t u : Set α}
 
 open scoped symmDiff
 

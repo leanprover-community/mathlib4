@@ -32,7 +32,7 @@ open NumberField Units InfinitePlace nonZeroDivisors Polynomial
 namespace IsCyclotomicExtension.Rat.Three
 
 variable {K : Type*} [Field K]
-variable {ζ : K} (hζ : IsPrimitiveRoot ζ ↑(3 : ℕ+)) (u : (𝓞 K)ˣ)
+variable {ζ : K} (hζ : IsPrimitiveRoot ζ 3) (u : (𝓞 K)ˣ)
 local notation3 "η" => (IsPrimitiveRoot.isUnit (hζ.toInteger_isPrimitiveRoot) (by decide)).unit
 local notation3 "λ" => hζ.toInteger - 1
 
@@ -107,8 +107,8 @@ theorem eq_one_or_neg_one_of_unit_of_congruent
     obtain ⟨n, x, hx⟩ := hcong
     rw [sub_eq_iff_eq_add] at hx
     refine ⟨-n, -x, sub_eq_iff_eq_add.2 ?_⟩
-    simp only [PNat.val_ofNat, Nat.cast_ofNat, mul_neg, Int.cast_neg, ← neg_add, ← hx,
-      Units.val_neg, IsUnit.unit_spec, RingOfIntegers.neg_mk, neg_neg]
+    simp only [Nat.cast_ofNat, mul_neg, Int.cast_neg, ← neg_add, ← hx, Units.val_neg,
+      IsUnit.unit_spec, RingOfIntegers.neg_mk, neg_neg]
   · exact (hζ.pow_of_coprime 2 (by decide)).not_exists_int_prime_dvd_sub_of_prime_ne_two'
       (by decide) hcong
   · apply (hζ.pow_of_coprime 2 (by decide)).not_exists_int_prime_dvd_sub_of_prime_ne_two'
@@ -116,8 +116,8 @@ theorem eq_one_or_neg_one_of_unit_of_congruent
     obtain ⟨n, x, hx⟩ := hcong
     refine ⟨-n, -x, sub_eq_iff_eq_add.2 ?_⟩
     have : (hζ.pow_of_coprime 2 (by decide)).toInteger = hζ.toInteger ^ 2 := by ext; simp
-    simp only [this, PNat.val_ofNat, Nat.cast_ofNat, mul_neg, Int.cast_neg, ← neg_add, ←
-      sub_eq_iff_eq_add.1 hx, Units.val_neg, val_pow_eq_pow_val, IsUnit.unit_spec, neg_neg]
+    simp only [this, Nat.cast_ofNat, mul_neg, Int.cast_neg, ← neg_add, ← sub_eq_iff_eq_add.1 hx,
+      Units.val_neg, val_pow_eq_pow_val, IsUnit.unit_spec, neg_neg]
 
 variable (x : 𝓞 K)
 
@@ -128,12 +128,12 @@ lemma lambda_dvd_or_dvd_sub_one_or_dvd_add_one [NumberField K] [IsCyclotomicExte
   have := hζ.finite_quotient_toInteger_sub_one (by decide)
   let _ := Fintype.ofFinite (𝓞 K ⧸ Ideal.span {λ})
   let _ : Ring (𝓞 K ⧸ Ideal.span {λ}) := CommRing.toRing -- to speed up instance synthesis
-  let _ : AddGroup (𝓞 K ⧸ Ideal.span {λ}) := AddGroupWithOne.toAddGroup -- dito
+  let _ : AddGroup (𝓞 K ⧸ Ideal.span {λ}) := AddGroupWithOne.toAddGroup -- ditto
   have := Finset.mem_univ (Ideal.Quotient.mk (Ideal.span {λ}) x)
   have h3 : Fintype.card (𝓞 K ⧸ Ideal.span {λ}) = 3 := by
-    rw [← Nat.card_eq_fintype_card, hζ.card_quotient_toInteger_sub_one (by decide),
+    rw [← Nat.card_eq_fintype_card, hζ.card_quotient_toInteger_sub_one,
       hζ.norm_toInteger_sub_one_of_prime_ne_two' (by decide)]
-    simp only [PNat.val_ofNat, Nat.cast_ofNat, Int.reduceAbs]
+    simp only [Nat.cast_ofNat, Int.reduceAbs]
   rw [Finset.univ_of_card_le_three h3.le] at this
   simp only [Finset.mem_insert, Finset.mem_singleton] at this
   rcases this with h | h | h

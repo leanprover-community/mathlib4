@@ -33,12 +33,12 @@ open CategoryTheory Limits
 namespace FGModuleCat
 
 variable {J : Type} [SmallCategory J] [FinCategory J]
-variable {k : Type v} [Field k]
+variable {k : Type u} [Field k]
 
 instance {J : Type} [Finite J] (Z : J → ModuleCat.{v} k) [∀ j, FiniteDimensional k (Z j)] :
     FiniteDimensional k (∏ᶜ fun j => Z j : ModuleCat.{v} k) :=
   haveI : FiniteDimensional k (ModuleCat.of k (∀ j, Z j)) := by unfold ModuleCat.of; infer_instance
-  FiniteDimensional.of_injective (ModuleCat.piIsoPi _).hom
+  FiniteDimensional.of_injective (ModuleCat.piIsoPi _).hom.hom
     ((ModuleCat.mono_iff_injective _).1 (by infer_instance))
 
 /-- Finite limits of finite dimensional vectors spaces are finite dimensional,
@@ -48,14 +48,15 @@ instance (F : J ⥤ FGModuleCat k) :
   haveI : ∀ j, FiniteDimensional k ((F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)).obj j) := by
     intro j; change FiniteDimensional k (F.obj j); infer_instance
   FiniteDimensional.of_injective
-    (limitSubobjectProduct (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)))
+    (limitSubobjectProduct (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k))).hom
     ((ModuleCat.mono_iff_injective _).1 inferInstance)
 
 /-- The forgetful functor from `FGModuleCat k` to `ModuleCat k` creates all finite limits. -/
 def forget₂CreatesLimit (F : J ⥤ FGModuleCat k) :
     CreatesLimit F (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) :=
   createsLimitOfFullyFaithfulOfIso
-    ⟨(limit (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)) : ModuleCat.{v} k), inferInstance⟩
+    ⟨(limit (F ⋙ forget₂ (FGModuleCat k) (ModuleCat.{v} k)) : ModuleCat.{v} k),
+      by rw [ModuleCat.isFG_iff]; infer_instance⟩
     (Iso.refl _)
 
 instance : CreatesLimitsOfShape J (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) where
@@ -66,7 +67,7 @@ instance (J : Type) [Category J] [FinCategory J] :
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape
     (forget₂ (FGModuleCat k) (ModuleCat.{v} k))
 
-instance : HasFiniteLimits (FGModuleCat k) where
+instance : HasFiniteLimits (FGModuleCat.{v} k) where
   out _ _ _ := inferInstance
 
 instance : PreservesFiniteLimits (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) where

@@ -7,7 +7,7 @@ import Mathlib.Data.Prod.Basic
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Logic.Unique
-import Mathlib.Order.Defs
+import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Tactic.Attr.Register
 
 /-!
@@ -97,7 +97,3 @@ instance Function.nontrivial [h : Nonempty α] [Nontrivial β] : Nontrivial (α 
 @[nontriviality]
 protected theorem Subsingleton.le [Preorder α] [Subsingleton α] (x y : α) : x ≤ y :=
   le_of_eq (Subsingleton.elim x y)
-
-@[to_additive]
-theorem Subsingleton.eq_one [One α] [Subsingleton α] (a : α) : a = 1 :=
-  Subsingleton.elim _ _

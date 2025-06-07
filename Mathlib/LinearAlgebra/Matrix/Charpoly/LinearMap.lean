@@ -30,41 +30,38 @@ open Polynomial Matrix
 /-- The composition of a matrix (as an endomorphism of `ι → R`) with the projection
 `(ι → R) →ₗ[R] M`. -/
 def PiToModule.fromMatrix [DecidableEq ι] : Matrix ι ι R →ₗ[R] (ι → R) →ₗ[R] M :=
-  (LinearMap.llcomp R _ _ _ (Fintype.linearCombination R R b)).comp algEquivMatrix'.symm.toLinearMap
+  (LinearMap.llcomp R _ _ _ (Fintype.linearCombination R b)).comp algEquivMatrix'.symm.toLinearMap
 
 theorem PiToModule.fromMatrix_apply [DecidableEq ι] (A : Matrix ι ι R) (w : ι → R) :
-    PiToModule.fromMatrix R b A w = Fintype.linearCombination R R b (A *ᵥ w) :=
+    PiToModule.fromMatrix R b A w = Fintype.linearCombination R b (A *ᵥ w) :=
   rfl
 
 theorem PiToModule.fromMatrix_apply_single_one [DecidableEq ι] (A : Matrix ι ι R) (j : ι) :
     PiToModule.fromMatrix R b A (Pi.single j 1) = ∑ i : ι, A i j • b i := by
   rw [PiToModule.fromMatrix_apply, Fintype.linearCombination_apply, Matrix.mulVec_single]
-  simp_rw [mul_one]
+  simp_rw [MulOpposite.op_one, one_smul, col_apply]
 
 /-- The endomorphisms of `M` acts on `(ι → R) →ₗ[R] M`, and takes the projection
 to a `(ι → R) →ₗ[R] M`. -/
 def PiToModule.fromEnd : Module.End R M →ₗ[R] (ι → R) →ₗ[R] M :=
-  LinearMap.lcomp _ _ (Fintype.linearCombination R R b)
+  LinearMap.lcomp _ _ (Fintype.linearCombination R b)
 
 theorem PiToModule.fromEnd_apply (f : Module.End R M) (w : ι → R) :
-    PiToModule.fromEnd R b f w = f (Fintype.linearCombination R R b w) :=
+    PiToModule.fromEnd R b f w = f (Fintype.linearCombination R b w) :=
   rfl
 
 theorem PiToModule.fromEnd_apply_single_one [DecidableEq ι] (f : Module.End R M) (i : ι) :
     PiToModule.fromEnd R b f (Pi.single i 1) = f (b i) := by
-  rw [PiToModule.fromEnd_apply]
-  congr
-  convert Fintype.linearCombination_apply_single (S := R) R b i (1 : R)
-  rw [one_smul]
+  rw [PiToModule.fromEnd_apply, Fintype.linearCombination_apply_single, one_smul]
 
 theorem PiToModule.fromEnd_injective (hb : Submodule.span R (Set.range b) = ⊤) :
     Function.Injective (PiToModule.fromEnd R b) := by
   intro x y e
   ext m
-  obtain ⟨m, rfl⟩ : m ∈ LinearMap.range (Fintype.linearCombination R R b) := by
+  obtain ⟨m, rfl⟩ : m ∈ LinearMap.range (Fintype.linearCombination R b) := by
     rw [(Fintype.range_linearCombination R b).trans hb]
     exact Submodule.mem_top
-  exact (LinearMap.congr_fun e m : _)
+  exact (LinearMap.congr_fun e m :)
 
 section
 
@@ -78,12 +75,12 @@ def Matrix.Represents (A : Matrix ι ι R) (f : Module.End R M) : Prop :=
 variable {b}
 
 theorem Matrix.Represents.congr_fun {A : Matrix ι ι R} {f : Module.End R M} (h : A.Represents b f)
-    (x) : Fintype.linearCombination R R b (A *ᵥ x) = f (Fintype.linearCombination R R b x) :=
+    (x) : Fintype.linearCombination R b (A *ᵥ x) = f (Fintype.linearCombination R b x) :=
   LinearMap.congr_fun h x
 
 theorem Matrix.represents_iff {A : Matrix ι ι R} {f : Module.End R M} :
     A.Represents b f ↔
-      ∀ x, Fintype.linearCombination R R b (A *ᵥ x) = f (Fintype.linearCombination R R b x) :=
+      ∀ x, Fintype.linearCombination R b (A *ᵥ x) = f (Fintype.linearCombination R b x) :=
   ⟨fun e x => e.congr_fun x, fun H => LinearMap.ext fun x => H x⟩
 
 theorem Matrix.represents_iff' {A : Matrix ι ι R} {f : Module.End R M} :
@@ -101,7 +98,7 @@ theorem Matrix.represents_iff' {A : Matrix ι ι R} {f : Module.End R M} :
 theorem Matrix.Represents.mul {A A' : Matrix ι ι R} {f f' : Module.End R M} (h : A.Represents b f)
     (h' : Matrix.Represents b A' f') : (A * A').Represents b (f * f') := by
   delta Matrix.Represents PiToModule.fromMatrix
-  rw [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply, _root_.map_mul]
+  rw [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply, map_mul]
   ext
   dsimp [PiToModule.fromEnd]
   rw [← h'.congr_fun, ← h.congr_fun]
@@ -109,7 +106,7 @@ theorem Matrix.Represents.mul {A A' : Matrix ι ι R} {f f' : Module.End R M} (h
 
 theorem Matrix.Represents.one : (1 : Matrix ι ι R).Represents b 1 := by
   delta Matrix.Represents PiToModule.fromMatrix
-  rw [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply, _root_.map_one]
+  rw [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply, map_one]
   ext
   rfl
 
@@ -124,7 +121,7 @@ theorem Matrix.Represents.zero : (0 : Matrix ι ι R).Represents b 0 := by
 theorem Matrix.Represents.smul {A : Matrix ι ι R} {f : Module.End R M} (h : A.Represents b f)
     (r : R) : (r • A).Represents b (r • f) := by
   delta Matrix.Represents at h ⊢
-  rw [_root_.map_smul, _root_.map_smul, h]
+  rw [map_smul, map_smul, h]
 
 theorem Matrix.Represents.algebraMap (r : R) :
     (algebraMap _ (Matrix ι ι R) r).Represents b (algebraMap _ (Module.End R M) r) := by
@@ -210,12 +207,10 @@ theorem LinearMap.exists_monic_and_coeff_mem_pow_and_aeval_eq_zero_of_range_le_s
     cases subsingleton_or_nontrivial R
     · exact ⟨0, Polynomial.monic_of_subsingleton _, by simp⟩
     obtain ⟨s : Finset M, hs : Submodule.span R (s : Set M) = ⊤⟩ :=
-      Module.Finite.out (R := R) (M := M)
-    -- Porting note: `H` was `rfl`
-    obtain ⟨A, H, h⟩ :=
+      Module.Finite.fg_top (R := R) (M := M)
+    obtain ⟨A, rfl, h⟩ :=
       Matrix.isRepresentation.toEnd_exists_mem_ideal R ((↑) : s → M)
         (by rw [Subtype.range_coe_subtype, Finset.setOf_mem, hs]) f I hI
-    rw [← H]
     refine ⟨A.1.charpoly, A.1.charpoly_monic, ?_, ?_⟩
     · rw [A.1.charpoly_natDegree_eq_dim]
       exact coeff_charpoly_mem_ideal_pow h

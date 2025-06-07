@@ -19,6 +19,8 @@ and `HomotopyCategory` namespaces.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Category ComplexShape Limits
 
 variable (C : Type*) [Category C] [Preadditive C]
@@ -39,8 +41,8 @@ def shiftShortComplexFunctor' (n i j k i' j' k' : ℤ)
   NatIso.ofComponents (fun K => ShortComplex.isoMk
       (n.negOnePow • ((shiftEval C n i i' hi).app K))
       ((shiftEval C n j j' hj).app K) (n.negOnePow • ((shiftEval C n k k' hk).app K))
-      (by dsimp; simp) (by dsimp; simp))
-      (fun f ↦ by ext <;> dsimp <;> simp)
+      (by simp) (by simp))
+      (fun f ↦ by ext <;> simp)
 
 /-- The natural isomorphism `(K⟦n⟧).sc i ≅ K.sc i'` when `n + i = i'`. -/
 @[simps!]
@@ -55,7 +57,7 @@ lemma shiftShortComplexFunctorIso_zero_add_hom_app (a : ℤ) (K : CochainComplex
     (shiftShortComplexFunctorIso C 0 a a (zero_add a)).hom.app K =
       (shortComplexFunctor C (ComplexShape.up ℤ) a).map
         ((shiftFunctorZero (CochainComplex C ℤ) ℤ).hom.app K) := by
-  ext <;> dsimp <;> simp [one_smul, shiftFunctorZero_hom_app_f]
+  ext <;> simp [one_smul, shiftFunctorZero_hom_app_f]
 
 lemma shiftShortComplexFunctorIso_add'_hom_app
     (n m mn : ℤ) (hmn : m + n = mn) (a a' a'' : ℤ) (ha' : n + a = a') (ha'' : m + a' = a'')
@@ -88,13 +90,22 @@ lemma shiftIso_hom_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C �
     (shiftIso C n a a' ha').hom.app K =
       ShortComplex.homologyMap ((shiftShortComplexFunctorIso C n a a' ha').hom.app K) := by
   dsimp [shiftIso]
-  erw [id_comp, id_comp, comp_id]
+  rw [id_comp, id_comp]
+  -- This `erw` is required to bridge the gap between
+  -- `((shortComplexFunctor C (up ℤ) a').obj K).homology`
+  -- (the target of the first morphism)
+  -- and
+  -- `homology K a'`
+  -- (the source of the identity morphism).
+  erw [comp_id]
 
 lemma shiftIso_inv_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C ℤ) :
     (shiftIso C n a a' ha').inv.app K =
       ShortComplex.homologyMap ((shiftShortComplexFunctorIso C n a a' ha').inv.app K) := by
   dsimp [shiftIso]
-  erw [id_comp, comp_id, comp_id]
+  rw [id_comp, comp_id]
+  -- This `erw` is required as above in `shiftIso_hom_app`.
+  erw [comp_id]
 
 end ShiftSequence
 

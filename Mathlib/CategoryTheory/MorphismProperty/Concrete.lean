@@ -25,13 +25,12 @@ universe v u
 
 namespace CategoryTheory
 
-variable (C : Type u) [Category.{v} C] [ConcreteCategory C]
+variable (C : Type u) [Category.{v} C] {FC : C → C → Type*} {CC : C → Type*}
+variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
 
 namespace MorphismProperty
 
 open Function
-
-attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
 
 /-- Injectiveness (in a concrete category) as a `MorphismProperty` -/
 protected def injective : MorphismProperty C := fun _ _ f => Injective f
@@ -53,7 +52,7 @@ instance : (MorphismProperty.injective C).IsMultiplicative where
     aesop
   comp_mem f g hf hg := by
     delta MorphismProperty.injective
-    rw [coe_comp]
+    rw [hom_comp]
     exact hg.comp hf
 
 instance : (MorphismProperty.surjective C).IsMultiplicative where
@@ -63,7 +62,7 @@ instance : (MorphismProperty.surjective C).IsMultiplicative where
     aesop
   comp_mem f g hf hg := by
     delta MorphismProperty.surjective
-    rw [coe_comp]
+    rw [hom_comp]
     exact hg.comp hf
 
 instance : (MorphismProperty.bijective C).IsMultiplicative where
@@ -73,7 +72,7 @@ instance : (MorphismProperty.bijective C).IsMultiplicative where
     aesop
   comp_mem f g hf hg := by
     delta MorphismProperty.bijective
-    rw [coe_comp]
+    rw [hom_comp]
     exact hg.comp hf
 
 instance injective_respectsIso : (MorphismProperty.injective C).RespectsIso :=
@@ -111,6 +110,7 @@ end ConcreteCategory
 
 open ConcreteCategory
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- In the category of types, any map can be functorially factored as a surjective
 map followed by an injective map. -/
 def functorialSurjectiveInjectiveFactorizationData :
@@ -136,6 +136,7 @@ def functorialSurjectiveInjectiveFactorizationData :
     rw [Subtype.ext_iff]
     exact h
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : HasFunctorialSurjectiveInjectiveFactorization (Type u) where
   nonempty_functorialFactorizationData :=
     ⟨functorialSurjectiveInjectiveFactorizationData⟩

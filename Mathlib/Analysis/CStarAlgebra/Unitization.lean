@@ -38,12 +38,8 @@ lemma opNorm_mul_flip_apply (a : E) : ‖(mul 𝕜 E).flip a‖ = ‖a‖ := by
     _ ≤ ‖(mul 𝕜 E).flip a‖ * ‖b‖ := by
         simpa only [flip_apply, mul_apply', norm_star] using le_opNorm ((mul 𝕜 E).flip a) (star b)
 
-@[deprecated (since := "2024-02-02")] alias op_norm_mul_flip_apply := opNorm_mul_flip_apply
-
 lemma opNNNorm_mul_flip_apply (a : E) : ‖(mul 𝕜 E).flip a‖₊ = ‖a‖₊ :=
   Subtype.ext (opNorm_mul_flip_apply 𝕜 a)
-
-@[deprecated (since := "2024-02-02")] alias op_nnnorm_mul_flip_apply := opNNNorm_mul_flip_apply
 
 variable (E)
 
@@ -60,7 +56,7 @@ variable (E)
 instance CStarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
   isometry_mul' := AddMonoidHomClass.isometry_of_norm (mul 𝕜 E) fun a => NNReal.eq_iff.mp <|
     show ‖mul 𝕜 E a‖₊ = ‖a‖₊ by
-    rw [← sSup_closed_unit_ball_eq_nnnorm]
+    rw [← sSup_unitClosedBall_eq_nnnorm]
     refine csSup_eq_of_forall_le_of_forall_lt_exists_gt ?_ ?_ fun r hr => ?_
     · exact (Metric.nonempty_closedBall.mpr zero_le_one).image _
     · rintro - ⟨x, hx, rfl⟩
@@ -87,12 +83,12 @@ variable {E}
 out so that declaring the `CStarRing` instance doesn't time out. -/
 theorem Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
     ‖(Unitization.splitMul 𝕜 E x).snd‖ ^ 2 ≤ ‖(Unitization.splitMul 𝕜 E (star x * x)).snd‖ := by
-  /- The key idea is that we can use `sSup_closed_unit_ball_eq_norm` to make this about
+  /- The key idea is that we can use `sSup_unitClosedBall_eq_norm` to make this about
   applying this linear map to elements of norm at most one. There is a bit of `sqrt` and `sq`
   shuffling that needs to occur, which is primarily just an annoyance. -/
   refine (Real.le_sqrt (norm_nonneg _) (norm_nonneg _)).mp ?_
   simp only [Unitization.splitMul_apply]
-  rw [← sSup_closed_unit_ball_eq_norm]
+  rw [← sSup_unitClosedBall_eq_norm]
   refine csSup_le ((Metric.nonempty_closedBall.2 zero_le_one).image _) ?_
   rintro - ⟨b, hb, rfl⟩
   simp only
@@ -101,7 +97,7 @@ theorem Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
     ← CStarRing.norm_star_mul_self, ContinuousLinearMap.add_apply, star_add, mul_apply',
     Algebra.algebraMap_eq_smul_one, ContinuousLinearMap.smul_apply,
     ContinuousLinearMap.one_apply, star_mul, star_smul, add_mul, smul_mul_assoc, ← mul_smul_comm,
-    mul_assoc, ← mul_add, ← sSup_closed_unit_ball_eq_norm]
+    mul_assoc, ← mul_add, ← sSup_unitClosedBall_eq_norm]
   refine (norm_mul_le _ _).trans ?_
   calc
     _ ≤ ‖star x.fst • (x.fst • b + x.snd * b) + star x.snd * (x.fst • b + x.snd * b)‖ := by
@@ -178,8 +174,10 @@ instance Unitization.instCStarRing : CStarRing (Unitization 𝕜 E) where
 unital, `A⁺¹ ≃⋆ₐ[ℂ] (ℂ × A)`. -/
 scoped[CStarAlgebra] postfix:max "⁺¹" => Unitization ℂ
 
+#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 noncomputable instance Unitization.instCStarAlgebra {A : Type*} [NonUnitalCStarAlgebra A] :
     CStarAlgebra (Unitization ℂ A) where
+  norm_mul_self_le := CStarRing.norm_mul_self_le
 
 noncomputable instance Unitization.instCommCStarAlgebra {A : Type*} [NonUnitalCommCStarAlgebra A] :
     CommCStarAlgebra (Unitization ℂ A) where

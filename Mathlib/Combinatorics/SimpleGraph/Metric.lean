@@ -32,6 +32,7 @@ graph metric, distance
 
 -/
 
+assert_not_exists Field
 
 namespace SimpleGraph
 
@@ -147,7 +148,7 @@ theorem edist_anti {G' : SimpleGraph V} (h : G ≤ G') :
     G'.edist u v ≤ G.edist u v := by
   by_cases hr : G.Reachable u v
   · obtain ⟨_, hw⟩ := hr.exists_walk_length_eq_edist
-    rw [← hw, ← Walk.length_map (Hom.mapSpanningSubgraphs h)]
+    rw [← hw, ← Walk.length_map (.ofLE h)]
     apply edist_le
   · exact edist_eq_top_of_not_reachable hr ▸ le_top
 
@@ -191,12 +192,23 @@ protected theorem Reachable.pos_dist_of_ne (h : G.Reachable u v) (hne : u ≠ v)
     0 < G.dist u v :=
   Nat.pos_of_ne_zero (by simp [h, hne])
 
+protected theorem Reachable.one_lt_dist_of_ne_of_not_adj (h : G.Reachable u v) (hne : u ≠ v)
+    (hnadj : ¬G.Adj u v) : 1 < G.dist u v :=
+  Nat.lt_of_le_of_ne (h.pos_dist_of_ne hne) (by
+    by_contra! hc
+    obtain ⟨p, hp⟩ := Reachable.exists_walk_length_eq_dist h
+    exact hnadj (Walk.exists_length_eq_one_iff.mp ⟨p, hc ▸ hp⟩))
+
 protected theorem Connected.dist_eq_zero_iff (hconn : G.Connected) :
     G.dist u v = 0 ↔ u = v := by simp [hconn u v]
 
 protected theorem Connected.pos_dist_of_ne (hconn : G.Connected) (hne : u ≠ v) :
     0 < G.dist u v :=
   Nat.pos_of_ne_zero fun h ↦ False.elim <| hne <| (hconn.dist_eq_zero_iff).mp h
+
+protected theorem Connected.one_lt_dist_of_ne_of_not_adj (h : G.Connected) (hne : u ≠ v)
+    (hnadj : ¬G.Adj u v) : 1 < G.dist u v :=
+  Reachable.one_lt_dist_of_ne_of_not_adj (h u v) hne hnadj
 
 theorem dist_eq_zero_of_not_reachable (h : ¬G.Reachable u v) : G.dist u v = 0 := by
   simp [h]
@@ -272,8 +284,30 @@ lemma dist_top [DecidableEq V] : (⊤ : SimpleGraph V).dist u v = (if u = v then
 protected theorem Reachable.dist_anti {G' : SimpleGraph V} (h : G ≤ G') (hr : G.Reachable u v) :
     G'.dist u v ≤ G.dist u v := by
   obtain ⟨_, hw⟩ := hr.exists_walk_length_eq_dist
-  rw [← hw, ← Walk.length_map (Hom.mapSpanningSubgraphs h)]
+  rw [← hw, ← Walk.length_map (.ofLE h)]
   apply dist_le
+
+/-- This bundles and abstracts some facts about the first three vertices of a shortest walk
+of length at least two: the first and third nodes are different and not connected. -/
+lemma Walk.exists_adj_adj_not_adj_ne {p : G.Walk v w} (hp : p.length = G.dist v w)
+    (hl : 1 < G.dist v w) : ∃ (x a b : V), G.Adj x a ∧ G.Adj a b ∧ ¬ G.Adj x b ∧ x ≠ b := by
+  use v, p.getVert 1, p.getVert 2
+  have hnp : ¬p.Nil := by simpa [nil_iff_length_eq, hp] using Nat.ne_zero_of_lt hl
+  have : p.tail.tail.length < p.tail.length := by
+    rw [← p.tail.length_tail_add_one (by
+      simp only [not_nil_iff_lt_length, ← p.length_tail_add_one hnp] at hp ⊢
+      omega)]
+    omega
+  have : p.tail.length < p.length := by rw [← p.length_tail_add_one hnp]; omega
+  by_cases hv : v = p.getVert 2
+  · have : G.dist v w ≤ p.tail.tail.length := by
+      simpa [hv, p.getVert_tail] using dist_le p.tail.tail
+    omega
+  by_cases hadj : G.Adj v (p.getVert 2)
+  · have : G.dist v w ≤ p.tail.tail.length + 1 :=
+      dist_le <| p.tail.tail.cons <| p.getVert_tail ▸ hadj
+    omega
+  exact ⟨p.adj_snd hnp, p.adj_getVert_succ (hp ▸ hl), hadj, hv⟩
 
 end dist
 

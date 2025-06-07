@@ -3,9 +3,14 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.Group.Action.Pi
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Ring.Pi
+import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Big operators for Pi Types
@@ -55,7 +60,7 @@ theorem prod_mk_prod {α β γ : Type*} [CommMonoid α] [CommMonoid β] (s : Fin
   Finset.induction_on s rfl (by simp +contextual [Prod.ext_iff])
 
 /-- decomposing `x : ι → R` as a sum along the canonical basis -/
-theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [Semiring R]
+theorem pi_eq_sum_univ {ι : Type*} [Fintype ι] [DecidableEq ι] {R : Type*} [NonAssocSemiring R]
     (x : ι → R) : x = ∑ i, (x i) • fun j => if i = j then (1 : R) else 0 := by
   ext
   simp
@@ -72,7 +77,7 @@ lemma prod_indicator_apply (s : Finset ι) (f : ι → Set κ) (g : ι → κ �
     simp only [Finset.inf_set_eq_iInter, Set.mem_iInter] at hj
     exact Set.indicator_of_mem (hj _ hi) _
   · obtain ⟨i, hi, hj⟩ := by simpa using hj
-    exact Finset.prod_eq_zero hi <| Set.indicator_of_not_mem hj _
+    exact Finset.prod_eq_zero hi <| Set.indicator_of_notMem hj _
 
 lemma prod_indicator (s : Finset ι) (f : ι → Set κ) (g : ι → κ → α) :
     ∏ i ∈ s, (f i).indicator (g i) = (⋂ x ∈ s, f x).indicator (∏ i ∈ s, g i) := by
@@ -156,28 +161,47 @@ the product of the homomorphism monoids."]
 def Pi.monoidHomMulEquiv {ι : Type*} [Fintype ι] [DecidableEq ι] (M : ι → Type*)
     [(i : ι) → CommMonoid (M i)] (M' : Type*) [CommMonoid M'] :
     (((i : ι) → M i) →* M') ≃* ((i : ι) → (M i →* M')) where
-      toFun φ i := φ.comp <| MonoidHom.mulSingle M i
-      invFun φ := ∏ (i : ι), (φ i).comp (Pi.evalMonoidHom M i)
-      left_inv φ := by
-        ext
-        simp only [MonoidHom.finset_prod_apply, MonoidHom.coe_comp, Function.comp_apply,
-          evalMonoidHom_apply, MonoidHom.mulSingle_apply, ← map_prod]
-        refine congrArg _ <| funext fun _ ↦ ?_
-        rw [Fintype.prod_apply]
-        exact Fintype.prod_pi_mulSingle ..
-      right_inv φ := by
-        ext i m
-        simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.mulSingle_apply,
-          MonoidHom.finset_prod_apply, evalMonoidHom_apply, ]
-        let φ' i : M i → M' := ⇑(φ i)
-        conv =>
-          enter [1, 2, j]
-          rw [show φ j = φ' j from rfl, Pi.apply_mulSingle φ' (fun i ↦ map_one (φ i))]
-        rw [show φ' i = φ i from rfl]
-        exact Fintype.prod_pi_mulSingle' ..
-      map_mul' φ ψ := by
-        ext
-        simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.mulSingle_apply,
-          MonoidHom.mul_apply, mul_apply]
+  toFun φ i := φ.comp <| MonoidHom.mulSingle M i
+  invFun φ := ∏ (i : ι), (φ i).comp (Pi.evalMonoidHom M i)
+  left_inv φ := by
+    ext
+    simp only [MonoidHom.finset_prod_apply, MonoidHom.coe_comp, Function.comp_apply,
+      evalMonoidHom_apply, MonoidHom.mulSingle_apply, ← map_prod]
+    refine congrArg _ <| funext fun _ ↦ ?_
+    rw [Fintype.prod_apply]
+    exact Fintype.prod_pi_mulSingle ..
+  right_inv φ := by
+    ext i m
+    simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.mulSingle_apply,
+      MonoidHom.finset_prod_apply, evalMonoidHom_apply, ]
+    let φ' i : M i → M' := ⇑(φ i)
+    conv =>
+      enter [1, 2, j]
+      rw [show φ j = φ' j from rfl, Pi.apply_mulSingle φ' (fun i ↦ map_one (φ i))]
+    rw [show φ' i = φ i from rfl]
+    exact Fintype.prod_pi_mulSingle' ..
+  map_mul' φ ψ := by
+    ext
+    simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.mulSingle_apply,
+      MonoidHom.mul_apply, mul_apply]
 
 end MulEquiv
+
+variable [Finite ι] [DecidableEq ι] {M : Type*}
+
+-- manually additivized to fix variable names
+-- See https://github.com/leanprover-community/mathlib4/issues/11462
+lemma Pi.single_induction [AddCommMonoid M] (p : (ι → M) → Prop) (f : ι → M)
+    (zero : p 0) (add : ∀ f g, p f → p g → p (f + g))
+    (single : ∀ i m, p (Pi.single i m)) : p f := by
+  cases nonempty_fintype ι
+  rw [← Finset.univ_sum_single f]
+  exact Finset.sum_induction _ _ add zero (by simp [single])
+
+@[to_additive existing (attr := elab_as_elim)]
+lemma Pi.mulSingle_induction [CommMonoid M] (p : (ι → M) → Prop) (f : ι → M)
+    (one : p 1) (mul : ∀ f g, p f → p g → p (f * g))
+    (mulSingle : ∀ i m, p (Pi.mulSingle i m)) : p f := by
+  cases nonempty_fintype ι
+  rw [← Finset.univ_prod_mulSingle f]
+  exact Finset.prod_induction _ _ mul one (by simp [mulSingle])

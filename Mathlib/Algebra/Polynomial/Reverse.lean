@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Polynomial.Degree.TrailingDegree
 import Mathlib.Algebra.Polynomial.EraseLead
-import Mathlib.Algebra.Polynomial.Eval
 
 /-!
 # Reverse of a univariate polynomial
@@ -20,9 +19,9 @@ coefficients of `f` and `g` do not multiply to zero.
 
 namespace Polynomial
 
-open Polynomial Finsupp Finset
+open Finsupp Finset
 
-open Polynomial
+open scoped Polynomial
 
 section Semiring
 
@@ -127,7 +126,7 @@ theorem reflect_C_mul_X_pow (N n : ℕ) {c : R} : reflect N (C c * X ^ n) = C c 
   rw [reflect_C_mul, coeff_C_mul, coeff_C_mul, coeff_X_pow, coeff_reflect]
   split_ifs with h
   · rw [h, revAt_invol, coeff_X_pow_self]
-  · rw [not_mem_support_iff.mp]
+  · rw [notMem_support_iff.mp]
     intro a
     rw [← one_mul (X ^ n), ← C_1] at a
     apply h
@@ -143,6 +142,14 @@ theorem reflect_monomial (N n : ℕ) : reflect N ((X : R[X]) ^ n) = X ^ revAt N 
 
 @[simp] lemma reflect_one_X : reflect 1 (X : R[X]) = 1 := by
   simpa using reflect_monomial 1 1 (R := R)
+
+lemma reflect_map {S : Type*} [Semiring S] (f : R →+* S) (p : R[X]) (n : ℕ) :
+    (p.map f).reflect n = (p.reflect n).map f := by
+  ext; simp
+
+@[simp]
+lemma reflect_one (n : ℕ) : (1 : R[X]).reflect n = Polynomial.X ^ n := by
+  rw [← C.map_one, reflect_C, map_one, one_mul]
 
 theorem reflect_mul_induction (cf cg : ℕ) :
     ∀ N O : ℕ,
@@ -275,7 +282,7 @@ theorem reverse_mul {f g : R[X]} (fg : f.leadingCoeff * g.leadingCoeff ≠ 0) :
   rw [natDegree_mul' fg, reflect_mul f g rfl.le rfl.le]
 
 @[simp]
-theorem reverse_mul_of_domain {R : Type*} [Ring R] [NoZeroDivisors R] (f g : R[X]) :
+theorem reverse_mul_of_domain {R : Type*} [Semiring R] [NoZeroDivisors R] (f g : R[X]) :
     reverse (f * g) = reverse f * reverse g := by
   by_cases f0 : f = 0
   · simp only [f0, zero_mul, reverse_zero]
@@ -283,7 +290,7 @@ theorem reverse_mul_of_domain {R : Type*} [Ring R] [NoZeroDivisors R] (f g : R[X
   · rw [g0, mul_zero, reverse_zero, mul_zero]
   simp [reverse_mul, *]
 
-theorem trailingCoeff_mul {R : Type*} [Ring R] [NoZeroDivisors R] (p q : R[X]) :
+theorem trailingCoeff_mul {R : Type*} [Semiring R] [NoZeroDivisors R] (p q : R[X]) :
     (p * q).trailingCoeff = p.trailingCoeff * q.trailingCoeff := by
   rw [← reverse_leadingCoeff, reverse_mul_of_domain, leadingCoeff_mul, reverse_leadingCoeff,
     reverse_leadingCoeff]

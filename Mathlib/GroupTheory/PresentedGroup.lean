@@ -3,6 +3,7 @@ Copyright (c) 2019 Michael Howes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Howes, Newell Jensen
 -/
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.GroupTheory.FreeGroup.Basic
 import Mathlib.GroupTheory.QuotientGroup.Defs
 
@@ -38,10 +39,34 @@ namespace PresentedGroup
 instance (rels : Set (FreeGroup α)) : Group (PresentedGroup rels) :=
   QuotientGroup.Quotient.group _
 
+/-- The canonical map from the free group on `α` to a presented group with generators `x : α`,
+where `x` is mapped to its equivalence class under the given set of relations `rels` -/
+def mk (rels : Set (FreeGroup α)) : FreeGroup α →* PresentedGroup rels :=
+  ⟨⟨QuotientGroup.mk, rfl⟩, fun _ _ => rfl⟩
+
+theorem mk_surjective (rels : Set (FreeGroup α)) : Function.Surjective <| mk rels :=
+  QuotientGroup.mk_surjective
+
 /-- `of` is the canonical map from `α` to a presented group with generators `x : α`. The term `x` is
 mapped to the equivalence class of the image of `x` in `FreeGroup α`. -/
 def of {rels : Set (FreeGroup α)} (x : α) : PresentedGroup rels :=
-  QuotientGroup.mk (FreeGroup.of x)
+  mk rels (FreeGroup.of x)
+
+lemma mk_eq_one_iff {rels : Set (FreeGroup α)} {x : FreeGroup α} :
+    mk rels x = 1 ↔ x ∈ Subgroup.normalClosure rels :=
+  QuotientGroup.eq_one_iff _
+
+lemma one_of_mem {rels : Set (FreeGroup α)} {x : FreeGroup α} (hx : x ∈ rels) :
+    mk rels x = 1 :=
+  mk_eq_one_iff.mpr <| Subgroup.subset_normalClosure hx
+
+lemma mk_eq_mk_of_mul_inv_mem {rels : Set (FreeGroup α)} {x y : FreeGroup α}
+    (hx : x * y⁻¹ ∈ rels) : mk rels x = mk rels y :=
+  eq_of_mul_inv_eq_one <| one_of_mem hx
+
+lemma mk_eq_mk_of_inv_mul_mem {rels : Set (FreeGroup α)} {x y : FreeGroup α}
+    (hx : x⁻¹ * y ∈ rels) : mk rels x = mk rels y :=
+  eq_of_inv_mul_eq_one <| one_of_mem hx
 
 /-- The generators of a presented group generate the presented group. That is, the subgroup closure
 of the set of generators equals `⊤`. -/
@@ -51,7 +76,24 @@ theorem closure_range_of (rels : Set (FreeGroup α)) :
   have : (PresentedGroup.of : α → PresentedGroup rels) = QuotientGroup.mk' _ ∘ FreeGroup.of := rfl
   rw [this, Set.range_comp, ← MonoidHom.map_closure (QuotientGroup.mk' _),
     FreeGroup.closure_range_of, ← MonoidHom.range_eq_map]
-  exact MonoidHom.range_top_of_surjective _ (QuotientGroup.mk'_surjective _)
+  exact MonoidHom.range_eq_top.2 (QuotientGroup.mk'_surjective _)
+
+@[induction_eliminator]
+theorem induction_on {rels : Set (FreeGroup α)} {C : PresentedGroup rels → Prop}
+    (x : PresentedGroup rels) (H : ∀ z, C (mk rels z)) : C x :=
+  Quotient.inductionOn' x H
+
+theorem generated_by (rels : Set (FreeGroup α)) (H : Subgroup (PresentedGroup rels))
+    (h : ∀ j : α, PresentedGroup.of j ∈ H) (x : PresentedGroup rels) : x ∈ H := by
+  induction' x with z
+  induction z
+  · exact one_mem H
+  · exact h _
+  · exact (Subgroup.inv_mem_iff H).mpr (by assumption)
+  rename_i h1 h2
+  change QuotientGroup.mk _ ∈ H.carrier
+  rw [QuotientGroup.mk_mul]
+  exact Subgroup.mul_mem _ h1 h2
 
 section ToGroup
 

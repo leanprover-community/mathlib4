@@ -6,8 +6,15 @@ Authors: Eric Wieser
 import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.Algebra.Ring.Subring.Defs
 
-/-! # Subrings invariant under an action -/
+/-! # Subrings invariant under an action
 
+If a monoid acts on a ring via a `MulSemiringAction`, then `IsInvariantSubring` is
+a predicate on subrings asserting that the subring is fixed elementwise by the
+action.
+
+-/
+
+assert_not_exists RelIso
 
 section Ring
 
@@ -44,14 +51,12 @@ variable (U : Subring R') [IsInvariantSubring M U]
 def IsInvariantSubring.subtypeHom : U →+*[M] R' :=
   { U.subtype with map_smul' := fun _ _ ↦ rfl }
 
--- Porting note: changed `coe` to `Subtype.val`
 @[simp]
 theorem IsInvariantSubring.coe_subtypeHom :
     (IsInvariantSubring.subtypeHom M U : U → R') = Subtype.val := rfl
 
--- Porting note: added `toRingHom`
 @[simp]
 theorem IsInvariantSubring.coe_subtypeHom' :
-    ((IsInvariantSubring.subtypeHom M U).toRingHom : U →+* R') = U.subtype := rfl
+    ((IsInvariantSubring.subtypeHom M U) : U →+* R') = U.subtype := rfl
 
 end

@@ -37,7 +37,7 @@ rectangular box, partition
 -/
 
 open Set Finset Function
-open scoped Classical NNReal
+open scoped NNReal
 
 noncomputable section
 
@@ -133,9 +133,9 @@ instance : OrderTop (Prepartition I) where
 
 instance : OrderBot (Prepartition I) where
   bot := ⟨∅,
-    fun _ hJ => (Finset.not_mem_empty _ hJ).elim,
-    fun _ hJ => (Set.not_mem_empty _ <| Finset.coe_empty ▸ hJ).elim⟩
-  bot_le _ _ hJ := (Finset.not_mem_empty _ hJ).elim
+    fun _ hJ => (Finset.notMem_empty _ hJ).elim,
+    fun _ hJ => (Set.notMem_empty _ <| Finset.coe_empty ▸ hJ).elim⟩
+  bot_le _ _ hJ := (Finset.notMem_empty _ hJ).elim
 
 instance : Inhabited (Prepartition I) := ⟨⊤⟩
 
@@ -149,8 +149,10 @@ theorem mem_top : J ∈ (⊤ : Prepartition I) ↔ J = I :=
 theorem top_boxes : (⊤ : Prepartition I).boxes = {I} := rfl
 
 @[simp]
-theorem not_mem_bot : J ∉ (⊥ : Prepartition I) :=
-  Finset.not_mem_empty _
+theorem notMem_bot : J ∉ (⊥ : Prepartition I) :=
+  Finset.notMem_empty _
+
+@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 @[simp]
 theorem bot_boxes : (⊥ : Prepartition I).boxes = ∅ := rfl
@@ -169,11 +171,12 @@ theorem injOn_setOf_mem_Icc_setOf_lower_eq (x : ι → ℝ) :
   · have hi₂ : J₂.lower i = x i := (H _).1 hi₁
     have H₁ : x i < J₁.upper i := by simpa only [hi₁] using J₁.lower_lt_upper i
     have H₂ : x i < J₂.upper i := by simpa only [hi₂] using J₂.lower_lt_upper i
-    rw [Ioc_inter_Ioc, hi₁, hi₂, sup_idem, Set.nonempty_Ioc]
+    rw [Set.Ioc_inter_Ioc, hi₁, hi₂, sup_idem, Set.nonempty_Ioc]
     exact lt_min H₁ H₂
   · have hi₂ : J₂.lower i < x i := (hx₂.1 i).lt_of_ne (mt (H _).2 hi₁.ne)
     exact ⟨x i, ⟨hi₁, hx₁.2 i⟩, ⟨hi₂, hx₂.2 i⟩⟩
 
+open scoped Classical in
 /-- The set of boxes of a prepartition that contain `x` in their closures has cardinality
 at most `2 ^ Fintype.card ι`. -/
 theorem card_filter_mem_Icc_le [Fintype ι] (x : ι → ℝ) :
@@ -249,6 +252,7 @@ theorem eq_of_boxes_subset_iUnion_superset (h₁ : π₁.boxes ⊆ π₂.boxes) 
       ⟨fun _ hJ₁ _ hJ₂ Hne =>
         (π₂.eq_of_mem_of_mem hJ₁ (h₁ hJ₂) Hne.choose_spec.1 Hne.choose_spec.2).le, h₂⟩
 
+open scoped Classical in
 /-- Given a prepartition `π` of a box `I` and a collection of prepartitions `πi J` of all boxes
 `J ∈ π`, returns the prepartition of `I` into the union of the boxes of all `πi J`.
 
@@ -300,6 +304,7 @@ theorem biUnion_congr_of_le (h : π₁ = π₂) (hi : ∀ J ≤ I, πi₁ J = π
 theorem iUnion_biUnion (πi : ∀ J : Box ι, Prepartition J) :
     (π.biUnion πi).iUnion = ⋃ J ∈ π, (πi J).iUnion := by simp [Prepartition.iUnion]
 
+open scoped Classical in
 @[simp]
 theorem sum_biUnion_boxes {M : Type*} [AddCommMonoid M] (π : Prepartition I)
     (πi : ∀ J, Prepartition J) (f : Box ι → M) :
@@ -308,6 +313,7 @@ theorem sum_biUnion_boxes {M : Type*} [AddCommMonoid M] (π : Prepartition I)
   refine Finset.sum_biUnion fun J₁ h₁ J₂ h₂ hne => Finset.disjoint_left.2 fun J' h₁' h₂' => ?_
   exact hne (π.eq_of_le_of_le h₁ h₂ ((πi J₁).le_of_mem h₁') ((πi J₂).le_of_mem h₂'))
 
+open scoped Classical in
 /-- Given a box `J ∈ π.biUnion πi`, returns the box `J' ∈ π` such that `J ∈ πi J'`.
 For `J ∉ π.biUnion πi`, returns `I`. -/
 def biUnionIndex (πi : ∀ (J : Box ι), Prepartition J) (J : Box ι) : Box ι :=
@@ -410,6 +416,7 @@ theorem sum_ofWithBot {M : Type*} [AddCommMonoid M] (boxes : Finset (WithBot (Bo
       ∑ J ∈ boxes, Option.elim' 0 f J :=
   Finset.sum_eraseNone _ _
 
+open scoped Classical in
 /-- Restrict a prepartition to a box. -/
 def restrict (π : Prepartition I) (J : Box ι) : Prepartition J :=
   ofWithBot (π.boxes.image fun J' : Box ι => J ⊓ J')
@@ -433,6 +440,7 @@ theorem mem_restrict' : J₁ ∈ π.restrict J ↔ ∃ J' ∈ π, (J₁ : Set (�
 
 @[mono]
 theorem restrict_mono {π₁ π₂ : Prepartition I} (Hle : π₁ ≤ π₂) : π₁.restrict J ≤ π₂.restrict J := by
+  classical
   refine ofWithBot_mono fun J₁ hJ₁ hne => ?_
   rw [Finset.mem_image] at hJ₁; rcases hJ₁ with ⟨J₁, hJ₁, rfl⟩
   rcases Hle hJ₁ with ⟨J₂, hJ₂, hle⟩
@@ -444,6 +452,7 @@ theorem monotone_restrict : Monotone fun π : Prepartition I => restrict π J :=
 /-- Restricting to a larger box does not change the set of boxes. We cannot claim equality
 of prepartitions because they have different types. -/
 theorem restrict_boxes_of_le (π : Prepartition I) (h : I ≤ J) : (π.restrict J).boxes = π.boxes := by
+  classical
   simp only [restrict, ofWithBot, eraseNone_eq_biUnion]
   refine Finset.image_biUnion.trans ?_
   refine (Finset.biUnion_congr rfl ?_).trans Finset.biUnion_singleton_eq_self
@@ -510,6 +519,7 @@ theorem mem_inf {π₁ π₂ : Prepartition I} :
 theorem iUnion_inf (π₁ π₂ : Prepartition I) : (π₁ ⊓ π₂).iUnion = π₁.iUnion ∩ π₂.iUnion := by
   simp only [inf_def, iUnion_biUnion, iUnion_restrict, ← iUnion_inter, ← iUnion_def]
 
+open scoped Classical in
 /-- The prepartition with boxes `{J ∈ π | p J}`. -/
 @[simps]
 def filter (π : Prepartition I) (p : Box ι → Prop) : Prepartition I where
@@ -518,8 +528,9 @@ def filter (π : Prepartition I) (p : Box ι → Prop) : Prepartition I where
   pairwiseDisjoint _ h₁ _ h₂ := π.disjoint_coe_of_mem (mem_filter.1 h₁).1 (mem_filter.1 h₂).1
 
 @[simp]
-theorem mem_filter {p : Box ι → Prop} : J ∈ π.filter p ↔ J ∈ π ∧ p J :=
-  Finset.mem_filter
+theorem mem_filter {p : Box ι → Prop} : J ∈ π.filter p ↔ J ∈ π ∧ p J := by
+  classical
+  exact Finset.mem_filter
 
 theorem filter_le (π : Prepartition I) (p : Box ι → Prop) : π.filter p ≤ π := fun J hJ =>
   let ⟨hπ, _⟩ := π.mem_filter.1 hJ
@@ -545,11 +556,13 @@ theorem iUnion_filter_not (π : Prepartition I) (p : Box ι → Prop) :
     rw [Set.union_eq_left, filter_boxes, coe_filter]
     exact fun _ ⟨h, _⟩ => h
 
+open scoped Classical in
 theorem sum_fiberwise {α M} [AddCommMonoid M] (π : Prepartition I) (f : Box ι → α) (g : Box ι → M) :
     (∑ y ∈ π.boxes.image f, ∑ J ∈ (π.filter fun J => f J = y).boxes, g J) =
       ∑ J ∈ π.boxes, g J := by
   convert sum_fiberwise_of_maps_to (fun _ => Finset.mem_image_of_mem f) g
 
+open scoped Classical in
 /-- Union of two disjoint prepartitions. -/
 @[simps]
 def disjUnion (π₁ π₂ : Prepartition I) (h : Disjoint π₁.iUnion π₂.iUnion) : Prepartition I where
@@ -562,14 +575,15 @@ def disjUnion (π₁ π₂ : Prepartition I) (h : Disjoint π₁.iUnion π₂.iU
 
 @[simp]
 theorem mem_disjUnion (H : Disjoint π₁.iUnion π₂.iUnion) :
-    J ∈ π₁.disjUnion π₂ H ↔ J ∈ π₁ ∨ J ∈ π₂ :=
-  Finset.mem_union
+    J ∈ π₁.disjUnion π₂ H ↔ J ∈ π₁ ∨ J ∈ π₂ := by
+  classical exact Finset.mem_union
 
 @[simp]
 theorem iUnion_disjUnion (h : Disjoint π₁.iUnion π₂.iUnion) :
     (π₁.disjUnion π₂ h).iUnion = π₁.iUnion ∪ π₂.iUnion := by
   simp [disjUnion, Prepartition.iUnion, iUnion_or, iUnion_union_distrib]
 
+open scoped Classical in
 @[simp]
 theorem sum_disj_union_boxes {M : Type*} [AddCommMonoid M] (h : Disjoint π₁.iUnion π₂.iUnion)
     (f : Box ι → M) :
@@ -592,13 +606,13 @@ theorem distortion_le_iff {c : ℝ≥0} : π.distortion ≤ c ↔ ∀ J ∈ π, 
   Finset.sup_le_iff
 
 theorem distortion_biUnion (π : Prepartition I) (πi : ∀ J, Prepartition J) :
-    (π.biUnion πi).distortion = π.boxes.sup fun J => (πi J).distortion :=
-  sup_biUnion _ _
+    (π.biUnion πi).distortion = π.boxes.sup fun J => (πi J).distortion := by
+  classical exact sup_biUnion _ _
 
 @[simp]
 theorem distortion_disjUnion (h : Disjoint π₁.iUnion π₂.iUnion) :
-    (π₁.disjUnion π₂ h).distortion = max π₁.distortion π₂.distortion :=
-  sup_union
+    (π₁.disjUnion π₂ h).distortion = max π₁.distortion π₂.distortion := by
+  classical exact sup_union
 
 theorem distortion_of_const {c} (h₁ : π.boxes.Nonempty) (h₂ : ∀ J ∈ π, Box.distortion J = c) :
     π.distortion = c :=

@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Kim Morrison, Simon Hudon
 -/
 import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.Opposites
 
 /-!
 # Endomorphisms
@@ -51,12 +50,10 @@ def of (f : X ⟶ X) : End X := f
 `X ⟶ X`. -/
 def asHom (f : End X) : X ⟶ X := f
 
--- dsimp loops when applying this lemma to its LHS,
--- probably https://github.com/leanprover/lean4/pull/2867
-@[simp, nolint simpNF] -- Porting note (#11215): TODO: use `of`/`asHom`?
+@[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `of`/`asHom`?
 theorem one_def : (1 : End X) = 𝟙 X := rfl
 
-@[simp] -- Porting note (#11215): TODO: use `of`/`asHom`?
+@[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `of`/`asHom`?
 theorem mul_def (xs ys : End X) : xs * ys = ys ≫ xs := rfl
 
 end Struct
@@ -78,7 +75,7 @@ instance mulActionRight {X Y : C} : MulAction (End Y) (X ⟶ Y) where
   one_smul := Category.comp_id
   mul_smul _ _ _ := Eq.symm <| Category.assoc _ _ _
 
-instance mulActionLeft {X : Cᵒᵖ} {Y : C} : MulAction (End X) (unop X ⟶ Y) where
+instance mulActionLeft {X Y : C} : MulAction (End X)ᵐᵒᵖ (X ⟶ Y) where
   smul r f := r.unop ≫ f
   one_smul := Category.id_comp
   mul_smul _ _ _ := Category.assoc _ _ _
@@ -86,7 +83,7 @@ instance mulActionLeft {X : Cᵒᵖ} {Y : C} : MulAction (End X) (unop X ⟶ Y) 
 theorem smul_right {X Y : C} {r : End Y} {f : X ⟶ Y} : r • f = f ≫ r :=
   rfl
 
-theorem smul_left {X : Cᵒᵖ} {Y : C} {r : End X} {f : unop X ⟶ Y} : r • f = r.unop ≫ f :=
+theorem smul_left {X Y : C} {r : (End X)ᵐᵒᵖ} {f : X ⟶ Y} : r • f = r.unop ≫ f :=
   rfl
 
 end MulAction

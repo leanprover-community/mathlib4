@@ -42,7 +42,7 @@ namespace CliffordAlgebra
 variable (A)
 
 /-- Auxiliary construction: note this is really just a heterobasic `CliffordAlgebra.map`. -/
--- `noncomputable` is a performance workaround for mathlib4#7103
+-- `noncomputable` is a performance workaround for https://github.com/leanprover-community/mathlib4/issues/7103
 noncomputable def ofBaseChangeAux (Q : QuadraticForm R V) :
     CliffordAlgebra Q →ₐ[R] CliffordAlgebra (Q.baseChange A) :=
   CliffordAlgebra.lift Q <| by
@@ -57,7 +57,7 @@ noncomputable def ofBaseChangeAux (Q : QuadraticForm R V) :
 
 /-- Convert from the base-changed clifford algebra to the clifford algebra over a base-changed
 module. -/
--- `noncomputable` is a performance workaround for mathlib4#7103
+-- `noncomputable` is a performance workaround for https://github.com/leanprover-community/mathlib4/issues/7103
 noncomputable def ofBaseChange (Q : QuadraticForm R V) :
     A ⊗[R] CliffordAlgebra Q →ₐ[A] CliffordAlgebra (Q.baseChange A) :=
   Algebra.TensorProduct.lift (Algebra.ofId _ _) (ofBaseChangeAux A Q)
@@ -76,7 +76,7 @@ noncomputable def ofBaseChange (Q : QuadraticForm R V) :
 
 /-- Convert from the clifford algebra over a base-changed module to the base-changed clifford
 algebra. -/
--- `noncomputable` is a performance workaround for mathlib4#7103
+-- `noncomputable` is a performance workaround for https://github.com/leanprover-community/mathlib4/issues/7103
 noncomputable def toBaseChange (Q : QuadraticForm R V) :
     CliffordAlgebra (Q.baseChange A) →ₐ[A] A ⊗[R] CliffordAlgebra Q :=
   CliffordAlgebra.lift _ <| by
@@ -156,12 +156,11 @@ attribute [ext] TensorProduct.ext
 theorem toBaseChange_comp_ofBaseChange (Q : QuadraticForm R V) :
     (toBaseChange A Q).comp (ofBaseChange A Q) = AlgHom.id _ _ := by
   ext v
-  change toBaseChange A Q (ofBaseChange A Q (1 ⊗ₜ[R] ι Q v)) = 1 ⊗ₜ[R] ι Q v
-  rw [ofBaseChange_tmul_ι, toBaseChange_ι]
+  simp
 
 @[simp] theorem toBaseChange_ofBaseChange (Q : QuadraticForm R V) (x : A ⊗[R] CliffordAlgebra Q) :
     toBaseChange A Q (ofBaseChange A Q x) = x :=
-  AlgHom.congr_fun (toBaseChange_comp_ofBaseChange A Q : _) x
+  AlgHom.congr_fun (toBaseChange_comp_ofBaseChange A Q :) x
 
 theorem ofBaseChange_comp_toBaseChange (Q : QuadraticForm R V) :
     (ofBaseChange A Q).comp (toBaseChange A Q) = AlgHom.id _ _ := by
@@ -173,14 +172,14 @@ theorem ofBaseChange_comp_toBaseChange (Q : QuadraticForm R V) :
 @[simp] theorem ofBaseChange_toBaseChange
     (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.baseChange A)) :
     ofBaseChange A Q (toBaseChange A Q x) = x :=
-  AlgHom.congr_fun (ofBaseChange_comp_toBaseChange A Q : _) x
+  AlgHom.congr_fun (ofBaseChange_comp_toBaseChange A Q :) x
 
 /-- Base-changing the vector space of a clifford algebra is isomorphic as an A-algebra to
 base-changing the clifford algebra itself; <|Cℓ(A ⊗_R V, Q_A) ≅ A ⊗_R Cℓ(V, Q)<|.
 
 This is `CliffordAlgebra.toBaseChange` and `CliffordAlgebra.ofBaseChange` as an equivalence. -/
 @[simps!]
--- `noncomputable` is a performance workaround for mathlib4#7103
+-- `noncomputable` is a performance workaround for https://github.com/leanprover-community/mathlib4/issues/7103
 noncomputable def equivBaseChange (Q : QuadraticForm R V) :
     CliffordAlgebra (Q.baseChange A) ≃ₐ[A] A ⊗[R] CliffordAlgebra Q :=
   AlgEquiv.ofAlgHom (toBaseChange A Q) (ofBaseChange A Q)

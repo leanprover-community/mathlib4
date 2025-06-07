@@ -5,6 +5,7 @@ Authors: Koundinya Vajjha, Thomas Browning
 -/
 import Mathlib.NumberTheory.Harmonic.Defs
 import Mathlib.NumberTheory.Padics.PadicNumbers
+import Mathlib.Tactic.Positivity
 
 /-!
 
@@ -16,12 +17,18 @@ https://kconrad.math.uconn.edu/blurbs/gradnumthy/padicharmonicsum.pdf
 
 -/
 
+lemma harmonic_pos {n : ℕ} (Hn : n ≠ 0) : 0 < harmonic n := by
+  unfold harmonic
+  rw [← Finset.nonempty_range_iff] at Hn
+  positivity
+
 /-- The 2-adic valuation of the n-th harmonic number is the negative of the logarithm
     of n. -/
 theorem padicValRat_two_harmonic (n : ℕ) : padicValRat 2 (harmonic n) = -Nat.log 2 n := by
-  induction' n with n ih
-  · simp
-  · rcases eq_or_ne n 0 with rfl | hn
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rcases eq_or_ne n 0 with rfl | hn
     · simp
     rw [harmonic_succ]
     have key : padicValRat 2 (harmonic n) ≠ padicValRat 2 (↑(n + 1))⁻¹ := by

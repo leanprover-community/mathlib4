@@ -30,7 +30,7 @@ and `exp (x * y) = (exp x) ^ y`.
 ENNReal, EReal, logarithm, exponential
 -/
 
-open EReal ENNReal
+open EReal ENNReal Topology
 section LogExp
 
 @[simp] lemma EReal.log_exp (x : EReal) : log (exp x) = x := by

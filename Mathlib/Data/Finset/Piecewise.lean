@@ -3,7 +3,8 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Finset.BooleanAlgebra
+import Mathlib.Data.Set.Piecewise
 import Mathlib.Order.Interval.Set.Basic
 
 /-!
@@ -48,8 +49,10 @@ lemma piecewise_eq_of_mem {i : ι} (hi : i ∈ s) : s.piecewise f g i = f i := b
   simp [piecewise, hi]
 
 @[simp]
-lemma piecewise_eq_of_not_mem {i : ι} (hi : i ∉ s) : s.piecewise f g i = g i := by
+lemma piecewise_eq_of_notMem {i : ι} (hi : i ∉ s) : s.piecewise f g i = g i := by
   simp [piecewise, hi]
+
+@[deprecated (since := "2025-05-23")] alias piecewise_eq_of_not_mem := piecewise_eq_of_notMem
 
 lemma piecewise_congr {f f' g g' : ∀ i, π i} (hf : ∀ i ∈ s, f i = f' i)
     (hg : ∀ i ∉ s, g i = g' i) : s.piecewise f g = s.piecewise f' g' :=
@@ -71,7 +74,7 @@ lemma piecewise_cases {i} (p : π i → Prop) (hf : p (f i)) (hg : p (g i)) :
   by_cases hi : i ∈ s <;> simpa [hi]
 
 lemma piecewise_singleton [DecidableEq ι] (i : ι) : piecewise {i} f g = update g i (f i) := by
-  rw [← insert_emptyc_eq, piecewise_insert, piecewise_empty]
+  rw [← insert_empty_eq, piecewise_insert, piecewise_empty]
 
 lemma piecewise_piecewise_of_subset_left {s t : Finset ι} [∀ i, Decidable (i ∈ s)]
     [∀ i, Decidable (i ∈ t)] (h : s ⊆ t) (f₁ f₂ g : ∀ a, π a) :
@@ -86,7 +89,7 @@ lemma piecewise_idem_left (f₁ f₂ g : ∀ a, π a) :
 lemma piecewise_piecewise_of_subset_right {s t : Finset ι} [∀ i, Decidable (i ∈ s)]
     [∀ i, Decidable (i ∈ t)] (h : t ⊆ s) (f g₁ g₂ : ∀ a, π a) :
     s.piecewise f (t.piecewise g₁ g₂) = s.piecewise f g₂ :=
-  s.piecewise_congr (fun _ _ => rfl) fun _i hi => t.piecewise_eq_of_not_mem _ _ (mt (@h _) hi)
+  s.piecewise_congr (fun _ _ => rfl) fun _i hi => t.piecewise_eq_of_notMem _ _ (mt (@h _) hi)
 
 @[simp]
 lemma piecewise_idem_right (f g₁ g₂ : ∀ a, π a) :
@@ -105,14 +108,17 @@ lemma update_piecewise [DecidableEq ι] (i : ι) (v : π i) :
 lemma update_piecewise_of_mem [DecidableEq ι] {i : ι} (hi : i ∈ s) (v : π i) :
     update (s.piecewise f g) i v = s.piecewise (update f i v) g := by
   rw [update_piecewise]
-  refine s.piecewise_congr (fun _ _ => rfl) fun j hj => update_noteq ?_ _ _
+  refine s.piecewise_congr (fun _ _ => rfl) fun j hj => update_of_ne ?_ ..
   exact fun h => hj (h.symm ▸ hi)
 
-lemma update_piecewise_of_not_mem [DecidableEq ι] {i : ι} (hi : i ∉ s) (v : π i) :
+lemma update_piecewise_of_notMem [DecidableEq ι] {i : ι} (hi : i ∉ s) (v : π i) :
     update (s.piecewise f g) i v = s.piecewise f (update g i v) := by
   rw [update_piecewise]
-  refine s.piecewise_congr (fun j hj => update_noteq ?_ _ _) fun _ _ => rfl
+  refine s.piecewise_congr (fun j hj => update_of_ne ?_ ..) fun _ _ => rfl
   exact fun h => hi (h ▸ hj)
+
+@[deprecated (since := "2025-05-23")]
+alias update_piecewise_of_not_mem := update_piecewise_of_notMem
 
 lemma piecewise_same : s.piecewise f f = f := by
   ext i

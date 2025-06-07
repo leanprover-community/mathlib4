@@ -14,6 +14,8 @@ import Mathlib.Data.Set.Image
 
 -/
 
+assert_not_exists WithTop
+
 universe u v w x
 
 open Set Set.Notation
@@ -33,11 +35,6 @@ namespace Function
 
 namespace Embedding
 
-/-- Embedding into `WithTop α`. -/
-@[simps]
-def coeWithTop {α} : α ↪ WithTop α :=
-  { Embedding.some with toFun := WithTop.some }
-
 /-- Given an embedding `f : α ↪ β` and a point outside of `Set.range f`, construct an embedding
 `Option α ↪ β`. -/
 @[simps]
@@ -47,10 +44,10 @@ def optionElim {α β} (f : α ↪ β) (x : β) (h : x ∉ Set.range f) : Option
 /-- Equivalence between embeddings of `Option α` and a sigma type over the embeddings of `α`. -/
 @[simps]
 def optionEmbeddingEquiv (α β) : (Option α ↪ β) ≃ Σ f : α ↪ β, ↥(Set.range f)ᶜ where
-  toFun f := ⟨coeWithTop.trans f, f none, fun ⟨x, hx⟩ ↦ Option.some_ne_none x <| f.injective hx⟩
+  toFun f := ⟨Embedding.some.trans f, f none, fun ⟨x, hx⟩ ↦ Option.some_ne_none x <| f.injective hx⟩
   invFun f := f.1.optionElim f.2 f.2.2
-  left_inv f := ext <| by rintro (_ | _) <;> simp [Option.coe_def]; rfl
-  right_inv := fun ⟨f, y, hy⟩ ↦ by ext <;> simp [Option.coe_def]; rfl
+  left_inv f := ext <| by rintro (_ | _) <;> simp [Option.coe_def]
+  right_inv := fun ⟨f, y, hy⟩ ↦ by ext <;> simp [Option.coe_def]
 
 /-- Restrict the codomain of an embedding. -/
 def codRestrict {α β} (p : Set β) (f : α ↪ β) (H : ∀ a, f a ∈ p) : α ↪ p :=
@@ -107,17 +104,17 @@ def subtypeOrEquiv (p q : α → Prop) [DecidablePred p] (h : Disjoint p q) :
   right_inv x := by
     cases x with
     | inl x =>
-        simp only [Sum.elim_inl]
-        rw [subtypeOrLeftEmbedding_apply_left]
-        · simp
-        · simpa using x.prop
+      simp only [Sum.elim_inl]
+      rw [subtypeOrLeftEmbedding_apply_left]
+      · simp
+      · simpa using x.prop
     | inr x =>
-        simp only [Sum.elim_inr]
-        rw [subtypeOrLeftEmbedding_apply_right]
-        · simp
-        · suffices ¬p x by simpa
-          intro hp
-          simpa using h.le_bot x ⟨hp, x.prop⟩
+      simp only [Sum.elim_inr]
+      rw [subtypeOrLeftEmbedding_apply_right]
+      · simp
+      · suffices ¬p x by simpa
+        intro hp
+        simpa using h.le_bot x ⟨hp, x.prop⟩
 
 @[simp]
 theorem subtypeOrEquiv_symm_inl (p q : α → Prop) [DecidablePred p] (h : Disjoint p q)
@@ -159,6 +156,8 @@ variable {α ι : Type*} {s t r : Set α}
 @[simp] theorem Function.Embedding.sumSet_range {s t : Set α} (h : Disjoint s t) :
     range (Function.Embedding.sumSet h) = s ∪ t := by
   simp [Set.ext_iff]
+
+open scoped Function -- required for scoped `on` notation
 
 /-- For an indexed family `s : ι → Set α` of disjoint sets,
 the natural injection from the sigma-type `(i : ι) × ↑(s i)` to `α`. -/

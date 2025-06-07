@@ -16,17 +16,17 @@ maximum recursion depth.
 
 `noncomm_ring` is just a `simp only [some lemmas]` followed by `abel`. It automatically uses `abel1`
 to close the goal, and if that doesn't succeed, defaults to `abel_nf`.
- -/
+-/
 
 namespace Mathlib.Tactic.NoncommRing
 
 section nat_lit_mul
 variable {R : Type*} [NonAssocSemiring R] (r : R) (n : ℕ)
 
-lemma nat_lit_mul_eq_nsmul [n.AtLeastTwo] : no_index (OfNat.ofNat n) * r = n • r := by
-  simp only [nsmul_eq_mul, Nat.cast_eq_ofNat]
-lemma mul_nat_lit_eq_nsmul [n.AtLeastTwo] : r * no_index (OfNat.ofNat n) = n • r := by
-  simp only [nsmul_eq_mul', Nat.cast_eq_ofNat]
+lemma nat_lit_mul_eq_nsmul [n.AtLeastTwo] : ofNat(n) * r = OfNat.ofNat n • r := by
+  simp only [nsmul_eq_mul, Nat.cast_ofNat]
+lemma mul_nat_lit_eq_nsmul [n.AtLeastTwo] : r * ofNat(n) = OfNat.ofNat n • r := by
+  simp only [nsmul_eq_mul', Nat.cast_ofNat]
 
 end nat_lit_mul
 
@@ -71,3 +71,9 @@ macro_rules
     if rules.isSome then `(tactic| repeat1 ($tac;)) else `(tactic| $tac)
 
 end Mathlib.Tactic.NoncommRing
+
+/-!
+We register `noncomm_ring` with the `hint` tactic.
+-/
+
+register_hint noncomm_ring

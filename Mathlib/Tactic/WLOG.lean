@@ -30,7 +30,7 @@ structure WLOGResult where
   * `h : ¬ P`: the assumption that `P` does not hold
   * `H`: the statement that in the original context `P` suffices to prove the goal.
   -/
-  reductionGoal    : MVarId
+  reductionGoal : MVarId
   /-- The pair `(HFVarId, negHypFVarId)` of `FVarIds` for `reductionGoal`:
 
   * `HFVarId`: `H`, the statement that in the original context `P` suffices to prove the goal.
@@ -77,7 +77,8 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
   let (revertedFVars, HType) ← liftMkBindingM fun ctx => (do
     let f ← collectForwardDeps lctx fvars
     let revertedFVars := filterOutImplementationDetails lctx (f.map Expr.fvarId!)
-    let HType ← withFreshCache do mkAuxMVarType lctx (revertedFVars.map Expr.fvar) .natural HSuffix
+    let HType ← withFreshCache do
+      mkAuxMVarType lctx (revertedFVars.map Expr.fvar) .natural HSuffix (usedLetOnly := true)
     return (revertedFVars, HType))
       { preserveOrder := false, mainModule := ctx.mainModule }
   /- Set up the goal which will suppose `h`; this begins as a goal with type H (hence HExpr), and h

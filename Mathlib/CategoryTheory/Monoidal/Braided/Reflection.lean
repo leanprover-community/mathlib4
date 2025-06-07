@@ -26,9 +26,9 @@ apply Day's reflection theorem to prove that `C` is also closed monoidal.
 - The original paper is [day1972] *A reflection theorem for closed categories*, by Day, 1972.
 -/
 
-open CategoryTheory Category MonoidalCategory MonoidalClosed BraidedCategory Functor
-
 namespace CategoryTheory.Monoidal.Reflective
+
+open Category MonoidalCategory MonoidalClosed BraidedCategory Functor
 
 variable {C D : Type*} [Category C] [Category D]
 
@@ -37,7 +37,7 @@ variable [MonoidalCategory D] [SymmetricCategory D] [MonoidalClosed D]
 section
 variable {R : C ⥤ D} [R.Faithful] [R.Full] {L : D ⥤ C} (adj : L ⊣ R)
 
-/-- The uncurried retraction of the unit in the proof of `4 → 1` in `day_reflection` below. -/
+/-- The uncurried retraction of the unit in the proof of `4 → 1` in `isIso_tfae` below. -/
 private noncomputable def adjRetractionAux
     (c : C) (d : D) [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ adj.unit.app d))] :
   d ⊗ ((L ⋙ R).obj ((ihom d).obj (R.obj c))) ⟶ (R.obj c) :=
@@ -45,7 +45,7 @@ private noncomputable def adjRetractionAux
     R.map (inv (L.map (adj.unit.app _ ⊗ adj.unit.app _))) ≫ (L ⋙ R).map (β_ _ _).hom ≫
       (L ⋙ R).map ((ihom.ev _).app _) ≫ inv (adj.unit.app _)
 
-/-- The retraction of the unit in the proof of `4 → 1` in `day_reflection` below. -/
+/-- The retraction of the unit in the proof of `4 → 1` in `isIso_tfae` below. -/
 private noncomputable def adjRetraction (c : C) (d : D)
     [IsIso (L.map (adj.unit.app ((ihom d).obj (R.obj c)) ⊗ adj.unit.app d))] :
     (L ⋙ R).obj ((ihom d).obj (R.obj c)) ⟶ ((ihom d).obj (R.obj c)) :=
@@ -140,7 +140,7 @@ theorem isIso_tfae : List.TFAE
       simp
     rw [w₃, isIso_iff_bijective]
     simp only [comp_obj, op_tensorObj, coyoneda_obj_obj, unop_tensorObj, id_obj,
-      yoneda_obj_obj, tensorLeft_obj, EquivLike.comp_bijective, EquivLike.bijective_comp]
+      yoneda_obj_obj, curriedTensor_obj_obj, EquivLike.comp_bijective, EquivLike.bijective_comp]
     have w₄ : (coyoneda.map (adj.unit.app d).op).app ((ihom d').obj (R.obj c)) ≫
         (coyoneda.obj ⟨d⟩).map (adj.unit.app ((ihom d').obj (R.obj c))) =
           (coyoneda.obj ⟨(L ⋙ R).obj d⟩).map (adj.unit.app ((ihom d').obj (R.obj c))) ≫

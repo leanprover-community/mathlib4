@@ -39,7 +39,7 @@ than just a functor known to be a right adjoint. In docstrings, we write `(η, �
 and counit of the adjunction `adj₁ : F ⊣ U` and `(ι, δ)` for the unit and counit of the adjunction
 `adj₂ : F' ⊣ R ⋙ U`.
 
-This file has been adapted to `Mathlib.CategoryTheory.Adjunction.Lifting.Right`.
+This file has been adapted to `Mathlib/CategoryTheory/Adjunction/Lifting/Right.lean`.
 Please try to keep them in sync.
 
 ## TODO
@@ -122,15 +122,8 @@ variable [HasReflexiveCoequalizers A]
 noncomputable def constructLeftAdjointObj (Y : B) : A :=
   coequalizer (F'.map (U.map (adj₁.counit.app Y))) (otherMap _ _ adj₁ adj₂ Y)
 
-#adaptation_note
-/--
-The new unused variable linter in
-https://github.com/leanprover/lean4/pull/5338
-flags `{ z : F.obj (U.obj X) ⟶ R.obj Y // _ }`.
--/
-set_option linter.unusedVariables false in
 /-- The homset equivalence which helps show that `R` is a right adjoint. -/
-@[simps!] -- Porting note: Originally `@[simps (config := { rhsMd := semireducible })]`
+@[simps!]
 noncomputable def constructLeftAdjointEquiv [∀ X : B, RegularEpi (adj₁.counit.app X)] (Y : A)
     (X : B) : (constructLeftAdjointObj _ _ adj₁ adj₂ X ⟶ Y) ≃ (X ⟶ R.obj Y) :=
   calc
@@ -166,11 +159,11 @@ noncomputable def constructLeftAdjoint [∀ X : B, RegularEpi (adj₁.counit.app
   rw [constructLeftAdjointEquiv_apply, constructLeftAdjointEquiv_apply,
     Equiv.symm_apply_eq, Subtype.ext_iff]
   dsimp
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [Cofork.IsColimit.homIso_natural, Cofork.IsColimit.homIso_natural]
   erw [adj₂.homEquiv_naturality_right]
   simp_rw [Functor.comp_map]
-  -- This used to be `simp`, but we need `aesop_cat` after leanprover/lean4#2644
+  -- This used to be `simp`, but we need `aesop_cat` after https://github.com/leanprover/lean4/pull/2644
   aesop_cat
 
 end LiftLeftAdjoint

@@ -3,9 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Data.Nat.Prime.Factorial
 import Mathlib.NumberTheory.LegendreSymbol.Basic
+import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # Lemmas of Gauss and Eisenstein
@@ -51,9 +51,9 @@ theorem Ico_map_valMinAbs_natAbs_eq_Ico_map_id (p : ℕ) [hp : Fact p.Prime] (a 
     · rw [natCast_natAbs_valMinAbs]
       split_ifs
       · rw [mul_div_cancel₀ _ hap, valMinAbs_def_pos, val_cast_of_lt (hep hb),
-          if_pos (le_of_lt_succ (mem_Ico.1 hb).2), Int.natAbs_ofNat]
+          if_pos (le_of_lt_succ (mem_Ico.1 hb).2), Int.natAbs_natCast]
       · rw [mul_neg, mul_div_cancel₀ _ hap, natAbs_valMinAbs_neg, valMinAbs_def_pos,
-          val_cast_of_lt (hep hb), if_pos (le_of_lt_succ (mem_Ico.1 hb).2), Int.natAbs_ofNat]
+          val_cast_of_lt (hep hb), if_pos (le_of_lt_succ (mem_Ico.1 hb).2), Int.natAbs_natCast]
   exact Multiset.map_eq_map_of_bij_of_nodup _ _ (Finset.nodup _) (Finset.nodup _)
     (fun x _ => (a * x : ZMod p).valMinAbs.natAbs) hmem
     (inj_on_of_surj_on_of_card_le _ hmem hsurj le_rfl) hsurj (fun _ _ => rfl)
@@ -143,7 +143,7 @@ theorem eisenstein_lemma_aux (p : ℕ) [Fact p.Prime] [Fact (p % 2 = 1)] {a : �
   have ha2 : (a : ZMod 2) = (1 : ℕ) := (eq_iff_modEq_nat _).2 ha2
   (eq_iff_modEq_nat 2).1 <| sub_eq_zero.1 <| by
     simpa [add_left_comm, sub_eq_add_neg, ← mul_sum, mul_comm, ha2, Nat.cast_sum,
-      add_neg_eq_iff_eq_add.symm, neg_eq_self_mod_two, add_assoc] using
+      add_neg_eq_iff_eq_add.symm, add_assoc] using
       Eq.symm (eisenstein_lemma_aux₁ p hap)
 
 theorem div_eq_filter_card {a b c : ℕ} (hb0 : 0 < b) (hc : a / b ≤ c) :

@@ -26,13 +26,13 @@ variable {F G : Type u → Type u}
 variable [Applicative F] [Applicative G]
 variable [LawfulApplicative G]
 
-theorem Option.id_traverse {α} (x : Option α) : Option.traverse (pure : α → Id α) x = x := by
+theorem Option.id_traverse {α} (x : Option α) : Option.traverse (pure : α → Id α) x = pure x := by
   cases x <;> rfl
 
 theorem Option.comp_traverse {α β γ} (f : β → F γ) (g : α → G β) (x : Option α) :
     Option.traverse (Comp.mk ∘ (f <$> ·) ∘ g) x =
       Comp.mk (Option.traverse f <$> Option.traverse g x) := by
-  cases x <;> (simp! [functor_norm] <;> rfl)
+  cases x <;> (simp [Option.traverse, Option.mapM, functor_norm] <;> rfl)
 
 theorem Option.traverse_eq_map_id {α β} (f : α → β) (x : Option α) :
     Option.traverse ((pure : _ → Id _) ∘ f) x = (pure : _ → Id _) (f <$> x) := by cases x <;> rfl
@@ -42,8 +42,9 @@ variable (η : ApplicativeTransformation F G)
 theorem Option.naturality [LawfulApplicative F] {α β} (f : α → F β) (x : Option α) :
     η (Option.traverse f x) = Option.traverse (@η _ ∘ f) x := by
   -- Porting note: added `ApplicativeTransformation` theorems
-  cases' x with x <;> simp! [*, functor_norm, ApplicativeTransformation.preserves_map,
-    ApplicativeTransformation.preserves_seq, ApplicativeTransformation.preserves_pure]
+  rcases x with - | x <;> simp! [*, functor_norm, ApplicativeTransformation.preserves_map,
+    ApplicativeTransformation.preserves_seq, ApplicativeTransformation.preserves_pure,
+    Option.traverse]
 
 end Option
 
@@ -65,8 +66,8 @@ variable [LawfulApplicative G]
 
 open Applicative Functor List
 
-protected theorem id_traverse {α} (xs : List α) : List.traverse (pure : α → Id α) xs = xs := by
-  induction xs <;> simp! [*, List.traverse, functor_norm]; rfl
+protected theorem id_traverse {α} (xs : List α) : (List.traverse pure xs : Id _) = pure xs := by
+  induction xs <;> simp! [*, List.traverse, functor_norm]
 
 protected theorem comp_traverse {α β γ} (f : β → F γ) (g : α → G β) (x : List α) :
     List.traverse (Comp.mk ∘ (f <$> ·) ∘ g) x =
@@ -75,7 +76,7 @@ protected theorem comp_traverse {α β γ} (f : β → F γ) (g : α → G β) (
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) (x : List α) :
     List.traverse ((pure : _ → Id _) ∘ f) x = (pure : _ → Id _) (f <$> x) := by
-  induction x <;> simp! [*, functor_norm]; rfl
+  induction x <;> simp! [*, functor_norm]
 
 variable [LawfulApplicative F] (η : ApplicativeTransformation F G)
 

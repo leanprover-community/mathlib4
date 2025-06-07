@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Functor.ReflectsIso
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Half braidings and the Drinfeld center of a monoidal category
@@ -47,8 +47,8 @@ Thinking of `C` as a 2-category with a single `0`-morphism, these are the same a
 transformations (in the pseudo- sense) of the identity 2-functor on `C`, which send the unique
 `0`-morphism to `X`.
 -/
--- @[nolint has_nonempty_instance] -- Porting note(#5171): This linter does not exist yet.
 structure HalfBraiding (X : C) where
+  /-- The family of isomorphisms `X ⊗ U ≅ U ⊗ X` -/
   β : ∀ U, X ⊗ U ≅ U ⊗ X
   monoidal : ∀ U U', (β (U ⊗ U')).hom =
       (α_ _ _ _).inv ≫
@@ -66,7 +66,6 @@ variable (C)
 /-- The Drinfeld center of a monoidal category `C` has as objects pairs `⟨X, b⟩`, where `X : C`
 and `b` is a half-braiding on `X`.
 -/
--- @[nolint has_nonempty_instance] -- Porting note(#5171): This linter does not exist yet.
 def Center :=
   Σ X : C, HalfBraiding X
 
@@ -75,9 +74,9 @@ namespace Center
 variable {C}
 
 /-- A morphism in the Drinfeld center of `C`. -/
--- Porting note(#5171): linter not ported yet
-@[ext] -- @[nolint has_nonempty_instance]
+@[ext]
 structure Hom (X Y : Center C) where
+  /-- The underlying morphism between the first components of the objects involved -/
   f : X.1 ⟶ Y.1
   comm : ∀ U, (f ▷ U) ≫ (Y.2.β U).hom = (X.2.β U).hom ≫ (U ◁ f) := by aesop_cat
 
@@ -276,7 +275,7 @@ theorem associator_hom_f (X Y Z : Center C) : Hom.f (α_ X Y Z).hom = (α_ X.1 Y
 
 @[simp]
 theorem associator_inv_f (X Y Z : Center C) : Hom.f (α_ X Y Z).inv = (α_ X.1 Y.1 Z.1).inv := by
-  apply Iso.inv_ext' -- Porting note (#11041): Originally `ext`
+  apply Iso.inv_ext' -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext`
   rw [← associator_hom_f, ← comp_f, Iso.hom_inv_id]; rfl
 
 @[simp]
@@ -285,7 +284,7 @@ theorem leftUnitor_hom_f (X : Center C) : Hom.f (λ_ X).hom = (λ_ X.1).hom :=
 
 @[simp]
 theorem leftUnitor_inv_f (X : Center C) : Hom.f (λ_ X).inv = (λ_ X.1).inv := by
-  apply Iso.inv_ext' -- Porting note (#11041): Originally `ext`
+  apply Iso.inv_ext' -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext`
   rw [← leftUnitor_hom_f, ← comp_f, Iso.hom_inv_id]; rfl
 
 @[simp]
@@ -294,7 +293,7 @@ theorem rightUnitor_hom_f (X : Center C) : Hom.f (ρ_ X).hom = (ρ_ X.1).hom :=
 
 @[simp]
 theorem rightUnitor_inv_f (X : Center C) : Hom.f (ρ_ X).inv = (ρ_ X.1).inv := by
-  apply Iso.inv_ext' -- Porting note (#11041): Originally `ext`
+  apply Iso.inv_ext' -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): Originally `ext`
   rw [← rightUnitor_hom_f, ← comp_f, Iso.hom_inv_id]; rfl
 
 end

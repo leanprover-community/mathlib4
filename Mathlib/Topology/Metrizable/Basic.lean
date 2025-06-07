@@ -12,9 +12,7 @@ In this file we define metrizable topological spaces, i.e., topological spaces f
 exists a metric space structure that generates the same topology.
 -/
 
-
-open Set Filter Metric
-open scoped Filter Topology
+open Filter Set Metric Topology
 
 namespace TopologicalSpace
 
@@ -44,13 +42,13 @@ instance pseudoMetrizableSpace_prod [PseudoMetrizableSpace X] [PseudoMetrizableS
 
 /-- Given an inducing map of a topological space into a pseudo metrizable space, the source space
 is also pseudo metrizable. -/
-theorem _root_.IsInducing.pseudoMetrizableSpace [PseudoMetrizableSpace Y] {f : X → Y}
+theorem _root_.Topology.IsInducing.pseudoMetrizableSpace [PseudoMetrizableSpace Y] {f : X → Y}
     (hf : IsInducing f) : PseudoMetrizableSpace X :=
   letI : PseudoMetricSpace Y := pseudoMetrizableSpacePseudoMetric Y
   ⟨⟨hf.comapPseudoMetricSpace, rfl⟩⟩
 
 @[deprecated (since := "2024-10-28")]
-alias _root_.Inducing.pseudoMetrizableSpace := _root_.IsInducing.pseudoMetrizableSpace
+alias _root_.Inducing.pseudoMetrizableSpace := IsInducing.pseudoMetrizableSpace
 
 /-- Every pseudo-metrizable space is first countable. -/
 instance (priority := 100) PseudoMetrizableSpace.firstCountableTopology
@@ -85,6 +83,11 @@ instance (priority := 100) MetrizableSpace.toPseudoMetrizableSpace [h : Metrizab
   let ⟨m, hm⟩ := h.1
   ⟨⟨m.toPseudoMetricSpace, hm⟩⟩
 
+instance (priority := 100) PseudoMetrizableSpace.toMetrizableSpace
+    [T0Space X] [h : PseudoMetrizableSpace X] : MetrizableSpace X :=
+  letI := pseudoMetrizableSpacePseudoMetric X
+  ⟨.ofT0PseudoMetricSpace X, rfl⟩
+
 /-- Construct on a metrizable space a metric compatible with the topology. -/
 noncomputable def metrizableSpaceMetric (X : Type*) [TopologicalSpace X] [h : MetrizableSpace X] :
     MetricSpace X :=
@@ -101,7 +104,7 @@ instance metrizableSpace_prod [MetrizableSpace X] [MetrizableSpace Y] : Metrizab
 
 /-- Given an embedding of a topological space into a metrizable space, the source space is also
 metrizable. -/
-theorem _root_.IsEmbedding.metrizableSpace [MetrizableSpace Y] {f : X → Y}
+theorem _root_.Topology.IsEmbedding.metrizableSpace [MetrizableSpace Y] {f : X → Y}
     (hf : IsEmbedding f) : MetrizableSpace X :=
   letI : MetricSpace Y := metrizableSpaceMetric Y
   ⟨⟨hf.comapMetricSpace f, rfl⟩⟩

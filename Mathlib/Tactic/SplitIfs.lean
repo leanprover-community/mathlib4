@@ -75,7 +75,7 @@ private def discharge? (e : Expr) : SimpM (Option Expr) := do
 -/
 private def reduceIfsAt (loc : Location) : TacticM Unit := do
   let ctx ← SplitIf.getSimpContext
-  let ctx := { ctx with config := { ctx.config with failIfUnchanged := false } }
+  let ctx := ctx.setFailIfUnchanged false
   let _ ← simpLocation ctx (← ({} : Simp.SimprocsArray).add `reduceCtorEq false) discharge? loc
   pure ()
 

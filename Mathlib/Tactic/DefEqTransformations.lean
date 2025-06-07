@@ -114,6 +114,57 @@ elab "reduce" loc?:(ppSpace Parser.Tactic.location)? : tactic =>
   runDefEqTactic (fun _ e => reduce e (skipTypes := false) (skipProofs := false)) loc? "reduce"
 
 
+/-! ### `unfold_let` -/
+
+/-- Unfold all the fvars from `fvars` in `e` that have local definitions (are "let-bound"). -/
+def unfoldFVars (fvars : Array FVarId) (e : Expr) : MetaM Expr := do
+  transform (usedLetOnly := true) e fun node => do
+    match node with
+    | .fvar fvarId =>
+      if fvars.contains fvarId then
+        if let some val ← fvarId.getValue? then
+          return .visit (← instantiateMVars val)
+        else
+          return .continue
+      else
+        return .continue
+    | _ => return .continue
+
+/--
+This tactic is subsumed by the `unfold` tactic.
+
+`unfold_let x y z at loc` unfolds the local definitions `x`, `y`, and `z` at the given
+location, which is known as "zeta reduction."
+This also exists as a `conv`-mode tactic.
+
+If no local definitions are given, then all local definitions are unfolded.
+This variant also exists as the `conv`-mode tactic `zeta`.
+-/
+@[deprecated unfold (since := "2024-11-11")]
+syntax (name := unfoldLetStx) "unfold_let" (ppSpace colGt term:max)*
+  (ppSpace Parser.Tactic.location)? : tactic
+
+elab_rules : tactic
+  | `(tactic| unfold_let $[$loc?]?) => do
+    logWarning "The `unfold_let` tactic is deprecated. Please use `unfold` instead."
+    runDefEqTactic (fun _ => zetaReduce) loc? "unfold_let"
+  | `(tactic| unfold_let $hs:term* $[$loc?]?) => do
+    let fvars ← getFVarIds hs
+    logWarning "The `unfold_let` tactic is deprecated. Please use `unfold` instead."
+    runDefEqTactic (fun _ => unfoldFVars fvars) loc? "unfold_let"
+
+@[inherit_doc unfoldLetStx, deprecated unfold (since := "2024-11-11")]
+syntax "unfold_let" (ppSpace colGt term:max)* : conv
+
+elab_rules : conv
+  | `(conv| unfold_let) => do
+    logWarning "The `unfold_let` tactic is deprecated. Please use `unfold` instead."
+    runDefEqConvTactic zetaReduce
+  | `(conv| unfold_let $hs:term*) => do
+    logWarning "The `unfold_let` tactic is deprecated. Please use `unfold` instead."
+    runDefEqConvTactic (unfoldFVars (← getFVarIds hs))
+
+
 /-! ### `refold_let` -/
 
 /-- For each fvar, looks for its body in `e` and replaces it with the fvar. -/

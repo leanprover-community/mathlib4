@@ -15,7 +15,7 @@ This file contains basics about the separable degree of a polynomial.
 ## Main results
 
 - `IsSeparableContraction`: is the condition that, for `g` a separable polynomial, we have that
-   `g(x^(q^m)) = f(x)` for some `m : ℕ`.
+  `g(x^(q^m)) = f(x)` for some `m : ℕ`.
 - `HasSeparableContraction`: the condition of having a separable contraction
 - `HasSeparableContraction.degree`: the separable degree, defined as the degree of some
   separable contraction
@@ -37,7 +37,6 @@ noncomputable section
 
 namespace Polynomial
 
-open scoped Classical
 open Polynomial
 
 section CommSemiring
@@ -95,8 +94,8 @@ section Field
 variable {F : Type*} [Field F]
 variable (q : ℕ) {f : F[X]} (hf : HasSeparableContraction q f)
 
-/-- Every irreducible polynomial can be contracted to a separable polynomial.
-https://stacks.math.columbia.edu/tag/09H0 -/
+/-- Every irreducible polynomial can be contracted to a separable polynomial. -/
+@[stacks 09H0]
 theorem _root_.Irreducible.hasSeparableContraction (q : ℕ) [hF : ExpChar F q] {f : F[X]}
     (irred : Irreducible f) : HasSeparableContraction q f := by
   cases hF

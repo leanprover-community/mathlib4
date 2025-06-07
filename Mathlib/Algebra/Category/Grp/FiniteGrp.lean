@@ -3,6 +3,7 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Nailin Guan, Yuyang Zhao
 -/
+import Mathlib.Data.Finite.Defs
 import Mathlib.Algebra.Category.Grp.Basic
 
 /-!
@@ -43,21 +44,13 @@ instance : CoeSort FiniteGrp.{u} (Type u) where
 instance : Category FiniteGrp := InducedCategory.category FiniteGrp.toGrp
 
 @[to_additive]
-instance : ConcreteCategory FiniteGrp := InducedCategory.concreteCategory FiniteGrp.toGrp
+instance : ConcreteCategory FiniteGrp (· →* ·) := InducedCategory.concreteCategory FiniteGrp.toGrp
 
 @[to_additive]
 instance (G : FiniteGrp) : Group G := inferInstanceAs <| Group G.toGrp
 
 @[to_additive]
 instance (G : FiniteGrp) : Finite G := G.isFinite
-
-@[to_additive]
-instance (G H : FiniteGrp) : FunLike (G ⟶ H) G H :=
-  inferInstanceAs <| FunLike (G →* H) G H
-
-@[to_additive]
-instance (G H : FiniteGrp) : MonoidHomClass (G ⟶ H) G H :=
-  inferInstanceAs <| MonoidHomClass (G →* H) G H
 
 /-- Construct a term of `FiniteGrp` from a type endowed with the structure of a finite group. -/
 @[to_additive "Construct a term of `FiniteAddGrp` from a type endowed with the structure of a

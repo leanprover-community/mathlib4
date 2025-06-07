@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.CategoryTheory.Preadditive.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Preadditive structure on functor categories
@@ -39,37 +40,30 @@ instance functorCategoryPreadditive : Preadditive (C ⥤ D) where
         apply add_assoc
       zero_add := by
         intros
-        dsimp
         ext
         apply zero_add
       add_zero := by
         intros
-        dsimp
         ext
         apply add_zero
       add_comm := by
         intros
-        dsimp
         ext
         apply add_comm
       sub_eq_add_neg := by
         intros
-        dsimp
         ext
         apply sub_eq_add_neg
       neg_add_cancel := by
         intros
-        dsimp
         ext
         apply neg_add_cancel }
   add_comp := by
     intros
-    dsimp
     ext
     apply add_comp
   comp_add := by
     intros
-    dsimp
     ext
     apply comp_add
 

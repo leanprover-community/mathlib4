@@ -58,9 +58,8 @@ elements from any set in `𝒜`. -/
 def shadow (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
   𝒜.sup fun s => s.image (erase s)
 
--- Porting note: added `inherit_doc` to calm linter
 @[inherit_doc] scoped[FinsetFamily] notation:max "∂ " => Finset.shadow
--- Porting note: had to open FinsetFamily
+
 open FinsetFamily
 
 /-- The shadow of the empty set is empty. -/
@@ -69,7 +68,7 @@ theorem shadow_empty : ∂ (∅ : Finset (Finset α)) = ∅ :=
   rfl
 
 @[simp] lemma shadow_iterate_empty (k : ℕ) : ∂^[k] (∅ : Finset (Finset α)) = ∅ := by
-  induction' k <;> simp [*, shadow_empty]
+  induction k <;> simp [*, shadow_empty]
 
 @[simp]
 theorem shadow_singleton_empty : ∂ ({∅} : Finset (Finset α)) = ∅ :=
@@ -117,11 +116,11 @@ lemma mem_shadow_iff_exists_mem_card_add_one : t ∈ ∂ 𝒜 ↔ ∃ s ∈ 𝒜
 
 lemma mem_shadow_iterate_iff_exists_card :
     t ∈ ∂^[k] 𝒜 ↔ ∃ u : Finset α, #u = k ∧ Disjoint t u ∧ t ∪ u ∈ 𝒜 := by
-  induction' k with k ih generalizing t
-  · simp
-  set_option tactic.skipAssignedInstances false in
-  simp only [mem_shadow_iff_insert_mem, ih, Function.iterate_succ_apply', card_eq_succ]
-  aesop
+  induction k generalizing t with
+  | zero => simp
+  | succ k ih =>
+    simp only [mem_shadow_iff_insert_mem, ih, Function.iterate_succ_apply', card_eq_succ]
+    aesop
 
 /-- `t ∈ ∂^k 𝒜` iff `t` is exactly `k` elements less than something from `𝒜`.
 
@@ -184,7 +183,6 @@ variable [DecidableEq α] [Fintype α] {𝒜 : Finset (Finset α)} {s t : Finset
 def upShadow (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
   𝒜.sup fun s => sᶜ.image fun a => insert a s
 
--- Porting note: added `inherit_doc` to calm linter
 @[inherit_doc] scoped[FinsetFamily] notation:max "∂⁺ " => Finset.upShadow
 
 /-- The upper shadow of the empty set is empty. -/
@@ -229,16 +227,17 @@ lemma mem_upShadow_iff_exists_mem_card_add_one :
 
 lemma mem_upShadow_iterate_iff_exists_card :
     t ∈ ∂⁺^[k] 𝒜 ↔ ∃ u : Finset α, #u = k ∧ u ⊆ t ∧ t \ u ∈ 𝒜 := by
-  induction' k with k ih generalizing t
-  · simp
-  simp only [mem_upShadow_iff_erase_mem, ih, Function.iterate_succ_apply', card_eq_succ,
-    subset_erase, erase_sdiff_comm, ← sdiff_insert]
-  constructor
-  · rintro ⟨a, hat, u, rfl, ⟨hut, hau⟩, htu⟩
-    exact ⟨_, ⟨_, _, hau, rfl, rfl⟩, insert_subset hat hut, htu⟩
-  · rintro ⟨_, ⟨a, u, hau, rfl, rfl⟩, hut, htu⟩
-    rw [insert_subset_iff] at hut
-    exact ⟨a, hut.1, _, rfl, ⟨hut.2, hau⟩, htu⟩
+  induction k generalizing t with
+  | zero => simp
+  | succ k ih =>
+    simp only [mem_upShadow_iff_erase_mem, ih, Function.iterate_succ_apply', card_eq_succ,
+      subset_erase, erase_sdiff_comm, ← sdiff_insert]
+    constructor
+    · rintro ⟨a, hat, u, rfl, ⟨hut, hau⟩, htu⟩
+      exact ⟨_, ⟨_, _, hau, rfl, rfl⟩, insert_subset hat hut, htu⟩
+    · rintro ⟨_, ⟨a, u, hau, rfl, rfl⟩, hut, htu⟩
+      rw [insert_subset_iff] at hut
+      exact ⟨a, hut.1, _, rfl, ⟨hut.2, hau⟩, htu⟩
 
 /-- `t` is in the upper shadow of `𝒜` iff `t` is exactly `k` elements less than something from `𝒜`.
 
@@ -266,7 +265,7 @@ protected lemma _root_.Set.Sized.upShadow (h𝒜 : (𝒜 : Set (Finset α)).Size
     (∂⁺ 𝒜 : Set (Finset α)).Sized (r + 1) := by
   intro A h
   obtain ⟨A, hA, i, hi, rfl⟩ := mem_upShadow_iff.1 h
-  rw [card_insert_of_not_mem hi, h𝒜 hA]
+  rw [card_insert_of_notMem hi, h𝒜 hA]
 
 /-- Being in the upper shadow of `𝒜` means we have a superset in `𝒜`. -/
 theorem exists_subset_of_mem_upShadow (hs : s ∈ ∂⁺ 𝒜) : ∃ t ∈ 𝒜, t ⊆ s :=
@@ -276,25 +275,27 @@ theorem exists_subset_of_mem_upShadow (hs : s ∈ ∂⁺ 𝒜) : ∃ t ∈ 𝒜,
 /-- `t ∈ ∂^k 𝒜` iff `t` is exactly `k` elements more than something in `𝒜`. -/
 theorem mem_upShadow_iff_exists_mem_card_add :
     s ∈ ∂⁺ ^[k] 𝒜 ↔ ∃ t ∈ 𝒜, t ⊆ s ∧ #t + k = #s := by
-  induction' k with k ih generalizing 𝒜 s
-  · refine ⟨fun hs => ⟨s, hs, Subset.refl _, rfl⟩, ?_⟩
+  induction k generalizing 𝒜 s with
+  | zero =>
+    refine ⟨fun hs => ⟨s, hs, Subset.refl _, rfl⟩, ?_⟩
     rintro ⟨t, ht, hst, hcard⟩
     rwa [← eq_of_subset_of_card_le hst hcard.ge]
-  simp only [exists_prop, Function.comp_apply, Function.iterate_succ]
-  refine ih.trans ?_
-  clear ih
-  constructor
-  · rintro ⟨t, ht, hts, hcardst⟩
-    obtain ⟨u, hu, hut, hcardtu⟩ := mem_upShadow_iff_exists_mem_card_add_one.1 ht
-    refine ⟨u, hu, hut.trans hts, ?_⟩
-    rw [← hcardst, hcardtu, add_right_comm]
-    rfl
-  · rintro ⟨t, ht, hts, hcard⟩
-    obtain ⟨u, htu, hus, hu⟩ := Finset.exists_subsuperset_card_eq hts (Nat.le_add_right _ 1)
-      (by omega)
-    refine ⟨u, mem_upShadow_iff_exists_mem_card_add_one.2 ⟨t, ht, htu, hu⟩, hus, ?_⟩
-    rw [hu, ← hcard, add_right_comm]
-    rfl
+  | succ k ih =>
+    simp only [exists_prop, Function.comp_apply, Function.iterate_succ]
+    refine ih.trans ?_
+    clear ih
+    constructor
+    · rintro ⟨t, ht, hts, hcardst⟩
+      obtain ⟨u, hu, hut, hcardtu⟩ := mem_upShadow_iff_exists_mem_card_add_one.1 ht
+      refine ⟨u, hu, hut.trans hts, ?_⟩
+      rw [← hcardst, hcardtu, add_right_comm]
+      rfl
+    · rintro ⟨t, ht, hts, hcard⟩
+      obtain ⟨u, htu, hus, hu⟩ := Finset.exists_subsuperset_card_eq hts (Nat.le_add_right _ 1)
+        (by omega)
+      refine ⟨u, mem_upShadow_iff_exists_mem_card_add_one.2 ⟨t, ht, htu, hu⟩, hus, ?_⟩
+      rw [hu, ← hcard, add_right_comm]
+      rfl
 
 @[simp] lemma shadow_compls : ∂ 𝒜ᶜˢ = (∂⁺ 𝒜)ᶜˢ := by
   ext s

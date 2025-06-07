@@ -158,7 +158,6 @@ def isoMk (iso : ∀ a, (F.functor a ≅ G.functor a))
   inv :=
     { hom := fun a => (iso a).inv
       comm := fun n a a' ha' => by
-        dsimp only
         rw [← cancel_mono (iso a).hom, assoc, assoc, Iso.inv_hom_id, comp_id, comm,
           ← whiskerRight_comp_assoc, Iso.inv_hom_id, whiskerRight_id', id_comp] }
 
@@ -249,8 +248,7 @@ def postcompIsoOfIso {G G' : D ⥤ E} (e : G ≅ G') [G.CommShift A] [G'.CommShi
     F.postcomp G ≅ F.postcomp G' :=
   isoMk (fun a => isoWhiskerLeft (F.functor a) e) (fun n a a' ha' => by
     ext X
-    dsimp
-    simp [NatTrans.CommShift.shift_app e.hom n])
+    simp [NatTrans.shift_app e.hom n])
 
 end SingleFunctors
 

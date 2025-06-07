@@ -104,7 +104,7 @@ and every epimorphism is the cokernel of some morphism.
 finite products give a terminal object, and in a preadditive category
 any terminal object is a zero object.)
 -/
-class Abelian extends Preadditive C, NormalMonoCategory C, NormalEpiCategory C where
+class Abelian extends Preadditive C, IsNormalMonoCategory C, IsNormalEpiCategory C where
   [has_finite_products : HasFiniteProducts C]
   [has_kernels : HasKernels C]
   [has_cokernels : HasCokernels C]
@@ -183,9 +183,9 @@ attribute [local instance] Limits.HasFiniteBiproducts.of_hasFiniteProducts
 /-- A category with finite products in which coimage-image comparisons are all isomorphisms
 is a normal mono category.
 -/
-def normalMonoCategory : NormalMonoCategory C where
-  normalMonoOfMono f m :=
-    { Z := _
+lemma isNormalMonoCategory : IsNormalMonoCategory C where
+  normalMonoOfMono f m := ⟨{
+      Z := _
       g := cokernel.π f
       w := by simp
       isLimit := by
@@ -203,14 +203,14 @@ def normalMonoCategory : NormalMonoCategory C where
           simp only [KernelFork.ι_ofι, Category.assoc]
           convert limit.lift_π A WalkingParallelPair.zero using 2
           rw [IsIso.inv_comp_eq, eq_comm]
-          exact (imageMonoFactorisation f).fac }
+          exact (imageMonoFactorisation f).fac }⟩
 
 /-- A category with finite products in which coimage-image comparisons are all isomorphisms
 is a normal epi category.
 -/
-def normalEpiCategory : NormalEpiCategory C where
-  normalEpiOfEpi f m :=
-    { W := kernel f
+lemma isNormalEpiCategory : IsNormalEpiCategory C where
+  normalEpiOfEpi f m := ⟨{
+      W := kernel f
       g := kernel.ι _
       w := kernel.condition _
       isColimit := by
@@ -229,24 +229,22 @@ def normalEpiCategory : NormalEpiCategory C where
           simp only [CokernelCofork.π_ofπ, ← Category.assoc]
           convert colimit.ι_desc A WalkingParallelPair.one using 2
           rw [IsIso.comp_inv_eq, IsIso.comp_inv_eq, eq_comm, ← imageMonoFactorisation_e']
-          exact (imageMonoFactorisation f).fac }
+          exact (imageMonoFactorisation f).fac }⟩
 
 end OfCoimageImageComparisonIsIso
 
 variable [∀ {X Y : C} (f : X ⟶ Y), IsIso (Abelian.coimageImageComparison f)]
   [Limits.HasFiniteProducts C]
 
-attribute [local instance] OfCoimageImageComparisonIsIso.normalMonoCategory
+attribute [local instance] OfCoimageImageComparisonIsIso.isNormalMonoCategory
 
-attribute [local instance] OfCoimageImageComparisonIsIso.normalEpiCategory
+attribute [local instance] OfCoimageImageComparisonIsIso.isNormalEpiCategory
 
 /-- A preadditive category with kernels, cokernels, and finite products,
 in which the coimage-image comparison morphism is always an isomorphism,
-is an abelian category.
-
-The Stacks project uses this characterisation at the definition of an abelian category.
-See <https://stacks.math.columbia.edu/tag/0109>.
--/
+is an abelian category. -/
+@[stacks 0109
+"The Stacks project uses this characterisation at the definition of an abelian category."]
 def ofCoimageImageComparisonIsIso : Abelian C where
 
 end CategoryTheory.Abelian
@@ -260,6 +258,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 -- but triggers https://github.com/leanprover/lean4/issues/2055
 -- We set it as a local instance instead.
 -- instance (priority := 100)
+-- Turning it into a global instance breaks `Mathlib/Algebra/Category/ModuleCat/Sheaf/Free.lean`.
 /-- An abelian category has finite biproducts. -/
 theorem hasFiniteBiproducts : HasFiniteBiproducts C :=
   Limits.HasFiniteBiproducts.of_hasFiniteProducts
@@ -763,25 +762,9 @@ namespace CategoryTheory.NonPreadditiveAbelian
 variable (C : Type u) [Category.{v} C] [NonPreadditiveAbelian C]
 
 /-- Every NonPreadditiveAbelian category can be promoted to an abelian category. -/
-def abelian : Abelian C :=
-  {/- We need the `convert`s here because the instances we have are slightly different from the
-       instances we need: `HasKernels` depends on an instance of `HasZeroMorphisms`. In the
-       case of `NonPreadditiveAbelian`, this instance is an explicit argument. However, in the case
-       of `abelian`, the `HasZeroMorphisms` instance is derived from `Preadditive`. So we need to
-       transform an instance of "has kernels with NonPreadditiveAbelian.HasZeroMorphisms" to an
-       instance of "has kernels with NonPreadditiveAbelian.Preadditive.HasZeroMorphisms".
-       Luckily, we have a `subsingleton` instance for `HasZeroMorphisms`, so `convert` can
-       immediately close the goal it creates for the two instances of `HasZeroMorphisms`,
-       and the proof is complete. -/
-    NonPreadditiveAbelian.preadditive with
-    has_finite_products := by infer_instance
-    has_kernels := by convert (by infer_instance : Limits.HasKernels C)
-    has_cokernels := by convert (by infer_instance : Limits.HasCokernels C)
-    normalMonoOfMono := by
-      intro _ _ f _
-      convert normalMonoOfMono f
-    normalEpiOfEpi := by
-      intro _ _ f _
-      convert normalEpiOfEpi f }
+def abelian : Abelian C where
+  toPreadditive := NonPreadditiveAbelian.preadditive
+  normalMonoOfMono := fun f _ ↦ ⟨normalMonoOfMono f⟩
+  normalEpiOfEpi := fun f _ ↦ ⟨normalEpiOfEpi f⟩
 
 end CategoryTheory.NonPreadditiveAbelian
