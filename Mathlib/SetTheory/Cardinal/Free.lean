@@ -105,7 +105,6 @@ end Cardinal
 
 section Nonempty
 
-open Fin.CommRing in
 /-- A commutative ring can be constructed on any non-empty type.
 
 See also `Infinite.nonempty_field`. -/
@@ -115,7 +114,7 @@ instance nonempty_commRing [Nonempty α] : Nonempty (CommRing α) := by
     have : NeZero (Fintype.card α) := ⟨by inhabit α; simp⟩
     classical
     obtain ⟨e⟩ := Fintype.truncEquivFin α
-    exact ⟨e.commRing⟩
+    exact ⟨open scoped Fin.CommRing in e.commRing⟩
   · have ⟨e⟩ : Nonempty (α ≃ FreeCommRing α) := by simp [← Cardinal.eq]
     exact ⟨e.commRing⟩
 
