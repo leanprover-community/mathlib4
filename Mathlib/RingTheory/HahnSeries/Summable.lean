@@ -842,15 +842,13 @@ instance instField : Field (HahnSeries Γ R) where
     rw [sub_sub_cancel] at h
     rw [inv_def, ← mul_assoc, mul_comm x, h]
   nnqsmul := (· • ·)
-  nnqsmul_def q x := by
-    ext; simpa [← single_zero_nnratCast] using Semifield.nnqsmul_def _ _
   qsmul := (· • ·)
-  qsmul_def q x := by
-    ext; simpa [← single_zero_ratCast] using Field.qsmul_def _ _
+  nnqsmul_def q x := by ext; simp [← single_zero_nnratCast, NNRat.smul_def]
+  qsmul_def q x := by ext; simp [← single_zero_ratCast, Rat.smul_def]
   nnratCast_def q := by
-    simp [← single_zero_nnratCast, ← single_zero_natCast, Semifield.nnratCast_def]
+    simp [← single_zero_nnratCast, ← single_zero_natCast, NNRat.cast_def]
   ratCast_def q := by
-    simp [← single_zero_ratCast, ← single_zero_intCast, ← single_zero_natCast, Field.ratCast_def]
+    simp [← single_zero_ratCast, ← single_zero_intCast, ← single_zero_natCast, Rat.cast_def]
 
 theorem single_zero_ofScientific (m e s) :
     single (0 : Γ) (OfScientific.ofScientific m e s : R) = OfScientific.ofScientific m e s := by
