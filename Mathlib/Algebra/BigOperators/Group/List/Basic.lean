@@ -131,7 +131,7 @@ theorem prod_set :
   | x :: xs, 0, a => by simp [set]
   | x :: xs, i + 1, a => by
     simp [set, prod_set xs i a, mul_assoc, Nat.add_lt_add_iff_right]
-  | [], _, _ => by simp [set, (Nat.zero_le _).not_lt, Nat.zero_le]
+  | [], _, _ => by simp [set, (Nat.zero_le _).not_gt, Nat.zero_le]
 
 /-- We'd like to state this as `L.headI * L.tail.prod = L.prod`, but because `L.headI` relies on an
 inhabited instance to return a garbage value on the empty list, this is not possible.

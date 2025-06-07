@@ -476,7 +476,7 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_c
     have : (Ioo l u).Countable :=
       (hs.preimage ((add_right_injective w).comp ofReal_injective)).mono hsub
     rw [← Cardinal.le_aleph0_iff_set_countable, Cardinal.mk_Ioo_real (hlu₀.1.trans hlu₀.2)] at this
-    exact this.not_lt Cardinal.aleph0_lt_continuum
+    exact this.not_gt Cardinal.aleph0_lt_continuum
   exact ⟨g x, (hlu_sub hx.1).1, (hlu_sub hx.1).2, hx.2⟩
 
 /-- **Cauchy integral formula**: if `f : ℂ → E` is continuous on a closed disc of radius `R` and is

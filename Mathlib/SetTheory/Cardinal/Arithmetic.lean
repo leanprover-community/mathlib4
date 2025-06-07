@@ -187,7 +187,7 @@ theorem mul_eq_left_iff {a b : Cardinal} : a * b = a ↔ max ℵ₀ b ≤ a ∧ 
   · rcases le_or_gt ℵ₀ a with ha | ha
     · have : a ≠ 0 := by
         rintro rfl
-        exact ha.not_lt aleph0_pos
+        exact ha.not_gt aleph0_pos
       left
       rw [and_assoc]
       use ha
@@ -682,7 +682,7 @@ theorem mk_finset_of_infinite (α : Type u) [Infinite α] : #(Finset α) = #α :
 theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal) :
     #{ t : Set α // #t ≤ c } ≤ #α ^ c := by
   refine le_trans ?_ (by rw [← add_one_eq (aleph0_le_mk α)])
-  induction' c using Cardinal.inductionOn with β
+  induction c using Cardinal.inductionOn with | _ β
   fapply mk_le_of_surjective
   · intro f
     use Sum.inl ⁻¹' range f

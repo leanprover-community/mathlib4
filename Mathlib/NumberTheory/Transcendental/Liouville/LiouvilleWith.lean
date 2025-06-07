@@ -266,7 +266,7 @@ theorem ne_cast_int (h : LiouvilleWith p x) (hp : 1 < p) (m : ℤ) : x ≠ m := 
   rintro rfl; rename' m => M
   rcases ((eventually_gt_atTop 0).and_frequently (h.frequently_lt_rpow_neg hp)).exists with
     ⟨n : ℕ, hn : 0 < n, m : ℤ, hne : (M : ℝ) ≠ m / n, hlt : |(M - m / n : ℝ)| < n ^ (-1 : ℝ)⟩
-  refine hlt.not_le ?_
+  refine hlt.not_ge ?_
   have hn' : (0 : ℝ) < n := by simpa
   rw [rpow_neg_one, ← one_div, sub_div' hn'.ne', abs_div, Nat.abs_cast]
   gcongr
@@ -312,10 +312,10 @@ theorem frequently_exists_num (hx : Liouville x) (n : ℕ) :
   rcases hx m with ⟨a, b, hb, hne, hlt⟩
   lift b to ℕ using zero_le_one.trans hb.le; norm_cast at hb; push_cast at hne hlt
   rcases le_or_gt N b with h | h
-  · refine (hN b h a hne).not_lt (hlt.trans_le ?_)
+  · refine (hN b h a hne).not_gt (hlt.trans_le ?_)
     gcongr
     exact_mod_cast hb.le
-  · exact (hm b h hb _).not_lt hlt
+  · exact (hm b h hb _).not_gt hlt
 
 /-- A Liouville number is a Liouville number with any real exponent. -/
 protected theorem liouvilleWith (hx : Liouville x) (p : ℝ) : LiouvilleWith p x := by

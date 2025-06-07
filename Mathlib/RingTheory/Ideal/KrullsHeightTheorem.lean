@@ -93,7 +93,7 @@ lemma Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes_of_isLocalRing
     refine IsLocalization.map_units (M := q.primeCompl) _ ⟨_, ?_⟩
     show Submodule.IsPrincipal.generator I ∉ (↑q : Set R)
     rw [← Set.singleton_subset_iff, ← Ideal.span_le, Ideal.span_singleton_generator]
-    exact fun e ↦ h₂.not_le (hp.2 ⟨h₁, e⟩ h₂.le)
+    exact fun e ↦ h₂.not_ge (hp.2 ⟨h₁, e⟩ h₂.le)
 
 /-- **Krull's principal ideal theorem** (also known as **Krullscher Hauptidealsatz**) :
   In a commutative Noetherian ring `R`, any prime ideal that is minimal over a principal ideal
@@ -134,7 +134,7 @@ theorem Ideal.mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert {q p : Ide
   have := minimalPrimes_isPrime hp
   have : (p.map f).IsPrime := map_isPrime_of_surjective hf (by rwa [mk_ker])
   suffices h : (p.map f).height ≤ 1 by
-    have h_lt : q.map f < p.map f := (map_mono hqp.le).lt_of_not_ge fun e ↦ hqp.not_le <| by
+    have h_lt : q.map f < p.map f := (map_mono hqp.le).lt_of_not_ge fun e ↦ hqp.not_ge <| by
       simpa only [comap_map_of_surjective f hf, ← RingHom.ker_eq_comap_bot, f, mk_ker,
         sup_eq_left.mpr hI'q, sup_eq_left.mpr hI'p] using comap_mono (f := f) e
     have : (q.map f).IsPrime := map_isPrime_of_surjective hf (by rwa [mk_ker])

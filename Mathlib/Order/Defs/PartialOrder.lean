@@ -71,13 +71,18 @@ lemma not_lt_of_ge (hab : a ≤ b) : ¬ b < a := imp_not_comm.1 not_le_of_gt hab
 @[deprecated (since := "2025-05-11")] alias not_le_of_lt := not_le_of_gt
 @[deprecated (since := "2025-05-11")] alias not_lt_of_le := not_lt_of_ge
 
-alias LT.lt.not_le := not_le_of_gt
-alias LE.le.not_lt := not_lt_of_ge
+alias LT.lt.not_ge := not_le_of_gt
+alias LE.le.not_gt := not_lt_of_ge
+
+@[deprecated (since := "2025-06-07")] alias LT.lt.not_le := LT.lt.not_ge
+@[deprecated (since := "2025-06-07")] alias LE.le.not_lt := LE.le.not_gt
+
 
 lemma ge_trans : a ≥ b → b ≥ c → a ≥ c := fun h₁ h₂ => le_trans h₂ h₁
 
 lemma lt_irrefl (a : α) : ¬a < a := fun h ↦ not_le_of_gt h le_rfl
-lemma gt_irrefl (a : α) : ¬a > a := lt_irrefl _
+
+@[deprecated (since := "2025-06-07")] alias gt_irrefl := lt_irrefl
 
 lemma lt_of_lt_of_le (hab : a < b) (hbc : b ≤ c) : a < c :=
   lt_of_le_not_ge (le_trans (le_of_lt hab) hbc) fun hca ↦ not_le_of_gt hab (le_trans hbc hca)

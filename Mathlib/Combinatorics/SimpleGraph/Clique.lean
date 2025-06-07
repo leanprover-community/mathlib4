@@ -222,7 +222,7 @@ protected theorem IsNClique.map (h : G.IsNClique n s) {f : α ↪ β} :
 theorem isNClique_map_iff (hn : 1 < n) {t : Finset β} {f : α ↪ β} :
     (G.map f).IsNClique n t ↔ ∃ s : Finset α, G.IsNClique n s ∧ s.map f = t := by
   rw [isNClique_iff, isClique_map_finset_iff, or_and_right,
-    or_iff_right (by rintro ⟨h', rfl⟩; exact h'.not_lt hn)]
+    or_iff_right (by rintro ⟨h', rfl⟩; exact h'.not_gt hn)]
   constructor
   · rintro ⟨⟨s, hs, rfl⟩, rfl⟩
     simp [isNClique_iff, hs]
@@ -540,7 +540,7 @@ protected theorem CliqueFree.cliqueFreeOn (hG : G.CliqueFree n) : G.CliqueFreeOn
   fun _t _ ↦ hG _
 
 theorem cliqueFreeOn_of_card_lt {s : Finset α} (h : #s < n) : G.CliqueFreeOn s n :=
-  fun _t hts ht => h.not_le <| ht.2.symm.trans_le <| card_mono hts
+  fun _t hts ht => h.not_ge <| ht.2.symm.trans_le <| card_mono hts
 
 -- TODO: Restate using `SimpleGraph.IndepSet` once we have it
 @[simp]

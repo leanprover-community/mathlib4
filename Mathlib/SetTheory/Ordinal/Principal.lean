@@ -79,9 +79,10 @@ theorem principal_one_iff : Principal op 1 ↔ op 0 0 = 0 := by
   · rwa [lt_one_iff_zero, ha, hb] at *
 
 theorem Principal.iterate_lt (hao : a < o) (ho : Principal op o) (n : ℕ) : (op a)^[n] a < o := by
-  induction' n with n hn
-  · rwa [Function.iterate_zero]
-  · rw [Function.iterate_succ']
+  induction n with
+  | zero => rwa [Function.iterate_zero]
+  | succ n hn =>
+    rw [Function.iterate_succ']
     exact ho hao hn
 
 theorem op_eq_self_of_principal (hao : a < o) (H : IsNormal (op a))
@@ -122,7 +123,7 @@ private theorem principal_nfp_iSup (op : Ordinal → Ordinal → Ordinal) (o : O
 theorem not_bddAbove_principal (op : Ordinal → Ordinal → Ordinal) :
     ¬ BddAbove { o | Principal op o } := by
   rintro ⟨a, ha⟩
-  exact ((le_nfp _ _).trans (ha (principal_nfp_iSup op (succ a)))).not_lt (lt_succ a)
+  exact ((le_nfp _ _).trans (ha (principal_nfp_iSup op (succ a)))).not_gt (lt_succ a)
 
 /-! #### Additive principal ordinals -/
 
@@ -156,7 +157,7 @@ theorem exists_lt_add_of_not_principal_add (ha : ¬ Principal (· + ·) a) :
   refine
     ⟨b, hb, _, lt_of_le_of_ne (sub_le_self a b) fun hab => ?_, Ordinal.add_sub_cancel_of_le hb.le⟩
   rw [← sub_le, hab] at H
-  exact H.not_lt hc
+  exact H.not_gt hc
 
 theorem principal_add_iff_add_lt_ne_self : Principal (· + ·) a ↔ ∀ b < a, ∀ c < a, b + c ≠ a :=
   ⟨fun ha _ hb _ hc => (ha hb hc).ne, fun H => by
@@ -212,9 +213,9 @@ theorem principal_add_iff_zero_or_omega0_opow :
     apply not_lt_of_ge
     suffices e : ω ^ log ω o * n + o = o by
       simpa only [e] using le_add_right (ω ^ log ω o * ↑n) o
-    induction' n with n IH
-    · simp [Nat.cast_zero, mul_zero, zero_add]
-    · simp only [Nat.cast_succ, mul_add_one, add_assoc, this, IH]
+    induction n with
+    | zero => simp [Nat.cast_zero, mul_zero, zero_add]
+    | succ n IH => simp only [Nat.cast_succ, mul_add_one, add_assoc, this, IH]
 
 theorem principal_add_opow_of_principal_add {a} (ha : Principal (· + ·) a) (b : Ordinal) :
     Principal (· + ·) (a ^ b) := by

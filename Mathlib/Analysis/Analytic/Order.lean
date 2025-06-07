@@ -221,7 +221,7 @@ lemma le_analyticOrderAt_sub :
 
 lemma analyticOrderAt_add_eq_left_of_lt (hfg : analyticOrderAt f z₀ < analyticOrderAt g z₀) :
     analyticOrderAt (f + g) z₀ = analyticOrderAt f z₀ :=
-  le_antisymm (by simpa [hfg.not_le] using le_analyticOrderAt_sub (f := f + g) (g := g) (z₀ := z₀))
+  le_antisymm (by simpa [hfg.not_ge] using le_analyticOrderAt_sub (f := f + g) (g := g) (z₀ := z₀))
     (by simpa [hfg.le] using le_analyticOrderAt_add (f := f) (g := g) (z₀ := z₀))
 
 lemma analyticOrderAt_add_eq_right_of_lt (hgf : analyticOrderAt g z₀ < analyticOrderAt f z₀) :

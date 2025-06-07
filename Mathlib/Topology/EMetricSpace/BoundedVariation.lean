@@ -229,7 +229,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
         exact hu (Nat.le_succ i)
       · simp only [le_refl, if_true, add_le_iff_nonpos_right, Nat.le_zero, Nat.one_ne_zero,
           if_false, h]
-      · have A : ¬i ≤ n := hi.not_le
+      · have A : ¬i ≤ n := hi.not_ge
         have B : ¬i + 1 ≤ n := fun h => A (i.le_succ.trans h)
         simp only [A, B, if_false, le_rfl]
     refine ⟨v, n + 2, hv, vs, (mem_image _ _ _).2 ⟨n + 1, ?_, ?_⟩, ?_⟩
@@ -268,8 +268,8 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       have T := Nat.find_min exists_N A
       push_neg at T
       exact T (A.le.trans hN.1)
-    · have A : ¬i < N := (Nat.lt_succ_iff.mp hi).not_lt
-      have B : ¬i + 1 < N := hi.not_lt
+    · have A : ¬i < N := (Nat.lt_succ_iff.mp hi).not_gt
+      have B : ¬i + 1 < N := hi.not_gt
       have C : ¬i + 1 = N := hi.ne.symm
       have D : i + 1 - 1 = i := Nat.pred_succ i
       rw [if_neg A, if_neg B, if_neg C, D]
@@ -422,7 +422,7 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
         · exact hi.2
       · refine Finset.disjoint_left.2 fun i hi h'i => ?_
         simp only [Finset.mem_Ico, Finset.mem_range] at hi h'i
-        exact hi.not_lt (Nat.lt_of_succ_le h'i.left)
+        exact hi.not_gt (Nat.lt_of_succ_le h'i.left)
     _ ≤ eVariationOn f (s ∪ t) := sum_le f _ hw wst
 
 /-- If a set `s` is to the left of a set `t`, and both contain the boundary point `x`, then
@@ -604,9 +604,9 @@ protected theorem nonneg_of_le {a b : α} (h : a ≤ b) : 0 ≤ variationOnFromT
 protected theorem eq_neg_swap (a b : α) :
     variationOnFromTo f s a b = -variationOnFromTo f s b a := by
   rcases lt_trichotomy a b with (ab | rfl | ba)
-  · simp only [variationOnFromTo, if_pos ab.le, if_neg ab.not_le, neg_neg]
+  · simp only [variationOnFromTo, if_pos ab.le, if_neg ab.not_ge, neg_neg]
   · simp only [variationOnFromTo.self, neg_zero]
-  · simp only [variationOnFromTo, if_pos ba.le, if_neg ba.not_le, neg_neg]
+  · simp only [variationOnFromTo, if_pos ba.le, if_neg ba.not_ge, neg_neg]
 
 protected theorem nonpos_of_ge {a b : α} (h : b ≤ a) : variationOnFromTo f s a b ≤ 0 := by
   rw [variationOnFromTo.eq_neg_swap]

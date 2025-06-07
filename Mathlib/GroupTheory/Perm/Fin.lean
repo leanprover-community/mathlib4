@@ -165,7 +165,7 @@ theorem cycleRange_of_le {n : ℕ} [NeZero n] {i j : Fin n} (h : j ≤ i) :
 theorem coe_cycleRange_of_le {n : ℕ} {i j : Fin n} (h : j ≤ i) :
     (cycleRange i j : ℕ) = if j = i then 0 else (j : ℕ) + 1 := by
   rcases n with - | n
-  · exact absurd le_rfl i.pos.not_le
+  · exact absurd le_rfl i.pos.not_ge
   rw [cycleRange_of_le h]
   split_ifs with h'
   · rfl
@@ -343,7 +343,7 @@ theorem Equiv.Perm.prod_Iio_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
   refine Finset.prod_congr rfl fun ⟨x₁, x₂⟩ hx ↦ ?_
   replace hx : x₂ < x₁ := by simpa [hD] using hx
   obtain hlt | hle := lt_or_ge (σ x₁) (σ x₂)
-  · simp [inf_eq_left.2 hlt.le, sup_eq_right.2 hlt.le, hx.not_lt, ← hf]
+  · simp [inf_eq_left.2 hlt.le, sup_eq_right.2 hlt.le, hx.not_gt, ← hf]
   simp [inf_eq_right.2 hle, sup_eq_left.2 hle, hx]
 
 theorem Equiv.Perm.prod_Ioi_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
