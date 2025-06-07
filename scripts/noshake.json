@@ -212,6 +212,8 @@
   "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Topology.Category.UniformSpace":
   ["Mathlib.CategoryTheory.Monad.Limits"],
+  "Mathlib.Topology.Algebra.RestrictedProduct.Basic":
+  ["Mathlib.Order.Filter.Cofinite"],
   "Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology":
   ["Mathlib.Topology.Algebra.UniformRing"],
   "Mathlib.Tactic.Widget.StringDiagram":
