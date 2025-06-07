@@ -774,19 +774,25 @@ section Unique
 
 variable [Semiring R]
 variable [AddCommMonoid M] [AddCommMonoid M₂]
-variable [Module R M] [Module R M₂]
+variable [Module R M] [Module R M₂] [Unique M₂]
 
 /-- Multiplying by the trivial module from the left does not change the structure.
 This is the `LinearEquiv` version of `AddEquiv.uniqueProd`. -/
 @[simps!]
-def uniqueProd [Unique M₂] : (M₂ × M) ≃ₗ[R] M :=
+def uniqueProd : (M₂ × M) ≃ₗ[R] M :=
   AddEquiv.uniqueProd.toLinearEquiv (by simp [AddEquiv.uniqueProd])
+
+lemma coe_uniqueProd :
+  (uniqueProd (R := R) (M := M) (M₂ := M₂) : (M₂ × M) ≃ M) = Equiv.uniqueProd M M₂ := rfl
 
 /-- Multiplying by the trivial module from the right does not change the structure.
 This is the `LinearEquiv` version of `AddEquiv.prodUnique`. -/
 @[simps!]
-def prodUnique [Unique M₂] : (M × M₂) ≃ₗ[R] M :=
+def prodUnique : (M × M₂) ≃ₗ[R] M :=
   AddEquiv.prodUnique.toLinearEquiv (by simp [AddEquiv.prodUnique])
+
+lemma coe_prodUnique :
+  (prodUnique (R := R) (M := M) (M₂ := M₂) : (M × M₂) ≃ M) = Equiv.prodUnique M M₂ := rfl
 
 end Unique
 
