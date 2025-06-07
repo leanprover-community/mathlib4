@@ -284,14 +284,14 @@ theorem dist_eq_of_angle_eq_angle_of_angle_ne_pi {p₁ p₂ p₃ : P} (h : ∠ p
 
 /-- The **sum of the angles of a triangle** (possibly degenerate, where two
 given vertices are distinct), angle-at-point. -/
-theorem angle_add_angle_add_angle_eq_pi {p₁ p₂ p₃ : P} (h2 : p₂ ≠ p₁) :
+theorem angle_add_angle_add_angle_eq_pi {p₁ p₂ : P} (p₃ : P) (h : p₂ ≠ p₁) :
     ∠ p₁ p₂ p₃ + ∠ p₂ p₃ p₁ + ∠ p₃ p₁ p₂ = π := by
   rw [add_assoc, add_comm, add_comm (∠ p₂ p₃ p₁), angle_comm p₂ p₃ p₁]
   unfold angle
   rw [← angle_neg_neg (p₁ -ᵥ p₃), ← angle_neg_neg (p₁ -ᵥ p₂), neg_vsub_eq_vsub_rev,
     neg_vsub_eq_vsub_rev, neg_vsub_eq_vsub_rev, neg_vsub_eq_vsub_rev, ←
     vsub_sub_vsub_cancel_right p₃ p₂ p₁, ← vsub_sub_vsub_cancel_right p₂ p₃ p₁]
-  exact angle_add_angle_sub_add_angle_sub_eq_pi _ fun he => h2 (vsub_eq_zero_iff_eq.1 he)
+  exact angle_add_angle_sub_add_angle_sub_eq_pi _ fun he => h (vsub_eq_zero_iff_eq.1 he)
 
 /-- The **sum of the angles of a triangle** (possibly degenerate, where the triangle is a line),
 oriented angles at point. -/
