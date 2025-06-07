@@ -158,7 +158,7 @@ theorem mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Si
       rw [sigmaLift, dif_pos rfl, mem_map]
       exact ⟨_, hx, by simp [Sigma.ext_iff]⟩
   · rw [sigmaLift, dif_neg h]
-    refine iff_of_false (not_mem_empty _) ?_
+    refine iff_of_false (notMem_empty _) ?_
     rintro ⟨⟨⟩, ⟨⟩, _⟩
     exact h rfl
 
@@ -169,15 +169,21 @@ theorem mk_mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (i :
   rintro ⟨x, hx, _, rfl⟩
   exact hx
 
-theorem not_mem_sigmaLift_of_ne_left (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Sigma α)
+theorem notMem_sigmaLift_of_ne_left (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Sigma α)
     (b : Sigma β) (x : Sigma γ) (h : a.1 ≠ x.1) : x ∉ sigmaLift f a b := by
   rw [mem_sigmaLift]
   exact fun H => h H.fst
 
-theorem not_mem_sigmaLift_of_ne_right (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) {a : Sigma α}
+@[deprecated (since := "2025-05-23")]
+alias not_mem_sigmaLift_of_ne_left := notMem_sigmaLift_of_ne_left
+
+theorem notMem_sigmaLift_of_ne_right (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) {a : Sigma α}
     (b : Sigma β) {x : Sigma γ} (h : b.1 ≠ x.1) : x ∉ sigmaLift f a b := by
   rw [mem_sigmaLift]
   exact fun H => h H.snd.fst
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_sigmaLift_of_ne_right := notMem_sigmaLift_of_ne_right
 
 variable {f g : ∀ ⦃i⦄, α i → β i → Finset (γ i)} {a : Σ i, α i} {b : Σ i, β i}
 

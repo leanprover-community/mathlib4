@@ -153,7 +153,7 @@ lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
     rcases key with ⟨rfl, rfl⟩|⟨rfl, rfl⟩ <;>
     simp [this.right.le, this.right, mabs]
   · wlog ha : 1 ≤ a generalizing a
-    · convert @this (a⁻¹) ?_ (by simpa using le_of_not_le ha) using 4
+    · convert @this (a⁻¹) ?_ (by simpa using le_of_not_ge ha) using 4
       · simp
       · rwa [mabs_inv]
     rw [mabs, sup_eq_left.mpr ((inv_le_one'.mpr ha).trans ha)] at h
@@ -196,6 +196,80 @@ noncomputable def LinearOrderedCommGroup.multiplicative_int_orderMonoidIso_of_is
   have : IsLeast {y : Additive G | 0 < y} (.ofMul x) := h
   let f' := LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos (G := Additive G) this
   exact ⟨AddEquiv.toMultiplicative' f', by simp⟩
+
+section TypeTags
+
+/-- Reinterpret `G ≃*o H` as `Additive G ≃+o Additive H`. -/
+def OrderMonoidIso.toAdditive {G H : Type*}
+    [CommMonoid G] [PartialOrder G] [CommMonoid H] [PartialOrder H] :
+    (G ≃*o H) ≃ (Additive G ≃+o Additive H) where
+  toFun e := ⟨MulEquiv.toAdditive e, by simp⟩
+  invFun e := ⟨MulEquiv.toAdditive.symm e, by simp⟩
+  left_inv e := by ext; simp
+  right_inv e := by ext; simp
+
+/-- Reinterpret `G ≃+o H` as `Multiplicative G ≃*o Multiplicative H`. -/
+def OrderAddMonoidIso.toMultiplicative {G H : Type*}
+    [AddCommMonoid G] [PartialOrder G] [AddCommMonoid H] [PartialOrder H] :
+    (G ≃+o H) ≃ (Multiplicative G ≃*o Multiplicative H) where
+  toFun e := ⟨AddEquiv.toMultiplicative e, by simp⟩
+  invFun e := ⟨AddEquiv.toMultiplicative.symm e, by simp⟩
+  left_inv e := by ext; simp
+  right_inv e := by ext; simp
+
+/-- Reinterpret `Additive G ≃+o H` as `G ≃*o Multiplicative H`. -/
+def OrderAddMonoidIso.toMultiplicative' {G H : Type*}
+    [CommMonoid G] [PartialOrder G] [AddCommMonoid H] [PartialOrder H] :
+    (Additive G ≃+o H) ≃ (G ≃*o Multiplicative H) where
+  toFun e := ⟨AddEquiv.toMultiplicative' e, by simp⟩
+  invFun e := ⟨AddEquiv.toMultiplicative'.symm e, by simp⟩
+  left_inv e := by ext; simp
+  right_inv e := by ext; simp
+
+/-- Reinterpret `G ≃* Multiplicative H` as `Additive G ≃+ H`. -/
+abbrev OrderMonoidIso.toAdditive' {G H : Type*}
+    [CommMonoid G] [PartialOrder G] [AddCommMonoid H] [PartialOrder H] :
+    (G ≃*o Multiplicative H) ≃ (Additive G ≃+o H) :=
+  OrderAddMonoidIso.toMultiplicative'.symm
+
+/-- Reinterpret `G ≃+o Additive H` as `Multiplicative G ≃*o H`. -/
+def OrderAddMonoidIso.toMultiplicative'' {G H : Type*}
+    [AddCommMonoid G] [PartialOrder G] [CommMonoid H] [PartialOrder H] :
+    (G ≃+o Additive H) ≃ (Multiplicative G ≃*o H) where
+  toFun e := ⟨AddEquiv.toMultiplicative'' e, by simp⟩
+  invFun e := ⟨AddEquiv.toMultiplicative''.symm e, by simp⟩
+  left_inv e := by ext; simp
+  right_inv e := by ext; simp
+
+/-- Reinterpret `Multiplicative G ≃*o H` as `G ≃+o Additive H` as. -/
+abbrev OrderMonoidIso.toAdditive'' {G H : Type*}
+    [AddCommMonoid G] [PartialOrder G] [CommMonoid H] [PartialOrder H] :
+    (Multiplicative G ≃*o H) ≃ (G ≃+o Additive H) :=
+  OrderAddMonoidIso.toMultiplicative''.symm
+
+/-- The multiplicative version of an additivized ordered monoid is order-mul-equivalent to itself.
+-/
+def OrderMonoidIso.toMultiplicative_toAdditive {G : Type*} [CommMonoid G] [PartialOrder G] :
+    Multiplicative (Additive G) ≃*o G :=
+  OrderAddMonoidIso.toMultiplicative'' <| OrderMonoidIso.toAdditive (.refl _)
+
+/-- The additive version of an multiplicativized ordered additive monoid is
+order-add-equivalent to itself. -/
+def OrderAddMonoidIso.toAdditive_toMultiplicative {G : Type*} [AddCommMonoid G] [PartialOrder G] :
+    Additive (Multiplicative G) ≃+o G :=
+  OrderMonoidIso.toAdditive' <| OrderAddMonoidIso.toMultiplicative (.refl _)
+
+instance Additive.instUniqueOrderAddMonoidIso {G H : Type*}
+    [CommMonoid G] [PartialOrder G] [CommMonoid H] [PartialOrder H] [Unique (G ≃*o H)] :
+    Unique (Additive G ≃+o Additive H) :=
+  OrderMonoidIso.toAdditive.symm.unique
+
+instance Multiplicative.instUniqueOrderdMonoidIso {G H : Type*}
+    [AddCommMonoid G] [PartialOrder G] [AddCommMonoid H] [PartialOrder H] [Unique (G ≃+o H)] :
+    Unique (Multiplicative G ≃*o Multiplicative H) :=
+  OrderAddMonoidIso.toMultiplicative.symm.unique
+
+end TypeTags
 
 /-- Any linearly ordered archimedean additive group is either isomorphic (and order-isomorphic)
 to the integers, or is densely ordered. -/
@@ -276,6 +350,16 @@ lemma denselyOrdered_units_iff {G₀ : Type*} [LinearOrderedCommGroupWithZero G�
     refine ⟨Units.mk0 z hz'.ne', ?_⟩
     simp [← Units.val_lt_val, hz]
 
+/-- Any linearly ordered group with zero is isomorphic to adjoining `0` to the units of itself. -/
+@[simps!]
+def OrderMonoidIso.withZeroUnits {α : Type*} [LinearOrderedCommGroupWithZero α]
+    [DecidablePred (fun a : α ↦ a = 0)] :
+    WithZero αˣ ≃*o α where
+  toMulEquiv := WithZero.withZeroUnitsEquiv
+  map_le_map_iff' {a b} := by
+    cases a <;> cases b <;>
+    simp
+
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
 either isomorphic (and order-isomorphic) to `ℤₘ₀`, or is densely ordered. -/
 lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
@@ -285,17 +369,7 @@ lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
   rw [← denselyOrdered_units_iff]
   refine (LinearOrderedCommGroup.discrete_or_denselyOrdered Gˣ).imp_left ?_
   intro ⟨f⟩
-  refine ⟨OrderMonoidIso.trans
-    ⟨WithZero.withZeroUnitsEquiv.symm, ?_⟩ ⟨f.withZero, ?_⟩⟩
-  · intro
-    simp only [WithZero.withZeroUnitsEquiv, MulEquiv.symm_mk,
-      MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe, MulEquiv.coe_mk,
-      Equiv.coe_fn_symm_mk ]
-    split_ifs <;>
-    simp_all [← Units.val_le_val]
-  · intro a b
-    induction a <;> induction b <;>
-    simp [MulEquiv.withZero]
+  exact ⟨OrderMonoidIso.withZeroUnits.symm.trans f.withZero⟩
 
 open WithZero in
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
@@ -306,9 +380,9 @@ lemma LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered (G : Type*)
   rw [← denselyOrdered_units_iff,
       ← LinearOrderedCommGroup.discrete_iff_not_denselyOrdered]
   refine Nonempty.congr ?_ ?_ <;> intro f
-  · refine ⟨MulEquiv.unzero (withZeroUnitsEquiv.trans f), ?_⟩
+  · refine ⟨MulEquiv.withZero.symm (withZeroUnitsEquiv.trans f), ?_⟩
     intros
-    simp only [MulEquiv.unzero, withZeroUnitsEquiv, MulEquiv.trans_apply,
+    simp only [MulEquiv.withZero, withZeroUnitsEquiv, MulEquiv.trans_apply,
       MulEquiv.coe_mk, Equiv.coe_fn_mk, recZeroCoe_coe, OrderMonoidIso.coe_mulEquiv,
       MulEquiv.symm_trans_apply, MulEquiv.symm_mk, Equiv.coe_fn_symm_mk, map_eq_zero, coe_ne_zero,
       ↓reduceDIte, unzero_coe, MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe]
@@ -402,10 +476,10 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_le_lt_iff_nonempty_disc
       rcases eq_or_ne b 0 with rfl|hb
       · simp [WithZero.withZeroUnitsEquiv, MulEquiv.withZero]
       simp [WithZero.withZeroUnitsEquiv, MulEquiv.withZero, ha, hb, ← Units.val_le_val]
-    · exact MulEquiv.unzero (WithZero.withZeroUnitsEquiv.trans f)
+    · exact MulEquiv.withZero.symm (WithZero.withZeroUnitsEquiv.trans f)
     · intros
       rw [← WithZero.coe_le_coe]
-      simp [WithZero.withZeroUnitsEquiv, MulEquiv.unzero]
+      simp
   rw [← Set.wellFoundedOn_sdiff_singleton (a := 0)]
   refine ⟨fun h ↦ (h.mapsTo Units.val ?_).mono' ?_,
     fun h ↦ (h.mapsTo ?_ ?_).mono' ?_⟩

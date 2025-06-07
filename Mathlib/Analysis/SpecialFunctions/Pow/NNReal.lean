@@ -513,7 +513,7 @@ theorem rpow_one (x : ℝ≥0∞) : x ^ (1 : ℝ) = x := by
   · exact dif_pos zero_lt_one
   · change ite _ _ _ = _
     simp only [NNReal.rpow_one, some_eq_coe, ite_eq_right_iff, top_ne_coe, and_imp]
-    exact fun _ => zero_le_one.not_lt
+    exact fun _ => zero_le_one.not_gt
 
 @[simp]
 theorem one_rpow (x : ℝ) : (1 : ℝ≥0∞) ^ x = 1 := by
@@ -533,7 +533,7 @@ theorem rpow_eq_zero_iff {x : ℝ≥0∞} {y : ℝ} : x ^ y = 0 ↔ x = 0 ∧ 0 
     · simp [← coe_rpow_of_ne_zero h, h]
 
 lemma rpow_eq_zero_iff_of_pos {x : ℝ≥0∞} {y : ℝ} (hy : 0 < y) : x ^ y = 0 ↔ x = 0 := by
-  simp [hy, hy.not_lt]
+  simp [hy, hy.not_gt]
 
 @[simp]
 theorem rpow_eq_top_iff {x : ℝ≥0∞} {y : ℝ} : x ^ y = ⊤ ↔ x = 0 ∧ y < 0 ∨ x = ⊤ ∧ 0 < y := by
@@ -561,11 +561,23 @@ theorem rpow_eq_top_of_nonneg (x : ℝ≥0∞) {y : ℝ} (hy0 : 0 ≤ y) : x ^ y
     exact h.right hy0
   · exact h.left
 
+-- This is an unsafe rule since we want to try `rpow_ne_top_of_ne_zero` if `y < 0`.
+@[aesop (rule_sets := [finiteness]) unsafe apply]
 theorem rpow_ne_top_of_nonneg {x : ℝ≥0∞} {y : ℝ} (hy0 : 0 ≤ y) (h : x ≠ ⊤) : x ^ y ≠ ⊤ :=
   mt (ENNReal.rpow_eq_top_of_nonneg x hy0) h
 
+-- This is an unsafe rule since we want to try `rpow_ne_top_of_nonneg'` if `x = 0`.
+@[aesop (rule_sets := [finiteness]) unsafe apply]
+theorem rpow_ne_top_of_nonneg' {y : ℝ} {x : ℝ≥0∞} (hx : 0 < x) (hx' : x ≠ ⊤) : x ^ y ≠ ⊤ :=
+  fun h ↦ by simp [rpow_eq_top_iff, hx.ne', hx'] at h
+
 theorem rpow_lt_top_of_nonneg {x : ℝ≥0∞} {y : ℝ} (hy0 : 0 ≤ y) (h : x ≠ ⊤) : x ^ y < ⊤ :=
   lt_top_iff_ne_top.mpr (ENNReal.rpow_ne_top_of_nonneg hy0 h)
+
+-- This is an unsafe rule since we want to try `rpow_ne_top_of_nonneg` if `x = 0`.
+@[aesop (rule_sets := [finiteness]) unsafe apply]
+theorem rpow_ne_top_of_ne_zero {x : ℝ≥0∞} {y : ℝ} (hx : x ≠ 0) (hx' : x ≠ ⊤) : x ^ y ≠ ⊤ := by
+  simp [rpow_eq_top_iff, hx, hx']
 
 theorem rpow_add {x : ℝ≥0∞} (y z : ℝ) (hx : x ≠ 0) (h'x : x ≠ ⊤) : x ^ (y + z) = x ^ y * x ^ z := by
   cases x with
@@ -640,9 +652,9 @@ theorem mul_rpow_eq_ite (x y : ℝ≥0∞) (z : ℝ) :
   rcases eq_or_ne z 0 with (rfl | hz); · simp
   replace hz := hz.lt_or_lt
   wlog hxy : x ≤ y
-  · convert this y x z hz (le_of_not_le hxy) using 2 <;> simp only [mul_comm, and_comm, or_comm]
+  · convert this y x z hz (le_of_not_ge hxy) using 2 <;> simp only [mul_comm, and_comm, or_comm]
   rcases eq_or_ne x 0 with (rfl | hx0)
-  · induction y <;> rcases hz with hz | hz <;> simp [*, hz.not_lt]
+  · induction y <;> rcases hz with hz | hz <;> simp [*, hz.not_gt]
   rcases eq_or_ne y 0 with (rfl | hy0)
   · exact (hx0 (bot_unique hxy)).elim
   induction x
@@ -673,7 +685,7 @@ theorem mul_rpow_of_ne_zero {x y : ℝ≥0∞} (hx : x ≠ 0) (hy : y ≠ 0) (z 
     (x * y) ^ z = x ^ z * y ^ z := by simp [*, mul_rpow_eq_ite]
 
 theorem mul_rpow_of_nonneg (x y : ℝ≥0∞) {z : ℝ} (hz : 0 ≤ z) : (x * y) ^ z = x ^ z * y ^ z := by
-  simp [hz.not_lt, mul_rpow_eq_ite]
+  simp [hz.not_gt, mul_rpow_eq_ite]
 
 theorem prod_rpow_of_ne_top {ι} {s : Finset ι} {f : ι → ℝ≥0∞} (hf : ∀ i ∈ s, f i ≠ ∞) (r : ℝ) :
     ∏ i ∈ s, f i ^ r = (∏ i ∈ s, f i) ^ r := by
@@ -813,7 +825,7 @@ theorem rpow_pos_of_nonneg {p : ℝ} {x : ℝ≥0∞} (hx_pos : 0 < x) (hp_nonne
     exact rpow_lt_rpow hx_pos hp_pos
 
 theorem rpow_pos {p : ℝ} {x : ℝ≥0∞} (hx_pos : 0 < x) (hx_ne_top : x ≠ ⊤) : 0 < x ^ p := by
-  rcases lt_or_le 0 p with hp_pos | hp_nonpos
+  rcases lt_or_ge 0 p with hp_pos | hp_nonpos
   · exact rpow_pos_of_nonneg hx_pos (le_of_lt hp_pos)
   · rw [← neg_neg p, rpow_neg, ENNReal.inv_pos]
     exact rpow_ne_top_of_nonneg (Right.nonneg_neg_iff.mpr hp_nonpos) hx_ne_top

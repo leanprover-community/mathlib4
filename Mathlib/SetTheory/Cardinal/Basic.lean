@@ -343,9 +343,9 @@ lemma succ_eq_of_lt_aleph0 {c : Cardinal} (h : c < ℵ₀) : Order.succ c = c + 
 
 theorem aleph0_le {c : Cardinal} : ℵ₀ ≤ c ↔ ∀ n : ℕ, ↑n ≤ c :=
   ⟨fun h _ => (nat_lt_aleph0 _).le.trans h, fun h =>
-    le_of_not_lt fun hn => by
+    le_of_not_gt fun hn => by
       rcases lt_aleph0.1 hn with ⟨n, rfl⟩
-      exact (Nat.lt_succ_self _).not_le (Nat.cast_le.1 (h (n + 1)))⟩
+      exact (Nat.lt_succ_self _).not_ge (Nat.cast_le.1 (h (n + 1)))⟩
 
 theorem isSuccPrelimit_aleph0 : IsSuccPrelimit ℵ₀ :=
   isSuccPrelimit_of_succ_lt fun a ha => by
@@ -451,9 +451,9 @@ theorem nsmul_lt_aleph0_iff {n : ℕ} {a : Cardinal} : n • a < ℵ₀ ↔ n = 
   | zero => simpa using nat_lt_aleph0 0
   | succ n =>
       simp only [Nat.succ_ne_zero, false_or]
-      induction' n with n ih
-      · simp
-      rw [succ_nsmul, add_lt_aleph0_iff, ih, and_self_iff]
+      induction n with
+      | zero => simp
+      | succ n ih => rw [succ_nsmul, add_lt_aleph0_iff, ih, and_self_iff]
 
 /-- See also `Cardinal.nsmul_lt_aleph0_iff` for a hypothesis-free version. -/
 theorem nsmul_lt_aleph0_iff_of_ne_zero {n : ℕ} {a : Cardinal} (h : n ≠ 0) : n • a < ℵ₀ ↔ a < ℵ₀ :=
@@ -626,7 +626,7 @@ theorem mk_emptyCollection_iff {α : Type u} {s : Set α} : #s = 0 ↔ s = ∅ :
   constructor
   · intro h
     rw [mk_eq_zero_iff] at h
-    exact eq_empty_iff_forall_not_mem.2 fun x hx => h.elim' ⟨x, hx⟩
+    exact eq_empty_iff_forall_notMem.2 fun x hx => h.elim' ⟨x, hx⟩
   · rintro rfl
     exact mk_emptyCollection _
 
@@ -927,7 +927,7 @@ theorem mk_eq_two_iff' (x : α) : #α = 2 ↔ ∃! y, y ≠ x := by
   · rintro ⟨y, hne, hy⟩
     exact ⟨x, y, hne.symm, eq_univ_of_forall fun z => or_iff_not_imp_left.2 (hy z)⟩
 
-theorem exists_not_mem_of_length_lt {α : Type*} (l : List α) (h : ↑l.length < #α) :
+theorem exists_notMem_of_length_lt {α : Type*} (l : List α) (h : ↑l.length < #α) :
     ∃ z : α, z ∉ l := by
   classical
   contrapose! h
@@ -937,10 +937,13 @@ theorem exists_not_mem_of_length_lt {α : Type*} (l : List α) (h : ↑l.length 
     _ = l.toFinset.card := Cardinal.mk_coe_finset
     _ ≤ l.length := Nat.cast_le.mpr (List.toFinset_card_le l)
 
+@[deprecated (since := "2025-05-23")]
+alias exists_not_mem_of_length_lt := exists_notMem_of_length_lt
+
 theorem three_le {α : Type*} (h : 3 ≤ #α) (x : α) (y : α) : ∃ z : α, z ≠ x ∧ z ≠ y := by
   have : ↑(3 : ℕ) ≤ #α := by simpa using h
   have : ↑(2 : ℕ) < #α := by rwa [← succ_le_iff, ← Cardinal.nat_succ]
-  have := exists_not_mem_of_length_lt [x, y] this
+  have := exists_notMem_of_length_lt [x, y] this
   simpa [not_or] using this
 
 /-! ### `powerlt` operation -/
@@ -986,6 +989,6 @@ theorem zero_powerlt {a : Cardinal} (h : a ≠ 0) : 0 ^< a = 1 := by
 @[simp]
 theorem powerlt_zero {a : Cardinal} : a ^< 0 = 0 := by
   convert Cardinal.iSup_of_empty _
-  exact Subtype.isEmpty_of_false fun x => mem_Iio.not.mpr (Cardinal.zero_le x).not_lt
+  exact Subtype.isEmpty_of_false fun x => mem_Iio.not.mpr (Cardinal.zero_le x).not_gt
 
 end Cardinal

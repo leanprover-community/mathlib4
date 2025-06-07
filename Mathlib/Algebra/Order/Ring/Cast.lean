@@ -13,7 +13,7 @@ import Mathlib.Data.Nat.Cast.Order.Ring
 This file proves additional properties about the *canonical* homomorphism from
 the integers into an additive group with a one (`Int.cast`),
 particularly results involving algebraic homomorphisms or the order structure on `ℤ`
-which were not available in the import dependencies of `Mathlib.Data.Int.Cast.Basic`.
+which were not available in the import dependencies of `Mathlib/Data/Int/Cast/Basic.lean`.
 
 ## TODO
 
@@ -45,7 +45,7 @@ variable [NeZero (1 : R)] {m n : ℤ}
   | (n : ℕ) => by simp
   | -[n+1] => by
     have : -(n : R) < 1 := lt_of_le_of_lt (by simp) zero_lt_one
-    simpa [(negSucc_lt_zero n).not_le, ← sub_eq_add_neg, le_neg] using this.not_le
+    simpa [(negSucc_lt_zero n).not_ge, ← sub_eq_add_neg, le_neg] using this.not_ge
 
 @[simp, norm_cast] lemma cast_le : (m : R) ≤ n ↔ m ≤ n := by
   rw [← sub_nonneg, ← cast_sub, cast_nonneg, sub_nonneg]
