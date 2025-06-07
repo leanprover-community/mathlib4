@@ -150,10 +150,6 @@ theorem coe_toLinearMap : ⇑f.toLinearMap = f :=
   rfl
 
 @[simp]
-theorem coe_symm_toLinearMap : ⇑f.toLinearMap.symm = f.symm :=
-  rfl
-
-@[simp]
 theorem coe_mk (f : E →ₛₗ[σ₁₂] E₂) (hf) : ⇑(mk f hf) = f :=
   rfl
 
@@ -303,10 +299,6 @@ theorem toContinuousLinearMap_inj {f g : E →ₛₗᵢ[σ₁₂] E₂} :
 
 @[simp]
 theorem coe_toContinuousLinearMap : ⇑f.toContinuousLinearMap = f :=
-  rfl
-
-@[simp]
-theorem coe_symm_toContinuousLinearMap : ⇑f.toContinuousLinearMap.symm = f.symm :=
   rfl
 
 @[simp]
@@ -512,10 +504,6 @@ theorem coe_mk (e : E ≃ₛₗ[σ₁₂] E₂) (he : ∀ x, ‖e x‖ = ‖x‖
 theorem coe_toLinearEquiv (e : E ≃ₛₗᵢ[σ₁₂] E₂) : ⇑e.toLinearEquiv = e :=
   rfl
 
-@[simp]
-theorem coe_symm_toLinearEquiv (e : E ≃ₛₗᵢ[σ₁₂] E₂) : ⇑e.toLinearEquiv.symm = e.symm :=
-  rfl
-
 @[ext]
 theorem ext {e e' : E ≃ₛₗᵢ[σ₁₂] E₂} (h : ∀ x, e x = e' x) : e = e' :=
   toLinearEquiv_injective <| LinearEquiv.ext h
@@ -552,10 +540,6 @@ theorem toLinearIsometry_inj {f g : E ≃ₛₗᵢ[σ₁₂] E₂} :
 theorem coe_toLinearIsometry : ⇑e.toLinearIsometry = e :=
   rfl
 
-@[simp]
-theorem coe_symm_toLinearIsometry : ⇑e.toLinearIsometry.symm = e.symm :=
-  rfl
-
 protected theorem isometry : Isometry e :=
   e.toLinearIsometry.isometry
 
@@ -576,10 +560,6 @@ theorem toIsometryEquiv_inj {f g : E ≃ₛₗᵢ[σ₁₂] E₂} :
 theorem coe_toIsometryEquiv : ⇑e.toIsometryEquiv = e :=
   rfl
 
-@[simp]
-theorem coe_symm_toIsometryEquiv : ⇑e.toIsometryEquiv.symm = e.symm :=
-  rfl
-
 theorem range_eq_univ (e : E ≃ₛₗᵢ[σ₁₂] E₂) : Set.range e = Set.univ := by
   rw [← coe_toIsometryEquiv]
   exact IsometryEquiv.range_eq_univ _
@@ -597,10 +577,6 @@ theorem toHomeomorph_inj {f g : E ≃ₛₗᵢ[σ₁₂] E₂} : f.toHomeomorph 
 
 @[simp]
 theorem coe_toHomeomorph : ⇑e.toHomeomorph = e :=
-  rfl
-
-@[simp]
-theorem coe_symm_toHomeomorph : ⇑e.toHomeomorph.symm = e.symm :=
   rfl
 
 protected theorem continuous : Continuous e :=
@@ -681,12 +657,21 @@ theorem toLinearEquiv_symm : e.symm.toLinearEquiv = e.toLinearEquiv.symm :=
   rfl
 
 @[simp]
+theorem coe_symm_toLinearEquiv : ⇑e.toLinearEquiv.symm = e.symm := rfl
+
+@[simp]
 theorem toIsometryEquiv_symm : e.symm.toIsometryEquiv = e.toIsometryEquiv.symm :=
   rfl
 
 @[simp]
+theorem coe_symm_toIsometryEquiv : ⇑e.toIsometryEquiv.symm = e.symm := rfl
+
+@[simp]
 theorem toHomeomorph_symm : e.symm.toHomeomorph = e.toHomeomorph.symm :=
   rfl
+
+@[simp]
+theorem coe_symm_toHomeomorph : ⇑e.toHomeomorph.symm = e.symm := rfl
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
@@ -719,6 +704,16 @@ theorem trans_apply (e₁ : E ≃ₛₗᵢ[σ₁₂] E₂) (e₂ : E₂ ≃ₛ�
 @[simp]
 theorem toLinearEquiv_trans (e' : E₂ ≃ₛₗᵢ[σ₂₃] E₃) :
     (e.trans e').toLinearEquiv = e.toLinearEquiv.trans e'.toLinearEquiv :=
+  rfl
+
+@[simp]
+theorem toIsometryEquiv_trans (e' : E₂ ≃ₛₗᵢ[σ₂₃] E₃) :
+    (e.trans e').toIsometryEquiv = e.toIsometryEquiv.trans e'.toIsometryEquiv :=
+  rfl
+
+@[simp]
+theorem toHomeomorph_trans (e' : E₂ ≃ₛₗᵢ[σ₂₃] E₃) :
+    (e.trans e').toHomeomorph = e.toHomeomorph.trans e'.toHomeomorph :=
   rfl
 
 @[simp]
