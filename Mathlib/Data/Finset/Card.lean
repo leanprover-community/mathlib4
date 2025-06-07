@@ -520,10 +520,6 @@ theorem card_le_card_sdiff_add_card : #s ≤ #(s \ t) + #t :=
 theorem card_sdiff_add_card (s t : Finset α) : #(s \ t) + #t = #(s ∪ t) := by
   rw [← card_union_of_disjoint sdiff_disjoint, sdiff_union_self_eq_union]
 
-lemma card_sdiff_comm (h : #s = #t) : #(s \ t) = #(t \ s) :=
-  Nat.add_right_cancel (m := #t) <| by
-    simp_rw [card_sdiff_add_card, ← h, card_sdiff_add_card, union_comm]
-
 theorem sdiff_nonempty_of_card_lt_card (h : #s < #t) : (t \ s).Nonempty := by
   rw [nonempty_iff_ne_empty, Ne, sdiff_eq_empty_iff_subset]
   exact fun h' ↦ h.not_le (card_le_card h')
@@ -544,6 +540,17 @@ lemma card_sdiff_add_card_inter (s t : Finset α) :
 lemma card_inter_add_card_sdiff (s t : Finset α) :
     #(s ∩ t) + #(s \ t) = #s := by
   rw [Nat.add_comm, card_sdiff_add_card_inter]
+
+lemma card_sdiff_le_card_sdiff_iff : #(s \ t) ≤ #(t \ s) ↔ #s ≤ #t := by
+  rw [← Nat.add_le_add_iff_left, card_inter_add_card_sdiff, inter_comm, card_inter_add_card_sdiff]
+
+lemma card_sdiff_lt_card_sdiff_iff : #(s \ t) < #(t \ s) ↔ #s < #t :=
+  lt_iff_lt_of_le_iff_le card_sdiff_le_card_sdiff_iff
+
+lemma card_sdiff_eq_card_sdiff_iff : #(s \ t) = #(t \ s) ↔ #s = #t := by
+  rw [← Nat.add_left_cancel_iff, card_inter_add_card_sdiff, inter_comm, card_inter_add_card_sdiff]
+
+alias ⟨_, card_sdiff_comm⟩ := card_sdiff_eq_card_sdiff_iff
 
 /-- **Pigeonhole principle** for two finsets inside an ambient finset. -/
 theorem inter_nonempty_of_card_lt_card_add_card (hts : t ⊆ s) (hus : u ⊆ s)
