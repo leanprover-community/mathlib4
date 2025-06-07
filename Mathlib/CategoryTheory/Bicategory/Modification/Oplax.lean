@@ -184,7 +184,7 @@ end
 
 end Modification
 
-/-- Category structure on the oplax natural transformations between oplax functors. -/
+/-- Category structure on the strong natural transformations between oplax functors. -/
 @[simps]
 scoped instance homCategory : Category (F ⟶ G) where
   Hom := Modification
