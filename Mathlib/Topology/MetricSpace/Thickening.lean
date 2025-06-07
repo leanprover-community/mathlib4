@@ -248,7 +248,7 @@ theorem cthickening_singleton {α : Type*} [PseudoMetricSpace α] (x : α) {δ :
 
 theorem closedBall_subset_cthickening_singleton {α : Type*} [PseudoMetricSpace α] (x : α) (δ : ℝ) :
     closedBall x δ ⊆ cthickening δ ({x} : Set α) := by
-  rcases lt_or_le δ 0 with (hδ | hδ)
+  rcases lt_or_ge δ 0 with (hδ | hδ)
   · simp only [closedBall_eq_empty.mpr hδ, empty_subset]
   · simp only [cthickening_singleton x hδ, Subset.rfl]
 
@@ -645,6 +645,25 @@ theorem thickening_ball [PseudoMetricSpace α] (x : α) (ε δ : ℝ) :
   apply thickening_thickening_subset
 
 end Metric
+
+section Clopen
+
+open Metric
+
+variable [PseudoEMetricSpace α] {s : Set α}
+
+lemma IsClopen.of_thickening_subset_self {δ : ℝ} (hδ : 0 < δ) (hs : thickening δ s ⊆ s) :
+    IsClopen s := by
+  replace hs : thickening δ s = s := le_antisymm hs (self_subset_thickening hδ s)
+  refine ⟨?_, hs ▸ isOpen_thickening⟩
+  rw [← closure_subset_iff_isClosed, closure_eq_iInter_thickening]
+  exact Set.biInter_subset_of_mem hδ |>.trans_eq hs
+
+lemma IsClopen.of_cthickening_subset_self {δ : ℝ} (hδ : 0 < δ) (hs : cthickening δ s ⊆ s) :
+    IsClopen s :=
+  .of_thickening_subset_self hδ <| (thickening_subset_cthickening δ s).trans hs
+
+end Clopen
 
 open Metric in
 theorem IsCompact.exists_thickening_image_subset

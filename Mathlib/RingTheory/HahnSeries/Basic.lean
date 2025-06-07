@@ -332,6 +332,7 @@ theorem leadingCoeff_eq_iff {x : HahnSeries Γ R} : x.leadingCoeff = 0 ↔ x = 0
 theorem leadingCoeff_ne_iff {x : HahnSeries Γ R} : x.leadingCoeff ≠ 0 ↔ x ≠ 0 :=
   leadingCoeff_eq_iff.not
 
+@[simp]
 theorem leadingCoeff_of_single {a : Γ} {r : R} : leadingCoeff (single a r) = r := by
   simp only [leadingCoeff, single_eq_zero_iff]
   by_cases h : r = 0 <;> simp [h]

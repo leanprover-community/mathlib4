@@ -1057,7 +1057,7 @@ theorem continuousAt_zero' [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] {p 
     {r : ℝ} (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) : ContinuousAt p 0 := by
   refine continuousAt_zero_of_forall' fun ε hε ↦ ?_
   obtain ⟨k, hk₀, hk⟩ : ∃ k : 𝕜, 0 < ‖k‖ ∧ ‖k‖ * r < ε := by
-    rcases le_or_lt r 0 with hr | hr
+    rcases le_or_gt r 0 with hr | hr
     · use 1; simpa using hr.trans_lt hε
     · simpa [lt_div_iff₀ hr] using exists_norm_lt 𝕜 (div_pos hε hr)
   rw [← set_smul_mem_nhds_zero_iff (norm_pos_iff.1 hk₀), smul_closedBall_zero hk₀] at hp

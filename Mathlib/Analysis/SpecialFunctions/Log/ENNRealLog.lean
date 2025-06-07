@@ -149,7 +149,7 @@ theorem log_mul_add {x y : ℝ≥0∞} : log (x * y) = log x + log y := by
 theorem log_rpow {x : ℝ≥0∞} {y : ℝ} : log (x ^ y) = y * log x := by
   rcases lt_trichotomy y 0 with (y_neg | rfl | y_pos)
   · rcases ENNReal.trichotomy x with (rfl | rfl | x_real)
-    · simp only [ENNReal.zero_rpow_def y, not_lt_of_lt y_neg, y_neg.ne, if_false, log_top,
+    · simp only [ENNReal.zero_rpow_def y, not_lt_of_gt y_neg, y_neg.ne, if_false, log_top,
         log_zero, EReal.coe_mul_bot_of_neg y_neg]
     · rw [ENNReal.top_rpow_of_neg y_neg, log_zero, log_top, EReal.coe_mul_top_of_neg y_neg]
     · have x_ne_zero := (ENNReal.toReal_pos_iff.1 x_real).1.ne'

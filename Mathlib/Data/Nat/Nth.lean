@@ -198,7 +198,7 @@ theorem isLeast_nth {n} (h : ∀ hf : (setOf p).Finite, n < #hf.toFinset) :
     IsLeast {i | p i ∧ ∀ k < n, nth p k < i} (nth p n) :=
   ⟨⟨nth_mem n h, fun _k hk => nth_lt_nth' hk h⟩, fun _x hx =>
     let ⟨k, hk, hkx⟩ := exists_lt_card_nth_eq hx.1
-    (lt_or_le k n).elim (fun hlt => absurd hkx (hx.2 _ hlt).ne) fun hle => hkx ▸ nth_le_nth' hle hk⟩
+    (lt_or_ge k n).elim (fun hlt => absurd hkx (hx.2 _ hlt).ne) fun hle => hkx ▸ nth_le_nth' hle hk⟩
 
 theorem isLeast_nth_of_lt_card {n : ℕ} (hf : (setOf p).Finite) (hn : n < #hf.toFinset) :
     IsLeast {i | p i ∧ ∀ k < n, nth p k < i} (nth p n) :=
@@ -256,7 +256,7 @@ lemma nth_ne_zero_anti (h₀ : ¬p 0) {a b : ℕ} (hab : a ≤ b) (hb : nth p b 
 theorem le_nth_of_lt_nth_succ {k a : ℕ} (h : a < nth p (k + 1)) (ha : p a) : a ≤ nth p k := by
   rcases (setOf p).finite_or_infinite with hf | hf
   · rcases exists_lt_card_finite_nth_eq hf ha with ⟨n, hn, rfl⟩
-    rcases lt_or_le (k + 1) #hf.toFinset with hk | hk
+    rcases lt_or_ge (k + 1) #hf.toFinset with hk | hk
     · rwa [(nth_strictMonoOn hf).lt_iff_lt hn hk, Nat.lt_succ_iff,
         ← (nth_strictMonoOn hf).le_iff_le hn (k.lt_succ_self.trans hk)] at h
     · rw [nth_of_card_le _ hk] at h
