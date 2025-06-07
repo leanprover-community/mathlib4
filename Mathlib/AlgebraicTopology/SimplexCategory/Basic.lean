@@ -8,6 +8,7 @@ import Mathlib.Data.Fintype.Sort
 import Mathlib.Order.Category.NonemptyFinLinOrd
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.SimplexCategory
 
 /-! # Basic properties of the simplex category
 
