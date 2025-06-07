@@ -68,7 +68,7 @@ theorem concat_comp_IccInclusionRight (hb : f ⊤ = g ⊥) :
   ext ⟨x, hx⟩
   obtain rfl | hxb := eq_or_ne x b
   · simpa [concat, IccInclusionRight, IccExtendCM, projIccCM, inclusion, hb]
-  · have h : ¬ x ≤ b := lt_of_le_of_ne hx.1 (Ne.symm hxb) |>.not_le
+  · have h : ¬ x ≤ b := lt_of_le_of_ne hx.1 (Ne.symm hxb) |>.not_ge
     simp [concat, hb, IccInclusionRight, h, IccExtendCM, projIccCM, projIcc, inclusion, hx.2, hx.1]
 
 @[simp]

@@ -420,7 +420,7 @@ theorem exists_ne_map_eq_of_card_lt_of_maps_to {t : Finset β} (hc : #t < #s) {f
     (hf : ∀ a ∈ s, f a ∈ t) : ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by
   classical
   by_contra! hz
-  refine hc.not_le (card_le_card_of_injOn f hf ?_)
+  refine hc.not_ge (card_le_card_of_injOn f hf ?_)
   intro x hx y hy
   contrapose
   exact hz x hx y hy
@@ -522,7 +522,7 @@ theorem card_sdiff_add_card (s t : Finset α) : #(s \ t) + #t = #(s ∪ t) := by
 
 theorem sdiff_nonempty_of_card_lt_card (h : #s < #t) : (t \ s).Nonempty := by
   rw [nonempty_iff_ne_empty, Ne, sdiff_eq_empty_iff_subset]
-  exact fun h' ↦ h.not_le (card_le_card h')
+  exact fun h' ↦ h.not_ge (card_le_card h')
 
 omit [DecidableEq α] in
 theorem exists_mem_notMem_of_card_lt_card (h : #s < #t) : ∃ e, e ∈ t ∧ e ∉ s := by
@@ -645,7 +645,7 @@ theorem card_le_one_iff_subset_singleton [Nonempty α] : #s ≤ 1 ↔ ∃ x : α
 lemma exists_mem_ne (hs : 1 < #s) (a : α) : ∃ b ∈ s, b ≠ a := by
   have : Nonempty α := ⟨a⟩
   by_contra!
-  exact hs.not_le (card_le_one_iff_subset_singleton.2 ⟨a, subset_singleton_iff'.2 this⟩)
+  exact hs.not_ge (card_le_one_iff_subset_singleton.2 ⟨a, subset_singleton_iff'.2 this⟩)
 
 /-- A `Finset` of a subsingleton type has cardinality at most one. -/
 theorem card_le_one_of_subsingleton [Subsingleton α] (s : Finset α) : #s ≤ 1 :=

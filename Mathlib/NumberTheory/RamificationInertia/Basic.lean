@@ -89,7 +89,7 @@ theorem ramificationIdx_spec {n : ℕ} (hle : map f p ≤ P ^ n) (hgt : ¬map f 
   rw [ramificationIdx_eq_find ⟨n, this⟩]
   refine le_antisymm (Nat.find_min' _ this) (le_of_not_gt fun h : Nat.find _ < n => ?_)
   obtain this' := Nat.find_spec ⟨n, this⟩
-  exact h.not_le (this' _ hle)
+  exact h.not_ge (this' _ hle)
 
 theorem ramificationIdx_lt {n : ℕ} (hgt : ¬map f p ≤ P ^ n) : ramificationIdx f p P < n := by
   classical
@@ -104,7 +104,7 @@ theorem ramificationIdx_lt {n : ℕ} (hgt : ¬map f p ≤ P ^ n) : ramificationI
 
 @[simp]
 theorem ramificationIdx_bot : ramificationIdx f ⊥ P = 0 :=
-  dif_neg <| not_exists.mpr fun n hn => n.lt_succ_self.not_le (hn _ (by simp))
+  dif_neg <| not_exists.mpr fun n hn => n.lt_succ_self.not_ge (hn _ (by simp))
 
 @[simp]
 theorem ramificationIdx_of_not_le (h : ¬map f p ≤ P) : ramificationIdx f p P = 0 :=
@@ -199,7 +199,7 @@ theorem ramificationIdx_eq_normalizedFactors_count [DecidableEq (Ideal S)]
     rw [dvd_iff_normalizedFactors_le_normalizedFactors (pow_ne_zero _ hP0) hp0,
       normalizedFactors_pow, normalizedFactors_irreducible hPirr, normalize_eq,
       Multiset.nsmul_singleton, ← Multiset.le_count_iff_replicate_le]
-  exact (Nat.lt_succ_self _).not_le
+  exact (Nat.lt_succ_self _).not_ge
 
 theorem ramificationIdx_eq_factors_count [DecidableEq (Ideal S)]
     (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (hP0 : P ≠ ⊥) :
