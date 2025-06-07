@@ -56,7 +56,7 @@ instance normalizationMonoid : NormalizationMonoid ℤ where
   normUnit a := if 0 ≤ a then 1 else -1
   normUnit_zero := if_pos le_rfl
   normUnit_mul {a b} hna hnb := by
-    rcases hna.lt_or_lt with ha | ha <;> rcases hnb.lt_or_lt with hb | hb <;>
+    rcases hna.lt_or_gt with ha | ha <;> rcases hnb.lt_or_gt with hb | hb <;>
       simp [Int.mul_nonneg_iff, ha.le, ha.not_ge, hb.le, hb.not_ge]
   normUnit_coe_units u :=
     (units_eq_one_or u).elim (fun eq => eq.symm ▸ if_pos Int.one_nonneg) fun eq =>

@@ -158,7 +158,7 @@ lemma apply_add_one_lt_of_apply_eq {i j : ℕ} (hi : N ≤ i) (hij : i < j) (ha 
 
 lemma apply_add_one_ne_of_apply_eq {i j : ℕ} (hi : N ≤ i) (hj : N ≤ j) (hij : i ≠ j)
     (ha : a i = a j) : a (i + 1) ≠ a (j + 1) :=
-  hij.lt_or_lt.elim (fun h ↦ (hc.apply_add_one_lt_of_apply_eq hi h ha).ne) fun h ↦
+  hij.lt_or_gt.elim (fun h ↦ (hc.apply_add_one_lt_of_apply_eq hi h ha).ne) fun h ↦
     (hc.apply_add_one_lt_of_apply_eq hj h ha.symm).ne'
 
 lemma exists_infinite_setOf_apply_eq : ∃ m, {i | a i = m}.Infinite := by
