@@ -156,33 +156,41 @@ theorem id_eq_id (X : Grpd) : 𝟙 X = 𝟭 X := rfl
 /-- Composition in the category of categories equals functor composition. -/
 theorem comp_eq_comp {X Y Z : Grpd} (F : X ⟶ Y) (G : Y ⟶ Z) : F ≫ G = F ⋙ G := rfl
 
-/-- Functor that gets the set of objects of a groupoid. It is not
-called `forget`, because it is not a faithful functor. -/
-def objects : Grpd.{v, u} ⥤ Type u where
-  obj := Bundled.α
-  map F := F.obj
+def toCat₁ {C D : Grpd.{v, u}} (F : C ⟶ D) : Cat.of C ⟶ Cat.of D := F
 
-/-- Forgetting functor to `Cat` -/
+/- @[simp]
+lemma functorToCat_eq {C D : Grpd.{v, u}} (F : C ⟶ D) :
+    functorToCat F = F := rfl -/
+
+def toCat₂ {C D : Grpd.{v, u}} {F G : C ⟶ D} (η : F ⟶ G) : toCat₁ F ⟶ toCat₁ G := η
+
+/- @[simp]
+lemma toCat₂_whisker_left {C D E : Grpd.{v, u}} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) :
+    toCat₂ (F ◁ η) = toCat₁ F ◁ toCat₂ η := rfl -/
+section
+
+attribute [-simp] eqToIso_refl
+
+/-- Forgetting pseudofunctor to `Cat` -/
 def forgetToCat' : Pseudofunctor Grpd.{v, u} Cat.{v, u} where
   obj C := Cat.of C
   map := id
   map₂ := id
-  -- TODO: constructor for pseudofunctors into strict bicats?
   mapId C := eqToIso rfl
   mapComp C D := eqToIso rfl
-  map₂_whisker_left := by
-    intros
-    simp [-eqToIso_refl]
-    rfl
-  map₂_whisker_right := sorry
-  map₂_associator := sorry
-  map₂_left_unitor := sorry
-  map₂_right_unitor := sorry
+
+end
 
 /-- Forgetting functor to `Cat` -/
 def forgetToCat : Grpd.{v, u} ⥤ Cat.{v, u} where
   obj C := Cat.of C
   map := id
+
+/-- Functor that gets the set of objects of a groupoid. It is not
+called `forget`, because it is not a faithful functor. -/
+def objects : Grpd.{v, u} ⥤ Type u where
+  obj := Bundled.α
+  map F := F.obj
 
 instance forgetToCat_full : forgetToCat.Full where map_surjective f := ⟨f, rfl⟩
 
