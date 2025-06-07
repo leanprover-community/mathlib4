@@ -1110,7 +1110,6 @@ lemma ext_getVert {u v} {p q : G.Walk u v} (h : ∀ k, p.getVert k = q.getVert k
       rw [getVert_nil, getVert_cons_succ, getVert_zero] at h
       exact ((G.loopless _) (h ▸ ha)).elim
     | cons hb q =>
-      expose_names
       have h₁ := h 1
       rw [getVert_cons_succ, getVert_zero] at h₁
       specialize ih (q := (cons hb q).tail.copy h₁.symm rfl)
