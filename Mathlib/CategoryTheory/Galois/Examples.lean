@@ -61,7 +61,7 @@ noncomputable def Action.imageComplement {X Y : Action FintypeCat G}
   }
 
 /-- The inclusion from the complement of the image of `f : X ⟶ Y` into `Y`. -/
-def Action.imageComplementIncl {X Y : Action FintypeCat G} (f : X ⟶ Y) :
+noncomputable def Action.imageComplementIncl {X Y : Action FintypeCat G} (f : X ⟶ Y) :
     Action.imageComplement G f ⟶ Y where
   hom := FintypeCat.imageComplementIncl f.hom
   comm _ := rfl

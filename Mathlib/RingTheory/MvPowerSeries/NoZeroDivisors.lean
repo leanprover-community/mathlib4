@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.Data.Finsupp.WellFounded
 import Mathlib.RingTheory.MvPowerSeries.LexOrder
+import Mathlib.RingTheory.MvPowerSeries.Order
 
 /-! # ZeroDivisors in a MvPowerSeries ring
 
@@ -13,16 +14,22 @@ import Mathlib.RingTheory.MvPowerSeries.LexOrder
 a multivariate power series whose constant coefficient is not a zero divisor
 is itself not a zero divisor
 
-## TODO
 
-* A subsequent PR https://github.com/leanprover-community/mathlib4/pull/14571 proves that if `R` has no zero divisors,
-then so does `MvPowerSeries σ R`.
+- `MvPowerSeries.order_mul` : multiplicativity of `MvPowerSeries.order`
+  if the semiring `R` has no zero divisors
+
+##  Instance
+
+If `R` has `NoZeroDivisors`, then so does `MvPowerSeries σ R`.
+
+
+## TODO
 
 * Transfer/adapt these results to `HahnSeries`.
 
 ## Remark
 
-The analogue of `Polynomial.nmem_nonZeroDivisors_iff`
+The analogue of `Polynomial.notMem_nonZeroDivisors_iff`
 (McCoy theorem) holds for power series over a noetherian ring,
 but not in general. See [Fields1971]
 -/
@@ -83,14 +90,49 @@ lemma X_mem_nonzeroDivisors {i : σ} :
 
 end Semiring
 
-instance [Semiring R] [NoZeroDivisors R] :
-    NoZeroDivisors (MvPowerSeries σ R) where
+variable [Semiring R] [NoZeroDivisors R]
+
+instance : NoZeroDivisors (MvPowerSeries σ R) where
   eq_zero_or_eq_zero_of_mul_eq_zero {φ ψ} h := by
     letI : LinearOrder σ := LinearOrder.swap σ WellOrderingRel.isWellOrder.linearOrder
     letI : WellFoundedGT σ := by
       change IsWellFounded σ fun x y ↦ WellOrderingRel x y
       exact IsWellOrder.toIsWellFounded
     simpa only [← lexOrder_eq_top_iff_eq_zero, lexOrder_mul, WithTop.add_eq_top] using h
+
+theorem weightedOrder_mul (w : σ → ℕ) (f g : MvPowerSeries σ R) :
+    (f * g).weightedOrder w = f.weightedOrder w + g.weightedOrder w := by
+  apply le_antisymm _ (le_weightedOrder_mul w)
+  by_cases hf : f.weightedOrder w < ⊤
+  · by_cases hg : g.weightedOrder w < ⊤
+    · let p := (f.weightedOrder w).toNat
+      have hp : p = f.weightedOrder w := by
+        simpa only [p, ENat.coe_toNat_eq_self, ← lt_top_iff_ne_top]
+      let q := (g.weightedOrder w).toNat
+      have hq : q = g.weightedOrder w := by
+        simpa only [q, ENat.coe_toNat_eq_self, ← lt_top_iff_ne_top]
+      have : f.weightedHomogeneousComponent w p * g.weightedHomogeneousComponent w q ≠ 0 := by
+        simp only [ne_eq, mul_eq_zero]
+        intro H
+        rcases H with  H | H <;>
+        · refine weightedHomogeneousComponent_of_weightedOrder ?_ H
+          simp only [ENat.coe_toNat_eq_self, ne_eq, weightedOrder_eq_top_iff, p, q]
+          rw [← ne_eq, ne_zero_iff_weightedOrder_finite w]
+          exact ENat.coe_toNat (ne_top_of_lt (by simpa))
+      rw [← weightedHomogeneousComponent_mul_of_le_weightedOrder
+          (le_of_eq hp) (le_of_eq hq)] at this
+      rw [← hp, ← hq, ← Nat.cast_add, ← not_lt]
+      intro H
+      apply this
+      apply weightedHomogeneousComponent_of_lt_weightedOrder_eq_zero H
+    · rw [not_lt_top_iff] at hg
+      simp [hg]
+  · rw [not_lt_top_iff] at hf
+    simp [hf]
+
+theorem order_mul (f g : MvPowerSeries σ R) :
+    (f * g).order = f.order + g.order :=
+  weightedOrder_mul _ f g
 
 end MvPowerSeries
 

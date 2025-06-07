@@ -96,13 +96,11 @@ theorem Prime.eq_one_or_self_of_dvd {p : ℕ} (pp : p.Prime) (m : ℕ) (hm : m �
 theorem prime_def {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, m ∣ p → m = 1 ∨ m = p := by
   refine ⟨fun h => ⟨h.two_le, h.eq_one_or_self_of_dvd⟩, fun h => ?_⟩
   have h1 := Nat.one_lt_two.trans_le h.1
-  refine ⟨mt Nat.isUnit_iff.mp h1.ne', fun a b hab => ?_⟩
+  refine ⟨mt Nat.isUnit_iff.mp h1.ne', ?_⟩
+  rintro a b rfl
   simp only [Nat.isUnit_iff]
-  apply Or.imp_right _ (h.2 a _)
-  · rintro rfl
-    rw [← mul_right_inj' (Nat.ne_zero_of_lt h1), ← hab, mul_one]
-  · rw [hab]
-    exact dvd_mul_right _ _
+  refine (h.2 a <| dvd_mul_right ..).imp_right fun hab ↦ ?_
+  rw [← mul_right_inj' (Nat.ne_zero_of_lt h1), ← hab, ← hab, mul_one]
 
 @[deprecated (since := "2024-11-19")]
 alias prime_def_lt'' := prime_def

@@ -27,7 +27,7 @@ For right multiplication (`a ↦ a * b`) we define the following typeclasses:
 
 We then provide statements and instances about these typeclasses not requiring `MulZeroClass`
 or higher on the underlying type – those that do can be found in
-`Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic`.
+`Mathlib/Algebra/Order/GroupWithZero/Unbundled/Basic.lean`.
 
 Less granular typeclasses like `OrderedAddCommMonoid` and `LinearOrderedField` should be enough for
 most purposes, and the system is set up so that they imply the correct granular typeclasses here.
@@ -36,7 +36,7 @@ most purposes, and the system is set up so that they imply the correct granular 
 
 As the underlying type `α` gets more structured, some of the above typeclasses become equivalent.
 The commonly used implications are:
-* When `α` is a partial order (in `Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic`):
+* When `α` is a partial order (in `Mathlib/Algebra/Order/GroupWithZero/Unbundled/Basic.lean`):
   * `PosMulStrictMono.toPosMulMono`
   * `MulPosStrictMono.toMulPosMono`
   * `PosMulReflectLE.toPosMulReflectLT`
@@ -332,14 +332,25 @@ variable [@Std.Commutative α (· * ·)]
 theorem posMulMono_iff_mulPosMono : PosMulMono α ↔ MulPosMono α := by
   simp only [posMulMono_iff, mulPosMono_iff, Std.Commutative.comm]
 
+theorem PosMulMono.toMulPosMono [PosMulMono α] : MulPosMono α := posMulMono_iff_mulPosMono.mp ‹_›
+
 theorem posMulStrictMono_iff_mulPosStrictMono : PosMulStrictMono α ↔ MulPosStrictMono α := by
   simp only [posMulStrictMono_iff, mulPosStrictMono_iff, Std.Commutative.comm]
+
+theorem PosMulStrictMono.toMulPosStrictMono [PosMulStrictMono α] : MulPosStrictMono α :=
+  posMulStrictMono_iff_mulPosStrictMono.mp ‹_›
 
 theorem posMulReflectLE_iff_mulPosReflectLE : PosMulReflectLE α ↔ MulPosReflectLE α := by
   simp only [posMulReflectLE_iff, mulPosReflectLE_iff, Std.Commutative.comm]
 
+theorem PosMulReflectLE.toMulPosReflectLE [PosMulReflectLE α] : MulPosReflectLE α :=
+  posMulReflectLE_iff_mulPosReflectLE.mp ‹_›
+
 theorem posMulReflectLT_iff_mulPosReflectLT : PosMulReflectLT α ↔ MulPosReflectLT α := by
   simp only [posMulReflectLT_iff, mulPosReflectLT_iff, Std.Commutative.comm]
+
+theorem PosMulReflectLT.toMulPosReflectLT [PosMulReflectLT α] : MulPosReflectLT α :=
+  posMulReflectLT_iff_mulPosReflectLT.mp ‹_›
 
 end Preorder
 

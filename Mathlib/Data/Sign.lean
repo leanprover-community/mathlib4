@@ -107,8 +107,8 @@ instance : LinearOrder SignType where
   le_total a b := by cases a <;> cases b <;> first | left; constructor | right; constructor
   le_antisymm := le_antisymm
   le_trans := le_trans
-  decidableLE := LE.decidableRel
-  decidableEq := SignType.decidableEq
+  toDecidableLE := LE.decidableRel
+  toDecidableEq := SignType.decidableEq
 
 instance : BoundedOrder SignType where
   top := 1

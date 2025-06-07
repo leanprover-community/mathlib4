@@ -331,9 +331,6 @@ theorem Topology.IsClosedEmbedding.subtypeVal (h : IsClosed {a | p a}) :
     IsClosedEmbedding ((↑) : Subtype p → X) :=
   ⟨.subtypeVal, by rwa [Subtype.range_coe_subtype]⟩
 
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_subtype_val := IsClosedEmbedding.subtypeVal
-
 @[continuity, fun_prop]
 theorem continuous_subtype_val : Continuous (@Subtype.val X p) :=
   continuous_induced_dom
@@ -346,9 +343,6 @@ theorem IsOpen.isOpenEmbedding_subtypeVal {s : Set X} (hs : IsOpen s) :
     IsOpenEmbedding ((↑) : s → X) :=
   ⟨.subtypeVal, (@Subtype.range_coe _ s).symm ▸ hs⟩
 
-@[deprecated (since := "2024-10-18")]
-alias IsOpen.openEmbedding_subtype_val := IsOpen.isOpenEmbedding_subtypeVal
-
 theorem IsOpen.isOpenMap_subtype_val {s : Set X} (hs : IsOpen s) : IsOpenMap ((↑) : s → X) :=
   hs.isOpenEmbedding_subtypeVal.isOpenMap
 
@@ -358,9 +352,6 @@ theorem IsOpenMap.restrict {f : X → Y} (hf : IsOpenMap f) {s : Set X} (hs : Is
 
 lemma IsClosed.isClosedEmbedding_subtypeVal {s : Set X} (hs : IsClosed s) :
     IsClosedEmbedding ((↑) : s → X) := .subtypeVal hs
-
-@[deprecated (since := "2024-10-20")]
-alias IsClosed.closedEmbedding_subtype_val := IsClosed.isClosedEmbedding_subtypeVal
 
 theorem IsClosed.isClosedMap_subtype_val {s : Set X} (hs : IsClosed s) :
     IsClosedMap ((↑) : s → X) :=
@@ -722,7 +713,7 @@ theorem Finset.continuous_restrict₂_apply {s t : Finset X} (hst : s ⊆ t)
 lemma Pi.induced_restrict (S : Set ι) :
     induced (S.restrict) Pi.topologicalSpace =
     ⨅ i ∈ S, induced (eval i) (T i) := by
-  simp (config := { unfoldPartialApp := true }) [← iInf_subtype'', ← induced_precomp' ((↑) : S → ι),
+  simp +unfoldPartialApp [← iInf_subtype'', ← induced_precomp' ((↑) : S → ι),
     restrict]
 
 lemma Pi.induced_restrict_sUnion (𝔖 : Set (Set ι)) :
@@ -1047,16 +1038,10 @@ lemma Topology.IsOpenEmbedding.sigmaMk {i : ι} : IsOpenEmbedding (@Sigma.mk ι 
 
 @[deprecated (since := "2024-10-30")] alias isOpenEmbedding_sigmaMk := IsOpenEmbedding.sigmaMk
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_sigmaMk := IsOpenEmbedding.sigmaMk
-
 lemma Topology.IsClosedEmbedding.sigmaMk {i : ι} : IsClosedEmbedding (@Sigma.mk ι σ i) :=
   .of_continuous_injective_isClosedMap continuous_sigmaMk sigma_mk_injective isClosedMap_sigmaMk
 
 @[deprecated (since := "2024-10-30")] alias isClosedEmbedding_sigmaMk := IsClosedEmbedding.sigmaMk
-
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_sigmaMk := IsClosedEmbedding.sigmaMk
 
 lemma Topology.IsEmbedding.sigmaMk {i : ι} : IsEmbedding (@Sigma.mk ι σ i) :=
   IsClosedEmbedding.sigmaMk.1
@@ -1150,9 +1135,6 @@ lemma Topology.isOpenEmbedding_sigmaMap {f₁ : ι → κ} {f₂ : ∀ i, σ i �
 
 @[deprecated (since := "2024-10-30")] alias isOpenEmbedding_sigma_map := isOpenEmbedding_sigmaMap
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_sigma_map := isOpenEmbedding_sigmaMap
-
 end Sigma
 
 section ULift
@@ -1195,9 +1177,6 @@ lemma Topology.IsClosedEmbedding.uliftDown [TopologicalSpace X] :
 
 @[deprecated (since := "2024-10-30")]
 alias ULift.isClosedEmbedding_down := IsClosedEmbedding.uliftDown
-
-@[deprecated (since := "2024-10-20")]
-alias ULift.closedEmbedding_down := IsClosedEmbedding.uliftDown
 
 instance [TopologicalSpace X] [DiscreteTopology X] : DiscreteTopology (ULift X) :=
   IsEmbedding.uliftDown.discreteTopology

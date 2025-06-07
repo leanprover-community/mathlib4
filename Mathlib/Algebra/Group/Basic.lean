@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 import Aesop
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Nat.Init
 import Mathlib.Data.Int.Init
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.SimpRw
@@ -210,7 +209,7 @@ end CommMonoid
 
 section LeftCancelMonoid
 
-variable [LeftCancelMonoid M] {a b : M}
+variable [Monoid M] [IsLeftCancelMul M] {a b : M}
 
 @[to_additive (attr := simp)]
 theorem mul_eq_left : a * b = a ↔ b = 1 := calc
@@ -818,7 +817,7 @@ theorem inv_pow_sub (a : G) {m n : ℕ} (h : n ≤ m) : a⁻¹ ^ (m - n) = (a ^ 
 
 @[to_additive add_one_zsmul]
 lemma zpow_add_one (a : G) : ∀ n : ℤ, a ^ (n + 1) = a ^ n * a
-  | (n : ℕ) => by simp only [← Int.ofNat_succ, zpow_natCast, pow_succ]
+  | (n : ℕ) => by simp only [← Int.natCast_succ, zpow_natCast, pow_succ]
   | -1 => by simp [Int.add_left_neg]
   | .negSucc (n + 1) => by
     rw [zpow_negSucc, pow_succ', mul_inv_rev, inv_mul_cancel_right]
@@ -1001,6 +1000,14 @@ theorem div_div_div_cancel_left (a b c : G) : c / a / (c / b) = b / a := by
 theorem div_eq_div_iff_mul_eq_mul : a / b = c / d ↔ a * d = c * b := by
   rw [div_eq_iff_eq_mul, div_mul_eq_mul_div, eq_comm, div_eq_iff_eq_mul']
   simp only [mul_comm, eq_comm]
+
+@[to_additive]
+theorem mul_inv_eq_mul_inv_iff_mul_eq_mul : a * b⁻¹ = c * d⁻¹ ↔ a * d = c * b := by
+  rw [← div_eq_mul_inv, ← div_eq_mul_inv, div_eq_div_iff_mul_eq_mul]
+
+@[to_additive]
+theorem inv_mul_eq_inv_mul_iff_mul_eq_mul : b⁻¹ * a = d⁻¹ * c ↔ a * d = c * b := by
+  rw [← div_eq_inv_mul, ← div_eq_inv_mul, div_eq_div_iff_mul_eq_mul]
 
 @[to_additive]
 theorem div_eq_div_iff_div_eq_div : a / b = c / d ↔ a / c = b / d := by

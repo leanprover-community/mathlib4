@@ -33,7 +33,7 @@ if `w` is reduced (i.e none its letters are in the image of the base monoid), an
 ## References
 
 * The normal form theorem follows these [notes](https://webspace.maths.qmul.ac.uk/i.m.chiswell/ggt/lecture_notes/lecture2.pdf)
-from Queen Mary University
+  from Queen Mary University
 
 ## Tags
 
@@ -494,7 +494,7 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
     (empty : motive empty)
     (cons : ∀ (i : ι) (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
       (_hgn : g ∈ d.set i) (hgr : g ∉ (φ i).range) (_hw1 : w.head = 1),
-      motive w →  motive (cons g w hmw hgr))
+      motive w → motive (cons g w hmw hgr))
     (base : ∀ (h : H) (w : NormalWord d), w.head = 1 → motive w → motive
       (base φ h • w)) : motive w := by
   rcases w with ⟨w, head, h3⟩
@@ -608,8 +608,6 @@ theorem base_injective (hφ : ∀ i, Function.Injective (φ i)) :
     by simp_all [funext_iff, base_smul_eq_smul])
 
 section Reduced
-
-open NormalWord
 
 variable (φ) in
 /-- A word in `CoprodI` is reduced if none of its letters are in the base group. -/

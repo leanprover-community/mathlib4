@@ -25,7 +25,8 @@ namespace StarOrderedRing
 must commute. We provide this only as an example as opposed to a lemma because we never expect the
 type class assumptions to be satisfied without a `CommSemiring` instance already in scope; not that
 it is impossible, only that it shouldn't occur in practice. -/
-example {R : Type*} [OrderedSemiring R] [StarRing R] [StarOrderedRing R] {x y : R} (hx : 0 ≤ x)
+example {R : Type*} [Semiring R] [PartialOrder R] [IsOrderedRing R]
+    [StarRing R] [StarOrderedRing R] {x y : R} (hx : 0 ≤ x)
     (hy : 0 ≤ y) : x * y = y * x := by
   rw [← IsSelfAdjoint.of_nonneg (mul_nonneg hy hx), star_mul, IsSelfAdjoint.of_nonneg hx,
     IsSelfAdjoint.of_nonneg hy]
@@ -45,31 +46,12 @@ private lemma mul_le_mul_of_nonneg_left {R : Type*} [NonUnitalCommSemiring R] [P
     simp only [← nonneg_iff, add_mul] at hx hy ⊢
     apply add_le_add <;> aesop
 
-/-- A commutative star-ordered semiring is an ordered semiring.
-
-This is not registered as an instance because it introduces a type class loop between `CommSemiring`
-and `OrderedCommSemiring`, and it seem loops still cause issues sometimes.
-
-See note [reducible non-instances]. -/
-abbrev toOrderedCommSemiring (R : Type*) [CommSemiring R] [PartialOrder R]
-    [StarRing R] [StarOrderedRing R] : OrderedCommSemiring R where
+/-- A commutative star-ordered semiring is an ordered semiring. -/
+instance toIsOrderedRing (R : Type*) [CommSemiring R] [PartialOrder R]
+    [StarRing R] [StarOrderedRing R] : IsOrderedRing R where
   add_le_add_left _ _ := add_le_add_left
   zero_le_one := zero_le_one
-  mul_comm := mul_comm
   mul_le_mul_of_nonneg_left _ _ _ := mul_le_mul_of_nonneg_left
   mul_le_mul_of_nonneg_right a b c := by simpa only [mul_comm _ c] using mul_le_mul_of_nonneg_left
-
-/-- A commutative star-ordered ring is an ordered ring.
-
-This is not registered as an instance because it introduces a type class loop between `CommSemiring`
-and `OrderedCommSemiring`, and it seem loops still cause issues sometimes.
-
-See note [reducible non-instances]. -/
-abbrev toOrderedCommRing (R : Type*) [CommRing R] [PartialOrder R]
-    [StarRing R] [StarOrderedRing R] : OrderedCommRing R where
-  add_le_add_left _ _ := add_le_add_left
-  zero_le_one := zero_le_one
-  mul_comm := mul_comm
-  mul_nonneg _ _ := let _ := toOrderedCommSemiring R; mul_nonneg
 
 end StarOrderedRing

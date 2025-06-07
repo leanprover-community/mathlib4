@@ -22,7 +22,7 @@ This file defines rays in modules.
   coefficient.
 
 * `Module.Ray` is a type for the equivalence class of nonzero vectors in a module with some
-common positive multiple.
+  common positive multiple.
 -/
 
 
@@ -522,8 +522,8 @@ theorem sameRay_or_sameRay_neg_iff_not_linearIndependent {x y : M} :
       rw [Fin.sum_univ_two, Fin.exists_fin_two]
       simp [h, hr₁.ne.symm]
   · rcases h with ⟨m, hm, hmne⟩
-    rw [Fin.sum_univ_two, add_eq_zero_iff_eq_neg, Matrix.cons_val_zero,
-      Matrix.cons_val_one, Matrix.head_cons] at hm
+    rw [Fin.sum_univ_two, add_eq_zero_iff_eq_neg] at hm
+    dsimp only [Matrix.cons_val] at hm
     rcases lt_trichotomy (m 0) 0 with (hm0 | hm0 | hm0) <;>
       rcases lt_trichotomy (m 1) 0 with (hm1 | hm1 | hm1)
     · refine

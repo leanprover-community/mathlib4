@@ -60,7 +60,7 @@ def IsometryEquiv.prod
     (e₁ : Q₁.IsometryEquiv Q₁') (e₂ : Q₂.IsometryEquiv Q₂') :
     (Q₁.prod Q₂).IsometryEquiv (Q₁'.prod Q₂') where
   map_app' x := congr_arg₂ (· + ·) (e₁.map_app x.1) (e₂.map_app x.2)
-  toLinearEquiv := LinearEquiv.prod e₁.toLinearEquiv e₂.toLinearEquiv
+  toLinearEquiv := LinearEquiv.prodCongr e₁.toLinearEquiv e₂.toLinearEquiv
 
 /-- `LinearMap.inl` as an isometry. -/
 @[simps!]

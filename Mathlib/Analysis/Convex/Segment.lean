@@ -98,7 +98,7 @@ open Convex
 section MulActionWithZero
 
 variable (𝕜)
-variable [IsOrderedRing 𝕜] [MulActionWithZero 𝕜 E]
+variable [ZeroLEOneClass 𝕜] [MulActionWithZero 𝕜 E]
 
 
 theorem left_mem_segment (x y : E) : x ∈ [x -[𝕜] y] :=
@@ -112,7 +112,7 @@ end MulActionWithZero
 section Module
 
 variable (𝕜)
-variable [IsOrderedRing 𝕜] [Module 𝕜 E] {s : Set E} {x y z : E}
+variable [ZeroLEOneClass 𝕜] [Module 𝕜 E] {s : Set E} {x y z : E}
 
 @[simp]
 theorem segment_same (x : E) : [x -[𝕜] x] = {x} :=
@@ -152,12 +152,12 @@ open Convex
 
 section OrderedRing
 
-variable (𝕜) [Ring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+variable (𝕜) [Ring 𝕜] [PartialOrder 𝕜] [AddRightMono 𝕜]
   [AddCommGroup E] [AddCommGroup F] [AddCommGroup G] [Module 𝕜 E] [Module 𝕜 F]
 
 section DenselyOrdered
 
-variable [Nontrivial 𝕜] [DenselyOrdered 𝕜]
+variable [ZeroLEOneClass 𝕜] [Nontrivial 𝕜] [DenselyOrdered 𝕜]
 
 @[simp]
 theorem openSegment_same (x : E) : openSegment 𝕜 x x = {x} :=
@@ -253,11 +253,9 @@ theorem openSegment_translate_image (a b c : E) :
     (fun x => a + x) '' openSegment 𝕜 b c = openSegment 𝕜 (a + b) (a + c) :=
   openSegment_translate_preimage 𝕜 a b c ▸ image_preimage_eq _ <| add_left_surjective a
 
-lemma segment_inter_eq_endpoint_of_linearIndependent_sub
+lemma segment_inter_subset_endpoint_of_linearIndependent_sub
     {c x y : E} (h : LinearIndependent 𝕜 ![x - c, y - c]) :
-    [c -[𝕜] x] ∩ [c -[𝕜] y] = {c} := by
-  apply Subset.antisymm; swap
-  · simp [singleton_subset_iff, left_mem_segment]
+    [c -[𝕜] x] ∩ [c -[𝕜] y] ⊆ {c} := by
   intro z ⟨hzt, hzs⟩
   rw [segment_eq_image, mem_image] at hzt hzs
   rcases hzt with ⟨p, ⟨p0, p1⟩, rfl⟩
@@ -269,6 +267,12 @@ lemma segment_inter_eq_endpoint_of_linearIndependent_sub
     convert H using 1 <;> simp [sub_smul]
   obtain ⟨rfl, rfl⟩ : p = 0 ∧ q = 0 := h.eq_zero_of_pair' ((add_right_inj c).1 this).symm
   simp
+
+lemma segment_inter_eq_endpoint_of_linearIndependent_sub [ZeroLEOneClass 𝕜]
+    {c x y : E} (h : LinearIndependent 𝕜 ![x - c, y - c]) :
+    [c -[𝕜] x] ∩ [c -[𝕜] y] = {c} := by
+  refine (segment_inter_subset_endpoint_of_linearIndependent_sub 𝕜 h).antisymm ?_
+  simp [singleton_subset_iff, left_mem_segment]
 
 end OrderedRing
 
@@ -289,11 +293,9 @@ lemma segment_inter_eq_endpoint_of_linearIndependent_of_ne
   simp only [add_sub_add_left_eq_sub]
   suffices H : LinearIndependent 𝕜 ![(-1 : 𝕜) • x + t • y, (-1 : 𝕜) • x + s • y] by
     convert H using 1; simp only [neg_smul, one_smul]; abel_nf
-  apply h.linear_combination_pair_of_det_ne_zero
-  contrapose! hs
-  apply Eq.symm
-  simpa [neg_mul, one_mul, mul_neg, mul_one, sub_neg_eq_add, add_comm _ t,
-    ← sub_eq_add_neg, sub_eq_zero] using hs
+  nontriviality 𝕜
+  rw [LinearIndependent.pair_add_smul_add_smul_iff]
+  aesop
 
 section LinearOrderedRing
 

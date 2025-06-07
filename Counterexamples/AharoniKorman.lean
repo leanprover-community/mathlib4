@@ -59,17 +59,13 @@ aim of reaching a contradiction (as then, no such partition can exist). We may f
   them is exactly the length of a maximal chain between them (`card_C_inter_Icc_eq`).
 * For two points of `C` in the same level, and two points `(a, b, n)` and `(c, d, n)` between them,
   if `a + b = c + d` then `f (a, b, n) = f (c, d, n)` (`apply_eq_of_line_eq`).
-* No element of `S ​\ (C ∩ level n)` can be mapped into `level (n + 1)` (`not_S_hits_next`). This
+* No element of `S \ (C ∩ level n)` can be mapped into `level (n + 1)` (`not_S_hits_next`). This
   step vitally uses the previous two facts.
 * If all of `S \ (C ∩ level n)` is mapped into `level (n - 1)`, then we have a contradiction
   (`not_S_mapsTo_previous`).
 * But as `f` maps each element of `S \ (C ∩ level n)` to `level (n - 1) ∪ level n ∪ level (n + 1)`,
   we have a contradiction (`no_spinalMap`), and therefore show that no spinal map exists.
 -/
-
-#adaptation_note /-- 2025-03-12
-We temporarily comment out this file on `nightly-testing`, awaiting fixes for a complex
-interaction between `omega`, `aesop`, and asynchronous elaboration.
 
 attribute [aesop norm 10 tactic] Lean.Elab.Tactic.Omega.omegaDefault
 attribute [aesop 2 simp] Set.subset_def Finset.subset_iff
@@ -1253,5 +1249,3 @@ theorem aharoni_korman_false :
     rw [Hollom.exists_partition_iff_nonempty_spinalMap hC] at h
     obtain ⟨f⟩ := h
     exact Hollom.no_spinalMap hC f
-
--/

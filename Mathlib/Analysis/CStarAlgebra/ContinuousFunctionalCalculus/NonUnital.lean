@@ -14,10 +14,10 @@ import Mathlib.Topology.UniformSpace.CompactConvergence
 This file defines a generic API for the *continuous functional calculus* in *non-unital* algebras
 which is suitable in a wide range of settings. The design is intended to match as closely as
 possible that for unital algebras in
-`Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital`.  Changes to either file should
-be mirrored in its counterpart whenever possible. The underlying reasons for the design decisions in
-the unital case apply equally in the non-unital case. See the module documentation in that file for
-more information.
+`Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Unital.lean`.  Changes to either file
+should be mirrored in its counterpart whenever possible. The underlying reasons for the design
+decisions in the unital case apply equally in the non-unital case. See the module documentation in
+that file for more information.
 
 A continuous functional calculus for an element `a : A` in a non-unital topological `R`-algebra is
 a continuous extension of the polynomial functional calculus (i.e., `Polynomial.aeval`) for
@@ -137,9 +137,6 @@ noncomputable def cfcₙHom : C(σₙ R a, R)₀ →⋆ₙₐ[R] A :=
 lemma cfcₙHom_isClosedEmbedding :
     IsClosedEmbedding <| (cfcₙHom ha : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) :=
   (NonUnitalContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.1
-
-@[deprecated (since := "2024-10-20")]
-alias cfcₙHom_closedEmbedding := cfcₙHom_isClosedEmbedding
 
 @[fun_prop]
 lemma cfcₙHom_continuous : Continuous (cfcₙHom ha : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) :=
@@ -773,9 +770,6 @@ lemma isClosedEmbedding_cfcₙHom_of_cfcHom {a : A} (ha : p a) :
   have : ∀ U ∈ 𝓤 (C(Unit, R)), (0, 0) ∈ U := fun U hU ↦ refl_mem_uniformity hU
   convert Filter.comap_const_of_mem this with ⟨u, v⟩ <;>
   ext ⟨x, rfl⟩ <;> [exact map_zero u; exact map_zero v]
-
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_cfcₙHom_of_cfcHom := isClosedEmbedding_cfcₙHom_of_cfcHom
 
 instance ContinuousFunctionalCalculus.toNonUnital :
     NonUnitalContinuousFunctionalCalculus R A p where
