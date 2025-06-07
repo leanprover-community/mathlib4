@@ -363,8 +363,10 @@ theorem max_def' (a b : α) : max a b = if b ≤ a then a else b := by
 @[deprecated (since := "2025-05-11")] alias lt_of_not_le := lt_of_not_ge
 @[deprecated (since := "2025-05-11")] alias lt_iff_not_le := lt_iff_not_ge
 
-theorem Ne.lt_or_lt (h : a ≠ b) : a < b ∨ b < a :=
+theorem Ne.lt_or_gt (h : a ≠ b) : a < b ∨ b < a :=
   lt_or_gt_of_ne h
+
+@[deprecated (since := "2025-06-07")] alias Ne.lt_or_lt := Ne.lt_or_gt
 
 /-- A version of `ne_iff_lt_or_gt` with LHS and RHS reversed. -/
 @[simp]
@@ -437,7 +439,7 @@ lemma ltByCases_not_gt (h : ¬ y < x) {h₁ : x < y → P} {h₂ : x = y → P} 
 set_option linter.deprecated false in
 @[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltByCases_ne (h : x ≠ y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P}
-    (p : ¬ x < y → y < x := fun h' => h.lt_or_lt.resolve_left h') :
+    (p : ¬ x < y → y < x := fun h' => h.lt_or_gt.resolve_left h') :
     ltByCases x y h₁ h₂ h₃ = if h' : x < y then h₁ h' else h₃ (p h') :=
   dite_congr rfl (fun _ => rfl) (fun _ => dif_pos _)
 
@@ -1282,9 +1284,9 @@ lemma eq_or_eq_or_eq_of_forall_not_lt_lt [LinearOrder α]
     (h : ∀ ⦃x y z : α⦄, x < y → y < z → False) (x y z : α) : x = y ∨ y = z ∨ x = z := by
   by_contra hne
   simp only [not_or, ← Ne.eq_def] at hne
-  rcases hne.1.lt_or_lt with h₁ | h₁ <;>
-  rcases hne.2.1.lt_or_lt with h₂ | h₂ <;>
-  rcases hne.2.2.lt_or_lt with h₃ | h₃
+  rcases hne.1.lt_or_gt with h₁ | h₁ <;>
+  rcases hne.2.1.lt_or_gt with h₂ | h₂ <;>
+  rcases hne.2.2.lt_or_gt with h₃ | h₃
   exacts [h h₁ h₂, h h₂ h₃, h h₃ h₂, h h₃ h₁, h h₁ h₃, h h₂ h₃, h h₁ h₃, h h₂ h₁]
 
 namespace PUnit
