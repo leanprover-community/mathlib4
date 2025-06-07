@@ -127,14 +127,14 @@ def exists_delab : Delab := whenPPOption Lean.getPPNotation do
       | `(∃ $i:ident, $j:ident ∈ $s ∧ $body)
       | `(∃ ($i:ident : $_), $j:ident ∈ $s ∧ $body) =>
         if i == j then `(∃ $i:ident ∈ $s, $body) else pure stx
-      | `(∃ $x:ident, $y:ident > $z ∧ $body)
-      | `(∃ ($x:ident : $_), $y:ident > $z ∧ $body) =>
+      | `(∃ $x:ident, $z < $y:ident ∧ $body)
+      | `(∃ ($x:ident : $_), $z < $y:ident ∧ $body) =>
         if x == y then `(∃ $x:ident > $z, $body) else pure stx
       | `(∃ $x:ident, $y:ident < $z ∧ $body)
       | `(∃ ($x:ident : $_), $y:ident < $z ∧ $body) =>
         if x == y then `(∃ $x:ident < $z, $body) else pure stx
-      | `(∃ $x:ident, $y:ident ≥ $z ∧ $body)
-      | `(∃ ($x:ident : $_), $y:ident ≥ $z ∧ $body) =>
+      | `(∃ $x:ident, $z ≤ $y:ident ∧ $body)
+      | `(∃ ($x:ident : $_), $z ≤ $y:ident ∧ $body) =>
         if x == y then `(∃ $x:ident ≥ $z, $body) else pure stx
       | `(∃ $x:ident, $y:ident ≤ $z ∧ $body)
       | `(∃ ($x:ident : $_), $y:ident ≤ $z ∧ $body) =>

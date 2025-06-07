@@ -82,3 +82,7 @@ register_linter_set linter.mathlibStandardSet :=
 /-- Declare `∃ x > y, ...` as syntax for `∃ x, y < x ∧ ...`.
 This overwrites the lean core behaviour, which interprets `∃ x > y, ...` as `∃ x, x > y ∧ ...` -/
 binder_predicate (priority := high) x " > " y:term => `($y < $x)
+
+/-- Declare `∃ x ≥ y, ...` as syntax for `∃ x, y ≤ x ∧ ...`.
+This overwrites the lean core behaviour, which interprets `∃ x ≥ y, ...` as `∃ x, x ≥ y ∧ ...` -/
+binder_predicate (priority := high) x " ≥ " y:term => `($y ≤ $x)

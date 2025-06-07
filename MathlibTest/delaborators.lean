@@ -6,7 +6,7 @@ variable (P : Nat → Prop) (α : Nat → Type) (s : Set ℕ)
 
 /-- info: ∀ x > 0, P x : Prop -/
 #guard_msgs in
-#check ∀ x, x > 0 → P x
+#check ∀ x, 0 < x → P x
 
 /-- info: ∀ x > 0, P x : Prop -/
 #guard_msgs in
@@ -14,7 +14,7 @@ variable (P : Nat → Prop) (α : Nat → Type) (s : Set ℕ)
 
 /-- info: ∀ x ≥ 0, P x : Prop -/
 #guard_msgs in
-#check ∀ x, x ≥ 0 → P x
+#check ∀ x, 0 ≤ x → P x
 
 /-- info: ∀ x ≥ 0, P x : Prop -/
 #guard_msgs in
@@ -96,7 +96,7 @@ Disabling binder predicates
 /-- info: ∀ x > 0, P x : Prop -/
 #guard_msgs in
 #check ∀ x > 0, P x
-/-- info: ∀ (x : ℕ), x > 0 → P x : Prop -/
+/-- info: ∀ (x : ℕ), 0 < x → P x : Prop -/
 #guard_msgs in
 set_option pp.mathlib.binderPredicates false in
 #check ∀ x > 0, P x
@@ -104,7 +104,7 @@ set_option pp.mathlib.binderPredicates false in
 /-- info: ∃ x > 0, P x : Prop -/
 #guard_msgs in
 #check ∃ x > 0, P x
-/-- info: ∃ x, x > 0 ∧ P x : Prop -/
+/-- info: ∃ x, 0 < x ∧ P x : Prop -/
 #guard_msgs in
 set_option pp.mathlib.binderPredicates false in
 #check ∃ x > 0, P x
@@ -126,10 +126,10 @@ open PiNotation
 Note that the implementation of the `Π` delaborator in `Mathlib/Util/Delaborators.lean`
 does not (yet?) make use of binder predicates.
 -/
-/-- info: Π (x : ℕ), x > 0 → α x : Type -/
+/-- info: Π (x : ℕ), 0 < x → α x : Type -/
 #guard_msgs in
 #check Π x > 0, α x
-/-- info: Π (x : ℕ), x > 0 → α x : Type -/
+/-- info: Π (x : ℕ), 0 < x → α x : Type -/
 #guard_msgs in
 set_option pp.mathlib.binderPredicates false in
 #check Π x > 0, α x
@@ -164,11 +164,11 @@ section existential
 
 /-- info: ∃ i ≥ 3, i = i : Prop -/
 #guard_msgs in
-#check ∃ (i : Nat), i ≥ 3 ∧ i = i
+#check ∃ (i : Nat), 3 ≤ i ∧ i = i
 
 /-- info: ∃ i > 3, i = i : Prop -/
 #guard_msgs in
-#check ∃ (i : Nat), i > 3 ∧ i = i
+#check ∃ (i : Nat), 3 < i ∧ i = i
 
 /-- info: ∃ i ≤ 3, i = i : Prop -/
 #guard_msgs in
