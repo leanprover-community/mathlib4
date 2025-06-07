@@ -54,10 +54,7 @@ namespace HahnSeries
 
 variable [Zero Γ] [PartialOrder Γ]
 
-instance [Zero R] [One R] : One (HahnSeries Γ R) :=
-  ⟨single 0 1⟩
-
-
+instance [Zero R] [One R] : One (HahnSeries Γ R) where one := single 0 1
 instance [Zero R] [NatCast R] : NatCast (HahnSeries Γ R) where natCast n := single 0 n
 instance [Zero R] [IntCast R] : IntCast (HahnSeries Γ R) where intCast z := single 0 z
 instance [Zero R] [NNRatCast R] : NNRatCast (HahnSeries Γ R) where nnratCast q := single 0 q

@@ -355,7 +355,6 @@ theorem coeff_neg' (x : HahnSeries Γ R) : (-x).coeff = -x.coeff :=
 theorem coeff_neg {x : HahnSeries Γ R} {a : Γ} : (-x).coeff a = -x.coeff a :=
   rfl
 
-
 @[deprecated (since := "2025-01-31")] alias neg_coeff := coeff_neg
 
 instance : Sub (HahnSeries Γ R) where
@@ -373,7 +372,6 @@ theorem coeff_sub {x y : HahnSeries Γ R} {a : Γ} : (x - y).coeff a = x.coeff a
   rfl
 
 @[deprecated (since := "2025-01-31")] alias sub_coeff := coeff_sub
-
 
 instance : AddGroup (HahnSeries Γ R) := fast_instance%
   coeff_injective.addGroup _
