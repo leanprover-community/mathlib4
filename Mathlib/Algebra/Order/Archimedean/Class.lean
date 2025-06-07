@@ -347,35 +347,22 @@ over archimedean classes. -/
 over archimedean classes."]
 noncomputable
 def orderHom (f : F) : MulArchimedeanClass M →o MulArchimedeanClass N where
-  toFun := fun a ↦ mk (f a.out)
-  monotone' := by
-    intro a b h
-    contrapose! h
-    rw [mk_lt_mk] at h
-    rw [← out_eq a, ← out_eq b, mk_lt_mk]
-    intro n
-    obtain h := h n
-    contrapose! h
-    obtain h := OrderHomClass.monotone f h
-    rw [map_pow, map_mabs, map_mabs] at h
-    exact h
+  toFun := Quotient.map f (fun a b h ↦ by
+    obtain ⟨⟨m, hm⟩, ⟨n, hn⟩⟩ := h
+    refine ⟨⟨m, ?_⟩, ⟨n, ?_⟩⟩ <;> rw [← map_mabs, ← map_mabs, ← map_pow]
+    · exact OrderHomClass.monotone f hm
+    · exact OrderHomClass.monotone f hn
+  )
+  monotone' a b h := by
+    rw [← out_eq a, ← out_eq b] at h ⊢
+    show mk (f a.out) ≤ mk (f b.out)
+    rw [mk_le_mk] at h ⊢
+    obtain ⟨n, hn⟩ := h
+    simp_rw [← map_mabs, ← map_pow]
+    exact ⟨n, OrderHomClass.monotone f hn⟩
 
 @[to_additive]
-theorem orderHom_apply (f : F) (A : MulArchimedeanClass M) : orderHom f A = mk (f A.out) := rfl
-
-@[to_additive]
-theorem map_mk (f : F) (a : M) : mk (f a) = orderHom f (mk a) := by
-  rw [orderHom_apply]
-  apply eq.mpr
-  have heq : mk a = mk (mk a).out := by
-    rw [out_eq]
-  obtain ⟨⟨m, hm⟩, ⟨n, hn⟩⟩ := eq.mp heq
-  refine ⟨⟨m, ?_⟩, ⟨n, ?_⟩⟩
-  all_goals
-    rw [← map_mabs, ← map_mabs, ← map_pow]
-    apply OrderHomClass.monotone
-    try exact hm
-    try exact hn
+theorem map_mk (f : F) (a : M) : mk (f a) = orderHom f (mk a) := rfl
 
 @[to_additive]
 theorem map_mk_eq (f : F) (h : mk a = mk b) : mk (f a) = mk (f b) := by
@@ -384,30 +371,17 @@ theorem map_mk_eq (f : F) (h : mk a = mk b) : mk (f a) = mk (f b) := by
 @[to_additive]
 theorem map_mk_le (f : F) (h : mk a ≤ mk b) : mk (f a) ≤ mk (f b) := by
   rw [map_mk, map_mk]
-  apply OrderHomClass.monotone
-  exact h
+  exact OrderHomClass.monotone _ h
 
 @[to_additive]
 theorem orderHom_injective {f : F} (h : Function.Injective f) :
     Function.Injective (orderHom f) := by
   intro a b
-  nth_rw 2 [← out_eq a]
-  nth_rw 2 [← out_eq b]
-  rw [orderHom_apply, orderHom_apply, eq, eq]
+  rw [← out_eq a, ← out_eq b, ← map_mk, ← map_mk, eq, eq]
   simp_rw [← map_mabs, ← map_pow]
-  intro h
-  obtain ⟨⟨m, hm⟩, ⟨n, hn⟩⟩ := h
-  refine ⟨⟨m, ?_⟩, ⟨n, ?_⟩⟩
-  · contrapose! hm
-    apply lt_of_le_of_ne
-    · apply OrderHomClass.monotone f hm.le
-    · contrapose! hm
-      exact (h hm).symm.le
-  · contrapose! hn
-    apply lt_of_le_of_ne
-    · apply OrderHomClass.monotone f hn.le
-    · contrapose! hn
-      exact (h hn).symm.le
+  obtain hmono := (OrderHomClass.monotone f).strictMono_of_injective h
+  intro ⟨⟨m, hm⟩, ⟨n, hn⟩⟩
+  exact ⟨⟨m, hmono.le_iff_le.mp hm⟩, ⟨n, hmono.le_iff_le.mp hn⟩⟩
 
 @[to_additive (attr := simp)]
 theorem orderHom_top (f : F) : orderHom f ⊤ = ⊤ := by
