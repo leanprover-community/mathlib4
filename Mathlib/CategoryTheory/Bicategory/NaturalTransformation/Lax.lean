@@ -282,7 +282,7 @@ def vcomp : StrongTrans F H :=
 /-- `CategoryStruct` on `LaxFunctor B C` where the (1-)morphisms are given by strong
 transformations. -/
 @[simps! id_app id_naturality comp_app comp_naturality]
-scoped instance LaxFunctor.instCategoryStruct : CategoryStruct (LaxFunctor B C) where
+scoped instance categoryStruct : CategoryStruct (LaxFunctor B C) where
   Hom := StrongTrans
   id := StrongTrans.id
   comp := StrongTrans.vcomp
