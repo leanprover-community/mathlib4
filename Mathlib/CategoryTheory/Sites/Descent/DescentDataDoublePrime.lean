@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Christian Merten
 -/
 import Mathlib.CategoryTheory.Sites.Descent.DescentDataPrime
---import Mathlib.CategoryTheory.Sites.Descent.DescentDataAsCoalgebra
 import Mathlib.CategoryTheory.Sites.Descent.IsStack
 import Mathlib.CategoryTheory.Bicategory.Adjunction.Adj
 import Mathlib.CategoryTheory.Bicategory.Adjunction.BaseChange
