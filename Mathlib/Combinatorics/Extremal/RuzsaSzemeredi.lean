@@ -178,6 +178,7 @@ lemma rothNumberNat_le_ruzsaSzemerediNumberNat (n : ℕ) :
   let α := Fin (2 * n + 1)
   have : Nat.Coprime 2 (2 * n + 1) := by simp
   haveI : Fact (IsUnit (2 : Fin (2 * n + 1))) := ⟨by simpa using (ZMod.unitOfCoprime 2 this).isUnit⟩
+  open scoped Fin.CommRing in
   calc
     (2 * n + 1) * rothNumberNat n
     _ = Fintype.card α * addRothNumber (Iio (n : α)) := by
