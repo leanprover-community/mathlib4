@@ -621,13 +621,44 @@ def gAct (g: G) (v: LipschitzH (S := S)): LipschitzH (S := S) := {
     exact v_harmonic
 }
 
+def gAct_const (g: G) (z: ℂ): gAct g (ConstLipschitzH z) = ConstLipschitzH z := by
+  unfold gAct
+  unfold ConstLipschitzH
+  ext x
+  simp [DFunLike.coe]
 
-#synth Module ℂ (LipschitzH (G a:= G))
+#synth Module ℂ (LipschitzH (G := G))
 #synth AddCommGroup (LipschitzH (G := G))
 
 abbrev W := (LipschitzH (G := G)) ⧸ ConstF
 
-def GRep: Representation ℂ G (W (G := G)) := Representation.ofMulAction ℂ G (W (G := G))
+
+def GRep: Representation ℂ G (LipschitzH (G := G)) := {
+  toFun := fun g => {
+    toFun := gAct g
+    map_add' := by
+      intro f h
+      ext a
+      simp [gAct]
+      simp [DFunLike.coe]
+    map_smul' := by
+      intro c f
+      ext a
+      simp [gAct]
+      simp [DFunLike.coe]
+      simp [HSMul.hSMul, SMul.smul]
+  }
+  map_one' := by
+    ext f a
+    simp [gAct]
+    rfl
+  map_mul' := by
+    intro g h
+    ext f a
+    simp [gAct]
+    simp [DFunLike.coe]
+    simp [mul_assoc]
+}
 
 -- TODO - use the fact that G is finitely generated
 instance countableG: Countable (Additive (MulOpposite G)) := by
