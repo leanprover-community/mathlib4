@@ -73,8 +73,8 @@ theorem perm_insertIdx_iff {l₁ l₂ : List α} {n : ℕ} {a : α} :
       apply iff_of_false
       · intro h
         rw [h.length_eq] at hn₁
-        exact (hn₁.trans_le hn₂).not_le (length_le_length_insertIdx ..)
-      · exact fun h ↦ (hn₁.trans_le hn₂).not_le h.length_eq.ge
+        exact (hn₁.trans_le hn₂).not_ge (length_le_length_insertIdx ..)
+      · exact fun h ↦ (hn₁.trans_le hn₂).not_ge h.length_eq.ge
   | inr hn₁ =>
     exact perm_insertIdx_iff_of_le hn₁ (le_trans hn₁ hle) _
 

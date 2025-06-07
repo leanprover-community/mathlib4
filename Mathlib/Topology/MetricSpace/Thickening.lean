@@ -79,7 +79,7 @@ theorem thickening_empty (δ : ℝ) : thickening δ (∅ : Set α) = ∅ := by
   simp only [thickening, setOf_false, infEdist_empty, not_top_lt]
 
 theorem thickening_of_nonpos (hδ : δ ≤ 0) (s : Set α) : thickening δ s = ∅ :=
-  eq_empty_of_forall_notMem fun _ => ((ENNReal.ofReal_of_nonpos hδ).trans_le bot_le).not_lt
+  eq_empty_of_forall_notMem fun _ => ((ENNReal.ofReal_of_nonpos hδ).trans_le bot_le).not_gt
 
 /-- The (open) thickening `Metric.thickening δ E` of a fixed subset `E` is an increasing function of
 the thickening radius `δ`. -/
@@ -398,7 +398,7 @@ theorem _root_.Disjoint.exists_thickenings (hst : Disjoint s t) (hs : IsCompact 
   rw [← NNReal.coe_two, ← NNReal.coe_div, ENNReal.ofReal_coe_nnreal] at hzs hzt
   obtain ⟨x, hx, hzx⟩ := hzs
   obtain ⟨y, hy, hzy⟩ := hzt
-  refine (h x hx y hy).not_le ?_
+  refine (h x hx y hy).not_ge ?_
   calc
     edist x y ≤ edist z x + edist z y := edist_triangle_left _ _ _
     _ ≤ ↑(r / 2) + ↑(r / 2) := add_le_add hzx.le hzy.le

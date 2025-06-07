@@ -345,7 +345,7 @@ theorem aleph0_le {c : Cardinal} : ℵ₀ ≤ c ↔ ∀ n : ℕ, ↑n ≤ c :=
   ⟨fun h _ => (nat_lt_aleph0 _).le.trans h, fun h =>
     le_of_not_gt fun hn => by
       rcases lt_aleph0.1 hn with ⟨n, rfl⟩
-      exact (Nat.lt_succ_self _).not_le (Nat.cast_le.1 (h (n + 1)))⟩
+      exact (Nat.lt_succ_self _).not_ge (Nat.cast_le.1 (h (n + 1)))⟩
 
 theorem isSuccPrelimit_aleph0 : IsSuccPrelimit ℵ₀ :=
   isSuccPrelimit_of_succ_lt fun a ha => by
@@ -989,6 +989,6 @@ theorem zero_powerlt {a : Cardinal} (h : a ≠ 0) : 0 ^< a = 1 := by
 @[simp]
 theorem powerlt_zero {a : Cardinal} : a ^< 0 = 0 := by
   convert Cardinal.iSup_of_empty _
-  exact Subtype.isEmpty_of_false fun x => mem_Iio.not.mpr (Cardinal.zero_le x).not_lt
+  exact Subtype.isEmpty_of_false fun x => mem_Iio.not.mpr (Cardinal.zero_le x).not_gt
 
 end Cardinal

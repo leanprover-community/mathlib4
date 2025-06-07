@@ -150,9 +150,10 @@ alias LT.lt.ne := ne_of_lt
 alias Eq.le := le_of_eq
 alias Eq.ge := ge_of_eq
 alias LT.lt.asymm := lt_asymm
-alias LT.lt.not_lt := lt_asymm
+alias LT.lt.not_gt := lt_asymm
 
 @[deprecated (since := "2025-05-11")] alias LE.le.lt_of_not_le := LE.le.lt_of_not_ge
+@[deprecated (since := "2025-06-07")] alias LT.lt.not_lt := LT.lt.not_gt
 
 theorem ne_of_not_le (h : ¬a ≤ b) : a ≠ b := fun hab ↦ h (le_of_eq hab)
 
@@ -413,7 +414,7 @@ lemma ltByCases_lt (h : x < y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ :
 set_option linter.deprecated false in
 @[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltByCases_gt (h : y < x) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P} :
-    ltByCases x y h₁ h₂ h₃ = h₃ h := (dif_neg h.not_lt).trans (dif_pos h)
+    ltByCases x y h₁ h₂ h₃ = h₃ h := (dif_neg h.not_gt).trans (dif_pos h)
 
 set_option linter.deprecated false in
 @[deprecated lt_trichotomy (since := "2025-04-21")]
@@ -470,11 +471,11 @@ set_option linter.deprecated false in
 lemma ltByCases_eq_iff {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P} {p : P} :
     ltByCases x y h₁ h₂ h₃ = p ↔ (∃ h, h₁ h = p) ∨ (∃ h, h₂ h = p) ∨ (∃ h, h₃ h = p) := by
   refine ltByCases x y (fun h => ?_) (fun h => ?_) (fun h => ?_)
-  · simp only [ltByCases_lt, exists_prop_of_true, h, h.not_lt, not_false_eq_true,
+  · simp only [ltByCases_lt, exists_prop_of_true, h, h.not_gt, not_false_eq_true,
     exists_prop_of_false, or_false, h.ne]
   · simp only [h, lt_self_iff_false, ltByCases_eq, not_false_eq_true,
     exists_prop_of_false, exists_prop_of_true, or_false, false_or]
-  · simp only [ltByCases_gt, exists_prop_of_true, h, h.not_lt, not_false_eq_true,
+  · simp only [ltByCases_gt, exists_prop_of_true, h, h.not_gt, not_false_eq_true,
     exists_prop_of_false, false_or, h.ne']
 
 set_option linter.deprecated false in
@@ -540,9 +541,9 @@ set_option linter.deprecated false in
 lemma ltTrichotomy_eq_iff : ltTrichotomy x y p q r = s ↔
     (x < y ∧ p = s) ∨ (x = y ∧ q = s) ∨ (y < x ∧ r = s) := by
   refine ltByCases x y (fun h => ?_) (fun h => ?_) (fun h => ?_)
-  · simp only [ltTrichotomy_lt, false_and, true_and, or_false, h, h.not_lt, h.ne]
+  · simp only [ltTrichotomy_lt, false_and, true_and, or_false, h, h.not_gt, h.ne]
   · simp only [ltTrichotomy_eq, false_and, true_and, or_false, false_or, h, lt_irrefl]
-  · simp only [ltTrichotomy_gt, false_and, true_and, false_or, h, h.not_lt, h.ne']
+  · simp only [ltTrichotomy_gt, false_and, true_and, false_or, h, h.not_gt, h.ne']
 
 set_option linter.deprecated false in
 @[deprecated lt_trichotomy (since := "2025-04-21")]
@@ -584,7 +585,7 @@ end LinearOrder
 
 lemma lt_imp_lt_of_le_imp_le {β} [LinearOrder α] [Preorder β] {a b : α} {c d : β}
     (H : a ≤ b → c ≤ d) (h : d < c) : b < a :=
-  lt_of_not_ge fun h' ↦ (H h').not_lt h
+  lt_of_not_ge fun h' ↦ (H h').not_gt h
 
 lemma le_imp_le_iff_lt_imp_lt {β} [LinearOrder α] [LinearOrder β] {a b : α} {c d : β} :
     a ≤ b → c ≤ d ↔ d < c → b < a :=
@@ -1155,8 +1156,8 @@ theorem lt_iff : x < y ↔ x.1 < y.1 ∧ x.2 ≤ y.2 ∨ x.1 ≤ y.1 ∧ x.2 < y
     · exact Or.inr ⟨h.1.1, LE.le.lt_of_not_ge h.1.2 fun h₂ ↦ h.2 ⟨h₁, h₂⟩⟩
     · exact Or.inl ⟨LE.le.lt_of_not_ge h.1.1 h₁, h.1.2⟩
   · rintro (⟨h₁, h₂⟩ | ⟨h₁, h₂⟩)
-    · exact ⟨⟨h₁.le, h₂⟩, fun h ↦ h₁.not_le h.1⟩
-    · exact ⟨⟨h₁, h₂.le⟩, fun h ↦ h₂.not_le h.2⟩
+    · exact ⟨⟨h₁.le, h₂⟩, fun h ↦ h₁.not_ge h.1⟩
+    · exact ⟨⟨h₁, h₂.le⟩, fun h ↦ h₂.not_ge h.2⟩
 
 @[simp]
 theorem mk_lt_mk : (a₁, b₁) < (a₂, b₂) ↔ a₁ < a₂ ∧ b₁ ≤ b₂ ∨ a₁ ≤ a₂ ∧ b₁ < b₂ :=

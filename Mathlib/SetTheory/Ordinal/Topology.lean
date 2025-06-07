@@ -225,7 +225,7 @@ theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
     rw [← hb]
     apply Hs.monotone
     by_contra! hba
-    apply (Hs (lt_succ b)).not_le
+    apply (Hs (lt_succ b)).not_ge
     rw [hb]
     exact le_bsup.{u, u} _ _ (ha.succ_lt hba)
 
@@ -274,7 +274,7 @@ theorem IsAcc.isLimit {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) : IsLimit 
   rw [isAcc_iff] at h
   refine isLimit_of_not_succ_of_ne_zero (fun ⟨x, hx⟩ ↦ ?_) h.1
   rcases h.2 x (lt_of_lt_of_le (lt_succ x) hx.symm.le) with ⟨p, hp⟩
-  exact (hx.symm ▸ (succ_le_iff.mpr hp.2.1)).not_lt hp.2.2
+  exact (hx.symm ▸ (succ_le_iff.mpr hp.2.1)).not_gt hp.2.2
 
 theorem IsAcc.mono {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc S) :
     o.IsAcc T := by
