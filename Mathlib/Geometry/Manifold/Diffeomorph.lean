@@ -21,7 +21,7 @@ This file implements diffeomorphisms.
 * `ModelWithCorners.transContinuousLinearEquiv`: compose a given `ModelWithCorners` with a
   continuous linear equiv between the old and the new target spaces. Useful, e.g, to turn any
   finite dimensional manifold into a manifold modelled on a Euclidean space.
-* `Diffeomorph.totransContinuousLinearEquiv`: the identity diffeomorphism between `M` with
+* `Diffeomorph.toTransContinuousLinearEquiv`: the identity diffeomorphism between `M` with
   model `I` and `M` with model `I.transContinuousLinearEquiv e`.
 
 This file also provides diffeomorphisms related to products and disjoint unions.
@@ -471,7 +471,7 @@ variable (I M)
 
 /-- The identity diffeomorphism between a manifold with model `I` and the same manifold
 with model `I.trans_diffeomorph e`. -/
-def totransContinuousLinearEquiv (e : E ≃L[𝕜] F) : M ≃ₘ^n⟮I, I.transContinuousLinearEquiv e⟯ M where
+def toTransContinuousLinearEquiv (e : E ≃L[𝕜] F) : M ≃ₘ^n⟮I, I.transContinuousLinearEquiv e⟯ M where
   toEquiv := Equiv.refl M
   contMDiff_toFun x := by
     refine contMDiffWithinAt_iff'.2 ⟨continuousWithinAt_id, ?_⟩
@@ -495,22 +495,22 @@ variable {I M}
 theorem contMDiffWithinAt_transContinuousLinearEquiv_right {f : M' → M} {x s} :
     ContMDiffWithinAt I' (I.transContinuousLinearEquiv e) n f s x
       ↔ ContMDiffWithinAt I' I n f s x :=
-  (totransContinuousLinearEquiv I M e).contMDiffWithinAt_diffeomorph_comp_iff le_rfl
+  (toTransContinuousLinearEquiv I M e).contMDiffWithinAt_diffeomorph_comp_iff le_rfl
 
 @[simp]
 theorem contMDiffAt_transContinuousLinearEquiv_right {f : M' → M} {x} :
     ContMDiffAt I' (I.transContinuousLinearEquiv e) n f x ↔ ContMDiffAt I' I n f x :=
-  (totransContinuousLinearEquiv I M e).contMDiffAt_diffeomorph_comp_iff le_rfl
+  (toTransContinuousLinearEquiv I M e).contMDiffAt_diffeomorph_comp_iff le_rfl
 
 @[simp]
 theorem contMDiffOn_transContinuousLinearEquiv_right {f : M' → M} {s} :
     ContMDiffOn I' (I.transContinuousLinearEquiv e) n f s ↔ ContMDiffOn I' I n f s :=
-  (totransContinuousLinearEquiv I M e).contMDiffOn_diffeomorph_comp_iff le_rfl
+  (toTransContinuousLinearEquiv I M e).contMDiffOn_diffeomorph_comp_iff le_rfl
 
 @[simp]
 theorem contMDiff_transContinuousLinearEquiv_right {f : M' → M} :
     ContMDiff I' (I.transContinuousLinearEquiv e) n f ↔ ContMDiff I' I n f :=
-  (totransContinuousLinearEquiv I M e).contMDiff_diffeomorph_comp_iff le_rfl
+  (toTransContinuousLinearEquiv I M e).contMDiff_diffeomorph_comp_iff le_rfl
 
 @[deprecated (since := "2024-11-21")]
 alias smooth_transContinuousLinearEquiv_right := contMDiff_transContinuousLinearEquiv_right
@@ -519,22 +519,22 @@ alias smooth_transContinuousLinearEquiv_right := contMDiff_transContinuousLinear
 theorem contMDiffWithinAt_transContinuousLinearEquiv_left {f : M → M'} {x s} :
     ContMDiffWithinAt (I.transContinuousLinearEquiv e) I' n f s x
       ↔ ContMDiffWithinAt I I' n f s x :=
-  ((totransContinuousLinearEquiv I M e).contMDiffWithinAt_comp_diffeomorph_iff le_rfl).symm
+  ((toTransContinuousLinearEquiv I M e).contMDiffWithinAt_comp_diffeomorph_iff le_rfl).symm
 
 @[simp]
 theorem contMDiffAt_transContinuousLinearEquiv_left {f : M → M'} {x} :
     ContMDiffAt (I.transContinuousLinearEquiv e) I' n f x ↔ ContMDiffAt I I' n f x :=
-  ((totransContinuousLinearEquiv I M e).contMDiffAt_comp_diffeomorph_iff le_rfl).symm
+  ((toTransContinuousLinearEquiv I M e).contMDiffAt_comp_diffeomorph_iff le_rfl).symm
 
 @[simp]
 theorem contMDiffOn_transContinuousLinearEquiv_left {f : M → M'} {s} :
     ContMDiffOn (I.transContinuousLinearEquiv e) I' n f s ↔ ContMDiffOn I I' n f s :=
-  ((totransContinuousLinearEquiv I M e).contMDiffOn_comp_diffeomorph_iff le_rfl).symm
+  ((toTransContinuousLinearEquiv I M e).contMDiffOn_comp_diffeomorph_iff le_rfl).symm
 
 @[simp]
 theorem contMDiff_transContinuousLinearEquiv_left {f : M → M'} :
     ContMDiff (I.transContinuousLinearEquiv e) I' n f ↔ ContMDiff I I' n f :=
-  ((totransContinuousLinearEquiv I M e).contMDiff_comp_diffeomorph_iff le_rfl).symm
+  ((toTransContinuousLinearEquiv I M e).contMDiff_comp_diffeomorph_iff le_rfl).symm
 
 @[deprecated (since := "2024-11-21")]
 alias smooth_transContinuousLinearEquiv_left := contMDiff_transContinuousLinearEquiv_left
