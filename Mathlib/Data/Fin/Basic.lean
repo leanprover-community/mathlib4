@@ -1497,3 +1497,5 @@ protected theorem zero_mul' [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
 end Mul
 
 end Fin
+
+set_option linter.style.longFile 1700
