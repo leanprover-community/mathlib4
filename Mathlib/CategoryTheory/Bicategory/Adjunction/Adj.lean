@@ -167,7 +167,9 @@ namespace Adj
 /-- If `a : Adj B`, `a.obj : B` is the underlying object of `B`. -/
 abbrev obj (a : Adj B) : B := a
 
-variable (a b c d : B)
+section
+
+variable (a b : B)
 
 /--
 Given two objects `a` and `b` in a bicategory,
@@ -188,6 +190,8 @@ def Hom.mk' {l : a ⟶ b} {r : b ⟶ a} (adj : l ⊣ r) : Hom a b where
   l := l
   r := r
   adj := adj
+
+end
 
 instance : CategoryStruct (Adj B) where
   Hom (a : B) b := Hom a b

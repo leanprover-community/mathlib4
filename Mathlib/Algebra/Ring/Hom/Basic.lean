@@ -12,7 +12,7 @@ import Mathlib.Data.Set.Insert
 # Additional lemmas about homomorphisms of semirings and rings
 
 These lemmas have been banished here to avoid unnecessary imports in
-`Mathlib.Algebra.Hom.Ring.Defs`.
+`Mathlib/Algebra/Hom/Ring/Defs.lean`.
 
 They could be moved to more natural homes.
 -/

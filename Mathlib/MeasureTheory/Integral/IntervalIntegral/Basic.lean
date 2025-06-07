@@ -135,7 +135,7 @@ theorem MeasureTheory.IntegrableOn.intervalIntegrable (hf : IntegrableOn f [[a, 
 
 theorem intervalIntegrable_const_iff {c : E} :
     IntervalIntegrable (fun _ => c) μ a b ↔ c = 0 ∨ μ (Ι a b) < ∞ := by
-  simp only [intervalIntegrable_iff, integrableOn_const]
+  simp only [intervalIntegrable_iff, integrableOn_const_iff (C := c)]
 
 @[simp]
 theorem intervalIntegrable_const [IsLocallyFiniteMeasure μ] {c : E} :
@@ -315,7 +315,7 @@ theorem comp_mul_right (hf : IntervalIntegrable f volume a b) (c : ℝ) :
 theorem comp_add_right (hf : IntervalIntegrable f volume a b) (c : ℝ) :
     IntervalIntegrable (fun x => f (x + c)) volume (a - c) (b - c) := by
   wlog h : a ≤ b generalizing a b
-  · exact IntervalIntegrable.symm (this hf.symm (le_of_not_le h))
+  · exact IntervalIntegrable.symm (this hf.symm (le_of_not_ge h))
   rw [intervalIntegrable_iff'] at hf ⊢
   have A : MeasurableEmbedding fun x => x + c :=
     (Homeomorph.addRight c).isClosedEmbedding.measurableEmbedding
@@ -603,11 +603,16 @@ theorem norm_integral_le_integral_norm (h : a ≤ b) :
     ‖∫ x in a..b, f x ∂μ‖ ≤ ∫ x in a..b, ‖f x‖ ∂μ :=
   norm_integral_le_integral_norm_uIoc.trans_eq <| by rw [uIoc_of_le h, integral_of_le h]
 
-nonrec theorem norm_integral_le_of_norm_le {g : ℝ → ℝ} (h : ∀ᵐ t ∂μ.restrict <| Ι a b, ‖f t‖ ≤ g t)
+theorem norm_integral_le_abs_of_norm_le {g : ℝ → ℝ} (h : ∀ᵐ t ∂μ.restrict <| Ι a b, ‖f t‖ ≤ g t)
     (hbound : IntervalIntegrable g μ a b) : ‖∫ t in a..b, f t ∂μ‖ ≤ |∫ t in a..b, g t ∂μ| := by
-  simp_rw [norm_intervalIntegral_eq, abs_intervalIntegral_eq,
-    abs_eq_self.mpr (integral_nonneg_of_ae <| h.mono fun _t ht => (norm_nonneg _).trans ht),
-    norm_integral_le_of_norm_le hbound.def' h]
+  rw [norm_intervalIntegral_eq, abs_intervalIntegral_eq]
+  exact (norm_integral_le_of_norm_le hbound.def' h).trans (le_abs_self _)
+
+theorem norm_integral_le_of_norm_le {g : ℝ → ℝ} (hab : a ≤ b)
+    (h : ∀ᵐ t ∂μ, t ∈ Set.Ioc a b → ‖f t‖ ≤ g t) (hbound : IntervalIntegrable g μ a b) :
+    ‖∫ t in a..b, f t ∂μ‖ ≤ ∫ t in a..b, g t ∂μ := by
+  simp only [integral_of_le hab, uIoc_of_le hab, ← ae_restrict_iff' measurableSet_Ioc] at *
+  exact MeasureTheory.norm_integral_le_of_norm_le hbound.1 h
 
 theorem norm_integral_le_of_norm_le_const_ae {a b C : ℝ} {f : ℝ → E}
     (h : ∀ᵐ x, x ∈ Ι a b → ‖f x‖ ≤ C) : ‖∫ x in a..b, f x‖ ≤ C * |b - a| := by
@@ -964,7 +969,7 @@ theorem integral_interval_sub_interval_comm' (hab : IntervalIntegrable f μ a b)
 theorem integral_Iic_sub_Iic (ha : IntegrableOn f (Iic a) μ) (hb : IntegrableOn f (Iic b) μ) :
     ((∫ x in Iic b, f x ∂μ) - ∫ x in Iic a, f x ∂μ) = ∫ x in a..b, f x ∂μ := by
   wlog hab : a ≤ b generalizing a b
-  · rw [integral_symm, ← this hb ha (le_of_not_le hab), neg_sub]
+  · rw [integral_symm, ← this hb ha (le_of_not_ge hab), neg_sub]
   rw [sub_eq_iff_eq_add', integral_of_le hab, ← setIntegral_union (Iic_disjoint_Ioc le_rfl),
     Iic_union_Ioc_eq_Iic hab]
   exacts [measurableSet_Ioc, ha, hb.mono_set fun _ => And.right]
@@ -985,8 +990,7 @@ theorem integral_Iio_add_Ici (h_left : IntegrableOn f (Iio b) μ)
 theorem integral_const_of_cdf [CompleteSpace E] [IsFiniteMeasure μ] (c : E) :
     ∫ _ in a..b, c ∂μ = (μ.real (Iic b) - μ.real (Iic a)) • c := by
   simp only [sub_smul, ← setIntegral_const]
-  refine (integral_Iic_sub_Iic ?_ ?_).symm <;>
-    simp only [integrableOn_const, measure_lt_top, or_true]
+  refine (integral_Iic_sub_Iic ?_ ?_).symm <;> simp
 
 theorem integral_eq_integral_of_support_subset {a b} (h : support f ⊆ Ioc a b) :
     ∫ x in a..b, f x ∂μ = ∫ x, f x ∂μ := by
@@ -1054,7 +1058,7 @@ integral over `a..b` is positive if and only if `a < b` and the measure of
 theorem integral_pos_iff_support_of_nonneg_ae' (hf : 0 ≤ᵐ[μ.restrict (Ι a b)] f)
     (hfi : IntervalIntegrable f μ a b) :
     (0 < ∫ x in a..b, f x ∂μ) ↔ a < b ∧ 0 < μ (support f ∩ Ioc a b) := by
-  rcases lt_or_le a b with hab | hba
+  rcases lt_or_ge a b with hab | hba
   · rw [uIoc_of_le hab.le] at hf
     simp only [hab, true_and, integral_of_le hab.le,
       setIntegral_pos_iff_support_of_nonneg_ae hf hfi.1]

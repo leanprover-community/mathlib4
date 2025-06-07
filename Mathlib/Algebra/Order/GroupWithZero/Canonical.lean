@@ -71,7 +71,7 @@ abbrev Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β]
 
 @[simp]
 theorem not_lt_zero' : ¬a < 0 :=
-  not_lt_of_le zero_le'
+  not_lt_of_ge zero_le'
 
 @[simp]
 theorem le_zero_iff : a ≤ 0 ↔ a = 0 :=

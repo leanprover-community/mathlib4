@@ -176,13 +176,13 @@ variable {a b : Γ} {r : R}
 
 @[simp]
 theorem coeff_single_same (a : Γ) (r : R) : (single a r).coeff a = r := by
-  classical exact Pi.single_eq_same (f := fun _ => R) a r
+  classical exact Pi.single_eq_same (M := fun _ => R) a r
 
 @[deprecated (since := "2025-01-31")] alias single_coeff_same := coeff_single_same
 
 @[simp]
 theorem coeff_single_of_ne (h : b ≠ a) : (single a r).coeff b = 0 := by
-  classical exact Pi.single_eq_of_ne (f := fun _ => R) h r
+  classical exact Pi.single_eq_of_ne (M := fun _ => R) h r
 
 @[deprecated (since := "2025-01-31")] alias single_coeff_of_ne := coeff_single_of_ne
 
@@ -329,6 +329,7 @@ theorem leadingCoeff_eq_iff {x : HahnSeries Γ R} : x.leadingCoeff = 0 ↔ x = 0
 theorem leadingCoeff_ne_iff {x : HahnSeries Γ R} : x.leadingCoeff ≠ 0 ↔ x ≠ 0 :=
   leadingCoeff_eq_iff.not
 
+@[simp]
 theorem leadingCoeff_of_single {a : Γ} {r : R} : leadingCoeff (single a r) = r := by
   simp only [leadingCoeff, single_eq_zero_iff]
   by_cases h : r = 0 <;> simp [h]

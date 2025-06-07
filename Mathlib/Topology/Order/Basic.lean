@@ -610,7 +610,7 @@ theorem countable_image_lt_image_Ioi [OrderTopology α] [LinearOrder β] (f : β
     have A : (f '' s).PairwiseDisjoint fun x => Ioo x (z (invFunOn f s x)) := by
       rintro _ ⟨u, us, rfl⟩ _ ⟨v, vs, rfl⟩ huv
       wlog hle : u ≤ v generalizing u v
-      · exact (this v vs u us huv.symm (le_of_not_le hle)).symm
+      · exact (this v vs u us huv.symm (le_of_not_ge hle)).symm
       have hlt : u < v := hle.lt_of_ne (ne_of_apply_ne _ huv)
       apply disjoint_iff_forall_ne.2
       rintro a ha b hb rfl
@@ -654,7 +654,7 @@ instance instIsCountablyGenerated_atTop [OrderTopology α] [SecondCountableTopol
         apply b_ne
         convert s.2
         exact H.symm
-      exact Iff.mp nmem_singleton_empty this
+      exact Iff.mp notMem_singleton_empty this
     choose a ha using A
     have : (atTop : Filter α) = (generate (Ici '' (range a))) := by
       apply atTop_eq_generate_of_not_bddAbove

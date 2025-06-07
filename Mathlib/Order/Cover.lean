@@ -79,10 +79,10 @@ instance WCovBy.isRefl : IsRefl α (· ⩿ ·) :=
   ⟨WCovBy.refl⟩
 
 theorem WCovBy.Ioo_eq (h : a ⩿ b) : Ioo a b = ∅ :=
-  eq_empty_iff_forall_not_mem.2 fun _ hx => h.2 hx.1 hx.2
+  eq_empty_iff_forall_notMem.2 fun _ hx => h.2 hx.1 hx.2
 
 theorem wcovBy_iff_Ioo_eq : a ⩿ b ↔ a ≤ b ∧ Ioo a b = ∅ :=
-  and_congr_right' <| by simp [eq_empty_iff_forall_not_mem]
+  and_congr_right' <| by simp [eq_empty_iff_forall_notMem]
 
 lemma WCovBy.of_le_of_le (hac : a ⩿ c) (hab : a ≤ b) (hbc : b ≤ c) : b ⩿ c :=
   ⟨hbc, fun _x hbx hxc ↦ hac.2 (hab.trans_lt hbx) hxc⟩
@@ -240,7 +240,7 @@ protected theorem CovBy.wcovBy (h : a ⋖ b) : a ⩿ b :=
   ⟨h.le, h.2⟩
 
 theorem WCovBy.covBy_of_not_le (h : a ⩿ b) (h2 : ¬b ≤ a) : a ⋖ b :=
-  ⟨h.le.lt_of_not_le h2, h.2⟩
+  ⟨h.le.lt_of_not_ge h2, h.2⟩
 
 theorem WCovBy.covBy_of_lt (h : a ⩿ b) (h2 : a < b) : a ⋖ b :=
   ⟨h2, h.2⟩
@@ -289,7 +289,7 @@ theorem CovBy.Ioo_eq (h : a ⋖ b) : Ioo a b = ∅ :=
   h.wcovBy.Ioo_eq
 
 theorem covBy_iff_Ioo_eq : a ⋖ b ↔ a < b ∧ Ioo a b = ∅ :=
-  and_congr_right' <| by simp [eq_empty_iff_forall_not_mem]
+  and_congr_right' <| by simp [eq_empty_iff_forall_notMem]
 
 theorem CovBy.of_image (f : α ↪o β) (h : f a ⋖ f b) : a ⋖ b :=
   ⟨f.lt_iff_lt.mp h.lt, fun _ hac hcb => h.2 (f.lt_iff_lt.mpr hac) (f.lt_iff_lt.mpr hcb)⟩
@@ -393,7 +393,7 @@ theorem CovBy.unique_right (hb : a ⋖ b) (hc : a ⋖ c) : b = c :=
 /-- If `a`, `b`, `c` are consecutive and `a < x < c` then `x = b`. -/
 theorem CovBy.eq_of_between {x : α} (hab : a ⋖ b) (hbc : b ⋖ c) (hax : a < x) (hxc : x < c) :
     x = b :=
-  le_antisymm (le_of_not_lt fun h => hbc.2 h hxc) (le_of_not_lt <| hab.2 hax)
+  le_antisymm (le_of_not_gt fun h => hbc.2 h hxc) (le_of_not_gt <| hab.2 hax)
 
 theorem covBy_iff_lt_iff_le_left {x y : α} : x ⋖ y ↔ ∀ {z}, z < y ↔ z ≤ x where
   mp := fun hx _z ↦ ⟨hx.le_of_lt, fun hz ↦ hz.trans_lt hx.lt⟩
@@ -576,7 +576,7 @@ lemma _root_.WCovBy.eval (h : a ⩿ b) (i : ι) : a i ⩿ b i := by
   classical
   refine ⟨h.1 i, fun ci h₁ h₂ ↦ ?_⟩
   have hcb : Function.update a i ci ≤ b := by simpa [update_le_iff, h₂.le] using fun j hj ↦ h.1 j
-  refine h.2 (by simpa) (lt_of_le_not_le hcb ?_)
+  refine h.2 (by simpa) (lt_of_le_not_ge hcb ?_)
   simp [le_update_iff, h₂.not_le]
 
 lemma exists_forall_antisymmRel_of_covBy (h : a ⋖ b) :
@@ -588,7 +588,7 @@ lemma exists_forall_antisymmRel_of_covBy (h : a ⋖ b) :
   let c : (i : ι) → α i := Function.update a i (b i)
   have h₁ : c ≤ b := by simpa [update_le_iff, c] using fun k hk ↦ hab k
   have h₂ : ¬ c j < b j := h (by simp [c, hi.le]) i (by simpa [c]) h₁ j
-  exact ⟨hab j, by simpa [lt_iff_le_not_le, hab j, c, hj] using h₂⟩
+  exact ⟨hab j, by simpa [lt_iff_le_not_ge, hab j, c, hj] using h₂⟩
 
 lemma exists_forall_antisymmRel_of_wcovBy [Nonempty ι] (h : a ⩿ b) :
     ∃ i, ∀ j ≠ i, AntisymmRel (· ≤ ·) (a j) (b j) := by

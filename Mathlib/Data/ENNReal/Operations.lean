@@ -11,10 +11,10 @@ import Mathlib.Data.ENNReal.Real
 In this file we prove elementary properties of algebraic operations on `ℝ≥0∞`, including addition,
 multiplication, natural powers and truncated subtraction, as well as how these interact with the
 order structure on `ℝ≥0∞`. Notably excluded from this list are inversion and division, the
-definitions and properties of which can be found in `Mathlib.Data.ENNReal.Inv`.
+definitions and properties of which can be found in `Mathlib/Data/ENNReal/Inv.lean`.
 
 Note: the definitions of the operations included in this file can be found in
-`Mathlib.Data.ENNReal.Basic`.
+`Mathlib/Data/ENNReal/Basic.lean`.
 -/
 
 assert_not_exists Finset
@@ -232,6 +232,7 @@ lemma eq_top_of_pow (n : ℕ) (ha : a ^ n = ∞) : a = ∞ := WithTop.eq_top_of_
 
 @[deprecated (since := "2025-04-24")] alias pow_eq_top := eq_top_of_pow
 
+@[aesop (rule_sets := [finiteness]) safe apply]
 lemma pow_ne_top (ha : a ≠ ∞) : a ^ n ≠ ∞ := WithTop.pow_ne_top ha
 lemma pow_lt_top (ha : a < ∞) : a ^ n < ∞ := WithTop.pow_lt_top ha
 
@@ -394,7 +395,7 @@ theorem sub_right_inj {a b c : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≤ a) (hc :
     (cancel_of_ne <| ne_top_of_le_ne_top ha hc) hb hc
 
 protected theorem sub_mul (h : 0 < b → b < a → c ≠ ∞) : (a - b) * c = a * c - b * c := by
-  rcases le_or_lt a b with hab | hab; · simp [hab, mul_right_mono hab, tsub_eq_zero_of_le]
+  rcases le_or_gt a b with hab | hab; · simp [hab, mul_right_mono hab, tsub_eq_zero_of_le]
   rcases eq_or_lt_of_le (zero_le b) with (rfl | hb); · simp
   exact (cancel_of_ne <| mul_ne_top hab.ne_top (h hb hab)).tsub_mul
 

@@ -64,7 +64,7 @@ variable {G}
 
 theorem isAcyclic_iff_forall_adj_isBridge :
     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
-  simp_rw [isBridge_iff_adj_and_forall_cycle_not_mem]
+  simp_rw [isBridge_iff_adj_and_forall_cycle_notMem]
   constructor
   · intro ha v w hvw
     apply And.intro hvw
@@ -165,7 +165,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
   case inj =>
     intros a ha b hb h
     wlog h' : (f a).length ≤ (f b).length generalizing a b
-    · exact Eq.symm (this _ hb _ ha h.symm (le_of_not_le h'))
+    · exact Eq.symm (this _ hb _ ha h.symm (le_of_not_ge h'))
     rw [dart_edge_eq_iff] at h
     obtain (h | h) := h
     · exact (congrArg (·.fst) h)
@@ -182,7 +182,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
     intros x y h
     wlog h' : (f x).length ≤ (f y).length generalizing x y
     · rw [Sym2.eq_swap]
-      exact this y x h.symm (le_of_not_le h')
+      exact this y x h.symm (le_of_not_ge h')
     refine ⟨y, ?_, dart_edge_eq_mk'_iff.2 <| Or.inr ?_⟩
     · rintro rfl
       rw [← hf' _ nil IsPath.nil, length_nil,
