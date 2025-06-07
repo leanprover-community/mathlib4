@@ -736,26 +736,6 @@ theorem hausdorffMeasure_image_le (h : LipschitzWith K f) {d : ℝ} (hd : 0 ≤ 
 
 end LipschitzWith
 
-/--
-Let `A` be a subset of `ℝⁿ` and `W` a `k`-dimensional subspace. Then the `s`-dimensional
-Hausdorff measure of the orthogonal projection of `A` onto `W` is less than or equal to the
-`s`-dimensional Hausdorff measure of `A`.
--/
-theorem hausdorffMeasure_orthogonalProjection_le (n : ℕ) (s: ℝ)
-  (W : Submodule ℝ (EuclideanSpace ℝ (Fin n)))
-  (A : Set (EuclideanSpace ℝ (Fin n)))
-  (hW : BorelSpace W)
-  (hs : 0 ≤ s) :
-    μH[s] (Submodule.orthogonalProjection W '' A) ≤ μH[s] A := by
-  have h₁ : LipschitzWith 1 (Submodule.orthogonalProjection W) := by
-    apply Submodule.lipschitzWith_orthogonalProjection
-  have h₂ : μH[s] (Submodule.orthogonalProjection W '' A)
-      ≤ 1 ^ s * μH[s] A := by
-    apply LipschitzWith.hausdorffMeasure_image_le
-    exact h₁; exact hs
-  simp only [ENNReal.one_rpow, one_mul] at h₂
-  exact h₂
-
 open scoped Pointwise
 
 theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormedAddCommGroup E]
@@ -1114,6 +1094,27 @@ end RealAffine
 theorem hausdorffMeasure_segment {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [MeasurableSpace E] [BorelSpace E] (x y : E) : μH[1] (segment ℝ x y) = edist x y := by
   rw [← affineSegment_eq_segment, hausdorffMeasure_affineSegment]
+
+-- This duplicates an instance from Mathlib.MeasureTheory.Measure.Haar.Disintegration
+-- Instance with keys using `Submodule`
+instance {𝕜 : Type u_1} {E : Type u_2} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E]
+    (T : Submodule 𝕜 E) : BorelSpace T :=
+  Subtype.borelSpace _
+
+/--
+Let `s` be a subset of `𝕜`-inner product space, and `K` a subspace. Then the `d`-dimensional
+Hausdorff measure of the orthogonal projection of `s` onto `K` is less than or equal to the
+`d`-dimensional Hausdorff measure of `s`.
+-/
+theorem hausdorffMeasure_orthogonalProjection_le {𝕜 : Type u_1} {E : Type u_2} [RCLike 𝕜]
+    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E]
+    (K : Submodule 𝕜 E) [K.HasOrthogonalProjection]
+    (d : ℝ) (s : Set E) (hs : 0 ≤ d) :
+    μH[d] (K.orthogonalProjection '' s) ≤ μH[d] s := by
+  have h : μH[d] (Submodule.orthogonalProjection K '' s) ≤ 1 ^ d * μH[d] s :=
+    K.lipschitzWith_orthogonalProjection.hausdorffMeasure_image_le hs s
+  simpa using h
 
 end Geometric
 

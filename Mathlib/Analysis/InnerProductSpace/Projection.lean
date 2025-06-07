@@ -587,6 +587,23 @@ variable (K)
 theorem orthogonalProjection_norm_le : ‖K.orthogonalProjection‖ ≤ 1 :=
   LinearMap.mkContinuous_norm_le _ (by norm_num) _
 
+/-- The orthogonal projection onto a closed subspace is norm non-increasing. -/
+theorem norm_orthogonalProjection_le (v : E) :
+    ‖orthogonalProjection K v‖ ≤ ‖v‖ := by calc
+  ‖orthogonalProjection K v‖ ≤ ‖orthogonalProjection K‖ * ‖v‖ := K.orthogonalProjection.le_opNorm _
+  _ ≤ 1 * ‖v‖ := by gcongr; exact orthogonalProjection_norm_le K
+  _ = _ := by simp
+
+/-- The orthogonal projection onto a closed subspace is a `1`-Lipschitz map. -/
+theorem lipschitzWith_orthogonalProjection :
+    LipschitzWith 1 (orthogonalProjection K) := by
+  apply LipschitzWith.mk_one
+  intro x y
+  calc
+    _ = ‖orthogonalProjection K (x - y)‖ := by simp [dist_eq_norm]
+    _ ≤ ‖x - y‖ := norm_orthogonalProjection_le _ _
+    _ = dist x y := by simp [dist_eq_norm]
+
 variable (𝕜)
 
 theorem smul_orthogonalProjection_singleton {v : E} (w : E) :
@@ -617,32 +634,6 @@ theorem orthogonalProjection_unit_singleton {v : E} (hv : ‖v‖ = 1) (w : E) :
     ((𝕜 ∙ v).orthogonalProjection w : E) = ⟪v, w⟫ • v := by
   rw [← smul_orthogonalProjection_singleton 𝕜 w]
   simp [hv]
-
-/-- The orthogonal projection onto a closed subspace is norm non-increasing. -/
-theorem norm_orthogonalProjection_le (v : E) :
-    ‖orthogonalProjection K v‖ ≤ ‖v‖ := by
-  have h₁ : ‖orthogonalProjection K v‖ ≤ ‖orthogonalProjection K‖ * ‖v‖ := by
-    exact ContinuousLinearMap.le_opNorm K.orthogonalProjection ↑v
-  have h₂ : ‖orthogonalProjection K‖ ≤ 1 := by
-    exact orthogonalProjection_norm_le K
-  have h₃ : ‖orthogonalProjection K‖ * ‖v‖ ≤ ‖v‖ := by
-    calc
-      ‖orthogonalProjection K‖ * ‖v‖ ≤ 1 * ‖v‖ := by
-        gcongr
-      _ = ‖v‖ := by simp only [AddSubgroupClass.coe_norm, one_mul]
-  exact Preorder.le_trans ‖K.orthogonalProjection ↑v‖ (‖K.orthogonalProjection‖ * ‖v‖) ‖v‖ h₁ h₃
-
-/-- The orthogonal projection onto a closed subspace is a `1`-Lipschitz map. -/
-theorem lipschitzWith_orthogonalProjection :
-    LipschitzWith 1 (orthogonalProjection K) := by
-  apply LipschitzWith.mk_one
-  intro x y
-  rw [dist_eq_norm, dist_eq_norm]
-  calc
-    ‖orthogonalProjection K x - orthogonalProjection K y‖
-      = ‖orthogonalProjection K (x - y)‖ := by
-        simp only [AddSubgroupClass.coe_norm, AddSubgroupClass.coe_sub, map_sub]
-    _ ≤ ‖x - y‖ := by apply norm_orthogonalProjection_le
 
 end orthogonalProjection
 
