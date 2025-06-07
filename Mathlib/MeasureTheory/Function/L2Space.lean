@@ -256,6 +256,38 @@ theorem inner_indicatorConstLp_one (hs : MeasurableSet s) (hμs : μ s ≠ ∞) 
     ⟪indicatorConstLp 2 hs hμs (1 : 𝕜), f⟫ = ∫ x in s, f x ∂μ := by
   rw [L2.inner_indicatorConstLp_eq_inner_setIntegral 𝕜 hs hμs (1 : 𝕜) f]; simp
 
+/- The inner product in `L2` of multiples `a` and `b` of indicators of two sets with finite measure
+is `a * b` times the measure of the intersection. -/
+lemma inner_indicatorConstLp_indicatorConstLp [CompleteSpace E] [NormedSpace ℝ E] {v w : Set α}
+    (hv : MeasurableSet v) (hw : MeasurableSet w) (hμv : μ v ≠ ∞ := by finiteness)
+    (hμw : μ w ≠ ∞ := by finiteness) (a b : E) :
+    ⟪indicatorConstLp 2 hv hμv a, indicatorConstLp 2 hw hμw b⟫ = μ.real (v ∩ w) • ⟪a, b⟫ := by
+  rw [inner_indicatorConstLp_eq_inner_setIntegral]
+  have h : ((indicatorConstLp 2 hw hμw (b : E)) : α → E) =ᶠ[ae μ] w.indicator fun x ↦ (b : E) :=
+    indicatorConstLp_coeFn (hs := hw) (hμs := hμw)
+  have g : ∀ᵐ (x : α) ∂μ, x ∈ v → ((indicatorConstLp 2 hw hμw (b : E)) : α → E) x =
+      w.indicator (fun x ↦ (b : E)) x := Filter.Eventually.mono h fun x a a_1 ↦ a
+  rw [setIntegral_congr_ae hv g, setIntegral_indicator hw]
+  rw [integral_const, measureReal_restrict_apply,
+    Set.univ_inter, inner_smul_right_eq_smul]
+  simp
+
+/- The inner product in `L2` of indicators of two sets with finite measure
+is the measure of the intersection. -/
+lemma inner_indicatorConstLp_one_indicatorConstLp_one
+    {v w : Set α} (hv : MeasurableSet v)
+    (hw : MeasurableSet w) (hμv : μ v ≠ ∞ := by finiteness) (hμw : μ w ≠ ∞ := by finiteness) :
+    ⟪indicatorConstLp 2 hv hμv (1 : 𝕜), indicatorConstLp 2 hw hμw (1 : 𝕜)⟫ = μ.real (v ∩ w) := by
+  simp [inner_indicatorConstLp_indicatorConstLp, RCLike.ofReal_alg]
+
+local notation "⟪" x ", " y "⟫_ℝ" => inner ℝ x y
+
+lemma inner_indicatorConstLp_one_indicatorConstLp_one'
+    {v w : Set α} (hv : MeasurableSet v)
+    (hw : MeasurableSet w) (hμv : μ v ≠ ∞ := by finiteness) (hμw : μ w ≠ ∞ := by finiteness) :
+    ⟪indicatorConstLp 2 hv hμv (1 : ℝ), indicatorConstLp 2 hw hμw (1 : ℝ)⟫_ℝ = μ.real (v ∩ w) :=
+  inner_indicatorConstLp_one_indicatorConstLp_one hv hw
+
 end IndicatorConstLp
 
 end L2
