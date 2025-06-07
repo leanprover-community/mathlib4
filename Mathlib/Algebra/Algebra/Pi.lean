@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Equiv
+import Mathlib.Algebra.Algebra.Prod
 
 /-!
 # The R-algebra structure on families of R-algebras
@@ -123,7 +124,7 @@ end AlgHom
 
 namespace AlgEquiv
 
-variable {R ι : Type*} {A₁ A₂ A₃ : ι → Type*}
+variable {α β R ι : Type*} {A₁ A₂ A₃ : ι → Type*}
 variable [CommSemiring R] [∀ i, Semiring (A₁ i)] [∀ i, Semiring (A₂ i)] [∀ i, Semiring (A₃ i)]
 variable [∀ i, Algebra R (A₁ i)] [∀ i, Algebra R (A₂ i)] [∀ i, Algebra R (A₃ i)]
 
@@ -156,5 +157,80 @@ theorem piCongrRight_symm (e : ∀ i, A₁ i ≃ₐ[R] A₂ i) :
 theorem piCongrRight_trans (e₁ : ∀ i, A₁ i ≃ₐ[R] A₂ i) (e₂ : ∀ i, A₂ i ≃ₐ[R] A₃ i) :
     (piCongrRight e₁).trans (piCongrRight e₂) = piCongrRight fun i ↦ (e₁ i).trans (e₂ i) :=
   rfl
+
+variable (R A₁) in
+/--
+Transport dependent functions through an equivalence of the base space.
+
+This is `Equiv.piCongrLeft'` as an `AlgEquiv`.
+-/
+def piCongrLeft' {ι' : Type*} (e : ι ≃ ι') : (Π i, A₁ i) ≃ₐ[R] Π i, A₁ (e.symm i) :=
+  .ofRingEquiv (f := .piCongrLeft' A₁ e) (by intro; ext; simp)
+
+-- Priority `low - 1` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low - 1]
+lemma piCongrLeft'_apply {ι' : Type*} (e : ι ≃ ι') (x : (Π i, A₁ i)) :
+    piCongrLeft' R A₁ e x = Equiv.piCongrLeft' _ _ x := rfl
+
+-- Priority `low - 1` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low - 1]
+lemma piCongrLeft'_symm_apply {ι' : Type*} (e : ι ≃ ι') (x : Π i, A₁ (e.symm i)) :
+    (piCongrLeft' R A₁ e).symm x = (Equiv.piCongrLeft' _ _).symm x := rfl
+
+variable (R A₁) in
+/--
+Transport dependent functions through an equivalence of the base space, expressed as
+"simplification".
+
+This is `Equiv.piCongrLeft` as an `AlgEquiv`.
+-/
+def piCongrLeft {ι' : Type*} (e : ι' ≃ ι) : (Π i, A₁ (e i)) ≃ₐ[R] Π i, A₁ i :=
+  (AlgEquiv.piCongrLeft' R A₁ e.symm).symm
+
+-- Priority `low - 1` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low - 1]
+lemma piCongrLeft_apply {ι' : Type*} (e : ι' ≃ ι) (x : Π i, A₁ (e i)) :
+    piCongrLeft R A₁ e x = Equiv.piCongrLeft _ _ x := rfl
+
+-- Priority `low - 1` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low - 1]
+lemma piCongrLeft_symm_apply {ι' : Type*} (e : ι' ≃ ι) (x : Π i, A₁ i) :
+    (piCongrLeft R A₁ e).symm x = (Equiv.piCongrLeft _ _).symm x := rfl
+
+section
+
+variable (S : Type*) [Semiring S] [Algebra R S]
+
+variable (ι R) in
+/-- If `ι` as a unique element, then `ι → S` is isomorphic to `S` as an `R`-algebra. -/
+def funUnique [Unique ι] : (ι → S) ≃ₐ[R] S :=
+  .ofRingEquiv (f := .piUnique (fun i : ι ↦ S)) (by simp)
+
+-- Priority `low - 1` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low - 1]
+lemma funUnique_apply [Unique ι] (x : ι → S) : funUnique R ι S x = Equiv.funUnique ι S x := rfl
+
+-- Priority `low - 1` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low - 1]
+lemma funUnique_symm_apply [Unique ι] (x : S) :
+    (funUnique R ι S).symm x = (Equiv.funUnique ι S).symm x := rfl
+
+variable (α β R) in
+/-- `Equiv.sumArrowEquivProdArrow` as an algebra equivalence. -/
+def sumArrowEquivProdArrow : (α ⊕ β → S) ≃ₐ[R] (α → S) × (β → S) :=
+  .ofRingEquiv (f := .sumArrowEquivProdArrow α β S) (by intro; ext <;> simp)
+
+-- Priority `low - 1` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low - 1]
+lemma sumArrowEquivProdArrow_apply (x : α ⊕ β → S) :
+    sumArrowEquivProdArrow α β R S x = Equiv.sumArrowEquivProdArrow α β S x := rfl
+
+-- Priority `low - 1` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low - 1]
+lemma sumArrowEquivProdArrow_symm_apply_inr (x : (α → S) × (β → S)) :
+    (sumArrowEquivProdArrow α β R S).symm x = (Equiv.sumArrowEquivProdArrow α β S).symm x :=
+  rfl
+
+end
 
 end AlgEquiv
