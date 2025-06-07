@@ -18,11 +18,11 @@ This file implements diffeomorphisms.
 * `Diffeomorph.toHomeomorph`: reinterpret a diffeomorphism as a homeomorphism.
 * `ContinuousLinearEquiv.toDiffeomorph`: reinterpret a continuous equivalence as
   a diffeomorphism.
-* `ModelWithCorners.transContinuousLinearEquiv`: compose a given `ModelWithCorners` with a diffeomorphism
-  between the old and the new target spaces. Useful, e.g, to turn any finite dimensional manifold
-  into a manifold modelled on a Euclidean space.
-* `Diffeomorph.totransContinuousLinearEquiv`: the identity diffeomorphism between `M` with model `I` and `M`
-  with model `I.trans_diffeomorph e`.
+* `ModelWithCorners.transContinuousLinearEquiv`: compose a given `ModelWithCorners` with a
+  continuous linear equiv between the old and the new target spaces. Useful, e.g, to turn any
+  finite dimensional manifold into a manifold modelled on a Euclidean space.
+* `Diffeomorph.totransContinuousLinearEquiv`: the identity diffeomorphism between `M` with
+  model `I` and `M` with model `I.transContinuousLinearEquiv e`.
 
 This file also provides diffeomorphisms related to products and disjoint unions.
 * `Diffeomorph.prodCongr`: the product of two diffeomorphisms
@@ -351,14 +351,16 @@ theorem uniqueMDiffOn_preimage (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s : 
     UniqueMDiffOn I (h ⁻¹' s) ↔ UniqueMDiffOn J s :=
   h.symm_image_eq_preimage s ▸ h.symm.uniqueMDiffOn_image hn
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: should use `E ≃ₘ^n[𝕜] F` notation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215):
+-- TODO: should use `E ≃ₘ^n[𝕜] F` notation
 @[simp]
 theorem uniqueDiffOn_image (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, F)⟯ F) (hn : 1 ≤ n) {s : Set E} :
     UniqueDiffOn 𝕜 (h '' s) ↔ UniqueDiffOn 𝕜 s := by
   simp only [← uniqueMDiffOn_iff_uniqueDiffOn, uniqueMDiffOn_image, hn]
 
 @[simp]
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: should use `E ≃ₘ^n[𝕜] F` notation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215):
+-- TODO: should use `E ≃ₘ^n[𝕜] F` notation
 theorem uniqueDiffOn_preimage (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, F)⟯ F) (hn : 1 ≤ n) {s : Set F} :
     UniqueDiffOn 𝕜 (h ⁻¹' s) ↔ UniqueDiffOn 𝕜 s :=
   h.symm_image_eq_preimage s ▸ h.symm.uniqueDiffOn_image hn
@@ -450,16 +452,18 @@ namespace ContinuousLinearEquiv
 
 variable (e : E ≃L[𝕜] F)
 
-/-- TODO: streamline simp normal form. -/
-@[simp] lemma coe_toEquiv_symm : e.toEquiv.symm = e.symm := rfl
-
 instance instIsManifoldtransContinuousLinearEquiv [IsManifold I n M] :
     IsManifold (I.transContinuousLinearEquiv e) n M := by
   refine isManifold_of_contDiffOn (I.transContinuousLinearEquiv e) n M fun e₁ e₂ h₁ h₂ => ?_
   refine e.contDiff.comp_contDiffOn
       (((contDiffGroupoid n I).compatible h₁ h₂).1.comp e.symm.contDiff.contDiffOn ?_)
-  simp only [mapsTo_iff_subset_preimage, mfld_simps, preimage_comp,
-    coe_toEquiv_symm, range_comp, EquivLike.coe_coe]
+  simp only [ModelWithCorners.target_eq, PartialEquiv.restr_coe_symm,
+    Equiv.toPartialEquiv_symm_apply, LinearEquiv.coe_toEquiv_symm, symm_toLinearEquiv,
+    EquivLike.coe_coe, coe_toLinearEquiv, ModelWithCorners.coe_transContinuousLinearEquiv_symm,
+    PartialHomeomorph.trans_toPartialEquiv, PartialHomeomorph.symm_toPartialEquiv,
+    PartialEquiv.trans_source, PartialEquiv.symm_source, PartialHomeomorph.coe_coe_symm,
+    preimage_inter, preimage_comp, ModelWithCorners.coe_transContinuousLinearEquiv, range_comp,
+    mapsTo_iff_subset_preimage]
   gcongr
   rw [ContinuousLinearEquiv.image_eq_preimage]
 
