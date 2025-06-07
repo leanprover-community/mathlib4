@@ -402,7 +402,7 @@ theorem LinearOrder.convexOn_of_lt (hs : Convex 𝕜 s)
   wlog h : x < y
   · rw [add_comm (a • x), add_comm (a • f x)]
     rw [add_comm] at hab
-    exact this hs hf y hy x hx hxy.symm b a hb ha hab (hxy.lt_or_lt.resolve_left h)
+    exact this hs hf y hy x hx hxy.symm b a hb ha hab (hxy.lt_or_gt.resolve_left h)
   exact hf hx hy h ha hb hab
 
 /-- For a function on a convex set in a linearly ordered space (where the order and the algebraic
@@ -427,7 +427,7 @@ theorem LinearOrder.strictConvexOn_of_lt (hs : Convex 𝕜 s)
   wlog h : x < y
   · rw [add_comm (a • x), add_comm (a • f x)]
     rw [add_comm] at hab
-    exact this hs hf y hy x hx hxy.symm b a hb ha hab (hxy.lt_or_lt.resolve_left h)
+    exact this hs hf y hy x hx hxy.symm b a hb ha hab (hxy.lt_or_gt.resolve_left h)
   exact hf hx hy h ha hb hab
 
 /-- For a function on a convex set in a linearly ordered space (where the order and the algebraic

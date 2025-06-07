@@ -910,7 +910,7 @@ lemma antitone_rpow_of_base_le_one {b : ℝ} (hb₀ : 0 < b) (hb₁ : b ≤ 1) :
 
 lemma rpow_right_inj (hx₀ : 0 < x) (hx₁ : x ≠ 1) : x ^ y = x ^ z ↔ y = z := by
   refine ⟨fun H ↦ ?_, fun H ↦ by rw [H]⟩
-  rcases hx₁.lt_or_lt with h | h
+  rcases hx₁.lt_or_gt with h | h
   · exact (strictAnti_rpow_of_base_lt_one hx₀ h).injective H
   · exact (strictMono_rpow_of_base_gt_one h).injective H
 

@@ -348,7 +348,7 @@ theorem partiallyWellOrderedOn_iff_finite_antichains [IsSymm α r] :
       rw [hmn]
       exact refl _
   rintro _ ⟨m, hm, rfl⟩ _ ⟨n, hn, rfl⟩ hmn
-  obtain h | h := (ne_of_apply_ne _ hmn).lt_or_lt
+  obtain h | h := (ne_of_apply_ne _ hmn).lt_or_gt
   · exact H _ _ h
   · exact mt symm (H _ _ h)
 

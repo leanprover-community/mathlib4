@@ -775,7 +775,7 @@ lemma degree_eq_one_of_irreducible_of_root (hi : Irreducible p) {x : R} (hx : Is
 lemma leadingCoeff_divByMonic_X_sub_C (p : R[X]) (hp : degree p ≠ 0) (a : R) :
     leadingCoeff (p /ₘ (X - C a)) = leadingCoeff p := by
   nontriviality
-  rcases hp.lt_or_lt with hd | hd
+  rcases hp.lt_or_gt with hd | hd
   · rw [degree_eq_bot.mp <| Nat.WithBot.lt_zero_iff.mp hd, zero_divByMonic]
   refine leadingCoeff_divByMonic_of_monic (monic_X_sub_C a) ?_
   rwa [degree_X_sub_C, Nat.WithBot.one_le_iff_zero_lt]
