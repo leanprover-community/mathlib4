@@ -17,8 +17,8 @@ The "Freer" monad (as in, "more free") is an alternative representation of free 
 that doesn't require the underlying type constructor to be a `Functor`. Unlike the traditional
 `Free` monad which generates a monad from a functor, `Freer` works with any type constructor
 `f : Type → Type`, making it more general and easier to use with algebraic effects. The traditional
-free monad is undefinable in Lean due to strict positivity, so `Freer` is both a workaround and a
-generalization.
+free monad is not safely definable in Lean due to strict positivity, so `Freer` is both a workaround
+and a generalization.
 
 See the Haskell [freer-simple](https://hackage.haskell.org/package/freer-simple) library for the
 Haskell implementation.
@@ -209,7 +209,10 @@ def runWriter {w : Type u} {α : Type v} [AddMonoid w] (computation : FreerWrite
 
 /-- Capture the output produced by a computation. -/
 def listen {w : Type u} {α : Type v} [AddMonoid w] (comp : FreerWriter w α) :
-FreerWriter w (α × w) := Freer.pure (runWriter comp)
+FreerWriter w (α × w) := do
+  let (result, log) := runWriter comp
+  tell log  -- re-emit the captured log
+  return (result, log)
 
 /-- Run a computation that produces a value and a function to transform the output. -/
 def pass {w : Type u} {α : Type v} [AddMonoid w] (comp : FreerWriter w (α × (w → w))) :
