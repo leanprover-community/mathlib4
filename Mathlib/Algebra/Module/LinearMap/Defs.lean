@@ -580,9 +580,9 @@ instance CompatibleSMul.intModule {S : Type*} [Semiring S] [Module S M] [Module 
     CompatibleSMul M M₂ ℤ S :=
   ⟨fun fₗ c x ↦ by
     induction c with
-    | hz => simp
-    | hp n ih => simp [add_smul, ih]
-    | hn n ih => simp [sub_smul, ih]⟩
+    | zero => simp
+    | succ n ih => simp [add_smul, ih]
+    | pred n ih => simp [sub_smul, ih]⟩
 
 instance CompatibleSMul.units {R S : Type*} [Monoid R] [MulAction R M] [MulAction R M₂]
     [Semiring S] [Module S M] [Module S M₂] [CompatibleSMul M M₂ R S] : CompatibleSMul M M₂ Rˣ S :=
