@@ -19,6 +19,8 @@ Results require `RCLike 𝕜`.
 ## Main results
 
 * `Matrix.gram_posSemidef` Gram matrices are positive semi-definite.
+* `Matrix.gram_posDef_iff_linearIndependent` Linear independence of `v` is
+  equivalent to positive definiteness of `gram 𝕜 v`.
 -/
 
 open RCLike Real Matrix
@@ -37,22 +39,20 @@ def gram (𝕜 : Type*) [Inner 𝕜 E] (v : n → E) : Matrix n n 𝕜 := of fun
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜  _ _ x y
 
-lemma gram_apply [Inner 𝕜 E] {v : n → E} (i j : n) :
-    (gram _ v) i j = ⟪v i, v j⟫ := by
-  rfl
+lemma gram_apply [Inner 𝕜 E] (v : n → E) (i j : n) :
+    (gram _ v) i j = ⟪v i, v j⟫ := rfl
 
 variable [RCLike 𝕜]
-
-/-- A Gram matrix is Hermitian. -/
-lemma isHermitian_gram
-[SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E] {v : n → E} : (gram 𝕜 v).IsHermitian := by
-  refine IsHermitian.ext_iff.mpr (fun i j ↦ ?_)
-  rw [gram, of_apply, of_apply]
-  simp only [RCLike.star_def, inner_conj_symm]
 
 section SemiInnerProductSpace
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+
+/-- A Gram matrix is Hermitian. -/
+lemma isHermitian_gram {v : n → E} : (gram 𝕜 v).IsHermitian := by
+  refine IsHermitian.ext_iff.mpr (fun i j ↦ ?_)
+  rw [gram, of_apply, of_apply]
+  simp only [RCLike.star_def, inner_conj_symm]
 
 theorem star_dotProduct_gram_mulVec [Fintype n] {v : n → E} (x : n → 𝕜) :
     star x ⬝ᵥ (gram 𝕜 v) *ᵥ x = ⟪∑ i, x i • v i, ∑ i, x i • v i⟫ := by
