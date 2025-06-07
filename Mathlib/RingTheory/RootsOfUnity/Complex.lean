@@ -189,7 +189,7 @@ lemma cyclotomic_polynomial_3_roots {K : Type*} [Field K] [NeZero (2 : K)] {z s 
   rw [quadratic_eq_zero_iff one_ne_zero (by rw [hs, discrim]; norm_num)]
   ring_nf
 
-lemma cyclotomic_polynomial_3_ne_zero_of_sq_ne {K : Type*} [Field K] [NeZero (2 : K)] {z : K}
+lemma cyclotomic_polynomial_3_ne_zero_of_sq_ne {K : Type*} [Field K] {z : K}
     (h : ∀ s : K, s^2 ≠ -3) : z ^ 2 + z + 1 ≠ 0 := by
   suffices 1 * (z * z) + 1 * z + 1 ≠ 0 by
     rw[one_mul, one_mul, ← sq] at this
