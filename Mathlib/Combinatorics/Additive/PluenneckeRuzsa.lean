@@ -152,8 +152,8 @@ variable [CommGroup G] {A B C : Finset G}
 -- Auxiliary lemma for Ruzsa's triangle sum inequality, and the Plünnecke-Ruzsa inequality.
 @[to_additive]
 private theorem mul_aux (hA : A.Nonempty)
-    (h : ∀ A' ∈ B.powerset.erase ∅, ((A * C).card : ℚ) / A.card ≤ (A' * C).card / A'.card) :
-    ∀ A' ⊆ B, (A * C).card * A'.card ≤ (A' * C).card * A.card := by
+    (h : ∀ A' ∈ B.powerset.erase ∅, (#(A * C) : ℚ) / #A ≤ #(A' * C) / #A') :
+    ∀ A' ⊆ B, #(A * C) * #A' ≤ #(A' * C) * #A := by
   rintro A' hAA'
   obtain rfl | hA' := A'.eq_empty_or_nonempty
   · simp
@@ -171,15 +171,18 @@ theorem ruzsa_triangle_inequality_mul_mul_mul (A B C : Finset G) :
   rw [mem_erase, mem_powerset, ← nonempty_iff_ne_empty] at hU
   have : #(C * U * A) * #U ≤ #(U * A) * #(C * U) :=
     pluennecke_petridis_inequality_mul C (fun A' hA' ↦ mul_aux hU.1 hUA _ (hA'.trans hU.2))
-  have : #(U * A) * #B ≤ #(A * B) * #U := mul_comm A B ▸ mul_aux hU.1 hUA _ subset_rfl
-  have : #(U * C) ≤ #(B * C) := card_le_card (mul_subset_mul_right hU.2)
-  have : #(A * C) ≤ #(U * A * C) := mul_assoc U A C ▸ card_le_card_mul_left hU.1
-  have : #(C * U * A) = #(U * A * C) := by rw [mul_rotate]
-  have : #(U * C) = #(C * U) := by rw [mul_comm]
-  have : 0 ≤ #U * #(A * B) := by positivity
-  have : 0 ≤ #(U * A) * #(A * B) := by positivity
-  have : 0 < #(U * A) := by positivity
-  nlinarith
+  have hcard : 0 < #(U * A) := by positivity
+  rw [← mul_le_mul_iff_of_pos_left hcard]
+  calc
+    #(U * A) * (#(A * C) * #B) = #(U * A) * #B * #(A * C) := by ring
+    _ ≤ #(B * A) * #U * #(A * C) := by gcongr ?_ * _; exact mul_aux hU.1 hUA _ subset_rfl
+    _ ≤ #(B * A) * #U * #(A * C * U) := by gcongr _ * ?_; exact card_le_card_mul_right hU.1
+    _ = #(B * A) * #U * #(C * U * A) := by rw [mul_rotate A]
+    _ = #(B * A) * (#(C * U * A) * #U) := by ring
+    _ ≤ #(B * A) * (#(U * A) * #(C * U)) := by gcongr
+    _ ≤ #(B * A) * (#(U * A) * #(C * B)) := by gcongr _ * (_ * #(C * ?_)); exact hU.2
+    _ = #(A * B) * (#(U * A) * #(B * C)) := by simp only [mul_comm B]
+    _ = #(U * A) * (#(A * B) * #(B * C)) := by ring
 
 /-- **Ruzsa's triangle inequality**. Mul-div-div version. -/
 @[to_additive "**Ruzsa's triangle inequality**. Add-sub-sub version."]
