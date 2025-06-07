@@ -385,6 +385,24 @@ end MeasureTheory.VectorMeasure
 
 section properties
 
+namespace MeasureTheory.SignedMeasure
+
+variable {X V : Type*} [MeasurableSpace X]
+
+-- TO DO: move this to a good home or do more mathlib style choices earlier make this redundant?
+-- open Classical in
+-- lemma biUnion_Finset {X : Type*} [MeasurableSpace X] (μ : SignedMeasure X)
+--     {S : Finset (Set X)} (hS : ∀ s ∈ S, MeasurableSet s) (hS' : S.toSet.PairwiseDisjoint id) :
+--     ∑ s ∈ S, μ s = μ (⋃ s ∈ S, s) := by
+--   have : ⋃ s ∈ S, s = ⋃ i : S, i.val := by apply Set.biUnion_eq_iUnion
+--   rw [this, μ.of_disjoint_iUnion]
+--   · simp
+--   · simpa
+--   · intro p q h
+--     exact hS' p.property q.property (Subtype.coe_ne_coe.mpr h)
+
+end MeasureTheory.SignedMeasure
+
 namespace MeasureTheory.VectorMeasure
 
 variable {X V : Type*} [MeasurableSpace X] [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
@@ -404,8 +422,6 @@ lemma le_variation' (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) 
     refine Eq.symm (sum_filter_of_ne fun p hp h ↦ ?_)
     by_contra! hc
     simp_all [hc]
-  have h' (p) (hp : p ∈ Q ) : p ∈ P ∧ p ≠ ∅ := by
-    exact mem_filter.mp hp
   have hQ : IsInnerPart s Q := by
     refine ⟨fun p hp ↦ ?_, fun p hp ↦ ?_, fun p hp q hq hpq  ↦ ?_, fun p hp ↦ ?_⟩
     · exact hP₁ p (mem_filter.mp hp).1
@@ -458,6 +474,7 @@ lemma variation_of_ENNReal (μ : VectorMeasure X ℝ≥0∞) : variation μ = μ
     · push_neg at hc
       simp [hc]
 
+-- To do: this proof can be much shorter and much better written.
 open VectorMeasure SignedMeasure Classical in
 /-- For signed measures, variation defined by the Hahn–Jordan decomposition coincides with variation
 defined as a sup. -/
@@ -510,7 +527,6 @@ lemma variation_SignedMeasure (μ : SignedMeasure X) :
       rw [hs']
       have : ‖μ (s ∩ r)‖ₑ = ENNReal.ofReal (μ (s ∩ r)) := by
         refine Real.enorm_of_nonneg  ?_
-        -- Now show that `0 ≤ μ (s ∩ r)`
         refine nonneg_of_zero_le_restrict μ ?_
         exact zero_le_restrict_subset μ hsm (by simp) hs
       rw [this, toMeasureOfZeroLE_apply μ hs hsm hr]
@@ -578,26 +594,118 @@ lemma variation_SignedMeasure (μ : SignedMeasure X) :
         exact restrict_le_zero_subset μ this (by simp) hsc
       nth_rw 2 [h5, h6]
       simpa using abs_add_le (μ (s ∩ p)) (μ (sᶜ ∩ p))
-    have h' p (hp : p ∈ P) : ‖μ p‖ₑ = ENNReal.ofReal |μ p| := by
-      sorry
-    calc ∑ p ∈ P, ‖μ p‖ₑ
-      _ = ∑ p ∈ P, ENNReal.ofReal |μ p| := by
-        exact Finset.sum_congr rfl h'
-      _ = ENNReal.ofReal  (∑ p ∈ P, |μ p|) := by
-        refine Eq.symm <| ofReal_sum_of_nonneg ?_
+    suffices (∑ p ∈ P, ‖μ p‖ₑ).toReal ≤ (μ.totalVariation r).toReal by
+      refine (toNNReal_le_toNNReal ?_ ?_).mp this
+      · refine sum_ne_top.mpr ?_
+        intro p hp
+        exact enorm_ne_top
+      · exact Finiteness.add_ne_top
+          (measure_ne_top μ.toJordanDecomposition.posPart r)
+          (measure_ne_top μ.toJordanDecomposition.negPart r)
+    have := calc (∑ p ∈ P, ‖μ p‖ₑ).toReal
+      _ = ∑ p ∈ P, (‖μ p‖ₑ).toReal := by
+        refine toReal_sum ?_
+        intro p hp
         simp
-      _ ≤ ENNReal.ofReal  (∑ p ∈ P, (μ (s ∩ p) - μ (sᶜ ∩ p))) := by
+      _ = ∑ p ∈ P, |μ p| := by
+        refine Finset.sum_congr rfl fun p hp ↦ ?_
+        exact rfl
+      _ ≤ ∑ p ∈ P, (μ (s ∩ p) - μ (sᶜ ∩ p)) := by
         gcongr with p hp
         exact h p hp
-      _ = ENNReal.ofReal  (∑ p ∈ P, μ (s ∩ p) - ∑ p ∈ P, μ (sᶜ ∩ p)) := by
-        congr
+      _ = ∑ p ∈ P, μ (s ∩ p) - ∑ p ∈ P, μ (sᶜ ∩ p) := by
         exact Finset.sum_sub_distrib
-      _ ≤ ENNReal.ofReal  (μ (s ∩ r) - μ (sᶜ ∩ r)) := by
-        sorry
-      _ = μ.totalVariation r := by
+      _ ≤ μ (s ∩ r) - μ (sᶜ ∩ r) := by
+        gcongr
+        · calc ∑ p ∈ P, μ (s ∩ p)
+            _ = μ (⋃ p ∈ P, (s ∩ p)) := by
+              have : ⋃ p ∈ P, (s ∩ p) = ⋃ i : P, (s ∩ i.val) := by apply Set.biUnion_eq_iUnion
+              rw [this, μ.of_disjoint_iUnion]
+              · rw [← Finset.tsum_subtype]
+              · rw [Subtype.forall]
+                intro p hp
+                exact MeasurableSet.inter hsm <| hP.2.1 p hp
+              · intro p q h
+                have hd := hP.2.2.1 p.property q.property (Subtype.coe_ne_coe.mpr h)
+                intro x hxp hxq
+                simp at hxp hxq
+                have hxpq : x ⊆ p ∩ q := by
+                  exact Set.subset_inter hxp.2 hxq.2
+                have : p.val ∩ q.val = ∅ := by
+                  exact Disjoint.inter_eq hd
+                exact le_of_le_of_eq hxpq this
+            _ = μ (s ∩ (⋃ p ∈ P, p)) := by
+              -- This step isn't bad but isn't required.
+              congr
+              exact Eq.symm (Set.inter_iUnion₂ s fun i j ↦ i)
+            _ ≤ μ (s ∩ r) := by
+              have : μ (s ∩ r) = μ (s ∩ ⋃ p ∈ P, p) + μ ((s ∩ r) \ (s ∩ ⋃ p ∈ P, p)) := by
+                refine Eq.symm (of_add_of_diff ?_ ?_ ?_)
+                · refine MeasurableSet.inter hsm ?_
+                  refine Finset.measurableSet_biUnion P hP.2.1
+                · exact MeasurableSet.inter hsm hr
+                · apply Set.inter_subset_inter_right
+                  exact Set.iUnion₂_subset_iff.mpr hP.1
+              rw [this]
+              simp only [le_add_iff_nonneg_right, ge_iff_le]
+              refine nonneg_of_zero_le_restrict μ ?_
+              have : (s ∩ r) \ (s ∩ ⋃ p ∈ P, p) ⊆ s := by
+                refine subset_trans ?_ (Set.inter_subset_left : s ∩ r ⊆ s)
+                exact Set.diff_subset
+              exact zero_le_restrict_subset μ hsm this hs
+        · calc μ (sᶜ ∩ r)
+            _ ≤ μ (sᶜ ∩ (⋃ p ∈ P, p)) := by
+              have : μ (sᶜ ∩ r) = μ (sᶜ ∩ ⋃ p ∈ P, p) + μ ((sᶜ ∩ r) \ (sᶜ ∩ ⋃ p ∈ P, p)) := by
+                refine Eq.symm (of_add_of_diff ?_ ?_ ?_)
+                · refine MeasurableSet.inter ?_ ?_
+                  exact MeasurableSet.compl_iff.mpr hsm
+                  refine Finset.measurableSet_biUnion P hP.2.1
+                · exact MeasurableSet.inter (MeasurableSet.compl_iff.mpr hsm) hr
+                · apply Set.inter_subset_inter_right
+                  exact Set.iUnion₂_subset_iff.mpr hP.1
+              rw [this]
+              rw [add_le_iff_nonpos_right]
+              refine nonpos_of_restrict_le_zero μ ?_
+              have : (sᶜ ∩ r) \ (sᶜ ∩ ⋃ p ∈ P, p) ⊆ sᶜ := by
+                refine subset_trans ?_ (Set.inter_subset_left : sᶜ ∩ r ⊆ sᶜ)
+                exact Set.diff_subset
+              refine restrict_le_zero_subset μ (MeasurableSet.compl_iff.mpr hsm) this hsc
+            _ = μ (⋃ p ∈ P, (sᶜ ∩ p)) := by
+              congr
+              exact Set.inter_iUnion₂ sᶜ fun i j ↦ i
+            _ = ∑ p ∈ P, μ (sᶜ ∩ p) := by
+              have : ⋃ p ∈ P, (sᶜ ∩ p) = ⋃ i : P, (sᶜ ∩ i.val) := by apply Set.biUnion_eq_iUnion
+              rw [this, μ.of_disjoint_iUnion]
+              · rw [← Finset.tsum_subtype]
+              · rw [Subtype.forall]
+                intro p hp
+                refine MeasurableSet.inter (MeasurableSet.compl_iff.mpr hsm) ?_
+                exact hP.2.1 p hp
+              · intro p q h
+                have hd := hP.2.2.1 p.property q.property (Subtype.coe_ne_coe.mpr h)
+                intro x hxp hxq
+                simp at hxp hxq
+                have hxpq : x ⊆ p ∩ q := by
+                  exact Set.subset_inter hxp.2 hxq.2
+                have : p.val ∩ q.val = ∅ := by
+                  exact Disjoint.inter_eq hd
+                exact le_of_le_of_eq hxpq this
+      _ = (μ.totalVariation r).toReal := by
         dsimp [totalVariation]
-        -- Use estimate as above but swap `ENNReal.ofReal` for `.real` on the other side in places.
-        sorry
+        have h' : μ (s ∩ r) = (μ.toJordanDecomposition.posPart r).toReal := by
+          rw [hs']
+          have := toMeasureOfZeroLE_apply μ hs hsm hr
+          simp [this]
+        have h'' : μ (sᶜ ∩ r) = - (μ.toJordanDecomposition.negPart r).toReal := by
+          rw [hsc']
+          have := toMeasureOfLEZero_apply μ hsc (MeasurableSet.compl hsm) hr
+          simp [this]
+        rw [h', h'']
+        simp
+        refine Eq.symm (toReal_add ?_ ?_)
+        exact measure_ne_top μ.toJordanDecomposition.posPart r
+        exact measure_ne_top μ.toJordanDecomposition.negPart r
+    exact this
 
 end MeasureTheory.VectorMeasure
 
