@@ -443,7 +443,7 @@ end HomogeneousElement
 
 section LinearOrderedAddCommMonoid
 
-variable [LinearOrderedAddCommMonoid ι] [DecidableEq ι]
+variable [AddCommMonoid ι] [LinearOrder ι] [IsOrderedAddMonoid ι] [DecidableEq ι]
 
 section Semiring
 
