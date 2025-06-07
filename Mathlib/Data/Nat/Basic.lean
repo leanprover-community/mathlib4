@@ -42,9 +42,6 @@ instance instLinearOrder : LinearOrder ℕ where
 -- Shortcut instances
 instance : Preorder ℕ := inferInstance
 instance : PartialOrder ℕ := inferInstance
-instance : Min ℕ := inferInstance
-instance : Max ℕ := inferInstance
-instance : Ord ℕ := inferInstance
 
 instance instNontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
 
