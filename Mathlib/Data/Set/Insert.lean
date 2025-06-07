@@ -410,6 +410,9 @@ theorem insert_diff_of_notMem (s) (h : a ∉ t) : insert a s \ t = insert a (s \
 
 @[deprecated (since := "2025-05-23")] alias insert_diff_of_not_mem := insert_diff_of_notMem
 
+lemma insert_diff_subset : insert a s \ t ⊆ insert a (s \ t) := by
+  rintro b ⟨rfl | hbs, hbt⟩ <;> simp [*]
+
 theorem insert_diff_self_of_notMem {a : α} {s : Set α} (h : a ∉ s) : insert a s \ {a} = s := by
   ext x
   simp [and_iff_left_of_imp (ne_of_mem_of_not_mem · h)]
