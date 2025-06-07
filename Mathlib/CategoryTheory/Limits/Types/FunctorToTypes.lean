@@ -160,19 +160,14 @@ lemma overYonedaRightOpIso' : (overYoneda' F).rightOp =
     sectionOver.over F ⋙ yoneda.op ⋙ ((whiskeringRight _ _ _).obj uliftFunctor).op :=
   rfl
 
+section
+
 variable [UnivLE.{max u v, v}] (F : Cᵒᵖ ⥤ Type v)
-variable [UnivLE.{max u v w, max v w}] (F' : Cᵒᵖ ⥤ Type (max v w))
 
 def overCompYonedaCompCoyonedaFlipNatIsoWhiskeringLeftOver :
     (sectionOver.over F ⋙ yoneda.op ⋙ coyoneda).flip
       ≅ (whiskeringLeftOver F) ⋙ (whiskeringRightUlift F) :=
   (flipFunctor _ _ _).mapIso (isoWhiskerLeft (sectionOver.over F) largeCurriedYonedaLemma)
-
-def overCompYonedaCompCoyonedaFlipNatIsoWhiskeringLeftOver' :
-    (sectionOver.over F' ⋙ yoneda.op ⋙ ((whiskeringRight _ _ _).obj uliftFunctor).op
-      ⋙ coyoneda).flip ≅ (whiskeringLeftOver F') ⋙ (whiskeringRightUlift F') :=
-  (flipFunctor _ _ _).mapIso (isoWhiskerLeft (sectionOver.over F')
-    largeCurriedYonedaCompUliftFunctorLemma)
 
 noncomputable def coyonedaOpColimitOverYonedaNatIsoWhiskeringLeftOverLim :
     coyoneda.obj (Opposite.op (colimit (overYoneda F))) ≅
@@ -181,32 +176,47 @@ noncomputable def coyonedaOpColimitOverYonedaNatIsoWhiskeringLeftOverLim :
     ((limitIsoFlipCompLim _).trans
     (isoWhiskerRight (overCompYonedaCompCoyonedaFlipNatIsoWhiskeringLeftOver F) _))
 
-noncomputable def coyonedaOpColimitOverYonedaNatIsoWhiskeringLeftOverLim' :
-    coyoneda.obj (Opposite.op (colimit (overYoneda' F'))) ≅
-      (whiskeringLeftOver F') ⋙ (whiskeringRightUlift F') ⋙ lim :=
-  (coyonedaOpColimitIsoLimitCoyoneda' (overYoneda' F')).trans
-    ((limitIsoFlipCompLim _).trans
-    (isoWhiskerRight (overCompYonedaCompCoyonedaFlipNatIsoWhiskeringLeftOver' F') _))
-
 noncomputable def coyonedaOpNatIsoCoyonedaOpColimitOverYoneda :
     coyoneda.obj (Opposite.op F) ≅ coyoneda.obj (Opposite.op (colimit (overYoneda F))) :=
   (coyonedaOpNatIsoWhiskeringLeftOverCompLim F).trans
     (coyonedaOpColimitOverYonedaNatIsoWhiskeringLeftOverLim F).symm
 
-noncomputable def coyonedaOpNatIsoCoyonedaOpColimitOverYoneda' :
-    coyoneda.obj (Opposite.op F') ≅ coyoneda.obj (Opposite.op (colimit (overYoneda' F'))) :=
-  (coyonedaOpNatIsoWhiskeringLeftOverCompLim F').trans
-    (coyonedaOpColimitOverYonedaNatIsoWhiskeringLeftOverLim' F').symm
-
-/-- A natural isomorphism between a presheaf a a colimit of representable presheaves. -/
+/-- A natural isomorphism between any presheaf and a colimit of representable presheaves. -/
 noncomputable def natIsoColimitOverYoneda :
     F ≅ colimit (overYoneda F) :=
   (Coyoneda.fullyFaithful.preimageIso (coyonedaOpNatIsoCoyonedaOpColimitOverYoneda F).symm).unop
 
+end
+
+section
+
+variable [UnivLE.{max u v w, max v w}] (F : Cᵒᵖ ⥤ Type max v w)
+
+def overCompYonedaCompCoyonedaFlipNatIsoWhiskeringLeftOver' :
+    (sectionOver.over F ⋙ yoneda.op ⋙ ((whiskeringRight _ _ _).obj uliftFunctor).op
+      ⋙ coyoneda).flip ≅ (whiskeringLeftOver F) ⋙ (whiskeringRightUlift F) :=
+  (flipFunctor _ _ _).mapIso (isoWhiskerLeft (sectionOver.over F)
+    largeCurriedYonedaCompUliftFunctorLemma)
+
+noncomputable def coyonedaOpColimitOverYonedaNatIsoWhiskeringLeftOverLim' :
+    coyoneda.obj (Opposite.op (colimit (overYoneda' F))) ≅
+      (whiskeringLeftOver F) ⋙ (whiskeringRightUlift F) ⋙ lim :=
+  (coyonedaOpColimitIsoLimitCoyoneda' (overYoneda' F)).trans
+    ((limitIsoFlipCompLim _).trans
+    (isoWhiskerRight (overCompYonedaCompCoyonedaFlipNatIsoWhiskeringLeftOver' F) _))
+
+noncomputable def coyonedaOpNatIsoCoyonedaOpColimitOverYoneda' :
+    coyoneda.obj (Opposite.op F) ≅ coyoneda.obj (Opposite.op (colimit (overYoneda' F))) :=
+  (coyonedaOpNatIsoWhiskeringLeftOverCompLim F).trans
+    (coyonedaOpColimitOverYonedaNatIsoWhiskeringLeftOverLim' F).symm
+
 /-- A variant of `natIsoColimitOverYoneda` with heterogeneous universes. -/
 noncomputable def natIsoColimitOverYoneda' :
-    F' ≅ colimit (overYoneda' F') :=
-  (Coyoneda.fullyFaithful.preimageIso (coyonedaOpNatIsoCoyonedaOpColimitOverYoneda' F').symm).unop
+    F ≅ colimit (overYoneda' F) :=
+  (Coyoneda.fullyFaithful.preimageIso (coyonedaOpNatIsoCoyonedaOpColimitOverYoneda' F).symm).unop
+
+
+end
 
 end presheaf
 

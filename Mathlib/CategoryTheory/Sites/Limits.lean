@@ -244,13 +244,21 @@ end Colimits
 
 section isoColimitOverYoneda
 
-variable [UnivLE.{max u v, v}] [HasWeakSheafify J (Type v)] (F : Sheaf J (Type v))
-
-noncomputable def isoColimitOverYonedaCompPresheafToSheaf :
+/-- An isomorphism between any sheaf and a colimit of representable sheaves. -/
+noncomputable def isoColimitOverYonedaCompPresheafToSheaf [UnivLE.{max u v, v}]
+    [HasWeakSheafify J (Type v)] (F : Sheaf J (Type v)) :
     F ≅ colimit (overYoneda F.val ⋙ (presheafToSheaf J (Type v))) :=
   (sheafificationIso F).trans
-    (((presheafToSheaf J (Type v)).mapIso (isoColimitOverYoneda F.val)).trans
-    (preservesColimitIso (presheafToSheaf J (Type v)) (overYoneda F.val)))
+    (((presheafToSheaf _ _).mapIso (natIsoColimitOverYoneda F.val)).trans
+    (preservesColimitIso (presheafToSheaf _ _) (overYoneda F.val)))
+
+/-- A variant of `isoColimitOverYonedaCompPresheafToSheaf` with heterogeneous universes. -/
+noncomputable def isoColimitOverYonedaCompPresheafToSheaf' [UnivLE.{max u v w, max v w}]
+    [HasWeakSheafify J (Type max v w)] (F : Sheaf J (Type max v w)):
+    F ≅ colimit (overYoneda' F.val ⋙ (presheafToSheaf J (Type max v w))) :=
+  (sheafificationIso F).trans
+    (((presheafToSheaf _ _).mapIso (natIsoColimitOverYoneda' F.val)).trans
+    (preservesColimitIso (presheafToSheaf _ _) (overYoneda' F.val)))
 
 end isoColimitOverYoneda
 
