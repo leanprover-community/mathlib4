@@ -35,13 +35,18 @@ variable {F G H I : Pseudofunctor B C}
 and a modification. -/
 @[simps!]
 def whiskerLeft (η : F ⟶ G) {θ ι : G ⟶ H} (Γ : θ ⟶ ι) : η ≫ θ ⟶ η ≫ ι :=
-  Modification.mkOfOplax <| OplaxTrans.whiskerLeft η.toOplax Γ.toOplax
+  -- TODO: should I have a bicategory of strong trans (of oplax functors), or not?
+  Modification.mkOfOplax <|
+    Oplax.StrongTrans.Modification.mkOfOplax <|
+      Oplax.OplaxTrans.whiskerLeft η.toOplax.toOplax Γ.toOplax.toOplax
 
 /-- Right whiskering of an strong natural transformation between pseudofunctors
 and a modification. -/
 @[simps!]
 def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι ⟶ θ ≫ ι :=
-  Modification.mkOfOplax <| OplaxTrans.whiskerRight Γ.toOplax ι.toOplax
+  Modification.mkOfOplax <|
+    Oplax.StrongTrans.Modification.mkOfOplax <|
+      Oplax.OplaxTrans.whiskerRight Γ.toOplax.toOplax ι.toOplax.toOplax
 
 /-- Associator for the vertical composition of strong natural transformations
 between pseudofunctors. -/
@@ -61,8 +66,6 @@ between pseudofunctors. -/
 def rightUnitor (η : F ⟶ G) : η ≫ 𝟙 G ≅ η :=
   ModificationIso.ofComponents (fun a => ρ_ (η.app a))
 
-end StrongTrans
-
 variable (B C)
 
 /-- A bicategory structure on the pseudofunctors between two bicategories. -/
@@ -75,5 +78,7 @@ instance bicategory : Bicategory (Pseudofunctor B C) where
   leftUnitor {F G} := StrongTrans.leftUnitor
   rightUnitor {F G} := StrongTrans.rightUnitor
   whisker_exchange {a b c f g h i} η θ := by ext; exact whisker_exchange _ _
+
+end StrongTrans
 
 end CategoryTheory.Pseudofunctor
