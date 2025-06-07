@@ -321,6 +321,25 @@ instance LipschitzH.add [Generates (S := S)] : Add (LipschitzH (G := G)) := {
       rw [← Finset.sum_add_distrib]
   }
 }
+
+
+lemma S_nonempty: S.Nonempty := by exact Finset.nonempty_coe_sort.mp hS
+
+def ConstLipschitzH (z: ℂ) : LipschitzH (G := G) := {
+  toFun := fun x => z
+  lipschitz := by
+    use 0
+    apply LipschitzWith.const
+  harmonic := by
+    unfold Harmonic
+    intro x
+    simp
+    field_simp
+    have card_ne_zero: (#(S) : ℂ) ≠ 0 := by
+      sorry
+    field_simp
+}
+
 instance LipschitzH.zero [Generates (S := S)] : Zero (LipschitzH (G := G)) := {
   zero := {
     toFun := fun x => 0
@@ -344,7 +363,8 @@ instance LipschitzH.instAddCommMonoid: AddCommMonoid (LipschitzH (G := G)) := {
 }
 
 -- V is the vector space
-def V := Module ℂ (LipschitzH (G := G))
+abbrev V := Module ℂ (LipschitzH (G := G))
+
 
 @[simp]
 theorem LipschitzH.add_apply (f g: LipschitzH (G := G)) (x: G): (f + g).toFun x = f x + g x := by
@@ -410,6 +430,44 @@ instance lipschitzHVectorSpace : V (G := G) := {
     dsimp [Zero.zero]
     simp
 }
+
+def ConstF: Submodule ℂ (LipschitzH (G := G)) := {
+  carrier := Set.range ConstLipschitzH
+  add_mem' := by
+    intro a b ha hb
+    simp at ha
+    simp at hb
+    obtain ⟨x, hx⟩ := ha
+    obtain ⟨y, hy⟩ := hb
+    simp
+    use (x + y)
+    ext g
+    simp [ConstLipschitzH]
+    rw [← hx, ← hy]
+    dsimp [ConstLipschitzH]
+    simp [DFunLike.coe]
+  zero_mem' := by
+    use (0 : ℂ)
+    simp [ConstLipschitzH]
+    ext g
+    simp [DFunLike.coe]
+    dsimp [OfNat.ofNat]
+    simp [Zero.zero]
+  smul_mem' := by
+    intro c f hf
+    simp at hf
+    simp
+    obtain ⟨x, hx⟩ := hf
+    use (c * x)
+    ext g
+    simp [ConstLipschitzH]
+    simp [HSMul.hSMul, SMul.smul]
+    left
+    rw [← hx]
+    simp [ConstLipschitzH]
+}
+
+def foo: Submodule ℂ (LipschitzH (G := G)) := (1)
 
 -- TODO - use the fact that G is finitely generated
 instance countableG: Countable (Additive (MulOpposite G)) := by
@@ -951,8 +1009,6 @@ theorem mu_conv_eq_sum (m: ℕ) (g: G): muConv m g = (((1 : ℝ) / (#(S) : ℝ))
 def HasPolynomialGrowthD (d: ℕ): Prop := ∀ n ≥ 2, #(S ^ n) ≤ n ^ d
 def HasPolynomialGrowth: Prop := ∃ d, HasPolynomialGrowthD (S := S) d
 
-lemma S_nonempty: S.Nonempty := by
-  exact Finset.nonempty_coe_sort.mp hS
 
 -- TODO - get rid of this, since all groups must be inhabited
 variable [Inhabited G]
