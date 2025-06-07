@@ -188,6 +188,13 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
       UniqueDiffOn.pi (Fin n) (fun _ => ℝ) _ _ fun i (_ : i ∈ ({0} : Set (Fin n))) =>
         uniqueDiffOn_Ici 0
     simpa only [singleton_pi] using this
+  convex_range h := by
+    erw [range_euclideanHalfSpace]
+    -- issue: the above lemma uses scalar multiplication from WithLp (as one should),
+    -- but this lemma takes the scalar multiplication from an SMulZero instance instead.
+    -- Not sure why this happens!
+    convert EuclideanHalfSpace.convex (n := n)
+    sorry
   target_subset_closure_interior := by simp
   continuous_toFun := continuous_subtype_val
   continuous_invFun := by
@@ -212,11 +219,16 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
       UniqueDiffOn.univ_pi (Fin n) (fun _ => ℝ) _ fun _ => uniqueDiffOn_Ici 0
     simpa only [pi_univ_Ici] using this
   target_subset_closure_interior := by
+    dsimp
     have : {x : EuclideanSpace ℝ (Fin n) | ∀ (i : Fin n), 0 ≤ x i}
       = Set.pi univ (fun i ↦ Ici 0) := by aesop
     simp only [this, interior_pi_set finite_univ]
     rw [closure_pi_set]
     simp
+  convex_range h := by
+    erw [range_euclideanQuadrant]
+    convert EuclideanQuadrant.convex
+    sorry -- same issue as above
   continuous_toFun := continuous_subtype_val
   continuous_invFun := Continuous.subtype_mk
     (continuous_pi fun i => (continuous_id.max continuous_const).comp (continuous_apply i)) _
