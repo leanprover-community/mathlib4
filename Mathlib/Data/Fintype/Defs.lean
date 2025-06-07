@@ -190,7 +190,7 @@ to show the domain type when the filter is over `Finset.univ`. -/
 
 end Mathlib.Meta
 
-open Finset Function
+open Finset
 
 namespace Fintype
 

@@ -122,7 +122,7 @@ theorem convolution_integrand_bound_right_of_le_of_subset {C : ℝ} (hC : ∀ i,
       refine mt (fun hxt => hu ?_) ht
       refine ⟨_, Set.neg_mem_neg.mpr (subset_closure hxt), _, hx, ?_⟩
       simp only [neg_sub, sub_add_cancel]
-    simp only [nmem_support.mp this, (L _).map_zero, norm_zero, le_rfl]
+    simp only [notMem_support.mp this, (L _).map_zero, norm_zero, le_rfl]
 
 theorem _root_.HasCompactSupport.convolution_integrand_bound_right_of_subset
     (hcg : HasCompactSupport g) (hg : Continuous g)
@@ -215,7 +215,7 @@ theorem _root_.BddAbove.convolutionExistsAt' {x₀ : G} {s : Set G}
       refine (le_ciSup_set hbg <| mem_preimage.mpr ?_)
       rwa [neg_sub, sub_add_cancel]
     · have : t ∉ support fun t => L (f t) (g (x₀ - t)) := mt (fun h => h2s h) ht
-      rw [nmem_support.mp this, norm_zero]
+      rw [notMem_support.mp this, norm_zero]
   refine Integrable.mono' ?_ ?_ this
   · rw [integrable_indicator_iff hs]; exact ((hf.norm.const_mul _).mul_const _).integrableOn
   · exact hf.aestronglyMeasurable.convolution_integrand_snd' L hmg
@@ -515,7 +515,7 @@ theorem support_convolution_subset_swap : support (f ⋆[L, μ] g) ⊆ support g
   intro x h2x
   by_contra hx
   apply h2x
-  simp_rw [Set.mem_add, ← exists_and_left, not_exists, not_and_or, nmem_support] at hx
+  simp_rw [Set.mem_add, ← exists_and_left, not_exists, not_and_or, notMem_support] at hx
   rw [convolution_def]
   convert integral_zero G F using 2
   ext t
@@ -617,7 +617,7 @@ theorem _root_.HasCompactSupport.continuous_convolution_right (hcg : HasCompactS
   have : ContinuousOn (↿g') (univ ×ˢ univ) := (hg.comp continuous_snd).continuousOn
   exact continuousOn_convolution_right_with_param_comp L
     (continuous_iff_continuousOn_univ.1 continuous_id) hcg
-    (fun p x _ hx => image_eq_zero_of_nmem_tsupport hx) hf this
+    (fun p x _ hx => image_eq_zero_of_notMem_tsupport hx) hf this
 
 /-- The convolution is continuous if one function is integrable and the other is bounded and
 continuous. -/
@@ -724,7 +724,7 @@ theorem convolution_eq_right' {x₀ : G} {R : ℝ} (hf : support f ⊆ ball (0 :
       specialize hg (x₀ - t)
       rw [sub_eq_add_neg, add_mem_ball_iff_norm, norm_neg, ← sub_eq_add_neg] at hg
       rw [hg h2t]
-    · rw [nmem_support] at ht
+    · rw [notMem_support] at ht
       simp_rw [ht, L.map_zero₂]
   simp_rw [convolution_def, h2]
 
@@ -757,7 +757,7 @@ theorem dist_convolution_le' {x₀ : G} {R ε : ℝ} {z₀ : E'} (hε : 0 ≤ ε
       rw [sub_eq_add_neg, add_mem_ball_iff_norm, norm_neg, ← sub_eq_add_neg] at hg
       refine ((L (f t)).dist_le_opNorm _ _).trans ?_
       exact mul_le_mul_of_nonneg_left (hg h2t) (norm_nonneg _)
-    · rw [nmem_support] at ht
+    · rw [notMem_support] at ht
       simp_rw [ht, L.map_zero₂, L.map_zero, norm_zero, zero_mul, dist_self]
       rfl
   simp_rw [convolution_def]
@@ -1253,26 +1253,26 @@ theorem contDiffOn_convolution_right_with_param {f : G → E} {n : ℕ∞} (L : 
     have hes : IsOpen (isoP ⁻¹' s) := isoP.continuous.isOpen_preimage _ hs
     refine contDiffOn_convolution_right_with_param_aux eL hes hek ?_ ?_ ?_
     · intro p x hp hx
-      simp only [eg, (· ∘ ·), ContinuousLinearEquiv.prod_apply, LinearIsometryEquiv.coe_coe,
+      simp only [eg, (· ∘ ·), ContinuousLinearEquiv.prodCongr_apply, LinearIsometryEquiv.coe_coe,
         ContinuousLinearEquiv.map_eq_zero_iff]
       exact hgs _ _ hp hx
     · exact (locallyIntegrable_map_homeomorph isoG.symm.toHomeomorph).2 hf
     · apply isoE'.symm.contDiff.comp_contDiffOn
-      apply hg.comp (isoP.prod isoG).contDiff.contDiffOn
+      apply hg.comp (isoP.prodCongr isoG).contDiff.contDiffOn
       rintro ⟨p, x⟩ ⟨hp, -⟩
-      simpa only [mem_preimage, ContinuousLinearEquiv.prod_apply, prodMk_mem_set_prod_eq, mem_univ,
-        and_true] using hp
-  have A : ContDiffOn 𝕜 n (isoF ∘ R ∘ (isoP.prod isoG).symm) (s ×ˢ univ) := by
+      simpa only [mem_preimage, ContinuousLinearEquiv.prodCongr_apply, prodMk_mem_set_prod_eq,
+        mem_univ, and_true] using hp
+  have A : ContDiffOn 𝕜 n (isoF ∘ R ∘ (isoP.prodCongr isoG).symm) (s ×ˢ univ) := by
     apply isoF.contDiff.comp_contDiffOn
     apply R_contdiff.comp (ContinuousLinearEquiv.contDiff _).contDiffOn
     rintro ⟨p, x⟩ ⟨hp, -⟩
-    simpa only [mem_preimage, mem_prod, mem_univ, and_true, ContinuousLinearEquiv.prod_symm,
-      ContinuousLinearEquiv.prod_apply, ContinuousLinearEquiv.apply_symm_apply] using hp
-  have : isoF ∘ R ∘ (isoP.prod isoG).symm = fun q : P × G => (f ⋆[L, μ] g q.1) q.2 := by
+    simpa only [mem_preimage, mem_prod, mem_univ, and_true, ContinuousLinearEquiv.prodCongr_symm,
+      ContinuousLinearEquiv.prodCongr_apply, ContinuousLinearEquiv.apply_symm_apply] using hp
+  have : isoF ∘ R ∘ (isoP.prodCongr isoG).symm = fun q : P × G => (f ⋆[L, μ] g q.1) q.2 := by
     apply funext
     rintro ⟨p, x⟩
-    simp only [LinearIsometryEquiv.coe_coe, (· ∘ ·), ContinuousLinearEquiv.prod_symm,
-      ContinuousLinearEquiv.prod_apply]
+    simp only [LinearIsometryEquiv.coe_coe, (· ∘ ·), ContinuousLinearEquiv.prodCongr_symm,
+      ContinuousLinearEquiv.prodCongr_apply]
     simp only [R, convolution, coe_comp', ContinuousLinearEquiv.coe_coe, (· ∘ ·)]
     rw [IsClosedEmbedding.integral_map, ← isoF.integral_comp_comm]
     · rfl
@@ -1351,24 +1351,24 @@ theorem posConvolution_eq_convolution_indicator (f : ℝ → E) (g : ℝ → E')
       integral_indicator (measurableSet_Ioo : MeasurableSet (Ioo 0 x))]
     congr 1 with t : 1
     have : t ≤ 0 ∨ t ∈ Ioo 0 x ∨ x ≤ t := by
-      rcases le_or_lt t 0 with (h | h)
+      rcases le_or_gt t 0 with (h | h)
       · exact Or.inl h
-      · rcases lt_or_le t x with (h' | h')
+      · rcases lt_or_ge t x with (h' | h')
         exacts [Or.inr (Or.inl ⟨h, h'⟩), Or.inr (Or.inr h')]
     rcases this with (ht | ht | ht)
-    · rw [indicator_of_not_mem (not_mem_Ioo_of_le ht), indicator_of_not_mem (not_mem_Ioi.mpr ht),
+    · rw [indicator_of_notMem (notMem_Ioo_of_le ht), indicator_of_notMem (notMem_Ioi.mpr ht),
         ContinuousLinearMap.map_zero, ContinuousLinearMap.zero_apply]
     · rw [indicator_of_mem ht, indicator_of_mem (mem_Ioi.mpr ht.1),
           indicator_of_mem (mem_Ioi.mpr <| sub_pos.mpr ht.2)]
-    · rw [indicator_of_not_mem (not_mem_Ioo_of_ge ht),
-          indicator_of_not_mem (not_mem_Ioi.mpr (sub_nonpos_of_le ht)),
+    · rw [indicator_of_notMem (notMem_Ioo_of_ge ht),
+          indicator_of_notMem (notMem_Ioi.mpr (sub_nonpos_of_le ht)),
           ContinuousLinearMap.map_zero]
   · convert (integral_zero ℝ F).symm with t
     by_cases ht : 0 < t
-    · rw [indicator_of_not_mem (_ : x - t ∉ Ioi 0), ContinuousLinearMap.map_zero]
-      rw [not_mem_Ioi] at h ⊢
+    · rw [indicator_of_notMem (_ : x - t ∉ Ioi 0), ContinuousLinearMap.map_zero]
+      rw [notMem_Ioi] at h ⊢
       exact sub_nonpos.mpr (h.trans ht.le)
-    · rw [indicator_of_not_mem (mem_Ioi.not.mpr ht), ContinuousLinearMap.map_zero,
+    · rw [indicator_of_notMem (mem_Ioi.not.mpr ht), ContinuousLinearMap.map_zero,
        ContinuousLinearMap.zero_apply]
 
 theorem integrable_posConvolution {f : ℝ → E} {g : ℝ → E'} {μ ν : Measure ℝ} [SFinite μ]

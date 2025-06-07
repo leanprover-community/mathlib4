@@ -65,8 +65,8 @@ theorem primeFactorsList_count_eq {n p : ℕ} : n.primeFactorsList.count p = n.f
   simp only [factorization_def _ pp]
   apply _root_.le_antisymm
   · rw [le_padicValNat_iff_replicate_subperm_primeFactorsList pp hn0.ne']
-    exact List.le_count_iff_replicate_sublist.mp le_rfl |>.subperm
-  · rw [← Nat.lt_add_one_iff, lt_iff_not_ge, ge_iff_le,
+    exact List.replicate_sublist_iff.mpr le_rfl |>.subperm
+  · rw [← Nat.lt_add_one_iff, lt_iff_not_ge,
       le_padicValNat_iff_replicate_subperm_primeFactorsList pp hn0.ne']
     intro h
     have := h.count_le p
@@ -114,7 +114,7 @@ theorem factorization_one : factorization 1 = 0 := by ext; simp [factorization]
 
 theorem factorization_eq_zero_iff (n p : ℕ) :
     n.factorization p = 0 ↔ ¬p.Prime ∨ ¬p ∣ n ∨ n = 0 := by
-  simp_rw [← not_mem_support_iff, support_factorization, mem_primeFactors, not_and_or, not_ne_iff]
+  simp_rw [← notMem_support_iff, support_factorization, mem_primeFactors, not_and_or, not_ne_iff]
 
 @[simp]
 theorem factorization_eq_zero_of_non_prime (n : ℕ) {p : ℕ} (hp : ¬p.Prime) :
@@ -215,7 +215,7 @@ theorem prod_pow_factorization_eq_self {f : ℕ →₀ ℕ} (hf : ∀ p : ℕ, p
 def factorizationEquiv : ℕ+ ≃ { f : ℕ →₀ ℕ | ∀ p ∈ f.support, Prime p } where
   toFun := fun ⟨n, _⟩ => ⟨n.factorization, fun _ => prime_of_mem_primeFactors⟩
   invFun := fun ⟨f, hf⟩ =>
-    ⟨f.prod _, prod_pow_pos_of_zero_not_mem_support fun H => not_prime_zero (hf 0 H)⟩
+    ⟨f.prod _, prod_pow_pos_of_zero_notMem_support fun H => not_prime_zero (hf 0 H)⟩
   left_inv := fun ⟨_, hx⟩ => Subtype.ext <| factorization_prod_pow_eq_self hx.ne.symm
   right_inv := fun ⟨_, hf⟩ => Subtype.ext <| prod_pow_factorization_eq_self hf
 

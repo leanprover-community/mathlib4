@@ -14,8 +14,8 @@ import Mathlib.Tactic.Monotonicity.Attr
 /-!
 # Lemmas on the monotone multiplication typeclasses
 
-This file builds on `Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs` by proving several lemmas
-that do not immediately follow from the typeclass specifications.
+This file builds on `Mathlib/Algebra/Order/GroupWithZero/Unbundled/Defs.lean` by proving several
+lemmas that do not immediately follow from the typeclass specifications.
 -/
 
 open Function
@@ -653,7 +653,7 @@ lemma lt_of_pow_lt_pow_left₀ (n : ℕ) (hb : 0 ≤ b) (h : a ^ n < b ^ n) : a 
   lt_of_not_ge fun hn => not_lt_of_ge (pow_le_pow_left₀ hb hn _) h
 
 lemma le_of_pow_le_pow_left₀ (hn : n ≠ 0) (hb : 0 ≤ b) (h : a ^ n ≤ b ^ n) : a ≤ b :=
-  le_of_not_lt fun h1 => not_le_of_lt (pow_lt_pow_left₀ h1 hb hn) h
+  le_of_not_gt fun h1 => not_le_of_gt (pow_lt_pow_left₀ h1 hb hn) h
 
 lemma sq_eq_sq₀ (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ 2 = b ^ 2 ↔ a = b := by
   simp [ha, hb]

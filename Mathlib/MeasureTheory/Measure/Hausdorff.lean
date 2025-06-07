@@ -26,8 +26,8 @@ The value of `μH[d]`, `d > 0`, on a set `s` (measurable or not) is given by
 
 For every set `s` for any `d < d'` we have either `μH[d] s = ∞` or `μH[d'] s = 0`, see
 `MeasureTheory.Measure.hausdorffMeasure_zero_or_top`. In
-`Mathlib.Topology.MetricSpace.HausdorffDimension` we use this fact to define the Hausdorff dimension
-`dimH` of a set in an (extended) metric space.
+`Mathlib/Topology/MetricSpace/HausdorffDimension.lean` we use this fact to define the Hausdorff
+dimension `dimH` of a set in an (extended) metric space.
 
 We also define two generalizations of the Hausdorff measure. In one generalization (see
 `MeasureTheory.Measure.mkMetric`) we take any function `m (diam s)` instead of `(diam s) ^ d`. In
@@ -584,7 +584,7 @@ theorem hausdorffMeasure_zero_or_top {d₁ d₂ : ℝ} (h : d₁ < d₂) (s : Se
   rw [Pi.smul_apply, smul_eq_mul,
     ← ENNReal.div_le_iff_le_mul (Or.inr ENNReal.coe_ne_top) (Or.inr <| mt ENNReal.coe_eq_zero.1 hc)]
   rcases eq_or_ne r 0 with (rfl | hr₀)
-  · rcases lt_or_le 0 d₂ with (h₂ | h₂)
+  · rcases lt_or_ge 0 d₂ with (h₂ | h₂)
     · simp only [h₂, ENNReal.zero_rpow_of_pos, zero_le, ENNReal.zero_div, ENNReal.coe_zero]
     · simp only [h.trans_le h₂, ENNReal.div_top, zero_le, ENNReal.zero_rpow_of_neg,
         ENNReal.coe_zero]

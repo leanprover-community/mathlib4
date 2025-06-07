@@ -769,7 +769,7 @@ lemma Cauchy.exists_lb_eventual_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy �
       exact (valuation_le_iff_coeff_lt_eq_zero K).mp hg
     · refine ⟨min (f.2.isWF.min (HahnSeries.support_nonempty_iff.mpr hf)) 0 - 1, fun _ hg n hn ↦ ?_⟩
       rw [eq_coeff_of_valuation_sub_lt K hg (d := 0)]
-      · exact Function.nmem_support.mp fun h ↦
+      · exact Function.notMem_support.mp fun h ↦
         f.2.isWF.not_lt_min (HahnSeries.support_nonempty_iff.mpr hf) h
         <| lt_trans hn <| Int.sub_one_lt_iff.mpr <| min_le_left _ _
       exact lt_of_lt_of_le hn <| le_of_lt (Int.sub_one_lt_of_le <| min_le_right _ _)
@@ -831,7 +831,7 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
     intro i hi x hx
     simp only [Set.mem_inter_iff, Set.mem_iInter, and_imp] at hx
     by_cases H : i < ℓ
-    exacts [hx.1 _ H, hx.2 _ (le_of_not_lt H) <| le_of_lt <| lt_max_of_lt_right hi]
+    exacts [hx.1 _ H, hx.2 _ (le_of_not_gt H) <| le_of_lt <| lt_max_of_lt_right hi]
   suffices (⋂ n ∈ Set.Iio ℓ, φ n) ∩ (⋂ n ∈ Set.Icc ℓ N, φ n) ∈ ℱ by
     exact ℱ.sets_of_superset this <| intersec₂.trans intersec₁
   /- To show that the intersection we have in sight is in `ℱ`, we use that it contains a double
@@ -878,7 +878,7 @@ section Dense
 
 open scoped Multiplicative
 
-open HahnSeries LaurentSeries PowerSeries IsDedekindDomain.HeightOneSpectrum WithZero
+open LaurentSeries PowerSeries IsDedekindDomain.HeightOneSpectrum WithZero
 
 theorem exists_Polynomial_intValuation_lt (F : K⟦X⟧) (η : ℤₘ₀ˣ) :
     ∃ P : K[X], (PowerSeries.idealX K).intValuation (F - P) < η := by

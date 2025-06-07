@@ -134,7 +134,7 @@ theorem exists_smodEq (pb : PowerBasis A B) (b : B) :
   · exact ⟨0, by rw [SModEq, Subsingleton.eq_zero b, map_zero]⟩
   refine ⟨pb.basis.repr b ⟨0, pb.dim_pos⟩, ?_⟩
   have H := pb.basis.sum_repr b
-  rw [← insert_erase (mem_univ ⟨0, pb.dim_pos⟩), sum_insert (not_mem_erase _ _)] at H
+  rw [← insert_erase (mem_univ ⟨0, pb.dim_pos⟩), sum_insert (notMem_erase _ _)] at H
   rw [SModEq, ← add_zero (algebraMap _ _ _), Quotient.mk_add]
   nth_rewrite 1 [← H]
   rw [Quotient.mk_add]
@@ -144,7 +144,7 @@ theorem exists_smodEq (pb : PowerBasis A B) (b : B) :
     refine sum_mem _ (fun i hi ↦ ?_)
     rw [Algebra.smul_def']
     refine Ideal.mul_mem_left _ _ <| Ideal.pow_mem_of_mem _ (Ideal.subset_span (by simp)) _ <|
-      Nat.pos_of_ne_zero <| fun h ↦ not_mem_erase i univ <| Fin.eq_mk_iff_val_eq.2 h ▸ hi
+      Nat.pos_of_ne_zero <| fun h ↦ notMem_erase i univ <| Fin.eq_mk_iff_val_eq.2 h ▸ hi
 
 open Submodule.Quotient in
 theorem exists_gen_dvd_sub (pb : PowerBasis A B) (b : B) : ∃ a, pb.gen ∣ b - algebraMap A B a := by
@@ -172,7 +172,7 @@ theorem minpolyGen_monic (pb : PowerBasis A S) : Monic (minpolyGen pb) := by
 
 theorem dim_le_natDegree_of_root (pb : PowerBasis A S) {p : A[X]} (ne_zero : p ≠ 0)
     (root : aeval pb.gen p = 0) : pb.dim ≤ p.natDegree := by
-  refine le_of_not_lt fun hlt => ne_zero ?_
+  refine le_of_not_gt fun hlt => ne_zero ?_
   rw [p.as_sum_range' _ hlt, Finset.sum_range]
   refine Fintype.sum_eq_zero _ fun i => ?_
   simp_rw [aeval_eq_sum_range' hlt, Finset.sum_range, ← pb.basis_eq_pow] at root

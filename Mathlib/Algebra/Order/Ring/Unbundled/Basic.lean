@@ -17,7 +17,7 @@ import Mathlib.Tactic.Tauto
 # Basic facts for ordered rings and semirings
 
 This file develops the basics of ordered (semi)rings in an unbundled fashion for later use with
-the bundled classes from `Mathlib.Algebra.Order.Ring.Defs`.
+the bundled classes from `Mathlib/Algebra/Order/Ring/Defs.lean`.
 
 The set of typeclass variables here comprises
 * an algebraic class (`Semiring`, `CommSemiring`, `Ring`, `CommRing`)
@@ -412,7 +412,7 @@ theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg
     [MulPosStrictMono R] [PosMulStrictMono R]
     (hab : 0 ≤ a * b) : 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
   refine Decidable.or_iff_not_not_and_not.2 ?_
-  simp only [not_and, not_le]; intro ab nab; apply not_lt_of_le hab _
+  simp only [not_and, not_le]; intro ab nab; apply not_lt_of_ge hab _
   rcases lt_trichotomy 0 a with (ha | rfl | ha)
   · exact mul_neg_of_pos_of_neg ha (ab ha.le)
   · exact ((ab le_rfl).asymm (nab le_rfl)).elim
@@ -475,7 +475,7 @@ theorem add_le_mul [ZeroLEOneClass R] [NeZero (1 : R)]
     [MulPosStrictMono R] [PosMulStrictMono R] [AddLeftMono R]
     (a2 : 2 ≤ a) (b2 : 2 ≤ b) : a + b ≤ a * b :=
   if hab : a ≤ b then add_le_mul_of_left_le_right a2 hab
-  else add_le_mul_of_right_le_left b2 (le_of_not_le hab)
+  else add_le_mul_of_right_le_left b2 (le_of_not_ge hab)
 
 theorem add_le_mul' [ZeroLEOneClass R] [NeZero (1 : R)]
     [MulPosStrictMono R] [PosMulStrictMono R] [AddLeftMono R]
