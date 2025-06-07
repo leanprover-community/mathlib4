@@ -1499,6 +1499,17 @@ import Mathlib.Analysis.Convex.Exposed
 import Mathlib.Analysis.Convex.Extrema
 import Mathlib.Analysis.Convex.Extreme
 import Mathlib.Analysis.Convex.Function
+import Mathlib.Analysis.Convex.Function.Basic
+import Mathlib.Analysis.Convex.Function.Continuous
+import Mathlib.Analysis.Convex.Function.Deriv
+import Mathlib.Analysis.Convex.Function.Extrema
+import Mathlib.Analysis.Convex.Function.Integral
+import Mathlib.Analysis.Convex.Function.Jensen
+import Mathlib.Analysis.Convex.Function.Mul
+import Mathlib.Analysis.Convex.Function.Piecewise
+import Mathlib.Analysis.Convex.Function.Quasiconvex
+import Mathlib.Analysis.Convex.Function.Slope
+import Mathlib.Analysis.Convex.Function.Strong
 import Mathlib.Analysis.Convex.Gauge
 import Mathlib.Analysis.Convex.GaugeRescale
 import Mathlib.Analysis.Convex.Hull

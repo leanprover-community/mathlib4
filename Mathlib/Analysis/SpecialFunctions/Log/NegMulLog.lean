@@ -5,7 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
-import Mathlib.Analysis.Convex.Deriv
+import Mathlib.Analysis.Convex.Function.Deriv
 
 /-!
 # The function `x ↦ - x * log x`
