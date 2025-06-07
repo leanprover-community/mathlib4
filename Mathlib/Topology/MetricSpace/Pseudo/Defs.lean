@@ -444,7 +444,7 @@ theorem closedBall_eq_empty : closedBall x ε = ∅ ↔ ε < 0 := by
 
 /-- Closed balls and spheres coincide when the radius is non-positive -/
 theorem closedBall_eq_sphere_of_nonpos (hε : ε ≤ 0) : closedBall x ε = sphere x ε :=
-  Set.ext fun _ => (hε.trans dist_nonneg).le_iff_eq
+  Set.ext fun _ => (hε.trans dist_nonneg).ge_iff_eq'
 
 theorem ball_subset_closedBall : ball x ε ⊆ closedBall x ε := fun _y hy =>
   mem_closedBall.2 (le_of_lt hy)

@@ -123,7 +123,7 @@ alias ⟨IsTop.eq_top, _⟩ := isTop_iff_eq_top
 
 @[simp]
 theorem top_le_iff : ⊤ ≤ a ↔ a = ⊤ :=
-  le_top.le_iff_eq.trans eq_comm
+  le_top.ge_iff_eq
 
 theorem top_unique (h : ⊤ ≤ a) : a = ⊤ :=
   le_top.antisymm h

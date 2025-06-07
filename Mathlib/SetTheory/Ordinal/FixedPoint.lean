@@ -207,7 +207,7 @@ theorem le_iff_derivFamily [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a} :
 
 theorem fp_iff_derivFamily [Small.{u} ι] (H : ∀ i, IsNormal (f i)) {a} :
     (∀ i, f i a = a) ↔ ∃ o, derivFamily f o = a :=
-  Iff.trans ⟨fun h i => le_of_eq (h i), fun h i => (H i).le_iff_eq.1 (h i)⟩ (le_iff_derivFamily H)
+  Iff.trans ⟨fun h i => le_of_eq (h i), fun h i => eq_of_le_of_ge (H i) (h i)⟩ (le_iff_derivFamily H)
 
 /-- For a family of normal functions, `Ordinal.derivFamily` enumerates the common fixed points. -/
 theorem derivFamily_eq_enumOrd [Small.{u} ι] (H : ∀ i, IsNormal (f i)) :

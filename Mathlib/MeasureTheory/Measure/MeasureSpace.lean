@@ -1116,7 +1116,7 @@ protected theorem zero_le {_m0 : MeasurableSpace α} (μ : Measure α) : 0 ≤ �
   bot_le
 
 theorem nonpos_iff_eq_zero' : μ ≤ 0 ↔ μ = 0 :=
-  μ.zero_le.le_iff_eq
+  μ.zero_le.ge_iff_eq'
 
 @[simp]
 theorem measure_univ_eq_zero : μ univ = 0 ↔ μ = 0 :=

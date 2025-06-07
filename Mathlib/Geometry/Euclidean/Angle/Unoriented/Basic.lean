@@ -185,14 +185,14 @@ theorem sin_angle_mul_norm_mul_norm (x y : V) :
 /-- The angle between two vectors is zero if and only if they are
 nonzero and one is a positive multiple of the other. -/
 theorem angle_eq_zero_iff {x y : V} : angle x y = 0 ↔ x ≠ 0 ∧ ∃ r : ℝ, 0 < r ∧ y = r • x := by
-  rw [angle, ← real_inner_div_norm_mul_norm_eq_one_iff, Real.arccos_eq_zero, LE.le.le_iff_eq,
+  rw [angle, ← real_inner_div_norm_mul_norm_eq_one_iff, Real.arccos_eq_zero, LE.le.ge_iff_eq',
     eq_comm]
   exact (abs_le.mp (abs_real_inner_div_norm_mul_norm_le_one x y)).2
 
 /-- The angle between two vectors is π if and only if they are nonzero
 and one is a negative multiple of the other. -/
 theorem angle_eq_pi_iff {x y : V} : angle x y = π ↔ x ≠ 0 ∧ ∃ r : ℝ, r < 0 ∧ y = r • x := by
-  rw [angle, ← real_inner_div_norm_mul_norm_eq_neg_one_iff, Real.arccos_eq_pi, LE.le.le_iff_eq]
+  rw [angle, ← real_inner_div_norm_mul_norm_eq_neg_one_iff, Real.arccos_eq_pi, LE.le.ge_iff_eq']
   exact (abs_le.mp (abs_real_inner_div_norm_mul_norm_le_one x y)).1
 
 /-- If the angle between two vectors is π, the angles between those

@@ -404,7 +404,7 @@ theorem IsNormal.le_apply {f} (H : IsNormal f) {a} : a ≤ f a :=
   H.strictMono.le_apply
 
 theorem IsNormal.le_iff_eq {f} (H : IsNormal f) {a} : f a ≤ a ↔ f a = a :=
-  H.le_apply.le_iff_eq
+  H.le_apply.ge_iff_eq'
 
 theorem IsNormal.le_set {f o} (H : IsNormal f) (p : Set Ordinal) (p0 : p.Nonempty) (b)
     (H₂ : ∀ o, b ≤ o ↔ ∀ a ∈ p, a ≤ o) : f b ≤ o ↔ ∀ a ∈ p, f a ≤ o :=
