@@ -67,7 +67,6 @@ representing an operation from `f` followed by a continuation.
 This construction provides a free monad for any type constructor `f`, allowing for composable
 effect descriptions that can be interpreted later. Unlike the traditional Free monad,
 this does not require `f` to be a functor. -/
-
 inductive Freer.{u, v, w} (f : Type u → Type v) (α : Type w) where
   | pure : α → Freer f α
   | impure (ι : Type u) (op : f ι) (cont : ι → Freer f α) : Freer f α
@@ -315,9 +314,9 @@ example : FreerState.runState (do
 
 -- Example FreerWriter computations
 example : FreerWriter.run (do
-  FreerWriter.tell 2
+  FreerWriter.tell (21 : Nat)
   FreerWriter.tell 3
-  return 42) = (42, 6) := rfl
+  return 42) = (42, 63) := rfl
 
 example : FreerWriter.run (do
   let (x, captured) ← FreerWriter.listen (do
