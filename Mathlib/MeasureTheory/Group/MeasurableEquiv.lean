@@ -34,16 +34,18 @@ We also deduce that the corresponding maps are measurable embeddings.
 measurable, equivalence, group action
 -/
 
+open scoped Pointwise NNReal
+
 namespace MeasurableEquiv
 
-variable {G G₀ α : Type*} [MeasurableSpace G] [MeasurableSpace G₀] [MeasurableSpace α] [Group G]
-  [GroupWithZero G₀] [MulAction G α] [MulAction G₀ α] [MeasurableSMul G α] [MeasurableSMul G₀ α]
+variable {G G₀ α : Type*} [MeasurableSpace α] [Group G] [GroupWithZero G₀] [MulAction G α]
+  [MulAction G₀ α] [MeasurableConstSMul G α] [MeasurableConstSMul G₀ α]
 
 /-- If a group `G` acts on `α` by measurable maps, then each element `c : G` defines a measurable
 automorphism of `α`. -/
-@[to_additive (attr := simps! (config := .asFn) toEquiv apply)
+@[to_additive (attr := simps! -fullyApplied toEquiv apply)
       "If an additive group `G` acts on `α` by measurable maps, then each element `c : G`
-      defines a measurable automorphism of `α`." ]
+      defines a measurable automorphism of `α`."]
 def smul (c : G) : α ≃ᵐ α where
   toEquiv := MulAction.toPerm c
   measurable_toFun := measurable_const_smul c
@@ -72,6 +74,8 @@ theorem symm_smul₀ {c : G₀} (hc : c ≠ 0) :
 theorem _root_.measurableEmbedding_const_smul₀ {c : G₀} (hc : c ≠ 0) :
     MeasurableEmbedding (c • · : α → α) :=
   (smul₀ c hc).measurableEmbedding
+
+variable [MeasurableSpace G] [MeasurableSpace G₀]
 
 section Mul
 
@@ -174,7 +178,7 @@ theorem toEquiv_mulRight₀ {g : G₀} (hg : g ≠ 0) : (mulRight₀ g hg).toEqu
 end Mul
 
 /-- Inversion as a measurable automorphism of a group or group with zero. -/
-@[to_additive (attr := simps! (config := .asFn) toEquiv apply)
+@[to_additive (attr := simps! -fullyApplied toEquiv apply)
     "Negation as a measurable automorphism of an additive group."]
 def inv (G) [MeasurableSpace G] [InvolutiveInv G] [MeasurableInv G] : G ≃ᵐ G where
   toEquiv := Equiv.inv G
@@ -187,17 +191,56 @@ theorem symm_inv {G} [MeasurableSpace G] [InvolutiveInv G] [MeasurableInv G] :
   rfl
 
 /-- `equiv.divRight` as a `MeasurableEquiv`. -/
-@[to_additive " `equiv.subRight` as a `MeasurableEquiv` "]
+@[to_additive "`equiv.subRight` as a `MeasurableEquiv`"]
 def divRight [MeasurableMul G] (g : G) : G ≃ᵐ G where
   toEquiv := Equiv.divRight g
   measurable_toFun := measurable_div_const' g
   measurable_invFun := measurable_mul_const g
 
+@[to_additive]
+lemma _root_.measurableEmbedding_divRight [MeasurableMul G] (g : G) :
+    MeasurableEmbedding fun x ↦ x / g :=
+  (divRight g).measurableEmbedding
+
 /-- `equiv.divLeft` as a `MeasurableEquiv` -/
-@[to_additive " `equiv.subLeft` as a `MeasurableEquiv` "]
+@[to_additive "`equiv.subLeft` as a `MeasurableEquiv`"]
 def divLeft [MeasurableMul G] [MeasurableInv G] (g : G) : G ≃ᵐ G where
   toEquiv := Equiv.divLeft g
   measurable_toFun := measurable_id.const_div g
   measurable_invFun := measurable_inv.mul_const g
 
+@[to_additive]
+lemma _root_.measurableEmbedding_divLeft [MeasurableMul G] [MeasurableInv G] (g : G) :
+    MeasurableEmbedding fun x ↦ g / x :=
+  (divLeft g).measurableEmbedding
+
 end MeasurableEquiv
+
+namespace MeasureTheory.Measure
+variable {G A : Type*} [Group G] [MulAction G A] [MeasurableSpace A]
+  [MeasurableConstSMul G A] {μ ν : Measure A} {g : G}
+
+noncomputable instance : DistribMulAction Gᵈᵐᵃ (Measure A) where
+  smul g μ := μ.map (DomMulAct.mk.symm g⁻¹ • ·)
+  one_smul μ := show μ.map _ = _ by simp
+  mul_smul g g' μ := show μ.map _ = ((μ.map _).map _) by
+    rw [map_map]
+    · simp [Function.comp_def, mul_smul]
+    · exact measurable_const_smul ..
+    · exact measurable_const_smul ..
+  smul_zero g := show (0 : Measure A).map _ = 0 by simp
+  smul_add g μ ν := show (μ + ν).map _ = μ.map _ + ν.map _ by
+    rw [Measure.map_add]; exact measurable_const_smul ..
+
+lemma dmaSMul_apply (μ : Measure A) (g : Gᵈᵐᵃ) (s : Set A) :
+    (g • μ) s = μ (DomMulAct.mk.symm g • s) := by
+  refine ((MeasurableEquiv.smul ((DomMulAct.mk.symm g : G)⁻¹)).map_apply _).trans ?_
+  congr 1
+  exact Set.preimage_smul_inv (DomMulAct.mk.symm g) s
+
+instance : SMulCommClass ℝ≥0 Gᵈᵐᵃ (Measure A) where
+  smul_comm r g μ := show r • μ.map _ = (r • μ).map _ by simp
+
+instance : SMulCommClass Gᵈᵐᵃ ℝ≥0 (Measure A) := .symm ..
+
+end MeasureTheory.Measure

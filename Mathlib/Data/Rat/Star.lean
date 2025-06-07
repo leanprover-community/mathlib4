@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux, Yaël Dillies
 -/
 import Mathlib.Algebra.GroupWithZero.Commute
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Star.Order
-import Mathlib.Data.NNRat.Lemmas
 import Mathlib.Algebra.Order.Monoid.Submonoid
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.Order.Star.Basic
+import Mathlib.Data.NNRat.Order
 import Mathlib.Tactic.FieldSimp
 
 /-!
@@ -38,7 +38,7 @@ namespace NNRat
   simpa only [sq] using addSubmonoid_closure_range_pow two_ne_zero
 
 instance instStarOrderedRing : StarOrderedRing ℚ≥0 where
-  le_iff a b := by simp [le_iff_exists_nonneg_add a b]
+  le_iff a b := by simp [eq_comm, le_iff_exists_nonneg_add (a := a)]
 
 end NNRat
 
@@ -57,6 +57,6 @@ lemma addSubmonoid_closure_range_mul_self : closure (range fun x : ℚ ↦ x * x
   simpa only [sq] using addSubmonoid_closure_range_pow two_ne_zero even_two
 
 instance instStarOrderedRing : StarOrderedRing ℚ where
-  le_iff a b := by simp [le_iff_exists_nonneg_add a b]
+  le_iff a b := by simp [eq_comm, le_iff_exists_nonneg_add (a := a)]
 
 end Rat

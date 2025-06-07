@@ -6,6 +6,7 @@ Authors: Simon Hudon
 import Mathlib.Data.Option.Defs
 import Mathlib.Control.Functor
 import Batteries.Data.List.Basic
+import Mathlib.Control.Basic
 
 /-!
 # Traversable type class
@@ -31,11 +32,11 @@ For more on how to use traversable, consider the Haskell tutorial:
 <https://en.wikibooks.org/wiki/Haskell/Traversable>
 
 ## Main definitions
-  * `Traversable` type class - exposes the `traverse` function
-  * `sequence` - based on `traverse`,
-    turns a collection of effects into an effect returning a collection
-  * `LawfulTraversable` - laws for a traversable functor
-  * `ApplicativeTransformation` - the notion of a natural transformation for applicative functors
+* `Traversable` type class - exposes the `traverse` function
+* `sequence` - based on `traverse`,
+  turns a collection of effects into an effect returning a collection
+* `LawfulTraversable` - laws for a traversable functor
+* `ApplicativeTransformation` - the notion of a natural transformation for applicative functors
 
 ## Tags
 
@@ -43,15 +44,15 @@ traversable iterator functor applicative
 
 ## References
 
- * "Applicative Programming with Effects", by Conor McBride and Ross Paterson,
-   Journal of Functional Programming 18:1 (2008) 1-13, online at
-   <http://www.soi.city.ac.uk/~ross/papers/Applicative.html>
- * "The Essence of the Iterator Pattern", by Jeremy Gibbons and Bruno Oliveira,
-   in Mathematically-Structured Functional Programming, 2006, online at
-   <http://web.comlab.ox.ac.uk/oucl/work/jeremy.gibbons/publications/#iterator>
- * "An Investigation of the Laws of Traversals", by Mauro Jaskelioff and Ondrej Rypacek,
-   in Mathematically-Structured Functional Programming, 2012,
-   online at <http://arxiv.org/pdf/1202.2919>
+* "Applicative Programming with Effects", by Conor McBride and Ross Paterson,
+  Journal of Functional Programming 18:1 (2008) 1-13, online at
+  <http://www.soi.city.ac.uk/~ross/papers/Applicative.html>
+* "The Essence of the Iterator Pattern", by Jeremy Gibbons and Bruno Oliveira,
+  in Mathematically-Structured Functional Programming, 2006, online at
+  <http://web.comlab.ox.ac.uk/oucl/work/jeremy.gibbons/publications/#iterator>
+* "An Investigation of the Laws of Traversals", by Mauro Jaskelioff and Ondrej Rypacek,
+  in Mathematically-Structured Functional Programming, 2012,
+  online at <http://arxiv.org/pdf/1202.2919>
 -/
 
 open Function hiding comp
@@ -60,8 +61,8 @@ universe u v w
 
 section ApplicativeTransformation
 
-variable (F : Type u → Type v) [Applicative F] [LawfulApplicative F]
-variable (G : Type u → Type w) [Applicative G] [LawfulApplicative G]
+variable (F : Type u → Type v) [Applicative F]
+variable (G : Type u → Type w) [Applicative G]
 
 /-- A transformation between applicative functors.  It is a natural
 transformation such that `app` preserves the `Pure.pure` and
@@ -143,7 +144,7 @@ end Preserves
 
 /-- The identity applicative transformation from an applicative functor to itself. -/
 def idTransformation : ApplicativeTransformation F F where
-  app α := id
+  app _ := id
   preserves_pure' := by simp
   preserves_seq' x y := by simp
 
@@ -157,7 +158,7 @@ variable {H : Type u → Type s} [Applicative H]
 /-- The composition of applicative transformations. -/
 def comp (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F G) :
     ApplicativeTransformation F H where
-  app α x := η' (η x)
+  app _ x := η' (η x)
   -- Porting note: something has gone wrong with `simp [functor_norm]`,
   -- which should suffice for the next two.
   preserves_pure' x := by simp only [preserves_pure]
@@ -203,8 +204,7 @@ export Traversable (traverse)
 section Functions
 
 variable {t : Type u → Type u}
-variable {m : Type u → Type v} [Applicative m]
-variable {α β : Type u}
+variable {α : Type u}
 variable {f : Type u → Type u} [Applicative f]
 
 /-- A traversable functor commutes with all applicative functors. -/
@@ -219,10 +219,9 @@ send the composition of applicative functors to the composition of the
 `traverse` of each, send each function `f` to `fun x ↦ f <$> x`, and
 satisfy a naturality condition with respect to applicative
 transformations. -/
-class LawfulTraversable (t : Type u → Type u) [Traversable t] extends LawfulFunctor t :
-    Prop where
-  /-- `traverse` plays well with `pure` of the identity monad-/
-  id_traverse : ∀ {α} (x : t α), traverse (pure : α → Id α) x = x
+class LawfulTraversable (t : Type u → Type u) [Traversable t] : Prop extends LawfulFunctor t where
+  /-- `traverse` plays well with `pure` of the identity monad -/
+  id_traverse : ∀ {α} (x : t α), traverse (pure : α → Id α) x = pure x
   /-- `traverse` plays well with composition of applicative functors. -/
   comp_traverse :
     ∀ {F G} [Applicative F] [Applicative G] [LawfulApplicative F] [LawfulApplicative G] {α β γ}
@@ -230,7 +229,7 @@ class LawfulTraversable (t : Type u → Type u) [Traversable t] extends LawfulFu
       traverse (Functor.Comp.mk ∘ map f ∘ g) x = Comp.mk (map (traverse f) (traverse g x))
   /-- An axiom for `traverse` involving `pure : β → Id β`. -/
   traverse_eq_map_id : ∀ {α β} (f : α → β) (x : t α),
-    traverse ((pure : β → Id β) ∘ f) x = id.mk (f <$> x)
+    traverse ((pure : β → Id β) ∘ f) x = pure (f <$> x)
   /-- The naturality axiom explaining how lawful traversable functors should play with
   lawful applicative functors. -/
   naturality :
@@ -248,8 +247,6 @@ instance : LawfulTraversable Id where
   naturality _ _ _ _ _ := rfl
 
 section
-
-variable {F : Type u → Type v} [Applicative F]
 
 instance : Traversable Option :=
   ⟨Option.traverse⟩

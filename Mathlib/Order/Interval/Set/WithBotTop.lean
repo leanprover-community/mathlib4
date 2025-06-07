@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Set.Image
 import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.WithBot
 
 /-!
 # Intervals in `WithTop α` and `WithBot α`

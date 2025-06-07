@@ -14,7 +14,7 @@ The structure of a metric space on `ℕ` is introduced in this file, induced fro
 
 noncomputable section
 
-open Metric Set Filter
+open Filter Metric Set Topology
 
 namespace Nat
 
@@ -31,13 +31,13 @@ theorem dist_cast_real (x y : ℕ) : dist (x : ℝ) y = dist x y := rfl
 theorem pairwise_one_le_dist : Pairwise fun m n : ℕ => 1 ≤ dist m n := fun _ _ hne =>
   Int.pairwise_one_le_dist <| mod_cast hne
 
-theorem uniformEmbedding_coe_real : UniformEmbedding ((↑) : ℕ → ℝ) :=
-  uniformEmbedding_bot_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
+theorem isUniformEmbedding_coe_real : IsUniformEmbedding ((↑) : ℕ → ℝ) :=
+  isUniformEmbedding_bot_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
 
-theorem closedEmbedding_coe_real : ClosedEmbedding ((↑) : ℕ → ℝ) :=
-  closedEmbedding_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
+theorem isClosedEmbedding_coe_real : IsClosedEmbedding ((↑) : ℕ → ℝ) :=
+  isClosedEmbedding_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
 
-instance : MetricSpace ℕ := Nat.uniformEmbedding_coe_real.comapMetricSpace _
+instance : MetricSpace ℕ := Nat.isUniformEmbedding_coe_real.comapMetricSpace _
 
 theorem preimage_ball (x : ℕ) (r : ℝ) : (↑) ⁻¹' ball (x : ℝ) r = ball x r := rfl
 
@@ -46,7 +46,7 @@ theorem preimage_closedBall (x : ℕ) (r : ℝ) : (↑) ⁻¹' closedBall (x : �
 theorem closedBall_eq_Icc (x : ℕ) (r : ℝ) : closedBall x r = Icc ⌈↑x - r⌉₊ ⌊↑x + r⌋₊ := by
   rcases le_or_lt 0 r with (hr | hr)
   · rw [← preimage_closedBall, Real.closedBall_eq_Icc, preimage_Icc]
-    exact add_nonneg (cast_nonneg x) hr
+    positivity
   · rw [closedBall_eq_empty.2 hr, Icc_eq_empty_of_lt]
     calc ⌊(x : ℝ) + r⌋₊ ≤ ⌊(x : ℝ)⌋₊ := floor_mono <| by linarith
     _ < ⌈↑x - r⌉₊ := by

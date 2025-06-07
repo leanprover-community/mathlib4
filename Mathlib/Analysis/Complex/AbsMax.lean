@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.Normed.Module.Completion
+import Mathlib.Analysis.InnerProductSpace.Convex
 import Mathlib.Analysis.NormedSpace.Extr
+import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.Topology.Order.ExtrClosure
 
 /-!
@@ -127,12 +128,12 @@ theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
     refine ((continuousOn_id.sub continuousOn_const).inv₀ ?_).smul (hd.continuousOn_ball.mono hsub)
     exact fun ζ hζ => sub_ne_zero.2 (ne_of_mem_sphere hζ hr.ne')
   · show ∀ ζ ∈ sphere z r, ‖(ζ - z)⁻¹ • f ζ‖ ≤ ‖f z‖ / r
-    rintro ζ (hζ : abs (ζ - z) = r)
-    rw [le_div_iff hr, norm_smul, norm_inv, norm_eq_abs, hζ, mul_comm, mul_inv_cancel_left₀ hr.ne']
+    rintro ζ (hζ : ‖ζ - z‖ = r)
+    rw [le_div_iff₀ hr, norm_smul, norm_inv, hζ, mul_comm, mul_inv_cancel_left₀ hr.ne']
     exact hz (hsub hζ)
   show ‖(w - z)⁻¹ • f w‖ < ‖f z‖ / r
-  rw [norm_smul, norm_inv, norm_eq_abs, ← div_eq_inv_mul]
-  exact (div_lt_div_right hr).2 hw_lt
+  rw [norm_smul, norm_inv, ← div_eq_inv_mul]
+  exact (div_lt_div_iff_of_pos_right hr).2 hw_lt
 
 /-!
 Now we drop the assumption `CompleteSpace F` by embedding `F` into its completion.
@@ -143,8 +144,8 @@ theorem norm_max_aux₂ {f : ℂ → F} {z w : ℂ} (hd : DiffContOnCl ℂ f (ba
   set e : F →L[ℂ] F̂ := UniformSpace.Completion.toComplL
   have he : ∀ x, ‖e x‖ = ‖x‖ := UniformSpace.Completion.norm_coe
   replace hz : IsMaxOn (norm ∘ e ∘ f) (closedBall z (dist w z)) z := by
-    simpa only [IsMaxOn, (· ∘ ·), he] using hz
-  simpa only [he, (· ∘ ·)]
+    simpa only [IsMaxOn, Function.comp_def, he] using hz
+  simpa only [he, Function.comp_def]
     using norm_max_aux₁ (e.differentiable.comp_diffContOnCl hd) hz
 
 /-!
@@ -172,7 +173,7 @@ Finally, we generalize the theorem from a disk in `ℂ` to a closed ball in any 
 
 /-- **Maximum modulus principle** on a closed ball: if `f : E → F` is continuous on a closed ball,
 is complex differentiable on the corresponding open ball, and the norm `‖f w‖` takes its maximum
-value on the open ball at its center, then the norm `‖f w‖` is constant on the closed ball.  -/
+value on the open ball at its center, then the norm `‖f w‖` is constant on the closed ball. -/
 theorem norm_eqOn_closedBall_of_isMaxOn {f : E → F} {z : E} {r : ℝ}
     (hd : DiffContOnCl ℂ f (ball z r)) (hz : IsMaxOn (norm ∘ f) (ball z r) z) :
     EqOn (norm ∘ f) (const E ‖f z‖) (closedBall z r) := by
@@ -306,11 +307,35 @@ normed complex space to a strictly convex normed complex space has the following
 - it is complex differentiable on the corresponding open ball;
 - the norm `‖f w‖` takes its maximum value on the open ball at its center.
 
-Then `f` is a constant on the closed ball.  -/
+Then `f` is a constant on the closed ball. -/
 theorem eqOn_closedBall_of_isMaxOn_norm {f : E → F} {z : E} {r : ℝ}
     (hd : DiffContOnCl ℂ f (ball z r)) (hz : IsMaxOn (norm ∘ f) (ball z r) z) :
     EqOn f (const E (f z)) (closedBall z r) := fun _x hx =>
   eq_of_isMaxOn_of_ball_subset hd hz <| ball_subset_ball hx
+
+/-- If `f` is differentiable on the open unit ball `{z : ℂ | ‖z‖ < 1}`, and `‖f‖` attains a maximum
+in this open ball, then `f` is constant. -/
+lemma eq_const_of_exists_max {f : E → F} {b : ℝ} (h_an : DifferentiableOn ℂ f (ball 0 b))
+    {v : E} (hv : v ∈ ball 0 b) (hv_max : IsMaxOn (norm ∘ f) (ball 0 b) v) :
+    Set.EqOn f (Function.const E (f v)) (ball 0 b) :=
+  Complex.eqOn_of_isPreconnected_of_isMaxOn_norm (convex_ball 0 b).isPreconnected
+    isOpen_ball h_an hv hv_max
+
+/-- If `f` is a function differentiable on the open unit ball, and there exists an `r < 1` such that
+any value of `‖f‖` on the open ball is bounded above by some value on the closed ball of radius `r`,
+then `f` is constant. -/
+lemma eq_const_of_exists_le [ProperSpace E] {f : E → F} {r b : ℝ}
+    (h_an : DifferentiableOn ℂ f (ball 0 b)) (hr_nn : 0 ≤ r) (hr_lt : r < b)
+    (hr : ∀ z, z ∈ (ball 0 b) → ∃ w, w ∈ closedBall 0 r ∧ ‖f z‖ ≤ ‖f w‖) :
+    Set.EqOn f (Function.const E (f 0)) (ball 0 b) := by
+  obtain ⟨x, hx_mem, hx_max⟩ := isCompact_closedBall (0 : E) r |>.exists_isMaxOn
+    (nonempty_closedBall.mpr hr_nn)
+    (h_an.continuousOn.mono <| closedBall_subset_ball hr_lt).norm
+  suffices Set.EqOn f (Function.const E (f x)) (ball 0 b) by
+    rwa [this (mem_ball_self (hr_nn.trans_lt hr_lt))]
+  apply eq_const_of_exists_max h_an (closedBall_subset_ball hr_lt hx_mem) (fun z hz ↦ ?_)
+  obtain ⟨w, hw, hw'⟩ := hr z hz
+  exact hw'.trans (hx_max hw)
 
 /-- **Maximum modulus principle**: if `f : E → F` is complex differentiable in a neighborhood of `c`
 and the norm `‖f z‖` has a local maximum at `c`, then `f` is locally constant in a neighborhood
@@ -356,7 +381,7 @@ theorem exists_mem_frontier_isMaxOn_norm [FiniteDimensional ℂ E] {f : E → F}
   obtain ⟨w, hwU, hle⟩ : ∃ w ∈ closure U, IsMaxOn (norm ∘ f) (closure U) w :=
     hc.exists_isMaxOn hne.closure hd.continuousOn.norm
   rw [closure_eq_interior_union_frontier, mem_union] at hwU
-  cases' hwU with hwU hwU; rotate_left; · exact ⟨w, hwU, hle⟩
+  rcases hwU with hwU | hwU; rotate_left; · exact ⟨w, hwU, hle⟩
   have : interior U ≠ univ := ne_top_of_le_ne_top hc.ne_univ interior_subset_closure
   rcases exists_mem_frontier_infDist_compl_eq_dist hwU this with ⟨z, hzU, hzw⟩
   refine ⟨z, frontier_interior_subset hzU, fun x hx => (hle hx).out.trans_eq ?_⟩
@@ -370,7 +395,7 @@ theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : I
     (hd : DiffContOnCl ℂ f U) {C : ℝ} (hC : ∀ z ∈ frontier U, ‖f z‖ ≤ C) {z : E}
     (hz : z ∈ closure U) : ‖f z‖ ≤ C := by
   rw [closure_eq_self_union_frontier, union_comm, mem_union] at hz
-  cases' hz with hz hz; · exact hC z hz
+  rcases hz with hz | hz; · exact hC z hz
   /- In case of a finite dimensional domain, one can just apply
     `Complex.exists_mem_frontier_isMaxOn_norm`. To make it work in any Banach space, we restrict
     the function to a line first. -/

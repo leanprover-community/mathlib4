@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.TensorProduct.Graded.External
 import Mathlib.RingTheory.GradedAlgebra.Basic
-import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Graded tensor products over graded algebras
@@ -150,14 +149,14 @@ theorem mulHom_apply (x y : 𝒜 ᵍ⊗[R] ℬ) :
       = (auxEquiv R 𝒜 ℬ).symm (gradedMul R (𝒜 ·) (ℬ ·) (auxEquiv R 𝒜 ℬ x) (auxEquiv R 𝒜 ℬ y)) :=
   rfl
 
-/-- The multipication on the graded tensor product.
+/-- The multiplication on the graded tensor product.
 
 See `GradedTensorProduct.coe_mul_coe` for a characterization on pure tensors. -/
 instance : Mul (𝒜 ᵍ⊗[R] ℬ) where mul x y := mulHom 𝒜 ℬ x y
 
 theorem mul_def (x y : 𝒜 ᵍ⊗[R] ℬ) : x * y = mulHom 𝒜 ℬ x y := rfl
 
--- Before #8386 this was `@[simp]` but it times out when we try to apply it.
+-- Before https://github.com/leanprover-community/mathlib4/pull/8386 this was `@[simp]` but it times out when we try to apply it.
 theorem auxEquiv_mul (x y : 𝒜 ᵍ⊗[R] ℬ) :
     auxEquiv R 𝒜 ℬ (x * y) = gradedMul R (𝒜 ·) (ℬ ·) (auxEquiv R 𝒜 ℬ x) (auxEquiv R 𝒜 ℬ y) :=
   LinearEquiv.eq_symm_apply _ |>.mp rfl
@@ -179,17 +178,17 @@ instance instRing : Ring (𝒜 ᵍ⊗[R] ℬ) where
   mul_zero x := by simp_rw [mul_def, map_zero]
   zero_mul x := by simp_rw [mul_def, LinearMap.map_zero₂]
 
-/-- The characterization of this multiplication on partially homogenous elements. -/
+/-- The characterization of this multiplication on partially homogeneous elements. -/
 theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ι} (a₁ : A) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : B) :
     (a₁ ᵍ⊗ₜ[R] (b₁ : B) * (a₂ : A) ᵍ⊗ₜ[R] b₂ : 𝒜 ᵍ⊗[R] ℬ) =
       (-1 : ℤˣ)^(j₁ * i₂) • ((a₁ * a₂ : A) ᵍ⊗ₜ (b₁ * b₂ : B)) := by
   dsimp only [mul_def, mulHom_apply, of_symm_of]
   dsimp [auxEquiv, tmul]
-  erw [decompose_coe, decompose_coe]
+  rw [decompose_coe, decompose_coe]
   simp_rw [← lof_eq_of R]
   rw [tmul_of_gradedMul_of_tmul]
   simp_rw [lof_eq_of R]
-  -- Note: #8386 had to specialize `map_smul` to `LinearEquiv.map_smul`
+  -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specialize `map_smul` to `LinearEquiv.map_smul`
   rw [@Units.smul_def _ _ (_) (_), ← Int.cast_smul_eq_zsmul R, LinearEquiv.map_smul, map_smul,
     Int.cast_smul_eq_zsmul R, ← @Units.smul_def _ _ (_) (_)]
   rw [congr_symm_tmul]
@@ -221,7 +220,7 @@ theorem tmul_coe_mul_one_tmul {j₁ : ι} (a₁ : A) (b₁ : ℬ j₁) (b₂ : B
 theorem tmul_one_mul_one_tmul (a₁ : A) (b₂ : B) :
     (a₁ ᵍ⊗ₜ[R] (1 : B) * (1 : A) ᵍ⊗ₜ[R] b₂ : 𝒜 ᵍ⊗[R] ℬ) = (a₁ : A) ᵍ⊗ₜ (b₂ : B) := by
   convert tmul_coe_mul_zero_coe_tmul 𝒜 ℬ
-    a₁ (@GradedMonoid.GOne.one _ (ℬ ·) _ _) (@GradedMonoid.GOne.one _ (𝒜 ·) _ _) b₂
+    a₁ (GradedMonoid.GOne.one (A := (ℬ ·))) (GradedMonoid.GOne.one (A := (𝒜 ·))) b₂
   · rw [SetLike.coe_gOne, mul_one]
   · rw [SetLike.coe_gOne, one_mul]
 
@@ -233,7 +232,6 @@ def includeLeftRingHom : A →+* 𝒜 ᵍ⊗[R] ℬ where
   map_add' := by simp [tmul, TensorProduct.add_tmul]
   map_one' := rfl
   map_mul' a₁ a₂ := by
-    dsimp
     classical
     rw [← DirectSum.sum_support_decompose 𝒜 a₂, Finset.mul_sum]
     simp_rw [tmul, sum_tmul, map_sum, Finset.mul_sum]
@@ -243,7 +241,7 @@ def includeLeftRingHom : A →+* 𝒜 ᵍ⊗[R] ℬ where
       SetLike.coe_gOne, one_mul]
 
 instance instAlgebra : Algebra R (𝒜 ᵍ⊗[R] ℬ) where
-  toRingHom := (includeLeftRingHom 𝒜 ℬ).comp (algebraMap R A)
+  algebraMap := (includeLeftRingHom 𝒜 ℬ).comp (algebraMap R A)
   commutes' r x := by
     dsimp [mul_def, mulHom_apply, auxEquiv_tmul]
     simp_rw [DirectSum.decompose_algebraMap, DirectSum.decompose_one, algebraMap_gradedMul,
@@ -251,9 +249,9 @@ instance instAlgebra : Algebra R (𝒜 ᵍ⊗[R] ℬ) where
   smul_def' r x := by
     dsimp [mul_def, mulHom_apply, auxEquiv_tmul]
     simp_rw [DirectSum.decompose_algebraMap, DirectSum.decompose_one, algebraMap_gradedMul]
-    -- Qualified `map_smul` to avoid a TC timeout #8386
-    erw [LinearMap.map_smul]
-    erw [LinearEquiv.symm_apply_apply]
+    -- Qualified `map_smul` to avoid a TC timeout https://github.com/leanprover-community/mathlib4/pull/8386
+    rw [LinearEquiv.map_smul]
+    simp
 
 lemma algebraMap_def (r : R) : algebraMap R (𝒜 ᵍ⊗[R] ℬ) r = algebraMap R A r ᵍ⊗ₜ[R] 1 := rfl
 
@@ -295,10 +293,10 @@ lemma algebraMap_def' (r : R) : algebraMap R (𝒜 ᵍ⊗[R] ℬ) r = 1 ᵍ⊗�
 variable {C} [Ring C] [Algebra R C]
 
 /-- The forwards direction of the universal property; an algebra morphism out of the graded tensor
-product can be assembed from maps on each component that (anti)commute on pure elements of the
+product can be assembled from maps on each component that (anti)commute on pure elements of the
 corresponding graded algebras. -/
 def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
-    (h_anti_commutes : ∀ ⦃i j⦄ (a : 𝒜 i) (b : ℬ j), f a * g b = (-1 : ℤˣ)^(j * i) • (g b * f a)) :
+    (h_anti_commutes : ∀ ⦃i j⦄ (a : 𝒜 i) (b : ℬ j), f a * g b = (-1 : ℤˣ) ^ (j * i) • (g b * f a)) :
     (𝒜 ᵍ⊗[R] ℬ) →ₐ[R] C :=
   AlgHom.ofLinearMap
     (LinearMap.mul' R C
@@ -325,7 +323,7 @@ def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
 
 @[simp]
 theorem lift_tmul (f : A →ₐ[R] C) (g : B →ₐ[R] C)
-    (h_anti_commutes : ∀ ⦃i j⦄ (a : 𝒜 i) (b : ℬ j), f a * g b = (-1 : ℤˣ)^(j * i) • (g b * f a))
+    (h_anti_commutes : ∀ ⦃i j⦄ (a : 𝒜 i) (b : ℬ j), f a * g b = (-1 : ℤˣ) ^ (j * i) • (g b * f a))
     (a : A) (b : B) :
     lift 𝒜 ℬ f g h_anti_commutes (a ᵍ⊗ₜ b) = f a * g b :=
   rfl
@@ -378,8 +376,8 @@ lemma auxEquiv_comm (x : 𝒜 ᵍ⊗[R] ℬ) :
   (auxEquiv R ℬ 𝒜).injective <| by
     simp_rw [auxEquiv_comm, auxEquiv_tmul, decompose_coe, ← lof_eq_of R, gradedComm_of_tmul_of,
       @Units.smul_def _ _ (_) (_), ← Int.cast_smul_eq_zsmul R]
-    -- Qualified `map_smul` to avoid a TC timeout #8386
-    erw [LinearMap.map_smul, auxEquiv_tmul]
+    -- Qualified `map_smul` to avoid a TC timeout https://github.com/leanprover-community/mathlib4/pull/8386
+    rw [LinearEquiv.map_smul, auxEquiv_tmul]
     simp_rw [decompose_coe, lof_eq_of]
 
 end GradedTensorProduct

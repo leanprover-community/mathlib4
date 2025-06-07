@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
 import Mathlib.Tactic.FunProp.FunctionData
-import Batteries.Data.RBMap.Basic
 
 /-!
 ## `funProp`
@@ -15,6 +14,7 @@ this file defines environment extension for `funProp`
 
 namespace Mathlib
 open Lean Meta
+open Std (TreeSet)
 
 namespace Meta.FunProp
 
@@ -87,7 +87,7 @@ structure Context where
   /-- fun_prop config -/
   config : Config := {}
   /-- Name to unfold -/
-  constToUnfold : Batteries.RBSet Name Name.quickCmp :=
+  constToUnfold : TreeSet Name Name.quickCmp :=
     .ofArray defaultNamesToUnfold _
   /-- Custom discharger to satisfy theorem hypotheses. -/
   disch : Expr → MetaM (Option Expr) := fun _ => pure .none
@@ -97,8 +97,10 @@ structure Context where
 /-- `fun_prop` state -/
 structure State where
   /-- Simp's cache is used as the `fun_prop` tactic is designed to be used inside of simp and
-  utilize its cache -/
+  utilize its cache. It holds successful goals. -/
   cache : Simp.Cache := {}
+  /-- Cache storing failed goals such that they are not tried again. -/
+  failureCache : ExprSet := {}
   /-- Count the number of steps and stop when maxSteps is reached. -/
   numSteps := 0
   /-- Log progress and failures messages that should be displayed to the user at the end. -/
@@ -111,6 +113,7 @@ def Context.increaseTransitionDepth (ctx : Context) : Context :=
 /-- Monad to run `fun_prop` tactic in. -/
 abbrev FunPropM := ReaderT FunProp.Context <| StateT FunProp.State MetaM
 
+set_option linter.style.docString false in
 /-- Result of `funProp`, it is a proof of function property `P f` -/
 structure Result where
   /-- -/
@@ -153,7 +156,7 @@ function property like continuity from another property like differentiability.
 The main reason is that if the user forgets to add a continuity theorem for function `foo` then
 `fun_prop` should report that there is a continuity theorem for `foo` missing. If we would log
 messages `transitionDepth > 0` then user will see messages saying that there is a missing theorem
-for differentiability, smoothness, ... for `foo`.  -/
+for differentiability, smoothness, ... for `foo`. -/
 def logError (msg : String) : FunPropM Unit := do
   if (← read).transitionDepth = 0 then
     modify fun s =>

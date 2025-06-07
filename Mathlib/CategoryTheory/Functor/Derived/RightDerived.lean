@@ -48,13 +48,9 @@ variable {C C' D D' H H' : Type _} [Category C] [Category C']
 if it is equipped with a natural transformation `α : F ⟶ L ⋙ RF`
 which makes it a left Kan extension of `F` along `L`,
 where `L : C ⥤ D` is a localization functor for `W : MorphismProperty C`. -/
-class IsRightDerivedFunctor [L.IsLocalization W] : Prop where
-  isLeftKanExtension' : RF.IsLeftKanExtension α
-
-lemma IsRightDerivedFunctor.isLeftKanExtension
-    [L.IsLocalization W] [RF.IsRightDerivedFunctor α W] :
-    RF.IsLeftKanExtension α :=
-  IsRightDerivedFunctor.isLeftKanExtension' W
+class IsRightDerivedFunctor (RF : D ⥤ H) {F : C ⥤ H} {L : C ⥤ D} (α : F ⟶ L ⋙ RF)
+    (W : MorphismProperty C) [L.IsLocalization W] : Prop where
+  isLeftKanExtension (RF α) : RF.IsLeftKanExtension α
 
 lemma isRightDerivedFunctor_iff_isLeftKanExtension [L.IsLocalization W] :
     RF.IsRightDerivedFunctor α W ↔ RF.IsLeftKanExtension α := by
@@ -97,7 +93,7 @@ lemma rightDerived_ext (G : D ⥤ H) (γ₁ γ₂ : RF ⟶ G)
   RF.hom_ext_of_isLeftKanExtension α γ₁ γ₂ hγ
 
 /-- The natural transformation `RF ⟶ RF'` on right derived functors that is
-induced by a natural transformation `F ⟶ F'`.  -/
+induced by a natural transformation `F ⟶ F'`. -/
 noncomputable def rightDerivedNatTrans (τ : F ⟶ F') : RF ⟶ RF' :=
   RF.rightDerivedDesc α W RF' (τ ≫ α')
 
@@ -117,7 +113,7 @@ lemma rightDerivedNatTrans_app (τ : F ⟶ F') (X : C) :
 @[simp]
 lemma rightDerivedNatTrans_id :
     rightDerivedNatTrans RF RF α α W (𝟙 F) = 𝟙 RF :=
-  rightDerived_ext RF α W _ _ _ (by aesop_cat)
+  rightDerived_ext RF α W _ _ _ (by simp)
 
 variable [RF'.IsRightDerivedFunctor α' W]
 
@@ -125,10 +121,10 @@ variable [RF'.IsRightDerivedFunctor α' W]
 lemma rightDerivedNatTrans_comp (τ : F ⟶ F') (τ' : F' ⟶ F'') :
     rightDerivedNatTrans RF RF' α α' W τ ≫ rightDerivedNatTrans RF' RF'' α' α'' W τ' =
     rightDerivedNatTrans RF RF'' α α'' W (τ ≫ τ') :=
-  rightDerived_ext RF α W _ _ _ (by aesop_cat)
+  rightDerived_ext RF α W _ _ _ (by simp)
 
 /-- The natural isomorphism `RF ≅ RF'` on right derived functors that is
-induced by a natural isomorphism `F ≅ F'`.  -/
+induced by a natural isomorphism `F ≅ F'`. -/
 @[simps]
 noncomputable def rightDerivedNatIso (τ : F ≅ F') :
     RF ≅ RF' where
@@ -204,7 +200,7 @@ noncomputable def totalRightDerivedUnit : F ⟶ L ⋙ F.totalRightDerived L W :=
 
 instance : (F.totalRightDerived L W).IsRightDerivedFunctor
     (F.totalRightDerivedUnit L W) W where
-  isLeftKanExtension' := by
+  isLeftKanExtension := by
     dsimp [totalRightDerived, totalRightDerivedUnit]
     infer_instance
 

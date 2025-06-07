@@ -42,7 +42,7 @@ theorem lhs_ineq {x y : ℝ} (hxy : 0 ≤ x * y) :
 theorem four_pow_four_pos : (0 : ℝ) < 4 ^ 4 := by norm_num
 
 theorem mid_ineq {s t : ℝ} : s * t ^ 3 ≤ (3 * t + s) ^ 4 / 4 ^ 4 := by
-  rw [le_div_iff four_pow_four_pos]
+  rw [le_div_iff₀ four_pow_four_pos]
   have : 0 ≤ (s - t) ^ 2 * ((s + 7 * t) ^ 2 + 2 * (4 * t) ^ 2) := by positivity
   linarith
 
@@ -64,7 +64,7 @@ theorem subst_wlog {x y z s : ℝ} (hxy : 0 ≤ x * y) (hxyz : x + y + z = 0) :
       _ ≤ (2 * (x ^ 2 + y ^ 2 + (x + y) ^ 2) + 2 * s ^ 2) ^ 4 / 4 ^ 4 := by
           gcongr (?_ + _) ^ 4 / _
           apply rhs_ineq
-  refine le_of_pow_le_pow_left two_ne_zero (by positivity) ?_
+  refine le_of_pow_le_pow_left₀ two_ne_zero (by positivity) ?_
   calc
     (32 * |x * y * z * s|) ^ 2 = 32 * (2 * s ^ 2 * (16 * x ^ 2 * y ^ 2 * (x + y) ^ 2)) := by
       rw [mul_pow, sq_abs, hz]; ring
@@ -78,9 +78,9 @@ theorem subst_wlog {x y z s : ℝ} (hxy : 0 ≤ x * y) (hxyz : x + y + z = 0) :
 theorem subst_proof₁ (x y z s : ℝ) (hxyz : x + y + z = 0) :
     |x * y * z * s| ≤ sqrt 2 / 32 * (x ^ 2 + y ^ 2 + z ^ 2 + s ^ 2) ^ 2 := by
   wlog h' : 0 ≤ x * y generalizing x y z; swap
-  · rw [div_mul_eq_mul_div, le_div_iff' zero_lt_32]
+  · rw [div_mul_eq_mul_div, le_div_iff₀' zero_lt_32]
     exact subst_wlog h' hxyz
-  cases' (mul_nonneg_of_three x y z).resolve_left h' with h h
+  rcases (mul_nonneg_of_three x y z).resolve_left h' with h | h
   · convert this y z x _ h using 2 <;> linarith
   · convert this z x y _ h using 2 <;> linarith
 
@@ -103,11 +103,11 @@ theorem proof₂ (M : ℝ)
   let c := 2 + 3 * α
   calc _ = 18 ^ 2 * 2 * α / 48 ^ 2 := by ring
     _ ≤ M := ?_
-  rw [div_le_iff (by positivity)]
+  rw [div_le_iff₀ (by positivity)]
   calc 18 ^ 2 * 2 * α
       = 18 ^ 2 * α ^ 2 * α := by linear_combination -324 * α * hα
     _ = abs (-(18 ^ 2 * α ^ 2 * α)) := by rw [abs_neg, abs_of_nonneg]; positivity
-    _ = |a * 2 * (a ^ 2 - 2 ^ 2) + 2 * c * (2 ^ 2 - c ^ 2) + c * a * (c ^ 2 - a ^ 2)| := by ring_nf
+    _ = |a * 2 * (a ^ 2 - 2 ^ 2) + 2 * c * (2 ^ 2 - c ^ 2) + c * a * (c ^ 2 - a ^ 2)| := by ring_nf!
     _ ≤ M * (a ^ 2 + 2 ^ 2 + c ^ 2) ^ 2 := by apply h
     _ = M * 48 ^ 2 := by linear_combination (324 * α ^ 2 + 1080) * M * hα
 

@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import Mathlib.Init
 import Lean.Elab.Command
-import Lean.Linter.Util
-import Batteries.Lean.HashSet
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+import Mathlib.Tactic.Linter.Header
 
 /-!
 # `#`-command linter
@@ -36,7 +36,7 @@ register_option linter.hashCommand : Bool := {
 
 namespace HashCommandLinter
 
-open Lean Elab
+open Lean Elab Linter
 
 open Command in
 /-- Exactly like `withSetOptionIn`, but recursively discards nested uses of `in`.
@@ -54,7 +54,7 @@ private partial def withSetOptionIn' (cmd : CommandElab) : CommandElab := fun st
     cmd stx
 
 /-- `allowed_commands` is the `HashSet` of `#`-commands that are allowed in 'Mathlib'. -/
-private abbrev allowed_commands : HashSet String := { "#adaptation_note" }
+private abbrev allowed_commands : Std.HashSet String := { "#adaptation_note" }
 
 /-- Checks that no command beginning with `#` is present in 'Mathlib',
 except for the ones in `allowed_commands`.
@@ -65,12 +65,9 @@ This means that CI will eventually fail on `#`-commands, but does not stop it fr
 However, in order to avoid local clutter, when `warningAsError` is `false`, the linter
 logs a warning only for the `#`-commands that do not already emit a message. -/
 def hashCommandLinter : Linter where run := withSetOptionIn' fun stx => do
-  let mod := (← getMainModule).components
-  if Linter.getLinterValue linter.hashCommand (← getOptions) &&
-    ((← get).messages.toList.isEmpty || warningAsError.get (← getOptions)) &&
-    -- we check that the module is either not in `test` or, is `test.HashCommandLinter`
-    (mod.getD 0 default != `test || (mod == [`test, `HashCommandLinter]))
-    then
+  if getLinterValue linter.hashCommand (← getLinterOptions) &&
+    ((← get).messages.reportedPlusUnreported.isEmpty || warningAsError.get (← getOptions))
+  then
     if let some sa := stx.getHead? then
       let a := sa.getAtomVal
       if (a.get ⟨0⟩ == '#' && ! allowed_commands.contains a) then

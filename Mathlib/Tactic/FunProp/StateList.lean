@@ -2,7 +2,11 @@
 Copyright (c) 2023 J. W. Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: J. W. Gerbscheid
+-/
 
+import Mathlib.Init
+
+/-!
 The combined state and list monad transformer.
 `StateListT σ α` is equivalent to `StateT σ (ListT α)` but more efficient.
 
@@ -21,7 +25,6 @@ in the do block are combined.
 
 -/
 
-import Mathlib.Init
 /-! StateList -/
 
 namespace Mathlib.Meta.FunProp
@@ -149,7 +152,7 @@ instance : MonadLift m (StateListT σ m) := ⟨StateListT.lift⟩
 instance : MonadFunctor m (StateListT σ m) := ⟨fun f x s => f (x s)⟩
 
 @[always_inline]
-instance{ε} [MonadExceptOf ε m] : MonadExceptOf ε (StateListT σ m) := {
+instance {ε} [MonadExceptOf ε m] : MonadExceptOf ε (StateListT σ m) := {
   throw    := StateListT.lift ∘ throwThe ε
   tryCatch := fun x c s => tryCatchThe ε (x s) (fun e => c e s)
 }

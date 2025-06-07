@@ -3,7 +3,7 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.ReflectsIso
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
@@ -88,10 +88,9 @@ lemma pi {J : Type w} {C : J → Type u} {D : J → Type u'}
 
 end IsInvertedBy
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The full subcategory of `C ⥤ D` consisting of functors inverting morphisms in `W` -/
 def FunctorsInverting (W : MorphismProperty C) (D : Type*) [Category D] :=
-  FullSubcategory fun F : C ⥤ D => W.IsInvertedBy F
+  ObjectProperty.FullSubcategory fun F : C ⥤ D => W.IsInvertedBy F
 
 @[ext]
 lemma FunctorsInverting.ext {W : MorphismProperty C} {F₁ F₂ : FunctorsInverting W D}
@@ -102,10 +101,8 @@ lemma FunctorsInverting.ext {W : MorphismProperty C} {F₁ F₂ : FunctorsInvert
   rfl
 
 instance (W : MorphismProperty C) (D : Type*) [Category D] : Category (FunctorsInverting W D) :=
-  FullSubcategory.category _
+  ObjectProperty.FullSubcategory.category _
 
--- Porting note (#5229): add another `@[ext]` lemma
--- since `ext` can't see through the definition to use `NatTrans.ext`.
 @[ext]
 lemma FunctorsInverting.hom_ext {W : MorphismProperty C} {F₁ F₂ : FunctorsInverting W D}
     {α β : F₁ ⟶ F₂} (h : α.app = β.app) : α = β :=
@@ -128,10 +125,7 @@ lemma IsInvertedBy.isoClosure_iff (W : MorphismProperty C) (F : C ⥤ D) :
   · intro h X Y f hf
     exact h _ (W.le_isoClosure _ hf)
   · intro h X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
-    have : f = e.inv.left ≫ f' ≫ e.hom.right := by
-      erw [← e.hom.w, ← Arrow.comp_left_assoc, e.inv_hom_id, Category.id_comp]
-      rfl
-    simp only [this, F.map_comp]
+    simp only [Arrow.iso_w' e, F.map_comp]
     have := h _ hf'
     infer_instance
 

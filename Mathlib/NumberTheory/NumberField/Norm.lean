@@ -5,6 +5,7 @@ Authors: Riccardo Brasca, Eric Rodriguez
 -/
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.RingTheory.Localization.NormTrace
+import Mathlib.RingTheory.Norm.Transitivity
 
 /-!
 # Norm in number fields
@@ -22,7 +23,7 @@ rings of integers.
 
 open scoped NumberField
 
-open Finset NumberField Algebra FiniteDimensional
+open Finset NumberField Algebra Module IntermediateField
 
 section Rat
 
@@ -40,7 +41,7 @@ namespace RingOfIntegers
 
 variable {L : Type*} (K : Type*) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 
-/-- `Algebra.norm` as a morphism betwen the rings of integers. -/
+/-- `Algebra.norm` as a morphism between the rings of integers. -/
 noncomputable def norm [Algebra.IsSeparable K L] : 𝓞 L →* 𝓞 K :=
   RingOfIntegers.restrict_monoidHom
     ((Algebra.norm K).comp (algebraMap (𝓞 L) L : (𝓞 L) →* L))

@@ -13,6 +13,7 @@ pretriangulated categories which satisfy the octahedron axiom.
 
 -/
 
+assert_not_exists TwoSidedIdeal
 
 noncomputable section
 
@@ -31,15 +32,17 @@ variable {C}
 
 -- Porting note: see https://github.com/leanprover/lean4/issues/2188
 set_option genInjectivity false in
-/-- An octahedron is a type of datum whose existence is asserted by
-the octahedron axiom (TR 4), see https://stacks.math.columbia.edu/tag/05QK -/
+/-- An octahedron is a type of datum whose existence is asserted by the octahedron axiom (TR 4). -/
+@[stacks 05QK]
 structure Octahedron
   {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ : C}
   {u₁₂ : X₁ ⟶ X₂} {u₂₃ : X₂ ⟶ X₃} {u₁₃ : X₁ ⟶ X₃} (comm : u₁₂ ≫ u₂₃ = u₁₃)
   {v₁₂ : X₂ ⟶ Z₁₂} {w₁₂ : Z₁₂ ⟶ X₁⟦(1 : ℤ)⟧} (h₁₂ : Triangle.mk u₁₂ v₁₂ w₁₂ ∈ distTriang C)
   {v₂₃ : X₃ ⟶ Z₂₃} {w₂₃ : Z₂₃ ⟶ X₂⟦(1 : ℤ)⟧} (h₂₃ : Triangle.mk u₂₃ v₂₃ w₂₃ ∈ distTriang C)
   {v₁₃ : X₃ ⟶ Z₁₃} {w₁₃ : Z₁₃ ⟶ X₁⟦(1 : ℤ)⟧} (h₁₃ : Triangle.mk u₁₃ v₁₃ w₁₃ ∈ distTriang C) where
+  /-- `m₁` is the morphism `a` of (TR 4) as presented in Stacks. -/
   m₁ : Z₁₂ ⟶ Z₁₃
+  /-- `m₃` is the morphism `b` of (TR 4) as presented in Stacks. -/
   m₃ : Z₁₃ ⟶ Z₂₃
   comm₁ : v₁₂ ≫ m₁ = u₂₃ ≫ v₁₃
   comm₂ : m₁ ≫ w₁₃ = w₁₂
@@ -159,7 +162,8 @@ end Triangulated
 open Triangulated
 
 /-- A triangulated category is a pretriangulated category which satisfies
-the octahedron axiom (TR 4), see https://stacks.math.columbia.edu/tag/05QK -/
+the octahedron axiom (TR 4). -/
+@[stacks 05QK]
 class IsTriangulated : Prop where
   /-- the octahedron axiom (TR 4) -/
   octahedron_axiom :

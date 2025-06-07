@@ -3,10 +3,11 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.NNRat.Order
 import Mathlib.Data.Rat.Cast.CharZero
+import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # Density of a finite set
@@ -73,7 +74,7 @@ lemma dens_eq_card_div_card (s : Finset α) : dens s = s.card / Fintype.card α 
   simp_rw [dens, card_disjUnion, Nat.cast_add, add_div]
 
 @[simp] lemma dens_eq_zero : dens s = 0 ↔ s = ∅ := by
-  simp (config := { contextual := true }) [dens, Fintype.card_eq_zero_iff, eq_empty_of_isEmpty]
+  simp +contextual [dens, Fintype.card_eq_zero_iff, eq_empty_of_isEmpty]
 
 lemma dens_ne_zero : dens s ≠ 0 ↔ s.Nonempty := dens_eq_zero.not.trans nonempty_iff_ne_empty.symm
 
@@ -110,23 +111,23 @@ lemma dens_image [Fintype β] [DecidableEq β] {f : α → β} (hf : Bijective f
     (s.image f).dens = s.dens := by
   simpa [map_eq_image, -dens_map_equiv] using dens_map_equiv (.ofBijective f hf)
 
-lemma card_mul_dens (s : Finset α) : Fintype.card α * s.dens = s.card := by
+@[simp] lemma card_mul_dens (s : Finset α) : Fintype.card α * s.dens = s.card := by
   cases isEmpty_or_nonempty α
   · simp [Subsingleton.elim s ∅]
   rw [dens, mul_div_cancel₀]
   exact mod_cast Fintype.card_ne_zero
 
-lemma dens_mul_card (s : Finset α) : s.dens * Fintype.card α = s.card := by
+@[simp] lemma dens_mul_card (s : Finset α) : s.dens * Fintype.card α = s.card := by
   rw [mul_comm, card_mul_dens]
 
 section Semifield
 variable [Semifield 𝕜] [CharZero 𝕜]
 
-lemma natCast_card_mul_nnratCast_dens (s : Finset α) : (Fintype.card α * s.dens : 𝕜) = s.card :=
-  mod_cast s.card_mul_dens
+@[simp] lemma natCast_card_mul_nnratCast_dens (s : Finset α) :
+    (Fintype.card α * s.dens : 𝕜) = s.card := mod_cast s.card_mul_dens
 
-lemma nnratCast_dens_mul_natCast_card (s : Finset α) : s.dens * Fintype.card α = s.card :=
-  mod_cast s.dens_mul_card
+@[simp] lemma nnratCast_dens_mul_natCast_card (s : Finset α) :
+    (s.dens * Fintype.card α : 𝕜) = s.card := mod_cast s.dens_mul_card
 
 @[norm_cast] lemma nnratCast_dens (s : Finset α) : (s.dens : 𝕜) = s.card / Fintype.card α := by
   simp [dens]
@@ -183,7 +184,7 @@ lemma dens_inter_add_dens_sdiff (s t : Finset α) : dens (s ∩ t) + dens (s \ t
 
 lemma dens_filter_add_dens_filter_not_eq_dens {α : Type*} [Fintype α] {s : Finset α}
     (p : α → Prop) [DecidablePred p] [∀ x, Decidable (¬p x)] :
-    dens (s.filter p) + dens (s.filter fun a ↦ ¬ p a) = dens s := by
+    dens {a ∈ s | p a} + dens {a ∈ s | ¬ p a} = dens s := by
   classical
   rw [← dens_union_of_disjoint (disjoint_filter_filter_neg ..), filter_union_filter_neg_eq]
 

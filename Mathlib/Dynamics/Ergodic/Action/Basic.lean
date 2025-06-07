@@ -24,8 +24,8 @@ if for any (null) measurable set `s`,
 if it is a.e.-invariant under each scalar addition `(g +ᵥ ·)`, `g : G`,
 then it is either null or conull.
 -/
-class ErgodicVAdd (G α : Type*) [VAdd G α] {_ : MeasurableSpace α} (μ : Measure α)
-    extends VAddInvariantMeasure G α μ : Prop where
+class ErgodicVAdd (G α : Type*) [VAdd G α] {_ : MeasurableSpace α} (μ : Measure α) : Prop
+    extends VAddInvariantMeasure G α μ where
   aeconst_of_forall_preimage_vadd_ae_eq {s : Set α} : MeasurableSet s →
     (∀ g : G, (g +ᵥ ·) ⁻¹' s =ᵐ[μ] s) → EventuallyConst s (ae μ)
 
@@ -36,8 +36,8 @@ if it is a.e.-invariant under each scalar multiplication `(g • ·)`, `g : G`,
 then it is either null or conull.
 -/
 @[to_additive, mk_iff]
-class ErgodicSMul (G α : Type*) [SMul G α] {_ : MeasurableSpace α} (μ : Measure α)
-    extends SMulInvariantMeasure G α μ : Prop where
+class ErgodicSMul (G α : Type*) [SMul G α] {_ : MeasurableSpace α} (μ : Measure α) : Prop
+    extends SMulInvariantMeasure G α μ where
   aeconst_of_forall_preimage_smul_ae_eq {s : Set α} : MeasurableSet s →
     (∀ g : G, (g • ·) ⁻¹' s =ᵐ[μ] s) → EventuallyConst s (ae μ)
 
@@ -85,12 +85,10 @@ theorem ergodicSMul_iterateMulAct {f : α → α} (hf : Measurable f) :
   simp only [ergodicSMul_iff, smulInvariantMeasure_iterateMulAct, hf]
   refine ⟨fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ⟨?_⟩⟩, fun h ↦ ⟨h.1, ?_⟩⟩
   · intro s hm hs
-    rw [← eventuallyConst_set']
     refine h₂ hm fun n ↦ ?_
     nth_rewrite 2 [← Function.IsFixedPt.preimage_iterate hs n.val]
     rfl
   · intro s hm hs
-    rw [eventuallyConst_set']
-    exact h.quasiErgodic.ae_empty_or_univ' hm <| hs (.mk 1)
+    exact h.quasiErgodic.aeconst_set₀ hm.nullMeasurableSet <| hs (.mk 1)
 
 end MeasureTheory

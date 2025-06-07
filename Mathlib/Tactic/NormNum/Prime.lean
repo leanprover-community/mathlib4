@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # `norm_num` extensions on natural numbers
@@ -30,7 +30,7 @@ namespace Mathlib.Meta.NormNum
 
 theorem not_prime_mul_of_ble (a b n : ℕ) (h : a * b = n) (h₁ : a.ble 1 = false)
     (h₂ : b.ble 1 = false) : ¬ n.Prime :=
-  not_prime_mul' h (ble_eq_false.mp h₁).ne' (ble_eq_false.mp h₂).ne'
+  not_prime_of_mul_eq h (ble_eq_false.mp h₁).ne' (ble_eq_false.mp h₂).ne'
 
 /-- Produce a proof that `n` is not prime from a factor `1 < d < n`. `en` should be the expression
   that is the natural number literal `n`. -/
@@ -118,7 +118,7 @@ theorem isNat_minFac_4 : {n n' k : ℕ} →
 
 /-- The `norm_num` extension which identifies expressions of the form `minFac n`. -/
 @[norm_num Nat.minFac _] partial def evalMinFac :
-  NormNumExt where eval {u α} e := do
+  NormNumExt where eval {_ _} e := do
   let .app (.const ``Nat.minFac _) (n : Q(ℕ)) ← whnfR e | failure
   let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
   let ⟨nn, pn⟩ ← deriveNat n sℕ
@@ -175,7 +175,7 @@ theorem isNat_prime_2 : {n n' : ℕ} →
 theorem isNat_not_prime {n n' : ℕ} (h : IsNat n n') : ¬n'.Prime → ¬n.Prime := isNat.natElim h
 
 /-- The `norm_num` extension which identifies expressions of the form `Nat.Prime n`. -/
-@[norm_num Nat.Prime _] def evalNatPrime : NormNumExt where eval {u α} e := do
+@[norm_num Nat.Prime _] def evalNatPrime : NormNumExt where eval {_ _} e := do
   let .app (.const `Nat.Prime _) (n : Q(ℕ)) ← whnfR e | failure
   let ⟨nn, pn⟩ ← deriveNat n _
   let n' := nn.natLit!

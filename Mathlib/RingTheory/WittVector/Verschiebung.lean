@@ -75,7 +75,7 @@ theorem verschiebungPoly_zero : verschiebungPoly 0 = 0 :=
 
 theorem aeval_verschiebung_poly' (x : 𝕎 R) (n : ℕ) :
     aeval x.coeff (verschiebungPoly n) = (verschiebungFun x).coeff n := by
-  cases' n with n
+  rcases n with - | n
   · simp only [verschiebungPoly, ite_true, map_zero, verschiebungFun_coeff_zero]
   · rw [verschiebungPoly, verschiebungFun_coeff_succ, if_neg n.succ_ne_zero, aeval_X,
       add_tsub_cancel_right]
@@ -84,13 +84,12 @@ variable (p)
 
 /-- `WittVector.verschiebung` has polynomial structure given by `WittVector.verschiebungPoly`.
 -/
--- Porting note: replaced `@[is_poly]` with `instance`.
 instance verschiebungFun_isPoly : IsPoly p fun R _Rcr => @verschiebungFun p R _Rcr := by
   use verschiebungPoly
   simp only [aeval_verschiebung_poly', eq_self_iff_true, forall₃_true_iff]
 
--- Porting note: we add this example as a verification that Lean 4's instance resolution
--- can handle what in Lean 3 we needed the `@[is_poly]` attribute to help with.
+-- We add this example as a verification that Lean 4's instance resolution can handle the `IsPoly`
+-- typeclass, whereas Lean 3 needed a bespoke `@[is_poly]` attribute.
 example (p : ℕ) (f : ⦃R : Type _⦄ → [CommRing R] → WittVector p R → WittVector p R) [IsPoly p f] :
     IsPoly p (fun (R : Type*) (I : CommRing R) ↦ verschiebungFun ∘ (@f R I)) :=
   inferInstance
@@ -110,7 +109,6 @@ noncomputable def verschiebung : 𝕎 R →+ 𝕎 R where
     ext ⟨⟩ <;> rw [verschiebungFun_coeff] <;>
       simp only [if_true, eq_self_iff_true, zero_coeff, ite_self]
   map_add' := by
-    dsimp
     ghost_calc _ _
     rintro ⟨⟩ <;> ghost_simp
 
@@ -148,6 +146,14 @@ theorem verschiebung_coeff_add_one (x : 𝕎 R) (n : ℕ) :
 @[simp]
 theorem verschiebung_coeff_succ (x : 𝕎 R) (n : ℕ) : (verschiebung x).coeff n.succ = x.coeff n :=
   rfl
+
+variable (p R) in
+theorem verschiebung_injective : Function.Injective (verschiebung : 𝕎 R → 𝕎 R) := by
+  rw [injective_iff_map_eq_zero]
+  intro w h
+  ext n
+  rw [← verschiebung_coeff_succ, h]
+  simp only [zero_coeff]
 
 theorem aeval_verschiebungPoly (x : 𝕎 R) (n : ℕ) :
     aeval x.coeff (verschiebungPoly n) = (verschiebung x).coeff n :=

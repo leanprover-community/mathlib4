@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Markus Himmel
+Authors: Kim Morrison, Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
@@ -24,7 +24,7 @@ so that `m` factors through the `m'` in any other such factorisation.
     morphism `e`.
 * `HasImages C` means that every morphism in `C` has an image.
 * Let `f : X ⟶ Y` and `g : P ⟶ Q` be morphisms in `C`, which we will represent as objects of the
-  arrow category `arrow C`. Then `sq : f ⟶ g` is a commutative square in `C`. If `f` and `g` have
+  arrow category `Arrow C`. Then `sq : f ⟶ g` is a commutative square in `C`. If `f` and `g` have
   images, then `HasImageMap sq` represents the fact that there is a morphism
   `i : image f ⟶ image g` making the diagram
 
@@ -81,8 +81,6 @@ attribute [reassoc (attr := simp)] MonoFactorisation.fac
 
 attribute [instance] MonoFactorisation.m_mono
 
-attribute [instance] MonoFactorisation.m_mono
-
 namespace MonoFactorisation
 
 /-- The obvious factorisation of a monomorphism through itself. -/
@@ -102,8 +100,8 @@ determined. -/
 @[ext (iff := false)]
 theorem ext {F F' : MonoFactorisation f} (hI : F.I = F'.I)
     (hm : F.m = eqToHom hI ≫ F'.m) : F = F' := by
-  cases' F with _ Fm _ _ Ffac; cases' F' with _ Fm' _ _ Ffac'
-  cases' hI
+  obtain ⟨_, Fm, _, Ffac⟩ := F; obtain ⟨_, Fm', _, Ffac'⟩ := F'
+  cases hI
   simp? at hm says simp only [eqToHom_refl, Category.id_comp] at hm
   congr
   apply (cancel_mono Fm).1
@@ -243,7 +241,7 @@ def ofArrowIso {f g : Arrow C} (F : ImageFactorisation f.hom) (sq : f ⟶ g) [Is
 
 end ImageFactorisation
 
-/-- `has_image f` means that there exists an image factorisation of `f`. -/
+/-- `HasImage f` means that there exists an image factorisation of `f`. -/
 class HasImage (f : X ⟶ Y) : Prop where mk' ::
   exists_image : Nonempty (ImageFactorisation f)
 
@@ -391,7 +389,7 @@ theorem image.ext [HasImage f] {W : C} {g h : image f ⟶ W} [HasLimit (parallel
   let F' : MonoFactorisation f :=
     { I := equalizer g h
       m := q ≫ image.ι f
-      m_mono := by apply mono_comp
+      m_mono := mono_comp _ _
       e := e' }
   let v := image.lift F'
   have t₀ : v ≫ q ≫ image.ι f = image.ι f := image.lift_fac F'
@@ -508,7 +506,7 @@ instance image.preComp_mono [HasImage g] [HasImage (f ≫ g)] : Mono (image.preC
   `image (f ≫ (g ≫ h)) ⟶ image (g ≫ h) ⟶ image h`
 agrees with the one step comparison map
   `image (f ≫ (g ≫ h)) ≅ image ((f ≫ g) ≫ h) ⟶ image h`.
- -/
+-/
 theorem image.preComp_comp {W : C} (h : Z ⟶ W) [HasImage (g ≫ h)] [HasImage (f ≫ g ≫ h)]
     [HasImage h] [HasImage ((f ≫ g) ≫ h)] :
     image.preComp f (g ≫ h) ≫ image.preComp g h =
@@ -603,6 +601,8 @@ end
 
 section HasImageMap
 
+-- Don't generate unnecessary injectivity lemmas which the `simpNF` linter will complain about.
+set_option genInjectivity false in
 /-- An image map is a morphism `image f → image g` fitting into a commutative square and satisfying
     the obvious commutativity conditions. -/
 structure ImageMap {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶ g) where
@@ -611,11 +611,8 @@ structure ImageMap {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶
 
 attribute [inherit_doc ImageMap] ImageMap.map ImageMap.map_ι
 
--- Porting note: LHS of this simplifies, simpNF still complains after blacklisting
-attribute [-simp, nolint simpNF] ImageMap.mk.injEq
-
 instance inhabitedImageMap {f : Arrow C} [HasImage f.hom] : Inhabited (ImageMap (𝟙 f)) :=
-  ⟨⟨𝟙 _, by aesop⟩⟩
+  ⟨⟨𝟙 _, by simp⟩⟩
 
 attribute [reassoc (attr := simp)] ImageMap.map_ι
 
@@ -719,8 +716,8 @@ theorem image.factor_map :
 theorem image.map_ι : image.map sq ≫ image.ι g.hom = image.ι f.hom ≫ sq.right := by simp
 
 theorem image.map_homMk'_ι {X Y P Q : C} {k : X ⟶ Y} [HasImage k] {l : P ⟶ Q} [HasImage l]
-    {m : X ⟶ P} {n : Y ⟶ Q} (w : m ≫ l = k ≫ n) [HasImageMap (Arrow.homMk' w)] :
-    image.map (Arrow.homMk' w) ≫ image.ι l = image.ι k ≫ n :=
+    {m : X ⟶ P} {n : Y ⟶ Q} (w : m ≫ l = k ≫ n) [HasImageMap (Arrow.homMk' _ _ w)] :
+    image.map (Arrow.homMk' _ _ w) ≫ image.ι l = image.ι k ≫ n :=
   image.map_ι _
 
 section
@@ -758,7 +755,7 @@ end HasImageMap
 
 section
 
-variable (C) [Category.{v} C] [HasImages C]
+variable (C) [HasImages C]
 
 /-- If a category `has_image_maps`, then all commutative squares induce morphisms on images. -/
 class HasImageMaps : Prop where
@@ -832,7 +829,7 @@ end StrongEpiMonoFactorisation
 
 section HasStrongEpiImages
 
-variable (C) [Category.{v} C] [HasImages C]
+variable (C) [HasImages C]
 
 /-- A category has strong epi images if it has all images and `factorThruImage f` is a strong
     epimorphism for all `f`. -/

@@ -17,10 +17,10 @@ This file proves Theorem 70 from the [100 Theorems List](https://www.cs.ru.nl/~f
 The theorem characterizes even perfect numbers.
 
 Euclid proved that if `2 ^ (k + 1) - 1` is prime (these primes are known as Mersenne primes),
-  then `2 ^ k * 2 ^ (k + 1) - 1` is perfect.
+  then `2 ^ k * (2 ^ (k + 1) - 1)` is perfect.
 
 Euler proved the converse, that if `n` is even and perfect, then there exists `k` such that
-  `n = 2 ^ k * 2 ^ (k + 1) - 1` and `2 ^ (k + 1) - 1` is prime.
+  `n = 2 ^ k * (2 ^ (k + 1) - 1)` and `2 ^ (k + 1) - 1` is prime.
 
 ## References
 https://en.wikipedia.org/wiki/Euclid%E2%80%93Euler_theorem
@@ -34,7 +34,7 @@ namespace Nat
 open ArithmeticFunction Finset
 
 theorem sigma_two_pow_eq_mersenne_succ (k : ℕ) : σ 1 (2 ^ k) = mersenne (k + 1) := by
-  simp_rw [sigma_one_apply, mersenne, show 2 = 1 + 1 from rfl, ← geom_sum_mul_add 1 (k + 1)]
+  simp_rw [sigma_one_apply, mersenne, ← one_add_one_eq_two, ← geom_sum_mul_add 1 (k + 1)]
   norm_num
 
 /-- Euclid's theorem that Mersenne primes induce perfect numbers -/
@@ -55,12 +55,12 @@ theorem even_two_pow_mul_mersenne_of_prime (k : ℕ) (pr : (mersenne (k + 1)).Pr
     Even (2 ^ k * mersenne (k + 1)) := by simp [ne_zero_of_prime_mersenne k pr, parity_simps]
 
 theorem eq_two_pow_mul_odd {n : ℕ} (hpos : 0 < n) : ∃ k m : ℕ, n = 2 ^ k * m ∧ ¬Even m := by
-  have h := multiplicity.finite_nat_iff.2 ⟨Nat.prime_two.ne_one, hpos⟩
-  cases' multiplicity.pow_multiplicity_dvd h with m hm
-  use (multiplicity 2 n).get h, m
+  have h := Nat.finiteMultiplicity_iff.2 ⟨Nat.prime_two.ne_one, hpos⟩
+  obtain ⟨m, hm⟩ := pow_multiplicity_dvd 2 n
+  use multiplicity 2 n, m
   refine ⟨hm, ?_⟩
   rw [even_iff_two_dvd]
-  have hg := multiplicity.is_greatest' h (Nat.lt_succ_self _)
+  have hg := h.not_pow_dvd_of_multiplicity_lt (Nat.lt_succ_self _)
   contrapose! hg
   rcases hg with ⟨k, rfl⟩
   apply Dvd.intro k
@@ -103,7 +103,7 @@ theorem eq_two_pow_mul_prime_mersenne_of_even_perfect {n : ℕ} (ev : Even n) (p
       | .succ k =>
         apply ne_of_lt _ jcon2
         rw [mersenne, ← Nat.pred_eq_sub_one, Nat.lt_pred_iff, ← pow_one (Nat.succ 1)]
-        apply pow_lt_pow_right (Nat.lt_succ_self 1) (Nat.succ_lt_succ (Nat.succ_pos k))
+        apply pow_lt_pow_right₀ (Nat.lt_succ_self 1) (Nat.succ_lt_succ k.succ_pos)
     contrapose! hm
     simp [hm]
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Elements
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Types.Limits
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
 
@@ -53,7 +53,7 @@ lemma map_lift_mapCone (c : Cone F) :
     A.map (limit.lift (F ⋙ π A) ((π A).mapCone c)) c.pt.snd = liftedConeElement F := by
   apply (preservesLimitIso A (F ⋙ π A)).toEquiv.injective
   ext i
-  have h₁ := congrFun (preservesLimitsIso_hom_π A (F ⋙ π A) i)
+  have h₁ := congrFun (preservesLimitIso_hom_π A (F ⋙ π A) i)
     (A.map (limit.lift (F ⋙ π A) ((π A).mapCone c)) c.pt.snd)
   have h₂ := (c.π.app i).property
   simp_all [← FunctorToTypes.map_comp_apply, liftedConeElement]
@@ -62,7 +62,7 @@ lemma map_lift_mapCone (c : Cone F) :
 lemma map_π_liftedConeElement (i : I) :
     A.map (limit.π (F ⋙ π A) i) (liftedConeElement F) = (F.obj i).snd := by
   have := congrFun
-    (preservesLimitsIso_inv_π A (F ⋙ π A) i) (liftedConeElement' F)
+    (preservesLimitIso_inv_π A (F ⋙ π A) i) (liftedConeElement' F)
   simp_all [liftedConeElement]
 
 /-- (implementation) The constructured limit cone. -/

@@ -57,14 +57,14 @@ theorem not_distrib : ¬(p ⊔ q1) ⊓ (p ⊔ q2) ≤ p ⊔ q1 ⊓ q2 := by
         4 / 3 = 4 * (1 - 2 / 3) := by norm_num
         _ ≤ 4 * (1 - x.snd) := by gcongr
         _ ≤ 4 * |1 - x.snd| := by gcongr; apply le_abs_self
-        _ = q2 ((1, 1) - x) := by simp; rfl
+        _ = q2 ((1, 1) - x) := rfl
         _ ≤ (p ⊔ q2) ((1, 1) - x) := le_sup_right
         _ ≤ (p ⊔ q1) x + (p ⊔ q2) ((1, 1) - x) := le_add_of_nonneg_left (apply_nonneg _ _)
     · calc
         4 / 3 = 2 / 3 + (1 - 1 / 3) := by norm_num
         _ ≤ x.snd + (1 - x.fst) := by gcongr
         _ ≤ |x.snd| + |1 - x.fst| := add_le_add (le_abs_self _) (le_abs_self _)
-        _ ≤ p x + p ((1, 1) - x) := by exact add_le_add le_sup_right le_sup_left
+        _ ≤ p x + p ((1, 1) - x) := add_le_add le_sup_right le_sup_left
         _ ≤ (p ⊔ q1) x + (p ⊔ q2) ((1, 1) - x) := add_le_add le_sup_left le_sup_left
   · calc
       4 / 3 = 4 * (1 / 3) := by norm_num

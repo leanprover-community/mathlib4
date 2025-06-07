@@ -3,7 +3,7 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finset.Insert
 import Mathlib.Data.Set.Lattice
 
 /-!
@@ -59,12 +59,14 @@ theorem finiteInter_mem (cond : FiniteInter S) (F : Finset (Set α)) :
 
 theorem finiteInterClosure_insert {A : Set α} (cond : FiniteInter S) (P)
     (H : P ∈ finiteInterClosure (insert A S)) : P ∈ S ∨ ∃ Q ∈ S, P = A ∩ Q := by
-  induction' H with S h T1 T2 _ _ h1 h2
-  · cases h
+  induction H with
+  | basic h =>
+    cases h
     · exact Or.inr ⟨Set.univ, cond.univ_mem, by simpa⟩
     · exact Or.inl (by assumption)
-  · exact Or.inl cond.univ_mem
-  · rcases h1 with (h | ⟨Q, hQ, rfl⟩) <;> rcases h2 with (i | ⟨R, hR, rfl⟩)
+  | univ => exact Or.inl cond.univ_mem
+  | @inter T1 T2 _ _ h1 h2 =>
+    rcases h1 with (h | ⟨Q, hQ, rfl⟩) <;> rcases h2 with (i | ⟨R, hR, rfl⟩)
     · exact Or.inl (cond.inter_mem h i)
     · exact
         Or.inr ⟨T1 ∩ R, cond.inter_mem h hR, by simp only [← Set.inter_assoc, Set.inter_comm _ A]⟩
@@ -73,11 +75,11 @@ theorem finiteInterClosure_insert {A : Set α} (cond : FiniteInter S) (P)
         Or.inr
           ⟨Q ∩ R, cond.inter_mem hQ hR, by
             ext x
-            constructor <;> simp (config := { contextual := true })⟩
+            constructor <;> simp +contextual⟩
 
 open Set
 
-theorem mk₂ (h: ∀ ⦃s⦄, s ∈ S → ∀ ⦃t⦄, t ∈ S → s ∩ t ∈ S) :
+theorem mk₂ (h : ∀ ⦃s⦄, s ∈ S → ∀ ⦃t⦄, t ∈ S → s ∩ t ∈ S) :
     FiniteInter (insert (univ : Set α) S) where
   univ_mem := Set.mem_insert Set.univ S
   inter_mem s hs t ht := by aesop

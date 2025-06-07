@@ -3,7 +3,6 @@ Copyright (c) 2023 Luke Mantle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Mantle
 -/
-import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Data.Nat.Factorial.DoubleFactorial
 
@@ -60,8 +59,6 @@ theorem hermite_eq_iterate (n : ℕ) : hermite n = (fun p => X * p - derivative 
 theorem hermite_zero : hermite 0 = C 1 :=
   rfl
 
--- Porting note (#10618): There was initially @[simp] on this line but it was removed
--- because simp can prove this theorem
 theorem hermite_one : hermite 1 = X := by
   rw [hermite_succ, hermite_zero]
   simp only [map_one, mul_one, derivative_one, sub_zero]

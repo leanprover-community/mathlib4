@@ -3,7 +3,6 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Init.Logic
 import Mathlib.Logic.Function.Defs
 import Mathlib.Tactic.TypeStar
 
@@ -16,7 +15,7 @@ A type is *nontrivial* if it contains at least two elements. This is useful in p
 
 We introduce a typeclass `Nontrivial` formalizing this property.
 
-Basic results about nontrivial types are in `Mathlib.Logic.Nontrivial.Basic`.
+Basic results about nontrivial types are in `Mathlib/Logic/Nontrivial/Basic.lean`.
 -/
 
 variable {α : Type*} {β : Type*}

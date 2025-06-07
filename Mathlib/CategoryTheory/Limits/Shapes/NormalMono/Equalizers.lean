@@ -23,7 +23,7 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C]
 
 namespace CategoryTheory.NormalMonoCategory
 
-variable [HasFiniteProducts C] [HasKernels C] [NormalMonoCategory C]
+variable [HasFiniteProducts C] [HasKernels C] [IsNormalMonoCategory C]
 
 /-- The pullback of two monomorphisms exists. -/
 @[irreducible, nolint defLemma] -- Porting note: changed to irreducible and a def
@@ -55,7 +55,7 @@ def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
         PullbackCone.IsLimit.mk _
           (fun s =>
             kernel.lift (prod.lift f g) (PullbackCone.snd s ≫ b) <|
-              prod.hom_ext
+              Limits.prod.hom_ext
                 (calc
                   ((PullbackCone.snd s ≫ b) ≫ prod.lift f g) ≫ Limits.prod.fst =
                       PullbackCone.snd s ≫ b ≫ f := by simp only [prod.lift_fst, Category.assoc]
@@ -101,7 +101,7 @@ private abbrev P {X Y : C} (f g : X ⟶ Y) [Mono (prod.lift (𝟙 X) f)] [Mono (
   pullback (prod.lift (𝟙 X) f) (prod.lift (𝟙 X) g)
 
 /-- The equalizer of `f` and `g` exists. -/
- -- Porting note: changed to irreducible def since irreducible_def was breaking things
+-- Porting note: changed to irreducible def since irreducible_def was breaking things
 @[irreducible, nolint defLemma]
 def hasLimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasLimit (parallelPair f g) :=
   have huv : (pullback.fst _ _ : P f g ⟶ X) = pullback.snd _ _ :=
@@ -125,7 +125,7 @@ def hasLimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasLimit (parallelPair f g
         Fork.IsLimit.mk _
           (fun s =>
             pullback.lift (Fork.ι s) (Fork.ι s) <|
-              prod.hom_ext (by simp only [prod.lift_fst, Category.assoc])
+              Limits.prod.hom_ext (by simp only [prod.lift_fst, Category.assoc])
                 (by simp only [prod.comp_lift, Fork.condition s]))
           (fun s => by simp) fun s m h =>
           pullback.hom_ext (by simpa only [pullback.lift_fst] using h)
@@ -173,7 +173,7 @@ end CategoryTheory.NormalMonoCategory
 
 namespace CategoryTheory.NormalEpiCategory
 
-variable [HasFiniteCoproducts C] [HasCokernels C] [NormalEpiCategory C]
+variable [HasFiniteCoproducts C] [HasCokernels C] [IsNormalEpiCategory C]
 
 /-- The pushout of two epimorphisms exists. -/
 @[irreducible, nolint defLemma] -- Porting note: made a def and re-added irreducible
@@ -267,7 +267,6 @@ def hasColimit_parallelPair {X Y : C} (f g : X ⟶ Y) : HasColimit (parallelPair
       _ = (coprod.inl ≫ coprod.desc (𝟙 Y) g) ≫ pushout.inr _ _ := by
         simp only [Category.assoc, pushout.condition]
       _ = pushout.inr _ _ := by rw [coprod.inl_desc, Category.id_comp]
-
   have hvu : f ≫ (pushout.inl _ _ : Y ⟶ Q f g) = g ≫ pushout.inr _ _ :=
     calc
       f ≫ (pushout.inl _ _ : Y ⟶ Q f g) = (coprod.inr ≫ coprod.desc (𝟙 Y) f) ≫ pushout.inl _ _ := by
