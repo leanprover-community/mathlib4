@@ -89,7 +89,7 @@ theorem Polynomial.isPeriodicPt_eval_two {P : Polynomial ℤ} {t : ℤ}
           (fun x => P.eval x)^[n + 1] t - (fun x => P.eval x)^[n] t :=
       fun m n => Cycle.chain_iff_pairwise.1 HC' _ HC _ HC
     -- The sign of P^n(t) - t is the same as P(t) - t for positive n. Proven by induction on n.
-    have IH : ∀ n : ℕ, ((fun x => P.eval x)^[n + 1] t - t).sign = (P.eval t - t).sign := fun n ↦ by
+    have IH (n : ℕ) : ((fun x => P.eval x)^[n + 1] t - t).sign = (P.eval t - t).sign := by
       induction n with
       | zero => rfl
       | succ n IH =>
