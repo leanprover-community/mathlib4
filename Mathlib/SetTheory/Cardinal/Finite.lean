@@ -22,8 +22,6 @@ import Mathlib.SetTheory.Cardinal.ENat
   (using the legacy definition `PartENat := Part ℕ`). If `α` is infinite, `PartENat.card α = ⊤`.
 -/
 
-assert_not_exists Field
-
 open Cardinal Function
 
 noncomputable section
@@ -352,25 +350,23 @@ theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α 
 theorem card_prod (α β : Type*) : ENat.card (α × β) = card α * card β := by
   simp [ENat.card]
 
-lemma card_epow {α β : Type*} : ENat.card (α → β) = (card β) ^ card α := by
+@[simp]
+lemma card_pow {α β : Type*} : ENat.card (α → β) = (card β) ^ card α := by
   classical
+  rcases isEmpty_or_nonempty α with α_emp | α_emp
+  · simp [(card_eq_zero_iff_empty α).2 α_emp]
   rcases finite_or_infinite α
-  · have _ := Fintype.ofFinite α
-    rcases finite_or_infinite β
-    · have _ := Fintype.ofFinite β
-      rw [card_eq_coe_fintype_card (α := α), card_eq_coe_fintype_card (α := β),
-        card_eq_coe_fintype_card (α := α → β), epow_natCast, ← Nat.cast_pow, Fintype.card_fun]
-    · rw [card_eq_top_of_infinite (α := β)]
-      rcases isEmpty_or_nonempty α with _ | h
-      · simp
-      · rw [top_epow ((card_ne_zero_iff_nonempty α).2 h), card_eq_top]
-        exact Pi.infinite_of_right
+  · rcases finite_or_infinite β
+    · have _ := Fintype.ofFinite α
+      have _ := Fintype.ofFinite β
+      simp
+    · simp [top_epow ((card_ne_zero_iff_nonempty α).2 α_emp)]
   · rw [card_eq_top_of_infinite (α := α)]
     rcases lt_trichotomy (ENat.card β) 1 with b_0 | b_1 | b_2
     · rw [lt_one_iff_eq_zero] at b_0
       rw [b_0, zero_epow_top]
       rw [card_eq_zero_iff_empty] at b_0 ⊢
-      simp only [isEmpty_pi, b_0, exists_const]
+      simp [b_0]
     · rw [b_1, one_epow, card_eq_one_iff_unique]
       rw [card_eq_one_iff_unique] at b_1
       exact Pi.nonemptyUnique
