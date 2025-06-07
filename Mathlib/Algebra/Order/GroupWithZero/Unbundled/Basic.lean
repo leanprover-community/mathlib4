@@ -608,7 +608,7 @@ lemma pow_left_inj₀ [MulPosMono M₀] (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n �
   (pow_left_strictMonoOn₀ hn).eq_iff_eq ha hb
 
 lemma pow_right_injective₀ (ha₀ : 0 < a) (ha₁ : a ≠ 1) : Injective (a ^ ·) := by
-  obtain ha₁ | ha₁ := ha₁.lt_or_lt
+  obtain ha₁ | ha₁ := ha₁.lt_or_gt
   · exact (pow_right_strictAnti₀ ha₀ ha₁).injective
   · exact (pow_right_strictMono₀ ha₁).injective
 
@@ -1271,7 +1271,7 @@ lemma inv_le_one_iff₀ : a⁻¹ ≤ 1 ↔ a ≤ 0 ∨ 1 ≤ a := by
   simp only [← not_lt, one_lt_inv_iff₀, not_and_or]
 
 lemma zpow_right_injective₀ (ha₀ : 0 < a) (ha₁ : a ≠ 1) : Injective fun n : ℤ ↦ a ^ n := by
-  obtain ha₁ | ha₁ := ha₁.lt_or_lt
+  obtain ha₁ | ha₁ := ha₁.lt_or_gt
   · exact (zpow_right_strictAnti₀ ha₀ ha₁).injective
   · exact (zpow_right_strictMono₀ ha₁).injective
 

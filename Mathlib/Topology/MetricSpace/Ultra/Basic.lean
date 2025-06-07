@@ -54,7 +54,7 @@ namespace IsUltrametricDist
 lemma dist_eq_max_of_dist_ne_dist (h : dist x y ≠ dist y z) :
     dist x z = max (dist x y) (dist y z) := by
   apply le_antisymm (dist_triangle_max x y z)
-  rcases h.lt_or_lt with h | h
+  rcases h.lt_or_gt with h | h
   · rw [max_eq_right h.le]
     apply (le_max_iff.mp <| dist_triangle_max y x z).resolve_left
     simpa only [not_le, dist_comm x y] using h
