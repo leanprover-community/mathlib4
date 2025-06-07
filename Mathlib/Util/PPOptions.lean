@@ -9,9 +9,9 @@ import Mathlib.Init
 Mathlib-specific pretty printer options.
 -/
 
-namespace Mathlib
-
 open Lean
+
+namespace Mathlib
 
 /--
 The `pp.mathlib.binderPredicates` option is used to control whether mathlib pretty printers
@@ -29,3 +29,17 @@ def getPPBinderPredicates (o : Options) : Bool :=
   o.get pp.mathlib.binderPredicates.name (!getPPAll o)
 
 end Mathlib
+
+
+/--
+The `pp.mdata` option is used to control whether `Expr.mdata` nodes are pretty-printed.`
+-/
+register_option pp.mdata : Bool := {
+  defValue := false
+  group    := "pp"
+  descr    := "(pretty printer) pretty prints mdata annotations"
+}
+
+/-- Gets whether `Expr.mdata` delaboration is enabled. -/
+def Lean.getPPMData (o : Options) : Bool :=
+  o.get pp.mdata.name (getPPAll o)
