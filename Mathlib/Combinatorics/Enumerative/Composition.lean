@@ -570,7 +570,6 @@ theorem ne_single_iff {n : ℕ} (hn : 0 < n) {c : Composition n} :
         _ < ∑ k, c.blocksFun k :=
           Finset.single_lt_sum ji (Finset.mem_univ _) (Finset.mem_univ _) (c.one_le_blocksFun j)
             fun _ _ _ => zero_le _
-
     simpa using Fintype.card_eq_one_of_forall_eq this
 
 variable {m : ℕ}
@@ -1023,7 +1022,7 @@ theorem CompositionAsSet.toComposition_boundaries (c : CompositionAsSet n) :
     · simpa [c.card_boundaries_eq_succ_length] using i.2
     · simp [Composition.boundary, Composition.sizeUpTo, ← hi]
   · rintro ⟨i, i_lt, hi⟩
-    refine ⟨i, by simp, ?_⟩
+    refine ⟨Fin.ofNat _ i, by simp, ?_⟩
     rw [c.card_boundaries_eq_succ_length] at i_lt
     simp [Composition.boundary, Nat.mod_eq_of_lt i_lt, Composition.sizeUpTo, hi]
 

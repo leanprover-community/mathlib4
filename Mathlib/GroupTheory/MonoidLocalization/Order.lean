@@ -77,7 +77,7 @@ instance partialOrder : PartialOrder (Localization s) where
       · simp_rw [mk_le_mk, mk_eq_mk_iff, r_iff_exists]
         exact fun hab hba => ⟨1, by rw [hab.antisymm hba]⟩
     all_goals rfl
-  lt_iff_le_not_le a b := Localization.induction_on₂ a b fun _ _ => lt_iff_le_not_le
+  lt_iff_le_not_ge a b := Localization.induction_on₂ a b fun _ _ => lt_iff_le_not_ge
 
 @[to_additive]
 instance isOrderedCancelMonoid : IsOrderedCancelMonoid (Localization s) where

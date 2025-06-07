@@ -306,7 +306,7 @@ theorem formPerm_apply_mem_eq_self_iff (hl : Nodup l) (x : α) (hx : x ∈ l) :
   obtain ⟨k, hk, rfl⟩ := getElem_of_mem hx
   rw [formPerm_apply_getElem _ hl k hk, hl.getElem_inj_iff]
   cases hn : l.length
-  · exact absurd k.zero_le (hk.trans_le hn.le).not_le
+  · exact absurd k.zero_le (hk.trans_le hn.le).not_ge
   · rw [hn] at hk
     rcases (Nat.le_of_lt_succ hk).eq_or_lt with hk' | hk'
     · simp [← hk', Nat.succ_le_succ_iff, eq_comm]

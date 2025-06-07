@@ -131,9 +131,9 @@ lemma σ_mul (g g' : GL (Fin 2) ℝ) (z : ℂ) : σ (g * g') z = σ g (σ g' z) 
   simp only [σ, map_mul, Units.val_mul]
   rcases g.det_ne_zero.lt_or_lt with (h | h) <;>
   rcases g'.det_ne_zero.lt_or_lt with (h' | h')
-  · simp [mul_pos_of_neg_of_neg h h', h.not_lt, h'.not_lt]
-  · simp [(mul_neg_of_neg_of_pos h h').not_lt, h.not_lt, h']
-  · simp [(mul_neg_of_pos_of_neg h h').not_lt, h, h'.not_lt]
+  · simp [mul_pos_of_neg_of_neg h h', h.not_gt, h'.not_gt]
+  · simp [(mul_neg_of_neg_of_pos h h').not_gt, h.not_gt, h']
+  · simp [(mul_neg_of_pos_of_neg h h').not_gt, h, h'.not_gt]
   · simp [mul_pos h h', h, h']
 
 lemma σ_mul_comm (g h : GL (Fin 2) ℝ) (z : ℂ) : σ g (σ h z) = σ h (σ g z) := by
