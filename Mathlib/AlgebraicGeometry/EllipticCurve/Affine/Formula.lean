@@ -177,10 +177,15 @@ lemma slope_of_Y_eq {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy : y₁ = W.
   rw [slope, if_pos hx, if_pos hy]
 
 @[simp]
+lemma slope_of_Y_ne' {x₂ y₁ y₂ : F} (hy : ¬y₁ = -y₂ - W.a₁ * x₂ - W.a₃) :
+    W.slope x₂ x₂ y₁ y₂ =
+      (3 * x₂ ^ 2 + 2 * W.a₂ * x₂ + W.a₄ - W.a₁ * y₁) / (y₁ - (-y₁ - W.a₁ * x₂ - W.a₃)) := by
+  simp [slope, hy]
+
 lemma slope_of_Y_ne {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy : y₁ ≠ W.negY x₂ y₂) :
     W.slope x₁ x₂ y₁ y₂ =
       (3 * x₁ ^ 2 + 2 * W.a₂ * x₁ + W.a₄ - W.a₁ * y₁) / (y₁ - W.negY x₁ y₁) := by
-  rw [slope, if_pos hx, if_neg hy]
+  simp_all
 
 @[simp]
 lemma slope_of_X_ne {x₁ x₂ y₁ y₂ : F} (hx : x₁ ≠ x₂) :

@@ -146,11 +146,11 @@ def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D whe
   mapId := fun a => G.map₂Iso (F.mapId a) ≪≫ G.mapId (F.obj a)
   mapComp := fun f g => (G.map₂Iso (F.mapComp f g)) ≪≫ G.mapComp (F.map f) (F.map g)
   -- Note: whilst these are all provable by `aesop_cat`, the proof is very slow
-  map₂_whisker_left f η := by dsimp; simp
-  map₂_whisker_right η h := by dsimp; simp
-  map₂_associator f g h := by dsimp; simp
-  map₂_left_unitor f := by dsimp; simp
-  map₂_right_unitor f := by dsimp; simp
+  map₂_whisker_left f η := by simp
+  map₂_whisker_right η h := by simp
+  map₂_associator f g h := by simp
+  map₂_left_unitor f := by simp
+  map₂_right_unitor f := by simp
 
 section
 

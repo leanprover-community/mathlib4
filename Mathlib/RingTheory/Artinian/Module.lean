@@ -528,7 +528,7 @@ lemma setOf_isPrime_finite : {I : Ideal R | I.IsPrime}.Finite := by
 
 instance : Finite (PrimeSpectrum R) :=
   haveI : Finite {I : Ideal R // I.IsPrime} := (setOf_isPrime_finite R).to_subtype
-  .of_equiv _ (PrimeSpectrum.equivSubtype _).symm
+  .of_equiv _ (PrimeSpectrum.equivSubtype _).symm.toEquiv
 
 /-- A temporary field instance on the quotients by maximal ideals. -/
 @[local instance] noncomputable def fieldOfSubtypeIsMaximal

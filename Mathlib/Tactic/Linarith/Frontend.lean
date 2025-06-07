@@ -130,7 +130,7 @@ The components of `linarith` are spread between a number of files for the sake o
 linarith, nlinarith, lra, nra, Fourier-Motzkin, linear arithmetic, linear programming
 -/
 
-open Lean Elab Tactic Meta
+open Lean Elab Parser Tactic Meta
 open Batteries Mathlib
 
 
@@ -144,7 +144,6 @@ be in context to choose a default.
 -/
 
 section
-open Meta
 
 /-- A configuration object for `linarith`. -/
 structure LinarithConfig : Type where
@@ -363,7 +362,7 @@ end Linarith
 
 /-! ### User facing functions -/
 
-open Parser Tactic Syntax
+open Syntax
 
 /-- Syntax for the arguments of `linarith`, after the optional `!`. -/
 syntax linarithArgsRest := optConfig (&" only")? (" [" term,* "]")?

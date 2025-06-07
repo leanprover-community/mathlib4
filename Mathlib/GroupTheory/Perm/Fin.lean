@@ -130,6 +130,7 @@ theorem cycleType_finRotate_of_le {n : ℕ} (h : 2 ≤ n) : cycleType (finRotate
 
 namespace Fin
 
+open Fin.NatCast in -- TODO: refactor to avoid needing this
 /-- `Fin.cycleRange i` is the cycle `(0 1 2 ... i)` leaving `(i+1 ... (n-1))` unchanged. -/
 def cycleRange {n : ℕ} (i : Fin n) : Perm (Fin n) :=
   (finRotate (i + 1)).extendDomain
@@ -197,7 +198,7 @@ theorem cycleRange_apply {n : ℕ} [NeZero n] (i j : Fin n) :
 @[simp]
 theorem cycleRange_zero (n : ℕ) [NeZero n] : cycleRange (0 : Fin n) = 1 := by
   ext j
-  rcases (Fin.zero_le' j).eq_or_lt with rfl | hj
+  rcases (Fin.zero_le j).eq_or_lt with rfl | hj
   · simp
   · rw [cycleRange_of_gt hj, one_apply]
 
