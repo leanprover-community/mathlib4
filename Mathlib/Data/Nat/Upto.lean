@@ -53,7 +53,7 @@ protected theorem wf : (∃ x, p x) → WellFounded (Upto.GT p)
       exact (measure _).wf
     ext ⟨a, ha⟩ ⟨b, _⟩
     dsimp [InvImage, Upto.GT]
-    rw [tsub_lt_tsub_iff_left_of_le (le_of_not_lt fun h' => ha _ h' h)]
+    rw [tsub_lt_tsub_iff_left_of_le (le_of_not_gt fun h' => ha _ h' h)]
 
 /-- Zero is always a member of `Nat.Upto p` because it has no predecessors. -/
 def zero : Nat.Upto p :=

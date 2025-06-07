@@ -33,8 +33,8 @@ semiring structure.
 * The less than relation on cardinals forms a well-order.
 * Cardinals form a `ConditionallyCompleteLinearOrderBot`. Bounded sets for cardinals in universe
   `u` are precisely the sets indexed by some type in universe `u`, see
-  `Cardinal.bddAbove_iff_small` (in `Mathlib.SetTheory.Cardinal.Small`). One can use `sSup` for the
-  cardinal supremum, and `sInf` for the minimum of a set of cardinals.
+  `Cardinal.bddAbove_iff_small`. One can use `sSup` for the cardinal supremum,
+  and `sInf` for the minimum of a set of cardinals.
 
 ## Main Statements
 
@@ -297,7 +297,9 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
 instance isOrderedRing : IsOrderedRing Cardinal.{u} :=
   CanonicallyOrderedAdd.toIsOrderedRing
 
-instance orderBot : OrderBot Cardinal.{u} := inferInstance
+instance orderBot : OrderBot Cardinal.{u} where
+  bot := 0
+  bot_le := zero_le
 
 instance noZeroDivisors : NoZeroDivisors Cardinal.{u} where
   eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
@@ -406,7 +408,7 @@ theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
   intro b hlt
   rcases b, c with ⟨⟨β⟩, ⟨γ⟩⟩
   obtain ⟨f⟩ := le_of_lt hlt
-  have : ¬Surjective f := fun hn => (not_le_of_lt hlt) (mk_le_of_surjective hn)
+  have : ¬Surjective f := fun hn => (not_le_of_gt hlt) (mk_le_of_surjective hn)
   simp only [Surjective, not_forall] at this
   rcases this with ⟨b, hb⟩
   calc

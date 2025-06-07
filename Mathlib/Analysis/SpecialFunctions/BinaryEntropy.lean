@@ -136,10 +136,10 @@ lemma binEntropy_lt_log_two : binEntropy p < log 2 ↔ p ≠ 2⁻¹ := by
     simp at h
   wlog hp : p < 2⁻¹
   · have hp : 1 - p < 2⁻¹ := by
-      rw [sub_lt_comm]; norm_num at *; linarith (config := { splitNe := true })
+      rw [sub_lt_comm]; norm_num at *; linarith +splitNe
     rw [← binEntropy_one_sub]
     exact this hp.ne hp
-  obtain hp₀ | hp₀ := le_or_lt p 0
+  obtain hp₀ | hp₀ := le_or_gt p 0
   · exact (binEntropy_nonpos_of_nonpos hp₀).trans_lt <| log_pos <| by norm_num
   have hp₁ : 0 < 1 - p := sub_pos.2 <| hp.trans <| by norm_num
   calc

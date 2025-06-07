@@ -17,7 +17,7 @@ import Mathlib.Tactic.Tauto
 # Basic facts for ordered rings and semirings
 
 This file develops the basics of ordered (semi)rings in an unbundled fashion for later use with
-the bundled classes from `Mathlib.Algebra.Order.Ring.Defs`.
+the bundled classes from `Mathlib/Algebra/Order/Ring/Defs.lean`.
 
 The set of typeclass variables here comprises
 * an algebraic class (`Semiring`, `CommSemiring`, `Ring`, `CommRing`)
@@ -412,7 +412,7 @@ theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg
     [MulPosStrictMono R] [PosMulStrictMono R]
     (hab : 0 ≤ a * b) : 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
   refine Decidable.or_iff_not_not_and_not.2 ?_
-  simp only [not_and, not_le]; intro ab nab; apply not_lt_of_le hab _
+  simp only [not_and, not_le]; intro ab nab; apply not_lt_of_ge hab _
   rcases lt_trichotomy 0 a with (ha | rfl | ha)
   · exact mul_neg_of_pos_of_neg ha (ab ha.le)
   · exact ((ab le_rfl).asymm (nab le_rfl)).elim
@@ -475,7 +475,7 @@ theorem add_le_mul [ZeroLEOneClass R] [NeZero (1 : R)]
     [MulPosStrictMono R] [PosMulStrictMono R] [AddLeftMono R]
     (a2 : 2 ≤ a) (b2 : 2 ≤ b) : a + b ≤ a * b :=
   if hab : a ≤ b then add_le_mul_of_left_le_right a2 hab
-  else add_le_mul_of_right_le_left b2 (le_of_not_le hab)
+  else add_le_mul_of_right_le_left b2 (le_of_not_ge hab)
 
 theorem add_le_mul' [ZeroLEOneClass R] [NeZero (1 : R)]
     [MulPosStrictMono R] [PosMulStrictMono R] [AddLeftMono R]
@@ -821,6 +821,26 @@ lemma mul_self_le_mul_self_of_le_of_neg_le
   (le_total 0 a).elim (mul_self_le_mul_self · h₁) fun h ↦
     (neg_mul_neg a a).symm.trans_le <|
       mul_le_mul h₂ h₂ (neg_nonneg.2 h) <| (neg_nonneg.2 h).trans h₂
+
+lemma sub_mul_sub_nonneg_iff [MulPosStrictMono R] [PosMulStrictMono R] [AddLeftMono R]
+    (x : R) (h : a ≤ b) : 0 ≤ (x - a) * (x - b) ↔ x ≤ a ∨ b ≤ x := by
+  rw [mul_nonneg_iff, sub_nonneg, sub_nonneg, sub_nonpos, sub_nonpos,
+    and_iff_right_of_imp h.trans, and_iff_left_of_imp h.trans', or_comm]
+
+lemma sub_mul_sub_nonpos_iff [MulPosStrictMono R] [PosMulStrictMono R] [AddLeftMono R]
+    (x : R) (h : a ≤ b) :  (x - a) * (x - b) ≤ 0 ↔ a ≤ x ∧ x ≤ b := by
+  rw [mul_nonpos_iff, sub_nonneg, sub_nonneg, sub_nonpos, sub_nonpos, or_iff_left_iff_imp, and_comm]
+  exact And.imp h.trans h.trans'
+
+lemma sub_mul_sub_pos_iff [MulPosStrictMono R] [PosMulStrictMono R] [AddLeftMono R]
+    (x : R) (h : a ≤ b) : 0 < (x - a) * (x - b) ↔ x < a ∨ b < x := by
+  rw [mul_pos_iff, sub_pos, sub_pos, sub_neg, sub_neg, and_iff_right_of_imp h.trans_lt,
+    and_iff_left_of_imp h.trans_lt', or_comm]
+
+lemma sub_mul_sub_neg_iff [MulPosStrictMono R] [PosMulStrictMono R] [AddLeftMono R]
+    (x : R) (h : a ≤ b) : (x - a) * (x - b) < 0 ↔ a < x ∧ x < b := by
+  rw [mul_neg_iff, sub_pos, sub_pos, sub_neg, sub_neg, or_iff_left_iff_imp, and_comm]
+  exact And.imp h.trans_lt h.trans_lt'
 
 end LinearOrderedRing
 end OrderedCommRing

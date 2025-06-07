@@ -16,7 +16,7 @@ import Mathlib.Data.ENat.Lattice
 
 If the constant coefficient of a formal (univariate) power series is invertible,
 then this formal power series is invertible.
-(See the discussion in `Mathlib.RingTheory.MvPowerSeries.Inverse` for
+(See the discussion in `Mathlib/RingTheory/MvPowerSeries/Inverse.lean` for
 the construction.)
 
 Formal (univariate) power series over a local ring form a local ring.
@@ -68,7 +68,7 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
   · aesop
   · aesop
   · rintro ⟨i, j⟩ _hij
-    obtain H | H := le_or_lt n j
+    obtain H | H := le_or_gt n j
     · aesop
     rw [if_pos H, if_pos]
     · rfl

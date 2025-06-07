@@ -135,7 +135,7 @@ theorem coeffList_eraseLead (h : P ≠ 0) :
   by_cases hkd : P.natDegree + 1 ≤ k + 1
   · rw [List.getElem?_eq_none]
       <;> simpa [hep, h] using by omega
-  obtain ⟨dk, hdk⟩ := exists_add_of_le (Nat.le_of_lt_succ (Nat.lt_of_not_le hkd))
+  obtain ⟨dk, hdk⟩ := exists_add_of_le (Nat.le_of_lt_succ (Nat.lt_of_not_ge hkd))
   rw [List.getElem?_reverse (by simpa [withBotSucc_degree_eq_natDegree_add_one h] using hkd),
     List.getElem?_cons_succ, List.length_map, List.length_range, List.getElem?_map,
     List.getElem?_range (by omega), Option.map_some]

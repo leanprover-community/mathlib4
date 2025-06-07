@@ -266,7 +266,7 @@ theorem prod_one_sub_ordered [LinearOrder ι] (s : Finset ι) (f : ι → α) :
 theorem prod_range_natCast_sub (n k : ℕ) :
     ∏ i ∈ range k, (n - i : α) = (∏ i ∈ range k, (n - i) : ℕ) := by
   rw [prod_natCast]
-  rcases le_or_lt k n with hkn | hnk
+  rcases le_or_gt k n with hkn | hnk
   · exact prod_congr rfl fun i hi => (Nat.cast_sub <| (mem_range.1 hi).le.trans hkn).symm
   · rw [← mem_range] at hnk
     rw [prod_eq_zero hnk, prod_eq_zero hnk] <;> simp

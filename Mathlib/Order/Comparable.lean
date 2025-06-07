@@ -251,13 +251,13 @@ theorem IncompRel.not_gt (h : IncompRel (· ≤ ·) a b) : ¬ b < a := mt le_of_
 theorem LT.lt.not_incompRel (h : a < b) : ¬ IncompRel (· ≤ ·) a b := fun h' ↦ h'.not_lt h
 
 theorem not_le_iff_lt_or_incompRel : ¬ b ≤ a ↔ a < b ∨ IncompRel (· ≤ ·) a b := by
-  rw [lt_iff_le_not_le, IncompRel]
+  rw [lt_iff_le_not_ge, IncompRel]
   tauto
 
 /-- Exactly one of the following is true. -/
 theorem lt_or_antisymmRel_or_gt_or_incompRel (a b : α) :
     a < b ∨ AntisymmRel (· ≤ ·) a b ∨ b < a ∨ IncompRel (· ≤ ·) a b := by
-  simp_rw [lt_iff_le_not_le]
+  simp_rw [lt_iff_le_not_ge]
   tauto
 
 @[trans]

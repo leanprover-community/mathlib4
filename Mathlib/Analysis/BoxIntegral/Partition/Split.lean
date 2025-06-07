@@ -19,7 +19,7 @@ We introduce the following definitions.
 * `BoxIntegral.Box.splitLower I i a` and `BoxIntegral.Box.splitUpper I i a` are these boxes (as
   `WithBot (BoxIntegral.Box ι)`);
 * `BoxIntegral.Prepartition.split I i a` is the partition of `I` made of these two boxes (or of one
-   box `I` if one of these boxes is empty);
+  box `I` if one of these boxes is empty);
 * `BoxIntegral.Prepartition.splitMany I s`, where `s : Finset (ι × ℝ)` is a finite set of
   hyperplanes `{x : ι → ℝ | x i = a}` encoded as pairs `(i, a)`, is the partition of `I` made by
   cutting it along all the hyperplanes in `s`.
@@ -128,11 +128,11 @@ theorem disjoint_splitLower_splitUpper (I : Box ι) (i : ι) (x : ℝ) :
   rw [← disjoint_withBotCoe, coe_splitLower, coe_splitUpper]
   refine (Disjoint.inf_left' _ ?_).inf_right' _
   rw [Set.disjoint_left]
-  exact fun y (hle : y i ≤ x) hlt => not_lt_of_le hle hlt
+  exact fun y (hle : y i ≤ x) hlt => not_lt_of_ge hle hlt
 
 theorem splitLower_ne_splitUpper (I : Box ι) (i : ι) (x : ℝ) :
     I.splitLower i x ≠ I.splitUpper i x := by
-  rcases le_or_lt x (I.lower i) with h | _
+  rcases le_or_gt x (I.lower i) with h | _
   · rw [splitUpper_eq_self.2 h, splitLower_eq_bot.2 h]
     exact WithBot.bot_ne_coe
   · refine (disjoint_splitLower_splitUpper I i x).ne ?_
@@ -169,7 +169,7 @@ theorem mem_split_iff' : J ∈ split I i x ↔
 
 @[simp]
 theorem iUnion_split (I : Box ι) (i : ι) (x : ℝ) : (split I i x).iUnion = I := by
-  simp [split, ← inter_union_distrib_left, ← setOf_or, le_or_lt]
+  simp [split, ← inter_union_distrib_left, ← setOf_or, le_or_gt]
 
 theorem isPartitionSplit (I : Box ι) (i : ι) (x : ℝ) : IsPartition (split I i x) :=
   isPartition_iff_iUnion_eq.2 <| iUnion_split I i x
@@ -181,7 +181,7 @@ theorem sum_split_boxes {M : Type*} [AddCommMonoid M] (I : Box ι) (i : ι) (x :
   rw [split, sum_ofWithBot, Finset.sum_pair (I.splitLower_ne_splitUpper i x)]
 
 /-- If `x ∉ (I.lower i, I.upper i)`, then the hyperplane `{y | y i = x}` does not split `I`. -/
-theorem split_of_not_mem_Ioo (h : x ∉ Ioo (I.lower i) (I.upper i)) : split I i x = ⊤ := by
+theorem split_of_notMem_Ioo (h : x ∉ Ioo (I.lower i) (I.upper i)) : split I i x = ⊤ := by
   refine ((isPartitionTop I).eq_of_boxes_subset fun J hJ => ?_).symm
   rcases mem_top.1 hJ with rfl; clear hJ
   rw [mem_boxes, mem_split_iff]
@@ -189,6 +189,8 @@ theorem split_of_not_mem_Ioo (h : x ∉ Ioo (I.lower i) (I.upper i)) : split I i
   cases h <;> [right; left]
   · rwa [eq_comm, Box.splitUpper_eq_self]
   · rwa [eq_comm, Box.splitLower_eq_self]
+
+@[deprecated (since := "2025-05-23")] alias split_of_not_mem_Ioo := split_of_notMem_Ioo
 
 theorem coe_eq_of_mem_split_of_mem_le {y : ι → ℝ} (h₁ : J ∈ split I i x) (h₂ : y ∈ J)
     (h₃ : y i ≤ x) : (J : Set (ι → ℝ)) = ↑I ∩ { y | y i ≤ x } := by

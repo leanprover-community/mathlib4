@@ -248,7 +248,7 @@ theorem appendFun_id_id {α : TypeVec n} {β : Type*} :
 instance subsingleton0 : Subsingleton (TypeVec 0) :=
   ⟨fun _ _ => funext Fin2.elim0⟩
 
--- See `Mathlib.Tactic.Attr.Register` for `register_simp_attr typevec`
+-- See `Mathlib/Tactic/Attr/Register.lean` for `register_simp_attr typevec`
 
 /-- cases distinction for 0-length type vector -/
 protected def casesNil {β : TypeVec 0 → Sort*} (f : β Fin2.elim0) : ∀ v, β v :=
@@ -612,8 +612,6 @@ theorem dropFun_RelLast' {α : TypeVec n} {β} (R : β → β → Prop) :
   rfl
 
 attribute [simp] drop_append1'
-
-open MvFunctor
 
 @[simp]
 theorem dropFun_prod {α α' β β' : TypeVec (n + 1)} (f : α ⟹ β) (f' : α' ⟹ β') :
