@@ -158,7 +158,7 @@ protected theorem map_add : ∀ x y, v (x + y) ≤ max (v x) (v y) :=
 @[simp]
 theorem map_add' : ∀ x y, v (x + y) ≤ v x ∨ v (x + y) ≤ v y := by
   intro x y
-  rw [← le_max_iff, ← ge_iff_le]
+  rw [← le_max_iff]
   apply v.map_add
 
 theorem map_add_le {x y g} (hx : v x ≤ g) (hy : v y ≤ g) : v (x + y) ≤ g :=
@@ -736,7 +736,7 @@ theorem map_add : ∀ (x y : R), min (v x) (v y) ≤ v (x + y) :=
 @[simp]
 theorem map_add' : ∀ (x y : R), v x ≤ v (x + y) ∨ v y ≤ v (x + y) := by
   intro x y
-  rw [← @min_le_iff _ _ (v x) (v y) (v (x+y)), ← ge_iff_le]
+  rw [← @min_le_iff _ _ (v x) (v y) (v (x+y))]
   apply map_add
 
 theorem map_le_add {x y : R} {g : Γ₀} (hx : g ≤ v x) (hy : g ≤ v y) : g ≤ v (x + y) :=
