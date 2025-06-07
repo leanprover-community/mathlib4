@@ -73,6 +73,21 @@ lemma PrespectralSpace.of_isClosedEmbedding [PrespectralSpace Y]
     (f : X → Y) (hf : IsClosedEmbedding f) : PrespectralSpace X :=
   .of_isInducing f hf.isInducing hf.isProperMap.isSpectralMap
 
+instance PrespectralSpace.sigma {ι : Type*} (X : ι → Type*) [∀ i, TopologicalSpace (X i)]
+    [∀ i, PrespectralSpace (X i)] : PrespectralSpace (Σ i, X i) :=
+  .of_isTopologicalBasis (IsTopologicalBasis.sigma fun i ↦ isTopologicalBasis) fun U hU ↦ by
+    simp_rw [Set.mem_iUnion] at hU
+    obtain ⟨i, V, hV, rfl⟩ := hU
+    exact hV.2.image continuous_sigmaMk
+
+variable (X) in
+lemma PrespectralSpace.isBasis_opens [PrespectralSpace X] :
+    TopologicalSpace.Opens.IsBasis { U : Opens X | IsCompact (U : Set X) } := by
+  dsimp only [TopologicalSpace.Opens.IsBasis]
+  convert isTopologicalBasis (X := X)
+  ext s
+  exact ⟨fun ⟨V, hV, heq⟩ ↦ heq ▸ ⟨V.2, hV⟩, fun h ↦ ⟨⟨s, h.1⟩, h.2, rfl⟩⟩
+
 /-- In a prespectral space, the lattice of opens is determined by its lattice of compact opens. -/
 def PrespectralSpace.opensEquiv [PrespectralSpace X] :
     Opens X ≃o Order.Ideal (CompactOpens X) where
@@ -102,3 +117,28 @@ def PrespectralSpace.opensEquiv [PrespectralSpace X] :
     intro H x hxU
     obtain ⟨W, ⟨h₁, h₂⟩, hxW, hWU⟩ := isTopologicalBasis.exists_subset_of_mem_open hxU U.2
     exact H ⟨⟨W, h₂⟩, h₁⟩ hWU hxW
+
+open TopologicalSpace Opens in
+/-- If `X` has a basis of compact opens and `f : X → S` is open, every
+compact open of `S` is the image of a compact open of `X`. -/
+lemma IsOpenMap.exists_opens_image_eq_of_prespectralSpace [PrespectralSpace X] {f : X → Y}
+    (hfc : Continuous f) (h : IsOpenMap f) {U : Set Y} (hs : U ⊆ Set.range f) (hU : IsOpen U)
+    (hc : IsCompact U) : ∃ (V : Opens X), IsCompact V.1 ∧ f '' V = U := by
+  obtain ⟨Us, hUs, heq⟩ := TopologicalSpace.Opens.isBasis_iff_cover.mp
+    (PrespectralSpace.isBasis_opens X) ⟨f ⁻¹' U, hU.preimage hfc⟩
+  obtain ⟨t, ht⟩ := by
+    refine hc.elim_finite_subcover (fun s : Us ↦ f '' s.1) (fun s ↦ h _ s.1.2) (fun x hx ↦ ?_)
+    obtain ⟨x, rfl⟩ := hs hx
+    obtain ⟨i, hi, hx⟩ := mem_sSup.mp <| by rwa [← heq]
+    exact Set.mem_iUnion.mpr ⟨⟨i, hi⟩, x, hx, rfl⟩
+  refine ⟨⨆ s ∈ t, s.1, ?_, ?_⟩
+  · simp only [iSup_mk, carrier_eq_coe, coe_mk]
+    exact t.finite_toSet.isCompact_biUnion fun i _ ↦ hUs i.2
+  · simp only [iSup_mk, carrier_eq_coe, Set.iUnion_coe_set, coe_mk, Set.image_iUnion]
+    convert_to ⋃ i ∈ t, f '' i.1 = U
+    · aesop
+    · refine subset_antisymm (fun x ↦ ?_) ht
+      simp_rw [Set.mem_iUnion]
+      rintro ⟨i, hi, x, hx, rfl⟩
+      have := heq ▸ mem_sSup.mpr ⟨i.1, i.2, hx⟩
+      exact this
