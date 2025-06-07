@@ -96,14 +96,11 @@ scoped instance homCategory (F G : OplaxFunctor B C) : Category (F ⟶ G) where
   id η := { app := fun a ↦ 𝟙 (η.app a) }
   comp Γ Δ := { app := fun a => Γ.app a ≫ Δ.app a }
 
--- TODO: FIX
-variable {η θ : OplaxTrans F G}
-
 instance : Inhabited (Modification η η) :=
   ⟨𝟙 η⟩
 
 @[ext]
-lemma homCategory.ext {α β : OplaxTrans F G} {m n : α ⟶ β} (w : ∀ b, m.app b = n.app b) : m = n :=
+lemma homCategory.ext {Γ Δ : η ⟶ θ} (w : ∀ b, Γ.app b = Δ.app b) : Γ = Δ :=
   Modification.ext (funext w)
 
 /-- Construct a modification isomorphism between oplax natural transformations
@@ -204,7 +201,7 @@ instance : Inhabited (Modification η η) :=
   ⟨𝟙 η⟩
 
 @[ext]
-lemma homCategory.ext {m n : η ⟶ θ} (w : ∀ b, m.app b = n.app b) : m = n :=
+lemma homCategory.ext {Γ Δ : η ⟶ θ} (w : ∀ b, Γ.app b = Δ.app b) : Γ = Δ :=
   Modification.ext (funext w)
 
 /-- Construct a modification isomorphism between strong natural transformations (of oplax functors)
