@@ -42,7 +42,7 @@ theorem isGood_iff {x} : IsGood x ↔ x ∈ Ico (-1/2) (45/8) \ {0} := by
   -- First, note that the denominator is equal to zero at `x = 0`, hence it's not a solution.
   rcases eq_or_ne x 0 with rfl | hx
   · simp [isGood_iff']
-  cases lt_or_le x (-1/2) with
+  cases lt_or_ge x (-1/2) with
   | inl hx2 =>
     -- Next, if `x < -1/2`, then the square root is undefined.
     have : 2 * x + 1 < 0 := by linarith

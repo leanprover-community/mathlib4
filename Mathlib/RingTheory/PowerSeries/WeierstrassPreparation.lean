@@ -328,7 +328,7 @@ theorem eq_zero_of_mul_eq [IsHausdorff I A]
   | succ k ih =>
     rw [g.eq_X_pow_mul_shift_add_trunc (g.map (Ideal.Quotient.mk I)).order.toNat] at heq
     have h1 : ∀ i, coeff A i r ∈ I ^ (k + 1) := fun i ↦ by
-      rcases lt_or_le i (g.map (Ideal.Quotient.mk I)).order.toNat with hi | hi
+      rcases lt_or_ge i (g.map (Ideal.Quotient.mk I)).order.toNat with hi | hi
       · rw [← heq, pow_succ']
         refine coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal i (fun j hj ↦ ?_)
           (fun j _ ↦ ih j) i le_rfl

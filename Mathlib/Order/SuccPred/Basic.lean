@@ -184,7 +184,7 @@ alias ⟨_root_.IsMax.of_succ_le, _root_.IsMax.succ_le⟩ := succ_le_iff_isMax
 
 @[simp]
 theorem lt_succ_iff_not_isMax : a < succ a ↔ ¬IsMax a :=
-  ⟨not_isMax_of_lt, fun ha => (le_succ a).lt_of_not_le fun h => ha <| max_of_succ_le h⟩
+  ⟨not_isMax_of_lt, fun ha => (le_succ a).lt_of_not_ge fun h => ha <| max_of_succ_le h⟩
 
 alias ⟨_, lt_succ_of_not_isMax⟩ := lt_succ_iff_not_isMax
 
@@ -208,7 +208,7 @@ theorem succ_le_succ (h : a ≤ b) : succ a ≤ succ b := by
   by_cases hb : IsMax b
   · by_cases hba : b ≤ a
     · exact (hb <| hba.trans <| le_succ _).trans (le_succ _)
-    · exact succ_le_of_lt ((h.lt_of_not_le hba).trans_le <| le_succ b)
+    · exact succ_le_of_lt ((h.lt_of_not_ge hba).trans_le <| le_succ b)
   · rw [succ_le_iff_of_not_isMax fun ha => hb <| ha.mono h]
     apply lt_succ_of_le_of_not_isMax h hb
 
@@ -218,7 +218,7 @@ theorem succ_mono : Monotone (succ : α → α) := fun _ _ => succ_le_succ
 lemma le_succ_of_wcovBy (h : a ⩿ b) : b ≤ succ a := by
   obtain hab | ⟨-, hba⟩ := h.covBy_or_le_and_le
   · by_contra hba
-    exact h.2 (lt_succ_of_not_isMax hab.lt.not_isMax) <| hab.lt.succ_le.lt_of_not_le hba
+    exact h.2 (lt_succ_of_not_isMax hab.lt.not_isMax) <| hab.lt.succ_le.lt_of_not_ge hba
   · exact hba.trans (le_succ _)
 
 alias _root_.WCovBy.le_succ := le_succ_of_wcovBy
@@ -583,7 +583,7 @@ alias ⟨_root_.IsMin.of_le_pred, _root_.IsMin.le_pred⟩ := le_pred_iff_isMin
 
 @[simp]
 theorem pred_lt_iff_not_isMin : pred a < a ↔ ¬IsMin a :=
-  ⟨not_isMin_of_lt, fun ha => (pred_le a).lt_of_not_le fun h => ha <| min_of_le_pred h⟩
+  ⟨not_isMin_of_lt, fun ha => (pred_le a).lt_of_not_ge fun h => ha <| min_of_le_pred h⟩
 
 alias ⟨_, pred_lt_of_not_isMin⟩ := pred_lt_iff_not_isMin
 
@@ -617,7 +617,7 @@ theorem pred_mono : Monotone (pred : α → α) := fun _ _ => pred_le_pred
 lemma pred_le_of_wcovBy (h : a ⩿ b) : pred b ≤ a := by
   obtain hab | ⟨-, hba⟩ := h.covBy_or_le_and_le
   · by_contra hba
-    exact h.2 (hab.lt.le_pred.lt_of_not_le hba) (pred_lt_of_not_isMin hab.lt.not_isMin)
+    exact h.2 (hab.lt.le_pred.lt_of_not_ge hba) (pred_lt_of_not_isMin hab.lt.not_isMin)
   · exact (pred_le _).trans hba
 
 alias _root_.WCovBy.pred_le := pred_le_of_wcovBy

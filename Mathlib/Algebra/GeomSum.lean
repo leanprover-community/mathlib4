@@ -183,7 +183,7 @@ theorem sub_dvd_pow_sub_pow [CommRing R] (x y : R) (n : ℕ) : x - y ∣ x ^ n -
   (Commute.all x y).sub_dvd_pow_sub_pow n
 
 theorem nat_sub_dvd_pow_sub_pow (x y n : ℕ) : x - y ∣ x ^ n - y ^ n := by
-  rcases le_or_lt y x with h | h
+  rcases le_or_gt y x with h | h
   · have : y ^ n ≤ x ^ n := Nat.pow_le_pow_left h _
     exact mod_cast sub_dvd_pow_sub_pow (x : ℤ) (↑y) n
   · have : x ^ n ≤ y ^ n := Nat.pow_le_pow_left h.le _
@@ -385,7 +385,7 @@ theorem geom_sum_Ico' [DivisionRing K] {x : K} (hx : x ≠ 1) {m n : ℕ} (hmn :
 theorem geom_sum_Ico_le_of_lt_one [Field K] [LinearOrder K] [IsStrictOrderedRing K]
     {x : K} (hx : 0 ≤ x) (h'x : x < 1)
     {m n : ℕ} : ∑ i ∈ Ico m n, x ^ i ≤ x ^ m / (1 - x) := by
-  rcases le_or_lt m n with (hmn | hmn)
+  rcases le_or_gt m n with (hmn | hmn)
   · rw [geom_sum_Ico' h'x.ne hmn]
     apply div_le_div₀ (pow_nonneg hx _) _ (sub_pos.2 h'x) le_rfl
     simpa using pow_nonneg hx _
@@ -527,7 +527,7 @@ theorem geom_sum_pos' [Ring R] [LinearOrder R] [IsStrictOrderedRing R]
   obtain _ | _ | n := n
   · cases hn rfl
   · simp only [zero_add, range_one, sum_singleton, pow_zero, zero_lt_one]
-  obtain hx' | hx' := lt_or_le x 0
+  obtain hx' | hx' := lt_or_ge x 0
   · exact (geom_sum_pos_and_lt_one hx' hx n.one_lt_succ_succ).1
   · exact geom_sum_pos hx' (by simp only [Nat.succ_ne_zero, Ne, not_false_iff])
 
