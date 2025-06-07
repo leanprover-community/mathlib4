@@ -171,52 +171,20 @@ section
 variable (F)
 
 /-- The natural isomorphism witnessing the pseudo-unity constraint of `Grothendieck.map`. -/
-def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ F) where
-  hom := { app := fun _ ↦ eqToHom (by aesop_cat) }
-  inv := { app := fun _ ↦ eqToHom (by aesop_cat) }
-  hom_inv_id := by
-    ext
-    · simp
-    · simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc]
-  inv_hom_id := by
-    ext
-    · simp
-    · simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc]
+def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ F) := 
+  NatIso.ofComponents (fun _ ↦ eqToIso (by aesop_cat))
 
 lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ F) :=
   Functor.ext_of_iso (mapIdIso F) (fun x ↦ by simp [map]) (fun x ↦ by simp [mapIdIso])
 
 end
 
-/-- Auxillary definition for `Grothendieck.mapCompIso`. -/
-abbrev mapCompIso_hom (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ⟶ map α ⋙ map β where
-  app a := eqToHom (by aesop_cat)
-  naturality := by
-    -- aesop should solve this...
-    intro x y f
-    simp only [comp_obj, eqToHom_refl, comp_id, Functor.comp_map, id_comp]
-    ext <;> simp
-
-/-- Auxillary definition for `Grothendieck.mapCompIso`. -/
-abbrev mapCompIso_inv (α : F ⟶ G) (β : G ⟶ H) : map α ⋙ map β ⟶ map (α ≫ β) where
-  app a := eqToHom (by aesop_cat)
-  naturality := by
-    intro x y f
-    simp only [comp_obj, Functor.comp_map, eqToHom_refl, comp_id, id_comp]
-    ext <;> simp
-
 /-- The natural isomorphism witnessing the pseudo-functoriality of `Grothendieck.map`. -/
-def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β where
-  hom := mapCompIso_hom α β
-  inv := mapCompIso_inv α β
-  hom_inv_id := by
-    ext
-    · simp
-    · simp [H.mapComp_id_left_inv_app, ← Functor.map_comp_assoc]
-  inv_hom_id := by
-    ext
-    · simp
-    · simp [H.mapComp_id_left_inv_app, ← Functor.map_comp_assoc]
+def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β :=
+  NatIso.ofComponents (fun _ ↦ eqToIso (by aesop_cat)) (fun f ↦ by
+    dsimp
+    simp only [comp_id, id_comp]
+    ext <;> simp)
 
 lemma map_comp_eq (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) = map α ⋙ map β :=
   Functor.ext_of_iso (mapCompIso α β) (fun _ ↦ by simp [map]) (fun _ ↦ by simp [mapCompIso])
