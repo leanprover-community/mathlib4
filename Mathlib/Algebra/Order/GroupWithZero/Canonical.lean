@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Johan Commelin, Patrick Massot
 -/
 import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Algebra.Order.AddGroupWithTop
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
@@ -388,6 +387,18 @@ instance instLinearOrderedCommMonoidWithZero [CommMonoid α] [LinearOrder α] [I
 
 instance instLinearOrderedCommGroupWithZero [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] :
     LinearOrderedCommGroupWithZero (WithZero α) where
+
+theorem log_le_iff_le_exp {α : Type*} [AddGroup α] [Preorder α]
+    {γ : (WithZero (Multiplicative α))ˣ} {u : α} :
+    log γ ≤ u ↔ γ.val ≤ exp u := by
+  simp only [log_apply, ← coe_unitsWithZeroEquiv_eq_units_val, coe_le_coe]
+  exact ge_iff_le
+
+theorem lt_log_iff_exp_lt {α : Type*} [AddGroup α] [Preorder α]
+    {γ : α} {u : (WithZero (Multiplicative α))ˣ} :
+    γ < log u ↔ exp γ < u.val := by
+  simp only [log_apply, ← coe_unitsWithZeroEquiv_eq_units_val, coe_lt_coe]
+  exact gt_iff_lt
 
 end WithZero
 
