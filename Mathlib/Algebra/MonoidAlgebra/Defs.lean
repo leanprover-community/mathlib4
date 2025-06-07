@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Data.Finsupp.SMul
-import Mathlib.LinearAlgebra.Finsupp.LSum
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 # Monoid algebras
@@ -498,6 +498,9 @@ def of [MulOneClass G] : G →* MonoidAlgebra k G :=
   { ofMagma k G with
     toFun := fun a => single a 1
     map_one' := rfl }
+
+@[simp]
+lemma linearCombination_of [MulOneClass G] : linearCombination k (of k G) = .id := by ext; simp
 
 end
 
@@ -1231,6 +1234,10 @@ def of [AddZeroClass G] : Multiplicative G →* k[G] :=
 
 /-- Embedding of a magma with zero `G`, into its magma algebra, having `G` as source. -/
 def of' : G → k[G] := fun a => single a 1
+
+@[simp]
+lemma linearCombination_of [AddZeroClass G] : linearCombination k (of k G) = .id := by
+  ext; simp; rfl
 
 end
 
