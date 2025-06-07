@@ -16,36 +16,37 @@ This file defines archimedean classes of a given linearly ordered group.
 
 * `ArchimedeanClass` are classes of elements in a ordered additive commutative group
   that are archimedean equivelent. Two elements `a` and `b` are archimedean equivalent when there
-  exists two positive integers `m` and `n` such that `|a| ≤ m • |b|` and `|b| ≤ n • |a|`.
+  exists two natural numbers `m` and `n` such that `|a| ≤ m • |b|` and `|b| ≤ n • |a|`.
 * `MulArchimedeanClass` is the multiplicative version of `ArchimedeanClass`.
   Two elements `a` and `b` are mul-archimedean equivalent when there
-  exists two positive integers `m` and `n` such that `|a|ₘ ≤ |b|ₘ ^ m` and `|b|ₘ ≤ |a|ₘ ^ n`.
+  exists two natural numbers `m` and `n` such that `|a|ₘ ≤ |b|ₘ ^ m` and `|b|ₘ ≤ |a|ₘ ^ n`.
 * `ArchimedeanClass.orderHom` and `MulArchimedeanClass.orderHom` are `OrderHom` over
   archimedean classes lifted from ordered group homomorphisms.
 
 ## Main statements
-* `ArchimedeanClass.archimedean_of_mk_eq_mk` / `MulArchimedeanClass.mulArchimedean_of_mk_eq_mk`:
-  an ordered commutative group is (mul-)archimedean if
-  all non-identity elements belong to the same (`Mul`-)`ArchimedeanClass`.
+
+The following theorems state that an ordered commutative group is (mul-)archimedean if and only if
+all non-identity elements belong to the same (`Mul`-)`ArchimedeanClass`:
+* `ArchimedeanClass.archimedean_of_mk_eq_mk` / `MulArchimedeanClass.mulArchimedean_of_mk_eq_mk`
+* `ArchimedeanClass.mk_eq_mk_of_archimedean` / `MulArchimedeanClass.mk_eq_mk_of_mulArchimedean`
 
 -/
 
 variable {M: Type*}
-variable [CommGroup M] [LinearOrder M] [IsOrderedMonoid M]
+variable [CommGroup M] [LinearOrder M] [IsOrderedMonoid M] {a b : M}
 
 variable (M) in
-/-- Two elements are mul-archimedean equivalent iff there exists two positive integers
+/-- Two elements are mul-archimedean equivalent iff there exists two natural numbers
 `m` and `n` such that `|a|ₘ ≤ |b|ₘ ^ m` and `|b|ₘ ≤ |a|ₘ ^ n`. -/
 @[to_additive archimedeanEquiv "Two elements are archimedean equivalent iff there exists
-two positive integers `m` and `n` such that `|a| ≤ m • |b|` and `|b| ≤ n • |a|`."]
+two natural numbers `m` and `n` such that `|a| ≤ m • |b|` and `|b| ≤ n • |a|`."]
 def mulArchimedeanEquiv : Setoid M where
-  r a b := (∃ m, m ≠ 0 ∧ |a|ₘ ≤ |b|ₘ ^ m) ∧ (∃ n, n ≠ 0 ∧ |b|ₘ ≤ |a|ₘ ^ n)
-  iseqv.refl _ := ⟨⟨1, by simp, by simp⟩, ⟨1, by simp, by simp⟩⟩
+  r a b := (∃ m, |a|ₘ ≤ |b|ₘ ^ m) ∧ (∃ n, |b|ₘ ≤ |a|ₘ ^ n)
+  iseqv.refl _ := ⟨⟨1, by simp⟩, ⟨1, by simp⟩⟩
   iseqv.symm := And.symm
   iseqv.trans {a b c} := by
-    intro ⟨⟨m, hm0, hm⟩, ⟨n, hn0, hn⟩⟩ ⟨⟨m', hm0', hm'⟩, ⟨n', hn0', hn'⟩⟩
-    refine ⟨⟨m' * m, mul_ne_zero hm0' hm0, hm.trans ?_⟩,
-      ⟨n * n', mul_ne_zero hn0 hn0', hn'.trans ?_⟩⟩
+    intro ⟨⟨m, hm⟩, ⟨n, hn⟩⟩ ⟨⟨m', hm'⟩, ⟨n', hn'⟩⟩
+    refine ⟨⟨m' * m, hm.trans ?_⟩, ⟨n * n', hn'.trans ?_⟩⟩
     · rw [pow_mul]
       exact pow_le_pow_left' hm' m
     · rw [pow_mul]
@@ -81,16 +82,16 @@ theorem out_eq (A : MulArchimedeanClass M) : mk A.out = A := Quotient.out_eq' A
 
 @[to_additive]
 theorem eq {a b : M} :
-    mk a = mk b ↔ (∃ m, m ≠ 0 ∧ |a|ₘ ≤ |b|ₘ ^ m) ∧ (∃ n, n ≠ 0 ∧ |b|ₘ ≤ |a|ₘ ^ n) := Quotient.eq''
+    mk a = mk b ↔ (∃ m, |a|ₘ ≤ |b|ₘ ^ m) ∧ (∃ n, |b|ₘ ≤ |a|ₘ ^ n) := Quotient.eq''
 
 @[to_additive]
 theorem mk_out (a : M) :
-    (∃ m, m ≠ 0 ∧ |(mk a).out|ₘ ≤ |a|ₘ ^ m) ∧ (∃ n, n ≠ 0 ∧ |a|ₘ ≤ |(mk a).out|ₘ ^ n) :=
+    (∃ m, |(mk a).out|ₘ ≤ |a|ₘ ^ m) ∧ (∃ n, |a|ₘ ≤ |(mk a).out|ₘ ^ n) :=
   eq.mp (by simp)
 
 @[to_additive (attr := simp)]
 theorem mk_inv (a : M) : mk a⁻¹ = mk a :=
-  eq.mpr ⟨⟨1, by simp, by simp⟩, ⟨1, by simp, by simp⟩⟩
+  eq.mpr ⟨⟨1, by simp⟩, ⟨1, by simp⟩⟩
 
 @[to_additive]
 theorem mk_div_comm (a b : M) : mk (a / b) = mk (b / a) := by
@@ -98,14 +99,13 @@ theorem mk_div_comm (a b : M) : mk (a / b) = mk (b / a) := by
 
 @[to_additive (attr := simp)]
 theorem mk_mabs (a : M) : mk |a|ₘ = mk a :=
-  eq.mpr ⟨⟨1, by simp, by simp⟩, ⟨1, by simp, by simp⟩⟩
+  eq.mpr ⟨⟨1, by simp⟩, ⟨1, by simp⟩⟩
 
 @[to_additive (attr := simp)]
 theorem mk_eq_mk_one_iff {a : M} : mk a = mk 1 ↔ a = 1 := by
   constructor
   · intro h
-    rw [eq] at h
-    obtain ⟨⟨_, _, hm⟩, _⟩ := h
+    obtain ⟨⟨_, hm⟩, _⟩ := eq.mp h
     simpa using hm
   · intro h
     rw [h]
@@ -119,7 +119,7 @@ variable (M) in
 /-- We equip archimedean classes with linear order using the absolute value of their
 representatives. By convention, elements with smaller absolute value are in *larger* classes.
 Ordering backwards this way simplifies formalization of theorems such as
-Hahn embedding theorem.
+the Hahn embedding theorem.
 
 While the order is defined using `MulArchimedean.out`, it is equivalently characterized by
 `MulArchimedean.mk_le_mk` and `MulArchimedean.mk_lt_mk`, which are recommended to use to
@@ -127,19 +127,17 @@ avoid using `MulArchimedean.out`. -/
 @[to_additive "We equip archimedean classes with linear order using the absolute value of their
 representatives. By convention, elements with smaller absolute value are in *larger* classes.
 Ordering backwards this way simplifies formalization of theorems such as
-Hahn embedding theorem.
+the Hahn embedding theorem.
 
 While the order is defined using `Archimedean.out`, it is equivalently characterized by
 `Archimedean.mk_le_mk` and `Archimedean.mk_lt_mk`, which are recommended to use to
 avoid using `Archimedean.out`."]
 noncomputable
 instance instLinearOrder : LinearOrder (MulArchimedeanClass M) :=
-  LinearOrder.lift' (OrderDual.toDual |·.out|ₘ) (by
-    intro A B
+  LinearOrder.lift' (OrderDual.toDual |·.out|ₘ) fun A B ↦ by
     simp only [EmbeddingLike.apply_eq_iff_eq]
     intro h
     simpa using congr_arg mk h
-  )
 
 @[to_additive]
 theorem le (A B : MulArchimedeanClass M) : A ≤ B ↔ |B.out|ₘ ≤ |A.out|ₘ := by rfl
@@ -153,36 +151,30 @@ theorem le_mk_one (A : MulArchimedeanClass M) : A ≤ mk 1 := by
   simp
 
 @[to_additive]
-theorem mk_lt_mk {a b : M} : mk a < mk b ↔ ∀ n, |b|ₘ ^ n < |a|ₘ := by
-  obtain ⟨⟨m, hm0, hm⟩, ⟨n, hn0, hn⟩⟩ := mk_out a
-  obtain ⟨⟨m', hm0', hm'⟩, ⟨n', hn0', hn'⟩⟩ := mk_out b
+theorem mk_lt_mk : mk a < mk b ↔ ∀ n, |b|ₘ ^ n < |a|ₘ := by
+  obtain ⟨⟨m, hm⟩, ⟨n, hn⟩⟩ := mk_out a
+  obtain ⟨⟨m', hm'⟩, ⟨n', hn'⟩⟩ := mk_out b
   constructor
   · intro h k
-    by_cases hk0 : k = 0
-    · rw [hk0]
-      simp only [pow_zero, one_lt_mabs]
-      contrapose! h
-      rw [h]
-      simpa using le_mk_one (mk b)
-    · have hne : ¬ mk a = mk b := ne_of_lt h
-      rw [eq] at hne
-      simp only [not_and, not_exists, not_le, forall_exists_index] at hne
-      by_contra!
-      obtain hne' := hne k ⟨hk0, this⟩ (m * n') (by simp [hn0', hm0])
-      rw [lt] at h
-      contrapose! hne'
-      refine le_of_lt (lt_of_le_of_lt hn' ?_)
-      rw [pow_mul, (pow_left_strictMono hn0').lt_iff_lt]
-      exact lt_of_lt_of_le h hm
+    have hne : ¬ mk a = mk b := ne_of_lt h
+    rw [eq] at hne
+    simp only [not_and, not_exists, not_le, forall_exists_index] at hne
+    by_contra!
+    obtain hne' := hne k this (m * n')
+    rw [lt] at h
+    contrapose! hne'
+    refine hn'.trans ?_
+    rw [pow_mul]
+    exact pow_le_pow_left' (lt_of_lt_of_le h hm).le n'
   · intro h
-    rw [lt, ← (pow_left_strictMono hn0).lt_iff_lt]
-    rw [← (pow_left_strictMono hn0).le_iff_le] at hm'
-    apply lt_of_le_of_lt hm'
+    rw [lt]
+    apply (pow_left_mono n).reflect_lt
+    apply lt_of_le_of_lt (pow_le_pow_left' hm' n)
     rw [← pow_mul]
     exact lt_of_lt_of_le (h (m' * n)) hn
 
 @[to_additive]
-theorem mk_le_mk {a b : M} : mk a ≤ mk b ↔ ∃ n, |b|ₘ ≤ |a|ₘ ^ n := by
+theorem mk_le_mk : mk a ≤ mk b ↔ ∃ n, |b|ₘ ≤ |a|ₘ ^ n := by
   simpa using mk_lt_mk.not
 
 variable (M) in
@@ -199,16 +191,10 @@ theorem top_eq : (⊤ : MulArchimedeanClass M) = mk 1 := rfl
 
 variable (M) in
 @[to_additive (attr := simp)]
-theorem top_out : (⊤ : MulArchimedeanClass M).out = 1 := by
-  exact mk_one_out M
+theorem top_out : (⊤ : MulArchimedeanClass M).out = 1 := mk_one_out M
 
 @[to_additive (attr := simp)]
-theorem mk_eq_top_iff {a : M} : mk a = ⊤ ↔ a = 1 := by
-  exact mk_eq_mk_one_iff
-
-@[to_additive]
-theorem ne_top_of_lt {A B : MulArchimedeanClass M} (h : A < B) : A ≠ ⊤ :=
-  lt_of_lt_of_le h le_top |>.ne
+theorem mk_eq_top_iff : mk a = ⊤ ↔ a = 1 := mk_eq_mk_one_iff
 
 variable (M) in
 @[to_additive]
@@ -238,32 +224,35 @@ theorem mk_monotoneOn : MonotoneOn mk (Set.Iic (1 : M)) := by
   simpa using h
 
 @[to_additive]
-theorem mk_le_mk_self_mul_of_mk_eq {a b : M} (hab : mk a = mk b) : mk a ≤ mk (a * b) := by
+theorem min_le_mk_mul (a b : M) : min (mk a) (mk b) ≤ mk (a * b) := by
   by_contra! h
-  obtain h1 := mk_lt_mk.mp h 2
-  obtain h2 := mk_lt_mk.mp (hab ▸ h) 2
-  rw [pow_two] at h1 h2
-  obtain h1 := lt_of_lt_of_le h1 (mabs_mul _ _)
-  obtain h2 := lt_of_lt_of_le h2 (mabs_mul _ _)
-  simp only [mul_lt_mul_iff_left, mul_lt_mul_iff_right] at h1 h2
-  have := h1.trans h2
-  simp at this
+  rw [lt_min_iff] at h
+  have h1 := (mk_lt_mk.mp h.1 2).trans_le (mabs_mul _ _)
+  have h2 := (mk_lt_mk.mp h.2 2).trans_le (mabs_mul _ _)
+  simp only [mul_lt_mul_iff_left, mul_lt_mul_iff_right, pow_two] at h1 h2
+  exact h1.not_lt h2
 
 @[to_additive]
-theorem mk_eq_mk_self_mul_of_mk_lt {a b : M} (h : mk a < mk b) : mk a = mk (a * b) := by
+theorem mk_left_le_mk_mul (hab : mk a ≤ mk b) : mk a ≤ mk (a * b) := by
+  simpa [hab] using min_le_mk_mul (a := a) (b := b)
+
+@[to_additive]
+theorem mk_right_le_mk_mul (hba : mk b ≤ mk a) : mk b ≤ mk (a * b) := by
+  simpa [hba] using min_le_mk_mul (a := a) (b := b)
+
+@[to_additive]
+theorem mk_left_eq_mk_mul (h : mk a < mk b) : mk a = mk (a * b) := by
+  refine le_antisymm (mk_left_le_mk_mul h.le) (mk_le_mk.mpr ⟨2, ?_⟩)
   rw [mk_lt_mk] at h
-  refine eq.mpr ⟨⟨2, by simp, ?_⟩, ⟨2, by simp, ?_⟩⟩
-  · apply (mabs_mul' _ b).trans
-    rw [mul_comm b a, pow_two, mul_le_mul_iff_right]
-    apply le_of_mul_le_mul_left' (a := |b|ₘ)
-    rw [mul_comm a b]
-    refine le_trans ?_ (mabs_mul' a b)
-    obtain h := (h 2).le
-    rw [pow_two] at h
-    exact h
-  · apply (mabs_mul _ _).trans
-    rw [pow_two, mul_le_mul_iff_left]
-    simpa using (h 1).le
+  apply (mabs_mul' _ b).trans
+  rw [mul_comm b a, pow_two, mul_le_mul_iff_right]
+  apply le_of_mul_le_mul_left' (a := |b|ₘ)
+  rw [mul_comm a b]
+  exact (pow_two |b|ₘ ▸ (h 2).le).trans (mabs_mul' a b)
+
+@[to_additive]
+theorem mk_right_eq_mk_mul (h : mk b < mk a) : mk b = mk (a * b) :=
+  mul_comm a b ▸ mk_left_eq_mk_mul h
 
 /-- The product over a set of an elements in distinct classes is in the lowest class. -/
 @[to_additive "The sum over a set of an elements in distinct classes is in the lowest class."]
@@ -285,7 +274,7 @@ theorem mk_prod {ι : Type*} [LinearOrder ι] {s : Finset ι} (hnonempty : s.Non
       exact hi (Finset.min'_mem _ hs)
     rw [← ih] at hne
     obtain hlt|hlt := lt_or_gt_of_ne hne
-    · rw [← mk_eq_mk_self_mul_of_mk_lt hlt]
+    · rw [← mk_left_eq_mk_mul hlt]
       congr
       apply le_antisymm (Finset.le_min' _ _ _ ?_) (Finset.min'_le _ _ (by simp))
       intro y hy
@@ -295,7 +284,7 @@ theorem mk_prod {ι : Type*} [LinearOrder ι] {s : Finset ι} (hnonempty : s.Non
         apply (hmono.lt_iff_lt (by simp) hminmem).mp
         rw [ih] at hlt
         exact hlt
-    · rw [mul_comm, ← mk_eq_mk_self_mul_of_mk_lt hlt, ih]
+    · rw [mul_comm, ← mk_left_eq_mk_mul hlt, ih]
       congr 2
       refine le_antisymm (Finset.le_min' _ _ _ ?_) (Finset.min'_le _ _ hminmem)
       intro y hy
@@ -306,31 +295,19 @@ theorem mk_prod {ι : Type*} [LinearOrder ι] {s : Finset ι} (hnonempty : s.Non
       · exact Finset.min'_le _ _ hmem
 
 @[to_additive]
-theorem min_le_mk_mul (a b : M) : min (mk a) (mk b) ≤ mk (a * b) := by
-  obtain hab|hab|hab := lt_trichotomy (mk a) (mk b)
-  · rw [inf_le_iff]
-    exact Or.inl (mk_eq_mk_self_mul_of_mk_lt hab).le
-  · rw [← hab]
-    simpa using mk_le_mk_self_mul_of_mk_eq hab
-  · rw [inf_le_iff]
-    right
-    rw [mul_comm]
-    exact (mk_eq_mk_self_mul_of_mk_lt hab).le
-
-@[to_additive]
-theorem lt_of_mk_lt_mk_of_one_le {a b : M} (h : mk a < mk b) (hpos : 1 ≤ a) : b < a := by
+theorem lt_of_mk_lt_mk_of_one_le (h : mk a < mk b) (hpos : 1 ≤ a) : b < a := by
   obtain h := (mk_lt_mk).mp h 1
   rw [pow_one, mabs_lt, mabs_eq_self.mpr hpos] at h
   exact h.2
 
 @[to_additive]
-theorem lt_of_mk_lt_mk_of_le_one {a b : M} (h : mk a < mk b) (hneg : a ≤ 1) : a < b := by
+theorem lt_of_mk_lt_mk_of_le_one (h : mk a < mk b) (hneg : a ≤ 1) : a < b := by
   obtain h := (mk_lt_mk).mp h 1
   rw [pow_one, mabs_lt, mabs_eq_inv_self.mpr hneg, inv_inv] at h
   exact h.1
 
 @[to_additive]
-theorem one_lt_of_one_lt_of_mk_lt {a b : M} (ha : 1 < a) (hab : mk a < mk (b / a)) :
+theorem one_lt_of_one_lt_of_mk_lt (ha : 1 < a) (hab : mk a < mk (b / a)) :
     1 < b := by
   suffices a⁻¹ < b / a by
     simpa using this
@@ -348,9 +325,16 @@ theorem mulArchimedean_of_mk_eq_mk (h : ∀ (a b : M), a ≠ 1 → b ≠ 1 → m
       simpa using hx
     · have hx : 1 < x := lt_of_not_ge hx
       have hxy : mk x = mk y := h x y hx.ne.symm hy.ne.symm
-      obtain ⟨⟨m, _, hm⟩, _⟩ := (MulArchimedeanClass.eq).mp hxy
+      obtain ⟨⟨m, hm⟩, _⟩ := (MulArchimedeanClass.eq).mp hxy
       rw [mabs_eq_self.mpr hx.le, mabs_eq_self.mpr hy.le] at hm
       exact ⟨m, hm⟩
+
+@[to_additive mk_eq_mk_of_archimedean]
+theorem mk_eq_mk_of_mulArchimedean [MulArchimedean M] (ha : a ≠ 1) (hb : b ≠ 1) :
+    mk a = mk b := by
+  obtain hm := MulArchimedean.arch |a|ₘ (show 1 < |b|ₘ by simpa using hb)
+  obtain hn := MulArchimedean.arch |b|ₘ (show 1 < |a|ₘ by simpa using ha)
+  exact eq.mpr ⟨hm, hn⟩
 
 section Hom
 
@@ -377,16 +361,16 @@ def orderHom (f : F) : MulArchimedeanClass M →o MulArchimedeanClass N where
     exact h
 
 @[to_additive]
-theorem orderHom_apply (f : F) (A : MulArchimedeanClass M) : (orderHom f) A = mk (f A.out) := rfl
+theorem orderHom_apply (f : F) (A : MulArchimedeanClass M) : orderHom f A = mk (f A.out) := rfl
 
 @[to_additive]
-theorem map_mk (f : F) (a : M) : mk (f a) = (orderHom f) (mk a) := by
+theorem map_mk (f : F) (a : M) : mk (f a) = orderHom f (mk a) := by
   rw [orderHom_apply]
   apply eq.mpr
   have heq : mk a = mk (mk a).out := by
     rw [out_eq]
-  obtain ⟨⟨m, hm0, hm⟩, ⟨n, hn0, hn⟩⟩ := eq.mp heq
-  refine ⟨⟨m, hm0, ?_⟩, ⟨n, hn0, ?_⟩⟩
+  obtain ⟨⟨m, hm⟩, ⟨n, hn⟩⟩ := eq.mp heq
+  refine ⟨⟨m, ?_⟩, ⟨n, ?_⟩⟩
   all_goals
     rw [← map_mabs, ← map_mabs, ← map_pow]
     apply OrderHomClass.monotone
@@ -394,11 +378,11 @@ theorem map_mk (f : F) (a : M) : mk (f a) = (orderHom f) (mk a) := by
     try exact hn
 
 @[to_additive]
-theorem map_mk_eq (f : F) {a b : M} (h : mk a = mk b) : mk (f a) = mk (f b) := by
+theorem map_mk_eq (f : F) (h : mk a = mk b) : mk (f a) = mk (f b) := by
   rw [map_mk, map_mk, h]
 
 @[to_additive]
-theorem map_mk_le (f : F) {a b : M} (h : mk a ≤ mk b) : mk (f a) ≤ mk (f b) := by
+theorem map_mk_le (f : F) (h : mk a ≤ mk b) : mk (f a) ≤ mk (f b) := by
   rw [map_mk, map_mk]
   apply OrderHomClass.monotone
   exact h
@@ -412,8 +396,8 @@ theorem orderHom_injective {f : F} (h : Function.Injective f) :
   rw [orderHom_apply, orderHom_apply, eq, eq]
   simp_rw [← map_mabs, ← map_pow]
   intro h
-  obtain ⟨⟨m, hm0, hm⟩, ⟨n, hn0, hn⟩⟩ := h
-  refine ⟨⟨m, hm0, ?_⟩, ⟨n, hn0, ?_⟩⟩
+  obtain ⟨⟨m, hm⟩, ⟨n, hn⟩⟩ := h
+  refine ⟨⟨m, ?_⟩, ⟨n, ?_⟩⟩
   · contrapose! hm
     apply lt_of_le_of_ne
     · apply OrderHomClass.monotone f hm.le
@@ -426,7 +410,7 @@ theorem orderHom_injective {f : F} (h : Function.Injective f) :
       exact (h hn).symm.le
 
 @[to_additive (attr := simp)]
-theorem orderHom_top (f : F) : (orderHom f) ⊤ = ⊤ := by
+theorem orderHom_top (f : F) : orderHom f ⊤ = ⊤ := by
   rw [top_eq, top_eq, ← map_mk]
   simp
 
