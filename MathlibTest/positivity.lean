@@ -28,6 +28,14 @@ example : 0 < 3 := by positivity
 
 example : (0 : ℝ≥0∞) < 1 := by positivity
 example : (0 : ℝ≥0∞) < 2 := by positivity
+example : (0 : EReal) < 2 := by positivity
+example : 0 < (2 : EReal) := by positivity
+example : (0 : EReal) < 2 := by positivity
+
+example : (0 : ℝ≥0∞) ≤ 1 := by positivity
+example : (0 : ℝ≥0∞) ≤ 0 := by positivity
+example : (0 : EReal) ≤ 0 := by positivity
+example : 0 ≤ (2 : EReal) := by positivity
 
 /- ## Goals working directly from a hypothesis -/
 -- set_option trace.Meta.debug true
@@ -210,7 +218,6 @@ example (a : ℤ) : 0 ≤ a⁻ := by positivity
 
 section ENNReal
 
-open scoped ENNReal
 variable {a b : ℝ≥0∞}
 
 example : 0 ≤ a := by positivity
@@ -231,33 +238,25 @@ end ENNReal
 
 section EReal
 
-private axiom test_sorry : ∀ {α}, α
-
--- Missing positivity extension: literals in EReal
-example : 0 < (5 : EReal) := by
-  fail_if_success positivity
-  exact test_sorry
-
 variable {a b : EReal}
 
 example (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a + b := by positivity
-example (ha : 0 ≤ a) (hb : 0 < b) : 0 < a + b := by positivity
 example (ha : 0 < a) (hb : 0 ≤ b) : 0 < a + b := by positivity
+example (ha : 0 ≤ a) (hb : 0 < b) : 0 < a + b := by positivity
+example (ha : 0 < a) (hb : 0 < b) : 0 < a + b := by positivity
+example (ha : 0 ≤ a) : 0 ≤ 2 + a := by positivity
+example (ha : 0 < a) : 0 < a + 2 := by positivity
 
-example (_ha : 0 ≤ a) : 0 < a + 5 := by
-  fail_if_success positivity
-  exact test_sorry
-
-example {ha : 0 ≤ a} {hb : 0 ≤ b} : 0 ≤ a * b := by positivity
--- These tests will only pass after #25094.
--- example (ha : 0 < a) : 0 < 2 * a := by positivity
--- example (ha : 0 < a) : 0 < a * 37 := by positivity
-example (_ha : 0 ≤ a) : 0 < 2 * a + 3 := by
-  fail_if_success positivity
-  exact test_sorry
-example (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by positivity
+example (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a * b := by positivity
 example (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a * b := by positivity
-example {a b : EReal} (ha : 0 < a) (ha : 0 < b) : 0 < a * b := by positivity
+example (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a * b := by positivity
+example (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by positivity
+example (ha : 0 ≤ a) : 0 ≤ 2 * a := by positivity
+example (ha : 0 < a) : 0 < a * 2 := by positivity
+
+example : 0 < (5 : EReal) := by positivity
+example (_ha : 0 ≤ a) : 0 < a + 5 := by positivity
+example (_ha : 0 ≤ a) : 0 < 2 * a + 3 := by positivity
 
 end EReal
 
