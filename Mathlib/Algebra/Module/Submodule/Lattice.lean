@@ -194,11 +194,11 @@ instance : Min (Submodule R M) :=
 instance completeLattice : CompleteLattice (Submodule R M) :=
   { (inferInstance : OrderTop (Submodule R M)),
     (inferInstance : OrderBot (Submodule R M)) with
-    sup := fun a b ↦ sInf { x | a ≤ x ∧ b ≤ x }
+    max := fun a b ↦ sInf { x | a ≤ x ∧ b ≤ x }
     le_sup_left := fun _ _ ↦ le_sInf' fun _ ⟨h, _⟩ ↦ h
     le_sup_right := fun _ _ ↦ le_sInf' fun _ ⟨_, h⟩ ↦ h
     sup_le := fun _ _ _ h₁ h₂ ↦ sInf_le' ⟨h₁, h₂⟩
-    inf := (· ⊓ ·)
+    min := (· ⊓ ·)
     le_inf := fun _ _ _ ↦ Set.subset_inter
     inf_le_left := fun _ _ ↦ Set.inter_subset_left
     inf_le_right := fun _ _ ↦ Set.inter_subset_right

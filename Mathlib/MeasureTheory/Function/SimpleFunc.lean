@@ -595,14 +595,14 @@ instance [CommMonoid β] [PartialOrder β] [IsOrderedMonoid β] :
 
 instance instSemilatticeInf [SemilatticeInf β] : SemilatticeInf (α →ₛ β) :=
   { SimpleFunc.instPartialOrder with
-    inf := (· ⊓ ·)
+    min := (· ⊓ ·)
     inf_le_left := fun _ _ _ => inf_le_left
     inf_le_right := fun _ _ _ => inf_le_right
     le_inf := fun _f _g _h hfh hgh a => le_inf (hfh a) (hgh a) }
 
 instance instSemilatticeSup [SemilatticeSup β] : SemilatticeSup (α →ₛ β) :=
   { SimpleFunc.instPartialOrder with
-    sup := (· ⊔ ·)
+    max := (· ⊔ ·)
     le_sup_left := fun _ _ _ => le_sup_left
     le_sup_right := fun _ _ _ => le_sup_right
     sup_le := fun _f _g _h hfh hgh a => sup_le (hfh a) (hgh a) }

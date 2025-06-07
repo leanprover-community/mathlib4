@@ -236,7 +236,7 @@ instance : CompleteLattice (Subsemiring R) :=
       hn ▸ natCast_mem s n
     top := ⊤
     le_top := fun _ _ _ => mem_top _
-    inf := (· ⊓ ·)
+    min := (· ⊓ ·)
     inf_le_left := fun _ _ _ => And.left
     inf_le_right := fun _ _ _ => And.right
     le_inf := fun _ _ _ h₁ h₂ _ hx => ⟨h₁ hx, h₂ hx⟩ }

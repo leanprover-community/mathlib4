@@ -170,8 +170,8 @@ instance distribLattice : DistribLattice (Digraph V) :=
 instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Digraph V) :=
   { Digraph.distribLattice with
     le := (· ≤ ·)
-    sup := (· ⊔ ·)
-    inf := (· ⊓ ·)
+    max := (· ⊔ ·)
+    min := (· ⊓ ·)
     compl := HasCompl.compl
     sdiff := (· \ ·)
     top := Digraph.completeDigraph V
