@@ -171,12 +171,12 @@ theorem withTopCongr_refl : (OrderIso.refl α).withTopCongr = OrderIso.refl _ :=
   RelIso.toEquiv_injective Equiv.optionCongr_refl
 
 @[simp]
-theorem withTopCongr_symm (e : α ≃o β) : e.withTopCongr.symm = e.symm.withTopCongr :=
+theorem withTopCongr_symm (e : α ≃o β) : e.symm.withTopCongr = e.withTopCongr.symm :=
   RelIso.toEquiv_injective e.toEquiv.optionCongr_symm
 
 @[simp]
 theorem withTopCongr_trans (e₁ : α ≃o β) (e₂ : β ≃o γ) :
-    e₁.withTopCongr.trans e₂.withTopCongr = (e₁.trans e₂).withTopCongr :=
+    (e₁.trans e₂).withTopCongr = e₁.withTopCongr.trans e₂.withTopCongr :=
   RelIso.toEquiv_injective <| e₁.toEquiv.optionCongr_trans e₂.toEquiv
 
 /-- A version of `Equiv.optionCongr` for `WithBot`. -/
@@ -189,12 +189,12 @@ theorem withBotCongr_refl : (OrderIso.refl α).withBotCongr = OrderIso.refl _ :=
   RelIso.toEquiv_injective Equiv.optionCongr_refl
 
 @[simp]
-theorem withBotCongr_symm (e : α ≃o β) : e.withBotCongr.symm = e.symm.withBotCongr :=
+theorem withBotCongr_symm (e : α ≃o β) : e.symm.withBotCongr = e.withBotCongr.symm :=
   RelIso.toEquiv_injective e.toEquiv.optionCongr_symm
 
 @[simp]
 theorem withBotCongr_trans (e₁ : α ≃o β) (e₂ : β ≃o γ) :
-    e₁.withBotCongr.trans e₂.withBotCongr = (e₁.trans e₂).withBotCongr :=
+    (e₁.trans e₂).withBotCongr = e₁.withBotCongr.trans e₂.withBotCongr :=
   RelIso.toEquiv_injective <| e₁.toEquiv.optionCongr_trans e₂.toEquiv
 
 end OrderIso
