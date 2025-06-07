@@ -19,3 +19,24 @@ We register `gcongr` with the `hint` tactic.
 -/
 
 register_hint gcongr
+
+namespace Mathlib.Tactic.GCongr
+
+/-!
+Tag the relevant transitivity lemmas for `<` and `≤` with `@[gcongr]`.
+The tags for `≤` aren't strictly necessary, but they help avoid an `IsTrans` type class search.
+-/
+
+attribute [gcongr] lt_of_le_of_lt lt_of_le_of_lt' le_trans le_trans'
+
+variable {α : Type} [Preorder α]
+
+@[gcongr]
+theorem lt_imp_lt {a b c d : α} (h₁ : c ≤ a) (h₂ : b ≤ d) : a < b → c < d :=
+  fun h => (h₁.trans_lt h).trans_le h₂
+
+@[gcongr]
+theorem le_imp_le {a b c d : α} (h₁ : c ≤ a) (h₂ : b ≤ d) : a ≤ b → c ≤ d :=
+  fun h => (h₁.trans h).trans h₂
+
+end Mathlib.Tactic.GCongr

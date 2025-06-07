@@ -201,13 +201,15 @@ axiom f : ℕ → ℕ
 
 example {x y : ℕ} (h : f x ≤ f y) : f x ≤ f y := by
   success_if_fail_with_msg
-    "gcongr failed, no @[gcongr] lemma applies for the template portion GCongrTests.f ?a and the relation LE.le"
+    "gcongr failed, no @[gcongr] lemma applies for the template portion GCongrTests.f\
+      \n  ?a and the relation GCongrTests.f x ≤ GCongrTests.f y"
     (gcongr f ?a)
   exact h
 
 example {x y : ℕ} (h : f x ≤ f y) : f x ^ 2 ≤ f y ^ 2 := by
   success_if_fail_with_msg
-    "gcongr failed, no @[gcongr] lemma applies for the template portion GCongrTests.f ?a and the relation LE.le"
+    "gcongr failed, no @[gcongr] lemma applies for the template portion GCongrTests.f\
+      \n  ?a and the relation GCongrTests.f x ≤ GCongrTests.f y"
     (gcongr (f ?a) ^ 2)
   gcongr
 
@@ -247,5 +249,15 @@ example {ι : Type*} [Fintype ι] {f g : ι → ℝ} : ∏ i, f i ^ 2 ≤ ∏ i,
     exact test_sorry
   · guard_target = f i ≤ g i
     exact test_sorry
+
+/-! Test that `gcongr` can deal with `_ ≤ _ → _ ≤ _` and `_ < _ → _ < _` -/
+
+example {a b : ℕ} (h1 : a ≤ 0) (h2 : 0 ≤ b)  : b ≤ a + 1 → 0 ≤ 0 + 1 := by gcongr
+example {a b : ℕ} (h1 : a ≤ 0) (_h2 : 0 ≤ b) : b ≤ a + 1 → b ≤ 0 + 1 := by gcongr
+example {a b : ℕ} (_h1 : a ≤ 0) (h2 : 0 ≤ b) : b ≤ a + 1 → 0 ≤ a + 1 := by gcongr
+
+example {a b : ℕ} (h1 : a ≤ 0) (h2 : 0 ≤ b)  : b < a + 1 → 0 < 0 + 1 := by gcongr
+example {a b : ℕ} (h1 : a ≤ 0) (_h2 : 0 ≤ b) : b < a + 1 → b < 0 + 1 := by gcongr
+example {a b : ℕ} (_h1 : a ≤ 0) (h2 : 0 ≤ b) : b < a + 1 → 0 < a + 1 := by gcongr
 
 end GCongrTests
