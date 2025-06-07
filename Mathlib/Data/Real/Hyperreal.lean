@@ -264,14 +264,14 @@ theorem isSt_sSup {x : ℝ*} (hni : ¬Infinite x) : IsSt x (sSup { y : ℝ | (y 
   have HR₂ : BddAbove S :=
     ⟨r₂, fun _y hy => le_of_lt (coe_lt_coe.1 (lt_of_lt_of_le hy (not_lt.mp hr₂)))⟩
   fun δ hδ =>
-  ⟨lt_of_not_le fun c =>
+  ⟨lt_of_not_ge fun c =>
       have hc : ∀ y ∈ S, y ≤ R - δ := fun _y hy =>
         coe_le_coe.1 <| le_of_lt <| lt_of_lt_of_le hy c
-      not_lt_of_le (csSup_le HR₁ hc) <| sub_lt_self R hδ,
-    lt_of_not_le fun c =>
+      not_lt_of_ge (csSup_le HR₁ hc) <| sub_lt_self R hδ,
+    lt_of_not_ge fun c =>
       have hc : ↑(R + δ / 2) < x :=
         lt_of_lt_of_le (add_lt_add_left (coe_lt_coe.2 (half_lt_self hδ)) R) c
-      not_lt_of_le (le_csSup HR₂ hc) <| (lt_add_iff_pos_right _).mpr <| half_pos hδ⟩
+      not_lt_of_ge (le_csSup HR₂ hc) <| (lt_add_iff_pos_right _).mpr <| half_pos hδ⟩
 
 theorem exists_st_of_not_infinite {x : ℝ*} (hni : ¬Infinite x) : ∃ r : ℝ, IsSt x r :=
   ⟨sSup { y : ℝ | (y : ℝ*) < x }, isSt_sSup hni⟩
@@ -410,11 +410,11 @@ theorem InfiniteNeg.not_infinitesimal {x : ℝ*} (h : InfiniteNeg x) : ¬Infinit
 
 theorem infinitePos_iff_infinite_and_pos {x : ℝ*} : InfinitePos x ↔ Infinite x ∧ 0 < x :=
   ⟨fun hip => ⟨Or.inl hip, hip 0⟩, fun ⟨hi, hp⟩ =>
-    hi.casesOn id fun hin => False.elim (not_lt_of_lt hp (hin 0))⟩
+    hi.casesOn id fun hin => False.elim (not_lt_of_gt hp (hin 0))⟩
 
 theorem infiniteNeg_iff_infinite_and_neg {x : ℝ*} : InfiniteNeg x ↔ Infinite x ∧ x < 0 :=
   ⟨fun hip => ⟨Or.inr hip, hip 0⟩, fun ⟨hi, hp⟩ =>
-    hi.casesOn (fun hin => False.elim (not_lt_of_lt hp (hin 0))) fun hip => hip⟩
+    hi.casesOn (fun hin => False.elim (not_lt_of_gt hp (hin 0))) fun hip => hip⟩
 
 theorem infinitePos_iff_infinite_of_nonneg {x : ℝ*} (hp : 0 ≤ x) : InfinitePos x ↔ Infinite x :=
   .symm <| or_iff_left fun h ↦ h.lt_zero.not_le hp

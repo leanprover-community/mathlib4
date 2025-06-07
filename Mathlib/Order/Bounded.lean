@@ -274,7 +274,7 @@ theorem bounded_le_inter_lt [LinearOrder α] (a : α) :
 theorem unbounded_le_inter_lt [LinearOrder α] (a : α) :
     Unbounded (· ≤ ·) (s ∩ { b | a < b }) ↔ Unbounded (· ≤ ·) s := by
   convert @unbounded_le_inter_not_le _ s _ a
-  exact lt_iff_not_le
+  exact lt_iff_not_ge
 
 theorem bounded_le_inter_le [LinearOrder α] (a : α) :
     Bounded (· ≤ ·) (s ∩ { b | a ≤ b }) ↔ Bounded (· ≤ ·) s := by
