@@ -34,6 +34,43 @@ namespace Bicategory
 variable {B : Type*} [Bicategory B] {c d e : B}
   {l₁ : c ⟶ d} {r₁ : d ⟶ c} {l₂ : d ⟶ e} {r₂ : e ⟶ d}
 
+@[reassoc]
+lemma whiskerLeft_whiskerLeft_associator_whiskerRight
+    {x y z v : B} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z)
+    (u' h' : z ⟶ v)
+    (α : f ≫ g ⟶ h) (β : u' ⟶ h') :
+    f ◁ g ◁ β ≫ (α_ _ _ _).inv ≫ α ▷ _ =
+      (α_ _ _ _).inv ≫
+      α ▷ _ ≫ _ ◁ β := by
+  rw [← whisker_exchange]
+  simp
+
+@[reassoc]
+lemma whiskerRight_associator_whiskerLeft_whiskerLeft
+    {x y z v : B} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z)
+    (u' h' : z ⟶ v) (α : h ⟶ f ≫ g) (β : u' ⟶ h') :
+    α ▷ u' ≫ (α_ f g u').hom ≫ f ◁ g ◁ β =
+      h ◁ β ≫ α ▷ _ ≫ (α_ _ _ _).hom := by
+  rw [whisker_exchange_assoc]
+  simp
+
+@[reassoc]
+lemma whiskerLeft_associator_whiskerRight_whiskerRight
+    {x y z v : B} (f : v ⟶ y) (g : y ⟶ z) (h : v ⟶ z)
+    (u' h' : x ⟶ v) (α : h ⟶ f ≫ g) (β : u' ⟶ h') :
+    u' ◁ α ≫ (α_ _ _ _).inv ≫ β ▷ f ▷ g =
+      β ▷ h ≫ h' ◁ α ≫ (α_ _ _ _).inv := by
+  rw [← whisker_exchange_assoc]
+  simp
+
+@[reassoc]
+lemma whiskerRight_whiskerRight_associator_whiskerLeft
+    {x y z v : B} (f : v ⟶ y) (g : y ⟶ z) (h : v ⟶ z)
+    (u' h' : x ⟶ v) (β : u' ⟶ h') (α : f ≫ g ⟶ h) :
+    β ▷ f ▷ g ≫ (α_ _ _ _).hom ≫ h' ◁ α =
+      (α_ _ _ _).hom ≫ u' ◁ α ≫ β ▷ h := by
+  simp [whisker_exchange]
+
 @[reassoc (attr := simp)]
 lemma Adjunction.whiskerRight_unit_whiskerLeft_counit (adj₁ : Adjunction l₁ r₁) :
     adj₁.unit ▷ l₁ ⊗≫ l₁ ◁ adj₁.counit = (λ_ l₁).hom ≫ (ρ_ l₁).inv :=
@@ -72,35 +109,93 @@ lemma Adjunction.homEquiv₁_symm_comp {b c d : B} {l : b ⟶ c}
       adj.homEquiv₁.symm β ≫ l ◁ α := by
   simp [homEquiv₁_symm_apply]
 
+lemma Adjunction.homEquiv₁_comp {b c d : B} {l : b ⟶ c}
+    {r : c ⟶ b} (adj : l ⊣ r) {g g' : b ⟶ d} {h : c ⟶ d} (β : g ⟶ l ≫ h) (α : g' ⟶ g) :
+    adj.homEquiv₁ (α ≫ β) =
+      r ◁ α ≫ adj.homEquiv₁ β := by
+  simp [homEquiv₁_apply]
+
+lemma Adjunction.homEquiv₁_symm_whiskerLeft_comp {b c d : B} {l : b ⟶ c}
+    {r : c ⟶ b} (adj : l ⊣ r) {g g' : b ⟶ d} {h : c ⟶ d} (β : g' ⟶ g) (α : r ≫ g ⟶ h) :
+    adj.homEquiv₁.symm (r ◁ β ≫ α) =
+      β ≫ adj.homEquiv₁.symm α := by
+  simp [homEquiv₁_symm_apply, whiskerRight_associator_whiskerLeft_whiskerLeft_assoc]
+
+lemma Adjunction.homEquiv₁_symm_whiskerRight_comp {b c e : B} {l : b ⟶ c}
+    {r : c ⟶ b} (adj : l ⊣ r) {h : b ⟶ e} {f : c ⟶ b} (α : r ≫ 𝟙 _ ⟶ f) :
+    adj.homEquiv₁.symm ((ρ_ _).inv ▷ h ≫ α ▷ h) =
+      (λ_ _).inv ≫ adj.homEquiv₁.symm α ▷ h ≫ (α_ _ _ _).hom := by
+  simp [homEquiv₁_symm_apply]
+  bicategory
+
+lemma Adjunction.homEquiv₂_comp {a b c : B} {l : b ⟶ c} {r : c ⟶ b}
+    (adj : l ⊣ r) {g : a ⟶ b} {h h' : a ⟶ c} (α : g ≫ l ⟶ h) (β : h ⟶ h') :
+    adj.homEquiv₂ (α ≫ β) = adj.homEquiv₂ α ≫ β ▷ r := by
+  simp [homEquiv₂_apply]
+
+lemma Adjunction.homEquiv₂_whiskerRight_comp {a b c : B} {l : b ⟶ c} {r : c ⟶ b}
+    (adj : l ⊣ r) {g g' : a ⟶ b} {h : a ⟶ c} (β : g' ⟶ g) (α : g ≫ l ⟶ h)  :
+    adj.homEquiv₂ (β ▷ l ≫ α) = β ≫ adj.homEquiv₂ α := by
+  simp [homEquiv₂_apply, whiskerLeft_associator_whiskerRight_whiskerRight_assoc]
+
 lemma mateEquiv_whiskerRight_comp {c d e f : B} {g g' : c ⟶ e} {h : d ⟶ f}
     {l₁ : c ⟶ d} {r₁ : d ⟶ c} {l₂ : e ⟶ f} {r₂ : f ⟶ e} (adj₁ : l₁ ⊣ r₁)
     (adj₂ : l₂ ⊣ r₂) (α : g' ≫ l₂ ⟶ l₁ ≫ h) (β : g ⟶ g') :
-    mateEquiv adj₁ adj₂ (β ▷ l₂ ≫ α) = r₁ ◁ β ≫ mateEquiv adj₁ adj₂ α :=
-  sorry
+    mateEquiv adj₁ adj₂ (β ▷ l₂ ≫ α) = r₁ ◁ β ≫ mateEquiv adj₁ adj₂ α := by
+  rw [mateEquiv_eq_iff]
+  simp [mateEquiv_apply, Adjunction.homEquiv₂_whiskerRight_comp,
+    Adjunction.homEquiv₁_symm_whiskerLeft_comp]
 
 lemma mateEquiv_comp_whiskerLeft {c d e f : B} {g : c ⟶ e} {h h' : d ⟶ f}
     {l₁ : c ⟶ d} {r₁ : d ⟶ c} {l₂ : e ⟶ f} {r₂ : f ⟶ e} (adj₁ : l₁ ⊣ r₁)
     (adj₂ : l₂ ⊣ r₂) (α : g ≫ l₂ ⟶ l₁ ≫ h) (β : h ⟶ h') :
-    mateEquiv adj₁ adj₂ (α ≫ l₁ ◁ β) = mateEquiv adj₁ adj₂ α ≫ β ▷ r₂ :=
-  sorry
+    mateEquiv adj₁ adj₂ (α ≫ l₁ ◁ β) = mateEquiv adj₁ adj₂ α ≫ β ▷ r₂ := by
+  rw [mateEquiv_eq_iff]
+  simp [Adjunction.homEquiv₁_symm_comp, mateEquiv_apply, Adjunction.homEquiv₂_comp]
+
+lemma Adj.homEquiv₁_of_iso {b c d : Adj B} {l l' : b ⟶ c} {g : b.obj ⟶ d.obj}
+    {h : c.obj ⟶ d.obj} (e : l ≅ l') (α : g ⟶ l.l ≫ h) :
+    l.adj.homEquiv₁ α = e.inv.τr ▷ g ≫ l'.adj.homEquiv₁ (α ≫ e.hom.τl ▷ h) := by
+  simp only [Adjunction.homEquiv₁_apply, whiskerLeft_comp, Category.assoc]
+  rw [← whisker_exchange_assoc]
+  congr 1
+  simp only [whiskerRight_comp, Category.assoc, Iso.cancel_iso_inv_left]
+  rw [whiskerRight_whiskerRight_associator_whiskerLeft_assoc]
+  simp only [whiskerRight_comp, Category.assoc, Iso.hom_inv_id_assoc]
+  rw [← comp_whiskerRight_assoc, Adj.Hom₂.τr_whiskerRight_comp_counit]
+  simp only [comp_whiskerRight, whisker_assoc, Category.assoc, Iso.inv_hom_id_assoc]
+  simp [← whiskerLeft_comp_assoc, ← comp_whiskerRight]
+
+lemma Adj.homEquiv₁_symm_of_iso {b c d : Adj B} {l l' : b ⟶ c} {g : b.obj ⟶ d.obj}
+    {h : c.obj ⟶ d.obj} (e : l ≅ l') (α : l.r ≫ g ⟶ h) :
+    l.adj.homEquiv₁.symm α = l'.adj.homEquiv₁.symm (e.hom.τr ▷ g ≫ α) ≫ e.inv.τl ▷ _ := by
+  apply l.adj.homEquiv₁.injective
+  simp only [Equiv.apply_symm_apply]
+  rw [Adj.homEquiv₁_of_iso e]
+  simp [Adj.homEquiv₁_of_iso e, ← comp_whiskerRight, ← comp_whiskerRight_assoc]
+
+lemma Adj.homEquiv₂_of_iso {a b c : Adj B} {l l' : b ⟶ c}
+    {g : a.obj ⟶ b.obj} {h : a.obj ⟶ c.obj} (e : l ≅ l')
+    (α : g ≫ l.l ⟶ h) :
+    l.adj.homEquiv₂ α = l'.adj.homEquiv₂ (g ◁ e.inv.τl ≫ α) ≫ h ◁ e.hom.τr := by
+  simp only [Adjunction.homEquiv₂_apply, comp_whiskerRight, whisker_assoc, Category.assoc,
+    Iso.inv_hom_id_assoc, Iso.cancel_iso_inv_left]
+  rw [← whiskerLeft_comp_assoc, Hom₂.unit_comp_τl_whiskerRIght]
+  simp only [whiskerLeft_comp, Category.assoc]
+  simp [whiskerLeft_whiskerLeft_associator_whiskerRight_assoc, ← whiskerLeft_comp]
 
 lemma mateEquiv_of_iso {c d e f : Adj B} {g : c.obj ⟶ e.obj} {h : d.obj ⟶ f.obj}
     {l₁ l₁' : c ⟶ d} {l₂ l₂' : e ⟶ f}
     (e₁ : l₁ ≅ l₁') (e₂ : l₂ ≅ l₂') (α : g ≫ l₂.l ⟶ l₁.l ≫ h) :
     mateEquiv l₁'.adj l₂'.adj (g ◁ e₂.inv.τl ≫ α ≫ e₁.hom.τl ▷ _) =
-      e₁.hom.τr ▷ g ≫ mateEquiv l₁.adj l₂.adj α ≫ h ◁ e₂.inv.τr :=
-  sorry
-
-@[reassoc]
-lemma whiskerLeft_whiskerLeft_associator_whiskerRight
-    {x y z u v : B} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z)
-    (g' : z ⟶ u) (f' : u ⟶ v) (h' : z ⟶ v)
-    (α : f ≫ g ⟶ h) (β : g' ≫ f' ⟶ h') :
-    f ◁ g ◁ β ≫ (α_ _ _ _).inv ≫ α ▷ _ =
-      (α_ _ _ _).inv ≫
-      α ▷ _ ≫ _ ◁ β := by
-  rw [← whisker_exchange]
-  simp
+      e₁.hom.τr ▷ g ≫ mateEquiv l₁.adj l₂.adj α ≫ h ◁ e₂.inv.τr := by
+  rw [mateEquiv_eq_iff, Adj.homEquiv₁_symm_of_iso e₁.symm, mateEquiv_apply]
+  simp only [Iso.symm_hom, ← comp_whiskerRight_assoc, Adj.inv_hom_id_τr, id_whiskerRight,
+    Category.id_comp, Adjunction.homEquiv₁_symm_comp, Equiv.symm_apply_apply, Category.assoc,
+    Iso.symm_inv, whiskerRight_comp]
+  rw [Adj.homEquiv₂_of_iso e₂.symm]
+  simp [Adj.homEquiv₂_of_iso e₂.symm, ← whiskerLeft_comp_assoc, Adjunction.homEquiv₂_comp,
+    whiskerRight_whiskerRight_associator_whiskerLeft_assoc]
 
 @[simp] lemma Adj.associator_hom_τl' {a b c d : Adj B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
     (α_ f g h).hom.τl = (α_ _ _ _).hom := rfl
