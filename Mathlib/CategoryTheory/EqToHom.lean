@@ -119,34 +119,42 @@ theorem heq_comp {C} [Category C] {X Y Z X' Y' Z' : C}
 variable {β : Sort*}
 
 /-- We can push `eqToHom` to the left through families of morphisms. -/
--- The simpNF linter incorrectly claims that this will never apply.
--- It seems the side condition `w` is not applied by `simpNF`.
--- https://github.com/leanprover-community/mathlib4/issues/5049
-@[reassoc (attr := simp, nolint simpNF)]
+@[reassoc (attr := simp)]
 theorem eqToHom_naturality {f g : β → C} (z : ∀ b, f b ⟶ g b) {j j' : β} (w : j = j') :
     z j ≫ eqToHom (by simp [w]) = eqToHom (by simp [w]) ≫ z j' := by
   cases w
   simp
 
+@[reassoc (attr := simp)]
+theorem eqToHom_comp_eq_self {X : C} {f : β → C} (z : ∀ b, f b ⟶ X) {j j' : β} (w : j = j') :
+    eqToHom (by simp [w]) ≫ z j' = z j := by
+  simp [← eqToHom_naturality, *]
+
 /-- A variant on `eqToHom_naturality` that helps Lean identify the families `f` and `g`. -/
--- The simpNF linter incorrectly claims that this will never apply.
--- It seems the side condition `w` is not applied by `simpNF`.
--- https://github.com/leanprover-community/mathlib4/issues/5049
-@[reassoc (attr := simp, nolint simpNF)]
+@[reassoc (attr := simp)]
 theorem eqToHom_iso_hom_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j j' : β} (w : j = j') :
     (z j).hom ≫ eqToHom (by simp [w]) = eqToHom (by simp [w]) ≫ (z j').hom := by
   cases w
   simp
 
+@[reassoc (attr := simp)]
+theorem eqToHom_comp_iso_hom_eq_self
+    {X : C} {f : β → C} (z : ∀ b, f b ≅ X) {j j' : β} (w : j = j') :
+    eqToHom (by simp [w]) ≫ (z j').hom = (z j).hom := by
+  simp [← eqToHom_iso_hom_naturality, *]
+
 /-- A variant on `eqToHom_naturality` that helps Lean identify the families `f` and `g`. -/
--- The simpNF linter incorrectly claims that this will never apply.
--- It seems the side condition `w` is not applied by `simpNF`.
--- https://github.com/leanprover-community/mathlib4/issues/5049
-@[reassoc (attr := simp, nolint simpNF)]
+@[reassoc (attr := simp)]
 theorem eqToHom_iso_inv_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j j' : β} (w : j = j') :
     (z j).inv ≫ eqToHom (by simp [w]) = eqToHom (by simp [w]) ≫ (z j').inv := by
   cases w
   simp
+
+@[reassoc (attr := simp)]
+theorem eqToHom_comp_iso_inv_eq_self
+    {X : C} {f : β → C} (z : ∀ b, f b ≅ X) {j j' : β} (w : j = j') :
+    eqToHom (by simp [w]) ≫ (z j').hom = (z j).hom := by
+  simp [← eqToHom_iso_hom_naturality, *]
 
 /-- Reducible form of congrArg_mpr_hom_left -/
 @[simp]

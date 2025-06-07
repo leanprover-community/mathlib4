@@ -181,8 +181,7 @@ def stalkIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ≅ Y) (x : X) :
     Y.presheaf.stalk (α.hom.base x) ≅ X.presheaf.stalk x :=
   asIso (α.hom.stalkMap x)
 
--- See https://github.com/leanprover-community/batteries/issues/365 for the simpNF issue.
-@[reassoc, elementwise, simp, nolint simpNF]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
     (f : X ⟶ Y) {x y : X} (h : x ⤳ y) :
     Y.presheaf.stalkSpecializes (f.base.hom.map_specializes h) ≫ f.stalkMap x =
