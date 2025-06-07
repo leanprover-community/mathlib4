@@ -40,6 +40,26 @@ theorem lift_comp_one_right {A : C} {B : C} [Mon_Class B] (f : A ⟶ B) (g : A �
   have := lift f g ≫= mul_one B
   rwa [lift_whiskerLeft_assoc, lift_rightUnitor_hom] at this
 
+variable [BraidedCategory C] {M N N₁ N₂ : Mon_ C}
+
+instance : CartesianMonoidalCategory (Mon_ C) where
+  isTerminalTensorUnit :=
+    .ofUniqueHom (fun M ↦ .mk (toUnit _) (toUnit_unique ..))
+      fun M f ↦ by ext; exact toUnit_unique ..
+  fst M N := .mk (fst M.X N.X) (by simp [toUnit_unique _ (𝟙 _)])
+  snd M N := .mk (snd M.X N.X) (by simp [toUnit_unique _ (𝟙 _)])
+  tensorProductIsBinaryProduct M N :=
+    BinaryFan.IsLimit.mk _ (fun {T} f g ↦ .mk (lift f.hom g.hom)
+      (by dsimp; ext <;> simp [toUnit_unique _ (𝟙 _)])
+      (by dsimp; ext <;> simp [toUnit_unique _ (𝟙 _), ← tensor_comp_assoc]))
+      (by aesop_cat) (by aesop_cat) (by aesop_cat)
+  fst_def M N := by ext; simp [fst_def]; congr
+  snd_def M N := by ext; simp [snd_def]; congr
+
+@[simp] lemma lift_hom (f : M ⟶ N₁) (g : M ⟶ N₂) : (lift f g).hom = lift f.hom g.hom := rfl
+@[simp] lemma fst_hom (M N : Mon_ C) : (fst M N).hom = fst M.X N.X := rfl
+@[simp] lemma snd_hom (M N : Mon_ C) : (snd M N).hom = snd M.X N.X := rfl
+
 end Mon_Class
 
 variable (X) in
