@@ -23,6 +23,10 @@ subfield `F` is (isomorphic to) the maximal real subfield of `K`.
 * `NumberField.IsCMField`: A predicate that says that if a number field is CM, then it is a totally
   complex quadratic extension of its totally real subfield
 
+
+* `NumberField.IsCM.ofIsCMExtension`: Assume that there exists `F` such that `K/F` is a
+  CM-extension. Then `K` is CM.
+
 ## Implementation note
 
 Most result are proved under the general hypothesis: `K/F` quadratic extension of number fields
@@ -127,6 +131,29 @@ theorem zpowers_complexConj_eq_top :
   rw [Nat.card_zpowers, orderOf_complexConj, Nat.card_eq_fintype_card, IsGalois.card_aut_eq_finrank,
     IsQuadraticExtension.finrank_eq_two]
 
+variable (F K) in
+/--
+Any field `F` such that `K/F` is a CM-extension is isomorphic as a ring to the maximal
+real subfield of `K/ℚ`.
+-/
+def maximalRealSubfieldEquiv [h : IsCMExtension F K] :
+    maximalRealSubfield ℚ K ≃+* F := by
+  let E := AlgHom.fieldRange (algebraMap F K).toRatAlgHom
+  have hE : IsCMExtension E K := by
+      refine ofRingEquiv (F := F) (f := (algebraMap F K).rangeRestrictFieldEquiv.symm) ?_
+      exact RingHom.ext fun x ↦ (algebraMap F K).rangeRestrictFieldEquiv_apply_symm_apply x
+  exact ((algebraMap F K).rangeRestrictFieldEquiv.trans <|
+    (IntermediateField.equivOfEq hE.eq_maximalRealSubfield).toRingEquiv).symm
+
+omit [IsTotallyReal F] in
+@[simp]
+theorem algebraMap_maximalRealSubfieldEquiv [h : IsCMExtension F K] (x : maximalRealSubfield ℚ K) :
+   algebraMap F K (maximalRealSubfieldEquiv F K x) = x := by
+  unfold maximalRealSubfieldEquiv
+  rw [RingEquiv.symm_trans_apply, AlgEquiv.toRingEquiv_eq_coe,
+    RingHom.rangeRestrictFieldEquiv_apply_symm_apply]
+  rfl
+
 end CMExtension
 
 section maximalRealSubfield
@@ -150,6 +177,11 @@ noncomputable instance starRing : StarRing K where
   star_involutive := fun _ ↦ CMExtension.complexConj_apply_apply _ _
   star_mul := fun _ _ ↦ by rw [map_mul, mul_comm]
   star_add := fun _ _ ↦ by rw [map_add]
+
+omit [IsTotallyReal F] in
+theorem _root_.NumberField.IsCM.ofIsCMExtension [h : IsCMExtension F K] :
+    IsCM K where
+  CMExtension := ofRingEquiv (f := maximalRealSubfieldEquiv F K) (by ext; simp)
 
 theorem card_infinitePlace_eq_card_infinitePlace :
     Fintype.card (InfinitePlace (maximalRealSubfield K)) = Fintype.card (InfinitePlace K) :=
