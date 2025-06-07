@@ -167,9 +167,9 @@ end
 def idStr : String → String := id
 
 /--
-error: Application type mismatch: In the appplication
+error: Application type mismatch: In the application
   idStr Nat.zero
-the final argument
+the argument
   Nat.zero
 has type
   ℕ : Type

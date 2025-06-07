@@ -17,8 +17,8 @@ corresponding measure, giving mass `f b - f a` to the interval `(a, b]`.
 ## Main definitions
 
 * `StieltjesFunction` is a structure containing a function from `ℝ → ℝ`, together with the
-assertions that it is monotone and right-continuous. To `f : StieltjesFunction`, one associates
-a Borel measure `f.measure`.
+  assertions that it is monotone and right-continuous. To `f : StieltjesFunction`, one associates
+  a Borel measure `f.measure`.
 * `f.measure_Ioc` asserts that `f.measure (Ioc a b) = ofReal (f b - f a)`
 * `f.measure_Ioo` asserts that `f.measure (Ioo a b) = ofReal (leftLim f b - f a)`.
 * `f.measure_Icc` and `f.measure_Ico` are analogous.
@@ -230,7 +230,7 @@ theorem length_subadditive_Icc_Ioo {a b : ℝ} {c d : ℕ → ℝ} (ss : Icc a b
   rcases this with ⟨i, cb, is, bd⟩
   rw [← Finset.insert_erase is] at cv ⊢
   rw [Finset.coe_insert, biUnion_insert] at cv
-  rw [Finset.sum_insert (Finset.not_mem_erase _ _)]
+  rw [Finset.sum_insert (Finset.notMem_erase _ _)]
   refine le_trans ?_ (add_le_add_left (IH _ (Finset.erase_ssubset is) (c i) ?_) _)
   · refine le_trans (ENNReal.ofReal_le_ofReal ?_) ENNReal.ofReal_add_le
     rw [sub_add_sub_cancel]

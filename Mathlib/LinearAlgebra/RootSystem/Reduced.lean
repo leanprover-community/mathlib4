@@ -12,10 +12,10 @@ This file contains basic definitions and results related to reduced root pairing
 
 ## Main definitions:
 
- * `RootPairing.IsReduced`: A root pairing is said to be reduced if two linearly dependent roots are
-   always related by a sign.
- * `RootPairing.linearIndependent_iff_coxeterWeight_ne_four`: for a finite root pairing, two
-   roots are linearly independent iff their Coxeter weight is not four.
+* `RootPairing.IsReduced`: A root pairing is said to be reduced if two linearly dependent roots are
+  always related by a sign.
+* `RootPairing.linearIndependent_iff_coxeterWeight_ne_four`: for a finite root pairing, two
+  roots are linearly independent iff their Coxeter weight is not four.
 
 ## Implementation details:
 
@@ -68,7 +68,7 @@ lemma IsReduced.linearIndependent_iff [Nontrivial R] [P.IsReduced] :
   · rw [h h']
     exact ⟨1, 1, by simp⟩
 
-lemma two_smul_nmem_range_root [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i : ι} :
+lemma two_smul_notMem_range_root [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i : ι} :
     (2 : R) • P.root i ∉ range P.root := by
   have _i : Nontrivial R := ⟨2, 0, two_ne_zero⟩
   have : ¬ LinearIndependent R ![(2 : R) • P.root i, P.root i] := by
@@ -83,20 +83,22 @@ lemma two_smul_nmem_range_root [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.Is
       (smul_left_injective ℤ <| P.ne_zero i).eq_iff] at hj
     norm_num at hj
 
+@[deprecated (since := "2025-05-24")] alias two_smul_nmem_range_root := two_smul_notMem_range_root
+
 lemma linearIndependent_of_add_mem_range_root
     [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i j : ι}
     (h : P.root i + P.root j ∈ range P.root) :
     LinearIndependent R ![P.root i, P.root j] := by
-  refine IsReduced.linearIndependent P (fun hij ↦ ?_) (fun hij ↦ P.zero_nmem_range_root ?_)
+  refine IsReduced.linearIndependent P (fun hij ↦ ?_) (fun hij ↦ P.zero_notMem_range_root ?_)
   · rw [hij, ← two_smul (R := R)] at h
-    exact P.two_smul_nmem_range_root h
+    exact P.two_smul_notMem_range_root h
   · rwa [hij, neg_add_cancel] at h
 
 lemma linearIndependent_of_sub_mem_range_root
     [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M] [P.IsReduced] {i j : ι}
     (h : P.root i - P.root j ∈ range P.root) :
     LinearIndependent R ![P.root i, P.root j] := by
-  suffices LinearIndependent R ![P.root i, P.root (P.reflection_perm j j)] by simpa using this
+  suffices LinearIndependent R ![P.root i, P.root (P.reflectionPerm j j)] by simpa using this
   apply P.linearIndependent_of_add_mem_range_root
   simpa [sub_eq_add_neg] using h
 
@@ -205,7 +207,7 @@ lemma pairing_neg_two_neg_two_iff :
     P.pairing i j = -2 ∧ P.pairing j i = -2 ↔ P.root i = -P.root j := by
   simp only [← neg_eq_iff_eq_neg]
   simpa [eq_comm (a := -P.root i), eq_comm (b := j)] using
-    P.pairing_two_two_iff (P.reflection_perm i i) j
+    P.pairing_two_two_iff (P.reflectionPerm i i) j
 
 variable [NoZeroSMulDivisors R N]
 
@@ -228,7 +230,7 @@ lemma pairing_one_four_iff' (h2 : IsSMulRegular R (2 : R)) :
 
 lemma pairing_neg_one_neg_four_iff' (h2 : IsSMulRegular R (2 : R)) :
     P.pairing i j = -1 ∧ P.pairing j i = -4 ↔ P.root j = (-2 : R) • P.root i := by
-  simpa [neg_smul, ← neg_eq_iff_eq_neg] using P.pairing_one_four_iff' i (P.reflection_perm j j) h2
+  simpa [neg_smul, ← neg_eq_iff_eq_neg] using P.pairing_one_four_iff' i (P.reflectionPerm j j) h2
 
 /-- See also `RootPairing.pairingIn_one_four_iff`. -/
 @[simp]
