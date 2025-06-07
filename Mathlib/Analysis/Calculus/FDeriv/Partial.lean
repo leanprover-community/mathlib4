@@ -244,7 +244,6 @@ theorem hasFDerivWithinAt_of_partial_fst_continuousOn_prod_open
     HasFDerivWithinAt f ((f'x z).coprod f'yz) (s ×ˢ t) z := by
   have hmt_st := mapsTo_swap_prod s t
   have hmt_ts := mapsTo_swap_prod t s
-  --have hf'x_swap_cont := hf'x_cont.comp (continuousOn_swap (t ×ˢ s)) hmt_ts
   have hf'x_swap_cont := hf'x_cont.comp
     (fun z hz => continuous_swap.continuousWithinAt)
     hmt_ts
@@ -257,7 +256,9 @@ theorem hasFDerivWithinAt_of_partial_fst_continuousOn_prod_open
     hf'yz
     (fun z' hz' => (hf'x z'.swap (hmt_ts hz')))
   -- exchange `E` and `F` back in the result to satisfy the goal
-  convert hswap.comp z (hasFDerivWithinAt_swap (s ×ˢ t) z) hmt_st
+  let cle_swap := ContinuousLinearEquiv.prodComm 𝕜 E F
+  convert hswap.comp z (cle_swap.hasFDerivWithinAt) hmt_st
+  unfold cle_swap
   simp only [Prod.swap_swap, comp_apply, ContinuousLinearMap.coprod_comp_prodComm]
 
 /-- If a function `f : E × F → G` has partial derivative `f'x` or `f'y` continuous

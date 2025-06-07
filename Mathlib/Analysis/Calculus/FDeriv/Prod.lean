@@ -355,25 +355,6 @@ alias DifferentiableAt.prod_map := DifferentiableAt.prodMap
 
 end prodMap
 
-section Swap
-
-@[fun_prop]
-theorem hasFDerivWithinAt_swap
-  (s : Set (E × F)) (p : E × F) :
-    HasFDerivWithinAt
-      (Prod.swap : E × F → F × E)
-      (ContinuousLinearMap.prodComm 𝕜 E F)
-      s p
-    := by
-  convert hasFDerivWithinAt_snd.prodMk (hasFDerivWithinAt_fst (𝕜 := 𝕜) (p := p))
-
--- TODO: Prove also the following?
--- hasStrictFDerivAt_swap, hasFDerivAtFilter_swap, hasFDerivAt_swap, differentiableAt_swap,
--- differentiable_swap, differentiableWithinAt_swap, differentiableOn_swap,
--- fderiv_swap, fderivWithin_swap
-
-end Swap
-
 section Pi
 
 /-!
