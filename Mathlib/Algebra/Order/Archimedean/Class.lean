@@ -82,7 +82,7 @@ theorem range_mk : Set.range (mk (M := M)) = Set.univ := Set.range_eq_univ.mpr (
 noncomputable
 def out (A : MulArchimedeanClass M) : M := Quotient.out A
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem out_eq (A : MulArchimedeanClass M) : mk A.out = A := Quotient.out_eq' A
 
 @[to_additive]
@@ -92,7 +92,7 @@ theorem eq {a b : M} :
 @[to_additive]
 theorem mk_out (a : M) :
     (∃ m, |(mk a).out|ₘ ≤ |a|ₘ ^ m) ∧ (∃ n, |a|ₘ ≤ |(mk a).out|ₘ ^ n) :=
-  eq.mp (by simp [out_eq])
+  eq.mp (by simp)
 
 @[to_additive (attr := simp)]
 theorem mk_inv (a : M) : mk a⁻¹ = mk a :=
@@ -142,7 +142,7 @@ instance instLinearOrder : LinearOrder (MulArchimedeanClass M) :=
   LinearOrder.lift' (OrderDual.toDual |·.out|ₘ) fun A B ↦ by
     simp only [EmbeddingLike.apply_eq_iff_eq]
     intro h
-    simpa [out_eq] using congr_arg mk h
+    simpa using congr_arg mk h
 
 @[to_additive]
 theorem le (A B : MulArchimedeanClass M) : A ≤ B ↔ |B.out|ₘ ≤ |A.out|ₘ := by rfl
