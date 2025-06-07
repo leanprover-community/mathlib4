@@ -102,6 +102,7 @@ theorem of_toList : ∀ l : Lists' α true, ofList (toList l) = l :=
     | nil => simp
     | cons' b a _ IH => simpa [cons] using IH rfl
 
+/-- Recursion/induction principle for `Lists'.ofList`. -/
 @[elab_as_elim]
 def recOfList {motive : Lists' α true → Sort*} (ofList : ∀ l, motive (ofList l)) : ∀ l, motive l :=
   fun l ↦ cast (by simp) <| ofList (l.toList)
