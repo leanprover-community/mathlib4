@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.Topology.StoneCech
+import Mathlib.Topology.Compactification.StoneCech
 import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
