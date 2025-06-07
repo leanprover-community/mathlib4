@@ -182,48 +182,22 @@ Low order roots of unity
 
 open Complex
 
-lemma test : (1 : ℂ) ≠ (0 : ℂ) := by exact Ne.symm (zero_ne_one' ℂ)
-
-#check quadratic_eq_zero_iff (zero_ne_one' ℂ).symm
-
-
-example (z : ℂ) : z ^ 3 - 1 = (z - 1) * (z ^ 2 + z + 1) := by
-  ring
-
-lemma test2 : discrim 1 1 1 = (√3 * I) * (√3 * I) := by
-  rw [discrim]
-  ring_nf
-  rw [I_sq, ← ofReal_pow, Real.sq_sqrt zero_le_three, mul_neg, mul_one, ofReal_ofNat]
-
-
-example (z : ℂ) : z ^ 2 + z + 1 = 0 ↔ z = -(1 / 2) + √3 / 2 * I ∨ z = -(1 / 2) - √3 / 2 * I := by
+lemma q1 (z : ℂ) : z ^ 2 + z + 1 = 0 ↔ z = -(1 / 2) + √3 / 2 * I ∨ z = -(1 / 2) - √3 / 2 * I := by
   suffices 1 * (z * z) + 1 * z + 1 = 0 ↔ z = -(1 / 2) + ↑√3 / 2 * I ∨ z = -(1 / 2) - ↑√3 / 2 * I by
     rw [← this]; ring_nf
-  rw [quadratic_eq_zero_iff (zero_ne_one' ℂ).symm test2]
+  have discrim1 : discrim 1 1 1 = (√3 * I) * (√3 * I) := by
+    rw [discrim]
+    ring_nf
+    rw [I_sq, ← ofReal_pow, Real.sq_sqrt zero_le_three, mul_neg, mul_one, ofReal_ofNat]
+  rw [quadratic_eq_zero_iff (zero_ne_one' ℂ).symm discrim1]
   ring_nf
 
-
-
-  --rw [quadratic_eq_zero_iff (zero_ne_one' ℂ).symm]
-  /-
-  conv_lhs => rw [← one_mul]
-
-  calc z ^ 2 + z + 1 = 0 ↔ 1 * z * z + 1 * z + 1 = 0 := by ring
-  _ ↔ z =
-  _ ↔ z = -(1 / 2) + √3 / 2 * I ∨ z = -(1 / 2) - √3 / 2 * I := sorry
-  --rw [quadratic_eq_zero_iff (zero_ne_one' ℂ).symm]
-  -/
-
 example : {z : ℂ | z^3 = 1} = {1, -(1/2)+√3/2*I, -(1/2)-√3/2*I} := by
-  have H (z : ℂ) : z ^ 3 - 1 =
-      (z - 1) * (z - (-(1 / 2) + √3 / 2 * I)) * (z - (-(1 / 2) - √3 / 2 * I)) := by
-    ring_nf
-    rw [I_sq, ← ofReal_pow, Real.sq_sqrt zero_le_three, ofReal_ofNat]
-    ring
+  have H (z : ℂ) : z ^ 3 - 1 = (z - 1) * (z ^ 2 + z + 1) := by ring
   ext1 z
   simp only [Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
-  rw [← sub_eq_zero, H]
-  simp only [mul_eq_zero, sub_eq_zero, or_assoc]
+  rw [← q1, ← sub_eq_zero, H]
+  simp only [mul_eq_zero, sub_eq_zero]
 
 example : {z : ℂ | z^4 = 1} = {1, I, -1, -I} := by
   have H (z : ℂ) : z ^ 4 - 1 = (z - 1) * (z - I) * (z + 1) * (z + I) := by
@@ -268,4 +242,4 @@ example : {z : ℂ | z^5 = 1} = {1,
 example (z : ℂ) : z ^ 6 - 1 = (z - 1) * (z + 1) * (z ^ 2 + z + 1) * (z ^ 2 - z + 1) := by
   ring
 
---example (z : ℂ) : z ^ 2 - z + 1 = (z - )
+example (z : ℂ) : z ^ 2 - z + 1 = (z - )
