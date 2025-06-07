@@ -11,10 +11,12 @@ import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 Given functors `F : A ⥤ B`, `L : B ⥤ C`, and `G : B ⥤ D`,
 we introduce a typeclass `G.PreservesLeftKanExtension F L` which encodes the fact that
-the left/right Kan extension of `F` along `L` is preserved by the functor `G`.
+the left Kan extension of `F` along `L` is preserved by the functor `G`.
 
 When the Kan extension is pointwise, it suffices that `G` preserves (co)limits of the relevant
 diagrams.
+
+We introduce the dual typeclass `G.PreservesRightKanExtension`.
 
 -/
 
@@ -25,7 +27,7 @@ variable {A B C D : Type*} [Category A] [Category B] [Category C] [Category D]
 
 section LeftKanExtension
 
-/-- `G.PreservesLeftKanExtension F L` asserts that `G` preserves all left kan extensions
+/-- `G.PreservesLeftKanExtension F L` asserts that `G` preserves all left Kan extensions
 of `F` along `L`. See `PreservesLeftKanExtension.mk_of_preserves_isLeftKanExtension` for a
 constructor taking a single left Kan extension as input. -/
 class PreservesLeftKanExtension where
@@ -63,22 +65,22 @@ lemma PreservesLeftKanExtension.mk_of_preserves_universal (E : LeftExtension L F
     G.PreservesLeftKanExtension F L :=
   .mk' G F L fun hE' ↦
     ⟨Limits.IsInitial.equivOfIso
-      ((LeftExtension.postcompose₂ L F G).mapIso (Limits.IsInitial.uniqueUpToIso hE hE')) h.some⟩
+      (LeftExtension.postcompose₂ L F G|>.mapIso <| Limits.IsInitial.uniqueUpToIso hE hE') h.some⟩
 
 attribute [instance] PreservesLeftKanExtension.preserves
 
-/-- `G.PreservesLeftKanExtensionAt F L c` asserts that `G` preserves all pointwise left kan
+/-- `G.PreservesLeftKanExtensionAt F L c` asserts that `G` preserves all pointwise left Kan
 extensions of `F` along `L` at the point `c`. -/
 class PreservesPointwiseLeftKanExtensionAt (c : C) where
   /-- `G` preserves every pointwise extensions of `F` along `L` at `c`. -/
   preserves : ∀ (E : LeftExtension L F), E.IsPointwiseLeftKanExtensionAt c →
     (LeftExtension.postcompose₂ L F G|>.obj E).IsPointwiseLeftKanExtensionAt c
 
-/-- `G.PreservesLeftKanExtension F L` asserts that `G` preserves all pointwise left kan extensions
+/-- `G.PreservesLeftKanExtension F L` asserts that `G` preserves all pointwise left Kan extensions
 of `F` along `L`. -/
 abbrev PreservesPointwiseLeftKanExtension := ∀ c : C, PreservesPointwiseLeftKanExtensionAt G F L c
 
-/-- Given a pointwise left kan extension of `F` at `L`, exhibits
+/-- Given a pointwise left Kan extension of `F` at `L`, exhibits
 `(LeftExtension.whiskerRight L F G).obj E` as a pointwise left Kan extension of `F ⋙ G` at `L`. -/
 def PreservesPointwiseLeftKanExtension.preserves [h : PreservesPointwiseLeftKanExtension G F L]
     (E : LeftExtension L F) (hE : E.IsPointwiseLeftKanExtension) :
@@ -136,17 +138,18 @@ lemma leftKanExtensionCompIsoOfPreserves_hom_fac :
     whiskerRight (L.leftKanExtensionUnit F) G ≫ (Functor.associator _ _ _).hom ≫
       whiskerLeft L (leftKanExtensionCompIsoOfPreserves G F L).hom =
     (L.leftKanExtensionUnit <| F ⋙ G) := by
-  simpa [leftKanExtensionCompIsoOfPreserves] using descOfIsLeftKanExtension_fac
-    (α := whiskerRight (L.leftKanExtensionUnit F) G ≫ (Functor.associator _ _ _).hom)
-    (β := L.leftKanExtensionUnit (F ⋙ G))
+  simpa [leftKanExtensionCompIsoOfPreserves] using
+    descOfIsLeftKanExtension_fac
+      (α := whiskerRight (L.leftKanExtensionUnit F) G ≫ (Functor.associator _ _ _).hom)
+      (β := L.leftKanExtensionUnit (F ⋙ G))
 
 @[reassoc (attr := simp)]
 lemma leftKanExtensionCompIsoOfPreserves_hom_fac_app (a : A) :
     G.map ((L.leftKanExtensionUnit F).app a) ≫
       (G.leftKanExtensionCompIsoOfPreserves F L).hom.app (L.obj a) =
     (L.leftKanExtensionUnit (F ⋙ G)).app a := by
-  simpa [- leftKanExtensionCompIsoOfPreserves_hom_fac] using congrArg (fun t ↦ t.app a)
-    (leftKanExtensionCompIsoOfPreserves_hom_fac G F L)
+  simpa [- leftKanExtensionCompIsoOfPreserves_hom_fac] using
+    NatTrans.congr_app (leftKanExtensionCompIsoOfPreserves_hom_fac G F L) a
 
 @[reassoc (attr := simp)]
 lemma leftKanExtensionCompIsoOfPreserves_inv_fac :
@@ -160,13 +163,13 @@ lemma leftKanExtensionCompIsoOfPreserves_inv_fac_app (a : A) :
     (L.leftKanExtensionUnit (F ⋙ G)).app a ≫
       (G.leftKanExtensionCompIsoOfPreserves F L).inv.app (L.obj a) =
     G.map ((L.leftKanExtensionUnit F).app a) := by
-  simpa [- leftKanExtensionCompIsoOfPreserves_inv_fac] using congrArg (fun t ↦ t.app a)
-    (leftKanExtensionCompIsoOfPreserves_inv_fac G F L)
+  simpa [- leftKanExtensionCompIsoOfPreserves_inv_fac] using
+    NatTrans.congr_app (leftKanExtensionCompIsoOfPreserves_inv_fac G F L) a
 
 end
 
-/-- A functor that preserves the colimit of `(CostructuredArrow.proj L c ⋙ F)` preserves
-the pointwise left kan extension of `F` along `L` at c. -/
+/-- A functor that preserves the colimit of `CostructuredArrow.proj L c ⋙ F` preserves
+the pointwise left Kan extension of `F` along `L` at `c`. -/
 noncomputable instance preservesPointwiseLeftKanExtensionAtOfPreservesColimit (c : C)
     [Limits.PreservesColimit (CostructuredArrow.proj L c ⋙ F) G] :
     G.PreservesPointwiseLeftKanExtensionAt F L c where
@@ -207,17 +210,18 @@ lemma pointwiseLeftKanExtensionCompIsoOfPreserves_hom_fac :
     whiskerRight (L.pointwiseLeftKanExtensionUnit F) G ≫ (Functor.associator _ _ _).hom ≫
       whiskerLeft L (pointwiseLeftKanExtensionCompIsoOfPreserves G F L).hom =
     (L.pointwiseLeftKanExtensionUnit <| F ⋙ G) := by
-  simpa [pointwiseLeftKanExtensionCompIsoOfPreserves] using descOfIsLeftKanExtension_fac
-    (α := whiskerRight (L.pointwiseLeftKanExtensionUnit F) G ≫ (Functor.associator _ _ _).hom)
-    (β := L.pointwiseLeftKanExtensionUnit <| F ⋙ G)
+  simpa [pointwiseLeftKanExtensionCompIsoOfPreserves] using
+    descOfIsLeftKanExtension_fac
+      (α := whiskerRight (L.pointwiseLeftKanExtensionUnit F) G ≫ (Functor.associator _ _ _).hom)
+      (β := L.pointwiseLeftKanExtensionUnit <| F ⋙ G)
 
 @[reassoc]
 lemma pointwiseLeftKanExtensionCompIsoOfPreserves_hom_fac_app (a : A) :
     G.map ((L.pointwiseLeftKanExtensionUnit F).app a) ≫
       (G.pointwiseLeftKanExtensionCompIsoOfPreserves F L).hom.app (L.obj a) =
     (L.pointwiseLeftKanExtensionUnit <| F ⋙ G).app a := by
-  simpa [- pointwiseLeftKanExtensionCompIsoOfPreserves_hom_fac] using congrArg (fun t ↦ t.app a)
-    (pointwiseLeftKanExtensionCompIsoOfPreserves_hom_fac G F L)
+  simpa [- pointwiseLeftKanExtensionCompIsoOfPreserves_hom_fac] using
+    NatTrans.congr_app (pointwiseLeftKanExtensionCompIsoOfPreserves_hom_fac G F L) a
 
 @[reassoc (attr := simp)]
 lemma pointwiseLeftKanExtensionCompIsoOfPreserves_inv_fac :
@@ -231,8 +235,8 @@ lemma pointwiseLeftKanExtensionCompIsoOfPreserves_fac_app (a : A) :
     (L.pointwiseLeftKanExtensionUnit <| F ⋙ G).app a ≫
       (G.pointwiseLeftKanExtensionCompIsoOfPreserves F L).inv.app (L.obj a) =
     G.map (L.pointwiseLeftKanExtensionUnit F|>.app a) := by
-  simpa [-pointwiseLeftKanExtensionCompIsoOfPreserves_inv_fac] using congrArg (fun t ↦ t.app a)
-    (pointwiseLeftKanExtensionCompIsoOfPreserves_inv_fac G F L)
+  simpa [-pointwiseLeftKanExtensionCompIsoOfPreserves_inv_fac] using
+    NatTrans.congr_app (pointwiseLeftKanExtensionCompIsoOfPreserves_inv_fac G F L) a
 
 end
 
@@ -263,7 +267,7 @@ end LeftKanExtension
 
 section RightKanExtension
 
-/-- `G.PreservesRightKanExtension F L` asserts that `G` preserves all right kan extensions
+/-- `G.PreservesRightKanExtension F L` asserts that `G` preserves all right Kan extensions
 of `F` along `L`. See `PreservesRightKanExtension.mk_of_preserves_isRightKanExtension` for a
 constructor taking a single right Kan extension as input. -/
 class PreservesRightKanExtension where
@@ -301,22 +305,22 @@ lemma PreservesRightKanExtension.mk_of_preserves_universal (E : RightExtension L
     G.PreservesRightKanExtension F L :=
   .mk' G F L fun hE' ↦
     ⟨Limits.IsTerminal.equivOfIso
-      ((RightExtension.postcompose₂ L F G).mapIso (Limits.IsTerminal.uniqueUpToIso hE hE')) h.some⟩
+      (RightExtension.postcompose₂ L F G|>.mapIso <| Limits.IsTerminal.uniqueUpToIso hE hE') h.some⟩
 
 attribute [instance] PreservesRightKanExtension.preserves
 
-/-- `G.PreservesRightKanExtensionAt F L c` asserts that `G` preserves all right pointwise right kan
+/-- `G.PreservesRightKanExtensionAt F L c` asserts that `G` preserves all right pointwise right Kan
 extensions of `F` along `L` at `c`. -/
 class PreservesPointwiseRightKanExtensionAt (c : C) where
   /-- `G` preserves every pointwise extensions of `F` along `L` at `c`. -/
   preserves : ∀ (E : RightExtension L F), E.IsPointwiseRightKanExtensionAt c →
     (RightExtension.postcompose₂ L F G|>.obj E).IsPointwiseRightKanExtensionAt c
 
-/-- `G.PreservesRightKanExtensions L` asserts that `G` preserves all pointwise right kan
+/-- `G.PreservesRightKanExtensions L` asserts that `G` preserves all pointwise right Kan
 extensions of `F` along `L` for every `F`. -/
 abbrev PreservesPointwiseRightKanExtension := ∀ c : C, PreservesPointwiseRightKanExtensionAt G F L c
 
-/-- Given a pointwise right kan extension of `F` at `L`, exhibits
+/-- Given a pointwise right Kan extension of `F` at `L`, exhibits
 `(RightExtension.whiskerRight L F G).obj E` as a pointwise right Kan extension of `F ⋙ G` at `L`. -/
 def PreservesPointwiseRightKanExtension.preserves [h : PreservesPointwiseRightKanExtension G F L]
     (E : RightExtension L F) (hE : E.IsPointwiseRightKanExtension) :
@@ -396,12 +400,12 @@ lemma rightKanExtensionCompIsoOfPreserves_inv_fac_app (a : A) :
       G.map (L.rightKanExtensionCounit F|>.app a) =
     (L.rightKanExtensionCounit (F ⋙ G)).app a := by
   simpa [-rightKanExtensionCompIsoOfPreserves_inv_fac] using
-    congrArg (fun t ↦ t.app a) <| rightKanExtensionCompIsoOfPreserves_inv_fac G F L
+    NatTrans.congr_app (rightKanExtensionCompIsoOfPreserves_inv_fac G F L) a
 
 end
 
 /-- A functor that preserves the limit of `(StructuredArrow.proj L c ⋙ F)` preserves
-the pointwise right kan extension of `F` along `L` at c. -/
+the pointwise right Kan extension of `F` along `L` at c. -/
 noncomputable instance preservesPointwiseRightKanExtensionAtOfPreservesColimit (c : C)
     [Limits.PreservesLimit (StructuredArrow.proj c L ⋙ F) G] :
     G.PreservesPointwiseRightKanExtensionAt F L c where
@@ -451,7 +455,7 @@ lemma pointwiseRightKanExtensionCompIsoOfPreserves_hom_fac_app (a : A) :
       (L.pointwiseRightKanExtensionCounit <| F ⋙ G).app a =
     G.map (L.pointwiseRightKanExtensionCounit F|>.app a) := by
   simpa [-pointwiseRightKanExtensionCompIsoOfPreserves_hom_fac] using
-    congrArg (fun t ↦ t.app a) <| pointwiseRightKanExtensionCompIsoOfPreserves_hom_fac G F L
+    NatTrans.congr_app (pointwiseRightKanExtensionCompIsoOfPreserves_hom_fac G F L) a
 
 @[reassoc (attr := simp)]
 lemma pointwiseRightKanExtensionCompIsoOfPreserves_inv_fac :
@@ -466,7 +470,7 @@ lemma pointwiseRightKanExtensionCompIsoOfPreserves_inv_fac_app (a : A) :
       G.map (L.pointwiseRightKanExtensionCounit F|>.app a) =
     (L.pointwiseRightKanExtensionCounit <| F ⋙ G).app a := by
   simpa [-pointwiseRightKanExtensionCompIsoOfPreserves_inv_fac] using
-    congrArg (fun t ↦ t.app a) <| pointwiseRightKanExtensionCompIsoOfPreserves_inv_fac G F L
+    NatTrans.congr_app (pointwiseRightKanExtensionCompIsoOfPreserves_inv_fac G F L) a
 
 end
 
@@ -494,7 +498,7 @@ noncomputable def ranFunctorCompOfPreserves [G.PreservesRightKanExtensions L]
       simp only [comp_obj, Category.assoc, rightKanExtensionCompIsoOfPreserves_hom_fac,
         NatTrans.comp_app, whiskerLeft_app, whiskerRight_app, associator_inv_app, Category.id_comp,
         liftOfIsRightKanExtension_fac, rightKanExtensionCompIsoOfPreserves_hom_fac_assoc,
-        ← G.map_comp ]
+        ← G.map_comp]
       simp)
 
 end RightKanExtension
