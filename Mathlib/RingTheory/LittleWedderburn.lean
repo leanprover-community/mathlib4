@@ -92,14 +92,14 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
       simp only [eq_comm, Int.natAbs_eq_iff, Nat.cast_sub hq.le, Nat.cast_one, neg_sub, true_or]
     · by_contra! h
       obtain ⟨x, hx⟩ := finrank_le_one_iff.mp h
-      refine not_le_of_lt hZ.lt_top (fun y _ ↦ Subring.mem_center_iff.mpr fun z ↦ ?_)
+      refine not_le_of_gt hZ.lt_top (fun y _ ↦ Subring.mem_center_iff.mpr fun z ↦ ?_)
       obtain ⟨r, rfl⟩ := hx y
       obtain ⟨s, rfl⟩ := hx z
       rw [smul_mul_smul_comm, smul_mul_smul_comm, mul_comm]
   rw [Nat.cast_sum]
   apply Finset.dvd_sum
   rintro ⟨x⟩ hx
-  simp (config := {zeta := false}) only [ConjClasses.quot_mk_eq_mk, Set.mem_toFinset] at hx ⊢
+  simp -zeta only [ConjClasses.quot_mk_eq_mk, Set.mem_toFinset] at hx ⊢
   set Zx := Subring.centralizer ({↑x} : Set D)
   -- The key thing is then to note that for all conjugacy classes `x`, `|x|` is given by
   -- `|Dˣ| / |Zxˣ|`, where `Zx` is the centralizer of `x`; but `Zx` is an algebra over `Z`, and
@@ -129,7 +129,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   refine Nat.mem_properDivisors.mpr ⟨⟨_, (finrank_mul_finrank Z Zx D).symm⟩, ?_⟩
   rw [← Nat.pow_lt_pow_iff_right hq, ← card_D, ← card_Zx]
   obtain ⟨b, -, hb⟩ := SetLike.exists_of_lt hZx.lt_top
-  refine card_lt_of_injective_of_not_mem _ Subtype.val_injective (?_ : b ∉ _)
+  refine card_lt_of_injective_of_notMem _ Subtype.val_injective (?_ : b ∉ _)
   rintro ⟨b, rfl⟩
   exact hb b.2
 

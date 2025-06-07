@@ -40,7 +40,7 @@ section OrthonormalSets_Seminormed
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 variable {ι : Type*} (𝕜)
 
@@ -49,6 +49,16 @@ def Orthonormal (v : ι → E) : Prop :=
   (∀ i, ‖v i‖ = 1) ∧ Pairwise fun i j => ⟪v i, v j⟫ = 0
 
 variable {𝕜}
+
+@[simp]
+lemma Orthonormal.of_isEmpty [IsEmpty ι] (v : ι → E) : Orthonormal 𝕜 v :=
+  ⟨IsEmpty.elim ‹_›, Subsingleton.pairwise⟩
+
+@[simp]
+lemma orthonormal_vecCons_iff {n : ℕ} {v : E} {vs : Fin n → E} :
+    Orthonormal 𝕜 (Matrix.vecCons v vs) ↔ ‖v‖ = 1 ∧ (∀ i, ⟪v, vs i⟫ = 0) ∧ Orthonormal 𝕜 vs := by
+  simp_rw [Orthonormal, pairwise_fin_succ_iff_of_isSymm, Fin.forall_fin_succ]
+  tauto
 
 lemma Orthonormal.norm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
     ‖v i‖ = 1 := h.1 i
@@ -76,7 +86,7 @@ theorem orthonormal_iff_ite [DecidableEq ι] {v : ι → E} :
   · intro h
     constructor
     · intro i
-      have h' : ‖v i‖ ^ 2 = 1 ^ 2 := by simp [@norm_sq_eq_inner 𝕜, h i i]
+      have h' : ‖v i‖ ^ 2 = 1 ^ 2 := by simp [@norm_sq_eq_re_inner 𝕜, h i i]
       have h₁ : 0 ≤ ‖v i‖ := norm_nonneg _
       have h₂ : (0 : ℝ) ≤ 1 := zero_le_one
       rwa [sq_eq_sq₀ h₁ h₂] at h'
@@ -285,7 +295,7 @@ open scoped InnerProductSpace
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 section
 
@@ -418,7 +428,7 @@ variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 variable {ι : Type*} (x : E) {v : ι → E}
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-- Bessel's inequality for finite sums. -/
 theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜 v) :
@@ -434,7 +444,7 @@ theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜
     rw [← sub_nonneg, ← hbf]
     simp only [norm_nonneg, pow_nonneg]
   rw [@norm_sub_sq 𝕜, sub_add]
-  simp only [@InnerProductSpace.norm_sq_eq_inner 𝕜 E, inner_sum, sum_inner]
+  simp only [@InnerProductSpace.norm_sq_eq_re_inner 𝕜 E, inner_sum, sum_inner]
   simp only [inner_smul_right, two_mul, inner_smul_left, inner_conj_symm, ← mul_assoc, h₂,
     add_sub_cancel_right, sub_right_inj]
   simp only [map_sum, ← inner_conj_symm x, ← h₃]

@@ -116,8 +116,6 @@ theorem sublistsAux_eq_flatMap :
       rw [flatMap_append, ← ih, flatMap_singleton, sublistsAux, foldl_append]
       simp [sublistsAux])
 
-@[deprecated (since := "2024-10-16")] alias sublistsAux_eq_bind := sublistsAux_eq_flatMap
-
 @[csimp] theorem sublists_eq_sublistsFast : @sublists = @sublistsFast := by
   ext α l : 2
   trans l.foldr sublistsAux [[]]

@@ -170,6 +170,9 @@ theorem ofReal_pos {p : ℝ} : 0 < ENNReal.ofReal p ↔ 0 < p := by simp [ENNRea
 @[simp]
 theorem ofReal_eq_zero {p : ℝ} : ENNReal.ofReal p = 0 ↔ p ≤ 0 := by simp [ENNReal.ofReal]
 
+theorem ofReal_ne_zero_iff {r : ℝ} : ENNReal.ofReal r ≠ 0 ↔ 0 < r := by
+  rw [← zero_lt_iff, ENNReal.ofReal_pos]
+
 @[simp]
 theorem zero_eq_ofReal {p : ℝ} : 0 = ENNReal.ofReal p ↔ p ≤ 0 :=
   eq_comm.trans ofReal_eq_zero
@@ -413,7 +416,7 @@ theorem toReal_sSup (s : Set ℝ≥0∞) (hf : ∀ r ∈ s, r ≠ ∞) :
   obtain ⟨i, hi⟩ | h := em (∃ i, f i ≤ 0)
   · rw [(iInf_eq_bot _).2 fun _ _ ↦ ⟨i, by simpa [ofReal_of_nonpos hi]⟩]
     simp [Real.iInf_nonpos' ⟨i, hi⟩]
-  replace h i : 0 ≤ f i := le_of_not_le fun hi ↦ h ⟨i, hi⟩
+  replace h i : 0 ≤ f i := le_of_not_ge fun hi ↦ h ⟨i, hi⟩
   refine eq_of_forall_le_iff fun a ↦ ?_
   obtain rfl | ha := eq_or_ne a ∞
   · simp

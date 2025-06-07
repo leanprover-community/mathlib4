@@ -20,7 +20,7 @@ images of different morphisms commute, we obtain a canonical morphism
 
 * `MonoidHom.noncommPiCoprod : (Π i, N i) →* M` is the main homomorphism
 * `Subgroup.noncommPiCoprod : (Π i, H i) →* G` is the specialization to `H i : Subgroup G`
-   and the subgroup embedding.
+  and the subgroup embedding.
 
 ## Main theorems
 
@@ -31,11 +31,11 @@ images of different morphisms commute, we obtain a canonical morphism
   `⨆ (i : ι), (ϕ i).range`
 * `Subgroup.noncommPiCoprod_range`: The range of `Subgroup.noncommPiCoprod` is `⨆ (i : ι), H i`.
 * `MonoidHom.injective_noncommPiCoprod_of_iSupIndep`: in the case of groups, `pi_hom.hom` is
-   injective if the `ϕ` are injective and the ranges of the `ϕ` are independent.
+  injective if the `ϕ` are injective and the ranges of the `ϕ` are independent.
 * `MonoidHom.independent_range_of_coprime_order`: If the `N i` have coprime orders, then the ranges
-   of the `ϕ` are independent.
+  of the `ϕ` are independent.
 * `Subgroup.independent_of_coprime_order`: If commuting normal subgroups `H i` have coprime orders,
-   they are independent.
+  they are independent.
 
 -/
 
@@ -54,7 +54,7 @@ theorem eq_one_of_noncommProd_eq_one_of_iSupIndep {ι : Type*} (s : Finset ι) (
     (heq1 : s.noncommProd f comm = 1) : ∀ i ∈ s, f i = 1 := by
   classical
     revert heq1
-    induction' s using Finset.induction_on with i s hnmem ih
+    induction' s using Finset.induction_on with i s hnotMem ih
     · simp
     · have hcomm := comm.mono (Finset.coe_subset.2 <| Finset.subset_insert _ _)
       simp only [Finset.forall_mem_insert] at hmem
@@ -64,10 +64,10 @@ theorem eq_one_of_noncommProd_eq_one_of_iSupIndep {ι : Type*} (s : Finset ι) (
         have : K x ≤ ⨆ i ∈ (s : Set ι), K i := le_iSup₂ (f := fun i _ => K i) x hx
         exact this (hmem.2 x hx)
       intro heq1
-      rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hnmem] at heq1
-      have hnmem' : i ∉ (s : Set ι) := by simpa
+      rw [Finset.noncommProd_insert_of_notMem _ _ _ _ hnotMem] at heq1
+      have hnotMem' : i ∉ (s : Set ι) := by simpa
       obtain ⟨heq1i : f i = 1, heq1S : s.noncommProd f _ = 1⟩ :=
-        Subgroup.disjoint_iff_mul_eq_one.mp (hind.disjoint_biSup hnmem') hmem.1 hmem_bsupr heq1
+        Subgroup.disjoint_iff_mul_eq_one.mp (hind.disjoint_biSup hnotMem') hmem.1 hmem_bsupr heq1
       intro i h
       simp only [Finset.mem_insert] at h
       rcases h with (rfl | h)
@@ -119,7 +119,7 @@ theorem noncommPiCoprod_mulSingle [DecidableEq ι] (i : ι) (y : N i) :
   change Finset.univ.noncommProd (fun j => ϕ j (Pi.mulSingle i y j)) (fun _ _ _ _ h => hcomm h _ _)
     = ϕ i y
   rw [← Finset.insert_erase (Finset.mem_univ i)]
-  rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ (Finset.not_mem_erase i _)]
+  rw [Finset.noncommProd_insert_of_notMem _ _ _ _ (Finset.notMem_erase i _)]
   rw [Pi.mulSingle_eq_same]
   rw [Finset.noncommProd_eq_pow_card]
   · rw [one_pow]
@@ -189,7 +189,7 @@ Given monoid morphisms `φᵢ : Nᵢ → M` and `f : M → P`, if we have suffic
 theorem comp_noncommPiCoprod {P : Type*} [Monoid P] {f : M →* P}
     (hcomm' : Pairwise fun i j => ∀ x y, Commute (f.comp (ϕ i) x) (f.comp (ϕ j) y) :=
       Pairwise.mono hcomm (fun i j ↦ forall_imp (fun x h y ↦ by
-        simp only [MonoidHom.coe_comp, Function.comp_apply, Commute.map  (h y) f]))) :
+        simp only [MonoidHom.coe_comp, Function.comp_apply, Commute.map (h y) f]))) :
     f.comp (MonoidHom.noncommPiCoprod ϕ hcomm) =
       MonoidHom.noncommPiCoprod (fun i ↦ f.comp (ϕ i)) hcomm' :=
   MonoidHom.ext fun _ ↦ by

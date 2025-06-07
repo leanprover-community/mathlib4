@@ -62,9 +62,6 @@ theorem LocPathConnectedSpace.of_bases {p : X → ι → Prop} {s : X → ι →
     rcases (h x).mem_iff.mp ht with ⟨i, hpi, hi⟩
     exact ⟨s x i, (h x).mem_of_mem hpi, h' x i hpi, hi⟩
 
-@[deprecated (since := "2024-10-16")]
-alias locPathConnected_of_bases := LocPathConnectedSpace.of_bases
-
 variable [LocPathConnectedSpace X]
 
 protected theorem IsOpen.pathComponentIn (x : X) (hF : IsOpen F) :
@@ -124,14 +121,8 @@ theorem Topology.IsOpenEmbedding.locPathConnectedSpace {e : Y → X} (he : IsOpe
   .of_bases this fun x s ⟨_, hs, hse⟩ ↦ by
     rwa [he.isPathConnected_iff, image_preimage_eq_of_subset hse]
 
-@[deprecated (since := "2024-10-18")]
-alias OpenEmbedding.locPathConnectedSpace := IsOpenEmbedding.locPathConnectedSpace
-
 theorem IsOpen.locPathConnectedSpace {U : Set X} (h : IsOpen U) : LocPathConnectedSpace U :=
   h.isOpenEmbedding_subtypeVal.locPathConnectedSpace
-
-@[deprecated (since := "2024-10-17")]
-alias locPathConnected_of_isOpen := IsOpen.locPathConnectedSpace
 
 theorem IsOpen.isConnected_iff_isPathConnected {U : Set X} (U_op : IsOpen U) :
     IsConnected U ↔ IsPathConnected U := by

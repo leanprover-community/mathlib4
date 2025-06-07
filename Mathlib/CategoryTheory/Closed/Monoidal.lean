@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Mates
+import Mathlib.CategoryTheory.Adjunction.Parametrized
 
 /-!
 # Closed monoidal categories
@@ -268,6 +269,13 @@ def internalHom [MonoidalClosed C] : Cᵒᵖ ⥤ C ⥤ C where
   obj X := ihom X.unop
   map f := pre f.unop
 
+/-- The parametrized adjunction between `curriedTensor C : C ⥤ C ⥤ C`
+and `internalHom : Cᵒᵖ ⥤ C ⥤ C` -/
+@[simps!]
+def internalHomAdjunction₂ [MonoidalClosed C] :
+    curriedTensor C ⊣₂ internalHom where
+  adj _ := ihom.adjunction _
+
 section OfEquiv
 
 variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
@@ -406,8 +414,7 @@ lemma assoc (w x y z : C) [Closed w] [Closed x] [Closed y] :
   rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc]; dsimp
   rw [← uncurry_eq, uncurry_curry, associator_inv_naturality_right_assoc, whisker_exchange_assoc,
     ← uncurry_eq, uncurry_curry]
-  simp only [comp_whiskerRight, tensorLeft_obj, Category.assoc, pentagon_inv_assoc,
-    whiskerRight_tensor, Iso.hom_inv_id_assoc]
+  simp
 
 end Enriched
 

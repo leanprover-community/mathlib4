@@ -339,7 +339,8 @@ end Real
 
 namespace Complex
 
-theorem sum_div_factorial_le {α : Type*} [LinearOrderedField α] (n j : ℕ) (hn : 0 < n) :
+theorem sum_div_factorial_le {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+    (n j : ℕ) (hn : 0 < n) :
     (∑ m ∈ range j with n ≤ m, (1 / m.factorial : α)) ≤ n.succ / (n.factorial * n) :=
   calc
     (∑ m ∈ range j with n ≤ m, (1 / m.factorial : α)) =
@@ -631,7 +632,7 @@ theorem exp_bound_div_one_sub_of_interval {x : ℝ} (h1 : 0 ≤ x) (h2 : x < 1) 
 theorem add_one_lt_exp {x : ℝ} (hx : x ≠ 0) : x + 1 < Real.exp x := by
   obtain hx | hx := hx.symm.lt_or_lt
   · exact add_one_lt_exp_of_pos hx
-  obtain h' | h' := le_or_lt 1 (-x)
+  obtain h' | h' := le_or_gt 1 (-x)
   · linarith [x.exp_pos]
   have hx' : 0 < x + 1 := by linarith
   simpa [add_comm, exp_neg, inv_lt_inv₀ (exp_pos _) hx']

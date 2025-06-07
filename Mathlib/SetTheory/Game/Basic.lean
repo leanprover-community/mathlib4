@@ -3,7 +3,7 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Apurva Nakade, Yuyang Zhao
 -/
-import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.SetTheory.PGame.Algebra
 import Mathlib.Tactic.Abel
 
@@ -91,9 +91,9 @@ instance instPartialOrderGame : PartialOrder Game where
     apply Quot.sound
     exact ⟨h₁, h₂⟩
   lt := Quotient.lift₂ (· < ·) fun _ _ _ _ hx hy => propext (lt_congr hx hy)
-  lt_iff_le_not_le := by
+  lt_iff_le_not_ge := by
     rintro ⟨x⟩ ⟨y⟩
-    exact @lt_iff_le_not_le _ _ x y
+    exact @lt_iff_le_not_ge _ _ x y
 
 /-- The less or fuzzy relation on games.
 
@@ -189,9 +189,8 @@ theorem add_lf_add_left : ∀ {b c : Game} (_ : b ⧏ c) (a), (a + b : Game) ⧏
   rintro ⟨b⟩ ⟨c⟩ h ⟨a⟩
   apply PGame.add_lf_add_left h
 
-instance orderedAddCommGroup : OrderedAddCommGroup Game :=
-  { Game.instAddCommGroupWithOneGame, Game.instPartialOrderGame with
-    add_le_add_left := @add_le_add_left _ _ _ Game.addLeftMono }
+instance isOrderedAddMonoid : IsOrderedAddMonoid Game :=
+  { add_le_add_left := @add_le_add_left _ _ _ Game.addLeftMono }
 
 /-- A small family of games is bounded above. -/
 lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Game.{u}) :

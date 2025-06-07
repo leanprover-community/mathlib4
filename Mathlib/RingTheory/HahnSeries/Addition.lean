@@ -16,7 +16,7 @@ coefficients in `R`, whose supports are partially well-ordered. With further str
 `HahnSeries Γ R` also has addition by adding coefficients.
 
 ## Main Definitions
-  * If `R` is a (commutative) additive monoid or group, then so is `HahnSeries Γ R`.
+* If `R` is a (commutative) additive monoid or group, then so is `HahnSeries Γ R`.
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
@@ -429,7 +429,7 @@ theorem order_smul_not_lt [Zero Γ] (r : R) (x : HahnSeries Γ V) (h : r • x �
 
 theorem le_order_smul {Γ} [Zero Γ] [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
     x.order ≤ (r • x).order :=
-  le_of_not_lt (order_smul_not_lt r x h)
+  le_of_not_gt (order_smul_not_lt r x h)
 
 end SMulZeroClass
 

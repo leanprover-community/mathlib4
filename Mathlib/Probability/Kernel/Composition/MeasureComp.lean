@@ -24,7 +24,7 @@ variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β
   {μ ν : Measure α} {κ η : Kernel α β}
 
 lemma comp_assoc {η : Kernel β γ} : η ∘ₘ (κ ∘ₘ μ) = (η ∘ₖ κ) ∘ₘ μ :=
-  Measure.bind_bind κ.measurable η.measurable
+  Measure.bind_bind κ.aemeasurable η.aemeasurable
 
 /-- This lemma allows to rewrite the compostion of a measure and a kernel as the composition
 of two kernels, which allows to transfer properties of `∘ₖ` to `∘ₘ`. -/
@@ -41,7 +41,7 @@ lemma comp_eq_sum_of_countable [Countable α] [MeasurableSingletonClass α] :
 lemma snd_compProd (μ : Measure α) [SFinite μ] (κ : Kernel α β) [IsSFiniteKernel κ] :
     (μ ⊗ₘ κ).snd = κ ∘ₘ μ := by
   ext s hs
-  rw [bind_apply hs κ.measurable, snd_apply hs, compProd_apply]
+  rw [bind_apply hs κ.aemeasurable, snd_apply hs, compProd_apply]
   · rfl
   · exact measurable_snd hs
 
@@ -66,8 +66,8 @@ instance [IsZeroOrProbabilityMeasure μ] [IsZeroOrMarkovKernel κ] :
 lemma map_comp (μ : Measure α) (κ : Kernel α β) {f : β → γ} (hf : Measurable f) :
     (κ ∘ₘ μ).map f = (κ.map f) ∘ₘ μ := by
   ext s hs
-  rw [Measure.map_apply hf hs, Measure.bind_apply (hf hs) κ.measurable,
-    Measure.bind_apply hs (Kernel.measurable _)]
+  rw [Measure.map_apply hf hs, Measure.bind_apply (hf hs) κ.aemeasurable,
+    Measure.bind_apply hs (Kernel.aemeasurable _)]
   simp_rw [Kernel.map_apply' _ hf _ hs]
 
 section CompProd
@@ -86,8 +86,8 @@ lemma comp_compProd_comm {η : Kernel (α × β) γ} [SFinite μ] [IsSFiniteKern
   · simp [compProd_of_not_isSFiniteKernel _ _ hκ,
       Kernel.compProd_of_not_isSFiniteKernel_left _ _ hκ]
   ext s hs
-  rw [Measure.bind_apply hs η.measurable, Measure.snd_apply hs,
-    Measure.bind_apply _ (Kernel.measurable _), Measure.lintegral_compProd (η.measurable_coe hs)]
+  rw [Measure.bind_apply hs η.aemeasurable, Measure.snd_apply hs,
+    Measure.bind_apply _ (Kernel.aemeasurable _), Measure.lintegral_compProd (η.measurable_coe hs)]
   swap; · exact measurable_snd hs
   congr with a
   rw [Kernel.compProd_apply]
@@ -119,7 +119,7 @@ lemma add_comp' : (⇑κ + ⇑η) ∘ₘ μ = κ ∘ₘ μ + η ∘ₘ μ := by 
 @[simp]
 lemma comp_smul (a : ℝ≥0∞) : κ ∘ₘ (a • μ) = a • (κ ∘ₘ μ) := by
   ext s hs
-  simp only [bind_apply hs κ.measurable, lintegral_smul_measure, smul_apply, smul_eq_mul]
+  simp only [bind_apply hs κ.aemeasurable, lintegral_smul_measure, smul_apply, smul_eq_mul]
 
 end AddSMul
 
@@ -128,14 +128,14 @@ section AbsolutelyContinuous
 lemma AbsolutelyContinuous.comp_right (hμν : μ ≪ ν) (κ : Kernel α γ) :
     κ ∘ₘ μ ≪ κ ∘ₘ ν := by
   refine Measure.AbsolutelyContinuous.mk fun s hs hs_zero ↦ ?_
-  rw [Measure.bind_apply hs (Kernel.measurable _),
+  rw [Measure.bind_apply hs (Kernel.aemeasurable _),
     lintegral_eq_zero_iff (Kernel.measurable_coe _ hs)] at hs_zero ⊢
   exact hμν.ae_eq hs_zero
 
 lemma AbsolutelyContinuous.comp_left (μ : Measure α) (hκη : ∀ᵐ a ∂μ, κ a ≪ η a) :
     κ ∘ₘ μ ≪ η ∘ₘ μ := by
   refine Measure.AbsolutelyContinuous.mk fun s hs hs_zero ↦ ?_
-  rw [Measure.bind_apply hs (Kernel.measurable _),
+  rw [Measure.bind_apply hs (Kernel.aemeasurable _),
     lintegral_eq_zero_iff (Kernel.measurable_coe _ hs)] at hs_zero ⊢
   filter_upwards [hs_zero, hκη] with a ha_zero ha_ac using ha_ac ha_zero
 

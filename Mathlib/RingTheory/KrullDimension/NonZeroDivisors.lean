@@ -3,9 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
+import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.RingTheory.Spectrum.Prime.Topology
+import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
 /-!
 
@@ -18,24 +20,13 @@ import Mathlib.RingTheory.Spectrum.Prime.Topology
 - `ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial`: `dim R + #σ ≤ dim R[σ]`.
 -/
 
-open nonZeroDivisors
+open scoped nonZeroDivisors
 
 variable {R S : Type*} [CommRing R] [CommRing S]
 
 lemma ringKrullDim_quotient (I : Ideal R) :
     ringKrullDim (R ⧸ I) = Order.krullDim (PrimeSpectrum.zeroLocus (R := R) I) := by
-  let e : PrimeSpectrum (R ⧸ I) ≃ (PrimeSpectrum.zeroLocus (R := R) I) :=
-    (Equiv.ofInjective _ (PrimeSpectrum.comap_injective_of_surjective _
-      Ideal.Quotient.mk_surjective)).trans (Equiv.setCongr
-      (by rw [PrimeSpectrum.range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective,
-        Ideal.mk_ker]))
-  let e' : PrimeSpectrum (R ⧸ I) ≃o (PrimeSpectrum.zeroLocus (R := R) I) :=
-    { __ := e, map_rel_iff' := fun {a b} ↦ by
-        show a.asIdeal.comap _ ≤ b.asIdeal.comap _ ↔ a ≤ b
-        rw [← Ideal.map_le_iff_le_comap,
-          Ideal.map_comap_of_surjective _ Ideal.Quotient.mk_surjective]
-        rfl }
-  rw [ringKrullDim, Order.krullDim_eq_of_orderIso e']
+  rw [ringKrullDim, Order.krullDim_eq_of_orderIso I.primeSpectrumQuotientOrderIsoZeroLocus]
 
 lemma ringKrullDim_quotient_succ_le_of_nonZeroDivisor
     {r : R} (hr : r ∈ R⁰) :
@@ -58,7 +49,6 @@ lemma ringKrullDim_quotient_succ_le_of_nonZeroDivisor
     (Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes hp)
     ⟨show r ∈ p by simpa [← h] using l.head.2, hr⟩
   refine le_trans ?_ (le_iSup _ ((l.map Subtype.val (fun _ _ ↦ id)).cons p' hp'))
-  show (l.length + 1 : ℕ∞) ≤ ↑(0 + l.length + 1)
   simp
 
 /-- If `R →+* S` is surjective whose kernel contains a nonzerodivisor, then `dim S + 1 ≤ dim R`. -/
@@ -116,11 +106,12 @@ lemma ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (σ : Type*) :
     simp only [ENat.some_eq_coe, Nat.card_eq_fintype_card, Fintype.card_fin, Nat.cast_add,
       Nat.cast_one]
     trans n + 1
-    · exact WithBot.coe_le_coe.mpr (by simp)
+    · norm_cast
+      simp
     · exact WithBot.le_add_self Order.bot_lt_krullDim.ne' _
 
 open PowerSeries in
 lemma ringKrullDim_succ_le_ringKrullDim_powerseries :
-    ringKrullDim R + 1 ≤ ringKrullDim (PowerSeries R) := by
-  refine ringKrullDim_succ_le_of_surjective (constantCoeff R) (⟨C R ·, rfl⟩)
+    ringKrullDim R + 1 ≤ ringKrullDim (PowerSeries R) :=
+  ringKrullDim_succ_le_of_surjective (constantCoeff R) (⟨C R ·, rfl⟩)
     MvPowerSeries.X_mem_nonzeroDivisors constantCoeff_X

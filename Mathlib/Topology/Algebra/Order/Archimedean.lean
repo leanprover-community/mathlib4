@@ -26,13 +26,15 @@ In this file we prove the following theorems:
 open Set
 
 /-- Rational numbers are dense in a linear ordered archimedean field. -/
-theorem Rat.denseRange_cast {𝕜} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+theorem Rat.denseRange_cast {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    [TopologicalSpace 𝕜] [OrderTopology 𝕜]
     [Archimedean 𝕜] : DenseRange ((↑) : ℚ → 𝕜) :=
   dense_of_exists_between fun _ _ h => Set.exists_range_iff.2 <| exists_rat_btwn h
 
 namespace Subgroup
 
-variable {G : Type*} [LinearOrderedCommGroup G] [TopologicalSpace G] [OrderTopology G]
+variable {G : Type*} [CommGroup G] [LinearOrder G] [IsOrderedMonoid G]
+  [TopologicalSpace G] [OrderTopology G]
   [MulArchimedean G]
 
 /-- A subgroup of an archimedean linear ordered multiplicative commutative group with order
@@ -56,7 +58,7 @@ theorem dense_of_not_isolated_one (S : Subgroup G) (hS : ∀ ε > 1, ∃ g ∈ S
 
 /-- Let `S` be a nontrivial subgroup in an archimedean linear ordered multiplicative commutative
 group `G` with order topology. If the set of elements of `S` that are greater than one
- does not have a minimal element, then `S` is dense `G`. -/
+does not have a minimal element, then `S` is dense `G`. -/
 @[to_additive "Let `S` be a nontrivial additive subgroup in an archimedean linear ordered additive
 commutative group `G` with order topology. If the set of positive elements of `S` does not have a
 minimal element, then `S` is dense `G`."]
@@ -69,7 +71,7 @@ theorem dense_of_no_min (S : Subgroup G) (hbot : S ≠ ⊥)
 /-- A subgroup of an archimedean linear ordered multiplicative commutative group `G` with order
 topology either is dense in `G` or is a cyclic subgroup. -/
 @[to_additive dense_or_cyclic
- "An additive subgroup of an archimedean linear ordered additive commutative group `G`
+"An additive subgroup of an archimedean linear ordered additive commutative group `G`
 with order topology either is dense in `G` or is a cyclic subgroup."]
 theorem dense_or_cyclic (S : Subgroup G) : Dense (S : Set G) ∨ ∃ a : G, S = closure {a} := by
   refine (em _).imp (dense_of_not_isolated_one S) fun h => ?_
@@ -85,7 +87,7 @@ a subgroup is either dense or is cyclic, but not both.
 For a non-exclusive `Or` version with weaker assumptions,
 see `Subgroup.dense_or_cyclic` above. -/
 @[to_additive dense_xor'_cyclic
- "In a nontrivial densely linear ordered archimedean topological additive group,
+"In a nontrivial densely linear ordered archimedean topological additive group,
 a subgroup is either dense or is cyclic, but not both.
 
 For a non-exclusive `Or` version with weaker assumptions, see `AddSubgroup.dense_or_cyclic` above."]

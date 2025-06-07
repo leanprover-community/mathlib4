@@ -18,11 +18,11 @@ using the following naming conventions:
 
 Each interval has the name `I` + letter for left side + letter for right side.
 For instance, `Ioc a b` denotes the interval `(a, b]`.
-The definitions can be found in `Mathlib.Order.Interval.Set.Defs`.
+The definitions can be found in `Mathlib/Order/Interval/Set/Defs.lean`.
 
 This file contains basic facts on inclusion of and set operations on intervals
 (where the precise statements depend on the order's properties;
-statements requiring `LinearOrder` are in `Mathlib.Order.Interval.Set.LinearOrder`).
+statements requiring `LinearOrder` are in `Mathlib/Order/Interval/Set/LinearOrder.lean`).
 
 TODO: This is just the beginning; a lot of rules are missing
 -/
@@ -243,19 +243,19 @@ instance [NoMaxOrder α] : NoMaxOrder (Ici a) :=
 
 @[simp]
 theorem Icc_eq_empty (h : ¬a ≤ b) : Icc a b = ∅ :=
-  eq_empty_iff_forall_not_mem.2 fun _ ⟨ha, hb⟩ => h (ha.trans hb)
+  eq_empty_iff_forall_notMem.2 fun _ ⟨ha, hb⟩ => h (ha.trans hb)
 
 @[simp]
 theorem Ico_eq_empty (h : ¬a < b) : Ico a b = ∅ :=
-  eq_empty_iff_forall_not_mem.2 fun _ ⟨ha, hb⟩ => h (ha.trans_lt hb)
+  eq_empty_iff_forall_notMem.2 fun _ ⟨ha, hb⟩ => h (ha.trans_lt hb)
 
 @[simp]
 theorem Ioc_eq_empty (h : ¬a < b) : Ioc a b = ∅ :=
-  eq_empty_iff_forall_not_mem.2 fun _ ⟨ha, hb⟩ => h (ha.trans_le hb)
+  eq_empty_iff_forall_notMem.2 fun _ ⟨ha, hb⟩ => h (ha.trans_le hb)
 
 @[simp]
 theorem Ioo_eq_empty (h : ¬a < b) : Ioo a b = ∅ :=
-  eq_empty_iff_forall_not_mem.2 fun _ ⟨ha, hb⟩ => h (ha.trans hb)
+  eq_empty_iff_forall_notMem.2 fun _ ⟨ha, hb⟩ => h (ha.trans hb)
 
 @[simp]
 theorem Icc_eq_empty_of_lt (h : b < a) : Icc a b = ∅ :=
@@ -289,10 +289,26 @@ theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a :=
 @[gcongr] alias ⟨_, _root_.GCongr.Ici_subset_Ici_of_le⟩ := Ici_subset_Ici
 
 @[simp]
+theorem Ici_ssubset_Ici : Ici a ⊂ Ici b ↔ b < a where
+  mp h := by
+    obtain ⟨ab, c, cb, ac⟩ := ssubset_iff_exists.mp h
+    exact lt_of_le_not_ge (Ici_subset_Ici.mp ab) (fun h' ↦ ac (h'.trans cb))
+  mpr h := (ssubset_iff_of_subset (Ici_subset_Ici.mpr h.le)).mpr
+    ⟨b, right_mem_Iic, fun h' => h.not_le h'⟩
+
+@[gcongr] alias ⟨_, _root_.GCongr.Ici_ssubset_Ici_of_le⟩ := Ici_ssubset_Ici
+
+@[simp]
 theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b :=
   @Ici_subset_Ici αᵒᵈ _ _ _
 
 @[gcongr] alias ⟨_, _root_.GCongr.Iic_subset_Iic_of_le⟩ := Iic_subset_Iic
+
+@[simp]
+theorem Iic_ssubset_Iic : Iic a ⊂ Iic b ↔ a < b :=
+  @Ici_ssubset_Ici αᵒᵈ _ _ _
+
+@[gcongr] alias ⟨_, _root_.GCongr.Iic_ssubset_Iic_of_le⟩ := Iic_ssubset_Iic
 
 @[simp]
 theorem Ici_subset_Ioi : Ici a ⊆ Ioi b ↔ b < a :=
@@ -441,6 +457,12 @@ the equivalence in linear orders, use `Ioi_subset_Ioi_iff`. -/
 @[gcongr]
 theorem Ioi_subset_Ioi (h : a ≤ b) : Ioi b ⊆ Ioi a := fun _ hx => h.trans_lt hx
 
+/-- If `a < b`, then `(b, +∞) ⊂ (a, +∞)`. In preorders, this is just an implication. If you need
+the equivalence in linear orders, use `Ioi_ssubset_Ioi_iff`. -/
+@[gcongr]
+theorem Ioi_ssubset_Ioi (h : a < b) : Ioi b ⊂ Ioi a :=
+  (ssubset_iff_of_subset (Ioi_subset_Ioi h.le)).mpr ⟨b, h, lt_irrefl b⟩
+
 /-- If `a ≤ b`, then `(b, +∞) ⊆ [a, +∞)`. In preorders, this is just an implication. If you need
 the equivalence in dense linear orders, use `Ioi_subset_Ici_iff`. -/
 theorem Ioi_subset_Ici (h : a ≤ b) : Ioi b ⊆ Ici a :=
@@ -450,6 +472,12 @@ theorem Ioi_subset_Ici (h : a ≤ b) : Ioi b ⊆ Ici a :=
 the equivalence in linear orders, use `Iio_subset_Iio_iff`. -/
 @[gcongr]
 theorem Iio_subset_Iio (h : a ≤ b) : Iio a ⊆ Iio b := fun _ hx => lt_of_lt_of_le hx h
+
+/-- If `a < b`, then `(-∞, a) ⊂ (-∞, b)`. In preorders, this is just an implication. If you need
+the equivalence in linear orders, use `Iio_ssubset_Iio_iff`. -/
+@[gcongr]
+theorem Iio_ssubset_Iio (h : a < b) : Iio a ⊂ Iio b :=
+  (ssubset_iff_of_subset (Iio_subset_Iio h.le)).mpr ⟨a, h, lt_irrefl a⟩
 
 /-- If `a ≤ b`, then `(-∞, a) ⊆ (-∞, b]`. In preorders, this is just an implication. If you need
 the equivalence in dense linear orders, use `Iio_subset_Iic_iff`. -/
@@ -520,7 +548,7 @@ theorem _root_.IsBot.Ici_eq (h : IsBot a) : Ici a = univ :=
   eq_univ_of_forall h
 
 @[simp] theorem Ioi_eq_empty_iff : Ioi a = ∅ ↔ IsMax a := by
-  simp only [isMax_iff_forall_not_lt, eq_empty_iff_forall_not_mem, mem_Ioi]
+  simp only [isMax_iff_forall_not_lt, eq_empty_iff_forall_notMem, mem_Ioi]
 
 @[simp] theorem Iio_eq_empty_iff : Iio a = ∅ ↔ IsMin a := Ioi_eq_empty_iff (α := αᵒᵈ)
 
@@ -533,25 +561,45 @@ theorem _root_.IsBot.Ici_eq (h : IsBot a) : Ici a = univ :=
 theorem Iic_inter_Ioc_of_le (h : a ≤ c) : Iic a ∩ Ioc b c = Ioc b a :=
   ext fun _ => ⟨fun H => ⟨H.2.1, H.1⟩, fun H => ⟨H.2, H.1, H.2.trans h⟩⟩
 
-theorem not_mem_Icc_of_lt (ha : c < a) : c ∉ Icc a b := fun h => ha.not_le h.1
+theorem notMem_Icc_of_lt (ha : c < a) : c ∉ Icc a b := fun h => ha.not_le h.1
 
-theorem not_mem_Icc_of_gt (hb : b < c) : c ∉ Icc a b := fun h => hb.not_le h.2
+@[deprecated (since := "2025-05-23")] alias not_mem_Icc_of_lt := notMem_Icc_of_lt
 
-theorem not_mem_Ico_of_lt (ha : c < a) : c ∉ Ico a b := fun h => ha.not_le h.1
+theorem notMem_Icc_of_gt (hb : b < c) : c ∉ Icc a b := fun h => hb.not_le h.2
 
-theorem not_mem_Ioc_of_gt (hb : b < c) : c ∉ Ioc a b := fun h => hb.not_le h.2
+@[deprecated (since := "2025-05-23")] alias not_mem_Icc_of_gt := notMem_Icc_of_gt
 
-theorem not_mem_Ioi_self : a ∉ Ioi a := lt_irrefl _
+theorem notMem_Ico_of_lt (ha : c < a) : c ∉ Ico a b := fun h => ha.not_le h.1
 
-theorem not_mem_Iio_self : b ∉ Iio b := lt_irrefl _
+@[deprecated (since := "2025-05-23")] alias not_mem_Ico_of_lt := notMem_Ico_of_lt
 
-theorem not_mem_Ioc_of_le (ha : c ≤ a) : c ∉ Ioc a b := fun h => lt_irrefl _ <| h.1.trans_le ha
+theorem notMem_Ioc_of_gt (hb : b < c) : c ∉ Ioc a b := fun h => hb.not_le h.2
 
-theorem not_mem_Ico_of_ge (hb : b ≤ c) : c ∉ Ico a b := fun h => lt_irrefl _ <| h.2.trans_le hb
+@[deprecated (since := "2025-05-23")] alias not_mem_Ioc_of_gt := notMem_Ioc_of_gt
 
-theorem not_mem_Ioo_of_le (ha : c ≤ a) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.1.trans_le ha
+theorem notMem_Ioi_self : a ∉ Ioi a := lt_irrefl _
 
-theorem not_mem_Ioo_of_ge (hb : b ≤ c) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.2.trans_le hb
+@[deprecated (since := "2025-05-23")] alias not_mem_Ioi_self := notMem_Ioi_self
+
+theorem notMem_Iio_self : b ∉ Iio b := lt_irrefl _
+
+@[deprecated (since := "2025-05-23")] alias not_mem_Iio_self := notMem_Iio_self
+
+theorem notMem_Ioc_of_le (ha : c ≤ a) : c ∉ Ioc a b := fun h => lt_irrefl _ <| h.1.trans_le ha
+
+@[deprecated (since := "2025-05-23")] alias not_mem_Ioc_of_le := notMem_Ioc_of_le
+
+theorem notMem_Ico_of_ge (hb : b ≤ c) : c ∉ Ico a b := fun h => lt_irrefl _ <| h.2.trans_le hb
+
+@[deprecated (since := "2025-05-23")] alias not_mem_Ico_of_ge := notMem_Ico_of_ge
+
+theorem notMem_Ioo_of_le (ha : c ≤ a) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.1.trans_le ha
+
+@[deprecated (since := "2025-05-23")] alias not_mem_Ioo_of_le := notMem_Ioo_of_le
+
+theorem notMem_Ioo_of_ge (hb : b ≤ c) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.2.trans_le hb
+
+@[deprecated (since := "2025-05-23")] alias not_mem_Ioo_of_ge := notMem_Ioo_of_ge
 
 section matched_intervals
 
@@ -807,6 +855,18 @@ theorem Icc_inter_Icc_eq_singleton (hab : a ≤ b) (hbc : b ≤ c) : Icc a b ∩
   rw [← Ici_inter_Iic, ← Iic_inter_Ici, inter_inter_inter_comm, Iic_inter_Ici]
   simp [hab, hbc]
 
+lemma Icc_eq_Icc_iff {d : α} (h : a ≤ b) :
+    Icc a b = Icc c d ↔ a = c ∧ b = d := by
+  refine ⟨fun heq ↦ ?_, by rintro ⟨rfl, rfl⟩; rfl⟩
+  have h' : c ≤ d := by
+    by_contra contra; rw [Icc_eq_empty_iff.mpr contra, Icc_eq_empty_iff] at heq; contradiction
+  simp only [Set.ext_iff, mem_Icc] at heq
+  obtain ⟨-, h₁⟩ := (heq b).mp ⟨h, le_refl _⟩
+  obtain ⟨h₂, -⟩ := (heq a).mp ⟨le_refl _, h⟩
+  obtain ⟨h₃, -⟩ := (heq c).mpr ⟨le_refl _, h'⟩
+  obtain ⟨-, h₄⟩ := (heq d).mpr ⟨h', le_refl _⟩
+  exact ⟨le_antisymm h₃ h₂, le_antisymm h₁ h₄⟩
+
 end PartialOrder
 
 section OrderTop
@@ -978,8 +1038,8 @@ namespace Set
 @[simp] lemma Ici_False : Ici False = univ := by aesop
 @[simp] lemma Ici_True : Ici True = {True} := by aesop
 lemma Iio_False : Iio False = ∅ := by aesop
-@[simp] lemma Iio_True : Iio True = {False} := by aesop (add simp [Ioi, lt_iff_le_not_le])
-@[simp] lemma Ioi_False : Ioi False = {True} := by aesop (add simp [Ioi, lt_iff_le_not_le])
+@[simp] lemma Iio_True : Iio True = {False} := by aesop (add simp [Ioi, lt_iff_le_not_ge])
+@[simp] lemma Ioi_False : Ioi False = {True} := by aesop (add simp [Ioi, lt_iff_le_not_ge])
 lemma Ioi_True : Ioi True = ∅ := by aesop
 
 end Set

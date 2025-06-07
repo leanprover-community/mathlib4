@@ -46,10 +46,6 @@ theorem eval₂_C_X : eval₂ C X p = p :=
 
 end
 
-section Eval₂
-
-end Eval₂
-
 section Eval
 
 variable {x : R}

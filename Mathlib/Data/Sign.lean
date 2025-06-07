@@ -107,8 +107,8 @@ instance : LinearOrder SignType where
   le_total a b := by cases a <;> cases b <;> first | left; constructor | right; constructor
   le_antisymm := le_antisymm
   le_trans := le_trans
-  decidableLE := LE.decidableRel
-  decidableEq := SignType.decidableEq
+  toDecidableLE := LE.decidableRel
+  toDecidableEq := SignType.decidableEq
 
 instance : BoundedOrder SignType where
   top := 1
@@ -347,7 +347,7 @@ theorem sign_eq_zero_iff : sign a = 0 ↔ a = 0 := by
   rw [sign_apply] at h
   split_ifs at h with h_1 h_2
   cases h
-  exact (le_of_not_lt h_1).eq_of_not_lt h_2
+  exact (le_of_not_gt h_1).eq_of_not_lt h_2
 
 theorem sign_ne_zero : sign a ≠ 0 ↔ a ≠ 0 :=
   sign_eq_zero_iff.not

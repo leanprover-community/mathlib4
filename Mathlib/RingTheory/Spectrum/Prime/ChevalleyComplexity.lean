@@ -238,7 +238,7 @@ private lemma induction_structure (n : ℕ)
           comp_apply, smul_eq_mul]
         refine ((degree_mul_le _ _).trans (add_le_add degree_C_le degree_map_le)).trans ?_
         simp
-      rw [lt_iff_le_not_le]
+      rw [lt_iff_le_not_ge]
       simp only [coe_mapRingHom, funext_iff, InductionObj.ofLex_degree_fst, Pi.smul_apply,
         comp_apply, smul_eq_mul, show (ofLex e.degree).2 from H,
         le_Prop_eq, implies_true, true_implies, true_and]
@@ -261,9 +261,8 @@ private lemma induction_structure (n : ℕ)
         Ideal.Quotient.mk_singleton_self, ne_eq, not_true_eq_false, false_or] at h_eq
       exact hi h_eq
 
-#adaptation_note /-- nightly-2025-03-25
-Requires more heartbeats after nightly-2025-03-25. -/
 set_option maxHeartbeats 400000 in
+-- Requires more heartbeats after nightly-2025-03-25.
 open IsLocalization in
 open Submodule hiding comap in
 /-- Part 4 of the induction structure applied to `Statement R₀ R n`. See the docstring of
@@ -441,7 +440,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
           by_cases hi : i ≤ f.natDegree
           · exact ⟨i, hi.trans_lt (by simp), rfl⟩
           · exact ⟨f.natDegree + 1, by simp,
-              by simp [f.coeff_eq_zero_of_natDegree_lt (lt_of_not_le hi)]⟩
+              by simp [f.coeff_eq_zero_of_natDegree_lt (lt_of_not_ge hi)]⟩
         · ext; simp [eq_comm]
     · simp
   · intros R _ g i hi hi_min _ R₀ _ f
@@ -674,7 +673,7 @@ lemma chevalley_mvPolynomialC
   · refine ⟨(S.map (isEmptyRingEquiv _ _).toRingHom), ?_, ?_⟩
     · rw [ConstructibleSetData.toSet_map]
       show _ = (comapEquiv (isEmptyRingEquiv _ _)).symm ⁻¹' _
-      rw [← Equiv.image_eq_preimage]
+      rw [← OrderIso.image_eq_preimage]
       rfl
     · simp only [ConstructibleSetData.map, RingEquiv.toRingHom_eq_coe, Finset.mem_image, comp_apply,
         BasicConstructibleSetData.map, RingHom.coe_coe, isEmptyRingEquiv_eq_coeff_zero, pow_one,
@@ -758,7 +757,7 @@ lemma chevalley_mvPolynomialC
     rw [← hU₁, ← hT₁, ← Set.image_comp, ← ContinuousMap.coe_comp, ← comap_comp,
       ConstructibleSetData.toSet_map]
     show _ = _ '' ((comapEquiv e.toRingEquiv).symm ⁻¹' _)
-    rw [← Equiv.image_eq_preimage, Set.image_image]
+    rw [← OrderIso.image_eq_preimage, Set.image_image]
     simp only [comapEquiv_apply, ← comap_apply, ← comap_comp_apply]
     congr!
     exact e.symm.toAlgHom.comp_algebraMap.symm
@@ -791,8 +790,8 @@ A constructible set of complexity at most `M` in `Spec R[X₁, ..., Xₘ]` gets 
 `f : R[Y₁, ..., Yₙ] → R[X₁, ..., Xₘ]` to a constructible set of complexity `O_{M, m, n}(1)` in
 `Spec R[Y₁, ..., Yₙ]`.
 
-See the module doc of `Mathlib.RingTheory.Spectrum.Prime.ChevalleyComplexity` for an explanation of
-this notion of complexity. -/
+See the module doc of `Mathlib/RingTheory/Spectrum/Prime/ChevalleyComplexity.lean` for an
+explanation of this notion of complexity. -/
 lemma chevalley_mvPolynomial_mvPolynomial
     {m n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] MvPolynomial (Fin m) R)
     (k : ℕ) (d : Multiset (Fin m))

@@ -35,7 +35,7 @@ section round
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing α] [FloorRing α]
+variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
 
 /-- `round` rounds a number to the nearest integer. `round (1 / 2) = 1` -/
 def round (x : α) : ℤ :=
@@ -137,7 +137,7 @@ theorem abs_sub_round_eq_min (x : α) : |x - round x| = min (fract x) (1 - fract
 
 theorem round_le (x : α) (z : ℤ) : |x - round x| ≤ |x - z| := by
   rw [abs_sub_round_eq_min, min_le_iff]
-  rcases le_or_lt (z : α) x with (hx | hx) <;> [left; right]
+  rcases le_or_gt (z : α) x with (hx | hx) <;> [left; right]
   · conv_rhs => rw [abs_eq_self.mpr (sub_nonneg.mpr hx), ← fract_add_floor x, add_sub_assoc]
     simpa only [le_add_iff_nonneg_right, sub_nonneg, cast_le] using le_floor.mpr hx
   · rw [abs_eq_neg_self.mpr (sub_neg.mpr hx).le]
@@ -151,11 +151,11 @@ end LinearOrderedRing
 
 section LinearOrderedField
 
-variable [LinearOrderedField α] [FloorRing α]
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
 
 theorem round_eq (x : α) : round x = ⌊x + 1 / 2⌋ := by
   simp_rw [round, (by simp only [lt_div_iff₀', two_pos] : 2 * fract x < 1 ↔ fract x < 1 / 2)]
-  rcases lt_or_le (fract x) (1 / 2) with hx | hx
+  rcases lt_or_ge (fract x) (1 / 2) with hx | hx
   · conv_rhs => rw [← fract_add_floor x, add_assoc, add_left_comm, floor_intCast_add]
     rw [if_pos hx, left_eq_add, floor_eq_iff, cast_zero, zero_add]
     constructor
@@ -218,7 +218,8 @@ end round
 
 namespace Int
 
-variable [LinearOrderedField α] [LinearOrderedField β] [FloorRing α] [FloorRing β]
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+  [Field β] [LinearOrder β] [IsStrictOrderedRing β] [FloorRing α] [FloorRing β]
 variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
 
 theorem map_round (f : F) (hf : StrictMono f) (a : α) : round (f a) = round a := by

@@ -314,6 +314,18 @@ theorem isUnit'_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit' a ↔ ∃ b, b 
 @[to_additive (reorder := 3 4 5)]
 def reorderMulThree {α : Type _} [Mul α] (x y z : α) : α := x * y * z
 
+/-! Test a permutation that is too big for the list of arguments. -/
+/--
+error: the permutation
+[[2, 3, 50]]
+provided by the reorder config option is too large, the type
+  {α : Type u_1} → [Mul α] → α → α → α → α
+has only 5 arguments
+-/
+#guard_msgs in
+@[to_additive (reorder := 3 4 51)]
+def reorderMulThree' {α : Type _} [Mul α] (x y z : α) : α := x * y * z
+
 example {α : Type _} [Add α] (x y z : α) : reorderAddThree z x y = x + y + z := rfl
 
 
@@ -446,3 +458,24 @@ warning: declaration uses 'sorry'
 #guard_msgs in
 @[to_additive]
 instance foo {α : Type*} [Semigroup α] : Monoid α := sorry
+
+-- Test the error message for a wrong `to_additive existing`.
+
+/--
+error: `to_additive` validation failed:
+  expected 1 universe levels, but 'Nat.le_trans' has 0 universe levels
+-/
+#guard_msgs in
+@[to_additive existing Nat.le_trans]
+lemma one_eq_one'' {α : Type*} [One α] : (1 : α) = 1 := rfl
+
+
+/--
+error: `to_additive` validation failed: expected
+  ∀ {α : Type u} [inst : Zero α], 0 = 0
+but 'Eq.trans' has type
+  ∀ {α : Sort u} {a b c : α}, a = b → b = c → a = c
+-/
+#guard_msgs in
+@[to_additive existing Eq.trans]
+lemma one_eq_one''' {α : Type*} [One α] : (1 : α) = 1 := rfl

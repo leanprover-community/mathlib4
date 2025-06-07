@@ -135,7 +135,7 @@ theorem sqrt_mul_self (h : 0 ≤ x) : √(x * x) = x :=
 theorem sqrt_eq_cases : √x = y ↔ y * y = x ∧ 0 ≤ y ∨ x < 0 ∧ y = 0 := by
   constructor
   · rintro rfl
-    rcases le_or_lt 0 x with hle | hlt
+    rcases le_or_gt 0 x with hle | hlt
     · exact Or.inl ⟨mul_self_sqrt hle, sqrt_nonneg x⟩
     · exact Or.inr ⟨hlt, sqrt_eq_zero_of_nonpos hlt.le⟩
   · rintro (⟨rfl, hy⟩ | ⟨hx, rfl⟩)
@@ -283,7 +283,7 @@ def evalNNRealSqrt : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: a square root is nonnegative, and is strictly positive if
 its input is. -/
-@[positivity √ _]
+@[positivity √_]
 def evalSqrt : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(√$a) =>
@@ -322,7 +322,7 @@ variable {x y : ℝ}
 
 @[simp]
 theorem div_sqrt : x / √x = √x := by
-  rcases le_or_lt x 0 with h | h
+  rcases le_or_gt x 0 with h | h
   · rw [sqrt_eq_zero'.mpr h, div_zero]
   · rw [div_eq_iff (sqrt_ne_zero'.mpr h), mul_self_sqrt h.le]
 

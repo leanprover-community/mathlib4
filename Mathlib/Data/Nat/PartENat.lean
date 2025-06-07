@@ -26,7 +26,7 @@ There is no additive analogue of `MonoidWithZero`; if there were then `PartENat`
 be an `AddMonoidWithTop`.
 
 * `toWithTop` : the map from `PartENat` to `ℕ∞`, with theorems that it plays well
-with `+` and `≤`.
+  with `+` and `≤`.
 
 * `withTopAddEquiv : PartENat ≃+ ℕ∞`
 * `withTopOrderIso : PartENat ≃o ℕ∞`
@@ -220,12 +220,12 @@ instance partialOrder : PartialOrder PartENat where
   le_refl _ := ⟨id, fun _ => le_rfl⟩
   le_trans := fun _ _ _ ⟨hxy₁, hxy₂⟩ ⟨hyz₁, hyz₂⟩ =>
     ⟨hxy₁ ∘ hyz₁, fun _ => le_trans (hxy₂ _) (hyz₂ _)⟩
-  lt_iff_le_not_le _ _ := Iff.rfl
+  lt_iff_le_not_ge _ _ := Iff.rfl
   le_antisymm := fun _ _ ⟨hxy₁, hxy₂⟩ ⟨hyx₁, hyx₂⟩ =>
     Part.ext' ⟨hyx₁, hxy₁⟩ fun _ _ => le_antisymm (hxy₂ _) (hyx₂ _)
 
 theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.get hx < y.get hy := by
-  rw [lt_iff_le_not_le, le_def, le_def, not_exists]
+  rw [lt_iff_le_not_ge, le_def, le_def, not_exists]
   constructor
   · rintro ⟨⟨hyx, H⟩, h⟩
     by_cases hx : x.Dom
@@ -242,11 +242,10 @@ theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.ge
       obtain ⟨hx', h⟩ := h
       exact (hx hx').elim
   · rintro ⟨hx, H⟩
-    exact ⟨⟨fun _ => hx, fun hy => (H hy).le⟩, fun hxy h => not_lt_of_le (h _) (H _)⟩
+    exact ⟨⟨fun _ => hx, fun hy => (H hy).le⟩, fun hxy h => not_lt_of_ge (h _) (H _)⟩
 
-noncomputable instance orderedAddCommMonoid : OrderedAddCommMonoid PartENat :=
-  { PartENat.partialOrder, PartENat.addCommMonoid with
-    add_le_add_left := fun a b ⟨h₁, h₂⟩ c =>
+noncomputable instance isOrderedAddMonoid : IsOrderedAddMonoid PartENat :=
+  { add_le_add_left := fun a b ⟨h₁, h₂⟩ c =>
       PartENat.casesOn c (by simp [top_add]) fun c =>
         ⟨fun h => And.intro (dom_natCast _) (h₁ h.2), fun h => by
           simpa only [coe_add_get] using add_le_add_left (h₂ _) c⟩ }
@@ -387,7 +386,7 @@ instance isTotal : IsTotal PartENat (· ≤ ·) where
 noncomputable instance linearOrder : LinearOrder PartENat :=
   { PartENat.partialOrder with
     le_total := IsTotal.total
-    decidableLE := Classical.decRel _
+    toDecidableLE := Classical.decRel _
     max := (· ⊔ ·)
     max_def a b := congr_fun₂ (@sup_eq_maxDefault PartENat _ (_) _) _ _ }
 
@@ -735,7 +734,7 @@ theorem find_eq_top_iff : find P = ⊤ ↔ ∀ n, ¬P n :=
 end Find
 
 noncomputable instance : LinearOrderedAddCommMonoidWithTop PartENat :=
-  { PartENat.linearOrder, PartENat.orderedAddCommMonoid, PartENat.orderTop with
+  { PartENat.linearOrder, PartENat.isOrderedAddMonoid, PartENat.orderTop with
     top_add' := top_add }
 
 noncomputable instance : CompleteLinearOrder PartENat :=
