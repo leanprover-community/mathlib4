@@ -374,7 +374,7 @@ theorem diam_pair : diam ({x, y} : Set α) = dist x y := by
 theorem diam_triple :
     Metric.diam ({x, y, z} : Set α) = max (max (dist x y) (dist x z)) (dist y z) := by
   simp only [Metric.diam, EMetric.diam_triple, dist_edist]
-  rw [ENNReal.toReal_max, ENNReal.toReal_max] <;> apply_rules [ne_of_lt, edist_lt_top, max_lt]
+  rw [ENNReal.toReal_max, ENNReal.toReal_max]
 
 /-- If the distance between any two points in a set is bounded by some constant `C`,
 then `ENNReal.ofReal C` bounds the emetric diameter of this set. -/
