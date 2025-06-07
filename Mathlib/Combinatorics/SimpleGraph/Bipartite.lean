@@ -263,7 +263,6 @@ lemma IsBipartite.exists_isBipartiteWith (h : G.IsBipartite) : ∃ s t, G.IsBipa
 
 /-- If a simple graph `G` has a bipartition, then it is bipartite. -/
 lemma IsBipartiteWith.isBipartite {s t : Set V} (h : G.IsBipartiteWith s t) : G.IsBipartite := by
-  classical
   refine ⟨s.indicator 1, fun {v w} hw ↦ ?_⟩
   obtain (⟨hs, ht⟩ | ⟨ht, hs⟩) := h.2 hw <;>
     { replace ht : _ ∉ s := h.1.subset_compl_left ht; simp [hs, ht] }
