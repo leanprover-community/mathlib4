@@ -470,7 +470,7 @@ theorem coeff_apply (h : IsAdjoinRootMonic S f) (z : S) (i : ℕ) :
     h.coeff z i = if hi : i < natDegree f then h.basis.repr z ⟨i, hi⟩ else 0 := by
   split_ifs with hi
   · exact h.coeff_apply_lt z i hi
-  · exact h.coeff_apply_le z i (le_of_not_lt hi)
+  · exact h.coeff_apply_le z i (le_of_not_gt hi)
 
 theorem coeff_root_pow (h : IsAdjoinRootMonic S f) {n} (hn : n < natDegree f) :
     h.coeff (h.root ^ n) = Pi.single n 1 := by

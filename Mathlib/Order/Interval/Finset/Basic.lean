@@ -1109,7 +1109,7 @@ lemma transGen_wcovBy_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hx
   already. In that case, since `z` is maximal in `Ico x y`, then `z ⩿ y` and we can use the
   induction hypothesis to show that `Relation.TransGen (· ⩿ ·) x z`. -/
   · obtain ⟨z, hxz, hz⟩ :=
-      (Set.finite_Ico x y).exists_le_maximal <| Set.left_mem_Ico.2 <| hxy.lt_of_not_le hxy'
+      (Set.finite_Ico x y).exists_le_maximal <| Set.left_mem_Ico.2 <| hxy.lt_of_not_ge hxy'
     have z_card := calc
       #(Icc x z) ≤ #(Ico x y) := card_le_card <| Icc_subset_Ico_right hz.1.2
       _          < #(Icc x y) := this
@@ -1151,7 +1151,7 @@ lemma transGen_covBy_of_lt [Preorder α] [LocallyFiniteOrder α] {x y : α} (hxy
   · exact .tail (transGen_covBy_of_lt hxz) hzy
   /- when `¬ x < z`, then actually `z ≤ x` (not because it's a linear order, but because
   `x ≤ z`), and since `z ⋖ y` we conclude that `x ⋖ y` , then `Relation.TransGen.single`. -/
-  · simp only [lt_iff_le_not_le, not_and, not_not] at hxz
+  · simp only [lt_iff_le_not_ge, not_and, not_not] at hxz
     exact .single (hzy.of_le_of_lt (hxz hz.1.1) hxy)
 termination_by #(Ico x y)
 

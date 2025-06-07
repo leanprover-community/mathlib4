@@ -235,9 +235,9 @@ function from $[a, b]$ to the whole line is equal to the original function. -/
 theorem IccExtend_eq_self (f : α → β) (ha : ∀ x < a, f x = f a) (hb : ∀ x, b < x → f x = f b) :
     IccExtend h (f ∘ (↑)) = f := by
   ext x
-  rcases lt_or_le x a with hxa | hax
+  rcases lt_or_ge x a with hxa | hax
   · simp [IccExtend_of_le_left _ _ hxa.le, ha x hxa]
-  · rcases le_or_lt x b with hxb | hbx
+  · rcases le_or_gt x b with hxb | hbx
     · lift x to Icc a b using ⟨hax, hxb⟩
       rw [IccExtend_val, comp_apply]
     · simp [IccExtend_of_right_le _ _ hbx.le, hb x hbx]

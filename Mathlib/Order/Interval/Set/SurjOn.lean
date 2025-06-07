@@ -31,7 +31,7 @@ theorem surjOn_Ioo_of_monotone_surjective (h_mono : Monotone f) (h_surj : Functi
 
 theorem surjOn_Ico_of_monotone_surjective (h_mono : Monotone f) (h_surj : Function.Surjective f)
     (a b : α) : SurjOn f (Ico a b) (Ico (f a) (f b)) := by
-  obtain hab | hab := lt_or_le a b
+  obtain hab | hab := lt_or_ge a b
   · intro p hp
     rcases eq_left_or_mem_Ioo_of_mem_Ico hp with (rfl | hp')
     · exact mem_image_of_mem f (left_mem_Ico.mpr hab)

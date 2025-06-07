@@ -82,7 +82,7 @@ def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.sy
   map_zero_left := by simp [reflTransSymmAux]
   map_one_left x := by
     simp only [reflTransSymmAux, Path.coe_toContinuousMap, Path.trans]
-    cases le_or_lt (x : ℝ) 2⁻¹ with
+    cases le_or_gt (x : ℝ) 2⁻¹ with
     | inl hx => simp [hx, ← extend_extends]
     | inr hx =>
       simp? [hx.not_le, ← extend_extends] says
