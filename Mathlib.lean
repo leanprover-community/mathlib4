@@ -6100,6 +6100,7 @@ import Mathlib.Topology.Compactification.OnePoint.Basic
 import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
 import Mathlib.Topology.Compactification.OnePoint.Sphere
 import Mathlib.Topology.Compactification.OnePointEquiv
+import Mathlib.Topology.Compactification.StoneCech
 import Mathlib.Topology.Compactness.Bases
 import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.Compactness.CompactlyCoherentSpace
