@@ -67,10 +67,39 @@ variable {ι α β : Type*} {π : ι → Type*}
 
 attribute [ext] LE
 
-protected lemma LE.le.ge [LE α] {x y : α} (h : x ≤ y) : y ≥ x := h
-protected lemma GE.ge.le [LE α] {x y : α} (h : x ≥ y) : y ≤ x := h
-protected lemma LT.lt.gt [LT α] {x y : α} (h : x < y) : y > x := h
-protected lemma GT.gt.lt [LT α] {x y : α} (h : x > y) : y < x := h
+section LE
+
+variable [LE α] {a b c : α}
+
+protected lemma LE.le.ge (h : a ≤ b) : b ≥ a := h
+protected lemma GE.ge.le (h : a ≥ b) : b ≤ a := h
+
+theorem le_of_le_of_eq' : b ≤ c → a = b → a ≤ c := flip le_of_eq_of_le
+theorem le_of_eq_of_le' : b = c → a ≤ b → a ≤ c := flip le_of_le_of_eq
+
+alias LE.le.trans_eq := le_of_le_of_eq
+alias LE.le.trans_eq' := le_of_le_of_eq'
+alias Eq.trans_le := le_of_eq_of_le
+alias Eq.trans_ge := le_of_eq_of_le'
+
+end LE
+
+section LT
+
+variable [LT α] {a b c : α}
+
+protected lemma LT.lt.gt (h : a < b) : b > a := h
+protected lemma GT.gt.lt (h : a > b) : b < a := h
+
+theorem lt_of_lt_of_eq' : b < c → a = b → a < c := flip lt_of_eq_of_lt
+theorem lt_of_eq_of_lt' : b = c → a < b → a < c := flip lt_of_lt_of_eq
+
+alias LT.lt.trans_eq := lt_of_lt_of_eq
+alias LT.lt.trans_eq' := lt_of_lt_of_eq'
+alias Eq.trans_lt := lt_of_eq_of_lt
+alias Eq.trans_gt := lt_of_eq_of_lt'
+
+end LT
 
 /-- Given a relation `R` on `β` and a function `f : α → β`, the preimage relation on `α` is defined
 by `x ≤ y ↔ f x ≤ f y`. It is the unique relation on `α` making `f` a `RelEmbedding` (assuming `f`
@@ -102,18 +131,6 @@ theorem lt_of_le_of_lt' : b ≤ c → a < b → a < c :=
 theorem lt_of_lt_of_le' : b < c → a ≤ b → a < c :=
   flip lt_of_le_of_lt
 
-theorem le_of_le_of_eq' : b ≤ c → a = b → a ≤ c :=
-  flip le_of_eq_of_le
-
-theorem le_of_eq_of_le' : b = c → a ≤ b → a ≤ c :=
-  flip le_of_le_of_eq
-
-theorem lt_of_lt_of_eq' : b < c → a = b → a < c :=
-  flip lt_of_eq_of_lt
-
-theorem lt_of_eq_of_lt' : b = c → a < b → a < c :=
-  flip lt_of_lt_of_eq
-
 theorem not_lt_iff_not_le_or_ge : ¬a < b ↔ ¬a ≤ b ∨ b ≤ a := by
   rw [lt_iff_le_not_ge, Classical.not_and_iff_not_or_not, Classical.not_not]
 
@@ -135,16 +152,7 @@ alias LE.le.trans_lt := lt_of_le_of_lt
 alias LE.le.trans_lt' := lt_of_le_of_lt'
 alias LT.lt.trans_le := lt_of_lt_of_le
 alias LT.lt.trans_le' := lt_of_lt_of_le'
-alias LE.le.trans_eq := le_of_le_of_eq
-alias LE.le.trans_eq' := le_of_le_of_eq'
-alias LT.lt.trans_eq := lt_of_lt_of_eq
-alias LT.lt.trans_eq' := lt_of_lt_of_eq'
-alias Eq.trans_le := le_of_eq_of_le
-alias Eq.trans_ge := le_of_eq_of_le'
-alias Eq.trans_lt := lt_of_eq_of_lt
-alias Eq.trans_gt := lt_of_eq_of_lt'
 alias LE.le.lt_of_not_ge := lt_of_le_not_ge
-alias LE.le.lt_or_eq_dec := Decidable.lt_or_eq_of_le
 alias LT.lt.le := le_of_lt
 alias LT.lt.ne := ne_of_lt
 alias Eq.le := le_of_eq
@@ -276,6 +284,7 @@ theorem eq_or_lt_of_le (h : a ≤ b) : a = b ∨ a < b := h.lt_or_eq.symm
 theorem eq_or_gt_of_le (h : a ≤ b) : b = a ∨ a < b := h.lt_or_eq.symm.imp Eq.symm id
 theorem gt_or_eq_of_le (h : a ≤ b) : a < b ∨ b = a := (eq_or_gt_of_le h).symm
 
+alias LE.le.lt_or_eq_dec := Decidable.lt_or_eq_of_le
 alias LE.le.eq_or_lt_dec := Decidable.eq_or_lt_of_le
 alias LE.le.eq_or_lt := eq_or_lt_of_le
 alias LE.le.eq_or_gt := eq_or_gt_of_le
