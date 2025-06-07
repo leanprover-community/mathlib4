@@ -63,7 +63,7 @@ lemma hasExt_iff [HasDerivedCategory.{w'} C] :
     exact (small_congr ((shiftFunctorZero _ ℤ).app
       ((singleFunctor C 0).obj X)).homFromEquiv).1 (h X Y 0 n)
   · intro h X Y a b
-    obtain hab | hab := le_or_lt a b
+    obtain hab | hab := le_or_gt a b
     · refine (small_congr ?_).1 (h X Y (b - a) (by simpa))
       exact (Functor.FullyFaithful.ofFullyFaithful
         (shiftFunctor _ a)).homEquiv.trans

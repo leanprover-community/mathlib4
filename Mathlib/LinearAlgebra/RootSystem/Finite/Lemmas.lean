@@ -402,7 +402,7 @@ lemma pairingIn_le_zero_of_ne :
 lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
     (hkj : k ≠ j) (hk' : α k + α i ∈ Φ) :
     α k - α j ∈ Φ := by
-  rcases lt_or_le 0 (P.pairingIn ℤ j k) with hm | hm
+  rcases lt_or_ge 0 (P.pairingIn ℤ j k) with hm | hm
   · rw [← neg_mem_range_root_iff, neg_sub]
     exact P.root_sub_root_mem_of_pairingIn_pos hm hkj.symm
   obtain ⟨l, hl⟩ := hk
