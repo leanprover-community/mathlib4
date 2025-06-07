@@ -156,17 +156,6 @@ theorem id_eq_id (X : Grpd) : 𝟙 X = 𝟭 X := rfl
 /-- Composition in the category of categories equals functor composition. -/
 theorem comp_eq_comp {X Y Z : Grpd} (F : X ⟶ Y) (G : Y ⟶ Z) : F ≫ G = F ⋙ G := rfl
 
-def toCat₁ {C D : Grpd.{v, u}} (F : C ⟶ D) : Cat.of C ⟶ Cat.of D := F
-
-/- @[simp]
-lemma functorToCat_eq {C D : Grpd.{v, u}} (F : C ⟶ D) :
-    functorToCat F = F := rfl -/
-
-def toCat₂ {C D : Grpd.{v, u}} {F G : C ⟶ D} (η : F ⟶ G) : toCat₁ F ⟶ toCat₁ G := η
-
-/- @[simp]
-lemma toCat₂_whisker_left {C D E : Grpd.{v, u}} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) :
-    toCat₂ (F ◁ η) = toCat₁ F ◁ toCat₂ η := rfl -/
 section
 
 attribute [-simp] eqToIso_refl
