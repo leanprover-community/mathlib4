@@ -134,7 +134,7 @@ For non-dependent functions you can also use the abbreviation `FunLike`.
 This typeclass is used in the definition of the homomorphism typeclasses,
 such as `ZeroHomClass`, `MulHomClass`, `MonoidHomClass`, ....
 -/
-@[notation_class * toFun Simps.findCoercionArgs]
+@[notation_class* toFun Simps.findCoercionArgs]
 class DFunLike (F : Sort*) (α : outParam (Sort*)) (β : outParam <| α → Sort*) where
   /-- The coercion from `F` to a function. -/
   coe : F → ∀ a : α, β a
