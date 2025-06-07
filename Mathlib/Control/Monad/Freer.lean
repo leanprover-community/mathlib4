@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tanner Duve
 -/
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Control.Monad.Writer
 
 /-!
 # Freer Monad and Common Instances
@@ -11,10 +12,12 @@ import Mathlib.Algebra.Group.Defs
 This file defines a general `Freer` monad construction and several canonical instances:
 `State`, `Writer`, and `Continuation` monads implemented via this construction.
 
-The "Freer" monad (pronounced "more free") is an alternative representation of free monads
-that doesn't require the underlying functor to be a `Functor`. Unlike the traditional
-`Free` monad which requires `f` to be a functor, `Freer` works with any type constructor
+The "Freer" monad (as in, "more free") is an alternative representation of free monads
+that doesn't require the underlying type constructor to be a `Functor`. Unlike the traditional
+`Free` monad which generates a monad from a functor, `Freer` works with any type constructor
 `f : Type → Type`, making it more general and easier to use with algebraic effects.
+
+See the Haskell [freer-simple](https://hackage.haskell.org/package/freer-simple) library.
 
 ## Main Definitions
 
@@ -37,7 +40,6 @@ and helper functions.
 
 * Oleg Kiselyov, Hiromi Ishii. "Freer Monads, More Extensible Effects".
   Haskell Symposium 2015.
-* The Haskell `freer-simple` library: https://hackage.haskell.org/package/freer-simple
 
 ## Tags
 
@@ -204,6 +206,19 @@ def runWriter {w : Type u} {α : Type v} [AddMonoid w] (computation : FreerWrite
 /-- Capture the output produced by a computation. -/
 def listen {w : Type u} {α : Type v} [AddMonoid w] (comp : FreerWriter w α) :
 FreerWriter w (α × w) := Freer.pure (runWriter comp)
+
+/-- Run a computation that produces a value and a function to transform the output. -/
+def pass {w : Type u} {α : Type v} [AddMonoid w] (comp : FreerWriter w (α × (w → w))) :
+FreerWriter w α := do
+  let (result, accLog) := runWriter comp
+  let (a, f) := result
+  tell (f accLog)
+  return a
+
+instance {w : Type u} [AddMonoid w] : MonadWriter w (FreerWriter w) where
+  tell := FreerWriter.tell
+  listen := FreerWriter.listen
+  pass := FreerWriter.pass
 
 /-- Run a writer computation, returning only the log. -/
 def execWriter {w : Type u} {α : Type v} [AddMonoid w] (computation : FreerWriter w α) : w :=
