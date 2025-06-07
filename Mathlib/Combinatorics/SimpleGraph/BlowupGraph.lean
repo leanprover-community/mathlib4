@@ -7,6 +7,7 @@ import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Finset.Powerset
+import Mathlib.Data.Rat.Floor
 import Mathlib.Algebra.Order.Floor.Defs
 import Mathlib.Algebra.Order.Floor.Semiring
 import Mathlib.Combinatorics.SimpleGraph.Operations
@@ -20,6 +21,7 @@ namespace SimpleGraph
 
 variable {ι : Type*} (H : SimpleGraph ι) --[DecidableRel H.Adj]
 (V : ι → Type*) --[∀ i, DecidableEq (V i)]
+
 
 /--
 Given a family of vertex types indexed by `ι`, pulling back from `H : SimpleGraph ι`
@@ -333,8 +335,7 @@ section ExtremalInduced
 open Classical in
 /--
 The `extremalInduced H F` is the the maximum number of embeddings of `H` in an `F`-free graph on `n`
-vertices.
-If `H` is contained in all simple graphs on `n` vertices, then this is `0`.
+vertices. e.g. if `H = K₂` then this is twice the max number of edges in an `F`-free graph on `n`
 -/
 noncomputable def extremalInduced (n : ℕ) {β γ : Type*} (H : SimpleGraph γ) (F : SimpleGraph β)
   [Fintype γ] : ℕ :=
@@ -465,13 +466,48 @@ theorem isExtremalH_free_iff :
   exact fun h ↦ ⟨eq_of_le_of_le (card_embeddings_le_extremalInduced h), ge_of_eq⟩
 
 lemma card_embeddings_of_isExtremalH_free (h : G.IsExtremalH H F.Free) :
-    ‖H ↪g G‖ = extremalInduced (card α) H F:= (isExtremalH_free_iff.mp h).2
+    ‖H ↪g G‖ = extremalInduced (card α) H F := (isExtremalH_free_iff.mp h).2
+
+local notation "exᵢ" => extremalInduced
+lemma antitone_extremalInduced (H : SimpleGraph γ) (F : SimpleGraph β)
+    [DecidableRel H.Adj] [DecidableRel F.Adj] :
+    AntitoneOn (fun n ↦ (exᵢ n H F / n.choose ‖γ‖ : ℚ)) {x | ‖γ‖ ≤ x} := by
+  apply antitoneOn_div_choose _ ‖γ‖
+  intro n
+  by_cases hn : n < ‖γ‖
+  · have : n + 1 - ‖γ‖ = 0 := by omega
+    simp [this]
+  push_neg at hn
+  have hp : 0 < (n : ℚ) + 1 - ‖γ‖ := by
+    rw [← Nat.cast_add_one, ← Nat.cast_sub (by omega)]
+    norm_cast; omega
+  have : exᵢ (n + 1) H F ≤ ((((n + 1) * exᵢ n H F) : ℚ)/(n + 1 - ‖γ‖)) := by
+    rw [← Fintype.card_fin (n + 1)]
+    apply (extremalInduced_le_iff_of_nonneg F (α := (Fin (n + 1))) ?_).2
+    · intro G hG hF
+      rw [le_div_iff₀ hp]
+      rw [← Nat.cast_add_one, ← Nat.cast_sub (by omega)]
+      norm_cast
+      calc
+      _ = ∑ t : Finset (Fin (n + 1)) with t.card = n , ‖H ↪g (G.induce t)‖ :=
+          (sum_card_embeddings_induce_n G H).symm
+      _ ≤ _ := by
+        rw [mul_comm]
+        apply (sum_le_card_nsmul {t : Finset (Fin (n + 1)) | t.card = n} _ (exᵢ n H F) ?_).trans
+        · simp [mul_comm]
+        intro t ht
+        simp only [univ_filter_card_eq, mem_powersetCard, subset_univ, true_and] at ht
+        have : Fintype.card (( t.toSet): Type) = n := by simp [ht]
+        simp_rw [← this]
+        apply card_embeddings_le_extremalInduced
+        intro hf
+        exact hF <| hf.trans ⟨(Embedding.comap _ G).toHom, fun _ _ h ↦ by simpa using h⟩
+    · apply div_nonneg (by norm_cast; omega) hp.le
+  rw [← Nat.cast_add_one, ← Nat.cast_sub (by omega)] at this
+  rw [le_div_iff₀ (mod_cast (by omega)), mul_comm] at this
+  norm_cast at this
 
 end ExtremalInduced
-
-
-
-
 end SimpleGraph
 
 
