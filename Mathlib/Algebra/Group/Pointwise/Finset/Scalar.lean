@@ -173,7 +173,7 @@ lemma coe_smul_finset (a : α) (s : Finset β) : ↑(a • s) = a • (↑s : Se
 @[to_additive] lemma smul_finset_card_le : #(a • s) ≤ #s := card_image_le
 
 @[to_additive (attr := simp)]
-lemma smul_finset_empty (a : α) : a • (∅ : Finset β) = ∅ := image_empty _
+lemma smul_finset_empty (a : α) : a • (∅ : Finset β) = ∅ := rfl
 
 @[to_additive (attr := simp)]
 lemma smul_finset_eq_empty : a • s = ∅ ↔ s = ∅ := image_eq_empty

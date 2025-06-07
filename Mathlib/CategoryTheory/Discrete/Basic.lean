@@ -50,7 +50,7 @@ structure Discrete (α : Type u₁) where
   as : α
 
 @[simp]
-theorem Discrete.mk_as {α : Type u₁} (X : Discrete α) : Discrete.mk X.as = X := by
+theorem Discrete.mk_as {α : Type u₁} (X : Discrete α) : Discrete.mk X.as = X :=
   rfl
 
 /-- `Discrete α` is equivalent to the original type `α`. -/

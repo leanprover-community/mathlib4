@@ -192,7 +192,7 @@ theorem destruct_think (s : WSeq α) : destruct (think s) = (destruct s).think :
 
 @[simp]
 theorem seq_destruct_nil : Seq.destruct (nil : WSeq α) = none :=
-  Seq.destruct_nil
+  rfl
 
 @[simp]
 theorem seq_destruct_cons (a : α) (s) : Seq.destruct (cons a s) = some (some a, s) :=

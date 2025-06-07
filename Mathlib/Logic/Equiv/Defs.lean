@@ -655,15 +655,15 @@ abbrev sigmaCongrRight {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) : Perm
 @[simp] theorem sigmaCongrRight_trans {α} {β : α → Sort _}
     (F : ∀ a, Perm (β a)) (G : ∀ a, Perm (β a)) :
     (sigmaCongrRight F).trans (sigmaCongrRight G) = sigmaCongrRight fun a => (F a).trans (G a) :=
-  Equiv.sigmaCongrRight_trans F G
+  rfl
 
 @[simp] theorem sigmaCongrRight_symm {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) :
     (sigmaCongrRight F).symm = sigmaCongrRight fun a => (F a).symm :=
-  Equiv.sigmaCongrRight_symm F
+  rfl
 
 @[simp] theorem sigmaCongrRight_refl {α} {β : α → Sort _} :
     (sigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ a, β a) :=
-  Equiv.sigmaCongrRight_refl
+  rfl
 
 end Perm
 
