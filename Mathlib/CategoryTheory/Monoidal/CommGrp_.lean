@@ -221,7 +221,7 @@ noncomputable def mapCommGrpCompIso : (F ⋙ G).mapCommGrp ≅ F.mapCommGrp ⋙ 
 /-- Natural transformations between functors lift to commutative group objects. -/
 @[simps!]
 noncomputable def mapCommGrpNatTrans (f : F ⟶ F') : F.mapCommGrp ⟶ F'.mapCommGrp where
-  app X := .mk (f.app _)
+  app X := .mk' (f.app _)
 
 /-- Natural isomorphisms between functors lift to commutative group objects. -/
 @[simps!]
@@ -233,7 +233,7 @@ attribute [local instance] Functor.Braided.ofChosenFiniteProducts in
 @[simps]
 noncomputable def mapCommGrpFunctor : (C ⥤ₗ D) ⥤ CommGrp_ C ⥤ CommGrp_ D where
   obj F := F.1.mapCommGrp
-  map {F G} α := { app := fun A => { hom := α.app A.X } }
+  map {F G} α := { app A := .mk' (α.app A.X) }
 
 end Functor
 
