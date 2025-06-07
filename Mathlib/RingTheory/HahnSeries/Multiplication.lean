@@ -74,6 +74,9 @@ theorem single_zero_intCast [Zero R] [IntCast R] (z : ℤ) : single (0 : Γ) (z 
 theorem single_zero_nnratCast [Zero R] [NNRatCast R] (q : ℚ≥0) : single (0 : Γ) (q : R) = q := rfl
 theorem single_zero_ratCast [Zero R] [RatCast R] (q : ℚ) : single (0 : Γ) (q : R) = q := rfl
 
+theorem single_zero_ofNat [Zero R] [NatCast R] (n : ℕ) [n.AtLeastTwo] :
+    single (0 : Γ) (ofNat(n) : R) = ofNat(n) := rfl
+
 @[simp]
 theorem support_one [MulZeroOneClass R] [Nontrivial R] : support (1 : HahnSeries Γ R) = {0} :=
   support_single_of_ne one_ne_zero
