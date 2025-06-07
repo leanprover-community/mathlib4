@@ -280,8 +280,13 @@ lemma inner_indicatorConstLp_one_indicatorConstLp_one
     ⟪indicatorConstLp 2 hv hμv (1 : 𝕜), indicatorConstLp 2 hw hμw (1 : 𝕜)⟫ = μ.real (v ∩ w) := by
   simp [inner_indicatorConstLp_indicatorConstLp, RCLike.ofReal_alg]
 
-example (a b : ℝ) : a = b ↔ (a : 𝕜) = (b : 𝕜) := by
-  rw [algebraMap.coe_inj]
+local notation "⟪" x ", " y "⟫_ℝ" => inner ℝ x y
+
+lemma inner_indicatorConstLp_one_indicatorConstLp_one'
+    {v w : Set α} (hv : MeasurableSet v)
+    (hw : MeasurableSet w) (hμv : μ v ≠ ∞ := by finiteness) (hμw : μ w ≠ ∞ := by finiteness) :
+    ⟪indicatorConstLp 2 hv hμv (1 : ℝ), indicatorConstLp 2 hw hμw (1 : ℝ)⟫_ℝ = μ.real (v ∩ w) :=
+  inner_indicatorConstLp_one_indicatorConstLp_one hv hw
 
 end IndicatorConstLp
 
