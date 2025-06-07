@@ -359,6 +359,18 @@ instance [Module R''ᵐᵒᵖ M] [IsCentralScalar R'' M] : IsCentralScalar R'' (
       (fun x y => by rw [smul_tmul', smul_tmul', op_smul_eq_smul]) fun x y hx hy => by
       rw [smul_add, smul_add, hx, hy]
 
+unsuppress_compilation in
+open Lean.Parser.Tactic in
+/-- `tensor_induction x with x₁ x₂` attempts to replace `x` by `x₁ ⊗ₜ x₂` via linearity. -/
+scoped macro "tensor_induction " var:elimTarget "with " var₁:ident var₂:ident : tactic =>
+  `(tactic|
+    (induction $var using TensorProduct.induction_on with
+      | zero => simp
+      | add _ _ h₁ h₂ =>
+        simp [TensorProduct.tmul_add, TensorProduct.add_tmul, add_mul, mul_add, h₁, h₂,
+          add_smul, smul_add]
+      | tmul $var₁ $var₂ => ?_))
+
 section
 
 -- Like `R'`, `R'₂` provides a `DistribMulAction R'₂ (M ⊗[R] N)`
