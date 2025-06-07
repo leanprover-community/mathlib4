@@ -324,6 +324,7 @@ instance LipschitzH.add [Generates (S := S)] : Add (LipschitzH (G := G)) := {
 }
 
 
+
 lemma S_nonempty: S.Nonempty := by exact Finset.nonempty_coe_sort.mp hS
 
 def ConstLipschitzH (z: ℂ) : LipschitzH (G := G) := {
@@ -350,21 +351,6 @@ instance LipschitzH.zero [Generates (S := S)] : Zero (LipschitzH (G := G)) := {
     harmonic := by simp [Harmonic]
   }
 }
-instance LipschitzH.addMonoid [Generates (S := S)] : AddMonoid (LipschitzH (G := G)) := {
-  LipschitzH.zero,
-  LipschitzH.add with
-  add_assoc := fun _ _ _ => ext fun _ => add_assoc _ _ _
-  zero_add := fun _ => ext fun _ => zero_add _
-  add_zero := fun _ => ext fun _ => add_zero _
-  nsmul := nsmulRec
-}
-
-instance LipschitzH.instAddCommMonoid: AddCommMonoid (LipschitzH (G := G)) := {
-  LipschitzH.addMonoid with add_comm := fun _ _ => ext fun _ => add_comm _ _
-}
-
--- V is the vector space
-abbrev V := Module ℂ (LipschitzH (G := G))
 
 
 @[simp]
@@ -372,7 +358,7 @@ theorem LipschitzH.add_apply (f g: LipschitzH (G := G)) (x: G): (f + g).toFun x 
   unfold LipschitzH.add
   rfl
 
-instance lipschitzHVectorSpace : V (G := G) := {
+instance lipschitzSMul: SMul ℂ (LipschitzH (G := G)) := {
   smul := fun c f => {
     toFun := fun x => c * f.toFun x
     lipschitz := by
@@ -400,33 +386,165 @@ instance lipschitzHVectorSpace : V (G := G) := {
       field_simp at hf
       exact hf
   }
-  one_smul := by simp [HSMul.hSMul]
-  mul_smul := by
-    intro x y f
-    simp [HSMul.hSMul]
-    ext g
-    rw [mul_assoc]
-  smul_zero := by
-    intro a
-    dsimp [HSMul.hSMul]
+}
+
+instance LipschitzH.addMonoid [Generates (S := S)] : AddMonoid (LipschitzH (G := G)) := {
+  LipschitzH.zero,
+  LipschitzH.add with
+  add_assoc := fun _ _ _ => ext fun _ => add_assoc _ _ _
+  zero_add := fun _ => ext fun _ => zero_add _
+  add_zero := fun _ => ext fun _ => add_zero _
+  nsmul := fun n f => (n : ℂ) • f
+  nsmul_zero := by
+    intro f
+    dsimp [HSMul.hSMul, SMul.smul]
     dsimp [OfNat.ofNat]
     dsimp [Zero.zero]
     simp
+  nsmul_succ := by
+    sorry
+}
+
+
+-- -- See https://github.com/leanprover-community/mathlib4/blob/6c6e0180f0d3dc9f47f85532f48d268d8656789a/Mathlib/Topology/ContinuousMap/Bounded/Normed.lean#L194-L196
+-- instance lipschitzHAddCommGroup: AddCommGroup (LipschitzH (G := G)) := by
+--   apply DFunLike.coe_injective.addCommGroup
+--   .
+--     ext g
+--     simp [DFunLike.coe]
+--     unfold Zero.toOfNat0
+--     simp [Zero.zero]
+--   .
+--     intro x y
+--     simp [DFunLike.coe]
+--     ext g
+--     simp [DFunLike.coe]
+--   . intro f
+--     ext g
+--     simp [DFunLike.coe]
+--     simp [negLipschitzH]
+--   .
+--     intro f h
+--     ext g
+--     simp [DFunLike.coe]
+--     conv =>
+--       lhs
+--       dsimp [HSub.hSub]
+--     simp [subLipschithZ]
+--     simp [DFunLike.coe]
+--     simp [negLipschitzH]
+--     rw [sub_eq_add_neg]
+--   . intro f
+--     intro n
+--     simp [DFunLike.coe]
+--     dsimp [HSMul.hSMul]
+--     dsimp [SMul.smul]
+
+
+
+instance negLipschitzH: Neg (LipschitzH (G := G)) := {
+  neg := fun f => {
+    toFun := fun x => -f.toFun x
+    lipschitz := by
+      obtain ⟨C, hC⟩ := f.lipschitz
+      use C
+      exact LipschitzWith.neg hC
+    harmonic := by
+      have f_harmonic := f.harmonic
+      simp [Harmonic] at f_harmonic
+      unfold Harmonic
+      intro g
+      simp
+      specialize f_harmonic g
+      exact f_harmonic
+  }
+}
+
+-- TODO - is there an existing instance we should be using here?
+instance subLipschithZ: Sub (LipschitzH (G := G)) := {
+  sub := fun f g => f + -g
+}
+
+instance lipschitzSmulZ: SMul ℤ (LipschitzH (G := G)) := {
+  smul := fun n f => (n : ℂ) • f
+}
+
+instance LipschitzH.instAddCommMonoid: AddCommMonoid (LipschitzH (G := G)) := {
+  LipschitzH.addMonoid with add_comm := fun _ _ => ext fun _ => add_comm _ _
+}
+
+instance LipschitzH.instAddCommGroup: AddCommGroup (LipschitzH (G := G)) := {
+  LipschitzH.instAddCommMonoid with
+  sub_eq_add_neg := by
+    intro f h
+    sorry
+  zsmul := fun n f => (n : ℂ) • f
+  zsmul_zero' := by
+    intro f
+    dsimp [HSMul.hSMul, SMul.smul]
+    ext g
+    simp [DFunLike.coe]
+    unfold Zero.toOfNat0
+    unfold OfNat.ofNat
+    simp [Zero.zero]
+  neg_add_cancel := by
+    intro f
+    ext g
+    simp
+    simp [negLipschitzH]
+    simp [DFunLike.coe]
+    unfold Zero.toOfNat0
+    unfold OfNat.ofNat
+    simp [Zero.zero]
+  zsmul_succ' := by sorry
+  zsmul_neg' := by
+    intro n hn
+    simp
+    sorry
+}
+
+
+-- V is the vector space
+abbrev V := Module ℂ (LipschitzH (G := G))
+
+
+lemma zero_apply (x: G): (0: LipschitzH (G := G) (S := S)).toFun x = 0 := by
+  unfold LipschitzH.zero
+  rfl
+
+--set_option pp.all true
+
+instance lipschitzHVectorSpace : V (G := G) := {
+  smul := lipschitzSMul.smul
+  one_smul := by simp [HSMul.hSMul, SMul.smul]
+  mul_smul := by
+    intro x y f
+    simp [HSMul.hSMul, SMul.smul]
+    ext g
+    rw [mul_assoc]
+  smul_zero := by
+    intro c
+    dsimp [HSMul.hSMul, SMul.smul]
+    ext g
+    simp
+    have foo := zero_apply g
+    rw [foo]
+    simp
   smul_add := by
     intro a f g
-    dsimp [HSMul.hSMul]
+    dsimp [HSMul.hSMul, SMul.smul]
     simp [mul_add]
     ext p
     simp [DFunLike.coe]
   add_smul := by
     intro a f g
-    dsimp [HSMul.hSMul]
+    dsimp [HSMul.hSMul, SMul.smul]
     simp [add_mul]
     ext p
     simp [DFunLike.coe]
   zero_smul := by
     intro a
-    dsimp [HSMul.hSMul]
+    dsimp [HSMul.hSMul, SMul.smul]
     dsimp [OfNat.ofNat]
     dsimp [Zero.zero]
     simp
@@ -468,7 +586,12 @@ def ConstF: Submodule ℂ (LipschitzH (G := G)) := {
     simp [ConstLipschitzH]
 }
 
-def foo: Submodule ℂ (LipschitzH (G := G)) := (1)
+
+
+#synth Module ℂ (LipschitzH (G := G))
+#synth AddCommGroup (LipschitzH (G := G))
+
+def W := (LipschitzH (G := G)) ⧸ ConstF
 
 -- TODO - use the fact that G is finitely generated
 instance countableG: Countable (Additive (MulOpposite G)) := by
