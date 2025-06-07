@@ -594,6 +594,91 @@ protected lemma RingHom.map_pow (f : α →+* β) (a) : ∀ n : ℕ, f (a ^ n) =
 
 end Semiring
 
+namespace NonUnitalRingHom
+
+variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β] [NonUnitalNonAssocSemiring γ]
+
+/-- If `p` is a surjective `NonUnitalRingHom`, `g` is a map, and `f`
+  is a `NonUnitalRingHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `NonUnitalRingHom`. -/
+@[simps]
+def liftLeft (f : α →ₙ+* β) {p : α →ₙ+* γ} (hp : Surjective p) (g : γ → β)
+    (hg : ∀ x, g (p x) = f x) : γ →ₙ+* β :=
+  { f.toMulHom.liftLeft (p := p) hp g hg, f.toAddHom.liftLeft (p := p) hp g hg,
+    f.toZeroHom.liftLeft p g hg with toFun := g }
+
+/-- If `p` is an injective `NonUnitalRingHom`, `g` is a map, and `f`
+  is a `NonUnitalRingHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `NonUnitalRingHom`. -/
+@[simps]
+def liftRight (f : α →ₙ+* β) {p : γ →ₙ+* β} (hp : Injective p) (g : α → γ)
+    (hg : ∀ x, p (g x) = f x) : α →ₙ+* γ :=
+  { f.toMulHom.liftRight (p := p) hp g hg, f.toAddHom.liftRight (p := p) hp g hg,
+    f.toZeroHom.liftRight (p := p) hp g hg with toFun := g }
+
+/-- If `p` is a `NonUnitalRingHom` with `p_inv` a right inverse map, and `f`
+  is a `NonUnitalRingHom` such that `⇑f ∘ p_inv ∘ ⇑p = ⇑f`, then
+  `⇑f ∘ p_inv` is also a `NonUnitalRingHom`. -/
+@[simps!]
+def liftOfRightInverse (p : α →ₙ+* γ) (p_inv : γ → α) (hp : RightInverse p_inv p) (f : α →ₙ+* β) :
+    (hf : ∀ x, f (p_inv (p x)) = f x) → γ →ₙ+* β := f.liftLeft hp.surjective (f ∘ p_inv)
+
+/-- If `p` is a `NonUnitalRingHom` with `p_inv` a left inverse map, and `f`
+  is a `NonUnitalRingHom` such that `⇑p ∘ p_inv ∘ ⇑f = ⇑f`, then `p_inv ∘ ⇑f` is also a
+  `NonUnitalRingHom`. -/
+@[simps!]
+def liftOfLeftInverse (p : γ →ₙ+* β) (p_inv : β → γ) (hp : LeftInverse p_inv p) (f : α →ₙ+* β) :
+    (hf : ∀ x, p (p_inv (f x)) = f x) → α →ₙ+* γ := f.liftRight hp.injective (p_inv ∘ f)
+
+/-- makes a `NonUnitalRingHom` from the bijective inverse of a `NonUnitalRingHom` -/
+@[simps!] def inverse
+    (f : α →ₙ+* β) (g : β → α)
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : β →ₙ+* α :=
+  liftLeft (NonUnitalRingHom.id α) h₂.surjective g h₁
+
+end NonUnitalRingHom
+
+namespace RingHom
+
+
+variable [NonAssocSemiring α] [NonAssocSemiring β] [NonAssocSemiring γ]
+
+/-- If `p` is a surjective `RingHom`, `g` is a map, and `f`
+  is a `RingHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `RingHom`. -/
+@[simps]
+def liftLeft (f : α →+* β) {p : α →+* γ} (hp : Surjective p) (g : γ → β)
+    (hg : ∀ x, g (p x) = f x) : γ →+* β :=
+  { f.toMulHom.liftLeft (p := p) hp g hg, f.toAddHom.liftLeft (p := p) hp g hg,
+    f.toOneHom.liftLeft p g hg, f.toZeroHom.liftLeft p g hg with toFun := g }
+
+/-- If `p` is an injective `RingHom`, `g` is a map, and `f`
+  is a `RingHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `RingHom`. -/
+@[simps]
+def liftRight (f : α →+* β) {p : γ →+* β} (hp : Injective p) (g : α → γ)
+    (hg : ∀ x, p (g x) = f x) : α →+* γ :=
+  { f.toMulHom.liftRight (p := p) hp g hg, f.toAddHom.liftRight (p := p) hp g hg,
+    f.toOneHom.liftRight (p := p) hp g hg, f.toZeroHom.liftRight (p := p) hp g hg with toFun := g }
+
+/-- If `p` is a `RingHom` with `p_inv` a right inverse map, and `f`
+  is a `RingHom` such that `⇑f ∘ p_inv ∘ ⇑p = ⇑f`, then
+  `⇑f ∘ p_inv` is also a `RingHom`. -/
+@[simps!]
+def liftOfRightInverse (p : α →+* γ) (p_inv : γ → α) (hp : RightInverse p_inv p) (f : α →+* β) :
+    (hf : ∀ x, f (p_inv (p x)) = f x) → γ →+* β := f.liftLeft hp.surjective (f ∘ p_inv)
+
+/-- If `p` is a `RingHom` with `p_inv` a left inverse map, and `f`
+  is a `RingHom` such that `⇑p ∘ p_inv ∘ ⇑f = ⇑f`, then `p_inv ∘ ⇑f` is also a
+  `RingHom`. -/
+@[simps!]
+def liftOfLeftInverse (p : γ →+* β) (p_inv : β → γ) (hp : LeftInverse p_inv p) (f : α →+* β) :
+    (hf : ∀ x, p (p_inv (f x)) = f x) → α →+* γ := f.liftRight hp.injective (p_inv ∘ f)
+
+/-- makes a `RingHom` from the bijective inverse of a `RingHom` -/
+@[simps!] def inverse
+    (f : α →+* β) (g : β → α)
+    (h₁ : Function.LeftInverse g f) (h₂ : Function.RightInverse g f) : β →+* α :=
+  liftLeft (RingHom.id α) h₂.surjective g h₁
+
+end RingHom
+
 namespace AddMonoidHom
 
 variable [CommRing α] [IsDomain α] [CommRing β] (f : β →+ α)

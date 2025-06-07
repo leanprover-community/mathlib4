@@ -119,7 +119,7 @@ lemma _root_.Odd.intCast (hn : Odd n) : Odd (n : α) := hn.map (castRingHom α)
 end Ring
 
 theorem cast_dvd_cast [Ring α] (m n : ℤ) (h : m ∣ n) : (m : α) ∣ (n : α) :=
-  RingHom.map_dvd (Int.castRingHom α) h
+  map_dvd (Int.castRingHom α) h
 
 end cast
 
