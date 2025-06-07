@@ -8,7 +8,7 @@ import Mathlib.Topology.VectorBundle.Hom
 
 /-! # Homs of `C^n` vector bundles over the same base space
 
-Here we show that `Bundle.ContinuousLinearMap` is a `C^n` vector bundle.
+Here we show that the bundle of continuous linear maps is a `C^n` vector bundle.
 
 Note that we only do this for bundles of linear maps, not for bundles of arbitrary semilinear maps.
 To do it for semilinear maps, we would need to generalize `ContinuousLinearMap.contMDiff`
@@ -39,7 +39,7 @@ variable {𝕜 B F₁ F₂ M : Type*} {n : WithTop ℕ∞}
   [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₂ E₂] {e₁ e₁' : Trivialization F₁ (π F₁ E₁)}
   {e₂ e₂' : Trivialization F₂ (π F₂ E₂)}
 
-local notation "LE₁E₂" => TotalSpace (F₁ →L[𝕜] F₂) (Bundle.ContinuousLinearMap (RingHom.id 𝕜) E₁ E₂)
+local notation "LE₁E₂" => TotalSpace (F₁ →L[𝕜] F₂) (fun (b : B) ↦ E₁ b →L[𝕜] E₂ b)
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11083): moved slow parts to separate lemmas
 theorem contMDiffOn_continuousLinearMapCoordChange
@@ -90,7 +90,7 @@ alias Bundle.ContinuousLinearMap.vectorPrebundle.isSmooth :=
   Bundle.ContinuousLinearMap.vectorPrebundle.isContMDiff
 
 instance ContMDiffVectorBundle.continuousLinearMap :
-    ContMDiffVectorBundle n (F₁ →L[𝕜] F₂) (Bundle.ContinuousLinearMap (RingHom.id 𝕜) E₁ E₂) IB :=
+    ContMDiffVectorBundle n (F₁ →L[𝕜] F₂) ((fun (b : B) ↦ E₁ b →L[𝕜] E₂ b)) IB :=
   (Bundle.ContinuousLinearMap.vectorPrebundle (RingHom.id 𝕜) F₁ E₁ F₂ E₂).contMDiffVectorBundle IB
 
 end
