@@ -208,13 +208,13 @@ class NonUnitalCommSemiring (α : Type u) extends NonUnitalSemiring α, CommSemi
 /-- A commutative semiring is a semiring with commutative multiplication. -/
 class CommSemiring (R : Type u) extends Semiring R, CommMonoid R
 
--- see Note [lower instance priority]
-instance (priority := 100) CommSemiring.toNonUnitalCommSemiring [CommSemiring α] :
+attribute [instance high] CommSemiring.toSemiring
+
+instance (priority := high) CommSemiring.toNonUnitalCommSemiring [CommSemiring α] :
     NonUnitalCommSemiring α :=
   { inferInstanceAs (CommMonoid α), inferInstanceAs (CommSemiring α) with }
 
--- see Note [lower instance priority]
-instance (priority := 100) CommSemiring.toCommMonoidWithZero [CommSemiring α] :
+instance (priority := high) CommSemiring.toCommMonoidWithZero [CommSemiring α] :
     CommMonoidWithZero α :=
   { inferInstanceAs (CommMonoid α), inferInstanceAs (CommSemiring α) with }
 
@@ -371,15 +371,15 @@ instance (priority := 100) NonUnitalCommRing.toNonUnitalCommSemiring [s : NonUni
 /-- A commutative ring is a ring with commutative multiplication. -/
 class CommRing (α : Type u) extends Ring α, CommMonoid α
 
-instance (priority := 100) CommRing.toCommSemiring [s : CommRing α] : CommSemiring α :=
+attribute [instance high] CommRing.toRing
+
+instance (priority := high) CommRing.toCommSemiring [s : CommRing α] : CommSemiring α :=
   { s with }
 
--- see Note [lower instance priority]
-instance (priority := 100) CommRing.toNonUnitalCommRing [s : CommRing α] : NonUnitalCommRing α :=
+instance (priority := high) CommRing.toNonUnitalCommRing [s : CommRing α] : NonUnitalCommRing α :=
   { s with }
 
--- see Note [lower instance priority]
-instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
+instance (priority := high) CommRing.toAddCommGroupWithOne [s : CommRing α] :
     AddCommGroupWithOne α :=
   { s with }
 

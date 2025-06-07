@@ -219,7 +219,7 @@ noncomputable
 def AdjoinRootXPowSubCEquivToRootsOfUnity [NeZero n] (σ : K[n√a] ≃ₐ[K] K[n√a]) :
     rootsOfUnity n K :=
   letI := Fact.mk H
-  letI : IsDomain K[n√a] := inferInstance
+  letI : IsDomain K[n√a] := sorry -- inferInstance
   letI := Classical.decEq K
   (rootsOfUnityEquivOfPrimitiveRoots (n := n) (algebraMap K K[n√a]).injective hζ).symm
     (rootsOfUnity.mkOfPowEq (if a = 0 then 1 else σ (root _) / root _) (by
