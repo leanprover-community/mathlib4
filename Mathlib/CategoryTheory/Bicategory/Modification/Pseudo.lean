@@ -38,7 +38,7 @@ namespace StrongTrans
 
 variable (η θ : F ⟶ G)
 
-/-- A modification `Γ` between strong transformations  (of pseudofunctors) `η` and `θ` consists of a
+/-- A modification `Γ` between strong transformations (of pseudofunctors) `η` and `θ` consists of a
 family of 2-morphisms `Γ.app a : η.app a ⟶ θ.app a`, which satisfies the equation
 `(F.map f ◁ app b) ≫ (θ.naturality f).hom = (η.naturality f).hom ≫ (app a ▷ G.map f)`
 for each 1-morphism `f : a ⟶ b`.
@@ -118,7 +118,7 @@ by giving object level isomorphisms, and checking naturality only in the forward
 def ModificationIso.ofComponents (app : ∀ a, η.app a ≅ θ.app a)
     (naturality : ∀ {a b} (f : a ⟶ b),
       F.map f ◁ (app b).hom ≫ (θ.naturality f).hom =
-        (η.naturality f).hom ≫ (app a).hom ▷ G.map f) :
+        (η.naturality f).hom ≫ (app a).hom ▷ G.map f := by aesop_cat) :
     η ≅ θ where
   hom := { app := fun a => (app a).hom }
   inv :=
