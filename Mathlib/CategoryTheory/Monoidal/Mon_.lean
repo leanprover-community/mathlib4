@@ -260,7 +260,7 @@ variable [F.LaxMonoidal] [F'.LaxMonoidal] [G.LaxMonoidal] (X Y : C) [Mon_Class X
   (f : X ⟶ Y) [IsMon_Hom f]
 
 /-- The image of a monoid object under a lax monoidal functor is a monoid object. -/
-abbrev obj.instMon_Class : Mon_Class (F.obj X) where
+abbrev mon_ClassObj : Mon_Class (F.obj X) where
   one := ε F ≫ F.map η
   mul := LaxMonoidal.μ F X X ≫ F.map μ
   one_mul' := by simp [← F.map_comp]
@@ -271,7 +271,9 @@ abbrev obj.instMon_Class : Mon_Class (F.obj X) where
     slice_lhs 3 4 => rw [← F.map_comp, Mon_Class.mul_assoc]
     simp
 
-attribute [local instance] obj.instMon_Class
+scoped[Obj] attribute [instance] CategoryTheory.Functor.mon_ClassObj
+
+open scoped Obj
 
 @[reassoc, simp] lemma obj.η_def : (η : 𝟙_ D ⟶ F.obj X) = ε F ≫ F.map η := rfl
 
@@ -338,7 +340,7 @@ end LaxMonoidal
 section Monoidal
 variable [F.Monoidal]
 
-attribute [local instance] obj.instMon_Class
+open scoped Obj
 
 protected instance Full.mapMon [F.Full] [F.Faithful] : F.mapMon.Full where
   map_surjective {X Y} f :=
