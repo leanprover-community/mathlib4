@@ -905,7 +905,7 @@ open Classical in
 swaps sign at places in `s` and leaves the rest unchanged. -/
 def negAt :
     mixedSpace K ≃L[ℝ] mixedSpace K :=
-  (piCongrRight fun w ↦ if w ∈ s then neg ℝ else ContinuousLinearEquiv.refl ℝ ℝ).prod
+  (piCongrRight fun w ↦ if w ∈ s then neg ℝ else ContinuousLinearEquiv.refl ℝ ℝ).prodCongr
     (ContinuousLinearEquiv.refl ℝ _)
 
 variable {s}
@@ -913,13 +913,13 @@ variable {s}
 @[simp]
 theorem negAt_apply_isReal_and_mem (x : mixedSpace K) {w : {w // IsReal w}} (hw : w ∈ s) :
     (negAt s x).1 w = - x.1 w := by
-  simp_rw [negAt, ContinuousLinearEquiv.prod_apply, piCongrRight_apply, if_pos hw,
+  simp_rw [negAt, prodCongr_apply, piCongrRight_apply, if_pos hw,
     ContinuousLinearEquiv.neg_apply]
 
 @[simp]
 theorem negAt_apply_isReal_and_notMem (x : mixedSpace K) {w : {w // IsReal w}} (hw : w ∉ s) :
     (negAt s x).1 w = x.1 w := by
-  simp_rw [negAt, ContinuousLinearEquiv.prod_apply, piCongrRight_apply, if_neg hw,
+  simp_rw [negAt, prodCongr_apply, piCongrRight_apply, if_neg hw,
     ContinuousLinearEquiv.refl_apply]
 
 @[deprecated (since := "2025-05-23")]
@@ -978,10 +978,12 @@ theorem negAt_symm :
     (negAt s).symm = negAt s := by
   ext x w
   · by_cases hw : w ∈ s
-    · simp_rw [negAt_apply_isReal_and_mem _ hw, negAt, prod_symm,
-        ContinuousLinearEquiv.prod_apply, piCongrRight_symm_apply, if_pos hw, symm_neg, neg_apply]
-    · simp_rw [negAt_apply_isReal_and_notMem _ hw, negAt, prod_symm,
-        ContinuousLinearEquiv.prod_apply, piCongrRight_symm_apply, if_neg hw, refl_symm, refl_apply]
+    · simp_rw [negAt_apply_isReal_and_mem _ hw, negAt, prodCongr_symm,
+        prodCongr_apply, piCongrRight_symm_apply, if_pos hw, symm_neg,
+        neg_apply]
+    · simp_rw [negAt_apply_isReal_and_notMem _ hw, negAt, prodCongr_symm,
+        prodCongr_apply, piCongrRight_symm_apply, if_neg hw, refl_symm,
+        refl_apply]
   · rfl
 
 /-- For `x : mixedSpace K`, the set `signSet x` is the set of real places `w` s.t. `x w ≤ 0`. -/

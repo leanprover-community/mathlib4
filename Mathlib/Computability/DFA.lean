@@ -31,7 +31,7 @@ a `Fintype` instance must be supplied for true DFAs.
 ## Main theorems
 
 - `DFA.pumping_lemma` : every sufficiently long string accepted by the DFA has a substring that can
-  be repeated arbitrarily many times
+  be repeated arbitrarily many times (and have the overall string still be accepted)
 
 ## Implementation notes
 

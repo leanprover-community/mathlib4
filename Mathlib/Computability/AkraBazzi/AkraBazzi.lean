@@ -501,7 +501,6 @@ lemma isTheta_smoothingFn_sub_self (i : α) :
                             (R.b_pos i) (ne_of_lt <| R.b_lt_one i)
                   rw [← isTheta_const_mul_right this]
 
-
 /-!
 #### Akra-Bazzi exponent `p`
 

@@ -147,7 +147,7 @@ theorem prod_Ico_reflect (f : ℕ → M) (k : ℕ) {m n : ℕ} (h : m ≤ n + 1)
   rcases lt_or_ge k m with hkm | hkm
   · rw [← Nat.Ico_image_const_sub_eq_Ico (this _ hkm)]
     refine (prod_image ?_).symm
-    simp only [mem_Ico]
+    simp only [mem_Ico, Set.InjOn, mem_coe]
     rintro i ⟨_, im⟩ j ⟨_, jm⟩ Hij
     rw [← tsub_tsub_cancel_of_le (this _ im), Hij, tsub_tsub_cancel_of_le (this _ jm)]
   · have : n + 1 - k ≤ n + 1 - m := by

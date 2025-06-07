@@ -21,6 +21,8 @@ open Fin
 
 namespace Fin
 
+open Fin.CommRing
+
 variable {n : ℕ} {k : Fin n}
 
 theorem even_succAbove_add_predAbove (i : Fin (n + 1)) (j : Fin n) :
@@ -52,7 +54,6 @@ lemma even_of_odd (hn : Odd n) (k : Fin n) : Even k := by
   rcases k.val.even_or_odd with hk | hk
   · exact even_of_val hk
   · simpa using (hk.add_odd hn).natCast (α := Fin n)
-
 
 lemma odd_of_odd [NeZero n] (hn : Odd n) (k : Fin n) : Odd k := by
   rcases k.val.even_or_odd with hk | hk
