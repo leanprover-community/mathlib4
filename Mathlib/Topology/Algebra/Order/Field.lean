@@ -147,9 +147,6 @@ lemma inv_nhdsGT_zero : (𝓝[>] (0 : 𝕜))⁻¹ = atTop := by rw [← inv_atTo
 lemma inv_nhdsLT_zero : (𝓝[<] (0 : 𝕜))⁻¹ = atBot := by
   rw [← inv_atBot₀, inv_inv]
 
-@[simp] lemma inv_nhdsWithin_Iio_zero : (𝓝[<] (0 : 𝕜))⁻¹ = atBot := by
-  rw [← inv_atBot₀, inv_inv]
-
 /-- The function `x ↦ x⁻¹` tends to `+∞` on the right of `0`. -/
 theorem tendsto_inv_nhdsGT_zero : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[>] (0 : 𝕜)) atTop :=
   inv_nhdsGT_zero.le
