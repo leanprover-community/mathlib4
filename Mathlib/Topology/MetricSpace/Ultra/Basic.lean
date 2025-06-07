@@ -166,7 +166,7 @@ lemma isOpen_closedBall {r : ℝ} (hr : r ≠ 0) : IsOpen (closedBall x r) := by
       use r
       simp [h, hd, ball_subset_closedBall]
     | inr hd =>
-      simp [closedBall_eq_of_mem hy, h.not_lt] at hd
+      simp [closedBall_eq_of_mem hy, h.not_gt] at hd
 
 lemma isClopen_closedBall {r : ℝ} (hr : r ≠ 0) : IsClopen (closedBall x r) :=
   ⟨Metric.isClosed_closedBall, isOpen_closedBall x hr⟩

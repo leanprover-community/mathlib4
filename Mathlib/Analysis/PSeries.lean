@@ -285,7 +285,7 @@ theorem summable_nat_rpow_inv {p : ℝ} :
     apply hk₀
     rw [← pos_iff_ne_zero, ← @Nat.cast_pos ℝ] at hk₀
     simpa [inv_lt_one₀ (rpow_pos_of_pos hk₀ _), one_lt_rpow_iff_of_pos hk₀, hp,
-      hp.not_lt, hk₀] using hk₁
+      hp.not_gt, hk₀] using hk₁
 
 @[simp]
 theorem summable_nat_rpow {p : ℝ} : Summable (fun n => (n : ℝ) ^ p : ℕ → ℝ) ↔ p < -1 := by

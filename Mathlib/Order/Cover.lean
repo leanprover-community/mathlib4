@@ -38,7 +38,7 @@ theorem WCovBy.le (h : a ⩿ b) : a ≤ b :=
   h.1
 
 theorem WCovBy.refl (a : α) : a ⩿ a :=
-  ⟨le_rfl, fun _ hc => hc.not_lt⟩
+  ⟨le_rfl, fun _ hc => hc.not_gt⟩
 
 @[simp] lemma WCovBy.rfl : a ⩿ a := WCovBy.refl a
 

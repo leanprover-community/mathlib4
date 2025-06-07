@@ -343,7 +343,7 @@ theorem Equiv.Perm.prod_Iio_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
   refine Finset.prod_congr rfl fun ⟨x₁, x₂⟩ hx ↦ ?_
   replace hx : x₂ < x₁ := by simpa [hD] using hx
   obtain hlt | hle := lt_or_ge (σ x₁) (σ x₂)
-  · simp [inf_eq_left.2 hlt.le, sup_eq_right.2 hlt.le, hx.not_lt, ← hf]
+  · simp [inf_eq_left.2 hlt.le, sup_eq_right.2 hlt.le, hx.not_gt, ← hf]
   simp [inf_eq_right.2 hle, sup_eq_left.2 hle, hx]
 
 theorem Equiv.Perm.prod_Ioi_comp_eq_sign_mul_prod {R : Type*} [CommRing R]

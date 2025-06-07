@@ -364,7 +364,7 @@ theorem neg_pi_div_two_le_arg_iff {z : ℂ} : -(π / 2) ≤ arg z ↔ 0 ≤ re z
 lemma neg_pi_div_two_lt_arg_iff {z : ℂ} : -(π / 2) < arg z ↔ 0 < re z ∨ 0 ≤ im z := by
   rw [lt_iff_le_and_ne, neg_pi_div_two_le_arg_iff, ne_comm, Ne, arg_eq_neg_pi_div_two_iff]
   rcases lt_trichotomy z.re 0 with hre | hre | hre
-  · simp [hre.ne, hre.not_ge, hre.not_lt]
+  · simp [hre.ne, hre.not_ge, hre.not_gt]
   · simp [hre]
   · simp [hre, hre.le, hre.ne']
 
@@ -372,7 +372,7 @@ lemma arg_lt_pi_div_two_iff {z : ℂ} : arg z < π / 2 ↔ 0 < re z ∨ im z < 0
   rw [lt_iff_le_and_ne, arg_le_pi_div_two_iff, Ne, arg_eq_pi_div_two_iff]
   rcases lt_trichotomy z.re 0 with hre | hre | hre
   · have : z ≠ 0 := by simp [Complex.ext_iff, hre.ne]
-    simp [hre.ne, hre.not_ge, hre.not_lt, this]
+    simp [hre.ne, hre.not_ge, hre.not_gt, this]
   · have : z = 0 ↔ z.im = 0 := by simp [Complex.ext_iff, hre]
     simp [hre, this, or_comm, le_iff_eq_or_lt]
   · simp [hre, hre.le, hre.ne']
@@ -408,7 +408,7 @@ theorem arg_neg_eq_arg_add_pi_of_im_neg {x : ℂ} (hi : x.im < 0) : arg (-x) = a
 theorem arg_neg_eq_arg_sub_pi_iff {x : ℂ} :
     arg (-x) = arg x - π ↔ 0 < x.im ∨ x.im = 0 ∧ x.re < 0 := by
   rcases lt_trichotomy x.im 0 with (hi | hi | hi)
-  · simp [hi, hi.ne, hi.not_lt, arg_neg_eq_arg_add_pi_of_im_neg, sub_eq_add_neg, ←
+  · simp [hi, hi.ne, hi.not_gt, arg_neg_eq_arg_add_pi_of_im_neg, sub_eq_add_neg, ←
       add_eq_zero_iff_eq_neg, Real.pi_ne_zero]
   · rw [(ext rfl hi : x = x.re)]
     rcases lt_trichotomy x.re 0 with (hr | hr | hr)
@@ -416,7 +416,7 @@ theorem arg_neg_eq_arg_sub_pi_iff {x : ℂ} :
       simp [hr]
     · simp [hr, hi, Real.pi_ne_zero]
     · rw [arg_ofReal_of_nonneg hr.le, ← ofReal_neg, arg_ofReal_of_neg (Left.neg_neg_iff.2 hr)]
-      simp [hr.not_lt, ← add_eq_zero_iff_eq_neg, Real.pi_ne_zero]
+      simp [hr.not_gt, ← add_eq_zero_iff_eq_neg, Real.pi_ne_zero]
   · simp [hi, arg_neg_eq_arg_sub_pi_of_im_pos]
 
 theorem arg_neg_eq_arg_add_pi_iff {x : ℂ} :
@@ -426,11 +426,11 @@ theorem arg_neg_eq_arg_add_pi_iff {x : ℂ} :
   · rw [(ext rfl hi : x = x.re)]
     rcases lt_trichotomy x.re 0 with (hr | hr | hr)
     · rw [arg_ofReal_of_neg hr, ← ofReal_neg, arg_ofReal_of_nonneg (Left.neg_pos_iff.2 hr).le]
-      simp [hr.not_lt, ← two_mul, Real.pi_ne_zero]
+      simp [hr.not_gt, ← two_mul, Real.pi_ne_zero]
     · simp [hr, hi, Real.pi_ne_zero.symm]
     · rw [arg_ofReal_of_nonneg hr.le, ← ofReal_neg, arg_ofReal_of_neg (Left.neg_neg_iff.2 hr)]
       simp [hr]
-  · simp [hi, hi.ne.symm, hi.not_lt, arg_neg_eq_arg_sub_pi_of_im_pos, sub_eq_add_neg, ←
+  · simp [hi, hi.ne.symm, hi.not_gt, arg_neg_eq_arg_sub_pi_of_im_pos, sub_eq_add_neg, ←
       add_eq_zero_iff_neg_eq, Real.pi_ne_zero]
 
 theorem arg_neg_coe_angle {x : ℂ} (hx : x ≠ 0) : (arg (-x) : Real.Angle) = arg x + π := by

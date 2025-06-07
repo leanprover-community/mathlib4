@@ -492,27 +492,27 @@ theorem lt_one_div_of_neg (ha : a < 0) (hb : b < 0) : a < 1 / b ↔ b < 1 / a :=
 
 theorem one_lt_div_iff : 1 < a / b ↔ 0 < b ∧ b < a ∨ b < 0 ∧ a < b := by
   rcases lt_trichotomy b 0 with (hb | rfl | hb)
-  · simp [hb, hb.not_lt, one_lt_div_of_neg]
+  · simp [hb, hb.not_gt, one_lt_div_of_neg]
   · simp [lt_irrefl, zero_le_one]
-  · simp [hb, hb.not_lt, one_lt_div]
+  · simp [hb, hb.not_gt, one_lt_div]
 
 theorem one_le_div_iff : 1 ≤ a / b ↔ 0 < b ∧ b ≤ a ∨ b < 0 ∧ a ≤ b := by
   rcases lt_trichotomy b 0 with (hb | rfl | hb)
-  · simp [hb, hb.not_lt, one_le_div_of_neg]
+  · simp [hb, hb.not_gt, one_le_div_of_neg]
   · simp [lt_irrefl, zero_lt_one.not_ge, zero_lt_one]
-  · simp [hb, hb.not_lt, one_le_div]
+  · simp [hb, hb.not_gt, one_le_div]
 
 theorem div_lt_one_iff : a / b < 1 ↔ 0 < b ∧ a < b ∨ b = 0 ∨ b < 0 ∧ b < a := by
   rcases lt_trichotomy b 0 with (hb | rfl | hb)
-  · simp [hb, hb.not_lt, hb.ne, div_lt_one_of_neg]
+  · simp [hb, hb.not_gt, hb.ne, div_lt_one_of_neg]
   · simp [zero_lt_one]
-  · simp [hb, hb.not_lt, div_lt_one, hb.ne.symm]
+  · simp [hb, hb.not_gt, div_lt_one, hb.ne.symm]
 
 theorem div_le_one_iff : a / b ≤ 1 ↔ 0 < b ∧ a ≤ b ∨ b = 0 ∨ b < 0 ∧ b ≤ a := by
   rcases lt_trichotomy b 0 with (hb | rfl | hb)
-  · simp [hb, hb.not_lt, hb.ne, div_le_one_of_neg]
+  · simp [hb, hb.not_gt, hb.ne, div_le_one_of_neg]
   · simp [zero_le_one]
-  · simp [hb, hb.not_lt, div_le_one, hb.ne.symm]
+  · simp [hb, hb.not_gt, div_le_one, hb.ne.symm]
 
 /-! ### Relating two divisions, involving `1` -/
 

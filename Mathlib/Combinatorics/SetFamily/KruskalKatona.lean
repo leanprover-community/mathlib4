@@ -136,7 +136,7 @@ lemma toColex_compress_lt_toColex {hU : U.Nonempty} {hV : V.Nonempty} (h : max' 
   simp_rw [mem_sdiff (s := s), filter_inj, and_assoc]
   refine ⟨_, hA.1.2 <| max'_mem _ hV, notMem_sdiff_of_mem_right <| max'_mem _ _, fun a ha ↦ ?_⟩
   have : a ∉ V := fun H ↦ ha.not_ge (le_max' _ _ H)
-  have : a ∉ U := fun H ↦ ha.not_lt ((le_max' _ _ H).trans_lt h)
+  have : a ∉ U := fun H ↦ ha.not_gt ((le_max' _ _ H).trans_lt h)
   simp [‹a ∉ U›, ‹a ∉ V›]
 
 /-- These are the compressions which we will apply to decrease the "measure" of a family of sets. -/
@@ -185,7 +185,7 @@ lemma isInitSeg_of_compressed {ℬ : Finset (Finset α)} {r : ℕ} (h₁ : (ℬ 
   have smaller : max' _ hV < max' _ hU := by
     obtain hlt | heq | hgt := lt_trichotomy (max' _ hU) (max' _ hV)
     · rw [← compress_sdiff_sdiff A B] at hAB hBA
-      cases hBA.not_lt <| toColex_compress_lt_toColex hlt hAB
+      cases hBA.not_gt <| toColex_compress_lt_toColex hlt hAB
     · exact (disjoint_right.1 disj (max'_mem _ hU) <| heq.symm ▸ max'_mem _ _).elim
     · assumption
   refine hB ?_

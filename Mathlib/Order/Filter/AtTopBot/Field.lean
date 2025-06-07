@@ -164,9 +164,9 @@ if and only if `r > 0` and `f` tends to infinity or `r < 0` and `f` tends to neg
 theorem tendsto_const_mul_atTop_iff [NeBot l] :
     Tendsto (fun x => r * f x) l atTop ↔ 0 < r ∧ Tendsto f l atTop ∨ r < 0 ∧ Tendsto f l atBot := by
   rcases lt_trichotomy r 0 with (hr | rfl | hr)
-  · simp [hr, hr.not_lt, tendsto_const_mul_atTop_of_neg]
+  · simp [hr, hr.not_gt, tendsto_const_mul_atTop_of_neg]
   · simp [not_tendsto_const_atTop]
-  · simp [hr, hr.not_lt, tendsto_const_mul_atTop_of_pos]
+  · simp [hr, hr.not_gt, tendsto_const_mul_atTop_of_pos]
 
 /-- The function `fun x ↦ f x * r` tends to infinity along a nontrivial filter
 if and only if `r > 0` and `f` tends to infinity or `r < 0` and `f` tends to negative infinity. -/

@@ -269,7 +269,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       push_neg at T
       exact T (A.le.trans hN.1)
     · have A : ¬i < N := (Nat.lt_succ_iff.mp hi).not_gt
-      have B : ¬i + 1 < N := hi.not_lt
+      have B : ¬i + 1 < N := hi.not_gt
       have C : ¬i + 1 = N := hi.ne.symm
       have D : i + 1 - 1 = i := Nat.pred_succ i
       rw [if_neg A, if_neg B, if_neg C, D]
@@ -422,7 +422,7 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
         · exact hi.2
       · refine Finset.disjoint_left.2 fun i hi h'i => ?_
         simp only [Finset.mem_Ico, Finset.mem_range] at hi h'i
-        exact hi.not_lt (Nat.lt_of_succ_le h'i.left)
+        exact hi.not_gt (Nat.lt_of_succ_le h'i.left)
     _ ≤ eVariationOn f (s ∪ t) := sum_le f _ hw wst
 
 /-- If a set `s` is to the left of a set `t`, and both contain the boundary point `x`, then

@@ -161,7 +161,7 @@ theorem not_integrableOn_Ioi_rpow (s : ℝ) : ¬ IntegrableOn (fun x ↦ x ^ s) 
     exact hs.not_gt this
   · have : IntegrableOn (fun x ↦ x ^ s) (Ioi (1 : ℝ)) := h.mono (Ioi_subset_Ioi zero_le_one) le_rfl
     rw [integrableOn_Ioi_rpow_iff zero_lt_one] at this
-    exact hs.not_lt this
+    exact hs.not_gt this
 
 theorem setIntegral_Ioi_zero_rpow (s : ℝ) : ∫ x in Ioi (0 : ℝ), x ^ s = 0 :=
   MeasureTheory.integral_undef (not_integrableOn_Ioi_rpow s)
@@ -229,7 +229,7 @@ theorem not_integrableOn_Ioi_cpow (s : ℂ) :
   · have : IntegrableOn (fun x : ℝ ↦ (x : ℂ) ^ s) (Ioi 1) :=
       h.mono (Ioi_subset_Ioi zero_le_one) le_rfl
     rw [integrableOn_Ioi_cpow_iff zero_lt_one] at this
-    exact hs.not_lt this
+    exact hs.not_gt this
 
 theorem setIntegral_Ioi_zero_cpow (s : ℂ) : ∫ x in Ioi (0 : ℝ), (x : ℂ) ^ s = 0 :=
   MeasureTheory.integral_undef (not_integrableOn_Ioi_cpow s)

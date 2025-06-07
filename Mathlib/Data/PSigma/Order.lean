@@ -68,7 +68,7 @@ instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ' i, �
     lt_iff_le_not_ge := by
       refine fun a b => ⟨fun hab => ⟨hab.mono_right fun i a b => le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨i, a, hji⟩ | ⟨i, hba⟩) <;> obtain ⟨_, _, hij⟩ | ⟨_, hab⟩ := hab
-        · exact hij.not_lt hji
+        · exact hij.not_gt hji
         · exact lt_irrefl _ hji
         · exact lt_irrefl _ hij
         · exact hab.not_ge hba

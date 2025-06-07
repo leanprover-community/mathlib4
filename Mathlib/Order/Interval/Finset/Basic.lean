@@ -541,7 +541,7 @@ end LocallyFiniteOrder
 variable [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot α]
 
 theorem disjoint_Ioi_Iio (a : α) : Disjoint (Ioi a) (Iio a) :=
-  disjoint_left.2 fun _ hab hba => (mem_Ioi.1 hab).not_lt <| mem_Iio.1 hba
+  disjoint_left.2 fun _ hab hba => (mem_Ioi.1 hab).not_gt <| mem_Iio.1 hba
 
 end Preorder
 

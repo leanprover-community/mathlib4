@@ -533,7 +533,7 @@ theorem rpow_eq_zero_iff {x : ℝ≥0∞} {y : ℝ} : x ^ y = 0 ↔ x = 0 ∧ 0 
     · simp [← coe_rpow_of_ne_zero h, h]
 
 lemma rpow_eq_zero_iff_of_pos {x : ℝ≥0∞} {y : ℝ} (hy : 0 < y) : x ^ y = 0 ↔ x = 0 := by
-  simp [hy, hy.not_lt]
+  simp [hy, hy.not_gt]
 
 @[simp]
 theorem rpow_eq_top_iff {x : ℝ≥0∞} {y : ℝ} : x ^ y = ⊤ ↔ x = 0 ∧ y < 0 ∨ x = ⊤ ∧ 0 < y := by
@@ -654,7 +654,7 @@ theorem mul_rpow_eq_ite (x y : ℝ≥0∞) (z : ℝ) :
   wlog hxy : x ≤ y
   · convert this y x z hz (le_of_not_ge hxy) using 2 <;> simp only [mul_comm, and_comm, or_comm]
   rcases eq_or_ne x 0 with (rfl | hx0)
-  · induction y <;> rcases hz with hz | hz <;> simp [*, hz.not_lt]
+  · induction y <;> rcases hz with hz | hz <;> simp [*, hz.not_gt]
   rcases eq_or_ne y 0 with (rfl | hy0)
   · exact (hx0 (bot_unique hxy)).elim
   induction x

@@ -42,7 +42,7 @@ instance range_Iio : HasCountableSeparatingOn X (· ∈ range Iio) s := by
       simp [hlt.not_ge] at h
     | inr hne =>
       rcases hsd.inter_open_nonempty _ isOpen_Ioo hne with ⟨z, ⟨hxz, hzy⟩, hzs⟩
-      simpa [hxz, hzy.not_lt] using h (Iio z) (mem_image_of_mem _ (.inl hzs))
+      simpa [hxz, hzy.not_gt] using h (Iio z) (mem_image_of_mem _ (.inl hzs))
 
 instance range_Ioi : HasCountableSeparatingOn X (· ∈ range Ioi) s :=
   .range_Iio (X := Xᵒᵈ)
