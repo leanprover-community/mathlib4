@@ -436,6 +436,33 @@ lemma comp_forget₁_mapComp' :
   ext
   simp [Pseudofunctor.mapComp'_eq_mapComp, forget₁]
 
+lemma mapComp'_comp_adjForget₁_hom :
+    ((F.comp Adj.forget₁).mapComp' f g fg hfg).hom = (F.mapComp' f g fg hfg).hom.τl := by
+  simp [comp_forget₁_mapComp']
+
+lemma mapComp'_comp_adjForget₁_inv :
+    ((F.comp Adj.forget₁).mapComp' f g fg hfg).inv = (F.mapComp' f g fg hfg).inv.τl := by
+  simp [comp_forget₁_mapComp']
+
+lemma mapId_comp_adjForget₁ (x : B) :
+    (F.comp forget₁).mapId x = lIso (F.mapId x) := by
+  ext
+  simp
+
+lemma mapId_comp_adjForget₁_hom (x : B) :
+    ((F.comp forget₁).mapId x).hom = (F.mapId x).hom.τl := by
+  simp [mapId_comp_adjForget₁]
+
+lemma mapId_comp_adjForget₁_inv (x : B) :
+    ((F.comp forget₁).mapId x).inv = (F.mapId x).inv.τl := by
+  simp [mapId_comp_adjForget₁]
+
+lemma counit_map_id :
+    (F.map (𝟙 a)).adj.counit =
+      (F.mapId a).inv.τr ▷ _ ≫ _ ◁ (F.mapId a).hom.τl ≫ (λ_ _).hom := by
+  rw [← whisker_exchange_assoc, ← (F.mapId a).inv.conjugateEquiv_τl, conjugateEquiv_apply']
+  simp [Adjunction.id, ← whiskerLeft_comp_assoc]
+
 @[reassoc]
 lemma unit_comp_mapComp'_hom_τr_comp_counit :
     (F.map g).adj.unit ▷ (F.map f).r ▷ (F.map fg).l ≫

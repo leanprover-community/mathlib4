@@ -54,6 +54,29 @@ lemma mateEquiv_id (adj₁ : Adjunction l₁ r₁) (adj₂ : Adjunction l₂ r�
   · rw [whisker_exchange]
     bicategory
 
+lemma Adjunction.homEquiv₁_symm_whiskerRight {b c d e : B} {l : b ⟶ c}
+    {r : c ⟶ b} (adj : l ⊣ r) {g : b ⟶ d} {h : c ⟶ d} (β : r ≫ g ⟶ h) (u : d ⟶ e) :
+    adj.homEquiv₁.symm ((α_ _ _ _).inv ≫ β ▷ u) =
+      adj.homEquiv₁.symm β ▷ u ≫ (α_ _ _ _).hom := by
+  simp [homEquiv₁_symm_apply]
+
+lemma Adjunction.homEquiv₁_symm_comp {b c d : B} {l : b ⟶ c}
+    {r : c ⟶ b} (adj : l ⊣ r) {g : b ⟶ d} {h h' : c ⟶ d} (β : r ≫ g ⟶ h) (α : h ⟶ h') :
+    adj.homEquiv₁.symm (β ≫ α) =
+      adj.homEquiv₁.symm β ≫ l ◁ α := by
+  simp [homEquiv₁_symm_apply]
+
+@[reassoc]
+lemma whiskerLeft_whiskerLeft_associator_whiskerRight
+    {x y z u v : B} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z)
+    (g' : z ⟶ u) (f' : u ⟶ v) (h' : z ⟶ v)
+    (α : f ≫ g ⟶ h) (β : g' ≫ f' ⟶ h') :
+    f ◁ g ◁ β ≫ (α_ _ _ _).inv ≫ α ▷ _ =
+      (α_ _ _ _).inv ≫
+      α ▷ _ ≫ _ ◁ β := by
+  rw [← whisker_exchange]
+  simp
+
 end Bicategory
 
 variable {C : Type*} [Category C]
@@ -118,14 +141,37 @@ lemma whiskerBaseChange_eq_whiskerLeft_isoMapOfCommSq :
 lemma whiskerBaseChange_eq_whiskerRight_baseChange :
     F.whiskerBaseChange sq =
       (α_ _ _ _).inv ≫ F.baseChange sq ▷ (F.map r).l ≫
-      (α_ _ _ _).hom ≫ (F.map b).l ◁ (F.map r).adj.counit ≫ (ρ_ _).hom :=
-  sorry
-
-/-lemma whiskerBaseChange_eq' :
-    F.whiskerBaseChange sq =
-    (α_ _ _ _).inv ≫ F.baseChange sq ▷ (F.map r).l ≫
       (α_ _ _ _).hom ≫ (F.map b).l ◁ (F.map r).adj.counit ≫ (ρ_ _).hom := by
-  rw [whiskerBaseChange_eq, Adjunction.homEquiv₂_symm_apply]-/
+  apply (F.map l).adj.homEquiv₁.symm.injective
+  rw [whiskerBaseChange]
+  simp only [Equiv.symm_apply_apply]
+  rw [← Category.assoc]
+  rw [Adjunction.homEquiv₁_symm_comp]
+  rw [Adjunction.homEquiv₁_symm_whiskerRight]
+  rw [baseChange, Bicategory.mateEquiv_apply]
+  simp only [Equiv.symm_apply_apply, comp_whiskerRight, Category.assoc, Bicategory.whiskerLeft_comp,
+    whiskerLeft_rightUnitor, pentagon_assoc]
+  rw [Adjunction.homEquiv₂_apply]
+  simp only [comp_whiskerRight, whisker_assoc, Category.assoc, triangle_assoc_comp_right_inv_assoc]
+  have :
+    (F.isoMapOfCommSq sq).hom.τl ▷ (F.map r).r ▷ (F.map r).l ≫
+      (α_ ((F.map l).l ≫ (F.map b).l) (F.map r).r (F.map r).l).hom ≫
+        (α_ (F.map l).l (F.map b).l ((F.map r).r ≫ (F.map r).l)).hom ≫
+          (F.map l).l ◁ (F.map b).l ◁ (F.map r).adj.counit =
+      (α_ _ _ _).hom ≫
+      _ ◁ (F.map r).adj.counit ≫
+      (F.isoMapOfCommSq sq).hom.τl ▷ _ ≫
+      (α_ _ _ _).hom := by
+    rw [whisker_exchange_assoc]
+    simp
+  rw [reassoc_of% this]
+  simp only [Adj.comp_l, comp_whiskerLeft, Bicategory.whiskerRight_id, Iso.hom_inv_id_assoc,
+    Category.assoc, Iso.inv_hom_id, Category.comp_id, pentagon_inv_hom_hom_hom_hom_assoc,
+    Iso.inv_hom_id_assoc]
+  nth_rw 2 [← Bicategory.whiskerLeft_comp_assoc]
+  nth_rw 2 [← Bicategory.whiskerLeft_comp_assoc]
+  rw [Category.assoc]
+  simp
 
 section Unit
 
@@ -140,10 +186,9 @@ lemma baseChange_id_id_eq_unit :
       (ρ_ _).hom ≫
       (F.mapId _).inv.τr ≫
       (F.map f).adj.unit := by
-  rw [baseChange]
-  simp only [isoMapOfCommSq_self_self, Iso.refl_hom, Adj.id_τl, Adj.comp_l, Adj.id_l, Adj.id_r]
-  rw [mateEquiv_id]
-  sorry
+  simp only [baseChange, isoMapOfCommSq_self_self, Iso.refl_hom, Adj.id_τl, Adj.comp_l]
+  rw [mateEquiv_id, Adj.counit_map_id, ← whisker_exchange_assoc]
+  simp
 
 end Unit
 
@@ -167,7 +212,7 @@ lemma baseChange_horiz_comp' :
     (α_ _ _ _).hom ≫
     (F.map b).l ◁ baseChange F sq' ≫
     (α_ _ _ _).inv ≫
-    ((F.comp Adj.forget₁).mapComp' b b' b'' hb).inv ▷ (F.map r).r :=
+    ((F.comp Adj.forget₁).mapComp' b b' b'' hb).inv ▷ (F.map r).r := by
   sorry
 
 end Horizontal
@@ -224,27 +269,6 @@ variable {X₁ X₂ X₃ Y₁ Y₂ Y₃ Z₁ Z₂ Z₃ : B}
   (hr : rt ≫ rb = r)
   (hb : bl ≫ br = b)
 
-lemma mapComp'_comp_adjForget₁_hom {a b c : B} (f : a ⟶ b) (g : b ⟶ c) (fg : a ⟶ c)
-    (hfg : f ≫ g = fg := by aesop_cat) :
-    ((F.comp Adj.forget₁).mapComp' f g fg hfg).hom = (F.mapComp' f g fg hfg).hom.τl :=
-  sorry
-
-lemma mapComp'_comp_adjForget₁_inv {a b c : B} (f : a ⟶ b) (g : b ⟶ c) (fg : a ⟶ c)
-    (hfg : f ≫ g = fg := by aesop_cat) :
-    ((F.comp Adj.forget₁).mapComp' f g fg hfg).inv = (F.mapComp' f g fg hfg).inv.τl :=
-  sorry
-
-@[reassoc]
-lemma _root_.CategoryTheory.Bicategory.whiskerLeft_whiskerLeft_associator_whiskerRight
-    {x y z u v : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z)
-    (g' : z ⟶ u) (f' : u ⟶ v) (h' : z ⟶ v)
-    (α : f ≫ g ⟶ h) (β : g' ≫ f' ⟶ h') :
-    f ◁ g ◁ β ≫ (α_ _ _ _).inv ≫ α ▷ _ =
-      (α_ _ _ _).inv ≫
-      α ▷ _ ≫ _ ◁ β := by
-  rw [← whisker_exchange]
-  simp
-
 lemma baseChange_square :
     F.baseChange sq =
       (F.mapComp' lt lb l hl).inv.τr ▷ _ ≫
@@ -272,8 +296,8 @@ lemma baseChange_square :
   simp only [Adj.forget₂_obj, Adj.forget₂_map, Quiver.Hom.unop_op', Adj.comp_r, Adj.forget₂_map₂,
     Quiver.Hom.unop_op, comp_toPrelaxFunctor, PrelaxFunctor.comp_toPrelaxFunctorStruct,
     PrelaxFunctorStruct.comp_toPrefunctor, Prefunctor.comp_obj, Adj.forget₁_obj,
-    Prefunctor.comp_map, Adj.forget₁_map, mapComp'_comp_adjForget₁_hom,
-    mapComp'_comp_adjForget₁_inv, Bicategory.whiskerLeft_comp, comp_whiskerRight, whisker_assoc,
+    Prefunctor.comp_map, Adj.forget₁_map, Adj.mapComp'_comp_adjForget₁_hom,
+    Adj.mapComp'_comp_adjForget₁_inv, Bicategory.whiskerLeft_comp, comp_whiskerRight, whisker_assoc,
     Category.assoc, Iso.inv_hom_id_assoc, Adj.comp_l]
   congr 7
   slice_lhs 2 3 =>
@@ -347,7 +371,6 @@ lemma baseChange_of_comp_eq :
   simp only [Category.assoc]
   have : (Adj.forget₁.mapId (F.obj Y₁)).hom = 𝟙 _ := rfl
   rw [this]
-  --have : (F.mapId Y₁).hom.l = 𝟙 _ := sorry
   simp only [Adj.forget₁_obj, Adj.forget₁_map, Adj.id_l, Bicategory.whiskerLeft_id,
     Category.id_comp]
   rw [mapComp'_comp_id]
