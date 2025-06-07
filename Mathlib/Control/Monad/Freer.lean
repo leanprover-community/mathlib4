@@ -5,6 +5,7 @@ Authors: Tanner Duve
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Control.Monad.Writer
+import Mathlib.Control.Monad.Cont
 
 /-!
 # Freer Monad and Common Instances
@@ -15,9 +16,12 @@ This file defines a general `Freer` monad construction and several canonical ins
 The "Freer" monad (as in, "more free") is an alternative representation of free monads
 that doesn't require the underlying type constructor to be a `Functor`. Unlike the traditional
 `Free` monad which generates a monad from a functor, `Freer` works with any type constructor
-`f : Type → Type`, making it more general and easier to use with algebraic effects.
+`f : Type → Type`, making it more general and easier to use with algebraic effects. The traditional
+free monad is undefinable in Lean due to strict positivity, so `Freer` is both a workaround and a
+generalization.
 
-See the Haskell [freer-simple](https://hackage.haskell.org/package/freer-simple) library.
+See the Haskell [freer-simple](https://hackage.haskell.org/package/freer-simple) library for the
+Haskell implementation.
 
 ## Main Definitions
 
@@ -249,6 +253,16 @@ instance {r : Type u} : LawfulMonad (FreerCont r) := inferInstance
 def run {r : Type u} {α : Type v} : FreerCont r α → (α → r) → r
   | .pure a, k => k a
   | .impure _ (ContF.callCC g) cont, k => g (fun a => run (cont a) k)
+
+/-- Call with current continuation for the Freer continuation monad. -/
+def callCC {r : Type u} {α β : Type v} (f : MonadCont.Label α (FreerCont r) β → FreerCont r α) :
+FreerCont r α :=
+  Freer.impure _ (ContF.callCC (fun k =>
+    run (f ⟨fun x => Freer.impure _ (ContF.callCC (fun _ => k x)) Freer.pure⟩) k
+  )) Freer.pure
+
+instance {r : Type u} : MonadCont (FreerCont r) where
+  callCC := FreerCont.callCC
 
 end FreerCont
 
