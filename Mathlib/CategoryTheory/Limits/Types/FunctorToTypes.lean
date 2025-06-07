@@ -122,12 +122,13 @@ def coyonedaOpNatIsoWhiskeringLeftOverCompSectionsFunctorSectionOver :
   hom := {app G := (homEquivOverCompSections' F G).toFun}
   inv := {app G := (homEquivOverCompSections' F G).invFun}
 
--- useless
+/-- An equivalence between maps from `F` to `G` and a limit of sections of `G`. -/
 noncomputable def homEquivLimitOverComp [UnivLE.{max w u, w}] :
     (F ⟶ G) ≃ limit (sectionOver.over F ⋙ G) :=
   (homEquivOverCompSections F G).trans
     (Types.limitEquivSections (sectionOver.over F ⋙ G)).symm
 
+/-- A functorial version of `homEquivLimitOverComp` -/
 noncomputable def coyonedaOpNatIsoWhiskeringLeftOverCompLim [UnivLE.{max w u, w}] :
     coyoneda.obj (Opposite.op F) ≅
       (whiskeringLeftOver F) ⋙ (whiskeringRightUlift F) ⋙ lim :=
@@ -149,61 +150,29 @@ def overYoneda : (sectionOver F)ᵒᵖ ⥤ (Cᵒᵖ ⥤ Type v) where
   obj s := yoneda.obj s.unop.fst.unop
   map f := yoneda.map f.unop.fst.unop
 
--- useless
 lemma overYonedaRightOpIso : (overYoneda F).rightOp = sectionOver.over F ⋙ yoneda.op := by
   rfl
 
-variable [UnivLE.{max u v, v}] (F : Cᵒᵖ ⥤ Type v) {G : Cᵒᵖ ⥤ Type v} -- G useless
+def overYoneda' : (sectionOver F)ᵒᵖ ⥤ (Cᵒᵖ ⥤ Type (max v w)) :=
+  overYoneda F ⋙ ((whiskeringRight _ _ _).obj uliftFunctor)
 
--- useless
-noncomputable def colimitOverYonedaHomIsoLimitOverComp :
-    (colimit (overYoneda F) ⟶ G) ≅ limit (sectionOver.over F ⋙ G ⋙ uliftFunctor) :=
-  (colimitHomIsoLimitYoneda' (overYoneda F) G).trans
-    (HasLimit.isoOfNatIso (isoWhiskerLeft (sectionOver.over F) (yonedaOpCompYonedaObj G)))
+lemma overYonedaRightOpIso' : (overYoneda' F).rightOp =
+    sectionOver.over F ⋙ yoneda.op ⋙ ((whiskeringRight _ _ _).obj uliftFunctor).op :=
+  rfl
+
+variable [UnivLE.{max u v, v}] (F : Cᵒᵖ ⥤ Type v)
+variable [UnivLE.{max u v w, max v w}] (F' : Cᵒᵖ ⥤ Type (max v w))
 
 def overCompYonedaCompCoyonedaFlipNatIsoWhiskeringLeftOver :
     (sectionOver.over F ⋙ yoneda.op ⋙ coyoneda).flip
-      ≅ (whiskeringLeftOver F) ⋙ (whiskeringRightUlift F) where
-  hom := {
-      app G := {
-          app s := fun x => { down := yonedaEquiv.toFun x}
-          naturality _ _ _ := by
-            ext
-            simp only [Functor.comp_obj, whiskeringLeft_obj_obj, whiskeringRight_obj_obj,
-              sectionOver.over_obj, uliftFunctor_obj, Functor.flip_obj_obj, Functor.op_obj,
-              coyoneda_obj_obj, Functor.flip_obj_map, Functor.comp_map, sectionOver.over_map,
-              Functor.op_map, Opposite.op_unop, Equiv.toFun_as_coe, types_comp_apply,
-              coyoneda_map_app, Quiver.Hom.unop_op, uliftFunctor_map, ULift.up.injEq]
-            rw [← yonedaEquiv_naturality]
-            rfl
-        }
-    }
-  inv := {
-      app G := {
-          app s := fun x => yonedaEquiv.invFun x.down
-          naturality _ _ _ := by
-            ext
-            apply NatTrans.ext
-            ext
-            simp only [sectionOver.over_obj, Functor.op_obj, Functor.comp_obj,
-              whiskeringLeft_obj_obj, whiskeringRight_obj_obj, uliftFunctor_obj,
-              Functor.flip_obj_obj, coyoneda_obj_obj, Functor.comp_map, sectionOver.over_map,
-              Opposite.op_unop, Equiv.invFun_as_coe, types_comp_apply, uliftFunctor_map,
-              Functor.flip_obj_map, Functor.op_map, coyoneda_map_app, Quiver.Hom.unop_op,
-              FunctorToTypes.comp, yoneda_map_app]
-            rw [yonedaEquiv_symm_app_apply, yonedaEquiv_symm_app_apply]
-            simp
-        }
-      naturality _ _ _ := by
-        apply NatTrans.ext
-        ext
-        simp only [Functor.flip_obj_obj, Functor.comp_obj, sectionOver.over_obj, Functor.op_obj,
-          coyoneda_obj_obj, whiskeringLeft_obj_obj, whiskeringRight_obj_obj, Functor.comp_map,
-          whiskeringLeft_obj_map, whiskeringRight_obj_map, uliftFunctor_obj, Opposite.op_unop,
-          Equiv.invFun_as_coe, FunctorToTypes.comp, whiskerRight_app, whiskerLeft_app,
-          uliftFunctor_map, Functor.flip_map_app, coyoneda_obj_map]
-        rw [yonedaEquiv_symm_naturality_right]
-    }
+      ≅ (whiskeringLeftOver F) ⋙ (whiskeringRightUlift F) :=
+  (flipFunctor _ _ _).mapIso (isoWhiskerLeft (sectionOver.over F) largeCurriedYonedaLemma)
+
+def overCompYonedaCompCoyonedaFlipNatIsoWhiskeringLeftOver' :
+    (sectionOver.over F' ⋙ yoneda.op ⋙ ((whiskeringRight _ _ _).obj uliftFunctor).op
+      ⋙ coyoneda).flip ≅ (whiskeringLeftOver F') ⋙ (whiskeringRightUlift F') :=
+  (flipFunctor _ _ _).mapIso (isoWhiskerLeft (sectionOver.over F')
+    largeCurriedYonedaCompUliftFunctorLemma)
 
 noncomputable def coyonedaOpColimitOverYonedaNatIsoWhiskeringLeftOverLim :
     coyoneda.obj (Opposite.op (colimit (overYoneda F))) ≅
@@ -212,37 +181,32 @@ noncomputable def coyonedaOpColimitOverYonedaNatIsoWhiskeringLeftOverLim :
     ((limitIsoFlipCompLim _).trans
     (isoWhiskerRight (overCompYonedaCompCoyonedaFlipNatIsoWhiskeringLeftOver F) _))
 
--- useless
-noncomputable def colimitOverYonedaHomIsoLimitOverComp' :
-    (colimit (overYoneda F) ⟶ G) ≅ ULift.{u, v} (limit (sectionOver.over F ⋙ G)) :=
-  (colimitOverYonedaHomIsoLimitOverComp F).trans
-    (preservesLimitIso uliftFunctor (sectionOver.over F ⋙ G)).symm
-
--- useless
-noncomputable def colimitOverYonedaHomEquivLimitOverComp :
-    (colimit (overYoneda F) ⟶ G) ≃ (limit (sectionOver.over F ⋙ G)) :=
-  (colimitOverYonedaHomIsoLimitOverComp' F).toEquiv.trans Equiv.ulift
-
--- useless
-noncomputable def homEquivHomColimitOverYoneda :
-    (F ⟶ G) ≃ (colimit (overYoneda F) ⟶ G) :=
-  (homEquivLimitOverComp F G).trans (colimitOverYonedaHomEquivLimitOverComp F).symm
+noncomputable def coyonedaOpColimitOverYonedaNatIsoWhiskeringLeftOverLim' :
+    coyoneda.obj (Opposite.op (colimit (overYoneda' F'))) ≅
+      (whiskeringLeftOver F') ⋙ (whiskeringRightUlift F') ⋙ lim :=
+  (coyonedaOpColimitIsoLimitCoyoneda' (overYoneda' F')).trans
+    ((limitIsoFlipCompLim _).trans
+    (isoWhiskerRight (overCompYonedaCompCoyonedaFlipNatIsoWhiskeringLeftOver' F') _))
 
 noncomputable def coyonedaOpNatIsoCoyonedaOpColimitOverYoneda :
     coyoneda.obj (Opposite.op F) ≅ coyoneda.obj (Opposite.op (colimit (overYoneda F))) :=
   (coyonedaOpNatIsoWhiskeringLeftOverCompLim F).trans
     (coyonedaOpColimitOverYonedaNatIsoWhiskeringLeftOverLim F).symm
 
-noncomputable def isoColimitOverYoneda :
+noncomputable def coyonedaOpNatIsoCoyonedaOpColimitOverYoneda' :
+    coyoneda.obj (Opposite.op F') ≅ coyoneda.obj (Opposite.op (colimit (overYoneda' F'))) :=
+  (coyonedaOpNatIsoWhiskeringLeftOverCompLim F').trans
+    (coyonedaOpColimitOverYonedaNatIsoWhiskeringLeftOverLim' F').symm
+
+/-- A natural isomorphism between a presheaf a a colimit of representable presheaves. -/
+noncomputable def natIsoColimitOverYoneda :
     F ≅ colimit (overYoneda F) :=
   (Coyoneda.fullyFaithful.preimageIso (coyonedaOpNatIsoCoyonedaOpColimitOverYoneda F).symm).unop
 
-/-
-noncomputable def isoColimitOverYoneda' [UnivLE.{max u w, v}] [UnivLE.{max u v w, max v w}]
-    (G : Cᵒᵖ ⥤ Type w) :
-    G ⋙ uliftFunctor.{v, w} ≅ colimit (overYoneda G) ⋙ uliftFunctor.{w, v} := by
-  #check isoColimitOverYoneda (ULiftHom.down.{v, u, w}.op ⋙ G ⋙ uliftFunctor.{v, w})
--/
+/-- A variant of `natIsoColimitOverYoneda` with heterogeneous universes. -/
+noncomputable def natIsoColimitOverYoneda' :
+    F' ≅ colimit (overYoneda' F') :=
+  (Coyoneda.fullyFaithful.preimageIso (coyonedaOpNatIsoCoyonedaOpColimitOverYoneda' F').symm).unop
 
 end presheaf
 

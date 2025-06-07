@@ -469,7 +469,6 @@ lemma yonedaEquiv_naturality {X Y : C} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda.o
     (g : Y ⟶ X) : F.map g.op (yonedaEquiv f) = yonedaEquiv (yoneda.map g ≫ f) := by
   change (f.app (op X) ≫ F.map g.op) (𝟙 X) = f.app (op Y) (𝟙 Y ≫ g)
   rw [← f.naturality]
-  dsimp
   simp
 
 /-- Variant of `yonedaEquiv_naturality` with general `g`. This is technically strictly more general
@@ -554,24 +553,6 @@ theorem yonedaPairing_map (P Q : Cᵒᵖ × (Cᵒᵖ ⥤ Type v₁)) (α : P ⟶
     (yonedaPairing C).map α β = yoneda.map α.1.unop ≫ β ≫ α.2 :=
   rfl
 
-universe w in
-variable {C} in
-/-- A bijection `(yoneda.obj X ⋙ uliftFunctor ⟶ F) ≃ F.obj (op X)` which is a variant
-of `yonedaEquiv` with heterogeneous universes. -/
-def yonedaCompUliftFunctorEquiv (F : Cᵒᵖ ⥤ Type max v₁ w) (X : C) :
-    (yoneda.obj X ⋙ uliftFunctor ⟶ F) ≃ F.obj (op X) where
-  toFun φ := φ.app (op X) (ULift.up (𝟙 _))
-  invFun f :=
-    { app := fun _ x => F.map (ULift.down x).op f }
-  left_inv φ := by
-    ext Y f
-    dsimp
-    rw [← FunctorToTypes.naturality]
-    dsimp
-    rw [Category.comp_id]
-    rfl
-  right_inv f := by simp
-
 /-- The Yoneda lemma asserts that the Yoneda pairing
 `(X : Cᵒᵖ, F : Cᵒᵖ ⥤ Type) ↦ (yoneda.obj (unop X) ⟶ F)`
 is naturally isomorphic to the evaluation `(X, F) ↦ F.obj X`. -/
@@ -648,6 +629,70 @@ lemma isIso_iff_isIso_yoneda_map {X Y : C} (f : X ⟶ Y) :
     IsIso f ↔ ∀ c : C, IsIso ((yoneda.map f).app ⟨c⟩) := by
   rw [isIso_iff_yoneda_map_bijective]
   exact forall_congr' fun _ ↦ (isIso_iff_bijective _).symm
+
+section
+
+universe w
+
+/-- A bijection `(yoneda.obj X ⋙ uliftFunctor ⟶ F) ≃ F.obj (op X)` which is a variant
+of `yonedaEquiv` with heterogeneous universes. -/
+def yonedaCompUliftFunctorEquiv (F : Cᵒᵖ ⥤ Type max v₁ w) (X : C) :
+    (yoneda.obj X ⋙ uliftFunctor ⟶ F) ≃ F.obj (op X) where
+  toFun φ := φ.app (op X) (ULift.up (𝟙 _))
+  invFun f :=
+    { app := fun _ x => F.map (ULift.down x).op f }
+  left_inv φ := by
+    ext Y f
+    dsimp
+    rw [← FunctorToTypes.naturality]
+    dsimp
+    rw [Category.comp_id]
+    rfl
+  right_inv f := by simp
+
+theorem yonedaCompUliftFunctorEquiv_apply {X : C} {F : Cᵒᵖ ⥤ Type max v₁ w}
+    (f : yoneda.obj X ⋙ uliftFunctor ⟶ F) :
+    yonedaCompUliftFunctorEquiv F X f = f.app (op X) (ULift.up (𝟙 X)) :=
+  rfl
+
+@[simp]
+theorem yonedaCompUliftFunctorEquiv_symm_app_apply {X : C} {F : Cᵒᵖ ⥤ Type max v₁ w}
+    (x : F.obj (op X)) (Y : Cᵒᵖ) (f : Y.unop ⟶ X) :
+    ((yonedaCompUliftFunctorEquiv F X).symm x).app Y (ULift.up f) = F.map f.op x :=
+  rfl
+
+theorem yonedaCompUliftFunctorEquiv_naturality {X Y : C} {F : Cᵒᵖ ⥤ Type max v₁ w}
+    (f : yoneda.obj X ⋙ uliftFunctor ⟶ F) (g : Y ⟶ X) :
+    F.map g.op (yonedaCompUliftFunctorEquiv F X f)
+      = yonedaCompUliftFunctorEquiv F Y (whiskerRight (yoneda.map g) uliftFunctor ≫ f) := by
+  change (f.app (op X) ≫ F.map g.op) _ = f.app (op Y) _
+  rw [← f.naturality]
+  simp
+
+lemma yonedaCompUliftFunctorEquiv_comp {X : C} {F G : Cᵒᵖ ⥤ Type max v₁ w}
+    (α : yoneda.obj X ⋙ uliftFunctor ⟶ F) (β : F ⟶ G) :
+    yonedaCompUliftFunctorEquiv _ _ (α ≫ β) = β.app _ (yonedaCompUliftFunctorEquiv _ _ α) :=
+  rfl
+
+/-- A variant of the curried version of the Yoneda lemma with heterogeneous universes. -/
+def largeCurriedYonedaCompUliftFunctorLemma {C : Type u₁} [Category.{v₁} C] :
+    yoneda.op ⋙ ((whiskeringRight _ _ _).obj uliftFunctor.{w}).op ⋙ coyoneda ≅
+      evaluation Cᵒᵖ (Type max v₁ w) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} :=
+  NatIso.ofComponents
+    (fun X => NatIso.ofComponents
+      (fun _ => Equiv.toIso <| (yonedaCompUliftFunctorEquiv _ _).trans Equiv.ulift.symm)
+      (by
+        intros Y Z f
+        ext g
+        rw [← ULift.down_inj]
+        simpa using yonedaCompUliftFunctorEquiv_comp _ _))
+    (by
+      intros Y Z f
+      ext F g
+      rw [← ULift.down_inj]
+      simpa using (yonedaCompUliftFunctorEquiv_naturality _ _).symm)
+
+end
 
 end YonedaLemma
 
