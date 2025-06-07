@@ -322,7 +322,7 @@ lemma restrictScalars_map [SMul R R₂] [Module R₂ M] [Module R M₂] [IsScala
 /-- If `N ⊆ M` then submodules of `N` are the same as submodules of `M` contained in `N`.
 
 See also `Submodule.mapIic`. -/
-def MapSubtype.relIso : Submodule R p ≃o { p' : Submodule R M // p' ≤ p } where
+def MapSubtype.orderIso : Submodule R p ≃o { p' : Submodule R M // p' ≤ p } where
   toFun p' := ⟨map p.subtype p', map_subtype_le p _⟩
   invFun q := comap p.subtype q
   left_inv p' := comap_map_eq_of_injective (by exact Subtype.val_injective) p'
@@ -332,10 +332,12 @@ def MapSubtype.relIso : Submodule R p ≃o { p' : Submodule R M // p' ≤ p } wh
     rw [map_le_iff_le_comap,
       comap_map_eq_of_injective (show Injective p.subtype from Subtype.coe_injective) p₂]
 
+@[deprecated (since := "2025-06-03")] alias MapSubtype.relIso := MapSubtype.orderIso
+
 /-- If `p ⊆ M` is a submodule, the ordering of submodules of `p` is embedded in the ordering of
 submodules of `M`. -/
 def MapSubtype.orderEmbedding : Submodule R p ↪o Submodule R M :=
-  (RelIso.toRelEmbedding <| MapSubtype.relIso p).trans <|
+  (RelIso.toRelEmbedding <| MapSubtype.orderIso p).trans <|
     Subtype.relEmbedding (X := Submodule R M) (fun p p' ↦ p ≤ p') _
 
 @[simp]
@@ -346,7 +348,7 @@ theorem map_subtype_embedding_eq (p' : Submodule R p) :
 /-- If `N ⊆ M` then submodules of `N` are the same as submodules of `M` contained in `N`. -/
 def mapIic (p : Submodule R M) :
     Submodule R p ≃o Set.Iic p :=
-  Submodule.MapSubtype.relIso p
+  Submodule.MapSubtype.orderIso p
 
 @[simp] lemma coe_mapIic_apply
     (p : Submodule R M) (q : Submodule R p) :
