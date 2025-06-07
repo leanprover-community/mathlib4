@@ -189,6 +189,17 @@ lemma cyclotomic_polynomial_3_roots {K : Type*} [Field K] [NeZero (2 : K)] {z s 
   rw [quadratic_eq_zero_iff one_ne_zero (by rw [hs, discrim]; norm_num)]
   ring_nf
 
+lemma cyclotomic_polynomial_3_ne_zero_of_sq_ne {K : Type*} [Field K] [NeZero (2 : K)] {z : K}
+    (h : ∀ s : K, s^2 ≠ -3) : z ^ 2 + z + 1 ≠ 0 := by
+  suffices 1 * (z * z) + 1 * z + 1 ≠ 0 by
+    rw[one_mul, one_mul, ← sq] at this
+    exact this
+  apply quadratic_ne_zero_of_discrim_ne_sq
+  intro s
+  rw [discrim]
+  norm_num
+  exact fun a ↦ h s (id (Eq.symm a))
+
 lemma cubic_roots_of_unity {K : Type*} [Field K] [NeZero (2 : K)] {s : K} (hs : s * s = -3) :
   {z : K | z^3 = 1} = {1, -(1 / 2) + s / 2, -(1 / 2) - s / 2} := by
   have H (z : K) : z ^ 3 - 1 = (z - 1) * (z ^ 2 + z + 1) := by ring
