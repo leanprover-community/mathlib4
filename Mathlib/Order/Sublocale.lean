@@ -204,22 +204,24 @@ end Nucleus
 
 /-- The nuclei on a frame corresponds exactly to the sublocales on this frame.
 The sublocales are ordered dually to the nuclei. -/
-def orderIso : (Nucleus X)ᵒᵈ ≃o Sublocale X where
+def nucleusIsoSublocale : (Nucleus X)ᵒᵈ ≃o Sublocale X where
   toFun n := n.ofDual.toSublocale
   invFun s := .toDual s.toNucleus
   left_inv := by simp [Function.LeftInverse, Nucleus.ext_iff]
   right_inv S := by ext x; simpa using ⟨by simp +contextual [eq_comm], fun hx ↦ ⟨x, by simp [hx]⟩⟩
   map_rel_iff' := by simp
 
-lemma orderIso.eq_toSublocale : Nucleus.toSublocale = (@orderIso X _) := rfl
-lemma orderIso.symm_eq_toNucleus : Sublocale.toNucleus = (@orderIso X _).symm := rfl
+lemma nucleusIsoSublocale.eq_toSublocale : Nucleus.toSublocale = @nucleusIsoSublocale X _ := rfl
+lemma nucleusIsoSublocale.symm_eq_toNucleus :
+  Sublocale.toNucleus = (@nucleusIsoSublocale X _).symm := rfl
 
 instance Sublocale.instCompleteLattice : CompleteLattice (Sublocale X) :=
-  orderIso.toGaloisInsertion.liftCompleteLattice
+  nucleusIsoSublocale.toGaloisInsertion.liftCompleteLattice
 
 instance Sublocale.instCoframeMinimalAxioms : Order.Coframe.MinimalAxioms (Sublocale X) where
-  iInf_sup_le_sup_sInf a s := by simp [← toNucleus_le_toNucleus, orderIso.symm_eq_toNucleus,
-    orderIso.symm.map_sup, orderIso.symm.map_sInf, sup_iInf_eq, orderIso.symm.map_iInf]
+  iInf_sup_le_sup_sInf a s := by simp [← toNucleus_le_toNucleus,
+    nucleusIsoSublocale.symm_eq_toNucleus, nucleusIsoSublocale.symm.map_sup,
+    nucleusIsoSublocale.symm.map_sInf, sup_iInf_eq, nucleusIsoSublocale.symm.map_iInf]
 
 instance Sublocale.instCoframe : Order.Coframe (Sublocale X) :=
   .ofMinimalAxioms instCoframeMinimalAxioms
