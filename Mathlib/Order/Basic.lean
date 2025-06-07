@@ -339,7 +339,9 @@ end LE.le
 
 namespace LT.lt
 
-lemma lt_or_lt (h : a < b) (c : α) : a < c ∨ c < b := (le_or_gt b c).imp h.trans_le id
+lemma gt_or_lt (h : a < b) (c : α) : a < c ∨ c < b := (le_or_gt b c).imp h.trans_le id
+
+@[deprecated (since := "2025-06-07")] alias lt_or_lt := gt_or_lt
 
 end LT.lt
 

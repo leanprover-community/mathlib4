@@ -134,7 +134,7 @@ variable {x : ℝ}
 open expNegInvGlue
 
 theorem pos_denom (x) : 0 < expNegInvGlue x + expNegInvGlue (1 - x) :=
-  (zero_lt_one.lt_or_lt x).elim (fun hx => add_pos_of_pos_of_nonneg (pos_of_pos hx) (nonneg _))
+  (zero_lt_one.gt_or_lt x).elim (fun hx => add_pos_of_pos_of_nonneg (pos_of_pos hx) (nonneg _))
     fun hx => add_pos_of_nonneg_of_pos (nonneg _) (pos_of_pos <| sub_pos.2 hx)
 
 theorem one_of_one_le (h : 1 ≤ x) : smoothTransition x = 1 :=
