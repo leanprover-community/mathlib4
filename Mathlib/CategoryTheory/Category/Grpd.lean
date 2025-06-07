@@ -150,10 +150,10 @@ lemma associator_inv_app {B C D E : Grpd} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶
     (α_ F G H).inv.app X = eqToHom (by simp) :=
   rfl
 
-/-- The identity in the category of categories equals the identity functor. -/
+/-- The identity in the category of groupoids equals the identity functor. -/
 theorem id_eq_id (X : Grpd) : 𝟙 X = 𝟭 X := rfl
 
-/-- Composition in the category of categories equals functor composition. -/
+/-- Composition in the category of groupoids equals functor composition. -/
 theorem comp_eq_comp {X Y Z : Grpd} (F : X ⟶ Y) (G : Y ⟶ Z) : F ≫ G = F ⋙ G := rfl
 
 section
@@ -175,24 +175,15 @@ def forgetToCat : Grpd.{v, u} ⥤ Cat.{v, u} where
   obj C := Cat.of C
   map := id
 
+instance forgetToCat_full : forgetToCat.Full where map_surjective f := ⟨f, rfl⟩
+
+instance forgetToCat_faithful : forgetToCat.Faithful where
+
 /-- Functor that gets the set of objects of a groupoid. It is not
 called `forget`, because it is not a faithful functor. -/
 def objects : Grpd.{v, u} ⥤ Type u where
   obj := Bundled.α
   map F := F.obj
-
-instance forgetToCat_full : forgetToCat.Full where map_surjective f := ⟨f, rfl⟩
-
-instance forgetToCat_faithful : forgetToCat.Faithful where
-
-/-- Convert arrows in the category of groupoids to functors,
-which sometimes helps in applying simp lemmas -/
-theorem hom_to_functor {C D E : Grpd.{v, u}} (f : C ⟶ D) (g : D ⟶ E) : f ≫ g = f ⋙ g :=
-  rfl
-
-/-- Converts identity in the category of groupoids to the functor identity -/
-theorem id_to_functor {C : Grpd.{v, u}} : 𝟭 C = 𝟙 C :=
-  rfl
 
 section Products
 
@@ -206,7 +197,7 @@ def piLimitFanIsLimit ⦃J : Type u⦄ (F : J → Grpd.{u, u}) : Limits.IsLimit 
     (by
       intros
       dsimp only [piLimitFan]
-      simp [hom_to_functor])
+      simp [comp_eq_comp])
     (by
       intro s m w
       apply Functor.pi_ext
