@@ -1091,6 +1091,36 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
   | .cons h q =>
     simp only [getVert_cons_succ, tail_cons_eq, getVert_cons]
     exact getVert_copy q n (getVert_zero q).symm rfl
+
+@[ext]
+lemma ext_getVert {u v} {p q : G.Walk u v} (h : ∀ k, p.getVert k = q.getVert k) :
+    p = q := by
+  induction p with
+  | nil =>
+    cases q with
+    | nil => rfl
+    | cons ha =>
+      specialize h 1
+      rw [getVert_nil, getVert_cons_succ, getVert_zero] at h
+      exact ((G.loopless _) (h ▸ ha)).elim
+  | cons ha _ ih =>
+    cases q with
+    | nil =>
+      specialize h 1
+      rw [getVert_nil, getVert_cons_succ, getVert_zero] at h
+      exact ((G.loopless _) (h ▸ ha)).elim
+    | cons hb q =>
+      expose_names
+      have h₁ := h 1
+      rw [getVert_cons_succ, getVert_zero] at h₁
+      specialize ih (q := (cons hb q).tail.copy h₁.symm rfl)
+      simp only [getVert_copy, getVert_tail] at ih
+      specialize ih fun k ↦ by
+        rw [getVert_cons_succ]
+        specialize h (k + 1)
+        rwa [getVert_cons_succ, getVert_cons_succ] at h
+      simp [ih]
+
 end Walk
 
 /-! ### Mapping walks -/
