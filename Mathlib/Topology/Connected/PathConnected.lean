@@ -40,7 +40,9 @@ subtype `↥F`.
 * `isPathConnected_iff_pathConnectedSpace : IsPathConnected F ↔ PathConnectedSpace ↥F`
 
 Furthermore, it is shown that continuous images and quotients of path-connected sets/spaces are
-path-connected, and that every path-connected set/space is also connected.
+path-connected, and that every path-connected set/space is also connected. (See
+`Counterexamples.TopologistsSineCurve` for an example of a set in `ℝ × ℝ` that is connected but not
+path-connected.)
 -/
 
 noncomputable section
@@ -521,6 +523,10 @@ instance (priority := 100) PathConnectedSpace.connectedSpace [PathConnectedSpace
   rw [← univ_subset_iff]
   exact (by simpa using hx : pathComponent x = univ) ▸ pathComponent_subset_component x
 
+/-- A path-connected set is connected.
+
+(See `Counterexamples.TopologistsSineCurve` for the standard counterexample showing that the
+converse is false.) -/
 theorem IsPathConnected.isConnected (hF : IsPathConnected F) : IsConnected F := by
   rw [isConnected_iff_connectedSpace]
   rw [isPathConnected_iff_pathConnectedSpace] at hF
