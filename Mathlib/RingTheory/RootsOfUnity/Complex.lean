@@ -194,7 +194,7 @@ lemma cyclotomic_polynomial_3_ne_zero_of_sq_ne {K : Type*} [Field K] {z : K}
   suffices 1 * (z * z) + 1 * z + 1 ≠ 0 by
     rw[one_mul, one_mul, ← sq] at this
     exact this
-  exact quadratic_ne_zero_of_discrim_ne_sq (fun s => by rw [discrim]; ring; exact (h s).symm) _
+  exact quadratic_ne_zero_of_discrim_ne_sq (fun s => by rw [discrim]; ring_nf; exact (h s).symm) _
 
 lemma cubic_roots_of_unity_of_sq_eq {K : Type*} [Field K] [NeZero (2 : K)] {s : K}
     (hs : s * s = -3) : {z : K | z^3 = 1} = {1, -(1 / 2) + s / 2, -(1 / 2) - s / 2} := by
