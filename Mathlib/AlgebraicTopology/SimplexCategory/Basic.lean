@@ -419,7 +419,7 @@ lemma factor_δ_spec {m n : ℕ} (f : ⦋m⦌ ⟶ ⦋n+1⦌) (j : Fin (n+2))
       simp_all
   | succ j =>
     rw [predAbove_of_castSucc_lt 0 _ (by simp), pred_succ]
-    rcases hj.lt_or_lt with (hj | hj)
+    rcases hj.lt_or_gt with (hj | hj)
     · rw [predAbove_of_le_castSucc j _]
       swap
       · exact (le_castSucc_iff.mpr hj)

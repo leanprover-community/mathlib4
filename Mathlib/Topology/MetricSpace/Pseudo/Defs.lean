@@ -500,7 +500,7 @@ theorem ball_subset_ball (h : ε₁ ≤ ε₂) : ball x ε₁ ⊆ ball x ε₂ :
   lt_of_lt_of_le (mem_ball.1 yx) h
 
 theorem closedBall_eq_bInter_ball : closedBall x ε = ⋂ δ > ε, ball x δ := by
-  ext y; rw [mem_closedBall, ← forall_lt_iff_le', mem_iInter₂]; rfl
+  ext y; rw [mem_closedBall, ← forall_gt_iff_le, mem_iInter₂]; rfl
 
 theorem ball_subset_ball' (h : ε₁ + dist x y ≤ ε₂) : ball x ε₁ ⊆ ball y ε₂ := fun z hz =>
   calc

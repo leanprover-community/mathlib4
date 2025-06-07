@@ -197,7 +197,7 @@ theorem eq_of_mabs_div_le_one (h : |a / b|ₘ ≤ 1) : a = b :=
 
 @[to_additive]
 lemma eq_of_mabs_div_lt_all {x y : G} (h : ∀ ε > 1, |x / y|ₘ < ε) : x = y :=
-  eq_of_mabs_div_le_one <| forall_lt_iff_le'.mp h
+  eq_of_mabs_div_le_one <| le_of_forall_gt h
 
 @[to_additive]
 lemma eq_of_mabs_div_le_all [DenselyOrdered G] {x y : G} (h : ∀ ε > 1, |x / y|ₘ ≤ ε) : x = y :=
