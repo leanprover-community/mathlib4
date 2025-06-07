@@ -203,7 +203,7 @@ example : {z : ℂ | z^4 = 1} = {1, I, -1, -I} := by
   rw [← sub_eq_zero, H]
   simp [mul_eq_zero, sub_eq_zero, or_assoc, ← sub_neg_eq_add]
 
-lemma cyclotomic_polynomial_5 (z : ℂ) :
+lemma factorize_cyclotomic_polynomial_5 (z : ℂ) :
     z ^ 4 + z ^ 3 + z ^ 2 + z + 1 = (z - ((√5 -1)/4 + √2 * √(5 + √5)/4 * I))
                                   * (z - ((√5 -1)/4 - √2 * √(5 + √5)/4 * I))
                                   * (z - (-(√5 + 1)/4 + √2 * √(5 - √5) / 4 * I))
@@ -226,18 +226,9 @@ example : {z : ℂ | z^5 = 1} = {1,
     (√5 -1)/4 - √2 * √(5 + √5)/4 * I,
     -(√5 + 1)/4 + √2 * √(5 - √5) / 4 * I,
     -(√5 +1)/4 - √2 * √(5 - √5) / 4 * I} := by
-  have H (z : ℂ) : z ^ 5 - 1 = (z - 1)
-                              * (z - ((√5 -1)/4 + √2 * √(5 + √5)/4 * I))
-                              * (z - ((√5 -1)/4 - √2 * √(5 + √5)/4 * I))
-                              * (z - (-(√5 + 1)/4 + √2 * √(5 - √5) / 4 * I))
-                              * (z - (-(√5 +1)/4 - √2 * √(5 - √5) / 4 * I)) := by
-    have e1 : z ^ 5 - 1 = (z - 1) * (z ^ 4 + z ^ 3 + z ^ 2 + z + 1) := by
+  have e1 (z : ℂ) : z ^ 5 - 1 = (z - 1) * (z ^ 4 + z ^ 3 + z ^ 2 + z + 1) := by
       ring
-    rw [e1]
-    rw [cyclotomic_polynomial_5]
-    ring_nf
   ext z
   simp only [Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
-  rw [← sub_eq_zero, H]
-  --simp [← sub_neg_eq_add, or_assoc]
-  simp [or_assoc, sub_eq_zero]
+  rw [← sub_eq_zero]
+  simp only [e1, factorize_cyclotomic_polynomial_5, neg_add_rev, mul_eq_zero, sub_eq_zero, or_assoc]
