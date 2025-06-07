@@ -30,18 +30,20 @@ open Classical in
 (where `ι` has exactly two elements), this is the multicofork
 deduded from a pushout cocone. -/
 noncomputable def multicofork : Multicofork I :=
-  Multicofork.ofπ _ s.pt (fun k ↦
-    if hk : k = J.fst default then
-      eqToHom (by simp [hk]) ≫ s.inl
-    else
-      eqToHom (by
-        obtain rfl : k = J.snd default := by
-          have := h.symm.le (Set.mem_univ k)
-          simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at this
-          tauto
-        rfl) ≫ s.inr) (by
-    rw [Unique.forall_iff]
-    simpa [h'.symm] using s.condition)
+  Multicofork.ofπ _ s.pt
+    (fun k ↦
+      if hk : k = J.fst default then
+        eqToHom (by simp [hk]) ≫ s.inl
+      else
+        eqToHom (by
+          obtain rfl : k = J.snd default := by
+            have := h.symm.le (Set.mem_univ k)
+            simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at this
+            tauto
+          rfl) ≫ s.inr)
+    (by
+      rw [Unique.forall_iff]
+      simpa [h'.symm] using s.condition)
 
 @[simp]
 lemma multicofork_π_eq_inl : (multicofork h h' s).π (J.fst default) = s.inl := by
