@@ -54,9 +54,8 @@ where `count I w` is a power of 2.
 -/
 private theorem der_cons_replicate (n : ℕ) : Derivable (M :: replicate (2 ^ n) I) := by
   induction n with
-  | zero => -- base case
-    constructor
-  | succ k hk => -- inductive step
+  | zero => constructor
+  | succ k hk =>
     rw [pow_add, pow_one 2, mul_two, replicate_add]
     exact Derivable.r2 hk
 
@@ -335,12 +334,10 @@ theorem der_of_decstr {en : Miustr} (h : Decstr en) : Derivable en := by
    for induction -/
   have hu : ∃ n, count U en = n := exists_eq'
   obtain ⟨n, hu⟩ := hu
-  revert en -- Crucially, we need the induction hypothesis to quantify over `en`
-  induction n with
-  | zero => exact base_case_suf _
+  induction n generalizing en with
+  | zero => exact base_case_suf _ h hu
   | succ k hk =>
-    intro ys hdec hus
-    rcases ind_hyp_suf k ys hus hdec with ⟨as, bs, hyab, habuc, hdecab⟩
+    rcases ind_hyp_suf k en hu h with ⟨as, bs, hyab, habuc, hdecab⟩
     have h₂ : Derivable (↑(M :: as) ++ ↑[I, I, I] ++ bs) := hk hdecab habuc
     rw [hyab]
     exact Derivable.r3 h₂
