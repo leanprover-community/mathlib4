@@ -35,11 +35,11 @@ categories `F(S)` and the functor `ι` sends `a : F(S)` to `(S, a)` in the fiber
 The following API is developed so that the fibers from a `HasFibers` instance can be used
 analogously to the standard fibers.
 
-- `mapPreimage φ` is a lift of a morphism `φ : (ι S).obj a ⟶ (ι S).obj b` in `𝒳`, which lies over
+- `Fib.homMk φ` is a lift of a morphism `φ : (ι S).obj a ⟶ (ι S).obj b` in `𝒳`, which lies over
 `𝟙 S`, to a morphism in the fiber over `S`.
-- `objPreimage` gives an object in the fiber over `S` which is isomorphic to a given `a : 𝒳` that
-satisfies `p(a) = S`. The isomorphism is given by `objObjPreimageIso`.
-- `HasFibers.pullbackObj` is a version of `IsPreFibered.pullbackObj` which ensures that the object
+- `Fib.mk` gives an object in the fiber over `S` which is isomorphic to a given `a : 𝒳` that
+satisfies `p(a) = S`. The isomorphism is given by `Fib.mkIsoSelf`.
+- `HasFibers.mkPullback` is a version of `IsPreFibered.mkPullback` which ensures that the object
 lies in a given fiber. The corresponding cartesian morphism is given by `HasFibers.pullbackMap`.
 - `HasFibers.inducedMap` is a version of `IsCartesian.inducedMap` which gives the corresponding
 morphism in the fiber category.
@@ -119,7 +119,7 @@ def proj_map {R S : 𝒮} {a : Fib p R} {b : Fib p S}
     (φ : (ι R).obj a ⟶ (ι S).obj b) : R ⟶ S :=
   eqToHom (proj_eq a).symm ≫ (p.map φ) ≫ eqToHom (proj_eq b)
 
-/-- For any homomorphism φ in a fiber Fib S, its image under ι S lies over 𝟙 S -/
+/-- For any homomorphism `φ` in a fiber `Fib S`, its image under `ι S` lies over `𝟙 S`. -/
 instance homLift {S : 𝒮} {a b : Fib p S} (φ : a ⟶ b) : IsHomLift p (𝟙 S) ((ι S).map φ) := by
   apply of_fac p _ _ (proj_eq a) (proj_eq b)
   rw [← Functor.comp_map, Functor.congr_hom (comp_const S)]
@@ -127,46 +127,39 @@ instance homLift {S : 𝒮} {a b : Fib p S} (φ : a ⟶ b) : IsHomLift p (𝟙 S
 
 /-- A version of fullness of the functor `Fib S ⥤ Fiber p S` that can be used inside the category
 `𝒳`. -/
-noncomputable def mapPreimage {S : 𝒮} {a b : Fib p S} (φ : (ι S).obj a ⟶ (ι S).obj b)
+noncomputable def Fib.homMk {S : 𝒮} {a b : Fib p S} (φ : (ι S).obj a ⟶ (ι S).obj b)
     [IsHomLift p (𝟙 S) φ] : a ⟶ b :=
-  (inducedFunctor _ S).preimage (homMk p S φ)
+  (inducedFunctor _ S).preimage (Fiber.homMk p S φ)
 
 @[simp]
-lemma mapPreimage_eq {S : 𝒮} {a b : Fib p S} (φ : (ι S).obj a ⟶ (ι S).obj b)
-    [IsHomLift p (𝟙 S) φ] : (ι S).map (mapPreimage φ) = φ := by
-  simp [mapPreimage, congr_hom (inducedFunctor_comp p S)]
+lemma Fib.map_homMk {S : 𝒮} {a b : Fib p S} (φ : (ι S).obj a ⟶ (ι S).obj b)
+    [IsHomLift p (𝟙 S) φ] : (ι S).map (homMk φ) = φ := by
+  simp [Fib.homMk, congr_hom (inducedFunctor_comp p S)]
+
+@[ext]
+lemma Fib.hom_ext {S : 𝒮} {a b : Fib p S} {f g : a ⟶ b}
+    (h : (ι S).map f = (ι S).map g) : f = g :=
+  (ι S).map_injective h
 
 /-- The lift of an isomorphism `Φ : (ι S).obj a ≅ (ι S).obj b` lying over `𝟙 S` to an isomorphism
 in `Fib S`. -/
-noncomputable def LiftIso {S : 𝒮} {a b : Fib p S}
-    (Φ : (ι S).obj a ≅ (ι S).obj b) (hΦ : IsHomLift p (𝟙 S) Φ.hom) : a ≅ b := by
-  let a' : Fiber p S := (inducedFunctor p S).obj a
-  let b' : Fiber p S := (inducedFunctor p S).obj b
-  let Φ' : a' ≅ b' := {
-    hom := ⟨Φ.hom, hΦ⟩
-    inv := ⟨Φ.inv, inferInstance⟩
-    hom_inv_id := by
-      ext
-      simp [fiberInclusion.map_comp]
-      simp [fiberInclusion]
-    inv_hom_id := by
-      ext
-      simp [fiberInclusion.map_comp]
-      simp [fiberInclusion]
-    }
-  exact ((inducedFunctor p S).preimageIso Φ')
+@[simps]
+noncomputable def Fib.isoMk {S : 𝒮} {a b : Fib p S}
+    (Φ : (ι S).obj a ≅ (ι S).obj b) (hΦ : IsHomLift p (𝟙 S) Φ.hom) : a ≅ b where
+  hom := Fib.homMk Φ.hom
+  inv := Fib.homMk Φ.inv
 
 /-- An object in `Fib p S` isomorphic in `𝒳` to a given object `a : 𝒳` such that `p(a) = S`. -/
-noncomputable def objPreimage {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) : Fib p S :=
+noncomputable def Fib.mk {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) : Fib p S :=
   Functor.objPreimage (inducedFunctor p S) (Fiber.mk ha)
 
 /-- Applying `ι S` to the preimage of `a : 𝒳` in `Fib p S` yields an object isomorphic to `a`. -/
-noncomputable def objObjPreimageIso {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) :
-    (ι S).obj (objPreimage ha) ≅ a :=
+noncomputable def Fib.mkIsoSelf {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) :
+    (ι S).obj (Fib.mk ha) ≅ a :=
   fiberInclusion.mapIso (Functor.objObjPreimageIso (inducedFunctor p S) (Fiber.mk ha))
 
-instance objObjPreimageIso.IsHomLift {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) :
-    IsHomLift p (𝟙 S) (objObjPreimageIso ha).hom :=
+instance Fib.mkIsoSelfIsHomLift {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) :
+    IsHomLift p (𝟙 S) (Fib.mkIsoSelf ha).hom :=
   (Functor.objObjPreimageIso (inducedFunctor p S) (Fiber.mk ha)).hom.2
 
 section
@@ -175,12 +168,12 @@ variable [IsPreFibered p] {R S : 𝒮} {a : 𝒳} (f : R ⟶ S) (ha : p.obj a = 
 
 /-- The domain, taken in `Fib p R`, of some cartesian morphism lifting a given
 `f : R ⟶ S` in `𝒮` -/
-noncomputable def pullbackObj : Fib p R :=
-  objPreimage (domain_eq p f (IsPreFibered.pullbackMap ha f))
+noncomputable def mkPullback : Fib p R :=
+  Fib.mk (domain_eq p f (IsPreFibered.pullbackMap ha f))
 
 /-- A cartesian morphism lifting `f : R ⟶ S` with domain in the image of `Fib p R` -/
-noncomputable def pullbackMap : (ι R).obj (pullbackObj f ha) ⟶ a :=
-  (objObjPreimageIso (domain_eq p f (IsPreFibered.pullbackMap ha f))).hom ≫
+noncomputable def pullbackMap : (ι R).obj (mkPullback f ha) ⟶ a :=
+  (Fib.mkIsoSelf (domain_eq p f (IsPreFibered.pullbackMap ha f))).hom ≫
     (IsPreFibered.pullbackMap ha f)
 
 instance pullbackMap.isCartesian : IsCartesian p f (pullbackMap f ha) := by
@@ -204,10 +197,10 @@ R ====== R --f--> S
 ```
 Then the induced map τ : b' ⟶ b can be lifted to the fiber over R -/
 noncomputable def inducedMap : b ⟶ b' :=
-  mapPreimage (IsCartesian.map p f ψ φ)
+  Fib.homMk (IsCartesian.map p f ψ φ)
 
 lemma inducedMap_comp : (ι R).map (inducedMap f ψ φ) ≫ ψ = φ := by
-  simp only [inducedMap, mapPreimage_eq, IsCartesian.fac]
+  simp only [inducedMap, Fib.map_homMk, IsCartesian.fac]
 
 end
 
@@ -236,7 +229,7 @@ lemma fiber_factorization (ha : p.obj a = S) {b : Fib p R} (f : R ⟶ S) (φ : (
     [IsHomLift p f φ] : ∃ (b' : Fib p R) (τ : b ⟶ b') (ψ : (ι R).obj b' ⟶ a),
       IsStronglyCartesian p f ψ ∧ (((ι R).map τ) ≫ ψ = φ) :=
   let ψ := pullbackMap f ha
-  ⟨pullbackObj f ha, inducedMap f ψ φ, ψ, inferInstance, inducedMap_comp f ψ φ⟩
+  ⟨mkPullback f ha, inducedMap f ψ φ, ψ, inferInstance, inducedMap_comp f ψ φ⟩
 
 end
 
