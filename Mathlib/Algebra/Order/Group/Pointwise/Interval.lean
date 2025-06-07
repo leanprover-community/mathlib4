@@ -877,18 +877,6 @@ theorem image_div_const_uIcc (a b c : α) : (fun x => x / a) '' [[b, c]] = [[b /
 /-- The (pre)image under `inv` of `Ioo a 0` is `Iio a⁻¹`. -/
 theorem inv_Ioo_0_right {a : α} (ha : a < 0) : (Ioo a 0)⁻¹ = Iio a⁻¹ := by
   ext x
-  exact ⟨fun h ↦ inv_lt_of_inv_lt₀ (inv_pos.1 h.1) h.2,
-         fun h ↦ ⟨inv_pos.2 <| (inv_pos.2 ha).trans h, inv_lt_of_inv_lt₀ ha h⟩⟩
-
-/-- The (pre)image under `inv` of `Ioo a 0` is `Iio a⁻¹`. -/
-theorem inv_Ioo_0_right {a : α} (ha : a < 0) : (Ioo a 0)⁻¹ = Iio a⁻¹ := by
-  ext x
-  refine ⟨fun h ↦ (lt_inv_of_neg (inv_neg''.1 h.2) ha).2 h.1, fun h ↦ ?_⟩
-  have h' := (h.trans (inv_neg''.2 ha))
-  exact ⟨(lt_inv_of_neg ha h').2 h, inv_neg''.2 h'⟩
-
-theorem inv_Iio {a : α} (ha : a < 0) : (Iio a)⁻¹ = Ioo a⁻¹ 0 := by
-  rw [inv_eq_iff_eq_inv, inv_Ioo_0_right (inv_neg''.2 ha), inv_inv]
   refine ⟨fun h ↦ (lt_inv_of_neg (inv_neg''.1 h.2) ha).2 h.1, fun h ↦ ?_⟩
   have h' := (h.trans (inv_neg''.2 ha))
   exact ⟨(lt_inv_of_neg ha h').2 h, inv_neg''.2 h'⟩
