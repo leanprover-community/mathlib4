@@ -1,10 +1,12 @@
 /-
 Copyright (c) 2022 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Apurva Nakade
+Authors: Apurva Nakade, Yaël Dillies
 -/
 import Mathlib.Analysis.Convex.Cone.Closure
 import Mathlib.Analysis.InnerProductSpace.Adjoint
+import Mathlib.Topology.Algebra.Module.ClosedSubmodule
+import Mathlib.Topology.Algebra.Order.Module
 
 /-!
 # Proper cones
@@ -30,77 +32,107 @@ The next steps are:
 
 -/
 
-open ContinuousLinearMap Filter Set
+open ContinuousLinearMap Filter Function Set
 
-/-- A proper cone is a pointed cone `K` that is closed. Proper cones have the nice property that
+variable {R E F G : Type*} [Semiring R] [PartialOrder R] [IsOrderedRing R]
+variable [AddCommMonoid E] [TopologicalSpace E] [Module R E]
+variable [AddCommMonoid F] [TopologicalSpace F] [Module R F]
+variable [AddCommMonoid G] [TopologicalSpace G] [Module R G]
+
+local notation "R≥0" => {r : R // 0 ≤ r}
+
+variable (R E) in
+/-- A proper cone is a pointed cone `C` that is closed. Proper cones have the nice property that
 they are equal to their double dual, see `ProperCone.dual_dual`.
 This makes them useful for defining cone programs and proving duality theorems. -/
-structure ProperCone (𝕜 : Type*) (E : Type*)
-    [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [AddCommMonoid E]
-    [TopologicalSpace E] [Module 𝕜 E] extends Submodule {c : 𝕜 // 0 ≤ c} E where
-  isClosed' : IsClosed (carrier : Set E)
+abbrev ProperCone := ClosedSubmodule R≥0 E
 
 namespace ProperCone
 section Module
+variable {C C₁ C₂ : ProperCone R E} {r : R} {x : E}
 
-variable {𝕜 : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
-variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [Module 𝕜 E]
+/-- Alias of `ClosedSubmodule.toSubmodule` for convenience and discoverability. -/
+@[coe] abbrev toPointedCone (C : ProperCone R E) : PointedCone R E := C.toSubmodule
 
-/-- A `PointedCone` is defined as an alias of submodule. We replicate the abbreviation here and
-define `toPointedCone` as an alias of `toSubmodule`. -/
-abbrev toPointedCone (C : ProperCone 𝕜 E) := C.toSubmodule
+instance : Coe (ProperCone R E) (PointedCone R E) := ⟨toPointedCone⟩
 
-attribute [coe] toPointedCone
-
-instance : Coe (ProperCone 𝕜 E) (PointedCone 𝕜 E) :=
-  ⟨toPointedCone⟩
-
-theorem toPointedCone_injective : Function.Injective ((↑) : ProperCone 𝕜 E → PointedCone 𝕜 E) :=
-  fun S T h => by cases S; cases T; congr
+lemma toPointedCone_injective : Injective ((↑) : ProperCone R E → PointedCone R E) :=
+  ClosedSubmodule.toSubmodule_injective
 
 -- TODO: add `ConvexConeClass` that extends `SetLike` and replace the below instance
-instance : SetLike (ProperCone 𝕜 E) E where
-  coe K := K.carrier
-  coe_injective' _ _ h := ProperCone.toPointedCone_injective (SetLike.coe_injective h)
+instance : SetLike (ProperCone R E) E where
+  coe C := C.carrier
+  coe_injective' _ _ h := ProperCone.toPointedCone_injective <| SetLike.coe_injective h
 
-@[ext]
-theorem ext {S T : ProperCone 𝕜 E} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
-  SetLike.ext h
+@[ext] lemma ext (h : ∀ x, x ∈ C₁ ↔ x ∈ C₂) : C₁ = C₂ := SetLike.ext h
+
+@[simp] lemma mem_toPointedCone : x ∈ C.toPointedCone ↔ x ∈ C := .rfl
+
+protected lemma pointed_toConvexCone (C : ProperCone R E) : (C : ConvexCone R E).Pointed :=
+  C.toPointedCone.pointed_toConvexCone
+
+protected lemma nonempty (C : ProperCone R E) : (C : Set E).Nonempty := C.toSubmodule.nonempty
+protected lemma isClosed (C : ProperCone R E) : IsClosed (C : Set E) := C.isClosed'
+
+protected nonrec lemma smul_mem (C : ProperCone R E) (hx : x ∈ C) (hr : 0 ≤ r) : r • x ∈ C :=
+  C.smul_mem ⟨r, hr⟩ hx
+
+section T1Space
+variable [T1Space E]
+
+lemma mem_bot : x ∈ (⊥ : ProperCone R E) ↔ x = 0 := .rfl
+
+@[simp, norm_cast] lemma toPointedCone_bot : (⊥ : ProperCone R E).toPointedCone = ⊥ := rfl
+
+end T1Space
+
+/-- The closure of image of a proper cone under a `ℝ`-linear map is a proper cone. We
+use continuous maps here so that the comap of f is also a map between proper cones. -/
+abbrev comap (f : E →L[R] F) (C : ProperCone R F) : ProperCone R E :=
+  ClosedSubmodule.comap (f.restrictScalars R≥0) C
+
+@[simp] lemma comap_id (C : ProperCone R F) : C.comap (.id _ _) = C := rfl
+
+@[simp] lemma coe_comap (f : E →L[R] F) (C : ProperCone R F) : (C.comap f : Set E) = f ⁻¹' C := rfl
+
+lemma comap_comap (g : F →L[R] G) (f : E →L[R] F) (C : ProperCone R G) :
+    (C.comap g).comap f = C.comap (g.comp f) := rfl
+
+lemma mem_comap {C : ProperCone R F} {f : E →L[R] F} : x ∈ C.comap f ↔ f x ∈ C := .rfl
+
+variable [ContinuousAdd F] [ContinuousConstSMul R F]
+
+/-- The closure of image of a proper cone under a linear map is a proper cone.
+
+We use continuous maps here to match `ProperCone.comap`. -/
+abbrev map (f : E →L[R] F) (C : ProperCone R E) : ProperCone R F :=
+  ClosedSubmodule.map (f.restrictScalars R≥0) C
+
+@[simp] lemma map_id (C : ProperCone R F) : C.map (.id _ _) = C := ClosedSubmodule.map_id _
+
+@[simp, norm_cast]
+lemma coe_map (f : E →L[R] F) (C : ProperCone R E) :
+    C.map f = (C.toPointedCone.map (f : E →ₗ[R] F)).closure := rfl
 
 @[simp]
-theorem mem_coe {x : E} {K : ProperCone 𝕜 E} : x ∈ (K : PointedCone 𝕜 E) ↔ x ∈ K :=
-  Iff.rfl
-
-instance instZero (K : ProperCone 𝕜 E) : Zero K := PointedCone.instZero (K.toSubmodule)
-
-protected theorem nonempty (K : ProperCone 𝕜 E) : (K : Set E).Nonempty :=
-  ⟨0, by { simp_rw [SetLike.mem_coe, ← ProperCone.mem_coe, Submodule.zero_mem] }⟩
-
-protected theorem isClosed (K : ProperCone 𝕜 E) : IsClosed (K : Set E) :=
-  K.isClosed'
+lemma mem_map {f : E →L[R] F} {K : ProperCone R E} {y : F} :
+    y ∈ K.map f ↔ y ∈ (PointedCone.map (f : E →ₗ[R] F) ↑K).closure := .rfl
 
 end Module
 
 section PositiveCone
+variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [Module R E] [PartialOrder E]
+  [IsOrderedAddMonoid E] [OrderedSMul R E] [OrderClosedTopology E] {x : E}
 
-variable (𝕜 E)
-variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
-  [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
-  [TopologicalSpace E] [OrderClosedTopology E]
-
+variable (R E) in
 /-- The positive cone is the proper cone formed by the set of nonnegative elements in an ordered
 module. -/
-def positive : ProperCone 𝕜 E where
-  toSubmodule := PointedCone.positive 𝕜 E
+@[simps!]
+def positive : ProperCone R E where
+  toSubmodule := PointedCone.positive R E
   isClosed' := isClosed_Ici
 
-@[simp]
-theorem mem_positive {x : E} : x ∈ positive 𝕜 E ↔ 0 ≤ x :=
-  Iff.rfl
-
-@[simp]
-theorem coe_positive : ↑(positive 𝕜 E) = ConvexCone.positive 𝕜 E :=
-  rfl
+@[simp] lemma mem_positive : x ∈ positive R E ↔ 0 ≤ x := .rfl
 
 end PositiveCone
 
@@ -138,26 +170,6 @@ variable {G : Type*} [NormedAddCommGroup G] [InnerProductSpace ℝ G]
 protected theorem pointed (K : ProperCone ℝ E) : (K : ConvexCone ℝ E).Pointed :=
   (K : ConvexCone ℝ E).pointed_of_nonempty_of_isClosed K.nonempty K.isClosed
 
-/-- The closure of image of a proper cone under a continuous `ℝ`-linear map is a proper cone. We
-use continuous maps here so that the comap of f is also a map between proper cones. -/
-noncomputable def map (f : E →L[ℝ] F) (K : ProperCone ℝ E) : ProperCone ℝ F where
-  toSubmodule := PointedCone.closure (PointedCone.map (f : E →ₗ[ℝ] F) ↑K)
-  isClosed' := isClosed_closure
-
-@[simp, norm_cast]
-theorem coe_map (f : E →L[ℝ] F) (K : ProperCone ℝ E) :
-    ↑(K.map f) = (PointedCone.map (f : E →ₗ[ℝ] F) ↑K).closure :=
-  rfl
-
-@[simp]
-theorem mem_map {f : E →L[ℝ] F} {K : ProperCone ℝ E} {y : F} :
-    y ∈ K.map f ↔ y ∈ (PointedCone.map (f : E →ₗ[ℝ] F) ↑K).closure :=
-  Iff.rfl
-
-@[simp]
-theorem map_id (K : ProperCone ℝ E) : K.map (ContinuousLinearMap.id ℝ E) = K :=
-  ProperCone.toPointedCone_injective <| by simpa using IsClosed.closure_eq K.isClosed
-
 /-- The inner dual cone of a proper cone is a proper cone. -/
 def dual (K : ProperCone ℝ E) : ProperCone ℝ E where
   toSubmodule := PointedCone.dual (K : PointedCone ℝ E)
@@ -171,29 +183,6 @@ open scoped InnerProductSpace in
 @[simp]
 theorem mem_dual {K : ProperCone ℝ E} {y : E} : y ∈ dual K ↔ ∀ ⦃x⦄, x ∈ K → 0 ≤ ⟪x, y⟫_ℝ := by
   aesop
-
-/-- The preimage of a proper cone under a continuous `ℝ`-linear map is a proper cone. -/
-noncomputable def comap (f : E →L[ℝ] F) (S : ProperCone ℝ F) : ProperCone ℝ E where
-  toSubmodule := PointedCone.comap (f : E →ₗ[ℝ] F) S
-  isClosed' := by
-    rw [PointedCone.comap]
-    apply IsClosed.preimage f.2 S.isClosed
-
-@[simp]
-theorem coe_comap (f : E →L[ℝ] F) (S : ProperCone ℝ F) : (S.comap f : Set E) = f ⁻¹' S :=
-  rfl
-
-@[simp]
-theorem comap_id (S : ConvexCone ℝ E) : S.comap LinearMap.id = S :=
-  SetLike.coe_injective preimage_id
-
-theorem comap_comap (g : F →L[ℝ] G) (f : E →L[ℝ] F) (S : ProperCone ℝ G) :
-    (S.comap g).comap f = S.comap (g.comp f) :=
-  SetLike.coe_injective <| by congr
-
-@[simp]
-theorem mem_comap {f : E →L[ℝ] F} {S : ProperCone ℝ F} {x : E} : x ∈ S.comap f ↔ f x ∈ S :=
-  Iff.rfl
 
 end InnerProductSpace
 
@@ -220,7 +209,7 @@ theorem hyperplane_separation (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F}
     (by
       -- suppose `b ∈ K.map f`
       simp_rw [mem_map, PointedCone.mem_closure, PointedCone.coe_map, coe_coe,
-        mem_closure_iff_seq_limit, mem_image, SetLike.mem_coe, mem_coe, mem_dual,
+        mem_closure_iff_seq_limit, mem_image, SetLike.mem_coe, mem_dual,
         adjoint_inner_right, forall_exists_index, and_imp]
       -- there is a sequence `seq : ℕ → F` in the image of `f` that converges to `b`
       rintro seq hmem htends y hinner
