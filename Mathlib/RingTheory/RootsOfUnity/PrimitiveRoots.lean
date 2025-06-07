@@ -251,7 +251,7 @@ lemma injOn_pow {n : ℕ} {ζ : M} (hζ : IsPrimitiveRoot ζ n) :
 lemma exists_pos {k : ℕ} (hζ : ζ ^ k = 1) (hk : k ≠ 0) :
     ∃ k' > 0, IsPrimitiveRoot ζ k' :=
   ⟨orderOf ζ, by
-    rw [gt_iff_lt, orderOf_pos_iff, isOfFinOrder_iff_pow_eq_one]
+    rw [orderOf_pos_iff, isOfFinOrder_iff_pow_eq_one]
     exact ⟨k, Nat.pos_iff_ne_zero.mpr hk, hζ⟩, .orderOf _⟩
 
 lemma existsUnique : ∃! k, IsPrimitiveRoot ζ k :=

@@ -286,7 +286,7 @@ theorem exists_nonlinearRightInverse_of_surjective (f : E →SL[σ] F)
     exists_preimage_norm_le _ (LinearMap.range_eq_top.1 hsurj)
   use {
       toFun := fsymm
-      nnnorm := ⟨C, hC.lt.le⟩
+      nnnorm := ⟨C, hC.le⟩
       bound' := fun y => (h y).2
       right_inv' := fun y => (h y).1 }
   exact hC

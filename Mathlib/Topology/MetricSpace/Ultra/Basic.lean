@@ -159,7 +159,6 @@ lemma isOpen_closedBall {r : ℝ} (hr : r ≠ 0) : IsOpen (closedBall x r) := by
     simp [closedBall_eq_empty.mpr h]
   | inr h =>
     rw [isOpen_iff]
-    simp only [Set.mem_compl_iff, not_lt, gt_iff_lt]
     intro y hy
     cases closedBall_eq_or_disjoint x y r with
     | inl hd =>
