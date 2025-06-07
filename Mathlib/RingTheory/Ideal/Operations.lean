@@ -1308,3 +1308,7 @@ lemma Ideal.exists_subset_radical_span_sup_of_subset_radical_sup {R : Type*} [Co
   choose m a b ha hb heq using hs
   refine ⟨a, by rwa [Set.range_subset_iff], fun z hz ↦ ⟨m ⟨z, hz⟩, heq ⟨z, hz⟩ ▸ ?_⟩⟩
   exact Ideal.add_mem _ (mem_sup_left (subset_span ⟨⟨z, hz⟩, rfl⟩)) (mem_sup_right <| hb _)
+
+@[deprecated (since := "2025-05-13")]
+alias Ideal.exists_subset_radical_span_sup_span_of_subset_radical_sup :=
+  Ideal.exists_subset_radical_span_sup_of_subset_radical_sup
