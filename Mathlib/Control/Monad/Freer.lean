@@ -3,7 +3,6 @@ Copyright (c) 2025 Tanner Duve. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tanner Duve
 -/
-import Mathlib.Algebra.Group.Defs
 import Mathlib.Control.Monad.Writer
 import Mathlib.Control.Monad.Cont
 import Mathlib.Algebra.Group.Nat.Defs
@@ -196,6 +195,8 @@ constructor, `tell`, which writes a value to the log.
 inductive WriterF (ω : Type u) : Type u → Type _ where
   | tell : ω → WriterF ω PUnit
 
+/-- Writer monad implemented via the `Freer` monad construction. This provides a more efficient
+implementation than the traditional `WriterT` transformer, as it avoids buffering the log. -/
 abbrev FreerWriter (ω : Type u) := Freer (WriterF ω)
 
 namespace FreerWriter
@@ -225,9 +226,12 @@ def run {ω : Type u} [Monoid ω] {α} : FreerWriter ω α → α × ω
 `listen` captures the log produced by a subcomputation incrementally. It traverses the computation,
 emitting log entries as encountered, and returns the accumulated log as a result.
 -/
-def listen {ω : Type u} [Monoid ω] {α} (m : FreerWriter ω α) : FreerWriter ω (α × ω) :=
-  let (a, w) := run m
-  Freer.impure _ (WriterF.tell w) (fun _ => .pure (a, w))
+def listen {ω : Type u} [Monoid ω] {α : Type v} : FreerWriter ω α → FreerWriter ω (α × ω)
+  | .pure a => .pure (a, 1)
+  | .impure _ (WriterF.tell w) k =>
+      Freer.impure _ (WriterF.tell w) fun _ =>
+        listen (k PUnit.unit) >>= fun (a, w') =>
+          pure (a, w * w')
 
 /--
 `pass` allows a subcomputation to modify its own log. After traversing the computation and
@@ -313,10 +317,12 @@ example : FreerState.runState (do
   return s : FreerState Nat Nat) 5 = (5, 6) := rfl
 
 -- Example FreerWriter computations
+local instance : Monoid Nat := inferInstance
+
 example : FreerWriter.run (do
-  FreerWriter.tell (21 : Nat)
+  FreerWriter.tell (2 : Nat)
   FreerWriter.tell 3
-  return 42) = (42, 63) := rfl
+  return 42) = (42, 6) := rfl
 
 example : FreerWriter.run (do
   let (x, captured) ← FreerWriter.listen (do
