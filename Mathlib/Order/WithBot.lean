@@ -269,7 +269,7 @@ alias unbot'_lt_iff := unbotD_lt_iff
 end LT
 
 instance preorder [Preorder α] : Preorder (WithBot α) where
-  lt_iff_le_not_le x y := by cases x <;> cases y <;> simp [lt_iff_le_not_le]
+  lt_iff_le_not_ge x y := by cases x <;> cases y <;> simp [lt_iff_le_not_ge]
   le_refl x := by cases x <;> simp [le_def]
   le_trans x y z := by cases x <;> cases y <;> cases z <;> simp [le_def]; simpa using le_trans
 
@@ -770,7 +770,7 @@ alias lt_untop'_iff := lt_untopD_iff
 end LT
 
 instance preorder [Preorder α] : Preorder (WithTop α) where
-  lt_iff_le_not_le x y := by cases x <;> cases y <;> simp [lt_iff_le_not_le]
+  lt_iff_le_not_ge x y := by cases x <;> cases y <;> simp [lt_iff_le_not_ge]
   le_refl x := by cases x <;> simp [le_def]
   le_trans x y z := by cases x <;> cases y <;> cases z <;> simp [le_def]; simpa using le_trans
 

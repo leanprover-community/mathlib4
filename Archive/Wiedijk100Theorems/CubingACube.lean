@@ -38,7 +38,7 @@ theorem Ico_lemma {α} [LinearOrder α] {x₁ x₂ y₁ y₂ z₁ z₂ w : α} (
   simp only [not_and, not_lt, mem_Ico] at hw
   refine ⟨max x₁ (min w y₂), ?_, ?_, ?_⟩
   · simp [le_refl, lt_trans h₁ (lt_trans hy h₂), h₂]
-  · simp +contextual [hw, lt_irrefl, not_le_of_lt h₁]
+  · simp +contextual [hw, lt_irrefl, not_le_of_gt h₁]
   · simp [hw.2.1, hw.2.2, hz₁, lt_of_lt_of_le h₁ hz₂]
 
 /-- A (hyper)-cube (in standard orientation) is a vector `b` consisting of the bottom-left point
@@ -190,7 +190,7 @@ theorem shiftUp_bottom_subset_bottoms (hc : (cs i).xm ≠ 1) :
     intro j; exact side_subset h (hps j)
   rw [← h.2, mem_iUnion] at this; rcases this with ⟨i', hi'⟩
   rw [mem_iUnion]; use i'; refine ⟨?_, fun j => hi' j.succ⟩
-  have : i ≠ i' := by rintro rfl; apply not_le_of_lt (hi' 0).2; rw [hp0]; rfl
+  have : i ≠ i' := by rintro rfl; apply not_le_of_gt (hi' 0).2; rw [hp0]; rfl
   have := h.1 this
   rw [onFun, comp_apply, comp_apply, toSet_disjoint, exists_fin_succ] at this
   rcases this with (h0 | ⟨j, hj⟩)
@@ -290,7 +290,7 @@ theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
   have h2i' : i' ∈ bcubes cs c := ⟨hi'.1.symm, v.2.1 i' hi'.1.symm ⟨tail p, hi'.2, hp.2⟩⟩
   refine ⟨i, h2i, i', h2i', ?_⟩
   rintro rfl
-  apply not_le_of_lt (hi'.2 ⟨1, Nat.le_of_succ_le_succ h.three_le⟩).2
+  apply not_le_of_gt (hi'.2 ⟨1, Nat.le_of_succ_le_succ h.three_le⟩).2
   simp only [tail, Cube.tail, p]
   rw [if_pos, add_le_add_iff_right]
   · exact (hi.2 _).1

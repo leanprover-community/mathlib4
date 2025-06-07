@@ -238,7 +238,7 @@ theorem ne_sup_iff_lt_sup {ι : Type u} {f : ι → Ordinal.{max u v}} :
 theorem succ_lt_iSup_of_ne_iSup {ι} {f : ι → Ordinal.{u}} [Small.{u} ι]
     (hf : ∀ i, f i ≠ iSup f) {a} (hao : a < iSup f) : succ a < iSup f := by
   by_contra! hoa
-  exact hao.not_le (Ordinal.iSup_le fun i => le_of_lt_succ <|
+  exact hao.not_ge (Ordinal.iSup_le fun i => le_of_lt_succ <|
     (lt_of_le_of_ne (Ordinal.le_iSup _ _) (hf i)).trans_le hoa)
 
 -- FIXME There is undeprecated material below still depending on this?!
@@ -248,7 +248,7 @@ theorem sup_not_succ_of_ne_sup {ι : Type u} {f : ι → Ordinal.{max u v}}
     (hf : ∀ i, f i ≠ sup.{_, v} f) {a} (hao : a < sup.{_, v} f) : succ a < sup.{_, v} f := by
   by_contra! hoa
   exact
-    hao.not_le (sup_le fun i => le_of_lt_succ <| (lt_of_le_of_ne (le_sup _ _) (hf i)).trans_le hoa)
+    hao.not_ge (sup_le fun i => le_of_lt_succ <| (lt_of_le_of_ne (le_sup _ _) (hf i)).trans_le hoa)
 
 -- TODO: generalize to conditionally complete lattices.
 theorem iSup_eq_zero_iff {ι} {f : ι → Ordinal.{u}} [Small.{u} ι] :
@@ -326,7 +326,7 @@ theorem sup_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal) :
 theorem unbounded_range_of_le_iSup {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β → α)
     (h : type r ≤ ⨆ i, typein r (f i)) : Unbounded r (range f) :=
   (not_bounded_iff _).1 fun ⟨x, hx⟩ =>
-    h.not_lt <| lt_of_le_of_lt
+    h.not_gt <| lt_of_le_of_lt
       (Ordinal.iSup_le fun y => ((typein_lt_typein r).2 <| hx _ <| mem_range_self y).le)
       (typein_lt_type r x)
 

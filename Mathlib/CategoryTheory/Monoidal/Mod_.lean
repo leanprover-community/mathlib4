@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Monoidal.Mon_
 
 universe v₁ v₂ u₁ u₂
 
-open CategoryTheory MonoidalCategory
+open CategoryTheory MonoidalCategory Mon_Class
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 
@@ -22,8 +22,8 @@ structure Mod_ (A : Mon_ C) where
   X : C
   /-- The action morphism of the module object -/
   smul : A.X ⊗ X ⟶ X
-  one_smul : A.one ▷ X ≫ smul = (λ_ X).hom := by aesop_cat
-  assoc : A.mul ▷ X ≫ smul = (α_ A.X A.X X).hom ≫ A.X ◁ smul ≫ smul := by aesop_cat
+  one_smul : η ▷ X ≫ smul = (λ_ X).hom := by aesop_cat
+  assoc : μ ▷ X ≫ smul = (α_ A.X A.X X).hom ≫ A.X ◁ smul ≫ smul := by aesop_cat
 
 attribute [reassoc (attr := simp)] Mod_.one_smul Mod_.assoc
 
@@ -32,7 +32,7 @@ namespace Mod_
 variable {A : Mon_ C} (M : Mod_ A)
 
 theorem assoc_flip :
-    A.X ◁ M.smul ≫ M.smul = (α_ A.X A.X M.X).inv ≫ A.mul ▷ M.X ≫ M.smul := by simp
+    A.X ◁ M.smul ≫ M.smul = (α_ A.X A.X M.X).inv ≫ μ ▷ M.X ≫ M.smul := by simp
 
 /-- A morphism of module objects. -/
 @[ext]
@@ -78,7 +78,7 @@ variable (A)
 @[simps]
 def regular : Mod_ A where
   X := A.X
-  smul := A.mul
+  smul := μ
 
 instance : Inhabited (Mod_ A) :=
   ⟨regular A⟩
@@ -87,8 +87,6 @@ instance : Inhabited (Mod_ A) :=
 def forget : Mod_ A ⥤ C where
   obj A := A.X
   map f := f.hom
-
-open CategoryTheory.MonoidalCategory
 
 #adaptation_note /-- https://github.com/leanprover/lean4/pull/6053
 we needed to increase the `maxHeartbeats` limit if we didn't write an explicit proof for
@@ -131,7 +129,7 @@ end Mod_
 
 section Mod_Class
 
-open CategoryTheory Mon_Class MonoidalCategory
+open Mon_Class
 
 variable (M : C) [Mon_Class M]
 
@@ -154,8 +152,6 @@ attribute [reassoc (attr := simp)] Mod_Class.mul_smul Mod_Class.one_smul
 
 namespace Mod_Class
 
-open Mon_Class
-
 theorem assoc_flip (X : C) [Mod_Class M X] : M ◁ γ ≫ γ[X] = (α_ M M X).inv ≫ μ[M] ▷ X ≫ γ := by
   simp
 
@@ -173,7 +169,7 @@ end Mod_Class
 /-- Construct an object of `Mod_ (Mon_.mk' M)` from an object `X : C` and a
 `Mod_Class M X` instance. -/
 @[simps]
-def Mod_.mk' (X : C) [Mod_Class M X] : Mod_ (.mk' M) where
+def Mod_.mk' (X : C) [Mod_Class M X] : Mod_ (.mk M) where
   X := X
   smul := γ[M]
 
