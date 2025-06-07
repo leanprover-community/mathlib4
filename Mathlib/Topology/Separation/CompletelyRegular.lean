@@ -103,7 +103,7 @@ lemma Topology.IsInducing.completelyRegularSpace
 instance {p : X → Prop} [CompletelyRegularSpace X] : CompletelyRegularSpace (Subtype p) :=
   Topology.IsInducing.subtypeVal.completelyRegularSpace
 
-lemma CompletelyRegularSpace.isInducing_stoneCechUnit [CompletelyRegularSpace X] :
+lemma isInducing_stoneCechUnit [CompletelyRegularSpace X] :
     IsInducing (stoneCechUnit : X → StoneCech X) := by
   rw [isInducing_iff_nhds]
   intro x
@@ -120,14 +120,14 @@ lemma CompletelyRegularSpace.isInducing_stoneCechUnit [CompletelyRegularSpace X]
     rw [mem_preimage, stoneCechExtend_stoneCechUnit, efx, mem_compl_iff, mem_singleton_iff]
     norm_num
 
-lemma CompletelyRegularSpace.isDenseInducing_stoneCechUnit [CompletelyRegularSpace X] :
+lemma isDenseInducing_stoneCechUnit [CompletelyRegularSpace X] :
     IsDenseInducing (stoneCechUnit : X → StoneCech X) where
-  toIsInducing := CompletelyRegularSpace.isInducing_stoneCechUnit
+  toIsInducing := isInducing_stoneCechUnit
   dense := denseRange_stoneCechUnit
 
 lemma completelyRegularSpace_iff_isInducing_stoneCechUnit :
     CompletelyRegularSpace X ↔ IsInducing (stoneCechUnit : X → StoneCech X) where
-  mp _ := CompletelyRegularSpace.isInducing_stoneCechUnit
+  mp _ := isInducing_stoneCechUnit
   mpr hs := hs.completelyRegularSpace
 
 /-- A T₃.₅ space is a completely regular space that is also T1. -/
@@ -176,17 +176,17 @@ lemma injective_stoneCechUnit_of_t35Space [T35Space X] :
 @[deprecated (since := "2025-04-13")]
 alias injective_stoneCechUnit_of_completelyRegularSpace := injective_stoneCechUnit_of_t35Space
 
-lemma T35Space.isEmbedding_stoneCechUnit [T35Space X] :
+lemma isEmbedding_stoneCechUnit [T35Space X] :
     IsEmbedding (stoneCechUnit : X → StoneCech X) where
-  toIsInducing := CompletelyRegularSpace.isInducing_stoneCechUnit
+  toIsInducing := isInducing_stoneCechUnit
   injective := injective_stoneCechUnit_of_t35Space
 
-lemma T35Space.isDenseEmbedding_stoneCechUnit [T35Space X] :
+lemma isDenseEmbedding_stoneCechUnit [T35Space X] :
     IsDenseEmbedding (stoneCechUnit : X → StoneCech X) where
-  toIsDenseInducing := CompletelyRegularSpace.isDenseInducing_stoneCechUnit
+  toIsDenseInducing := isDenseInducing_stoneCechUnit
   injective := injective_stoneCechUnit_of_t35Space
 
 lemma t35Space_iff_isEmbedding_stoneCechUnit :
     T35Space X ↔ IsEmbedding (stoneCechUnit : X → StoneCech X) where
-  mp _ := T35Space.isEmbedding_stoneCechUnit
+  mp _ := isEmbedding_stoneCechUnit
   mpr hs := hs.t35Space
