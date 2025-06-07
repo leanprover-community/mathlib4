@@ -225,7 +225,15 @@ theorem invFun_eq_symm : e.invFun = e.symm :=
   rfl
 
 @[simp]
-theorem coe_toEquiv_symm : e.toEquiv.symm = e.symm :=
+theorem toEquiv_symm : e.symm.toEquiv = e.toEquiv.symm :=
+  rfl
+
+@[simp]
+theorem coe_toEquiv : ⇑e.toEquiv = e :=
+  rfl
+
+@[simp]
+theorem coe_symm_toEquiv : ⇑e.toEquiv.symm = e.symm :=
   rfl
 
 variable {e₁₂ : A ≃ₗc[R] B} {e₂₃ : B ≃ₗc[R] C}

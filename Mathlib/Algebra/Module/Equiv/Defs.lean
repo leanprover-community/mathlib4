@@ -271,8 +271,11 @@ theorem invFun_eq_symm : e.invFun = e.symm :=
   rfl
 
 @[simp]
-theorem coe_toEquiv_symm : e.toEquiv.symm = e.symm :=
+theorem toEquiv_symm : e.symm.toEquiv = e.toEquiv.symm :=
   rfl
+
+@[simp]
+theorem coe_symm_toEquiv : ⇑e.toEquiv.symm = e.symm := rfl
 
 variable {module_M₁ : Module R₁ M₁} {module_M₂ : Module R₂ M₂} {module_M₃ : Module R₃ M₃}
 variable {module_M₄ : Module R₄ M₄} {module_N₁ : Module R₁ N₁} {module_N₂ : Module R₁ N₂}
@@ -313,12 +316,10 @@ notation3:80 (name := transNotation) e₁:80 " ≪≫ₗ " e₂:81 =>
 variable {e₁₂} {e₂₃}
 
 @[simp]
-theorem coe_toAddEquiv : e.toAddEquiv = e :=
+theorem coe_eq_toAddEquiv : e = e.toAddEquiv :=
   rfl
 
-@[simp]
-lemma coe_addEquiv_apply (x : M) : (e : M ≃+ M₂) x = e x := by
-  rfl
+lemma coe_addEquiv_apply (x : M) : (e : M ≃+ M₂) x = e x := rfl
 
 /-- The two paths coercion can take to an `AddMonoidHom` are equivalent -/
 theorem toAddMonoidHom_commutes : e.toLinearMap.toAddMonoidHom = e.toAddEquiv.toAddMonoidHom :=

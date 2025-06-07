@@ -302,6 +302,10 @@ theorem coe_mk (e : P ≃ᵃ[𝕜] P₂) (he : ∀ x, ‖e.linear x‖ = ‖x‖
 theorem coe_toAffineEquiv (e : P ≃ᵃⁱ[𝕜] P₂) : ⇑e.toAffineEquiv = e :=
   rfl
 
+@[simp]
+theorem coe_toAffineEquiv_symm (e : P ≃ᵃⁱ[𝕜] P₂) : ⇑e.toAffineEquiv.symm = e.symm :=
+  rfl
+
 theorem toAffineEquiv_injective : Injective (toAffineEquiv : (P ≃ᵃⁱ[𝕜] P₂) → P ≃ᵃ[𝕜] P₂)
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
@@ -384,6 +388,10 @@ def toIsometryEquiv : P ≃ᵢ P₂ :=
 theorem coe_toIsometryEquiv : ⇑e.toIsometryEquiv = e :=
   rfl
 
+@[simp]
+theorem coe_symm_toIsometryEquiv : ⇑e.toIsometryEquiv.symm = e.symm :=
+  rfl
+
 theorem range_eq_univ (e : P ≃ᵃⁱ[𝕜] P₂) : Set.range e = Set.univ := by
   rw [← coe_toIsometryEquiv]
   exact IsometryEquiv.range_eq_univ _
@@ -394,6 +402,10 @@ def toHomeomorph : P ≃ₜ P₂ :=
 
 @[simp]
 theorem coe_toHomeomorph : ⇑e.toHomeomorph = e :=
+  rfl
+
+@[simp]
+theorem coe_symm_toHomeomorph : ⇑e.toHomeomorph.symm = e.symm :=
   rfl
 
 protected theorem continuous : Continuous e :=
@@ -454,15 +466,15 @@ theorem symm_bijective : Bijective (AffineIsometryEquiv.symm : (P₂ ≃ᵃⁱ[�
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
-theorem toAffineEquiv_symm : e.toAffineEquiv.symm = e.symm.toAffineEquiv :=
+theorem toAffineEquiv_symm : e.symm.toAffineEquiv = e.toAffineEquiv.symm :=
   rfl
 
 @[simp]
-theorem toIsometryEquiv_symm : e.toIsometryEquiv.symm = e.symm.toIsometryEquiv :=
+theorem toIsometryEquiv_symm : e.symm.toIsometryEquiv = e.toIsometryEquiv.symm :=
   rfl
 
 @[simp]
-theorem toHomeomorph_symm : e.toHomeomorph.symm = e.symm.toHomeomorph :=
+theorem toHomeomorph_symm : e.symm.toHomeomorph = e.toHomeomorph.symm :=
   rfl
 
 /-- Composition of `AffineIsometryEquiv`s as an `AffineIsometryEquiv`. -/
