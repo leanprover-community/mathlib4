@@ -109,12 +109,15 @@ variable {f₁ : a ⟶ b} {g₁ : b ⟶ a} {f₂ : b ⟶ c} {g₂ : c ⟶ b}
 /-- Auxiliary definition for `adjunction.comp`. -/
 @[simp]
 def compUnit (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂) : 𝟙 a ⟶ (f₁ ≫ f₂) ≫ g₂ ≫ g₁ :=
-  adj₁.unit ⊗≫ f₁ ◁ adj₂.unit ▷ g₁ ⊗≫ 𝟙 _
+  adj₁.unit ≫ f₁ ◁ ((λ_ _).inv ≫ adj₂.unit ▷ g₁ ≫ (α_ _ _ _).hom) ≫
+    (α_ _ _ _).inv
+  --adj₁.unit ⊗≫ f₁ ◁ adj₂.unit ▷ g₁ ⊗≫ 𝟙 _
 
 /-- Auxiliary definition for `adjunction.comp`. -/
 @[simp]
 def compCounit (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂) : (g₂ ≫ g₁) ≫ f₁ ≫ f₂ ⟶ 𝟙 c :=
-  𝟙 _ ⊗≫ g₂ ◁ adj₁.counit ▷ f₂ ⊗≫ adj₂.counit
+  (α_ _ _ _).hom ≫ _ ◁ (α_ _ _ _).inv ≫ g₂ ◁ (adj₁.counit ▷ f₂ ≫ (λ_ _).hom) ≫ adj₂.counit
+  --𝟙 _ ⊗≫ g₂ ◁ adj₁.counit ▷ f₂ ⊗≫ adj₂.counit
 
 theorem comp_left_triangle_aux (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂) :
     leftZigzag (compUnit adj₁ adj₂) (compCounit adj₁ adj₂) = (λ_ _).hom ≫ (ρ_ _).inv := by
