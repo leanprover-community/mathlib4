@@ -337,7 +337,7 @@ theorem cyclotomic.dvd_X_pow_sub_one (n : ℕ) (R : Type*) [Ring R] :
     cyclotomic n R ∣ X ^ n - 1 := by
   suffices cyclotomic n ℤ ∣ X ^ n - 1 by
     simpa only [map_cyclotomic_int, Polynomial.map_sub, Polynomial.map_one, Polynomial.map_pow,
-      Polynomial.map_X] using map_dvd (Int.castRingHom R) this
+      Polynomial.map_X] using Polynomial.map_dvd (Int.castRingHom R) this
   rcases n.eq_zero_or_pos with (rfl | hn)
   · simp
   rw [← prod_cyclotomic_eq_X_pow_sub_one hn]
