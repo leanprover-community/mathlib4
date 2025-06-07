@@ -8,6 +8,7 @@ import Batteries.Tactic.Trans
 import Mathlib.Data.Ordering.Basic
 import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.Push.Attr
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.TypeStar
 import Mathlib.Order.Defs.PartialOrder
@@ -115,8 +116,8 @@ lemma ne_iff_lt_or_gt : a ≠ b ↔ a < b ∨ b < a := ⟨lt_or_gt_of_ne, (Or.el
 
 lemma lt_iff_not_ge : a < b ↔ ¬b ≤ a := ⟨not_le_of_gt, lt_of_not_ge⟩
 
-@[simp] lemma not_lt : ¬a < b ↔ b ≤ a := ⟨le_of_not_gt, not_lt_of_ge⟩
-@[simp] lemma not_le : ¬a ≤ b ↔ b < a := lt_iff_not_ge.symm
+@[simp, push low] lemma not_lt : ¬a < b ↔ b ≤ a := ⟨le_of_not_gt, not_lt_of_ge⟩
+@[simp, push low] lemma not_le : ¬a ≤ b ↔ b < a := lt_iff_not_ge.symm
 
 lemma eq_or_lt_of_not_gt (h : ¬a < b) : a = b ∨ b < a :=
   if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge => h (lt_of_le_of_ne hge h₁))
