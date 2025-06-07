@@ -750,7 +750,7 @@ theorem toReal_nonneg_iff_sign_nonneg {θ : Angle} : 0 ≤ θ.toReal ↔ 0 ≤ �
   rcases lt_trichotomy θ.toReal 0 with (h | h | h)
   · refine ⟨fun hn => False.elim (h.not_le hn), fun hn => ?_⟩
     rw [toReal_neg_iff_sign_neg.1 h] at hn
-    exact False.elim (hn.not_lt (by decide))
+    exact False.elim (hn.not_gt (by decide))
   · simp [h, sign, ← sin_toReal]
   · refine ⟨fun _ => ?_, fun _ => h.le⟩
     rw [sign, ← sin_toReal, sign_nonneg_iff]

@@ -101,7 +101,7 @@ theorem pow_le_of_le_log {b x y : ℕ} (hy : y ≠ 0) (h : x ≤ log b y) : b ^ 
 
 theorem le_log_of_pow_le {b x y : ℕ} (hb : 1 < b) (h : b ^ x ≤ y) : x ≤ log b y := by
   rcases ne_or_eq y 0 with (hy | rfl)
-  exacts [(pow_le_iff_le_log hb hy).1 h, (h.not_lt (Nat.pow_pos (Nat.zero_lt_one.trans hb))).elim]
+  exacts [(pow_le_iff_le_log hb hy).1 h, (h.not_gt (Nat.pow_pos (Nat.zero_lt_one.trans hb))).elim]
 
 theorem pow_log_le_self (b : ℕ) {x : ℕ} (hx : x ≠ 0) : b ^ log b x ≤ x :=
   pow_le_of_le_log hx le_rfl
@@ -433,7 +433,7 @@ private lemma logC_spec {b m : ℕ} (hb : 1 < b) (hm : 0 < m) :
   exact ⟨h₁.trans' (Nat.le_mul_of_pos_right _ (h₄ hm)), h₃.trans_le (Nat.mul_le_mul_left _ h₂)⟩
 
 private lemma logC_of_left_le_one {b m : ℕ} (hb : b ≤ 1) : logC b m = 0 := by
-  rw [logC, dif_neg hb.not_lt]
+  rw [logC, dif_neg hb.not_gt]
 
 private lemma logC_zero {b : ℕ} :
     logC b 0 = 0 := by

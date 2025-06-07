@@ -249,7 +249,7 @@ theorem lsub_lt_ord_lift {ι} {f : ι → Ordinal} {c : Ordinal}
     (hf : ∀ i, f i < c) : lsub.{u, v} f < c :=
   lt_of_le_of_ne (lsub_le hf) fun h => by
     subst h
-    exact (cof_lsub_le_lift.{u, v} f).not_lt hι
+    exact (cof_lsub_le_lift.{u, v} f).not_gt hι
 
 theorem lsub_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) :
     (∀ i, f i < c) → lsub.{u, u} f < c :=

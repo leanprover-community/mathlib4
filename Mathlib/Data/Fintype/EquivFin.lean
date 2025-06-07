@@ -476,7 +476,7 @@ end Infinite
 instance : Infinite ℕ :=
   Infinite.of_not_fintype <| by
     intro h
-    exact (Finset.range _).card_le_univ.not_lt ((Nat.lt_succ_self _).trans_eq (card_range _).symm)
+    exact (Finset.range _).card_le_univ.not_gt ((Nat.lt_succ_self _).trans_eq (card_range _).symm)
 
 instance Int.infinite : Infinite ℤ :=
   Infinite.of_injective Int.ofNat fun _ _ => Int.ofNat.inj

@@ -51,7 +51,7 @@ theorem floor_eq_iff (ha : 0 ≤ a) : ⌊a⌋₊ = n ↔ ↑n ≤ a ∧ a < ↑n
 variable [IsStrictOrderedRing R]
 
 theorem lt_of_floor_lt (h : ⌊a⌋₊ < n) : a < n :=
-  lt_of_not_ge fun h' => (le_floor h').not_lt h
+  lt_of_not_ge fun h' => (le_floor h').not_gt h
 
 theorem lt_one_of_floor_lt_one (h : ⌊a⌋₊ < 1) : a < 1 := mod_cast lt_of_floor_lt h
 

@@ -110,7 +110,7 @@ lemma accumulate_invAccumulate {n m} (hmn : m ≤ n) {s : Fin m → ℕ} (hs : A
     rw [accumulate_last (hm.trans_le hmn) this, invAccumulate, dif_pos hm, dif_neg this.not_gt,
       Nat.sub_zero]
     intro j hj
-    rw [invAccumulate, dif_neg hj.not_lt, Nat.zero_sub]
+    rw [invAccumulate, dif_neg hj.not_gt, Nat.zero_sub]
 
 end accumulate
 
@@ -244,7 +244,7 @@ lemma IsSymmetric.antitone_supDegree [LinearOrder σ] {p : MvPolynomial σ R} (h
   rw [Antitone]
   by_contra! h
   obtain ⟨i, j, hle, hlt⟩ := h
-  apply (le_sup (s := p.support) (f := toLex) _).not_lt
+  apply (le_sup (s := p.support) (f := toLex) _).not_gt
   pick_goal 3
   · rw [← hp (Equiv.swap i j), mem_support_iff, coeff_rename_mapDomain _ (Equiv.injective _)]
     rw [Ne, ← leadingCoeff_eq_zero toLex.injective, leadingCoeff_toLex] at h0

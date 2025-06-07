@@ -164,8 +164,8 @@ instance instPreorderSum : Preorder (α ⊕ β) :=
     lt_iff_le_not_ge := fun a b => by
       refine ⟨fun hab => ⟨hab.mono (fun _ _ => le_of_lt) fun _ _ => le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨hba⟩ | ⟨hba⟩)
-        · exact hba.not_lt (inl_lt_inl_iff.1 hab)
-        · exact hba.not_lt (inr_lt_inr_iff.1 hab)
+        · exact hba.not_gt (inl_lt_inl_iff.1 hab)
+        · exact hba.not_gt (inr_lt_inr_iff.1 hab)
       · rintro ⟨⟨hab⟩ | ⟨hab⟩, hba⟩
         · exact LiftRel.inl (hab.lt_of_not_ge fun h => hba <| LiftRel.inl h)
         · exact LiftRel.inr (hab.lt_of_not_ge fun h => hba <| LiftRel.inr h) }
@@ -344,8 +344,8 @@ instance preorder : Preorder (α ⊕ₗ β) :=
     lt_iff_le_not_ge := fun a b => by
       refine ⟨fun hab => ⟨hab.mono (fun _ _ => le_of_lt) fun _ _ => le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨hba⟩ | ⟨hba⟩ | ⟨b, a⟩)
-        · exact hba.not_lt (inl_lt_inl_iff.1 hab)
-        · exact hba.not_lt (inr_lt_inr_iff.1 hab)
+        · exact hba.not_gt (inl_lt_inl_iff.1 hab)
+        · exact hba.not_gt (inr_lt_inr_iff.1 hab)
         · exact not_inr_lt_inl hab
       · rintro ⟨⟨hab⟩ | ⟨hab⟩ | ⟨a, b⟩, hba⟩
         · exact Lex.inl (hab.lt_of_not_ge fun h => hba <| Lex.inl h)

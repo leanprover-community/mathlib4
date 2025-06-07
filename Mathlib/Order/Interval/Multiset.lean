@@ -144,15 +144,15 @@ theorem Icc_eq_zero_of_lt (h : b < a) : Icc a b = 0 :=
 
 @[simp]
 theorem Ico_eq_zero_of_le (h : b ≤ a) : Ico a b = 0 :=
-  Ico_eq_zero h.not_lt
+  Ico_eq_zero h.not_gt
 
 @[simp]
 theorem Ioc_eq_zero_of_le (h : b ≤ a) : Ioc a b = 0 :=
-  Ioc_eq_zero h.not_lt
+  Ioc_eq_zero h.not_gt
 
 @[simp]
 theorem Ioo_eq_zero_of_le (h : b ≤ a) : Ioo a b = 0 :=
-  Ioo_eq_zero h.not_lt
+  Ioo_eq_zero h.not_gt
 
 variable (a)
 

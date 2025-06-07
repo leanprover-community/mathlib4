@@ -185,7 +185,7 @@ theorem signBijAux_injOn {n : ℕ} {f : Perm (Fin n)} :
   rintro ⟨a₁, a₂⟩ ha ⟨b₁, b₂⟩ hb h
   dsimp [signBijAux] at h
   rw [Finset.mem_coe, mem_finPairsLT] at *
-  have : ¬b₁ < b₂ := hb.le.not_lt
+  have : ¬b₁ < b₂ := hb.le.not_gt
   split_ifs at h <;>
   simp_all only [not_lt, Sigma.mk.inj_iff, (Equiv.injective f).eq_iff, heq_eq_eq]
   · exact absurd this (not_le.mpr ha)
@@ -204,7 +204,7 @@ theorem signBijAux_surj {n : ℕ} {f : Perm (Fin n)} :
           (le_of_not_gt hxa).lt_of_ne fun h => by
             simp [mem_finPairsLT, f⁻¹.injective h, lt_irrefl] at ha, by
               dsimp [signBijAux]
-              rw [apply_inv_self, apply_inv_self, if_neg (mem_finPairsLT.1 ha).le.not_lt]⟩
+              rw [apply_inv_self, apply_inv_self, if_neg (mem_finPairsLT.1 ha).le.not_gt]⟩
 
 theorem signBijAux_mem {n : ℕ} {f : Perm (Fin n)} :
     ∀ a : Σ_ : Fin n, Fin n, a ∈ finPairsLT n → signBijAux f a ∈ finPairsLT n :=

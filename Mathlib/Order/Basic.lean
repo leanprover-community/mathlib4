@@ -584,7 +584,7 @@ end LinearOrder
 
 lemma lt_imp_lt_of_le_imp_le {β} [LinearOrder α] [Preorder β] {a b : α} {c d : β}
     (H : a ≤ b → c ≤ d) (h : d < c) : b < a :=
-  lt_of_not_ge fun h' ↦ (H h').not_lt h
+  lt_of_not_ge fun h' ↦ (H h').not_gt h
 
 lemma le_imp_le_iff_lt_imp_lt {β} [LinearOrder α] [LinearOrder β] {a b : α} {c d : β} :
     a ≤ b → c ≤ d ↔ d < c → b < a :=

@@ -101,7 +101,7 @@ lemma shadow_initSeg [Fintype α] (hs : s.Nonempty) :
   · apply mem_insert_of_mem
     rw [← r₁] at gt
     by_contra
-    apply (min'_le tᶜ _ _).not_lt gt
+    apply (min'_le tᶜ _ _).not_gt gt
     rwa [mem_compl]
 
 /-- The shadow of an initial segment is also an initial segment. -/

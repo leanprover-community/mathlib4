@@ -65,7 +65,7 @@ theorem Iic_disjoint_Ici : Disjoint (Iic a) (Ici b) ↔ ¬b ≤ a :=
 
 @[simp]
 theorem Ioc_disjoint_Ioi (h : b ≤ c) : Disjoint (Ioc a b) (Ioi c) :=
-  disjoint_left.mpr (fun _ hx hy ↦ (hx.2.trans h).not_lt hy)
+  disjoint_left.mpr (fun _ hx hy ↦ (hx.2.trans h).not_gt hy)
 
 theorem Ioc_disjoint_Ioi_same : Disjoint (Ioc a b) (Ioi b) :=
   Ioc_disjoint_Ioi le_rfl

@@ -537,7 +537,7 @@ instance WithBot.instArchimedean (M) [AddCommMonoid M] [PartialOrder M] [Archime
   constructor
   intro x y hxy
   cases y with
-  | bot => exact absurd hxy bot_le.not_lt
+  | bot => exact absurd hxy bot_le.not_gt
   | coe y =>
     cases x with
     | bot => refine ⟨0, bot_le⟩
@@ -548,7 +548,7 @@ instance WithZero.instMulArchimedean (M) [CommMonoid M] [PartialOrder M] [MulArc
   constructor
   intro x y hxy
   cases y with
-  | zero => exact absurd hxy (zero_le _).not_lt
+  | zero => exact absurd hxy (zero_le _).not_gt
   | coe y =>
     cases x with
     | zero => refine ⟨0, zero_le _⟩

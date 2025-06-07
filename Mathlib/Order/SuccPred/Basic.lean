@@ -189,7 +189,7 @@ theorem lt_succ_iff_not_isMax : a < succ a ↔ ¬IsMax a :=
 alias ⟨_, lt_succ_of_not_isMax⟩ := lt_succ_iff_not_isMax
 
 theorem wcovBy_succ (a : α) : a ⩿ succ a :=
-  ⟨le_succ a, fun _ hb => (succ_le_of_lt hb).not_lt⟩
+  ⟨le_succ a, fun _ hb => (succ_le_of_lt hb).not_gt⟩
 
 theorem covBy_succ_of_not_isMax (h : ¬IsMax a) : a ⋖ succ a :=
   (wcovBy_succ a).covBy_of_lt <| lt_succ_of_not_isMax h
@@ -588,7 +588,7 @@ theorem pred_lt_iff_not_isMin : pred a < a ↔ ¬IsMin a :=
 alias ⟨_, pred_lt_of_not_isMin⟩ := pred_lt_iff_not_isMin
 
 theorem pred_wcovBy (a : α) : pred a ⩿ a :=
-  ⟨pred_le a, fun _ hb nh => (le_pred_of_lt nh).not_lt hb⟩
+  ⟨pred_le a, fun _ hb nh => (le_pred_of_lt nh).not_gt hb⟩
 
 theorem pred_covBy_of_not_isMin (h : ¬IsMin a) : pred a ⋖ a :=
   (pred_wcovBy a).covBy_of_lt <| pred_lt_of_not_isMin h
@@ -1083,7 +1083,7 @@ instance : PredOrder (WithTop α) where
     · exact (min_of_le_pred <| coe_le_coe.1 ha).withTop
   le_pred_of_lt {a b} h := by
     cases a
-    · exact (le_top.not_lt h).elim
+    · exact (le_top.not_gt h).elim
     cases b
     · exact coe_le_coe.2 le_top
     exact coe_le_coe.2 (le_pred_of_lt <| coe_lt_coe.1 h)
@@ -1115,7 +1115,7 @@ instance [hα : Nonempty α] : IsEmpty (PredOrder (WithTop α)) :=
     | coe a =>
       obtain ⟨c, hc⟩ := exists_gt a
       rw [← coe_lt_coe, ← h] at hc
-      exact (le_pred_of_lt (coe_lt_top c)).not_lt hc⟩
+      exact (le_pred_of_lt (coe_lt_top c)).not_gt hc⟩
 
 end Pred
 
@@ -1227,7 +1227,7 @@ instance [hα : Nonempty α] : IsEmpty (SuccOrder (WithBot α)) :=
     | coe a =>
       obtain ⟨c, hc⟩ := exists_lt a
       rw [← coe_lt_coe, ← h] at hc
-      exact (succ_le_of_lt (bot_lt_coe _)).not_lt hc⟩
+      exact (succ_le_of_lt (bot_lt_coe _)).not_gt hc⟩
 
 end Succ
 

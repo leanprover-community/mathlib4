@@ -35,7 +35,7 @@ theorem Unbounded.mono (hst : s ⊆ t) (hs : Unbounded r s) : Unbounded r t := f
 theorem unbounded_le_of_forall_exists_lt [Preorder α] (h : ∀ a, ∃ b ∈ s, a < b) :
     Unbounded (· ≤ ·) s := fun a =>
   let ⟨b, hb, hb'⟩ := h a
-  ⟨b, hb, fun hba => hba.not_lt hb'⟩
+  ⟨b, hb, fun hba => hba.not_gt hb'⟩
 
 theorem unbounded_le_iff [LinearOrder α] : Unbounded (· ≤ ·) s ↔ ∀ a, ∃ b ∈ s, a < b := by
   simp only [Unbounded, not_le]
@@ -239,7 +239,7 @@ theorem unbounded_lt_Ioi [SemilatticeSup α] [NoMaxOrder α] (a : α) :
   unbounded_lt_of_unbounded_le (unbounded_le_Ioi a)
 
 theorem unbounded_lt_Ici [SemilatticeSup α] (a : α) : Unbounded (· < ·) (Ici a) := fun b =>
-  ⟨a ⊔ b, le_sup_left, le_sup_right.not_lt⟩
+  ⟨a ⊔ b, le_sup_left, le_sup_right.not_gt⟩
 
 /-! ### Bounded initial segments -/
 

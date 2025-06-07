@@ -665,12 +665,12 @@ theorem nonneg_of_mul_nonpos_right [ExistsAddOfLE R] [MulPosStrictMono R]
 theorem pos_of_mul_neg_left [ExistsAddOfLE R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]
     {a b : R} (h : a * b < 0) (hb : b ≤ 0) : 0 < a :=
-  lt_of_not_ge fun ha => absurd h (mul_nonneg_of_nonpos_of_nonpos ha hb).not_lt
+  lt_of_not_ge fun ha => absurd h (mul_nonneg_of_nonpos_of_nonpos ha hb).not_gt
 
 theorem pos_of_mul_neg_right [ExistsAddOfLE R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]
     {a b : R} (h : a * b < 0) (ha : a ≤ 0) : 0 < b :=
-  lt_of_not_ge fun hb => absurd h (mul_nonneg_of_nonpos_of_nonpos ha hb).not_lt
+  lt_of_not_ge fun hb => absurd h (mul_nonneg_of_nonpos_of_nonpos ha hb).not_gt
 
 theorem neg_iff_pos_of_mul_neg [ExistsAddOfLE R] [PosMulMono R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]

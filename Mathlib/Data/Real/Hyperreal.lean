@@ -350,7 +350,7 @@ theorem IsSt.sub {x y : ℝ*} {r s : ℝ} (hxr : IsSt x r) (hys : IsSt y s) : Is
   hxr.map₂ hys continuous_sub.continuousAt
 
 theorem IsSt.le {x y : ℝ*} {r s : ℝ} (hrx : IsSt x r) (hsy : IsSt y s) (hxy : x ≤ y) : r ≤ s :=
-  not_lt.1 fun h ↦ hxy.not_lt <| hsy.lt hrx h
+  not_lt.1 fun h ↦ hxy.not_gt <| hsy.lt hrx h
 
 theorem st_le_of_le {x y : ℝ*} (hix : ¬Infinite x) (hiy : ¬Infinite y) : x ≤ y → st x ≤ st y :=
   (isSt_st' hix).le (isSt_st' hiy)

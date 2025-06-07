@@ -397,7 +397,7 @@ theorem CovBy.eq_of_between {x : α} (hab : a ⋖ b) (hbc : b ⋖ c) (hax : a < 
 
 theorem covBy_iff_lt_iff_le_left {x y : α} : x ⋖ y ↔ ∀ {z}, z < y ↔ z ≤ x where
   mp := fun hx _z ↦ ⟨hx.le_of_lt, fun hz ↦ hz.trans_lt hx.lt⟩
-  mpr := fun H ↦ ⟨H.2 le_rfl, fun _z hx hz ↦ (H.1 hz).not_lt hx⟩
+  mpr := fun H ↦ ⟨H.2 le_rfl, fun _z hx hz ↦ (H.1 hz).not_gt hx⟩
 
 theorem covBy_iff_le_iff_lt_left {x y : α} : x ⋖ y ↔ ∀ {z}, z ≤ x ↔ z < y := by
   simp_rw [covBy_iff_lt_iff_le_left, iff_comm]
@@ -631,7 +631,7 @@ lemma covBy_iff_antisymmRel :
     obtain ⟨j, hj⟩ := (Pi.lt_def.1 h.1).2
     have : Nonempty ι := ⟨j⟩
     obtain ⟨i, hi⟩ := exists_forall_antisymmRel_of_wcovBy h.wcovBy
-    obtain rfl : i = j := by_contra fun this ↦ (hi j (Ne.symm this)).2.not_lt hj
+    obtain rfl : i = j := by_contra fun this ↦ (hi j (Ne.symm this)).2.not_gt hj
     exact ⟨i, covBy_iff_wcovBy_and_lt.2 ⟨h.wcovBy.eval i, hj⟩, hi⟩
   rintro ⟨i, hi, h⟩
   have : Nonempty ι := ⟨i⟩

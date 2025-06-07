@@ -263,15 +263,15 @@ theorem Icc_eq_empty_of_lt (h : b < a) : Icc a b = ∅ :=
 
 @[simp]
 theorem Ico_eq_empty_of_le (h : b ≤ a) : Ico a b = ∅ :=
-  Ico_eq_empty h.not_lt
+  Ico_eq_empty h.not_gt
 
 @[simp]
 theorem Ioc_eq_empty_of_le (h : b ≤ a) : Ioc a b = ∅ :=
-  Ioc_eq_empty h.not_lt
+  Ioc_eq_empty h.not_gt
 
 @[simp]
 theorem Ioo_eq_empty_of_le (h : b ≤ a) : Ioo a b = ∅ :=
-  Ioo_eq_empty h.not_lt
+  Ioo_eq_empty h.not_gt
 
 theorem Ico_self (a : α) : Ico a a = ∅ :=
   Ico_eq_empty <| lt_irrefl _

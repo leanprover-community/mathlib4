@@ -79,7 +79,7 @@ theorem thickening_empty (δ : ℝ) : thickening δ (∅ : Set α) = ∅ := by
   simp only [thickening, setOf_false, infEdist_empty, not_top_lt]
 
 theorem thickening_of_nonpos (hδ : δ ≤ 0) (s : Set α) : thickening δ s = ∅ :=
-  eq_empty_of_forall_notMem fun _ => ((ENNReal.ofReal_of_nonpos hδ).trans_le bot_le).not_lt
+  eq_empty_of_forall_notMem fun _ => ((ENNReal.ofReal_of_nonpos hδ).trans_le bot_le).not_gt
 
 /-- The (open) thickening `Metric.thickening δ E` of a fixed subset `E` is an increasing function of
 the thickening radius `δ`. -/

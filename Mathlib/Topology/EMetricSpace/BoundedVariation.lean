@@ -268,7 +268,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       have T := Nat.find_min exists_N A
       push_neg at T
       exact T (A.le.trans hN.1)
-    · have A : ¬i < N := (Nat.lt_succ_iff.mp hi).not_lt
+    · have A : ¬i < N := (Nat.lt_succ_iff.mp hi).not_gt
       have B : ¬i + 1 < N := hi.not_lt
       have C : ¬i + 1 = N := hi.ne.symm
       have D : i + 1 - 1 = i := Nat.pred_succ i

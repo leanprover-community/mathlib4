@@ -88,7 +88,7 @@ lemma isUniform_one : G.IsUniform (1 : 𝕜) s t := by
 variable {G}
 
 lemma IsUniform.pos (hG : G.IsUniform ε s t) : 0 < ε :=
-  not_le.1 fun hε ↦ (hε.trans <| abs_nonneg _).not_lt <| hG (empty_subset _) (empty_subset _)
+  not_le.1 fun hε ↦ (hε.trans <| abs_nonneg _).not_gt <| hG (empty_subset _) (empty_subset _)
     (by simpa using mul_nonpos_of_nonneg_of_nonpos (Nat.cast_nonneg _) hε)
     (by simpa using mul_nonpos_of_nonneg_of_nonpos (Nat.cast_nonneg _) hε)
 
@@ -104,7 +104,7 @@ lemma IsUniform.pos (hG : G.IsUniform ε s t) : 0 < ε :=
   · rwa [sub_self, abs_zero]
 
 theorem not_isUniform_zero : ¬G.IsUniform (0 : 𝕜) s t := fun h =>
-  (abs_nonneg _).not_lt <| h (empty_subset _) (empty_subset _) (by simp) (by simp)
+  (abs_nonneg _).not_gt <| h (empty_subset _) (empty_subset _) (by simp) (by simp)
 
 theorem not_isUniform_iff :
     ¬G.IsUniform ε s t ↔ ∃ s', s' ⊆ s ∧ ∃ t', t' ⊆ t ∧ #s * ε ≤ #s' ∧

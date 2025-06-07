@@ -785,7 +785,7 @@ theorem exists_ne_map_eq_of_ncard_lt_of_maps_to {t : Set β} (hc : t.ncard < s.n
     ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ f x = f y := by
   by_contra h'
   simp only [Ne, exists_prop, not_exists, not_and, not_imp_not] at h'
-  exact (ncard_le_ncard_of_injOn f hf h' ht).not_lt hc
+  exact (ncard_le_ncard_of_injOn f hf h' ht).not_gt hc
 
 theorem le_ncard_of_inj_on_range {n : ℕ} (f : ℕ → α) (hf : ∀ i < n, f i ∈ s)
     (f_inj : ∀ i < n, ∀ j < n, f i = f j → i = j) (hs : s.Finite := by toFinite_tac) :

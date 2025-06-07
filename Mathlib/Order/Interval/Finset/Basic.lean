@@ -110,15 +110,15 @@ theorem Icc_eq_empty_of_lt (h : b < a) : Icc a b = ∅ :=
 
 @[simp]
 theorem Ico_eq_empty_of_le (h : b ≤ a) : Ico a b = ∅ :=
-  Ico_eq_empty h.not_lt
+  Ico_eq_empty h.not_gt
 
 @[simp]
 theorem Ioc_eq_empty_of_le (h : b ≤ a) : Ioc a b = ∅ :=
-  Ioc_eq_empty h.not_lt
+  Ioc_eq_empty h.not_gt
 
 @[simp]
 theorem Ioo_eq_empty_of_le (h : b ≤ a) : Ioo a b = ∅ :=
-  Ioo_eq_empty h.not_lt
+  Ioo_eq_empty h.not_gt
 
 theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b := by simp only [mem_Icc, true_and, le_rfl]
 
@@ -249,7 +249,7 @@ theorem Icc_ssubset_Icc_right (hI : a₂ ≤ b₂) (ha : a₂ ≤ a₁) (hb : b�
 @[simp]
 theorem Ioc_disjoint_Ioc_of_le {d : α} (hbc : b ≤ c) : Disjoint (Ioc a b) (Ioc c d) :=
   disjoint_left.2 fun _ h1 h2 ↦ not_and_of_not_left _
-    ((mem_Ioc.1 h1).2.trans hbc).not_lt (mem_Ioc.1 h2)
+    ((mem_Ioc.1 h1).2.trans hbc).not_gt (mem_Ioc.1 h2)
 
 variable (a)
 
@@ -273,7 +273,7 @@ section Filter
 
 theorem Ico_filter_lt_of_le_left [DecidablePred (· < c)] (hca : c ≤ a) :
     {x ∈ Ico a b | x < c} = ∅ :=
-  filter_false_of_mem fun _ hx => (hca.trans (mem_Ico.1 hx).1).not_lt
+  filter_false_of_mem fun _ hx => (hca.trans (mem_Ico.1 hx).1).not_gt
 
 theorem Ico_filter_lt_of_right_le [DecidablePred (· < c)] (hbc : b ≤ c) :
     {x ∈ Ico a b | x < c} = Ico a b :=
@@ -465,7 +465,7 @@ theorem Ioo_subset_Iic_self : Ioo a b ⊆ Iic b :=
   Ioo_subset_Ioc_self.trans Ioc_subset_Iic_self
 
 theorem Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
-  disjoint_left.2 fun _ hax hbcx ↦ (mem_Iic.1 hax).not_lt <| lt_of_le_of_lt h (mem_Ioc.1 hbcx).1
+  disjoint_left.2 fun _ hax hbcx ↦ (mem_Iic.1 hax).not_gt <| lt_of_le_of_lt h (mem_Ioc.1 hbcx).1
 
 /-- An equivalence between `Finset.Iic a` and `Set.Iic a`. -/
 def _root_.Equiv.IicFinsetSet (a : α) : Iic a ≃ Set.Iic a where

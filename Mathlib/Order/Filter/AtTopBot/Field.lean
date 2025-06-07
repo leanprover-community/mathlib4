@@ -48,7 +48,7 @@ theorem tendsto_const_mul_atTop_iff_pos [NeBot l] (h : Tendsto f l atTop) :
     Tendsto (fun x => r * f x) l atTop ↔ 0 < r := by
   refine ⟨fun hrf => not_le.mp fun hr => ?_, fun hr => (tendsto_const_mul_atTop_of_pos hr).mpr h⟩
   rcases ((h.eventually_ge_atTop 0).and (hrf.eventually_gt_atTop 0)).exists with ⟨x, hx, hrx⟩
-  exact (mul_nonpos_of_nonpos_of_nonneg hr hx).not_lt hrx
+  exact (mul_nonpos_of_nonpos_of_nonneg hr hx).not_gt hrx
 
 /-- If `f` tends to infinity along a nontrivial filter `l`, then
 `fun x ↦ f x * r` tends to infinity if and only if `0 < r`. -/

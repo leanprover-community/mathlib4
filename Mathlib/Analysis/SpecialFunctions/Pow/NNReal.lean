@@ -513,7 +513,7 @@ theorem rpow_one (x : ℝ≥0∞) : x ^ (1 : ℝ) = x := by
   · exact dif_pos zero_lt_one
   · change ite _ _ _ = _
     simp only [NNReal.rpow_one, some_eq_coe, ite_eq_right_iff, top_ne_coe, and_imp]
-    exact fun _ => zero_le_one.not_lt
+    exact fun _ => zero_le_one.not_gt
 
 @[simp]
 theorem one_rpow (x : ℝ) : (1 : ℝ≥0∞) ^ x = 1 := by
@@ -685,7 +685,7 @@ theorem mul_rpow_of_ne_zero {x y : ℝ≥0∞} (hx : x ≠ 0) (hy : y ≠ 0) (z 
     (x * y) ^ z = x ^ z * y ^ z := by simp [*, mul_rpow_eq_ite]
 
 theorem mul_rpow_of_nonneg (x y : ℝ≥0∞) {z : ℝ} (hz : 0 ≤ z) : (x * y) ^ z = x ^ z * y ^ z := by
-  simp [hz.not_lt, mul_rpow_eq_ite]
+  simp [hz.not_gt, mul_rpow_eq_ite]
 
 theorem prod_rpow_of_ne_top {ι} {s : Finset ι} {f : ι → ℝ≥0∞} (hf : ∀ i ∈ s, f i ≠ ∞) (r : ℝ) :
     ∏ i ∈ s, f i ^ r = (∏ i ∈ s, f i) ^ r := by

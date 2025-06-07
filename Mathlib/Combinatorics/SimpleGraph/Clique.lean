@@ -222,7 +222,7 @@ protected theorem IsNClique.map (h : G.IsNClique n s) {f : α ↪ β} :
 theorem isNClique_map_iff (hn : 1 < n) {t : Finset β} {f : α ↪ β} :
     (G.map f).IsNClique n t ↔ ∃ s : Finset α, G.IsNClique n s ∧ s.map f = t := by
   rw [isNClique_iff, isClique_map_finset_iff, or_and_right,
-    or_iff_right (by rintro ⟨h', rfl⟩; exact h'.not_lt hn)]
+    or_iff_right (by rintro ⟨h', rfl⟩; exact h'.not_gt hn)]
   constructor
   · rintro ⟨⟨s, hs, rfl⟩, rfl⟩
     simp [isNClique_iff, hs]

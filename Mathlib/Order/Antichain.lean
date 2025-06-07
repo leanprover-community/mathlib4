@@ -308,7 +308,7 @@ lemma IsAntichain.of_strictMonoOn_antitoneOn (hf : StrictMonoOn f s) (hf' : Anti
 
 lemma IsAntichain.of_monotoneOn_strictAntiOn (hf : MonotoneOn f s) (hf' : StrictAntiOn f s) :
     IsAntichain (· ≤ ·) s :=
-  fun _a ha _b hb hab' hab ↦ (hf ha hb hab).not_lt (hf' ha hb <| hab.lt_of_ne hab')
+  fun _a ha _b hb hab' hab ↦ (hf ha hb hab).not_gt (hf' ha hb <| hab.lt_of_ne hab')
 
 end General
 

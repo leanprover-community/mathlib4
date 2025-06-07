@@ -304,8 +304,8 @@ theorem arg_conj (x : ℂ) : arg (conj x) = if arg x = π then π else -arg x :=
   · simp [hr]
   · simp [hr]
   · simp [hr, hr.le, hi.ne]
-  · simp [hr, hr.le, hr.le.not_lt]
-  · simp [hr, hr.le, hr.le.not_lt]
+  · simp [hr, hr.le, hr.le.not_gt]
+  · simp [hr, hr.le, hr.le.not_gt]
 
 theorem arg_inv (x : ℂ) : arg x⁻¹ = if arg x = π then π else -arg x := by
   rw [← arg_conj, inv_def, mul_comm]
@@ -338,7 +338,7 @@ theorem arg_le_pi_div_two_iff {z : ℂ} : arg z ≤ π / 2 ↔ 0 ≤ re z ∨ im
   · simp only [hre, arg_of_re_nonneg hre, Real.arcsin_le_pi_div_two, true_or]
   simp only [hre.not_le, false_or]
   rcases le_or_gt 0 (im z) with him | him
-  · simp only [him.not_lt]
+  · simp only [him.not_gt]
     rw [iff_false, not_le, arg_of_re_neg_of_im_nonneg hre him, ← sub_lt_iff_lt_add, half_sub,
       Real.neg_pi_div_two_lt_arcsin, neg_im, neg_div, neg_lt_neg_iff, div_lt_one, ←
       abs_of_nonneg him, abs_im_lt_norm]

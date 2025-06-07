@@ -423,7 +423,7 @@ instance [MulZeroClass α] [Preorder α] [PosMulReflectLT α] : PosMulReflectLT 
       exact (WithBot.bot_lt_coe (0 : α)).not_le x0
     induction b
     · rw [mul_bot x0'] at h
-      exact absurd h bot_le.not_lt
+      exact absurd h bot_le.not_gt
     induction a
     · exact WithBot.bot_lt_coe _
     simp only [← coe_mul, coe_lt_coe] at *
@@ -441,7 +441,7 @@ instance [MulZeroClass α] [Preorder α] [MulPosReflectLT α] : MulPosReflectLT 
       exact (WithBot.bot_lt_coe (0 : α)).not_le x0
     induction b
     · rw [bot_mul x0'] at h
-      exact absurd h bot_le.not_lt
+      exact absurd h bot_le.not_gt
     induction a
     · exact WithBot.bot_lt_coe _
     simp only [← coe_mul, coe_lt_coe] at *

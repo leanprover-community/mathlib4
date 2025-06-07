@@ -122,7 +122,7 @@ private theorem principal_nfp_iSup (op : Ordinal → Ordinal → Ordinal) (o : O
 theorem not_bddAbove_principal (op : Ordinal → Ordinal → Ordinal) :
     ¬ BddAbove { o | Principal op o } := by
   rintro ⟨a, ha⟩
-  exact ((le_nfp _ _).trans (ha (principal_nfp_iSup op (succ a)))).not_lt (lt_succ a)
+  exact ((le_nfp _ _).trans (ha (principal_nfp_iSup op (succ a)))).not_gt (lt_succ a)
 
 /-! #### Additive principal ordinals -/
 
@@ -156,7 +156,7 @@ theorem exists_lt_add_of_not_principal_add (ha : ¬ Principal (· + ·) a) :
   refine
     ⟨b, hb, _, lt_of_le_of_ne (sub_le_self a b) fun hab => ?_, Ordinal.add_sub_cancel_of_le hb.le⟩
   rw [← sub_le, hab] at H
-  exact H.not_lt hc
+  exact H.not_gt hc
 
 theorem principal_add_iff_add_lt_ne_self : Principal (· + ·) a ↔ ∀ b < a, ∀ c < a, b + c ≠ a :=
   ⟨fun ha _ hb _ hc => (ha hb hc).ne, fun H => by

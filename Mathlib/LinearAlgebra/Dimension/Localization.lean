@@ -223,6 +223,6 @@ lemma nonempty_oreSet_of_strongRankCondition [StrongRankCondition R] :
   by_contra h
   have := aleph0_le_rank_of_isEmpty_oreSet (not_nonempty_iff.mp h)
   rw [rank_self] at this
-  exact this.not_lt one_lt_aleph0
+  exact this.not_gt one_lt_aleph0
 
 end Ring

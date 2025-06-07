@@ -421,7 +421,7 @@ theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) :=
     (le_of_not_gt fun h => by
       rcases lt_lift_iff.1 h with ⟨b, h, e⟩
       rw [lt_succ_iff, ← lift_le, e] at h
-      exact h.not_lt (lt_succ _))
+      exact h.not_gt (lt_succ _))
     (succ_le_of_lt <| lift_lt.2 <| lt_succ a)
 
 /-! ### Limit cardinals -/
