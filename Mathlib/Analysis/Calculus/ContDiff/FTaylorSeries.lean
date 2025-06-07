@@ -850,6 +850,14 @@ theorem iteratedFDerivWithin_univ {n : ℕ} :
     ext x m
     rw [iteratedFDeriv_succ_apply_left, iteratedFDerivWithin_succ_apply_left, IH, fderivWithin_univ]
 
+variable (𝕜) in
+/-- If two functions agree in a neighborhood, then so do their iterated derivatives. -/
+theorem Filter.EventuallyEq.iteratedFDeriv
+    {f₁ f₂ : E → F} {x : E} (h : f₁ =ᶠ[𝓝 x] f₂) (n : ℕ) :
+    iteratedFDeriv 𝕜 n f₁ =ᶠ[𝓝 x] iteratedFDeriv 𝕜 n f₂ := by
+  simp_all [← nhdsWithin_univ, ← iteratedFDerivWithin_univ,
+    Filter.EventuallyEq.iteratedFDerivWithin]
+
 theorem HasFTaylorSeriesUpTo.eq_iteratedFDeriv
     (h : HasFTaylorSeriesUpTo n f p) {m : ℕ} (hmn : m ≤ n) (x : E) :
     p x m = iteratedFDeriv 𝕜 m f x := by
