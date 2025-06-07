@@ -100,6 +100,15 @@ theorem tendsto_mod_div_atTop_nhds_zero_nat {m : ℕ} (hm : 0 < m) :
   exact tendsto_bdd_div_atTop_nhds_zero h0
     (.of_forall (fun n ↦  cast_le.mpr (mod_lt n hm).le)) tendsto_natCast_atTop_atTop
 
+/-- If `a ≠ 0`, `(a * x + c)⁻¹` tends to `0` as `x` tends to `∞`. -/
+theorem tendsto_mul_add_inv_atTop_nhds_zero (a c : ℝ) (ha : a ≠ 0) :
+    Tendsto (fun x => (a * x + c)⁻¹) atTop (𝓝 0) := by
+  obtain ha' | ha' := lt_or_gt_of_ne ha
+  · exact tendsto_inv_atBot_zero.comp
+      (tendsto_atBot_add_const_right _ c (tendsto_id.const_mul_atTop_of_neg ha'))
+  · exact tendsto_inv_atTop_zero.comp
+      (tendsto_atTop_add_const_right _ c (tendsto_id.const_mul_atTop ha'))
+
 theorem Filter.EventuallyEq.div_mul_cancel {α G : Type*} [GroupWithZero G] {f g : α → G}
     {l : Filter α} (hg : Tendsto g l (𝓟 {0}ᶜ)) : (fun x ↦ f x / g x * g x) =ᶠ[l] fun x ↦ f x := by
   filter_upwards [hg.le_comap <| preimage_mem_comap (m := g) (mem_principal_self {0}ᶜ)] with x hx

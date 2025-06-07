@@ -500,8 +500,8 @@ theorem continuousAt_logb_iff (hb₀ : 0 < b) (hb : b ≠ 1) : ContinuousAt (log
 theorem logb_prod {α : Type*} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
     logb b (∏ i ∈ s, f i) = ∑ i ∈ s, logb b (f i) := by
   induction s using Finset.cons_induction_on with
-  | h₁ => simp
-  | h₂ => simp_all [logb_mul, Finset.prod_ne_zero_iff]
+  | empty => simp
+  | cons => simp_all [logb_mul, Finset.prod_ne_zero_iff]
 
 protected theorem _root_.Finsupp.logb_prod {α β : Type*} [Zero β] (f : α →₀ β) (g : α → β → ℝ)
     (hg : ∀ a, g a (f a) = 0 → f a = 0) : logb b (f.prod g) = f.sum fun a c ↦ logb b (g a c) :=
@@ -511,18 +511,10 @@ theorem logb_nat_eq_sum_factorization (n : ℕ) :
     logb b n = n.factorization.sum fun p t => t * logb b p := by
   simp only [logb, mul_div_assoc', log_nat_eq_sum_factorization n, Finsupp.sum, Finset.sum_div]
 
-theorem tendsto_pow_logb_div_mul_add_atTop_aux (a c : ℝ) (ha : a ≠ 0) :
-    Tendsto (fun x => (a * x + c)⁻¹) atTop (𝓝 0) := by
-  obtain ha' | ha' := lt_or_gt_of_ne ha
-  · exact tendsto_inv_atBot_zero.comp
-      (tendsto_atBot_add_const_right _ c (tendsto_id.const_mul_atTop_of_neg ha'))
-  · exact tendsto_inv_atTop_zero.comp
-      (tendsto_atTop_add_const_right _ c (tendsto_id.const_mul_atTop ha'))
-
 theorem tendsto_pow_logb_div_mul_add_atTop (a c : ℝ) (n : ℕ) (ha : a ≠ 0) :
     Tendsto (fun x => logb b x ^ n / (a * x + c)) atTop (𝓝 0) := by
   cases eq_or_ne (log b) 0 with
-  | inl h => simpa [logb, h] using ((tendsto_pow_logb_div_mul_add_atTop_aux _ _ ha).const_mul _)
+  | inl h => simpa [logb, h] using ((tendsto_mul_add_inv_atTop_nhds_zero _ _ ha).const_mul _)
   | inr h => apply (tendsto_pow_log_div_mul_add_atTop (a * (log b) ^ n) (c * (log b) ^ n) n
                 (by positivity)).congr fun x ↦ by field_simp [logb]; ring
 
@@ -587,6 +579,10 @@ variable {b : ℝ}
 theorem tendsto_logb_comp_add_sub_logb (y : ℝ) :
     Tendsto (fun x : ℝ => logb b (x + y) - logb b x) atTop (𝓝 0) := by
   simpa [sub_div] using (tendsto_log_comp_add_sub_log y).div_const (log b)
+
+theorem tendsto_logb_nat_add_one_sub_logb :
+    Tendsto (fun k : ℕ => logb b (k + 1) - logb b k) atTop (𝓝 0) :=
+  (tendsto_logb_comp_add_sub_logb 1).comp tendsto_natCast_atTop_atTop
 
 end Real
 
