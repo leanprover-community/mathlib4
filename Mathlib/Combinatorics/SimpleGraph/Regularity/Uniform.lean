@@ -97,10 +97,10 @@ lemma IsUniform.pos (hG : G.IsUniform ε s t) : 0 < ε :=
   rw [card_singleton, Nat.cast_one, one_mul] at hs ht
   obtain rfl | rfl := Finset.subset_singleton_iff.1 hs'
   · replace hs : ε ≤ 0 := by simpa using hs
-    exact (hε.not_le hs).elim
+    exact (hε.not_ge hs).elim
   obtain rfl | rfl := Finset.subset_singleton_iff.1 ht'
   · replace ht : ε ≤ 0 := by simpa using ht
-    exact (hε.not_le ht).elim
+    exact (hε.not_ge ht).elim
   · rwa [sub_self, abs_zero]
 
 theorem not_isUniform_zero : ¬G.IsUniform (0 : 𝕜) s t := fun h =>

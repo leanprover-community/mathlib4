@@ -467,7 +467,7 @@ theorem ball_disjoint_ball (h : δ + ε ≤ dist x y) : Disjoint (ball x δ) (ba
 theorem closedBall_disjoint_closedBall (h : δ + ε < dist x y) :
     Disjoint (closedBall x δ) (closedBall y ε) :=
   Set.disjoint_left.mpr fun _a ha1 ha2 =>
-    h.not_le <| (dist_triangle_left _ _ _).trans <| add_le_add ha1 ha2
+    h.not_ge <| (dist_triangle_left _ _ _).trans <| add_le_add ha1 ha2
 
 theorem sphere_disjoint_ball : Disjoint (sphere x ε) (ball x ε) :=
   Set.disjoint_left.mpr fun _y hy₁ hy₂ => absurd hy₁ <| ne_of_lt hy₂

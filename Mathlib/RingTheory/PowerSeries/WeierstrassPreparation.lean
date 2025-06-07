@@ -334,7 +334,7 @@ theorem eq_zero_of_mul_eq [IsHausdorff I A]
           (fun j _ ↦ ih j) i le_rfl
         rw [map_add, Polynomial.coeff_coe]
         refine Ideal.add_mem _ ?_ (g.coeff_trunc_order_mem I j)
-        simp_rw [coeff_X_pow_mul', if_neg (lt_of_le_of_lt hj hi).not_le, zero_mem]
+        simp_rw [coeff_X_pow_mul', if_neg (lt_of_le_of_lt hj hi).not_ge, zero_mem]
       simp_rw [Polynomial.coeff_coe,
         Polynomial.coeff_eq_zero_of_degree_lt (lt_of_lt_of_le hdeg (by simpa)), zero_mem]
     rw [add_mul, mul_comm (X ^ _), ← eq_sub_iff_add_eq] at heq

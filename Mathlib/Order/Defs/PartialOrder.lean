@@ -71,9 +71,10 @@ lemma not_lt_of_ge (hab : a ≤ b) : ¬ b < a := imp_not_comm.1 not_le_of_gt hab
 @[deprecated (since := "2025-05-11")] alias not_le_of_lt := not_le_of_gt
 @[deprecated (since := "2025-05-11")] alias not_lt_of_le := not_lt_of_ge
 
-alias LT.lt.not_le := not_le_of_gt
+alias LT.lt.not_ge := not_le_of_gt
 alias LE.le.not_gt := not_lt_of_ge
 
+@[deprecated (since := "2025-06-07")] alias LT.lt.not_le := LT.lt.not_ge
 @[deprecated (since := "2025-06-07")] alias LE.le.not_lt := LE.le.not_gt
 
 

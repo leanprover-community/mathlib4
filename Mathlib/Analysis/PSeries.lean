@@ -276,7 +276,7 @@ theorem summable_nat_rpow_inv {p : ℝ} :
       gcongr
   -- If `p < 0`, then `1 / n ^ p` tends to infinity, thus the series diverges.
   · suffices ¬Summable (fun n => ((n : ℝ) ^ p)⁻¹ : ℕ → ℝ) by
-      have : ¬1 < p := fun hp₁ => hp.not_le (zero_le_one.trans hp₁.le)
+      have : ¬1 < p := fun hp₁ => hp.not_ge (zero_le_one.trans hp₁.le)
       simpa only [this, iff_false]
     intro h
     obtain ⟨k : ℕ, hk₁ : ((k : ℝ) ^ p)⁻¹ < 1, hk₀ : k ≠ 0⟩ :=

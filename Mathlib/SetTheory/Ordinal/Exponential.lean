@@ -306,7 +306,7 @@ theorem succ_log_def {b x : Ordinal} (hb : 1 < b) (hx : x ≠ 0) :
     simpa only [h, opow_zero] using this
   · rw [show log b x = pred t from log_def hb x, succ_pred_iff_is_succ.2 h]
   · rcases (lt_opow_of_limit (zero_lt_one.trans hb).ne' h).1 this with ⟨a, h₁, h₂⟩
-    exact h₁.not_le.elim ((le_csInf_iff'' (log_nonempty hb)).1 le_rfl a h₂)
+    exact h₁.not_ge.elim ((le_csInf_iff'' (log_nonempty hb)).1 le_rfl a h₂)
 
 theorem lt_opow_succ_log_self {b : Ordinal} (hb : 1 < b) (x : Ordinal) :
     x < b ^ succ (log b x) := by
@@ -319,7 +319,7 @@ theorem opow_log_le_self (b : Ordinal) {x : Ordinal} (hx : x ≠ 0) : b ^ log b 
   rcases eq_or_ne b 0 with (rfl | b0)
   · exact (zero_opow_le _).trans (one_le_iff_ne_zero.2 hx)
   rcases lt_or_eq_of_le (one_le_iff_ne_zero.2 b0) with (hb | rfl)
-  · refine le_of_not_gt fun h => (lt_succ (log b x)).not_le ?_
+  · refine le_of_not_gt fun h => (lt_succ (log b x)).not_ge ?_
     have := @csInf_le' _ _ { o | x < b ^ o } _ h
     rwa [← succ_log_def hb hx] at this
   · rwa [one_opow, one_le_iff_ne_zero]
@@ -335,7 +335,7 @@ theorem opow_le_iff_le_log {b x c : Ordinal} (hb : 1 < b) (hx : x ≠ 0) :
   intro h
   · apply le_of_not_gt
     intro hn
-    apply (lt_opow_succ_log_self hb x).not_le <|
+    apply (lt_opow_succ_log_self hb x).not_ge <|
       ((opow_le_opow_iff_right hb).2 <| succ_le_of_lt hn).trans h
   · exact ((opow_le_opow_iff_right hb).2 h).trans <| opow_log_le_self b hx
 

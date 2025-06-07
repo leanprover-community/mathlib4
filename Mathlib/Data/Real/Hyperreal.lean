@@ -417,7 +417,7 @@ theorem infiniteNeg_iff_infinite_and_neg {x : ℝ*} : InfiniteNeg x ↔ Infinite
     hi.casesOn (fun hin => False.elim (not_lt_of_gt hp (hin 0))) fun hip => hip⟩
 
 theorem infinitePos_iff_infinite_of_nonneg {x : ℝ*} (hp : 0 ≤ x) : InfinitePos x ↔ Infinite x :=
-  .symm <| or_iff_left fun h ↦ h.lt_zero.not_le hp
+  .symm <| or_iff_left fun h ↦ h.lt_zero.not_ge hp
 
 theorem infinitePos_iff_infinite_of_pos {x : ℝ*} (hp : 0 < x) : InfinitePos x ↔ Infinite x :=
   infinitePos_iff_infinite_of_nonneg hp.le

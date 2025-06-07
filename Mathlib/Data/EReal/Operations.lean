@@ -138,7 +138,7 @@ theorem addLECancellable_coe (x : ℝ) : AddLECancellable (x : EReal)
 
 -- TODO: add `MulLECancellable.strictMono*` etc
 theorem add_lt_add_right_coe {x y : EReal} (h : x < y) (z : ℝ) : x + z < y + z :=
-  not_le.1 <| mt (addLECancellable_coe z).add_le_add_iff_right.1 h.not_le
+  not_le.1 <| mt (addLECancellable_coe z).add_le_add_iff_right.1 h.not_ge
 
 theorem add_lt_add_left_coe {x y : EReal} (h : x < y) (z : ℝ) : (z : EReal) + x < z + y := by
   simpa [add_comm] using add_lt_add_right_coe h z

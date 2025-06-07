@@ -245,10 +245,10 @@ decreasing_by
   decreasing_trivial
 
 theorem clog_of_left_le_one {b : ℕ} (hb : b ≤ 1) (n : ℕ) : clog b n = 0 := by
-  rw [clog, dif_neg fun h : 1 < b ∧ 1 < n => h.1.not_le hb]
+  rw [clog, dif_neg fun h : 1 < b ∧ 1 < n => h.1.not_ge hb]
 
 theorem clog_of_right_le_one {n : ℕ} (hn : n ≤ 1) (b : ℕ) : clog b n = 0 := by
-  rw [clog, dif_neg fun h : 1 < b ∧ 1 < n => h.2.not_le hn]
+  rw [clog, dif_neg fun h : 1 < b ∧ 1 < n => h.2.not_ge hn]
 
 @[simp] lemma clog_zero_left (n : ℕ) : clog 0 n = 0 := clog_of_left_le_one (Nat.zero_le _) _
 

@@ -423,18 +423,18 @@ variable [Preorder β] {f : α → β} {s : Set α}
 open Ordering
 
 theorem Monotone.reflect_lt (hf : Monotone f) {a b : α} (h : f a < f b) : a < b :=
-  lt_of_not_ge fun h' ↦ h.not_le (hf h')
+  lt_of_not_ge fun h' ↦ h.not_ge (hf h')
 
 theorem Antitone.reflect_lt (hf : Antitone f) {a b : α} (h : f a < f b) : b < a :=
-  lt_of_not_ge fun h' ↦ h.not_le (hf h')
+  lt_of_not_ge fun h' ↦ h.not_ge (hf h')
 
 theorem MonotoneOn.reflect_lt (hf : MonotoneOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s)
     (h : f a < f b) : a < b :=
-  lt_of_not_ge fun h' ↦ h.not_le <| hf hb ha h'
+  lt_of_not_ge fun h' ↦ h.not_ge <| hf hb ha h'
 
 theorem AntitoneOn.reflect_lt (hf : AntitoneOn f s) {a b : α} (ha : a ∈ s) (hb : b ∈ s)
     (h : f a < f b) : b < a :=
-  lt_of_not_ge fun h' ↦ h.not_le <| hf ha hb h'
+  lt_of_not_ge fun h' ↦ h.not_ge <| hf ha hb h'
 
 end Preorder
 

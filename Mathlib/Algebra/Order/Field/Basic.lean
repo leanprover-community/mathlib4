@@ -499,7 +499,7 @@ theorem one_lt_div_iff : 1 < a / b ↔ 0 < b ∧ b < a ∨ b < 0 ∧ a < b := by
 theorem one_le_div_iff : 1 ≤ a / b ↔ 0 < b ∧ b ≤ a ∨ b < 0 ∧ a ≤ b := by
   rcases lt_trichotomy b 0 with (hb | rfl | hb)
   · simp [hb, hb.not_lt, one_le_div_of_neg]
-  · simp [lt_irrefl, zero_lt_one.not_le, zero_lt_one]
+  · simp [lt_irrefl, zero_lt_one.not_ge, zero_lt_one]
   · simp [hb, hb.not_lt, one_le_div]
 
 theorem div_lt_one_iff : a / b < 1 ↔ 0 < b ∧ a < b ∨ b = 0 ∨ b < 0 ∧ b < a := by

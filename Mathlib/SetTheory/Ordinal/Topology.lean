@@ -225,7 +225,7 @@ theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
     rw [← hb]
     apply Hs.monotone
     by_contra! hba
-    apply (Hs (lt_succ b)).not_le
+    apply (Hs (lt_succ b)).not_ge
     rw [hb]
     exact le_bsup.{u, u} _ _ (ha.succ_lt hba)
 

@@ -380,7 +380,7 @@ instance (priority := 100) PosSMulStrictMono.toPosSMulReflectLE [PosSMulStrictMo
   elim _a ha _b₁ _b₂ := (strictMono_smul_left_of_pos ha).le_iff_le.1
 
 lemma PosSMulReflectLE.toPosSMulStrictMono [PosSMulReflectLE α β] : PosSMulStrictMono α β where
-  elim _a ha _b₁ _b₂ hb := not_le.1 fun h ↦ hb.not_le <| le_of_smul_le_smul_left h ha
+  elim _a ha _b₁ _b₂ hb := not_le.1 fun h ↦ hb.not_ge <| le_of_smul_le_smul_left h ha
 
 lemma posSMulStrictMono_iff_PosSMulReflectLE : PosSMulStrictMono α β ↔ PosSMulReflectLE α β :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ PosSMulReflectLE.toPosSMulStrictMono⟩
@@ -406,7 +406,7 @@ section Right
 variable [Zero β]
 
 lemma SMulPosReflectLE.toSMulPosStrictMono [SMulPosReflectLE α β] : SMulPosStrictMono α β where
-  elim _b hb _a₁ _a₂ ha := not_le.1 fun h ↦ ha.not_le <| le_of_smul_le_smul_of_pos_right h hb
+  elim _b hb _a₁ _a₂ ha := not_le.1 fun h ↦ ha.not_ge <| le_of_smul_le_smul_of_pos_right h hb
 
 lemma SMulPosReflectLT.toSMulPosMono [SMulPosReflectLT α β] : SMulPosMono α β where
   elim _b hb _a₁ _a₂ ha := not_lt.1 fun h ↦ ha.not_gt <| lt_of_smul_lt_smul_right h hb
@@ -426,7 +426,7 @@ instance (priority := 100) SMulPosStrictMono.toSMulPosReflectLE [SMulPosStrictMo
   elim _b hb _a₁ _a₂ h := not_lt.1 fun ha ↦ h.not_gt <| smul_lt_smul_of_pos_right ha hb
 
 lemma SMulPosMono.toSMulPosReflectLT [SMulPosMono α β] : SMulPosReflectLT α β where
-  elim _b hb _a₁ _a₂ h := not_le.1 fun ha ↦ h.not_le <| smul_le_smul_of_nonneg_right ha hb
+  elim _b hb _a₁ _a₂ h := not_le.1 fun ha ↦ h.not_ge <| smul_le_smul_of_nonneg_right ha hb
 
 end Right
 end LinearOrder
@@ -623,10 +623,10 @@ lemma pos_and_pos_or_neg_and_neg_of_smul_pos [PosSMulMono α β] [SMulPosMono α
     exact smul_nonpos_of_nonneg_of_nonpos ha.le hb
 
 lemma neg_of_smul_pos_right [PosSMulMono α β] [SMulPosMono α β] (h : 0 < a • b) (ha : a ≤ 0) :
-    b < 0 := ((pos_and_pos_or_neg_and_neg_of_smul_pos h).resolve_left fun h ↦ h.1.not_le ha).2
+    b < 0 := ((pos_and_pos_or_neg_and_neg_of_smul_pos h).resolve_left fun h ↦ h.1.not_ge ha).2
 
 lemma neg_of_smul_pos_left [PosSMulMono α β] [SMulPosMono α β] (h : 0 < a • b) (ha : b ≤ 0) :
-    a < 0 := ((pos_and_pos_or_neg_and_neg_of_smul_pos h).resolve_left fun h ↦ h.2.not_le ha).1
+    a < 0 := ((pos_and_pos_or_neg_and_neg_of_smul_pos h).resolve_left fun h ↦ h.2.not_ge ha).1
 
 lemma neg_iff_neg_of_smul_pos [PosSMulMono α β] [SMulPosMono α β] (hab : 0 < a • b) :
     a < 0 ↔ b < 0 :=

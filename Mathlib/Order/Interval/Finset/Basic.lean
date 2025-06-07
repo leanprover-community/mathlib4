@@ -106,7 +106,7 @@ theorem Ioo_eq_empty (h : ¬a < b) : Ioo a b = ∅ :=
 
 @[simp]
 theorem Icc_eq_empty_of_lt (h : b < a) : Icc a b = ∅ :=
-  Icc_eq_empty h.not_le
+  Icc_eq_empty h.not_ge
 
 @[simp]
 theorem Ico_eq_empty_of_le (h : b ≤ a) : Ico a b = ∅ :=
@@ -291,7 +291,7 @@ theorem Ico_filter_le_of_le_left {a b c : α} [DecidablePred (c ≤ ·)] (hca : 
 
 theorem Ico_filter_le_of_right_le {a b : α} [DecidablePred (b ≤ ·)] :
     {x ∈ Ico a b | b ≤ x} = ∅ :=
-  filter_false_of_mem fun _ hx => (mem_Ico.1 hx).2.not_le
+  filter_false_of_mem fun _ hx => (mem_Ico.1 hx).2.not_ge
 
 theorem Ico_filter_le_of_left_le {a b c : α} [DecidablePred (c ≤ ·)] (hac : a ≤ c) :
     {x ∈ Ico a b | c ≤ x} = Ico c b := by
@@ -557,7 +557,7 @@ theorem Icc_eq_singleton_iff : Icc a b = {c} ↔ a = c ∧ b = c := by
   rw [← coe_eq_singleton, coe_Icc, Set.Icc_eq_singleton_iff]
 
 theorem Ico_disjoint_Ico_consecutive (a b c : α) : Disjoint (Ico a b) (Ico b c) :=
-  disjoint_left.2 fun _ hab hbc => (mem_Ico.mp hab).2.not_le (mem_Ico.mp hbc).1
+  disjoint_left.2 fun _ hab hbc => (mem_Ico.mp hab).2.not_ge (mem_Ico.mp hbc).1
 
 @[simp]
 theorem Ici_top [OrderTop α] : Ici (⊤ : α) = {⊤} := Icc_eq_singleton_iff.2 ⟨rfl, rfl⟩
@@ -1115,7 +1115,7 @@ lemma transGen_wcovBy_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hx
       _          < #(Icc x y) := this
     have h₁ := transGen_wcovBy_of_le hz.1.1
     have h₂ : z ⩿ y :=
-      ⟨hz.1.2.le, fun c hzc hcy ↦ hzc.not_le <| hz.2 ⟨hz.1.1.trans hzc.le, hcy⟩ hzc.le⟩
+      ⟨hz.1.2.le, fun c hzc hcy ↦ hzc.not_ge <| hz.2 ⟨hz.1.1.trans hzc.le, hcy⟩ hzc.le⟩
     exact .tail h₁ h₂
 termination_by #(Icc x y)
 
@@ -1144,7 +1144,7 @@ lemma transGen_covBy_of_lt [Preorder α] [LocallyFiniteOrder α] {x y : α} (hxy
     (Ico_subset_Ico_right hz.1.2.le) |>.mpr ⟨z, mem_Ico.2 hz.1, right_notMem_Ico⟩
   /- Since `z` is maximal in `Ico x y`, `z ⋖ y`. -/
   have hzy : z ⋖ y :=
-    ⟨hz.1.2, fun c hc hcy ↦ hc.not_le <| hz.2 (⟨(hz.1.1.trans_lt hc).le, hcy⟩) hc.le⟩
+    ⟨hz.1.2, fun c hc hcy ↦ hc.not_ge <| hz.2 (⟨(hz.1.1.trans_lt hc).le, hcy⟩) hc.le⟩
   by_cases hxz : x < z
   /- when `x < z`, then we may use the induction hypothesis to get a chain
   `Relation.TransGen (· ⋖ ·) x z`, which we can extend with `Relation.TransGen.tail`. -/

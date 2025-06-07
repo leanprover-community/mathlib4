@@ -174,7 +174,7 @@ def signAux {n : ℕ} (a : Perm (Fin n)) : ℤˣ :=
 theorem signAux_one (n : ℕ) : signAux (1 : Perm (Fin n)) = 1 := by
   unfold signAux
   conv => rhs; rw [← @Finset.prod_const_one _ _ (finPairsLT n)]
-  exact Finset.prod_congr rfl fun a ha => if_neg (mem_finPairsLT.1 ha).not_le
+  exact Finset.prod_congr rfl fun a ha => if_neg (mem_finPairsLT.1 ha).not_ge
 
 /-- `signBijAux f ⟨a, b⟩` returns the pair consisting of `f a` and `f b` in decreasing order. -/
 def signBijAux {n : ℕ} (f : Perm (Fin n)) (a : Σ _ : Fin n, Fin n) : Σ_ : Fin n, Fin n :=
@@ -219,8 +219,8 @@ theorem signBijAux_mem {n : ℕ} {f : Perm (Fin n)} :
 theorem signAux_inv {n : ℕ} (f : Perm (Fin n)) : signAux f⁻¹ = signAux f :=
   prod_nbij (signBijAux f⁻¹) signBijAux_mem signBijAux_injOn signBijAux_surj fun ⟨a, b⟩ hab ↦
     if h : f⁻¹ b < f⁻¹ a then by
-      simp_all [signBijAux, dif_pos h, if_neg h.not_le, apply_inv_self, apply_inv_self,
-        if_neg (mem_finPairsLT.1 hab).not_le]
+      simp_all [signBijAux, dif_pos h, if_neg h.not_ge, apply_inv_self, apply_inv_self,
+        if_neg (mem_finPairsLT.1 hab).not_ge]
     else by
       simp_all [signBijAux, if_pos (le_of_not_gt h), dif_neg h, apply_inv_self, apply_inv_self,
         if_pos (mem_finPairsLT.1 hab).le]
@@ -242,7 +242,7 @@ theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f
     · have : f (g b) ≠ f (g a) := by
         rw [Ne, f.injective.eq_iff, g.injective.eq_iff]
         exact ne_of_lt hab
-      rw [if_pos h₁, if_neg (h₁.lt_of_ne this).not_le]
+      rw [if_pos h₁, if_neg (h₁.lt_of_ne this).not_ge]
       rfl
     · rw [if_neg h₁, if_pos (lt_of_not_ge h₁).le]
       rfl
@@ -256,20 +256,20 @@ private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2
     replace ha₁ : a₂ < a₁ := mem_finPairsLT.1 ha₁
     dsimp only
     rcases a₁.zero_le.eq_or_lt with (rfl | H)
-    · exact absurd a₂.zero_le ha₁.not_le
+    · exact absurd a₂.zero_le ha₁.not_ge
     rcases a₂.zero_le.eq_or_lt with (rfl | H')
     · simp only [and_true, eq_self_iff_true, heq_iff_eq, mem_singleton, Sigma.mk.inj_iff] at ha₂
       have : 1 < a₁ := lt_of_le_of_ne (Nat.succ_le_of_lt ha₁)
         (Ne.symm (by intro h; apply ha₂; simp [h]))
       have h01 : Equiv.swap (0 : Fin (n + 2)) 1 0 = 1 := by simp
-      rw [swap_apply_of_ne_of_ne (ne_of_gt H) ha₂, h01, if_neg this.not_le]
+      rw [swap_apply_of_ne_of_ne (ne_of_gt H) ha₂, h01, if_neg this.not_ge]
     · have le : 1 ≤ a₂ := Nat.succ_le_of_lt H'
       have lt : 1 < a₁ := le.trans_lt ha₁
       have h01 : Equiv.swap (0 : Fin (n + 2)) 1 1 = 0 := by simp only [swap_apply_right]
       rcases le.eq_or_lt with (rfl | lt')
-      · rw [swap_apply_of_ne_of_ne H.ne' lt.ne', h01, if_neg H.not_le]
+      · rw [swap_apply_of_ne_of_ne H.ne' lt.ne', h01, if_neg H.not_ge]
       · rw [swap_apply_of_ne_of_ne (ne_of_gt H) (ne_of_gt lt),
-          swap_apply_of_ne_of_ne (ne_of_gt H') (ne_of_gt lt'), if_neg ha₁.not_le]
+          swap_apply_of_ne_of_ne (ne_of_gt H') (ne_of_gt lt'), if_neg ha₁.not_ge]
 
 private theorem signAux_swap_zero_one {n : ℕ} (hn : 2 ≤ n) :
     signAux (swap (⟨0, lt_of_lt_of_le (by decide) hn⟩ : Fin n) ⟨1, lt_of_lt_of_le (by decide) hn⟩) =

@@ -76,7 +76,7 @@ theorem map_isSuccLimit (hf : IsNormal f) (ha : IsSuccLimit a) : IsSuccLimit (f 
   · obtain ⟨c, hc, hc'⟩ := (hf.lt_iff_exists_lt ha).1 hb.lt
     have hc' := hb.ge_of_gt hc'
     rw [hf.strictMono.le_iff_le] at hc'
-    exact hc.not_le hc'
+    exact hc.not_ge hc'
 
 theorem map_isLUB (hf : IsNormal f) {s : Set α} (hs : IsLUB s a) (hs' : s.Nonempty) :
     IsLUB (f '' s) (f a) := by

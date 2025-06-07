@@ -1079,7 +1079,7 @@ instance : PredOrder (WithTop α) where
     | Option.some a => coe_le_coe.2 (pred_le a)
   min_of_le_pred {a} ha := by
     cases a
-    · exact ((coe_lt_top (⊤ : α)).not_le ha).elim
+    · exact ((coe_lt_top (⊤ : α)).not_ge ha).elim
     · exact (min_of_le_pred <| coe_le_coe.1 ha).withTop
   le_pred_of_lt {a b} h := by
     cases a
@@ -1140,7 +1140,7 @@ instance : SuccOrder (WithBot α) where
     | Option.some a => coe_le_coe.2 (le_succ a)
   max_of_succ_le {a} ha := by
     cases a
-    · exact ((bot_lt_coe (⊥ : α)).not_le ha).elim
+    · exact ((bot_lt_coe (⊥ : α)).not_ge ha).elim
     · exact (max_of_succ_le <| coe_le_coe.1 ha).withBot
   succ_le_of_lt {a b} h := by
     cases b

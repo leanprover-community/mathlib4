@@ -95,7 +95,7 @@ lemma accumulate_injective {n m} (hnm : n ≤ m) : Function.Injective (accumulat
     rwa [← he, accumulate_rec i.2 h t, add_right_cancel_iff] at this
   · have := h.antisymm (i.2.nat_succ_le.trans hnm)
     rw [← accumulate_last i.2 this t, ← accumulate_last i.2 this s, he]
-    iterate 2 { intro j hj; exact ((j.2.trans_le hnm).not_le hj).elim }
+    iterate 2 { intro j hj; exact ((j.2.trans_le hnm).not_ge hj).elim }
 
 lemma accumulate_invAccumulate {n m} (hmn : m ≤ n) {s : Fin m → ℕ} (hs : Antitone s) :
     accumulate n m (invAccumulate n m s) = s := funext <| fun ⟨i, hi⟩ ↦ by

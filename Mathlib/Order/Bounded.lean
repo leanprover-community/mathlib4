@@ -43,7 +43,7 @@ theorem unbounded_le_iff [LinearOrder α] : Unbounded (· ≤ ·) s ↔ ∀ a, �
 theorem unbounded_lt_of_forall_exists_le [Preorder α] (h : ∀ a, ∃ b ∈ s, a ≤ b) :
     Unbounded (· < ·) s := fun a =>
   let ⟨b, hb, hb'⟩ := h a
-  ⟨b, hb, fun hba => hba.not_le hb'⟩
+  ⟨b, hb, fun hba => hba.not_ge hb'⟩
 
 theorem unbounded_lt_iff [LinearOrder α] : Unbounded (· < ·) s ↔ ∀ a, ∃ b ∈ s, a ≤ b := by
   simp only [Unbounded, not_lt]
@@ -228,7 +228,7 @@ theorem bounded_ge_Icc [Preorder α] (a b : α) : Bounded (· ≥ ·) (Icc a b) 
 theorem unbounded_le_Ioi [SemilatticeSup α] [NoMaxOrder α] (a : α) :
     Unbounded (· ≤ ·) (Ioi a) := fun b =>
   let ⟨c, hc⟩ := exists_gt (a ⊔ b)
-  ⟨c, le_sup_left.trans_lt hc, (le_sup_right.trans_lt hc).not_le⟩
+  ⟨c, le_sup_left.trans_lt hc, (le_sup_right.trans_lt hc).not_ge⟩
 
 theorem unbounded_le_Ici [SemilatticeSup α] [NoMaxOrder α] (a : α) :
     Unbounded (· ≤ ·) (Ici a) :=

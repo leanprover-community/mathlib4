@@ -229,7 +229,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
         exact hu (Nat.le_succ i)
       · simp only [le_refl, if_true, add_le_iff_nonpos_right, Nat.le_zero, Nat.one_ne_zero,
           if_false, h]
-      · have A : ¬i ≤ n := hi.not_le
+      · have A : ¬i ≤ n := hi.not_ge
         have B : ¬i + 1 ≤ n := fun h => A (i.le_succ.trans h)
         simp only [A, B, if_false, le_rfl]
     refine ⟨v, n + 2, hv, vs, (mem_image _ _ _).2 ⟨n + 1, ?_, ?_⟩, ?_⟩
@@ -604,9 +604,9 @@ protected theorem nonneg_of_le {a b : α} (h : a ≤ b) : 0 ≤ variationOnFromT
 protected theorem eq_neg_swap (a b : α) :
     variationOnFromTo f s a b = -variationOnFromTo f s b a := by
   rcases lt_trichotomy a b with (ab | rfl | ba)
-  · simp only [variationOnFromTo, if_pos ab.le, if_neg ab.not_le, neg_neg]
+  · simp only [variationOnFromTo, if_pos ab.le, if_neg ab.not_ge, neg_neg]
   · simp only [variationOnFromTo.self, neg_zero]
-  · simp only [variationOnFromTo, if_pos ba.le, if_neg ba.not_le, neg_neg]
+  · simp only [variationOnFromTo, if_pos ba.le, if_neg ba.not_ge, neg_neg]
 
 protected theorem nonpos_of_ge {a b : α} (h : b ≤ a) : variationOnFromTo f s a b ≤ 0 := by
   rw [variationOnFromTo.eq_neg_swap]

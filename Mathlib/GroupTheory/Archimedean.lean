@@ -106,5 +106,5 @@ theorem Subgroup.cyclic_of_isolated_one {H : Subgroup G} {a : G} (h₀ : 1 < a)
 /-- Every subgroup of `ℤ` is cyclic. -/
 theorem Int.subgroup_cyclic (H : AddSubgroup ℤ) : ∃ a, H = AddSubgroup.closure {a} :=
   have : Ioo (0 : ℤ) 1 = ∅ := eq_empty_of_forall_notMem fun _ hm =>
-    hm.1.not_le (lt_add_one_iff.1 hm.2)
+    hm.1.not_ge (lt_add_one_iff.1 hm.2)
   AddSubgroup.cyclic_of_isolated_zero one_pos <| by simp [this]

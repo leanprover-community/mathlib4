@@ -903,7 +903,7 @@ theorem ncard_diff_add_ncard (s t : Set α) (hs : s.Finite := by toFinite_tac)
 theorem diff_nonempty_of_ncard_lt_ncard (h : s.ncard < t.ncard) (hs : s.Finite := by toFinite_tac) :
     (t \ s).Nonempty := by
   rw [Set.nonempty_iff_ne_empty, Ne, diff_eq_empty]
-  exact fun h' ↦ h.not_le (ncard_le_ncard h' hs)
+  exact fun h' ↦ h.not_ge (ncard_le_ncard h' hs)
 
 theorem exists_mem_notMem_of_ncard_lt_ncard (h : s.ncard < t.ncard)
     (hs : s.Finite := by toFinite_tac) : ∃ e, e ∈ t ∧ e ∉ s :=

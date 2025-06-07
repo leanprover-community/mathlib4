@@ -313,7 +313,7 @@ lemma uIoc_injective_right (a : α) : Injective fun b => Ι b a := by
   · refine
       eq_of_mem_uIoc_of_mem_uIoc ((h _).1 <| left_mem_uIoc.2 ha)
         ((h _).2 <| left_mem_uIoc.2 <| ha.trans_le ?_)
-    simpa [ha, ha.not_le, mem_uIoc] using h b
+    simpa [ha, ha.not_ge, mem_uIoc] using h b
 
 lemma uIoc_injective_left (a : α) : Injective (Ι a) := by
   simpa only [uIoc_comm] using uIoc_injective_right a

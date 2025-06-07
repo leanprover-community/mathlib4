@@ -87,7 +87,7 @@ theorem nth_le_nth_of_lt_card (hf : (setOf p).Finite) {m n : ℕ} (h : m ≤ n)
 
 theorem lt_of_nth_lt_nth_of_lt_card (hf : (setOf p).Finite) {m n : ℕ} (h : nth p m < nth p n)
     (hm : m < #hf.toFinset) : m < n :=
-  not_le.1 fun hle => h.not_le <| nth_le_nth_of_lt_card hf hle hm
+  not_le.1 fun hle => h.not_ge <| nth_le_nth_of_lt_card hf hle hm
 
 theorem le_of_nth_le_nth_of_lt_card (hf : (setOf p).Finite) {m n : ℕ} (h : nth p m ≤ nth p n)
     (hm : m < #hf.toFinset) : m ≤ n :=
@@ -330,7 +330,7 @@ variable (p) [DecidablePred p]
 @[simp]
 theorem count_nth_zero : count p (nth p 0) = 0 := by
   rw [count_eq_card_filter_range, card_eq_zero, filter_eq_empty_iff, nth_zero]
-  exact fun n h₁ h₂ => (mem_range.1 h₁).not_le (Nat.sInf_le h₂)
+  exact fun n h₁ h₂ => (mem_range.1 h₁).not_ge (Nat.sInf_le h₂)
 
 theorem filter_range_nth_subset_insert (k : ℕ) :
     {n ∈ range (nth p (k + 1)) | p n} ⊆ insert (nth p k) {n ∈ range (nth p k) | p n} := by

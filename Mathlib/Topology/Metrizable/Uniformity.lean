@@ -218,7 +218,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     · rw [(pow_right_strictAnti₀ hr.1 hr.2).le_iff_le, Nat.find_le_iff]
       exact ⟨fun ⟨m, hmn, hm⟩ hn => hm (hB.antitone hmn hn), fun h => ⟨n, le_rfl, h⟩⟩
     · push_neg at h
-      simp only [h, not_true, (pow_pos hr.1 _).not_le]
+      simp only [h, not_true, (pow_pos hr.1 _).not_ge]
   have hd_le : ∀ x y, ↑(d x y) ≤ 2 * dist x y := by
     refine PseudoMetricSpace.le_two_mul_dist_ofPreNNDist _ _ _ fun x₁ x₂ x₃ x₄ => ?_
     by_cases H : ∃ n, (x₁, x₄) ∉ U n

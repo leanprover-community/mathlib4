@@ -27,7 +27,7 @@ theorem surjOn_Ioo_of_monotone_surjective (h_mono : Monotone f) (h_surj : Functi
   rcases h_surj p with ⟨x, rfl⟩
   refine ⟨x, mem_Ioo.2 ?_, rfl⟩
   contrapose! hp
-  exact fun h => h.2.not_le (h_mono <| hp <| h_mono.reflect_lt h.1)
+  exact fun h => h.2.not_ge (h_mono <| hp <| h_mono.reflect_lt h.1)
 
 theorem surjOn_Ico_of_monotone_surjective (h_mono : Monotone f) (h_surj : Function.Surjective f)
     (a b : α) : SurjOn f (Ico a b) (Ico (f a) (f b)) := by

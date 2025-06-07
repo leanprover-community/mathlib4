@@ -71,7 +71,7 @@ instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ' i, �
         · exact hij.not_lt hji
         · exact lt_irrefl _ hji
         · exact lt_irrefl _ hij
-        · exact hab.not_le hba
+        · exact hab.not_ge hba
       · rintro ⟨⟨j, b, hij⟩ | ⟨i, hab⟩, hba⟩
         · exact Lex.left _ _ hij
         · exact Lex.right _ (hab.lt_of_not_ge fun h => hba <| Lex.right _ h) }

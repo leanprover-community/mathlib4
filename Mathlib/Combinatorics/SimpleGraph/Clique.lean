@@ -540,7 +540,7 @@ protected theorem CliqueFree.cliqueFreeOn (hG : G.CliqueFree n) : G.CliqueFreeOn
   fun _t _ ↦ hG _
 
 theorem cliqueFreeOn_of_card_lt {s : Finset α} (h : #s < n) : G.CliqueFreeOn s n :=
-  fun _t hts ht => h.not_le <| ht.2.symm.trans_le <| card_mono hts
+  fun _t hts ht => h.not_ge <| ht.2.symm.trans_le <| card_mono hts
 
 -- TODO: Restate using `SimpleGraph.IndepSet` once we have it
 @[simp]

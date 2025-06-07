@@ -135,7 +135,7 @@ lemma isClosed_ball (x : X) (r : ℝ) : IsClosed (ball x r) := by
     cases ball_eq_or_disjoint x y r with
     | inl hd =>
       rw [hd] at hy
-      simp [h.not_le] at hy
+      simp [h.not_ge] at hy
     | inr hd =>
       use r
       simp [h, hy, ← Set.le_iff_subset, le_compl_iff_disjoint_left, hd]
