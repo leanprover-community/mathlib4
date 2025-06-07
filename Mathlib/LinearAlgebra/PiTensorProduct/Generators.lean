@@ -19,7 +19,7 @@ are finitely generated, then so is `⨂[R] i, M i`.
 
 -/
 
-namespace Equiv
+namespace Set
 
 /-- The bijection `Unit ⊕ (({i₀})ᶜ : Set ι) ≃ ι` for any `i₀ : ι` -/
 noncomputable def sumSingletonComplEquiv {ι : Type*} (i₀ : ι) :
@@ -43,23 +43,7 @@ lemma sumSingletonComplEquiv_inl {ι : Type*} (i₀ : ι) (u : Unit):
 lemma sumSingletonComplEquiv_inr {ι : Type*} (i₀ : ι) (i : ({i₀}ᶜ : Set ι)) :
     sumSingletonComplEquiv i₀ (.inr i) = i := rfl
 
-end Equiv
-
--- to be moved
-lemma Nat.card_compl_add_card {ι : Type*} (S : Set ι) [Finite ι] :
-    Nat.card (Sᶜ : Set ι) + Nat.card S = Nat.card ι := by
-  classical
-  have : Fintype ι := Fintype.ofFinite ι
-  simp only [card_eq_fintype_card, ← Finset.card_compl_add_card S.toFinset, Set.toFinset_card,
-    Fintype.card_ofFinset]
-  congr
-  ext
-  simp
-
-lemma Nat.card_singleton_compl {ι : Type*} [Finite ι] (i : ι) {n : ℕ} (h : Nat.card ι = n + 1) :
-    Nat.card ({i}ᶜ : Set ι) = n := by
-  rw [← add_left_inj 1, ← h, ← Nat.card_compl_add_card {i}]
-  simp only [card_eq_fintype_card, Fintype.card_ofSubsingleton]
+end Set
 
 -- to be moved
 namespace Function
@@ -104,9 +88,9 @@ variable {ι : Type*} (M : ι → Type*)
 (for some `i₀ : ι`) and the pi tensor product indexed by the complement of `{i₀}`. -/
 noncomputable def equivTensorPiTensorComplSingleton (i₀ : ι) :
     (⨂[R] i, M i) ≃ₗ[R] (M i₀ ⊗[R] ⨂[R] (i : ((Set.singleton i₀)ᶜ : Set ι)), M i) :=
-  ((reindex R (s := M) (e := (Equiv.sumSingletonComplEquiv i₀).symm)).trans
+  ((reindex R (s := M) (e := (Set.sumSingletonComplEquiv i₀).symm)).trans
     (tmulEquivDep R
-        (fun i => M (Equiv.sumSingletonComplEquiv i₀ i))).symm).trans
+        (fun i => M (Set.sumSingletonComplEquiv i₀ i))).symm).trans
       (LinearEquiv.rTensor _ (subsingletonEquiv (R := R) (M := M i₀) Unit.unit))
 
 variable (i₀ : ι)
@@ -118,8 +102,8 @@ lemma equivTensorPiTensorComplSingleton_tprod (i₀ : ι) (m : ∀ i, M i) :
   dsimp [equivTensorPiTensorComplSingleton]
   erw [reindex_tprod (R := R) (s := M), tmulEquivDep_symm_apply]
   erw [LinearEquiv.rTensor_tmul]
-  simp only [Equiv.sumSingletonComplEquiv_inl, Equiv.symm_symm, subsingletonEquiv_apply_tprod,
-    Equiv.sumSingletonComplEquiv_inr]
+  simp only [Set.sumSingletonComplEquiv_inl, Equiv.symm_symm, subsingletonEquiv_apply_tprod,
+    Set.sumSingletonComplEquiv_inr]
   rfl
 
 @[simp]
@@ -152,48 +136,48 @@ lemma ext_of_span_eq_top
   revert ι
   induction n with
   | zero =>
-      intro ι _ M _ _ γ g _ φ φ' h hι
-      ext x
-      have : IsEmpty ι := by
-        rw [Nat.card_eq_zero] at hι
-        obtain (_ | h) := hι
-        · assumption
-        · exfalso
-          rw [← not_finite_iff_infinite] at h
-          exact h inferInstance
-      obtain rfl : x = fun i ↦ @g i (by apply isEmptyElim) := by
-        ext i
-        apply @isEmptyElim (a := i) _ _
-      apply h
+    intro ι _ M _ _ γ g _ φ φ' h hι
+    ext x
+    have : IsEmpty ι := by
+      rw [Nat.card_eq_zero] at hι
+      obtain (_ | h) := hι
+      · assumption
+      · exfalso
+        rw [← not_finite_iff_infinite] at h
+        exact h inferInstance
+    obtain rfl : x = fun i ↦ @g i (by apply isEmptyElim) := by
+      ext i
+      apply @isEmptyElim (a := i) _ _
+    apply h
   | succ n hn =>
-      intro ι _ M _ _ γ g hg φ φ' h hι
-      have : Nonempty ι := ((Nat.card_pos_iff (α := ι)).1 (by omega)).1
-      have i₀ : ι := Classical.arbitrary _
-      let e := equivTensorPiTensorComplSingleton R M i₀
-      obtain ⟨ψ, rfl⟩ : ∃ ψ, φ = LinearMap.comp ψ e.toLinearMap :=
-        ⟨φ.comp e.symm.toLinearMap, by ext; simp⟩
-      obtain ⟨ψ', rfl⟩ : ∃ ψ', φ' = LinearMap.comp ψ' e.toLinearMap :=
-        ⟨φ'.comp e.symm.toLinearMap, by ext; simp⟩
-      dsimp [e] at h
-      congr 1
-      apply (TensorProduct.lift.equiv _ _ _ _).symm.injective
-      rw [Submodule.linearMap_eq_iff_of_span_eq_top _ _ (hg i₀)]
-      rintro ⟨_, ⟨g₀, rfl⟩⟩
-      apply hn (g := fun i (j : γ i.1) ↦ by exact g j)
-      · intro i
-        exact hg _
-      · intro j
-        classical
-        simp only [lift.equiv_symm_apply]
-        convert h (Function.extendComplSingleton i₀ j g₀) using 1
-        all_goals
-          simp only [equivTensorPiTensorComplSingleton_tprod,
-            Function.extendComplSingleton_self]
-          congr
-          ext x
-          congr
-          rw [Function.extendComplSingleton_of_neq]
-      · exact Nat.card_singleton_compl i₀ hι
+    intro ι _ M _ _ γ g hg φ φ' h hι
+    have : Nonempty ι := ((Nat.card_pos_iff (α := ι)).1 (by omega)).1
+    have i₀ : ι := Classical.arbitrary _
+    let e := equivTensorPiTensorComplSingleton R M i₀
+    obtain ⟨ψ, rfl⟩ : ∃ ψ, φ = LinearMap.comp ψ e.toLinearMap :=
+      ⟨φ.comp e.symm.toLinearMap, by ext; simp⟩
+    obtain ⟨ψ', rfl⟩ : ∃ ψ', φ' = LinearMap.comp ψ' e.toLinearMap :=
+      ⟨φ'.comp e.symm.toLinearMap, by ext; simp⟩
+    dsimp [e] at h
+    congr 1
+    apply (TensorProduct.lift.equiv _ _ _ _).symm.injective
+    rw [Submodule.linearMap_eq_iff_of_span_eq_top _ _ (hg i₀)]
+    rintro ⟨_, ⟨g₀, rfl⟩⟩
+    apply hn (g := fun i (j : γ i.1) ↦ by exact g j)
+    · intro i
+      exact hg _
+    · intro j
+      classical
+      simp only [lift.equiv_symm_apply]
+      convert h (Function.extendComplSingleton i₀ j g₀) using 1
+      all_goals
+        simp only [equivTensorPiTensorComplSingleton_tprod,
+          Function.extendComplSingleton_self]
+        congr
+        ext x
+        congr
+        rw [Function.extendComplSingleton_of_neq]
+    · exact Nat.card_singleton_compl i₀ hι
 
 lemma _root_.MultilinearMap.ext_of_span_eq_top
     (hg : ∀ i, Submodule.span R (Set.range (@g i)) = ⊤)
