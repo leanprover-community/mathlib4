@@ -181,7 +181,7 @@ theorem coeff_hermite_explicit :
 
 theorem coeff_hermite_of_even_add {n k : ℕ} (hnk : Even (n + k)) :
     coeff (hermite n) k = (-1) ^ ((n - k) / 2) * (n - k - 1)‼ * Nat.choose n k := by
-  rcases le_or_lt k n with h_le | h_lt
+  rcases le_or_gt k n with h_le | h_lt
   · rw [Nat.even_add, ← Nat.even_sub h_le] at hnk
     obtain ⟨m, hm⟩ := hnk
     -- Porting note: linarith failed to find a contradiction by itself

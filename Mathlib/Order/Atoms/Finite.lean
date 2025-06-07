@@ -80,7 +80,7 @@ instance (priority := 100) Finite.to_isCoatomic [PartialOrder α] [OrderTop α] 
     Set.Finite.exists_maximalFor id { x : α | b ≤ x ∧ x ≠ ⊤ } (Set.toFinite _) ⟨b, le_rfl, ht⟩
   refine ⟨c, ⟨hc.2, fun y hcy => ?_⟩, hc.1⟩
   by_contra hyt
-  exact not_lt_iff_le_imp_le.2 (hmax ⟨hc.1.trans hcy.le, hyt⟩) hcy
+  exact not_lt_iff_le_imp_ge.2 (hmax ⟨hc.1.trans hcy.le, hyt⟩) hcy
 
 -- see Note [lower instance priority]
 instance (priority := 100) Finite.to_isAtomic [PartialOrder α] [OrderBot α] [Finite α] :

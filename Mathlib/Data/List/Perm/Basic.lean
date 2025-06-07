@@ -63,7 +63,7 @@ alias ⟨_, Perm.insertIdx_of_le⟩ := perm_insertIdx_iff_of_le
 theorem perm_insertIdx_iff {l₁ l₂ : List α} {n : ℕ} {a : α} :
     l₁.insertIdx n a ~ l₂.insertIdx n a ↔ l₁ ~ l₂ := by
   wlog hle : length l₁ ≤ length l₂ generalizing l₁ l₂
-  · rw [perm_comm, this (le_of_not_le hle), perm_comm]
+  · rw [perm_comm, this (le_of_not_ge hle), perm_comm]
   cases Nat.lt_or_ge (length l₁) n with
   | inl hn₁ =>
     rw [insertIdx_of_length_lt hn₁]
