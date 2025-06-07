@@ -40,9 +40,9 @@ theorem imo2019_q1 (f : ℤ → ℤ) :
   obtain ⟨c, H⟩ : ∃ c, ∀ b, f b = c + m * b := by
     refine ⟨f 0, fun b => ?_⟩
     induction b with
-    | hz => simp
-    | hp b ihb => simp [H, ihb, mul_add, add_assoc]
-    | hn b ihb =>
+    | zero => simp
+    | succ b ihb => simp [H, ihb, mul_add, add_assoc]
+    | pred b ihb =>
       rw [← sub_eq_of_eq_add (H _)]
       simp [ihb]; ring
   -- Now use `hf 0 0` and `hf 0 1` to show that `m ∈ {0, 2}`
