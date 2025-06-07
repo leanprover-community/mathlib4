@@ -50,6 +50,14 @@ lemma comap_id (w : InfinitePlace K) : w.comap (RingHom.id K) = w := rfl
 lemma comap_comp (w : InfinitePlace K) (f : F →+* K) (g : k →+* F) :
     w.comap (f.comp g) = (w.comap f).comap g := rfl
 
+@[simp]
+lemma comap_apply (w : InfinitePlace K) (f : k →+* K) (x : k) :
+    w.comap f x = w (f x) := rfl
+
+lemma comp_of_comap_eq {v : InfinitePlace k} {w : InfinitePlace K} {f : k →+* K}
+    (h : w.comap f = v) (x : k) : w (f x) = v x := by
+  simp [← h]
+
 lemma comap_mk_lift [Algebra k K] [Algebra.IsAlgebraic k K] (φ : k →+* ℂ) :
     (mk (ComplexEmbedding.lift K φ)).comap (algebraMap k K) = mk φ := by simp
 
@@ -162,6 +170,11 @@ An infinite place is unramified in a field extension if the restriction has the 
 -/
 def IsUnramified : Prop := mult (w.comap (algebraMap k K)) = mult w
 
+/--
+An infinite place is ramified in a field extension if it is not unramified.
+-/
+abbrev IsRamified : Prop := ¬w.IsUnramified k
+
 variable {k}
 
 lemma isUnramified_self : IsUnramified K w := rfl
@@ -212,6 +225,17 @@ lemma isUnramified_iff :
     IsUnramified k w ↔ IsReal w ∨ IsComplex (w.comap (algebraMap k K)) := by
   rw [← not_iff_not, not_isUnramified_iff, not_or,
     not_isReal_iff_isComplex, not_isComplex_iff_isReal]
+
+theorem isRamified_iff : w.IsRamified k ↔ w.IsComplex ∧ (w.comap (algebraMap k K)).IsReal :=
+  not_isUnramified_iff
+
+theorem IsRamified.ne_conjugate {w₁ w₂ : InfinitePlace K} (h : w₂.IsRamified k) :
+    w₁.embedding ≠ ComplexEmbedding.conjugate w₂.embedding := by
+  by_cases h_eq : w₁ = w₂
+  · rw [isRamified_iff, isComplex_iff] at h
+    exact Ne.symm (h_eq ▸ h.1)
+  · contrapose! h_eq
+    rw [← mk_embedding w₁, h_eq, mk_conjugate_eq, mk_embedding]
 
 variable (k)
 
@@ -299,6 +323,19 @@ lemma not_isUnramified_iff_card_stabilizer_eq_two [IsGalois k K] :
     ¬ IsUnramified k w ↔ Nat.card (Stab w) = 2 := by
   rw [isUnramified_iff_card_stabilizer_eq_one]
   obtain (e|e) := nat_card_stabilizer_eq_one_or_two k w <;> rw [e] <;> decide
+
+lemma isRamified_iff_card_stabilizer_eq_two [IsGalois k K] :
+    IsRamified k w ↔ Nat.card (Stab w) = 2 :=
+  not_isUnramified_iff_card_stabilizer_eq_two
+
+lemma exists_isConj_of_isRamified [IsGalois k K] {φ : K →+* ℂ} (h : IsRamified k (mk φ)) :
+    ∃ σ : K ≃ₐ[k] K, ComplexEmbedding.IsConj φ σ := by
+  rw [isRamified_iff_card_stabilizer_eq_two, Nat.card_eq_two_iff] at h
+  obtain ⟨⟨x, hx⟩, ⟨y, hy⟩, h₁, -⟩ := h
+  rw [mem_stabilizer_mk_iff] at hx hy
+  by_cases h : x = 1
+  · exact ⟨y, hy.resolve_left (by rwa [ne_eq, Subtype.mk_eq_mk.not, h, eq_comm] at h₁)⟩
+  · exact ⟨x, hx.resolve_left h⟩
 
 open scoped Classical in
 lemma card_stabilizer [IsGalois k K] :

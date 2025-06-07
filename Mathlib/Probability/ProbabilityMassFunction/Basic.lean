@@ -125,7 +125,7 @@ theorem apply_lt_top (p : PMF α) (a : α) : p a < ∞ :=
 
 section OuterMeasure
 
-open MeasureTheory MeasureTheory.OuterMeasure
+open OuterMeasure
 
 /-- Construct an `OuterMeasure` from a `PMF`, by assigning measure to each set `s : Set α` equal
   to the sum of `p x` for each `x ∈ α`. -/
@@ -147,7 +147,7 @@ theorem toOuterMeasure_caratheodory : p.toOuterMeasure.caratheodory = ⊤ := by
 @[simp]
 theorem toOuterMeasure_apply_finset (s : Finset α) : p.toOuterMeasure s = ∑ x ∈ s, p x := by
   refine (toOuterMeasure_apply p s).trans ((tsum_eq_sum (s := s) ?_).trans ?_)
-  · exact fun x hx => Set.indicator_of_not_mem (Finset.mem_coe.not.2 hx) _
+  · exact fun x hx => Set.indicator_of_notMem (Finset.mem_coe.not.2 hx) _
   · exact Finset.sum_congr rfl fun x hx => Set.indicator_of_mem (Finset.mem_coe.2 hx) _
 
 theorem toOuterMeasure_apply_singleton (a : α) : p.toOuterMeasure {a} = p a := by
@@ -178,7 +178,7 @@ theorem toOuterMeasure_apply_eq_one_iff : p.toOuterMeasure s = 1 ↔ p.support �
       _root_.trans (tsum_congr
         fun a => (Set.indicator_apply s p a).trans
           (ite_eq_left_iff.2 <| symm ∘ this a)) p.tsum_coe
-    exact fun a ha => (p.apply_eq_zero_iff a).2 <| Set.not_mem_subset h ha
+    exact fun a ha => (p.apply_eq_zero_iff a).2 <| Set.notMem_subset h ha
 
 @[simp]
 theorem toOuterMeasure_apply_inter_support :
@@ -202,8 +202,6 @@ theorem toOuterMeasure_apply_fintype [Fintype α] : p.toOuterMeasure s = ∑ x, 
 end OuterMeasure
 
 section Measure
-
-open MeasureTheory
 
 /-- Since every set is Carathéodory-measurable under `PMF.toOuterMeasure`,
   we can further extend this `OuterMeasure` to a `Measure` on `α`. -/
@@ -323,8 +321,6 @@ end Measure
 end MeasureTheory
 
 namespace PMF
-
-open MeasureTheory
 
 /-- The measure associated to a `PMF` by `toMeasure` is a probability measure. -/
 instance toMeasure.isProbabilityMeasure [MeasurableSpace α] (p : PMF α) :

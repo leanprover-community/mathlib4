@@ -208,10 +208,10 @@ theorem prod_add_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → α) :
   rw [add_comm]
   congr 1
   · rw [filter_false_of_mem, prod_empty, mul_one]
-    exact (forall_mem_insert _ _ _).2 ⟨lt_irrefl a, fun i hi => (ha i hi).not_lt⟩
+    exact (forall_mem_insert _ _ _).2 ⟨lt_irrefl a, fun i hi => (ha i hi).not_gt⟩
   · rw [mul_sum]
     refine sum_congr rfl fun i hi => ?_
-    rw [filter_insert, if_neg (ha i hi).not_lt, filter_insert, if_pos (ha i hi), prod_insert,
+    rw [filter_insert, if_neg (ha i hi).not_gt, filter_insert, if_pos (ha i hi), prod_insert,
       mul_left_comm]
     exact mt (fun ha => (mem_filter.1 ha).1) ha'
 
@@ -266,7 +266,7 @@ theorem prod_one_sub_ordered [LinearOrder ι] (s : Finset ι) (f : ι → α) :
 theorem prod_range_natCast_sub (n k : ℕ) :
     ∏ i ∈ range k, (n - i : α) = (∏ i ∈ range k, (n - i) : ℕ) := by
   rw [prod_natCast]
-  rcases le_or_lt k n with hkn | hnk
+  rcases le_or_gt k n with hkn | hnk
   · exact prod_congr rfl fun i hi => (Nat.cast_sub <| (mem_range.1 hi).le.trans hkn).symm
   · rw [← mem_range] at hnk
     rw [prod_eq_zero hnk, prod_eq_zero hnk] <;> simp

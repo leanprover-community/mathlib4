@@ -174,7 +174,7 @@ theorem nim_one_equiv : nim 1 ≈ star :=
 
 @[simp]
 theorem nim_birthday (o : Ordinal) : (nim o).birthday = o := by
-  induction' o using Ordinal.induction with o IH
+  induction o using Ordinal.induction with | _ o IH
   rw [nim, birthday_def]
   dsimp
   rw [max_eq_right le_rfl]
@@ -183,11 +183,11 @@ theorem nim_birthday (o : Ordinal) : (nim o).birthday = o := by
 
 @[simp]
 theorem neg_nim (o : Ordinal) : -nim o = nim o := by
-  induction' o using Ordinal.induction with o IH
+  induction o using Ordinal.induction with | _ o IH
   rw [nim]; dsimp; congr <;> funext i <;> exact IH _ (Ordinal.typein_lt_self i)
 
 instance impartial_nim (o : Ordinal) : Impartial (nim o) := by
-  induction' o using Ordinal.induction with o IH
+  induction o using Ordinal.induction with | _ o IH
   rw [impartial_def, neg_nim]
   refine ⟨equiv_rfl, fun i => ?_, fun i => ?_⟩ <;> simpa using IH _ (typein_lt_self _)
 
@@ -250,7 +250,7 @@ theorem exists_grundyValue_moveLeft_of_lt {G : PGame} {o : Nimber} (h : o < grun
     ∃ i, grundyValue (G.moveLeft i) = o := by
   rw [grundyValue_eq_sInf_moveLeft] at h
   by_contra ha
-  exact h.not_le (csInf_le' ha)
+  exact h.not_ge (csInf_le' ha)
 
 theorem grundyValue_le_of_forall_moveLeft {G : PGame} {o : Nimber}
     (h : ∀ i, grundyValue (G.moveLeft i) ≠ o) : G.grundyValue ≤ o := by

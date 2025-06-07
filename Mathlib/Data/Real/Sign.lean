@@ -14,9 +14,9 @@ real numbers to -1, positive real numbers to 1, and 0 to 0.
 
 ## Main definitions
 
- * `Real.sign r` is $\begin{cases} -1 & \text{if } r < 0, \\
-                               ~~\, 0 & \text{if } r = 0, \\
-                               ~~\, 1 & \text{if } r > 0. \end{cases}$
+* `Real.sign r` is $\begin{cases} -1 & \text{if } r < 0, \\
+                              ~~\, 0 & \text{if } r = 0, \\
+                              ~~\, 1 & \text{if } r > 0. \end{cases}$
 
 ## Tags
 
@@ -33,7 +33,7 @@ noncomputable def sign (r : ℝ) : ℝ :=
 
 theorem sign_of_neg {r : ℝ} (hr : r < 0) : sign r = -1 := by rw [sign, if_pos hr]
 
-theorem sign_of_pos {r : ℝ} (hr : 0 < r) : sign r = 1 := by rw [sign, if_pos hr, if_neg hr.not_lt]
+theorem sign_of_pos {r : ℝ} (hr : 0 < r) : sign r = 1 := by rw [sign, if_pos hr, if_neg hr.not_gt]
 
 @[simp]
 theorem sign_zero : sign 0 = 0 := by rw [sign, if_neg (lt_irrefl _), if_neg (lt_irrefl _)]

@@ -49,7 +49,7 @@ theorem bitIndices_bit_false (n : ℕ) :
 
 @[simp] theorem bitIndices_two_mul_add_one (n : ℕ) :
     bitIndices (2 * n + 1) = 0 :: (bitIndices n).map (· + 1) := by
-   rw [← bitIndices_bit_true, bit_true]
+  rw [← bitIndices_bit_true, bit_true]
 
 @[simp] theorem bitIndices_two_mul (n : ℕ) :
     bitIndices (2 * n) = (bitIndices n).map (· + 1) := by
@@ -112,7 +112,9 @@ theorem two_pow_le_of_mem_bitIndices (ha : a ∈ n.bitIndices) : 2^a ≤ n := by
   rw [← twoPowSum_bitIndices n]
   exact List.single_le_sum (by simp) _ <| mem_map_of_mem ha
 
-theorem not_mem_bitIndices_self (n : ℕ) : n ∉ n.bitIndices :=
-  fun h ↦ (n.lt_two_pow_self).not_le <| two_pow_le_of_mem_bitIndices h
+theorem notMem_bitIndices_self (n : ℕ) : n ∉ n.bitIndices :=
+  fun h ↦ (n.lt_two_pow_self).not_ge <| two_pow_le_of_mem_bitIndices h
+
+@[deprecated (since := "2025-05-23")] alias not_mem_bitIndices_self := notMem_bitIndices_self
 
 end Nat
