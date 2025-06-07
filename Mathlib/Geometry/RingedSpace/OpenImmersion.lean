@@ -261,9 +261,7 @@ theorem to_iso [h' : Epi f.base] : IsIso f := by
       congr
       exact (Set.image_preimage_eq _ ((TopCat.epi_iff_surjective _).mp h')).symm
     convert H.c_iso (Opens.map f.base |>.obj <| unop U)
-
   have : IsIso f.c := NatIso.isIso_of_isIso_app _
-
   apply (config := { allowSynthFailures := true }) isIso_of_components
   let t : X ≃ₜ Y := H.base_open.isEmbedding.toHomeomorph.trans
     { toFun := Subtype.val
@@ -363,7 +361,6 @@ def pullbackConeOfLeftLift : s.pt ⟶ (pullbackConeOfLeft f g).pt where
                 let s' : PullbackCone f.base g.base := PullbackCone.mk s.fst.base s.snd.base
                   -- Porting note: in mathlib3, this is just an underscore
                   (congr_arg Hom.base s.condition)
-
                 have : _ = s.snd.base := limit.lift_π s' WalkingCospan.right
                 conv_lhs =>
                   rw [← this]

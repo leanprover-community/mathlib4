@@ -148,7 +148,7 @@ instance linearOrder : LinearOrder ℚ where
   toDecidableEq := inferInstance
   toDecidableLE := inferInstance
   toDecidableLT := inferInstance
-  lt_iff_le_not_le _ _ := by rw [← Rat.not_le, and_iff_right_of_imp Rat.le_total.resolve_left]
+  lt_iff_le_not_ge _ _ := by rw [← Rat.not_le, and_iff_right_of_imp Rat.le_total.resolve_left]
 
 /-!
 ### Extra instances to short-circuit type class resolution
@@ -194,7 +194,7 @@ instance : AddLeftMono ℚ where
 
 theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d) :
     (a : ℚ) / b < c / d ↔ a * d < c * b := by
-  simp only [lt_iff_le_not_le]
+  simp only [lt_iff_le_not_ge]
   apply and_congr
   · simp [div_def', Rat.divInt_le_divInt b_pos d_pos]
   · apply not_congr

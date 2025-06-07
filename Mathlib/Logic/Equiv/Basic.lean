@@ -721,10 +721,8 @@ theorem apply_swap_eq_self {v : α → β} {i j : α} (hv : v i = v j) (k : α) 
     v (swap i j k) = v k := by
   by_cases hi : k = i
   · rw [hi, swap_apply_left, hv]
-
   by_cases hj : k = j
   · rw [hj, swap_apply_right, hv]
-
   rw [swap_apply_of_ne_of_ne hi hj]
 
 theorem swap_apply_eq_iff {x y z w : α} : swap x y z = w ↔ z = swap x y w := by
@@ -733,13 +731,10 @@ theorem swap_apply_eq_iff {x y z w : α} : swap x y z = w ↔ z = swap x y w := 
 theorem swap_apply_ne_self_iff {a b x : α} : swap a b x ≠ x ↔ a ≠ b ∧ (x = a ∨ x = b) := by
   by_cases hab : a = b
   · simp [hab]
-
   by_cases hax : x = a
   · simp [hax, eq_comm]
-
   by_cases hbx : x = b
   · simp [hbx]
-
   simp [hab, hax, hbx, swap_apply_of_ne_of_ne]
 
 namespace Perm
@@ -760,7 +755,6 @@ theorem sumCongr_refl_swap {α β : Sort _} [DecidableEq α] [DecidableEq β] (i
   ext x
   cases x
   · simp [Sum.map, swap_apply_of_ne_of_ne]
-
   · simp only [Equiv.sumCongr_apply, Sum.map, coe_refl, comp_id, Sum.elim_inr, comp_apply,
       swap_apply_def, Sum.inr.injEq]
     split_ifs <;> rfl
@@ -1007,10 +1001,8 @@ theorem Function.Injective.swap_apply
     Equiv.swap (f x) (f y) (f z) = f (Equiv.swap x y z) := by
   by_cases hx : z = x
   · simp [hx]
-
   by_cases hy : z = y
   · simp [hy]
-
   rw [Equiv.swap_apply_of_ne_of_ne hx hy, Equiv.swap_apply_of_ne_of_ne (hf.ne hx) (hf.ne hy)]
 
 theorem Function.Injective.swap_comp

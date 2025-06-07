@@ -307,7 +307,6 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
           else g ((Equiv.ofInjective _ h₂).symm ⟨x, (this x).resolve_left h⟩)
       · intro T f g
         funext x
-        dsimp
         simp [h₁.eq_iff]
       · intro T f g
         funext x

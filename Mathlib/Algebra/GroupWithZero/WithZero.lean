@@ -89,7 +89,7 @@ theorem monoidWithZeroHom_ext ⦃f g : WithZero α →*₀ β⦄
 
 /-- The (multiplicative) universal property of `WithZero`. -/
 @[simps! symm_apply_apply]
-noncomputable nonrec def lift' : (α →* β) ≃ (WithZero α →*₀ β) where
+nonrec def lift' : (α →* β) ≃ (WithZero α →*₀ β) where
   toFun f :=
     { toFun := fun
         | 0 => 0
@@ -115,7 +115,7 @@ variable [MulOneClass β] [MulOneClass γ]
 
 /-- The `MonoidWithZero` homomorphism `WithZero α →* WithZero β` induced by a monoid homomorphism
   `f : α →* β`. -/
-noncomputable def map' (f : α →* β) : WithZero α →*₀ WithZero β := lift' (coeMonoidHom.comp f)
+def map' (f : α →* β) : WithZero α →*₀ WithZero β := lift' (coeMonoidHom.comp f)
 
 lemma map'_zero (f : α →* β) : map' f 0 = 0 := rfl
 
@@ -243,6 +243,7 @@ instance instGroupWithZero : GroupWithZero (WithZero α) where
     apply mul_inv_cancel
 
 /-- Any group is isomorphic to the units of itself adjoined with `0`. -/
+@[simps]
 def unitsWithZeroEquiv : (WithZero α)ˣ ≃* α where
   toFun a := unzero a.ne_zero
   invFun a := Units.mk0 a coe_ne_zero
@@ -254,6 +255,7 @@ theorem coe_unitsWithZeroEquiv_eq_units_val (γ : (WithZero α)ˣ) :
   simp only [WithZero.unitsWithZeroEquiv, MulEquiv.coe_mk, Equiv.coe_fn_mk, WithZero.coe_unzero]
 
 /-- Any group with zero is isomorphic to adjoining `0` to the units of itself. -/
+@[simps]
 def withZeroUnitsEquiv {G : Type*} [GroupWithZero G]
     [DecidablePred (fun a : G ↦ a = 0)] :
     WithZero Gˣ ≃* G where
@@ -264,27 +266,23 @@ def withZeroUnitsEquiv {G : Type*} [GroupWithZero G]
   map_mul' := (by induction · <;> induction · <;> simp [← WithZero.coe_mul])
 
 /-- A version of `Equiv.optionCongr` for `WithZero`. -/
-noncomputable def _root_.MulEquiv.withZero [Group β] (e : α ≃* β) :
-    WithZero α ≃* WithZero β where
-  toFun := map' e.toMonoidHom
-  invFun := map' e.symm.toMonoidHom
-  left_inv := (by induction · <;> simp)
-  right_inv := (by induction · <;> simp)
-  map_mul' := (by induction · <;> induction · <;> simp)
+@[simps!]
+def _root_.MulEquiv.withZero [Group β] :
+    (α ≃* β) ≃ (WithZero α ≃* WithZero β) where
+  toFun e := ⟨⟨map' e, map' e.symm, (by induction · <;> simp), (by induction · <;> simp)⟩,
+    (by induction · <;> induction · <;> simp)⟩
+  invFun e := ⟨⟨
+    fun x ↦ unzero (x := e x) (by simp [ne_eq, ← e.eq_symm_apply]),
+    fun x ↦ unzero (x := e.symm x) (by simp [e.symm_apply_eq]),
+    by intro; simp, by intro; simp⟩,
+    by intro; simp [← coe_inj]⟩
+  left_inv _ := by ext; simp
+  right_inv _ := by ext x; cases x <;> simp
 
 /-- The inverse of `MulEquiv.withZero`. -/
-protected noncomputable def _root_.MulEquiv.unzero [Group β] (e : WithZero α ≃* WithZero β) :
-    α ≃* β where
-  toFun x := unzero (x := e x) (by simp [ne_eq, ← e.eq_symm_apply])
-  invFun x := unzero (x := e.symm x) (by simp [e.symm_apply_eq])
-  left_inv _ := by simp
-  right_inv _ := by simp
-  map_mul' _ _ := by
-    simp only [coe_mul, map_mul]
-    generalize_proofs A B C
-    suffices ((unzero A : β) : WithZero β) = (unzero B) * (unzero C) by
-      rwa [← WithZero.coe_mul, WithZero.coe_inj] at this
-    simp
+abbrev _root_.MulEquiv.unzero [Group β] (e : WithZero α ≃* WithZero β) :
+    α ≃* β :=
+  _root_.MulEquiv.withZero.symm e
 
 end Group
 

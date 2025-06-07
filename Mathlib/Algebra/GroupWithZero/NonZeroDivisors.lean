@@ -291,7 +291,7 @@ end GroupWithZero
 
 section nonZeroSMulDivisors
 
-open nonZeroSMulDivisors nonZeroDivisors
+open nonZeroSMulDivisors
 
 variable {M₀ M : Type*} [MonoidWithZero M₀] [Zero M] [MulAction M₀ M] {x : M₀}
 

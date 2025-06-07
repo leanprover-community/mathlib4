@@ -240,6 +240,10 @@ def toWeightBasis :
     b.toWeightBasis i = P.root i := by
   simp [toWeightBasis]
 
+@[simp] lemma toWeightBasis_repr_root (i : b.support) :
+    b.toWeightBasis.repr (P.root i) = Finsupp.single i 1 := by
+  simp [← LinearEquiv.eq_symm_apply]
+
 /-- A base of a root system yields a basis of the coroot space. -/
 def toCoweightBasis :
     Basis b.support R N :=
@@ -248,6 +252,10 @@ def toCoweightBasis :
 @[simp] lemma toCoweightBasis_apply (i : b.support) :
     b.toCoweightBasis i = P.coroot i :=
   b.flip.toWeightBasis_apply (P := P.flip) i
+
+@[simp] lemma toCoweightBasis_repr_coroot (i : b.support) :
+    b.toCoweightBasis.repr (P.coroot i) = Finsupp.single i 1 := by
+  simp [← LinearEquiv.eq_symm_apply]
 
 include b
 variable [Fintype ι]

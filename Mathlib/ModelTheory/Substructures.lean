@@ -50,7 +50,7 @@ variable [L.Structure M] [L.Structure N] [L.Structure P]
 
 open FirstOrder Cardinal
 
-open Structure Cardinal
+open Structure
 
 section ClosedUnder
 

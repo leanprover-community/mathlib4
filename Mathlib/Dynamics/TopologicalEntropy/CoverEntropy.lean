@@ -133,7 +133,7 @@ lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
   -- Deal with the edge cases: `F = ∅` or `m = 0`.
   rcases F.eq_empty_or_nonempty with rfl | F_nemp
   · exact ⟨∅, by simp⟩
-  have _ : Nonempty X := nonempty_of_exists F_nemp
+  have _ : Nonempty X := F_nemp.nonempty
   have s_nemp := h.nonempty F_nemp
   obtain ⟨x, x_F⟩ := F_nemp
   rcases m.eq_zero_or_pos with rfl | m_pos
@@ -347,7 +347,7 @@ lemma nonempty_inter_of_coverMincard {T : X → X} {F : Set X} {U : Set (X × X)
     rw [← ball_empt]
     rw [z_x] at hz
     exact mem_inter y_F hz
-  apply smaller_cover.coverMincard_le_card.not_lt
+  apply smaller_cover.coverMincard_le_card.not_gt
   rw [← h']
   exact_mod_cast s.card_erase_lt_of_mem x_s
 
