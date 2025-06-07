@@ -1082,12 +1082,6 @@ alias ring_inverse_eq_map_inverse := ringInverse_eq_inverse
   rw [← ringInverse_eq_inverse]
   exact Ring.inverse_one _
 
-/-- Like `Prod.swap`, but for `ContinuousLinearMap`. -/
-abbrev prodComm (R : Type*) [Semiring R]
-  (M₁ : Type*) [TopologicalSpace M₁] [AddCommMonoid M₁]
-  (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂]
-  [Module R M₁] [Module R M₂] := (ContinuousLinearEquiv.prodComm R M₁ M₂).toContinuousLinearMap
-
 /-- Composition of a map on a product with the exchange of the product factors. -/
 theorem coprod_comp_prodComm
   (R : Type*) [Semiring R]
@@ -1095,7 +1089,7 @@ theorem coprod_comp_prodComm
   (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M₂]
   (M : Type*) [TopologicalSpace M] [AddCommMonoid M] [Module R M] [ContinuousAdd M]
   (f : M₁ →L[R] M) (g : M₂ →L[R] M) :
-    (f.coprod g) ∘L (prodComm R M₂ M₁) = (g.coprod f) := by
+    (f.coprod g) ∘L (ContinuousLinearEquiv.prodComm R M₂ M₁) = (g.coprod f) := by
   ext; all_goals
   simp only [coe_comp', ContinuousLinearEquiv.coe_coe, Function.comp_apply, inl_apply, inr_apply,
     ContinuousLinearEquiv.prodComm_apply, Prod.swap_prod_mk, coprod_apply, map_zero,
