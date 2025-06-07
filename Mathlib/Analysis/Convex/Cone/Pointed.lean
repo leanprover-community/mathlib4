@@ -164,7 +164,7 @@ variable [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E
 /-- The positive cone is the pointed cone formed by the set of nonnegative elements in an ordered
 module. -/
 def positive : PointedCone 𝕜 E :=
-  (ConvexCone.positive 𝕜 E).toPointedCone <| ConvexCone.pointed_positive 𝕜 E
+  (ConvexCone.positive 𝕜 E).toPointedCone ConvexCone.pointed_positive
 
 @[simp]
 theorem mem_positive {x : E} : x ∈ positive 𝕜 E ↔ 0 ≤ x :=
