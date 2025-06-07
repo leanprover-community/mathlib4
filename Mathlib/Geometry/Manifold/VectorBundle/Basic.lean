@@ -614,10 +614,10 @@ instance Bundle.Prod.contMDiffVectorBundle : ContMDiffVectorBundle n (F₁ × F�
     refine ContMDiffOn.congr ?_ (e₁.coordChangeL_prod 𝕜 e₁' e₂ e₂')
     refine ContMDiffOn.clm_prodMap ?_ ?_
     · refine (contMDiffOn_coordChangeL e₁ e₁').mono ?_
-      simp only [Trivialization.baseSet_prod, mfld_simps]
+      simp only [Trivialization.prod_baseSet, mfld_simps]
       mfld_set_tac
     · refine (contMDiffOn_coordChangeL e₂ e₂').mono ?_
-      simp only [Trivialization.baseSet_prod, mfld_simps]
+      simp only [Trivialization.prod_baseSet, mfld_simps]
       mfld_set_tac
 
 end Prod
