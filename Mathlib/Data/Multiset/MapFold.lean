@@ -45,7 +45,7 @@ def map (f : α → β) (s : Multiset α) : Multiset β :=
 
 @[congr]
 theorem map_congr {f g : α → β} {s t : Multiset α} :
-    s = t → (∀ x ∈ t, f x = g x) → map f s = map g t := by
+    s = t → (∀ x ∈ t, binderNameHint x f (f x) = g x) → map f s = map g t := by
   rintro rfl h
   induction s using Quot.inductionOn
   exact congr_arg _ (List.map_congr_left h)
