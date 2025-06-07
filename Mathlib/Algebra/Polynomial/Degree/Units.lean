@@ -41,7 +41,7 @@ lemma degree_coe_units [Nontrivial R] (u : R[X]ˣ) : degree (u : R[X]) = 0 :=
 
 /-- Characterization of a unit of a polynomial ring over an integral domain `R`.
 See `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent` when `R` is a commutative ring. -/
-lemma isUnit_iff : IsUnit p ↔ ∃ r : R, IsUnit r ∧ C r = p :=
+protected lemma isUnit_iff : IsUnit p ↔ ∃ r : R, IsUnit r ∧ C r = p :=
   ⟨fun hp =>
     ⟨p.coeff 0,
       let h := eq_C_of_natDegree_eq_zero (natDegree_eq_zero_of_isUnit hp)
