@@ -586,12 +586,48 @@ def ConstF: Submodule ℂ (LipschitzH (G := G)) := {
     simp [ConstLipschitzH]
 }
 
+instance isometricGMul: IsIsometricSMul G G where
+  isometry_smul := by
+    intro g
+    simp [Isometry]
+    intro a b
+    simp [edist]
+    simp [PseudoMetricSpace.edist]
+    simp [WordDist]
+    group
 
 
-#synth Module ℂ (LipschitzH (G := G))
+
+def gAct (g: G) (v: LipschitzH (S := S)): LipschitzH (S := S) := {
+  toFun := fun x => v (g⁻¹ * x)
+  lipschitz := by
+    obtain ⟨C, hC⟩ := v.lipschitz
+    use C
+    simp [LipschitzWith]
+    intro x y
+    simp [LipschitzWith] at hC
+    specialize hC (g⁻¹ * x) (g⁻¹ * y)
+    simp [DFunLike.coe]
+    simp at hC
+    exact hC
+  harmonic := by
+    unfold Harmonic
+    intro x
+    have v_harmonic := v.harmonic
+    simp [Harmonic] at v_harmonic
+    specialize v_harmonic (g⁻¹ * x)
+    simp [DFunLike.coe]
+    simp_rw [← mul_assoc]
+    exact v_harmonic
+}
+
+
+#synth Module ℂ (LipschitzH (G a:= G))
 #synth AddCommGroup (LipschitzH (G := G))
 
-def W := (LipschitzH (G := G)) ⧸ ConstF
+abbrev W := (LipschitzH (G := G)) ⧸ ConstF
+
+def GRep: Representation ℂ G (W (G := G)) := Representation.ofMulAction ℂ G (W (G := G))
 
 -- TODO - use the fact that G is finitely generated
 instance countableG: Countable (Additive (MulOpposite G)) := by
