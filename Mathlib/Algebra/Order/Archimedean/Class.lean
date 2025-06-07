@@ -64,6 +64,11 @@ namespace MulArchimedeanClass
 @[to_additive "The archimedean class of a given element."]
 def mk (a : M) : MulArchimedeanClass M := Quotient.mk'' a
 
+/-- An induction principle for `MulArchimedeanClass`. -/
+@[to_additive (attr := elab_as_elim) "An induction principle for `ArchimedeanClass`"]
+theorem ind {motive : MulArchimedeanClass M → Prop} (mk : ∀ a, motive (.mk a)) : ∀ x, motive x :=
+  Quotient.ind mk
+
 variable (M) in
 @[to_additive]
 theorem mk_surjective : Function.Surjective <| mk (M := M) := Quotient.mk''_surjective
@@ -77,7 +82,7 @@ theorem range_mk : Set.range (mk (M := M)) = Set.univ := Set.range_eq_univ.mpr (
 noncomputable
 def out (A : MulArchimedeanClass M) : M := Quotient.out A
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem out_eq (A : MulArchimedeanClass M) : mk A.out = A := Quotient.out_eq' A
 
 @[to_additive]
@@ -87,7 +92,7 @@ theorem eq {a b : M} :
 @[to_additive]
 theorem mk_out (a : M) :
     (∃ m, |(mk a).out|ₘ ≤ |a|ₘ ^ m) ∧ (∃ n, |a|ₘ ≤ |(mk a).out|ₘ ^ n) :=
-  eq.mp (by simp)
+  eq.mp (by simp [out_eq])
 
 @[to_additive (attr := simp)]
 theorem mk_inv (a : M) : mk a⁻¹ = mk a :=
@@ -137,7 +142,7 @@ instance instLinearOrder : LinearOrder (MulArchimedeanClass M) :=
   LinearOrder.lift' (OrderDual.toDual |·.out|ₘ) fun A B ↦ by
     simp only [EmbeddingLike.apply_eq_iff_eq]
     intro h
-    simpa using congr_arg mk h
+    simpa [out_eq] using congr_arg mk h
 
 @[to_additive]
 theorem le (A B : MulArchimedeanClass M) : A ≤ B ↔ |B.out|ₘ ≤ |A.out|ₘ := by rfl
@@ -318,8 +323,7 @@ theorem one_lt_of_one_lt_of_mk_lt (ha : 1 < a) (hab : mk a < mk (b / a)) :
 @[to_additive archimedean_of_mk_eq_mk]
 theorem mulArchimedean_of_mk_eq_mk (h : ∀ (a b : M), a ≠ 1 → b ≠ 1 → mk a = mk b) :
     MulArchimedean M where
-  arch := by
-    intro x y hy
+  arch x y hy := by
     by_cases hx : x ≤ 1
     · use 0
       simpa using hx
@@ -347,45 +351,45 @@ over archimedean classes. -/
 over archimedean classes."]
 noncomputable
 def orderHom (f : F) : MulArchimedeanClass M →o MulArchimedeanClass N where
-  toFun := Quotient.map f (fun a b h ↦ by
-    obtain ⟨⟨m, hm⟩, ⟨n, hn⟩⟩ := h
+  toFun := Quotient.map f fun a b ⟨⟨m, hm⟩, ⟨n, hn⟩⟩ ↦ by
     refine ⟨⟨m, ?_⟩, ⟨n, ?_⟩⟩ <;> rw [← map_mabs, ← map_mabs, ← map_pow]
     · exact OrderHomClass.monotone f hm
     · exact OrderHomClass.monotone f hn
-  )
   monotone' a b h := by
-    rw [← out_eq a, ← out_eq b] at h ⊢
-    show mk (f a.out) ≤ mk (f b.out)
+    induction a using ind with | mk a
+    induction b using ind with | mk b
+    show mk (f a) ≤ mk (f b)
     rw [mk_le_mk] at h ⊢
     obtain ⟨n, hn⟩ := h
     simp_rw [← map_mabs, ← map_pow]
     exact ⟨n, OrderHomClass.monotone f hn⟩
 
-@[to_additive]
-theorem map_mk (f : F) (a : M) : mk (f a) = orderHom f (mk a) := rfl
+@[to_additive (attr := simp)]
+theorem orderHom_mk (f : F) (a : M) : orderHom f (mk a) = mk (f a) := rfl
 
 @[to_additive]
 theorem map_mk_eq (f : F) (h : mk a = mk b) : mk (f a) = mk (f b) := by
-  rw [map_mk, map_mk, h]
+  rw [← orderHom_mk, ← orderHom_mk, h]
 
 @[to_additive]
 theorem map_mk_le (f : F) (h : mk a ≤ mk b) : mk (f a) ≤ mk (f b) := by
-  rw [map_mk, map_mk]
+  rw [← orderHom_mk, ← orderHom_mk]
   exact OrderHomClass.monotone _ h
 
 @[to_additive]
 theorem orderHom_injective {f : F} (h : Function.Injective f) :
     Function.Injective (orderHom f) := by
   intro a b
-  rw [← out_eq a, ← out_eq b, ← map_mk, ← map_mk, eq, eq]
-  simp_rw [← map_mabs, ← map_pow]
+  induction a using ind with | mk a
+  induction b using ind with | mk b
+  simp_rw [orderHom_mk, eq, ← map_mabs, ← map_pow]
   obtain hmono := (OrderHomClass.monotone f).strictMono_of_injective h
   intro ⟨⟨m, hm⟩, ⟨n, hn⟩⟩
   exact ⟨⟨m, hmono.le_iff_le.mp hm⟩, ⟨n, hmono.le_iff_le.mp hn⟩⟩
 
 @[to_additive (attr := simp)]
 theorem orderHom_top (f : F) : orderHom f ⊤ = ⊤ := by
-  rw [top_eq, top_eq, ← map_mk]
+  rw [top_eq, top_eq]
   simp
 
 end Hom
