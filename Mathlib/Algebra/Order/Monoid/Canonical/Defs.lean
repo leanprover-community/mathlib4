@@ -226,7 +226,7 @@ theorem lt_iff_exists_mul [MulLeftStrictMono α] : a < b ↔ ∃ c > 1, b = a * 
   rw [lt_iff_le_and_ne, le_iff_exists_mul, ← exists_and_right]
   apply exists_congr
   intro c
-  rw [and_comm, and_congr_left_iff, gt_iff_lt]
+  rw [and_comm, and_congr_left_iff]
   rintro rfl
   constructor
   · rw [one_lt_iff_ne_one]
