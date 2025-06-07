@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.Ring.Action.Rat
 import Mathlib.RingTheory.HahnSeries.Multiplication
+import Mathlib.Data.Rat.Cast.Lemmas
 
 /-!
 # Summable families of Hahn Series
@@ -850,6 +851,10 @@ instance instField : Field (HahnSeries Γ R) where
     simp [← single_zero_nnratCast, ← single_zero_natCast, Semifield.nnratCast_def]
   ratCast_def q := by
     simp [← single_zero_ratCast, ← single_zero_intCast, ← single_zero_natCast, Field.ratCast_def]
+
+theorem single_zero_ofScientific (m e s) :
+    single (0 : Γ) (OfScientific.ofScientific m e s : R) = OfScientific.ofScientific m e s := by
+  simpa using single_zero_ratCast (Γ := Γ) (R := R) (OfScientific.ofScientific m e s)
 
 end Field
 
