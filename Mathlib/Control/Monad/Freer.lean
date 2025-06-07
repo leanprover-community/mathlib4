@@ -317,7 +317,7 @@ example : FreerState.runState (do
   return s : FreerState Nat Nat) 5 = (5, 6) := rfl
 
 -- Example FreerWriter computations
-local instance : Monoid Nat := inferInstance
+private instance : Monoid Nat := inferInstance
 
 example : FreerWriter.run (do
   FreerWriter.tell (2 : Nat)
