@@ -223,12 +223,10 @@ theorem Pi.π_comp_eqToHom {J : Type*} (f : J → C) [HasProduct f] {j j' : J} (
     Pi.π f j ≫ eqToHom (by simp [w]) = Pi.π f j' := by
   simp [*]
 
--- TODO: why can this lemma not be proven by `simp [*]`? It breaks symmetry with the lemma above
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem Sigma.eqToHom_comp_ι {J : Type*} (f : J → C) [HasCoproduct f] {j j' : J} (w : j = j') :
     eqToHom (by simp [w]) ≫ Sigma.ι f j' = Sigma.ι f j := by
-  cases w
-  simp
+  simp [*]
 
 /-- A collection of morphisms `P ⟶ f b` induces a morphism `P ⟶ ∏ᶜ f`. -/
 abbrev Pi.lift {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) : P ⟶ ∏ᶜ f :=

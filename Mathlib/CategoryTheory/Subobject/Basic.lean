@@ -193,11 +193,9 @@ noncomputable def arrow {X : C} (Y : Subobject X) : (Y : C) ⟶ X :=
 instance arrow_mono {X : C} (Y : Subobject X) : Mono Y.arrow :=
   (representative.obj Y).property
 
-@[simp]
 theorem arrow_congr {A : C} (X Y : Subobject A) (h : X = Y) :
     eqToHom (congr_arg (fun X : Subobject A => (X : C)) h) ≫ Y.arrow = X.arrow := by
-  induction h
-  simp
+  simp [h]
 
 @[simp]
 theorem representative_coe (Y : Subobject X) : (representative.obj Y : C) = (Y : C) :=
