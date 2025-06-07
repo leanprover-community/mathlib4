@@ -238,10 +238,9 @@ lemma antitoneOn_div_choose (e : ℕ → ℕ) (k : ℕ)
       apply le_of_mul_le_mul_left hn (by omega)
     apply (div_le_div_iff₀ (mod_cast Nat.choose_pos (by omega))
               (mod_cast Nat.choose_pos (by omega))).2
-    convert this
     norm_cast
-    simp [mul_comm]
-  · intro a b hab; dsimp; apply mul_le_mul_of_nonneg_left hab zero_le'
+    simpa [mul_comm]
+  · intro a b hab; exact mul_le_mul_of_nonneg_left hab zero_le'
 
 /--
 The following version yields `(n + 1 - |V(H)|) * exᵢ(n + 1, H) ≤ (n + 1) * exᵢ(n, H)`, where
