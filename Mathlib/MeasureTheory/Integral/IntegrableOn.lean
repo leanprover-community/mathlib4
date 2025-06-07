@@ -72,6 +72,12 @@ namespace MeasureTheory
 
 section NormedAddCommGroup
 
+theorem hasFiniteIntegral_restrict_of_bounded_enorm [ENorm ε] {f : α → ε} {s : Set α}
+    {μ : Measure α} {C} (hC : C ≠ ∞) (hs : μ s < ∞) (hf : ∀ᵐ x ∂μ.restrict s, ‖f x‖ₑ ≤ C) :
+    HasFiniteIntegral f (μ.restrict s) :=
+  haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rwa [Measure.restrict_apply_univ]⟩
+  hasFiniteIntegral_of_bounded_enorm hf hC
+
 theorem hasFiniteIntegral_restrict_of_bounded [NormedAddCommGroup E] {f : α → E} {s : Set α}
     {μ : Measure α} {C} (hs : μ s < ∞) (hf : ∀ᵐ x ∂μ.restrict s, ‖f x‖ ≤ C) :
     HasFiniteIntegral f (μ.restrict s) :=
@@ -497,16 +503,31 @@ theorem IntegrableAtFilter.inf_ae_iff {l : Filter α} :
 alias ⟨IntegrableAtFilter.of_inf_ae, _⟩ := IntegrableAtFilter.inf_ae_iff
 
 @[simp]
-theorem integrableAtFilter_top {f : α → E} : IntegrableAtFilter f ⊤ μ ↔ Integrable f μ := by
+theorem integrableAtFilter_top [PseudoMetrizableSpace ε'] {f : α → ε'} :
+    IntegrableAtFilter f ⊤ μ ↔ Integrable f μ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.integrableAtFilter ⊤⟩
   obtain ⟨s, hsf, hs⟩ := h
   exact (integrableOn_iff_integrable_of_support_subset fun _ _ ↦ hsf _).mp hs
 
-theorem IntegrableAtFilter.sup_iff {f : α → E} {l l' : Filter α} :
+theorem IntegrableAtFilter.sup_iff [PseudoMetrizableSpace ε'] {f : α → ε'} {l l' : Filter α} :
     IntegrableAtFilter f (l ⊔ l') μ ↔ IntegrableAtFilter f l μ ∧ IntegrableAtFilter f l' μ := by
   constructor
   · exact fun h => ⟨h.filter_mono le_sup_left, h.filter_mono le_sup_right⟩
   · exact fun ⟨⟨s, hsl, hs⟩, ⟨t, htl, ht⟩⟩ ↦ ⟨s ∪ t, union_mem_sup hsl htl, hs.union ht⟩
+
+/-- If `μ` is a measure finite at filter `l` and `f` is a function such that its enorm is bounded
+above at `l`, then `f` is integrable at `l`. -/
+theorem Measure.FiniteAtFilter.integrableAtFilter_enorm {f : α → ε} {l : Filter α}
+    [IsMeasurablyGenerated l] (hfm : StronglyMeasurableAtFilter f l μ) (hμ : μ.FiniteAtFilter l)
+    (hf : l.IsBoundedUnder (· ≤ ·) (enorm ∘ f)) : IntegrableAtFilter f l μ := by
+  obtain ⟨C, hC⟩ : ∃ C, ∀ᶠ s in l.smallSets, ∀ x ∈ s, ‖f x‖ₑ ≤ C :=
+    hf.imp fun C hC => eventually_smallSets.2 ⟨_, hC, fun t => id⟩
+  rcases (hfm.eventually.and (hμ.eventually.and hC)).exists_measurable_mem_of_smallSets with
+    ⟨s, hsl, hsm, hfm, hμ, hC⟩
+  -- TODO: this doesn't suffice; need the bound C to be finite (which hf does not imply)
+  refine ⟨s, hsl, ⟨hfm, hasFiniteIntegral_restrict_of_bounded_enorm sorry hμ (C := C) ?_⟩⟩
+  rw [ae_restrict_eq hsm, eventually_inf_principal]
+  exact Eventually.of_forall hC
 
 /-- If `μ` is a measure finite at filter `l` and `f` is a function such that its norm is bounded
 above at `l`, then `f` is integrable at `l`. -/
@@ -520,6 +541,12 @@ theorem Measure.FiniteAtFilter.integrableAtFilter {f : α → E} {l : Filter α}
   refine ⟨s, hsl, ⟨hfm, hasFiniteIntegral_restrict_of_bounded hμ (C := C) ?_⟩⟩
   rw [ae_restrict_eq hsm, eventually_inf_principal]
   exact Eventually.of_forall hC
+
+theorem Measure.FiniteAtFilter.integrableAtFilter_of_tendsto_ae_enorm {f : α → ε} {l : Filter α}
+    [IsMeasurablyGenerated l] (hfm : StronglyMeasurableAtFilter f l μ) (hμ : μ.FiniteAtFilter l) {b}
+    (hf : Tendsto f (l ⊓ ae μ) (𝓝 b)) : IntegrableAtFilter f l μ :=
+  (hμ.inf_of_left.integrableAtFilter_enorm (hfm.filter_mono inf_le_left)
+      sorry /-hf.enorm.isBoundedUnder_le-/).of_inf_ae
 
 theorem Measure.FiniteAtFilter.integrableAtFilter_of_tendsto_ae {f : α → E} {l : Filter α}
     [IsMeasurablyGenerated l] (hfm : StronglyMeasurableAtFilter f l μ) (hμ : μ.FiniteAtFilter l) {b}
