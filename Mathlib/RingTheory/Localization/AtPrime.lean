@@ -3,13 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
+import Mathlib.RingTheory.Ideal.Over
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.Localization.Ideal
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
-import Mathlib.RingTheory.Ideal.Over
-import Mathlib.RingTheory.Spectrum.Prime.Defs
 
 /-!
 # Localizations of commutative rings at the complement of a prime ideal
@@ -117,9 +115,16 @@ variable (I : Ideal R) [hI : I.IsPrime] [IsLocalization.AtPrime S I]
 
 /-- The prime ideals in the localization of a commutative ring at a prime ideal I are in
 order-preserving bijection with the prime ideals contained in I. -/
+@[simps!]
 def orderIsoOfPrime : { p : Ideal S // p.IsPrime } ≃o { p : Ideal R // p.IsPrime ∧ p ≤ I } :=
   (IsLocalization.orderIsoOfPrime I.primeCompl S).trans <| .setCongr _ _ <| show setOf _ = setOf _
     by ext; simp [Ideal.primeCompl, ← le_compl_iff_disjoint_left]
+
+/-- The prime spectrum of the localization of a commutative ring R at a prime ideal I are in
+order-preserving bijection with the interval (-∞, I] in the prime spectrum of R. -/
+@[simps!] def primeSpectrumOrderIso : PrimeSpectrum S ≃o Set.Iic (⟨I, hI⟩ : PrimeSpectrum R) :=
+  (PrimeSpectrum.equivSubtype S).trans <| (orderIsoOfPrime S I).trans
+    ⟨⟨fun p ↦ ⟨⟨p, p.2.1⟩, p.2.2⟩, fun p ↦ ⟨p.1.1, p.1.2, p.2⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩, .rfl⟩
 
 theorem isUnit_to_map_iff (x : R) : IsUnit ((algebraMap R S) x) ↔ x ∈ I.primeCompl :=
   ⟨fun h hx =>
@@ -178,6 +183,13 @@ theorem AtPrime.map_eq_maximalIdeal :
     (AtPrime.comap_maximalIdeal (hI := hI)).symm
   -- Porting note: can not find `hI`
   rw [map_comap I.primeCompl]
+
+lemma AtPrime.eq_maximalIdeal_iff_comap_eq {J : Ideal (Localization.AtPrime I)} :
+    Ideal.comap (algebraMap R (Localization.AtPrime I)) J = I ↔
+    J = IsLocalRing.maximalIdeal (Localization.AtPrime I) where
+  mp h := le_antisymm (IsLocalRing.le_maximalIdeal (fun hJ ↦ (hI.ne_top (h.symm ▸ hJ ▸ rfl)))) <| by
+    simpa [← AtPrime.map_eq_maximalIdeal, ← h] using Ideal.map_comap_le
+  mpr h := h.symm ▸ AtPrime.comap_maximalIdeal
 
 theorem le_comap_primeCompl_iff {J : Ideal P} [J.IsPrime] {f : R →+* P} :
     I.primeCompl ≤ J.primeCompl.comap f ↔ J.comap f ≤ I :=
@@ -240,16 +252,17 @@ namespace AtPrime
 section
 
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+  [Algebra R A] [Algebra R B] [IsScalarTower R A B]
 
 noncomputable instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
   Algebra (Localization.AtPrime p) (Localization.AtPrime P) :=
     (Localization.localRingHom p P (algebraMap A B) Ideal.LiesOver.over).toAlgebra
 
 instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
-  IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime P) := by
-    refine IsScalarTower.of_algebraMap_eq fun x ↦ ?_
-    simp only [RingHom.algebraMap_toAlgebra, RingHom.coe_comp, Function.comp_apply,
-      Localization.localRingHom_to_map, ← IsScalarTower.algebraMap_apply]
+  IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime P) := .of_algebraMap_eq (by
+  simp [RingHom.algebraMap_toAlgebra, IsScalarTower.algebraMap_apply R A (Localization.AtPrime p),
+    Localization.localRingHom_to_map, IsScalarTower.algebraMap_apply R B (Localization.AtPrime P),
+    IsScalarTower.algebraMap_apply R A B])
 
 end
 
@@ -276,8 +289,8 @@ end AtPrime
 
 end Localization
 
-variable {R : Type*} [CommRing R] (q : Ideal R) [q.IsPrime] {S : Type*} [CommRing S] [Algebra R S]
-    [IsLocalization.AtPrime S q]
+variable (q : Ideal R) [q.IsPrime] (M : Submonoid R) {S : Type*} [CommSemiring S] [Algebra R S]
+  [IsLocalization.AtPrime S q]
 
 lemma Ideal.isPrime_map_of_isLocalizationAtPrime {p : Ideal R} [p.IsPrime] (hpq : p ≤ q) :
     (p.map (algebraMap R S)).IsPrime := by
@@ -296,7 +309,7 @@ lemma IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes
     (S : Type*) [CommSemiring S] [Algebra R S] [IsLocalization.AtPrime S p (hp := hp.1.1)] :
     Subsingleton (PrimeSpectrum S) :=
   have := hp.1.1
-  have : Unique {i : Ideal R // i.IsPrime ∧ i ≤ p} := ⟨⟨p, hp.1.1, le_rfl⟩,
-    fun i ↦ Subtype.ext <| (minimalPrimes_eq_minimals (R := R) ▸ hp).eq_of_le i.2.1 i.2.2⟩
-  have := (IsLocalization.AtPrime.orderIsoOfPrime S p).subsingleton
-  ⟨fun x y ↦ PrimeSpectrum.ext congr($(this.1 ⟨_, x.2⟩ ⟨_, y.2⟩))⟩
+  have : Unique (Set.Iic (⟨p, hp.1.1⟩ : PrimeSpectrum R)) := ⟨⟨⟨p, hp.1.1⟩, by exact
+    fun ⦃x⦄ a ↦ a⟩, fun i ↦ Subtype.ext <| PrimeSpectrum.ext <|
+    (minimalPrimes_eq_minimals (R := R) ▸ hp).eq_of_le i.1.2 i.2⟩
+  (IsLocalization.AtPrime.primeSpectrumOrderIso S p).subsingleton
