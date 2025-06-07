@@ -98,7 +98,7 @@ instance : IsStronglyAtomic α where
     obtain ⟨x, hx, hxmin⟩ := (LocallyFiniteOrder.finsetIoc a b).exists_minimal
       ⟨b, by simpa [LocallyFiniteOrder.finset_mem_Ioc]⟩
     simp only [LocallyFiniteOrder.finset_mem_Ioc] at hx hxmin
-    exact ⟨x, ⟨hx.1, fun c hac hcx ↦ hcx.not_le <| hxmin ⟨hac, hcx.le.trans hx.2⟩ hcx.le⟩, hx.2⟩
+    exact ⟨x, ⟨hx.1, fun c hac hcx ↦ hcx.not_ge <| hxmin ⟨hac, hcx.le.trans hx.2⟩ hcx.le⟩, hx.2⟩
 
 instance : IsStronglyCoatomic α := by
   rw [← isStronglyAtomic_dual_iff_is_stronglyCoatomic]; infer_instance

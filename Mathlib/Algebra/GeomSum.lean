@@ -456,7 +456,7 @@ theorem Nat.geom_sum_Ico_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
     _ = ∑ i ∈ range n.succ, a / b ^ i := by
       rw [range_eq_Ico, ← Finset.insert_Ico_add_one_left_eq_Ico (Nat.succ_pos _), sum_insert]
       · rfl
-      exact fun h => zero_lt_one.not_le (mem_Ico.1 h).1
+      exact fun h => zero_lt_one.not_ge (mem_Ico.1 h).1
     _ ≤ a * b / (b - 1) := Nat.geom_sum_le hb a _
     _ = (a * 1 + a * (b - 1)) / (b - 1) := by
       rw [← mul_add, add_tsub_cancel_of_le (one_le_two.trans hb)]
@@ -548,7 +548,7 @@ theorem geom_sum_pos_iff [Ring R] [LinearOrder R] [IsStrictOrderedRing R] (hn : 
     (0 < ∑ i ∈ range n, x ^ i) ↔ Odd n ∨ 0 < x + 1 := by
   refine ⟨fun h => ?_, ?_⟩
   · rw [or_iff_not_imp_left, ← not_le, Nat.not_odd_iff_even]
-    refine fun hn hx => h.not_le ?_
+    refine fun hn hx => h.not_ge ?_
     simpa [if_pos hn] using geom_sum_alternating_of_le_neg_one hx n
   · rintro (hn | hx')
     · exact hn.geom_sum_pos

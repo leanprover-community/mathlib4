@@ -420,19 +420,19 @@ theorem nonneg_and_nonneg_or_nonpos_and_nonpos_of_mul_nonneg
 
 theorem nonneg_of_mul_nonneg_left [MulPosStrictMono R]
     (h : 0 ≤ a * b) (hb : 0 < b) : 0 ≤ a :=
-  le_of_not_gt fun ha => (mul_neg_of_neg_of_pos ha hb).not_le h
+  le_of_not_gt fun ha => (mul_neg_of_neg_of_pos ha hb).not_ge h
 
 theorem nonneg_of_mul_nonneg_right [PosMulStrictMono R]
     (h : 0 ≤ a * b) (ha : 0 < a) : 0 ≤ b :=
-  le_of_not_gt fun hb => (mul_neg_of_pos_of_neg ha hb).not_le h
+  le_of_not_gt fun hb => (mul_neg_of_pos_of_neg ha hb).not_ge h
 
 theorem nonpos_of_mul_nonpos_left [PosMulStrictMono R]
     (h : a * b ≤ 0) (hb : 0 < b) : a ≤ 0 :=
-  le_of_not_gt fun ha : a > 0 => (mul_pos ha hb).not_le h
+  le_of_not_gt fun ha : a > 0 => (mul_pos ha hb).not_ge h
 
 theorem nonpos_of_mul_nonpos_right [PosMulStrictMono R]
     (h : a * b ≤ 0) (ha : 0 < a) : b ≤ 0 :=
-  le_of_not_gt fun hb : b > 0 => (mul_pos ha hb).not_le h
+  le_of_not_gt fun hb : b > 0 => (mul_pos ha hb).not_ge h
 
 @[simp]
 theorem mul_nonneg_iff_of_pos_left [PosMulStrictMono R]
@@ -492,11 +492,11 @@ theorem mul_nonneg_iff_left_nonneg_of_pos [PosMulStrictMono R] [MulPosStrictMono
 
 theorem nonpos_of_mul_nonneg_left [PosMulStrictMono R]
     (h : 0 ≤ a * b) (hb : b < 0) : a ≤ 0 :=
-  le_of_not_gt fun ha => absurd h (mul_neg_of_pos_of_neg ha hb).not_le
+  le_of_not_gt fun ha => absurd h (mul_neg_of_pos_of_neg ha hb).not_ge
 
 theorem nonpos_of_mul_nonneg_right [MulPosStrictMono R]
     (h : 0 ≤ a * b) (ha : a < 0) : b ≤ 0 :=
-  le_of_not_gt fun hb => absurd h (mul_neg_of_neg_of_pos ha hb).not_le
+  le_of_not_gt fun hb => absurd h (mul_neg_of_neg_of_pos ha hb).not_ge
 
 @[simp]
 theorem Units.inv_pos
@@ -545,7 +545,7 @@ theorem le_of_mul_le_of_one_le
 
 theorem nonneg_le_nonneg_of_sq_le_sq [PosMulStrictMono R] [MulPosMono R]
     {a b : R} (hb : 0 ≤ b) (h : a * a ≤ b * b) : a ≤ b :=
-  le_of_not_gt fun hab => (mul_self_lt_mul_self hb hab).not_le h
+  le_of_not_gt fun hab => (mul_self_lt_mul_self hb hab).not_ge h
 
 theorem mul_self_le_mul_self_iff [PosMulStrictMono R] [MulPosMono R]
     {a b : R} (h1 : 0 ≤ a) (h2 : 0 ≤ b) : a ≤ b ↔ a * a ≤ b * b :=
@@ -655,22 +655,22 @@ theorem mul_self_pos [ExistsAddOfLE R] [PosMulStrictMono R] [MulPosStrictMono R]
 theorem nonneg_of_mul_nonpos_left [ExistsAddOfLE R] [MulPosStrictMono R]
     [AddRightMono R] [AddRightReflectLE R]
     {a b : R} (h : a * b ≤ 0) (hb : b < 0) : 0 ≤ a :=
-  le_of_not_gt fun ha => absurd h (mul_pos_of_neg_of_neg ha hb).not_le
+  le_of_not_gt fun ha => absurd h (mul_pos_of_neg_of_neg ha hb).not_ge
 
 theorem nonneg_of_mul_nonpos_right [ExistsAddOfLE R] [MulPosStrictMono R]
     [AddRightMono R] [AddRightReflectLE R]
     {a b : R} (h : a * b ≤ 0) (ha : a < 0) : 0 ≤ b :=
-  le_of_not_gt fun hb => absurd h (mul_pos_of_neg_of_neg ha hb).not_le
+  le_of_not_gt fun hb => absurd h (mul_pos_of_neg_of_neg ha hb).not_ge
 
 theorem pos_of_mul_neg_left [ExistsAddOfLE R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]
     {a b : R} (h : a * b < 0) (hb : b ≤ 0) : 0 < a :=
-  lt_of_not_ge fun ha => absurd h (mul_nonneg_of_nonpos_of_nonpos ha hb).not_lt
+  lt_of_not_ge fun ha => absurd h (mul_nonneg_of_nonpos_of_nonpos ha hb).not_gt
 
 theorem pos_of_mul_neg_right [ExistsAddOfLE R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]
     {a b : R} (h : a * b < 0) (ha : a ≤ 0) : 0 < b :=
-  lt_of_not_ge fun hb => absurd h (mul_nonneg_of_nonpos_of_nonpos ha hb).not_lt
+  lt_of_not_ge fun hb => absurd h (mul_nonneg_of_nonpos_of_nonpos ha hb).not_gt
 
 theorem neg_iff_pos_of_mul_neg [ExistsAddOfLE R] [PosMulMono R] [MulPosMono R]
     [AddRightMono R] [AddRightReflectLE R]

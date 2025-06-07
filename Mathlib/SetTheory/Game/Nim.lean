@@ -250,7 +250,7 @@ theorem exists_grundyValue_moveLeft_of_lt {G : PGame} {o : Nimber} (h : o < grun
     ∃ i, grundyValue (G.moveLeft i) = o := by
   rw [grundyValue_eq_sInf_moveLeft] at h
   by_contra ha
-  exact h.not_le (csInf_le' ha)
+  exact h.not_ge (csInf_le' ha)
 
 theorem grundyValue_le_of_forall_moveLeft {G : PGame} {o : Nimber}
     (h : ∀ i, grundyValue (G.moveLeft i) ≠ o) : G.grundyValue ≤ o := by

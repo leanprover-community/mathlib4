@@ -344,7 +344,7 @@ instance : AddLeftMono NatOrdinal.{u} :=
 instance : AddLeftReflectLE NatOrdinal.{u} :=
   ⟨fun a b c h => by
     by_contra! h'
-    exact h.not_lt (add_lt_add_left h' a)⟩
+    exact h.not_gt (add_lt_add_left h' a)⟩
 
 instance : AddCommMonoid NatOrdinal :=
   { add := (· + ·)
