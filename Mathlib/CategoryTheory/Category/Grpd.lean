@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
+Authors: Yury Kudryashov, Calle Sönne
 -/
 import Mathlib.CategoryTheory.SingleObj
 import Mathlib.CategoryTheory.Limits.Shapes.Products
+import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
 # Category of groupoids
@@ -54,14 +55,29 @@ def of (C : Type u) [Groupoid.{v} C] : Grpd.{v, u} :=
 theorem coe_of (C : Type u) [Groupoid C] : (of C : Type u) = C :=
   rfl
 
-/-- Category structure on `Grpd` -/
-instance category : LargeCategory.{max v u} Grpd.{v, u} where
+/-- Bicategory structure on `Grpd` -/
+instance bicategory : Bicategory.{max v u, max v u} Grpd.{v, u} where
   Hom C D := C ⥤ D
   id C := 𝟭 C
   comp F G := F ⋙ G
-  id_comp _ := rfl
-  comp_id _ := rfl
+  homCategory := fun _ _ => Functor.category
+  whiskerLeft {_} {_} {_} F _ _ η := whiskerLeft F η
+  whiskerRight {_} {_} {_} _ _ η H := whiskerRight η H
+  associator {_} {_} {_} _ := Functor.associator
+  leftUnitor {_} _ := Functor.leftUnitor
+  rightUnitor {_} _ := Functor.rightUnitor
+  pentagon := fun {_} {_} {_} {_} {_}=> Functor.pentagon
+  triangle {_} {_} {_} := Functor.triangle
+
+/-- `Grpd` is a strict bicategory. -/
+instance bicategory.strict : Bicategory.Strict Grpd.{v, u} where
+  id_comp {C} {D} F := by cases F; rfl
+  comp_id {C} {D} F := by cases F; rfl
   assoc := by intros; rfl
+
+/-- Category structure on `Grpd` -/
+instance category : LargeCategory.{max v u} Grpd.{v, u} :=
+  StrictBicategory.category Grpd.{v, u}
 
 /-- Functor that gets the set of objects of a groupoid. It is not
 called `forget`, because it is not a faithful functor. -/
