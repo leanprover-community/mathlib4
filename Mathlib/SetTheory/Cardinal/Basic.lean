@@ -824,13 +824,13 @@ theorem mk_diff_add_mk {S T : Set α} (h : T ⊆ S) : #(S \ T : Set α) + #T = #
   refine (mk_union_of_disjoint <| ?_).symm.trans <| by rw [diff_union_of_subset h]
   exact disjoint_sdiff_self_left
 
-lemma diff_nonempty_of_mk_lt_mk {α : Type*} {S T : Set α} (h : #S < #T) : (T \ S).Nonempty := by
+lemma diff_nonempty_of_mk_lt_mk {S T : Set α} (h : #S < #T) : (T \ S).Nonempty := by
   suffices (T \ S).Nonempty by simpa
   rw [← mk_set_ne_zero_iff]
   intro h'
   exact h.not_ge ((le_mk_diff_add_mk T S).trans (by simp [h']))
 
-lemma compl_nonempty_of_mk_lt_mk {α : Type*} {S : Set α} (h : #S < #α) : Sᶜ.Nonempty := by
+lemma compl_nonempty_of_mk_lt_mk {S : Set α} (h : #S < #α) : Sᶜ.Nonempty := by
   rw [← mk_univ (α := α)] at h
   simpa [Set.compl_eq_univ_diff] using diff_nonempty_of_mk_lt_mk h
 
