@@ -211,7 +211,7 @@ it, but no more than twice as large.
 theorem exists_prime_lt_and_le_two_mul (n : ℕ) (hn0 : n ≠ 0) :
     ∃ p, Nat.Prime p ∧ n < p ∧ p ≤ 2 * n := by
   -- Split into cases whether `n` is large or small
-  rcases lt_or_le 511 n with h | h
+  rcases lt_or_ge 511 n with h | h
   -- If `n` is large, apply the lemma derived from the inequalities on the central binomial
   -- coefficient.
   · exact exists_prime_lt_and_le_two_mul_eventually n h

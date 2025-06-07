@@ -334,10 +334,10 @@ lemma image_exp_Ioc_eq_sphere : (fun θ : ℝ ↦ exp (θ * I)) '' Set.Ioc (-π)
   ext; simpa using norm_eq_one_iff'.symm
 
 theorem arg_le_pi_div_two_iff {z : ℂ} : arg z ≤ π / 2 ↔ 0 ≤ re z ∨ im z < 0 := by
-  rcases le_or_lt 0 (re z) with hre | hre
+  rcases le_or_gt 0 (re z) with hre | hre
   · simp only [hre, arg_of_re_nonneg hre, Real.arcsin_le_pi_div_two, true_or]
   simp only [hre.not_le, false_or]
-  rcases le_or_lt 0 (im z) with him | him
+  rcases le_or_gt 0 (im z) with him | him
   · simp only [him.not_lt]
     rw [iff_false, not_le, arg_of_re_neg_of_im_nonneg hre him, ← sub_lt_iff_lt_add, half_sub,
       Real.neg_pi_div_two_lt_arcsin, neg_im, neg_div, neg_lt_neg_iff, div_lt_one, ←
@@ -348,10 +348,10 @@ theorem arg_le_pi_div_two_iff {z : ℂ} : arg z ≤ π / 2 ↔ 0 ≤ re z ∨ im
     exact (sub_le_self _ Real.pi_pos.le).trans (Real.arcsin_le_pi_div_two _)
 
 theorem neg_pi_div_two_le_arg_iff {z : ℂ} : -(π / 2) ≤ arg z ↔ 0 ≤ re z ∨ 0 ≤ im z := by
-  rcases le_or_lt 0 (re z) with hre | hre
+  rcases le_or_gt 0 (re z) with hre | hre
   · simp only [hre, arg_of_re_nonneg hre, Real.neg_pi_div_two_le_arcsin, true_or]
   simp only [hre.not_le, false_or]
-  rcases le_or_lt 0 (im z) with him | him
+  rcases le_or_gt 0 (im z) with him | him
   · simp only [him]
     rw [iff_true, arg_of_re_neg_of_im_nonneg hre him]
     exact (Real.neg_pi_div_two_le_arcsin _).trans (le_add_of_nonneg_right Real.pi_pos.le)

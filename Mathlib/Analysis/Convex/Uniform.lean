@@ -59,10 +59,10 @@ theorem exists_forall_closed_ball_dist_add_le_two_sub (hε : 0 < ε) :
   obtain ⟨δ, hδ, h⟩ := exists_forall_sphere_dist_add_le_two_sub E hε'
   set δ' := min (1 / 2) (min (ε / 3) <| δ / 3)
   refine ⟨δ', lt_min one_half_pos <| lt_min hε' (div_pos hδ zero_lt_three), fun x hx y hy hxy => ?_⟩
-  obtain hx' | hx' := le_or_lt ‖x‖ (1 - δ')
+  obtain hx' | hx' := le_or_gt ‖x‖ (1 - δ')
   · rw [← one_add_one_eq_two]
     exact (norm_add_le_of_le hx' hy).trans (sub_add_eq_add_sub _ _ _).le
-  obtain hy' | hy' := le_or_lt ‖y‖ (1 - δ')
+  obtain hy' | hy' := le_or_gt ‖y‖ (1 - δ')
   · rw [← one_add_one_eq_two]
     exact (norm_add_le_of_le hx hy').trans (add_sub_assoc _ _ _).ge
   have hδ' : 0 < 1 - δ' := sub_pos_of_lt (min_lt_of_left_lt one_half_lt_one)
@@ -101,7 +101,7 @@ theorem exists_forall_closed_ball_dist_add_le_two_sub (hε : 0 < ε) :
 
 theorem exists_forall_closed_ball_dist_add_le_two_mul_sub (hε : 0 < ε) (r : ℝ) :
     ∃ δ, 0 < δ ∧ ∀ ⦃x : E⦄, ‖x‖ ≤ r → ∀ ⦃y⦄, ‖y‖ ≤ r → ε ≤ ‖x - y‖ → ‖x + y‖ ≤ 2 * r - δ := by
-  obtain hr | hr := le_or_lt r 0
+  obtain hr | hr := le_or_gt r 0
   · exact ⟨1, one_pos, fun x hx y hy h => (hε.not_le <|
       h.trans <| (norm_sub_le _ _).trans <| add_nonpos (hx.trans hr) (hy.trans hr)).elim⟩
   obtain ⟨δ, hδ, h⟩ := exists_forall_closed_ball_dist_add_le_two_sub E (div_pos hε hr)
