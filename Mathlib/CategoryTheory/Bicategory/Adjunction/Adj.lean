@@ -353,6 +353,15 @@ instance : Bicategory (Adj B) where
 @[simp] lemma whiskerLeft_τr' (α : a ⟶ b) {β β' : b ⟶ c} (y : β ⟶ β') :
     (α ◁ y).τr = y.τr ▷ α.r := rfl
 
+@[simp] lemma leftUnitor_hom_τl' (α : a ⟶ b) : (λ_ α).hom.τl = (λ_ _).hom := rfl
+@[simp] lemma leftUnitor_hom_τr' (α : a ⟶ b) : (λ_ α).hom.τr = (ρ_ _).inv := rfl
+@[simp] lemma rightUnitor_hom_τl' (α : a ⟶ b) : (ρ_ α).hom.τl = (ρ_ _).hom := rfl
+@[simp] lemma rightUnitor_hom_τr' (α : a ⟶ b) : (ρ_ α).hom.τr = (λ_ _).inv := rfl
+@[simp] lemma leftUnitor_inv_τl' (α : a ⟶ b) : (λ_ α).inv.τl = (λ_ _).inv := rfl
+@[simp] lemma leftUnitor_inv_τr' (α : a ⟶ b) : (λ_ α).inv.τr = (ρ_ _).hom := rfl
+@[simp] lemma rightUnitor_inv_τl' (α : a ⟶ b) : (ρ_ α).inv.τl = (ρ_ _).inv := rfl
+@[simp] lemma rightUnitor_inv_τr' (α : a ⟶ b) : (ρ_ α).inv.τr = (λ_ _).hom := rfl
+
 /-- The forget pseudofunctor from `Adj B` to `B`. -/
 @[simps obj map map₂ mapId mapComp]
 def forget₁ : Pseudofunctor (Adj B) B where
