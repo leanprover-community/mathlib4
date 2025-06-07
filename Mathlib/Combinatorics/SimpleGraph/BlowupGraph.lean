@@ -214,6 +214,35 @@ lemma sum_card_embeddings_induce_eq (G : SimpleGraph α) (H : SimpleGraph β) [F
       ext t
       constructor <;> intro ⟨ht1, ht2⟩ <;> exact ⟨ht1, fun x hx ↦ ht2 (by simpa using hx)⟩
 
+theorem monotoneOn_nat_Ici_of_le_succ {γ : Type*} [Preorder γ] {f : ℕ → γ} {k : ℕ}
+    (hf : ∀ n ≥ k, f n ≤ f (n + 1)) :
+    MonotoneOn f { x | k ≤ x } :=
+  fun _ hab _ _ hle ↦ Nat.rel_of_forall_rel_succ_of_le_of_le (· ≤ ·) hf hab hle
+
+theorem antitoneOn_nat_Ici_of_succ_le {γ : Type*} [Preorder γ]  {f : ℕ → γ} {k : ℕ}
+    (hf : ∀ n ≥ k, f (n + 1) ≤ f n) :
+    AntitoneOn f { x | k ≤ x } :=
+  @monotoneOn_nat_Ici_of_le_succ γᵒᵈ _ f k hf
+
+lemma antitoneOn_div_choose (e : ℕ → ℕ) (k : ℕ)
+    (h : ∀ n, (n + 1 - k) * e (n + 1) ≤ (n + 1) * (e n)) :
+    AntitoneOn (fun n ↦ (e n / n.choose k : ℚ)) {x | k ≤ x} := by
+  apply antitoneOn_nat_Ici_of_succ_le
+  intro n hₙ
+  have hn := h n
+  apply_fun (fun a ↦ (n.choose k) * a) at hn
+  · dsimp at hn
+    simp_rw [← mul_assoc, Nat.choose_mul_succ_eq] at hn
+    have : (n.choose k) * (e (n + 1)) ≤ ((n + 1).choose k) * (e n) := by
+      simp_rw [mul_comm _ (n + 1 - k), mul_assoc] at hn
+      apply le_of_mul_le_mul_left hn (by omega)
+    apply (div_le_div_iff₀ (mod_cast Nat.choose_pos (by omega))
+              (mod_cast Nat.choose_pos (by omega))).2
+    convert this
+    norm_cast
+    simp [mul_comm]
+  · intro a b hab; dsimp; apply mul_le_mul_of_nonneg_left hab zero_le'
+
 /--
 The following version yields `(n + 1 - |V(H)|) * exᵢ(n + 1, H) ≤ (n + 1) * exᵢ(n, H)`, where
 `exᵢ(n, H)` is the maximum number of embeddings `H` into any `n`-vertex graph `G`.
@@ -223,43 +252,47 @@ well-defined.
 (This doesn't use anything about graphs, it would work as well in hypergraphs/multigraphs etc.)
 -/
 lemma sum_card_embeddings_induce_n {n : ℕ} (G : SimpleGraph (Fin (n + 1))) (H : SimpleGraph β)
-  [Fintype β] (hk : ‖β‖ ≤ n) : ∑ t : Finset (Fin (n + 1)) with t.card = n , ‖H ↪g (G.induce t)‖
+  [Fintype β] : ∑ t : Finset (Fin (n + 1)) with t.card = n , ‖H ↪g (G.induce t)‖
                               = ‖H ↪g G‖ *(n + 1 - ‖β‖) := by
-  rw [sum_card_embeddings_induce_eq G H hk, Fintype.card_fin]
-  have : n + 1 - ‖β‖ = n - ‖β‖ + 1 := by omega
-  rw [this, Nat.choose_succ_self_right]
+  by_cases hk : ‖β‖ ≤ n
+  · rw [sum_card_embeddings_induce_eq G H hk, Fintype.card_fin]
+    have : n + 1 - ‖β‖ = n - ‖β‖ + 1 := by omega
+    rw [this, Nat.choose_succ_self_right]
+  · push_neg at hk
+    have : n + 1 - ‖β‖ = 0 := by omega
+    rw [this, mul_zero]
+    convert sum_const_zero
+    apply Fintype.card_eq_zero_iff.2 <| isEmpty_iff.2
+      fun e ↦ (Fintype.card_le_of_embedding e.toEmbedding).not_lt (by simp_all)
 
-def topTwoEmbeddingDartsEquiv (G : SimpleGraph α) : ((⊤ : SimpleGraph (Fin 2)) ↪g G) ≃ G.Dart where
-  toFun := fun e ↦ ⟨⟨e 0, e 1⟩, by simp⟩
-  invFun := fun d ↦ ⟨⟨fun i ↦ ite (i = 0) d.1.1 d.1.2, by
-    intro i j h; dsimp at h
-    split_ifs at h with h0 h1 h2;
-    · subst_vars; rfl
+def topBoolEmbeddingDartsEquiv (G : SimpleGraph α) : ((⊤ : SimpleGraph Bool) ↪g G) ≃ G.Dart where
+  toFun := fun e ↦ ⟨⟨e true, e false⟩, by simp⟩
+  invFun := fun d ↦ ⟨⟨fun i ↦
+    match i with
+    | true => d.1.1
+    | false => d.1.2,
+    fun i j h ↦ by
+    cases i <;> cases j <;> dsimp at h <;> try rfl
     · exact (G.loopless _ (h ▸ d.adj)).elim
-    · exact (G.loopless _ (h ▸ d.adj)).elim
-    · rw [Fin.eq_one_of_ne_zero _ h0, Fin.eq_one_of_ne_zero _ h2]⟩, by
-      intro a b
-      dsimp
-      split_ifs with h1 h2 h3 <;> subst_vars
-      · simp
-      · rw [Fin.eq_one_of_ne_zero _ h2]
-        simp
-      · rw [Fin.eq_one_of_ne_zero _ h1]
-        simpa using d.adj.symm
-      · rw [Fin.eq_one_of_ne_zero _ h1]
-        rw [Fin.eq_one_of_ne_zero _ h3]
-        simp⟩
-  left_inv := fun e ↦ by
-    ext a; dsimp;
-    split_ifs with h1
-    · subst_vars; rfl
-    · rw [Fin.eq_one_of_ne_zero _ h1]
+    · exact (G.loopless _ (h ▸ d.adj)).elim⟩,
+    by intro i j; cases i <;> cases j <;> simp [d.adj.symm]⟩
+  left_inv := fun e ↦ by ext a; cases a <;> simp
   right_inv := fun d ↦ rfl
 
 omit [DecidableEq α] in
 lemma card_embedding_top_two_eq_twice_card_edges (G : SimpleGraph α)
-    [DecidableRel G.Adj] : ‖(⊤ : SimpleGraph (Fin 2)) ↪g G‖ = 2 * #G.edgeFinset :=
-  (Fintype.card_congr G.topTwoEmbeddingDartsEquiv).trans <| dart_card_eq_twice_card_edges _
+    [DecidableRel G.Adj] : ‖(⊤ : SimpleGraph Bool) ↪g G‖ = 2 * #G.edgeFinset :=
+  (Fintype.card_congr G.topBoolEmbeddingDartsEquiv).trans <| dart_card_eq_twice_card_edges _
+
+lemma card_edgeFinset_eq_average {n : ℕ} (G : SimpleGraph (Fin (n + 1))) [DecidableRel G.Adj] :
+    ∑ t : Finset (Fin (n + 1)) with t.card = n , #(G.induce t).edgeFinset =
+    #G.edgeFinset * (n - 1) := by
+  apply_fun (fun a ↦ 2 * a)
+  · dsimp; rw [mul_sum, ← mul_assoc]
+    simp_rw [← card_embedding_top_two_eq_twice_card_edges]
+    rw [sum_card_embeddings_induce_n G (⊤ : SimpleGraph Bool)]
+    simp
+  · intro a b hab; simpa using hab
 
 open Finset Fintype
 
