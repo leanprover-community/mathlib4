@@ -273,7 +273,7 @@ theorem IsSuccPrelimit.le_iff_forall_le (h : IsSuccPrelimit a) : a ≤ b ↔ ∀
   use fun ha c hc ↦ hc.le.trans ha
   intro H
   by_contra! ha
-  exact h b ⟨ha, fun c hb hc ↦ (H c hc).not_lt hb⟩
+  exact h b ⟨ha, fun c hb hc ↦ (H c hc).not_gt hb⟩
 
 theorem IsSuccLimit.le_iff_forall_le (h : IsSuccLimit a) : a ≤ b ↔ ∀ c < a, c ≤ b :=
   h.isSuccPrelimit.le_iff_forall_le
