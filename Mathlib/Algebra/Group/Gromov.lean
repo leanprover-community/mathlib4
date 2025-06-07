@@ -660,6 +660,20 @@ def GRep: Representation ℂ G (LipschitzH (G := G)) := {
     simp [mul_assoc]
 }
 
+def GRepW: Representation ℂ G (W (G := G)) := Representation.quotient (GRep (G := G)) ConstF (by
+  intro g
+  intro f hf
+  simp
+  simp [ConstF]
+  simp [ConstF] at hf
+  obtain ⟨K, hK⟩ := hf
+  use K
+  ext a
+  simp [GRep]
+  rw [← hK]
+  rw [gAct_const]
+)
+
 -- TODO - use the fact that G is finitely generated
 instance countableG: Countable (Additive (MulOpposite G)) := by
   apply Function.Surjective.countable (f := fun (x: List S) => (Additive.ofMul (MulOpposite.op (x.unattach.prod))))
