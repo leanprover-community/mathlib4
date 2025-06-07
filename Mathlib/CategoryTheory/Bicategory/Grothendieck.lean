@@ -171,7 +171,7 @@ section
 variable (F)
 
 /-- The natural isomorphism witnessing the pseudo-unity constraint of `Grothendieck.map`. -/
-def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ F) := 
+def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ F) :=
   NatIso.ofComponents (fun _ ↦ eqToIso (by aesop_cat))
 
 lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ F) :=
