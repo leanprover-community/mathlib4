@@ -200,19 +200,37 @@ lemma cyclotomic_polynomial_3_ne_zero_of_sq_ne {K : Type*} [Field K] [NeZero (2 
   norm_num
   exact fun a ↦ h s (id (Eq.symm a))
 
-lemma cubic_roots_of_unity {K : Type*} [Field K] [NeZero (2 : K)] {s : K} (hs : s * s = -3) :
-  {z : K | z^3 = 1} = {1, -(1 / 2) + s / 2, -(1 / 2) - s / 2} := by
+lemma cubic_roots_of_unity_of_sq_eq {K : Type*} [Field K] [NeZero (2 : K)] {s : K}
+    (hs : s * s = -3) : {z : K | z^3 = 1} = {1, -(1 / 2) + s / 2, -(1 / 2) - s / 2} := by
   have H (z : K) : z ^ 3 - 1 = (z - 1) * (z ^ 2 + z + 1) := by ring
   ext1 z
   simp only [Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
   rw [← sub_eq_zero, H, ← cyclotomic_polynomial_3_roots hs, mul_eq_zero, sub_eq_zero]
 
+lemma cubic_roots_of_unity_of_sq_ne {K : Type*} [Field K] [NeZero (2 : K)]
+    (h : ∀ s : K, s^2 ≠ -3) : {z : K | z^3 = 1} = {1} := by
+  have H (z : K) : z ^ 3 - 1 = (z - 1) * (z ^ 2 + z + 1) := by ring
+  ext1 z
+  simp only [Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
+  rw [← sub_eq_zero, H, mul_eq_zero_iff_right (cyclotomic_polynomial_3_ne_zero_of_sq_ne h),
+    sub_eq_zero]
+
 example : {z : ℂ | z ^ 3 = 1} = {1, -(1 / 2) + √3 / 2 * I, -(1 / 2) - √3 / 2 * I} := by
   have hs : (√3 * I) * (√3 * I) = -3 := by
     ring_nf
     rw [I_sq, ← ofReal_pow, Real.sq_sqrt zero_le_three, mul_neg, mul_one,  ofReal_ofNat]
-  rw [cubic_roots_of_unity hs]
+  rw [cubic_roots_of_unity_of_sq_eq hs]
   ring_nf
+
+example : {z : ℝ | z ^ 3 = 1} = {1} := by
+  rw [cubic_roots_of_unity_of_sq_ne]
+  intro s
+  by_contra hc
+  have e2 : s=0 := by
+    rw [← sq_nonpos_iff]
+    simp_all only [Left.neg_nonpos_iff, Nat.ofNat_nonneg]
+  rw [e2, zero_pow two_ne_zero] at hc
+  simp_all only [zero_eq_neg, OfNat.ofNat_ne_zero]
 
 example : {z : ℂ | z^4 = 1} = {1, I, -1, -I} := by
   have H (z : ℂ) : z ^ 4 - 1 = (z - 1) * (z - I) * (z + 1) * (z + I) := by
