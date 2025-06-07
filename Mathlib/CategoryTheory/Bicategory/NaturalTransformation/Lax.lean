@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne, Robin Carlier
 -/
 import Mathlib.CategoryTheory.Bicategory.Functor.Lax
+import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
 
 /-!
 # Transformations between lax functors
@@ -84,57 +85,7 @@ attribute [reassoc (attr := simp)] LaxTrans.naturality_naturality LaxTrans.natur
 
 namespace LaxTrans
 
-variable {F : LaxFunctor B C} {G H : LaxFunctor B C} (η : LaxTrans F G) (θ : LaxTrans G H)
-
-section
-
-variable {a b c : B} {a' : C}
-
-@[reassoc (attr := simp)]
-theorem whiskerLeft_naturality_naturality (f : a' ⟶ G.obj a) {g h : a ⟶ b} (β : g ⟶ h) :
-    f ◁ θ.naturality g ≫ f ◁ G.map₂ β ▷ θ.app b =
-    f ◁ θ.app a ◁ H.map₂ β ≫ f ◁ θ.naturality h := by
-  simp_rw [← Bicategory.whiskerLeft_comp, naturality_naturality]
-
-@[reassoc (attr := simp)]
-theorem whiskerRight_naturality_naturality {f g : a ⟶ b} (β : f ⟶ g) (h : G.obj b ⟶ a') :
-    η.naturality f ▷ h ≫ F.map₂ β ▷ η.app b ▷ h =
-    (α_ _ _ _).hom ≫ η.app a ◁ G.map₂ β ▷ h  ≫ (α_ _ _ _).inv ≫ η.naturality g ▷ h := by
-  rw [← comp_whiskerRight, naturality_naturality, comp_whiskerRight, whisker_assoc,
-    Category.assoc, Category.assoc]
-
-@[reassoc (attr := simp)]
-theorem whiskerLeft_naturality_comp (f : a' ⟶ G.obj a) (g : a ⟶ b) (h : b ⟶ c) :
-    f ◁ θ.app a ◁ H.mapComp g h ≫ f ◁ θ.naturality (g ≫ h) =
-    f ◁ (α_ _ _ _).inv ≫ f ◁ θ.naturality g ▷ H.map h ≫ f ◁ (α_ _ _ _).hom ≫
-      f ◁ G.map g ◁ θ.naturality h ≫ f ◁ (α_ _ _ _).inv ≫ f ◁ G.mapComp g h ▷ θ.app c := by
-  simp_rw [← Bicategory.whiskerLeft_comp, naturality_comp]
-
-@[reassoc (attr := simp)]
-theorem whiskerRight_naturality_comp (f : a ⟶ b) (g : b ⟶ c) (h : G.obj c ⟶ a') :
-    (α_ _ _ _).hom ≫ η.app a ◁ G.mapComp f g ▷ h ≫ (α_ _ _ _).inv ≫
-      η.naturality (f ≫ g) ▷ h =
-    (α_ _ _ _).inv ▷ h ≫
-      η.naturality f ▷ G.map g ▷ h ≫
-      (α_ _ _ _).hom ▷ h ≫ (α_ _ _ _).hom ≫
-      F.map f ◁ η.naturality g ▷ h ≫ (α_ _ _ _).inv ≫
-      (α_ _ _ _).inv ▷ h ≫ F.mapComp f g ▷ η.app c ▷ h := by
-  simpa [-naturality_comp] using congr_arg (fun t ↦ t ▷ h) <| naturality_comp _ _ _
-
-@[reassoc (attr := simp)]
-theorem whiskerLeft_naturality_id (f : a' ⟶ G.obj a) :
-    f ◁ θ.app a ◁ H.mapId a ≫ f ◁ θ.naturality (𝟙 a) =
-    (α_ _ _ _).inv ≫ (ρ_ (f ≫ θ.app a)).hom ≫ f ◁ (λ_ (θ.app a)).inv ≫
-      f ◁ G.mapId a ▷ θ.app a := by
-  simpa [-naturality_id] using congr_arg (fun t ↦ f ◁ t) <| naturality_id _ _
-
-@[reassoc (attr := simp)]
-theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
-    (α_ _ _ _).hom ≫ η.app a ◁ G.mapId a ▷ f ≫ (α_ _ _ _).inv ≫ η.naturality (𝟙 a) ▷ f =
-    (ρ_ (η.app a)).hom ▷ f ≫ (λ_ (η.app a ≫ f)).inv ≫ (α_ _ _ _).inv ≫ F.mapId a ▷ η.app a ▷ f := by
-  simpa [-naturality_id] using congr_arg (fun t ↦ t ▷ f) <| naturality_id _ _
-
-end
+variable {F G H : LaxFunctor B C} (η : LaxTrans F G) (θ : LaxTrans G H)
 
 variable (F) in
 /-- The identity lax transformation. -/
@@ -145,36 +96,78 @@ def id : LaxTrans F F where
 instance : Inhabited (LaxTrans F F) :=
   ⟨id F⟩
 
+/-- Auxiliary definition for `vComp`. -/
+abbrev vCompApp (a : B) : F.obj a ⟶ H.obj a :=
+  η.app a ≫ θ.app a
+
+/-- Auxiliary definition for `vComp`. -/
+abbrev vCompNaturality {a b : B} (f : a ⟶ b) :
+    (η.app a ≫ θ.app a) ≫ H.map f ⟶ F.map f ≫ η.app b ≫ θ.app b :=
+  (α_ _ _ _).hom ≫ η.app a ◁ θ.naturality f ≫ (α_ _ _ _).inv ≫
+    η.naturality f ▷ θ.app b ≫ (α_ _ _ _).hom
+
+theorem vComp_naturality_naturality {a b : B} {f g : a ⟶ b} (β : f ⟶ g) :
+    η.vCompNaturality θ f ≫ F.map₂ β ▷ η.vCompApp θ b =
+      η.vCompApp θ a ◁ H.map₂ β ≫ η.vCompNaturality θ g :=
+  calc
+    _ = 𝟙 _ ⊗≫ η.app a ◁ θ.naturality f ⊗≫
+          (η.naturality f ≫ F.map₂ β ▷ η.app b) ▷ θ.app b ⊗≫ 𝟙 _ := by
+      bicategory
+    _ = 𝟙 _ ⊗≫ η.app a ◁ (θ.naturality f ≫ G.map₂ β ▷ θ.app b) ⊗≫
+          η.naturality g ▷ θ.app b ⊗≫ 𝟙 _ := by
+      rw [naturality_naturality]
+      bicategory
+    _ = _ := by
+      rw [naturality_naturality]
+      bicategory
+
+theorem vComp_naturality_id (a : B) :
+    η.vCompApp θ a ◁ H.mapId a ≫ η.vCompNaturality θ (𝟙 a) =
+      (ρ_ (η.vCompApp θ a)).hom ≫ (λ_ (η.vCompApp θ a)).inv ≫ F.mapId a ▷ η.vCompApp θ a :=
+  calc
+    _ = 𝟙 _ ⊗≫ η.app a ◁ (θ.app a ◁ H.mapId a ≫ θ.naturality (𝟙 a)) ⊗≫
+          η.naturality (𝟙 a) ▷ θ.app a ⊗≫ 𝟙 _ := by
+      bicategory
+    _ = 𝟙 _ ⊗≫ (η.app a ◁ G.mapId a ≫ η.naturality (𝟙 a)) ▷ θ.app a ⊗≫ 𝟙 _ := by
+      rw [naturality_id]
+      bicategory
+    _ = _ := by
+      rw [naturality_id]
+      bicategory
+
+theorem vComp_naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
+    η.vCompApp θ a ◁ H.mapComp f g ≫ η.vCompNaturality θ (f ≫ g) =
+      (α_ (η.vCompApp θ a) (H.map f) (H.map g)).inv ≫
+        η.vCompNaturality θ f ▷ H.map g ≫
+          (α_ (F.map f) (η.vCompApp θ b) (H.map g)).hom ≫
+            F.map f ◁ η.vCompNaturality θ g ≫
+              (α_ (F.map f) (F.map g) (η.vCompApp θ c)).inv ≫ F.mapComp f g ▷ η.vCompApp θ c :=
+  calc
+    _ = 𝟙 _ ⊗≫ η.app a ◁ (θ.app a ◁ H.mapComp f g ≫ θ.naturality (f ≫ g)) ⊗≫
+          η.naturality (f ≫ g) ▷ θ.app c ⊗≫ 𝟙 _ := by
+      bicategory
+    _ = 𝟙 _ ⊗≫ η.app a ◁ (θ.naturality f ▷ (H.map g) ⊗≫ G.map f ◁ θ.naturality g) ⊗≫
+          (η.app a ◁ G.mapComp f g ≫ η.naturality (f ≫ g)) ▷ θ.app c ⊗≫ 𝟙 _ := by
+      rw [naturality_comp θ]
+      bicategory
+    _ = 𝟙 _ ⊗≫ η.app a ◁ θ.naturality f ▷ H.map g ⊗≫
+          ((η.app a ≫ G.map f) ◁ θ.naturality g ≫ η.naturality f ▷ (G.map g ≫ θ.app c)) ⊗≫
+            F.map f ◁ η.naturality g ▷ θ.app c ⊗≫
+              F.mapComp f g ▷ η.app c ▷ θ.app c ⊗≫ 𝟙 _ := by
+      rw [naturality_comp η]
+      bicategory
+    _ = _ := by
+      rw [whisker_exchange]
+      bicategory
+
 /-- Vertical composition of lax transformations. -/
 @[simps]
-def vcomp : LaxTrans F H where
-  app a := η.app a ≫ θ.app a
-  naturality {a b} f :=
-    (α_ _ _ _).hom ≫ η.app a ◁ (θ.naturality f) ≫ (α_ _ _ _).inv ≫
-      η.naturality f ▷ θ.app b ≫ (α_ _ _ _).hom
-  naturality_comp {a b c} f g := by
-    calc
-      _ = (α_ _ _ _).hom ≫ _ ◁ (α_ _ _ _).inv  ≫
-            η.app a ◁ θ.naturality f ▷ H.map g ≫
-            _ ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv ≫
-            η.naturality f ▷ (θ.app b ≫ H.map g) ≫
-            (F.map f ≫ η.app b) ◁ θ.naturality g ≫
-            (α_ _ _ _).hom ≫ F.map f ◁ (α_ _ _ _).inv ≫
-            F.map f ◁ η.naturality g ▷ θ.app c ≫
-            (α_ _ _ _).inv ≫ (α_ _ _ _).inv ▷ _ ≫
-            F.mapComp f g ▷ η.app c ▷ θ.app c ≫ (α_ _ _ _).hom := by
-        rw [← whisker_exchange_assoc]
-        simp only [← whisker_exchange_assoc, comp_whiskerLeft, assoc, Iso.inv_hom_id_assoc,
-          whiskerLeft_naturality_comp_assoc, Bicategory.whiskerRight_comp,
-          pentagon_hom_hom_inv_hom_hom_assoc, Iso.cancel_iso_hom_left,
-          associator_inv_naturality_middle_assoc]
-        simp
-      _ = _ := by simp
-  naturality_id x := by
-    simp only [comp_whiskerLeft, assoc, Iso.inv_hom_id_assoc, whiskerLeft_naturality_id_assoc,
-      Iso.hom_inv_id_assoc, Bicategory.whiskerRight_comp, Iso.cancel_iso_hom_left,
-      associator_inv_naturality_middle_assoc]
-    simp
+def vComp (η : LaxTrans F G) (θ : LaxTrans G H) : LaxTrans F H where
+  app a := vCompApp η θ a
+  naturality := vCompNaturality η θ
+  naturality_naturality := vComp_naturality_naturality η θ
+  naturality_id := vComp_naturality_id η θ
+  naturality_comp := vComp_naturality_comp η θ
 
 /-- `CategoryStruct` on `LaxFunctor B C` where the (1-)morphisms are given by lax
 transformations. -/
@@ -182,7 +175,7 @@ transformations. -/
 scoped instance : CategoryStruct (LaxFunctor B C) where
   Hom := LaxTrans
   id := LaxTrans.id
-  comp := LaxTrans.vcomp
+  comp := LaxTrans.vComp
 
 end LaxTrans
 
@@ -255,7 +248,6 @@ noncomputable def mkOfLax' {F G : LaxFunctor B C} (η : LaxTrans F G)
 
 variable (F : LaxFunctor B C)
 
-
 /-- The identity strong natural transformation. -/
 @[simps!]
 def id : StrongTrans F F :=
@@ -268,13 +260,12 @@ lemma id.toLax : (id F).toLax = LaxTrans.id F :=
 instance : Inhabited (StrongTrans F F) :=
   ⟨id F⟩
 
-
 variable {F} {G H : LaxFunctor B C} (η : StrongTrans F G) (θ : StrongTrans G H)
 
 /-- Vertical composition of strong natural transformations. -/
 @[simps!]
-def vcomp : StrongTrans F H :=
-  mkOfLax (LaxTrans.vcomp η.toLax θ.toLax)
+def vComp : StrongTrans F H :=
+  mkOfLax (LaxTrans.vComp η.toLax θ.toLax)
     { naturality := fun {a b} f ↦
         (α_ _ _ _) ≪≫ whiskerLeftIso (η.app a) (θ.naturality f) ≪≫ (α_ _ _ _).symm ≪≫
         whiskerRightIso (η.naturality f) (θ.app b) ≪≫ (α_ _ _ _) }
@@ -285,56 +276,7 @@ transformations. -/
 scoped instance categoryStruct : CategoryStruct (LaxFunctor B C) where
   Hom := StrongTrans
   id := StrongTrans.id
-  comp := StrongTrans.vcomp
-
-section
-
-variable {a b c : B} {a' : C}
-
-@[reassoc (attr := simp), to_app]
-theorem whiskerLeft_naturality_naturality (f : a' ⟶ G.obj a) {g h : a ⟶ b} (β : g ⟶ h) :
-    f ◁ (θ.naturality g).hom ≫ f ◁ G.map₂ β ▷ θ.app b =
-    f ◁ θ.app a ◁ H.map₂ β ≫ f ◁ (θ.naturality h).hom := by
-  apply θ.toLax.whiskerLeft_naturality_naturality
-
-@[reassoc (attr := simp), to_app]
-theorem whiskerRight_naturality_naturality {f g : a ⟶ b} (β : f ⟶ g) (h : G.obj b ⟶ a') :
-    (η.naturality f).hom ▷ h ≫ F.map₂ β ▷ η.app b ▷ h =
-    (α_ _ _ _).hom ≫ η.app a ◁ G.map₂ β ▷ h  ≫ (α_ _ _ _).inv ≫ (η.naturality g).hom ▷ h :=
-  η.toLax.whiskerRight_naturality_naturality _ _
-
-@[reassoc (attr := simp), to_app]
-theorem whiskerLeft_naturality_comp (f : a' ⟶ G.obj a) (g : a ⟶ b) (h : b ⟶ c) :
-    f ◁ θ.app a ◁ H.mapComp g h ≫ f ◁ (θ.naturality (g ≫ h)).hom =
-    f ◁ (α_ _ _ _).inv ≫ f ◁ (θ.naturality g).hom ▷ H.map h ≫ f ◁ (α_ _ _ _).hom ≫
-      f ◁ G.map g ◁ (θ.naturality h).hom ≫ f ◁ (α_ _ _ _).inv ≫ f ◁ G.mapComp g h ▷ θ.app c  :=
-  θ.toLax.whiskerLeft_naturality_comp _ _ _
-
-@[reassoc (attr := simp), to_app]
-theorem whiskerRight_naturality_comp (f : a ⟶ b) (g : b ⟶ c) (h : G.obj c ⟶ a') :
-    (α_ _ _ _).hom ≫ η.app a ◁ G.mapComp f g ▷ h ≫ (α_ _ _ _).inv ≫
-      (η.naturality (f ≫ g)).hom ▷ h =
-    (α_ _ _ _).inv ▷ h ≫
-      (η.naturality f).hom ▷ G.map g ▷ h ≫
-      (α_ _ _ _).hom ▷ h ≫ (α_ _ _ _).hom ≫
-      F.map f ◁ (η.naturality g).hom ▷ h ≫ (α_ _ _ _).inv ≫
-      (α_ _ _ _).inv ▷ h ≫ F.mapComp f g ▷ η.app c ▷ h :=
-  η.toLax.whiskerRight_naturality_comp _ _ _
-
-@[reassoc (attr := simp), to_app]
-theorem whiskerLeft_naturality_id (f : a' ⟶ G.obj a) :
-    f ◁ θ.app a ◁ H.mapId a ≫ f ◁ (θ.naturality (𝟙 a)).hom =
-    (α_ _ _ _).inv ≫ (ρ_ (f ≫ θ.app a)).hom ≫ f ◁ (λ_ (θ.app a)).inv ≫
-      f ◁ G.mapId a ▷ θ.app a :=
-  θ.toLax.whiskerLeft_naturality_id _
-
-@[reassoc (attr := simp), to_app]
-theorem whiskerRight_naturality_id (f : G.obj a ⟶ a') :
-    (α_ _ _ _).hom ≫ η.app a ◁ G.mapId a ▷ f ≫ (α_ _ _ _).inv ≫ (η.naturality (𝟙 a)).hom ▷ f =
-    (ρ_ (η.app a)).hom ▷ f ≫ (λ_ (η.app a ≫ f)).inv ≫ (α_ _ _ _).inv ≫ F.mapId a ▷ η.app a ▷ f :=
-  η.toLax.whiskerRight_naturality_id _
-
-end
+  comp := StrongTrans.vComp
 
 end StrongTrans
 
