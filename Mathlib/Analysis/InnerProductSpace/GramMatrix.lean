@@ -76,7 +76,7 @@ theorem gram_posSemidef [Fintype n] {v : n → E} :
 
 /-- In a seminormed space, positive definiteness of `gram 𝕜 v` implies linear independence of `v` -/
 theorem linearIndependent_of_gram_posDef [Fintype n] {v : n → E} (h_gram : PosDef (gram 𝕜 v)) :
-    LinearIndependent 𝕜 v:= by
+    LinearIndependent 𝕜 v := by
   rw [Fintype.linearIndependent_iff]
   obtain ⟨h0, h1⟩ := gram_posSemidef (𝕜 := 𝕜) (v := v)
   intro y hy
