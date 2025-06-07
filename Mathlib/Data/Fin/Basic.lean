@@ -310,6 +310,21 @@ theorem nontrivial_iff_two_le : Nontrivial (Fin n) ↔ 2 ≤ n := by
   rcases n with (_ | _ | n) <;>
   simp [Fin.nontrivial, not_nontrivial, Nat.succ_le_iff]
 
+/-- If working with more than two elements, we can always pick a third distinct from two existing
+elements. -/
+theorem exists_ne_and_ne_of_two_lt (i j : Fin n) (h : 2 < n) : ∃ k, k ≠ i ∧ k ≠ j := by
+  have : NeZero n := ⟨by omega⟩
+  rcases i with ⟨i, hi⟩
+  rcases j with ⟨j, hj⟩
+  simp_rw [← Fin.val_ne_iff]
+  by_cases h0 : 0 ≠ i ∧ 0 ≠ j
+  · exact ⟨0, h0⟩
+  · by_cases h1 : 1 ≠ i ∧ 1 ≠ j
+    · exact ⟨⟨1, by omega⟩, h1⟩
+    · refine ⟨⟨2, by omega⟩, ?_⟩
+      dsimp only
+      omega
+
 section Monoid
 
 instance inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) :=
