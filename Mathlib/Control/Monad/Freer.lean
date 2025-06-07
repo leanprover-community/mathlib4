@@ -11,6 +11,11 @@ import Mathlib.Algebra.Group.Defs
 This file defines a general `Freer` monad construction and several canonical instances:
 `State`, `Writer`, and `Continuation` monads implemented via this construction.
 
+The "Freer" monad (pronounced "more free") is an alternative representation of free monads
+that doesn't require the underlying functor to be a `Functor`. Unlike the traditional
+`Free` monad which requires `f` to be a functor, `Freer` works with any type constructor
+`f : Type → Type`, making it more general and easier to use with algebraic effects.
+
 ## Main Definitions
 
 - `Freer`: The general Freer monad.
@@ -24,9 +29,15 @@ The `Freer` monad is defined using an inductive type with constructors `pure` an
 We implement `Functor` and `Monad` instances, and prove the corresponding `LawfulFunctor`
 and `LawfulMonad` instances.
 
-The monads `FreerState`, `FreerWriter`, and `FreerCont` are built by supplying appropriate functors
-to the `Freer` constructor. They are equipped with interpreters and helper functions.
+The monads `FreerState`, `FreerWriter`, and `FreerCont` are built by supplying appropriate
+effect type constructors to the `Freer` constructor. They are equipped with interpreters
+and helper functions.
 
+## References
+
+* Oleg Kiselyov, Hiromi Ishii. "Freer Monads, More Extensible Effects".
+  Haskell Symposium 2015.
+* The Haskell `freer-simple` library: https://hackage.haskell.org/package/freer-simple
 
 ## Tags
 
@@ -166,13 +177,9 @@ end FreerState
 /-! ### Writer Monad via `Freer` -/
 
 /-- Type constructor for writer operations. -/
-inductive WriterF (w : Type u) (α : Type v) where
-  /-- Append a value to the log, continuing with the given result. -/
-  | tell : w → α → WriterF w α
-
-instance {w : Type u} : Functor (WriterF w) where
-  map f
-  | .tell log a => .tell log (f a)
+inductive WriterF (w : Type u) : Type v → Type _ where
+  /-- Append a value to the log. -/
+  | tell : w → WriterF w PUnit
 
 /-- Writer monad via the `Freer` monad. -/
 abbrev FreerWriter (w : Type u) := Freer (WriterF w)
@@ -184,23 +191,23 @@ instance {w : Type u} : LawfulMonad (FreerWriter w) := inferInstance
 
 /-- Append to the log. -/
 def tell {w : Type u} (log : w) : FreerWriter w PUnit :=
-  Freer.impure PUnit (WriterF.tell log PUnit.unit) Freer.pure
+  Freer.impure PUnit (WriterF.tell log) Freer.pure
 
 /-- Run a writer computation, returning the result and log. -/
 def runWriter {w : Type u} {α : Type v} [AddMonoid w] (computation : FreerWriter w α) : α × w :=
   match computation with
   | Freer.pure a => (a, 0)
-  | Freer.impure _ (WriterF.tell log p) cont =>
-      let (result, accLog) := runWriter (cont p)
+  | Freer.impure _ (WriterF.tell log) cont =>
+      let (result, accLog) := runWriter (cont PUnit.unit)
       (result, log + accLog)
+
+/-- Capture the output produced by a computation. -/
+def listen {w : Type u} {α : Type v} [AddMonoid w] (comp : FreerWriter w α) :
+FreerWriter w (α × w) := Freer.pure (runWriter comp)
 
 /-- Run a writer computation, returning only the log. -/
 def execWriter {w : Type u} {α : Type v} [AddMonoid w] (computation : FreerWriter w α) : w :=
   (runWriter computation).2
-
-/-- Run a writer computation and return the result along with the log it produced. -/
-def listen {w : Type u} {α : Type v} [AddMonoid w]
-(computation : FreerWriter w α) : FreerWriter w (α × w) := Freer.pure (runWriter computation)
 
 end FreerWriter
 
