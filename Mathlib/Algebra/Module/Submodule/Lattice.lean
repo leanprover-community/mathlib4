@@ -327,6 +327,9 @@ theorem nontrivial_iff : Nontrivial (Submodule R M) ↔ Nontrivial M :=
 
 variable {R}
 
+theorem _root_.Module.subsingleton_of_top_le_bot (h : (⊤ : Submodule R M) ≤ ⊥) : Subsingleton M :=
+  subsingleton_of_forall_eq 0 fun _ ↦ h Submodule.mem_top
+
 instance [Subsingleton M] : Unique (Submodule R M) :=
   ⟨⟨⊥⟩, fun a => @Subsingleton.elim _ ((subsingleton_iff R).mpr ‹_›) a _⟩
 
