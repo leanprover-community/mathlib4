@@ -182,22 +182,26 @@ Low order roots of unity
 
 open Complex
 
-lemma q1 (z : ℂ) : z ^ 2 + z + 1 = 0 ↔ z = -(1 / 2) + √3 / 2 * I ∨ z = -(1 / 2) - √3 / 2 * I := by
-  suffices 1 * (z * z) + 1 * z + 1 = 0 ↔ z = -(1 / 2) + ↑√3 / 2 * I ∨ z = -(1 / 2) - ↑√3 / 2 * I by
+lemma q1 {K : Type*} [Field K] [NeZero (2 : K)] (z : K) {s : K} (hs : s * s = -3) :
+    z ^ 2 + z + 1 = 0 ↔ z = -(1 / 2) + s / 2 ∨ z = -(1 / 2) - s / 2 := by
+  suffices 1 * (z * z) + 1 * z + 1 = 0 ↔ z = -(1 / 2) + s / 2 ∨ z = -(1 / 2) - s / 2 by
     rw [← this]; ring_nf
-  have discrim1 : discrim 1 1 1 = (√3 * I) * (√3 * I) := by
-    rw [discrim]
-    ring_nf
-    rw [I_sq, ← ofReal_pow, Real.sq_sqrt zero_le_three, mul_neg, mul_one, ofReal_ofNat]
-  rw [quadratic_eq_zero_iff (zero_ne_one' ℂ).symm discrim1]
+  rw [quadratic_eq_zero_iff one_ne_zero (by rw [hs, discrim]; norm_num)]
   ring_nf
 
-example : {z : ℂ | z^3 = 1} = {1, -(1/2)+√3/2*I, -(1/2)-√3/2*I} := by
-  have H (z : ℂ) : z ^ 3 - 1 = (z - 1) * (z ^ 2 + z + 1) := by ring
+lemma q2 {K : Type*} [Field K] [NeZero (2 : K)] {s : K} (hs : s * s = -3) :
+  {z : K | z^3 = 1} = {1, -(1 / 2) + s / 2, -(1 / 2) - s / 2} := by
+  have H (z : K) : z ^ 3 - 1 = (z - 1) * (z ^ 2 + z + 1) := by ring
   ext1 z
   simp only [Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
-  rw [← q1, ← sub_eq_zero, H]
-  simp only [mul_eq_zero, sub_eq_zero]
+  rw [← sub_eq_zero, H, ← q1 z hs, mul_eq_zero, sub_eq_zero]
+
+example : {z : ℂ | z^3 = 1} = {1, -(1/2)+√3/2*I, -(1/2)-√3/2*I} := by
+  have hs : (√3 * I) * (√3 * I) = -3 := by
+    ring_nf
+    rw [I_sq, ← ofReal_pow, Real.sq_sqrt zero_le_three, mul_neg, mul_one,  ofReal_ofNat]
+  rw [q2 hs]
+  ring_nf
 
 example : {z : ℂ | z^4 = 1} = {1, I, -1, -I} := by
   have H (z : ℂ) : z ^ 4 - 1 = (z - 1) * (z - I) * (z + 1) * (z + I) := by
@@ -241,5 +245,3 @@ example : {z : ℂ | z^5 = 1} = {1,
 
 example (z : ℂ) : z ^ 6 - 1 = (z - 1) * (z + 1) * (z ^ 2 + z + 1) * (z ^ 2 - z + 1) := by
   ring
-
-example (z : ℂ) : z ^ 2 - z + 1 = (z - )
