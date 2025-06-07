@@ -3,6 +3,7 @@ Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
+import Mathlib.RingTheory.Ideal.BigOperators
 import Mathlib.RingTheory.Polynomial.Eisenstein.Criterion
 import Mathlib.RingTheory.Polynomial.ScaleRoots
 
@@ -56,13 +57,28 @@ namespace IsWeaklyEisensteinAt
 
 section CommSemiring
 
-variable [CommSemiring R] {𝓟 : Ideal R} {f : R[X]}
+variable [CommSemiring R] {𝓟 : Ideal R} {f f' : R[X]}
 
 theorem map (hf : f.IsWeaklyEisensteinAt 𝓟) {A : Type v} [CommSemiring A] (φ : R →+* A) :
     (f.map φ).IsWeaklyEisensteinAt (𝓟.map φ) := by
   refine (isWeaklyEisensteinAt_iff _ _).2 fun hn => ?_
   rw [coeff_map]
   exact mem_map_of_mem _ (hf.mem (lt_of_lt_of_le hn natDegree_map_le))
+
+theorem mul (hf : f.IsWeaklyEisensteinAt 𝓟) (hf' : f'.IsWeaklyEisensteinAt 𝓟) :
+    (f * f').IsWeaklyEisensteinAt 𝓟 := by
+  rw [isWeaklyEisensteinAt_iff] at hf hf' ⊢
+  intro n hn
+  rw [coeff_mul]
+  refine sum_mem _ fun x hx ↦ ?_
+  rcases lt_or_ge x.1 f.natDegree with hx1 | hx1
+  · exact mul_mem_right _ _ (hf hx1)
+  replace hx1 : x.2 < f'.natDegree := by
+    by_contra!
+    rw [HasAntidiagonal.mem_antidiagonal] at hx
+    replace hn := hn.trans_le natDegree_mul_le
+    linarith
+  exact mul_mem_left _ _ (hf' hx1)
 
 end CommSemiring
 

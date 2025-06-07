@@ -454,7 +454,7 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     · rw [Right.nonneg_neg_iff, natCast_nonpos_iff] at hl
       simp [hl]
   obtain ⟨m₀, rfl | rfl⟩ := m.eq_nat_or_neg
-  · exact this (ofNat_nonneg m₀)
+  · exact this (natCast_nonneg m₀)
   let q := ⌈↑m₀ / (n : k)⌉
   let m₁ := q * ↑n - (↑m₀ : ℤ)
   have hm₁ : 0 ≤ m₁ := by

@@ -180,7 +180,7 @@ then so does that of `g`. -/
 lemma LSeriesSummable.congr' {f g : ℕ → ℂ} (s : ℂ) (h : f =ᶠ[atTop] g) (hf : LSeriesSummable f s) :
     LSeriesSummable g s := by
   rw [← Nat.cofinite_eq_atTop] at h
-  refine (summable_norm_iff.mpr hf).of_norm_bounded_eventually _ ?_
+  refine (summable_norm_iff.mpr hf).of_norm_bounded_eventually ?_
   have : term f s =ᶠ[cofinite] term g s := by
     rw [eventuallyEq_iff_exists_mem] at h ⊢
     obtain ⟨S, hS, hS'⟩ := h
@@ -344,7 +344,7 @@ lemma LSeriesSummable_of_le_const_mul_rpow {f : ℕ → ℂ} {x : ℝ} {s : ℂ}
     simp_rw [div_eq_mul_inv, norm_mul, ← cpow_neg]
     have hsx : -s.re + x - 1 < -1 := by linarith only [hs]
     refine Summable.mul_left _ <|
-      Summable.of_norm_bounded_eventually_nat (fun n ↦ (n : ℝ) ^ (-s.re + x - 1)) ?_ ?_
+      Summable.of_norm_bounded_eventually_nat (g := fun n ↦ (n : ℝ) ^ (-s.re + x - 1)) ?_ ?_
     · simpa
     · simp only [norm_norm, Filter.eventually_atTop]
       refine ⟨1, fun n hn ↦ le_of_eq ?_⟩
@@ -371,7 +371,7 @@ lemma LSeriesSummable_of_isBigO_rpow {f : ℕ → ℂ} {x : ℝ} {s : ℂ} (hs :
   have hC'₀ : 0 ≤ C' := (le_max' _ _ (mem_insert.mpr (Or.inl rfl))).trans <| le_max_right ..
   have hCC' : C ≤ C' := le_max_left ..
   refine LSeriesSummable_of_le_const_mul_rpow hs ⟨C', fun n hn₀ ↦ ?_⟩
-  rcases le_or_lt m n with hn | hn
+  rcases le_or_gt m n with hn | hn
   · refine (hm n hn).trans ?_
     have hn₀ : (0 : ℝ) ≤ n := cast_nonneg _
     gcongr

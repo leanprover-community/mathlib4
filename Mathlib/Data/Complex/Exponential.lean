@@ -632,7 +632,7 @@ theorem exp_bound_div_one_sub_of_interval {x : ℝ} (h1 : 0 ≤ x) (h2 : x < 1) 
 theorem add_one_lt_exp {x : ℝ} (hx : x ≠ 0) : x + 1 < Real.exp x := by
   obtain hx | hx := hx.symm.lt_or_lt
   · exact add_one_lt_exp_of_pos hx
-  obtain h' | h' := le_or_lt 1 (-x)
+  obtain h' | h' := le_or_gt 1 (-x)
   · linarith [x.exp_pos]
   have hx' : 0 < x + 1 := by linarith
   simpa [add_comm, exp_neg, inv_lt_inv₀ (exp_pos _) hx']

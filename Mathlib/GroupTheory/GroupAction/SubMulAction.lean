@@ -239,8 +239,6 @@ variable {p} in
 theorem val_smul (r : R) (x : p) : (↑(r • x) : M) = r • (x : M) :=
   rfl
 
--- Porting note: no longer needed because of defeq structure eta
-
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
 @[to_additive "Embedding of a submodule `p` to the ambient space `M`."]
 protected def subtype : p →[R] M where
@@ -411,8 +409,7 @@ theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
 instance : HasCompl (SubMulAction R M) where
   compl s := ⟨sᶜ, by simp⟩
 
-theorem compl_def (s : SubMulAction R M) :
-  sᶜ.carrier = (s : Set M)ᶜ := rfl
+theorem compl_def (s : SubMulAction R M) : sᶜ.carrier = (s : Set M)ᶜ := rfl
 
 end MulActionGroup
 
