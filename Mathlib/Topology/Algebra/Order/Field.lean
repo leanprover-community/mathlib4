@@ -157,17 +157,9 @@ theorem tendsto_inv_nhdsGT_zero : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[>] (0 :
 @[deprecated (since := "2024-12-22")]
 alias tendsto_inv_zero_atTop := tendsto_inv_nhdsGT_zero
 
-/-- The function `x ↦ x⁻¹` tends to `-∞` on the left of `0`. -/
-theorem tendsto_inv_zero_atBot : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[<] (0 : 𝕜)) atBot :=
-  inv_nhdsWithin_Iio_zero.le
-
 /-- The function `r ↦ r⁻¹` tends to `0` on the right as `r → +∞`. -/
 theorem tendsto_inv_atTop_nhdsGT_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝[>] (0 : 𝕜)) :=
   inv_atTop₀.le
-
-/-- The function `r ↦ r⁻¹` tends to `0` on the left as `r → -∞`. -/
-theorem tendsto_inv_atBot_zero' : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝[<] (0 : 𝕜)) :=
-  inv_atBot₀.le
 
 @[deprecated (since := "2024-12-22")]
 alias tendsto_inv_atTop_zero' := tendsto_inv_atTop_nhdsGT_zero
@@ -191,9 +183,6 @@ alias tendsto_inv_atBot_zero' := tendsto_inv_atBot_nhdsLT_zero
 
 theorem tendsto_inv_atBot_zero : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝 0) :=
   tendsto_inv_atBot_nhdsLT_zero.mono_right inf_le_left
-
-theorem tendsto_inv_atBot_zero : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝 0) :=
-  tendsto_inv_atBot_zero'.mono_right inf_le_left
 
 theorem Filter.Tendsto.div_atTop {a : 𝕜} (h : Tendsto f l (𝓝 a)) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x / g x) l (𝓝 0) := by
