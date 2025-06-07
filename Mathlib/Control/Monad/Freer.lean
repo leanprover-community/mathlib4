@@ -6,6 +6,7 @@ Authors: Tanner Duve
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Control.Monad.Writer
 import Mathlib.Control.Monad.Cont
+import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # Freer Monad and Common Instances
@@ -19,6 +20,13 @@ that doesn't require the underlying type constructor to be a `Functor`. Unlike t
 `f : Type → Type`, making it more general and easier to use with algebraic effects. The traditional
 free monad is not safely definable in Lean due to strict positivity, so `Freer` is both a workaround
 and a generalization.
+
+In this construction, computations are represented as **trees of effects**. Each node (`impure`)
+represents a request to perform an effect, accompanied by a continuation specifying how the
+computationproceeds after the effect.
+The leaves (`pure`) represent completed computations with final results.
+To execute or interpret these computations, an interpreter walks this tree, handling effects
+step-by-step.
 
 See the Haskell [freer-simple](https://hackage.haskell.org/package/freer-simple) library for the
 Haskell implementation.
@@ -42,7 +50,7 @@ and helper functions.
 
 ## References
 
-* Oleg Kiselyov, Hiromi Ishii. "Freer Monads, More Extensible Effects".
+* [Kiselyov2015] Oleg Kiselyov, Hiromi Ishii. *Freer Monads, More Extensible Effects*.
   Haskell Symposium 2015.
 
 ## Tags
@@ -182,56 +190,74 @@ end FreerState
 
 /-! ### Writer Monad via `Freer` -/
 
-/-- Type constructor for writer operations. -/
-inductive WriterF (w : Type u) : Type v → Type _ where
-  /-- Append a value to the log. -/
-  | tell : w → WriterF w PUnit
+/--
+Type constructor for writer operations. Writer has a single effect, so the definition has just one
+constructor, `tell`, which writes a value to the log.
+-/
+inductive WriterF (ω : Type u) : Type u → Type _ where
+  | tell : ω → WriterF ω PUnit
 
-/-- Writer monad via the `Freer` monad. -/
-abbrev FreerWriter (w : Type u) := Freer (WriterF w)
+abbrev FreerWriter (ω : Type u) := Freer (WriterF ω)
 
 namespace FreerWriter
 
-instance {w : Type u} : Monad (FreerWriter w) := inferInstance
-instance {w : Type u} : LawfulMonad (FreerWriter w) := inferInstance
+open WriterF
 
-/-- Append to the log. -/
-def tell {w : Type u} (log : w) : FreerWriter w PUnit :=
-  Freer.impure PUnit (WriterF.tell log) Freer.pure
+instance {ω : Type u} : Monad (FreerWriter ω) := inferInstance
+instance {ω : Type u} : LawfulMonad (FreerWriter ω) := inferInstance
 
-/-- Run a writer computation, returning the result and log. -/
-def runWriter {w : Type u} {α : Type v} [AddMonoid w] (computation : FreerWriter w α) : α × w :=
-  match computation with
-  | Freer.pure a => (a, 0)
-  | Freer.impure _ (WriterF.tell log) cont =>
-      let (result, accLog) := runWriter (cont PUnit.unit)
-      (result, log + accLog)
+/--
+Writes a log entry. This creates an effectful node in the computation tree.
+-/
+def tell {ω : Type u} (w : ω) : FreerWriter ω PUnit :=
+  Freer.impure _ (WriterF.tell w) Freer.pure
 
-/-- Capture the output produced by a computation. -/
-def listen {w : Type u} {α : Type v} [AddMonoid w] (comp : FreerWriter w α) :
-FreerWriter w (α × w) := do
-  let (result, log) := runWriter comp
-  tell log  -- re-emit the captured log
-  return (result, log)
+/--
+Interprets a `FreerWriter` computation by recursively traversing the tree, accumulating
+log entries with the monoid operation, and returns the final value paired with the accumulated log.
+-/
+def run {ω : Type u} [Monoid ω] {α} : FreerWriter ω α → α × ω
+  | .pure a => (a, 1)
+  | .impure _ (WriterF.tell w) k =>
+      let (a, w') := run (k PUnit.unit)
+      (a, w * w')
 
-/-- Run a computation that produces a value and a function to transform the output. -/
-def pass {w : Type u} {α : Type v} [AddMonoid w] (comp : FreerWriter w (α × (w → w))) :
-FreerWriter w α := do
-  let (result, accLog) := runWriter comp
-  let (a, f) := result
-  tell (f accLog)
-  return a
+/--
+`listen` captures the log produced by a subcomputation incrementally. It traverses the computation,
+emitting log entries as encountered, and returns the accumulated log as a result.
+-/
+def listen {ω : Type u} [Monoid ω] {α} (m : FreerWriter ω α) : FreerWriter ω (α × ω) :=
+  let (a, w) := run m
+  Freer.impure _ (WriterF.tell w) (fun _ => .pure (a, w))
 
-instance {w : Type u} [AddMonoid w] : MonadWriter w (FreerWriter w) where
-  tell := FreerWriter.tell
-  listen := FreerWriter.listen
-  pass := FreerWriter.pass
+/--
+`pass` allows a subcomputation to modify its own log. After traversing the computation and
+accumulating its log, the resulting function is applied to rewrite the accumulated log
+before re-emission.
+-/
+def pass {ω : Type u} [Monoid ω] {α} (m : FreerWriter ω (α × (ω → ω))) : FreerWriter ω α :=
+  let ((a, f), w) := run m
+  Freer.impure _ (WriterF.tell (f w)) (fun _ => .pure a)
 
-/-- Run a writer computation, returning only the log. -/
-def execWriter {w : Type u} {α : Type v} [AddMonoid w] (computation : FreerWriter w α) : w :=
-  (runWriter computation).2
+instance {ω : Type u} [Monoid ω] : MonadWriter ω (FreerWriter ω) where
+  tell w := Freer.impure _ (WriterF.tell w) (fun _ => .pure PUnit.unit)
+  listen := listen
+  pass := pass
+
+/--
+Evaluate a writer computation, returning the final result and discarding the log.
+-/
+def eval {ω : Type u} [Monoid ω] {α : Type v} (comp : FreerWriter ω α) : α :=
+  (run comp).1
+
+/--
+Execute a writer computation, returning only the accumulated log and discarding the result.
+-/
+def exec {ω : Type u} {α : Type v} [Monoid ω] (comp : FreerWriter ω α) : ω :=
+  (run comp).2
 
 end FreerWriter
+
 
 /-! ### Continuation Monad via `Freer` -/
 
@@ -287,7 +313,35 @@ example : FreerState.runState (do
   set (s + 1)
   return s : FreerState Nat Nat) 5 = (5, 6) := rfl
 
--- Example FreerCont computation
-example : FreerCont.run (return 42 : FreerCont Nat Nat) id = 42 := rfl
+-- Example FreerWriter computations
+example : FreerWriter.run (do
+  FreerWriter.tell 2
+  FreerWriter.tell 3
+  return 42) = (42, 6) := rfl
+
+example : FreerWriter.run (do
+  let (x, captured) ← FreerWriter.listen (do
+    FreerWriter.tell 2
+    FreerWriter.tell 3
+    return 42)
+  FreerWriter.tell 2
+  return (x, captured)) = ((42, 6), 12) := rfl
+
+example : FreerWriter.run (FreerWriter.pass (do
+  FreerWriter.tell 3
+  return (42, fun log => log * 2))) = (42, 6) := rfl
+
+-- Example FreerCont computations
+example : FreerCont.run (do
+  FreerCont.callCC (fun k => do
+    k.1 42
+    return 100)
+  : FreerCont Nat Nat) id = 42 := rfl
+
+example : FreerCont.run (do
+  let x ← FreerCont.callCC (fun k => do
+    if true then k.1 42 else return 100)
+  return x + 1
+  : FreerCont Nat Nat) id = 43 := rfl
 
 end Freer
