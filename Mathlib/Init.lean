@@ -78,3 +78,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.setOption
   linter.style.maxHeartbeats
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
+
+/-- Declare `∃ x > y, ...` as syntax for `∃ x, y < x ∧ ...`.
+This overwrites the lean core behaviour, which interprets `∃ x > y, ...` as `∃ x, x > y ∧ ...` -/
+binder_predicate (priority := high) x " > " y:term => `($y < $x)

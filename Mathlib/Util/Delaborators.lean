@@ -55,11 +55,11 @@ def delabPi : Delab := whenPPOption getPPBinderPredicates <| whenPPOption Lean.g
   match stx with
   | `(∀ ($i:ident : $_), $j:ident ∈ $s → $body) =>
     if i == j then `(∀ $i:ident ∈ $s, $body) else pure stx
-  | `(∀ ($x:ident : $_), $y:ident > $z → $body) =>
+  | `(∀ ($x:ident : $_), $z < $y:ident → $body) =>
     if x == y then `(∀ $x:ident > $z, $body) else pure stx
   | `(∀ ($x:ident : $_), $y:ident < $z → $body) =>
     if x == y then `(∀ $x:ident < $z, $body) else pure stx
-  | `(∀ ($x:ident : $_), $y:ident ≥ $z → $body) =>
+  | `(∀ ($x:ident : $_), $z ≤ $y:ident → $body) =>
     if x == y then `(∀ $x:ident ≥ $z, $body) else pure stx
   | `(∀ ($x:ident : $_), $y:ident ≤ $z → $body) =>
     if x == y then `(∀ $x:ident ≤ $z, $body) else pure stx
