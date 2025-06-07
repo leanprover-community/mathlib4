@@ -9,7 +9,7 @@ import Mathlib.Topology.Separation.Hausdorff
 /-!
 # Compact systems.
 
-This files defines compact systems of sets.
+This file defines compact systems of sets.
 
 ## Main definitions
 
@@ -162,7 +162,7 @@ lemma iff_isCompactSystem_of_or_univ : IsCompactSystem p ↔
             simp only [h₆, Set.mem_univ]
       have h₇ : Dissipate s' (max j n) = ∅ := by
         rw [← subset_empty_iff] at hj ⊢
-        exact le_trans (antitone_dissipate (Nat.le_max_left j n)) hj
+        exact le_trans (dissipate_antitone (Nat.le_max_left j n)) hj
       specialize h₂ (max j n) (Nat.le_max_right j n)
       specialize hd (max j n)
       rw [h₂, Set.nonempty_iff_ne_empty, h₇] at hd
@@ -242,7 +242,7 @@ theorem of_isCompact_isClosed :
   have htco : ∀ (i : { j : ℕ | s j ≠ univ}), IsCompact (s i) :=
     fun i ↦ (h1 i).1
   haveI f : Nonempty α := by
-    apply nonempty_of_exists _
+    apply Exists.nonempty _
     · exact fun x ↦ x ∈ s 0
     · exact h2 0
   by_cases h : Nonempty ↑{j | s j ≠ Set.univ}
