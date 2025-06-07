@@ -397,17 +397,20 @@ theorem le_of_forall_lt (H : ∀ c, c < a → c < b) : a ≤ b :=
 theorem forall_lt_iff_le : (∀ ⦃c⦄, c < a → c < b) ↔ a ≤ b :=
   ⟨le_of_forall_lt, fun h _ hca ↦ lt_of_lt_of_le hca h⟩
 
-theorem le_of_forall_lt' (H : ∀ c, a < c → b < c) : b ≤ a :=
+theorem le_of_forall_gt (H : ∀ c, a < c → b < c) : b ≤ a :=
   le_of_not_gt fun h ↦ lt_irrefl _ (H _ h)
 
-theorem forall_lt_iff_le' : (∀ ⦃c⦄, a < c → b < c) ↔ b ≤ a :=
-  ⟨le_of_forall_lt', fun h _ hac ↦ lt_of_le_of_lt h hac⟩
+theorem forall_gt_iff_le : (∀ ⦃c⦄, a < c → b < c) ↔ b ≤ a :=
+  ⟨le_of_forall_gt, fun h _ hac ↦ lt_of_le_of_lt h hac⟩
+
+@[deprecated (since := "2025-06-07")] alias le_of_forall_lt' := le_of_forall_gt
+@[deprecated (since := "2025-06-07")] alias forall_lt_iff_le' := forall_gt_iff_le
 
 theorem eq_of_forall_lt_iff (h : ∀ c, c < a ↔ c < b) : a = b :=
   (le_of_forall_lt fun _ ↦ (h _).1).antisymm <| le_of_forall_lt fun _ ↦ (h _).2
 
 theorem eq_of_forall_gt_iff (h : ∀ c, a < c ↔ b < c) : a = b :=
-  (le_of_forall_lt' fun _ ↦ (h _).2).antisymm <| le_of_forall_lt' fun _ ↦ (h _).1
+  (le_of_forall_gt fun _ ↦ (h _).2).antisymm <| le_of_forall_gt fun _ ↦ (h _).1
 
 section ltByCases
 variable {P : Sort*} {x y : α}

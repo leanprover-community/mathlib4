@@ -636,7 +636,7 @@ theorem ball_subset_closedBall (x r) : ball p x r ⊆ closedBall p x r := fun _ 
   (mem_closedBall _).mpr ((mem_ball _).mp h).le
 
 theorem closedBall_eq_biInter_ball (x r) : closedBall p x r = ⋂ ρ > r, ball p x ρ := by
-  ext y; simp_rw [mem_closedBall, mem_iInter₂, mem_ball, ← forall_lt_iff_le']
+  ext y; simp_rw [mem_closedBall, mem_iInter₂, mem_ball, ← forall_gt_iff_le]
 
 @[simp]
 theorem ball_zero' (x : E) (hr : 0 < r) : ball (0 : Seminorm 𝕜 E) x r = Set.univ := by
