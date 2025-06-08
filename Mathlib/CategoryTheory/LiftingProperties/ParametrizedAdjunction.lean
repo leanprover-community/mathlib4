@@ -177,7 +177,7 @@ noncomputable def arrowHomEquiv :
               ← adj₂.homEquiv_naturality_three])
   invFun β := Arrow.homMk
       (sq₁₂.isPushout.desc
-        (adj₂.homEquiv.symm (β.left))
+        (adj₂.homEquiv.symm β.left)
         (adj₂.homEquiv.symm (β.right ≫ sq₁₃.fst)) (by
           have := Arrow.w β =≫ sq₁₃.fst
           dsimp at this
