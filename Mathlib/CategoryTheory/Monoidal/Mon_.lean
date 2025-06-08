@@ -626,7 +626,9 @@ theorem mul_rightUnitor {M : C} [Mon_Class M] :
 
 namespace tensorObj
 
-@[simps]
+-- We don't want `tensorObj.one_def` to be simp as it would loop with `IsMon_Hom.one_hom` applied
+-- to `(λ_ N.X).inv`.
+@[simps -isSimp]
 instance {M N : C} [Mon_Class M] [Mon_Class N] : Mon_Class (M ⊗ N) where
   one := (λ_ (𝟙_ C)).inv ≫ (η ⊗ η)
   mul := tensorμ M N M N ≫ (μ ⊗ μ)
