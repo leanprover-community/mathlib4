@@ -70,8 +70,7 @@ lemma irreducible_or_factor (hp : ¬IsUnit p) :
   simpa [irreducible_iff, hp, and_rotate] using em (∀ a b, p = a * b → IsUnit a ∨ IsUnit b)
 
 @[to_additive]
-lemma Irreducible.eq_one_or_eq_one [Subsingleton Mˣ] (hp : Irreducible p) (hab : p = a * b) :
-    a = 1 ∨ b = 1 := by
-  simpa using hp.isUnit_or_isUnit hab
+lemma Irreducible.eq_one_or_eq_one [Subsingleton Mˣ] (hab : Irreducible (a * b)) :
+    a = 1 ∨ b = 1 := by simpa using hab.isUnit_or_isUnit rfl
 
 end Monoid
