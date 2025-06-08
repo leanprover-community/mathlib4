@@ -323,7 +323,7 @@ theorem WellFoundedLT.finite_of_sSupIndep [WellFoundedLT α] {s : Set α}
   have lt n : a (n + 1) < a n := (Disjoint.right_lt_sup_of_left_ne_bot
     ((hs (e n).2.1).mono_right <| iSup₂_le fun i hi ↦ le_sSup ?_) (e n).2.2).trans_le (sup_le n)
   · exact (RelEmbedding.natGT a lt).not_wellFounded_of_decreasing_seq wellFounded_lt
-  exact ⟨(e i).2.1, fun h ↦ n.lt_succ_self.not_le <| hi.trans_eq <| e.2 <| Subtype.val_injective h⟩
+  exact ⟨(e i).2.1, fun h ↦ n.lt_succ_self.not_ge <| hi.trans_eq <| e.2 <| Subtype.val_injective h⟩
 
 @[deprecated (since := "2024-11-24")]
 alias CompleteLattice.WellFoundedLT.finite_of_setIndependent := WellFoundedLT.finite_of_sSupIndep

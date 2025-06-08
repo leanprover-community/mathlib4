@@ -314,6 +314,7 @@ lemma append_apply_left (p q : RelSeries r) (connect : r p.last q.head)
   simp only [Function.comp_apply]
   convert Fin.append_left _ _ _
 
+open Fin.NatCast in -- TODO: can this be removed?
 lemma append_apply_right (p q : RelSeries r) (connect : r p.last q.head)
     (i : Fin (q.length + 1)) :
     p.append q connect (i.natAdd p.length + 1) = q i := by
@@ -838,7 +839,7 @@ lemma Rel.wellFounded_swap_of_finiteDimensional [Rel.FiniteDimensional r] :
   rw [WellFounded.wellFounded_iff_no_descending_seq]
   refine ⟨fun ⟨f, hf⟩ ↦ ?_⟩
   let s := RelSeries.mk (r := r) ((RelSeries.longestOf r).length + 1) (f ·) (hf ·)
-  exact (RelSeries.longestOf r).length.lt_succ_self.not_le s.length_le_length_longestOf
+  exact (RelSeries.longestOf r).length.lt_succ_self.not_ge s.length_le_length_longestOf
 
 lemma Rel.wellFounded_of_finiteDimensional [Rel.FiniteDimensional r] : WellFounded r :=
   have : (Rel.FiniteDimensional (Function.swap r)) := Rel.finiteDimensional_swap_iff.mp ‹_›

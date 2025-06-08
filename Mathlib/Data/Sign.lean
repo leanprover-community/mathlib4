@@ -347,7 +347,7 @@ theorem sign_eq_zero_iff : sign a = 0 ↔ a = 0 := by
   rw [sign_apply] at h
   split_ifs at h with h_1 h_2
   cases h
-  exact (le_of_not_lt h_1).eq_of_not_lt h_2
+  exact (le_of_not_gt h_1).eq_of_not_lt h_2
 
 theorem sign_ne_zero : sign a ≠ 0 ↔ a ≠ 0 :=
   sign_eq_zero_iff.not
@@ -357,12 +357,12 @@ theorem sign_nonneg_iff : 0 ≤ sign a ↔ 0 ≤ a := by
   rcases lt_trichotomy 0 a with (h | h | h)
   · simp [h, h.le]
   · simp [← h]
-  · simp [h, h.not_le]
+  · simp [h, h.not_ge]
 
 @[simp]
 theorem sign_nonpos_iff : sign a ≤ 0 ↔ a ≤ 0 := by
   rcases lt_trichotomy 0 a with (h | h | h)
-  · simp [h, h.not_le]
+  · simp [h, h.not_ge]
   · simp [← h]
   · simp [h, h.le]
 

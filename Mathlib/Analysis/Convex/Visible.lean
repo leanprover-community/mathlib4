@@ -169,7 +169,7 @@ lemma IsClosed.exists_wbtw_isVisible (hs : IsClosed s) (hy : y ∈ s) (x : V) :
   replace hδ₀ : 0 < δ := hδ₀.lt_of_ne' <| by rintro hδ₀; simp [hδ₀] at h
   replace hε₁ : ε < 1 := hε₁.lt_of_ne <| by rintro rfl; simp at h
   rw [lineMap_lineMap_right] at hε
-  exact (csInf_le ht ⟨mul_nonneg hε₀ hδ₀.le, hε⟩).not_lt <| mul_lt_of_lt_one_left hδ₀ hε₁
+  exact (csInf_le ht ⟨mul_nonneg hε₀ hδ₀.le, hε⟩).not_gt <| mul_lt_of_lt_one_left hδ₀ hε₁
 
 -- TODO: Once we have cone hulls, the RHS can be strengthened to
 -- `coneHull ℝ x {y ∈ s | IsVisible ℝ (convexHull ℝ s) x y}`
