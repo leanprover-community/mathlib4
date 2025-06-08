@@ -40,13 +40,13 @@ namespace Rel
 
 open OrderDual
 
-/-- `leftDual` maps any set `J` of elements of type `α` to the set `{b : β | ∀ a ∈ J, R a b}` of
-elements `b` of type `β` such that `R a b` for every element `a` of `J`. -/
-def leftDual (J : Set α) : Set β := {b : β | ∀ ⦃a⦄, a ∈ J → R a b}
+/-- `leftDual` maps any set `J` of elements of type `α` to the set `{b : β | ∀ a ∈ J, a ~[R] b}` of
+elements `b` of type `β` such that `a ~[R] b` for every element `a` of `J`. -/
+def leftDual (J : Set α) : Set β := {b : β | ∀ ⦃a⦄, a ∈ J → a ~[R] b}
 
-/-- `rightDual` maps any set `I` of elements of type `β` to the set `{a : α | ∀ b ∈ I, R a b}`
-of elements `a` of type `α` such that `R a b` for every element `b` of `I`. -/
-def rightDual (I : Set β) : Set α := {a : α | ∀ ⦃b⦄, b ∈ I → R a b}
+/-- `rightDual` maps any set `I` of elements of type `β` to the set `{a : α | ∀ b ∈ I, a ~[R] b}`
+of elements `a` of type `α` such that `a ~[R] b` for every element `b` of `I`. -/
+def rightDual (I : Set β) : Set α := {a : α | ∀ ⦃b⦄, b ∈ I → a ~[R] b}
 
 /-- The pair of functions `toDual ∘ leftDual` and `rightDual ∘ ofDual` forms a Galois connection. -/
 theorem gc_leftDual_rightDual : GaloisConnection (toDual ∘ R.leftDual) (R.rightDual ∘ ofDual) :=
