@@ -5,6 +5,7 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Topology.UniformSpace.Completion
 import Mathlib.Topology.UniformSpace.Ultra.Basic
+import Mathlib.Topology.UniformSpace.Ultra.Constructions
 
 /-!
 # Completions of ultrametric (nonarchimedean) uniform spaces
@@ -22,10 +23,8 @@ open Filter Set Topology Uniformity
 
 lemma IsUltraUniformity.of_isUniformInducing {Y : Type*} [UniformSpace X] [UniformSpace Y]
     [h : IsUltraUniformity Y] {f : X → Y} (hf : IsUniformInducing f) :
-    IsUltraUniformity X := by
-  apply mk_of_hasBasis (hf.basis_uniformity h.hasBasis)
-  · exact fun _ ⟨_, hU, _⟩ ↦ hU.preimage_prodMap f
-  · exact fun _ ⟨_, _, hU⟩ ↦ hU.preimage_prodMap f
+    IsUltraUniformity X :=
+  hf.comap_uniformSpace ▸ .comap h f
 
 lemma IsSymmetricRel.cauchyFilter_gen [UniformSpace X] {s : Set (X × X)} (h : IsSymmetricRel s) :
     IsSymmetricRel (CauchyFilter.gen s) := by
@@ -35,7 +34,7 @@ lemma IsTransitiveRel.cauchyFilter_gen [UniformSpace X] {s : Set (X × X)} (hs :
     IsTransitiveRel (CauchyFilter.gen s) := by
   simp only [IsTransitiveRel, CauchyFilter.gen, mem_setOf_eq]
   intro f g h hfg hgh
-  exact hs.mem_filter_prod_comm hfg hgh g.2.1
+  exact hs.mem_filter_prod_comm hfg hgh
 
 instance IsUltraUniformity.cauchyFilter [UniformSpace X]
     [h : IsUltraUniformity X] :
