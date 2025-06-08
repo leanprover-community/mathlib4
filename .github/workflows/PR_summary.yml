@@ -108,7 +108,7 @@ jobs:
               tee -a extraneous_deprecated_module.txt
           else
             # shellcheck disable=SC2016
-            printf '\nnote: file `%s` was removed without a module deprecation\nPlease create a follow-up pull request adding one. Thanks!\n' "${file}" |
+            printf '\nnote: file `%s` was removed.\nPlease create a follow-up pull request adding a module deprecation. Thanks!\n' "${file}" |
               tee -a moved_without_deprecation.txt
           fi
         done < removed_files.txt
