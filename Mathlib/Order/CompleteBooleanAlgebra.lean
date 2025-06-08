@@ -339,13 +339,13 @@ instance (priority := 100) CompleteLinearOrder.toCompletelyDistribLattice [Compl
       rcases h with ⟨x, hr, hl⟩
       suffices rhs ≥ x from nomatch not_lt.2 this hr
       have : ∀ a, ∃ b, x < g a b := fun a =>
-        lt_iSup_iff.1 <| lt_of_not_le fun h =>
+        lt_iSup_iff.1 <| lt_of_not_ge fun h =>
             lt_irrefl x (lt_of_lt_of_le hl (le_trans (iInf_le _ a) h))
       choose f hf using this
       refine le_trans ?_ (le_iSup _ f)
       exact le_iInf fun a => le_of_lt (hf a)
     else
-      refine le_of_not_lt fun hrl : rhs < lhs => not_le_of_lt hrl ?_
+      refine le_of_not_gt fun hrl : rhs < lhs => not_le_of_gt hrl ?_
       replace h : ∀ x, x ≤ rhs ∨ lhs ≤ x := by
         simpa only [not_exists, not_and_or, not_or, not_lt] using h
       have : ∀ a, ∃ b, rhs < g a b := fun a =>

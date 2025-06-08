@@ -138,7 +138,7 @@ theorem card_le_one_iff_eq_bot [Finite H] : Nat.card H ≤ 1 ↔ H = ⊥ :=
 
 @[to_additive one_lt_card_iff_ne_bot]
 theorem one_lt_card_iff_ne_bot [Finite H] : 1 < Nat.card H ↔ H ≠ ⊥ :=
-  lt_iff_not_le.trans H.card_le_one_iff_eq_bot.not
+  lt_iff_not_ge.trans H.card_le_one_iff_eq_bot.not
 
 @[to_additive]
 theorem card_le_card_group [Finite G] : Nat.card H ≤ Nat.card G :=
