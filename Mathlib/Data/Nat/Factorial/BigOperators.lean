@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Pim Otte
 -/
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.Zify
 
 /-!
@@ -26,7 +25,7 @@ lemma monotone_factorial : Monotone factorial := fun _ _ => factorial_le
 
 variable {α : Type*} (s : Finset α) (f : α → ℕ)
 
-theorem prod_factorial_pos : 0 < ∏ i ∈ s, (f i)! := by positivity
+theorem prod_factorial_pos : 0 < ∏ i ∈ s, (f i)! := prod_pos fun _ _ ↦ factorial_pos _
 
 theorem prod_factorial_dvd_factorial_sum : (∏ i ∈ s, (f i)!) ∣ (∑ i ∈ s, f i)! := by
   induction' s using Finset.cons_induction_on with a s has ih
