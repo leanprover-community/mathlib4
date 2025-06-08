@@ -316,7 +316,7 @@ theorem continuousAt_zpow₀ (x : G₀) (m : ℤ) (h : x ≠ 0 ∨ 0 ≤ m) :
   rcases m with m | m
   · simpa only [Int.ofNat_eq_coe, zpow_natCast] using continuousAt_pow x m
   · simp only [zpow_negSucc]
-    have hx : x ≠ 0 := h.resolve_right (Int.negSucc_lt_zero m).not_le
+    have hx : x ≠ 0 := h.resolve_right (Int.negSucc_lt_zero m).not_ge
     exact (continuousAt_pow x (m + 1)).inv₀ (pow_ne_zero _ hx)
 
 theorem continuousOn_zpow₀ (m : ℤ) : ContinuousOn (fun x : G₀ => x ^ m) {0}ᶜ := fun _x hx =>

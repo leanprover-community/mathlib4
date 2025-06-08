@@ -1140,8 +1140,8 @@ theorem continuous_edist : Continuous fun p : α × α => edist p.1 p.2 := by
   calc
     edist x y ≤ edist x x' + edist x' y' + edist y' y := edist_triangle4 _ _ _ _
     _ = edist x' y' + (edist x x' + edist y y') := by simp only [edist_comm]; ac_rfl
-    _ ≤ edist x' y' + (edist (x, y) (x', y') + edist (x, y) (x', y')) :=
-      (add_le_add_left (add_le_add (le_max_left _ _) (le_max_right _ _)) _)
+    _ ≤ edist x' y' + (edist (x, y) (x', y') + edist (x, y) (x', y')) := by
+      gcongr <;> apply_rules [le_max_left, le_max_right]
     _ = edist x' y' + 2 * edist (x, y) (x', y') := by rw [← mul_two, mul_comm]
 
 @[continuity, fun_prop]
@@ -1226,13 +1226,13 @@ theorem diam_eq {s : Set ℝ} (h : Bornology.IsBounded s) : Metric.diam s = sSup
 
 @[simp]
 theorem ediam_Ioo (a b : ℝ) : EMetric.diam (Ioo a b) = ENNReal.ofReal (b - a) := by
-  rcases le_or_lt b a with (h | h)
+  rcases le_or_gt b a with (h | h)
   · simp [h]
   · rw [Real.ediam_eq (isBounded_Ioo _ _), csSup_Ioo h, csInf_Ioo h]
 
 @[simp]
 theorem ediam_Icc (a b : ℝ) : EMetric.diam (Icc a b) = ENNReal.ofReal (b - a) := by
-  rcases le_or_lt a b with (h | h)
+  rcases le_or_gt a b with (h | h)
   · rw [Real.ediam_eq (isBounded_Icc _ _), csSup_Icc h, csInf_Icc h]
   · simp [h, h.le]
 

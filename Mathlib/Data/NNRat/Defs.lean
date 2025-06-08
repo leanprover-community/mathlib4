@@ -17,8 +17,8 @@ import Mathlib.Order.GaloisConnection.Defs
 This file defines the nonnegative rationals as a subtype of `Rat` and provides its basic algebraic
 order structure.
 
-Note that `NNRat` is not declared as a `Semifield` here. See `Mathlib.Algebra.Field.Rat` for that
-instance.
+Note that `NNRat` is not declared as a `Semifield` here. See `Mathlib/Algebra/Field/Rat.lean` for
+that instance.
 
 We also define an instance `CanLift ℚ ℚ≥0`. This instance can be used by the `lift` tactic to
 replace `x : ℚ` and `hx : 0 ≤ x` in the proof context with `x : ℚ≥0` while replacing all occurrences
@@ -282,8 +282,8 @@ theorem le_toNNRat_iff_coe_le {q : ℚ≥0} (hp : 0 ≤ p) : q ≤ toNNRat p ↔
   rw [← coe_le_coe, Rat.coe_toNNRat p hp]
 
 theorem le_toNNRat_iff_coe_le' {q : ℚ≥0} (hq : 0 < q) : q ≤ toNNRat p ↔ ↑q ≤ p :=
-  (le_or_lt 0 p).elim le_toNNRat_iff_coe_le fun hp ↦ by
-    simp only [(hp.trans_le q.coe_nonneg).not_le, toNNRat_eq_zero.2 hp.le, hq.not_le]
+  (le_or_gt 0 p).elim le_toNNRat_iff_coe_le fun hp ↦ by
+    simp only [(hp.trans_le q.coe_nonneg).not_ge, toNNRat_eq_zero.2 hp.le, hq.not_ge]
 
 theorem toNNRat_lt_iff_lt_coe {p : ℚ≥0} (hq : 0 ≤ q) : toNNRat q < p ↔ q < ↑p := by
   rw [← coe_lt_coe, Rat.coe_toNNRat q hq]

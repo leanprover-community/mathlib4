@@ -320,7 +320,7 @@ theorem single_eq_pi_diag (i : ι) : single R φ i = pi (diag i) := by
   rfl
 
 theorem ker_single (i : ι) : ker (single R φ i) = ⊥ :=
-  ker_eq_bot_of_injective <| Pi.single_injective _ _
+  ker_eq_bot_of_injective <| Pi.single_injective _
 
 theorem proj_comp_single (i j : ι) : (proj i).comp (single R φ j) = diag j i := by
   rw [single_eq_pi_diag, proj_pi]

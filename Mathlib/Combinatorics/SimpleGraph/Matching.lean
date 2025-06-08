@@ -46,7 +46,7 @@ one edge, and the edges of the subgraph represent the paired vertices.
 
 * Tutte's Theorem
 
-* Hall's Marriage Theorem (see `Mathlib.Combinatorics.Hall.Basic`)
+* Hall's Marriage Theorem (see `Mathlib/Combinatorics/Hall/Basic.lean`)
 -/
 
 assert_not_exists Field TwoSidedIdeal
@@ -170,7 +170,6 @@ lemma IsMatching.exists_of_disjoint_sets_of_equiv {s t : Set V} (h : Disjoint s 
       · exact hadj ⟨v, _⟩
       · exact (hadj ⟨w, _⟩).symm
     edge_vert := by aesop }
-
   simp only [Subgraph.IsMatching, Set.mem_union, true_and]
   intro v hv
   rcases hv with hl | hr
@@ -425,7 +424,7 @@ lemma Subgraph.IsPerfectMatching.symmDiff_isCycles
   obtain ⟨w, hw⟩ := hM.1 (hM.2 v)
   obtain ⟨w', hw'⟩ := hM'.1 (hM'.2 v)
   simp only [symmDiff_def, Set.ncard_eq_two, ne_eq, imp_iff_not_or, Set.not_nonempty_iff_eq_empty,
-    Set.eq_empty_iff_forall_not_mem, SimpleGraph.mem_neighborSet, SimpleGraph.sup_adj, sdiff_adj,
+    Set.eq_empty_iff_forall_notMem, SimpleGraph.mem_neighborSet, SimpleGraph.sup_adj, sdiff_adj,
     spanningCoe_adj, not_or, not_and, not_not]
   by_cases hww' : w = w'
   · simp_all [← imp_iff_not_or, hww']

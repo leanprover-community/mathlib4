@@ -41,7 +41,7 @@ lemma eqOn_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
     {a a' : ℝ} (hpos : 0 < a') (hle : a' ≤ a) :
     EqOn (γ a') (γ a) (Ioo (-a') a') := by
   apply isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless _ hv
-    (hγ a' (by positivity)) ((hγ a (gt_of_ge_of_gt hle hpos)).mono _)
+    (hγ a' (by positivity)) ((hγ a (lt_of_lt_of_le hpos hle)).mono _)
     (by rw [hγx a, hγx a'])
   · rw [mem_Ioo]
     exact ⟨neg_lt_zero.mpr hpos, by positivity⟩
@@ -169,7 +169,6 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
     (by rw [neg_lt, neg_zero]; exact half_pos hε)
   rw [mem_setOf] at ha
   rw [← hasup, ← sub_eq_add_neg] at hlt
-
   -- integral curve defined on `Ioo (-a) a`
   obtain ⟨γ, h0, hγ⟩ := ha
   -- integral curve starting at `-(asup - ε / 2)` with radius `ε`
@@ -182,15 +181,12 @@ lemma exists_isIntegralCurve_of_isIntegralCurveOn [BoundarylessManifold I M]
   rw [isIntegralCurveOn_comp_sub (dt := asup - ε / 2)] at hγ2
   set γ2 := γ2_aux ∘ (· - (asup - ε / 2)) with γ2_def
   have heq2 : γ2 (asup - ε / 2) = γ (asup - ε / 2) := by simp [γ2_def, h2_aux]
-
   -- rewrite shifted Ioo as Ioo
   rw [neg_sub] at hγ1
   rw [Real.Ioo_eq_ball, neg_add_cancel, zero_div, sub_neg_eq_add, add_self_div_two,
     Metric.vadd_ball, vadd_eq_add, add_zero, Real.ball_eq_Ioo] at hγ1 hγ2
-
   -- to help `linarith`
   have hεle : ε ≤ asup := le_csSup hbdd (h x)
-
   -- extend `γ` on the left by `γ1` and on the right by `γ2`
   set γ_ext : ℝ → M := piecewise (Ioo (-(asup + ε / 2)) a)
     (piecewise (Ioo (-a) a) γ γ1) γ2 with γ_ext_def
