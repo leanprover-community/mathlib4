@@ -726,7 +726,7 @@ open scoped Classical in
 lemma union_pi_ite_of_disjoint {s t : Set ι} {x y : (i : ι) → Set (α i)} (hst : Disjoint s t) :
     ((s ∪ t).pi fun i ↦ if i ∈ s then x i else y i)  = (s.pi x) ∩ (t.pi y) := by
   rw [union_pi, Set.pi_congr rfl (fun i hi ↦ if_pos hi), Set.pi_congr rfl (fun i hi ↦
-    if_neg <| hst.symm.not_mem_of_mem_left hi)]
+    if_neg <| hst.symm.notMem_of_mem_left hi)]
 
 theorem union_pi_inter
     (ht₁ : ∀ i ∉ s₁, t₁ i = univ) (ht₂ : ∀ i ∉ s₂, t₂ i = univ) :
