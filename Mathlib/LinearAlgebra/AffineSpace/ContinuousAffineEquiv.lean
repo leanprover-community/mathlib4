@@ -183,6 +183,8 @@ theorem coe_symm_toAffineEquiv (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toAffineEquiv.sy
 @[simp]
 theorem toEquiv_symm (e : P₁ ≃ᴬ[k] P₂) : e.symm.toEquiv = e.toEquiv.symm := rfl
 
+@[deprecated (since := "2025-06-08")] alias symm_toEquiv := toEquiv_symm
+
 @[simp]
 theorem coe_symm_toEquiv (e : P₁ ≃ᴬ[k] P₂) : ⇑e.toEquiv.symm = e.symm := rfl
 
