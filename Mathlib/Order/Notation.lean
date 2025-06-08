@@ -65,21 +65,17 @@ attribute [ext] Min Max
 The supremum/join operation: `x ⊔ y`. It is notation for `max x y`
 and should be used when the type is not a linear order.
 -/
-syntax:68 term:68 " ⊔ " term:69 : term
+syntax:68 (name := sup) term:68 " ⊔ " term:69 : term
 
 /--
 The infimum/meet operation: `x ⊓ y`. It is notation for `min x y`
 and should be used when the type is not a linear order.
 -/
-syntax:69 term:69 " ⊓ " term:70 : term
-
-macro_rules
-| `($a ⊔ $b) => `(Max.max $a $b)
-| `($a ⊓ $b) => `(Min.min $a $b)
+syntax:69 (name := inf) term:69 " ⊓ " term:70 : term
 
 namespace Mathlib.Meta
 
-open Lean Meta PrettyPrinter Delaborator SubExpr Qq
+open Lean Meta Elab Term PrettyPrinter.Delaborator SubExpr Qq
 
 -- irreducible to not confuse Qq
 @[irreducible] private def linearOrderExpr (u : Level) : Q(Type u → Type u) :=
@@ -109,6 +105,30 @@ private def hasLinearOrder (u : Level) (α : Q(Type u)) (cls : Q(Type u → Type
   catch _ =>
     -- For instance, if `LinearOrder` is not yet imported.
     return false
+
+@[term_elab sup]
+def elabSup : TermElab
+  | `($a ⊔ $b), expectedType? => do
+    let e ← Lean.Elab.Term.elabTerm (← `(Max.max $a $b)) expectedType?
+    let_expr f@Max.max α inst _ _ := e | throwError "expected an application of `max`, not {e}"
+    have u := f.constLevels![0]!
+    if ← hasLinearOrder u α q(Max) q($(linearOrderToMax u)) inst then
+      logWarning m!"The notation `⊔` should not be used for linear orders. \
+        Please write `max {a} {b}` instead"
+    return e
+  | _, _ => throwUnsupportedSyntax
+
+@[term_elab inf]
+def elabInf : TermElab
+  | `($a ⊓ $b), expectedType? => do
+    let e ← Lean.Elab.Term.elabTerm (← `(Min.min $a $b)) expectedType?
+    let_expr f@Min.min α inst _ _ := e | throwError "expected an application of `min`, not {e}"
+    have u := f.constLevels![0]!
+    if ← hasLinearOrder u α q(Min) q($(linearOrderToMin u)) inst then
+      logWarning m!"The notation `⊓` should not be used for linear orders. \
+        Please write `min {a} {b}` instead"
+    return e
+  | _, _ => throwUnsupportedSyntax
 
 /-- Delaborate `max x y` into `x ⊔ y` if the type is not a linear order. -/
 @[delab app.Max.max]
