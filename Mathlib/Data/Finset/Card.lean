@@ -282,7 +282,7 @@ theorem map_eq_of_subset {f : α ↪ α} (hs : s.map f ⊆ s) : s.map f = s :=
 
 theorem card_filter_eq_iff {p : α → Prop} [DecidablePred p] :
     #(s.filter p) = #s ↔ ∀ x ∈ s, p x := by
-  rw [(card_filter_le s p).eq_iff_not_lt, not_lt, eq_iff_card_le_of_subset (filter_subset p s),
+  rw [← (card_filter_le s p).ge_iff_eq, eq_iff_card_le_of_subset (filter_subset p s),
     filter_eq_self]
 
 alias ⟨filter_card_eq, _⟩ := card_filter_eq_iff

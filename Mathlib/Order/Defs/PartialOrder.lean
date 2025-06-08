@@ -174,9 +174,14 @@ def decidableEqOfDecidableLE [DecidableLE α] : DecidableEq α
     else isFalse fun heq => hab (heq ▸ le_refl _)
 
 -- See Note [decidable namespace]
-lemma Decidable.lt_or_eq_of_le [DecidableLE α] (hab : a ≤ b) : a < b ∨ a = b :=
+protected lemma Decidable.lt_or_eq_of_le [DecidableLE α] (hab : a ≤ b) : a < b ∨ a = b :=
   if hba : b ≤ a then Or.inr (le_antisymm hab hba) else Or.inl (lt_of_le_not_ge hab hba)
 
+protected lemma Decidable.le_iff_lt_or_eq [DecidableLE α] : a ≤ b ↔ a < b ∨ a = b :=
+  ⟨Decidable.lt_or_eq_of_le, le_of_lt_or_eq⟩
+
+
 lemma lt_or_eq_of_le : a ≤ b → a < b ∨ a = b := open scoped Classical in Decidable.lt_or_eq_of_le
+lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := open scoped Classical in Decidable.le_iff_lt_or_eq
 
 end PartialOrder

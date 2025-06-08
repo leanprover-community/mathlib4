@@ -314,7 +314,7 @@ theorem not_bot_lt_iff : ¬⊥ < a ↔ a = ⊥ :=
   bot_lt_iff_ne_bot.not_left
 
 theorem eq_bot_or_bot_lt (a : α) : a = ⊥ ∨ ⊥ < a :=
-  bot_le.eq_or_gt
+  bot_le.eq_or_lt'
 
 theorem eq_bot_of_minimal (h : ∀ b, ¬b < a) : a = ⊥ :=
   (eq_bot_or_bot_lt a).resolve_right (h ⊥)

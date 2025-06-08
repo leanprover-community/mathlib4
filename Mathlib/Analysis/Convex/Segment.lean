@@ -126,7 +126,7 @@ theorem insert_endpoints_openSegment (x y : E) :
   simp only [subset_antisymm_iff, insert_subset_iff, left_mem_segment, right_mem_segment,
     openSegment_subset_segment, true_and]
   rintro z ⟨a, b, ha, hb, hab, rfl⟩
-  refine hb.eq_or_gt.imp ?_ fun hb' => ha.eq_or_gt.imp ?_ fun ha' => ?_
+  refine hb.eq_or_lt.imp ?_ fun hb' => ha.eq_or_lt.imp ?_ fun ha' => ?_
   · rintro rfl
     rw [← add_zero a, hab, one_smul, zero_smul, add_zero]
   · rintro rfl
