@@ -106,16 +106,16 @@ lemma IsTransitiveRel.comp_eq_of_idRel_subset {s : Set (X × X)}
     s ○ s = s :=
   le_antisymm h.comp_subset_self (subset_comp_self h')
 
-lemma IsTransitiveRel.prod_subset_trans {s : Set (X × X)} {t u v : Set X}
-    (hs : IsTransitiveRel s) (htu : t ×ˢ u ⊆ s) (huv : u ×ˢ v ⊆ s) (hu : u.Nonempty) :
+lemma IsTransitiveRel.prod_subset_trans {s : Set (X × X)} {t u v : Set X} (hs : IsTransitiveRel s)
+    (htu : t ×ˢ u ⊆ s) (huv : u ×ˢ v ⊆ s) (hu : u.Nonempty) :
     t ×ˢ v ⊆ s := by
   rintro ⟨a, b⟩ hab
   simp only [mem_prod] at hab
   obtain ⟨x, hx⟩ := hu
   exact hs (@htu ⟨a, x⟩ ⟨hab.left, hx⟩) (@huv ⟨x, b⟩ ⟨hx, hab.right⟩)
 
-lemma IsTransitiveRel.mem_filter_prod_trans {s : Set (X × X)} {f g h : Filter X}
-    [g.NeBot] (hs : IsTransitiveRel s) (hfg : s ∈ f ×ˢ g) (hgh : s ∈ g ×ˢ h) :
+lemma IsTransitiveRel.mem_filter_prod_trans {s : Set (X × X)} {f g h : Filter X} [g.NeBot]
+    (hs : IsTransitiveRel s) (hfg : s ∈ f ×ˢ g) (hgh : s ∈ g ×ˢ h) :
     s ∈ f ×ˢ h :=
   Eventually.trans_prod (by simpa using hfg) (by simpa using hgh) hs
 

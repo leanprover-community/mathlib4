@@ -22,9 +22,9 @@ variable {X Y : Type*}
 open Filter Set Topology Uniformity
 
 lemma IsUltraUniformity.of_isUniformInducing {Y : Type*} [UniformSpace X] [UniformSpace Y]
-    [h : IsUltraUniformity Y] {f : X → Y} (hf : IsUniformInducing f) :
+    [IsUltraUniformity Y] {f : X → Y} (hf : IsUniformInducing f) :
     IsUltraUniformity X :=
-  hf.comap_uniformSpace ▸ .comap h f
+  hf.comap_uniformSpace ▸ .comap inferInstance f
 
 lemma IsSymmetricRel.cauchyFilter_gen [UniformSpace X] {s : Set (X × X)} (h : IsSymmetricRel s) :
     IsSymmetricRel (CauchyFilter.gen s) := by
@@ -36,10 +36,9 @@ lemma IsTransitiveRel.cauchyFilter_gen [UniformSpace X] {s : Set (X × X)} (hs :
   intro f g h hfg hgh
   exact hs.mem_filter_prod_comm hfg hgh
 
-instance IsUltraUniformity.cauchyFilter [UniformSpace X]
-    [h : IsUltraUniformity X] :
+instance IsUltraUniformity.cauchyFilter [UniformSpace X] [IsUltraUniformity X] :
     IsUltraUniformity (CauchyFilter X) := by
-  apply mk_of_hasBasis (CauchyFilter.basis_uniformity h.hasBasis)
+  apply mk_of_hasBasis (CauchyFilter.basis_uniformity IsUltraUniformity.hasBasis)
   · exact fun _ ⟨_, hU, _⟩ ↦ hU.cauchyFilter_gen
   · exact fun _ ⟨_, _, hU⟩ ↦ hU.cauchyFilter_gen
 
@@ -48,10 +47,10 @@ lemma IsUltraUniformity.cauchyFilter_iff [UniformSpace X] :
   ⟨fun h ↦ h.of_isUniformInducing CauchyFilter.isUniformInducing_pureCauchy,
    fun _ ↦ inferInstance⟩
 
-instance IsUltraUniformity.separationQuotient [UniformSpace X]
-    [h : IsUltraUniformity X] :
+instance IsUltraUniformity.separationQuotient [UniformSpace X] [IsUltraUniformity X] :
     IsUltraUniformity (SeparationQuotient X) := by
-  have := h.hasBasis.map (Prod.map SeparationQuotient.mk SeparationQuotient.mk)
+  have := IsUltraUniformity.hasBasis.map
+    (Prod.map SeparationQuotient.mk (SeparationQuotient.mk (X := X)))
   rw [← SeparationQuotient.uniformity_eq] at this
   apply mk_of_hasBasis this
   · exact fun _ ⟨_, hU, _⟩ ↦ hU.image_prodMap _
@@ -76,7 +75,6 @@ lemma IsUltraUniformity.completion_iff [UniformSpace X] :
   rw [iff_comm, ← cauchyFilter_iff, ← separationQuotient_iff]
   exact Iff.rfl
 
-instance IsUltraUniformity.completion [UniformSpace X]
-    [h : IsUltraUniformity X] :
+instance IsUltraUniformity.completion [UniformSpace X] [IsUltraUniformity X] :
     IsUltraUniformity (UniformSpace.Completion X) :=
-  completion_iff.2 h
+  completion_iff.2 inferInstance
