@@ -14,11 +14,11 @@ import Mathlib.Algebra.Group.Subgroup.Lattice
 
 /-! # Range of MonoidHomWithZero
 Given a function `f : A → B` whose codomain `B` is a `MonoidWithZero`, we define the
-type `range₀`, by endowing the range of `f` with a `0` (inherited from that of `B`). We then
-provide some properties of `range₀ f`. Hypotheses on `A`, `B` and `f` are added as needed: in
-particular, when `B` is a `GroupWithZero` so is `range₀ f` and if `B` is commutative, then
-`range₀ f` is also commutative and can be provided with a more explicit description (see
-`MonoidHomWithZero.mem_range₀_iff_of_comm`).
+type `range₀`, by endowing the invertible elements in the range of `f` with a `0` (inherited from
+that of `B`). We then provide some properties of `range₀ f`. Hypotheses on `A`, `B` and `f` are
+added as needed: in particular, when `B` is a `GroupWithZero` so is `range₀ f` and if `B` is
+commutative, then `range₀ f` is also commutative and can be provided with a more explicit
+description (see `MonoidHomWithZero.mem_range₀_iff_of_comm`).
 
 ## Main Results
 * `range₀ f` is the smallest submonoid with zero containing the range of `f`;
@@ -32,6 +32,8 @@ explicitely descibed as the elements that are ratios of terms in `range f` , see
 The definition of `range₀` (as a `Submonoid B`) simply requires that `B` be a nontrivial
 `CancelMonoidWithZero`, and no assumption neither on `A` nor on `f` is need. To define an instance
 of `GroupWithZero` on `range₀ f`, we need `GroupWithZero B` but still no assumption on `A` or `f`.
+That `B` is a `GroupWithZero`is also needed to prove that all elements in the image of `f` give rise
+to terms in `range₀ f`.
 
 Commutativity of `B` and compatiblity of `f` with the monoidal structures is only required to
 provide the explicit description of `range₀ f` in `MonoidHomWithZero.mem_range₀_iff_of_comm`.
