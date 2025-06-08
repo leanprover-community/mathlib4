@@ -129,13 +129,10 @@ open Classical in
 The Finset of all `σ`-flags with vertex type `α` (where both `α` and `ι` are finite).
 -/
 noncomputable def SigmaFlags (σ : SimpleGraph ι) : Finset (Flag α ι) := {F | F.IsSigma σ}
-#check Finset.card_eq_sum_card_fiberwise
-#check Finset.sum_comm' -- use this below
+
 variable {k m n : ℕ}
 local notation "‖" x "‖" => Fintype.card x
 
-#check SimpleGraph.induce
-#check Subtype.ext_iff_val
 open Finset
 /--
 Embeddings of `H` in `G[t]` are equivalent to embeddings of `H` in `G` that map into `t`.
