@@ -12,7 +12,7 @@ This file defines polynomial functors and the W-type construction as a polynomia
 (For the M-type construction, see `Mathlib/Data/PFunctor/Univariate/M.lean`.)
 -/
 
-universe u uA uB uA₁ uB₁ uA₂ uB₂ v v₁ v₂ v₃
+universe u v uA uB uA₁ uB₁ uA₂ uB₂ v₁ v₂ v₃
 
 /-- A polynomial functor `P` is given by a type `A` and a family `B` of types over `A`. `P` maps
 any type `α` to a new type `P α`, which is defined as the sigma type `Σ x, P.B x → α`.
@@ -38,10 +38,10 @@ variable (P : PFunctor.{uA, uB}) {α : Type v₁} {β : Type v₂} {γ : Type v�
 
 /-- Applying `P` to an object of `Type` -/
 @[coe]
-def Obj (α : Type v) : Type (max uA uB v) :=
+def Obj (α : Type v) : Type (max v uA uB) :=
   Σ x : P.A, P.B x → α
 
-instance : CoeFun PFunctor.{uA, uB} (fun _ => Type v → Type (max uA uB v)) where
+instance : CoeFun PFunctor.{uA, uB} (fun _ => Type v → Type (max v uA uB)) where
   coe := Obj
 
 /-- Applying `P` to a morphism of `Type` -/
@@ -70,7 +70,7 @@ protected theorem id_map : ∀ x : P α, P.map id x = x := fun ⟨_, _⟩ => rfl
 protected theorem map_map (f : α → β) (g : β → γ) :
     ∀ x : P α, P.map g (P.map f x) = P.map (g ∘ f) x := fun ⟨_, _⟩ => rfl
 
-instance : LawfulFunctor (Obj.{uA, uB, v} P) where
+instance : LawfulFunctor (Obj.{v} P) where
   map_const := rfl
   id_map x := P.id_map x
   comp_map f g x := P.map_map f g x |>.symm
