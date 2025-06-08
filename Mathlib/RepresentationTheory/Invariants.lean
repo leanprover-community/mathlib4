@@ -245,22 +245,4 @@ lemma invariantsAdjunction_homEquiv_symm_apply_hom
 noncomputable instance : (invariantsFunctor k G).IsRightAdjoint :=
   (invariantsAdjunction k G).isRightAdjoint
 
-/-- The adjunction between the functor equipping a module with the trivial representation, and
-the functor sending a representation to its submodule of invariants. -/
-noncomputable abbrev invariantsAdjunction : trivialFunctor G ⊣ invariantsFunctor k G :=
-  Adjunction.mkOfHomEquiv {
-    homEquiv _ _ := {
-      toFun f := ModuleCat.ofHom <|
-        LinearMap.codRestrict _ f.hom.hom fun x g => (hom_comm_apply f _ _).symm
-      invFun f := {
-        hom := ModuleCat.ofHom (Submodule.subtype _ ∘ₗ f.hom)
-        comm g := by ext x; exact ((f x).2 g).symm }
-      left_inv := by intro; rfl
-      right_inv := by intro; rfl }
-    homEquiv_naturality_left_symm := by intros; rfl
-    homEquiv_naturality_right := by intros; rfl }
-
-noncomputable instance : Limits.PreservesLimits (invariantsFunctor k G) :=
-  (invariantsAdjunction k G).rightAdjoint_preservesLimits
-
 end Rep

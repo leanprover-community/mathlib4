@@ -129,15 +129,12 @@ theorem d_eq [DecidableEq G] :
     d A n = (coinvariantsTensorFreeLEquiv A (Fin (n + 1) → G)).toModuleIso.inv ≫
       (coinvariantsTensorBarResolution A).d (n + 1) n ≫
       (coinvariantsTensorFreeLEquiv A (Fin n → G)).toModuleIso.hom := by
-  ext g a : 3
-  simp only [LinearMap.coe_comp, Function.comp_apply, lsingle_apply]
-  rw [d_single]
-  simp_all [finsuppToCoinvariantsTensorFree_single (A := A) g,
+  ext : 3
+  simp_all [d_single (k := k) (G := G), finsuppToCoinvariantsTensorFree_single (A := A),
     coinvariantsTensorFreeToFinsupp_mk_tmul_single (A := A) (α := Fin n → G),
-    instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj,
-    instMonoidalCategoryStruct_whiskerLeft, ModuleCat.MonoidalCategory.whiskerLeft,
-    coinvariantsTensorBarResolution, TensorProduct.tmul_add, Coinvariants.map,
-    TensorProduct.tmul_sum, map_sum, map_add, barComplex.d_single (k := k) _ g]
+    ModuleCat.MonoidalCategory.tensorObj, ModuleCat.MonoidalCategory.whiskerLeft, tensorObj_def,
+    whiskerLeft_def, coinvariantsTensorBarResolution, TensorProduct.tmul_add,
+    TensorProduct.tmul_sum, barComplex.d_single (k := k)]
 
 end inhomogeneousChains
 
