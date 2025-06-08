@@ -67,7 +67,7 @@ section
 @[simps]
 def trivial (X : V) : Action V G := { V := X, ρ := 1 }
 
-instance inhabited' : Inhabited (Action Type* G) :=
+instance inhabited' : Inhabited (Action (Type*) G) :=
   ⟨⟨PUnit, 1⟩⟩
 
 instance : Inhabited (Action AddCommGrp G) :=

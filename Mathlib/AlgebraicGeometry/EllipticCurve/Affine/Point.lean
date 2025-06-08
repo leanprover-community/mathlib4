@@ -434,7 +434,7 @@ lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
         rcases hq' : q.degree with _ | dq -- `hq' : ` should be redundant
         · exact (hq hq').elim -- `hq'` should be `rfl`
         · rw [hq'] at hdpq hdq -- line should be redundant
-          rcases le_or_lt dp (dq + 1) with hpq | hpq
+          rcases le_or_gt dp (dq + 1) with hpq | hpq
           · convert (degree_sub_eq_right_of_degree_lt <| (degree_sub_le _ _).trans_lt <|
                       max_lt_iff.mpr ⟨hdp.trans_lt _, hdpq.trans_lt _⟩).trans
               (max_eq_right_of_lt _).symm <;> rw [hdq] <;>
@@ -544,12 +544,12 @@ lemma add_of_Y_eq {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h�
     (hx : x₁ = x₂) (hy : y₁ = W.negY x₂ y₂) : some h₁ + some h₂ = 0 := by
   simpa only [add_def, add] using dif_pos ⟨hx, hy⟩
 
-@[simp]
+-- Removing `@[simp]`, because `hy` causes a maximum recursion depth error in the simpNF linter.
 lemma add_self_of_Y_eq {x₁ y₁ : F} {h₁ : W.Nonsingular x₁ y₁} (hy : y₁ = W.negY x₁ y₁) :
     some h₁ + some h₁ = 0 :=
   add_of_Y_eq rfl hy
 
-@[simp]
+-- @[simp] -- Not a good simp lemma, since `hy` is not in simp normal form.
 lemma add_of_Y_ne {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ : W.Nonsingular x₂ y₂}
     (hy : y₁ ≠ W.negY x₂ y₂) :
     some h₁ + some h₂ = some (nonsingular_add h₁ h₂ fun hxy => hy hxy.right) :=
@@ -560,7 +560,7 @@ lemma add_of_Y_ne' {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h
     some h₁ + some h₂ = -some (nonsingular_negAdd h₁ h₂ fun hxy => hy hxy.right) :=
   add_of_Y_ne hy
 
-@[simp]
+-- @[simp] -- Not a good simp lemma, since `hy` is not in simp normal form.
 lemma add_self_of_Y_ne {x₁ y₁ : F} {h₁ : W.Nonsingular x₁ y₁} (hy : y₁ ≠ W.negY x₁ y₁) :
     some h₁ + some h₁ = some (nonsingular_add h₁ h₁ fun hxy => hy hxy.right) :=
   add_of_Y_ne hy

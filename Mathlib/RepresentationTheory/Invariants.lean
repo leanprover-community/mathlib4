@@ -209,7 +209,7 @@ abbrev quotientToInvariants : Rep k (G ⧸ S) := Rep.of (A.ρ.quotientToInvarian
 variable (k G)
 
 /-- The functor sending a representation to its submodule of invariants. -/
-@[simps]
+@[simps! obj_carrier map_hom]
 noncomputable def invariantsFunctor : Rep k G ⥤ ModuleCat k where
   obj A := ModuleCat.of k A.ρ.invariants
   map {A B} f := ModuleCat.ofHom <| (f.hom.hom ∘ₗ A.ρ.invariants.subtype).codRestrict
@@ -218,8 +218,32 @@ noncomputable def invariantsFunctor : Rep k G ⥤ ModuleCat k where
       simp_all [hc g]
 
 instance : (invariantsFunctor k G).PreservesZeroMorphisms where
-
 instance : (invariantsFunctor k G).Additive where
+instance : (invariantsFunctor k G).Linear k where
+
+/-- The adjunction between the functor equipping a module with the trivial representation, and
+the functor sending a representation to its submodule of invariants. -/
+@[simps]
+noncomputable def invariantsAdjunction : trivialFunctor k G ⊣ invariantsFunctor k G where
+  unit := { app _ := ModuleCat.ofHom <| LinearMap.id.codRestrict _ <| by simp [trivialFunctor] }
+  counit := { app X := {
+    hom := ModuleCat.ofHom <| Submodule.subtype _
+    comm g := by ext x; exact (x.2 g).symm }}
+
+@[simp]
+lemma invariantsAdjunction_homEquiv_apply_hom
+    {X : ModuleCat k} {Y : Rep k G} (f : (trivialFunctor k G).obj X ⟶ Y) :
+    ((invariantsAdjunction k G).homEquiv _ _ f).hom =
+      f.hom.hom.codRestrict _ (by intros _ _; exact (hom_comm_apply f _ _).symm) := rfl
+
+@[simp]
+lemma invariantsAdjunction_homEquiv_symm_apply_hom
+    {X : ModuleCat k} {Y : Rep k G} (f : X ⟶ (invariantsFunctor k G).obj Y) :
+    (((invariantsAdjunction k G).homEquiv _ _).symm f).hom.hom =
+      Submodule.subtype _ ∘ₗ f.hom := rfl
+
+noncomputable instance : (invariantsFunctor k G).IsRightAdjoint :=
+  (invariantsAdjunction k G).isRightAdjoint
 
 /-- The adjunction between the functor equipping a module with the trivial representation, and
 the functor sending a representation to its submodule of invariants. -/
