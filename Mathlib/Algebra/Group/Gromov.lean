@@ -155,6 +155,7 @@ lemma WordDist_triangle (x y z: G): WordDist (S := S) x z ≤ WordDist (S := S) 
 
 -- TODO - I'm not certain that these are actually the correct instances for the proof
 
+
 noncomputable instance WordDist.instPseudoMetricSpace: PseudoMetricSpace G where
   dist x y := WordDist (G := G) (S := S) x y
   dist_self x := by
@@ -504,6 +505,9 @@ instance LipschitzH.instAddCommGroup: AddCommGroup (LipschitzH (G := G)) := {
 }
 
 
+noncomputable def LipschitzSemiNorm (f: LipschitzH (S := S)) := sInf { k: NNReal | LipschitzWith k f.toFun }
+
+
 -- V is the vector space
 abbrev V := Module ℂ (LipschitzH (G := G))
 
@@ -633,7 +637,11 @@ def gAct_const (g: G) (z: ℂ): gAct g (ConstLipschitzH z) = ConstLipschitzH z :
 abbrev W := (LipschitzH (G := G)) ⧸ ConstF
 
 
-def GRep: Representation ℂ G (LipschitzH (G := G)) := {
+
+-- We don't use `Representation` directly, since it's an alias involving LinearMap,
+-- and we need ContinuousLinearMap in order to be able to use `ContinuousLinearMap.opNorm`
+-- Representation ℂ G (LipschitzH (G := G))
+def GRep: (G →* (LipschitzH (G := G)) →SL[ℂ] (LipschitzH (G := G)))  := {
   toFun := fun g => {
     toFun := gAct g
     map_add' := by
@@ -673,6 +681,37 @@ def GRepW: Representation ℂ G (W (G := G)) := Representation.quotient (GRep (G
   rw [← hK]
   rw [gAct_const]
 )
+
+-- The space 'GL(W)' of linear functions from W to W
+abbrev GL_W := W (G := G) →ₗ[ℂ] W (G := G)
+
+def GLW_toContinuousLinearMap (w: GL_W): ContinuousLinearMap (W (G := G)) (W (G := G)) := {
+  toFun := w.toFun
+  map_add' := by
+    intro x y
+    ext a
+    simp [DFunLike.coe]
+  map_smul' := by
+    intro c x
+    ext a
+    simp [DFunLike.coe]
+    simp [HSMul.hSMul, SMul.smul]
+}
+
+instance GLW_seminorm:  SeminormedAddCommGroup (W (G := G) →ₗ[ℂ] W (G := G)) where
+  norm := ContinuousLinearMap.opNorm
+
+instance GLW_norm: NormedSpace ℝ (W →ₗ[ℂ] W) where
+
+
+
+-- The image of G under our representation: ρ(G) in the Vikman paper
+def rho_g := Set.range (GRepW (G := G))
+
+theorem compact_rho_g: IsCompact (rho_g (G := G)) := by
+  unfold rho_g
+  apply Set.range_isCompact
+  apply Representation.isCompact
 
 -- TODO - use the fact that G is finitely generated
 instance countableG: Countable (Additive (MulOpposite G)) := by
