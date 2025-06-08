@@ -652,8 +652,7 @@ attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_l
 theorem not_dvd_differentIdeal_of_intTrace_not_mem
     [NoZeroSMulDivisors A B] [Module.Finite A B]
     [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
-    {p : Ideal A}
-    (P Q : Ideal B) (hP : P * Q = Ideal.map (algebraMap A B) p)
+    {p : Ideal A} (P Q : Ideal B) (hP : P * Q = Ideal.map (algebraMap A B) p)
     (x : B) (hxQ : x ∈ Q) (hx : Algebra.intTrace A B x ∉ p) :
     ¬ P ∣ differentIdeal A B := by
   by_cases hp : p = ⊥
@@ -720,9 +719,8 @@ omit [IsIntegrallyClosed A] in
 theorem not_dvd_differentIdeal_of_isCoprime_of_isSeparable
     [IsDedekindDomain A] [NoZeroSMulDivisors A B] [Module.Finite A B]
     [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
-    {p : Ideal A} [p.IsMaximal]
-    (P Q : Ideal B) (hPQ : IsCoprime P Q)
-    (hP : P * Q = Ideal.map (algebraMap A B) p) [P.IsMaximal] [P.LiesOver p]
+    {p : Ideal A} [p.IsMaximal] (P Q : Ideal B) [P.IsMaximal] [P.LiesOver p]
+    (hPQ : IsCoprime P Q) (hP : P * Q = Ideal.map (algebraMap A B) p)
     [Algebra.IsSeparable (A ⧸ p) (B ⧸ P)] :
     ¬ P ∣ differentIdeal A B := by
   letI : Algebra (A ⧸ p) (B ⧸ Q) := Ideal.Quotient.algebraQuotientOfLEComap (by
@@ -742,5 +740,20 @@ theorem not_dvd_differentIdeal_of_isCoprime_of_isSeparable
   · rw [← Ideal.Quotient.eq_zero_iff_mem, ← Algebra.trace_quotient_eq_of_isDedekindDomain,
       hy, Algebra.trace_eq_of_algEquiv, Algebra.trace_prod_apply]
     simpa
+
+omit [IsIntegrallyClosed A] in
+theorem not_dvd_differentIdeal_of_isCoprime
+    [IsDedekindDomain A] [NoZeroSMulDivisors A B] [Module.Finite A B]
+    [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
+    {p : Ideal A} [p.IsMaximal] [Finite (A ⧸ p)] (P Q : Ideal B) [P.IsMaximal]
+    (hPQ : IsCoprime P Q) (hP : P * Q = Ideal.map (algebraMap A B) p) :
+    ¬ P ∣ differentIdeal A B := by
+  have : P.LiesOver p := by
+    constructor
+    refine ‹p.IsMaximal›.eq_of_le ?_ ?_
+    · simpa using ‹P.IsMaximal›.ne_top
+    · rw [← Ideal.map_le_iff_le_comap, ← hP]
+      exact Ideal.mul_le_right
+  refine not_dvd_differentIdeal_of_isCoprime_of_isSeparable A P Q hPQ hP
 
 end
