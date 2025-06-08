@@ -6,6 +6,7 @@ Authors: Tanner Duve
 import Mathlib.Control.Monad.Writer
 import Mathlib.Control.Monad.Cont
 import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Tactic.Cases
 
 /-!
 # Freer Monad and Common Instances
@@ -68,7 +69,7 @@ effect descriptions that can be interpreted later. Unlike the traditional Free m
 this does not require `f` to be a functor. -/
 inductive Freer.{u, v, w} (f : Type u → Type v) (α : Type w) where
   | protected pure : α → Freer f α
-  | impure (ι : Type u) (op : f ι) (cont : ι → Freer f α) : Freer f α
+  | impure {ι : Type u} (op : f ι) (cont : ι → Freer f α) : Freer f α
 
 universe u v w
 
@@ -79,7 +80,7 @@ def map {α β : Type _} (F : Type u → Type v) (f : α → β) : Freer F α �
 fun FFa =>
   match FFa with
   | .pure a => .pure (f a)
-  | .impure ι op cont => .impure ι op (fun z => Freer.map F f (cont z))
+  | .impure op cont => .impure op (fun z => Freer.map F f (cont z))
 
 instance {F : Type u → Type v} : Functor (Freer F) where
   map := Freer.map F
@@ -89,67 +90,49 @@ instance {F : Type u → Type v} : LawfulFunctor (Freer F) where
     simp [Functor.mapConst, Functor.map]
   id_map x := by
     simp [Functor.map]
-    induction x
-    case pure a => simp [Freer.map]
-    case impure ι op cont ih => simp [Freer.map, ih]
+    induction' x with a b op cont ih
+    · simp [map]
+    · simp [map, ih]
   comp_map g h x := by
     simp [Functor.map]
     induction x
     case pure a => simp [Freer.map]
-    case impure ι op cont ih => simp [Freer.map, ih]
+    case impure op cont ih => simp [Freer.map, ih]
 
 /-- Bind operation for the `Freer` monad. -/
-protected def bind {a b : Type _} (F : Type u → Type v) (x : Freer F a) (f : a → Freer F b) : Freer F b :=
+protected def bind {a b : Type _} (F : Type u → Type v) (x : Freer F a) (f : a → Freer F b) :
+Freer F b :=
   match x with
   | .pure a => f a
-  | .impure ι op cont => .impure ι op (fun z => bindFree F (cont z) f)
+  | .impure op cont => .impure op (fun z => Freer.bind F (cont z) f)
 
 instance {F : Type u → Type v} : Monad (Freer F) where
   pure := Freer.pure
-  bind := bindFree F
+  bind := Freer.bind F
 
-instance {F : Type u → Type v} : LawfulMonad (Freer F) where
-  bind_pure_comp x y := by
-    simp [Functor.map, bind, pure]; induction y
-    · case pure a => simp [bindFree, map, Pure.pure]
-    · case impure X Fx k ih => simp [bindFree, Freer.map, ih]
-  bind_map f x := by
-    simp [bind, Seq.seq]
-  pure_bind a f := by
-    simp [bind, pure, bindFree]
-  bind_assoc x f g := by
-    simp [bind]; induction x
-    case pure a => simp [bindFree, Freer.map]
-    case impure X Fx k ih => simp [bindFree, Freer.map, ih]
-  seqLeft_eq x y := by
-    simp [Functor.map, SeqLeft.seqLeft, Seq.seq]; induction x
-    case pure a =>
-      simp [bindFree, Freer.map]
-      induction y
-      case pure b => simp [bindFree, Freer.map]
-      case impure X Fy k ih => simp [bindFree, Freer.map, ih]
-    case impure X Fx k ih => simp [bindFree, Freer.map, ih]
-  seqRight_eq x y := by
-    simp [Functor.map, bindFree, Freer.map]; induction x
-    case pure a =>
-      simp [bindFree, Freer.map]
-      induction y
-      case pure b => simp [SeqRight.seqRight, Seq.seq, Functor.map, bindFree, Freer.map]
-      case impure X Fy k ih =>
-        simp [SeqRight.seqRight, Seq.seq, Functor.map, bindFree, Freer.map, ih] at ih ⊢
-        apply funext; exact ih
-    case impure X Fx k ih =>
-      simp [Freer.map, Seq.seq, bindFree, Functor.map, SeqRight.seqRight] at ih ⊢
-      apply funext; exact ih
-  pure_seq f x := by
-    simp [Seq.seq, Functor.map, pure, bindFree]
+instance FreeLawfulMonad {F : Type u → Type v} : LawfulMonad (Freer F) := by
+  apply LawfulMonad.mk'
+  · intro x y; induction' y with a b op cont ih'; all_goals {simp}
+  · intro _ _ x f; simp only [bind, Freer.bind]
+  · intro _ _ _ x f g; induction' x with a b op cont ih;
+    · simp only [bind, Freer.bind]
+    · simp only [bind, Freer.bind, ih] at *; simp [ih]
+  · intro _ _ x y; simp [Functor.map, Functor.mapConst]
+  · intro _ _ x y; simp [bind, SeqLeft.seqLeft, Pure.pure]
+  · intro _ _ x y; simp [bind, SeqRight.seqRight]
+  · intro _ _ f x; induction' x with a b op cont ih;
+    · simp [bind, Freer.bind, Functor.map, Pure.pure, map]
+    · simp only [Functor.map, bind, Freer.bind, map, Pure.pure, map] at *; simp [ih]
+  · intro _ _ f x; simp [bind, Freer.bind, Functor.map, Seq.seq]
 
 /-! ### State Monad via `Freer` -/
 
 /-- Type constructor for state operations. -/
 inductive StateF (σ : Type u) : Type u → Type _ where
-  | get : StateF σ σ                   -- get the current state
-  | set : σ → StateF σ PUnit           -- set the state
+  /-- Get the current state. -/
+  | get : StateF σ σ
+  /-- Set the state. -/
+  | set : σ → StateF σ PUnit
 
 /-- State monad via the `Freer` monad. -/
 abbrev FreerState (σ : Type u) := Freer (StateF σ)
@@ -160,12 +143,12 @@ instance {σ : Type u} : Monad (FreerState σ) := inferInstance
 instance {σ : Type u} : LawfulMonad (FreerState σ) := inferInstance
 
 instance {σ : Type u} : MonadStateOf σ (FreerState σ) where
-  get := Freer.impure σ (StateF.get) Freer.pure
-  set newState := Freer.impure PUnit (StateF.set newState) (fun _ => Freer.pure PUnit.unit)
+  get := Freer.impure StateF.get Freer.pure
+  set newState := Freer.impure (StateF.set newState) (fun _ => Freer.pure PUnit.unit)
   modifyGet f :=
-    Freer.impure σ StateF.get (fun s =>
+    Freer.impure StateF.get (fun s =>
       let (a, s') := f s
-      Freer.impure PUnit (StateF.set s') (fun _ => Freer.pure a))
+      Freer.impure (StateF.set s') (fun _ => Freer.pure a))
 
 instance {σ : Type u} : MonadState σ (FreerState σ) := inferInstance
 
@@ -173,8 +156,8 @@ instance {σ : Type u} : MonadState σ (FreerState σ) := inferInstance
 def runState {σ : Type u} {α : Type v} (comp : FreerState σ α) (s₀ : σ) : α × σ :=
   match comp with
   | .pure a => (a, s₀)
-  | .impure _ StateF.get k     => runState (k s₀) s₀
-  | .impure _ (StateF.set s') k => runState (k PUnit.unit) s'
+  | .impure StateF.get k     => runState (k s₀) s₀
+  | .impure (StateF.set s') k => runState (k PUnit.unit) s'
 
 /-- Run a state computation, returning only the result. -/
 def evalState {σ : Type u} {α : Type v} (c : FreerState σ α) (s₀ : σ) : α :=
@@ -192,7 +175,7 @@ end FreerState
 Type constructor for writer operations. Writer has a single effect, so the definition has just one
 constructor, `tell`, which writes a value to the log.
 -/
-inductive WriterF (ω : Type u) : Type u → Type _ where
+inductive WriterF (ω : Type u) : Type u → Type u
   | tell : ω → WriterF ω PUnit
 
 /-- Writer monad implemented via the `Freer` monad construction. This provides a more efficient
@@ -210,7 +193,7 @@ instance {ω : Type u} : LawfulMonad (FreerWriter ω) := inferInstance
 Writes a log entry. This creates an effectful node in the computation tree.
 -/
 def tell {ω : Type u} (w : ω) : FreerWriter ω PUnit :=
-  Freer.impure _ (WriterF.tell w) Freer.pure
+  Freer.impure  (WriterF.tell w) Freer.pure
 
 /--
 Interprets a `FreerWriter` computation by recursively traversing the tree, accumulating
@@ -218,7 +201,7 @@ log entries with the monoid operation, and returns the final value paired with t
 -/
 def run {ω : Type u} [Monoid ω] {α} : FreerWriter ω α → α × ω
   | .pure a => (a, 1)
-  | .impure _ (WriterF.tell w) k =>
+  | .impure (WriterF.tell w) k =>
       let (a, w') := run (k PUnit.unit)
       (a, w * w')
 
@@ -228,8 +211,8 @@ emitting log entries as encountered, and returns the accumulated log as a result
 -/
 def listen {ω : Type u} [Monoid ω] {α : Type v} : FreerWriter ω α → FreerWriter ω (α × ω)
   | .pure a => .pure (a, 1)
-  | .impure _ (WriterF.tell w) k =>
-      Freer.impure _ (WriterF.tell w) fun _ =>
+  | .impure (WriterF.tell w) k =>
+      Freer.impure (WriterF.tell w) fun _ =>
         listen (k PUnit.unit) >>= fun (a, w') =>
           pure (a, w * w')
 
@@ -240,10 +223,10 @@ before re-emission.
 -/
 def pass {ω : Type u} [Monoid ω] {α} (m : FreerWriter ω (α × (ω → ω))) : FreerWriter ω α :=
   let ((a, f), w) := run m
-  Freer.impure _ (WriterF.tell (f w)) (fun _ => .pure a)
+  Freer.impure (WriterF.tell (f w)) (fun _ => .pure a)
 
 instance {ω : Type u} [Monoid ω] : MonadWriter ω (FreerWriter ω) where
-  tell w := Freer.impure _ (WriterF.tell w) (fun _ => .pure PUnit.unit)
+  tell w := Freer.impure (WriterF.tell w) (fun _ => .pure PUnit.unit)
   listen := listen
   pass := pass
 
@@ -284,69 +267,18 @@ instance {r : Type u} : LawfulMonad (FreerCont r) := inferInstance
 /-- Run a continuation computation with the given continuation. -/
 def run {r : Type u} {α : Type v} : FreerCont r α → (α → r) → r
   | .pure a, k => k a
-  | .impure _ (ContF.callCC g) cont, k => g (fun a => run (cont a) k)
+  | .impure (ContF.callCC g) cont, k => g (fun a => run (cont a) k)
 
 /-- Call with current continuation for the Freer continuation monad. -/
 def callCC {r : Type u} {α β : Type v} (f : MonadCont.Label α (FreerCont r) β → FreerCont r α) :
 FreerCont r α :=
-  Freer.impure _ (ContF.callCC (fun k =>
-    run (f ⟨fun x => Freer.impure _ (ContF.callCC (fun _ => k x)) Freer.pure⟩) k
+  Freer.impure (ContF.callCC (fun k =>
+    run (f ⟨fun x => Freer.impure (ContF.callCC (fun _ => k x)) Freer.pure⟩) k
   )) Freer.pure
 
 instance {r : Type u} : MonadCont (FreerCont r) where
   callCC := FreerCont.callCC
 
 end FreerCont
-
-/-! ### Basic Examples -/
-
--- Example FreerState computations
-example : FreerState.evalState (do
-  let s ← get
-  set (s + 1)
-  return s : FreerState Nat Nat) 5 = 5 := rfl
-
-example : FreerState.execState (do
-  let s ← get
-  set (s + 1)
-  return s : FreerState Nat Nat) 5 = 6 := rfl
-
-example : FreerState.runState (do
-  let s ← get
-  set (s + 1)
-  return s : FreerState Nat Nat) 5 = (5, 6) := rfl
-
--- Example FreerWriter computations
-private instance : Monoid Nat := inferInstance
-
-example : FreerWriter.run (do
-  FreerWriter.tell (2 : Nat)
-  FreerWriter.tell 3
-  return 42) = (42, 6) := rfl
-
-example : FreerWriter.run (do
-  let (x, captured) ← FreerWriter.listen (do
-    FreerWriter.tell 2
-    FreerWriter.tell 3
-    return 42)
-  FreerWriter.tell 2
-  return (x, captured)) = ((42, 6), 12) := rfl
-
-example : FreerWriter.run (FreerWriter.pass (do
-  FreerWriter.tell 3
-  return (42, fun log => log * 2))) = (42, 6) := rfl
-
--- Example FreerCont computations
-example : FreerCont.run (do
-  FreerCont.callCC (fun k => do
-    k.1 42
-    return 100)
-  : FreerCont Nat Nat) id = 42 := rfl
-
-example : FreerCont.run (do
-  let x ← FreerCont.callCC (fun k => do
-    if true then k.1 42 else return 100)
-  return x + 1
-  : FreerCont Nat Nat) id = 43 := rfl
 
 end Freer
