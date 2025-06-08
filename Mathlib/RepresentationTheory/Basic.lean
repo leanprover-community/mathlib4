@@ -57,12 +57,12 @@ variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k 
 @[simp]
 theorem ρ_inv_self_apply (g : G) (x : V) :
     ρ g⁻¹ (ρ g x) = x := by
-  simp [← LinearMap.mul_apply, ← map_mul]
+  simp [← Module.End.mul_apply, ← map_mul]
 
 @[simp]
 theorem ρ_self_inv_apply (g : G) (x : V) :
     ρ g (ρ g⁻¹ x) = x := by
-  simp [← LinearMap.mul_apply, ← map_mul]
+  simp [← Module.End.mul_apply, ← map_mul]
 
 lemma ρ_apply_bijective (g : G) :
     Function.Bijective (ρ g) :=
@@ -623,7 +623,7 @@ variable (k G) (α : Type*)
 
 /-- The free `k[G]`-module on a type `α` is isomorphic to the representation `free k G α`
 considered as a `k[G]`-module. -/
-def finsuppLEquivFreeAsModule :
+noncomputable def finsuppLEquivFreeAsModule :
     (α →₀ MonoidAlgebra k G) ≃ₗ[MonoidAlgebra k G] (free k G α).asModule :=
   { AddEquiv.refl _ with
     map_smul' := fun r x => by
@@ -638,7 +638,7 @@ def finsuppLEquivFreeAsModule :
         simp [free, MonoidAlgebra, asModule, ofMulAction_def, mapDomain, smul_sum, single_sum] }
 
 /-- `α` gives a `k[G]`-basis of the representation `free k G α`. -/
-def freeAsModuleBasis :
+noncomputable def freeAsModuleBasis :
     Basis α (MonoidAlgebra k G) (free k G α).asModule where
   repr := (finsuppLEquivFreeAsModule k G α).symm
 
