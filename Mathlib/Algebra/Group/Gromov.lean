@@ -781,10 +781,14 @@ lemma lipschitz_attains_norm (f: G → ℂ) (hf: IsLipschitz f): LipschitzWith (
   specialize lipschitz_d x y
   rw [mul_comm] at lipschitz_d
   apply ENNReal.div_le_of_le_mul' at lipschitz_d
-  conv at d_lt_slope =>
-    equals ENNReal.ofNNReal D < (edist (f x) (f y) / edist x y) =>
-      sorry
-
+  norm_cast at lipschitz_d
+  norm_cast at d_lt_slope
+  repeat rw [edist_nndist] at lipschitz_d
+  repeat rw [edist_nndist] at d_lt_slope
+  rw [← ENNReal.coe_div] at lipschitz_d
+  norm_cast at lipschitz_d
+  rw [← ENNReal.coe_div] at d_lt_slope
+  norm_cast at d_lt_slope
   apply not_lt_of_le at lipschitz_d
   contradiction
 
