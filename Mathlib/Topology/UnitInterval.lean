@@ -237,7 +237,7 @@ variable {α} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
 /-- `Set.projIcc` is a contraction. -/
 lemma _root_.Set.abs_projIcc_sub_projIcc : (|projIcc a b h c - projIcc a b h d| : α) ≤ |c - d| := by
   wlog hdc : d ≤ c generalizing c d
-  · rw [abs_sub_comm, abs_sub_comm c]; exact this (le_of_not_le hdc)
+  · rw [abs_sub_comm, abs_sub_comm c]; exact this (le_of_not_ge hdc)
   rw [abs_eq_self.2 (sub_nonneg.2 hdc),
     abs_eq_self.2 (sub_nonneg.2 <| mod_cast monotone_projIcc h hdc)]
   rw [← sub_nonneg] at hdc

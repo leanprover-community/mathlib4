@@ -15,7 +15,10 @@ computer science such as the POSIX standard.
 
 ## TODO
 
-* Show that this regular expressions and DFA/NFA's are equivalent. -/
+Currently, we don't show that regular expressions and DFA/NFA's are equivalent.
+Multiple competing PRs towards that goal are in review.
+See https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Regular.20languages.3A.20the.20review.20queue
+-/
 
 open List Set
 
