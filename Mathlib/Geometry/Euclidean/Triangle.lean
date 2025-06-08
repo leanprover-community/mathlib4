@@ -62,27 +62,22 @@ theorem norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_ang
 /-- **Law of sines** (sine rule), vector form. -/
 theorem sin_angle_mul_norm_eq_sin_angle_mul_norm (x y : V) :
     Real.sin (angle x y) * ‖x‖ = Real.sin (angle y (x - y)) * ‖x - y‖ := by
-  obtain rfl | hx := eq_or_ne x 0
-  · simp
-    obtain rfl | hy := eq_or_ne y 0
-    · right; rfl
-    · left; simp [angle_neg_right, angle_self hy]
+  wlog h : x ≠ 0 ∧ y ≠ 0 ∧ x ≠ y
   · obtain rfl | hy := eq_or_ne y 0
     · simp
-    · obtain rfl | hxy := eq_or_ne x y
-      · simp; left; simp [angle_self hx]
-      · have hsub: x - y ≠ 0 := sub_ne_zero_of_ne hxy
-        have h_sin (x y : V) (hx: x ≠ 0) (hy: y ≠ 0) :
-            Real.sin (angle x y) = √(⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) / (‖x‖ * ‖y‖) := by
-          field_simp [sin_angle_mul_norm_mul_norm]
-        rw [h_sin x y hx hy, h_sin y (x - y) hy hsub]
-        field_simp
-        rw [mul_assoc, mul_assoc]
-        congr 1
-        · congr 1
-          simp_rw [inner_sub_left, inner_sub_right, real_inner_comm x y]
-          ring
-        · ring
+    obtain rfl | hx := eq_or_ne x 0
+    · simp [angle_neg_right, angle_self hy]
+    obtain rfl | hxy := eq_or_ne x y
+    · simp [angle_self hx]
+    cases h ⟨hx, hy, hxy⟩
+  obtain ⟨hx, hy, hxy⟩ := h
+  have h_sin (x y : V) (hx : x ≠ 0) (hy : y ≠ 0) :
+      Real.sin (angle x y) = √(⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) / (‖x‖ * ‖y‖) := by
+    field_simp [sin_angle_mul_norm_mul_norm]
+  rw [h_sin x y hx hy, h_sin y (x - y) hy (sub_ne_zero_of_ne hxy)]
+  have hsub : x - y ≠ 0 := sub_ne_zero_of_ne hxy
+  field_simp [mul_assoc, inner_sub_left, inner_sub_right, real_inner_comm x y, hsub]
+  ring_nf
 
 /-- A variant of the law of sines, (two given sides are nonzero), vector angle form. -/
 theorem sin_angle_div_norm_eq_sin_angle_div_norm (x y : V) (hx : x ≠ 0) (hxy: x - y ≠ 0) :
