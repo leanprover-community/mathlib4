@@ -145,7 +145,7 @@ theorem keythm : ⨆ (q : Ideal (𝓞 K)) (hq : q.IsMaximal), inertiaSubgroup q 
   suffices h : F = ⊥ by
     rw [← fixingSubgroup_fixedField H]
     change fixingSubgroup F = ⊤
-    rw [h, IntermediateField.fixingSubgroup.bot] -- will get renamed and moved in #22759
+    rw [h, IntermediateField.fixingSubgroup_bot]
   have : H.Normal := sorry
   have : IsGalois ℚ F := sorry
   have key0 : ∀ (q : Ideal (𝓞 K)) (hq : q.IsMaximal), inertiaSubgroup q ≤ H := by
@@ -183,7 +183,35 @@ theorem tada {G S T : Type*} [Group G] [MulAction G S] [MulAction G T]
     (f : S →[G] T) (σ : G)
     (hσS : MulAction.toPermHom G S σ ≠ 1) (hσT : MulAction.toPermHom G T σ = 1)
     (h : ∀ s : Finset S, s.card ≤ (s.image f).card + 1) :
-    (MulAction.toPermHom G S σ).IsSwap := sorry
+    (MulAction.toPermHom G S σ).IsSwap := by
+  classical
+  simp_rw [ne_eq, MulAction.toPermHom_apply, Perm.IsSwap, Perm.ext_iff, MulAction.toPerm_apply,
+    Perm.one_apply, not_forall, ← ne_eq] at hσS hσT ⊢
+  have h1 (x : S) : σ • σ • x = x := by
+    contrapose! h
+    have h' : σ • x ≠ x := by
+      contrapose! h
+      rw [h, h]
+    use {σ • σ • x, σ • x, x}
+    rw [Finset.card_eq_three.mpr ⟨σ • σ • x, σ • x, x, by simpa, h, h', rfl⟩]
+    simp [hσT]
+  obtain ⟨x, hx⟩ := hσS
+  refine ⟨σ • x, x, hx, fun y ↦ ?_⟩
+  rcases eq_or_ne y (σ • x) with rfl | h2
+  · rw [swap_apply_left, h1]
+  rcases eq_or_ne y x with rfl | h3
+  · rw [swap_apply_right]
+  rw [swap_apply_of_ne_of_ne h2 h3]
+  contrapose! h
+  use {y, σ • x, σ • y, x}
+  rw [Finset.card_insert_of_notMem (by simp [h2, h3, h.symm]),
+    Finset.card_insert_of_notMem (by simp [hx, h3.symm]), Finset.card_pair]
+  · rw [Nat.lt_add_one_iff]
+    simp [hσT, Finset.card_le_two]
+  · rw [← h1 x]
+    simp [h2]
+
+#exit
 
 theorem X_pow_sub_X_sub_one_gal :
     Function.Bijective (Gal.galActionHom (X ^ n - X - 1 : ℚ[X]) ℂ) := by
