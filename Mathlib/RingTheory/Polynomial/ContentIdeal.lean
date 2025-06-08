@@ -38,7 +38,7 @@ theorem contenIdeal_zero : (0 : R[X]).contentIdeal = ⊥ := by
   simp [contentIdeal_def]
 
 @[simp]
-theorem contentIdeal_bot_iff : p.contentIdeal = ⊥ ↔ p = 0 := by
+theorem contentIdeal_eq_bot_iff : p.contentIdeal = ⊥ ↔ p = 0 := by
   simp only [contentIdeal_def, span_eq_bot, Finset.mem_coe]
   refine ⟨?_, fun h ↦ by simp [h]⟩
   contrapose!
@@ -48,8 +48,8 @@ theorem contentIdeal_bot_iff : p.contentIdeal = ⊥ ↔ p = 0 := by
 theorem coeff_mem_contentIdeal (n : ℕ) : p.coeff n ∈ p.contentIdeal := by
   by_cases h : p.coeff n = 0
   · simp [h]
-  · rw [contentIdeal_def, mem_span]
-    exact fun _ hJ ↦ Set.mem_of_subset_of_mem hJ <| Finset.mem_coe.mpr <| coeff_mem_coeffs p n h
+  · apply subset_span
+    simpa using coeff_mem_coeffs p n h
 
 @[simp]
 theorem contentIdeal_monomial (n : ℕ) (r : R) : (monomial n r).contentIdeal = Ideal.span {r} := by
@@ -76,10 +76,19 @@ theorem contentIdeal_le_contentIdeal_of_dvd {p q : R[X]} (hpq : p ∣ q) :
   rw [h3, coeff_mul] at h2
   rw [h2]
   exact Ideal.sum_mem _ <| fun _ _ ↦ mul_mem_right _ _ <| coeff_mem_contentIdeal p _
+/-
+theorem mem_contentIdeal_of_dvd {p : R[X]} {r : R} (h : C r ∣ p) :
+    r ∈ p.contentIdeal := by
+  rw [contentIdeal_def, mem_span]
+  intro I hI
+  rw [C_dvd_iff_dvd_coeff] at h
 
-theorem dvd_of_mem_of_isPrincipal_contentIdeal {p : R[X]}
-    (h_princ : Submodule.IsPrincipal p.contentIdeal) :
-    C (h_princ.generator) ∣ p := by
+
+  sorry -/
+
+theorem _root_.Submodule.IsPrincipal.contentIdeal_generator_dvd {p : R[X]}
+    (h_prin : Submodule.IsPrincipal p.contentIdeal) :
+    C (h_prin.generator) ∣ p := by
   rw [C_dvd_iff_dvd_coeff]
   intro n
   have := p.coeff_mem_contentIdeal n
@@ -87,14 +96,44 @@ theorem dvd_of_mem_of_isPrincipal_contentIdeal {p : R[X]}
   obtain ⟨_, ha⟩ := this
   simp [ha]
 
+theorem _root_.Submodule.IsPrincipal.contentIdeal_le_span_iff_dvd {p : R[X]}
+    (h_prin : Submodule.IsPrincipal p.contentIdeal) (r : R) :
+     p.contentIdeal ≤ span {r} ↔ C r ∣ p := by
+  let s := h_prin.generator
+  constructor
+  · rw [← span_singleton_generator p.contentIdeal]
+    intro h
+    calc
+    C r ∣ C s := by
+      apply RingHom.map_dvd C
+      rw [← span_singleton_le_span_singleton]
+      exact h
+     _   ∣ p := h_prin.contentIdeal_generator_dvd
+  · rw [← contentIdeal_C r]
+    exact fun h ↦ contentIdeal_le_contentIdeal_of_dvd h
+
 /-- If the coefficients of `p` geneate the whole ring, then `p` is primitive. -/
 theorem isPrimitive_of_contentIdeal_eq_top {p : R[X]} (h : p.contentIdeal = ⊤) :
     IsPrimitive p := by
-  by_contra h
+  have h_prin : Submodule.IsPrincipal p.contentIdeal := by
+    rw [h]
+    exact top_isPrincipal
+  intro r
+  simp [← h_prin.contentIdeal_le_span_iff_dvd r, h]
+  /- by_contra h
   simp only [IsPrimitive, not_forall, Classical.not_imp] at h
   obtain ⟨r, hr, _⟩ := h
   apply contentIdeal_le_contentIdeal_of_dvd at hr
-  simp_all
+  simp_all -/
+
+theorem _root_.Submodule.IsPrincipal.isPrimitive_iff_contentIdeal_eq_top {p : R[X]}
+    (h_prin : Submodule.IsPrincipal p.contentIdeal)  : IsPrimitive p ↔ p.contentIdeal = ⊤ := by
+  refine ⟨?_, fun a ↦ isPrimitive_of_contentIdeal_eq_top a⟩
+  contrapose!
+  simp only [IsPrimitive, not_forall]
+  intro _
+  use Submodule.IsPrincipal.generator p.contentIdeal, h_prin.contentIdeal_generator_dvd
+  simp_all [← Ideal.span_singleton_eq_top]
 
 end CommSemiring
 
@@ -104,15 +143,9 @@ variable {R : Type*} [CommSemiring R] [IsBezout R] (p : R[X])
 
 /-- The polynomial `p` is primitive if and only if the coefficients of `p` geneate the whole ring.
 -/
-theorem isPrimitive_iff_contentIdeal_eq_top :
-    IsPrimitive p ↔ p.contentIdeal = ⊤ := by
-  refine ⟨?_, fun a ↦ isPrimitive_of_contentIdeal_eq_top a⟩
-  contrapose!
-  simp only [IsPrimitive, not_forall]
-  intro h
-  have : Submodule.IsPrincipal p.contentIdeal := IsBezout.isPrincipal_of_FG _ ⟨p.coeffs, rfl⟩
-  use Submodule.IsPrincipal.generator p.contentIdeal, dvd_of_mem_of_isPrincipal_contentIdeal this
-  simp_all [← Ideal.span_singleton_eq_top]
+theorem isPrimitive_iff_contentIdeal_eq_top : IsPrimitive p ↔ p.contentIdeal = ⊤ :=
+  Submodule.IsPrincipal.isPrimitive_iff_contentIdeal_eq_top <|
+  IsBezout.isPrincipal_of_FG _ ⟨p.coeffs, rfl⟩
 
 end IsBezout
 
