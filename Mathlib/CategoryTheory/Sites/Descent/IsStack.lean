@@ -159,8 +159,13 @@ lemma hasEffectiveDescentRelativeTo_of_sieve_mem (J : GrothendieckTopology C)
 instance (J : GrothendieckTopology C) [F.IsStack J] :
     F.IsPrestack J where
   isSheaf {S} M N := by
-    rw [isSheaf_iff_isSheaf_of_type, Presieve.isSheaf_iff_isSheafFor_ofArrows]
-    intro ι X Y f hf
+    rw [isSheaf_iff_isSheaf_of_type]
+    intro X T hT
+    let T' : Sieve X.left := Sieve.overEquiv _ T
+    let f' (i : T'.arrows.category) := i.obj.hom
+    have : F.HasEffectiveDescentRelativeTo f' :=
+      F.hasEffectiveDescentRelativeTo_of_sieve_mem J T' hT
+    have := (F.toDescentData_fullyFaithful_iff f').1 ⟨Functor.FullyFaithful.ofFullyFaithful _⟩
     sorry
 
 end Pseudofunctor
