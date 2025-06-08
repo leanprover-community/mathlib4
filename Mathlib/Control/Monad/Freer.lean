@@ -67,7 +67,7 @@ This construction provides a free monad for any type constructor `f`, allowing f
 effect descriptions that can be interpreted later. Unlike the traditional Free monad,
 this does not require `f` to be a functor. -/
 inductive Freer.{u, v, w} (f : Type u → Type v) (α : Type w) where
-  | pure : α → Freer f α
+  | protected pure : α → Freer f α
   | impure (ι : Type u) (op : f ι) (cont : ι → Freer f α) : Freer f α
 
 universe u v w
