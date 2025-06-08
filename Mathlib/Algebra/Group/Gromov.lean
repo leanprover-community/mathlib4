@@ -721,6 +721,8 @@ lemma lipschiz_norm_zero: LipschitzSemiNorm (S := S) (0) = 0 := by
     exact csInf_le' zero_mem
   exact nonpos_iff_eq_zero.mp sinf_le
 
+
+
 #synth IsStrictOrderedRing NNReal
 
 -- TODO - upstream to mathlib
@@ -865,7 +867,9 @@ noncomputable instance LipschitzH_seminorm: SeminormedAddCommGroup (LipschitzH (
     simp
     apply lipschitzH_norm_triangle
 
-
+-- Note that we only implement SeminormedAddCommGroup for LipschitzH, so this is only
+-- really a seminormed space. The quotient space W := LipschitzH ⧸ ConstF
+-- is an actual normed space.
 noncomputable instance LipschitzH_normed: NormedSpace ℂ (LipschitzH (G := G)) where
   norm_smul_le := by
     intro c f
@@ -900,7 +904,54 @@ noncomputable instance LipschitzH_normed: NormedSpace ℂ (LipschitzH (G := G)) 
     left
     simp [K]
 
+--def myInst := Submodule.Quotient.normedAddCommGroup (S := ConstF)
 
+lemma lipschitz_norm_const (z: ℂ): LipschitzSemiNorm (G := G) (ConstLipschitzH z) = 0 := by
+  unfold LipschitzSemiNorm
+  have zero_mem: 0 ∈ { k: NNReal | LipschitzWith k (ConstLipschitzH (G := G) z).toFun } := by
+    simp
+    simp [ConstLipschitzH]
+    simp [LipschitzWith]
+  have my_le := csInf_le (by simp) zero_mem
+  exact nonpos_iff_eq_zero.mp my_le
+
+
+lemma constf_eq_null: (ConstF (G := G) : Set (LipschitzH (G := G))) = nullAddSubgroup (LipschitzH (G := G)) := by
+  unfold ConstF
+  unfold nullAddSubgroup
+  ext f
+  simp
+  refine ⟨?_, ?_⟩
+  .
+    intro hf
+    obtain ⟨z, hz⟩ := hf
+    rw [← hz]
+    simp [norm]
+    apply lipschitz_norm_const
+  .
+    intro hf
+    simp [norm, LipschitzSemiNorm] at hf
+    have lipschitz_zero := lipschitz_attains_norm f (f.lipschitz)
+    simp [LipschitzSemiNorm] at lipschitz_zero
+    rw [hf] at lipschitz_zero
+    simp [LipschitzWith] at lipschitz_zero
+    use (f.toFun 1)
+    simp [ConstLipschitzH]
+    ext a
+    simp
+    apply lipschitz_zero
+
+instance const_isClosed: IsClosed (ConstF (G := G) : Set (LipschitzH (G := G))) := by
+  conv =>
+    arg 1
+    arg 1
+    equals nullAddSubgroup (LipschitzH (G := G)) =>
+      unfold nullAddSubgroup
+      simp [ConstF]
+
+
+#synth NormedSpace ℂ (W (S := S))
+#synth NormedAddCommGroup (W (S := S))
 -- noncomputable instance W_seminorm: SeminormedAddCommGroup (W (G := G)) where
 --   norm := fun f => (LipschitzSemiNorm_w f).val
 --   dist_self := by
