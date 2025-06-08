@@ -6382,6 +6382,7 @@ import Mathlib.Topology.Compactness.Bases
 import Mathlib.Topology.Compactification.OnePoint.Basic
 import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
 import Mathlib.Topology.Compactness.Compact
+import Mathlib.Topology.Compactness.CompactSystem
 import Mathlib.Topology.Compactness.CompactlyCoherentSpace
 import Mathlib.Topology.Compactness.CompactSystem
 import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
