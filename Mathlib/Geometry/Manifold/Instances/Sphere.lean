@@ -288,6 +288,22 @@ theorem stereographic_neg_apply (v : sphere (0 : E) 1) :
   ext1
   simp
 
+theorem surjective_stereographic (hv : ‖v‖ = 1) :
+    Surjective (stereographic hv) :=
+  (stereographic hv).surjective_of_target_eq_univ rfl
+
+@[simp]
+theorem range_stereographic_symm (hv : ‖v‖ = 1) (hv' : v ∈ sphere 0 1 := by simpa) :
+    Set.range (stereographic hv).symm = {⟨v, hv'⟩}ᶜ := by
+  refine le_antisymm ?_ (stereographic hv).symm.target_subset_range
+  rintro x ⟨y, rfl⟩
+  suffices y ∈ (stereographic hv).target from (fun _ ↦ (stereographic hv).map_target) y this
+  simp
+
+lemma isOpenEmbedding_stereographic_symm (hv : ‖v‖ = 1) :
+    Topology.IsOpenEmbedding (stereographic hv).symm :=
+  (stereographic hv).symm.to_isOpenEmbedding (by simp)
+
 end StereographicProjection
 
 section ChartedSpace

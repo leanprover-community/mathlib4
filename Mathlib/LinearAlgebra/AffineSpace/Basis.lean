@@ -25,17 +25,17 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 
 ## Main definitions
 
- * `AffineBasis`: a structure representing an affine basis of an affine space.
- * `AffineBasis.coord`: the map `P →ᵃ[k] k` corresponding to `i : ι`.
- * `AffineBasis.coord_apply_eq`: the behaviour of `AffineBasis.coord i` on `p i`.
- * `AffineBasis.coord_apply_ne`: the behaviour of `AffineBasis.coord i` on `p j` when `j ≠ i`.
- * `AffineBasis.coord_apply`: the behaviour of `AffineBasis.coord i` on `p j` for general `j`.
- * `AffineBasis.coord_apply_combination`: the characterisation of `AffineBasis.coord i` in terms
+* `AffineBasis`: a structure representing an affine basis of an affine space.
+* `AffineBasis.coord`: the map `P →ᵃ[k] k` corresponding to `i : ι`.
+* `AffineBasis.coord_apply_eq`: the behaviour of `AffineBasis.coord i` on `p i`.
+* `AffineBasis.coord_apply_ne`: the behaviour of `AffineBasis.coord i` on `p j` when `j ≠ i`.
+* `AffineBasis.coord_apply`: the behaviour of `AffineBasis.coord i` on `p j` for general `j`.
+* `AffineBasis.coord_apply_combination`: the characterisation of `AffineBasis.coord i` in terms
     of affine combinations, i.e., `AffineBasis.coord i (w₀ p₀ + w₁ p₁ + ⋯) = wᵢ`.
 
 ## TODO
 
- * Construct the affine equivalence between `P` and `{ f : ι →₀ k | f.sum = 1 }`.
+* Construct the affine equivalence between `P` and `{ f : ι →₀ k | f.sum = 1 }`.
 
 -/
 
@@ -166,11 +166,14 @@ theorem coord_apply_combination_of_mem (hi : i ∈ s) {w : ι → k} (hw : s.sum
       s.map_affineCombination b w hw]
 
 @[simp]
-theorem coord_apply_combination_of_not_mem (hi : i ∉ s) {w : ι → k} (hw : s.sum w = 1) :
+theorem coord_apply_combination_of_notMem (hi : i ∉ s) {w : ι → k} (hw : s.sum w = 1) :
     b.coord i (s.affineCombination k b w) = 0 := by
   classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, if_false,
       mul_boole, hw, Function.comp_apply, smul_eq_mul, s.sum_ite_eq,
       s.map_affineCombination b w hw]
+
+@[deprecated (since := "2025-05-23")]
+alias coord_apply_combination_of_not_mem := coord_apply_combination_of_notMem
 
 @[simp]
 theorem sum_coord_apply_eq_one [Fintype ι] (q : P) : ∑ i, b.coord i q = 1 := by

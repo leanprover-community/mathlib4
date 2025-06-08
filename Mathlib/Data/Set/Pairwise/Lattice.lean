@@ -58,7 +58,7 @@ theorem pairwiseDisjoint_sUnion {s : Set (Set ι)} (h : DirectedOn (· ⊆ ·) s
 theorem pairwiseDisjoint_union_of_disjoint
     {s t : Set (Set ι)} {f : Set ι → α} (hf : Monotone f)
     (hs : PairwiseDisjoint s f) (ht : PairwiseDisjoint t f)
-    (hst : Disjoint (f (Set.sUnion s)) (f (sUnion t))) : PairwiseDisjoint (s ∪ t) f := by
+    (hst : Disjoint (f (sUnion s)) (f (sUnion t))) : PairwiseDisjoint (s ∪ t) f := by
   refine pairwiseDisjoint_union.mpr ⟨hs, ht, fun a ha b hb hab ↦ ?_⟩
   apply hst.mono (hf (subset_sUnion_of_subset s a (subset_refl a) ha))
     (hf (subset_sUnion_of_subset t b (subset_refl b) hb))
@@ -149,7 +149,7 @@ lemma Set.pairwiseDisjoint_pair_insert {s : Set α} {a : α} (ha : a ∉ s) :
     s.powerset.PairwiseDisjoint fun t ↦ ({t, insert a t} : Set (Set α)) := by
   rw [pairwiseDisjoint_iff]
   rintro i hi j hj
-  have := insert_erase_invOn.2.injOn (not_mem_subset hi ha) (not_mem_subset hj ha)
+  have := insert_erase_invOn.2.injOn (notMem_subset hi ha) (notMem_subset hj ha)
   aesop (add simp [Set.Nonempty, Set.subset_def])
 
 theorem Set.PairwiseDisjoint.subset_of_biUnion_subset_biUnion (h₀ : (s ∪ t).PairwiseDisjoint f)

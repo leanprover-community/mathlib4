@@ -12,19 +12,19 @@ This file defines admissible linear change of variables of Weierstrass curves.
 
 ## Main definitions
 
- * `WeierstrassCurve.VariableChange`: a change of variables of Weierstrass curves.
- * An instance which states that change of variables forms a group.
- * An instance which states that change of variables acts on Weierstrass curves.
+* `WeierstrassCurve.VariableChange`: a change of variables of Weierstrass curves.
+* An instance which states that change of variables forms a group.
+* An instance which states that change of variables acts on Weierstrass curves.
 
 ## Main statements
 
- * An instance which states that change of variables preserves elliptic curves.
- * `WeierstrassCurve.variableChange_j`: the j-invariant of an elliptic curve is invariant under an
+* An instance which states that change of variables preserves elliptic curves.
+* `WeierstrassCurve.variableChange_j`: the j-invariant of an elliptic curve is invariant under an
     admissible linear change of variables.
 
 ## References
 
- * [J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
+* [J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
 
 ## Tags
 

@@ -90,7 +90,6 @@ theorem isUnit_den (r : ℚ) (h : ‖(r : ℚ_[p])‖ ≤ 1) : IsUnit (r.den : �
       _ = _ := hr.symm
       _ < 1 * 1 := mul_lt_mul' h norm_denom_lt (norm_nonneg _) zero_lt_one
       _ = 1 := mul_one 1
-
   have : ↑p ∣ r.num ∧ (p : ℤ) ∣ r.den := by
     simp only [← norm_int_lt_one_iff_dvd, ← padic_norm_e_of_padicInt]
     exact ⟨key, norm_denom_lt⟩
@@ -125,8 +124,8 @@ theorem norm_sub_modPart (h : ‖(r : ℚ_[p])‖ ≤ 1) : ‖(⟨r, h⟩ - modP
       Int.cast_sub]
     apply Subtype.coe_injective
     simp only [coe_mul, Subtype.coe_mk, coe_natCast]
-    rw_mod_cast [@Rat.mul_den_eq_num r]
-    rfl
+    norm_cast
+    simp
   exact norm_sub_modPart_aux r h
 
 theorem exists_mem_range_of_norm_rat_le_one (h : ‖(r : ℚ_[p])‖ ≤ 1) :
@@ -169,7 +168,6 @@ theorem exists_mem_range : ∃ n : ℕ, n < p ∧ x - n ∈ maximalIdeal ℤ_[p]
       _ = ‖(r : ℚ_[p]) - x + x‖ := by ring_nf
       _ ≤ _ := padicNormE.nonarchimedean _ _
       _ ≤ _ := max_le (le_of_lt hr) x.2
-
   obtain ⟨n, hzn, hnp, hn⟩ := exists_mem_range_of_norm_rat_le_one r H
   lift n to ℕ using hzn
   use n
@@ -312,7 +310,6 @@ theorem appr_lt (x : ℤ_[p]) (n : ℕ) : x.appr n < p ^ n := by
     · calc
         _ < p ^ n + p ^ n * (p - 1) := ?_
         _ = p ^ (n + 1) := ?_
-
       · apply add_lt_add_of_lt_of_le (ih _)
         apply Nat.mul_le_mul_left
         apply le_pred_of_lt
@@ -432,7 +429,7 @@ theorem zmod_cast_comp_toZModPow (m n : ℕ) (h : m ≤ n) :
 theorem cast_toZModPow (m n : ℕ) (h : m ≤ n) (x : ℤ_[p]) :
     ZMod.cast (toZModPow n x) = toZModPow m x := by
   rw [← zmod_cast_comp_toZModPow _ _ h]
-  rfl
+  simp
 
 theorem denseRange_natCast : DenseRange (Nat.cast : ℕ → ℤ_[p]) := by
   intro x
@@ -474,8 +471,7 @@ def nthHom (r : R) : ℕ → ℤ := fun n => (f n r : ZMod (p ^ n)).val
 
 @[simp]
 theorem nthHom_zero : nthHom f 0 = 0 := by
-  simp +unfoldPartialApp [nthHom]
-  rfl
+  simp +unfoldPartialApp [nthHom, Pi.zero_def]
 
 variable {f}
 variable [hp_prime : Fact p.Prime]
@@ -609,8 +605,8 @@ theorem lift_sub_val_mem_span (r : R) (n : ℕ) :
   rw [Ideal.mem_span_singleton]
   convert
     (Int.castRingHom ℤ_[p]).map_dvd (pow_dvd_nthHom_sub f_compat r n (max n k) (le_max_left _ _))
-  · rw [map_pow]; rfl
-  · rw [map_sub]; rfl
+  · simp
+  · simp [nthHom]
 
 /-- One part of the universal property of `ℤ_[p]` as a projective limit.
 See also `PadicInt.lift_unique`.
