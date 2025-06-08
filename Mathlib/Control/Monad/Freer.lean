@@ -99,7 +99,7 @@ instance {F : Type u → Type v} : LawfulFunctor (Freer F) where
     case impure ι op cont ih => simp [Freer.map, ih]
 
 /-- Bind operation for the `Freer` monad. -/
-def bindFree {a b : Type _} (F : Type u → Type v) (x : Freer F a) (f : a → Freer F b) : Freer F b :=
+protected def bind {a b : Type _} (F : Type u → Type v) (x : Freer F a) (f : a → Freer F b) : Freer F b :=
   match x with
   | .pure a => f a
   | .impure ι op cont => .impure ι op (fun z => bindFree F (cont z) f)
