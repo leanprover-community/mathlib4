@@ -825,7 +825,6 @@ theorem mk_diff_add_mk {S T : Set α} (h : T ⊆ S) : #(S \ T : Set α) + #T = #
   exact disjoint_sdiff_self_left
 
 lemma diff_nonempty_of_mk_lt_mk {S T : Set α} (h : #S < #T) : (T \ S).Nonempty := by
-  suffices (T \ S).Nonempty by simpa
   rw [← mk_set_ne_zero_iff]
   intro h'
   exact h.not_ge ((le_mk_diff_add_mk T S).trans (by simp [h']))
