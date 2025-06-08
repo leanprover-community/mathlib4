@@ -1006,6 +1006,8 @@ abbrev GL_W := W (G := G) →L[ℂ] W (G := G)
 
 #synth NormedSpace ℂ (GL_W (G := G))
 #synth MetricSpace (GL_W (G := G))
+
+
 -- noncomputable instance GLW_seminorm:  SeminormedAddCommGroup (W (G := G) →ₗ[ℂ] W (G := G)) where
 --   norm := ContinuousLinearMap.opNorm
 
@@ -1015,20 +1017,13 @@ abbrev GL_W := W (G := G) →L[ℂ] W (G := G)
 -- and we need ContinuousLinearMap in order to be able to use `ContinuousLinearMap.opNorm`
 -- Representation ℂ G (LipschitzH (G := G))
 
+-- Submodule.isOpenQuotientMap_mkQ
 noncomputable def GRepW: (G →* GL_W (G := G))  := {
-  toFun := fun g => {
-    toFun := gAct g
-    map_add' := by
-      intro f h
-      ext a
-      simp [gAct]
-      simp [DFunLike.coe]
-    map_smul' := by
-      intro c f
-      ext a
-      simp [gAct]
-      simp [DFunLike.coe]
-      simp [HSMul.hSMul, SMul.smul]
+  toFun g := {
+    LinearMap.comp (Submodule.mkQ (ConstF (G := G))) (gAct g f) with
+    cont := by
+      apply Continuous.comp
+      .
   }
   map_one' := by
     ext f a
