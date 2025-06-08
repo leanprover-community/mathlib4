@@ -13,8 +13,6 @@ polynomial functor.  (For the M-type construction, see
 pfunctor/M.lean.)
 -/
 
--- "W", "Idx"
-
 universe u uA uB uA₁ uB₁ uA₂ uB₂ v v₁ v₂ v₃
 
 /-- A polynomial functor `P` is given by a type `A` and a family `B` of types over `A`. `P` maps
@@ -41,7 +39,7 @@ variable (P : PFunctor.{uA, uB}) {α : Type v₁} {β : Type v₂} {γ : Type v�
 
 /-- Applying `P` to an object of `Type` -/
 @[coe]
-def Obj (α : Type v) :=
+def Obj (α : Type v) : Type max uA uB v :=
   Σ x : P.A, P.B x → α
 
 instance : CoeFun PFunctor.{uA, uB} (fun _ => Type v → Type (max uA uB v)) where
@@ -54,7 +52,7 @@ def map (f : α → β) : P α → P β :=
 instance Obj.inhabited [Inhabited P.A] [Inhabited α] : Inhabited (P α) :=
   ⟨⟨default, default⟩⟩
 
-instance : Functor.{v, max uA uB v} P.Obj where map := @map P
+instance : Functor P.Obj where map := @map P
 
 /-- We prefer `PFunctor.map` to `Functor.map` because it is universe-polymorphic. -/
 @[simp]
@@ -80,7 +78,7 @@ instance : LawfulFunctor.{v, max uA uB v} P.Obj where
 
 /-- re-export existing definition of W-types and
 adapt it to a packaged definition of polynomial functor -/
-def W :=
+def W : Type max uA uB :=
   WType P.B
 
 /- inhabitants of W types is awkward to encode as an instance
@@ -116,7 +114,7 @@ variable (P)
 /-- `Idx` identifies a location inside the application of a pfunctor.
 For `F : PFunctor`, `x : F α` and `i : F.Idx`, `i` can designate
 one part of `x` or is invalid, if `i.1 ≠ x.1` -/
-def Idx :=
+def Idx : Type max uA uB :=
   Σ x : P.A, P.B x
 
 instance Idx.inhabited [Inhabited P.A] [Inhabited (P.B default)] : Inhabited P.Idx :=
