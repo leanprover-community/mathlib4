@@ -141,12 +141,7 @@ lemma quadratic_ne_zero (ha : a ≠ 0) : (a • X ^ 2 + b • X + C c) ≠ 0 := 
       coeff_C_ne_zero (n:=2) ((Nat.zero_ne_add_one 1).symm)]
   rw [← hc] at ha
   by_contra hx
-  have h : (a • X ^ 2 + b • X + C c).coeff 2 = (0 : R[X]).coeff 2 := by
-    rw [hx]
-  have h' : (a • X ^ 2 + b • X + C c).coeff 2 = 0 := by
-    simp_all only [coeff_zero, ne_eq, not_true_eq_false]
-  rw [hc] at h'
-  exact ha h
+  exact ha (congrFun (congrArg coeff hx) 2)
 
 theorem quadratic_roots_of_discrim_ne_sq (ha : a ≠ 0) (h : ∀ s : R, discrim a b c ≠ s^2) :
     (a • X ^ 2 + b • X + C c).roots = ∅ := by
