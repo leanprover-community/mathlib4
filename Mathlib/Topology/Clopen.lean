@@ -100,7 +100,7 @@ theorem isClopen_inter_of_disjoint_cover_clopen {s a b : Set X} (h : IsClopen s)
   convert this using 1
   refine (inter_subset_inter_right s hab.subset_compl_right).antisymm ?_
   rintro x ⟨hx₁, hx₂⟩
-  exact ⟨hx₁, by simpa [not_mem_of_mem_compl hx₂] using cover hx₁⟩
+  exact ⟨hx₁, by simpa [notMem_of_mem_compl hx₂] using cover hx₁⟩
 
 theorem isClopen_of_disjoint_cover_open {a b : Set X} (cover : univ ⊆ a ∪ b)
     (ha : IsOpen a) (hb : IsOpen b) (hab : Disjoint a b) : IsClopen a :=

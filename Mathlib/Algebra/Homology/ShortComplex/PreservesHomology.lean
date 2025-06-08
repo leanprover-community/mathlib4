@@ -250,6 +250,19 @@ noncomputable def HomologyMapData.map {φ : S₁ ⟶ S₂} {h₁ : S₁.Homology
   left := ψ.left.map F
   right := ψ.right.map F
 
+lemma map_leftRightHomologyComparison' (F : C ⥤ D) [F.PreservesZeroMorphisms]
+    (hₗ : S.LeftHomologyData) (hᵣ : S.RightHomologyData) [hₗ.IsPreservedBy F] [hᵣ.IsPreservedBy F] :
+    F.map (leftRightHomologyComparison' hₗ hᵣ) =
+      leftRightHomologyComparison' (hₗ.map F) (hᵣ.map F) := by
+  apply Cofork.IsColimit.hom_ext (hₗ.map F).hπ
+  apply Fork.IsLimit.hom_ext (hᵣ.map F).hι
+  trans F.map (hₗ.i ≫ hᵣ.p)
+  · simp [← Functor.map_comp]
+  trans (hₗ.map F).π ≫ ShortComplex.leftRightHomologyComparison'
+    (hₗ.map F) (hᵣ.map F) ≫ (hᵣ.map F).ι
+  · rw [ShortComplex.π_leftRightHomologyComparison'_ι]; simp
+  · simp
+
 end ShortComplex
 
 namespace Functor

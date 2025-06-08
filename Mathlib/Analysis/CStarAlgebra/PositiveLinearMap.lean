@@ -114,7 +114,7 @@ lemma exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a,
     tendsto_pow_atTop_atTop_of_one_lt one_lt_two |>.eventually_gt_atTop _
       |>.exists
   -- But `2 ^ n ≤ ‖f (2 ^ (-n) • x n)‖ ≤ ‖f (∑' m, 2 ^ (-m) • x m)‖`, which is a contradiction.
-  apply hn.not_le
+  apply hn.not_ge
   trans ‖f ((2 : ℝ) ^ (-n : ℤ) • x n)‖
   · have := hx n |>.le
     rw [pow_mul', sq] at this
