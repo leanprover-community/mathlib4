@@ -6,11 +6,10 @@ Authors: Jeremy Avigad
 import Mathlib.Data.W.Basic
 
 /-!
-# Polynomial functors
+# Polynomial Functors
 
-This file defines polynomial functors and the W-type construction as a
-polynomial functor.  (For the M-type construction, see
-pfunctor/M.lean.)
+This file defines polynomial functors and the W-type construction as a polynomial functor.
+(For the M-type construction, see `Mathlib/Data/PFunctor/M.lean`.)
 -/
 
 universe u uA uB uA₁ uB₁ uA₂ uB₂ v v₁ v₂ v₃
@@ -76,30 +75,29 @@ instance : LawfulFunctor (Obj.{uA, uB, v} P) where
   id_map x := P.id_map x
   comp_map f g x := P.map_map f g x |>.symm
 
-/-- re-export existing definition of W-types and
-adapt it to a packaged definition of polynomial functor -/
+/-- Re-export existing definition of W-types and adapt it to a packaged definition of polynomial
+functor. -/
 def W : Type (max uA uB) :=
   WType P.B
 
-/- inhabitants of W types is awkward to encode as an instance
-assumption because there needs to be a value `a : P.A`
-such that `P.B a` is empty to yield a finite tree -/
+/- Inhabitants of W types is awkward to encode as an instance assumption because there needs to be a
+value `a : P.A` such that `P.B a` is empty to yield a finite tree. -/
 
 variable {P}
 
-/-- root element of a W tree -/
+/-- The root element of a W tree -/
 def W.head : W P → P.A
   | ⟨a, _f⟩ => a
 
-/-- children of the root of a W tree -/
+/-- The children of the root of a W tree -/
 def W.children : ∀ x : W P, P.B (W.head x) → W P
   | ⟨_a, f⟩ => f
 
-/-- destructor for W-types -/
+/-- The destructor for W-types -/
 def W.dest : W P → P (W P)
   | ⟨a, f⟩ => ⟨a, f⟩
 
-/-- constructor for W-types -/
+/-- The constructor for W-types -/
 def W.mk : P (W P) → W P
   | ⟨a, f⟩ => ⟨a, f⟩
 
@@ -111,9 +109,8 @@ theorem W.mk_dest (p : W P) : W.mk (W.dest p) = p := by cases p; rfl
 
 variable (P)
 
-/-- `Idx` identifies a location inside the application of a pfunctor.
-For `F : PFunctor`, `x : F α` and `i : F.Idx`, `i` can designate
-one part of `x` or is invalid, if `i.1 ≠ x.1` -/
+/-- `Idx` identifies a location inside the application of a polynomial functor. For `F : PFunctor`,
+`x : F α` and `i : F.Idx`, `i` can designate one part of `x` or is invalid, if `i.1 ≠ x.1`. -/
 def Idx : Type (max uA uB) :=
   Σ x : P.A, P.B x
 
@@ -122,8 +119,7 @@ instance Idx.inhabited [Inhabited P.A] [Inhabited (P.B default)] : Inhabited P.I
 
 variable {P}
 
-/-- `x.iget i` takes the component of `x` designated by `i` if any is or returns
-a default value -/
+/-- `x.iget i` takes the component of `x` designated by `i` if any is or returns a default value -/
 def Obj.iget [DecidableEq P.A] {α} [Inhabited α] (x : P α) (i : P.Idx) : α :=
   if h : i.1 = x.1 then x.2 (cast (congr_arg _ h) i.2) else default
 
@@ -144,17 +140,17 @@ Composition of polynomial functors.
 -/
 namespace PFunctor
 
-/-- functor composition for polynomial functors -/
+/-- Composition for polynomial functors -/
 def comp (P₂ : PFunctor.{uA₂, uB₂}) (P₁ : PFunctor.{uA₁, uB₁}) :
     PFunctor.{max uA₁ uA₂ uB₂, max uB₁ uB₂} :=
   ⟨Σ a₂ : P₂.1, P₂.2 a₂ → P₁.1, fun a₂a₁ => Σ u : P₂.2 a₂a₁.1, P₁.2 (a₂a₁.2 u)⟩
 
-/-- constructor for composition -/
+/-- Constructor for composition -/
 def comp.mk (P₂ : PFunctor.{uA₂, uB₂}) (P₁ : PFunctor.{uA₁, uB₁}) {α : Type v} (x : P₂ (P₁ α)) :
     comp P₂ P₁ α :=
   ⟨⟨x.1, Sigma.fst ∘ x.2⟩, fun a₂a₁ => (x.2 a₂a₁.1).2 a₂a₁.2⟩
 
-/-- destructor for composition -/
+/-- Destructor for composition -/
 def comp.get (P₂ : PFunctor.{uA₂, uB₂}) (P₁ : PFunctor.{uA₁, uB₁}) {α : Type v} (x : comp P₂ P₁ α) :
     P₂ (P₁ α) :=
   ⟨x.1.1, fun a₂ => ⟨x.1.2 a₂, fun a₁ => x.2 ⟨a₂, a₁⟩⟩⟩
