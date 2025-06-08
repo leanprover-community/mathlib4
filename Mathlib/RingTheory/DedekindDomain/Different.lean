@@ -671,10 +671,6 @@ theorem not_dvd_differentIdeal_of_intTrace_not_mem
   have : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) L :=
     IsIntegralClosure.isLocalization _ K _ _
   have : FiniteDimensional K L := Module.Finite_of_isLocalization A B _ _ A⁰
-  have hp' := (Ideal.map_eq_bot_iff_of_injective
-    (FaithfulSMul.algebraMap_injective A B)).not.mpr hp
-  have hPbot : P ≠ ⊥ := fun e ↦ hp' (by simpa [e] using hP.symm)
-  have hQbot : Q ≠ ⊥ := fun e ↦ hp' (by simpa [e] using hP.symm)
   rw [Ideal.dvd_iff_le]
   intro H
   replace H := (mul_le_mul_right' H Q).trans_eq hP
@@ -689,7 +685,6 @@ theorem not_dvd_differentIdeal_of_intTrace_not_mem
     rw [← Algebra.algebraMap_intTrace (A := A), Algebra.linearMap_apply,
       (IsLocalization.injective _ le_rfl).eq_iff] at e
     exact e ▸ hy
-  have := @H (algebraMap _ _ x) ⟨_, hxQ, rfl⟩
   refine FractionalIdeal.mul_induction_on (H ⟨_, hxQ, rfl⟩) ?_ ?_
   · rintro x hx _ ⟨y, hy, rfl⟩
     induction hy using Submodule.span_induction generalizing x with
@@ -757,3 +752,4 @@ theorem not_dvd_differentIdeal_of_isCoprime
   refine not_dvd_differentIdeal_of_isCoprime_of_isSeparable A P Q hPQ hP
 
 end
+#lint
