@@ -627,6 +627,7 @@ def gAct (g: G) (v: LipschitzH (S := S)): LipschitzH (S := S) := {
     exact v_harmonic
 }
 
+
 def gAct_const (g: G) (z: ℂ): gAct g (ConstLipschitzH z) = ConstLipschitzH z := by
   unfold gAct
   unfold ConstLipschitzH
@@ -638,50 +639,45 @@ def gAct_const (g: G) (z: ℂ): gAct g (ConstLipschitzH z) = ConstLipschitzH z :
 
 abbrev W := (LipschitzH (G := G)) ⧸ ConstF
 
+@[simp]
+lemma lipschitz_neg_tofun (f: LipschitzH (G := G)): (-f).toFun = -(f.toFun) := by
+  rfl
 
 
--- We don't use `Representation` directly, since it's an alias involving LinearMap,
--- and we need ContinuousLinearMap in order to be able to use `ContinuousLinearMap.opNorm`
--- Representation ℂ G (LipschitzH (G := G))
-def GRep: (G →* (LipschitzH (G := G)) →SL[ℂ] (LipschitzH (G := G)))  := {
-  toFun := fun g => {
-    toFun := gAct g
-    map_add' := by
-      intro f h
-      ext a
-      simp [gAct]
-      simp [DFunLike.coe]
-    map_smul' := by
-      intro c f
-      ext a
-      simp [gAct]
-      simp [DFunLike.coe]
-      simp [HSMul.hSMul, SMul.smul]
-  }
-  map_one' := by
-    ext f a
-    simp [gAct]
-    rfl
-  map_mul' := by
-    intro g h
-    ext f a
-    simp [gAct]
-    simp [DFunLike.coe]
-    simp [mul_assoc]
-}
+lemma lipschitz_add_tofun (f g: LipschitzH (G := G)): (f + g).toFun = f.toFun + g.toFun := by
+  rfl
 
-def GRepW: Representation ℂ G (W (G := G)) := Representation.quotient (GRep (G := G)) ConstF (by
-  intro g
-  intro f hf
+
+lemma lipschitz_sub_tofun (f g: LipschitzH (G := G)): (f - g).toFun = f.toFun - g.toFun := by
+  rfl
+
+
+def gActW (g: G): W (G := G) → W (G := G) := Quotient.lift (fun f => Submodule.Quotient.mk (gAct g f)) (by
+  intro f h hfh
   simp
+  rw [Submodule.Quotient.eq']
+  dsimp [HasEquiv.Equiv] at hfh
+  rw [ConstF.quotientRel_def] at hfh
+  dsimp [gAct]
+  simp [HAdd.hAdd]
+  dsimp [Add.add]
+  simp [ConstF] at hfh
+  obtain ⟨z, hz⟩ := hfh
+  simp [ConstLipschitzH] at hz
   simp [ConstF]
-  simp [ConstF] at hf
-  obtain ⟨K, hK⟩ := hf
-  use K
+  simp [ConstLipschitzH]
+  use -z
   ext a
-  simp [GRep]
-  rw [← hK]
-  rw [gAct_const]
+  apply_fun LipschitzH.toFun at hz
+  have app_eq := congrFun hz (g⁻¹ * a)
+  simp at app_eq
+  rw [lipschitz_sub_tofun] at app_eq
+  simp at app_eq
+  rw [app_eq]
+  simp
+  rw [sub_eq_add_neg]
+  rw [add_comm]
+  rfl
 )
 
 
@@ -706,11 +702,7 @@ noncomputable def LipschitzSemiNorm_w (w: W (G := G)) := Quotient.lift ((fun f =
   simp [DFunLike.coe]
 ) w
 
-lemma lipschitz_neg_tofun (f: LipschitzH (G := G)): (-f).toFun = -(f.toFun) := by
-  rfl
 
-lemma lipschitz_add_tofun (f g: LipschitzH (G := G)): (f + g).toFun = f.toFun + g.toFun := by
-  rfl
 
 lemma lipschiz_norm_zero: LipschitzSemiNorm (S := S) (0) = 0 := by
   unfold LipschitzSemiNorm
@@ -948,6 +940,8 @@ instance const_isClosed: IsClosed (ConstF (G := G) : Set (LipschitzH (G := G))) 
 
 #synth NormedSpace ℂ (W (S := S))
 #synth NormedAddCommGroup (W (S := S))
+
+#synth TopologicalSpace (W (G := G))
 -- noncomputable instance W_seminorm: SeminormedAddCommGroup (W (G := G)) where
 --   norm := fun f => (LipschitzSemiNorm_w f).val
 --   dist_self := by
@@ -1007,26 +1001,60 @@ instance const_isClosed: IsClosed (ConstF (G := G) : Set (LipschitzH (G := G))) 
 
 
 
--- The space 'GL(W)' of linear functions from W to W
-abbrev GL_W := W (G := G) →[ℂ] W (G := G)
+-- The space 'GL(W)' of continuous linear functions from W to W
+abbrev GL_W := W (G := G) →L[ℂ] W (G := G)
 
-def GLW_toContinuousLinearMap (w: GL_W): ContinuousLinearMap (W (G := G)) (W (G := G)) := {
-  toFun := w.toFun
-  map_add' := by
-    intro x y
-    ext a
+#synth NormedSpace ℂ (GL_W (G := G))
+#synth MetricSpace (GL_W (G := G))
+-- noncomputable instance GLW_seminorm:  SeminormedAddCommGroup (W (G := G) →ₗ[ℂ] W (G := G)) where
+--   norm := ContinuousLinearMap.opNorm
+
+-- instance GLW_norm: NormedSpace ℝ (W →ₗ[ℂ] W) where
+
+-- We don't use `Representation` directly, since it's an alias involving LinearMap,
+-- and we need ContinuousLinearMap in order to be able to use `ContinuousLinearMap.opNorm`
+-- Representation ℂ G (LipschitzH (G := G))
+
+noncomputable def GRepW: (G →* GL_W (G := G))  := {
+  toFun := fun g => {
+    toFun := gAct g
+    map_add' := by
+      intro f h
+      ext a
+      simp [gAct]
+      simp [DFunLike.coe]
+    map_smul' := by
+      intro c f
+      ext a
+      simp [gAct]
+      simp [DFunLike.coe]
+      simp [HSMul.hSMul, SMul.smul]
+  }
+  map_one' := by
+    ext f a
+    simp [gAct]
+    rfl
+  map_mul' := by
+    intro g h
+    ext f a
+    simp [gAct]
     simp [DFunLike.coe]
-  map_smul' := by
-    intro c x
-    ext a
-    simp [DFunLike.coe]
-    simp [HSMul.hSMul, SMul.smul]
+    simp [mul_assoc]
 }
 
-instance GLW_seminorm:  SeminormedAddCommGroup (W (G := G) →ₗ[ℂ] W (G := G)) where
-  norm := ContinuousLinearMap.opNorm
-
-instance GLW_norm: NormedSpace ℝ (W →ₗ[ℂ] W) where
+def GRepW: Representation ℂ G (W (G := G)) := Representation.quotient (GRep (G := G)) ConstF (by
+  intro g
+  intro f hf
+  simp
+  simp [ConstF]
+  simp [ConstF] at hf
+  obtain ⟨K, hK⟩ := hf
+  use K
+  ext a
+  simp [GRep]
+  rw [← hK]
+  rw [gAct_const]
+)
 
 
 
