@@ -159,94 +159,6 @@ end Basis
 
 end groupCohomology.resolution
 
-namespace Rep
-
-variable (n) [Group G] (A : Rep k G)
-
-open groupCohomology.resolution
-
-/-- Given a `k`-linear `G`-representation `A`, the set of representation morphisms
-`Hom(k[Gⁿ⁺¹], A)` is `k`-linearly isomorphic to the set of functions `Gⁿ → A`. -/
-noncomputable def diagonalHomEquiv :
-    (Rep.diagonal k G (n + 1) ⟶ A) ≃ₗ[k] (Fin n → G) → A :=
-  Linear.homCongr k
-        ((diagonalSuccIsoTensorTrivial k G n).trans
-          ((Representation.ofMulAction k G G).repOfTprodIso 1))
-        (Iso.refl _) ≪≫ₗ
-      (Rep.MonoidalClosed.linearHomEquivComm _ _ _ ≪≫ₗ Rep.leftRegularHomEquiv _) ≪≫ₗ
-    (Finsupp.llift A k k (Fin n → G)).symm
-
-variable {n A}
-
-/-- Given a `k`-linear `G`-representation `A`, `diagonalHomEquiv` is a `k`-linear isomorphism of
-the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. This lemma says that this
-sends a morphism of representations `f : k[Gⁿ⁺¹] ⟶ A` to the function
-`(g₁, ..., gₙ) ↦ f(1, g₁, g₁g₂, ..., g₁g₂...gₙ).` -/
-theorem diagonalHomEquiv_apply (f : Rep.diagonal k G (n + 1) ⟶ A) (x : Fin n → G) :
-    diagonalHomEquiv n A f x = f.hom (Finsupp.single (Fin.partialProd x) 1) := by
-/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
-  unfold diagonalHomEquiv
-  simpa only [LinearEquiv.trans_apply, Rep.leftRegularHomEquiv_apply,
-    MonoidalClosed.linearHomEquivComm_hom, Finsupp.llift_symm_apply, TensorProduct.curry_apply,
-    Linear.homCongr_apply, Iso.refl_hom, Iso.trans_inv, Action.comp_hom, ModuleCat.comp_def,
-    LinearMap.comp_apply, Representation.repOfTprodIso_inv_apply,
-    diagonalSucc_inv_single_single (1 : G) x, one_smul, one_mul] -/
-  change f.hom ((diagonalSuccIsoTensorTrivial k G n).inv.hom
-    (Finsupp.single 1 1 ⊗ₜ[k] Finsupp.single x 1)) = _
-  rw [diagonalSuccIsoTensorTrivial_inv_hom_single_single, one_smul, one_mul]
-
-/-- Given a `k`-linear `G`-representation `A`, `diagonalHomEquiv` is a `k`-linear isomorphism of
-the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. This lemma says that the
-inverse map sends a function `f : Gⁿ → A` to the representation morphism sending
-`(g₀, ... gₙ) ↦ ρ(g₀)(f(g₀⁻¹g₁, g₁⁻¹g₂, ..., gₙ₋₁⁻¹gₙ))`, where `ρ` is the representation attached
-to `A`. -/
-theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) → G) :
-    ((diagonalHomEquiv n A).symm f).hom (Finsupp.single x 1) =
-      A.ρ (x 0) (f fun i : Fin n => (x (Fin.castSucc i))⁻¹ * x i.succ) := by
-  unfold diagonalHomEquiv
-/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
-  simp only [LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
-    Rep.leftRegularHomEquiv_symm_apply, Linear.homCongr_symm_apply, Action.comp_hom, Iso.refl_inv,
-    Category.comp_id, Rep.MonoidalClosed.linearHomEquivComm_symm_hom, Iso.trans_hom,
-    ModuleCat.comp_def, LinearMap.comp_apply, Representation.repOfTprodIso_apply,
-    diagonalSucc_hom_single x (1 : k), TensorProduct.uncurry_apply, Rep.leftRegularHom_hom,
-    Finsupp.lift_apply, ihom_obj_ρ_def, Rep.ihom_obj_ρ_apply, Finsupp.sum_single_index, zero_smul,
-    one_smul, Rep.of_ρ, Rep.Action_ρ_eq_ρ, Rep.trivial_def (x 0)⁻¹, Finsupp.llift_apply A k k] -/
-  simp only [LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
-    leftRegularHomEquiv_symm_apply, Linear.homCongr_symm_apply, Iso.trans_hom, Iso.refl_inv,
-    Category.comp_id, Action.comp_hom, MonoidalClosed.linearHomEquivComm_symm_hom,
-    ModuleCat.hom_comp, LinearMap.comp_apply, Action.tensorObj_V,
-    diagonalSuccIsoTensorTrivial_hom_hom_single x 1]
-  -- The prototype linter that checks if `erw` could be replaced with `rw` would time out
-  -- if it replaces the next `erw`s with `rw`s. So we focus down on the relevant part.
-  conv_lhs =>
-    erw [TensorProduct.uncurry_apply, Finsupp.lift_apply, Finsupp.sum_single_index]
-    · simp only [one_smul]
-      erw [Representation.linHom_apply]
-      simp only [LinearMap.comp_apply, MonoidHom.one_apply, Module.End.one_apply]
-      erw [Finsupp.llift_apply]
-      rw [Finsupp.lift_apply]
-      erw [Finsupp.sum_single_index]
-      · rw [one_smul]
-      · rw [zero_smul]
-    · rw [zero_smul]
-
-/-- Auxiliary lemma for defining group cohomology, used to show that the isomorphism
-`diagonalHomEquiv` commutes with the differentials in two complexes which compute
-group cohomology. -/
-theorem diagonalHomEquiv_symm_partialProd_succ (f : (Fin n → G) → A) (g : Fin (n + 1) → G)
-    (a : Fin (n + 1)) :
-    ((diagonalHomEquiv n A).symm f).hom (Finsupp.single (Fin.partialProd g ∘ a.succ.succAbove) 1)
-      = f (Fin.contractNth a (· * ·) g) := by
-  rw [diagonalHomEquiv_symm_apply]
-  simp only [Function.comp_apply, Fin.succ_succAbove_zero, Fin.partialProd_zero, map_one,
-    Fin.succ_succAbove_succ, Module.End.one_apply, Fin.partialProd_succ]
-  congr
-  ext
-  rw [← Fin.partialProd_succ, Fin.inv_partialProd_mul_eq_contractNth]
-
-end Rep
-
 variable (G)
 
 /-- The simplicial `G`-set sending `[n]` to `Gⁿ⁺¹` equipped with the diagonal action of `G`. -/
@@ -513,13 +425,10 @@ lemma d_comp_diagonalSuccIsoFree_inv_eq :
     d k G n ≫ (diagonalSuccIsoFree k G n).inv =
       (diagonalSuccIsoFree k G (n + 1)).inv ≫ (standardComplex k G).d (n + 1) n :=
   free_ext _ _ fun i => by
-    have := d_single (k := k) (G := G)
-    have := @diagonalSuccIsoFree_inv_hom_single_single k G _
-    simp_all only [ModuleCat.hom_comp, Action.comp_hom, LinearMap.coe_comp, Function.comp_apply,
-      map_add, map_sum]
-    simpa [standardComplex.d_eq, standardComplex.d_of (k := k) (Fin.partialProd i),
-      Fin.sum_univ_succ, Fin.partialProd_contractNth]
-      using congr(single $(by ext j; exact (Fin.partialProd_succ' i j).symm) 1)
+    simpa [diagonalSuccIsoFree_inv_hom_single_single (k := k), d_single (k := k),
+      standardComplex.d_eq, standardComplex.d_of (k := k) (Fin.partialProd i), Fin.sum_univ_succ,
+      Fin.partialProd_contractNth] using
+      congr(single $(by ext j; exact (Fin.partialProd_succ' i j).symm) 1)
 
 end barComplex
 

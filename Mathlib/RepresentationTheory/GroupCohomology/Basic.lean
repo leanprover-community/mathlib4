@@ -81,18 +81,15 @@ variable [Monoid G]
 
 /-- The complex `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `k`-linear
 `G`-representation. -/
+@[deprecated "We now use `Rep.barComplex` instead" (since := "2025-06-08")]
 abbrev linearYonedaObjResolution (A : Rep k G) : CochainComplex (ModuleCat.{u} k) ℕ :=
   (Rep.standardComplex k G).linearYonedaObj k A
-
-theorem linearYonedaObjResolution_d_apply
-    {A : Rep k G} (i j : ℕ) (x : (Rep.standardComplex k G).X i ⟶ A) :
-    (linearYonedaObjResolution A).d i j x = (Rep.standardComplex k G).d j i ≫ x :=
-  rfl
 
 end groupCohomology
 
 namespace inhomogeneousCochains
-open Rep
+
+open Rep groupCohomology
 
 /-- The differential in the complex of inhomogeneous cochains used to
 calculate group cohomology. -/
@@ -101,14 +98,13 @@ def d [Monoid G] (A : Rep k G) (n : ℕ) :
     ModuleCat.of k ((Fin n → G) → A) ⟶ ModuleCat.of k ((Fin (n + 1) → G) → A) :=
   ModuleCat.ofHom
   { toFun f g :=
-      A.ρ (g 0) (f fun i => g i.succ) +
-        Finset.univ.sum fun j : Fin (n + 1) =>
-          (-1 : k) ^ ((j : ℕ) + 1) • f (Fin.contractNth j (· * ·) g)
+      A.ρ (g 0) (f fun i => g i.succ) + Finset.univ.sum fun j : Fin (n + 1) =>
+        (-1 : k) ^ ((j : ℕ) + 1) • f (Fin.contractNth j (· * ·) g)
     map_add' f g := by
-      ext x
+      ext
       simp [Finset.sum_add_distrib, add_add_add_comm]
     map_smul' r f := by
-      ext x
+      ext
       simp [Finset.smul_sum, ← smul_assoc, mul_comm r] }
 
 variable [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ)
@@ -118,9 +114,8 @@ theorem d_eq :
       (freeLiftLEquiv (Fin n → G) A).toModuleIso.inv ≫
         ((barComplex k G).linearYonedaObj k A).d n (n + 1) ≫
           (freeLiftLEquiv (Fin (n + 1) → G) A).toModuleIso.hom := by
-  ext f g
-  have h := barComplex.d_single (k := k) _ g
-  simp_all [d_hom_apply, map_add]
+  ext
+  simp [d_hom_apply, map_add, barComplex.d_single (k := k)]
 
 end inhomogeneousCochains
 
