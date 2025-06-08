@@ -35,7 +35,7 @@ assert_not_exists MonoidWithZero DenselyOrdered
 
 open Function
 
-universe u v w
+universe s t u v w
 
 section MonoidHomClass
 
@@ -61,33 +61,30 @@ end MonoidHomClass
 
 namespace Units
 
-variable {α : Type*} {M : Type u} {N : Type v} {P : Type w} [Monoid M] [Monoid N] [Monoid P]
+variable {F : Type s} {G : Type t} {M : Type u} {N : Type v} {P : Type w} [Monoid M] [Monoid N]
+  [Monoid P] [FunLike F M N] [MonoidHomClass F M N] [FunLike G N P] [MonoidHomClass G N P]
 
-/-- The group homomorphism on units induced by a `MonoidHom`. -/
-@[to_additive "The additive homomorphism on `AddUnit`s induced by an `AddMonoidHom`."]
-def map (f : M →* N) : Mˣ →* Nˣ :=
+/-- The group homomorphism on units induced by a `MonoidHomClass`. -/
+@[to_additive "The additive homomorphism on `AddUnit`s induced by an `AddMonoidHomClass`."]
+def map (f : F) : Mˣ →* Nˣ :=
   MonoidHom.mk'
-    (fun u => ⟨f u.val, f u.inv,
-      by rw [← f.map_mul, u.val_inv, f.map_one],
-      by rw [← f.map_mul, u.inv_val, f.map_one]⟩)
-    fun x y => ext (f.map_mul x y)
+    (fun u => ⟨f u.val, f u.inv, by simp [← map_mul], by simp [← map_mul]⟩) fun _ _ => ext (by simp)
 
 @[to_additive (attr := simp)]
-theorem coe_map (f : M →* N) (x : Mˣ) : ↑(map f x) = f x := rfl
+theorem coe_map (f : F) (x : Mˣ) : ↑(map f x) = f x := rfl
 
 @[to_additive (attr := simp)]
-theorem coe_map_inv (f : M →* N) (u : Mˣ) : ↑(map f u)⁻¹ = f ↑u⁻¹ := rfl
+theorem coe_map_inv (f : F) (u : Mˣ) : ↑(map f u)⁻¹ = f ↑u⁻¹ := rfl
 
 @[to_additive (attr := simp)]
-lemma map_mk (f : M →* N) (val inv : M) (val_inv inv_val) :
-    map f (mk val inv val_inv inv_val) = mk (f val) (f inv)
-      (by rw [← f.map_mul, val_inv, f.map_one]) (by rw [← f.map_mul, inv_val, f.map_one]) := rfl
+theorem map_mk (f : F) (val inv : M) (val_inv inv_val) : map f (mk val inv val_inv inv_val) =
+    mk (f val) (f inv) (by simp [← map_mul, val_inv]) (by simp [← map_mul, inv_val]) := rfl
 
 @[to_additive (attr := simp)]
-theorem map_comp (f : M →* N) (g : N →* P) : map (g.comp f) = (map g).comp (map f) := rfl
+theorem map_comp (f : F) (g : G) : map (MonoidHom.comp (N := N) g f) = (map g).comp (map f) := rfl
 
 @[to_additive]
-lemma map_injective {f : M →* N} (hf : Function.Injective f) :
+theorem map_injective {f : F} (hf : Function.Injective f) :
     Function.Injective (map f) := fun _ _ e => ext (hf (congr_arg val e))
 
 variable (M)
@@ -107,7 +104,7 @@ theorem coeHom_apply (x : Mˣ) : coeHom M x = ↑x := rfl
 
 section DivisionMonoid
 
-variable [DivisionMonoid α]
+variable {α : Type*} [DivisionMonoid α]
 
 @[to_additive (attr := simp, norm_cast)]
 theorem val_zpow_eq_zpow_val : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) = (u : α) ^ n :=
@@ -177,6 +174,16 @@ variable [Monoid M] [Monoid N]
 @[to_additive]
 theorem map [MonoidHomClass F M N] (f : F) {x : M} (h : IsUnit x) : IsUnit (f x) := by
   rcases h with ⟨y, rfl⟩; exact (Units.map (f : M →* N) y).isUnit
+
+@[to_additive]
+theorem unit_map [MonoidHomClass F M N] (f : F) {x : M} (h : IsUnit x) :
+    (h.map f).unit = f h.unit :=
+  rfl
+
+@[to_additive]
+theorem unit_inv_map [MonoidHomClass F M N] (f : F) {x : M} (h : IsUnit x) :
+    (h.map f).unit⁻¹ = f ↑h.unit⁻¹ := by
+  simp_rw [← Units.coe_map, map_inv, Units.val_inv_inj, Units.coe_map, unit_spec]
 
 @[to_additive]
 theorem of_leftInverse [MonoidHomClass G N M] {f : F} {x : M} (g : G)

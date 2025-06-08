@@ -3,6 +3,7 @@ Copyright (c) 2017 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemaker, Jon Eugster
 -/
+import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commute.Defs
 
 /-!
@@ -261,6 +262,10 @@ lemma val_pow_eq_pow_val (n : ℕ) : ↑(a ^ n) = (a ^ n : α) := rfl
 
 @[to_additive (attr := simp, norm_cast)]
 lemma inv_pow_eq_pow_inv (n : ℕ) : ↑(a ^ n)⁻¹ = (a⁻¹ ^ n : α) := rfl
+
+@[to_additive (attr := simp)]
+lemma val_inv_inj : ((a⁻¹ : αˣ) : α) = ↑b⁻¹ ↔ (a : α) = b :=
+  Units.ext_iff.symm.trans <| inv_inj.trans Units.ext_iff
 
 end Monoid
 
