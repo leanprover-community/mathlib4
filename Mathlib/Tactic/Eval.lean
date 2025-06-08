@@ -14,7 +14,6 @@ This file provides the `eval% x` term elaborator, which evaluates the constant `
 in the interpreter, and interpolates it into the expression.
 -/
 
-
 open Qq Lean Elab Term
 
 namespace Mathlib.Meta
