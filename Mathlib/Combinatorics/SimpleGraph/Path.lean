@@ -328,8 +328,7 @@ lemma IsPath.getVert_eq_start_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi
 lemma IsPath.getVert_eq_end_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
     p.getVert i = w ↔ i = p.length := by
   have := hp.reverse.getVert_eq_start_iff (by omega : p.reverse.length - i ≤ p.reverse.length)
-  simp only [length_reverse, getVert_reverse,
-    show p.length - (p.length - i) = i from by omega] at this
+  simp only [length_reverse, getVert_reverse, show p.length - (p.length - i) = i by omega] at this
   rw [this]
   omega
 
@@ -893,7 +892,6 @@ lemma Reachable.mem_subgraphVerts {u v} {H : G.Subgraph} (hr : G.Reachable u v)
     exact aux (H.edge_vert (h _ hv' _ (Walk.adj_snd hnp)).symm) p.tail
   termination_by p.length
   decreasing_by {
-    simp_wf
     rw [← Walk.length_tail_add_one hnp]
     omega
   }
@@ -1132,15 +1130,12 @@ theorem map_mk (φ : G →g G') (v : V) :
   rfl
 
 @[simp]
-theorem map_id (C : ConnectedComponent G) : C.map Hom.id = C := by
-  refine C.ind ?_
-  exact fun _ => rfl
+theorem map_id (C : ConnectedComponent G) : C.map Hom.id = C := C.ind (fun _ => rfl)
 
 @[simp]
 theorem map_comp (C : G.ConnectedComponent) (φ : G →g G') (ψ : G' →g G'') :
-    (C.map φ).map ψ = C.map (ψ.comp φ) := by
-  refine C.ind ?_
-  exact fun _ => rfl
+    (C.map φ).map ψ = C.map (ψ.comp φ) :=
+  C.ind (fun _ => rfl)
 
 variable {φ : G ≃g G'} {v : V} {v' : V'}
 
@@ -1167,10 +1162,8 @@ namespace Iso
 def connectedComponentEquiv (φ : G ≃g G') : G.ConnectedComponent ≃ G'.ConnectedComponent where
   toFun := ConnectedComponent.map φ
   invFun := ConnectedComponent.map φ.symm
-  left_inv C := ConnectedComponent.ind
-    (fun v => congr_arg G.connectedComponentMk (Equiv.left_inv φ.toEquiv v)) C
-  right_inv C := ConnectedComponent.ind
-    (fun v => congr_arg G'.connectedComponentMk (Equiv.right_inv φ.toEquiv v)) C
+  left_inv C := C.ind (fun v => congr_arg G.connectedComponentMk (Equiv.left_inv φ.toEquiv v))
+  right_inv C := C.ind (fun v => congr_arg G'.connectedComponentMk (Equiv.right_inv φ.toEquiv v))
 
 @[simp]
 theorem connectedComponentEquiv_refl :
@@ -1203,9 +1196,8 @@ def supp (C : G.ConnectedComponent) :=
 theorem supp_injective :
     Function.Injective (ConnectedComponent.supp : G.ConnectedComponent → Set V) := by
   refine ConnectedComponent.ind₂ ?_
-  intro v w
   simp only [ConnectedComponent.supp, Set.ext_iff, ConnectedComponent.eq, Set.mem_setOf_eq]
-  intro h
+  intro v w h
   rw [reachable_comm, h]
 
 @[simp]
@@ -1254,8 +1246,7 @@ lemma mem_coe_supp_of_adj {v w : V} {H : Subgraph G} {c : ConnectedComponent H.c
 lemma eq_of_common_vertex {v : V} {c c' : ConnectedComponent G} (hc : v ∈ c.supp)
     (hc' : v ∈ c'.supp) : c = c' := by
   simp only [mem_supp_iff] at *
-  subst hc hc'
-  rfl
+  rw [← hc, ← hc']
 
 lemma connectedComponentMk_supp_subset_supp {G'} {v : V} (h : G ≤ G') (c' : G'.ConnectedComponent)
     (hc' : v ∈ c'.supp) : (G.connectedComponentMk v).supp ⊆ c'.supp := by
@@ -1279,21 +1270,20 @@ lemma top_supp_eq_univ (c : ConnectedComponent (⊤ : SimpleGraph V)) :
   have ⟨w, hw⟩ := c.exists_rep
   ext v
   simp only [Set.mem_univ, iff_true, mem_supp_iff, ← hw]
-  apply SimpleGraph.ConnectedComponent.sound
-  exact (@SimpleGraph.top_connected V (Nonempty.intro v)).preconnected v w
-
+  apply ConnectedComponent.sound
+  exact (@top_connected V (Nonempty.intro v)).preconnected v w
 
 lemma reachable_of_mem_supp {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
     (hu : u ∈ C.supp) (hv : v ∈ C.supp) : G.Reachable u v := by
   rw [mem_supp_iff] at hu hv
-  exact SimpleGraph.ConnectedComponent.exact (hv ▸ hu)
+  exact ConnectedComponent.exact (hv ▸ hu)
 
 lemma mem_supp_of_adj_mem_supp {G : SimpleGraph V} (C : G.ConnectedComponent) {u v : V}
     (hu : u ∈ C.supp) (hadj : G.Adj u v) : v ∈ C.supp := by
-  have hconcomp : G.connectedComponentMk u = G.connectedComponentMk v :=
+  have hC : G.connectedComponentMk u = G.connectedComponentMk v :=
     connectedComponentMk_eq_of_adj hadj
-  rw [hu] at hconcomp
-  exact hconcomp.symm
+  rw [hu] at hC
+  exact hC.symm
 
 /--
 Given a connected component `C` of a simple graph `G`, produce the induced graph on `C`.
@@ -1304,10 +1294,8 @@ def toSimpleGraph {G : SimpleGraph V} (C : G.ConnectedComponent) : SimpleGraph C
 
 /-- Homomorphism from a connected component graph to the original graph. -/
 def toSimpleGraph_hom {G : SimpleGraph V} (C : G.ConnectedComponent) : C.toSimpleGraph →g G where
-  toFun := fun u ↦ u.val
-  map_rel' := by
-    intro u v h
-    exact h
+  toFun u := u.val
+  map_rel' := id
 
 lemma toSimpleGraph_hom_apply {G : SimpleGraph V} (C : G.ConnectedComponent) (u : C) :
     C.toSimpleGraph_hom u = u.val := rfl
@@ -1377,7 +1365,7 @@ lemma iUnion_connectedComponentSupp (G : SimpleGraph V) :
     ⋃ c : G.ConnectedComponent, c.supp = Set.univ := by
   refine Set.eq_univ_of_forall fun v ↦ ⟨G.connectedComponentMk v, ?_⟩
   simp only [Set.mem_range, SetLike.mem_coe]
-  exact ⟨by use G.connectedComponentMk v; exact rfl, rfl⟩
+  exact ⟨⟨G.connectedComponentMk v, rfl⟩, rfl⟩
 
 theorem Preconnected.set_univ_walk_nonempty (hconn : G.Preconnected) (u v : V) :
     (Set.univ : Set (G.Walk u v)).Nonempty := by
@@ -1411,8 +1399,7 @@ theorem reachable_delete_edges_iff_exists_walk {v w v' w' : V} :
     simpa using p.edges_subset_edgeSet h
   · rintro ⟨p, h⟩
     refine ⟨p.transfer _ fun e ep => ?_⟩
-    simp only [edgeSet_sdiff, edgeSet_fromEdgeSet, edgeSet_sdiff_sdiff_isDiag, Set.mem_diff,
-      Set.mem_singleton_iff]
+    simp only [edgeSet_sdiff, edgeSet_fromEdgeSet, edgeSet_sdiff_sdiff_isDiag]
     exact ⟨p.edges_subset_edgeSet ep, fun h' => h (h' ▸ ep)⟩
 
 theorem isBridge_iff_adj_and_forall_walk_mem_edges {v w : V} :
