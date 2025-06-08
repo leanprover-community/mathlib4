@@ -5,36 +5,59 @@ Authors: Michael Rothgang
 -/
 
 import Batteries.Data.String.Matcher
-import Cli.Basic
-import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Data.Nat.Notation
+import Lake.Util.Casing
+
+-- Don't warn about the lake import: the above file has almost no imports, and this PR has been
+-- benchmarked.
+set_option linter.style.header false
 
 /-!
 ## Text-based linters
 
 This file defines various mathlib linters which are based on reading the source code only.
-In practice, only style linters will have this form.
-All of these have been rewritten from the `lint-style.py` script.
+In practice, all such linters check for code style issues.
 
-For now, this only contains the linters for the copyright and author headers and large files:
-further linters will be ported in subsequent PRs.
+Currently, this file contains linters checking
+- if the string "adaptation note" is used instead of the command #adaptation_note,
+- for lines with windows line endings,
+- for lines containing trailing whitespace.
 
+For historic reasons, some further such check checks are written in a Python script `lint-style.py`:
+these are gradually being rewritten in Lean.
+
+This linter has a file for style exceptions (to avoid false positives in the implementation),
+or for downstream projects to allow a gradual adoption of this linter.
+
+An executable running all these linters is defined in `scripts/lint-style.lean`.
 -/
 
-open Lean Elab System
+open Lean.Linter System
+
+namespace Mathlib.Linter.TextBased
+
+/-- Different kinds of "broad imports" that are linted against. -/
+inductive BroadImports
+  /-- Importing the entire "Mathlib.Tactic" folder -/
+  | TacticFolder
+  /-- Importing any module in `Lake`, unless carefully measured
+  This has caused unexpected regressions in the past. -/
+  | Lake
+deriving BEq
 
 /-- Possible errors that text-based linters can report. -/
 -- We collect these in one inductive type to centralise error reporting.
 inductive StyleError where
-  /-- Missing or malformed copyright header.
-  Unlike in the python script, we may provide some context on the actual error. -/
-  | copyright (context : Option String)
-  /-- Malformed authors line in the copyright header -/
-  | authors
-  /-- The current file was too large: this error contains the current number of lines
-  as well as a size limit (slightly larger). On future runs, this linter will allow this file
-  to grow up to this limit. -/
-  | fileTooLong (number_lines : ℕ) (new_size_limit : ℕ) : StyleError
-  deriving BEq
+  /-- The bare string "Adaptation note" (or variants thereof):
+  instead, the #adaptation_note command should be used. -/
+  | adaptationNote
+  /-- A line ends with windows line endings (\r\n) instead of unix ones (\n). -/
+  | windowsLineEnding
+  /-- A line contains trailing whitespace. -/
+  | trailingWhitespace
+  /-- A line contains a space before a semicolon -/
+  | semicolon
+deriving BEq
 
 /-- How to format style errors -/
 inductive ErrorFormat
@@ -49,58 +72,69 @@ inductive ErrorFormat
   deriving BEq
 
 /-- Create the underlying error message for a given `StyleError`. -/
-def StyleError.errorMessage (err : StyleError) (style : ErrorFormat) : String := match err with
-  | StyleError.copyright (some context) => s!"Malformed or missing copyright header: {context}"
-  | StyleError.copyright none => s!"Malformed or missing copyright header"
-  | StyleError.authors =>
-    "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'"
-  | StyleError.fileTooLong current_size size_limit =>
-    match style with
-    | ErrorFormat.github =>
-        s!"file contains {current_size} lines (at most {size_limit} allowed), try to split it up"
-    | ErrorFormat.exceptionsFile =>
-        s!"{size_limit} file contains {current_size} lines, try to split it up"
-    | ErrorFormat.humanReadable => s!"file contains {current_size} lines, try to split it up"
+def StyleError.errorMessage (err : StyleError) : String := match err with
+  | StyleError.adaptationNote =>
+    "Found the string \"Adaptation note:\", please use the #adaptation_note command instead"
+  | windowsLineEnding => "This line ends with a windows line ending (\r\n): please use Unix line\
+    endings (\n) instead"
+  | trailingWhitespace => "This line ends with some whitespace: please remove this"
+  | semicolon => "This line contains a space before a semicolon"
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
 -- in principle, we could also print something more readable.
 def StyleError.errorCode (err : StyleError) : String := match err with
-  | StyleError.copyright _ => "ERR_COP"
-  | StyleError.authors => "ERR_AUT"
-  | StyleError.fileTooLong _ _ => "ERR_NUM_LIN"
+  | StyleError.adaptationNote => "ERR_ADN"
+  | StyleError.windowsLineEnding => "ERR_WIN"
+  | StyleError.trailingWhitespace => "ERR_TWS"
+  | StyleError.semicolon => "ERR_SEM"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
 structure ErrorContext where
-  /-- The underlying `StyleError`-/
+  /-- The underlying `StyleError` -/
   error : StyleError
-  /-- The line number of the error -/
+  /-- The line number of the error (1-based) -/
   lineNumber : ℕ
   /-- The path to the file which was linted -/
   path : FilePath
 
-/-- The parts of a `StyleError` which are considered when matching against the existing
-  style exceptions: for example, we ignore the particular line length of a "line too long" error. -/
-def StyleError.normalise (err : StyleError) : StyleError := match err with
-  -- NB: keep this in sync with `parse?_errorContext` below.
-  | StyleError.fileTooLong _ _ => StyleError.fileTooLong 0 0
-  -- We do *not* care about the *kind* of wrong copyright.
-  | StyleError.copyright _ => StyleError.copyright ""
-  | _ => err
+/-- Possible results of comparing an `ErrorContext` to an `existing` entry:
+most often, they are different --- if the existing entry covers the new exception,
+depending on the error, we prefer the new or the existing entry. -/
+inductive ComparisonResult
+  /-- The contexts describe different errors: two separate style exceptions are required
+  to cover both. -/
+  | Different
+  /-- The existing exception also covers the new error:
+  we keep the existing exception. -/
+  | Comparable
+  deriving BEq
 
-/-- Careful: we do not want to compare `ErrorContexts` exactly; we ignore some details. -/
-instance : BEq ErrorContext where
-  beq ctx ctx' :=
-      ctx.path == ctx'.path
-      -- We completely ignore line numbers of errors. Not sure if this is best.
-      -- We normalise errors before comparing them.
-      && (ctx.error).normalise == (ctx'.error).normalise
+/-- Determine whether a `new` `ErrorContext` is covered by an `existing` exception,
+and, if it is, if we prefer replacing the new exception or keeping the previous one. -/
+def compare (existing new : ErrorContext) : ComparisonResult :=
+  -- Two comparable error contexts must have the same path.
+  -- To avoid issues with different path separators across different operating systems,
+  -- we compare the set of path components instead.
+  if existing.path.components != new.path.components then ComparisonResult.Different
+  -- We entirely ignore their line numbers: not sure if this is best.
+
+  -- NB: keep the following in sync with `parse?_errorContext` below.
+  -- Generally, comparable errors must have equal `StyleError`s.
+  else
+    if existing.error == new.error then ComparisonResult.Comparable else ComparisonResult.Different
+
+/-- Find the first style exception in `exceptions` (if any) which covers a style exception `e`. -/
+def ErrorContext.find?_comparable (e : ErrorContext) (exceptions : Array ErrorContext) :
+    Option ErrorContext :=
+  (exceptions).find? (fun new ↦ compare e new == ComparisonResult.Comparable)
 
 /-- Output the formatted error message, containing its context.
-`style` specifies if the error should be formatted for humans or for github output matchers -/
+`style` specifies if the error should be formatted for humans to read, github problem matchers
+to consume, or for the style exceptions file. -/
 def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
-  let error_message := errctx.error.errorMessage style
+  let errorMessage := errctx.error.errorMessage
   match style with
   | ErrorFormat.github =>
    -- We are outputting for github: duplicate file path, line number and error code,
@@ -108,42 +142,36 @@ def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
     let path := errctx.path
     let nr := errctx.lineNumber
     let code := errctx.error.errorCode
-    s!"::ERR file={path},line={nr},code={code}::{path}:{nr} {code}: {error_message}"
+    s!"::ERR file={path},line={nr},code={code}::{path}:{nr} {code}: {errorMessage}"
   | ErrorFormat.exceptionsFile =>
     -- Produce an entry in the exceptions file: with error code and "line" in front of the number.
-    s!"{errctx.path} : line {errctx.lineNumber} : {errctx.error.errorCode} : {error_message}"
+    s!"{errctx.path} : line {errctx.lineNumber} : {errctx.error.errorCode} : {errorMessage}"
   | ErrorFormat.humanReadable =>
     -- Print for humans: clickable file name and omit the error code
-    s!"error: {errctx.path}:{errctx.lineNumber}: {error_message}"
+    s!"error: {errctx.path}:{errctx.lineNumber}: {errorMessage}"
 
 /-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise. -/
 def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
   let parts := line.split (· == ' ')
   match parts with
-    | filename :: ":" :: "line" :: _line_number :: ":" :: error_code :: ":" :: error_message =>
+    | filename :: ":" :: "line" :: lineNumber :: ":" :: errorCode :: ":" :: _errorMessage =>
       -- Turn the filename into a path. In general, this is ambiguous if we don't know if we're
       -- dealing with e.g. Windows or POSIX paths. In our setting, this is fine, since no path
       -- component contains any path separator.
       let path := mkFilePath (filename.split (FilePath.pathSeparators.contains ·))
       -- Parse the error kind from the error code, ugh.
       -- NB: keep this in sync with `StyleError.errorCode` above!
-      let err : Option StyleError := match error_code with
-        -- Use default values for parameters which are normalised.
-        -- NB: keep this in sync with `normalise` above!
-        | "ERR_COP" => some (StyleError.copyright "")
-        | "ERR_AUT" => some (StyleError.authors)
-        | "ERR_NUM_LIN" =>
-          -- Parse the error message in the script. `none` indicates invalid input.
-          match (error_message.get? 0, error_message.get? 3) with
-          | (some limit, some current) =>
-            match (String.toNat? limit, String.toNat? current) with
-            | (some size_limit, some current_size) =>
-              some (StyleError.fileTooLong current_size size_limit)
-            | _ => none
-          | _ => none
+      let err : Option StyleError := match errorCode with
+        -- Use default values for parameters which are ignored for comparing style exceptions.
+        -- NB: keep this in sync with `compare` above!
+        | "ERR_ADN" => some (StyleError.adaptationNote)
+        | "ERR_SEM" => some (StyleError.semicolon)
+        | "ERR_TWS" => some (StyleError.trailingWhitespace)
+        | "ERR_WIN" => some (StyleError.windowsLineEnding)
         | _ => none
-      -- Omit the line number, as we don't use it anyway.
-      err.map fun e ↦ (ErrorContext.mk e 0 path)
+      match String.toNat? lineNumber with
+      | some n => err.map fun e ↦ (ErrorContext.mk e n path)
+      | _ => none
     -- It would be nice to print an error on any line which doesn't match the above format,
     -- but is awkward to do so (this `def` is not in any IO monad). Hopefully, this is not necessary
     -- anyway as the style exceptions file is mostly automatically generated.
@@ -156,63 +184,72 @@ def parseStyleExceptions (lines : Array String) : Array ErrorContext := Id.run d
   Array.filterMap (parse?_errorContext ·) (lines.filter (fun line ↦ !line.startsWith "--"))
 
 /-- Print information about all errors encountered to standard output.
-`style` specifies if we print errors for humand or github consumption. -/
+`style` specifies if the error should be formatted for humans to read, github problem matchers
+to consume, or for the style exceptions file. -/
 def formatErrors (errors : Array ErrorContext) (style : ErrorFormat) : IO Unit := do
   for e in errors do
     IO.println (outputMessage e style)
 
 /-- Core logic of a text based linter: given a collection of lines,
-return an array of all style errors with line numbers. -/
-abbrev TextbasedLinter := Array String → Array (StyleError × ℕ)
+return an array of all style errors with line numbers. If possible,
+also return the collection of all lines, changed as needed to fix the linter errors.
+(Such automatic fixes are only possible for some kinds of `StyleError`s.)
+-/
+abbrev TextbasedLinter := LinterOptions → Array String →
+  Array (StyleError × ℕ) × (Option (Array String))
 
 /-! Definitions of the actual text-based linters. -/
 section
 
-/-- Return if `line` looks like a correct authors line in a copyright header. -/
-def isCorrectAuthorsLine (line : String) : Bool :=
-  -- We cannot reasonably validate the author names, so we look only for a few common mistakes:
-  -- the file starting wrong, double spaces, using ' and ' between names,
-  -- and ending the line with a period.
-  line.startsWith "Authors: " && (!line.containsSubstr "  ")
-    && (!line.containsSubstr " and ") && (!line.endsWith ".")
+/-- Lint on any occurrences of the string "Adaptation note:" or variants thereof. -/
+register_option linter.adaptationNote : Bool := { defValue := true }
 
-/-- Lint a collection of input lines if they are missing an appropriate copyright header.
+@[inherit_doc linter.adaptationNote]
+def adaptationNoteLinter : TextbasedLinter := fun opts lines ↦ Id.run do
+  unless getLinterValue linter.adaptationNote opts do return (#[], none)
 
-A copyright header should start at the very beginning of the file and contain precisely five lines,
-including the copy year and holder, the license and main author(s) of the file (in this order).
--/
-def copyrightHeaderLinter : TextbasedLinter := fun lines ↦ Id.run do
-  -- Unlike the Python script, we just emit one warning.
-  let start := lines.extract 0 4
-  -- The header should start and end with blank comments.
-  let _ := match (start.get? 0, start.get? 4) with
-  | (some "/-", some "-/") => none
-  | (some "/-", _) => return #[(StyleError.copyright none, 4)]
-  | _ => return #[(StyleError.copyright none, 0)]
+  let mut errors := Array.mkEmpty 0
+  for h : idx in [:lines.size] do
+    -- We make this shorter to catch "Adaptation note", "adaptation note" and a missing colon.
+    if lines[idx].containsSubstr "daptation note" then
+      errors := errors.push (StyleError.adaptationNote, idx + 1)
+  return (errors, none)
 
-  -- If this is given, we go over the individual lines one by one,
-  -- and provide some context on what is mis-formatted (if anything).
-  let mut output := Array.mkEmpty 0
-  -- By hypotheses above, start has at least five lines, so the `none` cases below are never hit.
-  -- The first real line should state the copyright.
-  if let some copy := start.get? 1 then
-    if !(copy.startsWith "Copyright (c) 20" && copy.endsWith ". All rights reserved.") then
-      output := output.push (StyleError.copyright "Copyright line is malformed", 2)
-  -- The second line should be standard.
-  let expectedSecondLine := "Released under Apache 2.0 license as described in the file LICENSE."
-  if start.get? 2 != some expectedSecondLine then
-    output := output.push (StyleError.copyright
-      s!"Second line should be \"{expectedSecondLine}\"", 3)
-  -- The third line should contain authors.
-  if let some line := start.get? 3 then
-    if !line.containsSubstr "Author" then
-      output := output.push (StyleError.copyright
-        "The third line should describe the file's main authors", 4)
-    else
-      -- If it does, we check the authors line is formatted correctly.
-      if !isCorrectAuthorsLine line then
-        output := output.push (StyleError.authors, 4)
-  return output
+/-- Lint a collection of input strings if one of them contains trailing whitespace. -/
+register_option linter.trailingWhitespace : Bool := { defValue := true }
+
+@[inherit_doc linter.trailingWhitespace]
+def trailingWhitespaceLinter : TextbasedLinter := fun opts lines ↦ Id.run do
+  unless getLinterValue linter.trailingWhitespace opts do return (#[], none)
+
+  let mut errors := Array.mkEmpty 0
+  let mut fixedLines : Vector String lines.size := lines.toVector
+  for h : idx in [:lines.size] do
+    let line := lines[idx]
+    if line.back == ' ' then
+      errors := errors.push (StyleError.trailingWhitespace, idx + 1)
+      fixedLines := fixedLines.set idx line.trimRight
+  return (errors, if errors.size > 0 then some fixedLines.toArray else none)
+
+/-- Lint a collection of input strings for a semicolon preceded by a space. -/
+register_option linter.whitespaceBeforeSemicolon : Bool := { defValue := true }
+
+@[inherit_doc linter.whitespaceBeforeSemicolon]
+def semicolonLinter : TextbasedLinter := fun opts lines ↦ Id.run do
+  unless getLinterValue linter.whitespaceBeforeSemicolon opts do return (#[], none)
+
+  let mut errors := Array.mkEmpty 0
+  let mut fixedLines := lines
+  for h : idx in [:lines.size] do
+    let line := lines[idx]
+    let pos := line.find (· == ';')
+    -- Future: also lint for a semicolon *not* followed by a space or ⟩.
+    if pos != line.endPos && line.get (line.prev pos) == ' ' then
+      errors := errors.push (StyleError.semicolon, idx + 1)
+      -- We spell the bad string pattern this way to avoid the linter firing on itself.
+      fixedLines := fixedLines.set! idx (line.replace (⟨[' ', ';']⟩ : String) ";")
+   return (errors, if errors.size > 0 then some fixedLines else none)
+
 
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
 In practice, this means it's an imports-only file and exempt from almost all linting. -/
@@ -221,103 +258,128 @@ def isImportsOnlyFile (lines : Array String) : Bool :=
   -- this is in fact not necessary. (It is needed for `Tactic/Linter.lean`, though.)
   lines.all (fun line ↦ line.startsWith "import " || line == "" || line.startsWith "-- ")
 
-/-- Error if a collection of lines is too large. "Too large" means more than 1500 lines
-**and** longer than an optional previous limit.
-If the file is too large, return a matching `StyleError`, which includes a new size limit
-(which is somewhat larger than the current size). -/
-def checkFileLength (lines : Array String) (existing_limit : Option ℕ) : Option StyleError :=
-  Id.run do
-  if lines.size > 1500 then
-    let is_larger : Bool := match existing_limit with
-    | some mark => lines.size > mark
-    | none => true
-    if is_larger then
-      -- We add about 200 lines of slack to the current file size: small PRs will be unaffected,
-      -- but sufficiently large PRs will get nudged towards splitting up this file.
-      return some (StyleError.fileTooLong lines.size ((Nat.div lines.size 100) * 100 + 200))
-  none
-
 end
 
 /-- All text-based linters registered in this file. -/
-def allLinters : Array TextbasedLinter := #[copyrightHeaderLinter]
+def allLinters : Array TextbasedLinter := #[
+    adaptationNoteLinter, semicolonLinter, trailingWhitespaceLinter
+  ]
 
-/-- Read a file, apply all text-based linters and print the formatted errors.
-`sizeLimit` is any pre-existing limit on this file's size.
-`exceptions` are any other style exceptions.
-`style` specifies if errors should be formatted for github or human consumption.
-Return `true` if there were new errors (and `false` otherwise). -/
-def lintFile (path : FilePath) (sizeLimit : Option ℕ)
-  (exceptions : Array ErrorContext) (style : ErrorFormat) : IO Bool := do
-  let lines ← IO.FS.lines path
-  -- We don't need to run any checks on imports-only files.
-  -- NB. The Python script used to still run a few linters; this is in fact not necessary.
-  if isImportsOnlyFile lines then
-    return false
+
+/-- Read a file and apply all text-based linters.
+Return a list of all unexpected errors, and, if some errors could be fixed automatically,
+the collection of all lines with every automatic fix applied.
+`exceptions` are any pre-existing style exceptions for this file. -/
+def lintFile (opts : LinterOptions) (path : FilePath) (exceptions : Array ErrorContext) :
+    IO (Array ErrorContext × Option (Array String)) := do
   let mut errors := #[]
-  if let some (StyleError.fileTooLong n limit) := checkFileLength lines sizeLimit then
-    errors := #[ErrorContext.mk (StyleError.fileTooLong n limit) 1 path]
-  let allOutput := (Array.map (fun lint ↦
-    (Array.map (fun (e, n) ↦ ErrorContext.mk e n path)) (lint lines))) allLinters
-  -- This this list is not sorted: for github, this is fine.
-  errors := errors.append (allOutput.flatten.filter (fun e ↦ !exceptions.contains e))
-  formatErrors errors style
-  return errors.size > 0
+  -- Whether any changes were made by auto-fixes.
+  let mut changes_made := false
+  -- Check for windows line endings first: as `FS.lines` treats Unix and Windows lines the same,
+  -- we need to analyse the actual file contents.
+  let contents ← IO.FS.readFile path
+  let replaced := contents.crlfToLf
+  if replaced != contents then
+    changes_made := true
+    errors := errors.push (ErrorContext.mk StyleError.windowsLineEnding 1 path)
+  let lines := (replaced.splitOn "\n").toArray
 
-/-- Lint all files referenced in a given import-only file.
+  -- We don't need to run any further checks on imports-only files.
+  if isImportsOnlyFile lines then
+    return (errors, if changes_made then some lines else none)
+
+  -- All further style errors raised in this file.
+  let mut allOutput := #[]
+  -- A working copy of the lines in this file, modified by applying the auto-fixes.
+  let mut changed := lines
+
+  for lint in allLinters do
+    let (err, changes) := lint opts changed
+    allOutput := allOutput.append (Array.map (fun (e, n) ↦ #[(ErrorContext.mk e n path)]) err)
+    -- TODO: auto-fixes do not take style exceptions into account
+    if let some c := changes then
+      changed := c
+      changes_made := true
+  -- This list is not sorted: for github, this is fine.
+  errors := errors.append
+    (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
+  return (errors, if changes_made then some changed else none)
+
+/-- Enables the old Python-based style linters. -/
+register_option linter.pythonStyle : Bool := { defValue := true }
+
+/-- Lint a collection of modules for style violations.
+Print formatted errors for all unexpected style violations to standard output;
+correct automatically fixable style errors if configured so.
 Return the number of files which had new style errors.
-`style` specifies if errors should be formatted for github or human consumption. -/
-def lintAllFiles (path : FilePath) (style : ErrorFormat) : IO UInt32 := do
-  -- Read all module names from the file at `path`.
-  let allModules ← IO.FS.lines path
-  -- Read the style exceptions file.
-  -- We also have a `nolints` file with manual exceptions for the linter.
-  let exceptions ← IO.FS.lines (mkFilePath ["scripts", "style-exceptions.txt"])
-  let mut styleExceptions := parseStyleExceptions exceptions
-  let nolints ← IO.FS.lines (mkFilePath ["scripts", "nolints-style.txt"])
-  styleExceptions := styleExceptions.append (parseStyleExceptions nolints)
-
-  let mut numberErrorFiles := 0
-  for module in allModules do
-    let module := module.stripPrefix "import "
-    -- Convert the module name to a file name, then lint that file.
-    let path := (mkFilePath (module.split (· == '.'))).addExtension "lean"
-    -- Find all size limits for this given file.
-    -- If several size limits are given (unlikely in practice), we use the first one.
-    let sizeLimits := (styleExceptions.filter (·.path == path)).filterMap (fun errctx ↦
-      match errctx.error with
-      | StyleError.fileTooLong _ limit => some limit
-      | _ => none)
-    if ← lintFile path (sizeLimits.get? 0) styleExceptions style then
-      numberErrorFiles := numberErrorFiles + 1
-  return numberErrorFiles
-
-open Cli in
-/-- Implementation of the `lint_style` command line program. -/
-def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
-  let errorStyle := match (args.hasFlag "github", args.hasFlag "update") with
-    | (true, _) => ErrorFormat.github
-    | (false, true) => ErrorFormat.exceptionsFile
-    | (false, false) => ErrorFormat.humanReadable
+`opts` contains the options defined in the Lakefile, determining which linters to enable.
+`nolints` is a list of style exceptions to take into account.
+`moduleNames` are the names of all the modules to lint,
+`mode` specifies what kind of output this script should produce,
+`fix` configures whether fixable errors should be corrected in-place. -/
+def lintModules (opts : LinterOptions) (nolints : Array String) (moduleNames : Array Lean.Name)
+    (style : ErrorFormat) (fix : Bool) : IO UInt32 := do
+  let styleExceptions := parseStyleExceptions nolints
   let mut numberErrorFiles : UInt32 := 0
-  for s in ["Archive.lean", "Counterexamples.lean", "Mathlib.lean"] do
-    let n ← lintAllFiles (mkFilePath [s]) errorStyle
-    numberErrorFiles := numberErrorFiles + n
+  let mut allUnexpectedErrors := #[]
+  for module in moduleNames do
+    -- Convert the module name to a file name, then lint that file.
+    let path := mkFilePath (module.components.map toString)|>.addExtension "lean"
+
+    let (errors, changed) := ← lintFile opts path styleExceptions
+    if let some c := changed then
+      if fix then
+        let _ := ← IO.FS.writeFile path ("\n".intercalate c.toList)
+    if errors.size > 0 then
+      allUnexpectedErrors := allUnexpectedErrors.append errors
+      numberErrorFiles := numberErrorFiles + 1
+
+  -- Passing Lean options to Python files seems like a lot of work for something we want to
+  -- run entirely inside of Lean in the end anyway.
+  -- So for now, we enable/disable all of them with a single switch.
+  if getLinterValue linter.pythonStyle opts then
+    -- Run the remaining python linters. It is easier to just run on all files.
+    -- If this poses an issue, I can either filter the output
+    -- or wait until lint-style.py is fully rewritten in Lean.
+    let args := if fix then #["--fix"] else #[]
+    let output ← IO.Process.output { cmd := "./scripts/print-style-errors.sh", args := args }
+    if output.exitCode != 0 then
+      numberErrorFiles := numberErrorFiles + 1
+      IO.eprintln s!"error: `print-style-error.sh` exited with code {output.exitCode}"
+      IO.eprint output.stderr
+    else if output.stdout != "" then
+      numberErrorFiles := numberErrorFiles + 1
+      IO.eprint output.stdout
+  formatErrors allUnexpectedErrors style
+  if allUnexpectedErrors.size > 0 then
+    IO.eprintln s!"error: found {allUnexpectedErrors.size} new style error(s)"
   return numberErrorFiles
 
-open Cli in
-/-- Setting up command line options and help text for `lake exe lint_style`. -/
--- so far, no help options or so: perhaps that is fine?
-def lint_style : Cmd := `[Cli|
-  lint_style VIA lintStyleCli; ["0.0.1"]
-  "Run text-based style linters on every Lean file in Mathlib/, Archive/ and Counterexamples/.
-  Print errors about any unexpected style errors to standard output."
+/-- Verify that all modules are named in `UpperCamelCase` -/
+register_option linter.modulesUpperCamelCase : Bool := { defValue := true }
 
-  FLAGS:
-    github;     "Print errors in a format suitable for github problem matchers\n\
-                 otherwise, produce human-readable output"
-    update;     "Print errors solely for the style exceptions file"
-]
+/-- Verifies that all modules in `modules` are named in `UpperCamelCase`
+(except for explicitly discussed exceptions, which are hard-coded here).
+Return the number of modules violating this. -/
+def modulesNotUpperCamelCase (opts : LinterOptions) (modules : Array Lean.Name) : IO Nat := do
+  unless getLinterValue linter.modulesUpperCamelCase opts do return 0
 
-/-- The entry point to the `lake exe lint_style` command. -/
-def main (args : List String) : IO UInt32 := do lint_style.validate args
+  -- Exceptions to this list should be discussed on zulip!
+  let exceptions := [
+    `Mathlib.Analysis.CStarAlgebra.lpSpace,
+    `Mathlib.Analysis.InnerProductSpace.l2Space,
+    `Mathlib.Analysis.Normed.Lp.lpSpace
+  ]
+  -- We allow only names in UpperCamelCase, possibly with a trailing underscore.
+  let badNames := modules.filter fun name ↦
+    let upperCamelName := Lake.toUpperCamelCase name
+    !exceptions.contains name &&
+      upperCamelName != name && s!"{upperCamelName}_" != name.toString
+  for bad in badNames do
+    let upperCamelName := Lake.toUpperCamelCase bad
+    let good := if bad.toString.endsWith "_" then s!"{upperCamelName}_" else upperCamelName.toString
+    IO.eprintln
+      s!"error: module name '{bad}' is not in 'UpperCamelCase': it should be '{good}' instead"
+  return badNames.size
+
+end Mathlib.Linter.TextBased

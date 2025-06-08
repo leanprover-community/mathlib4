@@ -87,7 +87,7 @@ variable {W}
 for a morphism property `W`. The fact it is an equivalence relation is not
 formalized, but it would follow easily from `LeftFraction₂.map_eq_iff`. -/
 def LeftFraction₂Rel {X Y : C} (z₁ z₂ : W.LeftFraction₂ X Y) : Prop :=
-  ∃ (Z : C)  (t₁ : z₁.Y' ⟶ Z) (t₂ : z₂.Y' ⟶ Z) (_ : z₁.s ≫ t₁ = z₂.s ≫ t₂)
+  ∃ (Z : C) (t₁ : z₁.Y' ⟶ Z) (t₂ : z₂.Y' ⟶ Z) (_ : z₁.s ≫ t₁ = z₂.s ≫ t₂)
     (_ : z₁.f ≫ t₁ = z₂.f ≫ t₂) (_ : z₁.f' ≫ t₁ = z₂.f' ≫ t₂), W (z₁.s ≫ t₁)
 
 namespace LeftFraction₂
@@ -171,13 +171,13 @@ end LeftFraction₃
 
 namespace LeftFraction₂Rel
 
-variable {X Y : C} {z₁ z₂ : W.LeftFraction₂ X Y} (h : LeftFraction₂Rel z₁ z₂)
+variable {X Y : C} {z₁ z₂ : W.LeftFraction₂ X Y}
 
-lemma fst : LeftFractionRel z₁.fst z₂.fst := by
+lemma fst (h : LeftFraction₂Rel z₁ z₂) : LeftFractionRel z₁.fst z₂.fst := by
   obtain ⟨Z, t₁, t₂, hst, hft, _, ht⟩ := h
   exact ⟨Z, t₁, t₂, hst, hft, ht⟩
 
-lemma snd : LeftFractionRel z₁.snd z₂.snd := by
+lemma snd (h : LeftFraction₂Rel z₁ z₂) : LeftFractionRel z₁.snd z₂.snd := by
   obtain ⟨Z, t₁, t₂, hst, _, hft', ht⟩ := h
   exact ⟨Z, t₁, t₂, hst, hft', ht⟩
 

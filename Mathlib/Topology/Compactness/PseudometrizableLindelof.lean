@@ -10,7 +10,7 @@ import Mathlib.Topology.Compactness.Lindelof
 /-!
 # Second-countability of pseudometrizable Lindelöf spaces
 
-Factored out from `Mathlib.Topology.Compactness.Lindelof`
+Factored out from `Mathlib/Topology/Compactness/Lindelof.lean`
 to avoid circular dependencies.
 -/
 
@@ -21,7 +21,7 @@ open Set Filter Topology TopologicalSpace
 instance SecondCountableTopology.ofPseudoMetrizableSpaceLindelofSpace [PseudoMetrizableSpace X]
     [LindelofSpace X] : SecondCountableTopology X := by
   letI : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
-  have h_dense (ε) (hpos: 0 < ε) : ∃ s : Set X, s.Countable ∧ ∀ x, ∃ y ∈ s, dist x y ≤ ε := by
+  have h_dense (ε) (hpos : 0 < ε) : ∃ s : Set X, s.Countable ∧ ∀ x, ∃ y ∈ s, dist x y ≤ ε := by
     let U := fun (z : X) ↦ Metric.ball z ε
     obtain ⟨t, hct, huniv⟩ := LindelofSpace.elim_nhds_subcover U
       (fun _ ↦ (Metric.isOpen_ball).mem_nhds (Metric.mem_ball_self hpos))

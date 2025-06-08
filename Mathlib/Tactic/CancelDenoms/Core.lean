@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Tree.Basic
 import Mathlib.Logic.Basic
 import Mathlib.Tactic.NormNum.Core
@@ -40,28 +40,22 @@ theorem mul_subst {α} [CommRing α] {n1 n2 k e1 e2 t1 t2 : α}
     (h1 : n1 * e1 = t1) (h2 : n2 * e2 = t2) (h3 : n1 * n2 = k) : k * (e1 * e2) = t1 * t2 := by
   rw [← h3, mul_comm n1, mul_assoc n2, ← mul_assoc n1, h1,
       ← mul_assoc n2, mul_comm n2, mul_assoc, h2]
-#align cancel_factors.mul_subst CancelDenoms.mul_subst
 
 theorem div_subst {α} [Field α] {n1 n2 k e1 e2 t1 : α}
     (h1 : n1 * e1 = t1) (h2 : n2 / e2 = 1) (h3 : n1 * n2 = k) : k * (e1 / e2) = t1 := by
   rw [← h3, mul_assoc, mul_div_left_comm, h2, ← mul_assoc, h1, mul_comm, one_mul]
-#align cancel_factors.div_subst CancelDenoms.div_subst
 
 theorem cancel_factors_eq_div {α} [Field α] {n e e' : α}
     (h : n * e = e') (h2 : n ≠ 0) : e = e' / n :=
   eq_div_of_mul_eq h2 <| by rwa [mul_comm] at h
-#align cancel_factors.cancel_factors_eq_div CancelDenoms.cancel_factors_eq_div
 
 theorem add_subst {α} [Ring α] {n e1 e2 t1 t2 : α} (h1 : n * e1 = t1) (h2 : n * e2 = t2) :
     n * (e1 + e2) = t1 + t2 := by simp [left_distrib, *]
-#align cancel_factors.add_subst CancelDenoms.add_subst
 
 theorem sub_subst {α} [Ring α] {n e1 e2 t1 t2 : α} (h1 : n * e1 = t1) (h2 : n * e2 = t2) :
     n * (e1 - e2) = t1 - t2 := by simp [left_distrib, *, sub_eq_add_neg]
-#align cancel_factors.sub_subst CancelDenoms.sub_subst
 
 theorem neg_subst {α} [Ring α] {n e t : α} (h1 : n * e = t) : n * -e = -t := by simp [*]
-#align cancel_factors.neg_subst CancelDenoms.neg_subst
 
 theorem pow_subst {α} [CommRing α] {n e1 t1 k l : α} {e2 : ℕ}
     (h1 : n * e1 = t1) (h2 : l * n ^ e2 = k) : k * (e1 ^ e2) = l * t1 ^ e2 := by
@@ -70,21 +64,21 @@ theorem pow_subst {α} [CommRing α] {n e1 t1 k l : α} {e2 : ℕ}
 theorem inv_subst {α} [Field α] {n k e : α} (h2 : e ≠ 0) (h3 : n * e = k) :
     k * (e ⁻¹) = n := by rw [← div_eq_mul_inv, ← h3, mul_div_cancel_right₀ _ h2]
 
-theorem cancel_factors_lt {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α}
+theorem cancel_factors_lt {α} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+    {a b ad bd a' b' gcd : α}
     (ha : ad * a = a') (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
     (a < b) = (1 / gcd * (bd * a') < 1 / gcd * (ad * b')) := by
   rw [mul_lt_mul_left, ← ha, ← hb, ← mul_assoc, ← mul_assoc, mul_comm bd, mul_lt_mul_left]
   · exact mul_pos had hbd
   · exact one_div_pos.2 hgcd
-#align cancel_factors.cancel_factors_lt CancelDenoms.cancel_factors_lt
 
-theorem cancel_factors_le {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α}
+theorem cancel_factors_le {α} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+    {a b ad bd a' b' gcd : α}
     (ha : ad * a = a') (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
     (a ≤ b) = (1 / gcd * (bd * a') ≤ 1 / gcd * (ad * b')) := by
   rw [mul_le_mul_left, ← ha, ← hb, ← mul_assoc, ← mul_assoc, mul_comm bd, mul_le_mul_left]
   · exact mul_pos had hbd
   · exact one_div_pos.2 hgcd
-#align cancel_factors.cancel_factors_le CancelDenoms.cancel_factors_le
 
 theorem cancel_factors_eq {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * a = a')
     (hb : bd * b = b') (had : ad ≠ 0) (hbd : bd ≠ 0) (hgcd : gcd ≠ 0) :
@@ -100,7 +94,6 @@ theorem cancel_factors_eq {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * 
     on_goal 1 => apply div_ne_zero
     · exact one_ne_zero
     all_goals assumption
-#align cancel_factors.cancel_factors_eq CancelDenoms.cancel_factors_eq
 
 theorem cancel_factors_ne {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * a = a')
     (hb : bd * b = b') (had : ad ≠ 0) (hbd : bd ≠ 0) (hgcd : gcd ≠ 0) :
@@ -155,7 +148,7 @@ def synthesizeUsingNormNum (type : Q(Prop)) : MetaM Q($type) := do
   catch e =>
     throwError "Could not prove {type} using norm_num. {e.toMessageData}"
 
-/-- `CancelResult mα e v'` provies a value for `v * e` where the denominators have been cancelled.
+/-- `CancelResult mα e v'` provides a value for `v * e` where the denominators have been cancelled.
 -/
 structure CancelResult {u : Level} {α : Q(Type u)} (mα : Q(Mul $α)) (e : Q($α)) (v : Q($α)) where
   /-- An expression with denominators cancelled. -/
@@ -228,6 +221,10 @@ def deriveThms : List Name :=
 /-- Helper lemma to chain together a `simp` proof and the result of `mkProdPrf`. -/
 theorem derive_trans {α} [Mul α] {a b c d : α} (h : a = b) (h' : c * b = d) : c * a = d := h ▸ h'
 
+/-- Helper lemma to chain together two `simp` proofs and the result of `mkProdPrf`. -/
+theorem derive_trans₂ {α} [Mul α] {a b c d e : α} (h : a = b) (h' : b = c) (h'' : d * c = e) :
+    d * a = e := h ▸ h' ▸ h''
+
 /--
 Given `e`, a term with rational division, produces a natural number `n` and a proof of `n*e = e'`,
 where `e'` has no division. Assumes "well-behaved" division.
@@ -236,18 +233,20 @@ def derive (e : Expr) : MetaM (ℕ × Expr) := do
   trace[CancelDenoms] "e = {e}"
   let eSimp ← simpOnlyNames (config := Simp.neutralConfig) deriveThms e
   trace[CancelDenoms] "e simplified = {eSimp.expr}"
-  let (n, t) := findCancelFactor eSimp.expr
-  let ⟨u, tp, e⟩ ← inferTypeQ' eSimp.expr
+  let eSimpNormNum ← Mathlib.Meta.NormNum.deriveSimp (← Simp.mkContext) false eSimp.expr
+  trace[CancelDenoms] "e norm_num'd = {eSimpNormNum.expr}"
+  let (n, t) := findCancelFactor eSimpNormNum.expr
+  let ⟨u, tp, e⟩ ← inferTypeQ' eSimpNormNum.expr
   let stp : Q(Field $tp) ← synthInstanceQ q(Field $tp)
   try
     have n' := (← mkOfNat tp q(inferInstance) <| mkRawNatLit <| n).1
     let r ← mkProdPrf tp stp n n' t e
     trace[CancelDenoms] "pf : {← inferType r.pf}"
     let pf' ←
-      if let some pfSimp := eSimp.proof? then
-        mkAppM ``derive_trans #[pfSimp, r.pf]
-      else
-        pure r.pf
+      match eSimp.proof?, eSimpNormNum.proof? with
+      | some pfSimp, some pfSimp' => mkAppM ``derive_trans₂ #[pfSimp, pfSimp', r.pf]
+      | some pfSimp, none | none, some pfSimp => mkAppM ``derive_trans #[pfSimp, r.pf]
+      | none, none => pure r.pf
     return (n, pf')
   catch E => do
     throwError "CancelDenoms.derive failed to normalize {e}.\n{E.toMessageData}"
@@ -289,7 +288,9 @@ def cancelDenominatorsInType (h : Expr) : MetaM (Expr × Expr) := do
   have ar := (← mkOfNat α amwo <| mkRawNatLit ar).1
   have gcd := (← mkOfNat α amwo <| mkRawNatLit gcd).1
   let (al_cond, ar_cond, gcd_cond) ← if ord then do
-      let _ ← synthInstanceQ q(LinearOrderedField $α)
+      let _ ← synthInstanceQ q(Field $α)
+      let _ ← synthInstanceQ q(LinearOrder $α)
+      let _ ← synthInstanceQ q(IsStrictOrderedRing $α)
       let al_pos : Q(Prop) := q(0 < $al)
       let ar_pos : Q(Prop) := q(0 < $ar)
       let gcd_pos : Q(Prop) := q(0 < $gcd)

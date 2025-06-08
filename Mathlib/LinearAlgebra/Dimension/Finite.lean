@@ -1,15 +1,13 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Scott Morrison
+Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison
 -/
-import Mathlib.Algebra.Module.Torsion
-import Mathlib.SetTheory.Cardinal.Cofinality
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.LinearAlgebra.Dimension.Constructions
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-
-
-#align_import linear_algebra.dimension from "leanprover-community/mathlib"@"47a5f8186becdbc826190ced4312f8199f9db6a5"
+import Mathlib.LinearAlgebra.Dimension.Subsingleton
+import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.SetTheory.Cardinal.Cofinality
 
 /-!
 # Conditions for rank to be finite
@@ -17,7 +15,6 @@ import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 Also contains characterization for when rank equals zero or rank equals one.
 
 -/
-
 
 noncomputable section
 
@@ -29,7 +26,20 @@ variable [Module R M] [Module R M'] [Module R M₁]
 
 attribute [local instance] nontrivial_of_invariantBasisNumber
 
-open Cardinal Basis Submodule Function Set FiniteDimensional
+open Basis Cardinal Function Module Set Submodule
+
+/-- If every finite set of linearly independent vectors has cardinality at most `n`,
+then the same is true for arbitrary sets of linearly independent vectors.
+-/
+theorem linearIndependent_bounded_of_finset_linearIndependent_bounded {n : ℕ}
+    (H : ∀ s : Finset M, (LinearIndependent R fun i : s => (i : M)) → s.card ≤ n) :
+    ∀ s : Set M, LinearIndependent R ((↑) : s → M) → #s ≤ n := by
+  intro s li
+  apply Cardinal.card_le_of
+  intro t
+  rw [← Finset.card_map (Embedding.subtype s)]
+  apply H
+  apply linearIndependent_finset_map_embedding_subtype _ li
 
 theorem rank_le {n : ℕ}
     (H : ∀ s : Finset M, (LinearIndependent R fun i : s => (i : M)) → s.card ≤ n) :
@@ -38,7 +48,6 @@ theorem rank_le {n : ℕ}
   apply ciSup_le'
   rintro ⟨s, li⟩
   exact linearIndependent_bounded_of_finset_linearIndependent_bounded H _ li
-#align rank_le rank_le
 
 section RankZero
 
@@ -52,7 +61,7 @@ lemma rank_eq_zero_iff :
     rw [← Cardinal.one_le_iff_ne_zero]
     have : LinearIndependent R (fun _ : Unit ↦ x) :=
       linearIndependent_iff.mpr (fun l hl ↦ Finsupp.unique_ext <| not_not.mp fun H ↦
-        hx _ H ((Finsupp.total_unique _ _ _).symm.trans hl))
+        hx _ H ((Finsupp.linearCombination_unique _ _ _).symm.trans hl))
     simpa using this.cardinal_lift_le_rank
   · intro h
     rw [← le_zero_iff, Module.rank_def]
@@ -64,59 +73,42 @@ lemma rank_eq_zero_iff :
     apply ha
     simpa using DFunLike.congr_fun (linearIndependent_iff.mp hs (Finsupp.single i a) (by simpa)) i
 
+theorem rank_pos_of_free [Module.Free R M] [Nontrivial M] :
+    0 < Module.rank R M :=
+  have := Module.nontrivial R M
+  (pos_of_ne_zero <| Cardinal.mk_ne_zero _).trans_le
+    (Free.chooseBasis R M).linearIndependent.cardinal_le_rank
+
 variable [Nontrivial R]
+
+section
 variable [NoZeroSMulDivisors R M]
 
 theorem rank_zero_iff_forall_zero :
     Module.rank R M = 0 ↔ ∀ x : M, x = 0 := by
   simp_rw [rank_eq_zero_iff, smul_eq_zero, and_or_left, not_and_self_iff, false_or,
     exists_and_right, and_iff_right (exists_ne (0 : R))]
-#align rank_zero_iff_forall_zero rank_zero_iff_forall_zero
 
 /-- See `rank_subsingleton` for the reason that `Nontrivial R` is needed.
 Also see `rank_eq_zero_iff` for the version without `NoZeroSMulDivisor R M`. -/
 theorem rank_zero_iff : Module.rank R M = 0 ↔ Subsingleton M :=
   rank_zero_iff_forall_zero.trans (subsingleton_iff_forall_eq 0).symm
-#align rank_zero_iff rank_zero_iff
 
 theorem rank_pos_iff_exists_ne_zero : 0 < Module.rank R M ↔ ∃ x : M, x ≠ 0 := by
   rw [← not_iff_not]
   simpa using rank_zero_iff_forall_zero
-#align rank_pos_iff_exists_ne_zero rank_pos_iff_exists_ne_zero
 
 theorem rank_pos_iff_nontrivial : 0 < Module.rank R M ↔ Nontrivial M :=
   rank_pos_iff_exists_ne_zero.trans (nontrivial_iff_exists_ne 0).symm
-#align rank_pos_iff_nontrivial rank_pos_iff_nontrivial
-
-lemma rank_eq_zero_iff_isTorsion {R M} [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M] :
-    Module.rank R M = 0 ↔ Module.IsTorsion R M := by
-  rw [Module.IsTorsion, rank_eq_zero_iff]
-  simp [mem_nonZeroDivisors_iff_ne_zero]
 
 theorem rank_pos [Nontrivial M] : 0 < Module.rank R M :=
   rank_pos_iff_nontrivial.mpr ‹_›
-#align rank_pos rank_pos
 
-variable (R M)
-
-/-- See `rank_subsingleton` that assumes `Subsingleton R` instead. -/
-theorem rank_subsingleton' [Subsingleton M] : Module.rank R M = 0 :=
-  rank_eq_zero_iff.mpr fun _ ↦ ⟨1, one_ne_zero, Subsingleton.elim _ _⟩
-
-@[simp]
-theorem rank_punit : Module.rank R PUnit = 0 := rank_subsingleton' _ _
-#align rank_punit rank_punit
-
-@[simp]
-theorem rank_bot : Module.rank R (⊥ : Submodule R M) = 0 := rank_subsingleton' _ _
-#align rank_bot rank_bot
-
-variable {R M}
+end
 
 theorem exists_mem_ne_zero_of_rank_pos {s : Submodule R M} (h : 0 < Module.rank R s) :
     ∃ b : M, b ∈ s ∧ b ≠ 0 :=
   exists_mem_ne_zero_of_ne_bot fun eq => by rw [eq, rank_bot] at h; exact lt_irrefl _ h
-#align exists_mem_ne_zero_of_rank_pos exists_mem_ne_zero_of_rank_pos
 
 end RankZero
 
@@ -141,6 +133,7 @@ theorem Module.finite_of_rank_eq_one [Module.Free R M] (h : Module.rank R M = 1)
     Module.Finite R M :=
   Module.finite_of_rank_eq_nat <| h.trans Nat.cast_one.symm
 
+section
 variable [StrongRankCondition R]
 
 /-- If a module has a finite dimension, all bases are indexed by a finite type. -/
@@ -148,40 +141,39 @@ theorem Basis.nonempty_fintype_index_of_rank_lt_aleph0 {ι : Type*} (b : Basis �
     (h : Module.rank R M < ℵ₀) : Nonempty (Fintype ι) := by
   rwa [← Cardinal.lift_lt, ← b.mk_eq_rank, Cardinal.lift_aleph0, Cardinal.lift_lt_aleph0,
     Cardinal.lt_aleph0_iff_fintype] at h
-#align basis.nonempty_fintype_index_of_rank_lt_aleph_0 Basis.nonempty_fintype_index_of_rank_lt_aleph0
 
 /-- If a module has a finite dimension, all bases are indexed by a finite type. -/
 noncomputable def Basis.fintypeIndexOfRankLtAleph0 {ι : Type*} (b : Basis ι R M)
     (h : Module.rank R M < ℵ₀) : Fintype ι :=
   Classical.choice (b.nonempty_fintype_index_of_rank_lt_aleph0 h)
-#align basis.fintype_index_of_rank_lt_aleph_0 Basis.fintypeIndexOfRankLtAleph0
 
 /-- If a module has a finite dimension, all bases are indexed by a finite set. -/
 theorem Basis.finite_index_of_rank_lt_aleph0 {ι : Type*} {s : Set ι} (b : Basis s R M)
     (h : Module.rank R M < ℵ₀) : s.Finite :=
   finite_def.2 (b.nonempty_fintype_index_of_rank_lt_aleph0 h)
-#align basis.finite_index_of_rank_lt_aleph_0 Basis.finite_index_of_rank_lt_aleph0
+
+end
 
 namespace LinearIndependent
+variable [StrongRankCondition R]
 
-theorem cardinal_mk_le_finrank [Module.Finite R M]
+theorem cardinalMk_le_finrank [Module.Finite R M]
     {ι : Type w} {b : ι → M} (h : LinearIndependent R b) : #ι ≤ finrank R M := by
   rw [← lift_le.{max v w}]
   simpa only [← finrank_eq_rank, lift_natCast, lift_le_nat_iff] using h.cardinal_lift_le_rank
-#align finite_dimensional.cardinal_mk_le_finrank_of_linear_independent LinearIndependent.cardinal_mk_le_finrank
+
+@[deprecated (since := "2024-11-10")] alias cardinal_mk_le_finrank := cardinalMk_le_finrank
 
 theorem fintype_card_le_finrank [Module.Finite R M]
     {ι : Type*} [Fintype ι] {b : ι → M} (h : LinearIndependent R b) :
     Fintype.card ι ≤ finrank R M := by
-  simpa using h.cardinal_mk_le_finrank
-#align finite_dimensional.fintype_card_le_finrank_of_linear_independent LinearIndependent.fintype_card_le_finrank
+  simpa using h.cardinalMk_le_finrank
 
 theorem finset_card_le_finrank [Module.Finite R M]
     {b : Finset M} (h : LinearIndependent R (fun x => x : b → M)) :
     b.card ≤ finrank R M := by
   rw [← Fintype.card_coe]
   exact h.fintype_card_le_finrank
-#align finite_dimensional.finset_card_le_finrank_of_linear_independent LinearIndependent.finset_card_le_finrank
 
 theorem lt_aleph0_of_finite {ι : Type w}
     [Module.Finite R M] {v : ι → M} (h : LinearIndependent R v) : #ι < ℵ₀ := by
@@ -198,50 +190,39 @@ theorem finite [Module.Finite R M] {ι : Type*} {f : ι → M}
 theorem setFinite [Module.Finite R M] {b : Set M}
     (h : LinearIndependent R fun x : b => (x : M)) : b.Finite :=
   Cardinal.lt_aleph0_iff_set_finite.mp h.lt_aleph0_of_finite
-#align linear_independent.finite LinearIndependent.setFinite
 
 end LinearIndependent
 
-@[deprecated (since := "2023-12-27")]
-alias cardinal_mk_le_finrank_of_linearIndependent := LinearIndependent.cardinal_mk_le_finrank
-@[deprecated (since := "2023-12-27")]
-alias fintype_card_le_finrank_of_linearIndependent := LinearIndependent.fintype_card_le_finrank
-@[deprecated (since := "2023-12-27")]
-alias finset_card_le_finrank_of_linearIndependent := LinearIndependent.finset_card_le_finrank
-@[deprecated (since := "2023-12-27")]
-alias Module.Finite.lt_aleph0_of_linearIndependent := LinearIndependent.lt_aleph0_of_finite
-
 lemma exists_set_linearIndependent_of_lt_rank {n : Cardinal} (hn : n < Module.rank R M) :
-    ∃ s : Set M, #s = n ∧ LinearIndependent R ((↑) : s → M) := by
+    ∃ s : Set M, #s = n ∧ LinearIndepOn R id s := by
   obtain ⟨⟨s, hs⟩, hs'⟩ := exists_lt_of_lt_ciSup' (hn.trans_eq (Module.rank_def R M))
   obtain ⟨t, ht, ht'⟩ := le_mk_iff_exists_subset.mp hs'.le
-  exact ⟨t, ht', .mono ht hs⟩
+  exact ⟨t, ht', hs.mono ht⟩
 
 lemma exists_finset_linearIndependent_of_le_rank {n : ℕ} (hn : n ≤ Module.rank R M) :
-    ∃ s : Finset M, s.card = n ∧ LinearIndependent R ((↑) : s → M) := by
-  have := nonempty_linearIndependent_set
-  cases' hn.eq_or_lt with h h
+    ∃ s : Finset M, s.card = n ∧ LinearIndepOn R id (s : Set M) := by
+  rcases hn.eq_or_lt with h | h
   · obtain ⟨⟨s, hs⟩, hs'⟩ := Cardinal.exists_eq_natCast_of_iSup_eq _
-      (Cardinal.bddAbove_range.{v, v} _) _ (h.trans (Module.rank_def R M)).symm
+      (Cardinal.bddAbove_range _) _ (h.trans (Module.rank_def R M)).symm
     have : Finite s := lt_aleph0_iff_finite.mp (hs' ▸ nat_lt_aleph0 n)
     cases nonempty_fintype s
-    exact ⟨s.toFinset, by simpa using hs', by convert hs <;> exact Set.mem_toFinset⟩
+    refine ⟨s.toFinset, by simpa using hs', by simpa⟩
   · obtain ⟨s, hs, hs'⟩ := exists_set_linearIndependent_of_lt_rank h
     have : Finite s := lt_aleph0_iff_finite.mp (hs ▸ nat_lt_aleph0 n)
     cases nonempty_fintype s
-    exact ⟨s.toFinset, by simpa using hs, by convert hs' <;> exact Set.mem_toFinset⟩
+    exact ⟨s.toFinset, by simpa using hs, by simpa⟩
 
 lemma exists_linearIndependent_of_le_rank {n : ℕ} (hn : n ≤ Module.rank R M) :
     ∃ f : Fin n → M, LinearIndependent R f :=
   have ⟨_, hs, hs'⟩ := exists_finset_linearIndependent_of_le_rank hn
   ⟨_, (linearIndependent_equiv (Finset.equivFinOfCardEq hs).symm).mpr hs'⟩
 
-lemma natCast_le_rank_iff {n : ℕ} :
+lemma natCast_le_rank_iff [Nontrivial R] {n : ℕ} :
     n ≤ Module.rank R M ↔ ∃ f : Fin n → M, LinearIndependent R f :=
   ⟨exists_linearIndependent_of_le_rank,
     fun H ↦ by simpa using H.choose_spec.cardinal_lift_le_rank⟩
 
-lemma natCast_le_rank_iff_finset {n : ℕ} :
+lemma natCast_le_rank_iff_finset [Nontrivial R] {n : ℕ} :
     n ≤ Module.rank R M ↔ ∃ s : Finset M, s.card = n ∧ LinearIndependent R ((↑) : s → M) :=
   ⟨exists_finset_linearIndependent_of_le_rank,
     fun ⟨s, h₁, h₂⟩ ↦ by simpa [h₁] using h₂.cardinal_le_rank⟩
@@ -252,23 +233,22 @@ lemma exists_finset_linearIndependent_of_le_finrank {n : ℕ} (hn : n ≤ finran
   · rw [le_zero_iff.mp (hn.trans_eq h)]
     exact ⟨∅, rfl, by convert linearIndependent_empty R M using 2 <;> aesop⟩
   exact exists_finset_linearIndependent_of_le_rank
-    ((natCast_le.mpr hn).trans_eq (cast_toNat_of_lt_aleph0 (toNat_ne_zero.mp h).2))
+    ((Nat.cast_le.mpr hn).trans_eq (cast_toNat_of_lt_aleph0 (toNat_ne_zero.mp h).2))
 
 lemma exists_linearIndependent_of_le_finrank {n : ℕ} (hn : n ≤ finrank R M) :
     ∃ f : Fin n → M, LinearIndependent R f :=
   have ⟨_, hs, hs'⟩ := exists_finset_linearIndependent_of_le_finrank hn
   ⟨_, (linearIndependent_equiv (Finset.equivFinOfCardEq hs).symm).mpr hs'⟩
 
-variable [Module.Finite R M]
-
+variable [Module.Finite R M] [StrongRankCondition R] in
 theorem Module.Finite.not_linearIndependent_of_infinite {ι : Type*} [Infinite ι]
     (v : ι → M) : ¬LinearIndependent R v := mt LinearIndependent.finite <| @not_finite _ _
-#align finite_dimensional.not_linear_independent_of_infinite Module.Finite.not_linearIndependent_of_infinite
 
+section
 variable [NoZeroSMulDivisors R M]
 
-theorem CompleteLattice.Independent.subtype_ne_bot_le_rank [Nontrivial R]
-    {V : ι → Submodule R M} (hV : CompleteLattice.Independent V) :
+theorem iSupIndep.subtype_ne_bot_le_rank [Nontrivial R]
+    {V : ι → Submodule R M} (hV : iSupIndep V) :
     Cardinal.lift.{v} #{ i : ι // V i ≠ ⊥ } ≤ Cardinal.lift.{w} (Module.rank R M) := by
   set I := { i : ι // V i ≠ ⊥ }
   have hI : ∀ i : I, ∃ v ∈ V i, v ≠ (0 : M) := by
@@ -278,10 +258,14 @@ theorem CompleteLattice.Independent.subtype_ne_bot_le_rank [Nontrivial R]
   choose v hvV hv using hI
   have : LinearIndependent R v := (hV.comp Subtype.coe_injective).linearIndependent _ hvV hv
   exact this.cardinal_lift_le_rank
-#align complete_lattice.independent.subtype_ne_bot_le_rank CompleteLattice.Independent.subtype_ne_bot_le_rank
 
-theorem CompleteLattice.Independent.subtype_ne_bot_le_finrank_aux
-    {p : ι → Submodule R M} (hp : CompleteLattice.Independent p) :
+@[deprecated (since := "2024-11-24")]
+alias CompleteLattice.Independent.subtype_ne_bot_le_rank := iSupIndep.subtype_ne_bot_le_rank
+
+variable [Module.Finite R M] [StrongRankCondition R]
+
+theorem iSupIndep.subtype_ne_bot_le_finrank_aux
+    {p : ι → Submodule R M} (hp : iSupIndep p) :
     #{ i // p i ≠ ⊥ } ≤ (finrank R M : Cardinal.{w}) := by
   suffices Cardinal.lift.{v} #{ i // p i ≠ ⊥ } ≤ Cardinal.lift.{v} (finrank R M : Cardinal.{w}) by
     rwa [Cardinal.lift_le] at this
@@ -290,29 +274,30 @@ theorem CompleteLattice.Independent.subtype_ne_bot_le_finrank_aux
       hp.subtype_ne_bot_le_rank
     _ = Cardinal.lift.{w} (finrank R M : Cardinal.{v}) := by rw [finrank_eq_rank]
     _ = Cardinal.lift.{v} (finrank R M : Cardinal.{w}) := by simp
-#align complete_lattice.independent.subtype_ne_bot_le_finrank_aux CompleteLattice.Independent.subtype_ne_bot_le_finrank_aux
 
 /-- If `p` is an independent family of submodules of a `R`-finite module `M`, then the
 number of nontrivial subspaces in the family `p` is finite. -/
-noncomputable def CompleteLattice.Independent.fintypeNeBotOfFiniteDimensional
-    {p : ι → Submodule R M} (hp : CompleteLattice.Independent p) :
+noncomputable def iSupIndep.fintypeNeBotOfFiniteDimensional
+    {p : ι → Submodule R M} (hp : iSupIndep p) :
     Fintype { i : ι // p i ≠ ⊥ } := by
   suffices #{ i // p i ≠ ⊥ } < (ℵ₀ : Cardinal.{w}) by
     rw [Cardinal.lt_aleph0_iff_fintype] at this
     exact this.some
   refine lt_of_le_of_lt hp.subtype_ne_bot_le_finrank_aux ?_
   simp [Cardinal.nat_lt_aleph0]
-#align complete_lattice.independent.fintype_ne_bot_of_finite_dimensional CompleteLattice.Independent.fintypeNeBotOfFiniteDimensional
 
 /-- If `p` is an independent family of submodules of a `R`-finite module `M`, then the
 number of nontrivial subspaces in the family `p` is bounded above by the dimension of `M`.
 
 Note that the `Fintype` hypothesis required here can be provided by
-`CompleteLattice.Independent.fintypeNeBotOfFiniteDimensional`. -/
-theorem CompleteLattice.Independent.subtype_ne_bot_le_finrank
-    {p : ι → Submodule R M} (hp : CompleteLattice.Independent p) [Fintype { i // p i ≠ ⊥ }] :
+`iSupIndep.fintypeNeBotOfFiniteDimensional`. -/
+theorem iSupIndep.subtype_ne_bot_le_finrank
+    {p : ι → Submodule R M} (hp : iSupIndep p) [Fintype { i // p i ≠ ⊥ }] :
     Fintype.card { i // p i ≠ ⊥ } ≤ finrank R M := by simpa using hp.subtype_ne_bot_le_finrank_aux
-#align complete_lattice.independent.subtype_ne_bot_le_finrank CompleteLattice.Independent.subtype_ne_bot_le_finrank
+
+end
+
+variable [Module.Finite R M] [StrongRankCondition R]
 
 section
 
@@ -323,10 +308,9 @@ then there is a nontrivial linear relation amongst its elements. -/
 theorem Module.exists_nontrivial_relation_of_finrank_lt_card {t : Finset M}
     (h : finrank R M < t.card) : ∃ f : M → R, ∑ e ∈ t, f e • e = 0 ∧ ∃ x ∈ t, f x ≠ 0 := by
   obtain ⟨g, sum, z, nonzero⟩ := Fintype.not_linearIndependent_iff.mp
-    (mt LinearIndependent.finset_card_le_finrank h.not_le)
+    (mt LinearIndependent.finset_card_le_finrank h.not_ge)
   refine ⟨Subtype.val.extend g 0, ?_, z, z.2, by rwa [Subtype.val_injective.extend_apply]⟩
   rw [← Finset.sum_finset_coe]; convert sum; apply Subtype.val_injective.extend_apply
-#align finite_dimensional.exists_nontrivial_relation_of_rank_lt_card Module.exists_nontrivial_relation_of_finrank_lt_card
 
 /-- If a finset has cardinality larger than `finrank + 1`,
 then there is a nontrivial linear relation amongst its elements,
@@ -362,7 +346,6 @@ theorem Module.exists_nontrivial_relation_sum_zero_of_finrank_succ_lt_card
     have := mem_erase.mp x₁_mem'
     exact ⟨x₁, by
       simpa only [f, Embedding.coeFn_mk, sub_add_cancel, this.2, true_and, if_neg this.1]⟩
-#align finite_dimensional.exists_nontrivial_relation_sum_zero_of_rank_succ_lt_card Module.exists_nontrivial_relation_sum_zero_of_finrank_succ_lt_card
 
 end
 
@@ -370,98 +353,96 @@ end Finite
 
 section FinrankZero
 
-variable [Nontrivial R] [NoZeroSMulDivisors R M]
-
-/-- A finite dimensional space is nontrivial if it has positive `finrank`. -/
-theorem FiniteDimensional.nontrivial_of_finrank_pos (h : 0 < finrank R M) : Nontrivial M :=
-  rank_pos_iff_nontrivial.mp (lt_rank_of_lt_finrank h)
-#align finite_dimensional.nontrivial_of_finrank_pos FiniteDimensional.nontrivial_of_finrank_pos
-
-/-- A finite dimensional space is nontrivial if it has `finrank` equal to the successor of a
-natural number. -/
-theorem FiniteDimensional.nontrivial_of_finrank_eq_succ {n : ℕ}
-    (hn : finrank R M = n.succ) : Nontrivial M :=
-  nontrivial_of_finrank_pos (by rw [hn]; exact n.succ_pos)
-#align finite_dimensional.nontrivial_of_finrank_eq_succ FiniteDimensional.nontrivial_of_finrank_eq_succ
+section
+variable [Nontrivial R]
 
 /-- A (finite dimensional) space that is a subsingleton has zero `finrank`. -/
 @[nontriviality]
-theorem FiniteDimensional.finrank_zero_of_subsingleton [Subsingleton M] : finrank R M = 0 := by
-  rw [finrank, rank_subsingleton', _root_.map_zero]
-#align finite_dimensional.finrank_zero_of_subsingleton FiniteDimensional.finrank_zero_of_subsingleton
+theorem Module.finrank_zero_of_subsingleton [Subsingleton M] :
+    finrank R M = 0 := by
+  rw [finrank, rank_subsingleton', map_zero]
 
-lemma LinearIndependent.finrank_eq_zero_of_infinite {ι} [Nontrivial R] [Infinite ι] {v : ι → M}
+lemma LinearIndependent.finrank_eq_zero_of_infinite {ι} [Infinite ι] {v : ι → M}
     (hv : LinearIndependent R v) : finrank R M = 0 := toNat_eq_zero.mpr <| .inr hv.aleph0_le_rank
+
+section
+variable [NoZeroSMulDivisors R M]
+
+/-- A finite dimensional space is nontrivial if it has positive `finrank`. -/
+theorem Module.nontrivial_of_finrank_pos (h : 0 < finrank R M) : Nontrivial M :=
+  rank_pos_iff_nontrivial.mp (lt_rank_of_lt_finrank h)
+
+/-- A finite dimensional space is nontrivial if it has `finrank` equal to the successor of a
+natural number. -/
+theorem Module.nontrivial_of_finrank_eq_succ {n : ℕ}
+    (hn : finrank R M = n.succ) : Nontrivial M :=
+  nontrivial_of_finrank_pos (R := R) (by rw [hn]; exact n.succ_pos)
+
+end
 
 variable (R M)
 
 @[simp]
 theorem finrank_bot : finrank R (⊥ : Submodule R M) = 0 :=
   finrank_eq_of_rank_eq (rank_bot _ _)
-#align finrank_bot finrank_bot
 
-variable {R M}
+end
 
 section StrongRankCondition
 
 variable [StrongRankCondition R] [Module.Finite R M]
 
 /-- A finite rank torsion-free module has positive `finrank` iff it has a nonzero element. -/
-theorem FiniteDimensional.finrank_pos_iff_exists_ne_zero [NoZeroSMulDivisors R M] :
+theorem Module.finrank_pos_iff_exists_ne_zero [NoZeroSMulDivisors R M] :
     0 < finrank R M ↔ ∃ x : M, x ≠ 0 := by
   rw [← @rank_pos_iff_exists_ne_zero R M, ← finrank_eq_rank]
   norm_cast
-#align finite_dimensional.finrank_pos_iff_exists_ne_zero FiniteDimensional.finrank_pos_iff_exists_ne_zero
 
 /-- An `R`-finite torsion-free module has positive `finrank` iff it is nontrivial. -/
-theorem FiniteDimensional.finrank_pos_iff [NoZeroSMulDivisors R M] :
+theorem Module.finrank_pos_iff [NoZeroSMulDivisors R M] :
     0 < finrank R M ↔ Nontrivial M := by
   rw [← rank_pos_iff_nontrivial (R := R), ← finrank_eq_rank]
   norm_cast
-#align finite_dimensional.finrank_pos_iff FiniteDimensional.finrank_pos_iff
 
 /-- A nontrivial finite dimensional space has positive `finrank`. -/
-theorem FiniteDimensional.finrank_pos [NoZeroSMulDivisors R M] [h : Nontrivial M] :
+theorem Module.finrank_pos [NoZeroSMulDivisors R M] [h : Nontrivial M] :
     0 < finrank R M :=
   finrank_pos_iff.mpr h
-#align finite_dimensional.finrank_pos FiniteDimensional.finrank_pos
 
-/-- See `FiniteDimensional.finrank_zero_iff`
+/-- See `Module.finrank_zero_iff`
   for the stronger version with `NoZeroSMulDivisors R M`. -/
-theorem FiniteDimensional.finrank_eq_zero_iff :
+theorem Module.finrank_eq_zero_iff :
     finrank R M = 0 ↔ ∀ x : M, ∃ a : R, a ≠ 0 ∧ a • x = 0 := by
   rw [← rank_eq_zero_iff (R := R), ← finrank_eq_rank]
   norm_cast
 
-/-- The `StrongRankCondition` is automatic. See `commRing_strongRankCondition`. -/
-theorem FiniteDimensional.finrank_eq_zero_iff_isTorsion {R} [CommRing R] [StrongRankCondition R]
-    [IsDomain R] [Module R M] [Module.Finite R M] :
-    finrank R M = 0 ↔ Module.IsTorsion R M := by
-  rw [← rank_eq_zero_iff_isTorsion (R := R), ← finrank_eq_rank]
-  norm_cast
-
 /-- A finite dimensional space has zero `finrank` iff it is a subsingleton.
 This is the `finrank` version of `rank_zero_iff`. -/
-theorem FiniteDimensional.finrank_zero_iff [NoZeroSMulDivisors R M] :
+theorem Module.finrank_zero_iff [NoZeroSMulDivisors R M] :
     finrank R M = 0 ↔ Subsingleton M := by
   rw [← rank_zero_iff (R := R), ← finrank_eq_rank]
   norm_cast
-#align finite_dimensional.finrank_zero_iff FiniteDimensional.finrank_zero_iff
+
+/-- Similar to `rank_quotient_add_rank_le` but for `finrank` and a finite `M`. -/
+lemma Module.finrank_quotient_add_finrank_le (N : Submodule R M) :
+    finrank R (M ⧸ N) + finrank R N ≤ finrank R M := by
+  haveI := nontrivial_of_invariantBasisNumber R
+  have := rank_quotient_add_rank_le N
+  rw [← finrank_eq_rank R M, ← finrank_eq_rank R, ← N.finrank_eq_rank] at this
+  exact mod_cast this
 
 end StrongRankCondition
 
-theorem FiniteDimensional.finrank_eq_zero_of_rank_eq_zero (h : Module.rank R M = 0) :
+theorem Module.finrank_eq_zero_of_rank_eq_zero (h : Module.rank R M = 0) :
     finrank R M = 0 := by
   delta finrank
   rw [h, zero_toNat]
-#align finrank_eq_zero_of_rank_eq_zero FiniteDimensional.finrank_eq_zero_of_rank_eq_zero
 
 theorem Submodule.bot_eq_top_of_rank_eq_zero [NoZeroSMulDivisors R M] (h : Module.rank R M = 0) :
     (⊥ : Submodule R M) = ⊤ := by
   nontriviality R
   rw [rank_zero_iff] at h
-  exact Subsingleton.elim _ _
-#align bot_eq_top_of_rank_eq_zero Submodule.bot_eq_top_of_rank_eq_zero
+  subsingleton
 
 /-- See `rank_subsingleton` for the reason that `Nontrivial R` is needed. -/
 @[simp]
@@ -473,20 +454,23 @@ theorem Submodule.rank_eq_zero [Nontrivial R] [NoZeroSMulDivisors R M] {S : Subm
         ((Submodule.eq_bot_iff _).1 <| Eq.symm <| Submodule.bot_eq_top_of_rank_eq_zero h) ⟨x, hx⟩
           Submodule.mem_top,
     fun h => by rw [h, rank_bot]⟩
-#align rank_eq_zero Submodule.rank_eq_zero
 
 @[simp]
 theorem Submodule.finrank_eq_zero [StrongRankCondition R] [NoZeroSMulDivisors R M]
     {S : Submodule R M} [Module.Finite R S] :
     finrank R S = 0 ↔ S = ⊥ := by
-  rw [← Submodule.rank_eq_zero, ← finrank_eq_rank, ← @Nat.cast_zero Cardinal, Cardinal.natCast_inj]
-#align finrank_eq_zero Submodule.finrank_eq_zero
+  rw [← Submodule.rank_eq_zero, ← finrank_eq_rank, ← @Nat.cast_zero Cardinal, Nat.cast_inj]
 
 @[simp]
 lemma Submodule.one_le_finrank_iff [StrongRankCondition R] [NoZeroSMulDivisors R M]
     {S : Submodule R M} [Module.Finite R S] :
     1 ≤ finrank R S ↔ S ≠ ⊥ := by
   simp [← not_iff_not]
+
+@[simp]
+theorem Set.finrank_empty [Nontrivial R] :
+    Set.finrank R (∅ : Set M) = 0 := by
+  rw [Set.finrank, span_empty, finrank_bot]
 
 variable [Module.Free R M]
 
@@ -498,7 +482,6 @@ theorem finrank_eq_zero_of_basis_imp_not_finite
   obtain ⟨_, ⟨b⟩⟩ := (Module.free_iff_set R M).mp ‹_›
   have := Set.Infinite.to_subtype (h _ b)
   exact b.linearIndependent.finrank_eq_zero_of_infinite
-#align finrank_eq_zero_of_basis_imp_not_finite finrank_eq_zero_of_basis_imp_not_finite
 
 theorem finrank_eq_zero_of_basis_imp_false (h : ∀ s : Finset M, Basis.{v} (s : Set M) R M → False) :
     finrank R M = 0 :=
@@ -507,22 +490,18 @@ theorem finrank_eq_zero_of_basis_imp_false (h : ∀ s : Finset M, Basis.{v} (s :
       (by
         convert b
         simp)
-#align finrank_eq_zero_of_basis_imp_false finrank_eq_zero_of_basis_imp_false
 
 theorem finrank_eq_zero_of_not_exists_basis
     (h : ¬∃ s : Finset M, Nonempty (Basis (s : Set M) R M)) : finrank R M = 0 :=
   finrank_eq_zero_of_basis_imp_false fun s b => h ⟨s, ⟨b⟩⟩
-#align finrank_eq_zero_of_not_exists_basis finrank_eq_zero_of_not_exists_basis
 
 theorem finrank_eq_zero_of_not_exists_basis_finite
     (h : ¬∃ (s : Set M) (_ : Basis.{v} (s : Set M) R M), s.Finite) : finrank R M = 0 :=
   finrank_eq_zero_of_basis_imp_not_finite fun s b hs => h ⟨s, b, hs⟩
-#align finrank_eq_zero_of_not_exists_basis_finite finrank_eq_zero_of_not_exists_basis_finite
 
 theorem finrank_eq_zero_of_not_exists_basis_finset (h : ¬∃ s : Finset M, Nonempty (Basis s R M)) :
     finrank R M = 0 :=
   finrank_eq_zero_of_basis_imp_false fun s b => h ⟨s, ⟨b⟩⟩
-#align finrank_eq_zero_of_not_exists_basis_finset finrank_eq_zero_of_not_exists_basis_finset
 
 end FinrankZero
 
@@ -535,14 +514,13 @@ then the module has dimension one. -/
 theorem rank_eq_one (v : M) (n : v ≠ 0) (h : ∀ w : M, ∃ c : R, c • v = w) :
     Module.rank R M = 1 := by
   haveI := nontrivial_of_invariantBasisNumber R
-  obtain ⟨b⟩ := (Basis.basis_singleton_iff.{u} PUnit).mpr ⟨v, n, h⟩
+  obtain ⟨b⟩ := (Basis.basis_singleton_iff.{_, _, u} PUnit).mpr ⟨v, n, h⟩
   rw [rank_eq_card_basis b, Fintype.card_punit, Nat.cast_one]
 
 /-- If there is a nonzero vector and every other vector is a multiple of it,
 then the module has dimension one. -/
 theorem finrank_eq_one (v : M) (n : v ≠ 0) (h : ∀ w : M, ∃ c : R, c • v = w) : finrank R M = 1 :=
   finrank_eq_of_rank_eq (rank_eq_one v n h)
-#align finrank_eq_one finrank_eq_one
 
 /-- If every vector is a multiple of some `v : M`, then `M` has dimension at most one.
 -/
@@ -556,6 +534,28 @@ theorem finrank_le_one (v : M) (h : ∀ w : M, ∃ c : R, c • v = w) : finrank
     rw [finrank_zero_of_subsingleton]
     exact zero_le_one
   · exact (finrank_eq_one v hn h).le
-#align finrank_le_one finrank_le_one
 
 end RankOne
+
+namespace Module
+variable {ι : Type*}
+
+@[simp] lemma finite_finsupp_iff :
+    Module.Finite R (ι →₀ M) ↔ IsEmpty ι ∨ Subsingleton M ∨ Module.Finite R M ∧ Finite ι where
+  mp := by
+    simp only [or_iff_not_imp_left, not_subsingleton_iff_nontrivial, not_isEmpty_iff]
+    rintro h ⟨i⟩ _
+    obtain ⟨s, hs⟩ := id h
+    exact ⟨.of_surjective (Finsupp.lapply (R := R) (M := M) i) (Finsupp.apply_surjective i),
+       finite_of_span_finite_eq_top_finsupp s.finite_toSet hs⟩
+  mpr
+  | .inl _ => inferInstance
+  | .inr <| .inl h => inferInstance
+  | .inr <| .inr h => by cases h; infer_instance
+
+@[simp high]
+lemma finite_finsupp_self_iff : Module.Finite R (ι →₀ R) ↔ Subsingleton R ∨ Finite ι := by
+  simp only [finite_finsupp_iff, Finite.self, true_and, or_iff_right_iff_imp]
+  exact fun _ ↦ .inr inferInstance
+
+end Module

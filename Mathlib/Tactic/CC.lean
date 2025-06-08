@@ -5,8 +5,6 @@ Authors: Leonardo de Moura, Miyahara Kō
 -/
 import Mathlib.Tactic.CC.Addition
 
-#align_import init.meta.smt.congruence_closure from "leanprover-community/lean"@"9eae65f7144bcc692858b9dadf2e48181f4270b9"
-
 /-!
 # Congruence closure
 
@@ -43,12 +41,12 @@ The `cc` implementation in Lean does a few more tricks: for example it
 derives `a = b` from `Nat.succ a = Nat.succ b`, and `Nat.succ a != Nat.zero` for any `a`.
 
 * The starting reference point is Nelson, Oppen, [Fast decision procedures based on congruence
-closure](http://www.cs.colorado.edu/~bec/courses/csci5535-s09/reading/nelson-oppen-congruence.pdf),
-Journal of the ACM (1980)
+  closure](http://www.cs.colorado.edu/~bec/courses/csci5535-s09/reading/nelson-oppen-congruence.pdf),
+  Journal of the ACM (1980)
 
 * The congruence lemmas for dependent type theory as used in Lean are described in
-[Congruence closure in intensional type theory](https://leanprover.github.io/papers/congr.pdf)
-(de Moura, Selsam IJCAR 2016).
+  [Congruence closure in intensional type theory](https://leanprover.github.io/papers/congr.pdf)
+  (de Moura, Selsam IJCAR 2016).
 -/
 
 universe u
@@ -65,7 +63,6 @@ open CCM
 def mkCore (config : CCConfig) : CCState :=
   let s : CCState := { config with }
   s.mkEntryCore (.const ``True []) true false |>.mkEntryCore (.const ``False []) true false
-#align cc_state.mk_core Mathlib.Tactic.CC.CCState.mkCore
 
 /-- Create a congruence closure state object from the given `config` using the hypotheses in the
 current goal. -/
@@ -77,24 +74,20 @@ def mkUsingHsCore (config : CCConfig) : MetaM CCState := do
       if ← isProp dcl.type then
         add dcl.type dcl.toExpr) { mkCore config with }
   return c.toCCState
-#align cc_state.mk_using_hs_core Mathlib.Tactic.CC.CCState.mkUsingHsCore
 
 /-- Returns the root expression for each equivalence class in the graph.
 If the `Bool` argument is set to `true` then it only returns roots of non-singleton classes. -/
 def rootsCore (ccs : CCState) (nonsingleton : Bool) : List Expr :=
   ccs.getRoots #[] nonsingleton |>.toList
-#align cc_state.roots_core Mathlib.Tactic.CC.CCState.rootsCore
 
 /-- Increment the Global Modification time. -/
 def incGMT (ccs : CCState) : CCState :=
   { ccs with gmt := ccs.gmt + 1 }
-#align cc_state.inc_gmt Mathlib.Tactic.CC.CCState.incGMT
 
 /-- Add the given expression to the graph. -/
 def internalize (ccs : CCState) (e : Expr) : MetaM CCState := do
   let (_, c) ← CCM.run (CCM.internalize e) { ccs with }
   return c.toCCState
-#align cc_state.internalize Mathlib.Tactic.CC.CCState.internalize
 
 /-- Add the given proof term as a new rule.
 The proof term `H` must be an `Eq _ _`, `HEq _ _`, `Iff _ _`, or a negation of these. -/
@@ -104,60 +97,49 @@ def add (ccs : CCState) (H : Expr) : MetaM CCState := do
     throwError "CCState.add failed, given expression is not a proof term"
   let (_, c) ← CCM.run (CCM.add type H) { ccs with }
   return c.toCCState
-#align cc_state.add Mathlib.Tactic.CC.CCState.add
 
 /-- Check whether two expressions are in the same equivalence class. -/
 def isEqv (ccs : CCState) (e₁ e₂ : Expr) : MetaM Bool := do
   let (b, _) ← CCM.run (CCM.isEqv e₁ e₂) { ccs with }
   return b
-#align cc_state.is_eqv Mathlib.Tactic.CC.CCState.isEqv
 
 /-- Check whether two expressions are not in the same equivalence class. -/
 def isNotEqv (ccs : CCState) (e₁ e₂ : Expr) : MetaM Bool := do
   let (b, _) ← CCM.run (CCM.isNotEqv e₁ e₂) { ccs with }
   return b
-#align cc_state.is_not_eqv Mathlib.Tactic.CC.CCState.isNotEqv
 
 /-- Returns a proof term that the given terms are equivalent in the given `CCState` -/
 def eqvProof (ccs : CCState) (e₁ e₂ : Expr) : MetaM Expr := do
   let (some r, _) ← CCM.run (CCM.getEqProof e₁ e₂) { ccs with }
     | throwError "CCState.eqvProof failed to build proof"
   return r
-#align cc_state.eqv_proof Mathlib.Tactic.CC.CCState.eqvProof
 
 /-- `proofFor cc e` constructs a proof for e if it is equivalent to true in `CCState` -/
 def proofFor (ccs : CCState) (e : Expr) : MetaM Expr := do
   let (some r, _) ← CCM.run (CCM.getEqProof e (.const ``True [])) { ccs with }
     | throwError "CCState.proofFor failed to build proof"
   mkAppM ``of_eq_true #[r]
-#align cc_state.proof_for Mathlib.Tactic.CC.CCState.proofFor
 
 /-- `refutationFor cc e` constructs a proof for `Not e` if it is equivalent to `False` in `CCState`
 -/
 def refutationFor (ccs : CCState) (e : Expr) : MetaM Expr := do
   let (some r, _) ← CCM.run (CCM.getEqProof e (.const ``False [])) { ccs with }
     | throwError "CCState.refutationFor failed to build proof"
-  mkAppM ``not_of_eq_false #[r]
-#align cc_state.refutation_for Mathlib.Tactic.CC.CCState.refutationFor
+  mkAppM ``of_eq_false #[r]
 
 /-- If the given state is inconsistent, return a proof for `False`. Otherwise fail. -/
 def proofForFalse (ccs : CCState) : MetaM Expr := do
   let (some pr, _) ← CCM.run CCM.getInconsistencyProof { ccs with }
     | throwError "CCState.proofForFalse failed, state is not inconsistent"
   return pr
-#align cc_state.proof_for_false Mathlib.Tactic.CC.CCState.proofForFalse
-
-#align cc_state.mk Mathlib.Tactic.CC.CCState.mk
 
 /-- Create a congruence closure state object using the hypotheses in the current goal. -/
 def mkUsingHs : MetaM CCState :=
   CCState.mkUsingHsCore {}
-#align cc_state.mk_using_hs Mathlib.Tactic.CC.CCState.mkUsingHs
 
 /-- The root expressions for each equivalence class in the graph. -/
 def roots (s : CCState) : List Expr :=
   CCState.rootsCore s true
-#align cc_state.roots Mathlib.Tactic.CC.CCState.roots
 
 instance : ToMessageData CCState :=
   ⟨fun s => CCState.ppEqcs s true⟩
@@ -167,17 +149,14 @@ found. -/
 partial def eqcOfCore (s : CCState) (e : Expr) (f : Expr) (r : List Expr) : List Expr :=
   let n := s.next e
   if n == f then e :: r else eqcOfCore s n f (e :: r)
-#align cc_state.eqc_of_core Mathlib.Tactic.CC.CCState.eqcOfCore
 
 /-- The equivalence class of `e`. -/
 def eqcOf (s : CCState) (e : Expr) : List Expr :=
   s.eqcOfCore e e []
-#align cc_state.eqc_of Mathlib.Tactic.CC.CCState.eqcOf
 
 /-- The size of the equivalence class of `e`. -/
 def eqcSize (s : CCState) (e : Expr) : Nat :=
   s.eqcOf e |>.length
-#align cc_state.eqc_size Mathlib.Tactic.CC.CCState.eqcSize
 
 /-- Fold `f` over the equivalence class of `c`, accumulating the result in `a`.
 Loops until the element `first` is encountered.
@@ -188,12 +167,10 @@ partial def foldEqcCore {α} (s : CCState) (f : α → Expr → α) (first : Exp
   let new_a := f a c
   let next := s.next c
   if next == first then new_a else foldEqcCore s f first next new_a
-#align cc_state.fold_eqc_core Mathlib.Tactic.CC.CCState.foldEqcCore
 
 /-- Fold the function of `f` over the equivalence class of `e`. -/
 def foldEqc {α} (s : CCState) (e : Expr) (a : α) (f : α → Expr → α) : α :=
   foldEqcCore s f e e a
-#align cc_state.fold_eqc Mathlib.Tactic.CC.CCState.foldEqc
 
 /-- Fold the monadic function of `f` over the equivalence class of `e`. -/
 def foldEqcM {α} {m : Type → Type} [Monad m] (s : CCState) (e : Expr) (a : α)
@@ -201,7 +178,6 @@ def foldEqcM {α} {m : Type → Type} [Monad m] (s : CCState) (e : Expr) (a : α
   foldEqc s e (return a) fun act e => do
     let a ← act
     f a e
-#align cc_state.mfold_eqc Mathlib.Tactic.CC.CCState.foldEqcM
 
 end CCState
 
@@ -221,8 +197,8 @@ congruence lemmas.
 The `cc` implementation in Lean does a few more tricks: for example it
 derives `a = b` from `Nat.succ a = Nat.succ b`, and `Nat.succ a != Nat.zero` for any `a`.
 * The starting reference point is Nelson, Oppen, [Fast decision procedures based on congruence
-closure](http://www.cs.colorado.edu/~bec/courses/csci5535-s09/reading/nelson-oppen-congruence.pdf),
-Journal of the ACM (1980)
+  closure](http://www.cs.colorado.edu/~bec/courses/csci5535-s09/reading/nelson-oppen-congruence.pdf),
+  Journal of the ACM (1980)
 * The congruence lemmas for dependent type theory as used in Lean are described in
 [Congruence closure in intensional type theory](https://leanprover.github.io/papers/congr.pdf)
 (de Moura, Selsam IJCAR 2016).
@@ -248,10 +224,6 @@ def _root_.Lean.MVarId.cc (m : MVarId) (cfg : CCConfig := {}) : MetaM Unit := do
           throwError m!"cc tactic failed, equivalence classes: {s}"
         else
           throwError "cc tactic failed"
-#align tactic.cc_core Lean.MVarId.cc
-#align tactic.cc Lean.MVarId.cc
-#align tactic.cc_dbg_core Lean.MVarId.cc
-#align tactic.cc_dbg Lean.MVarId.cc
 
 /--
 Allow elaboration of `CCConfig` arguments to tactics.
@@ -279,10 +251,8 @@ example (f : ℕ → ℕ) (x : ℕ)
     f x = x := by
   cc
 ``` -/
-elab (name := _root_.Mathlib.Tactic.cc) "cc" cfg:(config)? : tactic => do
-  let cfg ← elabCCConfig (mkOptionalNode cfg)
+elab (name := _root_.Mathlib.Tactic.cc) "cc" cfg:optConfig : tactic => do
+  let cfg ← elabCCConfig cfg
   withMainContext <| liftMetaFinishingTactic (·.cc cfg)
-
-#align tactic.ac_refl Lean.Meta.AC.acRflTactic
 
 end Mathlib.Tactic.CC

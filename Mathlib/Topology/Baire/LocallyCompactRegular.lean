@@ -5,8 +5,6 @@ Authors: Damien Thomine
 -/
 import Mathlib.Topology.Sets.Compacts
 
-#align_import topology.metric_space.baire from "leanprover-community/mathlib"@"b9e46fe101fc897fb2e7edaf0bf1f09ea49eb81a"
-
 /-!
 # Second Baire theorem
 
@@ -54,4 +52,3 @@ instance (priority := 100) BaireSpace.of_t2Space_locallyCompactSpace {X : Type*}
       (fun n => closure_mono <| hK_anti n) (fun n => (K n).nonempty.closure)
       (K 0).isCompact.closure fun n => isClosed_closure
   exact hK_nonempty.mono hK_subset
-#align baire_category_theorem_locally_compact BaireSpace.of_t2Space_locallyCompactSpace

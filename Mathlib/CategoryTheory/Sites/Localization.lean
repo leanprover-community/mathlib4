@@ -45,18 +45,19 @@ lemma W_sheafToPreheaf_map_iff_isIso {F₁ F₂ : Sheaf J A} (φ : F₁ ⟶ F₂
 
 section Adjunction
 
-variable {G : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj : G ⊣ sheafToPresheaf J A)
+variable {G : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A}
 
-lemma W_adj_unit_app (P : Cᵒᵖ ⥤ A) : J.W (adj.unit.app P) := by
+lemma W_adj_unit_app (adj : G ⊣ sheafToPresheaf J A) (P : Cᵒᵖ ⥤ A) : J.W (adj.unit.app P) := by
   rw [W_eq_W_range_sheafToPresheaf_obj]
   exact LeftBousfield.W_adj_unit_app adj P
 
-lemma W_iff_isIso_map_of_adjunction {P₁ P₂ : Cᵒᵖ ⥤ A} (f : P₁ ⟶ P₂) :
+lemma W_iff_isIso_map_of_adjunction (adj : G ⊣ sheafToPresheaf J A)
+    {P₁ P₂ : Cᵒᵖ ⥤ A} (f : P₁ ⟶ P₂) :
     J.W f ↔ IsIso (G.map f) := by
   rw [W_eq_W_range_sheafToPresheaf_obj]
   exact LeftBousfield.W_iff_isIso_map adj f
 
-lemma W_eq_inverseImage_isomorphisms_of_adjunction :
+lemma W_eq_inverseImage_isomorphisms_of_adjunction (adj : G ⊣ sheafToPresheaf J A) :
     J.W = (MorphismProperty.isomorphisms _).inverseImage G := by
   rw [W_eq_W_range_sheafToPresheaf_obj,
     LeftBousfield.W_eq_inverseImage_isomorphisms adj]

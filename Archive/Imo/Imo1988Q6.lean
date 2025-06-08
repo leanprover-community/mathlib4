@@ -3,14 +3,12 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Rat.Defs
 import Mathlib.Order.WellFounded
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.WLOG
-
-#align_import imo.imo1988_q6 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
 /-!
 # IMO 1988 Q6 and constant descent Vieta jumping
@@ -24,10 +22,6 @@ In this file we formalise constant descent Vieta jumping,
 and apply this to prove Q6 of IMO1988.
 To illustrate the technique, we also prove a similar result.
 -/
-
-
--- open_locale classical
-attribute [local instance] Classical.propDecidable
 
 attribute [local simp] sq
 
@@ -44,10 +38,10 @@ under the following conditions:
 * `H_zero` : If an integral point `(x,0)` lies on the hyperbola `H`, then `claim` is true.
 * `H_diag` : If an integral point `(x,x)` lies on the hyperbola `H`, then `claim` is true.
 * `H_desc` : If `(x,y)` is an integral point on the hyperbola `H`,
-with `x < y` then there exists a “smaller” point on `H`: a point `(x',y')` with `x' < y' ≤ x`.
+  with `x < y` then there exists a “smaller” point on `H`: a point `(x',y')` with `x' < y' ≤ x`.
 
 For reasons of usability, the hyperbola `H` is implemented as an arbitrary predicate.
-(In question 6 of IMO1988, where this proof technique was first developped,
+(In question 6 of IMO1988, where this proof technique was first developed,
 the predicate `claim` would be `∃ (d : ℕ), d ^ 2 = k` for some natural number `k`,
 and the predicate `H` would be `fun a b ↦ a * a + b * b = (a * b + 1) * k`.)
 
@@ -74,7 +68,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   -- First of all, we may assume that x ≤ y.
   -- We justify this using H_symm.
   wlog hxy : x ≤ y
-  · rw [H_symm] at h₀; apply this y x h₀ B C base _ _ _ _ _ _ (le_of_not_le hxy); assumption'
+  · rw [H_symm] at h₀; apply this y x h₀ B C base _ _ _ _ _ _ (le_of_not_ge hxy); assumption'
   -- In fact, we can easily deal with the case x = y.
   by_cases x_eq_y : x = y
   · subst x_eq_y; exact H_diag h₀
@@ -113,7 +107,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
       -- We find the other root of the equation, and Vieta's formulas.
       rcases vieta_formula_quadratic hH with ⟨c, h_root, hV₁, hV₂⟩
       -- By substitutions we find that b = 0 or b = a.
-      simp only [hB, add_right_eq_self, add_right_inj] at hV₁
+      simp only [hB, add_eq_left, add_right_inj] at hV₁
       subst hV₁
       rw [← Int.ofNat_zero] at *
       rw [← H_quad] at h_root
@@ -160,7 +154,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   rw [mul_comm] at hV₂
   have Hc := H_desc hmx mx_lt_my h_base hHm c h_root hV₁ hV₂
   -- This means that we may assume that c ≥ 0 and c ≤ m_x.
-  cases' Hc with c_nonneg c_lt
+  obtain ⟨c_nonneg, c_lt⟩ := Hc
   -- In other words, c is a natural number.
   lift c to ℕ using c_nonneg
   -- Recall that we are trying find a point (a,b) such that b ∈ S and b < m.
@@ -189,7 +183,6 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
     subst c
     simp [hV₁]
     -- Hence p' = (c, m_x) lies on the upper branch, and we are done.
-#align imo1988_q6.constant_descent_vieta_jumping Imo1988Q6.constant_descent_vieta_jumping
 
 end Imo1988Q6
 
@@ -246,11 +239,10 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
     · contrapose! hV₀ with x_lt_z
       apply ne_of_gt
       calc
-        z * y > x * x := by apply mul_lt_mul' <;> linarith
+        z * y > x * x := by apply mul_lt_mul' <;> omega
         _ ≥ x * x - k := sub_le_self _ (Int.ofNat_zero_le k)
   · -- There is no base case in this application of Vieta jumping.
     simp
-#align imo1988_q6 imo1988_q6
 
 /-
 The following example illustrates the use of constant descent Vieta jumping
@@ -269,7 +261,7 @@ example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 
     apply eq_iff_eq_cancel_right.2
     simp; ring
   · -- Show that the solution set is symmetric in a and b.
-    intro x y; ring_nf -- Porting note: Originally, `cc` solved the entire goal
+    intro x y; ring_nf
   · -- Show that the claim is true if b = 0.
     simp
   · -- Show that the claim is true if a = b.
@@ -284,17 +276,16 @@ example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 
     constructor
     · have zy_pos : z * y ≥ 0 := by rw [hV₀]; exact mod_cast Nat.zero_le _
       apply nonneg_of_mul_nonneg_left zy_pos
-      linarith
+      omega
     · contrapose! hV₀ with x_lt_z
       apply ne_of_gt
       push_neg at h_base
       calc
-        z * y > x * y := by apply mul_lt_mul_of_pos_right <;> linarith
-        _ ≥ x * (x + 1) := by apply mul_le_mul <;> linarith
+        z * y > x * y := by apply mul_lt_mul_of_pos_right <;> omega
+        _ ≥ x * (x + 1) := by apply mul_le_mul <;> omega
         _ > x * x + 1 := by
-          rw [mul_add, mul_one]
-          apply add_lt_add_left
-          assumption_mod_cast
+          rw [mul_add]
+          omega
   · -- Show the base case.
     intro x y h h_base
     obtain rfl | rfl : x = 0 ∨ x = 1 := by rwa [Nat.le_add_one_iff, Nat.le_zero] at h_base

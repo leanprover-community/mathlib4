@@ -33,8 +33,6 @@ scoped notation "sf" n:60 => Nat.superFactorial n
 
 section SuperFactorial
 
-variable {n : ℕ}
-
 @[simp]
 theorem superFactorial_zero : sf 0 = 1 :=
   rfl
@@ -56,9 +54,8 @@ open Finset
 theorem prod_Icc_factorial : ∀ n : ℕ, ∏ x ∈ Icc 1 n, x ! = sf n
   | 0 => rfl
   | n + 1 => by
-    rw [← Ico_succ_right 1 n.succ, prod_Ico_succ_top <| Nat.succ_le_succ <| Nat.zero_le n,
-    Nat.factorial_succ, Ico_succ_right 1 n, prod_Icc_factorial n, superFactorial, factorial,
-    Nat.succ_eq_add_one, mul_comm]
+    rw [← Ico_add_one_right_eq_Icc 1, prod_Ico_succ_top le_add_self, Nat.factorial_succ,
+      Ico_add_one_right_eq_Icc 1 n, prod_Icc_factorial n, superFactorial, factorial, mul_comm]
 
 @[simp]
 theorem prod_range_factorial_succ (n : ℕ) : ∏ x ∈ range n, (x + 1)! = sf n :=
@@ -105,7 +102,7 @@ private theorem matrixOf_eval_descPochhammer_eq_mul_matrixOf_choose {n : ℕ} (v
     (Matrix.of (fun (i j : Fin n) => (descPochhammer ℤ j).eval (v i : ℤ))).det =
     (∏ i : Fin n, Nat.factorial i) *
       (Matrix.of (fun (i j : Fin n) => (Nat.choose (v i) (j : ℕ) : ℤ))).det := by
-  convert Matrix.det_mul_row (fun (i : Fin n) => ((Nat.factorial (i : ℕ)):ℤ)) _
+  convert Matrix.det_mul_row (fun (i : Fin n) => ((Nat.factorial (i : ℕ)) : ℤ)) _
   · rw [Matrix.of_apply, descPochhammer_eval_eq_descFactorial ℤ _ _]
     congr
     exact Nat.descFactorial_eq_factorial_mul_choose _ _

@@ -37,4 +37,3 @@ abbrev Module.ofMinimalAxioms {R : Type u} {M : Type v} [Semiring R] [AddCommGro
     zero_smul := fun x =>
       (AddMonoidHom.mk' (· • x) fun r s => add_smul r s x).map_zero
     smul_zero := fun r => (AddMonoidHom.mk' (r • ·) (smul_add r)).map_zero }
-#align module.of_core Module.ofMinimalAxioms

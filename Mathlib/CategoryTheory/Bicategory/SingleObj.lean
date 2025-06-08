@@ -1,12 +1,10 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Bicategory.End
 import Mathlib.CategoryTheory.Monoidal.Functor
-
-#align_import category_theory.bicategory.single_obj from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Promoting a monoidal category to a single object bicategory.
@@ -24,13 +22,14 @@ One could go much further: the bicategory of monoidal categories
 is equivalent to the bicategory consisting of
 * single object bicategories,
 * pseudofunctors, and
-* (oplax) natural transformations `η` such that `η.app PUnit.unit = 𝟙 _`.
+* (oplax) natural transformations `η` such that `η.app Unit.unit = 𝟙 _`.
 -/
 
+universe v u
 
 namespace CategoryTheory
 
-variable (C : Type*) [Category C] [MonoidalCategory C]
+variable (C : Type u) [Category.{v} C] [MonoidalCategory C]
 
 /-- Promote a monoidal category to a bicategory with a single object.
 (The objects of the monoidal category become the 1-morphisms,
@@ -38,11 +37,11 @@ with composition given by tensor product,
 and the morphisms of the monoidal category become the 2-morphisms.)
 -/
 @[nolint unusedArguments]
-def MonoidalSingleObj (C : Type*) [Category C] [MonoidalCategory C] :=
-  PUnit --deriving Inhabited
-#align category_theory.monoidal_single_obj CategoryTheory.MonoidalSingleObj
+def MonoidalSingleObj (C : Type u) [Category.{v} C] [MonoidalCategory C] :=
+  Unit
+-- The `Inhabited` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: `deriving` didn't work. Create this instance manually.
 instance : Inhabited (MonoidalSingleObj C) := by
   unfold MonoidalSingleObj
   infer_instance
@@ -53,7 +52,7 @@ instance : Bicategory (MonoidalSingleObj C) where
   Hom _ _ := C
   id _ := 𝟙_ C
   comp X Y := tensorObj X Y
-  whiskerLeft X Y Z f := X ◁ f
+  whiskerLeft X _ _ f := X ◁ f
   whiskerRight f Z := f ▷ Z
   associator X Y Z := α_ X Y Z
   leftUnitor X := λ_ X
@@ -65,8 +64,7 @@ namespace MonoidalSingleObj
 /-- The unique object in the bicategory obtained by "promoting" a monoidal category. -/
 @[nolint unusedArguments]
 protected def star : MonoidalSingleObj C :=
-  PUnit.unit
-#align category_theory.monoidal_single_obj.star CategoryTheory.MonoidalSingleObj.star
+  Unit.unit
 
 /-- The monoidal functor from the endomorphisms of the single object
 when we promote a monoidal category to a single object bicategory,
@@ -75,21 +73,23 @@ to the original monoidal category.
 We subsequently show this is an equivalence.
 -/
 @[simps]
-def endMonoidalStarFunctor : MonoidalFunctor (EndMonoidal (MonoidalSingleObj.star C)) C where
+def endMonoidalStarFunctor : (EndMonoidal (MonoidalSingleObj.star C)) ⥤ C where
   obj X := X
   map f := f
-  ε := 𝟙 _
-  μ X Y := 𝟙 _
-#align category_theory.monoidal_single_obj.End_monoidal_star_functor CategoryTheory.MonoidalSingleObj.endMonoidalStarFunctor
+
+instance : (endMonoidalStarFunctor C).Monoidal :=
+  Functor.CoreMonoidal.toMonoidal
+    { εIso := Iso.refl _
+      μIso := fun _ _ ↦ Iso.refl _ }
 
 /-- The equivalence between the endomorphisms of the single object
 when we promote a monoidal category to a single object bicategory,
 and the original monoidal category.
 -/
-@[simps functor inverse_obj inverse_map unitIso counitIso]
+@[simps]
 noncomputable def endMonoidalStarFunctorEquivalence :
     EndMonoidal (MonoidalSingleObj.star C) ≌ C where
-  functor := (endMonoidalStarFunctor C).toFunctor
+  functor := endMonoidalStarFunctor C
   inverse :=
     { obj := fun X => X
       map := fun f => f }
@@ -98,7 +98,6 @@ noncomputable def endMonoidalStarFunctorEquivalence :
 
 instance endMonoidalStarFunctor_isEquivalence : (endMonoidalStarFunctor C).IsEquivalence :=
   (endMonoidalStarFunctorEquivalence C).isEquivalence_functor
-#align category_theory.monoidal_single_obj.End_monoidal_star_functor_is_equivalence CategoryTheory.MonoidalSingleObj.endMonoidalStarFunctor_isEquivalence
 
 end MonoidalSingleObj
 

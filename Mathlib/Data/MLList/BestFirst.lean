@@ -1,12 +1,12 @@
 /-
-Copyright (c) 2023 Scott Morrison. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Batteries.Data.MLList.Basic
 import Mathlib.Data.Prod.Lex
+import Mathlib.Data.Set.Finite.Range
 import Mathlib.Order.Estimator
-import Mathlib.Data.Set.Finite
 
 /-!
 # Best first search
@@ -29,8 +29,6 @@ Options:
   otherwise if the graph is not a tree nodes may be visited multiple times.
 -/
 
-set_option autoImplicit true
-
 open Batteries EstimatorData Estimator Set
 
 /-!
@@ -42,7 +40,7 @@ If someone would like to generalize appropriately that would be great.
 We want to maintain a priority queue of `MLList m β`, each indexed by some `a : α` with a priority.
 (One could simplify matters here by simply flattening this out to a priority queue of pairs `α × β`,
 with the priority determined by the `α` factor.
-However the lazyness of `MLList` is essential to performance here:
+However the laziness of `MLList` is essential to performance here:
 we will extract elements from these lists one at a time,
 and only when they at the head of the queue.
 If another item arrives at the head of the queue,
@@ -58,7 +56,7 @@ When it is time to pop a `β` off the queue, we iteratively improve the lower bo
 front element of the queue, until we decide that either it must be the least element,
 or we can exchange it with the second element of the queue and continue.
 
-A `BestFirstQueue prio ε m β maxSize` consists of an `RBMap`,
+A `BestFirstQueue prio ε m β maxSize` consists of an `TreeMap`,
 where the keys are in `BestFirstNode prio ε`
 and the values are `MLList m β`.
 
@@ -79,17 +77,20 @@ With this design, it is okay if we visit nodes with very large edit distances:
 while these would be expensive to compute, we never actually finish the computation
 except in cases where the node arrives at the front of the queue.
 -/
+
+open Std (TreeMap TreeSet)
+
 section
 
 /-- A node in a `BestFirstQueue`. -/
-structure BestFirstNode (prio : α → Thunk ω) (ε : α → Type) where
+structure BestFirstNode {α : Sort*} {ω : Type*} (prio : α → Thunk ω) (ε : α → Type) where
   /-- The data to store at a node, from which we can calculate a priority using `prio`. -/
   key : α
   /-- An estimator for the priority of the key.
   (We will assume we have `[∀ a : α, Estimator (prio a) (ε a)]`.) -/
   estimator : ε key
 
-variable {α : Type} {prio : α → Thunk ω} {ε : α → Type} [LinearOrder ω]
+variable {ω α : Type} {prio : α → Thunk ω} {ε : α → Type} [LinearOrder ω]
   [∀ a, Estimator (prio a) (ε a)]
   [I : ∀ a : α, WellFoundedGT (range (bound (prio a) : ε a → ω))]
   {m : Type → Type} [Monad m] {β : Type}
@@ -107,7 +108,7 @@ set_option linter.unusedVariables false in
 variable (prio ε m β) [Ord ω] [Ord α] in
 /-- A queue of `MLList m β`s, lazily prioritized by lower bounds. -/
 @[nolint unusedArguments]
-def BestFirstQueue (maxSize : Option Nat) := RBMap (BestFirstNode prio ε) (MLList m β) compare
+def BestFirstQueue (maxSize : Option Nat) := TreeMap (BestFirstNode prio ε) (MLList m β) compare
 
 variable [Ord ω] [Ord α] {maxSize : Option Nat}
 
@@ -128,8 +129,8 @@ def insertAndEject
     if q.size < max then
       q.insert n l
     else
-      match q.max? with
-      | none => RBMap.empty
+      match q.maxEntry? with
+      | none => TreeMap.empty
       | some m => q.insert n l |>.erase m.1
 
 /--
@@ -138,16 +139,15 @@ ensure that the first element of the queue has the greatest priority.
 -/
 partial def ensureFirstIsBest (q : BestFirstQueue prio ε m β maxSize) :
     m (BestFirstQueue prio ε m β maxSize) := do
-  let s := @toStream (RBMap _ _ _) _ _ q
-  match s.next? with
+  match q.entryAtIdx? 0 with
   | none =>
     -- The queue is empty, nothing to do.
     return q
-  | some ((n, l), s') => match s'.next? with
+  | some (n, l) => match q.entryAtIdx? 1 with
     | none => do
       -- There's only one element in the queue, no reordering necessary.
       return q
-    | some ((m, _), _) =>
+    | some (m, _) =>
       -- `n` is the first index, `m` is the second index.
       -- We need to improve our estimate of the priority for `n` to make sure
       -- it really should come before `m`.
@@ -172,7 +172,7 @@ This may require improving estimates of priorities and shuffling the queue.
 partial def popWithBound (q : BestFirstQueue prio ε m β maxSize) :
     m (Option (((a : α) × (ε a) × β) × BestFirstQueue prio ε m β maxSize)) := do
   let q' ← ensureFirstIsBest q
-  match q'.min? with
+  match q'.minEntry? with
   | none =>
     -- The queue is empty, nothing to return.
     return none
@@ -236,7 +236,7 @@ At each step we pop an element off the queue,
 compute its children (lazily) and put these back on the queue.
 -/
 def impl (maxSize : Option Nat) (f : α → MLList m α) (a : α) : MLList m α :=
-  let init : BestFirstQueue prio ε m α maxSize := RBMap.single ⟨a, ⊥⟩ (f a)
+  let init : BestFirstQueue prio ε m α maxSize := TreeMap.empty.insert ⟨a, ⊥⟩ (f a)
   cons a (iterate go |>.runState' init)
 where
   /-- A single step of the best first search.
@@ -287,29 +287,29 @@ but lazily estimates these priorities to avoid unnecessary computations.
 -/
 def bestFirstSearchCore (f : α → MLList m α) (a : α)
     (β : Type _) [Ord β] (removeDuplicatesBy? : Option (α → β) := none)
-    (maxQueued : Option Nat := none) (maxDepth : Option Nat := none)  :
+    (maxQueued : Option Nat := none) (maxDepth : Option Nat := none) :
     MLList m α :=
   match removeDuplicatesBy? with
   | some g =>
-    let f' : α → MLList (StateT (RBSet β compare) m) α := fun a =>
+    let f' : α → MLList (StateT (TreeSet β compare) m) α := fun a =>
       (f a).liftM >>= fun a' => do
         let b := g a'
         guard !(← get).contains b
         modify fun s => s.insert b
         pure a'
-    implMaxDepth prio ε maxQueued maxDepth f' a |>.runState' (RBSet.empty.insert (g a))
+    implMaxDepth prio ε maxQueued maxDepth f' a |>.runState' (TreeSet.empty.insert (g a))
   | none =>
     implMaxDepth prio ε maxQueued maxDepth f a
 
 end
 
-variable [Monad m] [Alternative m] [LinearOrder α]
+variable {m : Type → Type} {α : Type} [Monad m] [Alternative m] [LinearOrder α]
 
 /-- A local instance that enables using "the actual value" as a priority estimator,
 for simple use cases. -/
-local instance instOrderBotEq : OrderBot { x : α // x = a } where
+local instance instOrderBotEq {a : α} : OrderBot { x : α // x = a } where
   bot := ⟨a, rfl⟩
-  bot_le := by aesop
+  bot_le := by simp
 
 /--
 A lazy list recording the best first search of a graph generated by a function

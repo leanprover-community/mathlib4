@@ -25,7 +25,8 @@ universe w v v' u u'
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C]
+variable {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type w}
+variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory.{w} C FC]
 
 open Limits MorphismProperty
 
@@ -33,32 +34,28 @@ namespace ConcreteCategory
 
 section
 
-attribute [local instance] ConcreteCategory.instFunLike in
 /-- In any concrete category, injective morphisms are monomorphisms. -/
 theorem mono_of_injective {X Y : C} (f : X ⟶ Y) (i : Function.Injective f) :
     Mono f :=
-  (forget C).mono_of_mono_map ((mono_iff_injective f).2 i)
-#align category_theory.concrete_category.mono_of_injective CategoryTheory.ConcreteCategory.mono_of_injective
+  (forget C).mono_of_mono_map ((mono_iff_injective ((forget C).map f)).2 i)
 
 instance forget₂_preservesMonomorphisms (C : Type u) (D : Type u')
-    [Category.{v} C] [ConcreteCategory.{w} C] [Category.{v'} D] [ConcreteCategory.{w} D]
+    [Category.{v} C] [HasForget.{w} C] [Category.{v'} D] [HasForget.{w} D]
     [HasForget₂ C D] [(forget C).PreservesMonomorphisms] :
     (forget₂ C D).PreservesMonomorphisms :=
   have : (forget₂ C D ⋙ forget D).PreservesMonomorphisms := by
     simp only [HasForget₂.forget_comp]
     infer_instance
   Functor.preservesMonomorphisms_of_preserves_of_reflects _ (forget D)
-#align category_theory.forget₂_preserves_monomorphisms CategoryTheory.ConcreteCategory.forget₂_preservesMonomorphisms
 
 instance forget₂_preservesEpimorphisms (C : Type u) (D : Type u')
-    [Category.{v} C] [ConcreteCategory.{w} C] [Category.{v'} D] [ConcreteCategory.{w} D]
+    [Category.{v} C] [HasForget.{w} C] [Category.{v'} D] [HasForget.{w} D]
     [HasForget₂ C D] [(forget C).PreservesEpimorphisms] :
     (forget₂ C D).PreservesEpimorphisms :=
   have : (forget₂ C D ⋙ forget D).PreservesEpimorphisms := by
     simp only [HasForget₂.forget_comp]
     infer_instance
   Functor.preservesEpimorphisms_of_preserves_of_reflects _ (forget D)
-#align category_theory.forget₂_preserves_epimorphisms CategoryTheory.ConcreteCategory.forget₂_preservesEpimorphisms
 
 variable (C)
 
@@ -136,45 +133,36 @@ section
 
 open CategoryTheory.Limits
 
-attribute [local instance] ConcreteCategory.hasCoeToSort
-attribute [local instance] ConcreteCategory.instFunLike
-
 theorem injective_of_mono_of_preservesPullback {X Y : C} (f : X ⟶ Y) [Mono f]
     [PreservesLimitsOfShape WalkingCospan (forget C)] : Function.Injective f :=
   (mono_iff_injective ((forget C).map f)).mp inferInstance
-#align category_theory.concrete_category.injective_of_mono_of_preserves_pullback CategoryTheory.ConcreteCategory.injective_of_mono_of_preservesPullback
 
 theorem mono_iff_injective_of_preservesPullback {X Y : C} (f : X ⟶ Y)
     [PreservesLimitsOfShape WalkingCospan (forget C)] : Mono f ↔ Function.Injective f :=
   ((forget C).mono_map_iff_mono _).symm.trans (mono_iff_injective _)
-#align category_theory.concrete_category.mono_iff_injective_of_preserves_pullback CategoryTheory.ConcreteCategory.mono_iff_injective_of_preservesPullback
 
 /-- In any concrete category, surjective morphisms are epimorphisms. -/
 theorem epi_of_surjective {X Y : C} (f : X ⟶ Y) (s : Function.Surjective f) :
     Epi f :=
-  (forget C).epi_of_epi_map ((epi_iff_surjective f).2 s)
-#align category_theory.concrete_category.epi_of_surjective CategoryTheory.ConcreteCategory.epi_of_surjective
+  (forget C).epi_of_epi_map ((epi_iff_surjective ((forget C).map f)).2 s)
 
 theorem surjective_of_epi_of_preservesPushout {X Y : C} (f : X ⟶ Y) [Epi f]
     [PreservesColimitsOfShape WalkingSpan (forget C)] : Function.Surjective f :=
   (epi_iff_surjective ((forget C).map f)).mp inferInstance
-#align category_theory.concrete_category.surjective_of_epi_of_preserves_pushout CategoryTheory.ConcreteCategory.surjective_of_epi_of_preservesPushout
 
 theorem epi_iff_surjective_of_preservesPushout {X Y : C} (f : X ⟶ Y)
     [PreservesColimitsOfShape WalkingSpan (forget C)] : Epi f ↔ Function.Surjective f :=
   ((forget C).epi_map_iff_epi _).symm.trans (epi_iff_surjective _)
-#align category_theory.concrete_category.epi_iff_surjective_of_preserves_pushout CategoryTheory.ConcreteCategory.epi_iff_surjective_of_preservesPushout
 
 theorem bijective_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
-    Function.Bijective ((forget C).map f) := by
+    Function.Bijective f := by
   rw [← isIso_iff_bijective]
   infer_instance
-#align category_theory.concrete_category.bijective_of_is_iso CategoryTheory.ConcreteCategory.bijective_of_isIso
 
 /-- If the forgetful functor of a concrete category reflects isomorphisms, being an isomorphism
 is equivalent to being bijective. -/
 theorem isIso_iff_bijective [(forget C).ReflectsIsomorphisms]
-    {X Y : C} (f : X ⟶ Y) : IsIso f ↔ Function.Bijective ((forget C).map f) := by
+    {X Y : C} (f : X ⟶ Y) : IsIso f ↔ Function.Bijective f := by
   rw [← CategoryTheory.isIso_iff_bijective]
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ isIso_of_reflects_iso f (forget C)⟩
 

@@ -3,9 +3,8 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-
-#align_import data.nat.upto from "leanprover-community/mathlib"@"ee0c179cd3c8a45aa5bffbf1b41d8dbede452865"
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Sub.Basic
 
 /-!
 # `Nat.Upto`
@@ -30,10 +29,9 @@ no `j` less than `i` satisfies `p`. This is an initial segment of the
 natural numbers, up to and including the first value satisfying `p`.
 
 We will be particularly interested in the case where there exists a value
-satisfying `p`, because in this case the `>` relation is well-founded.  -/
+satisfying `p`, because in this case the `>` relation is well-founded. -/
 abbrev Upto (p : ℕ → Prop) : Type :=
   { i : ℕ // ∀ j < i, ¬p j }
-#align nat.upto Nat.Upto
 
 namespace Upto
 
@@ -42,7 +40,6 @@ variable {p : ℕ → Prop}
 /-- Lift the "greater than" relation on natural numbers to `Nat.Upto`. -/
 protected def GT (p) (x y : Upto p) : Prop :=
   x.1 > y.1
-#align nat.upto.gt Nat.Upto.GT
 
 instance : LT (Upto p) :=
   ⟨fun x y => x.1 < y.1⟩
@@ -56,19 +53,16 @@ protected theorem wf : (∃ x, p x) → WellFounded (Upto.GT p)
       exact (measure _).wf
     ext ⟨a, ha⟩ ⟨b, _⟩
     dsimp [InvImage, Upto.GT]
-    rw [tsub_lt_tsub_iff_left_of_le (le_of_not_lt fun h' => ha _ h' h)]
-#align nat.upto.wf Nat.Upto.wf
+    rw [tsub_lt_tsub_iff_left_of_le (le_of_not_gt fun h' => ha _ h' h)]
 
 /-- Zero is always a member of `Nat.Upto p` because it has no predecessors. -/
 def zero : Nat.Upto p :=
   ⟨0, fun _ h => False.elim (Nat.not_lt_zero _ h)⟩
-#align nat.upto.zero Nat.Upto.zero
 
 /-- The successor of `n` is in `Nat.Upto p` provided that `n` doesn't satisfy `p`. -/
 def succ (x : Nat.Upto p) (h : ¬p x.val) : Nat.Upto p :=
   ⟨x.val.succ, fun j h' => by
     rcases Nat.lt_succ_iff_lt_or_eq.1 h' with (h' | rfl) <;> [exact x.2 _ h'; exact h]⟩
-#align nat.upto.succ Nat.Upto.succ
 
 end Upto
 

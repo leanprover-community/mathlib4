@@ -5,21 +5,22 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Semiquot
 import Mathlib.Data.Nat.Size
-import Mathlib.Tactic.Ring.RingNF
-
-#align_import data.fp.basic from "leanprover-community/mathlib"@"7b78d1776212a91ecc94cf601f83bdcc46b04213"
+import Batteries.Data.Rat.Basic
+import Mathlib.Data.PNat.Defs
+import Mathlib.Data.Rat.Init
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
 
 /-!
 # Implementation of floating-point numbers (experimental).
 -/
 
--- Porting note (#11215): TODO add docs and remove `@[nolint docBlame]`
+-- TODO add docs and remove `@[nolint docBlame]`
 
 @[nolint docBlame]
 def Int.shift2 (a b : ℕ) : ℤ → ℕ × ℕ
   | Int.ofNat e => (a <<< e, b)
   | Int.negSucc e => (a, b <<< e.succ)
-#align int.shift2 Int.shift2
 
 namespace FP
 
@@ -27,7 +28,6 @@ namespace FP
 inductive RMode
   | NE -- round to nearest even
   deriving Inhabited
-#align fp.rmode FP.RMode
 
 @[nolint docBlame]
 class FloatCfg where
@@ -35,46 +35,38 @@ class FloatCfg where
   precPos : 0 < prec
   precMax : prec ≤ emax
 attribute [nolint docBlame] FloatCfg.prec FloatCfg.emax FloatCfg.precPos FloatCfg.precMax
-#align fp.float_cfg FP.FloatCfg
 
 variable [C : FloatCfg]
 
 @[nolint docBlame]
 def prec :=
   C.prec
-#align fp.prec FP.prec
 
 @[nolint docBlame]
 def emax :=
   C.emax
-#align fp.emax FP.emax
 
 @[nolint docBlame]
 def emin : ℤ :=
   1 - C.emax
-#align fp.emin FP.emin
 
 @[nolint docBlame]
 def ValidFinite (e : ℤ) (m : ℕ) : Prop :=
   emin ≤ e + prec - 1 ∧ e + prec - 1 ≤ emax ∧ e = max (e + m.size - prec) emin
-#align fp.valid_finite FP.ValidFinite
 
 instance decValidFinite (e m) : Decidable (ValidFinite e m) := by
   (unfold ValidFinite; infer_instance)
-#align fp.dec_valid_finite FP.decValidFinite
 
 @[nolint docBlame]
 inductive Float
   | inf : Bool → Float
   | nan : Float
   | finite : Bool → ∀ e m, ValidFinite e m → Float
-#align fp.float FP.Float
 
 @[nolint docBlame]
 def Float.isFinite : Float → Bool
   | Float.finite _ _ _ _ => true
   | _ => false
-#align fp.float.is_finite FP.Float.isFinite
 
 @[nolint docBlame]
 def toRat : ∀ f : Float, f.isFinite → ℚ
@@ -82,7 +74,6 @@ def toRat : ∀ f : Float, f.isFinite → ℚ
     let (n, d) := Int.shift2 m 1 e
     let r := mkRat n d
     if s then -r else r
-#align fp.to_rat FP.toRat
 
 theorem Float.Zero.valid : ValidFinite emin 0 :=
   ⟨by
@@ -95,17 +86,13 @@ theorem Float.Zero.valid : ValidFinite emin 0 :=
       rw [← Int.ofNat_le] at this
       rw [← sub_nonneg] at *
       simp only [emin, emax] at *
-      ring_nf
-      rw [mul_comm]
-      assumption
-    le_trans C.precMax (Nat.le_mul_of_pos_left _ two_pos),
-    by (rw [max_eq_right]; simp [sub_eq_add_neg])⟩
-#align fp.float.zero.valid FP.Float.Zero.valid
+      omega
+    le_trans C.precMax (Nat.le_mul_of_pos_left _ Nat.zero_lt_two),
+    by (rw [max_eq_right]; simp [sub_eq_add_neg, Int.ofNat_zero_le])⟩
 
 @[nolint docBlame]
 def Float.zero (s : Bool) : Float :=
   Float.finite s emin 0 Float.Zero.valid
-#align fp.float.zero FP.Float.zero
 
 instance : Inhabited Float :=
   ⟨Float.zero true⟩
@@ -115,48 +102,42 @@ protected def Float.sign' : Float → Semiquot Bool
   | Float.inf s => pure s
   | Float.nan => ⊤
   | Float.finite s _ _ _ => pure s
-#align fp.float.sign' FP.Float.sign'
 
 @[nolint docBlame]
 protected def Float.sign : Float → Bool
   | Float.inf s => s
   | Float.nan => false
   | Float.finite s _ _ _ => s
-#align fp.float.sign FP.Float.sign
 
 @[nolint docBlame]
 protected def Float.isZero : Float → Bool
   | Float.finite _ _ 0 _ => true
   | _ => false
-#align fp.float.is_zero FP.Float.isZero
 
 @[nolint docBlame]
 protected def Float.neg : Float → Float
   | Float.inf s => Float.inf (not s)
   | Float.nan => Float.nan
   | Float.finite s e m f => Float.finite (not s) e m f
-#align fp.float.neg FP.Float.neg
 
 @[nolint docBlame]
 def divNatLtTwoPow (n d : ℕ) : ℤ → Bool
   | Int.ofNat e => n < d <<< e
   | Int.negSucc e => n <<< e.succ < d
-#align fp.div_nat_lt_two_pow FP.divNatLtTwoPowₓ -- Porting note: TC argument `[C : FP.FloatCfg]` no longer present
 
 
 -- TODO(Mario): Prove these and drop 'unsafe'
 @[nolint docBlame]
 unsafe def ofPosRatDn (n : ℕ+) (d : ℕ+) : Float × Bool := by
   let e₁ : ℤ := n.1.size - d.1.size - prec
-  cases' Int.shift2 d.1 n.1 (e₁ + prec) with d₁ n₁
+  obtain ⟨d₁, n₁⟩ := Int.shift2 d.1 n.1 (e₁ + prec)
   let e₂ := if n₁ < d₁ then e₁ - 1 else e₁
   let e₃ := max e₂ emin
-  cases' Int.shift2 d.1 n.1 (e₃ + prec) with d₂ n₂
+  obtain ⟨d₂, n₂⟩ := Int.shift2 d.1 n.1 (e₃ + prec)
   let r := mkRat n₂ d₂
   let m := r.floor
   refine (Float.finite Bool.false e₃ (Int.toNat m) ?_, r.den = 1)
   exact lcProof
-#align fp.of_pos_rat_dn FP.ofPosRatDn
 
 -- Porting note: remove this line when you dropped 'lcProof'
 set_option linter.unusedVariables false in
@@ -166,9 +147,7 @@ unsafe def nextUpPos (e m) (v : ValidFinite e m) : Float :=
   if ss : m'.size = m.size then
     Float.finite false e m' (by unfold ValidFinite at *; rw [ss]; exact v)
   else if h : e = emax then Float.inf false else Float.finite false e.succ (Nat.div2 m') lcProof
-#align fp.next_up_pos FP.nextUpPos
 
-set_option linter.deprecated false in
 -- Porting note: remove this line when you dropped 'lcProof'
 set_option linter.unusedVariables false in
 @[nolint docBlame]
@@ -181,22 +160,19 @@ unsafe def nextDnPos (e m) (v : ValidFinite e m) : Float :=
       Float.finite false e m' (by unfold ValidFinite at *; rw [ss]; exact v)
     else
       if h : e = emin then Float.finite false emin m' lcProof
-      else Float.finite false e.pred (bit1 m') lcProof
-#align fp.next_dn_pos FP.nextDnPos
+      else Float.finite false e.pred (2 * m' + 1) lcProof
 
 @[nolint docBlame]
 unsafe def nextUp : Float → Float
   | Float.finite Bool.false e m f => nextUpPos e m f
   | Float.finite Bool.true e m f => Float.neg <| nextDnPos e m f
   | f => f
-#align fp.next_up FP.nextUp
 
 @[nolint docBlame]
 unsafe def nextDn : Float → Float
   | Float.finite Bool.false e m f => nextDnPos e m f
   | Float.finite Bool.true e m f => Float.neg <| nextUpPos e m f
   | f => f
-#align fp.next_dn FP.nextDn
 
 @[nolint docBlame]
 unsafe def ofRatUp : ℚ → Float
@@ -205,12 +181,10 @@ unsafe def ofRatUp : ℚ → Float
     let (f, exact) := ofPosRatDn n.succPNat ⟨d, Nat.pos_of_ne_zero h⟩
     if exact then f else nextUp f
   | ⟨Int.negSucc n, d, h, _⟩ => Float.neg (ofPosRatDn n.succPNat ⟨d, Nat.pos_of_ne_zero h⟩).1
-#align fp.of_rat_up FP.ofRatUp
 
 @[nolint docBlame]
 unsafe def ofRatDn (r : ℚ) : Float :=
   Float.neg <| ofRatUp (-r)
-#align fp.of_rat_dn FP.ofRatDn
 
 @[nolint docBlame]
 unsafe def ofRat : RMode → ℚ → Float
@@ -229,7 +203,6 @@ unsafe def ofRat : RMode → ℚ → Float
               | Float.finite _ _ m _, _ => if 2 ∣ m then low else high
         else Float.inf true
     else Float.inf false
-#align fp.of_rat FP.ofRat
 
 namespace Float
 
@@ -248,7 +221,6 @@ unsafe def add (mode : RMode) : Float → Float → Float
     let f₁ := finite s₁ e₁ m₁ v₁
     let f₂ := finite s₂ e₂ m₂ v₂
     ofRat mode (toRat f₁ rfl + toRat f₂ rfl)
-#align fp.float.add FP.Float.add
 
 unsafe instance : Add Float :=
   ⟨Float.add RMode.NE⟩
@@ -256,7 +228,6 @@ unsafe instance : Add Float :=
 @[nolint docBlame]
 unsafe def sub (mode : RMode) (f1 f2 : Float) : Float :=
   add mode f1 (-f2)
-#align fp.float.sub FP.Float.sub
 
 unsafe instance : Sub Float :=
   ⟨Float.sub RMode.NE⟩
@@ -271,7 +242,6 @@ unsafe def mul (mode : RMode) : Float → Float → Float
     let f₁ := finite s₁ e₁ m₁ v₁
     let f₂ := finite s₂ e₂ m₂ v₂
     ofRat mode (toRat f₁ rfl * toRat f₂ rfl)
-#align fp.float.mul FP.Float.mul
 
 @[nolint docBlame]
 unsafe def div (mode : RMode) : Float → Float → Float
@@ -284,7 +254,6 @@ unsafe def div (mode : RMode) : Float → Float → Float
     let f₁ := finite s₁ e₁ m₁ v₁
     let f₂ := finite s₂ e₂ m₂ v₂
     if f₂.isZero then inf (xor s₁ s₂) else ofRat mode (toRat f₁ rfl / toRat f₂ rfl)
-#align fp.float.div FP.Float.div
 
 end Float
 

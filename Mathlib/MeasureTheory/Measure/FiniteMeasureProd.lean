@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-import Mathlib.MeasureTheory.Constructions.Prod.Basic
+import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Products of finite measures and probability measures
@@ -20,7 +20,7 @@ the underlying space is metrizable and separable.
 * `MeasureTheory.FiniteMeasure.prod`: The product of two finite measures.
 * `MeasureTheory.ProbabilityMeasure.prod`: The product of two probability measures.
 
-## Todo
+## TODO
 
 * Add continuous dependence of the product measures on the factors.
 
@@ -71,7 +71,7 @@ lemma prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t 
 @[simp] lemma map_snd_prod : (μ.prod ν).map Prod.snd = μ univ • ν := by ext; simp
 
 lemma map_prod_map {α' : Type*} [MeasurableSpace α'] {β' : Type*} [MeasurableSpace β']
-    {f : α → α'} {g : β → β'}  (f_mble : Measurable f) (g_mble : Measurable g):
+    {f : α → α'} {g : β → β'} (f_mble : Measurable f) (g_mble : Measurable g) :
     (μ.map f).prod (ν.map g) = (μ.prod ν).map (Prod.map f g) := by
   apply Subtype.ext
   simp only [val_eq_toMeasure, toMeasure_prod, toMeasure_map]
@@ -125,7 +125,7 @@ lemma prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t 
 lemma map_prod_map {α' : Type*} [MeasurableSpace α'] {β' : Type*} [MeasurableSpace β']
     {f : α → α'} {g : β → β'} (f_mble : Measurable f) (g_mble : Measurable g) :
     (μ.map f_mble.aemeasurable).prod (ν.map g_mble.aemeasurable)
-      = (μ.prod ν).map (f_mble.prod_map g_mble).aemeasurable := by
+      = (μ.prod ν).map (f_mble.prodMap g_mble).aemeasurable := by
   apply Subtype.ext
   simp only [val_eq_to_measure, toMeasure_prod, toMeasure_map]
   rw [Measure.map_prod_map _ _ f_mble g_mble]

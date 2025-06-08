@@ -46,7 +46,7 @@ structure PreOneHypercover (S : C) where
   f (i : I₀) : X i ⟶ S
   /-- the index type of the coverings of the fibre products -/
   I₁ (i₁ i₂ : I₀) : Type w
-  /-- the objects in the coverings of the fibre products  -/
+  /-- the objects in the coverings of the fibre products -/
   Y ⦃i₁ i₂ : I₀⦄ (j : I₁ i₁ i₂) : C
   /-- the first projection `Y j ⟶ X i₁` -/
   p₁ ⦃i₁ i₂ : I₀⦄ (j : I₁ i₁ i₂) : Y j ⟶ X i₁
@@ -88,7 +88,7 @@ noncomputable abbrev toPullback (j : E.I₁ i₁ i₂) [HasPullback (E.f i₁) (
 
 variable (i₁ i₂) in
 /-- The sieve of `pullback (E.f i₁) (E.f i₂)` given by `E : PreOneHypercover S`. -/
-def sieve₁' : Sieve (pullback (E.f i₁) (E.f i₂)) :=
+noncomputable def sieve₁' : Sieve (pullback (E.f i₁) (E.f i₂)) :=
   Sieve.ofArrows _ (fun (j : E.I₁ i₁ i₂) => E.toPullback j)
 
 lemma sieve₁_eq_pullback_sieve₁' {W : C} (p₁ : W ⟶ E.X i₁) (p₂ : W ⟶ E.X i₂)
@@ -99,11 +99,11 @@ lemma sieve₁_eq_pullback_sieve₁' {W : C} (p₁ : W ⟶ E.X i₁) (p₂ : W �
   · rintro ⟨j, h, fac₁, fac₂⟩
     exact ⟨_, h, _, ⟨j⟩, by aesop_cat⟩
   · rintro ⟨_, h, w, ⟨j⟩, fac⟩
-    exact ⟨j, h, by simpa using fac.symm =≫ pullback.fst,
-      by simpa using fac.symm =≫ pullback.snd⟩
+    exact ⟨j, h, by simpa using fac.symm =≫ pullback.fst _ _,
+      by simpa using fac.symm =≫ pullback.snd _ _⟩
 
 variable (i₁ i₂) in
-lemma sieve₁'_eq_sieve₁ : E.sieve₁' i₁ i₂ = E.sieve₁ pullback.fst pullback.snd := by
+lemma sieve₁'_eq_sieve₁ : E.sieve₁' i₁ i₂ = E.sieve₁ (pullback.fst _ _) (pullback.snd _ _) := by
   rw [← Sieve.pullback_id (S := E.sieve₁' i₁ i₂),
     sieve₁_eq_pullback_sieve₁' _ _ _ pullback.condition]
   congr
@@ -114,14 +114,18 @@ end
 /-- The sigma type of all `E.I₁ i₁ i₂` for `⟨i₁, i₂⟩ : E.I₀ × E.I₀`. -/
 abbrev I₁' : Type w := Sigma (fun (i : E.I₀ × E.I₀) => E.I₁ i.1 i.2)
 
+/-- The shape of the multiforks attached to `E : PreOneHypercover S`. -/
+@[simps]
+def multicospanShape : MulticospanShape where
+  L := E.I₀
+  R := E.I₁'
+  fst j := j.1.1
+  snd j := j.1.2
+
 /-- The diagram of the multifork attached to a presheaf
 `F : Cᵒᵖ ⥤ A`, `S : C` and `E : PreOneHypercover S`. -/
 @[simps]
-def multicospanIndex (F : Cᵒᵖ ⥤ A) : MulticospanIndex A where
-  L := E.I₀
-  R := E.I₁'
-  fstTo j := j.1.1
-  sndTo j := j.1.2
+def multicospanIndex (F : Cᵒᵖ ⥤ A) : MulticospanIndex E.multicospanShape A where
   left i := F.obj (Opposite.op (E.X i))
   right j := F.obj (Opposite.op (E.Y j.2))
   fst j := F.map ((E.p₁ j.2).op)
@@ -164,7 +168,7 @@ check that the data provides a covering of `S` and of the fibre products. -/
 @[simps toPreOneHypercover]
 def mk' {S : C} (E : PreOneHypercover S) [E.HasPullbacks]
     (mem₀ : E.sieve₀ ∈ J S) (mem₁' : ∀ (i₁ i₂ : E.I₀), E.sieve₁' i₁ i₂ ∈ J _) :
-        J.OneHypercover S where
+    J.OneHypercover S where
   toPreOneHypercover := E
   mem₀ := mem₀
   mem₁ i₁ i₂ W p₁ p₂ w := by
@@ -211,6 +215,51 @@ noncomputable def isLimitMultifork : IsLimit (E.multifork F.1) :=
 end
 
 end OneHypercover
+
+namespace Cover
+
+variable {X : C} (S : J.Cover X)
+
+/-- The tautological 1-pre-hypercover induced by `S : J.Cover X`. Its index type `I₀`
+is given by `S.Arrow` (i.e. all the morphisms in the sieve `S`), while `I₁` is given
+by all possible pullback cones. -/
+@[simps]
+def preOneHypercover : PreOneHypercover.{max u v} X where
+  I₀ := S.Arrow
+  X f := f.Y
+  f f := f.f
+  I₁ f₁ f₂ := f₁.Relation f₂
+  Y _ _ r := r.Z
+  p₁ _ _ r := r.g₁
+  p₂ _ _ r := r.g₂
+  w _ _ r := r.w
+
+@[simp]
+lemma preOneHypercover_sieve₀ : S.preOneHypercover.sieve₀ = S.1 := by
+  ext Y f
+  constructor
+  · rintro ⟨_, _, _, ⟨g⟩, rfl⟩
+    exact S.1.downward_closed g.hf _
+  · intro hf
+    exact Sieve.ofArrows_mk _ _ ({ hf := hf, .. } : S.Arrow)
+
+lemma preOneHypercover_sieve₁ (f₁ f₂ : S.Arrow) {W : C} (p₁ : W ⟶ f₁.Y) (p₂ : W ⟶ f₂.Y)
+    (w : p₁ ≫ f₁.f = p₂ ≫ f₂.f) :
+    S.preOneHypercover.sieve₁ p₁ p₂ = ⊤ := by
+  ext Y f
+  simp only [Sieve.top_apply, iff_true]
+  exact ⟨{ w := w, .. }, f, rfl, rfl⟩
+
+/-- The tautological 1-hypercover induced by `S : J.Cover X`. Its index type `I₀`
+is given by `S.Arrow` (i.e. all the morphisms in the sieve `S`), while `I₁` is given
+by all possible pullback cones. -/
+@[simps toPreOneHypercover]
+def oneHypercover : J.OneHypercover X where
+  toPreOneHypercover := S.preOneHypercover
+  mem₀ := by simp
+  mem₁ f₁ f₂ _ p₁ p₂ w := by simp [S.preOneHypercover_sieve₁ f₁ f₂ p₁ p₂ w]
+
+end Cover
 
 end GrothendieckTopology
 

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2023 Kim Liesinger. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Liesinger, Yaël Dillies
+Authors: Kim Morrison, Yaël Dillies
 -/
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Data.Set.Function
@@ -109,7 +109,6 @@ lemma MonotoneOn.image_Iic_subset (h : MonotoneOn f (Iic b)) : f '' Iic b ⊆ Ii
 
 lemma MonotoneOn.image_Icc_subset (h : MonotoneOn f (Icc a b)) : f '' Icc a b ⊆ Icc (f a) (f b) :=
   h.mapsTo_Icc.image_subset
-#align monotone_on.image_Icc_subset MonotoneOn.image_Icc_subset
 
 lemma AntitoneOn.image_Ici_subset (h : AntitoneOn f (Ici a)) : f '' Ici a ⊆ Iic (f a) :=
   h.mapsTo_Ici.image_subset
@@ -119,7 +118,6 @@ lemma AntitoneOn.image_Iic_subset (h : AntitoneOn f (Iic b)) : f '' Iic b ⊆ Ic
 
 lemma AntitoneOn.image_Icc_subset (h : AntitoneOn f (Icc a b)) : f '' Icc a b ⊆ Icc (f b) (f a) :=
   h.mapsTo_Icc.image_subset
-#align antitone_on.image_Icc_subset AntitoneOn.image_Icc_subset
 
 lemma StrictMonoOn.image_Ioi_subset (h : StrictMonoOn f (Ici a)) : f '' Ioi a ⊆ Ioi (f a) :=
   h.mapsTo_Ioi.image_subset
@@ -147,7 +145,6 @@ lemma Monotone.image_Iic_subset (h : Monotone f) : f '' Iic b ⊆ Iic (f b) :=
 
 lemma Monotone.image_Icc_subset (h : Monotone f) : f '' Icc a b ⊆ Icc (f a) (f b) :=
   (h.monotoneOn _).image_Icc_subset
-#align monotone.image_Icc_subset Monotone.image_Icc_subset
 
 lemma Antitone.image_Ici_subset (h : Antitone f) : f '' Ici a ⊆ Iic (f a) :=
   (h.antitoneOn _).image_Ici_subset
@@ -157,7 +154,6 @@ lemma Antitone.image_Iic_subset (h : Antitone f) : f '' Iic b ⊆ Ici (f b) :=
 
 lemma Antitone.image_Icc_subset (h : Antitone f) : f '' Icc a b ⊆ Icc (f b) (f a) :=
   (h.antitoneOn _).image_Icc_subset
-#align antitone.image_Icc_subset Antitone.image_Icc_subset
 
 lemma StrictMono.image_Ioi_subset (h : StrictMono f) : f '' Ioi a ⊆ Ioi (f a) :=
   (h.strictMonoOn _).image_Ioi_subset
@@ -242,6 +238,18 @@ lemma StrictAnti.image_Ioc_subset (h : StrictAnti f) : f '' Ioc a b ⊆ Ico (f b
 end PartialOrder
 
 namespace Set
+
+private lemma image_subtype_val_Ixx_Ixi {p q r : α → α → Prop} {a b : α} (c : {x // p a x ∧ q x b})
+    (h : ∀ {x}, r c x → p a x) :
+    Subtype.val '' {y : {x // p a x ∧ q x b} | r c.1 y.1} = {y : α | r c.1 y ∧ q y b} :=
+  (Subtype.image_preimage_val {x | p a x ∧ q x b} {y | r c.1 y}).trans <| by
+    ext; simp +contextual [@and_comm (r _ _), h]
+
+private lemma image_subtype_val_Ixx_Iix {p q r : α → α → Prop} {a b : α} (c : {x // p a x ∧ q x b})
+    (h : ∀ {x}, r x c → q x b) :
+    Subtype.val '' {y : {x // p a x ∧ q x b} | r y.1 c.1} = {y : α | p a y ∧ r y c.1} :=
+  (Subtype.image_preimage_val {x | p a x ∧ q x b} {y | r y c.1}).trans <| by
+    ext; simp +contextual [h]
 
 variable [Preorder α] {p : α → Prop}
 
@@ -350,18 +358,6 @@ lemma image_subtype_val_Iio_Ioi {a : α} (b : Iio a) : Subtype.val '' Ioi b = Io
 lemma image_subtype_val_Iio_Iio {a : α} (b : Iio a) : Subtype.val '' Iio b = Iio b.1 :=
   image_subtype_val_Ioi_Ioi (α := αᵒᵈ) _
 
-private lemma image_subtype_val_Ixx_Ixi {p q r : α → α → Prop} {a b : α} (c : {x // p a x ∧ q x b})
-    (h : ∀ {x}, r c x → p a x) :
-    Subtype.val '' {y : {x // p a x ∧ q x b} | r c.1 y.1} = {y : α | r c.1 y ∧ q y b} :=
-  (Subtype.image_preimage_val {x | p a x ∧ q x b} {y | r c.1 y}).trans <| by
-    ext; simp (config := { contextual := true }) [@and_comm (r _ _), h]
-
-private lemma image_subtype_val_Ixx_Iix {p q r : α → α → Prop} {a b : α} (c : {x // p a x ∧ q x b})
-    (h : ∀ {x}, r x c → q x b) :
-    Subtype.val '' {y : {x // p a x ∧ q x b} | r y.1 c.1} = {y : α | p a y ∧ r y c.1} :=
-  (Subtype.image_preimage_val {x | p a x ∧ q x b} {y | r y c.1}).trans <| by
-    ext; simp (config := { contextual := true}) [h]
-
 @[simp]
 lemma image_subtype_val_Icc_Ici {a b : α} (c : Icc a b) : Subtype.val '' Ici c = Icc c.1 b :=
   image_subtype_val_Ixx_Ixi c c.2.1.trans
@@ -435,18 +431,18 @@ lemma directedOn_le_Iic (b : α) : DirectedOn (· ≤ ·) (Iic b) :=
   fun _x hx _y hy ↦ ⟨b, le_rfl, hx, hy⟩
 
 lemma directedOn_le_Icc (a b : α) : DirectedOn (· ≤ ·) (Icc a b) :=
-  fun _x hx _y hy ↦ ⟨b, right_mem_Icc.2 $ hx.1.trans hx.2, hx.2, hy.2⟩
+  fun _x hx _y hy ↦ ⟨b, right_mem_Icc.2 <| hx.1.trans hx.2, hx.2, hy.2⟩
 
 lemma directedOn_le_Ioc (a b : α) : DirectedOn (· ≤ ·) (Ioc a b) :=
-  fun _x hx _y hy ↦ ⟨b, right_mem_Ioc.2 $ hx.1.trans_le hx.2, hx.2, hy.2⟩
+  fun _x hx _y hy ↦ ⟨b, right_mem_Ioc.2 <| hx.1.trans_le hx.2, hx.2, hy.2⟩
 
 lemma directedOn_ge_Ici (a : α) : DirectedOn (· ≥ ·) (Ici a) :=
   fun _x hx _y hy ↦ ⟨a, le_rfl, hx, hy⟩
 
 lemma directedOn_ge_Icc (a b : α) : DirectedOn (· ≥ ·) (Icc a b) :=
-  fun _x hx _y hy ↦ ⟨a, left_mem_Icc.2 $ hx.1.trans hx.2, hx.1, hy.1⟩
+  fun _x hx _y hy ↦ ⟨a, left_mem_Icc.2 <| hx.1.trans hx.2, hx.1, hy.1⟩
 
 lemma directedOn_ge_Ico (a b : α) : DirectedOn (· ≥ ·) (Ico a b) :=
-  fun _x hx _y hy ↦ ⟨a, left_mem_Ico.2 $ hx.1.trans_lt hx.2, hx.1, hy.1⟩
+  fun _x hx _y hy ↦ ⟨a, left_mem_Ico.2 <| hx.1.trans_lt hx.2, hx.1, hy.1⟩
 
 end Preorder

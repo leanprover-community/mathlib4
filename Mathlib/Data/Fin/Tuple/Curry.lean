@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Brendan Murphy
 -/
 import Mathlib.Data.Fin.Tuple.Basic
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Logic.Function.OfArity
 
 /-!
@@ -73,7 +73,7 @@ variable {n : ℕ} {p : Fin n → Type u} {τ : Type u}
 theorem curry_uncurry (f : Function.FromTypes p τ) : curry (uncurry f) = f := by
   induction n with
   | zero => rfl
-  | succ n ih => exact funext (ih $ f ·)
+  | succ n ih => exact funext (ih <| f ·)
 
 @[simp]
 theorem uncurry_curry (f : ((i : Fin n) → p i) → τ) :
