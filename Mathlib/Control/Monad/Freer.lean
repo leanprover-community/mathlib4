@@ -108,7 +108,7 @@ instance {F : Type u → Type v} : Monad (Freer F) where
   pure := Freer.pure
   bind := bindFree F
 
-instance FreeLawfulMonad {F : Type u → Type v} : LawfulMonad (Freer F) where
+instance {F : Type u → Type v} : LawfulMonad (Freer F) where
   bind_pure_comp x y := by
     simp [Functor.map, bind, pure]; induction y
     · case pure a => simp [bindFree, map, Pure.pure]
