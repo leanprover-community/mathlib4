@@ -153,6 +153,7 @@ jobs:
         BRANCH_NAME: ${{ github.head_ref }}
       run: |
         cd pr-branch
+        currentHash="$(git rev-parse HEAD)"
         PR="${{ github.event.pull_request.number }}"
         title="### PR summary"
 
@@ -192,8 +193,7 @@ jobs:
         else
           declDiff="$(printf '#### Declarations diff\n\n%s\n' "${declDiff}")"
         fi
-        git checkout "${BRANCH_NAME}"
-        currentHash="$(git rev-parse HEAD)"
+        git checkout "${currentHash}" --
         hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/commits/${currentHash}"
         printf 'hashURL: %s' "${hashURL}"
 
