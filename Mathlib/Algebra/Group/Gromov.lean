@@ -723,6 +723,7 @@ lemma lipschiz_norm_zero: LipschitzSemiNorm (S := S) (0) = 0 := by
 
 #synth IsStrictOrderedRing NNReal
 
+-- TODO - upstream to mathlib
 lemma lipschitz_attains_norm (f: G → ℂ) (hf: IsLipschitz f): LipschitzWith (LipschitzSemiNorm (G := G) f) f := by
   by_contra!
   have orig_this := this
@@ -796,41 +797,43 @@ lemma lipschitz_attains_norm (f: G → ℂ) (hf: IsLipschitz f): LipschitzWith (
   . rw [edist_nndist] at edist_ne_zero
     exact fun a ↦ edist_ne_zero (congrArg ENNReal.ofNNReal a)
 
-lemma lipschitz_norm_triangle (x y z: LipschitzH (G := G)): LipschitzSemiNorm (S := S) (x - z) ≤ LipschitzSemiNorm (S := S) (x - y) + LipschitzSemiNorm (S := S) (y - z) := by
+lemma lipschitz_norm_triangle (x y z: G → ℂ) (hx: IsLipschitz x) (hy: IsLipschitz y) (hz: IsLipschitz z): LipschitzSemiNorm (G := G) (x - z) ≤ LipschitzSemiNorm (G := G) (x - y) + LipschitzSemiNorm (G := G) (y - z) := by
   simp [LipschitzSemiNorm]
-
-
-  conv =>
-    lhs
-    dsimp [LipschitzWith]
-
-
-
-
   conv =>
     pattern x - z
     equals (x - y) + (y - z) =>
       field_simp
 
 
-
-
-  rw [lipschitz_add_tofun]
-
-
-  obtain ⟨X, hX⟩ := x.lipschitz
-  obtain ⟨Y, hY⟩ := y.lipschitz
-  obtain ⟨Z, hZ⟩ := z.lipschitz
-
-
-
-  have sum_norm_mem: (X + Y) + (Y + Z) ∈ { k: NNReal | LipschitzWith k ((x - y).toFun + (y - z).toFun) } := by
-    simp [LipschitzSemiNorm]
+  have sum_norm_mem: (LipschitzSemiNorm (x - y)) + (LipschitzSemiNorm (y - z)) ∈ { k: NNReal | LipschitzWith k ((x - y) + (y - z)) } := by
+    simp only [LipschitzSemiNorm]
     apply LipschitzWith.add
-    apply LipschitzWith.sub hX hY
-    apply LipschitzWith.sub hY hZ
+    .
+      apply lipschitz_attains_norm
+      simp [IsLipschitz]
+      simp [IsLipschitz] at hx
+      simp [IsLipschitz] at hy
+      obtain ⟨X, hX⟩ := hx
+      obtain ⟨Y, hY⟩ := hy
+      use X + Y
+      apply LipschitzWith.sub hX hY
+    .
+      apply lipschitz_attains_norm
+      simp [IsLipschitz]
+      simp [IsLipschitz] at hy
+      simp [IsLipschitz] at hz
+      obtain ⟨Y, hY⟩ := hy
+      obtain ⟨Z, hZ⟩ := hz
+      use Y + Z
+      apply LipschitzWith.sub hY hZ
 
-
+  have sinf_le_sum := csInf_le (by simp) sum_norm_mem
+  simp [LipschitzSemiNorm] at sinf_le_sum
+  conv at sinf_le_sum =>
+    pattern x - z
+    equals (x - y) + (y - z) =>
+      field_simp
+  exact sinf_le_sum
 
 
 
