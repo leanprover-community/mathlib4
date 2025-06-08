@@ -69,22 +69,6 @@ theorem _root_.Irreducible.isPrimitive [NoZeroDivisors R]
   obtain ⟨s, hs, rfl⟩ := Polynomial.isUnit_iff.mp H
   simp [hq, Polynomial.natDegree_C_mul hr] at hp'
 
-/-- If the coefficients of `p` geneate the whole ring, then `p` is primitive. -/
-theorem isPrimitive_of_span_coeffs_eq_top {p : R[X]} (h : Ideal.span (p.coeffs.toSet) = ⊤) :
-    IsPrimitive p := by
-  by_contra h
-  simp only [IsPrimitive, not_forall, Classical.not_imp] at h
-  obtain ⟨r, hr, _⟩ := h
-  rw [C_dvd_iff_dvd_coeff] at hr
-  have : Ideal.span (p.coeffs.toSet) ≤ Ideal.span {r} := by
-    rw [Ideal.span_le]
-    intro a ha
-    rw [Finset.mem_coe, mem_coeffs_iff] at ha
-    rcases ha with ⟨n, _, hn⟩
-    rw [SetLike.mem_coe, Ideal.mem_span_singleton, hn]
-    exact hr n
-  simp_all
-
 end Primitive
 
 variable {R : Type*} [CommRing R] [IsDomain R]
@@ -475,44 +459,5 @@ theorem degree_gcd_le_right (p) {q : R[X]} (hq : q ≠ 0) : (gcd p q).degree ≤
   exact degree_gcd_le_left hq p
 
 end NormalizedGCDMonoid
-
-section IsBezout
-
-variable [IsBezout R]
-
-omit [IsDomain R] in
-/-- The polynomial `p` is primitive if and only if the coefficients of `p` geneate the whole ring.
--/
-theorem isPrimitive_iff_span_coeffs_eq_top (p : R[X]) :
-    IsPrimitive p ↔ Ideal.span (p.coeffs.toSet) = ⊤ := by
-  refine ⟨?_, fun a ↦ isPrimitive_of_span_coeffs_eq_top a⟩
-  contrapose!
-  intro h
-  have : Submodule.IsPrincipal (Ideal.span (p.coeffs.toSet)) := by
-    apply IsBezout.isPrincipal_of_FG
-    use p.coeffs
-  simp only [IsPrimitive, not_forall]
-  let r := Submodule.IsPrincipal.generator (Ideal.span (p.coeffs.toSet))
-  use r
-  have hr1 : C r ∣ p := by
-    rw [C_dvd_iff_dvd_coeff]
-    intro n
-    have : p.coeff n ∈ Ideal.span (p.coeffs.toSet) := by
-      by_cases h_coeff : p.coeff n ≠ 0;
-      · rw [← Ideal.span_singleton_le_iff_mem]
-        gcongr
-        simp only [Set.singleton_subset_iff, Finset.mem_coe]
-        exact coeff_mem_coeffs p n h_coeff
-      · simp_all
-    rw [Submodule.IsPrincipal.mem_iff_eq_smul_generator] at this
-    obtain ⟨a, ha⟩ := this
-    simp [ha, r]
-  have hr2 : ¬IsUnit r := by
-    by_contra hr
-    apply h
-    simp_all [← Ideal.span_singleton_eq_top, r]
-  exact not_forall.mp fun a ↦ hr2 (a hr1)
-
-end IsBezout
 
 end Polynomial
