@@ -135,7 +135,7 @@ theorem quadratic_ne_zero_of_discrim_ne_sq (h : ∀ s : R, discrim a b c ≠ s^2
   rw [← ne_eq, sq]
   exact _root_.quadratic_ne_zero_of_discrim_ne_sq h _
 
-theorem quadratic_roots_of_discrim_eq_zero [NeZero (2 : R)] [DecidableEq R] (ha : a ≠ 0)
+theorem quadratic_roots_of_discrim_eq_sq [NeZero (2 : R)] [DecidableEq R] (ha : a ≠ 0)
     {z s : R} (h : discrim a b c = s * s) :
     z ∈ (a • X ^ 2 + b • X + C c).roots ↔ z = (-b + s) / (2 * a) ∨ z = (-b - s) / (2 * a) := by
   rw [Polynomial.mem_roots (by
