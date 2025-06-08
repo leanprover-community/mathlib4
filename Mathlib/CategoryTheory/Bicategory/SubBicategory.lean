@@ -1,38 +1,25 @@
 /-
-Copyright (c) 2024 Calle Sönne. All rights reserved.
+Copyright (c) 2025 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
-
-import Mathlib.CategoryTheory.Bicategory.Basic
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
-import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.CategoryTheory.EqToHom
 
 /-!
 
-# Sub-bicategories
+# Induced bicategories
 
-In this file we develop API for constructing a locally full sub-bicategory of a
-bicategory.
-
-Ideas:
-- Should have: inclusion of objects & inclusion of morphisms
-
+In this file we develop API for constructing a full sub-bicategory of a bicategory.
 
 -/
 
 namespace CategoryTheory.Bicategory
 
-open Category
-
-universe w v u w₁ v₁ u₁
-
 variable {B : Type*} (C : Type*) [Bicategory C] (F : B → C)
 
-/-- `InducedCategory D F`, where `F : C → D`, is a typeclass synonym for `C`,
-which provides a category structure so that the morphisms `X ⟶ Y` are the morphisms
-in `D` from `F X` to `F Y`.
+/-- `InducedBicategory B C`, where `F : B → C`, is a typeclass synonym for `B`. This is given
+a bicategory structure where the 1-morphisms `X ⟶ Y` are the 1-morphisms in `C` from `F X` to
+`F Y`, and the 2-morphisms `f ⟶ g` are also the 2-morphisms in `C` from `f` to `g`.
 -/
 @[nolint unusedArguments]
 def InducedBicategory (_F : B → C) : Type _ :=
@@ -62,7 +49,7 @@ section
 
 attribute [-simp] eqToIso_refl
 
-/-- The forgetful functor from an induced category to the original category,
+/-- The forgetful functor from an induced bicategory to the original bicategory,
 forgetting the extra data.
 -/
 @[simps]
