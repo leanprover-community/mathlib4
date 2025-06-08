@@ -132,8 +132,8 @@ def toEndHom [N.Normal] : G →* End (G ⧸ₐ N) where
   map_one' := by
     apply Action.hom_ext
     ext (x : G ⧸ N)
-    obtain ⟨x⟩ := x
-    simp; rfl
+    induction x using Quotient.inductionOn
+    simp
   map_mul' σ τ := by
     apply Action.hom_ext
     ext (x : G ⧸ N)
