@@ -240,39 +240,30 @@ open ShortComplex
 def shortComplexH0 : ShortComplex (ModuleCat k) :=
   mk _ _ (subtype_comp_dZero A)
 
-/-- The arrow `A --dZero--> Fun(G, A)` is isomorphic to the differential
-`(inhomogeneousCochains A).d 0 1` of the complex of inhomogeneous cochains of `A`. -/
-@[simps! hom_left hom_right inv_left inv_right]
-def dZeroArrowIso : Arrow.mk ((inhomogeneousCochains A).d 0 1) ≅ Arrow.mk (dZero A) :=
-  Arrow.isoMk (zeroCochainsIso A) (oneCochainsIso A) (comp_dZero_eq A)
-
 /-- The short complex `A --dZero--> Fun(G, A) --dOne--> Fun(G × G, A)`. -/
 def shortComplexH1 : ShortComplex (ModuleCat k) :=
   mk (dZero A) (dOne A) (dZero_comp_dOne A)
-
-/-- The short complex `A --dZero--> Fun(G, A) --dOne--> Fun(G × G, A)` is isomorphic to the 1st
-short complex associated to the complex of inhomogeneous cochains of `A`. -/
-@[simps! hom_τ₁ hom_τ₂ hom_τ₃ inv_τ₁ inv_τ₂ inv_τ₃]
-def shortComplexH1Iso : (inhomogeneousCochains A).sc 1 ≅ shortComplexH1 A :=
-    (inhomogeneousCochains A).isoSc' 0 1 2 (by simp) (by simp) ≪≫
-    isoMk (zeroCochainsIso A) (oneCochainsIso A) (twoCochainsIso A)
-      (comp_dZero_eq A) (comp_dOne_eq A)
 
 /-- The short complex `Fun(G, A) --dOne--> Fun(G × G, A) --dTwo--> Fun(G × G × G, A)`. -/
 def shortComplexH2 : ShortComplex (ModuleCat k) :=
   mk (dOne A) (dTwo A) (dOne_comp_dTwo A)
 
-/-- The short complex `A --dZero--> Fun(G, A) --dOne--> Fun(G × G, A)` is isomorphic to the 1st
-short complex associated to the complex of inhomogeneous cochains of `A`. -/
-@[simps! hom_τ₁ hom_τ₂ hom_τ₃ inv_τ₁ inv_τ₂ inv_τ₃]
-def shortComplexH2Iso : (inhomogeneousCochains A).sc 2 ≅ shortComplexH2 A :=
-    (inhomogeneousCochains A).isoSc' 1 2 3 (by simp) (by simp) ≪≫
-    isoMk (oneCochainsIso A) (twoCochainsIso A) (threeCochainsIso A)
-      (comp_dOne_eq A) (comp_dTwo_eq A)
-
 end Differentials
 
 section Cocycles
+
+/-- The 1-cocycles `Z¹(G, A)` of `A : Rep k G`, defined as the kernel of the map
+`Fun(G, A) → Fun(G × G, A)` sending `(f, (g₁, g₂)) ↦ ρ_A(g₁)(f(g₂)) - f(g₁g₂) + f(g₁).` -/
+@[deprecated "Use cocycles A 1 instead." (since := "2025-06-08")]
+def oneCocycles : Submodule k (G → A) := LinearMap.ker (dOne A).hom
+
+/-- The 2-cocycles `Z²(G, A)` of `A : Rep k G`, defined as the kernel of the map
+`Fun(G × G, A) → Fun(G × G × G, A)` sending
+`(f, (g₁, g₂, g₃)) ↦ ρ_A(g₁)(f(g₂, g₃)) - f(g₁g₂, g₃) + f(g₁, g₂g₃) - f(g₁, g₂).` -/
+@[deprecated "Use cocycles A 2 instead." (since := "2025-06-08")]
+def twoCocycles : Submodule k (G × G → A) := LinearMap.ker (dTwo A).hom
+
+section oneCocycles
 
 instance : FunLike (cocycles A 1) G A :=
   ⟨iCocycles A 1 ≫ (oneCochainsIso A).hom, (ModuleCat.mono_iff_injective _).1 inferInstance⟩
@@ -387,6 +378,36 @@ def oneCocyclesIsoOfIsTrivial [hA : A.IsTrivial] :
     left_inv _ := oneCocycles_ext <| fun _ => by simp
     right_inv _ := by ext; simp }
 
+@[deprecated (since := "2025-05-09")]
+noncomputable alias oneCocyclesLequivOfIsTrivial := oneCocyclesIsoOfIsTrivial
+
+end oneCocycles
+section oneCocycles'
+
+@[deprecated (since := "2025-06-09")]
+alias oneCocycles.coe_mk := coe_mkOneCocycles
+
+@[deprecated (since := "2025-06-09")]
+alias oneCocycles.val_eq_coe := iOneCocycles_apply
+
+@[deprecated (since := "2025-06-09")]
+alias mem_oneCocycles_def := memOneCocycles_def
+
+@[deprecated (since := "2025-06-09")]
+alias mem_oneCocycles_iff := memOneCocycles_iff
+
+@[deprecated (since := "2025-06-09")]
+alias dZero_apply_mem_oneCocycles := memOneCocycles_dZero_apply
+
+@[deprecated (since := "2025-06-09")]
+alias oneCocycles_map_mul_of_isTrivial := memOneCocycles_map_mul_of_isTrivial
+
+@[deprecated (since := "2025-06-09")]
+alias mem_oneCocycles_of_addMonoidHom := memOneCocycles_of_addMonoidHom
+
+end oneCocycles'
+section twoCocycles
+
 instance : FunLike (cocycles A 2) (G × G) A :=
   ⟨iCocycles A 2 ≫ (twoCochainsIso A).hom, (ModuleCat.mono_iff_injective _).1 inferInstance⟩
 
@@ -475,89 +496,29 @@ theorem memTwoCocycles_dOne_apply (x : G → A) :
 end twoCocycles
 section twoCocycles'
 
-instance : FunLike (cocycles A 2) (G × G) A :=
-  ⟨iCocycles A 2 ≫ (twoCochainsIso A).hom, (ModuleCat.mono_iff_injective _).1 inferInstance⟩
+@[deprecated (since := "2025-06-09")]
+alias twoCocycles.coe_mk := coe_mkTwoCocycles
 
-variable (A) in
-/-- The natural inclusion `cocycles A 2 ⟶ (inhomogeneousCochains A).X 2`, defined to be
-`(Fin 2 → G) → A`, composed with an isomorphism to `G × G → A`. -/
-def iTwoCocycles : cocycles A 2 ⟶ ModuleCat.of k (G × G → A) :=
-  iCocycles A 2 ≫ (twoCochainsIso A).hom
+@[deprecated (since := "2025-06-09")]
+alias twoCocycles.val_eq_coe := iTwoCocycles_apply
 
-@[simp]
-lemma iTwoCocycles_apply (f : cocycles A 2) :
-    iTwoCocycles A f = f := rfl
+@[deprecated (since := "2025-06-09")]
+alias mem_twoCocycles_def := memTwoCocycles_def
 
-/-- Given a `G`-representation `A`, we say a function `f : G × G → A` is a member of the 2-cocycles
-if the function `(g, h, j) ↦ A.ρ(g)(f(h, j)) - f(gh, j) + f(g, hj) - f(g, h)` is 0. -/
-abbrev MemTwoCocycles (f : G × G → A) := dTwo A f = 0
+@[deprecated (since := "2025-06-09")]
+alias mem_twoCocycles_iff := memTwoCocycles_iff
 
-/-- Given a `G`-representation `A`, this produces an element of the 2-cocycles of `A` given a
-function `f : G × G → A` satisfying `MemTwoCocycles`. -/
-def mkTwoCocycles (f : G × G → A) (hf : MemTwoCocycles f) : cocycles A 2 :=
-  ((inhomogeneousCochains A).sc 2).cyclesMk ((twoCochainsIso A).inv f) <| by
-    apply (ModuleCat.mono_iff_injective
-      ((inhomogeneousCochains A).XIsoOfEq (CochainComplex.next ℕ 2)).hom).1 inferInstance
-    have := congr($((inhomogeneousCochains A).d_comp_XIsoOfEq_hom
-      (CochainComplex.next _ 2) 2) ((twoCochainsIso A).inv f))
-    have := congr($((CommSq.horiz_inv ⟨comp_dTwo_eq A⟩).w) f)
-    simp_all [-HomologicalComplex.d_comp_XIsoOfEq_hom]
+@[deprecated (since := "2025-06-09")]
+alias twoCocycles_map_one_fst := memTwoCocycles_map_one_fst
 
-theorem memTwoCocycles (f : cocycles A 2) :
-    MemTwoCocycles f := by
-  simpa using congr($(congr(iCocycles A 2 ≫ $(comp_dTwo_eq A))) f)
+@[deprecated (since := "2025-06-09")]
+alias twoCocycles_map_one_snd := memTwoCocycles_map_one_snd
 
-theorem iTwoCocycles_mkTwoCocycles (f : G × G → A) (hf) :
-    iTwoCocycles A (mkTwoCocycles f hf) = f := by
-  apply (ModuleCat.mono_iff_injective (twoCochainsIso A).inv).1 inferInstance
-  simpa [iTwoCocycles] using ((inhomogeneousCochains A).sc 2).i_cyclesMk _ _
+@[deprecated (since := "2025-06-09")]
+alias twoCocycles_ρ_map_inv_sub_map_inv := memTwoCocycles_ρ_map_inv_sub_map_inv
 
-@[simp]
-theorem coe_mkTwoCocycles (f : G × G → A) (hf) :
-    (mkTwoCocycles f hf : G × G → A) = f := iTwoCocycles_mkTwoCocycles _ _
-
-@[ext]
-theorem twoCocycles_ext' {f₁ f₂ : cocycles A 2} (h : ∀ g h : G, f₁ (g, h) = f₂ (g, h)) : f₁ = f₂ :=
-  DFunLike.ext f₁ f₂ (Prod.forall.2 h)
-
-@[simp]
-theorem mkTwoCocycles_coe (f : cocycles A 2) :
-    mkTwoCocycles (f : G × G → A) (memTwoCocycles f) = f := by ext; simp
-
-theorem memTwoCocycles_def (f : G × G → A) :
-    MemTwoCocycles f ↔
-      ∀ g h j : G, A.ρ g (f (h, j)) - f (g * h, j) + f (g, h * j) - f (g, h) = 0 :=
-  LinearMap.mem_ker.trans <| by
-    simp_rw [funext_iff, dTwo_hom_apply, Prod.forall]
-    rfl
-
-theorem memTwoCocycles_iff (f : G × G → A) :
-    MemTwoCocycles f ↔ ∀ g h j : G,
-      f (g * h, j) + f (g, h) =
-        A.ρ g (f (h, j)) + f (g, h * j) := by
-  simp_rw [memTwoCocycles_def, sub_eq_zero, sub_add_eq_add_sub, sub_eq_iff_eq_add, eq_comm,
-    add_comm (f (_ * _, _))]
-
-theorem memTwoCocycles_map_one_fst (f : G × G → A) (hf : MemTwoCocycles f) (g : G) :
-    f (1, g) = f (1, 1) := by
-  have := ((memTwoCocycles_iff f).1 hf 1 1 g).symm
-  simpa only [map_one, Module.End.one_apply, one_mul, add_right_inj, this]
-
-theorem memTwoCocycles_map_one_snd (f : G × G → A) (hf : MemTwoCocycles f) (g : G) :
-    f (g, 1) = A.ρ g (f (1, 1)) := by
-  have := (memTwoCocycles_iff f).1 hf g 1 1
-  simpa only [mul_one, add_left_inj, this]
-
-lemma memTwoCocycles_ρ_map_inv_sub_map_inv (f : G × G → A) (hf : MemTwoCocycles f) (g : G) :
-    A.ρ g (f (g⁻¹, g)) - f (g, g⁻¹)
-      = f (1, 1) - f (g, 1) := by
-  have := (memTwoCocycles_iff f).1 hf g g⁻¹ g
-  simp only [mul_inv_cancel, inv_mul_cancel, memTwoCocycles_map_one_fst f hf g] at this
-  exact sub_eq_sub_iff_add_eq_add.2 this.symm
-
-theorem memTwoCocycles_dOne_apply (x : G → A) :
-    MemTwoCocycles (dOne A x) :=
-  congr($(dOne_comp_dTwo A) x)
+@[deprecated (since := "2025-06-09")]
+alias dOne_apply_mem_twoCocycles := memTwoCocycles_dOne_apply
 
 end twoCocycles'
 
@@ -1015,6 +976,12 @@ instance : Mono (shortComplexH0 A).f := by
   rw [ModuleCat.mono_iff_injective]
   apply Submodule.injective_subtype
 
+/-- The arrow `A --dZero--> Fun(G, A)` is isomorphic to the differential
+`(inhomogeneousCochains A).d 0 1` of the complex of inhomogeneous cochains of `A`. -/
+@[simps! hom_left hom_right inv_left inv_right]
+def dZeroArrowIso : Arrow.mk ((inhomogeneousCochains A).d 0 1) ≅ Arrow.mk (dZero A) :=
+  Arrow.isoMk (zeroCochainsIso A) (oneCochainsIso A) (comp_dZero_eq A)
+
 lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
   rw [ShortComplex.moduleCat_exact_iff]
   intro (x : A) (hx : dZero _ x = 0)
@@ -1113,6 +1080,13 @@ end H0
 section H1
 open ShortComplex
 
+/-- The short complex `A --dZero--> Fun(G, A) --dOne--> Fun(G × G, A)` is isomorphic to the 1st
+short complex associated to the complex of inhomogeneous cochains of `A`. -/
+def shortComplexH1Iso : (inhomogeneousCochains A).sc 1 ≅ shortComplexH1 A :=
+    (inhomogeneousCochains A).isoSc' 0 1 2 (by simp) (by simp) ≪≫
+    isoMk (zeroCochainsIso A) (oneCochainsIso A) (twoCochainsIso A)
+      (comp_dZero_eq A) (comp_dOne_eq A)
+
 /-- The quotient map `Z¹(G, A) → H¹(G, A).` -/
 abbrev H1π : cocycles A 1 ⟶ groupCohomology A 1 := groupCohomologyπ A 1
 
@@ -1166,6 +1140,14 @@ end H1
 
 section H2
 open ShortComplex
+
+/-- The short complex `A --dZero--> Fun(G, A) --dOne--> Fun(G × G, A)` is isomorphic to the 1st
+short complex associated to the complex of inhomogeneous cochains of `A`. -/
+@[simps! hom_τ₁ hom_τ₂ hom_τ₃ inv_τ₁ inv_τ₂ inv_τ₃]
+def shortComplexH2Iso : (inhomogeneousCochains A).sc 2 ≅ shortComplexH2 A :=
+    (inhomogeneousCochains A).isoSc' 1 2 3 (by simp) (by simp) ≪≫
+    isoMk (oneCochainsIso A) (twoCochainsIso A) (threeCochainsIso A)
+      (comp_dOne_eq A) (comp_dTwo_eq A)
 
 /-- The quotient map `Z²(G, A) → H²(G, A).` -/
 abbrev H2π : cocycles A 2 ⟶ groupCohomology A 2 := groupCohomologyπ A 2
