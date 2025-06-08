@@ -124,7 +124,7 @@ open Classical in
 /-- Dehomogenisation of a polynomial, e.g. `X²+2XY+3Y² ↦ X²+2X+3`. The variable to be removed
 is specified. -/
 noncomputable def dehomogenise {σ R : Type*} [CommSemiring R] (i : σ) :
-    MvPolynomial σ R →ₐ[R] MvPolynomial { j // j ≠ i } R :=
+    MvPolynomial σ R →ₐ[R] MvPolynomial { k // k ≠ i } R :=
   aeval fun j ↦ if H : j = i then 1 else X ⟨j, H⟩
 
 theorem dehomogenise_C {σ R : Type*} [CommSemiring R] (i : σ) (r : R) :
@@ -135,7 +135,7 @@ theorem dehomogenise_X_self {σ R : Type*} [CommSemiring R] (i : σ) :
     dehomogenise (R:=R) i (X i) = 1 := by
   rw [dehomogenise, aeval_X, dif_pos rfl]
 
-@[simp] theorem dehomogenise_X {σ R : Type*} [CommSemiring R] {i : σ} (j : {j // j ≠ i}) :
+@[simp] theorem dehomogenise_X {σ R : Type*} [CommSemiring R] {i : σ} (j : {k // k ≠ i}) :
     dehomogenise (R:=R) i (X j) = X j := by
   rw [dehomogenise, aeval_X, dif_neg]
 
@@ -153,7 +153,7 @@ theorem dehomogenise_X_powers {σ R : Type*} [CommSemiring R] (i : σ)
 
 /-- Map `Xⱼ/Xᵢ` to `Xⱼ`, contracting away the variable `Xᵢ`. -/
 noncomputable def contract {σ : Type*} (R : Type*) [CommRing R] (i : σ) :
-    Away (homogeneousSubmodule σ R) (X i) →ₐ[R] MvPolynomial { j // j ≠ i } R where
+    Away (homogeneousSubmodule σ R) (X i) →ₐ[R] MvPolynomial { k // k ≠ i } R where
   toFun p := Quotient.liftOn p (fun q ↦ q.num.val.dehomogenise i) fun q₁ q₂ hq ↦
     let ⟨x, hx⟩ := r_iff_exists.1 (mk_eq_mk_iff.1 hq)
     have := congr_arg (dehomogenise i) hx
@@ -176,7 +176,7 @@ noncomputable def contract {σ : Type*} (R : Type*) [CommRing R] (i : σ) :
 
 /-- Map `Xⱼ` to `Xⱼ/Xᵢ`, expanding to the variable `Xᵢ`. -/
 noncomputable def expand {σ : Type*} (R : Type*) [CommRing R] (i : σ) :
-    MvPolynomial { j // j ≠ i } R →ₐ[R] Away (homogeneousSubmodule σ R) (X i) :=
+    MvPolynomial { k // k ≠ i } R →ₐ[R] Away (homogeneousSubmodule σ R) (X i) :=
   aeval fun j ↦ .mk _ (isHomogeneous_X ..) 1 (X j) (isHomogeneous_X ..)
 
 theorem expand_C {σ R : Type*} [CommRing R] (i : σ) (r : R) :
@@ -232,7 +232,7 @@ theorem expand_dehomogenise_of_homogeneous {σ R : Type*} [CommRing R] (i : σ) 
 
 /-- Map `Xⱼ` to `Xⱼ/Xᵢ`. -/
 @[simps!] noncomputable def algEquivAway {σ : Type*} (R : Type*) [CommRing R] (i : σ) :
-    Away (homogeneousSubmodule σ R) (X i) ≃ₐ[R] MvPolynomial { j // j ≠ i } R where
+    Away (homogeneousSubmodule σ R) (X i) ≃ₐ[R] MvPolynomial { k // k ≠ i } R where
   invFun := expand R i
   left_inv p := by
     change expand R i (contract R i p) = p
@@ -303,7 +303,7 @@ instance isLocalization_away_dehomogenise {σ : Type*} (R : Type*) [CommRing R] 
 instance isLocalization_away_dehomogenise' {σ : Type*} (R : Type*) [CommRing R] (i j : σ) :
     IsLocalization.Away ((algEquivAway R i :
         Away (homogeneousSubmodule σ R) (X i) →+*
-          MvPolynomial { j // j ≠ i } R) (expand R i (dehomogenise i (X j))))
+          MvPolynomial { k // k ≠ i } R) (expand R i (dehomogenise i (X j))))
       (Localization.Away (dehomogenise (R:=R) i (X j))) :=
   isLocalization_away_dehomogenise ..
 
@@ -341,7 +341,7 @@ open CategoryTheory
 
 /-- Re-index an affine open cover along an equivalence `e : ι ≃ C.J` and equivalences
 `new_obj i ≅ C.obj (e i)`. -/
-noncomputable def AlgebraicGeometry.Scheme.AffineOpenCover.equiv {X : Scheme.{u}}
+@[simps!] noncomputable def AlgebraicGeometry.Scheme.AffineOpenCover.equiv {X : Scheme.{u}}
       (C : AffineOpenCover.{w} X) {ι : Type v} (e : ι ≃ C.J)
       (new_obj : ι → CommRingCat.{u}) (new_e : (i : ι) → C.obj (e i) ≅ new_obj i) :
     AffineOpenCover.{v} X where
@@ -359,28 +359,67 @@ noncomputable def AlgebraicGeometry.Scheme.AffineOpenCover.equiv {X : Scheme.{u}
     ⟩
 
 /-- Re-index an affine open cover along an equivalence `ι ≃ C.J`. -/
-def AlgebraicGeometry.Scheme.OpenCover.equiv {X : Scheme.{u}}
-    (C : OpenCover.{w} X) {ι : Type v} (e : ι ≃ C.J) : OpenCover.{v} X where
+@[simps!] noncomputable def AlgebraicGeometry.Scheme.AffineOpenCover.equivJ {X : Scheme.{u}}
+      (C : AffineOpenCover.{w} X) {ι : Type v} (e : ι ≃ C.J) : AffineOpenCover.{v} X :=
+  C.equiv e (C.obj <| e ·) (fun _ ↦ Iso.refl _)
+
+/-- Re-index an open cover along an equivalence `e : ι ≃ C.J` and equivalences
+`new_obj i ≅ C.obj (e i)`. -/
+@[simps!] noncomputable def AlgebraicGeometry.Scheme.OpenCover.equiv {X : Scheme.{u}}
+      (C : OpenCover.{w} X) {ι : Type v} (e : ι ≃ C.J)
+      (new_obj : ι → Scheme.{u}) (new_e : (i : ι) → new_obj i ≅ C.obj (e i)) :
+    OpenCover.{v} X where
   J := ι
-  obj := (C.obj <| e ·)
-  map := (C.map <| e ·)
+  obj := new_obj
+  map i := (new_e i).hom ≫ C.map (e i)
   f := (e.symm <| C.f ·)
-  covers := (by rw [e.apply_symm_apply]; exact C.covers ·)
+  covers x := let ⟨y, hy⟩ := C.covers x
+    ⟨ConcreteCategory.hom (eqToHom (by simp) ≫ (new_e _).inv).base y, by
+      rw [← ConcreteCategory.comp_apply, ← Scheme.comp_base, Category.assoc,
+        ← Category.assoc (new_e _).inv, Iso.inv_hom_id,  Category.id_comp]
+      convert hy
+      exact eq_of_heq <| (eqToHom_comp_heq ..).trans <| by rw [e.apply_symm_apply]
+    ⟩
+
+/-- Re-index an affine open cover along an equivalence `ι ≃ C.J`. -/
+@[simps!] noncomputable def AlgebraicGeometry.Scheme.OpenCover.equivJ {X : Scheme.{u}}
+    (C : OpenCover.{w} X) {ι : Type v} (e : ι ≃ C.J) : OpenCover.{v} X :=
+  C.equiv e (C.obj <| e ·) (fun _ ↦ Iso.refl _)
 
 namespace CategoryTheory.Limits
 
+@[simps!]
 noncomputable def pullback.iso {C : Type u} [Category.{v} C] [HasPullbacks C] {X₁ X₂ S₁ S₂ T : C}
       (f₁ : S₁ ⟶ T) (f₂ : S₂ ⟶ T) (e₁ : X₁ ≅ S₁) (e₂ : X₂ ≅ S₂) :
     pullback (e₁.hom ≫ f₁) (e₂.hom ≫ f₂) ≅ pullback f₁ f₂ where
   hom := pullback.map _ _ _ _ e₁.hom e₂.hom (𝟙 T) (Category.comp_id _) (Category.comp_id _)
   inv := pullback.map _ _ _ _ e₁.inv e₂.inv (𝟙 T) (by aesop) (by aesop)
 
+@[simps!]
 noncomputable def pullback.iso' {C : Type u} [Category.{v} C] [HasPullbacks C] {X₁ X₂ S₁ S₂ T : C}
       {f₁ : S₁ ⟶ T} {f₂ : S₂ ⟶ T} {g₁ : X₁ ⟶ T} {g₂ : X₂ ⟶ T} (e₁ : X₁ ≅ S₁) (e₂ : X₂ ≅ S₂)
       (h₁ : e₁.hom ≫ f₁ = g₁) (h₂ : e₂.hom ≫ f₂ = g₂) :
     pullback g₁ g₂ ≅ pullback f₁ f₂ where
   hom := pullback.map _ _ _ _ e₁.hom e₂.hom (𝟙 T) (by aesop) (by aesop)
   inv := pullback.map _ _ _ _ e₁.inv e₂.inv (𝟙 T) (by aesop) (by aesop)
+
+section pullback_over
+
+noncomputable instance pullback_over {C : Type u} [Category.{v} C] [HasPullbacks C]
+      {X₁ X₂ Y S : C} (f₁ : X₁ ⟶ Y) (f₂ : X₂ ⟶ Y)
+      [OverClass X₁ S] [OverClass X₂ S] [OverClass Y S] [HomIsOver f₁ S] [HomIsOver f₂ S] :
+    OverClass (pullback f₁ f₂) S :=
+  ⟨pullback.fst _ _ ≫ X₁ ↘ S⟩
+
+variable {C : Type u} [Category.{v} C] [HasPullbacks C] {X₁ X₂ Y S : C} (f₁ : X₁ ⟶ Y) (f₂ : X₂ ⟶ Y)
+  [OverClass X₁ S] [OverClass X₂ S] [OverClass Y S] [HomIsOver f₁ S] [HomIsOver f₂ S]
+
+theorem pullback_fst_over : pullback.fst _ _ ≫ X₁ ↘ S = pullback f₁ f₂ ↘ S := rfl
+
+theorem pullback_snd_over : pullback.snd _ _ ≫ X₂ ↘ S = pullback f₁ f₂ ↘ S := by
+  rw [← pullback_fst_over, ← comp_over f₁, pullback.condition_assoc, comp_over f₂]
+
+end pullback_over
 
 end CategoryTheory.Limits
 
@@ -399,21 +438,33 @@ attribute [local instance] gradedAlgebra
 /-- `ℙ(n; S)` is the projective `n`-space over `S`.
 Note that `n` is an arbitrary index type (e.g. `Fin m`). -/
 def ProjectiveSpace (n : Type v) (S : Scheme.{max u v}) : Scheme.{max u v} :=
-  pullback (terminal.from S) (terminal.from (Proj (homogeneousSubmodule n (ULift.{max u v} ℤ))))
+  -- S ⨯ Proj (homogeneousSubmodule n (ULift.{max u v} ℤ))
+  ((Over.star S).obj (Proj (homogeneousSubmodule n (ULift.{max u v} ℤ)))).left
+  -- pullback (terminal.from S) (terminal.from (Proj (homogeneousSubmodule n (ULift.{max u v} ℤ))))
+
+@[inherit_doc] scoped notation "ℙ("n"; "S")" => ProjectiveSpace n S
+
+lemma projectiveSpace_def (n : Type v) (S : Scheme.{max u v}) :
+    ℙ(n; S) = (S ⨯ Proj (homogeneousSubmodule n (ULift.{max u v} ℤ))) :=
+  rfl
 
 /-- The canonical affine open cover of `Proj (MvPolynomial σ R)`. The cover is indexed by `σ`,
-and each `i : σ` corresponds to `Spec (MvPolynomial {j // j ≠ i} R)`. -/
-@[simps! -isSimp] def Proj.openCoverMvPolynomial (σ : Type*) (R : Type*) [CommRing R] :
+and each `i : σ` corresponds to `Spec (MvPolynomial {k // k ≠ i} R)`. -/
+@[simps!] def Proj.openCoverMvPolynomial (σ : Type*) (R : Type*) [CommRing R] :
     (Proj (homogeneousSubmodule σ R)).AffineOpenCover :=
   (Proj.openCoverOfISupEqTop
       (homogeneousSubmodule σ R) .X (fun _ ↦ isHomogeneous_X _ _) (fun _ ↦ zero_lt_one)
       (by rw [homogeneous_eq_span, Ideal.span_le, Set.range_subset_iff]; exact
         fun i ↦ Ideal.subset_span <| Set.mem_range_self _)).equiv
-    (Equiv.refl σ) (.of <| MvPolynomial {j // j ≠ ·} R) (algEquivAway R · |>.toCommRingCatIso)
+    (Equiv.refl σ) (.of <| MvPolynomial {k // k ≠ ·} R) (algEquivAway R · |>.toCommRingCatIso)
 
-/-- The intersection (i.e. pullback) of the basic opens on `ℙ(n; R)` defined by `Xᵢ` and `Xⱼ` is
-`Spec R[n,1/Xⱼ]`. -/
-def Proj.pullbackOpenCoverMvPolynomial {σ : Type*} (R : Type*) [CommRing R] (i j : σ) :
+lemma Proj.openCoverMvPolynomial_obj {σ R : Type*} [CommRing R] (i : σ) :
+    (Proj.openCoverMvPolynomial σ R).obj i = .of (MvPolynomial {k // k ≠ i} R) :=
+  rfl
+
+/-- The intersection (i.e. pullback) of the basic opens on `ℙ(n; Spec R)` defined by `Xᵢ` and `Xⱼ`
+is `Spec R[n,1/Xⱼ]`. -/
+@[simps!] def Proj.pullbackOpenCoverMvPolynomial {σ : Type*} (R : Type*) [CommRing R] (i j : σ) :
     pullback (openCoverMvPolynomial σ R |>.map i) (openCoverMvPolynomial σ R |>.map j) ≅
       Spec (CommRingCat.of (Localization.Away (dehomogenise i (X (R:=R) j)))) :=
   pullback.iso _ _ _ _ ≪≫ pullbackAwayιIso _ _ _ _ _ rfl ≪≫
@@ -421,63 +472,100 @@ def Proj.pullbackOpenCoverMvPolynomial {σ : Type*} (R : Type*) [CommRing R] (i 
 
 namespace ProjectiveSpace
 
-@[inherit_doc] scoped [AlgebraicGeometry] notation "ℙ("n"; "S")" => ProjectiveSpace n S
-
 @[simps -isSimp]
 instance over : ℙ(n; S).CanonicallyOver S where
-  hom := pullback.fst _ _
+  hom := prod.fst
 
 /-- The map from the projective `n`-space over `S` to the integral model `Proj ℤ[n]`. -/
 def toProjMvPoly : ℙ(n; S) ⟶ Proj (homogeneousSubmodule n (ULift.{max u v} ℤ)) := pullback.snd _ _
 
-/-- The open set in `ℙ(n; S)` where the `i`ᵗʰ coordinate is invertible. -/
-def chart (i : n) : ℙ(n; S).Opens :=
-  Proj.basicOpen _ _
-
-/-- The `i`ᵗʰ chart from `𝔸(n; S)` to `ℙ(n; S)`, formed by setting the `i`ᵗʰ coordinate to be `1`. -/
-def affineToProjective (i : n) : 𝔸(n; S) ⟶ ℙ(n; S) :=
-  pullback.map _ _ _ _ (𝟙 _) _ (𝟙 _) (by simp) _
-
-/-- An open cover of `ℙ(n; S)` formed by removing each coordinate `i : n`. See `openCover` for a
-better version. -/
-def openCover' : Scheme.OpenCover.{v} ℙ(n; S) :=
-  (Scheme.Pullback.openCoverOfRight ((Proj.affineOpenCoverMvPolynomial n
-      (ULift.{max u v} ℤ)).openCover.equiv Equiv.ulift) _ _).equiv Equiv.ulift.symm
-
-variable {n} in
-/-- Map `𝔸({j // j ≠ i}; S)` isomorphically to `S × Spec (ℤ[n]_Xᵢ)₀`. -/
-def remap (i : n) : 𝔸({j // j ≠ i}; S) ⟶ (openCover' n S).obj i :=
-  pullback.map _ _ _ _ (𝟙 _)
-    (Spec.map <| CommRingCat.ofHom <| (algEquivAway (ULift.{max u v} ℤ) i).symm.toRingHom)
-    (𝟙 _) (terminal.hom_ext ..) (terminal.hom_ext ..)
-
-instance {R S : Type u} [CommRing R] [CommRing S] (f : R ≃+* S) : IsIso (CommRingCat.ofHom f.toRingHom) :=
-  f.toCommRingCatIso.isIso_hom
-
-instance {R S : Type u} [CommRing R] [CommRing S] (f : R ≃+* S) : IsIso (CommRingCat.ofHom (f : R →+* S)) :=
-  f.toCommRingCatIso.isIso_hom
-
-instance {C : Type*} [Category C] [HasTerminal C] (f : ⊤_ C ⟶ ⊤_ C) : IsIso f :=
-  ⟨f, terminal.hom_ext .., terminal.hom_ext ..⟩
-
-instance {C : Type*} [Category C] [HasInitial C] (f : ⊥_ C ⟶ ⊥_ C) : IsIso f :=
-  ⟨f, initial.hom_ext .., initial.hom_ext ..⟩
-
-instance (i : n) : IsIso (remap S i) :=
-  pullback.map_isIso _ _ _ _ (𝟙 _) _ (𝟙 _) (terminal.hom_ext ..) (terminal.hom_ext ..)
-
 /-- The canonical open cover of `ℙ(n; S)` indexed by `n`, where each coordinate `i : n` corresponds
-to the scheme `𝔸({j // j ≠ i}; S)`. -/
-@[simps! -isSimp J obj map] def openCover : Scheme.OpenCover.{v} ℙ(n; S) where
-  J := n
-  obj i := 𝔸({j // j ≠ i}; S)
-  map i := remap S i ≫ (openCover' n S).map i
-  f x := (openCover' n S).f x
-  covers x := let ⟨y, hy⟩ := (openCover' n S).covers x
-    ⟨ConcreteCategory.hom (inv (remap S ((openCover' n S).f x))).base y,
-    (ConcreteCategory.comp_apply ..).symm.trans <| by
-      rwa [Scheme.comp_base, ← Category.assoc, ← Scheme.comp_base, IsIso.inv_hom_id,
-        Scheme.id.base, Category.id_comp]⟩
+to the scheme `𝔸({k // k ≠ i}; S)`. -/
+def openCover : Scheme.OpenCover.{v} ℙ(n; S) :=
+  (Scheme.Pullback.openCoverOfRight ((Proj.openCoverMvPolynomial n
+      (ULift.{max u v} ℤ)).openCover.equivJ Equiv.ulift) _ _).equiv
+    Equiv.ulift.symm (fun i : n ↦ 𝔸({k // k ≠ i}; S)) (fun _ : n ↦ pullback.iso' (Iso.refl S)
+      (Iso.refl _) (terminal.hom_ext ..) (terminal.hom_ext ..))
+
+@[simp] lemma openCover_J : (openCover n S).J = n := rfl
+@[simp] lemma openCover_obj (i : n) : (openCover n S).obj i = 𝔸({k // k ≠ i}; S) := rfl
+
+instance (i : n) : ((openCover n S).obj i).CanonicallyOver S :=
+  AffineSpace.over _ _
+
+theorem openCover_obj_over (i : n) : (openCover n S).obj i ↘ S = pullback.fst _ _ := rfl
+
+lemma openCover_map_fst (i : n) : (openCover n S).map i ≫ pullback.fst _ _ =
+    𝔸({k // k ≠ i}; S) ↘ S := by
+  simp [openCover, Scheme.OpenCover.equiv, AffineSpace.over_over]
+
+instance openCover_map_over (i : n) : ((openCover n S).map i).IsOver S :=
+  ⟨openCover_map_fst ..⟩
+
+lemma openCover_map_snd (i : n) : (openCover n S).map i ≫ pullback.snd _ _ =
+    AffineSpace.toSpecMvPoly {k // k ≠ i} S ≫ (Proj.openCoverMvPolynomial n (ULift ℤ)).map i := by
+  simp [openCover, Scheme.OpenCover.equiv, AffineSpace.toSpecMvPoly, Scheme.OpenCover.equivJ]
+
+@[simp] lemma openCover_map (i : n) : (openCover n S).map i = pullback.map _ _ _ _ (𝟙 S)
+    ((Proj.openCoverMvPolynomial n _).map i) (𝟙 _) (terminal.hom_ext ..) (terminal.hom_ext ..) :=
+  pullback.hom_ext (by simp [openCover_map_fst, AffineSpace.over_over])
+    (by simp [openCover_map_snd, AffineSpace.toSpecMvPoly])
+
+/-- The map from the intersection (i.e. pullback) of the basic opens on `ℙ(n; S)` defined by `Xᵢ`
+and `Xⱼ`, to `S × ℤ[{k // k ≠ i}, 1/Xⱼ]`. -/
+def pullbackOpenCoverHomProduct (i j : n) :
+    pullback ((openCover n S).map i) ((openCover n S).map j) ⟶
+      pullback (terminal.from S) (terminal.from <| Spec <| .of <|
+        Localization.Away (dehomogenise i (X (R:=ULift.{max u v} ℤ) j))) :=
+  pullback.lift (_ ↘ S)
+    (pullback.map _ _ _ _ (AffineSpace.toSpecMvPoly ..) (AffineSpace.toSpecMvPoly ..)
+        (toProjMvPoly ..) (openCover_map_snd ..) (openCover_map_snd ..) ≫
+      (Proj.pullbackOpenCoverMvPolynomial ..).hom)
+    (terminal.hom_ext ..)
+
+-- set_option trace.profiler true
+set_option maxHeartbeats 999999 in
+variable {n} in
+/-- The intersection (i.e. pullback) of the basic opens on `ℙ(n; S)` defined by `Xᵢ` and `Xⱼ`
+is `S × ℤ[{k // k ≠ i}, 1/Xⱼ]`. -/
+def pullbackOpenCover (i j : n) : pullback ((openCover n S).map i) ((openCover n S).map j) ≅
+    pullback (terminal.from S) (terminal.from <| Spec <| .of <|
+      Localization.Away (dehomogenise i (X (R:=ULift.{max u v} ℤ) j))) := by
+  refine {
+    hom := pullback.lift (_ ↘ S)
+      (pullback.map _ _ _ _ (AffineSpace.toSpecMvPoly ..) (AffineSpace.toSpecMvPoly ..)
+          (toProjMvPoly ..) (openCover_map_snd ..) (openCover_map_snd ..) ≫
+        (Proj.pullbackOpenCoverMvPolynomial ..).hom)
+      (by simp)
+    inv := pullback.lift (pullback.map _ _ _ _ (𝟙 S)
+        ((Proj.pullbackOpenCoverMvPolynomial ..).inv ≫ pullback.fst ..)
+        (𝟙 _) (terminal.hom_ext ..) (terminal.hom_ext ..))
+      (pullback.map _ _ _ _ (𝟙 S)
+        ((Proj.pullbackOpenCoverMvPolynomial ..).inv ≫ pullback.snd ..)
+        (𝟙 _) (terminal.hom_ext ..) (terminal.hom_ext ..))
+      (by simp [pullback.map_comp, pullback.condition])
+    hom_inv_id := ?_
+    inv_hom_id := ?_
+  }
+  · refine pullback.hom_ext (pullback.hom_ext ?_ ?_) (pullback.hom_ext ?_ ?_)
+    · simpa using (pullback_fst_over ..).symm
+    · simp [AffineSpace.toSpecMvPoly]
+    · simpa using (pullback_snd_over ..).symm
+    · simp [AffineSpace.toSpecMvPoly]
+  · refine pullback.hom_ext ?_ ?_
+    · rw [Category.assoc, pullback.lift_fst, ← pullback_fst_over, pullback.lift_fst_assoc,
+        openCover_obj_over, pullback.lift_fst, Category.comp_id, Category.id_comp]
+    · rw [Category.assoc, pullback.lift_snd, ← pullback_snd_over, pullback.lift_snd_assoc,
+        openCover_obj_over, pullback.lift_snd, Category.comp_id, Category.id_comp]
+
+
+/-     exact pullback.hom_ext (pullback.hom_ext (by simpa using (pullback_fst_over ..).symm)
+      (by simp [AffineSpace.toSpecMvPoly]))
+    (pullback.hom_ext (by simpa using (pullback_snd_over ..).symm)
+      (by simp [AffineSpace.toSpecMvPoly]))
+  inv_hom_id := pullback.hom_ext (by rw [Category.assoc, pullback.lift_fst, ← pullback_fst_over, pullback.lift_fst_assoc]) _
+ -/
+#check pullback.lift_fst_snd
 
 variable {S₁ S₂ S₃ : Scheme.{max u v}}
 
@@ -499,7 +587,7 @@ def mapIso (f : S₁ ≅ S₂) : ℙ(n; S₁) ≅ ℙ(n; S₂) :=
 def SpecIso (R : Type max u v) [CommRing R] :
     ℙ(n; Spec (.of R)) ≅ Proj (homogeneousSubmodule n R) where
   hom := Scheme.Cover.glueMorphisms (openCover n _)
-    (fun i ↦ (AffineSpace.SpecIso {j // j ≠ i} (.of R)).hom ≫
+    (fun i ↦ (AffineSpace.SpecIso {k // k ≠ i} (.of R)).hom ≫
       Spec.map (CommRingCat.ofHom (by exact (algEquivAway R i).symm.toRingHom)) ≫
       Proj.awayι _ (.X i) (MvPolynomial.isHomogeneous_X R i) zero_lt_one)
     (fun i j ↦ by simp [-openCover_map])
