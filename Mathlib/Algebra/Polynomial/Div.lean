@@ -457,7 +457,7 @@ theorem coeff_divByMonic_X_sub_C (p : R[X]) (a : R) (n : ℕ) :
       apply Nat.le_sub_of_add_le
       rw [add_comm]; exact (mem_Icc.mp hi).1
     · exact this _ le_rfl
-  rw [Icc_eq_empty (Nat.lt_succ.mpr h).not_le, sum_empty]
+  rw [Icc_eq_empty (Nat.lt_succ.mpr h).not_ge, sum_empty]
   nontriviality R
   by_cases hp : p.natDegree = 0
   · rw [(divByMonic_eq_zero_iff <| monic_X_sub_C a).mpr, coeff_zero]
@@ -775,7 +775,7 @@ lemma degree_eq_one_of_irreducible_of_root (hi : Irreducible p) {x : R} (hx : Is
 lemma leadingCoeff_divByMonic_X_sub_C (p : R[X]) (hp : degree p ≠ 0) (a : R) :
     leadingCoeff (p /ₘ (X - C a)) = leadingCoeff p := by
   nontriviality
-  rcases hp.lt_or_lt with hd | hd
+  rcases hp.lt_or_gt with hd | hd
   · rw [degree_eq_bot.mp <| Nat.WithBot.lt_zero_iff.mp hd, zero_divByMonic]
   refine leadingCoeff_divByMonic_of_monic (monic_X_sub_C a) ?_
   rwa [degree_X_sub_C, Nat.WithBot.one_le_iff_zero_lt]

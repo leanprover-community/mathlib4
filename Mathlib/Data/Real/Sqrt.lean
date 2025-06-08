@@ -252,8 +252,8 @@ alias ⟨_, sqrt_pos_of_pos⟩ := sqrt_pos
 
 lemma sqrt_le_sqrt_iff' (hx : 0 < x) : √x ≤ √y ↔ x ≤ y := by
   obtain hy | hy := le_total y 0
-  · exact iff_of_false ((sqrt_eq_zero_of_nonpos hy).trans_lt <| sqrt_pos.2 hx).not_le
-      (hy.trans_lt hx).not_le
+  · exact iff_of_false ((sqrt_eq_zero_of_nonpos hy).trans_lt <| sqrt_pos.2 hx).not_ge
+      (hy.trans_lt hx).not_ge
   · exact sqrt_le_sqrt_iff hy
 
 @[simp] lemma one_le_sqrt : 1 ≤ √x ↔ 1 ≤ x := by

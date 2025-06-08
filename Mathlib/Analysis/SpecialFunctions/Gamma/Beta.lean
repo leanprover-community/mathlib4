@@ -515,7 +515,7 @@ theorem differentiable_one_div_Gamma : Differentiable ℂ fun s : ℂ => (Gamma 
     rw [Nat.cast_zero, neg_lt_zero] at hs
     suffices ∀ m : ℕ, s ≠ -↑m from (differentiableAt_Gamma _ this).inv (Gamma_ne_zero this)
     rintro m rfl
-    apply hs.not_le
+    apply hs.not_ge
     simp
   | succ n ihn =>
     rw [funext one_div_Gamma_eq_self_mul_one_div_Gamma_add_one]

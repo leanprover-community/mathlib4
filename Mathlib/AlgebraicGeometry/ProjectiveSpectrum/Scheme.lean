@@ -368,7 +368,7 @@ theorem carrier.add_mem (q : Spec.T A⁰_ f) {a b : A} (ha : a ∈ carrier f_deg
   change _ = HomogeneousLocalization.val _
   rw [HomogeneousLocalization.val_smul]
   split_ifs with h2 h1
-  · exact ((Finset.mem_range.1 hj).not_le h2).elim
+  · exact ((Finset.mem_range.1 hj).not_ge h2).elim
   all_goals simp only [HomogeneousLocalization.val_mul, HomogeneousLocalization.val_zero,
     HomogeneousLocalization.val_mk, Subtype.coe_mk, Localization.mk_mul, ← smul_mk]; congr 2
   · dsimp; rw [mul_assoc, ← pow_add, add_comm (m - j), Nat.add_sub_assoc h1]
