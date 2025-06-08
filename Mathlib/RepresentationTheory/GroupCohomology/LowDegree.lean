@@ -267,77 +267,6 @@ def twoCocycles : Submodule k (G × G → A) := LinearMap.ker (dTwo A).hom
 
 variable {A}
 
-section oneCocycles
-
-instance : FunLike (oneCocycles A) G A := ⟨Subtype.val, Subtype.val_injective⟩
-
-@[simp]
-theorem oneCocycles.coe_mk (f : G → A) (hf) : ((⟨f, hf⟩ : oneCocycles A) : G → A) = f := rfl
-
-@[simp]
-theorem oneCocycles.val_eq_coe (f : oneCocycles A) : f.1 = f := rfl
-
-@[ext]
-theorem oneCocycles_ext {f₁ f₂ : oneCocycles A} (h : ∀ g : G, f₁ g = f₂ g) : f₁ = f₂ :=
-  DFunLike.ext f₁ f₂ h
-
-theorem mem_oneCocycles_def (f : G → A) :
-    f ∈ oneCocycles A ↔ ∀ g h : G, A.ρ g (f h) - f (g * h) + f g = 0 :=
-  LinearMap.mem_ker.trans <| by
-    simp_rw [funext_iff, dOne_hom_apply, Prod.forall]
-    rfl
-
-theorem mem_oneCocycles_iff (f : G → A) :
-    f ∈ oneCocycles A ↔ ∀ g h : G, f (g * h) = A.ρ g (f h) + f g := by
-  simp_rw [mem_oneCocycles_def, sub_add_eq_add_sub, sub_eq_zero, eq_comm]
-
-@[simp] theorem oneCocycles_map_one (f : oneCocycles A) : f 1 = 0 := by
-  have := (mem_oneCocycles_def f).1 f.2 1 1
-  simpa only [map_one, Module.End.one_apply, mul_one, sub_self, zero_add] using this
-
-@[simp] theorem oneCocycles_map_inv (f : oneCocycles A) (g : G) :
-    A.ρ g (f g⁻¹) = - f g := by
-  rw [← add_eq_zero_iff_eq_neg, ← oneCocycles_map_one f, ← mul_inv_cancel g,
-    (mem_oneCocycles_iff f).1 f.2 g g⁻¹]
-
-theorem dZero_apply_mem_oneCocycles (x : A) :
-    dZero A x ∈ oneCocycles A :=
-  dZero_comp_dOne_apply _ _
-
-theorem oneCocycles_map_mul_of_isTrivial [A.IsTrivial] (f : oneCocycles A) (g h : G) :
-    f (g * h) = f g + f h := by
-  rw [(mem_oneCocycles_iff f).1 f.2, isTrivial_apply A.ρ g (f h), add_comm]
-
-theorem mem_oneCocycles_of_addMonoidHom [A.IsTrivial] (f : Additive G →+ A) :
-    f ∘ Additive.ofMul ∈ oneCocycles A :=
-  (mem_oneCocycles_iff _).2 fun g h => by
-    simp only [Function.comp_apply, ofMul_mul, map_add,
-      oneCocycles_map_mul_of_isTrivial, isTrivial_apply A.ρ g (f (Additive.ofMul h)),
-      add_comm (f (Additive.ofMul g))]
-
-variable (A) in
-/-- When `A : Rep k G` is a trivial representation of `G`, `Z¹(G, A)` is isomorphic to the
-group homs `G → A`. -/
-@[simps!]
-def oneCocyclesIsoOfIsTrivial [hA : A.IsTrivial] :
-    ModuleCat.of k (oneCocycles A) ≅ ModuleCat.of k (Additive G →+ A) :=
-  LinearEquiv.toModuleIso
-  { toFun f :=
-      { toFun := f ∘ Additive.toMul
-        map_zero' := oneCocycles_map_one f
-        map_add' := oneCocycles_map_mul_of_isTrivial f }
-    map_add' _ _ := rfl
-    map_smul' _ _ := rfl
-    invFun f :=
-      { val := f
-        property := mem_oneCocycles_of_addMonoidHom f }
-    left_inv f := by ext; rfl
-    right_inv f := by ext; rfl }
-
-@[deprecated (since := "2025-05-09")]
-noncomputable alias oneCocyclesLequivOfIsTrivial := oneCocyclesIsoOfIsTrivial
-
-end oneCocycles
 section oneCocycles'
 
 instance : FunLike (cocycles A 1) G A :=
@@ -452,57 +381,77 @@ def oneCocyclesIsoOfIsTrivial' [hA : A.IsTrivial] :
     right_inv _ := by ext; simp }
 
 end oneCocycles'
-section twoCocycles
+section oneCocycles
 
-instance : FunLike (twoCocycles A) (G × G) A := ⟨Subtype.val, Subtype.val_injective⟩
-
-@[simp]
-theorem twoCocycles.coe_mk (f : G × G → A) (hf) : ((⟨f, hf⟩ : twoCocycles A) : G × G → A) = f := rfl
+instance : FunLike (oneCocycles A) G A := ⟨Subtype.val, Subtype.val_injective⟩
 
 @[simp]
-theorem twoCocycles.val_eq_coe (f : twoCocycles A) : f.1 = f := rfl
+theorem oneCocycles.coe_mk (f : G → A) (hf) : ((⟨f, hf⟩ : oneCocycles A) : G → A) = f := rfl
+
+@[simp]
+theorem oneCocycles.val_eq_coe (f : oneCocycles A) : f.1 = f := rfl
 
 @[ext]
-theorem twoCocycles_ext {f₁ f₂ : twoCocycles A} (h : ∀ g h : G, f₁ (g, h) = f₂ (g, h)) : f₁ = f₂ :=
-  DFunLike.ext f₁ f₂ (Prod.forall.mpr h)
+theorem oneCocycles_ext {f₁ f₂ : oneCocycles A} (h : ∀ g : G, f₁ g = f₂ g) : f₁ = f₂ :=
+  DFunLike.ext f₁ f₂ h
 
-theorem mem_twoCocycles_def (f : G × G → A) :
-    f ∈ twoCocycles A ↔ ∀ g h j : G,
-      A.ρ g (f (h, j)) - f (g * h, j) + f (g, h * j) - f (g, h) = 0 :=
+theorem mem_oneCocycles_def (f : G → A) :
+    f ∈ oneCocycles A ↔ ∀ g h : G, A.ρ g (f h) - f (g * h) + f g = 0 :=
   LinearMap.mem_ker.trans <| by
-    simp_rw [funext_iff, dTwo_hom_apply, Prod.forall]
+    simp_rw [funext_iff, dOne_hom_apply, Prod.forall]
     rfl
 
-theorem mem_twoCocycles_iff (f : G × G → A) :
-    f ∈ twoCocycles A ↔ ∀ g h j : G,
-      f (g * h, j) + f (g, h) =
-        A.ρ g (f (h, j)) + f (g, h * j) := by
-  simp_rw [mem_twoCocycles_def, sub_eq_zero, sub_add_eq_add_sub, sub_eq_iff_eq_add, eq_comm,
-    add_comm (f (_ * _, _))]
+theorem mem_oneCocycles_iff (f : G → A) :
+    f ∈ oneCocycles A ↔ ∀ g h : G, f (g * h) = A.ρ g (f h) + f g := by
+  simp_rw [mem_oneCocycles_def, sub_add_eq_add_sub, sub_eq_zero, eq_comm]
 
-theorem twoCocycles_map_one_fst (f : twoCocycles A) (g : G) :
-    f (1, g) = f (1, 1) := by
-  have := ((mem_twoCocycles_iff f).1 f.2 1 1 g).symm
-  simpa only [map_one, Module.End.one_apply, one_mul, add_right_inj, this]
+@[simp] theorem oneCocycles_map_one (f : oneCocycles A) : f 1 = 0 := by
+  have := (mem_oneCocycles_def f).1 f.2 1 1
+  simpa only [map_one, Module.End.one_apply, mul_one, sub_self, zero_add] using this
 
-theorem twoCocycles_map_one_snd (f : twoCocycles A) (g : G) :
-    f (g, 1) = A.ρ g (f (1, 1)) := by
-  have := (mem_twoCocycles_iff f).1 f.2 g 1 1
-  simpa only [mul_one, add_left_inj, this]
+@[simp] theorem oneCocycles_map_inv (f : oneCocycles A) (g : G) :
+    A.ρ g (f g⁻¹) = - f g := by
+  rw [← add_eq_zero_iff_eq_neg, ← oneCocycles_map_one f, ← mul_inv_cancel g,
+    (mem_oneCocycles_iff f).1 f.2 g g⁻¹]
 
-lemma twoCocycles_ρ_map_inv_sub_map_inv (f : twoCocycles A) (g : G) :
-    A.ρ g (f (g⁻¹, g)) - f (g, g⁻¹)
-      = f (1, 1) - f (g, 1) := by
-  have := (mem_twoCocycles_iff f).1 f.2 g g⁻¹ g
-  simp only [mul_inv_cancel, inv_mul_cancel, twoCocycles_map_one_fst _ g]
-    at this
-  exact sub_eq_sub_iff_add_eq_add.2 this.symm
+theorem dZero_apply_mem_oneCocycles (x : A) :
+    dZero A x ∈ oneCocycles A :=
+  dZero_comp_dOne_apply _ _
 
-theorem dOne_apply_mem_twoCocycles (x : G → A) :
-    dOne A x ∈ twoCocycles A :=
-  dOne_comp_dTwo_apply _ _
+theorem oneCocycles_map_mul_of_isTrivial [A.IsTrivial] (f : oneCocycles A) (g h : G) :
+    f (g * h) = f g + f h := by
+  rw [(mem_oneCocycles_iff f).1 f.2, isTrivial_apply A.ρ g (f h), add_comm]
 
-end twoCocycles
+theorem mem_oneCocycles_of_addMonoidHom [A.IsTrivial] (f : Additive G →+ A) :
+    f ∘ Additive.ofMul ∈ oneCocycles A :=
+  (mem_oneCocycles_iff _).2 fun g h => by
+    simp only [Function.comp_apply, ofMul_mul, map_add,
+      oneCocycles_map_mul_of_isTrivial, isTrivial_apply A.ρ g (f (Additive.ofMul h)),
+      add_comm (f (Additive.ofMul g))]
+
+variable (A) in
+/-- When `A : Rep k G` is a trivial representation of `G`, `Z¹(G, A)` is isomorphic to the
+group homs `G → A`. -/
+@[simps!]
+def oneCocyclesIsoOfIsTrivial [hA : A.IsTrivial] :
+    ModuleCat.of k (oneCocycles A) ≅ ModuleCat.of k (Additive G →+ A) :=
+  LinearEquiv.toModuleIso
+  { toFun f :=
+      { toFun := f ∘ Additive.toMul
+        map_zero' := oneCocycles_map_one f
+        map_add' := oneCocycles_map_mul_of_isTrivial f }
+    map_add' _ _ := rfl
+    map_smul' _ _ := rfl
+    invFun f :=
+      { val := f
+        property := mem_oneCocycles_of_addMonoidHom f }
+    left_inv f := by ext; rfl
+    right_inv f := by ext; rfl }
+
+@[deprecated (since := "2025-05-09")]
+noncomputable alias oneCocyclesLequivOfIsTrivial := oneCocyclesIsoOfIsTrivial
+
+end oneCocycles
 section twoCocycles'
 
 instance : FunLike (cocycles A 2) (G × G) A :=
@@ -590,7 +539,57 @@ theorem memTwoCocycles_dOne_apply (x : G → A) :
   congr($(dOne_comp_dTwo A) x)
 
 end twoCocycles'
+section twoCocycles
 
+instance : FunLike (twoCocycles A) (G × G) A := ⟨Subtype.val, Subtype.val_injective⟩
+
+@[simp]
+theorem twoCocycles.coe_mk (f : G × G → A) (hf) : ((⟨f, hf⟩ : twoCocycles A) : G × G → A) = f := rfl
+
+@[simp]
+theorem twoCocycles.val_eq_coe (f : twoCocycles A) : f.1 = f := rfl
+
+@[ext]
+theorem twoCocycles_ext {f₁ f₂ : twoCocycles A} (h : ∀ g h : G, f₁ (g, h) = f₂ (g, h)) : f₁ = f₂ :=
+  DFunLike.ext f₁ f₂ (Prod.forall.mpr h)
+
+theorem mem_twoCocycles_def (f : G × G → A) :
+    f ∈ twoCocycles A ↔ ∀ g h j : G,
+      A.ρ g (f (h, j)) - f (g * h, j) + f (g, h * j) - f (g, h) = 0 :=
+  LinearMap.mem_ker.trans <| by
+    simp_rw [funext_iff, dTwo_hom_apply, Prod.forall]
+    rfl
+
+theorem mem_twoCocycles_iff (f : G × G → A) :
+    f ∈ twoCocycles A ↔ ∀ g h j : G,
+      f (g * h, j) + f (g, h) =
+        A.ρ g (f (h, j)) + f (g, h * j) := by
+  simp_rw [mem_twoCocycles_def, sub_eq_zero, sub_add_eq_add_sub, sub_eq_iff_eq_add, eq_comm,
+    add_comm (f (_ * _, _))]
+
+theorem twoCocycles_map_one_fst (f : twoCocycles A) (g : G) :
+    f (1, g) = f (1, 1) := by
+  have := ((mem_twoCocycles_iff f).1 f.2 1 1 g).symm
+  simpa only [map_one, Module.End.one_apply, one_mul, add_right_inj, this]
+
+theorem twoCocycles_map_one_snd (f : twoCocycles A) (g : G) :
+    f (g, 1) = A.ρ g (f (1, 1)) := by
+  have := (mem_twoCocycles_iff f).1 f.2 g 1 1
+  simpa only [mul_one, add_left_inj, this]
+
+lemma twoCocycles_ρ_map_inv_sub_map_inv (f : twoCocycles A) (g : G) :
+    A.ρ g (f (g⁻¹, g)) - f (g, g⁻¹)
+      = f (1, 1) - f (g, 1) := by
+  have := (mem_twoCocycles_iff f).1 f.2 g g⁻¹ g
+  simp only [mul_inv_cancel, inv_mul_cancel, twoCocycles_map_one_fst _ g]
+    at this
+  exact sub_eq_sub_iff_add_eq_add.2 this.symm
+
+theorem dOne_apply_mem_twoCocycles (x : G → A) :
+    dOne A x ∈ twoCocycles A :=
+  dOne_comp_dTwo_apply _ _
+
+end twoCocycles
 end Cocycles
 
 section Coboundaries
