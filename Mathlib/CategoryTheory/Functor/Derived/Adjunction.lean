@@ -40,18 +40,14 @@ variable {C₁ C₂ D₁ D₂ : Type*} [Category C₁] [Category C₂] [Category
 
 namespace Adjunction
 
-section
-
-variable [G'.IsLeftDerivedFunctor α W₁] [F'.IsRightDerivedFunctor β W₂]
-  (η : 𝟭 D₁ ⟶ G' ⋙ F') (ε : F' ⋙ G' ⟶ 𝟭 D₂)
-  (hη : ∀ (X₁ : C₁), η.app (L₁.obj X₁) ≫ F'.map (α.app X₁) =
-    L₁.map (adj.unit.app X₁) ≫ β.app (G.obj X₁) := by aesop_cat)
-  (hε : ∀ (X₂ : C₂), G'.map (β.app X₂) ≫ ε.app (L₂.obj X₂) =
-    α.app (F.obj X₂) ≫ L₂.map (adj.counit.app X₂) := by aesop_cat)
-
 /-- Auxiliary definition for `Adjunction.derived`. -/
 @[simps]
-def derived' : G' ⊣ F' where
+def derived' [G'.IsLeftDerivedFunctor α W₁] [F'.IsRightDerivedFunctor β W₂]
+    (η : 𝟭 D₁ ⟶ G' ⋙ F') (ε : F' ⋙ G' ⟶ 𝟭 D₂)
+    (hη : ∀ (X₁ : C₁), η.app (L₁.obj X₁) ≫ F'.map (α.app X₁) =
+      L₁.map (adj.unit.app X₁) ≫ β.app (G.obj X₁) := by aesop_cat)
+    (hε : ∀ (X₂ : C₂), G'.map (β.app X₂) ≫ ε.app (L₂.obj X₂) =
+      α.app (F.obj X₂) ≫ L₂.map (adj.counit.app X₂) := by aesop_cat) : G' ⊣ F' where
   unit := η
   counit := ε
   left_triangle_components := by
@@ -83,8 +79,6 @@ def derived' : G' ⊣ F' where
     rw [Category.comp_id, Category.comp_id, Category.id_comp, Category.id_comp,
       reassoc_of% eq₁, eq₂, reassoc_of% (hη (F.obj X₂)), ← eq₃, ← L₁.map_comp_assoc,
       adj.right_triangle_components, Functor.map_id, Category.id_comp]
-
-end
 
 section
 
@@ -129,23 +123,17 @@ lemma derivedε_fac_app (X₂ : C₂)  :
 
 end
 
-section
-
-variable [G'.IsLeftDerivedFunctor α W₁] [F'.IsRightDerivedFunctor β W₂]
-  [(G' ⋙ F').IsLeftDerivedFunctor
-    ((Functor.associator _ _ _).inv ≫ whiskerRight α F') W₁]
-  [(F' ⋙ G').IsRightDerivedFunctor
-    (whiskerRight β G' ≫ (Functor.associator _ _ _).hom) W₂]
-
 /-- An adjunction between functors induces an adjunction between the
 corresponding left/right derived functors, when these derived
 functors are *absolute*, i.e. they remain derived functors
 after the post-composition with any functor. -/
 @[simps!]
-noncomputable def derived : G' ⊣ F' :=
+noncomputable def derived [G'.IsLeftDerivedFunctor α W₁] [F'.IsRightDerivedFunctor β W₂]
+  [(G' ⋙ F').IsLeftDerivedFunctor
+    ((Functor.associator _ _ _).inv ≫ whiskerRight α F') W₁]
+  [(F' ⋙ G').IsRightDerivedFunctor
+    (whiskerRight β G' ≫ (Functor.associator _ _ _).hom) W₂] : G' ⊣ F' :=
   adj.derived' W₁ W₂ α β (adj.derivedη W₁ α β) (adj.derivedε W₂ α β)
-
-end
 
 end Adjunction
 
