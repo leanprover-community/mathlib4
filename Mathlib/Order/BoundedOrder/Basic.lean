@@ -295,7 +295,7 @@ alias ⟨IsBot.eq_bot, _⟩ := isBot_iff_eq_bot
 
 @[simp]
 theorem le_bot_iff : a ≤ ⊥ ↔ a = ⊥ :=
-  bot_le.le_iff_eq
+  bot_le.ge_iff_eq'
 
 theorem bot_unique (h : a ≤ ⊥) : a = ⊥ :=
   h.antisymm bot_le
