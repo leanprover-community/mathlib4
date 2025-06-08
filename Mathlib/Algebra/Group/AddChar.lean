@@ -24,7 +24,7 @@ We also include some constructions specific to the case when `A = R` is a ring; 
 `x ↦ ψ (r * x)`.
 
 For more refined results of a number-theoretic nature (primitive characters, Gauss sums, etc)
-see `Mathlib.NumberTheory.LegendreSymbol.AddCharacter`.
+see `Mathlib/NumberTheory/LegendreSymbol/AddCharacter.lean`.
 
 # Implementation notes
 

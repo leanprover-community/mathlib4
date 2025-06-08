@@ -411,7 +411,7 @@ lemma exists_mem_support_mem_erase_mem_support_takeUntil_eq_empty (s : Finset V)
     (h : {x ∈ s | x ∈ p.support}.Nonempty) :
     ∃ x ∈ s, ∃ hx : x ∈ p.support, {t ∈ s.erase x | t ∈ (p.takeUntil x hx).support} = ∅ := by
   simp only [← Finset.subset_empty]
-  induction' hp : p.length + #s using Nat.strong_induction_on with n ih generalizing s v
+  induction hp : p.length + #s using Nat.strong_induction_on generalizing s v with | _ n ih
   simp only [Finset.Nonempty, mem_filter] at h
   obtain ⟨x, hxs, hx⟩ := h
   obtain h | h := Finset.eq_empty_or_nonempty {t ∈ s.erase x | t ∈ (p.takeUntil x hx).support}
@@ -422,10 +422,10 @@ lemma exists_mem_support_mem_erase_mem_support_takeUntil_eq_empty (s : Finset V)
     omega
   obtain ⟨y, hys, hyp, h⟩ := ih _ this (s.erase x) h rfl
   use y, mem_of_mem_erase hys, support_takeUntil_subset p hx hyp
-  rwa [takeUntil_takeUntil, erase_right_comm, filter_erase, erase_eq_of_not_mem] at h
+  rwa [takeUntil_takeUntil, erase_right_comm, filter_erase, erase_eq_of_notMem] at h
   simp only [mem_filter, mem_erase, ne_eq, not_and, and_imp]
   rintro hxy -
-  exact not_mem_support_takeUntil_support_takeUntil_subset (Ne.symm hxy) hx hyp
+  exact notMem_support_takeUntil_support_takeUntil_subset (Ne.symm hxy) hx hyp
 
 lemma exists_mem_support_forall_mem_support_imp_eq (s : Finset V)
     (h : {x ∈ s | x ∈ p.support}.Nonempty) :

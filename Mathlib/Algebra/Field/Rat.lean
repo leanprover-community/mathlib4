@@ -41,7 +41,7 @@ instance instDivisionRing : DivisionRing ℚ := inferInstance
 
 protected lemma inv_nonneg {a : ℚ} (ha : 0 ≤ a) : 0 ≤ a⁻¹ := by
   rw [inv_def']
-  exact divInt_nonneg (Int.ofNat_nonneg a.den) (num_nonneg.mpr ha)
+  exact divInt_nonneg (Int.natCast_nonneg a.den) (num_nonneg.mpr ha)
 
 protected lemma div_nonneg {a b : ℚ} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a / b :=
   mul_nonneg ha (Rat.inv_nonneg hb)
