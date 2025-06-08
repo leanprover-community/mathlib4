@@ -942,12 +942,8 @@ lemma constf_eq_null: (ConstF (G := G) : Set (LipschitzH (G := G))) = nullAddSub
     apply lipschitz_zero
 
 instance const_isClosed: IsClosed (ConstF (G := G) : Set (LipschitzH (G := G))) := by
-  conv =>
-    arg 1
-    arg 1
-    equals nullAddSubgroup (LipschitzH (G := G)) =>
-      unfold nullAddSubgroup
-      simp [ConstF]
+  rw [constf_eq_null]
+  exact isClosed_nullAddSubgroup
 
 
 #synth NormedSpace ℂ (W (S := S))
