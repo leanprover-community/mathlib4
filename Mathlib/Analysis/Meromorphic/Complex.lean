@@ -33,8 +33,7 @@ lemma Complex.meromorphicAt_of_differentiable_on_punctured_nhds_of_exists_tendst
   use n + 1
   apply analyticAt_of_differentiable_on_punctured_nhds_of_continuousAt
   · filter_upwards [hd] with s hd'; fun_prop
-  · conv => arg 1; equals update (fun s : ℂ => (s - c) ^ (n + 1) • f s) c 0 => simp
-    rw [continuousAt_update_same]
+  · rw [continuousAt_iff_punctured_nhds]
     replace ht := ((tendsto_id.sub_const c).mono_left nhdsWithin_le_nhds).prodMk ht
     simp only [id_eq, sub_self, ← nhds_prod_eq] at ht
     simpa [pow_succ', mul_smul] using Tendsto.comp continuous_smul.continuousAt ht
