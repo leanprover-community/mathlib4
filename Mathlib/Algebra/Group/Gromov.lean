@@ -843,61 +843,83 @@ lemma lipschitzH_norm_triangle (x y z: LipschitzH (G := G)): LipschitzSemiNorm (
 
 --def lift_triangle (x y z: LipschitzH) := Quotient.lift lipschitzH_norm_triangle sorry
 
-noncomputable instance W_seminorm: SeminormedAddCommGroup (W (G := G)) where
-  norm := fun f => (LipschitzSemiNorm_w f).val
+noncomputable instance LipschitzH_seminorm: SeminormedAddCommGroup (LipschitzH (G := G)) where
+  norm := fun v => LipschitzSemiNorm (G := G) v
   dist_self := by
-    intro w
-    simp [LipschitzSemiNorm_w]
-    rw [← Submodule.Quotient.mk_zero]
-    unfold Submodule.Quotient.mk
-    rw [Quotient.lift_mk]
+    intro v
+    simp [LipschitzSemiNorm]
     exact lipschiz_norm_zero
   dist_comm := by
-    intro x w
-    simp
-    dsimp [LipschitzSemiNorm_w]
-    conv =>
-      pattern w - x
-      equals -(x - w) =>
-        field_simp
-
-    have forward_elem: Submodule.Quotient.mk (x - w).out = x - w := by
-      simp [Submodule.Quotient.mk]
-    rw [← forward_elem]
-    rw [← Submodule.Quotient.mk_neg]
-
-
-    unfold Submodule.Quotient.mk
-    repeat rw [Quotient.lift_mk]
+    intro x y
     simp [LipschitzSemiNorm]
+    simp [DFunLike.coe]
     conv =>
-      rhs
-      arg 1
-      arg 1
-      intro k
-      rw [lipschitz_neg_tofun]
-      rw [lipschitzWith_neg_iff]
+      lhs
+      pattern x - y
+      equals -(y - x) =>
+        field_simp
+    simp_rw [lipschitz_neg_tofun]
+    simp_rw [lipschitzWith_neg_iff]
   dist_triangle := by
     intro x y z
-    simp [LipschitzSemiNorm_w]
+    simp
+    apply lipschitzH_norm_triangle
 
-    have forward_elem (w: W (G := G)): Submodule.Quotient.mk (w).out = w := by
-      simp [Submodule.Quotient.mk]
-    rw [← forward_elem (w := (x - z))]
-    rw [← forward_elem (w := (x - y))]
-    rw [← forward_elem (w := (y - z))]
-    unfold Submodule.Quotient.mk
-    rw [Quotient.lift_mk]
-    rw [Quotient.lift_mk]
-    rw [Quotient.lift_mk]
+-- noncomputable instance W_seminorm: SeminormedAddCommGroup (W (G := G)) where
+--   norm := fun f => (LipschitzSemiNorm_w f).val
+--   dist_self := by
+--     intro w
+--     simp [LipschitzSemiNorm_w]
+--     rw [← Submodule.Quotient.mk_zero]
+--     unfold Submodule.Quotient.mk
+--     rw [Quotient.lift_mk]
+--     exact lipschiz_norm_zero
+--   dist_comm := by
+--     intro x w
+--     simp
+--     dsimp [LipschitzSemiNorm_w]
+--     conv =>
+--       pattern w - x
+--       equals -(x - w) =>
+--         field_simp
 
-    have triangle := lipschitz_norm_triangle (Quotient.out (x)).toFun (Quotient.out (y)).toFun (Quotient.out (z)).toFun sorry sorry sorry
+--     have forward_elem: Submodule.Quotient.mk (x - w).out = x - w := by
+--       simp [Submodule.Quotient.mk]
+--     rw [← forward_elem]
+--     rw [← Submodule.Quotient.mk_neg]
 
-    simp [LipschitzSemiNorm]
-    conv =>
-      pattern x - z
-      equals (x - y) + (y - z) =>
-        field_simp
+
+--     unfold Submodule.Quotient.mk
+--     repeat rw [Quotient.lift_mk]
+--     simp [LipschitzSemiNorm]
+--     conv =>
+--       rhs
+--       arg 1
+--       arg 1
+--       intro k
+--       rw [lipschitz_neg_tofun]
+--       rw [lipschitzWith_neg_iff]
+--   dist_triangle := by
+--     intro x y z
+--     simp [LipschitzSemiNorm_w]
+
+--     have forward_elem (w: W (G := G)): Submodule.Quotient.mk (w).out = w := by
+--       simp [Submodule.Quotient.mk]
+--     rw [← forward_elem (w := (x - z))]
+--     rw [← forward_elem (w := (x - y))]
+--     rw [← forward_elem (w := (y - z))]
+--     unfold Submodule.Quotient.mk
+--     rw [Quotient.lift_mk]
+--     rw [Quotient.lift_mk]
+--     rw [Quotient.lift_mk]
+
+--     have triangle := lipschitz_norm_triangle (Quotient.out (x)).toFun (Quotient.out (y)).toFun (Quotient.out (z)).toFun sorry sorry sorry
+
+--     simp [LipschitzSemiNorm]
+--     conv =>
+--       pattern x - z
+--       equals (x - y) + (y - z) =>
+--         field_simp
 
 
 
