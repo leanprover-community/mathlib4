@@ -540,7 +540,7 @@ theorem exists_of_lt {s₁ s₂ : AffineSubspace k P} (h : s₁ < s₂) : ∃ p 
 and there is a point only in the second. -/
 theorem lt_iff_le_and_exists (s₁ s₂ : AffineSubspace k P) :
     s₁ < s₂ ↔ s₁ ≤ s₂ ∧ ∃ p ∈ s₂, p ∉ s₁ := by
-  rw [lt_iff_le_not_le, not_le_iff_exists]
+  rw [lt_iff_le_not_ge, not_le_iff_exists]
 
 /-- If an affine subspace is nonempty and contained in another with the same direction, they are
 equal. -/
@@ -673,11 +673,13 @@ instance : Nonempty (⊤ : AffineSubspace k P) := inferInstanceAs (Nonempty (⊤
 variable {P}
 
 /-- No points are in `⊥`. -/
-theorem not_mem_bot (p : P) : p ∉ (⊥ : AffineSubspace k P) :=
-  Set.not_mem_empty p
+theorem notMem_bot (p : P) : p ∉ (⊥ : AffineSubspace k P) :=
+  Set.notMem_empty p
+
+@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 instance isEmpty_bot : IsEmpty (⊥ : AffineSubspace k P) :=
-  Subtype.isEmpty_of_false fun _ ↦ not_mem_bot _ _ _
+  Subtype.isEmpty_of_false fun _ ↦ notMem_bot _ _ _
 
 variable (P)
 
@@ -829,7 +831,7 @@ variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k
 
 variable {ι : Type*}
 
-open AffineSubspace Set
+open AffineSubspace
 
 section
 

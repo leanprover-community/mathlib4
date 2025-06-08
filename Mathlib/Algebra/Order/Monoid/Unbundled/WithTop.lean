@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Order.WithBot
-import Mathlib.Tactic.MinImports
 
 /-! # Adjoining top/bottom elements to ordered monoids.
 -/
@@ -199,7 +198,7 @@ lemma addLECancellable_coe [LE α] [ContravariantClass α α (· + ·) (· ≤ �
 
 lemma addLECancellable_iff_ne_top [Nonempty α] [Preorder α]
     [ContravariantClass α α (· + ·) (· ≤ ·)] : AddLECancellable x ↔ x ≠ ⊤ where
-  mp := by rintro h rfl; exact (coe_lt_top <| Classical.arbitrary _).not_le <| h <| by simp
+  mp := by rintro h rfl; exact (coe_lt_top <| Classical.arbitrary _).not_ge <| h <| by simp
   mpr := addLECancellable_of_ne_top
 
 --  There is no `WithTop.map_mul_of_mulHom`, since `WithTop` does not have a multiplication.
@@ -547,7 +546,7 @@ lemma addLECancellable_coe [LE α] [ContravariantClass α α (· + ·) (· ≤ �
 
 lemma addLECancellable_iff_ne_bot [Nonempty α] [Preorder α]
     [ContravariantClass α α (· + ·) (· ≤ ·)] : AddLECancellable x ↔ x ≠ ⊥ where
-  mp := by rintro h rfl; exact (bot_lt_coe <| Classical.arbitrary _).not_le <| h <| by simp
+  mp := by rintro h rfl; exact (bot_lt_coe <| Classical.arbitrary _).not_ge <| h <| by simp
   mpr := addLECancellable_of_ne_bot
 
 --  There is no `WithBot.map_mul_of_mulHom`, since `WithBot` does not have a multiplication.

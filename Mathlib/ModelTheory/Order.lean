@@ -127,7 +127,7 @@ def Term.lt (t₁ t₂ : L.Term (α ⊕ (Fin n))) : L.BoundedFormula α n :=
 variable (L)
 
 /-- The language homomorphism sending the unique symbol `≤` of `Language.order` to `≤` in an ordered
- language. -/
+language. -/
 @[simps] def orderLHom : Language.order →ᴸ L where
   onRelation | _, .le => leSymb
 
@@ -296,7 +296,7 @@ instance model_preorder : M ⊨ L.preorderTheory := by
 theorem Term.realize_lt {t₁ t₂ : L.Term (α ⊕ (Fin n))}
     {v : α → M} {xs : Fin n → M} :
     (t₁.lt t₂).Realize v xs ↔ t₁.realize (Sum.elim v xs) < t₂.realize (Sum.elim v xs) := by
-  simp [Term.lt, lt_iff_le_not_le]
+  simp [Term.lt, lt_iff_le_not_ge]
 
 theorem realize_denselyOrdered_iff :
     M ⊨ L.denselyOrderedSentence ↔ DenselyOrdered M := by

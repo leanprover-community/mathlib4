@@ -32,6 +32,7 @@ def single (i : m) (j : n) (a : α) : Matrix m n α :=
 
 @[deprecated (since := "2025-05-05")] alias stdBasisMatrix := single
 
+/-- See also `single_eq_updateRow_zero` and `single_eq_updateCol_zero`. -/
 theorem single_eq_of_single_single (i : m) (j : n) (a : α) :
     single i j a = Matrix.of (Pi.single i (Pi.single j a)) := by
   ext a b
@@ -209,13 +210,11 @@ theorem single_apply_of_ne (h : ¬(i = i' ∧ j = j')) : single i j c i' j' = 0 
 
 @[deprecated (since := "2025-05-05")] alias StdBasisMatrix.apply_of_ne := single_apply_of_ne
 
-@[simp]
 theorem single_apply_of_row_ne {i i' : m} (hi : i ≠ i') (j j' : n) (a : α) :
     single i j a i' j' = 0 := by simp [hi]
 
 @[deprecated (since := "2025-05-05")] alias StdBasisMatrix.apply_of_row_ne := single_apply_of_row_ne
 
-@[simp]
 theorem single_apply_of_col_ne (i i' : m) {j j' : n} (hj : j ≠ j') (a : α) :
     single i j a i' j' = 0 := by simp [hj]
 
@@ -226,13 +225,15 @@ end
 section
 variable [Zero α] (i j : n) (c : α)
 
-@[simp]
+-- This simp lemma should take priority over `diag_apply`
+@[simp 1050]
 theorem diag_single_of_ne (h : i ≠ j) : diag (single i j c) = 0 :=
   funext fun _ => if_neg fun ⟨e₁, e₂⟩ => h (e₁.trans e₂.symm)
 
 @[deprecated (since := "2025-05-05")] alias StdBasisMatrix.diag_zero := diag_single_of_ne
 
-@[simp]
+-- This simp lemma should take priority over `diag_apply`
+@[simp 1050]
 theorem diag_single_same : diag (single i i c) = Pi.single i c := by
   ext j
   by_cases hij : i = j <;> (try rw [hij]) <;> simp [hij]

@@ -10,7 +10,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 
 Let `C` be a preadditive category. Given two cochain complexes (indexed by `ℤ`),
 the type of cochains `HomComplex.Cochain K L n` of degree `n` was introduced
-in `Mathlib.Algebra.Homology.HomotopyCategory.HomComplex`. In this file, we
+in `Mathlib/Algebra/Homology/HomotopyCategory/HomComplex.lean`. In this file, we
 study how these cochains behave with respect to the shift on the complexes `K`
 and `L`.
 
