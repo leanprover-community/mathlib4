@@ -50,9 +50,9 @@ variable  [CancelMonoidWithZero B] [Nontrivial B]
 
 
 /-- For a map with codomain a `MonoidWithZero`, this is a smallest
-`MondoidWithZero` that contains the image. When the codomain is a `GroupWithZero`, so is
-`range₀ f`. See also `range₀'` for an alternative definition with more assumptions on `B` and `f`,
-and `blabla` for a proof that `range₀ f = range₀' f` under those assumptions. -/
+`MondoidWithZero` that contains the invertible elements in the image. When the codomain is a
+`GroupWithZero`, so is `range₀ f`. When `B` is commutative, see
+`MonoidHomWithZero.mem_range₀_iff_of_comm` for another characterization of `range₀ f`. -/
 def range₀ : Submonoid B where
   carrier := (↑)''(Subgroup.closure (G := Bˣ) ((↑)⁻¹' (range f))).carrier ∪ {0}
   mul_mem' {b b'} hb hb' := by
@@ -63,9 +63,6 @@ def range₀ : Submonoid B where
     · exact Or.inr ⟨a * a', by simpa only [Units.val_mul, and_true] using Subgroup.mul_mem _ ha ha'⟩
     all_goals tauto
   one_mem' := by simpa using Subgroup.one_mem ..
-
-theorem mem_range₀ {a : A} : f a ∈ range₀ f := by
-  sorry
 
 instance : CancelMonoidWithZero (range₀ f) where
   zero := ⟨0, by simp [range₀]⟩
@@ -84,6 +81,7 @@ instance : CancelMonoidWithZero (range₀ f) where
     have : x ≠ 0 := Subtype.coe_ne_coe.mpr ha
     simpa [this] using H
 
+
 theorem zero_mem_range₀ : 0 ∈ range₀ f := by
   simp [range₀]
 
@@ -95,6 +93,13 @@ end CancelMonoidWithZero
 section GroupWithZero
 
 variable [GroupWithZero B]
+
+theorem mem_range₀ {a : A} : f a ∈ range₀ f := by
+  by_cases h : f a = 0 <;>
+  simp [range₀, h]
+  refine ⟨Units.mk0 (f a) h, ?_, rfl⟩
+  apply Subgroup.subset_closure
+  simp
 
 @[simp]
 theorem range₀_coe_one : ((1 : range₀ f) : B) = 1 := rfl
