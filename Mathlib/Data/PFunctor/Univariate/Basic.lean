@@ -39,7 +39,7 @@ variable (P : PFunctor.{uA, uB}) {α : Type v₁} {β : Type v₂} {γ : Type v�
 
 /-- Applying `P` to an object of `Type` -/
 @[coe]
-def Obj (α : Type v) : Type max uA uB v :=
+def Obj (α : Type v) : Type (max uA uB v) :=
   Σ x : P.A, P.B x → α
 
 instance : CoeFun PFunctor.{uA, uB} (fun _ => Type v → Type (max uA uB v)) where
