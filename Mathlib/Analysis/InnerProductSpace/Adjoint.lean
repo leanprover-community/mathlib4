@@ -337,12 +337,12 @@ vector spaces. Use local instances instead. -/
 /-- The adjoint of an operator from the finite-dimensional inner product space `E` to the
 finite-dimensional inner product space `F`. -/
 def adjoint : (E →ₗ[𝕜] F) ≃ₗ⋆[𝕜] F →ₗ[𝕜] E :=
-  have := FiniteDimensional.complete 𝕜 E
-  have := FiniteDimensional.complete 𝕜 F
+  haveI := FiniteDimensional.complete 𝕜 E
+  haveI := FiniteDimensional.complete 𝕜 F
   /- Note: Instead of the two instances above, the following works:
     ```
-      have := FiniteDimensional.complete 𝕜
-      have := FiniteDimensional.complete 𝕜
+      haveI := FiniteDimensional.complete 𝕜
+      haveI := FiniteDimensional.complete 𝕜
     ```
     But removing one of the `have`s makes it fail. The reason is that `E` and `F` don't live
     in the same universe, so the first `have` can no longer be used for `F` after its universe
@@ -353,15 +353,15 @@ def adjoint : (E →ₗ[𝕜] F) ≃ₗ⋆[𝕜] F →ₗ[𝕜] E :=
     LinearMap.toContinuousLinearMap.symm
 
 theorem adjoint_toContinuousLinearMap (A : E →ₗ[𝕜] F) :
-    have := FiniteDimensional.complete 𝕜 E
-    have := FiniteDimensional.complete 𝕜 F
+    haveI := FiniteDimensional.complete 𝕜 E
+    haveI := FiniteDimensional.complete 𝕜 F
     LinearMap.toContinuousLinearMap (LinearMap.adjoint A) =
       ContinuousLinearMap.adjoint (LinearMap.toContinuousLinearMap A) :=
   rfl
 
 theorem adjoint_eq_toCLM_adjoint (A : E →ₗ[𝕜] F) :
-    have := FiniteDimensional.complete 𝕜 E
-    have := FiniteDimensional.complete 𝕜 F
+    haveI := FiniteDimensional.complete 𝕜 E
+    haveI := FiniteDimensional.complete 𝕜 F
     LinearMap.adjoint A = ContinuousLinearMap.adjoint (LinearMap.toContinuousLinearMap A) :=
   rfl
 
