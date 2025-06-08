@@ -1132,7 +1132,7 @@ lemma ext_getVert {u v} {p q : G.Walk u v} (h : ∀ k, p.getVert k = q.getVert k
   have : q.length ≤ p.length := by
     by_contra!
     exact (q.adj_getVert_succ this).ne (by simp [← h, getVert_of_length_le])
-  exact ext_getVert (hpq.antisymm this) fun k _ ↦ h k
+  exact ext_getVert_le_length (hpq.antisymm this) fun k _ ↦ h k
 
 end Walk
 
