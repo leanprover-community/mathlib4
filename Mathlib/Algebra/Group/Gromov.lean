@@ -730,9 +730,14 @@ lemma lipschitz_attains_norm (f: G → ℂ) (hf: IsLipschitz f): LipschitzWith (
   obtain ⟨x, y, hdist⟩ := this
   have edist_ne_zero: edist x y ≠ 0 := by
     by_contra!
-    sorry
+    rw [this] at hdist
+    simp at this
+    rw [this] at hdist
+    simp at hdist
+
   have edist_not_top: edist x y ≠ ⊤ := by
-    sorry
+    rw [edist_nndist]
+    exact ENNReal.coe_ne_top
 
   rw [← ENNReal.lt_div_iff_mul_lt (by simp) (Or.inl edist_not_top)] at hdist
   simp [LipschitzSemiNorm] at hdist
@@ -776,7 +781,6 @@ lemma lipschitz_attains_norm (f: G → ℂ) (hf: IsLipschitz f): LipschitzWith (
   specialize lipschitz_d x y
   rw [mul_comm] at lipschitz_d
   apply ENNReal.div_le_of_le_mul' at lipschitz_d
-  norm_cast at d_lt_slope
   conv at d_lt_slope =>
     equals ENNReal.ofNNReal D < (edist (f x) (f y) / edist x y) =>
       sorry
@@ -784,28 +788,6 @@ lemma lipschitz_attains_norm (f: G → ℂ) (hf: IsLipschitz f): LipschitzWith (
   apply not_lt_of_le at lipschitz_d
   contradiction
 
-
-
-  -- have weaken := LipschitzWith.weaken lipschitz_d (d_lt_slope.le)
-  -- simp [LipschitzWith] at weaken
-  -- specialize weaken x y
-  -- conv at weaken =>
-  --   rhs
-  --   arg 1
-  --   equals (edist (f x) (f y)) / (edist x y) =>
-  --     norm_cast
-  --     sorry
-  -- conv at weaken =>
-  --   rhs
-  --   equals edist (f x) (f y) * (edist x y / edist x y) =>
-  --     exact ENNReal.mul_comm_div
-
-
-  -- rw [ENNReal.div_self edist_ne_zero edist_not_top] at weaken
-
-
-
-  rw [← isGLB_iff_sInf_eq] at sinf_eq
 lemma lipschitz_norm_triangle (x y z: LipschitzH (G := G)): LipschitzSemiNorm (S := S) (x - z) ≤ LipschitzSemiNorm (S := S) (x - y) + LipschitzSemiNorm (S := S) (y - z) := by
   simp [LipschitzSemiNorm]
 
