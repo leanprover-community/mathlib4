@@ -836,7 +836,12 @@ lemma lipschitz_norm_triangle (x y z: G → ℂ) (hx: IsLipschitz x) (hy: IsLips
   exact sinf_le_sum
 
 
+lemma lipschitzH_norm_triangle (x y z: LipschitzH (G := G)): LipschitzSemiNorm (G := G) (x - z) ≤ LipschitzSemiNorm (G := G) (x - y) + LipschitzSemiNorm (G := G) (y - z) := by
+  apply lipschitz_norm_triangle x y z x.lipschitz y.lipschitz z.lipschitz
 
+
+
+--def lift_triangle (x y z: LipschitzH) := Quotient.lift lipschitzH_norm_triangle sorry
 
 noncomputable instance W_seminorm: SeminormedAddCommGroup (W (G := G)) where
   norm := fun f => (LipschitzSemiNorm_w f).val
@@ -879,10 +884,15 @@ noncomputable instance W_seminorm: SeminormedAddCommGroup (W (G := G)) where
     have forward_elem (w: W (G := G)): Submodule.Quotient.mk (w).out = w := by
       simp [Submodule.Quotient.mk]
     rw [← forward_elem (w := (x - z))]
-    rw [← forward_elem (w := (y - z))]
     rw [← forward_elem (w := (x - y))]
+    rw [← forward_elem (w := (y - z))]
     unfold Submodule.Quotient.mk
-    repeat rw [Quotient.lift_mk]
+    rw [Quotient.lift_mk]
+    rw [Quotient.lift_mk]
+    rw [Quotient.lift_mk]
+
+    have triangle := lipschitz_norm_triangle (Quotient.out (x)).toFun (Quotient.out (y)).toFun (Quotient.out (z)).toFun sorry sorry sorry
+
     simp [LipschitzSemiNorm]
     conv =>
       pattern x - z
