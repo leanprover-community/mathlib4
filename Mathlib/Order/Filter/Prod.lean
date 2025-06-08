@@ -238,9 +238,8 @@ theorem prod_comap_comap_eq.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {β�
 theorem prod_comm' : f ×ˢ g = comap Prod.swap (g ×ˢ f) := by
   simp only [prod_eq_inf, comap_comap, Function.comp_def, inf_comm, Prod.swap, comap_inf]
 
-theorem prod_comm : f ×ˢ g = map (fun p : β × α => (p.2, p.1)) (g ×ˢ f) := by
+theorem prod_comm : f ×ˢ g = map Prod.swap (g ×ˢ f) := by
   rw [prod_comm', ← map_swap_eq_comap_swap]
-  rfl
 
 theorem mem_prod_iff_left {s : Set (α × β)} :
     s ∈ f ×ˢ g ↔ ∃ t ∈ f, ∀ᶠ y in g, ∀ x ∈ t, (x, y) ∈ s := by

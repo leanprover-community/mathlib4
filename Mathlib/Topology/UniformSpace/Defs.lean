@@ -214,6 +214,12 @@ def IsSymmetricRel (V : Set (α × α)) : Prop :=
 @[deprecated (since := "2025-03-05")]
 alias SymmetricRel := IsSymmetricRel
 
+lemma isSymmetricRel_idRel : IsSymmetricRel (idRel : Set (α × α)) := by
+  simp [IsSymmetricRel, idRel, eq_comm]
+
+lemma isSymmetricRel_univ : IsSymmetricRel (Set.univ : Set (α × α)) :=
+  preimage_univ
+
 /-- The maximal symmetric relation contained in a given relation. -/
 def symmetrizeRel (V : Set (α × α)) : Set (α × α) :=
   V ∩ Prod.swap ⁻¹' V
@@ -256,45 +262,23 @@ lemma IsSymmetricRel.sInter {s : Set (Set (α × α))} (h : ∀ i ∈ s, IsSymme
   rw [sInter_eq_iInter]
   exact IsSymmetricRel.iInter (by simpa)
 
-lemma isSymmetricRel_idRel : IsSymmetricRel (idRel : Set (α × α)) := by
-  simp [IsSymmetricRel, idRel, eq_comm]
-
-lemma isSymmetricRel_univ : IsSymmetricRel (Set.univ : Set (α × α)) := by
-  simp [IsSymmetricRel, idRel, eq_comm]
-
 lemma IsSymmetricRel.preimage_prodMap {U : Set (β × β)} (ht : IsSymmetricRel U) (f : α → β) :
     IsSymmetricRel (Prod.map f f ⁻¹' U) :=
   Set.ext fun _ ↦ ht.mk_mem_comm
 
 lemma IsSymmetricRel.image_prodMap {U : Set (α × α)} (ht : IsSymmetricRel U) (f : α → β) :
     IsSymmetricRel (Prod.map f f '' U) := by
-  rw [IsSymmetricRel]
-  simp_rw [← Set.image_swap_eq_preimage_swap, Set.image_image]
-  ext ⟨a, b⟩
-  simp only [Set.mem_image, Prod.exists, Prod.map_apply, Prod.swap_prod_mk, Prod.mk.injEq]
-  constructor <;>
-  · rintro ⟨x, y, h, rfl, rfl⟩
-    refine ⟨y, x, ?_, rfl, rfl⟩
-    rwa [ht.mk_mem_comm]
+  rw [IsSymmetricRel, ← image_swap_eq_preimage_swap, ← image_comp, ← Prod.map_comp_swap, image_comp,
+      image_swap_eq_preimage_swap, ht]
 
-lemma IsSymmetricRel.prod_subset_comm {s : Set (α × α)} {t u : Set α}
-    (hs : IsSymmetricRel s) :
+lemma IsSymmetricRel.prod_subset_comm {s : Set (α × α)} {t u : Set α} (hs : IsSymmetricRel s) :
     t ×ˢ u ⊆ s ↔ u ×ˢ t ⊆ s := by
-  constructor <;>
-  · rintro h ⟨a, b⟩ hab
-    simp only [mem_prod] at hab
-    rw [hs.mk_mem_comm]
-    apply h
-    simp [hab]
+  rw [← hs.eq, ← image_subset_iff, image_swap_prod, hs.eq]
 
 lemma IsSymmetricRel.mem_filter_prod_comm {s : Set (α × α)} {f g : Filter α}
     (hs : IsSymmetricRel s) :
     s ∈ f ×ˢ g ↔ s ∈ g ×ˢ f := by
-  simp only [mem_prod_iff]
-  constructor <;>
-  · rintro ⟨t, ht, u, hu, hut⟩
-    rw [hs.prod_subset_comm] at hut
-    exact ⟨u, hu, t, ht, hut⟩
+  rw [← hs.eq, ← mem_map, ← prod_comm, hs.eq]
 
 /-- This core description of a uniform space is outside of the type class hierarchy. It is useful
   for constructions of uniform spaces, when the topology is derived from the uniform space. -/
@@ -511,7 +495,8 @@ theorem comp_symm_of_uniformity {s : Set (α × α)} (hs : s ∈ 𝓤 α) :
   ⟨t', ht', ht'₁ _ _, Subset.trans (monotone_id.compRel monotone_id ht'₂) ht₂⟩
 
 theorem uniformity_le_symm : 𝓤 α ≤ @Prod.swap α α <$> 𝓤 α := by
-  rw [map_swap_eq_comap_swap]; exact tendsto_swap_uniformity.le_comap
+  rw [show Prod.swap <$> 𝓤 α = map Prod.swap (𝓤 α) from rfl,
+    map_swap_eq_comap_swap]; exact tendsto_swap_uniformity.le_comap
 
 theorem uniformity_eq_symm : 𝓤 α = @Prod.swap α α <$> 𝓤 α :=
   le_antisymm uniformity_le_symm symm_le_uniformity
