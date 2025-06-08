@@ -319,7 +319,7 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
         simp only
         apply (hb _).trans ((ack_pair_lt _ _ _).trans_le _)
         -- If m is the maximum, we get a very weak inequality.
-        rcases lt_or_le _ m with h₁ | h₁
+        rcases lt_or_ge _ m with h₁ | h₁
         · rw [max_eq_left h₁.le]
           exact ack_le_ack (Nat.add_le_add (le_max_right a b) <| by norm_num)
                            (self_le_add_right m _)
@@ -327,7 +327,7 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
         -- We get rid of the second `pair`.
         apply (ack_pair_lt _ _ _).le.trans
         -- If n is the maximum, we get a very weak inequality.
-        rcases lt_or_le _ n with h₂ | h₂
+        rcases lt_or_ge _ n with h₂ | h₂
         · rw [max_eq_left h₂.le, add_assoc]
           exact
             ack_le_ack (Nat.add_le_add (le_max_right a b) <| by norm_num)

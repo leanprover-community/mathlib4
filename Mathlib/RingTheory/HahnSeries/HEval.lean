@@ -48,7 +48,7 @@ theorem powerSeriesFamily_of_not_orderTop_pos {x : HahnSeries Γ V} (hx : ¬ 0 <
     (f : PowerSeries R) :
     powerSeriesFamily x f = powerSeriesFamily 0 f := by
   ext n g
-  simp [hx]
+  obtain rfl | hn := eq_or_ne n 0 <;> simp [hx, *]
 
 theorem powerSeriesFamily_of_orderTop_pos {x : HahnSeries Γ V} (hx : 0 < x.orderTop)
     (f : PowerSeries R) (n : ℕ) :

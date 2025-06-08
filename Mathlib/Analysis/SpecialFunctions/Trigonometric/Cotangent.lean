@@ -132,7 +132,7 @@ theorem tendsto_logDeriv_euler_sin_div (x : ℂ) (hx : x ∈ ℂ_ℤ) :
     Tendsto (fun n : ℕ ↦ logDeriv (fun z ↦ ∏ j ∈ Finset.range n, (1 + sineTerm z j)) x)
         atTop (𝓝 <| logDeriv (fun t ↦ (Complex.sin (π * t) / (π * t))) x) := by
   refine logDeriv_tendsto (by apply isOpen_compl_range_intCast) ⟨x, hx⟩
-      HasProdLocallyUniformlyOn_euler_sin_prod.tendstoLocallyUniformlyOn_finset_range ?_ ?_
+      HasProdLocallyUniformlyOn_euler_sin_prod.tendstoLocallyUniformlyOn_finsetRange ?_ ?_
   · filter_upwards with n using by fun_prop
   · simp only [Set.mem_setOf_eq, ne_eq, div_eq_zero_iff, mul_eq_zero, ofReal_eq_zero, not_or]
     refine ⟨sin_pi_z_ne_zero hx, Real.pi_ne_zero , integerComplement.ne_zero hx⟩

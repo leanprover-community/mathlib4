@@ -481,7 +481,7 @@ theorem selfZPow_zero : selfZPow x B 0 = 1 := by
 
 theorem selfZPow_of_neg {n : ℤ} (hn : n < 0) :
     selfZPow x B n = mk' _ (1 : R) (Submonoid.pow x n.natAbs) :=
-  dif_neg hn.not_le
+  dif_neg hn.not_ge
 
 theorem selfZPow_of_nonpos {n : ℤ} (hn : n ≤ 0) :
     selfZPow x B n = mk' _ (1 : R) (Submonoid.pow x n.natAbs) := by
@@ -499,13 +499,13 @@ theorem selfZPow_sub_natCast {n m : ℕ} :
   by_cases h : m ≤ n
   · rw [IsLocalization.eq_mk'_iff_mul_eq, Submonoid.pow_apply, Subtype.coe_mk, ← Int.ofNat_sub h,
       selfZPow_natCast, ← map_pow, ← map_mul, ← pow_add, Nat.sub_add_cancel h]
-  · rw [← neg_sub, ← Int.ofNat_sub (le_of_not_le h), selfZPow_neg_natCast,
+  · rw [← neg_sub, ← Int.ofNat_sub (le_of_not_ge h), selfZPow_neg_natCast,
       IsLocalization.mk'_eq_iff_eq]
-    simp [Submonoid.pow_apply, ← pow_add, Nat.sub_add_cancel (le_of_not_le h)]
+    simp [Submonoid.pow_apply, ← pow_add, Nat.sub_add_cancel (le_of_not_ge h)]
 
 @[simp]
 theorem selfZPow_add {n m : ℤ} : selfZPow x B (n + m) = selfZPow x B n * selfZPow x B m := by
-  rcases le_or_lt 0 n with hn | hn <;> rcases le_or_lt 0 m with hm | hm
+  rcases le_or_gt 0 n with hn | hn <;> rcases le_or_gt 0 m with hm | hm
   · rw [selfZPow_of_nonneg _ _ hn, selfZPow_of_nonneg _ _ hm,
       selfZPow_of_nonneg _ _ (add_nonneg hn hm), Int.natAbs_add_of_nonneg hn hm, pow_add]
   · have : n + m = n.natAbs - m.natAbs := by
@@ -528,7 +528,7 @@ theorem selfZPow_mul_neg (d : ℤ) : selfZPow x B d * selfZPow x B (-d) = 1 := b
       Submonoid.pow_apply, IsLocalization.mk'_spec, map_one]
     apply nonneg_of_neg_nonpos
     rwa [neg_neg]
-  · rw [selfZPow_of_nonneg x B (le_of_not_le hd), selfZPow_of_nonpos, ← map_pow, Int.natAbs_neg,
+  · rw [selfZPow_of_nonneg x B (le_of_not_ge hd), selfZPow_of_nonpos, ← map_pow, Int.natAbs_neg,
       Submonoid.pow_apply, IsLocalization.mk'_spec'_mk, map_one]
     refine nonpos_of_neg_nonneg (le_of_lt ?_)
     rwa [neg_neg, ← not_le]
