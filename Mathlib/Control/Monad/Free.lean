@@ -103,12 +103,9 @@ FreeM F b :=
   | .liftBind op cont => .liftBind op (fun z => FreeM.bind F (cont z) f)
 
 /-- Lift an operation from the effect signature `f` into the `FreeM f` monad. -/
+@[simp]
 def lift {F : Type u → Type v} {ι : Type u} (op : F ι) : FreeM F ι :=
   FreeM.liftBind op FreeM.pure
-
-@[simp]
-lemma lift_def {F : Type u → Type v} {ι : Type u} (op : F ι) :
-    lift op = FreeM.liftBind op FreeM.pure := by sorry
 
 instance {F : Type u → Type v} : Monad (FreeM F) where
   pure := FreeM.pure
