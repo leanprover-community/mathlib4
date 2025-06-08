@@ -390,7 +390,7 @@ theorem getVert_reverse {u v : V} (p : G.Walk u v) (i : ℕ) :
       rw [Nat.succ_sub hi.le]
       simp [getVert]
     next hi =>
-      obtain rfl | hi' := Nat.eq_or_lt_of_not_lt hi
+      obtain rfl | hi' := eq_or_lt_of_not_gt hi
       · simp [getVert]
       · rw [Nat.eq_add_of_sub_eq (Nat.sub_pos_of_lt hi') rfl, Nat.sub_eq_zero_of_le hi']
         simp [getVert]

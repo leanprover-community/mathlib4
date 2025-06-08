@@ -109,7 +109,7 @@ def delabPrefunctorObjExp : Delab := whenPPOption getPPNotation <| withOverApp 6
     withNaryArg 4 do
       let e ← getExpr
       guard <| e.isAppOfArity' ``exp 5
-      withNaryArg 2 delab
+      withNaryArg 3 delab
   let B ← withNaryArg 5 delab
   `($A ⟹ $B)
 

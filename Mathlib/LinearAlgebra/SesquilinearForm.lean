@@ -852,10 +852,10 @@ lemma apply_mul_apply_le_of_forall_zero_le (hs : ∀ x, 0 ≤ B x x) (x y : M) :
   have aux (x y : M) : 0 ≤ (B x x) * ((B x x) * (B y y) - (B x y) * (B y x)) := by
     rw [← apply_smul_sub_smul_sub_eq B x y]
     exact hs (B x y • x - B x x • y)
-  rcases lt_or_le 0 (B x x) with hx | hx
+  rcases lt_or_ge 0 (B x x) with hx | hx
   · exact sub_nonneg.mp <| nonneg_of_mul_nonneg_right (aux x y) hx
   · replace hx : B x x = 0 := le_antisymm hx (hs x)
-    rcases lt_or_le 0 (B y y) with hy | hy
+    rcases lt_or_ge 0 (B y y) with hy | hy
     · rw [mul_comm (B x y), mul_comm (B x x)]
       exact sub_nonneg.mp <| nonneg_of_mul_nonneg_right (aux y x) hy
     · replace hy : B y y = 0 := le_antisymm hy (hs y)

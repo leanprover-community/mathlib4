@@ -41,7 +41,7 @@ theorem range_list_getElem? :
     range (l[·]? : ℕ → Option α) = insert none (some '' { x | x ∈ l }) := by
   rw [← range_list_get, ← range_comp]
   refine (range_subset_iff.2 fun n => ?_).antisymm (insert_subset_iff.2 ⟨?_, ?_⟩)
-  · exact (le_or_lt l.length n).imp getElem?_eq_none_iff.mpr
+  · exact (le_or_gt l.length n).imp getElem?_eq_none_iff.mpr
       (fun hlt => ⟨⟨_, hlt⟩, (getElem?_eq_getElem hlt).symm⟩)
   · exact ⟨_, getElem?_eq_none_iff.mpr le_rfl⟩
   · exact range_subset_iff.2 fun k => ⟨_, getElem?_eq_getElem _⟩

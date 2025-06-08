@@ -6,6 +6,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Noetherian.Defs
+import Mathlib.RingTheory.EssentialFiniteness
 
 /-!
 # Submodules in localizations of commutative rings
@@ -82,6 +83,11 @@ instance {R} [CommRing R] [IsNoetherianRing R] (S : Submonoid R) :
     IsNoetherianRing (Localization S) :=
   IsLocalization.isNoetherianRing S _ ‹_›
 
+lemma _root_.Algebra.EssFiniteType.isNoetherianRing
+    (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+    [Algebra.EssFiniteType R S] [IsNoetherianRing R] : IsNoetherianRing S := by
+  exact IsLocalization.isNoetherianRing (Algebra.EssFiniteType.submonoid R S) _
+    (Algebra.FiniteType.isNoetherianRing R _)
 section NonZeroDivisors
 
 variable {R : Type*} [CommRing R] {M : Submonoid R}

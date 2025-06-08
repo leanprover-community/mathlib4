@@ -43,9 +43,9 @@ open Imo2013Q1
 theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
     ∃ m : ℕ → ℕ+, (1 : ℚ) + (2 ^ k - 1) / n = ∏ i ∈ Finset.range k, (1 + 1 / (m i : ℚ)) := by
   revert n
-  induction' k with pk hpk
-  · intro n; use fun (_ : ℕ) => (1 : ℕ+); simp
-  -- For the base case, any m works.
+  induction k with
+  | zero => intro n; use fun (_ : ℕ) => (1 : ℕ+); simp -- For the base case, any m works.
+  | succ pk hpk =>
   intro n
   obtain ⟨t, ht : ↑n = t + t⟩ | ⟨t, ht : ↑n = 2 * t + 1⟩ := (n : ℕ).even_or_odd
   · -- even case
