@@ -153,10 +153,18 @@ theorem quadratic_roots_of_discrim_ne_sq (ha : a ≠ 0) (h : ∀ s : R, discrim 
   have hnc : ¬(a • X ^ 2 + b • X + C c).IsRoot r := quadratic_ne_zero_of_discrim_ne_sq h _
   exact hnc hc
 
-theorem quadratic_roots_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0)
+theorem quadratic_roots_iff_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0)
     {z s : R} (h : discrim a b c = s * s) :
     z ∈ (a • X ^ 2 + b • X + C c).roots ↔ z = (-b + s) / (2 * a) ∨ z = (-b - s) / (2 * a) := by
-  rw [Polynomial.mem_roots (quadratic_ne_zero ha), Polynomial.quadratic_eq_zero_iff ha h]
+  rw [mem_roots (quadratic_ne_zero ha), quadratic_eq_zero_iff ha h]
+
+theorem quadratic_roots_of_discrim_eq_sq [DecidableEq R] [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
+    (h : discrim a b c = s * s) :
+    (a • X ^ 2 + b • X + C c).roots.toFinset = {(-b + s) / (2 * a), (-b - s) / (2 * a)} := by
+  ext1 z
+  simp only [Finset.mem_insert, Finset.mem_singleton]
+  rw [← quadratic_roots_iff_of_discrim_eq_sq ha h]
+  rw [Multiset.mem_toFinset]
 
 end QuadraticDiscriminant
 
