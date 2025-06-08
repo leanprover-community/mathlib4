@@ -987,6 +987,10 @@ open Module
 variable [FiniteDimensional 𝕜 K]
 
 @[simp]
+theorem topologicalClosure_eq : K.topologicalClosure = K :=
+  K.closed_of_finiteDimensional.submodule_topologicalClosure_eq
+
+@[simp]
 theorem det_reflection : LinearMap.det K.reflection.toLinearMap = (-1) ^ finrank 𝕜 Kᗮ := by
   by_cases hK : FiniteDimensional 𝕜 Kᗮ
   swap

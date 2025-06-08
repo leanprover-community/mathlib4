@@ -156,11 +156,13 @@ theorem eq_adjoint_iff (A : E →L[𝕜] F) (B : F →L[𝕜] E) : A = B† ↔ 
   exact ext_inner_right 𝕜 fun y => by simp only [adjoint_inner_left, h x y]
 
 @[simp]
+theorem adjoint_eq_of_IsSymmetric {A : E →L[𝕜] E} (hA : A.IsSymmetric) : adjoint A = A := by
+  rwa [eq_comm, eq_adjoint_iff A A]
+
+@[simp]
 theorem adjoint_id :
-    ContinuousLinearMap.adjoint (ContinuousLinearMap.id 𝕜 E) = ContinuousLinearMap.id 𝕜 E := by
-  refine Eq.symm ?_
-  rw [eq_adjoint_iff]
-  simp
+    ContinuousLinearMap.adjoint (ContinuousLinearMap.id 𝕜 E) = ContinuousLinearMap.id 𝕜 E :=
+  adjoint_eq_of_IsSymmetric (fun _ _ ↦ rfl)
 
 theorem _root_.Submodule.adjoint_subtypeL (U : Submodule 𝕜 E) [CompleteSpace U] :
     U.subtypeL† = U.orthogonalProjection := by
@@ -174,6 +176,27 @@ theorem _root_.Submodule.adjoint_subtypeL (U : Submodule 𝕜 E) [CompleteSpace 
 theorem _root_.Submodule.adjoint_orthogonalProjection (U : Submodule 𝕜 E) [CompleteSpace U] :
     (U.orthogonalProjection : E →L[𝕜] U)† = U.subtypeL := by
   rw [← U.adjoint_subtypeL, adjoint_adjoint]
+
+theorem orthogonal_ker (T : E →L[𝕜] E) :
+    (LinearMap.ker T)ᗮ = (LinearMap.range (T†)).topologicalClosure := by
+  rw [← Submodule.orthogonal_orthogonal_eq_closure]
+  apply le_antisymm
+  all_goals refine Submodule.orthogonal_le fun x hx ↦ ?_
+  · refine ext_inner_left 𝕜 fun y ↦ ?_
+    simp [← T.adjoint_inner_left, hx _ (LinearMap.mem_range_self (T†) y)]
+  · rintro _ ⟨y, rfl⟩
+    simp_all [T.adjoint_inner_left]
+
+theorem orthogonal_range (T : E →L[𝕜] E) :
+    (LinearMap.range T)ᗮ = LinearMap.ker (T†) := by
+  rw [← (LinearMap.ker (T†)).orthogonal_orthogonal, (T†).orthogonal_ker]
+  simp
+
+theorem range_le_range_iff_ker_le_ker [FiniteDimensional 𝕜 E] {T U : E →L[𝕜] E}
+    (hT : T.IsSymmetric) (hU : U.IsSymmetric) :
+    LinearMap.ker U ≤ LinearMap.ker T ↔ LinearMap.range T ≤ LinearMap.range U := by
+  refine ⟨fun h ↦ ?_, LinearMap.ker_le_ker_of_range hT hU⟩
+  simpa [orthogonal_ker, hT, hU] using Submodule.orthogonal_le h
 
 /-- `E →L[𝕜] E` is a star algebra with the adjoint as the star operation. -/
 instance : Star (E →L[𝕜] E) :=
@@ -330,29 +353,29 @@ def adjoint : (E →ₗ[𝕜] F) ≃ₗ⋆[𝕜] F →ₗ[𝕜] E :=
     LinearMap.toContinuousLinearMap.symm
 
 theorem adjoint_toContinuousLinearMap (A : E →ₗ[𝕜] F) :
-    haveI := FiniteDimensional.complete 𝕜 E
-    haveI := FiniteDimensional.complete 𝕜 F
+    have := FiniteDimensional.complete 𝕜 E
+    have := FiniteDimensional.complete 𝕜 F
     LinearMap.toContinuousLinearMap (LinearMap.adjoint A) =
       ContinuousLinearMap.adjoint (LinearMap.toContinuousLinearMap A) :=
   rfl
 
 theorem adjoint_eq_toCLM_adjoint (A : E →ₗ[𝕜] F) :
-    haveI := FiniteDimensional.complete 𝕜 E
-    haveI := FiniteDimensional.complete 𝕜 F
+    have := FiniteDimensional.complete 𝕜 E
+    have := FiniteDimensional.complete 𝕜 F
     LinearMap.adjoint A = ContinuousLinearMap.adjoint (LinearMap.toContinuousLinearMap A) :=
   rfl
 
 /-- The fundamental property of the adjoint. -/
 theorem adjoint_inner_left (A : E →ₗ[𝕜] F) (x : E) (y : F) : ⟪adjoint A y, x⟫ = ⟪y, A x⟫ := by
-  haveI := FiniteDimensional.complete 𝕜 E
-  haveI := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.complete 𝕜 E
+  have := FiniteDimensional.complete 𝕜 F
   rw [← coe_toContinuousLinearMap A, adjoint_eq_toCLM_adjoint]
   exact ContinuousLinearMap.adjoint_inner_left _ x y
 
 /-- The fundamental property of the adjoint. -/
 theorem adjoint_inner_right (A : E →ₗ[𝕜] F) (x : E) (y : F) : ⟪x, adjoint A y⟫ = ⟪A x, y⟫ := by
-  haveI := FiniteDimensional.complete 𝕜 E
-  haveI := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.complete 𝕜 E
+  have := FiniteDimensional.complete 𝕜 F
   rw [← coe_toContinuousLinearMap A, adjoint_eq_toCLM_adjoint]
   exact ContinuousLinearMap.adjoint_inner_right _ x y
 

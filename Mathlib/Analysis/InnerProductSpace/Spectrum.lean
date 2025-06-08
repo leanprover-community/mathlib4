@@ -284,32 +284,6 @@ theorem eigenvectorBasis_apply_self_apply (hT : T.IsSymmetric) (hn : Module.finr
   intro a
   rw [smul_smul, mul_comm]
 
-theorem range_le_range_iff_ker_le_ker {U : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hU : U.IsSymmetric) :
-    range T ≤ range U ↔ ker U ≤ ker T := by
-  use ker_le_ker_of_range hT hU
-  rintro h _ ⟨y, rfl⟩
-  let b := hU.eigenvectorBasis rfl
-  have h₂ := OrthonormalBasis.sum_repr' b (T y)
-  simp_rw [← hT _ y, ← Finset.sum_add_sum_compl (s := { i | hU.eigenvalues rfl i = 0 })] at h₂
-  conv at h₂ =>
-    enter [1]
-    congr
-    · rw [← Finset.sum_attach]
-      enter [2, i]
-      equals 0 =>
-        obtain ⟨i, hi⟩ := i
-        suffices U (b i) = 0 by simp [show T (b i) = 0 from h this]
-        simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hi
-        simp [b, hi]
-    · rw [Finset.compl_filter, ← Finset.sum_attach (Finset.filter _ _)]
-      enter [2, i, 2]
-      equals (hU.eigenvalues rfl i : 𝕜)⁻¹ • U (b i) =>
-        obtain ⟨i, hi⟩ := i
-        rw [hU.apply_eigenvectorBasis rfl i, inv_smul_smul₀]
-        simpa using hi
-  simp only [Finset.sum_const_zero, smul_smul, zero_add, ← LinearMapClass.map_smul, ← map_sum] at h₂
-  exact ⟨_, h₂⟩
-
 end Version2
 
 end IsSymmetric
