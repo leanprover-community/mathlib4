@@ -143,11 +143,11 @@ namespace Bicategory.Opposite
 instance homCategory (a b : Bᴮᵒᵖ) : Quiver (a ⟶ b) where
   Hom := fun f g => (f.unbop ⟶ g.unbop)ᴮᵒᵖ
 
-/-- The 1-cell opposite of a natural transformation `η : f ⟶ g` in `B`.  -/
+/-- The 1-cell opposite of a natural transformation `η : f ⟶ g` in `B`. -/
 abbrev bop2 {a b : B} {f g : a ⟶ b} (η : f ⟶ g) : f.bop ⟶ g.bop :=
   Bicategory.Opposite.bop η
 
-/-- The 1-cell opposite of a natural transformation `η : f ⟶ g` in `Bᴮᵒᵖ`.  -/
+/-- The 1-cell opposite of a natural transformation `η : f ⟶ g` in `Bᴮᵒᵖ`. -/
 abbrev unbop2 {a b : Bᴮᵒᵖ} {f g : a ⟶ b} (η : f ⟶ g) : f.unbop ⟶ g.unbop :=
   Bicategory.Opposite.unbop η
 
