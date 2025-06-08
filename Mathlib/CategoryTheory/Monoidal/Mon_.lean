@@ -644,10 +644,10 @@ variable {X Y Z W : C} [Mon_Class X] [Mon_Class Y] [Mon_Class Z] [Mon_Class W]
 
 instance {f : X ⟶ Y} {g : Z ⟶ W} [IsMon_Hom f] [IsMon_Hom g] : IsMon_Hom (f ⊗ g) where
   one_hom := by
-    dsimp
+    dsimp [tensorObj.one_def]
     slice_lhs 2 3 => rw [← tensor_comp, one_hom, one_hom]
   mul_hom := by
-    dsimp
+    dsimp [tensorObj.mul_def]
     slice_rhs 1 2 => rw [tensorμ_natural]
     slice_lhs 2 3 => rw [← tensor_comp, mul_hom, mul_hom, tensor_comp]
     simp only [Category.assoc]
@@ -751,7 +751,9 @@ theorem tensor_mul (M N : Mon_ C) : μ[(M ⊗ N).X] =
 instance monMonoidal : MonoidalCategory (Mon_ C) where
   tensorHom_def := by intros; ext; simp [tensorHom_def]
 
-@[simps!]
+-- We don't want `tensorObj.one_def` to be simp as it would loop with `IsMon_Hom.one_hom` applied
+-- to `(λ_ N.X).inv`.
+@[simps! -isSimp]
 instance {M N : C} [Mon_Class M] [Mon_Class N] : Mon_Class (M ⊗ N) :=
   inferInstanceAs <| Mon_Class (Mon_.mk M ⊗ Mon_.mk N).X
 
@@ -790,7 +792,7 @@ namespace Mon_Class
 
 theorem mul_braiding (X Y : C) [Mon_Class X] [Mon_Class Y] :
     μ ≫ (β_ X Y).hom = ((β_ X Y).hom ⊗ (β_ X Y).hom) ≫ μ := by
-  dsimp
+  dsimp [tensorObj.mul_def]
   simp only [tensorμ, Category.assoc, BraidedCategory.braiding_naturality,
     BraidedCategory.braiding_tensor_right, BraidedCategory.braiding_tensor_left,
     comp_whiskerRight, whisker_assoc, MonoidalCategory.whiskerLeft_comp, pentagon_assoc,
