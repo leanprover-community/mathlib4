@@ -37,8 +37,8 @@ variable {R M}
 def toLinearEquiv (f : GeneralLinearGroup R M) : M ≃ₗ[R] M :=
   { f.val with
     invFun := f.inv.toFun
-    left_inv := fun m ↦ show (f.inv * f.val) m = m by erw [f.inv_val]; simp
-    right_inv := fun m ↦ show (f.val * f.inv) m = m by erw [f.val_inv]; simp }
+    left_inv := fun m ↦ show (f.inv * f.val) m = m by rw [f.inv_val]; simp
+    right_inv := fun m ↦ show (f.val * f.inv) m = m by rw [f.val_inv]; simp }
 
 /-- An equivalence from `M` to itself determines an invertible linear map. -/
 def ofLinearEquiv (f : M ≃ₗ[R] M) : GeneralLinearGroup R M where

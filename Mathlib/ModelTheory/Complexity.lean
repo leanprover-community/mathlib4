@@ -3,7 +3,7 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.Satisfiability
+import Mathlib.ModelTheory.Equivalence
 
 /-!
 # Quantifier Complexity
@@ -34,11 +34,8 @@ namespace FirstOrder
 
 namespace Language
 
-variable {L : Language.{u, v}} {L' : Language}
-variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
-variable {α : Type u'} {β : Type v'} {γ : Type*}
-variable {n l : ℕ} {φ ψ : L.BoundedFormula α l} {θ : L.BoundedFormula α l.succ}
-variable {v : α → M} {xs : Fin l → M}
+variable {L : Language.{u, v}} {M : Type w} [L.Structure M] {α : Type u'} {β : Type v'}
+variable {n l : ℕ} {φ : L.BoundedFormula α l}
 
 open FirstOrder Structure Fin
 
@@ -105,11 +102,11 @@ protected theorem castLE {h : l ≤ n} (hφ : IsQF φ) : (φ.castLE h).IsQF :=
 end IsQF
 
 theorem not_all_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.all.IsQF := fun con => by
-  cases' con with _ con
+  obtain - | con := con
   exact φ.not_all_isAtomic con
 
 theorem not_ex_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.ex.IsQF := fun con => by
-  cases' con with _ con _ _ con
+  obtain - | con | con := con
   · exact φ.not_ex_isAtomic con
   · exact not_all_isQF _ con
 
@@ -148,7 +145,6 @@ theorem IsPrenex.liftAt {k m : ℕ} (h : IsPrenex φ) : (φ.liftAt k m).IsPrenex
   IsPrenex.recOn h (fun ih => ih.liftAt.isPrenex) (fun _ ih => ih.castLE.all)
     fun _ ih => ih.castLE.ex
 
--- Porting note: universes in different order
 /-- An auxiliary operation to `FirstOrder.Language.BoundedFormula.toPrenex`.
   If `φ` is quantifier-free and `ψ` is in prenex normal form, then `φ.toPrenexImpRight ψ`
   is a prenex normal form for `φ.imp ψ`. -/
@@ -174,7 +170,6 @@ theorem isPrenex_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ
   | all _ ih1 => exact (ih1 hφ.liftAt).all
   | ex _ ih2 => exact (ih2 hφ.liftAt).ex
 
--- Porting note: universes in different order
 /-- An auxiliary operation to `FirstOrder.Language.BoundedFormula.toPrenex`.
   If `φ` and `ψ` are in prenex normal form, then `φ.toPrenexImp ψ`
   is a prenex normal form for `φ.imp ψ`. -/
@@ -200,7 +195,6 @@ theorem isPrenex_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ)
   | all _ ih1 => exact (ih1 hψ.liftAt).ex
   | ex _ ih2 => exact (ih2 hψ.liftAt).all
 
--- Porting note: universes in different order
 /-- For any bounded formula `φ`, `φ.toPrenex` is a semantically-equivalent formula in prenex normal
   form. -/
 def toPrenex : ∀ {n}, L.BoundedFormula α n → L.BoundedFormula α n
@@ -288,25 +282,25 @@ theorem IsQF.induction_on_sup_not {P : L.BoundedFormula α n → Prop} {φ : L.B
     (ha : ∀ ψ : L.BoundedFormula α n, IsAtomic ψ → P ψ)
     (hsup : ∀ {φ₁ φ₂}, P φ₁ → P φ₂ → P (φ₁ ⊔ φ₂)) (hnot : ∀ {φ}, P φ → P φ.not)
     (hse :
-      ∀ {φ₁ φ₂ : L.BoundedFormula α n}, Theory.SemanticallyEquivalent ∅ φ₁ φ₂ → (P φ₁ ↔ P φ₂)) :
+      ∀ {φ₁ φ₂ : L.BoundedFormula α n}, (φ₁ ⇔[∅] φ₂) → (P φ₁ ↔ P φ₂)) :
     P φ :=
   IsQF.recOn h hf @(ha) fun {φ₁ φ₂} _ _ h1 h2 =>
-    (hse (φ₁.imp_semanticallyEquivalent_not_sup φ₂)).2 (hsup (hnot h1) h2)
+    (hse (φ₁.imp_iff_not_sup φ₂)).2 (hsup (hnot h1) h2)
 
 theorem IsQF.induction_on_inf_not {P : L.BoundedFormula α n → Prop} {φ : L.BoundedFormula α n}
     (h : IsQF φ) (hf : P (⊥ : L.BoundedFormula α n))
     (ha : ∀ ψ : L.BoundedFormula α n, IsAtomic ψ → P ψ)
     (hinf : ∀ {φ₁ φ₂}, P φ₁ → P φ₂ → P (φ₁ ⊓ φ₂)) (hnot : ∀ {φ}, P φ → P φ.not)
     (hse :
-      ∀ {φ₁ φ₂ : L.BoundedFormula α n}, Theory.SemanticallyEquivalent ∅ φ₁ φ₂ → (P φ₁ ↔ P φ₂)) :
+      ∀ {φ₁ φ₂ : L.BoundedFormula α n}, (φ₁ ⇔[∅] φ₂) → (P φ₁ ↔ P φ₂)) :
     P φ :=
   h.induction_on_sup_not hf ha
     (fun {φ₁ φ₂} h1 h2 =>
-      (hse (φ₁.sup_semanticallyEquivalent_not_inf_not φ₂)).2 (hnot (hinf (hnot h1) (hnot h2))))
+      (hse (φ₁.sup_iff_not_inf_not φ₂)).2 (hnot (hinf (hnot h1) (hnot h2))))
     (fun {_} => hnot) fun {_ _} => hse
 
-theorem semanticallyEquivalent_toPrenex (φ : L.BoundedFormula α n) :
-    (∅ : L.Theory).SemanticallyEquivalent φ φ.toPrenex := fun M v xs => by
+theorem iff_toPrenex (φ : L.BoundedFormula α n) :
+    φ ⇔[∅] φ.toPrenex := fun M v xs => by
   rw [realize_iff, realize_toPrenex]
 
 theorem induction_on_all_ex {P : ∀ {m}, L.BoundedFormula α m → Prop} (φ : L.BoundedFormula α n)
@@ -314,10 +308,10 @@ theorem induction_on_all_ex {P : ∀ {m}, L.BoundedFormula α m → Prop} (φ : 
     (hall : ∀ {m} {ψ : L.BoundedFormula α (m + 1)}, P ψ → P ψ.all)
     (hex : ∀ {m} {φ : L.BoundedFormula α (m + 1)}, P φ → P φ.ex)
     (hse : ∀ {m} {φ₁ φ₂ : L.BoundedFormula α m},
-      Theory.SemanticallyEquivalent ∅ φ₁ φ₂ → (P φ₁ ↔ P φ₂)) :
+      (φ₁ ⇔[∅] φ₂) → (P φ₁ ↔ P φ₂)) :
     P φ := by
   suffices h' : ∀ {m} {φ : L.BoundedFormula α m}, φ.IsPrenex → P φ from
-    (hse φ.semanticallyEquivalent_toPrenex).2 (h' φ.toPrenex_isPrenex)
+    (hse φ.iff_toPrenex).2 (h' φ.toPrenex_isPrenex)
   intro m φ hφ
   induction hφ with
   | of_isQF hφ => exact hqf hφ
@@ -329,10 +323,10 @@ theorem induction_on_exists_not {P : ∀ {m}, L.BoundedFormula α m → Prop} (�
     (hnot : ∀ {m} {φ : L.BoundedFormula α m}, P φ → P φ.not)
     (hex : ∀ {m} {φ : L.BoundedFormula α (m + 1)}, P φ → P φ.ex)
     (hse : ∀ {m} {φ₁ φ₂ : L.BoundedFormula α m},
-      Theory.SemanticallyEquivalent ∅ φ₁ φ₂ → (P φ₁ ↔ P φ₂)) :
+      (φ₁ ⇔[∅] φ₂) → (P φ₁ ↔ P φ₂)) :
     P φ :=
   φ.induction_on_all_ex (fun {_ _} => hqf)
-    (fun {_ φ} hφ => (hse φ.all_semanticallyEquivalent_not_ex_not).2 (hnot (hex (hnot hφ))))
+    (fun {_ φ} hφ => (hse φ.all_iff_not_ex_not).2 (hnot (hex (hnot hφ))))
     (fun {_ _} => hex) fun {_ _ _} => hse
 
 /-- A universal formula is a formula defined by applying only universal quantifiers to a

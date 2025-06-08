@@ -35,7 +35,7 @@ noncomputable def isometryEquivSumSquares (w' : ι → ℂ) :
   convert QuadraticMap.isometryEquivBasisRepr (weightedSumSquares ℂ w')
     ((Pi.basisFun ℂ ι).unitsSMul fun i => (isUnit_iff_ne_zero.2 <| hw' i).unit)
   ext1 v
-  erw [basisRepr_apply, weightedSumSquares_apply, weightedSumSquares_apply]
+  rw [basisRepr_apply, weightedSumSquares_apply, weightedSumSquares_apply]
   refine sum_congr rfl fun j hj => ?_
   have hsum : (∑ i : ι, v i • ((isUnit_iff_ne_zero.2 <| hw' i).unit : ℂ) • (Pi.basisFun ℂ ι) i) j =
       v j • w j ^ (-(1 / 2 : ℂ)) := by
@@ -53,7 +53,7 @@ noncomputable def isometryEquivSumSquares (w' : ι → ℂ) :
   split_ifs with h
   · simp only [h, zero_smul, zero_mul]
   have hww' : w' j = w j := by simp only [w, dif_neg h, Units.val_mk0]
-  simp (config := {zeta := false}) only [one_mul, Units.val_mk0, smul_eq_mul]
+  simp -zeta only [one_mul, Units.val_mk0, smul_eq_mul]
   rw [hww']
   suffices v j * v j = w j ^ (-(1 / 2 : ℂ)) * w j ^ (-(1 / 2 : ℂ)) * w j * v j * v j by
     rw [this]; ring
@@ -70,7 +70,7 @@ noncomputable def isometryEquivSumSquaresUnits (w : ι → Units ℂ) :
 the sum of squares, i.e. `weightedSumSquares` with weight `fun (i : ι) => 1`. -/
 theorem equivalent_sum_squares {M : Type*} [AddCommGroup M] [Module ℂ M] [FiniteDimensional ℂ M]
     (Q : QuadraticForm ℂ M) (hQ : (associated (R := ℂ) Q).SeparatingLeft) :
-    Equivalent Q (weightedSumSquares ℂ (1 : Fin (FiniteDimensional.finrank ℂ M) → ℂ)) :=
+    Equivalent Q (weightedSumSquares ℂ (1 : Fin (Module.finrank ℂ M) → ℂ)) :=
   let ⟨w, ⟨hw₁⟩⟩ := Q.equivalent_weightedSumSquares_units_of_nondegenerate' hQ
   ⟨hw₁.trans (isometryEquivSumSquaresUnits w)⟩
 

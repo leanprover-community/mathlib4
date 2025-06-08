@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Reid Barton, Scott Morrison
+Authors: Reid Barton, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Opposites
 
@@ -51,6 +51,26 @@ theorem eqToHom_trans {X Y Z : C} (p : X = Y) (q : Y = Z) :
   cases q
   simp
 
+/-- `eqToHom h` is heterogeneously equal to the identity of its domain. -/
+lemma eqToHom_heq_id_dom (X Y : C) (h : X = Y) : HEq (eqToHom h) (𝟙 X) := by
+  subst h; rfl
+
+/-- `eqToHom h` is heterogeneously equal to the identity of its codomain. -/
+lemma eqToHom_heq_id_cod (X Y : C) (h : X = Y) : HEq (eqToHom h) (𝟙 Y) := by
+  subst h; rfl
+
+/-- Two morphisms are conjugate via eqToHom if and only if they are heterogeneously equal.
+Note this used to be in the Functor namespace, where it doesn't belong. -/
+theorem conj_eqToHom_iff_heq {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) (h : W = Y) (h' : X = Z) :
+    f = eqToHom h ≫ g ≫ eqToHom h'.symm ↔ HEq f g := by
+  cases h
+  cases h'
+  simp
+
+theorem conj_eqToHom_iff_heq' {C} [Category C] {W X Y Z : C}
+    (f : W ⟶ X) (g : Y ⟶ Z) (h : W = Y) (h' : Z = X) :
+    f = eqToHom h ≫ g ≫ eqToHom h' ↔ HEq f g := conj_eqToHom_iff_heq _ _ _ h'.symm
+
 theorem comp_eqToHom_iff {X Y Y' : C} (p : Y = Y') (f : X ⟶ Y) (g : X ⟶ Y') :
     f ≫ eqToHom p = g ↔ f = g ≫ eqToHom p.symm :=
   { mp := fun h => h ▸ by simp
@@ -61,10 +81,46 @@ theorem eqToHom_comp_iff {X X' Y : C} (p : X = X') (f : X ⟶ Y) (g : X' ⟶ Y) 
   { mp := fun h => h ▸ by simp
     mpr := fun h => h ▸ by simp [whisker_eq _ h] }
 
+theorem eqToHom_comp_heq {C} [Category C] {W X Y : C}
+    (f : Y ⟶ X) (h : W = Y) : HEq (eqToHom h ≫ f) f := by
+  rw [← conj_eqToHom_iff_heq _ _ h rfl, eqToHom_refl, Category.comp_id]
+
+@[simp] theorem eqToHom_comp_heq_iff {C} [Category C] {W X Y Z Z' : C}
+    (f : Y ⟶ X) (g : Z ⟶ Z') (h : W = Y) :
+    HEq (eqToHom h ≫ f) g ↔ HEq f g :=
+  ⟨(eqToHom_comp_heq ..).symm.trans, (eqToHom_comp_heq ..).trans⟩
+
+@[simp] theorem heq_eqToHom_comp_iff {C} [Category C] {W X Y Z Z' : C}
+    (f : Y ⟶ X) (g : Z ⟶ Z') (h : W = Y) :
+    HEq g (eqToHom h ≫ f) ↔ HEq g f :=
+  ⟨(·.trans (eqToHom_comp_heq ..)), (·.trans (eqToHom_comp_heq ..).symm)⟩
+
+theorem comp_eqToHom_heq {C} [Category C] {X Y Z : C}
+    (f : X ⟶ Y) (h : Y = Z) : HEq (f ≫ eqToHom h) f := by
+  rw [← conj_eqToHom_iff_heq' _ _ rfl h, eqToHom_refl, Category.id_comp]
+
+@[simp] theorem comp_eqToHom_heq_iff {C} [Category C] {W X Y Z Z' : C}
+    (f : X ⟶ Y) (g : Z ⟶ Z') (h : Y = W) :
+    HEq (f ≫ eqToHom h) g ↔ HEq f g :=
+  ⟨(comp_eqToHom_heq ..).symm.trans, (comp_eqToHom_heq ..).trans⟩
+
+@[simp] theorem heq_comp_eqToHom_iff {C} [Category C] {W X Y Z Z' : C}
+    (f : X ⟶ Y) (g : Z ⟶ Z') (h : Y = W) :
+    HEq g (f ≫ eqToHom h) ↔ HEq g f :=
+  ⟨(·.trans (comp_eqToHom_heq ..)), (·.trans (comp_eqToHom_heq ..).symm)⟩
+
+theorem heq_comp {C} [Category C] {X Y Z X' Y' Z' : C}
+    {f : X ⟶ Y} {g : Y ⟶ Z} {f' : X' ⟶ Y'} {g' : Y' ⟶ Z'}
+    (eq1 : X = X') (eq2 : Y = Y') (eq3 : Z = Z')
+    (H1 : HEq f f') (H2 : HEq g g') :
+    HEq (f ≫ g) (f' ≫ g') := by
+  cases eq1; cases eq2; cases eq3; cases H1; cases H2; rfl
+
 variable {β : Sort*}
 
 /-- We can push `eqToHom` to the left through families of morphisms. -/
 -- The simpNF linter incorrectly claims that this will never apply.
+-- It seems the side condition `w` is not applied by `simpNF`.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
 @[reassoc (attr := simp, nolint simpNF)]
 theorem eqToHom_naturality {f g : β → C} (z : ∀ b, f b ⟶ g b) {j j' : β} (w : j = j') :
@@ -74,6 +130,7 @@ theorem eqToHom_naturality {f g : β → C} (z : ∀ b, f b ⟶ g b) {j j' : β}
 
 /-- A variant on `eqToHom_naturality` that helps Lean identify the families `f` and `g`. -/
 -- The simpNF linter incorrectly claims that this will never apply.
+-- It seems the side condition `w` is not applied by `simpNF`.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
 @[reassoc (attr := simp, nolint simpNF)]
 theorem eqToHom_iso_hom_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j j' : β} (w : j = j') :
@@ -83,6 +140,7 @@ theorem eqToHom_iso_hom_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j 
 
 /-- A variant on `eqToHom_naturality` that helps Lean identify the families `f` and `g`. -/
 -- The simpNF linter incorrectly claims that this will never apply.
+-- It seems the side condition `w` is not applied by `simpNF`.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
 @[reassoc (attr := simp, nolint simpNF)]
 theorem eqToHom_iso_inv_naturality {f g : β → C} (z : ∀ b, f b ≅ g b) {j j' : β} (w : j = j') :
@@ -182,7 +240,7 @@ theorem ext {F G : C ⥤ D} (h_obj : ∀ X, F.obj X = G.obj X)
     F = G := by
   match F, G with
   | mk F_pre _ _ , mk G_pre _ _ =>
-    match F_pre, G_pre with  -- Porting note: did not unfold the Prefunctor unlike Lean3
+    match F_pre, G_pre with
     | Prefunctor.mk F_obj _ , Prefunctor.mk G_obj _ =>
     obtain rfl : F_obj = G_obj := by
       ext X
@@ -197,13 +255,6 @@ lemma ext_of_iso {F G : C ⥤ D} (e : F ≅ G) (hobj : ∀ X, F.obj X = G.obj X)
     rw [← cancel_mono (e.hom.app Y), e.hom.naturality f, happ, happ, Category.assoc,
     Category.assoc, eqToHom_trans, eqToHom_refl, Category.comp_id])
 
-/-- Two morphisms are conjugate via eqToHom if and only if they are heterogeneously equal. -/
-theorem conj_eqToHom_iff_heq {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) (h : W = Y) (h' : X = Z) :
-    f = eqToHom h ≫ g ≫ eqToHom h'.symm ↔ HEq f g := by
-  cases h
-  cases h'
-  simp
-
 /-- Proving equality between functors using heterogeneous equality. -/
 theorem hext {F G : C ⥤ D} (h_obj : ∀ X, F.obj X = G.obj X)
     (h_map : ∀ (X Y) (f : X ⟶ Y), HEq (F.map f) (G.map f)) : F = G :=
@@ -212,6 +263,7 @@ theorem hext {F G : C ⥤ D} (h_obj : ∀ X, F.obj X = G.obj X)
 -- Using equalities between functors.
 theorem congr_obj {F G : C ⥤ D} (h : F = G) (X) : F.obj X = G.obj X := by rw [h]
 
+@[reassoc]
 theorem congr_hom {F G : C ⥤ D} (h : F = G) {X Y} (f : X ⟶ Y) :
     F.map f = eqToHom (congr_obj h X) ≫ G.map f ≫ eqToHom (congr_obj h Y).symm := by
   subst h; simp
@@ -297,5 +349,28 @@ theorem dcongr_arg {ι : Type*} {F G : ι → C} (α : ∀ i, F i ⟶ G i) {i j 
     α i = eqToHom (congr_arg F h) ≫ α j ≫ eqToHom (congr_arg G h.symm) := by
   subst h
   simp
+
+/-- If `T ≃ D` is a bijection and `D` is a category, then
+`InducedCategory D e` is equivalent to `D`. -/
+@[simps]
+def Equivalence.induced {T : Type*} (e : T ≃ D) :
+    InducedCategory D e ≌ D where
+  functor := inducedFunctor e
+  inverse :=
+    { obj := e.symm
+      map {X Y} f := show e (e.symm X) ⟶ e (e.symm Y) from
+        eqToHom (e.apply_symm_apply X) ≫ f ≫
+          eqToHom (e.apply_symm_apply Y).symm
+      map_comp {X Y Z} f g := by
+        dsimp
+        rw [Category.assoc]
+        erw [Category.assoc]
+        rw [Category.assoc, eqToHom_trans_assoc, eqToHom_refl, Category.id_comp] }
+  unitIso := NatIso.ofComponents (fun _ ↦ eqToIso (by simp)) (fun {X Y} f ↦ by
+    dsimp
+    erw [eqToHom_trans_assoc _ (by simp), eqToHom_refl, Category.id_comp]
+    rfl )
+  counitIso := NatIso.ofComponents (fun _ ↦ eqToIso (by simp))
+  functor_unitIso_comp X := eqToHom_trans (by simp) (by simp)
 
 end CategoryTheory

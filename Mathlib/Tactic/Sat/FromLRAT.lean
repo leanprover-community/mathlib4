@@ -3,8 +3,8 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat
-import Batteries.Data.HashMap.Basic
+import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Tactic.ByContra
 
 /-!
 # `lrat_proof` command
@@ -40,8 +40,8 @@ foo : ∀ (a a_1 : Prop), (¬a ∧ ¬a_1 ∨ a ∧ ¬a_1) ∨ ¬a ∧ a_1 ∨ a 
   to load CNF / LRAT files from disk.
 -/
 
-open Lean hiding Literal HashMap
-open Batteries
+open Lean hiding Literal
+open Std (HashMap)
 
 namespace Sat
 
@@ -70,7 +70,10 @@ instance : ToExpr Literal where
 /-- A clause is a list of literals, thought of as a disjunction like `a ∨ b ∨ ¬c`. -/
 def Clause := List Literal
 
+/-- The empty clause -/
 def Clause.nil : Clause := []
+
+/-- Append a literal to a clause. -/
 def Clause.cons : Literal → Clause → Clause := List.cons
 
 /-- A formula is a list of clauses, thought of as a conjunction like `(a ∨ b) ∧ c ∧ (¬c ∨ ¬d)`. -/
@@ -323,7 +326,7 @@ partial def buildProofStep (db : HashMap Nat Clause)
   -- step 1
   for i in pf do
     let i := i.natAbs
-    let some cl := db.find? i | return Except.error "missing clause"
+    let some cl := db[i]? | return Except.error "missing clause"
     if !gctx.contains i then
       lams := lams.push (mkApp2 (mkConst ``Sat.Fmla.proof) ctx cl.expr)
       args := args.push cl.proof
@@ -355,7 +358,7 @@ partial def buildProofStep (db : HashMap Nat Clause)
   -- step 3
   for (step : Int) in pf do
     if step < 0 then return Except.error "unimplemented: RAT step"
-    let some cl := gctx.find? step.toNat | return Except.error "missing clause"
+    let some cl := gctx[step.toNat]? | return Except.error "missing clause"
     let mut unit := none
     for i in cl.lits do
       unless lctx.contains i do
@@ -364,7 +367,7 @@ partial def buildProofStep (db : HashMap Nat Clause)
         unit := some i
     let mut pr := mkApp2 (mkBVar (depth + n + 2 - cl.depth)) (v depth) (hv depth)
     for i in cl.lits do
-      pr := mkApp pr <| mkBVar (match lctx.find? i with | some k => depth - k | _ => 0)
+      pr := mkApp pr <| mkBVar (match lctx[i]? with | some k => depth - k | _ => 0)
     let some u := unit | return Except.ok <| f pr
     let lit := toExpr <| Sat.Literal.ofInt u
     let nlit := toExpr <| Sat.Literal.ofInt (-u)
@@ -550,7 +553,7 @@ def fromLRATAux (cnf lrat : String) (name : Name) : MetaM (Nat × Expr × Expr �
     | throwError "parse CNF failed"
   if arr.isEmpty then throwError "empty CNF"
   let ctx' := buildConj arr 0 arr.size
-  let ctxName ← mkAuxName (name ++ `ctx) 1
+  let ctxName ← mkAuxDeclName (name ++ `ctx)
   addDecl <| Declaration.defnDecl {
     name := ctxName
     levelParams := []
@@ -563,7 +566,7 @@ def fromLRATAux (cnf lrat : String) (name : Name) : MetaM (Nat × Expr × Expr �
   let Parsec.ParseResult.success _ steps := Parser.parseLRAT lrat.mkIterator
     | throwError "parse LRAT failed"
   let proof ← buildProof arr ctx ctx' steps
-  let declName ← mkAuxName (name ++ `proof) 1
+  let declName ← mkAuxDeclName (name ++ `proof)
   addDecl <| Declaration.thmDecl {
     name := declName
     levelParams := []

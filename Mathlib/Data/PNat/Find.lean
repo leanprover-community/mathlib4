@@ -57,7 +57,7 @@ protected theorem find_min : ∀ {m : ℕ+}, m < PNat.find h → ¬p m :=
   @(PNat.findX h).prop.right
 
 protected theorem find_min' {m : ℕ+} (hm : p m) : PNat.find h ≤ m :=
-  le_of_not_lt fun l => PNat.find_min h l hm
+  le_of_not_gt fun l => PNat.find_min h l hm
 
 variable {n m : ℕ+}
 
@@ -88,9 +88,7 @@ theorem lt_find_iff (n : ℕ+) : n < PNat.find h ↔ ∀ m ≤ n, ¬p m := by
 @[simp]
 theorem find_eq_one : PNat.find h = 1 ↔ p 1 := by simp [find_eq_iff]
 
--- Porting note: deleted `@[simp]` to satisfy the linter because `le_find_iff` is more general
-theorem one_le_find : 1 < PNat.find h ↔ ¬p 1 :=
-  not_iff_not.mp <| by simp
+theorem one_le_find : 1 < PNat.find h ↔ ¬p 1 := by simp
 
 theorem find_mono (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} :
     PNat.find hp ≤ PNat.find hq :=
@@ -101,10 +99,12 @@ theorem find_le {h : ∃ n, p n} (hn : p n) : PNat.find h ≤ n :=
 
 theorem find_comp_succ (h : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h1 : ¬p 1) :
     PNat.find h = PNat.find h₂ + 1 := by
-  refine (find_eq_iff _).2 ⟨PNat.find_spec h₂, fun n => PNat.recOn n ?_ ?_⟩
-  · simp [h1]
-  intro m _ hm
-  simp only [add_lt_add_iff_right, lt_find_iff] at hm
-  exact hm _ le_rfl
+  refine (find_eq_iff _).2 ⟨PNat.find_spec h₂, fun n ↦ ?_⟩
+  induction n with
+  | one => simp [h1]
+  | succ m _ =>
+    intro hm
+    simp only [add_lt_add_iff_right, lt_find_iff] at hm
+    exact hm _ le_rfl
 
 end PNat

@@ -12,12 +12,12 @@ If `Γ` is a `LinearOrderedCancelAddCommMonoid` and `R` is a domain, then the do
 admits an additive valuation given by `orderTop`.
 
 ## Main Definitions
-  * `HahnSeries.addVal Γ R` defines an `AddValuation` on `HahnSeries Γ R` when `Γ` is linearly
-    ordered.
+* `HahnSeries.addVal Γ R` defines an `AddValuation` on `HahnSeries Γ R` when `Γ` is linearly
+  ordered.
 
 ## TODO
-  * Multiplicative valuations
-  * Add any API for Laurent series valuations that do not depend on `Γ = ℤ`.
+* Multiplicative valuations
+* Add any API for Laurent series valuations that do not depend on `Γ = ℤ`.
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
@@ -32,12 +32,12 @@ namespace HahnSeries
 
 section Valuation
 
-variable (Γ R) [LinearOrderedCancelAddCommMonoid Γ] [Ring R] [IsDomain R]
+variable (Γ R) [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [Ring R] [IsDomain R]
 
 /-- The additive valuation on `HahnSeries Γ R`, returning the smallest index at which
   a Hahn Series has a nonzero coefficient, or `⊤` for the 0 series. -/
 def addVal : AddValuation (HahnSeries Γ R) (WithTop Γ) :=
-  AddValuation.of orderTop orderTop_zero (orderTop_one) (fun x y => min_orderTop_le_orderTop_add)
+  AddValuation.of orderTop orderTop_zero (orderTop_one) (fun _ _ => min_orderTop_le_orderTop_add)
   fun x y => by
     by_cases hx : x = 0; · simp [hx]
     by_cases hy : y = 0; · simp [hy]

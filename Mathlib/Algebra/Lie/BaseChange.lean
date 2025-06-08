@@ -16,9 +16,9 @@ scalars.
 
 ## Main definitions
 
- * `LieAlgebra.ExtendScalars.instLieAlgebra`
- * `LieAlgebra.ExtendScalars.instLieModule`
- * `LieAlgebra.RestrictScalars.lieAlgebra`
+* `LieAlgebra.ExtendScalars.instLieAlgebra`
+* `LieAlgebra.ExtendScalars.instLieModule`
+* `LieAlgebra.RestrictScalars.lieAlgebra`
 
 ## Tags
 
@@ -43,7 +43,7 @@ private def bracket' : A ⊗[R] L →ₗ[A] A ⊗[R] M →ₗ[A] A ⊗[R] M :=
   TensorProduct.curry <|
     TensorProduct.AlgebraTensorModule.map
         (LinearMap.mul' A A) (LieModule.toModuleHom R L M : L ⊗[R] M →ₗ[R] M) ∘ₗ
-      (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R A A L A M).toLinearMap
+      (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R R A A A L A M).toLinearMap
 
 @[simp]
 private theorem bracket'_tmul (s t : A) (x : L) (m : M) :
@@ -81,7 +81,6 @@ private theorem bracket_lie_self (x : A ⊗[R] L) : ⁅x, x⁆ = 0 := by
 
 private theorem bracket_leibniz_lie (x y : A ⊗[R] L) (z : A ⊗[R] M) :
     ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, z⁆ + ⁅y, ⁅x, z⁆⁆ := by
-  -- Porting note: replaced some `simp`s by `rw`s to avoid raising heartbeats
   simp only [bracket_def]
   refine x.induction_on ?_ ?_ ?_
   · simp only [LinearMap.map_zero, add_zero, LinearMap.zero_apply]
@@ -90,8 +89,7 @@ private theorem bracket_leibniz_lie (x y : A ⊗[R] L) (z : A ⊗[R] M) :
     · simp only [LinearMap.map_zero, add_zero, LinearMap.zero_apply]
     · intro a₂ l₂
       refine z.induction_on ?_ ?_ ?_
-      · rw [LinearMap.map_zero, LinearMap.map_zero, LinearMap.map_zero, LinearMap.map_zero,
-          add_zero]
+      · simp only [LinearMap.map_zero, add_zero]
       · intro a₃ l₃; simp only [bracket'_tmul]
         rw [mul_left_comm a₂ a₁ a₃, mul_assoc, leibniz_lie, TensorProduct.tmul_add]
       · intro u₁ u₂ h₁ h₂
@@ -118,7 +116,7 @@ instance instLieRingModule : LieRingModule (A ⊗[R] L) (A ⊗[R] M) where
 
 instance instLieModule : LieModule A (A ⊗[R] L) (A ⊗[R] M) where
   smul_lie t x m := by simp only [bracket_def, map_smul, LinearMap.smul_apply]
-  lie_smul t x m := map_smul _ _ _
+  lie_smul _ _ _ := map_smul _ _ _
 
 end ExtendScalars
 
@@ -135,7 +133,7 @@ variable [CommRing A] [LieAlgebra A L]
 
 instance lieAlgebra [CommRing R] [Algebra R A] : LieAlgebra R (RestrictScalars R A L) where
   lie_smul t x y := (lie_smul (algebraMap R A t) (RestrictScalars.addEquiv R A L x)
-    (RestrictScalars.addEquiv R A L y) : _)
+    (RestrictScalars.addEquiv R A L y) :)
 
 end RestrictScalars
 
@@ -200,13 +198,13 @@ lemma mem_baseChange_iff {m : A ⊗[R] M} :
 
 @[simp]
 lemma baseChange_bot : (⊥ : LieSubmodule R L M).baseChange A = ⊥ := by
-  simp only [baseChange, bot_coeSubmodule, Submodule.baseChange_bot,
+  simp only [baseChange, bot_toSubmodule, Submodule.baseChange_bot,
     Submodule.bot_toAddSubmonoid]
   rfl
 
 @[simp]
 lemma baseChange_top : (⊤ : LieSubmodule R L M).baseChange A = ⊤ := by
-  simp only [baseChange, top_coeSubmodule, Submodule.baseChange_top,
+  simp only [baseChange, top_toSubmodule, Submodule.baseChange_top,
     Submodule.bot_toAddSubmonoid]
   rfl
 
@@ -214,7 +212,7 @@ lemma lie_baseChange {I : LieIdeal R L} {N : LieSubmodule R L M} :
     ⁅I, N⁆.baseChange A = ⁅I.baseChange A, N.baseChange A⁆ := by
   set s : Set (A ⊗[R] M) := { m | ∃ x ∈ I, ∃ n ∈ N, 1 ⊗ₜ ⁅x, n⁆ = m}
   have : (TensorProduct.mk R A M 1) '' {m | ∃ x ∈ I, ∃ n ∈ N, ⁅x, n⁆ = m} = s := by ext; simp [s]
-  rw [← coe_toSubmodule_eq_iff, coe_baseChange, lieIdeal_oper_eq_linear_span',
+  rw [← toSubmodule_inj, coe_baseChange, lieIdeal_oper_eq_linear_span',
     Submodule.baseChange_span, this, lieIdeal_oper_eq_linear_span']
   refine le_antisymm (Submodule.span_mono ?_) (Submodule.span_le.mpr ?_)
   · rintro - ⟨x, hx, m, hm, rfl⟩
@@ -223,25 +221,26 @@ lemma lie_baseChange {I : LieIdeal R L} {N : LieSubmodule R L M} :
   · rintro - ⟨x, hx, m, hm, rfl⟩
     revert m
     apply Submodule.span_induction
-      (p := fun x' ↦ ∀ m' ∈ N.baseChange A, ⁅x', m'⁆ ∈ Submodule.span A s) hx
+      (p := fun x' _ ↦ ∀ m' ∈ N.baseChange A, ⁅x', m'⁆ ∈ Submodule.span A s) (hx := hx)
     · rintro _ ⟨y : L, hy : y ∈ I, rfl⟩ m hm
-      apply Submodule.span_induction (p := fun m' ↦ ⁅(1 : A) ⊗ₜ[R] y, m'⁆ ∈ Submodule.span A s) hm
+      apply Submodule.span_induction
+        (p := fun m' _ ↦ ⁅(1 : A) ⊗ₜ[R] y, m'⁆ ∈ Submodule.span A s) (hx := hm)
       · rintro - ⟨m', hm' : m' ∈ N, rfl⟩
         rw [TensorProduct.mk_apply, LieAlgebra.ExtendScalars.bracket_tmul, mul_one]
         apply Submodule.subset_span
         exact ⟨y, hy, m', hm', rfl⟩
       · simp
-      · intro u v hu hv
+      · intro u v _ _ hu hv
         rw [lie_add]
         exact Submodule.add_mem _ hu hv
-      · intro a u hu
+      · intro a u _ hu
         rw [lie_smul]
         exact Submodule.smul_mem _ a hu
     · simp
-    · intro x y hx hy m' hm'
+    · intro x y _ _ hx hy m' hm'
       rw [add_lie]
       exact Submodule.add_mem _ (hx _ hm') (hy _ hm')
-    · intro a x hx m' hm'
+    · intro a x _ hx m' hm'
       rw [smul_lie]
       exact Submodule.smul_mem _ a (hx _ hm')
 

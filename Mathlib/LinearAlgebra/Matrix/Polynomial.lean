@@ -38,13 +38,13 @@ theorem natDegree_det_X_add_C_le (A B : Matrix n n α) :
   rw [det_apply]
   refine (natDegree_sum_le _ _).trans ?_
   refine Multiset.max_le_of_forall_le _ _ ?_
-  simp only [forall_apply_eq_imp_iff, true_and_iff, Function.comp_apply, Multiset.map_map,
+  simp only [forall_apply_eq_imp_iff, true_and, Function.comp_apply, Multiset.map_map,
     Multiset.mem_map, exists_imp, Finset.mem_univ_val]
   intro g
   calc
     natDegree (sign g • ∏ i : n, (X • A.map C + B.map C : Matrix n n α[X]) (g i) i) ≤
         natDegree (∏ i : n, (X • A.map C + B.map C : Matrix n n α[X]) (g i) i) := by
-      cases' Int.units_eq_one_or (sign g) with sg sg
+      rcases Int.units_eq_one_or (sign g) with sg | sg
       · rw [sg, one_smul]
       · rw [sg, Units.neg_smul, one_smul, natDegree_neg]
     _ ≤ ∑ i : n, natDegree (((X : α[X]) • A.map C + B.map C : Matrix n n α[X]) (g i) i) :=

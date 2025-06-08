@@ -35,7 +35,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
       ∃ y, d x' y ≤ ε / 2 ^ k ∧ 2 * ϕ x' < ϕ y := by
     intro k x'
     push_neg at H
-    have := H (ε / 2 ^ k) (by positivity) x' (by simp [ε_pos.le, one_le_two])
+    have := H (ε / 2 ^ k) (by positivity) x' (div_le_self ε_pos.le <| one_le_pow₀ one_le_two)
     simpa [reformulation] using this
   haveI : Nonempty X := ⟨x⟩
   choose! F hF using H
@@ -69,7 +69,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
         refine @geom_le (ϕ ∘ u) _ zero_le_two (n + 1) fun m hm => ?_
         exact (IH _ <| Nat.lt_add_one_iff.1 hm).2.le
       exact hu (n + 1) ⟨A, B⟩
-  cases' forall_and.mp key with key₁ key₂
+  obtain ⟨key₁, key₂⟩ := forall_and.mp key
   -- Hence u is Cauchy
   have cauchy_u : CauchySeq u := by
     refine cauchySeq_of_le_geometric _ ε one_half_lt_one fun n => ?_

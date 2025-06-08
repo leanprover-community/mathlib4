@@ -3,8 +3,9 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Action.Faithful
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Units.Defs
 
 /-! # Group actions on and by `Mˣ`
 
@@ -45,20 +46,20 @@ instance [Monoid M] [SMul M α] [FaithfulSMul M α] : FaithfulSMul Mˣ α where
 
 @[to_additive]
 instance instMulAction [Monoid M] [MulAction M α] : MulAction Mˣ α where
-  one_smul := (one_smul M : _)
+  one_smul := one_smul M
   mul_smul m n := mul_smul (m : M) n
 
 @[to_additive]
 instance smulCommClass_left [Monoid M] [SMul M α] [SMul N α] [SMulCommClass M N α] :
-    SMulCommClass Mˣ N α where smul_comm m n := (smul_comm (m : M) n : _)
+    SMulCommClass Mˣ N α where smul_comm m n := smul_comm (m : M) n
 
 @[to_additive]
 instance smulCommClass_right [Monoid N] [SMul M α] [SMul N α] [SMulCommClass M N α] :
-    SMulCommClass M Nˣ α where smul_comm m n := (smul_comm m (n : N) : _)
+    SMulCommClass M Nˣ α where smul_comm m n := smul_comm m (n : N)
 
 @[to_additive]
 instance [Monoid M] [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
-    IsScalarTower Mˣ N α where smul_assoc m n := (smul_assoc (m : M) n : _)
+    IsScalarTower Mˣ N α where smul_assoc m n := smul_assoc (m : M) n
 
 /-! ### Action of a group `G` on units of `M` -/
 
@@ -71,8 +72,8 @@ instance mulAction' [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M]
     ⟨g • (m : M), (g⁻¹ • ((m⁻¹ : Mˣ) : M)),
       by rw [smul_mul_smul_comm, Units.mul_inv, mul_inv_cancel, one_smul],
       by rw [smul_mul_smul_comm, Units.inv_mul, inv_mul_cancel, one_smul]⟩
-  one_smul m := Units.ext <| one_smul _ _
-  mul_smul g₁ g₂ m := Units.ext <| mul_smul _ _ _
+  one_smul _ := Units.ext <| one_smul _ _
+  mul_smul _ _ _ := Units.ext <| mul_smul _ _ _
 
 @[to_additive (attr := simp)]
 lemma val_smul [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsScalarTower G M M]
@@ -101,7 +102,7 @@ instance isScalarTower' [SMul G H] [Group G] [Group H] [Monoid M] [MulAction G M
 @[to_additive "Transfer `VAddAssocClass G M α` to `VAddAssocClass G (AddUnits M) α`."]
 instance isScalarTower'_left [Group G] [Monoid M] [MulAction G M] [SMul M α] [SMul G α]
     [SMulCommClass G M M] [IsScalarTower G M M] [IsScalarTower G M α] :
-    IsScalarTower G Mˣ α where smul_assoc g m := (smul_assoc g (m : M) : _)
+    IsScalarTower G Mˣ α where smul_assoc g m := smul_assoc g (m : M)
 
 -- Just to prove this transfers a particularly useful instance.
 example [Monoid M] [Monoid N] [MulAction M N] [SMulCommClass M N N] [IsScalarTower M N N] :

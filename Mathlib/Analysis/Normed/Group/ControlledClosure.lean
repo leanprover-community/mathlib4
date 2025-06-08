@@ -8,7 +8,7 @@ import Mathlib.Analysis.SpecificLimits.Normed
 
 /-! # Extending a backward bound on a normed group homomorphism from a dense set
 
-Possible TODO (from the PR's review, https://github.com/leanprover-community/mathlib/pull/8498 ):
+Possible TODO (from the PR's review, https://github.com/leanprover-community/mathlib/pull/8498):
 "This feels a lot like the second step in the proof of the Banach open mapping theorem
 (`exists_preimage_norm_le`) ... wonder if it would be possible to refactor it using one of [the
 lemmas in this file]."
@@ -59,7 +59,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
       calc
         ‖u n‖ ≤ C * ‖v n‖ := hnorm_u n
         _ ≤ C * b n := by gcongr; exact (hv _ <| Nat.succ_le_iff.mp hn).le
-        _ = (1 / 2) ^ n * (ε * ‖h‖ / 2) := by simp [mul_div_cancel₀ _ hC.ne.symm]
+        _ = (1 / 2) ^ n * (ε * ‖h‖ / 2) := by simp [b, mul_div_cancel₀ _ hC.ne.symm]
         _ = ε * ‖h‖ / 2 * (1 / 2) ^ n := mul_comm _ _
   -- We now show that the limit `g` of `s` is the desired preimage.
   obtain ⟨g : G, hg⟩ := cauchySeq_tendsto_of_complete this
@@ -89,7 +89,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
     have : (∑ k ∈ range (n + 1), C * b k) ≤ ε * ‖h‖ :=
       calc (∑ k ∈ range (n + 1), C * b k)
         _ = (∑ k ∈ range (n + 1), (1 / 2 : ℝ) ^ k) * (ε * ‖h‖ / 2) := by
-          simp only [mul_div_cancel₀ _ hC.ne.symm, ← sum_mul]
+          simp only [b, mul_div_cancel₀ _ hC.ne.symm, ← sum_mul]
         _ ≤ 2 * (ε * ‖h‖ / 2) := by gcongr; apply sum_geometric_two_le
         _ = ε * ‖h‖ := mul_div_cancel₀ _ two_ne_zero
     calc

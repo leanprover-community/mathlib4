@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Amelia Livingston, 
 Neil Strickland, Aaron Anderson
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Tactic.Common
 
 /-!
@@ -15,7 +14,7 @@ This file defines the basics of the divisibility relation in the context of `(Co
 
 ## Main definitions
 
- * `semigroupDvd`
+* `semigroupDvd`
 
 ## Implementation notes
 
@@ -82,22 +81,6 @@ alias Dvd.dvd.mul_right := dvd_mul_of_dvd_left
 
 theorem dvd_of_mul_right_dvd (h : a * b ∣ c) : a ∣ c :=
   (dvd_mul_right a b).trans h
-
-section map_dvd
-
-variable {M N : Type*}
-
-theorem map_dvd [Semigroup M] [Semigroup N] {F : Type*} [FunLike F M N] [MulHomClass F M N]
-    (f : F) {a b} : a ∣ b → f a ∣ f b
-  | ⟨c, h⟩ => ⟨f c, h.symm ▸ map_mul f a c⟩
-
-theorem MulHom.map_dvd [Semigroup M] [Semigroup N] (f : M →ₙ* N) {a b} : a ∣ b → f a ∣ f b :=
-  _root_.map_dvd f
-
-theorem MonoidHom.map_dvd [Monoid M] [Monoid N] (f : M →* N) {a b} : a ∣ b → f a ∣ f b :=
-  _root_.map_dvd f
-
-end map_dvd
 
 /-- An element `a` in a semigroup is primal if whenever `a` is a divisor of `b * c`, it can be
 factored as the product of a divisor of `b` and a divisor of `c`. -/

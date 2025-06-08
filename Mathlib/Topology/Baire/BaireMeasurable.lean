@@ -3,9 +3,8 @@ Copyright (c) 2024 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
-import Mathlib.Topology.GDelta
 import Mathlib.Topology.LocallyClosed
-import Mathlib.MeasureTheory.Constructions.EventuallyMeasurable
+import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
@@ -31,7 +30,7 @@ variable (α : Type*) {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 open Topology
 
 /-- Notation for `=ᶠ[residual _]`. That is, eventual equality with respect to
-the filter of residual sets.-/
+the filter of residual sets. -/
 scoped[Topology] notation:50 f " =ᵇ " g:50 => Filter.EventuallyEq (residual _) f g
 
 /-- Notation to say that a property of points in a topological space holds
@@ -42,6 +41,15 @@ scoped[Topology] notation3 "∀ᵇ "(...)", "r:(scoped p => Filter.Eventually p 
 scoped[Topology] notation3 "∃ᵇ "(...)", "r:(scoped p => Filter.Frequently p <| residual _) => r
 
 variable {α}
+
+theorem coborder_mem_residual {s : Set α} (hs : IsLocallyClosed s) : coborder s ∈ residual α :=
+  residual_of_dense_open hs.isOpen_coborder dense_coborder
+
+theorem closure_residualEq {s : Set α} (hs : IsLocallyClosed s) : closure s =ᵇ s := by
+  rw [Filter.eventuallyEq_set]
+  filter_upwards [coborder_mem_residual hs] with x hx
+  nth_rewrite 2 [← closure_inter_coborder (s := s)]
+  simp [hx]
 
 /-- We say a set is a `BaireMeasurableSet` if it differs from some Borel set by
 a meager set. This forms a σ-algebra.
@@ -78,7 +86,7 @@ theorem iUnion {ι : Sort*} [Countable ι] {s : ι → Set α}
     (h : ∀ i, BaireMeasurableSet (s i)) : BaireMeasurableSet (⋃ i, s i) :=
   MeasurableSet.iUnion h
 
-theorem biUnion {ι : Type*}  {s : ι → Set α} {t : Set ι} (ht : t.Countable)
+theorem biUnion {ι : Type*} {s : ι → Set α} {t : Set ι} (ht : t.Countable)
     (h : ∀ i ∈ t, BaireMeasurableSet (s i)) : BaireMeasurableSet (⋃ i ∈ t, s i) :=
   MeasurableSet.biUnion ht h
 
@@ -90,7 +98,7 @@ theorem iInter {ι : Sort*} [Countable ι] {s : ι → Set α}
     (h : ∀ i, BaireMeasurableSet (s i)) : BaireMeasurableSet (⋂ i, s i) :=
   MeasurableSet.iInter h
 
-theorem biInter {ι : Type*}  {s : ι → Set α} {t : Set ι} (ht : t.Countable)
+theorem biInter {ι : Type*} {s : ι → Set α} {t : Set ι} (ht : t.Countable)
     (h : ∀ i ∈ t, BaireMeasurableSet (s i)) : BaireMeasurableSet (⋂ i ∈ t, s i) :=
   MeasurableSet.biInter ht h
 
@@ -117,25 +125,20 @@ end BaireMeasurableSet
 
 open Filter
 
-/--Any Borel set differs from some open set by a meager set. -/
+/-- Any Borel set differs from some open set by a meager set. -/
 theorem MeasurableSet.residualEq_isOpen [MeasurableSpace α] [BorelSpace α] (h : MeasurableSet s) :
-    ∃ u : Set α, (IsOpen u) ∧ s =ᵇ u := by
-  apply h.induction_on_open (fun s hs => ⟨s, hs, EventuallyEq.rfl⟩)
-  · rintro s - ⟨u, uo, su⟩
-    refine ⟨(closure u)ᶜ, isClosed_closure.isOpen_compl,
-      EventuallyEq.compl (su.trans <| EventuallyLE.antisymm subset_closure.eventuallyLE ?_)⟩
-    have : (coborder u) ∈ residual _ :=
-      residual_of_dense_open uo.isLocallyClosed.isOpen_coborder dense_coborder
-    rw [coborder_eq_union_closure_compl] at this
-    rw [EventuallyLE]
-    convert this
-    simp only [le_Prop_eq, imp_iff_or_not]
-    rfl --terrible
-  rintro s - - hs
-  choose u uo su using hs
-  exact ⟨⋃ i, u i, isOpen_iUnion uo, EventuallyEq.countable_iUnion su⟩
+    ∃ u : Set α, IsOpen u ∧ s =ᵇ u := by
+  induction s, h using MeasurableSet.induction_on_open with
+  | isOpen U hU => exact ⟨U, hU, .rfl⟩
+  | compl s _ ihs =>
+    obtain ⟨U, Uo, hsU⟩ := ihs
+    use (closure U)ᶜ, isClosed_closure.isOpen_compl
+    exact .compl <| hsU.trans <| .symm <| closure_residualEq Uo.isLocallyClosed
+  | iUnion f _ _ ihf =>
+    choose u uo su using ihf
+    exact ⟨⋃ i, u i, isOpen_iUnion uo, EventuallyEq.countable_iUnion su⟩
 
-/--Any `BaireMeasurableSet` differs from some open set by a meager set. -/
+/-- Any `BaireMeasurableSet` differs from some open set by a meager set. -/
 theorem BaireMeasurableSet.residualEq_isOpen (h : BaireMeasurableSet s) :
     ∃ u : Set α, (IsOpen u) ∧ s =ᵇ u := by
   borelize α
@@ -143,7 +146,7 @@ theorem BaireMeasurableSet.residualEq_isOpen (h : BaireMeasurableSet s) :
   rcases ht.residualEq_isOpen with ⟨u, hu, htu⟩
   exact ⟨u, hu, hst.trans htu⟩
 
-/--A set is Baire measurable if and only if it differs from some open set by a meager set. -/
+/-- A set is Baire measurable if and only if it differs from some open set by a meager set. -/
 theorem BaireMeasurableSet.iff_residualEq_isOpen :
     BaireMeasurableSet s ↔ ∃ u : Set α, (IsOpen u) ∧ s =ᵇ u :=
   ⟨fun h => h.residualEq_isOpen , fun ⟨_, uo, ueq⟩ => uo.baireMeasurableSet.congr ueq.symm⟩

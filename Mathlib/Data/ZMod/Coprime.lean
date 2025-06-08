@@ -3,8 +3,9 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
+import Mathlib.Algebra.EuclideanDomain.Int
+import Mathlib.Data.Nat.Prime.Int
 import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
@@ -14,6 +15,7 @@ We show that for prime `p`, the image of an integer `a` in `ZMod p` vanishes if 
 `a` and `p` are not coprime.
 -/
 
+assert_not_exists TwoSidedIdeal
 
 namespace ZMod
 
@@ -21,7 +23,7 @@ namespace ZMod
 `gcd a p ≠ 1`. -/
 theorem eq_zero_iff_gcd_ne_one {a : ℤ} {p : ℕ} [pp : Fact p.Prime] :
     (a : ZMod p) = 0 ↔ a.gcd p ≠ 1 := by
-  rw [Ne, Int.gcd_comm, Int.gcd_eq_one_iff_coprime,
+  rw [Ne, Int.gcd_comm, ← Int.isCoprime_iff_gcd_eq_one,
     (Nat.prime_iff_prime_int.1 pp.1).coprime_iff_not_dvd, Classical.not_not,
     intCast_zmod_eq_zero_iff_dvd]
 

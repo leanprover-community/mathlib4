@@ -25,23 +25,20 @@ derivative, slope
 -/
 
 
-universe u v w
+universe u v
 
-noncomputable section
+open scoped Topology
 
-open Topology Filter TopologicalSpace
-open Filter Set
+open Filter TopologicalSpace Set
 
 section NormedField
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {f f₀ f₁ g : 𝕜 → F}
-variable {f' f₀' f₁' g' : F}
+variable {f : 𝕜 → F}
+variable {f' : F}
 variable {x : 𝕜}
-variable {s t : Set 𝕜}
-variable {L L₁ L₂ : Filter 𝕜}
+variable {s : Set 𝕜}
 
 /-- If the domain has dimension one, then Fréchet derivative is equivalent to the classical
 definition with a limit. In this version we have to take the limit along the subset `-{x}`,
@@ -80,13 +77,13 @@ theorem hasDerivAt_iff_tendsto_slope_zero :
 
 alias ⟨HasDerivAt.tendsto_slope_zero, _⟩ := hasDerivAt_iff_tendsto_slope_zero
 
-theorem HasDerivAt.tendsto_slope_zero_right [PartialOrder 𝕜] (h : HasDerivAt f f' x) :
+theorem HasDerivAt.tendsto_slope_zero_right [Preorder 𝕜] (h : HasDerivAt f f' x) :
     Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (𝓝[>] 0) (𝓝 f') :=
-  h.tendsto_slope_zero.mono_left (nhds_right'_le_nhds_ne 0)
+  h.tendsto_slope_zero.mono_left (nhdsGT_le_nhdsNE 0)
 
-theorem HasDerivAt.tendsto_slope_zero_left [PartialOrder 𝕜] (h : HasDerivAt f f' x) :
+theorem HasDerivAt.tendsto_slope_zero_left [Preorder 𝕜] (h : HasDerivAt f f' x) :
     Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (𝓝[<] 0) (𝓝 f') :=
-  h.tendsto_slope_zero.mono_left (nhds_left'_le_nhds_ne 0)
+  h.tendsto_slope_zero.mono_left (nhdsLT_le_nhdsNE 0)
 
 /-- Given a set `t` such that `s ∩ t` is dense in `s`, then the range of `derivWithin f s` is
 contained in the closure of the submodule spanned by the image of `t`. -/
@@ -94,18 +91,14 @@ theorem range_derivWithin_subset_closure_span_image
     (f : 𝕜 → F) {s t : Set 𝕜} (h : s ⊆ closure (s ∩ t)) :
     range (derivWithin f s) ⊆ closure (Submodule.span 𝕜 (f '' t)) := by
   rintro - ⟨x, rfl⟩
-  rcases eq_or_neBot (𝓝[s \ {x}] x) with H|H
-  · simpa [derivWithin, fderivWithin, H] using subset_closure (zero_mem _)
+  by_cases H : UniqueDiffWithinAt 𝕜 s x; swap
+  · simpa [derivWithin_zero_of_not_uniqueDiffWithinAt H] using subset_closure (zero_mem _)
   by_cases H' : DifferentiableWithinAt 𝕜 f s x; swap
   · rw [derivWithin_zero_of_not_differentiableWithinAt H']
     exact subset_closure (zero_mem _)
   have I : (𝓝[(s ∩ t) \ {x}] x).NeBot := by
-    rw [← mem_closure_iff_nhdsWithin_neBot] at H ⊢
-    have A : closure (s \ {x}) ⊆ closure (closure (s ∩ t) \ {x}) :=
-      closure_mono (diff_subset_diff_left h)
-    have B : closure (s ∩ t) \ {x} ⊆ closure ((s ∩ t) \ {x}) := by
-      convert closure_diff; exact closure_singleton.symm
-    simpa using A.trans (closure_mono B) H
+    rw [← accPt_principal_iff_nhdsWithin, ← uniqueDiffWithinAt_iff_accPt]
+    exact H.mono_closure h
   have : Tendsto (slope f x) (𝓝[(s ∩ t) \ {x}] x) (𝓝 (derivWithin f s x)) := by
     apply Tendsto.mono_left (hasDerivWithinAt_iff_tendsto_slope.1 H'.hasDerivWithinAt)
     rw [inter_comm, inter_diff_assoc]
@@ -147,6 +140,11 @@ theorem isSeparable_range_deriv [SeparableSpace 𝕜] (f : 𝕜 → F) :
     IsSeparable (range (deriv f)) := by
   rw [← derivWithin_univ]
   exact isSeparable_range_derivWithin _ _
+
+lemma HasDerivAt.continuousAt_div [DecidableEq 𝕜] {f : 𝕜 → 𝕜} {c a : 𝕜} (hf : HasDerivAt f a c) :
+    ContinuousAt (Function.update (fun x ↦ (f x - f c) / (x - c)) c a) c := by
+  rw [← slope_fun_def_field]
+  exact continuousAt_update_same.mpr <| hasDerivAt_iff_tendsto_slope.mp hf
 
 end NormedField
 

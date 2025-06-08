@@ -13,7 +13,7 @@ import Lean.Elab.Command
 
 This file defines an `unset_option` user command, which unsets user configurable
 options.
-For example inputing `set_option blah 7` and then `unset_option blah`
+For example, inputting `set_option blah 7` and then `unset_option blah`
 returns the user to the default state before any `set_option` command is called.
 This is helpful when the user does not know the default value of the option or it
 is cleaner not to write it explicitly, or for some options where the default
@@ -22,8 +22,7 @@ behaviour is different from any user set value.
 
 namespace Lean.Elab
 
-variable {m : Type → Type} [Monad m] [MonadOptions m] [MonadExceptOf Exception m] [MonadRef m]
-variable [AddErrorMessageContext m] [MonadLiftT (EIO Exception) m] [MonadInfoTree m]
+variable {m : Type → Type} [Monad m] [MonadOptions m] [MonadRef m] [MonadInfoTree m]
 
 /-- unset the option specified by id -/
 def elabUnsetOption (id : Syntax) : m Options := do

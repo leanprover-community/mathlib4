@@ -40,7 +40,7 @@ than just a functor known to be a right adjoint. In docstrings, we write `(η, �
 and counit of the adjunction `adj₁ : F ⊣ U` and `(ι, δ)` for the unit and counit of the adjunction
 `adj₂ : L ⋙ F ⊣ U'`.
 
-This file has been adapted from `Mathlib.CategoryTheory.Adjunction.Lifting.Left`.
+This file has been adapted from `Mathlib/CategoryTheory/Adjunction/Lifting/Left.lean`.
 Please try to keep them in sync.
 
 ## TODO
@@ -152,6 +152,7 @@ noncomputable def constructRightAdjoint [∀ X : B, RegularMono (adj₁.unit.app
   rw [constructRightAdjointEquiv_symm_apply, constructRightAdjointEquiv_symm_apply,
     Equiv.symm_apply_eq, Subtype.ext_iff]
   dsimp
+  simp only [Adjunction.homEquiv_unit, Adjunction.homEquiv_counit]
   erw [Fork.IsLimit.homIso_natural, Fork.IsLimit.homIso_natural]
   simp only [Fork.ofι_pt, Functor.map_comp, assoc, limit.cone_x]
   erw [adj₂.homEquiv_naturality_left, Equiv.rightInverse_symm]

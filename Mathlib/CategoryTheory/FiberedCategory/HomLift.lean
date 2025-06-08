@@ -52,10 +52,10 @@ class Functor.IsHomLift {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) :
   cond : IsHomLiftAux p f φ
 
 /-- `subst_hom_lift p f φ` tries to substitute `f` with `p(φ)` by using `p.IsHomLift f φ` -/
-macro "subst_hom_lift" p:ident f:ident φ:ident : tactic =>
+macro "subst_hom_lift" p:term:max f:term:max φ:term:max : tactic =>
   `(tactic| obtain ⟨⟩ := Functor.IsHomLift.cond (p := $p) (f := $f) (φ := $φ))
 
-/-- For any arrow `φ : a ⟶ b` in `𝒳`, `φ` lifts the arrow `p.map φ` in the base `𝒮`-/
+/-- For any arrow `φ : a ⟶ b` in `𝒳`, `φ` lifts the arrow `p.map φ` in the base `𝒮`. -/
 @[simp]
 instance {a b : 𝒳} (φ : a ⟶ b) : p.IsHomLift (p.map φ) φ where
   cond := by constructor
@@ -106,11 +106,15 @@ lemma of_fac' {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (ha : p.obj
   obtain rfl : f = p.map φ := by simpa using h.symm
   infer_instance
 
-lemma of_commSq {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (ha : p.obj a = R) (hb : p.obj b = S)
-    (h : CommSq (p.map φ) (eqToHom ha) (eqToHom hb) f) : p.IsHomLift f φ := by
+lemma of_commsq {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (ha : p.obj a = R) (hb : p.obj b = S)
+    (h : p.map φ ≫ eqToHom hb = (eqToHom ha) ≫ f) : p.IsHomLift f φ := by
   subst ha hb
-  obtain rfl : f = p.map φ := by simpa using h.1.symm
+  obtain rfl : f = p.map φ := by simpa using h.symm
   infer_instance
+
+lemma of_commSq {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (ha : p.obj a = R) (hb : p.obj b = S)
+    (h : CommSq (p.map φ) (eqToHom ha) (eqToHom hb) f) : p.IsHomLift f φ :=
+  of_commsq p f φ ha hb h.1
 
 instance comp {R S T : 𝒮} {a b c : 𝒳} (f : R ⟶ S) (g : S ⟶ T) (φ : a ⟶ b)
     (ψ : b ⟶ c) [p.IsHomLift f φ] [p.IsHomLift g ψ] : p.IsHomLift (f ≫ g) (φ ≫ ψ) := by
@@ -142,7 +146,7 @@ instance comp_lift_id_left {a b c : 𝒳} {S T : 𝒮} (f : S ⟶ T) (ψ : b ⟶
 lemma comp_lift_id_left' {a b c : 𝒳} (R : 𝒮) (φ : a ⟶ b) [p.IsHomLift (𝟙 R) φ]
     {S T : 𝒮} (f : S ⟶ T) (ψ : b ⟶ c) [p.IsHomLift f ψ] : p.IsHomLift f (φ ≫ ψ) := by
   obtain rfl : R = S := by rw [← codomain_eq p (𝟙 R) φ, domain_eq p f ψ]
-  simpa using inferInstanceAs (p.IsHomLift (𝟙 R ≫ f) (φ ≫ ψ))
+  infer_instance
 
 lemma eqToHom_domain_lift_id {p : 𝒳 ⥤ 𝒮} {a b : 𝒳} (hab : a = b) {R : 𝒮} (hR : p.obj a = R) :
     p.IsHomLift (𝟙 R) (eqToHom hab) := by
@@ -180,25 +184,25 @@ instance lift_comp_eqToHom {R S S' : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a �
 lemma comp_eqToHom_lift_iff {R S : 𝒮} {a' a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : a' = a) :
     p.IsHomLift f (eqToHom h ≫ φ) ↔ p.IsHomLift f φ where
   mp hφ' := by subst h; simpa using hφ'
-  mpr hφ := inferInstance
+  mpr _ := inferInstance
 
 @[simp]
 lemma eqToHom_comp_lift_iff {R S : 𝒮} {a b b' : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : b = b') :
     p.IsHomLift f (φ ≫ eqToHom h) ↔ p.IsHomLift f φ where
   mp hφ' := by subst h; simpa using hφ'
-  mpr hφ := inferInstance
+  mpr _ := inferInstance
 
 @[simp]
 lemma lift_eqToHom_comp_iff {R' R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : R' = R) :
     p.IsHomLift (eqToHom h ≫ f) φ ↔ p.IsHomLift f φ where
   mp hφ' := by subst h; simpa using hφ'
-  mpr hφ := inferInstance
+  mpr _ := inferInstance
 
 @[simp]
 lemma lift_comp_eqToHom_iff {R S S' : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : S = S') :
     p.IsHomLift (f ≫ eqToHom h) φ ↔ p.IsHomLift f φ where
   mp := fun hφ' => by subst h; simpa using hφ'
-  mpr := fun hφ => inferInstance
+  mpr := fun _ => inferInstance
 
 section
 

@@ -20,7 +20,6 @@ section Sections
 /-- The sections of a multiset of multisets `s` consists of all those multisets
 which can be put in bijection with `s`, so each element is a member of the corresponding multiset.
 -/
-
 def Sections (s : Multiset (Multiset α)) : Multiset (Multiset α) :=
   Multiset.recOn s {0} (fun s _ c => s.bind fun a => c.map (Multiset.cons a)) fun a₀ a₁ _ pi => by
     simp [map_bind, bind_bind a₀ a₁, cons_swap]
@@ -42,7 +41,7 @@ theorem coe_sections :
   | a :: l => by
     simp only [List.map_cons, List.sections]
     rw [← cons_coe, sections_cons, bind_map_comm, coe_sections l]
-    simp [List.sections, Function.comp_def, List.bind]
+    simp [List.sections, Function.comp_def, List.flatMap]
 
 @[simp]
 theorem sections_add (s t : Multiset (Multiset α)) :
@@ -57,7 +56,7 @@ theorem mem_sections {s : Multiset (Multiset α)} :
   | cons _ _ ih => simp [ih, rel_cons_left, eq_comm]
 
 theorem card_sections {s : Multiset (Multiset α)} : card (Sections s) = prod (s.map card) :=
-  Multiset.induction_on s (by simp) (by simp (config := { contextual := true }))
+  Multiset.induction_on s (by simp) (by simp +contextual)
 
 end Sections
 

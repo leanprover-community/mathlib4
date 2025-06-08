@@ -3,8 +3,9 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Algebra.Group.Embedding
 import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Order.Interval.Finset.Basic
 
 /-!
@@ -14,6 +15,7 @@ This file proves that `ℤ` is a `LocallyFiniteOrder` and calculates the cardina
 intervals as finsets and fintypes.
 -/
 
+assert_not_exists Field
 
 open Finset Int
 
@@ -98,67 +100,73 @@ theorem uIcc_eq_finset_map :
       (Nat.castEmbedding.trans <| addLeftEmbedding <| min a b) := rfl
 
 @[simp]
-theorem card_Icc : (Icc a b).card = (b + 1 - a).toNat := (card_map _).trans <| card_range _
+theorem card_Icc : #(Icc a b) = (b + 1 - a).toNat := (card_map _).trans <| card_range _
 
 @[simp]
-theorem card_Ico : (Ico a b).card = (b - a).toNat := (card_map _).trans <| card_range _
+theorem card_Ico : #(Ico a b) = (b - a).toNat := (card_map _).trans <| card_range _
 
 @[simp]
-theorem card_Ioc : (Ioc a b).card = (b - a).toNat := (card_map _).trans <| card_range _
+theorem card_Ioc : #(Ioc a b) = (b - a).toNat := (card_map _).trans <| card_range _
 
 @[simp]
-theorem card_Ioo : (Ioo a b).card = (b - a - 1).toNat := (card_map _).trans <| card_range _
+theorem card_Ioo : #(Ioo a b) = (b - a - 1).toNat := (card_map _).trans <| card_range _
 
 @[simp]
-theorem card_uIcc : (uIcc a b).card = (b - a).natAbs + 1 :=
+theorem card_uIcc : #(uIcc a b) = (b - a).natAbs + 1 :=
   (card_map _).trans <|
     (Nat.cast_inj (R := ℤ)).mp <| by
-      rw [card_range, sup_eq_max, inf_eq_min,
-        Int.toNat_of_nonneg (sub_nonneg_of_le <| le_add_one min_le_max), Int.ofNat_add,
+      rw [card_range,
+        Int.toNat_of_nonneg (sub_nonneg_of_le <| le_add_one min_le_max), Int.natCast_add,
         Int.natCast_natAbs, add_comm, add_sub_assoc, max_sub_min_eq_abs, add_comm, Int.ofNat_one]
 
-theorem card_Icc_of_le (h : a ≤ b + 1) : ((Icc a b).card : ℤ) = b + 1 - a := by
+theorem card_Icc_of_le (h : a ≤ b + 1) : (#(Icc a b) : ℤ) = b + 1 - a := by
   rw [card_Icc, toNat_sub_of_le h]
 
-theorem card_Ico_of_le (h : a ≤ b) : ((Ico a b).card : ℤ) = b - a := by
+theorem card_Ico_of_le (h : a ≤ b) : (#(Ico a b) : ℤ) = b - a := by
   rw [card_Ico, toNat_sub_of_le h]
 
-theorem card_Ioc_of_le (h : a ≤ b) : ((Ioc a b).card : ℤ) = b - a := by
+theorem card_Ioc_of_le (h : a ≤ b) : (#(Ioc a b) : ℤ) = b - a := by
   rw [card_Ioc, toNat_sub_of_le h]
 
-theorem card_Ioo_of_lt (h : a < b) : ((Ioo a b).card : ℤ) = b - a - 1 := by
+theorem card_Ioo_of_lt (h : a < b) : (#(Ioo a b) : ℤ) = b - a - 1 := by
   rw [card_Ioo, sub_sub, toNat_sub_of_le h]
 
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
+theorem Icc_eq_pair : Finset.Icc a (a + 1) = {a, a + 1} := by
+  ext
+  simp
+  omega
+
+@[deprecated Fintype.card_Icc (since := "2025-03-28")]
 theorem card_fintype_Icc : Fintype.card (Set.Icc a b) = (b + 1 - a).toNat := by
-  rw [← card_Icc, Fintype.card_ofFinset]
+  simp
 
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
+@[deprecated Fintype.card_Ico (since := "2025-03-28")]
 theorem card_fintype_Ico : Fintype.card (Set.Ico a b) = (b - a).toNat := by
-  rw [← card_Ico, Fintype.card_ofFinset]
+  simp
 
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
+@[deprecated Fintype.card_Ioc (since := "2025-03-28")]
 theorem card_fintype_Ioc : Fintype.card (Set.Ioc a b) = (b - a).toNat := by
-  rw [← card_Ioc, Fintype.card_ofFinset]
+  simp
 
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
+@[deprecated Fintype.card_Ioo (since := "2025-03-28")]
 theorem card_fintype_Ioo : Fintype.card (Set.Ioo a b) = (b - a - 1).toNat := by
-  rw [← card_Ioo, Fintype.card_ofFinset]
+  simp
 
+@[deprecated Fintype.card_uIcc (since := "2025-03-28")]
 theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a).natAbs + 1 := by
-  rw [← card_uIcc, Fintype.card_ofFinset]
+  simp
 
 theorem card_fintype_Icc_of_le (h : a ≤ b + 1) : (Fintype.card (Set.Icc a b) : ℤ) = b + 1 - a := by
-  rw [card_fintype_Icc, toNat_sub_of_le h]
+  simp [h]
 
 theorem card_fintype_Ico_of_le (h : a ≤ b) : (Fintype.card (Set.Ico a b) : ℤ) = b - a := by
-  rw [card_fintype_Ico, toNat_sub_of_le h]
+  simp [h]
 
 theorem card_fintype_Ioc_of_le (h : a ≤ b) : (Fintype.card (Set.Ioc a b) : ℤ) = b - a := by
-  rw [card_fintype_Ioc, toNat_sub_of_le h]
+  simp [h]
 
 theorem card_fintype_Ioo_of_lt (h : a < b) : (Fintype.card (Set.Ioo a b) : ℤ) = b - a - 1 := by
-  rw [card_fintype_Ioo, sub_sub, toNat_sub_of_le h]
+  simp [h, h.le]
 
 theorem image_Ico_emod (n a : ℤ) (h : 0 ≤ a) : (Ico n (n + a)).image (· % a) = Ico 0 a := by
   obtain rfl | ha := eq_or_lt_of_le h
@@ -170,7 +178,7 @@ theorem image_Ico_emod (n a : ℤ) (h : 0 ≤ a) : (Ico n (n + a)).image (· % a
     exact ⟨emod_nonneg i ha.ne', emod_lt_of_pos i ha⟩
   intro hia
   have hn := Int.emod_add_ediv n a
-  obtain hi | hi := lt_or_le i (n % a)
+  obtain hi | hi := lt_or_ge i (n % a)
   · refine ⟨i + a * (n / a + 1), ⟨?_, ?_⟩, ?_⟩
     · rw [add_comm (n / a), mul_add, mul_one, ← add_assoc]
       refine hn.symm.le.trans (add_le_add_right ?_ _)

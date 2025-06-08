@@ -18,12 +18,7 @@ variable {α β γ : Type u}
 
 section Functor
 
-variable {f : Type u → Type v} [Functor f] [LawfulFunctor f]
-@[functor_norm]
-theorem Functor.map_map (m : α → β) (g : β → γ) (x : f α) : g <$> m <$> x = (g ∘ m) <$> x :=
-  (comp_map _ _ _).symm
--- order of implicits
--- order of implicits
+attribute [functor_norm] Functor.map_map
 
 end Functor
 
@@ -67,10 +62,6 @@ section Monad
 
 variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
 
-theorem map_bind (x : m α) {g : α → m β} {f : β → γ} :
-    f <$> (x >>= g) = x >>= fun a => f <$> g a := by
-  rw [← bind_pure_comp, bind_assoc]; simp [bind_pure_comp]
-
 theorem seq_bind_eq (x : m α) {g : β → m γ} {f : α → β} :
     f <$> x >>= g = x >>= g ∘ f :=
   show bind (f <$> x) g = bind x (g ∘ f) by
@@ -80,17 +71,17 @@ theorem seq_bind_eq (x : m α) {g : β → m γ} {f : α → β} :
 
 @[functor_norm]
 theorem fish_pure {α β} (f : α → m β) : f >=> pure = f := by
-  simp (config := { unfoldPartialApp := true }) only [(· >=> ·), functor_norm]
+  simp +unfoldPartialApp only [(· >=> ·), functor_norm]
 
 @[functor_norm]
 theorem fish_pipe {α β} (f : α → m β) : pure >=> f = f := by
-  simp (config := { unfoldPartialApp := true }) only [(· >=> ·), functor_norm]
+  simp +unfoldPartialApp only [(· >=> ·), functor_norm]
 
 -- note: in Lean 3 `>=>` is left-associative, but in Lean 4 it is right-associative.
 @[functor_norm]
 theorem fish_assoc {α β γ φ} (f : α → m β) (g : β → m γ) (h : γ → m φ) :
     (f >=> g) >=> h = f >=> g >=> h := by
-  simp (config := { unfoldPartialApp := true }) only [(· >=> ·), functor_norm]
+  simp +unfoldPartialApp only [(· >=> ·), functor_norm]
 
 variable {β' γ' : Type v}
 variable {m' : Type v → Type w} [Monad m']
@@ -206,15 +197,13 @@ end Sum
 
 /-- A `CommApplicative` functor `m` is a (lawful) applicative functor which behaves identically on
 `α × β` and `β × α`, so computations can occur in either order. -/
-class CommApplicative (m : Type u → Type v) [Applicative m] extends LawfulApplicative m : Prop where
+class CommApplicative (m : Type u → Type v) [Applicative m] : Prop extends LawfulApplicative m where
   /-- Computations performed first on `a : α` and then on `b : β` are equal to those performed in
   the reverse order. -/
   commutative_prod : ∀ {α β} (a : m α) (b : m β),
     Prod.mk <$> a <*> b = (fun (b : β) a => (a, b)) <$> b <*> a
 
 open Functor
-
-variable {m}
 
 theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative m]
     [CommApplicative m] {α β γ} (a : m α) (b : m β) {f : α → β → γ} :

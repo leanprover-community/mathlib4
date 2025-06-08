@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.List.Sublists
 import Mathlib.Data.List.Zip
 import Mathlib.Data.Multiset.Bind
+import Mathlib.Data.Multiset.Range
 
 /-!
 # The powerset of a multiset
@@ -19,7 +20,7 @@ variable {α : Type*}
 
 /-! ### powerset -/
 
--- Porting note (#11215): TODO: Write a more efficient version
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: Write a more efficient version
 /-- A helper function for the powerset of a multiset. Given a list `l`, returns a list
 of sublists of `l` as multisets. -/
 def powersetAux (l : List α) : List (Multiset α) :=
@@ -67,7 +68,7 @@ theorem powersetAux_perm {l₁ l₂ : List α} (p : l₁ ~ l₂) : powersetAux l
   powersetAux_perm_powersetAux'.trans <|
     (powerset_aux'_perm p).trans powersetAux_perm_powersetAux'.symm
 
---Porting note (#11083): slightly slower implementation due to `map ofList`
+--Porting note (https://github.com/leanprover-community/mathlib4/issues/11083): slightly slower implementation due to `map ofList`
 /-- The power set of a multiset. -/
 def powerset (s : Multiset α) : Multiset (Multiset α) :=
   Quot.liftOn s
@@ -250,10 +251,9 @@ theorem powersetCard_eq_empty {α : Type*} (n : ℕ) {s : Multiset α} (h : card
     powersetCard n s = 0 :=
   card_eq_zero.mp (Nat.choose_eq_zero_of_lt h ▸ card_powersetCard _ _)
 
-@[simp]
 theorem powersetCard_card_add (s : Multiset α) {i : ℕ} (hi : 0 < i) :
-    s.powersetCard (card s + i) = 0 :=
-  powersetCard_eq_empty _ (Nat.lt_add_of_pos_right hi)
+    s.powersetCard (card s + i) = 0 := by
+  simp [hi]
 
 theorem powersetCard_map {β : Type*} (f : α → β) (n : ℕ) (s : Multiset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (map f) := by
@@ -262,15 +262,15 @@ theorem powersetCard_map {β : Type*} (f : α → β) (n : ℕ) (s : Multiset α
   · cases n <;> simp [ih, map_comp_cons]
 
 theorem pairwise_disjoint_powersetCard (s : Multiset α) :
-    _root_.Pairwise fun i j => Multiset.Disjoint (s.powersetCard i) (s.powersetCard j) :=
-  fun _ _ h _ hi hj =>
-  h (Eq.trans (Multiset.mem_powersetCard.mp hi).right.symm (Multiset.mem_powersetCard.mp hj).right)
+    _root_.Pairwise fun i j => Disjoint (s.powersetCard i) (s.powersetCard j) :=
+  fun _ _ h ↦ disjoint_left.mpr fun hi hj ↦
+    h ((Multiset.mem_powersetCard.mp hi).2.symm.trans (Multiset.mem_powersetCard.mp hj).2)
 
 theorem bind_powerset_len {α : Type*} (S : Multiset α) :
     (bind (Multiset.range (card S + 1)) fun k => S.powersetCard k) = S.powerset := by
   induction S using Quotient.inductionOn
-  simp_rw [quot_mk_to_coe, powerset_coe', powersetCard_coe, ← coe_range, coe_bind, ← List.map_bind,
-    coe_card]
+  simp_rw [quot_mk_to_coe, powerset_coe', powersetCard_coe, ← coe_range, coe_bind,
+    ← List.map_flatMap, coe_card]
   exact coe_eq_coe.mpr ((List.range_bind_sublistsLen_perm _).map _)
 
 @[simp]

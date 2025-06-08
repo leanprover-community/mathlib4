@@ -6,10 +6,10 @@ Authors: Emilie Uthaiwat, Oliver Nash
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Div
 import Mathlib.Algebra.Polynomial.Identities
-import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Ideal.Quotient.Operations
+import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Polynomial.Tower
-import Mathlib.RingTheory.Nilpotent.Basic
 
 /-!
 # Nilpotency in polynomial rings.
@@ -17,8 +17,8 @@ import Mathlib.RingTheory.Nilpotent.Basic
 This file is a place for results related to nilpotency in (single-variable) polynomial rings.
 
 ## Main results:
- * `Polynomial.isNilpotent_iff`
- * `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`
+* `Polynomial.isNilpotent_iff`
+* `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`
 
 -/
 
@@ -79,19 +79,19 @@ protected lemma isNilpotent_iff :
       replace hp : eval 0 p = 0 := by rwa [coeff_zero_eq_aeval_zero] at hp₀
       refine isNilpotent_C_iff.mpr ⟨k, ?_⟩
       simpa [coeff_zero_eq_aeval_zero, hp] using congr_arg (fun q ↦ coeff q 0) hk
-    cases' i with i
+    rcases i with - | i
     · simpa [hp₀] using hr
     simp only [coeff_add, coeff_C_succ, add_zero]
     apply hp
     simpa using Commute.isNilpotent_sub (Commute.all _ _) hpr hr
-  · cases' i with i
+  · rcases i with - | i
     · simp
     simpa using hnp (isNilpotent_mul_X_iff.mp hpX) i
 
 @[simp] lemma isNilpotent_reflect_iff {P : R[X]} {N : ℕ} (hN : P.natDegree ≤ N) :
     IsNilpotent (reflect N P) ↔ IsNilpotent P := by
   simp only [Polynomial.isNilpotent_iff, coeff_reverse]
-  refine ⟨fun h i ↦ ?_, fun h i ↦ ?_⟩ <;> rcases le_or_lt i N with hi | hi
+  refine ⟨fun h i ↦ ?_, fun h i ↦ ?_⟩ <;> rcases le_or_gt i N with hi | hi
   · simpa [tsub_tsub_cancel_of_le hi] using h (N - i)
   · simp [coeff_eq_zero_of_natDegree_lt <| lt_of_le_of_lt hN hi]
   · simpa [hi, revAt_le] using h (N - i)
@@ -119,10 +119,10 @@ theorem isUnit_of_coeff_isUnit_isNilpotent (hunit : IsUnit (P.coeff 0))
   have hdeg₂ := lt_of_le_of_lt P.eraseLead_natDegree_le (Nat.sub_lt
     (Nat.pos_of_ne_zero hdeg) zero_lt_one)
   refine hind P₁.natDegree ?_ ?_ (fun i hi => ?_) rfl
-  · simp_rw [← h, hdeg₂]
-  · simp_rw [eraseLead_coeff_of_ne _ (Ne.symm hdeg), hunit]
+  · simp_rw [P₁, ← h, hdeg₂]
+  · simp_rw [P₁, eraseLead_coeff_of_ne _ (Ne.symm hdeg), hunit]
   · by_cases H : i ≤ P₁.natDegree
-    · simp_rw [eraseLead_coeff_of_ne _ (ne_of_lt (lt_of_le_of_lt H hdeg₂)), hnil i hi]
+    · simp_rw [P₁, eraseLead_coeff_of_ne _ (ne_of_lt (lt_of_le_of_lt H hdeg₂)), hnil i hi]
     · simp_rw [coeff_eq_zero_of_natDegree_lt (lt_of_not_ge H), IsNilpotent.zero]
 
 /-- Let `P` be a polynomial over `R`. If `P` is a unit, then all its coefficients are nilpotent,
@@ -141,7 +141,7 @@ theorem coeff_isUnit_isNilpotent_of_isUnit (hunit : IsUnit P) :
     intros I hI
     let f := mapRingHom (Ideal.Quotient.mk I)
     have hPQ : degree (f P) = 0 ∧ degree (f Q) = 0 := by
-      rw [← Nat.WithBot.add_eq_zero_iff, ← degree_mul, ← _root_.map_mul, hQ, map_one, degree_one]
+      rw [← Nat.WithBot.add_eq_zero_iff, ← degree_mul, ← map_mul, hQ, map_one, degree_one]
     have hcoeff : (f P).coeff n = 0 := by
       refine coeff_eq_zero_of_degree_lt ?_
       rw [hPQ.1]

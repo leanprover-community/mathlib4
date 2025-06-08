@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 -- Some proofs and docs came from mathlib3 `src/algebra/commute.lean` (c) Neil Strickland
 
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Init.Logic
+import Mathlib.Order.Defs.Unbundled
 
 /-!
 # Semiconjugate elements of a semigroup
@@ -27,8 +27,7 @@ This file provides only basic operations (`mul_left`, `mul_right`, `inv_right` e
 operations (`pow_right`, field inverse etc) are in the files that define corresponding notions.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 variable {S M G : Type*}
 
@@ -115,7 +114,7 @@ end Monoid
 
 section Group
 
-variable [Group G] {a x y : G}
+variable [Group G]
 
 /-- `a` semiconjugates `x` to `a * x * a⁻¹`. -/
 @[to_additive "`a` semiconjugates `x` to `a + x + -a`."]
