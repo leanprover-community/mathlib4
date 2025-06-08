@@ -514,6 +514,8 @@ instance LipschitzH.instAddCommGroup: AddCommGroup (LipschitzH (G := G)) := {
 abbrev V := Module ℂ (LipschitzH (G := G))
 
 
+
+
 lemma zero_apply (x: G): (0: LipschitzH (G := G) (S := S)).toFun x = 0 := by
   unfold LipschitzH.zero
   rfl
@@ -555,6 +557,10 @@ instance lipschitzHVectorSpace : V (G := G) := {
     dsimp [Zero.zero]
     simp
 }
+
+instance V_FiniteDimentional: FiniteDimensional ℂ (LipschitzH (G := G)) := by
+  -- This is a very long part of the proof in Vikman
+  sorry
 
 def ConstF: Submodule ℂ (LipschitzH (G := G)) := {
   carrier := Set.range ConstLipschitzH
@@ -1006,6 +1012,54 @@ abbrev GL_W := W (G := G) →L[ℂ] W (G := G)
 
 #synth NormedSpace ℂ (GL_W (G := G))
 #synth MetricSpace (GL_W (G := G))
+
+
+#synth FiniteDimensional ℂ (LipschitzH (G := G))
+#synth TopologicalSpace (LipschitzH (G := G))
+
+def GRep: Representation ℂ G (LipschitzH (G := G))  := {
+  toFun := fun g => {
+    toFun := gAct g
+    map_add' := by
+      intro f h
+      ext a
+      simp [gAct]
+      simp [DFunLike.coe]
+    map_smul' := by
+      intro c f
+      ext a
+      simp [gAct]
+      simp [DFunLike.coe]
+      simp [HSMul.hSMul, SMul.smul]
+  }
+  map_one' := by
+    ext f a
+    simp [gAct]
+    rfl
+  map_mul' := by
+    intro g h
+    ext f a
+    simp [gAct]
+    simp [DFunLike.coe]
+    simp [mul_assoc]
+}
+
+def GRepW: Representation ℂ G (W (G := G)) := Representation.quotient (GRep (G := G)) ConstF (by
+  intro g
+  intro f hf
+  simp
+  simp [ConstF]
+  simp [ConstF] at hf
+  obtain ⟨K, hK⟩ := hf
+  use K
+  ext a
+  simp [GRep]
+  rw [← hK]
+  rw [gAct_const]
+)
+
+-- Takes in a linear map from W to W, and produces a *contiuous* linear map from W to W
+noncomputable def GRepW_cont (m: W (G := G) →ₗ[ℂ] W (G := G)): GL_W (G := G) := LinearMap.toContinuousLinearMap m
 
 
 -- noncomputable instance GLW_seminorm:  SeminormedAddCommGroup (W (G := G) →ₗ[ℂ] W (G := G)) where
