@@ -160,7 +160,7 @@ variable {F G} (adj₂ : F ⊣₂ G)
 `sq₁₂ : F.PushoutObjObj f₁ f₂` and `sq₁₃ : G.PullbackObjObj f₁ f₃`, there are
 as many commutative squares with left map `sq₁₂.ι` and right map `f₃`
 as commutative squares with left map `f₂` and right map `sq₁₃.π`. -/
-@[simps! -isSimp apply_left apply_right symm_apply_left symm_apply_right]
+@[simps! apply_left symm_apply_right]
 noncomputable def arrowHomEquiv :
     (Arrow.mk sq₁₂.ι ⟶ Arrow.mk f₃) ≃
       (Arrow.mk f₂ ⟶ Arrow.mk sq₁₃.π) where
@@ -203,8 +203,26 @@ noncomputable def arrowHomEquiv :
     · simp
     · apply sq₁₃.isPullback.hom_ext <;> simp
 
-attribute [local simp] arrowHomEquiv_apply_left arrowHomEquiv_apply_right
-  arrowHomEquiv_symm_apply_left arrowHomEquiv_symm_apply_right
+@[reassoc (attr := simp)]
+lemma arrowHomEquiv_apply_right_fst (α : Arrow.mk sq₁₂.ι ⟶ Arrow.mk f₃) :
+    ((adj₂.arrowHomEquiv sq₁₂ sq₁₃) α).right ≫ sq₁₃.fst = adj₂.homEquiv (sq₁₂.inr ≫ α.left) :=
+  IsPullback.lift_fst _ _ _ _
+
+@[reassoc (attr := simp)]
+lemma arrowHomEquiv_apply_right_snd (α : Arrow.mk sq₁₂.ι ⟶ Arrow.mk f₃) :
+    ((adj₂.arrowHomEquiv sq₁₂ sq₁₃) α).right ≫ sq₁₃.snd = adj₂.homEquiv α.right :=
+  IsPullback.lift_snd _ _ _ _
+
+@[reassoc (attr := simp)]
+lemma inl_arrowHomEquiv_symm_apply_left (β : Arrow.mk f₂ ⟶ Arrow.mk sq₁₃.π) :
+    sq₁₂.inl ≫ ((adj₂.arrowHomEquiv sq₁₂ sq₁₃).symm β).left = adj₂.homEquiv.symm β.left :=
+  IsPushout.inl_desc _ _ _ _
+
+@[reassoc (attr := simp)]
+lemma inr_arrowHomEquiv_symm_apply_left (β : Arrow.mk f₂ ⟶ Arrow.mk sq₁₃.π) :
+    sq₁₂.inr ≫ ((adj₂.arrowHomEquiv sq₁₂ sq₁₃).symm β).left =
+    adj₂.homEquiv.symm (β.right ≫ sq₁₃.fst) :=
+  IsPushout.inr_desc _ _ _ _
 
 /-- Given a parametrized adjunction `F ⊣₂ G` between bifunctors, structures
 `sq₁₂ : F.PushoutObjObj f₁ f₂` and `sq₁₃ : G.PullbackObjObj f₁ f₃`,
@@ -224,12 +242,12 @@ noncomputable def liftStructEquiv (α : Arrow.mk sq₁₂.ι ⟶ Arrow.mk f₃) 
         apply sq₁₃.isPullback.hom_ext
         · have := l.fac_left
           dsimp at this ⊢
-          simp only [Category.assoc, sq₁₃.π_fst, IsPullback.lift_fst,
-            ← adj₂.homEquiv_naturality_one, ← this, sq₁₂.inr_ι_assoc]
+          simp only [Category.assoc, sq₁₃.π_fst, ← adj₂.homEquiv_naturality_one,
+            arrowHomEquiv_apply_right_fst, Arrow.mk_left, ← this, sq₁₂.inr_ι_assoc]
         · have := l.fac_right
           dsimp at this ⊢
-          simp only [Category.assoc, sq₁₃.π_snd, IsPullback.lift_snd, ← this,
-            adj₂.homEquiv_naturality_three] }
+          simp only [Category.assoc, sq₁₃.π_snd, ← this, adj₂.homEquiv_naturality_three,
+            arrowHomEquiv_apply_right_snd, Arrow.mk_right] }
   invFun l :=
     { l := adj₂.homEquiv.symm l.l
       fac_left := by
@@ -242,11 +260,12 @@ noncomputable def liftStructEquiv (α : Arrow.mk sq₁₂.ι ⟶ Arrow.mk f₃) 
           dsimp at this ⊢
           simp only [Category.assoc, sq₁₃.π_fst, IsPullback.lift_fst] at this
           simp only [sq₁₂.inr_ι_assoc, ← adj₂.homEquiv_symm_naturality_one,
-            this, Equiv.symm_apply_apply]
+            this, Equiv.symm_apply_apply, arrowHomEquiv_apply_right_fst, Arrow.mk_left]
       fac_right := by
         have := l.fac_right =≫ sq₁₃.snd
         dsimp at this ⊢
-        simp only [Category.assoc, sq₁₃.π_snd, IsPullback.lift_snd] at this
+        simp only [Category.assoc, sq₁₃.π_snd, arrowHomEquiv_apply_right_snd,
+          Arrow.mk_right] at this
         rw [← adj₂.homEquiv_symm_naturality_three, this,
           Equiv.symm_apply_apply] }
   left_inv _ := by aesop
