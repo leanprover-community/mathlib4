@@ -6,9 +6,6 @@ Authors: Miyahara Kō
 
 import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.Meromorphic.NormalForm
-import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
-import Mathlib.Analysis.Complex.RemovableSingularity
-import Mathlib.NumberTheory.LSeries.HurwitzZeta
 import Mathlib.NumberTheory.LSeries.RiemannZeta
 
 /-!
