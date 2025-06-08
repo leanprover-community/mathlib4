@@ -144,7 +144,7 @@ theorem abs_rpow_of_nonneg {x y : ℝ} (hx_nonneg : 0 ≤ x) : |x ^ y| = |x| ^ y
 
 @[bound]
 theorem abs_rpow_le_abs_rpow (x y : ℝ) : |x ^ y| ≤ |x| ^ y := by
-  rcases le_or_lt 0 x with hx | hx
+  rcases le_or_gt 0 x with hx | hx
   · rw [abs_rpow_of_nonneg hx]
   · rw [abs_of_neg hx, rpow_def_of_neg hx, rpow_def_of_pos (neg_pos.2 hx), log_neg_eq_log, abs_mul,
       abs_of_pos (exp_pos _)]
@@ -625,7 +625,7 @@ theorem rpow_le_rpow_left_iff (hx : 1 < x) : x ^ y ≤ x ^ z ↔ y ≤ z := by
 
 @[simp]
 theorem rpow_lt_rpow_left_iff (hx : 1 < x) : x ^ y < x ^ z ↔ y < z := by
-  rw [lt_iff_not_le, rpow_le_rpow_left_iff hx, lt_iff_not_le]
+  rw [lt_iff_not_ge, rpow_le_rpow_left_iff hx, lt_iff_not_ge]
 
 theorem rpow_lt_rpow_of_exponent_gt (hx0 : 0 < x) (hx1 : x < 1) (hyz : z < y) : x ^ y < x ^ z := by
   repeat' rw [rpow_def_of_pos hx0]
@@ -644,7 +644,7 @@ theorem rpow_le_rpow_left_iff_of_base_lt_one (hx0 : 0 < x) (hx1 : x < 1) :
 @[simp]
 theorem rpow_lt_rpow_left_iff_of_base_lt_one (hx0 : 0 < x) (hx1 : x < 1) :
     x ^ y < x ^ z ↔ z < y := by
-  rw [lt_iff_not_le, rpow_le_rpow_left_iff_of_base_lt_one hx0 hx1, lt_iff_not_le]
+  rw [lt_iff_not_ge, rpow_le_rpow_left_iff_of_base_lt_one hx0 hx1, lt_iff_not_ge]
 
 theorem rpow_lt_one {x z : ℝ} (hx1 : 0 ≤ x) (hx2 : x < 1) (hz : 0 < z) : x ^ z < 1 := by
   rw [← one_rpow z]
@@ -698,7 +698,7 @@ theorem one_lt_rpow_iff_of_pos (hx : 0 < x) : 1 < x ^ y ↔ 1 < x ∧ 0 < y ∨ 
 
 theorem one_lt_rpow_iff (hx : 0 ≤ x) : 1 < x ^ y ↔ 1 < x ∧ 0 < y ∨ 0 < x ∧ x < 1 ∧ y < 0 := by
   rcases hx.eq_or_lt with (rfl | hx)
-  · rcases _root_.em (y = 0) with (rfl | hy) <;> simp [*, lt_irrefl, (zero_lt_one' ℝ).not_lt]
+  · rcases _root_.em (y = 0) with (rfl | hy) <;> simp [*, lt_irrefl, (zero_lt_one' ℝ).not_gt]
   · simp [one_lt_rpow_iff_of_pos hx, hx]
 
 /-- This is a more general but less convenient version of `rpow_le_rpow_of_exponent_ge`.
@@ -774,7 +774,7 @@ lemma le_zpow_iff_log_le {n : ℤ} (hx : 0 < x) (hy : 0 < y) : x ≤ y ^ n ↔ l
   rpow_intCast _ _ ▸ le_rpow_iff_log_le hx hy
 
 lemma le_rpow_of_log_le (hy : 0 < y) (h : log x ≤ z * log y) : x ≤ y ^ z := by
-  obtain hx | hx := le_or_lt x 0
+  obtain hx | hx := le_or_gt x 0
   · exact hx.trans (rpow_pos_of_pos hy _).le
   · exact (le_rpow_iff_log_le hx hy).2 h
 
@@ -794,7 +794,7 @@ lemma lt_zpow_iff_log_lt {n : ℤ} (hx : 0 < x) (hy : 0 < y) : x < y ^ n ↔ log
   rpow_intCast _ _ ▸ lt_rpow_iff_log_lt hx hy
 
 lemma lt_rpow_of_log_lt (hy : 0 < y) (h : log x < z * log y) : x < y ^ z := by
-  obtain hx | hx := le_or_lt x 0
+  obtain hx | hx := le_or_gt x 0
   · exact hx.trans_lt (rpow_pos_of_pos hy _)
   · exact (lt_rpow_iff_log_lt hx hy).2 h
 
@@ -823,7 +823,7 @@ lemma le_log_of_zpow_le {n : ℤ} (hx : 0 < x) (h : x ^ n ≤ y) : n * log x ≤
   le_log_of_rpow_le hx (rpow_intCast _ _ ▸ h)
 
 lemma rpow_le_of_le_log (hy : 0 < y) (h : log x ≤ z * log y) : x ≤ y ^ z := by
-  obtain hx | hx := le_or_lt x 0
+  obtain hx | hx := le_or_gt x 0
   · exact hx.trans (rpow_pos_of_pos hy _).le
   · exact (le_rpow_iff_log_le hx hy).2 h
 
@@ -852,7 +852,7 @@ lemma lt_log_of_zpow_lt {n : ℤ} (hx : 0 < x) (h : x ^ n < y) : n * log x < log
   lt_log_of_rpow_lt hx (rpow_intCast _ _ ▸ h)
 
 lemma rpow_lt_of_lt_log (hy : 0 < y) (h : log x < z * log y) : x < y ^ z := by
-  obtain hx | hx := le_or_lt x 0
+  obtain hx | hx := le_or_gt x 0
   · exact hx.trans_lt (rpow_pos_of_pos hy _)
   · exact (lt_rpow_iff_log_lt hx hy).2 h
 
@@ -910,7 +910,7 @@ lemma antitone_rpow_of_base_le_one {b : ℝ} (hb₀ : 0 < b) (hb₁ : b ≤ 1) :
 
 lemma rpow_right_inj (hx₀ : 0 < x) (hx₁ : x ≠ 1) : x ^ y = x ^ z ↔ y = z := by
   refine ⟨fun H ↦ ?_, fun H ↦ by rw [H]⟩
-  rcases hx₁.lt_or_lt with h | h
+  rcases hx₁.lt_or_gt with h | h
   · exact (strictAnti_rpow_of_base_lt_one hx₀ h).injective H
   · exact (strictMono_rpow_of_base_gt_one h).injective H
 
@@ -975,7 +975,7 @@ variable {z x y : ℝ}
 section Sqrt
 
 theorem sqrt_eq_rpow (x : ℝ) : √x = x ^ (1 / (2 : ℝ)) := by
-  obtain h | h := le_or_lt 0 x
+  obtain h | h := le_or_gt 0 x
   · rw [← mul_self_inj_of_nonneg (sqrt_nonneg _) (rpow_nonneg h _), mul_self_sqrt h, ← sq,
       ← rpow_natCast, ← rpow_mul h]
     norm_num
