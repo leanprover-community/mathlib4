@@ -71,7 +71,7 @@ protected theorem id_map : ∀ x : P α, P.map id x = x := fun ⟨_, _⟩ => rfl
 protected theorem map_map (f : α → β) (g : β → γ) :
     ∀ x : P α, P.map g (P.map f x) = P.map (g ∘ f) x := fun ⟨_, _⟩ => rfl
 
-instance : LawfulFunctor.{v, max uA uB v} P.Obj where
+instance : LawfulFunctor P.Obj where
   map_const := rfl
   id_map x := P.id_map x
   comp_map f g x := P.map_map f g x |>.symm
