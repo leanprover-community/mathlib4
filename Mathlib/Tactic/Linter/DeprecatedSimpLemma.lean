@@ -8,6 +8,14 @@ Authors: Paul Lezeau
 -- this file has a valid copyright header and module docstring.
 import Mathlib.Tactic.Linter.Header
 
+/-!
+# Linter against deprecated simp lemmas
+
+Tagging deprecated lemmas with `simp` is unsafe as we may not always notice when they are being
+used. This linter is designed to flag such occurences.
+-/
+
+
 open Lean Elab Meta Std Linter Parser Term Command
 
 namespace Mathlib.Linter
