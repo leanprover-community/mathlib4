@@ -78,7 +78,7 @@ instance : LawfulFunctor P.Obj where
 
 /-- re-export existing definition of W-types and
 adapt it to a packaged definition of polynomial functor -/
-def W : Type max uA uB :=
+def W : Type (max uA uB) :=
   WType P.B
 
 /- inhabitants of W types is awkward to encode as an instance
@@ -114,7 +114,7 @@ variable (P)
 /-- `Idx` identifies a location inside the application of a pfunctor.
 For `F : PFunctor`, `x : F α` and `i : F.Idx`, `i` can designate
 one part of `x` or is invalid, if `i.1 ≠ x.1` -/
-def Idx : Type max uA uB :=
+def Idx : Type (max uA uB) :=
   Σ x : P.A, P.B x
 
 instance Idx.inhabited [Inhabited P.A] [Inhabited (P.B default)] : Inhabited P.Idx :=
