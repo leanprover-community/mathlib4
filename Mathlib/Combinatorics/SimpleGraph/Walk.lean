@@ -1091,24 +1091,39 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
   | .cons h q =>
     simp only [getVert_cons_succ, tail_cons_eq, getVert_cons]
     exact getVert_copy q n (getVert_zero q).symm rfl
+
+lemma ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) :
+    p = q := by
+  induction q with
+  | nil =>
+    rw [← nil_iff_eq_nil, nil_iff_support_eq]
+    exact support_nil ▸ h
+  | @cons _ u _ ha q ih =>
+    cases p with
+    | nil => simp at h
+    | @cons _ v _ _ p =>
+      simp only [support_cons, List.cons.injEq, true_and] at h
+      apply List.getElem_of_eq at h
+      specialize h (i := 0) (by simp)
+      rw [List.getElem_zero, List.getElem_zero, p.head_support, q.head_support] at h
+      have : (p.copy h rfl).support = q.support := by simpa
+      simp [← ih this]
+
 lemma ext_getVert {u v} {p q : G.Walk u v} (hl : p.length = q.length)
     (h : ∀ k ≤ p.length, p.getVert k = q.getVert k) :
     p = q := by
-  generalize hp : p.length = n at *
-  rw [eq_comm] at hl
-  induction n generalizing u with
-  | zero =>
-    cases eq_of_length_eq_zero hp
-    simp_all [length_eq_zero_iff]
-  | succ n ih =>
-    match p, hp, q, hl with
-    | cons x p, hp, cons y q, hq =>
-      obtain rfl := by simpa using h 1
-      simp only [cons.injEq, heq_eq_eq, true_and]
-      simp only [length_cons, Nat.add_right_cancel_iff] at hp hq
-      apply ih hp hq
-      intro k
-      simpa using h (k + 1)
+  suffices ∀ k : ℕ, p.support[k]? = q.support[k]? by
+    exact ext_support <| List.ext_getElem?_iff.mpr this
+  intro k
+  cases le_or_gt k p.length with
+  | inl hk =>
+    rw [← getVert_eq_support_get? p hk, ← getVert_eq_support_get? q (hl ▸ hk)]
+    exact congrArg some (h k hk)
+  | inr hk =>
+    replace hk : p.length + 1 ≤ k := hk
+    have ht : q.length + 1 ≤ k := hl ▸ hk
+    rw [← length_support, ← List.getElem?_eq_none_iff] at hk ht
+    rw [hk, ht]
 
 lemma ext_getVert' {u v} {p q : G.Walk u v} (h : ∀ k, p.getVert k = q.getVert k) :
     p = q := by
@@ -1118,6 +1133,7 @@ lemma ext_getVert' {u v} {p q : G.Walk u v} (h : ∀ k, p.getVert k = q.getVert 
     by_contra!
     exact (q.adj_getVert_succ this).ne (by simp [← h, getVert_of_length_le])
   exact ext_getVert (hpq.antisymm this) fun k _ ↦ h k
+
 end Walk
 
 /-! ### Mapping walks -/
