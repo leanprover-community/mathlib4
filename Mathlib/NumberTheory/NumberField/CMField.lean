@@ -189,7 +189,15 @@ class IsCMField (K : Type*) [Field K] [NumberField K] [IsTotallyComplex K] : Pro
 
 namespace IsCMField
 
-variable (K : Type*) [Field K] [NumberField K] [IsTotallyComplex K] [IsCMField K]
+variable (K : Type*) [Field K] [NumberField K] [IsTotallyComplex K]
+
+theorem ofCMExtension (F : Type*) [Field F] [NumberField F] [IsTotallyReal F] [Algebra F K]
+    [IsQuadraticExtension F K] :
+    IsCMField K where
+  is_quadratic := ⟨(IsQuadraticExtension.finrank_eq_two F K) ▸ finrank_eq_of_equiv_equiv
+      (CMExtension.equivMaximalRealSubfield F K).symm (RingEquiv.refl K) (by ext; simp)⟩
+
+variable [IsCMField K]
 
 instance isQuadraticExtension : IsQuadraticExtension (maximalRealSubfield K) K :=
   IsCMField.is_quadratic
@@ -199,12 +207,6 @@ noncomputable instance starRing : StarRing K where
   star_involutive := fun _ ↦ CMExtension.complexConj_apply_apply _ _
   star_mul := fun _ _ ↦ by rw [map_mul, mul_comm]
   star_add := fun _ _ ↦ by rw [map_add]
-
-theorem ofCMExtension (F : Type*) [Field F] [NumberField F] [IsTotallyReal F] [Algebra F K]
-    [IsQuadraticExtension F K] :
-    IsCMField K where
-  is_quadratic := ⟨(IsQuadraticExtension.finrank_eq_two F K) ▸ Algebra.finrank_eq_of_equiv_equiv
-      (CMExtension.equivMaximalRealSubfield F K).symm (RingEquiv.refl K) (by ext; simp)⟩
 
 theorem card_infinitePlace_eq_card_infinitePlace :
     Fintype.card (InfinitePlace (maximalRealSubfield K)) = Fintype.card (InfinitePlace K) :=
