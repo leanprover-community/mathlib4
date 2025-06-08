@@ -33,8 +33,8 @@ lemma Truncated.morphismProperty_eq_top
     W = ⊤ := by
   ext ⟨a, ha⟩ ⟨b, hb⟩ f
   simp only [MorphismProperty.top_apply, iff_true]
-  induction' a using SimplexCategory.rec with a
-  induction' b using SimplexCategory.rec with b
+  induction a using SimplexCategory.rec with | _ a
+  induction b using SimplexCategory.rec with | _ b
   dsimp at ha hb
   generalize h : a + b = c
   induction c generalizing a b with

@@ -134,7 +134,7 @@ lemma exists_pushouts
 lemma exists_larger_subobject {X : C} (A : Subobject X) (hA : A ≠ ⊤) :
     ∃ (A' : Subobject X) (h : A < A'),
       (generatingMonomorphisms G).pushouts (Subobject.ofLE A A' h.le) := by
-  induction' A using Subobject.ind with Y f _
+  induction A using Subobject.ind with | _ f
   obtain ⟨X', i, p', hi, hi', hp', fac⟩ := exists_pushouts hG f
     (by simpa only [Subobject.isIso_iff_mk_eq_top] using hA)
   refine ⟨Subobject.mk p', Subobject.mk_lt_mk_of_comm i fac hi',

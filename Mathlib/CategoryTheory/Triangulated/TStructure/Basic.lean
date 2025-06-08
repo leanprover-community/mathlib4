@@ -126,9 +126,9 @@ lemma le_monotone : Monotone t.le := by
     rw [← h, Nat.cast_add, ← add_assoc]
     exact (ha n).trans (hb (n+a))
   intro a
-  induction' a with a ha
-  · exact H_zero
-  · exact H_add a 1 _ rfl ha H_one
+  induction a with
+  | zero => exact H_zero
+  | succ a ha => exact H_add a 1 _ rfl ha H_one
 
 lemma ge_antitone : Antitone t.ge := by
   let H := fun (a : ℕ) => ∀ (n : ℤ), t.ge (n + a) ≤ t.ge n
@@ -149,9 +149,9 @@ lemma ge_antitone : Antitone t.ge := by
     rw [← h, Nat.cast_add, ← add_assoc ]
     exact (hb (n + a)).trans (ha n)
   intro a
-  induction' a with a ha
-  · exact H_zero
-  · exact H_add a 1 _ rfl ha H_one
+  induction a with
+  | zero => exact H_zero
+  | succ a ha => exact H_add a 1 _ rfl ha H_one
 
 /-- Given a t-structure `t` on a pretriangulated category `C`, the property `t.IsLE X n`
 holds if `X : C` is `≤ n` for the t-structure. -/
