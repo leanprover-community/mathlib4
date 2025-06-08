@@ -1089,11 +1089,11 @@ theorem coprod_comp_prodComm
   (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M₂]
   (M : Type*) [TopologicalSpace M] [AddCommMonoid M] [Module R M] [ContinuousAdd M]
   (f : M₁ →L[R] M) (g : M₂ →L[R] M) :
-    (f.coprod g) ∘L (ContinuousLinearEquiv.prodComm R M₂ M₁) = (g.coprod f) := by
-  ext; all_goals
-  simp only [coe_comp', ContinuousLinearEquiv.coe_coe, Function.comp_apply, inl_apply, inr_apply,
-    ContinuousLinearEquiv.prodComm_apply, Prod.swap_prod_mk, coprod_apply, map_zero,
-    zero_add, add_zero, coprod_comp_inl, coprod_comp_inr]
+    f.coprod g ∘L .prodComm R M₂ M₁ = g.coprod f := by
+  ext <;>
+    simp only [coe_comp', ContinuousLinearEquiv.coe_coe, Function.comp_apply, inl_apply, inr_apply,
+      ContinuousLinearEquiv.prodComm_apply, Prod.swap_prod_mk, coprod_apply, map_zero,
+     zero_add, add_zero, coprod_comp_inl, coprod_comp_inr]
 
 end ContinuousLinearMap
 
