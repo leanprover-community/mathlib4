@@ -1109,7 +1109,7 @@ lemma ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) :
       have : (p.copy h rfl).support = q.support := by simpa
       simp [← ih this]
 
-lemma ext_getVert {u v} {p q : G.Walk u v} (hl : p.length = q.length)
+lemma ext_getVert_le_length {u v} {p q : G.Walk u v} (hl : p.length = q.length)
     (h : ∀ k ≤ p.length, p.getVert k = q.getVert k) :
     p = q := by
   suffices ∀ k : ℕ, p.support[k]? = q.support[k]? by
@@ -1125,7 +1125,7 @@ lemma ext_getVert {u v} {p q : G.Walk u v} (hl : p.length = q.length)
     rw [← length_support, ← List.getElem?_eq_none_iff] at hk ht
     rw [hk, ht]
 
-lemma ext_getVert' {u v} {p q : G.Walk u v} (h : ∀ k, p.getVert k = q.getVert k) :
+lemma ext_getVert {u v} {p q : G.Walk u v} (h : ∀ k, p.getVert k = q.getVert k) :
     p = q := by
   wlog hpq : p.length ≤ q.length generalizing p q
   · exact (this (fun k ↦ (h k).symm) (le_of_not_ge hpq)).symm
