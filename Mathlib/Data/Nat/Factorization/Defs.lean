@@ -35,8 +35,6 @@ mapping each prime factor of `n` to its multiplicity in `n`.  For example, since
 
 -/
 
-assert_not_exists Field
-
 open Nat Finset List Finsupp
 
 namespace Nat
