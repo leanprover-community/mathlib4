@@ -145,15 +145,6 @@ def induceEquiv (G : SimpleGraph α) (H : SimpleGraph β) (t : Set α) : H ↪g 
   left_inv := fun e ↦ by ext; simp
   right_inv := fun e ↦ by ext; simp
 
-lemma subset_iff_of_card_le_card {α : Type*} {s t : Finset α} [Fintype α] [DecidableEq α]
-  (hst : #s ≤ #t) : s ⊆ t ↔ #(t \ s) = #t - #s := by
-  constructor <;> intro h
-  · rw [card_sdiff h]
-  · have : #(t \ s) + #s = #t := by omega
-    rw [card_sdiff_add_card] at this
-    have : t = t ∪ s := by apply eq_of_subset_of_card_le subset_union_left this.le
-    exact left_eq_union.mp this
-
 /--
 Given `s : Finset α`, the number of super-sets of `s` of size `k` is `choose (‖α‖ - #s) (k - #s)`,
 for `#s ≤ k`.
@@ -163,12 +154,8 @@ lemma card_supersets {α : Type*} [Fintype α] [DecidableEq α] {s : Finset α} 
   simp_rw [← card_compl, ← card_powersetCard]
   apply card_nbij (i := (· \ s))
   · intro t ht
-    simp only [mem_filter, mem_univ, true_and] at ht
-    simp only [mem_powersetCard]
-    refine ⟨fun _ ↦ by simp, ?_⟩
-    rw [subset_iff_of_card_le_card (card_le_card ht.2)] at ht
-    rw [ht.2]
-    omega
+    simp only [mem_filter, mem_univ, true_and, mem_powersetCard] at *
+    exact ⟨fun _ ↦ by simp, (ht.1 ▸ card_sdiff ht.2)⟩
   · intro t₁ ht1 t₂ ht2 he
     dsimp at he
     simp only [coe_filter, mem_univ, true_and, Set.mem_setOf_eq] at ht1 ht2
