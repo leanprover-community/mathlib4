@@ -730,7 +730,7 @@ lemma pi_inter_image {s t : Set ι} {x : (i : ι) → Set (α i)}  (hst : Disjoi
       simp only [Set.mem_pi] at hc1
       exact hc1 i hi1
     · have h : i ∉ s := by
-        exact Disjoint.not_mem_of_mem_left (Disjoint.symm hst) hi2
+        exact Disjoint.notMem_of_mem_left (Disjoint.symm hst) hi2
       simp only [h, ↓reduceIte]
       exact hx i hi2
   · rw [← hb2, ← hc2, union_pi_ite_of_disjoint hst, inter_comm]
