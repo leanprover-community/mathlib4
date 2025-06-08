@@ -60,8 +60,6 @@ def inducedPseudofunctor : Pseudofunctor (InducedBicategory C F) C where
   mapId b := eqToIso rfl
   mapComp f g := eqToIso rfl
 
--- TODO: add IsStrict when possible
-
 end
 
 end InducedBicategory
