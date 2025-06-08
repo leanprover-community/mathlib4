@@ -7,7 +7,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Regular.Basic
-import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Absolute values
