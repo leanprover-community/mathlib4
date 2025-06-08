@@ -159,9 +159,7 @@ theorem eq_adjoint_iff (A : E →L[𝕜] F) (B : F →L[𝕜] E) : A = B† ↔ 
 theorem adjoint_eq_of_IsSymmetric {A : E →L[𝕜] E} (hA : A.IsSymmetric) : adjoint A = A := by
   rwa [eq_comm, eq_adjoint_iff A A]
 
-@[simp]
-theorem adjoint_id :
-    ContinuousLinearMap.adjoint (ContinuousLinearMap.id 𝕜 E) = ContinuousLinearMap.id 𝕜 E :=
+theorem adjoint_id : (ContinuousLinearMap.id 𝕜 E)† = ContinuousLinearMap.id 𝕜 E :=
   adjoint_eq_of_IsSymmetric (fun _ _ ↦ rfl)
 
 theorem _root_.Submodule.adjoint_subtypeL (U : Submodule 𝕜 E) [CompleteSpace U] :
