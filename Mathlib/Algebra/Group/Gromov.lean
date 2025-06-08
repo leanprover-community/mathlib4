@@ -295,6 +295,7 @@ structure LipschitzH [Generates (G := G) (S := S)] where
   -- The function is harmonic
   harmonic: Harmonic (S := S) toFun
 
+def IsLipschitz (f: G → ℂ) := ∃ C, LipschitzWith C f
 
 instance: FunLike (LipschitzH (G := G)) G ℂ where
   coe := LipschitzH.toFun
@@ -342,6 +343,10 @@ def ConstLipschitzH (z: ℂ) : LipschitzH (G := G) := {
       sorry
     field_simp
 }
+
+lemma ConstLipschitzH_apply (z : ℂ) (g: G): (ConstLipschitzH (G := G) z) g = z := by
+  unfold ConstLipschitzH
+  rfl
 
 instance LipschitzH.zero [Generates (S := S)] : Zero (LipschitzH (G := G)) := {
   zero := {
@@ -503,9 +508,6 @@ instance LipschitzH.instAddCommGroup: AddCommGroup (LipschitzH (G := G)) := {
     simp
     sorry
 }
-
-
-noncomputable def LipschitzSemiNorm (f: LipschitzH (S := S)) := sInf { k: NNReal | LipschitzWith k f.toFun }
 
 
 -- V is the vector space
@@ -682,8 +684,227 @@ def GRepW: Representation ℂ G (W (G := G)) := Representation.quotient (GRep (G
   rw [gAct_const]
 )
 
+
+
+noncomputable def LipschitzSemiNorm (f: G → ℂ): NNReal := sInf { k: NNReal | LipschitzWith k f }
+
+-- The lift of LipschitzSemiNorm to W, using a proof that LipschitzSemiNorm doesn't depend on the choice representative
+-- (adding a constant to a Lipschitz function doesn't change its Lipschitz constant)
+noncomputable def LipschitzSemiNorm_w (w: W (G := G)) := Quotient.lift ((fun f => LipschitzSemiNorm (G := G) f.toFun)) (by
+  intro f g hfg
+  dsimp [HasEquiv.Equiv] at hfg
+  rw [ConstF.quotientRel_def] at hfg
+  simp [ConstF] at hfg
+  obtain ⟨k, hk⟩ := hfg
+  have f_eq_g_k: f = g + (ConstLipschitzH k) := by
+    exact Eq.symm (add_eq_of_eq_sub' hk)
+  rw [f_eq_g_k]
+  simp [LipschitzSemiNorm]
+  simp [LipschitzWith]
+  simp_rw [edist_eq_enorm_sub]
+  simp_rw [ConstLipschitzH_apply]
+  simp [DFunLike.coe]
+) w
+
+lemma lipschitz_neg_tofun (f: LipschitzH (G := G)): (-f).toFun = -(f.toFun) := by
+  rfl
+
+lemma lipschitz_add_tofun (f g: LipschitzH (G := G)): (f + g).toFun = f.toFun + g.toFun := by
+  rfl
+
+lemma lipschiz_norm_zero: LipschitzSemiNorm (S := S) (0) = 0 := by
+  unfold LipschitzSemiNorm
+  have zero_mem: 0 ∈ { k: NNReal | LipschitzWith k (0 : LipschitzH (G := G)) } := by
+    simp
+    apply LipschitzWith.const
+  have sinf_le: sInf { k: NNReal | LipschitzWith k (0 : LipschitzH (G := G)) } ≤ 0 := by
+    exact csInf_le' zero_mem
+  exact nonpos_iff_eq_zero.mp sinf_le
+
+#synth IsStrictOrderedRing NNReal
+
+lemma lipschitz_attains_norm (f: G → ℂ) (hf: IsLipschitz f): LipschitzWith (LipschitzSemiNorm (G := G) f) f := by
+  by_contra!
+  have orig_this := this
+  simp [LipschitzWith] at this
+  obtain ⟨x, y, hdist⟩ := this
+  have edist_ne_zero: edist x y ≠ 0 := by
+    by_contra!
+    sorry
+  have edist_not_top: edist x y ≠ ⊤ := by
+    sorry
+
+  rw [← ENNReal.lt_div_iff_mul_lt (by simp) (Or.inl edist_not_top)] at hdist
+  simp [LipschitzSemiNorm] at hdist
+  have isglb_sinf := isGLB_csInf (s := { k: NNReal | LipschitzWith k f }) (by
+    obtain ⟨K, hK⟩ := hf
+    use K
+    simp
+    exact hK
+  ) (by simp)
+
+
+
+  have between := IsGLB.exists_between (b := (edist (f x) (f y) / edist x y).toNNReal) isglb_sinf (by
+    rw [edist_nndist]
+    rw [edist_nndist]
+    conv =>
+      rhs
+      equals (nndist (f x) (f y)) / (nndist x y) =>
+        rw [← ENNReal.coe_div]
+        simp
+        exact ENNReal.coe_ne_zero.mp edist_ne_zero
+
+    rw [edist_nndist] at hdist
+    rw [edist_nndist] at hdist
+    have edist_gt_zero: edist x y > 0 := by
+      exact pos_of_ne_zero edist_ne_zero
+
+    have x_ne_y := edist_pos.mp edist_gt_zero
+
+    conv at hdist =>
+      rhs
+      equals ENNReal.ofNNReal ((nndist (f x) (f y)) / (nndist x y)) =>
+        rw [ENNReal.coe_div]
+        simp [x_ne_y]
+
+
+    norm_cast at hdist
+  )
+  obtain ⟨D, lipschitz_d, sinf_le_d, d_lt_slope⟩ := between
+  simp [LipschitzWith] at lipschitz_d
+  specialize lipschitz_d x y
+  apply_fun (fun (z) => z / (edist x y)) at lipschitz_d
+  field_simp at lipschitz_d
+  rw [← mul_div] at lipschitz_d
+  rw [ENNReal.div_self edist_ne_zero edist_not_top] at lipschitz_d
+  simp at lipschitz_d
+  norm_cast at lipschitz_d
+  norm_cast at d_lt_slope
+  conv at d_lt_slope =>
+    equals ENNReal.ofNNReal D < (edist (f x) (f y) / edist x y) =>
+      sorry
+
+  apply not_lt_of_le at lipschitz_d
+  contradiction
+
+
+
+  -- have weaken := LipschitzWith.weaken lipschitz_d (d_lt_slope.le)
+  -- simp [LipschitzWith] at weaken
+  -- specialize weaken x y
+  -- conv at weaken =>
+  --   rhs
+  --   arg 1
+  --   equals (edist (f x) (f y)) / (edist x y) =>
+  --     norm_cast
+  --     sorry
+  -- conv at weaken =>
+  --   rhs
+  --   equals edist (f x) (f y) * (edist x y / edist x y) =>
+  --     exact ENNReal.mul_comm_div
+
+
+  -- rw [ENNReal.div_self edist_ne_zero edist_not_top] at weaken
+
+
+
+  rw [← isGLB_iff_sInf_eq] at sinf_eq
+lemma lipschitz_norm_triangle (x y z: LipschitzH (G := G)): LipschitzSemiNorm (S := S) (x - z) ≤ LipschitzSemiNorm (S := S) (x - y) + LipschitzSemiNorm (S := S) (y - z) := by
+  simp [LipschitzSemiNorm]
+
+
+  conv =>
+    lhs
+    dsimp [LipschitzWith]
+
+
+
+
+  conv =>
+    pattern x - z
+    equals (x - y) + (y - z) =>
+      field_simp
+
+
+
+
+  rw [lipschitz_add_tofun]
+
+
+  obtain ⟨X, hX⟩ := x.lipschitz
+  obtain ⟨Y, hY⟩ := y.lipschitz
+  obtain ⟨Z, hZ⟩ := z.lipschitz
+
+
+
+  have sum_norm_mem: (X + Y) + (Y + Z) ∈ { k: NNReal | LipschitzWith k ((x - y).toFun + (y - z).toFun) } := by
+    simp [LipschitzSemiNorm]
+    apply LipschitzWith.add
+    apply LipschitzWith.sub hX hY
+    apply LipschitzWith.sub hY hZ
+
+
+
+
+
+
+noncomputable instance W_seminorm: SeminormedAddCommGroup (W (G := G)) where
+  norm := fun f => (LipschitzSemiNorm_w f).val
+  dist_self := by
+    intro w
+    simp [LipschitzSemiNorm_w]
+    rw [← Submodule.Quotient.mk_zero]
+    unfold Submodule.Quotient.mk
+    rw [Quotient.lift_mk]
+    exact lipschiz_norm_zero
+  dist_comm := by
+    intro x w
+    simp
+    dsimp [LipschitzSemiNorm_w]
+    conv =>
+      pattern w - x
+      equals -(x - w) =>
+        field_simp
+
+    have forward_elem: Submodule.Quotient.mk (x - w).out = x - w := by
+      simp [Submodule.Quotient.mk]
+    rw [← forward_elem]
+    rw [← Submodule.Quotient.mk_neg]
+
+
+    unfold Submodule.Quotient.mk
+    repeat rw [Quotient.lift_mk]
+    simp [LipschitzSemiNorm]
+    conv =>
+      rhs
+      arg 1
+      arg 1
+      intro k
+      rw [lipschitz_neg_tofun]
+      rw [lipschitzWith_neg_iff]
+  dist_triangle := by
+    intro x y z
+    simp [LipschitzSemiNorm_w]
+
+    have forward_elem (w: W (G := G)): Submodule.Quotient.mk (w).out = w := by
+      simp [Submodule.Quotient.mk]
+    rw [← forward_elem (w := (x - z))]
+    rw [← forward_elem (w := (y - z))]
+    rw [← forward_elem (w := (x - y))]
+    unfold Submodule.Quotient.mk
+    repeat rw [Quotient.lift_mk]
+    simp [LipschitzSemiNorm]
+    conv =>
+      pattern x - z
+      equals (x - y) + (y - z) =>
+        field_simp
+
+
+
+
 -- The space 'GL(W)' of linear functions from W to W
-abbrev GL_W := W (G := G) →ₗ[ℂ] W (G := G)
+abbrev GL_W := W (G := G) →[ℂ] W (G := G)
 
 def GLW_toContinuousLinearMap (w: GL_W): ContinuousLinearMap (W (G := G)) (W (G := G)) := {
   toFun := w.toFun
