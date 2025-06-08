@@ -288,7 +288,7 @@ def NontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [h' : NormedField 𝕜]
   toNormedField := h'
   non_trivial := by
     rcases h with ⟨x, hx, hx1⟩
-    rcases hx1.lt_or_lt with hlt | hlt
+    rcases hx1.lt_or_gt with hlt | hlt
     · use x⁻¹
       rw [norm_inv]
       exact (one_lt_inv₀ (norm_pos_iff.2 hx)).2 hlt

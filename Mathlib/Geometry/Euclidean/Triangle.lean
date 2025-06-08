@@ -194,10 +194,12 @@ theorem sin_angle_add_angle_sub_add_angle_sub_eq_zero {x y : V} (hx : x ≠ 0) (
     sin_angle_sub_add_angle_sub_rev_eq_sin_angle hx hy]
   ring
 
-/-- The sum of the angles of a possibly degenerate triangle (where the
-two given sides are nonzero), vector angle form. -/
-theorem angle_add_angle_sub_add_angle_sub_eq_pi {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
+/-- The sum of the angles of a possibly degenerate triangle (where one of the
+two given sides is nonzero), vector angle form. -/
+theorem angle_add_angle_sub_add_angle_sub_eq_pi (x : V) {y : V} (hy : y ≠ 0) :
     angle x y + angle x (x - y) + angle y (y - x) = π := by
+  by_cases hx : x = 0
+  · simp [hx, hy]
   have hcos := cos_angle_add_angle_sub_add_angle_sub_eq_neg_one hx hy
   have hsin := sin_angle_add_angle_sub_add_angle_sub_eq_zero hx hy
   rw [Real.sin_eq_zero_iff] at hsin
@@ -280,17 +282,16 @@ theorem dist_eq_of_angle_eq_angle_of_angle_ne_pi {p₁ p₂ p₃ : P} (h : ∠ p
   rw [← vsub_sub_vsub_cancel_left p₃ p₂ p₁, ← vsub_sub_vsub_cancel_left p₂ p₃ p₁] at h
   exact norm_eq_of_angle_sub_eq_angle_sub_rev_of_angle_ne_pi h hpi
 
-/-- The **sum of the angles of a triangle** (possibly degenerate, where the
-given vertex is distinct from the others), angle-at-point. -/
-theorem angle_add_angle_add_angle_eq_pi {p₁ p₂ p₃ : P} (h2 : p₂ ≠ p₁) (h3 : p₃ ≠ p₁) :
+/-- The **sum of the angles of a triangle** (possibly degenerate, where two
+given vertices are distinct), angle-at-point. -/
+theorem angle_add_angle_add_angle_eq_pi {p₁ p₂ : P} (p₃ : P) (h : p₂ ≠ p₁) :
     ∠ p₁ p₂ p₃ + ∠ p₂ p₃ p₁ + ∠ p₃ p₁ p₂ = π := by
   rw [add_assoc, add_comm, add_comm (∠ p₂ p₃ p₁), angle_comm p₂ p₃ p₁]
   unfold angle
   rw [← angle_neg_neg (p₁ -ᵥ p₃), ← angle_neg_neg (p₁ -ᵥ p₂), neg_vsub_eq_vsub_rev,
     neg_vsub_eq_vsub_rev, neg_vsub_eq_vsub_rev, neg_vsub_eq_vsub_rev, ←
     vsub_sub_vsub_cancel_right p₃ p₂ p₁, ← vsub_sub_vsub_cancel_right p₂ p₃ p₁]
-  exact angle_add_angle_sub_add_angle_sub_eq_pi (fun he => h3 (vsub_eq_zero_iff_eq.1 he)) fun he =>
-    h2 (vsub_eq_zero_iff_eq.1 he)
+  exact angle_add_angle_sub_add_angle_sub_eq_pi _ fun he => h (vsub_eq_zero_iff_eq.1 he)
 
 /-- The **sum of the angles of a triangle** (possibly degenerate, where the triangle is a line),
 oriented angles at point. -/

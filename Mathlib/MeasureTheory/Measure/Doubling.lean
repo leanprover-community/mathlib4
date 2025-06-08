@@ -77,7 +77,7 @@ theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
         _ ≤ ↑(C ^ n) * μ (closedBall x (2 * ε)) := hε.1 x
         _ ≤ ↑(C ^ n) * (C * μ (closedBall x ε)) := by gcongr; exact hε.2 x
         _ = ↑(C ^ (n + 1)) * μ (closedBall x ε) := by rw [← mul_assoc, pow_succ, ENNReal.coe_mul]
-  rcases lt_or_le K 1 with (hK | hK)
+  rcases lt_or_ge K 1 with (hK | hK)
   · refine ⟨1, ?_⟩
     simp only [ENNReal.coe_one, one_mul]
     refine eventually_mem_nhdsWithin.mono fun ε hε x t ht ↦ ?_

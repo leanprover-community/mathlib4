@@ -24,7 +24,7 @@ theorem IsSimpleRing.tfae [IsSimpleRing R] : List.TFAE
     simp_rw [← isFullyInvariant_iff_isTwoSided] at h
     have := isSimpleModule_iff_isAtom.mpr hI
     obtain eq | eq := h _ (isFullyInvariant_isotypicComponent R R I)
-    · exact (hI.bot_lt.not_le <| (le_sSup <| by exact ⟨.refl ..⟩).trans_eq eq).elim
+    · exact (hI.bot_lt.not_ge <| (le_sSup <| by exact ⟨.refl ..⟩).trans_eq eq).elim
     exact .congr (.symm <| .trans (.ofEq _ _ eq) Submodule.topEquiv)
   tfae_finish
 

@@ -545,7 +545,7 @@ theorem countable_setOf_covBy_right [OrderTopology α] [SecondCountableTopology 
     simpa only [IsBot, not_forall, not_le] using hx.right.right.right
   choose! z hz h'z using this
   have : PairwiseDisjoint t fun x => Ioc (z x) x := fun x xt x' x't hxx' => by
-    rcases hxx'.lt_or_lt with (h' | h')
+    rcases hxx'.lt_or_gt with (h' | h')
     · refine disjoint_left.2 fun u ux ux' => xt.2.2.1 ?_
       refine h'z x' x't ⟨ux'.1.trans_le (ux.2.trans (hy x xt.1).le), ?_⟩
       by_contra! H
@@ -610,7 +610,7 @@ theorem countable_image_lt_image_Ioi [OrderTopology α] [LinearOrder β] (f : β
     have A : (f '' s).PairwiseDisjoint fun x => Ioo x (z (invFunOn f s x)) := by
       rintro _ ⟨u, us, rfl⟩ _ ⟨v, vs, rfl⟩ huv
       wlog hle : u ≤ v generalizing u v
-      · exact (this v vs u us huv.symm (le_of_not_le hle)).symm
+      · exact (this v vs u us huv.symm (le_of_not_ge hle)).symm
       have hlt : u < v := hle.lt_of_ne (ne_of_apply_ne _ huv)
       apply disjoint_iff_forall_ne.2
       rintro a ha b hb rfl
