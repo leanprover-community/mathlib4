@@ -87,9 +87,9 @@ injective map `θ : ι ↪ α`. (We call this a `σ`-flag if the labelled subgra
 structure Flag (α ι : Type*) where
   G : SimpleGraph α
   θ : ι ↪ α
-
+#check Embedding
 /-- Added to prove `Fintype` instance later -/
-def FlagIso (α ι : Type*) : Flag α ι ≃ (SimpleGraph α) × (ι ↪ α) where
+def Flag_equiv_prod (α ι : Type*) : Flag α ι ≃ (SimpleGraph α) × (ι ↪ α) where
   toFun := fun F ↦ (F.G, F.θ)
   invFun := fun p ↦ { G := p.1, θ := p.2 }
   left_inv := fun F ↦ by cases F; rfl
@@ -99,13 +99,24 @@ def FlagIso (α ι : Type*) : Flag α ι ≃ (SimpleGraph α) × (ι ↪ α) whe
 abbrev Embedding.Flag {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι } (e : F₁.G ↪g F₂.G) :
     Prop := F₂.θ = e ∘ F₁.θ
 
-/-- An isomorphism of flags -/
-abbrev Iso.Flag {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι } (e : F₁.G ≃g F₂.G) :
-    Prop := F₂.θ = e ∘ F₁.θ
+/-- An embedding of flags is an embedding of the underlying graphs that preserves labels. -/
+structure Flag.Embedding {α β ι : Type*} (F₁ : Flag α ι) (F₂ : Flag β ι) extends F₁.G ↪g F₂.G where
+ labels : F₂.θ = toEmbedding ∘ F₁.θ
 
-lemma Flag.Iso_symm {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι} (e : F₁.G ≃g F₂.G)
-    (he : e.Flag) : F₁.θ = e.symm ∘ F₂.θ := by
-  ext; simp [he]
+
+/-- An isomorphims of flags is an isomorphism of the underlying graphs that preserves labels. -/
+structure Flag.Iso {α β ι : Type*} (F₁ : Flag α ι) (F₂ : Flag β ι) extends F₁.G ≃g F₂.G where
+ labels : F₂.θ = toEquiv ∘ F₁.θ
+
+@[inherit_doc] infixl:50 " ↪f " => Flag.Embedding
+@[inherit_doc] infixl:50 " ≃f " => Flag.Iso
+
+variable {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι} {e : F₁ ↪f F₂}
+
+
+lemma Flag.Iso_symm {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι} (e : F₁ ≃f F₂)
+     : F₁.θ = e.symm ∘ F₂.θ := by
+  ext x; simp [e.labels]
 
 /--
 `F` is a `σ`-flag iff the labelled subgraph given by `θ` is `σ`
@@ -116,13 +127,13 @@ def Flag.IsSigma (F : Flag α ι) (σ : SimpleGraph ι) : Prop :=
 lemma Flag.isSigma_self (F : Flag α ι) : F.IsSigma (F.G.comap F.θ) := rfl
 
 lemma Flag.isSigma_of_embedding {α β ι : Type*} {σ : SimpleGraph ι} {F₁ : Flag α ι}
-    {F₂ : Flag β ι} (e : F₁.G ↪g F₂.G) (he : e.Flag) (h1 : F₁.IsSigma σ) : F₂.IsSigma σ := by
-  rw [IsSigma, he, ← h1] at *
+    {F₂ : Flag β ι} (e : F₁ ↪f F₂)  (h1 : F₁.IsSigma σ) : F₂.IsSigma σ := by
+  rw [IsSigma, e.labels, ← h1] at *
   ext; simp
 
 variable {α ι  : Type*} [Fintype α] [Fintype ι] [DecidableEq α] [DecidableEq ι]
 
-noncomputable instance : Fintype (Flag α ι) :=  Fintype.ofEquiv _ (FlagIso α ι).symm
+noncomputable instance : Fintype (Flag α ι) :=  Fintype.ofEquiv _ (Flag_equiv_prod α ι).symm
 
 open Classical in
 /--
