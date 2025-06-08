@@ -96,6 +96,8 @@ lemma betaIntegralReal_eq (α β : ℝ) (hα : 0 < α) (hβ : 0 < β):
     unfold Real.Gamma; simp
   rw [betaIntegral_eq α β hα hβ, this]; simp
 
+/-- The probability density function of the beta distribution with shape parameters `α` and `β`.
+    Returns `(1 / Beta α β) * x^(α - 1) * (1 - x)^(β - 1)` when `0 < x < 1` and `0` otherwise. -/
 noncomputable def betaPDFReal (α β x : ℝ) : ℝ :=
   if 0 < x ∧ x < 1 then
     (1 / Beta α β) * x^(α - 1) * (1 - x)^(β - 1)
@@ -201,7 +203,7 @@ lemma lintegral_betaPDF_eq_one {α β: ℝ} (hα : 0 < α) (hβ : 0 < β) :
     conv => lhs; congr; rfl; ext; rw [mul_assoc]
     rw [integral_const_mul]
     field_simp; rw [div_eq_one_iff_eq (ne_of_gt (Beta_pos hα hβ))]
-    -- Use relationship Beta and Gamma
+    -- Use the relationship between Beta and Gamma to show that the integral equal beta
     rw [Beta_eq_betaIntegralReal α β hα hβ]; unfold betaIntegralReal betaIntegral
     rw [intervalIntegral.integral_of_le (by norm_num), <-integral_Ioc_eq_integral_Ioo]
     have (a : ℝ) (b : ℂ) : (a : ℂ) = b → a = b.re := by intro h; simp [← h]
@@ -224,7 +226,6 @@ lemma lintegral_betaPDF_eq_one {α β: ℝ} (hα : 0 < α) (hβ : 0 < β) :
     unfold betaPDFReal; rw [ae_eq_comm]; simp
     refine Filter.eventuallyEq_inf_principal_iff.mpr ?hfm.a
     simp; apply ae_of_all; intro x h1 h2
-    have h : 0 < x ∧ x < 1 := ⟨h1, h2⟩
     intro h'; left; have contra : ¬(0 < x → 1 ≤ x) := by
       intro h'
       have h3 : 1 ≤ x := h' h1
