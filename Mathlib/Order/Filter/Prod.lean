@@ -281,6 +281,19 @@ theorem eventually_swap_iff {p : α × β → Prop} :
     (∀ᶠ x : α × β in f ×ˢ g, p x) ↔ ∀ᶠ y : β × α in g ×ˢ f, p y.swap := by
   rw [prod_comm]; rfl
 
+lemma Eventually.trans_prod {h : Filter γ}
+    [NeBot g] {p : α → β → Prop} {q : β → γ → Prop} {r : α → γ → Prop}
+    (hp : ∀ᶠ xy in f ×ˢ g, p xy.1 xy.2) (hq : ∀ᶠ yz in g ×ˢ h, q yz.1 yz.2)
+    (hpqr : ∀ x y z, p x y → q y z → r x z) :
+    ∀ᶠ xz in f ×ˢ h, r xz.1 xz.2 := by
+  replace hp := hp.curry
+  replace hq := eventually_swap_iff.mp hq |>.curry
+  -- Note: the assumptions are slightly too strong, we can replace them by what `hp` and `hq`
+  -- are at this point if needed
+  refine eventually_prod_iff.mpr ⟨_, hp, _, hq, fun {x} hx {z} hz ↦ ?_⟩
+  rcases (hx.and hz).exists with ⟨y, hpy, hqy⟩
+  exact hpqr x y z hpy hqy
+
 theorem prod_assoc (f : Filter α) (g : Filter β) (h : Filter γ) :
     map (Equiv.prodAssoc α β γ) ((f ×ˢ g) ×ˢ h) = f ×ˢ (g ×ˢ h) := by
   simp_rw [← comap_equiv_symm, prod_eq_inf, comap_inf, comap_comap, inf_assoc,
