@@ -327,7 +327,7 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₃
     _ ≤ (s - 1) * s * C + s * ε := by
       gcongr
       exact LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂ h₀ hε hs hT₁
-        fun t ht ↦ (hT t ht.le).le
+        fun t ht ↦ (hT t ht).le
 
 theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div
     (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈ Icc 1 n, f k) / n) atTop (𝓝 l))
