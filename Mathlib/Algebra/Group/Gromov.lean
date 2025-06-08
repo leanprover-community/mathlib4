@@ -774,12 +774,8 @@ lemma lipschitz_attains_norm (f: G → ℂ) (hf: IsLipschitz f): LipschitzWith (
   obtain ⟨D, lipschitz_d, sinf_le_d, d_lt_slope⟩ := between
   simp [LipschitzWith] at lipschitz_d
   specialize lipschitz_d x y
-  apply_fun (fun (z) => z / (edist x y)) at lipschitz_d
-  field_simp at lipschitz_d
-  rw [← mul_div] at lipschitz_d
-  rw [ENNReal.div_self edist_ne_zero edist_not_top] at lipschitz_d
-  simp at lipschitz_d
-  norm_cast at lipschitz_d
+  rw [mul_comm] at lipschitz_d
+  apply ENNReal.div_le_of_le_mul' at lipschitz_d
   norm_cast at d_lt_slope
   conv at d_lt_slope =>
     equals ENNReal.ofNNReal D < (edist (f x) (f y) / edist x y) =>
