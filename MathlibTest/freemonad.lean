@@ -43,7 +43,6 @@ example : FreeWriter.run (do
   FreeWriter.tell "World!"
   return 42) = (42, "Hello, World!") := by simp
 
-
 example : FreeWriter.run (do
   let (x, captured) ← FreeWriter.listen (do
     FreeWriter.tell "Hello, "
@@ -51,7 +50,6 @@ example : FreeWriter.run (do
   FreeWriter.tell "World!"
   return (x, captured)) = ((42, "Hello, "), "Hello, World!") := by simp
 
-@[simp]
 example : FreeWriter.run (FreeWriter.pass (do
   FreeWriter.tell "Hello"
   return ((), fun (w : String) => w ++ "!"))) = ((), "Hello!") := by simp
