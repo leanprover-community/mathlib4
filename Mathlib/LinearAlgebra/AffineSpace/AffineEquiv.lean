@@ -174,6 +174,8 @@ theorem coe_symm_toEquiv (e : P₁ ≃ᵃ[k] P₂) : ⇑e.toEquiv.symm = e.symm 
 theorem linear_symm (e : P₁ ≃ᵃ[k] P₂) : e.symm.linear = e.linear.symm :=
   rfl
 
+@[deprecated (since := "2025-06-08")] alias symm_linear := linear_symm
+
 /-- See Note [custom simps projection] -/
 def Simps.apply (e : P₁ ≃ᵃ[k] P₂) : P₁ → P₂ :=
   e

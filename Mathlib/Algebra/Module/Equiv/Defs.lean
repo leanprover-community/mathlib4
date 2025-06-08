@@ -270,6 +270,8 @@ initialize_simps_projections LinearEquiv (toFun → apply, invFun → symm_apply
 theorem invFun_eq_symm : e.invFun = e.symm :=
   rfl
 
+theorem coe_toEquiv_symm : e.toEquiv.symm = e.symm := rfl
+
 @[simp]
 theorem toEquiv_symm : e.symm.toEquiv = e.toEquiv.symm :=
   rfl
