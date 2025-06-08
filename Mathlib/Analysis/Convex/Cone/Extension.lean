@@ -3,8 +3,8 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Frédéric Dupuis
 -/
-import Mathlib.Analysis.Convex.Cone.Basic
 import Mathlib.Data.Real.Archimedean
+import Mathlib.Geometry.Convex.Cone.Basic
 import Mathlib.LinearAlgebra.LinearPMap
 
 /-!
@@ -79,7 +79,7 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     replace := nonneg _ this
     rwa [f.map_sub, sub_nonneg] at this
   refine ⟨f.supSpanSingleton y (-c) hy, ?_, ?_⟩
-  · refine lt_iff_le_not_le.2 ⟨f.left_le_sup _ _, fun H => ?_⟩
+  · refine lt_iff_le_not_ge.2 ⟨f.left_le_sup _ _, fun H => ?_⟩
     replace H := LinearPMap.domain_mono.monotone H
     rw [LinearPMap.domain_supSpanSingleton, sup_le_iff, span_le, singleton_subset_iff] at H
     exact hy H.2

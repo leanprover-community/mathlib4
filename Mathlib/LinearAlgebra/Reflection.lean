@@ -8,7 +8,6 @@ import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Module.Submodule.Invariant
 import Mathlib.Algebra.Module.Torsion
-import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.LinearAlgebra.Dual.Defs
 import Mathlib.LinearAlgebra.FiniteSpan
@@ -280,8 +279,8 @@ lemma reflection_mul_reflection_zpow_apply_self (m : ℤ)
       (S R (k - 2)).eval t = (f y * g x - 2) * (S R (k - 1)).eval t - (S R k).eval t := by
     simp [S_sub_two, ht]
   induction m with
-  | hz => simp
-  | hp m ih =>
+  | zero => simp
+  | succ m ih =>
     -- Apply the inductive hypothesis.
     rw [add_comm (m : ℤ) 1, zpow_one_add, LinearEquiv.mul_apply, LinearEquiv.mul_apply, ih]
     -- Expand out all the reflections and use `hf`, `hg`.
@@ -290,7 +289,7 @@ lemma reflection_mul_reflection_zpow_apply_self (m : ℤ)
     match_scalars
     · linear_combination (norm := ring_nf) -S_eval_t_sub_two (m + 1)
     · ring_nf
-  | hn m ih =>
+  | pred m ih =>
     -- Apply the inductive hypothesis.
     rw [sub_eq_add_neg (-m : ℤ) 1, add_comm (-m : ℤ) (-1), zpow_add, zpow_neg_one, mul_inv_rev,
       reflection_inv, reflection_inv, LinearEquiv.mul_apply, LinearEquiv.mul_apply, ih]

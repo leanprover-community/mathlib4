@@ -49,7 +49,7 @@ theorem enumerate_eq_none :
       | zero => contradiction
       | succ m' =>
         simp? [hs, enumerate] at h ⊢ says
-          simp only [enumerate, hs, Option.bind_eq_bind, Option.some_bind] at h ⊢
+          simp only [enumerate, hs, Option.bind_eq_bind, Option.bind_some] at h ⊢
         have hm : n ≤ m' := Nat.le_of_succ_le_succ hm
         exact enumerate_eq_none h hm
 
@@ -68,7 +68,7 @@ theorem enumerate_mem (h_sel : ∀ s a, sel s = some a → a ∈ s) :
 theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, sel s = some a → a ∈ s)
     (h₁ : enumerate sel s n₁ = some a) (h₂ : enumerate sel s n₂ = some a) : n₁ = n₂ := by
   wlog hn : n₁ ≤ n₂ generalizing n₁ n₂
-  · exact (this h₂ h₁ (lt_of_not_le hn).le).symm
+  · exact (this h₂ h₁ (lt_of_not_ge hn).le).symm
   rcases Nat.le.dest hn with ⟨m, rfl⟩
   clear hn
   induction n₁ generalizing s with

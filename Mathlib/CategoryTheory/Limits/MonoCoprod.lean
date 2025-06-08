@@ -31,11 +31,11 @@ TODO: define distributive categories, and show that they satisfy `MonoCoprod`, s
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
-
 universe u
 
 namespace CategoryTheory
+
+open CategoryTheory.Category CategoryTheory.Limits
 
 namespace Limits
 

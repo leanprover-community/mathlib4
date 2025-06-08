@@ -43,7 +43,7 @@ theorem pow_sub_one_mod_pow_sub_one (a b c : ℕ) : (a ^ c - 1) % (a ^ b - 1) = 
   · simp
   rcases eq_zero_or_pos b with rfl | hb0
   · simp
-  rcases lt_or_le c b with h | h
+  rcases lt_or_ge c b with h | h
   · rw [mod_eq_of_lt, mod_eq_of_lt h]
     rwa [Nat.sub_lt_sub_iff_right (one_le_pow c a ha0), Nat.pow_lt_pow_iff_right ha1]
   · suffices a ^ (c - b + b) - 1 = a ^ (c - b) * (a ^ b - 1) + (a ^ (c - b) - 1) by
