@@ -189,9 +189,9 @@ class IsCMField (K : Type*) [Field K] [NumberField K] [IsTotallyComplex K] : Pro
 
 namespace IsCMField
 
-variable (K : Type*) [Field K] [NumberField K] [IsTotallyComplex K]
+variable (F K : Type*) [Field K] [NumberField K] [IsTotallyComplex K]
 
-theorem ofCMExtension (F : Type*) [Field F] [NumberField F] [IsTotallyReal F] [Algebra F K]
+theorem ofCMExtension [Field F] [NumberField F] [IsTotallyReal F] [Algebra F K]
     [IsQuadraticExtension F K] :
     IsCMField K where
   is_quadratic := ⟨(IsQuadraticExtension.finrank_eq_two F K) ▸ finrank_eq_of_equiv_equiv
