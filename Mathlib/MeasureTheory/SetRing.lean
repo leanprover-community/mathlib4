@@ -121,6 +121,13 @@ theorem iInter_le_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n �
   | zero => simp [hs 0]
   | succ n hn => rw [biInter_le_succ]; exact hC.inter_mem hn (hs _)
 
+lemma mem_sUnion (D : Set (Set α)) : D.Finite ↔
+    ∃ (D' : Finset (Set α)), D'.toSet = D := by
+  refine ⟨fun h ↦ Finite.exists_finset_coe h, fun ⟨D', hD'⟩ ↦ ?_⟩
+  rw [← hD']
+  simp only [finite_toSet]
+
+/-- Taking finite unions of elements in a set semi-ring gives a ring. -/
 theorem of_setSemiring' (hC : IsSetSemiring C) :
     IsSetRing (sUnion '' {D : Set (Set α) | D.Finite ∧ D ⊆ C}) := by
   refine ⟨?_, fun s t ⟨Ds, ⟨Ds1, Ds2⟩, Ds3⟩ ⟨Dt, ⟨Dt1, Dt2⟩, Dt3⟩ ↦ ?_,
@@ -128,50 +135,16 @@ theorem of_setSemiring' (hC : IsSetSemiring C) :
   · use ∅
     simp
   · use Ds ∪ Dt
-    simp [Ds1, Dt1, Ds2, Dt2]
-    rw [sUnion_union, Ds3, Dt3]
-  · rw [← Ds3, ← Dt3]
-    obtain Ds' := Finite.toFinset Ds1
-    have Ds2' : Ds'.toSet ⊆ C := by
-      intro x
-      sorry
-    obtain Dt' := Finite.toFinset Dt1
-    have Dt2' : Dt'.toSet ⊆ C := by sorry
-    obtain ⟨D, hD1, hD2, hD3⟩ := hC.sUnion_disjointOfUnion_setdiff Dt2' Ds2'
+    simp only [mem_setOf_eq, finite_union, Ds1, Dt1, and_self, Set.union_subset_iff, Ds2, Dt2,
+      true_and, sUnion_union, Ds3, Dt3]
+  · obtain ⟨Ds', hDs'⟩ := (mem_sUnion _).mp Ds1
+    obtain ⟨Dt', hDt'⟩ := (mem_sUnion _).mp Dt1
+    rw [← Ds3, ← Dt3]
+    rw [← hDs'] at Ds2 ⊢
+    rw [← hDt'] at Dt2 ⊢
+    obtain ⟨D, hD1, hD2, hD3⟩ := hC.sUnion_disjointOfUnion_setdiff Dt2 Ds2
     use D
     simp [hD1, hD3]
-
-
-
-
-
-
-    sorry
-  \. sorry
-  \. sorry
-  sorry
-
-
-/-- Taking finite unions of elements in a set semi-ring gives a ring. -/
-theorem of_setSemiring (hC : IsSetSemiring C) :
-    IsSetRing {s : Set α | ∃ (D : Finset (Set (α))), (D : Set (Set α)) ⊆ C ∧ s = ⋃₀ D}
-    := by
-  classical
-  refine ⟨?_, ?_, ?_⟩
-  · use {∅}
-    simp only [coe_singleton, Set.singleton_subset_iff, sUnion_singleton, and_true]
-    exact hC.empty_mem
-  · simp_rw [mem_setOf_eq]
-    rintro s t ⟨Ds, ⟨hDs1, hDs2⟩⟩ ⟨Dt, ⟨hDt1, hDt2⟩⟩
-    use (Ds ∪ Dt)
-    refine ⟨?_, ?_⟩
-    · simp only [coe_union, Set.union_subset_iff, hDs1, hDt1, and_self]
-    · simp only [hDs2, hDt2, coe_union, Set.sUnion_union]
-  · simp_rw [mem_setOf_eq]
-    rintro s t ⟨Ds, ⟨hDs1, hDs2⟩⟩ ⟨Dt, ⟨hDt1, hDt2⟩⟩
-    rw [hDs2, hDt2]
-    obtain ⟨D, hD1, hD2, hD3⟩ := hC.sUnion_disjointOfUnion_setdiff hDt1 hDs1
-    use D
 
 end IsSetRing
 
