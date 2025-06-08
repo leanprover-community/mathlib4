@@ -865,6 +865,42 @@ noncomputable instance LipschitzH_seminorm: SeminormedAddCommGroup (LipschitzH (
     simp
     apply lipschitzH_norm_triangle
 
+
+noncomputable instance LipschitzH_normed: NormedSpace ℂ (LipschitzH (G := G)) where
+  norm_smul_le := by
+    intro c f
+    simp [HSMul.hSMul, SMul.smul]
+    simp [norm]
+    conv =>
+      lhs
+      simp [LipschitzSemiNorm]
+    norm_cast
+    apply csInf_le (by
+      simp [BddBelow]
+      apply Set.nonempty_of_mem (x := 0)
+      rw [mem_lowerBounds]
+      simp
+    )
+    simp
+    let K := LipschitzSemiNorm (G := G) f
+    have hK := lipschitz_attains_norm f (f.lipschitz)
+    use ‖ (c * K) ‖₊
+    simp
+    have comp_mul_const := LipschitzWith.comp (Kf := ‖c‖₊) (Kg := K) (f := fun x => c • x) (g := f.toFun) (by apply lipschitzWith_smul) hK
+    simp at comp_mul_const
+    conv =>
+      lhs
+      arg 2
+      simp [DFunLike.coe]
+      equals (fun x ↦ c • x) ∘ f.toFun => rfl
+
+
+    refine ⟨comp_mul_const, ?_⟩
+    simp [norm]
+    left
+    simp [K]
+
+
 -- noncomputable instance W_seminorm: SeminormedAddCommGroup (W (G := G)) where
 --   norm := fun f => (LipschitzSemiNorm_w f).val
 --   dist_self := by
