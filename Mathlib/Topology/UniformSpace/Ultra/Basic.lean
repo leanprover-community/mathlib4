@@ -120,8 +120,8 @@ lemma IsTransitiveRel.mem_filter_prod_trans {s : Set (X × X)} {f g h : Filter X
     s ∈ f ×ˢ h :=
   Eventually.trans_prod (by simpa using hfg) (by simpa using hgh) hs
 
-lemma IsTransitiveRel.mem_filter_prod_comm {s : Set (X × X)} {f g h : Filter X}
-    (hs : IsTransitiveRel s) (hfg : s ∈ f ×ˢ g) (hgh : s ∈ g ×ˢ h) (hg : g.NeBot) :
+lemma IsTransitiveRel.mem_filter_prod_comm {s : Set (X × X)} {f g h : Filter X} [g.NeBot]
+    (hs : IsTransitiveRel s) (hfg : s ∈ f ×ˢ g) (hgh : s ∈ g ×ˢ h) :
     s ∈ f ×ˢ h := by
   rw [mem_prod_iff] at hfg hgh ⊢
   obtain ⟨t, ht, u, hu, htu⟩ := hfg
@@ -164,8 +164,7 @@ lemma IsUltraUniformity.mk_of_hasBasis {ι : Type*} {p : ι → Prop} {s : ι �
     (fun i hi ↦ ⟨s i, ⟨h_basis.mem_of_mem hi, h_symm i hi, h_trans i hi⟩, subset_rfl⟩)
     (fun _ hs ↦ hs.1)
 
-lemma IsUltraUniformity.mem_nhds_iff_symm_trans [IsUltraUniformity X]
-    {x : X} {s : Set X} :
+lemma IsUltraUniformity.mem_nhds_iff_symm_trans [IsUltraUniformity X] {x : X} {s : Set X} :
     s ∈ 𝓝 x ↔ ∃ V ∈ 𝓤 X, IsSymmetricRel V ∧ IsTransitiveRel V ∧ UniformSpace.ball x V ⊆ s := by
   rw [UniformSpace.mem_nhds_iff]
   constructor
