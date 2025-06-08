@@ -376,6 +376,7 @@ theorem IsPathConnected.preimage_coe {U W : Set X} (hW : IsPathConnected W) (hWU
     IsPathConnected (((↑) : U → X) ⁻¹' W) := by
   rwa [IsInducing.subtypeVal.isPathConnected_iff, Subtype.image_preimage_val, inter_eq_right.2 hWU]
 
+open Fin.NatCast in -- TODO: refactor to avoid needing this.
 theorem IsPathConnected.exists_path_through_family {n : ℕ}
     {s : Set X} (h : IsPathConnected s) (p : Fin (n + 1) → X) (hp : ∀ i, p i ∈ s) :
     ∃ γ : Path (p 0) (p n), range γ ⊆ s ∧ ∀ i, p i ∈ range γ := by
@@ -433,6 +434,7 @@ theorem IsPathConnected.exists_path_through_family {n : ℕ}
   suffices i = i % n.succ by congr
   rw [Nat.mod_eq_of_lt hi]
 
+open Fin.NatCast in -- TODO: refactor to avoid needing this.
 theorem IsPathConnected.exists_path_through_family' {n : ℕ}
     {s : Set X} (h : IsPathConnected s) (p : Fin (n + 1) → X) (hp : ∀ i, p i ∈ s) :
     ∃ (γ : Path (p 0) (p n)) (t : Fin (n + 1) → I), (∀ t, γ t ∈ s) ∧ ∀ i, γ (t i) = p i := by
@@ -528,12 +530,14 @@ namespace PathConnectedSpace
 
 variable [PathConnectedSpace X]
 
+open Fin.NatCast in -- TODO: refactor to avoid needing this.
 theorem exists_path_through_family {n : ℕ} (p : Fin (n + 1) → X) :
     ∃ γ : Path (p 0) (p n), ∀ i, p i ∈ range γ := by
   have : IsPathConnected (univ : Set X) := pathConnectedSpace_iff_univ.mp (by infer_instance)
   rcases this.exists_path_through_family p fun _i => True.intro with ⟨γ, -, h⟩
   exact ⟨γ, h⟩
 
+open Fin.NatCast in -- TODO: refactor to avoid needing this.
 theorem exists_path_through_family' {n : ℕ} (p : Fin (n + 1) → X) :
     ∃ (γ : Path (p 0) (p n)) (t : Fin (n + 1) → I), ∀ i, γ (t i) = p i := by
   have : IsPathConnected (univ : Set X) := pathConnectedSpace_iff_univ.mp (by infer_instance)

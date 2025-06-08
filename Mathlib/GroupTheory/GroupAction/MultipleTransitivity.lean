@@ -292,8 +292,6 @@ namespace SubMulAction.ofStabilizer
 
 open scoped BigOperators Pointwise Cardinal
 
-open MulAction Function.Embedding
-
 @[to_additive]
 theorem isMultiplyPretransitive_iff_of_conj
     {n : ℕ} {a b : α} {g : G} (hg : b = g • a) :

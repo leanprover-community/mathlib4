@@ -1352,7 +1352,7 @@ lemma map_sub_map_piecewise [LinearOrder ι] (a b : (i : ι) → M₁ i) (s : Fi
   congr 1
   · congr; ext i; split_ifs with h₁ h₂
     · rw [update_of_ne, Finset.piecewise_eq_of_notMem]
-      · exact fun h ↦ (hk i h).not_lt (h₁ <| .inr h)
+      · exact fun h ↦ (hk i h).not_gt (h₁ <| .inr h)
       · exact fun h ↦ (h₁ <| .inl h).ne h
     · cases h₂
       rw [update_self, s.piecewise_eq_of_notMem _ _ (lt_irrefl _ <| hk k ·)]

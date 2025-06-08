@@ -354,7 +354,6 @@ noncomputable def ofMulAction : Representation k G (H →₀ k) where
   toFun g := Finsupp.lmapDomain k k (g • ·)
   map_one' := by
     ext x y
-    dsimp
     simp
   map_mul' x y := by
     ext z w
