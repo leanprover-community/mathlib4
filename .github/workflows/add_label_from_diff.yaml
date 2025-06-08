@@ -13,7 +13,7 @@ jobs:
     name: Add topic label
     runs-on: ubuntu-latest
     # Don't run on forks, where we wouldn't have permissions to add the label anyway.
-    #if: github.repository == 'leanprover-community/mathlib4'
+    if: github.repository == 'leanprover-community/mathlib4'
     permissions:
       issues: write
       checks: write
