@@ -454,7 +454,6 @@ set_option linter.deprecated false in
 @[deprecated lt_trichotomy (since := "2025-04-21")]
 lemma ltByCases_eq (h : x = y) {h₁ : x < y → P} {h₂ : x = y → P} {h₃ : y < x → P} :
     ltByCases x y h₁ h₂ h₃ = h₂ h := (dif_neg h.not_lt).trans (dif_neg h.not_gt)
-#exit
 
 set_option linter.deprecated false in
 @[deprecated lt_trichotomy (since := "2025-04-21")]
