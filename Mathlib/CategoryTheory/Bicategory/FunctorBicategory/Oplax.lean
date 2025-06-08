@@ -14,7 +14,6 @@ Given bicategories `B` and `C`, we give a bicategory structure on `OplaxFunctor 
 * 2-morphisms are modifications.
 -/
 
-
 namespace CategoryTheory.Oplax
 
 open Category Bicategory
@@ -49,31 +48,30 @@ def whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι �
 /-- Associator for the vertical composition of oplax natural transformations. -/
 @[simps!]
 def associator (η : F ⟶ G) (θ : G ⟶ H) (ι : H ⟶ I) : (η ≫ θ) ≫ ι ≅ η ≫ θ ≫ ι :=
-  ModificationIso.ofComponents (fun a => α_ (η.app a) (θ.app a) (ι.app a)) (by simp)
+  ModificationIso.ofComponents (fun a => α_ (η.app a) (θ.app a) (ι.app a))
 
 /-- Left unitor for the vertical composition of oplax natural transformations. -/
 @[simps!]
 def leftUnitor (η : F ⟶ G) : 𝟙 F ≫ η ≅ η :=
-  ModificationIso.ofComponents (fun a => λ_ (η.app a)) (by simp)
+  ModificationIso.ofComponents (fun a => λ_ (η.app a))
 
 /-- Right unitor for the vertical composition of oplax natural transformations. -/
 @[simps!]
 def rightUnitor (η : F ⟶ G) : η ≫ 𝟙 G ≅ η :=
-  ModificationIso.ofComponents (fun a => ρ_ (η.app a)) (by simp)
+  ModificationIso.ofComponents (fun a => ρ_ (η.app a))
 
 variable (B C)
 
 /-- A bicategory structure on the oplax functors between bicategories. -/
-@[simps!]
+@[simps! whiskerLeft_app whiskerRight_app associator_hom_app associator_inv_app
+rightUnitor_hom_app rightUnitor_inv_app leftUnitor_hom_app leftUnitor_inv_app]
 scoped instance OplaxFunctor.bicategory : Bicategory (OplaxFunctor B C) where
   whiskerLeft {_ _ _} η _ _ Γ := whiskerLeft η Γ
   whiskerRight {_ _ _} _ _ Γ η := whiskerRight Γ η
   associator {_ _ _} _ := associator
   leftUnitor {_ _} := leftUnitor
   rightUnitor {_ _} := rightUnitor
-  whisker_exchange {a b c f g h i} η θ := by
-    ext
-    exact whisker_exchange _ _
+  whisker_exchange {a b c f g h i} η θ := by ext; exact whisker_exchange _ _
 
 end OplaxTrans
 
