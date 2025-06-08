@@ -162,7 +162,7 @@ instance continuousSemilinearEquivClass :
   inv_continuous := continuous_invFun
 
 @[simp]
-theorem coe_mk (e : M₁ ≃ₛₗ[σ₁₂] M₂) (a b) (x : M₁) : ⇑(ContinuousLinearEquiv.mk e a b) = e := rfl
+theorem coe_mk (e : M₁ ≃ₛₗ[σ₁₂] M₂) (a b) : ⇑(ContinuousLinearEquiv.mk e a b) = e := rfl
 
 theorem coe_apply (e : M₁ ≃SL[σ₁₂] M₂) (b : M₁) : (e : M₁ →SL[σ₁₂] M₂) b = e b :=
   rfl

@@ -315,8 +315,7 @@ notation3:80 (name := transNotation) e₁:80 " ≪≫ₗ " e₂:81 =>
 
 variable {e₁₂} {e₂₃}
 
-@[simp]
-theorem coe_eq_toAddEquiv : e = e.toAddEquiv :=
+theorem coe_toAddEquiv : e.toAddEquiv = e :=
   rfl
 
 lemma coe_addEquiv_apply (x : M) : (e : M ≃+ M₂) x = e x := rfl
