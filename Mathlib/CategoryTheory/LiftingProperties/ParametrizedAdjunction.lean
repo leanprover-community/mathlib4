@@ -164,18 +164,20 @@ as commutative squares with left map `f₂` and right map `sq₁₃.π`. -/
 noncomputable def arrowHomEquiv :
     (Arrow.mk sq₁₂.ι ⟶ Arrow.mk f₃) ≃
       (Arrow.mk f₂ ⟶ Arrow.mk sq₁₃.π) where
-  toFun α := Arrow.homMk (adj₂.homEquiv (sq₁₂.inl ≫ α.left))
-    (sq₁₃.isPullback.lift
-      (adj₂.homEquiv (sq₁₂.inr ≫ α.left)) (adj₂.homEquiv α.right)
-        (by simp [← adj₂.homEquiv_naturality_one,
-            ← adj₂.homEquiv_naturality_three])) (by
-          apply sq₁₃.isPullback.hom_ext
-          · simp [← adj₂.homEquiv_naturality_two,
-              ← adj₂.homEquiv_naturality_one,
-              sq₁₂.isPushout.w_assoc]
-          · simp [← adj₂.homEquiv_naturality_two,
-              ← adj₂.homEquiv_naturality_three])
-  invFun β := Arrow.homMk
+  toFun α :=
+    Arrow.homMk (adj₂.homEquiv (sq₁₂.inl ≫ α.left))
+      (sq₁₃.isPullback.lift
+        (adj₂.homEquiv (sq₁₂.inr ≫ α.left)) (adj₂.homEquiv α.right)
+          (by simp [← adj₂.homEquiv_naturality_one,
+              ← adj₂.homEquiv_naturality_three])) (by
+            apply sq₁₃.isPullback.hom_ext
+            · simp [← adj₂.homEquiv_naturality_two,
+                ← adj₂.homEquiv_naturality_one,
+                sq₁₂.isPushout.w_assoc]
+            · simp [← adj₂.homEquiv_naturality_two,
+                ← adj₂.homEquiv_naturality_three])
+  invFun β :=
+    Arrow.homMk
       (sq₁₂.isPushout.desc
         (adj₂.homEquiv.symm β.left)
         (adj₂.homEquiv.symm (β.right ≫ sq₁₃.fst)) (by
