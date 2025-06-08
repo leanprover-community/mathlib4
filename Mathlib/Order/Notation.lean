@@ -130,6 +130,11 @@ def elabInf : TermElab
     return e
   | _, _ => throwUnsupportedSyntax
 
+-- Hack: without this, we can't write `simp [(· ⊔ ·)]`
+macro_rules
+| `(fun a b => a ⊔ b) => `(fun a b => Max.max a b)
+| `(fun a b => a ⊓ b) => `(fun a b => Min.min a b)
+
 /-- Delaborate `max x y` into `x ⊔ y` if the type is not a linear order. -/
 @[delab app.Max.max]
 def delabSup : Delab := do
