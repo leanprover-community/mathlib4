@@ -3829,6 +3829,7 @@ import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
+import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Projection
 import Mathlib.LinearAlgebra.AffineSpace.Basis
 import Mathlib.LinearAlgebra.AffineSpace.Combination
 import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
