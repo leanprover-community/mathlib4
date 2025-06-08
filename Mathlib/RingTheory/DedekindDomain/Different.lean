@@ -9,6 +9,7 @@ import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.NumberTheory.KummerDedekind
 import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 import Mathlib.RingTheory.Trace.Quotient
+import Mathlib.RingTheory.Finiteness.Quotient
 
 /-!
 # The different ideal
@@ -460,6 +461,19 @@ variable {A K B L}
 
 open Submodule
 
+attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_liftAlgebra in
+theorem differentIdeal_ne_bot
+    [NoZeroSMulDivisors A B] [Module.Finite A B]
+    [Algebra.IsSeparable (FractionRing A) (FractionRing B)] :
+    differentIdeal A B ≠ ⊥ := by
+  let K := FractionRing A
+  let L := FractionRing B
+  have : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) L :=
+    IsIntegralClosure.isLocalization _ K _ _
+  have : FiniteDimensional K L := Module.Finite_of_isLocalization A B _ _ A⁰
+  rw [ne_eq, ← FractionalIdeal.coeIdeal_inj (K := L), coeIdeal_differentIdeal (K := K)]
+  simp
+
 lemma differentialIdeal_le_fractionalIdeal_iff
     {I : FractionalIdeal B⁰ L} (hI : I ≠ 0) [NoZeroSMulDivisors A B] :
     differentIdeal A B ≤ I ↔ (((I⁻¹ :) : Submodule B L).restrictScalars A).map
@@ -635,5 +649,102 @@ lemma pow_sub_one_dvd_differentIdeal [IsDedekindDomain A] [NoZeroSMulDivisors A 
   by_cases he : e = 0
   · rw [he, pow_zero]; exact one_dvd _
   exact pow_sub_one_dvd_differentIdeal_aux A (FractionRing A) (FractionRing B) _ he hp hP
+
+attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_liftAlgebra
+  Ideal.Quotient.field
+
+theorem not_dvd_differentIdeal_of_intTrace_not_mem
+    [NoZeroSMulDivisors A B] [Module.Finite A B]
+    [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
+    {p : Ideal A}
+    (P Q : Ideal B) (hP : P * Q = Ideal.map (algebraMap A B) p)
+    (x : B) (hxQ : x ∈ Q) (hx : Algebra.intTrace A B x ∉ p) :
+    ¬ P ∣ differentIdeal A B := by
+  by_cases hp : p = ⊥
+  · subst hp
+    simp only [Ideal.map_bot, Ideal.mul_eq_bot] at hP
+    obtain (rfl|rfl) := hP
+    · rw [← Ideal.zero_eq_bot, zero_dvd_iff]
+      exact differentIdeal_ne_bot
+    · obtain rfl := hxQ
+      simp at hx
+  letI : Algebra (A ⧸ p) (B ⧸ Q) := Ideal.Quotient.algebraQuotientOfLEComap (by
+      rw [← Ideal.map_le_iff_le_comap, ← hP]
+      exact Ideal.mul_le_left)
+  let K := FractionRing A
+  let L := FractionRing B
+  have : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) L :=
+    IsIntegralClosure.isLocalization _ K _ _
+  have : FiniteDimensional K L := Module.Finite_of_isLocalization A B _ _ A⁰
+  have hp' := (Ideal.map_eq_bot_iff_of_injective
+    (FaithfulSMul.algebraMap_injective A B)).not.mpr hp
+  have hPbot : P ≠ ⊥ := fun e ↦ hp' (by simpa [e] using hP.symm)
+  have hQbot : Q ≠ ⊥ := fun e ↦ hp' (by simpa [e] using hP.symm)
+  rw [Ideal.dvd_iff_le]
+  intro H
+  replace H := (mul_le_mul_right' H Q).trans_eq hP
+  replace H := (FractionalIdeal.coeIdeal_le_coeIdeal' _ (P := L) le_rfl).mpr H
+  rw [FractionalIdeal.coeIdeal_mul, coeIdeal_differentIdeal A K] at H
+  replace H := FractionalIdeal.mul_le_mul_left H (FractionalIdeal.dual A K 1)
+  simp only [ne_eq, FractionalIdeal.dual_eq_zero_iff, one_ne_zero, not_false_eq_true,
+    mul_inv_cancel_left₀] at H
+  apply hx
+  suffices Algebra.trace K L (algebraMap B L x) ∈ (p : FractionalIdeal A⁰ K) by
+    obtain ⟨y, hy, e⟩ := this
+    rw [← Algebra.algebraMap_intTrace (A := A), Algebra.linearMap_apply,
+      (IsLocalization.injective _ le_rfl).eq_iff] at e
+    exact e ▸ hy
+  have := @H (algebraMap _ _ x) ⟨_, hxQ, rfl⟩
+  refine FractionalIdeal.mul_induction_on (H ⟨_, hxQ, rfl⟩) ?_ ?_
+  · rintro x hx _ ⟨y, hy, rfl⟩
+    induction hy using Submodule.span_induction generalizing x with
+    | mem y h =>
+      obtain ⟨y, hy, rfl⟩ := h
+      obtain ⟨z, hz⟩ :=
+        (FractionalIdeal.mem_dual (by simp)).mp hx 1 ⟨1, trivial, (algebraMap B L).map_one⟩
+      simp only [Algebra.traceForm_apply, mul_one] at hz
+      refine ⟨z * y, Ideal.mul_mem_left _ _ hy, ?_⟩
+      rw [Algebra.linearMap_apply, Algebra.linearMap_apply, mul_comm x,
+        ← IsScalarTower.algebraMap_apply,
+        ← Algebra.smul_def, LinearMap.map_smul_of_tower, ← hz,
+        Algebra.smul_def, map_mul, mul_comm]
+    | zero => simp
+    | add y z _ _ hy hz =>
+      simp only [map_add, mul_add]
+      exact Submodule.add_mem _ (hy x hx) (hz x hx)
+    | smul y z hz IH =>
+      simpa [Algebra.smul_def, mul_assoc, -FractionalIdeal.mem_coeIdeal, mul_left_comm x] using
+        IH _ (Submodule.smul_mem _ y hx)
+  · simp only [map_add, forall_exists_index, and_imp]
+    exact fun _ _ h₁ h₂ ↦ Submodule.add_mem _ h₁ h₂
+
+open nonZeroDivisors
+
+omit [IsIntegrallyClosed A] in
+theorem not_dvd_differentIdeal_of_isCoprime_of_isSeparable
+    [IsDedekindDomain A] [NoZeroSMulDivisors A B] [Module.Finite A B]
+    [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
+    {p : Ideal A} [p.IsMaximal]
+    (P Q : Ideal B) (hPQ : IsCoprime P Q)
+    (hP : P * Q = Ideal.map (algebraMap A B) p) [P.IsMaximal] [P.LiesOver p]
+    [Algebra.IsSeparable (A ⧸ p) (B ⧸ P)] :
+    ¬ P ∣ differentIdeal A B := by
+  letI : Algebra (A ⧸ p) (B ⧸ Q) := Ideal.Quotient.algebraQuotientOfLEComap (by
+      rw [← Ideal.map_le_iff_le_comap, ← hP]
+      exact Ideal.mul_le_left)
+  have : IsScalarTower A (A ⧸ p) (B ⧸ Q) := .of_algebraMap_eq' rfl
+  have : Module.Finite (A ⧸ p) (B ⧸ Q) :=
+    Module.Finite.of_restrictScalars_finite A (A ⧸ p) (B ⧸ Q)
+  letI e : (B ⧸ p.map (algebraMap A B)) ≃ₐ[A ⧸ p] ((B ⧸ P) × B ⧸ Q) :=
+    { __ := (Ideal.quotEquivOfEq hP.symm).trans (Ideal.quotientMulEquivQuotientProd P Q hPQ),
+      commutes' := Quotient.ind fun _ ↦ rfl }
+  obtain ⟨x, hx⟩ : ∃ x, Algebra.trace (A ⧸ p) (B ⧸ P) x ≠ 0 := by
+    simpa [LinearMap.ext_iff] using Algebra.trace_ne_zero (A ⧸ p) (B ⧸ P)
+  obtain ⟨y, hy⟩ := Ideal.Quotient.mk_surjective (e.symm (x, 0))
+  refine not_dvd_differentIdeal_of_intTrace_not_mem A P Q hP y ?_ ?_
+  · simpa [e, Ideal.Quotient.eq_zero_iff_mem] using congr((e $hy).2)
+  · rw [← Ideal.Quotient.eq_zero_iff_mem, ← Algebra.trace_quotient_eq_of_isDedekindDomain,
+      hy, Algebra.trace_eq_of_algEquiv, Algebra.trace_prod_apply]
+    simpa
 
 end
