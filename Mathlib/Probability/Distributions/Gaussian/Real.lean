@@ -599,7 +599,7 @@ lemma gaussianReal_conv_gaussianReal {m₁ m₂ : ℝ} {v₁ v₂ : ℝ≥0} :
 
 /- The sum of two real Gaussian variables with means `m₁, m₂` and variances `v₁, v₂` is a real
 Gaussian distribution with mean `m₁ + m₂` and variance `v_1 + v_2`. -/
-lemma gaussianReal_add_gaussianReal {Ω} {mΩ : MeasureSpace Ω} {P : Measure Ω}
+lemma gaussianReal_add_indep_gaussianReal {Ω} {mΩ : MeasureSpace Ω} {P : Measure Ω}
     [IsFiniteMeasure P] {m₁ m₂ : ℝ} {v₁ v₂ : ℝ≥0} {X Y : Ω → ℝ} (hXY : IndepFun X Y P)
     (hX : P.map X = gaussianReal m₁ v₁) (hY : P.map Y = gaussianReal m₂ v₂) :
     P.map (X + Y) = gaussianReal (m₁ + m₂) (v₁ + v₂) := by
