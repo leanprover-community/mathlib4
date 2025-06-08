@@ -752,4 +752,3 @@ theorem not_dvd_differentIdeal_of_isCoprime
   refine not_dvd_differentIdeal_of_isCoprime_of_isSeparable A P Q hPQ hP
 
 end
-#lint
