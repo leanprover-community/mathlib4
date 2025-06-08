@@ -781,16 +781,20 @@ lemma lipschitz_attains_norm (f: G → ℂ) (hf: IsLipschitz f): LipschitzWith (
   specialize lipschitz_d x y
   rw [mul_comm] at lipschitz_d
   apply ENNReal.div_le_of_le_mul' at lipschitz_d
-  norm_cast at lipschitz_d
-  norm_cast at d_lt_slope
   repeat rw [edist_nndist] at lipschitz_d
   repeat rw [edist_nndist] at d_lt_slope
   rw [← ENNReal.coe_div] at lipschitz_d
-  norm_cast at lipschitz_d
-  rw [← ENNReal.coe_div] at d_lt_slope
-  norm_cast at d_lt_slope
-  apply not_lt_of_le at lipschitz_d
-  contradiction
+  .
+    norm_cast at lipschitz_d
+    rw [← ENNReal.coe_div] at d_lt_slope
+    .
+      norm_cast at d_lt_slope
+      apply not_lt_of_le at lipschitz_d
+      contradiction
+    . rw [edist_nndist] at edist_ne_zero
+      exact fun a ↦ edist_ne_zero (congrArg ENNReal.ofNNReal a)
+  . rw [edist_nndist] at edist_ne_zero
+    exact fun a ↦ edist_ne_zero (congrArg ENNReal.ofNNReal a)
 
 lemma lipschitz_norm_triangle (x y z: LipschitzH (G := G)): LipschitzSemiNorm (S := S) (x - z) ≤ LipschitzSemiNorm (S := S) (x - y) + LipschitzSemiNorm (S := S) (y - z) := by
   simp [LipschitzSemiNorm]
