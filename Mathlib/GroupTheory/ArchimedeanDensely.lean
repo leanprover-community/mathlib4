@@ -40,7 +40,7 @@ lemma Subgroup.mem_closure_singleton_iff_existsUnique_zpow {G : Type*}
   · suffices Function.Injective (a ^ · : ℤ → G) by
       rintro ⟨m, rfl⟩
       exact ⟨m, rfl, fun k hk ↦ this hk⟩
-    rcases ha.lt_or_lt with ha | ha
+    rcases ha.lt_or_gt with ha | ha
     · exact (zpow_right_strictAnti ha).injective
     · exact (zpow_right_strictMono ha).injective
   · exact fun h ↦ h.exists
@@ -153,7 +153,7 @@ lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
     rcases key with ⟨rfl, rfl⟩|⟨rfl, rfl⟩ <;>
     simp [this.right.le, this.right, mabs]
   · wlog ha : 1 ≤ a generalizing a
-    · convert @this (a⁻¹) ?_ (by simpa using le_of_not_le ha) using 4
+    · convert @this (a⁻¹) ?_ (by simpa using le_of_not_ge ha) using 4
       · simp
       · rwa [mabs_inv]
     rw [mabs, sup_eq_left.mpr ((inv_le_one'.mpr ha).trans ha)] at h
@@ -350,6 +350,16 @@ lemma denselyOrdered_units_iff {G₀ : Type*} [LinearOrderedCommGroupWithZero G�
     refine ⟨Units.mk0 z hz'.ne', ?_⟩
     simp [← Units.val_lt_val, hz]
 
+/-- Any linearly ordered group with zero is isomorphic to adjoining `0` to the units of itself. -/
+@[simps!]
+def OrderMonoidIso.withZeroUnits {α : Type*} [LinearOrderedCommGroupWithZero α]
+    [DecidablePred (fun a : α ↦ a = 0)] :
+    WithZero αˣ ≃*o α where
+  toMulEquiv := WithZero.withZeroUnitsEquiv
+  map_le_map_iff' {a b} := by
+    cases a <;> cases b <;>
+    simp
+
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
 either isomorphic (and order-isomorphic) to `ℤₘ₀`, or is densely ordered. -/
 lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
@@ -359,17 +369,7 @@ lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
   rw [← denselyOrdered_units_iff]
   refine (LinearOrderedCommGroup.discrete_or_denselyOrdered Gˣ).imp_left ?_
   intro ⟨f⟩
-  refine ⟨OrderMonoidIso.trans
-    ⟨WithZero.withZeroUnitsEquiv.symm, ?_⟩ ⟨f.withZero, ?_⟩⟩
-  · intro
-    simp only [WithZero.withZeroUnitsEquiv, MulEquiv.symm_mk,
-      MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe, MulEquiv.coe_mk,
-      Equiv.coe_fn_symm_mk ]
-    split_ifs <;>
-    simp_all [← Units.val_le_val]
-  · intro a b
-    induction a <;> induction b <;>
-    simp [MulEquiv.withZero]
+  exact ⟨OrderMonoidIso.withZeroUnits.symm.trans f.withZero⟩
 
 open WithZero in
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
@@ -380,9 +380,9 @@ lemma LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered (G : Type*)
   rw [← denselyOrdered_units_iff,
       ← LinearOrderedCommGroup.discrete_iff_not_denselyOrdered]
   refine Nonempty.congr ?_ ?_ <;> intro f
-  · refine ⟨MulEquiv.unzero (withZeroUnitsEquiv.trans f), ?_⟩
+  · refine ⟨MulEquiv.withZero.symm (withZeroUnitsEquiv.trans f), ?_⟩
     intros
-    simp only [MulEquiv.unzero, withZeroUnitsEquiv, MulEquiv.trans_apply,
+    simp only [MulEquiv.withZero, withZeroUnitsEquiv, MulEquiv.trans_apply,
       MulEquiv.coe_mk, Equiv.coe_fn_mk, recZeroCoe_coe, OrderMonoidIso.coe_mulEquiv,
       MulEquiv.symm_trans_apply, MulEquiv.symm_mk, Equiv.coe_fn_symm_mk, map_eq_zero, coe_ne_zero,
       ↓reduceDIte, unzero_coe, MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe]
@@ -476,10 +476,10 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_le_lt_iff_nonempty_disc
       rcases eq_or_ne b 0 with rfl|hb
       · simp [WithZero.withZeroUnitsEquiv, MulEquiv.withZero]
       simp [WithZero.withZeroUnitsEquiv, MulEquiv.withZero, ha, hb, ← Units.val_le_val]
-    · exact MulEquiv.unzero (WithZero.withZeroUnitsEquiv.trans f)
+    · exact MulEquiv.withZero.symm (WithZero.withZeroUnitsEquiv.trans f)
     · intros
       rw [← WithZero.coe_le_coe]
-      simp [WithZero.withZeroUnitsEquiv, MulEquiv.unzero]
+      simp
   rw [← Set.wellFoundedOn_sdiff_singleton (a := 0)]
   refine ⟨fun h ↦ (h.mapsTo Units.val ?_).mono' ?_,
     fun h ↦ (h.mapsTo ?_ ?_).mono' ?_⟩

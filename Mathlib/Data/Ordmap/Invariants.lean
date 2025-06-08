@@ -56,7 +56,7 @@ theorem not_le_delta {s} (H : 1 ≤ s) : ¬s ≤ delta * 0 :=
   not_le_of_gt H
 
 theorem delta_lt_false {a b : ℕ} (h₁ : delta * a < b) (h₂ : delta * b < a) : False :=
-  not_le_of_lt (lt_trans ((mul_lt_mul_left (by decide)).2 h₁) h₂) <| by
+  not_le_of_gt (lt_trans ((mul_lt_mul_left (by decide)).2 h₁) h₂) <| by
     simpa [mul_assoc] using Nat.mul_le_mul_right a (by decide : 1 ≤ delta * delta)
 
 /-! ### `singleton` -/
@@ -649,7 +649,7 @@ theorem balanceL_eq_balance {l x r} (sl : Sized l) (sr : Sized r) (H1 : size l =
       cases sr.2.1.size_eq_zero.1 this.1
       cases sr.2.2.size_eq_zero.1 this.2
       rw [sr.eq_node']; rfl
-    · replace H2 : ¬rs > delta * ls := not_lt_of_le (H2 sl.pos sr.pos)
+    · replace H2 : ¬rs > delta * ls := not_lt_of_ge (H2 sl.pos sr.pos)
       simp [balanceL, balance, H2]; split_ifs <;> simp [add_comm]
 
 /-- `Raised n m` means `m` is either equal or one up from `n`. -/

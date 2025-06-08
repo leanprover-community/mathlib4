@@ -27,7 +27,7 @@ instance instSuccAddOrder : SuccAddOrder ℤ := ⟨fun _ => rfl⟩
 @[instance] abbrev instPredOrder : PredOrder ℤ where
   pred := pred
   pred_le _ := (sub_one_lt_of_le le_rfl).le
-  min_of_le_pred ha := ((sub_one_lt_of_le le_rfl).not_le ha).elim
+  min_of_le_pred ha := ((sub_one_lt_of_le le_rfl).not_ge ha).elim
   le_pred_of_lt {_ _} := le_sub_one_of_lt
 
 instance instPredSubOrder : PredSubOrder ℤ := ⟨fun _ => rfl⟩

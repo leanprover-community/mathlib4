@@ -509,7 +509,7 @@ include hx
 @[to_additive]
 theorem IsOfFinOrder.pow_eq_pow_iff_modEq : x ^ n = x ^ m ↔ n ≡ m [MOD orderOf x] := by
   wlog hmn : m ≤ n generalizing m n
-  · rw [eq_comm, ModEq.comm, this (le_of_not_le hmn)]
+  · rw [eq_comm, ModEq.comm, this (le_of_not_ge hmn)]
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
   rw [pow_add, (hx.isUnit.pow _).mul_eq_left, pow_eq_one_iff_modEq]
   exact ⟨fun h ↦ Nat.ModEq.add_left _ h, fun h ↦ Nat.ModEq.add_left_cancel' _ h⟩
@@ -526,7 +526,7 @@ variable [LeftCancelMonoid G] {x y : G} {a : G} {m n : ℕ}
 @[to_additive]
 theorem pow_eq_pow_iff_modEq : x ^ n = x ^ m ↔ n ≡ m [MOD orderOf x] := by
   wlog hmn : m ≤ n generalizing m n
-  · rw [eq_comm, ModEq.comm, this (le_of_not_le hmn)]
+  · rw [eq_comm, ModEq.comm, this (le_of_not_ge hmn)]
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
   rw [← mul_one (x ^ m), pow_add, mul_left_cancel_iff, pow_eq_one_iff_modEq]
   exact ⟨fun h => Nat.ModEq.add_left _ h, fun h => Nat.ModEq.add_left_cancel' _ h⟩
@@ -1096,13 +1096,13 @@ variable [Ring G] [LinearOrder G] [IsStrictOrderedRing G] {a x : G}
 
 protected lemma IsOfFinOrder.eq_neg_one (ha₀ : a ≤ 0) (ha : IsOfFinOrder a) : a = -1 :=
   (sq_eq_one_iff.1 <| ha.pow.eq_one <| sq_nonneg a).resolve_left <| by
-    rintro rfl; exact one_pos.not_le ha₀
+    rintro rfl; exact one_pos.not_ge ha₀
 
 theorem orderOf_abs_ne_one (h : |x| ≠ 1) : orderOf x = 0 := by
   rw [orderOf_eq_zero_iff']
   intro n hn hx
   replace hx : |x| ^ n = 1 := by simpa only [abs_one, abs_pow] using congr_arg abs hx
-  rcases h.lt_or_lt with h | h
+  rcases h.lt_or_gt with h | h
   · exact ((pow_lt_one₀ (abs_nonneg x) h hn.ne').ne hx).elim
   · exact ((one_lt_pow₀ h hn.ne').ne' hx).elim
 
