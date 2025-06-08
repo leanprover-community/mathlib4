@@ -131,9 +131,10 @@ def elabInf : TermElab
   | _, _ => throwUnsupportedSyntax
 
 -- Hack: without this, we can't write `simp [(· ⊔ ·)]`
+-- The hack only works with these exact variable names
 macro_rules
-| `(fun a b => a ⊔ b) => `(fun a b => Max.max a b)
-| `(fun a b => a ⊓ b) => `(fun a b => Min.min a b)
+| `(fun x1 x2 => x1 ⊔ x2) => `(fun x1 x2 => Max.max x1 x2)
+| `(fun x1 x2 => x1 ⊓ x2) => `(fun x1 x2 => Min.min x1 x2)
 
 /-- Delaborate `max x y` into `x ⊔ y` if the type is not a linear order. -/
 @[delab app.Max.max]
