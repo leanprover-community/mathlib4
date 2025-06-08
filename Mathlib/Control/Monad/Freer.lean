@@ -5,7 +5,6 @@ Authors: Tanner Duve
 -/
 import Mathlib.Control.Monad.Writer
 import Mathlib.Control.Monad.Cont
-import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Tactic.Cases
 
 /-!
