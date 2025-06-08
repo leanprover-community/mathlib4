@@ -3,6 +3,7 @@ Copyright (c) 2025 Qinchuan Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Qinchuan Zhang
 -/
+import Mathlib.Algebra.QuadraticDiscriminant
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import Mathlib.RingTheory.Polynomial.Vieta
@@ -99,5 +100,58 @@ lemma aroots_quadratic_eq_pair_iff_of_ne_zero' [CommRing T] [Field S] [Algebra T
   rw [aroots_def, show map (algebraMap T S) (C a * X ^ 2 + C b * X + C c) = C ((algebraMap T S) a) *
     X ^ 2 + C ((algebraMap T S) b) * X + C ((algebraMap T S) c) by simp]
   exact roots_quadratic_eq_pair_iff_of_ne_zero' ha
+
+/-
+Polynomial versions of results in `Algebra.QuadraticDiscriminant`
+-/
+section QuadraticDiscriminant
+
+variable [Field R]
+
+variable {a b c : R}
+
+/-- Roots of a quadratic equation. -/
+theorem quadratic_eq_zero_iff [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
+    (h : discrim a b c = s * s) (x : R) :
+    IsRoot (a • X ^ 2 + b • X + C c) x ↔ x = (-b + s) / (2 * a) ∨ x = (-b - s) / (2 * a) := by
+  rw [IsRoot.def]
+  simp only [eval_add, eval_smul, eval_pow, eval_X, smul_eq_mul, eval_C]
+  rw [sq]
+  rw [_root_.quadratic_eq_zero_iff ha h]
+
+/-- Root of a quadratic when its discriminant equals zero -/
+theorem quadratic_eq_zero_iff_of_discrim_eq_zero [NeZero (2 : R)] (ha : a ≠ 0)
+    (h : discrim a b c = 0) (x : R) : IsRoot (a • X ^ 2 + b • X + C c) x ↔ x = -b / (2 * a) := by
+  rw [IsRoot.def]
+  simp only [eval_add, eval_smul, eval_pow, eval_X, smul_eq_mul, eval_C]
+  rw [sq]
+  rw [_root_.quadratic_eq_zero_iff_of_discrim_eq_zero ha h]
+
+/-- A quadratic has no root if its discriminant has no square root. -/
+theorem quadratic_ne_zero_of_discrim_ne_sq (h : ∀ s : R, discrim a b c ≠ s^2) (x : R) :
+    ¬ IsRoot (a • X ^ 2 + b • X + C c) x := by
+  rw [IsRoot.def]
+  simp only [eval_add, eval_smul, eval_pow, eval_X, smul_eq_mul, eval_C]
+  rw [← ne_eq, sq]
+  exact _root_.quadratic_ne_zero_of_discrim_ne_sq h _
+
+theorem quadratic_roots_of_discrim_eq_zero [NeZero (2 : R)] [DecidableEq R] (ha : a ≠ 0)
+    {z s : R} (h : discrim a b c = s * s) :
+    z ∈ (a • X ^ 2 + b • X + C c).roots ↔ z = (-b + s) / (2 * a) ∨ z = (-b - s) / (2 * a) := by
+  rw [Polynomial.mem_roots (by
+    have hc : (a • X ^ 2 + b • X + C c).coeff 2 = a := by
+      simp [coeff_add, coeff_C_mul, coeff_smul, coeff_X_of_ne_one (Nat.add_one_add_one_ne_one),
+        coeff_C_ne_zero (n:=2) ((Nat.zero_ne_add_one 1).symm)]
+    rw [← hc] at ha
+    by_contra hx
+    have h : (a • X ^ 2 + b • X + C c).coeff 2 = (0 : R[X]).coeff 2 := by
+      rw [hx]
+    have h' : (a • X ^ 2 + b • X + C c).coeff 2 = 0 := by
+      simp_all only [coeff_zero, ne_eq, not_true_eq_false]
+    rw [hc] at h'
+    exact ha h)]
+  rw [Polynomial.quadratic_eq_zero_iff ha h]
+
+end QuadraticDiscriminant
 
 end Polynomial
