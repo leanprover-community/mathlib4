@@ -26,7 +26,7 @@ open Set Metric MeasureTheory Filter Complex intervalIntegral
 
 open scoped Real Topology
 
-variable {E ι : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E] {U K : Set ℂ}
+variable {E ι : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {U K : Set ℂ}
   {z : ℂ} {M r δ : ℝ} {φ : Filter ι} {F : ι → ℂ → E} {f g : ℂ → E}
 
 namespace Complex
@@ -39,7 +39,7 @@ holomorphic, because it depends continuously on `f` for the uniform topology. -/
 noncomputable def cderiv (r : ℝ) (f : ℂ → E) (z : ℂ) : E :=
   (2 * π * I : ℂ)⁻¹ • ∮ w in C(z, r), ((w - z) ^ 2)⁻¹ • f w
 
-theorem cderiv_eq_deriv (hU : IsOpen U) (hf : DifferentiableOn ℂ f U) (hr : 0 < r)
+theorem cderiv_eq_deriv [CompleteSpace E] (hU : IsOpen U) (hf : DifferentiableOn ℂ f U) (hr : 0 < r)
     (hzr : closedBall z r ⊆ U) : cderiv r f z = deriv f z :=
   two_pi_I_inv_smul_circleIntegral_sub_sq_inv_smul_of_differentiable hU hzr hf (mem_ball_self hr)
 
@@ -50,13 +50,13 @@ theorem norm_cderiv_le (hr : 0 < r) (hf : ∀ w ∈ sphere z r, ‖f w‖ ≤ M)
     exact (norm_nonneg _).trans (hf w hw)
   have h1 : ∀ w ∈ sphere z r, ‖((w - z) ^ 2)⁻¹ • f w‖ ≤ M / r ^ 2 := by
     intro w hw
-    simp only [mem_sphere_iff_norm, norm_eq_abs] at hw
-    simp only [norm_smul, inv_mul_eq_div, hw, norm_eq_abs, map_inv₀, Complex.abs_pow]
-    exact div_le_div hM (hf w hw) (sq_pos_of_pos hr) le_rfl
+    simp only [mem_sphere_iff_norm] at hw
+    simp only [norm_smul, inv_mul_eq_div, hw, norm_inv, norm_pow]
+    exact div_le_div₀ hM (hf w hw) (sq_pos_of_pos hr) le_rfl
   have h2 := circleIntegral.norm_integral_le_of_norm_le_const hr.le h1
   simp only [cderiv, norm_smul]
   refine (mul_le_mul le_rfl h2 (norm_nonneg _) (norm_nonneg _)).trans (le_of_eq ?_)
-  field_simp [_root_.abs_of_nonneg Real.pi_pos.le]
+  field_simp [abs_of_nonneg Real.pi_pos.le]
   ring
 
 theorem cderiv_sub (hr : 0 < r) (hf : ContinuousOn f (sphere z r))
@@ -77,7 +77,7 @@ theorem norm_cderiv_lt (hr : 0 < r) (hfM : ∀ w ∈ sphere z r, ‖f w‖ < M)
     have e2 : ContinuousOn (fun w => ‖f w‖) (sphere z r) := continuous_norm.comp_continuousOn hf
     obtain ⟨x, hx, hx'⟩ := (isCompact_sphere z r).exists_isMaxOn e1 e2
     exact ⟨‖f x‖, hfM x hx, hx'⟩
-  exact (norm_cderiv_le hr hL2).trans_lt ((div_lt_div_right hr).mpr hL1)
+  exact (norm_cderiv_le hr hL2).trans_lt ((div_lt_div_iff_of_pos_right hr).mpr hL1)
 
 theorem norm_cderiv_sub_lt (hr : 0 < r) (hfg : ∀ w ∈ sphere z r, ‖f w - g w‖ < M)
     (hf : ContinuousOn f (sphere z r)) (hg : ContinuousOn g (sphere z r)) :
@@ -102,6 +102,8 @@ theorem _root_.TendstoUniformlyOn.cderiv (hF : TendstoUniformlyOn F f φ (cthick
   simpa only [mul_div_cancel_right₀ _ hδ.ne.symm] using norm_cderiv_sub_lt hδ e2 hf (h'.mono e3)
 
 end Cderiv
+
+variable [CompleteSpace E]
 
 section Weierstrass
 
@@ -168,7 +170,7 @@ theorem differentiableOn_tsum_of_summable_norm {u : ι → ℝ} (hu : Summable u
     DifferentiableOn ℂ (fun w : ℂ => ∑' i : ι, F i w) U := by
   classical
   have hc := (tendstoUniformlyOn_tsum hu hF_le).tendstoLocallyUniformlyOn
-  refine hc.differentiableOn (eventually_of_forall fun s => ?_) hU
+  refine hc.differentiableOn (Eventually.of_forall fun s => ?_) hU
   exact DifferentiableOn.sum fun i _ => hf i
 
 /-- If the terms in the sum `∑' (i : ι), F i` are uniformly bounded on `U` by a
@@ -180,7 +182,7 @@ theorem hasSum_deriv_of_summable_norm {u : ι → ℝ} (hu : Summable u)
     HasSum (fun i : ι => deriv (F i) z) (deriv (fun w : ℂ => ∑' i : ι, F i w) z) := by
   rw [HasSum]
   have hc := (tendstoUniformlyOn_tsum hu hF_le).tendstoLocallyUniformlyOn
-  convert (hc.deriv (eventually_of_forall fun s =>
+  convert (hc.deriv (Eventually.of_forall fun s =>
     DifferentiableOn.sum fun i _ => hf i) hU).tendsto_at hz using 1
   ext1 s
   exact (deriv_sum fun i _ => (hf i).differentiableAt (hU.mem_nhds hz)).symm

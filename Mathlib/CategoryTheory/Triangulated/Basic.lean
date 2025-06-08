@@ -5,7 +5,7 @@ Authors: Luke Kershaw
 -/
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 import Mathlib.CategoryTheory.Shift.Basic
 
 /-!
@@ -34,9 +34,8 @@ We work in a category `C` equipped with a shift.
 variable (C : Type u) [Category.{v} C] [HasShift C ℤ]
 
 /-- A triangle in `C` is a sextuple `(X,Y,Z,f,g,h)` where `X,Y,Z` are objects of `C`,
-and `f : X ⟶ Y`, `g : Y ⟶ Z`, `h : Z ⟶ X⟦1⟧` are morphisms in `C`.
-See <https://stacks.math.columbia.edu/tag/0144>.
--/
+and `f : X ⟶ Y`, `g : Y ⟶ Z`, `h : Z ⟶ X⟦1⟧` are morphisms in `C`. -/
+@[stacks 0144]
 structure Triangle where mk' ::
   /-- the first object of a triangle -/
   obj₁ : C
@@ -95,9 +94,8 @@ In other words, we have a commutative diagram:
   X' ───> Y' ───> Z' ───> X'⟦1⟧
      f'     g'     h'
 ```
-See <https://stacks.math.columbia.edu/tag/0144>.
 -/
-@[ext]
+@[ext, stacks 0144]
 structure TriangleMorphism (T₁ : Triangle C) (T₂ : Triangle C) where
   /-- the first morphism in a triangle morphism -/
   hom₁ : T₁.obj₁ ⟶ T₂.obj₁
@@ -148,7 +146,7 @@ instance triangleCategory : Category (Triangle C) where
 @[ext]
 lemma Triangle.hom_ext {A B : Triangle C} (f g : A ⟶ B)
     (h₁ : f.hom₁ = g.hom₁) (h₂ : f.hom₂ = g.hom₂) (h₃ : f.hom₃ = g.hom₃) : f = g :=
-  TriangleMorphism.ext _ _ h₁ h₂ h₃
+  TriangleMorphism.ext h₁ h₂ h₃
 
 @[simp]
 lemma id_hom₁ (A : Triangle C) : TriangleMorphism.hom₁ (𝟙 A) = 𝟙 _ := rfl
@@ -167,6 +165,7 @@ lemma comp_hom₂ {X Y Z : Triangle C} (f : X ⟶ Y) (g : Y ⟶ Z) :
 lemma comp_hom₃ {X Y Z : Triangle C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom₃ = f.hom₃ ≫ g.hom₃ := rfl
 
+/-- Make a morphism between triangles from the required data. -/
 @[simps]
 def Triangle.homMk (A B : Triangle C)
     (hom₁ : A.obj₁ ⟶ B.obj₁) (hom₂ : A.obj₂ ⟶ B.obj₂) (hom₃ : A.obj₃ ⟶ B.obj₃)
@@ -181,6 +180,7 @@ def Triangle.homMk (A B : Triangle C)
   comm₂ := comm₂
   comm₃ := comm₃
 
+/-- Make an isomorphism between triangles from the required data. -/
 @[simps]
 def Triangle.isoMk (A B : Triangle C)
     (iso₁ : A.obj₁ ≅ B.obj₁) (iso₂ : A.obj₂ ≅ B.obj₂) (iso₃ : A.obj₃ ≅ B.obj₃)
@@ -249,7 +249,7 @@ def binaryProductTriangleIsoBinaryBiproductTriangle
     (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] :
     binaryProductTriangle X₁ X₂ ≅ binaryBiproductTriangle X₁ X₂ :=
   Triangle.isoMk _ _ (Iso.refl _) (biprod.isoProd X₁ X₂).symm (Iso.refl _)
-    (by aesop_cat) (by aesop_cat) (by aesop_cat)
+    (by aesop_cat) (by simp) (by simp)
 
 section
 
@@ -260,9 +260,9 @@ variable {J : Type*} (T : J → Triangle C)
 /-- The product of a family of triangles. -/
 @[simps!]
 def productTriangle : Triangle C :=
-  Triangle.mk (Pi.map (fun j => (T j).mor₁))
-    (Pi.map (fun j => (T j).mor₂))
-    (Pi.map (fun j => (T j).mor₃) ≫ inv (piComparison _ _))
+  Triangle.mk (Limits.Pi.map (fun j => (T j).mor₁))
+    (Limits.Pi.map (fun j => (T j).mor₂))
+    (Limits.Pi.map (fun j => (T j).mor₃) ≫ inv (piComparison _ _))
 
 /-- A projection from the product of a family of triangles. -/
 @[simps]

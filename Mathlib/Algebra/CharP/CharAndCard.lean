@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.GroupTheory.Perm.Cycle.Type
 import Mathlib.RingTheory.Coprime.Lemmas
 
@@ -70,8 +71,8 @@ theorem prime_dvd_char_iff_dvd_card {R : Type*} [CommRing R] [Fintype R] (p : �
   rw [mul_zero, ← mul_assoc, hu, one_mul] at hr₁
   exact mt AddMonoid.addOrderOf_eq_one_iff.mpr (ne_of_eq_of_ne hr (Nat.Prime.ne_one Fact.out)) hr₁
 
-/-- A prime that does not divide the cardinality of a finite commutative ring `R`
-is a unit in `R`. -/
+/-- A prime that divides the cardinality of a finite commutative ring `R`
+isn't a unit in `R`. -/
 theorem not_isUnit_prime_of_dvd_card {R : Type*} [CommRing R] [Fintype R] (p : ℕ) [Fact p.Prime]
     (hp : p ∣ Fintype.card R) : ¬IsUnit (p : R) :=
   mt (isUnit_iff_not_dvd_char R p).mp

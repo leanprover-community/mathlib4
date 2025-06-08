@@ -37,8 +37,8 @@ add_decl_doc RingInvo.toRingEquiv
 
 /-- `RingInvoClass F R` states that `F` is a type of ring involutions.
 You should extend this class when you extend `RingInvo`. -/
-class RingInvoClass (F R : Type*) [Semiring R] [EquivLike F R Rᵐᵒᵖ]
-  extends RingEquivClass F R Rᵐᵒᵖ : Prop where
+class RingInvoClass (F R : Type*) [Semiring R] [EquivLike F R Rᵐᵒᵖ] : Prop
+  extends RingEquivClass F R Rᵐᵒᵖ where
   /-- Every ring involution must be its own inverse -/
   involution : ∀ (f : F) (x), (f (f x).unop).unop = x
 
@@ -83,10 +83,6 @@ def mk' (f : R →+* Rᵐᵒᵖ) (involution : ∀ r, (f (f r).unop).unop = r) :
     right_inv := fun _ => MulOpposite.unop_injective <| involution _
     involution' := involution }
 
--- Porting note: removed CoeFun instance, undesired in lean4
--- instance : CoeFun (RingInvo R) fun _ => R → Rᵐᵒᵖ :=
---   ⟨fun f => f.toRingEquiv.toFun⟩
-
 @[simp]
 theorem involution (f : RingInvo R) (x : R) : (f (f x).unop).unop = x :=
   f.involution' x
@@ -99,8 +95,6 @@ theorem involution (f : RingInvo R) (x : R) : (f (f x).unop).unop = x :=
 theorem coe_ringEquiv (f : RingInvo R) (a : R) : (f : R ≃+* Rᵐᵒᵖ) a = f a :=
   rfl
 
--- porting note (#10618): simp can prove this
--- @[simp]
 theorem map_eq_zero_iff (f : RingInvo R) {x : R} : f x = 0 ↔ x = 0 :=
   f.toRingEquiv.map_eq_zero_iff
 

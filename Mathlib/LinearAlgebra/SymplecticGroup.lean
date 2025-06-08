@@ -57,7 +57,7 @@ theorem J_det_mul_J_det : det (J l R) * det (J l R) = 1 := by
   rw [← det_mul, J_squared, ← one_smul R (-1 : Matrix _ _ R), smul_neg, ← neg_smul, det_smul,
     Fintype.card_sum, det_one, mul_one]
   apply Even.neg_one_pow
-  exact even_add_self _
+  exact Even.add_self _
 
 theorem isUnit_det_J : IsUnit (det (J l R)) :=
   isUnit_iff_exists_inv.mpr ⟨det (J l R), J_det_mul_J_det _ _⟩
@@ -86,7 +86,6 @@ open Matrix
 theorem mem_iff {A : Matrix (l ⊕ l) (l ⊕ l) R} :
     A ∈ symplecticGroup l R ↔ A * J l R * Aᵀ = J l R := by simp [symplecticGroup]
 
--- Porting note: Previous proof was `by infer_instance`
 instance coeMatrix : Coe (symplecticGroup l R) (Matrix (l ⊕ l) (l ⊕ l) R) :=
   ⟨Subtype.val⟩
 
@@ -178,7 +177,7 @@ theorem inv_eq_symplectic_inv (A : Matrix (l ⊕ l) (l ⊕ l) R) (hA : A ∈ sym
 
 instance : Group (symplecticGroup l R) :=
   { SymplecticGroup.hasInv, Submonoid.toMonoid _ with
-    mul_left_inv := fun A => by
+    inv_mul_cancel := fun A => by
       apply Subtype.ext
       simp only [Submonoid.coe_one, Submonoid.coe_mul, Matrix.neg_mul, coe_inv]
       exact inv_left_mul_aux A.2 }

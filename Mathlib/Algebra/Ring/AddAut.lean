@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.GroupTheory.GroupAction.Group
-import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.GroupWithZero.Action.Basic
+import Mathlib.Algebra.GroupWithZero.Action.Units
+import Mathlib.Algebra.Group.Units.Opposite
+import Mathlib.Algebra.Module.Opposite
 
 /-!
 # Multiplication on the left/right as additive automorphisms
@@ -22,7 +24,7 @@ namespace AddAut
 variable {R : Type*} [Semiring R]
 
 /-- Left multiplication by a unit of a semiring as an additive automorphism. -/
-@[simps! (config := { simpRhs := true })]
+@[simps! +simpRhs]
 def mulLeft : Rˣ →* AddAut R :=
   DistribMulAction.toAddAut _ _
 

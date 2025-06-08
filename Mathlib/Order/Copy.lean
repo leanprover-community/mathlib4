@@ -47,8 +47,8 @@ def BoundedOrder.copy {h : LE α} {h' : LE α} (c : @BoundedOrder α h')
 with possibly different definitional equalities. -/
 def Lattice.copy (c : Lattice α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
-    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
-    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf) : Lattice α where
+    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Max α).max)
+    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Min α).min) : Lattice α where
   le := le
   sup := sup
   inf := inf
@@ -67,8 +67,8 @@ def Lattice.copy (c : Lattice α)
 with possibly different definitional equalities. -/
 def DistribLattice.copy (c : DistribLattice α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
-    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
-    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf) : DistribLattice α where
+    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Max α).max)
+    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Min α).min) : DistribLattice α where
   toLattice := Lattice.copy (@DistribLattice.toLattice α c) le eq_le sup eq_sup inf eq_inf
   le_sup_inf := by intros; simp [eq_le, eq_sup, eq_inf, le_sup_inf]
 
@@ -77,8 +77,8 @@ with possibly different definitional equalities. -/
 def GeneralizedHeytingAlgebra.copy (c : GeneralizedHeytingAlgebra α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (top : α) (eq_top : top = (by infer_instance : Top α).top)
-    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
-    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
+    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Max α).max)
+    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Min α).min)
     (himp : α → α → α) (eq_himp : himp = (by infer_instance : HImp α).himp) :
     GeneralizedHeytingAlgebra α where
   __ := Lattice.copy (@GeneralizedHeytingAlgebra.toLattice α c) le eq_le sup eq_sup inf eq_inf
@@ -92,8 +92,8 @@ with possibly different definitional equalities. -/
 def GeneralizedCoheytingAlgebra.copy (c : GeneralizedCoheytingAlgebra α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (bot : α) (eq_bot : bot = (by infer_instance : Bot α).bot)
-    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
-    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
+    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Max α).max)
+    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Min α).min)
     (sdiff : α → α → α) (eq_sdiff : sdiff = (by infer_instance : SDiff α).sdiff) :
     GeneralizedCoheytingAlgebra α where
   __ := Lattice.copy (@GeneralizedCoheytingAlgebra.toLattice α c) le eq_le sup eq_sup inf eq_inf
@@ -108,8 +108,8 @@ def HeytingAlgebra.copy (c : HeytingAlgebra α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (top : α) (eq_top : top = (by infer_instance : Top α).top)
     (bot : α) (eq_bot : bot = (by infer_instance : Bot α).bot)
-    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
-    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
+    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Max α).max)
+    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Min α).min)
     (himp : α → α → α) (eq_himp : himp = (by infer_instance : HImp α).himp)
     (compl : α → α) (eq_compl : compl = (by infer_instance : HasCompl α).compl) :
     HeytingAlgebra α where
@@ -127,8 +127,8 @@ def CoheytingAlgebra.copy (c : CoheytingAlgebra α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (top : α) (eq_top : top = (by infer_instance : Top α).top)
     (bot : α) (eq_bot : bot = (by infer_instance : Bot α).bot)
-    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
-    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
+    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Max α).max)
+    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Min α).min)
     (sdiff : α → α → α) (eq_sdiff : sdiff = (by infer_instance : SDiff α).sdiff)
     (hnot : α → α) (eq_hnot : hnot = (by infer_instance : HNot α).hnot) :
     CoheytingAlgebra α where
@@ -146,8 +146,8 @@ def BiheytingAlgebra.copy (c : BiheytingAlgebra α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (top : α) (eq_top : top = (by infer_instance : Top α).top)
     (bot : α) (eq_bot : bot = (by infer_instance : Bot α).bot)
-    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
-    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
+    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Max α).max)
+    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Min α).min)
     (sdiff : α → α → α) (eq_sdiff : sdiff = (by infer_instance : SDiff α).sdiff)
     (hnot : α → α) (eq_hnot : hnot = (by infer_instance : HNot α).hnot)
     (himp : α → α → α) (eq_himp : himp = (by infer_instance : HImp α).himp)
@@ -164,8 +164,8 @@ def CompleteLattice.copy (c : CompleteLattice α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (top : α) (eq_top : top = (by infer_instance : Top α).top)
     (bot : α) (eq_bot : bot = (by infer_instance : Bot α).bot)
-    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
-    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
+    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Max α).max)
+    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Min α).min)
     (sSup : Set α → α) (eq_sSup : sSup = (by infer_instance : SupSet α).sSup)
     (sInf : Set α → α) (eq_sInf : sInf = (by infer_instance : InfSet α).sInf) :
     CompleteLattice α where
@@ -186,16 +186,14 @@ equalities. -/
 def Frame.copy (c : Frame α) (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (top : α) (eq_top : top = (by infer_instance : Top α).top)
     (bot : α) (eq_bot : bot = (by infer_instance : Bot α).bot)
-    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
-    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
+    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Max α).max)
+    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Min α).min)
     (himp : α → α → α) (eq_himp : himp = (by infer_instance : HImp α).himp)
     (compl : α → α) (eq_compl : compl = (by infer_instance : HasCompl α).compl)
     (sSup : Set α → α) (eq_sSup : sSup = (by infer_instance : SupSet α).sSup)
     (sInf : Set α → α) (eq_sInf : sInf = (by infer_instance : InfSet α).sInf) : Frame α where
   toCompleteLattice := CompleteLattice.copy (@Frame.toCompleteLattice α c)
     le eq_le top eq_top bot eq_bot sup eq_sup inf eq_inf sSup eq_sSup sInf eq_sInf
-  inf_sSup_le_iSup_inf := fun a s => by
-    simp [eq_le, eq_sup, eq_inf, eq_sSup, @Order.Frame.inf_sSup_le_iSup_inf α _ a s]
   __ := HeytingAlgebra.copy (@Frame.toHeytingAlgebra α c)
     le eq_le top eq_top bot eq_bot sup eq_sup inf eq_inf himp eq_himp compl eq_compl
 
@@ -204,16 +202,14 @@ equalities. -/
 def Coframe.copy (c : Coframe α) (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (top : α) (eq_top : top = (by infer_instance : Top α).top)
     (bot : α) (eq_bot : bot = (by infer_instance : Bot α).bot)
-    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
-    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
+    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Max α).max)
+    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Min α).min)
     (sdiff : α → α → α) (eq_sdiff : sdiff = (by infer_instance : SDiff α).sdiff)
     (hnot : α → α) (eq_hnot : hnot = (by infer_instance : HNot α).hnot)
     (sSup : Set α → α) (eq_sSup : sSup = (by infer_instance : SupSet α).sSup)
     (sInf : Set α → α) (eq_sInf : sInf = (by infer_instance : InfSet α).sInf) : Coframe α where
   toCompleteLattice := CompleteLattice.copy (@Coframe.toCompleteLattice α c)
     le eq_le top eq_top bot eq_bot sup eq_sup inf eq_inf sSup eq_sSup sInf eq_sInf
-  iInf_sup_le_sup_sInf := fun a s => by
-    simp [eq_le, eq_sup, eq_inf, eq_sInf, @Order.Coframe.iInf_sup_le_sup_sInf α _ a s]
   __ := CoheytingAlgebra.copy (@Coframe.toCoheytingAlgebra α c)
     le eq_le top eq_top bot eq_bot sup eq_sup inf eq_inf sdiff eq_sdiff hnot eq_hnot
 
@@ -223,8 +219,8 @@ def CompleteDistribLattice.copy (c : CompleteDistribLattice α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
     (top : α) (eq_top : top = (by infer_instance : Top α).top)
     (bot : α) (eq_bot : bot = (by infer_instance : Bot α).bot)
-    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
-    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
+    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Max α).max)
+    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Min α).min)
     (sdiff : α → α → α) (eq_sdiff : sdiff = (by infer_instance : SDiff α).sdiff)
     (hnot : α → α) (eq_hnot : hnot = (by infer_instance : HNot α).hnot)
     (himp : α → α → α) (eq_himp : himp = (by infer_instance : HImp α).himp)
@@ -241,8 +237,8 @@ def CompleteDistribLattice.copy (c : CompleteDistribLattice α)
 with possibly different definitional equalities. -/
 def ConditionallyCompleteLattice.copy (c : ConditionallyCompleteLattice α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
-    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Sup α).sup)
-    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Inf α).inf)
+    (sup : α → α → α) (eq_sup : sup = (by infer_instance : Max α).max)
+    (inf : α → α → α) (eq_inf : inf = (by infer_instance : Min α).min)
     (sSup : Set α → α) (eq_sSup : sSup = (by infer_instance : SupSet α).sSup)
     (sInf : Set α → α) (eq_sInf : sInf = (by infer_instance : InfSet α).sInf) :
     ConditionallyCompleteLattice α where

@@ -14,20 +14,17 @@ This file specializes the theory of minpoly to the case of an algebra over a GCD
 
 ## Main results
 
- * `minpoly.isIntegrallyClosed_eq_field_fractions`: For integrally closed domains, the minimal
+* `minpoly.isIntegrallyClosed_eq_field_fractions`: For integrally closed domains, the minimal
     polynomial over the ring is the same as the minimal polynomial over the fraction field.
 
- * `minpoly.isIntegrallyClosed_dvd` : For integrally closed domains, the minimal polynomial divides
+* `minpoly.isIntegrallyClosed_dvd` : For integrally closed domains, the minimal polynomial divides
     any primitive polynomial that has the integral element as root.
 
- * `IsIntegrallyClosed.Minpoly.unique` : The minimal polynomial of an element `x` is
+* `IsIntegrallyClosed.Minpoly.unique` : The minimal polynomial of an element `x` is
     uniquely characterized by its defining property: if there is another monic polynomial of minimal
     degree that has `x` as a root, then this polynomial is equal to the minimal polynomial of `x`.
 
 -/
-
-
-open scoped Classical Polynomial
 
 open Polynomial Set Function minpoly
 
@@ -121,7 +118,7 @@ theorem _root_.IsIntegrallyClosed.minpoly.unique {s : S} {P : R[X]} (hmo : P.Mon
   have hs : IsIntegral R s := ⟨P, hmo, hP⟩
   symm; apply eq_of_sub_eq_zero
   by_contra hnz
-  refine IsIntegrallyClosed.degree_le_of_ne_zero hs hnz (by simp [hP]) |>.not_lt ?_
+  refine IsIntegrallyClosed.degree_le_of_ne_zero hs hnz (by simp [hP]) |>.not_gt ?_
   refine degree_sub_lt ?_ (ne_zero hs) ?_
   · exact le_antisymm (min R s hmo hP) (Pmin (minpoly R s) (monic hs) (aeval R s))
   · rw [(monic hs).leadingCoeff, hmo.leadingCoeff]
@@ -188,5 +185,25 @@ theorem _root_.PowerBasis.ofGenMemAdjoin'_gen (B : PowerBasis R S) (hint : IsInt
   simp [PowerBasis.ofGenMemAdjoin']
 
 end AdjoinRoot
+
+section Subring
+
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
+
+variable (A : Subring K) [IsIntegrallyClosed A] [IsFractionRing A K]
+
+-- Implementation note: `inferInstance` does not work for these.
+instance : Algebra A (integralClosure A L) := Subalgebra.algebra (integralClosure A L)
+instance : SMul A (integralClosure A L) := Algebra.toSMul
+instance : IsScalarTower A ((integralClosure A L)) L :=
+  IsScalarTower.subalgebra' A L L (integralClosure A L)
+
+/-- The minimal polynomial of `x : L` over `K` agrees with its minimal polynomial over the
+integrally closed subring `A`. -/
+theorem ofSubring (x : integralClosure A L) :
+    Polynomial.map (algebraMap A K) (minpoly A x) = minpoly K (x : L) :=
+  eq_comm.mpr (isIntegrallyClosed_eq_field_fractions K L (IsIntegralClosure.isIntegral A L x))
+
+end Subring
 
 end minpoly

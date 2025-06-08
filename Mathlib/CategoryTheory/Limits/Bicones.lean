@@ -27,8 +27,6 @@ noncomputable section
 
 open CategoryTheory.Limits
 
-open scoped Classical
-
 namespace CategoryTheory
 
 section Bicone
@@ -45,11 +43,11 @@ variable (J : Type u₁)
 instance : Inhabited (Bicone J) :=
   ⟨Bicone.left⟩
 
+open scoped Classical in
 instance finBicone [Fintype J] : Fintype (Bicone J) where
   elems := [Bicone.left, Bicone.right].toFinset ∪ Finset.image Bicone.diagram Fintype.elems
   complete j := by
-    cases j <;> simp
-    apply Fintype.complete
+    cases j <;> simp [Fintype.complete]
 
 variable [Category.{v₁} J]
 
@@ -65,7 +63,7 @@ instance : Inhabited (BiconeHom J Bicone.left Bicone.left) :=
   ⟨BiconeHom.left_id⟩
 
 instance BiconeHom.decidableEq {j k : Bicone J} : DecidableEq (BiconeHom J j k) := fun f g => by
-  cases f <;> cases g <;> simp <;> infer_instance
+  classical cases f <;> cases g <;> simp only [diagram.injEq] <;> infer_instance
 
 @[simps]
 instance biconeCategoryStruct : CategoryStruct (Bicone J) where
@@ -117,6 +115,7 @@ def biconeMk {C : Type u₁} [Category.{v₁} C] {F : J ⥤ C} (c₁ c₂ : Cone
     · cases g
       apply F.map_comp
 
+open scoped Classical in
 instance finBiconeHom [FinCategory J] (j k : Bicone J) : Fintype (j ⟶ k) := by
   cases j <;> cases k
   · exact

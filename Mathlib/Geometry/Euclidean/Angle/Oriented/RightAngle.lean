@@ -25,7 +25,7 @@ open scoped RealInnerProductSpace
 
 namespace Orientation
 
-open FiniteDimensional
+open Module
 
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 variable [hd2 : Fact (finrank ℝ V = 2)] (o : Orientation ℝ V (Fin 2))
@@ -519,7 +519,7 @@ end Orientation
 
 namespace EuclideanGeometry
 
-open FiniteDimensional
+open Module
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]

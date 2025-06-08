@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
+import Mathlib.Init
 import Lean.Elab.ElabRules
 import Lean.DocString
 
@@ -37,6 +38,6 @@ elab_rules : command
     let bef := if bef.isNone then "" else (bef.get!).getString ++ "\n\n"
     let aft := if aft.isNone then "" else "\n\n" ++ (aft.get!).getString
     let oldDoc := (← findDocString? (← getEnv) declName).getD ""
-    addDocString declName <| bef ++ oldDoc ++ aft
+    addDocStringCore declName <| bef ++ oldDoc ++ aft
 
 end Mathlib.Tactic.ExtendDocs

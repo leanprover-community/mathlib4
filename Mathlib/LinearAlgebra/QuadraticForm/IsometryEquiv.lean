@@ -34,7 +34,6 @@ variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃] [Module R 
 
 /-- An isometric equivalence between two quadratic spaces `M₁, Q₁` and `M₂, Q₂` over a ring `R`,
 is a linear equivalence between `M₁` and `M₂` that commutes with the quadratic forms. -/
--- Porting note(#5171): linter not ported yet @[nolint has_nonempty_instance]
 structure IsometryEquiv (Q₁ : QuadraticMap R M₁ N) (Q₂ : QuadraticMap R M₂ N)
     extends M₁ ≃ₗ[R] M₂ where
   map_app' : ∀ m, Q₂ (toFun m) = Q₁ m
@@ -54,7 +53,7 @@ instance : EquivLike (Q₁.IsometryEquiv Q₂) M₁ M₂ where
   inv f := f.toLinearEquiv.symm
   left_inv f := f.toLinearEquiv.left_inv
   right_inv f := f.toLinearEquiv.right_inv
-  coe_injective' f g := by cases f; cases g; simp (config := {contextual := true})
+  coe_injective' f g := by cases f; cases g; simp +contextual
 
 instance : LinearEquivClass (Q₁.IsometryEquiv Q₂) R M₁ M₂ where
   map_add f := map_add f.toLinearEquiv
@@ -63,8 +62,6 @@ instance : LinearEquivClass (Q₁.IsometryEquiv Q₂) R M₁ M₂ where
 -- Porting note: was `Coe`
 instance : CoeOut (Q₁.IsometryEquiv Q₂) (M₁ ≃ₗ[R] M₂) :=
   ⟨IsometryEquiv.toLinearEquiv⟩
-
--- Porting note: syntaut
 
 @[simp]
 theorem coe_toLinearEquiv (f : Q₁.IsometryEquiv Q₂) : ⇑(f : M₁ ≃ₗ[R] M₂) = f :=
@@ -141,7 +138,7 @@ variable [Field K] [Invertible (2 : K)] [AddCommGroup V] [Module K V]
 /-- Given an orthogonal basis, a quadratic form is isometrically equivalent with a weighted sum of
 squares. -/
 noncomputable def isometryEquivWeightedSumSquares (Q : QuadraticForm K V)
-    (v : Basis (Fin (FiniteDimensional.finrank K V)) K V)
+    (v : Basis (Fin (Module.finrank K V)) K V)
     (hv₁ : (associated (R := K) Q).IsOrthoᵢ v) :
     Q.IsometryEquiv (weightedSumSquares K fun i => Q (v i)) := by
   let iso := Q.isometryEquivBasisRepr v
@@ -154,13 +151,13 @@ variable [FiniteDimensional K V]
 open LinearMap.BilinForm
 
 theorem equivalent_weightedSumSquares (Q : QuadraticForm K V) :
-    ∃ w : Fin (FiniteDimensional.finrank K V) → K, Equivalent Q (weightedSumSquares K w) :=
+    ∃ w : Fin (Module.finrank K V) → K, Equivalent Q (weightedSumSquares K w) :=
   let ⟨v, hv₁⟩ := exists_orthogonal_basis (associated_isSymm _ Q)
   ⟨_, ⟨Q.isometryEquivWeightedSumSquares v hv₁⟩⟩
 
 theorem equivalent_weightedSumSquares_units_of_nondegenerate' (Q : QuadraticForm K V)
     (hQ : (associated (R := K) Q).SeparatingLeft) :
-    ∃ w : Fin (FiniteDimensional.finrank K V) → Kˣ, Equivalent Q (weightedSumSquares K w) := by
+    ∃ w : Fin (Module.finrank K V) → Kˣ, Equivalent Q (weightedSumSquares K w) := by
   obtain ⟨v, hv₁⟩ := exists_orthogonal_basis (associated_isSymm K Q)
   have hv₂ := hv₁.not_isOrtho_basis_self_of_separatingLeft hQ
   simp_rw [LinearMap.IsOrtho, associated_eq_self_apply] at hv₂

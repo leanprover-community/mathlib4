@@ -17,7 +17,7 @@ In `C`, this cofork diagram is a split coequalizer (in particular, it is still a
 This split coequalizer is known as the Beck coequalizer (as it features heavily in Beck's
 monadicity theorem).
 
-This file has been adapted to `Mathlib.CategoryTheory.Monad.Equalizer`.
+This file has been adapted to `Mathlib/CategoryTheory/Monad/Equalizer.lean`.
 Please try to keep them in sync.
 
 -/
@@ -60,7 +60,7 @@ def FreeCoequalizer.π : (Monad.free T).obj X.A ⟶ X where
 theorem FreeCoequalizer.condition :
     FreeCoequalizer.topMap X ≫ FreeCoequalizer.π X =
       FreeCoequalizer.bottomMap X ≫ FreeCoequalizer.π X :=
-  Algebra.Hom.ext _ _ X.assoc.symm
+  Algebra.Hom.ext X.assoc.symm
 
 instance : IsReflexivePair (FreeCoequalizer.topMap X) (FreeCoequalizer.bottomMap X) := by
   apply IsReflexivePair.mk' _ _ _

@@ -3,10 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Subgroup.Lattice
+import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Algebra.Module.Submodule.Defs
 import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Algebra.Module.Submodule.Basic
-import Mathlib.Algebra.PUnitInstances.Module
+import Mathlib.Algebra.Module.PUnit
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
@@ -73,7 +77,7 @@ instance uniqueBot : Unique (⊥ : Submodule R M) :=
 
 instance : OrderBot (Submodule R M) where
   bot := ⊥
-  bot_le p x := by simp (config := { contextual := true }) [zero_mem]
+  bot_le p x := by simp +contextual [zero_mem]
 
 protected theorem eq_bot_iff (p : Submodule R M) : p = ⊥ ↔ ∀ x ∈ p, x = (0 : M) :=
   ⟨fun h ↦ h.symm ▸ fun _ hx ↦ (mem_bot R).mp hx,
@@ -171,8 +175,8 @@ instance : InfSet (Submodule R M) :=
   ⟨fun S ↦
     { carrier := ⋂ s ∈ S, (s : Set M)
       zero_mem' := by simp [zero_mem]
-      add_mem' := by simp (config := { contextual := true }) [add_mem]
-      smul_mem' := by simp (config := { contextual := true }) [smul_mem] }⟩
+      add_mem' := by simp +contextual [add_mem]
+      smul_mem' := by simp +contextual [smul_mem] }⟩
 
 private theorem sInf_le' {S : Set (Submodule R M)} {p} : p ∈ S → sInf S ≤ p :=
   Set.biInter_subset_of_mem
@@ -180,12 +184,12 @@ private theorem sInf_le' {S : Set (Submodule R M)} {p} : p ∈ S → sInf S ≤ 
 private theorem le_sInf' {S : Set (Submodule R M)} {p} : (∀ q ∈ S, p ≤ q) → p ≤ sInf S :=
   Set.subset_iInter₂
 
-instance : Inf (Submodule R M) :=
+instance : Min (Submodule R M) :=
   ⟨fun p q ↦
     { carrier := p ∩ q
       zero_mem' := by simp [zero_mem]
-      add_mem' := by simp (config := { contextual := true }) [add_mem]
-      smul_mem' := by simp (config := { contextual := true }) [smul_mem] }⟩
+      add_mem' := by simp +contextual [add_mem]
+      smul_mem' := by simp +contextual [smul_mem] }⟩
 
 instance completeLattice : CompleteLattice (Submodule R M) :=
   { (inferInstance : OrderTop (Submodule R M)),
@@ -198,6 +202,7 @@ instance completeLattice : CompleteLattice (Submodule R M) :=
     le_inf := fun _ _ _ ↦ Set.subset_inter
     inf_le_left := fun _ _ ↦ Set.inter_subset_left
     inf_le_right := fun _ _ ↦ Set.inter_subset_right
+    sSup S := sInf {sm | ∀ s ∈ S, s ≤ sm}
     le_sSup := fun _ _ hs ↦ le_sInf' fun _ hq ↦ by exact hq _ hs
     sSup_le := fun _ _ hs ↦ sInf_le' hs
     le_sInf := fun _ _ ↦ le_sInf'
@@ -240,6 +245,10 @@ theorem mem_iInf {ι} (p : ι → Submodule R M) {x} : (x ∈ ⨅ i, p i) ↔ �
 theorem mem_finset_inf {ι} {s : Finset ι} {p : ι → Submodule R M} {x : M} :
     x ∈ s.inf p ↔ ∀ i ∈ s, x ∈ p i := by
   simp only [← SetLike.mem_coe, finset_inf_coe, Set.mem_iInter]
+
+lemma inf_iInf {ι : Type*} [Nonempty ι] {p : ι → Submodule R M} (q : Submodule R M) :
+    q ⊓ ⨅ i, p i = ⨅ i, q ⊓ p i :=
+  SetLike.coe_injective <| by simpa only [inf_coe, iInf_coe] using Set.inter_iInter _ _
 
 theorem mem_sup_left {S T : Submodule R M} : ∀ {x : M}, x ∈ S → x ∈ S ⊔ T := by
   have : S ≤ S ⊔ T := le_sup_left
@@ -287,17 +296,16 @@ theorem toAddSubmonoid_sSup (s : Set (Submodule R M)) :
     { toAddSubmonoid := sSup (toAddSubmonoid '' s)
       smul_mem' := fun t {m} h ↦ by
         simp_rw [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, sSup_eq_iSup'] at h ⊢
-        refine AddSubmonoid.iSup_induction'
-          (C := fun x _ ↦ t • x ∈ ⨆ p : toAddSubmonoid '' s, (p : AddSubmonoid M)) ?_ ?_
-          (fun x y _ _ ↦ ?_) h
-        · rintro ⟨-, ⟨p : Submodule R M, hp : p ∈ s, rfl⟩⟩ x (hx : x ∈ p)
+        induction h using AddSubmonoid.iSup_induction' with
+        | mem p x hx =>
+          obtain ⟨-, ⟨p : Submodule R M, hp : p ∈ s, rfl⟩⟩ := p
           suffices p.toAddSubmonoid ≤ ⨆ q : toAddSubmonoid '' s, (q : AddSubmonoid M) by
             exact this (smul_mem p t hx)
           apply le_sSup
           rw [Subtype.range_coe_subtype]
           exact ⟨p, hp, rfl⟩
-        · simpa only [smul_zero] using zero_mem _
-        · simp_rw [smul_add]; exact add_mem }
+        | one => simpa only [smul_zero] using zero_mem _
+        | mul _ _ _ _ mx my => revert mx my; simp_rw [smul_add]; exact add_mem }
   refine le_antisymm (?_ : sSup s ≤ p) ?_
   · exact sSup_le fun q hq ↦ le_sSup <| Set.mem_image_of_mem toAddSubmonoid hq
   · exact sSup_le fun _ ⟨q, hq, hq'⟩ ↦ hq'.symm ▸ le_sSup hq
@@ -307,7 +315,7 @@ variable (R)
 @[simp]
 theorem subsingleton_iff : Subsingleton (Submodule R M) ↔ Subsingleton M :=
   have h : Subsingleton (Submodule R M) ↔ Subsingleton (AddSubmonoid M) := by
-    rw [← subsingleton_iff_bot_eq_top, ← subsingleton_iff_bot_eq_top, ← toAddSubmonoid_eq,
+    rw [← subsingleton_iff_bot_eq_top, ← subsingleton_iff_bot_eq_top, ← toAddSubmonoid_inj,
       bot_toAddSubmonoid, top_toAddSubmonoid]
   h.trans AddSubmonoid.subsingleton_iff
 
@@ -359,7 +367,6 @@ section NatSubmodule
 ## ℕ-submodules
 -/
 
--- Porting note: `S.toNatSubmodule` doesn't work. I used `AddSubmonoid.toNatSubmodule S` instead.
 /-- An additive submonoid is equivalent to a ℕ-submodule. -/
 def AddSubmonoid.toNatSubmodule : AddSubmonoid M ≃o Submodule ℕ M where
   toFun S := { S with smul_mem' := fun r s hs ↦ show r • s ∈ S from nsmul_mem hs _ }
@@ -375,7 +382,7 @@ theorem AddSubmonoid.toNatSubmodule_symm :
 
 @[simp]
 theorem AddSubmonoid.coe_toNatSubmodule (S : AddSubmonoid M) :
-    (AddSubmonoid.toNatSubmodule S : Set M) = S :=
+    (S.toNatSubmodule : Set M) = S :=
   rfl
 
 @[simp]
@@ -385,7 +392,7 @@ theorem AddSubmonoid.toNatSubmodule_toAddSubmonoid (S : AddSubmonoid M) :
 
 @[simp]
 theorem Submodule.toAddSubmonoid_toNatSubmodule (S : Submodule ℕ M) :
-    AddSubmonoid.toNatSubmodule S.toAddSubmonoid = S :=
+    S.toAddSubmonoid.toNatSubmodule = S :=
   AddSubmonoid.toNatSubmodule.apply_symm_apply S
 
 end NatSubmodule
@@ -400,7 +407,6 @@ section IntSubmodule
 
 variable [AddCommGroup M]
 
--- Porting note: `S.toIntSubmodule` doesn't work. I used `AddSubgroup.toIntSubmodule S` instead.
 /-- An additive subgroup is equivalent to a ℤ-submodule. -/
 def AddSubgroup.toIntSubmodule : AddSubgroup M ≃o Submodule ℤ M where
   toFun S := { S with smul_mem' := fun _ _ hs ↦ S.zsmul_mem hs _ }
@@ -416,7 +422,7 @@ theorem AddSubgroup.toIntSubmodule_symm :
 
 @[simp]
 theorem AddSubgroup.coe_toIntSubmodule (S : AddSubgroup M) :
-    (AddSubgroup.toIntSubmodule S : Set M) = S :=
+    (S.toIntSubmodule : Set M) = S :=
   rfl
 
 @[simp]
@@ -426,7 +432,7 @@ theorem AddSubgroup.toIntSubmodule_toAddSubgroup (S : AddSubgroup M) :
 
 @[simp]
 theorem Submodule.toAddSubgroup_toIntSubmodule (S : Submodule ℤ M) :
-    AddSubgroup.toIntSubmodule S.toAddSubgroup = S :=
+    S.toAddSubgroup.toIntSubmodule = S :=
   AddSubgroup.toIntSubmodule.apply_symm_apply S
 
 end IntSubmodule

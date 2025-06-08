@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Algebra.GroupWithZero.InjSurj
@@ -14,6 +14,7 @@ This file defines instances for group and monoid with zero and related structure
 (Recall `ULift α` is just a "copy" of a type `α` in a higher universe.)
 -/
 
+assert_not_exists Ring
 
 universe u
 

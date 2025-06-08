@@ -1,11 +1,11 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.Order.CompleteLattice
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Limits.IsLimit
+import Mathlib.Order.CompleteLattice.Basic
 
 /-!
 # The category of "pairwise intersections".
@@ -74,6 +74,11 @@ def comp : ∀ {o₁ o₂ o₃ : Pairwise ι} (_ : Hom o₁ o₂) (_ : Hom o₂ 
   | _, _, _, left i j, id_single _ => left i j
   | _, _, _, right i j, id_single _ => right i j
 
+instance : CategoryStruct (Pairwise ι) where
+  Hom := Hom
+  id := id
+  comp := @comp _
+
 section
 
 open Lean Elab Tactic in
@@ -83,13 +88,10 @@ def pairwiseCases : TacticM Unit := do
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] pairwiseCases in
 instance : Category (Pairwise ι) where
-  Hom := Hom
-  id := id
-  comp f g := comp f g
 
 end
 
-variable {α : Type v} (U : ι → α)
+variable {α : Type u} (U : ι → α)
 
 section
 
@@ -109,15 +111,11 @@ def diagramMap : ∀ {o₁ o₂ : Pairwise ι} (_ : o₁ ⟶ o₂), diagramObj U
   | _, _, left _ _ => homOfLE inf_le_left
   | _, _, right _ _ => homOfLE inf_le_right
 
--- Porting note: the fields map_id and map_comp were filled by hand, as generating them by `aesop`
--- causes a PANIC.
 /-- Given a function `U : ι → α` for `[SemilatticeInf α]`, we obtain a functor `Pairwise ι ⥤ α`,
 sending `single i` to `U i` and `pair i j` to `U i ⊓ U j`,
 and the morphisms to the obvious inequalities.
 -/
--- Porting note: We want `@[simps]` here, but this causes a PANIC in the linter.
--- (Which, worryingly, does not cause a linter failure!)
--- @[simps]
+@[simps]
 def diagram : Pairwise ι ⥤ α where
   obj := diagramObj U
   map := diagramMap U

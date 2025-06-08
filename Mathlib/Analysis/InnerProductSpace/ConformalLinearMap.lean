@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang
 -/
 import Mathlib.Analysis.NormedSpace.ConformalLinearMap
-import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.InnerProductSpace.LinearMap
 
 /-!
 # Conformal maps between inner product spaces

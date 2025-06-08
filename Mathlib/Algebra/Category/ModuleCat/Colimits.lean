@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Joël Riou
+Authors: Kim Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
@@ -42,7 +42,7 @@ noncomputable def coconePointSMul :
     R →+* End (colimit (F ⋙ forget₂ _ AddCommGrp)) where
   toFun r := colimMap
     { app := fun j => (F.obj j).smul r
-      naturality := fun X Y f => smul_naturality _ _ }
+      naturality := fun _ _ _ => smul_naturality _ _ }
   map_zero' := colimit.hom_ext (by simp)
   map_one' := colimit.hom_ext (by simp)
   map_add' r s := colimit.hom_ext (fun j => by
@@ -59,7 +59,7 @@ noncomputable def colimitCocone : Cocone F where
   ι :=
     { app := fun j => homMk (colimit.ι (F ⋙ forget₂ _ AddCommGrp)  j) (fun r => by
         dsimp
-        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+        -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
         erw [mkOfSMul_smul]
         simp)
       naturality := fun i j f => by
@@ -76,7 +76,7 @@ noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) where
     intro j
     dsimp
     rw [colimit.ι_desc_assoc]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [mkOfSMul_smul]
     dsimp
     simp only [ι_colimMap_assoc, Functor.comp_obj, forget₂_obj, colimit.ι_desc,
@@ -97,11 +97,11 @@ noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) where
 instance : HasColimit F := ⟨_, isColimitColimitCocone F⟩
 
 noncomputable instance : PreservesColimit F (forget₂ _ AddCommGrp) :=
-  preservesColimitOfPreservesColimitCocone (isColimitColimitCocone F) (colimit.isColimit _)
+  preservesColimit_of_preserves_colimit_cocone (isColimitColimitCocone F) (colimit.isColimit _)
 
 noncomputable instance reflectsColimit :
     ReflectsColimit F (forget₂ (ModuleCat.{w'} R) AddCommGrp) :=
-  reflectsColimitOfReflectsIsomorphisms _ _
+  reflectsColimit_of_reflectsIsomorphisms _ _
 
 end HasColimit
 
@@ -126,15 +126,15 @@ noncomputable instance forget₂PreservesColimitsOfSize
 
 noncomputable instance
     [HasColimitsOfSize.{u, v} AddCommGrpMax.{w, w'}] :
-    PreservesColimitsOfSize.{u, v} (forget₂ (ModuleCatMax.{w, w'} R) AddCommGrp) where
+    PreservesColimitsOfSize.{u, v} (forget₂ (ModuleCat.{max w w'} R) AddCommGrp) where
 
 instance : HasFiniteColimits (ModuleCat.{w'} R) := inferInstance
 
 -- Sanity checks, just to make sure typeclass search can find the instances we want.
-example (R : Type u) [Ring R] : HasColimits (ModuleCatMax.{v, u} R) :=
+example (R : Type u) [Ring R] : HasColimits (ModuleCat.{max v u} R) :=
   inferInstance
 
-example (R : Type u) [Ring R] : HasColimits (ModuleCatMax.{u, v} R) :=
+example (R : Type u) [Ring R] : HasColimits (ModuleCat.{max u v} R) :=
   inferInstance
 
 example (R : Type u) [Ring R] : HasColimits (ModuleCat.{u} R) :=

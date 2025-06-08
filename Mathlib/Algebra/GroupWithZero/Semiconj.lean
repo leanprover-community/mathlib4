@@ -5,16 +5,15 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Group.Semiconj.Units
-import Mathlib.Init.Classical
 
 /-!
 # Lemmas about semiconjugate elements in a `GroupWithZero`.
 
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
-variable {α M₀ G₀ M₀' G₀' F F' : Type*}
+variable {G₀ : Type*}
 
 namespace SemiconjBy
 

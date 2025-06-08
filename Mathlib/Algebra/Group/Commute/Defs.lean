@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Semiconj.Defs
-import Mathlib.Init.Algebra.Classes
 
 /-!
 # Commuting pairs of elements in monoids
@@ -25,8 +24,7 @@ This file defines only a few operations (`mul_left`, `inv_right`, etc).  Other o
 Most of the proofs come from the properties of `SemiconjBy`.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 variable {G M S : Type*}
 
@@ -90,24 +88,20 @@ variable [Semigroup S] {a b c : S}
 "If `a` commutes with both `b` and `c`, then it commutes with their sum."]
 theorem mul_right (hab : Commute a b) (hac : Commute a c) : Commute a (b * c) :=
   SemiconjBy.mul_right hab hac
--- I think `ₓ` is necessary because of the `mul` vs `HMul` distinction
 
 /-- If both `a` and `b` commute with `c`, then their product commutes with `c`. -/
 @[to_additive (attr := simp)
 "If both `a` and `b` commute with `c`, then their product commutes with `c`."]
 theorem mul_left (hac : Commute a c) (hbc : Commute b c) : Commute (a * b) c :=
   SemiconjBy.mul_left hac hbc
--- I think `ₓ` is necessary because of the `mul` vs `HMul` distinction
 
 @[to_additive]
 protected theorem right_comm (h : Commute b c) (a : S) : a * b * c = a * c * b := by
   simp only [mul_assoc, h.eq]
--- I think `ₓ` is necessary because of the `mul` vs `HMul` distinction
 
 @[to_additive]
 protected theorem left_comm (h : Commute a b) (c) : a * (b * c) = b * (a * c) := by
   simp only [← mul_assoc, h.eq]
--- I think `ₓ` is necessary because of the `mul` vs `HMul` distinction
 
 @[to_additive]
 protected theorem mul_mul_mul_comm (hbc : Commute b c) (a d : S) :
@@ -126,12 +120,10 @@ variable [MulOneClass M]
 @[to_additive (attr := simp)]
 theorem one_right (a : M) : Commute a 1 :=
   SemiconjBy.one_right a
--- I think `ₓ` is necessary because `One.toOfNat1` appears in the Lean 4 version
 
 @[to_additive (attr := simp)]
 theorem one_left (a : M) : Commute 1 a :=
   SemiconjBy.one_left a
--- I think `ₓ` is necessary because `One.toOfNat1` appears in the Lean 4 version
 
 end MulOneClass
 
@@ -142,36 +134,27 @@ variable [Monoid M] {a b : M}
 @[to_additive (attr := simp)]
 theorem pow_right (h : Commute a b) (n : ℕ) : Commute a (b ^ n) :=
   SemiconjBy.pow_right h n
--- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
 @[to_additive (attr := simp)]
 theorem pow_left (h : Commute a b) (n : ℕ) : Commute (a ^ n) b :=
   (h.symm.pow_right n).symm
--- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
 -- todo: should nat power be called `nsmul` here?
-@[to_additive (attr := simp)]
-theorem pow_pow (h : Commute a b) (m n : ℕ) : Commute (a ^ m) (b ^ n) :=
-  (h.pow_left m).pow_right n
--- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
+@[to_additive]
+theorem pow_pow (h : Commute a b) (m n : ℕ) : Commute (a ^ m) (b ^ n) := by
+  simp [h]
 
--- Porting note: `simpNF` told me to remove the `simp` attribute
 @[to_additive]
 theorem self_pow (a : M) (n : ℕ) : Commute a (a ^ n) :=
   (Commute.refl a).pow_right n
--- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
--- Porting note: `simpNF` told me to remove the `simp` attribute
 @[to_additive]
 theorem pow_self (a : M) (n : ℕ) : Commute (a ^ n) a :=
   (Commute.refl a).pow_left n
--- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
--- Porting note: `simpNF` told me to remove the `simp` attribute
 @[to_additive]
 theorem pow_pow_self (a : M) (m n : ℕ) : Commute (a ^ m) (a ^ n) :=
   (Commute.refl a).pow_pow m n
--- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
 @[to_additive] lemma mul_pow (h : Commute a b) : ∀ n, (a * b) ^ n = a ^ n * b ^ n
   | 0 => by rw [pow_zero, pow_zero, pow_zero, one_mul]
@@ -181,7 +164,7 @@ end Monoid
 
 section DivisionMonoid
 
-variable [DivisionMonoid G] {a b c d : G}
+variable [DivisionMonoid G] {a b : G}
 
 @[to_additive]
 protected theorem mul_inv (hab : Commute a b) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by rw [hab.eq, mul_inv_rev]

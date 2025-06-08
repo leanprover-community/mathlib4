@@ -236,13 +236,13 @@ def toGrothendieck (K : Coverage C) : GrothendieckTopology C where
       intro Z g hg
       rw [← Sieve.pullback_comp]
       exact hS hg
-  transitive' X S hS R hR := .transitive _ _ _ hS hR
+  transitive' _ _ hS _ hR := .transitive _ _ _ hS hR
 
 instance : PartialOrder (Coverage C) where
   le A B := A.covering ≤ B.covering
-  le_refl A X := le_refl _
-  le_trans A B C h1 h2 X := le_trans (h1 X) (h2 X)
-  le_antisymm A B h1 h2 := Coverage.ext A B <| funext <|
+  le_refl _ _ := le_refl _
+  le_trans _ _ _ h1 h2 X := le_trans (h1 X) (h2 X)
+  le_antisymm _ _ h1 h2 := Coverage.ext <| funext <|
     fun X => le_antisymm (h1 X) (h2 X)
 
 variable (C) in
@@ -309,7 +309,7 @@ Any sieve that contains a covering presieve for a coverage is a covering sieve f
 Grothendieck topology.
 -/
 theorem mem_toGrothendieck_sieves_of_superset (K : Coverage C) {X : C} {S : Sieve X}
-    {R : Presieve X} (h : R ≤ S) (hR : R ∈ K.covering X) : S ∈ (K.toGrothendieck C).sieves X :=
+    {R : Presieve X} (h : R ≤ S) (hR : R ∈ K.covering X) : S ∈ (K.toGrothendieck C) X :=
   K.saturate_of_superset ((Sieve.generate_le_iff _ _).mpr h) (Coverage.Saturate.of X _ hR)
 
 end Coverage
@@ -405,7 +405,7 @@ theorem isSheaf_sup (K L : Coverage C) (P : Cᵒᵖ ⥤ Type*) :
   rw [isSheaf_coverage, isSheaf_coverage] at h
   rw [isSheaf_coverage]
   intro X R hR
-  cases' hR with hR hR
+  rcases hR with hR | hR
   · exact h.1 R hR
   · exact h.2 R hR
 

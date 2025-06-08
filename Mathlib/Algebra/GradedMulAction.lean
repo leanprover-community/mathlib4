@@ -57,7 +57,7 @@ section Defs
 variable (A : ιA → Type*) (M : ιM → Type*)
 
 /-- A graded version of `SMul`. Scalar multiplication combines grades additively, i.e.
-if `a ∈ A i` and `m ∈ M j`, then `a • b` must be in `M (i + j)`-/
+if `a ∈ A i` and `m ∈ M j`, then `a • b` must be in `M (i + j)`. -/
 class GSMul [VAdd ιA ιM] where
   /-- The homogeneous multiplication map `smul` -/
   smul {i j} : A i → M j → M (i +ᵥ j)
@@ -112,15 +112,7 @@ instance SetLike.toGSMul {S R N M : Type*} [SetLike S R] [SetLike N M] [SMul R M
     GradedMonoid.GSMul (fun i ↦ A i) fun i ↦ B i where
   smul a b := ⟨a.1 • b.1, SetLike.GradedSMul.smul_mem a.2 b.2⟩
 
-/-
-Porting note: simpNF linter returns
-"Left-hand side does not simplify, when using the simp lemma on itself."
-However, simp does indeed solve the following. Possibly related std#71,std#78
-example {S R N M : Type*} [SetLike S R] [SetLike N M] [SMul R M] [Add ι]
-    (A : ι → S) (B : ι → N) [SetLike.GradedSMul A B] {i j : ι} (x : A i) (y : B j) :
-    (@GradedMonoid.GSMul.smul ι (fun i ↦ A i) (fun i ↦ B i) _ _ i j x y : M) = x.1 • y.1 := by simp
--/
-@[simp,nolint simpNF]
+@[simp]
 theorem SetLike.coe_GSMul {S R N M : Type*} [SetLike S R] [SetLike N M] [SMul R M] [VAdd ιA ιB]
     (A : ιA → S) (B : ιB → N) [SetLike.GradedSMul A B] {i : ιA} {j : ιB} (x : A i) (y : B j) :
     (@GradedMonoid.GSMul.smul ιA ιB (fun i ↦ A i) (fun i ↦ B i) _ _ i j x y : M) = x.1 • y.1 :=
@@ -137,9 +129,13 @@ section HomogeneousElements
 
 variable {S R N M : Type*} [SetLike S R] [SetLike N M]
 
-theorem SetLike.Homogeneous.graded_smul [VAdd ιA ιB] [SMul R M] {A : ιA → S} {B : ιB → N}
+theorem SetLike.IsHomogeneousElem.graded_smul [VAdd ιA ιB] [SMul R M] {A : ιA → S} {B : ιB → N}
     [SetLike.GradedSMul A B] {a : R} {b : M} :
-    SetLike.Homogeneous A a → SetLike.Homogeneous B b → SetLike.Homogeneous B (a • b)
+    SetLike.IsHomogeneousElem A a → SetLike.IsHomogeneousElem B b →
+    SetLike.IsHomogeneousElem B (a • b)
   | ⟨i, hi⟩, ⟨j, hj⟩ => ⟨i +ᵥ j, SetLike.GradedSMul.smul_mem hi hj⟩
+
+@[deprecated (since := "2025-01-31")] alias SetLike.Homogeneous.graded_smul :=
+  SetLike.IsHomogeneousElem.graded_smul
 
 end HomogeneousElements

@@ -3,12 +3,12 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Neil Strickland
 -/
-import Mathlib.Algebra.NeZero
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.Nat.Basic
+import Mathlib.Data.PNat.Notation
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Lift
-import Mathlib.Init.Data.Int.Order
 
 /-!
 # The positive natural numbers
@@ -17,28 +17,10 @@ This file contains the definitions, and basic results.
 Most algebraic facts are deferred to `Data.PNat.Basic`, as they need more imports.
 -/
 
-
-/-- `ℕ+` is the type of positive natural numbers. It is defined as a subtype,
-  and the VM representation of `ℕ+` is the same as `ℕ` because the proof
-  is not stored. -/
-def PNat := { n : ℕ // 0 < n }
-  deriving DecidableEq, LinearOrder
-
-@[inherit_doc]
-notation "ℕ+" => PNat
+deriving instance LinearOrder for PNat
 
 instance : One ℕ+ :=
   ⟨⟨1, Nat.zero_lt_one⟩⟩
-
-/-- The underlying natural number -/
-@[coe]
-def PNat.val : ℕ+ → ℕ := Subtype.val
-
-instance coePNatNat : Coe ℕ+ ℕ :=
-  ⟨PNat.val⟩
-
-instance : Repr ℕ+ :=
-  ⟨fun n n' => reprPrec n.1 n'⟩
 
 instance (n : ℕ) [NeZero n] : OfNat ℕ+ n :=
   ⟨⟨n, Nat.pos_of_ne_zero <| NeZero.ne n⟩⟩
@@ -105,17 +87,13 @@ namespace PNat
 open Nat
 
 /-- We now define a long list of structures on ℕ+ induced by
- similar structures on ℕ. Most of these behave in a completely
- obvious way, but there are a few things to be said about
- subtraction, division and powers.
+similar structures on ℕ. Most of these behave in a completely
+obvious way, but there are a few things to be said about
+subtraction, division and powers.
 -/
--- Porting note: no `simp`  because simp can prove it
-theorem mk_le_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) ≤ ⟨k, hk⟩ ↔ n ≤ k :=
-  Iff.rfl
+theorem mk_le_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) ≤ ⟨k, hk⟩ ↔ n ≤ k := by simp
 
--- Porting note: no `simp`  because simp can prove it
-theorem mk_lt_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) < ⟨k, hk⟩ ↔ n < k :=
-  Iff.rfl
+theorem mk_lt_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) < ⟨k, hk⟩ ↔ n < k := by simp
 
 @[simp, norm_cast]
 theorem coe_le_coe (n k : ℕ+) : (n : ℕ) ≤ k ↔ n ≤ k :=
@@ -132,7 +110,7 @@ theorem pos (n : ℕ+) : 0 < (n : ℕ) :=
 theorem eq {m n : ℕ+} : (m : ℕ) = n → m = n :=
   Subtype.eq
 
-theorem coe_injective : Function.Injective (fun (a : ℕ+) => (a : ℕ)) :=
+theorem coe_injective : Function.Injective PNat.val :=
   Subtype.coe_injective
 
 @[simp]
@@ -155,7 +133,7 @@ theorem one_le (n : ℕ+) : (1 : ℕ+) ≤ n :=
 
 @[simp]
 theorem not_lt_one (n : ℕ+) : ¬n < 1 :=
-  not_lt_of_le n.one_le
+  not_lt_of_ge n.one_le
 
 instance : Inhabited ℕ+ :=
   ⟨1⟩
