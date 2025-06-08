@@ -95,21 +95,32 @@ def Flag_equiv_prod (α ι : Type*) : Flag α ι ≃ (SimpleGraph α) × (ι ↪
   left_inv := fun F ↦ by cases F; rfl
   right_inv := fun p ↦ by cases p; rfl
 
-/-- An embedding of flags -/
-abbrev Embedding.Flag {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι } (e : F₁.G ↪g F₂.G) :
-    Prop := F₂.θ = e ∘ F₁.θ
-
 /-- An embedding of flags is an embedding of the underlying graphs that preserves labels. -/
+@[ext]
 structure Flag.Embedding {α β ι : Type*} (F₁ : Flag α ι) (F₂ : Flag β ι) extends F₁.G ↪g F₂.G where
  labels : F₂.θ = toEmbedding ∘ F₁.θ
 
-
 /-- An isomorphims of flags is an isomorphism of the underlying graphs that preserves labels. -/
+@[ext]
 structure Flag.Iso {α β ι : Type*} (F₁ : Flag α ι) (F₂ : Flag β ι) extends F₁.G ≃g F₂.G where
  labels : F₂.θ = toEquiv ∘ F₁.θ
 
 @[inherit_doc] infixl:50 " ↪f " => Flag.Embedding
 @[inherit_doc] infixl:50 " ≃f " => Flag.Iso
+
+def Flag.Embedding_equiv {α β ι : Type*} (F₁ : Flag α ι) (F₂ : Flag β ι) :
+    (F₁ ↪f F₂) ≃ {e : F₁.G ↪g F₂.G // F₂.θ = e ∘ F₁.θ} where
+  toFun := fun e ↦ ⟨e.toRelEmbedding, e.labels⟩
+  invFun := fun e ↦ ⟨e.val, e.2⟩
+  left_inv := fun _ ↦ rfl
+  right_inv := fun _ ↦ rfl
+
+variable [Fintype α] [Fintype β] (G : SimpleGraph α) (H : SimpleGraph β)
+#synth Fintype (G ↪g H)
+noncomputable instance Flag.instfintypeOfEmbeddings {α β ι : Type*}  {F₁ : Flag α ι} {F₂ : Flag β ι}
+    [Fintype α] [Fintype β] : Fintype (F₁ ↪f F₂) := by
+  classical exact Fintype.ofEquiv _  (Flag.Embedding_equiv F₁ F₂).symm
+
 
 variable {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι} {e : F₁ ↪f F₂}
 
