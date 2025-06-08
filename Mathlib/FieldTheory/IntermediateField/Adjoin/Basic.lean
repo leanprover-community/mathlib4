@@ -846,5 +846,3 @@ theorem AdjoinPair.algebraMap_gen₂ : (algebraMap (↥K⟮x, y⟯) L) (gen₂ K
 end AdjoinPair
 
 end IntermediateField
-
-#min_imports
