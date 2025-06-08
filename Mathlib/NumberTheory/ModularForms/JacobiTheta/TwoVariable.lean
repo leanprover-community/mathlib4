@@ -431,7 +431,7 @@ lemma jacobiTheta₂'_add_left (z τ : ℂ) : jacobiTheta₂' (z + 1) τ = jacob
 lemma jacobiTheta₂'_add_left' (z τ : ℂ) :
     jacobiTheta₂' (z + τ) τ =
       cexp (-π * I * (τ + 2 * z)) * (jacobiTheta₂' z τ - 2 * π * I * jacobiTheta₂ z τ) := by
-  rcases le_or_lt τ.im 0 with hτ | hτ
+  rcases le_or_gt τ.im 0 with hτ | hτ
   · simp_rw [jacobiTheta₂_undef _ hτ, jacobiTheta₂'_undef _ hτ, mul_zero, sub_zero, mul_zero]
   have (n : ℤ) : jacobiTheta₂'_term n (z + τ) τ =
       cexp (-π * I * (τ + 2 * z)) * (jacobiTheta₂'_term (n + 1) z τ -
@@ -471,7 +471,7 @@ times `jacobiTheta₂ (z / τ) (-1 / τ)`. This is the key lemma behind the proo
 equation for L-series of even Dirichlet characters. -/
 theorem jacobiTheta₂_functional_equation (z τ : ℂ) : jacobiTheta₂ z τ =
     1 / (-I * τ) ^ (1 / 2 : ℂ) * cexp (-π * I * z ^ 2 / τ) * jacobiTheta₂ (z / τ) (-1 / τ) := by
-  rcases le_or_lt (im τ) 0 with hτ | hτ
+  rcases le_or_gt (im τ) 0 with hτ | hτ
   · have : (-1 / τ).im ≤ 0 := by
       rw [neg_div, neg_im, one_div, inv_im, neg_nonpos]
       exact div_nonneg (neg_nonneg.mpr hτ) (normSq_nonneg τ)
@@ -503,7 +503,7 @@ the functional equation for L-series of odd Dirichlet characters. -/
 theorem jacobiTheta₂'_functional_equation (z τ : ℂ) :
     jacobiTheta₂' z τ = 1 / (-I * τ) ^ (1 / 2 : ℂ) * cexp (-π * I * z ^ 2 / τ) / τ *
       (jacobiTheta₂' (z / τ) (-1 / τ) - 2 * π * I * z * jacobiTheta₂ (z / τ) (-1 / τ)) := by
-  rcases le_or_lt (im τ) 0 with hτ | hτ
+  rcases le_or_gt (im τ) 0 with hτ | hτ
   · rw [jacobiTheta₂'_undef z hτ, jacobiTheta₂'_undef, jacobiTheta₂_undef, mul_zero,
       sub_zero, mul_zero] <;>
     rw [neg_div, neg_im, one_div, inv_im, neg_nonpos] <;>
