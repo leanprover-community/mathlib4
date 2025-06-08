@@ -217,3 +217,14 @@ theorem Equivalence.toOrderIso_symm_apply (e : X ≌ Y) (y : Y) :
 end PartialOrder
 
 end CategoryTheory
+
+open CategoryTheory
+
+lemma PartialOrder.isIso_iff_eq {X : Type u} [PartialOrder X]
+    {a b : X} (f : a ⟶ b) : IsIso f ↔ a = b := by
+  constructor
+  · intro _
+    exact (asIso f).to_eq
+  · rintro rfl
+    rw [Subsingleton.elim f (𝟙 _)]
+    infer_instance

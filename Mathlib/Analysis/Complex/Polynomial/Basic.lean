@@ -5,6 +5,7 @@ Authors: Chris Hughes, Junyan Xu, Yury Kudryashov
 -/
 import Mathlib.Analysis.Complex.Liouville
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
+import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.FieldTheory.PolynomialGaloisGroup
 import Mathlib.Topology.Algebra.Polynomial
 
@@ -46,6 +47,11 @@ instance isAlgClosed : IsAlgClosed ℂ :=
   IsAlgClosed.of_exists_root _ fun _p _ hp => Complex.exists_root <| degree_pos_of_irreducible hp
 
 end Complex
+
+/-- An algebraic extension of ℝ is isomorphic to either ℝ or ℂ as an ℝ-algebra. -/
+theorem Real.nonempty_algEquiv_or (F : Type*) [Field F] [Algebra ℝ F] [Algebra.IsAlgebraic ℝ F] :
+    Nonempty (F ≃ₐ[ℝ] ℝ) ∨ Nonempty (F ≃ₐ[ℝ] ℂ) :=
+  IsAlgClosed.nonempty_algEquiv_or_of_finrank_eq_two F Complex.finrank_real_complex
 
 namespace Polynomial.Gal
 
@@ -190,7 +196,9 @@ lemma Irreducible.degree_le_two {p : ℝ[X]} (hp : Irreducible p) : degree p ≤
   cases eq_or_ne z.im 0 with
   | inl hz0 =>
     lift z to ℝ using hz0
-    erw [aeval_ofReal, RCLike.ofReal_eq_zero] at hz
+    -- I can't work out why `erw` is needed here. It looks like exactly the LHS of `aeval_ofReal`.
+    erw [aeval_ofReal] at hz
+    rw [RCLike.ofReal_eq_zero] at hz
     exact (degree_eq_one_of_irreducible_of_root hp hz).trans_le one_le_two
   | inr hz0 =>
     obtain ⟨q, rfl⟩ := p.quadratic_dvd_of_aeval_eq_zero_im_ne_zero hz hz0

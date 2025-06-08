@@ -27,7 +27,7 @@ section Unital
 class IsometricContinuousFunctionalCalculus (R A : Type*) (p : outParam (A → Prop))
     [CommSemiring R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
     [Ring A] [StarRing A] [MetricSpace A] [Algebra R A] : Prop
-    extends ContinuousFunctionalCalculus R p where
+    extends ContinuousFunctionalCalculus R A p where
   isometric (a : A) (ha : p a) : Isometry (cfcHom ha (R := R))
 
 section MetricSpace
@@ -211,7 +211,7 @@ class NonUnitalIsometricContinuousFunctionalCalculus (R A : Type*) (p : outParam
     [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R]
     [ContinuousStar R] [NonUnitalRing A] [StarRing A] [MetricSpace A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : Prop
-    extends NonUnitalContinuousFunctionalCalculus R p where
+    extends NonUnitalContinuousFunctionalCalculus R A p where
   isometric (a : A) (ha : p a) : Isometry (cfcₙHom ha (R := R))
 
 section MetricSpace
@@ -396,7 +396,7 @@ end NonUnital
 /-! ### Instances of isometric continuous functional calculi
 
 The instances for `ℝ` and `ℂ` can be found in
-`Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic`, as those require an actual
+`Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Basic.lean`, as those require an actual
 `CStarAlgebra` instance on `A`, whereas the one for `ℝ≥0` is simply inherited from an existing
 instance for `ℝ`.
 -/

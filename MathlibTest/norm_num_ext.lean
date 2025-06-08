@@ -7,6 +7,7 @@ import Mathlib.Tactic.NormNum.BigOperators
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.NatFactorial
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.NatLog
 import Mathlib.Tactic.NormNum.NatSqrt
@@ -15,6 +16,7 @@ import Mathlib.Data.Rat.Floor
 import Mathlib.Tactic.NormNum.LegendreSymbol
 import Mathlib.Tactic.NormNum.Pow
 import Mathlib.Tactic.NormNum.RealSqrt
+import Mathlib.Tactic.NormNum.Irrational
 
 /-!
 # Tests for `norm_num` extensions
@@ -109,7 +111,7 @@ set_option maxRecDepth 8000 in
 example : Nat.Prime (2 ^ 25 - 39) := by norm_num1
 example : ¬ Nat.Prime ((2 ^ 19 - 1) * (2 ^ 25 - 39)) := by norm_num1
 
-example : Nat.Prime 317 := by norm_num (config := {decide := false})
+example : Nat.Prime 317 := by norm_num -decide
 
 example : Nat.minFac 0 = 2 := by norm_num1
 example : Nat.minFac 1 = 1 := by norm_num1
@@ -345,27 +347,27 @@ variable {α : Type _} [CommRing α]
 
 -- Lists:
 -- `by decide` closes the three goals below.
-example : ([1, 2, 1, 3]).sum = 7 := by norm_num (config := {decide := true}) only
-example : (List.range 10).sum = 45 := by norm_num (config := {decide := true}) only
-example : (List.finRange 10).sum = 45 := by norm_num (config := {decide := true}) only
+example : ([1, 2, 1, 3]).sum = 7 := by norm_num +decide only
+example : (List.range 10).sum = 45 := by norm_num +decide only
+example : (List.finRange 10).sum = 45 := by norm_num +decide only
 
 example : (([1, 2, 1, 3] : List ℚ).map (fun i => i^2)).sum = 15 := by norm_num
 
 -- Multisets:
 -- `by decide` closes the three goals below.
-example : (1 ::ₘ 2 ::ₘ 1 ::ₘ 3 ::ₘ {}).sum = 7 := by norm_num (config := {decide := true}) only
+example : (1 ::ₘ 2 ::ₘ 1 ::ₘ 3 ::ₘ {}).sum = 7 := by norm_num +decide only
 example : ((1 ::ₘ 2 ::ₘ 1 ::ₘ 3 ::ₘ {}).map (fun i => i^2)).sum = 15 := by
-  norm_num (config := {decide := true}) only
-example : (Multiset.range 10).sum = 45 := by norm_num (config := {decide := true}) only
-example : (↑[1, 2, 1, 3] : Multiset ℕ).sum = 7 := by norm_num (config := {decide := true}) only
+  norm_num +decide only
+example : (Multiset.range 10).sum = 45 := by norm_num +decide only
+example : (↑[1, 2, 1, 3] : Multiset ℕ).sum = 7 := by norm_num +decide only
 
 example : (({1, 2, 1, 3} : Multiset ℚ).map (fun i => i^2)).sum = 15 := by
   norm_num
 
 -- Finsets:
-example : Finset.prod (Finset.cons 2 ∅ (Finset.not_mem_empty _)) (fun x ↦ x) = 2 := by norm_num1
+example : Finset.prod (Finset.cons 2 ∅ (Finset.notMem_empty _)) (fun x ↦ x) = 2 := by norm_num1
 example : Finset.prod
-    (Finset.cons 6 (Finset.cons 2 ∅ (Finset.not_mem_empty _)) (by norm_num))
+    (Finset.cons 6 (Finset.cons 2 ∅ (Finset.notMem_empty _)) (by norm_num))
     (fun x ↦ x) =
   12 := by norm_num1
 
@@ -408,8 +410,8 @@ end big_operators
 
 section floor
 
-variable (R : Type*) [LinearOrderedRing R] [FloorRing R]
-variable (K : Type*) [LinearOrderedField K] [FloorRing K]
+variable (R : Type*) [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
+variable (K : Type*) [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorRing K]
 
 example : ⌊(-1 : R)⌋ = -1 := by norm_num
 example : ⌊(2 : R)⌋ = 2 := by norm_num
@@ -493,3 +495,49 @@ example : Real.sqrt 0 = 0 := by norm_num
 example : NNReal.sqrt 0 = 0 := by norm_num
 
 end real_sqrt
+
+section Factorial
+
+open Nat
+
+example : 0! = 1 := by norm_num1
+example : 1! = 1 := by norm_num1
+example : 2! = 2 := by norm_num1
+example : 3! = 6 := by norm_num1
+example : 4! = 24 := by norm_num1
+
+example : 10! = 3628800 := by norm_num1
+example : 1000! / 999! = 1000 := by norm_num1
+example : (Nat.sqrt 1024)! = 32! := by norm_num1
+example : (1 : ℚ) / 0 ! + 1 / 1 ! + 1 / 2 ! + 1 / 3! + 1 / 4! = 65 / 24 := by norm_num1
+
+example : (4 + 2).ascFactorial 3 = 336 := by norm_num1
+example : (5 + 5).descFactorial 2 = 90 := by norm_num1
+example : (1000000).descFactorial 1000001 = 0 := by norm_num1
+
+example : (200 : ℕ) ! / (10 ^ 370) = 78865 := by norm_num1
+
+end Factorial
+
+section irrational
+
+example : Irrational √2 := by norm_num1
+example : Irrational √(5 - 2) := by norm_num1
+example : Irrational √(7/4) := by norm_num1
+example : Irrational √(4/7) := by norm_num1
+example : Irrational √(1/2 + 1/2 + 1/3) := by norm_num1
+example : Irrational (100 ^ (1/3 : ℝ)) := by norm_num1
+example : Irrational ((27/38) ^ (1/3 : ℝ)) := by norm_num1
+example : Irrational ((87/6) ^ (54/321 : ℝ)) := by norm_num1
+
+-- Large prime number
+-- The current implementation should run in O(log n) time
+example : Irrational
+  √5210644015679228794060694325390955853335898483908056458352183851018372555735221 := by norm_num1
+
+-- Large numerator does not affect performance.
+-- We only need to check that it is coprime with the denominator.
+example : Irrational (100 ^ ((10^1000 + 10^500) / 3 : ℝ)) := by norm_num1
+
+
+end irrational

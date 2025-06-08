@@ -222,15 +222,25 @@ theorem essentiallySmall_of_small_of_locallySmall [Small.{w} C] [LocallySmall.{w
     EssentiallySmall.{w} C :=
   (essentiallySmall_iff C).2 ⟨small_of_surjective Quotient.exists_rep, by infer_instance⟩
 
+instance small_skeleton_of_essentiallySmall [h : EssentiallySmall.{w} C] : Small.{w} (Skeleton C) :=
+  essentiallySmall_iff C |>.1 h |>.1
+
+variable {C} in
+theorem essentiallySmall_of_fully_faithful {D : Type u'} [Category.{v'} D] (F : C ⥤ D)
+    [F.Full] [F.Faithful] [EssentiallySmall.{w} D] : EssentiallySmall.{w} C :=
+  (essentiallySmall_iff C).2 ⟨small_of_injective F.mapSkeleton_injective,
+    locallySmall_of_faithful F⟩
+
 section FullSubcategory
 
-instance locallySmall_fullSubcategory [LocallySmall.{w} C] (P : C → Prop) :
-    LocallySmall.{w} (FullSubcategory P) :=
-  locallySmall_of_faithful <| fullSubcategoryInclusion P
+instance locallySmall_fullSubcategory [LocallySmall.{w} C] (P : ObjectProperty C) :
+    LocallySmall.{w} P.FullSubcategory :=
+  locallySmall_of_faithful <| P.ι
 
 instance essentiallySmall_fullSubcategory_mem (s : Set C) [Small.{w} s] [LocallySmall.{w} C] :
-    EssentiallySmall.{w} (FullSubcategory (· ∈ s)) :=
-  suffices Small.{w} (FullSubcategory (· ∈ s)) from essentiallySmall_of_small_of_locallySmall _
+    EssentiallySmall.{w} (ObjectProperty.FullSubcategory (· ∈ s)) :=
+  suffices Small.{w} (ObjectProperty.FullSubcategory (· ∈ s)) from
+    essentiallySmall_of_small_of_locallySmall _
   small_of_injective (f := fun x => (⟨x.1, x.2⟩ : s)) (by aesop_cat)
 
 end FullSubcategory

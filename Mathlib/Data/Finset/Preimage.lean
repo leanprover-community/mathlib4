@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Set.Finite.Basic
@@ -93,7 +94,7 @@ lemma card_preimage (s : Finset β) (f : α → β) (hf) [DecidablePred (· ∈ 
   card_nbij f (by simp) (by simpa) (fun b hb ↦ by aesop)
 
 theorem image_preimage [DecidableEq β] (f : α → β) (s : Finset β) [∀ x, Decidable (x ∈ Set.range f)]
-    (hf : Set.InjOn f (f ⁻¹' ↑s)) : image f (preimage s f hf) = s.filter fun x => x ∈ Set.range f :=
+    (hf : Set.InjOn f (f ⁻¹' ↑s)) : image f (preimage s f hf) = {x ∈ s | x ∈ Set.range f} :=
   Finset.coe_inj.1 <| by
     simp only [coe_image, coe_preimage, coe_filter, Set.image_preimage_eq_inter_range,
       ← Set.sep_mem_eq]; rfl
@@ -115,8 +116,7 @@ theorem subset_map_iff {f : α ↪ β} {s : Finset β} {t : Finset α} :
   simp_rw [map_eq_image, subset_image_iff, eq_comm]
 
 theorem sigma_preimage_mk {β : α → Type*} [DecidableEq α] (s : Finset (Σ a, β a)) (t : Finset α) :
-    (t.sigma fun a => s.preimage (Sigma.mk a) sigma_mk_injective.injOn) =
-      s.filter fun a => a.1 ∈ t := by
+    t.sigma (fun a => s.preimage (Sigma.mk a) sigma_mk_injective.injOn) = {a ∈ s | a.1 ∈ t} := by
   ext x
   simp [and_comm]
 
@@ -140,3 +140,26 @@ theorem sigma_image_fst_preimage_mk {β : α → Type*} [DecidableEq α] (s : Fi
 
 end Preimage
 end Finset
+
+namespace Equiv
+
+/-- Given an equivalence `e : α ≃ β` and `s : Finset β`, restrict `e` to an equivalence
+from `e ⁻¹' s` to `s`. -/
+@[simps]
+def restrictPreimageFinset (e : α ≃ β) (s : Finset β) : (s.preimage e e.injective.injOn) ≃ s where
+  toFun a := ⟨e a, Finset.mem_preimage.1 a.2⟩
+  invFun b := ⟨e.symm b, by simp⟩
+  left_inv _ := by simp
+  right_inv _ := by simp
+
+end Equiv
+
+/-- Reindexing and then restricting to a `Finset` is the same as first restricting to the preimage
+of this `Finset` and then reindexing. -/
+lemma Finset.restrict_comp_piCongrLeft {π : β → Type*} (s : Finset β) (e : α ≃ β) :
+    s.restrict ∘ ⇑(e.piCongrLeft π) =
+    ⇑((e.restrictPreimageFinset s).piCongrLeft (fun b : s ↦ (π b))) ∘
+    (s.preimage e e.injective.injOn).restrict := by
+  ext x b
+  simp only [comp_apply, restrict, Equiv.piCongrLeft_apply_eq_cast, cast_inj,
+    Equiv.restrictPreimageFinset_symm_apply_coe]

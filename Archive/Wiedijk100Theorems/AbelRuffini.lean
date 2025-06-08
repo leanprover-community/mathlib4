@@ -12,7 +12,7 @@ import Mathlib.RingTheory.Polynomial.Selmer
 This file shows that the roots of `X ^ 5 - X - 1` are not solvable by radicals.
 
 The main ingredients are:
- * `solvableByRad.isSolvable'` in `Mathlib/FieldTheory/AbelRuffini.lean` :
+* `solvableByRad.isSolvable'` in `Mathlib/FieldTheory/AbelRuffini.lean` :
   an irreducible polynomial with an `IsSolvableByRad` root has solvable Galois group
  * `Polynomial.X_pow_sub_X_sub_one_irreducible_rat` and `Polynomial.X_pow_sub_X_sub_one_gal` in
   `RingTheory/Polynomial/Selmer.lean`: `X ^ 5 - X - 1` is irreducible and has full Galois group

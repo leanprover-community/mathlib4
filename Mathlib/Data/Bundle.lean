@@ -141,6 +141,4 @@ theorem Pullback.lift_mk (f : B' → B) (x : B') (y : E (f x)) :
 
 end Pullback
 
--- Porting note: not needed since Lean unfolds coercion
-
 end Bundle

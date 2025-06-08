@@ -26,9 +26,6 @@ It is equivalent to ask only that `Y` is covered by affine opens whose preimage 
 
 We also provide the instance `HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X`.
 
-## TODO
-- Affine morphisms are separated.
-
 -/
 
 universe v u
@@ -149,7 +146,7 @@ instance : HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X where
     · apply AffineTargetMorphismProperty.respectsIso_mk
       · rintro X Y Z e _ _ H
         have : IsAffine _ := H
-        exact isAffine_of_isIso e.hom
+        exact .of_isIso e.hom
       · exact fun _ _ _ ↦ id
     · intro X Y _ f r H
       have : IsAffine X := H

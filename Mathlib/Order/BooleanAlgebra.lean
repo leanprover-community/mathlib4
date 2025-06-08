@@ -293,6 +293,9 @@ theorem sdiff_lt (hx : y ≤ x) (hy : y ≠ ⊥) : x \ y < x := by
   rw [sdiff_eq_self_iff_disjoint', disjoint_iff] at h
   rw [← h, inf_eq_right.mpr hx]
 
+theorem sdiff_lt_left : x \ y < x ↔ ¬ Disjoint y x := by
+  rw [lt_iff_le_and_ne, Ne, sdiff_eq_self_iff_disjoint, and_iff_right sdiff_le]
+
 @[simp]
 theorem le_sdiff_right : x ≤ y \ x ↔ x = ⊥ :=
   ⟨fun h => disjoint_self.1 (disjoint_sdiff_self_right.mono_right h), fun h => h.le.trans bot_le⟩
@@ -303,8 +306,8 @@ theorem le_sdiff_right : x ≤ y \ x ↔ x = ⊥ :=
 lemma sdiff_ne_right : x \ y ≠ y ↔ x ≠ ⊥ ∨ y ≠ ⊥ := sdiff_eq_right.not.trans not_and_or
 
 theorem sdiff_lt_sdiff_right (h : x < y) (hz : z ≤ x) : x \ z < y \ z :=
-  (sdiff_le_sdiff_right h.le).lt_of_not_le
-    fun h' => h.not_le <| le_sdiff_sup.trans <| sup_le_of_le_sdiff_right h' hz
+  (sdiff_le_sdiff_right h.le).lt_of_not_ge
+    fun h' => h.not_ge <| le_sdiff_sup.trans <| sup_le_of_le_sdiff_right h' hz
 
 theorem sup_inf_inf_sdiff : x ⊓ y ⊓ z ⊔ y \ z = x ⊓ y ⊔ y \ z :=
   calc
@@ -447,13 +450,13 @@ theorem sup_eq_sdiff_sup_sdiff_sup_inf : x ⊔ y = x \ y ⊔ y \ x ⊔ x ⊓ y :
 
 theorem sup_lt_of_lt_sdiff_left (h : y < z \ x) (hxz : x ≤ z) : x ⊔ y < z := by
   rw [← sup_sdiff_cancel_right hxz]
-  refine (sup_le_sup_left h.le _).lt_of_not_le fun h' => h.not_le ?_
+  refine (sup_le_sup_left h.le _).lt_of_not_ge fun h' => h.not_ge ?_
   rw [← sdiff_idem]
   exact (sdiff_le_sdiff_of_sup_le_sup_left h').trans sdiff_le
 
 theorem sup_lt_of_lt_sdiff_right (h : x < z \ y) (hyz : y ≤ z) : x ⊔ y < z := by
   rw [← sdiff_sup_cancel hyz]
-  refine (sup_le_sup_right h.le _).lt_of_not_le fun h' => h.not_le ?_
+  refine (sup_le_sup_right h.le _).lt_of_not_ge fun h' => h.not_ge ?_
   rw [← sdiff_idem]
   exact (sdiff_le_sdiff_of_sup_le_sup_right h').trans sdiff_le
 
@@ -564,7 +567,7 @@ instance (priority := 100) BooleanAlgebra.toBiheytingAlgebra : BiheytingAlgebra 
   hnot := compl
   le_himp_iff a b c := by rw [himp_eq, isCompl_compl.le_sup_right_iff_inf_left_le]
   himp_bot _ := _root_.himp_eq.trans (bot_sup_eq _)
-  top_sdiff a := by rw [sdiff_eq, top_inf_eq]; rfl
+  top_sdiff a := by rw [sdiff_eq, top_inf_eq]
 
 @[simp]
 theorem hnot_eq_compl : ￢x = xᶜ :=
@@ -732,8 +735,6 @@ instance Pi.instBooleanAlgebra {ι : Type u} {α : ι → Type v} [∀ i, Boolea
   top_le_sup_compl _ _ := BooleanAlgebra.top_le_sup_compl _
 
 instance Bool.instBooleanAlgebra : BooleanAlgebra Bool where
-  __ := instDistribLattice
-  __ := linearOrder
   __ := instBoundedOrder
   compl := not
   inf_compl_le_bot a := a.and_not_self.le
@@ -802,7 +803,6 @@ This is not an instance, because it creates data using choice.
 -/
 noncomputable
 def booleanAlgebraOfComplemented [BoundedOrder α] [ComplementedLattice α] : BooleanAlgebra α where
-  __ := (inferInstanceAs (DistribLattice α))
   __ := (inferInstanceAs (BoundedOrder α))
   compl a := Classical.choose <| exists_isCompl a
   inf_compl_le_bot a := (Classical.choose_spec (exists_isCompl a)).disjoint.le_bot

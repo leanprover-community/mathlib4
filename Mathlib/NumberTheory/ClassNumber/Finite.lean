@@ -17,8 +17,8 @@ In this file, we use the notion of "admissible absolute value" to prove
 finiteness of the class group for number fields and function fields.
 
 ## Main definitions
- - `ClassGroup.fintypeOfAdmissibleOfAlgebraic`: if `R` has an admissible absolute value,
-   its integral closure has a finite class group
+- `ClassGroup.fintypeOfAdmissibleOfAlgebraic`: if `R` has an admissible absolute value,
+  its integral closure has a finite class group
 -/
 
 open scoped nonZeroDivisors
@@ -83,7 +83,7 @@ theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
 
 /-- If the `R`-integral element `a : S` has coordinates `< y` with respect to some basis `b`,
 its norm is strictly less than `normBound abv b * y ^ dim S`. -/
-theorem norm_lt {T : Type*} [LinearOrderedRing T] (a : S) {y : T}
+theorem norm_lt {T : Type*} [Ring T] [LinearOrder T] [IsStrictOrderedRing T] (a : S) {y : T}
     (hy : ∀ k, (abv (bS.repr a k) : T) < y) :
     (abv (Algebra.norm R a) : T) < normBound abv bS * y ^ Fintype.card ι := by
   obtain ⟨i⟩ := bS.index_nonempty
@@ -157,8 +157,10 @@ noncomputable def finsetApprox : Finset R :=
   (Finset.univ.image fun xy : _ × _ => distinctElems bS adm xy.1 - distinctElems bS adm xy.2).erase
     0
 
-theorem finsetApprox.zero_not_mem : (0 : R) ∉ finsetApprox bS adm :=
-  Finset.not_mem_erase _ _
+theorem finsetApprox.zero_notMem : (0 : R) ∉ finsetApprox bS adm :=
+  Finset.notMem_erase _ _
+
+@[deprecated (since := "2025-05-23")] alias finsetApprox.zero_not_mem := finsetApprox.zero_notMem
 
 @[simp]
 theorem mem_finsetApprox {x : R} :
@@ -256,7 +258,7 @@ theorem prod_finsetApprox_ne_zero : algebraMap R S (∏ m ∈ finsetApprox bS ad
   refine mt ((injective_iff_map_eq_zero _).mp bS.algebraMap_injective _) ?_
   simp only [Finset.prod_eq_zero_iff, not_exists]
   rintro x ⟨hx, rfl⟩
-  exact finsetApprox.zero_not_mem bS adm hx
+  exact finsetApprox.zero_notMem bS adm hx
 
 theorem ne_bot_of_prod_finsetApprox_mem (J : Ideal S)
     (h : algebraMap _ _ (∏ m ∈ finsetApprox bS adm, m) ∈ J) : J ≠ ⊥ :=
