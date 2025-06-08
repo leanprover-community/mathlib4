@@ -5,6 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Independence.Kernel
 import Mathlib.MeasureTheory.Constructions.Pi
+import Mathlib.MeasureTheory.Group.Convolution
 
 /-!
 # Independence of sets of sets and measure spaces (σ-algebras)
@@ -953,5 +954,25 @@ lemma iIndepFun.cond [Finite ι] (hY : ∀ i, Measurable (Y i))
   convert cond_iInter hY hindep hf (fun i _ ↦ hy _) ht using 2 with i hi
   simpa using cond_iInter hY hindep (fun j hj ↦ hf _ <| Finset.mem_singleton.1 hj ▸ hi)
     (fun i _ ↦ hy _) ht
+
+section Monoid
+
+variable {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M]
+
+@[to_additive]
+theorem IndepFun.map_mul_eq_map_mconv_map₀
+    [IsFiniteMeasure μ] {f g : Ω → M} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
+    (hfg : IndepFun f g μ) : μ.map (f * g) = (μ.map f) ∗ₘ (μ.map g) := by
+  conv in f * g => change (fun (x,y) ↦ x * y) ∘ (fun ω ↦ (f ω, g ω))
+  rw [← measurable_mul.aemeasurable.map_map_of_aemeasurable (hf.prodMk hg),
+    (indepFun_iff_map_prod_eq_prod_map_map hf hg).mp hfg, Measure.mconv]
+
+@[to_additive]
+theorem IndepFun.map_mul_eq_map_mconv_map
+    [IsFiniteMeasure μ] {f g : Ω → M} (hf : Measurable f) (hg : Measurable g)
+    (hfg : IndepFun f g μ) : μ.map (f * g) = (μ.map f) ∗ₘ (μ.map g) :=
+  hfg.map_mul_eq_map_mconv_map₀ hf.aemeasurable hg.aemeasurable
+
+end Monoid
 
 end ProbabilityTheory
