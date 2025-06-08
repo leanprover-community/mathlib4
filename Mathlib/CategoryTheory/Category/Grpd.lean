@@ -6,7 +6,7 @@ Authors: Yury Kudryashov, Calle Sönne
 
 import Mathlib.CategoryTheory.SingleObj
 import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+import Mathlib.CategoryTheory.Bicategory.Functor.Strict
 
 /-!
 # Category of groupoids
@@ -160,8 +160,8 @@ section
 
 attribute [-simp] eqToIso_refl
 
-/-- Forgetting pseudofunctor to `Cat` -/
-def forgetToCat' : Pseudofunctor Grpd.{v, u} Cat.{v, u} where
+/-- Forgetting pseudofunctor to `Cat`. -/
+def forgetToCat : Pseudofunctor Grpd.{v, u} Cat.{v, u} where
   obj C := Cat.of C
   map := id
   map₂ := id
@@ -170,14 +170,11 @@ def forgetToCat' : Pseudofunctor Grpd.{v, u} Cat.{v, u} where
 
 end
 
-/-- Forgetting functor to `Cat` -/
-def forgetToCat : Grpd.{v, u} ⥤ Cat.{v, u} where
-  obj C := Cat.of C
-  map := id
+instance forgetToCatIsStrict : forgetToCat.IsStrict where
 
-instance forgetToCat_full : forgetToCat.Full where map_surjective f := ⟨f, rfl⟩
+instance forgetToCat_full : forgetToCat.toFunctor.Full where map_surjective f := ⟨f, rfl⟩
 
-instance forgetToCat_faithful : forgetToCat.Faithful where
+instance forgetToCat_faithful : forgetToCat.toFunctor.Faithful where
 
 /-- Functor that gets the set of objects of a groupoid. It is not
 called `forget`, because it is not a faithful functor. -/
