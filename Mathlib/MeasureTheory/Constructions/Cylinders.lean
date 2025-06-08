@@ -120,7 +120,7 @@ theorem isPiSystem_squareCylinders [∀ i, Inhabited (α i)] {C : ∀ i, Set (Se
     · simp only [h, Finset.piecewise_eq_of_mem, t₁']
       exact h₁ i
     · simp only [t₁']
-      rw [Finset.piecewise_eq_of_not_mem s₁ t₁ (fun i ↦ univ) h]
+      rw [Finset.piecewise_eq_of_notMem s₁ t₁ (fun i ↦ univ) h]
       exact hC_univ i
   let t₂' := s₂.piecewise t₂ (fun i ↦ univ)
   have ht₂ (i : ι) : t₂' i ∈ C i := by
@@ -128,7 +128,7 @@ theorem isPiSystem_squareCylinders [∀ i, Inhabited (α i)] {C : ∀ i, Set (Se
     · simp only [h, Finset.piecewise_eq_of_mem, t₂']
       exact h₂ i
     · simp only [t₂']
-      rw [Finset.piecewise_eq_of_not_mem s₂ t₂ (fun i ↦ univ) h]
+      rw [Finset.piecewise_eq_of_notMem s₂ t₂ (fun i ↦ univ) h]
       exact hC_univ i
   have h₁ : (s₁ : Set ι).pi t₁' = (s₁ : Set ι).pi t₁ := by
     refine Set.pi_congr rfl ?_
@@ -140,7 +140,7 @@ theorem isPiSystem_squareCylinders [∀ i, Inhabited (α i)] {C : ∀ i, Set (Se
       (fun i ↦ t₁' i ∩ t₂' i) := by
     rw [squareCylinder, squareCylinder, squareCylinder, Finset.coe_union, union_pi_inter, h₁, h₂]
       <;>
-    exact fun i a ↦ Finset.piecewise_eq_of_not_mem _ _ (fun i ↦ Set.univ) a
+    exact fun i a ↦ Finset.piecewise_eq_of_notMem _ _ (fun i ↦ Set.univ) a
   rw [h] at hst_nonempty ⊢
   rw [squareCylinder, squareCylinders_eq_iUnion_image' C, mem_iUnion]
   · use (s₁ ∪ s₂), (fun i ↦ t₁' i ∩ t₂' i)
