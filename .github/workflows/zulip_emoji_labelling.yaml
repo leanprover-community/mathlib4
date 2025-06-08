@@ -5,7 +5,8 @@ jobs:
   # When a PR is (un)labelled with awaiting-author or maintainer-merge,
   # add resp. remove the matching emoji reaction from zulip messages.
   set_pr_emoji:
-    if: github.event.label.name == 'awaiting-author' || github.event.label.name == 'maintainer-merge'
+    if: (github.event.label.name == 'awaiting-author' || github.event.label.name == 'maintainer-merge') &&
+        github.repository == 'leanprover-community/mathlib4'
     runs-on: ubuntu-latest
     steps:
     - name: Checkout mathlib repository
