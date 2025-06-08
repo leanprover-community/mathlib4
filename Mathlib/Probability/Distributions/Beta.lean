@@ -7,9 +7,8 @@ import Mathlib.MeasureTheory.Measure.WithDensity
 import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 import Mathlib.MeasureTheory.Integral.Bochner.FundThmCalculus
 import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
-import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
+import Mathlib.Analysis.Complex.Basic
 import Mathlib.Probability.CDF
 
 /-! # Beta distributions over ℝ
