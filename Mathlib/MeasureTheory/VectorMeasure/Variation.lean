@@ -24,6 +24,8 @@ turns out that this function actually is a measure.
 * `VectorMeasure.variation` is the definition of the (total) variation measure.
 * `norm_measure_le_variation` shows, for any `μ`, `E`, that `‖μ E‖ₑ ≤ variation μ E`.
 * `variation_of_ENNReal` shows that, if `μ` is a `ℝ≥0∞`-valued measure, then `variation μ = μ`.
+* `signedMeasure_totalVariation_eq_variation` shows that variation defined as a supremum here
+  coincides with variation defined by the Hahn-Jordan decomposition for signed measures.
 
 ## Implementation notes
 
@@ -466,7 +468,7 @@ lemma variation_of_ENNReal (μ : VectorMeasure X ℝ≥0∞) : variation μ = μ
 open VectorMeasure SignedMeasure Classical in
 /-- For signed measures, variation defined by the Hahn–Jordan decomposition coincides with variation
 defined as a sup. -/
-lemma signedMeasure_totalVariation_eq_vectorMeasure_variation (μ : SignedMeasure X) :
+lemma signedMeasure_totalVariation_eq_variation (μ : SignedMeasure X) :
     totalVariation μ = μ.variation.ennrealToMeasure := by
   obtain ⟨s, hsm, hs, hsc, hs', hsc'⟩ := μ.toJordanDecomposition_spec
   ext r hr
@@ -486,7 +488,7 @@ lemma signedMeasure_totalVariation_eq_vectorMeasure_variation (μ : SignedMeasur
     have hP₂ : ∀ t ∈ P, MeasurableSet t := by simp [P, hsm, hr]
     have hP₃ : P.toSet.PairwiseDisjoint id := by
       -- Ridiculous case bashing, the must be a better way.
-      simp [P]
+      simp only [Finset.coe_insert, Finset.coe_singleton, P]
       intro p hp q hq hpq
       obtain hc | hc : p = s ∩ r ∨ p = sᶜ ∩ r := by exact hp
       · obtain hc' | hc' : q = s ∩ r ∨ q = sᶜ ∩ r := by exact hq
@@ -580,6 +582,7 @@ lemma signedMeasure_totalVariation_eq_vectorMeasure_variation (μ : SignedMeasur
       _ = ∑ p ∈ P, μ (s ∩ p) - ∑ p ∈ P, μ (sᶜ ∩ p) :=
         Finset.sum_sub_distrib
       _ ≤ μ (s ∩ r) - μ (sᶜ ∩ r) := by
+        -- Extract the following two estimates to a separate place
         gcongr
         · calc ∑ p ∈ P, μ (s ∩ p)
             _ = μ (⋃ p ∈ P, (s ∩ p)) := by
@@ -592,30 +595,22 @@ lemma signedMeasure_totalVariation_eq_vectorMeasure_variation (μ : SignedMeasur
               · intro p q h
                 have hd := hP.2.2.1 p.property q.property (Subtype.coe_ne_coe.mpr h)
                 intro x hxp hxq
-                simp only [Set.le_eq_subset, Set.subset_inter_iff] at hxp hxq
                 have hxpq : x ⊆ p ∩ q := by
+                  simp only [Set.le_eq_subset, Set.subset_inter_iff] at hxp hxq
                   exact Set.subset_inter hxp.2 hxq.2
-                have : p.val ∩ q.val = ∅ := by
-                  exact Disjoint.inter_eq hd
-                exact le_of_le_of_eq hxpq this
+                exact le_of_le_of_eq hxpq <| Disjoint.inter_eq hd
             _ = μ (s ∩ (⋃ p ∈ P, p)) := by
               congr
               exact Eq.symm (Set.inter_iUnion₂ s fun i j ↦ i)
             _ ≤ μ (s ∩ r) := by
               have : μ (s ∩ r) = μ (s ∩ ⋃ p ∈ P, p) + μ ((s ∩ r) \ (s ∩ ⋃ p ∈ P, p)) := by
                 refine Eq.symm (of_add_of_diff ?_ ?_ ?_)
-                · refine MeasurableSet.inter hsm ?_
-                  refine Finset.measurableSet_biUnion P hP.2.1
+                · exact MeasurableSet.inter hsm <| Finset.measurableSet_biUnion P hP.2.1
                 · exact MeasurableSet.inter hsm hr
-                · apply Set.inter_subset_inter_right
-                  exact Set.iUnion₂_subset_iff.mpr hP.1
-              rw [this]
-              simp only [le_add_iff_nonneg_right, ge_iff_le]
-              refine nonneg_of_zero_le_restrict μ ?_
-              have : (s ∩ r) \ (s ∩ ⋃ p ∈ P, p) ⊆ s := by
-                refine subset_trans ?_ (Set.inter_subset_left : s ∩ r ⊆ s)
-                exact Set.diff_subset
-              exact zero_le_restrict_subset μ hsm this hs
+                · exact Set.inter_subset_inter_right _ <| Set.iUnion₂_subset_iff.mpr hP.1
+              simp only [this, le_add_iff_nonneg_right, ge_iff_le]
+              refine nonneg_of_zero_le_restrict μ <| zero_le_restrict_subset μ hsm ?_ hs
+              exact subset_trans Set.diff_subset (Set.inter_subset_left : s ∩ r ⊆ s)
         · calc μ (sᶜ ∩ r)
             _ ≤ μ (sᶜ ∩ (⋃ p ∈ P, p)) := by
               have : μ (sᶜ ∩ r) = μ (sᶜ ∩ ⋃ p ∈ P, p) + μ ((sᶜ ∩ r) \ (sᶜ ∩ ⋃ p ∈ P, p)) := by
