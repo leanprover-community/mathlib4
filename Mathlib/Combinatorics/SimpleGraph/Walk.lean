@@ -1091,35 +1091,33 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
   | .cons h q =>
     simp only [getVert_cons_succ, tail_cons_eq, getVert_cons]
     exact getVert_copy q n (getVert_zero q).symm rfl
-
-@[ext]
-lemma ext_getVert {u v} {p q : G.Walk u v} (h : ∀ k, p.getVert k = q.getVert k) :
+lemma ext_getVert {u v} {p q : G.Walk u v} (hl : p.length = q.length)
+    (h : ∀ k ≤ p.length, p.getVert k = q.getVert k) :
     p = q := by
-  induction p with
-  | nil =>
-    cases q with
-    | nil => rfl
-    | cons ha =>
-      specialize h 1
-      rw [getVert_nil, getVert_cons_succ, getVert_zero] at h
-      exact ((G.loopless _) (h ▸ ha)).elim
-  | cons ha _ ih =>
-    cases q with
-    | nil =>
-      specialize h 1
-      rw [getVert_nil, getVert_cons_succ, getVert_zero] at h
-      exact ((G.loopless _) (h ▸ ha)).elim
-    | cons hb q =>
-      have h₁ := h 1
-      rw [getVert_cons_succ, getVert_zero] at h₁
-      specialize ih (q := (cons hb q).tail.copy h₁.symm rfl)
-      simp only [getVert_copy, getVert_tail] at ih
-      specialize ih fun k ↦ by
-        rw [getVert_cons_succ]
-        specialize h (k + 1)
-        rwa [getVert_cons_succ, getVert_cons_succ] at h
-      simp [ih]
+  generalize hp : p.length = n at *
+  rw [eq_comm] at hl
+  induction n generalizing u with
+  | zero =>
+    cases eq_of_length_eq_zero hp
+    simp_all [length_eq_zero_iff]
+  | succ n ih =>
+    match p, hp, q, hl with
+    | cons x p, hp, cons y q, hq =>
+      obtain rfl := by simpa using h 1
+      simp only [cons.injEq, heq_eq_eq, true_and]
+      simp only [length_cons, Nat.add_right_cancel_iff] at hp hq
+      apply ih hp hq
+      intro k
+      simpa using h (k + 1)
 
+lemma ext_getVert' {u v} {p q : G.Walk u v} (h : ∀ k, p.getVert k = q.getVert k) :
+    p = q := by
+  wlog hpq : p.length ≤ q.length generalizing p q
+  · exact (this (fun k ↦ (h k).symm) (le_of_not_ge hpq)).symm
+  have : q.length ≤ p.length := by
+    by_contra!
+    exact (q.adj_getVert_succ this).ne (by simp [← h, getVert_of_length_le])
+  exact ext_getVert (hpq.antisymm this) fun k _ ↦ h k
 end Walk
 
 /-! ### Mapping walks -/
