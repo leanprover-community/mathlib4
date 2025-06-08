@@ -96,7 +96,7 @@ lemma isZero_Tor_succ_of_projective (X Y : Rep k G) [Projective Y] (n : ℕ) :
 
 /-- Given a `k`-linear `G`-representation `A`, this is the chain complex `(A ⊗[k] P)_G`, where
 `P` is the bar resolution of `k` as a trivial representation. -/
-def coinvariantsTensorBarResolution [DecidableEq G] :=
+abbrev coinvariantsTensorBarResolution [DecidableEq G] :=
   (((coinvariantsTensor k G).obj A).mapHomologicalComplex _).obj (barComplex k G)
 
 end Rep
@@ -130,11 +130,10 @@ theorem d_eq [DecidableEq G] :
       (coinvariantsTensorBarResolution A).d (n + 1) n ≫
       (coinvariantsTensorFreeLEquiv A (Fin n → G)).toModuleIso.hom := by
   ext : 3
-  simp_all [d_single (k := k) (G := G), finsuppToCoinvariantsTensorFree_single (A := A),
+  simp [d_single (k := k) (G := G), finsuppToCoinvariantsTensorFree_single (A := A),
     coinvariantsTensorFreeToFinsupp_mk_tmul_single (A := A) (α := Fin n → G),
     ModuleCat.MonoidalCategory.tensorObj, ModuleCat.MonoidalCategory.whiskerLeft, tensorObj_def,
-    whiskerLeft_def, coinvariantsTensorBarResolution, TensorProduct.tmul_add,
-    TensorProduct.tmul_sum, barComplex.d_single (k := k)]
+    whiskerLeft_def, TensorProduct.tmul_add, TensorProduct.tmul_sum, barComplex.d_single (k := k)]
 
 end inhomogeneousChains
 
