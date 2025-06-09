@@ -5010,7 +5010,6 @@ import Mathlib.RepresentationTheory.GroupCohomology.Hilbert90
 import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
 import Mathlib.RepresentationTheory.GroupCohomology.Resolution
 import Mathlib.RepresentationTheory.Induced
-import Mathlib.RepresentationTheory.InducedIsoCoinduced
 import Mathlib.RepresentationTheory.Invariants
 import Mathlib.RepresentationTheory.Maschke
 import Mathlib.RepresentationTheory.Rep
