@@ -141,7 +141,7 @@ lemma pure_eq_pure {F : Type u → Type v} {α : Type w} (a : α) :
 /-- The `liftBind` constructor is semantically equivalent to `(lift op) >>= cont`. -/
 lemma liftBind_eq_lift_bind {F : Type u → Type v} {ι : Type u} {α : Type u}
     (op : F ι) (cont : ι → FreeM F α) :
-    FreeM.liftBind op cont = (lift op).bind cont := by
+    FreeM.liftBind op cont = (lift op) >>= cont := by
     simp [lift, bind, FreeM.bind]
 
 instance {F : Type u → Type v} : LawfulMonad (FreeM F) := LawfulMonad.mk'
@@ -217,9 +217,6 @@ If `g : FreeM F α → M α` is an interpreter that handles operations according
 
 That is, `mapM f` is the unique interpreter that extends the effect handler `f` to interpret
 `FreeM F` computations in monad `M`.
-
-This expresses the universal property: there is exactly one way to interpret free monad
-computations given any effect handler.
 -/
 theorem mapM_unique {F : Type u → Type v} {m : Type u → Type w} [Monad m] {α : Type u}
     (f : {ι : Type u} → F ι → m ι)
@@ -297,7 +294,8 @@ def stateInterp {σ : Type u} : {α : Type u} → StateF σ α → StateM σ α
   | _, StateF.get => MonadStateOf.get
   | _, StateF.set s => MonadStateOf.set s
 
-/-- Convert a `FreeState` computation into a `StateM` computation. -/
+/-- Convert a `FreeState` computation into a `StateM` computation. This is the canonical
+interpreter derived from `mapM`. -/
 def toStateM {σ α : Type u} (comp : FreeState σ α) : StateM σ α :=
   comp.mapM stateInterp
 
@@ -309,20 +307,13 @@ def run {σ : Type u} {α : Type v} (comp : FreeState σ α) (s₀ : σ) : α ×
   | .liftBind (StateF.set s') k => run (k PUnit.unit) s'
 
 /--
-Interpret a `FreeState` computation by folding it through the canonical
-interpreter `mapM`, using `stateInterp` as the effect handler
--/
-def fold {σ α : Type u} (comp : FreeState σ α) (s₀ : σ) : α × σ :=
-  (comp.mapM stateInterp) s₀
-
-/--
-The canonical interpreter `fold` derived from `mapM` agrees with the hand-written
+The canonical interpreter `toStateM` derived from `mapM` agrees with the hand-written
 recursive interpreter `run` for `FreeState`.
 -/
-theorem run_eq_fold {σ α : Type u} (comp : FreeState σ α) (s₀ : σ) :
-    run comp s₀ = fold comp s₀ := by
+theorem run_eq_toStateM {σ α : Type u} (comp : FreeState σ α) (s₀ : σ) :
+    run comp s₀ = toStateM comp s₀ := by
   induction' comp with a b op cont ih generalizing s₀
-  · simp [fold, FreeM.mapM, pure, run, StateT.pure]
+  · simp [toStateM, FreeM.mapM, pure, run, StateT.pure]
   · simp only [run, FreeM.mapM, stateInterp] at *
     rcases op
     · simp only [MonadStateOf.get, bind, StateT.bind, StateT.get, run] at *
@@ -401,7 +392,8 @@ instance {ω : Type u} : LawfulMonad (FreeWriter ω) := inferInstance
 def writerInterp {ω : Type u} : {α : Type u} → WriterF ω α → WriterT ω Id α
   | _, WriterF.tell w => MonadWriter.tell w
 
-/-- Convert a `FreeWriter` computation into a `WriterT` computation. -/
+/-- Convert a `FreeWriter` computation into a `WriterT` computation. This is the canonical
+interpreter derived from `mapM`. -/
 def toWriterT {ω α : Type u} [Monoid ω] (comp : FreeWriter ω α) : WriterT ω Id α :=
   comp.mapM writerInterp
 
@@ -426,21 +418,14 @@ def run {ω : Type u} [Monoid ω] {α} : FreeWriter ω α → α × ω
       (a, w * w')
 
 /--
-Interpret a `FreeWriter` computation by folding it through the canonical
-interpreter `mapM`, using `writerInterp` as the effect handler
--/
-def fold {ω : Type u} [Monoid ω] {α} (comp : FreeWriter ω α) : α × ω :=
-  WriterT.run (comp.mapM writerInterp)
-
-/--
-The canonical interpreter `fold` derived from `mapM` agrees with the hand-written
+The canonical interpreter `toWriterT` derived from `mapM` agrees with the hand-written
 recursive interpreter `run` for `FreeWriter`.
 -/
-theorem run_eq_fold {ω : Type u} [Monoid ω] {α} (comp : FreeWriter ω α) :
-    run comp = fold comp := by
+theorem run_eq_toWriterT {ω : Type u} [Monoid ω] {α} (comp : FreeWriter ω α) :
+    run comp = toWriterT comp := by
   induction' comp with a b op cont ih
-  · simp only [fold, FreeM.mapM, pure, run, WriterT.run]
-  · simp only [fold, FreeM.mapM] at *
+  · simp only [toWriterT, FreeM.mapM, pure, run, WriterT.run]
+  · simp only [toWriterT, FreeM.mapM] at *
     rcases op
     · simp only [run]
       congr <;> apply ih
@@ -550,7 +535,8 @@ instance {r : Type u} : LawfulMonad (FreeCont r) := inferInstance
 def contInterp {r : Type u} {α : Type v} : ContF r α → ContT r Id α
   | ContF.callCC g => fun k => g (fun a => k a)
 
-/-- Convert a `FreeCont` computation into a `ContT` computation. -/
+/-- Convert a `FreeCont` computation into a `ContT` computation. This is the canonical
+interpreter derived from `mapM`. -/
 def toContT {r α : Type u} (comp : FreeCont r α) : ContT r Id α :=
   comp.mapM contInterp
 
@@ -560,21 +546,14 @@ def run {r : Type u} {α : Type v} : FreeCont r α → (α → r) → r
   | .liftBind (ContF.callCC g) cont, k => g (fun a => run (cont a) k)
 
 /--
-Interpret a `FreeCont` computation by folding it through the canonical
-interpreter `mapM`, using `contInterp` as the effect handler
--/
-def fold {r : Type u} {α : Type v} (comp : FreeCont r α) (k : α → r) : r :=
-  (comp.mapM contInterp) k
-
-/--
-The canonical interpreter `fold` derived from `mapM` agrees with the hand-written
+The canonical interpreter `toContT` derived from `mapM` agrees with the hand-written
 recursive interpreter `run` for `FreeCont`.
 -/
-theorem run_eq_fold {r : Type u} {α : Type v} (comp : FreeCont r α) (k : α → r) :
-    run comp k = fold comp k := by
+theorem run_eq_toContT {r α : Type u} (comp : FreeCont r α) (k : α → r) :
+    run comp k = toContT comp k := by
   induction' comp with a b op cont ih
-  · simp [fold, FreeM.mapM, pure, run]
-  · simp only [fold, FreeM.mapM] at *
+  · simp [toContT, FreeM.mapM, pure, run]
+  · simp only [toContT, FreeM.mapM] at *
     rcases op
     · simp only [run, bind] at *
       congr
