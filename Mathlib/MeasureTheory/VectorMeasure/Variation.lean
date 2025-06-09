@@ -567,6 +567,67 @@ lemma le_signedMeasure_totalVariation (μ : SignedMeasure X) (r : Set X) (hr : M
     · exact sum_ne_top.mpr <| fun _ _ ↦  enorm_ne_top
     · exact Finiteness.add_ne_top (measure_ne_top μ.toJordanDecomposition.posPart r)
         (measure_ne_top μ.toJordanDecomposition.negPart r)
+  -- Extract the essential logic of the following two haves: subadditivity of the measure if nonneg.
+  have : ∑ p ∈ P, μ (s ∩ p) ≤ μ (s ∩ r) := calc
+    _ = μ (⋃ p ∈ P, (s ∩ p)) := by
+      have : ⋃ p ∈ P, (s ∩ p) = ⋃ i : P, (s ∩ i.val) := by apply Set.biUnion_eq_iUnion
+      rw [this, μ.of_disjoint_iUnion]
+      · rw [← Finset.tsum_subtype]
+      · rw [Subtype.forall]
+        intro p hp
+        exact MeasurableSet.inter hsm <| hP.2.1 p hp
+      · intro p q h
+        have hd := hP.2.2.1 p.property q.property (Subtype.coe_ne_coe.mpr h)
+        intro x hxp hxq
+        have hxpq : x ⊆ p ∩ q := by
+          simp only [Set.le_eq_subset, Set.subset_inter_iff] at hxp hxq
+          exact Set.subset_inter hxp.2 hxq.2
+        exact le_of_le_of_eq hxpq <| Disjoint.inter_eq hd
+    _ = μ (s ∩ (⋃ p ∈ P, p)) := by
+      congr
+      exact Eq.symm (Set.inter_iUnion₂ s fun i j ↦ i)
+    _ ≤ μ (s ∩ r) := by
+      have : μ (s ∩ r) = μ (s ∩ ⋃ p ∈ P, p) + μ ((s ∩ r) \ (s ∩ ⋃ p ∈ P, p)) := by
+        refine Eq.symm (of_add_of_diff ?_ ?_ ?_)
+        · exact MeasurableSet.inter hsm <| Finset.measurableSet_biUnion P hP.2.1
+        · exact MeasurableSet.inter hsm hr
+        · exact Set.inter_subset_inter_right _ <| Set.iUnion₂_subset_iff.mpr hP.1
+      simp only [this, le_add_iff_nonneg_right, ge_iff_le]
+      refine nonneg_of_zero_le_restrict μ <| zero_le_restrict_subset μ hsm ?_ hs
+      exact subset_trans Set.diff_subset (Set.inter_subset_left : s ∩ r ⊆ s)
+  have : μ (sᶜ ∩ r) ≤ ∑ p ∈ P, μ (sᶜ ∩ p) := calc
+    _ ≤ μ (sᶜ ∩ (⋃ p ∈ P, p)) := by
+      have : μ (sᶜ ∩ r) = μ (sᶜ ∩ ⋃ p ∈ P, p) + μ ((sᶜ ∩ r) \ (sᶜ ∩ ⋃ p ∈ P, p)) := by
+        refine Eq.symm (of_add_of_diff ?_ ?_ ?_)
+        · refine MeasurableSet.inter ?_ ?_
+          exact MeasurableSet.compl_iff.mpr hsm
+          refine Finset.measurableSet_biUnion P hP.2.1
+        · exact MeasurableSet.inter (MeasurableSet.compl_iff.mpr hsm) hr
+        · apply Set.inter_subset_inter_right
+          exact Set.iUnion₂_subset_iff.mpr hP.1
+      rw [this]
+      rw [add_le_iff_nonpos_right]
+      refine nonpos_of_restrict_le_zero μ ?_
+      have : (sᶜ ∩ r) \ (sᶜ ∩ ⋃ p ∈ P, p) ⊆ sᶜ := by
+        refine subset_trans ?_ (Set.inter_subset_left : sᶜ ∩ r ⊆ sᶜ)
+        exact Set.diff_subset
+      refine restrict_le_zero_subset μ (MeasurableSet.compl_iff.mpr hsm) this hsc
+    _ = μ (⋃ p ∈ P, (sᶜ ∩ p)) := by
+      congr
+      exact Set.inter_iUnion₂ sᶜ fun i j ↦ i
+    _ = ∑ p ∈ P, μ (sᶜ ∩ p) := by
+      have : ⋃ p ∈ P, (sᶜ ∩ p) = ⋃ i : P, (sᶜ ∩ i.val) := by apply Set.biUnion_eq_iUnion
+      rw [this, μ.of_disjoint_iUnion]
+      · rw [← Finset.tsum_subtype]
+      · rw [Subtype.forall]
+        intro p hp
+        exact MeasurableSet.inter (MeasurableSet.compl_iff.mpr hsm) (hP.2.1 p hp)
+      · intro p q h x hxp hxq
+        have hd := hP.2.2.1 p.property q.property (Subtype.coe_ne_coe.mpr h)
+        simp only [Set.le_eq_subset, Set.subset_inter_iff] at hxp hxq
+        have hxpq : x ⊆ p.val ∩ q.val := by
+          exact Set.subset_inter hxp.2 hxq.2
+        exact le_of_le_of_eq hxpq <| Disjoint.inter_eq hd
   calc (∑ p ∈ P, ‖μ p‖ₑ).toReal
     _ = ∑ p ∈ P, (‖μ p‖ₑ).toReal := by
       simp [toReal_sum]
@@ -578,68 +639,7 @@ lemma le_signedMeasure_totalVariation (μ : SignedMeasure X) (r : Set X) (hr : M
     _ = ∑ p ∈ P, μ (s ∩ p) - ∑ p ∈ P, μ (sᶜ ∩ p) :=
       Finset.sum_sub_distrib
     _ ≤ μ (s ∩ r) - μ (sᶜ ∩ r) := by
-      -- TO DO: Extract the following two estimates to a separate place.
       gcongr
-      · calc ∑ p ∈ P, μ (s ∩ p)
-          _ = μ (⋃ p ∈ P, (s ∩ p)) := by
-            have : ⋃ p ∈ P, (s ∩ p) = ⋃ i : P, (s ∩ i.val) := by apply Set.biUnion_eq_iUnion
-            rw [this, μ.of_disjoint_iUnion]
-            · rw [← Finset.tsum_subtype]
-            · rw [Subtype.forall]
-              intro p hp
-              exact MeasurableSet.inter hsm <| hP.2.1 p hp
-            · intro p q h
-              have hd := hP.2.2.1 p.property q.property (Subtype.coe_ne_coe.mpr h)
-              intro x hxp hxq
-              have hxpq : x ⊆ p ∩ q := by
-                simp only [Set.le_eq_subset, Set.subset_inter_iff] at hxp hxq
-                exact Set.subset_inter hxp.2 hxq.2
-              exact le_of_le_of_eq hxpq <| Disjoint.inter_eq hd
-          _ = μ (s ∩ (⋃ p ∈ P, p)) := by
-            congr
-            exact Eq.symm (Set.inter_iUnion₂ s fun i j ↦ i)
-          _ ≤ μ (s ∩ r) := by
-            have : μ (s ∩ r) = μ (s ∩ ⋃ p ∈ P, p) + μ ((s ∩ r) \ (s ∩ ⋃ p ∈ P, p)) := by
-              refine Eq.symm (of_add_of_diff ?_ ?_ ?_)
-              · exact MeasurableSet.inter hsm <| Finset.measurableSet_biUnion P hP.2.1
-              · exact MeasurableSet.inter hsm hr
-              · exact Set.inter_subset_inter_right _ <| Set.iUnion₂_subset_iff.mpr hP.1
-            simp only [this, le_add_iff_nonneg_right, ge_iff_le]
-            refine nonneg_of_zero_le_restrict μ <| zero_le_restrict_subset μ hsm ?_ hs
-            exact subset_trans Set.diff_subset (Set.inter_subset_left : s ∩ r ⊆ s)
-      · calc μ (sᶜ ∩ r)
-          _ ≤ μ (sᶜ ∩ (⋃ p ∈ P, p)) := by
-            have : μ (sᶜ ∩ r) = μ (sᶜ ∩ ⋃ p ∈ P, p) + μ ((sᶜ ∩ r) \ (sᶜ ∩ ⋃ p ∈ P, p)) := by
-              refine Eq.symm (of_add_of_diff ?_ ?_ ?_)
-              · refine MeasurableSet.inter ?_ ?_
-                exact MeasurableSet.compl_iff.mpr hsm
-                refine Finset.measurableSet_biUnion P hP.2.1
-              · exact MeasurableSet.inter (MeasurableSet.compl_iff.mpr hsm) hr
-              · apply Set.inter_subset_inter_right
-                exact Set.iUnion₂_subset_iff.mpr hP.1
-            rw [this]
-            rw [add_le_iff_nonpos_right]
-            refine nonpos_of_restrict_le_zero μ ?_
-            have : (sᶜ ∩ r) \ (sᶜ ∩ ⋃ p ∈ P, p) ⊆ sᶜ := by
-              refine subset_trans ?_ (Set.inter_subset_left : sᶜ ∩ r ⊆ sᶜ)
-              exact Set.diff_subset
-            refine restrict_le_zero_subset μ (MeasurableSet.compl_iff.mpr hsm) this hsc
-          _ = μ (⋃ p ∈ P, (sᶜ ∩ p)) := by
-            congr
-            exact Set.inter_iUnion₂ sᶜ fun i j ↦ i
-          _ = ∑ p ∈ P, μ (sᶜ ∩ p) := by
-            have : ⋃ p ∈ P, (sᶜ ∩ p) = ⋃ i : P, (sᶜ ∩ i.val) := by apply Set.biUnion_eq_iUnion
-            rw [this, μ.of_disjoint_iUnion]
-            · rw [← Finset.tsum_subtype]
-            · rw [Subtype.forall]
-              intro p hp
-              exact MeasurableSet.inter (MeasurableSet.compl_iff.mpr hsm) (hP.2.1 p hp)
-            · intro p q h x hxp hxq
-              have hd := hP.2.2.1 p.property q.property (Subtype.coe_ne_coe.mpr h)
-              simp only [Set.le_eq_subset, Set.subset_inter_iff] at hxp hxq
-              have hxpq : x ⊆ p.val ∩ q.val := by
-                exact Set.subset_inter hxp.2 hxq.2
-              exact le_of_le_of_eq hxpq <| Disjoint.inter_eq hd
     _ = (μ.totalVariation r).toReal := by
       have h' : μ (s ∩ r) = (μ.toJordanDecomposition.posPart r).toReal := by
         simp [hs', toMeasureOfZeroLE_apply μ hs hsm hr]
@@ -648,7 +648,7 @@ lemma le_signedMeasure_totalVariation (μ : SignedMeasure X) (r : Set X) (hr : M
       simp [totalVariation, h', h'', toReal_add, measure_ne_top μ.toJordanDecomposition.posPart r,
         measure_ne_top μ.toJordanDecomposition.negPart r]
 
-open VectorMeasure SignedMeasure Classical in
+open VectorMeasure SignedMeasure in
 /-- For signed measures, variation defined by the Hahn–Jordan decomposition coincides with variation
 defined as a sup. -/
 lemma signedMeasure_totalVariation_eq (μ : SignedMeasure X) :
