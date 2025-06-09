@@ -243,17 +243,16 @@ lemma Flag.sum_card_embeddings_induce_eq (F₁ : Flag β ι) (F₂ : Flag α ι)
   _ = _ := by
     rw [sum_comm, ← card_univ (α := (F₁ ↪f F₂)), card_eq_sum_ones, sum_mul, one_mul]
     congr with e
-    simp_rw [ sum_boole]
     have : ∀ (i : ι), F₂.θ i ∈ Set.range e.toEmbedding := fun i ↦ ⟨F₁.θ i, by simp [e.labels]⟩
     calc
     _ =  #{t : Finset α | #t = k  ∧ Set.range e.toEmbedding ⊆ t} := by
+      rw [sum_boole]
       congr with t; simp only [and_congr_right_iff, and_iff_right_iff_imp]
       intro hk hs i
       exact hs <| this i
     _ = _ := by
-      have hs : #((Set.range e.toEmbedding).toFinset) = ‖β‖ := by
-        simp_rw [Set.toFinset_range]
-        exact card_image_of_injective _ e.toEmbedding.injective
+      have hs : #((Set.range e.toEmbedding).toFinset) = ‖β‖ :=
+        Set.toFinset_range e.toEmbedding ▸ card_image_of_injective _ e.toEmbedding.injective
       rw [← hs, ← card_supersets (hs ▸ hk)]
       congr with t
       constructor <;> intro ⟨ht1, ht2⟩ <;> exact ⟨ht1, fun x hx ↦ ht2 (by simpa using hx)⟩
