@@ -545,6 +545,37 @@ lemma add_of_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF
       · exact hY.mgf_le t
     _ = exp ((cX + cY) * t ^ 2 / 2) := by rw [← exp_add]; congr; ring
 
+lemma add_of_HasSubgaussianMGF {Y : Ω → ℝ} {cX cY : ℝ≥0} (hcX : cX > 0) (hcY : cY > 0)
+    (hX : HasSubgaussianMGF X cX μ) (hY : HasSubgaussianMGF Y cY μ) :
+    HasSubgaussianMGF (fun ω ↦ X ω + Y ω) ((cX.sqrt + cY.sqrt) ^ 2) μ where
+  integrable_exp_mul t := by
+    simp_rw [mul_add, exp_add]
+    convert MemLp.integrable_mul (hX.memLp_exp_mul t 2) (hY.memLp_exp_mul t 2)
+    norm_cast
+    infer_instance
+  mgf_le t := by
+    let p := (cX.sqrt + cY.sqrt) / cX.sqrt
+    let q := (cX.sqrt + cY.sqrt) / cY.sqrt
+    calc μ[fun ω ↦ exp (t * (X ω + Y ω))]
+      _ ≤ μ[fun ω ↦ exp (t * X ω) ^ (p : ℝ)] ^ (1 / (p : ℝ)) *
+          μ[fun ω ↦ exp (t * Y ω) ^ (q : ℝ)] ^ (1 / (q : ℝ)) := by
+          simp_rw [mul_add, exp_add]
+          apply integral_mul_le_Lp_mul_Lq_of_nonneg
+          · exact ⟨by field_simp [p, q], by positivity, by positivity⟩
+          · apply ae_of_all; intro; apply exp_nonneg
+          · apply ae_of_all; intro; apply exp_nonneg
+          · apply hX.memLp_exp_mul;
+          · apply hY.memLp_exp_mul
+      _ ≤ exp (cX * (t * p) ^ 2 / 2) ^ (1 / (p : ℝ)) *
+          exp (cY * (t * q) ^ 2 / 2) ^ (1 / (q : ℝ)) := by
+            simp_rw [← exp_mul _ p, ← exp_mul _ q, mul_right_comm t _ p, mul_right_comm t _ q]
+            gcongr
+            · apply hX.2 (t * p)
+            · apply hY.2 (t * q)
+      _ = exp ((cX.sqrt + cY.sqrt) ^ 2 * t ^ 2 / 2) := by
+          simp_rw [← exp_mul, ← exp_add]
+          congr; field_simp [p, q]; ring
+
 private lemma sum_of_iIndepFun_of_forall_aemeasurable
     {ι : Type*} {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ι → ℝ≥0}
     (h_meas : ∀ i, AEMeasurable (X i) μ)
