@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Butterley, Yoh Tanimoto
 -/
 import Mathlib.MeasureTheory.VectorMeasure.Basic
-import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Analysis.Normed.Ring.Basic
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
 
 /-!
 # Total variation for vector-valued measures
 
-This file contains the definition of variation for `VectorMeasure` and proofs of some basic
+This file contains the definition of variation for any `VectorMeasure` and proofs of the basic
 properities of variation.
 
 Given a vector-valued measure μ we consider the problem of finding a function f such that, for any
@@ -21,8 +21,8 @@ turns out that this function actually is a measure.
 
 ## Main definitions & statements
 
-* `VectorMeasure.variation` is the definition of the (total) variation measure.
-* `norm_measure_le_variation` shows, for any `μ`, `E`, that `‖μ E‖ₑ ≤ variation μ E`.
+* `VectorMeasure.variation` is the definition of the total variation measure.
+* `norm_measure_le_variation` shows that `‖μ E‖ₑ ≤ variation μ E`.
 * `variation_of_ENNReal` shows that, if `μ` is a `ℝ≥0∞`-valued measure, then `variation μ = μ`.
 * `signedMeasure_totalVariation_eq_variation` shows that variation defined as a supremum here
   coincides with variation defined by the Hahn-Jordan decomposition for signed measures.
@@ -35,7 +35,12 @@ somewhat natural since we start with `VectorMeasure`.
 Variation is defined for signed measures in `MeasureTheory.SignedMeasure.totalVariation`. This
 definition uses the Hahn–Jordan decomposition of a signed measure. However this construction doesn't
 generalize to other vector-valued measures, in particular doesn't apply to the case of complex
-measures.
+measures. The equivalence is proven in `signedMeasure_totalVariation_eq_variation`.
+
+The notion of defining a set function as the supremum over all choices of partition of the sum gives
+a measure for any subadditive set function which assigns zero measure to the emptyset. Consequently
+the construction is first developed for any subadditive set function before specializing to the case
+of `s ↦ ‖μ s‖ₑ`.
 
 ## References
 
@@ -71,7 +76,7 @@ section IsInnerPart
 
 variable {X : Type*} [MeasurableSpace X]
 
--- To do: this could be better as a stucture.
+-- To do: maybe better as a stucture.
 /-- An inner partition is a finite collection of pairwise disjoint sets which are all contained
 within a given set. Different to `Setoid.IsPartition` there is no requirement for the union to be
 the entire set and the the number of partition elements is required to be finite. -/
