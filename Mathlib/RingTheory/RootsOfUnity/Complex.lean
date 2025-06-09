@@ -318,13 +318,10 @@ lemma quintic_roots_of_unity_of_sq {K : Type*} [Field K] [NeZero (4 : K)] {s t�
       -(s + 1) / 4 + t₂ / 4,
       -(s + 1) / 4 - t₂ / 4} := by
   have H (z : K) : z ^ 5 - 1 = (z - 1) * (z ^ 4 + z ^ 3 + z ^ 2 + z + 1) := by ring
-  rw [← Set.singleton_union]
-  rw [← quintic_cyclotomic_polynomial_roots_of_sq hs ht₁ ht₂]
+  rw [← Set.singleton_union, ← quintic_cyclotomic_polynomial_roots_of_sq hs ht₁ ht₂]
   ext1 z
   simp only [Set.mem_setOf_eq, Set.singleton_union, Set.mem_insert_iff]
-  rw [← sub_eq_zero, H]
-  rw [mul_eq_zero]
-  rw [sub_eq_zero]
+  rw [← sub_eq_zero, H, mul_eq_zero, sub_eq_zero]
 
 example : {z : ℂ | z ^ 5 = 1} = {1,
     (√5 -1)/4 + √2 * √(5 + √5)/4 * I,
