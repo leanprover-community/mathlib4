@@ -310,7 +310,7 @@ lemma quintic_cyclotomic_polynomial_roots_of_sq {K : Type*} [Field K] [NeZero (4
   simp only [(quintic_factorize_cyclotomic_polynomial hs ht₁ ht₂), neg_add_rev, mul_eq_zero,
     sub_eq_zero, or_assoc, Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
 
-lemma quntic_roots_of_unity_of_sq {K : Type*} [Field K] [NeZero (4 : K)] {s t₁ t₂ : K}
+lemma quintic_roots_of_unity_of_sq {K : Type*} [Field K] [NeZero (4 : K)] {s t₁ t₂ : K}
     (hs : s * s = 5) (ht₁ : t₁ * t₁ = - 2 * (5 + s)) (ht₂ : t₂ * t₂ = -2 * (5 -s)) :
   {z : K | z^5 = 1} = {1,
       (s - 1) / 4 + t₁ / 4,
@@ -326,12 +326,14 @@ lemma quntic_roots_of_unity_of_sq {K : Type*} [Field K] [NeZero (4 : K)] {s t₁
   rw [mul_eq_zero]
   rw [sub_eq_zero]
 
-example : {z : ℂ | z^5 = 1} = {1,
+example : {z : ℂ | z ^ 5 = 1} = {1,
     (√5 -1)/4 + √2 * √(5 + √5)/4 * I,
     (√5 -1)/4 - √2 * √(5 + √5)/4 * I,
     -(√5 + 1)/4 + √2 * √(5 - √5) / 4 * I,
     -(√5 +1)/4 - √2 * √(5 - √5) / 4 * I} := by
-  have hs : √5 * √5 = 5 := by norm_num
+  have hs : (√5 : ℂ) * √5 = 5 := by
+    norm_cast
+    norm_num
   have ht₁ : (√2 * √(5 + √5) * I) * (√2 * √(5 + √5) * I) = -2 * (5 + √5) := by
     rw [mul_assoc, mul_comm I,  mul_assoc _ I I, I_mul_I]
     norm_cast
@@ -340,6 +342,18 @@ example : {z : ℂ | z^5 = 1} = {1,
     rw [Real.sq_sqrt zero_le_two, Real.sq_sqrt (by simp only [Nat.ofNat_nonneg, Real.sqrt_nonneg,
       Left.add_nonneg])]
     ring_nf
+  have ht₂ : (√2 * √(5 - √5) * I) * (√2 * √(5 - √5) * I) = -2 * (5 - √5) := by
+    rw [mul_assoc, mul_comm I,  mul_assoc _ I I, I_mul_I]
+    norm_cast
+    norm_num
+    ring_nf
+    rw [Real.sq_sqrt zero_le_two, Real.sq_sqrt]
+    ring_nf
+    rw [sub_nonneg]
+    refine (Real.sqrt_le_left (Nat.ofNat_nonneg' 5)).mpr (by norm_num)
+  rw [quintic_roots_of_unity_of_sq hs ht₁ ht₂]
+  ring_nf
+
 
 example (z : ℂ) : z ^ 6 - 1 = (z - 1) * (z + 1) * (z ^ 2 + z + 1) * (z ^ 2 - z + 1) := by
   ring
