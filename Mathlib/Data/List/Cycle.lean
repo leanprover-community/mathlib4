@@ -469,8 +469,10 @@ theorem mem_coe_iff {a : α} {l : List α} : a ∈ (↑l : Cycle α) ↔ a ∈ l
   Iff.rfl
 
 @[simp]
-theorem not_mem_nil (a : α) : a ∉ nil :=
+theorem notMem_nil (a : α) : a ∉ nil :=
   List.not_mem_nil
+
+@[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
 
 instance [DecidableEq α] : DecidableEq (Cycle α) := fun s₁ s₂ =>
   Quotient.recOnSubsingleton₂' s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq''
@@ -875,7 +877,7 @@ theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := b
 theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈ s, r a b :=
   ⟨by
     induction' s with a l _
-    · exact fun _ b hb => (not_mem_nil _ hb).elim
+    · exact fun _ b hb => (notMem_nil _ hb).elim
     intro hs b hb c hc
     rw [Cycle.chain_coe_cons, List.chain_iff_pairwise] at hs
     simp only [pairwise_append, pairwise_cons, mem_append, mem_singleton, List.not_mem_nil,

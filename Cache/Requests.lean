@@ -8,14 +8,19 @@ import Cache.Hashing
 
 namespace Cache.Requests
 
-/-- Attempts to determine the running project's GitHub repository from its `origin` Git remote. -/
-def getRemoteRepo : IO String := do
-  let out ← IO.Process.output {cmd := "git", args := #["remote", "get-url", "origin"]}
+open System (FilePath)
+
+/--
+Attempts to determine the GitHub repository of a version of Mathlib from its `origin` Git remote.
+-/
+def getRemoteRepo (mathlibDepPath : FilePath) : IO String := do
+  let out ← IO.Process.output
+    {cmd := "git", args := #["remote", "get-url", "origin"], cwd := mathlibDepPath}
   unless out.exitCode == 0 do
     throw <| IO.userError s!"\
-      Failed to run Git to determine project repository (exit code: {out.exitCode}).\n\
-      Ensure Git is installed and the `origin` remote points to the project's GitHub repository.\n\
-      Stdout:\n{out.stdout.trim}\nStderr:{out.stderr.trim}\n"
+      Failed to run Git to determine Mathlib's repository (exit code: {out.exitCode}).\n\
+      Ensure Git is installed and Mathlib's `origin` remote points to its GitHub repository.\n\
+      Stdout:\n{out.stdout.trim}\nStderr:\n{out.stderr.trim}\n"
   -- No strong validation is done here because this is simply used as a smart default
   -- for `lake exe cache get`, which is freely modifiable by any user.
   let url := out.stdout.trim.stripSuffix ".git"
@@ -27,8 +32,8 @@ def getRemoteRepo : IO String := do
     return repo
   else
     throw <| IO.userError s!"\
-      Failed to determine project repository from remote URL.\n\
-      Ensure the `origin` Git remote points to the project's GitHub repository.\n\
+      Failed to determine Mathlib's repository from its remote URL.\n\
+      Ensure Mathlib's `origin` Git remote points to its GitHub repository.\n\
       Detected URL: {url}"
 
 -- FRO cache is flaky so disable until we work out the kinks: https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/The.20cache.20doesn't.20work/near/411058849
@@ -47,8 +52,6 @@ def getToken : IO String := do
   let some token ← IO.getEnv envVar
     | throw <| IO.userError s!"environment variable {envVar} must be set to upload caches"
   return token
-
-open System (FilePath)
 
 /-- The full name of the main Mathlib GitHub repository. -/
 def MATHLIBREPO := "leanprover-community/mathlib4"
@@ -224,8 +227,8 @@ def getFiles
   if let some repo := repo? then
     downloadFiles repo hashMap forceDownload parallel (warnOnMissing := true)
   else
-    let repo ← getRemoteRepo
-    IO.println s!"Project repository: {repo}"
+    let repo ← getRemoteRepo (← read).mathlibDepPath
+    IO.println s!"Mathlib repository: {repo}"
     downloadFiles repo hashMap forceDownload parallel (warnOnMissing := false)
     unless repo == MATHLIBREPO do
       downloadFiles MATHLIBREPO hashMap forceDownload parallel (warnOnMissing := true)
