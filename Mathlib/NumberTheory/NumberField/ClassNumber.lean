@@ -53,6 +53,10 @@ end RingOfIntegers
 noncomputable def classNumber : ℕ :=
   Fintype.card (ClassGroup (𝓞 K))
 
+theorem classNumber_ne_zero : classNumber K ≠ 0 := Fintype.card_ne_zero
+
+theorem classNumber_pos : 0 < classNumber K := Fintype.card_pos
+
 variable {K}
 
 /-- The class number of a number field is `1` iff the ring of integers is a PID. -/
