@@ -6,7 +6,7 @@ Authors: Jakob Stiefel, Rémy Degenne, Thomas Zhu
 import Mathlib.Analysis.Fourier.BoundedContinuousFunctionChar
 import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.Analysis.Normed.Module.Dual
+import Mathlib.MeasureTheory.Group.IntegralConvolution
 import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
 
 /-!
@@ -209,6 +209,15 @@ theorem Measure.ext_of_charFun [CompleteSpace E]
   · exact fun v hv ↦ DFunLike.ne_iff.mpr ⟨v, inner_self_ne_zero.mpr hv⟩
   · exact continuous_inner
 
+/-- The characteristic function of a convolution of measures
+is the product of the respective characteristic functions. -/
+lemma charFun_conv [IsFiniteMeasure μ] [IsFiniteMeasure ν] (t : E) :
+    charFun (μ ∗ ν) t = charFun μ t * charFun ν t := by
+  simp_rw [charFun_apply]
+  rw [integral_conv]
+  · simp [inner_add_left, add_mul, Complex.exp_add, integral_const_mul, integral_mul_const]
+  · exact (integrable_const (1 : ℝ)).mono (by fun_prop) (by simp)
+
 end InnerProductSpace
 
 section NormedSpace
@@ -272,10 +281,11 @@ lemma charFunDual_prod [SFinite μ] [SFinite ν] (L : Dual ℝ (E × F)) :
     Complex.exp_add]
   rw [integral_prod_mul (f := fun x ↦ cexp ((L₁ x * I))) (g := fun x ↦ cexp ((L₂ x * I)))]
 
-variable [CompleteSpace E] [BorelSpace E] [SecondCountableTopology E]
+variable [BorelSpace E] [SecondCountableTopology E]
 
 /-- If two finite measures have the same characteristic function, then they are equal. -/
-theorem Measure.ext_of_charFunDual {μ ν : Measure E} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+theorem Measure.ext_of_charFunDual [CompleteSpace E]
+    {μ ν : Measure E} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (h : charFunDual μ = charFunDual ν) :
     μ = ν := by
   refine ext_of_integral_char_eq continuous_probChar probChar_ne_one
@@ -287,6 +297,15 @@ theorem Measure.ext_of_charFunDual {μ ν : Measure E} [IsFiniteMeasure μ] [IsF
     by_contra! h
     exact hv (NormedSpace.eq_zero_of_forall_dual_eq_zero _ h)
   · exact isBoundedBilinearMap_apply.symm.continuous
+
+/-- The characteristic function of a convolution of measures
+is the product of the respective characteristic functions. -/
+lemma charFunDual_conv {μ ν : Measure E} [IsFiniteMeasure μ] [IsFiniteMeasure ν] (L : Dual ℝ E) :
+    charFunDual (μ ∗ ν) L = charFunDual μ L * charFunDual ν L := by
+  simp_rw [charFunDual_apply]
+  rw [integral_conv]
+  · simp [inner_add_left, add_mul, Complex.exp_add, integral_const_mul, integral_mul_const]
+  · exact (integrable_const (1 : ℝ)).mono (by fun_prop) (by simp)
 
 end NormedSpace
 

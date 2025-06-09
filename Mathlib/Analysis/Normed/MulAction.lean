@@ -109,7 +109,13 @@ instance (priority := 100) NormMulClass.toNormSMulClass_op [SeminormedRing α] [
     NormSMulClass αᵐᵒᵖ α where
   norm_smul a b := mul_comm ‖b‖ ‖a‖ ▸ norm_mul b a.unop
 
-variable [SeminormedRing α] [SeminormedAddGroup β] [SMul α β] [NormSMulClass α β]
+variable [SeminormedRing α] [SeminormedAddGroup β] [SMul α β]
+
+theorem NormSMulClass.of_nnnorm_smul (h : ∀ (r : α) (x : β), ‖r • x‖₊ = ‖r‖₊ * ‖x‖₊) :
+    NormSMulClass α β where
+  norm_smul r b := congr_arg NNReal.toReal (h r b)
+
+variable [NormSMulClass α β]
 
 theorem nnnorm_smul (r : α) (x : β) : ‖r • x‖₊ = ‖r‖₊ * ‖x‖₊ :=
   NNReal.eq <| norm_smul r x
