@@ -5,6 +5,7 @@ Authors: Emily Riehl, Dominic Verity
 -/
 import Mathlib.AlgebraicTopology.Quasicategory.Basic
 import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
+import Mathlib.AlgebraicTopology.SimplicialSet.ColimitOfRepresentable
 import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
 import Mathlib.CategoryTheory.Category.Cat.Limit
 import Mathlib.CategoryTheory.PUnit
@@ -13,6 +14,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
 import Mathlib.CategoryTheory.Monoidal.Functor
+import Mathlib.CategoryTheory.Closed.FunctorToTypes
 /-!
 
 # The homotopy category functor preserves finite products.
@@ -25,6 +27,28 @@ Both `Cat.{u, u}` and `SSet.{u}` are cartesian closed categories. This files pro
 `hoFunctor` preserves finite cartesian products; note it fails to preserve infinite products.
 
 -/
+
+section
+
+open CategoryTheory Limits
+
+variable {C D J : Type*} [Category C] [Category D] [Category J]
+variable (K : J ⥤ C) (L L' : C ⥤ D) (α : L ⟶ L') [IsIso (whiskerLeft K α)]
+variable (c : Cocone K) (hc : IsColimit c) [PreservesColimit K L] [PreservesColimit K L']
+
+include hc in
+lemma foo : IsIso (α.app c.pt) := by
+  obtain ⟨hc₁⟩ := PreservesColimit.preserves (F := L) hc
+  obtain ⟨hc₂⟩ := PreservesColimit.preserves (F := L') hc
+  let e := IsColimit.coconePointsIsoOfNatIso hc₁ hc₂ (asIso (whiskerLeft K α))
+  convert inferInstanceAs (IsIso e.hom)
+  apply hc₁.hom_ext fun j ↦ ?_
+  simp only [Functor.comp_obj, Functor.mapCocone_pt, Functor.const_obj_obj, Functor.mapCocone_ι_app,
+    NatTrans.naturality, IsColimit.coconePointsIsoOfNatIso_hom, asIso_hom, e]
+  refine ((hc₁.ι_map (L'.mapCocone c) (whiskerLeft K α) j).trans ?_).symm
+  simp
+
+end
 
 -- Where do these belong?
 namespace OrderHom
@@ -138,6 +162,14 @@ instance hoFunctor.binarySimplexProductIsIso (n m : ℕ) :
   --   (prodComparison_natural hoFunctor (simplexIsNerve n).hom (simplexIsNerve m).hom).symm
   sorry
 
+noncomputable
+def CartesianMonoidalCategory.tensorLeftIsoProd
+    {C : Type*} [Category C] [CartesianMonoidalCategory C] (X : C) :
+    MonoidalCategory.tensorLeft X ≅ prod.functor.obj X :=
+  NatIso.ofComponents fun Y ↦
+    (CartesianMonoidalCategory.tensorProductIsBinaryProduct X Y).conePointUniqueUpToIso
+      (limit.isLimit _)
+
 /-- Modulo composing with a symmetry on both ends, the natural transformation
 `prodComparisonNatTrans hofunctor Δ[m]` is a natural transformation between cocontinuous
 functors whose component at `X : SSet` is `prodComparison hoFunctor X Δ[m]`. This makes use
@@ -147,11 +179,29 @@ product functors on both categories.
 Using the colimit `Presheaf.colimitOfRepresentable (C := SimplexCategory) X` this reduces to
 the result proven in `hoFunctor.binarySimplexProductIsIso`.
 -/
-instance hoFunctor.binaryProductWithSimplexIsIso (X : SSet) (m : ℕ) :
-    IsIso (prodComparison hoFunctor X Δ[m]) := by
-  have Xcolim := Presheaf.colimitOfRepresentable (C := ULiftHom SimplexCategory)
-    (ULiftHom.down.op ⋙ X)
-  sorry
+lemma hoFunctor.binaryProductWithSimplexIsIso (D X : SSet.{u})
+    (H : ∀ m, IsIso (prodComparison hoFunctor D Δ[m])) :
+    IsIso (prodComparison hoFunctor D X) := by
+  letI Xcolim := CategoryTheory2.Presheaf.colimitOfRepresentable X
+  have : (prod.functor.obj D).IsLeftAdjoint := by
+    have := (CategoryTheory.FunctorToTypes.adj D).isLeftAdjoint
+    exact Functor.isLeftAdjoint_of_iso (CartesianMonoidalCategory.tensorLeftIsoProd _)
+  have : (prod.functor.obj (hoFunctor.obj (D : SSet.{u}))).IsLeftAdjoint := by
+    sorry
+  have : (hoFunctor).IsLeftAdjoint := nerveAdjunction.isLeftAdjoint
+  have : IsIso (whiskerLeft (CategoryTheory2.Presheaf.functorToRepresentables X)
+      (prodComparisonNatTrans hoFunctor D)) := by
+    rw [NatTrans.isIso_iff_isIso_app]
+    intro x
+    dsimp
+    exact H (unop (unop x).fst).len
+  exact foo
+    (J := (Elements X)ᵒᵖ)
+    (C := SSet.{u})
+    (D := Cat.{u, u})
+    (CategoryTheory2.Presheaf.functorToRepresentables X)
+    (prod.functor.obj D ⋙ hoFunctor) (hoFunctor ⋙ prod.functor.obj (hoFunctor.obj D))
+    (prodComparisonNatTrans ..) _ Xcolim
 
 /-- The natural transformation `prodComparisonNatTrans hofunctor X` is a natural
 transformation between cocontinuous functors whose component at `Y : SSet` is
@@ -163,11 +213,14 @@ the result proven in `hoFunctor.binaryProductWithSimplexIsIso`.
 -/
 instance hoFunctor.binaryProductIsIso (X Y : SSet):
     IsIso (prodComparison hoFunctor X Y) := by
-  unfold SSet SimplicialObject at X Y
-  have Ycolim := Presheaf.colimitOfRepresentable (C := ULiftHom SimplexCategory)
-    (ULiftHom.down.op ⋙ Y)
-  have := prodComparisonNatTrans hoFunctor X
-  sorry
+  apply hoFunctor.binaryProductWithSimplexIsIso
+  intro m
+  convert_to IsIso (hoFunctor.map (prod.braiding _ _).hom ≫
+    prodComparison hoFunctor Δ[m] X ≫ (prod.braiding _ _).hom)
+  · ext <;> simp [← Functor.map_comp]
+  suffices IsIso (prodComparison hoFunctor Δ[m] X) by infer_instance
+  apply hoFunctor.binaryProductWithSimplexIsIso
+  exact fun _ ↦ hoFunctor.binarySimplexProductIsIso _ _
 
 /-- The functor `hoFunctor : SSet ⥤ Cat` preserves binary products of simplicial sets
 `X` and `Y`. -/
