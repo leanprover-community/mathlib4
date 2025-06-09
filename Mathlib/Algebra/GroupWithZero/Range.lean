@@ -51,10 +51,63 @@ section CancelMonoidWithZero
 variable  [CancelMonoidWithZero B] [Nontrivial B]
 
 
+open Submonoid
+
 /-- For a map with codomain a `MonoidWithZero`, this is a smallest
 `MondoidWithZero` that contains the invertible elements in the image. When the codomain is a
 `GroupWithZero`, so is `range₀ f`. When `B` is commutative, see
 `MonoidHomWithZero.mem_range₀_iff_of_comm` for another characterization of `range₀ f`. -/
+def new_range₀ : Submonoid B :=
+  closure (range f) ⊔ (closure (((↑) ∘ (·)⁻¹: Bˣ → B)⁻¹' (range f))).map (Units.coeHom _)
+    ⊔ closure {0}
+
+example (S : Set B) (b : B) (hb : b ∈ S) : b ∈ Submonoid.closure S := by
+  rw [Submonoid.mem_closure]
+  intro T hT
+  apply hT hb
+
+
+theorem mem_range_mem_new_range₀ (a : A) : f a ∈ (new_range₀ f) := by
+  simp only [new_range₀, sup_eq_closure, coe_map, Units.coeHom_apply, mem_closure, union_subset_iff,
+    SetLike.coe_subset_coe, closure_le, image_subset_iff, singleton_subset_iff, SetLike.mem_coe,
+    and_imp]
+  intro _ hS _ _
+  apply hS
+  exact mem_range_self _
+
+theorem zero_mem_new_range₀ : 0 ∈ (new_range₀ f) := by
+  simp only [new_range₀, sup_eq_closure, coe_map, Units.coeHom_apply, mem_closure]
+  intro _ hS
+  apply hS
+  rw [mem_union]
+  right
+  simp only [SetLike.mem_coe]
+  exact mem_closure.mpr fun S a ↦ a rfl
+
+theorem inv_mem_new_range₀_of_invertible_image {a : A} {b : Bˣ} (ha : (f a) = b) :
+  (b⁻¹).1 ∈ (new_range₀ f) := by
+  simp only [new_range₀, sup_eq_closure, coe_map, Units.coeHom_apply, mem_closure]
+  intro S hS
+  apply hS
+  rw [mem_union]
+  left
+  rw [SetLike.mem_coe, mem_closure]
+  intro T hT
+  apply hT
+  rw [mem_union]
+  right
+  simp only [new_range₀, union_singleton, inv_zero, Submonoid.mem_mk, Subsemigroup.mem_mk,
+    mem_insert_iff, mem_image, Units.ne_zero, and_false, exists_const, or_false]
+  use b⁻¹
+  constructor
+  · simp [mem_closure]
+    intro U hU
+    apply hU
+    simp
+    use a
+  · rfl
+
+
 def range₀ : Submonoid B where
   carrier := (↑)''(Subgroup.closure (G := Bˣ) ((↑)⁻¹' (range f))).carrier ∪ {0}
   mul_mem' {b b'} hb hb' := by
@@ -109,9 +162,9 @@ theorem range₀_coe_one : ((1 : range₀ f) : B) = 1 := rfl
 theorem inv_mem_range₀ {b : B} (hb : b ∈ range₀ f) : b⁻¹ ∈ range₀ f := by
   simp only [range₀, union_singleton, inv_zero, Submonoid.mem_mk, Subsemigroup.mem_mk,
     mem_insert_iff, mem_image, Units.ne_zero, and_false, exists_const, or_false] at hb ⊢
-  rcases hb with hb | ⟨a, ha, rfl⟩
+  rcases hb with hb | ⟨b, hb, rfl⟩
   · simp [hb]
-  exact Or.inr ⟨a⁻¹, by simpa⟩
+  exact Or.inr ⟨b⁻¹, by simpa⟩
 
 instance : GroupWithZero (range₀ f) where
   toMonoidWithZero := inferInstance
