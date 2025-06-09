@@ -283,7 +283,7 @@ theorem hasFDerivWithinAt_continuousOn_of_partial_continuousOn_open
   refine ⟨?cont, ?diff⟩
   case cont =>
     -- combine continuity of partial to get continuity of total derivative
-    exact hf'x_cont.clm_coprod hf'y_cont
+    exact hf'x_cont.continuousLinearMapCoprod hf'y_cont
   case diff =>
     intro z hz
     -- first restrict all properties to a product neighborhood of z
