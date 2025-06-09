@@ -212,14 +212,11 @@ def isInterpreter
 /--
 The universal property of the free monad `FreeM`.
 
-If `g : FreeM F α → M α` is a monad morphism that interprets operations
-according to a handler `f : ∀ {α}, F α → M α`, then `g` is equal to `mapM f`.
+If `g : FreeM F α → M α` is an interpreter that handles operations according to a handler
+`f : ∀ {α}, F α → M α`, then `g` is equal to `mapM f`.
 
-That is, `mapM f` is the unique interpreter extending `f` to a monad morphism
-from `FreeM F` into `M`.
-
-This expresses the universal property: `FreeM F` is initial among monads
-equipped with a morphism from `F`.
+That is, `mapM f` is the unique interpreter that extends the effect handler `f` to interpret
+`FreeM F` computations in monad `M`.
 -/
 theorem mapM_unique {F : Type u → Type v} {m : Type u → Type w} [Monad m] {α : Type u}
     (f : {ι : Type u} → F ι → m ι)
