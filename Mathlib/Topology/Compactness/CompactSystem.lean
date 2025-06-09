@@ -303,6 +303,7 @@ end IsCompactSystem
 
 section PrefixInduction
 
+/-- A version of `Fin.elim` using even more dependent types. -/
 def Fin.elim0'.{u} {α : ℕ → Sort u} : (i : Fin 0) → (α i)
   | ⟨_, h⟩ => absurd h (Nat.not_lt_zero _)
 
@@ -324,6 +325,7 @@ and finding the next element.
 In comparisong to other induction principles, the proofs of `q n k` are needed in order to find
 the next element. -/
 
+/- An auxiliary definition for `Nat.prefixInduction`. -/
 def Nat.prefixInduction.aux : ∀ (n : Nat), { k : (i : Fin n) → (β i) // q n k }
     | 0 => ⟨Fin.elim0', step0⟩
     | n+1 =>
@@ -347,6 +349,10 @@ theorem Nat.prefixInduction.auxConsistent :
       rw [ih, aux]
       simp
 
+/-- An induction principle showing that `q : (n : ℕ) → (k : (i : Fin n) → (β i)) → Prop` holds
+for all `n`. `step0` is satisfied by construction since `Fin 0` is empty.
+In the induction `step`, we use that `q n k` holds for showing that `q (n + 1) (Fin.snoc k a)`
+holds for some `a : β n`. -/
 def Nat.prefixInduction (n : Nat) : β n :=
   (Nat.prefixInduction.aux q step0 step (n+1)).1 (Fin.last n)
 
@@ -361,10 +367,16 @@ theorem Nat.prefixInduction_spec (n : Nat) : q n (Nat.prefixInduction q step0 st
 /- Often, `step` can only be proved by showing an `∃` statement. For this case, we use `step'`. -/
 variable (step' : ∀ n (k : (i : Fin n) → (β i)) (_ : q n k), ∃ a, q (n + 1) (Fin.snoc k a))
 
+/-- For `Nat.prefixIndution`, this transforms an exists-statement in the induction step to choosing
+an element. -/
 noncomputable def step_of : (n : ℕ) → (k : (i : Fin n) → (β i)) → (hn : q n k) →
     { a : β n // q (n + 1) (Fin.snoc k a) } :=
   fun n k hn ↦ ⟨(step' n k hn).choose, (step' n k hn).choose_spec⟩
 
+/-- An induction principle showing that `q : (n : ℕ) → (k : (i : Fin n) → (β i)) → Prop` holds
+for all `n`. `step0` is satisfied by construction since `Fin 0` is empty.
+In the induction `step`, we use that `q n k` holds for showing that `q (n + 1) (Fin.snoc k a)`
+holds for some `a : β n`. This version is noncomputable since it relies on an `∃`-statement -/
 noncomputable def Nat.prefixInduction' (n : Nat) : β n :=
   (Nat.prefixInduction.aux q step0 (fun n k hn ↦ step_of q step' n k hn) (n+1)).1 (Fin.last n)
 
@@ -425,7 +437,6 @@ lemma q_iff_iInter' (L : ℕ → Finset (Set α)) (n : ℕ) (K : (k : Fin n) →
         refine ⟨y, y.prop, hx1⟩
       · obtain ⟨j, hj⟩ := exists_add_one_eq.mpr (zero_lt_of_ne_zero h)
         have hj' : j < N := by
-          have f : 0 < i := by exact zero_lt_of_ne_zero h
           rw [← hj] at hi
           exact lt_of_succ_lt hi
         specialize hx2 j hj'
@@ -566,7 +577,6 @@ lemma mem_iff (s : Set α) : union p s ↔ ∃ L : Finset (Set α), s = ⋃₀ L
     refine ⟨hL.2, hL.1.symm⟩
 
 theorem isCompactSystem (p : Set α → Prop)(hp : IsCompactSystem p) : IsCompactSystem (union p) := by
-  have hp' := (iff_nonempty_iInter_of_lt p).mp hp
   rw [iff_nonempty_iInter_of_lt]
   intro C hi
   simp_rw [mem_iff] at hi
@@ -677,3 +687,4 @@ theorem isCompactSystem.compactClosedSquareCylinders :
     (fun _ ↦ IsCompactSystem.nonempty_isCompactIsClosed)
 
 end ClosedCompactSquareCylinders
+#lint
