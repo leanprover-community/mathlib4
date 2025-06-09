@@ -50,13 +50,6 @@ canonical interpreters
 See the Haskell [freer-simple](https://hackage.haskell.org/package/freer-simple) library for the
 Haskell implementation that inspired this approach.
 
-## Main Definitions
-
-- `FreeM`: The free monad.
-- `FreeState`: State monad using the `FreeM` construction.
-- `FreeWriter`: Writer monad using the `FreeM` construction.
-- `FreeCont`: Continuation monad using the `FreeM` construction.
-
 ## Implementation Notes
 
 The `FreeM` monad is defined using an inductive type with constructors `pure` and `liftBind`.
