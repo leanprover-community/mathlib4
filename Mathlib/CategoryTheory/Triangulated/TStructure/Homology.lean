@@ -795,7 +795,11 @@ lemma case₁' [t.IsGE T.obj₁ 0] [t.IsGE T.obj₂ 0] [t.IsGE T.obj₃ 0] :
   apply IsZero.eq_of_src
   apply AddCommGrp.isZero
   intro (x : t.ιHeart.obj A ⟶ T.obj₃⟦-1⟧)
-  have : t.IsGE (T.obj₃⟦(-1 : ℤ)⟧) 1 := t.isGE_shift T.obj₃ 0 (-1) 1 (by omega)
+  have : t.IsGE (T.obj₃⟦(-1 : ℤ)⟧) 1 := by
+    refine {ge := ?_}
+    change (t.ge _).shift _ _
+    rw [t.shift_ge _ _ 0 (by omega)]
+    exact t.ge_of_isGE _ _
   exact t.zero x 0 1 (by omega)
 
 /-- case₂' -/
@@ -889,8 +893,13 @@ lemma isZero_homology₀_of_isGE_one (X : C) [t.IsGE X 1] :
 omit [IsTriangulated C] in
 lemma isZero_homology_of_isGE (X : C) (q n : ℤ) (hn₁ : q < n) [t.IsGE X n] :
     IsZero ((t.homology q).obj X) := by
-  have : t.IsGE (X⟦q⟧) (n - q) := t.isGE_shift X n q (n - q) (by omega)
-  have : t.IsGE (X⟦q⟧) 1 := t.isGE_of_GE (X⟦q⟧) 1 (n - q) (by omega)
+  have : t.IsGE (X⟦q⟧) (n - q) := by
+    refine {ge := ?_}
+    change (t.ge _).shift _ _
+    rw [t.shift_ge _ _ n (by omega)]
+    exact t.ge_of_isGE _ _
+  have : t.IsGE (X⟦q⟧) 1 :=
+    {ge := t.ge_antitone (a := 1) (b := n- q) (by omega) _ (t.ge_of_isGE _ _)}
   exact IsZero.of_iso (t.isZero_homology₀_of_isGE_one (X⟦q⟧))
     (((t.homology₀.shiftIso q 0 q (by omega)).app X).symm.trans
     ((t.homology₀.isoShiftZero ℤ).app (X⟦q⟧)))
@@ -912,8 +921,13 @@ lemma isZero_homology₀_of_isLE_neg_one (X : C) [t.IsLE X (-1)] :
 
 lemma isZero_homology_of_isLE (X : C) (q n : ℤ) (hn₁ : n < q) [t.IsLE X n] :
     IsZero ((t.homology q).obj X) := by
-  have : t.IsLE (X⟦q⟧) (n - q) := t.isLE_shift X n q (n - q) (by omega)
-  have : t.IsLE (X⟦q⟧) (-1) := t.isLE_of_LE (X⟦q⟧) (n - q) (-1) (by omega)
+  have : t.IsLE (X⟦q⟧) (n - q) := by
+    refine {le := ?_}
+    change (t.le _).shift _ _
+    rw [t.shift_le _ _ n (by omega)]
+    exact t.le_of_isLE _ _
+  have : t.IsLE (X⟦q⟧) (-1) :=
+    {le := t.le_monotone (a := n - q) (b := -1) (by omega) _ (t.le_of_isLE _ _)}
   exact IsZero.of_iso (t.isZero_homology₀_of_isLE_neg_one (X⟦q⟧))
     (((t.homology₀.shiftIso q 0 q (by omega)).app X).symm.trans
     ((t.homology₀.isoShiftZero ℤ).app (X⟦q⟧)))
@@ -924,7 +938,7 @@ lemma isGE₁_iff_isGE₀_and_isZero_homology₀ (X : C) :
   constructor
   · intro _
     constructor
-    · exact t.isGE_of_GE X 0 1 (by omega)
+    · exact {ge := t.ge_antitone zero_le_one _ (t.ge_of_isGE _ _)}
     · apply isZero_homology₀_of_isGE_one
   · rintro ⟨_, hX⟩
     rw [t.isGE_iff_isZero_truncLE_obj 0 1 (by omega)]
@@ -937,14 +951,30 @@ lemma isGE₁_iff_isGE₀_and_isZero_homology₀ (X : C) :
 
 lemma isGE_succ_iff_isGE_and_isZero_homology (X : C) (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
     t.IsGE X n₁ ↔ t.IsGE X n₀ ∧ (IsZero ((t.homology n₀).obj X)) := by
-  have eq₁ : t.IsGE (X⟦n₀⟧) 1 ↔ t.IsGE X n₁ := t.isGE_shift_iff _ _ _ _ hn₁
-  have eq₂ : t.IsGE (X⟦n₀⟧) 0 ↔ t.IsGE X n₀ := t.isGE_shift_iff _ _ _ _ (by omega)
+  have eq₁ : t.IsGE (X⟦n₀⟧) 1 ↔ t.IsGE X n₁ := by
+    refine ⟨fun _ ↦ ?_, fun _ ↦ ?_⟩
+    · refine {ge := ?_}
+      rw [← t.shift_ge n₀ 1 n₁ hn₁]
+      exact t.ge_of_isGE _ _
+    · refine {ge := ?_}
+      change (t.ge _).shift _ _
+      rw [t.shift_ge _ _ n₁ (by omega)]
+      exact t.ge_of_isGE _ _
+  have eq₂ : t.IsGE (X⟦n₀⟧) 0 ↔ t.IsGE X n₀ := by
+    refine ⟨fun _ ↦ ?_, fun _ ↦ ?_⟩
+    · refine {ge := ?_}
+      rw [← t.shift_ge n₀ 0 n₀ (by omega)]
+      exact t.ge_of_isGE _ _
+    · refine {ge := ?_}
+      change (t.ge _).shift _ _
+      rw [t.shift_ge _ _ n₀ (by omega)]
+      exact t.ge_of_isGE _ _
   have e : (t.homology n₀).obj X ≅ t.homology₀.obj (X⟦n₀⟧) :=
     (t.homology₀.shiftIso n₀ 0 n₀ (add_zero n₀)).symm.app _ ≪≫
       (t.homology₀.isoShiftZero ℤ ).app _
   have eq₃ : IsZero ((t.homology n₀).obj X) ↔ IsZero (t.homology₀.obj (X⟦n₀⟧)) :=
     ⟨fun h => IsZero.of_iso h e.symm, fun h => IsZero.of_iso h e⟩
-  rw [← eq₁, ←eq₂, eq₃]
+  rw [← eq₁, ← eq₂, eq₃]
   exact t.isGE₁_iff_isGE₀_and_isZero_homology₀ _
 
 lemma isLE_minus_1_iff_isLE₀_and_isZero_homology₀ (X : C) :
@@ -960,7 +990,7 @@ lemma isIso_whiskerLeft_ιHeart_truncLEι (b : ℤ) (hb : 0 ≤ b) :
   intro X
   dsimp
   rw [← t.isLE_iff_isIso_truncLEι_app]
-  exact t.isLE_of_LE _ 0 _ hb
+  exact {le := t.le_monotone hb _ (t.le_of_isLE _ _)}
 
 omit [t.HasHomology₀] [IsTriangulated C] in
 lemma isIso_whiskerLeft_ιHeart_truncGEπ (a : ℤ) (ha : a ≤ 0) :
@@ -969,7 +999,7 @@ lemma isIso_whiskerLeft_ιHeart_truncGEπ (a : ℤ) (ha : a ≤ 0) :
   intro X
   dsimp
   rw [← t.isGE_iff_isIso_truncGEπ_app]
-  exact t.isGE_of_GE _ _ 0 ha
+  exact {ge := t.ge_antitone ha _ (t.ge_of_isGE _ _)}
 
 noncomputable def ιHeartTruncLE (b : ℤ) (hb : 0 ≤ b): t.ιHeart ⋙ t.truncLE b ≅ t.ιHeart :=
   have := t.isIso_whiskerLeft_ιHeart_truncLEι b hb
@@ -1167,7 +1197,7 @@ noncomputable def homologyCompιHeartIso (q : ℤ) :
   isoWhiskerRight ((t.homology₀.shiftIso q 0 q (add_zero q)).symm ≪≫
     isoWhiskerLeft _ (t.homology₀.isoShiftZero ℤ)) _ ≪≫ Functor.associator _ _ _ ≪≫
     isoWhiskerLeft _  t.homology₀ιHeart ≪≫
-    (t.shiftTruncGELE q 0 q 0 q (add_zero q) (add_zero q)).symm
+    (t.shiftTruncGELE q 0 q (add_zero q) 0 q (add_zero q)).symm
 
 variable (X : C) (q q' : ℤ) (hqq' : q + 1 = q')
 
@@ -1212,9 +1242,9 @@ lemma isIso_homologyFunctor_map_mor₁_of_isGE (hT : T ∈ distTriang C) (n : �
     (hGE : t.IsGE T.obj₃ a) :
     IsIso ((t.homology n).map T.mor₁) := by
   have := (t.homology_exact₁ T hT (n - 1) n (by omega)).mono_g
-     (IsZero.eq_of_src (t.isZero_homology_of_isGE _ _ a (by omega [h])) _ _)
+     (IsZero.eq_of_src (t.isZero_homology_of_isGE _ _ a (by omega)) _ _)
   have := (t.homology_exact₂ T hT n).epi_f
-      (IsZero.eq_of_tgt (t.isZero_homology_of_isGE _ n a (by omega [h])) _ _)
+      (IsZero.eq_of_tgt (t.isZero_homology_of_isGE _ n a (by omega)) _ _)
   apply isIso_of_mono_of_epi
 
 omit hT in
@@ -1222,9 +1252,9 @@ lemma isIso_homologyFunctor_map_mor₂_of_isLE (hT : T ∈ distTriang C) (n : �
     (h : t.IsLE T.obj₁ a) :
     IsIso ((t.homology n).map T.mor₂) := by
   have := (t.homology_exact₂ T hT n).mono_g
-     (IsZero.eq_of_src (t.isZero_homology_of_isLE _ _ a (by omega [h])) _ _)
+     (IsZero.eq_of_src (t.isZero_homology_of_isLE _ _ a (by omega)) _ _)
   have := (t.homology_exact₃ T hT n (n + 1) rfl).epi_f
-      (IsZero.eq_of_tgt (t.isZero_homology_of_isLE _ (n + 1) a (by omega [h])) _ _)
+      (IsZero.eq_of_tgt (t.isZero_homology_of_isLE _ (n + 1) a (by omega)) _ _)
   apply isIso_of_mono_of_epi
 
 end
@@ -1244,7 +1274,7 @@ noncomputable local instance : t.homology₀.ShiftSequence ℤ :=
 
 lemma ConservativeHomologyObject (X : C) (hX : ∀ (n : ℤ), IsZero ((t.homology n).obj X)) :
     IsZero X := by
-  obtain ⟨A, B, hA, hB, f, g, h, DT⟩ := t.exists_triangle_zero_one X
+  obtain ⟨A, B, hA, hB, f, g, k, DT⟩ := t.exists_triangle_zero_one X
   erw [Triangle.isZero₂_iff _ DT]
   constructor
   · refine IsZero.eq_zero_of_src (nd.left _ ?_) _
@@ -1253,8 +1283,8 @@ lemma ConservativeHomologyObject (X : C) (hX : ∀ (n : ℤ), IsZero ((t.homolog
       intro n
       by_cases hn : 0 < n
       · have : t.IsLE A 0 := {le := hA}
-        exact t.isLE_of_LE A 0 n (le_of_lt hn)
-      · rw [lt_iff_not_le, not_not] at hn
+        exact {le := t.le_monotone (le_of_lt hn) _ (t.le_of_isLE _ _)}
+      · rw [lt_iff_not_ge, not_not] at hn
         have : n = - n.natAbs := by rw [Int.ofNat_natAbs_of_nonpos hn, neg_neg]
         rw [this]
         exact h n.natAbs
@@ -1275,10 +1305,10 @@ lemma ConservativeHomologyObject (X : C) (hX : ∀ (n : ℤ), IsZero ((t.homolog
     suffices h : ∀ (m : ℕ), t.IsGE B (m + 1) by
       intro n
       by_cases hn : n ≤ 0
-      · have : t.IsGE B 1 := {ge := hB}
-        exact t.isGE_of_GE B n 1 (by omega)
+      · have : t.IsGE (Triangle.mk f g k).obj₃ 1 := {ge := hB}
+        exact {ge := t.ge_antitone (a := n) (b := 1) (by omega) _ (t.ge_of_isGE _ _)}
       · have : n = (n - 1).natAbs + 1 := by
-          rw [← Int.eq_natAbs_of_nonneg (a := n - 1) (by omega [hn]), sub_add_cancel]
+          rw [← Int.eq_natAbs_of_nonneg (a := n - 1) (by omega), sub_add_cancel]
         rw [this]
         exact h _
     intro n
