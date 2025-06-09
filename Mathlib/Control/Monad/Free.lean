@@ -48,6 +48,7 @@ and helper functions.
 
 * [Kiselyov2015] Oleg Kiselyov, Hiromi Ishii. *Freer Monads, More Extensible Effects*.
   Haskell Symposium 2015.
+* [MilewskiDao] Bartosz Milewski. *The Dao of Functional Programming*. 2025.
 
 ## Tags
 
@@ -103,12 +104,9 @@ FreeM F b :=
   | .liftBind op cont => .liftBind op (fun z => FreeM.bind F (cont z) f)
 
 /-- Lift an operation from the effect signature `f` into the `FreeM f` monad. -/
+@[simp]
 def lift {F : Type u → Type v} {ι : Type u} (op : F ι) : FreeM F ι :=
   FreeM.liftBind op FreeM.pure
-
-@[simp]
-lemma lift_def {F : Type u → Type v} {ι : Type u} (op : F ι) :
-    lift op = FreeM.liftBind op FreeM.pure := by simp [lift]
 
 instance {F : Type u → Type v} : Monad (FreeM F) where
   pure := FreeM.pure
@@ -140,9 +138,13 @@ instance {F : Type u → Type v} : LawfulMonad (FreeM F) := LawfulMonad.mk'
     · simp only [bind, FreeM.bind]
     · simp only [bind, FreeM.bind, ih] at *; simp [ih])
 
-/-- Interpret a `FreeM f` computation into any monad `m` by providing an interpretation
-function for the effect signature `f`. This is the key operation that makes free monads useful
-for describing and then interpreting effectful computations. -/
+/--
+Interpret a `FreeM f` computation into any monad `m` by providing an interpretation
+function for the effect signature `f`.
+
+This function defines the *canonical interpreter* (also known as a *fold* or *catamorphism*)
+from the free monad `FreeM f` into the target monad `m`. It is the unique monad morphism that
+extends the effect handler `interp : ∀ {β}, F β → M β` via the universal property of `FreeM` -/
 
 protected def mapM {F : Type u → Type v} {M : Type u → Type w} [Monad M] {α : Type u} :
     FreeM F α → ({β : Type u} → F β → M β) → M α
@@ -164,6 +166,54 @@ lemma mapM_lift {F : Type u → Type v} {M : Type u → Type w} [Monad M] [Lawfu
     (interp : {β : Type u} → F β → M β) (op : F α) :
     (lift op).mapM interp = interp op := by
   simp [FreeM.mapM, lift]
+
+/--
+A predicate stating that `g : FreeM F α → M α` is an interpreter for the effect
+handler `f : ∀ {α}, F α → M α`.
+
+This means that `g` is a monad morphism from the free monad `FreeM F` to the
+monad `M`, and that it extends the interpretation of individual operations
+given by `f`.
+
+Formally, `g` satisfies the two equations:
+- `g (pure a) = pure a`
+- `g (liftBind op k) = f op >>= fun x => g (k x)`
+-/
+def isInterpreter
+    {F : Type u → Type v} {M : Type u → Type w} [Monad M] {α : Type u}
+    (f : {ι : Type u} → F ι → M ι)
+    (g : FreeM F α → M α) : Prop :=
+  (∀ a, g (pure a) = pure a) ∧
+  (∀ {ι} (op : F ι) (k : ι → FreeM F α),
+    g (FreeM.liftBind op k) = f op >>= fun x => g (k x))
+
+/--
+The universal property of the free monad `FreeM`.
+
+If `g : FreeM F α → M α` is a monad morphism that interprets operations
+according to a handler `f : ∀ {α}, F α → M α`, then `g` is equal to `mapM f`.
+
+That is, `mapM f` is the unique interpreter extending `f` to a monad morphism
+from `FreeM F` into `M`.
+
+This expresses the universal property: `FreeM F` is initial among monads
+equipped with a morphism from `F`.
+-/
+theorem mapM_unique {F : Type u → Type v} {m : Type u → Type w} [Monad m] {α : Type u}
+    (f : {ι : Type u} → F ι → m ι)
+    (g : FreeM F α → m α)
+    (h : isInterpreter f g) :
+    g = (·.mapM f) := by
+    apply funext
+    intro x
+    induction' x with a b op cont ih
+    · simp only [FreeM.mapM]
+      exact h.1 a
+    · simp only [FreeM.mapM]
+      rw [h.2]
+      congr 1
+      funext x
+      exact ih x
 
 /-! ### State Monad via `FreeM` -/
 
@@ -220,28 +270,59 @@ lemma map_liftBind {F : Type u → Type v} {α β γ : Type u} (f : β → γ) (
     (f <$> FreeM.liftBind op cont : FreeM F γ) = FreeM.liftBind op (fun x => f <$> cont x)
     := by simp [Functor.map, map]
 
+/-- Interpret `StateF` operations into `StateM`. -/
+def stateInterp {σ : Type u} : {α : Type u} → StateF σ α → StateM σ α
+  | _, StateF.get => MonadStateOf.get
+  | _, StateF.set s => MonadStateOf.set s
+
+/-- Convert a `FreeState` computation into a `StateM` computation. -/
+def toStateM {σ α : Type u} (comp : FreeState σ α) : StateM σ α :=
+  comp.mapM stateInterp
+
 /-- Run a state computation, returning both the result and final state. -/
-def runState {σ : Type u} {α : Type v} (comp : FreeState σ α) (s₀ : σ) : α × σ :=
+def run {σ : Type u} {α : Type v} (comp : FreeState σ α) (s₀ : σ) : α × σ :=
   match comp with
   | .pure a => (a, s₀)
-  | .liftBind StateF.get k     => runState (k s₀) s₀
-  | .liftBind (StateF.set s') k => runState (k PUnit.unit) s'
+  | .liftBind StateF.get k     => run (k s₀) s₀
+  | .liftBind (StateF.set s') k => run (k PUnit.unit) s'
+
+/--
+Interpret a `FreeState` computation by folding it through the canonical
+interpreter `mapM`, using `stateInterp` as the effect handler
+-/
+def fold {σ α : Type u} (comp : FreeState σ α) (s₀ : σ) : α × σ :=
+  (comp.mapM stateInterp) s₀
+
+/--
+The canonical interpreter `fold` derived from `mapM` agrees with the hand-written
+recursive interpreter `run` for `FreeState`.
+-/
+lemma run_eq_fold {σ α : Type u} (comp : FreeState σ α) (s₀ : σ) :
+    run comp s₀ = fold comp s₀ := by
+  induction' comp with a b op cont ih generalizing s₀
+  · simp [fold, FreeM.mapM, pure, run, StateT.pure]
+  · simp only [run, FreeM.mapM, stateInterp] at *
+    rcases op
+    · simp only [MonadStateOf.get, bind, StateT.bind, StateT.get, run] at *
+      apply ih
+    · simp only [MonadStateOf.set, bind, StateT.bind, StateT.set, run, PUnit.unit] at *
+      apply ih
 
 @[simp]
-lemma runState_pure {σ : Type u} {α : Type v} (a : α) (s₀ : σ) :
-    runState (pure a : FreeState σ α) s₀ = (a, s₀) := by simp [runState]
+lemma run_pure {σ : Type u} {α : Type v} (a : α) (s₀ : σ) :
+    run (pure a : FreeState σ α) s₀ = (a, s₀) := by simp [run]
 
 @[simp]
-lemma runState_get {σ : Type u} {α : Type v} (k : σ → FreeState σ α) (s₀ : σ) :
-    runState (.liftBind StateF.get k) s₀ = runState (k s₀) s₀ := by simp [runState]
+lemma run_get {σ : Type u} {α : Type v} (k : σ → FreeState σ α) (s₀ : σ) :
+    run (.liftBind StateF.get k) s₀ = run (k s₀) s₀ := by simp [run]
 
 @[simp]
-lemma runState_set {σ : Type u} {α : Type v} (s' : σ) (k : PUnit → FreeState σ α) (s₀ : σ) :
-    runState (.liftBind (StateF.set s') k) s₀ = runState (k PUnit.unit) s' := by simp [runState]
+lemma run_set {σ : Type u} {α : Type v} (s' : σ) (k : PUnit → FreeState σ α) (s₀ : σ) :
+    run (.liftBind (StateF.set s') k) s₀ = run (k PUnit.unit) s' := by simp [run]
 
 /-- Run a state computation, returning only the result. -/
 def evalState {σ : Type u} {α : Type v} (c : FreeState σ α) (s₀ : σ) : α :=
-  (runState c s₀).1
+  (run c s₀).1
 
 @[simp]
 lemma evalState_pure {σ : Type u} {α : Type v} (a : α) (s₀ : σ) :
@@ -257,7 +338,7 @@ lemma evalState_set {σ : Type u} {α : Type v} (s' : σ) (k : PUnit → FreeSta
 
 /-- Run a state computation, returning only the final state. -/
 def execState {σ : Type u} {α : Type v} (c : FreeState σ α) (s₀ : σ) : σ :=
-  (runState c s₀).2
+  (run c s₀).2
 
 @[simp]
 lemma execState_pure {σ : Type u} {α : Type v} (a : α) (s₀ : σ) :
@@ -271,14 +352,6 @@ lemma execState_get {σ : Type u} {α : Type v} (k : σ → FreeState σ α) (s�
 lemma execState_set {σ : Type u} {α : Type v} (s' : σ) (k : PUnit → FreeState σ α) (s₀ : σ) :
     execState (.liftBind (StateF.set s') k) s₀ = execState (k PUnit.unit) s' := by simp [execState]
 
-/-- Interpret `StateF` operations into `StateM`. -/
-def stateInterp {σ : Type u} : {α : Type u} → StateF σ α → StateM σ α
-  | _, StateF.get => MonadStateOf.get
-  | _, StateF.set s => MonadStateOf.set s
-
-/-- Convert a `FreeState` computation into a `StateM` computation. -/
-def toStateM {σ α : Type u} (comp : FreeState σ α) : StateM σ α :=
-  comp.mapM stateInterp
 
 end FreeState
 
@@ -302,6 +375,14 @@ open WriterF
 instance {ω : Type u} : Monad (FreeWriter ω) := inferInstance
 instance {ω : Type u} : LawfulMonad (FreeWriter ω) := inferInstance
 
+/-- Interpret `WriterF` operations into `WriterT`. -/
+def writerInterp {ω : Type u} : {α : Type u} → WriterF ω α → WriterT ω Id α
+  | _, WriterF.tell w => MonadWriter.tell w
+
+/-- Convert a `FreeWriter` computation into a `WriterT` computation. -/
+def toWriterT {ω α : Type u} [Monoid ω] (comp : FreeWriter ω α) : WriterT ω Id α :=
+  comp.mapM writerInterp
+
 /--
 Writes a log entry. This creates an effectful node in the computation tree.
 -/
@@ -322,6 +403,25 @@ def run {ω : Type u} [Monoid ω] {α} : FreeWriter ω α → α × ω
       let (a, w') := run (k PUnit.unit)
       (a, w * w')
 
+/--
+Interpret a `FreeWriter` computation by folding it through the canonical
+interpreter `mapM`, using `writerInterp` as the effect handler
+-/
+def fold {ω : Type u} [Monoid ω] {α} (comp : FreeWriter ω α) : α × ω :=
+  WriterT.run (comp.mapM writerInterp)
+
+/--
+The canonical interpreter `fold` derived from `mapM` agrees with the hand-written
+recursive interpreter `run` for `FreeWriter`.
+-/
+lemma run_eq_fold {ω : Type u} [Monoid ω] {α} (comp : FreeWriter ω α) :
+    run comp = fold comp := by
+  induction' comp with a b op cont ih
+  · simp only [fold, FreeM.mapM, pure, run, WriterT.run]
+  · simp only [fold, FreeM.mapM] at *
+    rcases op
+    · simp only [run]
+      congr <;> apply ih
 
 @[simp]
 lemma run_pure {ω : Type u} [Monoid ω] {α} (a : α) :
@@ -402,14 +502,6 @@ Execute a writer computation, returning only the accumulated log and discarding 
 def exec {ω : Type u} {α : Type v} [Monoid ω] (comp : FreeWriter ω α) : ω :=
   (run comp).2
 
-/-- Interpret `WriterF` operations into `WriterT`. -/
-def writerInterp {ω : Type u} : {α : Type u} → WriterF ω α → WriterT ω Id α
-  | _, WriterF.tell w => MonadWriter.tell w
-
-/-- Convert a `FreeWriter` computation into a `WriterT` computation. -/
-def toWriterT {ω α : Type u} [Monoid ω] (comp : FreeWriter ω α) : WriterT ω Id α :=
-  comp.mapM writerInterp
-
 end FreeWriter
 
 
@@ -432,11 +524,40 @@ namespace FreeCont
 instance {r : Type u} : Monad (FreeCont r) := inferInstance
 instance {r : Type u} : LawfulMonad (FreeCont r) := inferInstance
 
-/-- Run a continuation computation with the given continuation. -/
+/-- Interpret `ContF r` operations into `ContT r Id`. -/
+def contInterp {r : Type u} {α : Type v} : ContF r α → ContT r Id α
+  | ContF.callCC g => fun k => g (fun a => k a)
 
+/-- Convert a `FreeCont` computation into a `ContT` computation. -/
+def toContT {r α : Type u} (comp : FreeCont r α) : ContT r Id α :=
+  comp.mapM contInterp
+
+/-- Run a continuation computation with the given continuation. -/
 def run {r : Type u} {α : Type v} : FreeCont r α → (α → r) → r
   | .pure a, k => k a
   | .liftBind (ContF.callCC g) cont, k => g (fun a => run (cont a) k)
+
+/--
+Interpret a `FreeCont` computation by folding it through the canonical
+interpreter `mapM`, using `contInterp` as the effect handler
+-/
+def fold {r : Type u} {α : Type v} (comp : FreeCont r α) (k : α → r) : r :=
+  (comp.mapM contInterp) k
+
+/--
+The canonical interpreter `fold` derived from `mapM` agrees with the hand-written
+recursive interpreter `run` for `FreeCont`.
+-/
+lemma run_eq_fold {r : Type u} {α : Type v} (comp : FreeCont r α) (k : α → r) :
+    run comp k = fold comp k := by
+  induction' comp with a b op cont ih
+  · simp [fold, FreeM.mapM, pure, run]
+  · simp only [fold, FreeM.mapM] at *
+    rcases op
+    · simp only [run, bind] at *
+      congr
+      funext x
+      apply ih
 
 @[simp]
 lemma run_pure {r : Type u} {α : Type v} (a : α) (k : α → r) :
@@ -471,14 +592,6 @@ instance {r : Type u} : MonadCont (FreeCont r) where
 lemma run_map_callCC_apply {α β : Type v} (f : α → β) (a : α) :
     run (f <$> FreeCont.callCC (fun k => k.apply a)) id = f a := by
   simp
-
-/-- Interpret `ContF r` operations into `ContT r Id`. -/
-def contInterp {r : Type u} : {α : Type u} → ContF r α → ContT r Id α
-  | _, ContF.callCC g => fun k => g (fun a => k a)
-
-/-- Convert a `FreeCont` computation into a `ContT` computation. -/
-def toContT {r α : Type u} (comp : FreeCont r α) : ContT r Id α :=
-  comp.mapM contInterp
 
 end FreeCont
 

@@ -18,7 +18,7 @@ example : FreeState.execState (do
   return s : FreeState Nat Nat) 5 = 6 := by simp
 
 
-example : FreeState.runState (do
+example : FreeState.run (do
   let s ← get
   set (s + 1)
   return s : FreeState Nat Nat) 5 = (5, 6) := by simp
