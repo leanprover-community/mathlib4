@@ -554,16 +554,10 @@ lemma signedMeasure_totalVariation_eq_variation (μ : SignedMeasure X) :
         refine Eq.symm <| abs_of_nonneg <| nonneg_of_zero_le_restrict μ ?_
         exact zero_le_restrict_subset μ hsm (by simp) hs
       have h6 : μ (sᶜ ∩ p) = - |μ (sᶜ ∩ p)| := by
-        suffices |- μ (sᶜ ∩ p)| = - μ (sᶜ ∩ p) by
-          have : μ (sᶜ ∩ p) ≤ 0 := by
-            refine nonpos_of_restrict_le_zero μ ?_
-            exact restrict_le_zero_subset μ (MeasurableSet.compl_iff.mpr hsm) (by simp) hsc
-          simp [abs_of_nonpos this]
-        refine abs_of_nonneg ?_
-        rw [Left.nonneg_neg_iff]
-        refine nonpos_of_restrict_le_zero μ ?_
-        have : MeasurableSet sᶜ := by exact MeasurableSet.compl_iff.mpr hsm
-        exact restrict_le_zero_subset μ this (by simp) hsc
+        have h : μ (sᶜ ∩ p) ≤ 0 := by
+          refine nonpos_of_restrict_le_zero μ ?_
+          exact restrict_le_zero_subset μ (MeasurableSet.compl_iff.mpr hsm) (by simp) hsc
+        simp [abs_of_nonpos h]
       nth_rw 2 [h5, h6]
       simpa using abs_add_le (μ (s ∩ p)) (μ (sᶜ ∩ p))
     suffices (∑ p ∈ P, ‖μ p‖ₑ).toReal ≤ (μ.totalVariation r).toReal by
