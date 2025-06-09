@@ -312,7 +312,7 @@ variable (step :
 /-- In this section, we prove a general induction principle, which we need for the construction
 `Nat.prefixInduction q step0 step : (k : ℕ) →  (β k)` based on some
 `q : (n : ℕ) → (k : (i : Fin n) → (β i)) → Prop`. For
-the inducation start, `step0 : q 0 _` requires that `Fin 0` cannot be satisfied, and
+the inducation start, `step0 : q 0 _` always holds since `Fin 0` cannot be satisfied, and
 `step : (n : ℕ) → (k : (i : Fin n) → β i) → q n k → { a : β n // q (n + 1) (Fin.snoc k a) })`
 `(n : ℕ) : β n` constructs the next element satisfying `q (n + 1) _` from a proof of `q n k`
 and finding the next element.
