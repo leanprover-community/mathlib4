@@ -400,7 +400,6 @@ instance orderBot : OrderBot (FractionalIdeal S P) where
 theorem bot_eq_zero : (⊥ : FractionalIdeal S P) = 0 :=
   rfl
 
-@[simp]
 theorem le_zero_iff {I : FractionalIdeal S P} : I ≤ 0 ↔ I = 0 :=
   le_bot_iff
 
