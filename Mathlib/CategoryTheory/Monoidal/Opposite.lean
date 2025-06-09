@@ -324,10 +324,10 @@ instance : (MonoidalOpposite.mopMopEquivalence C).functor.Monoidal where
   δ' X Y := 𝟙 _
   μ' X Y := 𝟙 _
   η' := 𝟙 _
-  ε_η := by simp [ε, η]
-  η_ε := by simp [ε, η]
-  μ_δ X Y := by simp [μ, δ]
-  δ_μ X Y := by simp [μ, δ]
+  ε_η := Category.comp_id _
+  η_ε := Category.comp_id _
+  μ_δ X Y := Category.comp_id _
+  δ_μ X Y := Category.comp_id _
 
 @[simps!]
 instance : (MonoidalOpposite.mopMopEquivalence C).inverse.Monoidal where
@@ -335,10 +335,10 @@ instance : (MonoidalOpposite.mopMopEquivalence C).inverse.Monoidal where
   δ' X Y := 𝟙 _
   μ' X Y := 𝟙 _
   η' := 𝟙 _
-  ε_η := by simp [ε, η]
-  η_ε := by simp [ε, η]
-  μ_δ X Y := by simp [μ, δ]
-  δ_μ X Y := by simp [μ, δ]
+  ε_η := Category.comp_id _
+  η_ε := Category.comp_id _
+  μ_δ X Y := Category.comp_id _
+  δ_μ X Y := Category.comp_id _
 
 /-- The identification `mop X ⊗ mop Y = mop (Y ⊗ X)` as a natural isomorphism. -/
 @[simps!]
