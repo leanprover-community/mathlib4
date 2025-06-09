@@ -1213,14 +1213,20 @@ lemma quotient_norm_eq_norm (f: LipschitzH (G := G)): ‖(Submodule.Quotient.mk 
   . simp
   . exact Submodule.nonempty ConstF
 
-lemma GLW_preseves_norm (g: G) (w: W (G := G)): ‖(GRepW (G := G) (GRepW_base g)) w‖ = ‖w‖ := by
+-- Define the norm on invertible maps (Units) using the norm on the underlying linear maps
+noncomputable instance GL_W_opNorm : Norm (GL_W (G := G)) where
+  norm := fun f => ‖f.val‖
+
+lemma GLW_preseves_norm (g: G) (w: W (G := G)): ‖(GRepW (G := G) (GRepW_base g)).val w‖ = ‖w‖ := by
   unfold GL_W
   have exists_v: ∃ v, Submodule.Quotient.mk v = w := by
     apply Quotient.exists_rep
   obtain ⟨v, hv⟩ := exists_v
-  simp [GRepW, GRepW_base]
+  simp [GRepW, GRepW_base, GRepW_non_invertible]
   nth_rw 1 [← hv]
-  rw [Submodule.mapQ_apply]
+  rw [Representation.asGroupHom_apply]
+  simp
+  --rw [Submodule.mapQ_apply]
   rw [quotient_norm_eq_norm]
   rw [GRep_preserves_norm]
   rw [← hv]
