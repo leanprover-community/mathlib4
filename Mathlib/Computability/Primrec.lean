@@ -480,10 +480,10 @@ theorem nat_rec {f : α → β} {g : α → ℕ × β → β} (hf : Primrec f) (
           Nat.Primrec.id.pair <| (@Primcodable.prim α).comp Nat.Primrec.left).of_eq
       fun n => by
       simp only [Nat.unpaired, id_eq, Nat.unpair_pair, decode_prod_val, decode_nat,
-        Option.some_bind, Option.map_map, Option.map_some]
+        Option.bind_some, Option.map_map, Option.map_some]
       rcases @decode α _ n.unpair.1 with - | a; · rfl
       simp only [Nat.pred_eq_sub_one, encode_some, Nat.succ_eq_add_one, encodek, Option.map_some,
-        Option.some_bind, Option.map_map]
+        Option.bind_some, Option.map_map]
       induction n.unpair.2 <;> simp [*, encodek]
 
 theorem nat_rec' {f : α → ℕ} {g : α → β} {h : α → ℕ × β → β}
@@ -818,7 +818,7 @@ instance list : Primcodable (List α) :=
         apply Nat.case_strong_induction_on n; · simp
         intro n IH; simp
         rcases @decode α _ n.unpair.1 with - | a; · rfl
-        simp only [decode_eq_ofNat, Option.some.injEq, Option.some_bind, Option.map_some]
+        simp only [decode_eq_ofNat, Option.some.injEq, Option.bind_some, Option.map_some]
         suffices ∀ (o : Option (List ℕ)) (p), encode o = encode p →
             encode (Option.map (List.cons (encode a)) o) = encode (Option.map (List.cons a) p) from
           this _ _ (IH _ (Nat.unpair_right_le n))
@@ -1214,7 +1214,7 @@ theorem list_ofFn :
     ∀ {n} {f : Fin n → α → σ}, (∀ i, Primrec (f i)) → Primrec fun a => List.ofFn fun i => f i a
   | 0, _, _ => by simp only [List.ofFn_zero]; exact const []
   | n + 1, f, hf => by
-    simpa [List.ofFn_succ] using list_cons.comp (hf 0) (list_ofFn fun i => hf i.succ)
+    simpa using list_cons.comp (hf 0) (list_ofFn fun i => hf i.succ)
 
 theorem vector_ofFn {n} {f : Fin n → α → σ} (hf : ∀ i, Primrec (f i)) :
     Primrec fun a => List.Vector.ofFn fun i => f i a :=

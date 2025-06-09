@@ -159,7 +159,7 @@ theorem exists_disjoint_powers_of_span_eq_top (s : Set α) (hs : span s = ⊤) (
 
 theorem span_singleton_lt_span_singleton [IsDomain α] {x y : α} :
     span ({x} : Set α) < span ({y} : Set α) ↔ DvdNotUnit y x := by
-  rw [lt_iff_le_not_le, span_singleton_le_span_singleton, span_singleton_le_span_singleton,
+  rw [lt_iff_le_not_ge, span_singleton_le_span_singleton, span_singleton_le_span_singleton,
     dvd_and_not_dvd_iff]
 
 lemma isPrime_of_maximally_disjoint (I : Ideal α)

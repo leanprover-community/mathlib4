@@ -315,7 +315,7 @@ theorem separable_iff_derivative_ne_zero {f : F[X]} (hf : Irreducible f) :
       have : f ∣ derivative f := by
         conv_lhs => rw [hg3, ← hu]
         rwa [Units.mul_right_dvd]
-      not_lt_of_le (natDegree_le_of_dvd this h) <|
+      not_lt_of_ge (natDegree_le_of_dvd this h) <|
         natDegree_derivative_lt <| mt derivative_of_natDegree_zero h⟩
 
 attribute [local instance] Ideal.Quotient.field in
@@ -404,7 +404,7 @@ theorem unique_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : 0 
   revert g₁ g₂
   wlog hn : n₁ ≤ n₂
   · intro g₁ hg₁ Hg₁ g₂ hg₂ Hg₂
-    simpa only [eq_comm] using this p hf hp n₂ n₁ (le_of_not_le hn) g₂ hg₂ Hg₂ g₁ hg₁ Hg₁
+    simpa only [eq_comm] using this p hf hp n₂ n₁ (le_of_not_ge hn) g₂ hg₂ Hg₂ g₁ hg₁ Hg₁
   have hf0 : f ≠ 0 := hf.ne_zero
   intros g₁ hg₁ hgf₁ g₂ hg₂ hgf₂
   rw [le_iff_exists_add] at hn
