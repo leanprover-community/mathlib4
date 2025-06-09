@@ -280,7 +280,7 @@ lemma Ideal.depth_le_height [IsLocalRing R] (I : Ideal R) (netop : I ≠ ⊤):
     ← ofList_height_eq_length_of_isRegular rs reg.1 (fun r hr ↦ le_maximalIdeal netop (mem r hr))]
   exact Ideal.height_mono (span_le.mpr mem)
 
-lemma Ideal.depth_eq_height [IsCohenMacaulayLocalRing R] (I : Ideal R) (netop : I ≠ ⊤):
+lemma Ideal.depth_eq_height [IsCohenMacaulayLocalRing R] (I : Ideal R) (netop : I ≠ ⊤) :
     I.depth (ModuleCat.of R R) = I.height := by
   apply le_antisymm (I.depth_le_height netop)
   rcases Ideal.exists_spanRank_eq_and_height_eq I netop with ⟨J, le, rank, ht⟩
@@ -301,3 +301,41 @@ lemma Ideal.depth_eq_height [IsCohenMacaulayLocalRing R] (I : Ideal R) (netop : 
     (by simp [Ideal.ofList, span, ← Ideal.submodule_span_eq, rank])
   use fun r hr ↦ le (le_of_eq span (Submodule.subset_span (Finset.mem_toList.mp hr)))
   simp [rank]
+
+omit [IsNoetherianRing R] in
+lemma Ideal.primeHeight_eq_ringKrullDim_localization (p : Ideal R) [p.IsPrime]
+    (R' : Type*) [CommRing R'] [Algebra R R'] [IsLocalization.AtPrime R' p] :
+    p.primeHeight = ringKrullDim R' := by
+  simp [Ideal.primeHeight, ringKrullDim, Order.krullDim_eq_of_orderIso
+    (IsLocalization.AtPrime.primeSpectrumOrderIso R' p), ← Order.height_eq_krullDim_Iic]
+
+lemma Ideal.primeHeight_add_ringKrullDim_quotient_eq_ringKrullDim [IsCohenMacaulayLocalRing R]
+    (p : Ideal R) [p.IsPrime] : p.primeHeight + ringKrullDim (R ⧸ p) = ringKrullDim R := by
+
+  sorry
+
+omit [IsNoetherianRing R] in
+lemma ringKrullDim_quotient_eq_iSup_quotient_minimalPrimes (I : Ideal R) :
+    ringKrullDim (R ⧸ I) = ⨆ p ∈ I.minimalPrimes, ringKrullDim (R ⧸ p) := by
+  apply le_antisymm
+  · simp only [ringKrullDim_quotient, Order.krullDim, iSup_le_iff]
+    intro sp
+    let _ := sp.head.1.2
+    rcases Ideal.exists_minimalPrimes_le ((PrimeSpectrum.mem_zeroLocus _ _).mp sp.head.2) with
+      ⟨p, min, le⟩
+    apply le_trans _ (le_biSup _ min)
+    let sp' : LTSeries (PrimeSpectrum.zeroLocus (p : Set R)) := {
+      length := sp.length
+      toFun i := ⟨(sp.toFun i).1, le_trans le (Subtype.coe_le_coe.mpr (LTSeries.head_le sp i))⟩
+      step i := sp.step i }
+    convert le_iSup _ sp'
+    rfl
+  · simp only [iSup_le_iff]
+    intro p hp
+    exact ringKrullDim_le_of_surjective _ (Ideal.Quotient.factor_surjective hp.1.2)
+
+lemma Ideal.height_add_ringKrullDim_quotient_eq_ringKrullDim [IsCohenMacaulayLocalRing R]
+    (I : Ideal R) (netop : I ≠ ⊤) : I.height + ringKrullDim (R ⧸ I) = ringKrullDim R := by
+  simp only [height, ringKrullDim_quotient_eq_iSup_quotient_minimalPrimes I]
+
+  sorry
