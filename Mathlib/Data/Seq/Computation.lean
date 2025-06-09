@@ -159,16 +159,16 @@ theorem think_empty : empty α = think (empty α) :=
   destruct_eq_think destruct_empty
 
 /-- Recursion principle for computations, compare with `List.recOn`. -/
-def recOn {C : Computation α → Sort v} (s : Computation α) (h1 : ∀ a, C (pure a))
-    (h2 : ∀ s, C (think s)) : C s :=
+def recOn {motive : Computation α → Sort v} (s : Computation α) (pure : ∀ a, motive (pure a))
+    (think : ∀ s, motive (think s)) : motive s :=
   match H : destruct s with
   | Sum.inl v => by
     rw [destruct_eq_pure H]
-    apply h1
+    apply pure
   | Sum.inr v => match v with
     | ⟨a, s'⟩ => by
       rw [destruct_eq_think H]
-      apply h2
+      apply think
 
 /-- Corecursor constructor for `corec` -/
 def Corec.f (f : β → α ⊕ β) : α ⊕ β → Option α × (α ⊕ β)
