@@ -40,7 +40,7 @@ the (Bochner) integral of `f` (as a `ℝ`-valued function) with respect to the `
 associated to `Λ` is equal to `Λ f`. -/
 theorem integral_rieszMeasure (f : C_c(X, ℝ≥0)) : ∫ (x : X), (f x : ℝ) ∂(rieszMeasure Λ) = Λ f := by
   rw [← eq_toRealLinear_toReal Λ f,
-      ← RealRMK.integral_rieszMeasure (@nonneg_toRealLinear _ _ Λ) f.toReal]
+      ← RealRMK.integral_rieszMeasure (toRealLinear_nonneg Λ) f.toReal]
   simp only [toReal_apply]
   congr
   exact Eq.symm (eq_toNNRealLinear_toRealLinear Λ)
