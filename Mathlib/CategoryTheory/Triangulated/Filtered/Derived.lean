@@ -285,7 +285,7 @@ example (n : ℤ) (X : (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory)
     id_comp, id_comp, id_comp, id_comp, id_comp, id_comp, id_comp, id_comp, id_comp, id_comp,
     comp_id, comp_id, comp_id, comp_id, comp_id, comp_id, comp_id, comp_id]
   simp only [assoc]
-
+  sorry
 
 lemma FilteredAcyclicToComplex_diff_functor (X : (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory)
     (n : ℤ) : (FilteredAcyclicToComplex_deg_functor L₁ t₁ tF₁ L₂ t₂ tF₂ T FT n).hom.app X ≫
