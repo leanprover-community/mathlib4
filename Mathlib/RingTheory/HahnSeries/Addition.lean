@@ -410,9 +410,7 @@ theorem order_neg [Zero Γ] {f : HahnSeries Γ R} : (-f).order = f.order := by
 theorem leadingCoeff_neg {x : HahnSeries Γ R} : (-x).leadingCoeff = -x.leadingCoeff := by
   obtain rfl | hx := eq_or_ne x 0
   · simp
-  · rw [leadingCoeff_eq_coeff_orderTop hx, leadingCoeff_eq_coeff_orderTop (neg_ne_zero.mpr hx)]
-    rw [coeff_neg]
-    simp
+  · simp [← coeff_untop_eq_leadingCoeff hx, ← coeff_untop_eq_leadingCoeff (neg_ne_zero.mpr hx)]
 
 @[simp]
 protected lemma map_sub [AddGroup S] (f : R →+ S) {x y : HahnSeries Γ R} :
