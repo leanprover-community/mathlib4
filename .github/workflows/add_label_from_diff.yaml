@@ -43,7 +43,7 @@ jobs:
               --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
               --header 'X-GitHub-Api-Version: 2022-11-28' \
               --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels \
-              --data '{"labels":["${label}"]}'
+              --data "{'labels':[${label}]}"
           else
             echo "We are not applying any label."
           fi
