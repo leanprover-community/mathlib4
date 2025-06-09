@@ -269,7 +269,7 @@ the statement of `compare_comp_eq_compare` is the commutativity of the right tri
   |        V  ∨
  α ---f---> γ
 ```
- -/
+-/
 theorem compare_comp_eq_compare (γ : Type*) [TopologicalSpace γ]
     [T3Space γ] {f : α → γ} (cont_f : Continuous f) :
     letI := pkg.uniformStruct.toTopologicalSpace

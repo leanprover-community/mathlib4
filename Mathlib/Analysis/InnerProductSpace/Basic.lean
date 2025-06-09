@@ -6,7 +6,6 @@ Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.InnerProductSpace.Defs
-import Mathlib.GroupTheory.MonoidLocalization.Basic
 
 /-!
 # Properties of inner product spaces
@@ -58,6 +57,9 @@ theorem real_inner_comm (x y : F) : ⟪y, x⟫_ℝ = ⟪x, y⟫_ℝ :=
 theorem inner_eq_zero_symm {x y : E} : ⟪x, y⟫ = 0 ↔ ⟪y, x⟫ = 0 := by
   rw [← inner_conj_symm]
   exact star_eq_zero
+
+instance {ι : Sort*} (v : ι → E) : IsSymm ι fun i j => ⟪v i, v j⟫ = 0 where
+  symm _ _ := inner_eq_zero_symm.1
 
 @[simp]
 theorem inner_self_im (x : E) : im ⟪x, x⟫ = 0 := by rw [← @ofReal_inj 𝕜, im_eq_conj_sub]; simp
@@ -264,6 +266,18 @@ theorem real_inner_mul_inner_self_le (x y : F) : ⟪x, y⟫_ℝ * ⟪x, y⟫_ℝ
       rw [real_inner_comm y, ← norm_mul]
       exact le_abs_self _
     _ ≤ ⟪x, x⟫_ℝ * ⟪y, y⟫_ℝ := @inner_mul_inner_self_le ℝ _ _ _ _ x y
+
+theorem inner_eq_ofReal_norm_sq_left_iff {v w : E} : ⟪v, w⟫_𝕜 = ‖v‖ ^ 2 ↔ ⟪v, v - w⟫_𝕜 = 0 := by
+  rw [inner_sub_right, sub_eq_zero, inner_self_eq_norm_sq_to_K, eq_comm]
+
+theorem inner_eq_norm_sq_left_iff {v w : F} : ⟪v, w⟫_ℝ = ‖v‖ ^ 2 ↔ ⟪v, v - w⟫_ℝ = 0 :=
+  inner_eq_ofReal_norm_sq_left_iff
+
+theorem inner_eq_ofReal_norm_sq_right_iff {v w : E} : ⟪v, w⟫_𝕜 = ‖w‖ ^ 2 ↔ ⟪v - w, w⟫_𝕜 = 0 := by
+  rw [inner_sub_left, sub_eq_zero, inner_self_eq_norm_sq_to_K, eq_comm]
+
+theorem inner_eq_norm_sq_right_iff {v w : F} : ⟪v, w⟫_ℝ = ‖w‖ ^ 2 ↔ ⟪v - w, w⟫_ℝ = 0 :=
+  inner_eq_ofReal_norm_sq_right_iff
 
 end BasicProperties_Seminormed
 
@@ -522,7 +536,7 @@ theorem norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (x y : E) (h : ⟪x,
     ‖x + y‖ * ‖x + y‖ = ‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ := by
   rw [@norm_add_mul_self 𝕜, add_right_cancel_iff, add_eq_left, mul_eq_zero]
   apply Or.inr
-  simp only [h, zero_re']
+  simp only [h, zero_re]
 
 /-- Pythagorean theorem, vector inner product form. -/
 theorem norm_add_sq_eq_norm_sq_add_norm_sq_real {x y : F} (h : ⟪x, y⟫_ℝ = 0) :
@@ -566,7 +580,7 @@ theorem real_inner_add_sub_eq_zero_iff (x y : F) : ⟪x + y, x - y⟫_ℝ = 0 �
 /-- Given two orthogonal vectors, their sum and difference have equal norms. -/
 theorem norm_sub_eq_norm_add {v w : E} (h : ⟪v, w⟫ = 0) : ‖w - v‖ = ‖w + v‖ := by
   rw [← mul_self_inj_of_nonneg (norm_nonneg _) (norm_nonneg _)]
-  simp only [h, ← @inner_self_eq_norm_mul_norm 𝕜, sub_neg_eq_add, sub_zero, map_sub, zero_re',
+  simp only [h, ← @inner_self_eq_norm_mul_norm 𝕜, sub_neg_eq_add, sub_zero, map_sub, zero_re,
     zero_sub, add_zero, map_add, inner_add_right, inner_sub_left, inner_sub_right, inner_re_symm,
     zero_add]
 
@@ -798,6 +812,12 @@ theorem eq_of_norm_le_re_inner_eq_norm_sq {x y : E} (hle : ‖x‖ ≤ ‖y‖) 
   have H₁ : ‖x‖ ^ 2 ≤ ‖y‖ ^ 2 := by gcongr
   have H₂ : re ⟪y, x⟫ = ‖y‖ ^ 2 := by rwa [← inner_conj_symm, conj_re]
   simpa [inner_sub_left, inner_sub_right, ← norm_sq_eq_re_inner, h, H₂] using H₁
+
+/-- Equality is achieved in the triangle inequality iff the two vectors are collinear. -/
+theorem norm_add_eq_iff_real {x y : F} : ‖x + y‖ = ‖x‖ + ‖y‖ ↔ ‖y‖ • x = ‖x‖ • y := by
+  rw [← pow_left_inj₀ (norm_nonneg _) (Left.add_nonneg (norm_nonneg _) (norm_nonneg _)) two_ne_zero,
+    norm_add_sq (𝕜 := ℝ), add_pow_two, add_left_inj, add_right_inj, re_to_real, mul_assoc,
+    mul_right_inj' two_ne_zero, ← inner_eq_norm_mul_iff_real]
 
 end Norm
 

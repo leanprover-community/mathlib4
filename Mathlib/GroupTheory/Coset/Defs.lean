@@ -55,7 +55,7 @@ variable [Group α] (s : Subgroup α)
 /-- The equivalence relation corresponding to the partition of a group by left cosets
 of a subgroup. -/
 @[to_additive "The equivalence relation corresponding to the partition of a group by left cosets
- of a subgroup."]
+of a subgroup."]
 def leftRel : Setoid α :=
   MulAction.orbitRel s.op α
 
@@ -83,7 +83,7 @@ instance leftRelDecidable [DecidablePred (· ∈ s)] : DecidableRel (leftRel s).
 /-- `α ⧸ s` is the quotient type representing the left cosets of `s`.
   If `s` is a normal subgroup, `α ⧸ s` is a group -/
 @[to_additive "`α ⧸ s` is the quotient type representing the left cosets of `s`. If `s` is a normal
- subgroup, `α ⧸ s` is a group"]
+subgroup, `α ⧸ s` is a group"]
 instance instHasQuotientSubgroup : HasQuotient α (Subgroup α) :=
   ⟨fun s => Quotient (leftRel s)⟩
 
@@ -94,7 +94,7 @@ instance [DecidablePred (· ∈ s)] : DecidableEq (α ⧸ s) :=
 /-- The equivalence relation corresponding to the partition of a group by right cosets of a
 subgroup. -/
 @[to_additive "The equivalence relation corresponding to the partition of a group by right cosets
- of a subgroup."]
+of a subgroup."]
 def rightRel : Setoid α :=
   MulAction.orbitRel s α
 

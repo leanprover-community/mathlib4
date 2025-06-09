@@ -14,12 +14,12 @@ import Mathlib.MeasureTheory.Measure.Real
 
 The Bochner integral extends the definition of the Lebesgue integral to functions that map from a
 measure space into a Banach space (complete normed vector space). It is constructed here using
-the L1 Bochner integral constructed in the file `Mathlib.MeasureTheory.Integral.Bochner.L1`.
+the L1 Bochner integral constructed in the file `Mathlib/MeasureTheory/Integral/Bochner/L1.lean`.
 
 ## Main definitions
 
 The Bochner integral is defined through the extension process described in the file
-`Mathlib.MeasureTheory.Integral.SetToL1`, which follows these steps:
+`Mathlib/MeasureTheory/Integral/SetToL1.lean`, which follows these steps:
 
 * `MeasureTheory.integral`: the Bochner integral on functions defined as the Bochner integral of
   its equivalence class in L1 space, if it is in L1, and 0 otherwise.
@@ -27,7 +27,7 @@ The Bochner integral is defined through the extension process described in the f
 The result of that construction is `∫ a, f a ∂μ`, which is definitionally equal to
 `setToFun (dominatedFinMeasAdditive_weightedSMul μ) f`. Some basic properties of the integral
 (like linearity) are particular cases of the properties of `setToFun` (which are described in the
-file `Mathlib.MeasureTheory.Integral.SetToL1`).
+file `Mathlib/MeasureTheory/Integral/SetToL1.lean`).
 
 ## Main statements
 
@@ -60,10 +60,10 @@ file `Mathlib.MeasureTheory.Integral.SetToL1`).
     where `f⁺` is the positive part of `f` and `f⁻` is the negative part of `f`.
   * `integral_eq_lintegral_of_nonneg_ae`          : `0 ≤ᵐ[μ] f → ∫ x, f x ∂μ = ∫⁻ x, f x ∂μ`
 
-4. (In the file `Mathlib.MeasureTheory.Integral.DominatedConvergence`)
+4. (In the file `Mathlib/MeasureTheory/Integral/DominatedConvergence.lean`)
   `tendsto_integral_of_dominated_convergence` : the Lebesgue dominated convergence theorem
 
-5. (In the file `Mathlib.MeasureTheory.Integral.SetIntegral`) integration commutes with continuous
+5. (In `Mathlib/MeasureTheory/Integral/SetIntegral.lean`) integration commutes with continuous
   linear maps.
 
   * `ContinuousLinearMap.integral_comp_comm`
@@ -76,7 +76,7 @@ Some tips on how to prove a proposition if the API for the Bochner integral is n
 you need to unfold the definition of the Bochner integral and go back to simple functions.
 
 One method is to use the theorem `Integrable.induction` in the file
-`Mathlib.MeasureTheory.Function.SimpleFuncDenseLp` (or one of the related results, like
+`Mathlib/MeasureTheory/Function/SimpleFuncDenseLp.lean` (or one of the related results, like
 `Lp.induction` for functions in `Lp`), which allows you to prove something for an arbitrary
 integrable function.
 
@@ -148,7 +148,7 @@ Define the Bochner integral on functions generally to be the `L1` Bochner integr
 functions, and 0 otherwise; prove its basic properties.
 -/
 
-variable [NormedAddCommGroup E] [hE : CompleteSpace E] [NontriviallyNormedField 𝕜]
+variable [NormedAddCommGroup E] [hE : CompleteSpace E] [NormedDivisionRing 𝕜]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
 
@@ -266,12 +266,24 @@ theorem integral_sub' {f g : α → G} (hf : Integrable f μ) (hg : Integrable g
     ∫ a, (f - g) a ∂μ = ∫ a, f a ∂μ - ∫ a, g a ∂μ :=
   integral_sub hf hg
 
+/-- The Bochner integral is linear. Note this requires `𝕜` to be a normed division ring, in order
+to ensure that for `c ≠ 0`, the function `c • f` is integrable iff `f` is. For an analogous
+statement for more general rings with an *a priori* integrability assumption on `f`, see
+`MeasureTheory.Integrable.integral_smul`. -/
 @[integral_simps]
-theorem integral_smul [NormedSpace 𝕜 G] [SMulCommClass ℝ 𝕜 G] (c : 𝕜) (f : α → G) :
+theorem integral_smul [Module 𝕜 G] [NormSMulClass 𝕜 G] [SMulCommClass ℝ 𝕜 G] (c : 𝕜) (f : α → G) :
     ∫ a, c • f a ∂μ = c • ∫ a, f a ∂μ := by
   by_cases hG : CompleteSpace G
   · simp only [integral, hG, L1.integral]
     exact setToFun_smul (dominatedFinMeasAdditive_weightedSMul μ) weightedSMul_smul c f
+  · simp [integral, hG]
+
+theorem Integrable.integral_smul {R : Type*} [NormedRing R] [Module R G] [IsBoundedSMul R G]
+    [SMulCommClass ℝ R G] (c : R)
+    {f : α → G} (hf : Integrable f μ) :
+    ∫ a, c • f a ∂μ = c • ∫ a, f a ∂μ := by
+  by_cases hG : CompleteSpace G
+  · simpa only [integral, hG, hf, hf.fun_smul c] using L1.integral_smul c (toL1 f hf)
   · simp [integral, hG]
 
 theorem integral_const_mul {L : Type*} [RCLike L] (r : L) (f : α → L) :
@@ -765,7 +777,7 @@ lemma integral_tendsto_of_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
   have h_cont := ENNReal.continuousAt_toReal (x := ∫⁻ a, ENNReal.ofReal ((F - f 0) a) ∂μ) ?_
   swap
   · rw [← ofReal_integral_eq_lintegral_ofReal (hF.sub (hf 0)) hF_ge]
-    exact ENNReal.ofReal_ne_top
+    finiteness
   refine h_cont.tendsto.comp ?_
   -- use the result for the Lebesgue integral
   refine lintegral_tendsto_of_tendsto_of_monotone ?_ ?_ ?_
@@ -848,7 +860,7 @@ lemma tendsto_of_integral_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
     · simp [ha_bound 0]
   rw [h1, h2]
   refine Filter.Tendsto.add ?_ tendsto_const_nhds
-  exact (ENNReal.continuousAt_toReal ENNReal.ofReal_ne_top).tendsto.comp ha
+  exact (ENNReal.continuousAt_toReal (by finiteness)).tendsto.comp ha
 
 /-- If an antitone sequence of functions has a lower bound and the sequence of integrals of these
 functions tends to the integral of the lower bound, then the sequence of functions converges
@@ -1206,13 +1218,13 @@ theorem integral_mul_norm_le_Lp_mul_Lq {E} [NormedAddCommGroup E] {f g : α → 
       · rw [ENNReal.toReal_ofReal hpq.nonneg]
       · rw [Ne, ENNReal.ofReal_eq_zero, not_le]
         exact hpq.pos
-      · exact ENNReal.coe_ne_top
+      · finiteness
     · convert hg.eLpNorm_ne_top
       rw [eLpNorm_eq_lintegral_rpow_enorm]
       · rw [ENNReal.toReal_ofReal hpq.symm.nonneg]
       · rw [Ne, ENNReal.ofReal_eq_zero, not_le]
         exact hpq.symm.pos
-      · exact ENNReal.coe_ne_top
+      · finiteness
   · exact ENNReal.lintegral_mul_le_Lp_mul_Lq μ hpq hf.1.nnnorm.aemeasurable.coe_nnreal_ennreal
       hg.1.nnnorm.aemeasurable.coe_nnreal_ennreal
 
@@ -1405,9 +1417,7 @@ theorem eLpNorm_one_le_of_le {r : ℝ≥0} (hfint : Integrable f μ) (hfint' : 0
     filter_upwards [hf] with ω hω using Real.toNNReal_le_iff_le_coe.2 hω
   rw [MemLp.eLpNorm_eq_integral_rpow_norm one_ne_zero ENNReal.one_ne_top
       (memLp_one_iff_integrable.2 hfint),
-    ENNReal.ofReal_le_iff_le_toReal
-      (ENNReal.mul_ne_top (ENNReal.mul_ne_top ENNReal.ofNat_ne_top <| @measure_ne_top _ _ _ hμ _)
-        ENNReal.coe_ne_top)]
+    ENNReal.ofReal_le_iff_le_toReal (by finiteness)]
   simp_rw [ENNReal.toReal_one, _root_.inv_one, Real.rpow_one, Real.norm_eq_abs, ←
     max_zero_add_max_neg_zero_eq_abs_self, ← Real.coe_toNNReal']
   rw [integral_add hfint.real_toNNReal]
