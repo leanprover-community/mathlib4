@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Ordered vector spaces
@@ -63,3 +64,60 @@ lemma smul_inv_lt_iff_of_neg (h : a < 0) : b₁ < a⁻¹ • b₂ ↔ b₂ < a �
   rw [← smul_lt_smul_iff_of_neg_left h, smul_inv_smul₀ h.ne]
 
 end Field
+
+namespace Mathlib.Meta.Positivity
+open Lean Meta Qq Function
+
+variable {α β : Type*}
+
+section OrderedSMul
+variable [Zero α] [Zero β] [SMulZeroClass α β] [Preorder α] [Preorder β] [PosSMulMono α β] {a : α}
+  {b : β}
+
+private theorem smul_nonneg_of_pos_of_nonneg (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a • b :=
+  smul_nonneg ha.le hb
+
+private theorem smul_nonneg_of_nonneg_of_pos (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a • b :=
+  smul_nonneg ha hb.le
+
+end OrderedSMul
+
+section NoZeroSMulDivisors
+variable [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] {a : α} {b : β}
+
+private theorem smul_ne_zero_of_pos_of_ne_zero [Preorder α] (ha : 0 < a) (hb : b ≠ 0) : a • b ≠ 0 :=
+  smul_ne_zero ha.ne' hb
+
+private theorem smul_ne_zero_of_ne_zero_of_pos [Preorder β] (ha : a ≠ 0) (hb : 0 < b) : a • b ≠ 0 :=
+  smul_ne_zero ha hb.ne'
+
+end NoZeroSMulDivisors
+
+/-- Positivity extension for HSMul, i.e. (_ • _). -/
+@[positivity HSMul.hSMul _ _]
+def evalHSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
+  let .app (.app (.app (.app (.app (.app
+        (.const ``HSMul.hSMul [u1, _, _]) (β : Q(Type u1))) _) _) _)
+          (a : Q($β))) (b : Q($α)) ← whnfR e | throwError "failed to match hSMul"
+  let zM : Q(Zero $β) ← synthInstanceQ q(Zero $β)
+  let pM : Q(PartialOrder $β) ← synthInstanceQ q(PartialOrder $β)
+  -- Using `q()` here would be impractical, as we would have to manually `synthInstanceQ` all the
+  -- required typeclasses. Ideally we could tell `q()` to do this automatically.
+  match ← core zM pM a, ← core zα pα b with
+  | .positive pa, .positive pb =>
+      pure (.positive (← mkAppM ``smul_pos #[pa, pb]))
+  | .positive pa, .nonnegative pb =>
+      pure (.nonnegative (← mkAppM ``smul_nonneg_of_pos_of_nonneg #[pa, pb]))
+  | .nonnegative pa, .positive pb =>
+      pure (.nonnegative (← mkAppM ``smul_nonneg_of_nonneg_of_pos #[pa, pb]))
+  | .nonnegative pa, .nonnegative pb =>
+      pure (.nonnegative (← mkAppM ``smul_nonneg #[pa, pb]))
+  | .positive pa, .nonzero pb =>
+      pure (.nonzero (← mkAppM ``smul_ne_zero_of_pos_of_ne_zero #[pa, pb]))
+  | .nonzero pa, .positive pb =>
+      pure (.nonzero (← mkAppM ``smul_ne_zero_of_ne_zero_of_pos #[pa, pb]))
+  | .nonzero pa, .nonzero pb =>
+      pure (.nonzero (← mkAppM ``smul_ne_zero #[pa, pb]))
+  | _, _ => pure .none
+
+end Mathlib.Meta.Positivity
