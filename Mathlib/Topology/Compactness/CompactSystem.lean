@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Peter Pfaffelhuber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne, Peter Pfaffelhuber
+Authors: Rémy Degenne, Peter Pfaffelhuber, Joachim Breitner
 -/
 import Mathlib.Data.Set.Dissipate
 import Mathlib.Logic.IsEmpty
@@ -12,7 +12,9 @@ import Mathlib.Topology.Separation.Hausdorff
 /-!
 # Compact systems.
 
-This file defines compact systems of sets.
+This file defines compact systems of sets. These are set systems `p : Set α → Prop` with the
+following property: If `C : ℕ → Set α` is such that `∀ n, p (C n)` and `⋂ n, C n = ∅`, then
+there is some `N : ℕ` with `⋂ n < N, C n = ∅`.
 
 ## Main definitions
 
@@ -521,9 +523,7 @@ noncomputable def mem_of_union (L : ℕ → Finset (Set α))
   (hL : ∀ N, (⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet).Nonempty) : (k : ℕ) → L k :=
   Nat.prefixInduction' (q L) (step0 hL) (step')
 
-namespace mem_of_union
-
-theorem spec (L : ℕ → Finset (Set α))
+theorem mem_of_union.spec (L : ℕ → Finset (Set α))
     (hL : ∀ N, (⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet).Nonempty) (n : ℕ) :
     (∀ N, ((⋂ (j : Fin n), (mem_of_union L hL) j) ∩ (⋂ (k < N), ⋃₀ (L (n + k)).toSet)).Nonempty) :=
   Nat.prefixInduction'_spec (β := fun n ↦ {a // a ∈ L n}) (q L) (step0 hL) (step') n
@@ -533,29 +533,24 @@ lemma l1 (L : ℕ → Finset (Set α))
       (mem_of_union L hL k).val ∈ (L k).toSet := by
   exact (mem_of_union L hL k).prop
 
-
-lemma l2 (L : ℕ → Finset (Set α))
+lemma sInter_memOfUnion_nonempty (L : ℕ → Finset (Set α))
     (hL : ∀ N, (⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet).Nonempty) (n : ℕ) :
     (⋂ (j : Fin n), (mem_of_union L hL j).val).Nonempty := by
-  have h := spec L hL n 0
+  have h := mem_of_union.spec L hL n 0
   simp only [not_lt_zero, iInter_of_empty, iInter_univ, inter_univ] at h
   exact h
 
-lemma isSubsetN0 (L : ℕ → Finset (Set α)) (hL : ∀ N, (⋂ k < N, ⋃₀ (L k).toSet).Nonempty) :
-    (⋂ j, (mem_of_union L hL j)) ⊆
-      ⋂ k, (⋃₀ (L k).toSet) := by
+lemma sInter_memOfUnion_isSubset (L : ℕ → Finset (Set α))
+    (hL : ∀ N, (⋂ k < N, ⋃₀ (L k).toSet).Nonempty) :
+    (⋂ j, (mem_of_union L hL j)) ⊆ ⋂ k, (⋃₀ (L k).toSet) := by
   exact iInter_mono <| fun n ↦
   subset_sUnion_of_subset (↑(L n)) (mem_of_union L hL n).val (fun ⦃a⦄ a ↦ a) (l1 L hL n)
-
-end mem_of_union
 
 /-- Finite unions of sets in a compact system. -/
 def union (p : Set α → Prop) : Set α → Prop :=
   (sUnion '' ({ L : Set (Set α) | L.Finite ∧ ∀ K ∈ L, p K}))
 
-namespace union
-
-lemma mem_iff (s : Set α) : union p s ↔ ∃ L : Finset (Set α), s = ⋃₀ L ∧ ∀ K ∈ L, p K := by
+lemma union.mem_iff (s : Set α) : union p s ↔ ∃ L : Finset (Set α), s = ⋃₀ L ∧ ∀ K ∈ L, p K := by
   refine ⟨fun ⟨L, hL⟩ ↦ ?_, fun h ↦ ?_⟩
   · simp only [mem_setOf_eq] at hL
     let L' := (hL.1.1).toFinset
@@ -569,21 +564,20 @@ lemma mem_iff (s : Set α) : union p s ↔ ∃ L : Finset (Set α), s = ⋃₀ L
     simp only [mem_setOf_eq, Finset.finite_toSet, Finset.mem_coe, true_and]
     refine ⟨hL.2, hL.1.symm⟩
 
-theorem isCompactSystem (p : Set α → Prop)(hp : IsCompactSystem p) : IsCompactSystem (union p) := by
+theorem union.isCompactSystem (p : Set α → Prop)(hp : IsCompactSystem p) :
+    IsCompactSystem (union p) := by
   rw [iff_nonempty_iInter_of_lt]
   intro C hi
   simp_rw [mem_iff] at hi
   choose L' hL' using hi
   simp_rw [hL']
   intro hL
-  have h₁ := mem_of_union.l2 L' hL
+  have h₁ := sInter_memOfUnion_nonempty L' hL
   have h₂ : (∀ (i : ℕ), p ↑(mem_of_union L' hL i)) :=
     fun i ↦ (hL' i).2 (mem_of_union L' hL i).val (mem_of_union L' hL i).prop
   have h₃ := (iff_nonempty_iInter_of_lt' p).mp hp (fun k ↦ (mem_of_union L' hL k).val) h₂ h₁
-  have h₄ : ⋂ i, (mem_of_union L' hL) i ⊆ ⋂ i, ⋃₀ (L' i).toSet := mem_of_union.isSubsetN0 L' hL
+  have h₄ : ⋂ i, (mem_of_union L' hL) i ⊆ ⋂ i, ⋃₀ (L' i).toSet := sInter_memOfUnion_isSubset L' hL
   exact Nonempty.mono h₄ h₃
-
-end union
 
 end Union
 
@@ -650,84 +644,18 @@ variable [∀ i, TopologicalSpace (α i)]
 variable (α)
 /-- The set of sets of the form `s.pi t`, where `s : Finset ι` and `t i` is both,
 closed and compact, for all `i ∈ s`. -/
-def compactClosedSquareCylinders : Set (Set (Π i, α i)) :=
-  ⋃ (s) (t) (_ : ∀ i ∈ s, IsCompact (t i) ∧ IsClosed (t i)), {squareCylinder s t}
+def MeasureTheory.compactClosedSquareCylinders : Set (Set (Π i, α i)) :=
+  MeasureTheory.squareCylinders (fun i ↦ { t : Set (α i) | IsCompact t ∧ IsClosed t })
 
-def squareCylinders_of_prop (p : (i : ι) → Set (α i) → Prop) : Set (Set (Π i, α i)) :=
-  ⋃ (s) (t) (_ : ∀ i ∈ s, p i (t i)), {squareCylinder s t}
+/-- Products of compact and closed sets form a compact system. -/
+theorem IsCompactSystem.compactClosedPi :
+    IsCompactSystem (univ.pi '' univ.pi (fun i ↦ { t : Set (α i) | IsCompact t ∧ IsClosed t })) :=
+  IsCompactSystem.pi _ (fun _ ↦ IsCompactSystem.of_isCompact_isClosed)
 
-variable {α}
-@[simp]
-theorem mem_compactClosedSquareCylinders_iff (S : Set (Π i, α i)) :
-    S ∈ compactClosedSquareCylinders α
-      ↔ ∃ (s t : _) (_ : ∀ i ∈ s, IsCompact (t i) ∧ IsClosed (t i)),
-        S = squareCylinder s t := by
-  simp_rw [compactClosedSquareCylinders, mem_iUnion, mem_singleton_iff]
-
-
-variable {S : Set (Π i, α i)}
-
-/-- Given a closed compact cylinder, choose a finset of variables such that it only depends on
-these variables. -/
-noncomputable def compactClosedSquareCylinders.finset (hS : S ∈ compactClosedSquareCylinders α) :
-    Finset ι :=
-  ((mem_compactClosedSquareCylinders_iff S).mp hS).choose
-
-/-- Given a closed compact square cylinder `S`, choose a dependent function `(i : ι) → Set (α i)`
-of which it is a lift. -/
-def closedCompactSquareCylinders.func (hS : S ∈ compactClosedSquareCylinders α) :
-    (i : ι) → Set (α i) :=
-  ((mem_compactClosedSquareCylinders_iff S).mp hS).choose_spec.choose
-
-theorem compactClosedSquareCylinders.isCompact_isClosed (hS : S ∈ compactClosedSquareCylinders α) :
-    ∀ i ∈ compactClosedSquareCylinders.finset hS,
-      IsCompact (closedCompactSquareCylinders.func hS i) ∧
-        IsClosed (closedCompactSquareCylinders.func hS i) :=
-  ((mem_compactClosedSquareCylinders_iff S).mp hS).choose_spec.choose_spec.choose
-
-theorem closedCompactSquareCylinders.eq_squareCylinder (hS : S ∈ compactClosedSquareCylinders α) :
-    S = squareCylinder (compactClosedSquareCylinders.finset hS)
-      (closedCompactSquareCylinders.func hS) :=
-  ((mem_compactClosedSquareCylinders_iff S).mp hS).choose_spec.choose_spec.choose_spec
-
-theorem squareCylinder_mem_closedCompactSquareCylinders (s : Finset ι) (t : (i : ι) → Set (α i))
-    (h : ∀ i ∈ s, IsCompact (t i) ∧ IsClosed (t i)) :
-    squareCylinder s t ∈ compactClosedSquareCylinders α := by
-  rw [mem_compactClosedSquareCylinders_iff]
-  exact ⟨s, t, h, rfl⟩
-
-theorem CompactClosedOrUniv_pi :
-  IsCompactSystem (univ.pi '' univ.pi
-    (fun (i : ι) ↦ (fun (s : Set (α i)) ↦ (IsCompact s ∧ IsClosed s) ∨ (s = univ)))) := by
-  apply IsCompactSystem.pi
-    (fun (i : ι) ↦ (fun (s : Set (α i)) ↦ (IsCompact s ∧ IsClosed s) ∨ (s = univ)))
-      <| fun i ↦ IsCompactSystem.of_isCompact_isClosed_or_univ
-
-/-- In `closedCompactSquareCylinders α`, the set of dependent variables is a finset,
-  but not necessarily in `univ.pi '' univ.pi _`, where `_` are closed compact set, or `univ`. -/
-theorem compactClosedSquareCylinders_supset (S : _) :
-    S ∈ compactClosedSquareCylinders α → S ∈ (univ.pi '' univ.pi
-    (fun (i : ι) ↦ (fun (s : Set (α i)) ↦ (IsCompact s ∧ IsClosed s) ∨ (s = univ))))  := by
-  classical
-  intro hS
-  simp_rw [mem_compactClosedSquareCylinders_iff, squareCylinder] at hS
-  simp only [mem_image, mem_pi, mem_univ, forall_const]
-  obtain ⟨s, t, h_cl, h_co, h_pi⟩ := hS
-  let t' := fun (i : ι) ↦ if (i ∈ s) then (t i) else univ
-  refine ⟨t', fun i ↦ ?_, ?_⟩
-  · by_cases hi : i ∈ s
-    · simp only [hi, ↓reduceIte, t']
-      exact Or.inl (h_cl i hi)
-    · simp only [hi, ↓reduceIte, t']
-      apply Or.inr rfl
-  · change (pi univ fun i => if i ∈ (s : Set ι) then t i else univ) = (s : Set ι).pi t
-    rw [univ_pi_ite s t]
-
-/-- Closed and compact square cylinders form a compact system. -/
+/-- Compact and closed square cylinders are a compact system. -/
 theorem isCompactSystem.compactClosedSquareCylinders :
     IsCompactSystem (compactClosedSquareCylinders α) :=
   IsCompactSystem.mono CompactClosedOrUniv_pi
     compactClosedSquareCylinders_supset
 
 end ClosedCompactSquareCylinders
-#lint
