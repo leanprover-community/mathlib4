@@ -545,6 +545,9 @@ lemma ker_subschemeι_app (U : X.affineOpens) :
 lemma ker_subschemeι : I.subschemeι.ker = I := by
   ext; simp [ker_subschemeι_app]
 
+instance : IsEmpty (⊤ : X.IdealSheafData).subscheme := by
+  rw [← (subschemeι _).ker_eq_top_iff_isEmpty, ker_subschemeι]
+
 /-- Given `I ≤ J`, this is the map `Spec(Γ(X, U)/J(U)) ⟶ Spec(Γ(X, U)/I(U))`. -/
 noncomputable
 def glueDataObjHom {I J : IdealSheafData X} (h : I ≤ J) (U) :
@@ -674,6 +677,10 @@ instance [QuasiCompact f] : IsDominant f.toImage where
       ← Set.univ_subset_iff, ← Set.image_subset_iff, Set.image_univ,
       IdealSheafData.range_subschemeι, Hom.support_ker, ← Set.range_comp,
       ← TopCat.coe_comp, ← Scheme.comp_base, f.toImage_imageι]
+
+instance : IsIso (IdealSheafData.subschemeι ⊥ : _ ⟶ X) :=
+  ⟨Scheme.Hom.toImage (𝟙 X) ≫ IdealSheafData.inclusion bot_le,
+    by simp [← cancel_mono (IdealSheafData.subschemeι _)], by simp⟩
 
 lemma Hom.toImage_app :
     f.toImage.app (f.imageι ⁻¹ᵁ U) =

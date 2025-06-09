@@ -13,12 +13,12 @@ curve of `v` is a function `γ : ℝ → M` such that the derivative of `γ` at 
 integral curve may only be defined for all `t` within some subset of `ℝ`.
 
 This is the first of a series of files, organised as follows:
-* `Mathlib.Geometry.Manifold.IntegralCurve.Basic` (this file): Basic definitions and lemmas relating
-  them to each other and to continuity and differentiability
-* `Mathlib.Geometry.Manifold.IntegralCurve.Transform`: Lemmas about translating or scaling the
+* `Mathlib/Geometry/Manifold/IntegralCurve/Basic.lean` (this file): Basic definitions and lemmas
+  relating them to each other and to continuity and differentiability
+* `Mathlib/Geometry/Manifold/IntegralCurve/Transform.lean`: Lemmas about translating or scaling the
   domain of an integral curve by a constant
-* `Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique`: Local existence and uniqueness theorems for
-  integral curves
+* `Mathlib/Geometry/Manifold/IntegralCurve/ExistUnique.lean`: Local existence and uniqueness
+  theorems for integral curves
 
 ## Main definitions
 
