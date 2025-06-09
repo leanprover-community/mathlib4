@@ -410,11 +410,11 @@ theorem mk_cancel_common_right (s s' : S) (m : M) : mk (s' • m) (s * s') = mk 
   mk_eq.mpr ⟨1, by simp [mul_smul]⟩
 
 noncomputable instance isModule' : Module R (LocalizedModule S M) where
-  smul_zero := sorry
-  zero_smul := sorry
-  smul_add := sorry
-  add_smul := sorry
-#exit
+  smul_zero a := smul'_mk _ _ _ |>.trans congr(mk $(smul_zero _) _)
+  zero_smul := induction_on fun m s => by simp [smul'_mk]
+  smul_add a := induction_on₂ fun m m' s s' => by simp [smul'_mk, mk_add_mk, smul_comm a]
+  add_smul a a' := induction_on fun m s => by simp [smul'_mk, add_smul, mk_add_mk']
+
 lemma smul_eq_iff_of_mem
     (r : R) (hr : r ∈ S) (x y : LocalizedModule S M) :
     r • x = y ↔ x = Localization.mk 1 ⟨r, hr⟩ • y := by
@@ -494,9 +494,9 @@ variable (S M)
 -/
 @[simps]
 noncomputable def mkLinearMap : M →ₗ[R] LocalizedModule S M where
-  toFun m := mk m 1
+  toFun m := mk m (1 : S)
   map_add' x y := by simp [mk_add_mk]
-  map_smul' _ _ := (smul'_mk _ _ _).symm
+  map_smul' p m := (smul'_mk p m (1 : S)).symm
 
 end
 
