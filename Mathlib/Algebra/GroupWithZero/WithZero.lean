@@ -35,6 +35,11 @@ instance one : One (WithZero α) where
 
 @[simp, norm_cast] lemma coe_one : ((1 : α) : WithZero α) = 1 := rfl
 
+@[simp]
+lemma recZeroCoe_one {M N : Type*} [One M] (f : M → N) (z : N) :
+    recZeroCoe z f 1 = f 1 :=
+  rfl
+
 end One
 
 section Mul
@@ -268,6 +273,11 @@ def withZeroUnitsEquiv {G : Type*} [GroupWithZero G]
   right_inv _ := by simp only; split <;> simp_all
   map_mul' := (by induction · <;> induction · <;> simp [← WithZero.coe_mul])
 
+lemma withZeroUnitsEquiv_symm_apply_coe {G : Type*} [GroupWithZero G]
+    [DecidablePred (fun a : G ↦ a = 0)] (a : Gˣ) :
+    WithZero.withZeroUnitsEquiv.symm (a : G) = a := by
+  simp
+
 /-- A version of `Equiv.optionCongr` for `WithZero`. -/
 @[simps!]
 def _root_.MulEquiv.withZero [Group β] :
@@ -297,3 +307,44 @@ instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero
   natCast_succ n := by cases n <;> simp
 
 end WithZero
+
+namespace MonoidWithZeroHom
+
+protected lemma map_eq_zero_iff {G₀ G₀' : Type*} [GroupWithZero G₀]
+    [MulZeroOneClass G₀'] [Nontrivial G₀']
+    {f : G₀ →*₀ G₀'} {x : G₀}:
+    f x = 0 ↔ x = 0 := by
+  refine ⟨?_, by simp +contextual⟩
+  contrapose!
+  intro hx H
+  lift x to G₀ˣ using isUnit_iff_ne_zero.mpr hx
+  apply one_ne_zero (α := G₀')
+  rw [← map_one f, ← Units.mul_inv x, map_mul, H, zero_mul]
+
+variable {M₀ N₀}
+
+@[simp]
+lemma one_apply_val_unit {M₀ N₀ : Type*} [MonoidWithZero M₀] [MulZeroOneClass N₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] [Nontrivial M₀] [NoZeroDivisors M₀] (x : M₀ˣ) :
+    (1 : M₀ →*₀ N₀) x = (1 : N₀) :=
+  one_apply_of_ne_zero x.ne_zero
+
+/-- The trivial group-with-zero hom is absorbing for composition. -/
+@[simp]
+lemma apply_one_apply_eq {M₀ N₀ G₀ : Type*} [MulZeroOneClass M₀] [Nontrivial M₀] [NoZeroDivisors M₀]
+    [MulZeroOneClass N₀] [MulZeroOneClass G₀] [DecidablePred fun x : M₀ ↦ x = 0]
+    (f : N₀ →*₀ G₀) (x : M₀) :
+    f ((1 : M₀ →*₀ N₀) x) = (1 : M₀ →*₀ G₀) x := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
+  · rw [one_apply_of_ne_zero hx, one_apply_of_ne_zero hx, map_one]
+
+/-- The trivial group-with-zero hom is absorbing for composition. -/
+@[simp]
+lemma comp_one {M₀ N₀ G₀ : Type*} [MulZeroOneClass M₀] [Nontrivial M₀] [NoZeroDivisors M₀]
+    [MulZeroOneClass N₀] [MulZeroOneClass G₀] [DecidablePred fun x : M₀ ↦ x = 0]
+    (f : N₀ →*₀ G₀) :
+    f.comp (1 : M₀ →*₀ N₀) = (1 : M₀ →*₀ G₀) :=
+  ext <| apply_one_apply_eq _
+
+end MonoidWithZeroHom
