@@ -31,14 +31,14 @@ namespace Tactic.CategoryTheory.RotateIsos
 that `∀ {h h'}, expr ≫ h = h' → h = inv ≫ h'`, `∀ {h h'}, h ≫ expr = h' → h = h' ≫ inv`,
 `∀ {h}, expr = h → 𝟙 _ = inv ≫ h` and `∀ {h}, expr = h → 𝟙 _ = h ≫ inv`.
 
-By working at the `Expr` level, we can actually make sente of cancelable morphisms
+By working at the `Expr` level, we can actually make sense of cancelable morphisms
 both in the case of morphisms and isomorphism (using `Iso.trans` and `Iso.refl` instead of
 `Category.comp` and `Category.id`.
 
 The structure `Cancelable` is a book-keeping structure that holds the expression,
 an expression of its inverse, as well as expressions of proofs of the lemmas needed to cancel it. -/
 structure Cancelable where
-  /-- The expression -/
+  /-- The expression. -/
   expr : Expr
   /-- An expression of the inverse of `expr`. -/
   inv : Expr
@@ -65,7 +65,7 @@ partial def getCancelable?Aux (e : Expr)
   (← L.run (getCancelable?Aux · L)).findSomeM? (do · e whnfR_e)
 
 /-- A reference that stores the currently registered ways of detecting whether or not
-a morphisms is cancelable, as well as priority informations. Higher priorities get tried first
+a morphisms is cancelable, as well as priority informations. Higher priorities get tried first.
 This is necessary to make it so we can later expand this
 list in extensions of the tactic (e.g, for monoidal contexts).
 Such functions in this list are intended to take as fist argument the expression to simplify,
