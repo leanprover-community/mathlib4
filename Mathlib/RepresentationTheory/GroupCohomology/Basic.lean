@@ -171,7 +171,8 @@ open inhomogeneousCochains
 /-- Given a `k`-linear `G`-representation `A`, this is the complex of inhomogeneous cochains
 $$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots$$
 which calculates the group cohomology of `A`. -/
-noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
+@[simps! -isSimp X d]
+noncomputable def inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
   CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
     (fun n => ModuleCat.ofHom (inhomogeneousCochains.d n A)) fun n => by
 /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
@@ -225,22 +226,24 @@ theorem inhomogeneousCochains.ext {x y : (inhomogeneousCochains A).X n} (h : ∀
 
 /-- The `n`-cocycles `Zⁿ(G, A)` of a `k`-linear `G`-representation `A`, i.e. the kernel of the
 `n`th differential in the complex of inhomogeneous cochains. -/
-abbrev cocycles (n : ℕ) : ModuleCat k := (inhomogeneousCochains A).cycles n
+def cocycles (n : ℕ) : ModuleCat k := (inhomogeneousCochains A).cycles n
 
 variable {A} in
 /-- Make an `n`-cocycle out of an element of the kernel of the `n`th differential. -/
-abbrev cocyclesMk {n : ℕ} (f : (Fin n → G) → A) (h : inhomogeneousCochains.d n A f = 0) :
+def cocyclesMk {n : ℕ} (f : (Fin n → G) → A) (h : inhomogeneousCochains.d n A f = 0) :
     cocycles A n :=
-  (inhomogeneousCochains A).cyclesMk f (n + 1) (by simp) (by simp [h])
+  (inhomogeneousCochains A).cyclesMk f (n + 1) (by simp) (by simp [h, inhomogeneousCochains])
 
 /-- The natural inclusion of the `n`-cocycles `Zⁿ(G, A)` into the `n`-cochains `Cⁿ(G, A).` -/
 abbrev iCocycles (n : ℕ) : cocycles A n ⟶ (inhomogeneousCochains A).X n :=
   (inhomogeneousCochains A).iCycles n
 
 variable {A} in
+@[simp]
 theorem iCocycles_mk {n : ℕ} (f : (Fin n → G) → A) (h : inhomogeneousCochains.d n A f = 0) :
     iCocycles A n (cocyclesMk f h) = f := by
-  exact (inhomogeneousCochains A).i_cyclesMk (i := n) f (n + 1) (by simp) (by simp [h])
+  exact (inhomogeneousCochains A).i_cyclesMk (i := n) f (n + 1) (by simp)
+    (by simp [h, inhomogeneousCochains])
 
 /-- This is the map from `i`-cochains to `j`-cocycles induced by the differential in the complex of
 inhomogeneous cochains. -/
@@ -258,15 +261,15 @@ def groupCohomology [Group G] (A : Rep k G) (n : ℕ) : ModuleCat k :=
 
 /-- The natural map from `n`-cocycles to `n`th group cohomology for a `k`-linear
 `G`-representation `A`. -/
-abbrev groupCohomologyπ [Group G] (A : Rep k G) (n : ℕ) :
+abbrev groupCohomology.π [Group G] (A : Rep k G) (n : ℕ) :
     groupCohomology.cocycles A n ⟶ groupCohomology A n :=
   (inhomogeneousCochains A).homologyπ n
 
 @[elab_as_elim]
 theorem groupCohomology_induction [Group G] {A : Rep k G} {n : ℕ}
-    {C : groupCohomology A n → Prop} (h : ∀ x : cocycles A n, C (groupCohomologyπ A n x))
+    {C : groupCohomology A n → Prop} (h : ∀ x : cocycles A n, C (groupCohomology.π A n x))
     (x : groupCohomology A n) : C x := by
-  rcases (ModuleCat.epi_iff_surjective (groupCohomologyπ A n)).1 inferInstance x with ⟨y, rfl⟩
+  rcases (ModuleCat.epi_iff_surjective (groupCohomology.π A n)).1 inferInstance x with ⟨y, rfl⟩
   exact h y
 
 /-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to

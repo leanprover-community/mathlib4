@@ -726,6 +726,9 @@ theorem isOneCocycle_of_memOneCocycles
     IsOneCocycle f :=
   fun _ _ => (memOneCocycles_iff (A := Rep.ofDistribMulAction k G A) f).1 hf _ _
 
+@[deprecated (since := "2025-05-09")]
+alias isOneCocycle_of_mem_oneCocycles := isOneCocycle_of_memOneCocycles
+
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
 `f : G → A` satisfying the 1-coboundary condition, produces a 1-coboundary for the representation
 on `A` induced by the `DistribMulAction`. -/
@@ -750,6 +753,9 @@ abbrev twoCocyclesOfIsTwoCocycle {f : G × G → A} (hf : IsTwoCocycle f) :
 theorem isTwoCocycle_of_memTwoCocycles
     (f : G × G → A) (hf : MemTwoCocycles (A := Rep.ofDistribMulAction k G A) f) :
     IsTwoCocycle f := (memTwoCocycles_iff (A := Rep.ofDistribMulAction k G A) f).1 hf
+
+@[deprecated (since := "2025-05-09")]
+alias isTwoCocycle_of_mem_twoCocycles := isTwoCocycle_of_memTwoCocycles
 
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
 `f : G × G → A` satisfying the 2-coboundary condition, produces a 2-coboundary for the
@@ -849,13 +855,16 @@ variable {G M : Type} [Group G] [CommGroup M] [MulDistribMulAction G M]
 representation on `Additive M` induced by the `MulDistribMulAction`. -/
 abbrev oneCocyclesOfIsMulOneCocycle {f : G → M} (hf : IsMulOneCocycle f) :
     cocycles (Rep.ofMulDistribMulAction G M) 1 :=
-  mkOneCocycles (Additive.ofMul ∘ f) <| (memOneCocycles_iff
-    (A := Rep.ofMulDistribMulAction G M) f).2 hf
+  mkOneCocycles (Additive.ofMul ∘ f) <|
+    (memOneCocycles_iff (A := Rep.ofMulDistribMulAction G M) f).2 hf
 
 theorem isMulOneCocycle_of_memOneCocycles
     (f : G → M) (hf : MemOneCocycles (A := Rep.ofMulDistribMulAction G M) f) :
     IsMulOneCocycle (Additive.toMul ∘ f) :=
   (memOneCocycles_iff (A := Rep.ofMulDistribMulAction G M) f).1 hf
+
+@[deprecated (since := "2025-05-09")]
+alias isMulOneCocycle_of_mem_oneCocycles := isMulOneCocycle_of_memOneCocycles
 
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G → M` satisfying the multiplicative 1-coboundary condition, produces a
@@ -883,6 +892,9 @@ theorem isMulTwoCocycle_of_memTwoCocycles
     (f : G × G → M) (hf : MemTwoCocycles (A := Rep.ofMulDistribMulAction G M) f) :
     IsMulTwoCocycle (Additive.toMul ∘ f) :=
   (memTwoCocycles_iff (A := Rep.ofMulDistribMulAction G M) f).1 hf
+
+@[deprecated (since := "2025-05-09")]
+alias isMulTwoCocycle_of_mem_twoCocycles := isMulTwoCocycle_of_memTwoCocycles
 
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G × G → M` satisfying the multiplicative 2-coboundary condition, produces a
