@@ -111,7 +111,7 @@ private lemma trans_aux (hst : toColex s ≤ toColex t) (htu : toColex t ≤ toC
   · exact ⟨c, hcu, hcs, hb.2.2.trans hbc⟩
   have ⟨d, hdu, hdt, hcd⟩ := htu hct hcu
   have had : a ≤ d := hb.2.2.trans <| hbc.trans hcd
-  refine ⟨d, hdu, fun hds ↦ not_lt_iff_le_imp_le.2 (hbmax hds hdt had) ?_, had⟩
+  refine ⟨d, hdu, fun hds ↦ not_lt_iff_le_imp_ge.2 (hbmax hds hdt had) ?_, had⟩
   exact hbc.trans_lt <| hcd.lt_of_ne <| ne_of_mem_of_not_mem hct hdt
 
 private lemma antisymm_aux (hst : toColex s ≤ toColex t) (hts : toColex t ≤ toColex s) : s ⊆ t := by
@@ -352,7 +352,7 @@ lemma lt_iff_exists_filter_lt :
     refine ⟨m, hmt, hms, fun a hma ↦ ⟨fun has ↦ not_imp_comm.1 (hm _ has) hma.asymm, fun hat ↦ ?_⟩⟩
     by_contra has
     have hau : a ∈ u := mem_u.2 ⟨hat, has, fun b hbs hbt ↦ (hm _ hbs hbt).trans hma⟩
-    exact hma.not_le <| le_max' _ _ hau
+    exact hma.not_ge <| le_max' _ _ hau
   · rintro ⟨w, hwt, hws, hw⟩
     refine ⟨w, hwt, hws, fun a has hat ↦ ?_⟩
     by_contra! hwa
@@ -372,7 +372,7 @@ lemma erase_le_erase_min' (hst : toColex s ≤ toColex t) (hcard : #s ≤ #t) (h
   replace hst := hst.lt_of_ne <| toColex_inj.not.2 h'
   simp only [lt_iff_exists_filter_lt, mem_sdiff, filter_inj, and_assoc] at hst
   obtain ⟨w, hwt, hws, hw⟩ := hst
-  obtain hwa | haw := (ne_of_mem_of_not_mem ha hws).symm.lt_or_lt
+  obtain hwa | haw := (ne_of_mem_of_not_mem ha hws).symm.lt_or_gt
   -- If `w < a`, then `a` is the colex witness for `s \ {a} < t \ {m}`
   · have hma : m < a := (min'_le _ _ hwt).trans_lt hwa
     refine (lt_iff_exists_forall_lt.2 ⟨a, mem_erase.2 ⟨hma.ne', (hw hwa).1 ha⟩,
