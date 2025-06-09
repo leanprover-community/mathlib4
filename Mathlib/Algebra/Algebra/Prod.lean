@@ -127,12 +127,12 @@ def prodCongr (l : S ≃ₐ[R] A) (r : T ≃ₐ[R] B) : (S × T) ≃ₐ[R] A × 
 
 variable (l : S ≃ₐ[R] A) (r : T ≃ₐ[R] B)
 
--- Priority `low - 1` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
-@[simp low - 1]
+-- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low]
 lemma prodCongr_apply (x : S × T) : prodCongr l r x = Equiv.prodCongr l r x := rfl
 
--- Priority `low - 1` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
-@[simp low - 1]
+-- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low]
 lemma prodCongr_symm_apply (x : A × B) :
     (prodCongr l r).symm x = (Equiv.prodCongr l r).symm x := rfl
 

@@ -167,13 +167,13 @@ This is `Equiv.piCongrLeft'` as an `AlgEquiv`.
 def piCongrLeft' {ι' : Type*} (e : ι ≃ ι') : (Π i, A₁ i) ≃ₐ[R] Π i, A₁ (e.symm i) :=
   .ofRingEquiv (f := .piCongrLeft' A₁ e) (by intro; ext; simp)
 
--- Priority `low - 1` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
-@[simp low - 1]
+-- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low]
 lemma piCongrLeft'_apply {ι' : Type*} (e : ι ≃ ι') (x : (Π i, A₁ i)) :
     piCongrLeft' R A₁ e x = Equiv.piCongrLeft' _ _ x := rfl
 
--- Priority `low - 1` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
-@[simp low - 1]
+-- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low]
 lemma piCongrLeft'_symm_apply {ι' : Type*} (e : ι ≃ ι') (x : Π i, A₁ (e.symm i)) :
     (piCongrLeft' R A₁ e).symm x = (Equiv.piCongrLeft' _ _).symm x := rfl
 
@@ -187,13 +187,13 @@ This is `Equiv.piCongrLeft` as an `AlgEquiv`.
 def piCongrLeft {ι' : Type*} (e : ι' ≃ ι) : (Π i, A₁ (e i)) ≃ₐ[R] Π i, A₁ i :=
   (AlgEquiv.piCongrLeft' R A₁ e.symm).symm
 
--- Priority `low - 1` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
-@[simp low - 1]
+-- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low]
 lemma piCongrLeft_apply {ι' : Type*} (e : ι' ≃ ι) (x : Π i, A₁ (e i)) :
     piCongrLeft R A₁ e x = Equiv.piCongrLeft _ _ x := rfl
 
--- Priority `low - 1` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
-@[simp low - 1]
+-- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low]
 lemma piCongrLeft_symm_apply {ι' : Type*} (e : ι' ≃ ι) (x : Π i, A₁ i) :
     (piCongrLeft R A₁ e).symm x = (Equiv.piCongrLeft _ _).symm x := rfl
 
@@ -206,12 +206,12 @@ variable (ι R) in
 def funUnique [Unique ι] : (ι → S) ≃ₐ[R] S :=
   .ofRingEquiv (f := .piUnique (fun i : ι ↦ S)) (by simp)
 
--- Priority `low - 1` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
-@[simp low - 1]
+-- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low]
 lemma funUnique_apply [Unique ι] (x : ι → S) : funUnique R ι S x = Equiv.funUnique ι S x := rfl
 
--- Priority `low - 1` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
-@[simp low - 1]
+-- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low]
 lemma funUnique_symm_apply [Unique ι] (x : S) :
     (funUnique R ι S).symm x = (Equiv.funUnique ι S).symm x := rfl
 
@@ -220,13 +220,13 @@ variable (α β R) in
 def sumArrowEquivProdArrow : (α ⊕ β → S) ≃ₐ[R] (α → S) × (β → S) :=
   .ofRingEquiv (f := .sumArrowEquivProdArrow α β S) (by intro; ext <;> simp)
 
--- Priority `low - 1` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
-@[simp low - 1]
+-- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low]
 lemma sumArrowEquivProdArrow_apply (x : α ⊕ β → S) :
     sumArrowEquivProdArrow α β R S x = Equiv.sumArrowEquivProdArrow α β S x := rfl
 
--- Priority `low - 1` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
-@[simp low - 1]
+-- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low]
 lemma sumArrowEquivProdArrow_symm_apply_inr (x : (α → S) × (β → S)) :
     (sumArrowEquivProdArrow α β R S).symm x = (Equiv.sumArrowEquivProdArrow α β S).symm x :=
   rfl

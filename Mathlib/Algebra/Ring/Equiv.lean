@@ -899,13 +899,13 @@ def sumArrowEquivProdArrow : (α ⊕ β → R) ≃+* (α → R) × (β → R) wh
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
 
--- Priority `low - 1` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
-@[simp low - 1]
+-- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low]
 lemma sumArrowEquivProdArrow_apply (x) :
     sumArrowEquivProdArrow α β R x = Equiv.sumArrowEquivProdArrow α β R x := rfl
 
--- Priority `low - 1` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
-@[simp low - 1]
+-- Priority `low` to ensure generic `map_{add, mul, zero, one}` lemmas are applied first
+@[simp low]
 lemma sumArrowEquivProdArrow_symm_apply (x : (α → R) × (β → R)) :
     (sumArrowEquivProdArrow α β R).symm x = (Equiv.sumArrowEquivProdArrow α β R).symm x := rfl
 
