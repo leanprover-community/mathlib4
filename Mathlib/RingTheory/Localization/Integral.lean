@@ -250,7 +250,7 @@ lemma Algebra.IsIntegral.of_isLocalization (R S Rₚ Sₚ : Type*) [CommRing R] 
 open nonZeroDivisors Algebra in
 instance IsFractionRing.isLocalization_algebraMapSubmonoid
     {R S L : Type*} [CommRing R] [CommRing S] [IsDomain R] [Field L]
-    [Algebra R S] [Algebra R L] [Algebra S L] [IsScalarTower R S L]
+    [Algebra R S] [Algebra S L]
     [IsFractionRing S L] [Algebra.IsIntegral R S] [NoZeroSMulDivisors R S] :
     IsLocalization (algebraMapSubmonoid S R⁰) L := by
   have : IsDomain S := Function.Injective.isDomain _ (IsFractionRing.injective S L)
