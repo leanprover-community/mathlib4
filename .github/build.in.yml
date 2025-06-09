@@ -20,9 +20,15 @@ concurrency:
   # cancel any running workflow with the same label
   cancel-in-progress: true
 
+# Limit permissions for GITHUB_TOKEN for the entire workflow
+permissions:
+  contents: read
+  pull-requests: write  # Only allow PR comments/labels
+  # All other permissions are implicitly 'none'
+
 jobs:
   build:
-    if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
+    if: FORK_CONDITION
     name: BuildJOB_NAME
     runs-on: RUNS_ON
     outputs:
@@ -67,6 +73,7 @@ jobs:
       - name: Checkout PR branch
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
+          ref: "${{ PR_BRANCH_REF }}"
           path: pr-branch
 
       - name: Prepare DownstreamTest directory
@@ -415,6 +422,7 @@ jobs:
 
   post_steps:
     name: Post-Build StepJOB_NAME
+    if: FORK_CONDITION
     needs: [build]
     runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
     steps:
@@ -496,6 +504,7 @@ jobs:
 
   style_lint:
     name: Lint styleJOB_NAME
+    if: FORK_CONDITION
     runs-on: ubuntu-latest
     steps:
       - uses: leanprover-community/lint-style-action@f2e7272aad56233a642b08fe974cf09dd664b0c8 # 2025-05-22
@@ -503,9 +512,19 @@ jobs:
           mode: check
           lint-bib-file: true
 
+  build_and_lint:
+    name: CI Success
+    if: FORK_CONDITION
+    needs: [style_lint, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: succeed
+        run: |
+          echo "Success: Required build and lint checks completed!"
+
   final:
     name: Post-CI jobJOB_NAME
-    if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
+    if: FORK_CONDITION
     needs: [style_lint, build, post_steps]
     runs-on: ubuntu-latest
     steps:
