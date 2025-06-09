@@ -165,7 +165,7 @@ lemma lipschitzOnWith_cfc_fun (a : A) :
     simp only
     rw [cfc_apply .., cfc_apply .., isometry_cfcHom (R := R) a ha |>.edist_eq]
     simp only [ENNReal.coe_one, one_mul]
-    rw [edist_continuousRestrict' hf hg]
+    rw [edist_continuousRestrict_of_singleton hf hg]
   · simpa [cfc_apply_of_not_predicate a ha] using LipschitzWith.const' 0 |>.lipschitzOnWith
 
 open UniformOnFun in
@@ -524,7 +524,8 @@ lemma lipschitzOnWith_cfcₙ_fun (a : A) :
     simp only
     rw [cfcₙ_apply .., cfcₙ_apply .., isometry_cfcₙHom (R := R) a ha |>.edist_eq]
     simp only [ENNReal.coe_one, one_mul]
-    rw [← ContinuousMapZero.isometry_toContinuousMap.edist_eq, edist_continuousRestrict' hf hg]
+    rw [← ContinuousMapZero.isometry_toContinuousMap.edist_eq,
+      edist_continuousRestrict_of_singleton hf hg]
   · simpa [cfcₙ_apply_of_not_predicate a ha] using LipschitzWith.const' 0 |>.lipschitzOnWith
 
 open UniformOnFun in
