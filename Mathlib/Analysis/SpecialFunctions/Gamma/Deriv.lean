@@ -59,10 +59,12 @@ theorem hasDerivAt_GammaIntegral {s : ℂ} (hs : 0 < s.re) :
 
 theorem differentiableAt_GammaAux (s : ℂ) (n : ℕ) (h1 : 1 - s.re < n) (h2 : ∀ m : ℕ, s ≠ -m) :
     DifferentiableAt ℂ (GammaAux n) s := by
-  induction' n with n hn generalizing s
-  · refine (hasDerivAt_GammaIntegral ?_).differentiableAt
+  induction n generalizing s with
+  | zero =>
+    refine (hasDerivAt_GammaIntegral ?_).differentiableAt
     rw [Nat.cast_zero] at h1; linarith
-  · dsimp only [GammaAux]
+  | succ n hn =>
+    dsimp only [GammaAux]
     specialize hn (s + 1)
     have a : 1 - (s + 1).re < ↑n := by
       rw [Nat.cast_succ] at h1; rw [Complex.add_re, Complex.one_re]; linarith

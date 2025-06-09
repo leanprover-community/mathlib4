@@ -127,11 +127,11 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
   have hJle : ∀ m, J m ≤ I := fun m ↦ hJmono (zero_le m)
   have hJp : ∀ m, ¬p (J m) :=
     fun m ↦ Nat.recOn m hpI fun m ↦ by simpa only [J_succ] using hs (J m) (hJle m)
-  have hJsub : ∀ m i, (J m).upper i - (J m).lower i = (I.upper i - I.lower i) / 2 ^ m := by
-    intro m i
-    induction' m with m ihm
-    · simp [J]
-    simp only [pow_succ, J_succ, upper_sub_lower_splitCenterBox, ihm, div_div]
+  have hJsub :
+      ∀ m i, (J m).upper i - (J m).lower i = (I.upper i - I.lower i) / 2 ^ m := fun m i ↦ by
+    induction m with
+    | zero => simp [J]
+    | succ m ihm => simp only [pow_succ, J_succ, upper_sub_lower_splitCenterBox, ihm, div_div]
   have h0 : J 0 = I := rfl
   clear_value J
   clear hpI hs J_succ s
