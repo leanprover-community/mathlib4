@@ -223,8 +223,8 @@ theorem Separable.inj_of_prod_X_sub_C [Nontrivial R] {ι : Sort _} {f : ι → R
     (hfxy : f x = f y) : x = y := by
   classical
   by_contra hxy
-  rw [← insert_erase hx, prod_insert (not_mem_erase _ _), ←
-    insert_erase (mem_erase_of_ne_of_mem (Ne.symm hxy) hy), prod_insert (not_mem_erase _ _), ←
+  rw [← insert_erase hx, prod_insert (notMem_erase _ _), ←
+    insert_erase (mem_erase_of_ne_of_mem (Ne.symm hxy) hy), prod_insert (notMem_erase _ _), ←
     mul_assoc, hfxy, ← sq] at hfs
   cases (hfs.of_mul_left.of_pow (not_isUnit_X_sub_C _) two_ne_zero).2
 
@@ -315,7 +315,7 @@ theorem separable_iff_derivative_ne_zero {f : F[X]} (hf : Irreducible f) :
       have : f ∣ derivative f := by
         conv_lhs => rw [hg3, ← hu]
         rwa [Units.mul_right_dvd]
-      not_lt_of_le (natDegree_le_of_dvd this h) <|
+      not_lt_of_ge (natDegree_le_of_dvd this h) <|
         natDegree_derivative_lt <| mt derivative_of_natDegree_zero h⟩
 
 attribute [local instance] Ideal.Quotient.field in
@@ -365,7 +365,7 @@ theorem separable_or {f : F[X]} (hf : Irreducible f) :
 theorem exists_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : p ≠ 0) :
     ∃ (n : ℕ) (g : F[X]), g.Separable ∧ expand F (p ^ n) g = f := by
   replace hp : p.Prime := (CharP.char_is_prime_or_zero F p).resolve_right hp
-  induction' hn : f.natDegree using Nat.strong_induction_on with N ih generalizing f
+  induction hn : f.natDegree using Nat.strong_induction_on generalizing f with | _ N ih
   rcases separable_or p hf with (h | ⟨h1, g, hg, hgf⟩)
   · refine ⟨0, f, h, ?_⟩
     rw [pow_zero, expand_one]
@@ -404,7 +404,7 @@ theorem unique_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : 0 
   revert g₁ g₂
   wlog hn : n₁ ≤ n₂
   · intro g₁ hg₁ Hg₁ g₂ hg₂ Hg₂
-    simpa only [eq_comm] using this p hf hp n₂ n₁ (le_of_not_le hn) g₂ hg₂ Hg₂ g₁ hg₁ Hg₁
+    simpa only [eq_comm] using this p hf hp n₂ n₁ (le_of_not_ge hn) g₂ hg₂ Hg₂ g₁ hg₁ Hg₁
   have hf0 : f ≠ 0 := hf.ne_zero
   intros g₁ hg₁ hgf₁ g₂ hg₂ hgf₂
   rw [le_iff_exists_add] at hn

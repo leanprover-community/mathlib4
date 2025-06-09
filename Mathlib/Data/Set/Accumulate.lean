@@ -20,7 +20,7 @@ variable {α β : Type*} {s : α → Set β}
 
 namespace Set
 
-/-- `Accumulate s` is the union of `s y` for `y ≤ x`. -/
+/-- `Accumulate s x` is the union of `s y` for `y ≤ x`. -/
 def Accumulate [LE α] (s : α → Set β) (x : α) : Set β :=
   ⋃ y ≤ x, s y
 

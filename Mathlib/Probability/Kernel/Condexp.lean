@@ -95,7 +95,7 @@ alias condexpKernel_apply_eq_condDistrib := condExpKernel_apply_eq_condDistrib
 instance : IsMarkovKernel (condExpKernel μ m) := by
   rcases isEmpty_or_nonempty Ω with h | h
   · exact ⟨fun a ↦ (IsEmpty.false a).elim⟩
-  · simp [condExpKernel, h]; infer_instance
+  · simpa [condExpKernel, h] using by infer_instance
 
 lemma compProd_trim_condExpKernel (hm : m ≤ mΩ) :
     (μ.trim hm) ⊗ₘ condExpKernel μ m
