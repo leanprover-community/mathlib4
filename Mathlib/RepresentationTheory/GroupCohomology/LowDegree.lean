@@ -917,18 +917,18 @@ instance : Mono (shortComplexH0 A).f := by
   rw [ModuleCat.mono_iff_injective]
   apply Submodule.injective_subtype
 
-/-- The arrow `A --dZero--> Fun(G, A)` is isomorphic to the differential
-`(inhomogeneousCochains A).d 0 1` of the complex of inhomogeneous cochains of `A`. -/
-@[simps! hom_left hom_right inv_left inv_right]
-def dZeroArrowIso : Arrow.mk ((inhomogeneousCochains A).d 0 1) ≅ Arrow.mk (dZero A) :=
-  Arrow.isoMk (zeroCochainsIso A) (oneCochainsIso A) (comp_dZero_eq A)
-
 lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
   rw [ShortComplex.moduleCat_exact_iff]
   intro (x : A) (hx : dZero _ x = 0)
   refine ⟨⟨x, fun g => ?_⟩, rfl⟩
   rw [← sub_eq_zero]
   exact congr_fun hx g
+
+/-- The arrow `A --dZero--> Fun(G, A)` is isomorphic to the differential
+`(inhomogeneousCochains A).d 0 1` of the complex of inhomogeneous cochains of `A`. -/
+@[simps! hom_left hom_right inv_left inv_right]
+def dZeroArrowIso : Arrow.mk ((inhomogeneousCochains A).d 0 1) ≅ Arrow.mk (dZero A) :=
+  Arrow.isoMk (zeroCochainsIso A) (oneCochainsIso A) (comp_dZero_eq A)
 
 /-- The 0-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `A.ρ.invariants`, which is a simpler type. -/
@@ -984,8 +984,8 @@ instance : Mono (iZero A) := by unfold iZero; infer_instance
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem π_isoZeroCocycles_hom :
-    groupCohomologyπ A 0 ≫ (isoZeroCocycles A).hom = 𝟙 _ := by
-  simp [isoZeroCocycles, groupCohomologyπ]
+    π A 0 ≫ (isoZeroCocycles A).hom = 𝟙 _ := by
+  simp [isoZeroCocycles, π]
 
 /-- The 0th group cohomology of `A`, defined as the 0th cohomology of the complex of inhomogeneous
 cochains, is isomorphic to the invariants of the representation on `A`. -/
@@ -994,7 +994,7 @@ def H0Iso : groupCohomology A 0 ≅ ModuleCat.of k A.ρ.invariants :=
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem π_H0Iso_hom :
-    groupCohomologyπ A 0 ≫ (H0Iso A).hom = (zeroCocyclesIso A).hom := by
+    π A 0 ≫ (H0Iso A).hom = (zeroCocyclesIso A).hom := by
   simp [H0Iso]
 
 @[ext]
@@ -1012,8 +1012,8 @@ def H0IsoOfIsTrivial [A.IsTrivial] :
     LinearEquiv.ofTop]
 
 @[reassoc]
-lemma groupCohomologyπ_comp_H0Iso_hom  :
-    groupCohomologyπ A 0 ≫ (H0Iso A).hom = (zeroCocyclesIso A).hom := by
+lemma π_comp_H0Iso_hom  :
+    π A 0 ≫ (H0Iso A).hom = (zeroCocyclesIso A).hom := by
   simp
 
 end H0
@@ -1028,11 +1028,8 @@ def shortComplexH1Iso : (inhomogeneousCochains A).sc 1 ≅ shortComplexH1 A :=
     isoMk (zeroCochainsIso A) (oneCochainsIso A) (twoCochainsIso A)
       (comp_dZero_eq A) (comp_dOne_eq A)
 
-/-- The quotient map `Z¹(G, A) → H¹(G, A).` -/
-abbrev H1π : cocycles A 1 ⟶ groupCohomology A 1 := groupCohomologyπ A 1
-
 variable {A} in
-lemma H1π_eq_zero_iff (x : cocycles A 1) : H1π A x = 0 ↔ ⇑x ∈ oneCoboundaries A := by
+lemma π_1_eq_zero_iff (x : cocycles A 1) : π A 1 x = 0 ↔ ⇑x ∈ oneCoboundaries A := by
   have h₁ := leftHomologyπ_naturality' (shortComplexH1Iso A).hom (leftHomologyData _)
     (shortComplexH1 A).moduleCatLeftHomologyData
   have h₂ : _ = iCocycles A 1 ≫ (oneCochainsIso A).hom := cyclesMap'_i (shortComplexH1Iso A).hom
@@ -1044,12 +1041,12 @@ lemma H1π_eq_zero_iff (x : cocycles A 1) : H1π A x = 0 ↔ ⇑x ∈ oneCobound
     -cyclesMap'_i, shortComplexH1]
 
 variable {A} in
-lemma H1π_eq_iff (x y : cocycles A 1) : H1π A x = H1π A y ↔ ⇑(x - y) ∈ oneCoboundaries A := by
-  rw [← sub_eq_zero, ← map_sub, H1π_eq_zero_iff]
+lemma π_1_eq_iff (x y : cocycles A 1) : π A 1 x = π A 1 y ↔ ⇑(x - y) ∈ oneCoboundaries A := by
+  rw [← sub_eq_zero, ← map_sub, π_1_eq_zero_iff]
 
 @[elab_as_elim]
 theorem H1_induction {C : groupCohomology A 1 → Prop}
-    (h : ∀ (f : G → A) (hf : MemOneCocycles f), C (H1π A <| mkOneCocycles f hf))
+    (h : ∀ (f : G → A) (hf : MemOneCocycles f), C (π A 1 <| mkOneCocycles f hf))
     (x : groupCohomology A 1) : C x := by
   induction x using groupCohomology_induction with | @h x =>
   simpa using h x (memOneCocycles x)
@@ -1064,17 +1061,17 @@ def H1IsoOfIsTrivial [A.IsTrivial] :
     oneCocyclesIsoOfIsTrivial A
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-theorem H1π_comp_H1IsoOfIsTrivial [A.IsTrivial] :
-    H1π A ≫ (H1IsoOfIsTrivial A).hom = (oneCocyclesIsoOfIsTrivial A).hom := by
+theorem π_comp_H1IsoOfIsTrivial [A.IsTrivial] :
+    π A 1 ≫ (H1IsoOfIsTrivial A).hom = (oneCocyclesIsoOfIsTrivial A).hom := by
   simp [H1IsoOfIsTrivial]
 
-theorem H1IsoOfIsTrivial_H1π_apply_apply [A.IsTrivial] (f : cocycles A 1) (x : Additive G) :
-    (H1IsoOfIsTrivial A).hom (H1π A f) x = f x.toMul := by
+theorem H1IsoOfIsTrivial_π_apply_apply [A.IsTrivial] (f : cocycles A 1) (x : Additive G) :
+    (H1IsoOfIsTrivial A).hom (π A 1 f) x = f x.toMul := by
   simp [oneCocyclesIsoOfIsTrivial]
 
 @[simp]
 theorem H1IsoOfIsTrivial_inv_apply [A.IsTrivial] (f : Additive G →+ A) :
-    (H1IsoOfIsTrivial A).inv f = H1π A ((oneCocyclesIsoOfIsTrivial A).inv f) := by
+    (H1IsoOfIsTrivial A).inv f = π A 1 ((oneCocyclesIsoOfIsTrivial A).inv f) := by
   rfl
 
 end H1
@@ -1084,17 +1081,13 @@ open ShortComplex
 
 /-- The short complex `A --dZero--> Fun(G, A) --dOne--> Fun(G × G, A)` is isomorphic to the 1st
 short complex associated to the complex of inhomogeneous cochains of `A`. -/
-@[simps! hom_τ₁ hom_τ₂ hom_τ₃ inv_τ₁ inv_τ₂ inv_τ₃]
 def shortComplexH2Iso : (inhomogeneousCochains A).sc 2 ≅ shortComplexH2 A :=
     (inhomogeneousCochains A).isoSc' 1 2 3 (by simp) (by simp) ≪≫
     isoMk (oneCochainsIso A) (twoCochainsIso A) (threeCochainsIso A)
       (comp_dOne_eq A) (comp_dTwo_eq A)
 
-/-- The quotient map `Z²(G, A) → H²(G, A).` -/
-abbrev H2π : cocycles A 2 ⟶ groupCohomology A 2 := groupCohomologyπ A 2
-
 variable {A} in
-lemma H2π_eq_zero_iff (x : cocycles A 2) : H2π A x = 0 ↔ ⇑x ∈ twoCoboundaries A := by
+lemma π_2_eq_zero_iff (x : cocycles A 2) : π A 2 x = 0 ↔ ⇑x ∈ twoCoboundaries A := by
   have h₁ := leftHomologyπ_naturality' (shortComplexH2Iso A).hom (leftHomologyData _)
     (shortComplexH2 A).moduleCatLeftHomologyData
   have h₂ : _ = iCocycles A 2 ≫ (twoCochainsIso A).hom := cyclesMap'_i (shortComplexH2Iso A).hom
@@ -1106,12 +1099,12 @@ lemma H2π_eq_zero_iff (x : cocycles A 2) : H2π A x = 0 ↔ ⇑x ∈ twoCobound
     -cyclesMap'_i, shortComplexH2]
 
 variable {A} in
-lemma H2π_eq_iff (x y : cocycles A 2) : H2π A x = H2π A y ↔ ⇑(x - y) ∈ twoCoboundaries A := by
-  rw [← sub_eq_zero, ← map_sub, H2π_eq_zero_iff]
+lemma π_2_eq_iff (x y : cocycles A 2) : π A 2 x = π A 2 y ↔ ⇑(x - y) ∈ twoCoboundaries A := by
+  rw [← sub_eq_zero, ← map_sub, π_2_eq_zero_iff]
 
 @[elab_as_elim]
 theorem H2_induction {C : groupCohomology A 2 → Prop}
-    (h : ∀ (f : G × G → A) (hf : MemTwoCocycles f), C (H2π A <| mkTwoCocycles f hf))
+    (h : ∀ (f : G × G → A) (hf : MemTwoCocycles f), C (π A 2 <| mkTwoCocycles f hf))
     (x : groupCohomology A 2) : C x := by
   induction x using groupCohomology_induction with | @h x =>
   simpa using h x (memTwoCocycles x)
