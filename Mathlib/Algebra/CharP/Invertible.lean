@@ -120,4 +120,7 @@ instance invertibleTwo : Invertible (2 : K) :=
 instance invertibleThree : Invertible (3 : K) :=
   invertibleOfNonzero (mod_cast (by decide : 3 ≠ 0))
 
+instance invertibleFour : Invertible (4 : K) :=
+  invertibleOfNonzero (mod_cast (by decide : 4 ≠ 0))
+
 end DivisionSemiring
