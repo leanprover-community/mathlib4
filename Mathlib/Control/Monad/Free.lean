@@ -297,7 +297,7 @@ def fold {σ α : Type u} (comp : FreeState σ α) (s₀ : σ) : α × σ :=
 The canonical interpreter `fold` derived from `mapM` agrees with the hand-written
 recursive interpreter `run` for `FreeState`.
 -/
-lemma run_eq_fold {σ α : Type u} (comp : FreeState σ α) (s₀ : σ) :
+theorem run_eq_fold {σ α : Type u} (comp : FreeState σ α) (s₀ : σ) :
     run comp s₀ = fold comp s₀ := by
   induction' comp with a b op cont ih generalizing s₀
   · simp [fold, FreeM.mapM, pure, run, StateT.pure]
@@ -414,7 +414,7 @@ def fold {ω : Type u} [Monoid ω] {α} (comp : FreeWriter ω α) : α × ω :=
 The canonical interpreter `fold` derived from `mapM` agrees with the hand-written
 recursive interpreter `run` for `FreeWriter`.
 -/
-lemma run_eq_fold {ω : Type u} [Monoid ω] {α} (comp : FreeWriter ω α) :
+theorem run_eq_fold {ω : Type u} [Monoid ω] {α} (comp : FreeWriter ω α) :
     run comp = fold comp := by
   induction' comp with a b op cont ih
   · simp only [fold, FreeM.mapM, pure, run, WriterT.run]
@@ -548,7 +548,7 @@ def fold {r : Type u} {α : Type v} (comp : FreeCont r α) (k : α → r) : r :=
 The canonical interpreter `fold` derived from `mapM` agrees with the hand-written
 recursive interpreter `run` for `FreeCont`.
 -/
-lemma run_eq_fold {r : Type u} {α : Type v} (comp : FreeCont r α) (k : α → r) :
+theorem run_eq_fold {r : Type u} {α : Type v} (comp : FreeCont r α) (k : α → r) :
     run comp k = fold comp k := by
   induction' comp with a b op cont ih
   · simp [fold, FreeM.mapM, pure, run]
