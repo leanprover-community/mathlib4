@@ -199,6 +199,7 @@ Then the induced map τ : b' ⟶ b can be lifted to the fiber over R -/
 noncomputable def inducedMap : b ⟶ b' :=
   Fib.homMk (IsCartesian.map p f ψ φ)
 
+@[reassoc]
 lemma inducedMap_comp : (ι R).map (inducedMap f ψ φ) ≫ ψ = φ := by
   simp only [inducedMap, Fib.map_homMk, IsCartesian.fac]
 
