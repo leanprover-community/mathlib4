@@ -512,6 +512,16 @@ jobs:
           mode: check
           lint-bib-file: true
 
+  build_and_lint:
+    name: CI Success
+    if: FORK_CONDITION
+    needs: [style_lint, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: succeed
+        run: |
+          echo "Success: Required build and lint checks completed!"
+
   final:
     name: Post-CI jobJOB_NAME
     if: FORK_CONDITION
