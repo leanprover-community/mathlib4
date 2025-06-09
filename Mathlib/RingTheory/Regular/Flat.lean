@@ -3,6 +3,7 @@ Copyright (c) 2025 Yongle Hu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yongle Hu, Nailin Guan
 -/
+import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 import Mathlib.RingTheory.Flat.Localization
 import Mathlib.RingTheory.Regular.RegularSequence
 
@@ -12,7 +13,7 @@ import Mathlib.RingTheory.Regular.RegularSequence
 ## Main results
 * `RingTheory.Sequence.IsWeaklyRegular.of_flat_isBaseChange`: Let `R` be a commutative ring,
   `M` be an `R`-module, `S` be a flat `R`-algebra. If `[r₁, …, rₙ]` is a weakly regular
-  `M`-sequence, then its image in `M ⊗[R] S` is a weakly regular `M ⊗[R] S`-sequence.
+  `M`-sequence, then its image in `S ⊗[R] M` is a weakly regular `S ⊗[R] M`-sequence.
 -/
 
 open RingTheory.Sequence Pointwise Module TensorProduct
@@ -32,17 +33,6 @@ variable {R S M N: Type*} [CommRing R] [CommRing S] [Algebra R S] [Flat R S]
 protected def QuotSMulTop.congr (e : M ≃ₗ[R] N) : QuotSMulTop x M ≃ₗ[R] QuotSMulTop x N :=
   Submodule.Quotient.equiv (x • ⊤) (x • ⊤) e <|
     (Submodule.map_pointwise_smul x _ e.toLinearMap).trans (by simp)
-
-include hf
-
-variable {x} in
-theorem IsSMulRegular.of_flat_isBaseChange (reg : IsSMulRegular M x) :
-    IsSMulRegular N (algebraMap R S x) := by
-  have eq : hf.lift (f ∘ₗ (LinearMap.lsmul R M) x) = (LinearMap.lsmul S N) (algebraMap R S x) :=
-    hf.algHom_ext _ _ (fun _ ↦ by simp [hf.lift_eq])
-  convert Module.Flat.isBaseChange_preserves_injective_linearMap hf hf ((LinearMap.lsmul R M) x) reg
-  rw [eq]
-  rfl
 
 omit [Flat R S] [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R S N] hf in
 theorem TensorProduct.tsmul_eq_smul_one_tuml (s : S) (m : M) : s ⊗ₜ[R] m = s • (1 ⊗ₜ[R] m) := by
@@ -97,14 +87,25 @@ noncomputable def tensorQuotSMulTopEquivQuotSMulTopAlgebraMapTensor :
     intro m
     simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]
     nth_rw 2 [← Submodule.Quotient.mk_out m]
-    induction' Quotient.out m with s m m₁ m₂
+    induction Quotient.out m
     · simp
     · simp [← hsm]
     · simpa using by congr 1 }
 
+include hf
+
+variable {x} in
+theorem IsSMulRegular.of_flat_isBaseChange (reg : IsSMulRegular M x) :
+    IsSMulRegular N (algebraMap R S x) := by
+  have eq : hf.lift (f ∘ₗ (LinearMap.lsmul R M) x) = (LinearMap.lsmul S N) (algebraMap R S x) :=
+    hf.algHom_ext _ _ (fun _ ↦ by simp [hf.lift_eq])
+  convert Module.Flat.isBaseChange_preserves_injective_linearMap hf hf ((LinearMap.lsmul R M) x) reg
+  rw [eq]
+  rfl
+
 /-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be a flat `R`-algebra.
-  If `[r₁, …, rₙ]` is a weakly regular `M`-sequence, then its image in `M ⊗[R] S` is a
-  weakly regular `M ⊗[R] S`-sequence. -/
+  If `[r₁, …, rₙ]` is a weakly regular `M`-sequence, then its image in `S ⊗[R] M` is a
+  weakly regular `S ⊗[R] M`-sequence. -/
 theorem RingTheory.Sequence.IsWeaklyRegular.of_flat_isBaseChange {rs : List R}
     (reg : IsWeaklyRegular M rs) : IsWeaklyRegular N (rs.map (algebraMap R S)) := by
   generalize len : rs.length = n
@@ -123,6 +124,20 @@ theorem RingTheory.Sequence.IsWeaklyRegular.of_flat_isBaseChange {rs : List R}
       exact ⟨reg.1.of_flat_isBaseChange hf, ih hg reg.2 len⟩
 
 end Flat
+
+section FaithfullyFlat
+
+variable {R S M N: Type*} [CommRing R] [CommRing S] [Algebra R S] [FaithfullyFlat R S]
+  [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] [Module S N]
+  [IsScalarTower R S N] {f : M →ₗ[R] N} (hf : IsBaseChange S f) (x : R)
+
+/-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be a faithfully flat `R`-algebra.
+  If `[r₁, …, rₙ]` is a regular `M`-sequence, then its image in `S ⊗[R] M` is a regular
+  `S ⊗[R] M`-sequence. -/
+theorem RingTheory.Sequence.IsRegular.of_faithfullyFlat_isBaseChange {rs : List R}
+    (reg : IsRegular M rs) : IsRegular N (rs.map (algebraMap R S)) := sorry
+
+end FaithfullyFlat
 
 section IsLocalizedModule
 
@@ -148,26 +163,21 @@ end IsLocalizedModule
 
 section AtPrime
 
-theorem RingTheory.Sequence.IsRegular.of_isLocalizedModule_of_mem_prime
+theorem RingTheory.Sequence.IsWeaklyRegular.isRegular_of_isLocalizedModule_of_mem_prime
     {R : Type*} [CommRing R] (p : Ideal R) [p.IsPrime] (Rₚ : Type*) [CommRing Rₚ] [Algebra R Rₚ]
     [IsLocalization.AtPrime Rₚ p]
     {M Mₚ : Type*} [AddCommGroup M] [Module R M] [Nontrivial Mₚ] [AddCommGroup Mₚ] [Module Rₚ Mₚ]
     [Module.Finite Rₚ Mₚ] [Module R Mₚ] [IsScalarTower R Rₚ Mₚ]
-    (f : M →ₗ[R] Mₚ) [IsLocalizedModule.AtPrime p f] {rs : List R} (reg : IsRegular M rs)
-    (mem : ∀ r ∈ rs, r ∈ p) : IsRegular Mₚ (rs.map (algebraMap R Rₚ)) := by
+    (f : M →ₗ[R] Mₚ) [IsLocalizedModule.AtPrime p f] {rs : List R} (reg : IsWeaklyRegular M rs)
+    (mem : ∀ r ∈ rs, r ∈ p) : IsRegular Mₚ (rs.map (algebraMap R Rₚ)) :=
   have : IsLocalRing Rₚ := IsLocalization.AtPrime.isLocalRing Rₚ p
-  have mem : ∀ r ∈ List.map (algebraMap R Rₚ) rs, r ∈ IsLocalRing.maximalIdeal Rₚ := by
-    intro r hr
-    rcases List.mem_map.mp hr with ⟨r', hr', eq⟩
-    rw [← eq, IsLocalization.AtPrime.to_map_mem_maximal_iff Rₚ p]
-    exact mem r' hr'
-  have : Ideal.ofList (List.map (⇑(algebraMap R Rₚ)) rs) • (⊤ : Submodule Rₚ Mₚ) ≤
-      IsLocalRing.maximalIdeal Rₚ • (⊤ : Submodule Rₚ Mₚ) := by
-    apply Submodule.smul_mono _ fun _ a ↦ a
-    simpa only [Ideal.ofList, Ideal.span_le] using mem
-  refine ⟨reg.1.of_isLocalizedModule p.primeCompl Rₚ f, ?_⟩
-  apply (ne_top_of_lt (b := ⊤) (lt_of_le_of_lt this (Ne.lt_top (Ne.symm _)))).symm
-  exact Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
-    (IsLocalRing.maximalIdeal_le_jacobson _)
+  have h : ∀ r ∈ rs.map (algebraMap R Rₚ), r ∈ IsLocalRing.maximalIdeal Rₚ := by
+    intro _ hr
+    rcases List.mem_map.mp hr with ⟨r, hr, eq⟩
+    simpa only [← eq, IsLocalization.AtPrime.to_map_mem_maximal_iff Rₚ p] using mem r hr
+  ⟨reg.of_isLocalizedModule p.primeCompl Rₚ f, Ne.symm <| ne_top_of_lt <| lt_of_le_of_lt
+    (Submodule.smul_mono (by simpa only [Ideal.ofList, Ideal.span_le] using h) fun _ a ↦ a)
+      (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
+        (IsLocalRing.maximalIdeal_le_jacobson (annihilator Rₚ Mₚ))).symm.lt_top⟩
 
 end AtPrime
