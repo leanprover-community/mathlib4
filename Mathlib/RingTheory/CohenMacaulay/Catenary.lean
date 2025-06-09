@@ -280,27 +280,33 @@ lemma Ideal.depth_le_height [IsLocalRing R] (I : Ideal R) (netop : I ≠ ⊤):
     ← ofList_height_eq_length_of_isRegular rs reg.1 (fun r hr ↦ le_maximalIdeal netop (mem r hr))]
   exact Ideal.height_mono (span_le.mpr mem)
 
-lemma Ideal.depth_eq_height [IsCohenMacaulayLocalRing R] (I : Ideal R) (netop : I ≠ ⊤) :
-    I.depth (ModuleCat.of R R) = I.height := by
-  apply le_antisymm (I.depth_le_height netop)
+lemma Ideal.exist_regular_sequence_length_eq_height [IsCohenMacaulayLocalRing R]
+    (I : Ideal R) (netop : I ≠ ⊤) :
+    ∃ rs : List R, IsRegular R rs ∧ (∀ r ∈ rs, r ∈ I) ∧ rs.length = I.height := by
   rcases Ideal.exists_spanRank_eq_and_height_eq I netop with ⟨J, le, rank, ht⟩
   simp only [Submodule.fg_iff_spanRank_eq_spanFinrank.mpr
       ((isNoetherianRing_iff_ideal_fg R).mp (by assumption) J), Cardinal.nat_eq_ofENat] at rank
-  rw [IsLocalRing.ideal_depth_eq_sSup_length_regular I netop, ← ht]
-  apply le_sSup
   obtain ⟨⟨s, span⟩, hs⟩ : ∃ s : { s : Finset R // Submodule.span R s = J}, s.1.card =
     Submodule.spanFinrank J := by
     have : {x | ∃ s : { s : Finset R // Submodule.span R s = J}, s.1.card = x}.Nonempty := by
       rcases (isNoetherianRing_iff_ideal_fg R).mp (by assumption) J with ⟨s, hs⟩
       use s.card, ⟨s, hs⟩
     simpa only [Submodule.spanFinrank_eq_iInf J, iInf, Set.range] using Nat.sInf_mem this
-  simp only [← hs, ← ht] at rank
+  simp only [← hs] at rank
   use s.toList
-  use isRegular_of_ofList_height_eq_length_of_isCohenMacaulayLocalRing s.toList (fun r hr ↦
+  simp only [Finset.mem_toList, Finset.length_toList, rank, and_true]
+  refine ⟨?_, fun r hr ↦ le (le_of_eq span (Submodule.subset_span hr))⟩
+  exact isRegular_of_ofList_height_eq_length_of_isCohenMacaulayLocalRing s.toList (fun r hr ↦
     le_maximalIdeal netop (le (le_of_eq span (Submodule.subset_span (Finset.mem_toList.mp hr)))))
-    (by simp [Ideal.ofList, span, ← Ideal.submodule_span_eq, rank])
-  use fun r hr ↦ le (le_of_eq span (Submodule.subset_span (Finset.mem_toList.mp hr)))
-  simp [rank]
+    (by simp [Ideal.ofList, span, ← Ideal.submodule_span_eq, rank, ht])
+
+lemma Ideal.depth_eq_height [IsCohenMacaulayLocalRing R] (I : Ideal R) (netop : I ≠ ⊤) :
+    I.depth (ModuleCat.of R R) = I.height := by
+  apply le_antisymm (I.depth_le_height netop)
+  rw [IsLocalRing.ideal_depth_eq_sSup_length_regular I netop]
+  apply le_sSup
+  rcases Ideal.exist_regular_sequence_length_eq_height I netop with ⟨rs, reg, mem, len⟩
+  use rs
 
 omit [IsNoetherianRing R] in
 lemma Ideal.primeHeight_eq_ringKrullDim_localization (p : Ideal R) [p.IsPrime]
@@ -311,8 +317,24 @@ lemma Ideal.primeHeight_eq_ringKrullDim_localization (p : Ideal R) [p.IsPrime]
 
 lemma Ideal.primeHeight_add_ringKrullDim_quotient_eq_ringKrullDim [IsCohenMacaulayLocalRing R]
     (p : Ideal R) [p.IsPrime] : p.primeHeight + ringKrullDim (R ⧸ p) = ringKrullDim R := by
-
-  sorry
+  rcases Ideal.exist_regular_sequence_length_eq_height p IsPrime.ne_top' with ⟨rs, reg, mem, len⟩
+  have mem' := (fun r hr ↦ le_maximalIdeal_of_isPrime p (mem r hr))
+  have CM := (quotient_regular_isCohenMacaulay_iff_isCohenMacaulay (ModuleCat.of R R) rs reg).mp
+    ((isCohenMacaulayLocalRing_iff R).mp (by assumption))
+  have ht_eq := Ideal.ofList_height_eq_length_of_isRegular rs reg.1 mem'
+  rw [← Ideal.height_eq_primeHeight, ← len]
+  rw [(isCohenMacaulayLocalRing_def R).mp (by assumption),
+    ← depth_quotient_regular_sequence_add_length_eq_depth (ModuleCat.of R R) rs reg]
+  have ass : p ∈ associatedPrimes R (R ⧸ ofList rs • (⊤ : Ideal R)) := by
+    apply Module.associatedPrimes.minimalPrimes_annihilator_mem_associatedPrimes
+    simp only [smul_eq_mul, annihilator_quotient, mul_top]
+    apply Ideal.mem_minimalPrimes_of_height_eq
+    · exact (span_le.mpr mem)
+    · simp [← len, ← ht_eq]
+  let _ : Nontrivial (R ⧸ ofList rs • (⊤ : Ideal R)) := IsRegular.quot_ofList_smul_nontrivial reg ⊤
+  rw [depth_eq_dim_quotient_associated_prime_of_isCohenMacaulay p
+    (ModuleCat.of R (R ⧸ ofList rs • (⊤ : Ideal R))) ass]
+  simp [add_comm]
 
 omit [IsNoetherianRing R] in
 lemma ringKrullDim_quotient_eq_iSup_quotient_minimalPrimes (I : Ideal R) :
