@@ -171,14 +171,14 @@ theorem _root_.Set.up_one : (1 : Set α).up = 1 :=
 
 end One
 
-instance [MulOneClass α] : NonAssocSemiring (SetSemiring α) :=
+noncomputable instance [MulOneClass α] : NonAssocSemiring (SetSemiring α) :=
   { (inferInstance : NonUnitalNonAssocSemiring (SetSemiring α)),
     Set.mulOneClass with }
 
 instance [Semigroup α] : NonUnitalSemiring (SetSemiring α) :=
   { (inferInstance : NonUnitalNonAssocSemiring (SetSemiring α)), Set.semigroup with }
 
-instance [Monoid α] : IdemSemiring (SetSemiring α) :=
+noncomputable instance [Monoid α] : IdemSemiring (SetSemiring α) :=
   { (inferInstance : NonAssocSemiring (SetSemiring α)),
     (inferInstance : NonUnitalSemiring (SetSemiring α)),
     (inferInstance : CompleteBooleanAlgebra (Set α)) with }
@@ -186,27 +186,27 @@ instance [Monoid α] : IdemSemiring (SetSemiring α) :=
 instance [CommSemigroup α] : NonUnitalCommSemiring (SetSemiring α) :=
   { (inferInstance : NonUnitalSemiring (SetSemiring α)), Set.commSemigroup with }
 
-instance [CommMonoid α] : IdemCommSemiring (SetSemiring α) :=
+noncomputable instance [CommMonoid α] : IdemCommSemiring (SetSemiring α) :=
   { (inferInstance : IdemSemiring (SetSemiring α)),
     (inferInstance : CommMonoid (Set α)) with }
 
-instance [CommMonoid α] : CommMonoid (SetSemiring α) :=
+noncomputable instance [CommMonoid α] : CommMonoid (SetSemiring α) :=
   { (inferInstance : Monoid (SetSemiring α)), Set.commSemigroup with }
 
 instance : CanonicallyOrderedAdd (SetSemiring α) where
   exists_add_of_le {_ b} ab := ⟨b, (union_eq_right.2 ab).symm⟩
   le_self_add _ _ := subset_union_left
 
-instance [CommMonoid α] : OrderedCommSemiring (SetSemiring α) :=
-  CanonicallyOrderedAdd.toOrderedCommSemiring
+noncomputable instance [CommMonoid α] : IsOrderedRing (SetSemiring α) :=
+  CanonicallyOrderedAdd.toIsOrderedRing
 
 /-- The image of a set under a multiplicative homomorphism is a ring homomorphism
 with respect to the pointwise operations on sets. -/
-def imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) : SetSemiring α →+* SetSemiring β where
+noncomputable def imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) :
+    SetSemiring α →+* SetSemiring β where
   toFun s := (image f s.down).up
   map_zero' := image_empty _
   map_one' := by
-    dsimp only
     rw [down_one, image_one, map_one, singleton_one, up_one]
   map_add' := image_union _
   map_mul' _ _ := image_mul f
