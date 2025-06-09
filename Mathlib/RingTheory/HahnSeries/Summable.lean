@@ -850,6 +850,9 @@ instance instField : Field (HahnSeries Γ R) where
   ratCast_def q := by
     simp [← single_zero_ratCast, ← single_zero_intCast, ← single_zero_natCast, Rat.cast_def]
 
+example : (instSMul : SMul NNRat (HahnSeries Γ R)) = NNRat.smulDivisionSemiring := rfl
+example : (instSMul : SMul ℚ (HahnSeries Γ R)) = Rat.smulDivisionRing := rfl
+
 theorem single_zero_ofScientific (m e s) :
     single (0 : Γ) (OfScientific.ofScientific m e s : R) = OfScientific.ofScientific m e s := by
   simpa using single_zero_ratCast (Γ := Γ) (R := R) (OfScientific.ofScientific m e s)
