@@ -220,73 +220,42 @@ lemma Flag.sum_card_embeddings_induce_eq (F₁ : Flag β ι) (F₂ : Flag α ι)
                               = ‖F₁ ↪f F₂‖ * Nat.choose (‖α‖ - ‖β‖) (k - ‖β‖) := by
   classical
   calc
-  _ =  ∑ t : Finset α with #t = k, (if ht : ∀ i, F₂.θ i ∈ t then
-            ‖{e : F₁ ↪f F₂ | Set.range e.toEmbedding ⊆ t}‖ else 0)  := by
-    simp_rw [Fintype.card_congr <| Flag.induceEquiv ..]
-  _ = ∑ t : Finset α with #t = k, (if ht : ∀ i, F₂.θ i ∈ t then ∑ e : F₁ ↪f F₂,
-      ite (Set.range e.toEmbedding ⊆ t) 1 0 else 0) := by
-    congr; simp only [Set.coe_setOf, sum_boole, Nat.cast_id]
-    ext t
-    split_ifs with h
-    · apply Fintype.card_subtype
-    · rfl
-  _ = ∑ t : Finset α with #t = k, ∑ e : F₁ ↪f F₂,
-          ite ((∀ i, F₂.θ i ∈ t) ∧ Set.range e.toEmbedding ⊆ t) 1 0 := by
-    simp_rw [dite_eq_ite]
-    congr; ext t; simp only [RelEmbedding.coe_toEmbedding, sum_boole, Nat.cast_id]
-    split_ifs with h
-    · congr 2 with e;
-      constructor <;> intro he
-      · exact  ⟨h , he⟩
-      · exact he.2
-    · push_neg at h; symm
-      by_contra! he
-      obtain ⟨e, he⟩ := card_ne_zero.1 he
-      obtain ⟨i, hi⟩ := h
-      apply hi
-      simp at he
-      apply he.1 i
-  _ = ∑ t : Finset α, ∑ e : F₁ ↪f F₂,
+  _ = ∑ t : Finset α , ∑ e : F₁ ↪f F₂,
           ite (#t = k ∧ (∀ i, F₂.θ i ∈ t) ∧ Set.range e.toEmbedding ⊆ t) 1 0 := by
-    rw [sum_filter]
-    congr; ext t; simp
-    split_ifs with h
-    · congr 2 with e
+    simp_rw [Fintype.card_congr <| Flag.induceEquiv .., dite_eq_ite, sum_filter,sum_boole,
+              RelEmbedding.coe_toEmbedding, Set.coe_setOf, Fintype.card_subtype]
+    congr with t
+    split_ifs with h1 h2
+    · congr with e
       constructor <;> intro he
-      · exact  ⟨h , he⟩
-      · exact he.2
-    · contrapose! h
-      obtain ⟨e, he⟩ := card_ne_zero.1 h.symm
-      simp at he
+      · exact  ⟨h1 , h2, he⟩
+      · exact he.2.2
+    · contrapose! h2
+      obtain ⟨e, he⟩ := card_ne_zero.1 h2.symm
+      simp only [mem_filter, mem_univ, true_and] at he
+      exact he.2.1
+    · contrapose! h1
+      obtain ⟨e, he⟩ := card_ne_zero.1 h1.symm
+      simp only [mem_filter, mem_univ, true_and] at he
       exact he.1
   _ = _ := by
-    rw [sum_comm]
-    rw [← card_univ (α := (F₁ ↪f F₂)), card_eq_sum_ones, sum_mul, one_mul]
-    congr; ext e
-    simp only [RelEmbedding.coe_toEmbedding, sum_boole, Nat.cast_id]
-    have : ∀ (i : ι), F₂.θ i ∈ Set.range e.toRelEmbedding := by
-      intro i
-      have := e.labels
-      use (F₁.θ i)
-      rw [this]
-      rfl
+    rw [sum_comm, ← card_univ (α := (F₁ ↪f F₂)), card_eq_sum_ones, sum_mul, one_mul]
+    congr with e
+    simp_rw [RelEmbedding.coe_toEmbedding, sum_boole]
+    have : ∀ (i : ι), F₂.θ i ∈ Set.range e.toRelEmbedding := fun i ↦ ⟨F₁.θ i, by simp [e.labels]⟩
     calc
-    _ =  #{x : Finset α | #x = k  ∧ Set.range e.toRelEmbedding ⊆ x} := by
-      congr; ext x; simp only [and_congr_right_iff, and_iff_right_iff_imp]
+    _ =  #{t : Finset α | #t = k  ∧ Set.range e.toRelEmbedding ⊆ t} := by
+      congr with t; simp only [and_congr_right_iff, and_iff_right_iff_imp]
       intro hk hs i
       exact hs <| this i
     _ = _ := by
       have hs : #((Set.range e.toRelEmbedding).toFinset) = ‖β‖ := by
         simp_rw [Set.toFinset_range]
-        apply card_image_of_injective
-        exact e.toRelEmbedding.injective
+        exact card_image_of_injective _ e.toRelEmbedding.injective
       rw [← hs, ← card_supersets (hs ▸ hk)]
-      congr
-      ext t
+      congr with t
       constructor <;> intro ⟨ht1, ht2⟩ <;> exact ⟨ht1, fun x hx ↦ ht2 (by simpa using hx)⟩
 
-
-#check Finset.attach
 
 /--
 Embeddings of `H` in `G[t]` are equivalent to embeddings of `H` in `G` that map into `t`.
