@@ -305,10 +305,11 @@ theorem Chain'.imp_head {x y} (h : ∀ {z}, R x z → R y z) {l} (hl : Chain' R 
   hl.tail.cons' fun _ hz => h <| hl.rel_head? hz
 
 theorem chain'_getElem (h : List.Chain' R l) (n : ℕ) (h' : n + 1 < l.length) :
-    R l[n] l[n+1] :=
+    R l[n] l[n + 1] :=
   chain'_pair.mp <| Chain'.infix h ⟨l.take n, l.drop (n + 2), by simp⟩
 
-theorem chain'_of_not (h : ¬List.Chain' R l) : ∃ n : ℕ, ∃ h : n + 1 < l.length, ¬R l[n] l[n+1] := by
+theorem chain'_of_not (h : ¬List.Chain' R l) :
+    ∃ n : ℕ, ∃ h : n + 1 < l.length, ¬R l[n] l[n + 1] := by
   contrapose! h
   induction l with
   | nil => simp
@@ -322,7 +323,7 @@ theorem chain'_of_not (h : ¬List.Chain' R l) : ∃ n : ℕ, ∃ h : n + 1 < l.l
           obtain ⟨_, rfl⟩ := getElem?_eq_some_iff.mp yh
           have := h 0 (by rw [length_cons]; omega)
           rwa [getElem_cons_zero] at this
-      · refine ih (fun n h' => ?_)
+      · refine ih (fun n h' ↦ ?_)
         have := h (n + 1) (by rw [length_cons]; omega)
         simpa using this
 
