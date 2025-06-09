@@ -225,8 +225,6 @@ variable [Algebra k K] (φ : K →+* ℂ) (σ : K ≃ₐ[k] K)
 -/
 def IsConj : Prop := conjugate φ = φ.comp σ
 
-#check IsConj
-
 variable {φ σ}
 
 lemma IsConj.eq (h : IsConj φ σ) (x) : φ (σ x) = star (φ x) := RingHom.congr_fun h.symm x
