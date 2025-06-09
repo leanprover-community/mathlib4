@@ -316,36 +316,59 @@ instance : HasFiniteProducts t.Heart where
   out _ := Adjunction.hasLimitsOfShape_of_equivalence
       t.heartEquivalenceFullsubcategory.functor
 
-instance (X : C) (n : ℤ) [t.IsGE X 0] : t.IsGE (X⟦n⟧) (-n) :=
-  t.isGE_shift X 0 n (-n) (by linarith)
+instance (X : C) (n : ℤ) [t.IsGE X 0] : t.IsGE (X⟦n⟧) (-n) := by
+  refine {ge := ?_}
+  change (t.ge _).shift _ _
+  rw [t.shift_ge _ _ 0 (by omega)]
+  exact t.ge_of_isGE _ _
 
-instance (X : C) (n : ℤ) [t.IsGE X 0] : t.IsGE (X⟦-n⟧) n :=
-  t.isGE_shift X 0 (-n) n (by linarith)
+instance (X : C) (n : ℤ) [t.IsGE X 0] : t.IsGE (X⟦-n⟧) n := by
+  refine {ge := ?_}
+  change (t.ge _).shift _ _
+  rw [t.shift_ge _ _ 0 (by omega)]
+  exact t.ge_of_isGE _ _
 
-instance (X : C) (n : ℤ) [t.IsLE X 0] : t.IsLE (X⟦n⟧) (-n) :=
-  t.isLE_shift X 0 n (-n) (by linarith)
+instance (X : C) (n : ℤ) [t.IsLE X 0] : t.IsLE (X⟦n⟧) (-n) := by
+  refine {le := ?_}
+  change (t.le _).shift _ _
+  rw [t.shift_le _ _ 0 (by omega)]
+  exact t.le_of_isLE _ _
 
-instance (X : C) (n : ℤ) [t.IsLE X 0] : t.IsLE (X⟦-n⟧) n :=
-  t.isLE_shift X 0 (-n) n (by linarith)
+instance (X : C) (n : ℤ) [t.IsLE X 0] : t.IsLE (X⟦-n⟧) n := by
+  refine {le := ?_}
+  change (t.le _).shift _ _
+  rw [t.shift_le _ _ 0 (by omega)]
+  exact t.le_of_isLE _ _
 
 instance (X : C) [t.IsLE X 0] : t.IsLE X 1 :=
-  t.isLE_of_LE X 0 1 (by linarith)
+ {le := t.le_monotone zero_le_one _ (t.le_of_isLE _ _)}
 
 instance (X : C) (n : ℤ) [t.IsLE X n] : t.IsLE (X⟦(1 : ℤ)⟧) n :=
-  have := t.isLE_shift X n 1 (n - 1) (by linarith)
-  t.isLE_of_LE (X⟦(1 : ℤ)⟧) (n - 1) n (by linarith)
+  have : t.IsLE ((shiftFunctor C (1 : ℤ)).obj X) (n - 1) := by
+    refine {le := ?_}
+    change (t.le _).shift _ _
+    rw [t.shift_le _ _ n (by omega)]
+    exact t.le_of_isLE _ _
+  {le := t.le_monotone (a := n - 1) (b := n) (by omega) _ (t.le_of_isLE _ _)}
 
 instance (X : C) [t.IsGE X 0] : t.IsGE X (-1) :=
-  t.isGE_of_GE X (-1) 0 (by linarith)
+  {ge := t.ge_antitone (a := -1) (b := 0) (by omega) _ (t.ge_of_isGE _ _)}
 
-instance (X : C) (n : ℤ) [t.IsLE X n] : t.IsLE (X⟦n⟧) 0 :=
-  t.isLE_shift X n n 0 (add_zero n)
+instance (X : C) (n : ℤ) [t.IsLE X n] : t.IsLE (X⟦n⟧) 0 := by
+  refine {le := ?_}
+  change (t.le _).shift _ _
+  rw [t.shift_le _ _ n (by omega)]
+  exact t.le_of_isLE _ _
 
-instance (X : C) (n : ℤ) [t.IsGE X n] : t.IsGE (X⟦n⟧) 0 :=
-  t.isGE_shift X n n 0 (add_zero n)
+instance (X : C) (n : ℤ) [t.IsGE X n] : t.IsGE (X⟦n⟧) 0 := by
+  refine {ge := ?_}
+  change (t.ge _).shift _ _
+  rw [t.shift_ge _ _ n (by omega)]
+  exact t.ge_of_isGE _ _
 
-instance (X : C) : t.IsLE ((t.truncLT 0).obj X) (-1) :=
-  t.isLE_of_iso ((t.truncLEIsoTruncLT (-1) 0 (by linarith)).app X) (-1)
+instance (X : C) : t.IsLE ((t.truncLT 0).obj X) (-1) := by
+  refine {le := ?_}
+  exact (t.le (-1)).prop_of_iso ((t.truncLEIsoTruncLT (-1) 0 (by omega)).app X) (t.le_of_isLE _ _)
 
 section
 
@@ -382,8 +405,8 @@ lemma exists_distinguished_triangle_of_isLE_zero_of_isGE_neg_one
   have e₃ := t.ιHeartObjHeartMkIso _ hQ
   refine ⟨t.heartMk _ hK, t.heartMk _ hQ, e₁.hom ≫ (t.truncLEι (-1)).app X,
     (t.truncGEπ 0).app X ≫ e₃.inv,
-    e₃.hom ≫ (t.truncGEδLE (-1) 0 (by linarith)).app X ≫ e₁.inv⟦(1 : ℤ)⟧', ?_⟩
-  refine isomorphic_distinguished _ (t.triangleLEGE_distinguished (-1) 0 (by linarith) X) _ ?_
+    e₃.hom ≫ (t.truncGEδLE (-1) 0 (by omega)).app X ≫ e₁.inv⟦(1 : ℤ)⟧', ?_⟩
+  refine isomorphic_distinguished _ (t.triangleLEGE_distinguished (-1) 0 (by omega) X) _ ?_
   refine Triangle.isoMk _ _ e₁ (Iso.refl _) e₃ ?_ ?_ ?_
   · dsimp
     simp
@@ -403,7 +426,7 @@ lemma admissibleMorphism_heart {X₁ X₂ : t.Heart} (f : X₁ ⟶ X₂) :
 noncomputable instance : Abelian t.Heart := by
   apply AbelianSubcategory.abelian t.ιHeart
   · intro X Y n f hn
-    exact t.zero f 0 (-n) (by linarith)
+    exact t.zero f 0 (-n) (by omega)
   · apply admissibleMorphism_heart
 
 end
@@ -441,7 +464,7 @@ lemma truncLETriangle_distinguished :
   have : t.IsLE Z n := t.isLE₂ _ (rot_of_distTriang _ h₁) n
       (by dsimp; infer_instance) (by dsimp; infer_instance)
   obtain ⟨e, he : e.hom.hom₂ = 𝟙 _⟩ :=
-    t.triangle_iso_exists n (n + 1) (by linarith) _ _
+    t.triangle_iso_exists n (n + 1) (by omega) _ _
       (t.triangleLEGE_distinguished n (n + 1) rfl T.obj₃) H.mem (Iso.refl _)
       (by dsimp; infer_instance) (by dsimp; infer_instance)
       (by dsimp; infer_instance) (by dsimp; infer_instance)
@@ -488,9 +511,12 @@ instance : t.IsGE (t.truncGETriangle T n).obj₂ n := by dsimp; infer_instance
 instance : t.IsGE (t.truncGETriangle T n).obj₃ n := by dsimp; infer_instance
 
 instance (X : C) [t.IsGE X n] : t.IsGE (X⟦(-1 : ℤ)⟧) n := by
-  have : t.IsGE (X⟦(-1 : ℤ)⟧) (n + 1) :=
-    t.isGE_shift X n (-1) (n + 1) (by linarith)
-  exact t.isGE_of_GE _ n (n + 1) (by linarith)
+  have : t.IsGE (X⟦(-1 : ℤ)⟧) (n + 1) := by
+    refine {ge := ?_}
+    change (t.ge _).shift _ _
+    rw [t.shift_ge _ _ n (by omega)]
+    exact t.ge_of_isGE _ _
+  exact {ge := t.ge_antitone (a := n) (b := n + 1) (by omega) _ (t.ge_of_isGE _ _)}
 
 omit [t.HasHeart] in
 include hT in
@@ -500,14 +526,14 @@ lemma truncGETriangle_distinguished :
   let b : (t.truncGE n).obj T.obj₂ ⟶ T.obj₃ :=
     (t.truncGE n).map T.mor₂ ≫ (asIso ((t.truncGEπ n).app T.obj₃)).inv
   have comm : a ≫ b = T.mor₂ := by simp [a, b]
-  have h₁ := rot_of_distTriang _ (t.triangleLEGE_distinguished (n-1) n (by linarith) T.obj₂)
+  have h₁ := rot_of_distTriang _ (t.triangleLEGE_distinguished (n-1) n (by omega) T.obj₂)
   obtain ⟨Z, f₁, f₃, h₂⟩ := distinguished_cocone_triangle₁ b
   have H := someOctahedron comm h₁ (rot_of_distTriang _ h₂) (rot_of_distTriang _ hT)
   obtain ⟨m₁, hm₁⟩ : ∃ (m₁ : (t.truncLE (n-1)).obj T.obj₂ ⟶ T.obj₁),
     (shiftFunctor C (1 : ℤ)).map m₁ = H.m₁ := ⟨(shiftFunctor C (1 : ℤ)).preimage H.m₁, by simp⟩
   obtain ⟨m₃, hm₃⟩ : ∃ (m₃ : T.obj₁ ⟶ Z), (shiftFunctor C (1 : ℤ)).map m₃ = H.m₃ :=
     ⟨(shiftFunctor C (1 : ℤ)).preimage H.m₃, by simp⟩
-  let T' := Triangle.mk m₁ m₃ (f₁ ≫ (t.truncGEδLE (n-1) n (by linarith)).app T.obj₂)
+  let T' := Triangle.mk m₁ m₃ (f₁ ≫ (t.truncGEδLE (n-1) n (by omega)).app T.obj₂)
   have Hmem' : T' ∈ distTriang C := by
     rw [← T'.shift_distinguished_iff 1]
     refine isomorphic_distinguished _ H.mem _ ?_
@@ -521,8 +547,8 @@ lemma truncGETriangle_distinguished :
   have : t.IsGE Z n := t.isGE₂ _ (inv_rot_of_distTriang _ h₂) n
     (by dsimp; infer_instance) (by dsimp; infer_instance)
   obtain ⟨e, he : _ = 𝟙 _⟩ :=
-    t.triangle_iso_exists (n-1) n (by linarith) _ _
-      (t.triangleLEGE_distinguished (n - 1) n (by linarith) T.obj₁)
+    t.triangle_iso_exists (n-1) n (by omega) _ _
+      (t.triangleLEGE_distinguished (n - 1) n (by omega) T.obj₁)
       Hmem' (Iso.refl _) (by dsimp; infer_instance) (by dsimp; infer_instance)
       (by dsimp [T']; infer_instance) (by dsimp [T']; infer_instance)
   refine isomorphic_distinguished _ h₂ _ ?_
@@ -575,15 +601,18 @@ instance (A X : C) [t.IsLE X 0] [t.IsGE A 0] :
       apply IsZero.eq_of_src
       apply AddCommGrp.isZero
       intro (x : ((t.truncLT 0).obj X)⟦(1 : ℤ)⟧ ⟶ A)
-      have : t.IsLE (((t.truncLT 0).obj X)⟦(1 : ℤ)⟧) (-1) :=
-        t.isLE_shift ((t.truncLT 0).obj X) 0 1 (-1) (by linarith)
-      exact t.zero x (-1) 0 (by linarith))
+      have : t.IsLE (((t.truncLT 0).obj X)⟦(1 : ℤ)⟧) (-1) := by
+        refine {le := ?_}
+        change (t.le _).shift _ _
+        rw [t.shift_le _ _ 0 (by omega)]
+        exact t.le_of_isLE _ _
+      exact t.zero x (-1) 0 (by omega))
   have : Epi ((preadditiveYoneda.obj A).map ((t.truncGEπ 0).app X).op) :=
     (preadditiveYoneda_map_distinguished _ (t.triangleLTGE_distinguished 0 X) A).epi_f (by
       apply IsZero.eq_of_tgt
       apply AddCommGrp.isZero
       intro (x : (t.truncLT 0).obj X ⟶ A)
-      exact t.zero x (-1) 0 (by linarith))
+      exact t.zero x (-1) 0 (by omega))
   apply isIso_of_mono_of_epi
 
 instance (A X : C) [t.IsLE X 0] [t.IsGE A 0]:
@@ -613,20 +642,23 @@ instance (A X : C) [t.IsGE X 0] [t.IsLE A 0] :
     IsIso ((preadditiveCoyoneda.obj (Opposite.op A)).map ((t.truncLEι 0).app X)) := by
   have : Mono ((preadditiveCoyoneda.obj (Opposite.op A)).map ((t.truncLEι 0).app X)) :=
     ((preadditiveCoyoneda.obj (Opposite.op A)).map_distinguished_exact _
-      (inv_rot_of_distTriang _ (t.triangleLEGE_distinguished 0 1 (by linarith) X))).mono_g (by
+      (inv_rot_of_distTriang _ (t.triangleLEGE_distinguished 0 1 (by omega) X))).mono_g (by
         apply IsZero.eq_of_src
         apply AddCommGrp.isZero
         intro (x : A ⟶ (((t.truncGE 1).obj X)⟦(-1 : ℤ)⟧))
-        have : t.IsGE (((t.truncGE 1).obj X)⟦(-1 : ℤ)⟧) 1 :=
-          t.isGE_shift ((t.truncGE 1).obj X) 0 (-1) 1 (by linarith)
-        exact t.zero x 0 1 (by linarith))
+        have : t.IsGE (((t.truncGE 1).obj X)⟦(-1 : ℤ)⟧) 1 := by
+          refine {ge := ?_}
+          change (t.ge _).shift _ _
+          rw [t.shift_ge _ _ 0 (by omega)]
+          exact t.ge_of_isGE _ _
+        exact t.zero x 0 1 (by omega))
   have : Epi ((preadditiveCoyoneda.obj (Opposite.op A)).map ((t.truncLEι 0).app X)) :=
     ((preadditiveCoyoneda.obj (Opposite.op A)).map_distinguished_exact _
-      (t.triangleLEGE_distinguished 0 1 (by linarith) X)).epi_f (by
+      (t.triangleLEGE_distinguished 0 1 (by omega) X)).epi_f (by
         apply IsZero.eq_of_tgt
         apply AddCommGrp.isZero
         intro (x : A ⟶ (t.truncGE 1).obj X)
-        exact t.zero x 0 1 (by linarith))
+        exact t.zero x 0 1 (by omega))
   apply isIso_of_mono_of_epi
 
 instance (A X : C) [t.IsGE X 0] [t.IsLE A 0] :
@@ -716,7 +748,7 @@ lemma case₁ [t.IsLE T.obj₁ 0] [t.IsLE T.obj₂ 0] [t.IsLE T.obj₃ 0] :
   apply IsZero.eq_of_src
   apply AddCommGrp.isZero
   intro (x : T.obj₁⟦(1 : ℤ)⟧ ⟶ t.ιHeart.obj A)
-  exact t.zero x (-1) 0 (by linarith)
+  exact t.zero x (-1) 0 (by omega)
 
 lemma case₂ (h₁ : t.IsLE T.obj₁ 0) :
     (shortComplex t hT).Exact ∧ Epi (shortComplex t hT).g := by
@@ -763,8 +795,8 @@ lemma case₁' [t.IsGE T.obj₁ 0] [t.IsGE T.obj₂ 0] [t.IsGE T.obj₃ 0] :
   apply IsZero.eq_of_src
   apply AddCommGrp.isZero
   intro (x : t.ιHeart.obj A ⟶ T.obj₃⟦-1⟧)
-  have : t.IsGE (T.obj₃⟦(-1 : ℤ)⟧) 1 := t.isGE_shift T.obj₃ 0 (-1) 1 (by linarith)
-  exact t.zero x 0 1 (by linarith)
+  have : t.IsGE (T.obj₃⟦(-1 : ℤ)⟧) 1 := t.isGE_shift T.obj₃ 0 (-1) 1 (by omega)
+  exact t.zero x 0 1 (by omega)
 
 /-- case₂' -/
 lemma case₂' (h₃ : t.IsGE T.obj₃ 0) :
@@ -784,7 +816,7 @@ end IsHomologicalAux
 open IsHomologicalAux
 instance : t.homology₀.IsHomological where
   exact T hT := by
-    have h₁ := t.triangleLEGE_distinguished 0 1 (by linarith) T.obj₁
+    have h₁ := t.triangleLEGE_distinguished 0 1 (by omega) T.obj₁
     obtain ⟨U, f, g, h₃⟩ := distinguished_cocone_triangle ((t.truncLEι 0).app T.obj₁ ≫ T.mor₁)
     have H := someOctahedron rfl h₁ hT h₃
     have ex₁ := case₂ t h₃ (by dsimp; infer_instance)
@@ -814,7 +846,7 @@ instance (n : ℤ) : (t.homology n).Additive := by
 variable (T : Triangle C) (hT : T ∈ distTriang C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
 
 def homologyδ : (t.homology n₀).obj T.obj₃ ⟶ (t.homology n₁).obj T.obj₁ :=
-  t.homology₀.shiftMap T.mor₃ n₀ n₁ (by linarith)
+  t.homology₀.shiftMap T.mor₃ n₀ n₁ (by omega)
 
 include hT in
 @[reassoc (attr := simp)]
@@ -849,7 +881,7 @@ lemma isZero_homology₀_of_isGE_one (X : C) [t.IsGE X 1] :
   dsimp [truncGELE]
   rw [IsZero.iff_id_eq_zero, ← Functor.map_id]
   have : IsZero ((t.truncLE 0).obj X) := by
-    rw [← t.isGE_iff_isZero_truncLE_obj 0 1 (by linarith)]
+    rw [← t.isGE_iff_isZero_truncLE_obj 0 1 (by omega)]
     infer_instance
   rw [IsZero.iff_id_eq_zero] at this
   rw [this, Functor.map_zero]
@@ -857,10 +889,10 @@ lemma isZero_homology₀_of_isGE_one (X : C) [t.IsGE X 1] :
 omit [IsTriangulated C] in
 lemma isZero_homology_of_isGE (X : C) (q n : ℤ) (hn₁ : q < n) [t.IsGE X n] :
     IsZero ((t.homology q).obj X) := by
-  have : t.IsGE (X⟦q⟧) (n - q) := t.isGE_shift X n q (n - q) (by linarith)
-  have : t.IsGE (X⟦q⟧) 1 := t.isGE_of_GE (X⟦q⟧) 1 (n - q) (by linarith)
+  have : t.IsGE (X⟦q⟧) (n - q) := t.isGE_shift X n q (n - q) (by omega)
+  have : t.IsGE (X⟦q⟧) 1 := t.isGE_of_GE (X⟦q⟧) 1 (n - q) (by omega)
   exact IsZero.of_iso (t.isZero_homology₀_of_isGE_one (X⟦q⟧))
-    (((t.homology₀.shiftIso q 0 q (by linarith)).app X).symm.trans
+    (((t.homology₀.shiftIso q 0 q (by omega)).app X).symm.trans
     ((t.homology₀.isoShiftZero ℤ).app (X⟦q⟧)))
 
 omit [t.homology₀.ShiftSequence ℤ] in
@@ -873,17 +905,17 @@ lemma isZero_homology₀_of_isLE_neg_one (X : C) [t.IsLE X (-1)] :
   dsimp [truncLEGE]
   rw [IsZero.iff_id_eq_zero, ← Functor.map_id]
   have : IsZero ((t.truncGE 0).obj X) := by
-    rw [← t.isLE_iff_isZero_truncGE_obj (-1) 0 (by linarith)]
+    rw [← t.isLE_iff_isZero_truncGE_obj (-1) 0 (by omega)]
     infer_instance
   rw [IsZero.iff_id_eq_zero] at this
   rw [this, Functor.map_zero]
 
 lemma isZero_homology_of_isLE (X : C) (q n : ℤ) (hn₁ : n < q) [t.IsLE X n] :
     IsZero ((t.homology q).obj X) := by
-  have : t.IsLE (X⟦q⟧) (n - q) := t.isLE_shift X n q (n - q) (by linarith)
-  have : t.IsLE (X⟦q⟧) (-1) := t.isLE_of_LE (X⟦q⟧) (n - q) (-1) (by linarith)
+  have : t.IsLE (X⟦q⟧) (n - q) := t.isLE_shift X n q (n - q) (by omega)
+  have : t.IsLE (X⟦q⟧) (-1) := t.isLE_of_LE (X⟦q⟧) (n - q) (-1) (by omega)
   exact IsZero.of_iso (t.isZero_homology₀_of_isLE_neg_one (X⟦q⟧))
-    (((t.homology₀.shiftIso q 0 q (by linarith)).app X).symm.trans
+    (((t.homology₀.shiftIso q 0 q (by omega)).app X).symm.trans
     ((t.homology₀.isoShiftZero ℤ).app (X⟦q⟧)))
 
 omit [t.homology₀.ShiftSequence ℤ] in
@@ -892,10 +924,10 @@ lemma isGE₁_iff_isGE₀_and_isZero_homology₀ (X : C) :
   constructor
   · intro _
     constructor
-    · exact t.isGE_of_GE X 0 1 (by linarith)
+    · exact t.isGE_of_GE X 0 1 (by omega)
     · apply isZero_homology₀_of_isGE_one
   · rintro ⟨_, hX⟩
-    rw [t.isGE_iff_isZero_truncLE_obj 0 1 (by linarith)]
+    rw [t.isGE_iff_isZero_truncLE_obj 0 1 (by omega)]
     rw [IsZero.iff_id_eq_zero] at hX
     replace hX := t.ιHeart.congr_map hX
     rw [Functor.map_id, Functor.map_zero, ← IsZero.iff_id_eq_zero] at hX
@@ -906,7 +938,7 @@ lemma isGE₁_iff_isGE₀_and_isZero_homology₀ (X : C) :
 lemma isGE_succ_iff_isGE_and_isZero_homology (X : C) (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
     t.IsGE X n₁ ↔ t.IsGE X n₀ ∧ (IsZero ((t.homology n₀).obj X)) := by
   have eq₁ : t.IsGE (X⟦n₀⟧) 1 ↔ t.IsGE X n₁ := t.isGE_shift_iff _ _ _ _ hn₁
-  have eq₂ : t.IsGE (X⟦n₀⟧) 0 ↔ t.IsGE X n₀ := t.isGE_shift_iff _ _ _ _ (by linarith)
+  have eq₂ : t.IsGE (X⟦n₀⟧) 0 ↔ t.IsGE X n₀ := t.isGE_shift_iff _ _ _ _ (by omega)
   have e : (t.homology n₀).obj X ≅ t.homology₀.obj (X⟦n₀⟧) :=
     (t.homology₀.shiftIso n₀ 0 n₀ (add_zero n₀)).symm.app _ ≪≫
       (t.homology₀.isoShiftZero ℤ ).app _
@@ -975,7 +1007,7 @@ instance {A B : t.Heart} (f : A ⟶ B) [Mono f] (n : ℤ) :
     · simp only [not_lt] at h'
       obtain h'' : n < 0 := by
         obtain h' | rfl := h'.lt_or_eq
-        · linarith
+        · omega
         · exfalso
           exact h rfl
       apply t.isZero_homology_of_isGE _ _ 0 h''
@@ -999,14 +1031,14 @@ lemma shortExact_of_distTriang {X₁ X₂ X₃ : t.Heart} {f : X₁ ⟶ X₂}
     simpa only [Functor.map_comp, Functor.map_zero]
       using comp_distTriang_mor_zero₁₂ _ h)
   let S := (ShortComplex.mk _ _ w).map (t.ιHeart ⋙ t.homology 0)
-  have : Mono S.f := (t.homology_exact₁ _ h (-1) 0 (by linarith)).mono_g (by
+  have : Mono S.f := (t.homology_exact₁ _ h (-1) 0 (by omega)).mono_g (by
     apply IsZero.eq_of_src
     dsimp
-    exact t.isZero_homology_of_isGE _ (-1) 0 (by linarith))
-  have : Epi S.g := (t.homology_exact₃ _ h 0 1 (by linarith)).epi_f (by
+    exact t.isZero_homology_of_isGE _ (-1) 0 (by omega))
+  have : Epi S.g := (t.homology_exact₃ _ h 0 1 (by omega)).epi_f (by
     apply IsZero.eq_of_tgt
     dsimp
-    exact t.isZero_homology_of_isLE _ 1 0 (by linarith))
+    exact t.isZero_homology_of_isLE _ 1 0 (by omega))
   have hS : S.ShortExact := { exact := t.homology_exact₂ _ h 0 }
   refine ShortComplex.shortExact_of_iso ?_ hS
   exact ShortComplex.isoMk (t.ιHeartHomology_zero.app X₁) (t.ιHeartHomology_zero.app X₂)
@@ -1024,14 +1056,14 @@ lemma exists_distTriang_of_shortExact :
   obtain ⟨Z, f₂, f₃, h⟩ := distinguished_cocone_triangle (t.ιHeart.map S.f)
   have := t.cocone_heart_isLE_zero h
   have : t.IsGE Z 0 := by
-    rw [t.isGE_succ_iff_isGE_and_isZero_homology Z (-1) 0 (by linarith)]
+    rw [t.isGE_succ_iff_isGE_and_isZero_homology Z (-1) 0 (by omega)]
     constructor
     · exact t.cocone_heart_isGE_neg_one h
-    · apply (t.homology_exact₃ _ h (-1) 0 (by linarith)).isZero_X₂
+    · apply (t.homology_exact₃ _ h (-1) 0 (by omega)).isZero_X₂
       · apply IsZero.eq_of_src
         dsimp
-        apply t.isZero_homology_of_isGE _ _ 0 (by linarith)
-      · apply (t.homology_exact₁ _ h (-1) 0 (by linarith)).mono_g_iff.1
+        apply t.isZero_homology_of_isGE _ _ 0 (by omega)
+      · apply (t.homology_exact₁ _ h (-1) 0 (by omega)).mono_g_iff.1
         have := hS.mono_f
         dsimp
         infer_instance
@@ -1142,7 +1174,7 @@ variable (X : C) (q q' : ℤ) (hqq' : q + 1 = q')
 /-
 noncomputable def shiftSpectralObjectω₁IsoHomologyιHeart :
     ((spectralObject t X).ω₁ ⋙ shiftFunctor C q).obj
-        (ComposableArrows.mk₁ (homOfLE (by simp; linarith) : ℤt.mk q ⟶ ℤt.mk q')) ≅
+        (ComposableArrows.mk₁ (homOfLE (by simp; omega) : ℤt.mk q ⟶ ℤt.mk q')) ≅
       (t.homology q ⋙ ιHeart t).obj X :=
   (shiftFunctor C q).mapIso ((t.truncGELEIsoTruncGELT q q q' hqq').symm.app X) ≪≫
     ((t.homologyCompιHeartIso q).app X).symm
@@ -1179,10 +1211,10 @@ omit hT in
 lemma isIso_homologyFunctor_map_mor₁_of_isGE (hT : T ∈ distTriang C) (n : ℤ) (a : ℤ) (h : n + 1 ≤ a)
     (hGE : t.IsGE T.obj₃ a) :
     IsIso ((t.homology n).map T.mor₁) := by
-  have := (t.homology_exact₁ T hT (n - 1) n (by linarith)).mono_g
-     (IsZero.eq_of_src (t.isZero_homology_of_isGE _ _ a (by linarith [h])) _ _)
+  have := (t.homology_exact₁ T hT (n - 1) n (by omega)).mono_g
+     (IsZero.eq_of_src (t.isZero_homology_of_isGE _ _ a (by omega [h])) _ _)
   have := (t.homology_exact₂ T hT n).epi_f
-      (IsZero.eq_of_tgt (t.isZero_homology_of_isGE _ n a (by linarith [h])) _ _)
+      (IsZero.eq_of_tgt (t.isZero_homology_of_isGE _ n a (by omega [h])) _ _)
   apply isIso_of_mono_of_epi
 
 omit hT in
@@ -1190,9 +1222,9 @@ lemma isIso_homologyFunctor_map_mor₂_of_isLE (hT : T ∈ distTriang C) (n : �
     (h : t.IsLE T.obj₁ a) :
     IsIso ((t.homology n).map T.mor₂) := by
   have := (t.homology_exact₂ T hT n).mono_g
-     (IsZero.eq_of_src (t.isZero_homology_of_isLE _ _ a (by linarith [h])) _ _)
+     (IsZero.eq_of_src (t.isZero_homology_of_isLE _ _ a (by omega [h])) _ _)
   have := (t.homology_exact₃ T hT n (n + 1) rfl).epi_f
-      (IsZero.eq_of_tgt (t.isZero_homology_of_isLE _ (n + 1) a (by linarith [h])) _ _)
+      (IsZero.eq_of_tgt (t.isZero_homology_of_isLE _ (n + 1) a (by omega [h])) _ _)
   apply isIso_of_mono_of_epi
 
 end
@@ -1246,7 +1278,7 @@ lemma ConservativeHomologyObject (X : C) (hX : ∀ (n : ℤ), IsZero ((t.homolog
       · have : t.IsGE B 1 := {ge := hB}
         exact t.isGE_of_GE B n 1 (by omega)
       · have : n = (n - 1).natAbs + 1 := by
-          rw [← Int.eq_natAbs_of_nonneg (a := n - 1) (by linarith [hn]), sub_add_cancel]
+          rw [← Int.eq_natAbs_of_nonneg (a := n - 1) (by omega [hn]), sub_add_cancel]
         rw [this]
         exact h _
     intro n
@@ -1284,7 +1316,7 @@ lemma ConservativeHomologyMap {X Y : C} (f : X ⟶ Y) (hf : ∀ (n : ℤ), IsIso
 
 lemma isGE_of_isZero_homology (X : C) (n : ℤ)
     (hn : ∀ (j : ℤ), j < n → IsZero ((t.homology j).obj X)) : t.IsGE X n := by
-  obtain ⟨A, B, hA, hB, f, g, h, DT⟩ := t.exists_triangle X (n - 1) n (by linarith)
+  obtain ⟨A, B, hA, hB, f, g, h, DT⟩ := t.exists_triangle X (n - 1) n (by omega)
   refine {ge := IsClosedUnderIsomorphisms.of_iso ?_ hB}
   have : IsIso g := by
     erw [← Triangle.isZero₁_iff_isIso₂ _ DT]

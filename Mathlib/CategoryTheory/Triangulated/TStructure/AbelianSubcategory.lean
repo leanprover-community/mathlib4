@@ -32,7 +32,7 @@ lemma vanishing_from_positive_shift {X Y : A} {n : ℤ} (f : (ι.obj X)⟦n⟧ �
     (hn : 0 < n) : f = 0 := by
   apply (shiftFunctor C (-n)).map_injective
   rw [← cancel_epi ((shiftEquiv C n).unitIso.hom.app _), Functor.map_zero, comp_zero]
-  exact hι _ (by linarith)
+  exact hι _ (by omega)
 
 section
 
@@ -86,15 +86,15 @@ lemma mono_ιK : Mono (ιK f₃ α) := by
   simp only [Functor.comp_obj, Functor.comp_map, Functor.map_comp,
     shift_ι_map_ιK, Functor.map_zero, ← assoc] at hk ⊢
   obtain ⟨l, hl⟩ := Triangle.coyoneda_exact₃ _ hT _ hk
-  obtain rfl : l = 0 := vanishing_from_positive_shift hι _ (by linarith)
+  obtain rfl : l = 0 := vanishing_from_positive_shift hι _ (by omega)
   rw [zero_comp] at hl
   obtain ⟨m, hm⟩ := Triangle.coyoneda_exact₁ _ hT' ((ι.map k)⟦(1 : ℤ)⟧'⟦(1 : ℤ)⟧') (by
     dsimp
     rw [← Functor.map_comp, hl, Functor.map_zero])
   dsimp at m hm
   obtain rfl : m = 0 := by
-    rw [← cancel_epi ((shiftFunctorAdd' C (1 : ℤ) 1 2 (by linarith)).hom.app _), comp_zero]
-    exact vanishing_from_positive_shift hι _ (by linarith)
+    rw [← cancel_epi ((shiftFunctorAdd' C (1 : ℤ) 1 2 (by omega)).hom.app _), comp_zero]
+    exact vanishing_from_positive_shift hι _ (by omega)
   rw [zero_comp] at hm
   apply (shiftFunctor C (1 : ℤ)).map_injective
   rw [hm, Functor.map_zero]
@@ -105,14 +105,14 @@ lemma epi_πQ : Epi (πQ f₂ β) := by
   replace hk := ι.congr_map hk
   simp only [Functor.map_comp, ι_map_πQ, assoc, Functor.map_zero] at hk
   obtain ⟨l, hl⟩ := Triangle.yoneda_exact₃ _ hT _ hk
-  obtain rfl : l = 0 := vanishing_from_positive_shift hι _ (by linarith)
+  obtain rfl : l = 0 := vanishing_from_positive_shift hι _ (by omega)
   rw [comp_zero] at hl
   obtain ⟨m, hm⟩ := Triangle.yoneda_exact₃ _ hT' (ι.map k) hl
   dsimp at m hm
   obtain rfl : m = 0 := by
-    rw [← cancel_epi ((shiftFunctorAdd' C (1 : ℤ) 1 2 (by linarith)).hom.app _),
+    rw [← cancel_epi ((shiftFunctorAdd' C (1 : ℤ) 1 2 (by omega)).hom.app _),
       comp_zero]
-    exact vanishing_from_positive_shift hι _ (by linarith)
+    exact vanishing_from_positive_shift hι _ (by omega)
   apply ι.map_injective
   rw [hm, comp_zero, ι.map_zero]
 
@@ -129,7 +129,7 @@ lemma ιK_lift {B : A} (x₁ : B ⟶ X₁) (hx₁ : x₁ ≫ f₁ = 0) :
       dsimp
       rw [← Functor.map_comp, ← Functor.map_comp, hx₁, Functor.map_zero, Functor.map_zero])
   obtain ⟨k', hk'⟩ := Triangle.coyoneda_exact₂ _ hT' x₃
-    (vanishing_from_positive_shift hι _ (by linarith))
+    (vanishing_from_positive_shift hι _ (by omega))
   refine ⟨k', ?_⟩
   dsimp at hk' hx₃
   rw [hx₃, hk', assoc]
@@ -147,7 +147,7 @@ lemma πQ_desc {B : A} (x₂ : X₂ ⟶ B) (hx₂ : f₁ ≫ x₂ = 0) :
     dsimp
     rw [← ι.map_comp, hx₂, ι.map_zero])
   obtain ⟨k, hk⟩ := Triangle.yoneda_exact₂ _ hT' x₁
-    (vanishing_from_positive_shift hι _ (by linarith))
+    (vanishing_from_positive_shift hι _ (by omega))
   dsimp at k hk hx₁
   refine ⟨ι.preimage k, ?_⟩
   apply ι.map_injective

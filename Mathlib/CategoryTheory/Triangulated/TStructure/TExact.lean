@@ -53,17 +53,27 @@ lemma RightTExact.mk' (h : ∀ (X : C) [t₁.IsGE X 0], t₂.IsGE (F.obj X) 0) :
       rw [t₁.shift_ge _ _ n (by omega)]
       exact t₁.ge_of_isGE _ _
     have : t₂.IsGE ((shiftFunctor C n ⋙ F).obj X) 0 := h (X⟦n⟧)
-    have : t₂.IsGE ((F.obj X)⟦n⟧) 0 := t₂.isGE_of_iso ((F.commShiftIso n).app X) 0
-    exact t₂.isGE_of_shift (F.obj X) n n 0 (add_zero n)
+    have : t₂.IsGE ((F.obj X)⟦n⟧) 0 :=
+      {ge := (t₂.ge 0).prop_of_iso ((F.commShiftIso n).app X) (t₂.ge_of_isGE _ _)}
+    refine {ge := ?_}
+    rw [← t₂.shift_ge n 0 n (by omega)]
+    exact t₂.ge_of_isGE _ _
 
 /-- Constructor for `LeftTExact`. -/
 lemma LeftTExact.mk' (h : ∀ (X : C) [t₁.IsLE X 0], t₂.IsLE (F.obj X) 0) :
     F.LeftTExact t₁ t₂ where
   objLE X n _ := by
-    have := t₁.isLE_shift X n n 0 (add_zero n)
+    have : t₁.IsLE ((shiftFunctor C n).obj X) 0 := by
+      refine {le := ?_}
+      change (t₁.le _).shift _ _
+      rw [t₁.shift_le _ _ n (by omega)]
+      exact t₁.le_of_isLE _ _
     have : t₂.IsLE ((shiftFunctor C n ⋙ F).obj X) 0 := h (X⟦n⟧)
-    have : t₂.IsLE ((F.obj X)⟦n⟧) 0 := t₂.isLE_of_iso ((F.commShiftIso n).app X) 0
-    exact t₂.isLE_of_shift (F.obj X) n n 0 (add_zero n)
+    have : t₂.IsLE ((F.obj X)⟦n⟧) 0 :=
+      {le := (t₂.le 0).prop_of_iso ((F.commShiftIso n).app X) (t₂.le_of_isLE _ _)}
+    refine {le := ?_}
+    rw [← t₂.shift_le n 0 n (by omega)]
+    exact t₂.le_of_isLE _ _
 
 section
 
