@@ -153,9 +153,8 @@ jobs:
         shell: bash # We're only building the `master` branch version of the tools, so don't need to run inside landrun.
         run: |
           cd master-branch
-          lake build cache mk_all check-yaml graph
+          lake build cache check-yaml graph
           ls .lake/build/bin/cache
-          ls .lake/build/bin/mk_all
           ls .lake/build/bin/check-yaml
           ls .lake/packages/importGraph/.lake/build/bin/graph
 
@@ -236,13 +235,11 @@ jobs:
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
         id: mk_all
         continue-on-error: true # Allow workflow to continue, outcome checked later
-        # This only runs `mk_all --check` from the `master-branch`, so doesn't need to be inside landrun
-        shell: bash
+        # This runs `mk_all --check` from the `pr-branch` inside landrun
         run: |
           cd pr-branch
-
-          echo "Running mk_all --check (from master-branch)..."
-          LAKE_HOME="$TOOLCHAIN_DIR" ../master-branch/.lake/build/bin/mk_all --check
+          echo "Running mk_all --check (from pr-branch)..."
+          lake exe mk_all --check
 
       - name: begin gh-problem-match-wrap for build step
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
