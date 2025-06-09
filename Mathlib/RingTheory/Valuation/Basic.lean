@@ -3,11 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 -/
+import Mathlib.Algebra.GroupWithZero.Range
+import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Algebra.Order.Hom.Monoid
+import Mathlib.Algebra.Order.Monoid.Submonoid
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Tactic.TFAE
-
 /-!
 
 # The basics of valuation theory.
@@ -384,6 +386,18 @@ def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where
   zero_mem' := by simp
   add_mem' {x y} x_in y_in := lt_of_le_of_lt (v.map_add x y) (max_lt x_in y_in)
   neg_mem' x_in := by rwa [Set.mem_setOf, map_neg]
+
+theorem mem_ltAddSubgroup_iff {v : Valuation R Γ₀} {γ : Γ₀ˣ} {r : R} :
+    r ∈ v.ltAddSubgroup γ ↔ v r < γ := rfl.to_iff
+
+theorem ltAddSubgroup_monotone {v : Valuation R Γ₀} :
+    Monotone (v.ltAddSubgroup) := fun _ _ h _ h' ↦
+  lt_of_lt_of_le h' h
+
+theorem ltAddSubgroup_min {v : Valuation R Γ₀} {γ γ' : Γ₀ˣ} :
+    v.ltAddSubgroup (min γ γ') = v.ltAddSubgroup γ ⊓ v.ltAddSubgroup γ' := by
+  ext a
+  simp [AddSubgroup.mem_inf, mem_ltAddSubgroup_iff]
 
 end Group
 
@@ -991,6 +1005,7 @@ instance (v : Valuation R Γ₀) : CommMonoidWithZero (MonoidHom.mrange v) where
 @[simp]
 lemma val_mrange_zero (v : Valuation R Γ₀) : ((0 : MonoidHom.mrange v) : Γ₀) = 0 := rfl
 
+/-- The range of a valuation, as a `CommGroupWithZero` -/
 instance {Γ₀} [LinearOrderedCommGroupWithZero Γ₀] [DivisionRing K] (v : Valuation K Γ₀) :
     CommGroupWithZero (MonoidHom.mrange v) where
   inv := fun x ↦ ⟨x⁻¹, by
@@ -1004,4 +1019,126 @@ instance {Γ₀} [LinearOrderedCommGroupWithZero Γ₀] [DivisionRing K] (v : Va
     simp only [ne_eq, Subtype.ext_iff] at h
     simpa using mul_inv_cancel₀ h
 
+section Group
+
+variable {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation R Γ₀) {x y z : R}
+
+/-- The image of the valuation, as a `CommGroupWithZero` -/
+def rangeGroup₀ : Submonoid Γ₀ := MonoidHomWithZero.range₀ v
+
+theorem mem_rangeGroup₀_iff {x : Γ₀} :
+    x ∈ v.rangeGroup₀ ↔ ∃ a b, v a ≠ 0 ∧ v a * x = v b :=
+  MonoidHomWithZero.mem_range₀_iff
+
+theorem mem_rangeGroup₀ {a : R} : v a ∈ v.rangeGroup₀ :=
+  MonoidHomWithZero.mem_range₀
+
+instance : CommGroupWithZero v.rangeGroup₀ := by
+  unfold rangeGroup₀
+  infer_instance
+
+instance : LinearOrder v.rangeGroup₀ := inferInstance
+
+instance: IsOrderedMonoid v.rangeGroup₀ where
+  mul_le_mul_left _ _ h c := mul_le_mul_left' h c
+
+instance : LinearOrderedCommMonoidWithZero v.rangeGroup₀ where
+  zero_mul := zero_mul
+  mul_zero := mul_zero
+  zero_le_one := zero_le_one' Γ₀
+  bot := 0
+  bot_le _ := zero_le'
+
+/-- Define a unit of `v.rangeGroup₀` from an element of nonzero valuation. -/
+def mk_rangeGroup₀_unit {a : R} (ha : v a ≠ 0) : v.rangeGroup₀ˣ :=
+  IsUnit.unit  (a := ⟨v a, v.mem_rangeGroup₀⟩) (by
+    rwa [isUnit_iff_ne_zero, ne_eq, ← Subtype.coe_inj])
+
+@[simp]
+lemma coe_mk_rangeGroup₀_unit {a : R} (ha : v a ≠ 0) :
+    (v.mk_rangeGroup₀_unit ha : Γ₀) = v a := rfl
+
+@[simp] theorem coe_min (γ γ' : v.rangeGroup₀) :
+    ((min γ γ' : v.rangeGroup₀) : Γ₀)= min ↑γ ↑γ' := rfl
+
+@[simp] theorem coe_max (γ γ' : v.rangeGroup₀) :
+    ((max γ γ' : v.rangeGroup₀) : Γ₀)= max ↑γ ↑γ' := rfl
+
+lemma units_min_eq (γ₀ γ₁ : v.rangeGroup₀ˣ) :
+    (min γ₀ γ₁).map v.rangeGroup₀.subtype =
+      min (γ₀.map v.rangeGroup₀.subtype) (γ₁.map v.rangeGroup₀.subtype) := by
+  simp [Units.ext_iff]
+
+lemma units_max_eq (γ₀ γ₁ : v.rangeGroup₀ˣ) :
+    (max γ₀ γ₁).map v.rangeGroup₀.subtype =
+      max (γ₀.map v.rangeGroup₀.subtype) (γ₁.map v.rangeGroup₀.subtype) := by
+  simp [Units.ext_iff]
+
+instance : LinearOrderedCommGroupWithZero v.rangeGroup₀ where
+  inv_zero := inv_zero
+  mul_inv_cancel := GroupWithZero.mul_inv_cancel
+
+lemma exists_iff_exists (motive : Γ₀ → Prop) :
+    (∃ u : v.rangeGroup₀ˣ, motive u) ↔
+      ∃ γ ∈ v.rangeGroup₀, γ ≠ 0 ∧ motive γ := by
+  constructor
+  · rintro ⟨u, h⟩
+    refine ⟨u.val, u.val.prop, fun h' ↦ ?_, h⟩
+    apply u.ne_zero
+    rw [← Subtype.coe_inj, h', MonoidHomWithZero.range₀_coe_zero]
+  · rintro ⟨γ, hγ, h, h'⟩
+    have hγ' : IsUnit (⟨γ, hγ⟩ : v.rangeGroup₀) := by
+      simp [← Subtype.coe_inj, h]
+    exact ⟨hγ'.unit, h'⟩
+
+lemma isNontrivial_iff :
+    v.IsNontrivial ↔ Nontrivial v.rangeGroup₀ˣ := by
+  constructor
+  · rintro ⟨x, h0, h1⟩
+    use v.mk_rangeGroup₀_unit h0, 1
+    rwa [ne_eq, Units.ext_iff, Units.val_one, ← Subtype.coe_inj,
+      v.coe_mk_rangeGroup₀_unit]
+  · rintro ⟨x, y, h⟩
+    obtain ⟨a, b, hab⟩ := v.mem_rangeGroup₀_iff.mp x.val.prop
+    obtain ⟨c, d, hcd⟩ := v.mem_rangeGroup₀_iff.mp y.val.prop
+    by_cases ha : v a = 1
+    · by_cases hb : v b = 1
+      · simp only [ha, hb, one_mul] at hab
+        by_cases hc : v c = 1
+        · refine ⟨d, ?_, ?_⟩
+          · intro hd
+            apply y.ne_zero
+            simp only [hc, hd, one_mul] at hcd
+            simpa only [← Subtype.coe_inj, MonoidHomWithZero.range₀_coe_zero] using hcd.2
+          · intro hd
+            apply h
+            rw [hc, hd, one_mul, eq_comm] at hcd
+            simpa only [Units.ext_iff, ← Subtype.coe_inj, hab.2] using hcd.2
+        · exact ⟨c, hcd.1, hc⟩
+      · refine ⟨b, ?_, hb⟩
+        intro hb'
+        rw [ha, hb', one_mul] at hab
+        apply x.ne_zero
+        simp only [← Subtype.coe_inj, hab.2, MonoidHomWithZero.range₀_coe_zero]
+    · exact ⟨a, hab.1, ha⟩
+
+
+/-- The same valuation, with codomain restricted to `v.rangeGroup₀` -/
+def rangeGroup₀_restrict : Valuation R v.rangeGroup₀ where
+  toFun x := ⟨v x, by rw [mem_rangeGroup₀_iff]; use 1, x; simp⟩
+  map_zero' := by simp only [_root_.map_zero]; rfl
+  map_one' := by simp [← Subtype.coe_inj]
+  map_mul' x y := by simp [← Subtype.coe_inj]
+  map_add_le_max' x y := v.map_add x y
+
+@[simp]
+lemma coe_rangeGroup₀_restrict (x : R) :
+    (v.rangeGroup₀_restrict x : Γ₀) = v x := rfl
+
+theorem coe_comp_rangeGroup₀_restrict :
+    v = v.rangeGroup₀.subtype ∘ v.rangeGroup₀_restrict := rfl
+
+end Group
+
 end Valuation
+
