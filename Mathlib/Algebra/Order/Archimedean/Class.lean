@@ -119,11 +119,10 @@ instance instPreorder : Preorder (MulArchimedeanOrder M) where
 variable (M) in
 @[to_additive]
 instance instIsTotal : IsTotal (MulArchimedeanOrder M) (· ≤ ·) where
-  total := by
-    simp_rw [le]
-    by_contra!
-    obtain ⟨a, b, hab, hba⟩ := this
-    exact (lt_self_iff_false _).mp <| (pow_one |a.val|ₘ ▸ hab 1).trans (pow_one |b.val|ₘ ▸ hba 1)
+  total a b := by
+    obtain hab | hab := le_total |a.val|ₘ |b.val|ₘ
+    · exact Or.inr ⟨1, by simpa using hab⟩
+    · exact Or.inl ⟨1, by simpa using hab⟩
 
 variable {N : Type*} [CommGroup N] [LinearOrder N] [IsOrderedMonoid N]
 variable {F : Type*} [FunLike F M N] [OrderHomClass F M N] [MonoidHomClass F M N]
