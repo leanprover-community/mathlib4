@@ -1007,11 +1007,12 @@ instance const_isClosed: IsClosed (ConstF (G := G) : Set (LipschitzH (G := G))) 
 
 
 
--- The space 'GL(W)' of continuous linear functions from W to W
-abbrev GL_W := W (G := G) →L[ℂ] W (G := G)
+-- The space 'GL(W)' of invertible continuous linear functions from W to W
+abbrev GL_W := (W (G := G) →L[ℂ] W (G := G))ˣ
 
-#synth NormedSpace ℂ (GL_W (G := G))
-#synth MetricSpace (GL_W (G := G))
+
+--#synth NormedSpace ℂ (GL_W (G := G))
+--#synth MetricSpace (GL_W (G := G))
 
 
 #synth FiniteDimensional ℂ (LipschitzH (G := G))
@@ -1044,7 +1045,8 @@ def GRep: Representation ℂ G (LipschitzH (G := G))  := {
     simp [mul_assoc]
 }
 
-def GRepW_base: Representation ℂ G (W (G := G)) := Representation.quotient (GRep (G := G)) ConstF (by
+-- We start with a map from G into the space of (not necessarily invertible) linear maps from W to W
+def GRepW_non_invertible: Representation ℂ G (W (G := G)) := Representation.quotient (GRep (G := G)) ConstF (by
   intro g
   intro f hf
   simp
@@ -1057,6 +1059,10 @@ def GRepW_base: Representation ℂ G (W (G := G)) := Representation.quotient (GR
   rw [← hK]
   rw [gAct_const]
 )
+
+-- We then build a map from G into the group of invertible linear maps from W to W
+noncomputable def GRepW_base := Representation.asGroupHom (G := G) GRepW_non_invertible
+
 
 -- GRep just translates functions by g⁻¹, so it preserves the Lipschitz operator norm
 lemma GRep_preserves_norm (g: G) (f: LipschitzH): ‖(GRep g) f‖ = ‖f‖ := by
@@ -1117,22 +1123,48 @@ lemma GRep_preserves_norm (g: G) (f: LipschitzH): ‖(GRep g) f‖ = ‖f‖ := 
 
 
 
--- Takes in a linear map from W to W, and produces a *contiuous* linear map from W to W
-noncomputable def GRepW: (W (G := G) →ₗ[ℂ] W (G := G)) ≃ₗ[ℂ] GL_W (G := G) := LinearMap.toContinuousLinearMap
-
-noncomputable def GRepW_Multiplicative: (W (G := G) →ₗ[ℂ] W (G := G)) →* (Multiplicative (GL_W (G := G))) := {
-  toFun := fun f => Multiplicative.ofAdd (GRepW f)
+-- Takes in an invertible linear map from W to W, and produces a *continuous* linear map from W to W
+noncomputable def GRepW: (W (G := G) →ₗ[ℂ] W (G := G))ˣ →* GL_W (G := G) := {
+  toFun := fun f => {
+    val := LinearMap.toContinuousLinearMap f.val
+    inv := LinearMap.toContinuousLinearMap f.inv
+    val_inv := by
+      have old_inv := f.val_inv
+      ext a
+      apply_fun (fun f => f a) at old_inv
+      simp
+      simp only [Units.inv_eq_val_inv, Module.End.one_apply] at old_inv
+      apply old_inv
+    inv_val := by
+      have old_inv := f.inv_val
+      ext a
+      apply_fun (fun f => f a) at old_inv
+      simp
+      simp only [Units.inv_eq_val_inv, Module.End.one_apply] at old_inv
+      apply old_inv
+  }
   map_one' := by
+    ext a
     simp
   map_mul' := by
     intro f g
-    ext
-    simp [DFunLike.coe]
-    simp [ContinuousLinearMap.toFun_eq_coe]
-    simp [ContinuousLinearMap.mul_apply]
+    ext a
+    simp
 }
 
-#synth AddGroup (GL_W (G := G))
+-- noncomputable def GRepW_Multiplicative: (W (G := G) →ₗ[ℂ] W (G := G)) →* (Multiplicative (GL_W (G := G))) := {
+--   toFun := fun f => Multiplicative.ofAdd (GRepW f)
+--   map_one' := by
+--     simp
+--   map_mul' := by
+--     intro f g
+--     ext
+--     simp [DFunLike.coe]
+--     simp [ContinuousLinearMap.toFun_eq_coe]
+--     simp [ContinuousLinearMap.mul_apply]
+-- }
+
+#synth Group (GL_W (G := G))
 
 lemma quotient_norm_eq_norm (f: LipschitzH (G := G)): ‖(Submodule.Quotient.mk f : W)‖ = ‖f‖ := by
   --dsimp [norm]
@@ -1287,10 +1319,14 @@ lemma rho_g_FG: (rho_g_group (G := G)).FG := by
   . intro hg
     simp [rho_g]
     induction hg using AddSubgroup.closure_induction with
-    | mem =>
-      sorry
+    | mem x hx =>
+      simp at hx
+      obtain ⟨s, s_mem, hs⟩ := hx
+      use s
     | one =>
-      sorry
+      simp
+      use 1
+      simp [GRepW_base]
     | mul =>
       sorry
     | inv =>
