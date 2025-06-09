@@ -336,7 +336,7 @@ lemma kernelComplexExact : (ShortComplex.mk (kernel.ι f) f (kernel.condition f)
   refine IsZero.of_iso (isZero_zero A) (Limits.cokernel.ofEpi _)
 -/
 
-lemma monoCokernelComplexShortExact (hm : Mono f) :
+lemma monoCokernelComplexShortExact [Mono f] :
     (ShortComplex.mk f (cokernel.π f) (by simp)).ShortExact where
   exact := by
     have := Abelian.monoIsKernelOfCokernel _ (cokernelIsCokernel f)
@@ -353,7 +353,7 @@ lemma monoCokernelComplexShortExact (hm : Mono f) :
       exact this
     · simp only [Iso.refl_hom, id_comp, comp_id]
 
-lemma epiKernelComplexShortExact (_ : Epi f) :
+lemma epiKernelComplexShortExact [Epi f] :
     (ShortComplex.mk (kernel.ι f) f (by simp)).ShortExact where
   exact := kernelComplexExact f
 
