@@ -1156,8 +1156,8 @@ def isoH0 : groupCohomology A 0 ≅ H0 A :=
   (CochainComplex.isoHomologyπ₀ _).symm ≪≫ isoZeroCocycles A
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-lemma groupCohomologyπ_comp_isoH0_hom  :
-    groupCohomologyπ A 0 ≫ (isoH0 A).hom = (isoZeroCocycles A).hom := by
+lemma π_comp_isoH0_hom  :
+    π A 0 ≫ (isoH0 A).hom = (isoZeroCocycles A).hom := by
   simp [isoH0]
 
 end H0
@@ -1199,8 +1199,8 @@ def isoH1 : groupCohomology A 1 ≅ H1 A :=
     homologyMapIso (shortComplexH1Iso A) ≪≫ (shortComplexH1 A).moduleCatHomologyIso
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-lemma groupCohomologyπ_comp_isoH1_hom  :
-    groupCohomologyπ A 1 ≫ (isoH1 A).hom = (isoOneCocycles A).hom ≫ H1π A := by
+lemma π_comp_isoH1_hom  :
+    π A 1 ≫ (isoH1 A).hom = (isoOneCocycles A).hom ≫ H1π A := by
   simp [isoH1, isoOneCocycles]
 
 end H1
@@ -1243,8 +1243,8 @@ def isoH2 : groupCohomology A 2 ≅ H2 A :=
     homologyMapIso (shortComplexH2Iso A) ≪≫ (shortComplexH2 A).moduleCatHomologyIso
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-lemma groupCohomologyπ_comp_isoH2_hom  :
-    groupCohomologyπ A 2 ≫ (isoH2 A).hom = (isoTwoCocycles A).hom ≫ H2π A := by
+lemma π_comp_isoH2_hom  :
+    π A 2 ≫ (isoH2 A).hom = (isoTwoCocycles A).hom ≫ H2π A := by
   simp [isoH2, isoTwoCocycles]
 
 end H2
