@@ -217,6 +217,9 @@ If `g : FreeM F α → M α` is an interpreter that handles operations according
 
 That is, `mapM f` is the unique interpreter that extends the effect handler `f` to interpret
 `FreeM F` computations in monad `M`.
+
+This expresses the universal property: there is exactly one way to interpret free monad
+computations given any effect handler.
 -/
 theorem mapM_unique {F : Type u → Type v} {m : Type u → Type w} [Monad m] {α : Type u}
     (f : {ι : Type u} → F ι → m ι)
