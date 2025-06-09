@@ -13,16 +13,38 @@ import Mathlib.Tactic.Cases
 This file defines a general `FreeM` monad construction and several canonical instances:
 `State`, `Writer`, and `Continuation` monads implemented via this construction.
 
-The `FreeM` monad generates a monad from any type constructor `f : Type → Type`, without requiring
-`f` to be a `Functor`. This implementation uses the "freer monad" approach as the traditional
-free monad is not safely definable in Lean due to termination checking.
+The `FreeM` monad generates a free monad from any type constructor `f : Type → Type`, without
+requiring `f` to be a `Functor`. This implementation uses the "freer monad" approach as the
+traditional free monad is not safely definable in Lean due to termination checking.
 
 In this construction, computations are represented as **trees of effects**. Each node (`liftBind`)
 represents a request to perform an effect, accompanied by a continuation specifying how the
-computation proceeds after the effect.
-The leaves (`pure`) represent completed computations with final results.
-To execute or interpret these computations, an interpreter walks this tree, handling effects
-step-by-step.
+computation proceeds after the effect. The leaves (`pure`) represent completed computations with
+final results.
+
+A key insight is that `FreeM F` satisfies the **universal property of free monads**: for any monad
+`M` and effect handler `f : F → M`, there exists a unique way to interpret `FreeM F` computations
+in `M` that respects the effect semantics given by `f`. This unique interpreter is `mapM f`, which
+acts as the canonical **fold** (catamorphism) for free monads.
+
+## Implementation
+
+To execute or interpret these computations, we provide two approaches:
+1. **Hand-written interpreters** (`FreeState.run`, `FreeWriter.run`, `FreeCont.run`) that directly
+pattern-match on the tree structure
+2. **Canonical interpreters** (`FreeState.fold`, `FreeWriter.fold`, `FreeCont.fold`) derived from
+the universal property via `mapM`
+
+We prove that these approaches are equivalent, demonstrating that the implementation aligns with
+the theory.
+
+## Main Definitions
+
+- `FreeM`: The free monad construction
+- `mapM`: The canonical fold/interpreter satisfying the universal property
+- `FreeState`, `FreeWriter`, `FreeCont`: Specific effect monads with both hand-written and
+canonical interpreters
+- `mapM_unique`: Proof of the universal property
 
 See the Haskell [freer-simple](https://hackage.haskell.org/package/freer-simple) library for the
 Haskell implementation that inspired this approach.
