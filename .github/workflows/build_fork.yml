@@ -526,6 +526,7 @@ jobs:
 
   build_and_lint:
     name: Build Success
+    if: github.event.pull_request.head.repo.fork
     needs: [style_lint, build]
     runs-on: ubuntu-latest
     steps:

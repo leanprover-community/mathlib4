@@ -529,6 +529,7 @@ jobs:
 
   build_and_lint:
     name: Build Success
+    if: true
     needs: [style_lint, build]
     runs-on: ubuntu-latest
     steps:

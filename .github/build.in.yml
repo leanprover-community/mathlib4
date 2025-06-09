@@ -512,6 +512,7 @@ jobs:
 
   build_and_lint:
     name: Build Success
+    if: FORK_CONDITION
     needs: [style_lint, build]
     runs-on: ubuntu-latest
     steps:
