@@ -29,6 +29,7 @@ theorem natDegree_radical_le {a : k[X]} :
   · exact natDegree_le_of_dvd radical_dvd_self ha
 
 theorem divRadical_dvd_derivative (a : k[X]) : divRadical a ∣ derivative a := by
+  -- TODO case
   induction a using induction_on_coprime
   · case h0 =>
     rw [derivative_zero]
