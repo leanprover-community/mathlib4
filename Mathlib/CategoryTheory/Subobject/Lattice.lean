@@ -573,7 +573,7 @@ theorem sInf_le {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : sInf s ≤ 
       Limits.limit.π (wideCospan s)
         (some ⟨equivShrink (Subobject A) f,
           Set.mem_image_of_mem (equivShrink (Subobject A)) hf⟩) ≫
-      eqToHom (congr_arg (fun X : Subobject A => (X : C)) (Equiv.symm_apply_apply _ _))
+      (eqToHom (congr_arg (fun X : Subobject A => (X : C)) (Equiv.symm_apply_apply _ _)):)
   · dsimp [sInf]
     simp only [Category.comp_id, Category.assoc, ← underlyingIso_hom_comp_eq_mk,
       Subobject.arrow_congr, congrArg_mpr_hom_left, Iso.cancel_iso_hom_left]
