@@ -124,6 +124,13 @@ theorem binomialPow_apply_of_not_gt {g g' : Γ} (h : ¬ g < g') (r : R) :
     rw [binomialPow_apply, PowerSeries.heval_of_orderTop_not_pos _ this]
     simp
 
+theorem binomialPow_zero {g g' : Γ} :
+    binomialPow A g g' (Nat.cast (R := R) 0) = single 0 (1 : A) := by
+  by_cases h : g < g'
+  · rw [binomialPow_apply, Nat.cast_zero, zero_smul, single_zero_one, one_mul,
+      PowerSeries.binomialSeries_zero, OneHomClass.map_one]
+  · simp [binomialPow_apply_of_not_gt A h (0 : R)]
+
 theorem binomialPow_add {g g' : Γ} (r r' : R) :
     binomialPow A g g' r * binomialPow A g g' r' =
       binomialPow A g g' (r + r') := by

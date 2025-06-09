@@ -120,7 +120,8 @@ theorem ncoeff_zero_if_neg_order_leq (a b : V) (n : ℤ) (h: - order Y a b ≤ n
 
 theorem ncoeff_nonzero_at_neg_order_minus_one (a b : V) (h: Y a b ≠ 0) :
     ncoeff (Y a) (-order Y a b - 1) b ≠ 0 := by
-  rw [ncoeff, neg_sub, sub_neg_eq_add, add_sub_cancel_left]
+  dsimp [ncoeff]
+  rw [neg_sub, sub_neg_eq_add, add_sub_cancel_left]
   exact coeff_nonzero_at_order Y a b h
 
 -- Reminder: a (t + i) b = 0 for i ≥ -t - (order a b)

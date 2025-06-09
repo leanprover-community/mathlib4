@@ -141,19 +141,6 @@ lemma removeNth_update_of_lt {n : ℕ} {α : Sort*} {p q : Fin (n + 1)}
 
 section fromDeRham -- https://github.com/urkud/DeRhamCohomology/
 
-theorem succAbove_succAbove_predAbove {n : ℕ} (i : Fin (n + 1)) (j : Fin n) :
-    (i.succAbove j).succAbove (j.predAbove i) = i := by
-  ext
-  simp [succAbove, predAbove, lt_def, apply_dite Fin.val, apply_ite Fin.val]
-  split_ifs <;> omega
-
-theorem succAbove_succAbove_succAbove_predAbove {n : ℕ}
-    (i : Fin (n + 2)) (j : Fin (n + 1)) (k : Fin n) :
-    (i.succAbove j).succAbove ((j.predAbove i).succAbove k) = i.succAbove (j.succAbove k) := by
-  ext
-  simp [succAbove, predAbove, lt_def, apply_dite Fin.val, apply_ite Fin.val]
-  split_ifs <;> omega
-
 theorem removeNth_removeNth {n : ℕ} {α : Sort*} (m : Fin (n + 2) → α)
     (i : Fin (n + 1)) (j : Fin (n + 2)) :
     i.removeNth (j.removeNth m) = (i.predAbove j).removeNth ((j.succAbove i).removeNth m) := by

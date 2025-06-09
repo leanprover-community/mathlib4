@@ -75,7 +75,7 @@ lemma one_coef [One C] [Zero C] [One Γ] (m : Γ) :
 @[simp] lemma const_zero [One Γ] [AddCommMonoid C] :
     (const 0 : FormalSeries Γ C) = 0 := by
   ext m
-  simp only [const_coef, ite_self, instZero_zero_coef]
+  simp only [const_coef, ite_self, zero_coef]
 
 /-- The constant one is equal to the one series -/
 lemma const_one [One Γ] [Zero C] [One C] :
@@ -89,7 +89,7 @@ lemma monomial_one [One Γ] [Zero C] [One C] :
 @[simp] lemma monomial_zero [Zero C] (e : Γ) :
     (monomial 0 e : FormalSeries Γ C) = 0 := by
   ext m
-  simp only [monomial_coef, ite_self, instZero_zero_coef]
+  simp only [monomial_coef, ite_self, zero_coef]
 
 /-- The space of formal series has addition if the space of its coefficients has addition. -/
 @[simps]
@@ -112,13 +112,13 @@ additive monoid. -/
 instance [AddMonoid C] : AddMonoid (FormalSeries Γ C) where
   add_assoc f g h := by
     ext p
-    simp only [instAdd_add_coef, add_assoc]
+    simp only [add_coef, add_assoc]
   zero_add f := by
     ext p
-    simp only [instAdd_add_coef, instZero_zero_coef, zero_add]
+    simp only [add_coef, zero_coef, zero_add]
   add_zero f := by
     ext p
-    simp only [instAdd_add_coef, instZero_zero_coef, add_zero]
+    simp only [add_coef, zero_coef, add_zero]
   nsmul := nsmulRec
 
 /-- The space of formal series is an additive commutative monoid if the space of its coefficients
@@ -126,14 +126,14 @@ is an additive commutative monoid. -/
 instance [AddCommMonoid C] : AddCommMonoid (FormalSeries Γ C) where
   add_comm f g := by
     ext p
-    simp only [instAdd_add_coef, add_comm]
+    simp only [add_coef, add_comm]
 
 /-- The space of formal series is an additive group if the space of its coefficients is an
 additive group. -/
 instance [AddGroup C] : AddGroup (FormalSeries Γ C) where
   neg_add_cancel f := by
     ext p
-    simp only [instAdd_add_coef, instNeg_neg_coef, neg_add_cancel, instZero_zero_coef]
+    simp only [add_coef, neg_coef, neg_add_cancel, zero_coef]
   zsmul := zsmulRec
 
 /-- The space of formal series is an additive commutative group if the space of its coefficients
@@ -141,7 +141,7 @@ is an additive commutative group. -/
 instance [AddCommGroup C] : AddCommGroup (FormalSeries Γ C) where
   add_comm f g := by
     ext p
-    simp only [instAdd_add_coef, add_comm]
+    simp only [add_coef, add_comm]
 
 /-- The space of formal series is an `R`-module for a semiring `R` if the space of its coefficients
 is an `R`-module. -/
@@ -150,27 +150,27 @@ instance instModule {R V : Type*} [Semiring R] [AddCommMonoid V] [Module R V] :
   one_smul := by
     intro
     ext
-    simp only [instSmul_smul_coef, one_smul]
+    simp only [smul_coef, one_smul]
   mul_smul := by
     intros
     ext
-    simp only [instSmul_smul_coef, mul_smul]
+    simp only [smul_coef, mul_smul]
   smul_zero := by
     intro
     ext
-    simp only [instSmul_smul_coef, instZero_zero_coef, smul_zero]
+    simp only [smul_coef, zero_coef, smul_zero]
   smul_add := by
     intros
     ext
-    simp only [instSmul_smul_coef, instAdd_add_coef, smul_add]
+    simp only [smul_coef, add_coef, smul_add]
   add_smul := by
     intros
     ext
-    simp only [instSmul_smul_coef, instAdd_add_coef, add_smul]
+    simp only [smul_coef, add_coef, add_smul]
   zero_smul := by
     intro
     ext
-    simp only [instSmul_smul_coef, zero_smul, instZero_zero_coef]
+    simp only [smul_coef, zero_smul, zero_coef]
 
 section FiniteFiberAction
 

@@ -572,6 +572,17 @@ theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
     rw [HahnSeries.mem_support, Mathlib.Tactic.PushNeg.not_ne_eq] at this
     rw [this, smul_zero, smul_zero]
 
+omit [Module S W] [IsScalarTower S R W] in
+theorem binomialPow_smul_injective {g g' : Γ} (n : S) :
+    Function.Injective (HahnSeries.binomialPow (A := R) g g' n • · :
+      HVertexOperator Γ₁ R V W → HVertexOperator Γ₁ R V W) := by
+  refine Function.HasLeftInverse.injective ?_
+  use (HahnSeries.binomialPow (A := R) g g' (-n) • ·)
+  intro A
+  simp only [smul_smul, HahnSeries.binomialPow_add, neg_add_cancel]
+  rw [show OfNat.ofNat (α := S) 0 = Nat.cast 0 by norm_cast,
+    HahnSeries.binomialPow_zero, HahnSeries.single_zero_one, one_smul]
+
 end binomialPow
 
 end HVertexOperator

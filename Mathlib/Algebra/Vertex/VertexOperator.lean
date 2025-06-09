@@ -324,19 +324,24 @@ theorem isLocalToOrderLeqAdd (m n : ℕ) (h : IsLocalToOrderLeq A B n) :
     rw [ih k (l-1), ih (k-1) l, coeff_smul, sub_smul]
     simp [coeff_single_smul, neg_add_eq_sub, ← toLex_sub]
 
-/-!
 def isLocal_symm (n : ℕ) (h : IsLocalToOrderLeq A B n) : IsLocalToOrderLeq B A n := by
   intro k l
+  dsimp [IsLocalToOrderLeq, binomCompLeft, binomCompRight] at *
+  rw [coeff_smul _ (Int.negOnePow n : R), Pi.smul_apply, h l k]
+  simp [smul_smul, ← Int.cast_mul]
 
-  sorry
-
-theorem isLocal_with_hasseDeriv_left (m : ℕ) (h : IsLocalToOrderLeq R V A B n) :
-    IsLocalToOrderLeq (hasseDeriv m A) B (n + m) := by
-  sorry
--/
---show `A` and `B` local to order `n` implies `∂^[k]A` and `B` are local to order `n+k`.
 --show any vertex operator is local with identity.
 
+/-!
+theorem isLocal_with_hasseDeriv_left (m n : ℕ) (h : IsLocalToOrderLeq A B n) :
+    IsLocalToOrderLeq (hasseDeriv m A) B (n + m) := by
+  dsimp [IsLocalToOrderLeq] at *
+  intro k l
+  ext v
+  rw [binomCompLeft_apply_coeff, binomCompRight_apply_coeff]
+  simp_rw [hasseDeriv_coeff]
+  sorry
+-/
 
 end Local
 
