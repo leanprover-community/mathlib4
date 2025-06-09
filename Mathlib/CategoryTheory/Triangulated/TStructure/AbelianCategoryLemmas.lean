@@ -160,7 +160,6 @@ map α :=
      cases j with
      | zero => simp only [parallelPair_obj_zero, Functor.const_obj_obj,
        Cofork.app_zero_eq_comp_π_left, condition, eq_mpr_eq_cast, cast_eq, id_eq, zero_comp]
---               rw [← Functor.map_comp]; simp only [Fork.hom_comp_ι]
      | one => simp only [parallelPair_obj_one, Functor.const_obj_obj, Cofork.app_one_eq_π,
        eq_mpr_eq_cast, cast_eq, id_eq]
               rw [F.mapCokernelCofork_π, ← Functor.map_comp, F.mapCokernelCofork_π]

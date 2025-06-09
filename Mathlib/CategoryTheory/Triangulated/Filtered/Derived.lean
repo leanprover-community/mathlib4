@@ -94,7 +94,7 @@ variable (FT : T.filteredLifting L₁ L₂)
 
 -- Acyclic complexes of `T`-acyclic objects.
 def AcyclicComplexAcyclic : Triangulated.Subcategory
-    (HomotopyCategory (AcyclicCategory T t₁ t₂) (ComplexShape.up ℤ)) :=
+    (HomotopyCategory (Acyclic T t₁ t₂).FullSubcategory (ComplexShape.up ℤ)) :=
   (Functor.mapHomotopyCategory (T.AcyclicToHeart t₁ t₂)
   (ComplexShape.up ℤ) ⋙ HomotopyCategory.homologyFunctor
   t₁.Heart (ComplexShape.up ℤ) 0).homologicalKernel
@@ -108,7 +108,7 @@ instance : ObjectProperty.IsClosedUnderIsomorphisms (AcyclicComplexAcyclic t₁ 
   (ComplexShape.up ℤ) ⋙ HomotopyCategory.homologyFunctor
   t₁.Heart (ComplexShape.up ℤ) 0)
 
-lemma AcyclicComplexAcyclic_iff (K : HomotopyCategory (AcyclicCategory T t₁ t₂)
+lemma AcyclicComplexAcyclic_iff (K : HomotopyCategory (Acyclic T t₁ t₂).FullSubcategory
     (ComplexShape.up ℤ)) :
     (AcyclicComplexAcyclic t₁ t₂ T).P K ↔ (HomotopyCategory.subcategoryAcyclic t₁.Heart).P
     (((T.AcyclicToHeart t₁ t₂).mapHomotopyCategory (ComplexShape.up ℤ)).obj K) := sorry
@@ -116,7 +116,7 @@ lemma AcyclicComplexAcyclic_iff (K : HomotopyCategory (AcyclicCategory T t₁ t�
 -- A morphism in the homotopy category of `AcyclicCategory T t₁ t₂` has an acyclic
 -- cone if and only if its image in the homotopy category of `t₁.Heart`
 -- is a quasi-isomorphism.
-lemma AcyclicComplexAcyclic_W {K L : HomotopyCategory (AcyclicCategory T t₁ t₂)
+lemma AcyclicComplexAcyclic_W {K L : HomotopyCategory (Acyclic T t₁ t₂).FullSubcategory
     (ComplexShape.up ℤ)} (f : K ⟶ L) : (AcyclicComplexAcyclic t₁ t₂ T).W f ↔
     HomotopyCategory.quasiIso _ _ (((T.AcyclicToHeart t₁ t₂).mapHomotopyCategory
     (ComplexShape.up ℤ)).map f) := by
@@ -137,13 +137,13 @@ is a localization functor for the class of morphisms with acyclic cone (i.e. qua
 variable [(Functor.mapHomotopyCategory (T.AcyclicToHeart t₁ t₂)
     (ComplexShape.up ℤ) ⋙ DerivedCategory.Qh).IsLocalization (AcyclicComplexAcyclic t₁ t₂ T).W]
 
-lemma AcyclicComplexAcyclic_image {K : HomotopyCategory (AcyclicCategory T t₁ t₂)
+lemma AcyclicComplexAcyclic_image {K : HomotopyCategory (Acyclic T t₁ t₂).FullSubcategory
     (ComplexShape.up ℤ)} (hK : (AcyclicComplexAcyclic t₁ t₂ T).P K) :
     (HomotopyCategory.subcategoryAcyclic t₂.Heart).P
     (((T.FromAcyclic t₁ t₂).mapHomotopyCategory (ComplexShape.up ℤ)).obj K) := sorry
 -- This follows from the calculations in the file `Acyclic.lean`, modulo boundedness problems.
 
-lemma AcyclicComplexAcyclic_W_image {K L : HomotopyCategory (AcyclicCategory T t₁ t₂)
+lemma AcyclicComplexAcyclic_W_image {K L : HomotopyCategory (Acyclic T t₁ t₂).FullSubcategory
     (ComplexShape.up ℤ)} {f : K ⟶ L} (hf : (AcyclicComplexAcyclic t₁ t₂ T).W f) :
     HomotopyCategory.quasiIso _ _ (((T.FromAcyclic t₁ t₂).mapHomotopyCategory
     (ComplexShape.up ℤ)).map f) := by
@@ -171,7 +171,7 @@ def DerivedFunctor : DerivedCategory t₁.Heart ⥤ DerivedCategory t₂.Heart :
 -- heart of `C`, and its equivalent with the category of complexes of acyclic objects.
 
 def FilteredAcyclic : ObjectProperty tF₁.Heart :=
-  fun X ↦ ∀ n, AcyclicObject T t₁ t₂ ((t₁.homology n).obj ((Gr L₁ n).obj X.1))
+  fun X ↦ ∀ n, Acyclic T t₁ t₂ ((t₁.homology n).obj ((Gr L₁ n).obj X.1))
 
 lemma FilteredAcyclic_image (X : (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory) :
     tF₂.heart (FT.functor.obj X.1.1) := sorry
@@ -185,8 +185,8 @@ def FilteredAcyclicToHeart_comp : FilteredAcyclicToHeart L₁ t₁ tF₁ L₂ t�
   ObjectProperty.liftCompιIso _ _ _ ≪≫ (Functor.associator _ _ _).symm
 
 abbrev FilteredAcyclicToComplex_deg (n : ℤ) :
-    (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory ⥤ (AcyclicObject T t₁ t₂).FullSubcategory :=
-  (AcyclicObject T t₁ t₂).lift ((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙
+    (FilteredAcyclic L₁ t₁ tF₁ t₂ T).FullSubcategory ⥤ (Acyclic T t₁ t₂).FullSubcategory :=
+  (Acyclic T t₁ t₂).lift ((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙ tF₁.ιHeart ⋙
   FilteredToComplex_deg L₁ t₁ n) (fun X ↦ X.2 n)
 
 def FilteredAcyclicToComplex_deg_functor_half (n : ℤ) :
@@ -196,8 +196,8 @@ def FilteredAcyclicToComplex_deg_functor_half (n : ℤ) :
   dsimp [FilteredToComplex_deg, FilteredAcyclicToComplex_deg, Functor.FromAcyclic]
   refine Functor.associator _ _ t₂.ιHeart ≪≫ ?_
   refine isoWhiskerLeft _ (ObjectProperty.liftCompιIso t₂.heart _ _) ≪≫ ?_
-  refine (Functor.associator _ (AcyclicObject T t₁ t₂).ι (t₁.ιHeart ⋙ T)).symm ≪≫ ?_
-  refine isoWhiskerRight (ObjectProperty.liftCompιIso (AcyclicObject T t₁ t₂) _ _)
+  refine (Functor.associator _ (Acyclic T t₁ t₂).ι (t₁.ιHeart ⋙ T)).symm ≪≫ ?_
+  refine isoWhiskerRight (ObjectProperty.liftCompιIso (Acyclic T t₁ t₂) _ _)
     (t₁.ιHeart ⋙ T) ≪≫ ?_
   refine isoWhiskerRight ((Functor.associator (FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι tF₁.ιHeart
     (Gr L₁ n ⋙ t₁.homology n)).symm ≪≫ (Functor.associator ((FilteredAcyclic L₁ t₁ tF₁ t₂ T).ι ⋙
