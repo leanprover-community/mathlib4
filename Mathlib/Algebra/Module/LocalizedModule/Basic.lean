@@ -42,7 +42,6 @@ universe u v
 
 variable {R : Type u} [CommSemiring R] (S : Submonoid R)
 variable (M : Type v) [AddCommMonoid M] [Module R M]
-variable (T : Type*) [CommSemiring T] [Algebra R T] [IsLocalization S T]
 
 /-- The equivalence relation on `M × S` where `(m1, s1) ≈ (m2, s2)` if and only if
 for some (u : S), u * (s2 • m1 - s1 • m2) = 0 -/
@@ -175,10 +174,10 @@ private theorem zero_add' (x : LocalizedModule S M) : 0 + x = x :=
 private theorem add_zero' (x : LocalizedModule S M) : x + 0 = x :=
   x.induction_on fun m s => by rw [← zero_mk s, mk_add_mk', add_zero]
 section Actions
-variable {α : Type*}
+variable {α β : Type*}
 
 section SMul
-variable [SMul α M] [SMulCommClass α R M]
+variable [SMul α M] [SMul β M] [SMulCommClass α R M] [SMulCommClass β R M]
 
 instance : SMul α (LocalizedModule S M) where
   smul a x := liftOn x (fun x => mk (a • x.1) x.2) fun ⟨m1, s1⟩ ⟨m2, s2⟩ ⟨s, hs⟩ => mk_eq.mpr
@@ -186,14 +185,23 @@ instance : SMul α (LocalizedModule S M) where
 
 theorem smul'_mk (a : α) (m : M) (s : S) : a • mk m s = mk (a • m) s := rfl
 
+instance [SMulCommClass α β M] : SMulCommClass α β (LocalizedModule S M) where
+  smul_comm a b := induction_on fun m s => by simp [smul'_mk, smul_comm]
+
+instance [SMul α β] [IsScalarTower α β M] : IsScalarTower α β (LocalizedModule S M) where
+  smul_assoc a b := induction_on fun m s => by simp [smul'_mk, smul_comm]
+
+instance [SMul αᵐᵒᵖ M] [IsCentralScalar α M] : IsCentralScalar α (LocalizedModule S M) where
+  op_smul_eq_smul a := induction_on fun m s => by simp [smul'_mk, op_smul_eq_smul]
+
 end SMul
 
 instance [Monoid α] [MulAction α M] [SMulCommClass α R M] : MulAction α (LocalizedModule S M) :=
-  letI : MulAction α (M × ↥S) :=
-    { smul a ms := (a • ms.1, ms.2)
-      one_smul _ := Prod.ext (one_smul _ _) rfl
-      mul_smul _ _ _ := Prod.ext (mul_smul _ _ _) rfl }
   fast_instance%
+    letI : MulAction α (M × ↥S) :=
+      { smul a ms := (a • ms.1, ms.2)
+        one_smul _ := Prod.ext (one_smul _ _) rfl
+        mul_smul _ _ _ := Prod.ext (mul_smul _ _ _) rfl }
     Function.Surjective.mulAction
       (fun x : M × S => mk x.1 x.2) (Quotient.mk_surjective) (fun _ _ => rfl)
 
@@ -219,52 +227,83 @@ instance {M : Type*} [AddCommGroup M] [Module R M] : Neg (LocalizedModule S M) w
       rw [mk_eq]
       exact ⟨u, by simpa⟩
 
-instance {M : Type*} [AddCommGroup M] [Module R M] : AddCommGroup (LocalizedModule S M) :=
-  { show AddCommMonoid (LocalizedModule S M) by infer_instance with
-    neg_add_cancel := by
-      rintro ⟨m, s⟩
-      change
-        (liftOn (mk m s) (fun x => mk (-x.1) x.2) fun ⟨m1, s1⟩ ⟨m2, s2⟩ ⟨u, hu⟩ => by
-              rw [mk_eq]
-              exact ⟨u, by simpa⟩) +
-            mk m s =
-          0
-      rw [liftOn_mk, mk_add_mk]
-      simp
-    -- TODO: fix the diamond
-    zsmul := zsmulRec }
-
 theorem mk_neg {M : Type*} [AddCommGroup M] [Module R M] {m : M} {s : S} : mk (-m) s = -mk m s :=
   rfl
 
+instance {M : Type*} [AddCommGroup M] [Module R M] : AddCommGroup (LocalizedModule S M) where
+  __ : AddCommMonoid (LocalizedModule S M) := inferInstance
+  neg_add_cancel := induction_on fun m s => by
+    rw [← mk_neg, mk_add_mk', neg_add_cancel, zero_mk]
+  zsmul := (· • ·)
+  zsmul_zero' := induction_on fun m s => by simp [smul'_mk]
+  zsmul_succ' z := induction_on fun m s => by simp [smul'_mk, mk_add_mk', add_one_zsmul]
+  zsmul_neg' z := induction_on fun m s => by
+    simp_rw [smul'_mk, ←mk_neg]
+    have : Int.negSucc z • m = -((_ : ℤ) • m) := SubNegMonoid.zsmul_neg' z m
+    rw [this]
+
+instance {α : Type*} [Monoid α] [DistribMulAction α M] [SMulCommClass α R M] :
+    DistribMulAction α (LocalizedModule S M) where
+  smul_zero a := smul'_mk _ _ _ |>.trans congr(mk $(smul_zero _) _)
+  smul_add a := induction_on₂ fun m m' s s' => by simp [smul'_mk, mk_add_mk, smul_comm a]
+
+instance {α : Type*} [Semiring α] [Module α M] [SMulCommClass α R M] :
+    Module α (LocalizedModule S M) where
+  zero_smul := induction_on fun m s => by simp [smul'_mk]
+  add_smul a a' := induction_on fun m s => by simp [smul'_mk, add_smul, mk_add_mk']
+
+instance [One M] : One (LocalizedModule S M) where
+  one := mk 1 (1 : S)
+
+@[simp]
+theorem mk_one [One M] : mk (1 : M) (1 : S) = 1 := rfl
+
+instance {A : Type*}
+    [NonUnitalNonAssocSemiring A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
+    {S : Submonoid R} :
+    Mul (LocalizedModule S A) where
+  mul m₁ m₂ := liftOn₂ m₁ m₂ (fun x₁ x₂ => mk (x₁.1 * x₂.1) (x₁.2 * x₂.2)) <| by
+    rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨b₁, t₁⟩ ⟨b₂, t₂⟩ ⟨u₁, e₁⟩ ⟨u₂, e₂⟩
+    rw [mk_eq]
+    use u₁ * u₂
+    dsimp only at e₁ e₂ ⊢
+    rw [eq_comm]
+    trans (u₁ • t₁ • a₁) • u₂ • t₂ • a₂
+    on_goal 1 => rw [e₁, e₂]
+    on_goal 2 => rw [eq_comm]
+    all_goals
+      rw [smul_smul, mul_mul_mul_comm, ← smul_eq_mul, ← smul_eq_mul (α := A),
+        smul_smul_smul_comm, mul_smul, mul_smul]
+
+theorem mk_mul_mk {A : Type*}
+    [NonUnitalNonAssocSemiring A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
+    {a₁ a₂ : A} {s₁ s₂ : S} :
+    mk a₁ s₁ * mk a₂ s₂ = mk (a₁ * a₂) (s₁ * s₂) :=
+  rfl
+
+instance {α A : Type*}
+    [NonUnitalNonAssocSemiring A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
+    [SMul α A] [SMulCommClass α R A] [SMulCommClass α A A] :
+    SMulCommClass α (LocalizedModule S A) (LocalizedModule S A) where
+  smul_comm m := induction_on₂ fun m₁ m₂ s₁ s₂ => by
+    simp only [smul_eq_mul, mk_mul_mk, smul'_mk, mul_smul_comm]
+
+instance {α A : Type*}
+    [NonUnitalNonAssocSemiring A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
+    [SMul α A] [SMulCommClass α R A] [IsScalarTower α A A] :
+    IsScalarTower α (LocalizedModule S A) (LocalizedModule S A) where
+  smul_assoc m := induction_on₂ fun m₁ m₂ s₁ s₂ => by
+    simp only [smul_eq_mul, mk_mul_mk, smul'_mk, smul_mul_assoc]
+
 instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
-    Monoid (LocalizedModule S A) :=
-  { mul := fun m₁ m₂ =>
-      liftOn₂ m₁ m₂ (fun x₁ x₂ => LocalizedModule.mk (x₁.1 * x₂.1) (x₁.2 * x₂.2))
-        (by
-          rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨b₁, t₁⟩ ⟨b₂, t₂⟩ ⟨u₁, e₁⟩ ⟨u₂, e₂⟩
-          rw [mk_eq]
-          use u₁ * u₂
-          dsimp only at e₁ e₂ ⊢
-          rw [eq_comm]
-          trans (u₁ • t₁ • a₁) • u₂ • t₂ • a₂
-          on_goal 1 => rw [e₁, e₂]
-          on_goal 2 => rw [eq_comm]
-          all_goals
-            rw [smul_smul, mul_mul_mul_comm, ← smul_eq_mul, ← smul_eq_mul (α := A),
-              smul_smul_smul_comm, mul_smul, mul_smul])
-    one := mk 1 (1 : S)
-    one_mul := by
-      rintro ⟨a, s⟩
-      exact mk_eq.mpr ⟨1, by simp only [one_mul, one_smul]⟩
-    mul_one := by
-      rintro ⟨a, s⟩
-      exact mk_eq.mpr ⟨1, by simp only [mul_one, one_smul]⟩
-    mul_assoc := by
-      rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
-      apply mk_eq.mpr _
-      use 1
-      simp only [one_mul, smul_smul, ← mul_assoc, mul_right_comm] }
+    Monoid (LocalizedModule S A) where
+  one_mul := induction_on fun a s => mk_eq.mpr ⟨1, by simp only [one_mul, one_smul]⟩
+  mul_one := induction_on fun a s => mk_eq.mpr ⟨1, by simp only [mul_one, one_smul]⟩
+  mul_assoc := by
+    rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
+    apply mk_eq.mpr _
+    use 1
+    simp only [one_mul, smul_smul, ← mul_assoc, mul_right_comm]
 
 instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
     Semiring (LocalizedModule S A) :=
@@ -308,9 +347,29 @@ instance {A : Type*} [CommRing A] [Algebra R A] {S : Submonoid R} :
       rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩
       exact mk_eq.mpr ⟨1, by simp only [one_smul, mul_comm]⟩ }
 
-theorem mk_mul_mk {A : Type*} [Semiring A] [Algebra R A] {a₁ a₂ : A} {s₁ s₂ : S} :
-    mk a₁ s₁ * mk a₂ s₂ = mk (a₁ * a₂) (s₁ * s₂) :=
-  rfl
+/-- `mk · 1` as a morphism of rings. -/
+@[simps]
+def mkOneRingHom {A : Type*} [Semiring A] [Algebra R A] :
+    A →+* LocalizedModule S A where
+  toFun a := mk a 1
+  map_add' _ _ := mk_add_mk' _ _ _ |>.symm
+  map_mul' := by simp [mk_mul_mk]
+  map_zero' := rfl
+  map_one' := rfl
+
+instance algebra' {A : Type*} [Semiring A] [Algebra R A] :
+    Algebra R (LocalizedModule S A) where
+  algebraMap := mkOneRingHom.comp (algebraMap _ _)
+  commutes' r :=  induction_on fun a s => by
+    simp [mk_mul_mk, smul'_mk, Algebra.commutes]
+  smul_def' r := induction_on fun a s => by
+    simp [mk_mul_mk, smul'_mk, Algebra.smul_def]
+
+/-!
+### Actions by an an arbitrary localization `T` of `S`
+-/
+
+variable (T : Type*) [CommSemiring T] [Algebra R T] [IsLocalization S T]
 
 noncomputable instance : SMul T (LocalizedModule S M) where
   smul x p :=
@@ -409,12 +468,6 @@ theorem mk_cancel (s : S) (m : M) : mk (s • m) s = mk m 1 :=
 theorem mk_cancel_common_right (s s' : S) (m : M) : mk (s' • m) (s * s') = mk m s :=
   mk_eq.mpr ⟨1, by simp [mul_smul]⟩
 
-noncomputable instance isModule' : Module R (LocalizedModule S M) where
-  smul_zero a := smul'_mk _ _ _ |>.trans congr(mk $(smul_zero _) _)
-  zero_smul := induction_on fun m s => by simp [smul'_mk]
-  smul_add a := induction_on₂ fun m m' s s' => by simp [smul'_mk, mk_add_mk, smul_comm a]
-  add_smul a a' := induction_on fun m s => by simp [smul'_mk, add_smul, mk_add_mk']
-
 lemma smul_eq_iff_of_mem
     (r : R) (hr : r ∈ S) (x y : LocalizedModule S M) :
     r • x = y ↔ x = Localization.mk 1 ⟨r, hr⟩ • y := by
@@ -469,23 +522,6 @@ instance : IsScalarTower R T (LocalizedModule S M) where
     rw [← IsLocalization.mk'_sec (M := S) T x, IsLocalization.smul_mk', mk'_smul_mk, mk'_smul_mk,
       smul'_mk, mul_smul]
 
-noncomputable instance algebra' {A : Type*} [Semiring A] [Algebra R A] :
-    Algebra R (LocalizedModule S A) where
-  algebraMap := (algebraMap (Localization S) (LocalizedModule S A)).comp
-    (algebraMap R <| Localization S)
-  commutes' := by
-    intro r x
-    induction x using induction_on with | _ a s => _
-    dsimp
-    rw [← Localization.mk_one_eq_algebraMap, algebraMap_mk, mk_mul_mk, mk_mul_mk, mul_comm,
-      Algebra.commutes]
-  smul_def' := by
-    intro r x
-    induction x using induction_on with | _ a s => _
-    dsimp
-    rw [← Localization.mk_one_eq_algebraMap, algebraMap_mk, mk_mul_mk, smul'_mk,
-      Algebra.smul_def, one_mul]
-
 section
 
 variable (S M)
@@ -516,8 +552,7 @@ noncomputable def divBy (s : S) : LocalizedModule S M →ₗ[R] LocalizedModule 
   map_smul' r x := by
     refine x.induction_on (fun _ _ ↦ ?_)
     change liftOn (mk _ _) _ _ = r • (liftOn (mk _ _) _ _)
-    simp_rw [liftOn_mk, mul_assoc, ← smul_def]
-    congr!
+    simp_rw [liftOn_mk, smul'_mk]
 
 theorem divBy_mul_by (s : S) (p : LocalizedModule S M) :
     divBy s (algebraMap R (Module.End R (LocalizedModule S M)) s p) = p :=
