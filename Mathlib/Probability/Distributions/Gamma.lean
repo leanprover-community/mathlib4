@@ -78,8 +78,8 @@ lemma measurable_gammaPDFReal (a r : ℝ) : Measurable (gammaPDFReal a r) :=
 /-- The gamma pdf is strongly measurable -/
 @[fun_prop, measurability]
 lemma stronglyMeasurable_gammaPDFReal (a r : ℝ) :
-     StronglyMeasurable (gammaPDFReal a r) :=
-   (measurable_gammaPDFReal a r).stronglyMeasurable
+    StronglyMeasurable (gammaPDFReal a r) :=
+  (measurable_gammaPDFReal a r).stronglyMeasurable
 
 /-- The gamma pdf is positive for all positive reals -/
 lemma gammaPDFReal_pos {x a r : ℝ} (ha : 0 < a) (hr : 0 < r) (hx : 0 < x) :

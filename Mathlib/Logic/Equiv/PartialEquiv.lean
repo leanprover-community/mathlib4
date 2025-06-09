@@ -71,8 +71,8 @@ open Lean Meta Elab Tactic
 /-! Implementation of the `mfld_set_tac` tactic for working with the domains of partially-defined
 functions (`PartialEquiv`, `PartialHomeomorph`, etc).
 
-This is in a separate file from `Mathlib.Logic.Equiv.MfldSimpsAttr` because attributes need a new
-file to become functional.
+This is in a separate file from `Mathlib/Logic/Equiv/MfldSimpsAttr.lean` because attributes need a
+new file to become functional.
 -/
 
 /-- Common `@[simps]` configuration options used for manifold-related declarations. -/
@@ -195,6 +195,9 @@ theorem left_inv {x : α} (h : x ∈ e.source) : e.symm (e x) = x :=
 @[simp, mfld_simps]
 theorem right_inv {x : β} (h : x ∈ e.target) : e (e.symm x) = x :=
   e.right_inv' h
+
+theorem target_subset_range : e.target ⊆ range e :=
+  fun x hx ↦ ⟨e.symm x, right_inv e hx⟩
 
 theorem eq_symm_apply {x : α} {y : β} (hx : x ∈ e.source) (hy : y ∈ e.target) :
     x = e.symm y ↔ e x = y :=
@@ -382,7 +385,7 @@ theorem leftInvOn_piecewise {e' : PartialEquiv α β} [∀ i, Decidable (i ∈ s
     LeftInvOn (t.piecewise e.symm e'.symm) (s.piecewise e e') (s.ite e.source e'.source) := by
   rintro x (⟨he, hs⟩ | ⟨he, hs : x ∉ s⟩)
   · rw [piecewise_eq_of_mem _ _ _ hs, piecewise_eq_of_mem _ _ _ ((h he).2 hs), e.left_inv he]
-  · rw [piecewise_eq_of_not_mem _ _ _ hs, piecewise_eq_of_not_mem _ _ _ ((h'.compl he).2 hs),
+  · rw [piecewise_eq_of_notMem _ _ _ hs, piecewise_eq_of_notMem _ _ _ ((h'.compl he).2 hs),
       e'.left_inv he]
 
 theorem inter_eq_of_inter_eq_of_eqOn {e' : PartialEquiv α β} (h : e.IsImage s t)
@@ -875,6 +878,22 @@ theorem pi_trans (ei : ∀ i, PartialEquiv (αi i) (βi i)) (ei' : ∀ i, Partia
   ext <;> simp [forall_and]
 
 end Pi
+
+lemma surjective_of_target_eq_univ (h : e.target = univ) :
+    Surjective e :=
+  surjective_iff_surjOn_univ.mpr <| e.surjOn.mono (by simp) (by simp [h])
+
+lemma injective_of_source_eq_univ (h : e.source = univ) :
+    Injective e := by
+  simpa [injective_iff_injOn_univ, h] using e.injOn
+
+lemma injective_symm_of_target_eq_univ (h : e.target = univ) :
+    Injective e.symm :=
+  e.symm.injective_of_source_eq_univ h
+
+lemma surjective_symm_of_source_eq_univ (h : e.source = univ) :
+    Surjective e.symm :=
+  e.symm.surjective_of_target_eq_univ h
 
 end PartialEquiv
 
