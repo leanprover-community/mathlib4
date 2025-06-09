@@ -27,13 +27,13 @@ Both `Cat.{u, u}` and `SSet.{u}` are cartesian closed categories. This files pro
 -/
 
 -- Where do these belong?
+-- BM: `Mathlib.CategoryTheory.Category.Preorder`
 namespace OrderHom
 
 open CategoryTheory Functor SSet
 
-def toFunctor {X Y} [Preorder X] [Preorder Y] (f : X →o Y) : X ⥤ Y where
-  obj := f
-  map := fun ⟨⟨le⟩⟩ => ⟨⟨f.monotone le⟩⟩
+-- BM: golfed this, at the cost of being a bit less explicit
+def toFunctor {X Y} [Preorder X] [Preorder Y] (f : X →o Y) : X ⥤ Y := f.monotone.functor
 
 def ofFunctor {X Y} [Preorder X] [Preorder Y] (F : X ⥤ Y) : (X →o Y) where
   toFun := F.obj
@@ -51,34 +51,58 @@ universe u v
 
 open Category Functor Limits Opposite SimplexCategory Simplicial SSet Nerve
 
--- This `unfold` looks bad. Could it be somewhere else/done differently?
-def SimplexCategory.homIsoOrderHom {a b : SimplexCategory} :
-    (a ⟶ b) ≅ (Fin (a.len + 1) →o Fin (b.len + 1)) := by
-  simp only [Quiver.Hom]
-  unfold SimplexCategory.Hom
-  exact eqToIso rfl
+def SimplexCategory.homEquivOrderHom {a b : SimplexCategory} :
+    (a ⟶ b) ≃ (Fin (a.len + 1) →o Fin (b.len + 1)) where
+  toFun := Hom.toOrderHom
+  invFun := Hom.mk
+  left_inv f := by ext; rfl
+  right_inv f := by ext; rfl
+
+def OrderHom.uliftMapIso {α β : Type*} [Preorder α] [Preorder β] :
+    (ULift α →o ULift β) ≃ (α →o β) where
+  toFun f := ⟨fun x ↦ (f ⟨x⟩).down, fun _ _ h ↦ f.monotone (by simpa)⟩
+  invFun := OrderHom.uliftMap
+  left_inv f := by ext; rfl
+  right_inv f := by ext; rfl
+
+-- set_option pp.universes true
+
+-- def SimplexCategory.homIsoOrderHomULift {a b : SimplexCategory} :
+--     (a ⟶ b) ≅ (ULift.{u} (Fin (a.len + 1)) →o ULift (Fin (b.len + 1))) where
+--   hom := _
+--   inv := _
+
 
 -- what's the policy on defining short-but-convenient compositions?
 def SimplexCategory.homIsoFunctor {a b : SimplexCategory} :
-    (a ⟶ b) ≅ (Fin (a.len + 1) ⥤ Fin (b.len + 1)) :=
-  SimplexCategory.homIsoOrderHom ≪≫ OrderHom.isoFunctor
+    (a ⟶ b) ≃ (Fin (a.len + 1) ⥤ Fin (b.len + 1)) :=
+  Equiv.trans SimplexCategory.homEquivOrderHom OrderHom.isoFunctor.toEquiv
+
+def SimplexCategory.homIsoFunctor' {a b : SimplexCategory} :
+    (a ⟶ b) ≃ (Fin (a.len + 1) ⥤ ULiftFin (b.len + 1)) :=
+  Equiv.trans SimplexCategory.homIsoFunctor sorry
 
 /-- Nerves of finite non-empty ordinals are representable functors. -/
 def nerve.RepresentableBySimplex (n : ℕ) : (nerve (Fin (n + 1))).RepresentableBy ⦋n⦌ where
-  homEquiv := SimplexCategory.homIsoFunctor.toEquiv
+  homEquiv := SimplexCategory.homIsoFunctor
   homEquiv_comp {_ _} _ _ := rfl
 
-/-- The Yoneda embedding from the `SimplexCategory` into simplicial sets is naturally
-isomorphic to `SimplexCategory.toCat ⋙ nerveFunctor` with component isomorphisms
-`Δ[n] ≅ nerve (Fin (n + 1))`. -/
-def simplexIsNerve (n : ℕ) : Δ[n] ≅ nerve (Fin (n + 1)) := NatIso.ofComponents <| fun n ↦
-    Equiv.toIso stdSimplex.objEquiv ≪≫ SimplexCategory.homIsoFunctor
+-- /-- The Yoneda embedding from the `SimplexCategory` into simplicial sets is naturally
+-- isomorphic to `SimplexCategory.toCat ⋙ nerveFunctor` with component isomorphisms
+-- `Δ[n] ≅ nerve (Fin (n + 1))`. -/
+-- -- def simplexIsNerve (n : ℕ) : Δ[n] ≅ nerve (Fin (n + 1)) := NatIso.ofComponents <| fun n ↦
+-- --     Equiv.toIso stdSimplex.objEquiv ≪≫ SimplexCategory.homIsoFunctor
 
--- Alternate definition:
--- `:= SSet.stdSimplex.isoOfRepresentableBy <| nerve.RepresentableBySimplex n`
--- Though slightly shorter, this would essentially have us convert to an equiv then back to an iso.
+-- -- Alternate definition:
+-- -- `:= SSet.stdSimplex.isoOfRepresentableBy <| nerve.RepresentableBySimplex n`
+-- -- Though slightly shorter, this would essentially have us convert to an equiv then back to an iso.
 
-def simplexIsNerve' (n : ℕ) : Δ[n] ≅ nerve (ULiftFin (n + 1)) := sorry
+-- set_option pp.universes true
+
+def simplexIsNerve' (n : ℕ) : Δ[n] ≅ nerve (ULiftFin.{u} (n + 1)) :=
+  NatIso.ofComponents
+    (fun i ↦ Equiv.toIso (stdSimplex.objEquiv.trans SimplexCategory.homIsoFunctor'))
+    sorry
 
 section preservesTerminal
 
@@ -122,21 +146,9 @@ instance hoFunctor.binaryProductNerveIsIso (C D : Type v) [Category.{v} C] [Cate
 /-- By `simplexIsNerve` this is isomorphic to a map of the form
 `hoFunctor.binaryProductNerveIsIso`. -/
 instance hoFunctor.binarySimplexProductIsIso (n m : ℕ) :
-    IsIso (prodComparison hoFunctor Δ[n] Δ[m]) := by
-  have := hoFunctor.binaryProductNerveIsIso (Fin (n + 1)) (Fin (m + 1))
-  have := (prodComparison_natural hoFunctor (simplexIsNerve n).hom (simplexIsNerve m).hom).symm
-  have : IsIso (hoFunctor.map (prod.map (simplexIsNerve n).hom (simplexIsNerve m).hom)) := by
-    infer_instance
-  have : IsIso
-    (prod.map (hoFunctor.map (simplexIsNerve n).hom) (hoFunctor.map (simplexIsNerve m).hom)) := by
-    infer_instance
-  have : IsIso (hoFunctor.map (prod.map (simplexIsNerve n).hom (simplexIsNerve m).hom) ≫
-    prodComparison hoFunctor (nerve (Fin (n + 1))) (nerve (Fin (m + 1)))) := inferInstance
-  -- WHY DOES THIS FAIL?
-  -- exact IsIso.of_isIso_fac_right
-  --  (g := (prod.map (hoFunctor.map (simplexIsNerve n).hom)(hoFunctor.map (simplexIsNerve m).hom)))
-  --   (prodComparison_natural hoFunctor (simplexIsNerve n).hom (simplexIsNerve m).hom).symm
-  sorry
+    IsIso (prodComparison hoFunctor Δ[n] Δ[m]) :=
+  IsIso.of_isIso_fac_right
+    (prodComparison_natural hoFunctor (simplexIsNerve' n).hom (simplexIsNerve' m).hom).symm
 
 /-- Modulo composing with a symmetry on both ends, the natural transformation
 `prodComparisonNatTrans hofunctor Δ[m]` is a natural transformation between cocontinuous

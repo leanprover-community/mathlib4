@@ -890,7 +890,7 @@ section
 universe u v
 
 /-- An alias for the underlying type of the category `Fin n` lifted to an object of `Cat.{v, u}`. -/
-def ULiftFin (n : ℕ) : Type u := (ULiftHom.{v,u} (ULift.{u} (Fin n)))
+def ULiftFin (n : ℕ) : Type u := (ULiftHom.{u,u} (ULift.{u} (Fin n)))
 
 instance {n : ℕ} : Category (ULiftFin n) := ULiftHom.category
 namespace ULiftFin
