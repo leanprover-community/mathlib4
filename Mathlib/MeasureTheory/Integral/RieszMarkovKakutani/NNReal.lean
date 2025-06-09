@@ -54,7 +54,7 @@ theorem lintegral_rieszMeasure (f : C_c(X, ℝ≥0)) : ∫⁻ (x : X), f x ∂(r
        NNReal.eq_iff, NNReal.coe_mk]
     exact integral_rieszMeasure Λ f
   rw [rieszMeasure]
-  exact Continuous.integrable_of_hasCompactSupport (by continuity)
+  exact Continuous.integrable_of_hasCompactSupport (by fun_prop)
     (HasCompactSupport.comp_left f.hasCompactSupport rfl)
 
 end NNRealRMK
