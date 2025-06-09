@@ -232,6 +232,12 @@ theorem switchinglemma {F : Type*} [Field F] (p : F[X])
 
 attribute [-instance] Polynomial.Gal.galActionAux -- should be local to PolynomialGaloisGroup.lean
 
+theorem _root_.Subgroup.closure_diff_one {G : Type*} [Group G] (s : Set G) :
+    Subgroup.closure (s \ {1}) = Subgroup.closure s := by
+  rw [← s.diff_union_inter {1}, Subgroup.closure_union, s.diff_union_inter, eq_comm, sup_eq_left,
+    Subgroup.closure_le]
+  exact fun x hx ↦ hx.2.symm ▸ Subgroup.one_mem _
+
 theorem X_pow_sub_X_sub_one_gal :
     Function.Bijective (Gal.galActionHom (X ^ n - X - 1 : ℚ[X]) ℂ) := by
   classical
@@ -241,38 +247,31 @@ theorem X_pow_sub_X_sub_one_gal :
   have : NumberField K := by constructor
   have : IsGalois ℚ K := by constructor
   let R := 𝓞 K
+  let G := f.Gal
   suffices Function.Bijective (Gal.galActionHom f K) by
     rw [switchinglemma f ℂ K]
     exact (((Gal.rootsEquivRoots f f.SplittingField).symm.trans
       (Gal.rootsEquivRoots f ℂ)).permCongrHom.toEquiv.comp_bijective _).mpr this
-  have : MulAction.IsPretransitive f.Gal (f.rootSet K) := by
+  have : MulAction.IsPretransitive G (f.rootSet K) := by
     rcases eq_or_ne n 1 with rfl | hn
     · have : IsEmpty (rootSet f K) := by simp [f]
       infer_instance
     exact Gal.galAction_isPretransitive _ _ (X_pow_sub_X_sub_one_irreducible_rat hn)
-  let S0 : Set f.Gal := ⋃ (q : Ideal R) (hq : q.IsMaximal),
-    (↑(inertiaSubgroup q : Set (f.SplittingField ≃ₐ[ℚ] f.SplittingField)))
-  let S : Set f.Gal := S0 \ {1}
-  have hS0 : Subgroup.closure S0 = ⊤ := by
-    simp only [S0, Subgroup.closure_iUnion, Subgroup.closure_eq]
-    exact keythm K
+  let S : Set G := ⋃ (q : Ideal R) (hq : q.IsMaximal), ((inertiaSubgroup q : Set (K ≃ₐ[ℚ] K)) \ {1})
   have hS1 : Subgroup.closure S = ⊤ := by
-    rw [← hS0, ← Set.diff_union_inter S0 {1}, Subgroup.closure_union, eq_comm, sup_eq_left]
-    refine (Subgroup.closure_le _).mpr (Set.inter_subset_right.trans
-      (Set.singleton_subset_iff.mpr (Subgroup.one_mem _)))
+    simp only [S, Subgroup.closure_iUnion, Subgroup.closure_eq, Subgroup.closure_diff_one]
+    exact keythm K
   suffices hS2 : ∀ σ ∈ S, Perm.IsSwap (MulAction.toPermHom f.Gal (f.rootSet K) σ) by
     exact ⟨Gal.galActionHom_injective f K, surjective_of_isSwap_of_isPretransitive S hS2 hS1⟩
-  rintro σ ⟨hσ, hσ1 : σ ≠ 1⟩
-  rw [Set.mem_iUnion] at hσ
-  obtain ⟨q, hσ⟩ := hσ
-  rw [Set.mem_iUnion] at hσ
-  obtain ⟨hq, hσ⟩ := hσ
-  rw [SetLike.mem_coe] at hσ
+  simp only [S, Set.mem_diff, Set.mem_iUnion]
+  rintro σ ⟨q, hq, hσ, hσ1 : σ ≠ 1⟩
+  let H : Subgroup G := inertiaSubgroup q
   let F := R ⧸ q
   let π : R →+* F := Ideal.Quotient.mk q
   have : Field F := Ideal.Quotient.field q
+  have : MulAction H (f.rootSet K) := inferInstance
 
-  clear hS1 hS0 S S0
+  clear hS1 S
 
   -- σ ∈ inertiaSubgroup q
   -- σ acts trivially on the
