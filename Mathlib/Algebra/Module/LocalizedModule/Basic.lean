@@ -150,6 +150,10 @@ theorem mk_add_mk {m1 m2 : M} {s1 s2 : S} :
     mk m1 s1 + mk m2 s2 = mk (s2 • m1 + s1 • m2) (s1 * s2) :=
   mk_eq.mpr <| ⟨1, rfl⟩
 
+theorem mk_add_mk' (m1 m2 : M) (s : S) : mk m1 s + mk m2 s = mk (m1 + m2) s := by
+  rw [mk_add_mk, mk_eq]
+  exact ⟨1, by simp_rw [one_smul, mul_smul, smul_add]⟩
+
 private theorem add_assoc' (x y z : LocalizedModule S M) : x + y + z = x + (y + z) := by
   induction' x with mx sx
   induction' y with my sy
@@ -166,26 +170,34 @@ private theorem add_comm' (x y : LocalizedModule S M) : x + y = y + x :=
     x y
 
 private theorem zero_add' (x : LocalizedModule S M) : 0 + x = x :=
-  induction_on
-    (fun m s => by
-      rw [← zero_mk s, mk_add_mk, smul_zero, zero_add, mk_eq]
-      exact ⟨1, by rw [one_smul, mul_smul, one_smul]⟩)
-    x
+  x.induction_on fun m s => by rw [← zero_mk s, mk_add_mk', zero_add]
 
 private theorem add_zero' (x : LocalizedModule S M) : x + 0 = x :=
-  induction_on
-    (fun m s => by
-      rw [← zero_mk s, mk_add_mk, smul_zero, add_zero, mk_eq]
-      exact ⟨1, by rw [one_smul, mul_smul, one_smul]⟩)
-    x
+  x.induction_on fun m s => by rw [← zero_mk s, mk_add_mk', add_zero]
+section Actions
+variable {α : Type*}
 
-instance hasNatSMul : SMul ℕ (LocalizedModule S M) where smul n := nsmulRec n
+section SMul
+variable [SMul α M] [SMulCommClass α R M]
 
-private theorem nsmul_zero' (x : LocalizedModule S M) : (0 : ℕ) • x = 0 :=
-  LocalizedModule.induction_on (fun _ _ => rfl) x
+instance : SMul α (LocalizedModule S M) where
+  smul a x := liftOn x (fun x => mk (a • x.1) x.2) fun ⟨m1, s1⟩ ⟨m2, s2⟩ ⟨s, hs⟩ => mk_eq.mpr
+    ⟨s, by simp_rw [← smul_comm a, hs]⟩
 
-private theorem nsmul_succ' (n : ℕ) (x : LocalizedModule S M) : n.succ • x = n • x + x :=
-  LocalizedModule.induction_on (fun _ _ => rfl) x
+theorem smul'_mk (a : α) (m : M) (s : S) : a • mk m s = mk (a • m) s := rfl
+
+end SMul
+
+instance [Monoid α] [MulAction α M] [SMulCommClass α R M] : MulAction α (LocalizedModule S M) :=
+  letI : MulAction α (M × ↥S) :=
+    { smul a ms := (a • ms.1, ms.2)
+      one_smul _ := Prod.ext (one_smul _ _) rfl
+      mul_smul _ _ _ := Prod.ext (mul_smul _ _ _) rfl }
+  fast_instance%
+    Function.Surjective.mulAction
+      (fun x : M × S => mk x.1 x.2) (Quotient.mk_surjective) (fun _ _ => rfl)
+
+end Actions
 
 instance : AddCommMonoid (LocalizedModule S M) where
   add := (· + ·)
@@ -194,8 +206,11 @@ instance : AddCommMonoid (LocalizedModule S M) where
   zero_add := zero_add'
   add_zero := add_zero'
   nsmul := (· • ·)
-  nsmul_zero := nsmul_zero'
-  nsmul_succ := nsmul_succ'
+  nsmul_zero := induction_on (fun _ _ => by simp [smul'_mk])
+  nsmul_succ n := induction_on fun m s => by
+    rw [smul'_mk, smul'_mk]
+    have : n.succ • m = n • m + m := AddMonoid.nsmul_succ n m
+    rw [this, mk_add_mk']
   add_comm := add_comm'
 
 instance {M : Type*} [AddCommGroup M] [Module R M] : Neg (LocalizedModule S M) where
@@ -394,12 +409,12 @@ theorem mk_cancel (s : S) (m : M) : mk (s • m) s = mk m 1 :=
 theorem mk_cancel_common_right (s s' : S) (m : M) : mk (s' • m) (s * s') = mk m s :=
   mk_eq.mpr ⟨1, by simp [mul_smul]⟩
 
-noncomputable instance isModule' : Module R (LocalizedModule S M) :=
-  { Module.compHom (LocalizedModule S M) <| algebraMap R (Localization S) with }
-
-theorem smul'_mk (r : R) (s : S) (m : M) : r • mk m s = mk (r • m) s := by
-  simpa only [one_mul] using mk_smul_mk r m 1 s
-
+noncomputable instance isModule' : Module R (LocalizedModule S M) where
+  smul_zero := sorry
+  zero_smul := sorry
+  smul_add := sorry
+  add_smul := sorry
+#exit
 lemma smul_eq_iff_of_mem
     (r : R) (hr : r ∈ S) (x y : LocalizedModule S M) :
     r • x = y ↔ x = Localization.mk 1 ⟨r, hr⟩ • y := by
