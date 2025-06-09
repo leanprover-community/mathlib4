@@ -131,10 +131,6 @@ open IntermediateField
 
 attribute [local instance] Gal.splits_ℚ_ℂ
 
-instance {α β : Type*} [Monoid α] [Subsingleton β] [MulAction α β] :
-    MulAction.IsPretransitive α β :=
-  ⟨fun _ _ ↦ ⟨1, Subsingleton.elim _ _⟩⟩
-
 open NumberField
 
 variable {K : Type*} [Field K] [NumberField K] [IsGalois ℚ K]
@@ -270,6 +266,10 @@ theorem X_pow_sub_X_sub_one_gal :
   let π : R →+* F := Ideal.Quotient.mk q
   have : Field F := Ideal.Quotient.field q
   have : MulAction H (f.rootSet K) := inferInstance
+  have : MulAction H F := sorry
+  let ϕ : f.rootSet K → F := sorry -- equivariant map under which σ acts trivially
+  let f' : F[X] := X ^ n - X - 1
+
 
   clear hS1 S
 
