@@ -436,6 +436,7 @@ jobs:
 
   post_steps:
     name: Post-Build Step (fork)
+    if: github.event.pull_request.head.repo.fork
     needs: [build]
     runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
     steps:
@@ -517,12 +518,23 @@ jobs:
 
   style_lint:
     name: Lint style (fork)
+    if: github.event.pull_request.head.repo.fork
     runs-on: ubuntu-latest
     steps:
       - uses: leanprover-community/lint-style-action@f2e7272aad56233a642b08fe974cf09dd664b0c8 # 2025-05-22
         with:
           mode: check
           lint-bib-file: true
+
+  build_and_lint:
+    name: CI Success
+    if: github.event.pull_request.head.repo.fork
+    needs: [style_lint, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: succeed
+        run: |
+          echo "Success: Required build and lint checks completed!"
 
   final:
     name: Post-CI job (fork)

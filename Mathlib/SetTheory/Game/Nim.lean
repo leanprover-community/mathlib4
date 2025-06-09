@@ -201,7 +201,7 @@ theorem nim_add_equiv_zero_iff (o₁ o₂ : Ordinal) : (nim o₁ + nim o₂ ≈ 
   constructor
   · refine not_imp_not.1 fun hne : _ ≠ _ => (Impartial.not_equiv_zero_iff (nim o₁ + nim o₂)).2 ?_
     wlog h : o₁ < o₂
-    · exact (fuzzy_congr_left add_comm_equiv).1 (this _ _ hne.symm (hne.lt_or_lt.resolve_left h))
+    · exact (fuzzy_congr_left add_comm_equiv).1 (this _ _ hne.symm (hne.lt_or_gt.resolve_left h))
     rw [Impartial.fuzzy_zero_iff_gf, zero_lf_le]
     use toLeftMovesAdd (Sum.inr <| toLeftMovesNim ⟨_, h⟩)
     · simpa using (Impartial.add_self (nim o₁)).2

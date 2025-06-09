@@ -649,7 +649,7 @@ theorem mul_self_pos [ExistsAddOfLE R] [PosMulStrictMono R] [MulPosStrictMono R]
     rw [mul_zero] at h
     exact h.false
   · intro h
-    rcases h.lt_or_lt with h | h
+    rcases h.lt_or_gt with h | h
     exacts [mul_pos_of_neg_of_neg h h, mul_pos h h]
 
 theorem nonneg_of_mul_nonpos_left [ExistsAddOfLE R] [MulPosStrictMono R]

@@ -468,6 +468,7 @@ import Mathlib.Algebra.GroupWithZero.Pointwise.Finset
 import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Card
 import Mathlib.Algebra.GroupWithZero.Prod
+import Mathlib.Algebra.GroupWithZero.ProdHom
 import Mathlib.Algebra.GroupWithZero.Semiconj
 import Mathlib.Algebra.GroupWithZero.Subgroup
 import Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise
@@ -4038,6 +4039,7 @@ import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 import Mathlib.LinearAlgebra.Orientation
 import Mathlib.LinearAlgebra.PID
 import Mathlib.LinearAlgebra.PerfectPairing.Basic
+import Mathlib.LinearAlgebra.PerfectPairing.Matrix
 import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.PiTensorProduct

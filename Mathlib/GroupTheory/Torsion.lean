@@ -397,7 +397,7 @@ variable (G) [CommGroup G]
 "Quotienting a group by its additive torsion subgroup yields an additive torsion-free group."]
 instance _root_.QuotientGroup.instIsMulTorsionFree : IsMulTorsionFree <| G ⧸ torsion G := by
   refine .of_not_isOfFinOrder fun g hne hfin ↦ hne ?_
-  induction' g using QuotientGroup.induction_on with g
+  obtain ⟨g⟩ := g
   obtain ⟨m, mpos, hm⟩ := hfin.exists_pow_eq_one
   obtain ⟨n, npos, hn⟩ := ((QuotientGroup.eq_one_iff _).mp hm).exists_pow_eq_one
   exact (QuotientGroup.eq_one_iff g).mpr

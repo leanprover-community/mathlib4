@@ -196,7 +196,7 @@ theorem add_eq_max_of_ne {q r : ℚ} (hne : padicNorm p q ≠ padicNorm p r) :
     padicNorm p (q + r) = max (padicNorm p q) (padicNorm p r) := by
   wlog hlt : padicNorm p r < padicNorm p q
   · rw [add_comm, max_comm]
-    exact this hne.symm (hne.lt_or_lt.resolve_right hlt)
+    exact this hne.symm (hne.lt_or_gt.resolve_right hlt)
   have : padicNorm p q ≤ max (padicNorm p (q + r)) (padicNorm p r) :=
     calc
       padicNorm p q = padicNorm p (q + r + (-r)) := by ring_nf
