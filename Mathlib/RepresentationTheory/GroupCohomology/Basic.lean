@@ -230,7 +230,7 @@ def cocycles (n : ℕ) : ModuleCat k := (inhomogeneousCochains A).cycles n
 
 variable {A} in
 /-- Make an `n`-cocycle out of an element of the kernel of the `n`th differential. -/
-def cocyclesMk {n : ℕ} (f : (Fin n → G) → A) (h : inhomogeneousCochains.d n A f = 0) :
+abbrev cocyclesMk {n : ℕ} (f : (Fin n → G) → A) (h : inhomogeneousCochains.d n A f = 0) :
     cocycles A n :=
   (inhomogeneousCochains A).cyclesMk f (n + 1) (by simp) (by simp [h, inhomogeneousCochains])
 
@@ -239,7 +239,6 @@ abbrev iCocycles (n : ℕ) : cocycles A n ⟶ (inhomogeneousCochains A).X n :=
   (inhomogeneousCochains A).iCycles n
 
 variable {A} in
-@[simp]
 theorem iCocycles_mk {n : ℕ} (f : (Fin n → G) → A) (h : inhomogeneousCochains.d n A f = 0) :
     iCocycles A n (cocyclesMk f h) = f := by
   exact (inhomogeneousCochains A).i_cyclesMk (i := n) f (n + 1) (by simp)
