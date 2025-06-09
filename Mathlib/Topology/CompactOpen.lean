@@ -90,13 +90,35 @@ protected lemma mem_nhds_iff {f : C(X, Y)} {s : Set C(X, Y)} :
       {g : C(X, Y) | ∀ K U, (K, U) ∈ S → MapsTo g K U} ⊆ s := by
   simp [f.hasBasis_nhds.mem_iff, ← setOf_forall, and_assoc]
 
+lemma _root_.Filter.HasBasis.nhds_continuousMapConst {ι : Type*} {c : Y} {p : ι → Prop}
+    {U : ι → Set Y} (h : (𝓝 c).HasBasis p U) :
+    (𝓝 (const X c)).HasBasis (fun Ki : Set X × ι ↦ IsCompact Ki.1 ∧ p Ki.2)
+      fun Ki ↦ {f : C(X, Y) | MapsTo f Ki.1 (U Ki.2)} := by
+  refine ⟨fun s ↦ ⟨fun hs ↦ ?_, fun hs ↦ ?_⟩⟩
+  · rcases ContinuousMap.mem_nhds_iff.mp hs with ⟨S, hSf, hS, hSsub⟩
+    choose hScompact hSopen hSmaps using hS
+    have : ⋂ KU ∈ S, ⋂ (_ : KU.1.Nonempty), KU.2 ∈ 𝓝 c := by
+      simp only [biInter_mem hSf, Prod.forall, iInter_mem]
+      rintro K U hKU ⟨x, hx⟩
+      exact (hSopen K U hKU).mem_nhds <| hSmaps K U hKU hx
+    rcases h.mem_iff.mp this with ⟨i, hpi, hi⟩
+    refine ⟨(⋃ KU ∈ S, KU.1, i), ⟨hSf.isCompact_biUnion <| Prod.forall.2 hScompact, hpi⟩,
+      Subset.trans ?_ hSsub⟩
+    intro f hf K V hKV
+    rcases K.eq_empty_or_nonempty with rfl | hKne
+    · exact mapsTo_empty _ _
+    · refine hf.out.mono (subset_biUnion_of_mem (u := Prod.fst) hKV) (hi.trans ?_)
+      exact (biInter_subset_of_mem hKV).trans <| iInter_subset _ hKne
+  · rcases hs with ⟨⟨K, i⟩, ⟨hK, hpi⟩, hi⟩
+    filter_upwards [eventually_mapsTo hK isOpen_interior fun x _ ↦
+      mem_interior_iff_mem_nhds.mpr <| h.mem_of_mem hpi] with f hf
+    exact hi <| hf.mono_right interior_subset
+
 section Functorial
 
 /-- `C(X, ·)` is a functor. -/
 theorem continuous_postcomp (g : C(Y, Z)) : Continuous (ContinuousMap.comp g : C(X, Y) → C(X, Z)) :=
   continuous_compactOpen.2 fun _K hK _U hU ↦ isOpen_setOf_mapsTo hK (hU.preimage g.2)
-
-@[deprecated (since := "2024-10-19")] alias continuous_comp := continuous_postcomp
 
 /-- If `g : C(Y, Z)` is a topology inducing map,
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is a topology inducing map too. -/
@@ -108,8 +130,6 @@ theorem isInducing_postcomp (g : C(Y, Z)) (hg : IsInducing g) :
 
 @[deprecated (since := "2024-10-28")] alias inducing_postcomp := isInducing_postcomp
 
-@[deprecated (since := "2024-10-19")] alias inducing_comp := isInducing_postcomp
-
 /-- If `g : C(Y, Z)` is a topological embedding,
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is an embedding too. -/
 theorem isEmbedding_postcomp (g : C(Y, Z)) (hg : IsEmbedding g) :
@@ -119,15 +139,11 @@ theorem isEmbedding_postcomp (g : C(Y, Z)) (hg : IsEmbedding g) :
 @[deprecated (since := "2024-10-26")]
 alias embedding_postcomp := isEmbedding_postcomp
 
-@[deprecated (since := "2024-10-19")] alias embedding_comp := isEmbedding_postcomp
-
 /-- `C(·, Z)` is a functor. -/
 @[continuity, fun_prop]
 theorem continuous_precomp (f : C(X, Y)) : Continuous (fun g => g.comp f : C(Y, Z) → C(X, Z)) :=
   continuous_compactOpen.2 fun K hK U hU ↦ by
     simpa only [mapsTo_image_iff] using isOpen_setOf_mapsTo (hK.image f.2) hU
-
-@[deprecated (since := "2024-10-19")] alias continuous_comp_left := continuous_precomp
 
 variable (Z) in
 /-- Precomposition by a continuous map is itself a continuous map between spaces of continuous maps.
@@ -148,13 +164,16 @@ protected def _root_.Homeomorph.arrowCongr (φ : X ≃ₜ Z) (ψ : Y ≃ₜ T) :
   continuous_toFun := continuous_postcomp _ |>.comp <| continuous_precomp _
   continuous_invFun := continuous_postcomp _ |>.comp <| continuous_precomp _
 
-variable (Z) in
-/-- Precomposition by a homeomorphism is itself a homeomorphism between spaces of continuous maps.
--/
-@[deprecated Homeomorph.arrowCongr (since := "2024-10-19")]
-def compRightHomeomorph (f : X ≃ₜ Y) :
-    C(Y, Z) ≃ₜ C(X, Z) :=
-  .arrowCongr f.symm (.refl _)
+/-- The map from `X × C(Y, Z)` to `C(Y, X × Z)` is continuous. -/
+lemma continuous_prodMk_const : Continuous fun p : X × C(Y, Z) ↦ prodMk (const Y p.1) p.2 := by
+  simp_rw [continuous_iff_continuousAt, ContinuousAt, ContinuousMap.tendsto_nhds_compactOpen]
+  rintro ⟨r, f⟩ K hK U hU H
+  obtain ⟨V, W, hV, hW, hrV, hKW, hVW⟩ := generalized_tube_lemma (isCompact_singleton (x := r))
+    (hK.image f.continuous) hU (by simpa [Set.subset_def, forall_comm (α := X)])
+  refine Filter.eventually_of_mem (prod_mem_nhds (hV.mem_nhds (by simpa using hrV))
+    (ContinuousMap.eventually_mapsTo hK hW (Set.mapsTo'.mpr hKW))) ?_
+  rintro ⟨r', f'⟩ ⟨hr'V, hf'⟩ x hxK
+  exact hVW (Set.mk_mem_prod hr'V (hf' hxK))
 
 variable [LocallyCompactPair Y Z]
 
@@ -262,6 +281,27 @@ instance [T3Space Y] : T3Space C(X, Y) := inferInstance
 
 end Ev
 
+section DiscreteTopology
+variable [DiscreteTopology X]
+
+/-- The continuous functions from `X` to `Y` are the same as the plain functions when `X` is
+discrete. -/
+@[simps toEquiv]
+def homeoFnOfDiscrete : C(X, Y) ≃ₜ (X → Y) where
+  __ := equivFnOfDiscrete
+  continuous_invFun :=
+    continuous_compactOpen.2 fun K hK U hU ↦ isOpen_set_pi hK.finite_of_discrete fun _ _ ↦ hU
+
+attribute [simps! -isSimp] homeoFnOfDiscrete
+
+@[simp] lemma coe_homeoFnOfDiscrete : ⇑homeoFnOfDiscrete = (DFunLike.coe : C(X, Y) → X → Y) := rfl
+
+@[simp] lemma homeoFnOfDiscrete_symm_apply (f : X → Y) : homeoFnOfDiscrete.symm f = f := rfl
+
+lemma isHomeomorph_coe : IsHomeomorph ((⇑) : C(X, Y) → X → Y) := homeoFnOfDiscrete.isHomeomorph
+
+end DiscreteTopology
+
 section InfInduced
 
 /-- For any subset `s` of `X`, the restriction of continuous functions to `s` is continuous
@@ -350,13 +390,9 @@ variable {X Y}
 theorem image_coev {y : Y} (s : Set X) : coev X Y y '' s = {y} ×ˢ s := by simp [singleton_prod]
 
 /-- The coevaluation map `Y → C(X, Y × X)` is continuous (always). -/
-theorem continuous_coev : Continuous (coev X Y) := by
-  have : ∀ {a K U}, MapsTo (coev X Y a) K U ↔ {a} ×ˢ K ⊆ U := by simp [singleton_prod, mapsTo']
-  simp only [continuous_iff_continuousAt, ContinuousAt, tendsto_nhds_compactOpen, this]
-  intro x K hK U hU hKU
-  rcases generalized_tube_lemma isCompact_singleton hK hU hKU with ⟨V, W, hV, -, hxV, hKW, hVWU⟩
-  filter_upwards [hV.mem_nhds (hxV rfl)] with a ha
-  exact (prod_mono (singleton_subset_iff.mpr ha) hKW).trans hVWU
+theorem continuous_coev : Continuous (coev X Y) :=
+  ((continuous_prodMk_const (X := Y) (Y := X) (Z := X)).comp
+    (.prodMk continuous_id (continuous_const (y := ContinuousMap.id _))):)
 
 end Coev
 

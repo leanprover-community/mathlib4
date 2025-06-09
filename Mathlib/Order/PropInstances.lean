@@ -92,7 +92,6 @@ theorem Prop.isCompl_iff {P Q : Prop} : IsCompl P Q ↔ ¬(P ↔ Q) := by
   rw [_root_.isCompl_iff, Prop.disjoint_iff, Prop.codisjoint_iff, not_iff]
   by_cases P <;> by_cases Q <;> simp [*]
 
--- Porting note: Lean 3 would unfold these for us, but we need to do it manually now
 section decidable_instances
 
 universe u

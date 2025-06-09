@@ -95,7 +95,7 @@ instance [Algebra.IsPushout R S A B] :
   show (Algebra.pushoutDesc B (Algebra.lsmul R (A := S) S (S ⊗[R] Ω[A⁄R]))
     (Algebra.lsmul R (A := A) _ _) (LinearMap.ext <| smul_comm · ·)
       (algebraMap A B r)) • x = r • x
-  simp only [Algebra.pushoutDesc_right, LinearMap.smul_def, Algebra.lsmul_coe]
+  simp only [Algebra.pushoutDesc_right, Module.End.smul_def, Algebra.lsmul_coe]
 
 instance [Algebra.IsPushout R S A B] :
     IsScalarTower S B (S ⊗[R] Ω[A⁄R]) := by
@@ -104,7 +104,7 @@ instance [Algebra.IsPushout R S A B] :
   show (Algebra.pushoutDesc B (Algebra.lsmul R (A := S) S (S ⊗[R] Ω[A⁄R]))
     (Algebra.lsmul R (A := A) _ _) (LinearMap.ext <| smul_comm · ·)
       (algebraMap S B r)) • x = r • x
-  simp only [Algebra.pushoutDesc_left, LinearMap.smul_def, Algebra.lsmul_coe]
+  simp only [Algebra.pushoutDesc_left, Module.End.smul_def, Algebra.lsmul_coe]
 
 lemma map_liftBaseChange_smul [h : Algebra.IsPushout R S A B] (b : B) (x) :
     ((map R S A B).restrictScalars R).liftBaseChange S (b • x) =

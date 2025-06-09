@@ -3,7 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Batteries.Data.List.Pairwise
+import Batteries.Data.List.Perm
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.TakeWhile
@@ -125,6 +125,10 @@ theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ 
         (@eq_replicate_iff _ a (length u₂ + 1) (u₂ ++ [a])).2] <;>
         constructor <;>
       simp [iff_true_intro this, or_comm]
+
+theorem Sorted.eq_of_mem_iff [IsAntisymm α r] [IsIrrefl α r] {l₁ l₂ : List α}
+    (h₁ : Sorted r l₁) (h₂ : Sorted r l₂) (h : ∀ a : α, a ∈ l₁ ↔ a ∈ l₂) : l₁ = l₂ :=
+  eq_of_perm_of_sorted ((perm_ext_iff_of_nodup h₁.nodup h₂.nodup).2 h) h₁ h₂
 
 theorem sublist_of_subperm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ <+~ l₂)
     (hs₁ : l₁.Sorted r) (hs₂ : l₂.Sorted r) : l₁ <+ l₂ := by
@@ -440,8 +444,6 @@ theorem map_orderedInsert (f : α → β) (l : List α) (x : α)
 
 section Correctness
 
-open Perm
-
 theorem perm_orderedInsert (a) : ∀ l : List α, orderedInsert r a l ~ a :: l
   | [] => Perm.refl _
   | b :: l => by
@@ -510,12 +512,15 @@ theorem erase_orderedInsert [DecidableEq α] [IsRefl α r] (x : α) (xs : List �
   simp [refl x] at h
 
 /-- Inserting then erasing an element that is absent is the identity. -/
-theorem erase_orderedInsert_of_not_mem [DecidableEq α]
+theorem erase_orderedInsert_of_notMem [DecidableEq α]
     {x : α} {xs : List α} (hx : x ∉ xs) :
     (xs.orderedInsert r x).erase x = xs := by
   rw [orderedInsert_eq_take_drop, erase_append_right, List.erase_cons_head,
     takeWhile_append_dropWhile]
   exact mt ((takeWhile_prefix _).sublist.subset ·) hx
+
+@[deprecated (since := "2025-05-23")]
+alias erase_orderedInsert_of_not_mem := erase_orderedInsert_of_notMem
 
 /-- For an antisymmetric relation, erasing then inserting is the identity. -/
 theorem orderedInsert_erase [DecidableEq α] [IsAntisymm α r] (x : α) (xs : List α) (hx : x ∈ xs)
