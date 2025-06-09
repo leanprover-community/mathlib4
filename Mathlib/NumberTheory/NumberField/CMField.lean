@@ -29,6 +29,8 @@ subfield `F` is (isomorphic to) the maximal real subfield of `K`.
 * `NumberField.IsCM.ofIsCMExtension`: Assume that there exists `F` such that `K/F` is a
   CM-extension. Then `K` is CM.
 
+* `NumberField.IsCMField.of_abelian`: A totally complex abelian extension of `ℚ` is CM.
+
 ## Implementation note
 
 Most result are proved under the general hypothesis: `K/F` quadratic extension of number fields
@@ -189,13 +191,47 @@ class IsCMField (K : Type*) [Field K] [NumberField K] [IsTotallyComplex K] : Pro
 
 namespace IsCMField
 
-variable (K : Type*) [Field K] [NumberField K] [IsTotallyComplex K]
+variable (F K : Type*) [Field K] [NumberField K] [IsTotallyComplex K]
 
-theorem ofCMExtension (F : Type*) [Field F] [NumberField F] [IsTotallyReal F] [Algebra F K]
+theorem of_CMExtension [Field F] [NumberField F] [IsTotallyReal F] [Algebra F K]
     [IsQuadraticExtension F K] :
     IsCMField K where
   is_quadratic := ⟨(IsQuadraticExtension.finrank_eq_two F K) ▸ finrank_eq_of_equiv_equiv
       (CMExtension.equivMaximalRealSubfield F K).symm (RingEquiv.refl K) (by ext; simp)⟩
+
+open IntermediateField in
+/--
+A totally complex field that has a unique complex conjugation is CM.
+-/
+theorem of_isConj_unique {σ : K ≃ₐ[ℚ] K} (hσ : ∀ φ : K →+* ℂ, IsConj φ σ) :
+    IsCMField K := by
+  have : IsTotallyReal (fixedField (Subgroup.zpowers σ)) := ⟨fun w ↦ by
+    obtain ⟨W, rfl⟩ := w.comap_surjective (K := K)
+    let τ := subgroupEquivAlgEquiv _ ⟨σ, Subgroup.mem_zpowers σ⟩
+    have hτ : IsConj W.embedding τ := hσ _
+    simpa [← isReal_mk_iff, ← InfinitePlace.comap_mk, mk_embedding] using hτ.isReal_comp⟩
+  have : IsQuadraticExtension (fixedField (Subgroup.zpowers σ)) K := ⟨by
+    let φ : K →+* ℂ := Classical.choice (inferInstance : Nonempty _)
+    have hσ' : σ ≠ 1 :=
+      (isConj_ne_one_iff (hσ φ)).mpr <| IsTotallyComplex.complexEmbedding_not_isReal φ
+    rw [finrank_fixedField_eq_card, Fintype.card_zpowers, orderOf_isConj_two_of_ne_one (hσ φ) hσ']⟩
+  exact of_CMExtension (fixedField (Subgroup.zpowers σ)) K
+
+/--
+A totally complex abelian extension of `ℚ` is CM.
+-/
+instance of_abelian [IsGalois ℚ K] [IsMulCommutative (K ≃ₐ[ℚ] K)] :
+    IsCMField K := by
+  let φ : K →+* ℂ := Classical.choice (inferInstance : Nonempty _)
+  obtain ⟨σ, hσ₁⟩ : ∃ σ : K ≃ₐ[ℚ] K, ComplexEmbedding.IsConj φ σ :=
+    exists_isConj_of_isRamified <|
+      isRamified_iff.mpr ⟨IsTotallyComplex.isComplex _, IsTotallyReal.isReal _⟩
+  have hσ₂ : ∀ (φ : K →+* ℂ), ComplexEmbedding.IsConj φ σ := by
+    intro ψ
+    obtain ⟨ν, rfl⟩ := ComplexEmbedding.exists_comp_symm_eq_of_comp_eq (k := ℚ) φ ψ (by ext; simp)
+    rw [show σ = ν.symm⁻¹ * σ * ν.symm by simp]
+    exact hσ₁.comp
+  exact of_isConj_unique K hσ₂
 
 variable [IsCMField K]
 

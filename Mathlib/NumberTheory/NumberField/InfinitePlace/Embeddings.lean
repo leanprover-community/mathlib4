@@ -225,6 +225,8 @@ variable [Algebra k K] (φ : K →+* ℂ) (σ : K ≃ₐ[k] K)
 -/
 def IsConj : Prop := conjugate φ = φ.comp σ
 
+#check IsConj
+
 variable {φ σ}
 
 lemma IsConj.eq (h : IsConj φ σ) (x) : φ (σ x) = star (φ x) := RingHom.congr_fun h.symm x
@@ -258,5 +260,14 @@ lemma isConj_symm : IsConj φ σ.symm ↔ IsConj φ σ :=
 lemma isConj_apply_apply (hσ : IsConj φ σ) (x : K) :
     σ (σ x) = x := by
   simp [← φ.injective.eq_iff, hσ.eq]
+
+theorem IsConj.comp {ν : K ≃ₐ[k] K} (hσ : IsConj φ σ) :
+    IsConj (φ.comp ν) (ν⁻¹ * σ * ν) := by
+  ext
+  simpa [← AlgEquiv.mul_apply, ← mul_assoc] using RingHom.congr_fun hσ _
+
+lemma orderOf_isConj_two_of_ne_one (hσ : IsConj φ σ) (hσ' : σ ≠ 1) :
+    orderOf σ = 2 :=
+  orderOf_eq_prime_iff.mpr ⟨by ext; simpa using isConj_apply_apply hσ _, hσ'⟩
 
 end NumberField.ComplexEmbedding
