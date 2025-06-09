@@ -407,6 +407,14 @@ lemma natCast_mono (hbn : b ≤ n) (hab : a ≤ b) : (a : Fin (n + 1)) ≤ b :=
 lemma natCast_strictMono (hbn : b ≤ n) (hab : a < b) : (a : Fin (n + 1)) < b :=
   (natCast_lt_natCast (hab.le.trans hbn) hbn).2 hab
 
+@[simp]
+lemma castLE_natCast {m n : ℕ} [NeZero m] (h : m ≤ n) (a : ℕ) :
+    letI : NeZero n := ⟨Nat.pos_iff_ne_zero.mp (lt_of_lt_of_le m.pos_of_neZero h)⟩
+    Fin.castLE h (a.cast : Fin m) = (a % m : ℕ) := by
+  ext
+  simp only [coe_castLE, val_natCast]
+  rw [Nat.mod_eq_of_lt (a := a % m) (lt_of_lt_of_le (Nat.mod_lt _ m.pos_of_neZero) h)]
+
 end OfNatCoe
 
 end Add
@@ -478,14 +486,6 @@ attribute [simp] castSucc_inj
 
 lemma castLE_injective (hmn : m ≤ n) : Injective (castLE hmn) :=
   fun _ _ hab ↦ Fin.ext (congr_arg val hab :)
-
-@[simp]
-lemma castLE_natCast {m n : ℕ} [NeZero m] (h : m ≤ n) (a : ℕ) :
-    letI : NeZero n := ⟨Nat.pos_iff_ne_zero.mp (lt_of_lt_of_le m.pos_of_neZero h)⟩
-    Fin.castLE h a = (a % m : ℕ) := by
-  ext
-  simp only [coe_castLE, val_natCast]
-  rw [Nat.mod_eq_of_lt (a := a % m) (lt_of_lt_of_le (Nat.mod_lt _ m.pos_of_neZero) h)]
 
 lemma castAdd_injective (m n : ℕ) : Injective (@Fin.castAdd m n) := castLE_injective _
 
