@@ -155,6 +155,9 @@ theorem Acc.inv {α r} {x y : α} (h₁ : Acc r x) (h₂ : r y x) : Acc r y := b
 
 def WellFounded {α} (R : α → α → Prop) : Prop := ∀ x, Acc R x
 
+theorem WellFounded.irrefl {α R} (H : @WellFounded α R) {x} : ¬R x x :=
+  fun h => H x (· ≠ x) (fun _ ih eq => ih x (eq ▸ h) rfl) rfl
+
 section
 variable
   {α : Sort u} {C : α → Sort v} {r : α → α → Prop}
@@ -560,6 +563,13 @@ def Ordinal.Below (o : Ordinal) := o.out.fst
 def Ordinal.rel {o : Ordinal} : (x y : o.Below) → Prop := o.out.snd.1
 def Ordinal.rel_wo {o : Ordinal} : IsWellOrder o.Below rel := o.out.snd.2
 
+theorem Ordinal.mk_below (o : Ordinal) : mk o.Below o.rel o.rel_wo = o := by
+  show Quot.mk _ (Sigma.mk _ ⟨o.out.snd.1, _⟩) = o
+  rw [Subtype.eta, Sigma.fst_snd, Quot.mk_out]
+
+theorem Ordinal.exists (o : Ordinal) : ∃ α r hr, o = mk α r hr :=
+  ⟪_, _, _, (mk_below o).symm⟫
+
 theorem Ordinal.mk_eq_mk
     {α} {r : α → α → Prop} {hr : IsWellOrder α r}
     {β} {s : β → β → Prop} {hs : IsWellOrder β s} :
@@ -589,29 +599,70 @@ theorem type.wo {α} {r : α → α → Prop}
   · refine fun x C ih => H.r.r x.1 (fun y => ∀ h, C ⟨y, h⟩) ?_ _
     exact fun z h1 hz => ih _ fun ⟨w, hw⟩ hr => h1 _ hr _
 
-theorem type.lt {α} {r : α → α → Prop}
-    (H : IsWellOrder α r) (y : α) : WellOrder.lt' (type.R r y) r := by
-  refine ⟪?_, H.r.l, ?_⟫
-  · exact fun a b => H.l a.1 b.1 _ .inl fun h => .inr <| h _ (.inl ∘ Subtype.ext) .inr
-  · refine fun x C ih => H.r.r x.1 (fun y => ∀ h, C ⟨y, h⟩) ?_ _
-    exact fun z h1 hz => ih _ fun ⟨w, hw⟩ hr => h1 _ hr _
+theorem type.lt {α} {r : α → α → Prop} {y : α} : WellOrder.lt' (type.R r y) r := by
+  refine ⟪(·.1), y, ⟪Subtype.coe_injective, .rfl⟫, fun a => ⟪fun h => ?_, fun h => ⟪⟨_, h⟩, rfl⟫⟫⟫
+  ex_cases h with ⟨a, h'⟩ (rfl); exact h'
+
+theorem type.equiv {α β} {r : α → α → Prop} {s : β → β → Prop} {y : α}
+    {f} (H : IsPrincipalSeg s r f y) : WellOrder.Equiv (type.R r y) s := by
+  have hg (a : A r y) := (H.r _).r a.2
+  let g a := choose (hg a)
+  have hg a : f (g a) = a.1 := choose_spec (hg a)
+  let f' b : A r y := ⟨f b, (H.r _).l ⟪_, rfl⟫⟩
+  refine have inv := ⟪?_, ?_⟫; ⟪g, f', inv, LeftInverse.injective inv.r, ?_⟫
+  · exact H.l.r.symm.trans (hg _ ▸ (hg _).symm ▸ .rfl)
+  · dsimp [f']; exact fun x => H.l.l <| hg _ ▸ rfl
+  · exact fun _ => Subtype.ext (hg _)
 
 def type (α) (r : α → α → Prop) (H : IsWellOrder α r) (y : α) : Ordinal :=
   .mk (type.A r y) (type.R r y) (type.wo H y)
 
 theorem Ordinal.type_lt_mk (α) (r : α → α → Prop) (H : IsWellOrder α r) (y : α) :
-    (type α r H y).lt (mk α r H) :=
-  mk_lt_mk.r _
+    (type α r H y).lt (mk α r H) := mk_lt_mk.r type.lt
 
-def Ordinal.Below.mk {o : Ordinal} (x : Ordinal) (h : x.lt o) : o.Below := sorry
+theorem IsPrincipalSeg.uniq {α β} {r : α → α → Prop} {s : β → β → Prop}
+    (rwo : IsWellOrder α r) (swo : IsWellOrder β s)
+    {f f' top top'} (H : IsPrincipalSeg r s f top) (H' : IsPrincipalSeg r s f' top') :
+    f = f' ∧ top = top' := by
+  have ff : f = f' := by
+    have {f f' top top'} (H : IsPrincipalSeg r s f top) (H' : IsPrincipalSeg r s f' top')
+        {x} : ¬s (f x) (f' x) := by
+      refine rwo.r.r x (fun x => ¬s (f x) (f' x)) fun x ih h => ?_
+      ex_cases (H'.r _).r <| swo.r.l h <| (H'.r _).l ⟪x, rfl⟫ with a eq
+      have := H'.l.r.l (eq ▸ h)
+      exact ih a this (eq ▸ H.l.r.r this)
+    exact funext fun _ => swo.l _ _ _ (this H H').elim (fun h => h _ id) (this H' H).elim
+  have {f top top'} (H : IsPrincipalSeg r s f top) (H' : IsPrincipalSeg r s f top') :
+      ¬s top top' := fun h => swo.r.r.irrefl <| (H.r _).l ((H'.r _).r h)
+  subst ff; exact ⟪rfl, swo.l _ _ _ (this H H').elim (fun h => h _ id) (this H' H).elim⟫
+
+section
+variable {α β} {r : α → α → Prop} {s : β → β → Prop} (H : WellOrder.lt' r s)
+def WellOrder.lt'.embed : α → β := choose H
+def WellOrder.lt'.top : β := choose (choose_spec H)
+theorem WellOrder.lt'.seg : IsPrincipalSeg r s H.embed H.top := choose_spec (choose_spec H)
+end
+
+def Ordinal.Below.mk {o : Ordinal} (x : Ordinal) (h : x.lt o) : o.Below := h.top
 def Ordinal.Below.fst {o : Ordinal} : o.Below → Ordinal := type o.Below rel rel_wo
-def Ordinal.Below.snd {o : Ordinal} (x : o.Below) : x.fst.lt o := sorry
-def Ordinal.Below.mk_fst {o : Ordinal} (x : Ordinal) (h : x.lt o) : (mk x h).fst = x := sorry
+
+theorem Ordinal.Below.snd {o : Ordinal} (x : o.Below) : x.fst.lt o := by
+  conv => rhs; exact (mk_below _).symm
+  apply type_lt_mk
+
+theorem Ordinal.Below.mk_fst {o : Ordinal} (x : Ordinal) (h : x.lt o) : (mk x h).fst = x :=
+  (mk_eq_mk.r (type.equiv h.seg)).trans (mk_below x)
 
 theorem Ordinal.Below.ext {o : Ordinal} {x y : o.Below} (h1 : x.fst = y.fst) : x = y := by
   sorry
 
-theorem Ordinal.Below.fst_snd {o : Ordinal} (x : o.Below) : ⟪x.fst, x.snd⟫ = x := ext (mk_fst ..)
+theorem Ordinal.Below.fst_snd {o : Ordinal} (x : o.Below) : ⟪x.fst, x.snd⟫ = x := by
+  unfold mk
+  have := x.snd.seg
+  suffices ∃ f, IsPrincipalSeg (@rel x.fst) (@rel o) f x by
+    ex_cases this with f h
+    exact (this.uniq rel_wo rel_wo h).r
+  sorry
 
 @[elab_as_elim]
 theorem Ordinal.Below.casesOn {o : Ordinal} {C : o.Below → ∀ x : Ordinal, x.lt o → Prop}
