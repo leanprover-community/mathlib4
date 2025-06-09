@@ -370,19 +370,11 @@ namespace IsCompactSystem
 
 section Union
 
--- (hp : IsCompactSystem p)
--- (L : ℕ → Finset (Set α))
---   (hL : ∀ (n : ℕ) (d : Set α) (_ : d ∈ (L n : Set (Set α))), p d)
-
 /-- `q n K` is the joint property that `∀ (k : Fin n), K k ∈ L k` and
 `∀ N, (⋂ (j : Fin n), K j) ∩ (⋂ (k < N), ⋃₀ (L (n + k)).toSet) ≠ ∅`.` holds. -/
 def q (L : ℕ → Finset (Set α))
   : ∀ n, (K : (k : Fin n) → (L k)) → Prop := fun n K ↦
   (∀ N, ((⋂ j, K j) ∩ (⋂ (k < N), ⋃₀ (L (n + k)).toSet)).Nonempty)
-
-example (n : ℕ) (K : (k : Fin n) → Set α) :
-  ⋂ i, K i = ⋂ (i : ℕ) (hi : i < n), K ⟨i, hi⟩ := by
-  sorry
 
 lemma q_iff_iInter (L : ℕ → Finset (Set α)) (n : ℕ) (K : (k : Fin n) → (L k)) :
     q L n K ↔ (∀ (N : ℕ), ((⋂ (j : ℕ) (hj : j < n), K ⟨j, hj⟩) ∩ (⋂ (k < N),
@@ -463,7 +455,6 @@ lemma inter_sUnion_eq_empty (s : Set α) (L : Set (Set α)) :
   rw [disjoint_sUnion_right]
 
 lemma step' {L : ℕ → Finset (Set α)}
-    (hL : ∀ N, (⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet).Nonempty)
     : ∀ n (K : (k : Fin n) → L k), (q L n K) → ∃ a, q L (n + 1) (Fin.snoc K a) := by
   intro n K hK
   simp_rw [q_iff_iInter] at hK
@@ -517,14 +508,14 @@ for all `n` (this is `prop₀`) and `∀ N, ⋂ (j < n, K j) ∩ ⋂ (k < N), (�
 (this is `prop₁`.) -/
 noncomputable def mem_of_union (L : ℕ → Finset (Set α))
   (hL : ∀ N, (⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet).Nonempty) : (k : ℕ) → L k :=
-  Nat.prefixInduction' (q L) (step0 hL) (step' hL)
+  Nat.prefixInduction' (q L) (step0 hL) (step')
 
 namespace mem_of_union
 
 theorem spec (L : ℕ → Finset (Set α))
     (hL : ∀ N, (⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet).Nonempty) (n : ℕ) :
     (∀ N, ((⋂ (j : Fin n), (mem_of_union L hL) j) ∩ (⋂ (k < N), ⋃₀ (L (n + k)).toSet)).Nonempty) :=
-  Nat.prefixInduction'_spec (β := fun n ↦ {a // a ∈ L n}) (q L) (step0 hL) (step' hL) n
+  Nat.prefixInduction'_spec (β := fun n ↦ {a // a ∈ L n}) (q L) (step0 hL) (step') n
 
 lemma l1 (L : ℕ → Finset (Set α))
     (hL : ∀ N, (⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet).Nonempty) (k : ℕ) :
@@ -585,8 +576,6 @@ theorem isCompactSystem (p : Set α → Prop)(hp : IsCompactSystem p) : IsCompac
 end union
 
 end Union
-
-end IsCompactSystem
 
 section pi
 
