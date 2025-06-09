@@ -137,12 +137,20 @@ noncomputable def hom : (t.truncGE a).obj (X⟦n⟧) ⟶ ((t.truncGE a').obj X)�
 
 @[reassoc (attr := simp)]
 lemma π_hom : (t.truncGEπ a).app (X⟦n⟧) ≫ hom t X h = ((t.truncGEπ a').app X)⟦n⟧' := by
-  have := t.isGE_shift ((t.truncGE a').obj X) a' n a h
+  have : t.IsGE ((shiftFunctor C n).obj ((t.truncGE a').obj X)) a := by
+    refine {ge := ?_}
+    change (t.ge _).shift _ _
+    rw [t.shift_ge _ _ _ h]
+    exact t.ge_of_isGE _ _
   apply π_descTruncGE
 
 /-- inv' -/
 noncomputable def inv' : (t.truncGE a').obj X ⟶ ((t.truncGE a).obj (X⟦n⟧))⟦-n⟧  := by
-  have := t.isGE_shift ((t.truncGE a).obj (X⟦n⟧)) a (-n) a' (by linarith)
+  have : t.IsGE ((shiftFunctor C (-n)).obj ((t.truncGE a).obj ((shiftFunctor C n).obj X))) a' := by
+    refine {ge := ?_}
+    change (t.ge _).shift _ _
+    rw [t.shift_ge _ _ a (by omega)]
+    exact t.ge_of_isGE _ _
   apply t.descTruncGE
   exact (shiftEquiv C n).unitIso.hom.app X ≫ ((t.truncGEπ a).app (X⟦n⟧))⟦-n⟧'
 
@@ -151,7 +159,11 @@ noncomputable def inv' : (t.truncGE a').obj X ⟶ ((t.truncGE a).obj (X⟦n⟧))
 lemma π_inv' :
     (t.truncGEπ a').app X ≫ inv' t X h =
       (shiftEquiv C n).unitIso.hom.app X ≫ ((t.truncGEπ a).app (X⟦n⟧))⟦-n⟧' := by
-  have := t.isGE_shift ((t.truncGE a).obj (X⟦n⟧)) a (-n) a' (by linarith)
+  have : t.IsGE ((shiftFunctor C (-n)).obj ((t.truncGE a).obj ((shiftFunctor C n).obj X))) a' := by
+    refine {ge := ?_}
+    change (t.ge _).shift _ _
+    rw [t.shift_ge _ _ a (by omega)]
+    exact t.ge_of_isGE _ _
   apply t.π_descTruncGE
 
 noncomputable def inv :
@@ -192,8 +204,17 @@ noncomputable def iso : (t.truncGE a).obj (X⟦n⟧) ≅ ((t.truncGE a').obj X)�
   inv_hom_id := by
     apply ((shiftEquiv C n).toAdjunction.homEquiv _ _).injective
     dsimp
-    have := t.isGE_shift ((t.truncGE a').obj X) a' n a h
-    have := t.isGE_shift (((t.truncGE a').obj X)⟦n⟧) a (-n) a' (by linarith)
+    have : t.IsGE ((shiftFunctor C n).obj ((t.truncGE a').obj X)) a := by
+      refine {ge := ?_}
+      change (t.ge _).shift _ _
+      rw [t.shift_ge _ _ _ h]
+      exact t.ge_of_isGE _ _
+    have : t.IsGE ((shiftFunctor C (-n)).obj ((shiftFunctor C n).obj ((t.truncGE a').obj X)))
+        a' := by
+      refine {ge := ?_}
+      change (t.ge _).shift _ _
+      rw [t.shift_ge _ _ a (by omega)]
+      exact t.ge_of_isGE _ _
     apply from_truncGE_obj_ext
     dsimp
     simp only [Adjunction.homEquiv_unit, Functor.id_obj, Functor.comp_obj,
@@ -204,13 +225,17 @@ noncomputable def iso : (t.truncGE a).obj (X⟦n⟧) ≅ ((t.truncGE a').obj X)�
 
 end ShiftTruncGE
 
-variable (n a a' b b')
+variable (n a a')
 
 noncomputable def shiftTruncLE :
     t.truncLE a' ⋙ shiftFunctor C n ≅ shiftFunctor C n ⋙ t.truncLE a :=
   NatIso.ofComponents (fun X => ShiftTruncLE.iso t X h) (fun {X Y} f => by
     dsimp
-    have := t.isLE_shift ((t.truncLE a').obj X) a' n a h
+    have : t.IsLE ((shiftFunctor C n).obj ((t.truncLE a').obj X)) a := by
+      refine {le := ?_}
+      change (t.le _).shift _ _
+      rw [t.shift_le _ _ _ h]
+      exact t.le_of_isLE _ _
     apply to_truncLE_obj_ext
     simp only [Functor.id_obj, assoc, ShiftTruncLE.hom_ι, NatTrans.naturality, Functor.id_map,
       ShiftTruncLE.hom_ι_assoc, ← Functor.map_comp])
@@ -225,7 +250,11 @@ noncomputable def shiftTruncGE :
     t.truncGE a' ⋙ shiftFunctor C n ≅ shiftFunctor C n ⋙ t.truncGE a :=
   Iso.symm (NatIso.ofComponents (fun X => ShiftTruncGE.iso t X h) (fun {X Y} f => by
     dsimp
-    have := t.isGE_shift ((t.truncGE a').obj Y) a' n a h
+    have : t.IsGE ((shiftFunctor C n).obj ((t.truncGE a').obj Y)) a := by
+      refine {ge := ?_}
+      change (t.ge _).shift _ _
+      rw [t.shift_ge _ _ _ h]
+      exact t.ge_of_isGE _ _
     apply from_truncGE_obj_ext
     dsimp
     rw [ShiftTruncGE.π_hom_assoc, ← NatTrans.naturality_assoc, ShiftTruncGE.π_hom]
@@ -238,6 +267,8 @@ lemma π_shiftTruncGE_inv_app :
     (t.truncGEπ a).app (X⟦n⟧) ≫ (t.shiftTruncGE n a a' h).inv.app X =
       ((t.truncGEπ a').app X)⟦n⟧' := by
   simp [shiftTruncGE]
+
+variable (b b' : ℤ) (h' : n + b = b')
 
 noncomputable def shiftTruncGELE :
     t.truncGELE a' b' ⋙ shiftFunctor C n ≅ shiftFunctor C n ⋙ t.truncGELE a b :=
