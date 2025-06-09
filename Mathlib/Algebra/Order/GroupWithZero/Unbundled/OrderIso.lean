@@ -11,10 +11,9 @@ import Mathlib.Order.Hom.Basic
 # Multiplication by a positive element as an order isomorphism
 -/
 
-namespace OrderIso
-
 variable {G₀ : Type*} [GroupWithZero G₀]
-section PartialOrder
+
+namespace OrderIso
 
 variable [PartialOrder G₀]
 
@@ -58,8 +57,7 @@ def divRight₀ (a : G₀) (ha : 0 < a) : G₀ ≃o G₀ where
 
 end right
 
-end PartialOrder
-
+end OrderIso
 section Lattice
 
 lemma mul_inf₀ [SemilatticeInf G₀] [PosMulReflectLT G₀] {c : G₀} (hc : 0 ≤ c) (a b : G₀) :
@@ -87,5 +85,3 @@ lemma sup_mul₀ [SemilatticeSup G₀] [MulPosReflectLT G₀] {c : G₀} (hc : 0
   · exact (OrderIso.mulRight₀ c hc).map_sup a b
 
 end Lattice
-
-end OrderIso
