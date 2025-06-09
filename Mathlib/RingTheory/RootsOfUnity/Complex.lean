@@ -350,7 +350,3 @@ example : {z : ℂ | z ^ 5 = 1} = {1,
     refine (Real.sqrt_le_left (Nat.ofNat_nonneg' 5)).mpr (by norm_num)
   rw [quintic_roots_of_unity_of_sq hs ht₁ ht₂]
   ring_nf
-
-
-example (z : ℂ) : z ^ 6 - 1 = (z - 1) * (z + 1) * (z ^ 2 + z + 1) * (z ^ 2 - z + 1) := by
-  ring
