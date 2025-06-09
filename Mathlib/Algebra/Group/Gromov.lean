@@ -1242,6 +1242,12 @@ theorem compact_rho_g: IsCompact (closure (rho_g (G := G))) := by
 -- contains exactly the same elements as 'rho_g'
 noncomputable def rho_g_group := AddSubgroup.closure (rho_g (G := G))
 
+-- See the comment on 'rho_g_group - this is needed due to the fact that we're using
+-- AddSubgroup.closure, instead of defining 'rho_g' to be an AddSubgroup to start with
+-- This states that 'closure' isn't actually adding any elements
+lemma rho_g_group_mem (g: GL_W): g ∈ rho_g_group (G := G) ↔ g ∈ (rho_g (G := G)) := by
+  sorry
+
 -- def GL_W_multiplicative: GL_W →* Multiplicative (GL_W (G := G)) := {
 --   toFun := fun f => Multiplicative.ofMul (f.toFun)
 --   map_one' := by
@@ -1264,6 +1270,46 @@ noncomputable def rho_g_group := AddSubgroup.closure (rho_g (G := G))
 -- ρ(G) contains an abelian subgroup of finite index
 lemma rho_g_contains_abelian: ∃ M: AddSubgroup ((rho_g_group (G := G))), IsAddCommutative M ∧ M.index ≠ 0 := by
   sorry
+
+-- We need this to work with Finset
+noncomputable instance GL_W_DecidableEq: DecidableEq (GL_W (G := G)) := by
+  apply Classical.typeDecidableEq
+
+noncomputable instance w_map_DecidableEq: DecidableEq (W (G := G) →ₗ[ℂ] W (G := G)) := by
+  apply Classical.typeDecidableEq
+
+lemma rho_g_FG: (rho_g_group (G := G)).FG := by
+  simp [AddSubgroup.FG]
+  use (Finset.image GRepW (Finset.image (fun g => GRepW_base (G := G) g) S ))
+  ext g
+  rw [rho_g_group_mem]
+  refine ⟨?_, ?_⟩
+  . intro hg
+    simp [rho_g]
+    induction hg using AddSubgroup.closure_induction with
+    | mem =>
+      sorry
+    | one =>
+      sorry
+    | mul =>
+      sorry
+    | inv =>
+      sorry
+
+
+-- The input data and proofs for Theorem 3.1 in Vikman
+structure Theorem3_1_Data where
+  -- An abelian subgruop of G, with finite index
+  G': Subgroup G
+  isMulCommutative: IsMulCommutative G'
+  finite_index: G'.FiniteIndex
+  -- G' can be mapped homomorphically onto ℤ
+  φ: (Additive G) →+ ℤ
+  (hφ: Function.Surjective φ)
+
+-- Case 1 in Section 3.3 of Vikman, where the representation ρ(G) is infinite
+lemma rho_g_case_infinite (hr: (rho_g_group (G := G)).carrier.Infinite): Nonempty (Theorem3_1_Data (G := G)) := by
+  obtain ⟨
 
 -- TODO - use the fact that G is finitely generated
 instance countableG: Countable (Additive (MulOpposite G)) := by
