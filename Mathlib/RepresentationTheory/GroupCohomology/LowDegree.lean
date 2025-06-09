@@ -796,15 +796,17 @@ variable {k G A : Type u} [CommRing k] [Group G] [AddCommGroup A] [Module k A]
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
 `f : G → A` satisfying the 1-cocycle condition, produces a 1-cocycle for the representation on
 `A` induced by the `DistribMulAction`. -/
-@[simps]
-def oneCocyclesOfIsOneCocycle {f : G → A} (hf : IsOneCocycle f) :
-    oneCocycles (Rep.ofDistribMulAction k G A) :=
-  ⟨f, (mem_oneCocycles_iff (A := Rep.ofDistribMulAction k G A) f).2 hf⟩
+abbrev oneCocyclesOfIsOneCocycle {f : G → A} (hf : IsOneCocycle f) :
+    cocycles (Rep.ofDistribMulAction k G A) 1 :=
+  mkOneCocycles f <| (memOneCocycles_iff (A := Rep.ofDistribMulAction k G A) f).2 hf
 
-theorem isOneCocycle_of_mem_oneCocycles
-    (f : G → A) (hf : f ∈ oneCocycles (Rep.ofDistribMulAction k G A)) :
+theorem isOneCocycle_of_memOneCocycles
+    (f : G → A) (hf : MemOneCocycles (A := Rep.ofDistribMulAction k G A) f) :
     IsOneCocycle f :=
-  fun _ _ => (mem_oneCocycles_iff (A := Rep.ofDistribMulAction k G A) f).1 hf _ _
+  fun _ _ => (memOneCocycles_iff (A := Rep.ofDistribMulAction k G A) f).1 hf _ _
+
+@[deprecated (since := "2025-05-09")]
+alias isOneCocycle_of_mem_oneCocycles := isOneCocycle_of_memOneCocycles
 
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
 `f : G → A` satisfying the 1-coboundary condition, produces a 1-coboundary for the representation
@@ -823,14 +825,16 @@ theorem isOneCoboundary_of_mem_oneCoboundaries
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
 `f : G × G → A` satisfying the 2-cocycle condition, produces a 2-cocycle for the representation on
 `A` induced by the `DistribMulAction`. -/
-@[simps]
-def twoCocyclesOfIsTwoCocycle {f : G × G → A} (hf : IsTwoCocycle f) :
-    twoCocycles (Rep.ofDistribMulAction k G A) :=
-  ⟨f, (mem_twoCocycles_iff (A := Rep.ofDistribMulAction k G A) f).2 hf⟩
+abbrev twoCocyclesOfIsTwoCocycle {f : G × G → A} (hf : IsTwoCocycle f) :
+    cocycles (Rep.ofDistribMulAction k G A) 2 :=
+  mkTwoCocycles f <| (memTwoCocycles_iff (A := Rep.ofDistribMulAction k G A) f).2 hf
 
-theorem isTwoCocycle_of_mem_twoCocycles
-    (f : G × G → A) (hf : f ∈ twoCocycles (Rep.ofDistribMulAction k G A)) :
-    IsTwoCocycle f := (mem_twoCocycles_iff (A := Rep.ofDistribMulAction k G A) f).1 hf
+theorem isTwoCocycle_of_memTwoCocycles
+    (f : G × G → A) (hf : MemTwoCocycles (A := Rep.ofDistribMulAction k G A) f) :
+    IsTwoCocycle f := (memTwoCocycles_iff (A := Rep.ofDistribMulAction k G A) f).1 hf
+
+@[deprecated (since := "2025-05-09")]
+alias isTwoCocycle_of_mem_twoCocycles := isTwoCocycle_of_memTwoCocycles
 
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
 `f : G × G → A` satisfying the 2-coboundary condition, produces a 2-coboundary for the
@@ -928,15 +932,18 @@ variable {G M : Type} [Group G] [CommGroup M] [MulDistribMulAction G M]
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G → M` satisfying the multiplicative 1-cocycle condition, produces a 1-cocycle for the
 representation on `Additive M` induced by the `MulDistribMulAction`. -/
-@[simps]
-def oneCocyclesOfIsMulOneCocycle {f : G → M} (hf : IsMulOneCocycle f) :
-    oneCocycles (Rep.ofMulDistribMulAction G M) :=
-  ⟨Additive.ofMul ∘ f, (mem_oneCocycles_iff (A := Rep.ofMulDistribMulAction G M) f).2 hf⟩
+abbrev oneCocyclesOfIsMulOneCocycle {f : G → M} (hf : IsMulOneCocycle f) :
+    cocycles (Rep.ofMulDistribMulAction G M) 1 :=
+  mkOneCocycles (Additive.ofMul ∘ f) <|
+    (memOneCocycles_iff (A := Rep.ofMulDistribMulAction G M) f).2 hf
 
-theorem isMulOneCocycle_of_mem_oneCocycles
-    (f : G → M) (hf : f ∈ oneCocycles (Rep.ofMulDistribMulAction G M)) :
+theorem isMulOneCocycle_of_memOneCocycles
+    (f : G → M) (hf : MemOneCocycles (A := Rep.ofMulDistribMulAction G M) f) :
     IsMulOneCocycle (Additive.toMul ∘ f) :=
-  (mem_oneCocycles_iff (A := Rep.ofMulDistribMulAction G M) f).1 hf
+  (memOneCocycles_iff (A := Rep.ofMulDistribMulAction G M) f).1 hf
+
+@[deprecated (since := "2025-05-09")]
+alias isMulOneCocycle_of_mem_oneCocycles := isMulOneCocycle_of_memOneCocycles
 
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G → M` satisfying the multiplicative 1-coboundary condition, produces a
@@ -955,15 +962,18 @@ theorem isMulOneCoboundary_of_mem_oneCoboundaries
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G × G → M` satisfying the multiplicative 2-cocycle condition, produces a 2-cocycle for the
 representation on `Additive M` induced by the `MulDistribMulAction`. -/
-@[simps]
-def twoCocyclesOfIsMulTwoCocycle {f : G × G → M} (hf : IsMulTwoCocycle f) :
-    twoCocycles (Rep.ofMulDistribMulAction G M) :=
-  ⟨Additive.ofMul ∘ f, (mem_twoCocycles_iff (A := Rep.ofMulDistribMulAction G M) f).2 hf⟩
+abbrev twoCocyclesOfIsMulTwoCocycle {f : G × G → M} (hf : IsMulTwoCocycle f) :
+    cocycles (Rep.ofMulDistribMulAction G M) 2 :=
+  mkTwoCocycles (Additive.ofMul ∘ f) <|
+    (memTwoCocycles_iff (A := Rep.ofMulDistribMulAction G M) f).2 hf
 
-theorem isMulTwoCocycle_of_mem_twoCocycles
-    (f : G × G → M) (hf : f ∈ twoCocycles (Rep.ofMulDistribMulAction G M)) :
+theorem isMulTwoCocycle_of_memTwoCocycles
+    (f : G × G → M) (hf : MemTwoCocycles (A := Rep.ofMulDistribMulAction G M) f) :
     IsMulTwoCocycle (Additive.toMul ∘ f) :=
-  (mem_twoCocycles_iff (A := Rep.ofMulDistribMulAction G M) f).1 hf
+  (memTwoCocycles_iff (A := Rep.ofMulDistribMulAction G M) f).1 hf
+
+@[deprecated (since := "2025-05-09")]
+alias isMulTwoCocycle_of_mem_twoCocycles := isMulTwoCocycle_of_memTwoCocycles
 
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G × G → M` satisfying the multiplicative 2-coboundary condition, produces a
