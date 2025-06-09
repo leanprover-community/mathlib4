@@ -213,7 +213,8 @@ lemma card_supersets {α : Type*} [Fintype α] [DecidableEq α] {s : Finset α} 
 If `F₂` is an  `α, ι`-flag and `F₁` is a `β, ι`-flag, then we can count embeddings of `F₁` in `F₂`
 using `#(F₁ ↪f F₂) * (choose (‖α‖ - ‖β‖) (k - ‖β‖))` is equal to the sum of the number of embeddings
 `F₁ ↪f (F₂.induce t)` over subsets `t` of `α` of size `k`, that contain the image of `F₂.θ`, i.e.
-`t` contains all the labelled vertices of `F₂` (o/w there is no way to embed `F₁` in `F₂.induce t`).
+`t` contains all the labelled vertices of `F₂` (otherwise there are no embeddings of `F₁` into
+`F₂.induce t`, since any such embedding preserves the labels).
 -/
 lemma Flag.sum_card_embeddings_induce_eq (F₁ : Flag β ι) (F₂ : Flag α ι) [Fintype β] {k : ℕ}
   (hk : ‖β‖ ≤ k) : ∑ t : Finset α with #t = k,
@@ -223,8 +224,8 @@ lemma Flag.sum_card_embeddings_induce_eq (F₁ : Flag β ι) (F₂ : Flag α ι)
   calc
   _ = ∑ t : Finset α , ∑ e : F₁ ↪f F₂,
           ite (#t = k ∧ (∀ i, F₂.θ i ∈ t) ∧ Set.range e.toEmbedding ⊆ t) 1 0 := by
-    simp_rw [Fintype.card_congr <| Flag.induceEquiv .., dite_eq_ite, sum_filter,sum_boole,
-              RelEmbedding.coe_toEmbedding, Set.coe_setOf, Fintype.card_subtype]
+    simp_rw [Fintype.card_congr <| Flag.induceEquiv .., dite_eq_ite, sum_filter, sum_boole,
+              Set.coe_setOf, Fintype.card_subtype]
     congr with t
     split_ifs with h1 h2
     · congr with e
@@ -242,17 +243,17 @@ lemma Flag.sum_card_embeddings_induce_eq (F₁ : Flag β ι) (F₂ : Flag α ι)
   _ = _ := by
     rw [sum_comm, ← card_univ (α := (F₁ ↪f F₂)), card_eq_sum_ones, sum_mul, one_mul]
     congr with e
-    simp_rw [RelEmbedding.coe_toEmbedding, sum_boole]
-    have : ∀ (i : ι), F₂.θ i ∈ Set.range e.toRelEmbedding := fun i ↦ ⟨F₁.θ i, by simp [e.labels]⟩
+    simp_rw [ sum_boole]
+    have : ∀ (i : ι), F₂.θ i ∈ Set.range e.toEmbedding := fun i ↦ ⟨F₁.θ i, by simp [e.labels]⟩
     calc
-    _ =  #{t : Finset α | #t = k  ∧ Set.range e.toRelEmbedding ⊆ t} := by
+    _ =  #{t : Finset α | #t = k  ∧ Set.range e.toEmbedding ⊆ t} := by
       congr with t; simp only [and_congr_right_iff, and_iff_right_iff_imp]
       intro hk hs i
       exact hs <| this i
     _ = _ := by
-      have hs : #((Set.range e.toRelEmbedding).toFinset) = ‖β‖ := by
+      have hs : #((Set.range e.toEmbedding).toFinset) = ‖β‖ := by
         simp_rw [Set.toFinset_range]
-        exact card_image_of_injective _ e.toRelEmbedding.injective
+        exact card_image_of_injective _ e.toEmbedding.injective
       rw [← hs, ← card_supersets (hs ▸ hk)]
       congr with t
       constructor <;> intro ⟨ht1, ht2⟩ <;> exact ⟨ht1, fun x hx ↦ ht2 (by simpa using hx)⟩
