@@ -16,14 +16,13 @@ namespace Mon_Class
 
 open CategoryTheory MonoidalCategory MonoidalOpposite
 
-universe v u
-
 variable {C : Type*} [Category C] [MonoidalCategory C]
 
 section mop
 
 variable (M : C) [Mon_Class M]
 
+/-- If `M : C` is a monoid object, then `mop M : Cᴹᵒᵖ` too. -/
 @[simps!]
 instance mopMon_Class : Mon_Class (mop M) where
   mul := Mon_Class.mul.mop
@@ -39,6 +38,8 @@ instance mopMon_Class : Mon_Class (mop M) where
     simp
 
 variable {M} in
+/-- If `f` is a morphism of monoid objects internal to `C`,
+then `f.mop` is a morphism of monoid objects internal to `Cᴹᵒᵖ`. -/
 instance mop_isMon_Hom {N : C} [Mon_Class N]
     (f : M ⟶ N) [IsMon_Hom f] : IsMon_Hom f.mop where
   mul_hom := by
@@ -54,7 +55,8 @@ section unmop
 
 variable (M : Cᴹᵒᵖ) [Mon_Class M]
 
-@[simps -isSimp] -- removing isSimp causes a loop.
+/-- If `M : Cᴹᵒᵖ` is a monoid object, then `unmop M : C` too. -/
+@[simps -isSimp] -- not making them simp because it causes a loop.
 instance unmopMon_Class : Mon_Class (unmop M) where
   mul := Mon_Class.mul.unmop
   one := Mon_Class.one.unmop
@@ -69,6 +71,8 @@ instance unmopMon_Class : Mon_Class (unmop M) where
     simp
 
 variable {M} in
+/-- If `f` is a morphism of monoid objects internal to `Cᴹᵒᵖ`,
+so is `f.unmop`. -/
 instance unmop_isMon_Hom {N : Cᴹᵒᵖ} [Mon_Class N]
     (f : M ⟶ N) [IsMon_Hom f] : IsMon_Hom f.unmop where
   mul_hom := by
@@ -82,6 +86,8 @@ end unmop
 
 variable (C) in
 
+/-- The equivalence of categories between monoids internal to `C`
+and monoids internal to the monoidal opposite of `C`. -/
 @[simps!]
 def mopEquiv : Mon_ C ≌ Mon_ Cᴹᵒᵖ where
   functor :=
@@ -93,6 +99,9 @@ def mopEquiv : Mon_ C ≌ Mon_ Cᴹᵒᵖ where
   unitIso := .refl _
   counitIso := .refl _
 
+/-- The equivalence of categories between monoids internal to `C`
+and monoids internal to the monoidal opposite of `C` lies over
+the equivalence `C ≌ Cᴹᵒᵖ` via the forgetful functors. -/
 @[simps!]
 def mopEquivCompForgetIso :
     (mopEquiv C).functor ⋙ Mon_.forget Cᴹᵒᵖ ≅
