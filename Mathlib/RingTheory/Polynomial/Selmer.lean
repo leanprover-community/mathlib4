@@ -9,7 +9,7 @@ import Mathlib.GroupTheory.Perm.ClosureSwap
 import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
-import Mathlib.RingTheory.Invariant
+import Mathlib.RingTheory.Invariant.Basic
 
 /-!
 # Irreducibility of Selmer Polynomials
