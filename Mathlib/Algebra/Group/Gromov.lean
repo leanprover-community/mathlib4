@@ -1325,7 +1325,7 @@ theorem compact_rho_g: IsCompact (closure (rho_g (G := G))) := by
 -- of additive/multiplicative homomorphisms in the definition of 'rho_g'
 -- rho_g is already a group, so we should eventually prove that 'AddSubgroup.closure rho_g'
 -- contains exactly the same elements as 'rho_g'
-noncomputable def rho_g_group := AddSubgroup.closure (rho_g (G := G))
+noncomputable def rho_g_group := Subgroup.closure (rho_g (G := G))
 
 -- See the comment on 'rho_g_group - this is needed due to the fact that we're using
 -- AddSubgroup.closure, instead of defining 'rho_g' to be an AddSubgroup to start with
@@ -1353,7 +1353,7 @@ lemma rho_g_group_mem (g: GL_W): g ∈ rho_g_group (G := G) ↔ g ∈ (rho_g (G 
 -- Section 3.3 in Vikmanm, "Construction of a representation"
 -- This is a combination of Cartan's Theorem and Theorem 3.6, giving us the conclusion that
 -- ρ(G) contains an abelian subgroup of finite index
-lemma rho_g_contains_abelian: ∃ M: AddSubgroup ((rho_g_group (G := G))), IsAddCommutative M ∧ M.index ≠ 0 := by
+lemma rho_g_contains_abelian: ∃ M: Subgroup ((rho_g_group (G := G))), IsMulCommutative M ∧ M.index ≠ 0 := by
   sorry
 
 -- We need this to work with Finset
@@ -1364,7 +1364,7 @@ noncomputable instance w_map_DecidableEq: DecidableEq (W (G := G) →ₗ[ℂ] W 
   apply Classical.typeDecidableEq
 
 lemma rho_g_FG: (rho_g_group (G := G)).FG := by
-  simp [AddSubgroup.FG]
+  simp [Subgroup.FG]
   use (Finset.image GRepW (Finset.image (fun g => GRepW_base (G := G) g) S ))
   ext g
   rw [rho_g_group_mem]
