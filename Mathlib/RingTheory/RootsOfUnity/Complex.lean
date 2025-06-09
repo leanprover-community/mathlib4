@@ -182,7 +182,7 @@ Low order roots of unity
 
 open Complex
 
-lemma cyclotomic_polynomial_3_roots {K : Type*} [Field K] [NeZero (2 : K)] {z s : K}
+lemma cyclotomic_polynomial_3_roots_of_sq {K : Type*} [Field K] [NeZero (2 : K)] {z s : K}
     (hs : s * s = -3) : z ^ 2 + z + 1 = 0 ↔ z = -(1 / 2) + s / 2 ∨ z = -(1 / 2) - s / 2 := by
   suffices 1 * (z * z) + 1 * z + 1 = 0 ↔ z = -(1 / 2) + s / 2 ∨ z = -(1 / 2) - s / 2 by
     rw [← this]; ring_nf
@@ -201,7 +201,7 @@ lemma cubic_roots_of_unity_of_sq_eq {K : Type*} [Field K] [NeZero (2 : K)] {s : 
   have H (z : K) : z ^ 3 - 1 = (z - 1) * (z ^ 2 + z + 1) := by ring
   ext1 z
   simp only [Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
-  rw [← sub_eq_zero, H, ← cyclotomic_polynomial_3_roots hs, mul_eq_zero, sub_eq_zero]
+  rw [← sub_eq_zero, H, ← cyclotomic_polynomial_3_roots_of_sq hs, mul_eq_zero, sub_eq_zero]
 
 lemma cubic_roots_of_unity_of_sq_ne {K : Type*} [Field K] (h : ∀ s : K, s^2 ≠ -3) :
     {z : K | z^3 = 1} = {1} := by
@@ -265,9 +265,39 @@ example : {z : ℝ | z ^ 4 = 1} = {1, -1} := by
   subst e2
   simp_all only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, zero_eq_neg, one_ne_zero]
 
+#check DivisionMonoid
+
+lemma factorize_cyclotomic_polynomial_5 {K : Type*} [Field K] [NeZero (4 : K)] {s t₁ t₂ : K}
+    (hs : s * s = 5) (ht₁ : t₁ * t₁ = - 2 * (5 + s)) (ht₂ : t₂ * t₂ = -2 * (5 -s)) (z : K) :
+    z ^ 4 + z ^ 3 + z ^ 2 + z + 1 = (z - ((s - 1) / 4 +  t₁ / 4))
+                                  * (z - ((s - 1) / 4 -  t₁ / 4))
+                                  * (z - (-(s + 1) / 4 + t₂ / 4))
+                                  * (z - (-(s + 1) / 4 - t₂ / 4)) := by
+  have s4 : s ^ 4 = 25 := by
+    calc s ^ 4 = (s * s) * (s * s) := by ring_nf
+    _ = 5 * 5 := by rw [hs]
+    _ = 25 := by norm_num
+  ring_nf
+  rw [sq t₁, ht₁, sq t₂, ht₂, sq s, hs, s4]
+  ring_nf
+  rw [sq s, hs]
+  ring_nf
+  have p2 : (4 : K) ^ 2 = (16 : K) := by norm_num
+  have p3 : (4 : K) ^ 3 = (64 : K) := by norm_num
+  have p4 : (4 : K) ^ 4 = (256 : K) := by norm_num
+  rw [mul_assoc, ← p3, ← mul_pow]
+  rw [mul_assoc, ← p2, ← mul_pow]
+  rw [← p4, ← mul_pow _ 4]
+  rw [mul_assoc]
+  rw [inv_mul_cancel₀ four_ne_zero, one_pow, mul_one, one_pow, mul_one, one_pow]
+  ring_nf
 
 
-lemma factorize_cyclotomic_polynomial_5 (z : ℂ) :
+lemma cyclotomic_polynomial_5_roots_of_sq {K : Type*} [Field K] [NeZero (2 : K)] {z s : K}
+    (hs : s * s = -3) : z ^ 2 + z + 1 = 0 ↔ z = -(1 / 2) + s / 2 ∨ z = -(1 / 2) - s / 2 :=
+
+
+lemma factorize_cyclotomic_polynomial_5' (z : ℂ) :
     z ^ 4 + z ^ 3 + z ^ 2 + z + 1 = (z - ((√5 -1)/4 + √2 * √(5 + √5)/4 * I))
                                   * (z - ((√5 -1)/4 - √2 * √(5 + √5)/4 * I))
                                   * (z - (-(√5 + 1)/4 + √2 * √(5 - √5) / 4 * I))
@@ -295,7 +325,8 @@ example : {z : ℂ | z^5 = 1} = {1,
   ext z
   simp only [Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
   rw [← sub_eq_zero]
-  simp only [e1, factorize_cyclotomic_polynomial_5, neg_add_rev, mul_eq_zero, sub_eq_zero, or_assoc]
+  simp only [e1, factorize_cyclotomic_polynomial_5', neg_add_rev, mul_eq_zero, sub_eq_zero,
+    or_assoc]
 
 example (z : ℂ) : z ^ 6 - 1 = (z - 1) * (z + 1) * (z ^ 2 + z + 1) * (z ^ 2 - z + 1) := by
   ring
