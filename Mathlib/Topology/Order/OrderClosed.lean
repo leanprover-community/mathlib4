@@ -822,7 +822,7 @@ variable [TopologicalSpace α] [LinearOrder α] [OrderClosedTopology α]
 
 theorem isOpen_lt [TopologicalSpace β] {f g : β → α} (hf : Continuous f) (hg : Continuous g) :
     IsOpen { b | f b < g b } := by
-  simpa only [lt_iff_not_le] using (isClosed_le hg hf).isOpen_compl
+  simpa only [lt_iff_not_ge] using (isClosed_le hg hf).isOpen_compl
 
 theorem isOpen_lt_prod : IsOpen { p : α × α | p.1 < p.2 } :=
   isOpen_lt continuous_fst continuous_snd
