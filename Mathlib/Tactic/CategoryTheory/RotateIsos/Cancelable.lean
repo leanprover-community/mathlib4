@@ -11,13 +11,12 @@ import Batteries.Data.List.Basic
 # The `Cancelable` structure
 
 This files defines a `Cancelable` structure that stores the data of
-an expression, the data of the "inverse" of that expression (in category-theoretic) contexts.
+an expression, the data of the "inverse" (in the category-theoretic sense) of that expression.
 and proofs of the various lemmas used to move the expression "from the lhs to the rhs" using
 its inverse.
 This file also defines a global reference `cancelableFactoriesRef` which is a list
-that stores registered ways to check that a given expression is that of a `Cancelable`, and
-give such structure in that case, as way as helper functions that help inserting elements
-in this list.
+that stores registered ways to check that a given expression is that of a `Cancelable` and
+compute such structure when it is the case.
 
 This structure is part of the `rotate_isos` tactic.
 
@@ -28,8 +27,11 @@ open Lean Parser.Tactic Elab Command Elab.Tactic Meta _root_.CategoryTheory
 namespace Tactic.CategoryTheory.RotateIsos
 
 /-- An expression is cancelable if it has an expression `inv`, and if there are proofs
-that `∀ {h h'}, expr ≫ h = h' → h = inv ≫ h'`, `∀ {h h'}, h ≫ expr = h' → h = h' ≫ inv`,
-`∀ {h}, expr = h → 𝟙 _ = inv ≫ h` and `∀ {h}, expr = h → 𝟙 _ = h ≫ inv`.
+that
+- `∀ {h h'}, expr ≫ h = h' → h = inv ≫ h'`
+- `∀ {h h'}, h ≫ expr = h' → h = h' ≫ inv`
+- `∀ {h}, expr = h → 𝟙 _ = inv ≫ h`
+- `∀ {h}, expr = h → 𝟙 _ = h ≫ inv`.
 
 By working at the `Expr` level, we can actually make sente of cancelable morphisms
 both in the case of morphisms and isomorphism (using `Iso.trans` and `Iso.refl` instead of
@@ -57,7 +59,7 @@ abbrev CancelM := ReaderT (Expr → MetaM (Option Cancelable)) MetaM
 /-- Given an expression and a list of ways to produce a cancelable morphism from an
 expression, yields the first `Cancelable` structure we can derive from the expression by
 applying the given rules. The rules to produce a cancelable morphism may need (e.g for functors)
-to get the cancelable structure for subexpressions -/
+to get the cancelable structure for subexpressions. -/
 partial def getCancelable?Aux (e : Expr)
     (L : CancelM <| List <| Expr → Expr → MetaM (Option Cancelable)) :
     MetaM (Option Cancelable) := do
@@ -65,12 +67,12 @@ partial def getCancelable?Aux (e : Expr)
   (← L.run (getCancelable?Aux · L)).findSomeM? (do · e whnfR_e)
 
 /-- A reference that stores the currently registered ways of detecting whether or not
-a morphisms is cancelable, as well as priority informations. Higher priorities get tried first
-This is necessary to make it so we can later expand this
-list in extensions of the tactic (e.g, for monoidal contexts).
-Such functions in this list are intended to take as fist argument the expression to simplify,
+a morphisms is cancelable, as well as priority informations. Higher priorities get tried first.
+This is necessary to make it so that we can later expand this list in extensions of the tactic
+(e.g, for monoidal contexts).
+Functions in this list are intended to take as fist argument the expression to simplify,
 as second argument its weak head normal form at reducible transparency,
-and must return a `Cancelable` whose expression is the first argument.
+and are intended to return a `Cancelable` in which the `expr` is the first argument passed.
 
 Contract for this variable:
 - The list should remain sorted with respect to the second key.
@@ -87,22 +89,20 @@ initialize cancelableFactoriesRef :
 
 /-- Helper function that registers a function `f : Expr → Expr → MetaM (Option Cancelable)`
 as a way to construct `Cancelable` structure.
-This function does not check that this
-does not produce a duplicate entry and caller is responsible for ensuring first that they
-are not duplicating an entry.
+This function does not check that this do not produce a duplicate entry and caller is responsible
+for ensuring first that they are not duplicating an entry.
 See the docstring of `cancelableFactoriesRef` for an explanation on the intended behaviour
-of such functions. -/
+of functions passed as first argument. -/
 def insertCancelableFactory (f : Expr → Expr → MetaM (Option Cancelable)) (p : Nat) : IO Unit :=
   cancelableFactoriesRef.modify fun current =>
     return List.insertP (fun x => p ≥ x.2) (f, p) (← current)
 
 /-- Helper function that registers a function `f : Expr → Expr → CancelM (Option Cancelable)`
 as a way to construct `Cancelable` structure.
-This function does not check that this
-does not produce a duplicate entry and caller is responsible for ensuring first that they
-are not duplicating an entry.
+This function does not check that this do not produce a duplicate entry and caller is responsible
+for ensuring first that they are not duplicating an entry.
 See the docstring of `cancelableFactoriesRef` for an explanation on the intended behaviour
-of such functions. -/
+of functions passed as first argument. -/
 def insertCancelableFactory' (f : Expr → Expr → CancelM (Option Cancelable)) (p : Nat) :
       IO Unit :=
   cancelableFactoriesRef.modify fun current => do
@@ -110,18 +110,19 @@ def insertCancelableFactory' (f : Expr → Expr → CancelM (Option Cancelable))
     return List.insertP (fun x => p ≥ x.2) (fun e w => (f e w).run c, p) (← current)
 
 /-- Given an expression `e`, if `e` is an expression for a cancelable morphism, returns
-a `Cancelable` structure such that `e.expr` is the original expression, using the rules to do
-so that are currently in context. Otherwise, returns none. -/
+a `Cancelable` structure such that `e.expr` is the original expression using the rules to do
+so that are currently in context. Otherwise, returns `none`. -/
 def getCancelable? (e : Expr) : MetaM (Option Cancelable) := do
   getCancelable?Aux e <| (← cancelableFactoriesRef.get).bind (fun x => return x.map Prod.fst)
 
 open _root_.CategoryTheory in
-/-- Given an expression of type `f₁ ≫ ⋯ ≫ fₙ`or `f₁ ≪≫ ⋯ ≪≫ fₙ`,
+/-- Given an expression of type `f₁ ≫ ⋯ ≫ fₙ`or `f₁ ≪≫ ⋯ ≪≫ fₙ`
 assumed to be either fully left-associated or right-associated
 (depending on the argument `rev_assoc`),
-build a list of the cancellable morphisms (with their cancellation data) starting from
-the leftmost or rightmost (depending on the argument `rev`) until we hit a non-cancellable term.
-The function also returns a flag that is set if all of the morphisms are cancellable. -/
+build a list of the cancelable morphisms (with their cancellation data) starting from
+the leftmost or rightmost morphism (depending on the argument `rev`) until we hit a
+non-cancelable term.
+The function also returns a flag that is set if all of the morphisms are cancelable. -/
 partial def getCancelables (e : Expr) (rev rev_assoc: Bool) : MetaM (List Cancelable × Bool) := do
   match (← whnfR e).getAppFnArgs with
   | (``CategoryStruct.comp, #[_, _, _, _, _, l, r])
