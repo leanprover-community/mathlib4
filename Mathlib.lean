@@ -469,6 +469,7 @@ import Mathlib.Algebra.GroupWithZero.Pointwise.Finset
 import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Pointwise.Set.Card
 import Mathlib.Algebra.GroupWithZero.Prod
+import Mathlib.Algebra.GroupWithZero.ProdHom
 import Mathlib.Algebra.GroupWithZero.Semiconj
 import Mathlib.Algebra.GroupWithZero.Subgroup
 import Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise
@@ -4326,6 +4327,7 @@ import Mathlib.MeasureTheory.Integral.Periodic
 import Mathlib.MeasureTheory.Integral.Pi
 import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
+import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.NNReal
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Integral.SetToL1
@@ -4555,6 +4557,7 @@ import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.IsBoundedAtImInfty
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.MDifferentiable
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
 import Mathlib.NumberTheory.ModularForms.Identities
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.Bounds
