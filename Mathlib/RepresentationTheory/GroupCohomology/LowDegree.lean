@@ -267,7 +267,7 @@ def twoCocycles : Submodule k (G × G → A) := LinearMap.ker (dTwo A).hom
 
 variable {A}
 
-section oneCocycles'
+section NewOneCocycles
 
 instance : FunLike (cocycles A 1) G A :=
   ⟨iCocycles A 1 ≫ (oneCochainsIso A).hom, (ModuleCat.mono_iff_injective _).1 inferInstance⟩
@@ -380,8 +380,8 @@ def oneCocyclesIsoOfIsTrivial' [hA : A.IsTrivial] :
     left_inv _ := oneCocycles_ext' <| fun _ => by simp
     right_inv _ := by ext; simp }
 
-end oneCocycles'
-section oneCocycles
+end NewOneCocycles
+section OldOneCocycles
 
 instance : FunLike (oneCocycles A) G A := ⟨Subtype.val, Subtype.val_injective⟩
 
@@ -451,8 +451,8 @@ def oneCocyclesIsoOfIsTrivial [hA : A.IsTrivial] :
 @[deprecated (since := "2025-05-09")]
 noncomputable alias oneCocyclesLequivOfIsTrivial := oneCocyclesIsoOfIsTrivial
 
-end oneCocycles
-section twoCocycles'
+end OldOneCocycles
+section NewTwoCocycles
 
 instance : FunLike (cocycles A 2) (G × G) A :=
   ⟨iCocycles A 2 ≫ (twoCochainsIso A).hom, (ModuleCat.mono_iff_injective _).1 inferInstance⟩
@@ -538,8 +538,8 @@ theorem memTwoCocycles_dOne_apply (x : G → A) :
     MemTwoCocycles (dOne A x) :=
   congr($(dOne_comp_dTwo A) x)
 
-end twoCocycles'
-section twoCocycles
+end NewTwoCocycles
+section OldTwoCocycles
 
 instance : FunLike (twoCocycles A) (G × G) A := ⟨Subtype.val, Subtype.val_injective⟩
 
@@ -589,7 +589,7 @@ theorem dOne_apply_mem_twoCocycles (x : G → A) :
     dOne A x ∈ twoCocycles A :=
   dOne_comp_dTwo_apply _ _
 
-end twoCocycles
+end OldTwoCocycles
 end Cocycles
 
 section Coboundaries
