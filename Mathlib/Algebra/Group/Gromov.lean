@@ -1118,7 +1118,21 @@ lemma GRep_preserves_norm (g: G) (f: LipschitzH): ‖(GRep g) f‖ = ‖f‖ := 
 
 
 -- Takes in a linear map from W to W, and produces a *contiuous* linear map from W to W
-noncomputable def GRepW (m: W (G := G) →ₗ[ℂ] W (G := G)): GL_W (G := G) := LinearMap.toContinuousLinearMap m
+noncomputable def GRepW: (W (G := G) →ₗ[ℂ] W (G := G)) ≃ₗ[ℂ] GL_W (G := G) := LinearMap.toContinuousLinearMap
+
+noncomputable def GRepW_Multiplicative: (W (G := G) →ₗ[ℂ] W (G := G)) →* (Multiplicative (GL_W (G := G))) := {
+  toFun := fun f => Multiplicative.ofAdd (GRepW f)
+  map_one' := by
+    simp
+  map_mul' := by
+    intro f g
+    ext
+    simp [DFunLike.coe]
+    simp [ContinuousLinearMap.toFun_eq_coe]
+    simp [ContinuousLinearMap.mul_apply]
+}
+
+#synth AddGroup (GL_W (G := G))
 
 lemma quotient_norm_eq_norm (f: LipschitzH (G := G)): ‖(Submodule.Quotient.mk f : W)‖ = ‖f‖ := by
   --dsimp [norm]
@@ -1220,6 +1234,36 @@ theorem compact_rho_g: IsCompact (closure (rho_g (G := G))) := by
   rw [p_eq_a_rep] at norm_triangle
   rw [q_eq_b_rep] at norm_triangle
   exact norm_triangle
+
+-- The set ρ(G) considered as an additive subgroup of GL_W
+-- We use 'AddSubgroup.closure' to avoid needing to fight with compositions
+-- of additive/multiplicative homomorphisms in the definition of 'rho_g'
+-- rho_g is already a group, so we should eventually prove that 'AddSubgroup.closure rho_g'
+-- contains exactly the same elements as 'rho_g'
+noncomputable def rho_g_group := AddSubgroup.closure (rho_g (G := G))
+
+-- def GL_W_multiplicative: GL_W →* Multiplicative (GL_W (G := G)) := {
+--   toFun := fun f => Multiplicative.ofMul (f.toFun)
+--   map_one' := by
+--     ext
+--     simp [DFunLike.coe]
+--     simp [ContinuousLinearMap.toFun_eq_coe]
+--     simp [ContinuousLinearMap.one_apply]
+--   map_mul' := by
+--     intro f g
+--     ext
+--     simp [DFunLike.coe]
+--     simp [ContinuousLinearMap.toFun_eq_coe]
+--     simp [ContinuousLinearMap.mul_apply]
+-- }
+
+-- noncomputable def rho_g_group := Subgroup.map (N := (Multiplicative (GL_W (G := G)))) (G := G) ((GRepW (G := G)).toAddMonoidHom.comp (GRepW_base (G := G))) (H := ⊤)
+
+-- Section 3.3 in Vikmanm, "Construction of a representation"
+-- This is a combination of Cartan's Theorem and Theorem 3.6, giving us the conclusion that
+-- ρ(G) contains an abelian subgroup of finite index
+lemma rho_g_contains_abelian: ∃ M: AddSubgroup ((rho_g_group (G := G))), IsAddCommutative M ∧ M.index ≠ 0 := by
+  sorry
 
 -- TODO - use the fact that G is finitely generated
 instance countableG: Countable (Additive (MulOpposite G)) := by
