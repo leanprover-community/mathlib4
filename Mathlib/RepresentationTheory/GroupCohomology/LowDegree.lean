@@ -263,7 +263,7 @@ def oneCocycles : Submodule k (G → A) := LinearMap.ker (dOne A).hom
 @[deprecated "Use cocycles A 2 instead." (since := "2025-06-08")]
 def twoCocycles : Submodule k (G × G → A) := LinearMap.ker (dTwo A).hom
 
-section oneCocycles
+section OneCocycles
 
 instance : FunLike (cocycles A 1) G A :=
   ⟨iCocycles A 1 ≫ (oneCochainsIso A).hom, (ModuleCat.mono_iff_injective _).1 inferInstance⟩
@@ -381,9 +381,6 @@ def oneCocyclesIsoOfIsTrivial [hA : A.IsTrivial] :
 @[deprecated (since := "2025-05-09")]
 noncomputable alias oneCocyclesLequivOfIsTrivial := oneCocyclesIsoOfIsTrivial
 
-end oneCocycles
-section oneCocycles'
-
 @[deprecated (since := "2025-06-09")]
 alias oneCocycles.coe_mk := coe_mkOneCocycles
 
@@ -405,8 +402,8 @@ alias oneCocycles_map_mul_of_isTrivial := memOneCocycles_map_mul_of_isTrivial
 @[deprecated (since := "2025-06-09")]
 alias mem_oneCocycles_of_addMonoidHom := memOneCocycles_of_addMonoidHom
 
-end oneCocycles'
-section twoCocycles
+end OneCocycles
+section TwoCocycles
 
 instance : FunLike (cocycles A 2) (G × G) A :=
   ⟨iCocycles A 2 ≫ (twoCochainsIso A).hom, (ModuleCat.mono_iff_injective _).1 inferInstance⟩
@@ -493,9 +490,6 @@ theorem memTwoCocycles_dOne_apply (x : G → A) :
     MemTwoCocycles (dOne A x) :=
   congr($(dOne_comp_dTwo A) x)
 
-end twoCocycles
-section twoCocycles'
-
 @[deprecated (since := "2025-06-09")]
 alias twoCocycles.coe_mk := coe_mkTwoCocycles
 
@@ -520,8 +514,7 @@ alias twoCocycles_ρ_map_inv_sub_map_inv := memTwoCocycles_ρ_map_inv_sub_map_in
 @[deprecated (since := "2025-06-09")]
 alias dOne_apply_mem_twoCocycles := memTwoCocycles_dOne_apply
 
-end twoCocycles'
-
+end TwoCocycles
 end Cocycles
 
 section Coboundaries
@@ -538,7 +531,7 @@ def twoCoboundaries : Submodule k (G × G → A) :=
 
 variable {A}
 
-section oneCoboundaries
+section OneCoboundaries
 
 instance : FunLike (oneCoboundaries A) G A := ⟨Subtype.val, Subtype.val_injective⟩
 
@@ -556,6 +549,9 @@ theorem oneCoboundaries_ext {f₁ f₂ : oneCoboundaries A} (h : ∀ g : G, f₁
 lemma oneCoboundaries_memOneCocycles (x : oneCoboundaries A) : MemOneCocycles x := by
   rcases x with ⟨_, ⟨x, rfl⟩⟩
   exact memOneCocycles_dZero_apply x
+
+@[deprecated (since := "2025-06-09")]
+alias oneCoboundaries_le_oneCocycles := oneCoboundaries_memOneCocycles
 
 variable (A) in
 /-- Natural inclusion `B¹(G, A) →ₗ[k] Z¹(G, A)`. -/
@@ -590,43 +586,8 @@ theorem oneCoboundaries_eq_bot_of_isTrivial (A : Rep k G) [A.IsTrivial] :
   simp_rw [oneCoboundaries, dZero_eq_zero]
   exact LinearMap.range_eq_bot.2 rfl
 
-lemma oneCoboundaries_memOneCocycles (x : oneCoboundaries A) : MemOneCocycles x := by
-  rcases x with ⟨_, ⟨x, rfl⟩⟩
-  exact memOneCocycles_dZero_apply x
-
-end oneCoboundaries
-section oneCoboundaries'
-
-variable (A) in
-/-- Natural inclusion `B¹(G, A) →ₗ[k] Z¹(G, A)`. -/
-abbrev oneCoboundariesToOneCocycles' :
-    ModuleCat.of k (oneCoboundaries A) ⟶ cocycles A 1 :=
-  ((inhomogeneousCochains A).sc 1).liftCycles
-    (ModuleCat.ofHom (Submodule.subtype _) ≫ (oneCochainsIso A).inv) <| by
-    ext x
-    apply (ModuleCat.mono_iff_injective
-      ((inhomogeneousCochains A).XIsoOfEq (CochainComplex.next ℕ 1)).hom).1 inferInstance
-    have := congr($((inhomogeneousCochains A).d_comp_XIsoOfEq_hom
-      (CochainComplex.next _ 1) 1) ((oneCochainsIso A).inv x))
-    have := congr($((CommSq.horiz_inv ⟨comp_dOne_eq A⟩).w) x)
-    simp_all [-HomologicalComplex.d_comp_XIsoOfEq_hom, oneCoboundaries_memOneCocycles x]
-
-@[reassoc (attr := simp), elementwise (attr := simp)]
-theorem oneCoboundariesToOneCocycles_iOneCocycles :
-    oneCoboundariesToOneCocycles' A ≫ iOneCocycles A =
-      ModuleCat.ofHom (Submodule.subtype _) := by
-  ext x : 2
-  apply (ModuleCat.mono_iff_injective (oneCochainsIso A).inv).1 inferInstance
-  simpa [oneCoboundariesToOneCocycles', iOneCocycles, -ShortComplex.liftCycles_i] using
-    (congr($(((inhomogeneousCochains A).sc 1).liftCycles_i _ _) x))
-
-@[simp]
-lemma oneCoboundariesToOneCocycles_apply' (x : oneCoboundaries A) :
-    oneCoboundariesToOneCocycles A x = x.1 := by
-  simp [← iOneCocycles_apply]
-
-end oneCoboundaries'
-section twoCoboundaries
+end OneCoboundaries
+section TwoCoboundaries
 
 instance : FunLike (twoCoboundaries A) (G × G) A := ⟨Subtype.val, Subtype.val_injective⟩
 
@@ -645,6 +606,9 @@ theorem twoCoboundaries_ext {f₁ f₂ : twoCoboundaries A} (h : ∀ g h : G, f�
 lemma twoCoboundaries_memTwoCocycles (x : twoCoboundaries A) : MemTwoCocycles x := by
   rcases x with ⟨_, ⟨x, rfl⟩⟩
   exact memTwoCocycles_dOne_apply x
+
+@[deprecated (since := "2025-06-09")]
+alias twoCoboundaries_le_twoCocycles := twoCoboundaries_memTwoCocycles
 
 variable (A) in
 /-- Natural inclusion `B²(G, A) →ₗ[k] Z²(G, A)`. -/
@@ -674,42 +638,7 @@ lemma twoCoboundariesToTwoCocycles_apply (x : twoCoboundaries A) :
     twoCoboundariesToTwoCocycles A x = x.1 := by
   simp [← iTwoCocycles_apply]
 
-lemma twoCoboundaries_memTwoCocycles (x : twoCoboundaries A) : MemTwoCocycles x := by
-  rcases x with ⟨_, ⟨x, rfl⟩⟩
-  exact memTwoCocycles_dOne_apply x
-
-end twoCoboundaries
-section twoCoboundaries'
-
-variable (A) in
-/-- Natural inclusion `B²(G, A) →ₗ[k] Z²(G, A)`. -/
-abbrev twoCoboundariesToTwoCocycles' :
-    ModuleCat.of k (twoCoboundaries A) ⟶ cocycles A 2 :=
-  ((inhomogeneousCochains A).sc 2).liftCycles
-    (ModuleCat.ofHom (Submodule.subtype _) ≫ (twoCochainsIso A).inv) <| by
-    ext x
-    apply (ModuleCat.mono_iff_injective
-      ((inhomogeneousCochains A).XIsoOfEq (CochainComplex.next ℕ 2)).hom).1 inferInstance
-    have := congr($((inhomogeneousCochains A).d_comp_XIsoOfEq_hom
-      (CochainComplex.next _ 2) 2) ((twoCochainsIso A).inv x))
-    have := congr($((CommSq.horiz_inv ⟨comp_dTwo_eq A⟩).w) x)
-    simp_all [-HomologicalComplex.d_comp_XIsoOfEq_hom, twoCoboundaries_memTwoCocycles x]
-
-@[reassoc (attr := simp), elementwise (attr := simp)]
-theorem twoCoboundariesToTwoCocycles_iTwoCocycles :
-    twoCoboundariesToTwoCocycles' A ≫ iTwoCocycles A =
-      ModuleCat.ofHom (Submodule.subtype _) := by
-  ext x : 2
-  apply (ModuleCat.mono_iff_injective (twoCochainsIso A).inv).1 inferInstance
-  simpa [twoCoboundariesToTwoCocycles, iTwoCocycles, -ShortComplex.liftCycles_i] using
-    (congr($(((inhomogeneousCochains A).sc 2).liftCycles_i _ _) x))
-
-@[simp]
-lemma twoCoboundariesToTwoCocycles_apply' (x : twoCoboundaries A) :
-    twoCoboundariesToTwoCocycles' A x = x.1 := by
-  simp [← iTwoCocycles_apply]
-
-end twoCoboundaries'
+end TwoCoboundaries
 end Coboundaries
 
 section IsCocycle
