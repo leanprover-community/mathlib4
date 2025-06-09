@@ -40,8 +40,6 @@ Assume `B / A` is a finite extension of Dedekind domains, `K` is the fraction ri
 
 open Algebra
 
-attribute [local instance] FractionRing.liftAlgebra
-
 namespace Ideal
 
 open scoped Classical in
