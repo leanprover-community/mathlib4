@@ -285,8 +285,8 @@ lemma map_nonsingular (hf : Function.Bijective f) :
     (W.map f).toAffine.Nonsingular (f x) (f y) ↔ W.Nonsingular x y := by
   refine ⟨?_, fun h => h.map f⟩
   simp_rw [Nonsingular, map_equation _ _ hf.left, map_polynomialX, map_polynomialY,
-    map_mapRingHom_evalEval, ← Set.image_pair f, ← Ideal.map_span, Ideal.map_span_pair_eq_top hf,
-    imp_self]
+    map_mapRingHom_evalEval, ← Set.image_pair f, ← Ideal.map_span,
+    Ideal.map_eq_top_of_bijective f hf, imp_self]
 
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B] [Algebra S B]
   [IsScalarTower R S B] (f : A →ₐ[S] B) (x y : A)

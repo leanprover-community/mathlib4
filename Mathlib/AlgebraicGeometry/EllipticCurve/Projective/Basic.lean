@@ -43,6 +43,15 @@ All definitions and lemmas for Weierstrass curves in projective coordinates live
 abbreviation for `WeierstrassCurve` that can be converted using `WeierstrassCurve.toProjective`.
 This can be converted into `WeierstrassCurve.Affine` using `WeierstrassCurve.Projective.toAffine`.
 
+For ease of naming, the following conventions will be used in theorems about nonsingular projective
+points `P` and `Q` on a Weierstrass curve `W` over a commutative ring `R`.
+* `X_eq` is the condition `P x * Q z = Q x * P z`.
+* `X_ne` is the condition `IsUnit <| P x * Q z - Q x * P z` (which is equivalent to
+  `P x * Q z ≠ Q x * P z` if `R` is a field).
+* `Y_eq` is the condition `P y * Q z = Q y * P z` assuming `X_eq`.
+* `Y_ne` is the condition `IsUnit <| P y * Q z - Q y * P z` (which is equivalent to
+  `P y * Q z ≠ Q y * P z` if `R` is a field) assuming `X_eq`.
+
 Whenever possible, all changes to documentation and naming of definitions and theorems should be
 mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Basic.lean`.
 
@@ -196,23 +205,23 @@ lemma equiv_some_of_Z_ne_zero {P : F × F × F} (hPz : P z ≠ 0) : P ≈ (P x /
   convert equiv_some_of_isUnit_Z hPz.isUnit using 1
   simp_rw [Units.val_inv_eq_inv_val, IsUnit.unit_spec, div_eq_mul_inv]
 
-lemma X_eq_of_isUnit_Z {P Q : R × R × R} (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z) :
+lemma X_eq_iff_of_isUnit_Z {P Q : R × R × R} (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z) :
     P x * Q z = Q x * P z ↔ P x * hPz.unit⁻¹ = Q x * hQz.unit⁻¹ :=
   (Units.mul_inv_eq_mul_inv_iff _ _ hPz.unit hQz.unit).symm
 
-@[deprecated (since := "2025-05-26")] alias X_eq_iff := X_eq_of_isUnit_Z
+@[deprecated (since := "2025-05-26")] alias X_eq_iff := X_eq_iff_of_isUnit_Z
 
-lemma X_eq_of_Z_ne_zero {P Q : F × F × F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
+lemma X_eq_iff_of_Z_ne_zero {P Q : F × F × F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
     P x * Q z = Q x * P z ↔ P x / P z = Q x / Q z :=
   (div_eq_div_iff hPz hQz).symm
 
-lemma Y_eq_of_isUnit_Z {P Q : R × R × R} (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z) :
+lemma Y_eq_iff_of_isUnit_Z {P Q : R × R × R} (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z) :
     P y * Q z = Q y * P z ↔ P y * hPz.unit⁻¹ = Q y * hQz.unit⁻¹ :=
   (Units.mul_inv_eq_mul_inv_iff _ _ hPz.unit hQz.unit).symm
 
-@[deprecated (since := "2025-05-26")] alias Y_eq_iff := Y_eq_of_isUnit_Z
+@[deprecated (since := "2025-05-26")] alias Y_eq_iff := Y_eq_iff_of_isUnit_Z
 
-lemma Y_eq_of_Z_ne_zero {P Q : F × F × F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
+lemma Y_eq_iff_of_Z_ne_zero {P Q : F × F × F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
     P y * Q z = Q y * P z ↔ P y / P z = Q y / Q z :=
   (div_eq_div_iff hPz hQz).symm
 
@@ -564,7 +573,7 @@ lemma map_nonsingular (hf : Function.Bijective f) :
   refine ⟨?_, fun h => h.map f⟩
   simp_rw [Nonsingular, map_equation _ hf.left, map_polynomialX, map_polynomialY, map_polynomialZ,
     eval_map, map_eq, ← map_fin3, ← eval₂_comp, ← Set.image_pair f, ← Set.image_insert_eq,
-    ← Ideal.map_span, Ideal.map_span_triple_eq_top hf, imp_self]
+    ← Ideal.map_span, Ideal.map_eq_top_of_bijective f hf, imp_self]
 
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B] [Algebra S B]
   [IsScalarTower R S B] (f : A →ₐ[S] B) (P : A × A × A)

@@ -46,6 +46,19 @@ coordinates will be defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine/P
 * `WeierstrassCurve.Affine.equation_add`: addition preserves the Weierstrass equation.
 * `WeierstrassCurve.Affine.nonsingular_add`: addition preserves the nonsingular condition.
 
+## Implementation notes
+
+For ease of naming, the following conventions will be used in theorems about nonsingular affine
+points `(x₁, y₁)` and `(x₂, y₂)` on a Weierstrass curve `W` over a commutative ring `R`.
+* `X_eq` is the condition `x₁ = x₂`.
+* `X_ne` is the condition `IsUnit <| x₁ - x₂` (which is equivalent to `x₁ ≠ x₂` if `R` is a field).
+* `Y_eq` is the condition `y₁ = y₂` assuming `X_eq`.
+* `Y_ne` is the condition `IsUnit <| y₁ - y₂` (which is equivalent to `y₁ ≠ y₂` if `R` is a field)
+  assuming `X_eq`.
+* `Y_eq'` is the condition `y₁ = W.negY x₂ y₂` assuming `X_eq`.
+* `Y_ne'` is the condition `IsUnit <| y₁ - W.negY x₂ y₂` (which is equivalent to `y₁ ≠ W.negY x₂ y₂`
+  if `R` is a field) assuming `X_eq`.
+
 ## References
 
 [J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
@@ -120,15 +133,26 @@ lemma evalEval_negPolynomial (x y : R) : W'.negPolynomial.evalEval x y = W'.negY
 
 @[deprecated (since := "2025-03-05")] alias eval_negPolynomial := evalEval_negPolynomial
 
-lemma Y_eq_of_X_eq [NoZeroDivisors R] {x₁ x₂ y₁ y₂ : R} (h₁ : W'.Equation x₁ y₁)
-    (h₂ : W'.Equation x₂ y₂) (hx : x₁ = x₂) : y₁ = y₂ ∨ y₁ = W'.negY x₂ y₂ := by
-  rw [equation_iff] at h₁ h₂
-  rw [← sub_eq_zero, ← sub_eq_zero (a := y₁), ← mul_eq_zero, negY]
-  linear_combination (norm := (rw [hx]; ring1)) h₁ - h₂
+lemma Y_sub_Y_mul_Y_sub_negY {x₁ x₂ y₁ y₂ : R} (h₁ : W'.Equation x₁ y₁) (h₂ : W'.Equation x₂ y₂)
+    (hx : x₁ = x₂) : (y₁ - y₂) * (y₁ - W'.negY x₂ y₂) = 0 := by
+  linear_combination (norm := (rw [hx, negY]; ring1))
+    (equation_iff ..).mp h₁ - (equation_iff ..).mp h₂
 
-lemma Y_eq_of_Y_ne [NoZeroDivisors R] {x₁ x₂ y₁ y₂ : R} (h₁ : W'.Equation x₁ y₁)
-    (h₂ : W'.Equation x₂ y₂) (hx : x₁ = x₂) (hy : y₁ ≠ W'.negY x₂ y₂) : y₁ = y₂ :=
-  (Y_eq_of_X_eq h₁ h₂ hx).resolve_right hy
+lemma Y_eq_or_Y_eq' [NoZeroDivisors R] {x₁ x₂ y₁ y₂ : R} (h₁ : W'.Equation x₁ y₁)
+    (h₂ : W'.Equation x₂ y₂) (hx : x₁ = x₂) : y₁ = y₂ ∨ y₁ = W'.negY x₂ y₂ := by
+  rw [← sub_eq_zero, ← sub_eq_zero (a := y₁), ← mul_eq_zero, Y_sub_Y_mul_Y_sub_negY h₁ h₂ hx]
+
+@[deprecated (since := "2025-05-26")] alias Y_eq_of_X_eq := Y_eq_or_Y_eq'
+
+lemma Y_eq'_of_Y_ne {x₁ x₂ y₁ y₂ : R} (h₁ : W'.Equation x₁ y₁) (h₂ : W'.Equation x₂ y₂)
+    (hx : x₁ = x₂) (hy : IsUnit <| y₁ - y₂) : y₁ = W'.negY x₂ y₂ :=
+  sub_eq_zero.mp <| hy.mul_right_eq_zero.mp <| Y_sub_Y_mul_Y_sub_negY h₁ h₂ hx
+
+lemma Y_eq_of_Y_ne' {x₁ x₂ y₁ y₂ : R} (h₁ : W'.Equation x₁ y₁) (h₂ : W'.Equation x₂ y₂)
+    (hx : x₁ = x₂) (hy : IsUnit <| y₁ - W'.negY x₂ y₂) : y₁ = y₂ :=
+  sub_eq_zero.mp <| hy.mul_left_eq_zero.mp <| Y_sub_Y_mul_Y_sub_negY h₁ h₂ hx
+
+@[deprecated (since := "2025-05-26")] alias Y_eq_of_Y_ne := Y_eq_of_Y_ne'
 
 lemma equation_neg (x y : R) : W'.Equation x (W'.negY x y) ↔ W'.Equation x y := by
   rw [equation_iff, equation_iff, negY]
@@ -162,45 +186,55 @@ variable (W) in
 Weierstrass curve `W`.
 
 If `x₁ ≠ x₂`, then this line is the secant of `W` through `(x₁, y₁)` and `(x₂, y₂)`, and has slope
-`(y₁ - y₂) / (x₁ - x₂)`. Otherwise, if `y₁ ≠ -y₁ - a₁x₁ - a₃`, then this line is the tangent of `W`
-at `(x₁, y₁) = (x₂, y₂)`, and has slope `(3x₁² + 2a₂x₁ + a₄ - a₁y₁) / (2y₁ + a₁x₁ + a₃)`. Otherwise,
-this line is vertical, in which case this returns the value `0`.
+`(y₁ - y₂) / (x₁ - x₂)`. Otherwise, if `y₁ ≠ -y₂ - a₁x₂ - a₃`, then this line is the tangent of `W`
+at `(x₁, y₁) = (x₂, y₂)`, and has slope `(3x₁² + 2a₂x₁ + a₄ - a₁y₁) / (y₁ - (-y₂ - a₁x₂ - a₃))`.
+Otherwise, this line is vertical, in which case this returns the value `0`.
+
+Note that this definition is only mathematically accurate if `x₁ = x₂` whenever `x₁ - x₂` is not a
+unit, and if `y₁ = -y₂ - a₁x₂ - a₃` whenever `y₁ - (-y₂ - a₁x₂ - a₃)` is not a unit.
 
 This depends on `W`, and has argument order: `x₁`, `x₂`, `y₁`, `y₂`. -/
-noncomputable def slope (x₁ x₂ y₁ y₂ : F) : F :=
-  if x₁ = x₂ then if y₁ = W.negY x₂ y₂ then 0
-    else (3 * x₁ ^ 2 + 2 * W.a₂ * x₁ + W.a₄ - W.a₁ * y₁) / (y₁ - W.negY x₁ y₁)
-  else (y₁ - y₂) / (x₁ - x₂)
+noncomputable def slope (x₁ x₂ y₁ y₂ : R) : R :=
+  if hx : IsUnit <| x₁ - x₂ then (y₁ - y₂) * hx.unit⁻¹ else if hy : IsUnit <| y₁ - W'.negY x₂ y₂
+    then (3 * x₁ ^ 2 + 2 * W'.a₂ * x₁ + W'.a₄ - W'.a₁ * y₁) * hy.unit⁻¹ else 0
 
-@[simp]
-lemma slope_of_Y_eq {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy : y₁ = W.negY x₂ y₂) :
-    W.slope x₁ x₂ y₁ y₂ = 0 := by
-  rw [slope, if_pos hx, if_pos hy]
+lemma slope_of_X_ne {x₁ x₂ y₁ y₂ : R} (hx : IsUnit <| x₁ - x₂) :
+    W'.slope x₁ x₂ y₁ y₂ = (y₁ - y₂) * hx.unit⁻¹ := by
+  rw [slope, dif_pos hx]
 
-@[simp]
-lemma slope_of_Y_ne' {x₂ y₁ y₂ : F} (hy : ¬y₁ = -y₂ - W.a₁ * x₂ - W.a₃) :
-    W.slope x₂ x₂ y₁ y₂ =
-      (3 * x₂ ^ 2 + 2 * W.a₂ * x₂ + W.a₄ - W.a₁ * y₁) / (y₁ - (-y₁ - W.a₁ * x₂ - W.a₃)) := by
-  simp [slope, hy]
-
-lemma slope_of_Y_ne {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy : y₁ ≠ W.negY x₂ y₂) :
-    W.slope x₁ x₂ y₁ y₂ =
-      (3 * x₁ ^ 2 + 2 * W.a₂ * x₁ + W.a₄ - W.a₁ * y₁) / (y₁ - W.negY x₁ y₁) := by
-  simp_all
-
-@[simp]
-lemma slope_of_X_ne {x₁ x₂ y₁ y₂ : F} (hx : x₁ ≠ x₂) :
+lemma slope_of_X_ne_of_isField {x₁ x₂ y₁ y₂ : F} (hx : x₁ ≠ x₂) :
     W.slope x₁ x₂ y₁ y₂ = (y₁ - y₂) / (x₁ - x₂) := by
-  rw [slope, if_neg hx]
+  rw [← sub_ne_zero, ← isUnit_iff_ne_zero] at hx
+  rw [slope_of_X_ne hx, Units.val_inv_eq_inv_val, hx.unit_spec, div_eq_mul_inv]
 
-lemma slope_of_Y_ne_eq_evalEval {x₁ x₂ y₁ y₂ : F} (hx : x₁ = x₂) (hy : y₁ ≠ W.negY x₂ y₂) :
+lemma slope_of_Y_ne' [Nontrivial R] {x₁ x₂ y₁ y₂ : R} (hx : x₁ = x₂)
+    (hy : IsUnit <| y₁ - W'.negY x₂ y₂) :
+    W'.slope x₁ x₂ y₁ y₂ = (3 * x₁ ^ 2 + 2 * W'.a₂ * x₁ + W'.a₄ - W'.a₁ * y₁) * hy.unit⁻¹ := by
+  rw [slope, hx, sub_self, dif_neg not_isUnit_zero, dif_pos hy]
+
+@[deprecated (since := "2025-05-26")] alias slope_of_Y_ne := slope_of_Y_ne'
+
+lemma slope_of_Y_ne'_of_isField {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
+    (hx : x₁ = x₂) (hy : y₁ ≠ W.negY x₂ y₂) : W.slope x₁ x₂ y₁ y₂ =
+      (3 * x₁ ^ 2 + 2 * W.a₂ * x₁ + W.a₄ - W.a₁ * y₁) / (y₁ - W.negY x₁ y₁) := by
+  rw [← sub_ne_zero, ← isUnit_iff_ne_zero] at hy
+  simp_rw [slope_of_Y_ne' hx hy, hx, Y_eq_of_Y_ne' h₁ h₂ hx hy, Units.val_inv_eq_inv_val,
+    IsUnit.unit_spec, div_eq_mul_inv]
+
+lemma slope_of_Y_ne'_eq_evalEval {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
+    (hx : x₁ = x₂) (hy : y₁ ≠ W.negY x₂ y₂) :
     W.slope x₁ x₂ y₁ y₂ = -W.polynomialX.evalEval x₁ y₁ / W.polynomialY.evalEval x₁ y₁ := by
-  rw [slope_of_Y_ne hx hy, evalEval_polynomialX, neg_sub]
-  congr 1
-  rw [negY, evalEval_polynomialY]
-  ring1
+  rw [slope_of_Y_ne'_of_isField h₁ h₂ hx hy, evalEval_polynomialX, neg_sub, ← Y_sub_negPolynomial,
+    evalEval_sub, evalEval_X, evalEval_negPolynomial]
 
-@[deprecated (since := "2025-03-05")] alias slope_of_Y_ne_eq_eval := slope_of_Y_ne_eq_evalEval
+@[deprecated (since := "2025-03-05")] alias slope_of_Y_ne_eq_evalEval := slope_of_Y_ne'_eq_evalEval
+@[deprecated (since := "2025-03-05")] alias slope_of_Y_ne_eq_eval := slope_of_Y_ne'_eq_evalEval
+
+lemma slope_of_Y_eq' [Nontrivial R] {x₁ x₂ y₁ y₂ : R} (hx : x₁ = x₂) (hy : y₁ = W'.negY x₂ y₂) :
+    W'.slope x₁ x₂ y₁ y₂ = 0 := by
+  rw [slope, hx, sub_self, dif_neg not_isUnit_zero, hy, sub_self, dif_neg not_isUnit_zero]
+
+@[deprecated (since := "2025-05-26")] alias slope_of_Y_eq := slope_of_Y_eq'
 
 /-! ## Addition formulae in affine coordinates -/
 
@@ -258,134 +292,132 @@ This depends on `W`, and has argument order: `x₁`, `x₂`, `y₁`, `ℓ`. -/
 def addY (x₁ x₂ y₁ ℓ : R) : R :=
   W'.negY (W'.addX x₁ x₂ ℓ) (W'.negAddY x₁ x₂ y₁ ℓ)
 
-lemma addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
-    (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) : W.addPolynomial x₁ y₁ (W.slope x₁ x₂ y₁ y₂) =
-      -((X - C x₁) * (X - C x₂) * (X - C (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂))) := by
+lemma addPolynomial_slope [Nontrivial R] {x₁ x₂ y₁ y₂ : R} (h₁ : W'.Equation x₁ y₁)
+    (h₂ : W'.Equation x₂ y₂) (hxy : x₁ = x₂ → IsUnit (y₁ - W'.negY x₂ y₂))
+    (hxx : x₁ ≠ x₂ → IsUnit (x₁ - x₂)) : W'.addPolynomial x₁ y₁ (W'.slope x₁ x₂ y₁ y₂) =
+      -((X - C x₁) * (X - C x₂) * (X - C (W'.addX x₁ x₂ <| W'.slope x₁ x₂ y₁ y₂))) := by
   rw [addPolynomial_eq, neg_inj, Cubic.prod_X_sub_C_eq, Cubic.toPoly_injective]
   by_cases hx : x₁ = x₂
-  · have hy : y₁ ≠ W.negY x₂ y₂ := fun h => hxy ⟨hx, h⟩
-    rcases hx, Y_eq_of_Y_ne h₁ h₂ hx hy with ⟨rfl, rfl⟩
-    rw [equation_iff] at h₁ h₂
-    rw [slope_of_Y_ne rfl hy]
-    rw [negY, ← sub_ne_zero] at hy
+  · have hy : IsUnit <| y₁ - W'.negY x₂ y₂ := hxy hx
+    rcases hx, Y_eq_of_Y_ne' h₁ h₂ hx hy with ⟨rfl, rfl⟩
+    rw [slope_of_Y_ne' rfl hy]
     ext
     · rfl
-    · simp_rw [addX]
-      ring1
-    · field_simp [hy]
-      ring1
-    · linear_combination (norm := (field_simp [hy]; ring1)) -h₁
-  · rw [equation_iff] at h₁ h₂
+    · linear_combination (norm := (rw [addX]; ring1))
+    · linear_combination (norm := (simp_rw [evalEval_polynomialX, addX, negY]; ring1))
+        W'.polynomialX.evalEval x₁ y₁ * hy.mul_val_inv
+    · linear_combination (norm := (simp_rw [evalEval_polynomialX, addX, negY]; ring1))
+        -(equation_iff ..).mp h₂ - W'.polynomialX.evalEval x₁ y₁ * x₁ * hy.mul_val_inv
+  · replace hx : IsUnit <| x₁ - x₂ := hxx hx
     rw [slope_of_X_ne hx]
-    rw [← sub_eq_zero] at hx
     ext
     · rfl
-    · simp_rw [addX]
-      ring1
-    · apply mul_right_injective₀ hx
-      linear_combination (norm := (field_simp [hx]; ring1)) h₂ - h₁
-    · apply mul_right_injective₀ hx
-      linear_combination (norm := (field_simp [hx]; ring1)) x₂ * h₁ - x₁ * h₂
+    · linear_combination (norm := (rw [addX]; ring1))
+    · linear_combination (norm := (rw [addX]; ring1)) -↑hx.unit⁻¹ * (equation_iff ..).mp h₁
+        + ↑hx.unit⁻¹ * (equation_iff ..).mp h₂ + ((y₁ - y₂) ^ 2 * ↑hx.unit⁻¹
+        + W'.a₁ * y₁ - (W'.a₂ + x₁ + x₂) * (x₁ + x₂) + x₁ * x₂ - W'.a₄) * hx.mul_val_inv
+    · linear_combination (norm := (rw [addX]; ring1)) x₂ * ↑hx.unit⁻¹ * (equation_iff ..).mp h₁
+        - x₁ * ↑hx.unit⁻¹ * (equation_iff ..).mp h₂ + (-x₁ * (y₁ - y₂) ^ 2 * ↑hx.unit⁻¹
+        + (W'.a₃ + y₁) * y₁ + (W'.a₂ + x₁ + x₂) * x₁ * x₂ - W'.a₆) * hx.mul_val_inv
 
-lemma C_addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
-    (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) : C (W.addPolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) =
-      -(C (X - C x₁) * C (X - C x₂) * C (X - C (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂))) := by
-  rw [addPolynomial_slope h₁ h₂ hxy]
+lemma C_addPolynomial_slope [Nontrivial R] {x₁ x₂ y₁ y₂ : R} (h₁ : W'.Equation x₁ y₁)
+    (h₂ : W'.Equation x₂ y₂) (hxy : x₁ = x₂ → IsUnit (y₁ - W'.negY x₂ y₂))
+    (hxx : x₁ ≠ x₂ → IsUnit (x₁ - x₂)) : C (W'.addPolynomial x₁ y₁ <| W'.slope x₁ x₂ y₁ y₂) =
+      -(C (X - C x₁) * C (X - C x₂) * C (X - C (W'.addX x₁ x₂ <| W'.slope x₁ x₂ y₁ y₂))) := by
+  rw [addPolynomial_slope h₁ h₂ hxy hxx]
   map_simp
 
-lemma derivative_addPolynomial_slope {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁)
-    (h₂ : W.Equation x₂ y₂) (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
-    derivative (W.addPolynomial x₁ y₁ <| W.slope x₁ x₂ y₁ y₂) =
-      -((X - C x₁) * (X - C x₂) + (X - C x₁) * (X - C (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂)) +
-          (X - C x₂) * (X - C (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂))) := by
-  rw [addPolynomial_slope h₁ h₂ hxy]
+lemma derivative_addPolynomial_slope [Nontrivial R] {x₁ x₂ y₁ y₂ : R} (h₁ : W'.Equation x₁ y₁)
+    (h₂ : W'.Equation x₂ y₂) (hxy : x₁ = x₂ → IsUnit (y₁ - W'.negY x₂ y₂))
+    (hxx : x₁ ≠ x₂ → IsUnit (x₁ - x₂)) :
+    derivative (W'.addPolynomial x₁ y₁ <| W'.slope x₁ x₂ y₁ y₂) =
+      -((X - C x₁) * (X - C x₂) + (X - C x₁) * (X - C (W'.addX x₁ x₂ <| W'.slope x₁ x₂ y₁ y₂)) +
+          (X - C x₂) * (X - C (W'.addX x₁ x₂ <| W'.slope x₁ x₂ y₁ y₂))) := by
+  rw [addPolynomial_slope h₁ h₂ hxy hxx]
   derivative_simp
   ring1
-
-lemma nonsingular_negAdd_of_isUnit_eval_derivative {x₁ x₂ y₁ ℓ : R}
-    (hx' : W'.Equation (W'.addX x₁ x₂ ℓ) (W'.negAddY x₁ x₂ y₁ ℓ))
-    (hx : IsUnit <| (W'.addPolynomial x₁ y₁ ℓ).derivative.eval (W'.addX x₁ x₂ ℓ)) :
-    W'.Nonsingular (W'.addX x₁ x₂ ℓ) (W'.negAddY x₁ x₂ y₁ ℓ) := by
-  rw [Nonsingular, and_iff_right hx', negAddY, polynomialX, polynomialY]
-  eval_simp
-  contrapose! hx
-  rw [addPolynomial, linePolynomial, polynomial]
-  eval_simp
-  derivative_simp
-  eval_simp
-  rw [Nat.cast_ofNat]
-  contrapose! hx
-  exact Ideal.eq_top_of_isUnit_mem _ (Ideal.mem_span_pair.mpr ⟨1, ℓ, by ring1⟩) hx
-
-@[deprecated (since := "2025-05-26")] alias nonsingular_negAdd_of_eval_derivative_ne_zero :=
-  nonsingular_negAdd_of_isUnit_eval_derivative
 
 lemma equation_add_iff (x₁ x₂ y₁ ℓ : R) : W'.Equation (W'.addX x₁ x₂ ℓ) (W'.negAddY x₁ x₂ y₁ ℓ) ↔
     (W'.addPolynomial x₁ y₁ ℓ).eval (W'.addX x₁ x₂ ℓ) = 0 := by
   rw [Equation, negAddY, addPolynomial, linePolynomial, polynomial]
   eval_simp
 
-lemma equation_negAdd {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
-    (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) : W.Equation
-      (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂) (W.negAddY x₁ x₂ y₁ <| W.slope x₁ x₂ y₁ y₂) := by
-  rw [equation_add_iff, addPolynomial_slope h₁ h₂ hxy]
+lemma equation_negAdd [Nontrivial R] {x₁ x₂ y₁ y₂ : R} (h₁ : W'.Equation x₁ y₁)
+    (h₂ : W'.Equation x₂ y₂) (hxy : x₁ = x₂ → IsUnit (y₁ - W'.negY x₂ y₂))
+    (hxx : x₁ ≠ x₂ → IsUnit (x₁ - x₂)) : W'.Equation
+      (W'.addX x₁ x₂ <| W'.slope x₁ x₂ y₁ y₂) (W'.negAddY x₁ x₂ y₁ <| W'.slope x₁ x₂ y₁ y₂) := by
+  rw [equation_add_iff, addPolynomial_slope h₁ h₂ hxy hxx]
   eval_simp
   rw [neg_eq_zero, sub_self, mul_zero]
 
-lemma equation_add {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁) (h₂ : W.Equation x₂ y₂)
-    (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
-    W.Equation (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂) (W.addY x₁ x₂ y₁ <| W.slope x₁ x₂ y₁ y₂) :=
-  (equation_neg ..).mpr <| equation_negAdd h₁ h₂ hxy
+lemma equation_add [Nontrivial R] {x₁ x₂ y₁ y₂ : R} (h₁ : W'.Equation x₁ y₁)
+    (h₂ : W'.Equation x₂ y₂) (hxy : x₁ = x₂ → IsUnit (y₁ - W'.negY x₂ y₂))
+    (hxx : x₁ ≠ x₂ → IsUnit (x₁ - x₂)) : W'.Equation
+      (W'.addX x₁ x₂ <| W'.slope x₁ x₂ y₁ y₂) (W'.addY x₁ x₂ y₁ <| W'.slope x₁ x₂ y₁ y₂) :=
+  (equation_neg ..).mpr <| equation_negAdd h₁ h₂ hxy hxx
+
+lemma nonsingular_negAdd_of_isUnit_eval_derivative {x₁ x₂ y₁ ℓ : R}
+    (hx' : W'.Equation (W'.addX x₁ x₂ ℓ) (W'.negAddY x₁ x₂ y₁ ℓ))
+    (hx : IsUnit <| (W'.addPolynomial x₁ y₁ ℓ).derivative.eval <| W'.addX x₁ x₂ ℓ) :
+    W'.Nonsingular (W'.addX x₁ x₂ ℓ) (W'.negAddY x₁ x₂ y₁ ℓ) := by
+  revert hx
+  rw [addPolynomial, linePolynomial, polynomial, Nonsingular, and_iff_right hx', negAddY,
+    polynomialX, polynomialY]
+  eval_simp
+  derivative_simp
+  eval_simp
+  exact Ideal.eq_top_of_isUnit_mem _ <| Ideal.mem_span_pair.mpr ⟨1, ℓ, by ring1⟩
+
+@[deprecated (since := "2025-05-26")] alias nonsingular_negAdd_of_eval_derivative_ne_zero :=
+  nonsingular_negAdd_of_isUnit_eval_derivative
 
 lemma nonsingular_negAdd {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁) (h₂ : W.Nonsingular x₂ y₂)
-    (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) : W.Nonsingular
+    (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) : W.Nonsingular
       (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂) (W.negAddY x₁ x₂ y₁ <| W.slope x₁ x₂ y₁ y₂) := by
-  by_cases hx₁ : W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂) = x₁
-  · rwa [negAddY, hx₁, sub_self, mul_zero, zero_add]
-  · by_cases hx₂ : W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂) = x₂
-    · by_cases hx : x₁ = x₂
-      · subst hx
-        contradiction
-      · rwa [negAddY, ← neg_sub, mul_neg, hx₂, slope_of_X_ne hx,
-          div_mul_cancel₀ _ <| sub_ne_zero_of_ne hx, neg_sub, sub_add_cancel]
-    · apply nonsingular_negAdd_of_isUnit_eval_derivative <| equation_negAdd h₁.left h₂.left hxy
-      rw [derivative_addPolynomial_slope h₁.left h₂.left hxy]
+  by_cases hx₁ : x₁ = W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
+  · rwa [negAddY, ← hx₁, sub_self, mul_zero, zero_add]
+  · by_cases hx₂ : x₂ = W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
+    · rwa [negAddY, ← hx₂, ← neg_sub, mul_neg, slope_of_X_ne (sub_ne_zero.mpr <| hx₂ ▸ hx₁).isUnit,
+        mul_assoc, IsUnit.val_inv_mul, mul_one, neg_sub, sub_add_cancel]
+    · replace hxy := fun hx => (sub_ne_zero.mpr <| hxy hx).isUnit
+      have hxx : x₁ ≠ x₂ → IsUnit (x₁ - x₂) := fun hx => (sub_ne_zero.mpr hx).isUnit
+      apply nonsingular_negAdd_of_isUnit_eval_derivative <| equation_negAdd h₁.left h₂.left hxy hxx
+      rw [derivative_addPolynomial_slope h₁.left h₂.left hxy hxx]
       eval_simp
-      simp_rw [sub_self, mul_zero, add_zero]
-      exact ((sub_ne_zero_of_ne hx₁).isUnit.mul (sub_ne_zero_of_ne hx₂).isUnit).neg
+      simp_rw [sub_self, mul_zero, add_zero, IsUnit.neg_iff, IsUnit.mul_iff, IsUnit.sub_iff]
+      exact ⟨(sub_ne_zero.mpr hx₁).isUnit, (sub_ne_zero.mpr hx₂).isUnit⟩
 
 lemma nonsingular_add {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingular x₁ y₁) (h₂ : W.Nonsingular x₂ y₂)
-    (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
-    W.Nonsingular (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂) (W.addY x₁ x₂ y₁ <| W.slope x₁ x₂ y₁ y₂) :=
+    (hxy : x₁ = x₂ → y₁ ≠ W.negY x₂ y₂) : W.Nonsingular
+      (W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂) (W.addY x₁ x₂ y₁ <| W.slope x₁ x₂ y₁ y₂) :=
   (nonsingular_neg ..).mpr <| nonsingular_negAdd h₁ h₂ hxy
 
 /-- The formula `x(P₁ + P₂) = x(P₁ - P₂) - ψ(P₁)ψ(P₂) / (x(P₂) - x(P₁))²`,
 where `ψ(x,y) = 2y + a₁x + a₃`. -/
-lemma addX_eq_addX_negY_sub {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂) :
-    W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂) = W.addX x₁ x₂ (W.slope x₁ x₂ y₁ <| W.negY x₂ y₂) -
-      (y₁ - W.negY x₁ y₁) * (y₂ - W.negY x₂ y₂) / (x₂ - x₁) ^ 2 := by
-  simp_rw [slope_of_X_ne hx, addX, negY, ← neg_sub x₁, neg_sq]
-  field_simp [sub_ne_zero.mpr hx]
-  ring1
+lemma addX_eq_addX_negY_sub {x₁ x₂ y₁ y₂ : R} (hx : IsUnit <| x₁ - x₂) :
+    W'.addX x₁ x₂ (W'.slope x₁ x₂ y₁ y₂) = W'.addX x₁ x₂ (W'.slope x₁ x₂ y₁ <| W'.negY x₂ y₂) -
+      (y₁ - W'.negY x₁ y₁) * (y₂ - W'.negY x₂ y₂) * hx.unit⁻¹ ^ 2 := by
+  linear_combination (norm := (simp_rw [slope_of_X_ne hx, addX, negY]; ring1))
+    W'.a₁ * (y₂ - W'.negY x₂ y₂) * ↑hx.unit⁻¹ * hx.mul_val_inv
 
 /-- The formula `y(P₁)(x(P₂) - x(P₃)) + y(P₂)(x(P₃) - x(P₁)) + y(P₃)(x(P₁) - x(P₂)) = 0`,
 assuming that `P₁ + P₂ + P₃ = O`. -/
-lemma cyclic_sum_Y_mul_X_sub_X {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂) :
-    let x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
-    y₁ * (x₂ - x₃) + y₂ * (x₃ - x₁) + W.negAddY x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂) * (x₁ - x₂) = 0 := by
-  simp_rw [slope_of_X_ne hx, negAddY, addX]
-  field_simp [sub_ne_zero.mpr hx]
-  ring1
+lemma cyclic_sum_Y_mul_X_sub_X {x₁ x₂ y₁ y₂ : R} (hx : IsUnit <| x₁ - x₂) :
+    y₁ * (x₂ - W'.addX x₁ x₂ (W'.slope x₁ x₂ y₁ y₂))
+      + y₂ * (W'.addX x₁ x₂ (W'.slope x₁ x₂ y₁ y₂) - x₁)
+      + W'.negAddY x₁ x₂ y₁ (W'.slope x₁ x₂ y₁ y₂) * (x₁ - x₂) = 0 := by
+  linear_combination (norm := (rw [slope_of_X_ne hx, negAddY, addX]; ring1))
+    (y₁ - y₂) * (W'.addX x₁ x₂ (W'.slope x₁ x₂ y₁ y₂) - x₁) * hx.mul_val_inv
 
-/-- The formula `ψ(P₁ + P₂) = (ψ(P₂)(x(P₁) - x(P₃)) - ψ(P₁)(x(P₂) - x(P₃))) / (x(P₂) - x(P₁))`,
+/-- The formula `ψ(P₁ + P₂) = (ψ(P₁)(x(P₂) - x(P₃)) - ψ(P₂)(x(P₁) - x(P₃))) / (x(P₁) - x(P₂))`,
 where `ψ(x,y) = 2y + a₁x + a₃`. -/
-lemma addY_sub_negY_addY {x₁ x₂ : F} (y₁ y₂ : F) (hx : x₁ ≠ x₂) :
-    let x₃ := W.addX x₁ x₂ (W.slope x₁ x₂ y₁ y₂)
-    let y₃ := W.addY x₁ x₂ y₁ (W.slope x₁ x₂ y₁ y₂)
-    y₃ - W.negY x₃ y₃ =
-      ((y₂ - W.negY x₂ y₂) * (x₁ - x₃) - (y₁ - W.negY x₁ y₁) * (x₂ - x₃)) / (x₂ - x₁) := by
-  simp_rw [addY, negY, eq_div_iff (sub_ne_zero.mpr hx.symm)]
-  linear_combination (norm := ring1) 2 * cyclic_sum_Y_mul_X_sub_X y₁ y₂ hx
+lemma addY_sub_negY_addY {x₁ x₂ y₁ y₂ : R} (hx : IsUnit <| x₁ - x₂) :
+    W'.addY x₁ x₂ y₁ (W'.slope x₁ x₂ y₁ y₂) -
+        W'.negY (W'.addX x₁ x₂ <| W'.slope x₁ x₂ y₁ y₂) (W'.addY x₁ x₂ y₁ <| W'.slope x₁ x₂ y₁ y₂) =
+      ((y₁ - W'.negY x₁ y₁) * (x₂ - W'.addX x₁ x₂ (W'.slope x₁ x₂ y₁ y₂)) -
+          (y₂ - W'.negY x₂ y₂) * (x₁ - W'.addX x₁ x₂ (W'.slope x₁ x₂ y₁ y₂))) * hx.unit⁻¹ := by
+  linear_combination (norm := (simp_rw [slope_of_X_ne hx, addY, negAddY, addX, negY]; ring1))
+    (y₁ - W'.negY (W'.addX x₁ x₂ <| W'.slope x₁ x₂ y₁ y₂) y₁) * hx.mul_val_inv
 
 /-! ## Maps and base changes -/
 
@@ -422,16 +454,17 @@ lemma map_addY :
     (W'.map f).toAffine.addY (f x₁) (f x₂) (f y₁) (f ℓ) = f (W'.toAffine.addY x₁ x₂ y₁ ℓ) := by
   simp_rw [addY, map_negAddY, map_addX, map_negY]
 
-lemma map_slope (f : F →+* K) (x₁ x₂ y₁ y₂ : F) :
-    (W.map f).toAffine.slope (f x₁) (f x₂) (f y₁) (f y₂) = f (W.slope x₁ x₂ y₁ y₂) := by
-  by_cases hx : x₁ = x₂
-  · by_cases hy : y₁ = W.negY x₂ y₂
-    · rw [slope_of_Y_eq (congr_arg f hx) <| by rw [hy, map_negY], slope_of_Y_eq hx hy, map_zero]
-    · rw [slope_of_Y_ne (congr_arg f hx) <| map_negY f x₂ y₂ ▸ fun h => hy <| f.injective h,
-        map_negY, slope_of_Y_ne hx hy]
-      map_simp
-  · rw [slope_of_X_ne fun h => hx <| f.injective h, slope_of_X_ne hx]
+lemma map_slope [IsLocalHom f] :
+    (W'.map f).toAffine.slope (f x₁) (f x₂) (f y₁) (f y₂) = f (W'.slope x₁ x₂ y₁ y₂) := by
+  have isUnit_f {x y : R} : IsUnit (f x - f y) ↔ IsUnit (x - y) := map_sub f .. ▸ isUnit_map_iff ..
+  by_cases hx : IsUnit <| x₁ - x₂
+  · simp_rw [slope_of_X_ne <| isUnit_f.mpr hx, ← map_sub, hx.unit_inv_map, slope_of_X_ne hx]
     map_simp
+  · rw [slope, dif_neg <| hx ∘ isUnit_f.mp, map_negY, slope, dif_neg hx]
+    by_cases hy : IsUnit <| y₁ - W'.negY x₂ y₂
+    · simp_rw [dif_pos <| isUnit_f.mpr hy, dif_pos hy, ← map_sub, hy.unit_inv_map]
+      map_simp
+    · rw [dif_neg <| hy ∘ isUnit_f.mp, dif_neg hy, map_zero]
 
 variable [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Algebra R B] [Algebra S B]
   [IsScalarTower R S B] (f : A →ₐ[S] B) (x y x₁ y₁ x₂ y₂ ℓ : A)

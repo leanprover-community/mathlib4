@@ -175,35 +175,6 @@ theorem map_span (s : Set R) : map f (span s) = span (f '' s) := by
 
 variable {f I J K L}
 
-theorem map_span_singleton_eq_top (hf : Function.Bijective f) (x : R) :
-    map f (span {x}) = ⊤ ↔ span {x} = ⊤ := by
-  refine ⟨?_, fun h => ?_⟩
-  · simp_rw [eq_top_iff_one, map_span, Set.image_singleton, mem_span_singleton']
-    rintro ⟨a, h⟩
-    rcases hf.right a with ⟨a, rfl⟩
-    exact ⟨a, by rwa [← map_mul, map_eq_one_iff f hf.left] at h⟩
-  · rw [h, map_top]
-
-theorem map_span_pair_eq_top (hf : Function.Bijective f) (x y : R) :
-    map f (span {x, y}) = ⊤ ↔ span {x, y} = ⊤ := by
-  refine ⟨?_, fun h => ?_⟩
-  · simp_rw [eq_top_iff_one, map_span, Set.image_pair, mem_span_pair]
-    rintro ⟨a, b, h⟩
-    rcases hf.right a, hf.right b with ⟨⟨a, rfl⟩, ⟨b, rfl⟩⟩
-    exact ⟨a, b, by rwa [← map_mul, ← map_mul, ← map_add, map_eq_one_iff f hf.left] at h⟩
-  · rw [h, map_top]
-
-theorem map_span_triple_eq_top (hf : Function.Bijective f) (x y z : R) :
-    map f (span {x, y, z}) = ⊤ ↔ span {x, y, z} = ⊤ := by
-  refine ⟨?_, fun h => ?_⟩
-  · simp_rw [eq_top_iff_one, map_span, Set.image_insert_eq, Set.image_singleton, mem_span_insert,
-      mem_span_singleton']
-    rintro ⟨a, _, ⟨b, _, ⟨c, rfl⟩, rfl⟩, h⟩
-    rcases hf.right a, hf.right b, hf.right c with ⟨⟨a, rfl⟩, ⟨b, rfl⟩, ⟨c, rfl⟩⟩
-    exact ⟨a, _, ⟨b, _, ⟨c, rfl⟩, rfl⟩, by rwa [← map_mul, ← map_mul, ← map_mul, ← map_add,
-      ← map_add, eq_comm, map_eq_one_iff f hf.left, eq_comm] at h⟩
-  · rw [h, map_top]
-
 theorem map_le_of_le_comap : I ≤ K.comap f → I.map f ≤ K :=
   (gc_map_comap f).l_le
 
