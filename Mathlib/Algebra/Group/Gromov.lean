@@ -1281,6 +1281,9 @@ def rho_g := GRepW '' ( Set.range (fun g => GRepW_base (G := G) g) )
 
 instance GL_W_proper: ProperSpace (GL_W (G := G)) := by
   sorry
+
+-- We want the topology to come from our metric space 'GL_W_psuedoMetric', not from the units
+attribute [-instance] Units.instTopologicalSpaceUnits
 --   apply FiniteDimensional.proper_rclike (K := ℂ)
 
 -- In the Vikman paper, rho_g is precompact, and the closure of rho_g is a compact subgroup
@@ -1294,7 +1297,7 @@ theorem compact_rho_g: IsCompact (closure (rho_g (G := G))) := by
   simp at hq
   obtain ⟨a, p_eq_a_rep⟩ := hp
   obtain ⟨b, q_eq_b_rep⟩ := hq
-  rw [dist_eq_norm_sub]
+  simp [dist]
   rw [ContinuousLinearMap.norm_def]
   apply csInf_le (by
     simp [BddBelow]
@@ -1307,7 +1310,7 @@ theorem compact_rho_g: IsCompact (closure (rho_g (G := G))) := by
   simp
   intro x
   rw [sub_eq_add_neg]
-  have norm_triangle := norm_add_le (p x) (- q x)
+  have norm_triangle := norm_add_le (p.val x) (- q.val x)
   simp only [norm_neg] at norm_triangle
   rw [← p_eq_a_rep, ← q_eq_b_rep] at norm_triangle
   rw [GLW_preseves_norm] at norm_triangle
