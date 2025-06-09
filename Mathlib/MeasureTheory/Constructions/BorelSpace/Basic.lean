@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Group.Arithmetic
-import Mathlib.Topology.GDelta.UniformSpace
+import Mathlib.Topology.GDelta.MetrizableSpace
 import Mathlib.Topology.Instances.EReal.Lemmas
 import Mathlib.Topology.Instances.Rat
 
@@ -293,6 +293,10 @@ theorem IsCompact.measure_closure [R1Space γ] {K : Set γ} (hK : IsCompact K) (
 @[measurability]
 theorem measurableSet_closure : MeasurableSet (closure s) :=
   isClosed_closure.measurableSet
+
+@[measurability]
+theorem measurableSet_frontier : MeasurableSet (frontier s) :=
+  measurableSet_closure.diff measurableSet_interior
 
 theorem measurable_of_isOpen {f : δ → γ} (hf : ∀ s, IsOpen s → MeasurableSet (f ⁻¹' s)) :
     Measurable f := by
@@ -587,7 +591,7 @@ end
 
 section BorelSpace
 
-variable [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] [TopologicalSpace β]
+variable [TopologicalSpace α] [mα : MeasurableSpace α] [BorelSpace α] [mβ : TopologicalSpace β]
   [MeasurableSpace β] [BorelSpace β] [TopologicalSpace γ] [MeasurableSpace γ] [BorelSpace γ]
   [MeasurableSpace δ]
 
@@ -691,5 +695,21 @@ instance EReal.measurableSpace : MeasurableSpace EReal :=
 
 instance EReal.borelSpace : BorelSpace EReal :=
   ⟨rfl⟩
+
+namespace MeasureTheory.Measure.IsFiniteMeasureOnCompacts
+
+variable {mα} in
+protected theorem map (μ : Measure α) [IsFiniteMeasureOnCompacts μ] (f : α ≃ₜ β) :
+    IsFiniteMeasureOnCompacts (μ.map f) := by
+  refine ⟨fun K hK ↦ ?_⟩
+  rw [← f.toMeasurableEquiv_coe, MeasurableEquiv.map_apply]
+  exact IsCompact.measure_lt_top (f.isCompact_preimage.2 hK)
+
+variable {mβ} in
+protected theorem comap (μ : Measure β) [IsFiniteMeasureOnCompacts μ] (f : α ≃ₜ β) :
+    IsFiniteMeasureOnCompacts (μ.comap f) :=
+  IsFiniteMeasureOnCompacts.comap' μ f.continuous f.measurableEmbedding
+
+end MeasureTheory.Measure.IsFiniteMeasureOnCompacts
 
 end BorelSpace

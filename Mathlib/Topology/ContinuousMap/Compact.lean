@@ -262,9 +262,9 @@ end
 
 section
 
-variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
+variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
-instance normedSpace : NormedSpace 𝕜 C(α, E) where
+instance normedSpace {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E] : NormedSpace 𝕜 C(α, E) where
   norm_smul_le := norm_smul_le
 
 section
@@ -314,13 +314,13 @@ theorem linearIsometryBoundedOfCompact_of_compact_toEquiv :
 
 end
 
-@[simp] lemma nnnorm_smul_const {R β : Type*} [NormedAddCommGroup β] [NormedDivisionRing R]
-    [Module R β] [IsBoundedSMul R β] (f : C(α, R)) (b : β) :
+@[simp] lemma nnnorm_smul_const {R β : Type*} [SeminormedAddCommGroup β] [SeminormedRing R]
+    [Module R β] [NormSMulClass R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖₊ = ‖f‖₊ * ‖b‖₊ := by
   simp only [nnnorm_eq_iSup_nnnorm, smul_apply', const_apply, nnnorm_smul, iSup_mul]
 
-@[simp] lemma norm_smul_const {R β : Type*} [NormedAddCommGroup β] [NormedDivisionRing R]
-    [Module R β] [IsBoundedSMul R β] (f : C(α, R)) (b : β) :
+@[simp] lemma norm_smul_const {R β : Type*} [SeminormedAddCommGroup β] [SeminormedRing R]
+    [Module R β] [NormSMulClass R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖ = ‖f‖ * ‖b‖ := by
   simp only [← coe_nnnorm, NNReal.coe_mul, nnnorm_smul_const]
 
@@ -371,34 +371,13 @@ end ContinuousMap
 
 section CompLeft
 
-variable (X : Type*) {𝕜 β γ : Type*} [TopologicalSpace X] [CompactSpace X]
-  [NontriviallyNormedField 𝕜]
+@[deprecated (since := "2025-05-18")]
+alias ContinuousLinearMap.compLeftContinuousCompact :=
+  ContinuousLinearMap.compLeftContinuous
 
-variable [SeminormedAddCommGroup β] [NormedSpace 𝕜 β] [SeminormedAddCommGroup γ] [NormedSpace 𝕜 γ]
-
-open ContinuousMap
-
-/-- Postcomposition of continuous functions into a normed module by a continuous linear map is a
-continuous linear map.
-Transferred version of `ContinuousLinearMap.compLeftContinuousBounded`,
-upgraded version of `ContinuousLinearMap.compLeftContinuous`,
-similar to `LinearMap.compLeft`. -/
-protected def ContinuousLinearMap.compLeftContinuousCompact (g : β →L[𝕜] γ) :
-    C(X, β) →L[𝕜] C(X, γ) :=
-  (linearIsometryBoundedOfCompact X γ 𝕜).symm.toLinearIsometry.toContinuousLinearMap.comp <|
-    (g.compLeftContinuousBounded X).comp <|
-      (linearIsometryBoundedOfCompact X β 𝕜).toLinearIsometry.toContinuousLinearMap
-
-@[simp]
-theorem ContinuousLinearMap.toLinear_compLeftContinuousCompact (g : β →L[𝕜] γ) :
-    (g.compLeftContinuousCompact X : C(X, β) →ₗ[𝕜] C(X, γ)) = g.compLeftContinuous 𝕜 X := by
-  ext f
-  rfl
-
-@[simp]
-theorem ContinuousLinearMap.compLeftContinuousCompact_apply (g : β →L[𝕜] γ) (f : C(X, β)) (x : X) :
-    g.compLeftContinuousCompact X f x = g (f x) :=
-  rfl
+@[deprecated (since := "2025-05-18")]
+alias ContinuousLinearMap.compLeftContinuousCompact_apply :=
+  ContinuousLinearMap.compLeftContinuous_apply
 
 end CompLeft
 

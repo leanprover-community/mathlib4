@@ -30,10 +30,10 @@ modules, morphisms and equivalences, as well as various lemmas to make these def
 ## Notation
 
 Working over a fixed commutative ring `R`, we introduce the notations:
- * `L →ₗ⁅R⁆ L'` for a morphism of Lie algebras,
- * `L ≃ₗ⁅R⁆ L'` for an equivalence of Lie algebras,
- * `M →ₗ⁅R,L⁆ N` for a morphism of Lie algebra modules `M`, `N` over a Lie algebra `L`,
- * `M ≃ₗ⁅R,L⁆ N` for an equivalence of Lie algebra modules `M`, `N` over a Lie algebra `L`.
+* `L →ₗ⁅R⁆ L'` for a morphism of Lie algebras,
+* `L ≃ₗ⁅R⁆ L'` for an equivalence of Lie algebras,
+* `M →ₗ⁅R,L⁆ N` for a morphism of Lie algebra modules `M`, `N` over a Lie algebra `L`,
+* `M ≃ₗ⁅R,L⁆ N` for an equivalence of Lie algebra modules `M`, `N` over a Lie algebra `L`.
 
 ## Implementation notes
 
@@ -553,6 +553,8 @@ theorem coe_toLieHom (e : L₁ ≃ₗ⁅R⁆ L₂) : ⇑(e : L₁ →ₗ⁅R⁆ 
 @[simp]
 theorem coe_toLinearEquiv (e : L₁ ≃ₗ⁅R⁆ L₂) : ⇑(e : L₁ ≃ₗ[R] L₂) = e :=
   rfl
+
+@[simp] theorem coe_coe (e : L₁ ≃ₗ⁅R⁆ L₂) : ⇑e.toLieHom = e := rfl
 
 @[deprecated (since := "2024-12-30")] alias coe_to_linearEquiv := coe_toLinearEquiv
 

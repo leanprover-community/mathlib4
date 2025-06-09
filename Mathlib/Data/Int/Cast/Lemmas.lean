@@ -136,8 +136,8 @@ variable [Ring α] {a x y : α}
 @[simp] lemma intCast_mul_left (h : SemiconjBy a x y) (n : ℤ) : SemiconjBy (n * a) x y :=
   SemiconjBy.mul_left (Int.cast_commute _ _) h
 
-@[simp] lemma intCast_mul_intCast_mul (h : SemiconjBy a x y) (m n : ℤ) :
-    SemiconjBy (m * a) (n * x) (n * y) := (h.intCast_mul_left m).intCast_mul_right n
+lemma intCast_mul_intCast_mul (h : SemiconjBy a x y) (m n : ℤ) :
+    SemiconjBy (m * a) (n * x) (n * y) := by simp [h]
 
 end SemiconjBy
 
@@ -154,11 +154,11 @@ end NonAssocRing
 section Ring
 variable [Ring α] {a b : α}
 
-@[simp] lemma intCast_mul_right (h : Commute a b) (m : ℤ) : Commute a (m * b) :=
-  SemiconjBy.intCast_mul_right h m
+lemma intCast_mul_right (h : Commute a b) (m : ℤ) : Commute a (m * b) := by
+  simp [h]
 
-@[simp] lemma intCast_mul_left (h : Commute a b) (m : ℤ) : Commute (m  * a) b :=
-  SemiconjBy.intCast_mul_left h m
+lemma intCast_mul_left (h : Commute a b) (m : ℤ) : Commute (m * a) b := by
+  simp [h]
 
 lemma intCast_mul_intCast_mul (h : Commute a b) (m n : ℤ) : Commute (m * a) (n * b) :=
   SemiconjBy.intCast_mul_intCast_mul h m n
@@ -213,8 +213,6 @@ theorem Int.castAddHom_int : Int.castAddHom ℤ = AddMonoidHom.id ℤ :=
 namespace MonoidHom
 
 variable {M : Type*} [Monoid M]
-
-open Multiplicative
 
 @[ext]
 theorem ext_mint {f g : Multiplicative ℤ →* M} (h1 : f (ofAdd 1) = g (ofAdd 1)) : f = g :=
@@ -272,19 +270,17 @@ def zmultiplesHom : β ≃ (ℤ →+ β) where
 
 /-- Monoid homomorphisms from `Multiplicative ℤ` are defined by the image
 of `Multiplicative.ofAdd 1`. -/
-@[to_additive existing]
 def zpowersHom : α ≃ (Multiplicative ℤ →* α) :=
   ofMul.trans <| (zmultiplesHom _).trans <| AddMonoidHom.toMultiplicative''
 
-lemma zmultiplesHom_apply (x : β) (n : ℤ) : zmultiplesHom β x n = n • x := rfl
+@[simp] lemma zmultiplesHom_apply (x : β) (n : ℤ) : zmultiplesHom β x n = n • x := rfl
 
-lemma zmultiplesHom_symm_apply (f : ℤ →+ β) : (zmultiplesHom β).symm f = f 1 := rfl
+@[simp] lemma zmultiplesHom_symm_apply (f : ℤ →+ β) : (zmultiplesHom β).symm f = f 1 := rfl
 
-@[to_additive existing (attr := simp)]
-lemma zpowersHom_apply (x : α) (n : Multiplicative ℤ) : zpowersHom α x n = x ^ n.toAdd := rfl
+@[simp] lemma zpowersHom_apply (x : α) (n : Multiplicative ℤ) :
+    zpowersHom α x n = x ^ n.toAdd := rfl
 
-@[to_additive existing (attr := simp)]
-lemma zpowersHom_symm_apply (f : Multiplicative ℤ →* α) :
+@[simp] lemma zpowersHom_symm_apply (f : Multiplicative ℤ →* α) :
     (zpowersHom α).symm f = f (ofAdd 1) := rfl
 
 lemma MonoidHom.apply_mint (f : Multiplicative ℤ →* α) (n : Multiplicative ℤ) :
