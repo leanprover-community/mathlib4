@@ -314,10 +314,31 @@ variable (C)
 /-- The (identity) equivalence between `Cᴹᵒᵖ` and `C`. -/
 @[simps!] def MonoidalOpposite.unmopEquiv : Cᴹᵒᵖ ≌ C := (mopEquiv C).symm
 
--- todo: upgrade to monoidal equivalence
 /-- The equivalence between `C` and its monoidal opposite's monoidal opposite. -/
 @[simps!] def MonoidalOpposite.mopMopEquivalence : Cᴹᵒᵖᴹᵒᵖ ≌ C :=
   .trans (MonoidalOpposite.unmopEquiv Cᴹᵒᵖ) (MonoidalOpposite.unmopEquiv C)
+
+@[simps!]
+instance : (MonoidalOpposite.mopMopEquivalence C).functor.Monoidal where
+  ε' := 𝟙 _
+  δ' X Y := 𝟙 _
+  μ' X Y := 𝟙 _
+  η' := 𝟙 _
+  ε_η := by simp [ε, η]
+  η_ε := by simp [ε, η]
+  μ_δ X Y := by simp [μ, δ]
+  δ_μ X Y := by simp [μ, δ]
+
+@[simps!]
+instance : (MonoidalOpposite.mopMopEquivalence C).inverse.Monoidal where
+  ε' := 𝟙 _
+  δ' X Y := 𝟙 _
+  μ' X Y := 𝟙 _
+  η' := 𝟙 _
+  ε_η := by simp [ε, η]
+  η_ε := by simp [ε, η]
+  μ_δ X Y := by simp [μ, δ]
+  δ_μ X Y := by simp [μ, δ]
 
 /-- The identification `mop X ⊗ mop Y = mop (Y ⊗ X)` as a natural isomorphism. -/
 @[simps!]
