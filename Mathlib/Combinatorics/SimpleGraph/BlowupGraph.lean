@@ -209,10 +209,11 @@ lemma card_supersets {α : Type*} [Fintype α] [DecidableEq α] {s : Finset α} 
     have hd := disjoint_left.2 fun _ ha hs ↦ (mem_compl.1 <| ht.1 ha) hs
     exact ⟨by rw [card_union_of_disjoint hd]; omega, union_sdiff_cancel_right hd⟩
 
-/-- **The principle of counting induced subgraphs by averaging**
-If `G` is a graph on `α` and `H` is a graph on `β`, then
-`#(H ↪g G) * (choose (‖α‖ - ‖β‖) (k - ‖β‖))` is equal to the sum of the number of embeddings
-`H ↪g (G.induce t)` over subsets `t` of `α` of size `k`, for any `‖β‖ ≤ k`.
+/-- **The principle of counting induced flags by averaging**
+If `F₂` is an  `α, ι`-flag and `F₁` is a `β, ι`-flag, then we can count embeddings of `F₁` in `F₂`
+using `#(F₁ ↪f F₂) * (choose (‖α‖ - ‖β‖) (k - ‖β‖))` is equal to the sum of the number of embeddings
+`F₁ ↪f (F₂.induce t)` over subsets `t` of `α` of size `k`, that contain the image of `F₂.θ`, i.e.
+`t` contains all the labelled vertices of `F₂` (o/w there is no way to embed `F₁` in `F₂.induce t`).
 -/
 lemma Flag.sum_card_embeddings_induce_eq (F₁ : Flag β ι) (F₂ : Flag α ι) [Fintype β] {k : ℕ}
   (hk : ‖β‖ ≤ k) : ∑ t : Finset α with #t = k,
