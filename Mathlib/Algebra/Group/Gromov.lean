@@ -1371,19 +1371,27 @@ lemma rho_g_FG: (rho_g_group (G := G)).FG := by
   refine ⟨?_, ?_⟩
   . intro hg
     simp [rho_g]
-    induction hg using AddSubgroup.closure_induction with
+    induction hg using Subgroup.closure_induction with
     | mem x hx =>
       simp at hx
       obtain ⟨s, s_mem, hs⟩ := hx
       use s
     | one =>
-      simp
       use 1
-      simp [GRepW_base]
-    | mul =>
-      sorry
-    | inv =>
-      sorry
+      simp
+    | mul x y hx hy x_eq_rep y_eq_rep =>
+      obtain ⟨a, ha⟩ := x_eq_rep
+      obtain ⟨b, hb⟩ := y_eq_rep
+      use a * b
+      rw [← ha, ← hb]
+      simp
+    | inv x hx x_eq_rep =>
+      obtain ⟨a, ha⟩ := x_eq_rep
+      use a⁻¹
+      rw [← ha]
+      simp
+  . intro hg
+
 
 
 -- The input data and proofs for Theorem 3.1 in Vikman
