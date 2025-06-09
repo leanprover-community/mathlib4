@@ -46,7 +46,7 @@ theorem quotientSpanNatEquivZMod_comp_Quotient_mk (n : ℕ) :
 
 @[simp]
 theorem quotientSpanNatEquivZMod_comp_castRingHom (n : ℕ) :
-    RingHom.comp (Int.quotientSpanNatEquivZMod n).symm (Int.castRingHom (ZMod n)) =
+    ((Int.quotientSpanNatEquivZMod n).symm : _ →+* _).comp (Int.castRingHom (ZMod n)) =
       Ideal.Quotient.mk (Ideal.span {(n : ℤ)}) := by ext; simp
 
 @[simp]
@@ -56,7 +56,7 @@ theorem quotientSpanEquivZMod_comp_Quotient_mk (n : ℤ) :
 
 @[simp]
 theorem quotientSpanEquivZMod_comp_castRingHom (n : ℤ) :
-    RingHom.comp (Int.quotientSpanEquivZMod n).symm (Int.castRingHom (ZMod n.natAbs)) =
+    ((Int.quotientSpanEquivZMod n).symm : _ →+* _).comp (Int.castRingHom (ZMod n.natAbs)) =
       Ideal.Quotient.mk (Ideal.span {(n : ℤ)}) := by ext; simp
 
 end Int
