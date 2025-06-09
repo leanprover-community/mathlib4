@@ -1217,6 +1217,49 @@ lemma quotient_norm_eq_norm (f: LipschitzH (G := G)): ‖(Submodule.Quotient.mk 
 noncomputable instance GL_W_opNorm : Norm (GL_W (G := G)) where
   norm := fun f => ‖f.val‖
 
+-- Unfortunately, we cannot use 'NormedGroup', since we have a multiplicate group,
+-- but we want our distance function to be ‖f - g‖, not ‖f * g⁻¹‖
+noncomputable instance GL_W_psuedoMetric: PseudoMetricSpace (GL_W (G := G)) where
+  dist := fun f g => ‖f.val - g.val‖
+  dist_self := by
+    simp
+  dist_comm := by
+    intro x y
+    conv =>
+      rhs
+      arg 1
+      equals -(x.val - y.val) =>
+        simp
+    rw [ContinuousLinearMap.opNorm_neg]
+  dist_triangle := by
+    intro x y z
+    conv =>
+      lhs
+      arg 1
+      equals (x.val - y.val + y.val - z.val) =>
+        simp
+
+    have triangle := ContinuousLinearMap.opNorm_add_le (f := x.val - y.val) (g := y.val - z.val)
+    field_simp at triangle
+    field_simp
+    exact triangle
+
+-- noncomputable instance GL_W_NormedGroup : SeminormedGroup (GL_W (G := G)) := {
+--   norm := GL_W_opNorm.norm,
+--   dist_self := by
+--     simp
+--     simp [norm]
+--     unfold ContinuousLinearMap.opNorm
+--     simp
+
+--   dist_comm := by sorry
+--   dist_eq := by sorry
+-- }
+
+--#synth MetricSpace (LinearMap.GeneralLinearGroup ℝ ℝ)
+
+#synth NormedRing (W (G := G) →L[ℂ] W (G := G))
+
 lemma GLW_preseves_norm (g: G) (w: W (G := G)): ‖(GRepW (G := G) (GRepW_base g)).val w‖ = ‖w‖ := by
   unfold GL_W
   have exists_v: ∃ v, Submodule.Quotient.mk v = w := by
@@ -1237,7 +1280,8 @@ lemma GLW_preseves_norm (g: G) (w: W (G := G)): ‖(GRepW (G := G) (GRepW_base g
 def rho_g := GRepW '' ( Set.range (fun g => GRepW_base (G := G) g) )
 
 instance GL_W_proper: ProperSpace (GL_W (G := G)) := by
-  apply FiniteDimensional.proper_rclike (K := ℂ)
+  sorry
+--   apply FiniteDimensional.proper_rclike (K := ℂ)
 
 -- In the Vikman paper, rho_g is precompact, and the closure of rho_g is a compact subgroup
 theorem compact_rho_g: IsCompact (closure (rho_g (G := G))) := by
