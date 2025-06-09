@@ -123,6 +123,42 @@ theorem isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : G.Path v w), p = q) :
 theorem isAcyclic_iff_path_unique : G.IsAcyclic ↔ ∀ ⦃v w : V⦄ (p q : G.Path v w), p = q :=
   ⟨IsAcyclic.path_unique, isAcyclic_of_path_unique⟩
 
+theorem IsAcyclic.isPath_iff_chain' [DecidableEq V] (hG : G.IsAcyclic) {v w : V}
+    (p : G.Walk v w) : p.IsPath ↔ List.Chain' (fun x y => x ≠ y) p.edges := by
+  constructor
+  · intro hP
+    rw [isPath_def] at hP
+    exact List.Pairwise.chain' <| edges_nodup_of_support_nodup <| hP
+  · intro hL
+    induction p with
+    | nil => simp
+    | cons head tail ih =>
+        rename_i u' v' w'
+        rw [edges_cons] at hL
+        have hcc := List.chain'_cons'.mp hL
+        refine cons_isPath_iff head tail |>.mpr ⟨ih hcc.2, ?_⟩
+        rcases show tail.length = 0 ∨ 0 < tail.length by omega with h' | h'
+        · simp [nil_iff_support_eq.mp (nil_iff_length_eq.mpr h'), head.ne]
+        · by_contra hh
+          apply hG <| cons head <| tail.takeUntil u' hh
+          have : cons head (tail.takeUntil u' hh) |>.support.tail.Nodup := by
+            refine tail.isPath_def.mp (ih hcc.2) |>.sublist <| List.IsInfix.sublist ?_
+            exact ⟨[], (tail.dropUntil u' hh).support.tail, by simp [← support_append]⟩
+          simp only [isCycle_def, isTrail_def, edges_cons, List.nodup_cons]
+          refine ⟨⟨?_, edges_nodup_of_support_nodup this⟩, ⟨by simp, this⟩⟩
+          by_contra hhh
+          rw [Sym2.eq_swap] at hhh
+          have := IsPath.eq_snd_of_mem_edges (IsPath.mk' this) (by simp [head.ne.symm]) hhh
+          rw [snd_takeUntil head.ne] at this
+          refine hcc.1 s(u', v') ?_ rfl
+          rw [← tail.cons_tail_eq (by rw [not_nil_iff_lt_length]; omega)]
+          simp [this]
+
+theorem IsAcyclic.isPath_of_isTrail [DecidableEq V] (hG : G.IsAcyclic) {v w : V} {p : G.Walk v w}
+    (h : p.IsTrail) : p.IsPath := by
+  rw [isTrail_def] at h
+  exact hG.isPath_iff_chain' p |>.mpr <| List.Pairwise.chain' h
+
 theorem isTree_iff_existsUnique_path :
     G.IsTree ↔ Nonempty V ∧ ∀ v w : V, ∃! p : G.Walk v w, p.IsPath := by
   classical
