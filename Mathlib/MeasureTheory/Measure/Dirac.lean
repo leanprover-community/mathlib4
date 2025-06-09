@@ -180,11 +180,11 @@ instance Measure.dirac.instIsFiniteMeasure {a : α} : IsFiniteMeasure (dirac a) 
 instance Measure.dirac.instSigmaFinite {a : α} : SigmaFinite (dirac a) := inferInstance
 
 theorem dirac_eq_one_iff_mem (hs : MeasurableSet s) : dirac a s = 1 ↔ a ∈ s := by
-  rw [Iff.symm (prob_compl_eq_zero_iff hs), ← mem_ae_iff]
+  rw [← prob_compl_eq_zero_iff hs, ← mem_ae_iff]
   apply mem_ae_dirac_iff hs
 
 theorem dirac_eq_zero_iff_not_mem (hs : MeasurableSet s) : dirac a s = 0 ↔ a ∉ s := by
-  rw [Eq.symm (compl_compl s), ← mem_ae_iff, notMem_compl_iff]
+  rw [← compl_compl s, ← mem_ae_iff, notMem_compl_iff]
   apply mem_ae_dirac_iff (MeasurableSet.compl_iff.mpr hs)
 
 theorem restrict_dirac' (hs : MeasurableSet s) [Decidable (a ∈ s)] :
