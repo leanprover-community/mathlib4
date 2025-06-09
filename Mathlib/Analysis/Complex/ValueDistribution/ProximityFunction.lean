@@ -88,7 +88,7 @@ lemma proximity_coe_eq_proximity_sub_const_zero :
 For complex-valued `f`, establish a simple relation between the proximity functions of `f` and of
 `f⁻¹`.
 -/
-theorem proximity_inv  {f : ℂ → ℂ} : proximity f⁻¹ ⊤ = proximity f 0 := by
+theorem proximity_inv {f : ℂ → ℂ} : proximity f⁻¹ ⊤ = proximity f 0 := by
   simp [proximity_zero, proximity_top]
 
 end ValueDistribution

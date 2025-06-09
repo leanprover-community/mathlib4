@@ -416,7 +416,7 @@ theorem toReal_sSup (s : Set ℝ≥0∞) (hf : ∀ r ∈ s, r ≠ ∞) :
   obtain ⟨i, hi⟩ | h := em (∃ i, f i ≤ 0)
   · rw [(iInf_eq_bot _).2 fun _ _ ↦ ⟨i, by simpa [ofReal_of_nonpos hi]⟩]
     simp [Real.iInf_nonpos' ⟨i, hi⟩]
-  replace h i : 0 ≤ f i := le_of_not_le fun hi ↦ h ⟨i, hi⟩
+  replace h i : 0 ≤ f i := le_of_not_ge fun hi ↦ h ⟨i, hi⟩
   refine eq_of_forall_le_iff fun a ↦ ?_
   obtain rfl | ha := eq_or_ne a ∞
   · simp
