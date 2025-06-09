@@ -195,8 +195,7 @@ lemma var_aux_lt {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0∞} (ha : a < v
     simp_all [var_aux, hs, lt_iSup_iff]
   exact ⟨P, hP, by gcongr⟩
 
-lemma var_aux_le {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0 < ε)
-    (h : var_aux f s ≠ ⊤) :
+lemma var_aux_le {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0 < ε) (h : var_aux f s ≠ ⊤) :
     ∃ P, IsInnerPart s P ∧ var_aux f s ≤ ∑ p ∈ P, f p + ε := by
   let ε' := min ε (var_aux f s).toNNReal
   have hε1 : ε' ≤ var_aux f s := by simp_all [ε']
@@ -221,7 +220,7 @@ lemma le_var_aux {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
     (hP : IsInnerPart s P) : ∑ p ∈ P, f p ≤ var_aux f s := by
   simpa [var_aux, hs] using le_biSup (fun P ↦ ∑ p ∈ P, f p) hP
 
--- TO DO: better to rephrase as `HasSum`?
+-- TO DO: rephrase as `HasSum`?
 /-- A set function is subadditive if the value assigned to the union of disjoint sets is bounded
 above by the sum of the values assigned to the individual sets. -/
 def IsSubadditive (f : Set X → ℝ≥0∞) := ∀ (s : ℕ → Set X), (∀ i, MeasurableSet (s i)) →
@@ -240,7 +239,7 @@ lemma sum_part_le_tsum_sum_part (hf : IsSubadditive f) (hf' : f ∅ = 0) {s : �
     _ = ∑' i, ∑ q ∈ Q, f (q ∩ s i) := ?_
     _ ≤ ∑' i, ∑ p ∈ (P i), f p := ?_
   · -- Each `q` is equal to the union of `q ∩ s i`.
-    -- TO DO: This only needs one direction of the argument.
+    -- TO DO: This only needs one direction of the argument since subadditivity implies monotone.
     suffices h : ∀ q ∈ Q, q = ⋃ i, q ∩ s i by
       exact Finset.sum_congr rfl (fun q hq ↦ (by simp [← h q hq]))
     intro q hq
@@ -331,7 +330,7 @@ lemma var_aux_iUnion_le (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
   simp only [var_aux, MeasurableSet.iUnion hs, reduceIte, lt_iSup_iff] at hb
   obtain ⟨Q, hQ, hbQ⟩ := hb
   -- Take the partitions defined as intersection of `Q` and `s i`.
-  let P (i : ℕ) := (Q.image (fun q ↦ q ∩ (s i))).filter (· ≠ ∅)
+  let P (i : ℕ) := restriction (s i) Q
   have hP (i : ℕ) : IsInnerPart (s i) (P i) := restriction_isInnerPart hQ (hs i)
   have hP' := calc
     b < ∑ q ∈ Q, f q := hbQ
@@ -364,23 +363,31 @@ section variation
 variable {X : Type*} [MeasurableSpace X]
 variable {V : Type*} [TopologicalSpace V] [ENormedAddCommMonoid V]
 
-/-- The variation of a subadditive function as an `ℝ≥0∞`-valued `VectorMeasure`. -/
+/-! At this stage it is possible to define, as follows, the variation of a subadditive function as
+an `ℝ≥0∞`-valued `VectorMeasure`:
+```
 noncomputable def variation' {f : Set X → ℝ≥0∞} (hf : IsSubadditive f) (hf' : f ∅ = 0) :
     VectorMeasure X ℝ≥0∞ where
   measureOf'          := var_aux f
   empty'              := var_aux_empty' f
   not_measurable' _ h := if_neg h
   m_iUnion'           := var_aux_iUnion f hf hf'
+```
+This could then be used to define variation by applying it to the funtion `fun s ↦ ‖μ s‖ₑ`. However
+there are no apparent applications of the intermidate step.
+-/
 
 lemma isSubadditive_enorm_vectorMeasure (μ : VectorMeasure X V) [T2Space V] :
     IsSubadditive fun s ↦ ‖μ s‖ₑ := by
   intro _ hs hs'
   simpa [VectorMeasure.of_disjoint_iUnion hs hs'] using enorm_tsum_le_tsum_enorm
 
--- TO DO: define directly, not using using `variation'`.
 /-- The variation of a `VectorMeasure` as an `ℝ≥0∞`-valued `VectorMeasure`. -/
-noncomputable def variation [T2Space V] (μ : VectorMeasure X V) : VectorMeasure X ℝ≥0∞ :=
-  variation' (isSubadditive_enorm_vectorMeasure μ) (by simp)
+noncomputable def variation [T2Space V] (μ : VectorMeasure X V) : VectorMeasure X ℝ≥0∞ where
+  measureOf'          := var_aux (‖μ ·‖ₑ)
+  empty'              := var_aux_empty' (‖μ ·‖ₑ)
+  not_measurable' _ h := if_neg h
+  m_iUnion'           := var_aux_iUnion (‖μ ·‖ₑ) (isSubadditive_enorm_vectorMeasure μ) (by simp)
 
 end variation
 
@@ -405,7 +412,7 @@ variable {X V : Type*} [MeasurableSpace X] [TopologicalSpace V] [ENormedAddCommM
 /-- Measure version of `le_var_aux` which was for subadditive functions. -/
 lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
     (hP : IsInnerPart s P) : ∑ p ∈ P, ‖μ p‖ₑ ≤ μ.variation s := by
-  simpa [variation, variation'] using le_var_aux (fun s ↦ ‖μ s‖ₑ) hs hP
+  simpa [variation] using le_var_aux (fun s ↦ ‖μ s‖ₑ) hs hP
 
 open Classical Finset in
 /-- Measure version of `le_var_aux` which was for subadditive functions. -/
@@ -424,7 +431,7 @@ lemma le_variation' (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) 
     · exact hP₃ (mem_filter.mp hp).1 (mem_filter.mp hq).1 hpq
     · exact (mem_filter.mp hp).2
   refine le_of_eq_of_le h ?_
-  simpa [variation, variation'] using le_var_aux (fun s ↦ ‖μ s‖ₑ) hs hQ
+  simpa [variation] using le_var_aux (fun s ↦ ‖μ s‖ₑ) hs hQ
 
 theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) : ‖μ E‖ₑ ≤ variation μ E := by
   wlog hE' : E ≠ ∅
@@ -433,7 +440,7 @@ theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) : ‖μ E
   · simp [hE, μ.not_measurable' hE]
   have h : {E} ∈ {P | IsInnerPart E P} := by simpa using isInnerPart_self E hE hE'
   have := le_biSup (fun P ↦ ∑ p ∈ P, ‖μ p‖ₑ) h
-  simp_all [variation, variation', var_aux]
+  simp_all [variation, var_aux]
 
 -- TO DO: move this to a good home or incorporate in proof.
 lemma monotone_of_ENNReal  {s₁ s₂ : Set X} (hs₁ : MeasurableSet s₁) (hs₂ : MeasurableSet s₂)
@@ -454,7 +461,7 @@ lemma biUnion_Finset {X : Type*} [MeasurableSpace X] (μ : VectorMeasure X ℝ�
 
 lemma variation_of_ENNReal (μ : VectorMeasure X ℝ≥0∞) : variation μ = μ := by
   ext s hs
-  simp only [variation, variation', var_aux, hs, reduceIte]
+  simp only [variation, var_aux, hs, reduceIte]
   apply eq_of_le_of_le
   · simp only [enorm_eq_self, iSup_le_iff]
     intro P hP
@@ -541,7 +548,7 @@ lemma signedMeasure_totalVariation_eq_variation (μ : SignedMeasure X) :
     -- To estimate variation defined as the supremum requires estimating `∑ p ∈ P, |μ p|`. Using the
     -- additivity of the measure and the above, `∑ p ∈ P, |μ p| ≤ μ (s ∩ r) - μ (sᶜ ∩ r)`.
     suffices ∀ P, IsInnerPart r P → ∑ p ∈ P, ‖μ p‖ₑ ≤ μ.totalVariation r by
-      simpa [ennrealToMeasure_apply hr, variation, variation', var_aux, hr]
+      simpa [ennrealToMeasure_apply hr, variation, var_aux, hr]
     intro P hP
     have abs_le p (hp : p ∈ P) : |μ p| ≤ μ (s ∩ p) - μ (sᶜ ∩ p) := by
       have h1 : μ p = (μ.toJordanDecomposition.posPart p).toReal -
