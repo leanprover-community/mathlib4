@@ -141,7 +141,7 @@ lemma pure_eq_pure {F : Type u → Type v} {α : Type w} (a : α) :
 /-- The `liftBind` constructor is semantically equivalent to `(lift op) >>= cont`. -/
 lemma liftBind_eq_lift_bind {F : Type u → Type v} {ι : Type u} {α : Type u}
     (op : F ι) (cont : ι → FreeM F α) :
-    FreeM.liftBind op cont = (lift op) >>= cont := by
+    FreeM.liftBind op cont = (lift op).bind cont := by
     simp [lift, bind, FreeM.bind]
 
 instance {F : Type u → Type v} : LawfulMonad (FreeM F) := LawfulMonad.mk'
