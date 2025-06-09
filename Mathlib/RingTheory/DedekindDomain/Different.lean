@@ -648,7 +648,6 @@ lemma pow_sub_one_dvd_differentIdeal [Algebra.IsSeparable (FractionRing A) (Frac
   exact pow_sub_one_dvd_differentIdeal_aux A (FractionRing A) (FractionRing B) _ he hp hP
 
 theorem not_dvd_differentIdeal_of_intTrace_not_mem
-    [NoZeroSMulDivisors A B] [Module.Finite A B]
     [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
     {p : Ideal A} (P Q : Ideal B) (hP : P * Q = Ideal.map (algebraMap A B) p)
     (x : B) (hxQ : x ∈ Q) (hx : Algebra.intTrace A B x ∉ p) :
