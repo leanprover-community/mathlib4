@@ -111,6 +111,20 @@ lemma mapComp_assoc_left {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d)
     ≫ (α_ (F.map f) (F.map g) (F.map h)).inv := by
   simp
 
+@[reassoc]
+theorem mapComp_id_left {a b : B} (f : a ⟶ b) :
+    F.mapComp (𝟙 a) f ≫ F.mapId a ▷ F.map f = F.map₂ (λ_ f).hom ≫ (λ_ (F.map f)).inv := by
+  rw [Iso.eq_comp_inv]
+  simp only [Category.assoc]
+  rw [← F.map₂_leftUnitor]
+
+@[reassoc]
+theorem mapComp_id_right {a b : B} (f : a ⟶ b) :
+    F.mapComp f (𝟙 b) ≫ F.map f ◁ F.mapId b = F.map₂ (ρ_ f).hom ≫ (ρ_ (F.map f)).inv := by
+  rw [Iso.eq_comp_inv]
+  simp only [Category.assoc]
+  rw [← F.map₂_rightUnitor]
+
 /-- The identity oplax functor. -/
 @[simps]
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : OplaxFunctor B B where

@@ -64,6 +64,8 @@ namespace groupCohomology
 
 section Cochains
 
+variable [DecidableEq G]
+
 /-- The 0th object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `A` as a `k`-module. -/
 def zeroCochainsIso : (inhomogeneousCochains A).X 0 ≅ A.V :=
@@ -147,6 +149,8 @@ def dTwo : ModuleCat.of k (G × G → A) ⟶ ModuleCat.of k (G × G × G → A) 
           add_sub_assoc, add_sub_assoc]
     map_smul' r x := funext fun g => by dsimp; simp only [map_smul, smul_add, smul_sub] }
 
+variable [DecidableEq G]
+
 /-- Let `C(G, A)` denote the complex of inhomogeneous cochains of `A : Rep k G`. This lemma
 says `dZero` gives a simpler expression for the 0th differential: that is, the following
 square commutes:
@@ -222,15 +226,20 @@ theorem comp_dTwo_eq :
 
 @[deprecated (since := "2025-05-09")] alias dTwo_comp_eq := comp_dTwo_eq
 
+omit [DecidableEq G] in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem dZero_comp_dOne : dZero A ≫ dOne A = 0 := by
-  simp [(Iso.eq_inv_comp _).2 (comp_dOne_eq A), (Iso.eq_inv_comp _).2 (comp_dZero_eq A)]
+  ext
+  simp [Pi.zero_apply (M := fun _ => A)]
 
 @[deprecated (since := "2025-05-14")] alias dOne_comp_dZero := dZero_comp_dOne
 
+omit [DecidableEq G] in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem dOne_comp_dTwo : dOne A ≫ dTwo A = 0 := by
-  simp [(Iso.eq_inv_comp _).2 (comp_dOne_eq A), (Iso.eq_inv_comp _).2 (comp_dTwo_eq A)]
+  ext f g
+  simp [mul_assoc, Pi.zero_apply (M := fun _ => A)]
+  abel
 
 @[deprecated (since := "2025-05-14")] alias dTwo_comp_dOne := dOne_comp_dTwo
 
@@ -924,6 +933,8 @@ lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
   rw [← sub_eq_zero]
   exact congr_fun hx g
 
+variable [DecidableEq G]
+
 /-- The arrow `A --dZero--> Fun(G, A)` is isomorphic to the differential
 `(inhomogeneousCochains A).d 0 1` of the complex of inhomogeneous cochains of `A`. -/
 @[simps! hom_left hom_right inv_left inv_right]
@@ -1021,6 +1032,8 @@ end H0
 section H1
 open ShortComplex
 
+variable [DecidableEq G]
+
 /-- The short complex `A --dZero--> Fun(G, A) --dOne--> Fun(G × G, A)` is isomorphic to the 1st
 short complex associated to the complex of inhomogeneous cochains of `A`. -/
 def shortComplexH1Iso : (inhomogeneousCochains A).sc 1 ≅ shortComplexH1 A :=
@@ -1079,8 +1092,10 @@ end H1
 section H2
 open ShortComplex
 
-/-- The short complex `A --dZero--> Fun(G, A) --dOne--> Fun(G × G, A)` is isomorphic to the 1st
-short complex associated to the complex of inhomogeneous cochains of `A`. -/
+variable [DecidableEq G]
+
+/-- The short complex `Fun(G, A) --dOne--> Fun(G × G, A) --dTwo--> Fun(G × G × G, A)` is
+isomorphic to the 2nd short complex associated to the complex of inhomogeneous cochains of `A`. -/
 def shortComplexH2Iso : (inhomogeneousCochains A).sc 2 ≅ shortComplexH2 A :=
     (inhomogeneousCochains A).isoSc' 1 2 3 (by simp) (by simp) ≪≫
     isoMk (oneCochainsIso A) (twoCochainsIso A) (threeCochainsIso A)
