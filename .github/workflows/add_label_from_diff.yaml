@@ -23,7 +23,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
+          path: pr-branch
+
+      # Checkout the master branch into a subdirectory
+      - name: Checkout master branch
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          # When testing the scripts, comment out the "ref: master"
+          ref: master
+          path: master-branch
       - name: Configure Lean
         uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
         with:
@@ -32,6 +42,7 @@ jobs:
           use-mathlib-cache: false
       - name: lake exe autolabel
         run: |
+          cd pr-branch
           # the checkout dance, to avoid a detached head
           git checkout master
           git checkout -
