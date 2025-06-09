@@ -115,7 +115,7 @@ lemma proj_eq {S : 𝒮} (a : Fib p S) : p.obj ((ι S).obj a) = S := by
 
 /-- The morphism `R ⟶ S` in `𝒮` obtained by projecting a morphism
 `φ : (ι R).obj a ⟶ (ι S).obj b`. -/
-def proj_map {R S : 𝒮} {a : Fib p R} {b : Fib p S}
+def projMap {R S : 𝒮} {a : Fib p R} {b : Fib p S}
     (φ : (ι R).obj a ⟶ (ι S).obj b) : R ⟶ S :=
   eqToHom (proj_eq a).symm ≫ (p.map φ) ≫ eqToHom (proj_eq b)
 
