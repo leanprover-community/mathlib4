@@ -270,3 +270,34 @@ lemma isRegular_of_ofList_height_eq_length_of_isCohenMacaulayLocalRing [IsCohenM
     rw [List.take_append_of_le_length (le_of_lt hi)] at this
     simpa [List.getElem_append_left' hi rs'] using this
   · simpa using (ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (span_le.mpr mem)).symm
+
+lemma Ideal.depth_le_height [IsLocalRing R] (I : Ideal R) (netop : I ≠ ⊤):
+    I.depth (ModuleCat.of R R) ≤ I.height := by
+  simp only [IsLocalRing.ideal_depth_eq_sSup_length_regular I netop (ModuleCat.of R R), exists_prop,
+    exists_and_left, sSup_le_iff, Set.mem_setOf_eq, forall_exists_index, and_imp]
+  intro n rs reg mem len
+  rw [← len,
+    ← ofList_height_eq_length_of_isRegular rs reg.1 (fun r hr ↦ le_maximalIdeal netop (mem r hr))]
+  exact Ideal.height_mono (span_le.mpr mem)
+
+lemma Ideal.depth_eq_height [IsCohenMacaulayLocalRing R] (I : Ideal R) (netop : I ≠ ⊤):
+    I.depth (ModuleCat.of R R) = I.height := by
+  apply le_antisymm (I.depth_le_height netop)
+  rcases Ideal.exists_spanRank_eq_and_height_eq I netop with ⟨J, le, rank, ht⟩
+  simp only [Submodule.fg_iff_spanRank_eq_spanFinrank.mpr
+      ((isNoetherianRing_iff_ideal_fg R).mp (by assumption) J), Cardinal.nat_eq_ofENat] at rank
+  rw [IsLocalRing.ideal_depth_eq_sSup_length_regular I netop, ← ht]
+  apply le_sSup
+  obtain ⟨⟨s, span⟩, hs⟩ : ∃ s : { s : Finset R // Submodule.span R s = J}, s.1.card =
+    Submodule.spanFinrank J := by
+    have : {x | ∃ s : { s : Finset R // Submodule.span R s = J}, s.1.card = x}.Nonempty := by
+      rcases (isNoetherianRing_iff_ideal_fg R).mp (by assumption) J with ⟨s, hs⟩
+      use s.card, ⟨s, hs⟩
+    simpa only [Submodule.spanFinrank_eq_iInf J, iInf, Set.range] using Nat.sInf_mem this
+  simp only [← hs, ← ht] at rank
+  use s.toList
+  use isRegular_of_ofList_height_eq_length_of_isCohenMacaulayLocalRing s.toList (fun r hr ↦
+    le_maximalIdeal netop (le (le_of_eq span (Submodule.subset_span (Finset.mem_toList.mp hr)))))
+    (by simp [Ideal.ofList, span, ← Ideal.submodule_span_eq, rank])
+  use fun r hr ↦ le (le_of_eq span (Submodule.subset_span (Finset.mem_toList.mp hr)))
+  simp [rank]
