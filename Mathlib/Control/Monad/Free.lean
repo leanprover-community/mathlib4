@@ -32,8 +32,8 @@ acts as the canonical **fold** (catamorphism) for free monads.
 To execute or interpret these computations, we provide two approaches:
 1. **Hand-written interpreters** (`FreeState.run`, `FreeWriter.run`, `FreeCont.run`) that directly
 pattern-match on the tree structure
-2. **Canonical interpreters** (`FreeState.fold`, `FreeWriter.fold`, `FreeCont.fold`) derived from
-the universal property via `mapM`
+2. **Canonical interpreters** (`FreeState.toStateM`, `FreeWriter.toWriterT`, `FreeCont.toContT`)
+derived from the universal property via `mapM`
 
 We prove that these approaches are equivalent, demonstrating that the implementation aligns with
 the theory.
