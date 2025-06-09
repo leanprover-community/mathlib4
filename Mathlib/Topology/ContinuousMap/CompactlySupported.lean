@@ -810,7 +810,7 @@ noncomputable def toRealLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) :
       ring
 
 lemma toRealLinear_apply {Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0} (f : C_c(α, ℝ)) :
-    (toRealLinear Λ) f = Λ (nnrealPart f) - Λ (nnrealPart (-f)) := rfl
+    toRealLinear Λ f = Λ (nnrealPart f) - Λ (nnrealPart (-f)) := rfl
 
 lemma nonneg_toRealLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) {g : C_c(α, ℝ)} (hg : 0 ≤ g) :
     0 ≤ toRealLinear Λ g := by
