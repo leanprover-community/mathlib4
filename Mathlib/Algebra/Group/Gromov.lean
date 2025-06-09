@@ -1212,12 +1212,14 @@ theorem compact_rho_g: IsCompact (closure (rho_g (G := G))) := by
   intro x
   rw [sub_eq_add_neg]
   have norm_triangle := norm_add_le (p x) (- q x)
-
-
-  rw [← p_eq_a_rep, ← q_eq_b_rep]
-
-
-
+  simp only [norm_neg] at norm_triangle
+  rw [← p_eq_a_rep, ← q_eq_b_rep] at norm_triangle
+  rw [GLW_preseves_norm] at norm_triangle
+  rw [GLW_preseves_norm] at norm_triangle
+  rw [two_mul]
+  rw [p_eq_a_rep] at norm_triangle
+  rw [q_eq_b_rep] at norm_triangle
+  exact norm_triangle
 
 -- TODO - use the fact that G is finitely generated
 instance countableG: Countable (Additive (MulOpposite G)) := by
