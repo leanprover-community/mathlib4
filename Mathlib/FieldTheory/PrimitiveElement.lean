@@ -236,7 +236,7 @@ section FiniteIntermediateField
 theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hneq : m ≠ n)
     (heq : F⟮α ^ m⟯ = F⟮α ^ n⟯) : IsAlgebraic F α := by
   wlog hmn : m < n
-  · exact this F E hneq.symm heq.symm (hneq.lt_or_lt.resolve_left hmn)
+  · exact this F E hneq.symm heq.symm (hneq.lt_or_gt.resolve_left hmn)
   by_cases hm : m = 0
   · rw [hm] at heq hmn
     simp only [pow_zero, adjoin_one] at heq

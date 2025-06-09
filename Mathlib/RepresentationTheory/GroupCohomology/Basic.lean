@@ -83,10 +83,11 @@ variable [Monoid G]
 /-- The complex `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `k`-linear
 `G`-representation. -/
 abbrev linearYonedaObjResolution (A : Rep k G) : CochainComplex (ModuleCat.{u} k) ℕ :=
-  (groupCohomology.resolution k G).linearYonedaObj k A
+  (Rep.standardComplex k G).linearYonedaObj k A
 
-theorem linearYonedaObjResolution_d_apply {A : Rep k G} (i j : ℕ) (x : (resolution k G).X i ⟶ A) :
-    (linearYonedaObjResolution A).d i j x = (resolution k G).d j i ≫ x :=
+theorem linearYonedaObjResolution_d_apply
+    {A : Rep k G} (i j : ℕ) (x : (Rep.standardComplex k G).X i ⟶ A) :
+    (linearYonedaObjResolution A).d i j x = (Rep.standardComplex k G).d j i ≫ x :=
   rfl
 
 end groupCohomology
@@ -144,9 +145,9 @@ theorem d_eq :
   -- https://github.com/leanprover-community/mathlib4/issues/5026
   -- https://github.com/leanprover-community/mathlib4/issues/5164
   change d n A f g = diagonalHomEquiv (n + 1) A
-    ((resolution k G).d (n + 1) n ≫ (diagonalHomEquiv n A).symm f) g
-  rw [diagonalHomEquiv_apply, Action.comp_hom, ConcreteCategory.comp_apply, resolution.d_eq]
-  erw [resolution.d_of (Fin.partialProd g)]
+    ((standardComplex k G).d (n + 1) n ≫ (diagonalHomEquiv n A).symm f) g
+  rw [diagonalHomEquiv_apply, Action.comp_hom, ConcreteCategory.comp_apply, standardComplex.d_eq]
+  erw [standardComplex.d_of (Fin.partialProd g)]
   simp only [map_sum, ← Finsupp.smul_single_one _ ((-1 : k) ^ _)]
   -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [d_apply, @Fin.sum_univ_succ _ _ (n + 1), Fin.val_zero, pow_zero, one_smul,
@@ -248,7 +249,7 @@ abbrev groupCohomologyπ [Group G] (A : Rep k G) (n : ℕ) :
 
 /-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
 `Extⁿ(k, A)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
-def groupCohomologyIsoExt [Group G] (A : Rep k G) (n : ℕ) :
+def groupCohomologyIsoExt [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ) :
     groupCohomology A n ≅ ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj A :=
   isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousCochainsIso A)).hom n ≪≫
-    (extIso k G A n).symm
+    (Rep.standardResolution.extIso k G A n).symm
