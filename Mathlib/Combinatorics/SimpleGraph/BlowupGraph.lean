@@ -95,6 +95,14 @@ is the flag induced by `t` with the same labels.
 def Flag.induce {α ι : Type*} (F : Flag α ι) (t : Set α) (ht : ∀ i, F.θ i ∈ t) : Flag t ι :=
   ⟨F.G.induce t, ⟨fun i ↦ ⟨F.θ i, ht i⟩, fun h ↦ by simp_all⟩⟩
 
+def Flag.induce_copy {α ι : Type*} (F : Flag α ι) {s t : Set α} (h : s = t) (hs : ∀ i, F.θ i ∈ s) :
+    Flag t ι := by
+  subst_vars; exact F.induce t hs
+
+lemma Flag.induce_copy_eq {α ι : Type*} (F : Flag α ι) {s t : Set α} (h : s = t)
+    (hs : ∀ i, F.θ i ∈ s) (ht : ∀ i, F.θ i ∈ t) : F.induce t ht = F.induce_copy h hs := by
+  subst_vars; rfl
+
 lemma Flag.induce_adj {α ι : Type*} (F : Flag α ι) (t : Set α) (ht : ∀ i, F.θ i ∈ t) :
     (F.induce t ht).G = (F.G.induce t) := rfl
 
@@ -160,9 +168,9 @@ The Finset of all `σ`-flags with vertex type `α` (where both `α` and `ι` are
 -/
 noncomputable def SigmaFlags (σ : SimpleGraph ι) : Finset (Flag α ι) := {F | F.IsSigma σ}
 
-
 /--
 Flag embeddings of `F₁` in `F₂[t]` are equivalent to embeddings of `F₁` in `F₂` that map into `t`.
+(Note: that `F₂[t]` is only defined if all the labels of `F₂` lie in `t`).
 -/
 def Flag.induceEquiv (F₁ : Flag α ι) (F₂ : Flag β ι) (t : Set β) (h : ∀ i, F₂.θ i ∈ t) :
     F₁ ↪f (F₂.induce t h) ≃ {e : F₁ ↪f F₂ | Set.range e.toEmbedding ⊆ t}
