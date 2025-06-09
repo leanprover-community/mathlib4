@@ -23,6 +23,14 @@ This file proves irreducibility of the Selmer polynomials `X ^ n - X - 1`.
 TODO: Show that the Selmer polynomials have full Galois group.
 -/
 
+/-- If `α` is equivalent to `β`, then `Perm α` is isomorphic to `Perm β`. (#24816) -/
+def Equiv.permCongrHom {α β : Type*} (e : α ≃ β) : Equiv.Perm α ≃* Equiv.Perm β where
+  toFun x := e.symm.trans (x.trans e)
+  invFun y := e.trans (y.trans e.symm)
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+  map_mul' _ _ := by ext; simp
+
 section Inertia
 
 open scoped Pointwise
@@ -211,21 +219,37 @@ theorem tada {G S T : Type*} [Group G] [MulAction G S] [MulAction G T]
   · rw [← h1 x]
     simp [h2]
 
-#exit
+theorem switchinglemma {F : Type*} [Field F] (p : F[X])
+    (E₁ E₂ : Type*) [Field E₁] [Algebra F E₁] [Field E₂] [Algebra F E₂]
+    [Fact (p.Splits (algebraMap F E₁))] [Fact (p.Splits (algebraMap F E₂))] :
+    Gal.galActionHom p E₁ =
+      ((Polynomial.Gal.rootsEquivRoots p E₂).symm.trans
+        (Polynomial.Gal.rootsEquivRoots p E₁)).permCongrHom.toMonoidHom.comp
+        (Gal.galActionHom p E₂)
+       := by
+  ext
+  simp [permCongrHom, Gal.galActionHom, Polynomial.Gal.smul_def]
+
+attribute [-instance] Polynomial.Gal.galActionAux -- should be local to PolynomialGaloisGroup.lean
 
 theorem X_pow_sub_X_sub_one_gal :
     Function.Bijective (Gal.galActionHom (X ^ n - X - 1 : ℚ[X]) ℂ) := by
+  classical
   let f : ℚ[X] := X ^ n - X - 1
-  change Function.Bijective (Gal.galActionHom f ℂ)
-  have : MulAction.IsPretransitive f.Gal (f.rootSet ℂ) := by
-    rcases eq_or_ne n 1 with rfl | hn
-    · have : IsEmpty (rootSet f ℂ) := by simp [f]
-      infer_instance
-    exact Gal.galAction_isPretransitive _ _ (X_pow_sub_X_sub_one_irreducible_rat hn)
   let K := f.SplittingField
+  have : Fact (f.Splits (algebraMap ℚ K)) := ⟨SplittingField.splits f⟩
   have : NumberField K := by constructor
   have : IsGalois ℚ K := by constructor
   let R := 𝓞 K
+  suffices Function.Bijective (Gal.galActionHom f K) by
+    rw [switchinglemma f ℂ K]
+    exact (((Gal.rootsEquivRoots f f.SplittingField).symm.trans
+      (Gal.rootsEquivRoots f ℂ)).permCongrHom.toEquiv.comp_bijective _).mpr this
+  have : MulAction.IsPretransitive f.Gal (f.rootSet K) := by
+    rcases eq_or_ne n 1 with rfl | hn
+    · have : IsEmpty (rootSet f K) := by simp [f]
+      infer_instance
+    exact Gal.galAction_isPretransitive _ _ (X_pow_sub_X_sub_one_irreducible_rat hn)
   let S0 : Set f.Gal := ⋃ (q : Ideal R) (hq : q.IsMaximal),
     (↑(inertiaSubgroup q : Set (f.SplittingField ≃ₐ[ℚ] f.SplittingField)))
   let S : Set f.Gal := S0 \ {1}
@@ -233,30 +257,29 @@ theorem X_pow_sub_X_sub_one_gal :
     simp only [S0, Subgroup.closure_iUnion, Subgroup.closure_eq]
     exact keythm K
   have hS1 : Subgroup.closure S = ⊤ := by
-    have h : Subgroup.closure (S0 ∩ {1}) = ⊥ := by
-      rw [eq_bot_iff, ← Subgroup.closure_singleton_one]
-      exact Subgroup.closure_mono Set.inter_subset_right
-    rw [← hS0, ← Set.diff_union_inter S0 {1}, Subgroup.closure_union, h, sup_bot_eq]
-  have hS2 : ∀ σ ∈ S, Perm.IsSwap (MulAction.toPermHom f.Gal (f.rootSet ℂ) σ) := by
-    rintro σ ⟨hσ, hσ1 : σ ≠ 1⟩
-    rw [Set.mem_iUnion] at hσ
-    obtain ⟨q, hσ⟩ := hσ
-    rw [Set.mem_iUnion] at hσ
-    obtain ⟨hq, hσ⟩ := hσ
-    rw [SetLike.mem_coe] at hσ
-    let F := R ⧸ q
-    let π : R →+* F := Ideal.Quotient.mk q
-    have : Field F := Ideal.Quotient.field q
+    rw [← hS0, ← Set.diff_union_inter S0 {1}, Subgroup.closure_union, eq_comm, sup_eq_left]
+    refine (Subgroup.closure_le _).mpr (Set.inter_subset_right.trans
+      (Set.singleton_subset_iff.mpr (Subgroup.one_mem _)))
+  suffices hS2 : ∀ σ ∈ S, Perm.IsSwap (MulAction.toPermHom f.Gal (f.rootSet K) σ) by
+    exact ⟨Gal.galActionHom_injective f K, surjective_of_isSwap_of_isPretransitive S hS2 hS1⟩
+  rintro σ ⟨hσ, hσ1 : σ ≠ 1⟩
+  rw [Set.mem_iUnion] at hσ
+  obtain ⟨q, hσ⟩ := hσ
+  rw [Set.mem_iUnion] at hσ
+  obtain ⟨hq, hσ⟩ := hσ
+  rw [SetLike.mem_coe] at hσ
+  let F := R ⧸ q
+  let π : R →+* F := Ideal.Quotient.mk q
+  have : Field F := Ideal.Quotient.field q
 
-    clear hS1 hS0 S S0
+  clear hS1 hS0 S S0
 
-    -- σ ∈ inertiaSubgroup q
-    -- σ acts trivially on the
+  -- σ ∈ inertiaSubgroup q
+  -- σ acts trivially on the
 
-    -- finite field, might not need to consider the characteristic
-    -- reduce to action on roots in R
-    sorry
-  exact ⟨Gal.galActionHom_injective f ℂ, surjective_of_isSwap_of_isPretransitive S hS2 hS1⟩
+  -- finite field, might not need to consider the characteristic
+  -- reduce to action on roots in R
+  sorry
 
   -- have : ∀ p : Nat.Primes, ∀ q : factors (map (algebraMap ℤ R) p)
   -- roots lie in the ring of integers OK
