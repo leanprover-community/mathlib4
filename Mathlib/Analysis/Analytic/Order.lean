@@ -29,7 +29,6 @@ section NormedSpace
 variable {f g : 𝕜 → E} {n : ℕ} {z₀ : 𝕜}
 
 open scoped Classical in
-
 /-- The order of vanishing of `f` at `z₀`, as an element of `ℕ∞`.
 
 The order is defined to be `∞` if `f` is identically 0 on a neighbourhood of `z₀`, and otherwise the
@@ -222,7 +221,7 @@ lemma le_analyticOrderAt_sub :
 
 lemma analyticOrderAt_add_eq_left_of_lt (hfg : analyticOrderAt f z₀ < analyticOrderAt g z₀) :
     analyticOrderAt (f + g) z₀ = analyticOrderAt f z₀ :=
-  le_antisymm (by simpa [hfg.not_le] using le_analyticOrderAt_sub (f := f + g) (g := g) (z₀ := z₀))
+  le_antisymm (by simpa [hfg.not_ge] using le_analyticOrderAt_sub (f := f + g) (g := g) (z₀ := z₀))
     (by simpa [hfg.le] using le_analyticOrderAt_add (f := f) (g := g) (z₀ := z₀))
 
 lemma analyticOrderAt_add_eq_right_of_lt (hgf : analyticOrderAt g z₀ < analyticOrderAt f z₀) :
@@ -235,7 +234,7 @@ lemma analyticOrderAt_add_eq_right_of_lt (hgf : analyticOrderAt g z₀ < analyti
 of the orders of the summands. -/
 lemma analyticOrderAt_add_of_ne (hfg : analyticOrderAt f z₀ ≠ analyticOrderAt g z₀) :
     analyticOrderAt (f + g) z₀ = min (analyticOrderAt f z₀) (analyticOrderAt g z₀) := by
-  obtain hfg | hgf := hfg.lt_or_lt
+  obtain hfg | hgf := hfg.lt_or_gt
   · simpa [hfg.le] using analyticOrderAt_add_eq_left_of_lt hfg
   · simpa [hgf.le] using analyticOrderAt_add_eq_right_of_lt hgf
 
@@ -389,7 +388,7 @@ theorem exists_analyticOrderAt_ne_top_iff_forall (hU : IsConnected U) :
   have : ConnectedSpace U := Subtype.connectedSpace hU
   obtain ⟨v⟩ : Nonempty U := inferInstance
   suffices (∀ (u : U), analyticOrderAt f u ≠ ⊤) ∨ ∀ (u : U), analyticOrderAt f u = ⊤ by tauto
-  simpa [Set.eq_empty_iff_forall_not_mem, Set.eq_univ_iff_forall] using
+  simpa [Set.eq_empty_iff_forall_notMem, Set.eq_univ_iff_forall] using
       isClopen_iff.1 hf.isClopen_setOf_analyticOrderAt_eq_top
 
 /-- On a preconnected set, a meromorphic function has finite order at one point if it has finite

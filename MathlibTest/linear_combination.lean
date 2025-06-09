@@ -314,9 +314,9 @@ example (a : ℚ) (ha : a = 1) : a = 2 := by linear_combination ha
 --   sake of simplicity, but the tactic could potentially be modified to allow
 --   this behavior.
 /--
-error: application type mismatch
+error: Application type mismatch: In the application
   Mathlib.Tactic.LinearCombination.mul_const_eq h2 0
-argument
+the argument
   0
 has type
   ℝ : Type
