@@ -36,7 +36,8 @@ pattern-match on the tree structure
 derived from the universal property via `mapM`
 
 We prove that these approaches are equivalent, demonstrating that the implementation aligns with
-the theory.
+the theory. We also provide uniqueness theorems for the canonical interpreters, which follow from
+the universal property.
 
 ## Main Definitions
 
@@ -299,6 +300,10 @@ interpreter derived from `mapM`. -/
 def toStateM {σ α : Type u} (comp : FreeState σ α) : StateM σ α :=
   comp.mapM stateInterp
 
+/-- `toStateM` is the unique interpreter extending `stateInterp`. -/
+theorem toStateM_unique {σ α : Type u} (g : FreeState σ α → StateM σ α)
+    (h : isInterpreter stateInterp g) : g = toStateM := mapM_unique stateInterp g h
+
 /-- Run a state computation, returning both the result and final state. -/
 def run {σ : Type u} {α : Type v} (comp : FreeState σ α) (s₀ : σ) : α × σ :=
   match comp with
@@ -397,6 +402,10 @@ def writerInterp {ω : Type u} : {α : Type u} → WriterF ω α → WriterT ω 
 interpreter derived from `mapM`. -/
 def toWriterT {ω α : Type u} [Monoid ω] (comp : FreeWriter ω α) : WriterT ω Id α :=
   comp.mapM writerInterp
+
+/-- `toWriterT` is the unique interpreter extending `writerInterp`. -/
+theorem toWriterT_unique {ω α : Type u} [Monoid ω] (g : FreeWriter ω α → WriterT ω Id α)
+    (h : isInterpreter writerInterp g) : g = toWriterT := mapM_unique writerInterp g h
 
 /--
 Writes a log entry. This creates an effectful node in the computation tree.
@@ -542,6 +551,10 @@ def contInterp {r : Type u} {α : Type v} : ContF r α → ContT r Id α
 interpreter derived from `mapM`. -/
 def toContT {r α : Type u} (comp : FreeCont r α) : ContT r Id α :=
   comp.mapM contInterp
+
+/-- `toContT` is the unique interpreter extending `contInterp`. -/
+theorem toContT_unique {r α : Type u} (g : FreeCont r α → ContT r Id α)
+    (h : isInterpreter contInterp g) : g = toContT := mapM_unique contInterp g h
 
 /-- Run a continuation computation with the given continuation. -/
 def run {r : Type u} {α : Type v} : FreeCont r α → (α → r) → r
