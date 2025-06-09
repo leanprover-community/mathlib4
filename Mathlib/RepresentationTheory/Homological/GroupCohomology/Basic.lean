@@ -81,7 +81,8 @@ variable [Monoid G]
 
 /-- The complex `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `k`-linear
 `G`-representation. -/
-@[deprecated "We now use `Rep.barComplex` instead" (since := "2025-06-08")]
+@[deprecated "We now use `(Rep.barComplex k G).linearYonedaObj k A instead"
+  (since := "2025-06-08")]
 abbrev linearYonedaObjResolution (A : Rep k G) : CochainComplex (ModuleCat.{u} k) ℕ :=
   (Rep.standardComplex k G).linearYonedaObj k A
 
