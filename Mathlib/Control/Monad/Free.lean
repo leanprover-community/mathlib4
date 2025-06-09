@@ -452,19 +452,6 @@ lemma run_liftBind_tell {ω : Type u} [Monoid ω] {α} (w : ω) (k : PUnit → F
     let (a, w') := run (k PUnit.unit)
     (a, w * w') := by simp [run]
 
-lemma run_tell_return {ω : Type u} [Monoid ω] {α} (w : ω) (a : α) :
-    run (FreeWriter.tell w >>= fun _ => FreeM.pure a) = (a, w) := by
-  simp
-
-lemma run_tell_map {ω : Type u} [Monoid ω] {α} (w : ω) (f : PUnit → α) :
-    run (f <$> FreeWriter.tell w) = (f PUnit.unit, w) := by
-  simp
-
-lemma run_tell_tell_return {ω : Type u} [Monoid ω] {α} (w1 w2 : ω) (a : α) :
-    run (FreeWriter.tell w1 >>= fun _ => FreeWriter.tell w2 >>= fun _ => FreeM.pure a) =
-    (a, w1 * w2) := by
-  simp
-
 /--
 `listen` captures the log produced by a subcomputation incrementally. It traverses the computation,
 emitting log entries as encountered, and returns the accumulated log as a result.
@@ -586,10 +573,6 @@ lemma run_liftBind_callCC {r : Type u} {α β : Type v} (g : (α → r) → r)
 (cont : α → FreeCont r β) (k : β → r) :
     run (.liftBind (ContF.callCC g) cont) k = g (fun a => run (cont a) k) := by simp [run]
 
-lemma run_callCC {r : Type u} {α β : Type v} (g : (α → r) → r)
-(cont : α → FreeCont r β) (k : β → r) :
-    run (.liftBind (ContF.callCC g) cont) k = g (fun a => run (cont a) k) := by simp
-
 /-- Call with current continuation for the Free continuation monad. -/
 def callCC {r : Type u} {α β : Type v} (f : MonadCont.Label α (FreeCont r) β → FreeCont r α) :
 FreeCont r α :=
@@ -606,10 +589,6 @@ lemma callCC_def {r : Type u} {α β : Type v} (f : MonadCont.Label α (FreeCont
 
 instance {r : Type u} : MonadCont (FreeCont r) where
   callCC := FreeCont.callCC
-
-lemma run_map_callCC_apply {α β : Type v} (f : α → β) (a : α) :
-    run (f <$> FreeCont.callCC (fun k => k.apply a)) id = f a := by
-  simp
 
 end FreeCont
 
