@@ -597,12 +597,8 @@ theorem norm_orthogonalProjection_le (v : E) :
 /-- The orthogonal projection onto a closed subspace is a `1`-Lipschitz map. -/
 theorem lipschitzWith_orthogonalProjection :
     LipschitzWith 1 (orthogonalProjection K) := by
-  apply LipschitzWith.mk_one
-  intro x y
-  calc
-    _ = ‖orthogonalProjection K (x - y)‖ := by simp [dist_eq_norm]
-    _ ≤ ‖x - y‖ := norm_orthogonalProjection_le _ _
-    _ = dist x y := by simp [dist_eq_norm]
+  apply ContinuousLinearMap.lipschitzWith_of_opNorm_le
+  apply orthogonalProjection_norm_le
 
 variable (𝕜)
 

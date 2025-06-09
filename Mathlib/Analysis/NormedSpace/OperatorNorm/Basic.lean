@@ -163,7 +163,6 @@ theorem opNorm_eq_of_bounds {φ : E →SL[σ₁₂] F} {M : ℝ} (M_nonneg : 0 �
     ((le_csInf_iff ContinuousLinearMap.bounds_bddBelow ⟨M, M_nonneg, h_above⟩).mpr
       fun N ⟨N_nonneg, hN⟩ => h_below N N_nonneg hN)
 
-
 theorem opNorm_neg (f : E →SL[σ₁₂] F) : ‖-f‖ = ‖f‖ := by simp only [norm_def, neg_apply, norm_neg]
 
 
@@ -280,6 +279,16 @@ theorem opNorm_smul_le {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F]
     rw [smul_apply, norm_smul, mul_assoc]
     gcongr
     apply le_opNorm
+
+/-- A continuous linear map is `M`-Lipschitz if its operator norm is at most `M`. -/
+theorem lipschitzWith_of_opNorm_le {M : ℝ≥0} {φ : E →SL[σ₁₂] F}
+  (h : ‖φ‖ ≤ M) :
+    LipschitzWith M φ := by
+  refine LipschitzWith.of_dist_le_mul fun x y ↦ ?_
+  rw [dist_eq_norm, dist_eq_norm, ← φ.map_sub]
+  calc
+    ‖φ (x - y)‖ ≤ ‖φ‖ * ‖x - y‖ := by apply le_opNorm
+    _ ≤ M * ‖x - y‖ := by gcongr
 
 /-- Operator seminorm on the space of continuous (semi)linear maps, as `Seminorm`.
 
