@@ -87,7 +87,20 @@ injective map `θ : ι ↪ α`. (We call this a `σ`-flag if the labelled subgra
 structure Flag (α ι : Type*) where
   G : SimpleGraph α
   θ : ι ↪ α
-#check Embedding
+
+/--
+Given a flag `F = (G, θ)` and set `t ⊆ V(G)` containing `im(θ)` `F.induce t`
+is the flag induced by `t` with the same labels.
+-/
+def Flag.induce {α ι : Type*} (F : Flag α ι) (t : Set α) (ht : ∀ i, F.θ i ∈ t) : Flag t ι :=
+  ⟨F.G.induce t, ⟨fun i ↦ ⟨F.θ i, ht i⟩, fun h ↦ by simp_all⟩⟩
+
+lemma Flag.induce_adj {α ι : Type*} (F : Flag α ι) (t : Set α) (ht : ∀ i, F.θ i ∈ t) :
+    (F.induce t ht).G = (F.G.induce t) := rfl
+
+lemma Flag.induce_labels {α ι : Type*} {F : Flag α ι} (t : Set α) (ht : ∀ i, F.θ i ∈ t) {i : ι} :
+    (F.induce t ht).θ i = F.θ i := rfl
+
 /-- Added to prove `Fintype` instance later -/
 def Flag_equiv_prod (α ι : Type*) : Flag α ι ≃ (SimpleGraph α) × (ι ↪ α) where
   toFun := fun F ↦ (F.G, F.θ)
@@ -97,35 +110,30 @@ def Flag_equiv_prod (α ι : Type*) : Flag α ι ≃ (SimpleGraph α) × (ι ↪
 
 /-- An embedding of flags is an embedding of the underlying graphs that preserves labels. -/
 @[ext]
-structure Flag.Embedding {α β ι : Type*} (F₁ : Flag α ι) (F₂ : Flag β ι) extends F₁.G ↪g F₂.G where
+structure FlagEmbedding {α β ι : Type*} (F₁ : Flag α ι) (F₂ : Flag β ι) extends F₁.G ↪g F₂.G where
  labels : F₂.θ = toEmbedding ∘ F₁.θ
 
-/-- An isomorphims of flags is an isomorphism of the underlying graphs that preserves labels. -/
+/-- An isomorphism of flags is an isomorphism of the underlying graphs that preserves labels. -/
 @[ext]
-structure Flag.Iso {α β ι : Type*} (F₁ : Flag α ι) (F₂ : Flag β ι) extends F₁.G ≃g F₂.G where
+structure FlagIso {α β ι : Type*} (F₁ : Flag α ι) (F₂ : Flag β ι) extends F₁.G ≃g F₂.G where
  labels : F₂.θ = toEquiv ∘ F₁.θ
 
-@[inherit_doc] infixl:50 " ↪f " => Flag.Embedding
-@[inherit_doc] infixl:50 " ≃f " => Flag.Iso
+@[inherit_doc] infixl:50 " ↪f " => FlagEmbedding
+@[inherit_doc] infixl:50 " ≃f " => FlagIso
 
-def Flag.Embedding_equiv {α β ι : Type*} (F₁ : Flag α ι) (F₂ : Flag β ι) :
-    (F₁ ↪f F₂) ≃ {e : F₁.G ↪g F₂.G // F₂.θ = e ∘ F₁.θ} where
-  toFun := fun e ↦ ⟨e.toRelEmbedding, e.labels⟩
-  invFun := fun e ↦ ⟨e.val, e.2⟩
-  left_inv := fun _ ↦ rfl
-  right_inv := fun _ ↦ rfl
+theorem FlagEmbedding.toRelEmbedding_injective {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι} :
+    Function.Injective (FlagEmbedding.toRelEmbedding : F₁ ↪f F₂ → (F₁.G ↪g F₂.G)) := by
+  rintro ⟨f, -⟩ ⟨g, -⟩; simp
 
 variable [Fintype α] [Fintype β] (G : SimpleGraph α) (H : SimpleGraph β)
-#synth Fintype (G ↪g H)
-noncomputable instance Flag.instfintypeOfEmbeddings {α β ι : Type*}  {F₁ : Flag α ι} {F₂ : Flag β ι}
-    [Fintype α] [Fintype β] : Fintype (F₁ ↪f F₂) := by
-  classical exact Fintype.ofEquiv _  (Flag.Embedding_equiv F₁ F₂).symm
 
+noncomputable instance FlagEmbedding.instfintypeOfEmbeddings {α β ι : Type*} {F₁ : Flag α ι}
+    {F₂ : Flag β ι} [Fintype α] [Fintype β] : Fintype (F₁ ↪f F₂) := by
+  exact Fintype.ofInjective _ FlagEmbedding.toRelEmbedding_injective
 
 variable {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι} {e : F₁ ↪f F₂}
 
-
-lemma Flag.Iso_symm {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι} (e : F₁ ≃f F₂)
+lemma FlagIso.symm {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι} (e : F₁ ≃f F₂)
      : F₁.θ = e.symm ∘ F₂.θ := by
   ext x; simp [e.labels]
 
@@ -151,6 +159,22 @@ open Classical in
 The Finset of all `σ`-flags with vertex type `α` (where both `α` and `ι` are finite).
 -/
 noncomputable def SigmaFlags (σ : SimpleGraph ι) : Finset (Flag α ι) := {F | F.IsSigma σ}
+
+
+/--
+Flag embeddings of `F₁` in `F₂[t]` are equivalent to embeddings of `F₁` in `F₂` that map into `t`.
+-/
+def Flag.induceEquiv (F₁ : Flag α ι) (F₂ : Flag β ι) (t : Set β) (h : ∀ i, F₂.θ i ∈ t) :
+    F₁ ↪f (F₂.induce t h) ≃ {e : F₁ ↪f F₂ | Set.range e.toEmbedding ⊆ t}
+    where
+  toFun := fun e ↦ ⟨⟨Embedding.induce _|>.comp e.toRelEmbedding, by
+                     ext; rw [← F₂.induce_labels t h, e.labels]; rfl⟩, by rintro x ⟨y , rfl⟩; simp⟩
+  invFun := fun e ↦ ⟨⟨⟨fun a : α ↦ ⟨e.1.toRelEmbedding a , by apply e.2; simp⟩, fun _ ↦ by simp⟩,
+                     by simp [Flag.induce_adj]⟩, by ext i; simp [F₂.induce_labels t h, e.1.labels]⟩
+  left_inv := fun e ↦ by ext; simp
+  right_inv := fun e ↦ by ext; simp
+
+
 
 variable {k m n : ℕ}
 local notation "‖" x "‖" => Fintype.card x
