@@ -158,7 +158,7 @@ lemma Flag.isSigma_of_embedding {α β ι : Type*} {σ : SimpleGraph ι} {F₁ :
   rw [IsSigma, e.labels, ← h1] at *
   ext; simp
 
-variable {α ι  : Type*} [Fintype α] [Fintype ι] [DecidableEq α] [DecidableEq ι]
+variable {α ι  : Type*} [Fintype α] [Fintype ι] [DecidableEq α]
 
 noncomputable instance : Fintype (Flag α ι) :=  Fintype.ofEquiv _ (Flag_equiv_prod α ι).symm
 
@@ -183,22 +183,10 @@ def Flag.induceEquiv (F₁ : Flag α ι) (F₂ : Flag β ι) (t : Set β) (h : �
   right_inv := fun e ↦ by ext; simp
 
 
-
 variable {k m n : ℕ}
 local notation "‖" x "‖" => Fintype.card x
 
 open Finset
-/--
-Embeddings of `H` in `G[t]` are equivalent to embeddings of `H` in `G` that map into `t`.
--/
-def induceEquiv (G : SimpleGraph α) (H : SimpleGraph β) (t : Set α) : H ↪g (G.induce t) ≃
-    {e : H ↪g G | Set.range e ⊆ t} where
-  toFun := fun e ↦ ⟨Embedding.induce _|>.comp e, by rintro x ⟨y , rfl⟩; simp⟩
-  invFun := fun e ↦ ⟨⟨(fun b ↦ ⟨_, e.2 ⟨b , rfl⟩⟩), fun _ _ _ ↦ e.1.inj' (by aesop)⟩,
-                     by simp, by simp⟩
-  left_inv := fun e ↦ by ext; simp
-  right_inv := fun e ↦ by ext; simp
-
 /--
 Given `s : Finset α`, the number of super-sets of `s` of size `k` is `choose (‖α‖ - #s) (k - #s)`,
 for `#s ≤ k`.
@@ -226,8 +214,99 @@ If `G` is a graph on `α` and `H` is a graph on `β`, then
 `#(H ↪g G) * (choose (‖α‖ - ‖β‖) (k - ‖β‖))` is equal to the sum of the number of embeddings
 `H ↪g (G.induce t)` over subsets `t` of `α` of size `k`, for any `‖β‖ ≤ k`.
 -/
+lemma Flag.sum_card_embeddings_induce_eq (F₁ : Flag β ι) (F₂ : Flag α ι) [Fintype β] {k : ℕ}
+  (hk : ‖β‖ ≤ k) : ∑ t : Finset α with #t = k,
+    (if ht : ∀ i, F₂.θ i ∈ t then  ‖F₁ ↪f (F₂.induce t ht)‖ else 0)
+                              = ‖F₁ ↪f F₂‖ * Nat.choose (‖α‖ - ‖β‖) (k - ‖β‖) := by
+  classical
+  calc
+  _ =  ∑ t : Finset α with #t = k, (if ht : ∀ i, F₂.θ i ∈ t then
+            ‖{e : F₁ ↪f F₂ | Set.range e.toEmbedding ⊆ t}‖ else 0)  := by
+    simp_rw [Fintype.card_congr <| Flag.induceEquiv ..]
+  _ = ∑ t : Finset α with #t = k, (if ht : ∀ i, F₂.θ i ∈ t then ∑ e : F₁ ↪f F₂,
+      ite (Set.range e.toEmbedding ⊆ t) 1 0 else 0) := by
+    congr; simp only [Set.coe_setOf, sum_boole, Nat.cast_id]
+    ext t
+    split_ifs with h
+    · apply Fintype.card_subtype
+    · rfl
+  _ = ∑ t : Finset α with #t = k, ∑ e : F₁ ↪f F₂,
+          ite ((∀ i, F₂.θ i ∈ t) ∧ Set.range e.toEmbedding ⊆ t) 1 0 := by
+    simp_rw [dite_eq_ite]
+    congr; ext t; simp only [RelEmbedding.coe_toEmbedding, sum_boole, Nat.cast_id]
+    split_ifs with h
+    · congr 2 with e;
+      constructor <;> intro he
+      · exact  ⟨h , he⟩
+      · exact he.2
+    · push_neg at h; symm
+      by_contra! he
+      obtain ⟨e, he⟩ := card_ne_zero.1 he
+      obtain ⟨i, hi⟩ := h
+      apply hi
+      simp at he
+      apply he.1 i
+  _ = ∑ t : Finset α, ∑ e : F₁ ↪f F₂,
+          ite (#t = k ∧ (∀ i, F₂.θ i ∈ t) ∧ Set.range e.toEmbedding ⊆ t) 1 0 := by
+    rw [sum_filter]
+    congr; ext t; simp
+    split_ifs with h
+    · congr 2 with e
+      constructor <;> intro he
+      · exact  ⟨h , he⟩
+      · exact he.2
+    · contrapose! h
+      obtain ⟨e, he⟩ := card_ne_zero.1 h.symm
+      simp at he
+      exact he.1
+  _ = _ := by
+    rw [sum_comm]
+    rw [← card_univ (α := (F₁ ↪f F₂)), card_eq_sum_ones, sum_mul, one_mul]
+    congr; ext e
+    simp only [RelEmbedding.coe_toEmbedding, sum_boole, Nat.cast_id]
+    have : ∀ (i : ι), F₂.θ i ∈ Set.range e.toRelEmbedding := by
+      intro i
+      have := e.labels
+      use (F₁.θ i)
+      rw [this]
+      rfl
+    calc
+    _ =  #{x : Finset α | #x = k  ∧ Set.range e.toRelEmbedding ⊆ x} := by
+      congr; ext x; simp only [and_congr_right_iff, and_iff_right_iff_imp]
+      intro hk hs i
+      exact hs <| this i
+    _ = _ := by
+      have hs : #((Set.range e.toRelEmbedding).toFinset) = ‖β‖ := by
+        simp_rw [Set.toFinset_range]
+        apply card_image_of_injective
+        exact e.toRelEmbedding.injective
+      rw [← hs, ← card_supersets (hs ▸ hk)]
+      congr
+      ext t
+      constructor <;> intro ⟨ht1, ht2⟩ <;> exact ⟨ht1, fun x hx ↦ ht2 (by simpa using hx)⟩
+
+
+#check Finset.attach
+
+/--
+Embeddings of `H` in `G[t]` are equivalent to embeddings of `H` in `G` that map into `t`.
+-/
+def induceEquiv (G : SimpleGraph α) (H : SimpleGraph β) (t : Set α) : H ↪g (G.induce t) ≃
+    {e : H ↪g G | Set.range e ⊆ t} where
+  toFun := fun e ↦ ⟨Embedding.induce _|>.comp e, by rintro x ⟨y , rfl⟩; simp⟩
+  invFun := fun e ↦ ⟨⟨(fun b ↦ ⟨_, e.2 ⟨b , rfl⟩⟩), fun _ _ _ ↦ e.1.inj' (by aesop)⟩,
+                     by simp, by simp⟩
+  left_inv := fun e ↦ by ext; simp
+  right_inv := fun e ↦ by ext; simp
+
+
+/-- **The principle of counting induced subgraphs by averaging**
+If `G` is a graph on `α` and `H` is a graph on `β`, then
+`#(H ↪g G) * (choose (‖α‖ - ‖β‖) (k - ‖β‖))` is equal to the sum of the number of embeddings
+`H ↪g (G.induce t)` over subsets `t` of `α` of size `k`, for any `‖β‖ ≤ k`.
+-/
 lemma sum_card_embeddings_induce_eq (G : SimpleGraph α) (H : SimpleGraph β) [Fintype β] {k : ℕ}
-    (hk : ‖β‖ ≤ k) : ∑ t : Finset α with t.card = k , ‖H ↪g (G.induce t)‖
+    (hk : ‖β‖ ≤ k) : ∑ t : Finset α with #t = k , ‖H ↪g (G.induce t)‖
                               = ‖H ↪g G‖ * Nat.choose (‖α‖ - ‖β‖) (k - ‖β‖) := by
   classical
   calc
