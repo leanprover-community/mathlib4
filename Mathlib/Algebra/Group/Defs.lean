@@ -930,18 +930,28 @@ This is a duplicate of `SubNegMonoid.sub_eq_add_neg` ensuring that the types unf
 theorem div_eq_mul_inv (a b : G) : a / b = a * b⁻¹ :=
   DivInvMonoid.div_eq_mul_inv _ _
 
+@[to_additive]
+theorem mul_inv_eq_div (a b : G) : a * b⁻¹ = a / b := by
+  rw [div_eq_mul_inv]
+
+attribute [simp] mul_inv_eq_div
+
 alias division_def := div_eq_mul_inv
 
 @[to_additive, field_simps] -- The attributes are out of order on purpose
 theorem inv_eq_one_div (x : G) : x⁻¹ = 1 / x := by rw [div_eq_mul_inv, one_mul]
 
+attribute [simp] inv_eq_one_div
+
 @[to_additive]
 theorem mul_div_assoc (a b c : G) : a * b / c = a * (b / c) := by
   rw [div_eq_mul_inv, div_eq_mul_inv, mul_assoc _ _ _]
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem one_div (a : G) : 1 / a = a⁻¹ :=
   (inv_eq_one_div a).symm
+
+attribute [simp] zero_sub
 
 @[to_additive (attr := simp) one_zsmul]
 lemma zpow_one (a : G) : a ^ (1 : ℤ) = a := by rw [zpow_ofNat, pow_one]
