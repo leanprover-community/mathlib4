@@ -281,6 +281,29 @@ theorem mk_mul_mk {A : Type*}
     mk a₁ s₁ * mk a₂ s₂ = mk (a₁ * a₂) (s₁ * s₂) :=
   rfl
 
+instance {A : Type*}
+    [NonUnitalNonAssocSemiring A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
+    {S : Submonoid R} :
+    NonUnitalNonAssocSemiring (LocalizedModule S A) where
+  left_distrib := by
+    rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
+    apply mk_eq.mpr _
+    use 1
+    simp only [one_mul, smul_add, mul_add, mul_smul_comm, smul_smul, ← mul_assoc,
+      mul_right_comm]
+  right_distrib := by
+    rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
+    apply mk_eq.mpr _
+    use 1
+    simp only [one_mul, smul_add, add_mul, smul_smul, ← mul_assoc, smul_mul_assoc,
+      mul_right_comm]
+  zero_mul := by
+    rintro ⟨a, s⟩
+    exact mk_eq.mpr ⟨1, by simp only [zero_mul, smul_zero]⟩
+  mul_zero := by
+    rintro ⟨a, s⟩
+    exact mk_eq.mpr ⟨1, by simp only [mul_zero, smul_zero]⟩
+
 instance {α A : Type*}
     [NonUnitalNonAssocSemiring A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
     [SMul α A] [SMulCommClass α R A] [SMulCommClass α A A] :
@@ -306,27 +329,10 @@ instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
     simp only [one_mul, smul_smul, ← mul_assoc, mul_right_comm]
 
 instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
-    Semiring (LocalizedModule S A) :=
-  { show (AddCommMonoid (LocalizedModule S A)) by infer_instance,
-    show (Monoid (LocalizedModule S A)) by infer_instance with
-    left_distrib := by
-      rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
-      apply mk_eq.mpr _
-      use 1
-      simp only [one_mul, smul_add, mul_add, mul_smul_comm, smul_smul, ← mul_assoc,
-        mul_right_comm]
-    right_distrib := by
-      rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
-      apply mk_eq.mpr _
-      use 1
-      simp only [one_mul, smul_add, add_mul, smul_smul, ← mul_assoc, smul_mul_assoc,
-        mul_right_comm]
-    zero_mul := by
-      rintro ⟨a, s⟩
-      exact mk_eq.mpr ⟨1, by simp only [zero_mul, smul_zero]⟩
-    mul_zero := by
-      rintro ⟨a, s⟩
-      exact mk_eq.mpr ⟨1, by simp only [mul_zero, smul_zero]⟩ }
+    Semiring (LocalizedModule S A) where
+  __ : AddCommMonoid (LocalizedModule S A) := inferInstance
+  __ : Monoid (LocalizedModule S A) := inferInstance
+  __ : NonUnitalNonAssocSemiring (LocalizedModule S A) := inferInstance
 
 instance {A : Type*} [CommSemiring A] [Algebra R A] {S : Submonoid R} :
     CommSemiring (LocalizedModule S A) :=
