@@ -229,7 +229,7 @@ example : {z : ℝ | z ^ 3 = 1} = {1} := by
   simp_all only [zero_eq_neg, OfNat.ofNat_ne_zero]
 
 lemma quartic_roots_of_unity_of_sq_eq {K : Type*} [Field K] {s : K} (hs : s * s = -1) :
-    {z : K | z^4 = 1} = {1, s, -1, -s} := by
+    {z : K | z ^ 4 = 1} = {1, s, -1, -s} := by
   have H (z : K) : z ^ 4 - 1 = (z - 1) * (z - s) * (z + 1) * (z + s) := by
     ring_nf
     rw [sq s, hs]
@@ -240,7 +240,7 @@ lemma quartic_roots_of_unity_of_sq_eq {K : Type*} [Field K] {s : K} (hs : s * s 
   simp only [← sub_neg_eq_add, mul_eq_zero, sub_eq_zero, or_assoc]
 
 lemma quartic_roots_of_unity_of_sq_ne {K : Type*} [Field K] (h : ∀ s : K, s^2 ≠ -1) :
-    {z : K | z^4 = 1} = {1, -1} := by
+    {z : K | z ^ 4 = 1} = {1, -1} := by
   have H (z : K) : z ^ 4 - 1 = (z - 1) * (z + 1) * (z ^ 2 + 1) := by
     ring_nf
   ext z
@@ -267,8 +267,8 @@ example : {z : ℝ | z ^ 4 = 1} = {1, -1} := by
 
 lemma factorize_cyclotomic_polynomial_5 {K : Type*} [Field K] [NeZero (4 : K)] {s t₁ t₂ : K}
     (hs : s * s = 5) (ht₁ : t₁ * t₁ = - 2 * (5 + s)) (ht₂ : t₂ * t₂ = -2 * (5 -s)) (z : K) :
-    z ^ 4 + z ^ 3 + z ^ 2 + z + 1 = (z - ((s - 1) / 4 +  t₁ / 4))
-                                  * (z - ((s - 1) / 4 -  t₁ / 4))
+    z ^ 4 + z ^ 3 + z ^ 2 + z + 1 = (z - ( (s - 1) / 4 + t₁ / 4))
+                                  * (z - ( (s - 1) / 4 - t₁ / 4))
                                   * (z - (-(s + 1) / 4 + t₂ / 4))
                                   * (z - (-(s + 1) / 4 - t₂ / 4)) := by
   have s4 : s ^ 4 = 25 := by
@@ -287,10 +287,32 @@ lemma factorize_cyclotomic_polynomial_5 {K : Type*} [Field K] [NeZero (4 : K)] {
     inv_mul_cancel₀ four_ne_zero, one_pow, mul_one, one_pow, mul_one, one_pow]
   ring_nf
 
-/-
-lemma cyclotomic_polynomial_5_roots_of_sq {K : Type*} [Field K] [NeZero (2 : K)] {z s : K}
-    (hs : s * s = -3) : z ^ 2 + z + 1 = 0 ↔ z = -(1 / 2) + s / 2 ∨ z = -(1 / 2) - s / 2 :=
--/
+lemma cyclotomic_polynomial_5_roots_of_sq {K : Type*} [Field K] [NeZero (4 : K)] {s t₁ t₂ : K}
+    (hs : s * s = 5) (ht₁ : t₁ * t₁ = - 2 * (5 + s)) (ht₂ : t₂ * t₂ = -2 * (5 -s)) :
+    {z : K | z ^ 4 + z ^ 3 + z ^ 2 + z + 1 = 0} =
+      {(s - 1) / 4 + t₁ / 4,
+       (s - 1) / 4 - t₁ / 4,
+      -(s + 1) / 4 + t₂ / 4,
+      -(s + 1) / 4 - t₂ / 4} := by
+  ext1 z
+  simp only [(factorize_cyclotomic_polynomial_5 hs ht₁ ht₂), neg_add_rev, mul_eq_zero, sub_eq_zero,
+    or_assoc, Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
+
+lemma quntic_roots_of_unity_of_sq {K : Type*} [Field K] [NeZero (4 : K)] {s t₁ t₂ : K}
+    (hs : s * s = 5) (ht₁ : t₁ * t₁ = - 2 * (5 + s)) (ht₂ : t₂ * t₂ = -2 * (5 -s)) :
+  {z : K | z^5 = 1} = {1,
+      (s - 1) / 4 + t₁ / 4,
+       (s - 1) / 4 - t₁ / 4,
+      -(s + 1) / 4 + t₂ / 4,
+      -(s + 1) / 4 - t₂ / 4} := by
+  have H (z : K) : z ^ 5 - 1 = (z - 1) * (z ^ 4 + z ^ 3 + z ^ 2 + z + 1) := by ring
+  rw [← Set.singleton_union]
+  rw [← cyclotomic_polynomial_5_roots_of_sq hs ht₁ ht₂]
+  ext1 z
+  simp only [Set.mem_setOf_eq, Set.singleton_union, Set.mem_insert_iff]
+  rw [← sub_eq_zero, H]
+  rw [mul_eq_zero]
+  rw [sub_eq_zero]
 
 lemma factorize_cyclotomic_polynomial_5' (z : ℂ) :
     z ^ 4 + z ^ 3 + z ^ 2 + z + 1 = (z - ((√5 -1)/4 + √2 * √(5 + √5)/4 * I))
