@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Peter Pfaffelhuber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne, Peter Pfaffelhuber
+Authors: Rémy Degenne, Peter Pfaffelhuber, Joachim Breitner
 -/
 import Mathlib.Data.Set.Dissipate
 import Mathlib.Logic.IsEmpty
@@ -12,7 +12,9 @@ import Mathlib.Topology.Separation.Hausdorff
 /-!
 # Compact systems.
 
-This file defines compact systems of sets.
+This file defines compact systems of sets. These are set systems `p : Set α → Prop` with the
+following property: If `C : ℕ → Set α` is such that `∀ n, p (C n)` and `⋂ n, C n = ∅`, then
+there is some `N : ℕ` with `⋂ n < N, C n = ∅`.
 
 ## Main definitions
 
@@ -528,9 +530,7 @@ noncomputable def mem_of_union (L : ℕ → Finset (Set α))
   (hL : ∀ N, (⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet).Nonempty) : (k : ℕ) → L k :=
   Nat.prefixInduction' (q L) (step0 hL) (step')
 
-namespace mem_of_union
-
-theorem spec (L : ℕ → Finset (Set α))
+theorem mem_of_union.spec (L : ℕ → Finset (Set α))
     (hL : ∀ N, (⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet).Nonempty) (n : ℕ) :
     (∀ N, ((⋂ (j : Fin n), (mem_of_union L hL) j) ∩ (⋂ (k < N), ⋃₀ (L (n + k)).toSet)).Nonempty) :=
   Nat.prefixInduction'_spec (β := fun n ↦ {a // a ∈ L n}) (q L) (step0 hL) (step') n
@@ -540,29 +540,24 @@ lemma l1 (L : ℕ → Finset (Set α))
       (mem_of_union L hL k).val ∈ (L k).toSet := by
   exact (mem_of_union L hL k).prop
 
-
-lemma l2 (L : ℕ → Finset (Set α))
+lemma sInter_memOfUnion_nonempty (L : ℕ → Finset (Set α))
     (hL : ∀ N, (⋂ k, ⋂ (_ : k < N), ⋃₀ (L k).toSet).Nonempty) (n : ℕ) :
     (⋂ (j : Fin n), (mem_of_union L hL j).val).Nonempty := by
-  have h := spec L hL n 0
+  have h := mem_of_union.spec L hL n 0
   simp only [not_lt_zero, iInter_of_empty, iInter_univ, inter_univ] at h
   exact h
 
-lemma isSubsetN0 (L : ℕ → Finset (Set α)) (hL : ∀ N, (⋂ k < N, ⋃₀ (L k).toSet).Nonempty) :
-    (⋂ j, (mem_of_union L hL j)) ⊆
-      ⋂ k, (⋃₀ (L k).toSet) := by
+lemma sInter_memOfUnion_isSubset (L : ℕ → Finset (Set α))
+    (hL : ∀ N, (⋂ k < N, ⋃₀ (L k).toSet).Nonempty) :
+    (⋂ j, (mem_of_union L hL j)) ⊆ ⋂ k, (⋃₀ (L k).toSet) := by
   exact iInter_mono <| fun n ↦
   subset_sUnion_of_subset (↑(L n)) (mem_of_union L hL n).val (fun ⦃a⦄ a ↦ a) (l1 L hL n)
-
-end mem_of_union
 
 /-- Finite unions of sets in a compact system. -/
 def union (p : Set α → Prop) : Set α → Prop :=
   (sUnion '' ({ L : Set (Set α) | L.Finite ∧ ∀ K ∈ L, p K}))
 
-namespace union
-
-lemma mem_iff (s : Set α) : union p s ↔ ∃ L : Finset (Set α), s = ⋃₀ L ∧ ∀ K ∈ L, p K := by
+lemma union.mem_iff (s : Set α) : union p s ↔ ∃ L : Finset (Set α), s = ⋃₀ L ∧ ∀ K ∈ L, p K := by
   refine ⟨fun ⟨L, hL⟩ ↦ ?_, fun h ↦ ?_⟩
   · simp only [mem_setOf_eq] at hL
     let L' := (hL.1.1).toFinset
@@ -576,21 +571,20 @@ lemma mem_iff (s : Set α) : union p s ↔ ∃ L : Finset (Set α), s = ⋃₀ L
     simp only [mem_setOf_eq, Finset.finite_toSet, Finset.mem_coe, true_and]
     refine ⟨hL.2, hL.1.symm⟩
 
-theorem isCompactSystem (p : Set α → Prop)(hp : IsCompactSystem p) : IsCompactSystem (union p) := by
+theorem union.isCompactSystem (p : Set α → Prop)(hp : IsCompactSystem p) :
+    IsCompactSystem (union p) := by
   rw [iff_nonempty_iInter_of_lt]
   intro C hi
   simp_rw [mem_iff] at hi
   choose L' hL' using hi
   simp_rw [hL']
   intro hL
-  have h₁ := mem_of_union.l2 L' hL
+  have h₁ := sInter_memOfUnion_nonempty L' hL
   have h₂ : (∀ (i : ℕ), p ↑(mem_of_union L' hL i)) :=
     fun i ↦ (hL' i).2 (mem_of_union L' hL i).val (mem_of_union L' hL i).prop
   have h₃ := (iff_nonempty_iInter_of_lt' p).mp hp (fun k ↦ (mem_of_union L' hL k).val) h₂ h₁
-  have h₄ : ⋂ i, (mem_of_union L' hL) i ⊆ ⋂ i, ⋃₀ (L' i).toSet := mem_of_union.isSubsetN0 L' hL
+  have h₄ : ⋂ i, (mem_of_union L' hL) i ⊆ ⋂ i, ⋃₀ (L' i).toSet := sInter_memOfUnion_isSubset L' hL
   exact Nonempty.mono h₄ h₃
-
-end union
 
 end Union
 
@@ -675,7 +669,7 @@ closed and compact, for all `i ∈ s`. -/
 def MeasureTheory.compactClosedSquareCylinders : Set (Set (Π i, α i)) :=
   MeasureTheory.squareCylinders (fun i ↦ { t : Set (α i) | IsCompact t ∧ IsClosed t })
 
-/-- Products of compact and closed sets form a a compact system. -/
+/-- Products of compact and closed sets form a compact system. -/
 theorem IsCompactSystem.compactClosedPi :
     IsCompactSystem (univ.pi '' univ.pi (fun i ↦ { t : Set (α i) | IsCompact t ∧ IsClosed t })) :=
   IsCompactSystem.pi _ (fun _ ↦ IsCompactSystem.of_isCompact_isClosed)
@@ -687,4 +681,3 @@ theorem isCompactSystem.compactClosedSquareCylinders :
     (fun _ ↦ IsCompactSystem.nonempty_isCompactIsClosed)
 
 end ClosedCompactSquareCylinders
-#lint
