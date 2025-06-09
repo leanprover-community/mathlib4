@@ -102,14 +102,15 @@ lemma ClassGroup.mk_def (I : (FractionalIdeal R⁰ K)ˣ) :
 -- Can't be `@[simp]` because it can't figure out the quotient relation.
 theorem ClassGroup.Quot_mk_eq_mk (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
     Quot.mk _ I = ClassGroup.mk I := by
-  rw [ClassGroup.mk_def, canonicalEquiv_self]
+  rw [ClassGroup.mk_def, canonicalEquiv_self, RingEquiv.coe_monoidHom_refl, Units.map_id,
+    MonoidHom.id_apply, QuotientGroup.mk'_apply]
   rfl
 
 theorem ClassGroup.mk_eq_mk {I J : (FractionalIdeal R⁰ <| FractionRing R)ˣ} :
     ClassGroup.mk I = ClassGroup.mk J ↔
       ∃ x : (FractionRing R)ˣ, I * toPrincipalIdeal R (FractionRing R) x = J := by
-  rw [mk_def, mk_def, QuotientGroup.mk'_eq_mk', canonicalEquiv_self]
-  exact exists_exists_eq_and
+  rw [mk_def, mk_def, QuotientGroup.mk'_eq_mk']
+  simp [RingEquiv.coe_monoidHom_refl, MonoidHom.mem_range, -toPrincipalIdeal_eq_iff]
 
 theorem ClassGroup.mk_eq_mk_of_coe_ideal {I J : (FractionalIdeal R⁰ <| FractionRing R)ˣ}
     {I' J' : Ideal R} (hI : (I : FractionalIdeal R⁰ <| FractionRing R) = I')
@@ -206,9 +207,9 @@ theorem ClassGroup.mk_canonicalEquiv (K' : Type*) [Field K'] [Algebra R K'] [IsF
     (I : (FractionalIdeal R⁰ K)ˣ) :
     ClassGroup.mk (Units.map (↑(canonicalEquiv R⁰ K K')) I : (FractionalIdeal R⁰ K')ˣ) =
       ClassGroup.mk I := by
-  rw [mk_def, mk_def, ← MonoidHom.comp_apply (Units.map _), ← Units.map_comp,
-    ← RingEquiv.coe_monoidHom_trans, FractionalIdeal.canonicalEquiv_trans_canonicalEquiv]
-  rfl
+  rw [ClassGroup.mk_def, ClassGroup.mk_def, ← MonoidHom.comp_apply (Units.map _),
+      ← Units.map_comp, ← RingEquiv.coe_monoidHom_trans,
+      FractionalIdeal.canonicalEquiv_trans_canonicalEquiv]
 
 /-- Send a nonzero integral ideal to an invertible fractional ideal. -/
 noncomputable def FractionalIdeal.mk0 [IsDedekindDomain R] :
