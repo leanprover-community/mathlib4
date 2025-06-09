@@ -22,22 +22,34 @@ variable {C : Type _} [Category C] [Preadditive C] [HasZeroObject C] [HasShift C
 
 namespace TStructure
 
-variable (X : C) {n a a' b b' : ℤ} (h : n + a = a') (h' : n + b = b')
+variable (X : C) {n a a' : ℤ} (h : n + a = a')
 
 namespace ShiftTruncLE
 
 noncomputable def hom : ((t.truncLE a').obj X)⟦n⟧ ⟶ (t.truncLE a).obj (X⟦n⟧) := by
-  have := t.isLE_shift ((t.truncLE a').obj X) a' n a h
+  have : t.IsLE ((shiftFunctor C n).obj ((t.truncLE a').obj X)) a := by
+    refine {le := ?_}
+    change (t.le _).shift _ _
+    rw [t.shift_le _ _ _ h]
+    exact t.le_of_isLE _ _
   exact t.liftTruncLE (((t.truncLEι a').app X)⟦n⟧') a
 
 @[reassoc (attr := simp)]
 lemma hom_ι : hom t X h ≫ (t.truncLEι _).app _ = ((t.truncLEι a').app X)⟦n⟧' := by
-  have := t.isLE_shift ((t.truncLE a').obj X) a' n a h
+  have : t.IsLE ((shiftFunctor C n).obj ((t.truncLE a').obj X)) a := by
+    refine {le := ?_}
+    change (t.le _).shift _ _
+    rw [t.shift_le _ _ _ h]
+    exact t.le_of_isLE _ _
   apply liftTruncLE_ι
 
 /-- inv' -/
 noncomputable def inv' : ((t.truncLE a).obj (X⟦n⟧))⟦-n⟧ ⟶ (t.truncLE a').obj X := by
-  have := t.isLE_shift ((t.truncLE a).obj (X⟦n⟧)) a (-n) a' (by linarith)
+  have : t.IsLE ((shiftFunctor C (-n)).obj ((t.truncLE a).obj ((shiftFunctor C n).obj X))) a' := by
+    refine {le := ?_}
+    change (t.le _).shift _ _
+    rw [t.shift_le _ _ a (by omega)]
+    exact t.le_of_isLE _ _
   apply t.liftTruncLE
   exact (shiftEquiv C n).inverse.map ((t.truncLEι a).app (X⟦n⟧)) ≫
     (shiftEquiv C n).unitIso.inv.app X
@@ -46,7 +58,11 @@ noncomputable def inv' : ((t.truncLE a).obj (X⟦n⟧))⟦-n⟧ ⟶ (t.truncLE a
 lemma inv'_ι :
     inv' t X h ≫ (t.truncLEι a').app X =
       ((t.truncLEι a).app (X⟦n⟧))⟦-n⟧' ≫ (shiftEquiv C n).unitIso.inv.app X := by
-  have := t.isLE_shift ((t.truncLE a).obj (X⟦n⟧)) a (-n) a' (by linarith)
+  have : t.IsLE ((shiftFunctor C (-n)).obj ((t.truncLE a).obj ((shiftFunctor C n).obj X))) a' := by
+    refine {le := ?_}
+    change (t.le _).shift _ _
+    rw [t.shift_le _ _ a (by omega)]
+    exact t.le_of_isLE _ _
   apply liftTruncLE_ι
 
 noncomputable def inv :
@@ -82,8 +98,19 @@ noncomputable def iso : ((t.truncLE a').obj X)⟦n⟧ ≅ (t.truncLE a).obj (X�
   hom_inv_id := by
     apply ((shiftEquiv C n).symm.toAdjunction.homEquiv _ _).symm.injective
     dsimp
-    have := t.isLE_shift ((t.truncLE a').obj X) a' n a h
-    have := t.isLE_shift ((((t.truncLE a').obj X)⟦n⟧)) a (-n) a' (by linarith)
+--    have := t.isLE_shift ((t.truncLE a').obj X) a' n a h
+--    have := t.isLE_shift ((((t.truncLE a').obj X)⟦n⟧)) a (-n) a' (by linarith)
+    have : t.IsLE ((shiftFunctor C n).obj ((t.truncLE a').obj X)) a := by
+      refine {le := ?_}
+      change (t.le _).shift _ _
+      rw [t.shift_le _ _ _ h]
+      exact t.le_of_isLE _ _
+    have : t.IsLE ((shiftFunctor C (-n)).obj ((shiftFunctor C n).obj ((t.truncLE a').obj X)))
+        a' := by
+      refine {le := ?_}
+      change (t.le _).shift _ _
+      rw [t.shift_le _ _ a (by omega)]
+      exact t.le_of_isLE _ _
     apply to_truncLE_obj_ext
     dsimp
     simp only [Equivalence.symm, shiftEquiv'_inverse, shiftEquiv'_functor, shiftEquiv'_counitIso,
@@ -101,7 +128,11 @@ end ShiftTruncLE
 namespace ShiftTruncGE
 
 noncomputable def hom : (t.truncGE a).obj (X⟦n⟧) ⟶ ((t.truncGE a').obj X)⟦n⟧ := by
-  have := t.isGE_shift ((t.truncGE a').obj X) a' n a h
+  have : t.IsGE ((shiftFunctor C n).obj ((t.truncGE a').obj X)) a := by
+    refine {ge := ?_}
+    change (t.ge _).shift _ _
+    rw [t.shift_ge _ _ _ h]
+    exact t.ge_of_isGE _ _
   apply t.descTruncGE (((t.truncGEπ a').app X)⟦n⟧') a
 
 @[reassoc (attr := simp)]

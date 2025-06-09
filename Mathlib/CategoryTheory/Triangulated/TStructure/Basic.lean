@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.ObjectProperty.Shift
 import Mathlib.CategoryTheory.Triangulated.Pretriangulated
+import Mathlib.CategoryTheory.Triangulated.Subcategory
 import Mathlib.Data.Int.SuccPred
 
 /-!
@@ -199,8 +200,168 @@ lemma zero_of_isLE_of_isGE {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ <
     [t.IsLE X n₀] [t.IsGE Y n₁] : f = 0 :=
   t.zero f n₀ n₁ h
 
+lemma isZero (X : C) (n₀ n₁ : ℤ) (h : n₀ < n₁)
+    [t.IsLE X n₀] [t.IsGE X n₁] : IsZero X := by
+  rw [IsZero.iff_id_eq_zero]
+  exact t.zero _ n₀ n₁ h
+
+def heart : ObjectProperty C := fun X ↦ t.le 0 X ∧ t.ge 0 X
+
+lemma mem_heart_iff (X : C) :
+    t.heart X ↔ t.IsLE X 0 ∧ t.IsGE X 0 := by
+  constructor
+  · rintro ⟨h₁, h₂⟩
+    exact ⟨⟨h₁⟩, ⟨h₂⟩⟩
+  · rintro ⟨h₁, h₂⟩
+    exact ⟨t.le_of_isLE _ _, t.ge_of_isGE _ _⟩
+
+instance : t.heart.IsClosedUnderIsomorphisms where
+  of_iso {X Y} e hX := by
+    rw [mem_heart_iff] at hX ⊢
+    have := hX.1
+    have := hX.2
+    constructor
+    · exact {le := (t.le 0).prop_of_iso e (t.le_of_isLE _ _)}
+    · exact {ge := (t.ge 0).prop_of_iso e (t.ge_of_isGE _ _)}
+
+class HasHeart where
+  H : Type*
+  [cat : Category H]
+  [preadditive : Preadditive H]
+  ι : H ⥤ C
+  additive_ι : ι.Additive := by infer_instance
+  fullι : ι.Full := by infer_instance
+  faithful_ι : ι.Faithful := by infer_instance
+  hι : ι.essImage = t.heart := by simp
+
+def hasHeartFullSubcategory : t.HasHeart where
+  H := ObjectProperty.FullSubcategory t.heart
+  ι := ObjectProperty.ι t.heart
+  hι := by
+    ext X
+    constructor
+    · rintro ⟨⟨Y, hY⟩, ⟨e : Y ≅ X⟩⟩
+      exact t.heart.prop_of_iso e hY
+    · intro hX
+      exact ⟨⟨X, hX⟩, ⟨Iso.refl _⟩⟩
+
+variable [ht : t.HasHeart]
+
+def Heart := ht.H
+
+instance : Category t.Heart := ht.cat
+
+def ιHeart : t.Heart ⥤ C := ht.ι
+
+instance : Preadditive t.Heart := ht.preadditive
+instance : t.ιHeart.Full := ht.fullι
+instance : t.ιHeart.Faithful := ht.faithful_ι
+instance : t.ιHeart.Additive := ht.additive_ι
+
+lemma ιHeart_obj_mem (X : t.Heart) : t.heart (t.ιHeart.obj X) := by
+  change (t.ιHeart.obj X) ∈ setOf t.heart
+  rw [← ht.hι]
+  exact t.ιHeart.obj_mem_essImage X
+
+instance (X : t.Heart) : t.IsLE (t.ιHeart.obj X) 0 :=
+  ⟨(t.ιHeart_obj_mem X).1⟩
+
+instance (X : t.Heart) : t.IsGE (t.ιHeart.obj X) 0 :=
+  ⟨(t.ιHeart_obj_mem X).2⟩
+
+lemma mem_essImage_ιHeart_iff (X : C) :
+    t.ιHeart.essImage X ↔ t.heart X := by
+  dsimp [ιHeart]
+  rw [ht.hι]
+
+noncomputable def heartMk (X : C) (hX : t.heart X) : t.Heart :=
+  Functor.essImage.witness ((t.mem_essImage_ιHeart_iff X).2 hX)
+
+noncomputable def ιHeartObjHeartMkIso (X : C) (hX : t.heart X) :
+    t.ιHeart.obj (t.heartMk X hX) ≅ X :=
+  Functor.essImage.getIso ((t.mem_essImage_ιHeart_iff X).2 hX)
+
+@[simps obj]
+noncomputable def liftHeart {D : Type*} [Category D]
+    (F : D ⥤ C) (hF : ∀ (X : D), t.heart (F.obj X)) :
+    D ⥤ t.Heart where
+  obj X := t.heartMk (F.obj X) (hF X)
+  map {X Y} f := t.ιHeart.preimage ((t.ιHeartObjHeartMkIso _ (hF X)).hom ≫ F.map f ≫
+      (t.ιHeartObjHeartMkIso _ (hF Y)).inv)
+  map_id X := t.ιHeart.map_injective (by simp)
+  map_comp f g := t.ιHeart.map_injective (by simp)
+
+@[simp, reassoc]
+lemma ιHeart_map_liftHeart_map {D : Type*} [Category D]
+    (F : D ⥤ C) (hF : ∀ (X : D), t.heart (F.obj X)) {X Y : D} (f : X ⟶ Y) :
+    t.ιHeart.map ((t.liftHeart F hF).map f) =
+      (t.ιHeartObjHeartMkIso _ (hF X)).hom ≫ F.map f ≫
+        (t.ιHeartObjHeartMkIso _ (hF Y)).inv := by
+  simp [liftHeart]
+
+noncomputable def liftHeartιHeart {D : Type*} [Category D]
+    (F : D ⥤ C) (hF : ∀ (X : D), t.heart (F.obj X)) :
+    t.liftHeart F hF ⋙ t.ιHeart ≅ F :=
+  NatIso.ofComponents (fun X => t.ιHeartObjHeartMkIso _ (hF X)) (by aesop_cat)
 
 end TStructure
+
+namespace Subcategory
+
+variable {C}
+variable (S : Triangulated.Subcategory C) (t : TStructure C)
+
+class HasInducedTStructure : Prop where
+  exists_triangle_zero_one (A : C) (hA : S.P A) :
+    ∃ (X Y : C) (_ : t.le 0 X) (_ : t.ge 1 Y)
+      (f : X ⟶ A) (g : A ⟶ Y) (h : Y ⟶ X⟦(1 : ℤ)⟧) (_ : Triangle.mk f g h ∈ distTriang C),
+    S.ι.essImage X ∧ S.ι.essImage Y
+
+variable [h : S.HasInducedTStructure t]
+
+noncomputable def tStructure : TStructure S.category where
+  le n X := t.le n (S.ι.obj X)
+  ge n X := t.ge n (S.ι.obj X)
+  le_isClosedUnderIsomorphisms n := ⟨fun {X Y} e hX => (t.le n).prop_of_iso (S.ι.mapIso e) hX⟩
+  ge_isClosedUnderIsomorphisms n := ⟨fun {X Y} e hX => (t.ge n).prop_of_iso (S.ι.mapIso e) hX⟩
+  le_shift n a n' h X hX := (t.le n').prop_of_iso ((S.ι.commShiftIso a).symm.app X)
+    (t.le_shift n a n' h (S.ι.obj X) hX)
+  ge_shift n a n' h X hX := (t.ge n').prop_of_iso ((S.ι.commShiftIso a).symm.app X)
+    (t.ge_shift n a n' h (S.ι.obj X) hX)
+  zero' {X Y} f hX hY := S.ι.map_injective (by
+    rw [Functor.map_zero]
+    exact t.zero' (S.ι.map f) hX hY)
+  le_zero_le X hX := t.le_zero_le _ hX
+  ge_one_le X hX := t.ge_one_le _ hX
+  exists_triangle_zero_one A := by
+    obtain ⟨X, Y, hX, hY, f, g, h, hT, ⟨X', ⟨e⟩⟩, ⟨Y', ⟨e'⟩⟩⟩ :=
+      h.exists_triangle_zero_one A.1 A.2
+    refine ⟨X', Y', (t.le 0).prop_of_iso e.symm hX, (t.ge 1).prop_of_iso e'.symm hY,
+      S.ι.preimage (e.hom ≫ f), S.ι.preimage (g ≫ e'.inv),
+      S.ι.preimage (e'.hom ≫ h ≫ e.inv⟦(1 : ℤ)⟧' ≫ (S.ι.commShiftIso (1 : ℤ)).inv.app X'),
+      isomorphic_distinguished _ hT _ ?_⟩
+    refine Triangle.isoMk _ _ e (Iso.refl _) e' ?_ ?_ ?_
+    · dsimp
+      simp
+    · dsimp
+      simp
+    · dsimp
+      simp
+
+@[simp]
+lemma mem_tStructure_heart_iff (X : S.category) :
+    (S.tStructure t).heart X ↔ t.heart X.1 := by
+  rfl
+
+lemma tStructure_isLE_iff (X : S.category) (n : ℤ) :
+    (S.tStructure t).IsLE X n ↔ t.IsLE (S.ι.obj X) n :=
+  ⟨fun h => ⟨h.1⟩, fun h => ⟨h.1⟩⟩
+
+lemma tStructure_isGE_iff (X : S.category) (n : ℤ) :
+    (S.tStructure t).IsGE X n ↔ t.IsGE (S.ι.obj X) n :=
+  ⟨fun h => ⟨h.1⟩, fun h => ⟨h.1⟩⟩
+
+end Subcategory
 
 end Triangulated
 
