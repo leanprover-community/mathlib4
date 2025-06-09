@@ -800,17 +800,13 @@ noncomputable def toRealLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) :
     simp only [map_add, NNReal.coe_add]
     ring
   map_smul' a f := by
-    apply Or.elim3 (lt_trichotomy 0 a)
-    · intro ha
-      rw [RingHom.id_apply, smul_eq_mul, ← (smul_neg a f), nnrealPart_smul_pos f (le_of_lt ha),
-        nnrealPart_smul_pos (-f) (le_of_lt ha)]
-      simp [sup_of_le_left (le_of_lt ha), mul_sub]
-    · intro ha
-      simp [← ha]
-    · intro ha
-      simp only [RingHom.id_apply, smul_eq_mul, ← (smul_neg a f),
-        nnrealPart_smul_neg f (le_of_lt ha), nnrealPart_smul_neg (-f) (le_of_lt ha), map_smul,
-        NNReal.coe_mul, Real.coe_toNNReal', neg_neg, sup_of_le_left (neg_nonneg.mpr (le_of_lt ha))]
+    rcases le_total 0 a with ha | ha
+    · rw [RingHom.id_apply, smul_eq_mul, ← (smul_neg a f), nnrealPart_smul_pos f ha,
+        nnrealPart_smul_pos (-f) ha]
+      simp [sup_of_le_left ha, mul_sub]
+    · simp only [RingHom.id_apply, smul_eq_mul, ← (smul_neg a f),
+        nnrealPart_smul_neg f ha, nnrealPart_smul_neg (-f) ha, map_smul,
+        NNReal.coe_mul, Real.coe_toNNReal', neg_neg, sup_of_le_left (neg_nonneg.mpr ha)]
       ring
 
 lemma toRealLinear_apply {Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0} (f : C_c(α, ℝ)) :
