@@ -30,13 +30,13 @@ import Mathlib.RingTheory.Trace.Quotient
 universe u
 
 attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_liftAlgebra
+  Ideal.Quotient.field
 
 variable (A K : Type*) {L : Type u} {B} [CommRing A] [Field K] [CommRing B] [Field L]
 variable [Algebra A K] [Algebra B L] [Algebra A B] [Algebra K L] [Algebra A L]
 variable [IsScalarTower A K L] [IsScalarTower A B L]
 
-open nonZeroDivisors IsLocalization Matrix Algebra
-
+open nonZeroDivisors IsLocalization Matrix Algebra Pointwise Polynomial Submodule
 section BIsDomain
 
 /-- Under the AKLB setting, `Iᵛ := traceDual A K (I : Submodule B L)` is the
@@ -385,17 +385,18 @@ lemma dual_injective :
 
 end FractionalIdeal
 
+section IsIntegrallyClosed
+
 variable (B)
-variable [IsIntegrallyClosed A] [IsDedekindDomain B]
+variable [IsIntegrallyClosed A] [IsDedekindDomain B] [NoZeroSMulDivisors A B]
 
 /-- The different ideal of an extension of integral domains `B/A` is the inverse of the dual of `A`
 as an ideal of `B`. See `coeIdeal_differentIdeal` and `coeSubmodule_differentIdeal`. -/
-noncomputable def differentIdeal [NoZeroSMulDivisors A B] : Ideal B :=
+noncomputable def differentIdeal : Ideal B :=
   (1 / Submodule.traceDual A (FractionRing A) 1 : Submodule B (FractionRing B)).comap
     (Algebra.linearMap B (FractionRing B))
 
-lemma coeSubmodule_differentIdeal_fractionRing
-    [NoZeroSMulDivisors A B] [Algebra.IsIntegral A B]
+lemma coeSubmodule_differentIdeal_fractionRing [Algebra.IsIntegral A B]
     [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
     [FiniteDimensional (FractionRing A) (FractionRing B)] :
     coeSubmodule (FractionRing B) (differentIdeal A B) =
@@ -414,9 +415,10 @@ lemma coeSubmodule_differentIdeal_fractionRing
   · exact one_ne_zero
 
 section
+
 variable [IsFractionRing B L]
 
-lemma coeSubmodule_differentIdeal [NoZeroSMulDivisors A B] :
+lemma coeSubmodule_differentIdeal :
     coeSubmodule L (differentIdeal A B) = 1 / Submodule.traceDual A K 1 := by
   have : (FractionRing.algEquiv B L).toLinearEquiv.comp (Algebra.linearMap B (FractionRing B)) =
     Algebra.linearMap B L := by ext; simp
@@ -445,7 +447,7 @@ lemma coeSubmodule_differentIdeal [NoZeroSMulDivisors A B] :
 
 variable (L)
 
-lemma coeIdeal_differentIdeal [NoZeroSMulDivisors A B] :
+lemma coeIdeal_differentIdeal :
     ↑(differentIdeal A B) = (FractionalIdeal.dual A K (1 : FractionalIdeal B⁰ L))⁻¹ := by
   apply FractionalIdeal.coeToSubmodule_injective
   simp only [FractionalIdeal.coe_div
@@ -455,11 +457,7 @@ lemma coeIdeal_differentIdeal [NoZeroSMulDivisors A B] :
 
 variable {A K B L}
 
-open Submodule
-
-attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_liftAlgebra in
-theorem differentIdeal_ne_bot
-    [NoZeroSMulDivisors A B] [Module.Finite A B]
+theorem differentIdeal_ne_bot [Module.Finite A B]
     [Algebra.IsSeparable (FractionRing A) (FractionRing B)] :
     differentIdeal A B ≠ ⊥ := by
   let K := FractionRing A
@@ -471,7 +469,7 @@ theorem differentIdeal_ne_bot
   simp
 
 lemma differentialIdeal_le_fractionalIdeal_iff
-    {I : FractionalIdeal B⁰ L} (hI : I ≠ 0) [NoZeroSMulDivisors A B] :
+    {I : FractionalIdeal B⁰ L} (hI : I ≠ 0) :
     differentIdeal A B ≤ I ↔ (((I⁻¹ :) : Submodule B L).restrictScalars A).map
       ((Algebra.trace K L).restrictScalars A) ≤ 1 := by
   rw [coeIdeal_differentIdeal A K L B, FractionalIdeal.inv_le_comm (by simp) hI,
@@ -479,7 +477,7 @@ lemma differentialIdeal_le_fractionalIdeal_iff
   refine le_traceDual_iff_map_le_one.trans ?_
   simp
 
-lemma differentialIdeal_le_iff {I : Ideal B} (hI : I ≠ ⊥) [NoZeroSMulDivisors A B] :
+lemma differentialIdeal_le_iff {I : Ideal B} (hI : I ≠ ⊥) :
     differentIdeal A B ≤ I ↔ (((I⁻¹ : FractionalIdeal B⁰ L) : Submodule B L).restrictScalars A).map
       ((Algebra.trace K L).restrictScalars A) ≤ 1 :=
   (FractionalIdeal.coeIdeal_le_coeIdeal _).symm.trans
@@ -533,7 +531,7 @@ end
 variable (L) {B}
 
 open Polynomial Pointwise in
-lemma conductor_mul_differentIdeal [NoZeroSMulDivisors A B]
+lemma conductor_mul_differentIdeal
     (x : B) (hx : Algebra.adjoin K {algebraMap B L x} = ⊤) :
     (conductor A x) * differentIdeal A B = Ideal.span {aeval x (derivative (minpoly A x))} := by
   classical
@@ -574,18 +572,22 @@ lemma conductor_mul_differentIdeal [NoZeroSMulDivisors A B]
   exact ⟨fun H b ↦ (mul_one b) ▸ H b 1 (one_mem _), fun H _ _ _ ↦ H _⟩
 
 open Polynomial Pointwise in
-lemma aeval_derivative_mem_differentIdeal [NoZeroSMulDivisors A B]
+lemma aeval_derivative_mem_differentIdeal
     (x : B) (hx : Algebra.adjoin K {algebraMap B L x} = ⊤) :
     aeval x (derivative (minpoly A x)) ∈ differentIdeal A B := by
   refine SetLike.le_def.mp ?_ (Ideal.mem_span_singleton_self _)
   rw [← conductor_mul_differentIdeal A K L x hx]
   exact Ideal.mul_le_left
 
+end IsIntegrallyClosed
 section
 
+variable (L)
+variable [IsFractionRing B L] [IsDedekindDomain A] [IsDedekindDomain B]
+  [NoZeroSMulDivisors A B] [Module.Finite A B]
+
 include K L in
-lemma pow_sub_one_dvd_differentIdeal_aux [IsFractionRing B L] [IsDedekindDomain A]
-    [NoZeroSMulDivisors A B] [Module.Finite A B]
+lemma pow_sub_one_dvd_differentIdeal_aux
     {p : Ideal A} [p.IsMaximal] (P : Ideal B) {e : ℕ} (he : e ≠ 0) (hp : p ≠ ⊥)
     (hP : P ^ e ∣ p.map (algebraMap A B)) : P ^ (e - 1) ∣ differentIdeal A B := by
   obtain ⟨a, ha⟩ := (pow_dvd_pow _ (Nat.sub_le e 1)).trans hP
@@ -625,7 +627,7 @@ lemma pow_sub_one_dvd_differentIdeal_aux [IsFractionRing B L] [IsDedekindDomain 
     have : trace K L (algebraMap B L z) ∈ (p : FractionalIdeal A⁰ K) := by
       rw [← algebraMap_intTrace (A := A)]
       exact ⟨intTrace A B z, this z hz, rfl⟩
-    rwa [mul_comm, ← smul_eq_mul, ← LinearMap.map_smul, smul_def, mul_comm,
+    rwa [mul_comm, ← smul_eq_mul, ← LinearMap.map_smul, Algebra.smul_def, mul_comm,
       ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B L, ← hz']
   intros x hx
   rw [← Ideal.Quotient.eq_zero_iff_mem, ← trace_quotient_eq_of_isDedekindDomain,
@@ -634,8 +636,7 @@ lemma pow_sub_one_dvd_differentIdeal_aux [IsFractionRing B L] [IsDedekindDomain 
   rw [← map_pow, Ideal.Quotient.eq_zero_iff_mem]
   exact (Ideal.dvd_iff_le.mp this) <| Ideal.pow_mem_pow hx _
 
-lemma pow_sub_one_dvd_differentIdeal [IsDedekindDomain A] [NoZeroSMulDivisors A B]
-    [Module.Finite A B] [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
+lemma pow_sub_one_dvd_differentIdeal [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
     {p : Ideal A} [p.IsMaximal] (P : Ideal B) (e : ℕ) (hp : p ≠ ⊥)
     (hP : P ^ e ∣ p.map (algebraMap A B)) : P ^ (e - 1) ∣ differentIdeal A B := by
   have : IsLocalization (algebraMapSubmonoid B A⁰) (FractionRing B) :=
@@ -645,9 +646,6 @@ lemma pow_sub_one_dvd_differentIdeal [IsDedekindDomain A] [NoZeroSMulDivisors A 
   by_cases he : e = 0
   · rw [he, pow_zero]; exact one_dvd _
   exact pow_sub_one_dvd_differentIdeal_aux A (FractionRing A) (FractionRing B) _ he hp hP
-
-attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_liftAlgebra
-  Ideal.Quotient.field
 
 theorem not_dvd_differentIdeal_of_intTrace_not_mem
     [NoZeroSMulDivisors A B] [Module.Finite A B]
@@ -710,9 +708,7 @@ theorem not_dvd_differentIdeal_of_intTrace_not_mem
 
 open nonZeroDivisors
 
-omit [IsIntegrallyClosed A] in
 theorem not_dvd_differentIdeal_of_isCoprime_of_isSeparable
-    [IsDedekindDomain A] [NoZeroSMulDivisors A B] [Module.Finite A B]
     [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
     {p : Ideal A} [p.IsMaximal] (P Q : Ideal B) [P.IsMaximal] [P.LiesOver p]
     (hPQ : IsCoprime P Q) (hP : P * Q = Ideal.map (algebraMap A B) p)
@@ -736,9 +732,7 @@ theorem not_dvd_differentIdeal_of_isCoprime_of_isSeparable
       hy, Algebra.trace_eq_of_algEquiv, Algebra.trace_prod_apply]
     simpa
 
-omit [IsIntegrallyClosed A] in
 theorem not_dvd_differentIdeal_of_isCoprime
-    [IsDedekindDomain A] [NoZeroSMulDivisors A B] [Module.Finite A B]
     [Algebra.IsSeparable (FractionRing A) (FractionRing B)]
     {p : Ideal A} [p.IsMaximal] [Finite (A ⧸ p)] (P Q : Ideal B) [P.IsMaximal]
     (hPQ : IsCoprime P Q) (hP : P * Q = Ideal.map (algebraMap A B) p) :
@@ -749,6 +743,6 @@ theorem not_dvd_differentIdeal_of_isCoprime
     · simpa using ‹P.IsMaximal›.ne_top
     · rw [← Ideal.map_le_iff_le_comap, ← hP]
       exact Ideal.mul_le_right
-  refine not_dvd_differentIdeal_of_isCoprime_of_isSeparable A P Q hPQ hP
+  exact not_dvd_differentIdeal_of_isCoprime_of_isSeparable A P Q hPQ hP
 
 end
