@@ -47,7 +47,11 @@ attribute [instance] TExact.rightTExact TExact.leftTExact
 lemma RightTExact.mk' (h : ∀ (X : C) [t₁.IsGE X 0], t₂.IsGE (F.obj X) 0) :
     F.RightTExact t₁ t₂ where
   objGE X n _ := by
-    have := t₁.isGE_shift X n n 0 (add_zero n)
+    have : t₁.IsGE ((shiftFunctor C n).obj X) 0 := by
+      refine {ge := ?_}
+      change (t₁.ge _).shift _ _
+      rw [t₁.shift_ge _ _ n (by omega)]
+      exact t₁.ge_of_isGE _ _
     have : t₂.IsGE ((shiftFunctor C n ⋙ F).obj X) 0 := h (X⟦n⟧)
     have : t₂.IsGE ((F.obj X)⟦n⟧) 0 := t₂.isGE_of_iso ((F.commShiftIso n).app X) 0
     exact t₂.isGE_of_shift (F.obj X) n n 0 (add_zero n)
@@ -134,7 +138,7 @@ def triangleGELEIso_aux (a b : ℤ) (h : a + 1 = b) (X : C) :
   have : t₂.IsGE (F.mapTriangle.obj ((t₁.triangleLEGE a b h).obj X)).obj₃ b := by
     dsimp
     apply F.isGE_obj t₁ t₂
-  obtain ⟨e, h₂⟩ := t₂.triangle_iso_exists a b (by linarith) _ _
+  obtain ⟨e, h₂⟩ := t₂.triangle_iso_exists a b (by omega) _ _
     (t₂.triangleLEGE_distinguished a b h (F.obj X))
     (F.map_distinguished _ (t₁.triangleLEGE_distinguished a b h X)) (Iso.refl _)
     (by dsimp; infer_instance) (by dsimp; infer_instance) inferInstance inferInstance
@@ -150,12 +154,12 @@ def triangleGELEIso_aux (a b : ℤ) (h : a + 1 = b) (X : C) :
     simpa [h₂] using e.hom.comm₂
 
 instance (n : ℤ) (X : C) : IsIso ((truncGEComparison F t₁ t₂ n).app X) := by
-  obtain ⟨e, _, h₃, _⟩ := triangleGELEIso_aux F t₁ t₂ (n-1) n (by linarith) X
+  obtain ⟨e, _, h₃, _⟩ := triangleGELEIso_aux F t₁ t₂ (n-1) n (by omega) X
   rw [← h₃]
   infer_instance
 
 instance (n : ℤ) (X : C) : IsIso ((truncLEComparison F t₁ t₂ n).app X) := by
-  obtain ⟨e, h₁, _, _⟩ := triangleGELEIso_aux F t₁ t₂ n (n + 1) (by linarith) X
+  obtain ⟨e, h₁, _, _⟩ := triangleGELEIso_aux F t₁ t₂ n (n + 1) (by omega) X
   rw [← h₁]
   infer_instance
 
