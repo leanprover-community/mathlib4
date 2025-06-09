@@ -10,7 +10,7 @@ import Mathlib.Topology.Algebra.SeparationQuotient.Hom
 # Lifts of maps to separation quotients of seminormed groups
 
 For any `SeminormedAddCommGroup M`, a `NormedAddCommGroup` instance has been defined in
-`Mathlib.Analysis.Normed.Group.Uniform`.
+`Mathlib/Analysis/Normed/Group/Uniform.lean`.
 
 ## Main definitions
 

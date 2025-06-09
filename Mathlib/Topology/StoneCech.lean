@@ -72,7 +72,7 @@ theorem ultrafilter_isClosed_basic (s : Set α) : IsClosed { u : Ultrafilter α 
   rw [← isOpen_compl_iff]
   convert ultrafilter_isOpen_basic sᶜ using 1
   ext u
-  exact Ultrafilter.compl_mem_iff_not_mem.symm
+  exact Ultrafilter.compl_mem_iff_notMem.symm
 
 /-- Every ultrafilter `u` on `Ultrafilter α` converges to a unique
   point of `Ultrafilter α`, namely `joinM u`. -/

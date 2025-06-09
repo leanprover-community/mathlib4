@@ -603,7 +603,7 @@ theorem coprime_classification' {x y z : ℤ} (h : PythagoreanTriple x y z)
       · exfalso
         revert h_pos
         rw [h_neg]
-        exact imp_false.mpr (not_lt.mpr (neg_nonpos.mpr (add_nonneg (sq_nonneg m) (sq_nonneg n))))
+        exact imp_false.mpr (not_lt.mpr (neg_nonpos.mpr (by positivity)))
     exfalso
     rcases h_even with ⟨rfl, -⟩
     rw [mul_assoc, Int.mul_emod_right] at h_parity
@@ -628,7 +628,7 @@ theorem coprime_classification' {x y z : ℤ} (h : PythagoreanTriple x y z)
       · exfalso
         revert h_pos
         rw [h_neg]
-        exact imp_false.mpr (not_lt.mpr (neg_nonpos.mpr (add_nonneg (sq_nonneg m) (sq_nonneg n))))
+        exact imp_false.mpr (not_lt.mpr (neg_nonpos.mpr (by positivity)))
     exfalso
     rcases h_even with ⟨rfl, -⟩
     rw [mul_assoc, Int.mul_emod_right] at h_parity

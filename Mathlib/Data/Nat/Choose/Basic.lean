@@ -12,7 +12,7 @@ import Mathlib.Order.Monotone.Defs
 This file defines binomial coefficients and proves simple lemmas (i.e. those not
 requiring more imports).
 For the lemma that `n.choose k` counts the `k`-element-subsets of an `n`-element set,
-see `Fintype.card_powersetCard` in `Mathlib.Data.Finset.Powerset`.
+see `Fintype.card_powersetCard` in `Mathlib/Data/Finset/Powerset.lean`.
 
 ## Main definition and results
 

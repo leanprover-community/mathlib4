@@ -131,7 +131,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
           · rfl
         · apply ht₁.2.2 ‹x ∈ t› ‹y ∈ t› ‹x < y›
       -- Finally show that this new subsequence is one longer than the old one.
-      · rw [card_insert_of_not_mem, ht₂]
+      · rw [card_insert_of_notMem, ht₂]
         intro
         apply not_le_of_lt ‹i < j› (le_max_of_eq ‹j ∈ t› ‹t.max = i›)
   -- Finished both goals!

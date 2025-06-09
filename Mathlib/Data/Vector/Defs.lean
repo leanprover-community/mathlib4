@@ -147,16 +147,25 @@ def get (l : Vector α n) (i : Fin n) : α :=
 @[simp] theorem get_toVector (v : Vector α n) : v.toVector.get = v.get := rfl
 @[simp] theorem get_ofVector (v : _root_.Vector α n) : (ofVector v).get = v.get := rfl
 
+instance {n m : Nat} : HAppend (Vector α n) (Vector α m) (Vector α (n + m)) where
+  hAppend | ⟨l₁, h₁⟩, ⟨l₂, h₂⟩ => ⟨l₁ ++ l₂, by simp [*]⟩
+
+lemma append_def {n m : Nat}:
+    (HAppend.hAppend : Vector α n → Vector α m → Vector α (n + m)) =
+      fun | ⟨l₁, h₁⟩, ⟨l₂, h₂⟩ => ⟨l₁ ++ l₂, by simp [*]⟩ :=
+  rfl
+
 /-- Appending a vector to another. -/
+@[deprecated "use `++` instead" (since := "2025-06-05")]
 def append {n m : Nat} : Vector α n → Vector α m → Vector α (n + m)
   | ⟨l₁, h₁⟩, ⟨l₂, h₂⟩ => ⟨l₁ ++ l₂, by simp [*]⟩
 
 @[simp] theorem toVector_append :
-    ∀ v u : Vector α n, (v.append u).toVector = v.toVector ++ u.toVector :=
+    ∀ v u : Vector α n, (v ++ u).toVector = v.toVector ++ u.toVector :=
   fun ⟨_, _⟩ ⟨_, _⟩ => _root_.Vector.toList_inj.mp Array.toList_append.symm
 
 @[simp] theorem ofVector_append :
-    ∀ v u : _root_.Vector α n, ofVector (v ++ u) = (ofVector v).append (ofVector u) :=
+    ∀ v u : _root_.Vector α n, ofVector (v ++ u) = (ofVector v) ++ (ofVector u) :=
   fun ⟨_, _⟩ ⟨_, _⟩ => Subtype.ext Array.toList_append
 
 /-- Elimination rule for `Vector`. -/
@@ -277,13 +286,12 @@ section Shift
 /-- `shiftLeftFill v i` is the vector obtained by left-shifting `v` `i` times and padding with the
     `fill` argument. If `v.length < i` then this will return `replicate n fill`. -/
 def shiftLeftFill (v : Vector α n) (i : ℕ) (fill : α) : Vector α n :=
-  Vector.congr (by simp) <|
-    append (drop i v) (replicate (min n i) fill)
+  Vector.congr (by simp) (drop i v ++ replicate (min n i) fill)
 
 /-- `shiftRightFill v i` is the vector obtained by right-shifting `v` `i` times and padding with the
     `fill` argument. If `v.length < i` then this will return `replicate n fill`. -/
 def shiftRightFill (v : Vector α n) (i : ℕ) (fill : α) : Vector α n :=
-  Vector.congr (by omega) <| append (replicate (min n i) fill) (take (n - i) v)
+  Vector.congr (by omega) (replicate (min n i) fill ++ take (n - i) v)
 
 end Shift
 
@@ -321,7 +329,7 @@ theorem toList_cons (a : α) (v : Vector α n) : toList (cons a v) = a :: toList
 /-- Appending of vectors corresponds under `toList` to appending of lists. -/
 @[simp]
 theorem toList_append {n m : ℕ} (v : Vector α n) (w : Vector α m) :
-    toList (append v w) = toList v ++ toList w := by
+    toList (v ++ w) = toList v ++ toList w := by
   cases v
   cases w
   rfl

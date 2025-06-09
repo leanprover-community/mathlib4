@@ -64,7 +64,7 @@ variable {G}
 
 theorem isAcyclic_iff_forall_adj_isBridge :
     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
-  simp_rw [isBridge_iff_adj_and_forall_cycle_not_mem]
+  simp_rw [isBridge_iff_adj_and_forall_cycle_notMem]
   constructor
   · intro ha v w hvw
     apply And.intro hvw

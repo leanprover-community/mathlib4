@@ -258,8 +258,11 @@ theorem IsLowerSet.top_mem (hs : IsLowerSet s) : ⊤ ∈ s ↔ s = univ :=
 theorem IsUpperSet.top_mem (hs : IsUpperSet s) : ⊤ ∈ s ↔ s.Nonempty :=
   ⟨fun h => ⟨_, h⟩, fun ⟨_a, ha⟩ => hs le_top ha⟩
 
-theorem IsUpperSet.not_top_mem (hs : IsUpperSet s) : ⊤ ∉ s ↔ s = ∅ :=
+theorem IsUpperSet.top_notMem (hs : IsUpperSet s) : ⊤ ∉ s ↔ s = ∅ :=
   hs.top_mem.not.trans not_nonempty_iff_eq_empty
+
+@[deprecated (since := "2025-05-24")]
+alias IsUpperSet.not_top_mem := IsUpperSet.top_notMem
 
 end OrderTop
 
@@ -273,8 +276,11 @@ theorem IsUpperSet.bot_mem (hs : IsUpperSet s) : ⊥ ∈ s ↔ s = univ :=
 theorem IsLowerSet.bot_mem (hs : IsLowerSet s) : ⊥ ∈ s ↔ s.Nonempty :=
   ⟨fun h => ⟨_, h⟩, fun ⟨_a, ha⟩ => hs bot_le ha⟩
 
-theorem IsLowerSet.not_bot_mem (hs : IsLowerSet s) : ⊥ ∉ s ↔ s = ∅ :=
+theorem IsLowerSet.bot_notMem (hs : IsLowerSet s) : ⊥ ∉ s ↔ s = ∅ :=
   hs.bot_mem.not.trans not_nonempty_iff_eq_empty
+
+@[deprecated (since := "2025-05-24")]
+alias IsLowerSet.not_bot_mem := IsLowerSet.bot_notMem
 
 end OrderBot
 

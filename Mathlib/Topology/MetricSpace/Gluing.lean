@@ -74,8 +74,7 @@ private theorem glueDist_self (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) : ∀ x, 
 theorem glueDist_glued_points [Nonempty Z] (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (p : Z) :
     glueDist Φ Ψ ε (.inl (Φ p)) (.inr (Ψ p)) = ε := by
   have : ⨅ q, dist (Φ p) (Φ q) + dist (Ψ p) (Ψ q) = 0 := by
-    have A : ∀ q, 0 ≤ dist (Φ p) (Φ q) + dist (Ψ p) (Ψ q) := fun _ =>
-      add_nonneg dist_nonneg dist_nonneg
+    have A : ∀ q, 0 ≤ dist (Φ p) (Φ q) + dist (Ψ p) (Ψ q) := fun _ => by positivity
     refine le_antisymm ?_ (le_ciInf A)
     have : 0 = dist (Φ p) (Φ p) + dist (Ψ p) (Ψ p) := by simp
     rw [this]
@@ -98,7 +97,7 @@ theorem glueDist_swap (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) :
 
 theorem le_glueDist_inl_inr (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (x y) :
     ε ≤ glueDist Φ Ψ ε (.inl x) (.inr y) :=
-  le_add_of_nonneg_left <| Real.iInf_nonneg fun _ => add_nonneg dist_nonneg dist_nonneg
+  le_add_of_nonneg_left <| Real.iInf_nonneg fun _ => by positivity
 
 theorem le_glueDist_inr_inl (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (x y) :
     ε ≤ glueDist Φ Ψ ε (.inr x) (.inl y) := by
@@ -113,7 +112,7 @@ private theorem glueDist_triangle_inl_inr_inr (Φ : Z → X) (Ψ : Z → Y) (ε 
   simp only [glueDist]
   rw [add_right_comm, add_le_add_iff_right]
   refine le_ciInf_add fun p => ciInf_le_of_le ⟨0, ?_⟩ p ?_
-  · exact forall_mem_range.2 fun _ => add_nonneg dist_nonneg dist_nonneg
+  · exact forall_mem_range.2 fun _ => by positivity
   · linarith [dist_triangle_left z (Ψ p) y]
 
 private theorem glueDist_triangle_inl_inr_inl (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ)

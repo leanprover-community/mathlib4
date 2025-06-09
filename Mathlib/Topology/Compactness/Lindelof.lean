@@ -52,7 +52,7 @@ def IsLindelof (s : Set X) :=
 theorem IsLindelof.compl_mem_sets (hs : IsLindelof s) {f : Filter X} [CountableInterFilter f]
     (hf : ∀ x ∈ s, sᶜ ∈ 𝓝 x ⊓ f) : sᶜ ∈ f := by
   contrapose! hf
-  simp only [not_mem_iff_inf_principal_compl, compl_compl, inf_assoc] at hf ⊢
+  simp only [notMem_iff_inf_principal_compl, compl_compl, inf_assoc] at hf ⊢
   exact hs inf_le_right
 
 /-- The complement to a Lindelöf set belongs to a filter `f` with the countable intersection
@@ -266,7 +266,7 @@ theorem isLindelof_of_countable_subcover
   have uinf := f.sets_of_superset (le_principal_iff.1 fsub) h
   have uninf : ⋂ i ∈ t, (U i)ᶜ ∈ f := (countable_bInter_mem ht).mpr (fun _ _ ↦ hUf _)
   rw [← compl_iUnion₂] at uninf
-  have uninf := compl_not_mem uninf
+  have uninf := compl_notMem uninf
   simp only [compl_compl] at uninf
   contradiction
 

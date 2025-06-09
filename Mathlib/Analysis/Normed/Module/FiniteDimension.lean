@@ -622,13 +622,13 @@ theorem summable_norm_iff {α E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ
     obtain v := Module.finBasis ℝ E
     set e := v.equivFunL
     have H : Summable fun x => ‖e (f x)‖ := this (e.summable.2 hf)
-    refine .of_norm_bounded _ (H.mul_left ↑‖(e.symm : (Fin (finrank ℝ E) → ℝ) →L[ℝ] E)‖₊) fun i ↦ ?_
+    refine .of_norm_bounded (H.mul_left ↑‖(e.symm : (Fin (finrank ℝ E) → ℝ) →L[ℝ] E)‖₊) fun i ↦ ?_
     simpa using (e.symm : (Fin (finrank ℝ E) → ℝ) →L[ℝ] E).le_opNorm (e <| f i)
   clear! E
   -- Now we deal with `g : α → Fin N → ℝ`
   intro N g hg
   have : ∀ i, Summable fun x => ‖g x i‖ := fun i => (Pi.summable.1 hg i).abs
-  refine .of_norm_bounded _ (summable_sum fun i (_ : i ∈ Finset.univ) => this i) fun x => ?_
+  refine .of_norm_bounded (summable_sum fun i (_ : i ∈ Finset.univ) => this i) fun x => ?_
   rw [norm_norm, pi_norm_le_iff_of_nonneg]
   · refine fun i => Finset.single_le_sum (f := fun i => ‖g x i‖) (fun i _ => ?_) (Finset.mem_univ i)
     exact norm_nonneg (g x i)

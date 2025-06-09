@@ -285,7 +285,7 @@ theorem st_eq_sSup {x : ℝ*} : st x = sSup { y : ℝ | (y : ℝ*) < x } := by
       exact Set.eq_univ_of_forall hx
     | inr hx =>
       convert Real.sSup_empty.symm
-      exact Set.eq_empty_of_forall_not_mem fun y hy ↦ hy.out.not_lt (hx _)
+      exact Set.eq_empty_of_forall_notMem fun y hy ↦ hy.out.not_lt (hx _)
   · exact (isSt_sSup hx).st_eq
 
 theorem exists_st_iff_not_infinite {x : ℝ*} : (∃ r : ℝ, IsSt x r) ↔ ¬Infinite x :=

@@ -39,16 +39,16 @@ finsets, powers in groups, ...).
 Less basic uses of `ℕ` and `ℤ` should however use the typeclass-mediated development.
 
 The relevant files are:
-* `Mathlib.Data.Nat.Basic` for the continuation of the home-baked development on `ℕ`
-* `Mathlib.Data.Int.Init` for the continuation of the home-baked development on `ℤ`
-* `Mathlib.Algebra.Group.Nat` for the monoid instances on `ℕ`
-* `Mathlib.Algebra.Group.Int` for the group instance on `ℤ`
-* `Mathlib.Algebra.Ring.Nat` for the semiring instance on `ℕ`
-* `Mathlib.Algebra.Ring.Int` for the ring instance on `ℤ`
-* `Mathlib.Algebra.Order.Group.Nat` for the ordered monoid instance on `ℕ`
-* `Mathlib.Algebra.Order.Group.Int` for the ordered group instance on `ℤ`
-* `Mathlib.Algebra.Order.Ring.Nat` for the ordered semiring instance on `ℕ`
-* `Mathlib.Algebra.Order.Ring.Int` for the ordered ring instance on `ℤ`
+* `Mathlib/Data/Nat/Basic.lean` for the continuation of the home-baked development on `ℕ`
+* `Mathlib/Data/Int/Init.lean` for the continuation of the home-baked development on `ℤ`
+* `Mathlib/Algebra/Group/Nat.lean` for the monoid instances on `ℕ`
+* `Mathlib/Algebra/Group/Int.lean` for the group instance on `ℤ`
+* `Mathlib/Algebra/Ring/Nat.lean` for the semiring instance on `ℕ`
+* `Mathlib/Algebra/Ring/Int.lean` for the ring instance on `ℤ`
+* `Mathlib/Algebra/Order/Group/Nat.lean` for the ordered monoid instance on `ℕ`
+* `Mathlib/Algebra/Order/Group/Int.lean` for the ordered group instance on `ℤ`
+* `Mathlib/Algebra/Order/Ring/Nat.lean` for the ordered semiring instance on `ℕ`
+* `Mathlib/Algebra/Order/Ring/Int.lean` for the ordered ring instance on `ℤ`
 -/
 
 /- We don't want to import the algebraic hierarchy in this file. -/

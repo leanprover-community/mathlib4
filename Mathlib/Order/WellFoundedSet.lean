@@ -691,12 +691,14 @@ theorem bddAbove_preimage {s : Set α} (hs : s.PartiallyWellOrderedOn r) {f : �
   use (φ m), (φ n)
   exact ⟨hφm hmn, hr⟩
 
-theorem exists_not_mem_of_gt {s : Set α} (hs : s.PartiallyWellOrderedOn r) {f : ℕ → α}
+theorem exists_notMem_of_gt {s : Set α} (hs : s.PartiallyWellOrderedOn r) {f : ℕ → α}
     (hf : ∀ m n : ℕ, m < n → ¬ r (f m) (f n)) :
-    ∃ k : ℕ, ∀ m, k < m → ¬ (f m) ∈ s := by
+    ∃ k : ℕ, ∀ m, k < m → f m ∉ s := by
   have := hs.bddAbove_preimage hf
   contrapose! this
   simpa [not_bddAbove_iff, and_comm]
+
+@[deprecated (since := "2025-05-23")] alias exists_not_mem_of_gt := exists_notMem_of_gt
 
 -- TODO: move this material to the main file on WQOs.
 
@@ -740,9 +742,10 @@ theorem exists_min_bad_of_exists_bad (r : α → α → Prop) (rk : α → ℕ) 
         (minBadSeqOfBadSeq r rk s (n + 1) fn.1 fn.2.1).2.2⟩
   have h : ∀ m n, m ≤ n → (fs m).1 m = (fs n).1 m := fun m n mn => by
     obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le mn; clear mn
-    induction' k with k ih
-    · rfl
-    · rw [ih, (minBadSeqOfBadSeq r rk s (m + k + 1) (fs (m + k)).1 (fs (m + k)).2.1).2.1 m
+    induction k with
+    | zero => rfl
+    | succ k ih =>
+      rw [ih, (minBadSeqOfBadSeq r rk s (m + k + 1) (fs (m + k)).1 (fs (m + k)).2.1).2.1 m
         (Nat.lt_succ_iff.2 (Nat.add_le_add_left k.zero_le m))]
       rfl
   refine ⟨fun n => (fs n).1 n, ⟨fun n => (fs n).2.1.1 n, fun m n mn => ?_⟩, fun n g hg1 hg2 => ?_⟩
@@ -873,7 +876,7 @@ theorem Pi.isPWO {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellO
   refine Finset.cons_induction ?_ ?_
   · intro f
     exists RelEmbedding.refl (· ≤ ·)
-    simp only [IsEmpty.forall_iff, imp_true_iff, forall_const, Finset.not_mem_empty]
+    simp only [IsEmpty.forall_iff, imp_true_iff, forall_const, Finset.notMem_empty]
   · intro x s hx ih f
     obtain ⟨g, hg⟩ := (IsPWO.of_linearOrder univ).exists_monotone_subseq (f := (f · x)) mem_univ
     obtain ⟨g', hg'⟩ := ih (f ∘ g)

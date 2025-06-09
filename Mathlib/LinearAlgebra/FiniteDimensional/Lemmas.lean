@@ -14,8 +14,8 @@ import Mathlib.Tactic.IntervalCases
 This file contains some further development of finite dimensional vector spaces, their dimensions,
 and linear maps on such spaces.
 
-Definitions are in `Mathlib.LinearAlgebra.FiniteDimensional.Defs`
-and results that require fewer imports are in `Mathlib.LinearAlgebra.FiniteDimensional.Basic`.
+Definitions are in `Mathlib/LinearAlgebra/FiniteDimensional/Defs.lean`
+and results that require fewer imports are in `Mathlib/LinearAlgebra/FiniteDimensional/Basic.lean`.
 -/
 
 assert_not_exists Monoid.exponent Module.IsTorsion

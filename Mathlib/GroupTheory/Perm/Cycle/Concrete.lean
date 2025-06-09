@@ -63,7 +63,7 @@ theorem formPerm_disjoint_iff (hl : Nodup l) (hl' : Nodup l') (hn : 2 ≤ l.leng
     by_cases hx : x ∈ l
     on_goal 1 => by_cases hx' : x ∈ l'
     · exact (h hx hx').elim
-    all_goals have := formPerm_eq_self_of_not_mem _ _ ‹_›; tauto
+    all_goals have := formPerm_eq_self_of_notMem _ _ ‹_›; tauto
 
 theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPerm l) := by
   rcases l with - | ⟨x, l⟩
@@ -154,10 +154,13 @@ theorem support_formPerm [Fintype α] (s : Cycle α) (h : Nodup s) (hn : Nontriv
   rintro _ rfl
   simpa [Nat.succ_le_succ_iff] using length_nontrivial hn
 
-theorem formPerm_eq_self_of_not_mem (s : Cycle α) (h : Nodup s) (x : α) (hx : x ∉ s) :
+theorem formPerm_eq_self_of_notMem (s : Cycle α) (h : Nodup s) (x : α) (hx : x ∉ s) :
     formPerm s h x = x := by
   induction s using Quot.inductionOn
-  simpa using List.formPerm_eq_self_of_not_mem _ _ hx
+  simpa using List.formPerm_eq_self_of_notMem _ _ hx
+
+@[deprecated (since := "2025-05-23")]
+alias formPerm_eq_self_of_not_mem := formPerm_eq_self_of_notMem
 
 theorem formPerm_apply_mem_eq_next (s : Cycle α) (h : Nodup s) (x : α) (hx : x ∈ s) :
     formPerm s h x = next s h x hx := by
@@ -241,7 +244,7 @@ theorem mem_toList_iff {y : α} : y ∈ toList p x ↔ SameCycle p x y ∧ x ∈
 
 theorem nodup_toList (p : Perm α) (x : α) : Nodup (toList p x) := by
   by_cases hx : p x = x
-  · rw [← not_mem_support, ← toList_eq_nil_iff] at hx
+  · rw [← notMem_support, ← toList_eq_nil_iff] at hx
     simp [hx]
   have hc : IsCycle (cycleOf p x) := isCycle_cycleOf p hx
   rw [nodup_iff_injective_getElem]
@@ -339,7 +342,7 @@ theorem toList_formPerm_isRotated_self (l : List α) (hl : 2 ≤ l.length) (hn :
 
 theorem formPerm_toList (f : Perm α) (x : α) : formPerm (toList f x) = f.cycleOf x := by
   by_cases hx : f x = x
-  · rw [(cycleOf_eq_one_iff f).mpr hx, toList_eq_nil_iff.mpr (not_mem_support.mpr hx),
+  · rw [(cycleOf_eq_one_iff f).mpr hx, toList_eq_nil_iff.mpr (notMem_support.mpr hx),
       formPerm_nil]
   ext y
   by_cases hy : SameCycle f x y
@@ -348,7 +351,7 @@ theorem formPerm_toList (f : Perm α) (x : α) : formPerm (toList f x) = f.cycle
       next_toList_eq_apply, pow_succ', mul_apply]
     rw [mem_toList_iff]
     exact ⟨⟨k, rfl⟩, mem_support.mpr hx⟩
-  · rw [cycleOf_apply_of_not_sameCycle hy, formPerm_apply_of_not_mem]
+  · rw [cycleOf_apply_of_not_sameCycle hy, formPerm_apply_of_notMem]
     simp [mem_toList_iff, hy]
 
 /-- Given a cyclic `f : Perm α`, generate the `Cycle α` in the order

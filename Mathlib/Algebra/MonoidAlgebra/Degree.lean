@@ -311,7 +311,7 @@ theorem apply_add_of_supDegree_le (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
   · refine fun a ha hne => if_neg (fun he => ?_)
     apply_fun D at he; simp_rw [hadd] at he
     exact (add_lt_add_left (((Finset.le_sup ha).trans hq).lt_of_ne <| hD.ne_iff.2 hne) _).ne he
-  · intro h; rw [if_pos rfl, Finsupp.not_mem_support_iff.1 h, mul_zero]
+  · intro h; rw [if_pos rfl, Finsupp.notMem_support_iff.1 h, mul_zero]
   · refine fun a ha hne => Finset.sum_eq_zero (fun a' ha' => if_neg <| fun he => ?_)
     apply_fun D at he
     simp_rw [hadd] at he
@@ -319,7 +319,7 @@ theorem apply_add_of_supDegree_le (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
     exact (add_lt_add_of_lt_of_le (((Finset.le_sup ha).trans hp).lt_of_ne <| hD.ne_iff.2 hne)
       <| (Finset.le_sup ha').trans hq).ne he
   · refine fun h => Finset.sum_eq_zero (fun a _ => ite_eq_right_iff.mpr <| fun _ => ?_)
-    rw [Finsupp.not_mem_support_iff.mp h, zero_mul]
+    rw [Finsupp.notMem_support_iff.mp h, zero_mul]
 
 end SupDegree
 

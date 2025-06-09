@@ -360,7 +360,7 @@ lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ ∃ a, (
     · intro b hb
       simp only [sInter_image, mem_iInter, mem_compl_iff]
       intro s hs
-      obtain ⟨a,ha⟩ := (subset_insert_iff_of_not_mem hUS).mp hS1 hs
+      obtain ⟨a,ha⟩ := (subset_insert_iff_of_notMem hUS).mp hS1 hs
       subst hS2 ha
       simp_all only [compl_Ici, mem_Ici, sSup_le_iff, mem_setOf_eq, mem_Iio, not_lt]
     · intro b hb

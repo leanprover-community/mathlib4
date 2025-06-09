@@ -50,8 +50,11 @@ theorem pair_unpair (n : ℕ) : pair (unpair n).1 (unpair n).2 = n := by
       (Nat.sub_le_iff_le_add'.2 <| by rw [← Nat.add_assoc]; apply sqrt_le_add)
     simp [s, pair, hl.not_lt, Nat.add_assoc, Nat.add_sub_cancel' (le_of_not_gt h), sm]
 
-theorem pair_unpair' {n a b} (H : unpair n = (a, b)) : pair a b = n := by
+theorem pair_eq_of_unpair_eq {n a b} (H : unpair n = (a, b)) : pair a b = n := by
   simpa [H] using pair_unpair n
+
+@[deprecated (since := "2025-05-24")]
+alias pair_unpair' := pair_eq_of_unpair_eq
 
 @[simp]
 theorem unpair_pair (a b : ℕ) : unpair (pair a b) = (a, b) := by

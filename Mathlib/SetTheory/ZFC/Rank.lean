@@ -36,7 +36,7 @@ theorem rank_congr : ∀ {x y : PSet}, Equiv x y → rank x = rank y
   | ⟨_, _⟩, ⟨_, _⟩, ⟨αβ, βα⟩ => by
     apply congr_arg sSup
     ext
-    constructor <;> simp <;> intro a h
+    constructor <;> simp only [Set.mem_range, forall_exists_index] <;> intro a h
     · obtain ⟨b, h'⟩ := αβ a
       exists b
       rw [← h, rank_congr h']

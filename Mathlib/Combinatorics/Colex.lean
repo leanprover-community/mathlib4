@@ -57,7 +57,7 @@ Related files are:
 colex, colexicographic, binary
 -/
 
-open Finset Function
+open Function
 
 variable {α β : Type*}
 
@@ -376,7 +376,7 @@ lemma erase_le_erase_min' (hst : toColex s ≤ toColex t) (hcard : #s ≤ #t) (h
   -- If `w < a`, then `a` is the colex witness for `s \ {a} < t \ {m}`
   · have hma : m < a := (min'_le _ _ hwt).trans_lt hwa
     refine (lt_iff_exists_forall_lt.2 ⟨a, mem_erase.2 ⟨hma.ne', (hw hwa).1 ha⟩,
-      not_mem_erase _ _, fun b hbs hbt ↦ ?_⟩).le
+      notMem_erase _ _, fun b hbs hbt ↦ ?_⟩).le
     change b ∉ t.erase m at hbt
     rw [mem_erase, not_and_or, not_ne_iff] at hbt
     obtain rfl | hbt := hbt
@@ -495,8 +495,6 @@ lemma isInitSeg_iff_exists_initSeg :
   exact ⟨isInitSeg_initSeg, initSeg_nonempty⟩
 
 end Colex
-
-open Colex
 
 /-!
 ### Colex on `ℕ`

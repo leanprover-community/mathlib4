@@ -104,7 +104,7 @@ theorem sum_measure [Countable ι] {μ : ι → Measure α} (h : ∀ i, AEMeasur
       exact fun h => ⟨i, h, hi⟩
   · refine measure_mono_null (fun x (hx : f x ≠ g x) => ?_) (hsμ i)
     contrapose! hx
-    refine (piecewise_eq_of_not_mem _ _ _ ?_).symm
+    refine (piecewise_eq_of_notMem _ _ _ ?_).symm
     exact fun h => hx (mem_iInter.1 h i)
 
 @[simp]
@@ -197,7 +197,7 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
   · rintro _ ⟨x, rfl⟩
     by_cases hx : x ∈ s
     · simpa [g, hx] using h₀.some_mem
-    · simp only [g, hx, piecewise_eq_of_not_mem, not_false_iff]
+    · simp only [g, hx, piecewise_eq_of_notMem, not_false_iff]
       contrapose! hx
       apply subset_toMeasurable
       simp +contextual only [hx, mem_compl_iff, mem_setOf_eq, not_and,
@@ -207,7 +207,7 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
       exact H.ae_eq_mk.and ht
     filter_upwards [compl_mem_ae_iff.2 A] with x hx
     rw [mem_compl_iff] at hx
-    simp only [s, g, hx, piecewise_eq_of_not_mem, not_false_iff]
+    simp only [s, g, hx, piecewise_eq_of_notMem, not_false_iff]
     contrapose! hx
     apply subset_toMeasurable
     simp only [hx, mem_compl_iff, mem_setOf_eq, false_and, not_false_iff]
@@ -384,7 +384,7 @@ lemma MeasureTheory.NullMeasurable.aemeasurable {f : α → β}
   have hvμ : μ v = 0 := (measure_biUnion_null_iff hSc).2 fun s hs ↦ ae_le_set.1 <|
     ((hUeq s hs).trans (hTeq s hs).symm).le
   refine ⟨v.piecewise (fun _ ↦ default) f, ?_, measure_mono_null (fun x ↦
-    not_imp_comm.2 fun hxv ↦ (piecewise_eq_of_not_mem _ _ _ hxv).symm) hvμ⟩
+    not_imp_comm.2 fun hxv ↦ (piecewise_eq_of_notMem _ _ _ hxv).symm) hvμ⟩
   refine measurable_of_restrict_of_restrict_compl hvm ?_ ?_
   · rw [restrict_piecewise]
     apply measurable_const

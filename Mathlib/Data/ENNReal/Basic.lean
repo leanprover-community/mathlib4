@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Data.NNReal.Defs
 import Mathlib.Order.Interval.Set.WithBotTop
+import Mathlib.Tactic.Finiteness
 
 /-!
 # Extended non-negative reals

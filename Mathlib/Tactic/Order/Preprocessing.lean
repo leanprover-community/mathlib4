@@ -9,7 +9,7 @@ import Mathlib.Tactic.Order.CollectFacts
 # Facts preprocessing for the `order` tactic
 
 In this file we implement the preprocessing procedure for the `order` tactic.
-See `Mathlib.Tactic.Order` for details of preprocessing.
+See `Mathlib/Tactic/Order.lean` for details of preprocessing.
 -/
 
 namespace Mathlib.Tactic.Order

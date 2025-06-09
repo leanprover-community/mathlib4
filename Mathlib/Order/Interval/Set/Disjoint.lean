@@ -83,7 +83,7 @@ theorem Ioi_disjoint_Iio_same : Disjoint (Ioi a) (Iio a) :=
 @[simp]
 theorem Ioi_disjoint_Iio_iff [DenselyOrdered α] : Disjoint (Ioi a) (Iio b) ↔ ¬a < b :=
   ⟨fun h hab ↦ (exists_between hab).elim
-    fun _ hc ↦ h.not_mem_of_mem_left hc.left hc.right,
+    fun _ hc ↦ h.notMem_of_mem_left hc.left hc.right,
     Ioi_disjoint_Iio_of_not_lt⟩
 
 theorem Iio_disjoint_Ioi_of_not_lt (h : ¬a < b) : Disjoint (Iio b) (Ioi a) :=
@@ -219,10 +219,10 @@ theorem IsLUB.biUnion_Iio_eq (h : IsLUB s a) : ⋃ x ∈ s, Iio x = Iio a :=
 theorem IsLUB.iUnion_Iio_eq (h : IsLUB (range f) a) : ⋃ x, Iio (f x) = Iio a :=
   h.dual.iUnion_Ioi_eq
 
-theorem IsGLB.biUnion_Ici_eq_Ioi (a_glb : IsGLB s a) (a_not_mem : a ∉ s) :
+theorem IsGLB.biUnion_Ici_eq_Ioi (a_glb : IsGLB s a) (a_notMem : a ∉ s) :
     ⋃ x ∈ s, Ici x = Ioi a := by
   refine (iUnion₂_subset fun x hx => ?_).antisymm fun x hx => ?_
-  · exact Ici_subset_Ioi.mpr (lt_of_le_of_ne (a_glb.1 hx) fun h => (h ▸ a_not_mem) hx)
+  · exact Ici_subset_Ioi.mpr (lt_of_le_of_ne (a_glb.1 hx) fun h => (h ▸ a_notMem) hx)
   · rcases a_glb.exists_between hx with ⟨y, hys, _, hyx⟩
     rw [mem_iUnion₂]
     exact ⟨y, hys, hyx.le⟩
@@ -233,9 +233,9 @@ theorem IsGLB.biUnion_Ici_eq_Ici (a_glb : IsGLB s a) (a_mem : a ∈ s) :
   · exact Ici_subset_Ici.mpr (mem_lowerBounds.mp a_glb.1 x hx)
   · exact mem_iUnion₂.mpr ⟨a, a_mem, hx⟩
 
-theorem IsLUB.biUnion_Iic_eq_Iio (a_lub : IsLUB s a) (a_not_mem : a ∉ s) :
+theorem IsLUB.biUnion_Iic_eq_Iio (a_lub : IsLUB s a) (a_notMem : a ∉ s) :
     ⋃ x ∈ s, Iic x = Iio a :=
-  a_lub.dual.biUnion_Ici_eq_Ioi a_not_mem
+  a_lub.dual.biUnion_Ici_eq_Ioi a_notMem
 
 theorem IsLUB.biUnion_Iic_eq_Iic (a_lub : IsLUB s a) (a_mem : a ∈ s) : ⋃ x ∈ s, Iic x = Iic a :=
   a_lub.dual.biUnion_Ici_eq_Ici a_mem
@@ -267,7 +267,7 @@ theorem iUnion_Iic_of_not_bddAbove_range (hf : ¬ BddAbove (range f)) : ⋃ i, I
   exact Iio_subset_Iic_self
 
 theorem iInter_Iic_eq_empty_iff : ⋂ i, Iic (f i) = ∅ ↔ ¬ BddBelow (range f) := by
-  simp [not_bddBelow_iff, Set.eq_empty_iff_forall_not_mem]
+  simp [not_bddBelow_iff, Set.eq_empty_iff_forall_notMem]
 
 theorem iInter_Iio_of_not_bddBelow_range (hf : ¬ BddBelow (range f)) : ⋂ i, Iio (f i) = ∅ := by
   refine eq_empty_of_subset_empty ?_

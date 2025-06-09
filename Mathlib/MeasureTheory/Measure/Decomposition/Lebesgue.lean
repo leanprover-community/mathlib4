@@ -792,11 +792,13 @@ theorem iSup_succ_eq_sup {α} (f : ℕ → α → ℝ≥0∞) (m : ℕ) (a : α)
 
 theorem iSup_mem_measurableLE (f : ℕ → α → ℝ≥0∞) (hf : ∀ n, f n ∈ measurableLE μ ν) (n : ℕ) :
     (fun x ↦ ⨆ (k) (_ : k ≤ n), f k x) ∈ measurableLE μ ν := by
-  induction' n with m hm
-  · constructor
+  induction n with
+  | zero =>
+    constructor
     · simp [(hf 0).1]
     · intro A hA; simp [(hf 0).2 A hA]
-  · have :
+  | succ m hm =>
+    have :
       (fun a : α ↦ ⨆ (k : ℕ) (_ : k ≤ m + 1), f k a) = fun a ↦
         f m.succ a ⊔ ⨆ (k : ℕ) (_ : k ≤ m), f k a :=
       funext fun _ ↦ iSup_succ_eq_sup _ _ _

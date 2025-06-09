@@ -127,7 +127,7 @@ variable [CommRing R] [CommRing S] [CommRing A] [CommRing B] [Field F] [Field K]
   {W : Projective F}
 
 lemma smul_fin3 (P : Fin 3 → R) (u : R) : u • P = ![u * P x, u * P y, u * P z] := by
-  simp [← List.ofFn_inj]
+  simp [← List.ofFn_inj, List.ofFn_succ]
 
 lemma smul_fin3_ext (P : Fin 3 → R) (u : R) :
     (u • P) x = u * P x ∧ (u • P) y = u * P y ∧ (u • P) z = u * P z :=
@@ -287,6 +287,7 @@ associated to a Weierstrass curve `W` in projective coordinates. -/
 noncomputable def polynomialX : MvPolynomial (Fin 3) R :=
   pderiv x W'.polynomial
 
+open Fin.CommRing in
 lemma polynomialX_eq : W'.polynomialX =
     C W'.a₁ * X 1 * X 2 - (C 3 * X 0 ^ 2 + C (2 * W'.a₂) * X 0 * X 2 + C W'.a₄ * X 2 ^ 2) := by
   rw [polynomialX, polynomial]
@@ -310,6 +311,7 @@ associated to a Weierstrass curve `W` in projective coordinates. -/
 noncomputable def polynomialY : MvPolynomial (Fin 3) R :=
   pderiv y W'.polynomial
 
+open Fin.CommRing in
 lemma polynomialY_eq : W'.polynomialY =
     C 2 * X 1 * X 2 + C W'.a₁ * X 0 * X 2 + C W'.a₃ * X 2 ^ 2 := by
   rw [polynomialY, polynomial]

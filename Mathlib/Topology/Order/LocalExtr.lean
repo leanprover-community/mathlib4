@@ -13,14 +13,14 @@ import Mathlib.Topology.ContinuousOn
 ## Main definitions
 
 This file defines special versions of `Is*Filter f a l`, `*=Min/Max/Extr`, from
-`Mathlib.Order.Filter.Extr` for two kinds of filters: `nhdsWithin` and `nhds`.  These versions are
-called `IsLocal*On` and `IsLocal*`, respectively.
+`Mathlib/Order/Filter/Extr.lean` for two kinds of filters: `nhdsWithin` and `nhds`.
+These versions are called `IsLocal*On` and `IsLocal*`, respectively.
 
 ## Main statements
 
-Many lemmas in this file restate those from `Mathlib.Order.Filter.Extr`, and you can find a detailed
-documentation there. These convenience lemmas are provided only to make the dot notation return
-propositions of expected types, not just `Is*Filter`.
+Many lemmas in this file restate those from `Mathlib/Order/Filter/Extr.lean`, and you can find
+detailed documentation there. These convenience lemmas are provided only to make the dot notation
+return propositions of expected types, not just `Is*Filter`.
 
 Here is the list of statements specific to these two types of filters:
 

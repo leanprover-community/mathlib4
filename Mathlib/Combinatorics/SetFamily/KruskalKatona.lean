@@ -65,7 +65,7 @@ lemma shadow_initSeg [Fintype α] (hs : s.Nonempty) :
   -- First show that if t ∪ a ≤ s, then t ≤ s - min s
   · rintro ⟨a, ha, hst, hts⟩
     constructor
-    · rw [card_erase_of_mem (min'_mem _ _), hst, card_insert_of_not_mem ha, add_tsub_cancel_right]
+    · rw [card_erase_of_mem (min'_mem _ _), hst, card_insert_of_notMem ha, add_tsub_cancel_right]
     · simpa [ha] using erase_le_erase_min' hts hst.ge (mem_insert_self _ _)
   -- Now show that if t ≤ s - min s, there is j such that t ∪ j ≤ s
   -- We choose j as the smallest thing not in t
@@ -73,7 +73,7 @@ lemma shadow_initSeg [Fintype α] (hs : s.Nonempty) :
   simp only [toColex_inj, ofColex_toColex, ne_eq, and_imp]
   rintro cards' (rfl | ⟨k, hks, hkt, z⟩)
   -- If t = s - min s, then use j = min s so t ∪ j = s
-  · refine ⟨min' s hs, not_mem_erase _ _, ?_⟩
+  · refine ⟨min' s hs, notMem_erase _ _, ?_⟩
     rw [insert_erase (min'_mem _ _)]
     exact ⟨rfl, Or.inl rfl⟩
   set j := min' tᶜ ⟨k, mem_compl.2 hkt⟩
@@ -81,7 +81,7 @@ lemma shadow_initSeg [Fintype α] (hs : s.Nonempty) :
   have hjk : j ≤ k := min'_le _ _ (mem_compl.2 ‹k ∉ t›)
   have : j ∉ t := mem_compl.1 (min'_mem _ _)
   have hcard : #s = #(insert j t) := by
-    rw [card_insert_of_not_mem ‹j ∉ t›, ← ‹_ = #t›, card_erase_add_one (min'_mem _ _)]
+    rw [card_insert_of_notMem ‹j ∉ t›, ← ‹_ = #t›, card_erase_add_one (min'_mem _ _)]
   refine ⟨j, ‹_›, hcard, ?_⟩
   -- Cases on j < k or j = k
   obtain hjk | r₁ := hjk.lt_or_eq
@@ -120,7 +120,7 @@ protected lemma IsInitSeg.shadow [Finite α] (h₁ : IsInitSeg 𝒜 r) : IsInitS
 
 end Colex
 
-open Finset Colex Nat UV
+open Colex UV
 open scoped FinsetFamily
 
 variable {α : Type*} [LinearOrder α] {s U V : Finset α} {n : ℕ}
@@ -134,7 +134,7 @@ lemma toColex_compress_lt_toColex {hU : U.Nonempty} {hV : V.Nonempty} (h : max' 
   rw [compress, ite_ne_right_iff] at hA
   rw [compress, if_pos hA.1, lt_iff_exists_filter_lt]
   simp_rw [mem_sdiff (s := s), filter_inj, and_assoc]
-  refine ⟨_, hA.1.2 <| max'_mem _ hV, not_mem_sdiff_of_mem_right <| max'_mem _ _, fun a ha ↦ ?_⟩
+  refine ⟨_, hA.1.2 <| max'_mem _ hV, notMem_sdiff_of_mem_right <| max'_mem _ _, fun a ha ↦ ?_⟩
   have : a ∉ V := fun H ↦ ha.not_le (le_max' _ _ H)
   have : a ∉ U := fun H ↦ ha.not_lt ((le_max' _ _ H).trans_lt h)
   simp [‹a ∉ U›, ‹a ∉ V›]
@@ -241,7 +241,7 @@ private lemma kruskal_katona_helper {r : ℕ} (𝒜 : Finset (Finset (Fin n)))
   obtain husable | husable := usable.eq_empty_or_nonempty
   -- No. Then where we are is the required set family.
   · refine ⟨𝒜, le_rfl, rfl, h, fun U V hUV ↦ ?_⟩
-    rw [eq_empty_iff_forall_not_mem] at husable
+    rw [eq_empty_iff_forall_notMem] at husable
     by_contra h
     exact husable ⟨U, V⟩ <| mem_filter.2 ⟨mem_univ _, hUV, h⟩
   -- Yes. Then apply the smallest compression, then keep going
@@ -353,7 +353,7 @@ theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
   -- Take care of the r=0 case first: it's not very interesting.
   rcases Nat.eq_zero_or_pos r with b | h1r
   · convert Nat.zero_le _
-    rw [Finset.card_eq_zero, eq_empty_iff_forall_not_mem]
+    rw [Finset.card_eq_zero, eq_empty_iff_forall_notMem]
     refine fun A HA ↦ h𝒜 HA HA ?_
     rw [disjoint_self_iff_empty, ← Finset.card_eq_zero, ← b]
     exact h₂ HA

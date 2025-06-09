@@ -73,6 +73,7 @@ theorem subset_span {s : Set α} : s ⊆ span s :=
 theorem span_le {s : Set α} {I} : span s ≤ I ↔ s ⊆ I :=
   Submodule.span_le
 
+@[gcongr]
 theorem span_mono {s t : Set α} : s ⊆ t → span s ≤ span t :=
   Submodule.span_mono
 

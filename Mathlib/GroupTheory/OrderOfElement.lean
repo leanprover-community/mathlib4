@@ -914,12 +914,10 @@ theorem orderOf_dvd_card : orderOf x ∣ Fintype.card G := by
           congr_arg (@Fintype.card _) <| Subsingleton.elim _ _
         _ = @Fintype.card _ ft_cosets * @Fintype.card _ ft_s :=
           @Fintype.card_prod _ _ ft_cosets ft_s
-
     have eq₂ : orderOf x = @Fintype.card _ ft_s :=
       calc
         orderOf x = _ := Fintype.card_zpowers.symm
         _ = _ := congr_arg (@Fintype.card _) <| Subsingleton.elim _ _
-
     exact Dvd.intro (@Fintype.card (G ⧸ Subgroup.zpowers x) ft_cosets) (by rw [eq₁, eq₂, mul_comm])
 
 @[to_additive]
@@ -1204,6 +1202,6 @@ section single
 lemma orderOf_piMulSingle {ι : Type*} [DecidableEq ι] {M : ι → Type*} [(i : ι) → Monoid (M i)]
     (i : ι) (g : M i) :
     orderOf (Pi.mulSingle i g) = orderOf g :=
-  orderOf_injective (MonoidHom.mulSingle M i) (Pi.mulSingle_injective M i) g
+  orderOf_injective (MonoidHom.mulSingle M i) (Pi.mulSingle_injective i) g
 
 end single

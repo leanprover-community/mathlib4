@@ -196,7 +196,7 @@ theorem gramSchmidt_ne_zero_coe {f : ι → E} (n : ι)
       span 𝕜 (f ∘ ((↑) : Set.Iic n → ι) '' Set.Iio ⟨n, le_refl n⟩) := by
     rw [image_comp]
     simpa using h₁
-  apply LinearIndependent.not_mem_span_image h₀ _ h₂
+  apply LinearIndependent.notMem_span_image h₀ _ h₂
   simp only [Set.mem_Iio, lt_self_iff_false, not_false_iff]
 
 /-- If the input vectors of `gramSchmidt` are linearly independent,
@@ -213,7 +213,7 @@ theorem gramSchmidt_triangular {i j : ι} (hij : i < j) (b : Basis ι 𝕜 E) :
   have : gramSchmidt 𝕜 b i ∈ span 𝕜 (b '' Set.Iio j) := by rwa [← span_gramSchmidt_Iio 𝕜 b j]
   have : ↑(b.repr (gramSchmidt 𝕜 b i)).support ⊆ Set.Iio j :=
     Basis.repr_support_subset_of_mem_span b (Set.Iio j) this
-  exact (Finsupp.mem_supported' _ _).1 ((Finsupp.mem_supported 𝕜 _).2 this) j Set.not_mem_Iio_self
+  exact (Finsupp.mem_supported' _ _).1 ((Finsupp.mem_supported 𝕜 _).2 this) j Set.notMem_Iio_self
 
 /-- `gramSchmidt` produces linearly independent vectors when given linearly independent vectors. -/
 theorem gramSchmidt_linearIndependent {f : ι → E} (h₀ : LinearIndependent 𝕜 f) :

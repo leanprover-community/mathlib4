@@ -265,7 +265,7 @@ protected lemma _root_.Set.Sized.upShadow (h𝒜 : (𝒜 : Set (Finset α)).Size
     (∂⁺ 𝒜 : Set (Finset α)).Sized (r + 1) := by
   intro A h
   obtain ⟨A, hA, i, hi, rfl⟩ := mem_upShadow_iff.1 h
-  rw [card_insert_of_not_mem hi, h𝒜 hA]
+  rw [card_insert_of_notMem hi, h𝒜 hA]
 
 /-- Being in the upper shadow of `𝒜` means we have a superset in `𝒜`. -/
 theorem exists_subset_of_mem_upShadow (hs : s ∈ ∂⁺ 𝒜) : ∃ t ∈ 𝒜, t ⊆ s :=

@@ -79,10 +79,10 @@ instance WCovBy.isRefl : IsRefl α (· ⩿ ·) :=
   ⟨WCovBy.refl⟩
 
 theorem WCovBy.Ioo_eq (h : a ⩿ b) : Ioo a b = ∅ :=
-  eq_empty_iff_forall_not_mem.2 fun _ hx => h.2 hx.1 hx.2
+  eq_empty_iff_forall_notMem.2 fun _ hx => h.2 hx.1 hx.2
 
 theorem wcovBy_iff_Ioo_eq : a ⩿ b ↔ a ≤ b ∧ Ioo a b = ∅ :=
-  and_congr_right' <| by simp [eq_empty_iff_forall_not_mem]
+  and_congr_right' <| by simp [eq_empty_iff_forall_notMem]
 
 lemma WCovBy.of_le_of_le (hac : a ⩿ c) (hab : a ≤ b) (hbc : b ≤ c) : b ⩿ c :=
   ⟨hbc, fun _x hbx hxc ↦ hac.2 (hab.trans_lt hbx) hxc⟩
@@ -289,7 +289,7 @@ theorem CovBy.Ioo_eq (h : a ⋖ b) : Ioo a b = ∅ :=
   h.wcovBy.Ioo_eq
 
 theorem covBy_iff_Ioo_eq : a ⋖ b ↔ a < b ∧ Ioo a b = ∅ :=
-  and_congr_right' <| by simp [eq_empty_iff_forall_not_mem]
+  and_congr_right' <| by simp [eq_empty_iff_forall_notMem]
 
 theorem CovBy.of_image (f : α ↪o β) (h : f a ⋖ f b) : a ⋖ b :=
   ⟨f.lt_iff_lt.mp h.lt, fun _ hac hcb => h.2 (f.lt_iff_lt.mpr hac) (f.lt_iff_lt.mpr hcb)⟩

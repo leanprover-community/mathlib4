@@ -452,7 +452,7 @@ theorem not_bddAbove_of_tendsto_atTop [NoMaxOrder β] (h : Tendsto f l atTop) :
   rintro ⟨M, hM⟩
   have : ∀ x, f x ≤ M := by aesop
   have : ∅ = f ⁻¹' Ioi M := by aesop (add forward safe not_le_of_lt)
-  apply Filter.empty_not_mem l
+  apply Filter.empty_notMem l
   aesop (add safe Ioi_mem_atTop)
 
 theorem not_bddBelow_of_tendsto_atBot [NoMinOrder β] (h : Tendsto f l atBot) :

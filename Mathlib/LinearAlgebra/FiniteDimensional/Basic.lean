@@ -18,7 +18,7 @@ of linear maps on such spaces.
 Preservation of finite-dimensionality and formulas for the dimension are given for
 - submodules (`FiniteDimensional.finiteDimensional_submodule`)
 - quotients (for the dimension of a quotient, see `Submodule.finrank_quotient_add_finrank` in
-  `Mathlib.LinearAlgebra.FiniteDimensional`)
+  `Mathlib/LinearAlgebra/FiniteDimensional.lean`)
 - linear equivs, in `LinearEquiv.finiteDimensional`
 
 Basic properties of linear maps of a finite-dimensional vector space are given. Notably, the
@@ -31,7 +31,7 @@ and `LinearMap.comp_eq_id_comm`.
 You should not assume that there has been any effort to state lemmas as generally as possible.
 
 Plenty of the results hold for general fg modules or notherian modules, and they can be found in
-`Mathlib.LinearAlgebra.FreeModule.Finite.Rank` and `Mathlib.RingTheory.Noetherian`.
+`Mathlib/LinearAlgebra/FreeModule/Finite/Rank.lean` and `Mathlib/RingTheory/Noetherian.lean`.
 -/
 
 universe u v v' w
@@ -355,7 +355,7 @@ theorem ker_noncommProd_eq_of_supIndep_ker [FiniteDimensional K V] {ι : Type*} 
   | insert i s hi ih =>
     replace ih : ker (Finset.noncommProd s f <| Set.Pairwise.mono (s.subset_insert i) comm) =
         ⨆ x ∈ s, ker (f x) := ih _ (h.subset (s.subset_insert i))
-    rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, Module.End.mul_eq_comp,
+    rw [Finset.noncommProd_insert_of_notMem _ _ _ _ hi, Module.End.mul_eq_comp,
       ker_comp_eq_of_commute_of_disjoint_ker]
     · simp_rw [Finset.mem_insert_coe, iSup_insert, Finset.mem_coe, ih]
     · exact s.noncommProd_commute _ _ _ fun j hj ↦

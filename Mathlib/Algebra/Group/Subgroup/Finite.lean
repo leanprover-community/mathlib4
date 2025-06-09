@@ -177,10 +177,10 @@ theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgro
   | empty =>
     have : x = 1 := by
       ext i
-      exact h1 i (Finset.not_mem_empty i)
+      exact h1 i (Finset.notMem_empty i)
     rw [this]
     exact one_mem H
-  | insert i I hnmem ih =>
+  | insert i I hnotMem ih =>
     have : x = Function.update x i 1 * Pi.mulSingle i (x i) := by
       ext j
       by_cases heq : j = i

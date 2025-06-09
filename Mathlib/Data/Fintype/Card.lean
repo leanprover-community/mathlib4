@@ -28,7 +28,7 @@ universe u v
 
 variable {α β γ : Type*}
 
-open Finset Function
+open Finset
 
 namespace Fintype
 
@@ -111,9 +111,12 @@ theorem Finset.card_eq_iff_eq_univ [Fintype α] (s : Finset α) : #s = Fintype.c
 theorem Finset.card_le_univ [Fintype α] (s : Finset α) : #s ≤ Fintype.card α :=
   card_le_card (subset_univ s)
 
-theorem Finset.card_lt_univ_of_not_mem [Fintype α] {s : Finset α} {x : α} (hx : x ∉ s) :
+theorem Finset.card_lt_univ_of_notMem [Fintype α] {s : Finset α} {x : α} (hx : x ∉ s) :
     #s < Fintype.card α :=
   card_lt_card ⟨subset_univ s, not_forall.2 ⟨x, fun hx' => hx (hx' <| mem_univ x)⟩⟩
+
+@[deprecated (since := "2025-05-23")]
+alias Finset.card_lt_univ_of_not_mem := Finset.card_lt_univ_of_notMem
 
 theorem Finset.card_lt_iff_ne_univ [Fintype α] (s : Finset α) :
     #s < Fintype.card α ↔ s ≠ Finset.univ :=
@@ -229,18 +232,21 @@ theorem card_le_of_injective (f : α → β) (hf : Function.Injective f) : card 
 theorem card_le_of_embedding (f : α ↪ β) : card α ≤ card β :=
   card_le_of_injective f f.2
 
-theorem card_lt_of_injective_of_not_mem (f : α → β) (h : Function.Injective f) {b : β}
+theorem card_lt_of_injective_of_notMem (f : α → β) (h : Function.Injective f) {b : β}
     (w : b ∉ Set.range f) : card α < card β :=
   calc
     card α = (univ.map ⟨f, h⟩).card := (card_map _).symm
     _ < card β :=
-      Finset.card_lt_univ_of_not_mem (x := b) <| by
+      Finset.card_lt_univ_of_notMem (x := b) <| by
         rwa [← mem_coe, coe_map, coe_univ, Set.image_univ]
+
+@[deprecated (since := "2025-05-23")]
+alias card_lt_of_injective_of_not_mem := card_lt_of_injective_of_notMem
 
 theorem card_lt_of_injective_not_surjective (f : α → β) (h : Function.Injective f)
     (h' : ¬Function.Surjective f) : card α < card β :=
   let ⟨_y, hy⟩ := not_forall.1 h'
-  card_lt_of_injective_of_not_mem f h hy
+  card_lt_of_injective_of_notMem f h hy
 
 theorem card_le_of_surjective (f : α → β) (h : Function.Surjective f) : card β ≤ card α :=
   card_le_of_injective _ (Function.injective_surjInv h)
@@ -365,7 +371,7 @@ theorem Fintype.card_subtype_le [Fintype α] (p : α → Prop) [Fintype {a // p 
 
 lemma Fintype.card_subtype_lt [Fintype α] {p : α → Prop} [Fintype {a // p a}] {x : α} (hx : ¬p x) :
     Fintype.card { x // p x } < Fintype.card α :=
-  Fintype.card_lt_of_injective_of_not_mem (b := x) (↑) Subtype.coe_injective <| by
+  Fintype.card_lt_of_injective_of_notMem (b := x) (↑) Subtype.coe_injective <| by
     rwa [Subtype.range_coe_subtype]
 
 theorem Fintype.card_subtype [Fintype α] (p : α → Prop) [Fintype {a // p a}] [DecidablePred p] :

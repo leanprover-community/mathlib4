@@ -152,7 +152,7 @@ theorem beattySeq_symmDiff_beattySeq'_pos {r s : ℝ} (hrs : r.HolderConjugate s
     rw [← hk, beattySeq', sub_pos, Int.lt_ceil, Int.cast_one] at hj
     exact_mod_cast pos_of_mul_pos_left (zero_lt_one.trans hj) hs
   rw [Set.mem_symmDiff, hb₁ _ hrs.nonneg, hb₂ _ hrs.symm.nonneg, ← compl_beattySeq hrs,
-    Set.not_mem_compl_iff, Set.mem_compl_iff, and_self, and_self]
+    Set.notMem_compl_iff, Set.mem_compl_iff, and_self, and_self]
   exact or_not
 
 theorem beattySeq'_symmDiff_beattySeq_pos {r s : ℝ} (hrs : r.HolderConjugate s) :

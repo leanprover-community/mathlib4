@@ -34,7 +34,7 @@ lemma sum_indicator_eventually_eq_card {α : Type*} [AddCommMonoid α] (a : α) 
   refine ⟨m + 1, fun n n_m ↦ (sum_subset ?_ ?_).symm⟩ <;> intro x <;> rw [hs.mem_toFinset]
   · rw [Finset.mem_range]
     exact fun x_s ↦ ((mem_upperBounds.1 hm) x x_s).trans_lt (Nat.lt_of_succ_le n_m)
-  · exact fun _ x_s ↦ indicator_of_not_mem x_s (fun _ ↦ a)
+  · exact fun _ x_s ↦ indicator_of_notMem x_s (fun _ ↦ a)
 
 lemma infinite_iff_tendsto_sum_indicator_atTop {R : Type*}
     [AddCommMonoid R] [PartialOrder R] [IsOrderedAddMonoid R]
