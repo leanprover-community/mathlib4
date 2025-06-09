@@ -1167,7 +1167,7 @@ lemma quotient_norm_eq_norm (f: LipschitzH (G := G)): ‖(Submodule.Quotient.mk 
   . simp
   . exact Submodule.nonempty ConstF
 
-lemma GLW_preseves_norm (g: G) (w: W (G := G)): ‖(GRepW (G := G) (GRepW_base g)) w‖ ≤ ‖w‖ := by
+lemma GLW_preseves_norm (g: G) (w: W (G := G)): ‖(GRepW (G := G) (GRepW_base g)) w‖ = ‖w‖ := by
   unfold GL_W
   have exists_v: ∃ v, Submodule.Quotient.mk v = w := by
     apply Quotient.exists_rep
@@ -1175,28 +1175,10 @@ lemma GLW_preseves_norm (g: G) (w: W (G := G)): ‖(GRepW (G := G) (GRepW_base g
   simp [GRepW, GRepW_base]
   nth_rw 1 [← hv]
   rw [Submodule.mapQ_apply]
-  calc
-    _ ≤ ‖(GRep g) v‖ := by apply Submodule.Quotient.norm_mk_le ConstF (((GRep g) v))
-    _ = ‖v‖ := by apply GRep_preserves_norm
-    _ ≤ ‖w‖ := by
-      rw [← hv]
-
-
-  --sorry
-  --have norm_le := Submodule.Quotient.norm_mk_le ConstF (((GRep g) v))
-
-  --rw [QuotientAddGroup.norm_eq_infDist]
-  --simp [Metric.infDist, EMetric.infEdist]
-
-
-
-  --rw [QuotientAddGroup.norm_mk]
-
-  rw [QuotientAddGroup.norm_mk]
-
-  simp [GRep, gAct]
-  simp
-
+  rw [quotient_norm_eq_norm]
+  rw [GRep_preserves_norm]
+  rw [← hv]
+  rw [quotient_norm_eq_norm]
 
 
 -- The image of G under our representation: ρ(G) in the Vikman paper
