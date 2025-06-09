@@ -315,7 +315,7 @@ nontrivial commutative ring satisfies the strong rank condition, and
 satisfies the rank condition.
 
 We prove this instance separately to avoid dependency on
-`Mathlib.LinearAlgebra.Charpoly.Basic` or `Mathlib.LinearAlgebra.Matrix.ToLin`. -/
+`Mathlib/LinearAlgebra/Charpoly/Basic.lean` or `Mathlib/LinearAlgebra/Matrix/ToLin.lean`. -/
 instance (priority := 100) invariantBasisNumber_of_nontrivial_of_commRing {R : Type u} [CommRing R]
     [Nontrivial R] : InvariantBasisNumber R :=
   ⟨fun e =>

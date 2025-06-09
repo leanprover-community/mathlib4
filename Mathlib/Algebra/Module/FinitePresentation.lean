@@ -50,7 +50,7 @@ In particular,
 
 
 For finitely presented algebras, see `Algebra.FinitePresentation`
-in file `Mathlib.RingTheory.FinitePresentation`.
+in file `Mathlib/RingTheory/FinitePresentation.lean`.
 -/
 
 open Finsupp

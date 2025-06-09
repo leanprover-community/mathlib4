@@ -193,7 +193,7 @@ lemma rTensorAlgEquiv_apply (x : (MvPolynomial σ S) ⊗[R] N) :
 
 /-- The tensor product of the polynomial algebra by an algebra
   is algebraically equivalent to a polynomial algebra with
-  coefficients in that algegra -/
+  coefficients in that algebra -/
 noncomputable def scalarRTensorAlgEquiv :
     MvPolynomial σ R ⊗[R] N ≃ₐ[R] MvPolynomial σ N :=
   rTensorAlgEquiv.trans (mapAlgEquiv σ (Algebra.TensorProduct.lid R N))
@@ -204,7 +204,7 @@ variable (R)
 variable (A : Type*) [CommSemiring A] [Algebra R A]
 
 /-- Tensoring `MvPolynomial σ R` on the left by an `R`-algebra `A` is algebraically
-equivalent to `M̀vPolynomial σ A`. -/
+equivalent to `MvPolynomial σ A`. -/
 noncomputable def algebraTensorAlgEquiv :
     A ⊗[R] MvPolynomial σ R ≃ₐ[A] MvPolynomial σ A := AlgEquiv.ofAlgHom
   (Algebra.TensorProduct.lift

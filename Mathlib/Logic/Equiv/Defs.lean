@@ -21,7 +21,7 @@ In this file we define two types:
   not equality!) to express that various `Type`s or `Sort`s are equivalent.
 
 * `Equiv.Perm α`: the group of permutations `α ≃ α`. More lemmas about `Equiv.Perm` can be found in
-  `Mathlib.GroupTheory.Perm`.
+  `Mathlib/GroupTheory/Perm.lean`.
 
 Then we define
 
@@ -44,10 +44,10 @@ Then we define
   - `Equiv.decidableEq` takes `e : α ≃ β` and `[DecidableEq β]` and returns `DecidableEq α`.
 
   More definitions of this kind can be found in other files.
-  E.g., `Mathlib.Algebra.Equiv.TransferInstance` does it for many algebraic type classes like
+  E.g., `Mathlib/Algebra/Equiv/TransferInstance.lean` does it for many algebraic type classes like
   `Group`, `Module`, etc.
 
-Many more such isomorphisms and operations are defined in `Mathlib.Logic.Equiv.Basic`.
+Many more such isomorphisms and operations are defined in `Mathlib/Logic/Equiv/Basic.lean`.
 
 ## Tags
 

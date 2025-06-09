@@ -89,13 +89,10 @@ theorem removeNone_aux_inv (x : α) : removeNone_aux e.symm (removeNone_aux e x)
       cases h1 : e.symm (some (removeNone_aux e x)) <;> cases h2 : e (some x)
       · rw [removeNone_aux_none _ h1]
         exact (e.eq_symm_apply.mpr h2).symm
-
       · rw [removeNone_aux_some _ ⟨_, h2⟩] at h1
         simp at h1
-
       · rw [removeNone_aux_none _ h2] at h1
         simp at h1
-
       · rw [removeNone_aux_some _ ⟨_, h1⟩]
         rw [removeNone_aux_some _ ⟨_, h2⟩]
         simp)
