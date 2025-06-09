@@ -154,6 +154,7 @@ instance {F : Type u → Type v} : LawfulMonad (FreeM F) := LawfulMonad.mk'
     · simp only [bind, FreeM.bind]
     · simp only [bind, FreeM.bind, ih] at *; simp [ih])
 
+
 /--
 Interpret a `FreeM f` computation into any monad `m` by providing an interpretation
 function for the effect signature `f`.
@@ -212,6 +213,15 @@ If `g : FreeM F α → M α` is an interpreter that handles operations according
 That is, `mapM f` is the unique interpreter that extends the effect handler `f` to interpret
 `FreeM F` computations in monad `M`.
 -/
+theorem mapM_isInterpreter {F : Type u → Type v} {m : Type u → Type w} [Monad m] {α : Type u}
+    (f : {ι : Type u} → F ι → m ι) :
+    isInterpreter f (fun (c : FreeM F α) => c.mapM f) := by
+  constructor
+  · intro a
+    simp only [FreeM.mapM, Pure.pure]
+  · intro ι op k
+    simp only [FreeM.mapM, bind, FreeM.bind]
+
 theorem mapM_unique {F : Type u → Type v} {m : Type u → Type w} [Monad m] {α : Type u}
     (f : {ι : Type u} → F ι → m ι)
     (g : FreeM F α → m α)
@@ -309,7 +319,7 @@ The canonical interpreter `toStateM` derived from `mapM` agrees with the hand-wr
 recursive interpreter `run` for `FreeState`.
 -/
 @[simp]
-theorem run_eq_toStateM {σ α : Type u} (comp : FreeState σ α) (s₀ : σ) :
+theorem toStateM_eq_run {σ α : Type u} (comp : FreeState σ α) (s₀ : σ) :
     toStateM comp s₀ = run comp s₀ := by
   induction' comp with a b op cont ih generalizing s₀
   · simp [toStateM, FreeM.mapM, pure, run, StateT.pure]
