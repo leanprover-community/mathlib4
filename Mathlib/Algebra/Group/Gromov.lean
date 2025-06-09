@@ -1044,7 +1044,7 @@ def GRep: Representation ℂ G (LipschitzH (G := G))  := {
     simp [mul_assoc]
 }
 
-def GRepW: Representation ℂ G (W (G := G)) := Representation.quotient (GRep (G := G)) ConstF (by
+def GRepW_base: Representation ℂ G (W (G := G)) := Representation.quotient (GRep (G := G)) ConstF (by
   intro g
   intro f hf
   simp
@@ -1057,63 +1057,132 @@ def GRepW: Representation ℂ G (W (G := G)) := Representation.quotient (GRep (G
   rw [← hK]
   rw [gAct_const]
 )
+
+-- GRep just translates functions by g⁻¹, so it preserves the Lipschitz operator norm
+lemma GRep_preserves_norm (g: G) (f: LipschitzH): ‖(GRep g) f‖ = ‖f‖ := by
+  simp [GRep]
+  simp [norm]
+  nth_rw 1 [LipschitzSemiNorm]
+  rw [gAct]
+  simp [DFunLike.coe]
+  conv =>
+    lhs
+    arg 1
+    arg 1
+    intro k
+    equals (LipschitzWith k (f.toFun ∘ (fun y => (g⁻¹ * y)))) =>
+      rfl
+
+  have comp := LipschitzWith.comp (f := f.toFun) (g := fun y => (g⁻¹ • y)) (Kf := (LipschitzSemiNorm ⇑f)) (Kg := 1) ?_ ?_
+  rotate_left 1
+  . apply lipschitz_attains_norm
+    exact f.lipschitz
+  . simp [LipschitzWith]
+
+  have norm_mem: (LipschitzSemiNorm (G := G) f) ∈ { k: NNReal | LipschitzWith k (f.toFun ∘ (fun y => (g⁻¹ * y))) } := by
+    simp
+    simp at comp
+    exact comp
+
+
+  apply le_antisymm
+  .
+    apply csInf_le (by
+      simp [BddBelow]
+      apply Set.nonempty_of_mem (x := 0)
+      rw [mem_lowerBounds]
+      simp
+    ) norm_mem
+  .
+    apply le_csInf
+    .
+      apply Set.nonempty_of_mem (x := (LipschitzSemiNorm ⇑f)) norm_mem
+    . intro b hb
+      simp at hb
+      simp [LipschitzSemiNorm]
+      apply csInf_le
+      .
+        simp [BddBelow]
+        apply Set.nonempty_of_mem (x := 0)
+        rw [mem_lowerBounds]
+        simp
+      . simp
+        simp [LipschitzWith] at hb
+        simp [LipschitzWith]
+        intro x y
+        specialize hb (g * x) (g * y)
+        simp at hb
+        exact hb
+
+
+
 
 -- Takes in a linear map from W to W, and produces a *contiuous* linear map from W to W
-noncomputable def GRepW_cont (m: W (G := G) →ₗ[ℂ] W (G := G)): GL_W (G := G) := LinearMap.toContinuousLinearMap m
+noncomputable def GRepW (m: W (G := G) →ₗ[ℂ] W (G := G)): GL_W (G := G) := LinearMap.toContinuousLinearMap m
 
 
--- noncomputable instance GLW_seminorm:  SeminormedAddCommGroup (W (G := G) →ₗ[ℂ] W (G := G)) where
---   norm := ContinuousLinearMap.opNorm
 
--- instance GLW_norm: NormedSpace ℝ (W →ₗ[ℂ] W) where
+lemma GLW_preseves_norm (g: G) (w: W (G := G)): ‖(GRepW (G := G) (GRepW_base g)) w‖ ≤ ‖w‖ := by
+  unfold GL_W
+  have exists_v: ∃ v, Submodule.Quotient.mk v = w := by
+    apply Quotient.exists_rep
+  obtain ⟨v, hv⟩ := exists_v
+  simp [GRepW, GRepW_base]
+  nth_rw 1 [← hv]
+  rw [Submodule.mapQ_apply]
+  have norm_le := Submodule.Quotient.norm_mk_le ConstF (((GRep g) v))
 
--- We don't use `Representation` directly, since it's an alias involving LinearMap,
--- and we need ContinuousLinearMap in order to be able to use `ContinuousLinearMap.opNorm`
--- Representation ℂ G (LipschitzH (G := G))
+  rw [QuotientAddGroup.norm_eq_infDist]
+  simp [Metric.infDist, EMetric.infEdist]
 
--- Submodule.isOpenQuotientMap_mkQ
-noncomputable def GRepW: (G →* GL_W (G := G))  := {
-  toFun g := {
-    LinearMap.comp (Submodule.mkQ (ConstF (G := G))) (gAct g f) with
-    cont := by
-      apply Continuous.comp
-      .
-  }
-  map_one' := by
-    ext f a
-    simp [gAct]
-    rfl
-  map_mul' := by
-    intro g h
-    ext f a
-    simp [gAct]
-    simp [DFunLike.coe]
-    simp [mul_assoc]
-}
 
-def GRepW: Representation ℂ G (W (G := G)) := Representation.quotient (GRep (G := G)) ConstF (by
-  intro g
-  intro f hf
+
+  --rw [QuotientAddGroup.norm_mk]
+
+  rw [QuotientAddGroup.norm_mk]
+
+  simp [GRep, gAct]
   simp
-  simp [ConstF]
-  simp [ConstF] at hf
-  obtain ⟨K, hK⟩ := hf
-  use K
-  ext a
-  simp [GRep]
-  rw [← hK]
-  rw [gAct_const]
-)
 
 
 
 -- The image of G under our representation: ρ(G) in the Vikman paper
-def rho_g := Set.range (GRepW (G := G))
+def rho_g := GRepW '' ( Set.range (fun g => GRepW_base (G := G) g) )
 
-theorem compact_rho_g: IsCompact (rho_g (G := G)) := by
+instance GL_W_proper: ProperSpace (GL_W (G := G)) := by
+  apply FiniteDimensional.proper_rclike (K := ℂ)
+
+-- In the Vikman paper, rho_g is precompact, and the closure of rho_g is a compact subgroup
+theorem compact_rho_g: IsCompact (closure (rho_g (G := G))) := by
   unfold rho_g
-  apply Set.range_isCompact
-  apply Representation.isCompact
+  apply Bornology.IsBounded.isCompact_closure
+  rw [Metric.isBounded_iff]
+  use 2
+  intro p hp q hq
+  simp at hp
+  simp at hq
+  obtain ⟨a, p_eq_a_rep⟩ := hp
+  obtain ⟨b, q_eq_b_rep⟩ := hq
+  rw [dist_eq_norm_sub]
+  rw [ContinuousLinearMap.norm_def]
+  apply csInf_le (by
+    simp [BddBelow]
+    apply Set.nonempty_of_mem (x := 0)
+    rw [mem_lowerBounds]
+    simp
+    intro x hx _
+    exact hx
+  )
+  simp
+  intro x
+  rw [sub_eq_add_neg]
+  have norm_triangle := norm_add_le (p x) (- q x)
+
+
+  rw [← p_eq_a_rep, ← q_eq_b_rep]
+
+
+
 
 -- TODO - use the fact that G is finitely generated
 instance countableG: Countable (Additive (MulOpposite G)) := by
