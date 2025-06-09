@@ -27,7 +27,7 @@ variable [MulAction G α] {S : Subgroup G}
 @[to_additive "The additive action by an add_subgroup is the action by the underlying `AddGroup`. "]
 instance instMulAction : MulAction S α := inferInstanceAs (MulAction S.toSubmonoid α)
 
-@[to_additive] lemma smul_def (g : S) (m : α) : g • m = (g : G) • m := rfl
+@[to_additive (attr := simp)] lemma smul_def (g : S) (m : α) : g • m = (g : G) • m := rfl
 
 @[to_additive (attr := simp)]
 lemma mk_smul (g : G) (hg : g ∈ S) (a : α) : (⟨g, hg⟩ : S) • a = g • a := rfl
