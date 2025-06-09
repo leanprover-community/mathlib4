@@ -127,6 +127,20 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
   · intro ϕ; ext1; simp only [trans_apply, apply_symm_apply]
   · intro ϕ; ext1; simp only [trans_apply, symm_apply_apply]
 
+lemma finiteDimensional_of_finite [IsGalois F E] [Finite (E ≃ₐ[F] E)] : FiniteDimensional F E := by
+  by_contra H
+  obtain ⟨K, h₁, h₂⟩ := IntermediateField.exists_lt_finrank_of_infinite_dimensional H
+    (Nat.card (E ≃ₐ[F] E))
+  let K' := IntermediateField.normalClosure F K E
+  have : IsGalois F K' := ⟨⟩
+  have := Nat.card_le_card_of_surjective _
+    (AlgEquiv.restrictNormalHom_surjective (F := F) (K₁ := K') (E := E))
+  rw [Nat.card_eq_fintype_card, IsGalois.card_aut_eq_finrank] at this
+  have := (h₂.trans_le (LinearMap.finrank_le_finrank_of_injective
+    (f := (IntermediateField.inclusion K.le_normalClosure).toLinearMap)
+    (IntermediateField.inclusion_injective K.le_normalClosure))).trans_le this
+  simp at this
+
 end IsGalois
 
 end
