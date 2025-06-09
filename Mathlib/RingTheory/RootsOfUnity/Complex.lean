@@ -265,8 +265,6 @@ example : {z : ℝ | z ^ 4 = 1} = {1, -1} := by
   subst e2
   simp_all only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, zero_eq_neg, one_ne_zero]
 
-#check DivisionMonoid
-
 lemma factorize_cyclotomic_polynomial_5 {K : Type*} [Field K] [NeZero (4 : K)] {s t₁ t₂ : K}
     (hs : s * s = 5) (ht₁ : t₁ * t₁ = - 2 * (5 + s)) (ht₂ : t₂ * t₂ = -2 * (5 -s)) (z : K) :
     z ^ 4 + z ^ 3 + z ^ 2 + z + 1 = (z - ((s - 1) / 4 +  t₁ / 4))
