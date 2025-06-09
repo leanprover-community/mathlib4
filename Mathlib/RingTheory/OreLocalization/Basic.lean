@@ -106,7 +106,7 @@ private def add' (r₂ : X) (s₂ : S) : X[S⁻¹] → X[S⁻¹] :=
     have : sd * sb * s₁ = rd * rc * s₂ := by
       rw [mul_assoc, hb', ← mul_assoc, hd, mul_assoc, hc, ← mul_assoc]
     rw [add''_char _ _ _ _ (rd * rc : R) (sd * sb) this (sd * sb * s₁).2]
-    rw [mul_smul, ← Submonoid.smul_def sb, hb, smul_smul, hd, oreDiv_eq_iff]
+    rw [mul_smul, hb, smul_smul, hd, oreDiv_eq_iff]
     use 1
     use rd
     simp only [mul_smul, smul_add, one_smul, OneMemClass.coe_one, one_mul, true_and]
