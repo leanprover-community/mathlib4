@@ -227,7 +227,7 @@ lemma descChainEquivRel.isUltra_pseudometric_aux
   contrapose! hn
   -- trivial case, n = 0, x ~ z everywhere
   rcases eq_or_ne n 0 with rfl|npos
-  · simp [(Nat.cast_nonneg k).not_lt] at hn
+  · simp [(Nat.cast_nonneg k).not_gt] at hn
   refine ne_of_lt ?_
   have hkn := hk.trans_lt hn
   have hln := (hkl.trans_eq' hl).trans_lt hn
@@ -369,7 +369,7 @@ lemma IsUltraUniformity.ofPseudoMetricSystem_pseudoMetricSystem_eq {X : Type*} [
           rw [hinv.eq ha]
     rcases p.eq_empty_or_nonempty with rfl|hpn
     · -- trivial case, the set of balls is empty, so the intersection is the whole space
-      simp only [Finset.not_mem_empty, Set.mem_image, Prod.exists, false_iff, not_exists,
+      simp only [Finset.notMem_empty, Set.mem_image, Prod.exists, false_iff, not_exists,
       not_and] at hs'
       rcases u.eq_empty_or_nonempty with rfl|⟨⟨ε, d⟩, hu⟩
       · simp only [Set.image_empty, Set.sInter_empty, Set.univ_subset_iff] at hu
@@ -377,7 +377,7 @@ lemma IsUltraUniformity.ofPseudoMetricSystem_pseudoMetricSystem_eq {X : Type*} [
         simp [IsSymmetricRel, isTransitiveRel_univ]
       · exfalso
         simp only [Finset.image_empty] at hp
-        simp only [← hp, Finset.not_mem_empty, false_iff, not_exists, not_and] at hs'
+        simp only [← hp, Finset.notMem_empty, false_iff, not_exists, not_and] at hs'
         exact hs' _ _ _ hu rfl
     let ε : ℝ := p.inf' hpn (fun εd ↦ εd.1)
     have εpos : 0 < ε := by simp +contextual [ε]
