@@ -287,6 +287,7 @@ associated to a Weierstrass curve `W` in projective coordinates. -/
 noncomputable def polynomialX : MvPolynomial (Fin 3) R :=
   pderiv x W'.polynomial
 
+open Fin.CommRing in
 lemma polynomialX_eq : W'.polynomialX =
     C W'.a₁ * X 1 * X 2 - (C 3 * X 0 ^ 2 + C (2 * W'.a₂) * X 0 * X 2 + C W'.a₄ * X 2 ^ 2) := by
   rw [polynomialX, polynomial]
@@ -310,6 +311,7 @@ associated to a Weierstrass curve `W` in projective coordinates. -/
 noncomputable def polynomialY : MvPolynomial (Fin 3) R :=
   pderiv y W'.polynomial
 
+open Fin.CommRing in
 lemma polynomialY_eq : W'.polynomialY =
     C 2 * X 1 * X 2 + C W'.a₁ * X 0 * X 2 + C W'.a₃ * X 2 ^ 2 := by
   rw [polynomialY, polynomial]
