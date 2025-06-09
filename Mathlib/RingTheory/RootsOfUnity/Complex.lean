@@ -283,11 +283,8 @@ lemma factorize_cyclotomic_polynomial_5 {K : Type*} [Field K] [NeZero (4 : K)] {
   have p2 : (4 : K) ^ 2 = (16 : K) := by norm_num
   have p3 : (4 : K) ^ 3 = (64 : K) := by norm_num
   have p4 : (4 : K) ^ 4 = (256 : K) := by norm_num
-  rw [mul_assoc, ← p3, ← mul_pow]
-  rw [mul_assoc, ← p2, ← mul_pow]
-  rw [← p4, ← mul_pow _ 4]
-  rw [mul_assoc]
-  rw [inv_mul_cancel₀ four_ne_zero, one_pow, mul_one, one_pow, mul_one, one_pow]
+  rw [mul_assoc, ← p3, ← mul_pow, mul_assoc, ← p2, ← mul_pow, ← p4, ← mul_pow _ 4, mul_assoc,
+    inv_mul_cancel₀ four_ne_zero, one_pow, mul_one, one_pow, mul_one, one_pow]
   ring_nf
 
 /-
