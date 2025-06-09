@@ -102,7 +102,7 @@ def restrictedULiftYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) (E :
   right_inv := sorry
 
 section
-#exit
+
 variable (P : ℰᵒᵖ ⥤ Type (max w v₁ v₂))
 
 example [HasColimitsOfSize.{v₁, max u₁ v₁ v₂ w} ℰ] :
@@ -397,14 +397,21 @@ noncomputable def compULiftYonedaIsoULiftYonedaCompLan :
       simp only [id_comp] at eq₃
       simp [eq₁, eq₂, eq₃])
 
-#exit
 @[simp]
+lemma compULiftYonedaIsoULiftYonedaCompLan_inv_app_app_apply_eq_id (X : C) :
+    ((compULiftYonedaIsoULiftYonedaCompLan.{w} F).inv.app X).app (op (F.obj X))
+          ((F.op.lanUnit.app ((uliftYoneda.{max w v₂}).obj X)).app (op X)
+        (ULift.up (𝟙 X))) = ULift.up (𝟙 (F.obj X)) := by
+  sorry
+
+/-@[simp]
 lemma compYonedaIsoYonedaCompLan_inv_app_app_apply_eq_id (X : C) :
     ((compYonedaIsoYonedaCompLan F).inv.app X).app (Opposite.op (F.obj X))
       ((F.op.lanUnit.app (yoneda.obj X)).app _ (𝟙 X)) = 𝟙 _ :=
   (congr_fun (Functor.descOfIsLeftKanExtension_fac_app _
-    (F.op.lanUnit.app (yoneda.obj X)) _ (yonedaMap F X) (Opposite.op X)) (𝟙 _)).trans (by simp)
+    (F.op.lanUnit.app (yoneda.obj X)) _ (yonedaMap F X) (Opposite.op X)) (𝟙 _)).trans (by simp)-/
 
+#exit
 end
 
 namespace compYonedaIsoYonedaCompLan
