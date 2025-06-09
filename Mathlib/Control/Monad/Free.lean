@@ -310,8 +310,9 @@ def run {σ : Type u} {α : Type v} (comp : FreeState σ α) (s₀ : σ) : α ×
 The canonical interpreter `toStateM` derived from `mapM` agrees with the hand-written
 recursive interpreter `run` for `FreeState`.
 -/
+@[simp]
 theorem run_eq_toStateM {σ α : Type u} (comp : FreeState σ α) (s₀ : σ) :
-    run comp s₀ = toStateM comp s₀ := by
+    toStateM comp s₀ = run comp s₀ := by
   induction' comp with a b op cont ih generalizing s₀
   · simp [toStateM, FreeM.mapM, pure, run, StateT.pure]
   · simp only [run, FreeM.mapM, stateInterp] at *
@@ -421,14 +422,16 @@ def run {ω : Type u} [Monoid ω] {α} : FreeWriter ω α → α × ω
 The canonical interpreter `toWriterT` derived from `mapM` agrees with the hand-written
 recursive interpreter `run` for `FreeWriter`.
 -/
-theorem run_eq_toWriterT {ω : Type u} [Monoid ω] {α} (comp : FreeWriter ω α) :
-    run comp = toWriterT comp := by
+@[simp]
+theorem toWriterT_eq_run {ω : Type u} [Monoid ω] {α} (comp : FreeWriter ω α) :
+    toWriterT comp = run comp := by
   induction' comp with a b op cont ih
   · simp only [toWriterT, FreeM.mapM, pure, run, WriterT.run]
   · simp only [toWriterT, FreeM.mapM] at *
     rcases op
-    · simp only [run]
-      congr <;> apply ih
+    · simp only [run] at *
+      rw [←ih PUnit.unit]
+      congr
 
 @[simp]
 lemma run_pure {ω : Type u} [Monoid ω] {α} (a : α) :
@@ -549,8 +552,9 @@ def run {r : Type u} {α : Type v} : FreeCont r α → (α → r) → r
 The canonical interpreter `toContT` derived from `mapM` agrees with the hand-written
 recursive interpreter `run` for `FreeCont`.
 -/
-theorem run_eq_toContT {r α : Type u} (comp : FreeCont r α) (k : α → r) :
-    run comp k = toContT comp k := by
+@[simp]
+theorem toContT_eq_run {r α : Type u} (comp : FreeCont r α) (k : α → r) :
+    toContT comp k = run comp k := by
   induction' comp with a b op cont ih
   · simp [toContT, FreeM.mapM, pure, run]
   · simp only [toContT, FreeM.mapM] at *
