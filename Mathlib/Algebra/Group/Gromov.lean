@@ -1120,7 +1120,52 @@ lemma GRep_preserves_norm (g: G) (f: LipschitzH): ‖(GRep g) f‖ = ‖f‖ := 
 -- Takes in a linear map from W to W, and produces a *contiuous* linear map from W to W
 noncomputable def GRepW (m: W (G := G) →ₗ[ℂ] W (G := G)): GL_W (G := G) := LinearMap.toContinuousLinearMap m
 
+lemma quotient_norm_eq_norm (f: LipschitzH (G := G)): ‖(Submodule.Quotient.mk f : W)‖ = ‖f‖ := by
+  --dsimp [norm]
+  -- conv =>
+  --   lhs
+  --   arg 2
+  --   equals ‖↑ f‖ =>
+  --     sorry
+  have foo := QuotientAddGroup.norm_mk (S := ConstF.toAddSubgroup) f
+  conv =>
+    lhs
+    equals ‖(QuotientAddGroup.mk f : (LipschitzH ⧸ ConstF.toAddSubgroup))‖ =>
+      rfl
+  rw [QuotientAddGroup.norm_mk]
+  simp [Metric.infDist]
+  dsimp [EMetric.infEdist]
 
+  conv =>
+    lhs
+    arg 1
+    arg 1
+    intro y
+    arg 1
+    intro hy
+    equals (‖f‖₊ : ENNReal) =>
+      simp [ConstF] at hy
+      obtain ⟨a, ha⟩ := hy
+      simp [edist, PseudoMetricSpace.edist]
+      simp [LipschitzSemiNorm]
+      simp [LipschitzWith]
+      simp_rw [← ha]
+      simp [ConstLipschitzH, DFunLike.coe]
+      simp_rw [lipschitz_sub_tofun]
+      simp
+      rfl
+
+  conv =>
+    arg 1
+    arg 1
+    arg 1
+    intro y
+    arg 1
+    intro hy
+
+  rw [biInf_const ?_]
+  . simp
+  . exact Submodule.nonempty ConstF
 
 lemma GLW_preseves_norm (g: G) (w: W (G := G)): ‖(GRepW (G := G) (GRepW_base g)) w‖ ≤ ‖w‖ := by
   unfold GL_W
@@ -1130,10 +1175,18 @@ lemma GLW_preseves_norm (g: G) (w: W (G := G)): ‖(GRepW (G := G) (GRepW_base g
   simp [GRepW, GRepW_base]
   nth_rw 1 [← hv]
   rw [Submodule.mapQ_apply]
-  have norm_le := Submodule.Quotient.norm_mk_le ConstF (((GRep g) v))
+  calc
+    _ ≤ ‖(GRep g) v‖ := by apply Submodule.Quotient.norm_mk_le ConstF (((GRep g) v))
+    _ = ‖v‖ := by apply GRep_preserves_norm
+    _ ≤ ‖w‖ := by
+      rw [← hv]
 
-  rw [QuotientAddGroup.norm_eq_infDist]
-  simp [Metric.infDist, EMetric.infEdist]
+
+  --sorry
+  --have norm_le := Submodule.Quotient.norm_mk_le ConstF (((GRep g) v))
+
+  --rw [QuotientAddGroup.norm_eq_infDist]
+  --simp [Metric.infDist, EMetric.infEdist]
 
 
 
