@@ -260,6 +260,9 @@ theorem fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixe
   refine (algEquivEquivAlgHom (fixedField H) E).toEquiv.symm.trans ?_
   exact (fixingSubgroupEquiv (fixedField H)).toEquiv.symm
 
+/--
+A subgroup is isomorphic to the Galois group of its fixed field.
+-/
 def subgroupEquivAlgEquiv [FiniteDimensional F E] (H : Subgroup (E ≃ₐ[F] E)) :
     H ≃* E ≃ₐ[IntermediateField.fixedField H] E :=
  (MulEquiv.subgroupCongr (fixingSubgroup_fixedField H).symm).trans (fixingSubgroupEquiv _)
