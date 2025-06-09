@@ -292,10 +292,10 @@ lemma factorize_cyclotomic_polynomial_5 {K : Type*} [Field K] [NeZero (4 : K)] {
   rw [inv_mul_cancel₀ four_ne_zero, one_pow, mul_one, one_pow, mul_one, one_pow]
   ring_nf
 
-
+/-
 lemma cyclotomic_polynomial_5_roots_of_sq {K : Type*} [Field K] [NeZero (2 : K)] {z s : K}
     (hs : s * s = -3) : z ^ 2 + z + 1 = 0 ↔ z = -(1 / 2) + s / 2 ∨ z = -(1 / 2) - s / 2 :=
-
+-/
 
 lemma factorize_cyclotomic_polynomial_5' (z : ℂ) :
     z ^ 4 + z ^ 3 + z ^ 2 + z + 1 = (z - ((√5 -1)/4 + √2 * √(5 + √5)/4 * I))
