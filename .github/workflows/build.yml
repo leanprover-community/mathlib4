@@ -527,6 +527,14 @@ jobs:
           mode: check
           lint-bib-file: true
 
+  build_and_lint:
+    name: Build Success
+    needs: [style_lint, build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: succeed
+        run: echo "Success!"
+
   final:
     name: Post-CI job
     if: true
