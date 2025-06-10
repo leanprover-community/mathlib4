@@ -488,7 +488,7 @@ lemma conjugateEquiv_whiskerLeft
 lemma conjugateEquiv_whiskerRight
     {a b c : B} {l₁ : a ⟶ b} {r₁ : b ⟶ a} (adj₁ : l₁ ⊣ r₁)
     {l₁' : a ⟶ b} {r₁' : b ⟶ a} (adj₁' : l₁' ⊣ r₁')
-    {l₂ : b ⟶ c} {r₂ : c ⟶ b} (adj₂ : l₂ ⊣ r₂)(φ : l₁' ⟶ l₁) :
+    {l₂ : b ⟶ c} {r₂ : c ⟶ b} (adj₂ : l₂ ⊣ r₂) (φ : l₁' ⟶ l₁) :
     conjugateEquiv (adj₁.comp adj₂) (adj₁'.comp adj₂) (φ ▷ l₂) =
       r₂ ◁ conjugateEquiv adj₁ adj₁' φ := by
   have := mateEquiv_hcomp adj₁ adj₁' adj₂ adj₂
