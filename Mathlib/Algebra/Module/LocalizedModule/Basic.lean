@@ -379,18 +379,15 @@ noncomputable instance isModule : Module T (LocalizedModule S M) where
   add_smul := add_smul_aux
   zero_smul := zero_smul_aux
 
-@[simp]
 theorem mk_cancel_common_left (s' s : S) (m : M) : mk (s' • m) (s' * s) = mk m s :=
   mk_eq.mpr
     ⟨1, by
       simp only [mul_smul, one_smul]
       rw [smul_comm]⟩
 
-@[simp]
 theorem mk_cancel (s : S) (m : M) : mk (s • m) s = mk m 1 :=
   mk_eq.mpr ⟨1, by simp⟩
 
-@[simp]
 theorem mk_cancel_common_right (s s' : S) (m : M) : mk (s' • m) (s * s') = mk m s :=
   mk_eq.mpr ⟨1, by simp [mul_smul]⟩
 
@@ -994,22 +991,18 @@ theorem mk'_one (m : M) : mk' f m (1 : S) = f m := by
   rw [fromLocalizedModule_mk, Module.End.algebraMap_isUnit_inv_apply_eq_iff, Submonoid.coe_one,
     one_smul]
 
-@[simp]
 theorem mk'_cancel (m : M) (s : S) : mk' f (s • m) s = f m := by
   delta mk'
   rw [LocalizedModule.mk_cancel, ← mk'_one S f, fromLocalizedModule_mk,
     Module.End.algebraMap_isUnit_inv_apply_eq_iff, OneMemClass.coe_one, mk'_one, one_smul]
 
-@[simp]
 theorem mk'_cancel' (m : M) (s : S) : s • mk' f m s = f m := by
   rw [Submonoid.smul_def, ← mk'_smul, ← Submonoid.smul_def, mk'_cancel]
 
-@[simp]
 theorem mk'_cancel_left (m : M) (s₁ s₂ : S) : mk' f (s₁ • m) (s₁ * s₂) = mk' f m s₂ := by
   delta mk'
   rw [LocalizedModule.mk_cancel_common_left]
 
-@[simp]
 theorem mk'_cancel_right (m : M) (s₁ s₂ : S) : mk' f (s₂ • m) (s₁ * s₂) = mk' f m s₁ := by
   delta mk'
   rw [LocalizedModule.mk_cancel_common_right]
