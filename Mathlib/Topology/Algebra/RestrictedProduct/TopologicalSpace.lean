@@ -8,10 +8,12 @@ import Mathlib.Topology.Algebra.RestrictedProduct.Basic
 import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
-# Restricted products of topological spaces, groups and rings.
+# Restricted products of topological spaces, topological groups and rings
 
 We endow a restricted product of topological spaces with a natural topology,
-which we describe below. We also show various compatibility results.
+which we describe below. We also show various compatibility results when we change
+filters, and extend the construction of restricted products of algebraic structures
+to the topological setting.
 
 In particular, with the theory of adeles in mind, we show that if each `R i` is a locally compact
 topological ring with open subring `A i`, and if all but finitely many of the `A i`s are also

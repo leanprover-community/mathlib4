@@ -391,8 +391,4 @@ end ring
 
 end map
 
-section Topology
-
-end Topology
-
 end RestrictedProduct
