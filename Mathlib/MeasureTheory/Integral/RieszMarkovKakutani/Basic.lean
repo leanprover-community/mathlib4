@@ -10,9 +10,10 @@ import Mathlib.Topology.PartitionOfUnity
 /-!
 #  Riesz–Markov–Kakutani representation theorem
 
-This file will prove the Riesz-Markov-Kakutani representation theorem on a locally compact
-T2 space `X`. As a special case, the statements about linear functionals on bounded continuous
-functions follows.
+This file prepares technical definitions and results for the Riesz-Markov-Kakutani representation
+theorem on a locally compact T2 space `X`. As a special case, the statements about linear
+functionals on bounded continuous functions follows. Actual theorems, depending on the
+linearity (`ℝ`, `ℝ≥0` or `ℂ`), are proven in separate files (`Real.lean`, `NNReal.lean`...)
 
 To make use of the existing API, the measure is constructed from a content `λ` on the
 compact subsets of a locally compact space X, rather than the usual construction of open sets in the
@@ -154,7 +155,6 @@ section PartitionOfUnity
 
 variable [T2Space X] [LocallyCompactSpace X]
 
-open Fin.CommRing in -- TODO: can this be refactored to avoid using the ring structure in the proof?
 lemma exists_continuous_add_one_of_isCompact_nnreal
     {s₀ s₁ : Set X} {t : Set X} (s₀_compact : IsCompact s₀) (s₁_compact : IsCompact s₁)
     (t_compact : IsCompact t) (disj : Disjoint s₀ s₁) (hst : s₀ ∪ s₁ ⊆ t) :

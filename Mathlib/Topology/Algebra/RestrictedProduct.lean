@@ -220,27 +220,56 @@ variable {B : Π i, S i}
 instance [Π i, One (R i)] [∀ i, OneMemClass (S i) (R i)] : One (Πʳ i, [R i, B i]_[𝓕]) where
   one := ⟨fun _ ↦ 1, .of_forall fun _ ↦ one_mem _⟩
 
+@[to_additive (attr := simp)]
+lemma one_apply [Π i, One (R i)] [∀ i, OneMemClass (S i) (R i)] (i : ι) :
+    (1 : Πʳ i, [R i, B i]_[𝓕]) i = 1 :=
+  rfl
+
 @[to_additive]
 instance [Π i, Inv (R i)] [∀ i, InvMemClass (S i) (R i)] : Inv (Πʳ i, [R i, B i]_[𝓕]) where
   inv x := ⟨fun i ↦ (x i)⁻¹, x.2.mono fun _ ↦ inv_mem⟩
 
+@[to_additive (attr := simp)]
+lemma inv_apply [Π i, Inv (R i)] [∀ i, InvMemClass (S i) (R i)]
+    (x : Πʳ i, [R i, B i]_[𝓕]) (i : ι) : (x⁻¹) i = (x i)⁻¹ :=
+  rfl
+
 @[to_additive]
 instance [Π i, Mul (R i)] [∀ i, MulMemClass (S i) (R i)] : Mul (Πʳ i, [R i, B i]_[𝓕]) where
   mul x y := ⟨fun i ↦ x i * y i, y.2.mp (x.2.mono fun _ ↦ mul_mem)⟩
+
+@[to_additive (attr := simp)]
+lemma mul_apply [Π i, Mul (R i)] [∀ i, MulMemClass (S i) (R i)]
+    (x y : Πʳ i, [R i, B i]_[𝓕]) (i : ι) : (x * y) i = x i * y i :=
+  rfl
 
 @[to_additive]
 instance {G : Type*} [Π i, SMul G (R i)] [∀ i, SMulMemClass (S i) G (R i)] :
     SMul G (Πʳ i, [R i, B i]_[𝓕]) where
   smul g x := ⟨fun i ↦ g • (x i), x.2.mono fun _ ↦ SMulMemClass.smul_mem g⟩
 
+@[to_additive (attr := simp)]
+lemma smul_apply {G : Type*} [Π i, SMul G (R i)] [∀ i, SMulMemClass (S i) G (R i)] (g : G)
+    (x : Πʳ i, [R i, B i]_[𝓕]) (i : ι) : (g • x) i = g • x i :=
+  rfl
+
 @[to_additive]
 instance [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)] :
     Div (Πʳ i, [R i, B i]_[𝓕]) where
   div x y := ⟨fun i ↦ x i / y i, y.2.mp (x.2.mono fun _ ↦ div_mem)⟩
 
+@[to_additive (attr := simp)]
+lemma div_apply [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)]
+    (x y : Πʳ i, [R i, B i]_[𝓕]) (i : ι) : (x / y) i = x i / y i :=
+  rfl
+
 instance [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
     Pow (Πʳ i, [R i, B i]_[𝓕]) ℕ where
   pow x n := ⟨fun i ↦ x i ^ n, x.2.mono fun _ hi ↦ pow_mem hi n⟩
+
+lemma pow_apply [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)]
+    (x : Πʳ i, [R i, B i]_[𝓕]) (n : ℕ) (i : ι) : (x ^ n) i = x i ^ n :=
+  rfl
 
 instance [Π i, AddMonoid (R i)] [∀ i, AddSubmonoidClass (S i) (R i)] :
     AddMonoid (Πʳ i, [R i, B i]_[𝓕]) :=
@@ -255,6 +284,10 @@ instance [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
 instance [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)] :
     Pow (Πʳ i, [R i, B i]_[𝓕]) ℤ where
   pow x n := ⟨fun i ↦ x i ^ n, x.2.mono fun _ hi ↦ zpow_mem hi n⟩
+
+lemma zpow_apply [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)]
+    (x : Πʳ i, [R i, B i]_[𝓕]) (n : ℤ) (i : ι) : (x ^ n) i = x i ^ n :=
+  rfl
 
 instance [Π i, AddMonoidWithOne (R i)] [∀ i, AddSubmonoidWithOneClass (S i) (R i)] :
     NatCast (Πʳ i, [R i, B i]_[𝓕]) where
