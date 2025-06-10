@@ -119,18 +119,6 @@ section Preorder
 
 variable [Preorder α] {a b c d : α}
 
-theorem le_trans' : b ≤ c → a ≤ b → a ≤ c :=
-  flip le_trans
-
-theorem lt_trans' : b < c → a < b → a < c :=
-  flip lt_trans
-
-theorem lt_of_le_of_lt' : b ≤ c → a < b → a < c :=
-  flip lt_of_lt_of_le
-
-theorem lt_of_lt_of_le' : b < c → a ≤ b → a < c :=
-  flip lt_of_le_of_lt
-
 theorem not_lt_iff_not_le_or_ge : ¬a < b ↔ ¬a ≤ b ∨ b ≤ a := by
   rw [lt_iff_le_not_ge, Classical.not_and_iff_not_or_not, Classical.not_not]
 
@@ -144,6 +132,8 @@ lemma ge_of_eq (h : a = b) : b ≤ a := le_of_eq h.symm
 
 @[simp] lemma lt_self_iff_false (x : α) : x < x ↔ False := ⟨lt_irrefl x, False.elim⟩
 
+alias le_trans' := ge_trans
+alias lt_trans' := gt_trans
 alias LE.le.trans := le_trans
 alias LE.le.trans' := le_trans'
 alias LT.lt.trans := lt_trans
