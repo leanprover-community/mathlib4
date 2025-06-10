@@ -3,12 +3,9 @@ Copyright (c) 2025 Oliver Butterley. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Butterley, Yoh Tanimoto
 -/
-import Mathlib.MeasureTheory.VectorMeasure.Basic
-import Mathlib.Analysis.Normed.Ring.Basic
 import Mathlib.Analysis.Normed.Group.InfiniteSum
-import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
-import Mathlib.Data.Complex.Basic
 import Mathlib.MeasureTheory.Measure.Complex
+import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
 
 /-!
 # Total variation for vector-valued measures
@@ -65,7 +62,6 @@ open MeasureTheory BigOperators NNReal ENNReal Function Filter
 namespace MeasureTheory.VectorMeasure
 
 set_option linter.flexible true
--- set_option linter.ppRoundtrip true
 
 /-!
 ## Inner partitions
