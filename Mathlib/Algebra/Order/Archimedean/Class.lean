@@ -108,7 +108,7 @@ instance instPreorder : Preorder (MulArchimedeanOrder M) where
     use m * n
     rw [pow_mul]
     exact hn.trans (pow_le_pow_left' hm n)
-  lt_iff_le_not_le a b := by
+  lt_iff_le_not_ge a b := by
     rw [lt, le, le]
     suffices (∀ (n : ℕ), |b.val|ₘ ^ n < |a.val|ₘ) → ∃ n, |b.val|ₘ ≤ |a.val|ₘ ^ n by
       simpa using this
