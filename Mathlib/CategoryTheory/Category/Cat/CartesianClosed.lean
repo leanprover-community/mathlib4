@@ -51,21 +51,21 @@ def curryingIso : C ⥤ D ⥤ E ≅ C × D ⥤ E where
 
 /-- The isomorphism of categories of bifunctors given by flipping the arguments. -/
 @[simps]
-def flipIso : C ⥤ D ⥤ E ≅ D ⥤ C ⥤ E where
+def flippingIso : C ⥤ D ⥤ E ≅ D ⥤ C ⥤ E where
   hom F := F.flip
   inv F := F.flip
   hom_inv_id := types_ext _ _ (fun _ ↦ rfl)
   inv_hom_id := types_ext _ _ (fun _ ↦ rfl)
 
 /-- The equivalence of types of bifunctors given by currying. -/
-@[simps]
+@[simps!]
 def curryingEquiv : C ⥤ D ⥤ E ≃ C × D ⥤ E :=
   curryingIso.toEquiv
 
 /-- The flipped equivalence of types of bifunctors given by currying. -/
-@[simps]
+@[simps!]
 def curryingFlipEquiv : D ⥤ C ⥤ E ≃ C × D ⥤ E :=
-  (flipIso ≪≫ curryingIso).toEquiv
+  (flippingIso ≪≫ curryingIso).toEquiv
 
 /-- Natural isomorphism witnessing `comp_flip_uncurry_eq`. -/
 @[simps!]
