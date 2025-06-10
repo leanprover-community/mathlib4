@@ -52,7 +52,7 @@ lemma reflection_mem_weylGroup : Equiv.reflection P i ∈ P.weylGroup :=
 /-- The `ith` reflection as a term of the Weyl group. -/
 def weylGroup.ofIdx (i : ι) : P.weylGroup := ⟨_, P.reflection_mem_weylGroup i⟩
 
-@[simp] lemma weylGroup.ofIdx_smul (i : ι) (m : M) :
+lemma weylGroup.ofIdx_smul (i : ι) (m : M) :
     weylGroup.ofIdx P i • m = Equiv.reflection P i • m :=
   rfl
 
