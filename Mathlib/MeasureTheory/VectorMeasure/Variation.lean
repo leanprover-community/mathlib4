@@ -63,6 +63,7 @@ open MeasureTheory BigOperators NNReal ENNReal Function Filter
 namespace MeasureTheory.VectorMeasure
 
 set_option linter.flexible true
+-- set_option linter.ppRoundtrip true
 
 /-!
 ## Inner partitions
@@ -197,8 +198,8 @@ lemma var_aux_lt {s : Set X} (hs : MeasurableSet s) {a : ℝ≥0∞} (ha : a < v
     simp_all [var_aux, hs, lt_iSup_iff]
   exact ⟨P, hP, by gcongr⟩
 
-lemma var_aux_le {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0 < ε) (h : var_aux f s ≠ ⊤) :
-    ∃ P, IsInnerPart s P ∧ var_aux f s ≤ ∑ p ∈ P, f p + ε := by
+lemma var_aux_le {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε : 0 < ε)
+    (h : var_aux f s ≠ ⊤) : ∃ P, IsInnerPart s P ∧ var_aux f s ≤ ∑ p ∈ P, f p + ε := by
   let ε' := min ε (var_aux f s).toNNReal
   have hε1 : ε' ≤ var_aux f s := by simp_all [ε']
   have : ε' ≤ ε := by simp_all [ε']
@@ -212,11 +213,11 @@ lemma var_aux_le {s : Set X} (hs : MeasurableSet s) {ε : NNReal} (hε: 0 < ε) 
     refine ⟨P, hP, ?_⟩
     calc var_aux f s
       _ = a + ε' := (tsub_add_cancel_of_le hε1).symm
-      _ ≤  ∑ p ∈ P, f p + ε' := by
+      _ ≤ ∑ p ∈ P, f p + ε' := by
         exact (ENNReal.add_le_add_iff_right coe_ne_top).mpr (le_of_lt hP')
-      _ ≤  ∑ p ∈ P, f p + ε := by gcongr
+      _ ≤ ∑ p ∈ P, f p + ε := by gcongr
   · simp_rw [hw, zero_le, and_true]
-    exact ⟨{}, by simp, by simp [hs], by simp, by simp⟩
+    exact ⟨{ }, by simp, by simp [hs], by simp, by simp⟩
 
 lemma le_var_aux {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
     (hP : IsInnerPart s P) : ∑ p ∈ P, f p ≤ var_aux f s := by
