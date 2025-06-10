@@ -5,7 +5,6 @@ Authors: David Kurniadi Angdinata
 -/
 import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
-import Mathlib.Data.Fin.Tuple.Reflection
 
 /-!
 # Weierstrass equations and the nonsingular condition in projective coordinates
@@ -166,6 +165,10 @@ lemma equiv_iff_eq_of_Z_eq {P Q : R × R × R} (hz : P z = Q z) (hQz : IsUnit <|
 lemma Z_eq_zero_of_equiv {P Q : R × R × R} (h : P ≈ Q) : P z = 0 ↔ Q z = 0 := by
   rcases h with ⟨u, rfl⟩
   exact u.mul_right_eq_zero
+
+lemma isUnit_Z_of_equiv {P Q : R × R × R} (h : P ≈ Q) : IsUnit (P z) ↔ IsUnit (Q z) := by
+  rcases h with ⟨u, rfl⟩
+  exact isUnit_smul_iff u _
 
 lemma X_eq_of_equiv {P Q : R × R × R} (h : P ≈ Q) : P x * Q z = Q x * P z := by
   rcases h with ⟨u, rfl⟩
@@ -492,18 +495,29 @@ lemma equiv_zero_of_Z_eq_zero [NoZeroDivisors R] {P : R × R × R} (hP : W'.Nons
     (hPz : P z = 0) : P ≈ (0, 1, 0) :=
   equiv_of_Z_eq_zero hP nonsingular_zero hPz rfl
 
-lemma map_equiv_map (f : F →+* K) {P Q : F × F × F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) :
+lemma map_equiv_map_of_equiv (f : R →+* S) {P Q : R × R × R} (h : P ≈ Q) : f ∘ P ≈ f ∘ Q := by
+  rcases h with ⟨u, rfl⟩
+  exact ⟨Units.map f u, (WeierstrassCurve.Projective.map_smul ..).symm⟩
+
+lemma map_equiv_map {f : R →+* S} (hf : Function.Bijective f) (P Q : R × R × R) :
     f ∘ P ≈ f ∘ Q ↔ P ≈ Q := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
-  · by_cases hz : f (P z) = 0
-    · exact equiv_of_Z_eq_zero hP hQ ((map_eq_zero_iff f f.injective).mp hz) <|
-        (map_eq_zero_iff f f.injective).mp <| (Z_eq_zero_of_equiv h).mp hz
-    · refine equiv_of_X_eq_of_Y_eq ((map_ne_zero_iff f f.injective).mp hz).isUnit
-        ((map_ne_zero_iff f f.injective).mp <| hz.comp (Z_eq_zero_of_equiv h).mpr).isUnit ?_ ?_
-      all_goals apply f.injective; map_simp
-      exacts [X_eq_of_equiv h, Y_eq_of_equiv h]
-  · rcases h with ⟨u, rfl⟩
-    exact ⟨Units.map f u, (WeierstrassCurve.Projective.map_smul ..).symm⟩
+  refine ⟨fun h => ?_, map_equiv_map_of_equiv f⟩
+  rcases h with ⟨u, hu⟩
+  rcases (Units.map_bijective hf).right u with ⟨u, rfl⟩
+  simp_rw [map_eq, Units.smul_def, smul_eq, Units.coe_map, RingHom.toMonoidHom_eq_coe,
+    MonoidHom.coe_coe, Prod.mk.injEq, ← map_mul, hf.injective.eq_iff] at hu
+  exact ⟨u, Prod.ext hu.left <| Prod.ext hu.right.left hu.right.right⟩
+
+lemma map_equiv_map_of_field (f : F →+* K) {P Q : F × F × F} (hP : W.Nonsingular P)
+    (hQ : W.Nonsingular Q) : f ∘ P ≈ f ∘ Q ↔ P ≈ Q := by
+  refine ⟨fun h => ?_, map_equiv_map_of_equiv f⟩
+  by_cases hz : f (P z) = 0
+  · exact equiv_of_Z_eq_zero hP hQ ((map_eq_zero_iff f f.injective).mp hz) <|
+      (map_eq_zero_iff f f.injective).mp <| (Z_eq_zero_of_equiv h).mp hz
+  · refine equiv_of_X_eq_of_Y_eq ((map_ne_zero_iff f f.injective).mp hz).isUnit
+      ((map_ne_zero_iff f f.injective).mp <| hz.comp (Z_eq_zero_of_equiv h).mpr).isUnit ?_ ?_
+    all_goals apply f.injective; map_simp
+    exacts [X_eq_of_equiv h, Y_eq_of_equiv h]
 
 @[deprecated (since := "2025-05-04")] alias comp_equiv_comp := map_equiv_map
 

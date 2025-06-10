@@ -493,10 +493,10 @@ lemma baseChange_addY : (W'.baseChange B).toAffine.addY (f x₁) (f x₂) (f y�
     f ((W'.baseChange A).toAffine.addY x₁ x₂ y₁ ℓ) := by
   rw [← RingHom.coe_coe, ← map_addY, map_baseChange]
 
-lemma baseChange_slope [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebra R K] [Algebra S K]
-  [IsScalarTower R S K] (f : F →ₐ[S] K) (x₁ x₂ y₁ y₂ : F) :
-  (W'.baseChange K).toAffine.slope (f x₁) (f x₂) (f y₁) (f y₂) =
-    f ((W'.baseChange F).toAffine.slope x₁ x₂ y₁ y₂) := by
+lemma baseChange_slope [hf : IsLocalHom f] :
+    (W'.baseChange B).toAffine.slope (f x₁) (f x₂) (f y₁) (f y₂) =
+      f ((W'.baseChange A).toAffine.slope x₁ x₂ y₁ y₂) := by
+  have : IsLocalHom (f : A →+* B) := ⟨hf.map_nonunit⟩
   rw [← RingHom.coe_coe, ← map_slope, map_baseChange]
 
 end Affine

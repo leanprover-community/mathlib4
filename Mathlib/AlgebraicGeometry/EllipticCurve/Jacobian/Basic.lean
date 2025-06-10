@@ -5,7 +5,6 @@ Authors: David Kurniadi Angdinata
 -/
 import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
-import Mathlib.Data.Fin.Tuple.Reflection
 
 /-!
 # Weierstrass equations and the nonsingular condition in Jacobian coordinates
@@ -175,6 +174,10 @@ lemma equiv_iff_eq_of_Z_eq {P Q : R × R × R} (hz : P z = Q z) (hQz : IsUnit <|
 lemma Z_eq_zero_of_equiv {P Q : R × R × R} (h : P ≈ Q) : P z = 0 ↔ Q z = 0 := by
   rcases h with ⟨u, rfl⟩
   exact u.mul_right_eq_zero
+
+lemma isUnit_Z_of_equiv {P Q : R × R × R} (h : P ≈ Q) : IsUnit (P z) ↔ IsUnit (Q z) := by
+  rcases h with ⟨u, rfl⟩
+  exact isUnit_smul_iff u _
 
 lemma X_eq_of_equiv {P Q : R × R × R} (h : P ≈ Q) : P x * Q z ^ 2 = Q x * P z ^ 2 := by
   rcases h with ⟨_, rfl⟩
@@ -521,8 +524,21 @@ lemma equiv_zero_of_Z_eq_zero {P : R × R × R} (hP : W'.Nonsingular P) (hPz : P
     P ≈ (1, 1, 0) :=
   equiv_of_Z_eq_zero hP nonsingular_zero hPz rfl
 
-lemma map_equiv_map (f : F →+* K) {P Q : F × F × F} (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) :
+lemma map_equiv_map_of_equiv (f : R →+* S) {P Q : R × R × R} (h : P ≈ Q) : f ∘ P ≈ f ∘ Q := by
+  rcases h with ⟨u, rfl⟩
+  exact ⟨Units.map f u, (WeierstrassCurve.Jacobian.map_smul ..).symm⟩
+
+lemma map_equiv_map {f : R →+* S} (hf : Function.Bijective f) (P Q : R × R × R) :
     f ∘ P ≈ f ∘ Q ↔ P ≈ Q := by
+  refine ⟨fun h => ?_, map_equiv_map_of_equiv f⟩
+  rcases h with ⟨u, hu⟩
+  rcases (Units.map_bijective hf).right u with ⟨u, rfl⟩
+  simp_rw [map_eq, Units.smul_def, smul_eq, Units.coe_map, RingHom.toMonoidHom_eq_coe,
+    MonoidHom.coe_coe, Prod.mk.injEq, ← map_pow, ← map_mul, hf.injective.eq_iff] at hu
+  exact ⟨u, Prod.ext hu.left <| Prod.ext hu.right.left hu.right.right⟩
+
+lemma map_equiv_map_of_field (f : F →+* K) {P Q : F × F × F} (hP : W.Nonsingular P)
+    (hQ : W.Nonsingular Q) : f ∘ P ≈ f ∘ Q ↔ P ≈ Q := by
   refine ⟨fun h => ?_, fun h => ?_⟩
   · by_cases hz : f (P z) = 0
     · exact equiv_of_Z_eq_zero hP hQ ((map_eq_zero_iff f f.injective).mp hz) <|
