@@ -111,6 +111,10 @@ theorem coeff_add' (x y : HahnSeries Γ R) : (x + y).coeff = x.coeff + y.coeff :
 theorem coeff_add {x y : HahnSeries Γ R} {a : Γ} : (x + y).coeff a = x.coeff a + y.coeff a :=
   rfl
 
+@[simp] theorem single_add (a : Γ) (r s : R) : single a (r + s) = single a r + single a s := by
+  classical
+  ext : 1; exact Pi.single_add (f := fun _ => R) a r s
+
 @[deprecated (since := "2025-01-31")] alias add_coeff := coeff_add
 
 @[simp] theorem single_add (a : Γ) (r s : R) : single a (r + s) = single a r + single a s := by
@@ -404,9 +408,8 @@ theorem single_sub (a : Γ) (r s : R) : single a (r - s) = single a r - single a
   map_sub (single.addMonoidHom a) _ _
 
 @[simp]
-theorem single_neg (g : Γ) (r : R) :
-    single g (-r) = -single g r := by
-  rw [eq_neg_iff_add_eq_zero, ← single_add, single_eq_zero_iff, neg_add_eq_zero]
+theorem single_neg (a : Γ) (r : R) : single a (-r) = -single a r :=
+  map_neg (single.addMonoidHom a) _
 
 @[simp]
 theorem support_neg {x : HahnSeries Γ R} : (-x).support = x.support := by

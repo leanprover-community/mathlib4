@@ -1038,6 +1038,7 @@ import Mathlib.Algebra.Ring.Fin
 import Mathlib.Algebra.Ring.GrindInstances
 import Mathlib.Algebra.Ring.Hom.Basic
 import Mathlib.Algebra.Ring.Hom.Defs
+import Mathlib.Algebra.Ring.Hom.InjSurj
 import Mathlib.Algebra.Ring.Idempotent
 import Mathlib.Algebra.Ring.Identities
 import Mathlib.Algebra.Ring.InjSurj
@@ -2055,6 +2056,7 @@ import Mathlib.CategoryTheory.FiberedCategory.Cartesian
 import Mathlib.CategoryTheory.FiberedCategory.Cocartesian
 import Mathlib.CategoryTheory.FiberedCategory.Fiber
 import Mathlib.CategoryTheory.FiberedCategory.Fibered
+import Mathlib.CategoryTheory.FiberedCategory.HasFibers
 import Mathlib.CategoryTheory.FiberedCategory.HomLift
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Filtered.Connected
@@ -2146,6 +2148,7 @@ import Mathlib.CategoryTheory.Join.Sum
 import Mathlib.CategoryTheory.LiftingProperties.Adjunction
 import Mathlib.CategoryTheory.LiftingProperties.Basic
 import Mathlib.CategoryTheory.LiftingProperties.Limits
+import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
 import Mathlib.CategoryTheory.Limits.Bicones
 import Mathlib.CategoryTheory.Limits.ColimitLimit
 import Mathlib.CategoryTheory.Limits.Comma
@@ -3491,6 +3494,7 @@ import Mathlib.Deprecated.Cardinal.Continuum
 import Mathlib.Deprecated.Cardinal.Finite
 import Mathlib.Deprecated.Cardinal.PartENat
 import Mathlib.Deprecated.Order
+import Mathlib.Deprecated.RingHom
 import Mathlib.Dynamics.BirkhoffSum.Average
 import Mathlib.Dynamics.BirkhoffSum.Basic
 import Mathlib.Dynamics.BirkhoffSum.NormedSpace
@@ -4338,6 +4342,7 @@ import Mathlib.MeasureTheory.Integral.Periodic
 import Mathlib.MeasureTheory.Integral.Pi
 import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
+import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.NNReal
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Integral.SetToL1
@@ -4567,6 +4572,7 @@ import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.IsBoundedAtImInfty
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.MDifferentiable
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
 import Mathlib.NumberTheory.ModularForms.Identities
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.Bounds

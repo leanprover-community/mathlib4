@@ -6,6 +6,7 @@ Authors: Aaron Anderson, Scott Carnahan
 import Mathlib.Algebra.Ring.Action.Rat
 import Mathlib.Data.Rat.Cast.Lemmas
 import Mathlib.RingTheory.HahnSeries.Multiplication
+import Mathlib.Data.Rat.Cast.Lemmas
 
 /-!
 # Summable families of Hahn Series
