@@ -16,7 +16,7 @@ with a `0` (inherited from that of `B`): it is a `GroupWithZero` and if `B` is c
 (see `MonoidHomWithZero.mem_range₀_iff_of_comm`).
 
 ## Main Results
-* `range₀ f` is the smallest submonoid with zero containing the range of `f`;
+* `range₀ f` is the smallest subgroup with zero containing the range of `f`;
 * `range₀ f` is a `CancelCommMonoidWithZero`;
 * `range₀ f` is a `GroupWithZero`;
 * When `A` is a monoid with zero and `f` is a homomorphism of monoids with zero, `range₀ f` can be
@@ -47,7 +47,9 @@ variable  [GroupWithZero B]
 
 
 /-- For a map with codomain a `MonoidWithZero`, this is a smallest
-`GroupWithZero`, that contains the invertible elements in the image. See
+`GroupWithZero`, that contains the invertible elements in the image. 
+
+See
 `MonoidHomWithZero.mem_range₀_iff_of_comm` for another characterization of `range₀ f` when `B` is
 commutative. -/
 def range₀ : Submonoid B where
@@ -61,6 +63,7 @@ def range₀ : Submonoid B where
     all_goals tauto
   one_mem' := by simpa using Subgroup.one_mem ..
 
+-- Do we need to do the `GroupWithZero` in two steps?
 instance : CancelMonoidWithZero (range₀ f) where
   zero := ⟨0, by simp [range₀]⟩
   zero_mul a := by
@@ -125,6 +128,7 @@ section CommGroupWithZero
 variable [MonoidWithZero A] [CommGroupWithZero B] [MonoidWithZeroHomClass F A B]
 
 open Subgroup in
+-- Do we really wish to name this `…_of_comm`?
 theorem mem_range₀_iff_of_comm (y : B) :
     y ∈ range₀ f ↔ ∃ a, f a ≠ 0 ∧ ∃ x, f a * y = f x := by
   refine ⟨fun hy ↦ ?_, fun ⟨a, ha, ⟨x, hy⟩⟩ ↦ ?_⟩
