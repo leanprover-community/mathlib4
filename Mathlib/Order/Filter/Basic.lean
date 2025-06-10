@@ -132,8 +132,7 @@ theorem exists_mem_and_iff {P : Set α → Prop} {Q : Set α → Prop} (hP : Ant
 
 @[deprecated forall_swap (since := "2025-06-10")]
 theorem forall_in_swap {β : Type*} {p : Set α → β → Prop} :
-    (∀ a ∈ f, ∀ (b), p a b) ↔ ∀ (b), ∀ a ∈ f, p a b :=
-  Set.forall_in_swap
+    (∀ a ∈ f, ∀ (b), p a b) ↔ ∀ (b), ∀ a ∈ f, p a b := by tauto
 
 end Filter
 
