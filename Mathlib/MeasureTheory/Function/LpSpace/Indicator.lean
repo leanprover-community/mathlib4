@@ -143,7 +143,7 @@ theorem norm_indicatorConstLp_le :
   refine (eLpNorm_indicator_const_le _ _).trans_eq ?_
   rw [ENNReal.ofReal_mul (norm_nonneg _), ofReal_norm, measureReal_def,
     ENNReal.toReal_rpow, ENNReal.ofReal_toReal]
-  exact ENNReal.rpow_ne_top_of_nonneg (by positivity) hμs
+  finiteness
 
 theorem nnnorm_indicatorConstLp_le :
     ‖indicatorConstLp p hs hμs c‖₊ ≤ ‖c‖₊ * (μ s).toNNReal ^ (1 / p.toReal) :=

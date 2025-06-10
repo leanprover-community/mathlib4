@@ -28,7 +28,7 @@ universe u v
 
 variable {α β γ : Type*}
 
-open Finset Function
+open Finset
 
 namespace Fintype
 
@@ -422,7 +422,7 @@ theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [
   cases nonempty_fintype α
   have (x y) (hxy : r x y) : #{z | r z x} < #{z | r z y} :=
     Finset.card_lt_card <| by
-      simp only [Finset.lt_iff_ssubset.symm, lt_iff_le_not_le, Finset.le_iff_subset,
+      simp only [Finset.lt_iff_ssubset.symm, lt_iff_le_not_ge, Finset.le_iff_subset,
           Finset.subset_iff, mem_filter, true_and, mem_univ, hxy]
       exact
         ⟨fun z hzx => _root_.trans hzx hxy,
