@@ -349,8 +349,11 @@ variable {α : Type*} {a b c : α}
 
 attribute [local instance] LE.toBtw LT.toSBtw
 
--- The following lemmas are about the non-instances `LE.toBtw` and `LT.toSBtw`.
+/-- The following lemmas are about the non-instances `LE.toBtw`, `LT.toSBtw` and
+`LinearOrder.toCircularOrder`. -/
 lemma btw_iff [LE α] : btw a b c ↔ a ≤ b ∧ b ≤ c ∨ b ≤ c ∧ c ≤ a ∨ c ≤ a ∧ a ≤ b := .rfl
+/-- The following lemmas are about the non-instances `LE.toBtw`, `LT.toSBtw` and
+`LinearOrder.toCircularOrder`. -/
 lemma sbtw_iff [LT α] : sbtw a b c ↔ a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b := .rfl
 
 end
