@@ -70,9 +70,15 @@ def curryingEquiv : C ⥤ D ⥤ E ≃ C × D ⥤ E :=
 def curryingFlipEquiv : D ⥤ C ⥤ E ≃ C × D ⥤ E :=
   (flipIso ≪≫ curryingIso).toEquiv
 
+/-- Natural isomorphism witnessing `comp_flip_uncurry_eq`. -/
+@[simps!]
+def compFlipUncurryIso (F : B ⥤ D) (G : D ⥤ C ⥤ E) :
+    uncurry.obj (F ⋙ G).flip ≅ (𝟭 C).prod F ⋙ (uncurry.obj G.flip) :=
+  NatIso.ofComponents (fun _ ↦ eqToIso rfl)
+
 lemma comp_flip_uncurry_eq (F : B ⥤ D) (G : D ⥤ C ⥤ E) :
     uncurry.obj (F ⋙ G).flip = (𝟭 C).prod F ⋙ (uncurry.obj G.flip) :=
-  Functor.ext (by simp) (fun ⟨c₁, b₁⟩ ⟨c₂, b₂⟩ ⟨f₁, f₂⟩ => by simp)
+  Functor.ext_of_iso (compFlipUncurryIso F G) (by aesop_cat) (by aesop_cat)
 
 end
 
