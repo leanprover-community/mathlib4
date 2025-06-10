@@ -467,7 +467,6 @@ theorem ContinuousOn.clm_apply {X} [TopologicalSpace X] {f : X → (E →L[𝕜]
   isBoundedBilinearMap_apply.continuous.comp_continuousOn (hf.prodMk hg)
 
 theorem ContinuousOn.continuousLinearMapCoprod {X : Type*} [TopologicalSpace X]
-  {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
     {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G} {s : Set X}
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun x => (f x).coprod (g x)) s := by
@@ -475,7 +474,6 @@ theorem ContinuousOn.continuousLinearMapCoprod {X : Type*} [TopologicalSpace X]
   exact (hf.clm_comp continuousOn_const).add (hg.clm_comp continuousOn_const)
 
 theorem Continuous.continuousLinearMapCoprod {X : Type*} [TopologicalSpace X]
-  {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
     {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G}
     (hf : Continuous f) (hg : Continuous g) :
     Continuous (fun x => (f x).coprod (g x)) := by
