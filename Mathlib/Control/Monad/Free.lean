@@ -78,7 +78,7 @@ It has two constructors: `pure` for wrapping a value of type `a`, and `liftBind`
 representing an operation from `f` followed by a continuation.
 
 This construction provides a free monad for any type constructor `f`, allowing for composable
-effect descriptions that can be interpreted later. Unlike the traditional Free monad,
+effect descriptions that can be interpreted later. Unlike the traditional free monad,
 this does not require `f` to be a functor. -/
 inductive FreeM.{u, v, w} (f : Type u → Type v) (α : Type w) where
   | protected pure : α → FreeM f α
