@@ -1,8 +1,7 @@
 name: Autolabel PRs
 
 on:
-  pull_request_target:
-    types: [opened]
+  pull_request_target: #types: [opened] # we act on all PRs, but only label a PR if it was just opened
   push:
     paths:
       - scripts/autolabel.lean
@@ -35,17 +34,21 @@ jobs:
           printf '%s\n' "${labels}"
           label="$(printf '%s' "${labels}" | sed -n 's=.*#\[\([^ ]*\)\].*=\1=p')"
           printf 'label: "%s"\n' "${label}"
-          if [ -n "${label}" ]
+          if [ "@{{ github.event_name == 'reopened' }}" == 'opened' ]
           then
-            printf 'Applying label %s\n' "${label}"
-            curl --request POST \
-              --header 'Accept: application/vnd.github+json' \
-              --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
-              --header 'X-GitHub-Api-Version: 2022-11-28' \
-              --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels \
-              --data "{'labels':[${label}]}"
+            if [ -n "${label}" ]
+            then
+              printf 'Applying label %s\n' "${label}"
+              curl --request POST \
+                --header 'Accept: application/vnd.github+json' \
+                --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+                --header 'X-GitHub-Api-Version: 2022-11-28' \
+                --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels \
+                --data "{'labels':[${label}]}"
+            else
+              echo "We are not applying any label."
+            fi
           else
-            echo "We are not applying any label."
-          fi
+            printf 'The PR was %s, not opened, so we do not apply any label.\n' "${{ github.event_name }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
