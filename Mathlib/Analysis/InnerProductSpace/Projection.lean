@@ -772,15 +772,15 @@ theorem orthogonal_orthogonal [K.HasOrthogonalProjection] : Kᗮᗮ = K := by
     rw [inner_eq_zero_symm]
     exact hw v hv
 
-lemma orthogonal_le_orthogonal_iff (K₀ K₁ : Submodule 𝕜 E) [K₀.HasOrthogonalProjection]
+lemma orthogonal_le_orthogonal_iff {K₀ K₁ : Submodule 𝕜 E} [K₀.HasOrthogonalProjection]
     [K₁.HasOrthogonalProjection] : K₀ᗮ ≤ K₁ᗮ ↔ K₁ ≤ K₀ :=
   ⟨fun h ↦ by simpa using orthogonal_le h, orthogonal_le⟩
 
-lemma orthogonal_le_iff_orthogonal_le (K₀ K₁ : Submodule 𝕜 E) [K₀.HasOrthogonalProjection]
+lemma orthogonal_le_iff_orthogonal_le {K₀ K₁ : Submodule 𝕜 E} [K₀.HasOrthogonalProjection]
     [K₁.HasOrthogonalProjection] : K₀ᗮ ≤ K₁ ↔ K₁ᗮ ≤ K₀ := by
   rw [← orthogonal_le_orthogonal_iff, orthogonal_orthogonal]
 
-lemma le_orthogonal_iff_le_orthogonal (K₀ K₁ : Submodule 𝕜 E) [K₀.HasOrthogonalProjection]
+lemma le_orthogonal_iff_le_orthogonal {K₀ K₁ : Submodule 𝕜 E} [K₀.HasOrthogonalProjection]
     [K₁.HasOrthogonalProjection] : K₀ ≤ K₁ᗮ ↔ K₁ ≤ K₀ᗮ := by
   rw [← orthogonal_le_orthogonal_iff, orthogonal_orthogonal]
 
