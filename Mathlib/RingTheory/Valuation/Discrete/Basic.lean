@@ -30,7 +30,7 @@ equivalent to asking that `ofAdd (-1 : ℤ)` belongs to the image, in turn equiv
 
 namespace Valuation
 
-open Function Set LinearOrderedCommGroup
+open Function Set LinearOrderedCommGroup MonoidHomWithZero
 
 variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
 
@@ -41,17 +41,18 @@ nontrivial cyclic, a valuation `v : A → Γ` on a ring `A` is *discrete*, if
 `genLTOne Γˣ` belongs to the image. Note that the latter is equivalent to
 asking that `1 : ℤ` belongs to the image of the corresponding additive valuation. -/
 class IsDiscrete : Prop where
-  exists_generator_lt_one' : ∃ (γ : Γˣ), Subgroup.zpowers γ = ⊤ ∧ γ < 1 ∧ ↑γ ∈ range v
+  exists_generator_lt_one' : ∃ (γ : Γˣ), Subgroup.zpowers γ = (range₀ v)ˣ ∧ γ < 1 ∧ ↑γ ∈ range v
 
 lemma exists_generator_lt_one [IsDiscrete v] :
-  ∃ (γ : Γˣ), Subgroup.zpowers γ = ⊤ ∧ γ < 1 ∧ ↑γ ∈ range v := IsDiscrete.exists_generator_lt_one'
+    ∃ (γ : Γˣ), Subgroup.zpowers γ = (range₀ v)ˣ ∧ γ < 1 ∧ ↑γ ∈ range v :=
+  IsDiscrete.exists_generator_lt_one'
 
 /-- Given a discrete valuation `v`, `Valuation.IsDiscrete.generator` is a generator of the value
 group that is `< 1`. -/
 noncomputable def generator [IsDiscrete v] : Γˣ := v.exists_generator_lt_one.choose
 
-lemma generator_zpowers_eq_top [IsDiscrete v] :
-    Subgroup.zpowers (generator v) = (⊤ : Subgroup Γˣ) := v.exists_generator_lt_one.choose_spec.1
+lemma generator_zpowers_eq_range₀ [IsDiscrete v] :
+    Subgroup.zpowers (generator v) = (range₀ v)ˣ := v.exists_generator_lt_one.choose_spec.1
 
 lemma generator_lt_one [IsDiscrete v] : (generator v) < 1 :=
   v.exists_generator_lt_one.choose_spec.2.1
@@ -59,9 +60,46 @@ lemma generator_lt_one [IsDiscrete v] : (generator v) < 1 :=
 lemma generator_mem_range [IsDiscrete v] : ↑(generator v) ∈ range v :=
   v.exists_generator_lt_one.choose_spec.2.2
 
-lemma IsDiscrete.cyclic_value_group [IsDiscrete v] : IsCyclic Γˣ := by
+lemma IsDiscrete.cyclic_value_group [IsDiscrete v] : IsCyclic (range₀ v)ˣ := by
   rw [isCyclic_iff_exists_zpowers_eq_top]
-  exact ⟨_, generator_zpowers_eq_top v⟩
+  -- obtain ⟨a, ha⟩ := v.generator_mem_range
+  set γ := v.generator with hγ
+  rcases γ  with ⟨x, _, _, _⟩
+  have hx : x ∈ range v := sorry
+  rcases hx with ⟨b, hb⟩
+  set y : range₀ v := by
+    refine ⟨x, ?_⟩
+    rw [← hb]
+    apply mem_range₀ with hy
+  refine ⟨Units.mk0 y ?_, ?_⟩
+  · sorry
+  ext d
+  simp
+  have hd := d.2
+  rw [hy]
+
+
+  rw [generator_zpowers_eq_range₀ v]
+
+
+
+
+
+
+  -- set x : (range₀ v)ˣ := by
+  --   rw [← generator_zpowers_eq_range₀]
+  --   use v.generator.1
+  --   simp with hx
+  -- -- use x
+  -- -- rw [hx]
+  -- refine ⟨x.1, ?_⟩
+  -- convert generator_zpowers_eq_range₀ v
+  -- simp at hx
+
+
+
+  -- rw [generator_zpowers_eq_range₀]
+
 
 
 lemma IsDiscrete.nontrivial_value_group [IsDiscrete v] : Nontrivial Γˣ :=
@@ -70,24 +108,24 @@ lemma IsDiscrete.nontrivial_value_group [IsDiscrete v] : Nontrivial Γˣ :=
 variable {K : Type*} [Field K]
 
 /-- A discrete valuation on a field `K` is surjective. -/
-lemma IsDiscrete.surj (w : Valuation K Γ) [IsDiscrete w] : Surjective w := by
-  intro c
-  by_cases hc : c = 0
-  · exact ⟨0, by simp [hc]⟩
-  obtain ⟨π, hπ_gen, hπ_lt_one, a, ha⟩ := w.exists_generator_lt_one
-  set u : Γˣ := Units.mk0 c hc with hu
-  obtain ⟨k, hk⟩ := Subgroup.mem_zpowers_iff.mp (hπ_gen ▸ Subgroup.mem_top u)
-  use a^k
-  rw [map_zpow₀, ha]
-  norm_cast
-  rw [hk, hu, Units.val_mk0]
-
-/-- A valuation on a field `K` is discrete if and only if it is surjective. -/
-lemma isDiscrete_iff_surjective (w : Valuation K Γ) [IsCyclic Γˣ] [Nontrivial Γˣ] :
-    IsDiscrete w ↔ Surjective w := by
-  refine ⟨fun _ ↦ IsDiscrete.surj w, fun h ↦ ⟨LinearOrderedCommGroup.genLTOne Γˣ,
-    by simp, ?_, by apply h⟩⟩
-  simpa using (⊤ : Subgroup Γˣ).genLTOne_lt_one
+-- lemma IsDiscrete.surj (w : Valuation K Γ) [IsDiscrete w] : Surjective w := by
+--   intro c
+--   by_cases hc : c = 0
+--   · exact ⟨0, by simp [hc]⟩
+--   obtain ⟨π, hπ_gen, hπ_lt_one, a, ha⟩ := w.exists_generator_lt_one
+--   set u : Γˣ := Units.mk0 c hc with hu
+--   obtain ⟨k, hk⟩ := Subgroup.mem_zpowers_iff.mp (hπ_gen ▸ Subgroup.mem_top u)
+--   use a^k
+--   rw [map_zpow₀, ha]
+--   norm_cast
+--   rw [hk, hu, Units.val_mk0]
+--
+-- /-- A valuation on a field `K` is discrete if and only if it is surjective. -/
+-- lemma isDiscrete_iff_surjective (w : Valuation K Γ) [IsCyclic Γˣ] [Nontrivial Γˣ] :
+--     IsDiscrete w ↔ Surjective w := by
+--   refine ⟨fun _ ↦ IsDiscrete.surj w, fun h ↦ ⟨LinearOrderedCommGroup.genLTOne Γˣ,
+--     by simp, ?_, by apply h⟩⟩
+--   simpa using (⊤ : Subgroup Γˣ).genLTOne_lt_one
 
 instance [hv : IsDiscrete v] : IsNontrivial v where
   exists_val_nontrivial := by

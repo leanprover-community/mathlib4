@@ -126,6 +126,16 @@ theorem inv_mem_range₀_iff {b : B} : b⁻¹ ∈ range₀ f ↔ b ∈ range₀ 
   · simp only [h, inv_zero, zero_mem_range₀]
   exact ⟨fun h ↦ ((inv_inv b).symm ▸ (inv_mem_range₀ f)) h, inv_mem_range₀ _⟩
 
+example : range₀ f →* B := by
+  exact (range₀ f).subtype
+
+#check Units.map (range₀ f).subtype
+-- def asSubgroup : Subgroup Bˣ where
+--   carrier := (range₀ f)ˣ.carrier
+--   mul_mem' := _
+--   one_mem' := _
+--   inv_mem' := _
+
 end GroupWithZero
 section CommGroupWithZero
 
