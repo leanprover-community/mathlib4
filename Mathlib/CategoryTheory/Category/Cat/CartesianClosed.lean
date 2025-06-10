@@ -32,7 +32,7 @@ by forming the category of functors out of `C`. -/
 @[simps]
 def exp : Cat ⥤ Cat where
   obj D := Cat.of (C ⥤ D)
-  map F :=   map F := (whiskeringRight _ _ _).obj F
+  map F := (whiskeringRight _ _ _).obj F
 
 end Cat
 
