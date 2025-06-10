@@ -16,7 +16,7 @@ This file defines bundled homomorphisms of `R`-bialgebras. We simply mimic
 
 * `BialgHom R A B`: the type of `R`-bialgebra morphisms from `A` to `B`.
 * `Bialgebra.counitBialgHom R A : A →ₐc[R] R`: the counit of a bialgebra as a bialgebra
-homomorphism.
+  homomorphism.
 
 ## Notations
 

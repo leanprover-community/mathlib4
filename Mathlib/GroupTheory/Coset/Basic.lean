@@ -422,8 +422,7 @@ alias AddSubgroup.quotientEquivSumOfLE_apply := AddSubgroup.quotientEquivProdOfL
 alias AddSubgroup.quotientEquivSumOfLE_symm_apply := AddSubgroup.quotientEquivProdOfLE_symm_apply
 
 /-- If `s ≤ t`, then there is an embedding `s ⧸ H.subgroupOf s ↪ t ⧸ H.subgroupOf t`. -/
-@[to_additive "If `s ≤ t`, then there is an embedding
- `s ⧸ H.addSubgroupOf s ↪ t ⧸ H.addSubgroupOf t`."]
+@[to_additive "If `s ≤ t`, there is an embedding `s ⧸ H.addSubgroupOf s ↪ t ⧸ H.addSubgroupOf t`."]
 def quotientSubgroupOfEmbeddingOfLE (H : Subgroup α) (h : s ≤ t) :
     s ⧸ H.subgroupOf s ↪ t ⧸ H.subgroupOf t where
   toFun :=
@@ -467,7 +466,7 @@ theorem quotientMapOfLE_apply_mk (h : s ≤ t) (g : α) :
 
 /-- The natural embedding `H ⧸ (⨅ i, f i).subgroupOf H ↪ Π i, H ⧸ (f i).subgroupOf H`. -/
 @[to_additive (attr := simps) "The natural embedding
- `H ⧸ (⨅ i, f i).addSubgroupOf H) ↪ Π i, H ⧸ (f i).addSubgroupOf H`."]
+`H ⧸ (⨅ i, f i).addSubgroupOf H) ↪ Π i, H ⧸ (f i).addSubgroupOf H`."]
 def quotientiInfSubgroupOfEmbedding {ι : Type*} (f : ι → Subgroup α) (H : Subgroup α) :
     H ⧸ (⨅ i, f i).subgroupOf H ↪ ∀ i, H ⧸ (f i).subgroupOf H where
   toFun q i := quotientSubgroupOfMapOfLE H (iInf_le f i) q
@@ -557,8 +556,8 @@ variable [Group α]
 (typically non-canonical) bijection between the preimage of `t` in `α` and the product `s × t`. -/
 @[to_additive preimageMkEquivAddSubgroupProdSet
 "If `s` is a subgroup of the additive group `α`, and `t` is a subset of `α ⧸ s`, then
- there is a (typically non-canonical) bijection between the preimage of `t` in `α` and the product
- `s × t`."]
+there is a (typically non-canonical) bijection between the preimage of `t` in `α` and the product
+`s × t`."]
 noncomputable def preimageMkEquivSubgroupProdSet (s : Subgroup α) (t : Set (α ⧸ s)) :
     QuotientGroup.mk ⁻¹' t ≃ s × t where
   toFun a :=

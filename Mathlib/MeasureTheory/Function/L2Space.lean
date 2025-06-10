@@ -11,7 +11,7 @@ import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 /-! # `L^2` space
 
 If `E` is an inner product space over `𝕜` (`ℝ` or `ℂ`), then `Lp E 2 μ`
-(defined in `Mathlib.MeasureTheory.Function.LpSpace`)
+(defined in `Mathlib/MeasureTheory/Function/LpSpace.lean`)
 is also an inner product space, with inner product defined as `inner f g := ∫ a, ⟪f a, g a⟫ ∂μ`.
 
 ### Main results
@@ -19,7 +19,7 @@ is also an inner product space, with inner product defined as `inner f g := ∫ 
 * `mem_L1_inner` : for `f` and `g` in `Lp E 2 μ`, the pointwise inner product `fun x ↦ ⟪f x, g x⟫`
   belongs to `Lp 𝕜 1 μ`.
 * `integrable_inner` : for `f` and `g` in `Lp E 2 μ`, the pointwise inner product
- `fun x ↦ ⟪f x, g x⟫` is integrable.
+  `fun x ↦ ⟪f x, g x⟫` is integrable.
 * `L2.innerProductSpace` : `Lp E 2 μ` is an inner product space.
 -/
 
@@ -234,7 +234,7 @@ theorem inner_indicatorConstLp_eq_setIntegral_inner (f : Lp E 2 μ) (hs : Measur
         simp
       exact setIntegral_congr_ae hs.compl h_ae_eq
     have h_indicator : ∀ᵐ x : α ∂μ, x ∉ s → indicatorConstLp 2 hs hμs c x = 0 :=
-      indicatorConstLp_coeFn_nmem
+      indicatorConstLp_coeFn_notMem
     refine h_indicator.mono fun x hx hxs => ?_
     rw [hx hxs]
     exact inner_zero_left _

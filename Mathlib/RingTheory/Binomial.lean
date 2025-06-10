@@ -53,10 +53,10 @@ of cardinality `n`.
 Further results in Elliot's paper:
 * A CommRing is binomial if and only if it admits a λ-ring structure with trivial Adams operations.
 * The free commutative binomial ring on a set `X` is the ring of integer-valued polynomials in the
-variables `X`.  (also, noncommutative version?)
+  variables `X`.  (also, noncommutative version?)
 * Given a commutative binomial ring `A` and an `A`-algebra `B` that is complete with respect to an
-ideal `I`, formal exponentiation induces an `A`-module structure on the multiplicative subgroup
-`1 + I`.
+  ideal `I`, formal exponentiation induces an `A`-module structure on the multiplicative subgroup
+  `1 + I`.
 
 -/
 section Multichoose

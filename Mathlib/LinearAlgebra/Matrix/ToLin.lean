@@ -30,14 +30,14 @@ In the list below, and in all this file, `R` is a commutative ring (semiring
 is sometimes enough), `M` and its variations are `R`-modules, `ι`, `κ`, `n` and `m` are finite
 types used for indexing.
 
- * `LinearMap.toMatrix`: given bases `v₁ : ι → M₁` and `v₂ : κ → M₂`,
-   the `R`-linear equivalence from `M₁ →ₗ[R] M₂` to `Matrix κ ι R`
- * `Matrix.toLin`: the inverse of `LinearMap.toMatrix`
- * `LinearMap.toMatrix'`: the `R`-linear equivalence from `(m → R) →ₗ[R] (n → R)`
-   to `Matrix m n R` (with the standard basis on `m → R` and `n → R`)
- * `Matrix.toLin'`: the inverse of `LinearMap.toMatrix'`
- * `algEquivMatrix`: given a basis indexed by `n`, the `R`-algebra equivalence between
-   `R`-endomorphisms of `M` and `Matrix n n R`
+* `LinearMap.toMatrix`: given bases `v₁ : ι → M₁` and `v₂ : κ → M₂`,
+  the `R`-linear equivalence from `M₁ →ₗ[R] M₂` to `Matrix κ ι R`
+* `Matrix.toLin`: the inverse of `LinearMap.toMatrix`
+* `LinearMap.toMatrix'`: the `R`-linear equivalence from `(m → R) →ₗ[R] (n → R)`
+  to `Matrix m n R` (with the standard basis on `m → R` and `n → R`)
+* `Matrix.toLin'`: the inverse of `LinearMap.toMatrix'`
+* `algEquivMatrix`: given a basis indexed by `n`, the `R`-algebra equivalence between
+  `R`-endomorphisms of `M` and `Matrix n n R`
 
 ## Issues
 
@@ -300,7 +300,7 @@ def LinearMap.toMatrix' : ((n → R) →ₗ[R] m → R) ≃ₗ[R] Matrix m n R w
 
 /-- A `Matrix m n R` is linearly equivalent to a linear map `(n → R) →ₗ[R] (m → R)`.
 
-Note that the forward-direction does not require `DecidableEq` and is `Matrix.vecMulLin`. -/
+Note that the forward-direction does not require `DecidableEq` and is `Matrix.mulVecLin`. -/
 def Matrix.toLin' : Matrix m n R ≃ₗ[R] (n → R) →ₗ[R] m → R :=
   LinearMap.toMatrix'.symm
 
