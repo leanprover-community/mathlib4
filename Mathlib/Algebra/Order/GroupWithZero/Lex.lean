@@ -5,8 +5,8 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.GroupWithZero.ProdHom
 import Mathlib.Algebra.Order.Hom.Monoid
+import Mathlib.Algebra.Order.Monoid.Lex
 import Mathlib.Data.Prod.Lex
-import Mathlib.Order.Prod.Lex.Monoid
 
 /-!
 # Order homomorphisms for products of linearly ordered groups with zero
