@@ -202,7 +202,7 @@ variable {V : Type*} [Quiver V]
 def BoundedPaths (v w : V) (n : ℕ) : Sort _ :=
   { p : Path v w // p.length ≤ n }
 
-/-- Bounded paths of length zero between two vertices are subsingletons. -/
+/-- Bounded paths of length zero between two vertices form a subsingleton. -/
 instance instSubsingletonBddPaths (v w : V) : Subsingleton (BoundedPaths v w 0) where
   allEq := fun ⟨p, hp⟩ ⟨q, hq⟩ =>
    match v, w, p, q with
