@@ -112,7 +112,7 @@ lemma Finite.encard_biUnion {t : Set ι} (ht : t.Finite) {s : ι → Set α}
   · simp only [not_forall] at h
     obtain ⟨i, hi, (hn : (s i).Infinite)⟩ := h
     rw [← Set.insert_diff_self_of_mem hi,
-      finsum_mem_insert _ (not_mem_diff_of_mem <| mem_singleton i) ht.diff]
+      finsum_mem_insert _ (notMem_diff_of_mem <| mem_singleton i) ht.diff]
     simp [hn]
 
 lemma encard_iUnion_of_finite [Finite ι] {s : ι → Set α} (hs : Pairwise (Disjoint on s)) :
