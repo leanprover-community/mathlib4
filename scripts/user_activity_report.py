@@ -17,6 +17,8 @@ Features:
 
 The --remove flag generates (but does not execute) gh commands to remove
 write access from non-admin users who haven't committed in more than N days.
+Bot accounts (usernames ending with '-bot') are automatically excluded from
+removal commands.
 
 Results are cached to avoid repeated API calls. Cache files are automatically
 saved after each new commit lookup to prevent data loss.
@@ -390,6 +392,7 @@ def main():
         print(f"{'='*80}")
         print("# The following commands would remove write access from non-admin users")
         print("# who haven't committed in more than {} days:".format(args.remove))
+        print("# (Bot accounts ending with '-bot' are excluded)")
         print()
 
         now = datetime.now(timezone.utc)
@@ -400,6 +403,10 @@ def main():
             username = user_data['username']
             permission_level = user_data['permission_level']
             last_commit_date = user_data['last_commit_date']
+
+            # Skip bot accounts
+            if username.endswith('-bot'):
+                continue
 
             # Only consider non-admin users with write access
             if permission_level in ['write', 'maintain'] and permission_level != 'admin':
