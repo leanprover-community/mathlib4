@@ -2,61 +2,34 @@ name: Add "ready-to-merge" and "delegated" label
 
 # triggers the action when
 on:
-  # the PR receives a comment
-  issue_comment:
-    types: [created]
-  # the PR receives a review
-  pull_request_review:
-    # whether or not it is accompanied by a comment
-    types: [submitted]
-  # the PR receives a review comment
-  pull_request_review_comment:
-    types: [created]
+  repository_dispatch:
+    types: [bors-command]
 
 jobs:
   add_ready_to_merge_label:
-    # we set some variables. The ones of the form `${{ X }}${{ Y }}` are typically not
-    # both set simultaneously: depending on the event that triggers the PR, usually only one is set
+    # we set some variables from the dispatched payload
     env:
-      AUTHOR: ${{ github.event.comment.user.login }}${{ github.event.review.user.login }}
-      COMMENT_EVENT: ${{ github.event.comment.body }}
-      COMMENT_REVIEW: ${{ github.event.review.body }}
+      AUTHOR: ${{ github.event.client_payload.author }}
     name: Add ready-to-merge or delegated label
     runs-on: ubuntu-latest
     if: github.repository == 'leanprover-community/mathlib4'
     steps:
-      - name: Find bors merge/delegate
+      - name: Set merge or delegate outputs from payload
         id: merge_or_delegate
         run: |
-          COMMENT="${COMMENT_EVENT}${COMMENT_REVIEW}"
-          # we strip `\r` since line endings from GitHub contain this character
-          COMMENT="${COMMENT//$'\r'/}"
-          # for debugging, we print some information
-          printf '%s' "${COMMENT}" | hexdump -cC
-          printf 'Comment:"%s"\n' "${COMMENT}"
-          m_or_d="$(printf '%s' "${COMMENT}" |
-            sed -n 's=^bors  *\(merge\|r+\) *$=ready-to-merge=p; s=^bors  *\(delegate\|d+\|d\=\).*=delegated=p' | head -1)"
-
-          remove_labels="$(printf '%s' "${COMMENT}" |
-            sed -n 's=^bors  *\(merge\|r\|d\)- *$=remove-labels=p' | head -1)"
+          # Get values from the dispatched payload
+          m_or_d="${{ github.event.client_payload.mOrD }}"
+          remove_labels="${{ github.event.client_payload.removeLabels }}"
+          bot="${{ github.event.client_payload.bot }}"
 
           printf $'"bors delegate" or "bors merge" found? \'%s\'\n' "${m_or_d}"
           printf $'"bors r-" or "bors d-" found? \'%s\'\n' "${remove_labels}"
           printf $'AUTHOR: \'%s\'\n' "${AUTHOR}"
-          printf $'PR_NUMBER: \'%s\'\n' "${{ github.event.issue.number }}${{ github.event.pull_request.number }}"
-          printf $'%s' "${{ github.event.issue.number }}${{ github.event.pull_request.number }}" | hexdump -cC
+          printf $'PR_NUMBER: \'%s\'\n' "${{ github.event.client_payload.pr_number }}"
 
           printf $'mOrD=%s\n' "${m_or_d}" >> "${GITHUB_OUTPUT}"
           printf $'removeLabels=%s\n' "${remove_labels}" >> "${GITHUB_OUTPUT}"
-          if [ "${AUTHOR}" == 'leanprover-community-mathlib4-bot' ] ||
-             [ "${AUTHOR}" == 'leanprover-community-bot-assistant' ]
-          then
-            printf $'bot=true\n'
-            printf $'bot=true\n' >> "${GITHUB_OUTPUT}"
-          else
-            printf $'bot=false\n'
-            printf $'bot=false\n' >> "${GITHUB_OUTPUT}"
-          fi
+          printf $'bot=%s\n' "${bot}" >> "${GITHUB_OUTPUT}"
 
       - name: Check whether user is a mathlib admin
         id: user_permission
@@ -74,7 +47,7 @@ jobs:
         with:
           route: POST /repos/:repository/issues/:issue_number/labels
           repository: ${{ github.repository }}
-          issue_number: ${{ github.event.issue.number }}${{ github.event.pull_request.number }}
+          issue_number: ${{ github.event.client_payload.pr_number }}
           labels: '["${{ steps.merge_or_delegate.outputs.mOrD }}"]'
         env:
           GITHUB_TOKEN: ${{ secrets.TRIAGE_TOKEN }}
@@ -89,7 +62,7 @@ jobs:
         run: |
           for label in awaiting-author maintainer-merge; do
             curl --request DELETE \
-              --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}${{ github.event.pull_request.number }}/labels/${label}" \
+              --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.client_payload.pr_number }}/labels/${label}" \
               --header 'authorization: Bearer ${{ secrets.TRIAGE_TOKEN }}'
           done
 
@@ -101,7 +74,7 @@ jobs:
         run: |
           for label in ready-to-merge delegated; do
             curl --request DELETE \
-              --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}${{ github.event.pull_request.number }}/labels/${label}" \
+              --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.client_payload.pr_number }}/labels/${label}" \
               --header 'authorization: Bearer ${{ secrets.TRIAGE_TOKEN }}'
           done
 
@@ -135,4 +108,4 @@ jobs:
           ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
           ZULIP_SITE: https://leanprover.zulipchat.com
         run: |
-          python scripts/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ steps.merge_or_delegate.outputs.mOrD }}" "${{ steps.merge_or_delegate.outputs.mOrD }}" "${{ github.event.issue.number }}${{ github.event.pull_request.number }}"
+          python scripts/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ steps.merge_or_delegate.outputs.mOrD }}" "${{ steps.merge_or_delegate.outputs.mOrD }}" "${{ github.event.client_payload.pr_number }}"

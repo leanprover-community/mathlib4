@@ -1,0 +1,87 @@
+name: Bors Command Trigger
+
+on:
+  # the PR receives a comment
+  issue_comment:
+    types: [created]
+  # the PR receives a review
+  pull_request_review:
+    # whether or not it is accompanied by a comment
+    types: [submitted]
+  # the PR receives a review comment
+  pull_request_review_comment:
+    types: [created]
+
+jobs:
+  trigger_bors:
+    name: Parse and trigger bors commands
+    runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
+    steps:
+      - name: Parse bors command
+        id: parse_command
+        env:
+          AUTHOR: ${{ github.event.comment.user.login }}${{ github.event.review.user.login }}
+          COMMENT_EVENT: ${{ github.event.comment.body }}
+          COMMENT_REVIEW: ${{ github.event.review.body }}
+        run: |
+          COMMENT="${COMMENT_EVENT}${COMMENT_REVIEW}"
+          # we strip `\r` since line endings from GitHub contain this character
+          COMMENT="${COMMENT//$'\r'/}"
+          # for debugging, we print some information
+          printf '%s' "${COMMENT}" | hexdump -cC
+          printf 'Comment:"%s"\n' "${COMMENT}"
+          m_or_d="$(printf '%s' "${COMMENT}" |
+            sed -n 's=^bors  *\(merge\|r+\) *$=ready-to-merge=p; s=^bors  *\(delegate\|d+\|d\=\).*=delegated=p' | head -1)"
+
+          remove_labels="$(printf '%s' "${COMMENT}" |
+            sed -n 's=^bors  *\(merge\|r\|d\)- *$=remove-labels=p' | head -1)"
+
+          printf $'"bors delegate" or "bors merge" found? \'%s\'\n' "${m_or_d}"
+          printf $'"bors r-" or "bors d-" found? \'%s\'\n' "${remove_labels}"
+          printf $'AUTHOR: \'%s\'\n' "${AUTHOR}"
+          printf $'PR_NUMBER: \'%s\'\n' "${{ github.event.issue.number }}${{ github.event.pull_request.number }}"
+          printf $'%s' "${{ github.event.issue.number }}${{ github.event.pull_request.number }}" | hexdump -cC
+
+          printf $'mOrD=%s\n' "${m_or_d}" >> "${GITHUB_OUTPUT}"
+          printf $'removeLabels=%s\n' "${remove_labels}" >> "${GITHUB_OUTPUT}"
+          if [ "${AUTHOR}" == 'leanprover-community-mathlib4-bot' ] ||
+             [ "${AUTHOR}" == 'leanprover-community-bot-assistant' ]
+          then
+            printf $'bot=true\n'
+            printf $'bot=true\n' >> "${GITHUB_OUTPUT}"
+          else
+            printf $'bot=false\n'
+            printf $'bot=false\n' >> "${GITHUB_OUTPUT}"
+          fi
+
+      - name: Dispatch to main bors workflow
+        if: ${{ steps.parse_command.outputs.mOrD != '' || steps.parse_command.outputs.removeLabels != '' }}
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const payload = {
+              event_type: 'bors-command',
+              client_payload: {
+                author: process.env.AUTHOR,
+                pr_number: process.env.PR_NUMBER,
+                mOrD: process.env.M_OR_D,
+                removeLabels: process.env.REMOVE_LABELS,
+                bot: process.env.BOT
+              }
+            };
+
+            console.log('Dispatching with payload:', JSON.stringify(payload, null, 2));
+
+            await github.rest.repos.createDispatchEvent({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ...payload
+            });
+        env:
+          AUTHOR: ${{ github.event.comment.user.login }}${{ github.event.review.user.login }}
+          PR_NUMBER: ${{ github.event.issue.number }}${{ github.event.pull_request.number }}
+          M_OR_D: ${{ steps.parse_command.outputs.mOrD }}
+          REMOVE_LABELS: ${{ steps.parse_command.outputs.removeLabels }}
+          BOT: ${{ steps.parse_command.outputs.bot }}
