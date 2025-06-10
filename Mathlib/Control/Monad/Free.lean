@@ -106,9 +106,9 @@ instance {F : Type u → Type v} : LawfulFunctor (FreeM F) where
       simp [map, ih]
   comp_map g h x := by
     simp [Functor.map]
-    induction x
-    case pure a => simp [FreeM.map]
-    case liftBind op cont ih => simp [FreeM.map, ih]
+    induction x with
+    | pure a => rfl
+    | liftBind op cont ih => simp [FreeM.map, ih]
 
 /-- Bind operation for the `FreeM` monad. -/
 protected def bind {a b : Type _} (F : Type u → Type v) (x : FreeM F a) (f : a → FreeM F b) :
