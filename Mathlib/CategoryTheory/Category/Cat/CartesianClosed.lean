@@ -63,6 +63,7 @@ def curryingEquiv : C ⥤ D ⥤ E ≃ C × D ⥤ E :=
   curryingIso.toEquiv
 
 /-- The flipped equivalence of types of bifunctors given by currying. -/
+@[simps]
 def curryingFlipEquiv : D ⥤ C ⥤ E ≃ C × D ⥤ E :=
   (flipIso ≪≫ curryingIso).toEquiv
 
