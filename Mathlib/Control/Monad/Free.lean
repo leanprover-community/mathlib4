@@ -207,9 +207,8 @@ extends the effect handler `f` to interpret `FreeM F` computations in monad `M`.
 -/
 theorem extendsHandler_iff
 {F : Type u → Type v} {m : Type u → Type w} [Monad m] {α : Type u}
-    (f : {ι : Type u} → F ι → m ι)
-    (g : FreeM F α → m α) :
-    ExtendsHandler f g ↔ g = (·.mapM f) := by
+    (f : {ι : Type u} → F ι → m ι) (g : FreeM F α → m α) :
+    ExtendsHandler @f g ↔ g = (·.mapM @f) := by
   constructor
   · intro h
     apply funext
