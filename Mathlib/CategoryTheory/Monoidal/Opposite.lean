@@ -340,6 +340,12 @@ instance : (MonoidalOpposite.mopMopEquivalence C).inverse.Monoidal where
   μ_δ X Y := Category.comp_id _
   δ_μ X Y := Category.comp_id _
 
+instance : (mopMopEquivalence C).IsMonoidal where
+  leftAdjoint_ε := by
+    simp [ε, η, Adjunction.homEquiv, mopMopEquivalence, Equivalence.trans, unmopEquiv, ε']
+  leftAdjoint_μ X Y := by
+    simp [μ, η, δ, Adjunction.homEquiv, mopMopEquivalence, Equivalence.trans, unmopEquiv, μ']
+
 /-- The identification `mop X ⊗ mop Y = mop (Y ⊗ X)` as a natural isomorphism. -/
 @[simps!]
 def MonoidalOpposite.tensorIso :
