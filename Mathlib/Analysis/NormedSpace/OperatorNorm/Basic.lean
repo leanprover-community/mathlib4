@@ -151,11 +151,6 @@ theorem opNorm_le_bound' (f : E →SL[σ₁₂] F) {M : ℝ} (hMp : 0 ≤ M)
       simp only [h, mul_zero, norm_image_of_norm_zero f f.2 h, le_refl]
 
 
-theorem opNorm_le_of_lipschitz {f : E →SL[σ₁₂] F} {K : ℝ≥0} (hf : LipschitzWith K f) : ‖f‖ ≤ K :=
-  f.opNorm_le_bound K.2 fun x => by
-    simpa only [dist_zero_right, f.map_zero] using hf.dist_le_mul x 0
-
-
 theorem opNorm_eq_of_bounds {φ : E →SL[σ₁₂] F} {M : ℝ} (M_nonneg : 0 ≤ M)
     (h_above : ∀ x, ‖φ x‖ ≤ M * ‖x‖) (h_below : ∀ N ≥ 0, (∀ x, ‖φ x‖ ≤ N * ‖x‖) → M ≤ N) :
     ‖φ‖ = M :=
@@ -280,15 +275,20 @@ theorem opNorm_smul_le {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F]
     gcongr
     apply le_opNorm
 
-/-- A continuous linear map is `M`-Lipschitz if its operator norm is at most `M`. -/
-theorem lipschitzWith_of_opNorm_le {M : ℝ≥0} {φ : E →SL[σ₁₂] F}
-  (h : ‖φ‖ ≤ M) :
-    LipschitzWith M φ := by
-  refine LipschitzWith.of_dist_le_mul fun x y ↦ ?_
-  rw [dist_eq_norm, dist_eq_norm, ← φ.map_sub]
-  calc
-    ‖φ (x - y)‖ ≤ ‖φ‖ * ‖x - y‖ := by apply le_opNorm
-    _ ≤ M * ‖x - y‖ := by gcongr
+theorem opNorm_le_iff_lipschitz {f : E →SL[σ₁₂] F} {K : ℝ≥0} :
+    ‖f‖ ≤ K ↔ LipschitzWith K f := by
+  constructor
+  · intro h
+    refine LipschitzWith.of_dist_le_mul fun x y ↦ ?_
+    rw [dist_eq_norm, dist_eq_norm, ← f.map_sub]
+    calc
+      ‖f (x - y)‖ ≤ ‖f‖ * ‖x - y‖ := by apply le_opNorm
+      _ ≤ K * ‖x - y‖ := by gcongr
+  · intro hf
+    exact f.opNorm_le_bound K.2 fun x => by
+      simpa only [dist_zero_right, f.map_zero] using hf.dist_le_mul x 0
+
+alias ⟨lipschitzWith_of_opNorm_le, opNorm_le_of_lipschitz⟩ := opNorm_le_iff_lipschitz
 
 /-- Operator seminorm on the space of continuous (semi)linear maps, as `Seminorm`.
 
