@@ -10,6 +10,7 @@ import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.MeasureTheory.Constructions.UnitInterval
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 /-! # Riemannian manifolds
 
@@ -263,13 +264,26 @@ instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
       · apply (uniqueDiffOn_Icc zero_lt_one _ x.2).uniqueMDiffWithinAt
       simp only [Function.comp_apply, ContinuousLinearMap.coe_comp']
       have I : projIcc 0 1 zero_le_one (x : ℝ) = x := by rw [projIcc_of_mem]
-      have J : (x : ℝ) = projIcc 0 1 zero_le_one (x : ℝ) := by rw [I]
+      have J : x = projIcc 0 1 zero_le_one (x : ℝ) := by rw [I]
       rw [I]
       congr 1
       convert mfderivWithin_projIcc_one x x.2
     have : ∫⁻ x, ‖mfderiv (𝓡∂ 1) 𝓘(ℝ, F) γ x 1‖ₑ
         = ∫⁻ x in Icc 0 1, ‖mfderivWithin 𝓘(ℝ) 𝓘(ℝ, F) e (Icc 0 1) x 1‖ₑ := by
       simp_rw [← A]
+      have : MeasurePreserving (Subtype.val : unitInterval → ℝ) volume
+        (volume.restrict (Icc 0 1)) := measurePreserving_subtype_coe measurableSet_Icc
+      rw [← MeasureTheory.MeasurePreserving.lintegral_comp_emb this]
+      apply MeasurableEmbedding.subtype_coe measurableSet_Icc
+    rw [this]
+    simp only [mfderivWithin_eq_fderivWithin, ge_iff_le]
+    have W := enorm_integral_le_lintegral_enorm (f := fun x ↦ (fderivWithin ℝ e (Icc 0 1) x) 1)
+      (μ := volume.restrict (Icc 0 1))
+    refine le_trans ?_ W
+
+--    apply le_trans ?_ (enorm_integral_le_lintegral_enorm _)
+
+
 
 
 
@@ -278,3 +292,7 @@ instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
 
 
 end
+
+#exit
+
+MeasureTheory.MeasurePreserving.lintegral_comp_emb
