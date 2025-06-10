@@ -62,7 +62,6 @@ def range₀ : Submonoid B where
     all_goals tauto
   one_mem' := by simpa using Subgroup.one_mem ..
 
--- Do we need to do the `GroupWithZero` in two steps?
 instance : CancelMonoidWithZero (range₀ f) where
   zero := ⟨0, by simp [range₀]⟩
   zero_mul a := by
@@ -127,7 +126,6 @@ section CommGroupWithZero
 variable [MonoidWithZero A] [CommGroupWithZero B] [MonoidWithZeroHomClass F A B]
 
 open Subgroup in
--- Do we really wish to name this `…_of_comm`?
 theorem mem_range₀_iff_of_comm (y : B) :
     y ∈ range₀ f ↔ ∃ a, f a ≠ 0 ∧ ∃ x, f a * y = f x := by
   refine ⟨fun hy ↦ ?_, fun ⟨a, ha, ⟨x, hy⟩⟩ ↦ ?_⟩
