@@ -166,14 +166,14 @@ instance : Inhabited (OplaxTrans F F ) :=
 
 abbrev vCompApp (a : B) : F.obj a ⟶ H.obj a := η.app a ≫ θ.app a
 
-abbrev VCompNaturality {a b : B} (f : a ⟶ b) :
+abbrev vCompNaturality {a b : B} (f : a ⟶ b) :
     F.map f ≫ η.app b ≫ θ.app b ⟶ (η.app a ≫ θ.app a) ≫ H.map f :=
   (α_ _ _ _).inv ≫ η.naturality f ▷ θ.app b ≫ (α_ _ _ _).hom ≫
     η.app a ◁ θ.naturality f ≫ (α_ _ _ _).inv
 
-theorem VComp_naturality_naturality {a b : B} {f g : a ⟶ b} (β : f ⟶ g) :
-    F.map₂ β ▷ η.vCompApp θ b ≫ η.VCompNaturality θ g =
-      η.VCompNaturality θ f ≫ η.vCompApp θ a ◁ H.map₂ β := by
+theorem vComp_naturality_naturality {a b : B} {f g : a ⟶ b} (β : f ⟶ g) :
+    F.map₂ β ▷ η.vCompApp θ b ≫ η.vCompNaturality θ g =
+      η.vCompNaturality θ f ≫ η.vCompApp θ a ◁ H.map₂ β := by
   -- with_panel_widgets [StringDiagram]
   calc
     _ = 𝟙 _ ⊗≫ (F.map₂ β ▷ η.app b ≫ η.naturality g) ▷ θ.app b ⊗≫
@@ -187,8 +187,8 @@ theorem VComp_naturality_naturality {a b : B} {f g : a ⟶ b} (β : f ⟶ g) :
       rw [θ.naturality_naturality]
       bicategory
 
-theorem VComp_naturality_id (a : B) :
-    F.mapId a ▷ η.vCompApp θ a ≫ η.VCompNaturality θ (𝟙 a) =
+theorem vComp_naturality_id (a : B) :
+    F.mapId a ▷ η.vCompApp θ a ≫ η.vCompNaturality θ (𝟙 a) =
       (λ_ (η.vCompApp θ a)).hom ≫ (ρ_ (η.vCompApp θ a)).inv ≫ η.vCompApp θ a ◁ H.mapId a := by
   -- with_panel_widgets [StringDiagram]
   calc
@@ -202,12 +202,12 @@ theorem VComp_naturality_id (a : B) :
       rw [θ.naturality_id]
       bicategory
 
-theorem VComp_naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
-    F.mapComp f g ▷ η.vCompApp θ c ≫ η.VCompNaturality θ (f ≫ g) =
+theorem vComp_naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
+    F.mapComp f g ▷ η.vCompApp θ c ≫ η.vCompNaturality θ (f ≫ g) =
       (α_ (F.map f) (F.map g) (η.vCompApp θ c)).hom ≫
-        F.map f ◁ η.VCompNaturality θ g ≫
+        F.map f ◁ η.vCompNaturality θ g ≫
           (α_ (F.map f) (η.vCompApp θ b) (H.map g)).inv ≫
-            η.VCompNaturality θ f ▷ H.map g ≫
+            η.vCompNaturality θ f ▷ H.map g ≫
               (α_ (η.vCompApp θ a) (H.map f) (H.map g)).hom ≫ η.vCompApp θ a ◁ H.mapComp f g := by
   -- with_panel_widgets [StringDiagram]
   calc
@@ -229,10 +229,10 @@ theorem VComp_naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
 
 def vComp (η : OplaxTrans F G) (θ : OplaxTrans G H) : OplaxTrans F H where
   app := vCompApp η θ
-  naturality := VCompNaturality η θ
-  naturality_naturality := VComp_naturality_naturality η θ
-  naturality_id := VComp_naturality_id η θ
-  naturality_comp := VComp_naturality_comp η θ
+  naturality := vCompNaturality η θ
+  naturality_naturality := vComp_naturality_naturality η θ
+  naturality_id := vComp_naturality_id η θ
+  naturality_comp := vComp_naturality_comp η θ
 
 @[simps! id_app id_naturality comp_app comp_naturality]
 scoped instance : CategoryStruct (LaxFunctor B C) where
