@@ -145,25 +145,7 @@ lemma inner_orthoDir_nonneg (x y : V) :
   rw [inner_product_of_units_as_cos Hx Hy]
   exact Real.abs_cos_le_one (angle x y)
 
---Angle-specific stuff
-
-@[simp]
-lemma angle_unit_left (x y : V) :
-    angle (unit x) y = angle x y := by
-  by_cases hx : x = 0
-  · simp [hx]
-  by_cases hy : y = 0
-  · simp [hy]
-  replace hx : 0 < ‖x‖⁻¹ := by simp [hx]
-  replace hy : 0 < ‖y‖⁻¹ := by simp [hy]
-  simp only [unit, angle_smul_left_of_pos, hx, angle_smul_right_of_pos, hy]
-
-@[simp]
-lemma angle_unit_right (x y : V) :
-    angle x (unit y) = angle x y := by
-  rw [angle_comm, angle_unit_left, angle_comm]
-
-lemma angle_triangle_aux1 {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
+lemma orthoDir_aux_1 {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     ⟪x, orthoDir x y⟫ ^ 2 + ⟪x, y⟫ ^ 2 = 1 := by
   rw [orthoDir, unit]
   simp only [unit_eq_id_of_norm_one hy]
@@ -190,6 +172,25 @@ lemma angle_triangle_aux1 {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
   rw [real_inner_self_eq_norm_sq, hx, real_inner_self_eq_norm_sq, hy]
   ring
 
+--Angle-specific stuff
+
+@[simp]
+lemma angle_unit_left (x y : V) :
+    angle (unit x) y = angle x y := by
+  by_cases hx : x = 0
+  · simp [hx]
+  by_cases hy : y = 0
+  · simp [hy]
+  replace hx : 0 < ‖x‖⁻¹ := by simp [hx]
+  replace hy : 0 < ‖y‖⁻¹ := by simp [hy]
+  simp only [unit, angle_smul_left_of_pos, hx, angle_smul_right_of_pos, hy]
+
+@[simp]
+lemma angle_unit_right (x y : V) :
+    angle x (unit y) = angle x y := by
+  rw [angle_comm, angle_unit_left, angle_comm]
+
+
 lemma sin_as_inner_product {x y : V} (Hx : ‖x‖ = 1) :
     ⟪x, orthoDir x y⟫ = Real.sin (angle x y) := by
   wlog Hy : ‖y‖ = 1
@@ -197,7 +198,7 @@ lemma sin_as_inner_product {x y : V} (Hx : ‖x‖ = 1) :
     · simp [Hy, unit, inner_smul_right, real_inner_self_eq_norm_sq, Hx]
     · simpa using this (V := V) (y := unit y) Hx (by simpa)
   have h : ⟪x, orthoDir x y⟫ ^ 2 = Real.sin (angle x y) ^ 2 := by
-    simp [Real.sin_sq, ← inner_product_of_units_as_cos Hx Hy, ← angle_triangle_aux1 Hx Hy]
+    simp [Real.sin_sq, ← inner_product_of_units_as_cos Hx Hy, ← orthoDir_aux_1 Hx Hy]
   simpa [sq_eq_sq_iff_abs_eq_abs, abs_of_nonneg, inner_orthoDir_nonneg, sin_angle_nonneg] using h
 
 lemma angle_triangle_aux2 {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) :
