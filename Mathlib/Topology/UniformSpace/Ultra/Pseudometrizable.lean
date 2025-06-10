@@ -365,7 +365,6 @@ lemma descChainEquivRel.setOf_pseudoMetric_apply_lt_eq_apply_find_sub_one
   rw [hD.setOf_pseudoMetric_apply_lt_eq_biInter hε]
   ext
   simp only [Set.mem_setOf_eq, Set.mem_iInter]
-  have := Nat.find_spec hn
   have hn0 : 0 < Nat.find hn := by simp [hε']
   constructor
   · intro h
