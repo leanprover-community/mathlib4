@@ -83,7 +83,7 @@ lemma comp_flip_uncurry_eq (F : B ⥤ D) (G : D ⥤ C ⥤ E) :
 end
 
 section
-variable {B C D E: Type u} [Category.{u} B] [Category.{u} C]
+variable {B C D E : Type u} [Category.{u} B] [Category.{u} C]
   [Category.{u} D] [Category.{u} E]
 
 lemma comp_flip_curry_eq (F : C × B ⥤ D) (G : D ⥤ E) :
