@@ -328,6 +328,14 @@ lemma map'_mono {β : Type*} [MulOneClass α] [MulOneClass β] [Preorder β]
   · simp [WithZero.coe_le_iff]
   · simpa using fun h ↦ hf h
 
+lemma map'_strictMono {β : Type*} [MulOneClass α] [MulOneClass β] [Preorder β]
+    {f : α →* β} (hf : StrictMono f) :
+    StrictMono (WithZero.map' f) := by
+  intro x y h
+  cases x <;> cases y <;>
+  · simp_all [WithZero.zero_lt_coe, (WithZero.zero_lt_coe _).not_gt];
+    try exact hf h
+
 end Preorder
 
 section PartialOrder
@@ -360,11 +368,6 @@ protected lemma le_max_iff : (a : WithZero α) ≤ max (b : WithZero α) c ↔ a
 
 protected lemma min_le_iff : min (a : WithZero α) b ≤ c ↔ min a b ≤ c := by
   simp only [WithZero.coe_le_coe, min_le_iff]
-
-lemma map'_strictMono {β : Type*} [MulOneClass α] [MulOneClass β] [PartialOrder β]
-    {f : α →* β} (hf : StrictMono f) :
-    StrictMono (WithZero.map' f) :=
-  (map'_mono hf.monotone).strictMono_of_injective (map'_injective hf.injective)
 
 end LinearOrder
 

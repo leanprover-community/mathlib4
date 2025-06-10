@@ -139,11 +139,16 @@ lemma map'_map'  (f : α →* β) (g : β →* γ) (x) : map' g (map' f x) = map
 lemma map'_comp (f : α →* β) (g : β →* γ) : map' (g.comp f) = (map' g).comp (map' f) :=
   MonoidWithZeroHom.ext fun x => (map'_map' f g x).symm
 
-lemma map'_injective {f : α →* β} (hf : Function.Injective f) :
-    Function.Injective (WithZero.map' f) := by
-  intro x y
-  cases x <;> cases y <;>
-  simp [hf.eq_iff]
+lemma map'_injective_iff {f : α →* β} :
+    Function.Injective (map' f) ↔ Function.Injective f := by
+  constructor
+  · intro H _ _ h
+    rw [← WithZero.coe_inj]
+    apply H
+    simp [h]
+  · rintro H x y
+    cases x <;> cases y <;>
+    simp_all [H.eq_iff]
 
 end MulOneClass
 
