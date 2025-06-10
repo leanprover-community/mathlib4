@@ -52,13 +52,45 @@ group that is `< 1`. -/
 noncomputable def generator [IsDiscrete v] : Γˣ := v.exists_generator_lt_one.choose
 
 lemma generator_zpowers_eq_range₀ [IsDiscrete v] :
-    Subgroup.zpowers (generator v) = (range₀ v)ˣ := v.exists_generator_lt_one.choose_spec.1
+    (Subgroup.zpowers (generator v) : Subgroup Γˣ) =
+      Subgroup.map (Units.map (range₀ v).subtype) ⊤ :=
+  sorry --v.exists_generator_lt_one.choose_spec.1
 
 lemma generator_lt_one [IsDiscrete v] : (generator v) < 1 :=
   v.exists_generator_lt_one.choose_spec.2.1
 
 lemma generator_mem_range [IsDiscrete v] : ↑(generator v) ∈ range v :=
   v.exists_generator_lt_one.choose_spec.2.2
+
+lemma generator_ne_zero [IsDiscrete v] : (generator v : Γ) ≠ 0 :=
+  sorry
+
+noncomputable def gen₀ [v.IsDiscrete] : range₀ v := by
+  have h := v.generator_mem_range
+  let a := h.choose
+  have ha : v a = v.generator := h.choose_spec
+  use generator v
+  rw [← ha]
+  apply mem_range₀
+
+noncomputable def gen₀' [v.IsDiscrete] : (range₀ v)ˣ := by
+  apply Units.mk0 (v.gen₀)
+  sorry
+
+lemma gen₀_coe_eq_generator [v.IsDiscrete] :
+    Units.map (range₀ v).subtype (v.gen₀') = v.generator := by
+  simp only [gen₀', gen₀]
+  exact Units.eq_iff.mp rfl
+
+lemma IsDiscrete.cyclic_value_group' [IsDiscrete v] : IsCyclic (range₀ v)ˣ := by
+  rw [isCyclic_iff_exists_zpowers_eq_top]
+  use v.gen₀'
+  let H := Subgroup.map (Units.map (range₀ v).subtype) ⊤
+  have : IsCyclic H := by
+    rw [Subgroup.isCyclic_iff_exists_zpowers_eq_top]
+    use v.generator
+    rw [v.generator_zpowers_eq_range₀]
+  sorry
 
 lemma IsDiscrete.cyclic_value_group [IsDiscrete v] : IsCyclic (range₀ v)ˣ := by
   rw [isCyclic_iff_exists_zpowers_eq_top]
