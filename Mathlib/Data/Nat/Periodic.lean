@@ -3,10 +3,8 @@ Copyright (c) 2021 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey
 -/
-import Mathlib.Algebra.Periodic
+import Mathlib.Algebra.Ring.Periodic
 import Mathlib.Data.Nat.Count
-import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Periodic Functions on ℕ

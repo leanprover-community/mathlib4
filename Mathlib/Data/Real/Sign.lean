@@ -14,9 +14,9 @@ real numbers to -1, positive real numbers to 1, and 0 to 0.
 
 ## Main definitions
 
- * `Real.sign r` is $\begin{cases} -1 & \text{if } r < 0, \\
-                               ~~\, 0 & \text{if } r = 0, \\
-                               ~~\, 1 & \text{if } r > 0. \end{cases}$
+* `Real.sign r` is $\begin{cases} -1 & \text{if } r < 0, \\
+                              ~~\, 0 & \text{if } r = 0, \\
+                              ~~\, 1 & \text{if } r > 0. \end{cases}$
 
 ## Tags
 
@@ -33,7 +33,7 @@ noncomputable def sign (r : ℝ) : ℝ :=
 
 theorem sign_of_neg {r : ℝ} (hr : r < 0) : sign r = -1 := by rw [sign, if_pos hr]
 
-theorem sign_of_pos {r : ℝ} (hr : 0 < r) : sign r = 1 := by rw [sign, if_pos hr, if_neg hr.not_lt]
+theorem sign_of_pos {r : ℝ} (hr : 0 < r) : sign r = 1 := by rw [sign, if_pos hr, if_neg hr.not_gt]
 
 @[simp]
 theorem sign_zero : sign 0 = 0 := by rw [sign, if_neg (lt_irrefl _), if_neg (lt_irrefl _)]
@@ -50,7 +50,7 @@ theorem sign_apply_eq (r : ℝ) : sign r = -1 ∨ sign r = 0 ∨ sign r = 1 := b
 
 /-- This lemma is useful for working with `ℝˣ` -/
 theorem sign_apply_eq_of_ne_zero (r : ℝ) (h : r ≠ 0) : sign r = -1 ∨ sign r = 1 :=
-  h.lt_or_lt.imp sign_of_neg sign_of_pos
+  h.lt_or_gt.imp sign_of_neg sign_of_pos
 
 @[simp]
 theorem sign_eq_zero_iff {r : ℝ} : sign r = 0 ↔ r = 0 := by
@@ -68,9 +68,6 @@ theorem sign_intCast (z : ℤ) : sign (z : ℝ) = ↑(Int.sign z) := by
       Int.cast_one]
   · rw [Int.cast_zero, sign_zero, Int.sign_zero, Int.cast_zero]
   · rw [sign_of_pos (Int.cast_pos.mpr hp), Int.sign_eq_one_of_pos hp, Int.cast_one]
-
-@[deprecated (since := "2024-04-17")]
-alias sign_int_cast := sign_intCast
 
 theorem sign_neg {r : ℝ} : sign (-r) = -sign r := by
   obtain hn | rfl | hp := lt_trichotomy r (0 : ℝ)

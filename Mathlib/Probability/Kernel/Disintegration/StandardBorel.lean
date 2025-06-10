@@ -25,7 +25,7 @@ measurably into `ℝ`: it then suffices to define a suitable kernel for `Ω = �
 
 For `κ : Kernel α (β × ℝ)`, the construction of the conditional kernel proceeds as follows:
 * Build a measurable function `f : (α × β) → ℚ → ℝ` such that for all measurable sets
-  `s` and all `q : ℚ`, `∫ x in s, f (a, x) q ∂(Kernel.fst κ a) = (κ a (s ×ˢ Iic (q : ℝ))).toReal`.
+  `s` and all `q : ℚ`, `∫ x in s, f (a, x) q ∂(Kernel.fst κ a) = (κ a).real (s ×ˢ Iic (q : ℝ))`.
   We restrict to `ℚ` here to be able to prove the measurability.
 * Extend that function to `(α × β) → StieltjesFunction`. See the file `MeasurableStieltjes.lean`.
 * Finally obtain from the measurable Stieltjes function a measure on `ℝ` for each element of `α × β`
@@ -96,7 +96,7 @@ lemma isRatCondKernelCDFAux_density_Iic (κ : Kernel α (γ × ℝ)) [IsFiniteKe
       refine ⟨i, lt_of_le_of_lt ?_ hq⟩
       exact mod_cast hi i le_rfl
   tendsto_integral_of_monotone a s hs_mono hs_tendsto := by
-    rw [fst_apply' _ _ MeasurableSet.univ]
+    rw [fst_real_apply _ _ MeasurableSet.univ]
     let s' : ℕ → Set ℝ := fun n ↦ Iic (s n)
     refine tendsto_integral_density_of_monotone (le_rfl : fst κ ≤ fst κ)
       a s' ?_ ?_ (fun _ ↦ measurableSet_Iic)
@@ -158,10 +158,6 @@ instance instIsMarkovKernelCondKernelUnitReal (κ : Kernel Unit (α × ℝ)) [Is
 instance condKernelUnitReal.instIsCondKernel (κ : Kernel Unit (α × ℝ)) [IsFiniteKernel κ] :
     κ.IsCondKernel κ.condKernelUnitReal where
   disintegrate := by rw [condKernelUnitReal, compProd_toKernel]; ext; simp
-
-@[deprecated disintegrate (since := "2024-07-26")]
-lemma compProd_fst_condKernelUnitReal (κ : Kernel Unit (α × ℝ)) [IsFiniteKernel κ] :
-    fst κ ⊗ₖ condKernelUnitReal κ = κ := disintegrate _ _
 
 end Real
 
@@ -277,14 +273,14 @@ lemma compProd_fst_borelMarkovFromReal_eq_comapRight_compProd
   filter_upwards [h_ae] with a ha
   rw [borelMarkovFromReal, comapRight_apply', comapRight_apply']
   rotate_left
-  · exact measurable_prod_mk_left ht
-  · exact measurable_prod_mk_left ht
+  · exact measurable_prodMk_left ht
+  · exact measurable_prodMk_left ht
   classical
   rw [piecewise_apply, if_pos]
   exact ha
 
 /-- For `κ' := map κ (Prod.map (id : β → β) e)`, the hypothesis `hη` is `fst κ' ⊗ₖ η = κ'`.
-With that hypothesis, `fst κ ⊗ₖ borelMarkovFromReal κ η = κ`.-/
+With that hypothesis, `fst κ ⊗ₖ borelMarkovFromReal κ η = κ`. -/
 lemma compProd_fst_borelMarkovFromReal (κ : Kernel α (β × Ω)) [IsSFiniteKernel κ]
     (η : Kernel (α × β) ℝ) [IsSFiniteKernel η]
     (hη : (fst (map κ (Prod.map (id : β → β) (embeddingReal Ω)))) ⊗ₖ η
@@ -327,10 +323,6 @@ instance condKernelBorel.instIsCondKernel (κ : Kernel α (γ × Ω)) [IsFiniteK
   disintegrate := by
     rw [condKernelBorel, compProd_fst_borelMarkovFromReal _ _ (compProd_fst_condKernelReal _)]
 
-@[deprecated disintegrate (since := "2024-07-26")]
-lemma compProd_fst_condKernelBorel (κ : Kernel α (γ × Ω)) [IsFiniteKernel κ] :
-    fst κ ⊗ₖ condKernelBorel κ = κ := disintegrate _ _
-
 end CountablyGenerated
 
 section Unit
@@ -352,10 +344,6 @@ instance condKernelUnitBorel.instIsCondKernel : κ.IsCondKernel κ.condKernelUni
   disintegrate := by
     rw [condKernelUnitBorel, compProd_fst_borelMarkovFromReal _ _ (disintegrate _ _)]
 
-@[deprecated disintegrate (since := "2024-07-26")]
-lemma compProd_fst_condKernelUnitBorel (κ : Kernel Unit (α × Ω)) [IsFiniteKernel κ] :
-    fst κ ⊗ₖ condKernelUnitBorel κ = κ := disintegrate _ _
-
 end Unit
 
 section Measure
@@ -367,7 +355,7 @@ variable {ρ : Measure (α × Ω)} [IsFiniteMeasure ρ]
 noncomputable
 irreducible_def _root_.MeasureTheory.Measure.condKernel (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ] :
     Kernel α Ω :=
-  comap (condKernelUnitBorel (const Unit ρ)) (fun a ↦ ((), a)) measurable_prod_mk_left
+  comap (condKernelUnitBorel (const Unit ρ)) (fun a ↦ ((), a)) measurable_prodMk_left
 
 lemma _root_.MeasureTheory.Measure.condKernel_apply (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ]
     (a : α) :
@@ -391,22 +379,6 @@ instance _root_.MeasureTheory.Measure.instIsMarkovKernelCondKernel
   rw [Measure.condKernel]
   infer_instance
 
-/-- **Disintegration** of finite product measures on `α × Ω`, where `Ω` is standard Borel. Such a
-measure can be written as the composition-product of `ρ.fst` (marginal measure over `α`) and
-a Markov kernel from `α` to `Ω`. We call that Markov kernel `ρ.condKernel`. -/
-@[deprecated Measure.disintegrate (since := "2024-07-24")]
-lemma _root_.MeasureTheory.Measure.compProd_fst_condKernel
-    (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ] :
-    ρ.fst ⊗ₘ ρ.condKernel = ρ := ρ.disintegrate ρ.condKernel
-
-set_option linter.unusedVariables false in
-/-- Auxiliary lemma for `condKernel_apply_of_ne_zero`. -/
-@[deprecated Measure.IsCondKernel.apply_of_ne_zero (since := "2024-07-24"), nolint unusedArguments]
-lemma _root_.MeasureTheory.Measure.condKernel_apply_of_ne_zero_of_measurableSet
-    [MeasurableSingletonClass α] {x : α} (hx : ρ.fst {x} ≠ 0) {s : Set Ω} (hs : MeasurableSet s) :
-    ρ.condKernel x s = (ρ.fst {x})⁻¹ * ρ ({x} ×ˢ s) :=
-  Measure.IsCondKernel.apply_of_ne_zero _ _ hx _
-
 /-- If the singleton `{x}` has non-zero mass for `ρ.fst`, then for all `s : Set Ω`,
 `ρ.condKernel x s = (ρ.fst {x})⁻¹ * ρ ({x} ×ˢ s)` . -/
 lemma _root_.MeasureTheory.Measure.condKernel_apply_of_ne_zero [MeasurableSingletonClass α]
@@ -416,22 +388,10 @@ lemma _root_.MeasureTheory.Measure.condKernel_apply_of_ne_zero [MeasurableSingle
 
 end Measure
 
-section Countable
-
-variable [Countable α]
-
-@[deprecated disintegrate (since := "2024-07-24")]
-lemma compProd_fst_condKernelCountable (κ : Kernel α (β × Ω)) [IsFiniteKernel κ] :
-    fst κ ⊗ₖ condKernelCountable (fun a ↦ (κ a).condKernel)
-      (fun x y h ↦ by simp [apply_congr_of_mem_measurableAtom _ h]) = κ := disintegrate _ _
-
-end Countable
-
 section CountableOrCountablyGenerated
 variable [h : CountableOrCountablyGenerated α β] (κ : Kernel α (β × Ω)) [IsFiniteKernel κ]
 
 open Classical in
-
 /-- Conditional kernel of a kernel `κ : Kernel α (β × Ω)`: a Markov kernel such that
 `fst κ ⊗ₖ condKernel κ = κ` (see `MeasureTheory.Measure.compProd_fst_condKernel`).
 It exists whenever `Ω` is standard Borel and either `α` is countable
@@ -450,11 +410,6 @@ instance instIsMarkovKernelCondKernel : IsMarkovKernel (condKernel κ) := by
 
 instance condKernel.instIsCondKernel : κ.IsCondKernel κ.condKernel where
   disintegrate := by rw [condKernel_def]; split_ifs with hα <;> exact disintegrate _ _
-
-/-- **Disintegration** of finite kernels.
-The composition-product of `fst κ` and `condKernel κ` is equal to `κ`. -/
-@[deprecated Kernel.disintegrate (since := "2024-07-26")]
-lemma compProd_fst_condKernel : fst κ ⊗ₖ condKernel κ = κ := κ.disintegrate κ.condKernel
 
 end CountableOrCountablyGenerated
 

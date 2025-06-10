@@ -5,6 +5,7 @@ Authors: Kevin Lacker, Bryan Gin-ge Chen
 -/
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Data.Int.Basic
 
 /-!
 # Lemmas about `Nat.Prime` using `Int`s
@@ -17,7 +18,7 @@ namespace Int
 
 theorem not_prime_of_int_mul {a b : ℤ} {c : ℕ} (ha : a.natAbs ≠ 1) (hb : b.natAbs ≠ 1)
     (hc : a * b = (c : ℤ)) : ¬Nat.Prime c :=
-  not_prime_mul' (natAbs_mul_natAbs_eq hc) ha hb
+  not_prime_of_mul_eq (natAbs_mul_natAbs_eq hc) ha hb
 
 theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul {p : ℕ} (p_prime : Nat.Prime p) {m n : ℤ}
     {k l : ℕ} (hpm : ↑(p ^ k) ∣ m) (hpn : ↑(p ^ l) ∣ n) (hpmn : ↑(p ^ (k + l + 1)) ∣ m * n) :

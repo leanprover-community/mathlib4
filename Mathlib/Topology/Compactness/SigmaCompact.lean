@@ -3,7 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
+import Mathlib.Topology.Bases
 import Mathlib.Topology.Compactness.LocallyCompact
+import Mathlib.Topology.Compactness.LocallyFinite
+
 /-!
 # Sigma-compactness in topological spaces
 
@@ -121,8 +124,8 @@ lemma Topology.IsInducing.isSigmaCompact_iff {f : X → Y} {s : Set X}
 @[deprecated (since := "2024-10-28")]
 alias Inducing.isSigmaCompact_iff := IsInducing.isSigmaCompact_iff
 
-/-- If `f : X → Y` is an `Embedding`, the image `f '' s` of a set `s` is σ-compact
-  if and only `s` is σ-compact. -/
+/-- If `f : X → Y` is an embedding, the image `f '' s` of a set `s` is σ-compact
+if and only `s` is σ-compact. -/
 lemma Topology.IsEmbedding.isSigmaCompact_iff {f : X → Y} {s : Set X}
     (hf : IsEmbedding f) : IsSigmaCompact s ↔ IsSigmaCompact (f '' s) :=
   hf.isInducing.isSigmaCompact_iff
@@ -200,7 +203,7 @@ alias sigmaCompactSpace_of_locally_compact_second_countable :=
   sigmaCompactSpace_of_locallyCompact_secondCountable
 
 section
--- Porting note: doesn't work on the same line
+
 variable (X)
 variable [SigmaCompactSpace X]
 
@@ -269,9 +272,6 @@ protected lemma Topology.IsClosedEmbedding.sigmaCompactSpace {e : Y → X}
   ⟨⟨fun n => e ⁻¹' compactCovering X n, fun _ =>
       he.isCompact_preimage (isCompact_compactCovering _ _), by
       rw [← preimage_iUnion, iUnion_compactCovering, preimage_univ]⟩⟩
-
-@[deprecated (since := "2024-10-20")]
-alias ClosedEmbedding.sigmaCompactSpace := IsClosedEmbedding.sigmaCompactSpace
 
 theorem IsClosed.sigmaCompactSpace {s : Set X} (hs : IsClosed s) : SigmaCompactSpace s :=
   hs.isClosedEmbedding_subtypeVal.sigmaCompactSpace
@@ -418,7 +418,7 @@ def shiftr : CompactExhaustion X where
 @[simp]
 theorem find_shiftr (x : X) : K.shiftr.find x = K.find x + 1 := by
   classical
-  exact Nat.find_comp_succ _ _ (not_mem_empty _)
+  exact Nat.find_comp_succ _ _ (notMem_empty _)
 
 theorem mem_diff_shiftr_find (x : X) : x ∈ K.shiftr (K.find x + 1) \ K.shiftr (K.find x) :=
   ⟨K.mem_find _,

@@ -25,7 +25,6 @@ theorem upperBounds_image {s : Set α} : upperBounds (f '' s) = f '' upperBounds
 theorem lowerBounds_image {s : Set α} : lowerBounds (f '' s) = f '' lowerBounds s :=
   @upperBounds_image αᵒᵈ βᵒᵈ _ _ f.dual _
 
--- Porting note: by simps were `fun _ _ => f.le_iff_le` and `fun _ _ => f.symm.le_iff_le`
 @[simp]
 theorem isLUB_image {s : Set α} {x : β} : IsLUB (f '' s) x ↔ IsLUB s (f.symm x) :=
   ⟨fun h => IsLUB.of_image (by simp) ((f.apply_symm_apply x).symm ▸ h), fun h =>

@@ -42,12 +42,14 @@ def Γ₀NondegComplexIso (K : ChainComplex C ℕ) : (Γ₀.splitting K).nondegC
         Preadditive.comp_sum]
       rw [Fintype.sum_eq_single (0 : Fin (n + 2))]
       · simp only [Fin.val_zero, pow_zero, one_zsmul]
-        erw [Γ₀.Obj.mapMono_on_summand_id_assoc, Γ₀.Obj.Termwise.mapMono_δ₀,
-          Splitting.cofan_inj_πSummand_eq_id, comp_id]
+        rw [δ, Γ₀.Obj.mapMono_on_summand_id_assoc, Γ₀.Obj.Termwise.mapMono_δ₀,
+          Splitting.cofan_inj_πSummand_eq_id]
+        dsimp only [Γ₀.splitting, Splitting.summand.eq_1, Splitting.IndexSet.id_fst]
+        rw [comp_id]
       · intro i hi
         dsimp
         simp only [Preadditive.zsmul_comp, Preadditive.comp_zsmul, assoc]
-        erw [Γ₀.Obj.mapMono_on_summand_id_assoc, Γ₀.Obj.Termwise.mapMono_eq_zero, zero_comp,
+        rw [δ, Γ₀.Obj.mapMono_on_summand_id_assoc, Γ₀.Obj.Termwise.mapMono_eq_zero, zero_comp,
           zsmul_zero]
         · intro h
           replace h := congr_arg SimplexCategory.len h
@@ -149,7 +151,7 @@ def N₂Γ₂ : Γ₂ ⋙ N₂ ≅ 𝟭 (Karoubi (ChainComplex C ℕ)) :=
 @[simp]
 theorem N₂Γ₂_inv_app_f_f (X : Karoubi (ChainComplex C ℕ)) (n : ℕ) :
     (N₂Γ₂.inv.app X).f.f n =
-      X.p.f n ≫ ((Γ₀.splitting X.X).cofan _).inj (Splitting.IndexSet.id (op [n])) := by
+      X.p.f n ≫ ((Γ₀.splitting X.X).cofan _).inj (Splitting.IndexSet.id (op ⦋n⦌)) := by
   dsimp [N₂Γ₂]
   simp only [whiskeringLeft_obj_preimage_app, NatTrans.comp_app, Functor.comp_map,
     Karoubi.comp_f, N₂Γ₂ToKaroubiIso_inv_app, HomologicalComplex.comp_f,
@@ -160,7 +162,6 @@ theorem N₂Γ₂_inv_app_f_f (X : Karoubi (ChainComplex C ℕ)) (n : ℕ) :
     Splitting.ι_desc]
   apply Karoubi.HomologicalComplex.p_idem_assoc
 
--- Porting note: added to ease the proof of `N₂Γ₂_compatible_with_N₁Γ₀`
 lemma whiskerLeft_toKaroubi_N₂Γ₂_hom :
     whiskerLeft (toKaroubi (ChainComplex C ℕ)) N₂Γ₂.hom = N₂Γ₂ToKaroubiIso.hom ≫ N₁Γ₀.hom := by
   let e : _ ≅ toKaroubi (ChainComplex C ℕ) ⋙ 𝟭 _ := N₂Γ₂ToKaroubiIso ≪≫ N₁Γ₀

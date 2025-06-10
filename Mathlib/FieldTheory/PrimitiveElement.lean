@@ -3,7 +3,9 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.FieldTheory.IsAlgClosed.Basic
+import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.RingTheory.IntegralDomain
 import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
@@ -85,7 +87,7 @@ theorem primitive_element_inf_aux_exists_c (f g : F[X]) :
   classical
   let s := (sf.bind fun α' => sg.map fun β' => -(α' - α) / (β' - β)).toFinset
   let s' := s.preimage ϕ fun x _ y _ h => ϕ.injective h
-  obtain ⟨c, hc⟩ := Infinite.exists_not_mem_finset s'
+  obtain ⟨c, hc⟩ := Infinite.exists_notMem_finset s'
   simp_rw [s', s, Finset.mem_preimage, Multiset.mem_toFinset, Multiset.mem_bind, Multiset.mem_map]
     at hc
   push_neg at hc
@@ -127,18 +129,11 @@ theorem primitive_element_inf_aux [Algebra.IsSeparable F E] : ∃ γ : E, F⟮α
     mt EuclideanDomain.gcd_eq_zero_iff.mp (not_and.mpr fun _ => map_g_ne_zero)
   suffices p_linear : p.map (algebraMap F⟮γ⟯ E) = C h.leadingCoeff * (X - C β) by
     have finale : β = algebraMap F⟮γ⟯ E (-p.coeff 0 / p.coeff 1) := by
-      rw [map_div₀, RingHom.map_neg, ← coeff_map, ← coeff_map, p_linear]
-      -- Porting note: had to add `-map_add` to avoid going in the wrong direction.
-      simp [mul_sub, coeff_C, mul_div_cancel_left₀ β (mt leadingCoeff_eq_zero.mp h_ne_zero),
-        -map_add]
-      -- Porting note: an alternative solution is:
-      -- simp_rw [Polynomial.coeff_C_mul, Polynomial.coeff_sub, mul_sub,
-      --   Polynomial.coeff_X_zero, Polynomial.coeff_X_one, mul_zero, mul_one, zero_sub, neg_neg,
-      --   Polynomial.coeff_C, eq_self_iff_true, Nat.one_ne_zero, if_true, if_false, mul_zero,
-      --   sub_zero, mul_div_cancel_left β (mt leadingCoeff_eq_zero.mp h_ne_zero)]
+      simp [map_div₀, RingHom.map_neg, ← coeff_map, ← coeff_map, p_linear,
+        mul_sub, coeff_C, mul_div_cancel_left₀ β (mt leadingCoeff_eq_zero.mp h_ne_zero)]
     rw [finale]
     exact Subtype.mem (-p.coeff 0 / p.coeff 1)
-  have h_sep : h.Separable := separable_gcd_right _ (Algebra.IsSeparable.isSeparable F β).map
+  have h_sep : h.Separable := separable_gcd_right _ (.map (Algebra.IsSeparable.isSeparable F β))
   have h_root : h.eval β = 0 := by
     apply eval_gcd_eq_zero
     · rw [eval_comp, eval_sub, eval_mul, eval_C, eval_C, eval_X, eval_map, ← aeval_def, ←
@@ -215,10 +210,10 @@ theorem exists_primitive_element : ∃ α : E, F⟮α⟯ = ⊤ := by
     have base : P ⊥ := ⟨0, adjoin_zero⟩
     have ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮x⟯.restrictScalars F) := by
       intro K β hK
-      cases' hK with α hK
+      obtain ⟨α, hK⟩ := hK
       rw [← hK, adjoin_simple_adjoin_simple]
       haveI : Infinite F := isEmpty_fintype.mp F_inf
-      cases' primitive_element_inf_aux F α β with γ hγ
+      obtain ⟨γ, hγ⟩ := primitive_element_inf_aux F α β
       exact ⟨γ, hγ.symm⟩
     exact induction_on_adjoin P base ih ⊤
   · exact exists_primitive_element_of_finite_bot F E
@@ -241,7 +236,7 @@ section FiniteIntermediateField
 theorem isAlgebraic_of_adjoin_eq_adjoin {α : E} {m n : ℕ} (hneq : m ≠ n)
     (heq : F⟮α ^ m⟯ = F⟮α ^ n⟯) : IsAlgebraic F α := by
   wlog hmn : m < n
-  · exact this F E hneq.symm heq.symm (hneq.lt_or_lt.resolve_left hmn)
+  · exact this F E hneq.symm heq.symm (hneq.lt_or_gt.resolve_left hmn)
   by_cases hm : m = 0
   · rw [hm] at heq hmn
     simp only [pow_zero, adjoin_one] at heq

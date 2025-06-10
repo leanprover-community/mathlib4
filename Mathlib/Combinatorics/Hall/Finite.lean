@@ -62,7 +62,7 @@ theorem hall_cond_of_erase {x : ι} (a : α)
     by_cases hb : a ∈ s'.biUnion fun x => t x
     · rw [card_erase_of_mem hb]
       exact Nat.le_sub_one_of_lt ha'
-    · rw [erase_eq_of_not_mem hb]
+    · rw [erase_eq_of_notMem hb]
       exact Nat.le_of_lt ha'
   · rw [nonempty_iff_ne_empty, not_not] at he
     subst s'
@@ -92,7 +92,6 @@ theorem hall_hard_inductive_step_A {n : ℕ} (hn : Fintype.card ι = n + 1)
       0 < 1 := Nat.one_pos
       _ ≤ #(.biUnion {x} t) := ht {x}
       _ = (t x).card := by rw [Finset.singleton_biUnion]
-
   choose y hy using tx_ne
   -- Restrict to everything except `x` and `y`.
   let ι' := { x' : ι | x' ≠ x }
@@ -101,7 +100,6 @@ theorem hall_hard_inductive_step_A {n : ℕ} (hn : Fintype.card ι = n + 1)
     calc
       Fintype.card ι' = Fintype.card ι - 1 := Set.card_ne_eq _
       _ = n := by rw [hn, Nat.add_succ_sub_one, add_zero]
-
   rcases ih t' card_ι'.le (hall_cond_of_erase y ha) with ⟨f', hfinj, hfr⟩
   -- Extend the resulting function.
   refine ⟨fun z => if h : z = x then y else f' ⟨z, h⟩, ?_, ?_⟩
@@ -190,15 +188,15 @@ theorem hall_hard_inductive_step_B {n : ℕ} (hn : Fintype.card ι = n + 1)
     intro x' hx'
     rw [mem_biUnion]
     exact ⟨x', hx', hsf' _⟩
-  have f''_not_mem_biUnion : ∀ (x'') (hx'' : ¬x'' ∈ s), ¬f'' ⟨x'', hx''⟩ ∈ s.biUnion t := by
+  have f''_notMem_biUnion : ∀ (x'') (hx'' : x'' ∉ s), f'' ⟨x'', hx''⟩ ∉ s.biUnion t := by
     intro x'' hx''
     have h := hsf'' ⟨x'', hx''⟩
     rw [mem_sdiff] at h
     exact h.2
   have im_disj :
-      ∀ (x' x'' : ι) (hx' : x' ∈ s) (hx'' : ¬x'' ∈ s), f' ⟨x', hx'⟩ ≠ f'' ⟨x'', hx''⟩ := by
+      ∀ (x' x'' : ι) (hx' : x' ∈ s) (hx'' : x'' ∉ s), f' ⟨x', hx'⟩ ≠ f'' ⟨x'', hx''⟩ := by
     intro x x' hx' hx'' h
-    apply f''_not_mem_biUnion x' hx''
+    apply f''_notMem_biUnion x' hx''
     rw [← h]
     apply f'_mem_biUnion x
   refine ⟨fun x => if h : x ∈ s then f' ⟨x, h⟩ else f'' ⟨x, h⟩, ?_, ?_⟩
@@ -219,7 +217,8 @@ completing the proof the harder direction of **Hall's Marriage Theorem**.
 theorem hall_hard_inductive (ht : ∀ s : Finset ι, #s ≤ #(s.biUnion t)) :
     ∃ f : ι → α, Function.Injective f ∧ ∀ x, f x ∈ t x := by
   cases nonempty_fintype ι
-  induction' hn : Fintype.card ι using Nat.strong_induction_on with n ih generalizing ι
+  generalize hn : Fintype.card ι = m
+  induction m using Nat.strongRecOn generalizing ι with | ind n ih => _
   rcases n with (_ | n)
   · rw [Fintype.card_eq_zero_iff] at hn
     exact ⟨isEmptyElim, isEmptyElim, isEmptyElim⟩

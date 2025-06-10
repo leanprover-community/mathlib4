@@ -41,10 +41,9 @@ incidence matrix for each `SimpleGraph α` has the same type.
   arbitrary orientation of a simple graph.
 -/
 
+assert_not_exists Field
 
 open Finset Matrix SimpleGraph Sym2
-
-open Matrix
 
 namespace SimpleGraph
 
@@ -64,8 +63,7 @@ theorem incMatrix_apply [Zero R] [One R] {a : α} {e : Sym2 α} :
 /-- Entries of the incidence matrix can be computed given additional decidable instances. -/
 theorem incMatrix_apply' [Zero R] [One R] [DecidableEq α] [DecidableRel G.Adj] {a : α}
     {e : Sym2 α} : G.incMatrix R a e = if e ∈ G.incidenceSet a then 1 else 0 := by
-  unfold incMatrix Set.indicator
-  convert rfl
+  simp only [incMatrix, Set.indicator, Pi.one_apply]
 
 section MulZeroOneClass
 
@@ -78,12 +76,15 @@ theorem incMatrix_apply_mul_incMatrix_apply : G.incMatrix R a e * G.incMatrix R 
 
 theorem incMatrix_apply_mul_incMatrix_apply_of_not_adj (hab : a ≠ b) (h : ¬G.Adj a b) :
     G.incMatrix R a e * G.incMatrix R b e = 0 := by
-  rw [incMatrix_apply_mul_incMatrix_apply, Set.indicator_of_not_mem]
+  rw [incMatrix_apply_mul_incMatrix_apply, Set.indicator_of_notMem]
   rw [G.incidenceSet_inter_incidenceSet_of_not_adj h hab]
-  exact Set.not_mem_empty e
+  exact Set.notMem_empty e
 
-theorem incMatrix_of_not_mem_incidenceSet (h : e ∉ G.incidenceSet a) : G.incMatrix R a e = 0 := by
-  rw [incMatrix_apply, Set.indicator_of_not_mem h]
+theorem incMatrix_of_notMem_incidenceSet (h : e ∉ G.incidenceSet a) : G.incMatrix R a e = 0 := by
+  rw [incMatrix_apply, Set.indicator_of_notMem h]
+
+@[deprecated (since := "2025-05-23")]
+alias incMatrix_of_not_mem_incidenceSet := incMatrix_of_notMem_incidenceSet
 
 theorem incMatrix_of_mem_incidenceSet (h : e ∈ G.incidenceSet a) : G.incMatrix R a e = 1 := by
   rw [incMatrix_apply, Set.indicator_of_mem h, Pi.one_apply]
@@ -94,12 +95,8 @@ theorem incMatrix_apply_eq_zero_iff : G.incMatrix R a e = 0 ↔ e ∉ G.incidenc
   simp only [incMatrix_apply, Set.indicator_apply_eq_zero, Pi.one_apply, one_ne_zero]
 
 theorem incMatrix_apply_eq_one_iff : G.incMatrix R a e = 1 ↔ e ∈ G.incidenceSet a := by
-  -- Porting note: was `convert one_ne_zero.ite_eq_left_iff; infer_instance`
-  unfold incMatrix Set.indicator
-  simp only [Pi.one_apply]
-  apply Iff.intro <;> intro h
-  · split at h <;> simp_all only [zero_ne_one]
-  · simp_all only [ite_true]
+  convert one_ne_zero.ite_eq_left_iff
+  infer_instance
 
 end MulZeroOneClass
 
@@ -130,9 +127,12 @@ theorem sum_incMatrix_apply_of_mem_edgeSet [Fintype α] :
     ext e
     simp only [mem_filter, mem_univ, true_and, mem_insert, mem_singleton]
 
-theorem sum_incMatrix_apply_of_not_mem_edgeSet [Fintype α] (h : e ∉ G.edgeSet) :
+theorem sum_incMatrix_apply_of_notMem_edgeSet [Fintype α] (h : e ∉ G.edgeSet) :
     ∑ a, G.incMatrix R a e = 0 :=
-  sum_eq_zero fun _ _ => G.incMatrix_of_not_mem_incidenceSet fun he => h he.1
+  sum_eq_zero fun _ _ => G.incMatrix_of_notMem_incidenceSet fun he => h he.1
+
+@[deprecated (since := "2025-05-23")]
+alias sum_incMatrix_apply_of_not_mem_edgeSet := sum_incMatrix_apply_of_notMem_edgeSet
 
 theorem incMatrix_transpose_mul_diag [Fintype α] [Decidable (e ∈ G.edgeSet)] :
     ((G.incMatrix R)ᵀ * G.incMatrix R) e e = if e ∈ G.edgeSet then 2 else 0 := by

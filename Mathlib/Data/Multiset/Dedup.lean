@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.Dedup
-import Mathlib.Data.Multiset.Nodup
+import Mathlib.Data.Multiset.UnionInter
 
 /-!
 # Erasing duplicates in a multiset.
@@ -42,8 +42,10 @@ theorem dedup_cons_of_mem {a : α} {s : Multiset α} : a ∈ s → dedup (a ::�
   Quot.induction_on s fun _ m => @congr_arg _ _ _ _ ofList <| List.dedup_cons_of_mem m
 
 @[simp]
-theorem dedup_cons_of_not_mem {a : α} {s : Multiset α} : a ∉ s → dedup (a ::ₘ s) = a ::ₘ dedup s :=
-  Quot.induction_on s fun _ m => congr_arg ofList <| List.dedup_cons_of_not_mem m
+theorem dedup_cons_of_notMem {a : α} {s : Multiset α} : a ∉ s → dedup (a ::ₘ s) = a ::ₘ dedup s :=
+  Quot.induction_on s fun _ m => congr_arg ofList <| List.dedup_cons_of_notMem m
+
+@[deprecated (since := "2025-05-23")] alias dedup_cons_of_not_mem := dedup_cons_of_notMem
 
 theorem dedup_le (s : Multiset α) : dedup s ≤ s :=
   Quot.induction_on s fun _ => (dedup_sublist _).subperm

@@ -61,7 +61,6 @@ class HasShift (C : Type u) (A : Type*) [Category.{v} C] [AddMonoid A] where
   /-- `shift` is monoidal -/
   shiftMonoidal : shift.Monoidal := by infer_instance
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- A helper structure to construct the shift functor `(Discrete A) ⥤ (C ⥤ C)`. -/
 structure ShiftMkCore where
   /-- the family of shift functors -/
@@ -125,12 +124,10 @@ instance (h : ShiftMkCore C A) : (Discrete.functor h.F).Monoidal :=
       μIso_hom_natural_left := by
         rintro ⟨X⟩ ⟨Y⟩ ⟨⟨⟨rfl⟩⟩⟩ ⟨X'⟩
         ext
-        dsimp
         simp
       μIso_hom_natural_right := by
         rintro ⟨X⟩ ⟨Y⟩ ⟨X'⟩ ⟨⟨⟨rfl⟩⟩⟩
         ext
-        dsimp
         simp
       associativity := by
         rintro ⟨m₁⟩ ⟨m₂⟩ ⟨m₃⟩
@@ -357,7 +354,7 @@ abbrev shiftAdd (i j : A) : X⟦i + j⟧ ≅ X⟦i⟧⟦j⟧ :=
 theorem shift_shift' (i j : A) :
     f⟦i⟧'⟦j⟧' = (shiftAdd X i j).inv ≫ f⟦i + j⟧' ≫ (shiftAdd Y i j).hom := by
   symm
-  rw [← Functor.comp_map, NatIso.app_inv]
+  rw [← Functor.comp_map, Iso.app_inv]
   apply NatIso.naturality_1
 
 variable (A)
@@ -368,7 +365,7 @@ abbrev shiftZero : X⟦(0 : A)⟧ ≅ X :=
 
 theorem shiftZero' : f⟦(0 : A)⟧' = (shiftZero A X).hom ≫ f ≫ (shiftZero A Y).inv := by
   symm
-  rw [NatIso.app_inv, NatIso.app_hom]
+  rw [Iso.app_inv, Iso.app_hom]
   apply NatIso.naturality_2
 
 variable (C) {A}
@@ -740,7 +737,6 @@ def hasShift :
           shiftFunctorAdd_zero_add_hom_app, eqToHom_map]
         congr 1
         erw [(i n).hom.naturality]
-        dsimp
         simp)
       add_zero_hom_app := fun n X => hF.map_injective (by
         have := dcongr_arg (fun a => (i a).hom.app X) (add_zero n)

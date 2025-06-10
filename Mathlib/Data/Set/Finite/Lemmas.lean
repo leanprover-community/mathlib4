@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Data.Set.Lattice
-import Mathlib.Data.Finite.Powerset
+import Mathlib.Data.Fintype.Powerset
 import Mathlib.Logic.Embedding.Set
 
 /-!

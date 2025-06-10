@@ -6,7 +6,7 @@ Authors: Winston Yin
 import Mathlib.Analysis.ODE.Gronwall
 import Mathlib.Analysis.ODE.PicardLindelof
 import Mathlib.Geometry.Manifold.IntegralCurve.Transform
-import Mathlib.Geometry.Manifold.InteriorBoundary
+import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 
 /-!
 # Existence and uniqueness of integral curves
@@ -31,7 +31,7 @@ We state simpler versions of the theorem for boundaryless manifolds as corollari
 ## TODO
 
 * The case where the integral curve may venture to the boundary of the manifold. See Theorem 9.34,
-Lee. May require submanifolds.
+  Lee. May require submanifolds.
 
 ## Reference
 
