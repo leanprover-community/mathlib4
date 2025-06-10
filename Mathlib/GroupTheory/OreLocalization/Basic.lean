@@ -40,7 +40,7 @@ open OreLocalization
 
 namespace OreLocalization
 
-variable {R : Type*} [Monoid R] (S : Submonoid R) [OreSet S] (X) [MulAction R X]
+variable {R : Type*} [Monoid R] (S : Submonoid R) [OreSet S R] (X) [MulAction R X]
 
 /-- The setoid on `R × S` used for the Ore localization. -/
 @[to_additive AddOreLocalization.oreEqv "The setoid on `R × S` used for the Ore localization."]
@@ -51,6 +51,7 @@ def oreEqv : Setoid (X × S) where
     · rintro ⟨r, s⟩ ⟨r', s'⟩ ⟨u, v, hru, hsu⟩; dsimp only at *
       rcases oreCondition (s : R) s' with ⟨r₂, s₂, h₁⟩
       rcases oreCondition r₂ u with ⟨r₃, s₃, h₂⟩
+      simp only [smul_eq_mul, op_smul_eq_mul] at h₁ h₂
       have : r₃ * v * s = s₃ * s₂ * s := by
         -- Porting note: the proof used `assoc_rw`
         rw [mul_assoc _ (s₂ : R), h₁, ← mul_assoc, h₂, mul_assoc, ← hsu, ← mul_assoc]
@@ -58,6 +59,7 @@ def oreEqv : Setoid (X × S) where
       refine ⟨w * (s₃ * s₂), w * (r₃ * u), ?_, ?_⟩ <;>
         simp only [Submonoid.coe_mul, Submonoid.smul_def, ← hw]
       · simp only [mul_smul, hru, ← Submonoid.smul_def]
+        sorry
       · simp only [mul_assoc, hsu]
     · rintro ⟨r₁, s₁⟩ ⟨r₂, s₂⟩ ⟨r₃, s₃⟩ ⟨u, v, hur₁, hs₁u⟩ ⟨u', v', hur₂, hs₂u⟩
       rcases oreCondition v' u with ⟨r', s', h⟩; dsimp only at *
@@ -71,7 +73,7 @@ end OreLocalization
 /-- The Ore localization of a monoid and a submonoid fulfilling the Ore condition. -/
 @[to_additive AddOreLocalization "The Ore localization of an additive monoid and a submonoid
 fulfilling the Ore condition."]
-def OreLocalization {R : Type*} [Monoid R] (S : Submonoid R) [OreSet S]
+def OreLocalization {R : Type*} [Monoid R] (S : Submonoid R) [OreSet S R]
     (X : Type*) [MulAction R X] :=
   Quotient (OreLocalization.oreEqv S X)
 
@@ -79,7 +81,7 @@ namespace OreLocalization
 
 section Monoid
 
-variable (R : Type*) [Monoid R] (S : Submonoid R) [OreSet S]
+variable (R : Type*) [Monoid R] (S : Submonoid R) [OreSet S R]
 
 @[inherit_doc OreLocalization]
 scoped syntax:1075 term noWs atomic("[" term "⁻¹" noWs "]") : term
@@ -224,7 +226,7 @@ private theorem smul'_char (r₁ : R) (r₂ : X) (s₁ s₂ : S) (u : S) (v : R)
 
 /-- The multiplication on the Ore localization of monoids. -/
 @[to_additive]
-private abbrev smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
+private abbrev smul''  {A} [MulAction R A] (r : X) (s : S) : X[S⁻¹] → X[S⁻¹] :=
   liftExpand (smul' r s) fun r₁ r₂ s' hs => by
     rcases oreCondition r s' with ⟨r₁', s₁', h₁⟩
     rw [smul'_char _ _ _ _ _ _ h₁]
@@ -247,7 +249,7 @@ private abbrev smul'' (r : R) (s : S) : X[S⁻¹] → X[S⁻¹] :=
 /-- The scalar multiplication on the Ore localization of monoids. -/
 @[to_additive
   "the vector addition on the Ore localization of additive monoids."]
-protected abbrev smul (y : R[S⁻¹]) (x : X[S⁻¹]) : X[S⁻¹] :=
+protected abbrev smul {A} [MulAction R A] (y : A[S⁻¹]) (x : X[S⁻¹]) : X[S⁻¹] :=
   liftExpand (smul'' · · x) (fun r₁ r₂ s hs => by
     cases x with | _ x s₂
     show OreLocalization.smul' r₁ s x s₂ = OreLocalization.smul' (r₂ * r₁) ⟨_, hs⟩ x s₂
@@ -273,7 +275,7 @@ instance : SMul R[S⁻¹] X[S⁻¹] :=
   ⟨OreLocalization.smul⟩
 
 @[to_additive]
-instance : Mul R[S⁻¹] :=
+instance {A} [MulAction R A] : Mul A[S⁻¹] :=
   ⟨OreLocalization.smul⟩
 
 @[to_additive]

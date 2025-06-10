@@ -156,8 +156,8 @@ The multiplication on the localized module.
 Note that this gives a diamond with the instance on `R[S⁻¹]` (which does not require commutativity),
 but is defeq to it under `with_reducible_and_instances`.
 -/
-protected def mul {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R}
-    (m₁ m₂ : LocalizedModule S A) : LocalizedModule S A :=
+instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} : Mul (LocalizedModule S A) where
+  mul m₁ m₂ :=
   liftOn₂ m₁ m₂ (fun x₁ x₂ => LocalizedModule.mk (x₁.1 * x₂.1) (x₂.2 * x₁.2)) (by
     rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨b₁, t₁⟩ ⟨b₂, t₂⟩ ⟨u₁, e₁⟩ ⟨u₂, e₂⟩
     simp only [mul_comm s₂ s₁, mul_comm t₂ t₁]
@@ -166,10 +166,17 @@ protected def mul {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R}
     dsimp [Submonoid.smul_def] at *
     simp only [mul_smul_mul_comm, e₁, e₂])
 
+
+example {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
+    let foo :=  LocalizedModule.instMul (A := A) (S := S)
+    let bar : Mul (OreLocalization S A) := OreLocalization.instMul
+    bar = foo := by
+  with_reducible_and_instances rfl
+
+
 instance (priority := 900) {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
     Monoid (LocalizedModule S A) where
   __ := inferInstanceAs (One (LocalizedModule S A))
-  mul := LocalizedModule.mul
   one_mul := by
     rintro ⟨a, s⟩
     with_unfolding_all exact mk_eq.mpr ⟨1, by simp only [one_mul, mul_one, one_smul]⟩
