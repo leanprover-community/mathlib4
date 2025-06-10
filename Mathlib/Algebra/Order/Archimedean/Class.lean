@@ -5,6 +5,7 @@ Authors: Weiyi Wang
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Data.Finset.Max
 import Mathlib.Order.Antisymmetrization
 
@@ -33,7 +34,7 @@ all non-identity elements belong to the same (`Mul`-)`ArchimedeanClass`:
 
 ## Implementation notes
 
-Archimedean classes are equiped with a linear order, where elements with smaller absolute value
+Archimedean classes are equipped with a linear order, where elements with smaller absolute value
 are placed in a *higher* classes by convention. Ordering backwards this way simplifies
 formalization of theorems such as the Hahn embedding theorem.
 
@@ -88,12 +89,10 @@ instance instLT : LT (MulArchimedeanOrder M) where
   lt a b := ∀ n, |b.val|ₘ ^ n < |a.val|ₘ
 
 @[to_additive]
-theorem le_def {a b : MulArchimedeanOrder M} :
-  a ≤ b ↔ ∃ n, |b.val|ₘ ≤ |a.val|ₘ ^ n := .rfl
+theorem le_def {a b : MulArchimedeanOrder M} : a ≤ b ↔ ∃ n, |b.val|ₘ ≤ |a.val|ₘ ^ n := .rfl
 
 @[to_additive]
-theorem lt_def {a b : MulArchimedeanOrder M} :
-  a < b ↔ ∀ n, |b.val|ₘ ^ n < |a.val|ₘ := .rfl
+theorem lt_def {a b : MulArchimedeanOrder M} : a < b ↔ ∀ n, |b.val|ₘ ^ n < |a.val|ₘ := .rfl
 
 variable {M: Type*}
 variable [CommGroup M] [LinearOrder M] [IsOrderedMonoid M] {a b : M}
@@ -124,14 +123,12 @@ instance instIsTotal : IsTotal (MulArchimedeanOrder M) (· ≤ ·) where
     · exact .inl ⟨1, by simpa using hab⟩
 
 variable {N : Type*} [CommGroup N] [LinearOrder N] [IsOrderedMonoid N]
-variable {F : Type*} [FunLike F M N] [OrderHomClass F M N] [MonoidHomClass F M N]
 
-/-- An ordered group homomorphism can be made to an
-`orderHom` between their `MulArchimedeanOrder`. -/
-@[to_additive "An ordered group homomorphism can be made to an
-`orderHom` between their `ArchimedeanOrder`."]
+/-- An `OrderMonoidHom` can be made to an `OrderHom` between their `MulArchimedeanOrder`. -/
+@[to_additive "An `OrderAddMonoidHom` can be made to an `OrderHom` between their
+`ArchimedeanOrder`."]
 noncomputable
-def orderHom (f : F) : MulArchimedeanOrder M →o MulArchimedeanOrder N where
+def orderHom (f : M →*o N) : MulArchimedeanOrder M →o MulArchimedeanOrder N where
   toFun a := of (f a.val)
   monotone' := by
     rintro a b ⟨n, hn⟩
@@ -142,7 +139,7 @@ end MulArchimedeanOrder
 
 end Pre
 
-variable {M: Type*}
+variable {M : Type*}
 variable [CommGroup M] [LinearOrder M] [IsOrderedMonoid M] {a b : M}
 
 variable (M) in
@@ -207,7 +204,7 @@ theorem mk_eq_mk_one_iff {a : M} : mk a = mk 1 ↔ a = 1 := by
 
 variable (M) in
 @[to_additive]
-theorem mk_one_out : (mk 1 : MulArchimedeanClass M).out = 1 := by
+theorem out_mk_one : (mk 1 : MulArchimedeanClass M).out = 1 := by
   rw [← mk_eq_mk_one_iff, out_eq]
 
 variable (M) in
@@ -215,7 +212,8 @@ variable (M) in
 noncomputable
 instance instLinearOrder : LinearOrder (MulArchimedeanClass M) := by
   classical
-  exact instLinearOrderAntisymmetrizationLeOfDecidableLEOfDecidableLTOfIsTotal
+  unfold MulArchimedeanClass
+  infer_instance
 
 @[to_additive]
 theorem mk_le_mk : mk a ≤ mk b ↔ ∃ n, |b|ₘ ≤ |a|ₘ ^ n := .rfl
@@ -243,7 +241,7 @@ theorem mk_one : mk 1 = (⊤ : MulArchimedeanClass M) := rfl
 
 variable (M) in
 @[to_additive (attr := simp)]
-theorem out_top : (⊤ : MulArchimedeanClass M).out = 1 := mk_one_out M
+theorem out_top : (⊤ : MulArchimedeanClass M).out = 1 := out_mk_one M
 
 @[to_additive (attr := simp)]
 theorem mk_eq_top_iff : mk a = ⊤ ↔ a = 1 := mk_eq_mk_one_iff
@@ -390,30 +388,27 @@ theorem mk_eq_mk_of_mulArchimedean [MulArchimedean M] (ha : a ≠ 1) (hb : b ≠
 section Hom
 
 variable {N : Type*} [CommGroup N] [LinearOrder N] [IsOrderedMonoid N]
-variable {F : Type*} [FunLike F M N] [OrderHomClass F M N] [MonoidHomClass F M N]
 
-/-- An ordered group homomorphism can be lifted to an `OrderHom`
-over archimedean classes. -/
-@[to_additive "An ordered group homomorphism can be lifted to an `OrderHom`
-over archimedean classes."]
+/-- An `OrderMonoidHom` can be lifted to an `OrderHom` over archimedean classes. -/
+@[to_additive "An `OrderAddMonoidHom` can be lifted to an `OrderHom` over archimedean classes."]
 noncomputable
-def orderHom (f : F) : MulArchimedeanClass M →o MulArchimedeanClass N :=
+def orderHom (f : M →*o N) : MulArchimedeanClass M →o MulArchimedeanClass N :=
   (MulArchimedeanOrder.orderHom f).antisymmetrization
 
 @[to_additive (attr := simp)]
-theorem orderHom_mk (f : F) (a : M) : orderHom f (mk a) = mk (f a) := rfl
+theorem orderHom_mk (f : M →*o N) (a : M) : orderHom f (mk a) = mk (f a) := rfl
 
 @[to_additive]
-theorem map_mk_eq (f : F) (h : mk a = mk b) : mk (f a) = mk (f b) := by
+theorem map_mk_eq (f : M →*o N) (h : mk a = mk b) : mk (f a) = mk (f b) := by
   rw [← orderHom_mk, ← orderHom_mk, h]
 
 @[to_additive]
-theorem map_mk_le (f : F) (h : mk a ≤ mk b) : mk (f a) ≤ mk (f b) := by
+theorem map_mk_le (f : M →*o N) (h : mk a ≤ mk b) : mk (f a) ≤ mk (f b) := by
   rw [← orderHom_mk, ← orderHom_mk]
   exact OrderHomClass.monotone _ h
 
 @[to_additive]
-theorem orderHom_injective {f : F} (h : Function.Injective f) :
+theorem orderHom_injective {f : M →*o N} (h : Function.Injective f) :
     Function.Injective (orderHom f) := by
   intro a b
   induction a using ind with | mk a
@@ -424,7 +419,7 @@ theorem orderHom_injective {f : F} (h : Function.Injective f) :
   exact ⟨⟨m, hmono.le_iff_le.mp hm⟩, ⟨n, hmono.le_iff_le.mp hn⟩⟩
 
 @[to_additive (attr := simp)]
-theorem orderHom_top (f : F) : orderHom f ⊤ = ⊤ := by
+theorem orderHom_top (f : M →*o N) : orderHom f ⊤ = ⊤ := by
   rw [← mk_one, ← mk_one, orderHom_mk, map_one]
 
 end Hom

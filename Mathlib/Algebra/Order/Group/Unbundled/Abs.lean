@@ -213,7 +213,7 @@ variable [Group α] [LinearOrder α] {a b : α}
 
 @[to_additive] lemma lt_of_mabs_lt : |a|ₘ < b → a < b := (le_mabs_self _).trans_lt
 
-@[to_additive] lemma map_mabs {β F : Type*} [Group β] [LinearOrder β] [FunLike F α β]
+@[to_additive (attr := simp)] lemma map_mabs {β F : Type*} [Group β] [LinearOrder β] [FunLike F α β]
     [OrderHomClass F α β] [MonoidHomClass F α β] (f : F) (a : α) :
     f |a|ₘ = |f a|ₘ := by
   rw [mabs, mabs, (OrderHomClass.mono f).map_max, map_inv]
