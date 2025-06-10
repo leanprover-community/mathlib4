@@ -142,7 +142,6 @@ theorem subsingleton (h : 0 ∈ S) : Subsingleton (LocalizedModule S M) := by
   induction a,b using LocalizedModule.induction_on₂
   exact mk_eq.mpr ⟨⟨0, h⟩, by simp only [Submonoid.mk_smul, zero_smul]⟩
 
-@[simp]
 theorem zero_mk (s : S) : mk (0 : M) s = 0 := by simp [mk]
 
 theorem mk_add_mk {m1 m2 : M} {s1 s2 : S} :
