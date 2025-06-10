@@ -163,7 +163,8 @@ initialize gcongrExt : SimpleScopedEnvExtension (GCongrKey × GCongrLemma)
 def getCongrAppFnArgs (e : Expr) : Option (Name × Array Expr) :=
   match e with
   | .forallE n d b bi =>
-    -- TODO: this approach is problematic if LHS is dependent and RHS non-dependent
+    -- We determine here whether an arrow is an implication or a forall
+    -- this approach only works if LHS and RHS are both dependent or both non-dependent
     if b.hasLooseBVars then
       some (`_Forall, #[.lam n d b bi])
     else
@@ -266,19 +267,23 @@ initialize registerBuiltinAttribute {
   add := fun decl _ kind ↦ MetaM.run' do
     let declTy := (← getConstInfo decl).type
     let arity := declTy.getForallArity
+    -- We have to determine how many of the hypotheses should be introduced for
+    -- processing the `gcongr` lemma. This is because of implication lemmas like `Or.imp`,
+    -- which we treat as having conclusion `a ∨ b → c ∨ d` instead of just `c ∨ d`.
+    -- Since there is only one possible arity at which the `gcongr` lemma will be accepted,
+    -- we simply attempt to process the lemmas at the different possible arities.
     try
       gcongrExt.add (← makeGCongrLemma decl declTy arity) kind
-    catch e =>
-      let rec loop (arity : Nat) :=
-        match arity with
-        | 0 => throw e
-        | arity + 1 =>
-          try
-            gcongrExt.add (← makeGCongrLemma decl declTy arity) kind
-          catch _ =>
-            loop arity
-      loop arity
-
+    catch e => try
+      guard (1 ≤ arity)
+      gcongrExt.add (← makeGCongrLemma decl declTy (arity - 1)) kind
+    catch _ => try
+      -- We need to use `arity - 2` for lemmas such as `imp_imp_imp` and `forall_imp`.
+      guard (2 ≤ arity)
+      gcongrExt.add (← makeGCongrLemma decl declTy (arity - 2)) kind
+    catch _ =>
+      -- If none of the arities work, we throw the error of the first attempt.
+      throw e
 
 }
 
