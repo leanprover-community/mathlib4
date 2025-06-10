@@ -3,18 +3,11 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Jireh Loreaux
 -/
-import Mathlib.Algebra.Divisibility.Hom
-import Mathlib.Algebra.GroupWithZero.InjSurj
+
 import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Data.Set.Insert
 
 /-!
 # Additional lemmas about homomorphisms of semirings and rings
-
-These lemmas have been banished here to avoid unnecessary imports in
-`Mathlib/Algebra/Hom/Ring/Defs.lean`.
-
-They could be moved to more natural homes.
 -/
 
 assert_not_exists RelIso Field

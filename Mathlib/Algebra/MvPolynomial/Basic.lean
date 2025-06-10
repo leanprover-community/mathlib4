@@ -77,9 +77,6 @@ def MvPolynomial (σ : Type*) (R : Type*) [CommSemiring R] :=
 
 namespace MvPolynomial
 
--- Porting note: because of `MvPolynomial.C` and `MvPolynomial.X` this linter throws
--- tons of warnings in this file, and it's easier to just disable them globally in the file
-
 variable {σ : Type*} {a a' a₁ a₂ : R} {e : ℕ} {n m : σ} {s : σ →₀ ℕ}
 
 section CommSemiring
