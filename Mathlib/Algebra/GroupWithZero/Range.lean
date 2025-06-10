@@ -131,62 +131,53 @@ section CommGroupWithZero
 
 variable [MonoidWithZero A] [CommGroupWithZero B] [MonoidWithZeroHomClass F A B]
 
+open Subgroup in
 theorem mem_range₀_iff_of_comm (y : B) :
     y ∈ range₀ f ↔ ∃ a, f a ≠ 0 ∧ ∃ x, f a * y = f x := by
   refine ⟨fun hy ↦ ?_, fun ⟨a, ha, ⟨x, hy⟩⟩ ↦ ?_⟩
-  · simp [range₀] at hy
+  · simp only [range₀, union_singleton, Submonoid.mem_mk, Subsemigroup.mem_mk, mem_insert_iff,
+    mem_image, Subsemigroup.mem_carrier, Submonoid.mem_toSubsemigroup,
+    Subgroup.mem_toSubmonoid] at hy
     rcases hy with hy | ⟨u, hu, huy⟩
-    · use 1
-      simp [map_one, one_ne_zero]
-      use 0
-      rw [hy, map_zero]
-    induction hu using Subgroup.closure_induction generalizing y with
+    · exact ⟨1, by simp, 0, by simp [hy]⟩
+    induction hu using closure_induction generalizing y with
     | mem c hc =>
-      simp only [mem_preimage, mem_range] at hc
       obtain ⟨a, ha⟩ := hc
-      use 1
-      simp [← huy]
-      use a, ha.symm
-    | one =>
-      simp [← huy]
-      use 1
-      simp
+      exact ⟨1, by simp [← huy], a, by simp [ha, huy]⟩
+    | one => exact ⟨1, by simp, 1, by simp [← huy]⟩
     | mul c d hc hd hcy hdy =>
-      simp only [Units.val_mul] at huy
       obtain ⟨u, hu, ⟨a, ha⟩⟩ := hcy c (refl _)
       obtain ⟨v, hv, ⟨b, hb⟩⟩ := hdy d (refl _)
-      use u * v
-      simp [hu, hv]
-      use a * b
-      simp [← ha, ← hb, ← huy]
-      exact mul_mul_mul_comm (f u) (f v) ↑c ↑d
+      exact ⟨u * v, by simp [hu, hv], a * b,
+        by simpa [map_mul, ← huy, Units.val_mul, ← ha, ← hb] using mul_mul_mul_comm ..⟩
     | inv c hc hcy  =>
       obtain ⟨u, hu, ⟨a, ha⟩⟩ := hcy _ (refl _)
-      use a
-      simp [← ha, hu]
-      use u
-      simp [← huy]
-  · simp [range₀]
+      exact ⟨a, by simp [← ha, hu], u, by simp [← huy, ← ha]⟩
+  · simp only [range₀, union_singleton, Submonoid.mem_mk, Subsemigroup.mem_mk, mem_insert_iff,
+    mem_image, Subsemigroup.mem_carrier, Submonoid.mem_toSubsemigroup, Subgroup.mem_toSubmonoid]
     rcases GroupWithZero.eq_zero_or_unit y with h | h
     · simp [h]
     · right
-      obtain ⟨c, rfl⟩ := h
-      use c
-      simp
-      set u := (Ne.isUnit ha).unit
-      have hu : f a = u := by simp [u]
-      have hv : IsUnit (f x) := by simp [← hy, hu]
+      refine ⟨h.choose, ?_, h.choose_spec.symm⟩
+      set u := (Ne.isUnit ha).unit with hu
+      have hv : IsUnit (f x) := by
+        simp only [← hy, hu, isUnit_iff_ne_zero, ne_eq, mul_eq_zero, Units.ne_zero, false_or]
+        rw [h.choose_spec]
+        simp [ha]
       set v := hv.unit
-      replace hv : f x = v := by simp [v]
-      suffices c = v / u by
+      have hv : f x = v := by simp [v]
+      suffices h.choose = v / u by
         rw [this]
         apply Subgroup.div_mem
-        · apply Subgroup.subset_closure
+        · apply subset_closure
           simp [← hv]
-        · apply Subgroup.subset_closure
-          simp [← hu]
+        · apply subset_closure
+          simp [hu]
       rw [eq_div_iff_mul_eq', mul_comm, ← Units.eq_iff,
-        Units.val_mul, ← hu, ← hv, hy]
+        Units.val_mul, h.choose_spec.symm, ← hv, ← hy]
+      rfl
+
+
 
 /-- `MonoidHomWithZero.range₀' f` is a `CommGroupWithZero`  when the codomain is commutative. -/
 instance : CommGroupWithZero (range₀ f) where
