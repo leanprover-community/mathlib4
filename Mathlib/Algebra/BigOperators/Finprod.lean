@@ -1141,7 +1141,7 @@ theorem finprod_emb_domain (f : α ↪ β) [DecidablePred (· ∈ Set.range f)] 
 
 lemma Nat.cast_finprod [Finite ι] {R : Type*} [CommSemiring R] (f : ι → ℕ) :
     ↑(∏ᶠ x, f x : ℕ) = ∏ᶠ x, (f x : R) :=
-  (Nat.castRingHom R).map_finprod <| (Function.mulSupport f).toFinite
+  (Nat.castRingHom R).map_finprod (Function.mulSupport f).toFinite
 
 lemma Nat.cast_finprod_mem {s : Set ι} (hs : s.Finite) {R : Type*} [CommSemiring R] (f : ι → ℕ) :
     ↑(∏ᶠ x ∈ s, f x : ℕ) = ∏ᶠ x ∈ s, (f x : R) :=
