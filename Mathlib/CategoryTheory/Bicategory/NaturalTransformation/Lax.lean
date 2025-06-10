@@ -41,6 +41,7 @@ variable {F G H : LaxFunctor B C}
 variable (η : LaxTrans F G) (θ : LaxTrans G H)
 
 variable (F) in
+/-- The identity lax transformation. -/
 def id : LaxTrans F F where
   app a := 𝟙 (F.obj a)
   naturality {_ _} f := (λ_ (F.map f)).hom ≫ (ρ_ (F.map f)).inv
@@ -48,11 +49,11 @@ def id : LaxTrans F F where
 instance : Inhabited (LaxTrans F F ) :=
   ⟨id F⟩
 
--- #string_diagram naturality_naturality
-
+/-- Auxiliary definition for `vComp`. -/
 abbrev vCompApp (a : B) : F.obj a ⟶ H.obj a :=
   η.app a ≫ θ.app a
 
+/-- Auxiliary definition for `vComp`. -/
 abbrev vCompNaturality {a b : B} (f : a ⟶ b) :
     (η.app a ≫ θ.app a) ≫ H.map f ⟶ F.map f ≫ η.app b ≫ θ.app b :=
   (α_ _ _ _).hom ≫ η.app a ◁ θ.naturality f ≫ (α_ _ _ _).inv ≫
@@ -112,6 +113,7 @@ theorem vComp_naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
       rw [whisker_exchange]
       bicategory
 
+/-- Vertical composition of lax transformations. -/
 def vComp (η : LaxTrans F G) (θ : LaxTrans G H) : LaxTrans F H where
   app a := vCompApp η θ a
   naturality := vCompNaturality η θ
@@ -119,6 +121,8 @@ def vComp (η : LaxTrans F G) (θ : LaxTrans G H) : LaxTrans F H where
   naturality_id := vComp_naturality_id η θ
   naturality_comp := vComp_naturality_comp η θ
 
+/-- `CategoryStruct` on `LaxFunctor B C` where the (1-)morphisms are given by lax
+transformations. -/
 @[simps! id_app id_naturality comp_app comp_naturality]
 scoped instance : CategoryStruct (LaxFunctor B C) where
   Hom := LaxTrans
@@ -127,7 +131,12 @@ scoped instance : CategoryStruct (LaxFunctor B C) where
 
 end LaxTrans
 
-/-- op -/
+/-- If `η` is an oplax transformation between `F` and `G`, we have a 1-morphism
+`η.app a : F.obj a ⟶ G.obj a` for each object `a : B`. We also have a 2-morphism
+`η.naturality f : F.map f ≫ app b ⟶ app a ≫ G.map f` for each 1-morphism `f : a ⟶ b`.
+These 2-morphisms satisfies the naturality condition, and preserve the identities and
+the compositions modulo some adjustments of domains and codomains of 2-morphisms.
+-/
 structure OplaxTrans (F G : LaxFunctor B C) where
   /-- The component 1-morphisms of an oplax transformation. -/
   app (a : B) : F.obj a ⟶ G.obj a
@@ -157,6 +166,7 @@ attribute [reassoc (attr := simp)] naturality_naturality naturality_id naturalit
 variable {F G H : LaxFunctor B C} (η : OplaxTrans F G) (θ : OplaxTrans G H)
 
 variable (F) in
+/-- The identity oplax transformation. -/
 def id : OplaxTrans F F where
   app a := 𝟙 (F.obj a)
   naturality {_ _} f := (ρ_ (F.map f)).hom ≫ (λ_ (F.map f)).inv
@@ -164,8 +174,10 @@ def id : OplaxTrans F F where
 instance : Inhabited (OplaxTrans F F ) :=
   ⟨id F⟩
 
+/-- Auxiliary definition for `vComp`. -/
 abbrev vCompApp (a : B) : F.obj a ⟶ H.obj a := η.app a ≫ θ.app a
 
+/-- Auxiliary definition for `vComp`. -/
 abbrev vCompNaturality {a b : B} (f : a ⟶ b) :
     F.map f ≫ η.app b ≫ θ.app b ⟶ (η.app a ≫ θ.app a) ≫ H.map f :=
   (α_ _ _ _).inv ≫ η.naturality f ▷ θ.app b ≫ (α_ _ _ _).hom ≫
@@ -227,6 +239,7 @@ theorem vComp_naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
       rw [← whisker_exchange]
       bicategory
 
+/-- Vertical composition of oplax transformations. -/
 def vComp (η : OplaxTrans F G) (θ : OplaxTrans G H) : OplaxTrans F H where
   app := vCompApp η θ
   naturality := vCompNaturality η θ
@@ -234,6 +247,8 @@ def vComp (η : OplaxTrans F G) (θ : OplaxTrans G H) : OplaxTrans F H where
   naturality_id := vComp_naturality_id η θ
   naturality_comp := vComp_naturality_comp η θ
 
+/-- `CategoryStruct` on `LaxFunctor B C` where the (1-)morphisms are given by oplax
+transformations. -/
 @[simps! id_app id_naturality comp_app comp_naturality]
 scoped instance : CategoryStruct (LaxFunctor B C) where
   Hom := OplaxTrans
@@ -243,4 +258,5 @@ scoped instance : CategoryStruct (LaxFunctor B C) where
 end OplaxTrans
 
 end Lax
+
 end CategoryTheory
