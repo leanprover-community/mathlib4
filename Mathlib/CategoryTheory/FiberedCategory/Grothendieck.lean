@@ -44,7 +44,6 @@ instance isHomLift_cartesianLift : IsHomLift (forget F) f (cartesianLift a f) :=
 variable {a} in
 /-- Given some lift `g` of `f`, the canonical map from the domain of `g` to the domain of
 the cartesian lift of `f`. -/
--- TODO a implicit here?
 abbrev homCartesianLift {a' : ∫ F} (g : a'.1 ⟶ R) (φ' : a' ⟶ ⟨S, a⟩)
     [IsHomLift (forget F) (g ≫ f) φ'] : a' ⟶ domainCartesianLift a f where
   base := g
