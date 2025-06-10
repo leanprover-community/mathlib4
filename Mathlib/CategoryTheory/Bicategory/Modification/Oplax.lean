@@ -23,14 +23,27 @@ A modification `Γ` between oplax transformations `η` and `θ` consists of a fa
 
 -/
 
-namespace CategoryTheory.Oplax.OplaxTrans
+namespace CategoryTheory.Oplax
 
 open Category Bicategory
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
-  {F G : OplaxFunctor B C} (η θ : F ⟶ G)
+
+namespace LaxTrans
+
+variable {F G : OplaxFunctor B C} (η θ : F ⟶ G)
+
+
+
+end LaxTrans
+
+namespace OplaxTrans
+
+
+
+
 
 variable {F G : OplaxFunctor B C}
 
