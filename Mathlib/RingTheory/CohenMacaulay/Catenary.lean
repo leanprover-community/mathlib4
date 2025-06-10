@@ -367,17 +367,13 @@ lemma nonnegRingKrullDim_quotient_eq_iSup_quotient_minimalPrimes (I : Ideal R) (
     nonnegRingKrullDim (R ⧸ I) = ⨆ p ∈ I.minimalPrimes, nonnegRingKrullDim (R ⧸ p) := by
   have : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial hI
   apply WithBot.coe_inj.mp
-  rw [coe_nonnegRingKrullDim, ringKrullDim_quotient_eq_iSup_quotient_minimalPrimes I]
-  apply le_antisymm
-  · simp only [iSup_le_iff]
-    intro p hp
-    have : p.IsPrime := hp.1.1
-    simp only [← coe_nonnegRingKrullDim, WithBot.coe_le_coe]
-    apply le_iSup₂ p hp
-  · apply le_iSup_iff.mpr
-    intro a ha
-    sorry
-
+  apply Eq.trans ?_ (WithTop.coe_iSup _ (OrderTop.bddAbove _)).symm
+  simp [WithTop.coe_iSup _ (OrderTop.bddAbove _)]
+  simp [coe_nonnegRingKrullDim, ringKrullDim_quotient_eq_iSup_quotient_minimalPrimes I]
+  have h (p : Ideal R): p ∈ I.minimalPrimes → ringKrullDim (R ⧸ p) =
+      (nonnegRingKrullDim (R ⧸ p)) := sorry
+  apply Eq.trans (biSup_congr h) ?_
+  sorry
 
 lemma Ideal.height_add_ringKrullDim_quotient_eq_ringKrullDim [IsCohenMacaulayLocalRing R]
     (I : Ideal R) (netop : I ≠ ⊤) : I.height + ringKrullDim (R ⧸ I) = ringKrullDim R := by
