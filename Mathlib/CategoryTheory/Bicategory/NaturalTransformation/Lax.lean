@@ -1,13 +1,50 @@
+/-
+Copyright (c) 2025 Robin Carlier. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yuma Mizuno, Calle Sönne, Robin Carlier
+-/
 import Mathlib.CategoryTheory.Bicategory.Functor.Lax
 import Mathlib.Tactic.Widget.StringDiagram
 import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
 
-open Mathlib.Tactic.Widget
-
+/-!
+# Transformations between lax functors
+Just as there are natural transformations between functors, there are transformations
+between lax functors. The equality in the naturality condition of a natural transformation gets
+replaced by a specified 2-morphism. Now, there are three possible types of transformations (between
+lax functors):
+* Lax natural transformations;
+* OpLax natural transformations;
+* Strong natural transformations.
+These differ in the direction (and invertibility) of the 2-morphisms involved in the naturality
+condition.
+## Main definitions
+* `Lax.LaxTrans F G`: lax transformations between lax functors `F` and `G`. The naturality
+  condition is given by a 2-morphism `app a ≫ G.map f ⟶ F.map f ≫ app b` for each 1-morphism
+  `f : a ⟶ b`.
+* `Lax.OplaxTrans F G`: oplax transformations between lax functors `F` and `G`. The naturality
+  condition is given by a 2-morphism `F.map f ≫ app b ⟶ app a ≫ G.map f` for each 1-morphism
+  `f : a ⟶ b`.
+* `Lax.StrongTrans F G`: Strong transformations between lax functors `F` and `G`. The naturality
+  condition is given by a 2-isomorphism `F.map f ≫ app b ≅ app a ≫ G.map f` for each 1-morphism
+  `f : a ⟶ b`.
+Using these, we define two `CategoryStruct` (scoped) instances on `LaxFunctor B C`, one in the
+`Lax.LaxTrans` namespace and one in the `Lax.StrongTrans` namespace. The arrows in these
+CategoryStruct's are given by lax transformations and strong transformations respectively.
+We also provide API for going between lax transformations and strong transformations:
+* `Lax.StrongCore F G`: a structure on an lax transformation between lax functors that
+promotes it to a strong transformation.
+* `Lax.mkOfLax η η'`: given an lax transformation `η` such that each component
+  2-morphism is an isomorphism, `mkOfLax` gives the corresponding strong transformation.
+## References
+* [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055),
+section 4.2.
+-/
 
 namespace CategoryTheory.Lax
 
 open Category Bicategory
+open Mathlib.Tactic.Widget
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
