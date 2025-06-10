@@ -3,7 +3,6 @@ Copyright (c) 2025 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine
 -/
-import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Data.ENat.Basic
 
 /-!
@@ -21,22 +20,6 @@ is compatible with cardinality `ENat.card`.
 namespace ENat
 
 variable {x y z : ℕ∞}
-
-instance : Subsingleton ℕ∞ˣ := by
-  refine subsingleton_of_forall_eq 1 fun x ↦ ?_
-  have := x.val_inv
-  have x_top : x.val ≠ ⊤ := by
-    intro h
-    simp only [h, x.inv_eq_val_inv, ne_eq, (x⁻¹).ne_zero, not_false_eq_true, top_mul, top_ne_one]
-      at this
-  have x_inv_top : x.inv ≠ ⊤ := by
-    intro h
-    simp only [h, ne_eq, x.ne_zero, not_false_eq_true, mul_top, top_ne_one] at this
-  obtain ⟨y, x_y⟩ := ne_top_iff_exists.1 x_top
-  obtain ⟨z, x_z⟩ := ne_top_iff_exists.1 x_inv_top
-  replace x_y := x_y.symm
-  rw [x_y, ← x_z, ← coe_mul, ← coe_one, coe_inj, _root_.mul_eq_one] at this
-  rwa [this.1, Nat.cast_one, Units.val_eq_one] at x_y
 
 instance : Pow ℕ∞ ℕ∞ where
   pow
@@ -92,7 +75,7 @@ lemma epow_eq_zero_iff : x ^ y = 0 ↔ x = 0 ∧ y ≠ 0 := by
     rw [epow_natCast, pow_eq_zero_iff'] at h
     exact ⟨h.1, y.cast_ne_zero.2 h.2⟩
 
-lemma epow_add : x ^ (y + z) = (x ^ y) * x ^ z := by
+lemma epow_add : x ^ (y + z) = x ^ y * x ^ z := by
   rcases lt_trichotomy x 1 with x_0 | rfl | x_2
   · rw [lt_one_iff_eq_zero] at x_0
     rw [x_0]
@@ -115,7 +98,7 @@ lemma epow_add : x ^ (y + z) = (x ^ y) * x ^ z := by
         intro h; rw [h] at x_2; contradiction
       · exact pow_add x _ _
 
-lemma mul_epow : (x * y) ^ z = (x ^ z) * y ^ z := by
+lemma mul_epow : (x * y) ^ z = x ^ z * y ^ z := by
   induction z
   · rcases lt_trichotomy (x * y) 1 with xy_0 | xy_1 | xy_2
     · rw [lt_one_iff_eq_zero] at xy_0

@@ -349,18 +349,18 @@ theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α 
   simp only [ENat.card, Nat.cast_one]
 
 @[simp]
-theorem card_prod (α β : Type*) : ENat.card (α × β) = card α * card β := by
+theorem card_prod (α β : Type*) : card (α × β) = card α * card β := by
   simp [ENat.card]
 
 @[simp]
-lemma card_pow {α β : Type*} : ENat.card (α → β) = (card β) ^ card α := by
+lemma card_pow {α β : Type*} : card (α → β) = (card β) ^ card α := by
   classical
   rcases isEmpty_or_nonempty α with α_emp | α_emp
   · simp [(card_eq_zero_iff_empty α).2 α_emp]
   rcases finite_or_infinite α
   · rcases finite_or_infinite β
-    · have _ := Fintype.ofFinite α
-      have _ := Fintype.ofFinite β
+    · letI := Fintype.ofFinite α
+      letI := Fintype.ofFinite β
       simp
     · simp [top_epow ((card_ne_zero_iff_nonempty α).2 α_emp)]
   · rw [card_eq_top_of_infinite (α := α)]
