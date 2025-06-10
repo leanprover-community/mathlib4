@@ -125,7 +125,7 @@ theorem apply_lt_top (p : PMF α) (a : α) : p a < ∞ :=
 
 section OuterMeasure
 
-open MeasureTheory MeasureTheory.OuterMeasure
+open OuterMeasure
 
 /-- Construct an `OuterMeasure` from a `PMF`, by assigning measure to each set `s : Set α` equal
   to the sum of `p x` for each `x ∈ α`. -/
@@ -202,8 +202,6 @@ theorem toOuterMeasure_apply_fintype [Fintype α] : p.toOuterMeasure s = ∑ x, 
 end OuterMeasure
 
 section Measure
-
-open MeasureTheory
 
 /-- Since every set is Carathéodory-measurable under `PMF.toOuterMeasure`,
   we can further extend this `OuterMeasure` to a `Measure` on `α`. -/
@@ -323,8 +321,6 @@ end Measure
 end MeasureTheory
 
 namespace PMF
-
-open MeasureTheory
 
 /-- The measure associated to a `PMF` by `toMeasure` is a probability measure. -/
 instance toMeasure.isProbabilityMeasure [MeasurableSpace α] (p : PMF α) :

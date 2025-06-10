@@ -193,7 +193,7 @@ instance OneHom.funLike : FunLike (OneHom M N) M N where
 instance OneHom.oneHomClass : OneHomClass (OneHom M N) M N where
   map_one := OneHom.map_one'
 
-library_note "low priority simp lemmas"
+library_note "hom simp lemma priority"
 /--
 The hom class hierarchy allows for a single lemma, such as `map_one`, to apply to a large variety
 of morphism types, so long as they have an instance of `OneHomClass`. For example, this applies to
@@ -209,13 +209,24 @@ the entirety of the `FunLike` hierarchy in order to determine this because so ma
 a significant performance hit when `map_one` fails to apply.
 
 To avoid this problem, we mark these widely applicable simp lemmas with key discimination tree keys
-with `low` priority in order to ensure that they are not tried first.
+with `mid` priority in order to ensure that they are not tried first.
+
+We do not use `low`, to allow bundled morphisms to unfold themselves with `low` priority such that
+the generic morphism lemmas are applied first. For instance, we might have
+```lean
+def fooMonoidHom : M →* N where
+  toFun := foo; map_one' := sorry; map_mul' := sorry
+
+@[simp low] lemma fooMonoidHom_apply (x : M) : fooMonoidHom x = foo x := rfl
+```
+As `map_mul` is tagged `simp mid`, this means that it still fires before `fooMonoidHom_apply`, which
+is the behavior we desire.
 -/
 
 variable [FunLike F M N]
 
-/-- See note [low priority simp lemmas] -/
-@[to_additive (attr := simp low)]
+/-- See note [hom simp lemma priority] -/
+@[to_additive (attr := simp mid)]
 theorem map_one [OneHomClass F M N] (f : F) : f 1 = 1 :=
   OneHomClass.map_one f
 
@@ -306,8 +317,8 @@ instance MulHom.mulHomClass : MulHomClass (M →ₙ* N) M N where
 
 variable [FunLike F M N]
 
-/-- See note [low priority simp lemmas] -/
-@[to_additive (attr := simp low)]
+/-- See note [hom simp lemma priority] -/
+@[to_additive (attr := simp mid)]
 theorem map_mul [MulHomClass F M N] (f : F) (x y : M) : f (x * y) = f x * f y :=
   MulHomClass.map_mul f x y
 
@@ -420,8 +431,8 @@ lemma map_comp_div' [DivInvMonoid G] [DivInvMonoid H] [MulHomClass F G H] (f : F
 
 /-- Group homomorphisms preserve inverse.
 
-See note [low priority simp lemmas] -/
-@[to_additive (attr := simp low) "Additive group homomorphisms preserve negation."]
+See note [hom simp lemma priority] -/
+@[to_additive (attr := simp mid) "Additive group homomorphisms preserve negation."]
 theorem map_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
     (f : F) (a : G) : f a⁻¹ = (f a)⁻¹ :=
   eq_inv_of_mul_eq_one_left <| map_mul_eq_one f <| inv_mul_cancel _
@@ -441,8 +452,8 @@ lemma map_comp_mul_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : 
 
 /-- Group homomorphisms preserve division.
 
-See note [low priority simp lemmas] -/
-@[to_additive (attr := simp low) "Additive group homomorphisms preserve subtraction."]
+See note [hom simp lemma priority] -/
+@[to_additive (attr := simp mid) "Additive group homomorphisms preserve subtraction."]
 theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) :
     ∀ a b, f (a / b) = f a / f b := map_div' _ <| map_inv f
 
@@ -450,8 +461,8 @@ theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) :
 lemma map_comp_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g h : ι → G) :
     f ∘ (g / h) = f ∘ g / f ∘ h := by ext; simp
 
-/-- See note [low priority simp lemmas] -/
-@[to_additive (attr := simp low) (reorder := 9 10)]
+/-- See note [hom simp lemma priority] -/
+@[to_additive (attr := simp mid) (reorder := 9 10)]
 theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
     ∀ n : ℕ, f (a ^ n) = f a ^ n
   | 0 => by rw [pow_zero, pow_zero, map_one]
@@ -474,8 +485,8 @@ lemma map_comp_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f
 
 /-- Group homomorphisms preserve integer power.
 
-See note [low priority simp lemmas] -/
-@[to_additive (attr := simp low) (reorder := 9 10)
+See note [hom simp lemma priority] -/
+@[to_additive (attr := simp mid) (reorder := 9 10)
 "Additive group homomorphisms preserve integer scaling."]
 theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
     (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n := map_zpow' f (map_inv f) g n
@@ -856,7 +867,7 @@ protected theorem MonoidHom.map_zpow' [DivInvMonoid M] [DivInvMonoid N] (f : M �
 /-- If `M` and `N` have multiplications, `f : M →ₙ* N` is a surjective multiplicative map,
 and `M` is commutative, then `N` is commutative. -/
 @[to_additive
-"If `M` and `N` have additions, `f : M →ₙ+ N` is a surjective additive map,
+"If `M` and `N` have additions, `f` is a surjective additive map,
 and `M` is commutative, then `N` is commutative."]
 theorem Function.Surjective.mul_comm [Mul M] [Mul N] {f : M →ₙ* N}
     (is_surj : Function.Surjective f) (is_comm : Std.Commutative (· * · : M → M → M)) :
@@ -873,19 +884,19 @@ namespace OneHom
 
 variable [One M] [One N] [One P]
 
-/-- If `p : OneHom M P` is a `MulHom`, `g : P → N` is a map, and `f : OneHom M N`
-  is a `OneHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `OneHom`. -/
-@[to_additive (attr := simps) " If `p : ZeroHom M P` is a `ZeroHom`, `g : P → N`
-  is a map, and `f : ZeroHom M N` is an `ZeroHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
+/-- If `p` is a `MulHom`, `g` is a map, and `f`
+is a `OneHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `OneHom`. -/
+@[to_additive (attr := simps) " If `p` is a `ZeroHom`, `g`
+  is a map, and `f` is an `ZeroHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
   `ZeroHom`. "]
 def liftLeft (f : OneHom M N) (p : OneHom M P) (g : P → N) (hg : ∀ x, g (p x) = f x) :
     OneHom P N where toFun := g; map_one' := by simpa only [hg, map_one] using hg 1
 
-/-- If `p : OneHom P N` is an injective `OneHom`, `g : M → P` is a map, and `f : OneHom M N`
-  is a `OneHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `OneHom`. -/
-@[to_additive (attr := simps) " If `p : ZeroHom P N` is an injective `ZeroHom`, `g : M → P`
-  is a map, and `f : ZeroHom M N` is a `ZeroHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
-  `ZeroHom`. "]
+/-- If `p` is an injective `OneHom`, `p_inv` is a map, and `f`
+is a `OneHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `OneHom`. -/
+@[to_additive (attr := simps) " If `p` is an injective `ZeroHom`, `p_inv`
+is a map, and `f` is a `ZeroHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
+`ZeroHom`. "]
 def liftRight (f : OneHom M N) {p : OneHom P N} (hp : Injective p) (g : M → P)
     (hg : ∀ x, p (g x) = f x) : OneHom M P where
   toFun := g; map_one' := hp <| by simpa only [map_one] using hg 1
@@ -919,11 +930,11 @@ namespace MulHom
 
 variable [Mul M] [Mul N] [Mul P]
 
-/-- If `p : M →ₙ* P` is a surjective `MulHom`, `g : P → N` is a map, and `f : M →ₙ* N`
-  is a `MulHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `MulHom`. -/
-@[to_additive (attr := simps) " If `p : M →ₙ+ P` is a surjective `AddMulHom`, `g : P → N`
-  is a map, and `f : M →ₙ+ N` is an `AddMulHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
-  `AddMulHom`. "]
+/-- If `p` is a surjective `MulHom`, `g` is a map, and `f`
+is a `MulHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `MulHom`. -/
+@[to_additive (attr := simps) " If `p : M →ₙ+ P` is a surjective `AddMulHom`, `g`
+is a map, and `f` is an `AddMulHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
+`AddMulHom`. "]
 def liftLeft (f : M →ₙ* N) {p : M →ₙ* P} (hp : Surjective p) (g : P → N)
     (hg : ∀ x, g (p x) = f x) : P →ₙ* N where
   toFun := g; map_mul' x y := by
@@ -932,10 +943,10 @@ def liftLeft (f : M →ₙ* N) {p : M →ₙ* P} (hp : Surjective p) (g : P → 
     simp only [← map_mul p x y, hg, map_mul f]
 
 /-- If `p : P →ₙ* N` is an injective `MulHom`, `g : M → P` is a map, and `f : M →ₙ* N`
-  is a `MulHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `MulHom`. -/
+is a `MulHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `MulHom`. -/
 @[to_additive (attr := simps) " If `p : P →ₙ+ N` is an injective `AddMulHom`, `g : M → P`
-  is a map, and `f : M →ₙ+ N` is an `AddMulHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
-  `AddMulHom`. "]
+is a map, and `f : M →ₙ+ N` is an `AddMulHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
+`AddMulHom`. "]
 def liftRight (f : M →ₙ* N)
     {p : P →ₙ* N} (hp : Injective p) (g : M → P) (hg : ∀ x, p (g x) = f x) : M →ₙ* P where
   toFun := g; map_mul' x y := hp <| by simp only [hg, map_mul]
@@ -970,27 +981,22 @@ namespace MonoidHom
 variable [MulOneClass M] [MulOneClass N] [MulOneClass P]
 
 /-- If `p : M →* P` is a surjective `MonoidHom`, `g : P → N` is a map, and `f : M →* N`
-  is a `MonoidHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `MonoidHom`. -/
+is a `MonoidHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also a `MonoidHom`. -/
 @[to_additive (attr := simps) " If `p : M →+ P` is a surjective `AddMonoidHom`, `g : P → N`
-  is a map, and `f : M →+ N` is an `AddMonoidHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
-  `AddMonoidHom`. "]
+is a map, and `f : M →+ N` is an `AddMonoidHom` such that `g ∘ ⇑p = ⇑f`, then `g` is also an
+`AddMonoidHom`. "]
 def liftLeft (f : M →* N) {p : M →* P} (hp : Surjective p) (g : P → N) (hg : ∀ x, g (p x) = f x) :
-    P →* N where
-  toFun := g; map_one' := by simpa only [hg, map_one] using hg 1
-  map_mul' x y := by
-    rcases hp x with ⟨x, rfl⟩
-    rcases hp y with ⟨y, rfl⟩
-    simp only [← map_mul p x y, hg, map_mul f]
+    P →* N :=
+  { f.toMulHom.liftLeft (p := p) hp g hg, f.toOneHom.liftLeft p g hg with toFun := g }
 
 /-- If `p : P →* N` is an injective `MonoidHom`, `g : M → P` is a map, and `f : M →* N`
-  is a `MonoidHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `MonoidHom`. -/
+is a `MonoidHom` such that `⇑p ∘ g = ⇑f`, then `g` is also a `MonoidHom`. -/
 @[to_additive (attr := simps) " If `p : P →+ N` is an injective `AddMonoidHom`, `g : M → P`
-  is a map, and `f : M →+ N` is an `AddMonoidHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
-  `AddMonoidHom`. "]
+is a map, and `f : M →+ N` is an `AddMonoidHom` such that `⇑p ∘ g = ⇑f`, then `g` is also an
+`AddMonoidHom`. "]
 def liftRight (f : M →* N) {p : P →* N} (hp : Injective p) (g : M → P) (hg : ∀ x, p (g x) = f x) :
-    M →* P where
-  toFun := g; map_one' := hp <| by simpa only [map_one] using hg 1
-  map_mul' x y := hp <| by simp only [hg, map_mul]
+    M →* P :=
+  { f.toMulHom.liftRight (p := p) hp g hg, f.toOneHom.liftRight hp g hg with toFun := g }
 
 /-- If `p : M →* P` is a `MonoidHom` with `p_inv : P → M` a right inverse map, and `f : M →* N`
   is a `MonoidHom` such that `⇑f ∘ p_inv ∘ ⇑p = ⇑f`, then `⇑f ∘ p_inv` is also a `MonoidHom`. -/
