@@ -36,6 +36,7 @@ jobs:
           label="$(printf '%s' "${labels}" | sed -n 's=.*#\[\([^,]*\)\].*=\1=p')"
           printf 'label: "%s"\n' "${label}"
           printf 'Event type: %s\n' "${{ github.event_name }}"
+          printf 'url: "https://api.github.com/repos/%s/issues/%s/labels"' "${{ github.repository }}" "${{ github.event.pull_request.number }}"
           if [ "${{ github.event_name }}" == 'push' ]
           then
             if [ -n "${label}" ]
