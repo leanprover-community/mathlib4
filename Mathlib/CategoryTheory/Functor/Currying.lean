@@ -13,8 +13,9 @@ We define `curry : ((C × D) ⥤ E) ⥤ (C ⥤ (D ⥤ E))` and `uncurry : (C ⥤
 and verify that they provide an equivalence of categories
 `currying : (C ⥤ (D ⥤ E)) ≌ ((C × D) ⥤ E)`.
 
+This is used elsewhere to equip the category of small categories with a cartesian closed structure
+`cartesianClosed : CartesianClosed Cat.{u, u}`.
 -/
-
 
 namespace CategoryTheory
 
@@ -72,6 +73,7 @@ def curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E where
       naturality := fun X X' f => by
         ext; dsimp [curryObj]
         rw [NatTrans.naturality] }
+
 
 -- create projection simp lemmas even though this isn't a `{ .. }`.
 /-- The equivalence of functor categories given by currying/uncurrying.
