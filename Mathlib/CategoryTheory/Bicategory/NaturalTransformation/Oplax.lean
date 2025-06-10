@@ -7,8 +7,6 @@ import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 import Mathlib.Tactic.Widget.StringDiagram
 import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
 
-open Mathlib.Tactic.Widget
-
 /-!
 # Transformations between oplax functors
 
@@ -50,6 +48,7 @@ This file could also include lax transformations between oplax functors.
 namespace CategoryTheory.Oplax
 
 open Category Bicategory
+open Mathlib.Tactic.Widget
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
