@@ -987,7 +987,7 @@ open Module
 variable [FiniteDimensional 𝕜 K]
 
 @[simp]
-theorem topologicalClosure_eq : K.topologicalClosure = K :=
+theorem topologicalClosure_eq_self : K.topologicalClosure = K :=
   K.closed_of_finiteDimensional.submodule_topologicalClosure_eq
 
 @[simp]
