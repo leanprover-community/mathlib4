@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne, Robin Carlier
 -/
 import Mathlib.CategoryTheory.Bicategory.Functor.Lax
-import Mathlib.Tactic.Widget.StringDiagram
 import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
 
 /-!
@@ -49,7 +48,6 @@ section 4.2.
 namespace CategoryTheory.Lax
 
 open Category Bicategory
-open Mathlib.Tactic.Widget
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
@@ -228,7 +226,6 @@ abbrev vCompNaturality {a b : B} (f : a ⟶ b) :
 theorem vComp_naturality_naturality {a b : B} {f g : a ⟶ b} (β : f ⟶ g) :
     F.map₂ β ▷ η.vCompApp θ b ≫ η.vCompNaturality θ g =
       η.vCompNaturality θ f ≫ η.vCompApp θ a ◁ H.map₂ β := by
-  -- with_panel_widgets [StringDiagram]
   calc
     _ = 𝟙 _ ⊗≫ (F.map₂ β ▷ η.app b ≫ η.naturality g) ▷ θ.app b ⊗≫
           η.app a ◁ θ.naturality g ⊗≫ 𝟙 _ := by
@@ -244,7 +241,6 @@ theorem vComp_naturality_naturality {a b : B} {f g : a ⟶ b} (β : f ⟶ g) :
 theorem vComp_naturality_id (a : B) :
     F.mapId a ▷ η.vCompApp θ a ≫ η.vCompNaturality θ (𝟙 a) =
       (λ_ (η.vCompApp θ a)).hom ≫ (ρ_ (η.vCompApp θ a)).inv ≫ η.vCompApp θ a ◁ H.mapId a := by
-  -- with_panel_widgets [StringDiagram]
   calc
     _ = 𝟙 _ ⊗≫ (F.mapId a ▷ η.app a ≫ η.naturality (𝟙 a)) ▷ θ.app a ⊗≫
           η.app a ◁ θ.naturality (𝟙 a) ⊗≫ 𝟙 _ := by
@@ -263,7 +259,6 @@ theorem vComp_naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
           (α_ (F.map f) (η.vCompApp θ b) (H.map g)).inv ≫
             η.vCompNaturality θ f ▷ H.map g ≫
               (α_ (η.vCompApp θ a) (H.map f) (H.map g)).hom ≫ η.vCompApp θ a ◁ H.mapComp f g := by
-  -- with_panel_widgets [StringDiagram]
   calc
     _ = 𝟙 _ ⊗≫ (F.mapComp f g ▷ η.app c ≫ η.naturality (f ≫ g)) ▷ θ.app c ⊗≫
           η.app a ◁ θ.naturality (f ≫ g) ⊗≫ 𝟙 _ := by

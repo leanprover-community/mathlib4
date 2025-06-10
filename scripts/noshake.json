@@ -473,6 +473,8 @@
   "Mathlib.CategoryTheory.Limits.IsLimit": ["Batteries.Tactic.Congr"],
   "Mathlib.CategoryTheory.Functor.Basic":
   ["Mathlib.Tactic.CategoryTheory.CheckCompositions"],
+  "Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax":
+  ["Mathlib.Tactic.CategoryTheory.Bicategory.Basic"],
   "Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Lax":
   ["Mathlib.Tactic.CategoryTheory.Bicategory.Basic"],
   "Mathlib.CategoryTheory.Bicategory.Functor.Oplax":

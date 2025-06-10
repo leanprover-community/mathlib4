@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne
 -/
 import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
-import Mathlib.Tactic.Widget.StringDiagram
 import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
 
 /-!
@@ -53,7 +52,6 @@ This file could also include lax transformations between oplax functors.
 namespace CategoryTheory.Oplax
 
 open Category Bicategory
-open Mathlib.Tactic.Widget
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
@@ -128,7 +126,6 @@ theorem vComp_naturality_naturality {a b : B} {f g : a ⟶ b} (β : f ⟶ g) :
 theorem vComp_naturality_id (a : B) :
     η.vCompNaturality θ (𝟙 a) ≫ F.mapId a ▷ η.vCompApp θ a =
       η.vCompApp θ a ◁ H.mapId a ≫ (ρ_ (η.vCompApp θ a)).hom ≫ (λ_ (η.vCompApp θ a)).inv := by
-  -- with_panel_widgets [StringDiagram]
   calc
     _ = 𝟙 _ ⊗≫ η.app a ◁ θ.naturality (𝟙 a) ⊗≫
           (η.naturality (𝟙 a) ≫ F.mapId a ▷ η.app a) ▷ θ.app a ⊗≫ 𝟙 _ := by
@@ -147,7 +144,6 @@ theorem vComp_naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
           η.vCompNaturality θ f ▷ H.map g ≫
             (α_ (F.map f) (η.vCompApp θ b) (H.map g)).hom ≫
               F.map f ◁ η.vCompNaturality θ g ≫ (α_ (F.map f) (F.map g) (η.vCompApp θ c)).inv := by
-  -- with_panel_widgets [StringDiagram]
   calc
     _ = 𝟙 _ ⊗≫ η.app a ◁ θ.naturality (f ≫ g) ⊗≫
           (η.naturality (f ≫ g) ≫ F.mapComp f g ▷ η.app c) ▷ θ.app c ⊗≫ 𝟙 _ := by
