@@ -452,7 +452,7 @@ lemma exists_pow_mem_of_index_ne_zero (h : H.index ≠ 0) (a : G) :
   suffices ∃ n₁ n₂, n₁ ≠ n₂ ∧ n₁ ≤ H.index ∧ n₂ ≤ H.index ∧
       ((a ^ n₂ : G) : G ⧸ H) = ((a ^ n₁ : G) : G ⧸ H) by
     rcases this with ⟨n₁, n₂, hne, hle₁, hle₂, he⟩
-    rcases hne.lt_or_lt with hlt | hlt
+    rcases hne.lt_or_gt with hlt | hlt
     · exact ⟨n₁, n₂, hlt, hle₂, he⟩
     · exact ⟨n₂, n₁, hlt, hle₁, he.symm⟩
   by_contra hc
@@ -619,7 +619,7 @@ lemma index_strictAnti (h : H < K) [H.FiniteIndex] : K.index < H.index := by
   have h0 : K.index ≠ 0 := (finiteIndex_of_le h.le).index_ne_zero
   apply lt_of_le_of_ne (index_antitone h.le)
   rw [← relindex_mul_index h.le, Ne, eq_comm, mul_eq_right₀ h0, relindex_eq_one]
-  exact h.not_le
+  exact h.not_ge
 
 variable (H K)
 
