@@ -439,11 +439,14 @@ theorem biproduct.ι_π_self (f : J → C) [HasBiproduct f] (j : J) :
 theorem biproduct.ι_π_ne (f : J → C) [HasBiproduct f] {j j' : J} (h : j ≠ j') :
     biproduct.ι f j ≫ biproduct.π f j' = 0 := by simp [h]
 
-@[reassoc]
+@[reassoc (attr := simp)]
 theorem biproduct.eqToHom_comp_ι (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
     eqToHom (by simp [w]) ≫ biproduct.ι f j' = biproduct.ι f j := by
-  simp [*]
+  cases w
+  simp
 
+-- TODO?: simp proves this using `eqToHom_naturality`
+-- but `eqToHom_naturality` applies less easily than this lemma
 @[reassoc]
 theorem biproduct.π_comp_eqToHom (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
     biproduct.π f j ≫ eqToHom (by simp [w]) = biproduct.π f j' := by
