@@ -47,7 +47,7 @@ jobs:
                 --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels \
                 --data "{'labels':[${label}]}"
             else
-              echo "We are not applying any label."
+              echo "There is no single label that we could apply, so we are not applying any label."
             fi
           else
             printf $'The action type was \'%s\', not \'opened\', so we do not apply any label.\n' "${{ github.event_name }}"
