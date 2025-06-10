@@ -62,6 +62,8 @@ open MeasureTheory BigOperators NNReal ENNReal Function Filter
 
 namespace MeasureTheory.VectorMeasure
 
+set_option linter.flexible true
+
 /-!
 ## Inner partitions
 
@@ -102,7 +104,9 @@ the `P i` is a partition of `⋃ i, s i`. -/
 lemma isInnerPart_iUnion {s : ℕ → Set X} (hs : Pairwise (Disjoint on s))
     {P : ℕ → Finset (Set X)} (hP : ∀ i, IsInnerPart (s i) (P i)) (n : ℕ) :
     IsInnerPart (⋃ i, s i) (Finset.biUnion (Finset.range n) P) := by
-  simp [IsInnerPart]
+  suffices (∀ t, ∀ x < n, t ∈ P x → t ⊆ ⋃ i, s i) ∧ (∀ t, ∀ x < n, t ∈ P x → MeasurableSet t) ∧
+      (⋃ x, ⋃ (_ : x < n), (P x).toSet).PairwiseDisjoint id ∧ ∀ p, ∀ x < n, p ∈ P x → ¬p = ∅ by
+    simpa [IsInnerPart]
   refine ⟨fun p i _ hp ↦ ?_, fun p i _ hp ↦ ?_, fun p hp q hq hpq _ hrp hrq ↦ ?_, fun _ i _ h' ↦ ?_⟩
   · exact Set.subset_iUnion_of_subset i ((hP i).1 p hp)
   · exact (hP i).2.1 p hp
