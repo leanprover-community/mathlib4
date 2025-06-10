@@ -5,6 +5,8 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Data.Real.Archimedean
 import Mathlib.Topology.MetricSpace.BundledFun
+import Mathlib.Topology.MetricSpace.Pseudo.Defs
+import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Topology.UniformSpace.Ultra.Basic
 
 /-!
@@ -36,59 +38,91 @@ variable {X : Type*}
 
 /-- Any set of pseudometrics can induce a uniform space, where the entourages are
 any open ball of positive radius for any of the pseudometrics. -/
-def UniformSpace.Core.ofPseudoMetricSystem (M : Set (PseudoMetric X ℝ)) :
-    UniformSpace.Core X where
-  uniformity := .generate <| (fun εd ↦ {xy | εd.2 xy.1 xy.2 < εd.1}) '' ((Set.Ioi 0 : Set ℝ) ×ˢ M)
-  refl := by
-    simp only [Filter.principal, idRel_subset, Filter.le_generate_iff, Set.image_subset_iff,
-      Set.preimage_setOf_eq, Set.mem_setOf_eq, PseudoMetric.refl]
-    intro
-    aesop
-  symm := by
-    rw [Filter.tendsto_iff_comap]
-    refine (Filter.generate_image_preimage_le_comap _ _).trans' ?_
-    rw [← Set.image_swap_eq_preimage_swap, Set.image_image, Set.image_swap_eq_preimage_swap]
-    simp [PseudoMetric.symm]
-  comp := by
-    rw [Filter.le_generate_iff]
-    intro s
-    simp only [Set.mem_image, Set.mem_prod, Set.mem_Ioi, Prod.exists, Filter.mem_sets,
-      forall_exists_index, and_imp]
-    rintro ε d εpos hd rfl
-    rw [Filter.mem_lift'_sets (Monotone.compRel _ _)]
-    · refine ⟨{xy | d xy.1 xy.2 < ε / 2}, Filter.mem_generate_of_mem ?_, ?_⟩
-      · simp only [Set.mem_image, Set.mem_prod, Set.mem_Ioi, Prod.exists]
-        exact ⟨ε / 2, d, ⟨by simp [εpos], hd⟩, rfl⟩
-      · intro ⟨a, b⟩
-        rw [mem_compRel]
-        simp only [Set.mem_setOf_eq, forall_exists_index, and_imp]
-        intro c hac hcb
-        refine (d.triangle _ _ _).trans_lt ((add_lt_add hac hcb).trans_le ?_)
-        simp
-    · exact monotone_id
-    · exact monotone_id
+def UniformSpace.ofPseudoMetricSystem (M : Set (PseudoMetric X ℝ)) :
+    UniformSpace X :=
+  ⨅ d : M, .ofDist d d.val.refl d.val.symm d.val.triangle
+
+lemma hasBasis_ofDist
+    (d : X → X → ℝ) (refl : ∀ x, d x x = 0) (symm : ∀ x y, d x y = d y x)
+    (triangle : ∀ x y z, d x z ≤ d x y + d y z) :
+    𝓤[.ofDist d refl symm triangle].HasBasis ((0 : ℝ) < ·) (fun ε => { x | d x.1 x.2 < ε }) :=
+  UniformSpace.hasBasis_ofFun (⟨1, zero_lt_one⟩) _ _ _ _ _
+
+lemma hasBasis_ofPseudoMetric (d : PseudoMetric X ℝ) :
+    𝓤[.ofDist d d.refl d.symm d.triangle].HasBasis ((0 : ℝ) < ·) (fun ε => { x | d x.1 x.2 < ε }) :=
+  hasBasis_ofDist _ _ _ _
+
+lemma hasBasis_ofPseudoMetricSystem (M : Set (PseudoMetric X ℝ)) :
+    𝓤[.ofPseudoMetricSystem M].HasBasis
+      (fun s : Finset (PseudoMetric X ℝ × ℝ) ↦ ∀ p ∈ s, p.1 ∈ M ∧ 0 < p.2)
+      (fun s ↦ s.inf (fun p ↦ { x | p.1 x.1 x.2 < p.2 })) := by
+  have := Filter.HasBasis.iInf' (fun d : M ↦ hasBasis_ofPseudoMetric d.val)
+  have h : 𝓤[.ofPseudoMetricSystem M] =
+    ⨅ d : M, 𝓤[.ofDist d d.val.refl d.val.symm d.val.triangle] :=
+    iInf_uniformity
+  rw [← h] at this
+  classical
+  refine this.to_hasBasis ?_ ?_
+  · intro s ⟨hs, hs'⟩
+    refine ⟨hs.toFinset.image (fun d ↦ ⟨d.val, s.2 d⟩), ?_⟩
+    simp only [Finset.mem_image, Set.Finite.mem_toFinset, Subtype.exists, forall_exists_index,
+      and_imp, Prod.forall, Prod.mk.injEq, Finset.inf_image, Finset.inf_set_eq_iInter,
+      Function.comp_apply, Set.iInter_coe_set, subset_refl, and_true]
+    rintro d ε d hd hd' rfl rfl
+    exact ⟨hd, hs' _ hd'⟩
+  · intro s hs
+    refine ⟨
+      ⟨((s.attach.image (fun p ↦ ⟨p.1.1, (hs p.1 p.prop).1⟩) : Finset M) : Set M),
+      fun d ↦ if hd : d.1 ∈ s.image Prod.fst
+        then ((s.filter (fun p ↦ p.1 = d.1)).image Prod.snd).min' ?_ else 0⟩, ?_⟩
+    · simp only [Finset.mem_image, Prod.exists, exists_and_right, exists_eq_right] at hd
+      obtain ⟨x, hd⟩ := hd
+      simp only [Finset.image_nonempty]
+      refine ⟨⟨d, x⟩, ?_⟩
+      simp [hd]
+    simp only [Finset.coe_image, Finset.coe_attach, Set.image_univ, Set.finite_range, Set.mem_range,
+      Subtype.exists, Prod.exists, Finset.mem_image, exists_and_right, exists_eq_right,
+      forall_exists_index, Subtype.forall, Subtype.mk.injEq, true_and, Set.iInter_exists,
+      Set.iInter_coe_set, Finset.inf_set_eq_iInter, Set.subset_iInter_iff, Prod.forall]
+    refine ⟨?_, ?_⟩
+    · rintro _ _ _ _ hd' rfl
+      rw [dif_pos ⟨_, hd'⟩]
+      simp only [Finset.lt_min'_iff, Finset.mem_image, Finset.mem_filter, Prod.exists,
+        exists_eq_right]
+      intro _ hy
+      exact (hs _ hy).2
+    · intro d ε hd x
+      simp only [Set.mem_iInter, Set.mem_setOf_eq]
+      intro hx
+      refine (hx d (hs _ hd).1 d ε hd rfl).trans_le ?_
+      rw [dif_pos ⟨_, hd⟩]
+      refine Finset.min'_le _ _ ?_
+      simp [hd]
 
 /-- For the uniform space induced by a family of pseudometrics, the uniform space is
 nonarchimedean if all the pseudometrics are nonarchimedean. -/
-lemma IsUltraUniformity.ofCore_ofPseudoMetricSystem_of_isUltra {M : Set (PseudoMetric X ℝ)}
+lemma IsUltraUniformity.ofPseudoMetricSystem_of_isUltra {M : Set (PseudoMetric X ℝ)}
     (hM : ∀ d ∈ M, d.IsUltra) :
-    @IsUltraUniformity _ (.ofCore <| .ofPseudoMetricSystem M) := by
-  letI : UniformSpace X := .ofCore <| .ofPseudoMetricSystem M
-  refine .mk_of_hasBasis (Filter.hasBasis_generate _) ?_ ?_
-  · intro s
-    simp only [Set.subset_image_iff, and_imp, forall_exists_index]
-    rintro hs s hs' rfl
-    refine .sInter ?_
-    simp only [Set.mem_image]
-    rintro _ ⟨⟨ε, d⟩, _, rfl⟩
+    @IsUltraUniformity _ (.ofPseudoMetricSystem M) := by
+  letI : UniformSpace X := .ofPseudoMetricSystem M
+  refine .mk_of_hasBasis (hasBasis_ofPseudoMetricSystem M) ?_ ?_
+  · intro s hs
+    rw [Finset.inf_eq_iInf]
+    refine .iInter ?_
+    simp only [Set.iInf_eq_iInter, Prod.forall]
+    intro d _
+    refine .iInter ?_
+    intro
     exact d.isSymmetricRel_ball
-  · intro s
-    simp only [Set.subset_image_iff, and_imp, forall_exists_index]
-    rintro hs s hs' rfl
+  · intro s hs
+    rw [Finset.inf_eq_iInf]
+    refine .iInter ?_
+    simp only [Set.iInf_eq_iInter, Prod.forall]
+    intro d _
     refine .sInter ?_
-    simp only [Set.mem_image]
-    rintro _ ⟨⟨ε, d⟩, hd, rfl⟩
-    exact (hM _ (hs' hd).right).isTransitiveRel_ball
+    simp only [Set.mem_range, exists_prop, and_imp, forall_apply_eq_imp_iff]
+    intro hd
+    exact (hM _ (hs _ hd).left).isTransitiveRel_ball
 
 namespace UniformSpace.pseudoMetrizable
 
@@ -280,6 +314,85 @@ lemma descChainEquivRel.pseudoMetric_apply_lt_inv_natCast_iff_of_ne_zero
   · push_neg at h
     simp [h, Nat.pos_of_ne_zero hk]
 
+lemma descChainEquivRel.pseudoMetric_apply_lt_iff_of_pos
+    {D : ℕ → Set (X × X)} {hD : descChainEquivRel D}
+    [∀ x y, DecidablePred fun n ↦ (x, y) ∉ D n]
+    [∀ x y, Decidable (∃ n, (x, y) ∉ D n)] {x y : X} {ε : ℝ} (hε : 0 < ε) :
+    hD.PseudoMetric x y < ε ↔ ∀ (k : ℕ), ε ≤ (k : ℝ)⁻¹ → (x, y) ∈ D k := by
+  constructor
+  · intro h n hn
+    rcases eq_or_ne n 0 with rfl|hn'
+    · simp [hD.top]
+    rw [← hD.pseudoMetric_apply_lt_inv_natCast_iff_of_ne_zero hn']
+    exact hn.trans_lt' h
+  · intro h
+    simp only [PseudoMetric, pseudometric_aux, PseudoMetric.coe_mk]
+    split_ifs with h'
+    · rw [← not_le]
+      intro H
+      exact (Nat.find_spec h') (h _ H)
+    · simp [hε]
+
+lemma descChainEquivRel.setOf_pseudoMetric_apply_lt_eq_biInter
+    {D : ℕ → Set (X × X)} (hD : descChainEquivRel D)
+    [∀ x y, DecidablePred fun n ↦ (x, y) ∉ D n]
+    [∀ x y, Decidable (∃ n, (x, y) ∉ D n)] {ε : ℝ} (hε : 0 < ε) :
+    {xy | hD.PseudoMetric xy.1 xy.2 < ε} = ⋂ k ∈ {k : ℕ | ε ≤ (k : ℝ)⁻¹}, D k := by
+  ext
+  simp [hD.pseudoMetric_apply_lt_iff_of_pos hε]
+
+lemma descChainEquivRel.setOf_pseudoMetric_apply_lt_eq_univ_of_one_lt
+    {D : ℕ → Set (X × X)} (hD : descChainEquivRel D)
+    [∀ x y, DecidablePred fun n ↦ (x, y) ∉ D n]
+    [∀ x y, Decidable (∃ n, (x, y) ∉ D n)] {ε : ℝ} (hε : 0 < ε) (hε' : 1 < ε) :
+    {xy : X × X | hD.PseudoMetric xy.1 xy.2 < ε} = Set.univ := by
+  rw [hD.setOf_pseudoMetric_apply_lt_eq_biInter hε]
+  ext
+  simp only [Set.mem_setOf_eq, Set.mem_iInter, Set.mem_univ, iff_true]
+  rintro (_|k) hk
+  · simp [hD.top]
+  replace hk := hε'.trans_le hk
+  rw [one_lt_inv₀ (by positivity)] at hk
+  absurd hk
+  simp
+
+lemma descChainEquivRel.setOf_pseudoMetric_apply_lt_eq_apply_find_sub_one
+    {D : ℕ → Set (X × X)} (hD : descChainEquivRel D)
+    [∀ x y, DecidablePred fun n ↦ (x, y) ∉ D n]
+    [∀ x y, Decidable (∃ n, (x, y) ∉ D n)] {ε : ℝ} (hε : 0 < ε) (hε' : ε ≤ 1)
+    (hn : ∃ (n : ℕ), 1 / ((n : ℝ) + 1) < ε := exists_nat_one_div_lt hε) :
+    {xy | hD.PseudoMetric xy.1 xy.2 < ε} = D (Nat.find hn) := by
+  rw [hD.setOf_pseudoMetric_apply_lt_eq_biInter hε]
+  ext
+  simp only [Set.mem_setOf_eq, Set.mem_iInter]
+  have := Nat.find_spec hn
+  have hn0 : 0 < Nat.find hn := by simp [hε']
+  constructor
+  · intro h
+    apply h
+    have hn1 := Nat.find_min (m := Nat.find hn - 1) hn (Nat.sub_one_lt_of_lt hn0)
+    push_neg at hn1
+    rw [Nat.cast_sub hn0] at hn1
+    simpa using hn1
+  · intro h n hn'
+    apply hD.subset_of_le _ h
+    simp only [one_div, Nat.le_find_iff, not_lt]
+    intro m hm
+    refine hn'.trans ?_
+    refine inv_anti₀ ?_ (by exact_mod_cast hm)
+    positivity
+
+lemma descChainEquivRel.setOf_pseudoMetric_apply_lt_mem_uniformity
+    {D : ℕ → Set (X × X)} (hD : descChainEquivRel D)
+    [∀ x y, DecidablePred fun n ↦ (x, y) ∉ D n]
+    [∀ x y, Decidable (∃ n, (x, y) ∉ D n)] {ε : ℝ} (hε : 0 < ε) :
+    {xy | hD.PseudoMetric xy.1 xy.2 < ε} ∈ 𝓤 X := by
+  rcases le_or_gt ε 1 with hε' | hε'
+  · rw [hD.setOf_pseudoMetric_apply_lt_eq_apply_find_sub_one hε hε']
+    exact hD.mem_uniformity _
+  · rw [hD.setOf_pseudoMetric_apply_lt_eq_univ_of_one_lt hε hε']
+    simp
+
 open Classical in
 /-- Any uniform space has a natural system of pseudometrics definable on it,
 comprised of those pseudometrics constructed from a descending chain of
@@ -306,168 +419,88 @@ equivalence relation entourages. In a nonarchimedean uniformity, this pseudometr
 induces the uniformity. -/
 lemma IsUltraUniformity.ofPseudoMetricSystem_pseudoMetricSystem_eq {X : Type*} [U : UniformSpace X]
     [IsUltraUniformity X] :
-    .ofCore (.ofPseudoMetricSystem pseudoMetricSystem) = U := by
+    .ofPseudoMetricSystem pseudoMetricSystem = U := by
   -- to prove the two uniform spaces are equal we need to show that the uniformity filters are equal
   -- by showing that an arbitrary entourage of one is necessarily an entourage of the other
   ext t
+  rcases isEmpty_or_nonempty X with _|_
+  · simp [Filter.filter_eq_bot_of_isEmpty]
   -- we have that the "canonical" uniform space `U` is nonarchimedean;
   -- for the proof, we also have a local instance that the uniform space induced by the
   -- pseudometric system is nonarchimedean
   have : @IsUltraUniformity X <|
-    .ofCore (.ofPseudoMetricSystem pseudoMetricSystem) :=
-      IsUltraUniformity.ofCore_ofPseudoMetricSystem_of_isUltra
+    (.ofPseudoMetricSystem pseudoMetricSystem) :=
+      IsUltraUniformity.ofPseudoMetricSystem_of_isUltra
       fun _ a ↦ isUltra_of_mem_pseudoMetricSystem a
   -- the entourage is a member of one iff a member of the other -- over the bases of the uniformity
   -- which means there is an equivalence relation entourage
   -- that is a subset of our arbitrary entourage
   rw [IsUltraUniformity.hasBasis.mem_iff, IsUltraUniformity.hasBasis.mem_iff]
-  -- unfold the pseudo metric system entourage definition, which is the filter generated by
-  -- all balls of positive radius for any of the pseudometrics
-  simp only [Core.ofPseudoMetricSystem, mem_uniformity_ofCore_iff,
-    Set.exists_subset_image_iff, Set.sInter_image, id_eq]
+  simp_rw [(hasBasis_ofPseudoMetricSystem pseudoMetricSystem).mem_iff]
   constructor
-  · -- in this case, we have that our arbitrary entourage is supported by a set in the
-    -- filter generated by open balls
-    simp_rw [Filter.mem_generate_iff, Set.subset_image_iff]
-    rintro ⟨s, ⟨⟨u, ⟨u, h, rfl⟩, hf, hu⟩, hsymm, htrans⟩, hst⟩
-    -- which means after rearrangement that there is a set of (radius, pseudometric) pairs such that
-    -- 1. the radii are positive
-    -- 2. the pseudometrics are constructed as finite infima of pseudometics derived
-    --    from descending chains of equivalence relations
-    -- 3. the set of balls of all such pairs is finite
-    -- 4. the intersection of all these balls is a subset of the original entourage
-    -- the proof goes through by finding ε, lower than all radii in the set
-    -- which will give a ball at least ε-deep in all of the chains that were used to construct
-    -- the pseudometrics, and this ball will necessarily be a subset of all the balls
-    -- (and the ball is an equivalence relation)
-    -- so it is will be in the intersection, and thus in the parent set
-    -- first, pass the existing sets of a Finset, so that it is easier to discuss finite infima
-    obtain ⟨s', hs'⟩ := hf.exists_finset
-    classical
-    obtain ⟨p, hp⟩ : ∃ p : Finset ((Set.Ioi 0 : Set ℝ) × pseudoMetricSystem (X := X)),
-      p.image (fun εd ↦ {xy | εd.2.1 xy.1 xy.2 < εd.1}) = s' := by
-      have hs'' : ∀ a ∈ s', ∃ ε d, (ε, d) ∈ u ∧ a = {xy | d xy.1 xy.2 < ε} := by
-        simp only [Set.mem_image, Prod.exists] at hs'
-        simp [hs', eq_comm]
-      choose! fε fd hfu hfeq using hs''
-      have hinv : Set.LeftInvOn (fun εd ↦ {xy | εd.2 xy.1 xy.2 < εd.1})
-          (fun ball ↦ (fε ball, fd ball)) s' := by
-        intro a ha
-        simp only [Set.mem_image, Prod.exists, Finset.mem_coe] at hs' ha
-        symm
-        exact hfeq _ ha
-      refine ⟨s'.attach.image (fun ball ↦ (⟨fε ball.1, (h (hfu _ ball.prop)).left⟩,
-        ⟨fd ball.1, (h (hfu _ ball.prop)).right⟩)), ?_⟩
-      · ext t
-        simp only [Finset.mem_image, Finset.mem_attach, true_and, Prod.exists, Prod.mk.injEq,
-          exists_exists_and_eq_and]
-        constructor
-        · rintro ⟨ε, ⟨a, ha⟩, rfl, rfl⟩
-          rwa [hinv.eq ha]
-        · intro ha
-          refine ⟨_, ⟨t, ha⟩, rfl, ?_⟩
-          rw [hinv.eq ha]
-    rcases p.eq_empty_or_nonempty with rfl|hpn
-    · -- trivial case, the set of balls is empty, so the intersection is the whole space
-      simp only [Finset.notMem_empty, Set.mem_image, Prod.exists, false_iff, not_exists,
-      not_and] at hs'
-      rcases u.eq_empty_or_nonempty with rfl|⟨⟨ε, d⟩, hu⟩
-      · simp only [Set.image_empty, Set.sInter_empty, Set.univ_subset_iff] at hu
-        refine ⟨Set.univ, ?_, hu.ge.trans hst⟩
-        simp [IsSymmetricRel, isTransitiveRel_univ]
-      · exfalso
-        simp only [Finset.image_empty] at hp
-        simp only [← hp, Finset.notMem_empty, false_iff, not_exists, not_and] at hs'
-        exact hs' _ _ _ hu rfl
-    let ε : ℝ := p.inf' hpn (fun εd ↦ εd.1)
-    have εpos : 0 < ε := by simp +contextual [ε]
-    -- get a `k` such that `k⁻¹ < ε`, which will be the depth at which we get balls
-    obtain ⟨k, kpos, hk⟩ := Real.exists_nat_pos_inv_lt εpos
-    -- get the `k`-th ball for the each chain underlying each pseudometric, and intersect them
-    let Ds : Set (X × X) := p.inf (fun εd ↦ εd.2.prop.choose.inf (fun x ↦ x.val k))
-    -- this intersection of balls is a subset of the intersection of larger balls
-    have hDs : Ds ⊆ ⋂₀ ((fun εd ↦ {xy | εd.2 xy.1 xy.2 < εd.1}) '' u) := by
-      -- convert goal to discuss the finset we constructed
-      suffices Ds ⊆ ⋂₀ s' by
-        refine this.trans (Set.sInter_mono ?_)
-        intro a
-        simp [hs']
-      simp only [Finset.inf_set_eq_iInter, Set.iInter_coe_set, ← hp, Finset.coe_image,
-        Set.sInter_image, Finset.mem_coe, Set.subset_iInter_iff, Prod.forall, Subtype.forall,
-        Set.mem_Ioi, Ds]
-      -- we've deconstructed to discuss a single larger ball,
-      -- need to show that our k-inter-ball is a subset
-      -- by showing that the radius is necessarily larger than our chosen ε which is larger than k
-      rintro ε' εpos' Dm hDm hp ⟨x, y⟩
-      have hε : ε ≤ ε' := by
-        simp only [Finset.inf'_le_iff, Prod.exists, exists_and_right, Subtype.exists, Set.mem_Ioi,
-          ε]
-        exact ⟨_, ⟨‹_›, ⟨_, _, hp⟩⟩, le_rfl⟩
-      simp only [Set.mem_iInter, Prod.forall, Subtype.forall, Set.mem_Ioi, Set.mem_setOf_eq]
-      intro h
-      -- instead of deconstructing, since we need to prove membership later
-      -- carry around the `Exists.choose` object directly
-      rw [← hDm.choose_spec]
-      rcases hDm.choose.eq_empty_or_nonempty with hv'|hv'
-      · simp [hv', εpos']
-      refine (hk.trans_le hε).trans' ?_
-      rw [PseudoMetric.finsetSup_apply hv', Finset.sup'_lt_iff]
-      intro D hD
-      rw [D.prop.pseudoMetric_apply_lt_inv_natCast_iff_of_ne_zero kpos.ne']
-      exact h _ εpos' _ _ hp _ _ hD
-    -- we have our intersection of k-balls, each one is an entourage and an equivalence relation
-    -- so now we just have to show that those properties are preserved under intersection
-    refine ⟨_, ⟨?_, ?_, ?_⟩, hDs.trans (hu.trans hst)⟩
-    · dsimp [Ds] at hDs ⊢
-      simp only [Finset.inf_set_eq_iInter, Filter.biInter_finset_mem]
-      simp only [Subtype.forall, Prod.forall, Set.mem_Ioi, Ds]
-      rintro - - d hd hdp D hD hDm
-      exact hD.mem_uniformity _
-    · simp only [Finset.inf_set_eq_iInter, Ds]
-      refine IsSymmetricRel.sInter ?_
-      simp only [Set.mem_range, Prod.exists, Subtype.exists, Set.mem_Ioi,
-        forall_exists_index]
-      rintro _ _ _ _ _ rfl
+  · rintro ⟨s, ⟨⟨u, hu, hi'⟩, hsymm, htrans⟩, hst⟩
+    rw [Finset.inf_eq_iInf] at hi'
+    refine ⟨⨅ _, _, ⟨?_, ?_, ?_⟩, hi'.trans hst⟩
+    · refine (Filter.biInter_finset_mem _).mpr ?_
+      intro d hd
+      obtain ⟨D, hD⟩ := (hu d hd).1
+      rw [← hD]
+      simp only at hD ⊢
+      classical
+      rcases D.eq_empty_or_nonempty with rfl | hD'
+      · simp [(hu d hd).2]
+      have hs' : {xy : X × X | (D.sup fun k ↦ k.prop.PseudoMetric) xy.1 xy.2 < d.2} =
+        ⋂ f ∈ D, {x : X × X | f.prop.PseudoMetric x.1 x.2 < d.2} := by
+        ext
+        simp [PseudoMetric.finsetSup_apply hD']
+      rw [hs']
+      simp only [Filter.biInter_finset_mem, Subtype.forall]
+      intro f hf hf'
+      exact hf.setOf_pseudoMetric_apply_lt_mem_uniformity (hu d hd).2
+    · simp_rw [Set.iInf_eq_iInter]
       refine IsSymmetricRel.iInter ?_
-      intro
-      refine IsSymmetricRel.iInter ?_
-      intro ⟨D, hD⟩
-      refine IsSymmetricRel.iInter ?_
-      simp [hD.isSymmetricRel]
-    · simp only [Finset.inf_set_eq_iInter, Ds]
-      refine IsTransitiveRel.sInter ?_
-      simp only [Set.mem_range, Prod.exists, Subtype.exists, Set.mem_Ioi, forall_exists_index]
-      rintro _ _ _ _ _ rfl
-      refine IsTransitiveRel.sInter ?_
-      simp only [Set.mem_range, exists_prop, and_imp, forall_apply_eq_imp_iff]
-      intros
+      intro d
+      classical
+      rw [Set.iInter_eq_if]
+      split_ifs
+      · exact d.1.isSymmetricRel_ball
+      · simp [IsSymmetricRel]
+    · simp_rw [Set.iInf_eq_iInter]
       refine IsTransitiveRel.iInter ?_
-      intro ⟨D, hD⟩
-      refine IsTransitiveRel.sInter ?_
-      simp [hD.isTransitiveRel]
-  · -- in this case, we have that our arbitrary entourage is supported by an
-    -- equivalence relation entourage, and we need to provide a set of balls
-    -- from pseudometrics made from descending chains -- which will be the "ball" we just assumed
-    rintro ⟨s, ⟨hs, hsymm, htrans⟩, hst⟩
-    -- create the "trivial" chain which is constant of our equivalence relation entourage
+      intro d
+      classical
+      rw [Set.iInter_eq_if]
+      split_ifs with hd
+      · have : d.1.IsUltra := by
+          obtain ⟨D, hD⟩ := (hu d hd).1
+          rw [← hD]
+          refine PseudoMetric.IsUltra.finsetSup ?_
+          simp [descChainEquivRel.isUltra_pseudoMetric]
+        exact PseudoMetric.IsUltra.isTransitiveRel_ball _
+      · exact isTransitiveRel_univ
+  · rintro ⟨s, ⟨hs, hsymm, htrans⟩, hst⟩
     let D (n : ℕ) : Set (X × X) := if n = 0 then Set.univ else s
     have hD : descChainEquivRel D := by
       refine ⟨by simp [D], ?_, ?_, ?_, ?_⟩
       all_goals rintro (_|n) <;>
         simp [D, hs, hsymm, htrans]
     classical
-    -- use an arbitrary threshold radius (any positive natural would do)
-    refine ⟨{xy | hD.PseudoMetric xy.1 xy.2 < 1⁻¹}, ⟨?_, ?_, ?_⟩, subset_trans ?_ hst⟩
-    · refine Filter.mem_generate_of_mem ?_
-      simp only [pseudoMetricSystem, Set.mem_image, Set.mem_prod, Set.mem_Ioi, Set.mem_range,
-        Prod.exists, D]
-      exact ⟨_, _, ⟨by norm_num, {⟨D, hD⟩}, by simp⟩, rfl⟩
-    · exact hD.PseudoMetric.isSymmetricRel_ball
-    · exact hD.isUltra_pseudoMetric.isTransitiveRel_ball
-    · intro
-      simp only [Set.mem_setOf_eq, D]
-      have : (1 : ℝ)⁻¹ = ((1 : ℕ) : ℝ)⁻¹ := by norm_num
-      rw [this, descChainEquivRel.pseudoMetric_apply_lt_inv_natCast_iff_of_ne_zero] <;>
-      norm_num
+    refine ⟨s, ⟨?_, hsymm, htrans⟩, hst⟩
+    refine ⟨{⟨hD.PseudoMetric, 2⁻¹⟩}, ?_, ?_⟩
+    · simp only [Finset.mem_singleton, forall_eq, inv_pos, Nat.ofNat_pos, and_true, D]
+      use {⟨D, hD⟩}
+      simp
+    · simp only [descChainEquivRel.PseudoMetric, descChainEquivRel.pseudometric_aux,
+        Set.mem_ite_univ_left, Classical.not_imp, exists_and_right, Finset.inf_singleton,
+        PseudoMetric.coe_mk, Prod.mk.eta, D]
+      intro x
+      simp only [Set.mem_setOf_eq]
+      split_ifs with h
+      · generalize_proofs H
+        have : Nat.find H = 1 := by simp_all [Nat.find_eq_iff]
+        rw [this]
+        norm_num
+      · simp only [not_and, Decidable.not_not, forall_exists_index] at h
+        simpa using h 1
 
 end UniformSpace.pseudoMetrizable
