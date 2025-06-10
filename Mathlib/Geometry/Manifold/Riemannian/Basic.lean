@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Geometry.Manifold.ContMDiff.Defs
 import Mathlib.Geometry.Manifold.Instances.Real
-import Mathlib.Geometry.Manifold.MFDeriv.Defs
+import Mathlib.Geometry.Manifold.MFDeriv.Basic
 import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.MeasureTheory.Constructions.UnitInterval
@@ -22,16 +22,22 @@ open scoped Manifold ENNReal ContDiff Topology
 
 local notation "⟪" x ", " y "⟫" => inner ℝ x y
 
+noncomputable section
+
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {n : WithTop ℕ∞}
   {M : Type*}
 
-instance (x : unitInterval) : One (TangentSpace (𝓡∂ 1) x) where
-  one := fun _ ↦ 1
-
 instance (x : ℝ) : One (TangentSpace 𝓘(ℝ) x) where
   one := (1 : ℝ)
+
+irreducible_def one_tangentSpace_Icc {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) :
+    TangentSpace (𝓡∂ 1) z :=
+  mfderivWithin 𝓘(ℝ) (𝓡∂ 1) (Set.projIcc x y h.out.le) (Icc x y) z 1
+
+instance {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) : One (TangentSpace (𝓡∂ 1) z) where
+  one := one_tangentSpace_Icc z
 
 section
 
@@ -90,6 +96,27 @@ lemma contMDiff_subtypeVal_Icc {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ�
     filter_upwards [self_mem_nhdsWithin, nhdsWithin_le_nhds this] with w hw h'w
     rw [max_eq_left hw, max_eq_left]
     linarith
+
+lemma mfderivWithin_projIcc_one {x y : ℝ} [h : Fact (x < y)] (z : ℝ) (hz : z ∈ Icc x y) :
+    mfderivWithin 𝓘(ℝ) (𝓡∂ 1) (Set.projIcc x y h.out.le) (Icc x y) z 1 = 1 := by
+  change _ = one_tangentSpace_Icc (Set.projIcc x y h.out.le z)
+  simp [one_tangentSpace_Icc]
+  congr
+  simp only [projIcc_of_mem h.out.le hz]
+
+lemma mfderiv_subtypeVal_Icc_one {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) :
+    mfderiv (𝓡∂ 1) 𝓘(ℝ) (fun (z : Icc x y) ↦ (z : ℝ)) z 1 = 1 := by
+  have A : Set.EqOn (Subtype.val ∘ (Set.projIcc x y h.out.le)) id (Icc x y) := by
+    intro z hz
+    simp [projIcc_of_mem h.out.le hz]
+  have : mfderivWithin 𝓘(ℝ) 𝓘(ℝ) (Subtype.val ∘ (Set.projIcc x y h.out.le)) (Icc x y) z
+      = mfderivWithin 𝓘(ℝ) 𝓘(ℝ) id (Icc x y) z := by
+    apply Filter.EventuallyEq.mfderivWithin_eq_of_mem
+  sorry
+
+
+
+
 
 /-- The projection from `ℝ` to a closed segment is smooth on the segment, in the manifold sense. -/
 lemma contMDiffOn_projIcc {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ∞} :
