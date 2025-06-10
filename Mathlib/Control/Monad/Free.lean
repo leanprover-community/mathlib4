@@ -97,8 +97,7 @@ instance {F : Type u → Type v} : Functor (FreeM F) where
   map := FreeM.map F
 
 instance {F : Type u → Type v} : LawfulFunctor (FreeM F) where
-  map_const {α β} := by
-    simp [Functor.mapConst, Functor.map]
+  map_const := rfl
   id_map x := by
     simp [Functor.map]
     induction' x with a b op cont ih
