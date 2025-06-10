@@ -193,7 +193,10 @@
   "Mathlib.Util.WithWeakNamespace",
   "Qq"],
  "ignoreAll":
- ["Batteries.Tactic.Basic", "Mathlib.Mathport.Syntax", "Mathlib.Tactic.Linter", "Mathlib.Init"],
+ ["Batteries.Tactic.Basic",
+  "Mathlib.Mathport.Syntax",
+  "Mathlib.Tactic.Linter",
+  "Mathlib.Init"],
  "ignore":
  {"Mathlib.Util.Notation3": ["Lean.Elab.BuiltinCommand"],
   "Mathlib.Topology.UniformSpace.Defs": ["Mathlib.Tactic.Monotonicity.Basic"],
@@ -478,6 +481,8 @@
   ["Mathlib.Tactic.CategoryTheory.Bicategory.Basic"],
   "Mathlib.Analysis.Normed.Operator.LinearIsometry":
   ["Mathlib.Algebra.Star.Basic"],
+  "Mathlib.Analysis.Normed.Group.AddCircle":
+  ["Mathlib.Topology.Instances.AddCircle.Real"],
   "Mathlib.Analysis.InnerProductSpace.PiL2": ["Mathlib.Util.Superscript"],
   "Mathlib.Analysis.InnerProductSpace.Defs": ["Mathlib.Data.Complex.Basic"],
   "Mathlib.Analysis.Distribution.SchwartzSpace": ["Mathlib.Tactic.MoveAdd"],
