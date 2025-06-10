@@ -39,14 +39,13 @@ are given the `aesop` attribute according to the following principles:
   For performance reasons, these rules are placed in the `SetLike!` ruleset instead of the
   `SetLike` ruleset. An example is `SetLike.mem_of_subset`.
 - All other `unsafe` rules are given a probability between 5% and 90% based on how likely they are
-  to progress the proof state towards a solution. Apply-style rules should be given a higher
-  probability the more specific their conclusions are and the more generic their hypotheses are.
-  For instance, `Subgroup.mem_closure_of_mem` is given a lower probability than `mul_mem` because
-  its conclusion is more generic.
+  to progress the proof state towards a solution.
+- Simplifying the left-hand side of a membership goal (e.g., `mul_mem`) is prioritised over
+  simplifying the right-hand side (e.g., `Subgroup.mem_closure_of_mem`).
 - To optimise performance and avoid timeouts, Aesop should not be invoking low-priority rules
   unless it can make no other progress. If common usage patterns cause Aesop to invoke such rules,
   additional lemmas should be added at a higher priority to cover that pattern.
-  For example, `Subgroup.closure_mem_of_mem` covers a common use case of `SetLike.mem_of_subset`.
+  For example, `Subgroup.mem_closure_of_mem` covers a common use case of `SetLike.mem_of_subset`.
 
 Some examples of membership-related goals which Aesop this ruleset is designed to close
 can be found in the file MathlibTest/set_like.lean.
