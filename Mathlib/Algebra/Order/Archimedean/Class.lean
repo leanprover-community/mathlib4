@@ -196,7 +196,7 @@ theorem mk_div_comm (a b : M) : mk (a / b) = mk (b / a) := by
 theorem mk_mabs (a : M) : mk |a|ₘ = mk a :=
   eq.mpr ⟨⟨1, by simp⟩, ⟨1, by simp⟩⟩
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem mk_eq_mk_one_iff {a : M} : mk a = mk 1 ↔ a = 1 := by
   constructor
   · intro h
@@ -206,7 +206,7 @@ theorem mk_eq_mk_one_iff {a : M} : mk a = mk 1 ↔ a = 1 := by
     rw [h]
 
 variable (M) in
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem mk_one_out : (mk 1 : MulArchimedeanClass M).out = 1 := by
   rw [← mk_eq_mk_one_iff, out_eq]
 
