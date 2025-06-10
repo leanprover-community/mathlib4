@@ -113,37 +113,28 @@ end
 noncomputable section
 
 /-- Upgrading the functor `Action V G ⥤ (SingleObj G ⥤ V)` to a monoidal functor. -/
-instance : (FunctorCategoryEquivalence.functor (V := V) (G := G)).Monoidal :=
+@[simps!]
+instance FunctorCategoryEquivalence.functorMonoidal :
+    (FunctorCategoryEquivalence.functor (V := V) (G := G)).Monoidal :=
   inferInstanceAs (Monoidal.equivalenceTransported
     (Action.functorCategoryEquivalence V G).symm).inverse.Monoidal
 
-instance : (functorCategoryEquivalence V G).functor.Monoidal := by
+@[simps!]
+instance functorCategoryEquivalenceFunctorMonoidal :
+    (functorCategoryEquivalence V G).functor.Monoidal := by
   dsimp only [functorCategoryEquivalence_functor]; infer_instance
 
 /-- Upgrading the functor `(SingleObj G ⥤ V) ⥤ Action V G` to a monoidal functor. -/
-instance : (FunctorCategoryEquivalence.inverse (V := V) (G := G)).Monoidal :=
+@[simps!]
+instance FunctorCategoryEquivalence.inverseMonoidal :
+    (FunctorCategoryEquivalence.inverse (V := V) (G := G)).Monoidal :=
   inferInstanceAs (Monoidal.equivalenceTransported
     (Action.functorCategoryEquivalence V G).symm).functor.Monoidal
 
-instance : (functorCategoryEquivalence V G).inverse.Monoidal := by
+@[simps!]
+instance functorCategoryEquivalenceInverseMonoidal :
+    (functorCategoryEquivalence V G).inverse.Monoidal := by
   dsimp only [functorCategoryEquivalence_inverse]; infer_instance
-
-@[simp]
-lemma FunctorCategoryEquivalence.functor_ε :
-    ε (FunctorCategoryEquivalence.functor (V := V) (G := G)) = 𝟙 _ := rfl
-
-@[simp]
-lemma FunctorCategoryEquivalence.functor_η :
-    η (FunctorCategoryEquivalence.functor (V := V) (G := G)) = 𝟙 _ := rfl
-
-@[simp]
-lemma FunctorCategoryEquivalence.functor_μ (A B : Action V G) :
-    μ FunctorCategoryEquivalence.functor A B = 𝟙 _ := rfl
-
-@[simp]
-lemma FunctorCategoryEquivalence.functor_δ (A B : Action V G) :
-    δ FunctorCategoryEquivalence.functor A B = 𝟙 _ := rfl
-
 
 variable (H : Type*) [Group H]
 
@@ -284,19 +275,19 @@ open Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal
 /-- A lax monoidal functor induces a lax monoidal functor between
 the categories of `G`-actions within those categories. -/
 instance [F.LaxMonoidal] : (F.mapAction G).LaxMonoidal where
-  ε' :=
+  ε :=
     { hom := ε F
       comm := fun g => by
         dsimp [FunctorCategoryEquivalence.inverse, Functor.mapAction]
         rw [Category.id_comp, F.map_id, Category.comp_id] }
-  μ' X Y :=
+  μ X Y :=
     { hom := μ F X.V Y.V
       comm := fun g => μ_natural F (X.ρ g) (Y.ρ g) }
-  μ'_natural_left _ _ := by ext; simp
-  μ'_natural_right _ _ := by ext; simp
-  associativity' _ _ _ := by ext; simp
-  left_unitality' _ := by ext; simp
-  right_unitality' _ := by ext; simp
+  μ_natural_left _ _ := by ext; simp
+  μ_natural_right _ _ := by ext; simp
+  associativity _ _ _ := by ext; simp
+  left_unitality _ := by ext; simp
+  right_unitality _ := by ext; simp
 
 @[simp]
 lemma mapAction_ε_hom [F.LaxMonoidal] : (ε (F.mapAction G)).hom = ε F := rfl
@@ -308,19 +299,19 @@ lemma mapAction_μ_hom [F.LaxMonoidal] (X Y : Action V G) :
 /-- An oplax monoidal functor induces an oplax monoidal functor between
 the categories of `G`-actions within those categories. -/
 instance [F.OplaxMonoidal] : (F.mapAction G).OplaxMonoidal where
-  η' :=
+  η :=
     { hom := η F
       comm := fun g => by
         dsimp [FunctorCategoryEquivalence.inverse, Functor.mapAction]
         rw [map_id, Category.id_comp, Category.comp_id] }
-  δ' X Y :=
+  δ X Y :=
     { hom := δ F X.V Y.V
       comm := fun g => (δ_natural F (X.ρ g) (Y.ρ g)).symm }
-  δ'_natural_left _ _ := by ext; simp
-  δ'_natural_right _ _ := by ext; simp
-  oplax_associativity' _ _ _ := by ext; simp
-  oplax_left_unitality' _ := by ext; simp
-  oplax_right_unitality' _ := by ext; simp
+  δ_natural_left _ _ := by ext; simp
+  δ_natural_right _ _ := by ext; simp
+  oplax_associativity _ _ _ := by ext; simp
+  oplax_left_unitality _ := by ext; simp
+  oplax_right_unitality _ := by ext; simp
 
 @[simp]
 lemma mapAction_η_hom [F.OplaxMonoidal] : (η (F.mapAction G)).hom = η F := rfl
