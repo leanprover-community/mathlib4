@@ -3,7 +3,6 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Order.PiLex
@@ -29,7 +28,6 @@ variable [LinearOrder Γ] [Zero R] [PartialOrder R]
 variable (Γ R) in
 instance instPartialOrder : PartialOrder (Lex (HahnSeries Γ R)) :=
   PartialOrder.lift (toLex <| ofLex · |>.coeff) fun x y ↦ by simp
-
 
 theorem lt_iff (a b : Lex (HahnSeries Γ R)) :
     a < b ↔ ∃ (i : Γ), (∀ (j : Γ), j < i → (ofLex a).coeff j = (ofLex b).coeff j)
