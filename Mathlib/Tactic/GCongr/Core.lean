@@ -202,7 +202,7 @@ def makeGCongrLemma (decl : Name) (declTy : Expr) (numHyps : Nat) :
     for e1 in lhsArgs, e2 in rhsArgs do
       -- we call such a pair a "varying argument" pair if the LHS/RHS inputs are not defeq
       -- (and not proofs)
-      let isEq := (← isDefEq e1 e2) || ((← isProof e1) && (← isProof e2))
+      let isEq ← isDefEq e1 e2 <||> (isProof e1 <&&> isProof e2)
       if !isEq then
         -- verify that the "varying argument" pairs are free variables (after eta-reduction)
         let .fvar e1 := e1.eta | fail "Not all arguments are free variables"
@@ -237,8 +237,8 @@ def makeGCongrLemma (decl : Name) (declTy : Expr) (numHyps : Nat) :
           -- now check whether `hypTy` is of the form `rhs₁ _ ... _`,
           -- and whether the last hypothesis is of the form `lhs₁ _ ... _`.
           if let .fvar rhs₁ := hypTy.getAppFn then
-          if let some lhs₁ := args.back? then
-          if let .fvar lhs₁ := (← inferType lhs₁).getAppFn then
+          if let some lastFVar := args.back? then
+          if let .fvar lhs₁ := (← inferType lastFVar).getAppFn then
           if let some j := pairs.find? fun (_, e1, e2) =>
             lhs₁ == e1 && rhs₁ == e2 || lhs₁ == e2 && rhs₁ == e1
           then
@@ -436,15 +436,15 @@ partial def _root_.Lean.MVarId.gcongr
   let some (relName, lhs, rhs) := getRel rel | throwError "gcongr failed, {rel} is not a relation"
   let some (lhsHead, lhsArgs) := getCongrAppFnArgs lhs
     | if template.isNone then return (false, names, #[g])
-      throwError "gcongr failed, {lhs} is not a constant application"
+      throwError "gcongr failed, the head of {lhs} is not a constant"
   let some (rhsHead, rhsArgs) := getCongrAppFnArgs rhs
     | if template.isNone then return (false, names, #[g])
-      throwError "gcongr failed, {rhs} is not a constant application"
+      throwError "gcongr failed, the head of {rhs} is not a constant"
   -- B. If there is a template, check that it is of the form `tplHead _ ... _` and that
   -- `tplHead = lhsHead = rhsHead`
   let tplArgs ← if let some tpl := template then
     let some (tplHead, tplArgs) := getCongrAppFnArgs tpl
-      | throwError "gcongr failed, {tpl} is not a constant application"
+      | throwError "gcongr failed, the head of {tpl} is not a constant"
     unless tplHead == lhsHead && tplArgs.size == rhsArgs.size do
       throwError "expected {tplHead}, got {lhsHead}\n{lhs}"
     unless tplHead == rhsHead && tplArgs.size == rhsArgs.size do
@@ -477,7 +477,7 @@ partial def _root_.Lean.MVarId.gcongr
   -- the goal and whether the boolean-array of varying/nonvarying arguments of such
   -- a lemma matches `varyingArgs`.
   let key := { relName, head := lhsHead, varyingArgs }
-  for lem in ((gcongrExt.getState (← getEnv)).get? key).getD (getTransLemma? key) do
+  for lem in (gcongrExt.getState (← getEnv)).getD key #[] ++ getTransLemma? key do
     let gs ← try
       -- Try `apply`-ing such a lemma to the goal.
       Except.ok <$> withReducibleAndInstances (g.apply (← mkConstWithFreshMVarLevels lem.declName))
