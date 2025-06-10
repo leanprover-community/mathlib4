@@ -90,7 +90,7 @@ structure Flag (α ι : Type*) where
 
 /--
 Given a flag `F = (G, θ)` and set `t ⊆ V(G)` containing `im(θ)` `F.induce t`
-is the flag induced by `t` with the same labels.
+is the flag induced by `t` with the same labels_eq.
 -/
 def Flag.induce {α ι : Type*} (F : Flag α ι) (t : Set α) (ht : ∀ i, F.θ i ∈ t) : Flag t ι :=
   ⟨F.G.induce t, ⟨fun i ↦ ⟨F.θ i, ht i⟩, fun h ↦ by simp_all⟩⟩
@@ -106,7 +106,7 @@ lemma Flag.induce_copy_eq {α ι : Type*} (F : Flag α ι) {s t : Set α} (h : s
 lemma Flag.induce_adj {α ι : Type*} (F : Flag α ι) (t : Set α) (ht : ∀ i, F.θ i ∈ t) :
     (F.induce t ht).G = (F.G.induce t) := rfl
 
-lemma Flag.induce_labels {α ι : Type*} {F : Flag α ι} (t : Set α) (ht : ∀ i, F.θ i ∈ t) {i : ι} :
+lemma Flag.induce_labels_eq {α ι : Type*} {F : Flag α ι} (t : Set α) (ht : ∀ i, F.θ i ∈ t) {i : ι} :
     (F.induce t ht).θ i = F.θ i := rfl
 
 /-- Added to prove `Fintype` instance later -/
@@ -119,19 +119,19 @@ def Flag_equiv_prod (α ι : Type*) : Flag α ι ≃ (SimpleGraph α) × (ι ↪
 /-- An embedding of flags is an embedding of the underlying graphs that preserves labels. -/
 @[ext]
 structure FlagEmbedding {α β ι : Type*} (F₁ : Flag α ι) (F₂ : Flag β ι) extends F₁.G ↪g F₂.G where
- labels : F₂.θ = toEmbedding ∘ F₁.θ
+ labels_eq : F₂.θ = toEmbedding ∘ F₁.θ
 
 /-- An isomorphism of flags is an isomorphism of the underlying graphs that preserves labels. -/
 @[ext]
 structure FlagIso {α β ι : Type*} (F₁ : Flag α ι) (F₂ : Flag β ι) extends F₁.G ≃g F₂.G where
- labels : F₂.θ = toEquiv ∘ F₁.θ
+ labels_eq : F₂.θ = toEquiv ∘ F₁.θ
 
 @[inherit_doc] infixl:50 " ↪f " => FlagEmbedding
 @[inherit_doc] infixl:50 " ≃f " => FlagIso
 
 theorem FlagEmbedding.toRelEmbedding_injective {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι} :
     Function.Injective (FlagEmbedding.toRelEmbedding : F₁ ↪f F₂ → (F₁.G ↪g F₂.G)) := by
-  rintro ⟨f, -⟩ ⟨g, -⟩; simp
+  rintro ⟨f, _⟩ ⟨g, _⟩; simp
 
 variable [Fintype α] [Fintype β] (G : SimpleGraph α) (H : SimpleGraph β)
 
@@ -143,7 +143,7 @@ variable {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι} {e : F₁ �
 
 lemma FlagIso.symm {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι} (e : F₁ ≃f F₂)
      : F₁.θ = e.symm ∘ F₂.θ := by
-  ext x; simp [e.labels]
+  ext x; simp [e.labels_eq]
 
 /--
 `F` is a `σ`-flag iff the labelled subgraph given by `θ` is `σ`
@@ -155,7 +155,7 @@ lemma Flag.isSigma_self (F : Flag α ι) : F.IsSigma (F.G.comap F.θ) := rfl
 
 lemma Flag.isSigma_of_embedding {α β ι : Type*} {σ : SimpleGraph ι} {F₁ : Flag α ι}
     {F₂ : Flag β ι} (e : F₁ ↪f F₂)  (h1 : F₁.IsSigma σ) : F₂.IsSigma σ := by
-  rw [IsSigma, e.labels, ← h1] at *
+  rw [IsSigma, e.labels_eq, ← h1] at *
   ext; simp
 
 variable {α ι  : Type*} [Fintype α] [Fintype ι] [DecidableEq α]
@@ -170,23 +170,53 @@ noncomputable def SigmaFlags (σ : SimpleGraph ι) : Finset (Flag α ι) := {F |
 
 /--
 Flag embeddings of `F₁` in `F₂[t]` are equivalent to embeddings of `F₁` in `F₂` that map into `t`.
-(Note: that `F₂[t]` is only defined if all the labels of `F₂` lie in `t`).
+(Note: that `F₂[t]` is only defined if all the labels_eq of `F₂` lie in `t`).
 -/
 def Flag.induceEquiv (F₁ : Flag α ι) (F₂ : Flag β ι) (t : Set β) (h : ∀ i, F₂.θ i ∈ t) :
     F₁ ↪f (F₂.induce t h) ≃ {e : F₁ ↪f F₂ | Set.range e.toEmbedding ⊆ t}
     where
   toFun := fun e ↦ ⟨⟨Embedding.induce _|>.comp e.toRelEmbedding, by
-                     ext; rw [← F₂.induce_labels t h, e.labels]; rfl⟩, by rintro x ⟨y , rfl⟩; simp⟩
+                ext; rw [← F₂.induce_labels_eq t h, e.labels_eq]; rfl⟩, by rintro x ⟨y , rfl⟩; simp⟩
   invFun := fun e ↦ ⟨⟨⟨fun a : α ↦ ⟨e.1.toRelEmbedding a , by apply e.2; simp⟩, fun _ ↦ by simp⟩,
-                     by simp [Flag.induce_adj]⟩, by ext i; simp [F₂.induce_labels t h, e.1.labels]⟩
+                by simp [Flag.induce_adj]⟩, by ext i; simp [F₂.induce_labels_eq t h, e.1.labels_eq]⟩
   left_inv := fun e ↦ by ext; simp
   right_inv := fun e ↦ by ext; simp
 
+@[simp]
+def FlagEmbedding.Compat {β : Type*} {F₁ : Flag β ι} {F₂ : Flag β ι} {F : Flag α ι}
+    (e₁ : F₁ ↪f F) (e₂ : F₂ ↪f F) : Prop :=
+  ∀ ⦃b₁ b₂⦄, e₁.toEmbedding b₁ = e₂.toEmbedding b₂ → ∃ i, e₁.toEmbedding b₁ = F.θ i
+
+omit [Fintype α] [Fintype ι] [DecidableEq α] in
+lemma FlagEmbedding.Compat.symm {β : Type*} {F₁ F₂ : Flag β ι} {F : Flag α ι} {e₁ : F₁ ↪f F}
+    {e₂ : F₂ ↪f F} (h : e₁.Compat e₂) : e₂.Compat e₁ := by
+  simp only [FlagEmbedding.Compat, RelEmbedding.coe_toEmbedding] at *
+  intro b₁ b₂ he
+  obtain ⟨i, he'⟩ := h he.symm
+  use i, (he ▸ he')
+
+/-!
+## TODO:
+  1. Prove that:
+
+    ‖{(e₁, e₂) : (F₁ ↪f F) × (F₁ ↪f F) // ¬ e₁.Compat e₂}‖ ≤  (‖β‖!)² * #{ (A, B) | }
+
+    (e₁, e₂) ↦ {(A, B) : A,B ‖β‖-sets in α, with F.θ.image ⊆ A ∩ B ≠ F.θ.image}
+
+      Give C := F.θ.image (so `#C = ‖ι‖` )
+      #{(A, B) | #A = #B = ‖β‖ ∧ A ∩ B = C} =
+                      ((‖α‖ - ‖ι‖).choose (‖β‖ - ‖ι‖)) * ((‖α‖ - ‖β‖).choose (‖β‖ - ‖ι‖))
+
+
+  2. We can count compatible pairs by averaging over induced subgraphs?
+
+-/
 
 variable {k m n : ℕ}
 local notation "‖" x "‖" => Fintype.card x
 
 open Finset
+
 /--
 Given `s : Finset α`, the number of super-sets of `s` of size `k` is `choose (‖α‖ - #s) (k - #s)`,
 for `#s ≤ k`.
@@ -209,21 +239,87 @@ lemma card_supersets {α : Type*} [Fintype α] [DecidableEq α] {s : Finset α} 
     have hd := disjoint_left.2 fun _ ha hs ↦ (mem_compl.1 <| ht.1 ha) hs
     exact ⟨by rw [card_union_of_disjoint hd]; omega, union_sdiff_cancel_right hd⟩
 
-/-- **The principle of counting induced flags by averaging**
-If `F₂` is an  `α, ι`-flag and `F₁` is a `β, ι`-flag, then we can count embeddings of `F₁` in `F₂`
-using `#(F₁ ↪f F₂) * (choose (‖α‖ - ‖β‖) (k - ‖β‖))` is equal to the sum of the number of embeddings
-`F₁ ↪f (F₂.induce t)` over subsets `t` of `α` of size `k`, that contain the image of `F₂.θ`, i.e.
-`t` contains all the labelled vertices of `F₂` (otherwise there are no embeddings of `F₁` into
-`F₂.induce t`, since any such embedding preserves the labels).
+
+/--
+Given `s : Finset α`, the number of super-sets of `s` of size `k` is `choose (‖α‖ - #s) (k - #s)`,
+for `#s ≤ k`.
 -/
-lemma Flag.sum_card_embeddings_induce_eq (F₁ : Flag β ι) (F₂ : Flag α ι) [Fintype β] {k : ℕ}
+lemma card_supersets_inter' {α : Type*} [Fintype α] [DecidableEq α] {s u : Finset α} (hu : u ⊆ s) :
+    #{t : Finset α | #t = #s ∧ s ∩ t = u} = Nat.choose (‖α‖ - #s) (#s - #u) := by
+  simp_rw [← card_compl, ← card_powersetCard]
+  apply card_nbij (i := (· \ u))
+  · intro t ht
+    simp only [mem_filter, mem_univ, true_and, mem_powersetCard] at *
+    exact ⟨fun x hx ↦ by
+      rw [mem_compl, mem_sdiff] at *; intro hs; apply hx.2 <| ht.2 ▸ mem_inter.2 ⟨hs, hx.1⟩, by
+      rw [← ht.1]; apply card_sdiff (ht.2 ▸ inter_subset_right)⟩
+  · intro t₁ ht1 t₂ ht2 he
+    dsimp at he
+    simp only [coe_filter, mem_univ, true_and, Set.mem_setOf_eq] at ht1 ht2
+    have h1 : t₁\ u ∪ u = t₁:= by refine (sdiff_union_of_subset (ht1.2 ▸ inter_subset_right))
+    have h2 : t₂\ u ∪ u = t₂:= by refine (sdiff_union_of_subset (ht2.2 ▸ inter_subset_right))
+    rw [← h1, ← h2, he]
+  · intro z hz
+    simp only [mem_coe, mem_powersetCard] at hz
+    use (z ∪ u)
+    simp only [coe_filter, mem_univ, true_and, Set.mem_setOf_eq]
+    have hd := disjoint_of_subset_right hu <|
+                disjoint_left.2 fun _ ha hs ↦ (mem_compl.1 <| hz.1 ha) hs
+    have := card_le_card hu
+    refine ⟨⟨by rw [card_union_of_disjoint hd, hz.2]; omega,  ?_⟩,union_sdiff_cancel_right hd⟩
+    rw [inter_union_distrib_left, inter_eq_right.mpr hu]
+    have : s ∩ z = ∅ := by
+      rw [← disjoint_iff_inter_eq_empty]
+      apply disjoint_of_subset_right hz.1 (LE.le.disjoint_compl_right fun ⦃a⦄ a ↦ a)
+    simp [this]
+
+
+
+lemma card_supersets_inter  {α : Type*} [Fintype α] [DecidableEq α] (u : Finset α) (hk : #u ≤ k) :
+    #{(s, t) : Finset α × Finset α | #s = k ∧ #t = k ∧ s ∩ t = u} =
+    (‖α‖ - #u).choose (k - #u) * (‖α‖ - k).choose (k - #u) := by
+  calc
+  _ = ∑ x with #x = k ∧ u ⊆ x, ∑ y with #x = k ∧ #y = k ∧ x ∩ y = u, 1 :=by
+    rw [card_eq_sum_ones, sum_filter, Fintype.sum_prod_type]
+    dsimp
+    simp_rw [sum_ite, sum_const_zero, add_zero]
+    change ∑ x, ∑ y with _, 1 = ∑ x with _, ∑ y with _, 1
+    nth_rw 1 [sum_filter]
+    congr with x
+    rw [sum_filter]
+    simp only [sum_boole, Nat.cast_id, sum_const, smul_eq_mul, mul_one]
+    split_ifs with hx
+    · congr with y
+    · contrapose! hx
+      obtain ⟨e, he⟩ := card_ne_zero.1 hx
+      simp only [mem_filter, mem_univ, true_and] at he
+      exact ⟨he.1, he.2.2.symm ▸ Finset.inter_subset_left⟩
+  _ = _ := by
+    conv_lhs => enter [2]
+                simp only [sum_const, smul_eq_mul, mul_one]
+    convert sum_const ((‖α‖ - k).choose (k - #u)) with x hx
+    · simp only [mem_filter, mem_univ, true_and] at hx
+      rw [hx.1]; simp only [true_and, ← hx.1]
+      exact card_supersets_inter' hx.2
+    · exact (card_supersets hk).symm
+
+
+
+/-- **The principle of counting induced flags by averaging**
+If `F` is an  `α, ι`-flag and `F₁` is a `β, ι`-flag, then we can count embeddings of `F₁` in `F`
+using `#(F₁ ↪f F) * (choose (‖α‖ - ‖β‖) (k - ‖β‖))` is equal to the sum of the number of embeddings
+`F₁ ↪f (F.induce t)` over subsets `t` of `α` of size `k`, that contain the image of `F.θ`, i.e.
+`t` contains all the labelled vertices of `F` (otherwise there are no embeddings of `F₁` into
+`F.induce t`, since any such embedding preserves the labels).
+-/
+lemma Flag.sum_card_embeddings_induce_eq (F₁ : Flag β ι) (F : Flag α ι) [Fintype β] {k : ℕ}
   (hk : ‖β‖ ≤ k) : ∑ t : Finset α with #t = k,
-    (if ht : ∀ i, F₂.θ i ∈ t then  ‖F₁ ↪f (F₂.induce t ht)‖ else 0)
-                              = ‖F₁ ↪f F₂‖ * Nat.choose (‖α‖ - ‖β‖) (k - ‖β‖) := by
+    (if ht : ∀ i, F.θ i ∈ t then  ‖F₁ ↪f (F.induce t ht)‖ else 0)
+                              = ‖F₁ ↪f F‖ * Nat.choose (‖α‖ - ‖β‖) (k - ‖β‖) := by
   classical
   calc
-  _ = ∑ t : Finset α , ∑ e : F₁ ↪f F₂,
-          ite (#t = k ∧ (∀ i, F₂.θ i ∈ t) ∧ Set.range e.toEmbedding ⊆ t) 1 0 := by
+  _ = ∑ t : Finset α , ∑ e : F₁ ↪f F,
+          ite (#t = k ∧ (∀ i, F.θ i ∈ t) ∧ Set.range e.toEmbedding ⊆ t) 1 0 := by
     simp_rw [Fintype.card_congr <| Flag.induceEquiv .., dite_eq_ite, sum_filter, sum_boole,
               Set.coe_setOf, Fintype.card_subtype]
     congr with t
@@ -241,9 +337,9 @@ lemma Flag.sum_card_embeddings_induce_eq (F₁ : Flag β ι) (F₂ : Flag α ι)
       simp only [mem_filter, mem_univ, true_and] at he
       exact he.1
   _ = _ := by
-    rw [sum_comm, ← card_univ (α := (F₁ ↪f F₂)), card_eq_sum_ones, sum_mul, one_mul]
+    rw [sum_comm, ← card_univ (α := (F₁ ↪f F)), card_eq_sum_ones, sum_mul, one_mul]
     congr with e
-    have : ∀ (i : ι), F₂.θ i ∈ Set.range e.toEmbedding := fun i ↦ ⟨F₁.θ i, by simp [e.labels]⟩
+    have : ∀ (i : ι), F.θ i ∈ Set.range e.toEmbedding := fun i ↦ ⟨F₁.θ i, by simp [e.labels_eq]⟩
     calc
     _ =  #{t : Finset α | #t = k  ∧ Set.range e.toEmbedding ⊆ t} := by
       rw [sum_boole]
@@ -596,83 +692,3 @@ lemma antitone_extremalInduced_div_choose (H : SimpleGraph γ) (F : SimpleGraph 
 
 end ExtremalInduced
 end SimpleGraph
-
-
--- /--
--- Given a `k`-set `s` in `[n + m + k]`, the number of `m + k` super-sets of `s` is
--- `choose (n + m) m`
--- -/
-
--- lemma card_superset {k m n : ℕ} {s t : Finset (Fin (n + m + k))} (hs : #s = k) (ht : #t = m + k):
---     s ⊆ t ↔ #(t \ s) = m := by
---   constructor <;> intro h
---   · rw [card_sdiff h]; omega
---   · have : #(t \ s) + #s = #t := by omega
---     rw [card_sdiff_add_card] at this
---     have : t = t ∪ s := by apply eq_of_subset_of_card_le subset_union_left this.le
---     exact left_eq_union.mp this
-
--- lemma card_supersets {k m n : ℕ} {s : Finset (Fin (n + m + k))} (hs : s.card = k) :
---     #{t : Finset (Fin (n + m + k)) | #t = m + k ∧ s ⊆ t} = Nat.choose (n + m) m := by
---   have : #(sᶜ) = n + m := by rw [card_compl, Fintype.card_fin]; omega
---   simp_rw [← this]
---   rw [← card_powersetCard]
---   apply card_nbij (i := fun t ↦ (t \ s))
---   · intro t ht
---     simp only [mem_filter, mem_univ, true_and] at ht
---     simp only [mem_powersetCard]
---     exact ⟨fun _ ↦ by simp, (card_superset hs ht.1).1 ht.2⟩
---   · intro t₁ ht1 t₂ ht2 he
---     dsimp at he
---     simp only [coe_filter, mem_univ, true_and, Set.mem_setOf_eq] at ht1 ht2
---     rw [← sdiff_union_of_subset ht1.2, ← sdiff_union_of_subset ht2.2, he]
---   · intro t ht
---     simp only [mem_coe, mem_powersetCard] at ht
---     use (t ∪ s)
---     simp only [coe_filter, mem_univ, true_and, Set.mem_setOf_eq, subset_union_right, and_true]
---     refine ⟨?_,?_⟩
---     · simp_rw [← hs,← ht.2]
---       exact card_union_of_disjoint <| disjoint_left.2 fun _ ha hs ↦ (mem_compl.1 <| ht.1 ha) hs
---     · rw [union_sdiff_cancel_right]
---       exact disjoint_left.2 fun _ ha hs ↦ (mem_compl.1 <| ht.1 ha) hs
-
--- /-- **The principle of counting subgraphs by averaging**
--- If `G` is a graph on `[n + m + k]` and `H` is a graph on `[k]`, then the number of embeddings
--- `#(H ↪g G) * (choose (n + m) m)` is equal to the sum of the number of embeddings
--- `H ↪g (G.induce t)`
--- over subsets `t` of `[n + m + k]` of size `m + k`.
--- -/
--- lemma sum_embeddings_induce_eq (G : SimpleGraph (Fin (n + m + k))) (H : SimpleGraph (Fin k)) :
---    ∑ t : Finset (Fin (n + m + k)) with t.card = m + k, ‖H ↪g (G.induce t)‖
---      = ‖H ↪g G‖ * Nat.choose (n + m) m := by
---   classical
---   calc
---     _ = ∑ t : Finset (Fin (n + m + k)) with t.card = m + k, ‖{e : H ↪g G | Set.range e ⊆ t}‖
---  := by
---       simp_rw [Fintype.card_congr <| induceEquiv ..]
---     _ = ∑ t : Finset (Fin (n + m + k)) with t.card = m + k, ∑ e : H ↪g G,
---       ite (Set.range e ⊆ t) 1 0 := by
---       congr; simp only [Set.coe_setOf, sum_boole, Nat.cast_id]
---       ext t; apply Fintype.card_subtype
---     _ = ∑ e : H ↪g G, ∑ t : Finset (Fin (n + m + k)) with #t =  m + k,
---       ite (Set.range e ⊆ t) 1 0 := Finset.sum_comm
---     _ = ∑ e : H ↪g G, ∑ t : Finset (Fin (n + m + k)) with (#t =  m + k ∧ Set.range e ⊆ t), 1
--- := by
---       simp_rw [sum_ite, sum_const_zero, add_zero]
---       congr; ext e; congr 1; ext s; simp
---     _ = _ := by
---       simp_rw [← card_eq_sum_ones]
---       rw [← card_univ, card_eq_sum_ones, sum_mul, one_mul]
---       congr; ext e
---       have hs : #((Set.range e).toFinset) = k := by
---         simp_rw [Set.toFinset_range, ← card_fin k]
---         apply card_image_of_injective _ (RelEmbedding.injective e)
---       rw [← card_supersets hs]
---       congr
---       ext t
---       constructor <;> intro ⟨ht1, ht2⟩ <;> exact ⟨ht1, fun x hx ↦ ht2 (by simpa using hx)⟩
-
--- lemma edges_eq {n : ℕ} (G : SimpleGraph (Fin n)) [DecidableRel G.Adj] :
---     2 * #G.edgeFinset = ‖(⊤ : SimpleGraph (Fin 2)) ↪g G‖ := by
-
---   sorry
