@@ -149,8 +149,8 @@ attribute [local simp] Mon_Class.tensorObj.one_def Mon_Class.tensorObj.mul_def t
 @[simps]
 def ofMon_Comon_Obj (M : Mon_ (Comon_ C)) : Bimon_ C where
   X := ofMon_Comon_ObjX M
-  comon.counit.hom := ε[M.X.X]
-  comon.comul.hom := Δ[M.X.X]
+  comon.counit := .mk' ε[M.X.X]
+  comon.comul := .mk' Δ[M.X.X]
 
 variable (C) in
 /-- The backward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
