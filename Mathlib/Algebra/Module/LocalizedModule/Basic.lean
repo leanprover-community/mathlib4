@@ -638,8 +638,7 @@ theorem lift'_add (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R (M
         simp only [Submonoid.coe_mul, LinearMap.map_smul_of_tower]
         rw [mul_smul, Submonoid.smul_def]
       · dsimp
-        rw [Module.End.algebraMap_isUnit_inv_apply_eq_iff, mul_comm, mul_smul, ← map_smul]
-        rfl)
+        rw [Module.End.algebraMap_isUnit_inv_apply_eq_iff, mul_comm, mul_smul, ← map_smul])
     x y
 
 theorem lift'_smul (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R (Module.End R M'')) x))
@@ -1148,7 +1147,7 @@ lemma injective_of_map_eq {N : Type*} [AddCommMonoid N] [Module R N]
     apply H at h
     rw [map_smul, map_smul] at h
     rwa [← IsLocalizedModule.smul_inj f (n * m), mul_smul, mul_comm, mul_smul, hxm, hym]
-  simp [← hxm, ← hym, hab, ← S.smul_def, ← mul_smul, mul_comm, ← mul_smul]
+  simp [← hxm, ← hym, smul_comm (m : R), hab]
 
 lemma injective_of_map_zero {M M' N : Type*} [AddCommGroup M] [AddCommGroup M']
     [Module R M] [Module R M'] (f : M →ₗ[R] M') [IsLocalizedModule S f]
