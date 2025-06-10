@@ -143,22 +143,18 @@ abbrev toTensorMatrix: K ⊗[F] Matrix n n A →ₐ[R] Matrix n n (K ⊗[F] A) :
     induction t2 with
     | zero => simp
     | tmul x0 M' =>
-        -- eta_expand
         simp
-
         erw [Matrix.map_mul, MulAction.mul_smul, ← smul_mul_assoc, ← smul_one_mul x0 (M'.map _),
           ← mul_assoc]
         congr 2
         rw [← map_one (f := Matrix.scalar n),
           show x0 • (scalar n) (1 : K ⊗[F] A) = scalar n (x0 • 1) from diagonal_smul _ _ |>.symm,
           ← Matrix.scalar_commute]
-        rw [← show x0 • (scalar n) (1 : K ⊗[F] A) = scalar n (x0 • 1) from diagonal_smul _ _ |>.symm,
+        · rw [← show x0 • (scalar n) (1 : K ⊗[F] A) =
+            scalar n (x0 • 1) from diagonal_smul _ _ |>.symm,
           map_one, smul_one_mul]
-        rfl
-        sorry
-
-        -- simp [smul_eq_mul, mul_comm x x0]
-        -- erw [Matrix.map_mul]; rfl
+          rfl
+        · sorry
     | add _ _ h1 h2 => simp_all [mul_add]
   | add _ _ h1 h2 => simp_all [add_mul]
 
