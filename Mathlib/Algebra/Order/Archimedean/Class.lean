@@ -285,7 +285,7 @@ theorem min_le_mk_mul (a b : M) : min (mk a) (mk b) ≤ mk (a * b) := by
   have h1 := (mk_lt_mk.mp h.1 2).trans_le (mabs_mul _ _)
   have h2 := (mk_lt_mk.mp h.2 2).trans_le (mabs_mul _ _)
   simp only [mul_lt_mul_iff_left, mul_lt_mul_iff_right, pow_two] at h1 h2
-  exact h1.not_lt h2
+  exact h1.not_gt h2
 
 @[to_additive]
 theorem mk_left_le_mk_mul (hab : mk a ≤ mk b) : mk a ≤ mk (a * b) := by
