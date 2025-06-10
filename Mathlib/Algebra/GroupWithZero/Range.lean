@@ -189,5 +189,3 @@ instance : CommGroupWithZero (range₀ f) where
 end CommGroupWithZero
 
 end MonoidHomWithZero
-
-#min_imports
