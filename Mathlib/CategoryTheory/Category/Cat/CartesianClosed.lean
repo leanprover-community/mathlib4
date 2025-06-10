@@ -59,6 +59,7 @@ def flipIso : C ⥤ D ⥤ E ≅ D ⥤ C ⥤ E where
   inv_hom_id := types_ext _ _ (fun _ ↦ rfl)
 
 /-- The equivalence of types of bifunctors given by currying. -/
+@[simps]
 def curryingEquiv : C ⥤ D ⥤ E ≃ C × D ⥤ E :=
   curryingIso.toEquiv
 
