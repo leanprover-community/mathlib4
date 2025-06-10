@@ -216,7 +216,7 @@ variable [Group α] [LinearOrder α] {a b : α}
 @[to_additive] lemma map_mabs {β F : Type*} [Group β] [LinearOrder β] [FunLike F α β]
     [OrderHomClass F α β] [MonoidHomClass F α β] (f : F) (a : α) :
     f |a|ₘ = |f a|ₘ := by
-  rw [mabs, mabs, Monotone.map_max (OrderHomClass.mono f), map_inv]
+  rw [mabs, mabs, (OrderHomClass.mono f).map_max, map_inv]
 
 variable [MulLeftMono α] {a b : α}
 

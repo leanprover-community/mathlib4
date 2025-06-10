@@ -9,18 +9,18 @@ import Mathlib.Data.Finset.Max
 import Mathlib.Order.Antisymmetrization
 
 /-!
-# Archimedean classes of linearly ordered group.
+# Archimedean classes of a linearly ordered group
 
-This file defines archimedean classes of a given linearly ordered group.
+This file defines archimedean classes of a given linearly ordered group. Archimedean classes
+measure to what extent the group fails to be Archimedean. For additive group, elements `a` and `b`.
+in the same class are "equivalent" in the sense that there exist two natural numbers
+`m` and `n` such that `|a| ≤ m • |b|` and `|b| ≤ n • |a|`. An element `a` in a higher class than `b`
+is "infinitesimal" to `b` in the sense that `n • |a| < |b|` for all natural number `n`.
 
 ## Main definitions
 
-* `ArchimedeanClass` are classes of elements in a ordered additive commutative group
-  that are archimedean equivelent. Two elements `a` and `b` are archimedean equivalent when there
-  exists two natural numbers `m` and `n` such that `|a| ≤ m • |b|` and `|b| ≤ n • |a|`.
-* `MulArchimedeanClass` is the multiplicative version of `ArchimedeanClass`.
-  Two elements `a` and `b` are mul-archimedean equivalent when there
-  exists two natural numbers `m` and `n` such that `|a|ₘ ≤ |b|ₘ ^ m` and `|b|ₘ ≤ |a|ₘ ^ n`.
+* `ArchimedeanClass` is the archimedean class for additive linearly ordered group.
+* `MulArchimedeanClass` is the archimedean class for multiplicative linearly ordered group.
 * `ArchimedeanClass.orderHom` and `MulArchimedeanClass.orderHom` are `OrderHom` over
   archimedean classes lifted from ordered group homomorphisms.
 
@@ -34,9 +34,8 @@ all non-identity elements belong to the same (`Mul`-)`ArchimedeanClass`:
 ## Implementation notes
 
 Archimedean classes are equiped with a linear order, where elements with smaller absolute value
-are placed in a *higher* classes by convention. In other words, if `b` is infinitesimal relative to
-`a`, `b` is in a higher class than `a`. Ordering backwards this way simplifies formalization of
-theorems such as the Hahn embedding theorem.
+are placed in a *higher* classes by convention. Ordering backwards this way simplifies
+formalization of theorems such as the Hahn embedding theorem.
 
 To naturally derive this order, we first define it on the underlying group via the type
 synonym (`Mul`-)`ArchimedeanOrder`, and define (`Mul`-)`ArchimedeanClass` as `Antisymmetrization` of
@@ -89,12 +88,12 @@ instance instLT : LT (MulArchimedeanOrder M) where
   lt a b := ∀ n, |b.val|ₘ ^ n < |a.val|ₘ
 
 @[to_additive]
-theorem le {a b : MulArchimedeanOrder M} :
-  a ≤ b ↔ ∃ n, |b.val|ₘ ≤ |a.val|ₘ ^ n := by rfl
+theorem le_def {a b : MulArchimedeanOrder M} :
+  a ≤ b ↔ ∃ n, |b.val|ₘ ≤ |a.val|ₘ ^ n := .rfl
 
 @[to_additive]
-theorem lt {a b : MulArchimedeanOrder M} :
-  a < b ↔ ∀ n, |b.val|ₘ ^ n < |a.val|ₘ := by rfl
+theorem lt_def {a b : MulArchimedeanOrder M} :
+  a < b ↔ ∀ n, |b.val|ₘ ^ n < |a.val|ₘ := .rfl
 
 variable {M: Type*}
 variable [CommGroup M] [LinearOrder M] [IsOrderedMonoid M] {a b : M}
@@ -109,7 +108,7 @@ instance instPreorder : Preorder (MulArchimedeanOrder M) where
     rw [pow_mul]
     exact hn.trans (pow_le_pow_left' hm n)
   lt_iff_le_not_ge a b := by
-    rw [lt, le, le]
+    rw [lt_def, le_def, le_def]
     suffices (∀ (n : ℕ), |b.val|ₘ ^ n < |a.val|ₘ) → ∃ n, |b.val|ₘ ≤ |a.val|ₘ ^ n by
       simpa using this
     intro h
@@ -121,8 +120,8 @@ variable (M) in
 instance instIsTotal : IsTotal (MulArchimedeanOrder M) (· ≤ ·) where
   total a b := by
     obtain hab | hab := le_total |a.val|ₘ |b.val|ₘ
-    · exact Or.inr ⟨1, by simpa using hab⟩
-    · exact Or.inl ⟨1, by simpa using hab⟩
+    · exact .inr ⟨1, by simpa using hab⟩
+    · exact .inl ⟨1, by simpa using hab⟩
 
 variable {N : Type*} [CommGroup N] [LinearOrder N] [IsOrderedMonoid N]
 variable {F : Type*} [FunLike F M N] [OrderHomClass F M N] [MonoidHomClass F M N]
@@ -134,10 +133,9 @@ variable {F : Type*} [FunLike F M N] [OrderHomClass F M N] [MonoidHomClass F M N
 noncomputable
 def orderHom (f : F) : MulArchimedeanOrder M →o MulArchimedeanOrder N where
   toFun a := of (f a.val)
-  monotone' a b h := by
-    rw [le] at h ⊢
-    obtain ⟨n, hn⟩ := h
-    simp_rw [val_of, ← map_mabs, ← map_pow]
+  monotone' := by
+    rintro a b ⟨n, hn⟩
+    simp_rw [le_def, val_of, ← map_mabs, ← map_pow]
     exact ⟨n, OrderHomClass.monotone f hn⟩
 
 end MulArchimedeanOrder
@@ -152,7 +150,6 @@ variable (M) in
 @[to_additive ArchimedeanClass
 "`ArchimedeanClass` is the antisymmetrization of `ArchimedeanOrder`."]
 def MulArchimedeanClass := Antisymmetrization (MulArchimedeanOrder M) (· ≤ ·)
-
 
 namespace MulArchimedeanClass
 
@@ -221,10 +218,10 @@ instance instLinearOrder : LinearOrder (MulArchimedeanClass M) := by
   exact instLinearOrderAntisymmetrizationLeOfDecidableLEOfDecidableLTOfIsTotal
 
 @[to_additive]
-theorem mk_le_mk : mk a ≤ mk b ↔ ∃ n, |b|ₘ ≤ |a|ₘ ^ n := by rfl
+theorem mk_le_mk : mk a ≤ mk b ↔ ∃ n, |b|ₘ ≤ |a|ₘ ^ n := .rfl
 
 @[to_additive]
-theorem mk_lt_mk : mk a < mk b ↔ ∀ n, |b|ₘ ^ n < |a|ₘ := by simpa using mk_le_mk.not
+theorem mk_lt_mk : mk a < mk b ↔ ∀ n, |b|ₘ ^ n < |a|ₘ := .rfl
 
 @[to_additive]
 theorem le_mk_one (A : MulArchimedeanClass M) : A ≤ mk 1 := by
@@ -241,12 +238,12 @@ instance instOrderTop : OrderTop (MulArchimedeanClass M) where
   le_top := le_mk_one
 
 variable (M) in
-@[to_additive]
-theorem top_eq : (⊤ : MulArchimedeanClass M) = mk 1 := rfl
+@[to_additive (attr := simp)]
+theorem mk_one : mk 1 = (⊤ : MulArchimedeanClass M) := rfl
 
 variable (M) in
 @[to_additive (attr := simp)]
-theorem top_out : (⊤ : MulArchimedeanClass M).out = 1 := mk_one_out M
+theorem out_top : (⊤ : MulArchimedeanClass M).out = 1 := mk_one_out M
 
 @[to_additive (attr := simp)]
 theorem mk_eq_top_iff : mk a = ⊤ ↔ a = 1 := mk_eq_mk_one_iff
@@ -371,14 +368,14 @@ theorem one_lt_of_one_lt_of_mk_lt (ha : 1 < a) (hab : mk a < mk (b / a)) :
   · simpa using ha.le
 
 @[to_additive archimedean_of_mk_eq_mk]
-theorem mulArchimedean_of_mk_eq_mk (h : ∀ (a b : M), a ≠ 1 → b ≠ 1 → mk a = mk b) :
+theorem mulArchimedean_of_mk_eq_mk (h : ∀ a ≠ (1 : M), ∀ b ≠ 1, mk a = mk b) :
     MulArchimedean M where
   arch x y hy := by
     by_cases hx : x ≤ 1
     · use 0
       simpa using hx
     · have hx : 1 < x := lt_of_not_ge hx
-      have hxy : mk x = mk y := h x y hx.ne.symm hy.ne.symm
+      have hxy : mk x = mk y := h x hx.ne.symm y hy.ne.symm
       obtain ⟨_, ⟨m, hm⟩⟩ := (MulArchimedeanClass.eq).mp hxy
       rw [mabs_eq_self.mpr hx.le, mabs_eq_self.mpr hy.le] at hm
       exact ⟨m, hm⟩
@@ -428,8 +425,7 @@ theorem orderHom_injective {f : F} (h : Function.Injective f) :
 
 @[to_additive (attr := simp)]
 theorem orderHom_top (f : F) : orderHom f ⊤ = ⊤ := by
-  rw [top_eq, top_eq]
-  simp
+  rw [← mk_one, ← mk_one, orderHom_mk, map_one]
 
 end Hom
 
