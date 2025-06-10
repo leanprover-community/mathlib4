@@ -52,6 +52,7 @@ def curryingIso : C ⥤ D ⥤ E ≅ C × D ⥤ E where
   inv_hom_id := types_ext _ _ (fun F ↦ uncurry_obj_curry_obj F)
 
 /-- The isomorphism of categories of bifunctors given by flipping the arguments. -/
+@[simps]
 def flipIso : C ⥤ D ⥤ E ≅ D ⥤ C ⥤ E where
   hom F := F.flip
   inv F := F.flip
