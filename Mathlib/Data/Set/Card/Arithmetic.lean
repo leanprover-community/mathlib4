@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Otte
 -/
 
+import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Data.Set.Card
 import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.Algebra.BigOperators.Finprod
 
 /-!
 # Results using cardinal arithmetic
