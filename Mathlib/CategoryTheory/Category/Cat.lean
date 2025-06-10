@@ -183,6 +183,21 @@ def equivOfIso {C D : Cat} (γ : C ≅ D) : C ≌ D where
   unitIso := eqToIso <| Eq.symm γ.hom_inv_id
   counitIso := eqToIso γ.inv_hom_id
 
+/-- Under certain hypotheses, an equivalence of categories actually
+defines an isomorphism in `Cat`. -/
+@[simps]
+def isoOfEquiv {C D : Cat.{v, u}} (e : C ≌ D)
+    (h₁ : ∀ (X : C), e.inverse.obj (e.functor.obj X) = X)
+    (h₂ : ∀ (X : C), e.unitIso.hom.app X = eqToHom (h₁ X).symm)
+    (h₃ : ∀ (Y : D), e.functor.obj (e.inverse.obj Y) = Y)
+    (h₄ : ∀ (Y : D), e.counitIso.hom.app Y = eqToHom (h₃ Y)) :
+    C ≅ D where
+  hom := e.functor
+  inv := e.inverse
+  hom_inv_id := (Functor.ext_of_iso e.unitIso (fun X ↦ (h₁ X).symm) h₂).symm
+  inv_hom_id := (Functor.ext_of_iso e.counitIso h₃ h₄)
+
+
 end
 
 end Cat

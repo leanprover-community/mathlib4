@@ -117,11 +117,11 @@ instance cartesianClosed : CartesianClosed Cat.{u, u} where
 lemma cartesianClosed_closed_rightAdj_obj {D : Type u} [Category.{u} D] :
     ((Closed.rightAdj (C := Cat.{u,u}) (Cat.of C)).obj (Cat.of D)) = Cat.of (C ⥤ D) := rfl
 
--- (((CategoryTheory.Closed.rightAdj C).map F).obj G).obj X
-
--- (((CategoryTheory.Closed.rightAdj C).map F).obj G).map f
-
--- (((CategoryTheory.Closed.rightAdj C).map F).map α).app X
+@[simp]
+lemma cartesianClosed_closed_rightAdj_map {D E : Type u}
+    [Category.{u} D] [Category.{u} E] {F : D ⥤ E} :
+    (CategoryTheory.Closed.rightAdj (C := Cat.{u,u}) (Cat.of C)).map F.toCatHom
+      = (whiskeringRight _ _ _).obj F := rfl
 
 end
 
