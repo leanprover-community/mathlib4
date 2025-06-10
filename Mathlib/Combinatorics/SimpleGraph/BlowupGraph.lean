@@ -350,14 +350,25 @@ lemma Flag.sum_card_embeddings_induce_eq (F₁ : Flag β ι) (F : Flag α ι) [F
 abbrev compat_pairs (F₁₂ : Flag β ι × Flag β ι) (F : Flag α ι) :=
   {(e₁, e₂) : F₁₂.1 ↪f F × F₁₂.2 ↪f F | e₁.Compat e₂}
 
-
 @[inherit_doc] infixl:50 " ↪f₂ " => compat_pairs
 
--- TODO next: fix Fintype instances and correct the statement below.
-lemma Flag.sum_card_embeddings_induce_eq_compat (F₁ F₂ : Flag β ι) (F : Flag α ι) [Fintype β] {k : ℕ}
-  (hk : ‖β‖ ≤ k) : ∑ t : Finset α with #t = k,
+abbrev compat_pair_to_pair {F₁₂ : Flag β ι × Flag β ι} {F : Flag α ι} :
+  F₁₂ ↪f₂ F → (F₁₂.1 ↪f F) × (F₁₂.2 ↪f F) := fun e ↦ e.1
+
+lemma compat_pairs_inj {α β ι : Type*} {F : Flag α ι} {F₁₂ : Flag β ι × Flag β ι}:
+  Function.Injective (compat_pair_to_pair : F₁₂ ↪f₂ F → (F₁₂.1 ↪f F) × (F₁₂.2 ↪f F)) := by
+  rintro ⟨f, _⟩ ⟨g, _⟩; simp
+
+noncomputable instance FlagEmbedding.instfintypeOfCompatEmbeddings {α β ι : Type*} {F : Flag α ι}
+    {F₁₂ : Flag β ι × Flag β ι} [Fintype α] [Fintype β] : Fintype (F₁₂ ↪f₂ F) :=
+  Fintype.ofInjective _ compat_pairs_inj
+
+open Classical in
+-- TODO next: prove this (will require something like `Flag.induceEquiv` first.)
+lemma Flag.sum_card_embeddings_induce_eq_compat (F₁ F₂ : Flag β ι) (F : Flag α ι) [Fintype β]
+  {k : ℕ} (hk : 2 * ‖β‖ - ‖ι‖ ≤ k) : ∑ t : Finset α with #t = k,
     (if ht : ∀ i, F.θ i ∈ t then  ‖(F₁, F₂) ↪f₂ (F.induce t ht)‖ else 0)
-                              = ‖(F₁, F₂) ↪f₂ F‖ * Nat.choose (‖α‖ - ‖β‖) (k - ‖β‖) := by
+              = ‖(F₁, F₂) ↪f₂ F‖ * Nat.choose (‖α‖ - (2 * ‖β‖ - ‖ι‖ )) (k - 2 * ‖β‖ - ‖ι‖ ) := by
 
   sorry
 
