@@ -899,8 +899,7 @@ def tmulEquiv :
 @[simp]
 theorem tmulEquiv_apply (a : ι → M) (b : ι₂ → M) :
     tmulEquiv R M ((⨂ₜ[R] i, a i) ⊗ₜ[R] ⨂ₜ[R] i, b i) = ⨂ₜ[R] i, Sum.elim a b i := by
-  simp [tmulEquiv]
-  rfl
+  simp [tmulEquiv, Sum.elim]
 
 @[simp]
 theorem tmulEquiv_symm_apply (a : ι ⊕ ι₂ → M) :

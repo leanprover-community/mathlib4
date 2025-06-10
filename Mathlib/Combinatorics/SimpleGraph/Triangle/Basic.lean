@@ -202,7 +202,7 @@ theorem FarFromTriangleFree.cliqueFinset_nonempty' (hH : H ≤ G) (hG : G.FarFro
     (hcard : #G.edgeFinset - #H.edgeFinset < ε * (card α ^ 2 : ℕ)) :
     (H.cliqueFinset 3).Nonempty :=
   nonempty_of_ne_empty <|
-    cliqueFinset_eq_empty_iff.not.2 fun hH' => (hG.le_card_sub_card hH hH').not_lt hcard
+    cliqueFinset_eq_empty_iff.not.2 fun hH' => (hG.le_card_sub_card hH hH').not_gt hcard
 
 private lemma farFromTriangleFree_of_disjoint_triangles_aux {tris : Finset (Finset α)}
     (htris : tris ⊆ G.cliqueFinset 3)
@@ -286,10 +286,10 @@ theorem FarFromTriangleFree.nonpos (h₀ : G.FarFromTriangleFree ε) (h₁ : G.C
   exact nonpos_of_mul_nonpos_left (this h₁) (cast_pos.2 <| sq_pos_of_pos Fintype.card_pos)
 
 theorem CliqueFree.not_farFromTriangleFree (hG : G.CliqueFree 3) (hε : 0 < ε) :
-    ¬G.FarFromTriangleFree ε := fun h => (h.nonpos hG).not_lt hε
+    ¬G.FarFromTriangleFree ε := fun h => (h.nonpos hG).not_gt hε
 
 theorem FarFromTriangleFree.not_cliqueFree (hG : G.FarFromTriangleFree ε) (hε : 0 < ε) :
-    ¬G.CliqueFree 3 := fun h => (hG.nonpos h).not_lt hε
+    ¬G.CliqueFree 3 := fun h => (hG.nonpos h).not_gt hε
 
 theorem FarFromTriangleFree.cliqueFinset_nonempty [DecidableEq α]
     (hG : G.FarFromTriangleFree ε) (hε : 0 < ε) : (G.cliqueFinset 3).Nonempty :=

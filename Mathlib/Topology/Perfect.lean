@@ -37,7 +37,7 @@ see `preperfect_iff_perfect_closure`.
 
 ## See also
 
-`Mathlib.Topology.MetricSpace.Perfect`, for properties of perfect sets in metric spaces,
+`Mathlib/Topology/MetricSpace/Perfect.lean`, for properties of perfect sets in metric spaces,
 namely Polish spaces.
 
 ## References

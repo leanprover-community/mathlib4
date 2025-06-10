@@ -16,9 +16,9 @@ homomorphism `f : α →o β` is a function `α → β` along with a proof that 
 ## Main definitions
 
 In this file we define the following bundled monotone maps:
- * `OrderHom α β` a.k.a. `α →o β`: Preorder homomorphism.
+* `OrderHom α β` a.k.a. `α →o β`: Preorder homomorphism.
     An `OrderHom α β` is a function `f : α → β` such that `a₁ ≤ a₂ → f a₁ ≤ f a₂`
- * `OrderEmbedding α β` a.k.a. `α ↪o β`: Relation embedding.
+* `OrderEmbedding α β` a.k.a. `α ↪o β`: Relation embedding.
     An `OrderEmbedding α β` is an embedding `f : α ↪ β` such that `a ≤ b ↔ f a ≤ f b`.
     Defined as an abbreviation of `@RelEmbedding α β (≤) (≤)`.
 * `OrderIso`: Relation isomorphism.
@@ -67,7 +67,7 @@ monotone map, bundled morphism
 -/
 
 -- Developments relating order homs and sets belong in `Order.Hom.Set` or later.
-assert_not_exists Set.range
+assert_not_imported Mathlib.Data.Set.Basic
 
 open OrderDual
 
@@ -539,7 +539,7 @@ variable [Preorder α] [Preorder β] (f : α ↪o β)
 
 /-- `<` is preserved by order embeddings of preorders. -/
 def ltEmbedding : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop) :=
-  { f with map_rel_iff' := by intros; simp [lt_iff_le_not_le, f.map_rel_iff] }
+  { f with map_rel_iff' := by intros; simp [lt_iff_le_not_ge, f.map_rel_iff] }
 
 @[simp]
 theorem ltEmbedding_apply (x : α) : f.ltEmbedding x = f x :=

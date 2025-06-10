@@ -191,7 +191,7 @@ def singleton [T1Space α] (x : α) : Closeds α :=
 
 @[simp] lemma mem_singleton [T1Space α] {a b : α} : a ∈ singleton b ↔ a = b := Iff.rfl
 
-/-- The preimage of a closed set under a coninuous map. -/
+/-- The preimage of a closed set under a continuous map. -/
 @[simps]
 def preimage (s : Closeds β) {f : α → β} (hf : Continuous f) : Closeds α :=
   ⟨f ⁻¹' s, s.isClosed.preimage hf⟩

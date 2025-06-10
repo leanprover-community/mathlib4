@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
+Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes, Antoine Chambert-Loir
 -/
 import Mathlib.Data.Fin.Rev
 import Mathlib.Data.Nat.Find
+import Mathlib.Order.Fin.Basic
 
 /-!
 # Operation on tuples
@@ -290,6 +291,12 @@ theorem append_left (u : Fin m → α) (v : Fin n → α) (i : Fin m) :
     append u v (Fin.castAdd n i) = u i :=
   addCases_left _
 
+/-- Variant of `append_left` using `Fin.castLE` instead of `Fin.castAdd`. -/
+@[simp]
+theorem append_left' (u : Fin m → α) (v : Fin n → α) (i : Fin m) :
+    append u v (Fin.castLE (by omega) i) = u i :=
+  addCases_left _
+
 @[simp]
 theorem append_right (u : Fin m → α) (v : Fin n → α) (i : Fin n) :
     append u v (natAdd m i) = v i :=
@@ -378,6 +385,23 @@ theorem append_castAdd_natAdd {f : Fin (m + n) → α} :
     append (fun i ↦ f (castAdd n i)) (fun i ↦ f (natAdd m i)) = f := by
   unfold append addCases
   simp
+
+theorem append_comp_sumElim {xs : Fin m → α} {ys : Fin n → α} :
+    Fin.append xs ys ∘ Sum.elim (Fin.castAdd _) (Fin.natAdd _) = Sum.elim xs ys := by
+  ext (i | j) <;> simp
+
+theorem append_injective_iff {xs : Fin m → α} {ys : Fin n → α} :
+    Function.Injective (Fin.append xs ys) ↔
+      Function.Injective xs ∧ Function.Injective ys ∧ ∀ i j, xs i ≠ ys j := by
+  -- TODO: move things around so we can just import this.
+  -- We inline it because it's still shorter than proving from scratch.
+  let finSumFinEquiv : Fin m ⊕ Fin n ≃ Fin (m + n) :=
+  { toFun := Sum.elim (Fin.castAdd n) (Fin.natAdd m)
+    invFun i := @Fin.addCases m n (fun _ => Fin m ⊕ Fin n) Sum.inl Sum.inr i
+    left_inv x := by rcases x with y | y <;> simp
+    right_inv x := by refine Fin.addCases (fun i => ?_) (fun i => ?_) x <;> simp }
+  rw [← Sum.elim_injective, ← append_comp_sumElim, ← finSumFinEquiv.injective_comp,
+    Equiv.coe_fn_mk]
 
 end Append
 
@@ -527,6 +551,11 @@ theorem update_snoc_last : update (snoc p x) (last n) z = snoc p z := by
   ext j
   cases j using lastCases <;> simp
 
+@[simp]
+lemma range_snoc {α : Type*} (f : Fin n → α) (x : α) :
+    Set.range (snoc f x) = insert x (Set.range f) := by
+  ext; simp [Fin.exists_fin_succ', or_comm, eq_comm]
+
 /-- As a binary function, `Fin.snoc` is injective. -/
 theorem snoc_injective2 : Function.Injective2 (@snoc n α) := fun x y xₙ yₙ h ↦
   ⟨funext fun i ↦ by simpa using congr_fun h (castSucc i), by simpa using congr_fun h (last n)⟩
@@ -583,7 +612,7 @@ theorem cons_snoc_eq_snoc_cons {β : Sort*} (a : β) (q : Fin n → β) (b : β)
     | last => simp
     | cast j =>
       rw [cons_succ]
-      simp [succ_castSucc]
+      simp [← castSucc_succ]
 
 theorem comp_snoc {α : Sort*} {β : Sort*} (g : α → β) (q : Fin n → α) (y : α) :
     g ∘ snoc q y = snoc (g ∘ q) (g y) := by
@@ -686,6 +715,35 @@ def snocInduction {α : Sort*}
   | 0, x => by convert h0
   | _ + 1, x => snocCases (fun _ _ ↦ h _ _ <| snocInduction h0 h _) x
 
+theorem snoc_injective_of_injective {α} {x₀ : α} {x : Fin n → α}
+    (hx : Function.Injective x) (hx₀ : x₀ ∉ Set.range x) :
+    Function.Injective (snoc x x₀ : Fin n.succ → α) := fun i j h ↦ by
+  induction i using lastCases with
+  | cast i =>
+    induction j using lastCases with
+    | cast j =>
+      simpa only [castSucc_inj, ← Injective.eq_iff hx, snoc_castSucc] using h
+    | last =>
+      simp only [snoc_castSucc, snoc_last] at h
+      rw [← h] at hx₀
+      apply hx₀.elim (Set.mem_range_self i)
+  | last =>
+    induction j using lastCases with
+    | cast j =>
+      simp only [snoc_castSucc, snoc_last] at h
+      rw [h] at hx₀
+      apply hx₀.elim (Set.mem_range_self j)
+    | last => simp
+
+theorem snoc_injective_iff {α} {x₀ : α} {x : Fin n → α} :
+    Function.Injective (snoc x x₀ : Fin n.succ → α) ↔ Function.Injective x ∧ x₀ ∉ Set.range x := by
+  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ snoc_injective_of_injective h.1 h.2⟩
+  · simpa [Function.comp] using h.comp (Fin.castSucc_injective _)
+  · rintro ⟨i, hi⟩
+    rw [← @snoc_last n (fun i ↦ α) x₀ x, ← @snoc_castSucc n (fun i ↦ α) x₀ x i,
+      h.eq_iff] at hi
+    exact ne_last_of_lt i.castSucc_lt_last hi
+
 end TupleRight
 
 section InsertNth
@@ -773,6 +831,10 @@ theorem insertNth_apply_succAbove (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i
 
 @[simp]
 theorem succAbove_cases_eq_insertNth : @succAboveCases = @insertNth :=
+  rfl
+
+lemma removeNth_apply (p : Fin (n + 1)) (f : ∀ i, α i) (i : Fin n) :
+    p.removeNth f i = f (p.succAbove i) :=
   rfl
 
 @[simp] lemma removeNth_insertNth (p : Fin (n + 1)) (a : α p) (f : ∀ i, α (succAbove p i)) :
@@ -909,7 +971,14 @@ end Preorder
 open Set
 
 @[simp] lemma removeNth_update (p : Fin (n + 1)) (x) (f : ∀ j, α j) :
-    removeNth p (update f p x) = removeNth p f := by ext i; simp [removeNth, succAbove_ne]
+    removeNth p (update f p x) = removeNth p f := by ext i; simp [removeNth]
+
+@[simp]
+lemma removeNth_update_succAbove (p : Fin (n + 1)) (i : Fin n) (x : α (p.succAbove i))
+    (f : ∀ j, α j) :
+    removeNth p (update f (p.succAbove i) x) = update (removeNth p f) i x := by
+  ext j
+  rcases eq_or_ne j i with rfl | hne <;> simp [removeNth, succAbove_right_inj, *]
 
 @[simp] lemma insertNth_removeNth (p : Fin (n + 1)) (x) (f : ∀ j, α j) :
     insertNth p x (removeNth p f) = update f p x := by simp [Fin.insertNth_eq_iff]
@@ -920,8 +989,13 @@ lemma insertNth_self_removeNth (p : Fin (n + 1)) (f : ∀ j, α j) :
 @[simp]
 theorem update_insertNth (p : Fin (n + 1)) (x y : α p) (f : ∀ i, α (p.succAbove i)) :
     update (p.insertNth x f) p y = p.insertNth y f := by
-  ext i
-  cases i using p.succAboveCases <;> simp [succAbove_ne]
+  simp [eq_insertNth_iff]
+
+@[simp]
+theorem insertNth_update (p : Fin (n + 1)) (x : α p) (i : Fin n) (y : α (p.succAbove i))
+    (f : ∀ j, α (p.succAbove j)) :
+    p.insertNth x (update f i y) = update (p.insertNth x f) (p.succAbove i) y := by
+  simp [insertNth_eq_iff]
 
 /-- Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
 given by separating out the `p`-th element of the tuple.
@@ -942,6 +1016,30 @@ def insertNthEquiv (α : Fin (n + 1) → Type u) (p : Fin (n + 1)) :
 not a definitional equality. -/
 @[simp] lemma insertNthEquiv_last (n : ℕ) (α : Type*) :
     insertNthEquiv (fun _ ↦ α) (last n) = snocEquiv (fun _ ↦ α) := by ext; simp
+
+/-- A `HEq` version of `Fin.removeNth_removeNth_eq_swap`. -/
+theorem removeNth_removeNth_heq_swap {α : Fin (n + 2) → Sort*} (m : ∀ i, α i)
+    (i : Fin (n + 1)) (j : Fin (n + 2)) :
+    HEq (i.removeNth (j.removeNth m))
+      ((i.predAbove j).removeNth ((j.succAbove i).removeNth m)) := by
+  apply Function.hfunext rfl
+  simp only [heq_iff_eq]
+  rintro k _ rfl
+  unfold removeNth
+  apply congr_arg_heq
+  rw [succAbove_succAbove_succAbove_predAbove]
+
+/-- Given an `(n + 2)`-tuple `m` and two indexes `i : Fin (n + 1)` and `j : Fin (n + 2)`,
+one can remove `j`th element from `m`, then remove `i`th element from the result,
+or one can remove `(j.succAbove i)`th element from `m`,
+then remove `(i.predAbove j)`th element from the result.
+
+These two operations correspond to removing the same two elements in a different order,
+so they result in the same `n`-tuple. -/
+theorem removeNth_removeNth_eq_swap {α : Sort*} (m : Fin (n + 2) → α)
+    (i : Fin (n + 1)) (j : Fin (n + 2)) :
+    i.removeNth (j.removeNth m) = (i.predAbove j).removeNth ((j.succAbove i).removeNth m) :=
+  heq_iff_eq.mp (removeNth_removeNth_heq_swap m i j)
 
 end InsertNth
 

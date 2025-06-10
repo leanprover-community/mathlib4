@@ -237,7 +237,9 @@ theorem le_bihimp_iff {a b c : α} : a ≤ b ⇔ c ↔ a ⊓ b ≤ c ∧ a ⊓ c
 theorem inf_le_bihimp {a b : α} : a ⊓ b ≤ a ⇔ b :=
   inf_le_inf le_himp le_himp
 
-theorem bihimp_eq_inf_himp_inf : a ⇔ b = a ⊔ b ⇨ a ⊓ b := by simp [himp_inf_distrib, bihimp]
+theorem bihimp_eq_sup_himp_inf : a ⇔ b = a ⊔ b ⇨ a ⊓ b := by simp [himp_inf_distrib, bihimp]
+
+@[deprecated (since := "2025-06-05")] alias bihimp_eq_inf_himp_inf := bihimp_eq_sup_himp_inf
 
 theorem Codisjoint.bihimp_eq_inf {a b : α} (h : Codisjoint a b) : a ⇔ b = a ⊓ b := by
   rw [bihimp, h.himp_eq_left, h.himp_eq_right]

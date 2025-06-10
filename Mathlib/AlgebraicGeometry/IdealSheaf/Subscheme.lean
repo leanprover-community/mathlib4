@@ -445,10 +445,10 @@ def subschemeIso : I.subscheme ≅ I.glueData.glued :=
 /-- The inclusion from the subscheme associated to an ideal sheaf. -/
 noncomputable
 def subschemeι : I.subscheme ⟶ X :=
-    (I.subschemeIso.hom ≫ I.gluedTo).copyBase Subtype.val <| by
-  ext x
-  show (I.gluedHomeo (I.gluedHomeo.symm x)).1 = x.1
-  rw [I.gluedHomeo.apply_symm_apply]
+  (I.subschemeIso.hom ≫ I.gluedTo).copyBase Subtype.val <| by
+    ext x
+    show (I.gluedHomeo (I.gluedHomeo.symm x)).1 = x.1
+    rw [I.gluedHomeo.apply_symm_apply]
 
 lemma subschemeι_apply (x : I.subscheme) : I.subschemeι.base x = x.1 := rfl
 
@@ -544,6 +544,9 @@ lemma ker_subschemeι_app (U : X.affineOpens) :
 @[simp]
 lemma ker_subschemeι : I.subschemeι.ker = I := by
   ext; simp [ker_subschemeι_app]
+
+instance : IsEmpty (⊤ : X.IdealSheafData).subscheme := by
+  rw [← (subschemeι _).ker_eq_top_iff_isEmpty, ker_subschemeι]
 
 /-- Given `I ≤ J`, this is the map `Spec(Γ(X, U)/J(U)) ⟶ Spec(Γ(X, U)/I(U))`. -/
 noncomputable
@@ -674,6 +677,10 @@ instance [QuasiCompact f] : IsDominant f.toImage where
       ← Set.univ_subset_iff, ← Set.image_subset_iff, Set.image_univ,
       IdealSheafData.range_subschemeι, Hom.support_ker, ← Set.range_comp,
       ← TopCat.coe_comp, ← Scheme.comp_base, f.toImage_imageι]
+
+instance : IsIso (IdealSheafData.subschemeι ⊥ : _ ⟶ X) :=
+  ⟨Scheme.Hom.toImage (𝟙 X) ≫ IdealSheafData.inclusion bot_le,
+    by simp [← cancel_mono (IdealSheafData.subschemeι _)], by simp⟩
 
 lemma Hom.toImage_app :
     f.toImage.app (f.imageι ⁻¹ᵁ U) =

@@ -23,14 +23,14 @@ In the list below, and in all this file, `R` is a commutative ring (semiring
 is sometimes enough), `M` and its variations are `R`-modules, `ι`, `κ`, `n` and `m` are finite
 types used for indexing.
 
- * `Basis.det`: the determinant of a family of vectors with respect to a basis,
-   as a multilinear map
- * `LinearMap.det`: the determinant of an endomorphism `f : End R M` as a
-   multiplicative homomorphism (if `M` does not have a finite `R`-basis, the
-   result is `1` instead)
- * `LinearEquiv.det`: the determinant of an isomorphism `f : M ≃ₗ[R] M` as a
-   multiplicative homomorphism (if `M` does not have a finite `R`-basis, the
-   result is `1` instead)
+* `Basis.det`: the determinant of a family of vectors with respect to a basis,
+  as a multilinear map
+* `LinearMap.det`: the determinant of an endomorphism `f : End R M` as a
+  multiplicative homomorphism (if `M` does not have a finite `R`-basis, the
+  result is `1` instead)
+* `LinearEquiv.det`: the determinant of an isomorphism `f : M ≃ₗ[R] M` as a
+  multiplicative homomorphism (if `M` does not have a finite `R`-basis, the
+  result is `1` instead)
 
 ## Tags
 

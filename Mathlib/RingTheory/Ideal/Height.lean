@@ -14,8 +14,8 @@ In this file, we define the height of a prime ideal and the height of an ideal.
 # Main definitions
 
 * `Ideal.primeHeight` : The height of a prime ideal $\mathfrak{p}$. We define it as the supremum of
- the lengths of strictly decreasing chains of prime ideals below it. This definition is implemented
- via `Order.height`.
+  the lengths of strictly decreasing chains of prime ideals below it. This definition is implemented
+  via `Order.height`.
 
 * `Ideal.height` : The height of an ideal. We defined it as the infimum of the `primeHeight` of the
   minimal prime ideals of I.
@@ -91,12 +91,9 @@ lemma Ideal.primeHeight_strict_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime]
     I.primeHeight < J.primeHeight := by
   rw [primeHeight]
   have : I.FiniteHeight := by
-    rw [Ideal.finiteHeight_iff, ← lt_top_iff_ne_top]
+    rw [Ideal.finiteHeight_iff, ← lt_top_iff_ne_top, Ideal.height_eq_primeHeight]
     right
-    rcases (Ideal.finiteHeight_iff J).mp ‹_› with (hl | hr)
-    · exact False.elim (IsPrime.ne_top ‹_› hl)
-    · rw [Ideal.height_eq_primeHeight] at hr ⊢
-      apply lt_of_le_of_lt (Ideal.primeHeight_mono (le_of_lt h)) (by rwa [lt_top_iff_ne_top])
+    exact lt_of_le_of_lt (Ideal.primeHeight_mono h.le) (Ideal.primeHeight_lt_top J)
   exact Order.height_strictMono h (Ideal.primeHeight_lt_top _)
 
 @[gcongr]
@@ -127,9 +124,8 @@ lemma Ideal.primeHeight_le_ringKrullDim {I : Ideal R} [I.IsPrime] :
 lemma Ideal.height_le_ringKrullDim_of_ne_top {I : Ideal R} (h : I ≠ ⊤) :
     I.height ≤ ringKrullDim R := by
   rw [Ideal.height]
-  have : Nonempty (I.minimalPrimes) := Ideal.nonempty_minimalPrimes h
-  rcases this with ⟨P, hP⟩
-  have := hP.1.1
+  obtain ⟨P, hP⟩ : Nonempty (I.minimalPrimes) := Ideal.nonempty_minimalPrimes h
+  have := Ideal.minimalPrimes_isPrime hP
   refine le_trans ?_ (Ideal.primeHeight_le_ringKrullDim (I := P))
   simpa using iInf₂_le _ hP
 

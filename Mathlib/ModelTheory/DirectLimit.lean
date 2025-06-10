@@ -57,10 +57,12 @@ theorem coe_natLERec (m n : ℕ) (h : m ≤ n) :
     (natLERec f' m n h : G' m → G' n) = Nat.leRecOn h (@fun k => f' k) := by
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
   ext x
-  induction' k with k ih
-  · -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
+  induction k with
+  | zero =>
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [natLERec, Nat.leRecOn_self, Embedding.refl_apply, Nat.leRecOn_self]
-  · -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
+  | succ k ih =>
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [Nat.leRecOn_succ le_self_add, natLERec, Nat.leRecOn_succ le_self_add, ← natLERec,
       Embedding.comp_apply, ih]
 
