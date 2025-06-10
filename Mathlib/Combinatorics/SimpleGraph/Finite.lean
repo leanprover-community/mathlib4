@@ -154,13 +154,16 @@ theorem neighborFinset_def : G.neighborFinset v = (G.neighborSet v).toFinset :=
 theorem mem_neighborFinset (w : V) : w ∈ G.neighborFinset v ↔ G.Adj v w :=
   Set.mem_toFinset
 
-theorem not_mem_neighborFinset_self : v ∉ G.neighborFinset v := by simp
+theorem notMem_neighborFinset_self : v ∉ G.neighborFinset v := by simp
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_neighborFinset_self := notMem_neighborFinset_self
 
 theorem neighborFinset_disjoint_singleton : Disjoint (G.neighborFinset v) {v} :=
-  Finset.disjoint_singleton_right.mpr <| not_mem_neighborFinset_self _ _
+  Finset.disjoint_singleton_right.mpr <| notMem_neighborFinset_self _ _
 
 theorem singleton_disjoint_neighborFinset : Disjoint {v} (G.neighborFinset v) :=
-  Finset.disjoint_singleton_left.mpr <| not_mem_neighborFinset_self _ _
+  Finset.disjoint_singleton_left.mpr <| notMem_neighborFinset_self _ _
 
 /-- `G.degree v` is the number of vertices adjacent to `v`. -/
 def degree : ℕ := #(G.neighborFinset v)
@@ -178,8 +181,11 @@ theorem degree_pos_iff_exists_adj : 0 < G.degree v ↔ ∃ w, G.Adj v w := by
 theorem degree_pos_iff_mem_support : 0 < G.degree v ↔ v ∈ G.support := by
   rw [G.degree_pos_iff_exists_adj v, mem_support]
 
-theorem degree_eq_zero_iff_not_mem_support : G.degree v = 0 ↔ v ∉ G.support := by
+theorem degree_eq_zero_iff_notMem_support : G.degree v = 0 ↔ v ∉ G.support := by
   rw [← G.degree_pos_iff_mem_support v, Nat.pos_iff_ne_zero, not_ne_iff]
+
+@[deprecated (since := "2025-05-23")]
+alias degree_eq_zero_iff_not_mem_support := degree_eq_zero_iff_notMem_support
 
 theorem degree_compl [Fintype (Gᶜ.neighborSet v)] [Fintype V] :
     Gᶜ.degree v = Fintype.card V - 1 - G.degree v := by
@@ -428,7 +434,7 @@ theorem Adj.card_commonNeighbors_lt_degree {G : SimpleGraph V} [DecidableRel G.A
   use w
   constructor
   · rw [Set.mem_toFinset]
-    apply not_mem_commonNeighbors_right
+    apply notMem_commonNeighbors_right
   · rw [Finset.insert_subset_iff]
     constructor
     · simpa

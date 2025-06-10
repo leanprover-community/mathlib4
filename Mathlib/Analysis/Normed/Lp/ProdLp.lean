@@ -3,7 +3,6 @@ Copyright (c) 2023 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Sébastien Gouëzel, Jireh Loreaux
 -/
-
 import Mathlib.Analysis.MeanInequalities
 import Mathlib.Analysis.Normed.Lp.WithLp
 
@@ -32,7 +31,7 @@ statements for the coordinate functions, for instance.
 
 # Implementation notes
 
-This file is a straight-forward adaptation of `Mathlib.Analysis.Normed.Lp.PiLp`.
+This file is a straight-forward adaptation of `Mathlib/Analysis/Normed/Lp/PiLp.lean`.
 
 -/
 
@@ -356,8 +355,7 @@ abbrev prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
       rcases p.dichotomy with (rfl | h)
       · exact prod_sup_edist_ne_top_aux f g
       · rw [prod_edist_eq_add (zero_lt_one.trans_le h)]
-        refine ENNReal.rpow_ne_top_of_nonneg (by positivity) (ne_of_lt ?_)
-        simp [ENNReal.add_lt_top, ENNReal.rpow_lt_top_of_nonneg, edist_ne_top] )
+        finiteness)
     fun f g => by
     rcases p.dichotomy with (rfl | h)
     · rw [prod_edist_eq_sup, prod_dist_eq_sup]
@@ -371,10 +369,8 @@ abbrev prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
       · refine ENNReal.toReal_le_of_le_ofReal ?_ ?_
         · simp only [le_sup_iff, dist_nonneg, or_self]
         · simp [edist, PseudoMetricSpace.edist_dist, ENNReal.ofReal_le_ofReal]
-    · have h1 : edist f.fst g.fst ^ p.toReal ≠ ⊤ :=
-        ENNReal.rpow_ne_top_of_nonneg (zero_le_one.trans h) (edist_ne_top _ _)
-      have h2 : edist f.snd g.snd ^ p.toReal ≠ ⊤ :=
-        ENNReal.rpow_ne_top_of_nonneg (zero_le_one.trans h) (edist_ne_top _ _)
+    · have h1 : edist f.fst g.fst ^ p.toReal ≠ ⊤ := by finiteness
+      have h2 : edist f.snd g.snd ^ p.toReal ≠ ⊤ := by finiteness
       simp only [prod_edist_eq_add (zero_lt_one.trans_le h), dist_edist, ENNReal.toReal_rpow,
         prod_dist_eq_add (zero_lt_one.trans_le h), ← ENNReal.toReal_add h1 h2]
 

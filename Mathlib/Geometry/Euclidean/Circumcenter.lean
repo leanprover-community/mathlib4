@@ -56,7 +56,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
   simp only at hcc hcr hcccru
   let x := dist cc (orthogonalProjection s p)
   let y := dist p (orthogonalProjection s p)
-  have hy0 : y ≠ 0 := dist_orthogonalProjection_ne_zero_of_not_mem hp
+  have hy0 : y ≠ 0 := dist_orthogonalProjection_ne_zero_of_notMem hp
   let ycc₂ := (x * x + y * y - cr * cr) / (2 * y)
   let cc₂ := (ycc₂ / y) • (p -ᵥ orthogonalProjection s p : V) +ᵥ cc
   let cr₂ := √(cr * cr + ycc₂ * ycc₂)
@@ -146,12 +146,14 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
     {p : ι → P} (ha : AffineIndependent ℝ p) :
     ∃! cs : Sphere P, cs.center ∈ affineSpan ℝ (Set.range p) ∧ Set.range p ⊆ (cs : Set P) := by
   cases nonempty_fintype ι
-  induction' hn : Fintype.card ι with m hm generalizing ι
-  · exfalso
+  induction hn : Fintype.card ι generalizing ι with
+  | zero =>
+    exfalso
     have h := Fintype.card_pos_iff.2 hne
     rw [hn] at h
     exact lt_irrefl 0 h
-  · rcases m with - | m
+  | succ m hm =>
+    rcases m with - | m
     · rw [Fintype.card_eq_one_iff] at hn
       obtain ⟨i, hi⟩ := hn
       haveI : Unique ι := ⟨⟨i⟩, hi⟩
@@ -187,7 +189,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
         simp [Classical.em]
       rw [hr, ← affineSpan_insert_affineSpan]
       refine existsUnique_dist_eq_of_insert (Set.range_nonempty _) (subset_affineSpan ℝ _) ?_ hm
-      convert ha.not_mem_affineSpan_diff i Set.univ
+      convert ha.notMem_affineSpan_diff i Set.univ
       change (Set.range fun i2 : { x | x ≠ i } => p i2) = _
       rw [← Set.image_eq_range]
       congr with j

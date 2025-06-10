@@ -172,54 +172,42 @@ such that `positivity` successfully recognises both `a` and `b`. -/
     pure (.nonnegative q(add_nonneg $pa $pb))
   | _, _ => failure
 
-private theorem mul_nonneg_of_pos_of_nonneg [Semiring α] [PartialOrder α] [IsOrderedRing α]
-    {a b : α}
-    (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a * b :=
-  mul_nonneg ha.le hb
-
-private theorem mul_nonneg_of_nonneg_of_pos [Semiring α] [PartialOrder α] [IsOrderedRing α]
-    {a b : α}
-    (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a * b :=
-  mul_nonneg ha hb.le
-
-private theorem mul_ne_zero_of_ne_zero_of_pos [Semiring α] [PartialOrder α] [IsOrderedRing α]
-    [NoZeroDivisors α]
-    {a b : α} (ha : a ≠ 0) (hb : 0 < b) : a * b ≠ 0 :=
-  mul_ne_zero ha (ne_of_gt hb)
-
-private theorem mul_ne_zero_of_pos_of_ne_zero [Semiring α] [PartialOrder α] [IsOrderedRing α]
-    [NoZeroDivisors α]
-    {a b : α} (ha : 0 < a) (hb : b ≠ 0) : a * b ≠ 0 :=
-  mul_ne_zero (ne_of_gt ha) hb
-
 /-- The `positivity` extension which identifies expressions of the form `a * b`,
 such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity _ * _] def evalMul : PositivityExt where eval {u α} zα pα e := do
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
     | throwError "not *"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
-  let _a ← synthInstanceQ q(Semiring $α)
-  let _a ← synthInstanceQ q(PartialOrder $α)
-  let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
-  assumeInstancesCommute
+  let _a ← synthInstanceQ q(Mul $α)
   let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(HMul.hMul)
   let ra ← core zα pα a; let rb ← core zα pα b
-  match ra, rb with
-  | .positive pa, .positive pb => pure (.positive q(mul_pos $pa $pb))
-  | .positive pa, .nonnegative pb => pure (.nonnegative q(mul_nonneg_of_pos_of_nonneg $pa $pb))
-  | .nonnegative pa, .positive pb => pure (.nonnegative q(mul_nonneg_of_nonneg_of_pos $pa $pb))
-  | .nonnegative pa, .nonnegative pb => pure (.nonnegative q(mul_nonneg $pa $pb))
-  | .positive pa, .nonzero pb =>
-    let _a ← synthInstanceQ q(NoZeroDivisors $α)
-    pure (.nonzero q(mul_ne_zero_of_pos_of_ne_zero $pa $pb))
-  | .nonzero pa, .positive pb =>
-    let _a ← synthInstanceQ q(NoZeroDivisors $α)
-    pure (.nonzero q(mul_ne_zero_of_ne_zero_of_pos $pa $pb))
-  | .nonzero pa, .nonzero pb =>
+  let tryProveNonzero (pa? : Option Q($a ≠ 0)) (pb? : Option Q($b ≠ 0)) :
+      MetaM (Strictness zα pα e) := do
+    let pa ← liftOption pa?
+    let pb ← liftOption pb?
     let _a ← synthInstanceQ q(NoZeroDivisors $α)
     pure (.nonzero q(mul_ne_zero $pa $pb))
-  | _, _ => pure .none
-
+  let tryProveNonneg (pa? : Option Q(0 ≤ $a)) (pb? : Option Q(0 ≤ $b)) :
+      MetaM (Strictness zα pα e) := do
+    let pa ← liftOption pa?
+    let pb ← liftOption pb?
+    let _a ← synthInstanceQ q(MulZeroClass $α)
+    let _a ← synthInstanceQ q(PosMulMono $α)
+    assumeInstancesCommute
+    pure (.nonnegative q(mul_nonneg $pa $pb))
+  let tryProvePositive (pa? : Option Q(0 < $a)) (pb? : Option Q(0 < $b)) :
+      MetaM (Strictness zα pα e) := do
+    let pa ← liftOption pa?
+    let pb ← liftOption pb?
+    let _a ← synthInstanceQ q(MulZeroClass $α)
+    let _a ← synthInstanceQ q(PosMulStrictMono $α)
+    assumeInstancesCommute
+    pure (.positive q(mul_pos $pa $pb))
+  let mut result := .none
+  result ← orElse result (tryProvePositive ra.toPositive rb.toPositive)
+  result ← orElse result (tryProveNonneg ra.toNonneg rb.toNonneg)
+  result ← orElse result (tryProveNonzero ra.toNonzero rb.toNonzero)
+  return result
 
 private lemma int_div_self_pos {a : ℤ} (ha : 0 < a) : 0 < a / a := by
   rw [Int.ediv_self ha.ne']; exact zero_lt_one

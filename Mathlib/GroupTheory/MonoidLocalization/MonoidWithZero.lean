@@ -57,10 +57,6 @@ if `f : M →*₀ N` satisfies this predicate, then `N` is isomorphic to the loc
 structure LocalizationWithZeroMap extends LocalizationMap S N where
   map_zero' : toFun 0 = 0
 
--- Porting note: no docstrings for LocalizationWithZeroMap.map_zero'
-attribute [nolint docBlame] LocalizationWithZeroMap.toLocalizationMap
-  LocalizationWithZeroMap.map_zero'
-
 variable {S N}
 
 /-- The monoid with zero hom underlying a `LocalizationMap`. -/

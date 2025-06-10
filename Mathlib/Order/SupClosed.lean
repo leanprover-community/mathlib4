@@ -273,8 +273,6 @@ end LinearOrder
 
 /-! ## Closure -/
 
-open Finset
-
 section SemilatticeSup
 variable [SemilatticeSup α] [SemilatticeSup β] {s t : Set α} {a b : α}
 
@@ -453,8 +451,6 @@ end Lattice
 
 section DistribLattice
 variable [DistribLattice α] [DistribLattice β] {s : Set α}
-
-open Finset
 
 protected lemma SupClosed.infClosure (hs : SupClosed s) : SupClosed (infClosure s) := by
   rintro _ ⟨t, ht, hts, rfl⟩ _ ⟨u, hu, hus, rfl⟩
