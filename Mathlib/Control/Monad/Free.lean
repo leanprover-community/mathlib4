@@ -89,9 +89,7 @@ universe u v w
 namespace FreeM
 
 /-- Map a function over a `FreeM` monad. -/
-def map {α β : Type _} (F : Type u → Type v) (f : α → β) : FreeM F α → FreeM F β :=
-fun FFa =>
-  match FFa with
+def map {α β : Type _} (F : Type u → Type v) (f : α → β) : FreeM F α → FreeM F β
   | .pure a => .pure (f a)
   | .liftBind op cont => .liftBind op (fun z => FreeM.map F f (cont z))
 
