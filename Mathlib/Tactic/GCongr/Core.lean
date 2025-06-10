@@ -128,15 +128,12 @@ open Lean Meta
 
 /-- `GCongrKey` is the key used to store and look up `gcongr` lemmas. -/
 structure GCongrKey where
-  /-- The name of the relation.
-  For example, `a + b ≤ a + c` has ``relName := `LE.le``. -/
+  /-- The name of the relation. For example, `a + b ≤ a + c` has ``relName := `LE.le``. -/
   relName : Name
-  /-- The name of the head function.
-  For example, `a + b ≤ a + c` has ``head := `HAdd.hAdd``. -/
+  /-- The name of the head function. For example, `a + b ≤ a + c` has ``head := `HAdd.hAdd``. -/
   head : Name
   /-- The array of which arguments in the application of `head` are different.
-  For example, `a + b ≤ a + c` has `#[false, false, false, false, false, true]`.
-  We interpret `∀` and `fun` as having two arguments: the domain and the body. -/
+  For example, `a + b ≤ a + c` has `#[false, false, false, false, false, true]`. -/
   varyingArgs : Array Bool
 deriving Inhabited, BEq, Hashable
 
