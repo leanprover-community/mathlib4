@@ -445,7 +445,7 @@ theorem biproduct.eqToHom_comp_ι (f : J → C) [HasBiproduct f] {j j' : J} (w :
   cases w
   simp
 
--- TODO?: simp proves this using `eqToHom_naturality`
+-- TODO?: simp can prove this using `eqToHom_naturality`
 -- but `eqToHom_naturality` applies less easily than this lemma
 @[reassoc]
 theorem biproduct.π_comp_eqToHom (f : J → C) [HasBiproduct f] {j j' : J} (w : j = j') :
