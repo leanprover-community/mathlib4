@@ -199,7 +199,8 @@ lemma FlagEmbedding.Compat.symm {β : Type*} {F₁ F₂ : Flag β ι} {F : Flag 
 ## TODO:
   1. Prove that:
 
-    ‖{(e₁, e₂) : (F₁ ↪f F) × (F₁ ↪f F) // ¬ e₁.Compat e₂}‖ ≤  (‖β‖!)² * #{ (A, B) | }
+    ‖{(e₁, e₂) : (F₁ ↪f F) × (F₁ ↪f F) // ¬ e₁.Compat e₂}‖ ≤
+      (‖β‖!)² * #{ (A, B) | A,B ‖β‖-sets in α, with F.θ.image ⊆ A ∩ B ≠ F.θ.image}
 
     (e₁, e₂) ↦ {(A, B) : A,B ‖β‖-sets in α, with F.θ.image ⊆ A ∩ B ≠ F.θ.image}
 
@@ -281,26 +282,18 @@ lemma card_supersets_inter  {α : Type*} [Fintype α] [DecidableEq α] (u : Fins
   calc
   _ = ∑ x with #x = k ∧ u ⊆ x, ∑ y with #x = k ∧ #y = k ∧ x ∩ y = u, 1 :=by
     rw [card_eq_sum_ones, sum_filter, Fintype.sum_prod_type]
-    dsimp
-    simp_rw [sum_ite, sum_const_zero, add_zero]
-    change ∑ x, ∑ y with _, 1 = ∑ x with _, ∑ y with _, 1
-    nth_rw 1 [sum_filter]
-    congr with x
-    rw [sum_filter]
+    simp_rw [sum_ite, sum_const_zero, add_zero, sum_filter]
     simp only [sum_boole, Nat.cast_id, sum_const, smul_eq_mul, mul_one]
-    split_ifs with hx
-    · congr with y
-    · contrapose! hx
-      obtain ⟨e, he⟩ := card_ne_zero.1 hx
-      simp only [mem_filter, mem_univ, true_and] at he
-      exact ⟨he.1, he.2.2.symm ▸ Finset.inter_subset_left⟩
+    congr with a
+    simp only [left_eq_ite_iff, not_and]
+    intro hx; contrapose! hx
+    obtain ⟨e, he⟩ := card_ne_zero.1 hx
+    simp only [mem_filter, mem_univ, true_and] at he
+    exact ⟨he.1, he.2.2.symm ▸ Finset.inter_subset_left⟩
   _ = _ := by
-    conv_lhs => enter [2]
-                simp only [sum_const, smul_eq_mul, mul_one]
     convert sum_const ((‖α‖ - k).choose (k - #u)) with x hx
-    · simp only [mem_filter, mem_univ, true_and] at hx
-      rw [hx.1]; simp only [true_and, ← hx.1]
-      exact card_supersets_inter' hx.2
+    · simp_rw [mem_filter, mem_univ, true_and] at hx
+      simp [← hx.1, card_supersets_inter' hx.2]
     · exact (card_supersets hk).symm
 
 
@@ -353,6 +346,20 @@ lemma Flag.sum_card_embeddings_induce_eq (F₁ : Flag β ι) (F : Flag α ι) [F
       congr with t
       constructor <;> intro ⟨ht1, ht2⟩ <;> exact ⟨ht1, fun x hx ↦ ht2 (by simpa using hx)⟩
 
+/-- Given a pair of -/
+abbrev compat_pairs (F₁₂ : Flag β ι × Flag β ι) (F : Flag α ι) :=
+  {(e₁, e₂) : F₁₂.1 ↪f F × F₁₂.2 ↪f F | e₁.Compat e₂}
+
+
+@[inherit_doc] infixl:50 " ↪f₂ " => compat_pairs
+
+-- TODO next: fix Fintype instances and correct the statement below.
+lemma Flag.sum_card_embeddings_induce_eq_compat (F₁ F₂ : Flag β ι) (F : Flag α ι) [Fintype β] {k : ℕ}
+  (hk : ‖β‖ ≤ k) : ∑ t : Finset α with #t = k,
+    (if ht : ∀ i, F.θ i ∈ t then  ‖(F₁, F₂) ↪f₂ (F.induce t ht)‖ else 0)
+                              = ‖(F₁, F₂) ↪f₂ F‖ * Nat.choose (‖α‖ - ‖β‖) (k - ‖β‖) := by
+
+  sorry
 
 /--
 Embeddings of `H` in `G[t]` are equivalent to embeddings of `H` in `G` that map into `t`.
