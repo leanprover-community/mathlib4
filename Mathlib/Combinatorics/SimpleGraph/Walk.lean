@@ -898,6 +898,31 @@ def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
   | p, 0 => p.copy (getVert_zero p).symm rfl
   | .cons _ q, (n + 1) => q.drop n
 
+@[simp]
+lemma drop_length {u v : V} (p : G.Walk u v) (n : ℕ) : (p.drop n).length = p.length - n := by
+  induction p generalizing n with
+  | nil => unfold drop; simp_all
+  | cons h q ih =>
+      unfold drop
+      by_cases h₂ : n = 0
+      · subst h₂
+        simp
+      · obtain ⟨_, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h₂
+        simp_all
+
+@[simp]
+lemma drop_getVert {u v : V} (p : G.Walk u v) (n m : ℕ) :
+    (p.drop n).getVert m = p.getVert (n + m) := by
+  induction p generalizing n with
+  | nil => unfold drop; simp_all
+  | cons h q ih =>
+      unfold drop
+      by_cases h₂ : n = 0
+      · subst h₂
+        simp
+      · obtain ⟨_, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h₂
+        simp_all [Nat.add_right_comm, getVert_cons_succ]
+
 /-- The second vertex of a walk, or the only vertex in a nil walk. -/
 abbrev snd (p : G.Walk u v) : V := p.getVert 1
 
@@ -914,6 +939,34 @@ def take {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk u (p.getVert n) :=
   | .nil, _ => .nil
   | p, 0 => nil.copy rfl (getVert_zero p).symm
   | .cons h q, (n + 1) => .cons h (q.take n)
+
+@[simp]
+lemma take_length {u v : V} (p : G.Walk u v) (n : ℕ) : (p.take n).length = n ⊓ p.length := by
+  induction p generalizing n with
+  | nil => unfold take; simp_all
+  | cons h q ih =>
+      unfold take
+      by_cases h₂ : n = 0
+      · subst h₂
+        simp
+      · obtain ⟨_, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h₂
+        simp_all
+
+@[simp]
+lemma take_getVert {u v : V} (p : G.Walk u v) (n m : ℕ) :
+    (p.take n).getVert m = p.getVert (n ⊓ m) := by
+  induction p generalizing n m with
+  | nil => unfold take; simp_all
+  | cons h q ih =>
+      unfold take
+      by_cases h₂ : n = 0
+      · subst h₂
+        simp
+      · obtain ⟨_, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h₂
+        by_cases h₃ : m = 0
+        · simp [h₃]
+        · obtain ⟨_, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h₃
+          simp_all
 
 /-- The penultimate vertex of a walk, or the only vertex in a nil walk. -/
 abbrev penultimate (p : G.Walk u v) : V := p.getVert (p.length - 1)
