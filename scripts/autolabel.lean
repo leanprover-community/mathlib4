@@ -326,7 +326,7 @@ unsafe def main (args : List String): IO UInt32 := do
         println s!"::notice::Did not add label '{label}', since {t_labels_already_present} \
                   were already present"
     | none =>
-      println s!"::warning::no PR-number provided, not adding labels. \
+      println s!"::notice::no PR-number provided, not adding labels. \
       (call `lake exe autolabel 150602` to add the labels to PR `150602`)"
   | _ =>
     println s!"::notice::not adding multiple labels: {labels}"
