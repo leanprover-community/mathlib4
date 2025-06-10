@@ -188,9 +188,11 @@ theorem mem_support_iff {f : SkewMonoidAlgebra k G} {a : G} : a ∈ f.support �
   rcases f with ⟨⟩
   simp only [coeff, support_ofFinsupp, Finsupp.mem_support_iff, ne_eq, implies_true]
 
-theorem not_mem_support_iff {f : SkewMonoidAlgebra k G} {a : G} :
+theorem notMem_support_iff {f : SkewMonoidAlgebra k G} {a : G} :
     a ∉ f.support ↔ f.coeff a = 0 := by
   simp only [mem_support_iff, ne_eq, not_not]
+
+@[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
 
 theorem ext_iff {p q : SkewMonoidAlgebra k G} : p = q ↔ ∀ n, coeff p n = coeff q n := by
   rcases p with ⟨f : G →₀ k⟩
@@ -301,7 +303,7 @@ theorem ofFinsupp_eq_one {a} :
     (⟨a⟩ : SkewMonoidAlgebra k G) = 1 ↔ a = Finsupp.single 1 1 := by
   rw [← ofFinsupp_one, ofFinsupp_inj]
 
-theorem single_one_one  : single 1 (1 : k) = 1 := rfl
+theorem single_one_one : single 1 (1 : k) = 1 := rfl
 
 theorem one_def : (1 : SkewMonoidAlgebra k G) = single 1 1 := rfl
 

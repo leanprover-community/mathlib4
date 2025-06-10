@@ -28,13 +28,13 @@ itself, or simply Artinian if it is both left and right Artinian.
 
 ## Implementation Details
 
-The predicate `IsArtinianRing` is defined in `Mathlib.RingTheory.Artinian.Ring` instead, so that we
-can apply basic API on artinian modules to division rings without a heavy import.
+The predicate `IsArtinianRing` is defined in `Mathlib/RingTheory/Artinian/Ring.lean` instead,
+so that we can apply basic API on artinian modules to division rings without a heavy import.
 
 ## References
 
 * [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
-* [samuel]
+* [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 
 ## Tags
 

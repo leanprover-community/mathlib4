@@ -101,9 +101,10 @@ instance : Membership α (Finset α) :=
 theorem mem_def {a : α} {s : Finset α} : a ∈ s ↔ a ∈ s.1 :=
   Iff.rfl
 
+-- If https://github.com/leanprover/lean4/issues/2678 is resolved-
+-- this can be changed back to an `Iff`, but for now we would like `dsimp` to use it.
 @[simp]
-theorem mem_val {a : α} {s : Finset α} : a ∈ s.1 ↔ a ∈ s :=
-  Iff.rfl
+theorem mem_val {a : α} {s : Finset α} : (a ∈ s.1) = (a ∈ s) := rfl
 
 @[simp]
 theorem mem_mk {a : α} {s nd} : a ∈ @Finset.mk α s nd ↔ a ∈ s :=
@@ -117,7 +118,6 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 
 /-! ### set coercion -/
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- Convert a finset to a set in the natural way. -/
 @[coe] def toSet (s : Finset α) : Set α :=
   { a | a ∈ s }
@@ -253,8 +253,10 @@ theorem Superset.trans {s₁ s₂ s₃ : Finset α} : s₁ ⊇ s₂ → s₂ ⊇
 theorem mem_of_subset {s₁ s₂ : Finset α} {a : α} : s₁ ⊆ s₂ → a ∈ s₁ → a ∈ s₂ :=
   Multiset.mem_of_subset
 
-theorem not_mem_mono {s t : Finset α} (h : s ⊆ t) {a : α} : a ∉ t → a ∉ s :=
+theorem notMem_mono {s t : Finset α} (h : s ⊆ t) {a : α} : a ∉ t → a ∉ s :=
   mt <| @h _
+
+@[deprecated (since := "2025-05-23")] alias not_mem_mono := notMem_mono
 
 alias not_mem_subset := not_mem_mono
 
@@ -361,10 +363,10 @@ instance instDecidableRelSubset [DecidableEq α] : DecidableRel (α := Finset α
 instance instDecidableRelSSubset [DecidableEq α] : DecidableRel (α := Finset α) (· ⊂ ·) :=
   fun _ _ ↦ instDecidableAnd
 
-instance instDecidableLE [DecidableEq α] : DecidableRel (α := Finset α) (· ≤ ·) :=
+instance instDecidableLE [DecidableEq α] : DecidableLE (Finset α) :=
   instDecidableRelSubset
 
-instance instDecidableLT [DecidableEq α] : DecidableRel (α := Finset α) (· < ·) :=
+instance instDecidableLT [DecidableEq α] : DecidableLT (Finset α) :=
   instDecidableRelSSubset
 
 instance decidableDExistsFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a ∈ s), Decidable (p a h)] :

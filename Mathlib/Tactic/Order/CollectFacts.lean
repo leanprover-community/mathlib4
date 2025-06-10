@@ -116,9 +116,9 @@ a pair `(idxToAtom, facts)`, where the map `idxToAtom` converts indices to found
 atomic expressions of type `α`, and `facts` contains all collected `AtomicFact`s about them. -/
 def collectFacts (g : MVarId) :
     MetaM <| Std.HashMap Expr <| Std.HashMap Nat Expr × Array AtomicFact := g.withContext do
-  let res := (← (collectFactsImp g).run Std.HashMap.empty).snd
+  let res := (← (collectFactsImp g).run ∅).snd
   return res.map fun _ (atomToIdx, facts) =>
-    let idxToAtom : Std.HashMap Nat Expr := atomToIdx.fold (init := .empty) fun acc _ value =>
+    let idxToAtom : Std.HashMap Nat Expr := atomToIdx.fold (init := ∅) fun acc _ value =>
       acc.insert value.fst value.snd
     (idxToAtom, facts)
 

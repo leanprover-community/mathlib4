@@ -12,7 +12,7 @@ import Mathlib.Algebra.Group.Hom.Defs
 
 ## Main definitions
 
- * `map_dvd`
+* `map_dvd`
 
 ## Tags
 

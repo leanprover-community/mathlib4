@@ -16,11 +16,11 @@ import Mathlib.Tactic.Lift
 
 Sets in Lean are homogeneous; all their elements have the same type. Sets whose elements
 have type `X` are thus defined as `Set X := X → Prop`. Note that this function need not
-be decidable. The definition is in the module `Mathlib.Data.Set.Defs`.
+be decidable. The definition is in the module `Mathlib/Data/Set/Defs.lean`.
 
 This file provides some basic definitions related to sets and functions not present in the
 definitions file, as well as extra lemmas for functions defined in the definitions file and
-`Mathlib.Data.Set.Operations` (empty set, univ, union, intersection, insert, singleton,
+`Mathlib/Data/Set/Operations.lean` (empty set, univ, union, intersection, insert, singleton,
 set-theoretic difference, complement, and powerset).
 
 Note that a set is a term, not a type. There is a coercion from `Set α` to `Type*` sending
@@ -52,7 +52,7 @@ Definitions in the file:
 ## Implementation notes
 
 * `s.Nonempty` is to be preferred to `s ≠ ∅` or `∃ x, x ∈ s`. It has the advantage that
-the `s.Nonempty` dot notation can be used.
+  the `s.Nonempty` dot notation can be used.
 
 * For `s : Set α`, do not use `Subtype s`. Instead use `↥s` or `(s : Type*)` or `s`.
 
@@ -195,6 +195,10 @@ theorem mem_of_mem_of_subset {x : α} {s t : Set α} (hx : x ∈ s) (h : s ⊆ t
 theorem forall_in_swap {p : α → β → Prop} : (∀ a ∈ s, ∀ (b), p a b) ↔ ∀ (b), ∀ a ∈ s, p a b := by
   tauto
 
+theorem setOf_injective : Function.Injective (@setOf α) := injective_id
+
+theorem setOf_inj {p q : α → Prop} : { x | p x } = { x | q x } ↔ p = q := Iff.rfl
+
 /-! ### Lemmas about `mem` and `setOf` -/
 
 theorem mem_setOf {a : α} {p : α → Prop} : a ∈ { x | p x } ↔ p a :=
@@ -211,8 +215,10 @@ argument to `simp`. -/
 theorem _root_.Membership.mem.out {p : α → Prop} {a : α} (h : a ∈ { x | p x }) : p a :=
   h
 
-theorem nmem_setOf_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p a :=
+theorem notMem_setOf_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p a :=
   Iff.rfl
+
+@[deprecated (since := "2025-05-24")] alias nmem_setOf_iff := notMem_setOf_iff
 
 @[simp]
 theorem setOf_mem_eq {s : Set α} : { x | x ∈ s } = s :=
@@ -315,8 +321,10 @@ theorem eq_of_subset_of_subset {a b : Set α} : a ⊆ b → b ⊆ a → a = b :=
 theorem mem_of_subset_of_mem {s₁ s₂ : Set α} {a : α} (h : s₁ ⊆ s₂) : a ∈ s₁ → a ∈ s₂ :=
   @h _
 
-theorem not_mem_subset (h : s ⊆ t) : a ∉ t → a ∉ s :=
+theorem notMem_subset (h : s ⊆ t) : a ∉ t → a ∉ s :=
   mt <| mem_of_subset_of_mem h
+
+@[deprecated (since := "2025-05-23")] alias not_mem_subset := notMem_subset
 
 theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
   simp only [subset_def, not_forall, exists_prop]
@@ -351,11 +359,15 @@ protected theorem ssubset_of_subset_of_ssubset {s₁ s₂ s₃ : Set α} (hs₁s
     (hs₂s₃ : s₂ ⊂ s₃) : s₁ ⊂ s₃ :=
   ⟨Subset.trans hs₁s₂ hs₂s₃.1, fun hs₃s₁ => hs₂s₃.2 (Subset.trans hs₃s₁ hs₁s₂)⟩
 
-theorem not_mem_empty (x : α) : ¬x ∈ (∅ : Set α) :=
+theorem notMem_empty (x : α) : x ∉ (∅ : Set α) :=
   id
 
-theorem not_not_mem : ¬a ∉ s ↔ a ∈ s :=
+@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
+
+theorem not_notMem : ¬a ∉ s ↔ a ∈ s :=
   not_not
+
+@[deprecated (since := "2025-05-23")] alias not_not_mem := not_notMem
 
 /-! ### Non-empty sets -/
 
@@ -469,11 +481,16 @@ theorem empty_subset (s : Set α) : ∅ ⊆ s :=
 theorem subset_empty_iff {s : Set α} : s ⊆ ∅ ↔ s = ∅ :=
   (Subset.antisymm_iff.trans <| and_iff_left (empty_subset _)).symm
 
-theorem eq_empty_iff_forall_not_mem {s : Set α} : s = ∅ ↔ ∀ x, x ∉ s :=
+theorem eq_empty_iff_forall_notMem {s : Set α} : s = ∅ ↔ ∀ x, x ∉ s :=
   subset_empty_iff.symm
 
-theorem eq_empty_of_forall_not_mem (h : ∀ x, x ∉ s) : s = ∅ :=
+@[deprecated (since := "2025-05-23")]
+alias eq_empty_iff_forall_not_mem := eq_empty_iff_forall_notMem
+
+theorem eq_empty_of_forall_notMem (h : ∀ x, x ∉ s) : s = ∅ :=
   subset_empty_iff.1 h
+
+@[deprecated (since := "2025-05-23")] alias eq_empty_of_forall_not_mem := eq_empty_of_forall_notMem
 
 theorem eq_empty_of_subset_empty {s : Set α} : s ⊆ ∅ → s = ∅ :=
   subset_empty_iff.1
@@ -488,7 +505,7 @@ instance uniqueEmpty [IsEmpty α] : Unique (Set α) where
 
 /-- See also `Set.nonempty_iff_ne_empty`. -/
 theorem not_nonempty_iff_eq_empty {s : Set α} : ¬s.Nonempty ↔ s = ∅ := by
-  simp only [Set.Nonempty, not_exists, eq_empty_iff_forall_not_mem]
+  simp only [Set.Nonempty, not_exists, eq_empty_iff_forall_notMem]
 
 /-- See also `Set.not_nonempty_iff_eq_empty`. -/
 theorem nonempty_iff_ne_empty : s.Nonempty ↔ s ≠ ∅ :=
@@ -496,7 +513,7 @@ theorem nonempty_iff_ne_empty : s.Nonempty ↔ s ≠ ∅ :=
 
 /-- See also `nonempty_iff_ne_empty'`. -/
 theorem not_nonempty_iff_eq_empty' : ¬Nonempty s ↔ s = ∅ := by
-  rw [nonempty_subtype, not_exists, eq_empty_iff_forall_not_mem]
+  rw [nonempty_subtype, not_exists, eq_empty_iff_forall_notMem]
 
 /-- See also `not_nonempty_iff_eq_empty'`. -/
 theorem nonempty_iff_ne_empty' : Nonempty s ↔ s ≠ ∅ :=
@@ -547,7 +564,7 @@ theorem setOf_true : { _x : α | True } = univ :=
 
 @[simp]
 theorem univ_eq_empty_iff : (univ : Set α) = ∅ ↔ IsEmpty α :=
-  eq_empty_iff_forall_not_mem.trans
+  eq_empty_iff_forall_notMem.trans
     ⟨fun H => ⟨fun x => H x trivial⟩, fun H x _ => @IsEmpty.false α H x⟩
 
 theorem empty_ne_univ [Nonempty α] : (∅ : Set α) ≠ univ := fun e =>
@@ -578,11 +595,16 @@ theorem eq_univ_of_subset {s t : Set α} (h : s ⊆ t) (hs : s = univ) : t = uni
 theorem exists_mem_of_nonempty (α) : ∀ [Nonempty α], ∃ x : α, x ∈ (univ : Set α)
   | ⟨x⟩ => ⟨x, trivial⟩
 
-theorem ne_univ_iff_exists_not_mem {α : Type*} (s : Set α) : s ≠ univ ↔ ∃ a, a ∉ s := by
+theorem ne_univ_iff_exists_notMem {α : Type*} (s : Set α) : s ≠ univ ↔ ∃ a, a ∉ s := by
   rw [← not_forall, ← eq_univ_iff_forall]
 
-theorem not_subset_iff_exists_mem_not_mem {α : Type*} {s t : Set α} :
+@[deprecated (since := "2025-05-23")] alias ne_univ_iff_exists_not_mem := ne_univ_iff_exists_notMem
+
+theorem not_subset_iff_exists_mem_notMem {α : Type*} {s t : Set α} :
     ¬s ⊆ t ↔ ∃ x, x ∈ s ∧ x ∉ t := by simp [subset_def]
+
+@[deprecated (since := "2025-05-23")]
+alias not_subset_iff_exists_mem_not_mem := not_subset_iff_exists_mem_notMem
 
 theorem univ_unique [Unique α] : @Set.univ α = {default} :=
   Set.ext fun x => iff_of_true trivial <| Subsingleton.elim x default
@@ -690,7 +712,6 @@ theorem subset_union_of_subset_left {s t : Set α} (h : s ⊆ t) (u : Set α) : 
 theorem subset_union_of_subset_right {s u : Set α} (h : s ⊆ u) (t : Set α) : s ⊆ t ∪ u :=
   h.trans subset_union_right
 
--- Porting note: replaced `⊔` in RHS
 theorem union_congr_left (ht : t ⊆ s ∪ u) (hu : u ⊆ s ∪ t) : s ∪ t = s ∪ u :=
   sup_congr_left ht hu
 
@@ -713,6 +734,14 @@ theorem union_univ (s : Set α) : s ∪ univ = univ := sup_top_eq _
 
 @[simp]
 theorem univ_union (s : Set α) : univ ∪ s = univ := top_sup_eq _
+
+@[simp]
+theorem ssubset_union_left_iff : s ⊂ s ∪ t ↔ ¬ t ⊆ s :=
+  left_lt_sup
+
+@[simp]
+theorem ssubset_union_right_iff : t ⊂ s ∪ t ↔ ¬ s ⊆ t :=
+  right_lt_sup
 
 /-! ### Lemmas about intersection -/
 
@@ -831,6 +860,14 @@ theorem inter_setOf_eq_sep (s : Set α) (p : α → Prop) : s ∩ {a | p a} = {a
 theorem setOf_inter_eq_sep (p : α → Prop) (s : Set α) : {a | p a} ∩ s = {a ∈ s | p a} :=
   inter_comm _ _
 
+@[simp]
+theorem inter_ssubset_right_iff : s ∩ t ⊂ t ↔ ¬ t ⊆ s :=
+  inf_lt_right
+
+@[simp]
+theorem inter_ssubset_left_iff : s ∩ t ⊂ s ↔ ¬ s ⊆ t :=
+  inf_lt_left
+
 /-! ### Distributivity laws -/
 
 theorem inter_union_distrib_left (s t u : Set α) : s ∩ (t ∪ u) = s ∩ t ∪ s ∩ u :=
@@ -942,6 +979,10 @@ lemma inter_sdiff_left_comm (s t u : Set α) : s ∩ (t \ u) = t ∩ (s \ u) := 
 theorem diff_union_diff_cancel (hts : t ⊆ s) (hut : u ⊆ t) : s \ t ∪ t \ u = s \ u :=
   sdiff_sup_sdiff_cancel hts hut
 
+/-- A version of `diff_union_diff_cancel` with more general hypotheses. -/
+theorem diff_union_diff_cancel' (hi : s ∩ u ⊆ t) (hu : t ⊆ s ∪ u) : (s \ t) ∪ (t \ u) = s \ u :=
+  sdiff_sup_sdiff_cancel' hi hu
+
 theorem diff_diff_eq_sdiff_union (h : u ⊆ s) : s \ (t \ u) = s \ t ∪ u := sdiff_sdiff_eq_sdiff_sup h
 
 theorem inter_diff_distrib_left (s t u : Set α) : s ∩ (t \ u) = (s ∩ t) \ (s ∩ u) :=
@@ -949,6 +990,9 @@ theorem inter_diff_distrib_left (s t u : Set α) : s ∩ (t \ u) = (s ∩ t) \ (
 
 theorem inter_diff_distrib_right (s t u : Set α) : (s \ t) ∩ u = (s ∩ u) \ (t ∩ u) :=
   inf_sdiff_distrib_right _ _ _
+
+theorem diff_inter_distrib_right (s t r : Set α) : (t ∩ r) \ s = (t \ s) ∩ (r \ s) :=
+  inf_sdiff
 
 /-! ### Lemmas about complement -/
 
@@ -961,11 +1005,15 @@ theorem mem_compl {s : Set α} {x : α} (h : x ∉ s) : x ∈ sᶜ :=
 theorem compl_setOf {α} (p : α → Prop) : { a | p a }ᶜ = { a | ¬p a } :=
   rfl
 
-theorem not_mem_of_mem_compl {s : Set α} {x : α} (h : x ∈ sᶜ) : x ∉ s :=
+theorem notMem_of_mem_compl {s : Set α} {x : α} (h : x ∈ sᶜ) : x ∉ s :=
   h
 
-theorem not_mem_compl_iff {x : α} : x ∉ sᶜ ↔ x ∈ s :=
+@[deprecated (since := "2025-05-23")] alias not_mem_of_mem_compl := notMem_of_mem_compl
+
+theorem notMem_compl_iff {x : α} : x ∉ sᶜ ↔ x ∈ s :=
   not_not
+
+@[deprecated (since := "2025-05-23")] alias not_mem_compl_iff := notMem_compl_iff
 
 @[simp]
 theorem inter_compl_self (s : Set α) : s ∩ sᶜ = ∅ :=
@@ -1007,7 +1055,7 @@ lemma inl_compl_union_inr_compl {α β : Type*} {s : Set α} {t : Set β} :
   aesop
 
 theorem nonempty_compl : sᶜ.Nonempty ↔ s ≠ univ :=
-  (ne_univ_iff_exists_not_mem s).symm
+  (ne_univ_iff_exists_notMem s).symm
 
 theorem union_eq_compl_compl_inter_compl (s t : Set α) : s ∪ t = (sᶜ ∩ tᶜ)ᶜ :=
   ext fun _ => or_iff_not_and_not
@@ -1048,13 +1096,17 @@ theorem inter_compl_nonempty_iff {s t : Set α} : (s ∩ tᶜ).Nonempty ↔ ¬s 
 
 /-! ### Lemmas about set difference -/
 
-theorem not_mem_diff_of_mem {s t : Set α} {x : α} (hx : x ∈ t) : x ∉ s \ t := fun h => h.2 hx
+theorem notMem_diff_of_mem {s t : Set α} {x : α} (hx : x ∈ t) : x ∉ s \ t := fun h => h.2 hx
+
+@[deprecated (since := "2025-05-23")] alias not_mem_diff_of_mem := notMem_diff_of_mem
 
 theorem mem_of_mem_diff {s t : Set α} {x : α} (h : x ∈ s \ t) : x ∈ s :=
   h.left
 
-theorem not_mem_of_mem_diff {s t : Set α} {x : α} (h : x ∈ s \ t) : x ∉ t :=
+theorem notMem_of_mem_diff {s t : Set α} {x : α} (h : x ∈ s \ t) : x ∉ t :=
   h.right
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_mem_diff := notMem_of_mem_diff
 
 theorem diff_eq_compl_inter {s t : Set α} : s \ t = tᶜ ∩ s := by rw [diff_eq, inter_comm]
 
@@ -1162,7 +1214,7 @@ theorem diff_subset_comm {s t u : Set α} : s \ t ⊆ u ↔ s \ u ⊆ t :=
 theorem diff_inter {s t u : Set α} : s \ (t ∩ u) = s \ t ∪ s \ u :=
   sdiff_inf
 
-theorem diff_inter_diff {s t u : Set α} : s \ t ∩ (s \ u) = s \ (t ∪ u) :=
+theorem diff_inter_diff : s \ t ∩ (s \ u) = s \ (t ∪ u) :=
   sdiff_sup.symm
 
 theorem diff_compl : s \ tᶜ = s ∩ t :=
@@ -1173,6 +1225,12 @@ theorem compl_diff : (t \ s)ᶜ = s ∪ tᶜ :=
 
 theorem diff_diff_right {s t u : Set α} : s \ (t \ u) = s \ t ∪ s ∩ u :=
   sdiff_sdiff_right'
+
+theorem inter_diff_right_comm : (s ∩ t) \ u = s \ u ∩ t := by
+  rw [diff_eq, diff_eq, inter_right_comm]
+
+theorem diff_inter_right_comm : (s \ u) ∩ t = (s ∩ t) \ u := by
+  rw [diff_eq, diff_eq, inter_right_comm]
 
 @[simp]
 theorem union_diff_self {s t : Set α} : s ∪ t \ s = s ∪ t :=
@@ -1205,6 +1263,9 @@ theorem diff_diff_cancel_left {s t : Set α} (h : s ⊆ t) : t \ (t \ s) = s :=
 
 theorem union_eq_diff_union_diff_union_inter (s t : Set α) : s ∪ t = s \ t ∪ t \ s ∪ s ∩ t :=
   sup_eq_sdiff_sup_sdiff_sup_inf
+
+@[simp] lemma sdiff_sep_self (s : Set α) (p : α → Prop) : s \ {a ∈ s | p a} = {a ∈ s | ¬ p a} :=
+  diff_self_inter
 
 /-! ### Powerset -/
 
@@ -1448,3 +1509,5 @@ protected lemma setSubtypeComm_symm_apply (p : α → Prop) (s : {s // ∀ a ∈
   rfl
 
 end Equiv
+
+set_option linter.style.longFile 1700

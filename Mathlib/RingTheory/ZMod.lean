@@ -29,7 +29,7 @@ theorem ZMod.ker_intCastRingHom (n : ℕ) :
     ZMod.intCast_zmod_eq_zero_iff_dvd]
 
 /-- Two ring homomorphisms into `ZMod n` with equal kernels are equal. -/
-theorem ZMod.ringHom_eq_of_ker_eq {n : ℕ} {R : Type*} [CommRing R] (f g : R →+* ZMod n)
+theorem ZMod.ringHom_eq_of_ker_eq {n : ℕ} {R : Type*} [Ring R] (f g : R →+* ZMod n)
     (h : RingHom.ker f = RingHom.ker g) : f = g := by
   have := f.liftOfRightInverse_comp _ (ZMod.ringHom_rightInverse f) ⟨g, le_of_eq h⟩
   rw [Subtype.coe_mk] at this

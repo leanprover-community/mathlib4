@@ -35,14 +35,15 @@ open ContinuousLinearMap Filter Set
 /-- A proper cone is a pointed cone `K` that is closed. Proper cones have the nice property that
 they are equal to their double dual, see `ProperCone.dual_dual`.
 This makes them useful for defining cone programs and proving duality theorems. -/
-structure ProperCone (𝕜 : Type*) (E : Type*) [OrderedSemiring 𝕜] [AddCommMonoid E]
+structure ProperCone (𝕜 : Type*) (E : Type*)
+    [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [AddCommMonoid E]
     [TopologicalSpace E] [Module 𝕜 E] extends Submodule {c : 𝕜 // 0 ≤ c} E where
   isClosed' : IsClosed (carrier : Set E)
 
 namespace ProperCone
 section Module
 
-variable {𝕜 : Type*} [OrderedSemiring 𝕜]
+variable {𝕜 : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [Module 𝕜 E]
 
 /-- A `PointedCone` is defined as an alias of submodule. We replicate the abbreviation here and
@@ -53,11 +54,6 @@ attribute [coe] toPointedCone
 
 instance : Coe (ProperCone 𝕜 E) (PointedCone 𝕜 E) :=
   ⟨toPointedCone⟩
-
--- Porting note: now a syntactic tautology
--- @[simp]
--- theorem toConvexCone_eq_coe (K : ProperCone 𝕜 E) : K.toConvexCone = K :=
---   rfl
 
 theorem toPointedCone_injective : Function.Injective ((↑) : ProperCone 𝕜 E → PointedCone 𝕜 E) :=
   fun S T h => by cases S; cases T; congr
@@ -88,7 +84,8 @@ end Module
 section PositiveCone
 
 variable (𝕜 E)
-variable [OrderedSemiring 𝕜] [OrderedAddCommGroup E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+  [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
   [TopologicalSpace E] [OrderClosedTopology E]
 
 /-- The positive cone is the proper cone formed by the set of nonnegative elements in an ordered
@@ -109,7 +106,7 @@ end PositiveCone
 
 section Module
 
-variable {𝕜 : Type*} [OrderedSemiring 𝕜]
+variable {𝕜 : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [T1Space E] [Module 𝕜 E]
 
 instance : Zero (ProperCone 𝕜 E) :=
@@ -214,7 +211,7 @@ theorem dual_dual (K : ProperCone ℝ E) : K.dual.dual = K :=
     (K : ConvexCone ℝ E).innerDualCone_of_innerDualCone_eq_self K.nonempty K.isClosed
 
 /-- This is a relative version of
-`ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem`, which we recover by setting
+`ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem`, which we recover by setting
 `f` to be the identity map. This is also a geometric interpretation of the Farkas' lemma
 stated using proper cones. -/
 theorem hyperplane_separation (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F} :
@@ -225,7 +222,6 @@ theorem hyperplane_separation (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F}
       simp_rw [mem_map, PointedCone.mem_closure, PointedCone.coe_map, coe_coe,
         mem_closure_iff_seq_limit, mem_image, SetLike.mem_coe, mem_coe, mem_dual,
         adjoint_inner_right, forall_exists_index, and_imp]
-
       -- there is a sequence `seq : ℕ → F` in the image of `f` that converges to `b`
       rintro seq hmem htends y hinner
       suffices h : ∀ n, 0 ≤ ⟪y, seq n⟫_ℝ from
@@ -241,13 +237,11 @@ theorem hyperplane_separation (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F}
       -- suppose `b ∉ K.map f`
       intro h
       contrapose! h
-
       -- as `b ∉ K.map f`, there is a hyperplane `y` separating `b` from `K.map f`
-      let C := @PointedCone.toConvexCone ℝ F _ _ _ (K.map f)
+      let C := PointedCone.toConvexCone (𝕜 := ℝ) (E := F) (K.map f)
       obtain ⟨y, hxy, hyb⟩ :=
-        @ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem
+        @ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem
         _ _ _ _ C (K.map f).nonempty (K.map f).isClosed b h
-
       -- the rest of the proof is a straightforward algebraic manipulation
       refine ⟨y, ?_, hyb⟩
       simp_rw [ProperCone.mem_dual, adjoint_inner_right]
@@ -259,9 +253,12 @@ theorem hyperplane_separation (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F}
         SetLike.mem_coe]
       exact ⟨x, hxK, rfl⟩)
 
-theorem hyperplane_separation_of_nmem (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F}
+theorem hyperplane_separation_of_notMem (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F}
     (disj : b ∉ K.map f) : ∃ y : F, adjoint f y ∈ K.dual ∧ ⟪y, b⟫_ℝ < 0 := by
   contrapose! disj; rwa [K.hyperplane_separation]
+
+@[deprecated (since := "2025-05-24")]
+alias hyperplane_separation_of_nmem := hyperplane_separation_of_notMem
 
 end CompleteSpace
 

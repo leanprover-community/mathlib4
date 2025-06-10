@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 import Mathlib.MeasureTheory.MeasurableSpace.Prod
+import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
 import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
@@ -261,10 +262,8 @@ instance instMeasurableInv : MeasurableInv ℝ≥0∞ :=
   ⟨continuous_inv.measurable⟩
 
 instance : MeasurableSMul ℝ≥0 ℝ≥0∞ where
-  measurable_const_smul := by
-    simp_rw [ENNReal.smul_def]
-    exact fun _ ↦ MeasurableSMul.measurable_const_smul _
-  measurable_smul_const := fun x ↦ by
+  measurable_const_smul _ := by simp_rw [ENNReal.smul_def]; exact measurable_const_smul _
+  measurable_smul_const _ := by
     simp_rw [ENNReal.smul_def]
     exact measurable_coe_nnreal_ennreal.mul_const _
 
@@ -511,9 +510,9 @@ private lemma measurable_const_mul (c : EReal) : Measurable fun (x : EReal) ↦ 
     refine Measurable.piecewise (measurableSet_singleton _) measurable_const ?_
     exact Measurable.piecewise measurableSet_Iio measurable_const measurable_const
   induction c with
-  | h_bot => rwa [h1]
-  | h_real c => exact (measurable_id.const_mul _).coe_real_ereal
-  | h_top =>
+  | bot => rwa [h1]
+  | coe c => exact (measurable_id.const_mul _).coe_real_ereal
+  | top =>
     simp_rw [← neg_bot, neg_mul]
     apply Measurable.neg
     rwa [h1]

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Felix Weilacher
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 import Mathlib.Topology.MetricSpace.Perfect
 import Mathlib.Topology.Separation.CountableSeparatingOn
 
@@ -421,11 +422,10 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
   let p : ℕ → A := fun n => F^[n] p0
   have prec : ∀ n, p (n + 1) = F (p n) := fun n => by simp only [p, iterate_succ', Function.comp]
   -- check that at the `n`-th step we deal with cylinders of length `n`
-  have pn_fst : ∀ n, (p n).1.1 = n := by
-    intro n
-    induction' n with n IH
-    · rfl
-    · simp only [prec, hFn, IH]
+  have pn_fst : ∀ n, (p n).1.1 = n := fun n ↦ by
+    induction n with
+    | zero => rfl
+    | succ n IH => simp only [prec, hFn, IH]
   -- check that the cylinders we construct are indeed decreasing, by checking that the coordinates
   -- are stationary.
   have Ix : ∀ m n, m + 1 ≤ n → (p n).1.2.1 m = (p (m + 1)).1.2.1 m := by
@@ -664,7 +664,7 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
     the image `f '' (s i)` would be included in `v` by continuity of `f`, so its closure would be
     contained in the closure of `v`, and therefore it would be disjoint from `w`. This is a
     contradiction since `x` belongs both to this closure and to `w`. -/
-  letI := upgradePolishSpace γ
+  letI := TopologicalSpace.upgradeIsCompletelyMetrizable γ
   obtain ⟨b, b_count, b_nonempty, hb⟩ :
     ∃ b : Set (Set γ), b.Countable ∧ ∅ ∉ b ∧ IsTopologicalBasis b := exists_countable_basis γ
   haveI : Encodable b := b_count.toEncodable
@@ -929,7 +929,7 @@ theorem measurableSet_exists_tendsto [TopologicalSpace γ] [PolishSpace γ] [Mea
     MeasurableSet { x | ∃ c, Tendsto (fun n => f n x) l (𝓝 c) } := by
   rcases l.eq_or_neBot with rfl | hl
   · simp
-  letI := upgradePolishSpace γ
+  letI := TopologicalSpace.upgradeIsCompletelyMetrizable γ
   rcases l.exists_antitone_basis with ⟨u, hu⟩
   simp_rw [← cauchy_map_iff_exists_tendsto]
   change MeasurableSet { x | _ ∧ _ }

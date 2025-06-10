@@ -53,6 +53,11 @@ lemma iUnion_inter (hu : IsOpenCover u) (s : Set X) :
     ⋃ i, s ∩ u i = s := by
   simp [← inter_iUnion, hu.iSup_set_eq_univ]
 
+lemma isTopologicalBasis (hu : IsOpenCover u)
+    {B : ∀ i, Set (Set (u i))} (hB : ∀ i, IsTopologicalBasis (B i)) :
+    IsTopologicalBasis (⋃ i, (Subtype.val '' ·) '' B i) :=
+  isTopologicalBasis_of_cover (fun i ↦ (u i).2) hu.iSup_set_eq_univ hB
+
 end IsOpenCover
 
 end TopologicalSpace

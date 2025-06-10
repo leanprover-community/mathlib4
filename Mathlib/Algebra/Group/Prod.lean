@@ -7,9 +7,11 @@ import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Group.Torsion
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.Notation.Prod
-import Mathlib.Logic.Equiv.Basic
+import Mathlib.Logic.Equiv.Prod
+import Mathlib.Tactic.TermCongr
 
 /-!
 # Monoid, group etc structures on `M × N`
@@ -24,7 +26,7 @@ We also prove trivial `simp` lemmas, and define the following operations on `Mon
 * `f.prod g` : `M →* N × P`: sends `x` to `(f x, g x)`;
 * When `P` is commutative, `f.coprod g : M × N →* P` sends `(x, y)` to `f x * g y`
   (without the commutativity assumption on `P`, see `MonoidHom.noncommPiCoprod`);
-* `f.prodMap g : M × N → M' × N'`: `prod.map f g` as a `MonoidHom`,
+* `f.prodMap g : M × N → M' × N'`: `Prod.map f g` as a `MonoidHom`,
   sends `(x, y)` to `(f x, g y)`.
 
 ## Main declarations
@@ -43,37 +45,12 @@ variable {G : Type*} {H : Type*} {M : Type*} {N : Type*} {P : Type*}
 namespace Prod
 
 @[to_additive]
-instance instMul [Mul M] [Mul N] : Mul (M × N) :=
-  ⟨fun p q => ⟨p.1 * q.1, p.2 * q.2⟩⟩
-
-@[to_additive (attr := simp)]
-theorem fst_mul [Mul M] [Mul N] (p q : M × N) : (p * q).1 = p.1 * q.1 :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem snd_mul [Mul M] [Mul N] (p q : M × N) : (p * q).2 = p.2 * q.2 :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem mk_mul_mk [Mul M] [Mul N] (a₁ a₂ : M) (b₁ b₂ : N) :
-    (a₁, b₁) * (a₂, b₂) = (a₁ * a₂, b₁ * b₂) :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem swap_mul [Mul M] [Mul N] (p q : M × N) : (p * q).swap = p.swap * q.swap :=
-  rfl
-
-@[to_additive]
-theorem mul_def [Mul M] [Mul N] (p q : M × N) : p * q = (p.1 * q.1, p.2 * q.2) :=
-  rfl
-
-@[to_additive]
-theorem one_mk_mul_one_mk [Monoid M] [Mul N] (b₁ b₂ : N) :
+theorem one_mk_mul_one_mk [MulOneClass M] [Mul N] (b₁ b₂ : N) :
     ((1 : M), b₁) * (1, b₂) = (1, b₁ * b₂) := by
   rw [mk_mul_mk, mul_one]
 
 @[to_additive]
-theorem mk_one_mul_mk_one [Mul M] [Monoid N] (a₁ a₂ : M) :
+theorem mk_one_mul_mk_one [Mul M] [MulOneClass N] (a₁ a₂ : M) :
     (a₁, (1 : N)) * (a₂, 1) = (a₁ * a₂, 1) := by
   rw [mk_mul_mk, mul_one]
 
@@ -82,51 +59,8 @@ theorem fst_mul_snd [MulOneClass M] [MulOneClass N] (p : M × N) : (p.fst, 1) * 
   Prod.ext (mul_one p.1) (one_mul p.2)
 
 @[to_additive]
-instance instInv [Inv M] [Inv N] : Inv (M × N) :=
-  ⟨fun p => (p.1⁻¹, p.2⁻¹)⟩
-
-@[to_additive (attr := simp)]
-theorem fst_inv [Inv G] [Inv H] (p : G × H) : p⁻¹.1 = p.1⁻¹ :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem snd_inv [Inv G] [Inv H] (p : G × H) : p⁻¹.2 = p.2⁻¹ :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem inv_mk [Inv G] [Inv H] (a : G) (b : H) : (a, b)⁻¹ = (a⁻¹, b⁻¹) :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem swap_inv [Inv G] [Inv H] (p : G × H) : p⁻¹.swap = p.swap⁻¹ :=
-  rfl
-
-@[to_additive]
 instance [InvolutiveInv M] [InvolutiveInv N] : InvolutiveInv (M × N) :=
   { inv_inv := fun _ => Prod.ext (inv_inv _) (inv_inv _) }
-
-@[to_additive]
-instance instDiv [Div M] [Div N] : Div (M × N) :=
-  ⟨fun p q => ⟨p.1 / q.1, p.2 / q.2⟩⟩
-
-@[to_additive (attr := simp)]
-theorem fst_div [Div G] [Div H] (a b : G × H) : (a / b).1 = a.1 / b.1 :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem snd_div [Div G] [Div H] (a b : G × H) : (a / b).2 = a.2 / b.2 :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem mk_div_mk [Div G] [Div H] (x₁ x₂ : G) (y₁ y₂ : H) :
-    (x₁, y₁) / (x₂, y₂) = (x₁ / x₂, y₁ / y₂) :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem swap_div [Div G] [Div H] (a b : G × H) : (a / b).swap = a.swap / b.swap :=
-  rfl
-
-@[to_additive] lemma div_def [Div M] [Div N] (a b : M × N) : a / b = (a.1 / b.1, a.2 / b.2) := rfl
 
 @[to_additive]
 instance instSemigroup [Semigroup M] [Semigroup N] : Semigroup (M × N) where
@@ -148,6 +82,11 @@ instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
     npow_succ := fun _ _ => Prod.ext (Monoid.npow_succ _ _) (Monoid.npow_succ _ _),
     one_mul := by simp,
     mul_one := by simp }
+
+instance instIsMulTorsionFree [Monoid M] [Monoid N] [IsMulTorsionFree M] [IsMulTorsionFree N] :
+    IsMulTorsionFree (M × N) where
+  pow_left_injective n hn a b hab := by
+    ext <;> apply pow_left_injective hn; exacts [congr(($hab).1), congr(($hab).2)]
 
 @[to_additive Prod.subNegMonoid]
 instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) where
@@ -480,8 +419,8 @@ section prodMap
 variable {M' : Type*} {N' : Type*} [MulOneClass M'] [MulOneClass N'] [MulOneClass P]
   (f : M →* M') (g : N →* N')
 
-/-- `prod.map` as a `MonoidHom`. -/
-@[to_additive prodMap "`prod.map` as an `AddMonoidHom`."]
+/-- `Prod.map` as a `MonoidHom`. -/
+@[to_additive prodMap "`Prod.map` as an `AddMonoidHom`."]
 def prodMap : M × N →* M' × N' :=
   (f.comp (fst M N)).prod (g.comp (snd M N))
 
@@ -615,13 +554,21 @@ def prodCongr (f : M ≃* M') (g : N ≃* N') : M × N ≃* M' × N' :=
   { f.toEquiv.prodCongr g.toEquiv with
     map_mul' := fun _ _ => Prod.ext (map_mul f _ _) (map_mul g _ _) }
 
-/-- Multiplying by the trivial monoid doesn't change the structure. -/
-@[to_additive uniqueProd "Multiplying by the trivial monoid doesn't change the structure."]
+/-- Multiplying by the trivial monoid doesn't change the structure.
+
+This is the `MulEquiv` version of `Equiv.uniqueProd`. -/
+@[to_additive uniqueProd "Multiplying by the trivial monoid doesn't change the structure.
+
+This is the `AddEquiv` version of `Equiv.uniqueProd`."]
 def uniqueProd [Unique N] : N × M ≃* M :=
   { Equiv.uniqueProd M N with map_mul' := fun _ _ => rfl }
 
-/-- Multiplying by the trivial monoid doesn't change the structure. -/
-@[to_additive prodUnique "Multiplying by the trivial monoid doesn't change the structure."]
+/-- Multiplying by the trivial monoid doesn't change the structure.
+
+This is the `MulEquiv` version of `Equiv.prodUnique`. -/
+@[to_additive prodUnique "Multiplying by the trivial monoid doesn't change the structure.
+
+This is the `AddEquiv` version of `Equiv.prodUnique`."]
 def prodUnique [Unique N] : M × N ≃* M :=
   { Equiv.prodUnique M N with map_mul' := fun _ _ => rfl }
 

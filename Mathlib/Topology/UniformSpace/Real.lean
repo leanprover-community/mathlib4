@@ -47,7 +47,7 @@ theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ) :=
   continuous_subtype_val
 
 /-- Embedding of `ℝ≥0` to `ℝ` as a bundled continuous map. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def _root_.ContinuousMap.coeNNRealReal : C(ℝ≥0, ℝ) :=
   ⟨(↑), continuous_coe⟩
 

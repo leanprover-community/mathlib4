@@ -319,11 +319,12 @@ def meqOfSep (P : Cᵒᵖ ⥤ D)
     erw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply];
     rw [← (J.plusObj P).map_comp, ← (J.plusObj P).map_comp, ← op_comp, ← op_comp]
     exact s.condition
-      (Cover.Relation.mk { hf := II.fst.from_middle_condition }
-        { hf := II.snd.from_middle_condition }
-        { g₁ := II.r.g₁ ≫ II.fst.toMiddleHom
-          g₂ := II.r.g₂ ≫ II.snd.toMiddleHom
-          w := by simpa only [Category.assoc, Cover.Arrow.middle_spec] using II.r.w })
+      { fst.hf := II.fst.from_middle_condition
+        snd.hf := II.snd.from_middle_condition
+        r.g₁ := II.r.g₁ ≫ II.fst.toMiddleHom
+        r.g₂ := II.r.g₂ ≫ II.snd.toMiddleHom
+        r.w := by simpa only [Category.assoc, Cover.Arrow.middle_spec] using II.r.w
+        .. }
 
 theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
     (hsep :
@@ -375,7 +376,7 @@ theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
   erw [toPlus_apply (T IB) (t IB) IC]
   rw [← ht, ← ht]
   -- Conclude by constructing the relation showing equality...
-  let IR : S.Relation := Cover.Relation.mk { hf := IB.hf } { hf := I.hf } { w := IA.middle_spec }
+  let IR : S.Relation := { fst.hf := IB.hf, snd.hf := I.hf, r.w := IA.middle_spec, .. }
   exact s.condition IR
 
 variable [(forget D).ReflectsIsomorphisms]
