@@ -144,16 +144,13 @@ theorem ofMon_Comon_ObjX_mul (M : Mon_ (Comon_ C)) :
     μ[(ofMon_Comon_ObjX M).X] = 𝟙 (M.X.X ⊗ M.X.X) ≫ μ[M.X].hom :=
   rfl
 
+attribute [local simp] Mon_Class.tensorObj.one_def Mon_Class.tensorObj.mul_def tensorμ in
 /-- The object level part of the backward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
 @[simps]
 def ofMon_Comon_Obj (M : Mon_ (Comon_ C)) : Bimon_ C where
   X := ofMon_Comon_ObjX M
-  comon :=
-    { counit :=
-        { hom := ε[M.X.X] }
-      comul :=
-        { hom := Δ[M.X.X]
-          mul_hom := by simp [tensorμ] } }
+  comon.counit.hom := ε[M.X.X]
+  comon.comul.hom := Δ[M.X.X]
 
 variable (C) in
 /-- The backward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
@@ -277,6 +274,7 @@ instance (M : Bimon_ C) : Bimon_Class M.X.X where
   comul_assoc' := by
     simp_rw [← Bimon_ClassAux_comul, Comon_Class.comul_assoc]
 
+attribute [local simp] Mon_Class.tensorObj.one_def in
 @[reassoc]
 theorem one_comul (M : C) [Bimon_Class M] :
     η[M] ≫ Δ[M] = (λ_ _).inv ≫ (η[M] ⊗ η[M]) := by
