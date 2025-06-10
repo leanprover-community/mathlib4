@@ -14,7 +14,7 @@ This file adds a few results about the circular order on `Fin n`.
 
 instance (n : ℕ) : CircularOrder (Fin n) := LinearOrder.toCircularOrder _
 
-variable {n : ℕ} (a b c : Fin n)
+variable {n : ℕ} {a b c : Fin n}
 
 lemma Fin.btw_iff : btw a b c ↔ a ≤ b ∧ b ≤ c ∨ b ≤ c ∧ c ≤ a ∨ c ≤ a ∧ a ≤ b := .rfl
 lemma Fin.sbtw_iff [LT α] : sbtw a b c ↔ a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b := .rfl
