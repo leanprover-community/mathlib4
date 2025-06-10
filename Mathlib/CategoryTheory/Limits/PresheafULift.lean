@@ -87,7 +87,8 @@ def restrictedULiftYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) (E :
         simpa using (f.naturality φ).symm }
   invFun g :=
     { app y := (uliftYonedaEquiv.{max w v₂} (y.hom ≫ g)).down
-      naturality := sorry }
+      naturality := by
+        sorry }
   left_inv f := by
     ext X
     let e : CostructuredArrow.mk
@@ -99,7 +100,11 @@ def restrictedULiftYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) (E :
           simp [uliftYoneda]
           rfl )
     simpa [e] using f.naturality e.inv
-  right_inv := sorry
+  right_inv g := by
+    ext X x
+    apply ULift.down_injective
+    dsimp
+    rw [uliftYonedaEquiv_comp, Equiv.apply_symm_apply]
 
 section
 
