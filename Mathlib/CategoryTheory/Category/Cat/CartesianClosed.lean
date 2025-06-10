@@ -110,9 +110,18 @@ instance closed : Closed (Cat.of C) where
       homEquiv_naturality_right :=
         comp_flip_curry_eq }
 
-@[simps!]
 instance cartesianClosed : CartesianClosed Cat.{u, u} where
   closed C := closed C
+
+@[simp]
+lemma cartesianClosed_closed_rightAdj_obj {D : Type u} [Category.{u} D] :
+    ((Closed.rightAdj (C := Cat.{u,u}) (Cat.of C)).obj (Cat.of D)) = Cat.of (C ⥤ D) := rfl
+
+-- (((CategoryTheory.Closed.rightAdj C).map F).obj G).obj X
+
+-- (((CategoryTheory.Closed.rightAdj C).map F).obj G).map f
+
+-- (((CategoryTheory.Closed.rightAdj C).map F).map α).app X
 
 end
 
