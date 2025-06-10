@@ -1,6 +1,7 @@
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 import Mathlib.MeasureTheory.Measure.Complex
+import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
 
 /-!
 # Riesz–Markov–Kakutani representation theorem for complex linear functionals
@@ -43,7 +44,7 @@ theorem uniqueness : True := sorry
 -- It is easy to see that the difference of two regular complex Borel measures on `X` is regular.
 
 
-section ComplexRMK
+namespace ComplexRMK
 
 open NNReal
 open ZeroAtInfty MeasureTheory CompactlySupported CompactlySupportedContinuousMap
@@ -129,14 +130,19 @@ theorem exists_pos_lin_func : ∃ (Λ : C₀(X, ℝ) →L[ℝ] ℝ), ∀ (f : C�
 
 variable [MeasurableSpace X] [BorelSpace X]
 
+/-- The measure induced by a `ℂ`-linear positive functional `Λ`. -/
+noncomputable def rieszMeasure (Φ : C₀(X, ℂ) →L[ℂ] ℂ) : ComplexMeasure X := sorry
+
+
 /-- **Theorem**
-Let `Φ` be a bounded linear functional on `C₀(X, ℂ)`. Then (1) there exists a complex Borel measure
+Let `Φ` be a bounded linear functional on `C₀(X, ℂ)`. Then there exists a complex Borel measure
 `μ` such that, `∀ f : C₀(X, ℂ)`, `Φ f = ∫ x, f x ∂μ`, (2) `‖Φ‖ = |μ|(X)`. -/
-theorem Complex.integral_rieszMeasure : True := by
+theorem Complex.integral_rieszMeasure (f : C₀(X, ℂ)) :
+    -- Φ f = ∫ x, f x ∂(rieszMeasure Φ) ∧
+    ENNReal.ofReal ‖Φ‖ = (rieszMeasure Φ).variation Set.univ := by
   -- ∃ (μ : ComplexMeasure X), ∀ (f : C₀(X, ℂ)),
   --  Φ f = ∫ x, f x ∂μ
   --  ∧ ‖Φ‖ = ComplexMeasureMeasure.totalVariation μ X
-  -- TO DO: define `ComplexMeasureMeasure.totalVariation`
   -- TO DO: define `ComplexMeasure.integral`, maybe in general `VectorMeasure.integral`
 
   -- **Proof** [Rudin 87, Theorem 6.19]
