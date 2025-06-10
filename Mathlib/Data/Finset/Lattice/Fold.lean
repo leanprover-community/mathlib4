@@ -302,7 +302,7 @@ theorem inf_def : s.inf f = (s.1.map f).inf :=
 
 @[simp]
 theorem inf_empty : (∅ : Finset β).inf f = ⊤ :=
-  fold_empty
+  rfl
 
 @[simp]
 theorem inf_cons {b : β} (h : b ∉ s) : (cons b s h).inf f = f b ⊓ s.inf f :=

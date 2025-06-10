@@ -155,7 +155,7 @@ theorem zero_inv : (0 : k⟦X⟧)⁻¹ = 0 :=
 @[simp]
 theorem invOfUnit_eq (φ : k⟦X⟧) (h : constantCoeff k φ ≠ 0) :
     invOfUnit φ (Units.mk0 _ h) = φ⁻¹ :=
-  MvPowerSeries.invOfUnit_eq _ _
+  rfl
 
 @[simp]
 theorem invOfUnit_eq' (φ : k⟦X⟧) (u : Units k) (h : constantCoeff k φ = u) :
