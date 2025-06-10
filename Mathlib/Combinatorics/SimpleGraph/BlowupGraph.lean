@@ -415,17 +415,36 @@ def Flag₂.induceEquiv (F₁ F₂ : Flag β ι) (F : Flag α ι) (t : Set α ) 
     have :=F.induce_labels_eq t h (i := i)
     rwa [← this, he1, ←Subtype.ext_iff] at hi
   left_inv := fun e ↦ by ext <;> dsimp
-  right_inv := fun e ↦ by ext <;> dsimp 
+  right_inv := fun e ↦ by ext <;> dsimp
 
 open Classical in
--- TODO next: prove this (will require something like `Flag.induceEquiv` first.)
+-- TODO next: prove this
 lemma Flag.sum_card_embeddings_induce_eq_compat (F₁ F₂ : Flag β ι) (F : Flag α ι) [Fintype β]
   {k : ℕ} (hk : 2 * ‖β‖ - ‖ι‖ ≤ k) : ∑ t : Finset α with #t = k,
     (if ht : ∀ i, F.θ i ∈ t then  ‖(F₁, F₂) ↪f₂ (F.induce t ht)‖ else 0)
-              = ‖(F₁, F₂) ↪f₂ F‖ * Nat.choose (‖α‖ - (2 * ‖β‖ - ‖ι‖ )) (k - 2 * ‖β‖ - ‖ι‖ ) := by
+              = ‖(F₁, F₂) ↪f₂ F‖ * Nat.choose (‖α‖ - 2 * ‖β‖ + ‖ι‖ ) (k - 2 * ‖β‖ + ‖ι‖ ) := by
 
-  sorry
-
+  calc
+  _ = ∑ t : Finset α , ∑ e : ((F₁,F₂) ↪f₂ F),
+          ite (#t = k ∧ (∀ i, F.θ i ∈ t) ∧ Set.range e.1.1.toRelEmbedding ⊆ t
+            ∧ Set.range e.1.2.toRelEmbedding ⊆ t) 1 0 := by
+    simp_rw [Fintype.card_congr <| Flag₂.induceEquiv .., dite_eq_ite]
+    rw [sum_filter];
+    simp only [Set.coe_setOf, FlagEmbedding.Compat, Set.mem_setOf_eq, sum_boole, Nat.cast_id]
+    congr with t
+    split_ifs with h1 h2
+    · simp_rw [h1, h2]
+      simp only [Fintype.card_subtype, implies_true, true_and]
+      convert rfl
+    · by_contra! he
+      obtain ⟨e, he⟩ := card_ne_zero.1 he.symm
+      simp only [mem_filter, mem_univ, true_and] at he
+      exact h2 he.2.1
+    · contrapose! h1
+      obtain ⟨e, he⟩ := card_ne_zero.1 h1.symm
+      simp only [mem_filter, mem_univ, true_and] at he
+      exact he.1
+  _ = _ := by sorry
 /--
 Embeddings of `H` in `G[t]` are equivalent to embeddings of `H` in `G` that map into `t`.
 -/
