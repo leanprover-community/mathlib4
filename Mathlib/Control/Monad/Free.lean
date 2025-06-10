@@ -84,17 +84,21 @@ inductive FreeM.{u, v, w} (f : Type u → Type v) (α : Type w) where
   | protected pure : α → FreeM f α
   | liftBind {ι : Type u} (op : f ι) (cont : ι → FreeM f α) : FreeM f α
 
+-- Disable simpNF lints for auto-generated constructor lemmas, as they don't follow simp normal
+-- form patterns.
+attribute [nolint simpNF] FreeM.pure.sizeOf_spec FreeM.pure.injEq
+
 universe u v w
 
 namespace FreeM
 
 /-- Map a function over a `FreeM` monad. -/
-def map {α β : Type _} (F : Type u → Type v) (f : α → β) : FreeM F α → FreeM F β
+def map {α β : Type _} {F : Type u → Type v} (f : α → β) : FreeM F α → FreeM F β
   | .pure a => .pure (f a)
-  | .liftBind op cont => .liftBind op (fun z => FreeM.map F f (cont z))
+  | .liftBind op cont => .liftBind op (fun z => FreeM.map f (cont z))
 
 instance {F : Type u → Type v} : Functor (FreeM F) where
-  map := FreeM.map F
+  map := FreeM.map
 
 instance {F : Type u → Type v} : LawfulFunctor (FreeM F) where
   map_const := rfl
@@ -111,11 +115,11 @@ instance {F : Type u → Type v} : LawfulFunctor (FreeM F) where
     | liftBind op cont ih => simp [FreeM.map, ih]
 
 /-- Bind operation for the `FreeM` monad. -/
-protected def bind {a b : Type _} (F : Type u → Type v) (x : FreeM F a) (f : a → FreeM F b) :
+protected def bind {a b : Type _} {F : Type u → Type v} (x : FreeM F a) (f : a → FreeM F b) :
 FreeM F b :=
   match x with
   | .pure a => f a
-  | .liftBind op cont => .liftBind op (fun z => FreeM.bind F (cont z) f)
+  | .liftBind op cont => .liftBind op (fun z => FreeM.bind  (cont z) f)
 
 /-- Lift an operation from the effect signature `f` into the `FreeM f` monad. -/
 @[simp]
@@ -124,7 +128,7 @@ def lift {F : Type u → Type v} {ι : Type u} (op : F ι) : FreeM F ι :=
 
 instance {F : Type u → Type v} : Monad (FreeM F) where
   pure := FreeM.pure
-  bind := FreeM.bind F
+  bind := FreeM.bind
 
 @[simp]
 lemma pure_eq_pure {F : Type u → Type v} {α : Type w} (a : α) :
@@ -217,6 +221,7 @@ theorem extendsHandler_iff
       simp [ih]
   · subst h
     exact ⟨fun _ => rfl, fun _ _ => rfl⟩
+
 /-! ### State Monad via `FreeM` -/
 
 /-- Type constructor for state operations. -/
@@ -573,7 +578,5 @@ instance {r : Type u} : MonadCont (FreeCont r) where
   callCC := FreeCont.callCC
 
 end FreeCont
-
-attribute [nolint simpNF] pure.sizeOf_spec pure.injEq
 
 end FreeM
