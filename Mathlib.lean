@@ -1941,6 +1941,7 @@ import Mathlib.CategoryTheory.Category.Bipointed
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Category.Cat.Adjunction
 import Mathlib.CategoryTheory.Category.Cat.AsSmall
+import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
 import Mathlib.CategoryTheory.Category.Cat.Colimit
 import Mathlib.CategoryTheory.Category.Cat.Limit
 import Mathlib.CategoryTheory.Category.Cat.Op
