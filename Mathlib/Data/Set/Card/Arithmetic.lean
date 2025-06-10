@@ -93,13 +93,13 @@ open scoped Function
 
 variable {ι : Type*}
 
-lemma ncard_biUnion {t : Set ι} (ht : t.Finite) {s : ι → Set α} (hs : ∀ i ∈ t, (s i).Finite)
+lemma Finite.ncard_biUnion {t : Set ι} (ht : t.Finite) {s : ι → Set α} (hs : ∀ i ∈ t, (s i).Finite)
     (h : t.PairwiseDisjoint s) : (⋃ i ∈ t, s i).ncard = ∑ᶠ i ∈ t, (s i).ncard := by
   rw [← finsum_one, finsum_mem_biUnion h ht hs, finsum_mem_congr rfl fun i hi ↦ finsum_one]
 
-lemma ncard_iUnion [Finite ι] {s : ι → Set α} (hs : ∀ i, (s i).Finite)
+lemma ncard_iUnion_of_finite [Finite ι] {s : ι → Set α} (hs : ∀ i, (s i).Finite)
     (h : Pairwise (Disjoint on s)) : (⋃ i, s i).ncard = ∑ᶠ i : ι, (s i).ncard := by
-  rw [← finsum_mem_univ, ← Set.ncard_biUnion finite_univ (by simpa) (fun _ _ _ _ hab ↦ h hab)]
+  rw [← finsum_mem_univ, ← finite_univ.ncard_biUnion (by simpa) (fun _ _ _ _ hab ↦ h hab)]
   simp
 
 lemma Finite.encard_biUnion {t : Set ι} (ht : t.Finite) {s : ι → Set α}
