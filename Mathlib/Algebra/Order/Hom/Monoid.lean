@@ -933,12 +933,12 @@ theorem toMonoidWithZeroHom_eq_coe (f : α →*₀o β) : f.toMonoidWithZeroHom 
   rfl
 
 @[simp]
-theorem coe_monoidWithZeroHom_mk (f : α →*₀ β) (hf : Monotone f) :
-    ((OrderMonoidWithZeroHom.mk f hf) : α →*₀ β) = f := by
+theorem toMonoidWithZeroHom_mk (f : α →*₀ β) (hf : Monotone f) :
+    ((OrderMonoidWithZeroHom.mk f hf) : α →*₀ β) = ⟨f, f.map_one, f.map_mul⟩ := by
   rfl
 
 @[simp]
-lemma comp_coe_monoidWithZeroHom (f : β →*₀o γ) (g : α →*₀o β) :
+lemma toMonoidWithZeroHom_coe (f : β →*₀o γ) (g : α →*₀o β) :
     (f.comp g : α →*₀ γ) = (f : β →*₀ γ).comp g :=
   rfl
 
