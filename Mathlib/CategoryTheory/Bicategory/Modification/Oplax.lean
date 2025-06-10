@@ -23,63 +23,14 @@ A modification `Γ` between oplax transformations `η` and `θ` consists of a fa
 
 -/
 
-namespace CategoryTheory.Oplax
+namespace CategoryTheory.Oplax.OplaxTrans
 
 open Category Bicategory
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
-
-namespace LaxTrans
-
-variable {F G : OplaxFunctor B C} (η θ : F ⟶ G)
-
-@[ext]
-structure Modification (η θ : F ⟶ G) where
-  /-- The underlying family of 2-morphisms. -/
-  app (a : B) : η.app a ⟶ θ.app a
-  /-- The naturality condition. -/
-  naturality :
-    ∀ {a b : B} (f : a ⟶ b),
-      η.naturality f ≫ F.map f ◁ app b = app a ▷ G.map f ≫ θ.naturality f := by
-    aesop_cat
-
-attribute [reassoc (attr := simp)] Modification.naturality
-
-variable {η θ ι : F ⟶ G}
-
-namespace Modification
-
-variable (η) in
-/-- The identity modification. -/
-@[simps]
-def id : Modification η η where app a := 𝟙 (η.app a)
-
-instance : Inhabited (Modification η η) :=
-  ⟨Modification.id η⟩
-
-/-- Vertical composition of modifications. -/
-@[simps]
-def vComp (Γ : Modification η θ) (Δ : Modification θ ι) : Modification η ι where
-  app a := Γ.app a ≫ Δ.app a
-
-end Modification
-
-/-- Category structure on the lax natural transformations between OplaxFunctors. -/
-@[simps]
-scoped instance category (F G : OplaxFunctor B C) : Category (F ⟶ G) where
-  Hom := Modification
-  id := Modification.id
-  comp := Modification.vComp
-
-end LaxTrans
-
-namespace OplaxTrans
-
-
-
-
+  {F G : OplaxFunctor B C} (η θ : F ⟶ G)
 
 variable {F G : OplaxFunctor B C}
 
