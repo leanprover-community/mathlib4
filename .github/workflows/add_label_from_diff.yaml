@@ -46,7 +46,7 @@ jobs:
             --header 'Accept: application/vnd.github+json' \
             --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
             --header 'X-GitHub-Api-Version: 2022-11-28' \
-            --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels \
+            --url https://api.github.com/repos/${{ github.repository }}/issues/25656/labels \
             --data "{'labels':[${label}]}"
         else
           echo "There is no single label that we could apply, so we are not applying any label."
