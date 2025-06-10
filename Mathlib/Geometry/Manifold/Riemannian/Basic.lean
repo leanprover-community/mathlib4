@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Geometry.Manifold.ContMDiff.Defs
 import Mathlib.Geometry.Manifold.Instances.Real
-import Mathlib.Geometry.Manifold.MFDeriv.Basic
+import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.MeasureTheory.Constructions.UnitInterval
@@ -32,6 +32,13 @@ variable
 instance (x : ℝ) : One (TangentSpace 𝓘(ℝ) x) where
   one := (1 : ℝ)
 
+/-- Unit vector in the tangent space to a segment, as the image of the unit vector in the real line
+under the canonical projection. It is also mapped to the unit vector in the real line through
+the canonical injection, see `mfderiv_subtypeVal_Icc_one`.
+
+Note that one can not abuse defeqs for this definition: this is *not* the same as the vector
+`fun _ ↦ 1` in `EuclideanSpace ℝ (Fin 1)` through defeqs, as one of the charts of `Icc x y` is
+orientation-reversing. -/
 irreducible_def one_tangentSpace_Icc {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) :
     TangentSpace (𝓡∂ 1) z :=
   mfderivWithin 𝓘(ℝ) (𝓡∂ 1) (Set.projIcc x y h.out.le) (Icc x y) z 1
@@ -97,27 +104,6 @@ lemma contMDiff_subtypeVal_Icc {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ�
     rw [max_eq_left hw, max_eq_left]
     linarith
 
-lemma mfderivWithin_projIcc_one {x y : ℝ} [h : Fact (x < y)] (z : ℝ) (hz : z ∈ Icc x y) :
-    mfderivWithin 𝓘(ℝ) (𝓡∂ 1) (Set.projIcc x y h.out.le) (Icc x y) z 1 = 1 := by
-  change _ = one_tangentSpace_Icc (Set.projIcc x y h.out.le z)
-  simp [one_tangentSpace_Icc]
-  congr
-  simp only [projIcc_of_mem h.out.le hz]
-
-lemma mfderiv_subtypeVal_Icc_one {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) :
-    mfderiv (𝓡∂ 1) 𝓘(ℝ) (fun (z : Icc x y) ↦ (z : ℝ)) z 1 = 1 := by
-  have A : Set.EqOn (Subtype.val ∘ (Set.projIcc x y h.out.le)) id (Icc x y) := by
-    intro z hz
-    simp [projIcc_of_mem h.out.le hz]
-  have : mfderivWithin 𝓘(ℝ) 𝓘(ℝ) (Subtype.val ∘ (Set.projIcc x y h.out.le)) (Icc x y) z
-      = mfderivWithin 𝓘(ℝ) 𝓘(ℝ) id (Icc x y) z := by
-    apply Filter.EventuallyEq.mfderivWithin_eq_of_mem
-  sorry
-
-
-
-
-
 /-- The projection from `ℝ` to a closed segment is smooth on the segment, in the manifold sense. -/
 lemma contMDiffOn_projIcc {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ∞} :
     ContMDiffOn 𝓘(ℝ) (𝓡∂ 1) n (Set.projIcc x y h.out.le) (Icc x y) := by
@@ -158,6 +144,37 @@ lemma contMDiffOn_projIcc {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ∞} :
     simp only [sub_left_inj]
     rw [max_eq_right, min_eq_right hw.2]
     simp [hw.1, h.out.le]
+
+lemma mfderivWithin_projIcc_one {x y : ℝ} [h : Fact (x < y)] (z : ℝ) (hz : z ∈ Icc x y) :
+    mfderivWithin 𝓘(ℝ) (𝓡∂ 1) (Set.projIcc x y h.out.le) (Icc x y) z 1 = 1 := by
+  change _ = one_tangentSpace_Icc (Set.projIcc x y h.out.le z)
+  simp [one_tangentSpace_Icc]
+  congr
+  simp only [projIcc_of_mem h.out.le hz]
+
+lemma mfderiv_subtypeVal_Icc_one {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) :
+    mfderiv (𝓡∂ 1) 𝓘(ℝ) (Subtype.val : Icc x y → ℝ) z 1 = 1 := by
+  have A : mfderivWithin 𝓘(ℝ) 𝓘(ℝ) (Subtype.val ∘ (projIcc x y h.out.le)) (Icc x y) z 1
+      = mfderivWithin 𝓘(ℝ) 𝓘(ℝ) id (Icc x y) z 1 := by
+    congr 1
+    apply mfderivWithin_congr_of_mem _ z.2
+    intro z hz
+    simp [projIcc_of_mem h.out.le hz]
+  rw [mfderiv_comp_mfderivWithin (I' := 𝓡∂ 1)] at A; rotate_left
+  · apply contMDiff_subtypeVal_Icc.mdifferentiableAt le_rfl
+  · apply (contMDiffOn_projIcc _ z.2).mdifferentiableWithinAt le_rfl
+  · apply (uniqueDiffOn_Icc h.out _ z.2).uniqueMDiffWithinAt
+  simp only [Function.comp_apply, ContinuousLinearMap.coe_comp', id_eq,
+    mfderivWithin_eq_fderivWithin, mfderivWithin_projIcc_one z z.2] at A
+  have : projIcc x y h.out.le z = z := by simp only [projIcc_of_mem h.out.le z.2]
+  rw [this] at A
+  convert A
+  rw [fderivWithin_id (uniqueDiffOn_Icc h.out _ z.2)]
+  rfl
+
+
+
+
 
 end
 
@@ -222,10 +239,41 @@ noncomputable def riemannianMetricVectorSpace :
 noncomputable instance : RiemannianBundle (fun (x : F) ↦ TangentSpace 𝓘(ℝ, F) x) :=
   ⟨(riemannianMetricVectorSpace F).toRiemannianMetric⟩
 
+#check unitInterval
+
+#check mfderivWithin
+
+open MeasureTheory Measure
+
+#check measurePreserving_subtype_coe
+
 instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
   refine ⟨fun x y ↦ le_antisymm ?_ ?_⟩
   · simp only [riemannianEDist, le_iInf_iff]
     intro γ hγ
+    let e : ℝ → F := γ ∘ (projIcc 0 1 zero_le_one)
+    have : ContMDiffOn 𝓘(ℝ) 𝓘(ℝ, F) 1 e (Icc 0 1) :=
+      hγ.comp_contMDiffOn contMDiffOn_projIcc
+    have A (x : Icc 0 1) : mfderivWithin 𝓘(ℝ) 𝓘(ℝ, F) e (Icc 0 1) x 1
+        = mfderiv (𝓡∂ 1) 𝓘(ℝ, F) γ x 1 := by
+      simp only [e]
+      rw [mfderiv_comp_mfderivWithin (I' := 𝓡∂ 1)]; rotate_left
+      · apply hγ.mdifferentiableAt le_rfl
+      · apply (contMDiffOn_projIcc _ x.2).mdifferentiableWithinAt le_rfl
+      · apply (uniqueDiffOn_Icc zero_lt_one _ x.2).uniqueMDiffWithinAt
+      simp only [Function.comp_apply, ContinuousLinearMap.coe_comp']
+      have I : projIcc 0 1 zero_le_one (x : ℝ) = x := by rw [projIcc_of_mem]
+      have J : (x : ℝ) = projIcc 0 1 zero_le_one (x : ℝ) := by rw [I]
+      rw [I]
+      congr 1
+      convert mfderivWithin_projIcc_one x x.2
+    have : ∫⁻ x, ‖mfderiv (𝓡∂ 1) 𝓘(ℝ, F) γ x 1‖ₑ
+        = ∫⁻ x in Icc 0 1, ‖mfderivWithin 𝓘(ℝ) 𝓘(ℝ, F) e (Icc 0 1) x 1‖ₑ := by
+      simp_rw [← A]
+
+
+
+
 
 
 
