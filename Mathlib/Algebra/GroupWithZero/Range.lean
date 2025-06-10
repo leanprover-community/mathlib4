@@ -4,40 +4,42 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Filippo A. E. Nuccio
 -/
 
-import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.Algebra.Group.WithOne.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Tactic.NthRewrite
-import Mathlib.Tactic.Abel
-import Mathlib.Algebra.Group.Submonoid.Basic
+-- import Mathlib.Algebra.Group.Submonoid.Defs
+-- import Mathlib.Algebra.Group.WithOne.Basic
+-- import Mathlib.Algebra.GroupWithZero.Units.Basic
+-- import Mathlib.Tactic.NthRewrite
+-- import Mathlib.Tactic.Abel
+-- import Mathlib.Algebra.Group.Submonoid.Basic
+-- import Mathlib.Algebra.Group.Subgroup.Lattice
 import Mathlib.Algebra.Group.Subgroup.Lattice
+import Mathlib.Algebra.GroupWithZero.Hom
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 /-! # Range of MonoidHomWithZero
-Given a function `f : A → B` whose codomain `B` is a `MonoidWithZero`, we define the
-type `range₀`, by endowing the invertible elements in the range of `f` with a `0` (inherited from
-that of `B`). We then provide some properties of `range₀ f`. Hypotheses on `A`, `B` and `f` are
-added as needed: in particular, when `B` is a `GroupWithZero` so is `range₀ f` and if `B` is
-commutative, then `range₀ f` is also commutative and can be provided with a more explicit
-description (see `MonoidHomWithZero.mem_range₀_iff_of_comm`).
+Given a function `f : A → B` whose codomain `B` is a `GroupWithZero`, we define the
+type `range₀`, by endowing the invertible elements in the range of `f` (i.e., all non-zero elements)
+with a `0` (inherited from that of `B`): it is a `GroupWithZero` and if `B` is commutative, then
+`range₀ f` is also commutative and can be described more explicitly
+(see `MonoidHomWithZero.mem_range₀_iff_of_comm`).
 
 ## Main Results
 * `range₀ f` is the smallest submonoid with zero containing the range of `f`;
-* `range₀ f` is a `CancelCommMonoidWithZero` when its codomain is cancellative and non-trivial;
-* `range₀ f` is a `GroupWithZero` when its codomain is a group with zero;
+* `range₀ f` is a `CancelCommMonoidWithZero`;
+* `range₀ f` is a `GroupWithZero`;
 * When `A` is a monoid with zero and `f` is a homomorphism of monoids with zero, `range₀ f` can be
 explicitely descibed as the elements that are ratios of terms in `range f` , see
 `MonoidHomWithZero.mem_range₀_iff_of_comm`.
 
 ## Implementation details
 The definition of `range₀` (as a `Submonoid B`) simply requires that `B` be a nontrivial
-`CancelMonoidWithZero`, and no assumption neither on `A` nor on `f` is need. To define an instance
-of `GroupWithZero` on `range₀ f`, we need `GroupWithZero B` but still no assumption on `A` or `f`.
-That `B` is a `GroupWithZero`is also needed to prove that all elements in the image of `f` give rise
-to terms in `range₀ f`.
+`CancelMonoidWithZero`, and no assumption neither on `A` nor on `f` is needed; that `B` is a
+`GroupWithZero` would only be needed to provide an instance of `GroupWithZero (range₀ f)`, yet
+we choose to assume `GroupWithZero B` instead of `MonoidWithZero B` from the start, because
+otherwise it would *not* be true that `range f` is contained in `range₀ f`, potentially leading to
+some confusion.
 
 Commutativity of `B` and compatiblity of `f` with the monoidal structures is only required to
 provide the explicit description of `range₀ f` in `MonoidHomWithZero.mem_range₀_iff_of_comm`.
-
 -/
 
 namespace MonoidHomWithZero
@@ -46,68 +48,15 @@ open Set
 
 variable {A B F : Type*} [FunLike F A B] (f : F)
 
-section CancelMonoidWithZero
+section GroupWithZero
 
-variable  [CancelMonoidWithZero B] [Nontrivial B]
+variable  [GroupWithZero B]
 
-
-open Submonoid
 
 /-- For a map with codomain a `MonoidWithZero`, this is a smallest
-`MondoidWithZero` that contains the invertible elements in the image. When the codomain is a
-`GroupWithZero`, so is `range₀ f`. When `B` is commutative, see
-`MonoidHomWithZero.mem_range₀_iff_of_comm` for another characterization of `range₀ f`. -/
-def new_range₀ : Submonoid B :=
-  closure (range f) ⊔ (closure (((↑) ∘ (·)⁻¹: Bˣ → B)⁻¹' (range f))).map (Units.coeHom _)
-    ⊔ closure {0}
-
-example (S : Set B) (b : B) (hb : b ∈ S) : b ∈ Submonoid.closure S := by
-  rw [Submonoid.mem_closure]
-  intro T hT
-  apply hT hb
-
-
-theorem mem_range_mem_new_range₀ (a : A) : f a ∈ (new_range₀ f) := by
-  simp only [new_range₀, sup_eq_closure, coe_map, Units.coeHom_apply, mem_closure, union_subset_iff,
-    SetLike.coe_subset_coe, closure_le, image_subset_iff, singleton_subset_iff, SetLike.mem_coe,
-    and_imp]
-  intro _ hS _ _
-  apply hS
-  exact mem_range_self _
-
-theorem zero_mem_new_range₀ : 0 ∈ (new_range₀ f) := by
-  simp only [new_range₀, sup_eq_closure, coe_map, Units.coeHom_apply, mem_closure]
-  intro _ hS
-  apply hS
-  rw [mem_union]
-  right
-  simp only [SetLike.mem_coe]
-  exact mem_closure.mpr fun S a ↦ a rfl
-
-theorem inv_mem_new_range₀_of_invertible_image {a : A} {b : Bˣ} (ha : (f a) = b) :
-  (b⁻¹).1 ∈ (new_range₀ f) := by
-  simp only [new_range₀, sup_eq_closure, coe_map, Units.coeHom_apply, mem_closure]
-  intro S hS
-  apply hS
-  rw [mem_union]
-  left
-  rw [SetLike.mem_coe, mem_closure]
-  intro T hT
-  apply hT
-  rw [mem_union]
-  right
-  simp only [new_range₀, union_singleton, inv_zero, Submonoid.mem_mk, Subsemigroup.mem_mk,
-    mem_insert_iff, mem_image, Units.ne_zero, and_false, exists_const, or_false]
-  use b⁻¹
-  constructor
-  · simp [mem_closure]
-    intro U hU
-    apply hU
-    simp
-    use a
-  · rfl
-
-
+`GroupWithZero`, that contains the invertible elements in the image. See
+`MonoidHomWithZero.mem_range₀_iff_of_comm` for another characterization of `range₀ f` when `B` is
+commutative. -/
 def range₀ : Submonoid B where
   carrier := (↑)''(Subgroup.closure (G := Bˣ) ((↑)⁻¹' (range f))).carrier ∪ {0}
   mul_mem' {b b'} hb hb' := by
@@ -136,18 +85,11 @@ instance : CancelMonoidWithZero (range₀ f) where
     have : x ≠ 0 := Subtype.coe_ne_coe.mpr ha
     simpa [this] using H
 
-
 theorem zero_mem_range₀ : 0 ∈ range₀ f := by
   simp [range₀]
 
 @[simp]
 theorem range₀_coe_zero : ((0 : range₀ f) : B) = 0 := rfl
-
-end CancelMonoidWithZero
-
-section GroupWithZero
-
-variable [GroupWithZero B]
 
 theorem mem_range₀ {a : A} : f a ∈ range₀ f := by
   by_cases h : f a = 0 <;>
@@ -185,7 +127,6 @@ theorem inv_mem_range₀_iff {b : B} : b⁻¹ ∈ range₀ f ↔ b ∈ range₀ 
   exact ⟨fun h ↦ ((inv_inv b).symm ▸ (inv_mem_range₀ f)) h, inv_mem_range₀ _⟩
 
 end GroupWithZero
-
 section CommGroupWithZero
 
 variable [MonoidWithZero A] [CommGroupWithZero B] [MonoidWithZeroHomClass F A B]
@@ -263,3 +204,5 @@ instance : CommGroupWithZero (range₀ f) where
 end CommGroupWithZero
 
 end MonoidHomWithZero
+
+#min_imports
