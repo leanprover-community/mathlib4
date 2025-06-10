@@ -32,7 +32,7 @@ jobs:
           git checkout -
           labels="$(lake exe autolabel)"
           printf '%s\n' "${labels}"
-          # extract
+          # extract label
           label="$(printf '%s' "${labels}" | sed -n 's=.*#\[\([^,]*\)\].*=\1=p')"
           printf 'label: "%s"\n' "${label}"
           printf 'Event type: %s\n' "${{ github.event_name }}"
