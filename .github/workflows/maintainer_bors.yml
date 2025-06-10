@@ -27,9 +27,11 @@ jobs:
           printf $'AUTHOR: \'%s\'\n' "${AUTHOR}"
           printf $'PR_NUMBER: \'%s\'\n' "${{ github.event.client_payload.pr_number }}"
 
-          printf $'mOrD=%s\n' "${m_or_d}" >> "${GITHUB_OUTPUT}"
-          printf $'removeLabels=%s\n' "${remove_labels}" >> "${GITHUB_OUTPUT}"
-          printf $'bot=%s\n' "${bot}" >> "${GITHUB_OUTPUT}"
+          {
+            printf $'mOrD=%s\n' "${m_or_d}"
+            printf $'removeLabels=%s\n' "${remove_labels}"
+            printf $'bot=%s\n' "${bot}"
+          } >> "${GITHUB_OUTPUT}"
 
       - name: Check whether user is a mathlib admin
         id: user_permission
