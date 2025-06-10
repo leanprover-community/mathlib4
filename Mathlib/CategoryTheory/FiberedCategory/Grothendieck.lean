@@ -8,22 +8,12 @@ import Mathlib.CategoryTheory.Bicategory.Grothendieck
 import Mathlib.CategoryTheory.FiberedCategory.HasFibers
 
 /-!
-# The fibered category associated to a pseudofunctor
+# The Grothendieck construction gives a fibered category
 
-Given a category `𝒮` and any pseudofunctor valued in `Cat` we associate to it a fibered category
-category `F.toFibered ⥤ 𝒮`.
+In this file we show that the Grothendieck construction of a pseudofunctor `F`
+gives a fibered category over the base category.
 
-The category `F.toFibered` is defined as follows:
-* Objects: pairs `(S, a)` where `S` is an object of the base category and `a` is an object of the
-  category `F(S)`
-* Morphisms: morphisms `(R, b) ⟶ (S, a)` are defined as pairs `(f, h)` where `f : R ⟶ S` is a
-  morphism in `𝒮` and `h : b ⟶ F(f)(a)`
-
-The projection functor `F.toFibered ⥤ 𝒮` is then given by projecting to the first factors, i.e.
-* On objects, it sends `(S, a)` to `S`
-* On morphisms, it sends `(f, h)` to `f`
-
-We also provide a `HasFibers` instance `F.toFibered`, such that the fiber over `S` is the
+We also provide a `HasFibers` instance to `∫ F`, such that the fiber over `S` is the
 category `F(S)`.
 
 ## References
@@ -99,6 +89,7 @@ def ι : F.obj ⟨op S⟩ ⥤ ∫ F where
         Strict.leftUnitor_eqToIso, Strict.rightUnitor_eqToIso]
 
 @[simps]
+-- TODO: ofComponents here
 def comp_iso : (ι F S) ⋙ forget F ≅ (const (F.obj ⟨op S⟩)).obj S where
   hom := { app := fun a => 𝟙 _ }
   inv := { app := fun a => 𝟙 _ }
@@ -109,22 +100,32 @@ lemma comp_const : (ι F S) ⋙ forget F = (const (F.obj ⟨op S⟩)).obj S := b
 noncomputable instance : Functor.Full (Fiber.inducedFunctor (comp_const F S)) where
   map_surjective {X Y} f := by
     have := f.2 -- TODO: synthesize this
-    have hf : f.1.1 = 𝟙 S := by simpa using (IsHomLift.fac (forget F) (𝟙 S) f.1).symm
-    use f.1.2 ≫ eqToHom (by simp [hf]) ≫ (F.mapId ⟨op S⟩).hom.app Y
-    ext <;> simp [hf]
+    have hf : (Fiber.fiberInclusion.map f).base = 𝟙 S := by
+      simpa using (IsHomLift.fac (forget F) (𝟙 S) f.1).symm
+    use (Fiber.fiberInclusion.map f).2 ≫ eqToHom ?_ ≫ (F.mapId ⟨op S⟩).hom.app Y
+    rotate_left
+    -- TODO: more simp lemmas, should not need this...
+    · simp [Fiber.inducedFunctor, hf]
+      simp [Fiber.fiberInclusion]
+    ext
+    · simp [Fiber.inducedFunctor, hf]
+      simp [Fiber.fiberInclusion]
+    · simp
 
 instance : Functor.Faithful (Fiber.inducedFunctor (comp_const F S)) where
   map_injective := by
     intros a b f g heq
     -- can be made a one liner...
     rw [← Subtype.val_inj] at heq
-    obtain ⟨_, heq₂⟩ := (hom_ext_iff _ _).1 heq
+    simp only [Fiber.inducedFunctor] at heq -- TODO...
+    obtain ⟨_, heq₂⟩ := (Hom.ext_iff _ _).1 heq
     simpa [cancel_mono] using heq₂
 
 noncomputable instance : Functor.EssSurj (Fiber.inducedFunctor (comp_const F S)) := by
   apply essSurj_of_surj
   intro Y
-  have hYS : Y.1.1 = S := by simpa using Y.2
+  simp only [Fiber.inducedFunctor] -- TODO...
+  have hYS : S = Y.1.1 := by simpa using Y.2.symm
   use (hYS.symm ▸ Y.1.2)
   apply Subtype.val_inj.1
   ext <;> simp [hYS]
