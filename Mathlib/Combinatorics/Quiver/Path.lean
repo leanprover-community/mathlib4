@@ -193,7 +193,6 @@ theorem toList_injective (a : V) : ∀ b, Injective (toList : Path a b → List 
 theorem toList_inj {p q : Path a b} : p.toList = q.toList ↔ p = q :=
   (toList_injective _ _).eq_iff
 
-
 section BoundedPath
 
 variable {V : Type*} [Quiver V]
