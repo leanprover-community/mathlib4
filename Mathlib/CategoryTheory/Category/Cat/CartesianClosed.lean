@@ -87,7 +87,7 @@ variable {B C D E : Type u} [Category.{u} B] [Category.{u} C]
 @[simps!]
 def compFlipCurryIso (F : C × B ⥤ D) (G : D ⥤ E) :
     (curry.obj (F ⋙ G)).flip ≅ (curry.obj F).flip ⋙ (Cat.exp (Cat.of C)).map G.toCatHom :=
-  NatIso.ofComponents (fun _ ↦ eqToIso rfl)
+  .refl _
 
 lemma comp_flip_curry_eq (F : C × B ⥤ D) (G : D ⥤ E) :
     (curry.obj (F ⋙ G)).flip =
@@ -103,7 +103,7 @@ variable (C : Type u) [Category.{u} C]
 
 instance closed : Closed (Cat.of C) where
   rightAdj := exp C
-  adj := Adjunction.mkOfHomEquiv 
+  adj := Adjunction.mkOfHomEquiv
     { homEquiv _ _ := curryingFlipEquiv.symm
       homEquiv_naturality_left_symm :=
         comp_flip_uncurry_eq
