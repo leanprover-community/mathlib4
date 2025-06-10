@@ -14,173 +14,88 @@ This module defines the core of the `grw` tactic.
 
 -/
 
-open Lean Meta  Elab Tactic
+open Lean Meta Elab Tactic
 
-namespace Mathlib.Tactic.GRW
+namespace Mathlib.Tactic
 
-initialize registerTraceClass `GRW
+structure GRewriteResult where
+  /-- The rewritten expression -/
+  eNew     : Expr
+  /-- The proof of the implication. The direction depends on the argument `forwardImp`. -/
+  impProof : Expr
+  /-- The new side goals -/
+  mvarIds  : List MVarId -- new goals
 
-/--
-Lemmas marked `@[grw]` are used by the `grw` tactic to use a relation to rewrite an expression.
+axiom getRel (e : Expr) : Option (Name × Expr × Expr)
 
-The lemma is used to rewrite its first explicit argument into the result type. The other arguments
-are then filled in using the `gcongr` tactic. Due to it's use of templates, this attribute is
-very strict about argument order: the final arguments of the lemma should exactly match the
-arguments of the target type.
+/-- Configures the behavior of the `rewrite` and `rw` tactics. -/
+structure GRewrite.Config extends Rewrite.Config where
+  useRewrite : Bool := true
 
-For example, this lemma shows `grw` how to convert `a < b` into `c < d`.
-
-```lean
-@[grw]
-lemma rewrite_lt {α : Type} [Preorder α] {a b c d : α} (h₁ : a < b) (h₂ : c ≤ a) (h₃ : b ≤ d) :
-    c < d := lt_of_le_of_lt h₂ (lt_of_lt_of_le h₁ h₃)
-```
-
-These lemmas can do more than just use transitivity. This lemma shows `grw` how to rewrite `a ∈ X`
-into `a ∈ Y`. Note the dummy argument corresponding to the `a` argument of `a ∈ Y`.
-
-```lean
-@[grw]
-lemma rewrite_mem {α : Type} {a : α} {X Y : Set α} (h₁ : a ∈ X) (h₂ : X ⊆ Y) (_ : a = a) :
-    a ∈ Y := h₂ h₁
-```
--/
-initialize ext : LabelExtension ← (
-  let descr := "A lemma describing how to convert the first argument into the target type, possibly
-introducing side goals. These side goals will be solved with `gcongr`"
-  let grw := `grw
-  registerLabelAttr grw descr grw)
-
-open GCongr
-
-/-- Given `relationType := R a b`, returns `(a, b)` -/
-def getNeedleReplacement (relationType : Expr) : MetaM (Expr × Expr) := do
-  let args := relationType.getAppArgs
-  if args.size < 2 then
-    throwError "Expecting relation but got {relationType}"
-  return (args[args.size - 2]!, args[args.size - 1]!)
+declare_config_elab elabRewriteConfig Rewrite.Config
 
 /--
-When `rule` is an expression of type `x ~ y`, constructs the new expression after rewriting
-occurrences of `x` with `y` in `oldExpr` (or vice versa when `rev` is true). Returns
-`(template, newExpr)` where `newExpr` is the replaced expression and `template` is the rewrite
-motive with the bound variable replaced with a fresh mvar (used as input to gcongr).
+Rewrite `e` using the relation `hrel : x ~ y`, and construct an implication proof
+using the `gcongr` tactic to discharge this goal.
+
+if `forwardImp = true`, we prove that `e → eNew`; otherwise `eNew → e`.
+
+If `symm = false`, we rewrite `e` to `eNew := e[x/y]`; otherwise `eNew := e[y/x]`.
+
+The code aligns with `Lean.MVarId.rewrite` as much as possible.
 -/
-def getNewExpr (rule : Expr) (rev : Bool) (oldExpr : Expr) : MetaM (Expr × Expr) := do
-  let ruleType ← instantiateMVars (← inferType rule)
-  let (needle, replacement) ← if rev then
-    Prod.swap <$> getNeedleReplacement ruleType
-  else
-    getNeedleReplacement ruleType
-  trace[GRW] "Got needle = {needle} replacement = {replacement}"
-  let abst ← withReducible <| kabstract oldExpr needle
-  if !abst.hasLooseBVars then
-    throwError "Could not find pattern {needle} in {oldExpr}"
-  let newExpr := abst.instantiate1 replacement
-  trace[GRW] "old expr {oldExpr} new expr {newExpr}"
-  let template := abst.instantiate1 (← mkFreshExprSyntheticOpaqueMVar ruleType)
-  return (← whnfR template, newExpr)
-
-/-- Try to discharge the goal `goal` using `gcongr` using the provided `template` and using only
-`rule` for discharging the main subgoals. -/
-def useRule (template rule : Expr) (goal : MVarId) : MetaM (Array MVarId) := do
-  let template ← instantiateMVars template
-  try
-    if template.hasExprMVar then failure
-    goal.applyRfl
-    trace[GRW] "used reflexivity"
-    return #[]
-  catch _ => pure ()
-  try
-    let (_, _, subgoals) ← goal.gcongr template [] (failIfMainsUnsolved := true)
-      (mainGoalDischarger := fun g => g.gcongrForward #[rule])
-
-    trace[GRW] "Got proof {← instantiateMVars (.mvar goal)}"
-    return subgoals
-  catch e =>
-    throwError "failed to prove {← goal.getType} with gcongr, error was: {e.toMessageData}"
-
-/--
-Use the relation `rule : x ~ y` to rewrite the type of an mvar. Assigns the mvar and returns a new
-mvar of type either `p[x/y]` or `p[y/x]` depending on the value of the `rev` parameter
-
-Parameters:
-* `goal` The mvar for the current goal
-* `expr` the expression to rewrite in
-* `rule` An expression of type `x ~ y` where `~` is some relation
-* `rev` if true, we will rewrite `expr` to `newExpr := expr[y/x]`, otherwise `newExpr := expr[x/y]`
-* `isTarget` if true we are proving `newExpr → expr` otherwise we are proving `expr → newExpr`
-
-Returns:
-* `newExpr` The rewritten version of `expr`
-* `proof` if `isTarget` is true this is a value of type `newExpr → expr`,
-  otherwise it has type `expr → newExpr`
-* `subgoals` list of side goals created by `gcongr`. This does not include the goals
-  successfully filled by `gcongr_discharger`
--/
-def _root_.Lean.MVarId.grw (goal : MVarId) (expr rule : Expr) (rev isTarget : Bool) :
-    MetaM (Expr × Expr × Array MVarId) := do
-  let oldExpr ← instantiateMVars expr
-  let (ruleArgs, _, resultType) ← forallMetaTelescope (← inferType rule)
-  if (← whnfR resultType).isEq then
-    let ⟨newExpr, eqProof, subgoals⟩ ← goal.rewrite expr rule rev
-    let proof ← if isTarget then
-      mkAppOptM ``cast #[newExpr, expr, ← mkEqSymm eqProof]
+noncomputable
+def _root_.Lean.MVarId.grewrite (mvarId : MVarId) (e : Expr) (hrel : Expr) (forwardImp : Bool)
+    (symm : Bool := false) (config := { : GRewrite.Config }) : MetaM GRewriteResult :=
+  mvarId.withContext do
+    mvarId.checkNotAssigned `grewrite
+    let hrelType ← instantiateMVars (← inferType hrel)
+    let (newMVars, binderInfos, hrelType) ← forallMetaTelescopeReducing hrelType
+    -- If we can use the normal `rewrite` tactic, we default to using that.
+    if (hrelType.isAppOfArity ``Iff 2 || hrelType.isAppOfArity ``Eq 3) && config.useRewrite then
+      let x ← mvarId.rewrite e hrel symm config.toConfig
+      sorry
     else
-      mkAppOptM ``cast #[expr, newExpr, eqProof]
-    return ⟨newExpr, proof, subgoals.toArray⟩
-  let rule := mkAppN rule ruleArgs
-  let (template, newExpr) ← getNewExpr rule rev oldExpr
-  let lemmas ← labelled `grw
-  let (lhsExpr, rhsExpr) := if isTarget then (newExpr, oldExpr) else (oldExpr, newExpr)
+    let hrelIn := hrel
+    let hrel := mkAppN hrel newMVars
+    let some (relName, lhs, rhs) := getRel hrelType |
+      throwTacticEx `grewrite mvarId m!"{hrelType} is not a relation"
+    let (lhs, rhs) := if symm then (rhs, lhs) else (lhs, rhs)
+    if lhs.getAppFn.isMVar then
+      throwTacticEx `grewrite mvarId
+        m!"pattern is a metavariable{indentExpr lhs}\nfrom equation{indentExpr hrelType}"
+    let e ← instantiateMVars e
+    let eAbst ←
+      withConfig (fun oldConfig => { config, oldConfig with }) <| kabstract e lhs config.occs
+    unless eAbst.hasLooseBVars do
+      throwTacticEx `grewrite mvarId
+        m!"did not find instance of the pattern in the target expression{indentExpr lhs}"
+    -- construct grewrite proof
+    let eNew := eAbst.instantiate1 rhs
+    let eNew ← instantiateMVars eNew
+    try
+      check eNew
+    catch ex =>
+      throwTacticEx `grewrite mvarId m!"\
+        new expression is not type correct:{indentD eNew}\nError: {ex.toMessageData}\
+        \n\n\
+        Possible solutions: use grewrite's 'occs' configuration option to limit which occurrences \
+        are rewritten, or use 'gcongr'."
+    let eNew ← if rhs.hasBinderNameHint then eNew.resolveBinderNameHint else pure eNew
+    let template := eAbst.instantiate1 (← mkFreshExprSyntheticOpaqueMVar default)
 
-  -- TODO surely this can be faster
-  for lem in lemmas do
-    let lemResult ← withTraceNode `GRW (fun _ ↦ return m!"trying lemma {lem}") do
-      let lemResult ← try commitIfNoEx do
-        let lemExpr ← mkConstWithFreshMVarLevels lem
-        let lemType ← inferType lemExpr
-        let (metas, binders, _) ← withReducible <| forallMetaTelescopeReducing lemType
-        guard <| ← isDefEq rhsExpr (← inferType (mkAppN lemExpr metas))
+    let mkImp (e₁ e₂ : Expr) : Expr := .forallE `_a e₁ e₂ .default
+    let imp := if forwardImp then mkImp e eNew else mkImp eNew e
+    let gcongrGoal ← mkFreshExprMVar imp
+    let (_, _, _) ← gcongrGoal.mvarId!.gcongr template [] (inGRewrite := true)
 
-        withLocalDeclD (← mkFreshUserName `h) lhsExpr fun value => do
-          if let some firstDefaultArg := binders.findIdx? (· == .default) then
-            withReducible <| metas[firstDefaultArg]!.mvarId!.assignIfDefeq value
-          else
-            throwError "Lemma {lem} did not have a default argument"
+    postprocessAppMVars `grewrite mvarId newMVars binderInfos
+      (synthAssignedInstances := !tactic.skipAssignedInstances.get (← getOptions))
+    let newMVarIds ← newMVars.map Expr.mvarId! |>.filterM fun mvarId => not <$> mvarId.isAssigned
+    let otherMVarIds ← getMVarsNoDelayed hrelIn
+    let otherMVarIds := otherMVarIds.filter (!newMVarIds.contains ·)
+    let newMVarIds := newMVarIds ++ otherMVarIds
+    pure { eNew, impProof := ← instantiateMVars gcongrGoal, mvarIds := newMVarIds.toList }
 
-          trace[GRW] "Lemma {lem} matches, trying to fill args"
-          pure <| some ⟨← mkLambdaFVars #[value] (mkAppN lemExpr metas), metas⟩
-      catch ex => do
-        trace[GRW] "error in lemma {lem}: {ex.toMessageData}"
-        pure none
 
-      if let some (lemExpr, metas) := lemResult then
-        let metas ← metas.filterM fun x => not <$> x.mvarId!.isAssigned
-        let args := template.getAppArgs
-        trace[GRW] "template: {template} args: {args}, metas: {metas}"
-        -- HACK: we are assuming the side goals of the grw lemma come in the same order
-        -- as they appear in the function, and all the fixed args (e.g. type, instances)
-        -- come before the ones to rewrite
-        let args := args[args.size - metas.size:].toArray
-        let subgoals ← (metas.zip args).flatMapM fun (arg, template) => do
-          let mvar := arg.mvarId!
-          let type ← instantiateMVars (← inferType arg)
-          withTraceNode `GRW (fun _ ↦ return m!"Looking for value of type {type}") do
-            withReducibleAndInstances <| useRule template rule mvar
-        trace[GRW] "Got subgoals {subgoals}"
-        return some (lemExpr, subgoals)
-      else
-        return none
-
-    if let some (proof, subgoals) := lemResult then
-      trace[GRW] "Got proof {proof}"
-      let ruleSubgoals ← (ruleArgs.map Expr.mvarId!).filterM fun x => not <$> x.isAssigned
-      let subgoals := subgoals ++ ruleSubgoals
-      let otherMVars := (← getMVarsNoDelayed proof).filter (!subgoals.contains ·)
-      return (newExpr, proof, subgoals ++ otherMVars)
-  throwError "No grw lemmas worked"
-
-end GRW
-end Tactic
-end Mathlib
+end Mathlib.Tactic

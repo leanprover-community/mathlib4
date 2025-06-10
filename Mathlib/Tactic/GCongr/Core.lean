@@ -290,11 +290,12 @@ is a user-provided template, first check that the template asks us to descend th
 match. -/
 partial def _root_.Lean.MVarId.gcongr
     (g : MVarId) (template : Option Expr) (names : List (TSyntax ``binderIdent))
-    (failIfMainsUnsolved : Bool := false)
+    (inGRewrite : Bool := false)
     (mainGoalDischarger : MVarId → MetaM Unit := gcongrForwardDischarger)
     (sideGoalDischarger : MVarId → MetaM Unit := gcongrDischarger) :
     MetaM (Bool × List (TSyntax ``binderIdent) × Array MVarId) := g.withContext do
   withTraceNode `Meta.gcongr (fun _ => return m!"gcongr: ⊢ {← g.getType}") do
+  let template ← template.mapM whnfR
   match template with
   | none =>
     -- A. If there is no template, try to resolve the goal by the provided tactic
@@ -309,9 +310,8 @@ partial def _root_.Lean.MVarId.gcongr
     if let .mvar mvarId := tpl.getAppFn then
       if let .syntheticOpaque ← mvarId.getKind then
         try mainGoalDischarger g; return (true, names, #[])
-        catch _ =>
-          if failIfMainsUnsolved then throwError "could not resolve goal {← g.getType}"
-          return (false, names, #[g])
+        catch ex =>
+          if inGRewrite then throw ex else return (false, names, #[g])
     -- (ii) if the template is *not* `?_` then continue on.
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
   let .app (.app rel lhs) rhs ← withReducible g.getType'
@@ -403,7 +403,7 @@ partial def _root_.Lean.MVarId.gcongr
           pure e
         -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal with (if available) the
         -- appropriate template
-        let (_, names2, subgoals2) ← mvarId.gcongr tpl names2 failIfMainsUnsolved mainGoalDischarger
+        let (_, names2, subgoals2) ← mvarId.gcongr tpl names2 inGRewrite mainGoalDischarger
           sideGoalDischarger
         (names, subgoals) := (names2, subgoals ++ subgoals2)
       let mut out := #[]
@@ -423,7 +423,6 @@ partial def _root_.Lean.MVarId.gcongr
   -- A. If there is no template, and there was no `@[gcongr]` lemma which matched the goal,
   -- report this goal back.
   if template.isNone then
-    if failIfMainsUnsolved then throwError "could not resolve goal {← g.getType}"
     return (false, names, #[g])
   let some (sErr, e) := ex?
     -- B. If there is a template, and there was no `@[gcongr]` lemma which matched the template,
