@@ -26,11 +26,11 @@ are given the `aesop` attribute according to the following principles:
 - Apply-style rules with trivial hypotheses are registered both as `simp` rules and as
   `safe` Aesop rules. The latter is needed in case there are metavariables in the goal.
   For instance, Aesop can use the rule `one_mem` to prove
-  `(M : Type*) [Monid M] (s : Submonoid M) ⊢ ∃ m : M, m ∈ s`.
+  `(M : Type*) [Monoid M] (s : Submonoid M) ⊢ ∃ m : M, m ∈ s`.
 - Apply-style rules with nontrivial hypotheses are marked `unsafe`. This is because applying them
   might not be provability-preserving in the context of more complex membership rules.
   For instance, `mul_mem` is marked `unsafe`.
-- Unsafe rules should not be given a priority higher than 90%. This is the same probability
+- Unsafe rules are not given a priority higher than 90%. This is the same probability
   Aesop gives to safe rules when they generate metavariables. If the priority is too high, loops
   generated in the presence of metavariables will time out Aesop.
 - Apply-style rules with simple hypotheses which are refuted quickly if they aren't provable
@@ -40,11 +40,11 @@ are given the `aesop` attribute according to the following principles:
   `SetLike` ruleset. An example is `SetLike.mem_of_subset`.
 - All other `unsafe` rules are given a probability between 5% and 90% based on how likely they are
   to progress the proof state towards a solution.
-- Simplifying the left-hand side of a membership goal (e.g., `mul_mem`) is prioritised over
-  simplifying the right-hand side (e.g., `Subgroup.mem_closure_of_mem`).
+- Simplifying the left hand side of a membership goal (e.g., `mul_mem`) is prioritised over
+  simplifying the right hand side (e.g., `Subgroup.mem_closure_of_mem`).
 - To optimise performance and avoid timeouts, Aesop should not be invoking low-priority rules
   unless it can make no other progress. If common usage patterns cause Aesop to invoke such rules,
-  additional lemmas should be added at a higher priority to cover that pattern.
+  additional lemmas are added at a higher priority to cover that pattern.
   For example, `Subgroup.mem_closure_of_mem` covers a common use case of `SetLike.mem_of_subset`.
 
 Some examples of membership-related goals which Aesop this ruleset is designed to close
