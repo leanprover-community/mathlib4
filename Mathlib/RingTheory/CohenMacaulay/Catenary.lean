@@ -363,17 +363,48 @@ omit [IsNoetherianRing R] in
 lemma coe_nonnegRingKrullDim [Nontrivial R] : nonnegRingKrullDim R = ringKrullDim R := by
   simp only [nonnegRingKrullDim, ringKrullDim, Order.krullDim_eq_iSup_length]
 
+lemma Withbot.coe_biSup {ι : Type*} [CompleteLattice ℕ∞] [Nonempty ι] {s : Set ι}
+    (hs : s.Nonempty) {f : ι → ℕ∞} (hf : BddAbove (Set.range f)) :
+    ⨆ i ∈ s, f i = ⨆ i ∈ s, (f i : WithBot ℕ∞) := by
+  apply (WithBot.coe_iSup (OrderTop.bddAbove _)).trans
+  apply le_antisymm
+  · have h (i : ι) : (⨆ (_ : i ∈ s), f i) ≤ ⨆ i ∈ s, (f i : WithBot ℕ∞) := sorry
+    let g : ι → WithBot ℕ∞ := fun i ↦ (⨆ (_ : i ∈ s), f i : ℕ∞)
+    sorry--apply (iSup_le_iff (f := g) (a := ⨆ i ∈ s, (f i : WithBot ℕ∞))).mpr ?_
+  · sorry
+
+
+
+omit [IsNoetherianRing R] in
 lemma nonnegRingKrullDim_quotient_eq_iSup_quotient_minimalPrimes (I : Ideal R) (hI : I ≠ ⊤) :
-    nonnegRingKrullDim (R ⧸ I) = ⨆ p ∈ I.minimalPrimes, nonnegRingKrullDim (R ⧸ p) := by
+    nonnegRingKrullDim (R ⧸ I) = ⨆ p : I.minimalPrimes, nonnegRingKrullDim (R ⧸ p.1) := by
   have : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial hI
   apply WithBot.coe_inj.mp
-  apply Eq.trans ?_ (WithTop.coe_iSup _ (OrderTop.bddAbove _)).symm
-  simp [WithTop.coe_iSup _ (OrderTop.bddAbove _)]
-  simp [coe_nonnegRingKrullDim, ringKrullDim_quotient_eq_iSup_quotient_minimalPrimes I]
-  have h (p : Ideal R): p ∈ I.minimalPrimes → ringKrullDim (R ⧸ p) =
-      (nonnegRingKrullDim (R ⧸ p)) := sorry
-  apply Eq.trans (biSup_congr h) ?_
-  sorry
+  have : Nonempty ↑I.minimalPrimes := sorry
+  simp [WithBot.coe_iSup (OrderTop.bddAbove _)]
+  simp [coe_nonnegRingKrullDim]
+  apply le_antisymm
+  · simp only [ringKrullDim_quotient, Order.krullDim, iSup_le_iff]
+    intro sp
+    let _ := sp.head.1.2
+    rcases Ideal.exists_minimalPrimes_le ((PrimeSpectrum.mem_zeroLocus _ _).mp sp.head.2) with
+      ⟨p, min, le⟩
+    let sp' : LTSeries (PrimeSpectrum.zeroLocus (p : Set R)) := {
+      length := sp.length
+      toFun i := ⟨(sp.toFun i).1, le_trans le (Subtype.coe_le_coe.mpr (LTSeries.head_le sp i))⟩
+      step i := sp.step i }
+    have := min.1.1
+    apply le_trans _ (le_iSup _ ⟨p, min⟩)
+    apply le_of_le_of_eq ?_ coe_nonnegRingKrullDim.symm
+    simp [ringKrullDim_quotient, Order.krullDim]
+    convert le_iSup _ sp'
+    rfl
+  · sorry
+
+
+
+
+
 
 lemma Ideal.height_add_ringKrullDim_quotient_eq_ringKrullDim [IsCohenMacaulayLocalRing R]
     (I : Ideal R) (netop : I ≠ ⊤) : I.height + ringKrullDim (R ⧸ I) = ringKrullDim R := by
