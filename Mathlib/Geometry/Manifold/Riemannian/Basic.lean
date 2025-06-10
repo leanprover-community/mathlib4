@@ -11,6 +11,7 @@ import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.MeasureTheory.Constructions.UnitInterval
 import Mathlib.MeasureTheory.Integral.Bochner.Set
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
 /-! # Riemannian manifolds
 
@@ -240,20 +241,31 @@ noncomputable def riemannianMetricVectorSpace :
 noncomputable instance : RiemannianBundle (fun (x : F) ↦ TangentSpace 𝓘(ℝ, F) x) :=
   ⟨(riemannianMetricVectorSpace F).toRiemannianMetric⟩
 
-#check unitInterval
+set_option synthInstance.maxHeartbeats 30000 in
+-- otherwise, the instance is not found!
+lemma norm_tangentSpace_vectorSpace {x : F} {v : TangentSpace 𝓘(ℝ, F) x} :
+    ‖v‖ = ‖show F from v‖ := by
+  rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner]
 
-#check mfderivWithin
+set_option synthInstance.maxHeartbeats 30000 in
+-- otherwise, the instance is not found!
+lemma nnnorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace 𝓘(ℝ, F) x} :
+    ‖v‖₊ = ‖show F from v‖₊ := by
+  simp [nnnorm, norm_tangentSpace_vectorSpace]
+
+lemma enorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace 𝓘(ℝ, F) x} :
+    ‖v‖ₑ = ‖show F from v‖ₑ := by
+  simp [enorm, nnnorm_tangentSpace_vectorSpace]
 
 open MeasureTheory Measure
 
-#check measurePreserving_subtype_coe
-
-instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
+/- Remove completeness assumption... -/
+instance [CompleteSpace F] : IsRiemannianManifold 𝓘(ℝ, F) F := by
   refine ⟨fun x y ↦ le_antisymm ?_ ?_⟩
   · simp only [riemannianEDist, le_iInf_iff]
     intro γ hγ
     let e : ℝ → F := γ ∘ (projIcc 0 1 zero_le_one)
-    have : ContMDiffOn 𝓘(ℝ) 𝓘(ℝ, F) 1 e (Icc 0 1) :=
+    have D : ContMDiffOn 𝓘(ℝ) 𝓘(ℝ, F) 1 e (Icc 0 1) :=
       hγ.comp_contMDiffOn contMDiffOn_projIcc
     have A (x : Icc 0 1) : mfderivWithin 𝓘(ℝ) 𝓘(ℝ, F) e (Icc 0 1) x 1
         = mfderiv (𝓡∂ 1) 𝓘(ℝ, F) γ x 1 := by
@@ -276,12 +288,24 @@ instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
       rw [← MeasureTheory.MeasurePreserving.lintegral_comp_emb this]
       apply MeasurableEmbedding.subtype_coe measurableSet_Icc
     rw [this]
-    simp only [mfderivWithin_eq_fderivWithin, ge_iff_le]
+    simp only [mfderivWithin_eq_fderivWithin, enorm_tangentSpace_vectorSpace]
     have W := enorm_integral_le_lintegral_enorm (f := fun x ↦ (fderivWithin ℝ e (Icc 0 1) x) 1)
       (μ := volume.restrict (Icc 0 1))
     refine le_trans ?_ W
+    simp only [fderivWithin_derivWithin]
+    rw [integral_Icc_eq_integral_Ioc, ← intervalIntegral.integral_of_le zero_le_one]
+    have D' : ContDiffOn ℝ 1 e (Icc 0 1) := contMDiffOn_iff_contDiffOn.mp D
+    have : ∫ (x : ℝ) in (0)..1, derivWithin e (Icc 0 1) x = e 1 - e 0 := by
+      apply intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le zero_le_one
+      · apply D.continuousOn
+      · intro x hx
+        have N : Icc 0 1 ∈ 𝓝 x :=
+          Filter.mem_of_superset (isOpen_Ioo.mem_nhds hx) Ioo_subset_Icc_self
+        have W := ((D'.differentiableOn le_rfl x ⟨hx.1.le, hx.2.le⟩).differentiableAt N).hasDerivAt
+        convert W using 1
 
---    apply le_trans ?_ (enorm_integral_le_lintegral_enorm _)
+
+--    apply le_trans ?_ (enorm_integral_le_lintegr²al_enorm _)
 
 
 
