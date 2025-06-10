@@ -69,6 +69,23 @@ instance instDistrib (n : ℕ) : Distrib (Fin n) :=
     right_distrib := fun a b c => by
       rw [mul_comm, left_distrib_aux, mul_comm _ b, mul_comm] }
 
+instance instNonUnitalCommRing (n : ℕ) [NeZero n] : NonUnitalCommRing (Fin n) where
+  __ := Fin.addCommGroup n
+  __ := Fin.instCommSemigroup n
+  __ := Fin.instDistrib n
+  zero_mul := Fin.zero_mul'
+  mul_zero := Fin.mul_zero'
+
+instance instCommMonoid (n : ℕ) [NeZero n] : CommMonoid (Fin n) where
+  one_mul := Fin.one_mul'
+  mul_one := Fin.mul_one'
+
+/-- Note this is more general than `Fin.instCommRing` as it applies (vacuously) to `Fin 0` too. -/
+instance instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) where
+  toInvolutiveNeg := Fin.instInvolutiveNeg n
+  mul_neg := Nat.casesOn n finZeroElim fun _i => mul_neg
+  neg_mul := Nat.casesOn n finZeroElim fun _i => neg_mul
+
 /--
 Commutative ring structure on `Fin n`.
 
@@ -83,14 +100,13 @@ For example, for `x : Fin k` and `n : Nat`,
 it causes `x < n` to be elaborated as `x < ↑n` rather than `↑x < n`,
 silently introducing wraparound arithmetic.
 -/
-def instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
-  { Fin.instAddMonoidWithOne n, Fin.addCommGroup n, Fin.instCommSemigroup n,
-      Fin.instDistrib n with
-    intCast n := Fin.intCast n
-    one_mul := Fin.one_mul'
-    mul_one := Fin.mul_one',
-    zero_mul := Fin.zero_mul'
-    mul_zero := Fin.mul_zero' }
+def instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) where
+  __ := Fin.instAddMonoidWithOne n
+  __ := Fin.addCommGroup n
+  __ := Fin.instCommSemigroup n
+  __ := Fin.instNonUnitalCommRing n
+  __ := Fin.instCommMonoid n
+  intCast n := Fin.intCast n
 
 namespace CommRing
 
@@ -98,12 +114,8 @@ attribute [scoped instance] Fin.instCommRing
 
 end CommRing
 
-open Fin.CommRing in
-/-- Note this is more general than `Fin.instCommRing` as it applies (vacuously) to `Fin 0` too. -/
-def instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) :=
-  { toInvolutiveNeg := Fin.instInvolutiveNeg n
-    mul_neg := Nat.casesOn n finZeroElim fun _i => mul_neg
-    neg_mul := Nat.casesOn n finZeroElim fun _i => neg_mul }
+instance (n : ℕ) [NeZero n] : NeZero (1 : Fin (n + 1)) :=
+  open Fin.CommRing in inferInstance
 
 end Fin
 

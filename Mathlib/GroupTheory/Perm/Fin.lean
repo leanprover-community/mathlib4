@@ -165,7 +165,7 @@ theorem cycleRange_of_le {n : ℕ} [NeZero n] {i j : Fin n} (h : j ≤ i) :
 theorem coe_cycleRange_of_le {n : ℕ} {i j : Fin n} (h : j ≤ i) :
     (cycleRange i j : ℕ) = if j = i then 0 else (j : ℕ) + 1 := by
   rcases n with - | n
-  · exact absurd le_rfl i.pos.not_le
+  · exact absurd le_rfl i.pos.not_ge
   rw [cycleRange_of_le h]
   split_ifs with h'
   · rfl
@@ -335,15 +335,15 @@ theorem Equiv.Perm.prod_Iio_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
     refine ⟨?_, fun hlt ↦ ?_⟩
     · rintro ⟨i, j, hij, rfl, rfl⟩
       exact inf_le_sup.lt_of_ne <| by simp [hij.ne.symm]
-    obtain hlt' | hle := lt_or_le (σ.symm x1) (σ.symm x2)
+    obtain hlt' | hle := lt_or_ge (σ.symm x1) (σ.symm x2)
     · exact ⟨_, _, hlt', by simp [hlt.le]⟩
     exact ⟨_, _, hle.lt_of_ne (by simp [hlt.ne]), by simp [hlt.le]⟩
   nth_rw 2 [← hφD]
   rw [Finset.prod_image fun x hx y hy ↦ Finset.injOn_of_card_image_eq (by rw [hφD]) hx hy]
   refine Finset.prod_congr rfl fun ⟨x₁, x₂⟩ hx ↦ ?_
   replace hx : x₂ < x₁ := by simpa [hD] using hx
-  obtain hlt | hle := lt_or_le (σ x₁) (σ x₂)
-  · simp [inf_eq_left.2 hlt.le, sup_eq_right.2 hlt.le, hx.not_lt, ← hf]
+  obtain hlt | hle := lt_or_ge (σ x₁) (σ x₂)
+  · simp [inf_eq_left.2 hlt.le, sup_eq_right.2 hlt.le, hx.not_gt, ← hf]
   simp [inf_eq_right.2 hle, sup_eq_left.2 hle, hx]
 
 theorem Equiv.Perm.prod_Ioi_comp_eq_sign_mul_prod {R : Type*} [CommRing R]

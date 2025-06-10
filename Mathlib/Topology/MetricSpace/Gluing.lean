@@ -163,8 +163,8 @@ theorem Sum.mem_uniformity_iff_glueDist (hε : 0 < ε) (s : Set ((X ⊕ Y) × (X
     refine ⟨min (min δX δY) ε, lt_min (lt_min δX0 δY0) hε, ?_⟩
     rintro (a | a) (b | b) h <;> simp only [lt_min_iff] at h
     · exact hX h.1.1
-    · exact absurd h.2 (le_glueDist_inl_inr _ _ _ _ _).not_lt
-    · exact absurd h.2 (le_glueDist_inr_inl _ _ _ _ _).not_lt
+    · exact absurd h.2 (le_glueDist_inl_inr _ _ _ _ _).not_gt
+    · exact absurd h.2 (le_glueDist_inr_inl _ _ _ _ _).not_gt
     · exact hY h.1.2
   · rintro ⟨ε, ε0, H⟩
     constructor <;> exact ⟨ε, ε0, fun _ _ h => H _ _ h⟩
@@ -239,8 +239,8 @@ private theorem Sum.mem_uniformity (s : Set ((X ⊕ Y) × (X ⊕ Y))) :
     refine ⟨min (min εX εY) 1, lt_min (lt_min εX0 εY0) zero_lt_one, ?_⟩
     rintro (a | a) (b | b) h
     · exact hX (lt_of_lt_of_le h (le_trans (min_le_left _ _) (min_le_left _ _)))
-    · cases not_le_of_lt (lt_of_lt_of_le h (min_le_right _ _)) Sum.one_le_dist_inl_inr
-    · cases not_le_of_lt (lt_of_lt_of_le h (min_le_right _ _)) Sum.one_le_dist_inr_inl
+    · cases not_le_of_gt (lt_of_lt_of_le h (min_le_right _ _)) Sum.one_le_dist_inl_inr
+    · cases not_le_of_gt (lt_of_lt_of_le h (min_le_right _ _)) Sum.one_le_dist_inr_inl
     · exact hY (lt_of_lt_of_le h (le_trans (min_le_left _ _) (min_le_right _ _)))
   · rintro ⟨ε, ε0, H⟩
     constructor <;> rw [Filter.mem_map, mem_uniformity_dist] <;> exact ⟨ε, ε0, fun _ _ h => H _ _ h⟩

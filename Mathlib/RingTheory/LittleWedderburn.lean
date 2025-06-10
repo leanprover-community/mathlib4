@@ -85,14 +85,14 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   suffices Φₙ.eval ↑q ∣ ↑(∑ x ∈ (ConjClasses.noncenter Dˣ).toFinset, x.carrier.toFinset.card) by
     have contra : Φₙ.eval _ ∣ _ := eval_dvd (cyclotomic.dvd_X_pow_sub_one n ℤ) (x := (q : ℤ))
     rw [eval_sub, eval_pow, eval_X, eval_one, ← key, Int.dvd_add_left this] at contra
-    refine (Nat.le_of_dvd ?_ ?_).not_lt (sub_one_lt_natAbs_cyclotomic_eval (n := n) ?_ hq.ne')
+    refine (Nat.le_of_dvd ?_ ?_).not_gt (sub_one_lt_natAbs_cyclotomic_eval (n := n) ?_ hq.ne')
     · exact tsub_pos_of_lt hq
     · convert Int.natAbs_dvd_natAbs.mpr contra
       clear_value q
       simp only [eq_comm, Int.natAbs_eq_iff, Nat.cast_sub hq.le, Nat.cast_one, neg_sub, true_or]
     · by_contra! h
       obtain ⟨x, hx⟩ := finrank_le_one_iff.mp h
-      refine not_le_of_lt hZ.lt_top (fun y _ ↦ Subring.mem_center_iff.mpr fun z ↦ ?_)
+      refine not_le_of_gt hZ.lt_top (fun y _ ↦ Subring.mem_center_iff.mpr fun z ↦ ?_)
       obtain ⟨r, rfl⟩ := hx y
       obtain ⟨s, rfl⟩ := hx z
       rw [smul_mul_smul_comm, smul_mul_smul_comm, mul_comm]
