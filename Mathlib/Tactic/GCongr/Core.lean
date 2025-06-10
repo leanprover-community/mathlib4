@@ -537,7 +537,7 @@ partial def _root_.Lean.MVarId.gcongr
     -- B. If there is a template, and there was no `@[gcongr]` lemma which matched the template,
     -- fail.
     | throwError "gcongr failed, no @[gcongr] lemma applies for the template portion \
-        {template} and the relation {rel}"
+        {template} and the relation {relName}"
   -- B. If there is a template, and there was a `@[gcongr]` lemma which matched the template, but
   -- it was not possible to `apply` that lemma, then report the error message from `apply`-ing that
   -- lemma.
