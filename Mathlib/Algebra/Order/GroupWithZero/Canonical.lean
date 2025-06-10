@@ -318,6 +318,24 @@ instance instExistsAddOfLE [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (WithZero
     obtain ⟨c, rfl⟩ := exists_add_of_le (WithZero.coe_le_coe.1 h)
     exact ⟨c, rfl⟩⟩
 
+lemma map'_mono {β : Type*} [MulOneClass α] [MulOneClass β] [Preorder β]
+    {f : α →* β} (hf : Monotone f) :
+    Monotone (WithZero.map' f) := by
+  intro x y
+  cases x
+  · simp [WithZero.zero_le]
+  cases y
+  · simp [WithZero.coe_le_iff]
+  · simpa using fun h ↦ hf h
+
+lemma map'_strictMono {β : Type*} [MulOneClass α] [MulOneClass β] [Preorder β]
+    {f : α →* β} (hf : StrictMono f) :
+    StrictMono (WithZero.map' f) := by
+  intro x y h
+  cases x <;> cases y <;>
+  · simp_all [WithZero.zero_lt_coe, (WithZero.zero_lt_coe _).not_gt];
+    try exact hf h
+
 end Preorder
 
 section PartialOrder
