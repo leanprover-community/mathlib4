@@ -155,6 +155,8 @@ theorem mk_neg {M : Type*} [AddCommGroup M] [Module R M] {m : M} {s : S} :
 The multiplication on the localized module.
 Note that this gives a diamond with the instance on `R[S⁻¹]` (which does not require commutativity),
 but is defeq to it under `with_reducible_and_instances`.
+See https://github.com/leanprover-community/mathlib4/pull/25671 for an approach to generalize this
+but it requires right `R` actions on `R`-algebras.
 -/
 protected def mul {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R}
     (m₁ m₂ : LocalizedModule S A) : LocalizedModule S A :=
