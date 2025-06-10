@@ -86,6 +86,13 @@ theorem map_comp (f : M →* N) (g : N →* P) : map (g.comp f) = (map g).comp (
 theorem map_injective {f : M →* N} (hf : Function.Injective f) :
     Function.Injective (map f) := fun _ _ e => ext (hf (congr_arg val e))
 
+@[to_additive]
+theorem map_bijective {f : M →* N} (hf : Function.Bijective f) : Function.Bijective <| map f := by
+  refine ⟨map_injective hf.injective, ?_⟩
+  rintro ⟨u, v, uv, vu⟩
+  rcases hf.surjective u, hf.surjective v with ⟨⟨u, rfl⟩, ⟨v, rfl⟩⟩
+  exact ⟨⟨u, v, hf.injective <| by simpa, hf.injective <| by simpa⟩, rfl⟩
+
 variable (M)
 
 @[to_additive (attr := simp)]
