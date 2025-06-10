@@ -103,13 +103,12 @@ variable (C : Type u) [Category.{u} C]
 
 instance closed : Closed (Cat.of C) where
   rightAdj := exp C
-  adj := Adjunction.mkOfHomEquiv {
-    homEquiv _ _ := curryingFlipEquiv.symm
-    homEquiv_naturality_left_symm :=
-      comp_flip_uncurry_eq
-    homEquiv_naturality_right :=
-      comp_flip_curry_eq
-  }
+  adj := Adjunction.mkOfHomEquiv 
+    { homEquiv _ _ := curryingFlipEquiv.symm
+      homEquiv_naturality_left_symm :=
+        comp_flip_uncurry_eq
+      homEquiv_naturality_right :=
+        comp_flip_curry_eq }
 
 @[simps!]
 instance cartesianClosed : CartesianClosed Cat.{u, u} where
