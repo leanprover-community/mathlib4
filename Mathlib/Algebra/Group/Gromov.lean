@@ -1277,7 +1277,7 @@ lemma GLW_preseves_norm (g: G) (w: W (G := G)): ‖(GRepW (G := G) (GRepW_base g
 
 
 -- The image of G under our representation: ρ(G) in the Vikman paper
-def rho_g := GRepW '' ( Set.range (fun g => GRepW_base (G := G) g) )
+noncomputable def rho_g := ((GRepW (G := G)).restrict ((GRepW_base (G := G)).range)).range
 
 instance GL_W_proper: ProperSpace (GL_W (G := G)) := by
   sorry
@@ -1287,7 +1287,7 @@ attribute [-instance] Units.instTopologicalSpaceUnits
 --   apply FiniteDimensional.proper_rclike (K := ℂ)
 
 -- In the Vikman paper, rho_g is precompact, and the closure of rho_g is a compact subgroup
-theorem compact_rho_g: IsCompact (closure (rho_g (G := G))) := by
+theorem compact_rho_g: IsCompact (closure (rho_g (G := G).carrier)) := by
   unfold rho_g
   apply Bornology.IsBounded.isCompact_closure
   rw [Metric.isBounded_iff]
