@@ -32,9 +32,10 @@ jobs:
           git checkout -
           labels="$(lake exe autolabel)"
           printf '%s\n' "${labels}"
+          # extract
           label="$(printf '%s' "${labels}" | sed -n 's=.*#\[\([^,]*\)\].*=\1=p')"
           printf 'label: "%s"\n' "${label}"
-          if [ "@{{ github.event_name == 'reopened' }}" == 'opened' ]
+          if [ "@{{ github.event_name }}" == 'opened' ]
           then
             if [ -n "${label}" ]
             then
