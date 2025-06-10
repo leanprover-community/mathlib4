@@ -175,7 +175,7 @@ theorem map_update_smul [DecidableEq ι] (i : ι) (r : R) (x : M) :
 
 @[deprecated (since := "2024-11-03")] protected alias map_smul := map_update_smul
 
-@[simp]
+-- Cannot be @[simp] because `i` and `j` can not be inferred by `simp`.
 theorem map_eq_zero_of_eq (v : ι → M) {i j : ι} (h : v i = v j) (hij : i ≠ j) : f v = 0 :=
   f.map_eq_zero_of_eq' v i j h hij
 
@@ -367,6 +367,13 @@ instance instModule : Module S (M [⋀^ι]→ₗ[R] N) where
 instance instNoZeroSMulDivisors [NoZeroSMulDivisors S N] :
     NoZeroSMulDivisors S (M [⋀^ι]→ₗ[R] N) :=
   coe_injective.noZeroSMulDivisors _ rfl coeFn_smul
+
+/-- Embedding of alternating maps into multilinear maps as a linear map. -/
+@[simps]
+def toMultilinearMapLM : (M [⋀^ι]→ₗ[R] N) →ₗ[S] MultilinearMap R (fun _ : ι ↦ M) N where
+  toFun := toMultilinearMap
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 
 end Module
 
@@ -565,7 +572,11 @@ section DomLcongr
 variable (ι R N)
 variable (S : Type*) [Semiring S] [Module S N] [SMulCommClass R S N]
 
-/-- Construct a linear equivalence between maps from a linear equivalence between domains. -/
+/-- Construct a linear equivalence between maps from a linear equivalence between domains.
+
+This is `AlternatingMap.compLinearMap` as an isomorphism,
+and the alternating version of `LinearEquiv.multilinearMapCongrLeft`.
+It could also have been called `LinearEquiv.alternatingMapCongrLeft`. -/
 @[simps apply]
 def domLCongr (e : M ≃ₗ[R] M₂) : M [⋀^ι]→ₗ[R] N ≃ₗ[S] (M₂ [⋀^ι]→ₗ[R] N) where
   toFun f := f.compLinearMap e.symm
@@ -894,6 +905,20 @@ variable {R' : Type*} {M'' M₂'' N'' N₂'' : Type*} [CommSemiring R'] [AddComm
   [AddCommMonoid M₂''] [AddCommMonoid N''] [AddCommMonoid N₂''] [Module R' M''] [Module R' M₂'']
   [Module R' N''] [Module R' N₂'']
 
+/-- An isomorphism of multilinear maps given an isomorphism between their codomains.
+
+This is `Linear.compAlternatingMap` as an isomorphism,
+and the alternating version of `LinearEquiv.multilinearMapCongrRight`. -/
+@[simps!]
+def LinearEquiv.alternatingMapCongrRight (e : N'' ≃ₗ[R'] N₂'') :
+    M''[⋀^ι]→ₗ[R'] N'' ≃ₗ[R'] (M'' [⋀^ι]→ₗ[R'] N₂'') where
+  toFun f := e.compAlternatingMap f
+  invFun f := e.symm.compAlternatingMap f
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+
 /-- The space of constant maps is equivalent to the space of maps that are alternating with respect
 to an empty family. -/
 @[simps]
@@ -904,4 +929,3 @@ def AlternatingMap.constLinearEquivOfIsEmpty [IsEmpty ι] : N'' ≃ₗ[R'] (M'' 
   invFun f := f 0
   left_inv _ := rfl
   right_inv f := ext fun _ => AlternatingMap.congr_arg f <| Subsingleton.elim _ _
-

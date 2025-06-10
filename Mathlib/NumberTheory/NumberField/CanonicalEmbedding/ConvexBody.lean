@@ -375,7 +375,7 @@ open MeasureTheory MeasureTheory.Measure Real in
 open scoped Classical in
 theorem convexBodySum_volume :
     volume (convexBodySum K B) = (convexBodySumFactor K) * (.ofReal B) ^ (finrank ℚ K) := by
-  obtain hB | hB := le_or_lt B 0
+  obtain hB | hB := le_or_gt B 0
   · rw [convexBodySum_volume_eq_zero_of_le_zero K hB, ofReal_eq_zero.mpr hB, zero_pow, mul_zero]
     exact finrank_pos.ne'
   · suffices volume (convexBodySum K 1) = (convexBodySumFactor K) by
@@ -411,8 +411,8 @@ theorem convexBodySum_volume :
           ← Finset.sum_neg_distrib, exp_add, exp_sum, ← integral_prod_mul, volume_eq_prod]
       _ = (∫ x : ℝ, exp (-|x|)) ^ nrRealPlaces K *
               (∫ x : ℂ, Real.exp (-2 * ‖x‖)) ^ nrComplexPlaces K := by
-        rw [integral_fintype_prod_eq_pow _ (fun x => exp (- ‖x‖)), integral_fintype_prod_eq_pow _
-          (fun x => exp (- 2 * ‖x‖))]
+        rw [integral_fintype_prod_volume_eq_pow _ (fun x => exp (- ‖x‖)),
+          integral_fintype_prod_volume_eq_pow _ (fun x => exp (- 2 * ‖x‖))]
         simp_rw [norm_eq_abs]
       _ =  (2 * Gamma (1 / 1 + 1)) ^ nrRealPlaces K *
               (π * (2 : ℝ) ^ (-(2 : ℝ) / 1) * Gamma (2 / 1 + 1)) ^ nrComplexPlaces K := by
