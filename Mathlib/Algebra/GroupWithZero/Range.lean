@@ -47,11 +47,10 @@ variable  [GroupWithZero B]
 
 
 /-- For a map with codomain a `MonoidWithZero`, this is a smallest
-`GroupWithZero`, that contains the invertible elements in the image. 
+`GroupWithZero`, that contains the invertible elements in the image.
 
-See
-`MonoidHomWithZero.mem_range₀_iff_of_comm` for another characterization of `range₀ f` when `B` is
-commutative. -/
+See `MonoidHomWithZero.mem_range₀_iff_of_comm` for another characterization
+of `range₀ f` when `B` is commutative. -/
 def range₀ : Submonoid B where
   carrier := (↑)''(Subgroup.closure (G := Bˣ) ((↑)⁻¹' (range f))).carrier ∪ {0}
   mul_mem' {b b'} hb hb' := by
