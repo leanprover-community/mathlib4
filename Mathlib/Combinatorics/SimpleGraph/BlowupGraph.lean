@@ -185,14 +185,14 @@ def Flag.induceEquiv (F₁ : Flag α ι) (F₂ : Flag β ι) (t : Set β) (h : �
 @[simp]
 def FlagEmbedding.Compat {β : Type*} {F₁ : Flag β ι} {F₂ : Flag β ι} {F : Flag α ι}
     (e₁ : F₁ ↪f F) (e₂ : F₂ ↪f F) : Prop :=
-  ∀ ⦃b₁ b₂⦄, e₁.toEmbedding b₁ = e₂.toEmbedding b₂ → ∃ i, e₁.toEmbedding b₁ = F.θ i
+  ∀ b₁ b₂, e₁.toRelEmbedding b₁ = e₂.toRelEmbedding b₂ → ∃ i, e₁.toRelEmbedding b₁ = F.θ i
 
 omit [Fintype α] [Fintype ι] [DecidableEq α] in
 lemma FlagEmbedding.Compat.symm {β : Type*} {F₁ F₂ : Flag β ι} {F : Flag α ι} {e₁ : F₁ ↪f F}
     {e₂ : F₂ ↪f F} (h : e₁.Compat e₂) : e₂.Compat e₁ := by
   simp only [FlagEmbedding.Compat, RelEmbedding.coe_toEmbedding] at *
   intro b₁ b₂ he
-  obtain ⟨i, he'⟩ := h he.symm
+  obtain ⟨i, he'⟩ := h _ _ he.symm
   use i, (he ▸ he')
 
 /-!
@@ -346,7 +346,9 @@ lemma Flag.sum_card_embeddings_induce_eq (F₁ : Flag β ι) (F : Flag α ι) [F
       congr with t
       constructor <;> intro ⟨ht1, ht2⟩ <;> exact ⟨ht1, fun x hx ↦ ht2 (by simpa using hx)⟩
 
-/-- Given a pair of -/
+/--
+The set of all compatible embeddings of a pair of `(β,ι)`-flags in a `(α,ι)`-flag.
+-/
 abbrev compat_pairs (F₁₂ : Flag β ι × Flag β ι) (F : Flag α ι) :=
   {(e₁, e₂) : F₁₂.1 ↪f F × F₁₂.2 ↪f F | e₁.Compat e₂}
 
@@ -362,6 +364,58 @@ lemma compat_pairs_inj {α β ι : Type*} {F : Flag α ι} {F₁₂ : Flag β ι
 noncomputable instance FlagEmbedding.instfintypeOfCompatEmbeddings {α β ι : Type*} {F : Flag α ι}
     {F₁₂ : Flag β ι × Flag β ι} [Fintype α] [Fintype β] : Fintype (F₁₂ ↪f₂ F) :=
   Fintype.ofInjective _ compat_pairs_inj
+
+#check Subtype.ext_val
+/--
+Flag embeddings of `F₁` in `F₂[t]` are equivalent to embeddings of `F₁` in `F₂` that map into `t`.
+(Note: that `F₂[t]` is only defined if all the labels_eq of `F₂` lie in `t`).
+-/
+def Flag₂.induceEquiv (F₁ F₂ : Flag β ι) (F : Flag α ι) (t : Set α ) (h : ∀ i, F.θ i ∈ t) :
+    (F₁, F₂) ↪f₂ (F.induce t h) ≃
+      {e : (F₁, F₂) ↪f₂ F | Set.range e.1.1.toRelEmbedding ⊆ t ∧ Set.range e.1.2.toRelEmbedding ⊆ t}
+    where
+  toFun := fun e ↦ by
+    let f₁ : F₁ ↪f F:=⟨Embedding.induce _|>.comp e.1.1.toRelEmbedding,
+      by ext i; rw [← F.induce_labels_eq t h, e.1.1.labels_eq]; rfl⟩
+    let f₂ : F₂ ↪f F:=⟨Embedding.induce _|>.comp e.1.2.toRelEmbedding,
+      by ext i; rw [← F.induce_labels_eq t h, e.1.2.labels_eq];rfl⟩
+    have he : e.val.1.Compat e.val.2 := e.2
+    have he1: ∀ b, e.val.1.toRelEmbedding b = f₁.toRelEmbedding b := by intro b; rfl
+    have he2: ∀ b, e.val.2.toRelEmbedding b = f₂.toRelEmbedding b := by intro b; rfl
+    have hf : f₁.Compat f₂ := by
+      intro x y heq
+      have he3 : e.val.1.toRelEmbedding x = e.val.2.toRelEmbedding y := by
+        rwa [Subtype.ext_iff, he1, he2]
+      obtain ⟨i, heq'⟩ := he x y he3
+      have : (F.induce t h).θ i = F.θ i := F.induce_labels_eq t h
+      use i, by rw [← he1 x, ← this, ← Subtype.ext_iff,heq']
+    refine ⟨⟨(f₁,f₂), hf⟩,?_⟩
+    simp; constructor <;> intro a ⟨b,hb⟩
+    · rw [← he1] at hb; rw [← hb]; simp
+    · rw [← he2] at hb; rw [← hb]; simp
+  invFun := fun e ↦ by
+    have : ∀ b, e.1.1.1.toRelEmbedding b ∈ t := by intro b; apply e.2.1; simp
+    let f₁ : (F₁ ↪f (F.induce t h)) := ⟨⟨⟨fun b : β ↦ ⟨e.1.1.1.toRelEmbedding b, e.2.1 (by simp)⟩,
+      fun _ _ hb ↦ by simpa using hb⟩, by simp [Flag.induce_adj]⟩,
+      by ext i; simp [F.induce_labels_eq t h, e.1.1.1.labels_eq]⟩
+    let f₂ : (F₂ ↪f (F.induce t h)) := ⟨⟨⟨fun b : β ↦ ⟨e.1.1.2.toRelEmbedding b, e.2.2 (by simp)⟩,
+      fun _ _ hb ↦ by simpa using hb⟩, by simp [Flag.induce_adj]⟩,
+      by ext i; simp [F.induce_labels_eq t h, e.1.1.2.labels_eq]⟩
+    refine ⟨(f₁,f₂), ?_⟩
+    have : ∀ b₁ b₂, e.1.1.1.toRelEmbedding b₁ = e.1.1.2.toRelEmbedding b₂ →
+      ∃ i, e.1.1.1.toRelEmbedding b₁ = F.θ i := e.1.2
+    simp only [Set.mem_setOf_eq, FlagEmbedding.Compat]
+    have he1: ∀ b, e.1.1.1.toRelEmbedding b = f₁.toRelEmbedding b := by intro b; rfl
+    have he2: ∀ b, e.1.1.2.toRelEmbedding b = f₂.toRelEmbedding b := by intro b; rfl
+    intro b₁ b₂ hb
+    have heq : e.1.1.1.toRelEmbedding b₁ = e.1.1.2.toRelEmbedding b₂ := by
+      rwa [he1, he2, ← Subtype.ext_iff]
+    obtain ⟨i, hi⟩ := this _ _ heq
+    use i
+    have :=F.induce_labels_eq t h (i := i)
+    rwa [← this, he1, ←Subtype.ext_iff] at hi
+  left_inv := fun e ↦ by ext <;> dsimp
+  right_inv := fun e ↦ by ext <;> dsimp 
 
 open Classical in
 -- TODO next: prove this (will require something like `Flag.induceEquiv` first.)
