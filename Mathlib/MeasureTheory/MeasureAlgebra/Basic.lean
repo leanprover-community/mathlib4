@@ -5,20 +5,23 @@ Authors: William Du
 -/
 import Mathlib.MeasureTheory.MeasureAlgebra.Defs
 import Mathlib.Topology.Instances.ENNReal.Lemmas
+import Mathlib.Topology.Defs.Filter
+import Mathlib.Order.Filter.Defs
 
 /-!
 TODO: docstring
 -/
 
 open scoped Function -- required for scoped `on` notation
+open Filter
 
 variable {α : Type*}
 
 namespace MeasureAlgebra
 
-variable {m : MeasurableAlgebra α} {μ : MeasureAlgebraMeasure α} {a b : α}
+variable {m : MeasurableAlgebra α} {μ : MeasureAlgebraMeasure α}
 
-lemma prop321Ba (hd : a ⊓ b = ⊥) : μ (a ⊔ b) = (μ a) + (μ b) := by
+lemma prop321Ba {a b : α} (hd : a ⊓ b = ⊥) : μ (a ⊔ b) = (μ a) + (μ b) := by
   let s (n : ℕ) : α :=
     match n with
     | 0 => a
@@ -37,7 +40,7 @@ lemma prop321Ba (hd : a ⊓ b = ⊥) : μ (a ⊔ b) = (μ a) + (μ b) := by
       · rw [zero_add]; exact le_sup_right
       · exact bot_le
   have hpd : Pairwise (Disjoint on s) := by
-    unfold Pairwise; unfold Disjoint
+    unfold Pairwise Disjoint
     intro i j hi_ne_j x hx_le_si hx_le_sj
     rcases i with _ | _ | i
     repeat {
@@ -54,7 +57,7 @@ lemma prop321Ba (hd : a ⊓ b = ⊥) : μ (a ⊔ b) = (μ a) + (μ b) := by
     let d : Finset ℕ := {0, 1}
     have hf : ∀ x ∉ d, μ (s x) = 0 := by
       intro x hx_not_mem_d
-      simp only [d] at hx_not_mem_d
+      dsimp only [d] at hx_not_mem_d
       rw [Finset.mem_insert, Finset.mem_singleton, not_or] at hx_not_mem_d
       obtain ⟨hx_ne_0, hx_ne_1⟩ := hx_not_mem_d
       unfold s
@@ -66,12 +69,12 @@ lemma prop321Ba (hd : a ⊓ b = ⊥) : μ (a ⊔ b) = (μ a) + (μ b) := by
     rw [Finset.sum_insert h0_not_mem_1, Finset.sum_singleton]
   rw [hsup, MeasureAlgebraMeasure.disjoint hpd, hsum]
 
-lemma prop321Bb (hab : a ≤ b) : μ a ≤ μ b := by
+lemma prop321Bb {a b : α} (hab : a ≤ b) : μ a ≤ μ b := by
   rw [(le_iff_eq_sup_sdiff hab hab).mp (le_refl a)]
   rw [prop321Ba inf_sdiff_self_right]
   exact self_le_add_right (μ a) (μ (b \ a))
 
-lemma prop321Bc : μ (a ⊔ b) ≤ μ a + μ b := by
+lemma prop321Bc {a b : α} : μ (a ⊔ b) ≤ μ a + μ b := by
   rw [←sdiff_sup_self]
   rw [prop321Ba inf_sdiff_self_left]
   apply add_le_add_right
@@ -215,5 +218,40 @@ lemma prop321Bd {a : ℕ → α} : μ (⨆i a) ≤ ∑' i, μ (a i) := by
   intro i
   apply prop321Bb
   exact hb_le_a
+
+lemma prop321Be {a : ℕ → α} (hmonotone : Monotone a) :
+  Tendsto (μ ∘ a) atTop (nhds (μ (⨆i a))) := by
+  sorry
+
+-- needs inf
+-- lemma prop321Bf {a : ℕ → α} (hantitone : Antitone a) (hinf_le_infty : ⨅ i, (μ ∘ a) i < ⊤) :
+--   Tendsto (μ ∘ a) atTop (nhds (μ (⨅i a))) := by
+--   sorry
+
+variable {L : α} {f : ℕ → α} {s : Set α}
+
+#check Filter.Tendsto f Filter.atTop
+
+-- how to express definedness
+-- lemma prop321C {s : Set α} (hne : s.Nonempty) (hdirected : DirectedOn m.le s)
+--   (hsup_le_infty : sSup (Set.image μ s) < ⊤) : ??? ∧ μ (sSup s) = sSup (Set.image μ s) := by
+--   sorry
+
+-- lemma prop321D {s : Set α} (hne : s.Nonempty) (hdirected : DirectedOn m.le s)
+--   (hsup_defined : ???) : μ (sSup s) = sSup (Set.image μ s) := by
+--   sorry
+
+-- is pairwise disjoint enough?
+-- restrict μ to s
+-- lemma prop321E {s : Set α} (hd : s.PairwiseDisjoint id) (hsup_defined : ???) :
+  -- μ (sSup s) = ∑' a, μ a := by
+  -- sorry
+
+-- lemma prop321F {s : Set α} (hne : s.Nonempty) (hdirected : DirectedOn ge s)
+--   (hinf_le_infty : sInf (Set.image μ s) < ⊤) : ??? ∧ μ (sInf s) = sInf (Set.image μ s) := by
+--   sorry
+
+-- sequentially order-closed subalgebras
+-- lemma prop321G
 
 end MeasureAlgebra
