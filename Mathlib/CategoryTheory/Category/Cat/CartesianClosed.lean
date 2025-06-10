@@ -71,7 +71,7 @@ def curryingFlipEquiv : D ⥤ C ⥤ E ≃ C × D ⥤ E :=
 @[simps!]
 def compFlipUncurryIso (F : B ⥤ D) (G : D ⥤ C ⥤ E) :
     uncurry.obj (F ⋙ G).flip ≅ (𝟭 C).prod F ⋙ uncurry.obj G.flip :=
-  NatIso.ofComponents (fun _ ↦ eqToIso rfl)
+  .refl _
 
 lemma comp_flip_uncurry_eq (F : B ⥤ D) (G : D ⥤ C ⥤ E) :
     uncurry.obj (F ⋙ G).flip = (𝟭 C).prod F ⋙ uncurry.obj G.flip :=
