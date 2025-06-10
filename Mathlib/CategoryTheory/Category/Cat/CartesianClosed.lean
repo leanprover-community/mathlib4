@@ -29,6 +29,7 @@ variable (C : Type u) [Category.{v} C]
 
 /-- A category `C` induces a functor from `Cat` to itself defined
 by forming the category of functors out of `C`. -/
+@[simps]
 def exp : Cat ⥤ Cat where
   obj D := Cat.of (C ⥤ D)
   map F := {
