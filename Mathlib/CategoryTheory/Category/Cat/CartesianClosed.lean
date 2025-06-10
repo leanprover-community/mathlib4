@@ -86,14 +86,16 @@ section
 variable {B C D E : Type u} [Category.{u} B] [Category.{u} C]
   [Category.{u} D] [Category.{u} E]
 
+/-- Natural isomorphism witnessing `comp_flip_curry_eq`. -/
+@[simps!]
+def compFlipCurryIso (F : C × B ⥤ D) (G : D ⥤ E) :
+    (curry.obj (F ⋙ G)).flip ≅ (curry.obj F).flip ⋙ (Cat.exp (Cat.of C)).map G.toCatHom :=
+  NatIso.ofComponents (fun _ ↦ eqToIso rfl)
+
 lemma comp_flip_curry_eq (F : C × B ⥤ D) (G : D ⥤ E) :
     (curry.obj (F ⋙ G)).flip =
-      (curry.obj F).flip ⋙ (Cat.exp (Cat.of C)).map G.toCatHom := by
-  refine Functor.ext (fun _ ↦ rfl) ?_
-  · intro X Y f
-    simp only [Cat.of_α, comp_obj, eqToHom_refl, Functor.comp_map, Category.comp_id,
-      Category.id_comp]
-    rfl
+      (curry.obj F).flip ⋙ (Cat.exp (Cat.of C)).map G.toCatHom :=
+  Functor.ext_of_iso (compFlipCurryIso F G) (by aesop_cat) (by aesop_cat)
 
 end
 
