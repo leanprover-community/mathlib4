@@ -25,7 +25,7 @@ final results.
 A key insight is that `FreeM F` satisfies the **universal property of free monads**: for any monad
 `M` and effect handler `f : F → M`, there exists a unique way to interpret `FreeM F` computations
 in `M` that respects the effect semantics given by `f`. This unique interpreter is `mapM f`, which
-acts as the canonical **fold** (catamorphism) for free monads.
+acts as the canonical **fold** for free monads.
 
 ## Implementation
 
@@ -159,10 +159,9 @@ instance {F : Type u → Type v} : LawfulMonad (FreeM F) := LawfulMonad.mk'
 Interpret a `FreeM f` computation into any monad `m` by providing an interpretation
 function for the effect signature `f`.
 
-This function defines the *canonical interpreter* (also known as a *fold* or *catamorphism*)
-from the free monad `FreeM f` into the target monad `m`. It is the unique monad morphism that
-extends the effect handler `interp : ∀ {β}, F β → M β` via the universal property of `FreeM` -/
-
+This function defines the *canonical interpreter* from the free monad `FreeM f` into the target
+monad `m`. It is the unique monad morphism that extends the effect handler
+`interp : ∀ {β}, F β → M β` via the universal property of `FreeM` -/
 protected def mapM {F : Type u → Type v} {M : Type u → Type w} [Monad M] {α : Type u} :
     FreeM F α → ({β : Type u} → F β → M β) → M α
   | .pure a, _ => pure a
