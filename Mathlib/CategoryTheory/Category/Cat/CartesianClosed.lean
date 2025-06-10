@@ -45,6 +45,7 @@ variable {B : Type u₁} [Category.{v₁} B] {C : Type u₂} [Category.{v₂} C]
   [Category.{v₃} D] {E : Type u₄} [Category.{v₄} E]
 
 /-- The isomorphism of categories of bifunctors given by currying. -/
+@[simps]
 def curryingIso : C ⥤ D ⥤ E ≅ C × D ⥤ E where
   hom F := uncurry.obj F
   inv G := curry.obj G
