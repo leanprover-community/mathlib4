@@ -93,8 +93,6 @@ lemma comp_flip_curry_eq (F : C × B ⥤ D) (G : D ⥤ E) :
     (curry.obj (F ⋙ G)).flip =
       (curry.obj F).flip ⋙ (Cat.exp (Cat.of C)).map G.toCatHom :=
   Functor.ext_of_iso (compFlipCurryIso F G) (by aesop_cat) (by aesop_cat)
-      (curry.obj F).flip ⋙ (Cat.exp (Cat.of C)).map G.toCatHom :=
-  Functor.ext_of_iso (compFlipCurryIso F G) (by aesop_cat) (by aesop_cat)
 
 end
 
