@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Ilmārs Cīrulis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ilmārs Cīrulis
+Authors: Ilmārs Cīrulis, Alex Meiburg
 -/
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 
