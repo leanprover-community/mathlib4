@@ -22,10 +22,15 @@ condition.
 
 ## Main definitions
 
+* `Oplax.LaxTrans F G`: oplax transformations between oplax functors `F` and `G`. The naturality
+  condition is given by a 2-morphism `app a ≫ G.map f ⟶ F.map f ≫ app b` for each 1-morphism
+  `f : a ⟶ b`.
 * `Oplax.OplaxTrans F G`: oplax transformations between oplax functors `F` and `G`. The naturality
   condition is given by a 2-morphism `F.map f ≫ app b ⟶ app a ≫ G.map f` for each 1-morphism
   `f : a ⟶ b`.
-* `Oplax.StrongTrans F G`: Strong transformations between oplax functors `F` and `G`.
+* `Oplax.StrongTrans F G`: Strong transformations between oplax functors `F` and `G`. The naturality
+  condition is given by a 2-isomorphism `F.map f ≫ app b ≅ app a ≫ G.map f` for each 1-morphism
+  `f : a ⟶ b`.
 
 Using these, we define two `CategoryStruct` (scoped) instances on `OplaxFunctor B C`, one in the
 `Oplax.OplaxTrans` namespace and one in the `Oplax.StrongTrans` namespace. The arrows in these
