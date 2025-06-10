@@ -159,7 +159,7 @@ section LinearOrder
 variable [LinearOrder β] {f : α → β} {l : List α} {a m : α}
 
 theorem le_of_mem_argmax : a ∈ l → m ∈ argmax f l → f a ≤ f m := fun ha hm =>
-  le_of_not_lt <| not_lt_of_mem_argmax ha hm
+  le_of_not_gt <| not_lt_of_mem_argmax ha hm
 
 theorem le_of_mem_argmin : a ∈ l → m ∈ argmin f l → f m ≤ f a :=
   @le_of_mem_argmax _ βᵒᵈ _ _ _ _ _
@@ -176,7 +176,7 @@ theorem argmax_cons (f : α → β) (a : α) (l : List α) :
     dsimp
     split_ifs <;> try rfl
     · exact absurd (lt_trans ‹f a < f m› ‹_›) ‹_›
-    · cases (‹f a < f tl›.lt_or_lt _).elim ‹_› ‹_›
+    · cases (‹f a < f tl›.gt_or_lt _).elim ‹_› ‹_›
 
 theorem argmin_cons (f : α → β) (a : α) (l : List α) :
     argmin f (a :: l) =
@@ -197,7 +197,7 @@ theorem index_of_argmax :
     dsimp only at hm
     simp only [cond_eq_if, beq_iff_eq]
     obtain ha | ha := ha <;> split_ifs at hm <;> injection hm with hm <;> subst hm
-    · cases not_le_of_lt ‹_› ‹_›
+    · cases not_le_of_gt ‹_› ‹_›
     · rw [if_pos rfl]
     · rw [if_neg, if_neg]
       · exact Nat.succ_le_succ (index_of_argmax h (by assumption) ham)
@@ -323,10 +323,10 @@ theorem minimum_le_of_mem : a ∈ l → (minimum l : WithTop α) = m → m ≤ a
   le_of_mem_argmin
 
 theorem le_maximum_of_mem' (ha : a ∈ l) : (a : WithBot α) ≤ maximum l :=
-  le_of_not_lt <| not_maximum_lt_of_mem' ha
+  le_of_not_gt <| not_maximum_lt_of_mem' ha
 
 theorem minimum_le_of_mem' (ha : a ∈ l) : minimum l ≤ (a : WithTop α) :=
-  le_of_not_lt <| not_lt_minimum_of_mem' ha
+  le_of_not_gt <| not_lt_minimum_of_mem' ha
 
 theorem minimum_concat (a : α) (l : List α) : minimum (l ++ [a]) = min (minimum l) a :=
   @maximum_concat αᵒᵈ _ _ _

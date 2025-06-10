@@ -36,6 +36,7 @@ import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
 import Mathlib.Tactic.CategoryTheory.Elementwise
+import Mathlib.Tactic.CategoryTheory.IsoReassoc
 import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
 import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
 import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
@@ -81,6 +82,7 @@ import Mathlib.Tactic.Explode.Datatypes
 import Mathlib.Tactic.Explode.Pretty
 import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.ExtractGoal
+import Mathlib.Tactic.ExtractLets
 import Mathlib.Tactic.FBinop
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.FastInstance
@@ -123,6 +125,7 @@ import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.Lift
+import Mathlib.Tactic.LiftLets
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Linarith.Frontend
@@ -183,6 +186,7 @@ import Mathlib.Tactic.NormNum.Eq
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.Ineq
 import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Tactic.NormNum.Irrational
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.LegendreSymbol
 import Mathlib.Tactic.NormNum.NatFactorial
