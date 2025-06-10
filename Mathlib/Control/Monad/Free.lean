@@ -209,27 +209,14 @@ theorem extendsHandler_iff
 {F : Type u → Type v} {m : Type u → Type w} [Monad m] {α : Type u}
     (f : {ι : Type u} → F ι → m ι) (g : FreeM F α → m α) :
     ExtendsHandler @f g ↔ g = (·.mapM @f) := by
-  constructor
-  · intro h
-    apply funext
-    intro x
-    induction' x with a b op cont ih
-    · simp only [FreeM.mapM]
-      exact h.1 a
-    · simp only [FreeM.mapM]
-      rw [h.2]
-      congr 1
-      ext x
-      apply ih x
-  · intro h
-    constructor
-    · intro a
-      simp [h]
-    · intro ι op k
-      simp only [FreeM.mapM, bind, FreeM.bind]
-      rw [h]
-      congr 1
-
+  refine ⟨fun h => funext fun x => ?_, fun h => ?_⟩
+  · induction x with
+    | pure a => exact h.1 a
+    | liftBind op cont ih =>
+      rw [mapM_liftBind, h.2]
+      simp [ih]
+  · subst h
+    exact ⟨fun _ => rfl, fun _ _ => rfl⟩
 /-! ### State Monad via `FreeM` -/
 
 /-- Type constructor for state operations. -/
