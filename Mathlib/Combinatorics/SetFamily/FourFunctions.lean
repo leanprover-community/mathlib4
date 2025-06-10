@@ -83,8 +83,10 @@ private lemma ineq [ExistsAddOfLE β] {a₀ a₁ b₀ b₁ c₀ c₁ d₀ d₁ :
       = a₀ * b₁ * (c₀ * d₁) + c₀ * d₁ * (a₁ * b₀) := by ring
     _ ≤ a₀ * b₁ * (a₁ * b₀) + c₀ * d₁ * (c₀ * d₁) := mul_add_mul_le_mul_add_mul h₀₁ h₁₀
     _ = a₀ * b₀ * (a₁ * b₁) + c₀ * d₁ * (c₀ * d₁) := by ring
-    _ ≤ c₀ * d₀ * (c₁ * d₁) + c₀ * d₁ * (c₀ * d₁) :=
-        add_le_add_right (mul_le_mul h₀₀ h₁₁ (by positivity) <| by positivity) _
+    _ ≤ c₀ * d₀ * (c₁ * d₁) + c₀ * d₁ * (c₀ * d₁) := by
+      gcongr
+      · positivity
+      · positivity
     _ = (c₀ * d₁ + c₁ * d₀) * (c₀ * d₁) := by ring
 
 private def collapse (𝒜 : Finset (Finset α)) (a : α) (f : Finset α → β) (s : Finset α) : β :=
