@@ -76,7 +76,6 @@ lemma apply_reflection_reflection (x y : M) :
     B.form (P.reflection i x) (P.reflection i y) = B.form x y :=
   B.isOrthogonal_reflection i x y
 
-@[simp]
 lemma apply_weylGroup_smul (g : P.weylGroup) (x y : M) :
     B.form (g • x) (g • y) = B.form x y := by
   revert x y
@@ -87,6 +86,11 @@ lemma apply_weylGroup_smul (g : P.weylGroup) (x y : M) :
   | mul g₁ g₂ hg₁ hg₂ hg₁' hg₂' =>
     intro x y
     rw [← Submonoid.mk_mul_mk _ _ _ hg₁ hg₂, mul_smul, mul_smul, hg₁', hg₂']
+
+@[simp]
+lemma apply_weylGroup_coe_mul (g : P.weylGroup) (x y : M) :
+    B.form ((g : P.Aut) • x) ((g : P.Aut) • y) = B.form x y :=
+  apply_weylGroup_smul _ g x y
 
 @[simp]
 lemma apply_root_root_zero_iff [IsDomain R] [NeZero (2 : R)]:
