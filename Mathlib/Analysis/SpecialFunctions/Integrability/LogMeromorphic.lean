@@ -25,7 +25,7 @@ open Filter Interval MeasureTheory MeromorphicOn Metric Real
 ## Interval Integrability for Logarithms of Real Meromorphic Functions
 -/
 
-namespace intervalIntegral
+section IntervalIntegrable
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -100,7 +100,7 @@ end intervalIntegral
 ## Circle Integrability for Logarithms of Complex Meromorphic Functions
 -/
 
-namespace circleIntegral
+section CircleIntegrable
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
