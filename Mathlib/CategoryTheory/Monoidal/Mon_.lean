@@ -415,8 +415,8 @@ def monToLaxMonoidalObj (A : Mon_ C) :
     Discrete PUnit.{u + 1} ⥤ C := (Functor.const _).obj A.X
 
 instance (A : Mon_ C) : (monToLaxMonoidalObj A).LaxMonoidal where
-  ε' := η[A.X]
-  μ' := fun _ _ => μ[A.X]
+  ε := η[A.X]
+  «μ» _ _ := μ[A.X]
 
 @[simp]
 lemma monToLaxMonoidalObj_ε (A : Mon_ C) :
