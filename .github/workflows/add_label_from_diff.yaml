@@ -49,7 +49,7 @@ jobs:
               echo "We are not applying any label."
             fi
           else
-            printf 'The PR was %s, not opened, so we do not apply any label.\n' "${{ github.event_name }}"
+            printf $'The action type was \'%s\', not \'opened\', so we do not apply any label.\n' "${{ github.event_name }}"
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
