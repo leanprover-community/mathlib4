@@ -35,7 +35,7 @@ theorem Int.toNat_sub_eq_zero_leq {m n : ℤ} : Int.toNat (-m - n) = 0 ↔ -n �
 
 theorem Int.neg_sub_one_sub_nat (i : ℕ) (r s t : ℤ) (hi: i ≤ t) :
     -r - s - ↑(Int.toNat t - i) = ↑i - (r + Int.toNat t) - s := by
-  rw [Nat.cast_sub ((Int.le_toNat (le_trans (Int.ofNat_nonneg i) hi)).mpr hi),
+  rw [Nat.cast_sub ((Int.le_toNat (le_trans (Int.natCast_nonneg i) hi)).mpr hi),
     sub_eq_sub_iff_add_eq_add, Int.sub_add_cancel, sub_add_sub_cancel', sub_add_cancel_right]
 
 theorem Int.neg_one_pow_sub (n i : ℕ) (hi : i ≤ n) : (-1) ^ (n - i) = (-1) ^ n * (-1) ^ i := by
@@ -157,12 +157,15 @@ theorem locality_left_eq_Borcherds_sum_2 (a b c : V) (r s: ℤ) :
   rw [Finset.eventually_constant_sum ?_ (Nat.le_succ (Int.toNat (-s - order Y b c)))]
   · refine Finset.sum_congr rfl ?_
     intro i hi
-    simp_all only [Finset.mem_range]
+    simp_all only [Finset.mem_range, Int.reduceNeg, neg_sub,
+      sub_neg_eq_add, add_sub_cancel_left, LinearMap.coe_mk, AddHom.coe_mk]
     congr 1
     rw [Ring.choose_natCast, natCast_zsmul]
     congr 1
     rw [Int.neg_sub_one_sub_nat i r 1 (-s - order Y b c) (le_of_lt (Int.lt_toNat.mp hi)),
-      show -s - 1 - i = -i + -s - 1 by linarith]
+      show -s - 1 - i = -i + -s - 1 by omega]
+    congr 1
+    rw [Int.neg_add, Int.add_comm]
   intro i hi
   have h : (HVertexOperator.coeff (Y b) (-s - 1 - ↑i)) c = 0 := by
     refine coeff_zero_if_lt_order Y b c ?_ ?_
@@ -181,17 +184,25 @@ theorem locality_right_eq_Borcherds_sum_3 (a b c : V) (r s: ℤ) : Finset.sum (F
   rw [Finset.eventually_constant_sum ?_ (Nat.le_succ (Int.toNat (-r - order Y a c)))]
   · refine Finset.sum_congr rfl ?_
     intro i hi
-    simp_all only [Finset.mem_range]
+    simp_all only [Finset.mem_range, Int.reduceNeg, coeff_apply_apply, neg_smul,
+      LinearMap.coe_mk, AddHom.coe_mk, neg_sub, neg_add_rev]
+    have : (-1) ^ ((-r - order Y a c).toNat - i) = (-1) ^ (-r - order Y a c).toNat * (-1) ^ i :=
+      Int.neg_one_pow_sub (-r - order Y a c).toNat i <| Nat.le_of_succ_le hi
+    rw [this, ← Units.coe_neg_one]
+    simp only [Int.reduceNeg, zpow_one, ← Int.negOnePow_def, neg_mul, one_mul, Units.neg_smul,
+      neg_inj]
+    rw [Int.negOnePow_add, mul_comm _ (Int.negOnePow 1), ← smul_smul (Int.negOnePow 1),
+      Int.negOnePow_one]
+    simp only [Units.val_neg, Units.val_one, Int.reduceNeg, Units.neg_smul, one_smul, neg_inj]
     congr 1
-    · rw [Int.neg_one_pow_sub, ← Int.mul_neg_one]
-      · simp only [zpow_add, mul_neg, mul_one, zpow_natCast, zpow_one, Units.val_neg, Units.val_mul,
-          Units.val_pow_eq_pow_val, Units.val_one]
-      exact le_of_lt hi
-    rw [Ring.choose_natCast, natCast_zsmul]
-    congr 1
-    · rw [Nat.choose_symm (le_of_lt hi)]
-    rw [Int.neg_sub_one_sub_nat i s 1 (-r - order Y a c) (le_of_lt (Int.lt_toNat.mp hi)),
-      show -r - 1 - i = -i + -r - 1 by linarith]
+    · rw [Int.negOnePow_add]
+      rfl
+    · rw [Ring.choose_eq_nat_choose]
+      norm_cast
+      congr 1
+      · rw [Nat.choose_symm (Nat.le_of_succ_le hi)]
+      · rw [Int.neg_sub_one_sub_nat i s 1 (-r - order Y a c) (le_of_lt (Int.lt_toNat.mp hi)),
+          show -r - 1 - i = -i + -r - 1 by linarith]
   intro i hi
   have h : (HVertexOperator.coeff (Y a) (-r - 1 - ↑i)) c = 0 := by
     refine coeff_zero_if_lt_order Y a c ?_ ?_

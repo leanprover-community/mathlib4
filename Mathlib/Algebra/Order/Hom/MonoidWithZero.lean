@@ -80,7 +80,6 @@ instance [OrderHomClass F α β] [MonoidWithZeroHomClass F α β] : CoeTC F (α 
 
 end MonoidWithZero
 
-
 namespace OrderMonoidWithZeroHom
 
 section Preorder
@@ -262,7 +261,7 @@ def OrderMonoidIso.withZero {G H : Type*}
     [Group G] [PartialOrder G] [Group H] [PartialOrder H] :
     (G ≃*o H) ≃ (WithZero G ≃*o WithZero H) where
   toFun e := ⟨e.toMulEquiv.withZero, fun {a b} ↦ by cases a <;> cases b <;>
-    simp [WithZero.zero_le, (WithZero.zero_lt_coe _).not_le]⟩
+    simp [WithZero.zero_le, (WithZero.zero_lt_coe _).not_ge]⟩
   invFun e := ⟨MulEquiv.withZero.symm e, fun {a b} ↦ by simp⟩
   left_inv _ := by ext; simp
   right_inv _ := by ext x; cases x <;> simp

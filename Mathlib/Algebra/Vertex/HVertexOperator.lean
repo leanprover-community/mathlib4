@@ -499,7 +499,7 @@ theorem exists_binomialPow_smul_support_bound {g g' : Γ} (g₁ : Γ₁) (h : g 
     ∃ (k : ℕ), ∀ (m : ℕ) (_ : k < m),
       (-(n • g) - m • (g' - g)) +ᵥ g₁ ∉ ((HahnModule.of R).symm (A v)).support :=
   Set.PartiallyWellOrderedOn.exists_notMem_of_gt ((HahnModule.of R).symm (A v)).isPWO_support
-    fun _ _ hkl ↦ not_le_of_lt <| VAdd.vadd_lt_vadd_of_lt_of_le
+    fun _ _ hkl ↦ not_le_of_gt <| VAdd.vadd_lt_vadd_of_lt_of_le
       (sub_lt_sub_left (nsmul_lt_nsmul_left (sub_pos.mpr h) hkl) (-(n • g))) <| Preorder.le_refl g₁
 
 theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)

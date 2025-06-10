@@ -3,6 +3,8 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Scott Carnahan
 -/
+import Mathlib.Algebra.Ring.Action.Rat
+import Mathlib.Data.Rat.Cast.Lemmas
 import Mathlib.RingTheory.HahnSeries.Multiplication
 
 /-!
@@ -281,7 +283,7 @@ theorem hsum_subsingleton [Subsingleton α] {s : SummableFamily Γ R α} (a : α
   haveI : Unique α := uniqueOfSubsingleton a
   let e : Unit ≃ α := Equiv.ofUnique Unit α
   have he : ∀u : Unit, e u = a := fun u ↦ (fun f ↦ (Equiv.apply_eq_iff_eq_symm_apply f).mpr) e rfl
-  have hs : Equiv e.symm s = single (s a) := by ext; simp [he]
+  have hs : Equiv e.symm s = single (ι := Unit) default (s a) := by ext; simp [he]
   rw [← hsum_equiv e.symm, hs, hsum_single]
 
 /-- The summable family given by multiplying every series in a summable family by a scalar. -/
@@ -342,14 +344,7 @@ instance : Neg (SummableFamily Γ R α) where
         exact s.isPWO_iUnion_support
       finite_co_support' := fun g => by
         simp only [coeff_neg, Pi.neg_apply, Ne, neg_eq_zero]
-        exact s.finite_co_support g }⟩
-
-instance : AddCommGroup (SummableFamily Γ R α) :=
-  { inferInstanceAs (AddCommMonoid (SummableFamily Γ R α)) with
-    zsmul := zsmulRec
-    neg_add_cancel := fun a => by
-      ext
-      apply neg_add_cancel }
+        exact s.finite_co_support g }
 
 @[simp]
 theorem coe_neg (s : SummableFamily Γ R α) : ⇑(-s) = -s :=
@@ -374,7 +369,6 @@ theorem coe_sub (s t : SummableFamily Γ R α) : ⇑(s - t) = s - t :=
 
 theorem sub_apply : (s - t) a = s a - t a :=
   rfl
-
 
 instance : AddCommGroup (SummableFamily Γ R α) := fast_instance%
   DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub
@@ -1046,7 +1040,7 @@ end SummableFamily
 
 section Inversion
 
-section Monoid
+section CommRing
 
 variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [CommRing R]
 
@@ -1083,9 +1077,9 @@ theorem isUnit_of_isUnit_leadingCoeff_AddUnitOrder {x : HahnSeries Γ R} (hx : I
   rw [sub_sub_cancel] at h'
   exact isUnit_of_mul_isUnit_right (isUnit_of_mul_eq_one _ _ h')
 
-end Monoid
+end CommRing
 
-section CommRing
+section IsDomain
 
 variable [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [CommRing R] [IsDomain R]
 
@@ -1109,6 +1103,8 @@ end IsDomain
 
 section Field
 
+variable [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ] [Field R]
+
 @[simps -isSimp inv]
 instance : DivInvMonoid (HahnSeries Γ R) where
   inv x :=
@@ -1127,7 +1123,6 @@ theorem single_div_single (a b : Γ) (r s : R) :
   rw [div_eq_mul_inv, sub_eq_add_neg, div_eq_mul_inv, inv_single, single_mul_single]
 
 instance instField : Field (HahnSeries Γ R) where
-  __ : IsDomain (HahnSeries Γ R) := inferInstance
   inv_zero := by simp [inv_def]
   mul_inv_cancel x x0 := by
     have h :=
@@ -1135,11 +1130,21 @@ instance instField : Field (HahnSeries Γ R) where
         (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_iff.mpr x0)) _ (neg_add_cancel x.order))
     rw [sub_sub_cancel] at h
     rw [inv_def, ← mul_assoc, mul_comm x, h]
-  -- TODO: use `(· • ·)` here to avoid diamonds
-  nnqsmul := _
-  nnqsmul_def := fun q a => rfl
-  qsmul := _
-  qsmul_def := fun _ _ a => rfl
+  nnqsmul := (· • ·)
+  qsmul := (· • ·)
+  nnqsmul_def q x := by ext; simp [← single_zero_nnratCast, NNRat.smul_def]
+  qsmul_def q x := by ext; simp [← single_zero_ratCast, Rat.smul_def]
+  nnratCast_def q := by
+    simp [← single_zero_nnratCast, ← single_zero_natCast, NNRat.cast_def]
+  ratCast_def q := by
+    simp [← single_zero_ratCast, ← single_zero_intCast, ← single_zero_natCast, Rat.cast_def]
+
+example : (instSMul : SMul NNRat (HahnSeries Γ R)) = NNRat.smulDivisionSemiring := rfl
+example : (instSMul : SMul ℚ (HahnSeries Γ R)) = Rat.smulDivisionRing := rfl
+
+theorem single_zero_ofScientific (m e s) :
+    single (0 : Γ) (OfScientific.ofScientific m e s : R) = OfScientific.ofScientific m e s := by
+  simpa using single_zero_ratCast (Γ := Γ) (R := R) (OfScientific.ofScientific m e s)
 
 end Field
 

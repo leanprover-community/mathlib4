@@ -687,7 +687,7 @@ theorem eq_coeff_of_valuation_sub_lt {d n : ℤ} {f g : K⸨X⸩}
   · exact fun _ => by rw [triv]
   · intro hn
     apply eq_of_sub_eq_zero
-    rw [← Pi.sub_apply, ← HahnSeries.coeff_sub]
+    rw [← HahnSeries.coeff_sub]
     apply coeff_zero_of_lt_valuation K H hn
 
 /- Every Laurent series of valuation less than `(1 : ℤₘ₀)` comes from a power series. -/
@@ -866,7 +866,7 @@ theorem Cauchy.eventually_mem_nhds {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ)
   intro _ hf
   apply lt_of_le_of_lt (valuation_le_iff_coeff_lt_eq_zero K |>.mpr _) hD
   intro n hn
-  rw [HahnSeries.coeff_sub, Pi.sub_apply, sub_eq_zero, hf n hn |>.symm]; rfl
+  rw [HahnSeries.coeff_sub, sub_eq_zero, hf n hn |>.symm]; rfl
 
 /- Laurent Series with coefficients in a field are complete w.r.t. the `X`-adic valuation -/
 instance instLaurentSeriesComplete : CompleteSpace K⸨X⸩ :=

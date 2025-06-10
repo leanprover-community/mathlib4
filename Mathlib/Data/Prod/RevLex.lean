@@ -152,17 +152,17 @@ instance preorder (α β : Type*) [Preorder α] [Preorder β] : Preorder (α ×�
       · exact Or.inl <| lt_of_eq_of_lt h₁ h'
       · exact Or.inr <|
           ⟨h₁.trans h₃, Preorder.le_trans (ofRevLex x).1 (ofRevLex y).1 (ofRevLex z).1 h₂ h₄⟩
-  lt_iff_le_not_le x y := by
+  lt_iff_le_not_ge x y := by
     simp only [gt_iff_lt, lt_iff, ge_iff_le, le_iff, not_or, not_and]
     constructor
     · intro hxy
       obtain h | ⟨h₁, h₂⟩ := hxy
       · exact ⟨Or.inl h, ⟨not_lt_of_gt h, fun he ↦ ((ne_of_lt h) he.symm).elim⟩⟩
-      · exact ⟨Or.inr <| ⟨h₁, le_of_lt h₂⟩, ⟨by simp [h₁, gt_irrefl], fun _ ↦ not_le_of_lt h₂⟩⟩
+      · exact ⟨Or.inr <| ⟨h₁, le_of_lt h₂⟩, ⟨by simp [h₁, lt_irrefl], fun _ ↦ not_le_of_gt h₂⟩⟩
     · intro h
       obtain ⟨h₁ | ⟨h₂, h₃⟩, ⟨h₄, h₅⟩⟩ := h
       · exact Or.inl h₁
-      · exact Or.inr ⟨h₂, lt_of_le_not_le h₃ (h₅ h₂.symm)⟩
+      · exact Or.inr ⟨h₂, lt_of_le_not_ge h₃ (h₅ h₂.symm)⟩
 
 /-- Reverse lexicographic partial order for pairs. -/
 instance partialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] : PartialOrder (α ×ᵣ β) where

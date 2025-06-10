@@ -496,6 +496,7 @@ variable [LinearOrder Γ] [AddCommMonoid Γ] [CommRing R]
 
 theorem supp_one_sub_single {g : Γ} (r : R) :
     (1 - single g r).support ⊆ {0, g} := by
+  rw [sub_eq_add_neg, ← single_neg]
   refine support_add_subset.trans ?_
   simp_all only [support_neg, Set.union_subset_iff]
   constructor
@@ -524,7 +525,7 @@ theorem leadingCoeff_one_sub_single {g : Γ} (hg : 0 < g) (r : R) :
 theorem coeff_mul_one_sub_single [IsOrderedCancelAddMonoid Γ] {x : HahnSeries Γ R} {g g' : Γ}
     {r : R} :
     (x * (1 - single g r)).coeff (g + g') = x.coeff (g + g') - r * x.coeff g' := by
-  rw [mul_one_sub, coeff_sub, Pi.sub_apply, sub_right_inj, add_comm, coeff_mul_single_add, mul_comm]
+  rw [mul_one_sub, coeff_sub, sub_right_inj, add_comm, coeff_mul_single_add, mul_comm]
 
 /-!
 theorem support_one_sub_single_npow_zero {g : Γ} {r : R} {n : ℕ} :
