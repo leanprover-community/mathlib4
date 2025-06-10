@@ -156,20 +156,17 @@ theorem eq_adjoint_iff (A : E →L[𝕜] F) (B : F →L[𝕜] E) : A = B† ↔ 
   exact ext_inner_right 𝕜 fun y => by simp only [adjoint_inner_left, h x y]
 
 @[simp]
-theorem adjoint_eq_of_IsSymmetric {A : E →L[𝕜] E} (hA : A.IsSymmetric) : adjoint A = A := by
+theorem _root_.LinearMap.IsSymmetric.clm_adjoint_eq {A : E →L[𝕜] E} (hA : A.IsSymmetric) :
+    A† = A := by
   rwa [eq_comm, eq_adjoint_iff A A]
 
-theorem adjoint_id : (ContinuousLinearMap.id 𝕜 E)† = ContinuousLinearMap.id 𝕜 E :=
-  adjoint_eq_of_IsSymmetric (fun _ _ ↦ rfl)
+theorem adjoint_id : (ContinuousLinearMap.id 𝕜 E)† = ContinuousLinearMap.id 𝕜 E := by
+  simp
 
 theorem _root_.Submodule.adjoint_subtypeL (U : Submodule 𝕜 E) [CompleteSpace U] :
     U.subtypeL† = U.orthogonalProjection := by
   symm
-  rw [eq_adjoint_iff]
-  intro x u
-  rw [U.coe_inner, U.inner_orthogonalProjection_left_eq_right,
-    U.orthogonalProjection_mem_subspace_eq_self]
-  rfl
+  simp [eq_adjoint_iff]
 
 theorem _root_.Submodule.adjoint_orthogonalProjection (U : Submodule 𝕜 E) [CompleteSpace U] :
     (U.orthogonalProjection : E →L[𝕜] U)† = U.subtypeL := by
@@ -190,7 +187,7 @@ theorem orthogonal_range (T : E →L[𝕜] E) :
   rw [← (LinearMap.ker (T†)).orthogonal_orthogonal, (T†).orthogonal_ker]
   simp
 
-theorem range_le_range_iff_ker_le_ker [FiniteDimensional 𝕜 E] {T U : E →L[𝕜] E}
+theorem ker_le_ker_iff_range_le_range [FiniteDimensional 𝕜 E] {T U : E →L[𝕜] E}
     (hT : T.IsSymmetric) (hU : U.IsSymmetric) :
     LinearMap.ker U ≤ LinearMap.ker T ↔ LinearMap.range T ≤ LinearMap.range U := by
   refine ⟨fun h ↦ ?_, LinearMap.ker_le_ker_of_range hT hU⟩
@@ -216,11 +213,11 @@ theorem star_eq_adjoint (A : E →L[𝕜] E) : star A = A† :=
   rfl
 
 /-- A continuous linear operator is self-adjoint iff it is equal to its adjoint. -/
-theorem isSelfAdjoint_iff' {A : E →L[𝕜] E} : IsSelfAdjoint A ↔ ContinuousLinearMap.adjoint A = A :=
+theorem isSelfAdjoint_iff' {A : E →L[𝕜] E} : IsSelfAdjoint A ↔ A† = A :=
   Iff.rfl
 
 theorem norm_adjoint_comp_self (A : E →L[𝕜] F) :
-    ‖ContinuousLinearMap.adjoint A ∘L A‖ = ‖A‖ * ‖A‖ := by
+    ‖A† ∘L A‖ = ‖A‖ * ‖A‖ := by
   refine le_antisymm ?_ ?_
   · calc
       ‖A† ∘L A‖ ≤ ‖A†‖ * ‖A‖ := opNorm_comp_le _ _
@@ -400,6 +397,14 @@ theorem eq_adjoint_iff (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
   refine ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => ?_⟩
   ext x
   exact ext_inner_right 𝕜 fun y => by simp only [adjoint_inner_left, h x y]
+
+@[simp]
+theorem IsSymmetric.adjoint_eq {A : E →ₗ[𝕜] E} (hA : A.IsSymmetric) :
+    A.adjoint = A := by
+  rwa [eq_comm, eq_adjoint_iff A A]
+
+theorem adjoint_id : (LinearMap.id (R := 𝕜) (M := E)).adjoint = LinearMap.id := by
+  simp
 
 /-- The adjoint is unique: a map `A` is the adjoint of `B` iff it satisfies `⟪A x, y⟫ = ⟪x, B y⟫`
 for all basis vectors `x` and `y`. -/
