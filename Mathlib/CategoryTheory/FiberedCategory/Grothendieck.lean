@@ -22,13 +22,11 @@ Angelo Vistoli
 
 -/
 
-namespace CategoryTheory
+namespace CategoryTheory.Pseudofunctor.Grothendieck
 
-universe w v₁ v₂ v₃ u₁ u₂ u₃
+open Functor Opposite Bicategory
 
-open CategoryTheory Functor Category Opposite Discrete Bicategory Pseudofunctor.Grothendieck
-
-variable {𝒮 : Type u₁} [Category.{v₁} 𝒮] {F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat.{v₂, u₂}}
+variable {𝒮 : Type*} [Category 𝒮] {F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat}
 
 section
 
@@ -41,23 +39,22 @@ abbrev domainCartesianLift : ∫ F := ⟨R, (F.map f.op.toLoc).obj a⟩
 abbrev cartesianLift : domainCartesianLift a f ⟶ ⟨S, a⟩ := ⟨f, 𝟙 _⟩
 
 instance isHomLift_cartesianLift : IsHomLift (forget F) f (cartesianLift a f) :=
-  -- TODO: name instIsHomLift
-  instIsHomLiftMap (forget F) (cartesianLift a f)
+  IsHomLift.map (forget F) (cartesianLift a f)
 
+variable {a} in
 /-- Given some lift `g` of `f`, the canonical map from the domain of `g` to the domain of
 the cartesian lift of `f`. -/
 -- TODO a implicit here?
-abbrev homCartesianLift {a : F.obj ⟨op S⟩} (f : R ⟶ S) {a' : ∫ F} (g : a'.1 ⟶ R)
-    (φ' : a' ⟶ ⟨S, a⟩) [IsHomLift (forget F) (g ≫ f) φ'] : a' ⟶ domainCartesianLift a f where
+abbrev homCartesianLift {a' : ∫ F} (g : a'.1 ⟶ R) (φ' : a' ⟶ ⟨S, a⟩)
+    [IsHomLift (forget F) (g ≫ f) φ'] : a' ⟶ domainCartesianLift a f where
   base := g
   fiber :=
     have : φ'.base = g ≫ f := by simpa using IsHomLift.fac' (forget F) (g ≫ f) φ'
     φ'.fiber ≫ eqToHom (by simp [this]) ≫ (F.mapComp f.op.toLoc g.op.toLoc).hom.app a
 
-instance isHomLift_homCartesianLift {a : F.obj ⟨op S⟩} (f : R ⟶ S) {a' : ∫ F}
-    {φ' : a' ⟶ ⟨S, a⟩} {g : a'.1 ⟶ R} [IsHomLift (forget F) (g ≫ f) φ'] :
-      IsHomLift (forget F) g (homCartesianLift f g φ') :=
-  instIsHomLiftMap (forget F) (homCartesianLift f g φ')
+instance isHomLift_homCartesianLift {a' : ∫ F} {φ' : a' ⟶ ⟨S, a⟩} {g : a'.1 ⟶ R}
+    [IsHomLift (forget F) (g ≫ f) φ'] : IsHomLift (forget F) g (homCartesianLift f g φ') :=
+  IsHomLift.map (forget F) (homCartesianLift f g φ')
 
 lemma isStronglyCartesian_homCartesianLift :
     IsStronglyCartesian (forget F) f (cartesianLift a f) where
@@ -75,9 +72,9 @@ instance : IsFibered (forget F) :=
   IsFibered.of_exists_isStronglyCartesian (fun a _ f ↦
     ⟨domainCartesianLift a.2 f, cartesianLift a.2 f, isStronglyCartesian_homCartesianLift a.2 f⟩)
 
--- section?
 variable (F) (S : 𝒮)
 
+/-- The inclusion map from `F(S)` into `∫ F`. -/
 @[simps]
 def ι : F.obj ⟨op S⟩ ⥤ ∫ F where
   obj a := { base := S, fiber := a}
@@ -88,14 +85,13 @@ def ι : F.obj ⟨op S⟩ ⥤ ∫ F where
     · simp [← (F.mapId ⟨op S⟩).inv.naturality_assoc ψ, F.whiskerRight_mapId_inv_app,
         Strict.leftUnitor_eqToIso, Strict.rightUnitor_eqToIso]
 
-@[simps]
--- TODO: ofComponents here
-def comp_iso : (ι F S) ⋙ forget F ≅ (const (F.obj ⟨op S⟩)).obj S where
-  hom := { app := fun a => 𝟙 _ }
-  inv := { app := fun a => 𝟙 _ }
+/-- The natural isomorphism encoding `comp_const`. -/
+@[simps!]
+def compIso : (ι F S) ⋙ forget F ≅ (const (F.obj ⟨op S⟩)).obj S :=
+  NatIso.ofComponents (fun a => eqToIso rfl)
 
 lemma comp_const : (ι F S) ⋙ forget F = (const (F.obj ⟨op S⟩)).obj S := by
-  apply Functor.ext_of_iso (comp_iso F S) <;> simp
+  apply Functor.ext_of_iso (compIso F S) <;> simp
 
 noncomputable instance : Functor.Full (Fiber.inducedFunctor (comp_const F S)) where
   map_surjective {X Y} f := by
@@ -137,4 +133,4 @@ noncomputable instance : HasFibers (forget F) where
   ι := ι F
   comp_const := comp_const F
 
-end CategoryTheory
+end CategoryTheory.Pseudofunctor.Grothendieck
