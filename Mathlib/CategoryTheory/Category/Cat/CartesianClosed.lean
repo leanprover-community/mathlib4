@@ -111,6 +111,7 @@ instance closed : Closed (Cat.of C) where
       comp_flip_curry_eq
   }
 
+@[simps!]
 instance cartesianClosed : CartesianClosed Cat.{u, u} where
   closed C := closed C
 
