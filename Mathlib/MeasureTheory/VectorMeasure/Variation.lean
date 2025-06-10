@@ -7,6 +7,8 @@ import Mathlib.MeasureTheory.VectorMeasure.Basic
 import Mathlib.Analysis.Normed.Ring.Basic
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
+import Mathlib.Data.Complex.Basic
+import Mathlib.MeasureTheory.Measure.Complex
 
 /-!
 # Total variation for vector-valued measures
@@ -26,6 +28,8 @@ turns out that this function actually is a measure.
 * `variation_of_ENNReal` shows that, if `μ` is a `ℝ≥0∞`-valued measure, then `variation μ = μ`.
 * `signedMeasure_totalVariation_eq` shows that variation defined as a supremum here
   coincides with variation defined by the Hahn-Jordan decomposition for signed measures.
+* `variation_neg` shows that `(-μ).variation = μ.variation`.
+* `absolutelyContinuous` show that `μ ≪ᵥ μ.variation`.
 
 ## Implementation notes
 
@@ -49,13 +53,11 @@ of `s ↦ ‖μ s‖ₑ`.
 ## To do
 
 * Total variation is an enorm on the space of vector-valued measures.
-* Absolute continuity: `μ ≪ᵥ μ.variation` (`MeasureTheory.VectorMeasure.AbsolutelyContinuous`).
 * If `μ` is a complex measure then `variation μ univ < ∞`.
 * Polar representation of a complex measure `μ`: there exists a function `h` such that `|h(x)|=1`
   and `dμ = h d(μ.variation)`.
 * Suppose that `μ` is a measure, that `g ∈ L¹(μ)` and `λ(E) = ∫_E g dμ` for each measureable `E`,
   then `variation μ E = ∫_E |g| dμ` (Rudin Theorem 6.13).
-* Lemmas for the variation of `-μ` and `a • μ`.
 -/
 
 open MeasureTheory BigOperators NNReal ENNReal Function Filter
@@ -173,6 +175,9 @@ open Classical in
 quantity `∑ p ∈ P, f p`. If `s` is not measurable then it is set to `0`. -/
 noncomputable def var_aux (s : Set X) :=
     if (MeasurableSet s) then ⨆ (P : Finset (Set X)) (_ : IsInnerPart s P), ∑ p ∈ P, f p else 0
+
+lemma var_aux_zero (s : Set X) : var_aux (fun _ ↦ 0) s = 0 := by
+  simp [var_aux]
 
 /-- `var_aux` of the empty set is equal to zero. -/
 lemma var_aux_empty' : var_aux f ∅ = 0 := by
@@ -441,7 +446,7 @@ lemma monotone_of_ENNReal  {s₁ s₂ : Set X} (hs₁ : MeasurableSet s₁) (hs�
 
 -- TO DO: move this to a good home or could more mathlib style choices earlier make this redundant?
 open Classical in
-lemma biUnion_Finset {X : Type*} [MeasurableSpace X] (μ : VectorMeasure X ℝ≥0∞) {S : Finset (Set X)}
+lemma biUnion_Finset (μ : VectorMeasure X ℝ≥0∞) {S : Finset (Set X)}
     (hS : ∀ s ∈ S, MeasurableSet s) (hS' : S.toSet.PairwiseDisjoint id) :
     ∑ s ∈ S, μ s = μ (⋃ s ∈ S, s) := by
   have : ⋃ s ∈ S, s = ⋃ i : S, i.val := by apply Set.biUnion_eq_iUnion
@@ -468,6 +473,25 @@ lemma variation_of_ENNReal (μ : VectorMeasure X ℝ≥0∞) : variation μ = μ
       simp_all
     · push_neg at hc
       simp [hc]
+
+lemma variation_zero : (0 : VectorMeasure X V).variation = 0 := by
+  ext _ _
+  simp [variation, var_aux_zero]
+
+-- TO DO: generalize this to the largest possible class of `VectorMeasure X V`. What are the best
+-- assumptions for `V`?
+lemma variation_neg
+    (μ : MeasureTheory.ComplexMeasure X) : (-μ).variation = μ.variation := by
+  simp [variation]
+
+lemma absolutelyContinuous (μ : VectorMeasure X V) : μ ≪ᵥ μ.variation := by
+  intro s hs
+  by_contra! hc
+  refine (lt_self_iff_false (0 : ℝ≥0∞)).mp ?_
+  calc
+    0 < ‖μ s‖ₑ := enorm_pos.mpr hc
+    _ ≤ μ.variation s := norm_measure_le_variation μ s
+    _ = 0 := hs
 
 open VectorMeasure SignedMeasure Classical in
 -- TO DO: This proof can be massively improved.
