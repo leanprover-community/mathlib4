@@ -4,13 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Filippo A. E. Nuccio
 -/
 
--- import Mathlib.Algebra.Group.Submonoid.Defs
--- import Mathlib.Algebra.Group.WithOne.Basic
--- import Mathlib.Algebra.GroupWithZero.Units.Basic
--- import Mathlib.Tactic.NthRewrite
--- import Mathlib.Tactic.Abel
--- import Mathlib.Algebra.Group.Submonoid.Basic
--- import Mathlib.Algebra.Group.Subgroup.Lattice
 import Mathlib.Algebra.Group.Subgroup.Lattice
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.Units.Basic
