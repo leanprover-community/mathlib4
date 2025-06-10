@@ -1,0 +1,92 @@
+name: Maintainer Command Trigger
+
+on:
+  # the PR receives a comment
+  issue_comment:
+    types: [created, edited]
+  # the PR receives a review
+  pull_request_review:
+    # whether or not it is accompanied by a comment
+    types: [submitted]
+  # the PR receives a review comment
+  pull_request_review_comment:
+    types: [created, edited]
+
+jobs:
+  trigger_maintainer:
+    name: Parse and trigger maintainer commands
+    runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
+    steps:
+      - name: Parse maintainer command
+        id: parse_command
+        env:
+          AUTHOR: ${{ github.event.comment.user.login }}${{ github.event.review.user.login }}
+          PR_AUTHOR: ${{ github.event.issue.user.login }}${{ github.event.pull_request.user.login }}
+          PR_NUMBER: ${{ github.event.issue.number }}${{ github.event.pull_request.number }}
+          COMMENT_EVENT: ${{ github.event.comment.body }}
+          COMMENT_REVIEW: ${{ github.event.review.body }}
+          PR_TITLE_ISSUE: ${{ github.event.issue.title }}
+          PR_TITLE_PR: ${{ github.event.pull_request.title }}
+          PR_URL: ${{ github.event.issue.html_url }}${{ github.event.pull_request.html_url }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          echo "PR author: ${PR_AUTHOR}"
+          COMMENT="${COMMENT_EVENT}${COMMENT_REVIEW}"
+
+          # we strip `\r` since line endings from GitHub contain this character
+          COMMENT="${COMMENT//$'\r'/}"
+
+          # for debugging, we print some information
+          printf '%s' "${COMMENT}" | hexdump -cC
+          printf 'Comment:"%s"\n' "${COMMENT}"
+
+          m_or_d="$(printf '%s' "${COMMENT}" |
+            # captures `maintainer merge/delegate` as well as an optional `?`, ignoring subsequent spaces
+            sed -n 's=^maintainer  *\(merge\|delegate\)\(?\?\) *$=\1\2=p' | head -1)"
+
+          printf $'"maintainer delegate" or "maintainer merge" found? \'%s\'\n' "${m_or_d}"
+
+          printf $'mOrD=%s\n' "${m_or_d}" >> "${GITHUB_OUTPUT}"
+
+      - name: Dispatch to main maintainer workflow
+        if: ${{ steps.parse_command.outputs.mOrD != '' }}
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const payload = {
+              event_type: 'maintainer-command',
+              client_payload: {
+                author: process.env.AUTHOR,
+                pr_author: process.env.PR_AUTHOR,
+                pr_number: process.env.PR_NUMBER,
+                mOrD: process.env.M_OR_D,
+                comment_event: process.env.COMMENT_EVENT,
+                comment_review: process.env.COMMENT_REVIEW,
+                pr_title_issue: process.env.PR_TITLE_ISSUE,
+                pr_title_pr: process.env.PR_TITLE_PR,
+                pr_url: process.env.PR_URL,
+                event_name: process.env.EVENT_NAME,
+                github_event_action: context.payload.action
+              }
+            };
+
+            console.log('Dispatching maintainer command with payload:', JSON.stringify(payload, null, 2));
+
+            await github.rest.repos.createDispatchEvent({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ...payload
+            });
+        env:
+          AUTHOR: ${{ github.event.comment.user.login }}${{ github.event.review.user.login }}
+          PR_AUTHOR: ${{ github.event.issue.user.login }}${{ github.event.pull_request.user.login }}
+          PR_NUMBER: ${{ github.event.issue.number }}${{ github.event.pull_request.number }}
+          M_OR_D: ${{ steps.parse_command.outputs.mOrD }}
+          COMMENT_EVENT: ${{ github.event.comment.body }}
+          COMMENT_REVIEW: ${{ github.event.review.body }}
+          PR_TITLE_ISSUE: ${{ github.event.issue.title }}
+          PR_TITLE_PR: ${{ github.event.pull_request.title }}
+          PR_URL: ${{ github.event.issue.html_url }}${{ github.event.pull_request.html_url }}
+          EVENT_NAME: ${{ github.event_name }}
