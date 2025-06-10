@@ -258,17 +258,14 @@ theorem index_map_eq (hf1 : Surjective f) (hf2 : f.ker ≤ H) : (H.map f).index 
 lemma index_map_of_bijective (hf : Bijective f) (H : Subgroup G) : (H.map f).index = H.index :=
   index_map_eq _ hf.2 (by rw [f.ker_eq_bot_iff.2 hf.1]; exact bot_le)
 
+@[to_additive (attr := simp)]
+theorem index_map_equiv (e : G ≃* G') : (map (e : G →* G') H).index = H.index :=
+  index_map_of_bijective e.bijective H
+
 @[to_additive]
 theorem index_map_of_injective {f : G →* G'} (hf : Function.Injective f) :
     (H.map f).index = H.index * f.range.index := by
   rw [H.index_map, f.ker_eq_bot_iff.mpr hf, sup_bot_eq]
-
-@[to_additive (attr := simp)]
-theorem index_map_equiv (e : G ≃* G') :
-    (map (e : G →* G') H).index = H.index := by
-  refine index_map_eq H e.surjective ?_
-  rw [(MonoidHom.ker_eq_bot_iff _).mpr e.injective]
-  exact bot_le
 
 @[to_additive]
 theorem index_map_subtype {H : Subgroup G} (K : Subgroup H) :
@@ -575,8 +572,7 @@ instance IsFiniteRelIndex.to_finiteIndex_subgroupOf [H.IsFiniteRelIndex K] :
   index_ne_zero := relindex_ne_zero
 
 @[to_additive]
-theorem finiteIndex_iff {G : Type*} [Group G] {H : Subgroup G} :
-    H.FiniteIndex ↔ H.index ≠ 0 :=
+theorem finiteIndex_iff : H.FiniteIndex ↔ H.index ≠ 0 :=
   ⟨fun h ↦ h.index_ne_zero, fun h ↦ ⟨h⟩⟩
 
 /-- A finite index subgroup has finite quotient. -/
