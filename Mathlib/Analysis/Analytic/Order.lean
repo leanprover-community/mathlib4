@@ -433,8 +433,8 @@ codiscrete within `U`.
 See `AnalyticOnNhd.preimage_mem_codiscreteWithin` for a more general statement in preimages of
 codiscrete sets.
 -/
-theorem preimage_zero_codiscreteWithin {x : 𝕜} (h₁f : AnalyticOnNhd 𝕜 f U) (h₂f : f x ≠ 0)
-    (hU : IsConnected U) (hx : x ∈ U) :
+theorem preimage_zero_mem_codiscreteWithin {x : 𝕜} (h₁f : AnalyticOnNhd 𝕜 f U) (h₂f : f x ≠ 0)
+    (hx : x ∈ U) (hU : IsConnected U) :
     f ⁻¹' {0}ᶜ ∈ codiscreteWithin U := by
   filter_upwards [h₁f.codiscreteWithin_setOf_analyticOrderAt_eq_zero_or_top,
     self_mem_codiscreteWithin U] with a ha h₂a
@@ -451,9 +451,9 @@ If an analytic function `f` is not constantly zero on `𝕜`, then its set of ze
 See `AnalyticOnNhd.preimage_mem_codiscreteWithin` for a more general statement in preimages of
 codiscrete sets.
 -/
-theorem preimage_zero_codiscrete [ConnectedSpace 𝕜] {x : 𝕜} (hf : AnalyticOnNhd 𝕜 f Set.univ)
+theorem preimage_zero_mem_codiscrete [ConnectedSpace 𝕜] {x : 𝕜} (hf : AnalyticOnNhd 𝕜 f Set.univ)
     (hx : f x ≠ 0) :
     f ⁻¹' {0}ᶜ ∈ codiscrete 𝕜 :=
-  hf.preimage_zero_codiscreteWithin hx isConnected_univ trivial
+  hf.preimage_zero_mem_codiscreteWithin hx trivial isConnected_univ
 
 end AnalyticOnNhd
