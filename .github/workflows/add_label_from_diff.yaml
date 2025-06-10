@@ -3,7 +3,7 @@ name: Autolabel PRs
 on:
   pull_request_target:
   #types: [opened, edited] # we act on all PRs, but only label a PR if it was just opened
-  #push:
+  push:
   #  paths:
   #    - scripts/autolabel.lean
   #    - .github/workflows/add_label_from_diff.yaml
