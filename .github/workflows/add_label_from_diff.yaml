@@ -36,7 +36,7 @@ jobs:
           label="$(printf '%s' "${labels}" | sed -n 's=.*#\[\([^,]*\)\].*=\1=p')"
           printf 'label: "%s"\n' "${label}"
           printf 'Event type: %s\n' "${{ github.event_name }}"
-          if [ "${{ github.event_name }}" == 'push' ] #opened
+          if [ "${{ github.event_name }}" == 'opened' ]
           then
             if [ -n "${label}" ]
             then
