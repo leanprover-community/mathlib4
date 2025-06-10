@@ -22,8 +22,12 @@ class Generates {S: outParam (Finset G)}: Prop where
   one_mem: (1 : G) ∈ S
   has_inv: ∀ g ∈ S, g⁻¹ ∈ S
 
+
+
+
 variable {S S' : Finset G} [hGS: Generates (G := G) (S := S)] [hS: Nonempty S]
 -- [hGS': Generates (G := G) (S := S')] [hS': Nonempty S]
+
 
 lemma s_union_sinv : (S: Set G) ∪ (S: Set G)⁻¹ = S := by
   ext a
@@ -43,6 +47,15 @@ lemma S_eq_Sinv: S = S⁻¹ := by
     have a_inv := hGS.has_inv a⁻¹ ha
     simp only [inv_inv] at a_inv
     exact a_inv
+
+instance G_FG: Group.FG G := {
+  out := by
+    unfold Subgroup.FG
+    use S
+    have foo := hGS.generates
+    simp at foo
+    exact foo
+}
 
 
 
@@ -1275,20 +1288,22 @@ lemma GLW_preseves_norm (g: G) (w: W (G := G)): ‖(GRepW (G := G) (GRepW_base g
   rw [← hv]
   rw [quotient_norm_eq_norm]
 
-
+-- We want the topology to come from our metric space 'GL_W_psuedoMetric', not from the units
+attribute [-instance] Units.instTopologicalSpaceUnits
 -- The image of G under our representation: ρ(G) in the Vikman paper
 noncomputable def rho_g := ((GRepW (G := G)).restrict ((GRepW_base (G := G)).range)).range
+
+def rho_g_closure := _root_.closure (rho_g (G := G)).carrier
 
 instance GL_W_proper: ProperSpace (GL_W (G := G)) := by
   sorry
 
--- We want the topology to come from our metric space 'GL_W_psuedoMetric', not from the units
-attribute [-instance] Units.instTopologicalSpaceUnits
+
 --   apply FiniteDimensional.proper_rclike (K := ℂ)
 
 -- In the Vikman paper, rho_g is precompact, and the closure of rho_g is a compact subgroup
-theorem compact_rho_g: IsCompact (closure (rho_g (G := G).carrier)) := by
-  unfold rho_g
+theorem compact_rho_g: IsCompact (rho_g_closure (G := G)) := by
+  unfold rho_g_closure rho_g
   apply Bornology.IsBounded.isCompact_closure
   rw [Metric.isBounded_iff]
   use 2
@@ -1320,40 +1335,11 @@ theorem compact_rho_g: IsCompact (closure (rho_g (G := G).carrier)) := by
   rw [q_eq_b_rep] at norm_triangle
   exact norm_triangle
 
--- The set ρ(G) considered as an additive subgroup of GL_W
--- We use 'AddSubgroup.closure' to avoid needing to fight with compositions
--- of additive/multiplicative homomorphisms in the definition of 'rho_g'
--- rho_g is already a group, so we should eventually prove that 'AddSubgroup.closure rho_g'
--- contains exactly the same elements as 'rho_g'
-noncomputable def rho_g_group := Subgroup.closure (rho_g (G := G))
-
--- See the comment on 'rho_g_group - this is needed due to the fact that we're using
--- AddSubgroup.closure, instead of defining 'rho_g' to be an AddSubgroup to start with
--- This states that 'closure' isn't actually adding any elements
-lemma rho_g_group_mem (g: GL_W): g ∈ rho_g_group (G := G) ↔ g ∈ (rho_g (G := G)) := by
-  sorry
-
--- def GL_W_multiplicative: GL_W →* Multiplicative (GL_W (G := G)) := {
---   toFun := fun f => Multiplicative.ofMul (f.toFun)
---   map_one' := by
---     ext
---     simp [DFunLike.coe]
---     simp [ContinuousLinearMap.toFun_eq_coe]
---     simp [ContinuousLinearMap.one_apply]
---   map_mul' := by
---     intro f g
---     ext
---     simp [DFunLike.coe]
---     simp [ContinuousLinearMap.toFun_eq_coe]
---     simp [ContinuousLinearMap.mul_apply]
--- }
-
--- noncomputable def rho_g_group := Subgroup.map (N := (Multiplicative (GL_W (G := G)))) (G := G) ((GRepW (G := G)).toAddMonoidHom.comp (GRepW_base (G := G))) (H := ⊤)
 
 -- Section 3.3 in Vikmanm, "Construction of a representation"
 -- This is a combination of Cartan's Theorem and Theorem 3.6, giving us the conclusion that
 -- ρ(G) contains an abelian subgroup of finite index
-lemma rho_g_contains_abelian: ∃ M: Subgroup ((rho_g_group (G := G))), IsMulCommutative M ∧ M.index ≠ 0 := by
+lemma rho_g_contains_abelian: ∃ M: Subgroup ((rho_g (G := G))), IsMulCommutative M ∧ M.index ≠ 0 := by
   sorry
 
 -- We need this to work with Finset
@@ -1363,38 +1349,12 @@ noncomputable instance GL_W_DecidableEq: DecidableEq (GL_W (G := G)) := by
 noncomputable instance w_map_DecidableEq: DecidableEq (W (G := G) →ₗ[ℂ] W (G := G)) := by
   apply Classical.typeDecidableEq
 
-lemma rho_g_FG: (rho_g_group (G := G)).FG := by
-  simp [Subgroup.FG]
-  use (Finset.image GRepW (Finset.image (fun g => GRepW_base (G := G) g) S ))
-  ext g
-  rw [rho_g_group_mem]
-  refine ⟨?_, ?_⟩
-  . intro hg
-    simp [rho_g]
-    induction hg using Subgroup.closure_induction with
-    | mem x hx =>
-      simp at hx
-      obtain ⟨s, s_mem, hs⟩ := hx
-      use s
-    | one =>
-      use 1
-      simp
-    | mul x y hx hy x_eq_rep y_eq_rep =>
-      obtain ⟨a, ha⟩ := x_eq_rep
-      obtain ⟨b, hb⟩ := y_eq_rep
-      use a * b
-      rw [← ha, ← hb]
-      simp
-    | inv x hx x_eq_rep =>
-      obtain ⟨a, ha⟩ := x_eq_rep
-      use a⁻¹
-      rw [← ha]
-      simp
-  . intro hg
-    simp [rho_g] at hg
-    obtain ⟨a, ha⟩ := hg
-    sorry
-
+lemma rho_g_FG: (rho_g (G := G)).FG := by
+  have fg_grep: Group.FG ↥(GRepW_base (G := G)).range := by
+    apply Group.fg_range
+  unfold rho_g
+  rw [← Group.fg_iff_subgroup_fg]
+  apply Group.fg_range
 
 
 -- The input data and proofs for Theorem 3.1 in Vikman
