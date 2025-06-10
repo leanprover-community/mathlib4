@@ -26,7 +26,6 @@ jobs:
           use-github-cache: false
           use-mathlib-cache: false
       - name: lake exe autolabel
-        id: autolabel
         run: |
           # the checkout dance, to avoid a detached head
           git checkout master
@@ -39,6 +38,8 @@ jobs:
           if [ -n "${label}" ]
           then
             printf 'Applying label %s\n' "${label}"
+            # we use curl rather than octokit/request-action so that the job won't fail
+            # (and send an annoying email) if the labels don't exist
             curl --request POST \
               --header 'Accept: application/vnd.github+json' \
               --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
