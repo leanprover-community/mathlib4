@@ -445,9 +445,8 @@ end
 lemma mateEquiv_leftUnitor_hom_rightUnitor_inv
     {a b : B} {l : a ⟶ b} {r : b ⟶ a} (adj : l ⊣ r) :
     mateEquiv adj adj ((λ_ _).hom ≫ (ρ_ _).inv) = (ρ_ _).hom ≫ (λ_ _).inv := by
-  simp only [← cancel_mono (λ_ r).hom, ← cancel_epi (ρ_ r).inv,
-    Category.assoc, Iso.inv_hom_id_assoc, Iso.inv_hom_id,
-    ← conjugateEquiv_id adj, conjugateEquiv_apply, Category.id_comp]
+  simp [← cancel_mono (λ_ r).hom, ← cancel_epi (ρ_ r).inv,
+    ← conjugateEquiv_id adj, conjugateEquiv_apply]
 
 section
 
