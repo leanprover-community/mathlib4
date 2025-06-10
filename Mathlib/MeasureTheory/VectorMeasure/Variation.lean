@@ -49,9 +49,7 @@ of `s ↦ ‖μ s‖ₑ`.
 ## To do
 
 * Total variation is an enorm on the space of vector-valued measures.
-* If `variation μ univ < ∞` for each `μ` then variation is a norm on the space of vector-valued
-  measures.
-* Variation is equivalent to that defined via the Hahn–Jordan decomposition for signed measures.
+* Absolute continuity: `μ ≪ᵥ μ.variation` (`MeasureTheory.VectorMeasure.AbsolutelyContinuous`).
 * If `μ` is a complex measure then `variation μ univ < ∞`.
 * Polar representation of a complex measure `μ`: there exists a function `h` such that `|h(x)|=1`
   and `dμ = h d(μ.variation)`.
