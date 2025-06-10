@@ -12,7 +12,7 @@ In this file, given a functor `F : Jᵒᵖ ⥤ J ⥤ C`, we define its end `end_
 which is a suitable multiequalizer of the objects `(F.obj (op j)).obj j` for all `j : J`.
 For this shape of limits, cones are named wedges: the corresponding type is `Wedge F`.
 
-We also introduce `coend_ F` as multicoequalizers of
+We also introduce `coend F` as multicoequalizers of
 `(F.obj (op j)).obj j` for all `j : J`. In this cases, cocones are named cowedges.
 
 ## References
@@ -228,22 +228,22 @@ abbrev HasCoend := HasMulticoequalizer (multispanIndexCoend F)
 variable [HasCoend F]
 
 /-- The end of a functor `F : Jᵒᵖ ⥤ J ⥤ C`. -/
-noncomputable def coend_ : C := multicoequalizer (multispanIndexCoend F)
+noncomputable def coend : C := multicoequalizer (multispanIndexCoend F)
 
-/-- Given `F : Jᵒᵖ ⥤ J ⥤ C`, this is the inclusion `(F.obj (op j)).obj j ⟶ coend_ F`
+/-- Given `F : Jᵒᵖ ⥤ J ⥤ C`, this is the inclusion `(F.obj (op j)).obj j ⟶ coend F`
 for any `j : J`. -/
-noncomputable def coend_.ι (j : J) : (F.obj (op j)).obj j ⟶ coend_ F :=
+noncomputable def coend.ι (j : J) : (F.obj (op j)).obj j ⟶ coend F :=
   Multicoequalizer.π (multispanIndexCoend F) _
 
 @[reassoc]
-lemma coend_.condition {i j : J} (f : i ⟶ j) :
+lemma coend.condition {i j : J} (f : i ⟶ j) :
      (F.map f.op).app i ≫ ι F i  = (F.obj (op j)).map f ≫ ι F j := by
   apply Cowedge.condition
 
 variable {F}
 
 @[ext]
-lemma coend_.hom_ext {X : C} {f g : coend_ F ⟶ X} (h : ∀ j, coend_.ι F j ≫ f = coend_.ι F j ≫ g) :
+lemma coend.hom_ext {X : C} {f g : coend F ⟶ X} (h : ∀ j, coend.ι F j ≫ f = coend.ι F j ≫ g) :
     f = g :=
   Multicoequalizer.hom_ext _ _ _ (fun _ ↦ h _)
 
@@ -253,11 +253,11 @@ variable {X : C} (f : ∀ j, (F.obj (op j)).obj j ⟶ X)
   (hf : ∀ ⦃i j : J⦄ (g : i ⟶ j), (F.map g.op).app i ≫ f i = (F.obj (op j)).map g ≫ f j)
 
 /-- Constructor for morphisms to the end of a functor. -/
-noncomputable def coend_.desc : coend_ F ⟶ X :=
+noncomputable def coend.desc : coend F ⟶ X :=
   Cowedge.IsColimit.desc (colimit.isColimit _) f hf
 
 @[reassoc (attr := simp)]
-lemma coend_.ι_desc (j : J) : ι F j ≫ desc f hf = f j := by
+lemma coend.ι_desc (j : J) : ι F j ≫ desc f hf = f j := by
   apply IsColimit.fac
 
 end
