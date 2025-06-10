@@ -2,6 +2,7 @@ import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 import Mathlib.MeasureTheory.Measure.Complex
 import Mathlib.MeasureTheory.VectorMeasure.Variation.Basic
+import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Lebesgue
 
 /-!
 # Riesz–Markov–Kakutani representation theorem for complex linear functionals
@@ -43,11 +44,11 @@ theorem uniqueness : True := sorry
 -- Thus `|μ|(X) = 0`, and `μ = 0`.
 -- It is easy to see that the difference of two regular complex Borel measures on `X` is regular.
 
+open NNReal ENNReal
+open ZeroAtInfty MeasureTheory CompactlySupported CompactlySupportedContinuousMap
 
 namespace ComplexRMK
 
-open NNReal
-open ZeroAtInfty MeasureTheory CompactlySupported CompactlySupportedContinuousMap
 
 variable {X : Type*} [TopologicalSpace X] [LocallyCompactSpace X] [T2Space X]
 variable (Φ : C₀(X, ℂ) →L[ℂ] ℂ)
@@ -127,24 +128,45 @@ theorem exists_pos_lin_func : ∃ (Λ : C₀(X, ℝ) →L[ℝ] ℝ), ∀ (f : C�
 
   sorry
 
+end ComplexRMK
 
+namespace MeasureTheory.ComplexMeasure
+
+variable {X : Type*} [MeasurableSpace X]
+
+
+/-- The variation measure part in the polar decomposition of a complex measure. -/
+noncomputable def var
+     (μ : ComplexMeasure X) := μ.variation.ennrealToMeasure
+
+/-- The angular part (density function) in the polar decomposition of a complex measure. -/
+noncomputable def ang
+     (μ : ComplexMeasure X) := μ.rnDeriv μ.var
+
+noncomputable def integral (μ : ComplexMeasure X) (f : X → ℂ) :=
+  ∫ x, f x * μ.ang x ∂(μ.var)
+
+-- Would be good to have the notation `∫ x, f x ∂μ`.
+
+end MeasureTheory.ComplexMeasure
+
+namespace ComplexRMK
+
+variable {X : Type*} [TopologicalSpace X] [LocallyCompactSpace X] [T2Space X]
+variable (Φ : C₀(X, ℂ) →L[ℂ] ℂ)
 variable [MeasurableSpace X] [BorelSpace X]
 
 /-- The measure induced by a `ℂ`-linear positive functional `Λ`. -/
-noncomputable def rieszMeasure (Φ : C₀(X, ℂ) →L[ℂ] ℂ) : ComplexMeasure X := sorry
-
+noncomputable def rieszMeasure (Φ : C₀(X, ℂ) →L[ℂ] ℂ) : ComplexMeasure X :=
+  -- To be defined according to the construction of the proof.
+  sorry
 
 /-- **Theorem**
 Let `Φ` be a bounded linear functional on `C₀(X, ℂ)`. Then there exists a complex Borel measure
 `μ` such that, `∀ f : C₀(X, ℂ)`, `Φ f = ∫ x, f x ∂μ`, (2) `‖Φ‖ = |μ|(X)`. -/
 theorem Complex.integral_rieszMeasure (f : C₀(X, ℂ)) :
-    -- Φ f = ∫ x, f x ∂(rieszMeasure Φ) ∧
+     Φ f = (rieszMeasure Φ).integral (f ·) ∧
     ENNReal.ofReal ‖Φ‖ = (rieszMeasure Φ).variation Set.univ := by
-  -- ∃ (μ : ComplexMeasure X), ∀ (f : C₀(X, ℂ)),
-  --  Φ f = ∫ x, f x ∂μ
-  --  ∧ ‖Φ‖ = ComplexMeasureMeasure.totalVariation μ X
-  -- TO DO: define `ComplexMeasure.integral`, maybe in general `VectorMeasure.integral`
-
   -- **Proof** [Rudin 87, Theorem 6.19]
   -- Assume `‖Φ‖ = 1`, without loss of generality.
   -- *Part 1:*
