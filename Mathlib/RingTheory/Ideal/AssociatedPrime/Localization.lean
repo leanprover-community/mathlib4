@@ -9,7 +9,7 @@ import Mathlib.RingTheory.Localization.AtPrime
 
 /-!
 
-# Assocaited primes of localized module
+# Associated primes of localized module
 
 This file mainly proof the relation between `Ass(S⁻¹M)` and `Ass(M)`
 
