@@ -100,9 +100,10 @@ instance {F : Type u → Type v} : LawfulFunctor (FreeM F) where
   map_const := rfl
   id_map x := by
     simp [Functor.map]
-    induction' x with a b op cont ih
-    · simp [map]
-    · simp [map, ih]
+    induction x with
+    | pure a => rfl
+    | liftBind op cont ih =>
+      simp [map, ih]
   comp_map g h x := by
     simp [Functor.map]
     induction x
