@@ -1391,6 +1391,9 @@ lemma rho_g_FG: (rho_g_group (G := G)).FG := by
       rw [← ha]
       simp
   . intro hg
+    simp [rho_g] at hg
+    obtain ⟨a, ha⟩ := hg
+    sorry
 
 
 
@@ -1406,7 +1409,7 @@ structure Theorem3_1_Data where
 
 -- Case 1 in Section 3.3 of Vikman, where the representation ρ(G) is infinite
 lemma rho_g_case_infinite (hr: (rho_g_group (G := G)).carrier.Infinite): Nonempty (Theorem3_1_Data (G := G)) := by
-  obtain ⟨
+  sorry
 
 -- TODO - use the fact that G is finitely generated
 instance countableG: Countable (Additive (MulOpposite G)) := by
