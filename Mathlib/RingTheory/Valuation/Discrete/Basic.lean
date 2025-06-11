@@ -5,8 +5,10 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.GroupWithZero.Range
 import Mathlib.Algebra.Order.Group.Cyclic
+import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.Algebra.Order.Group.Units
 import Mathlib.RingTheory.Valuation.Basic
+import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Discrete Valuations
@@ -34,33 +36,52 @@ open Function Set LinearOrderedCommGroup MonoidHomWithZero
 
 variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
 
-variable {A : Type*} [Ring A] (v : Valuation A Γ)
+variable {A : Type*} [CommRing A] [IsDomain A] (v : Valuation A Γ)
+
+variable {v} in
+lemma ne_zero_iff' (hv : v.supp.primeCompl = nonZeroDivisors A) {a : A} : v a ≠ 0 ↔ a ≠ 0 := by
+  sorry
+
+
 
 /-- Given a linearly ordered commutative group with zero `Γ` such that `Γˣ` is
 nontrivial cyclic, a valuation `v : A → Γ` on a ring `A` is *discrete*, if
 `genLTOne Γˣ` belongs to the image. Note that the latter is equivalent to
 asking that `1 : ℤ` belongs to the image of the corresponding additive valuation. -/
 class IsDiscrete : Prop where
-  exists_generator_lt_one' : ∃ (γ : Γˣ), Subgroup.zpowers γ = (range₀ v)ˣ ∧ γ < 1 ∧ ↑γ ∈ range v
+  supp_v' : v.supp.primeCompl = nonZeroDivisors A
+  exists_generator_lt_one' : ∃ (γ : Γˣ), Subgroup.zpowers γ =
+    (nonZeroDivisors_range (ne_zero_iff' supp_v')) ∧ γ < 1-- ∧ ↑γ ∈ range v
+
+namespace IsDiscrete
+
+lemma supp_v [IsDiscrete v] : v.supp.primeCompl = nonZeroDivisors A := supp_v'
 
 lemma exists_generator_lt_one [IsDiscrete v] :
-    ∃ (γ : Γˣ), Subgroup.zpowers γ = (range₀ v)ˣ ∧ γ < 1 ∧ ↑γ ∈ range v :=
-  IsDiscrete.exists_generator_lt_one'
+    ∃ (γ : Γˣ), Subgroup.zpowers γ =
+      (nonZeroDivisors_range (ne_zero_iff' (supp_v v))) ∧ γ < 1 :=
+  exists_generator_lt_one'
 
 /-- Given a discrete valuation `v`, `Valuation.IsDiscrete.generator` is a generator of the value
 group that is `< 1`. -/
-noncomputable def generator [IsDiscrete v] : Γˣ := v.exists_generator_lt_one.choose
+noncomputable def generator [IsDiscrete v] : Γˣ := (exists_generator_lt_one v).choose
 
-lemma generator_zpowers_eq_range₀ [IsDiscrete v] :
-    (Subgroup.zpowers (generator v) : Subgroup Γˣ) =
-      Subgroup.map (Units.map (range₀ v).subtype) ⊤ :=
-  sorry --v.exists_generator_lt_one.choose_spec.1
+lemma generator_zpowers_eq_nonZeroDivisors_range [IsDiscrete v] :
+    (Subgroup.zpowers (generator v)) =
+      (nonZeroDivisors_range (ne_zero_iff' (supp_v v))) :=
+  (exists_generator_lt_one v).choose_spec.1
 
 lemma generator_lt_one [IsDiscrete v] : (generator v) < 1 :=
-  v.exists_generator_lt_one.choose_spec.2.1
+  (exists_generator_lt_one v).choose_spec.2
 
-lemma generator_mem_range [IsDiscrete v] : ↑(generator v) ∈ range v :=
-  v.exists_generator_lt_one.choose_spec.2.2
+lemma generator_zpowers_eq_range (K : Type*) [Field K] (w : Valuation K Γ) [IsDiscrete w] :
+    ↑(generator w) ∈ range w := by
+
+
+lemma generator_mem_range (K : Type*) [Field K] (w : Valuation K Γ) [IsDiscrete w] :
+    ↑(generator w) ∈ range w := by
+  sorry
+
 
 lemma generator_ne_zero [IsDiscrete v] : (generator v : Γ) ≠ 0 :=
   sorry
@@ -164,4 +185,5 @@ instance [hv : IsDiscrete v] : IsNontrivial v where
     obtain ⟨γ, _, _, x, hx_v⟩ := hv
     exact ⟨x, hx_v ▸ ⟨Units.ne_zero γ, ne_of_lt (by norm_cast)⟩⟩
 
+end IsDiscrete
 end Valuation
