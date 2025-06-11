@@ -55,27 +55,6 @@ def flippingIso : Cat.of (C ⥤ D ⥤ E) ≅ Cat.of (D ⥤ C ⥤ E) :=
     Functor.flip_flip (by aesop)
     Functor.flip_flip (by aesop)
 
-/-- The equivalence of types of bifunctors giving by flipping the arguments. -/
-@[simps!]
-def flippingEquiv : C ⥤ D ⥤ E ≃ D ⥤ C ⥤ E where
-  toFun F := F.flip
-  invFun F := F.flip
-  left_inv := fun _ ↦ rfl
-  right_inv := fun _ ↦ rfl
-
-/-- The equivalence of types of bifunctors given by currying. -/
-@[simps!]
-def curryingEquiv : C ⥤ D ⥤ E ≃ C × D ⥤ E where
-  toFun F := uncurry.obj F
-  invFun G := curry.obj G
-  left_inv := fun F ↦ curry_obj_uncurry_obj F
-  right_inv := fun G ↦ uncurry_obj_curry_obj G
-
-/-- The flipped equivalence of types of bifunctors given by currying. -/
-@[simps!]
-def curryingFlipEquiv : D ⥤ C ⥤ E ≃ C × D ⥤ E :=
-  flippingEquiv.trans curryingEquiv
-
 /-- Natural isomorphism witnessing `comp_flip_uncurry_eq`. -/
 @[simps!]
 def compFlipUncurryIso (F : B ⥤ D) (G : D ⥤ C ⥤ E) :
