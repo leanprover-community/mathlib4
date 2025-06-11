@@ -324,9 +324,8 @@ lemma Flag.sum_card_embeddings_induce_eq_compat (F₁ F₂ : Flag β ι) (F : Fl
   ∑ t : Finset α with #t = k, (if ht : F ⊆ₗt then  ‖(F₁, F₂) ↪f₂ (F.induce t ht)‖ else 0)
               = ‖(F₁, F₂) ↪f₂ F‖ * Nat.choose (‖α‖ - (2 * ‖β‖ - ‖ι‖) ) (k - (2 * ‖β‖ - ‖ι‖)) := by
   calc
-  _ = ∑ t : Finset α , ∑ e : ((F₁,F₂) ↪f₂ F),
-          ite (#t = k ∧ (∀ i, F.θ i ∈ t) ∧ Set.range e.1.1.toFun ⊆ t
-            ∧ Set.range e.1.2.toFun ⊆ t) 1 0 := by
+  _ = ∑ t : Finset α , ∑ e : ((F₁,F₂) ↪f₂ F), ite (#t = k ∧ (∀ i, F.θ i ∈ t) ∧
+        Set.range e.1.1.toFun ⊆ t ∧ Set.range e.1.2.toFun ⊆ t) 1 0 := by
     simp_rw [Fintype.card_congr <| Flag₂.induceEquiv .., dite_eq_ite]
     rw [sum_filter];
     simp only [Set.coe_setOf, FlagEmbedding.Compat, Set.mem_setOf_eq, sum_boole, Nat.cast_id]
