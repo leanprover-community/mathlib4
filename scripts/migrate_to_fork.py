@@ -18,6 +18,8 @@ Features:
    - Handles edge cases with both main repo and fork PRs requiring manual cleanup
 8. Uses fast delete/re-add approach for remote changes to avoid slow branch tracking updates
 9. Provides comprehensive status reporting and next steps
+10. Respects user's existing remote naming preferences (if user declines to rename remotes,
+    the script will use whatever remote names point to the correct repositories)
 
 Usage:
   python3 scripts/migrate_to_fork.py           # Interactive mode
@@ -210,8 +212,11 @@ def get_current_remotes() -> Dict[str, str]:
         return {}
 
 
-def setup_remotes(username: str, fork_url: str, auto_accept: bool = False) -> None:
-    """Set up upstream and origin remotes correctly."""
+def setup_remotes(username: str, fork_url: str, auto_accept: bool = False) -> str:
+    """Set up upstream and origin remotes correctly.
+
+    Returns the name of the remote that points to the user's fork.
+    """
     print_step(4, "Setting up git remotes")
 
     remotes = get_current_remotes()
@@ -253,6 +258,8 @@ def setup_remotes(username: str, fork_url: str, auto_accept: bool = False) -> No
             origin_remote = name
             break
 
+    fork_remote_name = 'origin'  # Default expected name
+
     if origin_remote:
         if origin_remote != 'origin':
             print(f"Found fork as remote '{origin_remote}'")
@@ -266,8 +273,13 @@ def setup_remotes(username: str, fork_url: str, auto_accept: bool = False) -> No
                 run_command(['git', 'remote', 'remove', origin_remote])
                 run_command(['git', 'remote', 'add', 'origin', fork_url])
                 print_success("Replaced remote with 'origin' pointing to your fork")
+                fork_remote_name = 'origin'
+            else:
+                print_success(f"Keeping fork as remote '{origin_remote}'")
+                fork_remote_name = origin_remote
         else:
             print_success("Origin remote (fork) already configured correctly")
+            fork_remote_name = 'origin'
     else:
         # Check if origin exists and is not the fork
         if 'origin' in remotes:
@@ -277,14 +289,20 @@ def setup_remotes(username: str, fork_url: str, auto_accept: bool = False) -> No
                     run_command(['git', 'remote', 'remove', 'origin'])
                     run_command(['git', 'remote', 'add', 'origin', fork_url])
                     print_success("Set origin to your fork")
+                    fork_remote_name = 'origin'
                 else:
                     run_command(['git', 'remote', 'add', 'fork', fork_url])
                     print_warning("Added fork as 'fork' remote instead of 'origin'")
+                    fork_remote_name = 'fork'
             else:
                 print_success("Origin already points to your fork")
+                fork_remote_name = 'origin'
         else:
             run_command(['git', 'remote', 'add', 'origin', fork_url])
             print_success("Added origin remote pointing to your fork")
+            fork_remote_name = 'origin'
+
+    return fork_remote_name
 
 
 def get_current_branch() -> str:
@@ -338,18 +356,18 @@ def validate_branch_for_migration(branch: str, auto_accept: bool = False) -> Non
             sys.exit(0)
 
 
-def check_branch_already_migrated(branch: str, username: str) -> bool:
+def check_branch_already_migrated(branch: str, username: str, fork_remote_name: str) -> bool:
     """Check if the current branch is already set to push to the user's fork."""
     try:
         # Get the upstream branch for the current branch
         result = run_command(['git', 'rev-parse', '--abbrev-ref', f'{branch}@{{upstream}}'], check=False)
         if result.returncode == 0:
             upstream = result.stdout.strip()
-            # Check if upstream is origin/branch (which should point to the fork)
-            if upstream.startswith('origin/'):
-                # Verify that origin actually points to the user's fork
+            # Check if upstream is fork_remote/branch (which should point to the fork)
+            if upstream.startswith(f'{fork_remote_name}/'):
+                # Verify that the fork remote actually points to the user's fork
                 remotes = get_current_remotes()
-                if 'origin' in remotes and f'{username}/mathlib4' in remotes['origin']:
+                if fork_remote_name in remotes and f'{username}/mathlib4' in remotes[fork_remote_name]:
                     print_success(f"Branch '{branch}' is already configured to push to your fork")
                     return True
         return False
@@ -357,13 +375,13 @@ def check_branch_already_migrated(branch: str, username: str) -> bool:
         return False
 
 
-def push_branch_to_fork(branch: str) -> None:
+def push_branch_to_fork(branch: str, fork_remote_name: str) -> None:
     """Push current branch to fork and set upstream."""
     print_step(5, f"Pushing branch '{branch}' to fork")
 
     try:
         # Push to fork and set upstream
-        run_command(['git', 'push', '-u', 'origin', branch])
+        run_command(['git', 'push', '-u', fork_remote_name, branch])
         print_success(f"Branch '{branch}' pushed to fork and set as upstream")
     except Exception as e:
         print_error(f"Failed to push branch: {e}")
@@ -517,18 +535,18 @@ def main() -> None:
     fork_url = check_and_create_fork(username, args.auto_accept)
 
     # Step 4: Setup remotes
-    setup_remotes(username, fork_url, args.auto_accept)
+    fork_remote_name = setup_remotes(username, fork_url, args.auto_accept)
 
     # Get current branch and validate
     current_branch = get_current_branch()
     validate_branch_for_migration(current_branch, args.auto_accept)
 
     # Check if branch is already migrated
-    branch_already_migrated = check_branch_already_migrated(current_branch, username)
+    branch_already_migrated = check_branch_already_migrated(current_branch, username, fork_remote_name)
 
     # Step 5: Push branch to fork (if needed)
     if not branch_already_migrated:
-        push_branch_to_fork(current_branch)
+        push_branch_to_fork(current_branch, fork_remote_name)
     else:
         print(f"✅ Branch '{current_branch}' is already configured to push to your fork - skipping migration")
 
@@ -574,13 +592,13 @@ def main() -> None:
     # Show summary of current state
     print(f"\n{Colors.BOLD}Current state:{Colors.END}")
     print(f"✓ Branch '{current_branch}' is configured to push to your fork")
-    print("✓ Git remotes are set up correctly")
+    print(f"✓ Git remotes are set up correctly (fork remote: '{fork_remote_name}')")
     if existing_pr_info and existing_pr_info['type'] in ['fork', 'both']:
         pr_info = existing_pr_info.get('pr') or existing_pr_info.get('fork_pr')
         print(f"✓ PR #{pr_info['number']} exists from your fork")
 
     print(f"\n{Colors.BOLD}Next steps:{Colors.END}")
-    print("1. Future pushes will automatically go to your fork")
+    print(f"1. Future pushes will automatically go to your fork ('{fork_remote_name}' remote)")
     print("2. Create PRs from your fork to leanprover-community/mathlib4")
     print("3. Remember to sync your fork regularly with upstream:")
     print("   gh repo sync --source leanprover-community/mathlib4")
