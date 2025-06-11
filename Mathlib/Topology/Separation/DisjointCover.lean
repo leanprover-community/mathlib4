@@ -167,7 +167,7 @@ lemma exists_finite_sum_const_mulIndicator_approximation_of_mem_nhds_diagonal [C
   obtain ⟨n, g, h, hg, hgh⟩ := exists_finite_approximation_of_mem_nhds_diagonal f hS
   refine ⟨n, fun i ↦ ⟨_, (isClopen_discrete {i}).preimage hg⟩, h, fun x ↦ ?_⟩
   convert hgh x
-  exact (Fintype.prod_eq_single _ fun i hi ↦ mulIndicator_of_not_mem hi.symm _).trans
+  exact (Fintype.prod_eq_single _ fun i hi ↦ mulIndicator_of_notMem hi.symm _).trans
     (mulIndicator_of_mem rfl _)
 
 end ContinuousMap
