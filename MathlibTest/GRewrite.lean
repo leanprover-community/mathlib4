@@ -8,6 +8,7 @@ import Mathlib.Tactic.GRewrite
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.NormNum
 import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
 /- In many examples in this module, we rewrite expressions which do not make it into the final term.
 
@@ -112,6 +113,10 @@ example (h₁ : W ⊂ Y) (h₂ : X ⊂ (W ∪ Z)) : X ⊂ (Y ∪ Z) := by
   grw [← h₁]
   guard_target =ₛ X ⊂ (W ∪ Z)
   exact h₂
+
+example {a b : Nat} (h : a < b) (f : Nat → Nat) (hf : ∀ i, 0 ≤ f i) :
+    ∑ i ∈ ({x | x ≤ a} : Set Nat), f i ≤ ∑ i ∈ ({x | x ≤ b} : Set Nat), f i := by
+  grw [h]
 
 end subsets
 
@@ -243,3 +248,37 @@ example {Prime : ℕ → Prop} {a a' : ℕ} (h₁ : Prime (a + 1)) (h₂ : a = a
   grw [h₂] at h₁
   guard_hyp h₁ :ₛ Prime (a' + 1)
   exact test_sorry
+
+/--
+error: tactic 'grewrite' failed, could not discharge b ≤ a using a ≤ b
+case h₁.h
+α : Type u_1
+inst✝² : CommRing α
+inst✝¹ : LinearOrder α
+inst✝ : IsStrictOrderedRing α
+a b c d e : α
+h₁ : a ≤ b
+h₂ : 0 ≤ c
+⊢ b ≤ a
+-/
+#guard_msgs in
+example (h₁ : a ≤ b) (h₂ : 0 ≤ c) : a * c ≥ 100 + a := by
+  grw [h₁]
+
+example (h₁ : a ≤ b) (h₂ : 0 ≤ c) : a * c ≥ 100 + a := by
+  nth_grw 2 [h₁]
+  guard_target =ₛ a * c ≥ 100 + b
+  exact test_sorry
+section apply
+
+variable {p q r s : Prop}
+
+example (h : p → q) (h' : r → s) : p ∧ r → q ∧ s := by
+  apply_rw [h, h']
+  exact id
+
+example (h : p → q) (h' : q → r) : p → r := by
+  apply_rw [← h] at h'
+  exact h'
+
+end apply

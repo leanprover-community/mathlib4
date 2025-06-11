@@ -76,4 +76,7 @@ theorem ssuperset_imp_ssuperset_left  (h₁ : b ⊆ a) (h₂ : c ⊂ b) : c ⊂ 
 
 end subset
 
+@[gcongr]
+theorem setOf_subset_setOf {p q : α → Prop} (h : ∀ a, p a → q a) : { a | p a } ⊆ { a | q a } := h
+
 end Mathlib.Tactic.GCongr
