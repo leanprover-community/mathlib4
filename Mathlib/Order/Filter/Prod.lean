@@ -238,9 +238,8 @@ theorem prod_comap_comap_eq.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {β�
 theorem prod_comm' : f ×ˢ g = comap Prod.swap (g ×ˢ f) := by
   simp only [prod_eq_inf, comap_comap, Function.comp_def, inf_comm, Prod.swap, comap_inf]
 
-theorem prod_comm : f ×ˢ g = map (fun p : β × α => (p.2, p.1)) (g ×ˢ f) := by
+theorem prod_comm : f ×ˢ g = map Prod.swap (g ×ˢ f) := by
   rw [prod_comm', ← map_swap_eq_comap_swap]
-  rfl
 
 theorem mem_prod_iff_left {s : Set (α × β)} :
     s ∈ f ×ˢ g ↔ ∃ t ∈ f, ∀ᶠ y in g, ∀ x ∈ t, (x, y) ∈ s := by
@@ -280,6 +279,19 @@ theorem prod_inj {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} [NeBot f₁] [N
 theorem eventually_swap_iff {p : α × β → Prop} :
     (∀ᶠ x : α × β in f ×ˢ g, p x) ↔ ∀ᶠ y : β × α in g ×ˢ f, p y.swap := by
   rw [prod_comm]; rfl
+
+lemma Eventually.trans_prod {h : Filter γ}
+    [NeBot g] {p : α → β → Prop} {q : β → γ → Prop} {r : α → γ → Prop}
+    (hp : ∀ᶠ xy in f ×ˢ g, p xy.1 xy.2) (hq : ∀ᶠ yz in g ×ˢ h, q yz.1 yz.2)
+    (hpqr : ∀ x y z, p x y → q y z → r x z) :
+    ∀ᶠ xz in f ×ˢ h, r xz.1 xz.2 := by
+  replace hp := hp.curry
+  replace hq := eventually_swap_iff.mp hq |>.curry
+  -- Note: the assumptions are slightly too strong, we can replace them by what `hp` and `hq`
+  -- are at this point if needed
+  refine eventually_prod_iff.mpr ⟨_, hp, _, hq, fun {x} hx {z} hz ↦ ?_⟩
+  rcases (hx.and hz).exists with ⟨y, hpy, hqy⟩
+  exact hpqr x y z hpy hqy
 
 theorem prod_assoc (f : Filter α) (g : Filter β) (h : Filter γ) :
     map (Equiv.prodAssoc α β γ) ((f ×ˢ g) ×ˢ h) = f ×ˢ (g ×ˢ h) := by
