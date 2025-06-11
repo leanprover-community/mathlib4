@@ -1359,9 +1359,8 @@ instance rho_g_FG: Group.FG (rho_g (G := G)) := by
 
 -- The input data and proofs for Theorem 3.1 in Vikman
 structure Theorem3_1_Data where
-  -- An abelian subgruop of G, with finite index
+  -- A finite index subgroup G' of G
   G': Subgroup G
-  isMulCommutative: IsMulCommutative G'
   finite_index: G'.FiniteIndex
   -- G' can be mapped homomorphically onto ℤ
   φ: (Additive G) →+ ℤ
@@ -1459,6 +1458,7 @@ lemma rho_g_case_infinite (hr: Infinite (↥(rho_g (G := G)))): Nonempty (Theore
     rhs
     equals H_as_GL_W.index =>
       unfold Subgroup.subgroupOf
+
       sorry
 
 
@@ -1477,6 +1477,45 @@ lemma rho_g_case_infinite (hr: Infinite (↥(rho_g (G := G)))): Nonempty (Theore
     }
 
 
+  apply Nonempty.intro
+  exact {
+    G' := G',
+    isMulCommutative := by
+      unfold G'
+      apply Subgroup.comap_injective_isMulCommutative
+      unfold rho_hom
+      simp
+      apply Function.Injective.comp
+      . unfold GRepW
+        intro a b hab
+        simp at hab
+        obtain ⟨a_eq_b, _⟩ := hab
+        norm_cast at a_eq_b
+      .
+        unfold GRepW_base
+        intro a b hab
+        suffices (GRepW_non_invertible.asGroupHom a).val = (GRepW_non_invertible.asGroupHom b).val by
+          rw [Representation.asGroupHom_apply] at this
+          rw [Representation.asGroupHom_apply] at this
+          simp [GRepW_non_invertible] at this
+          simp [GRep] at this
+
+
+        simp [Representation.asGroupHom] at hab
+        simp [MonoidHom.toHomUnits] at hab
+        rw [DFunLike.coe] at hab
+        unfold MonoidHom.instFunLike at hab
+
+        rw [DFunLike.1] at hab
+        norm_cast at hab
+        simp only [] at hab
+        simp at hab
+
+
+    finite_index := G'_finite_index,
+    φ := h_to_z,
+    hφ := h_to_z_surjective
+  }
 
 
 
