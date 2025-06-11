@@ -219,7 +219,7 @@ instance (h : (E × F) ≃L[𝕜] E') : SliceModel F (𝓘(𝕜, E)) (𝓘(𝕜,
   hmap := by
     apply h.toHomeomorph.isEmbedding.comp
     rw [← IsEmbedding.of_comp_iff (ContinuousLinearEquiv.prodComm 𝕜 E F).toHomeomorph.isEmbedding]
-    exact isEmbedding_prodMk (0 : F)
+    exact isEmbedding_prodMkRight (0 : F)
   compatible := by simp
 
 /-- *Any* model with corners on `E` which is an embedding is a slice model with the trivial model
@@ -254,11 +254,9 @@ noncomputable instance {n m : ℕ} [NeZero n] :
     SliceModel ((EuclideanSpace ℝ (Fin m))) (𝓡 n) (𝓡 (n + m)) where
   equiv := EuclideanSpace.finAddEquivProd |>.symm
   map x := (EuclideanSpace.finAddEquivProd (𝕜 := ℝ) (n := n) (m := m)).symm (x, 0)
-  hmap := by
-    apply (EuclideanSpace.finAddEquivProd.symm).toHomeomorph.isEmbedding.comp
-    sorry -- easy: prodMkLeft is an embedding
+  hmap :=
+    (EuclideanSpace.finAddEquivProd.symm).toHomeomorph.isEmbedding.comp (isEmbedding_prodMkLeft 0)
   compatible := by ext; simp
-
 
 noncomputable instance {n : ℕ} [NeZero n] :
     SliceModel (⊥ : Subspace ℝ ((Fin n → ℝ))) (modelWithCornersEuclideanQuadrant n) (𝓡∂ n) where
