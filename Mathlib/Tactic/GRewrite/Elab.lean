@@ -22,6 +22,7 @@ namespace Mathlib.Tactic
 
 open Lean Meta Elab Parser Tactic
 
+/-- Apply the `grewrite` tactic to the current goal. -/
 def grewriteTarget (stx : Syntax) (symm : Bool) (config : GRewrite.Config) : TacticM Unit := do
   let goal ← getMainGoal
   Term.withSynthesize <| goal.withContext do
@@ -35,6 +36,7 @@ def grewriteTarget (stx : Syntax) (symm : Bool) (config : GRewrite.Config) : Tac
     goal.assign (mkApp r.impProof mvarNew)
     replaceMainGoal (mvarNew.mvarId! :: r.mvarIds)
 
+/-- Apply the `grewrite` tactic to a local hypothesis. -/
 def grewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : GRewrite.Config) :
     TacticM Unit := withMainContext do
   -- Note: we cannot execute `replace` inside `Term.withSynthesize`.
@@ -50,6 +52,7 @@ def grewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : G
   let { mvarId, .. } ← goal.replace fvarId proof r.eNew
   replaceMainGoal (mvarId :: r.mvarIds)
 
+/-- Function elaborating `GRewrite.Config`. -/
 declare_config_elab elabGRewriteConfig GRewrite.Config
 
 /--

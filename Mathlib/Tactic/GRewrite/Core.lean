@@ -28,13 +28,15 @@ open Lean Meta
 
 namespace Mathlib.Tactic
 
+/-- Given a proof of `a ~ b`, close a goal of the form `a ~' b` or `b ~' a`
+for some possibly different relation `~'`. -/
 def GRewrite.dischargeMain (hrel : Expr) (goal : MVarId) : MetaM Unit := do
   try
     goal.gcongrForward #[hrel]
   catch _ =>
     throwTacticEx `grewrite goal m!"could not discharge {← goal.getType} using {← inferType hrel}"
 
-
+/-- The result returned by `Lean.MVarId.grewrite`. -/
 structure GRewriteResult where
   /-- The rewritten expression -/
   eNew     : Expr
@@ -45,10 +47,11 @@ structure GRewriteResult where
 
 /-- Configures the behavior of the `rewrite` and `rw` tactics. -/
 structure GRewrite.Config extends Rewrite.Config where
+  /-- When `useRewrite = true`, switch to using the default `rewrite` tactic when the goal is
+  and equality or iff. -/
   useRewrite : Bool := true
+  /-- When `implicationHyp = true`, interpret the rewrite rule as an implication. -/
   implicationHyp : Bool := false
-
-declare_config_elab elabRewriteConfig Rewrite.Config
 
 /--
 Rewrite `e` using the relation `hrel : x ~ y`, and construct an implication proof
