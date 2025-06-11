@@ -49,6 +49,8 @@ irreducible_def one_tangentSpace_Icc {x y : ℝ} [h : Fact (x < y)] (z : Icc x y
 instance {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) : One (TangentSpace (𝓡∂ 1) z) where
   one := one_tangentSpace_Icc z
 
+set_option says.verify true
+
 section ToMove
 
 variable {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ∞}
@@ -63,10 +65,9 @@ lemma contMDiff_subtypeVal_Icc  :
     simp only [extChartAt, PartialHomeomorph.extend, PartialHomeomorph.refl_partialEquiv,
       PartialEquiv.refl_source, PartialHomeomorph.singletonChartedSpace_chartAt_eq,
       modelWithCornersSelf_partialEquiv, PartialEquiv.trans_refl, PartialEquiv.refl_coe,
-      Icc_chartedSpaceChartAt, unitInterval.coe_lt_one, PartialEquiv.coe_trans_symm,
-      PartialHomeomorph.coe_coe_symm, ModelWithCorners.toPartialEquiv_coe_symm, CompTriple.comp_eq,
-      PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe,
-      Function.comp_apply]
+      Icc_chartedSpaceChartAt, PartialEquiv.coe_trans_symm, PartialHomeomorph.coe_coe_symm,
+      ModelWithCorners.toPartialEquiv_coe_symm, CompTriple.comp_eq, PartialEquiv.coe_trans,
+      ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe, Function.comp_apply]
   split_ifs with hz
   · simp? [IccLeftChart, Function.comp_def, modelWithCornersEuclideanHalfSpace] says
       simp only [IccLeftChart, Fin.isValue, PartialHomeomorph.mk_coe_symm, PartialEquiv.coe_symm_mk,
@@ -280,8 +281,8 @@ noncomputable def riemannianMetricVectorSpace :
         Trivialization.linearMapAt_apply, hom_trivializationAt_baseSet,
         TangentBundle.trivializationAt_baseSet, PartialHomeomorph.refl_partialEquiv,
         PartialEquiv.refl_source, PartialHomeomorph.singletonChartedSpace_chartAt_eq,
-        Trivial.fiberBundle_trivializationAt', Trivial.trivialization_baseSet, Set.inter_self,
-        Set.mem_univ, ↓reduceIte, Trivial.trivialization_apply]
+        Trivial.fiberBundle_trivializationAt', Trivial.trivialization_baseSet, inter_self, mem_univ,
+        ↓reduceIte, Trivial.trivialization_apply]
     rfl
 
 noncomputable instance : RiemannianBundle (fun (x : F) ↦ TangentSpace 𝓘(ℝ, F) x) :=
@@ -329,17 +330,19 @@ lemma lintegral_mfderiv_unitInterval_eq_mfderiv_comp_projIcc
   congr
   rw [mfderivWithin_of_mem_nhds (Icc_mem_nhds hx.1 hx.2)]
 
+/-- An inner product vector space is a Riemannian manifold, i.e., the distance between two points
+is the infimum of the lengths of paths between these points. -/
 instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
   refine ⟨fun x y ↦ le_antisymm ?_ ?_⟩
   · simp only [riemannianEDist, le_iInf_iff]
     intro γ hγ
     let e : ℝ → F := γ ∘ (projIcc 0 1 zero_le_one)
+    have D : ContDiffOn ℝ 1 e (Icc 0 1) :=
+      contMDiffOn_iff_contDiffOn.mp (hγ.comp_contMDiffOn contMDiffOn_projIcc)
     rw [lintegral_mfderiv_unitInterval_eq_mfderivWithin_comp_projIcc]
     simp only [mfderivWithin_eq_fderivWithin, enorm_tangentSpace_vectorSpace]
     conv_lhs =>
       rw [edist_comm, edist_eq_enorm_sub, show x = e 0 by simp [e], show y = e 1 by simp [e]]
-    have D : ContDiffOn ℝ 1 e (Icc 0 1) :=
-      contMDiffOn_iff_contDiffOn.mp (hγ.comp_contMDiffOn contMDiffOn_projIcc)
     exact (enorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc D zero_le_one).trans_eq rfl
   · let γ := Path.segment x y
     have hγ : ContMDiff (𝓡∂ 1) 𝓘(ℝ, F) 1 γ := by
