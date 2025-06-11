@@ -140,6 +140,10 @@ lemma prodAssoc_toEquiv :
 lemma prodAssoc_apply (p₁ : E) (p₂ : E') (p₃ : E'') :
   (prodAssoc 𝕜 E E' E'') ((p₁, p₂), p₃) = (p₁, (p₂, p₃)) := rfl
 
+@[simp]
+lemma prodAssoc_symm_apply (p₁ : E) (p₂ : E') (p₃ : E'') :
+  (prodAssoc 𝕜 E E' E'').symm (p₁, (p₂, p₃)) = ((p₁, p₂), p₃) := rfl
+
 end prodAssoc
 
 section prodCongr -- already present, but differently named: #25513 renames these
@@ -279,7 +283,17 @@ def instTrans (h : SliceModel F I I') (h' : SliceModel F' I' I'') : SliceModel (
   hmap := h'.hmap.comp h.hmap
   compatible := by -- paste the two commutative diagrams together
     ext x
-    simp [h.compatible, h'.compatible]
-    sorry
+    have : (ContinuousLinearEquiv.prodAssoc 𝕜 E F F').symm (I x, 0) = ((I x, 0), 0) := rfl
+    simp [h.compatible, h'.compatible, this]
+    symm
+
+
+
+    calc
+      _ = (SliceModel.equiv I' I'')
+        ((SliceModel.equiv I I') ((ContinuousLinearEquiv.prodAssoc 𝕜 E F F').symm (I x, 0)).1,
+          ((ContinuousLinearEquiv.prodAssoc 𝕜 E F F').symm (I x, 0)).2) := sorry
+      _ = I'' (SliceModel.map F' I' I'' (SliceModel.map F I I' x)) := sorry
+    --sorry
 
 end instances
