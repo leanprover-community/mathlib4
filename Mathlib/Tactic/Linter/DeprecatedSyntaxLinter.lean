@@ -21,6 +21,7 @@ in Lean 3, `refine` and `cases`. They have been superseded by Lean 4 tactics:
   tend to be more efficient on average.
 * `obtain`, `rcases` and `cases` replace `cases'`. Unlike the replacement tactics, `cases'`
   does not require the variables it introduces to be separated by case, which hinders readability.
+* `gcongr` replaces `mono`: XXX write more here!
 
 The `admit` tactic is a synonym for the much more common `sorry`, so the latter should be preferred.
 
