@@ -85,7 +85,12 @@ variable [T1Space E]
 
 lemma mem_bot : x ∈ (⊥ : ProperCone R E) ↔ x = 0 := .rfl
 
+@[simp, norm_cast] lemma coe_bot : (⊥ : ProperCone R E) = ({0} : Set E) := rfl
 @[simp, norm_cast] lemma toPointedCone_bot : (⊥ : ProperCone R E).toPointedCone = ⊥ := rfl
+
+@[deprecated (since := "2025-06-11")] alias mem_zero := mem_bot
+@[deprecated (since := "2025-06-11")] alias coe_zero := coe_bot
+@[deprecated (since := "2025-06-11")] alias pointed_zero := pointed_toConvexCone
 
 end T1Space
 
@@ -139,29 +144,4 @@ def positive : ProperCone R E where
 @[simp] lemma toPointedCone_positive : (positive R E).toPointedCone = .positive R E := rfl
 
 end PositiveCone
-
-section Module
-
-variable {𝕜 : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
-variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [T1Space E] [Module 𝕜 E]
-
-instance : Zero (ProperCone 𝕜 E) :=
-  ⟨{ toSubmodule := 0
-     isClosed' := isClosed_singleton }⟩
-
-instance : Inhabited (ProperCone 𝕜 E) :=
-  ⟨0⟩
-
-@[simp]
-theorem mem_zero (x : E) : x ∈ (0 : ProperCone 𝕜 E) ↔ x = 0 :=
-  Iff.rfl
-
-@[simp, norm_cast]
-theorem coe_zero : ↑(0 : ProperCone 𝕜 E) = (0 : ConvexCone 𝕜 E) :=
-  rfl
-
-theorem pointed_zero : ((0 : ProperCone 𝕜 E) : ConvexCone 𝕜 E).Pointed := by
-  simp [ConvexCone.pointed_zero]
-
-end Module
 end ProperCone
