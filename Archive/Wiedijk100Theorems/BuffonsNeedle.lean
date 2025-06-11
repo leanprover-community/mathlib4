@@ -155,7 +155,7 @@ lemma stronglyMeasurable_needleCrossesIndicator :
   by_cases hp : 0 ∈ needleProjX l p.1 p.2
   · simp_rw [needleCrossesIndicator, Set.indicator_of_mem hp, Pi.one_apply] at hxp
     apply Or.inr hxp.symm
-  · simp_rw [needleCrossesIndicator, Set.indicator_of_not_mem hp] at hxp
+  · simp_rw [needleCrossesIndicator, Set.indicator_of_notMem hp] at hxp
     apply Or.inl hxp.symm
 
 include hd in
@@ -171,7 +171,7 @@ lemma integrable_needleCrossesIndicator :
     unfold needleCrossesIndicator
     by_cases hp : 0 ∈ needleProjX l p.1 p.2
     · simp_rw [Set.indicator_of_mem hp, Pi.one_apply, le_refl]
-    · simp_rw [Set.indicator_of_not_mem hp, zero_le_one]
+    · simp_rw [Set.indicator_of_notMem hp, zero_le_one]
   refine And.intro
     (stronglyMeasurable_needleCrossesIndicator l).aestronglyMeasurable
     ((MeasureTheory.hasFiniteIntegral_iff_norm (needleCrossesIndicator l)).mpr ?_)

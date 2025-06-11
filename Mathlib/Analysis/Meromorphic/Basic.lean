@@ -12,7 +12,8 @@ Main statements:
 
 * `MeromorphicAt`: definition of meromorphy at a point
 * `MeromorphicAt.iff_eventuallyEq_zpow_smul_analyticAt`: `f` is meromorphic at `z₀` iff we have
-  `f z = (z - z₀) ^ n • g z` on a punctured nhd of `z₀`, for some `n : ℤ` and `g` analytic at z₀.
+  `f z = (z - z₀) ^ n • g z` on a punctured neighborhood of `z₀`, for some `n : ℤ`
+  and `g` analytic at `z₀`.
 -/
 
 open Filter
