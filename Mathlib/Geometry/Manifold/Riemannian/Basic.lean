@@ -149,12 +149,25 @@ lemma contMDiffOn_comp_projIcc_iff (f : Icc x y → M) :
 lemma contMDiffWithinAt_comp_projIcc_iff (f : Icc x y → M) (w : Icc x y) :
     ContMDiffWithinAt 𝓘(ℝ) I n (f ∘ (Set.projIcc x y h.out.le)) (Icc x y) w ↔
       ContMDiffAt (𝓡∂ 1) I n f w := by
+  refine ⟨fun hf ↦ ?_,
+    fun hf ↦ hf.comp_contMDiffWithinAt_of_eq (contMDiffOn_projIcc w w.2) (by simp)⟩
+  have A := contMDiff_subtypeVal_Icc (x := x) (y := y) (n := n) w
+  rw [← contMDiffWithinAt_univ] at A ⊢
+  convert hf.comp _ A (fun z hz ↦ z.2)
+  ext z
+  simp
+
+lemma mdifferentiableWithinAt_comp_projIcc_iff (f : Icc x y → M) (w : Icc x y) :
+    MDifferentiableWithinAt 𝓘(ℝ) I (f ∘ (Set.projIcc x y h.out.le)) (Icc x y) w ↔
+      MDifferentiableAt (𝓡∂ 1) I f w := by
   refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
-  · convert hf.comp_contMDiff (contMDiff_subtypeVal_Icc (x := x) (y := y)) (fun z ↦ z.2)
+  · have A := (contMDiff_subtypeVal_Icc (x := x) (y := y) (n := 1) w).mdifferentiableAt le_rfl
+    rw [← mdifferentiableWithinAt_univ] at A ⊢
+    convert hf.comp _ A (fun z hz ↦ z.2)
     ext z
     simp
-  · have W := hf.comp_contMDiffWithinAt --contMDiffOn_projIcc
-
+  · have := (contMDiffOn_projIcc (x := x) (y := y) (n := 1) w w.2).mdifferentiableWithinAt le_rfl
+    exact MDifferentiableAt.comp_mdifferentiableWithinAt_of_eq (w : ℝ) hf this (by simp)
 
 lemma mfderivWithin_projIcc_one (z : ℝ) (hz : z ∈ Icc x y) :
     mfderivWithin 𝓘(ℝ) (𝓡∂ 1) (Set.projIcc x y h.out.le) (Icc x y) z 1 = 1 := by
@@ -163,7 +176,25 @@ lemma mfderivWithin_projIcc_one (z : ℝ) (hz : z ∈ Icc x y) :
   congr
   simp only [projIcc_of_mem h.out.le hz]
 
-lemma mfderiv_subtypeVal_Icc_one (z : Icc x y) :
+lemma mfderivWithin_comp_projIcc_one (f : Icc x y → M) (w : Icc x y) :
+    mfderivWithin 𝓘(ℝ) I (f ∘ (projIcc x y h.out.le)) (Icc x y) w 1 = mfderiv (𝓡∂ 1) I f w 1 := by
+  by_cases hw : MDifferentiableAt (𝓡∂ 1) I f w; swap
+  · rw [mfderiv_zero_of_not_mdifferentiableAt hw, mfderivWithin_zero_of_not_mdifferentiableWithinAt]
+    · rfl
+    · rwa [mdifferentiableWithinAt_comp_projIcc_iff]
+  rw [mfderiv_comp_mfderivWithin (I' := 𝓡∂ 1)]; rotate_left
+  · convert hw
+    simp
+  · apply (contMDiffOn_projIcc _ w.2).mdifferentiableWithinAt le_rfl
+  · apply (uniqueDiffOn_Icc h.out _ w.2).uniqueMDiffWithinAt
+  simp only [Function.comp_apply, ContinuousLinearMap.coe_comp']
+  have I : projIcc x y h.out.le (w : ℝ) = w := by rw [projIcc_of_mem]
+  have J : w = projIcc x y h.out.le (w : ℝ) := by rw [I]
+  rw [I]
+  congr 1
+  convert mfderivWithin_projIcc_one w w.2
+
+lemma mfderiv_subtype_coe_Icc_one (z : Icc x y) :
     mfderiv (𝓡∂ 1) 𝓘(ℝ) (Subtype.val : Icc x y → ℝ) z 1 = 1 := by
   have A : mfderivWithin 𝓘(ℝ) 𝓘(ℝ) (Subtype.val ∘ (projIcc x y h.out.le)) (Icc x y) z 1
       = mfderivWithin 𝓘(ℝ) 𝓘(ℝ) id (Icc x y) z 1 := by
@@ -171,30 +202,10 @@ lemma mfderiv_subtypeVal_Icc_one (z : Icc x y) :
     apply mfderivWithin_congr_of_mem _ z.2
     intro z hz
     simp [projIcc_of_mem h.out.le hz]
-  rw [mfderiv_comp_mfderivWithin (I' := 𝓡∂ 1)] at A; rotate_left
-  · apply contMDiff_subtypeVal_Icc.mdifferentiableAt le_rfl
-  · apply (contMDiffOn_projIcc _ z.2).mdifferentiableWithinAt le_rfl
-  · apply (uniqueDiffOn_Icc h.out _ z.2).uniqueMDiffWithinAt
-  simp only [Function.comp_apply, ContinuousLinearMap.coe_comp', id_eq,
-    mfderivWithin_eq_fderivWithin, mfderivWithin_projIcc_one z z.2] at A
-  have : projIcc x y h.out.le z = z := by simp only [projIcc_of_mem h.out.le z.2]
-  rw [this] at A
-  convert A
+  rw [← mfderivWithin_comp_projIcc_one, A]
+  simp only [id_eq, mfderivWithin_eq_fderivWithin]
   rw [fderivWithin_id (uniqueDiffOn_Icc h.out _ z.2)]
   rfl
-
-lemma mfderivWithin_comp_projIcc_one (f : Icc x y → M) (w : Icc x y) :
-    mfderivWithin 𝓘(ℝ) I (f ∘ (projIcc x y h.out.le)) (Icc 0 1) w 1 = mfderiv (𝓡∂ 1) I f w 1 := by
-  rw [mfderiv_comp_mfderivWithin (I' := 𝓡∂ 1)]; rotate_left
-  · apply hγ.mdifferentiableAt le_rfl
-  · apply (contMDiffOn_projIcc _ x.2).mdifferentiableWithinAt le_rfl
-  · apply (uniqueDiffOn_Icc zero_lt_one _ x.2).uniqueMDiffWithinAt
-  simp only [Function.comp_apply, ContinuousLinearMap.coe_comp']
-  have I : projIcc 0 1 zero_le_one (x : ℝ) = x := by rw [projIcc_of_mem]
-  have J : x = projIcc 0 1 zero_le_one (x : ℝ) := by rw [I]
-  rw [I]
-  congr 1
-  convert mfderivWithin_projIcc_one x x.2
 
 end ToMove
 
@@ -294,48 +305,42 @@ lemma enorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace 𝓘(ℝ, F) x} :
 
 open MeasureTheory Measure
 
-lemma lintegral_mfderiv_unitInterval_eq_comp_projIcc (γ : unitInterval → M)
-    (h : ContMDiff (𝓡∂ 1) I 1 γ)
-    [∀ (y : M), ENorm (TangentSpace I y)]:
+lemma lintegral_mfderiv_unitInterval_eq_mfderivWithin_comp_projIcc
+    [∀ (y : M), ENorm (TangentSpace I y)] (γ : unitInterval → M) :
     ∫⁻ x, ‖mfderiv (𝓡∂ 1) I γ x 1‖ₑ =
       ∫⁻ x in Icc 0 1, ‖mfderivWithin 𝓘(ℝ) I (γ ∘ (projIcc 0 1 zero_le_one)) (Icc 0 1) x 1‖ₑ := by
+  simp_rw [← mfderivWithin_comp_projIcc_one]
+  have : MeasurePreserving (Subtype.val : unitInterval → ℝ) volume
+    (volume.restrict (Icc 0 1)) := measurePreserving_subtype_coe measurableSet_Icc
+  rw [← MeasureTheory.MeasurePreserving.lintegral_comp_emb this
+    (MeasurableEmbedding.subtype_coe measurableSet_Icc)]
+  congr
+  ext x
+  have : x = projIcc 0 1 zero_le_one (x : ℝ) := by simp
+  congr
 
-
-
-#exit
+lemma lintegral_mfderiv_unitInterval_eq_mfderiv_comp_projIcc
+    [∀ (y : M), ENorm (TangentSpace I y)] (γ : unitInterval → M) :
+    ∫⁻ x, ‖mfderiv (𝓡∂ 1) I γ x 1‖ₑ =
+      ∫⁻ x in Ioo 0 1, ‖mfderiv 𝓘(ℝ) I (γ ∘ (projIcc 0 1 zero_le_one)) x 1‖ₑ := by
+  rw [lintegral_mfderiv_unitInterval_eq_mfderivWithin_comp_projIcc, ← restrict_Ioo_eq_restrict_Icc]
+  apply lintegral_congr_ae
+  filter_upwards [self_mem_ae_restrict measurableSet_Ioo] with x hx
+  congr
+  rw [mfderivWithin_of_mem_nhds (Icc_mem_nhds hx.1 hx.2)]
 
 instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
   refine ⟨fun x y ↦ le_antisymm ?_ ?_⟩
   · simp only [riemannianEDist, le_iInf_iff]
     intro γ hγ
     let e : ℝ → F := γ ∘ (projIcc 0 1 zero_le_one)
-    have D : ContMDiffOn 𝓘(ℝ) 𝓘(ℝ, F) 1 e (Icc 0 1) :=
-      hγ.comp_contMDiffOn contMDiffOn_projIcc
-    have A (x : Icc 0 1) : mfderivWithin 𝓘(ℝ) 𝓘(ℝ, F) e (Icc 0 1) x 1
-        = mfderiv (𝓡∂ 1) 𝓘(ℝ, F) γ x 1 := by
-      simp only [e]
-      rw [mfderiv_comp_mfderivWithin (I' := 𝓡∂ 1)]; rotate_left
-      · apply hγ.mdifferentiableAt le_rfl
-      · apply (contMDiffOn_projIcc _ x.2).mdifferentiableWithinAt le_rfl
-      · apply (uniqueDiffOn_Icc zero_lt_one _ x.2).uniqueMDiffWithinAt
-      simp only [Function.comp_apply, ContinuousLinearMap.coe_comp']
-      have I : projIcc 0 1 zero_le_one (x : ℝ) = x := by rw [projIcc_of_mem]
-      have J : x = projIcc 0 1 zero_le_one (x : ℝ) := by rw [I]
-      rw [I]
-      congr 1
-      convert mfderivWithin_projIcc_one x x.2
-    have : ∫⁻ x, ‖mfderiv (𝓡∂ 1) 𝓘(ℝ, F) γ x 1‖ₑ
-        = ∫⁻ x in Icc 0 1, ‖mfderivWithin 𝓘(ℝ) 𝓘(ℝ, F) e (Icc 0 1) x 1‖ₑ := by
-      simp_rw [← A]
-      have : MeasurePreserving (Subtype.val : unitInterval → ℝ) volume
-        (volume.restrict (Icc 0 1)) := measurePreserving_subtype_coe measurableSet_Icc
-      rw [← MeasureTheory.MeasurePreserving.lintegral_comp_emb this]
-      apply MeasurableEmbedding.subtype_coe measurableSet_Icc
-    rw [this]
+    rw [lintegral_mfderiv_unitInterval_eq_mfderivWithin_comp_projIcc]
     simp only [mfderivWithin_eq_fderivWithin, enorm_tangentSpace_vectorSpace]
-    rw [edist_comm, edist_eq_enorm_sub, show x = e 0 by simp [e], show y = e 1 by simp [e]]
-    have D' : ContDiffOn ℝ 1 e (Icc 0 1) := contMDiffOn_iff_contDiffOn.mp D
-    exact (enorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc D' zero_le_one).trans_eq rfl
+    conv_lhs =>
+      rw [edist_comm, edist_eq_enorm_sub, show x = e 0 by simp [e], show y = e 1 by simp [e]]
+    have D : ContDiffOn ℝ 1 e (Icc 0 1) :=
+      contMDiffOn_iff_contDiffOn.mp (hγ.comp_contMDiffOn contMDiffOn_projIcc)
+    exact (enorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc D zero_le_one).trans_eq rfl
   · let γ := Path.segment x y
     have hγ : ContMDiff (𝓡∂ 1) 𝓘(ℝ, F) 1 γ := by
       rw [← contMDiffOn_comp_projIcc_iff]
@@ -348,6 +353,22 @@ instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
     have : riemannianEDist 𝓘(ℝ, F) x y ≤ ∫⁻ x, ‖mfderiv (𝓡∂ 1) 𝓘(ℝ, F) γ x 1‖ₑ :=
       (iInf_le _ γ).trans (iInf_le _ hγ)
     apply this.trans_eq
+    rw [lintegral_mfderiv_unitInterval_eq_mfderiv_comp_projIcc]
+    simp only [mfderivWithin_eq_fderivWithin, enorm_tangentSpace_vectorSpace]
+    have : edist x y = ∫⁻ (x_1 : ℝ) in Ioo 0 1, edist x y := by simp
+    rw [this]
+    apply lintegral_congr_ae
+    filter_upwards [self_mem_ae_restrict measurableSet_Ioo] with z hz
+    rw [edist_comm, edist_eq_enorm_sub]
+    congr
+    simp only [Function.comp_apply, mfderiv_eq_fderiv]
+
+
+
+
+
+
+
 
 
 
