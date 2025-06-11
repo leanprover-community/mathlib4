@@ -191,8 +191,7 @@ theorem equiv_free_prod_directSum_zmod (G : Type*) [CommGroup G] [hG : Group.FG 
   exact ⟨MulEquiv.toAdditive (G := G).symm <| equiv.some.trans <| (
     (AddEquiv.prodCongr (
       Finsupp.addEquivFunOnFinite.trans (
-        -- (AddEquiv.piAdditive _).trans (sorry)
-        sorry
+        ((AddEquiv.piAdditive _).trans (sorry)).symm
       )
     ) (
       DirectSum.addEquivProd _
