@@ -168,7 +168,7 @@ variable (M) in
 theorem range_mk : Set.range (mk (M := M)) = Set.univ := Set.range_eq_univ.mpr (mk_surjective M)
 
 @[to_additive]
-theorem eq {a b : M} : mk a = mk b ↔ (∃ m, |b|ₘ ≤ |a|ₘ ^ m) ∧ (∃ n, |a|ₘ ≤ |b|ₘ ^ n) := by
+theorem mk_eq_mk {a b : M} : mk a = mk b ↔ (∃ m, |b|ₘ ≤ |a|ₘ ^ m) ∧ (∃ n, |a|ₘ ≤ |b|ₘ ^ n) := by
   unfold mk toAntisymmetrization
   rw [Quotient.eq]
   rfl
@@ -179,11 +179,11 @@ noncomputable
 def out (A : MulArchimedeanClass M) : M := (Quotient.out A).val
 
 @[to_additive (attr := simp)]
-theorem out_eq (A : MulArchimedeanClass M) : mk A.out = A := Quotient.out_eq' A
+theorem mk_out (A : MulArchimedeanClass M) : mk A.out = A := Quotient.out_eq' A
 
 @[to_additive (attr := simp)]
 theorem mk_inv (a : M) : mk a⁻¹ = mk a :=
-  eq.mpr ⟨⟨1, by simp⟩, ⟨1, by simp⟩⟩
+  mk_eq_mk.mpr ⟨⟨1, by simp⟩, ⟨1, by simp⟩⟩
 
 @[to_additive]
 theorem mk_div_comm (a b : M) : mk (a / b) = mk (b / a) := by
@@ -191,21 +191,7 @@ theorem mk_div_comm (a b : M) : mk (a / b) = mk (b / a) := by
 
 @[to_additive (attr := simp)]
 theorem mk_mabs (a : M) : mk |a|ₘ = mk a :=
-  eq.mpr ⟨⟨1, by simp⟩, ⟨1, by simp⟩⟩
-
-@[to_additive]
-theorem mk_eq_mk_one_iff {a : M} : mk a = mk 1 ↔ a = 1 := by
-  constructor
-  · intro h
-    obtain ⟨_, ⟨_, hm⟩⟩ := eq.mp h
-    simpa using hm
-  · intro h
-    rw [h]
-
-variable (M) in
-@[to_additive]
-theorem out_mk_one : (mk 1 : MulArchimedeanClass M).out = 1 := by
-  rw [← mk_eq_mk_one_iff, out_eq]
+  mk_eq_mk.mpr ⟨⟨1, by simp⟩, ⟨1, by simp⟩⟩
 
 variable (M) in
 @[to_additive]
@@ -221,30 +207,35 @@ theorem mk_le_mk : mk a ≤ mk b ↔ ∃ n, |b|ₘ ≤ |a|ₘ ^ n := .rfl
 @[to_additive]
 theorem mk_lt_mk : mk a < mk b ↔ ∀ n, |b|ₘ ^ n < |a|ₘ := .rfl
 
-@[to_additive]
-theorem le_mk_one (A : MulArchimedeanClass M) : A ≤ mk 1 := by
-  induction A using ind with | mk a
-  rw [mk_le_mk]
-  exact ⟨1, by simp⟩
-
 variable (M) in
 /-- 1 is in its own class, which is also the largest class. -/
 @[to_additive "0 is in its own class, which is also the largest class."]
 noncomputable
 instance instOrderTop : OrderTop (MulArchimedeanClass M) where
   top := mk 1
-  le_top := le_mk_one
+  le_top A := by
+    induction A using ind with | mk a
+    rw [mk_le_mk]
+    exact ⟨1, by simp⟩
 
 variable (M) in
 @[to_additive (attr := simp)]
 theorem mk_one : mk 1 = (⊤ : MulArchimedeanClass M) := rfl
 
+@[to_additive (attr := simp)]
+theorem mk_eq_top_iff : mk a = ⊤ ↔ a = 1 := by
+  constructor
+  · intro h
+    obtain ⟨_, _, hm⟩ := mk_eq_mk.mp h
+    simpa using hm
+  · intro h
+    rw [h]
+    simp
+
 variable (M) in
 @[to_additive (attr := simp)]
-theorem out_top : (⊤ : MulArchimedeanClass M).out = 1 := out_mk_one M
-
-@[to_additive (attr := simp)]
-theorem mk_eq_top_iff : mk a = ⊤ ↔ a = 1 := mk_eq_mk_one_iff
+theorem out_top : (⊤ : MulArchimedeanClass M).out = 1 := by
+  rw [← mk_eq_top_iff, mk_out]
 
 variable (M) in
 @[to_additive]
@@ -374,7 +365,7 @@ theorem mulArchimedean_of_mk_eq_mk (h : ∀ a ≠ (1 : M), ∀ b ≠ 1, mk a = m
       simpa using hx
     · have hx : 1 < x := lt_of_not_ge hx
       have hxy : mk x = mk y := h x hx.ne.symm y hy.ne.symm
-      obtain ⟨_, ⟨m, hm⟩⟩ := (MulArchimedeanClass.eq).mp hxy
+      obtain ⟨_, ⟨m, hm⟩⟩ := (mk_eq_mk).mp hxy
       rw [mabs_eq_self.mpr hx.le, mabs_eq_self.mpr hy.le] at hm
       exact ⟨m, hm⟩
 
@@ -383,7 +374,7 @@ theorem mk_eq_mk_of_mulArchimedean [MulArchimedean M] (ha : a ≠ 1) (hb : b ≠
     mk a = mk b := by
   obtain hm := MulArchimedean.arch |b|ₘ (show 1 < |a|ₘ by simpa using ha)
   obtain hn := MulArchimedean.arch |a|ₘ (show 1 < |b|ₘ by simpa using hb)
-  exact eq.mpr ⟨hm, hn⟩
+  exact mk_eq_mk.mpr ⟨hm, hn⟩
 
 section Hom
 
@@ -413,7 +404,7 @@ theorem orderHom_injective {f : M →*o N} (h : Function.Injective f) :
   intro a b
   induction a using ind with | mk a
   induction b using ind with | mk b
-  simp_rw [orderHom_mk, eq, ← map_mabs, ← map_pow]
+  simp_rw [orderHom_mk, mk_eq_mk, ← map_mabs, ← map_pow]
   obtain hmono := (OrderHomClass.monotone f).strictMono_of_injective h
   intro ⟨⟨m, hm⟩, ⟨n, hn⟩⟩
   exact ⟨⟨m, hmono.le_iff_le.mp hm⟩, ⟨n, hmono.le_iff_le.mp hn⟩⟩
