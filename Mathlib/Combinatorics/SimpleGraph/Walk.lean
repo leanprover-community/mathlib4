@@ -1098,10 +1098,10 @@ lemma ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) :
   | nil =>
     rw [← nil_iff_eq_nil, nil_iff_support_eq]
     exact support_nil ▸ h
-  | @cons _ u _ ha q ih =>
+  | cons ha q ih =>
     cases p with
     | nil => simp at h
-    | @cons _ v _ _ p =>
+    | cons _ p =>
       simp only [support_cons, List.cons.injEq, true_and] at h
       apply List.getElem_of_eq at h
       specialize h (i := 0) (by simp)
