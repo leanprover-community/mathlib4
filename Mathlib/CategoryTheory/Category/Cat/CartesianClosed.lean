@@ -63,7 +63,7 @@ def compFlipUncurryIso (F : B ⥤ D) (G : D ⥤ C ⥤ E) :
 
 lemma comp_flip_uncurry_eq (F : B ⥤ D) (G : D ⥤ C ⥤ E) :
     uncurry.obj (F ⋙ G).flip = (𝟭 C).prod F ⋙ uncurry.obj G.flip :=
-  Functor.ext_of_iso (compFlipUncurryIso F G) (by aesop_cat) (by aesop_cat)
+  rfl
 
 end
 
