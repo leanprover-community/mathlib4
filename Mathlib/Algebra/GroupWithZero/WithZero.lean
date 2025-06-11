@@ -144,6 +144,8 @@ lemma map'_comp (f : α →* β) (g : β →* γ) : map' (g.comp f) = (map' g).c
 lemma map'_injective_iff {f : α →* β} : Injective (map' f) ↔ Injective f := by
   simp [Injective, WithZero.forall]
 
+alias ⟨_, map'_injective⟩ := map'_injective_iff
+
 end MulOneClass
 
 section Pow
