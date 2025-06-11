@@ -931,14 +931,8 @@ def take {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk u (p.getVert n) :=
 @[simp]
 lemma take_length {u v : V} (p : G.Walk u v) (n : ℕ) : (p.take n).length = n ⊓ p.length := by
   induction p generalizing n with
-  | nil => unfold take; simp_all
-  | cons h q ih =>
-      unfold take
-      by_cases h₂ : n = 0
-      · subst h₂
-        simp
-      · obtain ⟨_, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h₂
-        simp_all
+  | nil => simp [take]
+  | cons => cases n <;> simp_all [take]
 
 @[simp]
 lemma take_getVert {u v : V} (p : G.Walk u v) (n m : ℕ) :
