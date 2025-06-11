@@ -409,7 +409,8 @@ lemma mono_cokernelComparison_of_acyclic_homology {X Y : t₁.Heart} (f : X ⟶ 
     kernel.condition])).toComposableArrows
   have hR₂ : R₂.Exact := (map_shortExact_of_shortExact_and_acyclic F t₁ t₂
     (epiKernelComplexShortExact (cokernel.π f)) h₃ h₁).exact.exact_toComposableArrows
-  have hR₁ : R₁.Exact := (kernelComplexExact _).exact_toComposableArrows
+  have hR₁ : R₁.Exact := (ShortComplex.exact_of_f_is_kernel _
+    (kernelIsKernel _)).exact_toComposableArrows
   set φ : R₁ ⟶ R₂ := by
     refine ComposableArrows.homMk ?_ ?_
     · intro i
