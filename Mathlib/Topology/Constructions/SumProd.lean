@@ -587,6 +587,12 @@ lemma Topology.isInducing_prod_const {y : Y} {f : X → Z} :
 
 @[deprecated (since := "2024-10-28")] alias inducing_prod_const := isInducing_prod_const
 
+lemma isInducing_prodMkLeft (y : Y) : IsInducing (fun x : X ↦ (x, y)) :=
+  .of_comp (.prodMk_left y) continuous_fst .id
+
+lemma isInducing_prodMkRight (x : X) : IsInducing (Prod.mk x : Y → X × Y) :=
+  .of_comp (.prodMk_right x) continuous_snd .id
+
 lemma Topology.IsEmbedding.prodMap {f : X → Y} {g : Z → W} (hf : IsEmbedding f)
     (hg : IsEmbedding g) : IsEmbedding (Prod.map f g) where
   toIsInducing := hf.isInducing.prodMap hg.isInducing
