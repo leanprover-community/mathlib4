@@ -97,3 +97,12 @@ theorem enorm_sub_le_lintegral_deriv_of_contDiffOn_Icc (h : ContDiffOn ℝ 1 f (
   · exact ((h x ⟨hx.1.le, hx.2.le⟩).contDiffAt (Icc_mem_nhds hx.1 hx.2)).differentiableAt le_rfl
   have : fderiv ℝ g (f x) = g.toContinuousLinearMap := g.toContinuousLinearMap.fderiv
   simp [this]
+
+theorem enorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc (h : ContDiffOn ℝ 1 f (Icc a b))
+    (hab : a ≤ b) :
+    ‖f b - f a‖ₑ ≤ ∫⁻ x in Icc a b, ‖derivWithin f (Icc a b) x‖ₑ := by
+  apply (enorm_sub_le_lintegral_deriv_of_contDiffOn_Icc h hab).trans_eq
+  apply lintegral_congr_ae
+  rw [← restrict_Ioo_eq_restrict_Icc]
+  filter_upwards [self_mem_ae_restrict measurableSet_Ioo] with x hx
+  rw [derivWithin_of_mem_nhds (Icc_mem_nhds hx.1 hx.2)]

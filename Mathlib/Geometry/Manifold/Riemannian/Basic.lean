@@ -11,7 +11,7 @@ import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.MeasureTheory.Constructions.UnitInterval
 import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
 
 /-! # Riemannian manifolds
 
@@ -29,7 +29,7 @@ noncomputable section
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {n : WithTop ℕ∞}
-  {M : Type*}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 instance (x : ℝ) : One (TangentSpace 𝓘(ℝ) x) where
   one := (1 : ℝ)
@@ -48,18 +48,7 @@ irreducible_def one_tangentSpace_Icc {x y : ℝ} [h : Fact (x < y)] (z : Icc x y
 instance {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) : One (TangentSpace (𝓡∂ 1) z) where
   one := one_tangentSpace_Icc z
 
-section
-
-variable [TopologicalSpace M] [ChartedSpace H M]
-  [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
-
-variable (I) in
-/-- The Riemannian extended distance between two points, in a manifold where the tangent spaces
-have an inner product, defined as the infimum of the lengths of `C^1` paths between the points. -/
-noncomputable def riemannianEDist (x y : M) : ℝ≥0∞ :=
-  ⨅ (γ : Path x y) (_ : ContMDiff (𝓡∂ 1) I 1 γ), ∫⁻ x, ‖mfderiv (𝓡∂ 1) I γ x 1‖ₑ
-
-/- TODO: show that this is a distance (symmetry, triange inequality, nondegeneracy) -/
+section ToMove
 
 /-- The inclusion map from of a closed segment to `ℝ` is smooth in the manifold sense. -/
 lemma contMDiff_subtypeVal_Icc {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ∞} :
@@ -147,6 +136,13 @@ lemma contMDiffOn_projIcc {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ∞} :
     rw [max_eq_right, min_eq_right hw.2]
     simp [hw.1, h.out.le]
 
+lemma contMDiffOn_comp_projIcc_iff {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ∞} (f : Icc x y → M) :
+    ContMDiffOn 𝓘(ℝ) I n (f ∘ (Set.projIcc x y h.out.le)) (Icc x y) ↔ ContMDiff (𝓡∂ 1) I n f := by
+  refine ⟨fun hf ↦ ?_, fun hf ↦ hf.comp_contMDiffOn contMDiffOn_projIcc⟩
+  convert hf.comp_contMDiff (contMDiff_subtypeVal_Icc (x := x) (y := y)) (fun z ↦ z.2)
+  ext z
+  simp
+
 lemma mfderivWithin_projIcc_one {x y : ℝ} [h : Fact (x < y)] (z : ℝ) (hz : z ∈ Icc x y) :
     mfderivWithin 𝓘(ℝ) (𝓡∂ 1) (Set.projIcc x y h.out.le) (Icc x y) z 1 = 1 := by
   change _ = one_tangentSpace_Icc (Set.projIcc x y h.out.le z)
@@ -174,9 +170,20 @@ lemma mfderiv_subtypeVal_Icc_one {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) :
   rw [fderivWithin_id (uniqueDiffOn_Icc h.out _ z.2)]
   rfl
 
+end ToMove
 
 
+section
 
+variable [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
+
+variable (I) in
+/-- The Riemannian extended distance between two points, in a manifold where the tangent spaces
+have an inner product, defined as the infimum of the lengths of `C^1` paths between the points. -/
+noncomputable def riemannianEDist (x y : M) : ℝ≥0∞ :=
+  ⨅ (γ : Path x y) (_ : ContMDiff (𝓡∂ 1) I 1 γ), ∫⁻ x, ‖mfderiv (𝓡∂ 1) I γ x 1‖ₑ
+
+/- TODO: show that this is a distance (symmetry, triange inequality, nondegeneracy) -/
 
 end
 
@@ -205,6 +212,8 @@ open Bundle
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 variable (F) in
+/-- The standard riemannian metric on a vector space with an inner product, given by this inner
+product on each tangent space. -/
 noncomputable def riemannianMetricVectorSpace :
     ContMDiffRiemannianMetric 𝓘(ℝ, F) ω F (fun (x : F) ↦ TangentSpace 𝓘(ℝ, F) x) where
   inner x := (innerSL ℝ (E := F) : F →L[ℝ] F →L[ℝ] ℝ)
@@ -259,8 +268,7 @@ lemma enorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace 𝓘(ℝ, F) x} :
 
 open MeasureTheory Measure
 
-/- Remove completeness assumption... -/
-instance [CompleteSpace F] : IsRiemannianManifold 𝓘(ℝ, F) F := by
+instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
   refine ⟨fun x y ↦ le_antisymm ?_ ?_⟩
   · simp only [riemannianEDist, le_iInf_iff]
     intro γ hγ
@@ -289,23 +297,15 @@ instance [CompleteSpace F] : IsRiemannianManifold 𝓘(ℝ, F) F := by
       apply MeasurableEmbedding.subtype_coe measurableSet_Icc
     rw [this]
     simp only [mfderivWithin_eq_fderivWithin, enorm_tangentSpace_vectorSpace]
-    have W := enorm_integral_le_lintegral_enorm (f := fun x ↦ (fderivWithin ℝ e (Icc 0 1) x) 1)
-      (μ := volume.restrict (Icc 0 1))
-    refine le_trans ?_ W
-    simp only [fderivWithin_derivWithin]
-    rw [integral_Icc_eq_integral_Ioc, ← intervalIntegral.integral_of_le zero_le_one]
+    rw [edist_comm, edist_eq_enorm_sub, show x = e 0 by simp [e], show y = e 1 by simp [e]]
     have D' : ContDiffOn ℝ 1 e (Icc 0 1) := contMDiffOn_iff_contDiffOn.mp D
-    have : ∫ (x : ℝ) in (0)..1, derivWithin e (Icc 0 1) x = e 1 - e 0 := by
-      apply intervalIntegral.integral_eq_sub_of_hasDerivAt_of_le zero_le_one
-      · apply D.continuousOn
-      · intro x hx
-        have N : Icc 0 1 ∈ 𝓝 x :=
-          Filter.mem_of_superset (isOpen_Ioo.mem_nhds hx) Ioo_subset_Icc_self
-        have W := ((D'.differentiableOn le_rfl x ⟨hx.1.le, hx.2.le⟩).differentiableAt N).hasDerivAt
-        convert W using 1
-
-
---    apply le_trans ?_ (enorm_integral_le_lintegr²al_enorm _)
+    exact (enorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc D' zero_le_one).trans_eq rfl
+  · let γ := Path.segment x y
+    have : ContMDiff (𝓡∂ 1) 𝓘(ℝ, F) 1 γ := by
+      rw [← contMDiffOn_comp_projIcc_iff]
+      simp only [Path.segment, Path.coe_mk', ContinuousMap.coe_mk, contMDiffOn_iff_contDiffOn, γ]
+      have : ContDiff ℝ 1 (AffineMap.lineMap (k := ℝ) x y) := by
+        change ContDiff ℝ 1 (ContinuousAffineMap.lineMap (k := ℝ) x y)
 
 
 
@@ -316,7 +316,3 @@ instance [CompleteSpace F] : IsRiemannianManifold 𝓘(ℝ, F) F := by
 
 
 end
-
-#exit
-
-MeasureTheory.MeasurePreserving.lintegral_comp_emb
