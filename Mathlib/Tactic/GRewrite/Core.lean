@@ -8,9 +8,10 @@ import Lean.LabelAttribute
 import Mathlib.Tactic.GCongr.Core
 
 /-!
-# GRW Tactic
 
-This module defines the core of the `grw` tactic.
+# The generalized rewriting tactic
+
+This module defines the core of the `grw`/`grewrite` tactic.
 
 -/
 

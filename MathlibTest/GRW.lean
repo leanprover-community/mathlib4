@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth
 -/
 import Mathlib.Data.Int.ModEq
-import Mathlib.Tactic.GRW
+import Mathlib.Tactic.GRewrite
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.NormNum
 import Mathlib.Algebra.Order.Ring.Abs
