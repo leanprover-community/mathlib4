@@ -164,7 +164,7 @@ def check_gh_token_scopes() -> bool:
             return True
 
         # Parse the output to check for required scopes
-        auth_output = result.stdout  # gh auth status outputs to stderr
+        auth_output = result.stdout
         if 'repo' not in auth_output or 'workflow' not in auth_output:
             print_error("GitHub CLI token lacks required scopes.")
             print("Required scopes: repo, workflow")
