@@ -383,7 +383,7 @@ def prodComm [Module R₁ M₂] : (M₁ × M₂) ≃L[R₁] M₂ × M₁ :=
 
 @[simp] lemma prodComm_symm [Module R₁ M₂] : (prodComm R₁ M₁ M₂).symm = prodComm R₁ M₂ M₁ := rfl
 
-section
+section prodUnique
 
 variable (R M N : Type*) [Semiring R]
   [TopologicalSpace M] [AddCommMonoid M] [TopologicalSpace N] [AddCommMonoid N]
@@ -433,7 +433,7 @@ lemma uniqueProd_symm_apply (x : M) : (uniqueProd R M N).symm x = (default, x) :
 
 lemma coe_uniqueProd : (uniqueProd R M N : (N × M) ≃ M) = Equiv.uniqueProd M N := rfl
 
-end
+end prodUnique
 
 variable {R₁ M₁ M₂}
 
