@@ -3,10 +3,11 @@ Copyright (c) 2022 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade, Yaël Dillies
 -/
+import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Analysis.Convex.Cone.Closure
-import Mathlib.Analysis.InnerProductSpace.Adjoint
 import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 import Mathlib.Topology.Algebra.Order.Module
+import Mathlib.Topology.Order.OrderClosed
 
 /-!
 # Proper cones
