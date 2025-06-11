@@ -1394,15 +1394,27 @@ lemma rho_g_case_infinite (hr: Infinite (↥(rho_g (G := G)))): Nonempty (Theore
   -- TODO - figure out how to make instance inference work here
   obtain ⟨i, j, i_fin, j_fin, p, p_prime, e, exists_iso⟩ := @CommGroup.equiv_free_prod_directSum_zmod H (by apply CommGroup.ofIsMulCommutative) (h_fg)
   have iso := Classical.choice exists_iso
-  have hom := iso.surjective
 
   have j_nonempty: Nonempty j := by
     sorry
 
   -- TODO - can we get the comp '∘' syntax to give us a monoid hom, instead of a plain function?
-  have z_surjection := (Pi.evalMonoidHom _ (Classical.choice (by
+  let h_to_z := (Pi.evalMonoidHom _ (Classical.choice (by
     exact j_nonempty
   ))).comp ((MonoidHom.fst _ _).comp iso.toMonoidHom)
+
+  have h_to_z_surjective: Function.Surjective h_to_z := by
+    unfold h_to_z
+    simp
+    apply Function.Surjective.comp
+    .
+      intro x
+      simp
+      use fun _ => x
+    . apply Function.Surjective.comp
+      . exact Prod.fst_surjective
+      . exact iso.surjective
+
 
   sorry
 
