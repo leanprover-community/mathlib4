@@ -462,26 +462,84 @@ def create_new_pr_from_fork(branch: str, username: str, old_pr: Optional[Dict[st
         if old_pr:
             title = old_pr['title']
             print(f"Using title from old PR: {title}")
+
+            # Fetch full PR details including body and labels
+            print("Fetching complete PR details...")
+            try:
+                result = run_command(['gh', 'pr', 'view', str(old_pr['number']),
+                                    '--repo', 'leanprover-community/mathlib4',
+                                    '--json', 'body,labels'])
+                pr_details = json.loads(result.stdout)
+
+                original_body = pr_details.get('body', '') or ''
+                labels = pr_details.get('labels', [])
+
+                # Prepare the new body with migration notice
+                if original_body.strip():
+                    body = f"{original_body}\n\n---\n\n*This PR continues the work from #{old_pr['number']}.*\n\n*Original PR: {old_pr['url']}*"
+                else:
+                    body = f"*This PR continues the work from #{old_pr['number']}.*\n\n*Original PR: {old_pr['url']}*"
+
+                print_success(f"Found {len(labels)} labels to copy: {', '.join([label['name'] for label in labels])}" if labels else "No labels found on original PR")
+
+            except Exception as e:
+                print_warning(f"Could not fetch full PR details: {e}")
+                # Fallback to simple body
+                body = f"This PR continues the work from #{old_pr['number']}.\n\nOriginal PR: {old_pr['url']}"
+                labels = []
         else:
             title = get_user_input("Enter PR title")
+            body = ''
+            labels = []
 
         # Create PR from fork
         cmd = ['gh', 'pr', 'create',
                '--repo', 'leanprover-community/mathlib4',
                '--head', f'{username}:{branch}',
-               '--title', title]
-
-        if old_pr:
-            body = f"This PR continues the work from #{old_pr['number']}.\n\nOriginal PR: {old_pr['url']}"
-            cmd.extend(['--body', body])  # Add body as separate arguments
-        else:
-            cmd.extend(['--body', ''])  # Empty body for new PRs
+               '--title', title,
+               '--body', body]
 
         result = run_command(cmd)
 
-        # Extract PR URL from output
+        # Extract PR URL and number from output
         pr_url = result.stdout.strip()
         print_success(f"New PR created: {pr_url}")
+
+        # Extract PR number from URL for label operations
+        pr_number_match = re.search(r'/pull/(\d+)', pr_url)
+        if not pr_number_match:
+            print_warning("Could not extract PR number from URL - skipping label operations")
+            return pr_url
+
+        new_pr_number = pr_number_match.group(1)
+
+        # Copy labels if we have any
+        if labels and old_pr:
+            print("Copying labels to new PR...")
+            label_names = [label['name'] for label in labels]
+
+            try:
+                # Try to add all labels at once
+                for label_name in label_names:
+                    run_command(['gh', 'pr', 'edit', new_pr_number,
+                               '--repo', 'leanprover-community/mathlib4',
+                               '--add-label', label_name])
+                print_success(f"Successfully copied {len(label_names)} labels")
+
+            except Exception as e:
+                print_warning(f"Failed to add labels directly: {e}")
+                print("Falling back to adding labels as comments...")
+
+                # Fallback: add each label as a comment
+                for label_name in label_names:
+                    try:
+                        run_command(['gh', 'pr', 'comment', new_pr_number,
+                                   '--repo', 'leanprover-community/mathlib4',
+                                   '--body', label_name])
+                    except Exception as comment_error:
+                        print_warning(f"Failed to add comment for label '{label_name}': {comment_error}")
+
+                print_success(f"Added {len(label_names)} label comments as fallback")
 
         return pr_url
 
