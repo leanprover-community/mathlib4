@@ -59,7 +59,7 @@ theorem integral_derivWithin_Icc_of_contDiffOn_Icc (h : ContDiffOn ℝ 1 f (Icc 
 then `∫ y in a..b, deriv f y` equals `f b - f a`. -/
 theorem integral_deriv_of_contDiffOn_uIcc (h : ContDiffOn ℝ 1 f (uIcc a b)) :
     ∫ x in a..b, deriv f x = f b - f a := by
-  rcases le_or_lt a b with hab | hab
+  rcases le_or_gt a b with hab | hab
   · simp only [uIcc_of_le hab] at h
     apply integral_deriv_of_contDiffOn_Icc h hab
   · simp only [uIcc_of_ge hab.le] at h
@@ -70,7 +70,7 @@ theorem integral_deriv_of_contDiffOn_uIcc (h : ContDiffOn ℝ 1 f (uIcc a b)) :
 then `∫ y in a..b, derivWithin f (uIcc a b) y` equals `f b - f a`. -/
 theorem integral_derivWithin_uIcc_of_contDiffOn_uIcc (h : ContDiffOn ℝ 1 f (uIcc a b)) :
     ∫ x in a..b, derivWithin f (uIcc a b) x = f b - f a := by
-  rcases le_or_lt a b with hab | hab
+  rcases le_or_gt a b with hab | hab
   · simp only [uIcc_of_le hab] at h ⊢
     apply integral_derivWithin_Icc_of_contDiffOn_Icc h hab
   · simp only [uIcc_of_ge hab.le] at h ⊢
@@ -82,6 +82,9 @@ end intervalIntegral
 theorem enorm_sub_le_lintegral_deriv_of_contDiffOn_Icc (h : ContDiffOn ℝ 1 f (Icc a b))
     (hab : a ≤ b) :
     ‖f b - f a‖ₑ ≤ ∫⁻ x in Icc a b, ‖deriv f x‖ₑ := by
+  /- We want to write `f b - f a = ∫ x in Icc a b, deriv f x` and use the inequality between
+  norm of integral and integral of norm. There is a small difficulty that this formula is not
+  true when `E` is not complete, so we need to go first to the completion, and argue there. -/
   let g := UniformSpace.Completion.toComplₗᵢ (𝕜 := ℝ) (E := E)
   have : ‖(g ∘ f) b - (g ∘ f) a‖ₑ = ‖f b - f a‖ₑ := by
     rw [← edist_eq_enorm_sub, Function.comp_def, g.isometry.edist_eq, edist_eq_enorm_sub]
