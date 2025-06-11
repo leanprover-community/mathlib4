@@ -29,7 +29,14 @@ Given two oplax functors `F` and `G`, we define:
 * `StrongTrans.Modification η θ`: modifications between oplax transformations `η` and `θ` between
   `F` and `G`.
 * `StrongTrans.homCategory F G`: the category structure on the strong transformations
-  between `F` and `G`, where composition is given by vertical composition.
+  between `F` and `G`, where composition is given by vertical composition. Note that this a scoped
+  instance in the `Oplax.OplaxTrans` namespace, so you need to run `open scoped Oplax.OplaxTrans`
+  to access it.
+
+## Note
+
+The category structure in
+
 
 ## TODO
 * Once lax transformations between oplax functors are defined, we should also define
