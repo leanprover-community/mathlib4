@@ -355,32 +355,18 @@ instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
     apply this.trans_eq
     rw [lintegral_mfderiv_unitInterval_eq_mfderiv_comp_projIcc]
     simp only [mfderivWithin_eq_fderivWithin, enorm_tangentSpace_vectorSpace]
-    have : edist x y = ∫⁻ (x_1 : ℝ) in Ioo 0 1, edist x y := by simp
+    have : edist x y = ∫⁻ (x_1 : ℝ) in Ioo 0 1, ‖y - x‖ₑ := by
+      simp [edist_comm x y, edist_eq_enorm_sub]
     rw [this]
     apply lintegral_congr_ae
     filter_upwards [self_mem_ae_restrict measurableSet_Ioo] with z hz
-    rw [edist_comm, edist_eq_enorm_sub]
+    rw [show y - x = fderiv ℝ (ContinuousAffineMap.lineMap (R := ℝ) x y) z 1 by simp]
     congr
     simp only [Function.comp_apply, mfderiv_eq_fderiv]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    apply Filter.EventuallyEq.fderiv_eq
+    filter_upwards [Ioo_mem_nhds hz.1 hz.2] with w hw
+    have : projIcc 0 1 zero_le_one w = w := by rw [projIcc_of_mem _ ⟨hw.1.le, hw.2.le⟩]
+    simp only [Function.comp_apply, Path.segment_apply, this, γ]
+    rfl
 
 end
