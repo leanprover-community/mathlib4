@@ -707,6 +707,8 @@ section Conv
 variable {G : Type*} [Group G] [MeasureSpace G] [MeasurableMul₂ G]
   {μ : Measure G} [SFinite μ] [IsMulLeftInvariant μ]
 
+set_option trace.Meta.Tactic.fun_prop true
+
 @[to_additive]
 theorem mconv_withDensity_eq_mlconvolution₀ {f g : G → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
