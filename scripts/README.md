@@ -14,6 +14,26 @@ to learn about it as well!
   https://leanprover-community.github.io/install/macos.html
   If these web pages are deprecated or removed, we should remove these scripts.
 
+**Repository analysis and reporting**
+- `user_activity_report.py`
+  Generates a comprehensive report of all users with repository access and their last commit activity.
+  Shows username, age of last commit, and access level, sorted by commit recency (most recent first).
+
+  **Features:**
+  - Fetches repository collaborators and organization members via GitHub API
+  - Intelligent caching: user lists (24h TTL) and commit data (6h TTL) for performance
+  - Access level filtering: `--admin` (admin users only), `--write` (write+ access)
+  - Single user analysis: `--user USERNAME` for debugging specific users
+  - Result limiting: `--limit N` for testing with smaller datasets
+  - Inactive user cleanup: `--remove N` generates (but doesn't execute) gh commands
+    to remove write access from non-admin users inactive for more than N days
+  - Fallback to contributors API if collaborators access is restricted (`--contributors-only`)
+
+  **Caching:** Results cached in `scripts/users_cache.json` and `scripts/commits_cache.json`
+  (automatically added to .gitignore). Cache saved after each commit lookup to prevent data loss.
+
+  **Requirements:** `gh` (GitHub CLI) installed and authenticated (`gh auth login`).
+
 **Tools for manual maintenance**
 - `fix_unused.py`
   Bulk processing of unused variable warnings, replacing them with `_`.
