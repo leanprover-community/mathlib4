@@ -266,11 +266,12 @@ section ExtremalInduced
 open Classical in
 /--
 The `exᵢ n H F` is the the maximum number of embeddings of `H` in an `F`-free graph on `n`
-vertices, e.g. if `H = K₂` then this is twice the max number of edges in an `F`-free graph on `n`.
+vertices, e.g. if `H = K₂` this is twice the maximum number of edges in an `F`-free graph on `n`.
 -/
 noncomputable def extremalInduced (n : ℕ) {β γ : Type*} (H : SimpleGraph γ) (F : SimpleGraph β)
   [Fintype γ] : ℕ :=
   sup { G : SimpleGraph (Fin n) | F.Free G } (fun G ↦ ‖H ↪g G‖)
+
 local notation "exᵢ" => extremalInduced
 variable {n : ℕ} {β γ : Type*} [Fintype γ] {G : SimpleGraph α} {F : SimpleGraph β}
 {H : SimpleGraph γ}
@@ -399,7 +400,6 @@ theorem isExtremalH_free_iff :
 lemma card_embeddings_of_isExtremalH_free (h : G.IsExtremalH H F.Free) :
     ‖H ↪g G‖ = exᵢ (card α) H F := (isExtremalH_free_iff.mp h).2
 
-
 lemma antitone_extremalInduced_div_choose (H : SimpleGraph γ) (F : SimpleGraph β)
     [DecidableRel H.Adj] [DecidableRel F.Adj] :
     AntitoneOn (fun n ↦ (exᵢ n H F / n.choose ‖γ‖ : ℚ)) {x | ‖γ‖ ≤ x} := by
@@ -428,7 +428,7 @@ lemma antitone_extremalInduced_div_choose (H : SimpleGraph γ) (F : SimpleGraph 
         · simp [mul_comm]
         intro t ht
         simp only [univ_filter_card_eq, mem_powersetCard, subset_univ, true_and] at ht
-        have : Fintype.card (( t.toSet): Type) = n := by simp [ht]
+        have : Fintype.card (t.toSet : Type) = n := by simp [ht]
         simp_rw [← this]
         apply card_embeddings_le_extremalInduced
         intro hf

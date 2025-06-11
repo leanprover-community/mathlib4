@@ -6,6 +6,23 @@ Authors: John Talbot
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.Flag.Counting
 set_option linter.style.header false
+/-!
+## TODO:
+  1. Prove that:
+
+    ‖{(e₁, e₂) : (F₁ ↪f F) × (F₁ ↪f F) // ¬ e₁.Compat e₂}‖ ≤
+      (‖β‖!)² * #{ (A, B) | A,B ‖β‖-sets in α, with F.θ.image ⊆ A ∩ B ≠ F.θ.image}
+
+    (e₁, e₂) ↦ {(A, B) : A,B ‖β‖-sets in α, with F.θ.image ⊆ A ∩ B ≠ F.θ.image}
+
+      Give C := F.θ.image (so `#C = ‖ι‖` )
+      #{(A, B) | #A = #B = ‖β‖ ∧ A ∩ B = C} =
+                      ((‖α‖ - ‖ι‖).choose (‖β‖ - ‖ι‖)) * ((‖α‖ - ‖β‖).choose (‖β‖ - ‖ι‖))
+
+  2. Prove that averaging over injections from ι can be done over subgraphs of fixed size.
+
+-/
+
 namespace SimpleGraph
 
 variable {α β ι : Type*} {k : ℕ}
@@ -165,30 +182,10 @@ lemma FlagEmbedding.compat_iff_inter_eq {β : Type*} {F₁ F₂ : Flag β ι} {F
     nth_rw 2 [hb]
     simp
 
-/-!
-## TODO:
-  1. Prove that:
-
-    ‖{(e₁, e₂) : (F₁ ↪f F) × (F₁ ↪f F) // ¬ e₁.Compat e₂}‖ ≤
-      (‖β‖!)² * #{ (A, B) | A,B ‖β‖-sets in α, with F.θ.image ⊆ A ∩ B ≠ F.θ.image}
-
-    (e₁, e₂) ↦ {(A, B) : A,B ‖β‖-sets in α, with F.θ.image ⊆ A ∩ B ≠ F.θ.image}
-
-      Give C := F.θ.image (so `#C = ‖ι‖` )
-      #{(A, B) | #A = #B = ‖β‖ ∧ A ∩ B = C} =
-                      ((‖α‖ - ‖ι‖).choose (‖β‖ - ‖ι‖)) * ((‖α‖ - ‖β‖).choose (‖β‖ - ‖ι‖))
-
-
-  2. We can count compatible pairs by averaging over induced subflags ✓
-
--/
-
 variable {k m n : ℕ}
 local notation "‖" x "‖" => Fintype.card x
 
 open Finset
-
-
 
 /-- **The principle of counting induced flags by averaging**
 If `F` is an  `α, ι`-flag and `F₁` is a `β, ι`-flag, then we can count embeddings of `F₁` in `F`
@@ -242,7 +239,7 @@ lemma Flag.sum_card_embeddings_induce_eq (F₁ : Flag β ι) (F : Flag α ι) [F
 The set of all compatible embeddings of a pair of `(β,ι)`-flags in a `(α,ι)`-flag.
 -/
 abbrev compat_pairs (F₁₂ : Flag β ι × Flag β ι) (F : Flag α ι) :=
-  {(e₁, e₂) : F₁₂.1 ↪f F × F₁₂.2 ↪f F | e₁.Compat e₂}
+  {e : F₁₂.1 ↪f F × F₁₂.2 ↪f F // e.1.Compat e.2}
 
 @[inherit_doc] infixl:50 " ↪f₂ " => compat_pairs
 
@@ -264,7 +261,7 @@ of flag embeddings of `(F₁,F₂)` into `F` that map into `t`.
 -/
 def Flag₂.induceEquiv (F₁ F₂ : Flag β ι) (F : Flag α ι) (t : Set α ) (h : F ⊆ₗt) :
     (F₁, F₂) ↪f₂ (F.induce t h) ≃
-      {e : (F₁, F₂) ↪f₂ F | Set.range e.1.1.toFun ⊆ t ∧ Set.range e.1.2.toFun ⊆ t}
+      {e : (F₁, F₂) ↪f₂ F // Set.range e.1.1.toFun ⊆ t ∧ Set.range e.1.2.toFun ⊆ t}
     where
   toFun := fun e ↦ by
     let f₁ : F₁ ↪f F:=⟨Embedding.induce _|>.comp e.1.1.toRelEmbedding,
@@ -332,9 +329,7 @@ lemma Flag.sum_card_embeddings_induce_eq_compat (F₁ F₂ : Flag β ι) (F : Fl
     congr with t
     split_ifs with h1 h2
     · change ∀ i, F.θ i ∈ t at h2
-      simp_rw [h1, h2]
-      simp only [Fintype.card_subtype, implies_true, true_and]
-      convert rfl
+      simp_rw [h1, h2, Fintype.card_subtype, implies_true, true_and]
     · by_contra! he
       obtain ⟨e, he⟩ := card_ne_zero.1 he.symm
       simp only [mem_filter, mem_univ, true_and] at he
@@ -373,8 +368,5 @@ lemma Flag.sum_card_embeddings_induce_eq_compat (F₁ F₂ : Flag β ι) (F : Fl
       · constructor <;> intro h <;> intro _ hx
         · exact Finset.mem_coe.1 <| h <| Set.mem_toFinset.1 hx
         · exact h <| Set.mem_toFinset.2 hx
-
-
-
 
 end SimpleGraph
