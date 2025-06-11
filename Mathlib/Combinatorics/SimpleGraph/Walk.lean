@@ -899,14 +899,13 @@ def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
   | .cons _ q, (n + 1) => q.drop n
 
 @[simp]
-lemma drop_length {u v : V} (p : G.Walk u v) (n : ℕ) : (p.drop n).length = p.length - n := by
+lemma drop_length (p : G.Walk u v) (n : ℕ) : (p.drop n).length = p.length - n := by
   induction p generalizing n with
   | nil => simp [drop]
   | cons => cases n <;> simp_all [drop]
 
 @[simp]
-lemma drop_getVert {u v : V} (p : G.Walk u v) (n m : ℕ) :
-    (p.drop n).getVert m = p.getVert (n + m) := by
+lemma drop_getVert (p : G.Walk u v) (n m : ℕ) : (p.drop n).getVert m = p.getVert (n + m) := by
   induction p generalizing n with
   | nil => simp [drop]
   | cons => cases n <;> simp_all [drop, Nat.add_right_comm]
@@ -929,14 +928,13 @@ def take {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk u (p.getVert n) :=
   | .cons h q, (n + 1) => .cons h (q.take n)
 
 @[simp]
-lemma take_length {u v : V} (p : G.Walk u v) (n : ℕ) : (p.take n).length = n ⊓ p.length := by
+lemma take_length (p : G.Walk u v) (n : ℕ) : (p.take n).length = n ⊓ p.length := by
   induction p generalizing n with
   | nil => simp [take]
   | cons => cases n <;> simp_all [take]
 
 @[simp]
-lemma take_getVert {u v : V} (p : G.Walk u v) (n m : ℕ) :
-    (p.take n).getVert m = p.getVert (n ⊓ m) := by
+lemma take_getVert (p : G.Walk u v) (n m : ℕ) : (p.take n).getVert m = p.getVert (n ⊓ m) := by
   induction p generalizing n m with
   | nil => simp [take]
   | cons => cases n <;> cases m <;> simp_all [take]
