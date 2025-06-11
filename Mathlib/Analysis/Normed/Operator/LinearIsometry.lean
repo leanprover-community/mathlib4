@@ -608,10 +608,6 @@ theorem toContinuousLinearEquiv_inj {f g : E ≃ₛₗᵢ[σ₁₂] E₂} :
 theorem coe_toContinuousLinearEquiv : ⇑e.toContinuousLinearEquiv = e :=
   rfl
 
-@[simp]
-theorem coe_symm_toContinuousLinearEquiv : ⇑e.toContinuousLinearEquiv.symm = e.symm :=
-  rfl
-
 variable (R E)
 
 /-- Identity map as a `LinearIsometryEquiv`. -/
@@ -658,6 +654,14 @@ theorem toLinearEquiv_symm : e.symm.toLinearEquiv = e.toLinearEquiv.symm :=
 
 @[simp]
 theorem coe_symm_toLinearEquiv : ⇑e.toLinearEquiv.symm = e.symm := rfl
+
+@[simp]
+theorem toContinuousLinearEquiv_symm :
+    e.symm.toContinuousLinearEquiv = e.toContinuousLinearEquiv.symm := rfl
+
+@[simp]
+theorem coe_symm_toContinuousLinearEquiv : ⇑e.toContinuousLinearEquiv.symm = e.symm :=
+  rfl
 
 @[simp]
 theorem toIsometryEquiv_symm : e.symm.toIsometryEquiv = e.toIsometryEquiv.symm :=
