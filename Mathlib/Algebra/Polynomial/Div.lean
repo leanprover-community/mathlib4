@@ -617,7 +617,8 @@ theorem eval₂_modByMonic_eq_self_of_root [CommRing S] {f : R →+* S} {p q : R
 
 theorem sub_dvd_eval_sub (a b : R) (p : R[X]) : a - b ∣ p.eval a - p.eval b := by
   suffices X - C b ∣ p - C (p.eval b) by
-    simpa only [coe_evalRingHom, eval_sub, eval_X, eval_C] using (evalRingHom a).map_dvd this
+    simpa only [coe_evalRingHom, eval_sub, eval_X, eval_C]
+      using (_root_.map_dvd (evalRingHom a)) this
   simp [dvd_iff_isRoot]
 
 @[simp]
@@ -775,7 +776,7 @@ lemma degree_eq_one_of_irreducible_of_root (hi : Irreducible p) {x : R} (hx : Is
 lemma leadingCoeff_divByMonic_X_sub_C (p : R[X]) (hp : degree p ≠ 0) (a : R) :
     leadingCoeff (p /ₘ (X - C a)) = leadingCoeff p := by
   nontriviality
-  rcases hp.lt_or_lt with hd | hd
+  rcases hp.lt_or_gt with hd | hd
   · rw [degree_eq_bot.mp <| Nat.WithBot.lt_zero_iff.mp hd, zero_divByMonic]
   refine leadingCoeff_divByMonic_of_monic (monic_X_sub_C a) ?_
   rwa [degree_X_sub_C, Nat.WithBot.one_le_iff_zero_lt]

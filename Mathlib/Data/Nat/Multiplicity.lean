@@ -257,7 +257,7 @@ theorem emultiplicity_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤
   rw [Nat.add_sub_cancel_right]
 
 theorem dvd_choose_pow (hp : Prime p) (hk : k ≠ 0) (hkp : k ≠ p ^ n) : p ∣ (p ^ n).choose k := by
-  obtain hkp | hkp := hkp.symm.lt_or_lt
+  obtain hkp | hkp := hkp.symm.lt_or_gt
   · simp [choose_eq_zero_of_lt hkp]
   refine emultiplicity_ne_zero.1 fun h => hkp.not_ge <| Nat.le_of_dvd hk.bot_lt ?_
   have H := hp.emultiplicity_choose_prime_pow_add_emultiplicity hkp.le hk
