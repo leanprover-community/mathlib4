@@ -16,8 +16,8 @@ import Mathlib.RingTheory.TensorProduct.Basic
 
 * `matrixEquivTensor : Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)`.
 * `Matrix.kroneckerTMulAlgEquiv :
-    Matrix m m A ⊗[R] Matrix n n B ≃ₐ[R] Matrix (m × n) (m × n) (A ⊗[R] B)`,
-  where the forward map is the (tensor-ified) kronecker product.
+    Matrix m m A ⊗[R] Matrix n n B ≃ₐ[S] Matrix (m × n) (m × n) (A ⊗[R] B)`,
+  where the forward map is the (tensor-ified) Kronecker product.
 -/
 
 suppress_compilation

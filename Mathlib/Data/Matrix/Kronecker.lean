@@ -223,7 +223,7 @@ theorem trace_kroneckerMapBilinear [Semiring S] [Semiring R] [Fintype m] [Fintyp
 /-- `determinant` of `Matrix.kroneckerMapBilinear`.
 
 This is primarily used with `R = ℕ` to prove `Matrix.det_kronecker`. -/
-theorem det_kroneckerMapBilinear  [Semiring S] [Semiring R] [Fintype m] [Fintype n] [DecidableEq m]
+theorem det_kroneckerMapBilinear [Semiring S] [Semiring R] [Fintype m] [Fintype n] [DecidableEq m]
     [DecidableEq n] [NonAssocSemiring α] [NonAssocSemiring β] [CommRing γ] [Module R α] [Module S β]
     [Module R γ] [Module S γ] [SMulCommClass S R γ]
     (f : α →ₗ[R] β →ₗ[S] γ) (h_comm : ∀ a b a' b', f (a * b) (a' * b') = f a a' * f b b')
@@ -438,12 +438,12 @@ theorem kroneckerTMul_apply (A : Matrix l m α) (B : Matrix n p β) (i₁ i₂ j
 
 variable (S) in
 /-- `Matrix.kronecker` as a bilinear map. -/
-def kroneckerTMulBilinear [Semiring S] [Module S α]  [SMulCommClass R S α] :
+def kroneckerTMulBilinear [Semiring S] [Module S α] [SMulCommClass R S α] :
     Matrix l m α →ₗ[S] Matrix n p β →ₗ[R] Matrix (l × n) (m × p) (α ⊗[R] β) :=
   kroneckerMapBilinear (AlgebraTensorModule.mk _ _ α β)
 
 @[simp]
-theorem kroneckerTMulBilinear_apply [Semiring S] [Module S α]  [SMulCommClass R S α]
+theorem kroneckerTMulBilinear_apply [Semiring S] [Module S α] [SMulCommClass R S α]
     (A : Matrix l m α) (B : Matrix n p β) :
     kroneckerTMulBilinear R S A B = A ⊗ₖₜ[R] B := rfl
 
