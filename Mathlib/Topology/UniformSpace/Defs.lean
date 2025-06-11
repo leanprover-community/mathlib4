@@ -178,6 +178,14 @@ theorem Monotone.compRel [Preorder β] {f g : β → Set (α × α)} (hf : Monot
 theorem compRel_mono {f g h k : Set (α × α)} (h₁ : f ⊆ h) (h₂ : g ⊆ k) : f ○ g ⊆ h ○ k :=
   fun _ ⟨z, h, h'⟩ => ⟨z, h₁ h, h₂ h'⟩
 
+@[gcongr]
+theorem compRel_left_mono {f g h : Set (α × α)} (h₁ : f ⊆ g) : f ○ h ⊆ g ○ h :=
+  fun _ ⟨z, h, h'⟩ => ⟨z, h₁ h, h'⟩
+
+@[gcongr]
+theorem compRel_right_mono {f g h : Set (α × α)} (h₁ : g ⊆ h) : f ○ g ⊆ f ○ h :=
+  fun _ ⟨z, h, h'⟩ => ⟨z, h, h₁ h'⟩
+
 theorem prodMk_mem_compRel {a b c : α} {s t : Set (α × α)} (h₁ : (a, c) ∈ s) (h₂ : (c, b) ∈ t) :
     (a, b) ∈ s ○ t :=
   ⟨c, h₁, h₂⟩
@@ -541,13 +549,9 @@ theorem comp_comp_symm_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤
   rcases comp_symm_mem_uniformity_sets w_in with ⟨t, t_in, t_symm, t_sub⟩
   use t, t_in, t_symm
   have : t ⊆ t ○ t := subset_comp_self_of_mem_uniformity t_in
-  -- Porting note: Needed the following `have`s to make `mono` work
-  have ht := Subset.refl t
-  have hw := Subset.refl w
   calc
-    t ○ t ○ t ⊆ w ○ t := by mono
-    _ ⊆ w ○ (t ○ t) := by mono
-    _ ⊆ w ○ w := by mono
+    t ○ t ○ t ⊆ w ○ (t ○ t) := by gcongr
+    _ ⊆ w ○ w := by gcongr
     _ ⊆ s := w_sub
 
 /-!
