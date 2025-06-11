@@ -237,7 +237,7 @@ lemma FlagEmbedding.compat_iff_inter_eq {β : Type*} {F₁ F₂ : Flag β ι} {F
                       ((‖α‖ - ‖ι‖).choose (‖β‖ - ‖ι‖)) * ((‖α‖ - ‖β‖).choose (‖β‖ - ‖ι‖))
 
 
-  2. We can count compatible pairs by averaging over induced subgraphs?
+  2. We can count compatible pairs by averaging over induced subflags ✓
 
 -/
 
@@ -394,8 +394,9 @@ noncomputable instance FlagEmbedding.instfintypeOfCompatEmbeddings {α β ι : T
   Fintype.ofInjective _ compat_pairs_inj
 
 /--
-Flag embeddings of `F₁` in `F₂[t]` are equivalent to embeddings of `F₁` in `F₂` that map into `t`.
-(Note: that `F₂[t]` is only defined if all the labels_eq of `F₂` lie in `t`).
+Compatible pairs of flag embeddings of `(F₁, F₂)` into `F[t]` are equivalent to compatible pairs
+of flag embeddings of `(F₁,F₂)` into `F` that map into `t`.
+(Note: that `F[t]` is only defined if all the labels_eq of `F₂` lie in `t`).
 -/
 def Flag₂.induceEquiv (F₁ F₂ : Flag β ι) (F : Flag α ι) (t : Set α ) (h : ∀ i, F.θ i ∈ t) :
     (F₁, F₂) ↪f₂ (F.induce t h) ≃
@@ -445,6 +446,15 @@ def Flag₂.induceEquiv (F₁ F₂ : Flag β ι) (F : Flag α ι) (t : Set α ) 
   right_inv := fun e ↦ by ext <;> dsimp
 
 open Classical in
+/-- **The principle of counting induced pairs of compatible flag embeddings by averaging**
+If `F : Flag α ι` and `F₁, F₂ : Flag β ι` then
+`#((F₁, F₂) ↪f G) * (choose (‖α‖ - (2 * ‖β‖ - ‖ι‖)) (k - (2 * ‖β‖ - ‖ι‖)))` is equal to the sum of
+the number of embeddings
+`(F₁, F₂) ↪f₂ (F.induce t)` over subsets `t` of `α` of size `k`, for any `2 * ‖β‖ - ‖ι‖ ≤ k`.
+(Note: the inequality is required for there to exist any compatible pair of flag embeddings into
+a subset of size `k` since the two embeddings meet in the labels only i.e. in a `‖ι‖`-set and each
+have image of size `‖β‖`).
+-/
 lemma Flag.sum_card_embeddings_induce_eq_compat (F₁ F₂ : Flag β ι) (F : Flag α ι) [Fintype β]
   {k : ℕ} (hk : 2 * ‖β‖ - ‖ι‖ ≤ k) : ∑ t : Finset α with #t = k,
     (if ht : ∀ i, F.θ i ∈ t then  ‖(F₁, F₂) ↪f₂ (F.induce t ht)‖ else 0)
@@ -470,7 +480,7 @@ lemma Flag.sum_card_embeddings_induce_eq_compat (F₁ F₂ : Flag β ι) (F : Fl
       simp only [mem_filter, mem_univ, true_and] at he
       exact he.1
   _ = _ := by
-    rw [sum_comm,  ← card_univ (α := ((F₁,F₂) ↪f₂ F)), card_eq_sum_ones, sum_mul, one_mul]
+    rw [sum_comm, ← card_univ (α := ((F₁,F₂) ↪f₂ F)), card_eq_sum_ones, sum_mul, one_mul]
     congr with e
     have he1 : ∀ (i : ι), F.θ i ∈ Set.range e.1.1.toRelEmbedding :=
       fun i ↦ ⟨F₁.θ i, by simp [e.1.1.labels_eq]⟩
@@ -497,9 +507,9 @@ lemma Flag.sum_card_embeddings_induce_eq_compat (F₁ F₂ : Flag β ι) (F : Fl
         = 2* ‖β‖- ‖ι‖ := by
         simp_rw [Set.toFinset_union, card_union, hs1, hs2, ← Set.toFinset_inter, hint, hl, two_mul]
       convert card_supersets (this ▸ hk) with t <;> try exact this.symm
-      · constructor <;> intro h <;> intro x hx
-        · aesop
-        · apply h (by rwa [Set.mem_toFinset])
+      · constructor <;> intro h <;> intro _ hx
+        · exact Finset.mem_coe.1 <| h <| Set.mem_toFinset.1 hx
+        · exact h <| Set.mem_toFinset.2 hx
 
 /--
 Embeddings of `H` in `G[t]` are equivalent to embeddings of `H` in `G` that map into `t`.
