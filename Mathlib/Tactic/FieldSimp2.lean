@@ -27,6 +27,8 @@ initialize registerTraceClass `Tactic.field_simp
 
 variable {u : Level} {K : Q(Type u)} (iK : Q(Field $K))
 
+/-- Given an expression `e` in a field `K`,
+combine denominators to obtain a decomposition `e = n / d`. -/
 partial def normalize (e : Q($K)) : MetaM <| (n : Q($K)) × (d : Q($K)) × Q($e = $n / $d) := do
   match e with
   | ~q($z1 + $z2) =>
@@ -40,10 +42,12 @@ partial def normalize (e : Q($K)) : MetaM <| (n : Q($K)) × (d : Q($K)) × Q($e 
     let ⟨n2, d2, pf2⟩ ← normalize z2
     return ⟨q($n1 * $n2), q($d1 * $d2), q(sorry)⟩
   | ~q($z1 / $z2) =>
+    dbg_trace "division"
     let ⟨n1, d1, pf1⟩ ← normalize z1
     let ⟨n2, d2, pf2⟩ ← normalize z2
     return ⟨q($n1 * $d2), q($d1 * $n2), q(sorry)⟩
   | _ =>
+    dbg_trace "default case"
     return ⟨e, q(1), q(sorry)⟩
 
 -- Copy-pasted from https://github.com/hrmacbeth/metaprogramming/blob/main/Metaprogramming/Abel/Phase2_ConvProofs.lean
@@ -81,9 +85,10 @@ variable {x y : ℚ} [Field ℚ]
 #conv field_simp2 => (x * y)
 
 -- Bug: there should not be the extra division by one!
+-- the division match arm does not fire
 /-- info: x / y / 1 -/
 #guard_msgs in
-#conv field_simp2 => (x / y)
+#conv field_simp2 => x / y
 
 -- same
 #conv field_simp2 => (x / (x + 1) + y / (y + 1))
