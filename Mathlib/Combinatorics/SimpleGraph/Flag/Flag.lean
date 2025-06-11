@@ -20,24 +20,33 @@ structure Flag (α ι : Type*) where
   θ : ι ↪ α
 
 /--
+We say `F ⊆ₗt` (and write `F ⊆ₗ t`) if all the labelled vertices of the flag `F` lie in the
+set `t`.
+-/
+abbrev Flag.labels_in {α ι : Type*} (F : Flag α ι) (t : Set α) : Prop := ∀ i, F.θ i ∈ t
+
+@[inherit_doc] infixl:50 " ⊆ₗ " => Flag.labels_in
+
+
+/--
 Given a flag `F = (G, θ)` and set `t ⊆ V(G)` containing `im(θ)` `F.induce t`
 is the flag induced by `t` with the same labels_eq.
 -/
-def Flag.induce {α ι : Type*} (F : Flag α ι) (t : Set α) (ht : ∀ i, F.θ i ∈ t) : Flag t ι :=
+def Flag.induce {α ι : Type*} (F : Flag α ι) (t : Set α) (ht : F ⊆ₗt) : Flag t ι :=
   ⟨F.G.induce t, ⟨fun i ↦ ⟨F.θ i, ht i⟩, fun h ↦ by simp_all⟩⟩
 
-def Flag.induce_copy {α ι : Type*} (F : Flag α ι) {s t : Set α} (h : s = t) (hs : ∀ i, F.θ i ∈ s) :
+def Flag.induce_copy {α ι : Type*} (F : Flag α ι) {s t : Set α} (h : s = t) (hs : F ⊆ₗs) :
     Flag t ι := by
   subst_vars; exact F.induce t hs
 
 lemma Flag.induce_copy_eq {α ι : Type*} (F : Flag α ι) {s t : Set α} (h : s = t)
-    (hs : ∀ i, F.θ i ∈ s) (ht : ∀ i, F.θ i ∈ t) : F.induce t ht = F.induce_copy h hs := by
+    (hs : F ⊆ₗs) (ht : F ⊆ₗt) : F.induce t ht = F.induce_copy h hs := by
   subst_vars; rfl
 
-lemma Flag.induce_adj {α ι : Type*} (F : Flag α ι) (t : Set α) (ht : ∀ i, F.θ i ∈ t) :
+lemma Flag.induce_adj {α ι : Type*} (F : Flag α ι) (t : Set α) (ht : F ⊆ₗt) :
     (F.induce t ht).G = (F.G.induce t) := rfl
 
-lemma Flag.induce_labels_eq {α ι : Type*} {F : Flag α ι} (t : Set α) (ht : ∀ i, F.θ i ∈ t) {i : ι} :
+lemma Flag.induce_labels_eq {α ι : Type*} {F : Flag α ι} (t : Set α) (ht : F ⊆ₗt) {i : ι} :
     (F.induce t ht).θ i = F.θ i := rfl
 
 /-- Added to prove `Fintype` instance later -/
@@ -60,12 +69,6 @@ structure FlagIso {α β ι : Type*} (F₁ : Flag α ι) (F₂ : Flag β ι) ext
 @[inherit_doc] infixl:50 " ↪f " => FlagEmbedding
 @[inherit_doc] infixl:50 " ≃f " => FlagIso
 
-
-section test
-variable {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι} (e : F₁ ↪f F₂) {a : α}
-#check e.toFun a
-
-end test
 
 @[simp]
 lemma FlagEmbedding.labels_subset_range {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι}
@@ -196,7 +199,7 @@ using `#(F₁ ↪f F) * (choose (‖α‖ - ‖β‖) (k - ‖β‖))` is equal 
 -/
 lemma Flag.sum_card_embeddings_induce_eq (F₁ : Flag β ι) (F : Flag α ι) [Fintype β] {k : ℕ}
   (hk : ‖β‖ ≤ k) : ∑ t : Finset α with #t = k,
-    (if ht : ∀ i, F.θ i ∈ t then  ‖F₁ ↪f (F.induce t ht)‖ else 0)
+    (if ht : F ⊆ₗt then  ‖F₁ ↪f (F.induce t ht)‖ else 0)
                               = ‖F₁ ↪f F‖ * Nat.choose (‖α‖ - ‖β‖) (k - ‖β‖) := by
   classical
   calc
@@ -259,7 +262,7 @@ Compatible pairs of flag embeddings of `(F₁, F₂)` into `F[t]` are equivalent
 of flag embeddings of `(F₁,F₂)` into `F` that map into `t`.
 (Note: that `F[t]` is only defined if all the labels_eq of `F₂` lie in `t`).
 -/
-def Flag₂.induceEquiv (F₁ F₂ : Flag β ι) (F : Flag α ι) (t : Set α ) (h : ∀ i, F.θ i ∈ t) :
+def Flag₂.induceEquiv (F₁ F₂ : Flag β ι) (F : Flag α ι) (t : Set α ) (h : F ⊆ₗt) :
     (F₁, F₂) ↪f₂ (F.induce t h) ≃
       {e : (F₁, F₂) ↪f₂ F | Set.range e.1.1.toFun ⊆ t ∧ Set.range e.1.2.toFun ⊆ t}
     where
@@ -317,8 +320,8 @@ a subset of size `k` since the two embeddings meet in the labels only i.e. in a 
 have image of size `‖β‖`).
 -/
 lemma Flag.sum_card_embeddings_induce_eq_compat (F₁ F₂ : Flag β ι) (F : Flag α ι) [Fintype β]
-  {k : ℕ} (hk : 2 * ‖β‖ - ‖ι‖ ≤ k) : ∑ t : Finset α with #t = k,
-    (if ht : ∀ i, F.θ i ∈ t then  ‖(F₁, F₂) ↪f₂ (F.induce t ht)‖ else 0)
+  {k : ℕ} (hk : 2 * ‖β‖ - ‖ι‖ ≤ k) :
+  ∑ t : Finset α with #t = k, (if ht : F ⊆ₗt then  ‖(F₁, F₂) ↪f₂ (F.induce t ht)‖ else 0)
               = ‖(F₁, F₂) ↪f₂ F‖ * Nat.choose (‖α‖ - (2 * ‖β‖ - ‖ι‖) ) (k - (2 * ‖β‖ - ‖ι‖)) := by
   calc
   _ = ∑ t : Finset α , ∑ e : ((F₁,F₂) ↪f₂ F),
@@ -329,7 +332,8 @@ lemma Flag.sum_card_embeddings_induce_eq_compat (F₁ F₂ : Flag β ι) (F : Fl
     simp only [Set.coe_setOf, FlagEmbedding.Compat, Set.mem_setOf_eq, sum_boole, Nat.cast_id]
     congr with t
     split_ifs with h1 h2
-    · simp_rw [h1, h2]
+    · change ∀ i, F.θ i ∈ t at h2
+      simp_rw [h1, h2]
       simp only [Fintype.card_subtype, implies_true, true_and]
       convert rfl
     · by_contra! he
