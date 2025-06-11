@@ -163,7 +163,7 @@ def symm (e : P₁ ≃ᵃ[k] P₂) : P₂ ≃ᵃ[k] P₁ where
         LinearEquiv.apply_symm_apply, Equiv.apply_symm_apply]
 
 @[simp]
-theorem symm_toEquiv (e : P₁ ≃ᵃ[k] P₂) : e.symm.toEquiv = e.toEquiv.symm :=
+theorem toEquiv_symm (e : P₁ ≃ᵃ[k] P₂) : e.symm.toEquiv = e.toEquiv.symm :=
   rfl
 
 @[simp]
