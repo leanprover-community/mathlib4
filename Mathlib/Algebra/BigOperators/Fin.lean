@@ -46,7 +46,7 @@ variable [CommMonoid M] {n : ℕ}
 
 @[to_additive]
 theorem prod_ofFn (f : Fin n → M) : (List.ofFn f).prod = ∏ i, f i := by
-  simp [prod_eq_multiset_prod]
+  simp [prod_eq_multiset_prod, -prod_map_val]
 
 @[to_additive]
 theorem prod_univ_def (f : Fin n → M) : ∏ i, f i = ((List.finRange n).map f).prod := by
@@ -83,7 +83,7 @@ theorem prod_univ_castSucc (f : Fin (n + 1) → M) :
 
 @[to_additive (attr := simp)]
 theorem prod_univ_getElem (l : List M) : ∏ i : Fin l.length, l[i.1] = l.prod := by
-  simp [Finset.prod_eq_multiset_prod]
+  simp [Finset.prod_eq_multiset_prod, -prod_map_val]
 
 @[deprecated (since := "2025-04-19")]
 alias sum_univ_get := sum_univ_getElem
@@ -94,7 +94,7 @@ alias prod_univ_get := prod_univ_getElem
 @[to_additive (attr := simp)]
 theorem prod_univ_fun_getElem (l : List α) (f : α → M) :
     ∏ i : Fin l.length, f l[i.1] = (l.map f).prod := by
-  simp [Finset.prod_eq_multiset_prod]
+  simp [Finset.prod_eq_multiset_prod, -prod_map_val]
 
 @[deprecated (since := "2025-04-19")]
 alias sum_univ_get' := sum_univ_fun_getElem
@@ -511,7 +511,7 @@ theorem inv_partialProd_mul_eq_contractNth {G : Type*} [Group G] (g : Fin (n + 1
   · rwa [succAbove_of_castSucc_lt, succAbove_of_le_castSucc, partialProd_succ,
     castSucc_fin_succ, ← mul_assoc,
       partialProd_right_inv, contractNth_apply_of_eq]
-    · simp [le_iff_val_le_val, ← h]
+    · simp [le_iff_val_le_val, - val_fin_le, ← h]
     · rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
       exact le_of_eq h
   · rwa [succAbove_of_le_castSucc, succAbove_of_le_castSucc, partialProd_succ, partialProd_succ,

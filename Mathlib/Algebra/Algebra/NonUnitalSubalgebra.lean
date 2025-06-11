@@ -540,7 +540,7 @@ variable [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
 @[simp]
 lemma span_eq_toSubmodule (s : NonUnitalSubalgebra R A) :
     Submodule.span R (s : Set A) = s.toSubmodule := by
-  simp [SetLike.ext'_iff, Submodule.coe_span_eq_self]
+  simp [SetLike.ext'_iff, -SetLike.coe_set_eq, Submodule.coe_span_eq_self]
 
 variable [NonUnitalNonAssocSemiring B] [Module R B]
 variable [FunLike F A B] [NonUnitalAlgHomClass F R A B]

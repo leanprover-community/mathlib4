@@ -76,11 +76,13 @@ theorem monoidalPreadditive_of_faithful {D} [Category D] [Preadditive D] [Monoid
   { whiskerLeft_zero := by
       intros
       apply F.map_injective
-      simp [Functor.Monoidal.map_whiskerLeft]
+      simp [Functor.Monoidal.map_whiskerLeft, -Functor.LaxMonoidal.μ_natural_right,
+        -Functor.OplaxMonoidal.δ_natural_right_assoc]
     zero_whiskerRight := by
       intros
       apply F.map_injective
-      simp [Functor.Monoidal.map_whiskerRight]
+      simp [Functor.Monoidal.map_whiskerRight, -Functor.LaxMonoidal.μ_natural_left,
+        -Functor.OplaxMonoidal.δ_natural_left_assoc]
     whiskerLeft_add := by
       intros
       apply F.map_injective

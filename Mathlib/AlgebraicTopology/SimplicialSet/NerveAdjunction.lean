@@ -147,8 +147,8 @@ lemma toNerve₂.mk_naturality_σ00 : toNerve₂.mk.naturalityProperty F (σ₂ 
   dsimp at this ⊢
   rw [← this, ← OneTruncation₂.id_edge x]
   fapply ReflPrefunctor.congr_mk₁_map
-  · simp [← FunctorToTypes.map_comp_apply, ← op_comp]
-  · simp [← FunctorToTypes.map_comp_apply, ← op_comp]
+  · simp [← FunctorToTypes.map_comp_apply, ← op_comp, -map_comp]
+  · simp [← FunctorToTypes.map_comp_apply, ← op_comp, -map_comp]
   · aesop
 
 lemma toNerve₂.mk_naturality_δ0i (i : Fin 2) : toNerve₂.mk.naturalityProperty F (δ₂ i) := by
@@ -193,9 +193,9 @@ lemma toNerve₂.mk_naturality_δ1i (i : Fin 3) : toNerve₂.mk.naturalityProper
     rw [← hyp]
     fapply ReflPrefunctor.congr_mk₁_map
     · unfold ev0₂ ι0₂ δ₂
-      simp [← FunctorToTypes.map_comp_apply, ← op_comp]
+      simp [← FunctorToTypes.map_comp_apply, -map_comp]
     · unfold ev2₂ ι2₂ δ₂
-      simp [← FunctorToTypes.map_comp_apply, ← op_comp]
+      simp [← FunctorToTypes.map_comp_apply, -map_comp, ← op_comp]
     · aesop
   · simp only [Fin.reduceFinMk]
     show _ = (nerve C).δ 2 _
@@ -207,7 +207,7 @@ lemma toNerve₂.mk_naturality_δ1i (i : Fin 3) : toNerve₂.mk.naturalityProper
       dsimp at this
       exact congrFun (congrArg X.map (congrArg Quiver.Hom.op this)) x
     · unfold ev1₂ ι1₂ δ₂
-      simp [← FunctorToTypes.map_comp_apply, ← op_comp]
+      simp [← FunctorToTypes.map_comp_apply, ← op_comp, -map_comp]
     · aesop
 
 lemma toNerve₂.mk_naturality_σ1i (i : Fin 2) : toNerve₂.mk.naturalityProperty F (σ₂ i) := by

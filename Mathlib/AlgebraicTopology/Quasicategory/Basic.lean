@@ -42,7 +42,7 @@ lemma Quasicategory.hornFilling {S : SSet} [Quasicategory S] ⦃n : ℕ⦄ ⦃i 
     (h0 : 0 < i) (hn : i < Fin.last n)
     (σ₀ : (Λ[n, i] : SSet) ⟶ S) : ∃ σ : Δ[n] ⟶ S, σ₀ = Λ[n, i].ι ≫ σ := by
   cases n using Nat.casesAuxOn with
-  | zero => simp [Fin.lt_iff_val_lt_val] at hn
+  | zero => simp [Fin.lt_iff_val_lt_val, -Fin.val_fin_lt] at hn
   | succ n =>
   cases n using Nat.casesAuxOn with
   | zero =>
