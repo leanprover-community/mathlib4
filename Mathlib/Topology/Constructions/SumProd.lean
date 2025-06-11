@@ -609,11 +609,14 @@ lemma isEmbedding_graph {f : X → Y} (hf : Continuous f) : IsEmbedding fun x =>
 @[deprecated (since := "2024-10-26")]
 alias embedding_graph := isEmbedding_graph
 
-lemma isEmbedding_prodMk (x : X) : IsEmbedding (Prod.mk x : Y → X × Y) :=
+lemma isEmbedding_prodMkLeft (y : Y) : IsEmbedding (fun x : X ↦ (x, y)) :=
+  .of_comp (.prodMk_left y) continuous_fst .id
+
+lemma isEmbedding_prodMkRight (x : X) : IsEmbedding (Prod.mk x : Y → X × Y) :=
   .of_comp (.prodMk_right x) continuous_snd .id
 
 @[deprecated (since := "2024-10-26")]
-alias embedding_prod_mk := isEmbedding_prodMk
+alias embedding_prod_mk := isEmbedding_prodMkRight
 
 theorem IsOpenQuotientMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenQuotientMap f)
     (hg : IsOpenQuotientMap g) : IsOpenQuotientMap (Prod.map f g) :=
