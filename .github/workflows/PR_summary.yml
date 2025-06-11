@@ -72,6 +72,8 @@ jobs:
     - name: Get changed and removed/renamed files
       run: |
         cd pr-branch
+        # Discard any git changes from the previous steps
+        git reset --hard
         git fetch origin ${{ github.base_ref }}  # fetch the base branch
 
         # Get the list of all changed files.
