@@ -334,6 +334,9 @@ def setup_remotes(username: str, fork_url: str, auto_accept: bool = False) -> No
         run_command(['git', 'remote', 'add', 'upstream', upstream_url])
         print_success("Added upstream remote")
 
+    # Update the remote info after writing to it!
+    remotes = get_current_remotes()
+
     # Handle origin remote (fork)
     origin_remote = None
     for name, url in remotes.items():
