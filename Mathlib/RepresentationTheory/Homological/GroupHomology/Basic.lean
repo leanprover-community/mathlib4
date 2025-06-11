@@ -56,8 +56,10 @@ definition. We avoid using instances `Module (MonoidAlgebra k G) A` so that we d
 possible scalar action diamonds.
 
 Note that the existing definition of `Tor` in `Mathlib.CategoryTheory.Monoidal.Tor` is for monoidal
-categories, and the bifunctor we use here does not define a monoidal structure on `Rep k G` in
-general. It corresponds to tensoring modules over `k[G]`, but currently mathlib's `TensorProduct`
+categories, and the bifunctor we need to derive here maps to `ModuleCat k`. Hence we define
+`Rep.Tor k G n` by left-deriving the second argument of $(A, B) \mapsto (A \otimes_k B)_G$ instead.
+It is naturally isomorphic to the functor sending `A, B` to `A ⊗[k[G]] B`, where we give `A` the
+`k[G]ᵐᵒᵖ`-module structure defined by `g • a := A.ρ g⁻¹ a`, but currently mathlib's `TensorProduct`
 is only defined for commutative rings.
 
 ## TODO
@@ -130,10 +132,9 @@ theorem d_eq [DecidableEq G] :
       (coinvariantsTensorBarResolution A).d (n + 1) n ≫
       (coinvariantsTensorFreeLEquiv A (Fin n → G)).toModuleIso.hom := by
   ext : 3
-  simp [d_single (k := k) (G := G), finsuppToCoinvariantsTensorFree_single (A := A),
-    coinvariantsTensorFreeToFinsupp_mk_tmul_single (A := A) (α := Fin n → G),
-    ModuleCat.MonoidalCategory.tensorObj, ModuleCat.MonoidalCategory.whiskerLeft, tensorObj_def,
-    whiskerLeft_def, TensorProduct.tmul_add, TensorProduct.tmul_sum, barComplex.d_single (k := k)]
+  simp [d_single (k := k), ModuleCat.MonoidalCategory.tensorObj,
+    ModuleCat.MonoidalCategory.whiskerLeft, tensorObj_def, whiskerLeft_def, TensorProduct.tmul_add,
+    TensorProduct.tmul_sum, barComplex.d_single (k := k)]
 
 end inhomogeneousChains
 
