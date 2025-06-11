@@ -5,7 +5,7 @@ Authors: Junyan Xu
 -/
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Topology.Covering.Galois
-import Mathlib.Topology.Instances.AddCircle
+import Mathlib.Topology.Instances.AddCircle.Defs
 
 /-!
 # Covering maps involving `AddCircle`
@@ -52,7 +52,7 @@ theorem isCoveringMap_zsmul {n : ℤ} (hn : n ≠ 0) :
   refine @Finite.instDiscreteTopology _ _ _ ?_
   simp_rw [AddMonoidHom.mem_ker, DistribMulAction.toAddMonoidHom_apply]
   rw [← n.sign_mul_natAbs]
-  obtain neg | pos := hn.lt_or_lt
+  obtain neg | pos := hn.lt_or_gt
   on_goal 1 => simp_rw [n.sign_eq_neg_one_of_neg neg, neg_mul, one_mul, neg_smul, neg_eq_zero]
   on_goal 2 => rw [n.sign_eq_one_of_pos pos, one_mul]
   all_goals simpa only [Nat.cast_smul_eq_nsmul] using
