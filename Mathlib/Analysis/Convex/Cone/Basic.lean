@@ -118,7 +118,7 @@ lemma coe_map (f : E →L[R] F) (C : ProperCone R E) :
 
 @[simp]
 lemma mem_map {f : E →L[R] F} {C : ProperCone R E} {y : F} :
-    y ∈ C.map f ↔ y ∈ (PointedCone.map (f : E →ₗ[R] F) ↑K).closure := .rfl
+    y ∈ C.map f ↔ y ∈ (C.toPointedCone.map (f : E →ₗ[R] F)).closure := .rfl
 
 end Module
 
