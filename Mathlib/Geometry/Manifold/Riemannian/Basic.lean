@@ -3,6 +3,7 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Geometry.Manifold.ContMDiff.Defs
 import Mathlib.Geometry.Manifold.Instances.Real
@@ -50,8 +51,10 @@ instance {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) : One (TangentSpace (𝓡�
 
 section ToMove
 
+variable {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ∞}
+
 /-- The inclusion map from of a closed segment to `ℝ` is smooth in the manifold sense. -/
-lemma contMDiff_subtypeVal_Icc {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ∞} :
+lemma contMDiff_subtypeVal_Icc  :
     ContMDiff (𝓡∂ 1) 𝓘(ℝ) n (fun (z : Icc x y) ↦ (z : ℝ)) := by
   intro z
   rw [contMDiffAt_iff]
@@ -96,7 +99,7 @@ lemma contMDiff_subtypeVal_Icc {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ�
     linarith
 
 /-- The projection from `ℝ` to a closed segment is smooth on the segment, in the manifold sense. -/
-lemma contMDiffOn_projIcc {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ∞} :
+lemma contMDiffOn_projIcc :
     ContMDiffOn 𝓘(ℝ) (𝓡∂ 1) n (Set.projIcc x y h.out.le) (Icc x y) := by
   intro z hz
   rw [contMDiffWithinAt_iff]
@@ -136,21 +139,31 @@ lemma contMDiffOn_projIcc {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ∞} :
     rw [max_eq_right, min_eq_right hw.2]
     simp [hw.1, h.out.le]
 
-lemma contMDiffOn_comp_projIcc_iff {x y : ℝ} [h : Fact (x < y)] {n : WithTop ℕ∞} (f : Icc x y → M) :
+lemma contMDiffOn_comp_projIcc_iff (f : Icc x y → M) :
     ContMDiffOn 𝓘(ℝ) I n (f ∘ (Set.projIcc x y h.out.le)) (Icc x y) ↔ ContMDiff (𝓡∂ 1) I n f := by
   refine ⟨fun hf ↦ ?_, fun hf ↦ hf.comp_contMDiffOn contMDiffOn_projIcc⟩
   convert hf.comp_contMDiff (contMDiff_subtypeVal_Icc (x := x) (y := y)) (fun z ↦ z.2)
   ext z
   simp
 
-lemma mfderivWithin_projIcc_one {x y : ℝ} [h : Fact (x < y)] (z : ℝ) (hz : z ∈ Icc x y) :
+lemma contMDiffWithinAt_comp_projIcc_iff (f : Icc x y → M) (w : Icc x y) :
+    ContMDiffWithinAt 𝓘(ℝ) I n (f ∘ (Set.projIcc x y h.out.le)) (Icc x y) w ↔
+      ContMDiffAt (𝓡∂ 1) I n f w := by
+  refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
+  · convert hf.comp_contMDiff (contMDiff_subtypeVal_Icc (x := x) (y := y)) (fun z ↦ z.2)
+    ext z
+    simp
+  · have W := hf.comp_contMDiffWithinAt --contMDiffOn_projIcc
+
+
+lemma mfderivWithin_projIcc_one (z : ℝ) (hz : z ∈ Icc x y) :
     mfderivWithin 𝓘(ℝ) (𝓡∂ 1) (Set.projIcc x y h.out.le) (Icc x y) z 1 = 1 := by
   change _ = one_tangentSpace_Icc (Set.projIcc x y h.out.le z)
   simp [one_tangentSpace_Icc]
   congr
   simp only [projIcc_of_mem h.out.le hz]
 
-lemma mfderiv_subtypeVal_Icc_one {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) :
+lemma mfderiv_subtypeVal_Icc_one (z : Icc x y) :
     mfderiv (𝓡∂ 1) 𝓘(ℝ) (Subtype.val : Icc x y → ℝ) z 1 = 1 := by
   have A : mfderivWithin 𝓘(ℝ) 𝓘(ℝ) (Subtype.val ∘ (projIcc x y h.out.le)) (Icc x y) z 1
       = mfderivWithin 𝓘(ℝ) 𝓘(ℝ) id (Icc x y) z 1 := by
@@ -169,6 +182,19 @@ lemma mfderiv_subtypeVal_Icc_one {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) :
   convert A
   rw [fderivWithin_id (uniqueDiffOn_Icc h.out _ z.2)]
   rfl
+
+lemma mfderivWithin_comp_projIcc_one (f : Icc x y → M) (w : Icc x y) :
+    mfderivWithin 𝓘(ℝ) I (f ∘ (projIcc x y h.out.le)) (Icc 0 1) w 1 = mfderiv (𝓡∂ 1) I f w 1 := by
+  rw [mfderiv_comp_mfderivWithin (I' := 𝓡∂ 1)]; rotate_left
+  · apply hγ.mdifferentiableAt le_rfl
+  · apply (contMDiffOn_projIcc _ x.2).mdifferentiableWithinAt le_rfl
+  · apply (uniqueDiffOn_Icc zero_lt_one _ x.2).uniqueMDiffWithinAt
+  simp only [Function.comp_apply, ContinuousLinearMap.coe_comp']
+  have I : projIcc 0 1 zero_le_one (x : ℝ) = x := by rw [projIcc_of_mem]
+  have J : x = projIcc 0 1 zero_le_one (x : ℝ) := by rw [I]
+  rw [I]
+  congr 1
+  convert mfderivWithin_projIcc_one x x.2
 
 end ToMove
 
@@ -268,6 +294,16 @@ lemma enorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace 𝓘(ℝ, F) x} :
 
 open MeasureTheory Measure
 
+lemma lintegral_mfderiv_unitInterval_eq_comp_projIcc (γ : unitInterval → M)
+    (h : ContMDiff (𝓡∂ 1) I 1 γ)
+    [∀ (y : M), ENorm (TangentSpace I y)]:
+    ∫⁻ x, ‖mfderiv (𝓡∂ 1) I γ x 1‖ₑ =
+      ∫⁻ x in Icc 0 1, ‖mfderivWithin 𝓘(ℝ) I (γ ∘ (projIcc 0 1 zero_le_one)) (Icc 0 1) x 1‖ₑ := by
+
+
+
+#exit
+
 instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
   refine ⟨fun x y ↦ le_antisymm ?_ ?_⟩
   · simp only [riemannianEDist, le_iInf_iff]
@@ -301,11 +337,22 @@ instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
     have D' : ContDiffOn ℝ 1 e (Icc 0 1) := contMDiffOn_iff_contDiffOn.mp D
     exact (enorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc D' zero_le_one).trans_eq rfl
   · let γ := Path.segment x y
-    have : ContMDiff (𝓡∂ 1) 𝓘(ℝ, F) 1 γ := by
+    have hγ : ContMDiff (𝓡∂ 1) 𝓘(ℝ, F) 1 γ := by
       rw [← contMDiffOn_comp_projIcc_iff]
       simp only [Path.segment, Path.coe_mk', ContinuousMap.coe_mk, contMDiffOn_iff_contDiffOn, γ]
       have : ContDiff ℝ 1 (AffineMap.lineMap (k := ℝ) x y) := by
-        change ContDiff ℝ 1 (ContinuousAffineMap.lineMap (k := ℝ) x y)
+        change ContDiff ℝ 1 (ContinuousAffineMap.lineMap (R := ℝ) x y)
+        apply ContinuousAffineMap.contDiff
+      apply this.contDiffOn.congr (fun t ht ↦ ?_)
+      simp [projIcc_of_mem zero_le_one ht]
+    have : riemannianEDist 𝓘(ℝ, F) x y ≤ ∫⁻ x, ‖mfderiv (𝓡∂ 1) 𝓘(ℝ, F) γ x 1‖ₑ :=
+      (iInf_le _ γ).trans (iInf_le _ hγ)
+    apply this.trans_eq
+
+
+
+
+
 
 
 
