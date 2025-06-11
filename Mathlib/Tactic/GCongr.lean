@@ -72,7 +72,7 @@ theorem ssuperset_imp_ssuperset (h₁ : a ⊆ c) (h₂ : d ⊆ b) : a ⊃ b → 
 
 @[gcongr]
 theorem ssuperset_imp_ssuperset_right  (h : b ⊆ a) : b ⊃ c → a ⊃ c :=
-  ssubset_of_subset_of_ssubset' h
+  ssubset_imp_ssubset_right h
 
 @[gcongr]
 theorem ssuperset_imp_ssuperset_left  (h₁ : b ⊆ a) (h₂ : c ⊂ b) : c ⊂ a :=
