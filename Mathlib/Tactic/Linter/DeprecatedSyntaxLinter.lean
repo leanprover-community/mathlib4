@@ -184,7 +184,9 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
               as in\nset_option {opt} {n} in\n-- reason for change\n...\n")
         else
           rargs
-    | _ => rargs
+    | _ =>
+      dbg_trace kind
+      rargs
   | _ => default
 
 /-- The deprecated syntax linter flags usages of deprecated syntax and suggests

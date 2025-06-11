@@ -215,7 +215,10 @@ set_option maxHeartbeats 10 in
 /-- Doc-strings for the following command do not silence the linter. -/
 example : True := trivial
 
-set_option maxHeartbeats 0 -- neede for some reason
+set_option maxHeartbeats 200000 -- neede for some reason
+
+private axiom test_sorry : ∀ {α}, α
+open List Set
 
 #guard_msgs in
 example (x y z k : ℕ)
