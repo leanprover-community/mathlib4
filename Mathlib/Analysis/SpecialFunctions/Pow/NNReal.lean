@@ -513,7 +513,7 @@ theorem rpow_one (x : ℝ≥0∞) : x ^ (1 : ℝ) = x := by
   · exact dif_pos zero_lt_one
   · change ite _ _ _ = _
     simp only [NNReal.rpow_one, some_eq_coe, ite_eq_right_iff, top_ne_coe, and_imp]
-    exact fun _ => zero_le_one.not_lt
+    exact fun _ => zero_le_one.not_gt
 
 @[simp]
 theorem one_rpow (x : ℝ) : (1 : ℝ≥0∞) ^ x = 1 := by
@@ -533,7 +533,7 @@ theorem rpow_eq_zero_iff {x : ℝ≥0∞} {y : ℝ} : x ^ y = 0 ↔ x = 0 ∧ 0 
     · simp [← coe_rpow_of_ne_zero h, h]
 
 lemma rpow_eq_zero_iff_of_pos {x : ℝ≥0∞} {y : ℝ} (hy : 0 < y) : x ^ y = 0 ↔ x = 0 := by
-  simp [hy, hy.not_lt]
+  simp [hy, hy.not_gt]
 
 @[simp]
 theorem rpow_eq_top_iff {x : ℝ≥0∞} {y : ℝ} : x ^ y = ⊤ ↔ x = 0 ∧ y < 0 ∨ x = ⊤ ∧ 0 < y := by
@@ -650,11 +650,11 @@ theorem rpow_two (x : ℝ≥0∞) : x ^ (2 : ℝ) = x ^ 2 := rpow_ofNat x 2
 theorem mul_rpow_eq_ite (x y : ℝ≥0∞) (z : ℝ) :
     (x * y) ^ z = if (x = 0 ∧ y = ⊤ ∨ x = ⊤ ∧ y = 0) ∧ z < 0 then ⊤ else x ^ z * y ^ z := by
   rcases eq_or_ne z 0 with (rfl | hz); · simp
-  replace hz := hz.lt_or_lt
+  replace hz := hz.lt_or_gt
   wlog hxy : x ≤ y
   · convert this y x z hz (le_of_not_ge hxy) using 2 <;> simp only [mul_comm, and_comm, or_comm]
   rcases eq_or_ne x 0 with (rfl | hx0)
-  · induction y <;> rcases hz with hz | hz <;> simp [*, hz.not_lt]
+  · induction y <;> rcases hz with hz | hz <;> simp [*, hz.not_gt]
   rcases eq_or_ne y 0 with (rfl | hy0)
   · exact (hx0 (bot_unique hxy)).elim
   induction x
@@ -685,7 +685,7 @@ theorem mul_rpow_of_ne_zero {x y : ℝ≥0∞} (hx : x ≠ 0) (hy : y ≠ 0) (z 
     (x * y) ^ z = x ^ z * y ^ z := by simp [*, mul_rpow_eq_ite]
 
 theorem mul_rpow_of_nonneg (x y : ℝ≥0∞) {z : ℝ} (hz : 0 ≤ z) : (x * y) ^ z = x ^ z * y ^ z := by
-  simp [hz.not_lt, mul_rpow_eq_ite]
+  simp [hz.not_gt, mul_rpow_eq_ite]
 
 theorem prod_rpow_of_ne_top {ι} {s : Finset ι} {f : ι → ℝ≥0∞} (hf : ∀ i ∈ s, f i ≠ ∞) (r : ℝ) :
     ∏ i ∈ s, f i ^ r = (∏ i ∈ s, f i) ^ r := by
@@ -706,7 +706,7 @@ theorem prod_rpow_of_nonneg {ι} {s : Finset ι} {f : ι → ℝ≥0∞} {r : �
 
 theorem inv_rpow (x : ℝ≥0∞) (y : ℝ) : x⁻¹ ^ y = (x ^ y)⁻¹ := by
   rcases eq_or_ne y 0 with (rfl | hy); · simp only [rpow_zero, inv_one]
-  replace hy := hy.lt_or_lt
+  replace hy := hy.lt_or_gt
   rcases eq_or_ne x 0 with (rfl | h0); · cases hy <;> simp [*]
   rcases eq_or_ne x ⊤ with (rfl | h_top); · cases hy <;> simp [*]
   apply ENNReal.eq_inv_of_mul_eq_one_left
