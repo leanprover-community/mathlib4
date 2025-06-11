@@ -593,7 +593,7 @@ theorem coprime_classification' {x y z : ℤ} (h : PythagoreanTriple x y z)
             Int.gcd m n = 1 ∧ (m % 2 = 0 ∧ n % 2 = 1 ∨ m % 2 = 1 ∧ n % 2 = 0) ∧ 0 ≤ m := by
   obtain ⟨m, n, ht1, ht2, ht3, ht4⟩ :=
     PythagoreanTriple.coprime_classification.mp (And.intro h h_coprime)
-  rcases le_or_lt 0 m with hm | hm
+  rcases le_or_gt 0 m with hm | hm
   · use m, n
     rcases ht1 with h_odd | h_even
     · apply And.intro h_odd.1
@@ -603,7 +603,7 @@ theorem coprime_classification' {x y z : ℤ} (h : PythagoreanTriple x y z)
       · exfalso
         revert h_pos
         rw [h_neg]
-        exact imp_false.mpr (not_lt.mpr (neg_nonpos.mpr (add_nonneg (sq_nonneg m) (sq_nonneg n))))
+        exact imp_false.mpr (not_lt.mpr (neg_nonpos.mpr (by positivity)))
     exfalso
     rcases h_even with ⟨rfl, -⟩
     rw [mul_assoc, Int.mul_emod_right] at h_parity
@@ -628,7 +628,7 @@ theorem coprime_classification' {x y z : ℤ} (h : PythagoreanTriple x y z)
       · exfalso
         revert h_pos
         rw [h_neg]
-        exact imp_false.mpr (not_lt.mpr (neg_nonpos.mpr (add_nonneg (sq_nonneg m) (sq_nonneg n))))
+        exact imp_false.mpr (not_lt.mpr (neg_nonpos.mpr (by positivity)))
     exfalso
     rcases h_even with ⟨rfl, -⟩
     rw [mul_assoc, Int.mul_emod_right] at h_parity

@@ -83,7 +83,7 @@ lemma exists_triangle (A : C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
   have hT' : Triangle.mk (T.mor₁ ≫ e.hom) (e.inv ≫ T.mor₂) T.mor₃ ∈ distTriang C := by
     refine isomorphic_distinguished _ (Triangle.shift_distinguished _ mem (-n₀)) _ ?_
     refine Triangle.isoMk _ _ (Iso.refl _) e.symm (Iso.refl _) ?_ ?_ ?_
-    all_goals dsimp; simp [T]
+    all_goals simp [T]
   exact ⟨_, _, t.le_shift _ _ _ (neg_add_cancel n₀) _ hX,
     t.ge_shift _ _ _ (by omega) _ hY, _, _, _, hT'⟩
 
