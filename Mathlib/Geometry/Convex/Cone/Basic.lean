@@ -345,6 +345,8 @@ lemma to_isOrderedAddMonoid (C : ConvexCone R G) (h₁ : C.Pointed) (h₂ : C.Sa
       rw [add_sub_add_left_eq_sub]
       exact hab }
 
+@[deprecated (since := "2025-06-11")] alias toIsOrderedAddMonoid := to_isOrderedAddMonoid
+
 end AddCommGroup
 
 section Module
@@ -427,6 +429,8 @@ lemma toConvexCone_inf (C₁ C₂ : Submodule R M) :
 
 @[simp]
 lemma pointed_toConvexCone (C : Submodule R M) : C.toConvexCone.Pointed := C.zero_mem
+
+@[deprecated (since := "2025-06-11")] alias toConvexCone_pointed := pointed_toConvexCone
 
 end AddCommMonoid
 
