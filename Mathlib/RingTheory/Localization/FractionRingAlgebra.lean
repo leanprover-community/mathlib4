@@ -20,24 +20,12 @@ noncomputable section
 /-- This causes a diamond for `Algebra (FractionRing R) (FractionRing (FractionRing R))`
 but we will hardly ever see `FractionRing (FractionRing R)` in mathlib. -/
 instance : Algebra (FractionRing R) (FractionRing S) :=
-  -- this cannot be an instance because it wouldn't be able to synthesize S
-  haveI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain
   FractionRing.liftAlgebra _ _
 
 lemma algebraMap_fractionRing_eq_map :
     algebraMap (FractionRing R) (FractionRing S) =
       IsFractionRing.map (FaithfulSMul.algebraMap_injective R S) :=
   rfl
-
-instance : FaithfulSMul (FractionRing R) (FractionRing S) := by
-  nontriviality R
-  haveI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain
-  rw [faithfulSMul_iff_algebraMap_injective, algebraMap_fractionRing_eq_map, IsFractionRing.map]
-  intro r x h
-  induction r, x using Localization.induction_on₂ with | H r x
-  simp only [FractionRing.mk_eq_div, map_div₀, IsLocalization.map_eq] at h ⊢
-  rw [div_eq_div_iff (by simp) (by simp)] at h ⊢
-  simpa [← map_mul, (FaithfulSMul.algebraMap_injective R S).eq_iff, mul_comm] using h
 
 instance : IsScalarTower R₀ (FractionRing R) (FractionRing S) :=
   .of_algebraMap_eq' <| by
