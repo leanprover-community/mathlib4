@@ -18,7 +18,7 @@ open Set Function
 /-- Let `n : ℤ` and `s` a subset of a commutative group `G` that is invariant under preimage for
 the map `x ↦ x^n`. Then `s` is invariant under the pointwise action of the subgroup of elements
 `g : G` such that `g^(n^j) = 1` for some `j : ℕ`. (This subgroup is called the Prüfer subgroup when
- `G` is the `Circle` and `n` is prime.) -/
+`G` is the `Circle` and `n` is prime.) -/
 @[to_additive
       "Let `n : ℤ` and `s` a subset of an additive commutative group `G` that is invariant
       under preimage for the map `x ↦ n • x`. Then `s` is invariant under the pointwise action of

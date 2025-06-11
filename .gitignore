@@ -4,3 +4,7 @@
 .cache
 # `lake` stores its files here:
 .lake
+
+# User activity report script cache files
+scripts/users_cache.json
+scripts/commits_cache.json
