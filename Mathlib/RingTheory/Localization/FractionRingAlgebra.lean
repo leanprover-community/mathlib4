@@ -13,48 +13,61 @@ variable {R₀ R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [FaithfulSMu
 
 open scoped nonZeroDivisors
 
+namespace FractionRing
+
 noncomputable section
 
 /-- This causes a diamond for `Algebra (FractionRing R) (FractionRing (FractionRing R))`
 but we will hardly ever see `FractionRing (FractionRing R)` in mathlib. -/
 instance : Algebra (FractionRing R) (FractionRing S) :=
-  (IsFractionRing.map (FaithfulSMul.algebraMap_injective R S)).toAlgebra
+  -- this cannot be an instance because it wouldn't be able to synthesize S
+  haveI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain
+  FractionRing.liftAlgebra _ _
 
-lemma FractionRing.algebraMap_fractionRing_eq_map :
+lemma algebraMap_fractionRing_eq_map :
     algebraMap (FractionRing R) (FractionRing S) =
       IsFractionRing.map (FaithfulSMul.algebraMap_injective R S) :=
   rfl
 
 instance : FaithfulSMul (FractionRing R) (FractionRing S) := by
   nontriviality R
-  rw [faithfulSMul_iff_algebraMap_injective,
-    FractionRing.algebraMap_fractionRing_eq_map, IsFractionRing.map]
+  haveI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain
+  rw [faithfulSMul_iff_algebraMap_injective, algebraMap_fractionRing_eq_map, IsFractionRing.map]
   intro r x h
   induction r, x using Localization.induction_on₂ with | H r x
-  simp only [Localization.mk_eq_mk', IsLocalization.map_mk', IsFractionRing.mk'_eq_div] at h ⊢
-  rw [IsLocalization.mk'_eq_iff_eq, (FaithfulSMul.algebraMap_injective ..).eq_iff]
-  rw [div_eq_div_iff (by simp) (by simp)] at h
+  simp only [FractionRing.mk_eq_div, map_div₀, IsLocalization.map_eq] at h ⊢
+  rw [div_eq_div_iff (by simp) (by simp)] at h ⊢
   simpa [← map_mul, (FaithfulSMul.algebraMap_injective R S).eq_iff, mul_comm] using h
 
 instance : IsScalarTower R₀ (FractionRing R) (FractionRing S) :=
   .of_algebraMap_eq' <| by
-    simp [RingHom.algebraMap_toAlgebra, IsFractionRing.map, ← RingHom.comp_assoc,
+    simp [algebraMap_fractionRing_eq_map, IsFractionRing.map, ← RingHom.comp_assoc,
       IsScalarTower.algebraMap_eq R₀ R (FractionRing S),
       IsScalarTower.algebraMap_eq R₀ R (FractionRing R),
       IsScalarTower.algebraMap_eq R S (FractionRing S)]
 
-instance [IsDomain R] [FaithfulSMul R₀ R] [FaithfulSMul R₀ S] :
+instance [FaithfulSMul R₀ R] [FaithfulSMul R₀ S] :
+    haveI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain
     IsScalarTower (FractionRing R₀) (FractionRing R) (FractionRing S) :=
+  haveI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain
   .of_algebraMap_eq' <| by
     apply IsLocalization.ringHom_ext R₀⁰
-    dsimp [RingHom.algebraMap_toAlgebra, IsFractionRing.map]
+    dsimp [algebraMap_fractionRing_eq_map, IsFractionRing.map]
     rw [RingHom.comp_assoc, IsLocalization.map_comp, IsLocalization.map_comp,
       ← RingHom.comp_assoc, IsLocalization.map_comp, RingHom.comp_assoc,
       IsScalarTower.algebraMap_eq R₀ R S]
 
-instance [IsDomain R] [Algebra.IsIntegral R S] :
+instance [Algebra.IsIntegral R S] :
     Algebra.IsIntegral (FractionRing R) (FractionRing S) :=
+  haveI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain
   Algebra.IsIntegral.of_isLocalization R S _ _ R⁰
 
-instance [IsDomain R] [Module.Finite R S] : FiniteDimensional (FractionRing R) (FractionRing S) :=
+instance [Module.Finite R S] :
+    haveI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain
+    FiniteDimensional (FractionRing R) (FractionRing S) :=
+  haveI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain
   Module.Finite_of_isLocalization R S _ _ R⁰
+
+end
+
+end FractionRing
