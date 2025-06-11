@@ -103,66 +103,52 @@ variable (R K F A n: Type*) [CommSemiring R] [Semiring K] [CommSemiring F] [Alge
 
 open Matrix
 
-def toTensorMartrix_toFun_bilinear:
-    K →ₗ[F] Matrix n n A →ₗ[F] Matrix n n (K ⊗[F] A) where
-  toFun k := {
-    toFun M := k • Algebra.TensorProduct.includeRight.mapMatrix M
-    map_add' _ _ := by simp [← smul_add, map_add]
-    map_smul' r M := by simpa using smul_comm _ _ _
-  }
+def toTensorMatrix_toFun_bilinear:
+    K →ₗ[K] Matrix n n A →ₗ[F] Matrix n n (K ⊗[F] A) where
+  toFun k := (TensorProduct.mk F _ _ k).mapMatrix
   map_add' k1 k2 := by ext; simp [add_smul]
-  map_smul' r k := by ext; simp
+  map_smul' r k := by ext; dsimp; rw [← smul_eq_mul, smul_tmul']
 
 @[simp]
-lemma toTensorMartrix_toFun_bilinear_apply (k : K) (M : Matrix n n A) :
-    toTensorMartrix_toFun_bilinear K F A n k M =
-    k • Algebra.TensorProduct.includeRight.mapMatrix M := rfl
+lemma toTensorMatrix_toFun_bilinear_apply (k : K) (M : Matrix n n A) :
+    toTensorMatrix_toFun_bilinear K F A n k M = M.map (fun x => k ⊗ₜ x) := rfl
 
-abbrev toTensorMatrix_toFun_Flinear: K ⊗[F] Matrix n n A →ₗ[F] Matrix n n (K ⊗[F] A) :=
-    TensorProduct.lift <| toTensorMartrix_toFun_bilinear K F A n
 
-abbrev toTensorMatrix_toFun_Kliniear: K ⊗[F] Matrix n n A →ₗ[K] Matrix n n (K ⊗[F] A) :=
-  {__ := toTensorMatrix_toFun_Flinear K F A n,
-   map_smul' k tensor := by
-    induction tensor with
-    | zero => simp
-    | tmul k0 M => simp [TensorProduct.smul_tmul', MulAction.mul_smul]
-    | add _ _ h1 h2 => simp_all}
+-- abbrev toTensorMatrix_toFun_Klinear: K ⊗[F] Matrix n n A →ₗ[K] Matrix n n (K ⊗[F] A) :=
+--   {__ := toTensorMatrix_toFun_Flinear K F A n,
+--    map_smul' k tensor := by
+--     induction tensor with
+--     | zero => simp
+--     | tmul k0 M => simp [TensorProduct.smul_tmul', MulAction.mul_smul]
+--     | add _ _ h1 h2 => simp_all}
 
+abbrev toTensorMatrixLin : K ⊗[F] Matrix n n A →ₗ[K] Matrix n n (K ⊗[F] A) :=
+  AlgebraTensorModule.lift (toTensorMatrix_toFun_bilinear K F A n)
+
+attribute [local ext] AlgebraTensorModule.ext Matrix.ext_linearMap in
+theorem toTensorMatrixLin_mul (x y : K ⊗[F] Matrix n n A) :
+    toTensorMatrixLin K F A n (x * y) =
+      toTensorMatrixLin K F A n x * toTensorMatrixLin K F A n y := by
+  revert x y
+  erw [LinearMap.map_mul_iff _]
+  ext xk xi xj xA yk yj yk yM : 8
+  dsimp
+  obtain rfl | hj := eq_or_ne xj yj
+  · simp only [single_mul_single_same, ← mk_apply, map_single]
+    simp
+  · simp only [single_mul_single_of_ne _ _ _ _ hj, ← mk_apply, map_single]
+    simp
+
+attribute [local ext] AlgebraTensorModule.ext
 abbrev toTensorMatrix: K ⊗[F] Matrix n n A →ₐ[R] Matrix n n (K ⊗[F] A) :=
-  AlgHom.ofLinearMap (toTensorMatrix_toFun_Kliniear K F A n)
-  (by simp [Algebra.TensorProduct.one_def]) <| fun t1 t2 ↦ by
-  induction t1 with
-  | zero => simp
-  | tmul x M =>
-    induction t2 with
-    | zero => simp
-    | tmul x0 M' =>
-        simp only [tmul_mul_tmul, LinearMap.coe_restrictScalars, LinearMap.coe_mk, lift.tmul',
-          toTensorMartrix_toFun_bilinear_apply, AlgHom.mapMatrix_apply, smul_mul]
-        rw [← AlgHom.coe_toRingHom, Matrix.map_mul, MulAction.mul_smul,
-          ← smul_mul_assoc, ← smul_one_mul x0 (M'.map _), ← mul_assoc]
-        congr 2
-        rw [← map_one (f := Matrix.scalar n),
-          show x0 • (scalar n) (1 : K ⊗[F] A) = scalar n (x0 • 1) from diagonal_smul _ _ |>.symm,
-          ← Matrix.scalar_commute']
-        · rw [← show x0 • (scalar n) (1 : K ⊗[F] A) = scalar n (x0 • 1) from
-            diagonal_smul _ _ |>.symm, map_one, smul_one_mul]
-        · intro i j
-          simp [Algebra.TensorProduct.one_def, TensorProduct.smul_tmul', commute_iff_eq]
-    | add _ _ h1 h2 => simp_all [mul_add]
-  | add _ _ h1 h2 => simp_all [add_mul]
+  AlgHom.ofLinearMap
+    (AlgebraTensorModule.lift (toTensorMatrix_toFun_bilinear K F A n) |>.restrictScalars R)
+    (by simp [Algebra.TensorProduct.one_def])
+    (toTensorMatrixLin_mul _ _ _ _)
 
-open TensorProduct
 
-def invFun_toFun_bilinear (i j : n): K →ₗ[F] A →ₗ[F] K ⊗[F] Matrix n n A where
-  toFun k := {
-    toFun a := k ⊗ₜ single i j a
-    map_add' _ _ := by simp [single_add, tmul_add]
-    map_smul' _ _ := by simp [← smul_single, smul_tmul]
-  }
-  map_add' _ _ := by ext; simp [add_tmul]
-  map_smul' _ _ := by ext; simp [smul_tmul']
+def invFun_toFun_bilinear (i j : n): K →ₗ[F] A →ₗ[F] K ⊗[F] Matrix n n A :=
+  AlgebraTensorModule.mk F F K (Matrix n n A) |>.compl₂ (Matrix.singleLinearMap _ i j)
 
 omit [Fintype n] in
 @[simp]
@@ -172,13 +158,13 @@ lemma invFun_toFun_bilinear_apply (i j : n) (k : K) (a : A) :
 abbrev invFun_toFun (i j : n) : K ⊗[F] A →ₗ[F] K ⊗[F] Matrix n n A :=
   TensorProduct.lift <| invFun_toFun_bilinear K F A n i j
 
-abbrev invFun_Klinear (i j : n): K ⊗[F] A →ₗ[K] K ⊗[F] Matrix n n A :=
-  {__ := invFun_toFun K F A n i j,
-   map_smul' k tensor := by
+abbrev invFun_Klinear (i j : n) : K ⊗[F] A →ₗ[K] K ⊗[F] Matrix n n A where
+  __ := invFun_toFun K F A n i j
+  map_smul' k tensor := by
     induction tensor with
     | zero => simp
     | tmul k0 a => simp [smul_tmul', MulAction.mul_smul]
-    | add _ _ h1 h2 => simp_all}
+    | add _ _ h1 h2 => simp_all
 
 abbrev invFun_linearMap: Matrix n n (K ⊗[F] A) →ₗ[K] K ⊗[F] Matrix n n A where
   toFun M := ∑ p : n × n, invFun_Klinear K F A n p.1 p.2 (M p.1 p.2)
@@ -200,7 +186,7 @@ lemma right_inv (M : Matrix n n (K ⊗[F] A)) :
   refine Finset.sum_congr rfl fun p _ => Finset.sum_congr rfl fun q _ => ?_
   induction M p q with
   | zero => simp
-  | tmul x y => simp [smul_tmul']
+  | tmul x y => simp [smul_tmul']; simp [← mk_apply]
   | add _ _ h1 h2 => rw [map_add, map_add, h1, h2, single_add]
 
 def equivTensor' : K ⊗[F] Matrix n n A ≃ Matrix n n (K ⊗[F] A) where
