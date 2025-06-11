@@ -413,7 +413,6 @@ partial def _root_.Lean.MVarId.gcongr
     (sideGoalDischarger : MVarId → MetaM Unit := gcongrDischarger) :
     MetaM (Bool × List (TSyntax ``binderIdent) × Array MVarId) := g.withContext do
   withTraceNode `Meta.gcongr (fun _ => return m!"gcongr: ⊢ {← g.getType}") do
-  let template ← template.mapM whnfR
   match template with
   | none =>
     -- A. If there is no template, try to resolve the goal by the provided tactic
