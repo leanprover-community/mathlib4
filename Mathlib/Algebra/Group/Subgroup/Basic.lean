@@ -505,7 +505,7 @@ instance normalClosure_normal : (normalClosure s).Normal :=
     refine Subgroup.closure_induction (fun x hx => ?_) ?_ (fun x y _ _ ihx ihy => ?_)
       (fun x _ ihx => ?_) h
     · exact conjugatesOfSet_subset_normalClosure (conj_mem_conjugatesOfSet hx)
-    · simp
+    · simpa using (normalClosure s).one_mem
     · rw [← conj_mul]
       exact mul_mem ihx ihy
     · rw [← conj_inv]
@@ -687,13 +687,27 @@ namespace MonoidHom
 variable {G₁ G₂ G₃ : Type*} [Group G₁] [Group G₂] [Group G₃]
 variable (f : G₁ →* G₂) (f_inv : G₂ → G₁)
 
-@[to_additive]
-theorem ker_le_ker_iff (hf : RightInverse f_inv f) {g : G₁ →* G₃} :
-    f.ker ≤ g.ker ↔ ∀ x, g (f_inv (f x)) = g x := by
-  refine ⟨fun h x => ?_, fun h x hx => ?_⟩
-  · simpa [mul_inv_eq_one, hf (f x)] using (@h (f_inv (f x) * x⁻¹))
-  · refine (h x).symm.trans ?_
-    simpa [mem_ker.mp hx] using h 1
+/-- Auxiliary definition used to define `liftOfRightInverse` -/
+@[to_additive "Auxiliary definition used to define `liftOfRightInverse`"]
+def liftOfRightInverseAux (hf : Function.RightInverse f_inv f) (g : G₁ →* G₃) (hg : f.ker ≤ g.ker) :
+    G₂ →* G₃ where
+  toFun b := g (f_inv b)
+  map_one' := hg (hf 1)
+  map_mul' := by
+    intro x y
+    rw [← g.map_mul, ← mul_inv_eq_one, ← g.map_inv, ← g.map_mul, ← g.mem_ker]
+    apply hg
+    rw [f.mem_ker, f.map_mul, f.map_inv, mul_inv_eq_one, f.map_mul]
+    simp only [hf _]
+
+@[to_additive (attr := simp)]
+theorem liftOfRightInverseAux_comp_apply (hf : Function.RightInverse f_inv f) (g : G₁ →* G₃)
+    (hg : f.ker ≤ g.ker) (x : G₁) : (f.liftOfRightInverseAux f_inv hf g hg) (f x) = g x := by
+  dsimp [liftOfRightInverseAux]
+  rw [← mul_inv_eq_one, ← g.map_inv, ← g.map_mul, ← g.mem_ker]
+  apply hg
+  rw [f.mem_ker, f.map_mul, f.map_inv, mul_inv_eq_one]
+  simp only [hf _]
 
 /-- `liftOfRightInverse f hf g hg` is the unique group homomorphism `φ`
 
@@ -728,17 +742,16 @@ See `MonoidHom.eq_liftOfRightInverse` for the uniqueness lemma.
          G₂----> G₃
             ∃!φ
       ```"]
-def liftOfRightInverseEquivKerLeKer (hf : Function.RightInverse f_inv f) :
+def liftOfRightInverse (hf : Function.RightInverse f_inv f) :
     { g : G₁ →* G₃ // f.ker ≤ g.ker } ≃ (G₂ →* G₃) where
-  toFun g := g.1.liftOfRightInverse f_inv hf ((ker_le_ker_iff f f_inv hf).mp g.2)
+  toFun g := f.liftOfRightInverseAux f_inv hf g.1 g.2
   invFun φ := ⟨φ.comp f, fun x hx ↦ mem_ker.mpr <| by simp [mem_ker.mp hx]⟩
   left_inv g := by
-    unfold liftOfRightInverse
-    exact Subtype.ext liftLeft_comp
+    ext
+    simp only [comp_apply, liftOfRightInverseAux_comp_apply, Subtype.coe_mk]
   right_inv φ := by
-    simp
     ext b
-    simp only [liftOfRightInverse_apply, coe_comp, Function.comp_apply, hf b]
+    simp [liftOfRightInverseAux, hf b]
 
 /-- A non-computable version of `MonoidHom.liftOfRightInverse` for when no computable right
 inverse is available, that uses `Function.surjInv`. -/
@@ -747,13 +760,13 @@ inverse is available, that uses `Function.surjInv`. -/
       computable right inverse is available."]
 noncomputable abbrev liftOfSurjective (hf : Function.Surjective f) :
     { g : G₁ →* G₃ // f.ker ≤ g.ker } ≃ (G₂ →* G₃) :=
-  f.liftOfRightInverseEquivKerLeKer (Function.surjInv hf) (Function.rightInverse_surjInv hf)
+  f.liftOfRightInverse (Function.surjInv hf) (Function.rightInverse_surjInv hf)
 
 @[to_additive (attr := simp)]
 theorem liftOfRightInverse_comp_apply (hf : Function.RightInverse f_inv f)
     (g : { g : G₁ →* G₃ // f.ker ≤ g.ker }) (x : G₁) :
     (f.liftOfRightInverse f_inv hf g) (f x) = g.1 x :=
-  liftLeft_comp_apply x (hg := ((ker_le_ker_iff f f_inv hf).mp g.2)) (hp := hf.surjective)
+  f.liftOfRightInverseAux_comp_apply f_inv hf g.1 g.2 x
 
 @[to_additive (attr := simp)]
 theorem liftOfRightInverse_comp (hf : Function.RightInverse f_inv f)
