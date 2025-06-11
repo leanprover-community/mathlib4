@@ -57,10 +57,11 @@ possible scalar action diamonds.
 
 Note that the existing definition of `Tor` in `Mathlib.CategoryTheory.Monoidal.Tor` is for monoidal
 categories, and the bifunctor we need to derive here maps to `ModuleCat k`. Hence we define
-`Rep.Tor k G n` by left-deriving the second argument of $(A, B) \mapsto (A \otimes_k B)_G$ instead.
-It is naturally isomorphic to the functor sending `A, B` to `A ⊗[k[G]] B`, where we give `A` the
-`k[G]ᵐᵒᵖ`-module structure defined by `g • a := A.ρ g⁻¹ a`, but currently mathlib's `TensorProduct`
-is only defined for commutative rings.
+`Rep.Tor k G n` by instead left-deriving the second argument of `Rep.coinvariantsTensor k G`:
+$(A, B) \mapsto (A \otimes_k B)_G$. The functor `Rep.coinvariantsTensor k G` is naturally
+isomorphic to the functor sending `A, B` to `A ⊗[k[G]] B`, where we give `A` the `k[G]ᵐᵒᵖ`-module
+structure defined by `g • a := A.ρ g⁻¹ a`, but currently mathlib's `TensorProduct` is only defined
+for commutative rings.
 
 ## TODO
 
