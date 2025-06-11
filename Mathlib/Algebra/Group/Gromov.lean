@@ -1396,7 +1396,27 @@ lemma rho_g_case_infinite (hr: Infinite (↥(rho_g (G := G)))): Nonempty (Theore
   have iso := Classical.choice exists_iso
 
   have j_nonempty: Nonempty j := by
-    sorry
+    by_contra!
+    simp at this
+    simp [this] at iso
+    have H_finite : Finite H := by
+      rw [Equiv.finite_iff iso.toEquiv]
+      have finite_i: Finite i := by
+        infer_instance
+      have finite_mul: ∀ f: i, Finite (Multiplicative (ZMod (p f ^ e f))) := by
+        intro f
+        simp [Multiplicative]
+        have pow_ne_zero: NeZero (p f ^ e f) := by
+          exact {
+            out := by
+              simp
+              have first_ne_zero := Nat.Prime.ne_zero (p_prime f)
+              simp [first_ne_zero]
+          }
+        apply Finite.of_fintype
+      apply Finite.instProd
+    have no_finite := card_mul.not_finite
+    contradiction
 
   -- TODO - can we get the comp '∘' syntax to give us a monoid hom, instead of a plain function?
   let h_to_z := (Pi.evalMonoidHom _ (Classical.choice (by
@@ -1415,8 +1435,49 @@ lemma rho_g_case_infinite (hr: Infinite (↥(rho_g (G := G)))): Nonempty (Theore
       . exact Prod.fst_surjective
       . exact iso.surjective
 
+  let rho_hom := ((GRepW (G := G)).comp ((GRepW_base (G := G))))
 
-  sorry
+  -- Interpret H as a subgroup of GL_W
+  let H_as_GL_W := Subgroup.map (Subgroup.subtype (rho_g (S := S))) H
+  -- Take the preimage ρ⁻¹(H) := G'
+  let G' := Subgroup.comap rho_hom H_as_GL_W
+
+
+  have G'_index := Subgroup.index_comap H_as_GL_W rho_hom
+  simp [relindex] at G'_index
+
+  have subgroupof_equiv := Subgroup.subgroupOfEquivOfLe (H := H_as_GL_W) (K := rho_hom.range) (by
+    simp [H_as_GL_W, rho_hom, rho_g]
+    intro x hx
+    simp
+    simp at hx
+    obtain ⟨⟨g, x_eq_rep_g⟩, x_mem_H⟩ := hx
+    use g
+  )
+
+  conv at G'_index =>
+    rhs
+    equals H_as_GL_W.index =>
+      unfold Subgroup.subgroupOf
+      sorry
+
+
+
+  have H_index_ne_zero := H_finite_index.index_ne_zero
+
+  have G'_finite_index: G'.FiniteIndex := by
+    unfold G'
+    exact {
+      index_ne_zero := by
+        rw [G'_index]
+        dsimp [H_as_GL_W]
+        rw [Subgroup.index_map_subtype]
+        simp [H_index_ne_zero]
+
+    }
+
+
+
 
 
 
