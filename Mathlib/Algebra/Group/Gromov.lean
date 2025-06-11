@@ -1339,7 +1339,7 @@ theorem compact_rho_g: IsCompact (rho_g_closure (G := G)) := by
 -- Section 3.3 in Vikmanm, "Construction of a representation"
 -- This is a combination of Cartan's Theorem and Theorem 3.6, giving us the conclusion that
 -- ρ(G) contains an abelian subgroup of finite index
-lemma rho_g_contains_abelian: ∃ M: Subgroup ((rho_g (G := G))), IsMulCommutative M ∧ M.index ≠ 0 := by
+lemma rho_g_contains_abelian: ∃ M: Subgroup ((rho_g (G := G))), IsMulCommutative M ∧ M.FiniteIndex := by
   sorry
 
 -- We need this to work with Finset
@@ -1349,11 +1349,10 @@ noncomputable instance GL_W_DecidableEq: DecidableEq (GL_W (G := G)) := by
 noncomputable instance w_map_DecidableEq: DecidableEq (W (G := G) →ₗ[ℂ] W (G := G)) := by
   apply Classical.typeDecidableEq
 
-lemma rho_g_FG: (rho_g (G := G)).FG := by
+instance rho_g_FG: Group.FG (rho_g (G := G)) := by
   have fg_grep: Group.FG ↥(GRepW_base (G := G)).range := by
     apply Group.fg_range
   unfold rho_g
-  rw [← Group.fg_iff_subgroup_fg]
   apply Group.fg_range
 
 
@@ -1368,8 +1367,26 @@ structure Theorem3_1_Data where
   (hφ: Function.Surjective φ)
 
 -- Case 1 in Section 3.3 of Vikman, where the representation ρ(G) is infinite
-lemma rho_g_case_infinite (hr: (rho_g_group (G := G)).carrier.Infinite): Nonempty (Theorem3_1_Data (G := G)) := by
-  sorry
+lemma rho_g_case_infinite (hr: Infinite (↥(rho_g (G := G)))): Nonempty (Theorem3_1_Data (G := G)) := by
+  obtain ⟨H, H_abelian, H_finite_index⟩ := rho_g_contains_abelian (G := G)
+  -- TODO - generalize this to a lemma: finite-index subgroup of an infinite group is infinite
+  -- and upstream to mathlib
+  have h_fg: Group.FG H := by infer_instance
+  have card_mul := Subgroup.card_mul_index H
+  rw [Nat.card_eq_zero_of_infinite (α := rho_g (G := G))] at card_mul
+  rw [Nat.mul_eq_zero] at card_mul
+  simp [H_finite_index.index_ne_zero] at card_mul
+  rw [Nat.card_eq_zero] at card_mul
+  simp at card_mul
+  obtain h_infinite := card_mul
+
+  have h_commgroup: CommGroup H := by
+    apply CommGroup.ofIsMulCommutative
+
+  obtain ⟨i, x, n, h_n, h_iso⟩ := CommGroup.equiv_prod_multiplicative_zmod_of_finite ↥H
+
+
+
 
 -- TODO - use the fact that G is finitely generated
 instance countableG: Countable (Additive (MulOpposite G)) := by
