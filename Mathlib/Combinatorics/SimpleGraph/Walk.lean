@@ -914,14 +914,8 @@ lemma drop_length {u v : V} (p : G.Walk u v) (n : ℕ) : (p.drop n).length = p.l
 lemma drop_getVert {u v : V} (p : G.Walk u v) (n m : ℕ) :
     (p.drop n).getVert m = p.getVert (n + m) := by
   induction p generalizing n with
-  | nil => unfold drop; simp_all
-  | cons h q ih =>
-      unfold drop
-      by_cases h₂ : n = 0
-      · subst h₂
-        simp
-      · obtain ⟨_, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h₂
-        simp_all [Nat.add_right_comm, getVert_cons_succ]
+  | nil => simp [drop]
+  | cons => cases n <;> simp_all [drop, Nat.add_right_comm]
 
 /-- The second vertex of a walk, or the only vertex in a nil walk. -/
 abbrev snd (p : G.Walk u v) : V := p.getVert 1
