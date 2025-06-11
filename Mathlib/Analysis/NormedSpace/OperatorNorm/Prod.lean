@@ -114,7 +114,7 @@ theorem _root_.Continuous.prod_mapL {f : X → M₁ →L[𝕜] M₂} {g : X → 
 
 theorem _root_.Continuous.prod_map_equivL {f : X → M₁ ≃L[𝕜] M₂} {g : X → M₃ ≃L[𝕜] M₄}
     (hf : Continuous fun x => (f x : M₁ →L[𝕜] M₂)) (hg : Continuous fun x => (g x : M₃ →L[𝕜] M₄)) :
-    Continuous fun x => ((f x).prod (g x) : M₁ × M₃ →L[𝕜] M₂ × M₄) :=
+    Continuous fun x => ((f x).prodCongr (g x) : M₁ × M₃ →L[𝕜] M₂ × M₄) :=
   (prodMapL 𝕜 M₁ M₂ M₃ M₄).continuous.comp (hf.prodMk hg)
 
 theorem _root_.ContinuousOn.prod_mapL {f : X → M₁ →L[𝕜] M₂} {g : X → M₃ →L[𝕜] M₄} {s : Set X}
@@ -125,7 +125,7 @@ theorem _root_.ContinuousOn.prod_mapL {f : X → M₁ →L[𝕜] M₂} {g : X �
 theorem _root_.ContinuousOn.prod_map_equivL {f : X → M₁ ≃L[𝕜] M₂} {g : X → M₃ ≃L[𝕜] M₄} {s : Set X}
     (hf : ContinuousOn (fun x => (f x : M₁ →L[𝕜] M₂)) s)
     (hg : ContinuousOn (fun x => (g x : M₃ →L[𝕜] M₄)) s) :
-    ContinuousOn (fun x => ((f x).prod (g x) : M₁ × M₃ →L[𝕜] M₂ × M₄)) s :=
+    ContinuousOn (fun x => ((f x).prodCongr (g x) : M₁ × M₃ →L[𝕜] M₂ × M₄)) s :=
   hf.prod_mapL _ hg
 
 end Prod
