@@ -199,7 +199,7 @@ theorem Summable_cotTerm {z : ℂ} (hz : z ∈ ℂ_ℤ) : Summable fun n ↦ cot
     simpa using this
   suffices Summable fun i : ℤ ↦ (z - (↑i : ℂ))⁻¹ * (z + (↑i : ℂ))⁻¹ by
     apply this.comp_injective CharZero.cast_injective
-  apply (EisensteinSeries.summable_diff z 1 1).congr
+  apply (EisensteinSeries.summable_linear_sub_mul_linear_add z 1 1).congr
   simp [mul_comm]
 
 theorem cot_series_rep' {z : ℂ} (hz : z ∈ ℂ_ℤ) : π * Complex.cot (π * z) - 1 / z =
