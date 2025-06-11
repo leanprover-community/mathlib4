@@ -68,6 +68,9 @@ lemma cochainsMap_id_f_hom_eq_compLeft {A B : Rep k G} (f : A ⟶ B) (i : ℕ) :
   ext
   rfl
 
+@[deprecated (since := "2025-06-11")]
+alias cochainsMap_id_f_eq_compLeft := cochainsMap_id_f_hom_eq_compLeft
+
 @[reassoc]
 lemma cochainsMap_comp {G H K : Type u} [Group G] [DecidableEq G] [Group H] [DecidableEq H]
     [Group K] [DecidableEq K] {A : Rep k K} {B : Rep k H} {C : Rep k G} (f : H →* K) (g : G →* H)
@@ -240,6 +243,9 @@ variable [DecidableEq G] [DecidableEq H] in
 theorem cocyclesMap_comp_zeroCocyclesIso_hom :
     cocyclesMap f φ 0 ≫ (zeroCocyclesIso B).hom = (zeroCocyclesIso A).hom ≫ H0Map f φ := by
   simp [← cancel_mono (shortComplexH0 B).f]
+
+@[deprecated (since := "2025-06-11")]
+alias cocyclesMap_comp_isoZeroCocycles_hom := cocyclesMap_comp_zeroCocyclesIso_hom
 
 variable [DecidableEq G] [DecidableEq H] in
 @[reassoc (attr := simp), elementwise (attr := simp)]
