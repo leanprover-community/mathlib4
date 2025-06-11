@@ -135,6 +135,21 @@ private lemma exists_unitInterval_gt {t₀ : unitInterval} (ht₀ : t₀ < 1) {�
   rw [Subtype.dist_eq, dist_comm, dist_eq, abs_of_nonneg (by linarith)]
   linarith
 
+private lemma mem_S_of_x_pos {p : ℝ × ℝ} (hx : 0 < p.1) (hT : p ∈ T) : p.2 = sin (p.1)⁻¹ := by
+  obtain ⟨x, -, hx⟩ : p ∈ S := by
+    cases hT with
+    | inl hT => trivial
+    | inr hZ => obtain ⟨y, ⟨-, rfl⟩⟩ := hZ; exact (lt_irrefl _ hx).elim
+  simp [← hx]
+
+/-- For any `0 < a` and any `y ∈ Icc (-1) 1`, we can find `x ∈ Ioc a 0` with `sin x⁻¹ = y`. -/
+lemma exists_mem_Ioc_of_y {y : ℝ} (hy : y ∈ Icc (-1) 1) {a : ℝ} (ha : 0 < a) :
+    ∃ x ∈ Ioc 0 a, sin x⁻¹ = y := by
+  obtain ⟨N, h_dist⟩ := (Metric.tendsto_nhds.mp (x_seq_tendsto y) (a/2) (by positivity)).exists
+  refine ⟨x_seq y N, ⟨x_seq_pos y N, ?_⟩, x_seq_invsin hy _⟩
+  rw [dist_eq, sub_zero, abs_of_pos (x_seq_pos _ N)] at h_dist
+  linarith
+
 /-- The set `T` is not path-connected. -/
 theorem T_is_not_path_conn : ¬ IsPathConnected T := by
   -- **Step 1**:
@@ -163,54 +178,29 @@ theorem T_is_not_path_conn : ¬ IsPathConnected T := by
     obtain ⟨x, hxI, hx_eq⟩ : p t₁ ∈ S := by
       refine (h_pathConn.somePath_mem t₁).elim id fun ⟨y, hy⟩ ↦ ?_
       have : (p t₁).1 = 0 := by simp only [p, ← hy.2]
-      exact ((show t₁ ≤ t₀ from le_sSup this).not_lt ht₁.1).elim
+      exact ((show t₁ ≤ t₀ from le_sSup this).not_gt ht₁.1).elim
     simpa only [a, ← hx_eq] using hxI
   have intervalAZeroSubOfT₀T₁Xcoord : Icc 0 a ⊆ (fun t ↦ (p t).1) '' Icc t₀ t₁ :=
     (isPreconnected_Icc.image _ <| xcoord_pathContinuous.continuousOn).Icc_subset
       (show 0 ∈ (fun t ↦ (p t).1) '' Icc t₀ t₁ from ⟨t₀, ⟨le_rfl, ht₁.1.le⟩, ‹_›⟩)
       (show a ∈ (fun t ↦ (p t).1) '' Icc t₀ t₁ from ⟨t₁, ⟨ht₁.1.le, le_rfl⟩, rfl⟩)
-  -- **Step 3**:
-  -- For every `y ∈ [-1, 1]`, there exists a `t` with `p t = y` and `t ∈ [t₀, t₁]`, implying
-  -- that `dist t₀ t < δ`.
-  -- first find an appropriate `t`-value
-  have exists_in_interval {y : ℝ} (hy : y ∈ Icc (-1) 1) : ∃ t ∈ Icc t₀ t₁, (p t).2 = y := by
-    obtain ⟨i, hi⟩ :  ∃ i, x_seq y i ∈ Icc 0 a := by
-      obtain ⟨N, h_dist⟩ := (Metric.tendsto_nhds.mp (x_seq_tendsto y) (a/2) (by positivity)).exists
-      refine ⟨N, (x_seq_pos y N).le, ?_⟩
-      rw [dist_eq, sub_zero, abs_of_pos (x_seq_pos _ N)] at h_dist
-      linarith
-    obtain ⟨t, ht⟩ := intervalAZeroSubOfT₀T₁Xcoord hi
-    refine ⟨t, ht.1, ?_⟩
-    suffices (p t).2 = sin (x_seq y i)⁻¹ from this ▸ x_seq_invsin hy i
-    obtain ⟨xpos_real, hxInpos_real, h_eq_path⟩ : p t ∈ S := by
-      cases h_pathConn.somePath_mem t with
-      | inl hS => exact hS
-      | inr hZ =>
-        obtain ⟨y, hy⟩ := hZ
-        have h_x_zero : (p t).1 = 0 := by simp [p, ← hy.2]
-        have h_x_pos : 0 < (p t).1 := by simpa [ht.2] using x_seq_pos ..
-        linarith
-    have xIsSeq : xpos_real = x_seq y i := (congrArg Prod.fst h_eq_path).trans ht.2
-    rw [← h_eq_path, xIsSeq]
-  -- then show it lies within `δ` of `t₀`.
-  have exists_close (y : ℝ) (hy : y ∈ Icc (-1) 1) : ∃ t, dist t t₀ < δ ∧ (p t).2 = y := by
-    obtain ⟨t, ht, hty⟩ : ∃ t ∈ Icc t₀ t₁, (p t).2 = y := exists_in_interval hy
-    refine ⟨t, ?_, hty⟩
-    calc
-    dist t t₀ ≤ dist t₁ t₀ := by
-      simp only [Subtype.dist_eq, Real.dist_eq]
-      rw [abs_of_nonneg, abs_of_nonneg]
-      · simpa using ht.2
-      · linarith [Subtype.coe_lt_coe.mpr ht₁.1]
-      · simpa using mod_cast ht.1
+  -- **Step 3**: For every `y ∈ [-1, 1]`, there exists a `t` with `p t = y` and `dist t₀ t < δ`.
+  have exists_close {y : ℝ} (hy : y ∈ Icc (-1) 1) : ∃ t, dist t t₀ < δ ∧ (p t).2 = y := by
+    -- first find a `t ∈ [t₀, t₁]` with this property
+    obtain ⟨x, hx, hx'⟩ := exists_mem_Ioc_of_y hy ha
+    obtain ⟨t, ht⟩ : ∃ t ∈ Icc t₀ t₁, (p t).1 = x := intervalAZeroSubOfT₀T₁Xcoord ⟨hx.1.le, hx.2⟩
+    have hp : (p t).2 = sin (p t).1⁻¹ := mem_S_of_x_pos (ht.2 ▸ hx.1) (h_pathConn.somePath_mem t)
+    refine ⟨t, ?_, by rw [← hx', hp, ht.2]⟩
+    calc -- now show `t ∈ Icc t₀ t₁` implies `dist t t₀ < δ`
+    dist t t₀ ≤ dist t₁ t₀ := dist_right_le_of_mem_uIcc (Icc_subset_uIcc' ht.1)
     _ = dist t₀ t₁ := by rw [dist_comm]
     _ < δ := ht₁.2
   -- **Step 4**:
   -- Now the final contradiction: there are times within `δ` of `t₀` with `p t = 1`, and with
   -- `p t = -1`; but both must have distance `< 1` from `p t₀`, contradicting the triangle
   -- inequality.
-  obtain ⟨x₁, hx₁, h_pathx₁⟩ : ∃ x₁, dist x₁ t₀ < δ ∧ (p x₁).2 = 1 := exists_close _ (by simp)
-  obtain ⟨x₂, hx₂, h_pathx₂⟩ : ∃ x₂, dist x₂ t₀ < δ ∧ (p x₂).2 = -1 := exists_close _ (by simp)
+  obtain ⟨x₁, hx₁, h_pathx₁⟩ : ∃ x₁, dist x₁ t₀ < δ ∧ (p x₁).2 = 1 := exists_close (by simp)
+  obtain ⟨x₂, hx₂, h_pathx₂⟩ : ∃ x₂, dist x₂ t₀ < δ ∧ (p x₂).2 = -1 := exists_close (by simp)
   have : dist (p x₁) (p x₂) < 2 := by
     refine (dist_triangle_right _ _ (p t₀)).trans_lt ?_
     exact (add_lt_add (ht _ hx₁) (ht _ hx₂)).trans_eq (by norm_num)
