@@ -60,9 +60,32 @@ elab "field_simp2" : conv => do
   -- run the core normalization function `normalize` on `x`, relative to the atoms
   let ⟨d, n, pf⟩ ← normalize iK x
   -- convert `x` to the output of the normalization
-  Conv.applySimpResult { expr := (← mkAppM `HDiv.hDiv #[n, d]), proof? := some pf }
+  Conv.applySimpResult { expr := (← mkAppM `HDiv.hDiv #[d, n]), proof? := some pf }
 
 variable {x y : ℚ} [Field ℚ]
+
+/-- info: 1 / 1 -/
+#guard_msgs in
+#conv field_simp2 => (1 : ℚ)
+
+/-- info: x / 1 -/
+#guard_msgs in
+#conv field_simp2 => (x)
+
+/-- info: (x + y) / 1 -/
+#guard_msgs in
+#conv field_simp2 => (x + y)
+
+/-- info: x * y / 1 -/
+#guard_msgs in
+#conv field_simp2 => (x * y)
+
+-- Bug: there should not be the extra division by one!
+/-- info: x / y / 1 -/
+#guard_msgs in
+#conv field_simp2 => (x / y)
+
+-- same
 #conv field_simp2 => (x / (x + 1) + y / (y + 1))
 
 #exit
