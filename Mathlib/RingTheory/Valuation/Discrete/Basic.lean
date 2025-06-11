@@ -40,7 +40,21 @@ variable {A : Type*} [CommRing A] [IsDomain A] (v : Valuation A Γ)
 
 variable {v} in
 lemma ne_zero_iff' (hv : v.supp.primeCompl = nonZeroDivisors A) {a : A} : v a ≠ 0 ↔ a ≠ 0 := by
-  sorry
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · intro ha
+    rw [ha] at h
+    apply h
+    exact Valuation.map_zero ..
+  · intro hva
+    rw [← mem_supp_iff] at hva
+    replace hva : a ∈ (v.supp : Set A) := hva
+    rw [← compl_compl (x := (v.supp : Set A)), mem_compl_iff] at hva
+    replace hva : a ∉ (v.supp).primeCompl := hva
+    rw [hv] at hva
+    simp at hva
+    tauto
+
+    -- simp at hva
 
 
 
@@ -75,92 +89,52 @@ lemma generator_lt_one [IsDiscrete v] : (generator v) < 1 :=
   (exists_generator_lt_one v).choose_spec.2
 
 lemma generator_zpowers_eq_range (K : Type*) [Field K] (w : Valuation K Γ) [IsDiscrete w] :
-    ↑(generator w) ∈ range w := by
-
+    Units.val '' (Subgroup.zpowers (generator w)) = range w \ {0} := by
+  rw [generator_zpowers_eq_nonZeroDivisors_range, nonZeroDivisors_range_eq_range]
 
 lemma generator_mem_range (K : Type*) [Field K] (w : Valuation K Γ) [IsDiscrete w] :
     ↑(generator w) ∈ range w := by
-  sorry
-
-
-lemma generator_ne_zero [IsDiscrete v] : (generator v : Γ) ≠ 0 :=
-  sorry
-
-noncomputable def gen₀ [v.IsDiscrete] : range₀ v := by
-  have h := v.generator_mem_range
-  let a := h.choose
-  have ha : v a = v.generator := h.choose_spec
-  use generator v
-  rw [← ha]
-  apply mem_range₀
-
-noncomputable def gen₀' [v.IsDiscrete] : (range₀ v)ˣ := by
-  apply Units.mk0 (v.gen₀)
-  sorry
-
-lemma gen₀_coe_eq_generator [v.IsDiscrete] :
-    Units.map (range₀ v).subtype (v.gen₀') = v.generator := by
-  simp only [gen₀', gen₀]
-  exact Units.eq_iff.mp rfl
-
-lemma IsDiscrete.cyclic_value_group' [IsDiscrete v] : IsCyclic (range₀ v)ˣ := by
-  rw [isCyclic_iff_exists_zpowers_eq_top]
-  use v.gen₀'
-  let H := Subgroup.map (Units.map (range₀ v).subtype) ⊤
-  have : IsCyclic H := by
-    rw [Subgroup.isCyclic_iff_exists_zpowers_eq_top]
-    use v.generator
-    rw [v.generator_zpowers_eq_range₀]
-  sorry
-
-lemma IsDiscrete.cyclic_value_group [IsDiscrete v] : IsCyclic (range₀ v)ˣ := by
-  rw [isCyclic_iff_exists_zpowers_eq_top]
-  -- obtain ⟨a, ha⟩ := v.generator_mem_range
-  set γ := v.generator with hγ
-  rcases γ  with ⟨x, _, _, _⟩
-  have hx : x ∈ range v := sorry
-  rcases hx with ⟨b, hb⟩
-  set y : range₀ v := by
-    refine ⟨x, ?_⟩
-    rw [← hb]
-    apply mem_range₀ with hy
-  refine ⟨Units.mk0 y ?_, ?_⟩
-  · sorry
-  ext d
+  apply diff_subset
+  rw [← generator_zpowers_eq_range]
+  use generator w
   simp
-  have hd := d.2
-  rw [hy]
+
+lemma generator_ne_zero [IsDiscrete v] : (generator v : Γ) ≠ 0 := by simp
 
 
-  rw [generator_zpowers_eq_range₀ v]
+lemma cyclic_value_group [IsDiscrete v] :
+    IsCyclic <| nonZeroDivisors_range (ne_zero_iff' (supp_v v)) := by
+  rw [isCyclic_iff_exists_zpowers_eq_top]
+  rw [← generator_zpowers_eq_nonZeroDivisors_range]
+  let γ := generator v
+  have hγ : γ ∈ Subgroup.zpowers γ := by
+    simp
+  set η : Subgroup.zpowers γ := ⟨γ, hγ⟩ with hγ_def
+  use η
+  rw [eq_top_iff]
+  rintro ⟨g, hg⟩
+  rw [Subgroup.mem_zpowers_iff] at hg ⊢
+  obtain ⟨k, hk⟩ := hg
+  simp
+  use k
+  ext
+  rw [Units.ext_iff] at hk
+  exact hk
 
 
 
 
 
 
-  -- set x : (range₀ v)ˣ := by
-  --   rw [← generator_zpowers_eq_range₀]
-  --   use v.generator.1
-  --   simp with hx
-  -- -- use x
-  -- -- rw [hx]
-  -- refine ⟨x.1, ?_⟩
-  -- convert generator_zpowers_eq_range₀ v
-  -- simp at hx
 
 
 
-  -- rw [generator_zpowers_eq_range₀]
-
-
-
-lemma IsDiscrete.nontrivial_value_group [IsDiscrete v] : Nontrivial Γˣ :=
+lemma nontrivial_value_group [IsDiscrete v] : Nontrivial Γˣ :=
   ⟨1, generator v, ne_of_gt <| generator_lt_one v⟩
 
 variable {K : Type*} [Field K]
 
-/-- A discrete valuation on a field `K` is surjective. -/
+/- A discrete valuation on a field `K` is surjective. -/
 -- lemma IsDiscrete.surj (w : Valuation K Γ) [IsDiscrete w] : Surjective w := by
 --   intro c
 --   by_cases hc : c = 0
@@ -180,10 +154,10 @@ variable {K : Type*} [Field K]
 --     by simp, ?_, by apply h⟩⟩
 --   simpa using (⊤ : Subgroup Γˣ).genLTOne_lt_one
 
-instance [hv : IsDiscrete v] : IsNontrivial v where
-  exists_val_nontrivial := by
-    obtain ⟨γ, _, _, x, hx_v⟩ := hv
-    exact ⟨x, hx_v ▸ ⟨Units.ne_zero γ, ne_of_lt (by norm_cast)⟩⟩
+-- instance [hv : IsDiscrete v] : IsNontrivial v where
+--   exists_val_nontrivial := by
+--     obtain ⟨γ, _, _, x, hx_v⟩ := hv
+--     exact ⟨x, hx_v ▸ ⟨Units.ne_zero γ, ne_of_lt (by norm_cast)⟩⟩
 
 end IsDiscrete
 end Valuation

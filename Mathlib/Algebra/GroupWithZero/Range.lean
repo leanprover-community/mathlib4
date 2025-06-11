@@ -12,6 +12,7 @@ Authors: Antoine Chambert-Loir, Filippo A. E. Nuccio
 -- import Mathlib.Algebra.Group.Submonoid.Basic
 -- import Mathlib.Algebra.Group.Subgroup.Lattice
 import Mathlib.Algebra.Group.Subgroup.Lattice
+import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Group.Submonoid.Operations
@@ -156,17 +157,92 @@ def nonZeroDivisors_map : (nonZeroDivisors A) →* (nonZeroDivisors B) where
   map_one' := by simp
   map_mul' x y := by simp
 
-#check nonZeroDivisors_map h
+@[simp]
+lemma nonZeroDivisors_map_apply (a : nonZeroDivisors A) : nonZeroDivisors_map h a = f a := rfl
 
 noncomputable
 def nonZeroDivisors_mrange : Submonoid Bˣ := MonoidHom.mrange
   (nonZeroDivisorsEquivUnits.toMonoidHom.comp (nonZeroDivisors_map h))
 
+lemma mem_mrange {b : Bˣ} : b.1 ∈ range f → b ∈ nonZeroDivisors_mrange h := by
+  sorry
+
 def nonZeroDivisors_range : Subgroup Bˣ := Subgroup.closure (nonZeroDivisors_mrange h)
+
+lemma Units.mk0_inv_eq_inv {b : B} (hb : b ≠ 0) :
+    (Units.mk0 b hb)⁻¹ = Units.mk0 (b⁻¹) (inv_ne_zero hb) := Units.eq_iff.mp rfl
+
+lemma nonZeroDivisors_mrange_eq_nonZeroDivisors_range {X W : Type*} [GroupWithZero X]
+    [FunLike W X B] [MonoidWithZeroHomClass W X B] {φ : W} :
+    (nonZeroDivisors_mrange (map_ne_zero φ)) =
+      (nonZeroDivisors_range (map_ne_zero φ)).toSubmonoid := by
+  simp [nonZeroDivisors_range]
+  rw [Subgroup.closure_toSubmonoid]
+  rw [Eq.comm]
+  apply Submonoid.closure_eq_of_le
+  · simp
+    rintro x ⟨y, hy⟩
+    simp at hy
+    set z : nonZeroDivisors X := by
+      use y⁻¹
+      simp with hz
+    use z
+    rw [hz]
+    simp only [MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_coe,
+      Function.comp_apply, nonZeroDivisorsEquivUnits_apply, nonZeroDivisors_map_apply, map_inv₀]
+    rw [← inv_inv (a := Units.mk0 _ _)] at hy
+    simp at hy
+    apply_fun (fun b : Bˣ ↦ b⁻¹)
+    · simp only
+      rw [← hy]
+      rw [Units.mk0_inv_eq_inv]
+      simp
+    exact inv_injective
+  · rw [Submonoid.closure_union]
+    simp
+
+lemma nonZeroDivisors_mrange_eq_nonZeroDivisors_range' {X W : Type*} [GroupWithZero X]
+    [FunLike W X B] [MonoidWithZeroHomClass W X B] {φ : W} :
+    ((nonZeroDivisors_mrange (map_ne_zero φ)) : Set Bˣ) =
+      (nonZeroDivisors_range (map_ne_zero φ)) := by
+  rw [nonZeroDivisors_mrange_eq_nonZeroDivisors_range]
+  rfl
+
 
 lemma nonZeroDivisors_range_eq_range {X W : Type*} [GroupWithZero X] [FunLike W X B]
     [MonoidWithZeroHomClass W X B] {φ : W} :
-    Units.val '' (nonZeroDivisors_mrange (map_ne_zero φ)) = (range φ \ {0}) := sorry
+    Units.val '' (nonZeroDivisors_range (map_ne_zero φ)) = (range φ \ {0}) := by
+  ext x
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [← nonZeroDivisors_mrange_eq_nonZeroDivisors_range'] at h
+    obtain ⟨y, ⟨hy, rfl⟩⟩  := h
+    simp only [Subgroup.coe_toSubmonoid, Subgroup.closure_eq, SetLike.mem_coe] at hy
+    simp
+    simp [nonZeroDivisors_mrange] at hy
+    obtain ⟨a, ha0, ha⟩ := hy
+    use a
+    rw [← ha]
+    rfl
+  · rw [← nonZeroDivisors_mrange_eq_nonZeroDivisors_range']
+    simp only [mem_diff, mem_range, mem_singleton_iff] at h
+    obtain ⟨⟨y, hy⟩, hx₀⟩ := h
+    set u : Bˣ := Units.mk0 x hx₀ with hu
+    simp
+    use u
+    constructor
+    · apply mem_mrange
+      rw [hu]
+      simp
+      use y
+    · rfl
+
+
+
+
+
+
+
+
 -- def r₀ := WithZero (r f)
 #exit
 
