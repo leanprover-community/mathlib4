@@ -791,7 +791,7 @@ theorem toEquiv_symm (e : α ≃o β) : e.symm.toEquiv = e.toEquiv.symm :=
 theorem coe_toEquiv (e : α ≃o β) : ⇑e.toEquiv = e := rfl
 
 @[simp]
-theorem coe_toEquiv_symm (e : α ≃o β) : ⇑e.toEquiv.symm = e.symm := rfl
+theorem coe_symm_toEquiv (e : α ≃o β) : ⇑e.toEquiv.symm = e.symm := rfl
 
 /-- Composition of two order isomorphisms is an order isomorphism. -/
 @[trans]
