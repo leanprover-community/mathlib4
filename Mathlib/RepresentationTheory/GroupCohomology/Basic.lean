@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Homology.Opposite
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+import Mathlib.Algebra.Homology.ConcreteCategory
 import Mathlib.RepresentationTheory.GroupCohomology.Resolution
 import Mathlib.Tactic.CategoryTheory.Slice
 
@@ -137,6 +137,11 @@ noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
     slice_lhs 2 4 => { rw [Category.id_comp, ((barComplex k G).linearYonedaObj k A).d_comp_d] }
     simp
 
+variable {A n} in
+@[ext]
+theorem inhomogeneousCochains.ext {x y : (inhomogeneousCochains A).X n} (h : ∀ g, x g = y g) :
+    x = y := funext h
+
 theorem inhomogeneousCochains.d_def (n : ℕ) :
     (inhomogeneousCochains A).d n (n + 1) = d A n := by
   simp
@@ -159,13 +164,24 @@ def inhomogeneousCochainsIso :
 `n`th differential in the complex of inhomogeneous cochains. -/
 abbrev cocycles (n : ℕ) : ModuleCat k := (inhomogeneousCochains A).cycles n
 
+variable {A} in
+/-- Make an `n`-cocycle out of an element of the kernel of the `n`th differential. -/
+abbrev cocyclesMk {n : ℕ} (f : (Fin n → G) → A) (h : inhomogeneousCochains.d A n f = 0) :
+    cocycles A n :=
+  (inhomogeneousCochains A).cyclesMk f (n + 1) (by simp) (by simp [h])
+
 /-- The natural inclusion of the `n`-cocycles `Zⁿ(G, A)` into the `n`-cochains `Cⁿ(G, A).` -/
-abbrev iCocycles (n : ℕ) : cocycles A n ⟶ ModuleCat.of k ((Fin n → G) → A) :=
+abbrev iCocycles (n : ℕ) : cocycles A n ⟶ (inhomogeneousCochains A).X n :=
   (inhomogeneousCochains A).iCycles n
+
+variable {A} in
+theorem iCocycles_mk {n : ℕ} (f : (Fin n → G) → A) (h : inhomogeneousCochains.d A n f = 0) :
+    iCocycles A n (cocyclesMk f h) = f := by
+  exact (inhomogeneousCochains A).i_cyclesMk (i := n) f (n + 1) (by simp) (by simp [h])
 
 /-- This is the map from `i`-cochains to `j`-cocycles induced by the differential in the complex of
 inhomogeneous cochains. -/
-abbrev toCocycles (i j : ℕ) : ModuleCat.of k ((Fin i → G) → A) ⟶ cocycles A j :=
+abbrev toCocycles (i j : ℕ) : (inhomogeneousCochains A).X i ⟶ cocycles A j :=
   (inhomogeneousCochains A).toCycles i j
 
 end groupCohomology
@@ -179,9 +195,16 @@ def groupCohomology [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ) : ModuleCa
 
 /-- The natural map from `n`-cocycles to `n`th group cohomology for a `k`-linear
 `G`-representation `A`. -/
-abbrev groupCohomologyπ [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ) :
+abbrev groupCohomology.π [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ) :
     groupCohomology.cocycles A n ⟶ groupCohomology A n :=
   (inhomogeneousCochains A).homologyπ n
+
+@[elab_as_elim]
+theorem groupCohomology_induction [Group G] [DecidableEq G] {A : Rep k G} {n : ℕ}
+    {C : groupCohomology A n → Prop} (h : ∀ x : cocycles A n, C (π A n x))
+    (x : groupCohomology A n) : C x := by
+  rcases (ModuleCat.epi_iff_surjective (π A n)).1 inferInstance x with ⟨y, rfl⟩
+  exact h y
 
 /-- The `n`th group cohomology of a `k`-linear `G`-representation `A` is isomorphic to
 `Extⁿ(k, A)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
