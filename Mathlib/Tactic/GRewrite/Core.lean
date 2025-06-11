@@ -13,6 +13,17 @@ import Mathlib.Tactic.GCongr.Core
 
 This module defines the core of the `grw`/`grewrite` tactic.
 
+TODO:
+
+The algorithm used to implement `grw` uses the same method as `rw` to determine where to rewrite.
+This means that we can get ill-typed results. Moreover, it doesn't detect which occurrences
+can be rewritten by `gcongr` and which can't. It also means we cannot rewrite bound variables.
+
+A better algorithm would be similar to `simp only`, where we recursively enter the subexpression
+using `gcongr` lemmas. This is tricky due to the many different `gcongr` for each pattern.
+
+With the current implementation, we can instead use `nth_grw`.
+
 -/
 
 open Lean Meta
@@ -56,7 +67,14 @@ def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
   goal.withContext do
     goal.checkNotAssigned `grewrite
     let hrelType ← instantiateMVars (← inferType hrel)
-    let maxMVars? := if config.implicationHyp then some (hrelType.getForallArity - 1) else none
+    let maxMVars? ←
+      if config.implicationHyp then
+        if let arity + 1 := hrelType.getForallArity then
+          pure (some arity)
+        else
+          throwTacticEx `apply_rw goal m!"invalid implication {hrelType}"
+      else
+        pure none
     let (newMVars, binderInfos, hrelType) ←
       withReducible <| forallMetaTelescopeReducing hrelType maxMVars?
 
@@ -64,9 +82,9 @@ def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
     if (hrelType.isAppOfArity ``Iff 2 || hrelType.isAppOfArity ``Eq 3) && config.useRewrite then
       let ⟨eNew, eqProof, subgoals⟩ ← goal.rewrite e hrel symm config.toConfig
       let proof ← if forwardImp then
-        mkAppOptM ``cast #[e, eNew, eqProof]
+        mkAppOptM ``Eq.mp #[e, eNew, eqProof]
       else
-        mkAppOptM ``cast #[eNew, e, ← mkEqSymm eqProof]
+        mkAppOptM ``Eq.mpr #[eNew, e, eqProof]
       return ⟨eNew, proof, subgoals⟩
 
     let hrelIn := hrel
@@ -77,7 +95,7 @@ def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
     let (lhs, rhs) := if symm then (rhs, lhs) else (lhs, rhs)
     if lhs.getAppFn.isMVar then
       throwTacticEx `grewrite goal
-        m!"pattern is a metavariable{indentExpr lhs}\nfrom equation{indentExpr hrelType}"
+        m!"pattern is a metavariable{indentExpr lhs}\nfrom relation{indentExpr hrelType}"
     -- abstract the occurrences of `lhs` from `e` to get `eAbst`
     let e ← instantiateMVars e
     let eAbst ←

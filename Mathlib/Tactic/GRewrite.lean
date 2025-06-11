@@ -106,40 +106,20 @@ macro (name := rwSeq) "grw " c:optConfig s:rwRuleSeq l:(location)? : tactic =>
   | _ => Macro.throwUnsupported
 
 
-/-- `apply_rw [rules]` is a shorthand for `grw +implicationHyp [rules]`.
-This does rewriting up to unfolding of regular definitions (by comparison to regular `rw`
-which only unfolds `@[reducible]` definitions). -/
-macro "apply_rw" c:optConfig s:rwRuleSeq loc:(location)? : tactic => do
+/-- `apply_rewrite [rules]` is a shorthand for `grewrite +implicationHyp [rules]`. -/
+macro "apply_rewrite" c:optConfig s:rwRuleSeq loc:(location)? : tactic => do
+  `(tactic| grewrite $[$(getConfigItems c)]* +implicationHyp $s:rwRuleSeq $(loc)?)
+
+/-- `apply_rw [rules]` is a shorthand for `grw +implicationHyp [rules]`. -/
+macro (name := applyRwSeq) "apply_rw " c:optConfig s:rwRuleSeq loc:(location)? : tactic => do
   `(tactic| grw $[$(getConfigItems c)]* +implicationHyp $s:rwRuleSeq $(loc)?)
 
-
 /-- `nth_grewrite` is just like `nth_rewrite`, but for `grewrite`. -/
-syntax (name := nthGRewriteSeq) "nth_grewrite" optConfig ppSpace num+ rwRuleSeq (location)? : tactic
-
-@[inherit_doc nthGRewriteSeq, tactic nthGRewriteSeq]
-def evalNthGRewriteSeq : Tactic := fun stx => do
-  match stx with
-  | `(tactic| nth_grewrite $cfg:optConfig $[$n]* $_rules:rwRuleSeq $[$loc]?) =>
-    let cfg ← elabGRewriteConfig cfg
-    let loc := expandOptLocation (mkOptionalNode loc)
-    let occ := Occurrences.pos (n.map TSyntax.getNat).toList
-    let cfg := { cfg with occs := occ }
-    withRWRulesSeq stx[0] stx[3] fun symm term => do
-      withLocation loc
-        (grewriteLocalDecl term symm · cfg)
-        (grewriteTarget term symm cfg)
-        (throwTacticEx `nth_grewrite · "did not find instance of the pattern in the current goal")
-  | _ => throwUnsupportedSyntax
+macro "nth_grewrite" c:optConfig ppSpace nums:(num)+ s:rwRuleSeq loc:(location)? : tactic => do
+  `(tactic| grewrite $[$(getConfigItems c)]* (occs := .pos [$[$nums],*]) $s:rwRuleSeq $(loc)?)
 
 /-- `nth_grw` is just like `nth_rw`, but for `grw`. -/
-macro (name := nthGRwSeq) "nth_grw" c:optConfig ppSpace n:num+ s:rwRuleSeq l:(location)? : tactic =>
-  -- Note: This is a direct copy of `nth_rw` from core.
-  match s with
-  | `(rwRuleSeq| [$rs,*]%$rbrak) =>
-    -- We show the `rfl` state on `]`
-    `(tactic| (nth_grewrite $c:optConfig $[$n]* [$rs,*] $(l)?; with_annotate_state $rbrak
-      (try (with_reducible rfl))))
-  | _ => Macro.throwUnsupported
-
+macro "nth_grw" c:optConfig ppSpace nums:(num)+ s:rwRuleSeq loc:(location)? : tactic => do
+  `(tactic| grw $[$(getConfigItems c)]* (occs := .pos [$[$nums],*]) $s:rwRuleSeq $(loc)?)
 
 end Mathlib.Tactic

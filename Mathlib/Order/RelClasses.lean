@@ -596,14 +596,8 @@ alias HasSubset.Subset.ssubset_of_not_subset := ssubset_of_subset_not_subset
 theorem ssubset_of_subset_of_ssubset [IsTrans α (· ⊆ ·)] (h₁ : a ⊆ b) (h₂ : b ⊂ c) : a ⊂ c :=
   (h₁.trans h₂.subset).ssubset_of_not_subset fun h => h₂.not_subset <| h.trans h₁
 
-theorem ssubset_of_subset_of_ssubset' [IsTrans α (· ⊆ ·)] (h₁ : b ⊆ a) (h₂ : c ⊂ b) : c ⊂ a :=
-  (h₂.subset.trans h₁).ssubset_of_not_subset fun h => h₂.not_subset <| h₁.trans h
-
 theorem ssubset_of_ssubset_of_subset [IsTrans α (· ⊆ ·)] (h₁ : a ⊂ b) (h₂ : b ⊆ c) : a ⊂ c :=
   (h₁.subset.trans h₂).ssubset_of_not_subset fun h => h₁.not_subset <| h₂.trans h
-
-theorem ssubset_of_ssubset_of_subset' [IsTrans α (· ⊆ ·)] (h₁ : b ⊂ a) (h₂ : c ⊆ b) : c ⊂ a :=
-  (h₂.trans h₁.subset).ssubset_of_not_subset fun h => h₁.not_subset <| h.trans h₂
 
 theorem ssubset_of_subset_of_ne [IsAntisymm α (· ⊆ ·)] (h₁ : a ⊆ b) (h₂ : a ≠ b) : a ⊂ b :=
   h₁.ssubset_of_not_subset <| mt h₁.antisymm h₂

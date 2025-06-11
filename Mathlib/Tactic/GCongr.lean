@@ -53,7 +53,7 @@ end order
 
 section subset
 
-attribute [gcongr] ssubset_of_subset_of_ssubset ssubset_of_subset_of_ssubset'
+attribute [gcongr] ssubset_of_subset_of_ssubset
 
 variable [HasSubset α] [HasSSubset α]  [IsNonstrictStrictOrder α (· ⊆ ·) (· ⊂ ·)]
   [IsTrans α (· ⊆ ·)] {a b c d : α}
@@ -61,6 +61,10 @@ variable [HasSubset α] [HasSSubset α]  [IsNonstrictStrictOrder α (· ⊆ ·) 
 @[gcongr]
 theorem ssubset_imp_ssubset (h₁ : c ⊆ a) (h₂ : b ⊆ d) : a ⊂ b → c ⊂ d :=
   fun h => (h₁.trans_ssubset h).trans_subset h₂
+
+@[gcongr]
+theorem ssubset_imp_ssubset_right (h₁ : b ⊆ a) : c ⊂ b → c ⊂ a :=
+  fun h₂ => (h₂.subset.trans h₁).ssubset_of_not_subset fun h => h₂.not_subset <| h₁.trans h
 
 @[gcongr]
 theorem ssuperset_imp_ssuperset (h₁ : a ⊆ c) (h₂ : d ⊆ b) : a ⊃ b → c ⊃ d :=
@@ -75,8 +79,5 @@ theorem ssuperset_imp_ssuperset_left  (h₁ : b ⊆ a) (h₂ : c ⊂ b) : c ⊂ 
   (h₂.subset.trans h₁).ssubset_of_not_subset fun h => h₂.not_subset <| h₁.trans h
 
 end subset
-
-@[gcongr]
-theorem setOf_subset_setOf {p q : α → Prop} (h : ∀ a, p a → q a) : { a | p a } ⊆ { a | q a } := h
 
 end Mathlib.Tactic.GCongr

@@ -265,17 +265,29 @@ h₂ : 0 ≤ c
 example (h₁ : a ≤ b) (h₂ : 0 ≤ c) : a * c ≥ 100 + a := by
   grw [h₁]
 
-example (h₁ : a ≤ b) (h₂ : 0 ≤ c) : a * c ≥ 100 + a := by
-  nth_grw 2 [h₁]
-  guard_target =ₛ a * c ≥ 100 + b
+example (h₁ : a ≤ b) (h₂ : 0 ≤ c) : a * c ≥ 100 + a + a := by
+  nth_grw 2 3 [h₁]
+  guard_target =ₛ a * c ≥ 100 + b + b
   exact test_sorry
 section apply
 
 variable {p q r s : Prop}
 
-example (h : p → q) (h' : r → s) : p ∧ r → q ∧ s := by
+example (n : Nat) (h : p → n=1) (h' : p) : n = 1 := by
+  apply_rw [← h]
+  exact h'
+
+example (n : Nat) (h : p → n=1) (h' : r → s) : p ∧ r → n = 1 ∧ s := by
   apply_rw [h, h']
   exact id
+
+example (n : Nat) (h : p → n=1) (h' : r → s) : p ∧ r → n = 1 ∧ s := by
+  grw [h]
+  apply_rw [h']
+  gcongr
+  intro _
+  rfl
+  exact test_sorry
 
 example (h : p → q) (h' : q → r) : p → r := by
   apply_rw [← h] at h'
