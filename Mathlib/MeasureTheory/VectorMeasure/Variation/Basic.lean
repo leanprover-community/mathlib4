@@ -3,14 +3,12 @@ Copyright (c) 2025 Oliver Butterley. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Butterley, Yoh Tanimoto
 -/
-import Mathlib.Analysis.Normed.Group.InfiniteSum
-import Mathlib.MeasureTheory.VectorMeasure.Basic
+import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Lebesgue
 
 /-!
 # Total variation for vector-valued measures
 
-This file contains the definition of variation for any `VectorMeasure` and proofs of the basic
-properities of variation.
+This file contains the definition of variation for any `VectorMeasure`.
 
 Given a vector-valued measure μ we consider the problem of finding a function f such that, for any
 set E, ‖μ(E)‖ ≤ f(E). This suggests defining f(E) as the supremum over partitions {Eᵢ} of E, of the
@@ -23,12 +21,12 @@ turns out that this function actually is a measure.
 
 Various properties of `variation` are in the file `MeasureTheory/VectorMeasure/Variation/Lemmas`:
 
-* `norm_measure_le_variation` shows that `‖μ E‖ₑ ≤ variation μ E`.
-* `variation_of_ENNReal` shows that, if `μ` is a `ℝ≥0∞`-valued measure, then `variation μ = μ`.
-* `signedMeasure_totalVariation_eq` shows that variation defined as a supremum here
-  coincides with variation defined by the Hahn-Jordan decomposition for signed measures.
-* `variation_neg` shows that `(-μ).variation = μ.variation`.
-* `absolutelyContinuous` show that `μ ≪ᵥ μ.variation`.
+* `norm_measure_le_variation`: `‖μ E‖ₑ ≤ variation μ E`.
+* `variation_of_ENNReal`: if `μ` is a `ℝ≥0∞`-valued measure, then `variation μ = μ`.
+* `signedMeasure_totalVariation_eq`: variation defined as a supremum here coincides with variation
+  defined by the Hahn-Jordan decomposition for signed measures.
+* `variation_neg`: `(-μ).variation = μ.variation`.
+* `absolutelyContinuous`: `μ ≪ᵥ μ.variation`.
 
 ## Implementation notes
 
@@ -53,10 +51,8 @@ of `s ↦ ‖μ s‖ₑ`.
 
 * Total variation is an enorm on the space of vector-valued measures.
 * If `μ` is a complex measure then `variation μ univ < ∞`.
-* Polar representation of a complex measure `μ`: there exists a function `h` such that `|h(x)|=1`
-  and `dμ = h d(μ.variation)`.
 * Suppose that `μ` is a measure, that `g ∈ L¹(μ)` and `λ(E) = ∫_E g dμ` for each measureable `E`,
-  then `variation μ E = ∫_E |g| dμ` (Rudin Theorem 6.13).
+  then `variation λ E = ∫_E |g| dμ` (Rudin Theorem 6.13).
 -/
 
 open MeasureTheory BigOperators NNReal ENNReal Function Filter
@@ -77,7 +73,6 @@ section IsInnerPart
 
 variable {X : Type*} [MeasurableSpace X]
 
--- To do: maybe better as a stucture.
 /-- An inner partition is a finite collection of pairwise disjoint sets which are all contained
 within a given set. Different to `Setoid.IsPartition` there is no requirement for the union to be
 the entire set and the the number of partition elements is required to be finite. -/
@@ -226,7 +221,6 @@ lemma le_var_aux {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
     (hP : IsInnerPart s P) : ∑ p ∈ P, f p ≤ var_aux f s := by
   simpa [var_aux, hs] using le_biSup (fun P ↦ ∑ p ∈ P, f p) hP
 
--- TO DO: rephrase as `HasSum`?
 /-- A set function is subadditive if the value assigned to the union of disjoint sets is bounded
 above by the sum of the values assigned to the individual sets. -/
 def IsSubadditive (f : Set X → ℝ≥0∞) := ∀ (s : ℕ → Set X), (∀ i, MeasurableSet (s i)) →
@@ -322,7 +316,7 @@ lemma le_var_aux_iUnion (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
       have := le_var_aux_iUnion' f hs hs' P (fun i ↦ (hP i).1) n
       gcongr
 
-lemma ENNReal.sum_le_tsum' {f : ℕ → ℝ≥0∞} {a : ℝ≥0∞}
+lemma sum_le_tsum' {f : ℕ → ℝ≥0∞} {a : ℝ≥0∞}
     (h : ∀ b < a, ∃ n, b < ∑ i ∈ Finset.range n, f i) : a ≤ ∑' i, f i := by
   refine le_of_forall_lt fun b hb ↦ ?_
   obtain ⟨n, hn⟩ := h b hb
@@ -332,7 +326,7 @@ open Classical in
 lemma var_aux_iUnion_le (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
     (hs' : Pairwise (Disjoint on s)) (hf : IsSubadditive f) (hf' : f ∅ = 0) :
     var_aux f (⋃ i, s i) ≤ ∑' i, var_aux f (s i) := by
-  refine ENNReal.sum_le_tsum' fun b hb ↦ ?_
+  refine sum_le_tsum' fun b hb ↦ ?_
   simp only [var_aux, MeasurableSet.iUnion hs, reduceIte, lt_iSup_iff] at hb
   obtain ⟨Q, hQ, hbQ⟩ := hb
   -- Take the partitions defined as intersection of `Q` and `s i`.
@@ -367,7 +361,7 @@ end var_aux
 section variation
 
 variable {X : Type*} [MeasurableSpace X]
-variable {V : Type*} [TopologicalSpace V] [ENormedAddCommMonoid V]
+variable {V : Type*} [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
 
 /-! At this stage it is possible to define, as follows, the variation of a subadditive function as
 an `ℝ≥0∞`-valued `VectorMeasure`:
@@ -380,20 +374,29 @@ noncomputable def variation' {f : Set X → ℝ≥0∞} (hf : IsSubadditive f) (
   m_iUnion'           := var_aux_iUnion f hf hf'
 ```
 This could then be used to define variation by applying it to the funtion `fun s ↦ ‖μ s‖ₑ`. However
-there are no apparent applications of the intermidate step.
+there are no apparent applications of the intermediate step.
 -/
 
-lemma isSubadditive_enorm_vectorMeasure (μ : VectorMeasure X V) [T2Space V] :
-    IsSubadditive fun s ↦ ‖μ s‖ₑ := by
+lemma isSubadditive_enorm_vectorMeasure (μ : VectorMeasure X V) :
+    IsSubadditive (‖μ ·‖ₑ) := by
   intro _ hs hs'
   simpa [VectorMeasure.of_disjoint_iUnion hs hs'] using enorm_tsum_le_tsum_enorm
 
 /-- The variation of a `VectorMeasure` as an `ℝ≥0∞`-valued `VectorMeasure`. -/
-noncomputable def variation [T2Space V] (μ : VectorMeasure X V) : VectorMeasure X ℝ≥0∞ where
+noncomputable def variation (μ : VectorMeasure X V) : VectorMeasure X ℝ≥0∞ where
   measureOf'          := var_aux (‖μ ·‖ₑ)
   empty'              := var_aux_empty' (‖μ ·‖ₑ)
   not_measurable' _ h := if_neg h
   m_iUnion'           := var_aux_iUnion (‖μ ·‖ₑ) (isSubadditive_enorm_vectorMeasure μ) (by simp)
+
+/-- The total variation measure part in the polar decomposition of a complex measure. -/
+noncomputable def var (μ : ComplexMeasure X) := μ.variation.ennrealToMeasure
+
+/-- The angular part (density function) in the polar decomposition of a complex measure. -/
+noncomputable def ang (μ : ComplexMeasure X) := μ.rnDeriv μ.var
+
+/-! Like this we can consider integration of `(f : X → ℂ)` with respect to `(μ : ComplexMeasure X)`
+as the value `∫ x, f x * μ.ang x ∂(μ.var)`. -/
 
 end variation
 
