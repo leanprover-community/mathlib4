@@ -59,6 +59,13 @@ register_option linter.style.cases : Bool := {
   descr := "enable the cases linter"
 }
 
+/-- The option `linter.style.mono` of the deprecated syntax linter flags usages of
+the `mono` tactic, which can usually be replaced by `gcongr`. -/
+register_option linter.style.mono : Bool := {
+  defValue := false
+  descr := "enable the mono linter"
+}
+
 /-- The option `linter.style.admit` of the deprecated syntax linter flags usages of
 the `admit` tactic, which is a synonym for the much more common `sorry`. -/
 register_option linter.style.admit : Bool := {
@@ -147,6 +154,10 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
       rargs.push (kind, stx,
         "The `admit` tactic is discouraged: \
          please strongly consider using the synonymous `sorry` instead.")
+    | `Lean.Parser.Tactic.Monotonicity.mono =>
+      rargs.push (kind, stx,
+        "The `mono` tactic is discouraged: \
+         please strongly consider using the better developed `gcongr` instead.")
     | ``Lean.Parser.Tactic.decide =>
       if isDecideNative stx then
         rargs.push (kind, stx, "Using `decide +native` is not allowed in mathlib: \
@@ -188,6 +199,7 @@ def deprecatedSyntaxLinter : Linter where run stx := do
   unless getLinterValue linter.style.refine (← getLinterOptions) ||
       getLinterValue linter.style.cases (← getLinterOptions) ||
       getLinterValue linter.style.admit (← getLinterOptions) ||
+      getLinterValue linter.style.mono (← getLinterOptions) ||
       getLinterValue linter.style.maxHeartbeats (← getLinterOptions) ||
       getLinterValue linter.style.nativeDecide (← getLinterOptions) do
     return
@@ -205,6 +217,7 @@ def deprecatedSyntaxLinter : Linter where run stx := do
       | ``Lean.Parser.Tactic.refine' => Linter.logLintIf linter.style.refine stx' msg
       | `Mathlib.Tactic.cases' => Linter.logLintIf linter.style.cases stx' msg
       | ``Lean.Parser.Tactic.tacticAdmit => Linter.logLintIf linter.style.admit stx' msg
+      | `Lean.Parser.Tactic.Monotonicity.mono => Linter.logLintIf linter.style.mono stx' msg
       | ``Lean.Parser.Tactic.nativeDecide | ``Lean.Parser.Tactic.decide =>
         Linter.logLintIf linter.style.nativeDecide stx' msg
       | `MaxHeartbeats => Linter.logLintIf linter.style.maxHeartbeats stx' msg
