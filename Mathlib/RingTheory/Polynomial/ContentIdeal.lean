@@ -104,7 +104,7 @@ theorem _root_.Submodule.IsPrincipal.contentIdeal_le_span_iff_dvd
     intro _
     calc
     C r ∣ C h_prin.generator := by
-      apply RingHom.map_dvd C
+      apply _root_.map_dvd C
       rwa [← span_singleton_le_span_singleton]
      _   ∣ p := h_prin.contentIdeal_generator_dvd
   · rw [← contentIdeal_C r]
