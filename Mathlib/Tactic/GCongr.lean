@@ -29,14 +29,19 @@ The tags for `≤` aren't strictly necessary, but they help avoid an `IsTrans` t
 
 attribute [gcongr] lt_of_le_of_lt lt_of_le_of_lt' le_trans le_trans'
 
-variable {α : Type} [Preorder α]
+variable {α : Type*}
 
 @[gcongr]
-theorem lt_imp_lt {a b c d : α} (h₁ : c ≤ a) (h₂ : b ≤ d) : a < b → c < d :=
+theorem lt_imp_lt [Preorder α] {a b c d : α} (h₁ : c ≤ a) (h₂ : b ≤ d) : a < b → c < d :=
   fun h => (h₁.trans_lt h).trans_le h₂
 
 @[gcongr]
-theorem le_imp_le {a b c d : α} (h₁ : c ≤ a) (h₂ : b ≤ d) : a ≤ b → c ≤ d :=
+theorem le_imp_le [Preorder α] {a b c d : α} (h₁ : c ≤ a) (h₂ : b ≤ d) : a ≤ b → c ≤ d :=
   fun h => (h₁.trans h).trans h₂
+
+@[gcongr]
+theorem ssubset_imp_ssubset [HasSubset α] [HasSSubset α] [IsNonstrictStrictOrder α (· ⊆ ·) (· ⊂ ·)]
+    [IsTrans α (· ⊆ ·)] {a b c d : α} (h₁ : c ⊆ a) (h₂ : b ⊆ d) : a ⊂ b → c ⊂ d :=
+  fun h => (h₁.trans_ssubset h).trans_subset h₂
 
 end Mathlib.Tactic.GCongr

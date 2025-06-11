@@ -318,7 +318,7 @@ theorem Subset.antisymm_iff {a b : Set α} : a = b ↔ a ⊆ b ∧ b ⊆ a :=
 theorem eq_of_subset_of_subset {a b : Set α} : a ⊆ b → b ⊆ a → a = b :=
   Subset.antisymm
 
-theorem mem_of_subset_of_mem {s₁ s₂ : Set α} {a : α} (h : s₁ ⊆ s₂) : a ∈ s₁ → a ∈ s₂ :=
+@[gcongr] theorem mem_of_subset_of_mem {s₁ s₂ : Set α} {a : α} (h : s₁ ⊆ s₂) : a ∈ s₁ → a ∈ s₂ :=
   @h _
 
 theorem notMem_subset (h : s ⊆ t) : a ∉ t → a ∉ s :=
@@ -393,7 +393,7 @@ protected noncomputable def Nonempty.some (h : s.Nonempty) : α :=
 protected theorem Nonempty.some_mem (h : s.Nonempty) : h.some ∈ s :=
   Classical.choose_spec h
 
-theorem Nonempty.mono (ht : s ⊆ t) (hs : s.Nonempty) : t.Nonempty :=
+@[gcongr] theorem Nonempty.mono (ht : s ⊆ t) (hs : s.Nonempty) : t.Nonempty :=
   hs.imp ht
 
 theorem nonempty_of_not_subset (h : ¬s ⊆ t) : (s \ t).Nonempty :=
