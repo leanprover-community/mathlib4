@@ -71,6 +71,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.header
   linter.style.longLine
   linter.style.longFile
+  linter.style.mono
   linter.style.multiGoal
   linter.style.nativeDecide
   linter.style.openClassical
