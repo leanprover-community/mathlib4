@@ -5,7 +5,6 @@ Authors: Moritz Doll
 -/
 
 import Mathlib.Init
-import Lean.Elab.Tactic.Rewrite
 
 /-!
 # `nth_rewrite` tactic
