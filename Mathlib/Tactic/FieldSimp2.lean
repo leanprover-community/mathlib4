@@ -11,6 +11,7 @@ import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Util.DischargerAsTactic
 import Qq
+import Mathlib.Algebra.Field.Rat
 
 /-!
 # `field_simp` tactic
@@ -42,12 +43,10 @@ partial def normalize (e : Q($K)) : MetaM <| (n : Q($K)) × (d : Q($K)) × Q($e 
     let ⟨n2, d2, pf2⟩ ← normalize z2
     return ⟨q($n1 * $n2), q($d1 * $d2), q(sorry)⟩
   | ~q($z1 / $z2) =>
-    dbg_trace "division"
     let ⟨n1, d1, pf1⟩ ← normalize z1
     let ⟨n2, d2, pf2⟩ ← normalize z2
     return ⟨q($n1 * $d2), q($d1 * $n2), q(sorry)⟩
   | _ =>
-    dbg_trace "default case"
     return ⟨e, q(1), q(sorry)⟩
 
 -- Copy-pasted from https://github.com/hrmacbeth/metaprogramming/blob/main/Metaprogramming/Abel/Phase2_ConvProofs.lean
@@ -66,7 +65,7 @@ elab "field_simp2" : conv => do
   -- convert `x` to the output of the normalization
   Conv.applySimpResult { expr := (← mkAppM `HDiv.hDiv #[d, n]), proof? := some pf }
 
-variable {x y : ℚ} [Field ℚ]
+variable {x y : ℚ}
 
 /-- info: 1 / 1 -/
 #guard_msgs in
@@ -76,21 +75,18 @@ variable {x y : ℚ} [Field ℚ]
 #guard_msgs in
 #conv field_simp2 => (x)
 
-/-- info: (x + y) / 1 -/
+/-- info: (x * 1 + y * 1) / (1 * 1) -/
 #guard_msgs in
 #conv field_simp2 => (x + y)
 
-/-- info: x * y / 1 -/
+/-- info: x * y / (1 * 1) -/
 #guard_msgs in
 #conv field_simp2 => (x * y)
 
--- Bug: there should not be the extra division by one!
--- the division match arm does not fire
-/-- info: x / y / 1 -/
+/-- info: x * 1 / (1 * y) -/
 #guard_msgs in
 #conv field_simp2 => x / y
 
--- same
 #conv field_simp2 => (x / (x + 1) + y / (y + 1))
 
 #exit
