@@ -8,6 +8,12 @@ on:
       - scripts/autolabel.lean
       - .github/workflows/add_label_from_diff.yaml
 
+# Limit permissions for GITHUB_TOKEN for the entire workflow
+permissions:
+  contents: read
+  pull-requests: write  # Only allow PR comments/labels
+  # All other permissions are implicitly 'none'
+
 jobs:
   add_topic_label:
     name: Add topic label
@@ -41,12 +47,16 @@ jobs:
           printf 'Applying label %s\n' "${label}"
           # we use curl rather than octokit/request-action so that the job won't fail
           # (and send an annoying email) if the labels don't exist
+          url="https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels"
+          printf 'url: %s\n' "${url}"
+          jsonLabel="$(printf '{"labels":["%s"]}' "${label}")"
+          printf 'jsonLabel: %s\n' "${jsonLabel}"
           curl --request POST \
             --header 'Accept: application/vnd.github+json' \
             --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
             --header 'X-GitHub-Api-Version: 2022-11-28' \
-            --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels \
-            --data "{'labels':[${label}]}"
+            --url "${url}" \
+            --data "${jsonLabel}"
         else
           echo "There is no single label that we could apply, so we are not applying any label."
         fi

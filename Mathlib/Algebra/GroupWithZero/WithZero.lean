@@ -22,6 +22,8 @@ This file proves that one can adjoin a new zero element to a group and get a gro
   a monoid homomorphism `f : α →* β`.
 -/
 
+open Function
+
 assert_not_exists DenselyOrdered Ring
 
 namespace WithZero
@@ -139,16 +141,10 @@ lemma map'_map'  (f : α →* β) (g : β →* γ) (x) : map' g (map' f x) = map
 lemma map'_comp (f : α →* β) (g : β →* γ) : map' (g.comp f) = (map' g).comp (map' f) :=
   MonoidWithZeroHom.ext fun x => (map'_map' f g x).symm
 
-lemma map'_injective_iff {f : α →* β} :
-    Function.Injective (map' f) ↔ Function.Injective f := by
-  constructor
-  · intro H _ _ h
-    rw [← WithZero.coe_inj]
-    apply H
-    simp [h]
-  · rintro H x y
-    cases x <;> cases y <;>
-    simp_all [H.eq_iff]
+lemma map'_injective_iff {f : α →* β} : Injective (map' f) ↔ Injective f := by
+  simp [Injective, WithZero.forall]
+
+alias ⟨_, map'_injective⟩ := map'_injective_iff
 
 end MulOneClass
 
