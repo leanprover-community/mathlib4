@@ -198,11 +198,11 @@ theorem lowerBounds_mono ⦃s t : Set α⦄ (hst : s ⊆ t) ⦃a b⦄ (hab : a �
   lowerBounds_mono_set hst <| lowerBounds_mono_mem hab hb
 
 /-- If `s ⊆ t` and `t` is bounded above, then so is `s`. -/
-theorem BddAbove.mono ⦃s t : Set α⦄ (h : s ⊆ t) : BddAbove t → BddAbove s :=
+@[gcongr] theorem BddAbove.mono ⦃s t : Set α⦄ (h : s ⊆ t) : BddAbove t → BddAbove s :=
   Nonempty.mono <| upperBounds_mono_set h
 
 /-- If `s ⊆ t` and `t` is bounded below, then so is `s`. -/
-theorem BddBelow.mono ⦃s t : Set α⦄ (h : s ⊆ t) : BddBelow t → BddBelow s :=
+@[gcongr] theorem BddBelow.mono ⦃s t : Set α⦄ (h : s ⊆ t) : BddBelow t → BddBelow s :=
   Nonempty.mono <| lowerBounds_mono_set h
 
 /-- If `a` is a least upper bound for sets `s` and `p`, then it is a least upper bound for any

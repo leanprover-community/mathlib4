@@ -158,7 +158,7 @@ initialize gcongrExt : SimpleScopedEnvExtension (GCongrKey × GCongrLemma)
 
 /-- Given an application `f a₁ .. aₙ`, return the name of `f`, and the array of arguments `aᵢ`. -/
 def getCongrAppFnArgs (e : Expr) : Option (Name × Array Expr) :=
-  match e with
+  match e.cleanupAnnotations with
   | .forallE n d b bi =>
     -- We determine here whether an arrow is an implication or a forall
     -- this approach only works if LHS and RHS are both dependent or both non-dependent
@@ -408,6 +408,7 @@ is a user-provided template, first check that the template asks us to descend th
 match. -/
 partial def _root_.Lean.MVarId.gcongr
     (g : MVarId) (template : Option Expr) (names : List (TSyntax ``binderIdent))
+    (inGRewrite : Bool := false)
     (mainGoalDischarger : MVarId → MetaM Unit := gcongrForwardDischarger)
     (sideGoalDischarger : MVarId → MetaM Unit := gcongrDischarger) :
     MetaM (Bool × List (TSyntax ``binderIdent) × Array MVarId) := g.withContext do
@@ -426,7 +427,8 @@ partial def _root_.Lean.MVarId.gcongr
     if let .mvar mvarId := tpl.getAppFn then
       if let .syntheticOpaque ← mvarId.getKind then
         try mainGoalDischarger g; return (true, names, #[])
-        catch _ => return (false, names, #[g])
+        catch ex =>
+          if inGRewrite then throw ex else return (false, names, #[g])
     -- (ii) if the template is *not* `?_` then continue on.
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
   let rel ← withReducible g.getType'
@@ -510,7 +512,8 @@ partial def _root_.Lean.MVarId.gcongr
           pure e
         -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal with (if available) the
         -- appropriate template
-        let (_, names2, subgoals2) ← mvarId.gcongr tpl names2 mainGoalDischarger sideGoalDischarger
+        let (_, names2, subgoals2) ← mvarId.gcongr tpl names2 inGRewrite mainGoalDischarger
+          sideGoalDischarger
         (names, subgoals) := (names2, subgoals ++ subgoals2)
       let mut out := #[]
       -- Also try the discharger on any "side" (i.e., non-"main") goals which were not resolved
