@@ -560,4 +560,46 @@ instance [Algebra R A] [FaithfulSMul R A] : FaithfulSMul R (FractionRing A) := b
   exact (FaithfulSMul.algebraMap_injective A (FractionRing A)).comp
     (FaithfulSMul.algebraMap_injective R A)
 
+section FaithfulSMul
+
+variable {R A} [Algebra R A] [FaithfulSMul R A]
+
+-- TODO: should this be stated for IsFractionRing also? But that would require the Algebra below
+
+noncomputable
+instance : Algebra (FractionRing R) (FractionRing A) :=
+  (IsFractionRing.map (FaithfulSMul.algebraMap_injective R A)).toAlgebra
+
+lemma algebraMap_fractionRing_eq_map :
+    algebraMap (FractionRing R) (FractionRing A) =
+      IsFractionRing.map (FaithfulSMul.algebraMap_injective R A) :=
+  rfl
+
+lemma algebraMap_mk_one (r : R) :
+    algebraMap (FractionRing R) (FractionRing A) (.mk r 1) =
+      .mk (algebraMap R A r) 1 := by
+  simp [Localization.mk_eq_mk', algebraMap_fractionRing_eq_map, IsFractionRing.map,
+    IsLocalization.map_mk']
+
+@[simp]
+lemma algebraMap_algebraMap (r : R) :
+    algebraMap (FractionRing R) (FractionRing A) (algebraMap R (FractionRing R) r) =
+      algebraMap A (FractionRing A) (algebraMap R A r) :=
+  FractionRing.algebraMap_mk_one r
+
+instance : FaithfulSMul (FractionRing R) (FractionRing A) := by
+  -- nontriviality R would solve this before the `rw` if we imported LinearAlgebra.Module.Basic
+  rw [faithfulSMul_iff_algebraMap_injective]
+  nontriviality R
+  rw [FractionRing.algebraMap_fractionRing_eq_map]
+  rw [IsFractionRing.map]
+  intro r x h
+  induction r, x using Localization.induction_on₂ with | H r x
+  simp only [Localization.mk_eq_mk', IsLocalization.map_mk', IsFractionRing.mk'_eq_div] at h ⊢
+  rw [IsLocalization.mk'_eq_iff_eq, (FaithfulSMul.algebraMap_injective ..).eq_iff]
+  rw [div_eq_div_iff (by simp) (by simp)] at h
+  simpa [← map_mul, (FaithfulSMul.algebraMap_injective R A).eq_iff, mul_comm] using h
+
+end FaithfulSMul
+
 end FractionRing
