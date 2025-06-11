@@ -704,10 +704,8 @@ lemma IsLocallyFiniteMeasure.withDensity_ofReal {f : α → ℝ} (hf : Continuou
 
 section Conv
 
-variable {G : Type*} [Group G] [MeasureSpace G] [MeasurableMul₂ G]
+variable {G : Type*} [Group G] [MeasureSpace G] [MeasurableMul₂ G] [MeasurableInv G]
   {μ : Measure G} [SFinite μ] [IsMulLeftInvariant μ]
-
-set_option trace.Meta.Tactic.fun_prop true
 
 @[to_additive]
 theorem mconv_withDensity_eq_mlconvolution₀ {f g : G → ℝ≥0∞}
