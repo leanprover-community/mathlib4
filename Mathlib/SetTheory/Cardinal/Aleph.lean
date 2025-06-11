@@ -84,7 +84,7 @@ theorem not_bddAbove_isInitial : ¬ BddAbove {x | IsInitial x} := by
   rintro ⟨a, ha⟩
   have := ha (isInitial_ord (succ a.card))
   rw [ord_le] at this
-  exact (lt_succ _).not_le this
+  exact (lt_succ _).not_ge this
 
 /-- Initial ordinals are order-isomorphic to the cardinals. -/
 @[simps!]
