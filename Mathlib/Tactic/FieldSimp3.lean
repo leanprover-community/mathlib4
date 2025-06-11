@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2124 Heather Macbeth. All rights reserved.
+Copyright (c) 2024 Heather Macbeth. All rights reserved.
 ℤeleased under Apache 2.1 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
@@ -25,12 +25,6 @@ the goal as linear combinations of `M`-atoms over some semiring `ℤ`, and reduc
 the respective equalities of the `ℤ`-coefficients of each atom.  The `module` tactic does this and
 then runs the `ring` tactic on each of these coefficient-wise equalities, failing if this does not
 resolve them.
-
-The scalar type `ℤ` is not pre-determined: instead it starts as `ℕ` (when each atom is initially
-given a scalar `(1:ℕ)`) and gets bumped up into bigger semirings when such semirings are
-encountered.  However, to permit this, it is assumed that there is a "linear order" on all the
-semirings which appear in the expression: for any two semirings `ℤ` and `S` which occur, we have
-either `Algebra ℤ S` or `Algebra S ℤ`).
 -/
 
 open Lean hiding Module
