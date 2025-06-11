@@ -18,7 +18,7 @@ set_option linter.unusedVariables false
 
 private axiom test_sorry : ∀ {α}, α
 
-variable {α : Type*} [LinearOrderedCommRing α] (a b c d e : α)
+variable {α : Type*} [CommRing α] [LinearOrder α] [IsStrictOrderedRing α] (a b c d e : α)
 
 section inequalities
 
@@ -198,7 +198,18 @@ section
 relation does not have its main goals proved by `gcongr` (in the two examples here this is because
 the inequality goes in the wrong direction). -/
 
-/-- error: failed to prove 2 * x ≤ 2 * y with gcongr, error was: could not resolve goal x ≤ y -/
+/--
+error: tactic 'grewrite' failed, could not discharge x ≤ y using x ≥ y
+case a.h
+α : Type u_1
+inst✝² : CommRing α
+inst✝¹ : LinearOrder α
+inst✝ : IsStrictOrderedRing α
+a b✝ c d e : α
+x y b : ℚ
+h : x ≥ y
+⊢ x ≤ y
+-/
 #guard_msgs in
 example {x y b : ℚ} (h : x ≥ y) : 2 * x ≤ b := by
   grw [h]

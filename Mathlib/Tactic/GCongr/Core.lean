@@ -158,7 +158,7 @@ initialize gcongrExt : SimpleScopedEnvExtension (GCongrKey × GCongrLemma)
 
 /-- Given an application `f a₁ .. aₙ`, return the name of `f`, and the array of arguments `aᵢ`. -/
 def getCongrAppFnArgs (e : Expr) : Option (Name × Array Expr) :=
-  match e with
+  match e.cleanupAnnotations with
   | .forallE n d b bi =>
     -- We determine here whether an arrow is an implication or a forall
     -- this approach only works if LHS and RHS are both dependent or both non-dependent

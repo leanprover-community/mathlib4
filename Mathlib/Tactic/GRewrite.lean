@@ -43,7 +43,7 @@ def grewriteLocalDecl (stx : Syntax) (symm : Bool) (fvarId : FVarId) (config : G
       throwAbortTactic
     let localDecl ← fvarId.getDecl
     goal.grewrite localDecl.type e (forwardImp := true) (symm := symm) (config := config)
-  let proof := .app (r.impProof) (.mvar goal)
+  let proof := .app (r.impProof) (.fvar fvarId)
   let { mvarId, .. } ← goal.replace fvarId proof r.eNew
   replaceMainGoal (mvarId :: r.mvarIds)
 

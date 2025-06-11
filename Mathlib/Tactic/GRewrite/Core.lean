@@ -57,7 +57,8 @@ def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
     goal.checkNotAssigned `grewrite
     let hrelType ← instantiateMVars (← inferType hrel)
     let maxMVars? := if config.implicationHyp then some (hrelType.getForallArity - 1) else none
-    let (newMVars, binderInfos, hrelType) ← forallMetaTelescopeReducing hrelType maxMVars?
+    let (newMVars, binderInfos, hrelType) ←
+      withReducible <| forallMetaTelescopeReducing hrelType maxMVars?
 
     -- If we can use the normal `rewrite` tactic, we default to using that.
     if (hrelType.isAppOfArity ``Iff 2 || hrelType.isAppOfArity ``Eq 3) && config.useRewrite then
