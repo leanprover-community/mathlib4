@@ -29,7 +29,7 @@ jobs:
         id: merge_or_delegate
         run: |
           # don't try to run if we don't have access to necessary secrets
-          if [[ -z ${{ secrets.TRIAGE_TOKEN }} ]]
+          if [[ -z '${{ secrets.TRIAGE_TOKEN }}' ]]
           then
             printf 'No access to secrets, aborting.'
             printf 'mOrD=' > "${GITHUB_OUTPUT}"
