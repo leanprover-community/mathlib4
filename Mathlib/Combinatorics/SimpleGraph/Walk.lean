@@ -755,17 +755,15 @@ theorem edges_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.N
     simp only [edges_cons, support_cons, List.nodup_cons] at h ⊢
     exact ⟨fun h' => h.1 (fst_mem_support_of_mem_edges p' h'), ih h.2⟩
 
-lemma getVert_eq_support_getElem {u v : V} {n : ℕ} (p : G.Walk u v) (h2 : n ≤ p.length) :
-    p.getVert n = p.support[n]'(by rw [length_support]; omega) := by
-  induction p with
-  | nil => simp_all
-  | cons h q ih =>
-      simp only [Walk.support_cons]
-      by_cases hn : n = 0
-      · simp only [hn, getVert_zero, List.getElem_cons_zero]
-      · rw [Walk.getVert_cons q h hn, List.getElem_cons]
-        simp only [hn, ↓reduceDIte]
-        exact getVert_eq_support_getElem q (Nat.sub_le_of_le_add h2)
+lemma Walk.getVert_eq_support_getElem {u v : V} {n : ℕ} (p : G.Walk u v) (h : n ≤ p.length) :
+    p.getVert n = p.support[n]'(p.length_support ▸ Nat.lt_add_one_of_le h) := by
+  cases p with
+  | nil => simp
+  | cons => cases n with
+    | zero => simp
+    | succ n =>
+      simp_rw [support_cons, getVert_cons _ _ n.zero_ne_add_one.symm, List.getElem_cons]
+      exact getVert_eq_support_getElem _ (Nat.sub_le_of_le_add h)
 
 lemma getVert_eq_support_getElem? {u v : V} {n : ℕ} (p : G.Walk u v) (h : n ≤ p.length) :
     p.getVert n = p.support[n]? := by
