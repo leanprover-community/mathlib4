@@ -210,15 +210,15 @@ theorem ofNat_ne_top (a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ℕ∞) ≠ ⊤ :=
 
 @[simp]
 theorem top_sub_coe (a : ℕ) : (⊤ : ℕ∞) - a = ⊤ :=
-  WithTop.top_sub_coe
+  rfl
 
 @[simp]
 theorem top_sub_one : (⊤ : ℕ∞) - 1 = ⊤ :=
-  top_sub_coe 1
+  rfl
 
 @[simp]
 theorem top_sub_ofNat (a : ℕ) [a.AtLeastTwo] : (⊤ : ℕ∞) - ofNat(a) = ⊤ :=
-  top_sub_coe a
+  rfl
 
 @[simp]
 theorem top_pos : (0 : ℕ∞) < ⊤ :=
