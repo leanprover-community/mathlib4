@@ -147,14 +147,14 @@ lemma summand_bound_of_mem_verticalStrip {k : ℝ} (hk : 0 ≤ k) (x : Fin 2 →
     (neg_nonpos.mpr hk)
 
 lemma linear_isTheta_right (c : ℤ) (z : ℂ) :
-    (fun (d : ℤ) => ((c : ℂ) * z + d)) =Θ[cofinite] fun n => (n : ℝ) := by
+    (fun (d : ℤ) ↦ ((c : ℂ) * z + d)) =Θ[cofinite] fun n ↦ (n : ℝ) := by
   refine Asymptotics.IsLittleO.add_isTheta ?_ (Int.cast_complex_isTheta_cast_real )
   rw [isLittleO_const_left]
   exact Or.inr
     (tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding Int.isClosedEmbedding_coe_real)
 
 lemma linear_isTheta_left (d : ℤ) {z : ℂ} (hz : z ≠ 0) :
-    (fun (c : ℤ) => ((c : ℂ) * z + d)) =Θ[cofinite] fun n => (n : ℝ) := by
+    (fun (c : ℤ) ↦ ((c : ℂ) * z + d)) =Θ[cofinite] fun n ↦ (n : ℝ) := by
   apply IsTheta.add_isLittleO
   · simp_rw [mul_comm]
     apply Asymptotics.IsTheta.const_mul_left hz Int.cast_complex_isTheta_cast_real
@@ -162,11 +162,11 @@ lemma linear_isTheta_left (d : ℤ) {z : ℂ} (hz : z ≠ 0) :
       tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding Int.isClosedEmbedding_coe_real, or_true]
 
 lemma linear_inv_isBigO_right (c : ℤ) (z : ℂ) :
-    (fun (d : ℤ) => ((c : ℂ) * z + d)⁻¹) =O[cofinite] fun n => (n : ℝ)⁻¹ :=
+    (fun (d : ℤ) ↦ ((c : ℂ) * z + d)⁻¹) =O[cofinite] fun n ↦ (n : ℝ)⁻¹ :=
   (linear_isTheta_right c z).inv.isBigO
 
 lemma linear_inv_isBigO_left (d : ℤ) {z : ℂ} (hz : z ≠ 0) :
-    (fun (c : ℤ) => ((c : ℂ) * z + d)⁻¹) =O[cofinite] fun n => (n : ℝ)⁻¹ :=
+    (fun (c : ℤ) ↦ ((c : ℂ) * z + d)⁻¹) =O[cofinite] fun n ↦ (n : ℝ)⁻¹ :=
   (linear_isTheta_left d hz).inv.isBigO
 
 end bounding_functions
@@ -192,8 +192,8 @@ lemma summable_one_div_norm_rpow {k : ℝ} (hk : 2 < k) :
 
 lemma summable_inv_of_isBigO_rpow_inv {α : Type*} [NormedField α] [CompleteSpace α]
     {f  : ℤ → α} {a : ℝ} (hab : 1 < a)
-    (hf : (fun n => (f n)⁻¹) =O[cofinite] fun n => (|(n : ℝ)| ^ a)⁻¹) :
-    Summable fun n => (f n)⁻¹ :=
+    (hf : (fun n ↦ (f n)⁻¹) =O[cofinite] fun n ↦ (|(n : ℝ)| ^ a)⁻¹) :
+    Summable fun n ↦ (f n)⁻¹ :=
     summable_of_isBigO
       (Summable.congr (Real.summable_abs_int_rpow hab) fun b ↦ Real.rpow_neg (abs_nonneg ↑b) a) hf
 
