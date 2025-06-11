@@ -164,7 +164,14 @@ noncomputable
 def nonZeroDivisors_mrange : Submonoid Bˣ := MonoidHom.mrange
   (nonZeroDivisorsEquivUnits.toMonoidHom.comp (nonZeroDivisors_map h))
 
-lemma mem_mrange {b : Bˣ} : b.1 ∈ range f → b ∈ nonZeroDivisors_mrange h := by
+lemma mem_nonZeroDivisors_mrange {b : Bˣ} (hb : b.1 ∈ range f) : b ∈ nonZeroDivisors_mrange h := by
+  simp only [nonZeroDivisors_mrange, MulEquiv.toMonoidHom_eq_coe, MonoidHom.mem_mrange,
+    MonoidHom.coe_comp, MonoidHom.coe_coe, Function.comp_apply, nonZeroDivisorsEquivUnits_apply,
+    nonZeroDivisors_map_apply, Subtype.exists]
+  simp only [mem_range] at hb
+  obtain ⟨a, ha⟩ := hb
+  refine ⟨a, ?_, by ext; rw [← ha]; rfl⟩
+
   sorry
 
 def nonZeroDivisors_range : Subgroup Bˣ := Subgroup.closure (nonZeroDivisors_mrange h)
@@ -230,7 +237,7 @@ lemma nonZeroDivisors_range_eq_range {X W : Type*} [GroupWithZero X] [FunLike W 
     simp
     use u
     constructor
-    · apply mem_mrange
+    · apply mem_nonZeroDivisors_mrange
       rw [hu]
       simp
       use y
