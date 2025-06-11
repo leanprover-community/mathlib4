@@ -755,7 +755,7 @@ theorem edges_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.N
     simp only [edges_cons, support_cons, List.nodup_cons] at h ⊢
     exact ⟨fun h' => h.1 (fst_mem_support_of_mem_edges p' h'), ih h.2⟩
 
-lemma Walk.getVert_eq_support_getElem {u v : V} {n : ℕ} (p : G.Walk u v) (h : n ≤ p.length) :
+lemma getVert_eq_support_getElem {u v : V} {n : ℕ} (p : G.Walk u v) (h : n ≤ p.length) :
     p.getVert n = p.support[n]'(p.length_support ▸ Nat.lt_add_one_of_le h) := by
   cases p with
   | nil => simp
