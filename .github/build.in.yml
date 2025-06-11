@@ -512,7 +512,7 @@ jobs:
   build_and_lint:
     name: CI Success
     if: FORK_CONDITION
-    needs: [style_lint, build]
+    needs: [style_lint, post_steps]
     runs-on: ubuntu-latest
     steps:
       - name: succeed
