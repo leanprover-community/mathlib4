@@ -129,6 +129,13 @@ structure FlagIso {α β ι : Type*} (F₁ : Flag α ι) (F₂ : Flag β ι) ext
 @[inherit_doc] infixl:50 " ↪f " => FlagEmbedding
 @[inherit_doc] infixl:50 " ≃f " => FlagIso
 
+@[simp]
+lemma FlagEmbedding.labels_subset_range {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι}
+    (e : F₁ ↪f F₂) : Set.range F₂.θ ⊆ Set.range e.toRelEmbedding := by
+  intro i hi
+  rw [e.labels_eq] at hi
+  aesop
+
 theorem FlagEmbedding.toRelEmbedding_injective {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι} :
     Function.Injective (FlagEmbedding.toRelEmbedding : F₁ ↪f F₂ → (F₁.G ↪g F₂.G)) := by
   rintro ⟨f, _⟩ ⟨g, _⟩; simp
@@ -182,10 +189,15 @@ def Flag.induceEquiv (F₁ : Flag α ι) (F₂ : Flag β ι) (t : Set β) (h : �
   left_inv := fun e ↦ by ext; simp
   right_inv := fun e ↦ by ext; simp
 
+/--
+Two flag embeddings `e₁ : F₁ ↪f F` and `e₂ : F₂ ↪f F` are compatible if they are in
+`general position`, i.e. the intersection of their images is exactly the set of labelled vertices
+of `F`.
+-/
 @[simp]
 def FlagEmbedding.Compat {β : Type*} {F₁ : Flag β ι} {F₂ : Flag β ι} {F : Flag α ι}
     (e₁ : F₁ ↪f F) (e₂ : F₂ ↪f F) : Prop :=
-  ∀ b₁ b₂, e₁.toRelEmbedding b₁ = e₂.toRelEmbedding b₂ → ∃ i, e₁.toRelEmbedding b₁ = F.θ i
+  ∀ b₁ b₂, e₁.toRelEmbedding b₁ = e₂.toRelEmbedding b₂ → ∃ i, F.θ i = e₁.toRelEmbedding b₁
 
 omit [Fintype α] [Fintype ι] [DecidableEq α] in
 lemma FlagEmbedding.Compat.symm {β : Type*} {F₁ F₂ : Flag β ι} {F : Flag α ι} {e₁ : F₁ ↪f F}
@@ -194,6 +206,22 @@ lemma FlagEmbedding.Compat.symm {β : Type*} {F₁ F₂ : Flag β ι} {F : Flag 
   intro b₁ b₂ he
   obtain ⟨i, he'⟩ := h _ _ he.symm
   use i, (he ▸ he')
+
+omit [Fintype α] [Fintype ι] [DecidableEq α] in
+lemma FlagEmbedding.compat_iff_inter_eq {β : Type*} {F₁ F₂ : Flag β ι} {F : Flag α ι} {e₁ : F₁ ↪f F}
+    {e₂ : F₂ ↪f F} : e₁.Compat e₂ ↔ Set.range e₁.toRelEmbedding ∩ Set.range e₂.toRelEmbedding =
+        Set.range F.θ := by
+  constructor <;> intro h
+  · apply subset_antisymm
+    · intro a; simp only [Set.mem_inter_iff, Set.mem_range]
+      rintro ⟨⟨y,rfl⟩,⟨z, hz⟩⟩;
+      obtain ⟨i, hi⟩ := h _ _ hz.symm
+      use i, hi
+    · simp
+  · intro b₁ b₂ hb
+    simp_rw [← Set.mem_range,← h, Set.mem_inter_iff]
+    nth_rw 2 [hb]
+    simp
 
 /-!
 ## TODO:
@@ -365,7 +393,6 @@ noncomputable instance FlagEmbedding.instfintypeOfCompatEmbeddings {α β ι : T
     {F₁₂ : Flag β ι × Flag β ι} [Fintype α] [Fintype β] : Fintype (F₁₂ ↪f₂ F) :=
   Fintype.ofInjective _ compat_pairs_inj
 
-#check Subtype.ext_val
 /--
 Flag embeddings of `F₁` in `F₂[t]` are equivalent to embeddings of `F₁` in `F₂` that map into `t`.
 (Note: that `F₂[t]` is only defined if all the labels_eq of `F₂` lie in `t`).
@@ -403,7 +430,7 @@ def Flag₂.induceEquiv (F₁ F₂ : Flag β ι) (F : Flag α ι) (t : Set α ) 
       by ext i; simp [F.induce_labels_eq t h, e.1.1.2.labels_eq]⟩
     refine ⟨(f₁,f₂), ?_⟩
     have : ∀ b₁ b₂, e.1.1.1.toRelEmbedding b₁ = e.1.1.2.toRelEmbedding b₂ →
-      ∃ i, e.1.1.1.toRelEmbedding b₁ = F.θ i := e.1.2
+      ∃ i, F.θ i = e.1.1.1.toRelEmbedding b₁  := e.1.2
     simp only [Set.mem_setOf_eq, FlagEmbedding.Compat]
     have he1: ∀ b, e.1.1.1.toRelEmbedding b = f₁.toRelEmbedding b := by intro b; rfl
     have he2: ∀ b, e.1.1.2.toRelEmbedding b = f₂.toRelEmbedding b := by intro b; rfl
@@ -418,12 +445,10 @@ def Flag₂.induceEquiv (F₁ F₂ : Flag β ι) (F : Flag α ι) (t : Set α ) 
   right_inv := fun e ↦ by ext <;> dsimp
 
 open Classical in
--- TODO next: prove this
 lemma Flag.sum_card_embeddings_induce_eq_compat (F₁ F₂ : Flag β ι) (F : Flag α ι) [Fintype β]
   {k : ℕ} (hk : 2 * ‖β‖ - ‖ι‖ ≤ k) : ∑ t : Finset α with #t = k,
     (if ht : ∀ i, F.θ i ∈ t then  ‖(F₁, F₂) ↪f₂ (F.induce t ht)‖ else 0)
-              = ‖(F₁, F₂) ↪f₂ F‖ * Nat.choose (‖α‖ - 2 * ‖β‖ + ‖ι‖ ) (k - 2 * ‖β‖ + ‖ι‖ ) := by
-
+              = ‖(F₁, F₂) ↪f₂ F‖ * Nat.choose (‖α‖ - (2 * ‖β‖ - ‖ι‖) ) (k - (2 * ‖β‖ - ‖ι‖)) := by
   calc
   _ = ∑ t : Finset α , ∑ e : ((F₁,F₂) ↪f₂ F),
           ite (#t = k ∧ (∀ i, F.θ i ∈ t) ∧ Set.range e.1.1.toRelEmbedding ⊆ t
@@ -444,7 +469,38 @@ lemma Flag.sum_card_embeddings_induce_eq_compat (F₁ F₂ : Flag β ι) (F : Fl
       obtain ⟨e, he⟩ := card_ne_zero.1 h1.symm
       simp only [mem_filter, mem_univ, true_and] at he
       exact he.1
-  _ = _ := by sorry
+  _ = _ := by
+    rw [sum_comm,  ← card_univ (α := ((F₁,F₂) ↪f₂ F)), card_eq_sum_ones, sum_mul, one_mul]
+    congr with e
+    have he1 : ∀ (i : ι), F.θ i ∈ Set.range e.1.1.toRelEmbedding :=
+      fun i ↦ ⟨F₁.θ i, by simp [e.1.1.labels_eq]⟩
+    calc
+    _ = #{t : Finset α | #t = k ∧ Set.range e.1.1.toRelEmbedding ⊆ t
+              ∧ Set.range e.1.2.toRelEmbedding ⊆ t} := by
+      simp only [sum_boole,Set.mem_setOf_eq, FlagEmbedding.Compat, RelEmbedding.coe_toEmbedding,
+                 Nat.cast_id, and_self]
+      congr with t; simp only [and_congr_right_iff, and_iff_right_iff_imp]
+      intro hk hs i
+      exact hs.1 <| he1 i
+    _ =  #{t : Finset α | #t = k ∧
+      Set.range e.1.1.toRelEmbedding ∪ Set.range e.1.2.toRelEmbedding ⊆ t} := by
+      congr with t; simp
+    _ = _ := by
+      have hint := FlagEmbedding.compat_iff_inter_eq.1 e.2
+      have hs1 : #((Set.range e.1.1.toRelEmbedding).toFinset) = ‖β‖ := Set.toFinset_range
+        e.1.1.toRelEmbedding ▸ card_image_of_injective _ e.1.1.toRelEmbedding.injective
+      have hs2 : #((Set.range e.1.2.toRelEmbedding).toFinset) = ‖β‖ := Set.toFinset_range
+        e.1.2.toRelEmbedding ▸ card_image_of_injective _ e.1.2.toRelEmbedding.injective
+      have hl : #(Set.range F.θ).toFinset = ‖ι‖ :=
+        Set.toFinset_range F.θ ▸ card_image_of_injective _ F.θ.injective
+      have : #((Set.range e.1.1.toRelEmbedding ∪ Set.range e.1.2.toRelEmbedding).toFinset)
+        = 2* ‖β‖- ‖ι‖ := by
+        simp_rw [Set.toFinset_union, card_union, hs1, hs2, ← Set.toFinset_inter, hint, hl, two_mul]
+      convert card_supersets (this ▸ hk) with t <;> try exact this.symm
+      · constructor <;> intro h <;> intro x hx
+        · aesop
+        · apply h (by rwa [Set.mem_toFinset])
+
 /--
 Embeddings of `H` in `G[t]` are equivalent to embeddings of `H` in `G` that map into `t`.
 -/
