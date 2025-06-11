@@ -269,12 +269,11 @@ instance mono_map_0_of_mono {A B : Rep k G} (f : A ⟶ B) [Mono f] :
 @[deprecated (since := "2025-06-09")]
 alias mono_H0Map_of_mono := mono_map_0_of_mono
 
-/-@[reassoc (attr := simp), elementwise (attr := simp)]
+@[reassoc, elementwise]
 theorem cocyclesMap_comp_zeroIsoCocycles_hom :
-    cocyclesMap f φ 0 ≫ (zeroCocyclesIso B).hom = (zeroCocyclesIso A).hom ≫
-      ModuleCat.ofHom (LinearMap.restrict φ.hom.hom fun x hx => _) := by
-  have := cochainsMap_f_0_comp_zeroCochainsIso f φ
-  simp_all [← cancel_mono (shortComplexH0 B).f]-/
+    cocyclesMap f φ 0 ≫ (zeroCocyclesIso B).hom ≫ (shortComplexH0 B).f =
+      (zeroCocyclesIso A).hom ≫ (shortComplexH0 A).f ≫ φ.hom := by
+  simp
 
 end H0
 section H1
