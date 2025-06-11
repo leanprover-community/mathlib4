@@ -3,12 +3,9 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Data.Fintype.Perm
+import Mathlib.Data.Finite.Perm
 import Mathlib.Data.Nat.Prime.Factorial
 import Mathlib.GroupTheory.Index
-import Mathlib.Data.Finite.Perm
-
-import Mathlib.Data.Nat.Prime.Basic
 
 /-! # Subgroups of small index are normal
 
@@ -20,11 +17,13 @@ import Mathlib.Data.Nat.Prime.Basic
 
 -/
 
+assert_not_exists Field
+
+open MulAction MonoidHom Nat
+
 variable {G : Type*} [Group G] {H : Subgroup G} {p : ℕ}
 
 namespace Subgroup
-
-open MulAction MonoidHom Nat
 
 /-- A subgroup of index 1 is normal (does not require finiteness of G) -/
 theorem normal_of_index_eq_one (hH : H.index = 1) : H.Normal := by
@@ -58,7 +57,7 @@ theorem normal_of_index_eq_minFac_card (hHp : H.index = (Nat.card G).minFac) :
     rw [normalCore_eq_ker, index_ker, index_eq_card, ← Nat.card_perm]
     exact card_subgroup_dvd_card (toPermHom G (G ⧸ H)).range
   apply dvd_antisymm _ (index_dvd_of_le H.normalCore_le)
-  rwa [← Coprime.dvd_mul_right, mul_factorial_pred hp.pos]
+  rwa [← Coprime.dvd_mul_right, mul_factorial_pred hp.ne_zero]
   have hr1 : H.normalCore.index ≠ 1 := fun hr1 ↦ hp.ne_one <|
     Nat.eq_one_of_dvd_one (hr1 ▸ H.normalCore.index_dvd_of_le H.normalCore_le)
   rw [Nat.coprime_factorial_iff hr1]

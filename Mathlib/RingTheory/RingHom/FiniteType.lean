@@ -19,7 +19,7 @@ Let `R` be a commutative ring, `S` is an `R`-algebra, `M` be a submonoid of `R`.
   finite type `R' = M⁻¹R`-algebra.
 * `finiteType_ofLocalizationSpan` : `S` is a finite type `R`-algebra if there exists
   a set `{ r }` that spans `R` such that `Sᵣ` is a finite type `Rᵣ`-algebra.
-*`RingHom.finiteType_is_local`: `RingHom.FiniteType` is a local property.
+*`RingHom.finiteType_isLocal`: `RingHom.FiniteType` is a local property.
 
 -/
 
@@ -47,6 +47,7 @@ theorem finiteType_localizationPreserves : RingHom.LocalizationPreserves @RingHo
   letI := ((algebraMap S S').comp f).toAlgebra
   let f' : R' →+* S' := IsLocalization.map S' f (Submonoid.le_comap_map M)
   letI := f'.toAlgebra
+  have algF'_eq : algebraMap R' S' = IsLocalization.map S' f (Submonoid.le_comap_map M) := rfl
   haveI : IsScalarTower R R' S' :=
     IsScalarTower.of_algebraMap_eq' (IsLocalization.map_comp M.le_comap_map).symm
   let fₐ : S →ₐ[R] S' := AlgHom.mk' (algebraMap S S') fun c x => RingHom.map_mul _ _ _
@@ -65,9 +66,7 @@ theorem finiteType_localizationPreserves : RingHom.LocalizationPreserves @RingHo
     rw [Algebra.adjoin_le_iff]; exact Algebra.subset_adjoin
   convert (Algebra.adjoin R' (algebraMap S S' '' T)).smul_mem (H hy)
     (IsLocalization.mk' R' (1 : R) ⟨r, hr⟩) using 1
-  rw [Algebra.smul_def]
-  erw [IsLocalization.map_mk' M.le_comap_map]
-  rw [map_one]
+  rw [Algebra.smul_def, algF'_eq, IsLocalization.map_mk' M.le_comap_map, map_one]
 
 theorem localization_away_map_finiteType (r : R) [IsLocalization.Away r R']
     [IsLocalization.Away (f r) S'] (hf : f.FiniteType) :
@@ -95,7 +94,7 @@ theorem IsLocalization.exists_smul_mem_of_mem_adjoin [Algebra R S] [Algebra R S'
     Algebra.pow_smul_mem_of_smul_subset_of_mem_adjoin (y : S) (s : Set S') (A.map g)
       (by rw [hx₁]; exact Set.image_subset _ hA₁) hx (Set.mem_image_of_mem _ (hA₂ y.2))
   obtain ⟨x', hx', hx''⟩ := hn n (le_of_eq rfl)
-  rw [Algebra.smul_def, ← _root_.map_mul] at hx''
+  rw [Algebra.smul_def, ← map_mul] at hx''
   obtain ⟨a, ha₂⟩ := (IsLocalization.eq_iff_exists M S').mp hx''
   use a * y ^ n
   convert A.mul_mem hx' (hA₂ a.prop) using 1
@@ -219,7 +218,7 @@ theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteTy
       exact Or.inl (Or.inr r.2)
     · rw [ht]; trivial
 
-theorem finiteType_is_local : PropertyIsLocal @FiniteType :=
+theorem finiteType_isLocal : PropertyIsLocal @FiniteType :=
   ⟨finiteType_localizationPreserves.away,
     finiteType_ofLocalizationSpanTarget,
     finiteType_ofLocalizationSpanTarget.ofLocalizationSpan
@@ -228,8 +227,11 @@ theorem finiteType_is_local : PropertyIsLocal @FiniteType :=
     (finiteType_stableUnderComposition.stableUnderCompositionWithLocalizationAway
       finiteType_holdsForLocalizationAway).right⟩
 
+@[deprecated (since := "2025-03-01")]
+alias finiteType_is_local := finiteType_isLocal
+
 theorem finiteType_respectsIso : RingHom.RespectsIso @RingHom.FiniteType :=
-  RingHom.finiteType_is_local.respectsIso
+  RingHom.finiteType_isLocal.respectsIso
 
 theorem finiteType_isStableUnderBaseChange : IsStableUnderBaseChange @FiniteType := by
   apply IsStableUnderBaseChange.mk

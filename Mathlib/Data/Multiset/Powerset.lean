@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.List.Sublists
 import Mathlib.Data.List.Zip
 import Mathlib.Data.Multiset.Bind
+import Mathlib.Data.Multiset.Range
 
 /-!
 # The powerset of a multiset
@@ -250,10 +251,9 @@ theorem powersetCard_eq_empty {α : Type*} (n : ℕ) {s : Multiset α} (h : card
     powersetCard n s = 0 :=
   card_eq_zero.mp (Nat.choose_eq_zero_of_lt h ▸ card_powersetCard _ _)
 
-@[simp]
 theorem powersetCard_card_add (s : Multiset α) {i : ℕ} (hi : 0 < i) :
-    s.powersetCard (card s + i) = 0 :=
-  powersetCard_eq_empty _ (Nat.lt_add_of_pos_right hi)
+    s.powersetCard (card s + i) = 0 := by
+  simp [hi]
 
 theorem powersetCard_map {β : Type*} (f : α → β) (n : ℕ) (s : Multiset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (map f) := by

@@ -158,7 +158,7 @@ lemma Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange :
   rw [← hz₁, ← hy, ← Scheme.comp_base_apply, ← Scheme.comp_base_apply]
   dsimp only [diagonalCover, Cover.pullbackHom, Cover.bind_obj, openCoverOfLeftRight_obj]
   rw [← Scheme.comp_base_apply]
-  congr 4
+  congr 5
   apply pullback.hom_ext <;> simp
 
 lemma isClosedImmersion_diagonal_restrict_diagonalCoverDiagonalRange
@@ -197,6 +197,12 @@ lemma IsClosedImmersion.of_comp [IsClosedImmersion (f ≫ g)] [IsSeparated g] :
   rw [← pullback.lift_snd (𝟙 _) f (Category.id_comp (f ≫ g))]
   have := MorphismProperty.pullback_snd (P := @IsClosedImmersion) (f ≫ g) g inferInstance
   infer_instance
+
+instance {I J : X.IdealSheafData} (h : I ≤ J) : IsClosedImmersion (I.inclusion h) := by
+  have : IsClosedImmersion (I.inclusion h ≫ I.subschemeι) := by
+    simp only [Scheme.IdealSheafData.inclusion_subschemeι]
+    infer_instance
+  exact .of_comp _ I.subschemeι
 
 lemma IsSeparated.of_comp [IsSeparated (f ≫ g)] : IsSeparated f := by
   have := IsSeparated.diagonal_isClosedImmersion (f := f ≫ g)

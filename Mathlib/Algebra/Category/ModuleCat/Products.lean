@@ -22,7 +22,7 @@ universe u v w
 namespace ModuleCat
 
 variable {R : Type u} [Ring R]
-variable {ι : Type v} (Z : ι → ModuleCatMax.{v, w} R)
+variable {ι : Type v} (Z : ι → ModuleCat.{max v w} R)
 
 section product
 

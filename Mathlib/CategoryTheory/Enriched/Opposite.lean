@@ -15,8 +15,8 @@ When a monoidal category `V` is braided, we may define the opposite `V`-category
 
 This file constructs the opposite `V`-category as an instance on the type `Cᵒᵖ` and constructs an
 equivalence between
- • `ForgetEnrichment V (Cᵒᵖ)`, the underlying category of the `V`-category `Cᵒᵖ`; and
- • `(ForgetEnrichment V C)ᵒᵖ`, the opposite category of the underlying category of `C`.
+* `ForgetEnrichment V (Cᵒᵖ)`, the underlying category of the `V`-category `Cᵒᵖ`; and
+* `(ForgetEnrichment V C)ᵒᵖ`, the opposite category of the underlying category of `C`.
 We also show that if `C` is an enriched ordinary category (i.e. a category enriched in `V`
 equipped with an identification `(X ⟶ Y) ≃ (𝟙_ V ⟶ (X ⟶[V] Y))`) then `Cᵒᵖ` is again
 an enriched ordinary category.

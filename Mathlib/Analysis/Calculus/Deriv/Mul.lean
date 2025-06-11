@@ -65,9 +65,9 @@ theorem derivWithin_of_bilinear
     (hu : DifferentiableWithinAt 𝕜 u s x) (hv : DifferentiableWithinAt 𝕜 v s x) :
     derivWithin (fun y => B (u y) (v y)) s x =
       B (u x) (derivWithin v s x) + B (derivWithin u s x) (v x) := by
-  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
-  · exact (B.hasDerivWithinAt_of_bilinear hu.hasDerivWithinAt hv.hasDerivWithinAt).derivWithin hxs
-  · simp [derivWithin_zero_of_isolated hxs]
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact (B.hasDerivWithinAt_of_bilinear hu.hasDerivWithinAt hv.hasDerivWithinAt).derivWithin hsx
+  · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
 theorem deriv_of_bilinear (hu : DifferentiableAt 𝕜 u x) (hv : DifferentiableAt 𝕜 v x) :
     deriv (fun y => B (u y) (v y)) x = B (u x) (deriv v x) + B (deriv u x) (v x) :=
@@ -99,9 +99,9 @@ nonrec theorem HasStrictDerivAt.smul (hc : HasStrictDerivAt c c' x) (hf : HasStr
 theorem derivWithin_smul (hc : DifferentiableWithinAt 𝕜 c s x)
     (hf : DifferentiableWithinAt 𝕜 f s x) :
     derivWithin (fun y => c y • f y) s x = c x • derivWithin f s x + derivWithin c s x • f x := by
-  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
-  · exact (hc.hasDerivWithinAt.smul hf.hasDerivWithinAt).derivWithin hxs
-  · simp [derivWithin_zero_of_isolated hxs]
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact (hc.hasDerivWithinAt.smul hf.hasDerivWithinAt).derivWithin hsx
+  · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
 theorem deriv_smul (hc : DifferentiableAt 𝕜 c x) (hf : DifferentiableAt 𝕜 f x) :
     deriv (fun y => c y • f y) x = c x • deriv f x + deriv c x • f x :=
@@ -124,9 +124,9 @@ theorem HasDerivAt.smul_const (hc : HasDerivAt c c' x) (f : F) :
 
 theorem derivWithin_smul_const (hc : DifferentiableWithinAt 𝕜 c s x) (f : F) :
     derivWithin (fun y => c y • f) s x = derivWithin c s x • f := by
-  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
-  · exact (hc.hasDerivWithinAt.smul_const f).derivWithin hxs
-  · simp [derivWithin_zero_of_isolated hxs]
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact (hc.hasDerivWithinAt.smul_const f).derivWithin hsx
+  · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
 theorem deriv_smul_const (hc : DifferentiableAt 𝕜 c x) (f : F) :
     deriv (fun y => c y • f) x = deriv c x • f :=
@@ -156,9 +156,18 @@ nonrec theorem HasDerivAt.const_smul (c : R) (hf : HasDerivAt f f' x) :
 
 theorem derivWithin_const_smul (c : R) (hf : DifferentiableWithinAt 𝕜 f s x) :
     derivWithin (fun y => c • f y) s x = c • derivWithin f s x := by
-  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
-  · exact (hf.hasDerivWithinAt.const_smul c).derivWithin hxs
-  · simp [derivWithin_zero_of_isolated hxs]
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact (hf.hasDerivWithinAt.const_smul c).derivWithin hsx
+  · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
+
+/-- A variant of `derivWithin_const_smul` without differentiability assumption when the scalar
+multiplication is by field elements. -/
+lemma derivWithin_const_smul' {f : 𝕜 → F} {x : 𝕜} {R : Type*} [Field R] [Module R F]
+    [SMulCommClass 𝕜 R F] [ContinuousConstSMul R F] (c : R) :
+    derivWithin (fun y ↦ c • f y) s x = c • derivWithin f s x := by
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · simp [← fderivWithin_derivWithin, ← Pi.smul_def, fderivWithin_const_smul_field c hsx]
+  · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
 theorem deriv_const_smul (c : R) (hf : DifferentiableAt 𝕜 f x) :
     deriv (fun y => c • f y) x = c • deriv f x :=
@@ -169,15 +178,7 @@ multiplication is by field elements. -/
 lemma deriv_const_smul' {f : 𝕜 → F} {x : 𝕜} {R : Type*} [Field R] [Module R F] [SMulCommClass 𝕜 R F]
     [ContinuousConstSMul R F] (c : R) :
     deriv (fun y ↦ c • f y) x = c • deriv f x := by
-  by_cases hf : DifferentiableAt 𝕜 f x
-  · exact deriv_const_smul c hf
-  · rcases eq_or_ne c 0 with rfl | hc
-    · simp only [zero_smul, deriv_const']
-    · have H : ¬DifferentiableAt 𝕜 (fun y ↦ c • f y) x := by
-        contrapose! hf
-        conv => enter [2, y]; rw [← inv_smul_smul₀ hc (f y)]
-        exact DifferentiableAt.const_smul hf c⁻¹
-      rw [deriv_zero_of_not_differentiableAt hf, deriv_zero_of_not_differentiableAt H, smul_zero]
+  simp only [← derivWithin_univ, derivWithin_const_smul']
 
 end ConstSMul
 
@@ -193,7 +194,7 @@ theorem HasDerivWithinAt.mul (hc : HasDerivWithinAt c c' s x) (hd : HasDerivWith
     HasDerivWithinAt (fun y => c y * d y) (c' * d x + c x * d') s x := by
   have := (HasFDerivWithinAt.mul' hc hd).hasDerivWithinAt
   rwa [ContinuousLinearMap.add_apply, ContinuousLinearMap.smul_apply,
-    ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.smulRight_apply,
+    ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.smul_apply,
     ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, one_smul, one_smul,
     add_comm] at this
 
@@ -206,16 +207,16 @@ theorem HasStrictDerivAt.mul (hc : HasStrictDerivAt c c' x) (hd : HasStrictDeriv
     HasStrictDerivAt (fun y => c y * d y) (c' * d x + c x * d') x := by
   have := (HasStrictFDerivAt.mul' hc hd).hasStrictDerivAt
   rwa [ContinuousLinearMap.add_apply, ContinuousLinearMap.smul_apply,
-    ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.smulRight_apply,
+    ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.smul_apply,
     ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, one_smul, one_smul,
     add_comm] at this
 
 theorem derivWithin_mul (hc : DifferentiableWithinAt 𝕜 c s x)
     (hd : DifferentiableWithinAt 𝕜 d s x) :
     derivWithin (fun y => c y * d y) s x = derivWithin c s x * d x + c x * derivWithin d s x := by
-  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
-  · exact (hc.hasDerivWithinAt.mul hd.hasDerivWithinAt).derivWithin hxs
-  · simp [derivWithin_zero_of_isolated hxs]
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact (hc.hasDerivWithinAt.mul hd.hasDerivWithinAt).derivWithin hsx
+  · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
 @[simp]
 theorem deriv_mul (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d x) :
@@ -242,9 +243,9 @@ theorem HasStrictDerivAt.mul_const (hc : HasStrictDerivAt c c' x) (d : 𝔸) :
 
 theorem derivWithin_mul_const (hc : DifferentiableWithinAt 𝕜 c s x) (d : 𝔸) :
     derivWithin (fun y => c y * d) s x = derivWithin c s x * d := by
-  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
-  · exact (hc.hasDerivWithinAt.mul_const d).derivWithin hxs
-  · simp [derivWithin_zero_of_isolated hxs]
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact (hc.hasDerivWithinAt.mul_const d).derivWithin hsx
+  · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
 lemma derivWithin_mul_const_field (u : 𝕜') :
     derivWithin (fun y => v y * u) s x = derivWithin v s x * u := by
@@ -291,9 +292,9 @@ theorem HasStrictDerivAt.const_mul (c : 𝔸) (hd : HasStrictDerivAt d d' x) :
 
 theorem derivWithin_const_mul (c : 𝔸) (hd : DifferentiableWithinAt 𝕜 d s x) :
     derivWithin (fun y => c * d y) s x = c * derivWithin d s x := by
-  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
-  · exact (hd.hasDerivWithinAt.const_mul c).derivWithin hxs
-  · simp [derivWithin_zero_of_isolated hxs]
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact (hd.hasDerivWithinAt.const_mul c).derivWithin hsx
+  · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
 lemma derivWithin_const_mul_field (u : 𝕜') :
     derivWithin (fun y => u * v y) s x = u * derivWithin v s x := by
@@ -343,9 +344,9 @@ theorem derivWithin_finset_prod
     (hf : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (f i) s x) :
     derivWithin (∏ i ∈ u, f i ·) s x =
       ∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • derivWithin (f i) s x := by
-  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
-  · exact (HasDerivWithinAt.finset_prod fun i hi ↦ (hf i hi).hasDerivWithinAt).derivWithin hxs
-  · simp [derivWithin_zero_of_isolated hxs]
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact (HasDerivWithinAt.finset_prod fun i hi ↦ (hf i hi).hasDerivWithinAt).derivWithin hsx
+  · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
 end HasDeriv
 
@@ -454,9 +455,9 @@ theorem derivWithin_clm_comp (hc : DifferentiableWithinAt 𝕜 c s x)
     (hd : DifferentiableWithinAt 𝕜 d s x) :
     derivWithin (fun y => (c y).comp (d y)) s x =
       (derivWithin c s x).comp (d x) + (c x).comp (derivWithin d s x) := by
-  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
-  · exact (hc.hasDerivWithinAt.clm_comp hd.hasDerivWithinAt).derivWithin hxs
-  · simp [derivWithin_zero_of_isolated hxs]
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact (hc.hasDerivWithinAt.clm_comp hd.hasDerivWithinAt).derivWithin hsx
+  · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
 theorem deriv_clm_comp (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d x) :
     deriv (fun y => (c y).comp (d y)) x = (deriv c x).comp (d x) + (c x).comp (deriv d x) :=
@@ -484,9 +485,9 @@ theorem HasDerivAt.clm_apply (hc : HasDerivAt c c' x) (hu : HasDerivAt u u' x) :
 theorem derivWithin_clm_apply (hc : DifferentiableWithinAt 𝕜 c s x)
     (hu : DifferentiableWithinAt 𝕜 u s x) :
     derivWithin (fun y => (c y) (u y)) s x = derivWithin c s x (u x) + c x (derivWithin u s x) := by
-  rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
-  · exact (hc.hasDerivWithinAt.clm_apply hu.hasDerivWithinAt).derivWithin hxs
-  · simp [derivWithin_zero_of_isolated hxs]
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact (hc.hasDerivWithinAt.clm_apply hu.hasDerivWithinAt).derivWithin hsx
+  · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
 theorem deriv_clm_apply (hc : DifferentiableAt 𝕜 c x) (hu : DifferentiableAt 𝕜 u x) :
     deriv (fun y => (c y) (u y)) x = deriv c x (u x) + c x (deriv u x) :=

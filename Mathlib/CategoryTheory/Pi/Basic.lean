@@ -29,14 +29,6 @@ instance pi : Category.{max w₀ v₁} (∀ i, C i) where
   id X i := 𝟙 (X i)
   comp f g i := f i ≫ g i
 
-/-- This provides some assistance to typeclass search in a common situation,
-which otherwise fails. (Without this `CategoryTheory.Pi.has_limit_of_has_limit_comp_eval` fails.)
--/
-abbrev pi' {I : Type v₁} (C : I → Type u₁) [∀ i, Category.{v₁} (C i)] : Category.{v₁} (∀ i, C i) :=
-  CategoryTheory.pi C
-
-attribute [instance] pi'
-
 namespace Pi
 
 @[simp]
@@ -230,7 +222,6 @@ theorem pi_ext (f f' : A ⥤ ∀ i, C i) (h : ∀ i, f ⋙ (Pi.eval C i) = f' �
     have := congr_obj h X
     simpa
   · intro X Y g
-    dsimp
     funext i
     specialize h i
     have := congr_hom h g
