@@ -130,4 +130,5 @@ theorem scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
 
 theorem continuous_of_scottContinuous {α β} [OmegaCompletePartialOrder α]
     [OmegaCompletePartialOrder β] (f : Scott α → Scott β) (hf : ωScottContinuous f) :
-    Continuous f := by rw [continuous_def]; exact fun s hs ↦ hs.comp hf
+    Continuous f := by
+  rw [continuous_def]; exact fun s hs ↦ hs.comp hf
