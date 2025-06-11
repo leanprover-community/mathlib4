@@ -173,12 +173,12 @@ lemma addRothNumber_le_ruzsaSzemerediNumber :
   rw [← hscard, ← card_triangleIndices, ← card_triangles]
   exact (locallyLinear hs).le_ruzsaSzemerediNumber
 
-open Fin.CommRing in -- TODO: can this be refactored to avoid using the ring structure in the proof?
 lemma rothNumberNat_le_ruzsaSzemerediNumberNat (n : ℕ) :
     (2 * n + 1) * rothNumberNat n ≤ ruzsaSzemerediNumberNat (6 * n + 3) := by
   let α := Fin (2 * n + 1)
   have : Nat.Coprime 2 (2 * n + 1) := by simp
   haveI : Fact (IsUnit (2 : Fin (2 * n + 1))) := ⟨by simpa using (ZMod.unitOfCoprime 2 this).isUnit⟩
+  open scoped Fin.CommRing in
   calc
     (2 * n + 1) * rothNumberNat n
     _ = Fintype.card α * addRothNumber (Iio (n : α)) := by
