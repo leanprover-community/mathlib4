@@ -542,6 +542,8 @@ lemma H2π_comp_map :
 
 end H2
 
+end H2
+
 variable [DecidableEq G]
 
 variable (k G) in

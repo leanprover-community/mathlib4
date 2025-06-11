@@ -755,15 +755,10 @@ theorem isMulTwoCoboundary_of_mem_twoCoboundaries
 
 end ofMulDistribMulAction
 
-section Cohomology
-
 open ShortComplex
 
+section CocyclesIso
 section zeroCocyclesIso
-
-/-- We define the 0th group cohomology of a `k`-linear `G`-representation `A`, `H⁰(G, A)`, to be
-the invariants of the representation, `Aᴳ`. -/
-abbrev H0 := ModuleCat.of k A.ρ.invariants
 
 instance : Mono (shortComplexH0 A).f := by
   rw [ModuleCat.mono_iff_injective]
@@ -775,8 +770,6 @@ lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
   refine ⟨⟨x, fun g => ?_⟩, rfl⟩
   rw [← sub_eq_zero]
   exact congr_fun hx g
-
-section
 
 variable [DecidableEq G]
 
@@ -825,28 +818,8 @@ lemma cocyclesMk_0_eq (x : A.ρ.invariants) :
     exact (zeroCocyclesIso_inv_comp_iCocycles_apply A x).symm
 
 end zeroCocyclesIso
-section oneCocyclesIso
+section isoOneCocycles
 
-/-- We define the 1st group cohomology of a `k`-linear `G`-representation `A`, `H¹(G, A)`, to be
-1-cocycles (i.e. `Z¹(G, A) := Ker(d¹ : Fun(G, A) → Fun(G², A)`) modulo 1-coboundaries
-(i.e. `B¹(G, A) := Im(d⁰: A → Fun(G, A))`). -/
-abbrev H1 := (shortComplexH1 A).moduleCatLeftHomologyData.H
-
-/-- The quotient map `Z¹(G, A) → H¹(G, A).` -/
-abbrev H1π : ModuleCat.of k (oneCocycles A) ⟶ H1 A :=
-  (shortComplexH1 A).moduleCatLeftHomologyData.π
-
-variable {A} in
-lemma H1π_eq_zero_iff (x : oneCocycles A) : H1π A x = 0 ↔ ⇑x ∈ oneCoboundaries A := by
-  show (LinearMap.range ((dZero A).hom.codRestrict (oneCocycles A) _)).mkQ _ = 0 ↔ _
-  simp [LinearMap.range_codRestrict, oneCoboundaries]
-
-@[elab_as_elim]
-theorem H1_induction_on {C : H1 A → Prop}
-    (h : ∀ x : oneCocycles A, C (Submodule.Quotient.mk x)) (x : H1 A) :
-    C x := Quotient.inductionOn' x h
-
-section
 variable [DecidableEq G]
 
 /-- The short complex `A --dZero--> Fun(G, A) --dOne--> Fun(G × G, A)` is isomorphic to the 1st
@@ -867,12 +840,6 @@ lemma isoOneCocycles_hom_comp_i :
     (isoOneCocycles A).hom ≫ (shortComplexH1 A).moduleCatLeftHomologyData.i =
       iCocycles A 1 ≫ (oneCochainsIso A).hom := by
   simp [isoOneCocycles, iCocycles, HomologicalComplex.iCycles, iCycles]
-
-@[reassoc (attr := simp), elementwise (attr := simp)]
-lemma isoOneCocycles_inv_comp_iCocycles :
-    (isoOneCocycles A).inv ≫ iCocycles A 1 =
-      (shortComplexH1 A).moduleCatLeftHomologyData.i ≫ (oneCochainsIso A).inv :=
-  (CommSq.horiz_inv ⟨isoOneCocycles_hom_comp_i A⟩).w
 
 @[deprecated (since := "2025-05-09")]
 alias isoOneCocycles_hom_comp_subtype := isoOneCocycles_hom_comp_i
@@ -899,27 +866,8 @@ lemma cocyclesMk_1_eq (x : oneCocycles A) :
   simpa only [HomologicalComplex.i_cyclesMk] using
     (isoOneCocycles_inv_comp_iCocycles_apply _ x).symm
 
-end oneCocyclesIso
-section twoCocyclesIso
-
-/-- We define the 2nd group cohomology of a `k`-linear `G`-representation `A`, `H²(G, A)`, to be
-2-cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo 2-coboundaries
-(i.e. `B²(G, A) := Im(d¹: Fun(G, A) → Fun(G², A))`). -/
-abbrev H2 := (shortComplexH2 A).moduleCatLeftHomologyData.H
-
-/-- The quotient map `Z²(G, A) → H²(G, A).` -/
-abbrev H2π : ModuleCat.of k (twoCocycles A) ⟶ H2 A :=
-  (shortComplexH2 A).moduleCatLeftHomologyData.π
-
-variable {A} in
-lemma H2π_eq_zero_iff (x : twoCocycles A) : H2π A x = 0 ↔ ⇑x ∈ twoCoboundaries A := by
-  show (LinearMap.range ((dOne A).hom.codRestrict (twoCocycles A) _)).mkQ _ = 0 ↔ _
-  simp [LinearMap.range_codRestrict, twoCoboundaries]
-
-@[elab_as_elim]
-theorem H2_induction_on {C : H2 A → Prop}
-    (h : ∀ x : twoCocycles A, C (Submodule.Quotient.mk x)) (x : H2 A) :
-    C x := Quotient.inductionOn' x h
+end isoOneCocycles
+section isoTwoCocycles
 
 variable [DecidableEq G]
 
@@ -968,8 +916,8 @@ lemma cocyclesMk_2_eq (x : twoCocycles A) :
   simpa only [HomologicalComplex.i_cyclesMk] using
     (isoTwoCocycles_inv_comp_iCocycles_apply _ x).symm
 
-end twoCocyclesIso
-end cocyclesIso
+end isoTwoCocycles
+end CocyclesIso
 section Cohomology
 
 open ShortComplex
@@ -1162,15 +1110,6 @@ theorem H2_induction_on {C : H2 A → Prop} (x : H2 A) (h : ∀ x : twoCocycles 
   groupCohomology_induction_on x (fun y => by have := h ((isoTwoCocycles A).hom y); simpa [H2π])
 
 variable (A)
-
-lemma cocyclesMk_2_eq (x : twoCocycles A) :
-    cocyclesMk ((twoCochainsIso A).inv x) (by
-      simp [← inhomogeneousCochains.d_def, twoCocycles.dTwo_apply x]) =
-      (isoTwoCocycles A).inv x := by
-  apply_fun (forget₂ _ Ab).map ((inhomogeneousCochains A).iCycles 2) using
-    (AddCommGrp.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
-  simpa only [HomologicalComplex.i_cyclesMk] using
-    (isoTwoCocycles_inv_comp_iCocycles_apply _ x).symm
 
 /-- The 2nd group cohomology of `A`, defined as the 2nd cohomology of the complex of inhomogeneous
 cochains, is isomorphic to `twoCocycles A ⧸ twoCoboundaries A`, which is a simpler type. -/
