@@ -103,7 +103,9 @@ variable (R K F A n: Type*) [CommSemiring R] [Semiring K] [CommSemiring F] [Alge
 
 open Matrix
 
-def toTensorMartrix_toFun_bilinear:
+/-- The `K`-bilinear map sending `(k, M)` to `k • (1 ⊗ M i j)ᵢⱼ` where
+  `(1 ⊗ M i j)ᵢⱼ ∈ Mₙ(K ⊗ A)`. -/
+private def toTensorMatrix_toFun_bilinear:
     K →ₗ[F] Matrix n n A →ₗ[F] Matrix n n (K ⊗[F] A) where
   toFun k := {
     toFun M := k • Algebra.TensorProduct.includeRight.mapMatrix M
@@ -114,12 +116,12 @@ def toTensorMartrix_toFun_bilinear:
   map_smul' r k := by ext; simp
 
 @[simp]
-lemma toTensorMartrix_toFun_bilinear_apply (k : K) (M : Matrix n n A) :
-    toTensorMartrix_toFun_bilinear K F A n k M =
+lemma toTensorMatrix_toFun_bilinear_apply (k : K) (M : Matrix n n A) :
+    toTensorMatrix_toFun_bilinear K F A n k M =
     k • Algebra.TensorProduct.includeRight.mapMatrix M := rfl
 
 abbrev toTensorMatrix_toFun_Flinear: K ⊗[F] Matrix n n A →ₗ[F] Matrix n n (K ⊗[F] A) :=
-    TensorProduct.lift <| toTensorMartrix_toFun_bilinear K F A n
+    TensorProduct.lift <| toTensorMatrix_toFun_bilinear K F A n
 
 abbrev toTensorMatrix_toFun_Kliniear: K ⊗[F] Matrix n n A →ₗ[K] Matrix n n (K ⊗[F] A) :=
   {__ := toTensorMatrix_toFun_Flinear K F A n,
@@ -139,7 +141,7 @@ abbrev toTensorMatrix: K ⊗[F] Matrix n n A →ₐ[R] Matrix n n (K ⊗[F] A) :
     | zero => simp
     | tmul x0 M' =>
         simp only [tmul_mul_tmul, LinearMap.coe_restrictScalars, LinearMap.coe_mk, lift.tmul',
-          toTensorMartrix_toFun_bilinear_apply, AlgHom.mapMatrix_apply, smul_mul]
+          toTensorMatrix_toFun_bilinear_apply, AlgHom.mapMatrix_apply, smul_mul]
         rw [← AlgHom.coe_toRingHom, Matrix.map_mul, MulAction.mul_smul,
           ← smul_mul_assoc, ← smul_one_mul x0 (M'.map _), ← mul_assoc]
         congr 2
@@ -155,7 +157,8 @@ abbrev toTensorMatrix: K ⊗[F] Matrix n n A →ₐ[R] Matrix n n (K ⊗[F] A) :
 
 open TensorProduct
 
-def invFun_toFun_bilinear (i j : n): K →ₗ[F] A →ₗ[F] K ⊗[F] Matrix n n A where
+/-- THe `K`-bilinear inverse sending `(k, a)` to `k ⊗ (a • E_ij)` for some `i j : n`. -/
+private def invFun_toFun_bilinear (i j : n): K →ₗ[F] A →ₗ[F] K ⊗[F] Matrix n n A where
   toFun k := {
     toFun a := k ⊗ₜ single i j a
     map_add' _ _ := by simp [single_add, tmul_add]
@@ -203,12 +206,14 @@ lemma right_inv (M : Matrix n n (K ⊗[F] A)) :
   | tmul x y => simp [smul_tmul']
   | add _ _ h1 h2 => rw [map_add, map_add, h1, h2, single_add]
 
-def equivTensor' : K ⊗[F] Matrix n n A ≃ Matrix n n (K ⊗[F] A) where
+private def equivTensor' : K ⊗[F] Matrix n n A ≃ Matrix n n (K ⊗[F] A) where
   toFun := toTensorMatrix R K F A n
   invFun := invFun_linearMap K F A n
   left_inv := left_inv R K F A n
   right_inv := right_inv R K F A n
 
+/- The `R`-algebra isomorphism between `Mn(K ⊗[F] A)` and `K ⊗[F] Mₙ(A)`for `K` and `A` being
+  `R`-algebras and `F`-algebras. -/
 def matrixEquivTensorMatrix: K ⊗[F] Matrix n n A ≃ₐ[R] Matrix n n (K ⊗[F] A) :=
   {toTensorMatrix R K F A n, equivTensor' R K F A n with}
 
