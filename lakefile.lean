@@ -2,7 +2,6 @@ import Lake
 
 open Lake DSL
 
-
 /-!
 ## Mathlib dependencies on upstream projects
 -/

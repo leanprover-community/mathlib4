@@ -726,7 +726,7 @@ protected theorem liftOn'_mk (x : α) (f : α → β) (h) : (Quotient.mk s x).li
 @[simp]
 protected theorem liftOn₂'_mk {t : Setoid β} (f : α → β → γ) (h) (a : α) (b : β) :
     Quotient.liftOn₂' (Quotient.mk s a) (Quotient.mk t b) f h = f a b :=
-  Quotient.liftOn₂'_mk'' _ _ _ _
+  rfl
 
 theorem map'_mk {t : Setoid β} (f : α → β) (h) (x : α) :
     (Quotient.mk s x).map' f h = (Quotient.mk t (f x)) :=
