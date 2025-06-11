@@ -956,7 +956,7 @@ def H0IsoOfIsTrivial [DecidableEq G] [A.IsTrivial] :
 @[deprecated (since := "2025-05-09")]
 noncomputable alias H0LequivOfIsTrivial := H0IsoOfIsTrivial
 
-@[elementwise (attr := simp)]
+@[simp, elementwise]
 theorem H0IsoOfIsTrivial_hom [A.IsTrivial] :
     (H0IsoOfIsTrivial A).hom = (H0Iso A).hom ≫ (shortComplexH0 A).f := rfl
 
