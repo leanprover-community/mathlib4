@@ -767,9 +767,9 @@ lemma getVert_eq_support_getElem {u v : V} {n : ℕ} (p : G.Walk u v) (h2 : n �
         simp only [hn, ↓reduceDIte]
         exact getVert_eq_support_getElem q (Nat.sub_le_of_le_add h2)
 
-lemma getVert_eq_support_getElem? {u v : V} {n : ℕ} (p : G.Walk u v) (h2 : n ≤ p.length) :
+lemma getVert_eq_support_getElem? {u v : V} {n : ℕ} (p : G.Walk u v) (h : n ≤ p.length) :
     p.getVert n = p.support[n]? := by
-  rw [getVert_eq_support_getElem p h2, ← List.getElem?_eq_getElem]
+  rw [getVert_eq_support_getElem p h, ← List.getElem?_eq_getElem]
 
 @[deprecated (since := "2025-06-10")]
 alias getVert_eq_support_get? := getVert_eq_support_getElem?
