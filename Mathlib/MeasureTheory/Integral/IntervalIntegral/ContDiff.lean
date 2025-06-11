@@ -18,10 +18,12 @@ open MeasureTheory Set Filter Function Asymptotics
 
 open scoped Topology ENNReal Interval NNReal
 
-variable {ι 𝕜 E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {ι 𝕜 E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {f : ℝ → E} {a b : ℝ}
 
 namespace intervalIntegral
+
+variable [CompleteSpace E]
 
 /-- Fundamental theorem of calculus-2: If `f : ℝ → E` is `C^1` on `[a, b]`,
 then `∫ y in a..b, deriv f y` equals `f b - f a`. -/
@@ -76,3 +78,22 @@ theorem integral_derivWithin_uIcc_of_contDiffOn_uIcc (h : ContDiffOn ℝ 1 f (uI
     abel
 
 end intervalIntegral
+
+theorem enorm_sub_le_lintegral_deriv_of_contDiffOn_Icc (h : ContDiffOn ℝ 1 f (Icc a b))
+    (hab : a ≤ b) :
+    ‖f b - f a‖ₑ ≤ ∫⁻ x in Icc a b, ‖deriv f x‖ₑ := by
+  let g := UniformSpace.Completion.toComplₗᵢ (𝕜 := ℝ) (E := E)
+  have : ‖(g ∘ f) b - (g ∘ f) a‖ₑ = ‖f b - f a‖ₑ := by
+    rw [← edist_eq_enorm_sub, Function.comp_def, g.isometry.edist_eq, edist_eq_enorm_sub]
+  rw [← this,
+    ← intervalIntegral.integral_deriv_of_contDiffOn_Icc (g.contDiff.comp_contDiffOn h) hab,
+    intervalIntegral.integral_of_le hab, restrict_Ioc_eq_restrict_Icc]
+  apply (enorm_integral_le_lintegral_enorm _).trans
+  apply lintegral_mono_ae
+  rw [← restrict_Ioo_eq_restrict_Icc]
+  filter_upwards [self_mem_ae_restrict measurableSet_Ioo] with x hx
+  rw [fderiv_comp_deriv]; rotate_left
+  · exact (g.contDiff.differentiable le_rfl).differentiableAt
+  · exact ((h x ⟨hx.1.le, hx.2.le⟩).contDiffAt (Icc_mem_nhds hx.1 hx.2)).differentiableAt le_rfl
+  have : fderiv ℝ g (f x) = g.toContinuousLinearMap := g.toContinuousLinearMap.fderiv
+  simp [this]
