@@ -81,12 +81,10 @@ def _root_.Lean.MVarId.grewrite (goal : MVarId) (e : Expr) (hrel : Expr)
 
     -- If we can use the normal `rewrite` tactic, we default to using that.
     if (hrelType.isAppOfArity ``Iff 2 || hrelType.isAppOfArity ``Eq 3) && config.useRewrite then
-      let ⟨eNew, eqProof, subgoals⟩ ← goal.rewrite e hrel symm config.toConfig
-      let proof ← if forwardImp then
-        mkAppOptM ``Eq.mp #[e, eNew, eqProof]
-      else
-        mkAppOptM ``Eq.mpr #[eNew, e, eqProof]
-      return ⟨eNew, proof, subgoals⟩
+      let { eNew, eqProof, mvarIds } ← goal.rewrite e hrel symm config.toConfig
+      let mp := if forwardImp then ``Eq.mp else ``Eq.mpr
+      let impProof ← mkAppOptM mp #[e, eNew, eqProof]
+      return { eNew, impProof, mvarIds }
 
     let hrelIn := hrel
     -- check that `hrel` proves a relation
