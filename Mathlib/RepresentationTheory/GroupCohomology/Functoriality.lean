@@ -155,7 +155,7 @@ theorem map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
 
 @[reassoc, elementwise]
 theorem π_map (n : ℕ) :
-    groupCohomologyπ A n ≫ map f φ n = cocyclesMap f φ n ≫ groupCohomologyπ B n := by
+    π A n ≫ map f φ n = cocyclesMap f φ n ≫ π B n := by
   simp [map, cocyclesMap]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
@@ -246,7 +246,7 @@ variable [DecidableEq G] [DecidableEq H]
 theorem map_H0Iso_hom_f :
     map f φ 0 ≫ (H0Iso B).hom ≫ (shortComplexH0 B).f =
       (H0Iso A).hom ≫ (shortComplexH0 A).f ≫ φ.hom := by
-  simp [← cancel_epi (groupCohomologyπ _ _)]
+  simp [← cancel_epi (π _ _)]
 
 @[deprecated (since := "2025-06-09")]
 alias H0Map_comp_f := map_H0Iso_hom_f
