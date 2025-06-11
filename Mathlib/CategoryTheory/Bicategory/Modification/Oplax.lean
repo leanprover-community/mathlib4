@@ -13,7 +13,7 @@ In this file we define modifications of oplax and strong transformations of opla
 
 A modification `Γ` between oplax transformations `η` and `θ` (of oplax functors) consists of a
 family of 2-morphisms `Γ.app a : η.app a ⟶ θ.app a`, which for all 1-morphisms `f : a ⟶ b`
-satisfies the equation `(F.map f ◁ app b) ≫ θ.naturality f = η.naturality f ≫ app a ▷ G.map f`.
+satisfies the equation `(F.map f ◁ app b) ≫ θ.naturality f = η.naturality f ≫ (app a ▷ G.map f)`.
 
 Modifications between strong transformations are defined similarly.
 
@@ -26,7 +26,7 @@ Given two oplax functors `F` and `G`, we define:
 * `OplaxTrans.homCategory F G`: the category structure on the oplax transformations
   between `F` and `G`, where composition is given by vertical composition.
 
-* `StrongTrans.Modification η θ`: modifications between oplax transformations `η` and `θ` between
+* `StrongTrans.Modification η θ`: modifications between strong transformations `η` and `θ` between
   `F` and `G`.
 * `StrongTrans.homCategory F G`: the category structure on the strong transformations
   between `F` and `G`, where composition is given by vertical composition. Note that this a scoped
