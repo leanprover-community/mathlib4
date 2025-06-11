@@ -901,14 +901,8 @@ def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
 @[simp]
 lemma drop_length {u v : V} (p : G.Walk u v) (n : ℕ) : (p.drop n).length = p.length - n := by
   induction p generalizing n with
-  | nil => unfold drop; simp_all
-  | cons h q ih =>
-      unfold drop
-      by_cases h₂ : n = 0
-      · subst h₂
-        simp
-      · obtain ⟨_, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h₂
-        simp_all
+  | nil => simp [drop]
+  | cons => cases n <;> simp_all [drop]
 
 @[simp]
 lemma drop_getVert {u v : V} (p : G.Walk u v) (n m : ℕ) :
