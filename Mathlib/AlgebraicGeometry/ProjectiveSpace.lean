@@ -210,6 +210,19 @@ theorem dehomogenise_X_powers {σ R : Type*} [CommSemiring R] (i : σ)
     (d : Submonoid.powers (X (R:=R) i)) : dehomogenise (R:=R) i d = 1 :=
   dehomogenise_of_mem_X_powers d.2
 
+/-- Functoriality. -/
+theorem map_comp_dehomogenise {σ R S : Type*} [CommSemiring R] [CommSemiring S]
+      (f : R →+* S) (i : σ) :
+    (map f).comp (RingHomClass.toRingHom (dehomogenise (R:=R) i)) =
+      (RingHomClass.toRingHom (dehomogenise (R:=S) i)).comp (map f) :=
+  ringHom_ext (by simp) fun k ↦ by by_cases h : k = i <;> simp [h]
+
+/-- Functoriality. -/
+theorem map_dehomogenise {σ R S : Type*} [CommSemiring R] [CommSemiring S]
+      (f : R →+* S) (i : σ) (p : MvPolynomial σ R) :
+    map f (dehomogenise i p) = dehomogenise i (map f p) :=
+  RingHom.congr_fun (map_comp_dehomogenise f i) p
+
 /-- Map `Xⱼ/Xᵢ` to `Xⱼ`, contracting away the variable `Xᵢ`. -/
 noncomputable def contract {σ : Type*} (R : Type*) [CommRing R] (i : σ) :
     Away (homogeneousSubmodule σ R) (X i) →ₐ[R] MvPolynomial { k // k ≠ i } R where
@@ -743,7 +756,7 @@ instance ULift.algebra' {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A
 
 namespace AlgebraicGeometry
 
-open CategoryTheory.Limits TensorProduct
+/- open CategoryTheory.Limits TensorProduct
 
 /-- `Spec R ⨯ Spec S ≅ Spec (R ⊗[ℤ] S)`, using pullback to replace product. -/
 noncomputable def pullbackTerminalSpecIso (R S : Type u) [CommRing R] [CommRing S] :
@@ -753,7 +766,27 @@ noncomputable def pullbackTerminalSpecIso (R S : Type u) [CommRing R] [CommRing 
       (terminal.hom_ext ..) (terminal.hom_ext ..) ≪≫
     pullbackSpecIso (ULift.{u} ℤ) R S ≪≫
     Scheme.Spec.mapIso (RingEquiv.toCommRingCatIso <| RingEquivClass.toRingEquiv <|
-        Algebra.TensorProduct.equivOfCompatibleSMul ..).op
+        Algebra.TensorProduct.equivOfCompatibleSMul ..).op -/
+
+lemma AffineSpace.SpecIso_Int {n : Type v} :
+    (AffineSpace.SpecIso n (.of (ULift.{max u v} ℤ))).hom =
+      toSpecMvPoly n (Spec (.of (ULift.{max u v} ℤ))) := by
+  refine (toSpecMvPolyIntEquiv n).injective (funext fun i ↦ ?_)
+  rw [toSpecMvPolyIntEquiv_apply, SpecIso_hom_appTop]
+  simp [coord]
+
+lemma AffineSpace.map_comp_SpecIso {n : Type v} {R : Type max u v} [CommRing R] :
+    map n (Spec.map (CommRingCat.ofHom (algebraMap _ _))) ≫
+        (AffineSpace.SpecIso n (.of (ULift.{max u v} ℤ))).hom =
+      toSpecMvPoly n (Spec (.of R)) := by
+  rw [← map_toSpecMvPoly (Spec.map (CommRingCat.ofHom (algebraMap (ULift ℤ) R))), SpecIso_Int]
+
+lemma AffineSpace.SpecIso_comp_map {n : Type v} {R : Type max u v} [CommRing R] :
+    (AffineSpace.SpecIso n (.of R)).hom ≫
+        Spec.map (CommRingCat.ofHom (MvPolynomial.map (algebraMap _ _))) =
+      toSpecMvPoly n (Spec (.of R)) := by
+  rw [← AffineSpace.map_comp_SpecIso, map_Spec_map, Category.assoc, Category.assoc,
+    Iso.inv_hom_id, Category.comp_id, CommRingCat.hom_ofHom]
 
 end AlgebraicGeometry
 
@@ -996,19 +1029,17 @@ theorem Spec_away₂Inl_range :
 
 variable {n} in
 def opens₂IsoSpecAway₂ (R : Type max u v) [CommRing R] (i j : n) :
-    opens₂ (Spec (.of R)) i j ≅ Spec (.of (away₂ R i j)) :=
-  AlgebraicGeometry.IsOpenImmersion.isoOfRangeEq
+    opens₂ (Spec (.of R)) i j ≅ Spec (.of (away₂ R i j)) := by
+  refine AlgebraicGeometry.IsOpenImmersion.isoOfRangeEq
     (opens₂Fst _ i j ≫ (AffineSpace.SpecIso _ (.of R)).hom)
-    (Spec.map <| CommRingCat.ofHom <| away₂Inl R i j)
-    (by rw [Spec_away₂Inl_range, Scheme.comp_base, hom_comp, Set.range_comp, range_opens₂Fst,
-      eq_comm, ← Set.preimage_eq_iff_eq_image (by exact ConcreteCategory.bijective_of_isIso _)])
-
-#check AlgebraicGeometry.IsOpenImmersion.isoOfRangeEq
-#check PrimeSpectrum.localization_away_comap_range
-#check Scheme.iso_hom_base_inv_base
-#check Scheme.isIso_base
-#check hom_isIso
-#check ConcreteCategory.bijective_of_isIso
+    (Spec.map <| CommRingCat.ofHom <| away₂Inl R i j) ?_
+  rw [Spec_away₂Inl_range, Scheme.comp_base, hom_comp, Set.range_comp, range_opens₂Fst,
+    ← AffineSpace.toSpecMvPoly, ← AffineSpace.SpecIso_comp_map, Scheme.comp_base, hom_comp,
+    Set.preimage_comp, Spec.map_base, CommRingCat.hom_ofHom, ← TopCat.Hom.hom, ← TopCat.Hom.hom,
+    TopCat.hom_ofHom, ← TopologicalSpace.Opens.coe_comap]
+  conv => enter [1,2,2,1]; exact PrimeSpectrum.comap_basicOpen ..
+  rw [map_dehomogenise, map_X]
+  exact Set.image_preimage_eq _ (ConcreteCategory.bijective_of_isIso _).surjective
 
 /- Notes:
 `SpecIso` is constructed using multiple steps. First we construct all of the intermediate objects:
