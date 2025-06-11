@@ -38,6 +38,7 @@ variable {μa : Measure α} {μb : Measure β} {μc : Measure γ} {μd : Measure
 
 /-- `f` is a measure preserving map w.r.t. measures `μa` and `μb` if `f` is measurable
 and `map f μa = μb`. -/
+@[fun_prop]
 structure MeasurePreserving (f : α → β)
   (μa : Measure α := by volume_tac) (μb : Measure β := by volume_tac) : Prop where
   protected measurable : Measurable f
@@ -49,6 +50,7 @@ protected theorem _root_.Measurable.measurePreserving
 
 namespace MeasurePreserving
 
+@[fun_prop]
 protected theorem id (μ : Measure α) : MeasurePreserving id μ μ :=
   ⟨measurable_id, map_id⟩
 
@@ -82,10 +84,12 @@ theorem aemeasurable_comp_iff {f : α → β} (hf : MeasurePreserving f μa μb)
     (h₂ : MeasurableEmbedding f) {g : β → γ} : AEMeasurable (g ∘ f) μa ↔ AEMeasurable g μb := by
   rw [← hf.map_eq, h₂.aemeasurable_map_iff]
 
+@[fun_prop]
 protected theorem quasiMeasurePreserving {f : α → β} (hf : MeasurePreserving f μa μb) :
     QuasiMeasurePreserving f μa μb :=
   ⟨hf.1, hf.2.absolutelyContinuous⟩
 
+@[fun_prop]
 protected theorem comp {g : β → γ} {f : α → β} (hg : MeasurePreserving g μb μc)
     (hf : MeasurePreserving f μa μb) : MeasurePreserving (g ∘ f) μa μc :=
   ⟨hg.1.comp hf.1, by rw [← map_map hg.1 hf.1, hf.2, hg.2]⟩

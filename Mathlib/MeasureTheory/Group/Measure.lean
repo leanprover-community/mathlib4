@@ -71,12 +71,12 @@ section MeasurableMul
 
 variable [MeasurableMul G]
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem measurePreserving_mul_left (μ : Measure G) [IsMulLeftInvariant μ] (g : G) :
     MeasurePreserving (g * ·) μ μ :=
   ⟨measurable_const_mul g, map_mul_left_eq_self μ g⟩
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem MeasurePreserving.mul_left (μ : Measure G) [IsMulLeftInvariant μ] (g : G) {X : Type*}
     [MeasurableSpace X] {μ' : Measure X} {f : X → G} (hf : MeasurePreserving f μ' μ) :
     MeasurePreserving (fun x => g * f x) μ' μ :=
@@ -87,7 +87,7 @@ theorem measurePreserving_mul_right (μ : Measure G) [IsMulRightInvariant μ] (g
     MeasurePreserving (· * g) μ μ :=
   ⟨measurable_mul_const g, map_mul_right_eq_self μ g⟩
 
-@[to_additive]
+@[to_additive (attr := fun_prop)]
 theorem MeasurePreserving.mul_right (μ : Measure G) [IsMulRightInvariant μ] (g : G) {X : Type*}
     [MeasurableSpace X] {μ' : Measure X} {f : X → G} (hf : MeasurePreserving f μ' μ) :
     MeasurePreserving (fun x => f x * g) μ' μ :=
