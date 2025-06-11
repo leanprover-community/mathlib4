@@ -549,9 +549,6 @@ theorem comp_comp_symm_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤
   rcases comp_symm_mem_uniformity_sets w_in with ⟨t, t_in, t_symm, t_sub⟩
   use t, t_in, t_symm
   have : t ⊆ t ○ t := subset_comp_self_of_mem_uniformity t_in
-  -- Porting note: Needed the following `have`s to make `mono` work
-  have ht := Subset.refl t
-  have hw := Subset.refl w
   calc
     t ○ t ○ t ⊆ w ○ (t ○ t) := by gcongr
     _ ⊆ w ○ w := by gcongr
