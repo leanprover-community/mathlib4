@@ -944,17 +944,8 @@ lemma take_length {u v : V} (p : G.Walk u v) (n : ℕ) : (p.take n).length = n �
 lemma take_getVert {u v : V} (p : G.Walk u v) (n m : ℕ) :
     (p.take n).getVert m = p.getVert (n ⊓ m) := by
   induction p generalizing n m with
-  | nil => unfold take; simp_all
-  | cons h q ih =>
-      unfold take
-      by_cases h₂ : n = 0
-      · subst h₂
-        simp
-      · obtain ⟨_, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h₂
-        by_cases h₃ : m = 0
-        · simp [h₃]
-        · obtain ⟨_, rfl⟩ := Nat.exists_eq_succ_of_ne_zero h₃
-          simp_all
+  | nil => simp [take]
+  | cons => cases n <;> cases m <;> simp_all [take]
 
 /-- The penultimate vertex of a walk, or the only vertex in a nil walk. -/
 abbrev penultimate (p : G.Walk u v) : V := p.getVert (p.length - 1)
