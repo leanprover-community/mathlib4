@@ -455,7 +455,6 @@ theorem taylorWithinEval_eq {f : Real → Real} {x₀ : Real} {d : Nat}
     taylorWithinEval f d s x₀ = taylorWithinEval f d Set.univ x₀ := by
   ext x
   rw [taylorWithinEval, taylorWithinEval, taylorWithin_eq hx hs hf]
-#check iteratedDerivWithin_comp_const_smul
 
 /-- **Taylor's theorem** with the general mean value form of the remainder for `x < x₀`.
 
