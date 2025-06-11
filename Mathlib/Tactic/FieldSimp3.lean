@@ -80,23 +80,16 @@ theorem add_eq_eval₁ [DivInvMonoid M] (a₁ : ℤ × M) {a₂ : ℤ × M} {l�
 
 theorem add_eq_eval₂ [Field M] (r₁ r₂ : ℤ) (x : M)
     {l₁ l₂ l : NF M} (h : l₁.eval * l₂.eval = l.eval) :
-    ((r₁, x) ::ᵣ l₁).eval * ((r₂, x) ::ᵣ l₂).eval = ((r₁ * r₂, x) ::ᵣ l).eval := by
-  simp only [← h, eval_cons, add_smul, add_assoc]
-  -- congr! 1
-  sorry
-  -- simp only [← add_assoc]
-  -- congr! 1
-  -- rw [add_comm]
+    ((r₁, x) ::ᵣ l₁).eval * ((r₂, x) ::ᵣ l₂).eval = ((r₁ + r₂, x) ::ᵣ l).eval := by
+  have : x ^ (r₁ + r₂) = x ^ r₁ * x ^ r₂ := by refine zpow_add' sorry
+  simp only [← h, eval_cons, add_smul, this]
+  ring
 
 theorem add_eq_eval₃ [Field M] {a₁ : ℤ × M} (a₂ : ℤ × M)
     {l₁ l₂ l : NF M} (h : (a₁ ::ᵣ l₁).eval * l₂.eval = l.eval) :
     (a₁ ::ᵣ l₁).eval * (a₂ ::ᵣ l₂).eval = (a₂ ::ᵣ l).eval := by
-  sorry
-  -- simp only [eval_cons, ← h]
-  -- nth_rw 4 [add_comm]
-  -- simp only [add_assoc]
-  -- congr! 2
-  -- rw [add_comm]
+  simp only [eval_cons, ← h]
+  ring
 
 theorem add_eq_eval [Field M]
     {l₁ l₂ l : NF M} {l₁' : NF M} {l₂' : NF M}
@@ -109,12 +102,14 @@ theorem sub_eq_eval₁ [Field M](a₁ : ℤ × M) {a₂ : ℤ × M} {l₁ l₂ l
     (h : l₁.eval - (a₂ ::ᵣ l₂).eval = l.eval) :
     (a₁ ::ᵣ l₁).eval - (a₂ ::ᵣ l₂).eval = (a₁ ::ᵣ l).eval := by
   simp only [eval_cons, ← h, sub_eq_add_neg, add_assoc]
+  -- MR: don't we need some hypothesis between a₁ and a₂?
   sorry
 
 theorem sub_eq_eval₂ [Field M] (r₁ r₂ : ℤ) (x : M) {l₁ l₂ l : NF M}
     (h : l₁.eval - l₂.eval = l.eval) :
     ((r₁, x) ::ᵣ l₁).eval - ((r₂, x) ::ᵣ l₂).eval = ((r₁ - r₂, x) ::ᵣ l).eval := by
   simp only [← h, eval_cons, sub_smul, sub_eq_add_neg, neg_add, add_smul, neg_smul, add_assoc]
+  -- MR: this goal seems very wrong
   -- congr! 1
   sorry
   -- simp only [← add_assoc]
@@ -140,21 +135,19 @@ theorem sub_eq_eval [Field M]
 instance : Inv (NF M) where
   inv l := l.map fun (a, x) ↦ (-a, x)
 
-theorem eval_neg [Field M] (l : NF M) : (l⁻¹).eval = l.eval⁻¹ := by
+theorem eval_inv [Field M] (l : NF M) : (l⁻¹).eval = l.eval⁻¹ := by
+  simp only [NF.eval, List.map_map, List.prod_inv, NF.instInv]
+  -- was: congr; ext p; simp
   sorry
-  -- simp only [NF.eval, List.map_map, List.prod_neg, NF.instNeg]
-  -- congr
-  -- ext p
-  -- simp
 
 theorem zero_sub_eq_eval [Field M] (l : NF M) :
     1 / l.eval = (l⁻¹).eval := by
-  simp [eval_neg]
+  simp [eval_inv]
 
 theorem neg_eq_eval [Field M] [Semiring S] [Module S M] {l : NF M}
     {l₀ : NF M} (hl : l.eval = l₀.eval) {x : M} (h : x = l₀.eval) :
     x⁻¹ = (l⁻¹).eval := by
-  rw [h, ← hl, eval_neg]
+  rw [h, ← hl, eval_inv]
 
 instance : Pow (NF M) ℤ where
   pow l r := l.map fun (a, x) ↦ (r * a, x)
@@ -165,8 +158,7 @@ instance : Pow (NF M) ℤ where
 theorem eval_smul [Field M] {l : NF M} {x : M} (h : x = l.eval)
     (r : ℤ) : (l ^ r).eval = x ^ r := by
   unfold NF.eval at h ⊢
-  sorry
-  -- simp only [h, smul_sum, map_map, NF.smul_apply]
+  simp only [h, smul_sum, map_map, NF.smul_apply] -- smul_sum makes no sense
   -- congr
   -- ext p
   -- simp [mul_smul]
@@ -186,16 +178,16 @@ theorem eq_cons_cons [DivInvMonoid M] {r₁ r₂ : ℤ} (m : M) {l₁ l₂ : NF 
 theorem eq_cons_const [Field M] {r : ℤ} (m : M) {n : M}
     {l : NF M} (h1 : r = 1) (h2 : l.eval = n) :
     ((r, m) ::ᵣ l).eval = n := by
+  simp only [NF.eval, NF.cons] at *
+  simp [h1, h2] -- false as-is
   sorry
-  -- simp only [NF.eval, NF.cons] at *
-  -- simp [h1, h2]
 
 theorem eq_const_cons [Field M] {r : ℤ} (m : M) {n : M}
     {l : NF M} (h1 : 1 = r) (h2 : n = l.eval) :
     n = ((r, m) ::ᵣ l).eval := by
-  sorry
-  -- simp only [NF.eval, NF.cons] at *
-  -- simp [← h1, h2]
+  simp only [NF.eval, NF.cons] at *
+  simp [← h1, h2]
+  sorry -- current goal is false
 
 theorem eq_of_eval_eq_eval [Field M]
     {l₁ l₂ : NF M} {l₁' : NF M} {l₂' : NF M}
