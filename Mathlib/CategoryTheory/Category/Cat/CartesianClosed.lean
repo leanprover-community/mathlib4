@@ -21,7 +21,7 @@ universe v u v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
 
-open Functor
+open Functor Cat
 
 namespace Cat
 
@@ -42,30 +42,39 @@ variable {B : Type u₁} [Category.{v₁} B] {C : Type u₂} [Category.{v₂} C]
   [Category.{v₃} D] {E : Type u₄} [Category.{v₄} E]
 
 /-- The isomorphism of categories of bifunctors given by currying. -/
-@[simps]
-def curryingIso : C ⥤ D ⥤ E ≅ C × D ⥤ E where
-  hom F := uncurry.obj F
-  inv G := curry.obj G
-  hom_inv_id := types_ext _ _ (fun F ↦ curry_obj_uncurry_obj F)
-  inv_hom_id := types_ext _ _ (fun F ↦ uncurry_obj_curry_obj F)
+@[simps!]
+def curryingIso : Cat.of (C ⥤ D ⥤ E) ≅ Cat.of (C × D ⥤ E) :=
+  isoOfEquiv CategoryTheory.currying
+    Functor.curry_obj_uncurry_obj (by aesop)
+    Functor.uncurry_obj_curry_obj (by aesop)
 
 /-- The isomorphism of categories of bifunctors given by flipping the arguments. -/
-@[simps]
-def flippingIso : C ⥤ D ⥤ E ≅ D ⥤ C ⥤ E where
-  hom F := F.flip
-  inv F := F.flip
-  hom_inv_id := types_ext _ _ (fun _ ↦ rfl)
-  inv_hom_id := types_ext _ _ (fun _ ↦ rfl)
+@[simps!]
+def flippingIso : Cat.of (C ⥤ D ⥤ E) ≅ Cat.of (D ⥤ C ⥤ E) :=
+  isoOfEquiv CategoryTheory.flipping
+    Functor.flip_flip (by aesop)
+    Functor.flip_flip (by aesop)
+
+/-- The equivalence of types of bifunctors giving by flipping the arguments. -/
+@[simps!]
+def flippingEquiv : C ⥤ D ⥤ E ≃ D ⥤ C ⥤ E where
+  toFun F := F.flip
+  invFun F := F.flip
+  left_inv := fun _ ↦ rfl
+  right_inv := fun _ ↦ rfl
 
 /-- The equivalence of types of bifunctors given by currying. -/
 @[simps!]
-def curryingEquiv : C ⥤ D ⥤ E ≃ C × D ⥤ E :=
-  curryingIso.toEquiv
+def curryingEquiv : C ⥤ D ⥤ E ≃ C × D ⥤ E where
+  toFun F := uncurry.obj F
+  invFun G := curry.obj G
+  left_inv := fun F ↦ curry_obj_uncurry_obj F
+  right_inv := fun G ↦ uncurry_obj_curry_obj G
 
 /-- The flipped equivalence of types of bifunctors given by currying. -/
 @[simps!]
 def curryingFlipEquiv : D ⥤ C ⥤ E ≃ C × D ⥤ E :=
-  (flippingIso ≪≫ curryingIso).toEquiv
+  flippingEquiv.trans curryingEquiv
 
 /-- Natural isomorphism witnessing `comp_flip_uncurry_eq`. -/
 @[simps!]
