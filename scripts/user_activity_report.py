@@ -8,7 +8,7 @@ and access level, sorted by age of last commit (most recent first).
 
 Features:
 - Fetches repository collaborators and organization members
-- Caches user lists (24h TTL) and commit data (6h TTL) for performance
+- Caches user lists (24h expiry) and commit data (6h expiry) for performance
 - Supports filtering by access level (--admin, --write)
 - Supports single user analysis (--user USERNAME)
 - Supports limiting results for debugging (--limit N)
