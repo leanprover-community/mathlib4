@@ -1296,7 +1296,8 @@ noncomputable def rho_g := ((GRepW (G := G)).restrict ((GRepW_base (G := G)).ran
 def rho_g_closure := _root_.closure (rho_g (G := G)).carrier
 
 instance GL_W_proper: ProperSpace (GL_W (G := G)) := by
-  sorry
+  unfold GL_W
+  apply FiniteDimensional.RCLike.properSpace_submodule
 
 
 --   apply FiniteDimensional.proper_rclike (K := ℂ)
@@ -1371,7 +1372,16 @@ lemma rho_g_case_infinite (hr: Infinite (↥(rho_g (G := G)))): Nonempty (Theore
   obtain ⟨H, H_abelian, H_finite_index⟩ := rho_g_contains_abelian (G := G)
   -- TODO - generalize this to a lemma: finite-index subgroup of an infinite group is infinite
   -- and upstream to mathlib
-  have h_fg: Group.FG H := by infer_instance
+
+
+  --have h_commgroup: CommGroup H := by
+  --  apply CommGroup.ofIsMulCommutative
+
+  have h_fg: Group.FG ↥H := by infer_instance
+  --have h_fg_comm: @Group.FG ↥H CommGroup.toGroup := by
+  --  dsimp [CommGroup.toGroup]
+  --  exact h_fg
+
   have card_mul := Subgroup.card_mul_index H
   rw [Nat.card_eq_zero_of_infinite (α := rho_g (G := G))] at card_mul
   rw [Nat.mul_eq_zero] at card_mul
@@ -1380,10 +1390,25 @@ lemma rho_g_case_infinite (hr: Infinite (↥(rho_g (G := G)))): Nonempty (Theore
   simp at card_mul
   obtain h_infinite := card_mul
 
-  have h_commgroup: CommGroup H := by
-    apply CommGroup.ofIsMulCommutative
 
-  obtain ⟨i, x, n, h_n, h_iso⟩ := CommGroup.equiv_prod_multiplicative_zmod_of_finite ↥H
+  -- TODO - figure out how to make instance inference work here
+  obtain ⟨i, j, i_fin, j_fin, p, p_prime, e, exists_iso⟩ := @CommGroup.equiv_free_prod_directSum_zmod H (by apply CommGroup.ofIsMulCommutative) (h_fg)
+  have iso := Classical.choice exists_iso
+  have hom := iso.surjective
+
+  have j_nonempty: Nonempty j := by
+    sorry
+
+  -- TODO - can we get the comp '∘' syntax to give us a monoid hom, instead of a plain function?
+  have z_surjection := (Pi.evalMonoidHom _ (Classical.choice (by
+    exact j_nonempty
+  ))).comp ((MonoidHom.fst _ _).comp iso.toMonoidHom)
+
+  sorry
+
+
+
+
 
 
 

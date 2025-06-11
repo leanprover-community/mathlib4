@@ -205,6 +205,4 @@ theorem equiv_free_prod_directSum_zmod (G : Type*) [CommGroup G] [hG : Group.FG 
   )⟩
   --use (MulEquiv.toAdditive.symm <| equiv.some.trans <| Equiv.prodCongr (sorry) (sorry))
 
-
-
 end CommGroup
