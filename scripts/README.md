@@ -41,6 +41,20 @@ to learn about it as well!
   It assumes that the only difference between master and the current status of the PR consists
   of renames. More precisely, any change on a line that contains a declaration name
   and is not a rename, will likely confuse the script.
+- `migrate_to_fork.py`
+  Helps contributors migrate from having direct write access to the main repository
+  to using a fork-based workflow. This comprehensive script automates the entire migration process:
+  * Validates the current branch (prevents migration of system branches like master, nightly-testing)
+  * Checks GitHub CLI installation/authentication with OS-specific installation instructions
+  * Creates or syncs a fork of mathlib4 automatically
+  * Sets up git remotes correctly (`upstream` for leanprover-community/mathlib4, `origin` for user's fork)
+  * Detects already-completed migration steps and skips them for efficiency
+  * Migrates the current branch to the fork with proper upstream tracking
+  * Intelligently handles existing PRs (migrates main repo PRs to fork-based PRs, detects existing fork PRs)
+  * Uses fast delete/re-add approach for remote operations to avoid slow branch tracking updates
+  * Provides comprehensive status reporting and next steps guidance
+  Run with `python3 scripts/migrate_to_fork.py` (interactive) or `python3 scripts/migrate_to_fork.py -y` (auto-accept).
+  Requires GitHub CLI (`gh`) installed and authenticated. Safe to run multiple times.
 
 **Analyzing Mathlib's import structure**
 - `unused_in_pole.sh` (followed by an optional `<target>`, defaulting to `Mathlib`)
