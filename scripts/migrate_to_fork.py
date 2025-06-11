@@ -136,11 +136,11 @@ def check_gh_installation() -> bool:
             print("Please run: gh auth login")
             return False
         print_success("GitHub CLI is authenticated")
-        
+
         # Check token scopes
         if not check_gh_token_scopes():
             return False
-            
+
         return True
     except Exception:
         print_error("Failed to check GitHub CLI authentication status.")
@@ -162,19 +162,19 @@ def check_gh_token_scopes() -> bool:
                 return False
             print_warning("Could not verify token scopes, but basic API access works")
             return True
-        
+
         # Parse the output to check for required scopes
-        auth_output = result.stderr  # gh auth status outputs to stderr
+        auth_output = result.stdout  # gh auth status outputs to stderr
         if 'repo' not in auth_output or 'workflow' not in auth_output:
             print_error("GitHub CLI token lacks required scopes.")
             print("Required scopes: repo, workflow")
             print("Please re-authenticate with required scopes:")
             print("  gh auth login --scopes 'repo,workflow'")
             return False
-            
+
         print_success("GitHub CLI token has required scopes")
         return True
-        
+
     except Exception as e:
         # Try a fallback test - attempt to access repo API
         try:
@@ -237,7 +237,7 @@ def check_and_create_fork(username: str, auto_accept: bool = False) -> str:
     print_step(3, "Checking for fork of mathlib4")
 
     repo_name = f"{username}/mathlib4"
-    
+
     # Determine if we should use SSH
     use_ssh = check_ssh_github_access()
     if use_ssh:
@@ -301,8 +301,8 @@ def setup_remotes(username: str, fork_url: str, auto_accept: bool = False) -> No
     print_step(4, "Setting up git remotes")
 
     remotes = get_current_remotes()
-    
-    # Determine URL format based on SSH availability  
+
+    # Determine URL format based on SSH availability
     use_ssh = check_ssh_github_access()
     upstream_url = get_remote_url("leanprover-community/mathlib4", use_ssh)
 
