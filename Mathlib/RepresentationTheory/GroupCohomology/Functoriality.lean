@@ -137,6 +137,11 @@ noncomputable abbrev map (n : ℕ) :
     groupCohomology A n ⟶ groupCohomology B n :=
   HomologicalComplex.homologyMap (cochainsMap f φ) n
 
+@[reassoc, elementwise]
+theorem π_map (n : ℕ) :
+    π A n ≫ map f φ n = cocyclesMap f φ n ≫ π B n := by
+  simp [map, cocyclesMap]
+
 @[simp]
 lemma map_id : map (MonoidHom.id G) (𝟙 B) n = 𝟙 _ := HomologicalComplex.homologyMap_id _ _
 
@@ -152,11 +157,6 @@ theorem map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
     map (MonoidHom.id G) (φ ≫ ψ) n =
       map (MonoidHom.id G) φ n ≫ map (MonoidHom.id G) ψ n := by
   rw [map, cochainsMap_id_comp, HomologicalComplex.homologyMap_comp]
-
-@[reassoc, elementwise]
-theorem π_map (n : ℕ) :
-    π A n ≫ map f φ n = cocyclesMap f φ n ≫ π B n := by
-  simp [map, cocyclesMap]
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the induced map sending `x : H → A` to `(g : G) ↦ φ (x (f g))`. -/
