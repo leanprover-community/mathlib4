@@ -729,5 +729,4 @@ theorem mconv_withDensity_eq_mlconvolution {f g : G → ℝ≥0∞}
 
 end Conv
 
-
 end MeasureTheory
