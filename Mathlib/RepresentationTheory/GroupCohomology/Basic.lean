@@ -201,8 +201,8 @@ abbrev groupCohomology.π [Group G] [DecidableEq G] (A : Rep k G) (n : ℕ) :
 
 @[elab_as_elim]
 theorem groupCohomology_induction_on [Group G] [DecidableEq G] {A : Rep k G} {n : ℕ}
-    {C : groupCohomology A n → Prop} (h : ∀ x : cocycles A n, C (π A n x))
-    (x : groupCohomology A n) : C x := by
+    {C : groupCohomology A n → Prop} (x : groupCohomology A n)
+    (h : ∀ x : cocycles A n, C (π A n x)) : C x := by
   rcases (ModuleCat.epi_iff_surjective (π A n)).1 inferInstance x with ⟨y, rfl⟩
   exact h y
 

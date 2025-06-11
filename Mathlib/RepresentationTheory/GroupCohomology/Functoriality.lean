@@ -54,7 +54,6 @@ noncomputable def cochainsMap :
   comm' i j (hij : _ = _) := by
     subst hij
     ext
-    funext
     simpa [inhomogeneousCochains.d_hom_apply, Fin.comp_contractNth]
       using (hom_comm_apply φ _ _).symm
 
@@ -225,6 +224,8 @@ end
 
 open ShortComplex
 
+section H0
+
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is induced map `Aᴴ ⟶ Bᴳ`. -/
 noncomputable abbrev H0Map : H0 A ⟶ H0 B :=
@@ -265,14 +266,16 @@ variable [DecidableEq G] [DecidableEq H] in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem cocyclesMap_comp_isoZeroCocycles_hom :
     cocyclesMap f φ 0 ≫ (isoZeroCocycles B).hom = (isoZeroCocycles A).hom ≫ H0Map f φ := by
-  have := cochainsMap_f_0_comp_zeroCochainsIso f φ
-  simp_all [← cancel_mono (shortComplexH0 B).f]
+  simp [← cancel_mono (shortComplexH0 B).f]
 
 variable [DecidableEq G] [DecidableEq H] in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem map_comp_isoH0_hom :
     map f φ 0 ≫ (isoH0 B).hom = (isoH0 A).hom ≫ H0Map f φ := by
   simp [← cancel_epi (π _ _)]
+
+end H0
+section H1
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the induced map from the short complex `A --dZero--> Fun(H, A) --dOne--> Fun(H × H, A)`
@@ -463,6 +466,8 @@ lemma H1InfRes_exact : (H1InfRes A S).Exact := by
       oneCocycles.coe_mk (A := A.quotientToInvariants S), ← sub_sub]
 
 end InfRes
+end H1
+section H2
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is the induced map from the short complex
@@ -564,6 +569,8 @@ variable [DecidableEq G] [DecidableEq H] in
 lemma map_comp_isoH2_hom :
     map f φ 2 ≫ (isoH2 B).hom = (isoH2 A).hom ≫ H2Map f φ := by
   simp [← cancel_epi (π _ _), H2Map, Category.assoc]
+
+end H2
 
 variable [DecidableEq G]
 
