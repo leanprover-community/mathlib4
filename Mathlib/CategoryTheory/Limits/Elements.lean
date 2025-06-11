@@ -56,7 +56,8 @@ lemma map_lift_mapCone (c : Cone F) :
   have h₁ := congrFun (preservesLimitIso_hom_π A (F ⋙ π A) i)
     (A.map (limit.lift (F ⋙ π A) ((π A).mapCone c)) c.pt.snd)
   have h₂ := (c.π.app i).property
-  simp_all [← FunctorToTypes.map_comp_apply, liftedConeElement]
+  rw [← FunctorToTypes.map_comp_apply] at h₁
+  simp_all [liftedConeElement]
 
 @[simp]
 lemma map_π_liftedConeElement (i : I) :

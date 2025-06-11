@@ -33,7 +33,7 @@ theorem Ioi_zero_eq_map : Ioi (0 : Fin n.succ) = univ.map (Fin.succEmb _) :=
 
 @[simp]
 theorem Iio_last_eq_map : Iio (Fin.last n) = Finset.univ.map Fin.castSuccEmb :=
-  coe_injective <| by ext; simp [lt_def]
+  coe_injective <| by ext; simp [lt_def, -val_fin_lt]
 
 theorem Ioi_succ (i : Fin n) : Ioi i.succ = (Ioi i).map (Fin.succEmb _) := by simp
 

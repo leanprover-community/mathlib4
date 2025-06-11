@@ -108,8 +108,7 @@ a morphism whose underlying morphism is an isomorphism.
 def isoMk {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : X ≅ Y where
   hom := f
   inv := ⟨inv f.f,
-    fun U => by simp [← cancel_epi (f.f ▷ U), ← comp_whiskerRight_assoc,
-      ← MonoidalCategory.whiskerLeft_comp] ⟩
+    fun U => by simp [← cancel_epi (f.f ▷ U), ← MonoidalCategory.whiskerLeft_comp] ⟩
 
 instance isIso_of_f_isIso {X Y : Center C} (f : X ⟶ Y) [IsIso f.f] : IsIso f := by
   change IsIso (isoMk f).hom

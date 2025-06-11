@@ -339,7 +339,8 @@ instance (r : α → α → Prop) [IsWellOrder α r] : IsEmpty (r ≺i r) :=
 segment embedding -/
 def transInitial (f : r ≺i s) (g : s ≼i t) : r ≺i t :=
   ⟨@RelEmbedding.trans _ _ _ r s t f g, g f.top, fun a => by
-    simp [g.exists_eq_iff_rel, ← PrincipalSeg.mem_range_iff_rel, exists_swap, ← exists_and_left]⟩
+    simp -loopProtection [g.exists_eq_iff_rel, ← PrincipalSeg.mem_range_iff_rel, exists_swap,
+      ← exists_and_left]⟩
 
 @[simp]
 theorem transInitial_apply (f : r ≺i s) (g : s ≼i t) (a : α) : f.transInitial g a = g (f a) :=

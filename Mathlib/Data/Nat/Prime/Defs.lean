@@ -218,11 +218,11 @@ theorem minFac_zero : minFac 0 = 2 :=
 
 @[simp]
 theorem minFac_one : minFac 1 = 1 := by
-  simp [minFac, minFacAux]
+  unfold minFac minFacAux; simp
 
 @[simp]
 theorem minFac_two : minFac 2 = 2 := by
-  simp [minFac, minFacAux]
+  unfold minFac minFacAux; simp
 
 theorem minFac_eq (n : ℕ) : minFac n = if 2 ∣ n then 2 else minFacAux n 3 := rfl
 

@@ -332,7 +332,7 @@ lemma map_succ_succ (i j : ℕ) (hi : i + 1 < n + 1 + 1) (hj : j + 1 < n + 1 + 1
 
 @[simp]
 lemma map_one_succ (j : ℕ) (hj : j + 1 < n + 1 + 1) :
-    map F f 1 ⟨j + 1, hj⟩ (by simp [Fin.le_def]) = F.map' 0 j := rfl
+    map F f 1 ⟨j + 1, hj⟩ (by simp [Fin.le_def, -Fin.val_fin_le]) = F.map' 0 j := rfl
 
 lemma map_id (i : Fin (n + 1 + 1)) : map F f i i (by simp) = 𝟙 _ := by
   obtain ⟨_|_, hi⟩ := i <;> simp
@@ -352,7 +352,7 @@ lemma map_comp {i j k : Fin (n + 1 + 1)} (hij : i ≤ j) (hjk : j ≤ k) :
       · rfl
     · obtain _ | _ | k := k
       · simp [Fin.ext_iff] at hjk
-      · simp [Fin.le_def] at hjk
+      · simp [Fin.le_def, -Fin.val_fin_le] at hjk
         omega
       · dsimp
         rw [assoc, ← F.map_comp, homOfLE_comp]

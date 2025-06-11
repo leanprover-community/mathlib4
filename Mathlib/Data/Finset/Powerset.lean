@@ -184,7 +184,7 @@ def powersetCard (n : ℕ) (s : Finset α) : Finset (Finset α) :=
     s.2.powersetCard.pmap fun _a _ha _b _hb => congr_arg Finset.val⟩
 
 @[simp] lemma mem_powersetCard : s ∈ powersetCard n t ↔ s ⊆ t ∧ card s = n := by
-  cases s; simp [powersetCard, val_le_iff.symm]
+  cases s; simp [powersetCard, ← val_le_iff]
 
 @[simp]
 theorem powersetCard_mono {n} {s t : Finset α} (h : s ⊆ t) : powersetCard n s ⊆ powersetCard n t :=

@@ -168,8 +168,8 @@ theorem biproduct_ι_comp_leftDistributor_hom {J : Type} [Finite J] (X : C) (f :
     (X ◁ biproduct.ι _ j) ≫ (leftDistributor X f).hom = biproduct.ι (fun j => X ⊗ f j) j := by
   classical
   cases nonempty_fintype J
-  simp [leftDistributor_hom, Preadditive.comp_sum, ← MonoidalCategory.whiskerLeft_comp_assoc,
-    biproduct.ι_π, whiskerLeft_dite, dite_comp]
+  simp -loopProtection [leftDistributor_hom, Preadditive.comp_sum,
+    ← MonoidalCategory.whiskerLeft_comp_assoc, biproduct.ι_π, whiskerLeft_dite, dite_comp]
 
 @[reassoc (attr := simp)]
 theorem leftDistributor_inv_comp_biproduct_π {J : Type} [Finite J] (X : C) (f : J → C) (j : J) :
@@ -235,8 +235,8 @@ theorem biproduct_ι_comp_rightDistributor_hom {J : Type} [Finite J] (f : J → 
     (biproduct.ι _ j ▷ X) ≫ (rightDistributor f X).hom = biproduct.ι (fun j => f j ⊗ X) j := by
   classical
   cases nonempty_fintype J
-  simp [rightDistributor_hom, Preadditive.comp_sum, ← comp_whiskerRight_assoc, biproduct.ι_π,
-    dite_whiskerRight, dite_comp]
+  simp -loopProtection [rightDistributor_hom, Preadditive.comp_sum, ← comp_whiskerRight_assoc,
+    biproduct.ι_π, dite_whiskerRight, dite_comp]
 
 @[reassoc (attr := simp)]
 theorem rightDistributor_inv_comp_biproduct_π {J : Type} [Finite J] (f : J → C) (X : C) (j : J) :

@@ -49,7 +49,7 @@ instance : DecidablePred (IsSquare : ℤ → Prop) :=
 @[parity_simps] lemma even_add : Even (m + n) ↔ (Even m ↔ Even n) := by
   rcases emod_two_eq_zero_or_one m with h₁ | h₁ <;>
   rcases emod_two_eq_zero_or_one n with h₂ | h₂ <;>
-  simp [even_iff, h₁, h₂, Int.add_emod, one_add_one_eq_two, emod_self]
+  simp -loopProtection [even_iff, h₁, h₂, Int.add_emod, one_add_one_eq_two, emod_self]
 
 lemma two_not_dvd_two_mul_add_one (n : ℤ) : ¬2 ∣ 2 * n + 1 := by simp [add_emod]
 
@@ -63,7 +63,7 @@ lemma even_sub : Even (m - n) ↔ (Even m ↔ Even n) := by simp [sub_eq_add_neg
 @[parity_simps] lemma even_mul : Even (m * n) ↔ Even m ∨ Even n := by
   rcases emod_two_eq_zero_or_one m with h₁ | h₁ <;>
   rcases emod_two_eq_zero_or_one n with h₂ | h₂ <;>
-  simp [even_iff, h₁, h₂, Int.mul_emod]
+  simp -loopProtection [even_iff, h₁, h₂, Int.mul_emod]
 
 @[parity_simps] lemma even_pow {n : ℕ} : Even (m ^ n) ↔ Even m ∧ n ≠ 0 := by
   induction n <;> simp [*, even_mul, pow_succ]; tauto

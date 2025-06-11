@@ -453,10 +453,10 @@ lemma prod_nat_mod (l : List ℕ) (n : ℕ) : l.prod % n = (l.map (· % n)).prod
     simpa only [prod_cons, map_cons, Nat.mod_mul_mod, Nat.mul_mod_mod] using congr((a * $ih) % n)
 
 lemma sum_int_mod (l : List ℤ) (n : ℤ) : l.sum % n = (l.map (· % n)).sum % n := by
-  induction l <;> simp [Int.add_emod, *]
+  induction l <;> simp -loopProtection [Int.add_emod, *]
 
 lemma prod_int_mod (l : List ℤ) (n : ℤ) : l.prod % n = (l.map (· % n)).prod % n := by
-  induction l <;> simp [Int.mul_emod, *]
+  induction l <;> simp -loopProtection [Int.mul_emod, *]
 
 end List
 

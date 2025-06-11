@@ -448,8 +448,8 @@ theorem repeat_add (a : Fin n → α) (m₁ m₂ : ℕ) : Fin.repeat (m₁ + m�
   apply funext
   rw [(Fin.rightInverse_cast h.symm).surjective.forall]
   refine Fin.addCases (fun l => ?_) fun r => ?_
-  · simp [modNat, Nat.mod_eq_of_lt l.is_lt]
-  · simp [modNat, Nat.add_mod]
+  · simp [modNat]
+  · simp [modNat]
 
 theorem repeat_rev (a : Fin n → α) (k : Fin (m * n)) :
     Fin.repeat m a k.rev = Fin.repeat m (a ∘ Fin.rev) k :=

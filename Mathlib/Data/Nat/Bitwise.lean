@@ -46,7 +46,7 @@ variable {f : Bool → Bool → Bool}
 
 @[simp]
 lemma bitwise_zero_left (m : Nat) : bitwise f 0 m = if f false true then m else 0 := by
-  simp [bitwise]
+  unfold bitwise; simp
 
 @[simp]
 lemma bitwise_zero_right (n : Nat) : bitwise f n 0 = if f true false then n else 0 := by

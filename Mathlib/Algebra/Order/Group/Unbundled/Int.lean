@@ -73,7 +73,7 @@ theorem abs_lt_one_iff {a : ℤ} : |a| < 1 ↔ a = 0 := by
 theorem abs_le_one_iff {a : ℤ} : |a| ≤ 1 ↔ a = 0 ∨ a = 1 ∨ a = -1 := by
   rw [le_iff_lt_or_eq, abs_lt_one_iff]
   match a with
-  | (n : ℕ) => simp [abs_eq_natAbs]
+  | (n : ℕ) => simp [abs_eq_natAbs, -natCast_natAbs]
   | -[n+1] =>
       simp only [negSucc_ne_zero, abs_eq_natAbs, natAbs_negSucc, succ_eq_add_one,
         Int.natCast_add, cast_ofNat_Int, add_eq_right, natCast_eq_zero, false_or, reduceNeg]

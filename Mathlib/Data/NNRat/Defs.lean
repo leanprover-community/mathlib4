@@ -392,10 +392,10 @@ def numDenCasesOn.{u} {C : ℚ≥0 → Sort u} (q) (H : ∀ n d, d ≠ 0 → n.C
     C q := by rw [← q.num_divNat_den]; exact H _ _ q.den_ne_zero q.coprime_num_den
 
 lemma add_def (q r : ℚ≥0) : q + r = divNat (q.num * r.den + r.num * q.den) (q.den * r.den) := by
-  ext; simp [Rat.add_def', Rat.mkRat_eq_divInt, num_coe, den_coe]
+  ext; simp [Rat.add_def', Rat.mkRat_eq_divInt, -Rat.divInt_ofNat, num_coe, den_coe]
 
 lemma mul_def (q r : ℚ≥0) : q * r = divNat (q.num * r.num) (q.den * r.den) := by
-  ext; simp [Rat.mul_eq_mkRat, Rat.mkRat_eq_divInt, num_coe, den_coe]
+  ext; simp [Rat.mul_eq_mkRat, Rat.mkRat_eq_divInt, -Rat.divInt_ofNat, num_coe, den_coe]
 
 theorem lt_def {p q : ℚ≥0} : p < q ↔ p.num * q.den < q.num * p.den := by
   rw [← NNRat.coe_lt_coe, Rat.lt_def]; norm_cast

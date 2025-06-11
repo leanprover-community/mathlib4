@@ -103,7 +103,8 @@ instance category : Category (∫ F) where
   comp_id {a b} f := by
     ext
     · simp
-    · simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc, Strict.leftUnitor_eqToIso]
+    · simp -loopProtection [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc,
+        Strict.leftUnitor_eqToIso]
   assoc f g h := by
     ext
     · simp

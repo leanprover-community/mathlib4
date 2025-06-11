@@ -54,7 +54,7 @@ instance instMulZeroClass : MulZeroClass (WithZero α) where
 
 lemma unzero_mul {x y : WithZero α} (hxy : x * y ≠ 0) :
     unzero hxy = unzero (left_ne_zero_of_mul hxy) * unzero (right_ne_zero_of_mul hxy) := by
-  simp only [← coe_inj, coe_mul, coe_unzero]
+  rw [← coe_inj]; simp only [coe_mul, coe_unzero]
 
 instance instNoZeroDivisors : NoZeroDivisors (WithZero α) := ⟨Option.map₂_eq_none_iff.1⟩
 
@@ -288,7 +288,7 @@ def _root_.MulEquiv.withZero [Group β] :
     fun x ↦ unzero (x := e x) (by simp [ne_eq, ← e.eq_symm_apply]),
     fun x ↦ unzero (x := e.symm x) (by simp [e.symm_apply_eq]),
     by intro; simp, by intro; simp⟩,
-    by intro; simp [← coe_inj]⟩
+    by intro; simp [unzero_mul]⟩
   left_inv _ := by ext; simp
   right_inv _ := by ext x; cases x <;> simp
 

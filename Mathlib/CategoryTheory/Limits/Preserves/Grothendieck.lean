@@ -53,7 +53,7 @@ def fiberwiseColimitLimitIso (K : J ⥤ Grothendieck F ⥤ H)
       congr 1
       apply limit.hom_ext
       intro e
-      simp [← NatTrans.comp_app_assoc]
+      simp -loopProtection [← NatTrans.comp_app_assoc]
 
 variable (C) (F) in
 /-- If `colim` on a category `C` preserves limits of shape `J` and if it does so for `colim` on

@@ -128,10 +128,10 @@ theorem coe_bot : ((⊥ : UpperSet α) : Set α) = univ :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_eq_univ : (s : Set α) = univ ↔ s = ⊥ := by simp [SetLike.ext'_iff]
+theorem coe_eq_univ : (s : Set α) = univ ↔ s = ⊥ := by simp [SetLike.ext'_iff, -SetLike.coe_set_eq]
 
 @[simp, norm_cast]
-theorem coe_eq_empty : (s : Set α) = ∅ ↔ s = ⊤ := by simp [SetLike.ext'_iff]
+theorem coe_eq_empty : (s : Set α) = ∅ ↔ s = ⊤ := by simp [SetLike.ext'_iff, -SetLike.coe_set_eq]
 
 @[simp, norm_cast] lemma coe_nonempty : (s : Set α).Nonempty ↔ s ≠ ⊤ :=
   nonempty_iff_ne_empty.trans coe_eq_empty.not
@@ -210,7 +210,7 @@ theorem mem_iInf₂_iff {f : ∀ i, κ i → UpperSet α} : (a ∈ ⨅ (i) (j), 
 
 @[simp, norm_cast]
 theorem codisjoint_coe : Codisjoint (s : Set α) t ↔ Disjoint s t := by
-  simp [disjoint_iff, codisjoint_iff, SetLike.ext'_iff]
+  simp [disjoint_iff, codisjoint_iff, SetLike.ext'_iff, -SetLike.coe_set_eq]
 
 end UpperSet
 
@@ -260,10 +260,10 @@ theorem coe_bot : ((⊥ : LowerSet α) : Set α) = ∅ :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_eq_univ : (s : Set α) = univ ↔ s = ⊤ := by simp [SetLike.ext'_iff]
+theorem coe_eq_univ : (s : Set α) = univ ↔ s = ⊤ := by simp [SetLike.ext'_iff, -SetLike.coe_set_eq]
 
 @[simp, norm_cast]
-theorem coe_eq_empty : (s : Set α) = ∅ ↔ s = ⊥ := by simp [SetLike.ext'_iff]
+theorem coe_eq_empty : (s : Set α) = ∅ ↔ s = ⊥ := by simp [SetLike.ext'_iff, -SetLike.coe_set_eq]
 
 @[simp, norm_cast] lemma coe_nonempty : (s : Set α).Nonempty ↔ s ≠ ⊥ :=
   nonempty_iff_ne_empty.trans coe_eq_empty.not
@@ -344,7 +344,7 @@ theorem mem_iInf₂_iff {f : ∀ i, κ i → LowerSet α} : (a ∈ ⨅ (i) (j), 
 
 @[simp, norm_cast]
 theorem disjoint_coe : Disjoint (s : Set α) t ↔ Disjoint s t := by
-  simp [disjoint_iff, SetLike.ext'_iff]
+  simp [disjoint_iff, SetLike.ext'_iff, -SetLike.coe_set_eq]
 
 end LowerSet
 

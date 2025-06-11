@@ -81,7 +81,7 @@ lemma image_prod : (fun x : α × β ↦ f x.1 x.2) '' s ×ˢ t = image2 f s t :
 @[simp]
 lemma image2_curry (f : α × β → γ) (s : Set α) (t : Set β) :
     image2 (fun a b ↦ f (a, b)) s t = f '' s ×ˢ t := by
-  simp [← image_uncurry_prod, uncurry]
+  simp [← image_uncurry_prod, -image_prod, uncurry]
 
 theorem image2_swap (s : Set α) (t : Set β) : image2 f s t = image2 (fun a b => f b a) t s := by
   ext
