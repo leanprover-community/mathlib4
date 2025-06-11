@@ -138,6 +138,7 @@ theorem coe_comp (f : Q →ᴬ[R] Q₂) (g : P →ᴬ[R] Q) :
 
 theorem comp_apply (f : Q →ᴬ[R] Q₂) (g : P →ᴬ[R] Q) (x : P) : f.comp g x = f (g x) := rfl
 
+/-- The continuous affine map sending `0` to `p₀` and `1` to `p₁`. -/
 def lineMap (p₀ p₁ : P) [TopologicalSpace R] [TopologicalSpace V]
     [ContinuousSMul R V] [ContinuousVAdd V P] : R →ᴬ[R] P where
   toAffineMap := AffineMap.lineMap p₀ p₁
