@@ -45,7 +45,7 @@ def kroneckerTMulLinearEquiv :
   .ofLinear
     (AlgebraTensorModule.lift <| kroneckerTMulBilinear R S)
     ((LinearMap.lsum S _ R fun ii => LinearMap.lsum S _ R fun jj => AlgebraTensorModule.map
-       (singleLinearMap S ii.1 jj.1) (singleLinearMap R ii.2 jj.2))
+      (singleLinearMap S ii.1 jj.1) (singleLinearMap R ii.2 jj.2))
       ∘ₗ (ofLinearEquiv S).symm.toLinearMap)
     (by
       ext : 4
