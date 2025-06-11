@@ -19,8 +19,8 @@ also contains unrelated results about `Units` that depend on `MonoidHom`.
   `α` to `βˣ`.
 * `IsLocalHom`: A predicate on monoid maps, requiring that it maps nonunits
   to nonunits. For the local rings, that is, applied to their multiplicative monoids,
-  this means that the image of the unique maximal ideal is again  contained in the unique maximal ideal. 
-  This is developed earlier, and in the generality of monoids, as it allows its use in non-local-ring related contexts, 
+  this means that the image of the unique maximal ideal is again  contained in the unique maximal ideal.
+  This is developed earlier, and in the generality of monoids, as it allows its use in non-local-ring related contexts,
   but it does have the strange consequence that it does not require local rings, or even rings.
 
 ## TODO
