@@ -177,8 +177,9 @@ theorem equiv_prod_multiplicative_zmod_of_finite (G : Type*) [CommGroup G] [Fini
 group is the product of a power of `ℤ` and a direct product of some `ZMod (p i ^ e i)` for some
 prime powers `p i ^ e i`. -/
 theorem equiv_free_prod_directSum_zmod (G : Type*) [CommGroup G] [hG : Group.FG G] :
-    ∃ (ι j : Type) (_ : Fintype ι) (_ : Fintype j) (p : ι → ℕ) (_ : ∀ i, Nat.Prime <| p i) (e : ι → ℕ),
-      Nonempty <| G ≃* (j → ℤˣ) × ((i : ι) → Multiplicative (ZMod (p i ^ e i))) := by
+    ∃ (ι j : Type) (_ : Fintype ι) (_ : Fintype j) (p : ι → ℕ)
+    (_ : ∀ i, Nat.Prime <| p i) (e : ι → ℕ),
+      Nonempty <| G ≃* (j → Multiplicative ℤ) × ((i : ι) → Multiplicative (ZMod (p i ^ e i))) := by
   obtain ⟨n, ι, inst, x, p, e, equiv⟩ := AddCommGroup.equiv_free_prod_directSum_zmod (Additive G)
   use ι
   use (Fin n)
@@ -191,7 +192,11 @@ theorem equiv_free_prod_directSum_zmod (G : Type*) [CommGroup G] [hG : Group.FG 
   exact ⟨MulEquiv.toAdditive (G := G).symm <| equiv.some.trans <| (
     (AddEquiv.prodCongr (
       Finsupp.addEquivFunOnFinite.trans (
-        ((AddEquiv.piAdditive _).trans (sorry)).symm
+        ((AddEquiv.piAdditive _).trans (
+          AddEquiv.arrowCongr (Equiv.refl _) (
+           AddEquiv.additiveMultiplicative ℤ
+          )
+        )).symm
       )
     ) (
       DirectSum.addEquivProd _
