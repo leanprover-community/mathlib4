@@ -8,7 +8,6 @@ import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Algebra.Homology.ExactSequence
-import Mathlib.Tactic.Linarith
 
 open CategoryTheory Category CategoryTheory.Limits ZeroObject
 
@@ -326,22 +325,13 @@ lemma imageComparisonMonoOfMono (hc : Mono (cokernelComparison f F))
   rw [imageComparison_comp_ι]
   exact hm
 
-lemma kernelComplexExact : (ShortComplex.mk (kernel.ι f) f (kernel.condition f)).Exact := by
-  rw [ShortComplex.exact_iff_isZero_homology]
-  sorry
--- Proof needs to be fixed, mathlib changed.
-/-  refine IsZero.of_iso ?_ (ShortComplex.homology'IsoHomology _).symm
-  refine IsZero.of_iso ?_ (homology'IsoCokernelLift _ _ _)
-  simp only [equalizer_as_kernel, IsLimit.lift_self, Fork.ofι_pt]
-  refine IsZero.of_iso (isZero_zero A) (Limits.cokernel.ofEpi _)
--/
-
 lemma monoCokernelComplexShortExact [Mono f] :
     (ShortComplex.mk f (cokernel.π f) (by simp)).ShortExact where
   exact := by
     have := Abelian.monoIsKernelOfCokernel _ (cokernelIsCokernel f)
     refine ShortComplex.exact_of_iso (ShortComplex.isoMk ?_ ?_ ?_ ?_ ?_)
-      (kernelComplexExact (cokernel.π f))
+      ((ShortComplex.mk (kernel.ι (cokernel.π f)) (cokernel.π f) (kernel.condition
+      (cokernel.π f))).exact_of_f_is_kernel (kernelIsKernel _))
     · exact IsLimit.conePointUniqueUpToIso (kernelIsKernel (cokernel.π f)) this
     · exact Iso.refl _
     · exact Iso.refl _
@@ -355,7 +345,7 @@ lemma monoCokernelComplexShortExact [Mono f] :
 
 lemma epiKernelComplexShortExact [Epi f] :
     (ShortComplex.mk (kernel.ι f) f (by simp)).ShortExact where
-  exact := kernelComplexExact f
+  exact := ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel f)
 
 lemma kernelImageComplexShortExact : (ShortComplex.mk (kernel.ι f) (Abelian.factorThruImage f)
     (by rw [← cancel_mono (Abelian.image.ι f), assoc, Abelian.image.fac, zero_comp,
@@ -373,7 +363,7 @@ lemma kernelImageComplexShortExact : (ShortComplex.mk (kernel.ι f) (Abelian.fac
     have : Mono φ.τ₃ := by simp only [equalizer_as_kernel, id_eq, eq_mpr_eq_cast,
       ShortComplex.homMk_τ₃, φ]; exact inferInstance
     rw [ShortComplex.exact_iff_of_epi_of_isIso_of_mono φ]
-    exact kernelComplexExact f
+    exact ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel f)
 
 lemma imageComparisonEpiOfExact (hc : IsIso (cokernelComparison f F))
     (he : (ShortComplex.mk (F.map (Abelian.image.ι f))
@@ -400,8 +390,8 @@ lemma imageComparisonEpiOfExact (hc : IsIso (cokernelComparison f F))
            change F.map (cokernel.π f) = cokernel.π (F.map f) ≫ _
            rw [π_comp_cokernelComparison]
   have hR₁ : R₁.Exact := ShortComplex.Exact.exact_toComposableArrows he
-  have hR₂ : R₂.Exact :=
-    ShortComplex.Exact.exact_toComposableArrows (kernelComplexExact (cokernel.π (F.map f)))
+  have hR₂ : R₂.Exact := ShortComplex.Exact.exact_toComposableArrows
+    (ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel (cokernel.π (F.map f))))
   have hR₂' : Mono (R₂.map' 0 1) := by
     dsimp [R₂, ShortComplex.toComposableArrows]
     exact inferInstance
