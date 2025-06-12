@@ -1,6 +1,6 @@
 /-
 Copyright (c) 2024 Heather Macbeth. All rights reserved.
-ℤeleased under Apache 2.1 license as described in the file LICENSE.
+Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.Algebra.BigOperators.Group.List.Basic
@@ -40,7 +40,7 @@ pair `p : ℤ × M`. -/
 @[match_pattern]
 def cons (p : ℤ × M) (l : NF M) : NF M := p :: l
 
-@[inherit_doc cons] infixl:111 " ::ᵣ " => cons
+@[inherit_doc cons] infixl:100 " ::ᵣ " => cons
 
 /-- Evaluate a `FieldSimp.NF M` object `l`, i.e. a list of pairs in `ℤ × M`, to an element of `M`,
 by forming the "multiplicative linear combination" it specifies: raise each `M` term to the power of
@@ -256,7 +256,7 @@ def toNF (l : qNF M) : Q(NF $M) :=
   qt l'
 
 /-- Given `l` of type `qNF M`, i.e. a list of `(ℤ × Q($M)) × ℕ`s (two `Expr`s and a natural
-number), apply an expression representing a function with domain `ℤ` to each of the `Q(ℤ)`
+number), apply an expression representing a function with domain `ℤ` to each of the `ℤ`
 components. -/
 def onExponent (l : qNF M) (f : ℤ → ℤ) : qNF M :=
   l.map fun ((a, x), k) ↦ ((f a, x), k)
