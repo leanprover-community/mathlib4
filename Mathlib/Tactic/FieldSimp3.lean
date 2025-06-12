@@ -5,10 +5,8 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Algebra.BigOperators.Group.List.Basic
 import Mathlib.Algebra.Field.Rat
-import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Util.AtomM
-import Qq
 
 
 /-! # A tactic for clearing denominators in fields
@@ -375,6 +373,9 @@ Possible TODO, if poor performance on large problems is witnessed: switch the im
 https://github.com/leanprover-community/mathlib4/pull/16593/files#r1749623191 -/
 partial def normalize (iM : Q(Field $M)) (x : Q($M)) :
     AtomM (Σ l : qNF M, Q($x = NF.eval $(l.toNF))) := do
+  let baseCase := do
+    let (k, ⟨x', _⟩) ← AtomM.addAtomQ x
+    pure ⟨[((1, x'), k)], q(NF.atom_eq_eval $x')⟩
   match x with
   /- normalize a multiplication: `x₁ * x₂` -/
   | ~q($x₁ * $x₂) =>
@@ -398,20 +399,15 @@ partial def normalize (iM : Q(Field $M)) (x : Q($M)) :
   /- normalize an integer exponentiation: `y ^ (s : ℤ)` -/
   | ~q($y ^ ($s : ℤ)) =>
     let ⟨l, pf⟩ ← normalize iM y
-    let some s := Expr.int? s | throwError "foo" -- treat as atom in this case
+    let some s := Expr.int? s | baseCase
     -- build the new list and proof
     pure ⟨l.onExponent (HMul.hMul s), (q(NF.zpow_eq_eval $s $pf):)⟩
   /- normalize a `(1:M)` -/
-  | ~q(1) =>
-    pure ⟨[], q(NF.one_eq_eval $M)⟩
+  | ~q(1) => pure ⟨[], q(NF.one_eq_eval $M)⟩
   /- anything else should be treated as an atom -/
-  | _ =>
-    let (k, ⟨x', _⟩) ← AtomM.addAtomQ x
-    pure ⟨[((1, x'), k)], q(NF.atom_eq_eval $x')⟩
+  | _ => baseCase
 
 open Elab Tactic
-
--- Copy-pasted from https://github.com/hrmacbeth/metaprogramming/blob/main/Metaprogramming/Abel/Phase2_ConvProofs.lean
 
 /-- Conv tactic for field_simp normalisation.
 Wraps the `MetaM` normalization function `normalize`. -/
@@ -465,4 +461,13 @@ example : x * y = x ^ (1:ℤ) * (y ^ (1:ℤ) * 1) := by
   conv_lhs => field_simp2
 
 example : x / y = x ^ (1:ℤ) * (y ^ (-1:ℤ) * 1) := by
+  conv_lhs => field_simp2
+
+example : x / (y / x) = x ^ (2:ℤ) * (y ^ (-1:ℤ) * 1) := by
+  conv_lhs => field_simp2
+
+example : x / (y ^ (-3:ℤ) / x) = x ^ (2:ℤ) * (y ^ (3:ℤ) * 1) := by
+  conv_lhs => field_simp2
+
+example : (x / y ^ (-3:ℤ)) * x = x ^ (2:ℤ) * (y ^ (3:ℤ) * 1) := by
   conv_lhs => field_simp2
