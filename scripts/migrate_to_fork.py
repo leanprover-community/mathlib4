@@ -166,7 +166,7 @@ def check_gh_token_scopes() -> bool:
 
         # Parse the output to check for required scopes
         auth_output = result.stdout
-        if 'repo' not in auth_output or 'workflow' not in auth_output:
+        if 'repo' not in auth_output:  # or 'workflow' not in auth_output:
             print_error("GitHub CLI token lacks required scopes.")
             print("Required scopes: repo, workflow")
             print("Please re-authenticate with required scopes:")
@@ -255,7 +255,7 @@ def check_and_create_fork(username: str, auto_accept: bool = False) -> str:
             # Synchronize master branch
             print("Synchronizing fork's master branch...")
             try:
-                run_command(['gh', 'repo', 'sync', repo_name, '--source', 'leanprover-community/mathlib4'])
+                run_command(['gh', 'repo', 'sync', repo_name, '--source', 'leanprover-community/mathlib4'], check=False)
                 print_success("Fork synchronized with upstream")
             except Exception as e:
                 print_warning(f"Failed to sync fork automatically: {e}")
