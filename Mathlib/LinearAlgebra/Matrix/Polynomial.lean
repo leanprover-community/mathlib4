@@ -8,8 +8,6 @@ import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.Tactic.ComputeDegree
 
-#align_import linear_algebra.matrix.polynomial from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 # Matrices of polynomials and polynomials of matrices
 
@@ -26,7 +24,6 @@ In particular, we give results about the polynomial given by
 matrix determinant, polynomial
 -/
 
-set_option linter.uppercaseLean3 false
 
 open Matrix Polynomial
 
@@ -41,13 +38,13 @@ theorem natDegree_det_X_add_C_le (A B : Matrix n n α) :
   rw [det_apply]
   refine (natDegree_sum_le _ _).trans ?_
   refine Multiset.max_le_of_forall_le _ _ ?_
-  simp only [forall_apply_eq_imp_iff, true_and_iff, Function.comp_apply, Multiset.map_map,
+  simp only [forall_apply_eq_imp_iff, true_and, Function.comp_apply, Multiset.map_map,
     Multiset.mem_map, exists_imp, Finset.mem_univ_val]
   intro g
   calc
     natDegree (sign g • ∏ i : n, (X • A.map C + B.map C : Matrix n n α[X]) (g i) i) ≤
         natDegree (∏ i : n, (X • A.map C + B.map C : Matrix n n α[X]) (g i) i) := by
-      cases' Int.units_eq_one_or (sign g) with sg sg
+      rcases Int.units_eq_one_or (sign g) with sg | sg
       · rw [sg, one_smul]
       · rw [sg, Units.neg_smul, one_smul, natDegree_neg]
     _ ≤ ∑ i : n, natDegree (((X : α[X]) • A.map C + B.map C : Matrix n n α[X]) (g i) i) :=
@@ -57,7 +54,6 @@ theorem natDegree_det_X_add_C_le (A B : Matrix n n α) :
     _ ≤ Fintype.card n := by simp [mul_one, Algebra.id.smul_eq_mul, Finset.card_univ]
   dsimp only [add_apply, smul_apply, map_apply, smul_eq_mul]
   compute_degree
-#align polynomial.nat_degree_det_X_add_C_le Polynomial.natDegree_det_X_add_C_le
 
 theorem coeff_det_X_add_C_zero (A B : Matrix n n α) :
     coeff (det ((X : α[X]) • A.map C + B.map C)) 0 = det B := by
@@ -68,7 +64,6 @@ theorem coeff_det_X_add_C_zero (A B : Matrix n n α) :
   rw [coeff_zero_prod]
   refine Finset.prod_congr rfl ?_
   simp
-#align polynomial.coeff_det_X_add_C_zero Polynomial.coeff_det_X_add_C_zero
 
 theorem coeff_det_X_add_C_card (A B : Matrix n n α) :
     coeff (det ((X : α[X]) • A.map C + B.map C)) (Fintype.card n) = det A := by
@@ -84,7 +79,6 @@ theorem coeff_det_X_add_C_card (A B : Matrix n n α) :
   · rintro p -
     dsimp only [add_apply, smul_apply, map_apply, smul_eq_mul]
     compute_degree
-#align polynomial.coeff_det_X_add_C_card Polynomial.coeff_det_X_add_C_card
 
 theorem leadingCoeff_det_X_one_add_C (A : Matrix n n α) :
     leadingCoeff (det ((X : α[X]) • (1 : Matrix n n α[X]) + A.map C)) = 1 := by
@@ -100,6 +94,5 @@ theorem leadingCoeff_det_X_one_add_C (A : Matrix n n α) :
     have H := coeff_eq_zero_of_natDegree_lt h
     rw [coeff_det_X_add_C_card] at H
     simp at H
-#align polynomial.leading_coeff_det_X_one_add_C Polynomial.leadingCoeff_det_X_one_add_C
 
 end Polynomial

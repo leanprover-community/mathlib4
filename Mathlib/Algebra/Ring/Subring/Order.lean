@@ -3,8 +3,9 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.Algebra.Order.Hom.Ring
+import Mathlib.Algebra.Order.Ring.InjSurj
+import Mathlib.Algebra.Ring.Subring.Defs
 
 /-!
 
@@ -19,76 +20,29 @@ We study subrings of ordered rings and prove their basic properties.
 
 -/
 
-namespace SubringClass
-variable {R S : Type*} [SetLike S R] (s : S)
-
--- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
-/-- A subring of an `OrderedRing` is an `OrderedRing`. -/
-instance (priority := 75) toOrderedRing [OrderedRing R] [SubringClass S R] :
-    OrderedRing s :=
-  Subtype.coe_injective.orderedRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
-#align subring_class.to_ordered_ring SubringClass.toOrderedRing
-
--- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
-/-- A subring of an `OrderedCommRing` is an `OrderedCommRing`. -/
-instance (priority := 75) toOrderedCommRing [OrderedCommRing R] [SubringClass S R] :
-    OrderedCommRing s :=
-  Subtype.coe_injective.orderedCommRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
-#align subring_class.to_ordered_comm_ring SubringClass.toOrderedCommRing
-
--- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
-/-- A subring of a `LinearOrderedRing` is a `LinearOrderedRing`. -/
-instance (priority := 75) toLinearOrderedRing [LinearOrderedRing R] [SubringClass S R] :
-    LinearOrderedRing s :=
-  Subtype.coe_injective.linearOrderedRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-#align subring_class.to_linear_ordered_ring SubringClass.toLinearOrderedRing
-
--- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
-/-- A subring of a `LinearOrderedCommRing` is a `LinearOrderedCommRing`. -/
-instance (priority := 75) toLinearOrderedCommRing [LinearOrderedCommRing R] [SubringClass S R] :
-    LinearOrderedCommRing s :=
-  Subtype.coe_injective.linearOrderedCommRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-#align subring_class.to_linear_ordered_comm_ring SubringClass.toLinearOrderedCommRing
-
-end SubringClass
-
 namespace Subring
 
 variable {R : Type*}
 
-/-- A subring of an `OrderedRing` is an `OrderedRing`. -/
-instance toOrderedRing [OrderedRing R] (s : Subring R) : OrderedRing s :=
-  SubringClass.toOrderedRing s
-#align subring.to_ordered_ring Subring.toOrderedRing
+/-- A subring of an ordered ring is an ordered ring. -/
+instance toIsOrderedRing [Ring R] [PartialOrder R] [IsOrderedRing R] (s : Subring R) :
+    IsOrderedRing s :=
+  Subtype.coe_injective.isOrderedRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
-/-- A subring of an `OrderedCommRing` is an `OrderedCommRing`. -/
-instance toOrderedCommRing [OrderedCommRing R] (s : Subring R) : OrderedCommRing s :=
-  SubringClass.toOrderedCommRing s
-#align subring.to_ordered_comm_ring Subring.toOrderedCommRing
-
-/-- A subring of a `LinearOrderedRing` is a `LinearOrderedRing`. -/
-instance toLinearOrderedRing [LinearOrderedRing R] (s : Subring R) : LinearOrderedRing s :=
-  SubringClass.toLinearOrderedRing s
-#align subring.to_linear_ordered_ring Subring.toLinearOrderedRing
-
-/-- A subring of a `LinearOrderedCommRing` is a `LinearOrderedCommRing`. -/
-instance toLinearOrderedCommRing [LinearOrderedCommRing R] (s : Subring R) :
-    LinearOrderedCommRing s :=
-  SubringClass.toLinearOrderedCommRing s
-#align subring.to_linear_ordered_comm_ring Subring.toLinearOrderedCommRing
+/-- A subring of a strict ordered ring is a strict ordered ring. -/
+instance toIsStrictOrderedRing [Ring R] [PartialOrder R] [IsStrictOrderedRing R]
+    (s : Subring R) : IsStrictOrderedRing s :=
+  Subtype.coe_injective.isStrictOrderedRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
 /-- The inclusion `S → R` of a subring, as an ordered ring homomorphism. -/
-def orderedSubtype {R : Type*} [OrderedRing R] (s : Subring R) : s →+*o R where
+def orderedSubtype {R : Type*} [Ring R] [PartialOrder R] (s : Subring R) :
+    s →+*o R where
   __ := s.subtype
   monotone' := fun _ _ h ↦ h
 
-variable {R : Type*} [OrderedRing R]
+variable {R : Type*} [Ring R] [PartialOrder R]
 
 lemma orderedSubtype_coe (s : Subring R) : Subring.orderedSubtype s = Subring.subtype s := rfl
 

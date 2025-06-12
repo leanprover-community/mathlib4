@@ -5,8 +5,6 @@ Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 
-#align_import measure_theory.function.lp_seminorm from "leanprover-community/mathlib"@"c4015acc0a223449d44061e27ddac1835a3852b9"
-
 /-!
 # Lp seminorm with respect to trimmed measure
 
@@ -19,18 +17,14 @@ namespace MeasureTheory
 open Filter
 open scoped ENNReal
 
-variable {α E : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ : Measure α}
-  [NormedAddCommGroup E]
+variable {α E ε : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ : Measure α}
+  [NormedAddCommGroup E] [TopologicalSpace ε] [ContinuousENorm ε]
 
-theorem snorm'_trim (hm : m ≤ m0) {f : α → E} (hf : StronglyMeasurable[m] f) :
-    snorm' f q (μ.trim hm) = snorm' f q μ := by
-  simp_rw [snorm']
+theorem eLpNorm'_trim (hm : m ≤ m0) {f : α → ε} (hf : StronglyMeasurable[m] f) :
+    eLpNorm' f q (μ.trim hm) = eLpNorm' f q μ := by
+  simp_rw [eLpNorm']
   congr 1
-  refine lintegral_trim hm ?_
-  refine @Measurable.pow_const _ _ _ _ _ _ _ m _ (@Measurable.coe_nnreal_ennreal _ m _ ?_) q
-  apply @StronglyMeasurable.measurable
-  exact @StronglyMeasurable.nnnorm α m _ _ _ hf
-#align measure_theory.snorm'_trim MeasureTheory.snorm'_trim
+  exact lintegral_trim hm (by fun_prop)
 
 theorem limsup_trim (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] f) :
     limsup f (ae (μ.trim hm)) = limsup f (ae μ) := by
@@ -41,39 +35,35 @@ theorem limsup_trim (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] 
   suffices h_meas_eq : μ { x | ¬f x ≤ a } = μ.trim hm { x | ¬f x ≤ a } by
     simp_rw [Set.mem_setOf_eq, ae_iff, h_meas_eq]
   refine (trim_measurableSet_eq hm ?_).symm
-  refine @MeasurableSet.compl _ _ m (@measurableSet_le ℝ≥0∞ _ _ _ _ m _ _ _ _ _ hf ?_)
-  exact @measurable_const _ _ _ m _
-#align measure_theory.limsup_trim MeasureTheory.limsup_trim
+  exact (measurableSet_le hf measurable_const).compl
 
 theorem essSup_trim (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] f) :
     essSup f (μ.trim hm) = essSup f μ := by
   simp_rw [essSup]
   exact limsup_trim hm hf
-#align measure_theory.ess_sup_trim MeasureTheory.essSup_trim
 
-theorem snormEssSup_trim (hm : m ≤ m0) {f : α → E} (hf : StronglyMeasurable[m] f) :
-    snormEssSup f (μ.trim hm) = snormEssSup f μ :=
-  essSup_trim _ (@StronglyMeasurable.ennnorm _ m _ _ _ hf)
-#align measure_theory.snorm_ess_sup_trim MeasureTheory.snormEssSup_trim
+theorem eLpNormEssSup_trim (hm : m ≤ m0) {f : α → ε} (hf : StronglyMeasurable[m] f) :
+    eLpNormEssSup f (μ.trim hm) = eLpNormEssSup f μ :=
+  essSup_trim _ (@StronglyMeasurable.enorm _ m _ _ _ _ hf)
 
-theorem snorm_trim (hm : m ≤ m0) {f : α → E} (hf : StronglyMeasurable[m] f) :
-    snorm f p (μ.trim hm) = snorm f p μ := by
+theorem eLpNorm_trim (hm : m ≤ m0) {f : α → ε} (hf : StronglyMeasurable[m] f) :
+    eLpNorm f p (μ.trim hm) = eLpNorm f p μ := by
   by_cases h0 : p = 0
   · simp [h0]
   by_cases h_top : p = ∞
-  · simpa only [h_top, snorm_exponent_top] using snormEssSup_trim hm hf
-  simpa only [snorm_eq_snorm' h0 h_top] using snorm'_trim hm hf
-#align measure_theory.snorm_trim MeasureTheory.snorm_trim
+  · simpa only [h_top, eLpNorm_exponent_top] using eLpNormEssSup_trim hm hf
+  simpa only [eLpNorm_eq_eLpNorm' h0 h_top] using eLpNorm'_trim hm hf
 
-theorem snorm_trim_ae (hm : m ≤ m0) {f : α → E} (hf : AEStronglyMeasurable f (μ.trim hm)) :
-    snorm f p (μ.trim hm) = snorm f p μ := by
-  rw [snorm_congr_ae hf.ae_eq_mk, snorm_congr_ae (ae_eq_of_ae_eq_trim hf.ae_eq_mk)]
-  exact snorm_trim hm hf.stronglyMeasurable_mk
-#align measure_theory.snorm_trim_ae MeasureTheory.snorm_trim_ae
+theorem eLpNorm_trim_ae (hm : m ≤ m0) {f : α → ε} (hf : AEStronglyMeasurable[m] f (μ.trim hm)) :
+    eLpNorm f p (μ.trim hm) = eLpNorm f p μ := by
+  rw [eLpNorm_congr_ae hf.ae_eq_mk, eLpNorm_congr_ae (ae_eq_of_ae_eq_trim hf.ae_eq_mk)]
+  exact eLpNorm_trim hm hf.stronglyMeasurable_mk
 
-theorem memℒp_of_memℒp_trim (hm : m ≤ m0) {f : α → E} (hf : Memℒp f p (μ.trim hm)) : Memℒp f p μ :=
+theorem memLp_of_memLp_trim (hm : m ≤ m0) {f : α → ε} (hf : MemLp f p (μ.trim hm)) : MemLp f p μ :=
   ⟨aestronglyMeasurable_of_aestronglyMeasurable_trim hm hf.1,
-    (le_of_eq (snorm_trim_ae hm hf.1).symm).trans_lt hf.2⟩
-#align measure_theory.mem_ℒp_of_mem_ℒp_trim MeasureTheory.memℒp_of_memℒp_trim
+    (le_of_eq (eLpNorm_trim_ae hm hf.1).symm).trans_lt hf.2⟩
+
+@[deprecated (since := "2025-02-21")]
+alias memℒp_of_memℒp_trim := memLp_of_memLp_trim
 
 end MeasureTheory

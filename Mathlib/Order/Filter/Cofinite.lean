@@ -3,10 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
 -/
-import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Data.Finite.Prod
+import Mathlib.Data.Fintype.Pi
+import Mathlib.Data.Set.Finite.Lemmas
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Order.Filter.CountablyGenerated
+import Mathlib.Order.Filter.Ker
 import Mathlib.Order.Filter.Pi
-
-#align_import order.filter.cofinite from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
+import Mathlib.Order.Filter.Prod
+import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # The cofinite filter
@@ -31,27 +36,22 @@ namespace Filter
 /-- The cofinite filter is the filter of subsets whose complements are finite. -/
 def cofinite : Filter α :=
   comk Set.Finite finite_empty (fun _t ht _s hsub ↦ ht.subset hsub) fun _ h _ ↦ h.union
-#align filter.cofinite Filter.cofinite
 
 @[simp]
 theorem mem_cofinite {s : Set α} : s ∈ @cofinite α ↔ sᶜ.Finite :=
   Iff.rfl
-#align filter.mem_cofinite Filter.mem_cofinite
 
 @[simp]
 theorem eventually_cofinite {p : α → Prop} : (∀ᶠ x in cofinite, p x) ↔ { x | ¬p x }.Finite :=
   Iff.rfl
-#align filter.eventually_cofinite Filter.eventually_cofinite
 
 theorem hasBasis_cofinite : HasBasis cofinite (fun s : Set α => s.Finite) compl :=
   ⟨fun s =>
     ⟨fun h => ⟨sᶜ, h, (compl_compl s).subset⟩, fun ⟨_t, htf, hts⟩ =>
       htf.subset <| compl_subset_comm.2 hts⟩⟩
-#align filter.has_basis_cofinite Filter.hasBasis_cofinite
 
 instance cofinite_neBot [Infinite α] : NeBot (@cofinite α) :=
   hasBasis_cofinite.neBot_iff.2 fun hs => hs.infinite_compl.nonempty
-#align filter.cofinite_ne_bot Filter.cofinite_neBot
 
 @[simp]
 theorem cofinite_eq_bot_iff : @cofinite α = ⊥ ↔ Finite α := by
@@ -63,7 +63,6 @@ theorem cofinite_eq_bot [Finite α] : @cofinite α = ⊥ := cofinite_eq_bot_iff.
 theorem frequently_cofinite_iff_infinite {p : α → Prop} :
     (∃ᶠ x in cofinite, p x) ↔ Set.Infinite { x | p x } := by
   simp only [Filter.Frequently, eventually_cofinite, not_not, Set.Infinite]
-#align filter.frequently_cofinite_iff_infinite Filter.frequently_cofinite_iff_infinite
 
 lemma frequently_cofinite_mem_iff_infinite {s : Set α} : (∃ᶠ x in cofinite, x ∈ s) ↔ s.Infinite :=
   frequently_cofinite_iff_infinite
@@ -78,66 +77,62 @@ alias ⟨_, _root_.Set.Infinite.cofinite_inf_principal_neBot⟩ := cofinite_inf_
 
 theorem _root_.Set.Finite.compl_mem_cofinite {s : Set α} (hs : s.Finite) : sᶜ ∈ @cofinite α :=
   mem_cofinite.2 <| (compl_compl s).symm ▸ hs
-#align set.finite.compl_mem_cofinite Set.Finite.compl_mem_cofinite
 
-theorem _root_.Set.Finite.eventually_cofinite_nmem {s : Set α} (hs : s.Finite) :
+theorem _root_.Set.Finite.eventually_cofinite_notMem {s : Set α} (hs : s.Finite) :
     ∀ᶠ x in cofinite, x ∉ s :=
   hs.compl_mem_cofinite
-#align set.finite.eventually_cofinite_nmem Set.Finite.eventually_cofinite_nmem
 
-theorem _root_.Finset.eventually_cofinite_nmem (s : Finset α) : ∀ᶠ x in cofinite, x ∉ s :=
-  s.finite_toSet.eventually_cofinite_nmem
-#align finset.eventually_cofinite_nmem Finset.eventually_cofinite_nmem
+@[deprecated (since := "2025-05-24")]
+alias _root_.Set.Finite.eventually_cofinite_nmem := _root_.Set.Finite.eventually_cofinite_notMem
+
+theorem _root_.Finset.eventually_cofinite_notMem (s : Finset α) : ∀ᶠ x in cofinite, x ∉ s :=
+  s.finite_toSet.eventually_cofinite_notMem
+
+@[deprecated (since := "2025-05-24")]
+alias _root_.Finset.eventually_cofinite_nmem := _root_.Finset.eventually_cofinite_notMem
 
 theorem _root_.Set.infinite_iff_frequently_cofinite {s : Set α} :
     Set.Infinite s ↔ ∃ᶠ x in cofinite, x ∈ s :=
   frequently_cofinite_iff_infinite.symm
-#align set.infinite_iff_frequently_cofinite Set.infinite_iff_frequently_cofinite
 
 theorem eventually_cofinite_ne (x : α) : ∀ᶠ a in cofinite, a ≠ x :=
-  (Set.finite_singleton x).eventually_cofinite_nmem
-#align filter.eventually_cofinite_ne Filter.eventually_cofinite_ne
+  (Set.finite_singleton x).eventually_cofinite_notMem
 
 theorem le_cofinite_iff_compl_singleton_mem : l ≤ cofinite ↔ ∀ x, {x}ᶜ ∈ l := by
   refine ⟨fun h x => h (finite_singleton x).compl_mem_cofinite, fun h s (hs : sᶜ.Finite) => ?_⟩
   rw [← compl_compl s, ← biUnion_of_singleton sᶜ, compl_iUnion₂, Filter.biInter_mem hs]
   exact fun x _ => h x
-#align filter.le_cofinite_iff_compl_singleton_mem Filter.le_cofinite_iff_compl_singleton_mem
 
 theorem le_cofinite_iff_eventually_ne : l ≤ cofinite ↔ ∀ x, ∀ᶠ y in l, y ≠ x :=
   le_cofinite_iff_compl_singleton_mem
-#align filter.le_cofinite_iff_eventually_ne Filter.le_cofinite_iff_eventually_ne
 
-/-- If `α` is a preorder with no maximal element, then `atTop ≤ cofinite`. -/
-theorem atTop_le_cofinite [Preorder α] [NoMaxOrder α] : (atTop : Filter α) ≤ cofinite :=
+/-- If `α` is a preorder with no top element, then `atTop ≤ cofinite`. -/
+theorem atTop_le_cofinite [Preorder α] [NoTopOrder α] : (atTop : Filter α) ≤ cofinite :=
   le_cofinite_iff_eventually_ne.mpr eventually_ne_atTop
-#align filter.at_top_le_cofinite Filter.atTop_le_cofinite
+
+/-- If `α` is a preorder with no bottom element, then `atBot ≤ cofinite`. -/
+theorem atBot_le_cofinite [Preorder α] [NoBotOrder α] : (atBot : Filter α) ≤ cofinite :=
+  le_cofinite_iff_eventually_ne.mpr eventually_ne_atBot
 
 theorem comap_cofinite_le (f : α → β) : comap f cofinite ≤ cofinite :=
   le_cofinite_iff_eventually_ne.mpr fun x =>
     mem_comap.2 ⟨{f x}ᶜ, (finite_singleton _).compl_mem_cofinite, fun _ => ne_of_apply_ne f⟩
-#align filter.comap_cofinite_le Filter.comap_cofinite_le
 
 /-- The coproduct of the cofinite filters on two types is the cofinite filter on their product. -/
 theorem coprod_cofinite : (cofinite : Filter α).coprod (cofinite : Filter β) = cofinite :=
   Filter.coext fun s => by
     simp only [compl_mem_coprod, mem_cofinite, compl_compl, finite_image_fst_and_snd_iff]
-#align filter.coprod_cofinite Filter.coprod_cofinite
 
 theorem coprodᵢ_cofinite {α : ι → Type*} [Finite ι] :
     (Filter.coprodᵢ fun i => (cofinite : Filter (α i))) = cofinite :=
   Filter.coext fun s => by
     simp only [compl_mem_coprodᵢ, mem_cofinite, compl_compl, forall_finite_image_eval_iff]
-set_option linter.uppercaseLean3 false in
-#align filter.Coprod_cofinite Filter.coprodᵢ_cofinite
 
 theorem disjoint_cofinite_left : Disjoint cofinite l ↔ ∃ s ∈ l, Set.Finite s := by
   simp [l.basis_sets.disjoint_iff_right]
-#align filter.disjoint_cofinite_left Filter.disjoint_cofinite_left
 
 theorem disjoint_cofinite_right : Disjoint l cofinite ↔ ∃ s ∈ l, Set.Finite s :=
   disjoint_comm.trans disjoint_cofinite_left
-#align filter.disjoint_cofinite_right Filter.disjoint_cofinite_right
 
 /-- If `l ≥ Filter.cofinite` is a countably generated filter, then `l.ker` is cocountable. -/
 theorem countable_compl_ker [l.IsCountablyGenerated] (h : cofinite ≤ l) : Set.Countable l.kerᶜ := by
@@ -150,6 +145,50 @@ then for all but countably many elements, `f x ∈ l.ker`. -/
 theorem Tendsto.countable_compl_preimage_ker {f : α → β}
     {l : Filter β} [l.IsCountablyGenerated] (h : Tendsto f cofinite l) :
     Set.Countable (f ⁻¹' l.ker)ᶜ := by rw [← ker_comap]; exact countable_compl_ker h.le_comap
+
+/-- Given a collection of filters `l i : Filter (α i)` and sets `s i ∈ l i`,
+if all but finitely many of `s i` are the whole space,
+then their indexed product `Set.pi Set.univ s` belongs to the filter `Filter.pi l`. -/
+theorem univ_pi_mem_pi {α : ι → Type*} {s : ∀ i, Set (α i)} {l : ∀ i, Filter (α i)}
+    (h : ∀ i, s i ∈ l i) (hfin : ∀ᶠ i in cofinite, s i = univ) : univ.pi s ∈ pi l := by
+  filter_upwards [pi_mem_pi hfin fun i _ ↦ h i] with a ha i _
+  if hi : s i = univ then
+    simp [hi]
+  else
+    exact ha i hi
+
+/-- Given a family of maps `f i : α i → β i` and a family of filters `l i : Filter (α i)`,
+if all but finitely many of `f i` are surjective,
+then the indexed product of `f i`s maps the indexed product of the filters `l i`
+to the indexed products of their pushforwards under individual `f i`s.
+
+See also `map_piMap_pi_finite` for the case of a finite index type.
+-/
+theorem map_piMap_pi {α β : ι → Type*} {f : ∀ i, α i → β i}
+    (hf : ∀ᶠ i in cofinite, Surjective (f i)) (l : ∀ i, Filter (α i)) :
+    map (Pi.map f) (pi l) = pi fun i ↦ map (f i) (l i) := by
+  refine le_antisymm (tendsto_piMap_pi fun _ ↦ tendsto_map) ?_
+  refine ((hasBasis_pi fun i ↦ (l i).basis_sets).map _).ge_iff.2 ?_
+  rintro ⟨I, s⟩ ⟨hI : I.Finite, hs : ∀ i ∈ I, s i ∈ l i⟩
+  classical
+  rw [← univ_pi_piecewise_univ, piMap_image_univ_pi]
+  refine univ_pi_mem_pi (fun i ↦ ?_) ?_
+  · by_cases hi : i ∈ I
+    · simpa [hi] using image_mem_map (hs i hi)
+    · simp [hi]
+  · filter_upwards [hf, hI.compl_mem_cofinite] with i hsurj (hiI : i ∉ I)
+    simp [hiI, hsurj.range_eq]
+
+/-- Given finite families of maps `f i : α i → β i` and of filters `l i : Filter (α i)`,
+the indexed product of `f i`s maps the indexed product of the filters `l i`
+to the indexed products of their pushforwards under individual `f i`s.
+
+See also `map_piMap_pi` for a more general case.
+-/
+theorem map_piMap_pi_finite {α β : ι → Type*} [Finite ι]
+    (f : ∀ i, α i → β i) (l : ∀ i, Filter (α i)) :
+    map (Pi.map f) (pi l) = pi fun i ↦ map (f i) (l i) :=
+  map_piMap_pi (by simp) l
 
 end Filter
 
@@ -168,12 +207,10 @@ theorem Nat.cofinite_eq_atTop : @cofinite ℕ = atTop := by
   refine le_antisymm ?_ atTop_le_cofinite
   refine atTop_basis.ge_iff.2 fun N _ => ?_
   simpa only [mem_cofinite, compl_Ici] using finite_lt_nat N
-#align nat.cofinite_eq_at_top Nat.cofinite_eq_atTop
 
 theorem Nat.frequently_atTop_iff_infinite {p : ℕ → Prop} :
     (∃ᶠ n in atTop, p n) ↔ Set.Infinite { n | p n } := by
   rw [← Nat.cofinite_eq_atTop, frequently_cofinite_iff_infinite]
-#align nat.frequently_at_top_iff_infinite Nat.frequently_atTop_iff_infinite
 
 lemma Nat.eventually_pos : ∀ᶠ (k : ℕ) in Filter.atTop, 0 < k :=
   Filter.eventually_of_mem (Filter.mem_atTop_sets.mpr ⟨1, fun _ hx ↦ hx⟩) (fun _ hx ↦ hx)
@@ -187,30 +224,26 @@ theorem Filter.Tendsto.exists_within_forall_le {α β : Type*} [LinearOrder β] 
     simp only [not_le] at this
     obtain ⟨a₀, ⟨ha₀ : f a₀ < x, ha₀s⟩, others_bigger⟩ :=
       exists_min_image _ f (this.inter_of_left s) ⟨y, hx, hys⟩
-    refine ⟨a₀, ha₀s, fun a has => (lt_or_le (f a) x).elim ?_ (le_trans ha₀.le)⟩
+    refine ⟨a₀, ha₀s, fun a has => (lt_or_ge (f a) x).elim ?_ (le_trans ha₀.le)⟩
     exact fun h => others_bigger a ⟨h, has⟩
   · -- in this case, f is constant because all values are at top
     push_neg at not_all_top
     obtain ⟨a₀, ha₀s⟩ := hs
     exact ⟨a₀, ha₀s, fun a ha => not_all_top a ha (f a₀)⟩
-#align filter.tendsto.exists_within_forall_le Filter.Tendsto.exists_within_forall_le
 
 theorem Filter.Tendsto.exists_forall_le [Nonempty α] [LinearOrder β] {f : α → β}
     (hf : Tendsto f cofinite atTop) : ∃ a₀, ∀ a, f a₀ ≤ f a :=
   let ⟨a₀, _, ha₀⟩ := hf.exists_within_forall_le univ_nonempty
   ⟨a₀, fun a => ha₀ a (mem_univ _)⟩
-#align filter.tendsto.exists_forall_le Filter.Tendsto.exists_forall_le
 
 theorem Filter.Tendsto.exists_within_forall_ge [LinearOrder β] {s : Set α} (hs : s.Nonempty)
     {f : α → β} (hf : Filter.Tendsto f Filter.cofinite Filter.atBot) :
     ∃ a₀ ∈ s, ∀ a ∈ s, f a ≤ f a₀ :=
   @Filter.Tendsto.exists_within_forall_le _ βᵒᵈ _ _ hs _ hf
-#align filter.tendsto.exists_within_forall_ge Filter.Tendsto.exists_within_forall_ge
 
 theorem Filter.Tendsto.exists_forall_ge [Nonempty α] [LinearOrder β] {f : α → β}
     (hf : Tendsto f cofinite atBot) : ∃ a₀, ∀ a, f a ≤ f a₀ :=
   @Filter.Tendsto.exists_forall_le _ βᵒᵈ _ _ _ hf
-#align filter.tendsto.exists_forall_ge Filter.Tendsto.exists_forall_ge
 
 theorem Function.Surjective.le_map_cofinite {f : α → β} (hf : Surjective f) :
     cofinite ≤ map f cofinite := fun _ h => .of_preimage h hf
@@ -219,17 +252,19 @@ theorem Function.Surjective.le_map_cofinite {f : α → β} (hf : Surjective f) 
 `Filter.comap_cofinite_le` and `Function.Injective.comap_cofinite_eq`. -/
 theorem Function.Injective.tendsto_cofinite {f : α → β} (hf : Injective f) :
     Tendsto f cofinite cofinite := fun _ h => h.preimage hf.injOn
-#align function.injective.tendsto_cofinite Function.Injective.tendsto_cofinite
+
+/-- For a function with finite fibres, inverse images of finite sets are finite. -/
+theorem Filter.Tendsto.cofinite_of_finite_preimage_singleton {f : α → β}
+    (hf : ∀ b, Finite (f ⁻¹' {b})) : Tendsto f cofinite cofinite :=
+  fun _ h => h.preimage' fun b _ ↦ hf b
 
 /-- The pullback of the `Filter.cofinite` under an injective function is equal to `Filter.cofinite`.
 See also `Filter.comap_cofinite_le` and `Function.Injective.tendsto_cofinite`. -/
 theorem Function.Injective.comap_cofinite_eq {f : α → β} (hf : Injective f) :
     comap f cofinite = cofinite :=
   (comap_cofinite_le f).antisymm hf.tendsto_cofinite.le_comap
-#align function.injective.comap_cofinite_eq Function.Injective.comap_cofinite_eq
 
 /-- An injective sequence `f : ℕ → ℕ` tends to infinity at infinity. -/
 theorem Function.Injective.nat_tendsto_atTop {f : ℕ → ℕ} (hf : Injective f) :
     Tendsto f atTop atTop :=
   Nat.cofinite_eq_atTop ▸ hf.tendsto_cofinite
-#align function.injective.nat_tendsto_at_top Function.Injective.nat_tendsto_atTop

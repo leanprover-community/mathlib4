@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Order.Category.Frm
-
-#align_import topology.category.Locale from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
+import Mathlib.Topology.Category.CompHaus.Frm
 
 /-!
 # The category of locales
@@ -18,12 +17,10 @@ universe u
 
 open CategoryTheory Opposite Order TopologicalSpace
 
-set_option linter.uppercaseLean3 false
 
 /-- The category of locales. -/
 def Locale :=
   Frmᵒᵖ deriving LargeCategory
-#align Locale Locale
 
 namespace Locale
 
@@ -36,12 +33,10 @@ instance (X : Locale) : Frame X :=
 /-- Construct a bundled `Locale` from a `Frame`. -/
 def of (α : Type*) [Frame α] : Locale :=
   op <| Frm.of α
-#align Locale.of Locale.of
 
 @[simp]
 theorem coe_of (α : Type*) [Frame α] : ↥(of α) = α :=
   rfl
-#align Locale.coe_of Locale.coe_of
 
 instance : Inhabited Locale :=
   ⟨of PUnit⟩
@@ -53,11 +48,10 @@ end Locale
 @[simps!]
 def topToLocale : TopCat ⥤ Locale :=
   topCatOpToFrm.rightOp
-#align Top_to_Locale topToLocale
 
 -- Note, `CompHaus` is too strong. We only need `T0Space`.
 instance CompHausToLocale.faithful : (compHausToTop ⋙ topToLocale.{u}).Faithful :=
   ⟨fun h => by
     dsimp at h
-    exact Opens.comap_injective (Quiver.Hom.op_inj h)⟩
-#align CompHaus_to_Locale.faithful CompHausToLocale.faithful
+    exact ConcreteCategory.ext (Opens.comap_injective (congr_arg Frm.Hom.hom
+      (Quiver.Hom.op_inj h)))⟩

@@ -1,18 +1,20 @@
 /-
 Copyright (c) 2019 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Simon Hudon, Scott Morrison, Keeley Hoek, Robert Y. Lewis,
-Floris van Doorn, E.W.Ayers
+Authors: Mario Carneiro, Simon Hudon, Kim Morrison, Keeley Hoek, Robert Y. Lewis,
+Floris van Doorn, Edward Ayers
 -/
 import Lean.Expr
 import Mathlib.Util.MemoFix
 
-namespace Lean.Expr
 /-!
 # ReplaceRec
 
 We define a more flexible version of `Expr.replace` where we can use recursive calls even when
-replacing a subexpression. We completely mimic the implementation of `Expr.replace`. -/
+replacing a subexpression. We completely mimic the implementation of `Expr.replace`.
+-/
+
+namespace Lean.Expr
 
 /-- A version of `Expr.replace` where the replacement function is available to the function `f?`.
 
@@ -27,6 +29,6 @@ def replaceRec (f? : (Expr → Expr) → Expr → Option Expr) : Expr → Expr :
   memoFix fun r e ↦
     match f? r e with
     | some x => x
-    | none   => traverseChildren (M := Id) r e
+    | none   => Id.run <| traverseChildren (pure <| r ·) e
 
 end Lean.Expr

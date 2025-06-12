@@ -4,19 +4,34 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
 import Lean
-import Batteries
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
+import Mathlib.Tactic.Linter.OldObtain
+import Mathlib.Tactic.Simproc.ExistsAndEq
 
-set_option autoImplicit true
+/-!
+# Basic tactics and utilities for tactic writing
+
+This file defines some basic utilities for tactic writing, and also
+- a dummy `variables` macro (which warns that the Lean 4 name is `variable`)
+- the `introv` tactic, which allows the user to automatically introduce the variables of a theorem
+and explicitly name the non-dependent hypotheses,
+- an `assumption` macro, calling the `assumption` tactic on all goals
+- the tactics `match_target` and `clear_aux_decl` (clearing all auxiliary declarations from the
+context).
+-/
 
 namespace Mathlib.Tactic
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
+/-- Syntax for the `variables` command: this command is just a stub,
+and merely warns that it has been renamed to `variable` in Lean 4. -/
 syntax (name := «variables») "variables" (ppSpace bracketedBinder)* : command
 
+/-- The `variables` command: this is just a stub,
+and merely warns that it has been renamed to `variable` in Lean 4. -/
 @[command_elab «variables»] def elabVariables : CommandElab
   | `(variables%$pos $binders*) => do
     logWarningAt pos "'variables' has been replaced by 'variable' in lean 4"
@@ -29,7 +44,7 @@ Recall that variables linked this way should be considered to be semantically id
 
 The effect of this is, for example, the unused variable linter will see that variables
 from the first array are used if corresponding variables in the second array are used. -/
-def pushFVarAliasInfo [Monad m] [MonadInfoTree m]
+def pushFVarAliasInfo {m : Type → Type} [Monad m] [MonadInfoTree m]
     (oldFVars newFVars : Array FVarId) (newLCtx : LocalContext) : m Unit := do
   for old in oldFVars, new in newFVars do
     if old != new then
@@ -108,37 +123,6 @@ elab (name := clearAuxDecl) "clear_aux_decl" : tactic => withMainContext do
       g ← g.tryClear ldec.fvarId
   replaceMainGoal [g]
 
-/-- Clears the value of the local definition `fvarId`. Ensures that the resulting goal state
-is still type correct. Throws an error if it is a local hypothesis without a value. -/
-def _root_.Lean.MVarId.clearValue (mvarId : MVarId) (fvarId : FVarId) : MetaM MVarId := do
-  mvarId.checkNotAssigned `clear_value
-  let tag ← mvarId.getTag
-  let (_, mvarId) ← mvarId.withReverted #[fvarId] fun mvarId' fvars => mvarId'.withContext do
-    let tgt ← mvarId'.getType
-    unless tgt.isLet do
-      mvarId.withContext <|
-        throwTacticEx `clear_value mvarId m!"{Expr.fvar fvarId} is not a local definition"
-    let tgt' := Expr.forallE tgt.letName! tgt.letType! tgt.letBody! .default
-    unless ← isTypeCorrect tgt' do
-      mvarId.withContext <|
-        throwTacticEx `clear_value mvarId
-          m!"cannot clear {Expr.fvar fvarId}, the resulting context is not type correct"
-    let mvarId'' ← mkFreshExprSyntheticOpaqueMVar tgt' tag
-    mvarId'.assign <| .app mvarId'' tgt.letValue!
-    return ((), fvars.map .some, mvarId''.mvarId!)
-  return mvarId
-
-/-- `clear_value n₁ n₂ ...` clears the bodies of the local definitions `n₁, n₂ ...`, changing them
-into regular hypotheses. A hypothesis `n : α := t` is changed to `n : α`.
-
-The order of `n₁ n₂ ...` does not matter, and values will be cleared in reverse order of
-where they appear in the context. -/
-elab (name := clearValue) "clear_value" hs:(ppSpace colGt term:max)+ : tactic => do
-  let fvarIds ← getFVarIds hs
-  let fvarIds ← withMainContext <| sortFVarIds fvarIds
-  for fvarId in fvarIds.reverse do
-    withMainContext do
-      let mvarId ← (← getMainGoal).clearValue fvarId
-      replaceMainGoal [mvarId]
-
 attribute [pp_with_univ] ULift PUnit PEmpty
+
+end Mathlib.Tactic

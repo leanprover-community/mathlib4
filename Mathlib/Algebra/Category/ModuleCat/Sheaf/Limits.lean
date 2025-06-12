@@ -13,8 +13,7 @@ In this file, it is shown that under suitable assumptions,
 limits exist in the category `SheafOfModules R`.
 
 ## TODO
-* do the same for colimits (which requires constructing
-the associated sheaf of modules functor)
+* do the same for colimits (which requires constructing the associated sheaf of modules functor)
 
 -/
 
@@ -30,11 +29,11 @@ namespace PresheafOfModules
 variable {R : Cᵒᵖ ⥤ RingCat.{u}}
   {F : D ⥤ PresheafOfModules.{v} R}
   [∀ X, Small.{v} ((F ⋙ evaluation R X) ⋙ forget _).sections]
-  {c : Cone F} (hc : IsLimit c)
-  (hF : ∀ j, Presheaf.IsSheaf J (F.obj j).presheaf)
+  {c : Cone F}
   [HasLimitsOfShape D AddCommGrp.{v}]
 
-lemma isSheaf_of_isLimit : Presheaf.IsSheaf J (c.pt.presheaf) := by
+lemma isSheaf_of_isLimit (hc : IsLimit c) (hF : ∀ j, Presheaf.IsSheaf J (F.obj j).presheaf) :
+    Presheaf.IsSheaf J (c.pt.presheaf) := by
   let G : D ⥤ Sheaf J AddCommGrp.{v} :=
     { obj := fun j => ⟨(F.obj j).presheaf, hF j⟩
       map := fun φ => ⟨(PresheafOfModules.toPresheaf R).map (F.map φ)⟩ }
@@ -111,9 +110,9 @@ noncomputable instance forgetPreservesLimitsOfSize :
 
 noncomputable instance :
      PreservesFiniteLimits (SheafOfModules.toSheaf.{v} R ⋙ sheafToPresheaf _ _) :=
-  compPreservesFiniteLimits (SheafOfModules.forget.{v} R) (PresheafOfModules.toPresheaf R.val)
+  comp_preservesFiniteLimits (SheafOfModules.forget.{v} R) (PresheafOfModules.toPresheaf R.val)
 
 noncomputable instance : PreservesFiniteLimits (SheafOfModules.toSheaf.{v} R) :=
-  preservesFiniteLimitsOfReflectsOfPreserves _ (sheafToPresheaf _ _)
+  preservesFiniteLimits_of_reflects_of_preserves _ (sheafToPresheaf _ _)
 
 end SheafOfModules

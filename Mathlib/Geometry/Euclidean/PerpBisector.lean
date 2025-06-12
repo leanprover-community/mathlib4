@@ -6,8 +6,6 @@ Authors: Yury Kudryashov, Joseph Myers
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
 import Mathlib.Analysis.Normed.Group.AddTorsor
 
-#align_import geometry.euclidean.basic from "leanprover-community/mathlib"@"2de9c37fa71dde2f1c6feff19876dd6a7b1519f0"
-
 /-!
 # Perpendicular bisector of a segment
 
@@ -31,12 +29,11 @@ noncomputable section
 
 namespace AffineSubspace
 
-variable {c c₁ c₂ p₁ p₂ : P}
+variable {c p₁ p₂ : P}
 
 /-- Perpendicular bisector of a segment in a Euclidean affine space. -/
 def perpBisector (p₁ p₂ : P) : AffineSubspace ℝ P :=
-  .comap ((AffineEquiv.vaddConst ℝ (midpoint ℝ p₁ p₂)).symm : P →ᵃ[ℝ] V) <|
-    (LinearMap.ker (innerₛₗ ℝ (p₂ -ᵥ p₁))).toAffineSubspace
+  mk' (midpoint ℝ p₁ p₂) (LinearMap.ker (innerₛₗ ℝ (p₂ -ᵥ p₁)))
 
 /-- A point `c` belongs the perpendicular bisector of `[p₁, p₂] iff `p₂ -ᵥ p₁` is orthogonal to
 `c -ᵥ midpoint ℝ p₁ p₂`. -/
@@ -72,8 +69,7 @@ theorem perpBisector_nonempty : (perpBisector p₁ p₂ : Set P).Nonempty :=
 @[simp]
 theorem direction_perpBisector (p₁ p₂ : P) :
     (perpBisector p₁ p₂).direction = (ℝ ∙ (p₂ -ᵥ p₁))ᗮ := by
-  erw [perpBisector, comap_symm, map_direction, Submodule.map_id,
-    Submodule.toAffineSubspace_direction]
+  rw [perpBisector, direction_mk']
   ext x
   exact Submodule.mem_orthogonal_singleton_iff_inner_right.symm
 
@@ -130,7 +126,6 @@ theorem inner_vsub_vsub_of_dist_eq_of_dist_eq {c₁ c₂ p₁ p₂ : P} (hc₁ :
     (hc₂ : dist p₁ c₂ = dist p₂ c₂) : ⟪c₂ -ᵥ c₁, p₂ -ᵥ p₁⟫ = 0 := by
   rw [← Submodule.mem_orthogonal_singleton_iff_inner_left, ← direction_perpBisector]
   apply vsub_mem_direction <;> rwa [mem_perpBisector_iff_dist_eq']
-#align euclidean_geometry.inner_vsub_vsub_of_dist_eq_of_dist_eq EuclideanGeometry.inner_vsub_vsub_of_dist_eq_of_dist_eq
 
 end EuclideanGeometry
 

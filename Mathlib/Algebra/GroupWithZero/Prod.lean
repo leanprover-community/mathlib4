@@ -6,8 +6,7 @@ Authors: Eric Wieser, Yaël Dillies
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.Units.Basic
-
-#align_import algebra.group.prod from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
+import Mathlib.Algebra.GroupWithZero.WithZero
 
 /-!
 # Products of monoids with zero, groups with zero
@@ -20,7 +19,7 @@ In this file we define `MonoidWithZero`, `GroupWithZero`, etc... instances for `
 * `divMonoidWithZeroHom`: Division bundled as a monoid with zero homomorphism.
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 variable {M₀ N₀ : Type*}
 
@@ -51,6 +50,14 @@ instance instCommMonoidWithZero [CommMonoidWithZero M₀] [CommMonoidWithZero N�
 
 end Prod
 
+variable (M₀) in
+@[simp]
+lemma WithZero.toMonoidWithZeroHom_withZeroUnitsEquiv [GroupWithZero M₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] :
+    MonoidWithZeroHomClass.toMonoidWithZeroHom WithZero.withZeroUnitsEquiv =
+      WithZero.lift' (Units.coeHom M₀) :=
+  rfl
+
 /-! ### Multiplication and division as homomorphisms -/
 
 section BundledMulDiv
@@ -60,15 +67,11 @@ section BundledMulDiv
 def mulMonoidWithZeroHom [CommMonoidWithZero M₀] : M₀ × M₀ →*₀ M₀ where
   __ := mulMonoidHom
   map_zero' := mul_zero _
-#align mul_monoid_with_zero_hom mulMonoidWithZeroHom
-#align mul_monoid_with_zero_hom_apply mulMonoidWithZeroHom_apply
 
 /-- Division as a multiplicative homomorphism with zero. -/
 @[simps]
 def divMonoidWithZeroHom [CommGroupWithZero M₀] : M₀ × M₀ →*₀ M₀ where
   __ := divMonoidHom
   map_zero' := zero_div _
-#align div_monoid_with_zero_hom divMonoidWithZeroHom
-#align div_monoid_with_zero_hom_apply divMonoidWithZeroHom_apply
 
 end BundledMulDiv

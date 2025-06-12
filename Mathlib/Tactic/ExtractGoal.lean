@@ -3,6 +3,7 @@ Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Kyle Miller, Damiano Testa
 -/
+import Mathlib.Init
 import Lean.Elab.Tactic.ElabTerm
 import Lean.Meta.Tactic.Cleanup
 import Lean.PrettyPrinter
@@ -133,7 +134,7 @@ elab_rules : tactic
   | `(tactic| extract_goal $cfg:config $[using $name?]?) => do
     let name ← if let some name := name?
                 then pure name.getId
-                else mkAuxName ((← getCurrNamespace) ++ `extracted) 1
+                else mkAuxDeclName `extracted
     let msg ← withoutModifyingEnv <| withoutModifyingState do
       let g ← getMainGoal
       let g ← do match cfg with
@@ -167,3 +168,5 @@ elab_rules : tactic
       let cmd := if ← Meta.isProp ty then "theorem" else "def"
       pure m!"{cmd} {sig} := sorry"
     logInfo msg
+
+end Mathlib.Tactic.ExtractGoal

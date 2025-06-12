@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Functor.TwoSquare
 
 /-!
 # Guitart exact squares
@@ -49,28 +50,15 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
 
+open Category
+
 variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {C₄ : Type u₄}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃] [Category.{v₄} C₄]
   (T : C₁ ⥤ C₂) (L : C₁ ⥤ C₃) (R : C₂ ⥤ C₄) (B : C₃ ⥤ C₄)
 
-/-- A `2`-square consists of a natural transformation `T ⋙ R ⟶ L ⋙ B`
-involving fours functors `T`, `L`, `R`, `B` that are on the
-top/left/right/bottom sides of a square of categories. -/
-def TwoSquare := T ⋙ R ⟶ L ⋙ B
-
 namespace TwoSquare
 
-/-- Constructor for `TwoSquare`. -/
-abbrev mk (α : T ⋙ R ⟶ L ⋙ B) : TwoSquare T L R B := α
-
-variable {T L R B}
-
-@[ext]
-lemma ext (w w' : TwoSquare T L R B) (h : ∀ (X : C₁), w.app X = w'.app X) :
-    w = w' :=
-  NatTrans.ext _ _ (funext h)
-
-variable (w : TwoSquare T L R B)
+variable {T L R B} (w : TwoSquare T L R B)
 
 /-- Given `w : TwoSquare T L R B` and `X₃ : C₃`, this is the obvious functor
 `CostructuredArrow L X₃ ⥤ CostructuredArrow R (B.obj X₃)`. -/
@@ -114,16 +102,37 @@ abbrev CostructuredArrowDownwards :=
 section
 
 variable (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃)
-  (comm : R.map a ≫ w.app X₁ ≫ B.map b = g)
 
 /-- Constructor for objects in `w.StructuredArrowRightwards g`. -/
-abbrev StructuredArrowRightwards.mk : w.StructuredArrowRightwards g :=
+abbrev StructuredArrowRightwards.mk (comm : R.map a ≫ w.app X₁ ≫ B.map b = g) :
+    w.StructuredArrowRightwards g :=
   StructuredArrow.mk (Y := CostructuredArrow.mk b) (CostructuredArrow.homMk a comm)
 
 /-- Constructor for objects in `w.CostructuredArrowDownwards g`. -/
-abbrev CoStructuredArrowDownwards.mk : w.CostructuredArrowDownwards g :=
+abbrev CostructuredArrowDownwards.mk (comm : R.map a ≫ w.app X₁ ≫ B.map b = g) :
+    w.CostructuredArrowDownwards g :=
   CostructuredArrow.mk (Y := StructuredArrow.mk a)
     (StructuredArrow.homMk b (by simpa using comm))
+
+variable {w g}
+
+lemma StructuredArrowRightwards.mk_surjective
+    (f : w.StructuredArrowRightwards g) :
+    ∃ (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃)
+      (comm : R.map a ≫ w.app X₁ ≫ B.map b = g), f = mk w g X₁ a b comm := by
+  obtain ⟨g, φ, rfl⟩ := StructuredArrow.mk_surjective f
+  obtain ⟨X₁, b, rfl⟩ := g.mk_surjective
+  obtain ⟨a, ha, rfl⟩ := CostructuredArrow.homMk_surjective φ
+  exact ⟨X₁, a, b, by simpa using ha, rfl⟩
+
+lemma CostructuredArrowDownwards.mk_surjective
+    (f : w.CostructuredArrowDownwards g) :
+    ∃ (X₁ : C₁) (a : X₂ ⟶ T.obj X₁) (b : L.obj X₁ ⟶ X₃)
+      (comm : R.map a ≫ w.app X₁ ≫ B.map b = g), f = mk w g X₁ a b comm := by
+  obtain ⟨g, φ, rfl⟩ := CostructuredArrow.mk_surjective f
+  obtain ⟨X₁, a, rfl⟩ := g.mk_surjective
+  obtain ⟨b, hb, rfl⟩ := StructuredArrow.homMk_surjective φ
+  exact ⟨X₁, a, b, by simpa using hb, rfl⟩
 
 end
 
@@ -170,6 +179,29 @@ def equivalenceJ : w.StructuredArrowRightwards g ≌ w.CostructuredArrowDownward
 lemma isConnected_rightwards_iff_downwards :
     IsConnected (w.StructuredArrowRightwards g) ↔ IsConnected (w.CostructuredArrowDownwards g) :=
   isConnected_iff_of_equivalence (w.equivalenceJ g)
+
+end
+
+section
+
+/-- The functor `w.CostructuredArrowDownwards g ⥤ w.CostructuredArrowDownwards g'` induced
+by a morphism `γ` such that `R.map γ ≫ g = g'`. -/
+@[simps]
+def costructuredArrowDownwardsPrecomp
+    {X₂ X₂' : C₂} {X₃ : C₃} (g : R.obj X₂ ⟶ B.obj X₃) (g' : R.obj X₂' ⟶ B.obj X₃)
+    (γ : X₂' ⟶ X₂) (hγ : R.map γ ≫ g = g') :
+    w.CostructuredArrowDownwards g ⥤ w.CostructuredArrowDownwards g' where
+  obj A := CostructuredArrowDownwards.mk _ _ A.left.right (γ ≫ A.left.hom) A.hom.right
+    (by simpa [← hγ] using R.map γ ≫= StructuredArrow.w A.hom)
+  map {A A'} φ := CostructuredArrow.homMk (StructuredArrow.homMk φ.left.right (by
+      dsimp
+      rw [assoc, StructuredArrow.w])) (by
+    ext
+    dsimp
+    rw [← CostructuredArrow.w φ, structuredArrowDownwards_map]
+    rfl)
+  map_id _ := rfl
+  map_comp _ _ := rfl
 
 end
 

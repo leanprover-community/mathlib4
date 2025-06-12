@@ -3,8 +3,9 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
+import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.RingTheory.Finiteness.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Basic
-import Mathlib.RingTheory.Finiteness
 
 /-!
 
@@ -51,7 +52,7 @@ namespace TensorProduct
 of `M × N`, such that `x` is equal to the sum of `m_i ⊗ₜ[R] n_i`. -/
 theorem exists_multiset (x : M ⊗[R] N) :
     ∃ S : Multiset (M × N), x = (S.map fun i ↦ i.1 ⊗ₜ[R] i.2).sum := by
-  induction x using TensorProduct.induction_on with
+  induction x with
   | zero => exact ⟨0, by simp⟩
   | tmul x y => exact ⟨{(x, y)}, by simp⟩
   | add x y hx hy =>
@@ -64,7 +65,7 @@ of `M × N` such that each `m_i` is distinct (we represent it as an element of `
 such that `x` is equal to the sum of `m_i ⊗ₜ[R] n_i`. -/
 theorem exists_finsupp_left (x : M ⊗[R] N) :
     ∃ S : M →₀ N, x = S.sum fun m n ↦ m ⊗ₜ[R] n := by
-  induction x using TensorProduct.induction_on with
+  induction x with
   | zero => exact ⟨0, by simp⟩
   | tmul x y => exact ⟨Finsupp.single x y, by simp⟩
   | add x y hx hy =>
@@ -99,8 +100,10 @@ theorem exists_finite_submodule_of_finite (s : Set (M ⊗[R] N)) (hs : s.Finite)
     ∃ (M' : Submodule R M) (N' : Submodule R N), Module.Finite R M' ∧ Module.Finite R N' ∧
       s ⊆ LinearMap.range (mapIncl M' N') := by
   simp_rw [Module.Finite.iff_fg]
-  refine hs.induction_on ⟨_, _, fg_bot, fg_bot, Set.empty_subset _⟩ ?_
-  rintro a s - - ⟨M', N', hM', hN', h⟩
+  induction s, hs using Set.Finite.induction_on with
+  | empty => exact ⟨_, _, fg_bot, fg_bot, Set.empty_subset _⟩
+  | @insert a s _ _ ih =>
+  obtain ⟨M', N', hM', hN', h⟩ := ih
   refine TensorProduct.induction_on a ?_ (fun x y ↦ ?_) fun x y hx hy ↦ ?_
   · exact ⟨M', N', hM', hN', Set.insert_subset (zero_mem _) h⟩
   · refine ⟨_, _, hM'.sup (fg_span_singleton x),

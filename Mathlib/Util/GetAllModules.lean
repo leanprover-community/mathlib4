@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kim Morrison, Damiano Testa
 -/
 
+import Mathlib.Init
 import Lean.Util.Path
-
 
 /-!
 # Utility functions for finding all `.lean` files or modules in a project.
@@ -46,7 +46,7 @@ def getAllFiles (git : Bool) (ml : String) : IO (Array System.FilePath) := do
   )
 
 /-- Like `getAllFiles`, but return an array of *module* names instead,
-i.e. names of the form `Mathlib.Algebra.Algebra.Basic`.
+i.e. names of the form `Mathlib/Algebra/Algebra/Basic.lean`.
 In addition, these names are sorted in a platform-independent order. -/
 def getAllModulesSorted (git : Bool) (ml : String) : IO (Array String) := do
   let files ← getAllFiles git ml

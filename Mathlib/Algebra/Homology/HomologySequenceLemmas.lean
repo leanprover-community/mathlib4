@@ -60,7 +60,7 @@ variable (S)
 noncomputable def composableArrows₂ (i : ι) : ComposableArrows C 2 :=
   mk₂ (homologyMap S.f i) (homologyMap S.g i)
 
-lemma composableArrows₂_exact (i : ι) :
+lemma composableArrows₂_exact (hS₁ : S₁.ShortExact) (i : ι) :
     (composableArrows₂ S₁ i).Exact :=
   (hS₁.homology_exact₂ i).exact_toComposableArrows
 
@@ -72,7 +72,7 @@ noncomputable def composableArrows₅ (i j : ι) (hij : c.Rel i j) : ComposableA
   mk₅ (homologyMap S₁.f i) (homologyMap S₁.g i) (hS₁.δ i j hij)
     (homologyMap S₁.f j) (homologyMap S₁.g j)
 
-lemma composableArrows₅_exact (i j : ι) (hij : c.Rel i j):
+lemma composableArrows₅_exact (i j : ι) (hij : c.Rel i j) :
     (composableArrows₅ hS₁ i j hij).Exact :=
   exact_of_δ₀ (hS₁.homology_exact₂ i).exact_toComposableArrows
     (exact_of_δ₀ (hS₁.homology_exact₃ i j hij).exact_toComposableArrows
@@ -103,7 +103,7 @@ noncomputable def mapComposableArrows₅ (i j : ι) (hij : c.Rel i j) :
     (naturality' (mapComposableArrows₂ φ j) 0 1)
     (naturality' (mapComposableArrows₂ φ j) 1 2)
 
-attribute [local instance] epi_comp
+include hS₁ hS₂
 
 lemma mono_homologyMap_τ₃ (i : ι)
     (h₁ : Epi (homologyMap φ.τ₁ i))
@@ -145,7 +145,6 @@ lemma epi_homologyMap_τ₃ (i : ι)
     simp only [homologyMap_comp] at eq
     have := epi_homologyMap_of_epi_of_not_rel S₂.g i (by simpa using hi)
     exact epi_of_epi_fac eq.symm
-
 
 lemma isIso_homologyMap_τ₃ (i : ι)
     (h₁ : Epi (homologyMap φ.τ₁ i))

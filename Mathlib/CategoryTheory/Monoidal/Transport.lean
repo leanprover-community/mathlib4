@@ -1,11 +1,9 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
-
-#align_import category_theory.monoidal.transport from "leanprover-community/mathlib"@"31529827d0f68d1fbd429edc393a928f677f4aba"
 
 /-!
 # Transport a monoidal structure along an equivalence.
@@ -72,24 +70,14 @@ structure InducingFunctorData [MonoidalCategoryStruct D] (F : D ⥤ C) where
       (((μIso _ _).symm ≪≫ (.refl _ ⊗ εIso.symm)) ≪≫ ρ_ (F.obj X)).hom := by
     aesop_cat
 
--- these are theorems so don't need docstrings (std4#217)
-attribute [nolint docBlame]
-  InducingFunctorData.whiskerLeft_eq
-  InducingFunctorData.whiskerRight_eq
-  InducingFunctorData.tensorHom_eq
-  InducingFunctorData.associator_eq
-  InducingFunctorData.leftUnitor_eq
-  InducingFunctorData.rightUnitor_eq
-
 /--
 Induce the lawfulness of the monoidal structure along an faithful functor of (plain) categories,
 where the operations are already defined on the destination type `D`.
 
 The functor `F` must preserve all the data parts of the monoidal structure between the two
 categories.
-
 -/
-abbrev induced [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
+def induced [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
     (fData : InducingFunctorData F) :
     MonoidalCategory.{v₂} D where
   tensorHom_def {X₁ Y₁ X₂ Y₂} f g := F.map_injective <| by
@@ -117,27 +105,31 @@ abbrev induced [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
   associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} f₁ f₂ f₃ := F.map_injective <| by
     simp [fData.tensorHom_eq, fData.associator_eq, tensorHom_def, whisker_exchange_assoc]
 
-/--
-We can upgrade `F` to a monoidal functor from `D` to `E` with the induced structure.
--/
-@[simps]
-def fromInduced [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
+/-- A faithful functor equipped with a `InducingFunctorData` structure is monoidal. -/
+def fromInducedCoreMonoidal [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
     (fData : InducingFunctorData F) :
     letI := induced F fData
-    MonoidalFunctor D C :=
+    F.CoreMonoidal := by
   letI := induced F fData
-  { toFunctor := F
-    ε := fData.εIso.hom
-    μ := fun X Y => (fData.μIso X Y).hom
-    μ_natural_left := by cases fData; aesop_cat
-    μ_natural_right := by cases fData; aesop_cat
-    associativity := by cases fData; aesop_cat
-    left_unitality := by cases fData; aesop_cat
-    right_unitality := by cases fData; aesop_cat }
+  exact
+    { εIso := fData.εIso
+      μIso := fData.μIso
+      μIso_hom_natural_left := fun _ ↦ by simp [fData.whiskerRight_eq]
+      μIso_hom_natural_right := fun _ ↦ by simp [fData.whiskerLeft_eq]
+      associativity := fun _ _ _ ↦ by simp [fData.associator_eq]
+      left_unitality := fun _ ↦ by simp [fData.leftUnitor_eq]
+      right_unitality := fun _ ↦ by simp [fData.rightUnitor_eq] }
+
+instance fromInducedMonoidal [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
+    (fData : InducingFunctorData F) :
+    letI := induced F fData
+    F.Monoidal :=
+  letI := induced F fData
+  (fromInducedCoreMonoidal F fData).toMonoidal
 
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
-@[simps]
+@[simps -isSimp]
 def transportStruct (e : C ≌ D) : MonoidalCategoryStruct.{v₂} D where
   tensorObj X Y := e.functor.obj (e.inverse.obj X ⊗ e.inverse.obj Y)
   whiskerLeft X _ _ f := e.functor.map (e.inverse.obj X ◁ e.inverse.map f)
@@ -146,29 +138,28 @@ def transportStruct (e : C ≌ D) : MonoidalCategoryStruct.{v₂} D where
   tensorUnit := e.functor.obj (𝟙_ C)
   associator X Y Z :=
     e.functor.mapIso
-      (((e.unitIso.app _).symm ⊗ Iso.refl _) ≪≫
+      (whiskerRightIso (e.unitIso.app _).symm _ ≪≫
         α_ (e.inverse.obj X) (e.inverse.obj Y) (e.inverse.obj Z) ≪≫
-        (Iso.refl _ ⊗ e.unitIso.app _))
+        whiskerLeftIso _ (e.unitIso.app _))
   leftUnitor X :=
-    e.functor.mapIso (((e.unitIso.app _).symm ⊗ Iso.refl _) ≪≫ λ_ (e.inverse.obj X)) ≪≫
+    e.functor.mapIso ((whiskerRightIso (e.unitIso.app _).symm _) ≪≫ λ_ (e.inverse.obj X)) ≪≫
       e.counitIso.app _
   rightUnitor X :=
-    e.functor.mapIso ((Iso.refl _ ⊗ (e.unitIso.app _).symm) ≪≫ ρ_ (e.inverse.obj X)) ≪≫
+    e.functor.mapIso ((whiskerLeftIso _ (e.unitIso.app _).symm) ≪≫ ρ_ (e.inverse.obj X)) ≪≫
       e.counitIso.app _
 
+attribute [local simp] transportStruct in
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
 def transport (e : C ≌ D) : MonoidalCategory.{v₂} D :=
   letI : MonoidalCategoryStruct.{v₂} D := transportStruct e
   induced e.inverse
-    { μIso := fun X Y => e.unitIso.app _
+    { μIso := fun _ _ => e.unitIso.app _
       εIso := e.unitIso.app _ }
-#align category_theory.monoidal.transport CategoryTheory.Monoidal.transport
 
 /-- A type synonym for `D`, which will carry the transported monoidal structure. -/
 @[nolint unusedArguments]
 def Transported (_ : C ≌ D) := D
-#align category_theory.monoidal.transported CategoryTheory.Monoidal.Transported
 
 instance (e : C ≌ D) : Category (Transported e) := (inferInstance : Category D)
 
@@ -182,45 +173,38 @@ instance Transported.instMonoidalCategory (e : C ≌ D) : MonoidalCategory (Tran
 instance (e : C ≌ D) : Inhabited (Transported e) :=
   ⟨𝟙_ _⟩
 
-/-- We can upgrade `e.inverse` to a monoidal functor from `D` with the transported structure to `C`.
--/
-@[simps!]
-def fromTransported (e : C ≌ D) : MonoidalFunctor (Transported e) C := by
-  dsimp only [transport, Transported.instMonoidalCategory]
-  exact fromInduced (D := Transported e) e.inverse _
-#align category_theory.monoidal.from_transported CategoryTheory.Monoidal.fromTransported
+section
 
-instance instIsEquivalence_fromTransported (e : C ≌ D) :
-    (fromTransported e).IsEquivalence := by
-  dsimp [fromTransported]
+variable (e : C ≌ D)
+
+/-- We upgrade the equivalence of categories `e : C ≌ D` to a monoidal category
+equivalence `C ≌ Transported e`. -/
+abbrev equivalenceTransported : C ≌ Transported e := e
+
+instance : (equivalenceTransported e).inverse.Monoidal := by
+  dsimp only [Transported.instMonoidalCategory]
   infer_instance
 
-#noalign category_theory.monoidal.lax_to_transported
+instance : (equivalenceTransported e).symm.functor.Monoidal :=
+  inferInstanceAs (equivalenceTransported e).inverse.Monoidal
 
-/-- We can upgrade `e.functor` to a monoidal functor from `C` to `D` with the transported structure.
--/
-@[simps!]
-def toTransported (e : C ≌ D) : MonoidalFunctor C (Transported e) :=
-  monoidalInverse (fromTransported e) e.symm.toAdjunction
-#align category_theory.monoidal.to_transported CategoryTheory.Monoidal.toTransported
+instance : (equivalenceTransported e).functor.Monoidal :=
+  (equivalenceTransported e).symm.inverseMonoidal
 
-instance (e : C ≌ D) : (toTransported e).IsEquivalence :=
-  e.isEquivalence_functor
+instance : (equivalenceTransported e).symm.inverse.Monoidal :=
+  inferInstanceAs (equivalenceTransported e).functor.Monoidal
+
+instance : (equivalenceTransported e).symm.IsMonoidal := by
+  infer_instance
 
 /-- The unit isomorphism upgrades to a monoidal isomorphism. -/
-@[simps! hom inv]
-def transportedMonoidalUnitIso (e : C ≌ D) :
-    LaxMonoidalFunctor.id C ≅
-      (toTransported e).toLaxMonoidalFunctor ⊗⋙ (fromTransported e).toLaxMonoidalFunctor :=
-  asIso (monoidalCounit (fromTransported e) e.symm.toAdjunction) |>.symm
-#align category_theory.monoidal.transported_monoidal_unit_iso CategoryTheory.Monoidal.transportedMonoidalUnitIso
+instance : NatTrans.IsMonoidal (equivalenceTransported e).unit :=
+  inferInstanceAs (NatTrans.IsMonoidal (equivalenceTransported e).symm.counitIso.inv)
 
 /-- The counit isomorphism upgrades to a monoidal isomorphism. -/
-@[simps! hom inv]
-def transportedMonoidalCounitIso (e : C ≌ D) :
-    (fromTransported e).toLaxMonoidalFunctor ⊗⋙ (toTransported e).toLaxMonoidalFunctor ≅
-      LaxMonoidalFunctor.id (Transported e) :=
-  asIso (monoidalUnit (fromTransported e) e.symm.toAdjunction) |>.symm
-#align category_theory.monoidal.transported_monoidal_counit_iso CategoryTheory.Monoidal.transportedMonoidalCounitIso
+instance : NatTrans.IsMonoidal (equivalenceTransported e).counit :=
+  inferInstanceAs (NatTrans.IsMonoidal (equivalenceTransported e).symm.unitIso.inv)
+
+end
 
 end CategoryTheory.Monoidal
