@@ -201,7 +201,7 @@ def down (α : Type*) [Add α] [IsRightCancelAdd α] [One α] : ComplexShape α 
   down' 1
 
 instance (α : Type _) [AddRightCancelSemigroup α] [One α] [DecidableEq α] :
-  DecidableRel (down α).Rel := fun _ _ => by dsimp ; infer_instance
+  DecidableRel (down α).Rel := fun _ _ => by dsimp; infer_instance
 
 theorem down_mk {α : Type*} [AddRightCancelSemigroup α] [One α] (i j : α) (h : j + 1 = i) :
     (down α).Rel i j :=
