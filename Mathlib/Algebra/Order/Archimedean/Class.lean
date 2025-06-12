@@ -282,8 +282,8 @@ theorem mk_right_le_mk_mul (hba : mk b ≤ mk a) : mk b ≤ mk (a * b) := by
   simpa [hba] using min_le_mk_mul (a := a) (b := b)
 
 @[to_additive]
-theorem mk_left_eq_mk_mul (h : mk a < mk b) : mk a = mk (a * b) := by
-  refine le_antisymm (mk_left_le_mk_mul h.le) (mk_le_mk.mpr ⟨2, ?_⟩)
+theorem mk_mul_eq_mk_left (h : mk a < mk b) : mk (a * b) = mk a := by
+  refine le_antisymm (mk_le_mk.mpr ⟨2, ?_⟩) (mk_left_le_mk_mul h.le)
   rw [mk_lt_mk] at h
   apply (mabs_mul' _ b).trans
   rw [mul_comm b a, pow_two, mul_le_mul_iff_right]
@@ -292,8 +292,8 @@ theorem mk_left_eq_mk_mul (h : mk a < mk b) : mk a = mk (a * b) := by
   exact (pow_two |b|ₘ ▸ (h 2).le).trans (mabs_mul' a b)
 
 @[to_additive]
-theorem mk_right_eq_mk_mul (h : mk b < mk a) : mk b = mk (a * b) :=
-  mul_comm a b ▸ mk_left_eq_mk_mul h
+theorem mk_mul_eq_mk_right (h : mk b < mk a) : mk (a * b) = mk b :=
+  mul_comm a b ▸ mk_mul_eq_mk_left h
 
 /-- The product over a set of an elements in distinct classes is in the lowest class. -/
 @[to_additive "The sum over a set of an elements in distinct classes is in the lowest class."]
@@ -315,7 +315,7 @@ theorem mk_prod {ι : Type*} [LinearOrder ι] {s : Finset ι} (hnonempty : s.Non
       exact hi (Finset.min'_mem _ hs)
     rw [← ih] at hne
     obtain hlt|hlt := lt_or_gt_of_ne hne
-    · rw [← mk_left_eq_mk_mul hlt]
+    · rw [mk_mul_eq_mk_left hlt]
       congr
       apply le_antisymm (Finset.le_min' _ _ _ ?_) (Finset.min'_le _ _ (by simp))
       intro y hy
@@ -325,7 +325,7 @@ theorem mk_prod {ι : Type*} [LinearOrder ι] {s : Finset ι} (hnonempty : s.Non
         apply (hmono.lt_iff_lt (by simp) hminmem).mp
         rw [ih] at hlt
         exact hlt
-    · rw [mul_comm, ← mk_left_eq_mk_mul hlt, ih]
+    · rw [mul_comm, mk_mul_eq_mk_left hlt, ih]
       congr 2
       refine le_antisymm (Finset.le_min' _ _ _ ?_) (Finset.min'_le _ _ hminmem)
       intro y hy
