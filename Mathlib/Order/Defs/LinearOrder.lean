@@ -78,9 +78,10 @@ attribute [instance 900] LinearOrder.toDecidableEq
 
 lemma le_total : ∀ a b : α, a ≤ b ∨ b ≤ a := LinearOrder.le_total
 
-lemma le_of_not_ge : ¬a ≥ b → a ≤ b := (le_total b a).resolve_left
-lemma le_of_not_le : ¬a ≤ b → b ≤ a := (le_total a b).resolve_left
-lemma lt_of_not_ge (h : ¬a ≥ b) : a < b := lt_of_le_not_le (le_of_not_ge h) h
+lemma le_of_not_ge : ¬a ≤ b → b ≤ a := (le_total a b).resolve_left
+lemma lt_of_not_ge (h : ¬b ≤ a) : a < b := lt_of_le_not_ge (le_of_not_ge h) h
+
+@[deprecated (since := "2025-05-11")] alias le_of_not_le := le_of_not_ge
 
 lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a :=
   Or.elim (le_total a b)
@@ -91,32 +92,36 @@ lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a :=
     Or.elim (Decidable.lt_or_eq_of_le h) (fun h : b < a => Or.inr (Or.inr h)) fun h : b = a =>
       Or.inr (Or.inl h.symm)
 
-lemma le_of_not_lt (h : ¬b < a) : a ≤ b :=
+lemma le_of_not_gt (h : ¬b < a) : a ≤ b :=
   match lt_trichotomy a b with
   | Or.inl hlt => le_of_lt hlt
   | Or.inr (Or.inl HEq) => HEq ▸ le_refl a
   | Or.inr (Or.inr hgt) => absurd hgt h
 
-lemma le_of_not_gt : ¬a > b → a ≤ b := le_of_not_lt
+@[deprecated (since := "2025-05-11")] alias le_of_not_lt := le_of_not_gt
 
-lemma lt_or_le (a b : α) : a < b ∨ b ≤ a :=
+lemma lt_or_ge (a b : α) : a < b ∨ b ≤ a :=
   if hba : b ≤ a then Or.inr hba else Or.inl <| lt_of_not_ge hba
 
-lemma le_or_lt (a b : α) : a ≤ b ∨ b < a := (lt_or_le b a).symm
-lemma lt_or_ge : ∀ a b : α, a < b ∨ a ≥ b := lt_or_le
-lemma le_or_gt : ∀ a b : α, a ≤ b ∨ a > b := le_or_lt
+@[deprecated (since := "2025-05-11")] alias lt_or_le := lt_or_ge
 
-lemma lt_or_gt_of_ne (h : a ≠ b) : a < b ∨ a > b := by simpa [h] using lt_trichotomy a b
+lemma le_or_gt (a b : α) : a ≤ b ∨ b < a := (lt_or_ge b a).symm
 
-lemma ne_iff_lt_or_gt : a ≠ b ↔ a < b ∨ a > b := ⟨lt_or_gt_of_ne, (Or.elim · ne_of_lt ne_of_gt)⟩
+@[deprecated (since := "2025-05-11")] alias le_or_lt := le_or_gt
 
-lemma lt_iff_not_ge (x y : α) : x < y ↔ ¬x ≥ y := ⟨not_le_of_gt, lt_of_not_ge⟩
+lemma lt_or_gt_of_ne (h : a ≠ b) : a < b ∨ b < a := by simpa [h] using lt_trichotomy a b
+
+lemma ne_iff_lt_or_gt : a ≠ b ↔ a < b ∨ b < a := ⟨lt_or_gt_of_ne, (Or.elim · ne_of_lt ne_of_gt)⟩
+
+lemma lt_iff_not_ge : a < b ↔ ¬b ≤ a := ⟨not_le_of_gt, lt_of_not_ge⟩
 
 @[simp] lemma not_lt : ¬a < b ↔ b ≤ a := ⟨le_of_not_gt, not_lt_of_ge⟩
-@[simp] lemma not_le : ¬a ≤ b ↔ b < a := (lt_iff_not_ge _ _).symm
+@[simp] lemma not_le : ¬a ≤ b ↔ b < a := lt_iff_not_ge.symm
 
-lemma eq_or_lt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
+lemma eq_or_lt_of_not_gt (h : ¬a < b) : a = b ∨ b < a :=
   if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge => h (lt_of_le_of_ne hge h₁))
+
+@[deprecated (since := "2025-05-11")] alias eq_or_lt_of_not_lt := eq_or_lt_of_not_gt
 
 /-- Perform a case-split on the ordering of `x` and `y` in a decidable linear order. -/
 @[deprecated lt_trichotomy (since := "2025-04-21")]
@@ -126,7 +131,7 @@ def ltByCases (x y : α) {P : Sort*} (h₁ : x < y → P) (h₂ : x = y → P) (
 
 theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α} {c d : β}
     (H : d < c → b < a) (h : a ≤ b) : c ≤ d :=
-  le_of_not_lt fun h' => not_le_of_gt (H h') h
+  le_of_not_gt fun h' => not_le_of_gt (H h') h
 
 lemma min_def (a b : α) : min a b = if a ≤ b then a else b := by rw [LinearOrder.min_def a]
 lemma max_def (a b : α) : max a b = if a ≤ b then b else a := by rw [LinearOrder.max_def a]
@@ -134,7 +139,7 @@ lemma max_def (a b : α) : max a b = if a ≤ b then b else a := by rw [LinearOr
 lemma min_le_left (a b : α) : min a b ≤ a := by
   if h : a ≤ b
   then simp [min_def, if_pos h, le_refl]
-  else simpa [min_def, if_neg h] using le_of_not_le h
+  else simpa [min_def, if_neg h] using le_of_not_ge h
 
 lemma min_le_right (a b : α) : min a b ≤ b := by
   if h : a ≤ b
@@ -154,7 +159,7 @@ lemma le_max_left (a b : α) : a ≤ max a b := by
 lemma le_max_right (a b : α) : b ≤ max a b := by
   if h : a ≤ b
   then simp [max_def, if_pos h, le_refl]
-  else simpa [max_def, if_neg h] using le_of_not_le h
+  else simpa [max_def, if_neg h] using le_of_not_ge h
 
 lemma max_le (h₁ : a ≤ c) (h₂ : b ≤ c) : max a b ≤ c := by
   if h : a ≤ b
@@ -231,7 +236,7 @@ lemma compare_lt_iff_lt : compare a b = .lt ↔ a < b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
   split_ifs <;> simp only [*, lt_irrefl, reduceCtorEq]
 
-lemma compare_gt_iff_gt : compare a b = .gt ↔ a > b := by
+lemma compare_gt_iff_gt : compare a b = .gt ↔ b < a := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
   split_ifs <;> simp only [*, lt_irrefl, not_lt_of_gt, reduceCtorEq]
   case _ h₁ h₂ =>
@@ -251,7 +256,7 @@ lemma compare_le_iff_le : compare a b ≠ .gt ↔ a ≤ b := by
   · exact le_of_eq <| compare_eq_iff_eq.1 h
   · exact compare_gt_iff_gt.1 h
 
-lemma compare_ge_iff_ge : compare a b ≠ .lt ↔ a ≥ b := by
+lemma compare_ge_iff_ge : compare a b ≠ .lt ↔ b ≤ a := by
   cases h : compare a b <;> simp
   · exact compare_lt_iff_lt.1 h
   · exact le_of_eq <| (·.symm) <| compare_eq_iff_eq.1 h
