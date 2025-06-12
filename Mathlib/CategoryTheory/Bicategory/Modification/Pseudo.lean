@@ -104,15 +104,28 @@ theorem whiskerRight_naturality (f : a ⟶ b) (g : G.obj b ⟶ a') :
 
 end
 
+variable (η) in
+/-- The identity modification. -/
+@[simps]
+def id : Modification η η where app a := 𝟙 (η.app a)
+
+instance : Inhabited (Modification η η) :=
+  ⟨Modification.id η⟩
+
+/-- Vertical composition of modifications. -/
+@[simps]
+def vcomp {ι : F ⟶ G} (Γ : Modification η θ) (Δ : Modification θ ι) : Modification η ι where
+  app a := Γ.app a ≫ Δ.app a
+
 
 end Modification
 
 /-- Category structure on the strong transformations between pseudofunctors. -/
-@[simps]
+@[simps!]
 scoped instance homCategory : Category (F ⟶ G) where
   Hom := Modification
-  id η := { app := fun a ↦ 𝟙 (η.app a) }
-  comp Γ Δ := { app := fun a ↦ Γ.app a ≫ Δ.app a }
+  id := Modification.id
+  comp := Modification.vcomp
 
 instance : Inhabited (Modification η η) :=
   ⟨𝟙 η⟩
