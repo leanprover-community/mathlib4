@@ -198,7 +198,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
     calc
       ‖x‖ ≤ ∑' n, ‖u n‖ := norm_tsum_le_tsum_norm sNu
       _ ≤ ∑' n, (1 / 2) ^ n * (C * ‖y‖) :=
-        tsum_le_tsum ule sNu (Summable.mul_right _ summable_geometric_two)
+        sNu.tsum_le_tsum ule <| Summable.mul_right _ summable_geometric_two
       _ = (∑' n, (1 / 2) ^ n) * (C * ‖y‖) := tsum_mul_right
       _ = 2 * C * ‖y‖ := by rw [tsum_geometric_two, mul_assoc]
       _ ≤ 2 * C * ‖y‖ + ‖y‖ := le_add_of_nonneg_right (norm_nonneg y)
@@ -245,7 +245,6 @@ protected theorem isOpenMap (surj : Surjective f) : IsOpenMap f := by
         apply mul_lt_mul_of_pos_left _ Cpos
         rwa [mem_ball, dist_eq_norm] at hz
       _ = ε := mul_div_cancel₀ _ (ne_of_gt Cpos)
-
   exact Set.mem_image_of_mem _ (hε this)
 
 theorem isQuotientMap (surj : Surjective f) : IsQuotientMap f :=

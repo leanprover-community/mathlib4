@@ -141,9 +141,6 @@ theorem coequalizer_π_app_isLocalHom
           (unop (op U))))
   infer_instance
 
-@[deprecated (since := "2024-10-10")]
-alias coequalizer_π_app_isLocalRingHom := coequalizer_π_app_isLocalHom
-
 /-!
 We roughly follow the construction given in [MR0302656]. Given a pair `f, g : X ⟶ Y` of morphisms
 of locally ringed spaces, we want to show that the stalk map of
@@ -241,9 +238,6 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
   erw [← CommRingCat.comp_apply, ← CommRingCat.comp_apply, ← Y.presheaf.map_comp]
   convert @RingedSpace.isUnit_res_basicOpen Y.toRingedSpace (unop _)
       (((coequalizer.π f.toShHom g.toShHom).c.app (op U)) s)
-
-@[deprecated (since := "2024-10-10")]
-alias coequalizer_π_stalk_isLocalRingHom := coequalizer_π_stalk_isLocalHom
 
 end HasCoequalizer
 

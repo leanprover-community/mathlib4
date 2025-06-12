@@ -41,7 +41,8 @@ theorem eval_one_cyclotomic_prime_pow {R : Type*} [CommRing R] {p : ℕ} (k : �
 theorem eval₂_one_cyclotomic_prime_pow {R S : Type*} [CommRing R] [Semiring S] (f : R →+* S)
     {p : ℕ} (k : ℕ) [Fact p.Prime] : eval₂ f 1 (cyclotomic (p ^ (k + 1)) R) = p := by simp
 
-private theorem cyclotomic_neg_one_pos {n : ℕ} (hn : 2 < n) {R} [LinearOrderedCommRing R] :
+private theorem cyclotomic_neg_one_pos {n : ℕ} (hn : 2 < n) {R}
+    [CommRing R] [PartialOrder R] [IsStrictOrderedRing R] :
     0 < eval (-1 : R) (cyclotomic n R) := by
   haveI := NeZero.of_gt hn
   rw [← map_cyclotomic_int, ← Int.cast_one, ← Int.cast_neg, eval_intCast_map, Int.coe_castRingHom,
@@ -57,9 +58,10 @@ private theorem cyclotomic_neg_one_pos {n : ℕ} (hn : 2 < n) {R} [LinearOrdered
   obtain ⟨y, hy : IsRoot _ y⟩ := this (show (0 : ℝ) ∈ Set.Icc _ _ by simpa [h0] using hx)
   rw [@isRoot_cyclotomic_iff] at hy
   rw [hy.eq_orderOf] at hn
-  exact hn.not_le LinearOrderedRing.orderOf_le_two
+  exact hn.not_ge LinearOrderedRing.orderOf_le_two
 
-theorem cyclotomic_pos {n : ℕ} (hn : 2 < n) {R} [LinearOrderedCommRing R] (x : R) :
+theorem cyclotomic_pos {n : ℕ} (hn : 2 < n) {R}
+    [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] (x : R) :
     0 < eval x (cyclotomic n R) := by
   induction' n using Nat.strong_induction_on with n ih
   have hn' : 0 < n := pos_of_gt hn
@@ -102,7 +104,8 @@ theorem cyclotomic_pos {n : ℕ} (hn : 2 < n) {R} [LinearOrderedCommRing R] (x :
       exact hn'.ne' hi.2.2.1
     · simpa only [eval_X, eval_one, cyclotomic_two, eval_add] using h.right.le
 
-theorem cyclotomic_pos_and_nonneg (n : ℕ) {R} [LinearOrderedCommRing R] (x : R) :
+theorem cyclotomic_pos_and_nonneg (n : ℕ) {R}
+    [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] (x : R) :
     (1 < x → 0 < eval x (cyclotomic n R)) ∧ (1 ≤ x → 0 ≤ eval x (cyclotomic n R)) := by
   rcases n with (_ | _ | _ | n)
   · simp only [cyclotomic_zero, eval_one, zero_lt_one, implies_true, zero_le_one, and_self]
@@ -115,12 +118,14 @@ theorem cyclotomic_pos_and_nonneg (n : ℕ) {R} [LinearOrderedCommRing R] (x : R
 /-- Cyclotomic polynomials are always positive on inputs larger than one.
 Similar to `cyclotomic_pos` but with the condition on the input rather than index of the
 cyclotomic polynomial. -/
-theorem cyclotomic_pos' (n : ℕ) {R} [LinearOrderedCommRing R] {x : R} (hx : 1 < x) :
+theorem cyclotomic_pos' (n : ℕ) {R}
+    [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] {x : R} (hx : 1 < x) :
     0 < eval x (cyclotomic n R) :=
   (cyclotomic_pos_and_nonneg n x).1 hx
 
 /-- Cyclotomic polynomials are always nonnegative on inputs one or more. -/
-theorem cyclotomic_nonneg (n : ℕ) {R} [LinearOrderedCommRing R] {x : R} (hx : 1 ≤ x) :
+theorem cyclotomic_nonneg (n : ℕ) {R}
+    [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] {x : R} (hx : 1 ≤ x) :
     0 ≤ eval x (cyclotomic n R) :=
   (cyclotomic_pos_and_nonneg n x).2 hx
 
@@ -147,11 +152,12 @@ theorem eval_one_cyclotomic_not_prime_pow {R : Type*} [Ring R] {n : ℕ}
     · simp only [singleton_subset_iff, mem_sdiff, mem_erase, Ne, mem_divisors, dvd_refl,
         true_and, mem_image, mem_range, exists_prop, not_exists, not_and]
       exact ⟨⟨hn.ne', hn'.ne'⟩, fun t _ => h hp _⟩
-    rw [← Int.natAbs_ofNat p, Int.natAbs_dvd_natAbs] at hpe
+    rw [← Int.natAbs_natCast p, Int.natAbs_dvd_natAbs] at hpe
     obtain ⟨t, ht⟩ := hpe
     rw [Finset.prod_singleton, ht, mul_left_comm, mul_comm, ← mul_assoc, mul_assoc] at this
     have : (p : ℤ) ^ padicValNat p n * p ∣ n := ⟨_, this⟩
-    simp only [← _root_.pow_succ, ← Int.natAbs_dvd_natAbs, Int.natAbs_ofNat, Int.natAbs_pow] at this
+    simp only [← _root_.pow_succ, ← Int.natAbs_dvd_natAbs, Int.natAbs_natCast,
+      Int.natAbs_pow] at this
     exact pow_succ_padicValNat_not_dvd hn'.ne' this
   · rintro x - y - hxy
     apply Nat.succ_injective
@@ -282,7 +288,7 @@ theorem cyclotomic_eval_le_add_one_pow_totient {q : ℝ} (hq' : 1 < q) :
 
 theorem sub_one_pow_totient_lt_natAbs_cyclotomic_eval {n : ℕ} {q : ℕ} (hn' : 1 < n) (hq : q ≠ 1) :
     (q - 1) ^ totient n < ((cyclotomic n ℤ).eval ↑q).natAbs := by
-  rcases hq.lt_or_lt.imp_left Nat.lt_one_iff.mp with (rfl | hq')
+  rcases hq.lt_or_gt.imp_left Nat.lt_one_iff.mp with (rfl | hq')
   · rw [zero_tsub, zero_pow (Nat.totient_pos.2 (pos_of_gt hn')).ne', pos_iff_ne_zero,
       Int.natAbs_ne_zero, Nat.cast_zero, ← coeff_zero_eq_eval_zero, cyclotomic_coeff_zero _ hn']
     exact one_ne_zero

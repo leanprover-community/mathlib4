@@ -138,8 +138,15 @@ theorem ofReal_zero : ((0 : ℝ) : K) = 0 :=
   algebraMap.coe_zero
 
 @[rclike_simps]
-theorem zero_re' : re (0 : K) = (0 : ℝ) :=
+theorem zero_re : re (0 : K) = (0 : ℝ) :=
   map_zero re
+
+@[deprecated (since := "2025-05-29")]
+alias zero_re' := zero_re
+
+@[rclike_simps]
+theorem zero_im : im (0 : K) = (0 : ℝ) :=
+  map_zero im
 
 @[norm_cast]
 theorem ofReal_one : ((1 : ℝ) : K) = 1 :=
@@ -189,7 +196,7 @@ theorem ofReal_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
 @[simp, rclike_simps, norm_cast]
 theorem ofReal_finsupp_sum {α M : Type*} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
     ((f.sum fun a b => g a b : ℝ) : K) = f.sum fun a b => (g a b : K) :=
-  map_finsupp_sum (algebraMap ℝ K) f g
+  map_finsuppSum (algebraMap ℝ K) f g
 
 @[rclike_simps, norm_cast]
 theorem ofReal_mul (r s : ℝ) : ((r * s : ℝ) : K) = r * s :=
@@ -205,9 +212,11 @@ theorem ofReal_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
   map_prod (algebraMap ℝ K) _ _
 
 @[simp, rclike_simps, norm_cast]
-theorem ofReal_finsupp_prod {α M : Type*} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
+theorem ofReal_finsuppProd {α M : Type*} [Zero M] (f : α →₀ M) (g : α → M → ℝ) :
     ((f.prod fun a b => g a b : ℝ) : K) = f.prod fun a b => (g a b : K) :=
-  map_finsupp_prod _ f g
+  map_finsuppProd _ f g
+
+@[deprecated (since := "2025-04-06")] alias ofReal_finsupp_prod := ofReal_finsuppProd
 
 @[simp, norm_cast, rclike_simps]
 theorem real_smul_ofReal (r x : ℝ) : r • (x : K) = (r : K) * (x : K) :=
@@ -526,6 +535,10 @@ theorem norm_conj (z : K) : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_nor
 instance (priority := 100) : CStarRing K where
   norm_mul_self_le x := le_of_eq <| ((norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_conj _)).symm
 
+instance : StarModule ℝ K where
+  star_smul r a := by
+    apply RCLike.ext <;> simp [RCLike.smul_re, RCLike.smul_im]
+
 /-! ### Cast lemmas -/
 
 @[rclike_simps, norm_cast]
@@ -689,6 +702,10 @@ theorem norm_sq_re_add_conj (x : K) : ‖x + conj x‖ ^ 2 = re (x + conj x) ^ 2
 theorem norm_sq_re_conj_add (x : K) : ‖conj x + x‖ ^ 2 = re (conj x + x) ^ 2 := by
   rw [add_comm, norm_sq_re_add_conj]
 
+instance : NormSMulClass ℤ K where
+  norm_smul r x := by
+    rw [zsmul_eq_mul, norm_mul, ← ofReal_intCast, norm_ofReal, Int.norm_eq_abs]
+
 /-! ### Cauchy sequences -/
 
 theorem isCauSeq_re (f : CauSeq K norm) : IsCauSeq abs fun n => re (f n) := fun _ ε0 =>
@@ -830,18 +847,25 @@ lemma toStarOrderedRing : StarOrderedRing K :=
 
 scoped[ComplexOrder] attribute [instance] RCLike.toStarOrderedRing
 
+lemma toZeroLEOneClass : ZeroLEOneClass K where
+  zero_le_one := by simp [@RCLike.le_iff_re_im K]
+
+scoped[ComplexOrder] attribute [instance] RCLike.toZeroLEOneClass
+
+lemma toIsOrderedAddMonoid : IsOrderedAddMonoid K where
+  add_le_add_left _ _ := add_le_add_left
+
+scoped[ComplexOrder] attribute [instance] RCLike.toIsOrderedAddMonoid
+
 /-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are strictly ordered rings.
 
 Note this is only an instance with `open scoped ComplexOrder`. -/
-def toStrictOrderedCommRing : StrictOrderedCommRing K where
-  zero_le_one := by simp [@RCLike.le_iff_re_im K]
-  add_le_add_left _ _ := add_le_add_left
-  mul_pos z w hz hw := by
+lemma toIsStrictOrderedRing : IsStrictOrderedRing K :=
+  .of_mul_pos fun z w hz hw ↦ by
     rw [lt_iff_re_im, map_zero] at hz hw ⊢
     simp [mul_re, mul_im, ← hz.2, ← hw.2, mul_pos hz.1 hw.1]
-  mul_comm := by intros; apply ext <;> ring_nf
 
-scoped[ComplexOrder] attribute [instance] RCLike.toStrictOrderedCommRing
+scoped[ComplexOrder] attribute [instance] RCLike.toIsStrictOrderedRing
 
 theorem toOrderedSMul : OrderedSMul ℝ K :=
   OrderedSMul.mk' fun a b r hab hr => by
@@ -1063,6 +1087,20 @@ theorem continuous_normSq : Continuous (normSq : K → ℝ) :=
 
 theorem lipschitzWith_ofReal : LipschitzWith 1 (ofReal : ℝ → K) :=
   ofRealLI.lipschitz
+
+lemma lipschitzWith_re : LipschitzWith 1 (re (K := K)) := by
+  intro x y
+  simp only [ENNReal.coe_one, one_mul, edist_eq_enorm_sub]
+  calc ‖re x - re y‖ₑ
+  _ = ‖re (x - y)‖ₑ := by rw [ AddMonoidHom.map_sub re x y]
+  _ ≤ ‖x - y‖ₑ := by rw [enorm_le_iff_norm_le]; exact norm_re_le_norm (x - y)
+
+lemma lipschitzWith_im : LipschitzWith 1 (im (K := K)) := by
+  intro x y
+  simp only [ENNReal.coe_one, one_mul, edist_eq_enorm_sub]
+  calc ‖im x - im y‖ₑ
+  _ = ‖im (x - y)‖ₑ := by rw [ AddMonoidHom.map_sub im x y]
+  _ ≤ ‖x - y‖ₑ := by rw [enorm_le_iff_norm_le]; exact norm_im_le_norm (x - y)
 
 end LinearMaps
 
