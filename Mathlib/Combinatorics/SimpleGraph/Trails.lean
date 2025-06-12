@@ -116,6 +116,12 @@ theorem isEulerian_iff {u v : V} (p : G.Walk u v) :
   · rintro ⟨h, hl⟩
     exact h.isEulerian_of_forall_mem hl
 
+theorem IsEulerian.edgeSet_eq {u v : V} {p : G.Walk u v} (h : p.IsEulerian) :
+    p.edgeSet = G.edgeSet := by
+  apply Set.Subset.antisymm p.edges_subset_edgeSet
+  rw [Set.subset_def]
+  exact (p.isEulerian_iff.mp h).2
+
 theorem IsEulerian.edgesFinset_eq [Fintype G.edgeSet] {u v : V} {p : G.Walk u v}
     (h : p.IsEulerian) : h.isTrail.edgesFinset = G.edgeFinset := by
   ext e
