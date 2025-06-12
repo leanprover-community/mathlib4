@@ -51,13 +51,11 @@ lemma toFin_pow (x : BitVec w) (n : ℕ)    : toFin (x ^ n) = x.toFin ^ n := by
 ## Ring
 -/
 
-open Fin.CommRing
-
 -- Verify that the `HPow` instance from Lean agrees definitionally with the instance via `Monoid`.
 example : @instHPow (Fin (2 ^ w)) ℕ Monoid.toNatPow = Lean.Grind.Fin.instHPowFinNatOfNeZero := rfl
 
-open Fin.CommRing in
 instance : CommSemiring (BitVec w) :=
+  open Fin.CommRing in
   toFin_injective.commSemiring _
     rfl /- toFin_zero -/
     rfl /- toFin_one -/
@@ -76,6 +74,7 @@ theorem _root_.Fin.intCast_def' {n : Nat} [NeZero n] (x : Int) :
   dsimp [Int.cast, IntCast.intCast, Int.castDef]
   split <;> (simp [Fin.intCast]; omega)
 
+open Fin.CommRing in
 @[simp] theorem _root_.Fin.val_intCast {n : Nat} [NeZero n] (x : Int) :
     (x : Fin n).val = (x % n).toNat := by
   rw [Fin.intCast_def']
@@ -90,6 +89,7 @@ theorem _root_.Fin.intCast_def' {n : Nat} [NeZero n] (x : Int) :
       omega
 
 -- TODO: move to the Lean4 repository.
+open Fin.CommRing in
 theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = ↑z := by
   cases w
   case zero =>
@@ -108,8 +108,8 @@ open Fin.CommRing in
 theorem toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z := by
   apply toFin_inj.mpr <| (ofFin_intCast z).symm
 
-open Fin.CommRing in
 instance : CommRing (BitVec w) :=
+  open Fin.CommRing in
   toFin_injective.commRing _
     toFin_zero toFin_one toFin_add toFin_mul toFin_neg toFin_sub
     toFin_nsmul toFin_zsmul toFin_pow toFin_natCast toFin_intCast
