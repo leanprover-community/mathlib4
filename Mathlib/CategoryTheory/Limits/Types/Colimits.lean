@@ -227,7 +227,7 @@ def colimitCoconeIsColimit (F : J ⥤ Type max v u) : IsColimit (colimitCocone F
       exact (congr_fun (Cocone.w s f) x).symm
   uniq s m hm := by
     funext x
-    obtain ⟨x⟩ := x
+    induction x using Quot.ind with | _ x
     exact congr_fun (hm x.1) x.2
 
 end TypeMax
