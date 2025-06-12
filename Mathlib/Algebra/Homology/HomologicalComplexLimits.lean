@@ -295,7 +295,7 @@ noncomputable instance [HasFiniteLimits C] (i : ι) :
     PreservesFiniteLimits (single C c i) := ⟨by intros; infer_instance⟩
 
 noncomputable instance [HasFiniteColimits C] (i : ι) :
-    PreservesFiniteColimits (single C c i) := ⟨by intros ; infer_instance⟩
+    PreservesFiniteColimits (single C c i) := ⟨by intros; infer_instance⟩
 
 end
 
