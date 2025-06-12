@@ -21,18 +21,14 @@ For the bundled `LinearOrderedCommRing` instance on `ℚ`, see `Algebra.Order.Ri
 rat, rationals, field, ℚ, numerator, denominator, num, denom, order, ordering
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists Field
-assert_not_exists Finset
-assert_not_exists Set.Icc
-assert_not_exists GaloisConnection
+assert_not_exists OrderedCommMonoid Field Finset Set.Icc GaloisConnection
 
 namespace Rat
 
 variable {a b p q : ℚ}
 
 @[simp] lemma divInt_nonneg_iff_of_pos_right {a b : ℤ} (hb : 0 < b) : 0 ≤ a /. b ↔ 0 ≤ a := by
-  cases' hab : a /. b with n d hd hnd
+  rcases hab : a /. b with ⟨n, d, hd, hnd⟩
   rw [mk'_eq_divInt, divInt_eq_iff hb.ne' (mod_cast hd)] at hab
   rw [← num_nonneg, ← Int.mul_nonneg_iff_of_pos_right hb, ← hab,
     Int.mul_nonneg_iff_of_pos_right (mod_cast Nat.pos_of_ne_zero hd)]
@@ -85,44 +81,45 @@ protected lemma mul_nonneg : 0 ≤ a → 0 ≤ b → 0 ≤ a * b :=
         divInt_mul_divInt _ _ d₁0.ne' d₂0.ne']
       apply Int.mul_nonneg
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO can this be shortened?
+protected theorem not_le {a b : ℚ} : ¬a ≤ b ↔ b < a := (Bool.not_eq_false _).to_iff
+
+protected theorem not_lt {a b : ℚ} : ¬a < b ↔ b ≤ a := by
+  rw [← Rat.not_le, not_not]
+
+protected theorem lt_iff (a b : ℚ) : a < b ↔ a.num * b.den < b.num * a.den :=
+  numDenCasesOn'' a fun na da ha hared =>
+    numDenCasesOn'' b fun nb db hb hbred => by
+      show Rat.blt _ _ = true ↔ _
+      suffices
+        (na < 0 ∧ 0 ≤ nb ∨ if na = 0 then 0 < nb else (na ≤ 0 ∨ 0 < nb) ∧ na * ↑db < nb * da) ↔
+        na * db < nb * da by simpa [Rat.blt]
+      split_ifs with h
+      · suffices 0 < nb ↔ 0 < nb * da by simpa [h]
+        refine ⟨(Int.mul_pos · (by omega)), ?_⟩
+        contrapose!
+        exact (Int.mul_nonpos_of_nonpos_of_nonneg · (by omega))
+      · constructor
+        · refine (·.elim ?_ And.right)
+          rintro ⟨hna, nb0⟩
+          apply (Int.mul_neg_of_neg_of_pos hna _).trans_le (Int.mul_nonneg nb0 _) <;> omega
+        · intro h
+          suffices na < 0 ∧ 0 ≤ nb ∨ na ≤ 0 ∨ 0 < nb by simpa [h]
+          contrapose! h
+          apply (Int.mul_nonpos_of_nonpos_of_nonneg _ _).trans (Int.mul_nonneg _ _) <;> omega
+
+protected theorem le_iff (a b : ℚ) : a ≤ b ↔ a.num * b.den ≤ b.num * a.den := by
+  simpa only [Rat.not_lt, not_lt] using (Rat.lt_iff b a).not
+
 protected theorem le_iff_sub_nonneg (a b : ℚ) : a ≤ b ↔ 0 ≤ b - a :=
   numDenCasesOn'' a fun na da ha hared =>
     numDenCasesOn'' b fun nb db hb hbred => by
-      change Rat.blt _ _ = false ↔ _
-      unfold Rat.blt
-      simp only [Bool.and_eq_true, decide_eq_true_eq, Bool.ite_eq_false_distrib,
-        decide_eq_false_iff_not, not_lt, ite_eq_left_iff, not_and, not_le, ← num_nonneg]
-      split_ifs with h h'
-      · rw [Rat.sub_def]
-        simp only [false_iff, not_le, reduceCtorEq]
-        simp only [normalize_eq]
-        apply Int.ediv_neg'
-        · rw [sub_neg]
-          apply lt_of_lt_of_le
-          · apply Int.mul_neg_of_neg_of_pos h.1
-            rwa [Int.natCast_pos, Nat.pos_iff_ne_zero]
-          · apply Int.mul_nonneg h.2 (Int.natCast_nonneg _)
-        · simp only [Int.natCast_pos, Nat.pos_iff_ne_zero]
-          exact Nat.gcd_ne_zero_right (Nat.mul_ne_zero hb ha)
-      · simp [h']
-      · simp only [Rat.sub_def, normalize_eq]
-        refine ⟨fun H => ?_, fun H _ => ?_⟩
-        · refine Int.ediv_nonneg ?_ (Int.natCast_nonneg _)
-          rw [Int.sub_nonneg]
-          obtain hb|hb := Ne.lt_or_lt h'
-          · apply H
-            intro H'
-            exact (hb.trans H').false.elim
-          · obtain ha|ha := le_or_lt na 0
-            · apply le_trans <| Int.mul_nonpos_of_nonpos_of_nonneg ha (Int.natCast_nonneg _)
-              exact Int.mul_nonneg hb.le (Int.natCast_nonneg _)
-            · exact H (fun _ => ha)
-        · rw [← Int.sub_nonneg]
-          contrapose! H
-          apply Int.ediv_neg' H
-          simp only [Int.natCast_pos, Nat.pos_iff_ne_zero]
-          exact Nat.gcd_ne_zero_right (Nat.mul_ne_zero hb ha)
+      rw [Rat.le_iff, sub_def, normalize_eq, ← num_nonneg, ← Int.sub_nonneg]
+      dsimp only
+      refine ⟨(Int.ediv_nonneg · (Int.natCast_nonneg _)), fun H ↦ ?_⟩
+      contrapose! H
+      apply Int.ediv_neg_of_neg_of_pos H
+      simp only [Int.natCast_pos, Nat.pos_iff_ne_zero]
+      exact Nat.gcd_ne_zero_right (Nat.mul_ne_zero hb ha)
 
 protected lemma divInt_le_divInt {a b c d : ℤ} (b0 : 0 < b) (d0 : 0 < d) :
     a /. b ≤ c /. d ↔ a * d ≤ c * b := by
@@ -131,8 +128,6 @@ protected lemma divInt_le_divInt {a b c d : ℤ} (b0 : 0 < b) (d0 : 0 < d) :
 
 protected lemma le_total : a ≤ b ∨ b ≤ a := by
   simpa only [← Rat.le_iff_sub_nonneg, neg_sub] using Rat.nonneg_total (b - a)
-
-protected theorem not_le {a b : ℚ} : ¬a ≤ b ↔ b < a := (Bool.not_eq_false _).to_iff
 
 instance linearOrder : LinearOrder ℚ where
   le_refl a := by rw [Rat.le_iff_sub_nonneg, ← num_nonneg]; simp
@@ -150,10 +145,10 @@ instance linearOrder : LinearOrder ℚ where
     have := eq_neg_of_add_eq_zero_left (Rat.nonneg_antisymm hba hab)
     rwa [neg_neg] at this
   le_total _ _ := Rat.le_total
-  decidableEq := inferInstance
-  decidableLE := inferInstance
-  decidableLT := inferInstance
-  lt_iff_le_not_le _ _ := by rw [← Rat.not_le, and_iff_right_of_imp Rat.le_total.resolve_left]
+  toDecidableEq := inferInstance
+  toDecidableLE := inferInstance
+  toDecidableLT := inferInstance
+  lt_iff_le_not_ge _ _ := by rw [← Rat.not_le, and_iff_right_of_imp Rat.le_total.resolve_left]
 
 /-!
 ### Extra instances to short-circuit type class resolution
@@ -162,13 +157,13 @@ These also prevent non-computable instances being used to construct these instan
 -/
 
 instance instDistribLattice : DistribLattice ℚ := inferInstance
-instance instLattice        : Lattice ℚ        := inferInstance
+instance instLattice : Lattice ℚ := inferInstance
 instance instSemilatticeInf : SemilatticeInf ℚ := inferInstance
 instance instSemilatticeSup : SemilatticeSup ℚ := inferInstance
-instance instInf            : Min ℚ            := inferInstance
-instance instSup            : Max ℚ            := inferInstance
-instance instPartialOrder   : PartialOrder ℚ   := inferInstance
-instance instPreorder       : Preorder ℚ       := inferInstance
+instance instInf : Min ℚ := inferInstance
+instance instSup : Max ℚ := inferInstance
+instance instPartialOrder : PartialOrder ℚ := inferInstance
+instance instPreorder : Preorder ℚ := inferInstance
 
 /-! ### Miscellaneous lemmas -/
 
@@ -197,12 +192,9 @@ instance : AddLeftMono ℚ where
 @[simp] lemma num_pos {a : ℚ} : 0 < a.num ↔ 0 < a := lt_iff_lt_of_le_iff_le num_nonpos
 @[simp] lemma num_neg {a : ℚ} : a.num < 0 ↔ a < 0 := lt_iff_lt_of_le_iff_le num_nonneg
 
-@[deprecated (since := "2024-02-16")] alias num_nonneg_iff_zero_le := num_nonneg
-@[deprecated (since := "2024-02-16")] alias num_pos_iff_pos := num_pos
-
 theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d) :
     (a : ℚ) / b < c / d ↔ a * d < c * b := by
-  simp only [lt_iff_le_not_le]
+  simp only [lt_iff_le_not_ge]
   apply and_congr
   · simp [div_def', Rat.divInt_le_divInt b_pos d_pos]
   · apply not_congr

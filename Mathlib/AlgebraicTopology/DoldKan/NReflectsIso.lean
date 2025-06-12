@@ -36,14 +36,14 @@ instance : (N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)).Reflects
   ⟨fun {X Y} f => by
     intro
     -- restating the result in a way that allows induction on the degree n
-    suffices ∀ n : ℕ, IsIso (f.app (op [n])) by
+    suffices ∀ n : ℕ, IsIso (f.app (op ⦋n⦌)) by
       haveI : ∀ Δ : SimplexCategoryᵒᵖ, IsIso (f.app Δ) := fun Δ => this Δ.unop.len
       apply NatIso.isIso_of_isIso_app
     -- restating the assumption in a more practical form
     have h₁ := HomologicalComplex.congr_hom (Karoubi.hom_ext_iff.mp (IsIso.hom_inv_id (N₁.map f)))
     have h₂ := HomologicalComplex.congr_hom (Karoubi.hom_ext_iff.mp (IsIso.inv_hom_id (N₁.map f)))
     have h₃ := fun n =>
-      Karoubi.HomologicalComplex.p_comm_f_assoc (inv (N₁.map f)) n (f.app (op [n]))
+      Karoubi.HomologicalComplex.p_comm_f_assoc (inv (N₁.map f)) n (f.app (op ⦋n⦌))
     simp only [N₁_map_f, Karoubi.comp_f, HomologicalComplex.comp_f,
       AlternatingFaceMapComplex.map_f, N₁_obj_p, Karoubi.id_f, assoc] at h₁ h₂ h₃
     -- we have to construct an inverse to f in degree n, by induction on n
@@ -60,7 +60,7 @@ instance : (N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)).Reflects
     | succ n hn =>
       haveI := hn
       use φ { a := PInfty.f (n + 1) ≫ (inv (N₁.map f)).f.f (n + 1)
-              b := fun i => inv (f.app (op [n])) ≫ X.σ i }
+              b := fun i => inv (f.app (op ⦋n⦌)) ≫ X.σ i }
       simp only [MorphComponents.id, ← id_φ, ← preComp_φ, preComp, ← postComp_φ, postComp,
         PInfty_f_naturality_assoc, IsIso.hom_inv_id_assoc, assoc, IsIso.inv_hom_id_assoc,
         SimplicialObject.σ_naturality, h₁, h₂, h₃, and_self]⟩
@@ -110,11 +110,10 @@ instance : (N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)
     -- could this be fixed by setting better instance priorities?
     haveI : F₁.ReflectsIsomorphisms := reflectsIsomorphisms_of_full_and_faithful _
     haveI : F₂.ReflectsIsomorphisms := by infer_instance
-    haveI : F₃.ReflectsIsomorphisms := reflectsIsomorphisms_of_full_and_faithful _
     haveI : ((KaroubiKaroubi.equivalence C).inverse).ReflectsIsomorphisms :=
       reflectsIsomorphisms_of_full_and_faithful _
     have : IsIso (F.map f) := by
-      simp only [F]
+      simp only [F, F₁]
       rw [← compatibility_N₂_N₁_karoubi, Functor.comp_map]
       apply Functor.map_isIso
     exact isIso_of_reflects_iso f F⟩

@@ -150,7 +150,7 @@ theorem decomposeAux_coe {i : ι} (x : gradeBy R f i) :
       simpa only [Finsupp.support_single_ne_zero _ hb, Finset.disjoint_singleton_left]
     rw [mem_gradeBy_iff, Finsupp.support_add_eq this, Finset.coe_union, Set.union_subset_iff]
       at hmby
-    cases' hmby with h1 h2
+    obtain ⟨h1, h2⟩ := hmby
     have : f m = i := by
       rwa [Finsupp.support_single_ne_zero _ hb, Finset.coe_singleton, Set.singleton_subset_iff]
         at h1
@@ -165,9 +165,8 @@ theorem decomposeAux_coe {i : ι} (x : gradeBy R f i) :
 instance gradeBy.gradedAlgebra : GradedAlgebra (gradeBy R f) :=
   GradedAlgebra.ofAlgHom _ (decomposeAux f)
     (by
-      ext : 2
-      simp only [MonoidHom.coe_comp, MonoidHom.coe_coe, AlgHom.coe_comp, Function.comp_apply,
-        of_apply, AlgHom.coe_id, id_eq]
+      ext : 4
+      dsimp
       rw [decomposeAux_single, DirectSum.coeAlgHom_of, Subtype.coe_mk])
     fun i x => by rw [decomposeAux_coe f x]
 

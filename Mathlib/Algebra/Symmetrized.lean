@@ -22,6 +22,10 @@ We provide the symmetrized version of a type `α` as `SymAlg α`, with notation 
 The approach taken here is inspired by `Mathlib/Algebra/Opposites.lean`. We use Oxford Spellings
 (IETF en-GB-oxendict).
 
+## Note
+
+See `SymmetricAlgebra` instead if you are looking for the symmetric algebra of a module.
+
 ## References
 
 * [Hanche-Olsen and Størmer, Jordan Operator Algebras][hancheolsenstormer1984]
@@ -30,12 +34,12 @@ The approach taken here is inspired by `Mathlib/Algebra/Opposites.lean`. We use 
 
 open Function
 
-/-- The symmetrized algebra has the same underlying space as the original algebra.
--/
+/-- The symmetrized algebra (denoted as `αˢʸᵐ`)
+has the same underlying space as the original algebra `α`. -/
 def SymAlg (α : Type*) : Type _ :=
   α
 
-postfix:max "ˢʸᵐ" => SymAlg
+@[inherit_doc] postfix:max "ˢʸᵐ" => SymAlg
 
 namespace SymAlg
 
@@ -257,13 +261,11 @@ instance nonAssocSemiring [Semiring α] [Invertible (2 : α)] : NonAssocSemiring
     one_mul := fun _ => by
       rw [mul_def, unsym_one, mul_one, one_mul, ← two_mul, invOf_mul_cancel_left, sym_unsym]
     left_distrib := fun a b c => by
-      -- Porting note: rewrote previous proof which used `match` in a way that seems unsupported.
       rw [mul_def, mul_def, mul_def, ← sym_add, ← mul_add, unsym_add, add_mul]
       congr 2
       rw [mul_add]
       abel
     right_distrib := fun a b c => by
-      -- Porting note: rewrote previous proof which used `match` in a way that seems unsupported.
       rw [mul_def, mul_def, mul_def, ← sym_add, ← mul_add, unsym_add, add_mul]
       congr 2
       rw [mul_add]
@@ -293,12 +295,9 @@ instance [Ring α] [Invertible (2 : α)] : CommMagma αˢʸᵐ where
 instance [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ where
   lmul_comm_rmul_rmul a b := by
     have commute_half_left := fun a : α => by
-      -- Porting note: mathlib3 used `bit0_left`
       have := (Commute.one_left a).add_left (Commute.one_left a)
       rw [one_add_one_eq_two] at this
       exact this.invOf_left.eq
-
-    -- Porting note: introduced `calc` block to make more robust
     calc a * b * (a * a)
       _ = sym (⅟2 * ⅟2 * (unsym a * unsym b * unsym (a * a) +
           unsym b * unsym a * unsym (a * a) +
@@ -308,12 +307,10 @@ instance [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ where
           unsym (sym (⅟ 2 * (unsym b * unsym (a * a) + unsym (a * a) * unsym b))) +
           unsym (sym (⅟ 2 * (unsym b * unsym (a * a) + unsym (a * a) * unsym b))) * unsym a)) := ?_
       _ = a * (b * (a * a)) := ?_
-
     -- Rearrange LHS
     · rw [mul_def, mul_def a b, unsym_sym, ← mul_assoc, ← commute_half_left (unsym (a * a)),
         mul_assoc, mul_assoc, ← mul_add, ← mul_assoc, add_mul, mul_add (unsym (a * a)),
         ← add_assoc, ← mul_assoc, ← mul_assoc]
-
     · rw [unsym_sym, sym_inj, ← mul_assoc, ← commute_half_left (unsym a), mul_assoc (⅟ 2) (unsym a),
         mul_assoc (⅟ 2) _ (unsym a), ← mul_add, ← mul_assoc]
       conv_rhs => rw [mul_add (unsym a)]
@@ -323,7 +320,6 @@ instance [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ where
       convert mul_zero (⅟ (2 : α) * ⅟ (2 : α))
       rw [add_sub_add_right_eq_sub, add_assoc, add_assoc, add_sub_add_left_eq_sub, add_comm,
         add_sub_add_right_eq_sub, sub_eq_zero]
-
     -- Rearrange RHS
     · rw [← mul_def, ← mul_def]
 

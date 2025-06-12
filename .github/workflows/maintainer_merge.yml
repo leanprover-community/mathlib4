@@ -19,6 +19,7 @@ jobs:
     # both set simultaneously: depending on the event that triggers the PR, usually only one is set
     env:
       AUTHOR: ${{ github.event.comment.user.login }}${{ github.event.review.user.login }}
+      PR_AUTHOR: ${{ github.event.issue.user.login }}${{ github.event.pull_request.user.login }}
       PR_NUMBER: ${{ github.event.issue.number }}${{ github.event.pull_request.number }}
       COMMENT_EVENT: ${{ github.event.comment.body }}
       COMMENT_REVIEW: ${{ github.event.review.body }}
@@ -28,10 +29,20 @@ jobs:
       EVENT_NAME: ${{ github.event_name }}
     name: Ping maintainers on Zulip
     runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
     steps:
       - name: Find maintainer merge/delegate
         id: merge_or_delegate
         run: |
+          # don't try to run if we don't have access to necessary secrets
+          if [[ -z '${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }}' ]]
+          then
+            printf 'No access to secrets, aborting.'
+            printf 'mOrD=' > "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+
+          echo "PR author: ${PR_AUTHOR}"
           COMMENT="${COMMENT_EVENT}${COMMENT_REVIEW}"
 
           # we strip `\r` since line endings from GitHub contain this character
@@ -51,7 +62,7 @@ jobs:
 
       - name: Check whether user is part of mathlib-reviewers team
         if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
-        uses: TheModdingInquisition/actions-team-membership@v1.0
+        uses: TheModdingInquisition/actions-team-membership@a69636a92bc927f32c3910baac06bacc949c984c # v1.0
         with:
           organization: 'leanprover-community'
           team: 'mathlib-reviewers' # required. The team to check for
@@ -62,7 +73,7 @@ jobs:
 
       - name: Checkout
         if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Determine Zulip topic
         if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
@@ -81,13 +92,13 @@ jobs:
 
           echo ""
           message="$(
-            ./scripts/maintainer_merge_message.sh "${AUTHOR}" "${{ steps.merge_or_delegate.outputs.mOrD }}" "${EVENT_NAME}" "${PR_NUMBER}" "${PR_URL}" "${PR_TITLE_ISSUE}${PR_TITLE_PR}" "${COMMENT_EVENT}${COMMENT_REVIEW}"
+            ./scripts/maintainer_merge_message.sh "${AUTHOR}" "${{ steps.merge_or_delegate.outputs.mOrD }}" "${EVENT_NAME}" "${PR_NUMBER}" "${PR_URL}" "${PR_TITLE_ISSUE}${PR_TITLE_PR}" "${COMMENT_EVENT}${COMMENT_REVIEW}" "${PR_AUTHOR}"
           )"
           printf 'title<<EOF\n%s\nEOF' "${message}" | tee "$GITHUB_OUTPUT"
 
       - name: Send message on Zulip
         if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
-        uses: zulip/github-actions-zulip/send-message@v1
+        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
@@ -99,7 +110,7 @@ jobs:
 
       - name: Add comment to PR
         if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
-        uses: GrantBirki/comment@v2
+        uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
         with:
           # if a comment triggers the action, then `issue.number` is set
           # if a review or review comment triggers the action, then `pull_request.number` is set
@@ -109,9 +120,10 @@ jobs:
 
       - name: Add label to PR
         if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
+          # labels added by GITHUB_TOKEN won't trigger the Zulip emoji workflow
+          github-token: ${{secrets.TRIAGE_TOKEN}}
           script: |
             const { owner, repo, number: issue_number } = context.issue;
             await github.rest.issues.addLabels({ owner, repo, issue_number, labels: ['maintainer-merge'] });

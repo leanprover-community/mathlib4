@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Init
+import Mathlib.Util.PPOptions
 import Lean.PrettyPrinter.Delaborator.Builtins
 
 /-! # Pi type notation
@@ -13,11 +14,14 @@ Provides the `Π x : α, β x` notation as an alternative to Lean 4's built-in
 then do `open scoped PiNotation`.
 
 The notation also accepts extended binders, like `Π x ∈ s, β x` for `Π x, x ∈ s → β x`.
+This can be disabled with the `pp.mathlib.binderPredicates` option.
 -/
 
 namespace PiNotation
+open Lean hiding binderIdent
 open Lean.Parser Term
 open Lean.PrettyPrinter.Delaborator
+open Mathlib
 
 /-- Dependent function type (a "pi type"). The notation `Π x : α, β x` can
 also be written as `(x : α) → β x`. -/
@@ -46,7 +50,7 @@ parse it by simply using the pre-existing forall parser. -/
 /-- Override the Lean 4 pi notation delaborator with one that prints cute binders
 such as `∀ ε > 0`. -/
 @[delab forallE]
-def delabPi : Delab := whenPPOption Lean.getPPNotation do
+def delabPi : Delab := whenPPOption getPPBinderPredicates <| whenPPOption Lean.getPPNotation do
   let stx ← delabForall
   match stx with
   | `(∀ ($i:ident : $_), $j:ident ∈ $s → $body) =>
@@ -79,7 +83,8 @@ Note that this takes advantage of the fact that `(x : α) → p x` notation is
 never used for propositions, so we can match on this result and rewrite it. -/
 @[scoped delab forallE]
 def delabPi' : Delab := whenPPOption Lean.getPPNotation do
-  let stx ← delabPi
+  -- Use delabForall as a backup if `pp.mathlib.binderPredicates` is false.
+  let stx ← delabPi <|> delabForall
   -- Replacements
   let stx : Term ←
     match stx with
@@ -97,7 +102,7 @@ open Lean Parser Term PrettyPrinter Delaborator
 
 /-- Delaborator for existential quantifier, including extended binders. -/
 -- TODO: reduce the duplication in this code
-@[delab app.Exists]
+@[app_delab Exists]
 def exists_delab : Delab := whenPPOption Lean.getPPNotation do
   let #[ι, f] := (← SubExpr.getExpr).getAppArgs | failure
   unless f.isLambda do failure
@@ -117,38 +122,41 @@ def exists_delab : Delab := whenPPOption Lean.getPPNotation do
         `(∃ $x:ident, $body)
   -- Cute binders
   let stx : Term ←
-    match stx with
-    | `(∃ $i:ident, $j:ident ∈ $s ∧ $body)
-    | `(∃ ($i:ident : $_), $j:ident ∈ $s ∧ $body) =>
-      if i == j then `(∃ $i:ident ∈ $s, $body) else pure stx
-    | `(∃ $x:ident, $y:ident > $z ∧ $body)
-    | `(∃ ($x:ident : $_), $y:ident > $z ∧ $body) =>
-      if x == y then `(∃ $x:ident > $z, $body) else pure stx
-    | `(∃ $x:ident, $y:ident < $z ∧ $body)
-    | `(∃ ($x:ident : $_), $y:ident < $z ∧ $body) =>
-      if x == y then `(∃ $x:ident < $z, $body) else pure stx
-    | `(∃ $x:ident, $y:ident ≥ $z ∧ $body)
-    | `(∃ ($x:ident : $_), $y:ident ≥ $z ∧ $body) =>
-      if x == y then `(∃ $x:ident ≥ $z, $body) else pure stx
-    | `(∃ $x:ident, $y:ident ≤ $z ∧ $body)
-    | `(∃ ($x:ident : $_), $y:ident ≤ $z ∧ $body) =>
-      if x == y then `(∃ $x:ident ≤ $z, $body) else pure stx
-    | `(∃ $x:ident, $y:ident ∉ $z ∧ $body)
-    | `(∃ ($x:ident : $_), $y:ident ∉ $z ∧ $body) => do
-      if x == y then `(∃ $x:ident ∉ $z, $body) else pure stx
-    | `(∃ $x:ident, $y:ident ⊆ $z ∧ $body)
-    | `(∃ ($x:ident : $_), $y:ident ⊆ $z ∧ $body) =>
-      if x == y then `(∃ $x:ident ⊆ $z, $body) else pure stx
-    | `(∃ $x:ident, $y:ident ⊂ $z ∧ $body)
-    | `(∃ ($x:ident : $_), $y:ident ⊂ $z ∧ $body) =>
-      if x == y then `(∃ $x:ident ⊂ $z, $body) else pure stx
-    | `(∃ $x:ident, $y:ident ⊇ $z ∧ $body)
-    | `(∃ ($x:ident : $_), $y:ident ⊇ $z ∧ $body) =>
-      if x == y then `(∃ $x:ident ⊇ $z, $body) else pure stx
-    | `(∃ $x:ident, $y:ident ⊃ $z ∧ $body)
-    | `(∃ ($x:ident : $_), $y:ident ⊃ $z ∧ $body) =>
-      if x == y then `(∃ $x:ident ⊃ $z, $body) else pure stx
-    | _ => pure stx
+    if ← getPPOption Mathlib.getPPBinderPredicates then
+      match stx with
+      | `(∃ $i:ident, $j:ident ∈ $s ∧ $body)
+      | `(∃ ($i:ident : $_), $j:ident ∈ $s ∧ $body) =>
+        if i == j then `(∃ $i:ident ∈ $s, $body) else pure stx
+      | `(∃ $x:ident, $y:ident > $z ∧ $body)
+      | `(∃ ($x:ident : $_), $y:ident > $z ∧ $body) =>
+        if x == y then `(∃ $x:ident > $z, $body) else pure stx
+      | `(∃ $x:ident, $y:ident < $z ∧ $body)
+      | `(∃ ($x:ident : $_), $y:ident < $z ∧ $body) =>
+        if x == y then `(∃ $x:ident < $z, $body) else pure stx
+      | `(∃ $x:ident, $y:ident ≥ $z ∧ $body)
+      | `(∃ ($x:ident : $_), $y:ident ≥ $z ∧ $body) =>
+        if x == y then `(∃ $x:ident ≥ $z, $body) else pure stx
+      | `(∃ $x:ident, $y:ident ≤ $z ∧ $body)
+      | `(∃ ($x:ident : $_), $y:ident ≤ $z ∧ $body) =>
+        if x == y then `(∃ $x:ident ≤ $z, $body) else pure stx
+      | `(∃ $x:ident, $y:ident ∉ $z ∧ $body)
+      | `(∃ ($x:ident : $_), $y:ident ∉ $z ∧ $body) => do
+        if x == y then `(∃ $x:ident ∉ $z, $body) else pure stx
+      | `(∃ $x:ident, $y:ident ⊆ $z ∧ $body)
+      | `(∃ ($x:ident : $_), $y:ident ⊆ $z ∧ $body) =>
+        if x == y then `(∃ $x:ident ⊆ $z, $body) else pure stx
+      | `(∃ $x:ident, $y:ident ⊂ $z ∧ $body)
+      | `(∃ ($x:ident : $_), $y:ident ⊂ $z ∧ $body) =>
+        if x == y then `(∃ $x:ident ⊂ $z, $body) else pure stx
+      | `(∃ $x:ident, $y:ident ⊇ $z ∧ $body)
+      | `(∃ ($x:ident : $_), $y:ident ⊇ $z ∧ $body) =>
+        if x == y then `(∃ $x:ident ⊇ $z, $body) else pure stx
+      | `(∃ $x:ident, $y:ident ⊃ $z ∧ $body)
+      | `(∃ ($x:ident : $_), $y:ident ⊃ $z ∧ $body) =>
+        if x == y then `(∃ $x:ident ⊃ $z, $body) else pure stx
+      | _ => pure stx
+    else
+      pure stx
   match stx with
   | `(∃ $group:bracketedExplicitBinders, ∃ $[$groups:bracketedExplicitBinders]*, $body) =>
     `(∃ $group $groups*, $body)
@@ -159,7 +167,7 @@ end existential
 open Lean Lean.PrettyPrinter.Delaborator
 
 /-- Delaborator for `∉`. -/
-@[delab app.Not] def delab_not_in := whenPPOption Lean.getPPNotation do
+@[app_delab Not] def delab_not_in := whenPPOption Lean.getPPNotation do
   let #[f] := (← SubExpr.getExpr).getAppArgs | failure
   guard <| f.isAppOfArity ``Membership.mem 5
   let stx₁ ← SubExpr.withAppArg <| SubExpr.withNaryArg 3 delab

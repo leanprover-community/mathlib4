@@ -32,17 +32,17 @@ by taking `[Fact p.Prime]` as a type class argument.
 ## Calculations with `p`-adic valuations
 
 * `padicValNat_factorial`: Legendre's Theorem. The `p`-adic valuation of `n!` is the sum of the
-quotients `n / p ^ i`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound
-greater than `log p n`. See `Nat.Prime.multiplicity_factorial` for the same result but stated in the
-language of prime multiplicity.
+  quotients `n / p ^ i`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound
+  greater than `log p n`. See `Nat.Prime.multiplicity_factorial` for the same result but stated in
+  the language of prime multiplicity.
 
 * `sub_one_mul_padicValNat_factorial`: Legendre's Theorem.  Taking (`p - 1`) times
-the `p`-adic valuation of `n!` equals `n` minus the sum of base `p` digits of `n`.
+  the `p`-adic valuation of `n!` equals `n` minus the sum of base `p` digits of `n`.
 
 * `padicValNat_choose`: Kummer's Theorem. The `p`-adic valuation of `n.choose k` is the number
-of carries when `k` and `n - k` are added in base `p`. This sum is expressed over the finset
-`Ico 1 b` where `b` is any bound greater than `log p n`. See `Nat.Prime.multiplicity_choose` for the
-same result but stated in the language of prime multiplicity.
+  of carries when `k` and `n - k` are added in base `p`. This sum is expressed over the finset
+  `Ico 1 b` where `b` is any bound greater than `log p n`. See `Nat.Prime.multiplicity_choose` for
+  the same result but stated in the language of prime multiplicity.
 
 * `sub_one_mul_padicValNat_choose_eq_sub_sum_digits`: Kummer's Theorem. Taking (`p - 1`) times the
 `p`-adic valuation of the binomial `n` over `k` equals the sum of the digits of `k` plus the sum of
@@ -62,9 +62,8 @@ p-adic, p adic, padic, norm, valuation
 
 universe u
 
-open Nat
-
-open Rat
+open Nat Rat
+open scoped Finset
 
 namespace padicValNat
 
@@ -346,13 +345,7 @@ lemma add_eq_min {q r : ℚ} (hqr : q + r ≠ 0) (hq : q ≠ 0) (hr : r ≠ 0)
   have h3 := min_le_padicValRat_add (p := p) (ne_of_eq_of_ne (add_neg_cancel_right r q) hr)
   rw [add_neg_cancel_right, padicValRat.neg] at h2 h3
   rw [add_comm] at h3
-  refine le_antisymm (le_min ?_ ?_) h1
-  · contrapose! h2
-    rw [min_eq_right h2.le] at h3
-    exact lt_min h2 (lt_of_le_of_ne h3 hval)
-  · contrapose! h3
-    rw [min_eq_right h3.le] at h2
-    exact lt_min h3 (lt_of_le_of_ne h2 hval.symm)
+  omega
 
 lemma add_eq_of_lt {q r : ℚ} (hqr : q + r ≠ 0)
     (hq : q ≠ 0) (hr : r ≠ 0) (hval : padicValRat p q < padicValRat p r) :
@@ -373,9 +366,10 @@ lemma self_pow_inv (r : ℕ) : padicValRat p ((p : ℚ) ^ r)⁻¹ = -r := by
 (if the sum is non-zero). -/
 theorem sum_pos_of_pos {n : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i < n → 0 < padicValRat p (F i))
     (hn0 : ∑ i ∈ Finset.range n, F i ≠ 0) : 0 < padicValRat p (∑ i ∈ Finset.range n, F i) := by
-  induction' n with d hd
-  · exact False.elim (hn0 rfl)
-  · rw [Finset.sum_range_succ] at hn0 ⊢
+  induction n with
+  | zero => exact False.elim (hn0 rfl)
+  | succ d hd =>
+    rw [Finset.sum_range_succ] at hn0 ⊢
     by_cases h : ∑ x ∈ Finset.range d, F x = 0
     · rw [h, zero_add]
       exact hF d (lt_add_one _)
@@ -388,10 +382,12 @@ number, then the p-adic valuation of their sum is also greater than the same rat
 theorem lt_sum_of_lt {p j : ℕ} [hp : Fact (Nat.Prime p)] {F : ℕ → ℚ} {S : Finset ℕ}
     (hS : S.Nonempty) (hF : ∀ i, i ∈ S → padicValRat p (F j) < padicValRat p (F i))
     (hn1 : ∀ i : ℕ, 0 < F i) : padicValRat p (F j) < padicValRat p (∑ i ∈ S, F i) := by
-  induction' hS using Finset.Nonempty.cons_induction with k s S' Hnot Hne Hind
-  · rw [Finset.sum_singleton]
+  induction hS using Finset.Nonempty.cons_induction with
+  | singleton k =>
+    rw [Finset.sum_singleton]
     exact hF k (by simp)
-  · rw [Finset.cons_eq_insert, Finset.sum_insert Hnot]
+  | cons s S' Hnot Hne Hind =>
+    rw [Finset.cons_eq_insert, Finset.sum_insert Hnot]
     exact padicValRat.lt_add_of_lt
       (ne_of_gt (add_pos (hn1 s) (Finset.sum_pos (fun i _ => hn1 i) Hne)))
       (hF _ (by simp [Finset.mem_insert, true_or]))
@@ -503,23 +499,25 @@ lemma nat_log_eq_padicValNat_iff {n : ℕ} [hp : Fact (Nat.Prime p)] (hn : 0 < n
   rw [Nat.log_eq_iff (Or.inr ⟨(Nat.Prime.one_lt' p).out, by omega⟩), and_iff_right_iff_imp]
   exact fun _ => Nat.le_of_dvd hn pow_padicValNat_dvd
 
+/-- This is false for prime numbers other than 2:
+for `p = 3`, `n = 1`, one has `log 3 1 = padicValNat 3 2 = 0`. -/
 lemma Nat.log_ne_padicValNat_succ {n : ℕ} (hn : n ≠ 0) : log 2 n ≠ padicValNat 2 (n + 1) := by
   rw [Ne, log_eq_iff (by simp [hn])]
   rintro ⟨h1, h2⟩
   rw [← Nat.lt_add_one_iff, ← mul_one (2 ^ _)] at h1
   rw [← add_one_le_iff, Nat.pow_succ] at h2
-  refine not_dvd_of_between_consec_multiples h1 (lt_of_le_of_ne' h2 ?_) pow_padicValNat_dvd
+  refine not_dvd_of_lt_of_lt_mul_succ h1 (lt_of_le_of_ne' h2 ?_) pow_padicValNat_dvd
   -- TODO(kmill): Why is this `p := 2` necessary?
   exact pow_succ_padicValNat_not_dvd (p := 2) n.succ_ne_zero ∘ dvd_of_eq
 
-lemma Nat.max_log_padicValNat_succ_eq_log_succ (n : ℕ) :
-    max (log 2 n) (padicValNat 2 (n + 1)) = log 2 (n + 1) := by
-  apply le_antisymm (max_le (le_log_of_pow_le one_lt_two (pow_log_le_add_one 2 n))
+lemma Nat.max_log_padicValNat_succ_eq_log_succ (n : ℕ) [hp : Fact p.Prime] :
+    max (log p n) (padicValNat p (n + 1)) = log p (n + 1) := by
+  apply le_antisymm (max_le (le_log_of_pow_le hp.out.one_lt (pow_log_le_add_one p n))
     (padicValNat_le_nat_log (n + 1)))
   rw [le_max_iff, or_iff_not_imp_left, not_le]
   intro h
-  replace h := le_antisymm (add_one_le_iff.mpr (lt_pow_of_log_lt one_lt_two h))
-    (pow_log_le_self 2 n.succ_ne_zero)
+  replace h := le_antisymm (add_one_le_iff.mpr (lt_pow_of_log_lt hp.out.one_lt h))
+    (pow_log_le_self p n.succ_ne_zero)
   rw [h, padicValNat.prime_pow, ← h]
 
 theorem range_pow_padicValNat_subset_divisors {n : ℕ} (hn : n ≠ 0) :
@@ -553,7 +551,7 @@ theorem padicValNat_factorial_mul (n : ℕ) [hp : Fact p.Prime] :
 some `k`. -/
 theorem padicValNat_eq_zero_of_mem_Ioo {m k : ℕ}
     (hm : m ∈ Set.Ioo (p * k) (p * (k + 1))) : padicValNat p m = 0 :=
-  padicValNat.eq_zero_of_not_dvd <| not_dvd_of_between_consec_multiples hm.1 hm.2
+  padicValNat.eq_zero_of_not_dvd <| not_dvd_of_lt_of_lt_mul_succ hm.1 hm.2
 
 theorem padicValNat_factorial_mul_add {n : ℕ} (m : ℕ) [hp : Fact p.Prime] (h : n < p) :
     padicValNat p (p * m + n) ! = padicValNat p (p * m) ! := by
@@ -600,8 +598,7 @@ The `p`-adic valuation of `n.choose k` is the number of carries when `k` and `n 
 in base `p`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound greater than
 `log p n`. -/
 theorem padicValNat_choose {n k b : ℕ} [hp : Fact p.Prime] (hkn : k ≤ n) (hnb : log p n < b) :
-    padicValNat p (choose n k) =
-    ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card := by
+    padicValNat p (choose n k) = #{i ∈ Finset.Ico 1 b | p ^ i ≤ k % p ^ i + (n - k) % p ^ i} := by
   exact_mod_cast (padicValNat_eq_emultiplicity (p := p) <| choose_pos hkn) ▸
     Prime.emultiplicity_choose hp.out hkn hnb
 
@@ -611,8 +608,7 @@ The `p`-adic valuation of `(n + k).choose k` is the number of carries when `k` a
 in base `p`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound greater than
 `log p (n + k)`. -/
 theorem padicValNat_choose' {n k b : ℕ} [hp : Fact p.Prime] (hnb : log p (n + k) < b) :
-    padicValNat p (choose (n + k) k) =
-    ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + n % p ^ i).card := by
+    padicValNat p (choose (n + k) k) = #{i ∈ Finset.Ico 1 b | p ^ i ≤ k % p ^ i + n % p ^ i} := by
   exact_mod_cast (padicValNat_eq_emultiplicity (p := p) <| choose_pos <|
     Nat.le_add_left k n)▸ Prime.emultiplicity_choose' hp.out hnb
 

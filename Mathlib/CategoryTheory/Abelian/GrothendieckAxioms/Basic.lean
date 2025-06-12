@@ -53,7 +53,7 @@ open Limits
 
 attribute [instance] comp_preservesFiniteLimits comp_preservesFiniteColimits
 
-universe w w' w₂ w₂' v v' u u'
+universe w w' w₂ w₂' v v' v'' u u' u''
 
 variable (C : Type u) [Category.{v} C]
 
@@ -62,7 +62,7 @@ A category `C` is said to have exact colimits of shape `J` provided that colimit
 exist and are exact (in the sense that they preserve finite limits).
 -/
 class HasExactColimitsOfShape (J : Type u') [Category.{v'} J] (C : Type u) [Category.{v} C]
-    [HasColimitsOfShape J C]  where
+    [HasColimitsOfShape J C] where
   /-- Exactness of `J`-shaped colimits stated as `colim : (J ⥤ C) ⥤ C` preserving finite limits. -/
   preservesFiniteLimits : PreservesFiniteLimits (colim (J := J) (C := C))
 
@@ -167,6 +167,47 @@ lemma HasExactLimitsOfShape.of_codomain_equivalence (J : Type*) [Category J] {D 
   refine preservesColimit_of_natIso K (?_ : e.congrRight.inverse ⋙ lim ⋙ e.functor ≅ lim)
   apply e.symm.congrRight.fullyFaithfulFunctor.preimageIso
   exact isoWhiskerLeft (_ ⋙ lim) e.unitIso.symm ≪≫ (preservesLimitNatIso e.inverse).symm
+
+namespace Adjunction
+
+variable {C} {D : Type u''} [Category.{v''} D] {F : C ⥤ D} {G : D ⥤ C}
+
+/-- Let `adj : F ⊣ G` be an adjunction, with `G : D ⥤ C` reflective.
+Assume that `D` has finite limits and `F` commutes to them.
+If `C` has exact colimits of shape `J`, then `D` also has exact colimits of shape `J`. -/
+lemma hasExactColimitsOfShape (adj : F ⊣ G) [G.Full] [G.Faithful]
+    (J : Type u') [Category.{v'} J] [HasColimitsOfShape J C] [HasColimitsOfShape J D]
+    [HasExactColimitsOfShape J C] [HasFiniteLimits D] [PreservesFiniteLimits F] :
+    HasExactColimitsOfShape J D where
+  preservesFiniteLimits := ⟨fun K _ _ ↦ ⟨fun {H} ↦ by
+    have : PreservesLimitsOfSize.{0, 0} G := adj.rightAdjoint_preservesLimits
+    have : PreservesColimitsOfSize.{v', u'} F := adj.leftAdjoint_preservesColimits
+    let e : (whiskeringRight J D C).obj G ⋙ colim ⋙ F ≅ colim :=
+      isoWhiskerLeft _ (preservesColimitNatIso F) ≪≫ (Functor.associator _ _ _).symm ≪≫
+        isoWhiskerRight (whiskeringRightObjCompIso G F) _ ≪≫
+        isoWhiskerRight ((whiskeringRight J D D).mapIso (asIso adj.counit)) _ ≪≫
+        isoWhiskerRight whiskeringRightObjIdIso _ ≪≫ colim.leftUnitor
+    exact preservesLimit_of_natIso _ e⟩⟩
+
+/-- Let `adj : F ⊣ G` be an adjunction, with `F : C ⥤ D` coreflective.
+Assume that `C` has finite colimits and `G` commutes to them.
+If `D` has exact limits of shape `J`, then `C` also has exact limits of shape `J`. -/
+lemma hasExactLimitsOfShape (adj : F ⊣ G) [F.Full] [F.Faithful]
+    (J : Type u') [Category.{v'} J] [HasLimitsOfShape J C] [HasLimitsOfShape J D]
+    [HasExactLimitsOfShape J D] [HasFiniteColimits C] [PreservesFiniteColimits G] :
+    HasExactLimitsOfShape J C where
+  preservesFiniteColimits:= ⟨fun K _ _ ↦ ⟨fun {H} ↦ by
+    have : PreservesLimitsOfSize.{v', u'} G := adj.rightAdjoint_preservesLimits
+    have : PreservesColimitsOfSize.{0, 0} F := adj.leftAdjoint_preservesColimits
+    let e : (whiskeringRight J _ _).obj F ⋙ lim ⋙ G ≅ lim :=
+      isoWhiskerLeft _ (preservesLimitNatIso G) ≪≫
+        (Functor.associator _ _ _).symm ≪≫
+        isoWhiskerRight (whiskeringRightObjCompIso F G) _ ≪≫
+        isoWhiskerRight ((whiskeringRight J C C).mapIso (asIso adj.unit).symm) _ ≪≫
+        isoWhiskerRight whiskeringRightObjIdIso _ ≪≫ lim.leftUnitor
+    exact preservesColimit_of_natIso _ e⟩⟩
+
+end Adjunction
 
 /--
 A category `C` which has coproducts is said to have `AB4` of size `w` provided that

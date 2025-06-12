@@ -83,8 +83,8 @@ end ModelWithCorners
 
 section Charts
 
-variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M']
-  [SmoothManifoldWithCorners I'' M''] {e : PartialHomeomorph M H}
+variable [IsManifold I 1 M] [IsManifold I' 1 M']
+  [IsManifold I'' 1 M''] {e : PartialHomeomorph M H}
 
 theorem mdifferentiableAt_atlas (h : e ∈ atlas H M) {x : M} (hx : x ∈ e.source) :
     MDifferentiableAt I I e x := by
@@ -93,13 +93,13 @@ theorem mdifferentiableAt_atlas (h : e ∈ atlas H M) {x : M} (hx : x ∈ e.sour
   have mem :
     I ((chartAt H x : M → H) x) ∈ I.symm ⁻¹' ((chartAt H x).symm ≫ₕ e).source ∩ range I := by
     simp only [hx, mfld_simps]
-  have : (chartAt H x).symm.trans e ∈ contDiffGroupoid ∞ I :=
+  have : (chartAt H x).symm.trans e ∈ contDiffGroupoid 1 I :=
     HasGroupoid.compatible (chart_mem_atlas H x) h
   have A :
-    ContDiffOn 𝕜 ∞ (I ∘ (chartAt H x).symm.trans e ∘ I.symm)
+    ContDiffOn 𝕜 1 (I ∘ (chartAt H x).symm.trans e ∘ I.symm)
       (I.symm ⁻¹' ((chartAt H x).symm.trans e).source ∩ range I) :=
     this.1
-  have B := A.differentiableOn (mod_cast le_top) (I ((chartAt H x : M → H) x)) mem
+  have B := A.differentiableOn le_rfl (I ((chartAt H x : M → H) x)) mem
   simp only [mfld_simps] at B
   rw [inter_comm, differentiableWithinAt_inter] at B
   · simpa only [mfld_simps]
@@ -114,13 +114,13 @@ theorem mdifferentiableAt_atlas_symm (h : e ∈ atlas H M) {x : H} (hx : x ∈ e
   refine ⟨(e.continuousOn_symm x hx).continuousAt (e.open_target.mem_nhds hx), ?_⟩
   have mem : I x ∈ I.symm ⁻¹' (e.symm ≫ₕ chartAt H (e.symm x)).source ∩ range I := by
     simp only [hx, mfld_simps]
-  have : e.symm.trans (chartAt H (e.symm x)) ∈ contDiffGroupoid ∞ I :=
+  have : e.symm.trans (chartAt H (e.symm x)) ∈ contDiffGroupoid 1 I :=
     HasGroupoid.compatible h (chart_mem_atlas H _)
   have A :
-    ContDiffOn 𝕜 ∞ (I ∘ e.symm.trans (chartAt H (e.symm x)) ∘ I.symm)
+    ContDiffOn 𝕜 1 (I ∘ e.symm.trans (chartAt H (e.symm x)) ∘ I.symm)
       (I.symm ⁻¹' (e.symm.trans (chartAt H (e.symm x))).source ∩ range I) :=
     this.1
-  have B := A.differentiableOn (mod_cast le_top) (I x) mem
+  have B := A.differentiableOn le_rfl (I x) mem
   simp only [mfld_simps] at B
   rw [inter_comm, differentiableWithinAt_inter] at B
   · simpa only [mfld_simps]
@@ -224,14 +224,14 @@ end PartialHomeomorph.MDifferentiable
 
 section extChartAt
 
-variable [SmoothManifoldWithCorners I M] {s : Set M} {x y : M} {z : E}
+variable [IsManifold I 1 M] {s : Set M} {x y : M} {z : E}
 
 theorem hasMFDerivAt_extChartAt (h : y ∈ (chartAt H x).source) :
-    HasMFDerivAt I 𝓘(𝕜, E) (extChartAt I x) y (mfderiv I I (chartAt H x) y : _) :=
+    HasMFDerivAt I 𝓘(𝕜, E) (extChartAt I x) y (mfderiv I I (chartAt H x) y :) :=
   I.hasMFDerivAt.comp y ((mdifferentiable_chart x).mdifferentiableAt h).hasMFDerivAt
 
 theorem hasMFDerivWithinAt_extChartAt (h : y ∈ (chartAt H x).source) :
-    HasMFDerivWithinAt I 𝓘(𝕜, E) (extChartAt I x) s y (mfderiv I I (chartAt H x) y : _) :=
+    HasMFDerivWithinAt I 𝓘(𝕜, E) (extChartAt I x) s y (mfderiv I I (chartAt H x) y :) :=
   (hasMFDerivAt_extChartAt h).hasMFDerivWithinAt
 
 theorem mdifferentiableAt_extChartAt (h : y ∈ (chartAt H x).source) :

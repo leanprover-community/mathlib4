@@ -5,10 +5,10 @@ Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.Determinant
 import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
-import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Tactic.Monotonicity
+import Mathlib.Tactic.GCongr
 
 /-!
 # Approximations for Continued Fraction Computations (`GenContFract.of`)
@@ -52,7 +52,7 @@ open GenContFract (of)
 
 open Int
 
-variable {K : Type*} {v : K} {n : ℕ} [LinearOrderedField K] [FloorRing K]
+variable {K : Type*} {v : K} {n : ℕ} [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorRing K]
 
 namespace GenContFract
 
@@ -98,6 +98,7 @@ theorem one_le_succ_nth_stream_b {ifp_succ_n : IntFractPair K}
     ((nth_stream_fr_nonneg nth_stream_eq).lt_of_ne' stream_nth_fr_ne_zero)]
   exact (nth_stream_fr_lt_one nth_stream_eq).le
 
+omit [IsStrictOrderedRing K] in
 /--
 Shows that the `n + 1`th integer part `bₙ₊₁` of the stream is smaller or equal than the inverse of
 the `n`th fractional part `frₙ` of the stream.
@@ -230,16 +231,14 @@ theorem fib_le_of_contsAux_b :
         -- use the IH to get the inequalities for `pconts` and `ppconts`
         have ppred_nth_fib_le_ppconts_B : (fib n : K) ≤ ppconts.b :=
           IH n (lt_trans (Nat.lt.base n) <| Nat.lt.base <| n + 1) (Or.inr not_terminatedAt_ppred_n)
-        suffices (fib (n + 1) : K) ≤ gp.b * pconts.b by
-          solve_by_elim [_root_.add_le_add ppred_nth_fib_le_ppconts_B]
+        suffices (fib (n + 1) : K) ≤ gp.b * pconts.b by gcongr
         -- finally use the fact that `1 ≤ gp.b` to solve the goal
         suffices 1 * (fib (n + 1) : K) ≤ gp.b * pconts.b by rwa [one_mul] at this
         have one_le_gp_b : (1 : K) ≤ gp.b :=
           of_one_le_get?_partDen (partDen_eq_s_b s_ppred_nth_eq)
-        have : (0 : K) ≤ fib (n + 1) := mod_cast (fib (n + 1)).zero_le
-        have : (0 : K) ≤ gp.b := le_trans zero_le_one one_le_gp_b
-        mono
-        · norm_num
+        gcongr
+        apply IH
+        · simp
         · tauto)
 
 /-- Shows that the `n`th denominator is greater than or equal to the `n + 1`th fibonacci number,
@@ -456,7 +455,6 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
           haveI zero_le_ifp_n_fract : 0 ≤ ifp_n.fr :=
             IntFractPair.nth_stream_fr_nonneg stream_nth_eq
           inv_pos.2 (lt_of_le_of_ne zero_le_ifp_n_fract stream_nth_fr_ne_zero.symm)
-        -- Porting note: replaced complicated positivity proof with tactic.
         positivity
       rw [abs_of_pos this]
     rwa [this]
@@ -466,18 +464,17 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
       nextConts_b_ineq.trans_lt' <| mod_cast fib_pos.2 <| succ_pos _
     solve_by_elim [mul_pos]
   · -- we can cancel multiplication by `conts.b` and addition with `pred_conts.b`
-    suffices gp.b * conts.b ≤ ifp_n.fr⁻¹ * conts.b from
-      (mul_le_mul_left zero_lt_conts_b).2 <| (add_le_add_iff_left pred_conts.b).2 this
+    suffices gp.b * conts.b ≤ ifp_n.fr⁻¹ * conts.b by
+      simp only [den, den']; gcongr
     suffices (ifp_succ_n.b : K) * conts.b ≤ ifp_n.fr⁻¹ * conts.b by rwa [← ifp_succ_n_b_eq_gp_b]
     have : (ifp_succ_n.b : K) ≤ ifp_n.fr⁻¹ :=
       IntFractPair.succ_nth_stream_b_le_nth_stream_fr_inv stream_nth_eq succ_nth_stream_eq
-    have : 0 ≤ conts.b := le_of_lt zero_lt_conts_b
-    gcongr; exact this
+    gcongr
 
 /-- Shows that `|v - Aₙ / Bₙ| ≤ 1 / (bₙ * Bₙ * Bₙ)`. This bound is worse than the one shown in
 `GenContFract.abs_sub_convs_le`, but sometimes it is easier to apply and
 sufficient for one's use case.
- -/
+-/
 theorem abs_sub_convergents_le' {b : K}
     (nth_partDen_eq : (of v).partDens.get? n = some b) :
     |v - (of v).convs n| ≤ 1 / (b * (of v).dens n * (of v).dens n) := by
@@ -493,7 +490,8 @@ theorem abs_sub_convergents_le' {b : K}
     · have : 0 < b := zero_lt_one.trans_le (of_one_le_get?_partDen nth_partDen_eq)
       apply_rules [mul_pos]
     · conv_rhs => rw [mul_comm]
-      exact mul_le_mul_of_nonneg_right (le_of_succ_get?_den nth_partDen_eq) hB.le
+      gcongr
+      exact le_of_succ_get?_den nth_partDen_eq
 
 end ErrorTerm
 

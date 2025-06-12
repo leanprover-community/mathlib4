@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Hom.Instances
-import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Instances on spaces of monoid and group morphisms
@@ -34,12 +33,13 @@ instance instAddMonoidWithOne (M) [AddCommMonoid M] : AddMonoidWithOne (AddMonoi
 @[simp]
 lemma natCast_apply [AddCommMonoid M] (n : ℕ) (m : M) : (↑n : AddMonoid.End M) m = n • m := rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp] lemma ofNat_apply [AddCommMonoid M] (n : ℕ) [n.AtLeastTwo] (m : M) :
-    (no_index (OfNat.ofNat n : AddMonoid.End M)) m = n • m := rfl
+    (ofNat(n) : AddMonoid.End M) m = n • m := rfl
 
 instance instSemiring [AddCommMonoid M] : Semiring (AddMonoid.End M) :=
-  { AddMonoid.End.monoid M, AddMonoidHom.addCommMonoid, AddMonoid.End.instAddMonoidWithOne M with
+  { AddMonoid.End.instMonoid M,
+    AddMonoidHom.instAddCommMonoid,
+    AddMonoid.End.instAddMonoidWithOne M with
     zero_mul := fun _ => AddMonoidHom.ext fun _ => rfl,
     mul_zero := fun _ => AddMonoidHom.ext fun _ => AddMonoidHom.map_zero _,
     left_distrib := fun _ _ _ => AddMonoidHom.ext fun _ => AddMonoidHom.map_add _ _ _,
@@ -52,83 +52,3 @@ instance instRing [AddCommGroup M] : Ring (AddMonoid.End M) :=
     intCast_negSucc := negSucc_zsmul _ }
 
 end AddMonoid.End
-
-/-!
-### Miscellaneous definitions
-
-This file used to import `Algebra.GroupPower.Basic`, hence it was not possible to import it in
-some of the lower-level files like `Algebra.Ring.Basic`. The following lemmas should be rehomed now
-that `Algebra.GroupPower.Basic` was deleted.
--/
-
-
-section Semiring
-
-variable {R S : Type*} [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S]
-
-/-- Multiplication of an element of a (semi)ring is an `AddMonoidHom` in both arguments.
-
-This is a more-strongly bundled version of `AddMonoidHom.mulLeft` and `AddMonoidHom.mulRight`.
-
-Stronger versions of this exists for algebras as `LinearMap.mul`, `NonUnitalAlgHom.mul`
-and `Algebra.lmul`.
--/
-def AddMonoidHom.mul : R →+ R →+ R where
-  toFun := AddMonoidHom.mulLeft
-  map_zero' := AddMonoidHom.ext <| zero_mul
-  map_add' a b := AddMonoidHom.ext <| add_mul a b
-
-theorem AddMonoidHom.mul_apply (x y : R) : AddMonoidHom.mul x y = x * y :=
-  rfl
-
-@[simp]
-theorem AddMonoidHom.coe_mul : ⇑(AddMonoidHom.mul : R →+ R →+ R) = AddMonoidHom.mulLeft :=
-  rfl
-
-@[simp]
-theorem AddMonoidHom.coe_flip_mul :
-    ⇑(AddMonoidHom.mul : R →+ R →+ R).flip = AddMonoidHom.mulRight :=
-  rfl
-
-/-- An `AddMonoidHom` preserves multiplication if pre- and post- composition with
-`AddMonoidHom.mul` are equivalent. By converting the statement into an equality of
-`AddMonoidHom`s, this lemma allows various specialized `ext` lemmas about `→+` to then be applied.
--/
-theorem AddMonoidHom.map_mul_iff (f : R →+ S) :
-    (∀ x y, f (x * y) = f x * f y) ↔
-      (AddMonoidHom.mul : R →+ R →+ R).compr₂ f = (AddMonoidHom.mul.comp f).compl₂ f :=
-  Iff.symm AddMonoidHom.ext_iff₂
-
-lemma AddMonoidHom.mulLeft_eq_mulRight_iff_forall_commute {a : R} :
-    mulLeft a = mulRight a ↔ ∀ b, Commute a b :=
-  DFunLike.ext_iff
-
-lemma AddMonoidHom.mulRight_eq_mulLeft_iff_forall_commute {b : R} :
-    mulRight b = mulLeft b ↔ ∀ a, Commute a b :=
-  DFunLike.ext_iff
-
-/-- The left multiplication map: `(a, b) ↦ a * b`. See also `AddMonoidHom.mulLeft`. -/
-@[simps!]
-def AddMonoid.End.mulLeft : R →+ AddMonoid.End R :=
-  AddMonoidHom.mul
-
-/-- The right multiplication map: `(a, b) ↦ b * a`. See also `AddMonoidHom.mulRight`. -/
-@[simps!]
-def AddMonoid.End.mulRight : R →+ AddMonoid.End R :=
-  (AddMonoidHom.mul : R →+ AddMonoid.End R).flip
-
-end Semiring
-
-section CommSemiring
-
-variable {R : Type*} [NonUnitalNonAssocCommSemiring R]
-
-namespace AddMonoid.End
-
-lemma mulRight_eq_mulLeft : mulRight = (mulLeft : R →+ AddMonoid.End R) :=
-  AddMonoidHom.ext fun _ =>
-    Eq.symm <| AddMonoidHom.mulLeft_eq_mulRight_iff_forall_commute.2 (.all _)
-
-end AddMonoid.End
-
-end CommSemiring

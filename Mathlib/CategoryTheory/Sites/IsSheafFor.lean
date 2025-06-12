@@ -83,9 +83,10 @@ A presheaf is a sheaf (resp, separated) if every *compatible* family of elements
 (resp, at most one) amalgamation.
 
 This data is referred to as a `family` in [MM92], Chapter III, Section 4. It is also a concrete
-version of the elements of the middle object in https://stacks.math.columbia.edu/tag/00VM which is
+version of the elements of the middle object in the Stacks entry which is
 more useful for direct calculations. It is also used implicitly in Definition C2.1.2 in [Elephant].
 -/
+@[stacks 00VM "This is a concrete version of the elements of the middle object there."]
 def FamilyOfElements (P : Cᵒᵖ ⥤ Type w) (R : Presieve X) :=
   ∀ ⦃Y : C⦄ (f : Y ⟶ X), R f → P.obj (op Y)
 
@@ -356,7 +357,7 @@ theorem FamilyOfElements.IsAmalgamation.compPresheafMap {x : FamilyOfElements P 
 
 theorem is_compatible_of_exists_amalgamation (x : FamilyOfElements P R)
     (h : ∃ t, x.IsAmalgamation t) : x.Compatible := by
-  cases' h with t ht
+  obtain ⟨t, ht⟩ := h
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ comm
   rw [← ht _ h₁, ← ht _ h₂, ← FunctorToTypes.map_comp_apply, ← op_comp, comm]
   simp
@@ -416,8 +417,8 @@ This version is also useful to establish that being a sheaf is preserved under i
 presheaves.
 
 See the discussion before Equation (3) of [MM92], Chapter III, Section 4. See also C2.1.4 of
-[Elephant]. This is also a direct reformulation of <https://stacks.math.columbia.edu/tag/00Z8>.
--/
+[Elephant]. -/
+@[stacks 00Z8 "Direct reformulation"]
 def YonedaSheafCondition (P : Cᵒᵖ ⥤ Type v₁) (S : Sieve X) : Prop :=
   ∀ f : S.functor ⟶ P, ∃! g, S.functorInclusion ≫ g = f
 
@@ -459,15 +460,12 @@ theorem extension_iff_amalgamation {P : Cᵒᵖ ⥤ Type v₁} (x : S.functor �
   constructor
   · rintro rfl Y f hf
     rw [yonedaEquiv_naturality]
-    dsimp
     simp [yonedaEquiv_apply]
-  -- See note [dsimp, simp].
   · intro h
     ext Y ⟨f, hf⟩
     convert h f hf
     rw [yonedaEquiv_naturality]
-    dsimp [yonedaEquiv]
-    simp
+    simp [yonedaEquiv]
 
 /-- The yoneda version of the sheaf condition is equivalent to the sheaf condition.
 
@@ -489,7 +487,6 @@ to `P` can be (uniquely) extended to all of `yoneda.obj X`.
    S  →  P
    ↓  ↗
    yX
-
 -/
 noncomputable def IsSheafFor.extend {P : Cᵒᵖ ⥤ Type v₁} (h : IsSheafFor P (S : Presieve X))
     (f : S.functor ⟶ P) : yoneda.obj X ⟶ P :=
@@ -503,7 +500,6 @@ that the triangle below commutes, provided `P` is a sheaf for `S`
    S  →  P
    ↓  ↗
    yX
-
 -/
 @[reassoc (attr := simp)]
 theorem IsSheafFor.functorInclusion_comp_extend {P : Cᵒᵖ ⥤ Type v₁} (h : IsSheafFor P S.arrows)

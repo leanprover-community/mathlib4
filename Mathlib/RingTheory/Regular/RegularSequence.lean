@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brendan Murphy
 -/
 import Mathlib.RingTheory.Regular.IsSMulRegular
-import Mathlib.RingTheory.Artinian
+import Mathlib.RingTheory.Artinian.Module
+import Mathlib.RingTheory.Nakayama
 import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Regular sequences and weakly regular sequences
@@ -37,7 +39,7 @@ variable [Semiring R] [Semiring S]
 abbrev ofList (rs : List R) := span { r | r ∈ rs }
 
 @[simp] lemma ofList_nil : (ofList [] : Ideal R) = ⊥ :=
-  have : { r | r ∈ [] } = ∅ := Set.eq_empty_of_forall_not_mem List.not_mem_nil
+  have : { r | r ∈ [] } = ∅ := Set.eq_empty_of_forall_notMem (fun _ => List.not_mem_nil)
   Eq.trans (congrArg span this) span_empty
 
 @[simp] lemma ofList_append (rs₁ rs₂ : List R) :
@@ -66,7 +68,7 @@ end Ideal
 
 namespace Submodule
 
-lemma smul_top_le_comap_smul_top [CommSemiring R] [AddCommMonoid M]
+lemma smul_top_le_comap_smul_top [Semiring R] [AddCommMonoid M]
     [AddCommMonoid M₂] [Module R M] [Module R M₂] (I : Ideal R)
     (f : M →ₗ[R] M₂) : I • ⊤ ≤ comap f (I • ⊤) :=
   map_le_iff_le_comap.mp <| le_of_eq_of_le (map_smul'' _ _ _) <|
@@ -145,7 +147,7 @@ lemma isWeaklyRegular_iff_Fin (rs : List R) :
 
 /-- A weakly regular sequence `rs` on `M` is regular if also `M/rsM ≠ 0`. -/
 @[mk_iff]
-structure IsRegular (rs : List R) extends IsWeaklyRegular M rs : Prop where
+structure IsRegular (rs : List R) : Prop extends IsWeaklyRegular M rs where
   top_ne_smul : (⊤ : Submodule R M) ≠ Ideal.ofList rs • ⊤
 
 end Definitions
@@ -282,7 +284,7 @@ lemma cons' {r : R} {rs : List R} (h1 : IsSMulRegular M r)
 /-- Weakly regular sequences can be inductively characterized by:
 * The empty sequence is weakly regular on any module.
 * If `r` is regular on `M` and `rs` is a weakly regular sequence on `M⧸rM` then
-the sequence obtained from `rs` by prepending `r` is weakly regular on `M`.
+  the sequence obtained from `rs` by prepending `r` is weakly regular on `M`.
 
 This is the induction principle produced by the inductive definition above.
 The motive will usually be valued in `Prop`, but `Sort*` works too. -/
@@ -327,7 +329,7 @@ def recIterModByRegularWithRing
       [Module R M] → (r : R) → (rs : List R) → (h1 : IsSMulRegular M r) →
       (h2 : IsWeaklyRegular (QuotSMulTop r M)
               (rs.map (Ideal.Quotient.mk (Ideal.span {r})))) →
-      (ih : motive (R⧸Ideal.span {r}) (QuotSMulTop r M)
+      (ih : motive (R ⧸ Ideal.span {r}) (QuotSMulTop r M)
               (rs.map (Ideal.Quotient.mk (Ideal.span {r}))) h2) →
             motive R M (r :: rs) (cons' h1 h2)) :
     {R : Type u} → [CommRing R] → {M : Type v} → [AddCommGroup M] →
@@ -349,7 +351,7 @@ def ndrecWithRing
       [Module R M] → (r : R) → (rs : List R) → IsSMulRegular M r →
       IsWeaklyRegular (QuotSMulTop r M)
         (rs.map (Ideal.Quotient.mk (Ideal.span {r}))) →
-      motive (R⧸Ideal.span {r}) (QuotSMulTop r M)
+      motive (R ⧸ Ideal.span {r}) (QuotSMulTop r M)
         (rs.map (Ideal.Quotient.mk (Ideal.span {r}))) → motive R M (r :: rs))
     {R} [CommRing R] {M} [AddCommGroup M] [Module R M] {rs} :
     IsWeaklyRegular M rs → motive R M rs :=
@@ -411,7 +413,7 @@ lemma cons' {r : R} {rs : List R} (h1 : IsSMulRegular M r)
 /-- Regular sequences can be inductively characterized by:
 * The empty sequence is regular on any nonzero module.
 * If `r` is regular on `M` and `rs` is a regular sequence on `M⧸rM` then the
-sequence obtained from `rs` by prepending `r` is regular on `M`.
+  sequence obtained from `rs` by prepending `r` is regular on `M`.
 
 This is the induction principle produced by the inductive definition above.
 The motive will usually be valued in `Prop`, but `Sort*` works too. -/
@@ -458,7 +460,7 @@ def recIterModByRegularWithRing
       [Module R M] → (r : R) → (rs : List R) → (h1 : IsSMulRegular M r) →
       (h2 : IsRegular (QuotSMulTop r M)
               (rs.map (Ideal.Quotient.mk (Ideal.span {r})))) →
-      (ih : motive (R⧸Ideal.span {r}) (QuotSMulTop r M)
+      (ih : motive (R ⧸ Ideal.span {r}) (QuotSMulTop r M)
               (rs.map (Ideal.Quotient.mk (Ideal.span {r}))) h2) →
             motive R M (r :: rs) (cons' h1 h2))
     {R} [CommRing R] {M} [AddCommGroup M] [Module R M] {rs}
@@ -484,7 +486,7 @@ def ndrecIterModByRegularWithRing
       IsSMulRegular M r →
       IsRegular (QuotSMulTop r M)
         (rs.map (Ideal.Quotient.mk (Ideal.span {r}))) →
-      motive (R⧸Ideal.span {r}) (QuotSMulTop r M)
+      motive (R ⧸ Ideal.span {r}) (QuotSMulTop r M)
         (rs.map (Ideal.Quotient.mk (Ideal.span {r}))) →
       motive R M (r :: rs))
     {R} [CommRing R] {M} [AddCommGroup M] [Module R M] {rs} :
@@ -641,7 +643,7 @@ lemma IsWeaklyRegular.of_perm_of_subset_jacobson_annihilator [IsNoetherian R M]
           -- typechecking is much slower without it
           (LinearMap.annihilator_le_of_surjective (R := R) _ (mkQ_surjective _))
           (LinearMap.annihilator_le_of_injective _ (injective_subtype _)))
-        (h3 r (h.subset (List.mem_cons_self _ _))))
+        (h3 r (h.subset List.mem_cons_self)))
 
 end Perm
 

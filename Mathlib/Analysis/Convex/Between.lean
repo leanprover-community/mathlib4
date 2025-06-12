@@ -30,47 +30,23 @@ open AffineEquiv AffineMap
 
 section OrderedRing
 
-variable [OrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
-variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
-
 /-- The segment of points weakly between `x` and `y`. When convexity is refactored to support
 abstract affine combination spaces, this will no longer need to be a separate definition from
 `segment`. However, lemmas involving `+ᵥ` or `-ᵥ` will still be relevant after such a
 refactoring, as distinct from versions involving `+` or `-` in a module. -/
-def affineSegment (x y : P) :=
+def affineSegment [Ring R] [PartialOrder R] [AddCommGroup V] [Module R V]
+    [AddTorsor V P] (x y : P) :=
   lineMap x y '' Set.Icc (0 : R) 1
 
-theorem affineSegment_eq_segment (x y : V) : affineSegment R x y = segment R x y := by
-  rw [segment_eq_image_lineMap, affineSegment]
+variable [Ring R] [PartialOrder R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
-theorem affineSegment_comm (x y : P) : affineSegment R x y = affineSegment R y x := by
-  refine Set.ext fun z => ?_
-  constructor <;>
-    · rintro ⟨t, ht, hxy⟩
-      refine ⟨1 - t, ?_, ?_⟩
-      · rwa [Set.sub_mem_Icc_iff_right, sub_self, sub_zero]
-      · rwa [lineMap_apply_one_sub]
-
-theorem left_mem_affineSegment (x y : P) : x ∈ affineSegment R x y :=
-  ⟨0, Set.left_mem_Icc.2 zero_le_one, lineMap_apply_zero _ _⟩
-
-theorem right_mem_affineSegment (x y : P) : y ∈ affineSegment R x y :=
-  ⟨1, Set.right_mem_Icc.2 zero_le_one, lineMap_apply_one _ _⟩
-
-@[simp]
-theorem affineSegment_same (x : P) : affineSegment R x x = {x} := by
-  simp_rw [affineSegment, lineMap_same, AffineMap.coe_const, Function.const,
-    (Set.nonempty_Icc.mpr zero_le_one).image_const]
-
-variable {R}
-
+variable {R} in
 @[simp]
 theorem affineSegment_image (f : P →ᵃ[R] P') (x y : P) :
     f '' affineSegment R x y = affineSegment R (f x) (f y) := by
   rw [affineSegment, affineSegment, Set.image_image, ← comp_lineMap]
   rfl
-
-variable (R)
 
 @[simp]
 theorem affineSegment_const_vadd_image (x y : P) (v : V) :
@@ -116,6 +92,33 @@ theorem mem_vsub_const_affineSegment {x y z : P} (p : P) :
 
 variable (R)
 
+section OrderedRing
+variable [IsOrderedRing R]
+
+theorem affineSegment_eq_segment (x y : V) : affineSegment R x y = segment R x y := by
+  rw [segment_eq_image_lineMap, affineSegment]
+
+theorem affineSegment_comm (x y : P) : affineSegment R x y = affineSegment R y x := by
+  refine Set.ext fun z => ?_
+  constructor <;>
+    · rintro ⟨t, ht, hxy⟩
+      refine ⟨1 - t, ?_, ?_⟩
+      · rwa [Set.sub_mem_Icc_iff_right, sub_self, sub_zero]
+      · rwa [lineMap_apply_one_sub]
+
+theorem left_mem_affineSegment (x y : P) : x ∈ affineSegment R x y :=
+  ⟨0, Set.left_mem_Icc.2 zero_le_one, lineMap_apply_zero _ _⟩
+
+theorem right_mem_affineSegment (x y : P) : y ∈ affineSegment R x y :=
+  ⟨1, Set.right_mem_Icc.2 zero_le_one, lineMap_apply_one _ _⟩
+
+@[simp]
+theorem affineSegment_same (x : P) : affineSegment R x x = {x} := by
+  simp_rw [affineSegment, lineMap_same, AffineMap.coe_const, Function.const,
+    (Set.nonempty_Icc.mpr zero_le_one).image_const]
+
+end OrderedRing
+
 /-- The point `y` is weakly between `x` and `z`. -/
 def Wbtw (x y z : P) : Prop :=
   y ∈ affineSegment R x z
@@ -126,6 +129,10 @@ def Sbtw (x y z : P) : Prop :=
 
 variable {R}
 
+section OrderedRing
+
+variable [IsOrderedRing R]
+
 lemma mem_segment_iff_wbtw {x y z : V} : y ∈ segment R x z ↔ Wbtw R x y z := by
   rw [Wbtw, affineSegment_eq_segment]
 
@@ -133,6 +140,18 @@ alias ⟨_, Wbtw.mem_segment⟩ := mem_segment_iff_wbtw
 
 lemma Convex.mem_of_wbtw {p₀ p₁ p₂ : V} {s : Set V} (hs : Convex R s) (h₀₁₂ : Wbtw R p₀ p₁ p₂)
     (h₀ : p₀ ∈ s) (h₂ : p₂ ∈ s) : p₁ ∈ s := hs.segment_subset h₀ h₂ h₀₁₂.mem_segment
+
+theorem wbtw_comm {x y z : P} : Wbtw R x y z ↔ Wbtw R z y x := by
+  rw [Wbtw, Wbtw, affineSegment_comm]
+
+alias ⟨Wbtw.symm, _⟩ := wbtw_comm
+
+theorem sbtw_comm {x y z : P} : Sbtw R x y z ↔ Sbtw R z y x := by
+  rw [Sbtw, Sbtw, wbtw_comm, ← and_assoc, ← and_assoc, and_right_comm]
+
+alias ⟨Sbtw.symm, _⟩ := sbtw_comm
+
+end OrderedRing
 
 lemma AffineSubspace.mem_of_wbtw {s : AffineSubspace R P} {x y z : P} (hxyz : Wbtw R x y z)
     (hx : x ∈ s) (hz : z ∈ s) : y ∈ s := by obtain ⟨ε, -, rfl⟩ := hxyz; exact lineMap_mem _ hx hz
@@ -237,17 +256,11 @@ theorem Wbtw.mem_affineSpan {x y z : P} (h : Wbtw R x y z) : y ∈ line[R, x, z]
   rcases h with ⟨r, ⟨-, rfl⟩⟩
   exact lineMap_mem_affineSpan_pair _ _ _
 
-theorem wbtw_comm {x y z : P} : Wbtw R x y z ↔ Wbtw R z y x := by
-  rw [Wbtw, Wbtw, affineSegment_comm]
-
-alias ⟨Wbtw.symm, _⟩ := wbtw_comm
-
-theorem sbtw_comm {x y z : P} : Sbtw R x y z ↔ Sbtw R z y x := by
-  rw [Sbtw, Sbtw, wbtw_comm, ← and_assoc, ← and_assoc, and_right_comm]
-
-alias ⟨Sbtw.symm, _⟩ := sbtw_comm
-
 variable (R)
+
+section OrderedRing
+
+variable [IsOrderedRing R]
 
 @[simp]
 theorem wbtw_self_left (x y : P) : Wbtw R x x y :=
@@ -260,11 +273,11 @@ theorem wbtw_self_right (x y : P) : Wbtw R x y y :=
 @[simp]
 theorem wbtw_self_iff {x y : P} : Wbtw R x y x ↔ y = x := by
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · -- Porting note: Originally `simpa [Wbtw, affineSegment] using h`
-    have ⟨_, _, h₂⟩ := h
-    rw [h₂.symm, lineMap_same_apply]
+  · simpa [Wbtw, affineSegment] using h
   · rw [h]
     exact wbtw_self_left R x x
+
+end OrderedRing
 
 @[simp]
 theorem not_sbtw_self_left (x y : P) : ¬Sbtw R x x y :=
@@ -275,6 +288,7 @@ theorem not_sbtw_self_right (x y : P) : ¬Sbtw R x y y :=
   fun h => h.ne_right rfl
 
 variable {R}
+variable [IsOrderedRing R]
 
 theorem Wbtw.left_ne_right_of_ne_left {x y z : P} (h : Wbtw R x y z) (hne : y ≠ x) : x ≠ z := by
   rintro rfl
@@ -379,6 +393,7 @@ theorem sbtw_mul_sub_add_iff [NoZeroDivisors R] {x y r : R} :
     Sbtw R x (r * (y - x) + x) y ↔ x ≠ y ∧ r ∈ Set.Ioo (0 : R) 1 :=
   sbtw_lineMap_iff
 
+omit [IsOrderedRing R] in
 @[simp]
 theorem wbtw_zero_one_iff {x : R} : Wbtw R 0 x 1 ↔ x ∈ Set.Icc (0 : R) 1 := by
   rw [Wbtw, affineSegment, Set.mem_image]
@@ -389,6 +404,7 @@ theorem wbtw_zero_one_iff {x : R} : Wbtw R 0 x 1 ↔ x ∈ Set.Icc (0 : R) 1 := 
 theorem wbtw_one_zero_iff {x : R} : Wbtw R 1 x 0 ↔ x ∈ Set.Icc (0 : R) 1 := by
   rw [wbtw_comm, wbtw_zero_one_iff]
 
+omit [IsOrderedRing R] in
 @[simp]
 theorem sbtw_zero_one_iff {x : R} : Sbtw R 0 x 1 ↔ x ∈ Set.Ioo (0 : R) 1 := by
   rw [Sbtw, wbtw_zero_one_iff, Set.mem_Icc, Set.mem_Ioo]
@@ -475,7 +491,8 @@ end OrderedRing
 
 section StrictOrderedCommRing
 
-variable [StrictOrderedCommRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+variable [CommRing R] [PartialOrder R] [IsStrictOrderedRing R]
+  [AddCommGroup V] [Module R V] [AddTorsor V P]
 variable {R}
 
 theorem Wbtw.sameRay_vsub {x y z : P} (h : Wbtw R x y z) : SameRay R (y -ᵥ x) (z -ᵥ y) := by
@@ -500,7 +517,8 @@ end StrictOrderedCommRing
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+variable [Ring R] [LinearOrder R] [IsStrictOrderedRing R]
+  [AddCommGroup V] [Module R V] [AddTorsor V P]
 variable {R}
 
 /-- Suppose lines from two vertices of a triangle to interior points of the opposite side meet at
@@ -511,22 +529,16 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
     (h₁ : Sbtw R (t.points i₂) p₁ (t.points i₃)) (h₂ : Sbtw R (t.points i₁) p₂ (t.points i₃))
     (h₁' : p ∈ line[R, t.points i₁, p₁]) (h₂' : p ∈ line[R, t.points i₂, p₂]) :
     Sbtw R (t.points i₁) p p₁ := by
-  -- Should not be needed; see comments on local instances in `Data.Sign`.
-  letI : DecidableRel ((· < ·) : R → R → Prop) := LinearOrderedRing.decidableLT
   have h₁₃ : i₁ ≠ i₃ := by
     rintro rfl
     simp at h₂
   have h₂₃ : i₂ ≠ i₃ := by
     rintro rfl
     simp at h₁
-  have h3 : ∀ i : Fin 3, i = i₁ ∨ i = i₂ ∨ i = i₃ := by
-    clear h₁ h₂ h₁' h₂'
-    -- Porting note: Originally `decide!`
-    revert i₁ i₂ i₃; decide
+  have h3 : ∀ i : Fin 3, i = i₁ ∨ i = i₂ ∨ i = i₃ := by omega
   have hu : (Finset.univ : Finset (Fin 3)) = {i₁, i₂, i₃} := by
     clear h₁ h₂ h₁' h₂'
-    -- Porting note: Originally `decide!`
-    revert i₁ i₂ i₃; decide
+    decide +revert
   have hp : p ∈ affineSpan R (Set.range t.points) := by
     have hle : line[R, t.points i₁, p₁] ≤ affineSpan R (Set.range t.points) := by
       refine affineSpan_pair_le_of_mem_of_mem (mem_affineSpan R (Set.mem_range_self _)) ?_
@@ -583,8 +595,27 @@ end LinearOrderedRing
 
 section LinearOrderedField
 
-variable [LinearOrderedField R] [AddCommGroup V] [Module R V] [AddTorsor V P] {x y z : P}
+variable [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+  [AddCommGroup V] [Module R V] [AddTorsor V P] {x y z : P}
 variable {R}
+
+lemma wbtw_iff_of_le {x y z : R} (hxz : x ≤ z) : Wbtw R x y z ↔ x ≤ y ∧ y ≤ z := by
+  cases hxz.eq_or_lt with
+  | inl hxz =>
+    subst hxz
+    rw [← le_antisymm_iff, wbtw_self_iff, eq_comm]
+  | inr hxz =>
+    have hxz' : 0 < z - x := sub_pos.mpr hxz
+    let r := (y - x) / (z - x)
+    have hy : y = r * (z - x) + x := by simp [r, hxz'.ne']
+    simp [hy, wbtw_mul_sub_add_iff, mul_nonneg_iff_of_pos_right hxz', ← le_sub_iff_add_le,
+      mul_le_iff_le_one_left hxz', hxz.ne]
+
+lemma Wbtw.of_le_of_le {x y z : R} (hxy : x ≤ y) (hyz : y ≤ z) : Wbtw R x y z :=
+  (wbtw_iff_of_le (hxy.trans hyz)).mpr ⟨hxy, hyz⟩
+
+lemma Sbtw.of_lt_of_lt {x y z : R} (hxy : x < y) (hyz : y < z) : Sbtw R x y z :=
+  ⟨.of_le_of_le hxy.le hyz.le, hxy.ne', hyz.ne⟩
 
 theorem wbtw_iff_left_eq_or_right_mem_image_Ici {x y z : P} :
     Wbtw R x y z ↔ x = y ∨ z ∈ lineMap x y '' Set.Ici (1 : R) := by
@@ -662,6 +693,7 @@ theorem Sbtw.left_mem_image_Ioi {x y z : P} (h : Sbtw R x y z) :
 theorem Sbtw.left_mem_affineSpan {x y z : P} (h : Sbtw R x y z) : x ∈ line[R, z, y] :=
   h.symm.right_mem_affineSpan
 
+omit [IsStrictOrderedRing R] in
 lemma AffineSubspace.right_mem_of_wbtw {s : AffineSubspace R P} (hxyz : Wbtw R x y z) (hx : x ∈ s)
     (hy : y ∈ s) (hxy : x ≠ y) : z ∈ s := by
   obtain ⟨ε, -, rfl⟩ := hxyz
@@ -740,6 +772,7 @@ theorem Sbtw.trans_right_left {w x y z : P} (h₁ : Sbtw R w x z) (h₂ : Sbtw R
     Sbtw R w x y :=
   ⟨h₁.wbtw.trans_right_left h₂.wbtw, h₁.ne_left, h₂.left_ne⟩
 
+omit [IsStrictOrderedRing R] in
 theorem Wbtw.collinear {x y z : P} (h : Wbtw R x y z) : Collinear R ({x, y, z} : Set P) := by
   rw [collinear_iff_exists_forall_eq_smul_vadd]
   refine ⟨x, z -ᵥ x, ?_⟩
@@ -796,6 +829,16 @@ theorem wbtw_iff_sameRay_vsub {x y z : P} : Wbtw R x y z ↔ SameRay R (y -ᵥ x
     convert (one_smul R (y -ᵥ x)).symm
     field_simp [(add_pos hr₁ hr₂).ne', hr₂.ne']
     ring
+
+/-- If `T` is an affine independent family of points,
+then any 3 distinct points form a triangle. -/
+theorem AffineIndependent.not_wbtw_of_injective {ι} (i j k : ι)
+    (h : Function.Injective ![i, j, k]) {T : ι → P} (hT : AffineIndependent R T) :
+    ¬ Wbtw R (T i) (T j) (T k) := by
+  replace hT := hT.comp_embedding ⟨_, h⟩
+  rw [affineIndependent_iff_not_collinear] at hT
+  contrapose! hT
+  simp [Set.range_comp, Set.image_insert_eq, hT.symm.collinear]
 
 variable (R)
 

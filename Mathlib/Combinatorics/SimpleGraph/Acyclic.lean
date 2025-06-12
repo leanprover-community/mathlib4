@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -63,7 +64,7 @@ variable {G}
 
 theorem isAcyclic_iff_forall_adj_isBridge :
     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
-  simp_rw [isBridge_iff_adj_and_forall_cycle_not_mem]
+  simp_rw [isBridge_iff_adj_and_forall_cycle_notMem]
   constructor
   · intro ha v w hvw
     apply And.intro hvw
@@ -94,7 +95,7 @@ theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p
     rw [isBridge_iff_adj_and_forall_walk_mem_edges] at h
     replace h := h.2 (q.append p.reverse)
     simp only [Walk.edges_append, Walk.edges_reverse, List.mem_append, List.mem_reverse] at h
-    cases' h with h h
+    rcases h with h | h
     · cases q with
       | nil => simp [Walk.isPath_def] at hp
       | cons _ q =>
@@ -164,7 +165,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
   case inj =>
     intros a ha b hb h
     wlog h' : (f a).length ≤ (f b).length generalizing a b
-    · exact Eq.symm (this _ hb _ ha h.symm (le_of_not_le h'))
+    · exact Eq.symm (this _ hb _ ha h.symm (le_of_not_ge h'))
     rw [dart_edge_eq_iff] at h
     obtain (h | h) := h
     · exact (congrArg (·.fst) h)
@@ -175,13 +176,13 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
           length_tail_add_one (not_nil_of_ne (by simpa using ha))] at h3
         omega
       · simp only [ne_eq, eq_mp_eq_cast, id_eq, isPath_copy]
-        exact (hf _).tail (not_nil_of_ne (by simpa using ha))
+        exact (hf _).tail
   case surj =>
     simp only [mem_edgeFinset, Finset.mem_compl, Finset.mem_singleton, Sym2.forall, mem_edgeSet]
     intros x y h
     wlog h' : (f x).length ≤ (f y).length generalizing x y
     · rw [Sym2.eq_swap]
-      exact this y x h.symm (le_of_not_le h')
+      exact this y x h.symm (le_of_not_ge h')
     refine ⟨y, ?_, dart_edge_eq_mk'_iff.2 <| Or.inr ?_⟩
     · rintro rfl
       rw [← hf' _ nil IsPath.nil, length_nil,
@@ -196,5 +197,40 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
         simp [this, hf' _ _ ((hf _).dropUntil hy)] at h'
       refine (hG.existsUnique_path _ _).unique ((hf _).takeUntil _) ?_
       simp [h.ne]
+
+/-- A minimally connected graph is a tree. -/
+lemma isTree_of_minimal_connected (h : Minimal Connected G) : IsTree G := by
+  rw [isTree_iff, and_iff_right h.prop, isAcyclic_iff_forall_adj_isBridge]
+  exact fun _ _ _↦ by_contra fun hbr ↦ h.not_prop_of_lt
+    (by simpa [deleteEdges, ← edgeSet_ssubset_edgeSet])
+    <| h.prop.connected_delete_edge_of_not_isBridge hbr
+
+/-- Every connected graph has a spanning tree. -/
+lemma Connected.exists_isTree_le [Finite V] (h : G.Connected) : ∃ T ≤ G, IsTree T := by
+  obtain ⟨T, hTG, hmin⟩ := {H : SimpleGraph V | H.Connected}.toFinite.exists_le_minimal h
+  exact ⟨T, hTG, isTree_of_minimal_connected hmin⟩
+
+/-- Every connected graph on `n` vertices has at least `n-1` edges. -/
+lemma Connected.card_vert_le_card_edgeSet_add_one (h : G.Connected) :
+    Nat.card V ≤ Nat.card G.edgeSet + 1 := by
+  obtain hV | hV := (finite_or_infinite V).symm
+  · simp
+  have := Fintype.ofFinite
+  obtain ⟨T, hle, hT⟩ := h.exists_isTree_le
+  rw [Nat.card_eq_fintype_card, ← hT.card_edgeFinset, add_le_add_iff_right,
+    Nat.card_eq_fintype_card, ← edgeFinset_card]
+  exact Finset.card_mono <| by simpa
+
+lemma isTree_iff_connected_and_card [Finite V] :
+    G.IsTree ↔ G.Connected ∧ Nat.card G.edgeSet + 1 = Nat.card V := by
+  have := Fintype.ofFinite V
+  classical
+  refine ⟨fun h ↦ ⟨h.isConnected, by simpa using h.card_edgeFinset⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩⟩
+  simp_rw [isAcyclic_iff_forall_adj_isBridge]
+  refine fun x y h ↦ by_contra fun hbr ↦
+    (h₁.connected_delete_edge_of_not_isBridge hbr).card_vert_le_card_edgeSet_add_one.not_gt ?_
+  rw [Nat.card_eq_fintype_card, ← edgeFinset_card, ← h₂, Nat.card_eq_fintype_card,
+    ← edgeFinset_card, add_lt_add_iff_right]
+  exact Finset.card_lt_card <| by simpa [deleteEdges]
 
 end SimpleGraph

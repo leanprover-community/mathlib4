@@ -3,9 +3,10 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Group.Commute.Hom
-import Mathlib.Data.Fintype.Card
+import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Products (respectively, sums) over a finset or a multiset.
@@ -162,7 +163,7 @@ lemma noncommProd_induction (s : Multiset α) (comm)
 variable [FunLike F α β]
 
 @[to_additive]
-protected theorem map_noncommProd_aux [MonoidHomClass F α β] (s : Multiset α)
+protected theorem map_noncommProd_aux [MulHomClass F α β] (s : Multiset α)
     (comm : { x | x ∈ s }.Pairwise Commute) (f : F) : { x | x ∈ s.map f }.Pairwise Commute := by
   simp only [Multiset.mem_map]
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ _
@@ -173,13 +174,6 @@ theorem map_noncommProd [MonoidHomClass F α β] (s : Multiset α) (comm) (f : F
     f (s.noncommProd comm) = (s.map f).noncommProd (Multiset.map_noncommProd_aux s comm f) := by
   induction s using Quotient.inductionOn
   simpa using map_list_prod f _
-
-@[deprecated (since := "2024-07-23")] alias noncommProd_map := map_noncommProd
-@[deprecated (since := "2024-07-23")] alias noncommSum_map := map_noncommSum
-@[deprecated (since := "2024-07-23")]
-protected alias noncommProd_map_aux := Multiset.map_noncommProd_aux
-@[deprecated (since := "2024-07-23")]
-protected alias noncommSum_map_aux := Multiset.map_noncommSum_aux
 
 @[to_additive noncommSum_eq_card_nsmul]
 theorem noncommProd_eq_pow_card (s : Multiset α) (comm) (m : α) (h : ∀ x ∈ s, x = m) :
@@ -228,6 +222,7 @@ namespace Finset
 
 variable [Monoid β] [Monoid γ]
 
+open scoped Function -- required for scoped `on` notation
 
 /-- Proof used in definition of `Finset.noncommProd` -/
 @[to_additive]
@@ -291,18 +286,30 @@ theorem noncommProd_cons' (s : Finset α) (a : α) (f : α → β)
   simp_rw [noncommProd, Finset.cons_val, Multiset.map_cons, Multiset.noncommProd_cons']
 
 @[to_additive (attr := simp)]
-theorem noncommProd_insert_of_not_mem [DecidableEq α] (s : Finset α) (a : α) (f : α → β) (comm)
+theorem noncommProd_insert_of_notMem [DecidableEq α] (s : Finset α) (a : α) (f : α → β) (comm)
     (ha : a ∉ s) :
     noncommProd (insert a s) f comm =
       f a * noncommProd s f (comm.mono fun _ => mem_insert_of_mem) := by
   simp only [← cons_eq_insert _ _ ha, noncommProd_cons]
 
+@[deprecated (since := "2025-05-23")]
+alias noncommSum_insert_of_not_mem := noncommSum_insert_of_notMem
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias noncommProd_insert_of_not_mem := noncommProd_insert_of_notMem
+
 @[to_additive]
-theorem noncommProd_insert_of_not_mem' [DecidableEq α] (s : Finset α) (a : α) (f : α → β) (comm)
+theorem noncommProd_insert_of_notMem' [DecidableEq α] (s : Finset α) (a : α) (f : α → β) (comm)
     (ha : a ∉ s) :
     noncommProd (insert a s) f comm =
       noncommProd s f (comm.mono fun _ => mem_insert_of_mem) * f a := by
   simp only [← cons_eq_insert _ _ ha, noncommProd_cons']
+
+@[deprecated (since := "2025-05-23")]
+alias noncommSum_insert_of_not_mem' := noncommSum_insert_of_notMem'
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias noncommProd_insert_of_not_mem' := noncommProd_insert_of_notMem'
 
 @[to_additive (attr := simp)]
 theorem noncommProd_singleton (a : α) (f : α → β) :
@@ -319,9 +326,6 @@ theorem map_noncommProd [MonoidHomClass F β γ] (s : Finset α) (f : α → β)
     g (s.noncommProd f comm) =
       s.noncommProd (fun i => g (f i)) fun _ hx _ hy _ => (comm.of_refl hx hy).map g := by
   simp [noncommProd, Multiset.map_noncommProd]
-
-@[deprecated (since := "2024-07-23")] alias noncommProd_map := map_noncommProd
-@[deprecated (since := "2024-07-23")] alias noncommSum_map := map_noncommSum
 
 @[to_additive noncommSum_eq_card_nsmul]
 theorem noncommProd_eq_pow_card (s : Finset α) (f : α → β) (comm) (m : β) (h : ∀ x ∈ s, f x = m) :
@@ -395,13 +399,13 @@ theorem noncommProd_mul_distrib_aux {s : Finset α} {f : α → β} {g : α → 
 theorem noncommProd_mul_distrib {s : Finset α} (f : α → β) (g : α → β) (comm_ff comm_gg comm_gf) :
     noncommProd s (f * g) (noncommProd_mul_distrib_aux comm_ff comm_gg comm_gf) =
       noncommProd s f comm_ff * noncommProd s g comm_gg := by
-  induction' s using Finset.cons_induction_on with x s hnmem ih
+  induction' s using Finset.cons_induction_on with x s hnotMem ih
   · simp
   rw [Finset.noncommProd_cons, Finset.noncommProd_cons, Finset.noncommProd_cons, Pi.mul_apply,
     ih (comm_ff.mono fun _ => mem_cons_of_mem) (comm_gg.mono fun _ => mem_cons_of_mem)
       (comm_gf.mono fun _ => mem_cons_of_mem),
     (noncommProd_commute _ _ _ _ fun y hy => ?_).mul_mul_mul_comm]
-  exact comm_gf (mem_cons_self x s) (mem_cons_of_mem hy) (ne_of_mem_of_not_mem hy hnmem).symm
+  exact comm_gf (mem_cons_self x s) (mem_cons_of_mem hy) (ne_of_mem_of_not_mem hy hnotMem).symm
 
 section FinitePi
 
@@ -421,7 +425,7 @@ theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
   · intro j
     exact Pi.mulSingle j (x j) i
   · intro j _; dsimp
-  · rw [noncommProd_insert_of_not_mem _ _ _ _ (not_mem_erase _ _),
+  · rw [noncommProd_insert_of_notMem _ _ _ _ (notMem_erase _ _),
       noncommProd_eq_pow_card (univ.erase i), one_pow, mul_one]
     · simp only [MonoidHom.mulSingle_apply, ne_eq, Pi.mulSingle_eq_same]
     · intro j hj

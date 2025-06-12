@@ -3,15 +3,14 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.EquivFin
 import Mathlib.Data.Finset.Option
 
 /-!
 # fintype instances for option
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists MulAction
+assert_not_exists MonoidWithZero MulAction
 
 open Function
 
@@ -21,7 +20,7 @@ universe u v
 
 variable {α β : Type*}
 
-open Finset Function
+open Finset
 
 instance {α : Type*} [Fintype α] : Fintype (Option α) :=
   ⟨Finset.insertNone univ, fun a => by simp⟩
@@ -57,30 +56,24 @@ def truncRecEmptyOption {P : Type u → Sort v} (of_equiv : ∀ {α β}, α ≃ 
     apply Trunc.map _ (Fintype.truncEquivFin α)
     intro e
     exact of_equiv (Equiv.ulift.trans e.symm) h
-  apply ind where
-    -- Porting note: do a manual recursion, instead of `induction` tactic,
-    -- to ensure the result is computable
-    /-- Internal induction hypothesis -/
-    ind : ∀ n : ℕ, Trunc (P (ULift <| Fin n))
-    | Nat.zero => by
-          have : card PEmpty = card (ULift (Fin 0)) := by simp only [card_fin, card_pempty,
-                                                                     card_ulift]
-          apply Trunc.bind (truncEquivOfCardEq this)
-          intro e
-          apply Trunc.mk
-          exact of_equiv e h_empty
-      | Nat.succ n => by
-          have : card (Option (ULift (Fin n))) = card (ULift (Fin n.succ)) := by
-            simp only [card_fin, card_option, card_ulift]
-          apply Trunc.bind (truncEquivOfCardEq this)
-          intro e
-          apply Trunc.map _ (ind n)
-          intro ih
-          exact of_equiv e (h_option ih)
+  intro n
+  induction n with
+  | zero =>
+    have : card PEmpty = card (ULift (Fin 0)) := by
+      simp only [card_fin, card_pempty, card_ulift]
+    apply Trunc.bind (truncEquivOfCardEq this)
+    intro e
+    apply Trunc.mk
+    exact of_equiv e h_empty
+  | succ n ih =>
+    have : card (Option (ULift (Fin n))) = card (ULift (Fin n.succ)) := by
+      simp only [card_fin, card_option, card_ulift]
+    apply Trunc.bind (truncEquivOfCardEq this)
+    intro e
+    apply Trunc.map _ ih
+    intro ih
+    exact of_equiv e (h_option ih)
 
--- Porting note: due to instance inference issues in `SetTheory.Cardinal.Basic`
--- I had to explicitly name `h_fintype` in order to access it manually.
--- was `[Fintype α]`
 /-- An induction principle for finite types, analogous to `Nat.rec`. It effectively says
 that every `Fintype` is either `Empty` or `Option α`, up to an `Equiv`. -/
 @[elab_as_elim]

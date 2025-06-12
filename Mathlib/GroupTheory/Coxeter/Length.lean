@@ -5,6 +5,7 @@ Authors: Mitchell Lee
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.Coxeter.Basic
+import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Zify
 
 /-!
@@ -46,9 +47,11 @@ prove analogous results.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 namespace CoxeterSystem
 
-open List Matrix Function Classical
+open List Matrix Function
 
 variable {B : Type*}
 variable {W : Type*} [Group W]
@@ -63,6 +66,7 @@ private theorem exists_word_with_prod (w : W) : ∃ n ω, ω.length = n ∧ π �
   rcases cs.wordProd_surjective w with ⟨ω, rfl⟩
   use ω.length, ω
 
+open scoped Classical in
 /-- The length of `w`; i.e., the minimum number of simple reflections that
 must be multiplied to form `w`. -/
 noncomputable def length (w : W) : ℕ := Nat.find (cs.exists_word_with_prod w)
@@ -70,9 +74,11 @@ noncomputable def length (w : W) : ℕ := Nat.find (cs.exists_word_with_prod w)
 local prefix:100 "ℓ" => cs.length
 
 theorem exists_reduced_word (w : W) : ∃ ω, ω.length = ℓ w ∧ w = π ω := by
+  classical
   have := Nat.find_spec (cs.exists_word_with_prod w)
   tauto
 
+open scoped Classical in
 theorem length_wordProd_le (ω : List B) : ℓ (π ω) ≤ ω.length :=
   Nat.find_min' (cs.exists_word_with_prod (π ω)) ⟨ω, by tauto⟩
 
@@ -154,7 +160,7 @@ theorem length_eq_one_iff {w : W} : ℓ w = 1 ↔ ∃ i : B, w = s i := by
   constructor
   · intro h
     rcases cs.exists_reduced_word w with ⟨ω, hω, rfl⟩
-    rcases List.length_eq_one.mp (hω.trans h) with ⟨i, rfl⟩
+    rcases List.length_eq_one_iff.mp (hω.trans h) with ⟨i, rfl⟩
     exact ⟨i, cs.wordProd_singleton i⟩
   · rintro ⟨i, rfl⟩
     exact cs.length_simple i
@@ -238,18 +244,15 @@ theorem IsReduced.drop {cs : CoxeterSystem M W} {ω : List B} (hω : cs.IsReduce
 
 theorem not_isReduced_alternatingWord (i i' : B) {m : ℕ} (hM : M i i' ≠ 0) (hm : m > M i i') :
     ¬cs.IsReduced (alternatingWord i i' m) := by
-  induction' hm with m _ ih
-  · -- Base case; m = M i i' + 1
+  induction hm with
+  | refl => -- Base case; m = M i i' + 1
     suffices h : ℓ (π (alternatingWord i i' (M i i' + 1))) < M i i' + 1 by
       unfold IsReduced
       rw [Nat.succ_eq_add_one, length_alternatingWord]
       omega
     have : M i i' + 1 ≤ M i i' * 2 := by linarith [Nat.one_le_iff_ne_zero.mpr hM]
     rw [cs.prod_alternatingWord_eq_prod_alternatingWord_sub i i' _ this]
-    have : M i i' * 2 - (M i i' + 1) = M i i' - 1 := by
-      apply (Nat.sub_eq_iff_eq_add' this).mpr
-      rw [add_assoc, add_comm 1, Nat.sub_add_cancel (Nat.one_le_iff_ne_zero.mpr hM)]
-      exact mul_two _
+    have : M i i' * 2 - (M i i' + 1) = M i i' - 1 := by omega
     rw [this]
     calc
       ℓ (π (alternatingWord i' i (M i i' - 1)))
@@ -257,7 +260,7 @@ theorem not_isReduced_alternatingWord (i i' : B) {m : ℕ} (hM : M i i' ≠ 0) (
       _ = M i i' - 1                                  := length_alternatingWord _ _ _
       _ ≤ M i i'                                      := Nat.sub_le _ _
       _ < M i i' + 1                                  := Nat.lt_succ_self _
-  · -- Inductive step
+  | step m ih => -- Inductive step
     contrapose! ih
     rw [alternatingWord_succ'] at ih
     apply IsReduced.drop (j := 1) at ih
@@ -306,8 +309,7 @@ theorem isLeftDescent_iff {w : W} {i : B} :
   constructor
   · intro _
     exact (cs.length_simple_mul w i).resolve_left (by omega)
-  · intro _
-    omega
+  · omega
 
 theorem not_isLeftDescent_iff {w : W} {i : B} :
     ¬cs.IsLeftDescent w i ↔ ℓ (s i * w) = ℓ w + 1 := by
@@ -315,8 +317,7 @@ theorem not_isLeftDescent_iff {w : W} {i : B} :
   constructor
   · intro _
     exact (cs.length_simple_mul w i).resolve_right (by omega)
-  · intro _
-    omega
+  · omega
 
 theorem isRightDescent_iff {w : W} {i : B} :
     cs.IsRightDescent w i ↔ ℓ (w * s i) + 1 = ℓ w := by
@@ -324,8 +325,7 @@ theorem isRightDescent_iff {w : W} {i : B} :
   constructor
   · intro _
     exact (cs.length_mul_simple w i).resolve_left (by omega)
-  · intro _
-    omega
+  · omega
 
 theorem not_isRightDescent_iff {w : W} {i : B} :
     ¬cs.IsRightDescent w i ↔ ℓ (w * s i) = ℓ w + 1 := by
@@ -333,8 +333,7 @@ theorem not_isRightDescent_iff {w : W} {i : B} :
   constructor
   · intro _
     exact (cs.length_mul_simple w i).resolve_right (by omega)
-  · intro _
-    omega
+  · omega
 
 theorem isLeftDescent_iff_not_isLeftDescent_mul {w : W} {i : B} :
     cs.IsLeftDescent w i ↔ ¬cs.IsLeftDescent (s i * w) i := by

@@ -96,7 +96,7 @@ theorem length_of_mem_countedSequence {p q} {l : List ℤ} (hl : l ∈ countedSe
 
 theorem counted_eq_nil_iff {p q : ℕ} {l : List ℤ} (hl : l ∈ countedSequence p q) :
     l = [] ↔ p = 0 ∧ q = 0 :=
-  List.length_eq_zero.symm.trans <| by simp [length_of_mem_countedSequence hl]
+  List.length_eq_zero_iff.symm.trans <| by simp [length_of_mem_countedSequence hl]
 
 theorem counted_ne_nil_left {p q : ℕ} (hp : p ≠ 0) {l : List ℤ} (hl : l ∈ countedSequence p q) :
     l ≠ [] := by simp [counted_eq_nil_iff hl, hp]
@@ -115,13 +115,14 @@ theorem counted_succ_succ (p q : ℕ) :
     obtain ⟨hl₀, hl₁, hl₂⟩ := hl
     obtain hlast | hlast := hl₂ (l.head hlnil) (List.head_mem hlnil)
     · refine Or.inl ⟨l.tail, ⟨?_, ?_, ?_⟩, ?_⟩
-      · rw [List.count_tail l 1 hlnil, hl₀, hlast, beq_self_eq_true, if_pos rfl, Nat.add_sub_cancel]
-      · rw [List.count_tail l (-1) hlnil, hl₁, hlast, if_neg (by decide), Nat.sub_zero]
+      · rw [List.count_tail, hl₀, List.head?_eq_head, hlast, beq_self_eq_true, if_pos rfl,
+          Nat.add_sub_cancel]
+      · rw [List.count_tail, hl₁, List.head?_eq_head, hlast, if_neg (by decide), Nat.sub_zero]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.head_cons_tail]
     · refine Or.inr ⟨l.tail, ⟨?_, ?_, ?_⟩, ?_⟩
-      · rw [List.count_tail l 1 hlnil, hl₀, hlast, if_neg (by decide), Nat.sub_zero]
-      · rw [List.count_tail l (-1) hlnil, hl₁, hlast, beq_self_eq_true, if_pos rfl,
+      · rw [List.count_tail, hl₀, List.head?_eq_head, hlast, if_neg (by decide), Nat.sub_zero]
+      · rw [List.count_tail, hl₁, List.head?_eq_head, hlast, beq_self_eq_true, if_pos rfl,
           Nat.add_sub_cancel]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.head_cons_tail]
@@ -130,14 +131,12 @@ theorem counted_succ_succ (p q : ℕ) :
       · rw [List.count_cons, beq_self_eq_true, if_pos rfl, ht₀]
       · rw [List.count_cons, if_neg, ht₁]
         norm_num
-      · rintro x (_ | _)
-        exacts [Or.inl rfl, ht₂ x (by tauto)]
+      · simpa
     · refine ⟨?_, ?_, ?_⟩
       · rw [List.count_cons, if_neg, ht₀]
         norm_num
       · rw [List.count_cons, beq_self_eq_true, if_pos rfl, ht₁]
-      · rintro x (_ | _)
-        exacts [Or.inr rfl, ht₂ x (by tauto)]
+      · simpa
 
 theorem countedSequence_finite : ∀ p q : ℕ, (countedSequence p q).Finite
   | 0, q => by simp
@@ -165,9 +164,9 @@ theorem disjoint_bits (p q : ℕ) :
 
 open MeasureTheory.Measure
 
-private def measureableSpace_list_int : MeasurableSpace (List ℤ) := ⊤
+private def measurableSpace_list_int : MeasurableSpace (List ℤ) := ⊤
 
-attribute [local instance] measureableSpace_list_int
+attribute [local instance] measurableSpace_list_int
 
 private theorem measurableSingletonClass_list_int : MeasurableSingletonClass (List ℤ) :=
   { measurableSet_singleton := fun _ => trivial }
@@ -194,9 +193,7 @@ theorem first_vote_pos :
     simp [ENNReal.div_self _ _, List.replicate_succ]
   | 0, q + 1, _ => by
     rw [counted_left_zero, uniformOn_singleton]
-    simp only [List.replicate, Nat.add_eq, add_zero, mem_setOf_eq, List.headI_cons, Nat.cast_zero,
-      ENNReal.zero_div, ite_eq_right_iff]
-    decide
+    simp [List.replicate]
   | p + 1, q + 1, _ => by
     simp_rw [counted_succ_succ]
     rw [← uniformOn_disjoint_union ((countedSequence_finite _ _).image _)
@@ -227,7 +224,7 @@ theorem first_vote_pos :
 
 theorem headI_mem_of_nonempty {α : Type*} [Inhabited α] : ∀ {l : List α} (_ : l ≠ []), l.headI ∈ l
   | [], h => (h rfl).elim
-  | x::l, _ => List.mem_cons_self x l
+  | _::_, _ => List.mem_cons_self
 
 theorem first_vote_neg (p q : ℕ) (h : 0 < p + q) :
     uniformOn (countedSequence p q) {l | l.headI = 1}ᶜ = q / (p + q) := by
@@ -240,7 +237,7 @@ theorem first_vote_neg (p q : ℕ) (h : 0 < p + q) :
   all_goals simp_all [ENNReal.div_eq_top]
 
 theorem ballot_same (p : ℕ) : uniformOn (countedSequence (p + 1) (p + 1)) staysPositive = 0 := by
-  rw [uniformOn_eq_zero_iff (countedSequence_finite _ _), eq_empty_iff_forall_not_mem]
+  rw [uniformOn_eq_zero_iff (countedSequence_finite _ _), eq_empty_iff_forall_notMem]
   rintro x ⟨hx, t⟩
   apply ne_of_gt (t x _ x.suffix_refl)
   · simpa using sum_of_mem_countedSequence hx
@@ -318,7 +315,7 @@ theorem ballot_problem' :
     simp
   · intro p
     rw [ballot_edge]
-    simp only [ENNReal.one_toReal, Nat.cast_add, Nat.cast_one, Nat.cast_zero, sub_zero, add_zero]
+    simp only [ENNReal.toReal_one, Nat.cast_add, Nat.cast_one, Nat.cast_zero, sub_zero, add_zero]
     rw [div_self]
     exact Nat.cast_add_one_ne_zero p
   · intro q p qp h₁ h₂
@@ -330,8 +327,8 @@ theorem ballot_problem' :
     rw [← uniformOn_add_compl_eq {l : List ℤ | l.headI = 1} _ (countedSequence_finite _ _),
       first_vote_pos _ _ h₃, first_vote_neg _ _ h₃, ballot_pos, ballot_neg _ _ qp]
     rw [ENNReal.toReal_add, ENNReal.toReal_mul, ENNReal.toReal_mul, ← Nat.cast_add,
-      ENNReal.toReal_div, ENNReal.toReal_div, ENNReal.toReal_nat, ENNReal.toReal_nat,
-      ENNReal.toReal_nat, h₁, h₂]
+      ENNReal.toReal_div, ENNReal.toReal_div, ENNReal.toReal_natCast, ENNReal.toReal_natCast,
+      ENNReal.toReal_natCast, h₁, h₂]
     · have h₄ : (p + 1 : ℝ) + (q + 1 : ℝ) ≠ (0 : ℝ) := by
         apply ne_of_gt
         assumption_mod_cast
@@ -357,8 +354,8 @@ theorem ballot_problem :
     (uniformOn (countedSequence p q) staysPositive).toReal =
       ((p - q) / (p + q) : ℝ≥0∞).toReal := by
     rw [ballot_problem' q p qp]
-    rw [ENNReal.toReal_div, ← Nat.cast_add, ← Nat.cast_add, ENNReal.toReal_nat,
-      ENNReal.toReal_sub_of_le, ENNReal.toReal_nat, ENNReal.toReal_nat]
+    rw [ENNReal.toReal_div, ← Nat.cast_add, ← Nat.cast_add, ENNReal.toReal_natCast,
+      ENNReal.toReal_sub_of_le, ENNReal.toReal_natCast, ENNReal.toReal_natCast]
     exacts [Nat.cast_le.2 qp.le, ENNReal.natCast_ne_top _]
   rwa [ENNReal.toReal_eq_toReal (measure_lt_top _ _).ne] at this
   simp only [Ne, ENNReal.div_eq_top, tsub_eq_zero_iff_le, Nat.cast_le, not_le,

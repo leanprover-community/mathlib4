@@ -5,8 +5,7 @@ Authors: Devon Tuma
 -/
 import Mathlib.RingTheory.Jacobson.Ring
 import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.RingTheory.MvPolynomial
-import Mathlib.RingTheory.PrimeSpectrum
+import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
 # Nullstellensatz
@@ -68,7 +67,7 @@ theorem vanishingIdeal_anti_mono {A B : Set (σ → k)} (h : A ≤ B) :
     vanishingIdeal B ≤ vanishingIdeal A := fun _ hp x hx => hp x <| h hx
 
 theorem vanishingIdeal_empty : vanishingIdeal (∅ : Set (σ → k)) = ⊤ :=
-  le_antisymm le_top fun _ _ x hx => absurd hx (Set.not_mem_empty x)
+  le_antisymm le_top fun _ _ x hx => absurd hx (Set.notMem_empty x)
 
 theorem le_vanishingIdeal_zeroLocus (I : Ideal (MvPolynomial σ k)) :
     I ≤ vanishingIdeal (zeroLocus I) := fun p hp _ hx => hx p hp
@@ -154,9 +153,8 @@ theorem isMaximal_iff_eq_vanishingIdeal_singleton (I : Ideal (MvPolynomial σ k)
   letI : Field (MvPolynomial σ k ⧸ I) := Quotient.field I
   let ϕ : k →+* MvPolynomial σ k ⧸ I := (Ideal.Quotient.mk I).comp C
   have hϕ : Function.Bijective ϕ :=
-    ⟨quotient_mk_comp_C_injective _ _ I hI.ne_top,
-      IsAlgClosed.algebraMap_surjective_of_isIntegral' ϕ
-        (MvPolynomial.comp_C_integral_of_surjective_of_isJacobsonRing _ Quotient.mk_surjective)⟩
+    IsAlgClosed.ringHom_bijective_of_isIntegral ϕ
+      (MvPolynomial.comp_C_integral_of_surjective_of_isJacobsonRing _ Quotient.mk_surjective)
   obtain ⟨φ, hφ⟩ := Function.Surjective.hasRightInverse hϕ.2
   let x : σ → k := fun s => φ ((Ideal.Quotient.mk I) (X s))
   have hx : ∀ s : σ, ϕ (x s) = (Ideal.Quotient.mk I) (X s) := fun s =>
