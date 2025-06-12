@@ -365,7 +365,7 @@ theorem coe_equivRange (hinj : Injective f) (hclo : IsClosed (range f)) :
 
 @[simp]
 lemma equivRange_symm_toLinearEquiv (hinj : Injective f) (hclo : IsClosed (range f)) :
-    (f.equivRange hinj hclo).toLinearEquiv.symm =
+    (f.equivRange hinj hclo).symm.toLinearEquiv =
       (LinearEquiv.ofInjective f.toLinearMap hinj).symm := rfl
 
 @[simp]
