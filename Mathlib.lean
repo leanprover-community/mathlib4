@@ -1756,6 +1756,7 @@ import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Analysis.RCLike.BoundedContinuous
 import Mathlib.Analysis.RCLike.Inner
 import Mathlib.Analysis.RCLike.Lemmas
+import Mathlib.Analysis.RCLike.TangentCone
 import Mathlib.Analysis.Seminorm
 import Mathlib.Analysis.SpecialFunctions.Arsinh
 import Mathlib.Analysis.SpecialFunctions.Bernstein
@@ -3595,6 +3596,7 @@ import Mathlib.Geometry.Euclidean.Angle.Unoriented.CrossProduct
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
 import Mathlib.Geometry.Euclidean.Basic
 import Mathlib.Geometry.Euclidean.Circumcenter
+import Mathlib.Geometry.Euclidean.Incenter
 import Mathlib.Geometry.Euclidean.Inversion.Basic
 import Mathlib.Geometry.Euclidean.Inversion.Calculus
 import Mathlib.Geometry.Euclidean.Inversion.ImageHyperplane
@@ -5357,6 +5359,7 @@ import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.Polynomial.Bernstein
 import Mathlib.RingTheory.Polynomial.Chebyshev
 import Mathlib.RingTheory.Polynomial.Content
+import Mathlib.RingTheory.Polynomial.ContentIdeal
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
@@ -5720,6 +5723,9 @@ import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.GCongr.CoreAttrs
 import Mathlib.Tactic.GCongr.ForwardAttr
+import Mathlib.Tactic.GRewrite
+import Mathlib.Tactic.GRewrite.Core
+import Mathlib.Tactic.GRewrite.Elab
 import Mathlib.Tactic.Generalize
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.Group
