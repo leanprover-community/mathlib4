@@ -300,7 +300,7 @@ theorem aemeasurable_Ioi_of_forall_Ioc {β} {mβ : MeasurableSpace β} [LinearOr
     exact fun y _ => (hu_tendsto.eventually (eventually_ge_atTop y)).exists
   rw [Ioi_eq_iUnion, aemeasurable_iUnion_iff]
   intro n
-  rcases lt_or_le x (u n) with h | h
+  rcases lt_or_ge x (u n) with h | h
   · exact g_meas (u n) h
   · rw [Ioc_eq_empty (not_lt.mpr h), Measure.restrict_empty]
     exact aemeasurable_zero_measure

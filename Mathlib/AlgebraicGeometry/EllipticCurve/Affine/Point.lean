@@ -42,11 +42,11 @@ This file defines the group law on nonsingular points `W⟮F⟯` in affine coord
 ## Main statements
 
 * `WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing`: the affine coordinate ring
-    of a Weierstrass curve is an integral domain.
+  of a Weierstrass curve is an integral domain.
 * `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis`: the degree of the norm of an
-    element in the affine coordinate ring in terms of its power basis.
+  element in the affine coordinate ring in terms of its power basis.
 * `WeierstrassCurve.Affine.Point.instAddCommGroup`: the type of nonsingular points `W⟮F⟯` in affine
-    coordinates forms an abelian group under addition.
+  coordinates forms an abelian group under addition.
 
 ## Notations
 
@@ -434,7 +434,7 @@ lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
         rcases hq' : q.degree with _ | dq -- `hq' : ` should be redundant
         · exact (hq hq').elim -- `hq'` should be `rfl`
         · rw [hq'] at hdpq hdq -- line should be redundant
-          rcases le_or_lt dp (dq + 1) with hpq | hpq
+          rcases le_or_gt dp (dq + 1) with hpq | hpq
           · convert (degree_sub_eq_right_of_degree_lt <| (degree_sub_le _ _).trans_lt <|
                       max_lt_iff.mpr ⟨hdp.trans_lt _, hdpq.trans_lt _⟩).trans
               (max_eq_right_of_lt _).symm <;> rw [hdq] <;>

@@ -301,7 +301,7 @@ private theorem psp_from_prime_gt_p {b : ℕ} (b_ge_two : 2 ≤ b) {p : ℕ} (p_
   conv_rhs => rw [← Nat.sub_add_cancel (show 1 ≤ p by omega)]
   rw [Nat.pow_succ (b ^ 2)]
   suffices h : p * b ^ 2 < (b ^ 2) ^ (p - 1) * b ^ 2 by
-    apply gt_of_ge_of_gt
+    apply lt_of_le_of_lt'
     · exact tsub_le_tsub_left (one_le_of_lt p_gt_two) ((b ^ 2) ^ (p - 1) * b ^ 2)
     · have : p ≤ p * b ^ 2 := Nat.le_mul_of_pos_right _ (show 0 < b ^ 2 by positivity)
       exact tsub_lt_tsub_right_of_le this h
@@ -329,13 +329,13 @@ theorem exists_infinite_pseudoprimes {b : ℕ} (h : 1 ≤ b) (m : ℕ) :
     obtain ⟨p, ⟨hp₁, hp₂⟩⟩ := h
     have h₁ : 0 < b := pos_of_gt (Nat.succ_le_iff.mp b_ge_two)
     have h₂ : 4 ≤ b ^ 2 := pow_le_pow_left' b_ge_two 2
-    have h₃ : 0 < b ^ 2 - 1 := tsub_pos_of_lt (gt_of_ge_of_gt h₂ (by norm_num))
+    have h₃ : 0 < b ^ 2 - 1 := tsub_pos_of_lt (lt_of_lt_of_le (by norm_num) h₂)
     have h₄ : 0 < b * (b ^ 2 - 1) := mul_pos h₁ h₃
     have h₅ : b * (b ^ 2 - 1) < p := by omega
     have h₆ : ¬p ∣ b * (b ^ 2 - 1) := Nat.not_dvd_of_pos_of_lt h₄ h₅
     have h₇ : b ≤ b * (b ^ 2 - 1) := Nat.le_mul_of_pos_right _ h₃
     have h₈ : 2 ≤ b * (b ^ 2 - 1) := le_trans b_ge_two h₇
-    have h₉ : 2 < p := gt_of_gt_of_ge h₅ h₈
+    have h₉ : 2 < p := lt_of_le_of_lt h₈ h₅
     have h₁₀ := psp_from_prime_gt_p b_ge_two hp₂ h₉
     use psp_from_prime b p
     constructor
