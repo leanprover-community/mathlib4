@@ -10,13 +10,13 @@ import Mathlib.RepresentationTheory.Invariants
 /-!
 # The low-degree cohomology of a `k`-linear `G`-representation
 
-Let `k` be a commutative ring and `G` a group. This file gives simple expressions for
-the group cohomology of a `k`-linear `G`-representation `A` in degrees 0, 1 and 2.
+Let `k` be a commutative ring and `G` a group. This file contains specialised API for
+the cocycles and group cohomology of a `k`-linear `G`-representation `A` in degrees 0, 1 and 2.
 
 In `RepresentationTheory.GroupCohomology.Basic`, we define the `n`th group cohomology of `A` to be
 the cohomology of a complex `inhomogeneousCochains A`, whose objects are `(Fin n → G) → A`; this is
-unnecessarily unwieldy in low degree. Moreover, cohomology of a complex is defined as an abstract
-cokernel, whereas the definitions here are explicit quotients of cocycles by coboundaries.
+unnecessarily unwieldy in low degree. Here, meanwhile, we define the one and two cocycles and
+coboundaries as submodules of `Fun(G, A)` and `Fun(G × G, A)`, and provide maps to `H1` and `H2`.
 
 We also show that when the representation on `A` is trivial, `H¹(G, A) ≃ Hom(G, A)`.
 
@@ -28,25 +28,23 @@ multiplicative case, starting with the section `IsMulCocycle`, just mirrors the 
 unfortunately `@[to_additive]` can't deal with scalar actions.
 
 The file also contains an identification between the definitions in
-`RepresentationTheory.GroupCohomology.Basic`, `groupCohomology.cocycles A n` and
-`groupCohomology A n`, and the `nCocycles` and `Hn A` in this file, for `n = 0, 1, 2`.
+`RepresentationTheory.GroupCohomology.Basic`, `groupCohomology.cocycles A n`, and the `nCocycles`
+in this file, for `n = 0, 1, 2`.
 
 ## Main definitions
 
-* `groupCohomology.H0 A`: the invariants `Aᴳ` of the `G`-representation on `A`.
-* `groupCohomology.H1 A`: 1-cocycles (i.e. `Z¹(G, A) := Ker(d¹ : Fun(G, A) → Fun(G², A)`) modulo
-  1-coboundaries (i.e. `B¹(G, A) := Im(d⁰: A → Fun(G, A))`).
-* `groupCohomology.H2 A`: 2-cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo
-  2-coboundaries (i.e. `B²(G, A) := Im(d¹: Fun(G, A) → Fun(G², A))`).
+* `groupCohomology.H0Iso A`: isomorphism between `H⁰(G, A)` and the invariants `Aᴳ` of the
+  `G`-representation on `A`.
+* `groupCohomology.H1π A`: epimorphism from the 1-cocycles
+  (i.e. `Z¹(G, A) := Ker(d¹ : Fun(G, A) → Fun(G², A)`) to `H¹(G, A)`.
+* `groupCohomology.H2π A`: epimorphism from the 2-cocycles
+  (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) to `H²(G, A)`.
 * `groupCohomology.H1IsoOfIsTrivial`: the isomorphism `H¹(G, A) ≅ Hom(G, A)` when the
   representation on `A` is trivial.
-* `groupCohomology.isoHn` for `n = 0, 1, 2`: an isomorphism
-  `groupCohomology A n ≅ groupCohomology.Hn A`.
 
 ## TODO
 
 * The relationship between `H2` and group extensions
-* The inflation-restriction exact sequence
 * Nonabelian group cohomology
 
 -/
@@ -786,6 +784,9 @@ def zeroCocyclesIso : cocycles A 0 ≅ ModuleCat.of k A.ρ.invariants :=
     ((inhomogeneousCochains A).cyclesIsKernel 0 1 (by simp)) (shortComplexH0_exact A).fIsKernel
       (dZeroArrowIso A)
 
+@[deprecated (since := "2025-06-12")]
+noncomputable alias isoZeroCocycles := zeroCocyclesIso
+
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma zeroCocyclesIso_hom_comp_f :
     (zeroCocyclesIso A).hom ≫ (shortComplexH0 A).f =
@@ -801,6 +802,9 @@ lemma zeroCocyclesIso_inv_comp_iCocycles :
     (zeroCocyclesIso A).inv ≫ iCocycles A 0 =
       (shortComplexH0 A).f ≫ (zeroCochainsIso A).inv := by
   rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, zeroCocyclesIso_hom_comp_f]
+
+@[deprecated (since := "2025-06-12")]
+alias isoZeroCocycles_inv_comp_iCocycles := zeroCocyclesIso_inv_comp_iCocycles
 
 end zeroCocyclesIso
 

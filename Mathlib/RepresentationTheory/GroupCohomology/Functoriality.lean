@@ -255,28 +255,31 @@ theorem map_H0Iso_hom_f :
 alias H0Map_comp_f := map_H0Iso_hom_f
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-theorem map_comp_H0Iso_hom {A B : Rep k G} (f : A ⟶ B) :
+theorem map_id_comp_H0Iso_hom {A B : Rep k G} (f : A ⟶ B) :
     map (MonoidHom.id G) f 0 ≫ (H0Iso B).hom = (H0Iso A).hom ≫ (invariantsFunctor k G).map f := by
   simp only [← cancel_mono (shortComplexH0 B).f, Category.assoc, map_H0Iso_hom_f]
   rfl
 
 @[deprecated (since := "2025-06-09")]
-alias H0Map_id_eq_invariantsFunctor_map := map_comp_H0Iso_hom
+alias H0Map_id_eq_invariantsFunctor_map := map_id_comp_H0Iso_hom
 
 instance mono_map_0_of_mono {A B : Rep k G} (f : A ⟶ B) [Mono f] :
     Mono (map (MonoidHom.id G) f 0) where
   right_cancellation g h hgh := by
-    simp only [← cancel_mono (H0Iso B).hom, Category.assoc, map_comp_H0Iso_hom] at hgh
+    simp only [← cancel_mono (H0Iso B).hom, Category.assoc, map_id_comp_H0Iso_hom] at hgh
     simp_all [cancel_mono]
 
 @[deprecated (since := "2025-06-09")]
 alias mono_H0Map_of_mono := mono_map_0_of_mono
 
 @[reassoc, elementwise]
-theorem cocyclesMap_comp_zeroIsoCocycles_hom :
+theorem cocyclesMap_zeroIsoCocycles_hom_f :
     cocyclesMap f φ 0 ≫ (zeroCocyclesIso B).hom ≫ (shortComplexH0 B).f =
       (zeroCocyclesIso A).hom ≫ (shortComplexH0 A).f ≫ φ.hom := by
   simp
+
+@[deprecated (since := "2025-06-12")]
+alias cocyclesMap_comp_isoZeroCocycles_hom := cocyclesMap_zeroIsoCocycles_hom_f
 
 end H0
 section H1
@@ -357,16 +360,16 @@ theorem mapOneCocycles_one (φ : (Action.res _ 1).obj A ⟶ B) :
 
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is induced map `H¹(H, A) ⟶ H¹(G, B)`. -/
-@[deprecated (since := "2025-05-09")]
+@[deprecated (since := "2025-06-09")]
 alias H1Map := map
 
-@[deprecated (since := "2025-05-09")]
+@[deprecated (since := "2025-6-09")]
 alias H1Map_id := map_id
 
-@[deprecated (since := "2025-05-09")]
+@[deprecated (since := "2025-06-09")]
 alias H1Map_comp := map_comp
 
-@[deprecated (since := "2025-05-09")]
+@[deprecated (since := "2025-06-09")]
 alias H1Map_id_comp := map_id_comp
 
 variable [DecidableEq G] [DecidableEq H]
@@ -375,6 +378,9 @@ variable [DecidableEq G] [DecidableEq H]
 lemma H1π_comp_map :
     H1π A ≫ map f φ 1 = mapOneCocycles f φ ≫ H1π B := by
   simp [H1π, Iso.inv_comp_eq, ← cocyclesMap_comp_isoOneCocycles_hom_assoc]
+
+@[deprecated (since := "2025-06-12")]
+alias H1_comp_H1Map := H1π_comp_map
 
 @[simp]
 theorem map_1_one (φ : (Action.res _ 1).obj A ⟶ B) :
@@ -542,6 +548,9 @@ variable [DecidableEq G] [DecidableEq H] in
 lemma H2π_comp_map :
     H2π A ≫ map f φ 2 = mapTwoCocycles f φ ≫ H2π B := by
   simp [H2π, Iso.inv_comp_eq, ← cocyclesMap_comp_isoTwoCocycles_hom_assoc]
+
+@[deprecated (since := "2025-06-12")]
+alias H2_comp_H2Map := H2π_comp_map
 
 end H2
 
