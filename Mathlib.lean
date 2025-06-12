@@ -4699,6 +4699,7 @@ import Mathlib.Order.CompleteLattice.Basic
 import Mathlib.Order.CompleteLattice.Chain
 import Mathlib.Order.CompleteLattice.Defs
 import Mathlib.Order.CompleteLattice.Finset
+import Mathlib.Order.CompleteLattice.Group
 import Mathlib.Order.CompleteLattice.Lemmas
 import Mathlib.Order.CompleteLattice.SetLike
 import Mathlib.Order.CompleteLatticeIntervals
