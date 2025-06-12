@@ -54,7 +54,7 @@ on:
 
 name: continuous integration (staging)
 EOF
-  include "github.sha" bors "true" "" bors
+  include "github.sha" bors "github.repository == 'leanprover-community\/mathlib4'" "" bors
 }
 
 build_fork_yml() {
