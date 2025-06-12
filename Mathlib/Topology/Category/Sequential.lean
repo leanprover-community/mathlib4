@@ -55,7 +55,7 @@ abbrev of : Sequential.{u} where
 def sequentialToTop : Sequential.{u} ⥤ TopCat.{u} :=
   inducedFunctor _
 
-/-- The functor to `TopCat` is indeed fully faithful.-/
+/-- The functor to `TopCat` is indeed fully faithful. -/
 def fullyFaithfulSequentialToTop : sequentialToTop.FullyFaithful :=
   fullyFaithfulInducedFunctor _
 

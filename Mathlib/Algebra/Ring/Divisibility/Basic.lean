@@ -6,13 +6,14 @@ Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Ne
 import Mathlib.Algebra.Divisibility.Hom
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Data.Nat.Basic
 
 /-!
 # Lemmas about divisibility in rings
 
 Note that this file is imported by basic tactics like `linarith` and so must have only minimal
 imports. Further results about divisibility in rings may be found in
-`Mathlib.Algebra.Ring.Divisibility.Lemmas` which is not subject to this import constraint.
+`Mathlib/Algebra/Ring/Divisibility/Lemmas.lean` which is not subject to this import constraint.
 -/
 
 
@@ -26,6 +27,11 @@ theorem map_dvd_iff (f : F) {a b} : f a ∣ f b ↔ a ∣ b :=
   let f := MulEquivClass.toMulEquiv f
   ⟨fun h ↦ by rw [← f.left_inv a, ← f.left_inv b]; exact map_dvd f.symm h, map_dvd f⟩
 
+theorem map_dvd_iff_dvd_symm (f : F) {a : α} {b : β} :
+    f a ∣ b ↔ a ∣ (MulEquivClass.toMulEquiv f).symm b := by
+  obtain ⟨c, rfl⟩ : ∃ c, f c = b := EquivLike.surjective f b
+  simp [map_dvd_iff]
+
 theorem MulEquiv.decompositionMonoid (f : F) [DecompositionMonoid β] : DecompositionMonoid α where
   primal a b c h := by
     rw [← map_dvd_iff f, map_mul] at h
@@ -34,6 +40,23 @@ theorem MulEquiv.decompositionMonoid (f : F) [DecompositionMonoid β] : Decompos
     simp_rw [← map_dvd_iff f, ← map_mul, eq_symm_apply]
     iterate 2 erw [(f : α ≃* β).apply_symm_apply]
     exact h
+
+/--
+If `G` is a `LeftCancelSemiGroup`, left multiplication by `g` yields an equivalence between `G`
+and the set of elements of `G` divisible by `g`.
+-/
+protected noncomputable def Equiv.dvd {G : Type*} [LeftCancelSemigroup G] (g : G) :
+    G ≃ {a : G // g ∣ a} where
+  toFun := fun a ↦ ⟨g * a, ⟨a, rfl⟩⟩
+  invFun := fun ⟨_, h⟩ ↦ h.choose
+  left_inv := fun _ ↦ by simp
+  right_inv := by
+    rintro ⟨_, ⟨_, rfl⟩⟩
+    simp
+
+@[simp]
+theorem Equiv.dvd_apply {G : Type*} [LeftCancelSemigroup G] (g a : G) :
+    Equiv.dvd g a = g * a := rfl
 
 end Semigroup
 
@@ -110,20 +133,17 @@ theorem dvd_add_right (h : a ∣ b) : a ∣ b + c ↔ a ∣ c := by rw [add_comm
 /-- If an element `a` divides another element `c` in a ring, `a` divides the difference of another
 element `b` with `c` iff `a` divides `b`. -/
 theorem dvd_sub_left (h : a ∣ c) : a ∣ b - c ↔ a ∣ b := by
-  -- Porting note: Needed to give `α` explicitly
-  simpa only [← sub_eq_add_neg] using dvd_add_left ((dvd_neg (α := α)).2 h)
+  simpa only [← sub_eq_add_neg] using dvd_add_left (dvd_neg.2 h)
 
 /-- If an element `a` divides another element `b` in a ring, `a` divides the difference of `b` and
 another element `c` iff `a` divides `c`. -/
 theorem dvd_sub_right (h : a ∣ b) : a ∣ b - c ↔ a ∣ c := by
-  -- Porting note: Needed to give `α` explicitly
-  rw [sub_eq_add_neg, dvd_add_right h, dvd_neg (α := α)]
+  rw [sub_eq_add_neg, dvd_add_right h, dvd_neg]
 
 theorem dvd_iff_dvd_of_dvd_sub (h : a ∣ b - c) : a ∣ b ↔ a ∣ c := by
   rw [← sub_add_cancel b c, dvd_add_right h]
 
--- Porting note: Needed to give `α` explicitly
-theorem dvd_sub_comm : a ∣ b - c ↔ a ∣ c - b := by rw [← dvd_neg (α := α), neg_sub]
+theorem dvd_sub_comm : a ∣ b - c ↔ a ∣ c - b := by rw [← dvd_neg, neg_sub]
 
 end NonUnitalRing
 

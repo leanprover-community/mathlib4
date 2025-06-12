@@ -57,7 +57,7 @@ section Defs
 variable (A : ιA → Type*) (M : ιM → Type*)
 
 /-- A graded version of `SMul`. Scalar multiplication combines grades additively, i.e.
-if `a ∈ A i` and `m ∈ M j`, then `a • b` must be in `M (i + j)`-/
+if `a ∈ A i` and `m ∈ M j`, then `a • b` must be in `M (i + j)`. -/
 class GSMul [VAdd ιA ιM] where
   /-- The homogeneous multiplication map `smul` -/
   smul {i j} : A i → M j → M (i +ᵥ j)

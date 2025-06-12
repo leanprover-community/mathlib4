@@ -24,7 +24,7 @@ section SeminormedGroup
 
 variable [SeminormedGroup E] {s t : Set E}
 
--- note: we can't use `LipschitzOnWith.isBounded_image2` here without adding `[IsometricSMul E E]`
+-- note: we can't use `LipschitzOnWith.isBounded_image2` here without adding `[IsIsometricSMul E E]`
 @[to_additive]
 theorem Bornology.IsBounded.mul (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s * t) := by
   obtain ⟨Rs, hRs⟩ : ∃ R, ∀ x ∈ s, ‖x‖ ≤ R := hs.exists_norm_le'

@@ -3,9 +3,9 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.RingTheory.Trace.Basic
+import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 import Mathlib.RingTheory.Norm.Basic
+import Mathlib.RingTheory.Trace.Basic
 
 /-!
 # Discriminant of a family of vectors
@@ -227,7 +227,7 @@ theorem discr_powerBasis_eq_norm [Algebra.IsSeparable K L] :
       aeval_root_derivative_of_splits (minpoly.monic (Algebra.IsSeparable.isIntegral K pb.gen))
         (IsAlgClosed.splits_codomain _) (hroots σ),
       ← Finset.prod_mk _ (hnodup.erase _)]
-  rw [prod_sigma', prod_sigma']
+  rw [Finset.prod_sigma', Finset.prod_sigma']
   refine prod_bij' (fun i _ ↦ ⟨e i.2, e i.1 pb.gen⟩)
     (fun σ hσ ↦ ⟨e.symm (PowerBasis.lift pb σ.2 ?_), e.symm σ.1⟩) ?_ ?_ ?_ ?_ (fun i _ ↦ by simp)
   -- Porting note: `@mem_compl` was not necessary.

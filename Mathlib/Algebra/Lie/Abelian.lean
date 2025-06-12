@@ -161,8 +161,8 @@ def maxTrivHom (f : M →ₗ⁅R,L⁆ N) : maxTrivSubmodule R L M →ₗ⁅R,L�
   toFun m := ⟨f m, fun x =>
     (LieModuleHom.map_lie _ _ _).symm.trans <|
       (congr_arg f (m.property x)).trans (LieModuleHom.map_zero _)⟩
-  map_add' m n := by ext; simp [Function.comp_apply]
-  map_smul' t m := by ext; simp [Function.comp_apply]
+  map_add' m n := by ext; simp
+  map_smul' t m := by ext; simp
   map_lie' {x m} := by simp
 
 @[norm_cast, simp]

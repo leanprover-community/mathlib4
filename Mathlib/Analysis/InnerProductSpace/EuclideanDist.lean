@@ -24,7 +24,7 @@ open scoped Topology
 
 open Set
 
-variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [TopologicalAddGroup E] [T2Space E]
+variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E] [T2Space E]
   [Module ℝ E] [ContinuousSMul ℝ E] [FiniteDimensional ℝ E]
 
 noncomputable section
@@ -63,7 +63,7 @@ theorem closedBall_eq_preimage (x : E) (r : ℝ) :
 theorem ball_subset_closedBall {x : E} {r : ℝ} : ball x r ⊆ closedBall x r := fun _ (hy : _ < r) =>
   le_of_lt hy
 
-theorem isOpen_ball {x : E} {r : ℝ} : IsOpen (ball x r) :=
+@[simp] theorem isOpen_ball {x : E} {r : ℝ} : IsOpen (ball x r) :=
   Metric.isOpen_ball.preimage toEuclidean.continuous
 
 theorem mem_ball_self {x : E} {r : ℝ} (hr : 0 < r) : x ∈ ball x r :=

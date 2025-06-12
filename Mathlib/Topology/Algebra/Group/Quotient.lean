@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.Group.Pointwise
 import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
@@ -37,7 +37,7 @@ theorem isQuotientMap_mk (N : Subgroup G) : IsQuotientMap (mk : G → G ⧸ N) :
 @[deprecated (since := "2024-10-22")]
 alias quotientMap_mk := isQuotientMap_mk
 
-@[to_additive]
+@[to_additive (attr := continuity, fun_prop)]
 theorem continuous_mk {N : Subgroup G} : Continuous (mk : G → G ⧸ N) :=
   continuous_quot_mk
 
@@ -76,10 +76,6 @@ instance instLocallyCompactSpace [LocallyCompactSpace G] (N : Subgroup G) :
     LocallyCompactSpace (G ⧸ N) :=
   QuotientGroup.isOpenQuotientMap_mk.locallyCompactSpace
 
-@[to_additive (attr := deprecated "No deprecation message was provided." (since := "2024-10-05"))]
-theorem continuous_smul₁ (x : G ⧸ N) : Continuous fun g : G => g • x :=
-  continuous_id.smul continuous_const
-
 variable (N)
 
 /-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/
@@ -101,25 +97,16 @@ instance instSecondCountableTopology [SecondCountableTopology G] :
     SecondCountableTopology (G ⧸ N) :=
   ContinuousConstSMul.secondCountableTopology
 
-@[to_additive (attr := deprecated "No deprecation message was provided." (since := "2024-08-05"))]
-theorem nhds_one_isCountablyGenerated [FirstCountableTopology G] [N.Normal] :
-    (𝓝 (1 : G ⧸ N)).IsCountablyGenerated :=
-  inferInstance
-
 end ContinuousMul
 
-variable [TopologicalGroup G] (N : Subgroup G)
+variable [IsTopologicalGroup G] (N : Subgroup G)
 
 @[to_additive]
-instance instTopologicalGroup [N.Normal] : TopologicalGroup (G ⧸ N) where
+instance instIsTopologicalGroup [N.Normal] : IsTopologicalGroup (G ⧸ N) where
   continuous_mul := by
     rw [← (isOpenQuotientMap_mk.prodMap isOpenQuotientMap_mk).continuous_comp_iff]
     exact continuous_mk.comp continuous_mul
   continuous_inv := continuous_inv.quotient_map' _
-
-@[to_additive (attr := deprecated "No deprecation message was provided." (since := "2024-08-05"))]
-theorem _root_.topologicalGroup_quotient [N.Normal] : TopologicalGroup (G ⧸ N) :=
-  instTopologicalGroup N
 
 @[to_additive]
 theorem isClosedMap_coe {H : Subgroup G} (hH : IsCompact (H : Set G)) :
@@ -131,7 +118,7 @@ theorem isClosedMap_coe {H : Subgroup G} (hH : IsCompact (H : Set G)) :
 @[to_additive]
 instance instT3Space [N.Normal] [hN : IsClosed (N : Set G)] : T3Space (G ⧸ N) := by
   rw [← QuotientGroup.ker_mk' N] at hN
-  haveI := TopologicalGroup.t1Space (G ⧸ N) ((isQuotientMap_mk N).isClosed_preimage.mp hN)
+  haveI := IsTopologicalGroup.t1Space (G ⧸ N) ((isQuotientMap_mk N).isClosed_preimage.mp hN)
   infer_instance
 
 end QuotientGroup

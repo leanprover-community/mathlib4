@@ -97,7 +97,7 @@ theorem irreducible : Irreducible (p : 𝕎 k) := by
   obtain ⟨m, a, ha, rfl⟩ := verschiebung_nonzero ha0
   obtain ⟨n, b, hb, rfl⟩ := verschiebung_nonzero hb0
   cases m; · exact Or.inl (isUnit_of_coeff_zero_ne_zero a ha)
-  cases' n with n; · exact Or.inr (isUnit_of_coeff_zero_ne_zero b hb)
+  rcases n with - | n; · exact Or.inr (isUnit_of_coeff_zero_ne_zero b hb)
   rw [iterate_verschiebung_mul] at hab
   apply_fun fun x => coeff x 1 at hab
   simp only [coeff_p_one, Nat.add_succ, add_comm _ n, Function.iterate_succ', Function.comp_apply,

@@ -74,10 +74,10 @@ namespace ContinuousMap
 
 open TopologicalSpace
 
-section TopologicalRing
+section IsTopologicalRing
 
 variable {X R : Type*} [TopologicalSpace X] [Semiring R]
-variable [TopologicalSpace R] [TopologicalSemiring R]
+variable [TopologicalSpace R] [IsTopologicalSemiring R]
 variable (R)
 
 /-- Given a topological ring `R` and `s : Set X`, construct the ideal in `C(X, R)` of functions
@@ -100,17 +100,21 @@ theorem mem_idealOfSet {s : Set X} {f : C(X, R)} :
     f ∈ idealOfSet R s ↔ ∀ ⦃x : X⦄, x ∈ sᶜ → f x = 0 := by
   convert Iff.rfl
 
-theorem not_mem_idealOfSet {s : Set X} {f : C(X, R)} : f ∉ idealOfSet R s ↔ ∃ x ∈ sᶜ, f x ≠ 0 := by
+theorem notMem_idealOfSet {s : Set X} {f : C(X, R)} : f ∉ idealOfSet R s ↔ ∃ x ∈ sᶜ, f x ≠ 0 := by
   simp_rw [mem_idealOfSet]; push_neg; rfl
+
+@[deprecated (since := "2025-05-23")] alias not_mem_idealOfSet := notMem_idealOfSet
 
 /-- Given an ideal `I` of `C(X, R)`, construct the set of points for which every function in the
 ideal vanishes on the complement. -/
 def setOfIdeal (I : Ideal C(X, R)) : Set X :=
   {x : X | ∀ f ∈ I, (f : C(X, R)) x = 0}ᶜ
 
-theorem not_mem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
+theorem notMem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
     x ∉ setOfIdeal I ↔ ∀ ⦃f : C(X, R)⦄, f ∈ I → f x = 0 := by
   rw [← Set.mem_compl_iff, setOfIdeal, compl_compl, Set.mem_setOf]
+
+@[deprecated (since := "2025-05-23")] alias not_mem_setOfIdeal := notMem_setOfIdeal
 
 theorem mem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
     x ∈ setOfIdeal I ↔ ∃ f ∈ I, (f : C(X, R)) x ≠ 0 := by
@@ -147,13 +151,13 @@ variable (X R)
 theorem ideal_gc : GaloisConnection (setOfIdeal : Ideal C(X, R) → Set X) (idealOfSet R) := by
   refine fun I s => ⟨fun h f hf => ?_, fun h x hx => ?_⟩
   · by_contra h'
-    rcases not_mem_idealOfSet.mp h' with ⟨x, hx, hfx⟩
-    exact hfx (not_mem_setOfIdeal.mp (mt (@h x) hx) hf)
+    rcases notMem_idealOfSet.mp h' with ⟨x, hx, hfx⟩
+    exact hfx (notMem_setOfIdeal.mp (mt (@h x) hx) hf)
   · obtain ⟨f, hf, hfx⟩ := mem_setOfIdeal.mp hx
     by_contra hx'
-    exact not_mem_idealOfSet.mpr ⟨x, hx', hfx⟩ (h hf)
+    exact notMem_idealOfSet.mpr ⟨x, hx', hfx⟩ (h hf)
 
-end TopologicalRing
+end IsTopologicalRing
 
 section RCLike
 
@@ -185,7 +189,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     suffices to show that `f` is within `ε` of `I`. -/
   refine le_antisymm ?_
       ((idealOfSet_closed 𝕜 <| setOfIdeal I).closure_subset_iff.mpr fun f hf x hx =>
-        not_mem_setOfIdeal.mp hx hf)
+        notMem_setOfIdeal.mp hx hf)
   refine (fun f hf => Metric.mem_closure_iff.mpr fun ε hε => ?_)
   lift ε to ℝ≥0 using hε.lt.le
   replace hε := show (0 : ℝ≥0) < ε from hε
@@ -296,7 +300,7 @@ theorem setOfIdeal_ofSet_eq_interior (s : Set X) : setOfIdeal (idealOfSet 𝕜 s
     Set.Subset.antisymm
       ((setOfIdeal_open (idealOfSet 𝕜 s)).subset_interior_iff.mpr fun x hx =>
         let ⟨f, hf, hfx⟩ := mem_setOfIdeal.mp hx
-        Set.not_mem_compl_iff.mp (mt (@hf x) hfx))
+        Set.notMem_compl_iff.mp (mt (@hf x) hfx))
       fun x hx => ?_
   -- If `x ∉ closure sᶜ`, we must produce `f : C(X, 𝕜)` which is zero on `sᶜ` and `f x ≠ 0`.
   rw [← compl_compl (interior s), ← closure_compl] at hx
@@ -315,8 +319,7 @@ theorem setOfIdeal_ofSet_eq_interior (s : Set X) : setOfIdeal (idealOfSet 𝕜 s
 theorem setOfIdeal_ofSet_of_isOpen {s : Set X} (hs : IsOpen s) : setOfIdeal (idealOfSet 𝕜 s) = s :=
   (setOfIdeal_ofSet_eq_interior 𝕜 s).trans hs.interior_eq
 
-variable (X)
-
+variable (X) in
 /-- The Galois insertion `ContinuousMap.opensOfIdeal : Ideal C(X, 𝕜) → Opens X` and
 `fun s ↦ ContinuousMap.idealOfSet ↑s`. -/
 @[simps]
@@ -331,8 +334,6 @@ def idealOpensGI :
         (Set.ext_iff.mp
           (isClosed_of_closure_subset <|
               (idealOfSet_ofIdeal_eq_closure I ▸ hI : I.closure ≤ I)).closure_eq)
-
-variable {X}
 
 theorem idealOfSet_isMaximal_iff (s : Opens X) :
     (idealOfSet 𝕜 (s : Set X)).IsMaximal ↔ IsCoatom s := by
@@ -380,7 +381,7 @@ variable (X 𝕜 : Type*) [TopologicalSpace X]
 
 section ContinuousMapEval
 
-variable [CommRing 𝕜] [TopologicalSpace 𝕜] [TopologicalRing 𝕜]
+variable [CommRing 𝕜] [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜]
 variable [Nontrivial 𝕜] [NoZeroDivisors 𝕜]
 
 /-- The natural continuous map from a locally compact topological space `X` to the

@@ -6,8 +6,9 @@ Authors: Xavier Roblot
 import Mathlib.Algebra.Module.ZLattice.Covolume
 import Mathlib.Data.Real.Pi.Bounds
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
-import Mathlib.Tactic.Rify
 import Mathlib.NumberTheory.NumberField.Discriminant.Defs
+import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
+import Mathlib.Tactic.Rify
 
 /-!
 # Number field discriminant
@@ -16,10 +17,10 @@ This file defines the discriminant of a number field.
 ## Main result
 
 * `NumberField.abs_discr_gt_two`: **Hermite-Minkowski Theorem**. A nontrivial number field has
-discriminant greater than `2`.
+  discriminant greater than `2`.
 
 * `NumberField.finite_of_discr_bdd`: **Hermite Theorem**. Let `N` be an integer. There are only
-finitely many number fields (in some fixed extension of `ℚ`) of discriminant bounded by `N`.
+  finitely many number fields (in some fixed extension of `ℚ`) of discriminant bounded by `N`.
 
 ## Tags
 number field, discriminant
@@ -60,7 +61,7 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
         rw [← nnnorm_real, ← ofRealHom_eq_coe, RingHom.map_det, RingHom.mapMatrix_apply, this,
           det_mul, det_transpose, det_reindex_self]
       _ = (2 : ℝ≥0∞)⁻¹ ^ Fintype.card {w : InfinitePlace K // IsComplex w} * sqrt ‖N.det ^ 2‖₊ := by
-        have : ‖Complex.I‖₊ = 1 := by rw [← norm_toNNReal, norm_eq_abs, abs_I, Real.toNNReal_one]
+        have : ‖Complex.I‖₊ = 1 := by rw [← norm_toNNReal, norm_I, Real.toNNReal_one]
         rw [det_matrixToStdBasis, nnnorm_mul, nnnorm_pow, nnnorm_mul, this, mul_one, nnnorm_inv,
           coe_mul, ENNReal.coe_pow, ← norm_toNNReal, RCLike.norm_two, Real.toNNReal_ofNat,
           coe_inv two_ne_zero, coe_ofNat, nnnorm_pow, NNReal.sqrt_sq]
@@ -79,6 +80,7 @@ theorem _root_.NumberField.mixedEmbedding.covolume_integerLattice :
     ZLattice.covolume (mixedEmbedding.integerLattice K) =
       (2 ⁻¹) ^ nrComplexPlaces K * √|discr K| := by
   rw [ZLattice.covolume_eq_measure_fundamentalDomain _ _ (fundamentalDomain_integerLattice K),
+    measureReal_def,
     volume_fundamentalDomain_latticeBasis, ENNReal.toReal_mul, ENNReal.toReal_pow,
     ENNReal.toReal_inv, toReal_ofNat, ENNReal.coe_toReal, Real.coe_sqrt, coe_nnnorm,
     Int.norm_eq_abs]
@@ -89,6 +91,7 @@ theorem _root_.NumberField.mixedEmbedding.covolume_idealLattice (I : (Fractional
       (FractionalIdeal.absNorm (I : FractionalIdeal (𝓞 K)⁰ K)) *
         (2 ⁻¹) ^ nrComplexPlaces K * √|discr K| := by
   rw [ZLattice.covolume_eq_measure_fundamentalDomain _ _ (fundamentalDomain_idealLattice K I),
+    measureReal_def,
     volume_fundamentalDomain_fractionalIdealLatticeBasis, volume_fundamentalDomain_latticeBasis,
     ENNReal.toReal_mul, ENNReal.toReal_mul, ENNReal.toReal_pow, ENNReal.toReal_inv, toReal_ofNat,
     ENNReal.coe_toReal, Real.coe_sqrt, coe_nnnorm, Int.norm_eq_abs,
@@ -153,10 +156,13 @@ theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
   simp_rw [Units.val_one, FractionalIdeal.absNorm_one, Rat.cast_one, one_mul] at h_nm
   exact h_nm
 
-variable {K}
-
-theorem abs_discr_ge (h : 1 < finrank ℚ K) :
-    (4 / 9 : ℝ) * (3 * π / 4) ^ finrank ℚ K ≤ |discr K| := by
+/--
+The Minkowski lower bound `n^{2n}/((4/pi)^{2r_2}*n!^2)` for the absolute value of the discriminant
+of a number field of degree n.
+-/
+theorem abs_discr_ge' :
+    (finrank ℚ K) ^ (2 * finrank ℚ K) / ((4 / π) ^ (2 * nrComplexPlaces K) *
+      (finrank ℚ K).factorial ^ 2) ≤ |discr K| := by
   -- We use `exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr` to get a nonzero
   -- algebraic integer `x` of small norm and the fact that `1 ≤ |Norm x|` to get a lower bound
   -- on `sqrt |discr K|`.
@@ -165,11 +171,35 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
     rw [← Algebra.coe_norm_int, ← Int.cast_one, ← Int.cast_abs, Rat.cast_intCast, Int.cast_le]
     exact Int.one_le_abs (Algebra.norm_ne_zero_iff.mpr h_nz)
   replace h_bd := le_trans h_nm h_bd
-  rw [← inv_mul_le_iff₀ (by positivity), inv_div, mul_one, Real.le_sqrt (by positivity)
-    (by positivity), ← Int.cast_abs, div_pow, mul_pow, ← pow_mul, ← pow_mul] at h_bd
-  refine le_trans ?_ h_bd
+  rwa [← inv_mul_le_iff₀, inv_div, mul_one, Real.le_sqrt (by positivity) (by positivity),
+    ← Int.cast_abs, div_pow, mul_pow, ← pow_mul, mul_comm _ 2, ← pow_mul, mul_comm _ 2] at h_bd
+  exact div_pos (by positivity) <| pow_pos (Nat.cast_pos.mpr finrank_pos) (finrank ℚ K)
+
+theorem abs_discr_ge_of_isTotallyComplex [IsTotallyComplex K] :
+    (finrank ℚ K) ^ (2 * finrank ℚ K) / ((4 / π) ^ (finrank ℚ K) *
+      (finrank ℚ K).factorial ^ 2) ≤ |discr K| := by
+  have := abs_discr_ge' K
+  rwa [← IsTotallyComplex.finrank] at this
+
+theorem abs_discr_rpow_ge_of_isTotallyComplex [IsTotallyComplex K] :
+    (finrank ℚ K) ^ 2 / ((4 / π) * (finrank ℚ K).factorial ^ (2 * (finrank ℚ K : ℝ)⁻¹)) ≤
+        |discr K| ^ (finrank ℚ K : ℝ)⁻¹ := by
+  have h : 0 < (finrank ℚ K : ℝ) := Nat.cast_pos.mpr finrank_pos
+  rw [← Real.rpow_le_rpow_iff (z := finrank ℚ K) (by positivity) (by positivity) h, Real.div_rpow
+    (by positivity) (by positivity), ← Real.rpow_mul (by positivity), inv_mul_cancel₀ h.ne',
+    Real.rpow_one, Real.mul_rpow (by positivity) (by positivity), Real.rpow_natCast,
+    Real.rpow_natCast, ← pow_mul, ← Real.rpow_mul (by positivity),
+    inv_mul_cancel_right₀ h.ne', Real.rpow_two]
+  exact abs_discr_ge_of_isTotallyComplex K
+
+variable {K}
+
+theorem abs_discr_ge (h : 1 < finrank ℚ K) :
+    (4 / 9 : ℝ) * (3 * π / 4) ^ finrank ℚ K ≤ |discr K| := by
+  refine le_trans ?_ (abs_discr_ge' K)
   -- The sequence `a n` is a lower bound for `|discr K|`. We prove below by induction an uniform
   -- lower bound for this sequence from which we deduce the result.
+  rw [mul_comm 2 _]
   let a : ℕ → ℝ := fun n => (n : ℝ) ^ (n * 2) / ((4 / π) ^ n * (n.factorial : ℝ) ^ 2)
   suffices ∀ n, 2 ≤ n → (4 / 9 : ℝ) * (3 * π / 4) ^ n ≤ a n by
     refine le_trans (this (finrank ℚ K) h) ?_
@@ -271,7 +301,7 @@ theorem rank_le_rankOfDiscrBdd :
   have h₂ : 1 < 3 * π / 4 := by
     rw [_root_.lt_div_iff₀ (by positivity), ← _root_.div_lt_iff₀' (by positivity), one_mul]
     linarith [Real.pi_gt_three]
-  obtain h | h := lt_or_le 1 (finrank ℚ K)
+  obtain h | h := lt_or_ge 1 (finrank ℚ K)
   · apply le_max_of_le_right
     rw [Nat.le_floor_iff]
     · have h := le_trans (abs_discr_ge h) (Int.cast_le.mpr hK)

@@ -16,7 +16,7 @@ import Mathlib.Algebra.Group.Pi.Units
 
 ## Main Result
 
- * `bijective_lift_piRingHom_algebraMap_comp_piEvalRingHom`: the canonical map from a
+* `bijective_lift_piRingHom_algebraMap_comp_piEvalRingHom`: the canonical map from a
     localization of a finite product of rings `R i `at a monoid `M` to the direct product of
     localizations `R i` at the projection of `M` onto each corresponding factor is bijective.
 
