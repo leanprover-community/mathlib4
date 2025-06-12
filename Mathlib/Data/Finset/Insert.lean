@@ -32,12 +32,7 @@ finite sets, finset
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
-assert_not_exists List.sublistsLen
-assert_not_exists Multiset.powerset
-
-assert_not_exists CompleteLattice
-
-assert_not_exists OrderedCommMonoid
+assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice OrderedCommMonoid
 
 open Multiset Subtype Function
 
@@ -77,11 +72,12 @@ theorem mem_singleton {a b : α} : b ∈ ({a} : Finset α) ↔ b = a :=
 theorem eq_of_mem_singleton {x y : α} (h : x ∈ ({y} : Finset α)) : x = y :=
   mem_singleton.1 h
 
-theorem not_mem_singleton {a b : α} : a ∉ ({b} : Finset α) ↔ a ≠ b :=
+theorem notMem_singleton {a b : α} : a ∉ ({b} : Finset α) ↔ a ≠ b :=
   not_congr mem_singleton
 
+@[deprecated (since := "2025-05-23")] alias not_mem_singleton := notMem_singleton
+
 theorem mem_singleton_self (a : α) : a ∈ ({a} : Finset α) :=
-  -- Porting note: was `Or.inl rfl`
   mem_singleton.mpr rfl
 
 @[simp]
@@ -202,12 +198,19 @@ theorem nontrivial_iff_ne_singleton (ha : a ∈ s) : s.Nontrivial ↔ s ≠ {a} 
 theorem Nonempty.exists_eq_singleton_or_nontrivial : s.Nonempty → (∃ a, s = {a}) ∨ s.Nontrivial :=
   fun ⟨a, ha⟩ => (eq_singleton_or_nontrivial ha).imp_left <| Exists.intro a
 
+@[simp, norm_cast] lemma nontrivial_coe : (s : Set α).Nontrivial ↔ s.Nontrivial := .rfl
+
+alias ⟨Nontrivial.of_coe, Nontrivial.coe⟩ := nontrivial_coe
+
+lemma Nontrivial.not_subset_singleton (hs : s.Nontrivial) : ¬s ⊆ {a} :=
+  mod_cast hs.coe.not_subset_singleton
+
 instance instNontrivial [Nonempty α] : Nontrivial (Finset α) :=
   ‹Nonempty α›.elim fun a => ⟨⟨{a}, ∅, singleton_ne_empty _⟩⟩
 
 instance [IsEmpty α] : Unique (Finset α) where
   default := ∅
-  uniq _ := eq_empty_of_forall_not_mem isEmptyElim
+  uniq _ := eq_empty_of_forall_notMem isEmptyElim
 
 instance (i : α) : Unique ({i} : Finset α) where
   default := ⟨i, mem_singleton_self i⟩
@@ -249,8 +252,10 @@ theorem mem_cons_self (a : α) (s : Finset α) {h} : a ∈ cons a s h :=
 theorem cons_val (h : a ∉ s) : (cons a s h).1 = a ::ₘ s.1 :=
   rfl
 
-theorem eq_of_mem_cons_of_not_mem (has : a ∉ s) (h : b ∈ cons a s has) (hb : b ∉ s) : b = a :=
+theorem eq_of_mem_cons_of_notMem (has : a ∉ s) (h : b ∈ cons a s has) (hb : b ∉ s) : b = a :=
   (mem_cons.1 h).resolve_right hb
+
+@[deprecated (since := "2025-05-23")] alias eq_of_mem_cons_of_not_mem := eq_of_mem_cons_of_notMem
 
 theorem mem_of_mem_cons_of_ne {s : Finset α} {a : α} {has} {i : α}
     (hi : i ∈ cons a s has) (hia : i ≠ a) : i ∈ s :=
@@ -271,13 +276,11 @@ theorem mk_cons {s : Multiset α} (h : (a ::ₘ s).Nodup) :
   rfl
 
 @[simp]
-theorem cons_empty (a : α) : cons a ∅ (not_mem_empty _) = {a} := rfl
+theorem cons_empty (a : α) : cons a ∅ (notMem_empty _) = {a} := rfl
 
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem cons_nonempty (h : a ∉ s) : (cons a s h).Nonempty :=
   ⟨a, mem_cons.2 <| Or.inl rfl⟩
-
-@[deprecated (since := "2024-09-19")] alias nonempty_cons := cons_nonempty
 
 @[simp] theorem cons_ne_empty (h : a ∉ s) : cons a s h ≠ ∅ := (cons_nonempty _).ne_empty
 
@@ -365,8 +368,10 @@ theorem insert_val (a : α) (s : Finset α) : (insert a s).1 = ndinsert a s.1 :=
 theorem insert_val' (a : α) (s : Finset α) : (insert a s).1 = dedup (a ::ₘ s.1) := by
   rw [dedup_cons, dedup_eq_self]; rfl
 
-theorem insert_val_of_not_mem {a : α} {s : Finset α} (h : a ∉ s) : (insert a s).1 = a ::ₘ s.1 := by
-  rw [insert_val, ndinsert_of_not_mem h]
+theorem insert_val_of_notMem {a : α} {s : Finset α} (h : a ∉ s) : (insert a s).1 = a ::ₘ s.1 := by
+  rw [insert_val, ndinsert_of_notMem h]
+
+@[deprecated (since := "2025-05-23")] alias insert_val_of_not_mem := insert_val_of_notMem
 
 @[simp]
 theorem mem_insert : a ∈ insert b s ↔ a = b ∨ a ∈ s :=
@@ -381,10 +386,13 @@ theorem mem_insert_of_mem (h : a ∈ s) : a ∈ insert b s :=
 theorem mem_of_mem_insert_of_ne (h : b ∈ insert a s) : b ≠ a → b ∈ s :=
   (mem_insert.1 h).resolve_left
 
-theorem eq_of_mem_insert_of_not_mem (ha : b ∈ insert a s) (hb : b ∉ s) : b = a :=
+theorem eq_of_mem_insert_of_notMem (ha : b ∈ insert a s) (hb : b ∉ s) : b = a :=
   (mem_insert.1 ha).resolve_right hb
 
-/-- A version of `LawfulSingleton.insert_emptyc_eq` that works with `dsimp`. -/
+@[deprecated (since := "2025-05-23")]
+alias eq_of_mem_insert_of_not_mem := eq_of_mem_insert_of_notMem
+
+/-- A version of `LawfulSingleton.insert_empty_eq` that works with `dsimp`. -/
 @[simp] lemma insert_empty : insert a (∅ : Finset α) = {a} := rfl
 
 @[simp]
@@ -443,13 +451,14 @@ theorem insert_nonempty (a : α) (s : Finset α) : (insert a s).Nonempty :=
 theorem insert_ne_empty (a : α) (s : Finset α) : insert a s ≠ ∅ :=
   (insert_nonempty a s).ne_empty
 
--- Porting note: explicit universe annotation is no longer required.
 instance (i : α) (s : Finset α) : Nonempty ((insert i s : Finset α) : Set α) :=
   (Finset.coe_nonempty.mpr (s.insert_nonempty i)).to_subtype
 
-theorem ne_insert_of_not_mem (s t : Finset α) {a : α} (h : a ∉ s) : s ≠ insert a t := by
+theorem ne_insert_of_notMem (s t : Finset α) {a : α} (h : a ∉ s) : s ≠ insert a t := by
   contrapose! h
   simp [h]
+
+@[deprecated (since := "2025-05-23")] alias ne_insert_of_not_mem := ne_insert_of_notMem
 
 theorem insert_subset_iff : insert a s ⊆ t ↔ a ∈ t ∧ s ⊆ t := by
   simp only [subset_iff, mem_insert, forall_eq, or_imp, forall_and]
@@ -467,7 +476,7 @@ theorem insert_subset_insert (a : α) {s t : Finset α} (h : s ⊆ t) : insert a
   simp_rw [← coe_subset]; simp [-coe_subset, ha]
 
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
-  ⟨fun h => eq_of_mem_insert_of_not_mem (h ▸ mem_insert_self _ _) ha, congr_arg (insert · s)⟩
+  ⟨fun h => eq_of_mem_insert_of_notMem (h ▸ mem_insert_self _ _) ha, congr_arg (insert · s)⟩
 
 theorem insert_inj_on (s : Finset α) : Set.InjOn (fun a => insert a s) sᶜ := fun _ h _ _ =>
   (insert_inj h).1
@@ -478,8 +487,8 @@ theorem ssubset_insert (h : a ∉ s) : s ⊂ insert a s :=
   ssubset_iff.mpr ⟨a, h, Subset.rfl⟩
 
 @[elab_as_elim]
-theorem cons_induction {α : Type*} {p : Finset α → Prop} (empty : p ∅)
-    (cons : ∀ (a : α) (s : Finset α) (h : a ∉ s), p s → p (cons a s h)) : ∀ s, p s
+theorem cons_induction {α : Type*} {motive : Finset α → Prop} (empty : motive ∅)
+    (cons : ∀ (a : α) (s : Finset α) (h : a ∉ s), motive s → motive (cons a s h)) : ∀ s, motive s
   | ⟨s, nd⟩ => by
     induction s using Multiset.induction with
     | empty => exact empty
@@ -488,14 +497,15 @@ theorem cons_induction {α : Type*} {p : Finset α → Prop} (empty : p ∅)
       exact cons a _ _ (IH _)
 
 @[elab_as_elim]
-theorem cons_induction_on {α : Type*} {p : Finset α → Prop} (s : Finset α) (h₁ : p ∅)
-    (h₂ : ∀ ⦃a : α⦄ {s : Finset α} (h : a ∉ s), p s → p (cons a s h)) : p s :=
-  cons_induction h₁ h₂ s
+theorem cons_induction_on {α : Type*} {motive : Finset α → Prop} (s : Finset α) (empty : motive ∅)
+    (cons : ∀ (a : α) (s : Finset α) (h : a ∉ s), motive s → motive (cons a s h)) : motive s :=
+  cons_induction empty cons s
 
 @[elab_as_elim]
-protected theorem induction {α : Type*} {p : Finset α → Prop} [DecidableEq α] (empty : p ∅)
-    (insert : ∀ ⦃a : α⦄ {s : Finset α}, a ∉ s → p s → p (insert a s)) : ∀ s, p s :=
-  cons_induction empty fun a s ha => (s.cons_eq_insert a ha).symm ▸ insert ha
+protected theorem induction {α : Type*} {motive : Finset α → Prop} [DecidableEq α]
+    (empty : motive ∅)
+    (insert : ∀ (a : α) (s : Finset α), a ∉ s → motive s → motive (insert a s)) : ∀ s, motive s :=
+  cons_induction empty fun a s ha => (s.cons_eq_insert a ha).symm ▸ insert a s ha
 
 /-- To prove a proposition about an arbitrary `Finset α`,
 it suffices to prove it for the empty `Finset`,
@@ -503,8 +513,9 @@ and to show that if it holds for some `Finset α`,
 then it holds for the `Finset` obtained by inserting a new element.
 -/
 @[elab_as_elim]
-protected theorem induction_on {α : Type*} {p : Finset α → Prop} [DecidableEq α] (s : Finset α)
-    (empty : p ∅) (insert : ∀ ⦃a : α⦄ {s : Finset α}, a ∉ s → p s → p (insert a s)) : p s :=
+protected theorem induction_on {α : Type*} {motive : Finset α → Prop} [DecidableEq α] (s : Finset α)
+    (empty : motive ∅)
+    (insert : ∀ (a : α) (s : Finset α), a ∉ s → motive s → motive (insert a s)) : motive s :=
   Finset.induction empty insert s
 
 /-- To prove a proposition about `S : Finset α`,
@@ -513,22 +524,23 @@ and to show that if it holds for some `Finset α ⊆ S`,
 then it holds for the `Finset` obtained by inserting a new element of `S`.
 -/
 @[elab_as_elim]
-theorem induction_on' {α : Type*} {p : Finset α → Prop} [DecidableEq α] (S : Finset α) (h₁ : p ∅)
-    (h₂ : ∀ {a s}, a ∈ S → s ⊆ S → a ∉ s → p s → p (insert a s)) : p S :=
-  @Finset.induction_on α (fun T => T ⊆ S → p T) _ S (fun _ => h₁)
-    (fun _ _ has hqs hs =>
+theorem induction_on' {α : Type*} {motive : Finset α → Prop} [DecidableEq α] (S : Finset α)
+    (empty : motive ∅)
+    (insert : ∀ (a s), a ∈ S → s ⊆ S → a ∉ s → motive s → motive (insert a s)) : motive S :=
+  @Finset.induction_on α (fun T => T ⊆ S → motive T) _ S (fun _ => empty)
+    (fun a s has hqs hs =>
       let ⟨hS, sS⟩ := Finset.insert_subset_iff.1 hs
-      h₂ hS sS has (hqs sS))
+      insert a s hS sS has (hqs sS))
     (Finset.Subset.refl S)
 
 /-- To prove a proposition about a nonempty `s : Finset α`, it suffices to show it holds for all
 singletons and that if it holds for nonempty `t : Finset α`, then it also holds for the `Finset`
 obtained by inserting an element in `t`. -/
 @[elab_as_elim]
-theorem Nonempty.cons_induction {α : Type*} {p : ∀ s : Finset α, s.Nonempty → Prop}
-    (singleton : ∀ a, p {a} (singleton_nonempty _))
-    (cons : ∀ a s (h : a ∉ s) (hs), p s hs → p (Finset.cons a s h) (cons_nonempty h))
-    {s : Finset α} (hs : s.Nonempty) : p s hs := by
+theorem Nonempty.cons_induction {α : Type*} {motive : ∀ s : Finset α, s.Nonempty → Prop}
+    (singleton : ∀ a, motive {a} (singleton_nonempty _))
+    (cons : ∀ a s (h : a ∉ s) (hs), motive s hs → motive (Finset.cons a s h) (cons_nonempty h))
+    {s : Finset α} (hs : s.Nonempty) : motive s hs := by
   induction s using Finset.cons_induction with
   | empty => exact (not_nonempty_empty hs).elim
   | cons a t ha h =>
@@ -618,7 +630,7 @@ theorem toFinset_cons (a : α) (s : Multiset α) : toFinset (a ::ₘ s) = insert
 
 @[simp]
 theorem toFinset_singleton (a : α) : toFinset ({a} : Multiset α) = {a} := by
-  rw [← cons_zero, toFinset_cons, toFinset_zero, LawfulSingleton.insert_emptyc_eq]
+  rw [← cons_zero, toFinset_cons, toFinset_zero, LawfulSingleton.insert_empty_eq]
 
 end Multiset
 

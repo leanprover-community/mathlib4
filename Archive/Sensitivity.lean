@@ -5,12 +5,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Johan Commelin, Jesse Michael Han, Chris Hughes, Robert Y. Lewis,
   Patrick Massot
 -/
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.ApplyFun
-import Mathlib.LinearAlgebra.FiniteDimensional
-import Mathlib.LinearAlgebra.Dual
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Data.Real.Sqrt
+import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.FinCases
 
 /-!
 # Huang's sensitivity theorem
@@ -154,7 +154,13 @@ end Q
 /-- The free vector space on vertices of a hypercube, defined inductively. -/
 def V : ℕ → Type
   | 0 => ℝ
-  | Nat.succ n => V n × V n
+  | n + 1 => V n × V n
+
+@[simp]
+theorem V_zero : V 0 = ℝ := rfl
+
+@[simp]
+theorem V_succ {n : ℕ} : V (n + 1) = (V n × V n) := rfl
 
 namespace V
 
@@ -193,24 +199,22 @@ variable {n : ℕ}
 
 open Classical in
 theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
-  induction' n with n IH
-  · rw [show p = q from Subsingleton.elim (α := Q 0) p q]
+  induction n with
+  | zero => simp [Subsingleton.elim (α := Q 0) p q, ε, e]
+  | succ n IH =>
     dsimp [ε, e]
-    simp
-    rfl
-  · dsimp [ε, e]
     cases hp : p 0 <;> cases hq : q 0
     all_goals
-      repeat rw [Bool.cond_true]
-      repeat rw [Bool.cond_false]
-      simp only [LinearMap.fst_apply, LinearMap.snd_apply, LinearMap.comp_apply, IH, V]
+      simp only [Bool.cond_true, Bool.cond_false, LinearMap.fst_apply, LinearMap.snd_apply,
+        LinearMap.comp_apply, IH, V]
       congr 1; rw [Q.succ_n_eq]; simp [hp, hq]
 
 /-- Any vector in `V n` annihilated by all `ε p`'s is zero. -/
 theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
-  induction' n with n ih
-  · dsimp [ε] at h; exact h fun _ => true
-  · cases' v with v₁ v₂
+  induction n with
+  | zero => dsimp [ε] at h; exact h fun _ => true
+  | succ n ih =>
+    obtain ⟨v₁, v₂⟩ := v
     ext <;> change _ = (0 : V n) <;> simp only <;> apply ih <;> intro p <;>
       [let q : Q n.succ := fun i => if h : i = 0 then true else p (i.pred h);
       let q : Q n.succ := fun i => if h : i = 0 then false else p (i.pred h)]
@@ -229,7 +233,8 @@ and `ε` computes coefficients of decompositions of vectors on that basis. -/
 theorem dualBases_e_ε (n : ℕ) : DualBases (@e n) (@ε n) where
   eval_same := by simp [duality]
   eval_of_ne _ _ h := by simp [duality, h]
-  total := @epsilon_total _
+  total h := sub_eq_zero.mp <| epsilon_total fun i ↦ by
+    simpa only [map_sub, sub_eq_zero] using h i
 
 /-! We will now derive the dimension of `V`, first as a cardinal in `dim_V` and,
 since this cardinal is finite, as a natural number in `finrank_V` -/
@@ -256,7 +261,7 @@ theorem finrank_V : finrank ℝ (V n) = 2 ^ n := by
 defined inductively as a ℝ-linear map from `V n` to `V n`. -/
 noncomputable def f : ∀ n, V n →ₗ[ℝ] V n
   | 0 => 0
-  | Nat.succ n =>
+  | n + 1 =>
     LinearMap.prod (LinearMap.coprod (f n) LinearMap.id) (LinearMap.coprod LinearMap.id (-f n))
 
 /-! The preceding definition uses linear map constructions to automatically
@@ -289,12 +294,13 @@ theorem f_squared (v : V n) : (f n) (f n v) = (n : ℝ) • v := by
 `q` the column index). -/
 
 open Classical in
-theorem f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if p ∈ q.adjacent then 1 else 0 := by
-  induction' n with n IH
-  · intro p q
+theorem f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if p ∈ q.adjacent then 1 else 0 := fun p q ↦ by
+  induction n with
+  | zero =>
     dsimp [f]
     simp [Q.not_adjacent_zero]
-  · intro p q
+    rfl
+  | succ n IH =>
     have ite_nonneg : ite (π q = π p) (1 : ℝ) 0 ≥ 0 := by split_ifs <;> norm_num
     dsimp only [e, ε, f, V]; rw [LinearMap.prod_apply]; dsimp; cases hp : p 0 <;> cases hq : q 0
     all_goals
@@ -316,12 +322,12 @@ variable {m : ℕ}
 
 
 theorem g_apply : ∀ v, g m v = (f m v + √ (m + 1) • v, v) := by
-  delta g; intro v; erw [LinearMap.prod_apply]; simp
+  delta g; intro v; simp [V]
 
 theorem g_injective : Injective (g m) := by
   rw [g]
   intro x₁ x₂ h
-  simp only [V, LinearMap.prod_apply, LinearMap.id_apply, Prod.mk.inj_iff, Pi.prod] at h
+  simp only [V, LinearMap.prod_apply, LinearMap.id_apply, Prod.mk_inj, Pi.prod] at h
   exact h.right
 
 theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √ (m + 1) • w := by
@@ -368,7 +374,7 @@ open Classical in
 subspace of `V (m+1)` spanned by the corresponding basis vectors non-trivially
 intersects the range of `g m`. -/
 theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
-    ∃ y ∈ Span (e '' H) ⊓ range (g m), y ≠ (0 : _) := by
+    ∃ y ∈ Span (e '' H) ⊓ range (g m), y ≠ 0 := by
   let W := Span (e '' H)
   let img := range (g m)
   suffices 0 < dim (W ⊓ img) by
@@ -408,7 +414,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     rw [Finsupp.mem_support_iff] at p_in
     rw [Set.mem_toFinset]
     exact (dualBases_e_ε _).mem_of_mem_span y_mem_H p p_in
-  obtain ⟨q, H_max⟩ : ∃ q : Q m.succ, ∀ q' : Q m.succ, |(ε q' : _) y| ≤ |ε q y| :=
+  obtain ⟨q, H_max⟩ : ∃ q : Q m.succ, ∀ q' : Q m.succ, |(ε q' :) y| ≤ |ε q y| :=
     Finite.exists_max _
   have H_q_pos : 0 < |ε q y| := by
     contrapose! y_ne
@@ -425,7 +431,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     _ =
         |(coeffs y).sum fun (i : Q m.succ) (a : ℝ) =>
             a • (ε q ∘ f m.succ ∘ fun i : Q m.succ => e i) i| := by
-      erw [(f m.succ).map_finsupp_linearCombination, (ε q).map_finsupp_linearCombination,
+      rw [lc_def, (f m.succ).map_finsupp_linearCombination, (ε q).map_finsupp_linearCombination,
            Finsupp.linearCombination_apply]
     _ ≤ ∑ p ∈ (coeffs y).support, |coeffs y p * (ε q <| f m.succ <| e p)| :=
       (norm_sum_le _ fun p => coeffs y p * _)

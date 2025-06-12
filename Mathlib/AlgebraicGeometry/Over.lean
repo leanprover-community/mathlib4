@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Scheme
-import Mathlib.CategoryTheory.Comma.OverClass
+import Mathlib.CategoryTheory.Comma.Over.OverClass
 
 /-!
 # Typeclasses for `S`-schemes and `S`-morphisms
@@ -33,9 +33,9 @@ protected abbrev Over (X S : Scheme.{u}) := OverClass X S
 
 /--
 `X.CanonicallyOver S` is the typeclass containing the data of a structure morphism `X ↘ S : X ⟶ S`,
-and that `S` is (uniquely) inferrable from the structure of `X`.
+and that `S` is (uniquely) inferable from the structure of `X`.
 -/
-abbrev CanonicallyOver := CanonicallyOverClass X S
+abbrev CanonicallyOver (X S : Scheme.{u}) := CanonicallyOverClass X S
 
 /-- Given `X.Over S` and `Y.Over S` and `f : X ⟶ Y`,
 `f.IsOver S` is the typeclass asserting `f` commutes with the structure morphisms. -/

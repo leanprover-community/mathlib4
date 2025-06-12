@@ -8,7 +8,7 @@ import Mathlib.Algebra.MvPolynomial.Funext
 import Mathlib.Analysis.Analytic.Polynomial
 import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Topology.Algebra.MvPolynomial
 
@@ -35,8 +35,8 @@ variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
 variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 variable (𝕜 E F) in
-/-- The set of smooth functions supported in a set `s`, as a submodule of the space of functions. -/
-def SmoothSupportedOn (n : ℕ∞) (s : Set E) : Submodule 𝕜 (E → F) where
+/-- The set of `C^n` functions supported in a set `s`, as a submodule of the space of functions. -/
+def ContDiffSupportedOn (n : ℕ∞) (s : Set E) : Submodule 𝕜 (E → F) where
   carrier := { f : E → F | tsupport f ⊆ s ∧ ContDiff 𝕜 n f }
   add_mem' hf hg := ⟨tsupport_add.trans <| union_subset hf.1 hg.1, hf.2.add hg.2⟩
   zero_mem' :=
@@ -44,52 +44,52 @@ def SmoothSupportedOn (n : ℕ∞) (s : Set E) : Submodule 𝕜 (E → F) where
   smul_mem' r f hf :=
     ⟨(closure_mono <| support_const_smul_subset r f).trans hf.1, contDiff_const.smul hf.2⟩
 
-namespace SmoothSupportedOn
+namespace ContDiffSupportedOn
 
 variable {n : ℕ∞} {s : Set E}
 
-instance : FunLike (SmoothSupportedOn 𝕜 E F n s) E F where
+instance : FunLike (ContDiffSupportedOn 𝕜 E F n s) E F where
   coe := Subtype.val
   coe_injective' := Subtype.coe_injective
 
 @[simp]
-lemma coe_mk (f : E → F) (h) : (⟨f, h⟩ : SmoothSupportedOn 𝕜 E F n s) = f := rfl
+lemma coe_mk (f : E → F) (h) : (⟨f, h⟩ : ContDiffSupportedOn 𝕜 E F n s) = f := rfl
 
-lemma tsupport_subset (f : SmoothSupportedOn 𝕜 E F n s) : tsupport f ⊆ s := f.2.1
+lemma tsupport_subset (f : ContDiffSupportedOn 𝕜 E F n s) : tsupport f ⊆ s := f.2.1
 
-lemma support_subset (f : SmoothSupportedOn 𝕜 E F n s) :
+lemma support_subset (f : ContDiffSupportedOn 𝕜 E F n s) :
     support f ⊆ s := subset_tsupport _ |>.trans (tsupport_subset f)
 
-lemma contDiff (f : SmoothSupportedOn 𝕜 E F n s) :
+lemma contDiff (f : ContDiffSupportedOn 𝕜 E F n s) :
     ContDiff 𝕜 n f := f.2.2
 
-theorem continuous (f : SmoothSupportedOn 𝕜 E F n s) : Continuous f :=
-  (SmoothSupportedOn.contDiff _).continuous
+theorem continuous (f : ContDiffSupportedOn 𝕜 E F n s) : Continuous f :=
+  (ContDiffSupportedOn.contDiff _).continuous
 
-lemma hasCompactSupport [ProperSpace E] (f : SmoothSupportedOn 𝕜 E F n (closedBall 0 1)) :
+lemma hasCompactSupport [ProperSpace E] (f : ContDiffSupportedOn 𝕜 E F n (closedBall 0 1)) :
     HasCompactSupport f :=
   HasCompactSupport.of_support_subset_isCompact (isCompact_closedBall 0 1) (support_subset f)
 
 theorem integrable_eval_mul (p : MvPolynomial ι ℝ)
-    (f : SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :
+    (f : ContDiffSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :
     Integrable fun (x : EuclideanSpace ℝ ι) ↦ eval x p * f x :=
-  (p.continuous_eval.mul (SmoothSupportedOn.contDiff f).continuous).integrable_of_hasCompactSupport
-    (hasCompactSupport f).mul_left
+  p.continuous_eval.mul (ContDiffSupportedOn.contDiff f).continuous
+    |>.integrable_of_hasCompactSupport (hasCompactSupport f).mul_left
 
-end SmoothSupportedOn
+end ContDiffSupportedOn
 
 end normed
-open SmoothSupportedOn
+open ContDiffSupportedOn
 
 variable (ι)
 /-- Interpreting a multivariate polynomial as an element of the dual of smooth functions supported
 in the unit ball, via integration against Lebesgue measure. -/
 def L : MvPolynomial ι ℝ →ₗ[ℝ]
-    Module.Dual ℝ (SmoothSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :=
-  have int := SmoothSupportedOn.integrable_eval_mul (ι := ι)
+    Module.Dual ℝ (ContDiffSupportedOn ℝ (EuclideanSpace ℝ ι) ℝ ⊤ (closedBall 0 1)) :=
+  have int := ContDiffSupportedOn.integrable_eval_mul (ι := ι)
   .mk₂ ℝ (fun p f ↦ ∫ x : EuclideanSpace ℝ ι, eval x p • f x)
     (fun p₁ p₂ f ↦ by simp [add_mul, integral_add (int p₁ f) (int p₂ f)])
-    (fun r p f ↦ by simp [mul_assoc, integral_mul_left])
+    (fun r p f ↦ by simp [mul_assoc, integral_const_mul])
     (fun p f₁ f₂ ↦ by simp_rw [smul_eq_mul, ← integral_add (int p _) (int p _), ← mul_add]; rfl)
     fun r p f ↦ by simp_rw [← integral_smul, smul_comm r]; rfl
 

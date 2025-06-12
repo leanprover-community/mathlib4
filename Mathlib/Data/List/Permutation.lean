@@ -8,6 +8,7 @@ import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.List.Count
 import Mathlib.Data.List.Duplicate
 import Mathlib.Data.List.InsertIdx
+import Mathlib.Data.List.Induction
 import Batteries.Data.List.Perm
 import Mathlib.Data.List.Perm.Basic
 
@@ -89,7 +90,7 @@ theorem map_permutationsAux2' {α' β'} (g : α → α') (g' : β → β') (t : 
   induction' ys with ys_hd _ ys_ih generalizing f f'
   · simp
   · simp only [map, permutationsAux2_snd_cons, cons_append, cons.injEq]
-    rw [ys_ih, permutationsAux2_fst]
+    rw [ys_ih]
     · refine ⟨?_, rfl⟩
       simp only [← map_cons, ← map_append]; apply H
     · intro a; apply H
@@ -132,7 +133,7 @@ theorem permutations'Aux_eq_permutationsAux2 (t : α) (ts : List α) :
   induction' ts with a ts ih; · rfl
   simp only [permutations'Aux, ih, cons_append, permutationsAux2_snd_cons, append_nil, id_eq,
     cons.injEq, true_and]
-  simp (config := { singlePass := true }) only [← permutationsAux2_append]
+  simp +singlePass only [← permutationsAux2_append]
   simp [map_permutationsAux2]
 
 theorem mem_permutationsAux2 {t : α} {ts : List α} {ys : List α} {l l' : List α} :
@@ -193,7 +194,7 @@ theorem length_foldr_permutationsAux2' (t : α) (ts : List α) (r L : List (List
   induction' L with l L ih
   · simp
   have sum_map : (map length L).sum = n * length L := ih fun l m => H l (mem_cons_of_mem _ m)
-  have length_l : length l = n := H _ (mem_cons_self _ _)
+  have length_l : length l = n := H _ mem_cons_self
   simp [sum_map, length_l, Nat.mul_add, Nat.add_comm, mul_succ]
 
 @[simp]
@@ -237,7 +238,7 @@ theorem permutationsAux_append (is is' ts : List α) :
   congr 2
   funext _
   rw [map_permutationsAux2]
-  simp (config := { singlePass := true }) only [← permutationsAux2_comp_append]
+  simp +singlePass only [← permutationsAux2_comp_append]
   simp only [id, append_assoc]
 
 theorem permutations_append (is ts : List α) :
@@ -254,7 +255,7 @@ theorem perm_of_mem_permutationsAux :
   · exact (IH1 _ m).trans perm_middle
   · have p : l₁ ++ l₂ ~ is := by
       simp only [mem_cons] at m
-      cases' m with e m
+      rcases m with e | m
       · simp [e]
       exact is.append_nil ▸ IH2 _ m
     exact ((perm_middle.trans (p.cons _)).append_right _).trans (perm_append_comm.cons _)
@@ -268,7 +269,7 @@ theorem length_permutationsAux :
   refine permutationsAux.rec (by simp) ?_
   intro t ts is IH1 IH2
   have IH2 : length (permutationsAux is nil) + 1 = is.length ! := by simpa using IH2
-  simp only [factorial, Nat.mul_comm, add_eq] at IH1
+  simp only [length, factorial, Nat.mul_comm, add_eq] at IH1
   rw [permutationsAux_cons,
     length_foldr_permutationsAux2' _ _ _ _ _ fun l m => (perm_of_mem_permutations m).length_eq,
     permutations, length, length, IH2, Nat.succ_add, Nat.factorial_succ, Nat.mul_comm (_ + 1),
@@ -292,10 +293,10 @@ theorem mem_permutationsAux_of_perm :
   rcases IH1 _ (p.trans perm_middle) with (⟨is', p', e⟩ | m)
   · clear p
     subst e
-    rcases append_of_mem (p'.symm.subset (mem_cons_self _ _)) with ⟨l₁, l₂, e⟩
+    rcases append_of_mem (p'.symm.subset mem_cons_self) with ⟨l₁, l₂, e⟩
     subst is'
     have p := (perm_middle.symm.trans p').cons_inv
-    cases' l₂ with a l₂'
+    rcases l₂ with - | ⟨a, l₂'⟩
     · exact Or.inl ⟨l₁, by simpa using p⟩
     · exact Or.inr (Or.inr ⟨l₁, a :: l₂', mem_permutations_of_perm_lemma (IH2 _) p, by simp⟩)
   · exact Or.inr (Or.inl m)
@@ -326,7 +327,7 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
           map (cons c) ((permutations'Aux a l).flatMap (permutations'Aux b)) := by
     intros a' b'
     simp only [flatMap_map, permutations'Aux]
-    show List.flatMap (permutations'Aux _ l) (fun a => ([b' :: c :: a] ++
+    show (permutations'Aux _ l).flatMap (fun a => ([b' :: c :: a] ++
       map (cons c) (permutations'Aux _ a))) ~ _
     refine (flatMap_append_perm _ (fun x => [b' :: c :: x]) _).symm.trans ?_
     rw [← map_eq_flatMap, ← map_flatMap]
@@ -387,7 +388,7 @@ theorem getElem_permutations'Aux (s : List α) (x : α) (n : ℕ)
     (hn : n < length (permutations'Aux x s)) :
     (permutations'Aux x s)[n] = s.insertIdx n x := by
   induction' s with y s IH generalizing n
-  · simp only [length, Nat.zero_add, Nat.lt_one_iff] at hn
+  · simp only [permutations'Aux, length, Nat.zero_add, lt_one_iff] at hn
     simp [hn]
   · cases n
     · simp [get]
@@ -405,7 +406,7 @@ theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
   · rw [permutations'Aux, count_cons_self]
     by_cases hx : x = y
     · subst hx
-      simpa [takeWhile, Nat.succ_inj', DecEq_eq] using IH _
+      simpa [takeWhile, Nat.succ_inj, DecEq_eq] using IH _
     · rw [takeWhile]
       simp only [mem_map, cons.injEq, Ne.symm hx, false_and, and_false, exists_false,
         not_false_iff, count_eq_zero_of_not_mem, Nat.zero_add, hx, decide_false, length_nil]
@@ -417,21 +418,16 @@ theorem length_permutations'Aux (s : List α) (x : α) :
   · simp
   · simpa using IH
 
-@[deprecated "No deprecation message was provided." (since := "2024-06-12")]
-theorem permutations'Aux_get_zero (s : List α) (x : α)
-    (hn : 0 < length (permutations'Aux x s) := (by simp)) :
-    (permutations'Aux x s).get ⟨0, hn⟩ = x :: s :=
-  get_permutations'Aux _ _ _ _
-
 theorem injective_permutations'Aux (x : α) : Function.Injective (permutations'Aux x) := by
   intro s t h
   apply insertIdx_injective s.length x
+  dsimp
   have hl : s.length = t.length := by simpa using congr_arg length h
   rw [← get_permutations'Aux s x s.length (by simp),
     ← get_permutations'Aux t x s.length (by simp [hl])]
   simp only [get_eq_getElem, h, hl]
 
-theorem nodup_permutations'Aux_of_not_mem (s : List α) (x : α) (hx : x ∉ s) :
+theorem nodup_permutations'Aux_of_notMem (s : List α) (x : α) (hx : x ∉ s) :
     Nodup (permutations'Aux x s) := by
   induction' s with y s IH
   · simp
@@ -442,8 +438,11 @@ theorem nodup_permutations'Aux_of_not_mem (s : List α) (x : α) (hx : x ∉ s) 
     · exact IH hx.right
     · simp
 
+@[deprecated (since := "2025-05-23")]
+alias nodup_permutations'Aux_of_not_mem := nodup_permutations'Aux_of_notMem
+
 theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'Aux x s) ↔ x ∉ s := by
-  refine ⟨fun h H ↦ ?_, nodup_permutations'Aux_of_not_mem _ _⟩
+  refine ⟨fun h H ↦ ?_, nodup_permutations'Aux_of_notMem _ _⟩
   obtain ⟨⟨k, hk⟩, hk'⟩ := get_of_mem H
   rw [nodup_iff_injective_get] at h
   apply k.succ_ne_self.symm
@@ -451,7 +450,7 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
   have k1l : k + 1 < (permutations'Aux x s).length := by simpa using hk
   rw [← @Fin.mk.inj_iff _ _ _ kl k1l]; apply h
   rw [get_permutations'Aux, get_permutations'Aux]
-  have hl : length (insertIdx k x s) = length (insertIdx (k + 1) x s) := by
+  have hl : length (s.insertIdx k x) = length (s.insertIdx (k + 1) x) := by
     rw [length_insertIdx_of_le_length hk.le, length_insertIdx_of_le_length (Nat.succ_le_of_lt hk)]
   refine ext_get hl fun n hn hn' => ?_
   rcases lt_trichotomy n k with (H | rfl | H)
@@ -472,9 +471,10 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
 
 theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations := by
   rw [(permutations_perm_permutations' s).nodup_iff]
-  induction' hs with x l h h' IH
-  · simp
-  · rw [permutations']
+  induction hs with
+  | nil => simp
+  | @cons x l h h' IH =>
+    rw [permutations']
     rw [nodup_flatMap]
     constructor
     · intro ys hy
@@ -490,10 +490,10 @@ theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations :
       have hl : as.length = bs.length := (ha.trans hb.symm).length_eq
       simp only [Nat.lt_succ_iff, length_permutations'Aux] at hn hm
       rw [get_permutations'Aux] at hn' hm'
-      have hx : (insertIdx n x as)[m]'(by
+      have hx : (as.insertIdx n x)[m]'(by
           rwa [length_insertIdx_of_le_length hn, Nat.lt_succ_iff, hl]) = x := by
         simp [hn', ← hm', hm]
-      have hx' : (insertIdx m x bs)[n]'(by
+      have hx' : (bs.insertIdx m x)[n]'(by
           rwa [length_insertIdx_of_le_length hm, Nat.lt_succ_iff, ← hl]) = x := by
         simp [hm', ← hn', hn]
       rcases lt_trichotomy n m with (ht | ht | ht)
@@ -509,7 +509,7 @@ theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations :
 
 lemma permutations_take_two (x y : α) (s : List α) :
     (x :: y :: s).permutations.take 2 = [x :: y :: s, y :: x :: s] := by
-  induction s <;> simp only [take, permutationsAux, permutationsAux.rec, permutationsAux2, id_eq]
+  induction s <;> simp [permutations, permutationsAux.rec]
 
 @[simp]
 theorem nodup_permutations_iff {s : List α} : Nodup s.permutations ↔ Nodup s := by

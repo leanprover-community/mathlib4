@@ -5,10 +5,7 @@ Authors: Julian Kuelshammer
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.Choose.Central
-import Mathlib.Data.Tree.Basic
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
@@ -110,14 +107,15 @@ theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n 
   suffices (catalan n : ℚ) = Nat.centralBinom n / (n + 1) by
     have h := Nat.succ_dvd_centralBinom n
     exact mod_cast this
-  induction' n using Nat.case_strong_induction_on with d hd
-  · simp
-  · simp_rw [catalan_succ, Nat.cast_sum, Nat.cast_mul]
+  induction n using Nat.caseStrongRecOn with
+  | zero => simp
+  | ind d hd =>
+    simp_rw [catalan_succ, Nat.cast_sum, Nat.cast_mul]
     trans (∑ i : Fin d.succ, Nat.centralBinom i / (i + 1) *
-                             (Nat.centralBinom (d - i) / (d - i + 1)) : ℚ)
+                            (Nat.centralBinom (d - i) / (d - i + 1)) : ℚ)
     · congr
       ext1 x
-      have m_le_d : x.val ≤ d := by apply Nat.le_of_lt_succ; apply x.2
+      have m_le_d : x.val ≤ d := by omega
       have d_minus_x_le_d : (d - x.val) ≤ d := tsub_le_self
       rw [hd _ m_le_d, hd _ d_minus_x_le_d]
       norm_cast
@@ -150,11 +148,7 @@ def treesOfNumNodesEq : ℕ → Finset (Tree Unit)
   | 0 => {nil}
   | n + 1 =>
     (antidiagonal n).attach.biUnion fun ijh =>
-      -- Porting note: `unusedHavesSuffices` linter is not happy with this. Commented out.
-      -- have := Nat.lt_succ_of_le (fst_le ijh.2)
-      -- have := Nat.lt_succ_of_le (snd_le ijh.2)
       pairwiseNode (treesOfNumNodesEq ijh.1.1) (treesOfNumNodesEq ijh.1.2)
-  -- Porting note: Add this to satisfy the linter.
   decreasing_by
     · simp_wf; have := fst_le ijh.2; omega
     · simp_wf; have := snd_le ijh.2; omega
@@ -185,22 +179,14 @@ theorem coe_treesOfNumNodesEq (n : ℕ) :
   Set.ext (by simp)
 
 theorem treesOfNumNodesEq_card_eq_catalan (n : ℕ) : #(treesOfNumNodesEq n) = catalan n := by
-  induction' n using Nat.case_strong_induction_on with n ih
-  · simp
-  rw [treesOfNumNodesEq_succ, card_biUnion, catalan_succ']
-  · apply sum_congr rfl
-    rintro ⟨i, j⟩ H
-    rw [card_map, card_product, ih _ (fst_le H), ih _ (snd_le H)]
-  · simp_rw [disjoint_left]
-    rintro ⟨i, j⟩ _ ⟨i', j'⟩ _
-    -- Porting note: was clear * -; tidy
-    intros h a
-    cases' a with a l r
-    · intro h; simp at h
-    · intro h1 h2
-      apply h
-      trans (numNodes l, numNodes r)
-      · simp at h1; simp [h1]
-      · simp at h2; simp [h2]
+  induction n using Nat.case_strong_induction_on with
+  | hz => simp
+  | hi n ih =>
+    rw [treesOfNumNodesEq_succ, card_biUnion, catalan_succ']
+    · apply sum_congr rfl
+      rintro ⟨i, j⟩ H
+      rw [card_map, card_product, ih _ (fst_le H), ih _ (snd_le H)]
+    · simp_rw [Set.PairwiseDisjoint, Set.Pairwise, disjoint_left]
+      aesop
 
 end Tree

@@ -3,6 +3,8 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.Algebra.Group.Action.Opposite
+import Mathlib.Algebra.Group.Action.Units
 import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Regular.Basic
@@ -30,9 +32,7 @@ Our star rings are actually star non-unital, non-associative, semirings, but of 
 `star_neg : star (-r) = - star r` when the underlying semiring is a ring.
 -/
 
-assert_not_exists Finset
-assert_not_exists Subgroup
-assert_not_exists Rat.instField
+assert_not_exists Finset Subgroup Rat.instField
 
 universe u v w
 
@@ -155,7 +155,7 @@ end StarMul
 
 /-- In a commutative ring, make `simp` prefer leaving the order unchanged. -/
 @[simp]
-theorem star_mul' [CommSemigroup R] [StarMul R] (x y : R) : star (x * y) = star x * star y :=
+theorem star_mul' [CommMagma R] [StarMul R] (x y : R) : star (x * y) = star x * star y :=
   (star_mul x y).trans (mul_comm _ _)
 
 /-- `star` as a `MulEquiv` from `R` to `Rᵐᵒᵖ` -/
@@ -172,13 +172,10 @@ def starMulAut [CommSemigroup R] [StarMul R] : MulAut R :=
     toFun := star
     map_mul' := star_mul' }
 
-variable (R)
-
+variable (R) in
 @[simp]
 theorem star_one [MulOneClass R] [StarMul R] : star (1 : R) = 1 :=
   op_injective <| (starMulEquiv : R ≃* Rᵐᵒᵖ).map_one.trans op_one.symm
-
-variable {R}
 
 @[simp]
 theorem star_pow [Monoid R] [StarMul R] (x : R) (n : ℕ) : star (x ^ n) = star x ^ n :=
@@ -213,7 +210,7 @@ section
 attribute [local instance] starMulOfComm
 
 /-- Note that since `starMulOfComm` is reducible, `simp` can already prove this. -/
-theorem star_id_of_comm {R : Type*} [CommSemiring R] {x : R} : star x = x :=
+theorem star_id_of_comm {R : Type*} [CommMonoid R] {x : R} : star x = x :=
   rfl
 
 end
@@ -235,13 +232,10 @@ def starAddEquiv [AddMonoid R] [StarAddMonoid R] : R ≃+ R :=
     toFun := star
     map_add' := star_add }
 
-variable (R)
-
+variable (R) in
 @[simp]
 theorem star_zero [AddMonoid R] [StarAddMonoid R] : star (0 : R) = 0 :=
   (starAddEquiv : R ≃+ R).map_zero
-
-variable {R}
 
 @[simp]
 theorem star_eq_zero [AddMonoid R] [StarAddMonoid R] {x : R} : star x = 0 ↔ x = 0 :=
@@ -289,26 +283,26 @@ theorem star_natCast [NonAssocSemiring R] [StarRing R] (n : ℕ) : star (n : R) 
 
 @[simp]
 theorem star_ofNat [NonAssocSemiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo] :
-    star (no_index (OfNat.ofNat n) : R) = OfNat.ofNat n :=
+    star (ofNat(n) : R) = ofNat(n) :=
   star_natCast _
 
 section
 
 @[simp, norm_cast]
-theorem star_intCast [Ring R] [StarRing R] (z : ℤ) : star (z : R) = z :=
+theorem star_intCast [NonAssocRing R] [StarRing R] (z : ℤ) : star (z : R) = z :=
   (congr_arg unop <| map_intCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) z).trans (unop_intCast _)
 
 end
 
 section CommSemiring
+
 variable [CommSemiring R] [StarRing R]
 
 /-- `star` as a ring automorphism, for commutative `R`. -/
 @[simps apply]
 def starRingAut : RingAut R := { starAddEquiv, starMulAut (R := R) with toFun := star }
 
-variable (R)
-
+variable (R) in
 /-- `star` as a ring endomorphism, for commutative `R`. This is used to denote complex
 conjugation, and is available under the notation `conj` in the locale `ComplexConjugate`.
 
@@ -318,14 +312,12 @@ because the notation `E →ₗ⋆[R] F` for an `R`-conjugate-linear map (short f
 case for `(↑starRingAut : R →* R)`. -/
 def starRingEnd : R →+* R := @starRingAut R _ _
 
-variable {R}
-
 @[inherit_doc]
 scoped[ComplexConjugate] notation "conj" => starRingEnd _
 
 /-- This is not a simp lemma, since we usually want simp to keep `starRingEnd` bundled.
- For example, for complex conjugation, we don't want simp to turn `conj x`
- into the bare function `star x` automatically since most lemmas are about `conj x`. -/
+For example, for complex conjugation, we don't want simp to turn `conj x`
+into the bare function `star x` automatically since most lemmas are about `conj x`. -/
 theorem starRingEnd_apply (x : R) : starRingEnd R x = star x := rfl
 
 /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute due to report by linter:
@@ -334,7 +326,7 @@ simp can prove this:
   by simp only [RingHomCompTriple.comp_apply, RingHom.id_apply]
 One of the lemmas above could be a duplicate.
 If that's not the case try reordering lemmas or adding @[priority].
- -/
+-/
 -- @[simp]
 theorem starRingEnd_self_apply (x : R) : starRingEnd R (starRingEnd R x) = x := star_star x
 
@@ -404,7 +396,6 @@ the statement only requires `[Star R] [Star A] [SMul R A]`.
 If used as `[CommRing R] [StarRing R] [Semiring A] [StarRing A] [Algebra R A]`, this represents a
 star algebra.
 -/
-
 class StarModule (R : Type u) (A : Type v) [Star R] [Star A] [SMul R A] : Prop where
   /-- `star` commutes with scalar multiplication -/
   star_smul : ∀ (r : R) (a : A), star (r • a) = star r • star a
@@ -555,8 +546,12 @@ instance [Mul R] [StarMul R] : StarMul Rᵐᵒᵖ where
 instance [AddMonoid R] [StarAddMonoid R] : StarAddMonoid Rᵐᵒᵖ where
   star_add x y := unop_injective (star_add x.unop y.unop)
 
-instance [Semiring R] [StarRing R] : StarRing Rᵐᵒᵖ where
+instance [NonUnitalSemiring R] [StarRing R] : StarRing Rᵐᵒᵖ where
   star_add x y := unop_injective (star_add x.unop y.unop)
+
+instance {M : Type*} [Star R] [Star M] [SMul R M] [StarModule R M] :
+    StarModule R Mᵐᵒᵖ where
+  star_smul r x := unop_injective (star_smul r x.unop)
 
 end MulOpposite
 

@@ -42,9 +42,11 @@ section Semiring
 
 variable {S : Type*} [Semiring S]
 
-set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
-theorem natDegree_list_sum_le (l : List S[X]) : natDegree l.sum ≤ (l.map natDegree).foldr max 0 :=
-  List.sum_le_foldr_max natDegree (by simp) natDegree_add_le _
+theorem natDegree_list_sum_le (l : List S[X]) :
+    natDegree l.sum ≤ (l.map natDegree).foldr max 0 := by
+  apply List.sum_le_foldr_max natDegree
+  · simp
+  · exact natDegree_add_le
 
 theorem natDegree_multiset_sum_le (l : Multiset S[X]) :
     natDegree l.sum ≤ (l.map natDegree).foldr max 0 :=
@@ -58,18 +60,28 @@ lemma natDegree_sum_le_of_forall_le {n : ℕ} (f : ι → S[X]) (h : ∀ i ∈ s
     natDegree (∑ i ∈ s, f i) ≤ n :=
   le_trans (natDegree_sum_le s f) <| (Finset.fold_max_le n).mpr <| by simpa
 
+theorem degree_list_sum_le_of_forall_degree_le (l : List S[X])
+    (n : WithBot ℕ) (hl : ∀ p ∈ l, degree p ≤ n) :
+    degree l.sum ≤ n := by
+  induction l with
+  | nil => simp
+  | cons hd tl ih =>
+    simp only [List.mem_cons, forall_eq_or_imp] at hl
+    rcases hl with ⟨hhd, htl⟩
+    rw [List.sum_cons]
+    exact le_trans (degree_add_le hd tl.sum) (max_le hhd (ih htl))
+
 theorem degree_list_sum_le (l : List S[X]) : degree l.sum ≤ (l.map natDegree).maximum := by
-  by_cases h : l.sum = 0
-  · simp [h]
+  apply degree_list_sum_le_of_forall_degree_le
+  intros p hp
+  by_cases h : p = 0
+  · subst h
+    simp
   · rw [degree_eq_natDegree h]
-    suffices (l.map natDegree).maximum = ((l.map natDegree).foldr max 0 : ℕ) by
-      rw [this]
-      simpa using natDegree_list_sum_le l
-    rw [← List.foldr_max_of_ne_nil]
-    · congr
-    contrapose! h
-    rw [List.map_eq_nil_iff] at h
-    simp [h]
+    apply List.le_maximum_of_mem'
+    rw [List.mem_map]
+    use p
+    simp [hp]
 
 theorem natDegree_list_prod_le (l : List S[X]) : natDegree l.prod ≤ (l.map natDegree).sum := by
   induction' l with hd tl IH
@@ -93,14 +105,7 @@ theorem coeff_list_prod_of_natDegree_le (l : List S[X]) (n : ℕ) (hl : ∀ p �
       rw [← tl.length_map natDegree, mul_comm]
       refine List.sum_le_card_nsmul _ _ ?_
       simpa using hl'
-    have hdn : natDegree hd ≤ n := hl _ (List.mem_cons_self _ _)
-    rcases hdn.eq_or_lt with (rfl | hdn')
-    · rcases h.eq_or_lt with h' | h'
-      · rw [← h', coeff_mul_degree_add_degree, leadingCoeff, leadingCoeff]
-      · rw [coeff_eq_zero_of_natDegree_lt, coeff_eq_zero_of_natDegree_lt h', mul_zero]
-        exact natDegree_mul_le.trans_lt (add_lt_add_left h' _)
-    · rw [coeff_eq_zero_of_natDegree_lt hdn', coeff_eq_zero_of_natDegree_lt, zero_mul]
-      exact natDegree_mul_le.trans_lt (add_lt_add_of_lt_of_le hdn' h)
+    exact coeff_mul_add_eq_of_natDegree_le (hl _ List.mem_cons_self) h
 
 end Semiring
 
@@ -215,7 +220,7 @@ theorem coeff_multiset_prod_of_natDegree_le (n : ℕ) (hl : ∀ p ∈ t, natDegr
 
 theorem coeff_prod_of_natDegree_le (f : ι → R[X]) (n : ℕ) (h : ∀ p ∈ s, natDegree (f p) ≤ n) :
     coeff (∏ i ∈ s, f i) (#s * n) = ∏ i ∈ s, coeff (f i) n := by
-  cases' s with l hl
+  obtain ⟨l, hl⟩ := s
   convert coeff_multiset_prod_of_natDegree_le (l.map f) n ?_
   · simp
   · simp
@@ -270,7 +275,7 @@ theorem prod_X_sub_C_coeff_card_pred (s : Finset ι) (f : ι → R) (hs : 0 < #s
     (∏ i ∈ s, (X - C (f i))).coeff (#s - 1) = -∑ i ∈ s, f i := by
   simpa using multiset_prod_X_sub_C_coeff_card_pred (s.1.map f) (by simpa using hs)
 
-variable [IsDomain R]
+variable [Nontrivial R]
 
 @[simp]
 lemma natDegree_multiset_prod_X_sub_C_eq_card (s : Multiset R) :
@@ -279,6 +284,11 @@ lemma natDegree_multiset_prod_X_sub_C_eq_card (s : Multiset R) :
   · simp only [(· ∘ ·), natDegree_X_sub_C, Multiset.map_const', Multiset.sum_replicate, smul_eq_mul,
       mul_one]
   · exact Multiset.forall_mem_map_iff.2 fun a _ => monic_X_sub_C a
+
+@[simp] lemma natDegree_finset_prod_X_sub_C_eq_card {α} (s : Finset α) (f : α → R) :
+    (∏ a ∈ s, (X - C (f a))).natDegree = s.card := by
+  rw [Finset.prod, ← (X - C ·).comp_def f, ← Multiset.map_map,
+    natDegree_multiset_prod_X_sub_C_eq_card, Multiset.card_map, Finset.card]
 
 end CommRing
 

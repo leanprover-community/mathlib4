@@ -26,6 +26,9 @@ the definitions in Lenstras notes (see below for a reference).
 * `IsConnected`       : an object of a category is connected if it is not initial
                         and does not have non-trivial subobjects
 
+Any fiber functor `F` induces an equivalence with the category of finite, discrete `Aut F`-types.
+This is proven in `Mathlib/CategoryTheory/Galois/Equivalence.lean`.
+
 ## Implementation details
 
 We mostly follow Def 3.1 in Lenstras notes. In axiom (G3)
@@ -170,7 +173,7 @@ section
 
 /-- If `F` is a fiber functor and `E` is an equivalence between categories of finite types,
 then `F ⋙ E` is again a fiber functor. -/
-lemma comp_right (E : FintypeCat.{w} ⥤ FintypeCat.{t}) [E.IsEquivalence] :
+instance comp_right (E : FintypeCat.{w} ⥤ FintypeCat.{t}) [E.IsEquivalence] :
     FiberFunctor (F ⋙ E) where
   preservesQuotientsByFiniteGroups _ := comp_preservesColimitsOfShape F E
 
@@ -403,8 +406,8 @@ end CardFiber
 end PreGaloisCategory
 
 /-- A `PreGaloisCategory` is a `GaloisCategory` if it admits a fiber functor. -/
-class GaloisCategory (C : Type u₁) [Category.{u₂, u₁} C]
-    extends PreGaloisCategory C : Prop where
+class GaloisCategory (C : Type u₁) [Category.{u₂, u₁} C] : Prop
+    extends PreGaloisCategory C where
   hasFiberFunctor : ∃ F : C ⥤ FintypeCat.{u₂}, Nonempty (PreGaloisCategory.FiberFunctor F)
 
 namespace PreGaloisCategory

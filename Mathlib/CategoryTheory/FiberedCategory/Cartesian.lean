@@ -12,7 +12,8 @@ import Mathlib.CategoryTheory.FiberedCategory.HomLift
 This file defines cartesian resp. strongly cartesian morphisms with respect to a functor
 `p : 𝒳 ⥤ 𝒮`.
 
-This file has been adapted to `FiberedCategory/Cocartesian`, please try to change them in sync.
+This file has been adapted to `Mathlib/CategoryTheory/FiberedCategory/Cocartesian.lean`,
+please try to change them in sync.
 
 ## Main definitions
 
@@ -53,7 +54,7 @@ morphisms `φ' : a' ⟶ b`, also lying over `f`, there exists a unique morphism 
 `𝟙 R` such that `φ' = χ ≫ φ`.
 
 See SGA 1 VI 5.1. -/
-class IsCartesian extends IsHomLift p f φ : Prop where
+class IsCartesian : Prop extends IsHomLift p f φ where
   universal_property {a' : 𝒳} (φ' : a' ⟶ b) [IsHomLift p f φ'] :
       ∃! χ : a' ⟶ a, IsHomLift p (𝟙 R) χ ∧ χ ≫ φ = φ'
 
@@ -65,10 +66,9 @@ a'        a --φ--> b
 v         v        v
 R' --g--> R --f--> S
 ```
-such that `φ'` lifts `g ≫ f`, there exists a lift `χ` of `g` such that `φ' = χ ≫ φ`.
-
-See <https://stacks.math.columbia.edu/tag/02XK>. -/
-class IsStronglyCartesian extends IsHomLift p f φ : Prop where
+such that `φ'` lifts `g ≫ f`, there exists a lift `χ` of `g` such that `φ' = χ ≫ φ`. -/
+@[stacks 02XK]
+class IsStronglyCartesian : Prop extends IsHomLift p f φ where
   universal_property' {a' : 𝒳} (g : p.obj a' ⟶ R) (φ' : a' ⟶ b) [IsHomLift p (g ≫ f) φ'] :
       ∃! χ : a' ⟶ a, IsHomLift p g χ ∧ χ ≫ φ = φ'
 
@@ -117,7 +117,18 @@ lemma map_self : IsCartesian.map p f φ φ = 𝟙 a := by
   apply map_uniq
   simp only [id_comp]
 
-/-- The canonical isomorphism between the domains of two cartesian morphisms
+instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom] :
+    IsCartesian p f (φ ≫ φ'.hom) where
+  universal_property := by
+    intro c ψ hψ
+    use IsCartesian.map p f φ (ψ ≫ φ'.inv)
+    refine ⟨⟨inferInstance, by simp only [fac_assoc, assoc, Iso.inv_hom_id, comp_id]⟩, ?_⟩
+    rintro τ ⟨hτ₁, hτ₂⟩
+    apply map_uniq
+    rw [Iso.eq_comp_inv]
+    simp only [assoc, hτ₂]
+
+/-- The canonical isomorphism between the domains of two cartesian arrows
 lying over the same object. -/
 @[simps]
 noncomputable def domainUniqueUpToIso {a' : 𝒳} (φ' : a' ⟶ b) [IsCartesian p f φ'] : a' ≅ a where
@@ -151,17 +162,6 @@ instance of_iso_comp {a' : 𝒳} (φ' : a' ≅ a) [IsHomLift p (𝟙 R) φ'.hom]
     rw [Iso.eq_comp_inv]
     apply map_uniq
     simp only [assoc, hτ₂]
-
-/-- Postcomposing a cartesian morphism with an isomorphism lifting the identity is cartesian. -/
-instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom] :
-    IsCartesian p f (φ ≫ φ'.hom) where
-  universal_property := by
-    intro c ψ hψ
-    use IsCartesian.map p f φ (ψ ≫ φ'.inv)
-    refine ⟨⟨inferInstance, by simp⟩, ?_⟩
-    rintro τ ⟨hτ₁, hτ₂⟩
-    apply map_uniq
-    simp only [Iso.eq_comp_inv, assoc, hτ₂]
 
 end IsCartesian
 

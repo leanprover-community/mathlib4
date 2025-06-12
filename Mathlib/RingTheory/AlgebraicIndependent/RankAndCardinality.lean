@@ -3,6 +3,7 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 import Mathlib.FieldTheory.MvRatFunc.Rank
 import Mathlib.RingTheory.Algebraic.Cardinality
 import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
@@ -30,8 +31,6 @@ transcendence basis, transcendence degree, transcendence
 noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra
-
-open scoped Classical
 
 universe u v w
 
@@ -65,7 +64,7 @@ theorem IsTranscendenceBasis.lift_rank_eq_max_lift
 theorem Algebra.Transcendental.rank_eq_cardinalMk
     (F : Type u) (E : Type v) [Field F] [Field E] [Algebra F E] [Algebra.Transcendental F E] :
     Module.rank F E = #E := by
-  obtain ⟨ι, x, hx⟩ := exists_isTranscendenceBasis' _ (algebraMap F E).injective
+  obtain ⟨ι, x, hx⟩ := exists_isTranscendenceBasis' F E
   haveI := hx.nonempty_iff_transcendental.2 ‹_›
   simpa [← hx.lift_cardinalMk_eq_max_lift] using hx.lift_rank_eq_max_lift
 

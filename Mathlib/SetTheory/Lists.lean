@@ -102,6 +102,11 @@ theorem of_toList : ∀ l : Lists' α true, ofList (toList l) = l :=
     | nil => simp
     | cons' b a _ IH => simpa [cons] using IH rfl
 
+/-- Recursion/induction principle for `Lists'.ofList`. -/
+@[elab_as_elim]
+def recOfList {motive : Lists' α true → Sort*} (ofList : ∀ l, motive (ofList l)) : ∀ l, motive l :=
+  fun l ↦ cast (by simp) <| ofList (l.toList)
+
 end Lists'
 
 mutual
@@ -141,7 +146,7 @@ theorem mem_cons {a y l} : a ∈ @cons α y l ↔ a ~ y ∨ a ∈ l := by
 theorem cons_subset {a} {l₁ l₂ : Lists' α true} : Lists'.cons a l₁ ⊆ l₂ ↔ a ∈ l₂ ∧ l₁ ⊆ l₂ := by
   refine ⟨fun h => ?_, fun ⟨⟨a', m, e⟩, s⟩ => Subset.cons e m s⟩
   generalize h' : Lists'.cons a l₁ = l₁' at h
-  cases' h with l a' a'' l l' e m s
+  obtain - | @⟨a', _, _, _, e, m, s⟩ := h
   · cases a
     cases h'
   cases a; cases a'; cases h'; exact ⟨⟨_, m, e⟩, s⟩
@@ -167,7 +172,7 @@ theorem subset_nil {l : Lists' α true} : l ⊆ Lists'.nil → l = Lists'.nil :=
 theorem mem_of_subset' {a} : ∀ {l₁ l₂ : Lists' α true} (_ : l₁ ⊆ l₂) (_ : a ∈ l₁.toList), a ∈ l₂
   | nil, _, Lists'.Subset.nil, h => by cases h
   | cons' a0 l0, l₂, s, h => by
-    cases' s with _ _ _ _ _ e m s
+    obtain - | ⟨e, m, s⟩ := s
     simp only [toList, Sigma.eta, List.find?, List.mem_cons] at h
     rcases h with (rfl | h)
     · exact ⟨_, m, e⟩
@@ -175,10 +180,11 @@ theorem mem_of_subset' {a} : ∀ {l₁ l₂ : Lists' α true} (_ : l₁ ⊆ l₂
 
 theorem subset_def {l₁ l₂ : Lists' α true} : l₁ ⊆ l₂ ↔ ∀ a ∈ l₁.toList, a ∈ l₂ :=
   ⟨fun H _ => mem_of_subset' H, fun H => by
-    rw [← of_toList l₁]
-    revert H; induction' toList l₁ with h t t_ih <;> intro H
-    · exact Subset.nil
-    · simp only [ofList, List.find?, List.mem_cons, forall_eq_or_imp] at *
+    induction l₁ using recOfList with | _ l₁
+    induction l₁ with
+    | nil => exact Subset.nil
+    | cons h t t_ih =>
+      simp only [to_ofList, ofList, toList_cons, List.mem_cons, forall_eq_or_imp] at *
       exact cons_subset.2 ⟨H.1, t_ih H.2⟩⟩
 
 end Lists'
@@ -236,10 +242,11 @@ def inductionMut (C : Lists α → Sort*) (D : Lists' α true → Sort*)
         | false, _ => PUnit)
     by exact ⟨fun ⟨b, l⟩ => (this _).1, fun l => (this l).2⟩
   intros b l
-  induction' l with a b a l IH₁ IH
-  · exact ⟨C0 _, ⟨⟩⟩
-  · exact ⟨C1 _ D0, D0⟩
-  · have : D (Lists'.cons' a l) := D1 ⟨_, _⟩ _ IH₁.1 IH.2
+  induction l with
+  | atom => exact ⟨C0 _, ⟨⟩⟩
+  | nil => exact ⟨C1 _ D0, D0⟩
+  | cons' a l IH₁ IH =>
+    have : D (Lists'.cons' a l) := D1 ⟨_, _⟩ _ IH₁.1 IH.2
     exact ⟨C1 _ this, this⟩
 
 /-- Membership of ZFA list. A ZFA list belongs to a proper ZFA list if it belongs to the latter as a
@@ -257,7 +264,7 @@ theorem isList_of_mem {a : Lists α} : ∀ {l : Lists α}, a ∈ l → IsList l
 
 theorem Equiv.antisymm_iff {l₁ l₂ : Lists' α true} : of' l₁ ~ of' l₂ ↔ l₁ ⊆ l₂ ∧ l₂ ⊆ l₁ := by
   refine ⟨fun h => ?_, fun ⟨h₁, h₂⟩ => Equiv.antisymm h₁ h₂⟩
-  cases' h with _ _ _ h₁ h₂
+  obtain - | ⟨h₁, h₂⟩ := h
   · simp [Lists'.Subset.refl]
   · exact ⟨h₁, h₂⟩
 
@@ -268,7 +275,7 @@ theorem equiv_atom {a} {l : Lists α} : atom a ~ l ↔ atom a = l :=
 
 @[symm]
 theorem Equiv.symm {l₁ l₂ : Lists α} (h : l₁ ~ l₂) : l₂ ~ l₁ := by
-  cases' h with _ _ _ h₁ h₂ <;> [rfl; exact Equiv.antisymm h₂ h₁]
+  obtain - | ⟨h₁, h₂⟩ := h <;> [rfl; exact Equiv.antisymm h₂ h₁]
 
 theorem Equiv.trans : ∀ {l₁ l₂ l₃ : Lists α}, l₁ ~ l₂ → l₂ ~ l₃ → l₁ ~ l₃ := by
   let trans := fun l₁ : Lists α => ∀ ⦃l₂ l₃⦄, l₁ ~ l₂ → l₂ ~ l₃ → l₁ ~ l₃
@@ -277,12 +284,12 @@ theorem Equiv.trans : ∀ {l₁ l₂ l₃ : Lists α}, l₁ ~ l₂ → l₂ ~ l�
   · intro a l₂ l₃ h₁ h₂
     rwa [← equiv_atom.1 h₁] at h₂
   · intro l₁ IH l₂ l₃ h₁ h₂
-    cases' id h₁ with _ _ l₂
+    obtain - | l₂ := id h₁
     · exact h₂
-    cases' id h₂ with _ _ l₃
+    obtain - | l₃ := id h₂
     · exact h₁
-    cases' Equiv.antisymm_iff.1 h₁ with hl₁ hr₁
-    cases' Equiv.antisymm_iff.1 h₂ with hl₂ hr₂
+    obtain ⟨hl₁, hr₁⟩ := Equiv.antisymm_iff.1 h₁
+    obtain ⟨hl₂, hr₂⟩ := Equiv.antisymm_iff.1 h₂
     apply Equiv.antisymm_iff.2; constructor <;> apply Lists'.subset_def.2
     · intro a₁ m₁
       rcases Lists'.mem_of_subset' hl₁ m₁ with ⟨a₂, m₂, e₁₂⟩

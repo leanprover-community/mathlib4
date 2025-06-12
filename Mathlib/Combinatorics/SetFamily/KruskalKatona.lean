@@ -65,7 +65,7 @@ lemma shadow_initSeg [Fintype α] (hs : s.Nonempty) :
   -- First show that if t ∪ a ≤ s, then t ≤ s - min s
   · rintro ⟨a, ha, hst, hts⟩
     constructor
-    · rw [card_erase_of_mem (min'_mem _ _), hst, card_insert_of_not_mem ha, add_tsub_cancel_right]
+    · rw [card_erase_of_mem (min'_mem _ _), hst, card_insert_of_notMem ha, add_tsub_cancel_right]
     · simpa [ha] using erase_le_erase_min' hts hst.ge (mem_insert_self _ _)
   -- Now show that if t ≤ s - min s, there is j such that t ∪ j ≤ s
   -- We choose j as the smallest thing not in t
@@ -73,7 +73,7 @@ lemma shadow_initSeg [Fintype α] (hs : s.Nonempty) :
   simp only [toColex_inj, ofColex_toColex, ne_eq, and_imp]
   rintro cards' (rfl | ⟨k, hks, hkt, z⟩)
   -- If t = s - min s, then use j = min s so t ∪ j = s
-  · refine ⟨min' s hs, not_mem_erase _ _, ?_⟩
+  · refine ⟨min' s hs, notMem_erase _ _, ?_⟩
     rw [insert_erase (min'_mem _ _)]
     exact ⟨rfl, Or.inl rfl⟩
   set j := min' tᶜ ⟨k, mem_compl.2 hkt⟩
@@ -81,7 +81,7 @@ lemma shadow_initSeg [Fintype α] (hs : s.Nonempty) :
   have hjk : j ≤ k := min'_le _ _ (mem_compl.2 ‹k ∉ t›)
   have : j ∉ t := mem_compl.1 (min'_mem _ _)
   have hcard : #s = #(insert j t) := by
-    rw [card_insert_of_not_mem ‹j ∉ t›, ← ‹_ = #t›, card_erase_add_one (min'_mem _ _)]
+    rw [card_insert_of_notMem ‹j ∉ t›, ← ‹_ = #t›, card_erase_add_one (min'_mem _ _)]
   refine ⟨j, ‹_›, hcard, ?_⟩
   -- Cases on j < k or j = k
   obtain hjk | r₁ := hjk.lt_or_eq
@@ -101,7 +101,7 @@ lemma shadow_initSeg [Fintype α] (hs : s.Nonempty) :
   · apply mem_insert_of_mem
     rw [← r₁] at gt
     by_contra
-    apply (min'_le tᶜ _ _).not_lt gt
+    apply (min'_le tᶜ _ _).not_gt gt
     rwa [mem_compl]
 
 /-- The shadow of an initial segment is also an initial segment. -/
@@ -120,7 +120,7 @@ protected lemma IsInitSeg.shadow [Finite α] (h₁ : IsInitSeg 𝒜 r) : IsInitS
 
 end Colex
 
-open Finset Colex Nat UV
+open Colex UV
 open scoped FinsetFamily
 
 variable {α : Type*} [LinearOrder α] {s U V : Finset α} {n : ℕ}
@@ -134,12 +134,12 @@ lemma toColex_compress_lt_toColex {hU : U.Nonempty} {hV : V.Nonempty} (h : max' 
   rw [compress, ite_ne_right_iff] at hA
   rw [compress, if_pos hA.1, lt_iff_exists_filter_lt]
   simp_rw [mem_sdiff (s := s), filter_inj, and_assoc]
-  refine ⟨_, hA.1.2 <| max'_mem _ hV, not_mem_sdiff_of_mem_right <| max'_mem _ _, fun a ha ↦ ?_⟩
-  have : a ∉ V := fun H ↦ ha.not_le (le_max' _ _ H)
-  have : a ∉ U := fun H ↦ ha.not_lt ((le_max' _ _ H).trans_lt h)
+  refine ⟨_, hA.1.2 <| max'_mem _ hV, notMem_sdiff_of_mem_right <| max'_mem _ _, fun a ha ↦ ?_⟩
+  have : a ∉ V := fun H ↦ ha.not_ge (le_max' _ _ H)
+  have : a ∉ U := fun H ↦ ha.not_gt ((le_max' _ _ H).trans_lt h)
   simp [‹a ∉ U›, ‹a ∉ V›]
 
-/-- These are the compressions which we will apply to decrease the "measure" of a family of sets.-/
+/-- These are the compressions which we will apply to decrease the "measure" of a family of sets. -/
 private def UsefulCompression (U V : Finset α) : Prop :=
   Disjoint U V ∧ #U = #V ∧ ∃ (HU : U.Nonempty) (HV : V.Nonempty), max' U HU < max' V HV
 
@@ -185,7 +185,7 @@ lemma isInitSeg_of_compressed {ℬ : Finset (Finset α)} {r : ℕ} (h₁ : (ℬ 
   have smaller : max' _ hV < max' _ hU := by
     obtain hlt | heq | hgt := lt_trichotomy (max' _ hU) (max' _ hV)
     · rw [← compress_sdiff_sdiff A B] at hAB hBA
-      cases hBA.not_lt <| toColex_compress_lt_toColex hlt hAB
+      cases hBA.not_gt <| toColex_compress_lt_toColex hlt hAB
     · exact (disjoint_right.1 disj (max'_mem _ hU) <| heq.symm ▸ max'_mem _ _).elim
     · assumption
   refine hB ?_
@@ -198,7 +198,7 @@ attribute [-instance] Fintype.decidableForallFintype
 
 Note that this does depend on the order of the ground set, unlike the Kruskal-Katona theorem itself
 (although `kruskal_katona` currently is stated in an order-dependent manner). -/
-private def familyMeasure (𝒜 : Finset (Finset (Fin n))) : ℕ := ∑ A in 𝒜, ∑ a in A, 2 ^ (a : ℕ)
+private def familyMeasure (𝒜 : Finset (Finset (Fin n))) : ℕ := ∑ A ∈ 𝒜, ∑ a ∈ A, 2 ^ (a : ℕ)
 
 /-- Applying a compression strictly decreases the measure. This helps show that "compress until we
 can't any more" is a terminating process. -/
@@ -241,7 +241,7 @@ private lemma kruskal_katona_helper {r : ℕ} (𝒜 : Finset (Finset (Fin n)))
   obtain husable | husable := usable.eq_empty_or_nonempty
   -- No. Then where we are is the required set family.
   · refine ⟨𝒜, le_rfl, rfl, h, fun U V hUV ↦ ?_⟩
-    rw [eq_empty_iff_forall_not_mem] at husable
+    rw [eq_empty_iff_forall_notMem] at husable
     by_contra h
     exact husable ⟨U, V⟩ <| mem_filter.2 ⟨mem_univ _, hUV, h⟩
   -- Yes. Then apply the smallest compression, then keep going
@@ -250,7 +250,7 @@ private lemma kruskal_katona_helper {r : ℕ} (𝒜 : Finset (Finset (Fin n)))
   have h₂ : ∀ U₁ V₁, UsefulCompression U₁ V₁ → #U₁ < #U → IsCompressed U₁ V₁ 𝒜 := by
     rintro U₁ V₁ huseful hUcard
     by_contra h
-    exact hUcard.not_le <| t ⟨U₁, V₁⟩ <| mem_filter.2 ⟨mem_univ _, huseful, h⟩
+    exact hUcard.not_ge <| t ⟨U₁, V₁⟩ <| mem_filter.2 ⟨mem_univ _, huseful, h⟩
   have p1 : #(∂ (𝓒 U V 𝒜)) ≤ #(∂ 𝒜) := compression_improved _ hUV.2.1 h₂
   obtain ⟨-, hUV', hu, hv, hmax⟩ := hUV.2.1
   have := familyMeasure_compression_lt_familyMeasure hmax hUV.2.2
@@ -288,9 +288,10 @@ theorem kruskal_katona (h𝒜r : (𝒜 : Set (Finset (Fin n))).Sized r) (h𝒞�
 shadow size is attained by initial segments. -/
 theorem iterated_kk (h₁ : (𝒜 : Set (Finset (Fin n))).Sized r) (h₂ : #𝒞 ≤ #𝒜) (h₃ : IsInitSeg 𝒞 r) :
     #(∂^[k] 𝒞) ≤ #(∂^[k] 𝒜) := by
-  induction' k with _k ih generalizing r 𝒜 𝒞
-  · simpa
-  · refine ih h₁.shadow (kruskal_katona h₁ h₂ h₃) ?_
+  induction k generalizing r 𝒜 𝒞 with
+  | zero => simpa
+  | succ _ ih =>
+    refine ih h₁.shadow (kruskal_katona h₁ h₂ h₃) ?_
     convert h₃.shadow
 
 /-- The **Lovasz formulation of the Kruskal-Katona theorem**.
@@ -350,13 +351,13 @@ theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
     (h₃ : r ≤ n / 2) :
     #𝒜 ≤ (n - 1).choose (r - 1) := by
   -- Take care of the r=0 case first: it's not very interesting.
-  cases' Nat.eq_zero_or_pos r with b h1r
+  rcases Nat.eq_zero_or_pos r with b | h1r
   · convert Nat.zero_le _
-    rw [Finset.card_eq_zero, eq_empty_iff_forall_not_mem]
+    rw [Finset.card_eq_zero, eq_empty_iff_forall_notMem]
     refine fun A HA ↦ h𝒜 HA HA ?_
     rw [disjoint_self_iff_empty, ← Finset.card_eq_zero, ← b]
     exact h₂ HA
-  refine le_of_not_lt fun size ↦ ?_
+  refine le_of_not_gt fun size ↦ ?_
   -- Consider 𝒜ᶜˢ = {sᶜ | s ∈ 𝒜}
   -- Its iterated shadow (∂^[n-2k] 𝒜ᶜˢ) is disjoint from 𝒜 by intersecting-ness
   have : Disjoint 𝒜 (∂^[n - 2 * r] 𝒜ᶜˢ) := disjoint_right.2 fun A hAbar hA ↦ by
@@ -384,7 +385,7 @@ theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
     convert lt_of_le_of_lt (add_le_add_left kk _) (add_lt_add_right size _) using 1
     convert Nat.choose_succ_succ _ _ using 3
     all_goals rwa [Nat.sub_one, Nat.succ_pred_eq_of_pos]
-  apply this.not_le
+  apply this.not_ge
   convert Set.Sized.card_le _
   · rw [Fintype.card_fin]
   rw [coe_union, Set.sized_union]

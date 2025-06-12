@@ -3,7 +3,7 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Spectrum
+import Mathlib.Algebra.Algebra.Spectrum.Basic
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!
@@ -49,7 +49,6 @@ variable [CommRing R] [Ring A] [Algebra R A]
 local notation "σ" => spectrum R
 local notation "↑ₐ" => algebraMap R A
 
--- Porting note: removed an unneeded assumption `p ≠ 0`
 theorem exists_mem_of_not_isUnit_aeval_prod [IsDomain R] {p : R[X]} {a : A}
     (h : ¬IsUnit (aeval a (Multiset.map (fun x : R => X - C x) p.roots).prod)) :
     ∃ k : R, k ∈ σ a ∧ eval k p = 0 := by

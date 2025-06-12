@@ -52,8 +52,8 @@ above version with a sum, as it is simpler and more relevant for algorithms.
 ## TODO
 
 * Specialize this theorem to the very common case where the recurrence is of the form
-`T(n) = ℓT(r_i(n)) + g(n)`
-where `g(n) ∈ Θ(n^t)` for some `t`. (This is often called the "master theorem" in the literature.)
+  `T(n) = ℓT(r_i(n)) + g(n)`
+  where `g(n) ∈ Θ(n^t)` for some `t`. (This is often called the "master theorem" in the literature.)
 * Add the original version of the theorem with an integral instead of a sum.
 
 ## References
@@ -268,7 +268,7 @@ lemma eventually_log_b_mul_pos : ∀ᶠ (n : ℕ) in atTop, ∀ i, 0 < log (b i 
 @[aesop safe apply] lemma T_pos (n : ℕ) : 0 < T n := by
   induction n using Nat.strongRecOn with
   | ind n h_ind =>
-    cases lt_or_le n R.n₀ with
+    cases lt_or_ge n R.n₀ with
     | inl hn => exact R.T_gt_zero' n hn -- n < R.n₀
     | inr hn => -- R.n₀ ≤ n
       rw [R.h_rec n hn]
@@ -501,7 +501,6 @@ lemma isTheta_smoothingFn_sub_self (i : α) :
                             (R.b_pos i) (ne_of_lt <| R.b_lt_one i)
                   rw [← isTheta_const_mul_right this]
 
-
 /-!
 #### Akra-Bazzi exponent `p`
 
@@ -512,7 +511,7 @@ namely `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`. -/
 
 @[continuity]
 lemma continuous_sumCoeffsExp : Continuous (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
-  refine continuous_finset_sum Finset.univ fun i _ => Continuous.mul (by continuity) ?_
+  refine continuous_finset_sum Finset.univ fun i _ => Continuous.mul (by fun_prop) ?_
   exact Continuous.rpow continuous_const continuous_id (fun x => Or.inl (ne_of_gt (R.b_pos i)))
 
 lemma strictAnti_sumCoeffsExp : StrictAnti (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
@@ -532,8 +531,7 @@ lemma tendsto_zero_sumCoeffsExp : Tendsto (fun (p : ℝ) => ∑ i, a i * (b i) ^
 
 lemma tendsto_atTop_sumCoeffsExp : Tendsto (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) atBot atTop := by
   have h₁ : Tendsto (fun p : ℝ => (a (max_bi b) : ℝ) * b (max_bi b) ^ p) atBot atTop :=
-    Tendsto.mul_atTop (R.a_pos (max_bi b)) (by simp)
-      <| tendsto_rpow_atBot_of_base_lt_one _
+    Tendsto.const_mul_atTop (R.a_pos (max_bi b)) <| tendsto_rpow_atBot_of_base_lt_one _
       (by have := R.b_pos (max_bi b); linarith) (R.b_lt_one _)
   refine tendsto_atTop_mono (fun p => ?_) h₁
   refine Finset.single_le_sum (f := fun i => (a i : ℝ) * b i ^ p) (fun i _ => ?_) (mem_univ _)
@@ -559,7 +557,7 @@ variable (a b) in
 noncomputable irreducible_def p : ℝ := Function.invFun (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) 1
 
 include R in
-@[simp]
+-- Cannot be @[simp] because `T`, `g`, `r`, and `R` can not be inferred by `simp`.
 lemma sumCoeffsExp_p_eq_one : ∑ i, a i * (b i) ^ p a b = 1 := by
   simp only [p]
   exact Function.invFun_eq (by rw [← Set.mem_range]; exact R.one_mem_range_sumCoeffsExp)
@@ -629,7 +627,7 @@ lemma eventually_atTop_sumTransform_le :
   intro i
   have hrpos_i := hrpos i
   have g_nonneg : 0 ≤ g n := R.g_nonneg n (by positivity)
-  cases le_or_lt 0 (p a b + 1) with
+  cases le_or_gt 0 (p a b + 1) with
   | inl hp => -- 0 ≤ p a b + 1
     calc sumTransform (p a b) g (r i n) n
            = n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1)) := by rfl
@@ -843,7 +841,7 @@ lemma isEquivalent_deriv_rpow_p_mul_one_sub_smoothingFn {p : ℝ} (hp : p ≠ 0)
           (fun z => z ^ (p-1) / (log z ^ 2)) =o[atTop] fun z => z ^ (p-1) / 1 := by
                       simp_rw [div_eq_mul_inv]
                       refine IsBigO.mul_isLittleO (isBigO_refl _ _)
-                        (IsLittleO.inv_rev ?_ (by aesop (add safe Eventually.of_forall)))
+                        (IsLittleO.inv_rev ?_ (by simp))
                       rw [isLittleO_const_left]
                       refine Or.inr <| Tendsto.comp tendsto_norm_atTop_atTop ?_
                       exact Tendsto.comp (g := fun z => z ^ 2)
@@ -867,7 +865,7 @@ lemma isEquivalent_deriv_rpow_p_mul_one_add_smoothingFn {p : ℝ} (hp : p ≠ 0)
           (fun z => -(z ^ (p-1) / (log z ^ 2))) =o[atTop] fun z => z ^ (p-1) / 1 := by
                       simp_rw [isLittleO_neg_left, div_eq_mul_inv]
                       refine IsBigO.mul_isLittleO (isBigO_refl _ _)
-                        (IsLittleO.inv_rev ?_ (by aesop (add safe Eventually.of_forall)))
+                        (IsLittleO.inv_rev ?_ (by simp))
                       rw [isLittleO_const_left]
                       refine Or.inr <| Tendsto.comp tendsto_norm_atTop_atTop ?_
                       exact Tendsto.comp (g := fun z => z ^ 2)
@@ -1393,7 +1391,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
             -- Apply the induction hypothesis, or use the base case depending on how large `n` is
               gcongr (∑ i, a i * ?_) + g n with i _
               · exact le_of_lt <| R.a_pos _
-              · cases lt_or_le (r i n) n₀ with
+              · cases lt_or_ge (r i n) n₀ with
                 | inl ri_lt_n₀ => exact h_base _ <| Finset.mem_Ico.mpr ⟨b_mul_n₀_le_ri i, ri_lt_n₀⟩
                 | inr n₀_le_ri =>
                   exact h_ind (r i n) (R.r_lt_n _ _ (n₀_ge_Rn₀.trans hn)) n₀_le_ri

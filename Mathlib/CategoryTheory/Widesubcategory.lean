@@ -39,7 +39,6 @@ variable (F : C → D) (P : MorphismProperty D) [P.IsMultiplicative]
 which provides a category structure so that the morphisms `X ⟶ Y` are the morphisms
 in `D` from `F X` to `F Y` which satisfy a property `P : MorphismProperty D` that is multiplicative.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 @[nolint unusedArguments]
 def InducedWideCategory (_F : C → D) (_P : MorphismProperty D) [IsMultiplicative _P] :=
   C

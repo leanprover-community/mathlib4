@@ -3,11 +3,14 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
-import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Algebra.Group.ULift
+import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Cast.Prod
+import Mathlib.Data.ULift
+import Mathlib.Order.Interval.Set.Defs
+import Mathlib.Algebra.Ring.GrindInstances
 
 /-!
 # Characteristic of semirings
@@ -18,7 +21,7 @@ imports of `CharP/Lemmas.lean`.
 As such, we can probably reorganize and find a better home for most of these lemmas.
 -/
 
-assert_not_exists Finset
+assert_not_exists Finset TwoSidedIdeal
 
 open Set
 
@@ -30,7 +33,23 @@ variable [AddMonoidWithOne R] (p : ℕ)
 
 variable [CharP R p] {a b : ℕ}
 
+lemma natCast_eq_natCast' (h : a ≡ b [MOD p]) : (a : R) = b := by
+  wlog hle : a ≤ b
+  · exact (this R p h.symm (le_of_not_ge hle)).symm
+  rw [Nat.modEq_iff_dvd' hle] at h
+  rw [← Nat.sub_add_cancel hle, Nat.cast_add, (cast_eq_zero_iff R p _).mpr h, zero_add]
+
+lemma natCast_eq_natCast_mod (a : ℕ) : (a : R) = a % p :=
+  natCast_eq_natCast' R p (Nat.mod_modEq a p).symm
+
 variable [IsRightCancelAdd R]
+
+lemma natCast_eq_natCast : (a : R) = b ↔ a ≡ b [MOD p] := by
+  wlog hle : a ≤ b
+  · rw [eq_comm, this R p (le_of_not_ge hle), Nat.ModEq.comm]
+  rw [Nat.modEq_iff_dvd' hle, ← cast_eq_zero_iff R p (b - a),
+    ← add_right_cancel_iff (G := R) (a := a) (b := b - a), zero_add, ← Nat.cast_add,
+    Nat.sub_add_cancel hle, eq_comm]
 
 lemma natCast_injOn_Iio : (Set.Iio p).InjOn ((↑) : ℕ → R) :=
   fun _a ha _b hb hab ↦ ((natCast_eq_natCast _ _).1 hab).eq_of_lt_of_lt ha hb
@@ -39,6 +58,12 @@ end AddMonoidWithOne
 
 section AddGroupWithOne
 variable [AddGroupWithOne R] (p : ℕ) [CharP R p] {a b : ℤ}
+
+lemma intCast_eq_intCast : (a : R) = b ↔ a ≡ b [ZMOD p] := by
+  rw [eq_comm, ← sub_eq_zero, ← Int.cast_sub, CharP.intCast_eq_zero_iff R p, Int.modEq_iff_dvd]
+
+lemma intCast_eq_intCast_mod : (a : R) = a % (p : ℤ) :=
+  (CharP.intCast_eq_intCast R p).mpr (Int.mod_modEq a p).symm
 
 lemma intCast_injOn_Ico [IsRightCancelAdd R] : InjOn (Int.cast : ℤ → R) (Ico 0 p) := by
   rintro a ⟨ha₀, ha⟩ b ⟨hb₀, hb⟩ hab
@@ -49,10 +74,6 @@ lemma intCast_injOn_Ico [IsRightCancelAdd R] : InjOn (Int.cast : ℤ → R) (Ico
 
 end AddGroupWithOne
 end CharP
-
-lemma RingHom.charP_iff_charP {K L : Type*} [DivisionRing K] [Semiring L] [Nontrivial L]
-    (f : K →+* L) (p : ℕ) : CharP K p ↔ CharP L p := by
-  simp only [charP_iff, ← f.injective.eq_iff, map_natCast f, map_zero f]
 
 namespace CharP
 
@@ -114,7 +135,7 @@ variable (S : Type*) [AddMonoidWithOne R] [AddMonoidWithOne S] (p q : ℕ) [Char
 /-- The characteristic of the product of rings is the least common multiple of the
 characteristics of the two rings. -/
 instance Nat.lcm.charP [CharP S q] : CharP (R × S) (Nat.lcm p q) where
-  cast_eq_zero_iff' := by
+  cast_eq_zero_iff := by
     simp [Prod.ext_iff, CharP.cast_eq_zero_iff R p, CharP.cast_eq_zero_iff S q, Nat.lcm_dvd_iff]
 
 /-- The characteristic of the product of two rings of the same characteristic
@@ -131,10 +152,10 @@ instance Prod.charZero_of_right [CharZero S] : CharZero (R × S) where
 end Prod
 
 instance ULift.charP [AddMonoidWithOne R] (p : ℕ) [CharP R p] : CharP (ULift R) p where
-  cast_eq_zero_iff' n := Iff.trans ULift.ext_iff <| CharP.cast_eq_zero_iff R p n
+  cast_eq_zero_iff n := Iff.trans ULift.ext_iff <| CharP.cast_eq_zero_iff R p n
 
 instance MulOpposite.charP [AddMonoidWithOne R] (p : ℕ) [CharP R p] : CharP Rᵐᵒᵖ p where
-  cast_eq_zero_iff' n := MulOpposite.unop_inj.symm.trans <| CharP.cast_eq_zero_iff R p n
+  cast_eq_zero_iff n := MulOpposite.unop_inj.symm.trans <| CharP.cast_eq_zero_iff R p n
 
 section
 
@@ -164,9 +185,11 @@ end CharZero
 
 namespace Fin
 
+open Fin.NatCast
+
 /-- The characteristic of `F_p` is `p`. -/
 @[stacks 09FS "First part. We don't require `p` to be a prime in mathlib."]
-instance charP (n : ℕ) [NeZero n] : CharP (Fin n) n where cast_eq_zero_iff' _ := natCast_eq_zero
+instance charP (n : ℕ) [NeZero n] : CharP (Fin n) n where cast_eq_zero_iff _ := natCast_eq_zero
 
 end Fin
 
@@ -181,3 +204,17 @@ instance (S : Type*) [Semiring S] (p) [ExpChar R p] [ExpChar S p] : ExpChar (R �
   · have := Prod.charP R S p; exact .prime hp
 
 end AddMonoidWithOne
+
+section CommRing
+
+#adaptation_note
+/-- 2025-04-19 `IsCharP` has `n` as an outparam, but `CharP` does not.
+Remove after https://github.com/leanprover-community/mathlib4/pull/24216 is merged.
+-/
+set_option synthInstance.checkSynthOrder false in
+instance (α : Type*) [CommRing α] (n : ℕ) [CharP α n] : Lean.Grind.IsCharP α n where
+  ofNat_eq_zero_iff m := by
+    rw [CommRing.toGrindCommRing_ofNat]
+    simpa [← Nat.dvd_iff_mod_eq_zero] using CharP.cast_eq_zero_iff α n m
+
+end CommRing

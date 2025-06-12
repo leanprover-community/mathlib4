@@ -30,9 +30,6 @@ we put some declarations that are specifically about natural isomorphisms in the
 namespace so that they are available using dot notation.
 -/
 
-
-open CategoryTheory
-
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
@@ -41,7 +38,7 @@ namespace CategoryTheory
 open NatTrans
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] {E : Type u₃}
-  [Category.{v₃} E]
+  [Category.{v₃} E] {E' : Type u₄} [Category.{v₄} E']
 
 namespace Iso
 
@@ -75,6 +72,20 @@ lemma inv_hom_id_app_app {F G : C ⥤ D ⥤ E} (e : F ≅ G) (X₁ : C) (X₂ : 
     (e.inv.app X₁).app X₂ ≫ (e.hom.app X₁).app X₂ = 𝟙 _ := by
   rw [← NatTrans.comp_app, Iso.inv_hom_id_app, NatTrans.id_app]
 
+@[reassoc (attr := simp)]
+lemma hom_inv_id_app_app_app {F G : C ⥤ D ⥤ E ⥤ E'} (e : F ≅ G)
+    (X₁ : C) (X₂ : D) (X₃ : E) :
+    ((e.hom.app X₁).app X₂).app X₃ ≫ ((e.inv.app X₁).app X₂).app X₃ = 𝟙 _ := by
+  rw [← NatTrans.comp_app, ← NatTrans.comp_app, Iso.hom_inv_id_app,
+    NatTrans.id_app, NatTrans.id_app]
+
+@[reassoc (attr := simp)]
+lemma inv_hom_id_app_app_app {F G : C ⥤ D ⥤ E ⥤ E'} (e : F ≅ G)
+    (X₁ : C) (X₂ : D) (X₃ : E) :
+    ((e.inv.app X₁).app X₂).app X₃ ≫ ((e.hom.app X₁).app X₂).app X₃ = 𝟙 _ := by
+  rw [← NatTrans.comp_app, ← NatTrans.comp_app, Iso.inv_hom_id_app,
+    NatTrans.id_app, NatTrans.id_app]
+
 end Iso
 
 namespace NatIso
@@ -86,9 +97,11 @@ theorem trans_app {F G H : C ⥤ D} (α : F ≅ G) (β : G ≅ H) (X : C) :
     (α ≪≫ β).app X = α.app X ≪≫ β.app X :=
   rfl
 
+@[deprecated Iso.app_hom (since := "2025-03-11")]
 theorem app_hom {F G : C ⥤ D} (α : F ≅ G) (X : C) : (α.app X).hom = α.hom.app X :=
   rfl
 
+@[deprecated Iso.app_hom (since := "2025-03-11")]
 theorem app_inv {F G : C ⥤ D} (α : F ≅ G) (X : C) : (α.app X).inv = α.inv.app X :=
   rfl
 
@@ -108,7 +121,7 @@ section
 Unfortunately we need a separate set of cancellation lemmas for components of natural isomorphisms,
 because the `simp` normal form is `α.hom.app X`, rather than `α.app.hom X`.
 
-(With the later, the morphism would be visibly part of an isomorphism, so general lemmas about
+(With the latter, the morphism would be visibly part of an isomorphism, so general lemmas about
 isomorphisms would apply.)
 
 In the future, we should consider a redesign that changes this simp norm form,
@@ -213,7 +226,7 @@ theorem ofComponents.app (app' : ∀ X : C, F.obj X ≅ G.obj X) (naturality) (X
 /-- A natural transformation is an isomorphism if all its components are isomorphisms.
 -/
 theorem isIso_of_isIso_app (α : F ⟶ G) [∀ X : C, IsIso (α.app X)] : IsIso α :=
-  (ofComponents (fun X => asIso (α.app X)) (by aesop)).isIso_hom
+  (ofComponents (fun X => asIso (α.app X)) (by simp)).isIso_hom
 
 /-- Horizontal composition of natural isomorphisms. -/
 @[simps]

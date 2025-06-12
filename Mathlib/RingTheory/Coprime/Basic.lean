@@ -3,7 +3,8 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Ken Lee, Chris Hughes
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Units
+import Mathlib.Algebra.Group.Action.Units
+import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Hom.Defs
@@ -16,9 +17,9 @@ import Mathlib.Tactic.Ring
 ## Main definition
 
 * `IsCoprime x y`: that `x` and `y` are coprime, defined to be the existence of `a` and `b` such
-that `a * x + b * y = 1`. Note that elements with no common divisors (`IsRelPrime`) are not
-necessarily coprime, e.g., the multivariate polynomials `x₁` and `x₂` are not coprime.
-The two notions are equivalent in Bézout rings, see `isRelPrime_iff_isCoprime`.
+  that `a * x + b * y = 1`. Note that elements with no common divisors (`IsRelPrime`) are not
+  necessarily coprime, e.g., the multivariate polynomials `x₁` and `x₂` are not coprime.
+  The two notions are equivalent in Bézout rings, see `isRelPrime_iff_isCoprime`.
 
 This file also contains lemmas about `IsRelPrime` parallel to `IsCoprime`.
 
@@ -367,9 +368,33 @@ theorem neg_neg {x y : R} (h : IsCoprime x y) : IsCoprime (-x) (-y) :=
 theorem neg_neg_iff (x y : R) : IsCoprime (-x) (-y) ↔ IsCoprime x y :=
   (neg_left_iff _ _).trans (neg_right_iff _ _)
 
+section abs
+
+variable [LinearOrder R] [AddLeftMono R]
+
+lemma abs_left_iff (x y : R) : IsCoprime |x| y ↔ IsCoprime x y := by
+  cases le_or_gt 0 x with
+  | inl h => rw [abs_of_nonneg h]
+  | inr h => rw [abs_of_neg h, IsCoprime.neg_left_iff]
+
+lemma abs_left {x y : R} (h : IsCoprime x y) : IsCoprime |x| y := abs_left_iff _ _ |>.2 h
+
+lemma abs_right_iff (x y : R) : IsCoprime x |y| ↔ IsCoprime x y := by
+  rw [isCoprime_comm, IsCoprime.abs_left_iff, isCoprime_comm]
+
+lemma abs_right {x y : R} (h : IsCoprime x y) : IsCoprime x |y| := abs_right_iff _ _ |>.2 h
+
+theorem abs_abs_iff (x y : R) : IsCoprime |x| |y| ↔ IsCoprime x y :=
+  (abs_left_iff _ _).trans (abs_right_iff _ _)
+
+theorem abs_abs {x y : R} (h : IsCoprime x y) : IsCoprime |x| |y| := h.abs_left.abs_right
+
+end abs
+
 end CommRing
 
-theorem sq_add_sq_ne_zero {R : Type*} [LinearOrderedCommRing R] {a b : R} (h : IsCoprime a b) :
+theorem sq_add_sq_ne_zero {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
+    {a b : R} (h : IsCoprime a b) :
     a ^ 2 + b ^ 2 ≠ 0 := by
   intro h'
   obtain ⟨ha, hb⟩ := (add_eq_zero_iff_of_nonneg (sq_nonneg _) (sq_nonneg _)).mp h'
@@ -378,6 +403,29 @@ theorem sq_add_sq_ne_zero {R : Type*} [LinearOrderedCommRing R] {a b : R} (h : I
   exact not_isCoprime_zero_zero h
 
 end IsCoprime
+
+/-- `IsCoprime` is not a useful definition for `Nat`; consider using `Nat.Coprime` instead. -/
+@[simp]
+lemma Nat.isCoprime_iff {m n : ℕ} : IsCoprime m n ↔ m = 1 ∨ n = 1 := by
+  refine ⟨fun ⟨a, b, H⟩ => ?_, fun h => ?_⟩
+  · simp_rw [Nat.add_eq_one_iff, mul_eq_one, mul_eq_zero] at H
+    exact H.symm.imp (·.1.2) (·.2.2)
+  · obtain rfl | rfl := h
+    · exact isCoprime_one_left
+    · exact isCoprime_one_right
+
+/-- `IsCoprime` is not a useful definition for `PNat`; consider using `Nat.Coprime` instead. -/
+lemma PNat.isCoprime_iff {m n : ℕ+} : IsCoprime (m : ℕ) n ↔ m = 1 ∨ n = 1 := by simp
+
+/-- `IsCoprime` is not a useful definition if an inverse is available. -/
+@[simp]
+lemma Semifield.isCoprime_iff {R : Type*} [Semifield R] {m n : R} :
+    IsCoprime m n ↔ m ≠ 0 ∨ n ≠ 0 := by
+  obtain rfl | hn := eq_or_ne n 0
+  · simp [isCoprime_zero_right]
+  suffices IsCoprime m n by simpa [hn]
+  refine ⟨0, n⁻¹, ?_⟩
+  simp [inv_mul_cancel₀ hn]
 
 namespace IsRelPrime
 

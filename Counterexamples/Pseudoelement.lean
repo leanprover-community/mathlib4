@@ -33,11 +33,6 @@ open CategoryTheory.Abelian CategoryTheory CategoryTheory.Limits ModuleCat Linea
 
 namespace Counterexample
 
-/-
-Porting note: this file was rewritten to use categorical notation
-such as `𝟙 _` instead of `ofHom id`. This way, `simp` found it easier to prove things.
--/
-
 noncomputable section
 
 open CategoryTheory.Abelian.Pseudoelement
@@ -88,13 +83,7 @@ theorem x_not_pseudo_eq : ¬PseudoEqual _ x y := by
   let π₂ := (biprod.snd : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _)
   have ha₂ := congr_arg π₂ ha
   rw [← ModuleCat.comp_apply, ← ModuleCat.comp_apply] at ha₂
-  simp only [π₁, π₂, φ, BinaryBiproduct.bicone_snd, biprod.lift_snd, CategoryTheory.id_apply,
-    biprod.lift_fst_assoc, Category.id_comp, biprod.lift_snd_assoc, Linear.smul_comp,
-    Preadditive.add_comp, BinaryBicone.inl_snd, BinaryBicone.inr_snd, zero_add, two_smul] at ha₂
-  erw [add_apply, ModuleCat.id_apply] at ha₂
-  subst ha₁
-  simp only [self_eq_add_right] at ha₂
-  exact one_ne_zero' ℚ ha₂
+  simp_all [π₁, π₂, φ]
 
 attribute [local instance] Pseudoelement.setoid
 
@@ -118,7 +107,7 @@ theorem mk'_x_ne_mk'_y : (⟦x⟧ : Quotient <| Pseudoelement.setoid _) ≠ ⟦y
   fun h => x_not_pseudo_eq <| Quotient.eq'.1 h
 
 /-- There are two pseudoelements `x y : ℚ ⊞ ℚ` such that `x ≠ y`, `biprod.fst x = biprod.fst y` and
- `biprod.snd x = biprod.snd y`. -/
+`biprod.snd x = biprod.snd y`. -/
 theorem exist_ne_and_fst_eq_fst_and_snd_eq_snd :
     ∃ x y, -- Porting note: removed type ascription `: of ℤ ℚ ⊞ of ℤ ℚ`, it gave an error about
            -- `Type` not having zero morphisms. jmc: I don't understand where the error came from

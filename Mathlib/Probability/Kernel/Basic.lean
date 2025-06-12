@@ -68,6 +68,12 @@ theorem deterministic_apply' {f : α → β} (hf : Measurable f) (a : α) {s : S
   change Measure.dirac (f a) s = s.indicator 1 (f a)
   simp_rw [Measure.dirac_apply' _ hs]
 
+/-- Because of the measurability field in `Kernel.deterministic`, `rw [h]` will not rewrite
+`deterministic f hf` to `deterministic g ⋯`. Instead one can do `rw [deterministic_congr h]`. -/
+theorem deterministic_congr {f g : α → β} {hf : Measurable f} (h : f = g) :
+    deterministic f hf = deterministic g (h ▸ hf) := by
+  conv_lhs => enter [1]; rw [h]
+
 instance isMarkovKernel_deterministic {f : α → β} (hf : Measurable f) :
     IsMarkovKernel (deterministic f hf) :=
   ⟨fun a => by rw [deterministic_apply hf]; infer_instance⟩
@@ -86,17 +92,11 @@ theorem setLIntegral_deterministic' {f : β → ℝ≥0∞} {g : α → β} {a :
     ∫⁻ x in s, f x ∂deterministic g hg a = if g a ∈ s then f (g a) else 0 := by
   rw [deterministic_apply, setLIntegral_dirac' hf hs]
 
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_deterministic' := setLIntegral_deterministic'
-
 @[simp]
 theorem setLIntegral_deterministic {f : β → ℝ≥0∞} {g : α → β} {a : α} (hg : Measurable g)
     [MeasurableSingletonClass β] (s : Set β) [Decidable (g a ∈ s)] :
     ∫⁻ x in s, f x ∂deterministic g hg a = if g a ∈ s then f (g a) else 0 := by
   rw [deterministic_apply, setLIntegral_dirac f s]
-
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_deterministic := setLIntegral_deterministic
 
 end Deterministic
 
@@ -110,6 +110,14 @@ instance : IsMarkovKernel (Kernel.id : Kernel α α) := by rw [Kernel.id]; infer
 
 lemma id_apply (a : α) : Kernel.id a = Measure.dirac a := by
   rw [Kernel.id, deterministic_apply, id_def]
+
+lemma lintegral_id' {f : α → ℝ≥0∞} (hf : Measurable f) (a : α) :
+    ∫⁻ a, f a ∂(@Kernel.id α mα a) = f a := by
+  rw [id_apply, lintegral_dirac' _ hf]
+
+lemma lintegral_id [MeasurableSingletonClass α] {f : α → ℝ≥0∞} (a : α) :
+    ∫⁻ a, f a ∂(@Kernel.id α mα a) = f a := by
+  rw [id_apply, lintegral_dirac]
 
 end Id
 
@@ -180,10 +188,7 @@ lemma const_add (β : Type*) [MeasurableSpace β] (μ ν : Measure α) :
     const β (μ + ν) = const β μ + const β ν := by ext; simp
 
 lemma sum_const [Countable ι] (μ : ι → Measure β) :
-    Kernel.sum (fun n ↦ const α (μ n)) = const α (Measure.sum μ) := by
-  ext x s hs
-  rw [const_apply, Measure.sum_apply _ hs, Kernel.sum_apply' _ _ hs]
-  simp only [const_apply]
+    Kernel.sum (fun n ↦ const α (μ n)) = const α (Measure.sum μ) := rfl
 
 instance const.instIsFiniteKernel {μβ : Measure β} [IsFiniteMeasure μβ] :
     IsFiniteKernel (const α μβ) :=
@@ -215,9 +220,6 @@ theorem lintegral_const {f : β → ℝ≥0∞} {μ : Measure β} {a : α} :
 @[simp]
 theorem setLIntegral_const {f : β → ℝ≥0∞} {μ : Measure β} {a : α} {s : Set β} :
     ∫⁻ x in s, f x ∂const α μ a = ∫⁻ x in s, f x ∂μ := by rw [const_apply]
-
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_const := setLIntegral_const
 
 end Const
 
@@ -261,9 +263,6 @@ theorem lintegral_restrict (κ : Kernel α β) (hs : MeasurableSet s) (a : α) (
 theorem setLIntegral_restrict (κ : Kernel α β) (hs : MeasurableSet s) (a : α) (f : β → ℝ≥0∞)
     (t : Set β) : ∫⁻ b in t, f b ∂κ.restrict hs a = ∫⁻ b in t ∩ s, f b ∂κ a := by
   rw [restrict_apply, Measure.restrict_restrict' hs]
-
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_restrict := setLIntegral_restrict
 
 
 instance IsFiniteKernel.restrict (κ : Kernel α β) [IsFiniteKernel κ] (hs : MeasurableSet s) :
@@ -386,9 +385,6 @@ theorem setLIntegral_piecewise (a : α) (g : β → ℝ≥0∞) (t : Set β) :
       if a ∈ s then ∫⁻ b in t, g b ∂κ a else ∫⁻ b in t, g b ∂η a := by
   simp_rw [piecewise_apply]; split_ifs <;> rfl
 
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_piecewise := setLIntegral_piecewise
-
 end Piecewise
 
 lemma exists_ae_eq_isMarkovKernel {μ : Measure α}
@@ -405,7 +401,7 @@ lemma exists_ae_eq_isMarkovKernel {μ : Measure α}
   obtain ⟨a, ha⟩ : sᶜ.Nonempty := by
     contrapose! h'; simpa [μs, h'] using measure_univ_le_add_compl s (μ := μ)
   refine ⟨Kernel.piecewise s_meas (Kernel.const _ (κ a)) κ, ?_, ?_⟩
-  · filter_upwards [measure_zero_iff_ae_nmem.1 μs] with b hb
+  · filter_upwards [measure_zero_iff_ae_notMem.1 μs] with b hb
     simp [hb, piecewise]
   · refine ⟨fun b ↦ ?_⟩
     by_cases hb : b ∈ s
