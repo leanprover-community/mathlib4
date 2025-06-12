@@ -568,14 +568,15 @@ def showLinter : Linter where run := withSetOptionIn fun stx => do
         let (goal' :: goals') := tac.goalsAfter | return
         if goals != goals' then return -- `show` didn't act on first goal -> can't replace with `change`
         if goal == goal' then return -- same goal, no need to check
-        ci.runMetaM .empty do
-          let before ← instantiateMVars (← goal.getType)
-          let after ← instantiateMVars (← goal'.getType)
-          if before != after then
-            logLint linter.style.show tac.stx m!"\
-            The `show` tactic should only be used to indicate intermediate goal states for \
-            readability. However, this tactic invocation changed the goal. Please use `change` \
-            instead for these purposes."
+        let diff ← ci.runCoreM do
+          let before ← (do instantiateMVars (← goal.getType)).run' {} { mctx := tac.mctxBefore }
+          let after ← (do instantiateMVars (← goal'.getType)).run' {} { mctx := tac.mctxAfter }
+          return before != after
+        if diff then
+          logLint linter.style.show tac.stx m!"\
+          The `show` tactic should only be used to indicate intermediate goal states for \
+          readability.\nHowever, this tactic invocation changed the goal. Please use `change` \
+          instead for these purposes."
 
 initialize addLinter showLinter
 
