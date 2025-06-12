@@ -341,8 +341,8 @@ def connectShortComplexπ : (connectShortComplex S T e φ hφ).shortComplex₂ �
   τ₃ := 𝟙 _
 
 instance [Epi S.g] : Epi (connectShortComplexπ S T e φ hφ).τ₁ := epi_comp _ _
-instance : IsIso (connectShortComplexπ S T e φ hφ).τ₂ := by dsimp ; infer_instance
-instance : IsIso (connectShortComplexπ S T e φ hφ).τ₃ := by dsimp ; infer_instance
+instance : IsIso (connectShortComplexπ S T e φ hφ).τ₂ := by dsimp; infer_instance
+instance : IsIso (connectShortComplexπ S T e φ hφ).τ₃ := by dsimp; infer_instance
 
 lemma connectShortComplex_exact (hS : S.Exact) (hT : T.Exact) [Epi S.g] [Mono T.f] :
     (connectShortComplex S T e φ hφ).Exact where
