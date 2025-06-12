@@ -631,7 +631,7 @@ instance preorder : Preorder (ℤ√d) where
   le_refl a := show Nonneg (a - a) by simp only [sub_self]; trivial
   le_trans a b c hab hbc := by simpa [sub_add_sub_cancel'] using hab.add hbc
   lt := (· < ·)
-  lt_iff_le_not_le _ _ := (and_iff_right_of_imp (Zsqrtd.le_total _ _).resolve_left).symm
+  lt_iff_le_not_ge _ _ := (and_iff_right_of_imp (Zsqrtd.le_total _ _).resolve_left).symm
 
 open Int in
 theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
