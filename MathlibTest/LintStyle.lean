@@ -497,7 +497,7 @@ def aux' : Nat := 1
 end openClassical
 
 /- Tests for the `show` linter -/
-section show
+section showLinter
 
 set_option linter.style.show true
 
@@ -540,4 +540,4 @@ example := by
   show 1 = 1
   rfl
 
-end show
+end showLinter
