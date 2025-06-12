@@ -891,7 +891,7 @@ lemma to_truncLT_obj_ext (n : ℤ) (Y : C) {X : C}
 lemma liftTruncLE' {X Y : C} (f : X ⟶ Y) (n : ℤ) [t.IsLE X n] :
     ∃ (f' : X ⟶ (t.truncLE n).obj Y), f = f' ≫ (t.truncLEι n).app Y :=
   Triangle.coyoneda_exact₂ _ (t.triangleLEGT_distinguished n Y) f
-    (t.zero_of_isLE_of_isGE  _ n (n+1) (by linarith) inferInstance (by dsimp ; infer_instance))
+    (t.zero_of_isLE_of_isGE  _ n (n+1) (by linarith) inferInstance (by dsimp; infer_instance))
 
 noncomputable def liftTruncLE {X Y : C} (f : X ⟶ Y) (n : ℤ) [t.IsLE X n] :
     X ⟶ (t.truncLE n).obj Y := (t.liftTruncLE' f n).choose
