@@ -34,10 +34,18 @@ instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     simp [Transported.instBraidedCategory, braidedCategoryOfFullyFaithful,
       braidedCategoryOfFaithful]
 
+/--
+This is a def because once we have that both `(e' e).inverse` and `(e' e).functor` are
+braided, this causes a diamond.
+-/
 def transportedFunctorCompInverseLaxBraided (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     ((e' e).functor ⋙ (e' e).inverse).LaxBraided :=
   Functor.LaxBraided.ofNatIso _ _ (e' e).unitIso
 
+/--
+This is a def because once we have that both `(e' e).inverse` and `(e' e).functor` are
+braided, this causes a diamond.
+-/
 attribute [local instance] transportedFunctorCompInverseLaxBraided in
 def transportedInverseCompFunctorLaxBraided (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
     ((e' e).functor ⋙ (e' e).inverse).Braided where
