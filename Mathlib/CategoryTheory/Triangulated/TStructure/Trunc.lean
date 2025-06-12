@@ -1509,7 +1509,7 @@ instance (a b : ℤ) (X : C) : IsIso ((t.natTransTruncGELTTruncLTGE a b).app X) 
     have H := someOctahedron eq (t.triangleLTLTGELT_distinguished a b h X)
       (t.triangleLTGE_distinguished b X) (t.triangleLTGE_distinguished a X)
     let m₁ : (t.truncGELT a b).obj X ⟶  _ := H.m₁
-    have := t.isIso₁_truncLT_map_of_GE _ H.mem b (by dsimp ; infer_instance)
+    have := t.isIso₁_truncLT_map_of_GE _ H.mem b (by dsimp; infer_instance)
     dsimp at this
     have eq' : t.liftTruncLT m₁ (b-1) b (by linarith) =
         (t.natTransTruncGELTTruncLTGE a b).app X := by
