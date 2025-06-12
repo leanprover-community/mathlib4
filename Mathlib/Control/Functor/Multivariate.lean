@@ -127,23 +127,17 @@ theorem LiftR_def (x y : F α) :
           (TypeVec.prod.snd ⊚ subtypeVal R) <$$> u = y :=
   exists_iff_exists_of_mono _ _ _ (toSubtype'_of_subtype' R) (by
     simp only [map_map, comp_assoc, subtypeVal_toSubtype']
-    simp (config := { unfoldPartialApp := true }) [comp])
+    simp +unfoldPartialApp [comp])
 
 end LiftP'
 
 end MvFunctor
 
-open Nat
-
 namespace MvFunctor
-
-open TypeVec
 
 section LiftPLastPredIff
 
 variable {F : TypeVec.{u} (n + 1) → Type*} [MvFunctor F] [LawfulMvFunctor F] {α : TypeVec.{u} n}
-
-open MvFunctor
 
 variable {β : Type u}
 variable (pp : β → Prop)
@@ -172,12 +166,10 @@ theorem LiftP_PredLast_iff {β} (P : β → Prop) (x : F (α ::: β)) :
     cases i <;> rfl
   · intros
     rw [MvFunctor.map_map]
-    dsimp (config := { unfoldPartialApp := true }) [(· ⊚ ·)]
+    dsimp +unfoldPartialApp [(· ⊚ ·)]
     suffices (fun i => Subtype.val) = (fun i x => (MvFunctor.f P n α i x).val) by rw [this]
     ext i ⟨x, _⟩
     cases i <;> rfl
-
-open Function
 
 variable (rr : β → β → Prop)
 
@@ -206,7 +198,7 @@ theorem LiftR_RelLast_iff (x y : F (α ::: β)) :
   · ext i ⟨x, _⟩ : 2
     cases i <;> rfl
   · intros
-    simp (config := { unfoldPartialApp := true }) only [map_map, TypeVec.comp]
+    simp +unfoldPartialApp only [map_map, TypeVec.comp]
     -- Porting note: proof was
     -- rw [MvFunctor.map_map, MvFunctor.map_map, (· ⊚ ·), (· ⊚ ·)]
     -- congr <;> ext i ⟨x, _⟩ <;> cases i <;> rfl
