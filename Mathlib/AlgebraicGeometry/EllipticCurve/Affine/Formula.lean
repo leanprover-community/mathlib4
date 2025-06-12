@@ -133,24 +133,25 @@ lemma evalEval_negPolynomial (x y : R) : W'.negPolynomial.evalEval x y = W'.negY
 
 @[deprecated (since := "2025-03-05")] alias eval_negPolynomial := evalEval_negPolynomial
 
-lemma Y_sub_Y_mul_Y_sub_negY {x₁ x₂ y₁ y₂ : R} (h₁ : W'.Equation x₁ y₁) (h₂ : W'.Equation x₂ y₂)
-    (hx : x₁ = x₂) : (y₁ - y₂) * (y₁ - W'.negY x₂ y₂) = 0 := by
+lemma Y_sub_Y_mul_Y_sub_negY_of_X_eq {x₁ x₂ y₁ y₂ : R} (h₁ : W'.Equation x₁ y₁)
+    (h₂ : W'.Equation x₂ y₂) (hx : x₁ = x₂) : (y₁ - y₂) * (y₁ - W'.negY x₂ y₂) = 0 := by
   linear_combination (norm := (rw [hx, negY]; ring1))
     (equation_iff ..).mp h₁ - (equation_iff ..).mp h₂
 
-lemma Y_eq_or_Y_eq' [NoZeroDivisors R] {x₁ x₂ y₁ y₂ : R} (h₁ : W'.Equation x₁ y₁)
+lemma Y_eq_or_Y_eq'_of_X_eq [NoZeroDivisors R] {x₁ x₂ y₁ y₂ : R} (h₁ : W'.Equation x₁ y₁)
     (h₂ : W'.Equation x₂ y₂) (hx : x₁ = x₂) : y₁ = y₂ ∨ y₁ = W'.negY x₂ y₂ := by
-  rw [← sub_eq_zero, ← sub_eq_zero (a := y₁), ← mul_eq_zero, Y_sub_Y_mul_Y_sub_negY h₁ h₂ hx]
+  rw [← sub_eq_zero, ← sub_eq_zero (a := y₁), ← mul_eq_zero,
+    Y_sub_Y_mul_Y_sub_negY_of_X_eq h₁ h₂ hx]
 
-@[deprecated (since := "2025-05-26")] alias Y_eq_of_X_eq := Y_eq_or_Y_eq'
+@[deprecated (since := "2025-05-26")] alias Y_eq_of_X_eq := Y_eq_or_Y_eq'_of_X_eq
 
 lemma Y_eq'_of_Y_ne {x₁ x₂ y₁ y₂ : R} (h₁ : W'.Equation x₁ y₁) (h₂ : W'.Equation x₂ y₂)
     (hx : x₁ = x₂) (hy : IsUnit <| y₁ - y₂) : y₁ = W'.negY x₂ y₂ :=
-  sub_eq_zero.mp <| hy.mul_right_eq_zero.mp <| Y_sub_Y_mul_Y_sub_negY h₁ h₂ hx
+  sub_eq_zero.mp <| hy.mul_right_eq_zero.mp <| Y_sub_Y_mul_Y_sub_negY_of_X_eq h₁ h₂ hx
 
 lemma Y_eq_of_Y_ne' {x₁ x₂ y₁ y₂ : R} (h₁ : W'.Equation x₁ y₁) (h₂ : W'.Equation x₂ y₂)
     (hx : x₁ = x₂) (hy : IsUnit <| y₁ - W'.negY x₂ y₂) : y₁ = y₂ :=
-  sub_eq_zero.mp <| hy.mul_left_eq_zero.mp <| Y_sub_Y_mul_Y_sub_negY h₁ h₂ hx
+  sub_eq_zero.mp <| hy.mul_left_eq_zero.mp <| Y_sub_Y_mul_Y_sub_negY_of_X_eq h₁ h₂ hx
 
 @[deprecated (since := "2025-05-26")] alias Y_eq_of_Y_ne := Y_eq_of_Y_ne'
 

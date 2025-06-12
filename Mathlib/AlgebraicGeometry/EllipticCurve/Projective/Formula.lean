@@ -45,6 +45,12 @@ their large quotient polynomials are calculated explicitly in a computer algebra
 is done to ensure that the definitions of both `WeierstrassCurve.Projective.dblXYZ` and
 `WeierstrassCurve.Projective.addXYZ` are homogeneous of degree `4`.
 
+For ease of naming, the following conventions will be used in theorems about nonsingular projective
+points `P` and `Q` on a Weierstrass curve `W` over a commutative ring `R`.
+* `Y_eq'` is the condition `P y * Q z = W.negY Q * P z` assuming `X_eq`.
+* `Y_ne'` is the condition `IsUnit <| P y * Q z - W.negY Q * P z` (which is equivalent to
+  `P y * Q z ≠ W.negY Q * P z` if `R` is a field) assuming `X_eq`.
+
 Whenever possible, all changes to documentation and naming of definitions and theorems should be
 mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Formula.lean`.
 
@@ -98,11 +104,17 @@ lemma negY_of_Z_eq_zero [NoZeroDivisors R] {P : R × R × R} (hP : W'.Equation P
     W'.negY P = -P y := by
   rw [negY, hPz, X_eq_zero_of_Z_eq_zero hP hPz, mul_zero, sub_zero, mul_zero, sub_zero]
 
-lemma negY_of_Z_ne_zero {P : F × F × F} (hPz : P z ≠ 0) :
-    W.negY P / P z = W.toAffine.negY (P x / P z) (P y / P z) := by
-  linear_combination (norm := (rw [negY, Affine.negY]; ring1)) -W.a₃ * div_self hPz
+lemma negY_of_isUnit_Z {P : R × R × R} (hPz : IsUnit <| P z) :
+    W'.negY P = W'.toAffine.negY (P x * hPz.unit⁻¹) (P y * hPz.unit⁻¹) * P z := by
+  rw [negY, Affine.negY]
+  linear_combination (norm := ring1) P y * hPz.mul_val_inv + W'.a₁ * P x * hPz.mul_val_inv
 
-lemma Y_sub_Y_mul_Y_sub_negY {P Q : R × R × R} (hP : W'.Equation P) (hQ : W'.Equation Q)
+lemma negY_of_Z_ne_zero {P : F × F × F} (hPz : P z ≠ 0) :
+    W.negY P = W.toAffine.negY (P x / P z) (P y / P z) * P z := by
+  simp_rw [div_eq_mul_inv]
+  convert negY_of_isUnit_Z hPz.isUnit using 4 <;> exact hPz.isUnit.unit.val_inv_eq_inv_val.symm
+
+lemma Y_sub_Y_mul_Y_sub_negY_of_X_eq {P Q : R × R × R} (hP : W'.Equation P) (hQ : W'.Equation Q)
     (hx : P x * Q z = Q x * P z) :
     P z * Q z * (P y * Q z - Q y * P z) * (P y * Q z - W'.negY Q * P z) = 0 := by
   linear_combination (norm := (rw [negY]; ring1)) Q z ^ 3 * (equation_iff P).mp hP
@@ -110,52 +122,78 @@ lemma Y_sub_Y_mul_Y_sub_negY {P Q : R × R × R} (hP : W'.Equation P) (hQ : W'.E
       + Q x ^ 2 * P z ^ 2 - W'.a₁ * P y * P z * Q z ^ 2 + W'.a₂ * P x * Q z ^ 2 * P z
       + W'.a₂ * Q x * P z ^ 2 * Q z + W'.a₄ * P z ^ 2 * Q z ^ 2) * hx
 
-lemma Y_eq_of_Y_ne [NoZeroDivisors R] {P Q : R × R × R} (hP : W'.Equation P) (hQ : W'.Equation Q)
-    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ Q y * P z) :
-    P y * Q z = W'.negY Q * P z :=
-  sub_eq_zero.mp <| (mul_eq_zero.mp <| Y_sub_Y_mul_Y_sub_negY hP hQ hx).resolve_left <|
-    mul_ne_zero (mul_ne_zero hPz hQz) <| sub_ne_zero.mpr hy
+@[deprecated (since := "2025-05-26")] alias Y_sub_Y_mul_Y_sub_negY := Y_sub_Y_mul_Y_sub_negY_of_X_eq
 
-lemma Y_eq_of_Y_ne' [NoZeroDivisors R] {P Q : R × R × R} (hP : W'.Equation P) (hQ : W'.Equation Q)
-    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z)
-    (hy : P y * Q z ≠ W'.negY Q * P z) : P y * Q z = Q y * P z :=
-  sub_eq_zero.mp <| (mul_eq_zero.mp <| (mul_eq_zero.mp <| Y_sub_Y_mul_Y_sub_negY hP hQ hx
-    ).resolve_right <| sub_ne_zero.mpr hy).resolve_left <| mul_ne_zero hPz hQz
+lemma Y_eq_or_Y_eq'_of_X_eq [NoZeroDivisors R] {P Q : R × R × R} (hP : W'.Equation P)
+    (hQ : W'.Equation Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) :
+    P y * Q z = Q y * P z ∨ P y * Q z = W'.negY Q * P z := by
+  rw [← sub_eq_zero, ← sub_eq_zero (a := _ * _), ← mul_eq_zero, ← mul_eq_zero_iff_left <|
+      mul_ne_zero hPz hQz, ← mul_assoc, Y_sub_Y_mul_Y_sub_negY_of_X_eq hP hQ hx]
 
-lemma Y_eq_iff' {P Q : F × F × F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
-    P y * Q z = W.negY Q * P z ↔ P y / P z = W.toAffine.negY (Q x / Q z) (Q y / Q z) :=
-  negY_of_Z_ne_zero hQz ▸ (div_eq_div_iff hPz hQz).symm
+lemma Y_eq'_of_Y_ne {P Q : R × R × R} (hP : W'.Equation P) (hQ : W'.Equation Q)
+    (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z) (hx : P x * Q z = Q x * P z)
+    (hy : IsUnit <| P y * Q z - Q y * P z) : P y * Q z = W'.negY Q * P z :=
+  sub_eq_zero.mp <| ((hPz.mul hQz).mul hy).mul_right_eq_zero.mp <|
+    Y_sub_Y_mul_Y_sub_negY_of_X_eq hP hQ hx
 
-lemma Y_sub_Y_add_Y_sub_negY {P Q : R × R × R} (hx : P x * Q z = Q x * P z) :
+@[deprecated (since := "2025-05-26")] alias Y_eq_of_Y_ne := Y_eq'_of_Y_ne
+
+lemma Y_eq_of_Y_ne' {P Q : R × R × R} (hP : W'.Equation P) (hQ : W'.Equation Q)
+    (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z) (hx : P x * Q z = Q x * P z)
+    (hy : IsUnit <| P y * Q z - W'.negY Q * P z) : P y * Q z = Q y * P z :=
+  sub_eq_zero.mp <| (hPz.mul hQz).mul_right_eq_zero.mp <| hy.mul_left_eq_zero.mp <|
+    Y_sub_Y_mul_Y_sub_negY_of_X_eq hP hQ hx
+
+lemma Y_eq'_iff_of_isUnit_Z {P Q : R × R × R} (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z) :
+    P y * Q z = W'.negY Q * P z ↔
+      P y * hPz.unit⁻¹ = W'.toAffine.negY (Q x * hQz.unit⁻¹) (Q y * hQz.unit⁻¹) := by
+  rw [negY_of_isUnit_Z hQz, mul_right_comm, hQz.mul_left_inj, Units.mul_inv_eq_iff_eq_mul,
+    hPz.unit_spec]
+
+@[deprecated (since := "2025-05-26")] alias Y_eq_iff' := Y_eq'_iff_of_isUnit_Z
+
+lemma Y_eq'_iff_of_Z_ne_zero {P Q : F × F × F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
+    P y * Q z = W.negY Q * P z ↔ P y / P z = W.toAffine.negY (Q x / Q z) (Q y / Q z) := by
+  simp_rw [Y_eq'_iff_of_isUnit_Z hPz.isUnit hQz.isUnit, Units.val_inv_eq_inv_val, IsUnit.unit_spec,
+    div_eq_mul_inv]
+
+lemma Y_sub_Y_add_Y_sub_negY_of_X_eq {P Q : R × R × R} (hx : P x * Q z = Q x * P z) :
     (P y * Q z - Q y * P z) + (P y * Q z - W'.negY Q * P z) = (P y - W'.negY P) * Q z := by
   linear_combination (norm := (rw [negY, negY]; ring1)) -W'.a₁ * hx
 
-lemma Y_ne_negY_of_Y_ne [NoZeroDivisors R] {P Q : R × R × R} (hP : W'.Equation P)
-    (hQ : W'.Equation Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z)
-    (hy : P y * Q z ≠ Q y * P z) : P y ≠ W'.negY P := by
-  have hy' : P y * Q z - W'.negY Q * P z = 0 := sub_eq_zero.mpr <| Y_eq_of_Y_ne hP hQ hPz hQz hx hy
-  contrapose! hy
-  linear_combination (norm := ring1) Y_sub_Y_add_Y_sub_negY hx + Q z * hy - hy'
+@[deprecated (since := "2025-05-26")] alias Y_sub_Y_add_Y_sub_negY := Y_sub_Y_add_Y_sub_negY_of_X_eq
 
-lemma Y_ne_negY_of_Y_ne' [NoZeroDivisors R] {P Q : R × R × R} (hP : W'.Equation P)
-    (hQ : W'.Equation Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z)
-    (hy : P y * Q z ≠ W'.negY Q * P z) : P y ≠ W'.negY P := by
-  have hy' : P y * Q z - Q y * P z = 0 := sub_eq_zero.mpr <| Y_eq_of_Y_ne' hP hQ hPz hQz hx hy
-  contrapose! hy
-  linear_combination (norm := ring1) Y_sub_Y_add_Y_sub_negY hx + Q z * hy - hy'
+lemma isUnit_Y_sub_negY_of_Y_ne {P Q : R × R × R} (hP : W'.Equation P) (hQ : W'.Equation Q)
+    (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z) (hx : P x * Q z = Q x * P z)
+    (hy : IsUnit <| P y * Q z - Q y * P z) : IsUnit <| P y - W'.negY P :=
+  isUnit_of_mul_isUnit_left <| by rwa [← Y_sub_Y_add_Y_sub_negY_of_X_eq hx,
+    ← Y_eq'_of_Y_ne hP hQ hPz hQz hx hy, sub_self, add_zero]
 
-lemma Y_eq_negY_of_Y_eq [NoZeroDivisors R] {P Q : R × R × R} (hQz : Q z ≠ 0)
+@[deprecated (since := "2025-05-26")] alias Y_ne_negY_of_Y_ne := isUnit_Y_sub_negY_of_Y_ne
+
+lemma isUnit_Y_sub_negY_of_Y_ne' {P Q : R × R × R} (hP : W'.Equation P) (hQ : W'.Equation Q)
+    (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z) (hx : P x * Q z = Q x * P z)
+    (hy : IsUnit <| P y * Q z - W'.negY Q * P z) : IsUnit <| P y - W'.negY P :=
+  isUnit_of_mul_isUnit_left <| by rwa [← Y_sub_Y_add_Y_sub_negY_of_X_eq hx,
+    ← Y_eq_of_Y_ne' hP hQ hPz hQz hx hy, sub_self, zero_add]
+
+@[deprecated (since := "2025-05-26")] alias Y_ne_negY_of_Y_ne' := isUnit_Y_sub_negY_of_Y_ne'
+
+lemma Y_eq_negY_of_Y_eq_of_Y_eq' {P Q : R × R × R} (hQz : IsUnit <| Q z)
     (hx : P x * Q z = Q x * P z) (hy : P y * Q z = Q y * P z) (hy' : P y * Q z = W'.negY Q * P z) :
     P y = W'.negY P :=
-  mul_left_injective₀ hQz <| by
-    linear_combination (norm := ring1) -Y_sub_Y_add_Y_sub_negY hx + hy + hy'
+  hQz.mul_left_injective <| by
+    linear_combination (norm := ring1) -Y_sub_Y_add_Y_sub_negY_of_X_eq hx + hy + hy'
 
-lemma nonsingular_iff_of_Y_eq_negY {P : F × F × F} (hPz : P z ≠ 0) (hy : P y = W.negY P) :
-    W.Nonsingular P ↔ W.Equation P ∧ eval ![P x, P y, P z] W.polynomialX ≠ 0 := by
-  have hy' : eval ![P x, P y, P z] W.polynomialY = (P y - W.negY P) * P z := by
-    rw [negY, eval_polynomialY]
-    ring1
-  rw [nonsingular_iff_of_Z_ne_zero hPz, hy', hy, sub_self, zero_mul, ne_self_iff_false, or_false]
+@[deprecated (since := "2025-05-26")] alias Y_ne_negY_of_Y_eq := Y_eq_negY_of_Y_eq_of_Y_eq'
+
+lemma nonsingular_iff_of_Y_eq_negY {P : R × R × R} (hPz : IsUnit <| P z) (hy : P y = W'.negY P) :
+    W'.Nonsingular P ↔ W'.Equation P ∧ IsUnit (eval ![P x, P y, P z] W'.polynomialX) := by
+  rw [nonsingular_iff_of_isUnit_Z hPz, ← Ideal.span_singleton_eq_top, ← Ideal.span_pair_zero]
+  congr! 5
+  linear_combination (norm := (rw [eval_polynomialY, negY]; ring1)) P z * hy
+
+#exit
 
 /-! ## Doubling formulae in projective coordinates -/
 
