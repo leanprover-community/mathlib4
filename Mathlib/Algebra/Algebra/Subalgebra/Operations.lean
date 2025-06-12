@@ -10,10 +10,10 @@ import Mathlib.Algebra.Ring.Action.Submonoid
 /-!
 # More operations on subalgebras
 
-In this file we relate the definitions in `Mathlib.RingTheory.Ideal.Operations` to subalgebras.
-The contents of this file are somewhat random since both `Mathlib.Algebra.Algebra.Subalgebra.Basic`
-and `Mathlib.RingTheory.Ideal.Operations` are somewhat of a grab-bag of definitions, and this is
-whatever ends up in the intersection.
+In this file we relate the definitions in `Mathlib/RingTheory/Ideal/Operations.lean` to subalgebras.
+The contents of this file are somewhat random since both
+`Mathlib/Algebra/Algebra/Subalgebra/Basic.lean` and `Mathlib/RingTheory/Ideal/Operations.lean` are
+somewhat of a grab-bag of definitions, and this is whatever ends up in the intersection.
 -/
 
 assert_not_exists Cardinal
