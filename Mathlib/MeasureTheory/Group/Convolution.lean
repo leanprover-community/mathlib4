@@ -63,20 +63,6 @@ lemma mconv_dirac [MeasurableMul₂ M] (μ : Measure M) [SFinite μ] (x : M) :
   rw [Measure.prod_dirac, map_map (by fun_prop) (by fun_prop)]
   simp [Function.comp_def]
 
-@[to_additive]
-lemma dirac_mconv [MeasurableMul₂ M] (x : M) (μ : Measure M) [SFinite μ] :
-    (Measure.dirac x) ∗ₘ μ = μ.map (fun y ↦ x * y) := by
-  unfold mconv
-  rw [Measure.dirac_prod, map_map (by fun_prop) (by fun_prop)]
-  simp [Function.comp_def]
-
-@[to_additive]
-lemma mconv_dirac [MeasurableMul₂ M] (μ : Measure M) [SFinite μ] (x : M) :
-    μ ∗ₘ (Measure.dirac x) = μ.map (fun y ↦ y * x) := by
-  unfold mconv
-  rw [Measure.prod_dirac, map_map (by fun_prop) (by fun_prop)]
-  simp [Function.comp_def]
-
 /-- Convolution of the dirac measure at 1 with a measure μ returns μ. -/
 @[to_additive (attr := simp) "Convolution of the dirac measure at 0 with a measure μ returns μ."]
 theorem dirac_one_mconv [MeasurableMul₂ M] (μ : Measure M) [SFinite μ] :
