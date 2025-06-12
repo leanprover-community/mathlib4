@@ -59,10 +59,10 @@ noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
       · simp only [hpq, hp, hq, eq_self_iff_true, if_true, if_false]
         exact add_nonneg (pow_pos _).le (pow_pos _).le
       simp only [hpq, hp, hq, if_false]
-      refine le_trans (pow_right_mono₀ (by omega) (Polynomial.natDegree_add_le _ _)) ?_
+      refine le_trans (pow_right_mono₀ (by grind) (Polynomial.natDegree_add_le _ _)) ?_
       refine
         le_trans (le_max_iff.mpr ?_)
-          (max_le_add_of_nonneg (pow_nonneg (by omega) _) (pow_nonneg (by omega) _))
+          (max_le_add_of_nonneg (pow_nonneg (by grind) _) (pow_nonneg (by grind) _))
       exact (max_choice p.natDegree q.natDegree).imp (fun h => by rw [h]) fun h => by rw [h]
     map_mul' := fun p q => by
       by_cases hp : p = 0; · simp [hp]
