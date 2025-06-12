@@ -885,15 +885,6 @@ lemma toCocycles_comp_isoTwoCocycles_hom :
   simp [← cancel_mono (shortComplexH2 A).moduleCatLeftHomologyData.i, comp_dOne_eq,
     shortComplexH2_f]
 
-lemma cocyclesMk_2_eq (x : twoCocycles A) :
-    cocyclesMk ((twoCochainsIso A).inv x) (by
-      simp [← inhomogeneousCochains.d_def, twoCocycles.dTwo_apply x]) =
-      (isoTwoCocycles A).inv x := by
-  apply_fun (forget₂ _ Ab).map ((inhomogeneousCochains A).iCycles 2) using
-    (AddCommGrp.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
-  simpa only [HomologicalComplex.i_cyclesMk] using
-    (isoTwoCocycles_inv_comp_iCocycles_apply _ x).symm
-
 end isoTwoCocycles
 
 section Cohomology
