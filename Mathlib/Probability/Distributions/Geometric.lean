@@ -69,7 +69,7 @@ def geometricPMF (hp_pos : 0 < p) (hp_le_one : p ≤ 1) : PMF ℕ :=
 /-- The geometric pmf is measurable. -/
 @[fun_prop, measurability]
 lemma measurable_geometricPMFReal : Measurable (geometricPMFReal p) := by
-  measurability
+  fun_prop
 
 @[fun_prop, measurability]
 lemma stronglyMeasurable_geometricPMFReal : StronglyMeasurable (geometricPMFReal p) :=
