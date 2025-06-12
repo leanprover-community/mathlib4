@@ -91,12 +91,13 @@ theorem corners_theorem (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound ε �
   swap
   · have : ε / 9 ≤ 1 := by linarith
     positivity
-  refine hG.not_le (le_of_mul_le_mul_right ?_ (by positivity : (0 : ℝ) < card G ^ 2))
+  refine hG.not_ge (le_of_mul_le_mul_right ?_ (by positivity : (0 : ℝ) < card G ^ 2))
   classical
   have h₁ := (farFromTriangleFree_graph hAε).le_card_cliqueFinset
   rw [card_triangles, card_triangleIndices] at h₁
   convert h₁.trans (Nat.cast_le.2 <| card_le_univ _) using 1 <;> simp <;> ring
 
+open Fin.NatCast in -- TODO: refactor to avoid needing the coercion
 /-- The **corners theorem** for `ℕ`.
 
 The maximum density of a corner-free set in `{1, ..., n} × {1, ..., n}` goes to zero as `n` tends to
@@ -159,6 +160,7 @@ theorem roth_3ap_theorem (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound ε 
       sub_eq_sub_iff_add_eq_add, add_comm, hxy, add_comm]
   exact hx₁x₂ <| by simpa using this.symm
 
+open Fin.NatCast in -- TODO: refactor to avoid needing the coercion
 /-- **Roth's theorem** for `ℕ`.
 
 The maximum density of a 3AP-free set in `{1, ..., n}` goes to zero as `n` tends to infinity. -/

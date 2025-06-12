@@ -266,7 +266,7 @@ theorem weightedOrder_add_of_weightedOrder_ne (h : f.weightedOrder w ≠ g.weigh
   refine le_antisymm ?_ (min_weightedOrder_le_add w)
   wlog H₁ : f.weightedOrder w < g.weightedOrder w
   · rw [add_comm f g, inf_comm]
-    exact this _ h.symm ((le_of_not_lt H₁).lt_of_ne' h)
+    exact this _ h.symm ((le_of_not_gt H₁).lt_of_ne' h)
   simp only [le_inf_iff, weightedOrder_add_of_weightedOrder_lt.aux w H₁]
   exact ⟨le_rfl, le_of_lt H₁⟩
 
@@ -539,7 +539,7 @@ theorem weightedHomogeneousComponent_of_weightedOrder
 theorem isWeightedHomogeneous_weightedHomogeneousComponent (f : MvPowerSeries σ R) (p : ℕ) :
     IsWeightedHomogeneous w (f.weightedHomogeneousComponent w p) p := fun {d} ↦ by
   rw [not_imp_comm]
-  intro  hd
+  intro hd
   rw [coeff_weightedHomogeneousComponent, if_neg hd]
 
 variable {w} in
