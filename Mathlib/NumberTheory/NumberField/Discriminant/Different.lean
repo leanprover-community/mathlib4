@@ -8,15 +8,6 @@ variable [Module.Finite ℤ 𝒪]
 
 open nonZeroDivisors
 
-lemma AddSubgroup.toIntSubmodule_closure {E : Type*} [AddCommGroup E] (s : Set E) :
-    (closure s).toIntSubmodule = .span ℤ s := by
-  apply le_antisymm
-  · show closure s ≤ (Submodule.span ℤ s).toAddSubgroup
-    rw [closure_le]
-    exact Submodule.subset_span
-  · rw [Submodule.span_le]
-    exact subset_closure
-
 lemma NumberField.absNorm_differentIdeal : (differentIdeal ℤ 𝒪).absNorm = (discr K).natAbs := by
   refine (differentIdeal ℤ 𝒪).toAddSubgroup.relindex_top_right.symm.trans ?_
   rw [← Submodule.comap_map_eq_of_injective (f := Algebra.linearMap 𝒪 K)
