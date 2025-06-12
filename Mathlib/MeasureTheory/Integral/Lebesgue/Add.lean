@@ -127,7 +127,7 @@ theorem lintegral_iSup_ae {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurabl
   let ⟨s, hs⟩ := exists_measurable_superset_of_null (ae_iff.1 (ae_all_iff.2 h_mono))
   let g n a := if a ∈ s then 0 else f n a
   have g_eq_f : ∀ᵐ a ∂μ, ∀ n, g n a = f n a :=
-    (measure_zero_iff_ae_nmem.1 hs.2.2).mono fun a ha n => if_neg ha
+    (measure_zero_iff_ae_notMem.1 hs.2.2).mono fun a ha n => if_neg ha
   calc
     ∫⁻ a, ⨆ n, f n a ∂μ = ∫⁻ a, ⨆ n, g n a ∂μ :=
       lintegral_congr_ae <| g_eq_f.mono fun a ha => by simp only [ha]
@@ -138,7 +138,7 @@ theorem lintegral_iSup_ae {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurabl
   simp only [g]
   split_ifs with h
   · rfl
-  · have := Set.not_mem_subset hs.1 h
+  · have := Set.notMem_subset hs.1 h
     simp only [not_forall, not_le, mem_setOf_eq, not_exists, not_lt] at this
     exact this n
 
@@ -316,9 +316,10 @@ theorem lintegral_finset_sum' (s : Finset β) {f : β → α → ℝ≥0∞}
     (hf : ∀ b ∈ s, AEMeasurable (f b) μ) :
     ∫⁻ a, ∑ b ∈ s, f b a ∂μ = ∑ b ∈ s, ∫⁻ a, f b a ∂μ := by
   classical
-  induction' s using Finset.induction_on with a s has ih
-  · simp
-  · simp only [Finset.sum_insert has]
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert a s has ih =>
+    simp only [Finset.sum_insert has]
     rw [Finset.forall_mem_insert] at hf
     rw [lintegral_add_left' hf.1, ih hf.2]
 
