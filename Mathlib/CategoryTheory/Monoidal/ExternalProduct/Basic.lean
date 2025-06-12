@@ -21,18 +21,18 @@ namespace CategoryTheory.MonoidalCategory
 variable (J₁ : Type u₁) (J₂ : Type u₂) (C : Type u₃)
     [Category.{v₁} J₁] [Category.{v₂} J₂] [Category.{v₃} C] [MonoidalCategory C]
 
-/-- The (uncurried version of the) external product bifunctor: Given diagrams
+/-- The (curried version of the) external product bifunctor: given diagrams
 `K₁ : J₁ ⥤ C` and `K₂ : J₂ ⥤ C`, this is the bifunctor `j₁ ↦ j₂ ↦ K₁ j₁ ⊗ K₂ j₂`. -/
 @[simps!]
-def externalProductBifunctorUncurried : (J₁ ⥤ C) ⥤ (J₂ ⥤ C) ⥤ J₁ ⥤ J₂ ⥤ C :=
+def externalProductBifunctorCurried : (J₁ ⥤ C) ⥤ (J₂ ⥤ C) ⥤ J₁ ⥤ J₂ ⥤ C :=
   (Functor.postcompose₂.obj <| (evaluation _ _).obj <| curriedTensor C).obj <| whiskeringLeft₂ C
 
-/-- The external product bifunctor: Given diagrams
+/-- The external product bifunctor: given diagrams
 `K₁ : J₁ ⥤ C` and `K₂ : J₂ ⥤ C`, this is the bifunctor `(j₁, j₂) ↦ K₁ j₁ ⊗ K₂ j₂`. -/
 @[simps!]
 def externalProductBifunctor : ((J₁ ⥤ C) × (J₂ ⥤ C)) ⥤ J₁ × J₂ ⥤ C :=
   uncurry.obj <| (Functor.postcompose₂.obj <| uncurry).obj <|
-    externalProductBifunctorUncurried J₁ J₂ C
+    externalProductBifunctorCurried J₁ J₂ C
 
 variable {J₁ J₂ C}
 /-- An abbreviation for the action of `externalProductBifunctor J₁ J₂ C` on objects. -/
@@ -41,9 +41,8 @@ abbrev externalProduct (F₁ : J₁ ⥤ C) (F₂ : J₂ ⥤ C) :=
 
 namespace ExternalProduct
 /-- Notation for `externalProduct`.
-```
-open scoped CategoryTheory.MonoidalCategory.ExternalProduct
-``` to bring this notation in scope. -/
+Do `open scoped CategoryTheory.MonoidalCategory.ExternalProduct`
+to bring this notation in scope. -/
 scoped infixr:80 " ⊠ " => externalProduct
 
 end ExternalProduct
@@ -70,17 +69,18 @@ Note that `(externalProductSwap _ _ _).app (F₁, F₂) : Prod.swap _ _ ⋙ F₁
 type checks. -/
 @[simps!]
 def externalProductSwap [BraidedCategory C] :
-    externalProductBifunctor J₁ J₂ C ⋙ (whiskeringLeft _ _ _|>.obj <| Prod.swap _ _)
-    ≅ Prod.swap _ _ ⋙ externalProductBifunctor J₂ J₁ C :=
+    externalProductBifunctor J₁ J₂ C ⋙ (whiskeringLeft _ _ _|>.obj <| Prod.swap _ _) ≅
+    Prod.swap _ _ ⋙ externalProductBifunctor J₂ J₁ C :=
   NatIso.ofComponents
     (fun _ ↦ NatIso.ofComponents (fun _ ↦ β_ _ _) (by simp [tensorHom_def, whisker_exchange]))
     (fun _ ↦ by ext; simp [tensorHom_def, whisker_exchange])
 
-/-- A version of `externalProductSwap` phrased in terms of the uncurried functors. -/
+/-- A version of `externalProductSwap` phrased in terms of the curried functors. -/
 @[simps!]
 def externalProductFlip [BraidedCategory C] :
-    (Functor.postcompose₂.obj <| flipFunctor _ _ _).obj (externalProductBifunctorUncurried J₁ J₂ C)
-    ≅ (externalProductBifunctorUncurried J₂ J₁ C).flip :=
+    (Functor.postcompose₂.obj <| flipFunctor _ _ _).obj
+      (externalProductBifunctorCurried J₁ J₂ C) ≅
+    (externalProductBifunctorCurried J₂ J₁ C).flip :=
   NatIso.ofComponents <| fun _ ↦ NatIso.ofComponents <|
     fun _ ↦ NatIso.ofComponents <| fun _ ↦ NatIso.ofComponents (fun _ ↦ β_ _ _)
 
@@ -88,7 +88,7 @@ section Composition
 
 variable {J₁ J₂ C} {I₁ : Type u₃} {I₂ : Type u₄} [Category.{v₃} I₁] [Category.{v₄} I₂]
 
-/-- Composing F₁ × F₂ with (G₁ ⊠ G₂) is isomorphic to (F₁ ⋙ G₁) ⊠ (F₂ ⋙ G₂) -/
+/-- Composing `F₁ × F₂` with `G₁ ⊠ G₂` is isomorphic to `(F₁ ⋙ G₁) ⊠ (F₂ ⋙ G₂)`. -/
 @[simps!]
 def prodCompExternalProduct (F₁ : I₁ ⥤ J₁) (G₁ : J₁ ⥤ C) (F₂ : I₂ ⥤ J₂) (G₂ : J₂ ⥤ C) :
    F₁.prod F₂ ⋙ G₁ ⊠ G₂ ≅ (F₁ ⋙ G₁) ⊠ (F₂ ⋙ G₂) := NatIso.ofComponents (fun _ ↦ Iso.refl _)
