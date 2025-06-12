@@ -109,7 +109,7 @@ variable {R : Type*} [NormedCommRing R] [NormOneClass R] {f : ι → R}
 lemma multipliable_norm_one_add_of_summable_norm (hf : Summable fun i ↦ ‖f i‖) :
     Multipliable fun i ↦ ‖1 + f i‖ := by
   conv => enter [1, i]; rw [← sub_add_cancel ‖1 + f i‖ 1, add_comm]
-  refine Real.multipliable_one_add_of_summable <| hf.of_norm_bounded _ (fun i ↦ ?_)
+  refine Real.multipliable_one_add_of_summable <| hf.of_norm_bounded (fun i ↦ ?_)
   simpa using abs_norm_sub_norm_le (1 + f i) 1
 
 lemma Finset.norm_prod_one_add_sub_one_le (t : Finset ι) (f : ι → R) :

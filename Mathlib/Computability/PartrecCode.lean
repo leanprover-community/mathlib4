@@ -979,7 +979,7 @@ theorem primrec_evaln : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.
         rw [hg (Nat.pair_lt_pair_right _ lf)]
         rcases evaln k cf n with - | x
         · rfl
-        simp only [decode_eq_ofNat, Option.some.injEq, Option.some_bind]
+        simp only [decode_eq_ofNat, Option.some.injEq, Option.bind_some]
         cases x <;> simp [Nat.succ_ne_zero]
         rw [hg (Nat.pair_lt_pair_left _ k'.lt_succ_self)]
   (Primrec.option_bind

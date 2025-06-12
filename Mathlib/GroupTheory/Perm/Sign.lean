@@ -124,15 +124,16 @@ theorem mclosure_swap_castSucc_succ (n : ℕ) :
   rw [← mclosure_isSwap, Submonoid.closure_le]
   rintro _ ⟨i, j, ne, rfl⟩
   wlog lt : i < j generalizing i j
-  · rw [swap_comm]; exact this _ _ ne.symm (ne.lt_or_lt.resolve_left lt)
-  induction' j using Fin.induction with j ih
-  · cases lt
-  have mem : swap j.castSucc j.succ ∈ Submonoid.closure
+  · rw [swap_comm]; exact this _ _ ne.symm (ne.lt_or_gt.resolve_left lt)
+  induction j using Fin.induction with
+  | zero => cases lt
+  | succ j ih =>
+    have mem : swap j.castSucc j.succ ∈ Submonoid.closure
       (Set.range fun (i : Fin n) ↦ swap i.castSucc i.succ) := Submonoid.subset_closure ⟨_, rfl⟩
-  obtain rfl | lts := (Fin.le_castSucc_iff.mpr lt).eq_or_lt
-  · exact mem
-  rw [swap_comm, ← swap_mul_swap_mul_swap (y := Fin.castSucc j) lts.ne lt.ne]
-  exact mul_mem (mul_mem mem <| ih lts.ne lts) mem
+    obtain rfl | lts := (Fin.le_castSucc_iff.mpr lt).eq_or_lt
+    · exact mem
+    rw [swap_comm, ← swap_mul_swap_mul_swap (y := Fin.castSucc j) lts.ne lt.ne]
+    exact mul_mem (mul_mem mem <| ih lts.ne lts) mem
 
 /-- Like `swap_induction_on`, but with the composition on the right of `f`.
 
@@ -174,7 +175,7 @@ def signAux {n : ℕ} (a : Perm (Fin n)) : ℤˣ :=
 theorem signAux_one (n : ℕ) : signAux (1 : Perm (Fin n)) = 1 := by
   unfold signAux
   conv => rhs; rw [← @Finset.prod_const_one _ _ (finPairsLT n)]
-  exact Finset.prod_congr rfl fun a ha => if_neg (mem_finPairsLT.1 ha).not_le
+  exact Finset.prod_congr rfl fun a ha => if_neg (mem_finPairsLT.1 ha).not_ge
 
 /-- `signBijAux f ⟨a, b⟩` returns the pair consisting of `f a` and `f b` in decreasing order. -/
 def signBijAux {n : ℕ} (f : Perm (Fin n)) (a : Σ _ : Fin n, Fin n) : Σ_ : Fin n, Fin n :=
@@ -185,7 +186,7 @@ theorem signBijAux_injOn {n : ℕ} {f : Perm (Fin n)} :
   rintro ⟨a₁, a₂⟩ ha ⟨b₁, b₂⟩ hb h
   dsimp [signBijAux] at h
   rw [Finset.mem_coe, mem_finPairsLT] at *
-  have : ¬b₁ < b₂ := hb.le.not_lt
+  have : ¬b₁ < b₂ := hb.le.not_gt
   split_ifs at h <;>
   simp_all only [not_lt, Sigma.mk.inj_iff, (Equiv.injective f).eq_iff, heq_eq_eq]
   · exact absurd this (not_le.mpr ha)
@@ -204,7 +205,7 @@ theorem signBijAux_surj {n : ℕ} {f : Perm (Fin n)} :
           (le_of_not_gt hxa).lt_of_ne fun h => by
             simp [mem_finPairsLT, f⁻¹.injective h, lt_irrefl] at ha, by
               dsimp [signBijAux]
-              rw [apply_inv_self, apply_inv_self, if_neg (mem_finPairsLT.1 ha).le.not_lt]⟩
+              rw [apply_inv_self, apply_inv_self, if_neg (mem_finPairsLT.1 ha).le.not_gt]⟩
 
 theorem signBijAux_mem {n : ℕ} {f : Perm (Fin n)} :
     ∀ a : Σ_ : Fin n, Fin n, a ∈ finPairsLT n → signBijAux f a ∈ finPairsLT n :=
@@ -219,8 +220,8 @@ theorem signBijAux_mem {n : ℕ} {f : Perm (Fin n)} :
 theorem signAux_inv {n : ℕ} (f : Perm (Fin n)) : signAux f⁻¹ = signAux f :=
   prod_nbij (signBijAux f⁻¹) signBijAux_mem signBijAux_injOn signBijAux_surj fun ⟨a, b⟩ hab ↦
     if h : f⁻¹ b < f⁻¹ a then by
-      simp_all [signBijAux, dif_pos h, if_neg h.not_le, apply_inv_self, apply_inv_self,
-        if_neg (mem_finPairsLT.1 hab).not_le]
+      simp_all [signBijAux, dif_pos h, if_neg h.not_ge, apply_inv_self, apply_inv_self,
+        if_neg (mem_finPairsLT.1 hab).not_ge]
     else by
       simp_all [signBijAux, if_pos (le_of_not_gt h), dif_neg h, apply_inv_self, apply_inv_self,
         if_pos (mem_finPairsLT.1 hab).le]
@@ -242,7 +243,7 @@ theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f
     · have : f (g b) ≠ f (g a) := by
         rw [Ne, f.injective.eq_iff, g.injective.eq_iff]
         exact ne_of_lt hab
-      rw [if_pos h₁, if_neg (h₁.lt_of_ne this).not_le]
+      rw [if_pos h₁, if_neg (h₁.lt_of_ne this).not_ge]
       rfl
     · rw [if_neg h₁, if_pos (lt_of_not_ge h₁).le]
       rfl
@@ -256,20 +257,20 @@ private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2
     replace ha₁ : a₂ < a₁ := mem_finPairsLT.1 ha₁
     dsimp only
     rcases a₁.zero_le.eq_or_lt with (rfl | H)
-    · exact absurd a₂.zero_le ha₁.not_le
+    · exact absurd a₂.zero_le ha₁.not_ge
     rcases a₂.zero_le.eq_or_lt with (rfl | H')
     · simp only [and_true, eq_self_iff_true, heq_iff_eq, mem_singleton, Sigma.mk.inj_iff] at ha₂
       have : 1 < a₁ := lt_of_le_of_ne (Nat.succ_le_of_lt ha₁)
         (Ne.symm (by intro h; apply ha₂; simp [h]))
       have h01 : Equiv.swap (0 : Fin (n + 2)) 1 0 = 1 := by simp
-      rw [swap_apply_of_ne_of_ne (ne_of_gt H) ha₂, h01, if_neg this.not_le]
+      rw [swap_apply_of_ne_of_ne (ne_of_gt H) ha₂, h01, if_neg this.not_ge]
     · have le : 1 ≤ a₂ := Nat.succ_le_of_lt H'
       have lt : 1 < a₁ := le.trans_lt ha₁
       have h01 : Equiv.swap (0 : Fin (n + 2)) 1 1 = 0 := by simp only [swap_apply_right]
       rcases le.eq_or_lt with (rfl | lt')
-      · rw [swap_apply_of_ne_of_ne H.ne' lt.ne', h01, if_neg H.not_le]
+      · rw [swap_apply_of_ne_of_ne H.ne' lt.ne', h01, if_neg H.not_ge]
       · rw [swap_apply_of_ne_of_ne (ne_of_gt H) (ne_of_gt lt),
-          swap_apply_of_ne_of_ne (ne_of_gt H') (ne_of_gt lt'), if_neg ha₁.not_le]
+          swap_apply_of_ne_of_ne (ne_of_gt H') (ne_of_gt lt'), if_neg ha₁.not_ge]
 
 private theorem signAux_swap_zero_one {n : ℕ} (hn : 2 ≤ n) :
     signAux (swap (⟨0, lt_of_lt_of_le (by decide) hn⟩ : Fin n) ⟨1, lt_of_lt_of_le (by decide) hn⟩) =
@@ -353,7 +354,7 @@ theorem signAux3_mul_and_swap [Finite α] (f g : Perm α) (s : Multiset α) (hs 
 theorem signAux3_symm_trans_trans [Finite α] [DecidableEq β] [Finite β] (f : Perm α) (e : α ≃ β)
     {s : Multiset α} {t : Multiset β} (hs : ∀ x, x ∈ s) (ht : ∀ x, x ∈ t) :
     signAux3 ((e.symm.trans f).trans e) ht = signAux3 f hs := by
-  induction' t, s using Quotient.inductionOn₂ with t s ht hs
+  induction t, s using Quotient.inductionOn₂
   show signAux2 _ _ = signAux2 _ _
   rcases Finite.exists_equiv_fin β with ⟨n, ⟨e'⟩⟩
   rw [← signAux_eq_signAux2 _ _ e' fun _ _ => ht _,
@@ -513,20 +514,22 @@ theorem prod_prodExtendRight {α : Type*} [DecidableEq α] (σ : α → Perm β)
     obtain ⟨_, prod_eq⟩ := Or.resolve_right this (not_and.mpr fun h _ => h (mem_l a))
     rw [prod_eq, prodCongrRight_apply]
   clear mem_l
-  induction' l with a' l ih
-  · refine Or.inr ⟨List.not_mem_nil, ?_⟩
+  induction l with
+  | nil =>
+    refine Or.inr ⟨List.not_mem_nil, ?_⟩
     rw [List.map_nil, List.prod_nil, one_apply]
-  rw [List.map_cons, List.prod_cons, mul_apply]
-  rcases ih (List.nodup_cons.mp hl).2 with (⟨mem_l, prod_eq⟩ | ⟨notMem_l, prod_eq⟩) <;>
-    rw [prod_eq]
-  · refine Or.inl ⟨List.mem_cons_of_mem _ mem_l, ?_⟩
-    rw [prodExtendRight_apply_ne _ fun h : a = a' => (List.nodup_cons.mp hl).1 (h ▸ mem_l)]
-  by_cases ha' : a = a'
-  · rw [← ha'] at *
-    refine Or.inl ⟨l.mem_cons_self, ?_⟩
-    rw [prodExtendRight_apply_eq]
-  · refine Or.inr ⟨fun h => not_or_intro ha' notMem_l ((List.mem_cons).mp h), ?_⟩
-    rw [prodExtendRight_apply_ne _ ha']
+  | cons a' l ih =>
+    rw [List.map_cons, List.prod_cons, mul_apply]
+    rcases ih (List.nodup_cons.mp hl).2 with (⟨mem_l, prod_eq⟩ | ⟨notMem_l, prod_eq⟩) <;>
+      rw [prod_eq]
+    · refine Or.inl ⟨List.mem_cons_of_mem _ mem_l, ?_⟩
+      rw [prodExtendRight_apply_ne _ fun h : a = a' => (List.nodup_cons.mp hl).1 (h ▸ mem_l)]
+    by_cases ha' : a = a'
+    · rw [← ha'] at *
+      refine Or.inl ⟨l.mem_cons_self, ?_⟩
+      rw [prodExtendRight_apply_eq]
+    · refine Or.inr ⟨fun h => not_or_intro ha' notMem_l ((List.mem_cons).mp h), ?_⟩
+      rw [prodExtendRight_apply_ne _ ha']
 
 section congr
 
