@@ -186,7 +186,7 @@ lemma shortComplex_exact : E.shortComplex.Exact := by
   rw [ShortComplex.exact_iff_isZero_homology]
   refine' IsZero.of_iso (E.hK' (n+1)) (ShortComplex.homologyMapIso
     (_ ≪≫ (HomologicalComplex.natIsoSc' C (ComplexShape.up ℤ) n (n+1) (n+2)
-      (by simp) (by simp ; linarith)).symm.app _))
+      (by simp) (by simp; linarith)).symm.app _))
   refine' ShortComplex.isoMk (by exact Z.XIso E (-1) n (by linarith) (by linarith))
     (Z.XIso E 0 (n+1) (by linarith) (by linarith)) E.iso₁.symm _ _
   · simp [E.Z_d_eq (-1) 0 n (n+1) (by linarith) (by linarith) (by linarith) (by linarith)]
