@@ -173,9 +173,9 @@ irreducible_def rightAngleRotationAux₁ : E →ₗ[ℝ] E :=
 
 @[simp]
 theorem inner_rightAngleRotationAux₁_left (x y : E) : ⟪o.rightAngleRotationAux₁ x, y⟫ = ω x y := by
-  simp only [rightAngleRotationAux₁, LinearEquiv.trans_symm, LinearIsometryEquiv.toLinearEquiv_symm,
+  simp only [rightAngleRotationAux₁, LinearEquiv.trans_symm, LinearEquiv.symm_symm,
     LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, LinearEquiv.trans_apply,
-    LinearIsometryEquiv.coe_toLinearEquiv]
+    LinearIsometryEquiv.coe_symm_toLinearEquiv]
   rw [InnerProductSpace.toDual_symm_apply]
   norm_cast
 
