@@ -177,7 +177,7 @@ theorem index_pos (K : PositiveCompacts G) {V : Set G} (hV : (interior V).Nonemp
     obtain ⟨g, hg⟩ := K.interior_nonempty
     show g ∈ (∅ : Set G)
     convert h1t (interior_subset hg); symm
-    simp only [Finset.not_mem_empty, iUnion_of_empty, iUnion_empty]
+    simp only [Finset.notMem_empty, iUnion_of_empty, iUnion_empty]
   · exact index_defined K.isCompact hV
 
 @[to_additive addIndex_mono]
