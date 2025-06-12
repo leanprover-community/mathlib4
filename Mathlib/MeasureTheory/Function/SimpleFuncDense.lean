@@ -141,8 +141,7 @@ lemma approxOn_range_nonneg [Zero α] [Preorder α] {f : β → α}
     exact hf x
   exact fun _ ↦ this <| approxOn_mem ..
 
-@[simp, nolint simpNF] -- Porting note: LHS doesn't simplify.
--- It seems the side conditions `hf` and `hg` are not applied by `simpNF`.
+@[simp]
 theorem approxOn_comp {γ : Type*} [MeasurableSpace γ] {f : β → α} (hf : Measurable f) {g : γ → β}
     (hg : Measurable g) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s) [SeparableSpace s] (n : ℕ) :
     approxOn (f ∘ g) (hf.comp hg) s y₀ h₀ n = (approxOn f hf s y₀ h₀ n).comp g hg :=
