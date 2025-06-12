@@ -144,7 +144,7 @@ theorem isClique_map_finset_iff_of_nontrivial (ht : t.Nontrivial) :
 
 theorem isClique_map_finset_iff :
     (G.map f).IsClique t ↔ #t ≤ 1 ∨ ∃ (s : Finset α), G.IsClique s ∧ s.map f = t := by
-  obtain (ht | ht) := le_or_lt #t 1
+  obtain (ht | ht) := le_or_gt #t 1
   · simp only [ht, true_or, iff_true]
     exact IsClique.of_subsingleton <| card_le_one.1 ht
   rw [isClique_map_finset_iff_of_nontrivial, ← not_lt]
@@ -222,7 +222,7 @@ protected theorem IsNClique.map (h : G.IsNClique n s) {f : α ↪ β} :
 theorem isNClique_map_iff (hn : 1 < n) {t : Finset β} {f : α ↪ β} :
     (G.map f).IsNClique n t ↔ ∃ s : Finset α, G.IsNClique n s ∧ s.map f = t := by
   rw [isNClique_iff, isClique_map_finset_iff, or_and_right,
-    or_iff_right (by rintro ⟨h', rfl⟩; exact h'.not_lt hn)]
+    or_iff_right (by rintro ⟨h', rfl⟩; exact h'.not_gt hn)]
   constructor
   · rintro ⟨⟨s, hs, rfl⟩, rfl⟩
     simp [isNClique_iff, hs]
@@ -382,7 +382,7 @@ theorem CliqueFree.comap {H : SimpleGraph β} (f : H ↪g G) : G.CliqueFree n �
 
 @[simp] theorem cliqueFree_map_iff {f : α ↪ β} [Nonempty α] :
     (G.map f).CliqueFree n ↔ G.CliqueFree n := by
-  obtain (hle | hlt) := le_or_lt n 1
+  obtain (hle | hlt) := le_or_gt n 1
   · obtain (rfl | rfl) := Nat.le_one_iff_eq_zero_or_eq_one.1 hle
     · simp [CliqueFree]
     simp [CliqueFree, show ∃ (_ : β), True from ⟨f (Classical.arbitrary _), trivial⟩]
@@ -540,7 +540,7 @@ protected theorem CliqueFree.cliqueFreeOn (hG : G.CliqueFree n) : G.CliqueFreeOn
   fun _t _ ↦ hG _
 
 theorem cliqueFreeOn_of_card_lt {s : Finset α} (h : #s < n) : G.CliqueFreeOn s n :=
-  fun _t hts ht => h.not_le <| ht.2.symm.trans_le <| card_mono hts
+  fun _t hts ht => h.not_ge <| ht.2.symm.trans_le <| card_mono hts
 
 -- TODO: Restate using `SimpleGraph.IndepSet` once we have it
 @[simp]
