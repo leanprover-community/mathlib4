@@ -347,8 +347,8 @@ noncomputable def leftHomologyData : S.LeftHomologyData where
     dsimp
     let e : parallelPair (hkf.lift (KernelFork.ofι S.f S.zero) ≫ 𝟙 _) 0 ≅
         parallelPair S.toCycles 0 := parallelPair.ext (Iso.refl _) (isoK S hkf)
-          (by dsimp ; rw [f'_eq, assoc, assoc, id_comp, Iso.inv_hom_id, comp_id, id_comp])
-          (by dsimp ; simp only [zero_comp, comp_zero])
+          (by dsimp; rw [f'_eq, assoc, assoc, id_comp, Iso.inv_hom_id, comp_id, id_comp])
+          (by dsimp; simp only [zero_comp, comp_zero])
     refine IsColimit.precomposeInvEquiv e _ ?_
     exact IsColimit.ofIsoColimit S.homologyIsCokernel
       (Cofork.ext (isoHomology S hkf hcc fac).symm (homologyπ_isoHomology_inv S _ _ _))
