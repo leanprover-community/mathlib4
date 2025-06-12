@@ -58,7 +58,7 @@ theorem blahgalois [IsGalois ℚ K] {θ : 𝓞 K} (hθ : exponent θ = 1)
   obtain ⟨Q, hQ, H⟩ := h p hpmem hp
   have : Fact (p.Prime) := ⟨hp⟩
   let P := Ideal.primesOverSpanEquivMonicFactorsMod (hθ ▸ hp.not_dvd_one) ⟨I, hI⟩
-  set J := (Ideal.primesOverSpanEquivMonicFactorsMod (hθ ▸ hp.not_dvd_one)).symm ⟨Q, hQ⟩ with hJ
+  let J := (Ideal.primesOverSpanEquivMonicFactorsMod (hθ ▸ hp.not_dvd_one)).symm ⟨Q, hQ⟩
   have := hI.1; have := hI.2; have := J.2.1; have := J.2.2
   have := (isPrime_of_prime (prime_span_singleton_iff.mpr (prime_iff_prime_int.mp hp))).isMaximal
     (by simp [hp.ne_zero])
