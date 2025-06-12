@@ -371,23 +371,23 @@ def setup_remotes(username: str, fork_url: str, auto_accept: bool = False) -> st
             print_success("Origin remote (fork) already configured correctly")
             fork_remote_name = 'origin'
     else:
-        # Check if origin exists and is not the fork
+        # No fork remote found - need to add one
+        # Check if 'origin' is available for the fork
         if 'origin' in remotes:
-            if f'{username}/mathlib4' not in remotes['origin']:
-                print(f"Current origin: {remotes['origin']}")
-                if yes_no_prompt("Replace existing 'origin' with your fork?", auto_accept=auto_accept):
-                    run_command(['git', 'remote', 'remove', 'origin'])
-                    run_command(['git', 'remote', 'add', 'origin', fork_url])
-                    print_success("Set origin to your fork")
-                    fork_remote_name = 'origin'
-                else:
-                    run_command(['git', 'remote', 'add', 'fork', fork_url])
-                    print_warning("Added fork as 'fork' remote instead of 'origin'")
-                    fork_remote_name = 'fork'
-            else:
-                print_success("Origin already points to your fork")
+            # 'origin' exists but doesn't point to user's fork
+            print(f"Current origin: {remotes['origin']}")
+            if yes_no_prompt("Replace existing 'origin' with your fork?", auto_accept=auto_accept):
+                run_command(['git', 'remote', 'remove', 'origin'])
+                run_command(['git', 'remote', 'add', 'origin', fork_url])
+                print_success("Set origin to your fork")
                 fork_remote_name = 'origin'
+            else:
+                # User wants to keep existing origin, use 'fork' instead
+                run_command(['git', 'remote', 'add', 'fork', fork_url])
+                print_warning("Added fork as 'fork' remote instead of 'origin'")
+                fork_remote_name = 'fork'
         else:
+            # 'origin' doesn't exist, safe to add it
             run_command(['git', 'remote', 'add', 'origin', fork_url])
             print_success("Added origin remote pointing to your fork")
             fork_remote_name = 'origin'
