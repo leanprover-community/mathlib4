@@ -22,8 +22,9 @@ more details.
 ## Main definitions
 
 * `WithLp p V`: a copy of `V` to be equipped with an L`p` norm.
-* `WithLp.equiv p V`: the canonical equivalence between `WithLp p V` and `V`.
-* `WithLp.linearEquiv p K V`: the canonical `K`-module isomorphism between `WithLp p V` and `V`.
+* `WithLp.toLp`: the canonical equivalence between `V` and `WithLp p V`.
+* `WithLp.ofLp`: the canonical equivalence between `WithLp p V` and `V`.
+* `WithLp.toLpLinear p K V`: the canonical `K`-module isomorphism between `V` and `WithLp p V`.
 
 ## Implementation notes
 
@@ -50,8 +51,19 @@ variable (p : ℝ≥0∞) (K : Type uK) (K' : Type uK') (V : Type uV)
 
 namespace WithLp
 
+variable {V} in
+/-- The canonical equivalence between `V` and `WithLp p V`. This should always be used to convert
+back and forth between the representations. -/
+def toLp : V ≃ WithLp p V := .refl _
+
+variable {p V} in
 /-- The canonical equivalence between `WithLp p V` and `V`. This should always be used to convert
 back and forth between the representations. -/
+def ofLp : WithLp p V ≃ V := .refl _
+
+/-- The canonical equivalence between `WithLp p V` and `V`. This should always be used to convert
+back and forth between the representations. -/
+@[deprecated WithLp.ofLp (since := "2025-06-08")]
 protected def equiv : WithLp p V ≃ V := Equiv.refl _
 
 /-- A recursor for `WithLp p V`, that reduces to the underlying space `V`.
@@ -59,10 +71,9 @@ protected def equiv : WithLp p V ≃ V := Equiv.refl _
 This unfortunately cannot be registered with `cases_eliminator`, but it can still be used as
 `cases v using WithLp.rec with | toLp v =>`. -/
 @[elab_as_elim]
-protected def rec {motive : WithLp p V → Sort*}
-    (toLp : ∀ v : V, motive ((WithLp.equiv p _).symm v)) :
+protected def rec {motive : WithLp p V → Sort*} (toLp : ∀ v : V, motive (toLp p v)) :
     ∀ v, motive v :=
-  fun v => toLp ((WithLp.equiv p _) v)
+  fun v => toLp (ofLp v)
 
 /-! `WithLp p V` inherits various module-adjacent structures from `V`. -/
 
@@ -95,70 +106,117 @@ instance instModuleFinite
 
 variable {K V}
 
-/-! `WithLp.equiv` preserves the module structure. -/
+@[simp] lemma symm_toLp : (@toLp p V).symm = ofLp := rfl
+@[simp] lemma symm_ofLp : (@ofLp p V).symm = toLp p := rfl
 
-@[simp]
+@[simp] lemma ofLp_toLp (x : V) : ofLp (toLp p x) = x := rfl
+@[simp] lemma toLp_ofLp (x : WithLp p V) : toLp p (ofLp x) = x := rfl
+
+section AddCommGroup
+variable [AddCommGroup V]
+
+@[simp] lemma toLp_zero : toLp p (0 : V) = 0 := rfl
+@[simp] lemma ofLp_zero : ofLp (0 : WithLp p V) = 0 := rfl
+
+@[simp] lemma toLp_add (x y : V) : toLp p (x + y) = toLp p x + toLp p y := rfl
+@[simp] lemma ofLp_add (x y : WithLp p V) : ofLp (x + y) = ofLp x + ofLp y := rfl
+
+@[simp] lemma toLp_sub (x y : V) : toLp p (x - y) = toLp p x - toLp p y := rfl
+@[simp] lemma ofLp_sub (x y : WithLp p V) : ofLp (x - y) = ofLp x - ofLp y := rfl
+
+@[simp] lemma toLp_neg (x : V) : toLp p (-x) = -toLp p x := rfl
+@[simp] lemma ofLp_neg (x : WithLp p V) : ofLp (-x) = -ofLp x := rfl
+
+@[simp] lemma toLp_eq_zero {x : V} : toLp p x = 0 ↔ x = 0 := .rfl
+@[simp] lemma ofLp_eq_zero {x : WithLp p V} : ofLp x = 0 ↔ x = 0 := .rfl
+
+end AddCommGroup
+
+@[simp] lemma toLp_smul [SMul K V] (c : K) (x : V) : toLp p (c • x) = c • (toLp p x) := rfl
+@[simp] lemma ofLp_smul [SMul K V] (c : K) (x : WithLp p V) : ofLp (c • x) = c • ofLp x := rfl
+
+section equiv
+
+set_option linter.deprecated false in
+@[deprecated ofLp_zero (since := "2025-06-08")]
 theorem equiv_zero [AddCommGroup V] : WithLp.equiv p V 0 = 0 :=
   rfl
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated toLp_zero (since := "2025-06-08")]
 theorem equiv_symm_zero [AddCommGroup V] : (WithLp.equiv p V).symm 0 = 0 :=
   rfl
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated toLp_eq_zero (since := "2025-06-08")]
 theorem equiv_symm_eq_zero_iff [AddCommGroup V] {x : V} :
     (WithLp.equiv p V).symm x = 0 ↔ x = 0 := Iff.rfl
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated ofLp_eq_zero (since := "2025-06-08")]
 theorem equiv_eq_zero_iff [AddCommGroup V] {x : WithLp p V} :
     WithLp.equiv p V x = 0 ↔ x = 0 := Iff.rfl
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated ofLp_add (since := "2025-06-08")]
 theorem equiv_add [AddCommGroup V] (x y : WithLp p V) :
     WithLp.equiv p V (x + y) = WithLp.equiv p V x + WithLp.equiv p V y :=
   rfl
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated toLp_add (since := "2025-06-08")]
 theorem equiv_symm_add [AddCommGroup V] (x' y' : V) :
     (WithLp.equiv p V).symm (x' + y') = (WithLp.equiv p V).symm x' + (WithLp.equiv p V).symm y' :=
   rfl
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated ofLp_sub (since := "2025-06-08")]
 theorem equiv_sub [AddCommGroup V] (x y : WithLp p V) :
     WithLp.equiv p V (x - y) = WithLp.equiv p V x - WithLp.equiv p V y :=
   rfl
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated toLp_sub (since := "2025-06-08")]
 theorem equiv_symm_sub [AddCommGroup V] (x' y' : V) :
     (WithLp.equiv p V).symm (x' - y') = (WithLp.equiv p V).symm x' - (WithLp.equiv p V).symm y' :=
   rfl
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated ofLp_neg (since := "2025-06-08")]
 theorem equiv_neg [AddCommGroup V] (x : WithLp p V) : WithLp.equiv p V (-x) = -WithLp.equiv p V x :=
   rfl
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated toLp_neg (since := "2025-06-08")]
 theorem equiv_symm_neg [AddCommGroup V] (x' : V):
     (WithLp.equiv p V).symm (-x') = -(WithLp.equiv p V).symm x' :=
   rfl
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated ofLp_smul (since := "2025-06-08")]
 theorem equiv_smul [SMul K V] (c : K) (x : WithLp p V) :
     WithLp.equiv p V (c • x) = c • WithLp.equiv p V x :=
   rfl
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated toLp_smul (since := "2025-06-08")]
 theorem equiv_symm_smul [SMul K V] (c : K) (x' : V) :
     (WithLp.equiv p V).symm (c • x') = c • (WithLp.equiv p V).symm x' :=
   rfl
 
+end equiv
+
 variable (K V)
 
-/-- `WithLp.equiv` as a linear equivalence. -/
+/-- `WithLp.ofLp` as a linear equivalence. -/
 @[simps -fullyApplied]
-protected def linearEquiv [Semiring K] [AddCommGroup V] [Module K V] : WithLp p V ≃ₗ[K] V :=
-  { LinearEquiv.refl _ _ with
-    toFun := WithLp.equiv _ _
-    invFun := (WithLp.equiv _ _).symm }
+def ofLpLinearEquiv [Semiring K] [AddCommGroup V] [Module K V] : WithLp p V ≃ₗ[K] V  where
+  __ := LinearEquiv.refl _ _
+  toFun := WithLp.ofLp
+  invFun := WithLp.toLp p
+
+/-- `WithLp.equiv` as a linear equivalence. -/
+@[deprecated WithLp.ofLpLinearEquiv (since := "2025-06-08")]
+protected alias linearEquiv := ofLpLinearEquiv
 
 end WithLp
