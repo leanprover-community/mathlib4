@@ -33,7 +33,7 @@ form to which the tactics reduce field expressions. -/
 def NF (M : Type*) := List (ℤ × M)
 
 namespace NF
-variable {S : Type*} {M : Type*}
+variable {M : Type*}
 
 /-- Augment a `FieldSimp.NF M` object `l`, i.e. a list of pairs in `ℤ × M`, by prepending another
 pair `p : ℤ × M`. -/
@@ -216,7 +216,7 @@ theorem eq_of_eval_eq_eval [DivisionMonoid M]
 
 end NF
 
-variable {u v : Level}
+variable {v : Level}
 
 /-! ### Lists of expressions representing exponents and atoms, and operations on such lists -/
 
@@ -439,21 +439,21 @@ variable {x y : ℚ}
 
 /-- info: x ^ 1 * 1 -/
 #guard_msgs in
-#conv field_simp2 => (x)
+#conv field_simp2 => x
 
 /-- info: (x + y) ^ 1 * 1 -/
 #guard_msgs in
-#conv field_simp2 => (x + y)
+#conv field_simp2 => x + y
 
 /-- info: x ^ 1 * (y ^ 1 * 1) -/
 #guard_msgs in
-#conv field_simp2 => (x * y)
+#conv field_simp2 => x * y
 
 /-- info: x ^ 1 * (y ^ (-1) * 1) -/
 #guard_msgs in
 #conv field_simp2 => x / y
 
-#conv field_simp2 => (x / (x + 1) + y / (y + 1))
+#conv field_simp2 => x / (x + 1) + y / (y + 1)
 
 example : (1 : ℚ) = 1 := by
   conv_lhs => field_simp2
