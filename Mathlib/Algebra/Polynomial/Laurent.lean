@@ -255,7 +255,7 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
   simp_rw [Finsupp.single_apply, Finset.sum_ite_eq']
   split_ifs with h
   · rfl
-  · exact Finsupp.not_mem_support_iff.mp h
+  · exact Finsupp.notMem_support_iff.mp h
 
 /-- To prove something about Laurent polynomials, it suffices to show that
 * the condition is closed under taking sums, and
@@ -396,7 +396,7 @@ theorem toLaurent_support (f : R[X]) : f.toLaurent.support = f.support.map Nat.c
   · intro a s as hf f fs
     have : (erase a f).toLaurent.support = s.map Nat.castEmbedding := by
       refine hf (f.erase a) ?_
-      simp only [fs, Finset.erase_eq_of_not_mem as, Polynomial.support_erase,
+      simp only [fs, Finset.erase_eq_of_notMem as, Polynomial.support_erase,
         Finset.erase_insert_eq_erase]
     rw [← monomial_add_erase f a, Finset.map_insert, ← this, map_add, Polynomial.toLaurent_C_mul_T,
       support_add_eq, Finset.insert_eq]

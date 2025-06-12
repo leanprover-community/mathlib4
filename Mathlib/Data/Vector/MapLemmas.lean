@@ -290,10 +290,11 @@ If an accumulation function `f`, produces the same output bits regardless of acc
 then the state is redundant and can be optimized out.
 -/
 @[simp]
-theorem mapAccumr_eq_map_of_unused_state (f : α → σ → σ × β) (s : σ)
-    (h : ∀ a s s', (f a s).snd = (f a s').snd) :
-    (mapAccumr f xs s).snd = (map (fun x => (f x s).snd) xs) :=
-  mapAccumr_eq_map (fun _ => true) rfl (fun _ _ _ => rfl) (fun a s s' _ _ => h a s s')
+theorem mapAccumr_eq_map_of_unused_state (f : α → σ → σ × β) (f' : α → β) (s : σ)
+    (h : ∀ a s, (f a s).snd = f' a) :
+    (mapAccumr f xs s).snd = (map f' xs) := by
+  rw [mapAccumr_eq_map (fun _ => true) rfl (fun _ _ _ => rfl) (fun a s s' _ _ => by rw [h, h])]
+  simp_all
 
 
 /--
@@ -301,10 +302,10 @@ If an accumulation function `f`, produces the same output bits regardless of acc
 then the state is redundant and can be optimized out.
 -/
 @[simp]
-theorem mapAccumr₂_eq_map₂_of_unused_state (f : α → β → σ → σ × γ) (s : σ)
-    (h : ∀ a b s s', (f a b s).snd = (f a b s').snd) :
+theorem mapAccumr₂_eq_map₂_of_unused_state (f : α → β → σ → σ × γ) (f' : α → β → γ) (s : σ)
+    (h : ∀ a b s, (f a b s).snd = f' a b) :
     (mapAccumr₂ f xs ys s).snd = (map₂ (fun x y => (f x y s).snd) xs ys) :=
-  mapAccumr₂_eq_map₂ (fun _ => true) rfl (fun _ _ _ _ => rfl) (fun a b s s' _ _ => h a b s s')
+  mapAccumr₂_eq_map₂ (fun _ => true) rfl (fun _ _ _ _ => rfl) (fun a b s s' _ _ => by rw [h, h])
 
 
 /-- If `f` takes a pair of states, but always returns the same value for both elements of the
@@ -346,9 +347,9 @@ If `f` returns the same output and next state for every value of it's first argu
 `xs : Vector` is ignored, and we can rewrite `mapAccumr₂` into `map`.
 -/
 @[simp]
-theorem mapAccumr₂_unused_input_left [Inhabited α] (f : α → β → σ → σ × γ)
-    (h : ∀ a b s, f default b s = f a b s) :
-    mapAccumr₂ f xs ys s = mapAccumr (fun b s => f default b s) ys s := by
+theorem mapAccumr₂_unused_input_left (f : α → β → σ → σ × γ) (f' : β → σ → σ × γ)
+    (h : ∀ a b s, f a b s = f' b s) :
+    mapAccumr₂ f xs ys s = mapAccumr f' ys s := by
   induction xs, ys using Vector.revInductionOn₂ generalizing s with
   | nil => rfl
   | snoc xs ys x y ih => simp [h x y s, ih]
@@ -358,9 +359,9 @@ If `f` returns the same output and next state for every value of it's second arg
 `ys : Vector` is ignored, and we can rewrite `mapAccumr₂` into `map`.
 -/
 @[simp]
-theorem mapAccumr₂_unused_input_right [Inhabited β] (f : α → β → σ → σ × γ)
-    (h : ∀ a b s, f a default s = f a b s) :
-    mapAccumr₂ f xs ys s = mapAccumr (fun a s => f a default s) xs s := by
+theorem mapAccumr₂_unused_input_right (f : α → β → σ → σ × γ) (f' : α → σ → σ × γ)
+    (h : ∀ a b s, f a b s = f' a s) :
+    mapAccumr₂ f xs ys s = mapAccumr f' xs s := by
   induction xs, ys using Vector.revInductionOn₂ generalizing s with
   | nil => rfl
   | snoc xs ys x y ih => simp [h x y s, ih]

@@ -321,7 +321,7 @@ lemma free_bot (h : A ≠ ⊥) : A.Free (⊥ : SimpleGraph β) := by
   intro ⟨f, hf⟩
   absurd f.map_mem_edgeSet h.choose_spec
   rw [edgeSet_bot]
-  exact Set.not_mem_empty (h.choose.map f)
+  exact Set.notMem_empty (h.choose.map f)
 
 end Free
 
