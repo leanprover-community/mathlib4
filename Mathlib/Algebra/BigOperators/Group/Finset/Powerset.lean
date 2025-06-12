@@ -29,7 +29,7 @@ lemma prod_powerset_insert [DecidableEq α] (ha : a ∉ s) (f : Finset α → β
     ∏ t ∈ (insert a s).powerset, f t =
       (∏ t ∈ s.powerset, f t) * ∏ t ∈ s.powerset, f (insert a t) := by
   rw [powerset_insert, prod_union, prod_image]
-  · exact insert_erase_invOn.2.injOn.mono fun t ht ↦ not_mem_mono (mem_powerset.1 ht) ha
+  · exact insert_erase_invOn.2.injOn.mono fun t ht ↦ notMem_mono (mem_powerset.1 ht) ha
   · aesop (add simp [disjoint_left, insert_subset_iff])
 
 /-- A product over all subsets of `s ∪ {x}` is obtained by multiplying the product over all subsets
@@ -38,7 +38,7 @@ of `s`, and over all subsets of `s` to which one adds `x`. -/
 of `s`, and over all subsets of `s` to which one adds `x`."]
 lemma prod_powerset_cons (ha : a ∉ s) (f : Finset α → β) :
     ∏ t ∈ (s.cons a ha).powerset, f t = (∏ t ∈ s.powerset, f t) *
-      ∏ t ∈ s.powerset.attach, f (cons a t <| not_mem_mono (mem_powerset.1 t.2) ha) := by
+      ∏ t ∈ s.powerset.attach, f (cons a t <| notMem_mono (mem_powerset.1 t.2) ha) := by
   classical
   simp_rw [cons_eq_insert]
   rw [prod_powerset_insert ha, prod_attach _ fun t ↦ f (insert a t)]

@@ -283,6 +283,9 @@ theorem domCongr_toAlgHom (e : G ≃* H) : (domCongr k A e).toAlgHom = mapDomain
     domCongr k A e (single g a) = single (e g) a :=
   Finsupp.equivMapDomain_single _ _ _
 
+@[simp] lemma domCongr_comp_lsingle (e : G ≃* H) (g : G) :
+    (domCongr k A e).toLinearMap ∘ₗ lsingle g = lsingle (e g) := by ext; simp
+
 @[simp] theorem domCongr_refl : domCongr k A (MulEquiv.refl G) = AlgEquiv.refl :=
   AlgEquiv.ext fun _ => Finsupp.ext fun _ => rfl
 
@@ -570,6 +573,9 @@ theorem domCongr_toAlgHom (e : G ≃+ H) : (domCongr k A e).toAlgHom = mapDomain
 @[simp] theorem domCongr_single (e : G ≃+ H) (g : G) (a : A) :
     domCongr k A e (single g a) = single (e g) a :=
   Finsupp.equivMapDomain_single _ _ _
+
+@[simp] lemma domCongr_comp_lsingle (e : G ≃+ H) (g : G) :
+    (domCongr k A e).toLinearMap ∘ₗ lsingle g = lsingle (e g) := by ext; simp
 
 @[simp] theorem domCongr_refl : domCongr k A (AddEquiv.refl G) = AlgEquiv.refl :=
   AlgEquiv.ext fun _ => Finsupp.ext fun _ => rfl
