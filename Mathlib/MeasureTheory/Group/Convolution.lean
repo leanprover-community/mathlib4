@@ -38,11 +38,16 @@ scoped[MeasureTheory] infixr:80 " ∗ₘ " => MeasureTheory.Measure.mconv
 scoped[MeasureTheory] infixr:80 " ∗ " => MeasureTheory.Measure.conv
 
 @[to_additive]
+theorem lintegral_mconv_eq_lintegral_prod [MeasurableMul₂ M] {μ ν : Measure M}
+    {f : M → ℝ≥0∞} (hf : Measurable f):
+    ∫⁻ z, f z ∂(μ ∗ₘ ν) = ∫⁻ z, f (z.1 * z.2) ∂(μ.prod ν) := by
+  rw [mconv, lintegral_map hf measurable_mul]
+
+@[to_additive]
 theorem lintegral_mconv [MeasurableMul₂ M] {μ ν : Measure M} [SFinite ν]
     {f : M → ℝ≥0∞} (hf : Measurable f) :
     ∫⁻ z, f z ∂(μ ∗ₘ ν) = ∫⁻ x, ∫⁻ y, f (x * y) ∂ν ∂μ := by
-  rw [mconv, lintegral_map hf measurable_mul, lintegral_prod]
-  fun_prop
+  rw [lintegral_mconv_eq_lintegral_prod hf, lintegral_prod _ (by fun_prop)]
 
 @[to_additive]
 lemma dirac_mconv [MeasurableMul₂ M] (x : M) (μ : Measure M) [SFinite μ] :
