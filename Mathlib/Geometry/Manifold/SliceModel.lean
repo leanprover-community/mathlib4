@@ -212,7 +212,8 @@ def SliceModel.ofEmbedding {I : ModelWithCorners 𝕜 E H} (hI : IsEmbedding I) 
   compatible := by ext; simp
 
 -- TODO: prove that I is an embedding if I is boundaryless, then add the corresponding instance
--- TODO: think about the boundary case, and which particular version of submanifolds this enforces...
+-- TODO: think about the boundary case, and which particular version of submanifolds
+-- this definition enforces...
 
 open scoped Manifold
 
@@ -231,8 +232,8 @@ noncomputable instance {n : ℕ} [NeZero n] :
 /-- The standard model on `ℝ^n` is a slice model for the standard model for `ℝ^m`, for `n ≤ m`. -/
 noncomputable instance {n m : ℕ} [NeZero n] :
     SliceModel ((EuclideanSpace ℝ (Fin m))) (𝓡 n) (𝓡 (n + m)) where
-  equiv := EuclideanSpace.finAddEquivProd |>.symm
-  map x := (EuclideanSpace.finAddEquivProd (𝕜 := ℝ) (n := n) (m := m)).symm (x, 0)
+  equiv := EuclideanSpace.finAddEquivProd.symm
+  map x := EuclideanSpace.finAddEquivProd.symm (x, 0)
   hmap :=
     (EuclideanSpace.finAddEquivProd.symm).toHomeomorph.isEmbedding.comp (isEmbedding_prodMkLeft 0)
   compatible := by ext; simp
@@ -247,7 +248,7 @@ noncomputable instance {n : ℕ} [NeZero n] :
     sorry
   compatible := by
     ext x
-    simp_all only [comp_apply, ContinuousLinearEquiv.prodUnique_apply]
+    simp only [comp_apply, ContinuousLinearEquiv.prodUnique_apply]
     rfl
 
 -- TODO: make an instance/ figure out why Lean complains about synthesisation order!
@@ -259,16 +260,18 @@ def instTrans (h : SliceModel F I I') (h' : SliceModel F' I' I'') : SliceModel (
   compatible := by -- paste the two commutative diagrams together
     ext x
     have : (ContinuousLinearEquiv.prodAssoc 𝕜 E F F').symm (I x, 0) = ((I x, 0), 0) := rfl
-    simp [h.compatible, h'.compatible, this]
-    symm
-
-
-
+    simp only [comp_apply, ContinuousLinearEquiv.trans_apply, ContinuousLinearEquiv.prodCongr_apply,
+      ContinuousLinearEquiv.refl_apply, this]
+    -- can this be condensed? feels unnecessarily painful
     calc
-      _ = (SliceModel.equiv I' I'')
-        ((SliceModel.equiv I I') ((ContinuousLinearEquiv.prodAssoc 𝕜 E F F').symm (I x, 0)).1,
-          ((ContinuousLinearEquiv.prodAssoc 𝕜 E F F').symm (I x, 0)).2) := sorry
-      _ = I'' (SliceModel.map F' I' I'' (SliceModel.map F I I' x)) := sorry
-    --sorry
+      _ = (I'' ∘ SliceModel.map F' I' I'') (SliceModel.map F I I' x) := by
+        simp [Function.comp_apply]
+      _ = (SliceModel.equiv I' I'' ∘ (fun x ↦ (x, (0 : F'))) ∘ ↑I') (SliceModel.map F I I' x) := by
+        rw [h'.compatible]
+      _ = (SliceModel.equiv I' I'' ∘ (fun x ↦ (x, (0 : F')))) ((I' ∘ SliceModel.map F I I') x) := by
+        simp [Function.comp_apply]
+      _ = _ := by
+        rw [h.compatible]
+        congr
 
 end instances
