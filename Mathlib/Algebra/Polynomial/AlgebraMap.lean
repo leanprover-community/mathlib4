@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Prod
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.Polynomial.Eval.Algebra
@@ -49,7 +50,7 @@ instance algebraOfAlgebra : Algebra R A[X] where
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply]
       simp_rw [toFinsupp_mul, toFinsupp_C]
       convert Algebra.commutes' r p.toFinsupp
-  toRingHom := C.comp (algebraMap R A)
+  algebraMap := C.comp (algebraMap R A)
 
 @[simp]
 theorem algebraMap_apply (r : R) : algebraMap R A[X] r = C (algebraMap R A r) :=
@@ -90,8 +91,7 @@ theorem algHom_ext' {f g : A[X] →ₐ[R] B}
     (hX : f X = g X) : f = g :=
   AlgHom.coe_ringHom_injective (ringHom_ext' (congr_arg AlgHom.toRingHom hC) hX)
 
-variable (R)
-
+variable (R) in
 open AddMonoidAlgebra in
 /-- Algebra isomorphism between `R[X]` and `R[ℕ]`. This is just an
 implementation detail, but it can be useful to transfer results from `Finsupp` to polynomials. -/
@@ -100,8 +100,6 @@ def toFinsuppIsoAlg : R[X] ≃ₐ[R] R[ℕ] :=
   { toFinsuppIso R with
     commutes' := fun r => by
       dsimp }
-
-variable {R}
 
 instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
   ⟨⟨⊥, ⊤, by
@@ -135,16 +133,10 @@ theorem ringHom_eval₂_intCastRingHom {R S : Type*} [Ring R] [Ring S] (p : ℤ[
     (r : R) : f (eval₂ (Int.castRingHom R) r p) = eval₂ (Int.castRingHom S) (f r) p :=
   algHom_eval₂_algebraMap p f.toIntAlgHom r
 
-@[deprecated (since := "2024-05-27")]
-alias ringHom_eval₂_cast_int_ringHom := ringHom_eval₂_intCastRingHom
-
 @[simp]
 theorem eval₂_intCastRingHom_X {R : Type*} [Ring R] (p : ℤ[X]) (f : ℤ[X] →+* R) :
     eval₂ (Int.castRingHom R) (f X) p = f p :=
   eval₂_algebraMap_X p f.toIntAlgHom
-
-@[deprecated (since := "2024-04-17")]
-alias eval₂_int_castRingHom_X := eval₂_intCastRingHom_X
 
 /-- `Polynomial.eval₂` as an `AlgHom` for noncommutative algebras.
 
@@ -177,7 +169,7 @@ theorem mapAlgHom_coe_ringHom (f : A →ₐ[R] B) :
   rfl
 
 @[simp]
-theorem mapAlgHom_comp (C : Type z) [Semiring C] [Algebra R C] (f : B →ₐ[R] C) (g : A →ₐ[R] B) :
+theorem mapAlgHom_comp (C : Type*) [Semiring C] [Algebra R C] (f : B →ₐ[R] C) (g : A →ₐ[R] B) :
     (mapAlgHom f).comp (mapAlgHom g) = mapAlgHom (f.comp g) := by
   apply AlgHom.ext
   intro x
@@ -208,7 +200,11 @@ theorem mapAlgEquiv_coe_ringHom (f : A ≃ₐ[R] B) :
   rfl
 
 @[simp]
-theorem mapAlgEquiv_comp (C : Type z) [Semiring C] [Algebra R C] (f : A ≃ₐ[R] B) (g : B ≃ₐ[R] C) :
+theorem mapAlgEquiv_toAlgHom (f : A ≃ₐ[R] B) :
+    (mapAlgEquiv f : Polynomial A →ₐ[R] Polynomial B) = mapAlgHom f := rfl
+
+@[simp]
+theorem mapAlgEquiv_comp (C : Type*) [Semiring C] [Algebra R C] (f : A ≃ₐ[R] B) (g : B ≃ₐ[R] C) :
     (mapAlgEquiv f).trans (mapAlgEquiv g) = mapAlgEquiv (f.trans g) := by
   apply AlgEquiv.ext
   intro x
@@ -240,7 +236,6 @@ theorem algHom_ext {f g : R[X] →ₐ[R] B} (hX : f X = g X) :
 theorem aeval_def (p : R[X]) : aeval x p = eval₂ (algebraMap R A) x p :=
   rfl
 
--- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_zero : aeval x (0 : R[X]) = 0 :=
   map_zero (aeval x)
 
@@ -256,24 +251,17 @@ theorem aeval_C (r : R) : aeval x (C r) = algebraMap R A r :=
 theorem aeval_monomial {n : ℕ} {r : R} : aeval x (monomial n r) = algebraMap _ _ r * x ^ n :=
   eval₂_monomial _ _
 
--- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_X_pow {n : ℕ} : aeval x ((X : R[X]) ^ n) = x ^ n :=
   eval₂_X_pow _ _
 
--- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_add : aeval x (p + q) = aeval x p + aeval x q :=
   map_add _ _ _
 
--- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_one : aeval x (1 : R[X]) = 1 :=
   map_one _
 
--- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_natCast (n : ℕ) : aeval x (n : R[X]) = n :=
   map_natCast _ _
-
-@[deprecated (since := "2024-04-17")]
-alias aeval_nat_cast := aeval_natCast
 
 theorem aeval_mul : aeval x (p * q) = aeval x p * aeval x q :=
   map_mul _ _ _
@@ -372,6 +360,38 @@ theorem aeval_algEquiv (f : A ≃ₐ[R] B) (x : A) : aeval (f x) = (f : A →ₐ
 theorem aeval_algebraMap_apply_eq_algebraMap_eval (x : R) (p : R[X]) :
     aeval (algebraMap R A x) p = algebraMap R A (p.eval x) :=
   aeval_algHom_apply (Algebra.ofId R A) x p
+
+/-- Polynomial evaluation on a pair is a product of the evaluations on the components. -/
+theorem aeval_prod (x : A × B) : aeval (R := R) x = (aeval x.1).prod (aeval x.2) :=
+  aeval_algHom (.fst R A B) x ▸ aeval_algHom (.snd R A B) x ▸
+    (aeval x).prod_comp (.fst R A B) (.snd R A B)
+
+/-- Polynomial evaluation on a pair is a pair of evaluations. -/
+theorem aeval_prod_apply (x : A × B) (p : Polynomial R) :
+    p.aeval x = (p.aeval x.1, p.aeval x.2) := by simp [aeval_prod]
+
+section Pi
+
+variable {I : Type*} {A : I → Type*} [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)]
+variable (x : Π i, A i) (p : R[X])
+
+/-- Polynomial evaluation on an indexed tuple is the indexed product of the evaluations
+on the components.
+Generalizes `Polynomial.aeval_prod` to indexed products. -/
+theorem aeval_pi (x : Π i, A i) : aeval (R := R) x = Pi.algHom R A (fun i ↦ aeval (x i)) :=
+  (funext fun i ↦ aeval_algHom (Pi.evalAlgHom R A i) x) ▸
+    (Pi.algHom_comp R A (Pi.evalAlgHom R A) (aeval x))
+
+theorem aeval_pi_apply₂ (j : I) : p.aeval x j = p.aeval (x j) :=
+  aeval_pi (R := R) x ▸ Pi.algHom_apply R A (fun i ↦ aeval (x i)) p j
+
+/-- Polynomial evaluation on an indexed tuple is the indexed tuple of the evaluations
+on the components.
+Generalizes `Polynomial.aeval_prod_apply` to indexed products. -/
+theorem aeval_pi_apply : p.aeval x = fun j ↦ p.aeval (x j) :=
+  funext fun j ↦ aeval_pi_apply₂ x p j
+
+end Pi
 
 @[simp]
 theorem coe_aeval_eq_eval (r : R) : (aeval r : R[X] → R) = eval r :=
@@ -497,13 +517,13 @@ theorem dvd_term_of_dvd_eval_of_dvd_terms {z p : S} {f : S[X]} (i : ℕ) (dvd_ev
     (dvd_terms : ∀ j ≠ i, p ∣ f.coeff j * z ^ j) : p ∣ f.coeff i * z ^ i := by
   by_cases hi : i ∈ f.support
   · rw [eval, eval₂_eq_sum, sum_def] at dvd_eval
-    rw [← Finset.insert_erase hi, Finset.sum_insert (Finset.not_mem_erase _ _)] at dvd_eval
+    rw [← Finset.insert_erase hi, Finset.sum_insert (Finset.notMem_erase _ _)] at dvd_eval
     refine (dvd_add_left ?_).mp dvd_eval
     apply Finset.dvd_sum
     intro j hj
     exact dvd_terms j (Finset.ne_of_mem_erase hj)
   · convert dvd_zero p
-    rw [not_mem_support_iff] at hi
+    rw [notMem_support_iff] at hi
     simp [hi]
 
 theorem dvd_term_of_isRoot_of_dvd_terms {r p : S} {f : S[X]} (i : ℕ) (hr : f.IsRoot r)
@@ -580,7 +600,7 @@ lemma dvd_comp_X_add_C_iff (p q : R[X]) (a : R) :
 
 lemma dvd_comp_neg_X_iff (p q : R[X]) : p ∣ q.comp (-X) ↔ p.comp (-X) ∣ q := by
   let _ := invertibleOne (α := R)
-  let _ := invertibleNeg (α := R) 1
+  let _ := invertibleNeg (R := R) 1
   simpa using dvd_comp_C_mul_X_add_C_iff p q (-1) 0
 
 variable [IsDomain R]
@@ -599,11 +619,13 @@ lemma aeval_apply_smul_mem_of_le_comap'
     [Semiring A] [Algebra R A] [Module A M] [IsScalarTower R A M] (hm : m ∈ q) (p : R[X]) (a : A)
     (hq : q ≤ q.comap (Algebra.lsmul R R M a)) :
     aeval a p • m ∈ q := by
-  refine p.induction_on (M := fun f ↦ aeval a f • m ∈ q) (by simpa) (fun f₁ f₂ h₁ h₂ ↦ ?_)
-    (fun n t hmq ↦ ?_)
-  · simp_rw [map_add, add_smul]
+  induction p using Polynomial.induction_on with
+  | C a => simpa using SMulMemClass.smul_mem a hm
+  | add f₁ f₂ h₁ h₂ =>
+    simp_rw [map_add, add_smul]
     exact Submodule.add_mem q h₁ h₂
-  · dsimp only at hmq ⊢
+  | monomial n t hmq =>
+    dsimp only at hmq ⊢
     rw [pow_succ', mul_left_comm, map_mul, aeval_X, mul_smul]
     rw [← q.map_le_iff_le_comap] at hq
     exact hq ⟨_, hmq, rfl⟩
@@ -619,9 +641,8 @@ section CommSemiring
 
 variable [CommSemiring R] {a p : R[X]}
 
-theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 → r = 0) :
-    ∀ (Q : R[X]), P * Q = 0 → Q = 0 := by
-  intro Q hQ
+theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 → r = 0) (Q : R[X])
+    (hQ : P * Q = 0) : Q = 0 := by
   suffices ∀ i, P.coeff i • Q = 0 by
     rw [← leadingCoeff_eq_zero]
     apply h
@@ -647,22 +668,31 @@ theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 �
     rw [coeff_eq_zero_of_natDegree_lt hj, mul_zero]
   · omega
   · rw [← coeff_C_mul, ← smul_eq_C_mul, IH _ hi, coeff_zero]
-termination_by Q => Q.natDegree
+termination_by Q.natDegree
 
-open nonZeroDivisors in
+open nonZeroDivisors
+
 /-- *McCoy theorem*: a polynomial `P : R[X]` is a zerodivisor if and only if there is `a : R`
 such that `a ≠ 0` and `a • P = 0`. -/
-theorem nmem_nonZeroDivisors_iff {P : R[X]} : P ∉ R[X]⁰ ↔ ∃ a : R, a ≠ 0 ∧ a • P = 0 := by
+theorem notMem_nonZeroDivisors_iff {P : R[X]} : P ∉ R[X]⁰ ↔ ∃ a : R, a ≠ 0 ∧ a • P = 0 := by
   refine ⟨fun hP ↦ ?_, fun ⟨a, ha, h⟩ h1 ↦ ha <| C_eq_zero.1 <| (h1 _) <| smul_eq_C_mul a ▸ h⟩
   by_contra! h
-  obtain ⟨Q, hQ⟩ := _root_.nmem_nonZeroDivisors_iff.1 hP
+  obtain ⟨Q, hQ⟩ := _root_.notMem_nonZeroDivisors_iff.1 hP
   refine hQ.2 (eq_zero_of_mul_eq_zero_of_smul P (fun a ha ↦ ?_) Q (mul_comm P _ ▸ hQ.1))
   contrapose! ha
   exact h a ha
 
-open nonZeroDivisors in
+@[deprecated (since := "2025-05-24")] alias nmem_nonZeroDivisors_iff := notMem_nonZeroDivisors_iff
+
 protected lemma mem_nonZeroDivisors_iff {P : R[X]} : P ∈ R[X]⁰ ↔ ∀ a : R, a • P = 0 → a = 0 := by
-  simpa [not_imp_not] using (nmem_nonZeroDivisors_iff (P := P)).not
+  simpa [not_imp_not] using (notMem_nonZeroDivisors_iff (P := P)).not
+
+lemma mem_nonzeroDivisors_of_coeff_mem {p : R[X]} (n : ℕ) (hp : p.coeff n ∈ R⁰) :
+    p ∈ R[X]⁰ :=
+  Polynomial.mem_nonZeroDivisors_iff.mpr fun r hr ↦ hp _ (by simpa using congr(coeff $hr n))
+
+lemma X_mem_nonzeroDivisors : X ∈ R[X]⁰ :=
+  mem_nonzeroDivisors_of_coeff_mem 1 (by simp [one_mem])
 
 end CommSemiring
 

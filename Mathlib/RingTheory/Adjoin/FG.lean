@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.MvPolynomial.Basic
+import Mathlib.Algebra.MvPolynomial.Eval
+import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
 
@@ -16,7 +17,7 @@ This file develops the basic theory of finitely-generated subalgebras.
 ## Definitions
 
 * `FG (S : Subalgebra R A)` : A predicate saying that the subalgebra is finitely-generated
-as an A-algebra
+  as an A-algebra
 
 ## Tags
 
@@ -129,11 +130,10 @@ theorem FG.prod {S : Subalgebra R A} {T : Subalgebra R B} (hS : S.FG) (hT : T.FG
 
 section
 
-open scoped Classical
-
-theorem FG.map {S : Subalgebra R A} (f : A →ₐ[R] B) (hs : S.FG) : (S.map f).FG :=
+theorem FG.map {S : Subalgebra R A} (f : A →ₐ[R] B) (hs : S.FG) : (S.map f).FG := by
   let ⟨s, hs⟩ := hs
-  ⟨s.image f, by rw [Finset.coe_image, Algebra.adjoin_image, hs]⟩
+  classical
+  exact ⟨s.image f, by rw [Finset.coe_image, Algebra.adjoin_image, hs]⟩
 
 end
 

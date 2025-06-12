@@ -24,9 +24,8 @@ see `Complex.hasSum_taylorSeries_of_entire`, `Complex.taylorSeries_eq_of_entire`
 `Complex.taylorSeries_eq_of_entire'`.
 -/
 
-#adaptation_note
-/--
-Due to https://github.com/leanprover/lean4/issues/5126, we've had to change all
+#adaptation_note /-- https://github.com/leanprover/lean4/issues/5126
+we've had to change all
 the `⦃⦄` stricit implicit variable statements in this file to normal `{}` implicit variables.
 
 Once this issue is fixed, we should change them back. For now it doesn't break anything downstream.

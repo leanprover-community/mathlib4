@@ -19,15 +19,13 @@ epimorphic for all `i`. Then `G.obj S` is isomorphic to a limit indexed by
 We also provide the dual result for a functor of the form `G : Profiniteᵒᵖ ⥤ C`.
 
 We apply this to define `Profinite.diagram'`, `Profinite.asLimitCone'`, and `Profinite.asLimit'`,
-analogues to their unprimed versions in `Mathlib.Topology.Category.Profinite.AsLimit`, in which the
-indexing category is `StructuredArrow S toProfinite` instead of `DiscreteQuotient S`.
+analogues to their unprimed versions in `Mathlib/Topology/Category/Profinite/AsLimit.lean`, in which
+the indexing category is `StructuredArrow S toProfinite` instead of `DiscreteQuotient S`.
 -/
 
 universe u w
 
 open CategoryTheory Limits FintypeCat Functor
-
-attribute [local instance] ConcreteCategory.instFunLike
 
 namespace Profinite
 
@@ -43,7 +41,7 @@ lemma exists_hom (hc : IsLimit c) {X : FintypeCat} (f : c.pt ⟶ toProfinite.obj
   let _ : TopologicalSpace X := ⊥
   have : DiscreteTopology (toProfinite.obj X) := ⟨rfl⟩
   let f' : LocallyConstant c.pt (toProfinite.obj X) :=
-    ⟨f, (IsLocallyConstant.iff_continuous _).mpr f.continuous⟩
+    ⟨f, (IsLocallyConstant.iff_continuous _).mpr f.hom.continuous⟩
   obtain ⟨i, g, h⟩ := exists_locallyConstant.{_, u} c hc f'
   refine ⟨i, (g : _ → _), ?_⟩
   ext x

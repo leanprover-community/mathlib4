@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, Bhavik Mehta,
   Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 import Mathlib.Data.Finset.Sym
@@ -80,7 +80,7 @@ where
             simp_rw [Finset.mem_map, Embedding.coeFn_mk] at hti htj
             obtain ⟨ai, hai, hij'⟩ := hti
             obtain ⟨aj, haj, rfl⟩ := htj
-            rw [Fin.cons_eq_cons] at hij'
+            rw [Fin.cons_inj] at hij'
             ext
             · exact hij'.1
             · obtain ⟨-, rfl⟩ := hij'
@@ -138,7 +138,7 @@ variable {s : Finset ι} {n : μ} {f : ι → μ}
   ext; simp [Fintype.sum_eq_zero_iff_of_nonneg, funext_iff, not_imp_comm, ← forall_and]
 
 @[simp] lemma piAntidiag_empty_of_ne_zero (hn : n ≠ 0) : piAntidiag (∅ : Finset ι) n = ∅ :=
-  eq_empty_of_forall_not_mem (by simp [@eq_comm _ 0, hn.symm])
+  eq_empty_of_forall_notMem (by simp [@eq_comm _ 0, hn.symm])
 
 lemma piAntidiag_empty (n : μ) : piAntidiag (∅ : Finset ι) n = if n = 0 then {0} else ∅ := by
   split_ifs with hn <;> simp [*]
@@ -174,7 +174,7 @@ lemma piAntidiag_cons (hi : i ∉ s) (n : μ) :
     addLeftEmbedding_apply, Prod.exists]
   constructor
   · rintro ⟨hn, hf⟩
-    refine ⟨_, _, hn, update f i 0, ⟨sum_update_of_not_mem hi _ _, fun j ↦ ?_⟩, by aesop⟩
+    refine ⟨_, _, hn, update f i 0, ⟨sum_update_of_notMem hi _ _, fun j ↦ ?_⟩, by aesop⟩
     have := fun h₁ h₂ ↦ (hf j h₁).resolve_left h₂
     aesop (add simp [update])
   · rintro ⟨a, _, hn, g, ⟨rfl, hg⟩, rfl⟩
@@ -189,10 +189,11 @@ lemma piAntidiag_insert [DecidableEq (ι → μ)] (hi : i ∉ s) (n : μ) :
 end AddCancelCommMonoid
 
 section CanonicallyOrderedAddCommMonoid
-variable [DecidableEq ι] [CanonicallyOrderedAddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ]
+variable [DecidableEq ι] [AddCommMonoid μ] [PartialOrder μ]
+  [CanonicallyOrderedAdd μ] [HasAntidiagonal μ] [DecidableEq μ]
 
 @[simp] lemma piAntidiag_zero (s : Finset ι) : piAntidiag s (0 : μ) = {0} := by
-  ext; simp [Fintype.sum_eq_zero_iff_of_nonneg, funext_iff, not_imp_comm, ← forall_and]
+  ext; simp [funext_iff, not_imp_comm, ← forall_and]
 
 end CanonicallyOrderedAddCommMonoid
 
@@ -208,7 +209,7 @@ lemma piAntidiag_univ_fin_eq_antidiagonalTuple (n k : ℕ) :
   ext; simp [Nat.mem_antidiagonalTuple]
 
 lemma nsmul_piAntidiag [DecidableEq (ι → ℕ)] (s : Finset ι) (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
-    n •ℕ piAntidiag s m = (piAntidiag s (n * m)).filter fun f : ι → ℕ ↦ ∀ i ∈ s, n ∣ f i := by
+    n •ℕ piAntidiag s m = {f ∈ piAntidiag s (n * m) | ∀ i ∈ s, n ∣ f i} := by
   ext f
   refine mem_smul_finset.trans ?_
   simp only [mem_smul_finset, mem_filter, mem_piAntidiag, Function.Embedding.coeFn_mk, exists_prop,
@@ -229,18 +230,17 @@ lemma nsmul_piAntidiag [DecidableEq (ι → ℕ)] (s : Finset ι) (m : ℕ) {n :
 lemma map_nsmul_piAntidiag (s : Finset ι) (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     (piAntidiag s m).map
       ⟨(n • ·), fun _ _ h ↦ funext fun i ↦ mul_right_injective₀ hn (congr_fun h i)⟩ =
-        (piAntidiag s (n * m)).filter fun f : ι → ℕ ↦ ∀ i ∈ s, n ∣ f i := by
+        {f ∈ piAntidiag s (n * m) | ∀ i ∈ s, n ∣ f i} := by
   classical rw [map_eq_image]; exact nsmul_piAntidiag _ _ hn
 
 lemma nsmul_piAntidiag_univ [Fintype ι] (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
-    @SMul.smul _ _ Finset.smulFinset n (piAntidiag univ m) =
-      (piAntidiag univ (n * m)).filter fun f : ι → ℕ ↦ ∀ i, n ∣ f i := by
+    n •ℕ (piAntidiag univ m) = {f ∈ piAntidiag (univ : Finset ι) (n * m) | ∀ i, n ∣ f i} := by
   simpa using nsmul_piAntidiag (univ : Finset ι) m hn
 
 lemma map_nsmul_piAntidiag_univ [Fintype ι] (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     (piAntidiag (univ : Finset ι) m).map
         ⟨(n • ·), fun _ _ h ↦ funext fun i ↦ mul_right_injective₀ hn (congr_fun h i)⟩ =
-      (piAntidiag univ (n * m)).filter fun f : ι → ℕ ↦ ∀ i, n ∣ f i := by
+      {f ∈ piAntidiag (univ : Finset ι) (n * m) | ∀ i, n ∣ f i} := by
   simpa using map_nsmul_piAntidiag (univ : Finset ι) m hn
 
 end Nat

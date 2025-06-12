@@ -40,6 +40,8 @@ We only directly define a matroid for `Matroid.sigma`. All other versions of sum
 defined indirectly, using `Matroid.sigma` and the API in `Matroid.map`.
 -/
 
+assert_not_exists Field
+
 universe u v
 
 open Set
@@ -53,20 +55,20 @@ variable {ι : Type*} {α : ι → Type*} {M : (i : ι) → Matroid (α i)}
 protected def sigma (M : (i : ι) → Matroid (α i)) : Matroid ((i : ι) × α i) where
   E := univ.sigma (fun i ↦ (M i).E)
   Indep I := ∀ i, (M i).Indep (Sigma.mk i ⁻¹' I)
-  Base B := ∀ i, (M i).Base (Sigma.mk i ⁻¹' B)
+  IsBase B := ∀ i, (M i).IsBase (Sigma.mk i ⁻¹' B)
 
   indep_iff' I := by
     refine ⟨fun h ↦ ?_, fun ⟨B, hB, hIB⟩ i ↦ (hB i).indep.subset (preimage_mono hIB)⟩
-    choose Bs hBs using fun i ↦ (h i).exists_base_superset
+    choose Bs hBs using fun i ↦ (h i).exists_isBase_superset
     refine ⟨univ.sigma Bs, fun i ↦ by simpa using (hBs i).1, ?_⟩
     rw [← univ_sigma_preimage_mk I]
     refine sigma_mono rfl.subset fun i ↦ (hBs i).2
 
-  exists_base := by
-    choose B hB using fun i ↦ (M i).exists_base
+  exists_isBase := by
+    choose B hB using fun i ↦ (M i).exists_isBase
     exact ⟨univ.sigma B, by simpa⟩
 
-  base_exchange B₁ B₂ h₁ h₂ := by
+  isBase_exchange B₁ B₂ h₁ h₂ := by
     simp only [mem_diff, Sigma.exists, and_imp, Sigma.forall]
     intro i e he₁ he₂
     have hf_ex := (h₁ i).exchange (h₂ i) ⟨he₁, by simpa⟩
@@ -82,8 +84,7 @@ protected def sigma (M : (i : ι) → Matroid (α i)) : Matroid ((i : ι) × α 
 
   maximality X _ I hI hIX := by
     choose Js hJs using
-      fun i ↦ (hI i).subset_basis'_of_subset (preimage_mono (f := Sigma.mk i) hIX)
-
+      fun i ↦ (hI i).subset_isBasis'_of_subset (preimage_mono (f := Sigma.mk i) hIX)
     use univ.sigma Js
     simp only [maximal_subset_iff', mem_univ, mk_preimage_sigma, le_eq_subset, and_imp]
     refine ⟨?_, ⟨fun i ↦ (hJs i).1.indep, ?_⟩, fun S hS hSX hJS ↦ ?_⟩
@@ -104,14 +105,14 @@ protected def sigma (M : (i : ι) → Matroid (α i)) : Matroid ((i : ι) × α 
 @[simp] lemma sigma_indep_iff {I} :
     (Matroid.sigma M).Indep I ↔ ∀ i, (M i).Indep (Sigma.mk i ⁻¹' I) := Iff.rfl
 
-@[simp] lemma sigma_base_iff {B} :
-    (Matroid.sigma M).Base B ↔ ∀ i, (M i).Base (Sigma.mk i ⁻¹' B) := Iff.rfl
+@[simp] lemma sigma_isBase_iff {B} :
+    (Matroid.sigma M).IsBase B ↔ ∀ i, (M i).IsBase (Sigma.mk i ⁻¹' B) := Iff.rfl
 
 @[simp] lemma sigma_ground_eq : (Matroid.sigma M).E = univ.sigma fun i ↦ (M i).E := rfl
 
-@[simp] lemma sigma_basis_iff {I X} :
-    (Matroid.sigma M).Basis I X ↔ ∀ i, (M i).Basis (Sigma.mk i ⁻¹' I) (Sigma.mk i ⁻¹' X) := by
-  simp only [Basis, sigma_indep_iff, maximal_subset_iff, and_imp, and_assoc, sigma_ground_eq,
+@[simp] lemma sigma_isBasis_iff {I X} :
+    (Matroid.sigma M).IsBasis I X ↔ ∀ i, (M i).IsBasis (Sigma.mk i ⁻¹' I) (Sigma.mk i ⁻¹' X) := by
+  simp only [IsBasis, sigma_indep_iff, maximal_subset_iff, and_imp, and_assoc, sigma_ground_eq,
     forall_and, and_congr_right_iff]
   refine fun hI ↦ ⟨fun ⟨hIX, h, h'⟩ ↦ ⟨fun i ↦ preimage_mono hIX, fun i I₀ hI₀ hI₀X hII₀ ↦ ?_, ?_⟩,
     fun ⟨hIX, h', h''⟩ ↦ ⟨?_, ?_, ?_⟩⟩
@@ -164,15 +165,16 @@ protected def sum' (M : ι → Matroid α) : Matroid (ι × α) :=
   ext
   simp [Matroid.sum']
 
-@[simp] lemma sum'_base_iff {B} : (Matroid.sum' M).Base B ↔ ∀ i, (M i).Base (Prod.mk i ⁻¹' B) := by
-  simp only [Matroid.sum', mapEquiv_base_iff, Equiv.sigmaEquivProd_symm_apply, sigma_base_iff]
+@[simp] lemma sum'_isBase_iff {B} :
+    (Matroid.sum' M).IsBase B ↔ ∀ i, (M i).IsBase (Prod.mk i ⁻¹' B) := by
+  simp only [Matroid.sum', mapEquiv_isBase_iff, Equiv.sigmaEquivProd_symm_apply, sigma_isBase_iff]
   convert Iff.rfl
   ext
   simp
 
-@[simp] lemma sum'_basis_iff {I X} :
-    (Matroid.sum' M).Basis I X ↔ ∀ i, (M i).Basis (Prod.mk i ⁻¹' I) (Prod.mk i ⁻¹' X) := by
-  simp [Matroid.sum']
+@[simp] lemma sum'_isBasis_iff {I X} :
+    (Matroid.sum' M).IsBasis I X ↔ ∀ i, (M i).IsBasis (Prod.mk i ⁻¹' I) (Prod.mk i ⁻¹' X) := by
+  simp only [Matroid.sum', mapEquiv_isBasis_iff, Equiv.sigmaEquivProd_symm_apply, sigma_isBasis_iff]
   convert Iff.rfl <;>
   exact ext <| by simp
 
@@ -184,6 +186,8 @@ lemma Finitary.sum' (h : ∀ i, (M i).Finitary) : (Matroid.sum' M).Finitary := b
 end sum'
 
 section disjointSigma
+
+open scoped Function -- required for scoped `on` notation
 
 variable {α ι : Type*} {M : ι → Matroid α}
 
@@ -202,14 +206,14 @@ protected def disjointSigma (M : ι → Matroid α) (h : Pairwise (Disjoint on f
       (∀ i, (M i).Indep (I ∩ (M i).E)) ∧ I ⊆ ⋃ i, (M i).E := by
   simp [Matroid.disjointSigma, (Function.Embedding.sigmaSet_preimage h)]
 
-@[simp] lemma disjointSigma_base_iff {h B} :
-    (Matroid.disjointSigma M h).Base B ↔
-      (∀ i, (M i).Base (B ∩ (M i).E)) ∧ B ⊆ ⋃ i, (M i).E := by
+@[simp] lemma disjointSigma_isBase_iff {h B} :
+    (Matroid.disjointSigma M h).IsBase B ↔
+      (∀ i, (M i).IsBase (B ∩ (M i).E)) ∧ B ⊆ ⋃ i, (M i).E := by
   simp [Matroid.disjointSigma, (Function.Embedding.sigmaSet_preimage h)]
 
-@[simp] lemma disjointSigma_basis_iff {h I X} :
-    (Matroid.disjointSigma M h).Basis I X ↔
-      (∀ i, (M i).Basis (I ∩ (M i).E) (X ∩ (M i).E)) ∧ I ⊆ X ∧ X ⊆ ⋃ i, (M i).E := by
+@[simp] lemma disjointSigma_isBasis_iff {h I X} :
+    (Matroid.disjointSigma M h).IsBasis I X ↔
+      (∀ i, (M i).IsBasis (I ∩ (M i).E) (X ∩ (M i).E)) ∧ I ⊆ X ∧ X ⊆ ⋃ i, (M i).E := by
   simp [Matroid.disjointSigma, Function.Embedding.sigmaSet_preimage h]
 
 end disjointSigma
@@ -235,18 +239,18 @@ protected def sum (M : Matroid α) (N : Matroid β) : Matroid (α ⊕ β) :=
   convert Iff.rfl <;>
     simp [Set.ext_iff, Equiv.ulift, Equiv.sumEquivSigmaBool]
 
-@[simp] lemma sum_base_iff {M : Matroid α} {N : Matroid β} {B : Set (α ⊕ β)} :
-    (M.sum N).Base B ↔ M.Base (.inl ⁻¹' B) ∧ N.Base (.inr ⁻¹' B) := by
-  simp only [Matroid.sum, mapEquiv_base_iff, Equiv.sumCongr_symm, Equiv.sumCongr_apply,
-    Equiv.symm_symm, sigma_base_iff, Bool.forall_bool, Equiv.ulift_apply]
+@[simp] lemma sum_isBase_iff {M : Matroid α} {N : Matroid β} {B : Set (α ⊕ β)} :
+    (M.sum N).IsBase B ↔ M.IsBase (.inl ⁻¹' B) ∧ N.IsBase (.inr ⁻¹' B) := by
+  simp only [Matroid.sum, mapEquiv_isBase_iff, Equiv.sumCongr_symm, Equiv.sumCongr_apply,
+    Equiv.symm_symm, sigma_isBase_iff, Bool.forall_bool, Equiv.ulift_apply]
   convert Iff.rfl <;>
     simp [Set.ext_iff, Equiv.ulift, Equiv.sumEquivSigmaBool]
 
-@[simp] lemma sum_basis_iff {M : Matroid α} {N : Matroid β} {I X : Set (α ⊕ β)} :
-    (M.sum N).Basis I X ↔
-      (M.Basis (Sum.inl ⁻¹' I) (Sum.inl ⁻¹' X) ∧ N.Basis (Sum.inr ⁻¹' I) (Sum.inr ⁻¹' X)) := by
-  simp only [Matroid.sum, mapEquiv_basis_iff, Equiv.sumCongr_symm,
-    Equiv.sumCongr_apply, Equiv.symm_symm, sigma_basis_iff, Bool.forall_bool, Equiv.ulift_apply,
+@[simp] lemma sum_isBasis_iff {M : Matroid α} {N : Matroid β} {I X : Set (α ⊕ β)} :
+    (M.sum N).IsBasis I X ↔
+      (M.IsBasis (Sum.inl ⁻¹' I) (Sum.inl ⁻¹' X) ∧ N.IsBasis (Sum.inr ⁻¹' I) (Sum.inr ⁻¹' X)) := by
+  simp only [Matroid.sum, mapEquiv_isBasis_iff, Equiv.sumCongr_symm,
+    Equiv.sumCongr_apply, Equiv.symm_symm, sigma_isBasis_iff, Bool.forall_bool, Equiv.ulift_apply,
     Equiv.sumEquivSigmaBool, Equiv.coe_fn_mk, Equiv.ulift]
   convert Iff.rfl <;> exact ext <| by simp
 
@@ -267,13 +271,13 @@ def disjointSum (M N : Matroid α) (h : Disjoint M.E N.E) : Matroid α :=
     (M.disjointSum N h).Indep I ↔ M.Indep (I ∩ M.E) ∧ N.Indep (I ∩ N.E) ∧ I ⊆ M.E ∪ N.E := by
   simp [disjointSum, and_assoc]
 
-@[simp] lemma disjointSum_base_iff {h B} :
-    (M.disjointSum N h).Base B ↔ M.Base (B ∩ M.E) ∧ N.Base (B ∩ N.E) ∧ B ⊆ M.E ∪ N.E := by
+@[simp] lemma disjointSum_isBase_iff {h B} :
+    (M.disjointSum N h).IsBase B ↔ M.IsBase (B ∩ M.E) ∧ N.IsBase (B ∩ N.E) ∧ B ⊆ M.E ∪ N.E := by
   simp [disjointSum, and_assoc]
 
-@[simp] lemma disjointSum_basis_iff {h I X} :
-    (M.disjointSum N h).Basis I X ↔ M.Basis (I ∩ M.E) (X ∩ M.E) ∧
-      N.Basis (I ∩ N.E) (X ∩ N.E) ∧ I ⊆ X ∧ X ⊆ M.E ∪ N.E := by
+@[simp] lemma disjointSum_isBasis_iff {h I X} :
+    (M.disjointSum N h).IsBasis I X ↔ M.IsBasis (I ∩ M.E) (X ∩ M.E) ∧
+      N.IsBasis (I ∩ N.E) (X ∩ N.E) ∧ I ⊆ X ∧ X ⊆ M.E ∪ N.E := by
   simp [disjointSum, and_assoc]
 
 lemma disjointSum_comm {h} : M.disjointSum N h = N.disjointSum M h.symm := by
@@ -288,9 +292,9 @@ lemma Indep.eq_union_image_of_disjointSum {h I} (hI : (disjointSum M N h).Indep 
   refine ⟨_, _, hI.1, hI.2.1, h.mono inter_subset_right inter_subset_right, ?_⟩
   rw [← inter_union_distrib_left, inter_eq_self_of_subset_left hI.2.2]
 
-lemma Base.eq_union_image_of_disjointSum {h B} (hB : (disjointSum M N h).Base B) :
-    ∃ BM BN, M.Base BM ∧ N.Base BN ∧ Disjoint BM BN ∧ B = BM ∪ BN := by
-  rw [disjointSum_base_iff] at hB
+lemma IsBase.eq_union_image_of_disjointSum {h B} (hB : (disjointSum M N h).IsBase B) :
+    ∃ BM BN, M.IsBase BM ∧ N.IsBase BN ∧ Disjoint BM BN ∧ B = BM ∪ BN := by
+  rw [disjointSum_isBase_iff] at hB
   refine ⟨_, _, hB.1, hB.2.1, h.mono inter_subset_right inter_subset_right, ?_⟩
   rw [← inter_union_distrib_left, inter_eq_self_of_subset_left hB.2.2]
 

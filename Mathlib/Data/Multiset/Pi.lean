@@ -57,7 +57,7 @@ theorem cons_swap {a a' : α} {b : δ a} {b' : δ a'} {m : Multiset α} {f : ∀
   on_goal 1 => rcases Decidable.eq_or_ne a'' a' with (rfl | h₂)
   all_goals simp [*, Pi.cons_same, Pi.cons_ne]
 
-@[simp, nolint simpNF] -- Porting note: false positive, this lemma can prove itself
+@[simp]
 theorem cons_eta {m : Multiset α} {a : α} (f : ∀ a' ∈ a ::ₘ m, δ a') :
     (cons m a (f _ (mem_cons_self _ _)) fun a' ha' => f a' (mem_cons_of_mem ha')) = f := by
   ext a' h'
@@ -155,9 +155,9 @@ theorem mem_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) :
     ∀ f : ∀ a ∈ m, β a, f ∈ pi m t ↔ ∀ (a) (h : a ∈ m), f a h ∈ t a := by
   intro f
   induction' m using Multiset.induction_on with a m ih
-  · have : f = Pi.empty β := funext (fun _ => funext fun h => (not_mem_zero _ h).elim)
+  · have : f = Pi.empty β := funext (fun _ => funext fun h => (notMem_zero _ h).elim)
     simp only [this, pi_zero, mem_singleton, true_iff]
-    intro _ h; exact (not_mem_zero _ h).elim
+    intro _ h; exact (notMem_zero _ h).elim
   simp_rw [pi_cons, mem_bind, mem_map, ih]
   constructor
   · rintro ⟨b, hb, f', hf', rfl⟩ a' ha'

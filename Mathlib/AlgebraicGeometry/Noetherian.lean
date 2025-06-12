@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geno Racklin Asher
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
-import Mathlib.AlgebraicGeometry.PrimeSpectrum.Noetherian
 import Mathlib.RingTheory.Localization.Submodule
+import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 
 /-!
 # Noetherian and Locally Noetherian Schemes
@@ -158,7 +158,7 @@ lemma isLocallyNoetherian_of_isOpenImmersion {Y : Scheme} (f : X ⟶ Y) [IsOpenI
   · suffices Scheme.Hom.opensRange f ⊓ V = V by
       rw [this]
     rw [← Opens.coe_inj]
-    rw [Opens.coe_inf, Scheme.Hom.opensRange_coe, IsOpenMap.functor_obj_coe,
+    rw [Opens.coe_inf, Scheme.Hom.coe_opensRange, IsOpenMap.coe_functor_obj,
       Set.inter_eq_right, Set.image_subset_iff, Set.preimage_range]
     exact Set.subset_univ _
 
@@ -191,9 +191,8 @@ lemma noetherianSpace_of_isAffineOpen (U : X.Opens) (hU : IsAffineOpen U)
     (Scheme.restrictFunctorΓ.app (op U)).symm.commRingCatIsoToRingEquiv
   exact @noetherianSpace_of_isAffine _ hU _
 
-/-- Any open immersion `Z ⟶ X` with `X` locally Noetherian is quasi-compact.
-
-[Stacks: Lemma 01OX](https://stacks.math.columbia.edu/tag/01OX) -/
+/-- Any open immersion `Z ⟶ X` with `X` locally Noetherian is quasi-compact. -/
+@[stacks 01OX]
 instance (priority := 100) {Z : Scheme} [IsLocallyNoetherian X]
     {f : Z ⟶ X} [IsOpenImmersion f] : QuasiCompact f := by
   apply (quasiCompact_iff_forall_affine f).mpr
@@ -206,9 +205,8 @@ instance (priority := 100) {Z : Scheme} [IsLocallyNoetherian X]
     · exact Set.inter_subset_left
   · exact Set.inter_subset_right
 
-/-- A locally Noetherian scheme is quasi-separated.
-
-[Stacks: Lemma 01OY](https://stacks.math.columbia.edu/tag/01OY) -/
+/-- A locally Noetherian scheme is quasi-separated. -/
+@[stacks 01OY]
 instance (priority := 100) IsLocallyNoetherian.quasiSeparatedSpace [IsLocallyNoetherian X] :
     QuasiSeparatedSpace X := by
   apply (quasiSeparatedSpace_iff_affine X).mpr
@@ -228,7 +226,7 @@ instance (priority := 100) IsLocallyNoetherian.quasiSeparatedSpace [IsLocallyNoe
 
 /-- A scheme `X` is Noetherian if it is locally Noetherian and compact. -/
 @[mk_iff]
-class IsNoetherian (X : Scheme) extends IsLocallyNoetherian X, CompactSpace X : Prop
+class IsNoetherian (X : Scheme) : Prop extends IsLocallyNoetherian X, CompactSpace X
 
 /-- A scheme is Noetherian if and only if it is covered by finitely many affine opens whose
 sections are noetherian rings. -/
@@ -266,9 +264,8 @@ theorem isNoetherian_iff_of_finite_affine_openCover {𝒰 : Scheme.OpenCover.{v,
     · exact Scheme.OpenCover.compactSpace 𝒰
 
 open CategoryTheory in
-/-- A Noetherian scheme has a Noetherian underlying topological space.
-
-[Stacks, Lemma 01OZ](https://stacks.math.columbia.edu/tag/01OZ) -/
+/-- A Noetherian scheme has a Noetherian underlying topological space. -/
+@[stacks 01OZ]
 instance (priority := 100) IsNoetherian.noetherianSpace [IsNoetherian X] :
     NoetherianSpace X := by
   apply TopologicalSpace.noetherian_univ_iff.mp
@@ -284,9 +281,8 @@ instance (priority := 100) IsNoetherian.noetherianSpace [IsNoetherian X] :
   convert noetherianSpace_of_isAffineOpen U.1 U.2
   apply IsLocallyNoetherian.component_noetherian
 
-/-- Any morphism of schemes `f : X ⟶ Y` with `X` Noetherian is quasi-compact.
-
-[Stacks, Lemma 01P0](https://stacks.math.columbia.edu/tag/01P0) -/
+/-- Any morphism of schemes `f : X ⟶ Y` with `X` Noetherian is quasi-compact. -/
+@[stacks 01P0]
 instance (priority := 100) quasiCompact_of_noetherianSpace_source {X Y : Scheme}
     [NoetherianSpace X] (f : X ⟶ Y) : QuasiCompact f :=
   ⟨fun _ _ _ => NoetherianSpace.isCompact _⟩
@@ -325,9 +321,8 @@ theorem isNoetherian_Spec {R : CommRingCat} :
   ⟨fun _ => inferInstance,
    fun _ => inferInstance⟩
 
-/-- A Noetherian scheme has a finite number of irreducible components.
-
-[Stacks, Lemma 0BA8](https://stacks.math.columbia.edu/tag/0BA8) -/
+/-- A Noetherian scheme has a finite number of irreducible components. -/
+@[stacks 0BA8]
 theorem finite_irreducibleComponents_of_isNoetherian [IsNoetherian X] :
     (irreducibleComponents X).Finite := NoetherianSpace.finite_irreducibleComponents
 

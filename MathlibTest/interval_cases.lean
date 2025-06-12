@@ -140,7 +140,7 @@ example (n : ℕ) : n % 2 = 0 ∨ n % 2 = 1 := by
   set r := n % 2 with hr
   have h2 : r < 2 := by
     exact Nat.mod_lt _ (by decide)
-  interval_cases hrv : r -- Porting note: old syntax was `interval_cases r with hrv`
+  interval_cases hrv : r
   · left; exact hrv.symm.trans hrv
                --^ hover says `hrv : r = 0` and jumps to `hrv :` above
   · right; exact hrv.symm.trans hrv

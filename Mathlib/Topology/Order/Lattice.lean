@@ -55,8 +55,8 @@ instance (priority := 100) OrderDual.continuousInf (L : Type*) [TopologicalSpace
 /-- Let `L` be a lattice equipped with a topology such that `L` has continuous infimum and supremum.
 Then `L` is said to be a *topological lattice*.
 -/
-class TopologicalLattice (L : Type*) [TopologicalSpace L] [Lattice L]
-  extends ContinuousInf L, ContinuousSup L : Prop
+class TopologicalLattice (L : Type*) [TopologicalSpace L] [Lattice L] : Prop
+  extends ContinuousInf L, ContinuousSup L
 
 -- see Note [lower instance priority]
 instance (priority := 100) OrderDual.topologicalLattice (L : Type*) [TopologicalSpace L]
@@ -77,7 +77,7 @@ theorem continuous_inf [Min L] [ContinuousInf L] : Continuous fun p : L × L => 
 @[continuity, fun_prop]
 theorem Continuous.inf [Min L] [ContinuousInf L] {f g : X → L} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun x => f x ⊓ g x :=
-  continuous_inf.comp (hf.prod_mk hg : _)
+  continuous_inf.comp (hf.prodMk hg :)
 
 @[continuity]
 theorem continuous_sup [Max L] [ContinuousSup L] : Continuous fun p : L × L => p.1 ⊔ p.2 :=
@@ -86,7 +86,7 @@ theorem continuous_sup [Max L] [ContinuousSup L] : Continuous fun p : L × L => 
 @[continuity, fun_prop]
 theorem Continuous.sup [Max L] [ContinuousSup L] {f g : X → L} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun x => f x ⊔ g x :=
-  continuous_sup.comp (hf.prod_mk hg : _)
+  continuous_sup.comp (hf.prodMk hg :)
 
 namespace Filter.Tendsto
 
@@ -96,7 +96,7 @@ variable {α : Type*} {l : Filter α} {f g : α → L} {x y : L}
 
 lemma sup_nhds' [Max L] [ContinuousSup L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
     Tendsto (f ⊔ g) l (𝓝 (x ⊔ y)) :=
-  (continuous_sup.tendsto _).comp (Tendsto.prod_mk_nhds hf hg)
+  (continuous_sup.tendsto _).comp (hf.prodMk_nhds hg)
 
 lemma sup_nhds [Max L] [ContinuousSup L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
     Tendsto (fun i => f i ⊔ g i) l (𝓝 (x ⊔ y)) :=
@@ -104,7 +104,7 @@ lemma sup_nhds [Max L] [ContinuousSup L] (hf : Tendsto f l (𝓝 x)) (hg : Tends
 
 lemma inf_nhds' [Min L] [ContinuousInf L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
     Tendsto (f ⊓ g) l (𝓝 (x ⊓ y)) :=
-  (continuous_inf.tendsto _).comp (Tendsto.prod_mk_nhds hf hg)
+  (continuous_inf.tendsto _).comp (hf.prodMk_nhds hg)
 
 lemma inf_nhds [Min L] [ContinuousInf L] (hf : Tendsto f l (𝓝 x)) (hg : Tendsto g l (𝓝 y)) :
     Tendsto (fun i => f i ⊓ g i) l (𝓝 (x ⊓ y)) :=

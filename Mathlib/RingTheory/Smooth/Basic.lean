@@ -41,11 +41,8 @@ variable (R : Type u) [CommSemiring R]
 variable (A : Type u) [Semiring A] [Algebra R A]
 
 /-- An `R` algebra `A` is formally smooth if for every `R`-algebra, every square-zero ideal
-`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists at least one lift `A →ₐ[R] B`.
-
-See <https://stacks.math.columbia.edu/tag/00TI>.
--/
-@[mk_iff]
+`I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists at least one lift `A →ₐ[R] B`. -/
+@[mk_iff, stacks 00TI]
 class FormallySmooth : Prop where
   comp_surjective :
     ∀ ⦃B : Type u⦄ [CommRing B],
@@ -98,7 +95,7 @@ theorem comp_lift [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I)
 @[simp]
 theorem mk_lift [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I)
     (g : A →ₐ[R] B ⧸ I) (x : A) : Ideal.Quotient.mk I (FormallySmooth.lift I hI g x) = g x :=
-  AlgHom.congr_fun (FormallySmooth.comp_lift I hI g : _) x
+  AlgHom.congr_fun (FormallySmooth.comp_lift I hI g :) x
 
 variable {C : Type u} [CommRing C] [Algebra R C]
 
@@ -111,16 +108,14 @@ noncomputable def liftOfSurjective [FormallySmooth R A] (f : A →ₐ[R] C)
 
 @[simp]
 theorem liftOfSurjective_apply [FormallySmooth R A] (f : A →ₐ[R] C) (g : B →ₐ[R] C)
-    (hg : Function.Surjective g) (hg' : IsNilpotent <| RingHom.ker (g : B →+* C)) (x : A) :
+    (hg : Function.Surjective g) (hg' : IsNilpotent <| RingHom.ker g) (x : A) :
     g (FormallySmooth.liftOfSurjective f g hg hg' x) = f x := by
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).symm.injective
-  change _ = ((Ideal.quotientKerAlgEquivOfSurjective hg).symm.toAlgHom.comp f) x
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [← FormallySmooth.mk_lift _ hg'
-    ((Ideal.quotientKerAlgEquivOfSurjective hg).symm.toAlgHom.comp f)]
+  conv_rhs => rw [← AlgHom.coe_coe, ← AlgHom.comp_apply, ← FormallySmooth.mk_lift (A := A) _ hg']
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).injective
-  simp only [liftOfSurjective, AlgEquiv.apply_symm_apply, AlgEquiv.toAlgHom_eq_coe,
-    Ideal.quotientKerAlgEquivOfSurjective_apply, RingHom.kerLift_mk, RingHom.coe_coe]
+  rw [AlgEquiv.apply_symm_apply, Ideal.quotientKerAlgEquivOfSurjective_apply]
+  simp only [liftOfSurjective, ← RingHom.ker_coe_toRingHom g, RingHom.kerLift_mk,
+    AlgEquiv.toAlgHom_eq_coe, RingHom.coe_coe]
 
 @[simp]
 theorem comp_liftOfSurjective [FormallySmooth R A] (f : A →ₐ[R] C) (g : B →ₐ[R] C)
@@ -202,7 +197,7 @@ theorem of_split [FormallySmooth R P] (g : A →ₐ[R] P ⧸ (RingHom.ker f.toRi
     refine Ideal.Quotient.liftₐ _ (FormallySmooth.lift I ⟨2, hI⟩ (i.comp f)) ?_
     have : RingHom.ker f ≤ I.comap (FormallySmooth.lift I ⟨2, hI⟩ (i.comp f)) := by
       rintro x (hx : f x = 0)
-      have : _ = i (f x) := (FormallySmooth.mk_lift I ⟨2, hI⟩ (i.comp f) x : _)
+      have : _ = i (f x) := (FormallySmooth.mk_lift I ⟨2, hI⟩ (i.comp f) x :)
       rwa [hx, map_zero, ← Ideal.Quotient.mk_eq_mk, Submodule.Quotient.mk_eq_zero] at this
     intro x hx
     have := (Ideal.pow_right_mono this 2).trans (Ideal.le_comap_pow _ 2) hx
@@ -230,29 +225,20 @@ theorem iff_split_surjection [FormallySmooth R P] :
       ⟨Submodule.Quotient.mk (hf x).choose, (hf x).choose_spec⟩
     have sqz : RingHom.ker f.kerSquareLift.toRingHom ^ 2 = 0 := by
       rw [AlgHom.ker_kerSquareLift, Ideal.cotangentIdeal_square, Ideal.zero_eq_bot]
+    dsimp only [AlgHom.toRingHom_eq_coe, RingHom.ker_coe_toRingHom] at sqz
     refine
       ⟨FormallySmooth.lift _ ⟨2, sqz⟩ (Ideal.quotientKerAlgEquivOfSurjective surj).symm.toAlgHom,
         ?_⟩
+    dsimp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toAlgHom_eq_coe]
     ext x
     have :=
-      (Ideal.quotientKerAlgEquivOfSurjective surj).toAlgHom.congr_arg
-        (FormallySmooth.mk_lift _ ⟨2, sqz⟩
-          (Ideal.quotientKerAlgEquivOfSurjective surj).symm.toAlgHom x)
-    -- Porting note: was
-    -- dsimp at this
-    -- rw [AlgEquiv.apply_symm_apply] at this
-    erw [AlgEquiv.apply_symm_apply] at this
+      (Ideal.quotientKerAlgEquivOfSurjective surj).congr_arg
+        (FormallySmooth.mk_lift (R := R) _ ⟨2, sqz⟩
+          (Ideal.quotientKerAlgEquivOfSurjective surj).symm x)
+    dsimp only [AlgHom.toRingHom_eq_coe, AlgHom.coe_coe] at this
+    rw [AlgEquiv.apply_symm_apply] at this
     conv_rhs => rw [← this, AlgHom.id_apply]
     rfl
-    -- Porting note: lean3 was not finished here:
-    -- obtain ⟨y, e⟩ :=
-    --   Ideal.Quotient.mk_surjective
-    --     (FormallySmooth.lift _ ⟨2, sqz⟩
-    --       (Ideal.quotientKerAlgEquivOfSurjective surj).symm.toAlgHom
-    --       x)
-    -- dsimp at e ⊢
-    -- rw [← e]
-    -- rfl
   · rintro ⟨g, hg⟩; exact FormallySmooth.of_split f g hg
 
 end OfSurjective
@@ -343,12 +329,10 @@ section
 variable (R : Type u) [CommSemiring R]
 variable (A : Type u) [Semiring A] [Algebra R A]
 
-/-- An `R` algebra `A` is smooth if it is formally smooth and of finite presentation.
-
-In the stacks project, the definition of smooth is completely different, and tag
-<https://stacks.math.columbia.edu/tag/00TN> proves that their definition is equivalent
-to this.
--/
+/-- An `R` algebra `A` is smooth if it is formally smooth and of finite presentation. -/
+@[stacks 00T2 "In the stacks project, the definition of smooth is completely different, and tag
+<https://stacks.math.columbia.edu/tag/00TN> proves that their definition is equivalent to this.",
+mk_iff]
 class Smooth [CommSemiring R] (A : Type u) [Semiring A] [Algebra R A] : Prop where
   formallySmooth : FormallySmooth R A := by infer_instance
   finitePresentation : FinitePresentation R A := by infer_instance

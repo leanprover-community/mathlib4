@@ -8,12 +8,15 @@ on:
 
 jobs:
   handle_failure:
-    if: ${{ github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.head_branch == 'nightly-testing' }}
+
+    if: ${{ github.repository == 'leanprover-community/mathlib4' &&
+            github.event.workflow_run.conclusion == 'failure' &&
+            github.event.workflow_run.head_branch == 'nightly-testing' }}
     runs-on: ubuntu-latest
 
     steps:
     - name: Send message on Zulip
-      uses: zulip/github-actions-zulip/send-message@v1
+      uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
         email: 'github-mathlib4-bot@leanprover.zulipchat.com'
@@ -31,7 +34,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       with:
         ref: nightly-testing # checkout nightly-testing branch
         fetch-depth: 0 # checkout all branches so that we can push from `nightly-testing` to `nightly-testing-YYYY-MM-DD`
@@ -66,7 +69,7 @@ jobs:
         sudo rm -rf -- *
     # Checkout the Lean repository on 'nightly-with-mathlib'
     - name: Checkout Lean repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       with:
         repository: leanprover/lean4
         token: ${{ secrets.LEAN_PR_TESTING }}
@@ -122,15 +125,19 @@ jobs:
 
     - name: Check for matching bump/nightly-YYYY-MM-DD branch
       id: check_branch
-      uses: actions/github-script@v7
+      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
       with:
         script: |
           const branchName = `bump/nightly-${process.env.NIGHTLY}`;
-          const branches = await github.rest.repos.listBranches({
+          console.log(`Looking for branch: ${branchName}`);
+
+          // Use paginate to get all branches
+          const branches = await github.paginate(github.rest.repos.listBranches, {
             owner: context.repo.owner,
             repo: context.repo.repo
           });
-          const exists = branches.data.some(branch => branch.name === branchName);
+
+          const exists = branches.some(branch => branch.name === branchName);
           if (exists) {
             console.log(`Branch ${branchName} exists.`);
             return true;
@@ -148,8 +155,9 @@ jobs:
 
     - name: Fetch latest bump branch name
       id: latest_bump_branch
-      uses: actions/github-script@v7
+      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
       with:
+        result-encoding: string
         script: |
           const branches = await github.paginate(github.rest.repos.listBranches, {
             owner: context.repo.owner,
@@ -167,34 +175,120 @@ jobs:
 
     - name: Fetch lean-toolchain from latest bump branch
       id: bump_version
-      uses: actions/github-script@v7
+      uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
       with:
         script: |
-          const response = await github.rest.repos.getContent({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            path: 'lean-toolchain',
-            ref: ${{ steps.latest_bump_branch.outputs.result }}
-          });
-          const content = Buffer.from(response.data.content, 'base64').toString();
-          const version = content.match(/leanprover\/lean4:nightly-(\d{4}-\d{2}-\d{2})/)[1];
-          return version;
+          try {
+            const response = await github.rest.repos.getContent({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path: 'lean-toolchain',
+              ref: '${{ steps.latest_bump_branch.outputs.result }}'
+            });
+            const content = Buffer.from(response.data.content, 'base64').toString();
+            const match = content.match(/leanprover\/lean4:nightly-(\d{4}-\d{2}-\d{2})/);
+            if (!match) {
+              core.setFailed('Toolchain pattern did not match');
+              core.setOutput('toolchain_content', content);
+              return null;
+            }
+            return match[1];
+          } catch (error) {
+            core.setFailed(error.message);
+            return null;
+          }
 
-    - name: Compare versions and post a reminder.
+    - name: Send warning message on Zulip if pattern doesn't match
+      if: failure()
+      uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+      with:
+        api-key: ${{ secrets.ZULIP_API_KEY }}
+        email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+        organization-url: 'https://leanprover.zulipchat.com'
+        to: 'nightly-testing'
+        type: 'stream'
+        topic: 'Mathlib status updates'
+        content: |
+          ⚠️ Warning: The lean-toolchain file in the latest bump branch does not match the expected pattern 'leanprover/lean4:nightly-YYYY-MM-DD'.
+          Current content: ${{ steps.bump_version.outputs.toolchain_content }}
+          This needs to be fixed for the nightly testing process to work correctly.
+
+    - name: Setup for automatic PR creation
+      if: steps.check_branch.outputs.result == 'false'
+      env:
+        BUMP_VERSION: ${{ steps.bump_version.outputs.result }}
+        BUMP_BRANCH: ${{ steps.latest_bump_branch.outputs.result }}
+        SHA: ${{ env.SHA }}
+      run: |
+        echo "Installing zulip CLI..."
+        pip install zulip
+        echo "Configuring git identity for mathlib4-bot..."
+        git config --global user.name "mathlib4-bot"
+        git config --global user.email "github-mathlib4-bot@leanprover.zulipchat.com"
+        echo "Setting up zulip credentials..."
+        {
+          echo "[api]"
+          echo "email=github-mathlib4-bot@leanprover.zulipchat.com"
+          echo "key=${{ secrets.ZULIP_API_KEY }}"
+          echo "site=https://leanprover.zulipchat.com"
+        } > ~/.zuliprc
+        chmod 600 ~/.zuliprc
+        echo "Setup complete"
+
+    - name: Clean workspace and checkout Mathlib4
+      if: steps.check_branch.outputs.result == 'false'
+      run: |
+        sudo rm -rf -- *
+    - name: Checkout Mathlib4 repository
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      if: steps.check_branch.outputs.result == 'false'
+      with:
+        ref: nightly-testing # checkout nightly-testing branch (shouldn't matter which)
+        fetch-depth: 0 # checkout all branches
+        token: ${{ secrets.NIGHTLY_TESTING }}
+
+    - name: Attempt automatic PR creation
+      id: auto_pr
+      if: steps.check_branch.outputs.result == 'false'
+      continue-on-error: true
+      env:
+        BUMP_VERSION: ${{ steps.bump_version.outputs.result }}
+        BUMP_BRANCH: ${{ steps.latest_bump_branch.outputs.result }}
+        SHA: ${{ env.SHA }}
+        GH_TOKEN: ${{ secrets.NIGHTLY_TESTING }}
+        ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
+      run: |
+        echo "Current version: ${NIGHTLY}"
+        echo "Target bump branch: ${BUMP_BRANCH}"
+        echo "Using commit SHA: ${SHA}"
+        current_version="${NIGHTLY}"
+        bump_branch_suffix="${BUMP_BRANCH#bump/}"
+        echo "Running create-adaptation-pr.sh with:"
+        echo "  bumpversion: ${bump_branch_suffix}"
+        echo "  nightlydate: ${current_version}"
+        echo "  nightlysha: ${SHA}"
+        ./scripts/create-adaptation-pr.sh --bumpversion="${bump_branch_suffix}" --nightlydate="${current_version}" --nightlysha="${SHA}" --auto=yes
+
+    - name: Fallback to manual instructions
+      if: steps.auto_pr.outcome == 'failure' && steps.check_branch.outputs.result == 'false'
       env:
         BUMP_VERSION: ${{ steps.bump_version.outputs.result }}
         BUMP_BRANCH: ${{ steps.latest_bump_branch.outputs.result }}
         SHA: ${{ env.SHA }}
         ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
+        REPOSITORY: ${{ github.repository }}
+        CURRENT_RUN_ID: ${{ github.run_id }}
       shell: python
       run: |
         import os
         import zulip
-        client = zulip.Client(email='github-mathlib4-bot@leanprover.zulipchat.com', api_key=os.getenv('ZULIP_API_KEY'), site='https://leanprover.zulipchat.com')
+        client = zulip.Client(config_file="~/.zuliprc")
         current_version = os.getenv('NIGHTLY')
         bump_version = os.getenv('BUMP_VERSION')
         bump_branch = os.getenv('BUMP_BRANCH')
         sha = os.getenv('SHA')
+        repository = os.getenv('REPOSITORY')
+        current_run_id = os.getenv('CURRENT_RUN_ID')
         print(f'Current version: {current_version}, Bump version: {bump_version}, SHA: {sha}')
         if current_version > bump_version:
             print('Lean toolchain in `nightly-testing` is ahead of the bump branch.')
@@ -209,7 +303,8 @@ jobs:
             response = client.get_messages(request)
             messages = response['messages']
             bump_branch_suffix = bump_branch.replace('bump/', '')
-            payload = f"🛠️: it looks like it's time to create a new bump/nightly-{current_version} branch from nightly-testing (specifically {sha}), and then PR that to {bump_branch}. "
+            failed_link = f"https://github.com/{repository}/actions/runs/{current_run_id}"
+            payload = f"🛠️: Automatic PR creation [failed]({failed_link}). Please create a new bump/nightly-{current_version} branch from nightly-testing (specifically {sha}), and then PR that to {bump_branch}. "
             payload += "To do so semi-automatically, run the following script from mathlib root:\n\n"
             payload += f"```bash\n./scripts/create-adaptation-pr.sh --bumpversion={bump_branch_suffix} --nightlydate={current_version} --nightlysha={sha}\n```\n"
             # Only post if the message is different

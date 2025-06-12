@@ -55,10 +55,10 @@ lemma PreValuationRing.cond {A : Type u} [Mul A] [PreValuationRing A] (a b : A) 
 
 /-- An integral domain is called a `ValuationRing` provided that for any pair
 of elements `a b : A`, either `a` divides `b` or vice versa. -/
-class ValuationRing (A : Type u) [CommRing A] [IsDomain A] extends PreValuationRing A : Prop
+class ValuationRing (A : Type u) [CommRing A] [IsDomain A] : Prop extends PreValuationRing A
 
 -- Porting note: this lemma is needed since infer kinds are unsupported in Lean 4
-lemma ValuationRing.cond {A : Type u} [CommRing A] [IsDomain A] [ValuationRing A] (a b : A) :
+lemma ValuationRing.cond {A : Type u} [Mul A] [PreValuationRing A] (a b : A) :
     ∃ c : A, a * c = b ∨ b * c = a := PreValuationRing.cond _ _
 
 namespace ValuationRing
@@ -113,6 +113,13 @@ instance : Inv (ValueGroup A K) :=
         rw [Units.smul_def, Units.smul_def, Algebra.smul_def, Algebra.smul_def, mul_inv,
           map_units_inv])
 
+instance : Nontrivial (ValueGroup A K) where
+  exists_pair_ne := ⟨0, 1, fun c => by
+    obtain ⟨d, hd⟩ := Quotient.exact' c
+    apply_fun fun t => d⁻¹ • t at hd
+    dsimp at hd
+    simp only [inv_smul_smul, smul_zero, one_ne_zero] at hd⟩
+
 variable [IsDomain A] [ValuationRing A] [IsFractionRing A K]
 
 protected theorem le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a := by
@@ -152,26 +159,16 @@ noncomputable instance linearOrder : LinearOrder (ValueGroup A K) where
     apply Quotient.sound'
     exact ⟨this.unit, rfl⟩
   le_total := ValuationRing.le_total _ _
-  decidableLE := by classical infer_instance
+  toDecidableLE := Classical.decRel _
 
-noncomputable instance linearOrderedCommGroupWithZero :
-    LinearOrderedCommGroupWithZero (ValueGroup A K) :=
-  { linearOrder .. with
-    mul_assoc := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; apply Quotient.sound'; rw [mul_assoc]
+instance commGroupWithZero :
+    CommGroupWithZero (ValueGroup A K) :=
+  { mul_assoc := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; apply Quotient.sound'; rw [mul_assoc]
     one_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [one_mul]
     mul_one := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_one]
     mul_comm := by rintro ⟨a⟩ ⟨b⟩; apply Quotient.sound'; rw [mul_comm]
-    mul_le_mul_left := by
-      rintro ⟨a⟩ ⟨b⟩ ⟨c, rfl⟩ ⟨d⟩
-      use c; simp only [Algebra.smul_def]; ring
     zero_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [zero_mul]
     mul_zero := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_zero]
-    zero_le_one := ⟨0, by rw [zero_smul]⟩
-    exists_pair_ne := by
-      use 0, 1
-      intro c; obtain ⟨d, hd⟩ := Quotient.exact' c
-      apply_fun fun t => d⁻¹ • t at hd
-      simp only [inv_smul_smul, smul_zero, one_ne_zero] at hd
     inv_zero := by apply Quotient.sound'; rw [inv_zero]
     mul_inv_cancel := by
       rintro ⟨a⟩ ha
@@ -184,8 +181,18 @@ noncomputable instance linearOrderedCommGroupWithZero :
       rw [ha]
       rfl }
 
+noncomputable instance linearOrderedCommGroupWithZero :
+    LinearOrderedCommGroupWithZero (ValueGroup A K) :=
+  { linearOrder .., commGroupWithZero .. with
+    mul_le_mul_left := by
+      rintro ⟨a⟩ ⟨b⟩ ⟨c, rfl⟩ ⟨d⟩
+      use c; simp only [Algebra.smul_def]; ring
+    zero_le_one := ⟨0, by rw [zero_smul]⟩
+    bot := 0
+    bot_le := by rintro ⟨a⟩; exact ⟨0, zero_smul ..⟩ }
+
 /-- Any valuation ring induces a valuation on its fraction field. -/
-def valuation : Valuation K (ValueGroup A K) where
+noncomputable def valuation : Valuation K (ValueGroup A K) where
   toFun := Quotient.mk''
   map_zero' := rfl
   map_one' := rfl
@@ -197,8 +204,7 @@ def valuation : Valuation K (ValueGroup A K) where
     have : (algebraMap A K) ya ≠ 0 := IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hya
     have : (algebraMap A K) yb ≠ 0 := IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hyb
     obtain ⟨c, h | h⟩ := ValuationRing.cond (xa * yb) (xb * ya)
-    · dsimp
-      apply le_trans _ (le_max_left _ _)
+    · apply le_trans _ (le_max_left _ _)
       use c + 1
       rw [Algebra.smul_def]
       field_simp
@@ -265,7 +271,7 @@ instance (priority := 100) isLocalRing : IsLocalRing A :=
 instance le_total_ideal : IsTotal (Ideal A) LE.le := by
   constructor; intro α β
   by_cases h : α ≤ β; · exact Or.inl h
-  erw [not_forall] at h
+  rw [SetLike.le_def, not_forall] at h
   push_neg at h
   obtain ⟨a, h₁, h₂⟩ := h
   right
@@ -276,7 +282,7 @@ instance le_total_ideal : IsTotal (Ideal A) LE.le := by
   · exfalso; apply h₂; rw [← h]
     apply Ideal.mul_mem_right _ _ hb
 
-instance [DecidableRel ((· ≤ ·) : Ideal A → Ideal A → Prop)] : LinearOrder (Ideal A) :=
+instance [DecidableLE (Ideal A)] : LinearOrder (Ideal A) :=
   have := decidableEqOfDecidableLE (α := Ideal A)
   have := decidableLTOfDecidableLE (α := Ideal A)
   Lattice.toLinearOrder (Ideal A)
@@ -289,7 +295,7 @@ section dvd
 
 variable {R : Type*}
 
-theorem _root_.PreValuationRing.iff_dvd_total [Monoid R] :
+theorem _root_.PreValuationRing.iff_dvd_total [Semigroup R] :
     PreValuationRing R ↔ IsTotal R (· ∣ ·) := by
   classical
   refine ⟨fun H => ⟨fun a b => ?_⟩, fun H => ⟨fun a b => ?_⟩⟩
@@ -306,7 +312,7 @@ theorem _root_.PreValuationRing.iff_ideal_total [CommRing R] :
 
 variable (K)
 
-theorem dvd_total [Monoid R] [h : PreValuationRing R] (x y : R) : x ∣ y ∨ y ∣ x :=
+theorem dvd_total [Semigroup R] [h : PreValuationRing R] (x y : R) : x ∣ y ∨ y ∣ x :=
   @IsTotal.total _ _ (PreValuationRing.iff_dvd_total.mp h) x y
 
 end dvd
@@ -322,8 +328,8 @@ theorem iff_ideal_total : ValuationRing R ↔ IsTotal (Ideal R) (· ≤ ·) :=
   Iff.trans (⟨fun inst ↦ inst.toPreValuationRing, fun _ ↦ .mk⟩)
     PreValuationRing.iff_ideal_total
 
-theorem unique_irreducible [ValuationRing R] ⦃p q : R⦄ (hp : Irreducible p) (hq : Irreducible q) :
-    Associated p q := by
+theorem unique_irreducible [PreValuationRing R] ⦃p q : R⦄ (hp : Irreducible p)
+    (hq : Irreducible q) : Associated p q := by
   have := dvd_total p q
   rw [Irreducible.dvd_comm hp hq, or_self_iff] at this
   exact associated_of_dvd_dvd (Irreducible.dvd_symm hq hp this) this
@@ -386,7 +392,7 @@ instance (priority := 100) [IsLocalRing R] [IsBezout R] : ValuationRing R := by
   · simp [h]
   have : x * a + y * b = 1 := by
     apply mul_left_injective₀ h; convert e' using 1 <;> ring
-  cases' IsLocalRing.isUnit_or_isUnit_of_add_one this with h' h' <;> [left; right]
+  rcases IsLocalRing.isUnit_or_isUnit_of_add_one this with h' | h' <;> [left; right]
   all_goals exact mul_dvd_mul_right (isUnit_iff_forall_dvd.mp (isUnit_of_mul_isUnit_right h') _) _
 
 theorem iff_local_bezout_domain : ValuationRing R ↔ IsLocalRing R ∧ IsBezout R :=
@@ -413,8 +419,8 @@ theorem _root_.Function.Surjective.preValuationRing {R S : Type*} [Mul R] [PreVa
     obtain ⟨c, rfl | rfl⟩ := PreValuationRing.cond a b
     exacts [⟨f c, Or.inl <| (map_mul _ _ _).symm⟩, ⟨f c, Or.inr <| (map_mul _ _ _).symm⟩]⟩
 
-theorem _root_.Function.Surjective.valuationRing {R S : Type*} [CommRing R] [IsDomain R]
-    [ValuationRing R] [CommRing S] [IsDomain S] (f : R →+* S) (hf : Function.Surjective f) :
+theorem _root_.Function.Surjective.valuationRing {R S : Type*} [NonAssocSemiring R]
+    [PreValuationRing R] [CommRing S] [IsDomain S] (f : R →+* S) (hf : Function.Surjective f) :
     ValuationRing S :=
   have : PreValuationRing S := Function.Surjective.preValuationRing (R := R) f hf
   .mk

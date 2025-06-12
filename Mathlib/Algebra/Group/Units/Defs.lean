@@ -3,9 +3,7 @@ Copyright (c) 2017 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemaker, Jon Eugster
 -/
-import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Logic.Function.Basic
 
 /-!
 # Units (i.e., invertible elements) of a monoid
@@ -18,7 +16,7 @@ An element of a `Monoid` is a unit if it has a two-sided inverse.
 * `IsUnit x`: a predicate asserting that `x` is a unit (i.e., invertible element) of a monoid.
 
 For both declarations, there is an additive counterpart: `AddUnits` and `IsAddUnit`.
-See also `Prime`, `Associated`, and `Irreducible` in `Mathlib.Algebra.Associated`.
+See also `Prime`, `Associated`, and `Irreducible` in `Mathlib/Algebra/Associated.lean`.
 
 ## Notation
 
@@ -30,9 +28,7 @@ resembling the notation $R^{\times}$ for the units of a ring, which is common in
 The results here should be used to golf the basic `Group` lemmas.
 -/
 
-assert_not_exists Multiplicative
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists Multiplicative MonoidWithZero DenselyOrdered
 
 open Function
 
@@ -95,9 +91,6 @@ instance instInv : Inv αˣ :=
   ⟨fun u => ⟨u.2, u.1, u.4, u.3⟩⟩
 attribute [instance] AddUnits.instNeg
 
-/- porting note: the result of these definitions is syntactically equal to `Units.val` because of
-the way coercions work in Lean 4, so there is no need for these custom `simp` projections. -/
-
 /-- See Note [custom simps projection] -/
 @[to_additive "See Note [custom simps projection]"]
 def Simps.val_inv (u : αˣ) : α := ↑(u⁻¹)
@@ -107,7 +100,6 @@ initialize_simps_projections Units (as_prefix val, val_inv → null, inv → val
 initialize_simps_projections AddUnits
   (as_prefix val, val_neg → null, neg → val_neg, as_prefix val_neg)
 
--- Porting note: removed `simp` tag because of the tautology
 @[to_additive]
 theorem val_mk (a : α) (b h₁ h₂) : ↑(Units.mk a b h₁ h₂) = a :=
   rfl
@@ -186,8 +178,6 @@ theorem val_eq_one {a : αˣ} : (a : α) = 1 ↔ a = 1 := by rw [← Units.val_o
 @[to_additive (attr := simp)]
 theorem inv_mk (x y : α) (h₁ h₂) : (mk x y h₁ h₂)⁻¹ = mk y x h₂ h₁ :=
   rfl
-
--- Porting note: coercions are now eagerly elaborated, so no need for `val_eq_coe`
 
 @[to_additive (attr := simp)]
 theorem inv_eq_val_inv : a.inv = ((a⁻¹ : αˣ) : α) :=
@@ -269,6 +259,9 @@ instance instCommGroupUnits {α} [CommMonoid α] : CommGroup αˣ where
 @[to_additive (attr := simp, norm_cast)]
 lemma val_pow_eq_pow_val (n : ℕ) : ↑(a ^ n) = (a ^ n : α) := rfl
 
+@[to_additive (attr := simp, norm_cast)]
+lemma inv_pow_eq_pow_inv (n : ℕ) : ↑(a ^ n)⁻¹ = (a⁻¹ ^ n : α) := rfl
+
 end Monoid
 
 section DivisionMonoid
@@ -298,7 +291,7 @@ section Monoid
 
 variable [Monoid α] {a : α}
 
-/-- Partial division. It is defined when the
+/-- Partial division, denoted `a /ₚ u`. It is defined when the
   second argument is invertible, and unlike the division operator
   in `DivisionRing` it is not totalized at zero. -/
 def divp (a : α) (u : Units α) : α :=
@@ -367,10 +360,9 @@ variable {M : Type*} {N : Type*}
 /-- An element `a : M` of a `Monoid` is a unit if it has a two-sided inverse.
 The actual definition says that `a` is equal to some `u : Mˣ`, where
 `Mˣ` is a bundled version of `IsUnit`. -/
-@[to_additive
-      "An element `a : M` of an `AddMonoid` is an `AddUnit` if it has a two-sided additive inverse.
-      The actual definition says that `a` is equal to some `u : AddUnits M`,
-      where `AddUnits M` is a bundled version of `IsAddUnit`."]
+@[to_additive "An element `a : M` of an `AddMonoid` is an `AddUnit` if it has a two-sided additive
+inverse. The actual definition says that `a` is equal to some `u : AddUnits M`,
+where `AddUnits M` is a bundled version of `IsAddUnit`."]
 def IsUnit [Monoid M] (a : M) : Prop :=
   ∃ u : Mˣ, (u : M) = a
 
@@ -425,7 +417,8 @@ lemma IsUnit.exists_left_inv {a : M} (h : IsUnit a) : ∃ b, b * a = 1 := by
 @[to_additive] lemma IsUnit.pow (n : ℕ) : IsUnit a → IsUnit (a ^ n) := by
   rintro ⟨u, rfl⟩; exact ⟨u ^ n, rfl⟩
 
-@[to_additive] lemma isUnit_iff_eq_one [Subsingleton Mˣ] {x : M} : IsUnit x ↔ x = 1 :=
+@[to_additive (attr := simp)]
+lemma isUnit_iff_eq_one [Subsingleton Mˣ] {x : M} : IsUnit x ↔ x = 1 :=
   ⟨fun ⟨u, hu⟩ ↦ by rw [← hu, Subsingleton.elim u 1, Units.val_one], fun h ↦ h ▸ isUnit_one⟩
 
 end Monoid
@@ -477,25 +470,19 @@ theorem mul_iff [CommMonoid M] {x y : M} : IsUnit (x * y) ↔ IsUnit x ∧ IsUni
 
 section Monoid
 
-variable [Monoid M] {a : M}
+variable [Monoid M] {a b : M}
 
 /-- The element of the group of units, corresponding to an element of a monoid which is a unit. When
 `α` is a `DivisionMonoid`, use `IsUnit.unit'` instead. -/
+@[to_additive "The element of the additive group of additive units, corresponding to an element of
+an additive monoid which is an additive unit. When `α` is a `SubtractionMonoid`, use
+`IsAddUnit.addUnit'` instead."]
 protected noncomputable def unit (h : IsUnit a) : Mˣ :=
   (Classical.choose h).copy a (Classical.choose_spec h).symm _ rfl
 
--- Porting note: `to_additive` doesn't carry over `noncomputable` so we make an explicit defn
-/-- "The element of the additive group of additive units, corresponding to an element of
-an additive monoid which is an additive unit. When `α` is a `SubtractionMonoid`, use
-`IsAddUnit.addUnit'` instead. -/
-protected noncomputable def _root_.IsAddUnit.addUnit [AddMonoid N] {a : N} (h : IsAddUnit a) :
-    AddUnits N :=
-  (Classical.choose h).copy a (Classical.choose_spec h).symm _ rfl
-attribute [to_additive existing] IsUnit.unit
-
 @[to_additive (attr := simp)]
 theorem unit_of_val_units {a : Mˣ} (h : IsUnit (a : M)) : h.unit = a :=
-  Units.ext <| rfl
+  Units.ext rfl
 
 @[to_additive (attr := simp)]
 theorem unit_spec (h : IsUnit a) : ↑h.unit = a :=
@@ -504,6 +491,14 @@ theorem unit_spec (h : IsUnit a) : ↑h.unit = a :=
 @[to_additive (attr := simp)]
 theorem unit_one (h : IsUnit (1 : M)) : h.unit = 1 :=
   Units.eq_iff.1 rfl
+
+@[to_additive]
+theorem unit_mul (ha : IsUnit a) (hb : IsUnit b) : (ha.mul hb).unit = ha.unit * hb.unit :=
+  Units.ext rfl
+
+@[to_additive]
+theorem unit_pow (h : IsUnit a) (n : ℕ) : (h.pow n).unit = h.unit ^ n :=
+  Units.ext rfl
 
 @[to_additive (attr := simp)]
 theorem val_inv_mul (h : IsUnit a) : ↑h.unit⁻¹ * a = 1 :=
@@ -536,14 +531,13 @@ protected theorem mul_inv_cancel : IsUnit a → a * a⁻¹ = 1 := by
 /-- The element of the group of units, corresponding to an element of a monoid which is a unit. As
 opposed to `IsUnit.unit`, the inverse is computable and comes from the inversion on `α`. This is
 useful to transfer properties of inversion in `Units α` to `α`. See also `toUnits`. -/
-@[to_additive (attr := simps val )
+@[to_additive (attr := simps val)
 "The element of the additive group of additive units, corresponding to an element of
 an additive monoid which is an additive unit. As opposed to `IsAddUnit.addUnit`, the negation is
 computable and comes from the negation on `α`. This is useful to transfer properties of negation
 in `AddUnits α` to `α`. See also `toAddUnits`."]
 def unit' (h : IsUnit a) : αˣ := ⟨a, a⁻¹, h.mul_inv_cancel, h.inv_mul_cancel⟩
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `simps val_inv` fails
 @[to_additive] lemma val_inv_unit' (h : IsUnit a) : ↑(h.unit'⁻¹) = a⁻¹ := rfl
 
 @[to_additive (attr := simp)]
@@ -563,8 +557,17 @@ lemma inv (h : IsUnit a) : IsUnit a⁻¹ := by
   rw [← hu, ← Units.val_inv_eq_inv_val]
   exact Units.isUnit _
 
-@[to_additive] lemma div (ha : IsUnit a) (hb : IsUnit b) : IsUnit (a / b) := by
+@[to_additive]
+lemma unit_inv (h : IsUnit a) : h.inv.unit = h.unit⁻¹ :=
+  Units.ext h.unit.val_inv_eq_inv_val.symm
+
+@[to_additive]
+lemma div (ha : IsUnit a) (hb : IsUnit b) : IsUnit (a / b) := by
   rw [div_eq_mul_inv]; exact ha.mul hb.inv
+
+@[to_additive]
+lemma unit_div (ha : IsUnit a) (hb : IsUnit b) : (ha.div hb).unit = ha.unit / hb.unit :=
+  Units.ext (ha.unit.val_div_eq_div_val hb.unit).symm
 
 @[to_additive]
 protected lemma div_mul_cancel_right (h : IsUnit b) (a : α) : b / (a * b) = a⁻¹ := by

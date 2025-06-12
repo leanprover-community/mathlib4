@@ -5,6 +5,7 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.UniformSpace.Completion
+import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-!
 # Completion of topological groups:
@@ -12,8 +13,8 @@ import Mathlib.Topology.UniformSpace.Completion
 This files endows the completion of a topological abelian group with a group structure.
 More precisely the instance `UniformSpace.Completion.addGroup` builds an abelian group structure
 on the completion of an abelian group endowed with a compatible uniform structure.
-Then the instance `UniformSpace.Completion.uniformAddGroup` proves this group structure is
-compatible with the completed uniform structure. The compatibility condition is `UniformAddGroup`.
+Then the instance `UniformSpace.Completion.isUniformAddGroup` proves this group structure is
+compatible with the completed uniform structure. The compatibility condition is `IsUniformAddGroup`.
 
 ## Main declarations:
 
@@ -72,9 +73,9 @@ instance [UniformSpace α] [MonoidWithZero M] [Zero α] [MulActionWithZero M α]
 
 end Zero
 
-section UniformAddGroup
+section IsUniformAddGroup
 
-variable [UniformSpace α] [AddGroup α] [UniformAddGroup α]
+variable [UniformSpace α] [AddGroup α] [IsUniformAddGroup α]
 
 @[norm_cast]
 theorem coe_neg (a : α) : ((-a : α) : Completion α) = -a :=
@@ -155,7 +156,7 @@ instance addGroup : AddGroup (Completion α) :=
           rw_mod_cast [neg_add_cancel]
           rfl }
 
-instance uniformAddGroup : UniformAddGroup (Completion α) :=
+instance isUniformAddGroup : IsUniformAddGroup (Completion α) :=
   ⟨uniformContinuous_map₂ Sub.sub⟩
 
 instance {M} [Monoid M] [DistribMulAction M α] [UniformContinuousConstSMul M α] :
@@ -178,18 +179,15 @@ def toCompl : α →+ Completion α where
 theorem continuous_toCompl : Continuous (toCompl : α → Completion α) :=
   continuous_coe α
 
-variable (α)
-
+variable (α) in
 theorem isDenseInducing_toCompl : IsDenseInducing (toCompl : α → Completion α) :=
   isDenseInducing_coe
 
-variable {α}
-
-end UniformAddGroup
+end IsUniformAddGroup
 
 section UniformAddCommGroup
 
-variable [UniformSpace α] [AddCommGroup α] [UniformAddGroup α]
+variable [UniformSpace α] [AddCommGroup α] [IsUniformAddGroup α]
 
 instance instAddCommGroup : AddCommGroup (Completion α) :=
   { (inferInstance : AddGroup <| Completion α) with
@@ -216,8 +214,8 @@ end UniformSpace.Completion
 
 section AddMonoidHom
 
-variable [UniformSpace α] [AddGroup α] [UniformAddGroup α] [UniformSpace β] [AddGroup β]
-  [UniformAddGroup β]
+variable [UniformSpace α] [AddGroup α] [IsUniformAddGroup α] [UniformSpace β] [AddGroup β]
+  [IsUniformAddGroup β]
 
 open UniformSpace UniformSpace.Completion
 
@@ -268,7 +266,7 @@ theorem AddMonoidHom.completion_zero :
     simp [(0 : α →+ β).completion_coe continuous_const, coe_zero]
 
 theorem AddMonoidHom.completion_add {γ : Type*} [AddCommGroup γ] [UniformSpace γ]
-    [UniformAddGroup γ] (f g : α →+ γ) (hf : Continuous f) (hg : Continuous g) :
+    [IsUniformAddGroup γ] (f g : α →+ γ) (hf : Continuous f) (hg : Continuous g) :
     AddMonoidHom.completion (f + g) (hf.add hg) =
     AddMonoidHom.completion f hf + AddMonoidHom.completion g hg := by
   have hfg := hf.add hg
