@@ -297,9 +297,7 @@ protected def symm (e : M₁ ≃SL[σ₁₂] M₂) : M₂ ≃SL[σ₂₁] M₁ :
 theorem toLinearEquiv_symm (e : M₁ ≃SL[σ₁₂] M₂) : e.symm.toLinearEquiv = e.toLinearEquiv.symm :=
   rfl
 
-@[deprecated "use instead `toLinearEquiv_symm`, in the reverse direction" (since := "2025-06-08")]
-theorem symm_toLinearEquiv (e : M₁ ≃SL[σ₁₂] M₂) : e.toLinearEquiv.symm = e.symm.toLinearEquiv :=
-  rfl
+@[deprecated (since := "2025-06-08")] alias symm_toLinearEquiv := toLinearEquiv_symm
 
 @[simp]
 theorem coe_symm_toLinearEquiv (e : M₁ ≃SL[σ₁₂] M₂) : ⇑e.toLinearEquiv.symm = e.symm :=
