@@ -45,8 +45,8 @@ lemma map_cochainsFunctor_shortExact :
         (hX.exact.map (forget₂ (Rep k G) (ModuleCat k))).moduleCat_range_eq_ker
       simp [moduleCat_exact_iff_range_eq_ker, LinearMap.range_compLeft,
         LinearMap.ker_compLeft, this]
-    mono_f := letI := hX.2; cochainsMap_id_f_map_mono X.f i
-    epi_g := letI := hX.3; cochainsMap_id_f_map_epi X.g i }
+    mono_f := letI := hX.mono_f; cochainsMap_id_f_map_mono X.f i
+    epi_g := letI := hX.epi_g; cochainsMap_id_f_map_epi X.g i }
 
 open HomologicalComplex.HomologySequence
 
