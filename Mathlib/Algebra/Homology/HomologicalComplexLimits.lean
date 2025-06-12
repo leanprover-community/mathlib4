@@ -292,7 +292,7 @@ noncomputable instance [HasColimitsOfShape J C] (i : ι) :
     · exact preservesColimitsOfShapeOfIsZero _ (isZero_single_comp_eval C c _ _ h))
 
 noncomputable instance [HasFiniteLimits C] (i : ι) :
-    PreservesFiniteLimits (single C c i) := ⟨by intros ; infer_instance⟩
+    PreservesFiniteLimits (single C c i) := ⟨by intros; infer_instance⟩
 
 noncomputable instance [HasFiniteColimits C] (i : ι) :
     PreservesFiniteColimits (single C c i) := ⟨by intros ; infer_instance⟩
