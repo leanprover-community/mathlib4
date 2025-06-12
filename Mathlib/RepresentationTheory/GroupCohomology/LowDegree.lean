@@ -853,8 +853,8 @@ theorem H1π_comp_H1IsoOfIsTrivial_hom [A.IsTrivial] :
 @[deprecated (since := "2025-05-09")]
 alias H1LequivOfIsTrivial_comp_H1π := H1π_comp_H1IsoOfIsTrivial_hom
 
-theorem H1IsoOfIsTrivial_H1π_apply_apply [A.IsTrivial]
-    (f : oneCocycles A) (x : Additive G) :
+theorem H1IsoOfIsTrivial_H1π_apply_apply
+    [A.IsTrivial] (f : oneCocycles A) (x : Additive G) :
     (H1IsoOfIsTrivial A).hom (H1π A f) x = f x.toMul := by simp
 
 @[deprecated (since := "2025-05-09")]
@@ -927,6 +927,9 @@ lemma π_comp_isoH0_hom  :
     π A 0 ≫ (isoH0 A).hom = (isoZeroCocycles A).hom := by
   simp [isoH0]
 
+@[deprecated (since := "2025-06-12")]
+alias groupCohomologyπ_comp_isoH0_hom := π_comp_isoH0_hom
+
 end H0
 
 section H1
@@ -977,6 +980,9 @@ def isoH1 : groupCohomology A 1 ≅ H1 A :=
 lemma π_comp_isoH1_hom  :
     π A 1 ≫ (isoH1 A).hom = (isoOneCocycles A).hom ≫ H1π A := by
   simp [isoH1, isoOneCocycles, π, HomologicalComplex.homologyπ, leftHomologyπ]
+
+@[deprecated (since := "2025-06-12")]
+alias groupCohomologyπ_comp_isoH1_hom := π_comp_isoH1_hom
 
 end H1
 
@@ -1029,6 +1035,9 @@ def isoH2 : groupCohomology A 2 ≅ H2 A :=
 lemma π_comp_isoH2_hom  :
     π A 2 ≫ (isoH2 A).hom = (isoTwoCocycles A).hom ≫ H2π A := by
   simp [isoH2, isoTwoCocycles, π, HomologicalComplex.homologyπ, leftHomologyπ]
+
+@[deprecated (since := "2025-06-12")]
+alias groupCohomologyπ_comp_isoH2_hom := π_comp_isoH2_hom
 
 end H2
 
