@@ -666,7 +666,7 @@ theorem mrange_id : mrange (MonoidHom.id M) = ⊤ := by
   simp [mrange_eq_map]
 
 @[to_additive]
-theorem map_mrange (g : N →* P) (f : M →* N) : f.mrange.map g = mrange (comp g f) := by
+theorem map_mrange (g : N →* P) (f : M →* N) : (mrange f).map g = mrange (comp g f) := by
   simpa only [mrange_eq_map] using (⊤ : Submonoid M).map_map g f
 
 @[to_additive]
@@ -766,7 +766,7 @@ instance decidableMemMker [DecidableEq N] (f : F) : DecidablePred (· ∈ mker f
   decidable_of_iff (f x = 1) mem_mker
 
 @[to_additive]
-theorem comap_mker (g : N →* P) (f : M →* N) : g.mker.comap f = mker (comp g f) :=
+theorem comap_mker (g : N →* P) (f : M →* N) : (mker g).comap f = mker (comp g f) :=
   rfl
 
 @[to_additive (attr := simp)]
@@ -774,7 +774,7 @@ theorem comap_bot' (f : F) : (⊥ : Submonoid N).comap f = mker f :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem restrict_mker (f : M →* N) : mker (f.restrict S) = f.mker.comap S.subtype :=
+theorem restrict_mker (f : M →* N) : mker (f.restrict S) = (MonoidHom.mker f).comap S.subtype :=
   rfl
 
 @[to_additive]
@@ -796,7 +796,7 @@ theorem prod_map_comap_prod' {M' : Type*} {N' : Type*} [MulOneClass M'] [MulOneC
 
 @[to_additive mker_prod_map]
 theorem mker_prod_map {M' : Type*} {N' : Type*} [MulOneClass M'] [MulOneClass N'] (f : M →* N)
-    (g : M' →* N') : mker (prodMap f g) = f.mker.prod (mker g) := by
+    (g : M' →* N') : mker (prodMap f g) = (mker f).prod (mker g) := by
   rw [← comap_bot', ← comap_bot', ← comap_bot', ← prod_map_comap_prod', bot_prod_bot]
 
 @[to_additive (attr := simp)]
@@ -823,6 +823,14 @@ def submonoidComap (f : M →* N) (N' : Submonoid N) :
   toFun x := ⟨f x, x.2⟩
   map_one' := Subtype.eq f.map_one
   map_mul' x y := Subtype.eq (f.map_mul x y)
+
+@[to_additive]
+lemma submonoidComap_surjective_of_surjective (f : M →* N) (N' : Submonoid N) (hf : Surjective f) :
+    Surjective (f.submonoidComap N') := fun y ↦ by
+  obtain ⟨x, hx⟩ := hf y
+  use ⟨x, mem_comap.mpr (hx ▸ y.2)⟩
+  apply Subtype.val_injective
+  simp [hx]
 
 /-- The `MonoidHom` from a submonoid to its image.
 See `MulEquiv.SubmonoidMap` for a variant for `MulEquiv`s. -/
@@ -951,7 +959,7 @@ def submonoidCongr (h : S = T) : S ≃* T :=
 /-- A monoid homomorphism `f : M →* N` with a left-inverse `g : N → M` defines a multiplicative
 equivalence between `M` and `f.mrange`.
 This is a bidirectional version of `MonoidHom.mrange_restrict`. -/
-@[to_additive (attr := simps (config := { simpRhs := true }))
+@[to_additive (attr := simps +simpRhs)
       "An additive monoid homomorphism `f : M →+ N` with a left-inverse `g : N → M`
       defines an additive equivalence between `M` and `f.mrange`.
       This is a bidirectional version of `AddMonoidHom.mrange_restrict`. "]
@@ -959,7 +967,7 @@ def ofLeftInverse' (f : M →* N) {g : N → M} (h : Function.LeftInverse g f) :
     M ≃* MonoidHom.mrange f :=
   { f.mrangeRestrict with
     toFun := f.mrangeRestrict
-    invFun := g ∘ f.mrange.subtype
+    invFun := g ∘ (MonoidHom.mrange f).subtype
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <|
@@ -1041,5 +1049,10 @@ theorem map_comap_eq (f : F) (S : Submonoid N) : (S.comap f).map f = S ⊓ Monoi
 theorem map_comap_eq_self {f : F} {S : Submonoid N} (h : S ≤ MonoidHom.mrange f) :
     (S.comap f).map f = S := by
   simpa only [inf_of_le_left h] using map_comap_eq f S
+
+@[to_additive]
+theorem map_comap_eq_self_of_surjective {f : F} (h : Function.Surjective f) {S : Submonoid N} :
+    map f (comap f S) = S :=
+  map_comap_eq_self (MonoidHom.mrange_eq_top_of_surjective _ h ▸ le_top)
 
 end Submonoid

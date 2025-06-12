@@ -150,7 +150,7 @@ variable [NormedSpace ℂ E]
 lemma F_BddAbove (f : ℂ → E) (ε : ℝ) (hε : ε > 0)
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1)) :
     BddAbove ((norm ∘ (F f ε)) '' verticalClosedStrip 0 1) := by
- -- Rewriting goal
+  -- Rewriting goal
   simp only [F, image_congr, comp_apply, map_mul, invInterpStrip]
   rw [bddAbove_def] at *
   rcases hB with ⟨B, hB⟩

@@ -31,10 +31,6 @@ variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
   [HasFunctorialSurjectiveInjectiveFactorization A]
   [J.WEqualsLocallyBijective A]
 
-namespace Presheaf
-
-end Presheaf
-
 namespace Sheaf
 
 /-- The class of locally injective morphisms of sheaves, see `Sheaf.IsLocallyInjective`. -/
