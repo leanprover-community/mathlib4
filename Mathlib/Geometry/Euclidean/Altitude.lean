@@ -3,7 +3,7 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Projection
+import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Projection
 
 /-!
 # Altitudes of a simplex
@@ -31,7 +31,7 @@ namespace Affine
 
 namespace Simplex
 
-open Finset AffineSubspace EuclideanGeometry
+open Finset AffineSubspace
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
