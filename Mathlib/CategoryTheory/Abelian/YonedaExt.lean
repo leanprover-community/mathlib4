@@ -166,7 +166,7 @@ lemma isZero_homology_ZToX₁ (d : ℤ) (hd : d ≠ 0) :
       ((HomologicalComplex.natIsoSc' C (ComplexShape.up ℤ) (d-1) d (d+1)
         (by simp) (by simp)).app E.Z ≪≫ _ ≪≫
         ((HomologicalComplex.natIsoSc' C (ComplexShape.up ℤ) (d+n) (d+n+1) (d+n+2)
-          (by simp) (by simp only [CochainComplex.next] ; linarith)).app E.K).symm))
+          (by simp) (by simp only [CochainComplex.next]; linarith)).app E.K).symm))
     refine' ShortComplex.isoMk (Z.XIso E _ _ (by linarith) (by linarith))
       (Z.XIso E _ _ rfl (by linarith)) (Z.XIso E _ _ (by linarith) hd') _ _
     · simp [E.Z_d_eq (d-1) d (d+n) (d+n+1) (by linarith) (by linarith) (by linarith) (by linarith)]
