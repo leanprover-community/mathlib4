@@ -154,7 +154,7 @@ private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensiona
     exists ι, inferInstance, c₀, ?_, u₀, v₀
     · -- We need to prove that all `c₀` are constants.
       -- This is true because they are the division of a constant by
-      -- a natural nubmer (which is also constant)
+      -- a natural number (which is also constant)
       intro x
       simp [c₀, Derivation.leibniz_div, hc]
     · -- Proving that this works is mostly straightforward algebraic manipulation,

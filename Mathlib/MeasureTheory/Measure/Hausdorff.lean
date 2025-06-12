@@ -26,8 +26,8 @@ The value of `μH[d]`, `d > 0`, on a set `s` (measurable or not) is given by
 
 For every set `s` for any `d < d'` we have either `μH[d] s = ∞` or `μH[d'] s = 0`, see
 `MeasureTheory.Measure.hausdorffMeasure_zero_or_top`. In
-`Mathlib.Topology.MetricSpace.HausdorffDimension` we use this fact to define the Hausdorff dimension
-`dimH` of a set in an (extended) metric space.
+`Mathlib/Topology/MetricSpace/HausdorffDimension.lean` we use this fact to define the Hausdorff
+dimension `dimH` of a set in an (extended) metric space.
 
 We also define two generalizations of the Hausdorff measure. In one generalization (see
 `MeasureTheory.Measure.mkMetric`) we take any function `m (diam s)` instead of `(diam s) ^ d`. In
@@ -141,13 +141,14 @@ theorem finset_iUnion_of_pairwise_separated (hm : IsMetric μ) {I : Finset ι} {
     (hI : ∀ i ∈ I, ∀ j ∈ I, i ≠ j → Metric.AreSeparated (s i) (s j)) :
     μ (⋃ i ∈ I, s i) = ∑ i ∈ I, μ (s i) := by
   classical
-  induction' I using Finset.induction_on with i I hiI ihI hI
-  · simp
-  simp only [Finset.mem_insert] at hI
-  rw [Finset.set_biUnion_insert, hm, ihI, Finset.sum_insert hiI]
-  exacts [fun i hi j hj hij => hI i (Or.inr hi) j (Or.inr hj) hij,
-    Metric.AreSeparated.finset_iUnion_right fun j hj =>
-      hI i (Or.inl rfl) j (Or.inr hj) (ne_of_mem_of_not_mem hj hiI).symm]
+  induction I using Finset.induction_on with
+  | empty => simp
+  | insert i I hiI ihI =>
+    simp only [Finset.mem_insert] at hI
+    rw [Finset.set_biUnion_insert, hm, ihI, Finset.sum_insert hiI]
+    exacts [fun i hi j hj hij => hI i (Or.inr hi) j (Or.inr hj) hij,
+      Metric.AreSeparated.finset_iUnion_right fun j hj =>
+        hI i (Or.inl rfl) j (Or.inr hj) (ne_of_mem_of_not_mem hj hiI).symm]
 
 /-- Caratheodory theorem. If `m` is a metric outer measure, then every Borel measurable set `t` is
 Caratheodory measurable: for any (not necessarily measurable) set `s` we have
@@ -204,7 +205,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
   rw [← hm.finset_iUnion_of_pairwise_separated]
   · exact μ.mono (iUnion_subset fun i => iUnion_subset fun _ x hx => mem_iUnion.2 ⟨_, hx.1⟩)
   suffices ∀ i j, i < j → Metric.AreSeparated (S (2 * i + 1 + r)) (s \ S (2 * j + r)) from
-    fun i _ j _ hij => hij.lt_or_lt.elim
+    fun i _ j _ hij => hij.lt_or_gt.elim
       (fun h => (this i j h).mono inter_subset_left fun x hx => by exact ⟨hx.1.1, hx.2⟩)
       fun h => (this j i h).symm.mono (fun x hx => by exact ⟨hx.1.1, hx.2⟩) inter_subset_left
   intro i j hj
@@ -310,7 +311,7 @@ theorem mkMetric'_isMetric (m : Set X → ℝ≥0∞) : (mkMetric' m).IsMetric :
   refine boundedBy_union_of_top_of_nonempty_inter ?_
   rintro u ⟨x, hxs, hxu⟩ ⟨y, hyt, hyu⟩
   have : ε < diam u := εr.trans_le ((hr x hxs y hyt).trans <| edist_le_diam_of_mem hxu hyu)
-  exact iInf_eq_top.2 fun h => (this.not_le h).elim
+  exact iInf_eq_top.2 fun h => (this.not_ge h).elim
 
 /-- If `c ∉ {0, ∞}` and `m₁ d ≤ c * m₂ d` for `d < ε` for some `ε > 0`
 (we use `≤ᶠ[𝓝[≥] 0]` to state this), then `mkMetric m₁ hm₁ ≤ c • mkMetric m₂ hm₂`. -/
@@ -481,7 +482,7 @@ theorem mkMetric_apply (m : ℝ≥0∞ → ℝ≥0∞) (s : Set X) :
     push_neg at htr; rcases htr with ⟨n, hn⟩
     refine ENNReal.tsum_eq_top_of_eq_top ⟨n, ?_⟩
     rw [iSup_eq_if, if_pos, iInf_eq_if, if_neg]
-    · exact hn.not_le
+    · exact hn.not_ge
     rcases diam_pos_iff.1 ((zero_le r).trans_lt hn) with ⟨x, hx, -⟩
     exact ⟨x, hx⟩
 
@@ -533,6 +534,7 @@ theorem mkMetric_le_liminf_sum {β : Type*} {ι : β → Type*} [hι : ∀ n, Fi
 def hausdorffMeasure (d : ℝ) : Measure X :=
   mkMetric fun r => r ^ d
 
+@[inherit_doc]
 scoped[MeasureTheory] notation "μH[" d "]" => MeasureTheory.Measure.hausdorffMeasure d
 
 theorem le_hausdorffMeasure (d : ℝ) (μ : Measure X) (ε : ℝ≥0∞) (h₀ : 0 < ε)
@@ -569,7 +571,7 @@ theorem hausdorffMeasure_zero_or_top {d₁ d₂ : ℝ} (h : d₁ < d₂) (s : Se
   by_contra! H
   suffices ∀ c : ℝ≥0, c ≠ 0 → μH[d₂] s ≤ c * μH[d₁] s by
     rcases ENNReal.exists_nnreal_pos_mul_lt H.2 H.1 with ⟨c, hc0, hc⟩
-    exact hc.not_le (this c (pos_iff_ne_zero.1 hc0))
+    exact hc.not_ge (this c (pos_iff_ne_zero.1 hc0))
   intro c hc
   refine le_iff'.1 (mkMetric_mono_smul ENNReal.coe_ne_top (mod_cast hc) ?_) s
   have : 0 < ((c : ℝ≥0∞) ^ (d₂ - d₁)⁻¹) := by
@@ -582,7 +584,7 @@ theorem hausdorffMeasure_zero_or_top {d₁ d₂ : ℝ} (h : d₁ < d₂) (s : Se
   rw [Pi.smul_apply, smul_eq_mul,
     ← ENNReal.div_le_iff_le_mul (Or.inr ENNReal.coe_ne_top) (Or.inr <| mt ENNReal.coe_eq_zero.1 hc)]
   rcases eq_or_ne r 0 with (rfl | hr₀)
-  · rcases lt_or_le 0 d₂ with (h₂ | h₂)
+  · rcases lt_or_ge 0 d₂ with (h₂ | h₂)
     · simp only [h₂, ENNReal.zero_rpow_of_pos, zero_le, ENNReal.zero_div, ENNReal.coe_zero]
     · simp only [h.trans_le h₂, ENNReal.div_top, zero_le, ENNReal.zero_rpow_of_neg,
         ENNReal.coe_zero]
@@ -598,8 +600,7 @@ theorem hausdorffMeasure_mono {d₁ d₂ : ℝ} (h : d₁ ≤ d₂) (s : Set X) 
   · rw [hs]; exact zero_le _
   · rw [hs]; exact le_top
 
-variable (X)
-
+variable (X) in
 theorem noAtoms_hausdorff {d : ℝ} (hd : 0 < d) : NoAtoms (hausdorffMeasure d : Measure X) := by
   refine ⟨fun x => ?_⟩
   rw [← nonpos_iff_eq_zero, hausdorffMeasure_apply]
@@ -607,8 +608,6 @@ theorem noAtoms_hausdorff {d : ℝ} (hd : 0 < d) : NoAtoms (hausdorffMeasure d :
   · exact subset_iUnion (fun _ => {x} : ℕ → Set X) 0
   · simp only [EMetric.diam_singleton, zero_le]
   · simp [hd]
-
-variable {X}
 
 @[simp]
 theorem hausdorffMeasure_zero_singleton (x : X) : μH[0] ({x} : Set X) = 1 := by
@@ -738,8 +737,9 @@ end LipschitzWith
 open scoped Pointwise
 
 theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormedAddCommGroup E]
-    [NormedField 𝕜] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E] {d : ℝ} (hd : 0 ≤ d)
-    {r : 𝕜} (hr : r ≠ 0) (s : Set E) : μH[d] (r • s) = ‖r‖₊ ^ d • μH[d] s := by
+    [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E] [MeasurableSpace E] [BorelSpace E]
+    {d : ℝ} (hd : 0 ≤ d) {r : 𝕜} (hr : r ≠ 0) (s : Set E) :
+    μH[d] (r • s) = ‖r‖₊ ^ d • μH[d] s := by
   have {r : 𝕜} (s : Set E) : μH[d] (r • s) ≤ ‖r‖₊ ^ d • μH[d] s := by
     simpa [ENNReal.coe_rpow_of_nonneg, hd]
       using (lipschitzWith_smul r).hausdorffMeasure_image_le hd s
@@ -847,16 +847,16 @@ end IsometryEquiv
 namespace MeasureTheory
 
 @[to_additive]
-theorem hausdorffMeasure_smul {α : Type*} [SMul α X] [IsometricSMul α X] {d : ℝ} (c : α)
+theorem hausdorffMeasure_smul {α : Type*} [SMul α X] [IsIsometricSMul α X] {d : ℝ} (c : α)
     (h : 0 ≤ d ∨ Surjective (c • · : X → X)) (s : Set X) : μH[d] (c • s) = μH[d] s :=
   (isometry_smul X c).hausdorffMeasure_image h _
 
 @[to_additive]
-instance {d : ℝ} [Group X] [IsometricSMul X X] : IsMulLeftInvariant (μH[d] : Measure X) where
+instance {d : ℝ} [Group X] [IsIsometricSMul X X] : IsMulLeftInvariant (μH[d] : Measure X) where
   map_mul_left_eq_self x := (IsometryEquiv.constSMul x).map_hausdorffMeasure _
 
 @[to_additive]
-instance {d : ℝ} [Group X] [IsometricSMul Xᵐᵒᵖ X] : IsMulRightInvariant (μH[d] : Measure X) where
+instance {d : ℝ} [Group X] [IsIsometricSMul Xᵐᵒᵖ X] : IsMulRightInvariant (μH[d] : Measure X) where
   map_mul_right_eq_self x := (IsometryEquiv.constSMul (MulOpposite.op x)).map_hausdorffMeasure _
 
 /-!
@@ -966,7 +966,7 @@ instance isAddHaarMeasure_hausdorffMeasure {E : Type*}
       rw [← e.symm_image_image K]
       apply lt_of_le_of_lt <| e.symm.lipschitz.hausdorffMeasure_image_le (by simp) (e '' K)
       rw [ENNReal.rpow_natCast]
-      exact ENNReal.mul_lt_top (ENNReal.pow_lt_top ENNReal.coe_lt_top _) this
+      exact ENNReal.mul_lt_top (ENNReal.pow_lt_top ENNReal.coe_lt_top) this
     conv_lhs => congr; congr; rw [← Fintype.card_fin (finrank ℝ E)]
     rw [hausdorffMeasure_pi_real]
     exact (hK.image e.continuous).measure_lt_top

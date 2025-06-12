@@ -18,7 +18,7 @@ the dual statements between pushouts and epimorphisms.
 API as `pullback.fst_of_mono` and `pullback.snd_of_mono`.
 
 * A pullback cone is a limit iff its composition with a monomorphism is a limit. This is available
-as `IsLimitOfCompMono` and `pullbackIsPullbackOfCompMono` respectively.
+  as `IsLimitOfCompMono` and `pullbackIsPullbackOfCompMono` respectively.
 
 * Monomorphisms admit kernel pairs, this is `has_kernel_pair_of_mono`.
 

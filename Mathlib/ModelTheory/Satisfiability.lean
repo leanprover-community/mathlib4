@@ -47,8 +47,6 @@ universe u v w w'
 
 open Cardinal CategoryTheory
 
-open Cardinal FirstOrder
-
 namespace FirstOrder
 
 namespace Language
@@ -193,7 +191,7 @@ variable (L)
 /-- A version of The Downward Löwenheim–Skolem theorem where the structure `N` elementarily embeds
 into `M`, but is not by type a substructure of `M`, and thus can be chosen to belong to the universe
 of the cardinal `κ`.
- -/
+-/
 theorem exists_elementaryEmbedding_card_eq_of_le (M : Type w') [L.Structure M] [Nonempty M]
     (κ : Cardinal.{w}) (h1 : ℵ₀ ≤ κ) (h2 : lift.{w} L.card ≤ Cardinal.lift.{max u v} κ)
     (h3 : lift.{w'} κ ≤ Cardinal.lift.{w} #M) :

@@ -3,7 +3,11 @@ Copyright (c) 2024 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Algebra.Ring.Parity
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Data.Nat.Nth
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # IMO 2024 Q3
@@ -30,7 +34,7 @@ open scoped Finset
 namespace Imo2024Q3
 
 /-- The condition of the problem. Following usual Lean conventions, this is expressed with
-indices starting from 0, rather than from 1 as in the informal statment (but `N` remains as the
+indices starting from 0, rather than from 1 as in the informal statement (but `N` remains as the
 index of the last term for which `a n` is not defined in terms of previous terms). -/
 def Condition (a : ℕ → ℕ) (N : ℕ) : Prop :=
   (∀ i, 0 < a i) ∧ ∀ n, N < n → a n = #{i ∈ Finset.range n | a i = a (n - 1)}
@@ -58,7 +62,7 @@ lemma N_lt_of_M_le_apply {a : ℕ → ℕ} {N i : ℕ} (h : M a N ≤ a i) : N <
   exact Nat.not_succ_le_self _ (h.trans (Finset.le_sup (Finset.mem_range_succ_iff.2 hi)))
 
 lemma ne_zero_of_M_le_apply {a : ℕ → ℕ} {N i : ℕ} (h : M a N ≤ a i) : i ≠ 0 :=
-  Nat.not_eq_zero_of_lt (N_lt_of_M_le_apply h)
+  Nat.ne_zero_of_lt (N_lt_of_M_le_apply h)
 
 lemma apply_lt_of_M_le_apply {a : ℕ → ℕ} {N i j : ℕ} (hi : M a N ≤ a i) (hj : j ≤ N) :
     a j < a i :=
@@ -135,7 +139,7 @@ lemma apply_nth_add_one_eq_of_lt {m n : ℕ} (hn : N < Nat.nth (a · = m) n) :
 
 lemma lt_toFinset_card {j : ℕ} (h : M a N ≤ a (j + 1)) (hf : {i | a i = a j}.Finite) :
     M a N - 1 < #hf.toFinset := by
-  rw [Nat.sub_lt_iff_lt_add (M_pos _ _), Nat.lt_one_add_iff]
+  rw [Nat.sub_lt_iff_lt_add' (M_pos _ _), Nat.lt_one_add_iff]
   exact (hc.apply_eq_card (N_lt_of_M_le_apply h) ▸ h).trans (Finset.card_le_card (by simp))
 
 lemma nth_ne_zero_of_M_le_of_lt {i k : ℕ} (hi : M a N ≤ a i) (hk : k < a (i + 1)) :
@@ -154,7 +158,7 @@ lemma apply_add_one_lt_of_apply_eq {i j : ℕ} (hi : N ≤ i) (hij : i < j) (ha 
 
 lemma apply_add_one_ne_of_apply_eq {i j : ℕ} (hi : N ≤ i) (hj : N ≤ j) (hij : i ≠ j)
     (ha : a i = a j) : a (i + 1) ≠ a (j + 1) :=
-  hij.lt_or_lt.elim (fun h ↦ (hc.apply_add_one_lt_of_apply_eq hi h ha).ne) fun h ↦
+  hij.lt_or_gt.elim (fun h ↦ (hc.apply_add_one_lt_of_apply_eq hi h ha).ne) fun h ↦
     (hc.apply_add_one_lt_of_apply_eq hj h ha.symm).ne'
 
 lemma exists_infinite_setOf_apply_eq : ∃ m, {i | a i = m}.Infinite := by
@@ -190,7 +194,7 @@ lemma injOn_setOf_apply_add_one_eq_of_M_le {n : ℕ} (h : M a N ≤ n) :
   rw [← hi', ← hj', hij]
 
 lemma empty_consecutive_apply_ge_M : {i | M a N ≤ a i ∧ M a N ≤ a (i + 1)} = ∅ := by
-  rw [Set.eq_empty_iff_forall_not_mem]
+  rw [Set.eq_empty_iff_forall_notMem]
   intro i
   induction i using Nat.strong_induction_on with | h i ih =>
   -- Let i be the first index where both `a i` and `a (i + 1)` are at least M.
@@ -379,7 +383,7 @@ lemma exists_card_le_of_big {j : ℕ} (h : Big a j) :
   rw [← hc.finite_setOf_apply_eq_iff_not_small (hc.pos_of_big h)] at hns
   use hns
   by_contra! hlt
-  exact not_mem_of_csSup_lt h hc.bddAbove_setOf_k_lt_card fun _ ↦ hlt
+  exact notMem_of_csSup_lt h hc.bddAbove_setOf_k_lt_card fun _ ↦ hlt
 
 variable (a N)
 
@@ -403,7 +407,7 @@ lemma not_medium_of_N'aux_lt {j : ℕ} (h : N'aux a N < j) : ¬Medium a (a j) :=
     refine (Set.finite_Ioc _ _).biUnion ?_
     rintro i ⟨hk, -⟩
     rwa [hc.finite_setOf_apply_eq_iff_not_small (by omega), Small, not_le]
-  exact fun hm ↦ not_mem_of_csSup_lt (le_sup_left.trans_lt h)
+  exact fun hm ↦ notMem_of_csSup_lt (le_sup_left.trans_lt h)
     (hf.subset fun i hi ↦ (by simpa [s] using hi)).bddAbove hm
 
 lemma small_or_big_of_N'aux_lt {j : ℕ} (h : N'aux a N < j) : Small a (a j) ∨ Big a (a j) := by
@@ -421,7 +425,7 @@ omit hc
 lemma nth_sup_k_N_add_one_le_N'aux_of_small {j : ℕ} (h : Small a j) :
     Nat.nth (a · = j) (k a ⊔ (N + 1)) ≤ N'aux a N := by
   by_contra! hn
-  exact not_mem_of_csSup_lt (le_sup_right.trans_lt hn) ((Set.finite_Iic _).image _).bddAbove
+  exact notMem_of_csSup_lt (le_sup_right.trans_lt hn) ((Set.finite_Iic _).image _).bddAbove
     ⟨j, h, rfl⟩
 
 include hc
@@ -632,7 +636,7 @@ lemma apply_add_one_eq_card_small_le_card_eq {i : ℕ} (hi : N' a N < i) (hib : 
       rw [← Nat.count_eq_card_filter_range] at htr
       constructor
       · rwa [add_lt_add_iff_right, ← Nat.lt_nth_iff_count_lt hts,
-          Nat.sub_lt_iff_lt_add (hc.one_le_apply _), Nat.lt_one_add_iff]
+          Nat.sub_lt_iff_lt_add' (hc.one_le_apply _), Nat.lt_one_add_iff]
       · rw [hc.apply_nth_add_one_eq_of_infinite hts]
         · exact Nat.sub_add_cancel (hc.one_le_apply _)
         · refine (Nat.le_nth fun hf ↦ absurd hf hts).trans ((Nat.nth_le_nth hts).2 ?_)

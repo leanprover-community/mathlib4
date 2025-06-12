@@ -52,7 +52,7 @@ theorem trailingDegree_lt_wf : WellFounded fun p q : R[X] => trailingDegree p < 
 def natTrailingDegree (p : R[X]) : ℕ :=
   ENat.toNat (trailingDegree p)
 
-/-- `trailingCoeff p` gives the coefficient of the smallest power of `X` in `p`-/
+/-- `trailingCoeff p` gives the coefficient of the smallest power of `X` in `p`. -/
 def trailingCoeff (p : R[X]) : R :=
   coeff p (natTrailingDegree p)
 
@@ -419,7 +419,7 @@ theorem coeff_natTrailingDegree_eq_zero_of_trailingDegree_lt
   coeff_eq_zero_of_lt_trailingDegree <| natTrailingDegree_le_trailingDegree.trans_lt h
 
 theorem ne_zero_of_trailingDegree_lt {n : ℕ∞} (h : trailingDegree p < n) : p ≠ 0 := fun h₀ =>
-  h.not_le (by simp [h₀])
+  h.not_ge (by simp [h₀])
 
 lemma natTrailingDegree_eq_zero_of_constantCoeff_ne_zero (h : constantCoeff p ≠ 0) :
     p.natTrailingDegree = 0 :=

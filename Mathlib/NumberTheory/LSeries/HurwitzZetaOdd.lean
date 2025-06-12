@@ -178,7 +178,7 @@ lemma continuousOn_sinKernel (a : UnitAddCircle) : ContinuousOn (sinKernel a) (I
 lemma oddKernel_functional_equation (a : UnitAddCircle) (x : ℝ) :
     oddKernel a x = 1 / x ^ (3 / 2 : ℝ) * sinKernel a (1 / x) := by
   -- first reduce to `0 < x`
-  rcases le_or_lt x 0 with hx | hx
+  rcases le_or_gt x 0 with hx | hx
   · rw [oddKernel_undef _ hx, sinKernel_undef _ (one_div_nonpos.mpr hx), mul_zero]
   induction a using QuotientAddGroup.induction_on with | H a =>
   have h1 : -1 / (I * ↑(1 / x)) = I * x := by rw [one_div, ofReal_inv, mul_comm, ← div_div,
@@ -304,6 +304,7 @@ def hurwitzOddFEPair (a : UnitAddCircle) : StrongFEPair ℂ where
     measurableSet_Ioi
   k := 3 / 2
   hk := by norm_num
+  ε := 1
   hε := one_ne_zero
   f₀ := 0
   hf₀ := rfl
@@ -445,7 +446,7 @@ lemma hasSum_int_completedHurwitzZetaOdd (a : ℝ) {s : ℂ} (hs : 1 < re s) :
 -/
 
 /-- The odd part of the Hurwitz zeta function, i.e. the meromorphic function of `s` which agrees
-with `1 / 2 * ∑' (n : ℤ), sign (n + a) / |n + a| ^ s` for `1 < re s`-/
+with `1 / 2 * ∑' (n : ℤ), sign (n + a) / |n + a| ^ s` for `1 < re s` -/
 noncomputable def hurwitzZetaOdd (a : UnitAddCircle) (s : ℂ) :=
   completedHurwitzZetaOdd a s / Gammaℝ (s + 1)
 

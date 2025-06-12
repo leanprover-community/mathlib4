@@ -24,8 +24,8 @@ A Z-group is a group whose Sylow subgroups are all cyclic.
 * `IsZGroup.isCyclic_commutator`: a finite Z-group has cyclic commutator subgroup.
 * `IsZGroup.coprime_commutator_index`: the commutator subgroup of a finite Z-group is a
   Hall-subgroup (the commutator subgroup has cardinality coprime to its index).
-* `isZGroup_iff_mulEquiv`: a finite group `G` is a Z-group if and only if `G` is isomorphic to a
-  semidirect product of two cyclic subgroups of coprime order.
+* `isZGroup_iff_exists_mulEquiv`: a finite group `G` is a Z-group if and only if `G` is isomorphic
+  to a semidirect product of two cyclic subgroups of coprime order.
 
 -/
 
@@ -176,7 +176,7 @@ variable {p : ℕ} [Fact p.Prime]
 
 namespace IsPGroup
 
-/-- If a cyclic `p`-group `G` acts on a group `K` of coprime order, then the map `K × G → G`
+/-- If a group `K` acts on a cyclic `p`-group `G` of coprime order, then the map `K × G → G`
   defined by `(k, g) ↦ k • g * g⁻¹` is either trivial or surjective. -/
 theorem smul_mul_inv_trivial_or_surjective [IsCyclic G] (hG : IsPGroup p G)
     {K : Type*} [Group K] [MulDistribMulAction K G] (hGK : (Nat.card G).Coprime (Nat.card K)) :
