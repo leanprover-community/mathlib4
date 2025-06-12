@@ -9,21 +9,20 @@ import Mathlib.Analysis.Complex.TaylorSeries
 # Taylor expansion of `1 / z ^ r`
 -/
 
-lemma deriv_div_sub_pow {𝕜 : Type*} [NontriviallyNormedField 𝕜] (z w a : 𝕜) (r : ℕ) :
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+
+lemma deriv_div_sub_pow (z w a : 𝕜) (r : ℕ) :
     deriv (fun z : 𝕜 ↦ a / (w - z) ^ r) z = r * a / (w - z) ^ (r + 1) := by
   rw [deriv_comp_const_sub (f := fun z ↦ a / z ^ r) (a := w)]
-  simp only [div_eq_mul_inv, deriv_const_mul_field', ← zpow_natCast, ← zpow_neg, deriv_zpow]
-  rw [sub_eq_add_neg (-r : ℤ), ← neg_add, zpow_neg, mul_comm _ a]
-  norm_cast
-  field_simp
+  simp [div_eq_mul_inv, deriv_const_mul_field', ← zpow_natCast, ← zpow_neg,
+    deriv_zpow, neg_add_eq_sub, mul_assoc, mul_left_comm _ a]
 
-lemma hasDerivAt_div_sub_pow {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    (z w a : 𝕜) (r : ℕ) (hz : z ≠ w) :
+lemma hasDerivAt_div_sub_pow (z w a : 𝕜) (r : ℕ) (hz : z ≠ w) :
     HasDerivAt (fun z : 𝕜 ↦ a / (w - z) ^ r) (r * a / (w - z) ^ (r + 1)) z := by
   rw [← deriv_div_sub_pow, hasDerivAt_deriv_iff]
   refine .div (by fun_prop) (by fun_prop) (by simp [eq_comm, sub_eq_zero, hz])
 
-lemma iter_deriv_div_sub_pow {𝕜 : Type*} [NontriviallyNormedField 𝕜] (z w a : 𝕜) (r k : ℕ) :
+lemma iter_deriv_div_sub_pow (z w a : 𝕜) (r k : ℕ) :
     deriv^[k] (fun z : 𝕜 ↦ a / (w - z) ^ r) z = r.ascFactorial k * a / (w - z) ^ (r + k) := by
   revert z
   apply funext_iff.mp
@@ -31,14 +30,14 @@ lemma iter_deriv_div_sub_pow {𝕜 : Type*} [NontriviallyNormedField 𝕜] (z w 
   | zero => simp
   | succ k IH =>
     ext z
-    simp only [Function.iterate_succ', Function.comp_apply, IH, deriv_div_sub_pow,
-      Nat.ascFactorial_succ, ← add_assoc, mul_assoc, Nat.cast_mul]
+    simp [Function.iterate_succ', IH, deriv_div_sub_pow, Nat.ascFactorial_succ,
+      ← add_assoc, mul_assoc, -Function.iterate_succ]
 
 /-- Taylor expansion of `1 / z ^ k` at `w`. -/
-lemma Complex.tsum_eq_one_div_sub_pow (w z : ℂ) (hz : z.abs < w.abs) (k : ℕ) (hk : k ≠ 0) :
+lemma Complex.tsum_eq_one_div_sub_pow (w z : ℂ) (hz : ‖z‖ < ‖w‖) (k : ℕ) (hk : k ≠ 0) :
     ∑' i : ℕ, (Nat.choose (i + k - 1) i) * w ^ (- ↑(i + k) : ℤ) * z ^ i = 1 / (w - z) ^ k := by
   convert Complex.taylorSeries_eq_on_ball' (f := fun z ↦ 1 / (w - z) ^ k)
-    (show z ∈ Metric.ball 0 w.abs by simpa using hz) _ using 4 with i
+    (show z ∈ Metric.ball 0 ‖w‖ by simpa using hz) _ using 4 with i
   · rw [iteratedDeriv_eq_iterate, iter_deriv_div_sub_pow, sub_zero, zpow_neg, zpow_natCast, mul_one,
       eq_inv_mul_iff_mul_eq₀ (by norm_cast; positivity), ← mul_assoc, div_eq_mul_inv, add_comm,
       ← Nat.cast_mul, Nat.ascFactorial_eq_factorial_mul_choose']
@@ -46,7 +45,7 @@ lemma Complex.tsum_eq_one_div_sub_pow (w z : ℂ) (hz : z.abs < w.abs) (k : ℕ)
   · exact .div (by fun_prop) (by fun_prop) (by simp [sub_eq_zero, imp_not_comm, hk])
 
 /-- Taylor expansion of `1 / z ^ k` at `w`. -/
-lemma Complex.hasSum_one_div_sub_pow (w z : ℂ) (hz : z.abs < w.abs) (k : ℕ) (hk : k ≠ 0) :
+lemma Complex.hasSum_one_div_sub_pow (w z : ℂ) (hz : ‖z‖ < ‖w‖) (k : ℕ) (hk : k ≠ 0) :
     HasSum (fun i ↦ (Nat.choose (i + k - 1) i) * w ^ (- ↑(i + k) : ℤ) * z ^ i)
       (1 / (w - z) ^ k) := by
   rw [Summable.hasSum_iff, tsum_eq_one_div_sub_pow w z hz k hk]
@@ -56,22 +55,22 @@ lemma Complex.hasSum_one_div_sub_pow (w z : ℂ) (hz : z.abs < w.abs) (k : ℕ) 
   simp at hz
 
 /-- Taylor expansion of `1 / z` at `w`. -/
-lemma Complex.tsum_eq_one_div_sub (w z : ℂ) (hz : z.abs < w.abs) :
+lemma Complex.tsum_eq_one_div_sub (w z : ℂ) (hz : ‖z‖ < ‖w‖) :
     ∑' i : ℕ, w ^ (- ↑(i + 1) : ℤ) * z ^ i = 1 / (w - z) := by
   convert tsum_eq_one_div_sub_pow w z hz 1 one_ne_zero <;> simp
 
 /-- Taylor expansion of `1 / z ^ 2` at `w`. -/
-lemma Complex.tsum_eq_one_div_sub_sq (w z : ℂ) (hz : z.abs < w.abs) :
+lemma Complex.tsum_eq_one_div_sub_sq (w z : ℂ) (hz : ‖z‖ < ‖w‖) :
     ∑' i : ℕ, (i + 1) * w ^ (- ↑(i + 2) : ℤ) * z ^ i = 1 / (w - z) ^ 2 := by
   convert tsum_eq_one_div_sub_pow w z hz 2 two_ne_zero; simp
 
 /-- `∑ (ai + b)zⁱ = (b - a) / (1 - z) + a / (1 - z)²` -/
-lemma Complex.tsum_mul_add_const_mul_pow (z a b : ℂ) (hz : abs z < 1) :
+lemma Complex.tsum_mul_add_const_mul_pow (z a b : ℂ) (hz : ‖z‖ < 1) :
     ∑' i : ℕ, (a * i + b) * z ^ i = (b - a) / (1 - z) + a / (1 - z) ^ 2 := by
-  have H : abs z < abs 1 := by simpa using hz
+  have H : ‖z‖ < ‖(1 : ℂ)‖ := by simpa using hz
   simp_rw [div_eq_mul_inv, ← one_div]
   rw [← Complex.tsum_eq_one_div_sub_sq _ _ H, ← Complex.tsum_eq_one_div_sub _ _ H, ← tsum_mul_left,
-    ← tsum_mul_left, ← tsum_add]
+    ← tsum_mul_left, ← Summable.tsum_add]
   · congr 1 with i
     simp
     ring
