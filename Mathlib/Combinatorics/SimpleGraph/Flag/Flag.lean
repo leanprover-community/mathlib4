@@ -86,6 +86,25 @@ structure FlagIso {α β ι : Type*} (F₁ : Flag α ι) (F₂ : Flag β ι) ext
 @[inherit_doc] infixl:50 " ↪f " => FlagEmbedding
 @[inherit_doc] infixl:50 " ≃f " => FlagIso
 
+variable {γ  : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι} {F₃ : Flag γ ι}
+
+/-- An isomorphism of graphs gives rise to an embedding of graphs. -/
+abbrev FlagIso.toEmbedding (f : F₁ ≃f F₂): F₁ ↪f F₂ :=
+  ⟨f.toRelEmbedding, by ext x ; simp [f.labels_eq]⟩
+
+
+/-- The identity isomorphism of a flag with itself. -/
+abbrev FlagIso.refl : F₁ ≃f F₁ :=
+  ⟨RelIso.refl _, rfl⟩
+
+
+/-- The inverse of a flag isomorphism. -/
+abbrev FlagIso.symm  (f : F₁ ≃f F₂) : F₂ ≃f F₁ :=
+  ⟨RelIso.symm f.toRelIso, by ext; simp [f.labels_eq]⟩
+
+/-- Composition of flag embeddings. -/
+abbrev FlagEmbedding.trans (f₁₂ : F₁ ↪f F₂) (f₂₃ : F₂ ↪f F₃) : F₁ ↪f F₃ :=
+  ⟨f₁₂.toRelEmbedding.trans f₂₃.toRelEmbedding, by ext i; simp [f₂₃.labels_eq, f₁₂.labels_eq]⟩
 
 @[simp]
 lemma FlagEmbedding.labels_subset_range {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι}
@@ -106,9 +125,19 @@ noncomputable instance FlagEmbedding.instfintypeOfEmbeddings {α β ι : Type*} 
 
 variable {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι} {e : F₁ ↪f F₂}
 
-lemma FlagIso.symm {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι} (e : F₁ ≃f F₂)
-     : F₁.θ = e.symm ∘ F₂.θ := by
-  ext x; simp [e.labels_eq]
+lemma FlagIso.symm_eq {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι} (e : F₁ ≃f F₂)
+     : F₁.θ = e.symm.toFun ∘ F₂.θ := by
+  ext x; simp [e.labels_eq];
+
+def FlagIso.embeddings_equiv_of_equiv {α α' β β' ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι}
+    {F₁' : Flag α' ι} {F₂' : Flag β' ι}  (e₁ : F₁ ≃f F₁') (e₂ : F₂ ≃f F₂') :
+    (F₁ ↪f F₂) ≃ (F₁' ↪f F₂') where
+  toFun := fun f ↦ (e₁.symm.toEmbedding.trans f).trans e₂.toEmbedding
+  invFun := fun f ↦ (e₁.toEmbedding.trans f).trans e₂.symm.toEmbedding
+  left_inv := fun _ ↦ by ext; simp
+  right_inv := fun _ ↦ by ext; simp
+
+
 
 /--
 `F` is a `σ`-flag iff the labelled subgraph given by `θ` is `σ`
