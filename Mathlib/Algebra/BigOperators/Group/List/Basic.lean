@@ -131,7 +131,7 @@ theorem prod_set :
   | x :: xs, 0, a => by simp [set]
   | x :: xs, i + 1, a => by
     simp [set, prod_set xs i a, mul_assoc, Nat.add_lt_add_iff_right]
-  | [], _, _ => by simp [set, (Nat.zero_le _).not_lt, Nat.zero_le]
+  | [], _, _ => by simp [set, (Nat.zero_le _).not_gt, Nat.zero_le]
 
 /-- We'd like to state this as `L.headI * L.tail.prod = L.prod`, but because `L.headI` relies on an
 inhabited instance to return a garbage value on the empty list, this is not possible.
@@ -357,8 +357,8 @@ theorem prod_set' (L : List G) (n : ℕ) (a : G) :
   split_ifs with hn
   · rw [mul_comm _ a, mul_assoc a, prod_drop_succ L n hn, mul_comm _ (drop n L).prod, ←
       mul_assoc (take n L).prod, prod_take_mul_prod_drop, mul_comm a, mul_assoc]
-  · simp only [take_of_length_le (le_of_not_lt hn), prod_nil, mul_one,
-      drop_eq_nil_of_le ((le_of_not_lt hn).trans n.le_succ)]
+  · simp only [take_of_length_le (le_of_not_gt hn), prod_nil, mul_one,
+      drop_eq_nil_of_le ((le_of_not_gt hn).trans n.le_succ)]
 
 @[to_additive]
 lemma prod_map_ite_eq {A : Type*} [DecidableEq A] (l : List A) (f g : A → G) (a : A) :

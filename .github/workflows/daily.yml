@@ -15,6 +15,7 @@ env:
 jobs:
   check-lean4checker:
     runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
     strategy:
       matrix:
         branch_type: [master, nightly]

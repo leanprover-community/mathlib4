@@ -145,7 +145,7 @@ theorem moment_truncation_eq_intervalIntegral_of_nonneg (hf : AEStronglyMeasurab
   have M' : MeasurableSet (Set.Ioc A 0) := measurableSet_Ioc
   rw [truncation_eq_of_nonneg h'f]
   change ∫ x, (fun z => indicator (Set.Ioc 0 A) id z ^ n) (f x) ∂μ = _
-  rcases le_or_lt 0 A with (hA | hA)
+  rcases le_or_gt 0 A with (hA | hA)
   · rw [← integral_map (f := fun z => _ ^ n) hf.aemeasurable, intervalIntegral.integral_of_le hA,
       ← integral_indicator M]
     · simp only [indicator, zero_pow hn, id, ite_pow]
@@ -469,7 +469,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
   have I4 : (∑' i, ℙ {ω | (u i * ε : ℝ) ≤ |S (u i) ω - 𝔼[S (u i)]|}) < ∞ :=
     (le_of_tendsto_of_tendsto' (ENNReal.tendsto_nat_tsum _) tendsto_const_nhds I3).trans_lt
       ENNReal.ofReal_lt_top
-  filter_upwards [ae_eventually_not_mem I4.ne] with ω hω
+  filter_upwards [ae_eventually_notMem I4.ne] with ω hω
   simp_rw [S, not_le, mul_comm, sum_apply] at hω
   convert hω; simp only [Y, S, u, C, sum_apply]
 
@@ -533,7 +533,7 @@ theorem strong_law_aux5 :
     ext1 j
     exact (hident j).measure_mem_eq measurableSet_Ioi
   have B : ∀ᵐ ω, Tendsto (fun n : ℕ => truncation (X n) n ω - X n ω) atTop (𝓝 0) := by
-    filter_upwards [ae_eventually_not_mem A.ne] with ω hω
+    filter_upwards [ae_eventually_notMem A.ne] with ω hω
     apply tendsto_const_nhds.congr' _
     filter_upwards [hω, Ioi_mem_atTop 0] with n hn npos
     simp only [truncation, indicator, Set.mem_Ioc, id, Function.comp_apply]

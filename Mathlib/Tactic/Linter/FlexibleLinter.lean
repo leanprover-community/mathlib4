@@ -89,7 +89,7 @@ We then propagate all the `FVarId`s that were present in the "before" goals to t
 while leaving untouched the ones in the "inert" goals.
 -/
 
-open Lean Elab
+open Lean Elab Linter
 
 namespace Mathlib.Linter
 
@@ -295,6 +295,7 @@ def flexible : Std.HashSet Name :=
     `Mathlib.Tactic.normNum,
     `linarith,
     `nlinarith,
+    `Mathlib.Tactic.LinearCombination.linearCombination,
     ``Lean.Parser.Tactic.tacticNorm_cast__,
     `Aesop.Frontend.Parser.aesopTactic,
     `Mathlib.Tactic.Tauto.tauto,
@@ -370,7 +371,7 @@ def reallyPersist
 
 /-- The main implementation of the flexible linter. -/
 def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
-  unless Linter.getLinterValue linter.flexible (← getOptions) && (← getInfoState).enabled do
+  unless getLinterValue linter.flexible (← getLinterOptions) && (← getInfoState).enabled do
     return
   if (← MonadState.get).messages.hasErrors then
     return
