@@ -141,7 +141,7 @@ theorem emultiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
   revert hm
   have h4 : ∀ m ∈ Ico (p * n + 1) (p * (n + 1)), emultiplicity p m = 0 := by
     intro m hm
-    rw [emultiplicity_eq_zero, not_dvd_iff_between_consec_multiples _ hp.pos]
+    rw [emultiplicity_eq_zero, not_dvd_iff_lt_mul_succ _ hp.pos]
     rw [mem_Ico] at hm
     exact ⟨n, lt_of_succ_le hm.1, hm.2⟩
   simp_rw [← prod_Ico_id_eq_factorial, Finset.emultiplicity_prod hp', ← sum_Ico_consecutive _ h1 h3,
@@ -257,9 +257,9 @@ theorem emultiplicity_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤
   rw [Nat.add_sub_cancel_right]
 
 theorem dvd_choose_pow (hp : Prime p) (hk : k ≠ 0) (hkp : k ≠ p ^ n) : p ∣ (p ^ n).choose k := by
-  obtain hkp | hkp := hkp.symm.lt_or_lt
+  obtain hkp | hkp := hkp.symm.lt_or_gt
   · simp [choose_eq_zero_of_lt hkp]
-  refine emultiplicity_ne_zero.1 fun h => hkp.not_le <| Nat.le_of_dvd hk.bot_lt ?_
+  refine emultiplicity_ne_zero.1 fun h => hkp.not_ge <| Nat.le_of_dvd hk.bot_lt ?_
   have H := hp.emultiplicity_choose_prime_pow_add_emultiplicity hkp.le hk
   rw [h, zero_add, emultiplicity_eq_coe] at H
   exact H.1
