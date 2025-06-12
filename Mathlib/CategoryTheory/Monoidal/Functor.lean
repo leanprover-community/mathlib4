@@ -546,7 +546,7 @@ def toLaxMonoidal : F.LaxMonoidal where
   right_unitality := h.right_unitality
 
 /-- The oplax monoidal functor structure induced by a `Functor.CoreMonoidal` structure. -/
-@[simps]
+@[simps -isSimp]
 def toOplaxMonoidal : F.OplaxMonoidal where
   η := h.εIso.inv
   δ X Y := (h.μIso X Y).inv
