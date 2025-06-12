@@ -106,8 +106,6 @@ end notBelow
 
 open Scott hiding IsOpen IsOpen.isUpperSet
 
-open OmegaCompletePartialOrder
-
 theorem isωSup_ωSup {α} [OmegaCompletePartialOrder α] (c : Chain α) : IsωSup c (ωSup c) := by
   constructor
   · apply le_ωSup

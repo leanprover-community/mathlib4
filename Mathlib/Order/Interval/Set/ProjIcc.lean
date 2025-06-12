@@ -84,10 +84,10 @@ theorem projIci_eq_self : projIci a x = ⟨a, le_rfl⟩ ↔ x ≤ a := by simp [
 theorem projIic_eq_self : projIic b x = ⟨b, le_rfl⟩ ↔ b ≤ x := by simp [projIic, Subtype.ext_iff]
 
 theorem projIcc_eq_left (h : a < b) : projIcc a b h.le x = ⟨a, left_mem_Icc.mpr h.le⟩ ↔ x ≤ a := by
-  simp [projIcc, Subtype.ext_iff, h.not_le]
+  simp [projIcc, Subtype.ext_iff, h.not_ge]
 
 theorem projIcc_eq_right (h : a < b) : projIcc a b h.le x = ⟨b, right_mem_Icc.2 h.le⟩ ↔ b ≤ x := by
-  simp [projIcc, Subtype.ext_iff, max_min_distrib_left, h.le, h.not_le]
+  simp [projIcc, Subtype.ext_iff, max_min_distrib_left, h.le, h.not_ge]
 
 theorem projIci_of_mem (hx : x ∈ Ici a) : projIci a x = ⟨x, hx⟩ := by simpa [projIci]
 
@@ -235,9 +235,9 @@ function from $[a, b]$ to the whole line is equal to the original function. -/
 theorem IccExtend_eq_self (f : α → β) (ha : ∀ x < a, f x = f a) (hb : ∀ x, b < x → f x = f b) :
     IccExtend h (f ∘ (↑)) = f := by
   ext x
-  rcases lt_or_le x a with hxa | hax
+  rcases lt_or_ge x a with hxa | hax
   · simp [IccExtend_of_le_left _ _ hxa.le, ha x hxa]
-  · rcases le_or_lt x b with hxb | hbx
+  · rcases le_or_gt x b with hxb | hbx
     · lift x to Icc a b using ⟨hax, hxb⟩
       rw [IccExtend_val, comp_apply]
     · simp [IccExtend_of_right_le _ _ hbx.le, hb x hbx]

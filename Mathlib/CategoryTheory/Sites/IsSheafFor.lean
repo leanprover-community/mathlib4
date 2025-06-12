@@ -460,15 +460,12 @@ theorem extension_iff_amalgamation {P : Cᵒᵖ ⥤ Type v₁} (x : S.functor �
   constructor
   · rintro rfl Y f hf
     rw [yonedaEquiv_naturality]
-    dsimp
     simp [yonedaEquiv_apply]
-  -- See note [dsimp, simp].
   · intro h
     ext Y ⟨f, hf⟩
     convert h f hf
     rw [yonedaEquiv_naturality]
-    dsimp [yonedaEquiv]
-    simp
+    simp [yonedaEquiv]
 
 /-- The yoneda version of the sheaf condition is equivalent to the sheaf condition.
 
