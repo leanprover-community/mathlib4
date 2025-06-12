@@ -11,13 +11,13 @@ Authors: Antoine Chambert-Loir, Filippo A. E. Nuccio
 -- import Mathlib.Tactic.Abel
 -- import Mathlib.Algebra.Group.Submonoid.Basic
 -- import Mathlib.Algebra.Group.Subgroup.Lattice
+import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Algebra.Group.Subgroup.Lattice
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.GroupWithZero.WithZero
 
 /-! # Range of MonoidHomWithZero
 Given a function `f : A → B` whose codomain `B` is a `GroupWithZero`, we define the
@@ -60,6 +60,7 @@ variable  [GroupWithZero B]
 `GroupWithZero`, that contains the invertible elements in the image. See
 `MonoidHomWithZero.mem_range₀_iff_of_comm` for another characterization of `range₀ f` when `B` is
 commutative. -/
+
 def range₀ : Submonoid B where
   carrier := (↑)''(Subgroup.closure (G := Bˣ) ((↑)⁻¹' (range f))).carrier ∪ {0}
   mul_mem' {b b'} hb hb' := by
@@ -129,31 +130,15 @@ theorem inv_mem_range₀_iff {b : B} : b⁻¹ ∈ range₀ f ↔ b ∈ range₀ 
   · simp only [h, inv_zero, zero_mem_range₀]
   exact ⟨fun h ↦ ((inv_inv b).symm ▸ (inv_mem_range₀ f)) h, inv_mem_range₀ _⟩
 
-example : range₀ f →* B := by
-  exact (range₀ f).subtype
+-- **START HERE**
 
-#check Units.map (range₀ f).subtype
--- def asSubgroup : Subgroup Bˣ where
---   carrier := (range₀ f)ˣ.carrier
---   mul_mem' := _
---   one_mem' := _
---   inv_mem' := _
+variable [MonoidWithZero A] [Nontrivial A] [MonoidWithZeroHomClass F A B]
 
-end GroupWithZero
-section CommGroupWithZero
-
-variable [MonoidWithZero A] [Nontrivial A] [CommGroupWithZero B] [MonoidWithZeroHomClass F A B]
 variable{f}
-variable (h : ∀ {a}, f a ≠ 0 ↔ a ≠ 0)
-
-#check nonZeroDivisorsEquivUnits
+variable (h : ∀ {a}, f a ≠ 0 ↔ a ≠ 0) -- IS THIS A TYPECLASS?
 
 def nonZeroDivisors_map : (nonZeroDivisors A) →* (nonZeroDivisors B) where
-  toFun a := by
-    use f a
-    simp
-    apply h.mpr
-    apply nonZeroDivisors.coe_ne_zero
+  toFun := fun a ↦ ⟨f a, by simp [h]⟩
   map_one' := by simp
   map_mul' x y := by simp
 
@@ -164,15 +149,28 @@ noncomputable
 def nonZeroDivisors_mrange : Submonoid Bˣ := MonoidHom.mrange
   (nonZeroDivisorsEquivUnits.toMonoidHom.comp (nonZeroDivisors_map h))
 
-lemma mem_nonZeroDivisors_mrange {b : Bˣ} (hb : b.1 ∈ range f) : b ∈ nonZeroDivisors_mrange h := by
-  simp only [nonZeroDivisors_mrange, MulEquiv.toMonoidHom_eq_coe, MonoidHom.mem_mrange,
+lemma mem_nonZeroDivisors_mrange [NoZeroDivisors A]
+    {b : Bˣ} (hb : b.1 ∈ range f) : b ∈ nonZeroDivisors_mrange h := by
+  simp only [nonZeroDivisors_mrange, MonoidHom.mem_mrange, MulEquiv.toMonoidHom_eq_coe,
     MonoidHom.coe_comp, MonoidHom.coe_coe, Function.comp_apply, nonZeroDivisorsEquivUnits_apply,
-    nonZeroDivisors_map_apply, Subtype.exists]
-  simp only [mem_range] at hb
-  obtain ⟨a, ha⟩ := hb
-  refine ⟨a, ?_, by ext; rw [← ha]; rfl⟩
+    nonZeroDivisors_map_apply, Subtype.exists, mem_nonZeroDivisors_iff_ne_zero]
+  rcases hb with ⟨c, hc⟩
+  exact ⟨c, h.mp <| hc ▸ b.ne_zero, by simp [hc, Units.mk0_val]⟩
 
-  sorry
+-- lemma mem_nonZeroDivisors_mrange_old [NoZeroDivisors A]
+--     {b : Bˣ} (hb : b.1 ∈ range f) : b ∈ nonZeroDivisors_mrange h := by
+--   simp only [nonZeroDivisors_mrange, MulEquiv.toMonoidHom_eq_coe, MonoidHom.mem_mrange,
+--     MonoidHom.coe_comp, MonoidHom.coe_coe, Function.comp_apply, nonZeroDivisorsEquivUnits_apply,
+--     nonZeroDivisors_map_apply, Subtype.exists]
+--   simp only [mem_range] at hb
+--   obtain ⟨a, ha⟩ := hb
+--   refine ⟨a, ?_, by ext; rw [← ha]; rfl⟩
+--   rw [mem_nonZeroDivisors_iff]
+--   intro x hx
+--   rw [mul_eq_zero] at hx
+--   rcases hx with _ | hx
+--   · assumption
+--   · simp [hx, Eq.comm] at ha
 
 def nonZeroDivisors_range : Subgroup Bˣ := Subgroup.closure (nonZeroDivisors_mrange h)
 
@@ -243,64 +241,32 @@ lemma nonZeroDivisors_range_eq_range {X W : Type*} [GroupWithZero X] [FunLike W 
       use y
     · rfl
 
+abbrev NZDRange₀ := WithZero (nonZeroDivisors_range h)
 
-
-
-
-
-
-
--- def r₀ := WithZero (r f)
-#exit
-
-def r₀' := WithZero (r' f)
-
-def rr : Submonoid B := MonoidHom.mrange f
-
-#check (rr f).carrier
-example : 0 ∈ (rr f) := by
-  -- have : f 0 = 0 := by
-  --   exact map_zero f
-  -- rw [← this]
-  rw [rr]
-  simp
-  use 0
-
-instance : Zero (rr f) where
-  zero := ⟨_, _, map_zero _⟩
-
-@[simp]
-lemma coe_zero : ((0 : rr f) : B) = 0 := rfl
-
-example : 1 ∈ (rr f) := by
-  rw [rr]
-  apply one_mem
-
-instance : MonoidWithZero (rr f) where
-  toMonoid := inferInstance
-  toZero := inferInstance
-  zero_mul := by sorry
-  mul_zero a := by
-    rw [← (coe_zero f)]
-
-
-
-example (b : B) : (rr f)ˣ := by
-
-  -- let x : rr f := by
-  --   use b
-  --   sorry
-  apply Units.mk0
-
-
-
-
+instance : GroupWithZero (NZDRange₀ h) where
+  toMonoidWithZero := inferInstance
+  inv_zero := sorry
+  mul_inv_cancel := sorry
+  div_eq_mul_inv := sorry
 
 open Subgroup in
 theorem mem_range₀_iff_of_comm (y : B) :
-    y ∈ range₀ f ↔ ∃ a, f a ≠ 0 ∧ ∃ x, f a * y = f x := by
+    y ∈ range₀ f ↔ ∃ a, f a ≠ 0 ∧ ∃ x, f a * y = f x := by sorry
+
+
+end GroupWithZero
+section CommGroupWithZero
+
+variable [MonoidWithZero A] [Nontrivial A] [CommGroupWithZero B] [MonoidWithZeroHomClass F A B]
+variable{f}
+variable (h : ∀ {a}, f a ≠ 0 ↔ a ≠ 0) -- IS THIS A TYPECLASS?
+
+#exit
+open Subgroup in
+theorem mem_NZDRange₀_iff_of_comm (y : Bˣ) :
+    y ∈ (nonZeroDivisors_range h) ↔ ∃ a, f a ≠ 0 ∧ ∃ x, f a * y = f x := by
   refine ⟨fun hy ↦ ?_, fun ⟨a, ha, ⟨x, hy⟩⟩ ↦ ?_⟩
-  · simp only [range₀, union_singleton, Submonoid.mem_mk, Subsemigroup.mem_mk, mem_insert_iff,
+  · simp only [union_singleton, Submonoid.mem_mk, Subsemigroup.mem_mk, mem_insert_iff,
     mem_image, Subsemigroup.mem_carrier, Submonoid.mem_toSubsemigroup,
     Subgroup.mem_toSubmonoid] at hy
     rcases hy with hy | ⟨u, hu, huy⟩
