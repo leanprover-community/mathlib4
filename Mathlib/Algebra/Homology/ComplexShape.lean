@@ -192,7 +192,7 @@ def up (α : Type*) [Add α] [IsRightCancelAdd α] [One α] : ComplexShape α :=
   up' 1
 
 instance (α : Type _) [AddRightCancelSemigroup α] [One α] [DecidableEq α] :
-  DecidableRel (up α).Rel := fun _ _ => by dsimp ; infer_instance
+  DecidableRel (up α).Rel := fun _ _ => by dsimp; infer_instance
 
 /-- The `ComplexShape` appropriate for homology, so `d : X i ⟶ X j` only when `i = j + 1`.
 -/
