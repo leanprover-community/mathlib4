@@ -651,8 +651,6 @@ lemma IsDedekindDomain.exists_add_spanSingleton_mul_eq
     use x
     simpa [hb, ← mul_assoc, mul_add, mul_comm b (.spanSingleton _ _)] using congr(b * $e)
   subst hb'
-  have h0 : FractionalIdeal.spanSingleton R⁰ ((algebraMap R K) (↑a.den * ↑c.den)) ≠ 0 := by
-    simp [FractionalIdeal.spanSingleton_eq_zero_iff]
   have H : Ideal.span {c.den.1} * a.num ≤ c.num * Ideal.span {a.den.1} := by
     rw [← FractionalIdeal.coeIdeal_le_coeIdeal K]
     simp only [FractionalIdeal.coeIdeal_mul, FractionalIdeal.coeIdeal_span_singleton, ←
