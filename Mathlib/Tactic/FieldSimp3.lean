@@ -78,6 +78,19 @@ theorem mul_eq_eval₂ [Field M] (r₁ r₂ : ℤ) (x : M) (hx : x ≠ 0)
   congr! 1
   rw [mul_comm]
 
+theorem mul_eq_eval₂' [DivisionCommMonoid M] {r₁ r₂ : ℤ} (hr₁ : 0 ≤ r₁) (hr₂ : 0 ≤ r₂) (x : M)
+    {l₁ l₂ l : NF M} (h : l₁.eval * l₂.eval = l.eval) :
+    ((r₁, x) ::ᵣ l₁).eval * ((r₂, x) ::ᵣ l₂).eval = ((r₁ + r₂, x) ::ᵣ l).eval := by
+  lift r₁ to ℕ using hr₁
+  lift r₂ to ℕ using hr₂
+  simp only [← h, eval_cons]
+  norm_cast
+  simp only [pow_add, mul_assoc]
+  congr! 1
+  simp only [← mul_assoc]
+  congr! 1
+  rw [mul_comm]
+
 theorem mul_eq_eval₃ [DivisionCommMonoid M] {a₁ : ℤ × M} (a₂ : ℤ × M) {l₁ l₂ l : NF M}
     (h : (a₁ ::ᵣ l₁).eval * l₂.eval = l.eval) :
     (a₁ ::ᵣ l₁).eval * (a₂ ::ᵣ l₂).eval = (a₂ ::ᵣ l).eval := by
@@ -101,6 +114,24 @@ theorem div_eq_eval₂ [Field M] (r₁ r₂ : ℤ) (x : M) (hx : x ≠ 0) {l₁ 
     (h : l₁.eval / l₂.eval = l.eval) :
     ((r₁, x) ::ᵣ l₁).eval / ((r₂, x) ::ᵣ l₂).eval = ((r₁ - r₂, x) ::ᵣ l).eval := by
   simp only [← h, eval_cons, zpow_sub₀ hx, div_eq_mul_inv, mul_inv, mul_zpow, zpow_neg, mul_assoc]
+  congr! 1
+  simp only [← mul_assoc]
+  congr! 1
+  rw [mul_comm]
+
+theorem div_eq_eval₂' [DivisionCommMonoid M] {r₁ r₂ : ℤ} (hr₁ : 0 ≤ r₁) (hr₂ : r₂ ≤ 0) (x : M)
+    {l₁ l₂ l : NF M} (h : l₁.eval / l₂.eval = l.eval) :
+    ((r₁, x) ::ᵣ l₁).eval / ((r₂, x) ::ᵣ l₂).eval = ((r₁ - r₂, x) ::ᵣ l).eval := by
+  lift r₁ to ℕ using hr₁
+  let s₂ := - r₂
+  have : r₂ = -s₂ := by ring
+  rw [this]
+  have hs₂ : 0 ≤ s₂ := by rwa [neg_nonneg]
+  clear_value s₂
+  lift s₂ to ℕ using hs₂
+  simp only [← h, eval_cons, sub_neg_eq_add, zpow_neg]
+  norm_cast
+  simp only [pow_add, div_eq_mul_inv, mul_inv, mul_assoc, inv_inv]
   congr! 1
   simp only [← mul_assoc]
   congr! 1
@@ -133,7 +164,7 @@ theorem eval_inv [DivisionCommMonoid M] (l : NF M) : (l⁻¹).eval = l.eval⁻¹
   ext p
   simp
 
-theorem zero_div_eq_eval [DivisionCommMonoid M] (l : NF M) : 1 / l.eval = (l⁻¹).eval := by
+theorem one_div_eq_eval [DivisionCommMonoid M] (l : NF M) : 1 / l.eval = (l⁻¹).eval := by
   simp [eval_inv]
 
 theorem inv_eq_eval [DivisionCommMonoid M] {l : NF M} {x : M} (h : x = l.eval) :
@@ -267,9 +298,13 @@ def mkMulProof (iM : Q(Field $M)) (l₁ l₂ : qNF M) :
       (q(NF.mul_eq_eval₁ ($a₁, $x₁) $pf):)
     else if k₁ = k₂ then
       let pf := mkMulProof iM t₁ t₂
-      let hx₁ : Q($x₁ ≠ 0) := q(sorry) -- FIXME we won't have this in general, need a case split on
-      -- signs of `k₁` and `k₂`
-      (q(NF.mul_eq_eval₂ $a₁ $a₂ $x₁ $hx₁ $pf):)
+      if 0 ≤ a₁ && 0 ≤ a₂ then
+        let h₁ : Q(0 ≤ $a₁) := q(sorry) -- how do you quote a proof of a `ℤ` inequality?
+        let h₂ : Q(0 ≤ $a₂) := q(sorry)
+        (q(NF.mul_eq_eval₂' $h₁ $h₂ $x₁ $pf):)
+      else
+        let hx₁ : Q($x₁ ≠ 0) := q(sorry) -- use the discharger here
+        (q(NF.mul_eq_eval₂ $a₁ $a₂ $x₁ $hx₁ $pf):)
     else
       let pf := mkMulProof iM (((a₁, x₁), k₁) :: t₁) t₂
       (q(NF.mul_eq_eval₃ ($a₂, $x₂) $pf):)
@@ -305,17 +340,21 @@ linear combination represented by `FieldSimp.qNF.div l₁ l₁`. -/
 def mkDivProof (iM : Q(Field $M)) (l₁ l₂ : qNF M) :
     Q(NF.eval $(l₁.toNF) / NF.eval $(l₂.toNF) = NF.eval $((qNF.div l₁ l₂).toNF)) :=
   match l₁, l₂ with
-  | [], l => (q(NF.zero_div_eq_eval $(l.toNF)):)
-  | l, [] => (q(div_zero (NF.eval $(l.toNF))):)
+  | [], l => (q(NF.one_div_eq_eval $(l.toNF)):)
+  | l, [] => (q(div_one (NF.eval $(l.toNF))):)
   | ((a₁, x₁), k₁) :: t₁, ((a₂, x₂), k₂) :: t₂ =>
     if k₁ < k₂ then
       let pf := mkDivProof iM t₁ (((a₂, x₂), k₂) :: t₂)
       (q(NF.div_eq_eval₁ ($a₁, $x₁) $pf):)
     else if k₁ = k₂ then
       let pf := mkDivProof iM t₁ t₂
-      let hx₁ : Q($x₁ ≠ 0) := q(sorry) -- FIXME we won't have this in general, need a case split on
-      -- signs of `k₁` and `k₂`
-      (q(NF.div_eq_eval₂ $a₁ $a₂ $x₁ $hx₁ $pf):)
+      if 0 ≤ a₁ && a₂ ≤ 0 then
+        let h₁ : Q(0 ≤ $a₁) := q(sorry) -- how do you quote a proof of a `ℤ` inequality?
+        let h₂ : Q($a₂ ≤ 0) := q(sorry)
+        (q(NF.div_eq_eval₂' $h₁ $h₂ $x₁ $pf):)
+      else
+        let hx₁ : Q($x₁ ≠ 0) := q(sorry) -- use the discharger here
+        (q(NF.div_eq_eval₂ $a₁ $a₂ $x₁ $hx₁ $pf):)
     else
       let pf := mkDivProof iM (((a₁, x₁), k₁) :: t₁) t₂
       (q(NF.div_eq_eval₃ ($a₂, $x₂) $pf):)
@@ -379,16 +418,18 @@ elab "field_simp2" : conv => do
   -- find the expression `x` to `conv` on
   let x ← Conv.getLhs
   -- infer `u` and `K : Q(Type u)` such that `x : Q($K)`
-  let pf : Q((3:ℕ) = 3) := q(sorry)
   let ⟨u, K, _⟩ ← inferTypeQ' x
   -- find a `Field` instance on `K`
   let iK : Q(Field $K) ← synthInstanceQ q(Field $K)
   -- run the core normalization function `normalize` on `x`, relative to the atoms
   let ⟨l, pf⟩ ← AtomM.run .reducible <| normalize iK x
-  let e : Expr := l.toNF
-  let e' : Expr ← mkAppM `Mathlib.Tactic.FieldSimp.NF.eval #[e]
+  let e : Expr ← mkAppM `Mathlib.Tactic.FieldSimp.NF.eval #[l.toNF]
   -- convert `x` to the output of the normalization
-  Conv.applySimpResult { expr := e', proof? := some pf }
+  Conv.applySimpResult { expr := e, proof? := some pf }
+
+end Mathlib.Tactic.FieldSimp
+
+open Mathlib.Tactic.FieldSimp
 
 variable {x y : ℚ}
 
@@ -413,3 +454,19 @@ variable {x y : ℚ}
 #conv field_simp2 => x / y
 
 #conv field_simp2 => (x / (x + 1) + y / (y + 1))
+
+example : (1 : ℚ) = 1 := by
+  conv_lhs => field_simp2
+  rfl
+
+example : x = x ^ (1:ℤ) * 1 := by
+  conv_lhs => field_simp2
+  rfl
+
+example : x * y = x ^ (1:ℤ) * (y ^ (1:ℤ) * 1) := by
+  conv_lhs => field_simp2
+  rfl
+
+example : x / y = x ^ (1:ℤ) * (y ^ (-1:ℤ) * 1) := by
+  conv_lhs => field_simp2
+  rfl
