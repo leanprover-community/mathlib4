@@ -164,7 +164,7 @@ lemma discreteTopology_of_bddAbove_range_norm {𝕜 : Type*} [NormedField 𝕜]
   rintro ⟨_, rfl⟩
   obtain ⟨x, h⟩ := h
   obtain ⟨k, hk⟩ := NormedField.exists_lt_norm 𝕜 x
-  exact hk.not_le (h (Set.mem_range_self k))
+  exact hk.not_ge (h (Set.mem_range_self k))
 
 section Densely
 
