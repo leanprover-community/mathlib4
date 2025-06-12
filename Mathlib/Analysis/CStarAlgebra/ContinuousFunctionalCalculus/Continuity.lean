@@ -46,7 +46,7 @@ results in the variable `a` come in two flavors: those for `RCLike 𝕜` and tho
   `a₀ : A` along a filter `l` (such that eventually `a x` satisfies the predicate `p` associated to
   `𝕜` and has spectrum contained in `s`, as does `a₀`), then `fun x ↦ cfc f (a x)` tends to
   `cfc f a₀`.
-+ `lipschitzWith_cfc_fun`: The function `f ↦ cfc f a` is Lipschitz with constant with constant 1
++ `lipschitzWith_cfc_fun`: The function `f ↦ cfc f a` is Lipschitz with constant 1
   with respect to supremum metric (on `R →ᵤ[{spectrum R a}] R`) on those functions which are
   continuous on the spectrum.
 + `continuousOn_cfc`: For `f : 𝕜 → 𝕜` continuous on a compact set `s`, `cfc f` is continuous on the
@@ -154,7 +154,7 @@ variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricS
 variable (R) in
 open UniformOnFun in
 open scoped ContinuousFunctionalCalculus in
-/-- The function `f ↦ cfc f a` is Lipschitz with constant with constant 1 with respect to
+/-- The function `f ↦ cfc f a` is Lipschitz with constant 1 with respect to
 supremum metric (on `R →ᵤ[{spectrum R a}] R`) on those functions which are continuous on
 the spectrum. -/
 lemma lipschitzOnWith_cfc_fun (a : A) :
@@ -170,7 +170,7 @@ lemma lipschitzOnWith_cfc_fun (a : A) :
 
 open UniformOnFun in
 open scoped ContinuousFunctionalCalculus in
-/-- The function `f ↦ cfc f a` is Lipschitz with constant with constant 1 with respect to
+/-- The function `f ↦ cfc f a` is Lipschitz with constant 1 with respect to
 supremum metric (on `R →ᵤ[{s}] R`) on those functions which are continuous on a set `s` containing
 the spectrum. -/
 lemma lipschitzOnWith_cfc_fun_of_subset (a : A) {s : Set R} (hs : spectrum R a ⊆ s) :
@@ -513,7 +513,7 @@ variable {X R A : Type*} {p : A → Prop} [CommSemiring R] [StarRing R] [MetricS
 variable (R) in
 open UniformOnFun in
 open scoped NonUnitalContinuousFunctionalCalculus in
-/-- The function `f ↦ cfcₙ f a` is Lipschitz with constant with constant 1 with respect to
+/-- The function `f ↦ cfcₙ f a` is Lipschitz with constant 1 with respect to
 supremum metric (on `R →ᵤ[{quasispectrum R a}] R`) on those functions which are continuous on
 the quasispectrum and map zero to itself. -/
 lemma lipschitzOnWith_cfcₙ_fun (a : A) :
@@ -530,7 +530,7 @@ lemma lipschitzOnWith_cfcₙ_fun (a : A) :
 
 open UniformOnFun in
 open scoped ContinuousFunctionalCalculus in
-/-- The function `f ↦ cfcₙ f a` is Lipschitz with constant with constant 1 with respect to
+/-- The function `f ↦ cfcₙ f a` is Lipschitz with constant 1 with respect to
 supremum metric (on `R →ᵤ[{s}] R`) on those functions which are continuous on a set `s` containing
 the quasispectrum and map zero to itself. -/
 lemma lipschitzOnWith_cfcₙ_fun_of_subset (a : A) {s : Set R} (hs : quasispectrum R a ⊆ s) :
