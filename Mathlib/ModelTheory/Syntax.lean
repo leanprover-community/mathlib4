@@ -615,12 +615,18 @@ def toFormula : ∀ {n : ℕ}, L.BoundedFormula α n → L.Formula (α ⊕ (Fin 
     (φ.toFormula.relabel
         (Sum.elim (Sum.inl ∘ Sum.inl) (Sum.map Sum.inr id ∘ finSumFinEquiv.symm))).all
 
-/-- Take the disjunction of a finite set of formulas -/
+/-- Take the disjunction of a finite set of formulas.
+
+Note that this is an arbitrary formula defined using the axiom of choice. It is only well-defined up
+to equivalence of formulas. -/
 noncomputable def iSup [Finite β] (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
   let _ := Fintype.ofFinite β
   ((Finset.univ : Finset β).toList.map f).foldr (· ⊔ ·) ⊥
 
-/-- Take the conjunction of a finite set of formulas -/
+/-- Take the conjunction of a finite set of formulas.
+
+Note that this is an arbitrary formula defined using the axiom of choice. It is only well-defined up
+to equivalence of formulas. -/
 noncomputable def iInf [Finite β] (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
   let _ := Fintype.ofFinite β
   ((Finset.univ : Finset β).toList.map f).foldr (· ⊓ ·) ⊤
@@ -785,11 +791,17 @@ noncomputable def iExsUnique [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formul
 protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=
   φ.iff ψ
 
-/-- take the disjunction of finitely many formulas -/
+/-- Take the disjunction of finitely many formulas.
+
+Note that this is an arbitrary formula defined using the axiom of choice. It is only well-defined up
+to equivalence of formulas. -/
 noncomputable def iSup [Finite α] (f : α → L.Formula β) : L.Formula β :=
   BoundedFormula.iSup f
 
-/-- take the conjunction of finitely many formulas -/
+/-- Take the conjunction of finitely many formulas.
+
+Note that this is an arbitrary formula defined using the axiom of choice. It is only well-defined up
+to equivalence of formulas. -/
 noncomputable def iInf [Finite α] (f : α → L.Formula β) : L.Formula β :=
   BoundedFormula.iInf f
 
