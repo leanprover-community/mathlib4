@@ -117,7 +117,6 @@ theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : 
             have :=
               add_le_add_right (norm_le_insert' (R • x) (R • P • R • x)) (2 • ‖(1 - R) • P • R • x‖)
             simpa only [mul_smul, sub_smul, one_smul] using this
-
       rw [GE.ge] at e1
       nth_rewrite 2 [← add_zero ‖R • x‖] at e1
       rw [add_le_add_iff_left, two_smul, ← two_mul] at e1
