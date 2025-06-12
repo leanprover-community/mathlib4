@@ -16,14 +16,12 @@ and primitive polynomials.
 
 ## Main Definitions
 Let `p : R[X]`.
- - `p.content` is the `gcd` of the coefficients of `p`.
- - `p.IsPrimitive` indicates that `p.content = 1`.
+- `p.content` is the `gcd` of the coefficients of `p`.
+- `p.IsPrimitive` indicates that `p.content = 1`.
 
 ## Main Results
- - `Polynomial.content_mul`:
-  If `p q : R[X]`, then `(p * q).content = p.content * q.content`.
- - `Polynomial.NormalizedGcdMonoid`:
-  The polynomial ring of a GCD domain is itself a GCD domain.
+- `Polynomial.content_mul`: if `p q : R[X]`, then `(p * q).content = p.content * q.content`.
+- `Polynomial.NormalizedGcdMonoid`: the polynomial ring of a GCD domain is itself a GCD domain.
 
 ## Note
 
@@ -432,7 +430,7 @@ theorem dvd_iff_content_dvd_content_and_primPart_dvd_primPart {p q : R[X]} (hq :
     rw [content_mul, p.isPrimitive_primPart.dvd_primPart_iff_dvd hq]
     exact ⟨Dvd.intro _ rfl, p.primPart_dvd.trans (Dvd.intro _ rfl)⟩
   · rw [p.eq_C_content_mul_primPart, q.eq_C_content_mul_primPart]
-    exact mul_dvd_mul (RingHom.map_dvd C h.1) h.2
+    exact mul_dvd_mul (_root_.map_dvd C h.1) h.2
 
 noncomputable instance (priority := 100) normalizedGcdMonoid : NormalizedGCDMonoid R[X] :=
   letI := Classical.decEq R

@@ -204,7 +204,7 @@ theorem isConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr : 0
 /-- In a real vector space of dimension `> 1`, any sphere is preconnected. -/
 theorem isPreconnected_sphere (h : 1 < Module.rank ℝ E) (x : E) (r : ℝ) :
     IsPreconnected (sphere x r) := by
-  rcases le_or_lt 0 r with hr|hr
+  rcases le_or_gt 0 r with hr|hr
   · exact (isConnected_sphere h x hr).isPreconnected
   · simpa [hr] using isPreconnected_empty
 

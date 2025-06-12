@@ -267,7 +267,7 @@ theorem equivRealProd_symm_apply (p : ℝ × ℝ) : equivRealProd.symm p = p.1 +
   ext <;> simp [Complex.equivRealProd, ofReal]
 
 /-- The natural `AddEquiv` from `ℂ` to `ℝ × ℝ`. -/
-@[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
+@[simps! +simpRhs apply symm_apply_re symm_apply_im]
 def equivRealProdAddHom : ℂ ≃+ ℝ × ℝ :=
   { equivRealProd with map_add' := by simp }
 

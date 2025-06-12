@@ -114,7 +114,7 @@ lemma yonedaEquiv_map {n m : SimplexCategory} (f : n ⟶ m) :
   yonedaEquiv.symm.injective rfl
 
 /-- The (degenerate) `m`-simplex in the standard simplex concentrated in vertex `k`. -/
-def const (n : ℕ) (k : Fin (n+1)) (m : SimplexCategoryᵒᵖ) : Δ[n].obj m :=
+def const (n : ℕ) (k : Fin (n + 1)) (m : SimplexCategoryᵒᵖ) : Δ[n].obj m :=
   objMk (OrderHom.const _ k )
 
 @[simp]
@@ -131,7 +131,7 @@ def obj₀Equiv {n : ℕ} : Δ[n] _⦋0⦌ ≃ Fin (n + 1) where
   right_inv _ := rfl
 
 /-- The edge of the standard simplex with endpoints `a` and `b`. -/
-def edge (n : ℕ) (a b : Fin (n+1)) (hab : a ≤ b) : Δ[n] _⦋1⦌ := by
+def edge (n : ℕ) (a b : Fin (n + 1)) (hab : a ≤ b) : Δ[n] _⦋1⦌ := by
   refine objMk ⟨![a, b], ?_⟩
   rw [Fin.monotone_iff_le_succ]
   simp only [unop_op, len_mk, Fin.forall_fin_one]
@@ -142,7 +142,7 @@ lemma coe_edge_down_toOrderHom (n : ℕ) (a b : Fin (n+1)) (hab : a ≤ b) :
   rfl
 
 /-- The triangle in the standard simplex with vertices `a`, `b`, and `c`. -/
-def triangle {n : ℕ} (a b c : Fin (n+1)) (hab : a ≤ b) (hbc : b ≤ c) : Δ[n] _⦋2⦌ := by
+def triangle {n : ℕ} (a b c : Fin (n + 1)) (hab : a ≤ b) (hbc : b ≤ c) : Δ[n] _⦋2⦌ := by
   refine objMk ⟨![a, b, c], ?_⟩
   rw [Fin.monotone_iff_le_succ]
   simp only [unop_op, len_mk, Fin.forall_fin_two]
