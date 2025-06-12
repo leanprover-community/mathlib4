@@ -383,7 +383,7 @@ partial def normalize (iM : Q(Field $M)) (x : Q($M)) :
     -- build the new list and proof
     let pf := qNF.mkMulProof iM l₁ l₂
     pure ⟨qNF.mul l₁ l₂, (q(NF.mul_eq_eval $pf₁ $pf₂ $pf):)⟩
-  /- normalize a division: `x₁ - x₂` -/
+  /- normalize a division: `x₁ / x₂` -/
   | ~q($x₁ / $x₂) =>
     let ⟨l₁, pf₁⟩ ← normalize iM x₁
     let ⟨l₂, pf₂⟩ ← normalize iM x₂
