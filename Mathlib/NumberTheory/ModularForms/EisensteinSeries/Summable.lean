@@ -190,7 +190,7 @@ lemma summable_one_div_norm_rpow {k : ℝ} (hk : 2 < k) :
       Real.rpow_add (Nat.cast_pos.mpr hn), Real.rpow_one, Nat.cast_mul, Nat.cast_ofNat, mul_assoc]
   · exact fun n ↦ Real.rpow_nonneg (norm_nonneg _) _
 
-/-- If the inverse of a functions `isBigO` to `(|(n : ℝ)| ^ a)⁻¹` for `1 < a`, then the function is
+/-- If the inverse of a function `isBigO` to `(|(n : ℝ)| ^ a)⁻¹` for `1 < a`, then the function is
 Summable. -/
 lemma summable_inv_of_isBigO_rpow_inv {α : Type*} [NormedField α] [CompleteSpace α]
     {f  : ℤ → α} {a : ℝ} (hab : 1 < a)
