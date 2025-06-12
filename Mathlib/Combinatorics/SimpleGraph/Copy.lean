@@ -256,9 +256,18 @@ lemma IsContained.mono_left {A' : SimpleGraph α} (h_sub : A ≤ A') (h_isub : A
 
 alias IsContained.trans_le' := IsContained.mono_left
 
-/-- If `A ≃g B`, then `A` is contained in `C` if and only if `B` is contained in `C`. -/
-theorem isContained_congr (e : A ≃g B) : A ⊑ C ↔ B ⊑ C :=
-  ⟨.trans ⟨e.symm.toCopy⟩, .trans ⟨e.toCopy⟩⟩
+/-- If `A ≃g H` and `B ≃g G` then `A` is contained in `B` if and only if `H` is contained
+in `G`. -/
+theorem isContained_congr (e₁ : A ≃g H) (e₂ : B ≃g G) : A ⊑ B ↔ H ⊑ G :=
+  ⟨.trans' ⟨e₂.toCopy⟩ ∘ .trans ⟨e₁.symm.toCopy⟩, .trans' ⟨e₂.symm.toCopy⟩ ∘ .trans ⟨e₁.toCopy⟩⟩
+
+lemma isContained_congr_left (e₁ : A ≃g B) : A ⊑ C ↔ B ⊑ C := isContained_congr e₁ .refl
+
+alias ⟨_, IsContained.congr_left⟩ := isContained_congr_left
+
+lemma isContained_congr_right (e₂ : B ≃g C) : A ⊑ B ↔ A ⊑ C := isContained_congr .refl e₂
+
+alias ⟨_, IsContained.congr_right⟩ := isContained_congr_right
 
 /-- A simple graph having no vertices is contained in any simple graph. -/
 lemma IsContained.of_isEmpty [IsEmpty α] : A ⊑ B :=
@@ -295,15 +304,24 @@ abbrev Free (A : SimpleGraph α) (B : SimpleGraph β) := ¬A ⊑ B
 
 lemma not_free : ¬A.Free B ↔ A ⊑ B := not_not
 
-/-- If `A ≃g B`, then `C` is `A`-free if and only if `C` is `B`-free. -/
-theorem free_congr (e : A ≃g B) : A.Free C ↔ B.Free C := (isContained_congr e).not
+/-- If `A ≃g H` and `B ≃g G` then `B` is `A`-free if and only if `G` is `H`-free. -/
+theorem free_congr (e₁ : A ≃g H) (e₂ : B ≃g G) : A.Free B ↔ H.Free G :=
+  (isContained_congr e₁ e₂).not
+
+lemma free_congr_left (e₁ : A ≃g B) : A.Free C ↔ B.Free C := free_congr e₁ .refl
+
+alias ⟨_, Free.congr_left⟩ := free_congr_left
+
+lemma free_congr_right (e₂ : B ≃g C) : A.Free B ↔ A.Free C := free_congr .refl e₂
+
+alias ⟨_, Free.congr_right⟩ := free_congr_right
 
 lemma free_bot (h : A ≠ ⊥) : A.Free (⊥ : SimpleGraph β) := by
   rw [← edgeSet_nonempty] at h
   intro ⟨f, hf⟩
   absurd f.map_mem_edgeSet h.choose_spec
   rw [edgeSet_bot]
-  exact Set.not_mem_empty (h.choose.map f)
+  exact Set.notMem_empty (h.choose.map f)
 
 end Free
 

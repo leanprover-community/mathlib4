@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Hom.End
-import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Module.NatInt
 
 /-!
@@ -38,14 +37,9 @@ This is a stronger version of `DistribMulAction.toAddMonoidEnd` -/
 @[simps! apply_apply]
 def Module.toAddMonoidEnd : R →+* AddMonoid.End M :=
   { DistribMulAction.toAddMonoidEnd R M with
-    -- Porting note: the two `show`s weren't needed in mathlib3.
-    -- Somehow, now that `SMul` is heterogeneous, it can't unfold earlier fields of a definition for
-    -- use in later fields.  See
-    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Heterogeneous.20scalar.20multiplication
-    -- TODO(jmc): there should be a rw-lemma `smul_comp` close to `SMulZeroClass.compFun`
-    map_zero' := AddMonoidHom.ext fun r => show (0 : R) • r = 0 by simp
-    map_add' := fun x y =>
-      AddMonoidHom.ext fun r => show (x + y) • r = x • r + y • r by simp [add_smul] }
+    map_zero' := AddMonoidHom.ext fun r => by simp
+    map_add' x y :=
+      AddMonoidHom.ext fun r => by simp [(AddMonoidHom.add_apply), add_smul] }
 
 /-- A convenience alias for `Module.toAddMonoidEnd` as an `AddMonoidHom`, usually to allow the
 use of `AddMonoidHom.flip`. -/

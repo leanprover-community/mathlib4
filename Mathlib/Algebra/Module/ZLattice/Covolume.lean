@@ -17,27 +17,29 @@ Let `L` be a `ℤ`-lattice `L` defined as a discrete `ℤ`-submodule of `E` that
 ## Main definitions and results
 
 * `ZLattice.covolume`: the covolume of `L` defined as the volume of an arbitrary fundamental
-domain of `L`.
+  domain of `L`.
 
 * `ZLattice.covolume_eq_measure_fundamentalDomain`: the covolume of `L` does not depend on the
-choice of the fundamental domain of `L`.
+  choice of the fundamental domain of `L`.
 
 * `ZLattice.covolume_eq_det`: if `L` is a lattice in `ℝ^n`, then its covolume is the absolute
-value of the determinant of any `ℤ`-basis of `L`.
+  value of the determinant of any `ℤ`-basis of `L`.
 
 * `ZLattice. covolume_div_covolume_eq_relindex`: Let `L₁` be a sub-`ℤ`-lattice of `L₂`. Then the
 index of `L₁` inside `L₂` is equal to `covolume L₁ / covolume L₂`.
 
 * `ZLattice.covolume.tendsto_card_div_pow`: Let `s` be a bounded measurable set of `ι → ℝ`, then
-the number of points in `s ∩ n⁻¹ • L` divided by `n ^ card ι` tends to `volume s / covolume L`
-when `n : ℕ` tends to infinity. See also `ZLattice.covolume.tendsto_card_div_pow'` for a version
-for `InnerProductSpace ℝ E` and `ZLattice.covolume.tendsto_card_div_pow''` for the general version.
+  the number of points in `s ∩ n⁻¹ • L` divided by `n ^ card ι` tends to `volume s / covolume L`
+  when `n : ℕ` tends to infinity.
+  See also `ZLattice.covolume.tendsto_card_div_pow'` for a version for `InnerProductSpace ℝ E` and
+  `ZLattice.covolume.tendsto_card_div_pow''` for the general version.
 
 * `ZLattice.covolume.tendsto_card_le_div`: Let `X` be a cone in `ι → ℝ` and let `F : (ι → ℝ) → ℝ`
-be a function such that `F (c • x) = c ^ card ι * F x`. Then the number of points `x ∈ X` such that
-`F x ≤ c` divided by `c` tends to `volume {x ∈ X | F x ≤ 1} / covolume L` when `c : ℝ` tends to
-infinity. See also `ZLattice.covolume.tendsto_card_le_div'` for a version for
-`InnerProductSpace ℝ E` and `ZLattice.covolume.tendsto_card_le_div''` for the general version.
+  be a function such that `F (c • x) = c ^ card ι * F x`. Then the number of points `x ∈ X` such
+  that `F x ≤ c` divided by `c` tends to `volume {x ∈ X | F x ≤ 1} / covolume L`
+  when `c : ℝ` tends to infinity.
+  See also `ZLattice.covolume.tendsto_card_le_div'` for a version for `InnerProductSpace ℝ E` and
+  `ZLattice.covolume.tendsto_card_le_div''` for the general version.
 
 ## Naming convention
 
@@ -252,7 +254,7 @@ private theorem tendsto_card_le_div''_aux
 see the `Naming conventions` section in the introduction. -/
 theorem tendsto_card_le_div'' [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
     [Nonempty ι] {X : Set E} (hX : ∀ ⦃x⦄ ⦃r : ℝ⦄, x ∈ X → 0 < r → r • x ∈ X)
-    {F : E → ℝ} (h₁ : ∀ x ⦃r : ℝ⦄, 0 ≤ r →  F (r • x) = r ^ card ι * (F x))
+    {F : E → ℝ} (h₁ : ∀ x ⦃r : ℝ⦄, 0 ≤ r → F (r • x) = r ^ card ι * (F x))
     (h₂ : IsBounded {x ∈ X | F x ≤ 1}) (h₃ : MeasurableSet {x ∈ X | F x ≤ 1})
     (h₄ : volume (frontier ((b.ofZLatticeBasis ℝ L).equivFun '' {x | x ∈ X ∧ F x ≤ 1})) = 0) :
     Tendsto (fun c : ℝ ↦
@@ -317,7 +319,7 @@ theorem tendsto_card_div_pow (b : Basis ι ℤ L) {s : Set (ι → ℝ)} (hs₁ 
   · rw [frontier_equivFun, volume_image_eq_volume_div_covolume, hs₃, ENNReal.zero_div]
 
 theorem tendsto_card_le_div {X : Set (ι → ℝ)} (hX : ∀ ⦃x⦄ ⦃r : ℝ⦄, x ∈ X → 0 < r → r • x ∈ X)
-    {F : (ι → ℝ) → ℝ} (h₁ : ∀ x ⦃r : ℝ⦄, 0 ≤ r →  F (r • x) = r ^ card ι * (F x))
+    {F : (ι → ℝ) → ℝ} (h₁ : ∀ x ⦃r : ℝ⦄, 0 ≤ r → F (r • x) = r ^ card ι * (F x))
     (h₂ : IsBounded {x ∈ X | F x ≤ 1}) (h₃ : MeasurableSet {x ∈ X | F x ≤ 1})
     (h₄ : volume (frontier {x | x ∈ X ∧ F x ≤ 1}) = 0) [Nonempty ι] :
     Tendsto (fun c : ℝ ↦
@@ -363,7 +365,7 @@ theorem tendsto_card_div_pow' {s : Set E} (hs₁ : IsBounded s) (hs₂ : Measura
 see the `Naming convention` section in the introduction. -/
 theorem tendsto_card_le_div' [Nontrivial E] {X : Set E} {F : E → ℝ}
     (hX : ∀ ⦃x⦄ ⦃r : ℝ⦄, x ∈ X → 0 < r → r • x ∈ X)
-    (h₁ : ∀ x ⦃r : ℝ⦄, 0 ≤ r →  F (r • x) = r ^ finrank ℝ E * (F x))
+    (h₁ : ∀ x ⦃r : ℝ⦄, 0 ≤ r → F (r • x) = r ^ finrank ℝ E * (F x))
     (h₂ : IsBounded {x ∈ X | F x ≤ 1}) (h₃ : MeasurableSet {x ∈ X | F x ≤ 1})
     (h₄ : volume (frontier {x ∈ X | F x ≤ 1}) = 0) :
     Tendsto (fun c : ℝ ↦

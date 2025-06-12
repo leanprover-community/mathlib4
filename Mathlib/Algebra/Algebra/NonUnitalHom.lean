@@ -10,10 +10,10 @@ import Mathlib.Algebra.GroupWithZero.Action.Prod
 # Morphisms of non-unital algebras
 
 This file defines morphisms between two types, each of which carries:
- * an addition,
- * an additive zero,
- * a multiplication,
- * a scalar action.
+* an addition,
+* an additive zero,
+* a multiplication,
+* a scalar action.
 
 The multiplications are not assumed to be associative or unital, or even to be compatible with the
 scalar actions. In a typical application, the operations will satisfy compatibility conditions
@@ -201,6 +201,8 @@ theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h�
 @[simp]
 theorem mk_coe (f : A →ₛₙₐ[φ] B) (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₛₙₐ[φ] B) = f := by
   rfl
+
+@[simp] lemma addHomMk_coe (f : A →ₛₙₐ[φ] B) : AddHom.mk f (map_add f) = f := rfl
 
 @[simp]
 theorem toDistribMulActionHom_eq_coe (f : A →ₛₙₐ[φ] B) : f.toDistribMulActionHom = ↑f :=

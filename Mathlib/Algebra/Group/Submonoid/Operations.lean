@@ -824,6 +824,14 @@ def submonoidComap (f : M →* N) (N' : Submonoid N) :
   map_one' := Subtype.eq f.map_one
   map_mul' x y := Subtype.eq (f.map_mul x y)
 
+@[to_additive]
+lemma submonoidComap_surjective_of_surjective (f : M →* N) (N' : Submonoid N) (hf : Surjective f) :
+    Surjective (f.submonoidComap N') := fun y ↦ by
+  obtain ⟨x, hx⟩ := hf y
+  use ⟨x, mem_comap.mpr (hx ▸ y.2)⟩
+  apply Subtype.val_injective
+  simp [hx]
+
 /-- The `MonoidHom` from a submonoid to its image.
 See `MulEquiv.SubmonoidMap` for a variant for `MulEquiv`s. -/
 @[to_additive (attr := simps)
@@ -951,7 +959,7 @@ def submonoidCongr (h : S = T) : S ≃* T :=
 /-- A monoid homomorphism `f : M →* N` with a left-inverse `g : N → M` defines a multiplicative
 equivalence between `M` and `f.mrange`.
 This is a bidirectional version of `MonoidHom.mrange_restrict`. -/
-@[to_additive (attr := simps (config := { simpRhs := true }))
+@[to_additive (attr := simps +simpRhs)
       "An additive monoid homomorphism `f : M →+ N` with a left-inverse `g : N → M`
       defines an additive equivalence between `M` and `f.mrange`.
       This is a bidirectional version of `AddMonoidHom.mrange_restrict`. "]
@@ -1041,5 +1049,10 @@ theorem map_comap_eq (f : F) (S : Submonoid N) : (S.comap f).map f = S ⊓ Monoi
 theorem map_comap_eq_self {f : F} {S : Submonoid N} (h : S ≤ MonoidHom.mrange f) :
     (S.comap f).map f = S := by
   simpa only [inf_of_le_left h] using map_comap_eq f S
+
+@[to_additive]
+theorem map_comap_eq_self_of_surjective {f : F} (h : Function.Surjective f) {S : Submonoid N} :
+    map f (comap f S) = S :=
+  map_comap_eq_self (MonoidHom.mrange_eq_top_of_surjective _ h ▸ le_top)
 
 end Submonoid

@@ -272,3 +272,25 @@ theorem lineMap_lt_map_iff_slope_lt_slope (hab : a < b) (h₀ : 0 < r) (h₁ : r
   map_lt_lineMap_iff_slope_lt_slope (E := Eᵒᵈ) hab h₀ h₁
 
 end LinearOrderedField
+
+
+lemma slope_pos_iff {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    {f : 𝕜 → 𝕜} {x₀ b : 𝕜} (hb : x₀ < b) :
+    0 < slope f x₀ b ↔ f x₀ < f b := by
+  simp [slope, hb]
+
+lemma slope_pos_iff_gt {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    {f : 𝕜 → 𝕜} {x₀ b : 𝕜} (hb : b < x₀) :
+    0 < slope f x₀ b ↔ f b < f x₀ := by
+  rw [slope_comm, slope_pos_iff hb]
+
+lemma pos_of_slope_pos {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    {f : 𝕜 → 𝕜} {x₀ b : 𝕜}
+    (hb : x₀ < b) (hbf : 0 < slope f x₀ b) (hf : f x₀ = 0) : 0 < f b := by
+  simp_all [slope, hf]
+
+lemma neg_of_slope_pos {𝕜} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    {f : 𝕜 → 𝕜} {x₀ b : 𝕜}
+    (hb : b < x₀) (hbf : 0 < slope f x₀ b) (hf : f x₀ = 0) : f b < 0 := by
+  rwa [slope_pos_iff_gt, hf] at hbf
+  exact hb

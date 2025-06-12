@@ -66,9 +66,9 @@ theorem restrictScalarsEquiv_symm_mk [Ring S] [SMul S R] [Module S M] [IsScalarT
 end Module
 
 theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := by
-  obtain ⟨x, _, not_mem_s⟩ := SetLike.exists_of_lt h
+  obtain ⟨x, _, notMem_s⟩ := SetLike.exists_of_lt h
   refine ⟨⟨mk x, 0, ?_⟩⟩
-  simpa using not_mem_s
+  simpa using notMem_s
 
 end Quotient
 
@@ -216,9 +216,9 @@ theorem mapQ_pow {f : M →ₗ[R] M} (h : p ≤ p.comap f) (k : ℕ)
     (h' : p ≤ p.comap (f ^ k) := p.le_comap_pow_of_le_comap h k) :
     p.mapQ p (f ^ k) h' = p.mapQ p f h ^ k := by
   induction k with
-  | zero => simp [LinearMap.one_eq_id]
+  | zero => simp [Module.End.one_eq_id]
   | succ k ih =>
-    simp only [LinearMap.iterate_succ]
+    simp only [Module.End.iterate_succ]
     rw [mapQ_comp, ih]
 
 theorem comap_liftQ (f : M →ₛₗ[τ₁₂] M₂) (h) : q.comap (p.liftQ f h) = (q.comap f).map (mkQ p) :=

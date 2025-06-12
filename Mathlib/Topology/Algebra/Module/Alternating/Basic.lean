@@ -333,7 +333,12 @@ theorem _root_.ContinuousLinearMap.compContinuousAlternatingMap_coe (g : N →L[
   rfl
 
 /-- A continuous linear equivalence of domains
-defines an equivalence between continuous alternating maps. -/
+defines an equivalence between continuous alternating maps.
+
+This is available as a continuous linear isomorphism at
+`ContinuousLinearEquiv.continuousAlternatingMapCongrLeft`.
+
+This is `ContinuousAlternatingMap.compContinuousLinearMap` as an equivalence. -/
 @[simps -fullyApplied apply]
 def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrLeftEquiv (e : M ≃L[R] M') :
     M [⋀^ι]→L[R] N ≃ M' [⋀^ι]→L[R] N where
@@ -371,10 +376,6 @@ define an equivalence between the spaces of continuous alternating maps. -/
 def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrEquiv
     (e : M ≃L[R] M') (e' : N ≃L[R] N') : M [⋀^ι]→L[R] N ≃ M' [⋀^ι]→L[R] N' :=
   e.continuousAlternatingMapCongrLeftEquiv.trans e'.continuousAlternatingMapCongrRightEquiv
-
-@[deprecated (since := "2025-04-16")]
-alias _root_.ContinuousLinearEquiv.continuousAlternatingMapCongr :=
-  ContinuousLinearEquiv.continuousAlternatingMapCongrEquiv
 
 /-- `ContinuousAlternatingMap.pi` as an `Equiv`. -/
 @[simps]
@@ -524,6 +525,19 @@ theorem map_smul_univ [Fintype ι] (c : ι → R) (m : ι → M) :
     (f fun i => c i • m i) = (∏ i, c i) • f m :=
   f.toMultilinearMap.map_smul_univ _ _
 
+/-- If two continuous `R`-alternating maps from `R` are equal on 1, then they are equal.
+
+This is the alternating version of `ContinuousLinearMap.ext_ring`. -/
+@[ext]
+theorem ext_ring [Finite ι] [TopologicalSpace R] ⦃f g : R [⋀^ι]→L[R] M⦄
+    (h : f (fun _ ↦ 1) = g (fun _ ↦ 1)) : f = g :=
+  toAlternatingMap_injective <| AlternatingMap.ext_ring h
+
+/-- The only continuous `R`-alternating map from two or more copies of `R` is the zero map. -/
+instance uniqueOfCommRing [Finite ι] [Nontrivial ι] [TopologicalSpace R] :
+    Unique (R [⋀^ι]→L[R] N) where
+  uniq _ := toAlternatingMap_injective <| Subsingleton.elim _ _
+
 end CommSemiring
 
 section DistribMulAction
@@ -568,7 +582,7 @@ def toAlternatingMapLinear : (M [⋀^ι]→L[A] N) →ₗ[R] (M [⋀^ι]→ₗ[A
   map_smul' := by simp
 
 /-- `ContinuousAlternatingMap.pi` as a `LinearEquiv`. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def piLinearEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
     [∀ i, TopologicalSpace (M' i)] [∀ i, ContinuousAdd (M' i)] [∀ i, Module R (M' i)]
     [∀ i, Module A (M' i)] [∀ i, SMulCommClass A R (M' i)] [∀ i, ContinuousConstSMul R (M' i)] :
