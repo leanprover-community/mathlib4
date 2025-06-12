@@ -5,11 +5,11 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Algebra.Order.BigOperators.Group.Multiset
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.ZMod.Defs
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Freiman homomorphisms
@@ -226,13 +226,13 @@ lemma isMulFreimanIso_one_iff : IsMulFreimanIso 1 A B f ↔ BijOn f A B :=
 @[to_additive (attr := simp)]
 lemma isMulFreimanHom_empty : IsMulFreimanHom n (∅ : Set α) B f where
   mapsTo := mapsTo_empty f B
-  map_prod_eq_map_prod s t := by aesop (add simp eq_zero_of_forall_not_mem)
+  map_prod_eq_map_prod s t := by aesop (add simp eq_zero_of_forall_notMem)
 
 @[to_additive (attr := simp)]
 lemma isMulFreimanIso_empty : IsMulFreimanIso n (∅ : Set α) (∅ : Set β) f where
   bijOn := bijOn_empty _
   map_prod_eq_map_prod s t hs ht := by
-    simp [eq_zero_of_forall_not_mem hs, eq_zero_of_forall_not_mem ht]
+    simp [eq_zero_of_forall_notMem hs, eq_zero_of_forall_notMem ht]
 
 @[to_additive] lemma IsMulFreimanHom.mul (h₁ : IsMulFreimanHom n A B₁ f₁)
     (h₂ : IsMulFreimanHom n A B₂ f₂) : IsMulFreimanHom n A (B₁ * B₂) (f₁ * f₂) where
@@ -388,6 +388,8 @@ end Prod
 
 namespace Fin
 variable {k m n : ℕ}
+
+open Fin.CommRing
 
 private lemma aux (hm : m ≠ 0) (hkmn : m * k ≤ n) : k < (n + 1) :=
   Nat.lt_succ_iff.2 <| le_trans (Nat.le_mul_of_pos_left _ hm.bot_lt) hkmn

@@ -16,6 +16,7 @@ We introduce the bundled categories:
 * `AddGrp`
 * `CommGrp`
 * `AddCommGrp`
+
 along with the relevant forgetful functors between them, and to the bundled monoid categories.
 -/
 

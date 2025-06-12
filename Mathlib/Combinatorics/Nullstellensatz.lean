@@ -111,7 +111,6 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
         ext m
         simp only [coeff_zero, optionEquivLeft_coeff_coeff]
         set n := (embDomain Function.Embedding.some m).update none d with hn
-        -- set n := embDomain Function.Embedding.some m + Finsupp.single none d with hn
         rw [eq_option_embedding_update_none_iff] at hn
         rw [← hn.1, ← hn.2, optionEquivLeft_coeff_coeff]
         by_contra hm
@@ -190,7 +189,7 @@ private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι
     · rw [mapDomain_notin_range, single_eq_of_ne (Ne.symm hj)]
       simp [Set.range_const, Set.mem_singleton_iff, hj]
 
-variable [Fintype σ]
+variable [Finite σ]
 
 open scoped BigOperators
 
@@ -206,9 +205,9 @@ for some `h : σ →₀ MvPolynomial σ R` such that
 theorem combinatorial_nullstellensatz_exists_linearCombination
     [IsDomain R] (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty)
     (f : MvPolynomial σ R) (Heval : ∀ (x : σ → R), (∀ i, x i ∈ S i) → eval x f = 0) :
-    ∃ (h : σ →₀ MvPolynomial σ R)
-      (_ : ∀ i, ((∏ s ∈ S i, (X i - C s)) * h i).totalDegree ≤ f.totalDegree),
-    f = linearCombination (MvPolynomial σ R) (fun i ↦ ∏ r ∈ S i, (X i - C r)) h := by
+    ∃ (h : σ →₀ MvPolynomial σ R),
+      (∀ i, ((∏ s ∈ S i, (X i - C s)) * h i).totalDegree ≤ f.totalDegree) ∧
+      f = linearCombination (MvPolynomial σ R) (fun i ↦ ∏ r ∈ S i, (X i - C r)) h := by
   letI : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   obtain ⟨h, r, hf, hh, hr⟩ := degLex.div (b := fun i ↦ Alon.P (S i) i)
       (fun i ↦ by simp only [(Alon.monic_P ..).leadingCoeff_eq_one, isUnit_one]) f
@@ -232,7 +231,7 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
   · intro x hx
     rw [Iff.symm sub_eq_iff_eq_add'] at hf
     rw [← hf, map_sub, Heval x hx, zero_sub, neg_eq_zero,
-      linearCombination_apply, map_finsupp_sum, Finsupp.sum, Finset.sum_eq_zero]
+      linearCombination_apply, map_finsuppSum, Finsupp.sum, Finset.sum_eq_zero]
     intro i _
     rw [smul_eq_mul, map_mul]
     convert mul_zero _
@@ -251,7 +250,7 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
     (f : MvPolynomial σ R)
     (t : σ →₀ ℕ) (ht : f.coeff t ≠ 0) (ht' : f.totalDegree = t.degree)
     (S : σ → Finset R) (htS : ∀ i, t i < #(S i)) :
-    ∃ (s : σ → R) (_ : ∀ i, s i ∈ S i), eval s f ≠ 0 := by
+    ∃ s : σ → R, (∀ i, s i ∈ S i) ∧ eval s f ≠ 0 := by
   let _ : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   classical
   by_contra Heval
@@ -282,7 +281,7 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
   intro hq
   obtain ⟨e, hq', hq⟩ := Alon.of_mem_P_support _ _ _ hq
   apply coeff_eq_zero_of_totalDegree_lt
-  change (h i).totalDegree < p.degree
+  rw [← Finsupp.degree]
   apply lt_of_add_lt_add_right (lt_of_le_of_lt this _)
   rw [← hpq, degree_add, add_lt_add_iff_left, hq, degree_single]
   apply lt_of_le_of_lt _ (htS i)

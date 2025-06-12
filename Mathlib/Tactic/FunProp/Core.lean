@@ -117,7 +117,7 @@ def tryTheoremCore (xs : Array Expr) (val : Expr) (type : Expr) (e : Expr)
 
 /-- Try to apply a theorem provided some of the theorem arguments. -/
 def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
-    (hint : Array (Nat×Expr))
+    (hint : Array (Nat × Expr))
     (funProp : Expr → FunPropM (Option Result)) (newMCtxDepth : Bool := false) :
     FunPropM (Option Result) := do
   let go : FunPropM (Option Result) := do
@@ -128,7 +128,7 @@ def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
     for (i,x) in hint do
       try
         for (id,v) in hint do
-          xs[id]!.mvarId!.assignIfDefeq v
+          xs[id]!.mvarId!.assignIfDefEq v
       catch _ =>
         trace[Debug.Meta.Tactic.fun_prop]
           "failed to use hint {i} `{← ppExpr x} when applying theorem {← ppOrigin thmOrigin}"
