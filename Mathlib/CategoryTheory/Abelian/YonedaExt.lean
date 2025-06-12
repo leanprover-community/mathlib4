@@ -104,7 +104,7 @@ lemma Z_d_eq (a b : ℤ) (i j : ℤ) (hi : a + n + 1 = i)
 
 lemma isZero_Z_X_of_le (a : ℤ) (ha : a ≤ -n-2) : IsZero (E.Z.X a) := by
   dsimp [Z, Z.X]
-  rw [if_neg] ; swap
+  rw [if_neg]; swap
   · rintro rfl
     have hn : 0 ≤ (n : ℤ) := Nat.cast_nonneg n
     linarith
