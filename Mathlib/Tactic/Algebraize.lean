@@ -179,7 +179,7 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
       let cinfo ← try getConstInfo p catch _ => return
       let p' ← mkConstWithFreshMVarLevels p
       let (pargs,_,_) ← forallMetaTelescope (← inferType p')
-      let tp' ← mkAppOptM' p' (pargs.map Option.some)
+      let tp' := mkAppN p' pargs
 
       let getValType : MetaM (Option (Expr × Expr)) := do
         /- If the attribute points to the corresponding `Algebra` property itself, we assume that it
