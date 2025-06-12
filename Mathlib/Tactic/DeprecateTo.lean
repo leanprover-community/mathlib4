@@ -6,6 +6,7 @@ Authors: Damiano Testa
 import Lean.Meta.Tactic.TryThis
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Lemma
+import Std.Time
 
 /-!
 #  `deprecate to` -- a deprecation tool
@@ -43,9 +44,12 @@ open Lean Elab Term Command
 /-- Produce the syntax for the command `@[deprecated (since := "YYYY-MM-DD")] alias n := id`. -/
 def mkDeprecationStx (id : TSyntax `ident) (n : Name) (dat : Option String := none) :
     CommandElabM (TSyntax `command) := do
-  let dat := ← match dat with
-                | none => IO.Process.run { cmd := "date", args := #["-I"] }
-                | some s => return s
+  let dat := ←
+    match dat with
+      | none => do
+        let now ← Std.Time.ZonedDateTime.now
+        return Std.Time.Formats.leanDate.formatBuilder now.year now.month now.day
+      | some s => return s
   let nd := mkNode `str #[mkAtom ("\"" ++ dat.trimRight ++ "\"")]
   `(command| @[deprecated (since := $nd)] alias $(mkIdent n) := $id)
 
