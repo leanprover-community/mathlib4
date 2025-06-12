@@ -14,7 +14,7 @@ This file defines the basics of the divisibility relation in the context of `(Co
 
 ## Main definitions
 
- * `semigroupDvd`
+* `semigroupDvd`
 
 ## Implementation notes
 

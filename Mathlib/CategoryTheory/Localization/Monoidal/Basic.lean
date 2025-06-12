@@ -321,7 +321,7 @@ lemma pentagon (Y₁ Y₂ Y₃ Y₄ : LocalizedMonoidal L W ε) :
           (α_ ((L').obj X₁) ((L').obj (X₂ ⊗ X₃)) ((L').obj X₄)).hom :=
     pentagon_aux₂ _ _ _ (μ L W ε X₂ X₃).symm
   rw [associator_hom_app, tensorHom_id, id_tensorHom, associator_hom_app, tensorHom_id,
-    whiskerLeft_comp, whiskerRight_comp,  whiskerRight_comp,  whiskerRight_comp, assoc, assoc,
+    whiskerLeft_comp, whiskerRight_comp, whiskerRight_comp, whiskerRight_comp, assoc, assoc,
     assoc, whiskerRight_comp, assoc,
     reassoc_of% this, associator_hom_app, tensorHom_id,
     ← pentagon_aux₁ (X₂ := (L').obj X₃) (X₃ := (L').obj X₄) (i := μ L W ε X₁ X₂),
@@ -429,5 +429,24 @@ noncomputable instance : (toMonoidalCategory L W ε).Monoidal :=
       associativity X Y Z := by simp [associator_hom_app L W ε X Y Z]
       left_unitality Y := leftUnitor_hom_app L W ε Y
       right_unitality X := rightUnitor_hom_app L W ε X }
+
+local notation "L'" => toMonoidalCategory L W ε
+
+lemma associator_hom (X Y Z : C) : (α_ ((L').obj X) ((L').obj Y) ((L').obj Z)).hom =
+    (Functor.LaxMonoidal.μ (L') X Y) ▷ (L').obj Z ≫
+      (Functor.LaxMonoidal.μ (L') (X ⊗ Y) Z) ≫
+        (L').map (α_ X Y Z).hom ≫
+          (Functor.OplaxMonoidal.δ (L') X (Y ⊗ Z)) ≫
+            ((L').obj X) ◁ (Functor.OplaxMonoidal.δ (L') Y Z) := by
+  simp
+
+lemma associator_inv (X Y Z : C) : (α_ ((L').obj X) ((L').obj Y) ((L').obj Z)).inv =
+    (L').obj X ◁ (Functor.LaxMonoidal.μ (L') Y Z) ≫
+      (Functor.LaxMonoidal.μ (L') X (Y ⊗ Z)) ≫
+        (L').map (α_ X Y Z).inv ≫
+          (Functor.OplaxMonoidal.δ (L') (X ⊗ Y) Z) ≫
+            (Functor.OplaxMonoidal.δ (L') X Y) ▷ ((L').obj Z) := by
+  simp
+
 
 end CategoryTheory

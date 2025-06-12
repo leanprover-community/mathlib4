@@ -173,7 +173,7 @@ protected def recOnPure {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (pure 
   FreeMagma.recOnMul x ih1 ih2
 
 @[to_additive (attr := simp)]
-theorem map_pure (f : α → β) (x) : (f <$> pure x : FreeMagma β) = pure (f x) := rfl
+protected theorem map_pure (f : α → β) (x) : (f <$> pure x : FreeMagma β) = pure (f x) := rfl
 
 @[to_additive (attr := simp)]
 theorem map_mul' (f : α → β) (x y : FreeMagma α) : f <$> (x * y) = f <$> x * f <$> y := rfl
@@ -249,8 +249,7 @@ theorem traverse_mul' :
 @[to_additive (attr := simp)]
 theorem traverse_eq (x) : FreeMagma.traverse F x = traverse F x := rfl
 
--- This is not a simp lemma because the left-hand side is not in simp normal form.
-@[to_additive]
+@[to_additive (attr := deprecated "Use map_pure and seq_pure" (since := "2025-05-21"))]
 theorem mul_map_seq (x y : FreeMagma α) :
     ((· * ·) <$> x <*> y : Id (FreeMagma α)) = (x * y : FreeMagma α) := rfl
 
@@ -259,7 +258,7 @@ instance : LawfulTraversable FreeMagma.{u} :=
   { instLawfulMonad with
     id_traverse := fun x ↦
       FreeMagma.recOnPure x (fun _ ↦ rfl) fun x y ih1 ih2 ↦ by
-        rw [traverse_mul, ih1, ih2, mul_map_seq]
+        rw [traverse_mul, ih1, ih2, seq_pure, map_pure, map_pure]
     comp_traverse := fun f g x ↦
       FreeMagma.recOnPure x
         (fun x ↦ by simp only [Function.comp_def, traverse_pure, traverse_pure', functor_norm])
@@ -273,7 +272,7 @@ instance : LawfulTraversable FreeMagma.{u} :=
         (fun x y ih1 ih2 ↦ by simp only [traverse_mul, functor_norm, ih1, ih2])
     traverse_eq_map_id := fun f x ↦
       FreeMagma.recOnPure x (fun _ ↦ rfl) fun x y ih1 ih2 ↦ by
-        rw [traverse_mul, ih1, ih2, map_mul', mul_map_seq]; rfl }
+        rw [traverse_mul, ih1, ih2, map_mul', map_pure, seq_pure, map_pure] }
 
 end Category
 
@@ -579,7 +578,7 @@ def recOnPure {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (pure x))
   FreeSemigroup.recOnMul x ih1 ih2
 
 @[to_additive (attr := simp)]
-theorem map_pure (f : α → β) (x) : (f <$> pure x : FreeSemigroup β) = pure (f x) := rfl
+protected theorem map_pure (f : α → β) (x) : (f <$> pure x : FreeSemigroup β) = pure (f x) := rfl
 
 @[to_additive (attr := simp)]
 theorem map_mul' (f : α → β) (x y : FreeSemigroup α) : f <$> (x * y) = f <$> x * f <$> y :=
@@ -650,8 +649,7 @@ end
 @[to_additive (attr := simp)]
 theorem traverse_eq (x) : FreeSemigroup.traverse F x = traverse F x := rfl
 
--- This is not a simp lemma because the left-hand side is not in simp normal form.
-@[to_additive]
+@[to_additive (attr := deprecated "Use map_pure and seq_pure" (since := "2025-05-21"))]
 theorem mul_map_seq (x y : FreeSemigroup α) :
     ((· * ·) <$> x <*> y : Id (FreeSemigroup α)) = (x * y : FreeSemigroup α) := rfl
 
@@ -660,7 +658,7 @@ instance : LawfulTraversable FreeSemigroup.{u} :=
   { instLawfulMonad with
     id_traverse := fun x ↦
       FreeSemigroup.recOnMul x (fun _ ↦ rfl) fun x y ih1 ih2 ↦ by
-        rw [traverse_mul, ih1, ih2, mul_map_seq]
+        rw [traverse_mul, ih1, ih2, seq_pure, map_pure, map_pure]
     comp_traverse := fun f g x ↦
       recOnPure x (fun x ↦ by simp only [traverse_pure, functor_norm, Function.comp_def])
         fun x y ih1 ih2 ↦ by
@@ -671,7 +669,7 @@ instance : LawfulTraversable FreeSemigroup.{u} :=
           (fun x y ih1 ih2 ↦ by simp only [traverse_mul, functor_norm, ih1, ih2])
     traverse_eq_map_id := fun f x ↦
       FreeSemigroup.recOnMul x (fun _ ↦ rfl) fun x y ih1 ih2 ↦ by
-        rw [traverse_mul, ih1, ih2, map_mul', mul_map_seq]; rfl }
+        rw [traverse_mul, ih1, ih2, map_mul', map_pure, seq_pure, map_pure] }
 
 end Category
 
