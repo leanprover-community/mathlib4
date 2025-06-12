@@ -640,7 +640,7 @@ variable [IsManifold I (minSmoothness 𝕜 2) M] [IsManifold I' (minSmoothness �
   [CompleteSpace E] {n : WithTop ℕ∞}
 
 /-- The pullback commutes with the Lie bracket of vector fields on manifolds. Version where one
-assumes that the map is smooth on a larget set `u` (so that the
+assumes that the map is smooth on a larger set `u` (so that the
 condition `x₀ ∈ closure (interior u)`, needed to guarantee the symmetry of the second derivative,
 becomes easier to check.) -/
 lemma mpullbackWithin_mlieBracketWithin'

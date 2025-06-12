@@ -50,21 +50,24 @@ protected theorem continuousAt (f : C(α, β)) (x : α) : ContinuousAt f x :=
 theorem map_specializes (f : C(α, β)) {x y : α} (h : x ⤳ y) : f x ⤳ f y :=
   h.map f.2
 
-section
-
-variable (α β)
+section DiscreteTopology
+variable [DiscreteTopology α]
 
 /--
 The continuous functions from `α` to `β` are the same as the plain functions when `α` is discrete.
 -/
 @[simps]
-def equivFnOfDiscrete [DiscreteTopology α] : C(α, β) ≃ (α → β) :=
+def equivFnOfDiscrete : C(α, β) ≃ (α → β) :=
   ⟨fun f => f,
     fun f => ⟨f, continuous_of_discreteTopology⟩,
     fun _ => by ext; rfl,
     fun _ => by ext; rfl⟩
 
-end
+@[simp] lemma coe_equivFnOfDiscrete : ⇑equivFnOfDiscrete = (DFunLike.coe : C(α, β) → α → β) := rfl
+
+@[simp] lemma equivFnOfDiscrete_symm_apply (f : α → β) : equivFnOfDiscrete.symm f = f := rfl
+
+end DiscreteTopology
 
 variable (α)
 
@@ -304,7 +307,7 @@ noncomputable def liftCover : C(α, β) :=
     Set.iUnion_eq_univ_iff.2 fun x ↦ (hS x).imp fun _ ↦ mem_of_mem_nhds
   mk (Set.liftCover S (fun i ↦ φ i) hφ H) <| continuous_of_cover_nhds hS fun i ↦ by
     rw [continuousOn_iff_continuous_restrict]
-    simpa (config := { unfoldPartialApp := true }) only [Set.restrict, Set.liftCover_coe]
+    simpa +unfoldPartialApp only [Set.restrict, Set.liftCover_coe]
       using map_continuous (φ i)
 
 variable {S φ hφ hS}
@@ -431,13 +434,6 @@ variable (f : α ≃ₜ β) (g : β ≃ₜ γ)
 
 instance instContinuousMapClass : ContinuousMapClass (α ≃ₜ β) α β where
   map_continuous f := f.continuous_toFun
-
-/-- The forward direction of a homeomorphism, as a bundled continuous map. -/
-@[simps, deprecated _root_.toContinuousMap (since := "2024-10-12")]
-protected def toContinuousMap (e : α ≃ₜ β) : C(α, β) :=
-  ⟨e, e.continuous_toFun⟩
-
-attribute [deprecated ContinuousMap.coe_apply (since := "2024-10-12")] toContinuousMap_apply
 
 @[simp]
 theorem coe_refl : (Homeomorph.refl α : C(α, α)) = ContinuousMap.id α :=

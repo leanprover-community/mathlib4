@@ -57,6 +57,7 @@ end Functor
 
 /-- Introduce `id` as a quasi-functor. (Note that where a lawful `Monad` or
 `Applicative` or `Functor` is needed, `Id` is the correct definition). -/
+@[deprecated "Use `pure : α → Id α` instead." (since := "2025-05-21")]
 def id.mk {α : Sort u} : α → id α :=
   id
 
@@ -233,7 +234,7 @@ instance instApplicativeComp : Applicative (Comp F G) :=
 
 end Comp
 
-variable {F : Type u → Type u} [Functor F]
+variable {F : Type u → Type v} [Functor F]
 
 /-- If we consider `x : F α` to, in some sense, contain values of type `α`,
 predicate `Liftp p x` holds iff every value contained by `x` satisfies `p`. -/

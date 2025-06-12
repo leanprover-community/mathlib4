@@ -148,6 +148,10 @@ theorem linearProjOfIsCompl_apply_left (h : IsCompl p q) (x : p) :
 theorem linearProjOfIsCompl_range (h : IsCompl p q) : range (linearProjOfIsCompl p q h) = ⊤ :=
   range_eq_of_proj (linearProjOfIsCompl_apply_left h)
 
+theorem linearProjOfIsCompl_surjective (h : IsCompl p q) :
+    Function.Surjective (linearProjOfIsCompl p q h) :=
+  range_eq_top.mp (linearProjOfIsCompl_range h)
+
 @[simp]
 theorem linearProjOfIsCompl_apply_eq_zero_iff (h : IsCompl p q) {x : E} :
     linearProjOfIsCompl p q h x = 0 ↔ x ∈ q := by simp [linearProjOfIsCompl]
@@ -381,7 +385,7 @@ theorem isProj_iff_isIdempotentElem (f : M →ₗ[S] M) :
       exact mem_range_self f x
     · intro x hx
       obtain ⟨y, hy⟩ := mem_range.1 hx
-      rw [← hy, ← mul_apply, h]
+      rw [← hy, ← Module.End.mul_apply, h]
 
 @[deprecated (since := "2025-01-12")] alias isProj_iff_idempotent := isProj_iff_isIdempotentElem
 
@@ -418,8 +422,8 @@ theorem eq_conj_prod_map' {f : E →ₗ[R] E} (h : IsProj p f) :
   rw [← LinearMap.comp_assoc, LinearEquiv.eq_comp_toLinearMap_symm]
   ext x
   · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inl, coprod_apply, coe_subtype,
-      _root_.map_zero, add_zero, h.map_id x x.2, prodMap_apply, id_apply]
-  · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inr, coprod_apply, _root_.map_zero,
+      map_zero, add_zero, h.map_id x x.2, prodMap_apply, id_apply]
+  · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inr, coprod_apply, map_zero,
       coe_subtype, zero_add, map_coe_ker, prodMap_apply, zero_apply, add_zero]
 
 end IsProj
