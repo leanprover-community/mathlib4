@@ -159,6 +159,7 @@ theorem think_empty : empty α = think (empty α) :=
   destruct_eq_think destruct_empty
 
 /-- Recursion principle for computations, compare with `List.recOn`. -/
+@[elab_as_elim]
 def recOn {motive : Computation α → Sort v} (s : Computation α) (pure : ∀ a, motive (pure a))
     (think : ∀ s, motive (think s)) : motive s :=
   match H : destruct s with
@@ -254,18 +255,25 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
     | _, _, ⟨s, s', rfl, rfl, r⟩ =>
       suffices head s = head s' ∧ R (tail s) (tail s') from
         And.imp id (fun r => ⟨tail s, tail s', by cases s; rfl, by cases s'; rfl, r⟩) this
-      have h := bisim r; revert r h
-      apply recOn s _ _ <;> intro r' <;> apply recOn s' _ _ <;> intro a' r h
-      · constructor <;> dsimp at h
-        · rw [h]
-        · rw [h] at r
-          rw [tail_pure, tail_pure,h]
-          assumption
-      · rw [destruct_pure, destruct_think] at h
-        exact False.elim h
-      · rw [destruct_pure, destruct_think] at h
-        exact False.elim h
-      · simp_all
+      have h := bisim r
+      induction s using recOn with
+      | pure r' =>
+        induction s' using recOn with
+        | pure =>
+          constructor <;> dsimp at h
+          · rw [h]
+          · rw [h] at r
+            rwa [tail_pure, tail_pure, h]
+        | think =>
+          rw [destruct_pure, destruct_think] at h
+          exact False.elim h
+      | think r' =>
+        induction s' using recOn with
+        | pure =>
+          rw [destruct_pure, destruct_think] at h
+          exact False.elim h
+        | think => simp_all
+
   · exact ⟨s₁, s₂, rfl, rfl, r⟩
 
 end Bisim
@@ -502,18 +510,24 @@ theorem length_thinkN (s : Computation α) [_h : Terminates s] (n) :
   (results_thinkN n (results_of_terminates _)).length
 
 theorem eq_thinkN {s : Computation α} {a n} (h : Results s a n) : s = thinkN (pure a) n := by
-  revert s
-  induction n with | zero => _ | succ n IH => _ <;>
-  (intro s; apply recOn s (fun a' => _) fun s => _) <;> intro a h
-  · rw [← eq_of_pure_mem h.mem]
-    rfl
-  · obtain ⟨n, h⟩ := of_results_think h
-    cases h
-    contradiction
-  · have := h.len_unique (results_pure _)
-    contradiction
-  · rw [IH (results_think_iff.1 h)]
-    rfl
+  induction n generalizing s with
+  | zero =>
+    induction s using recOn with
+    | pure a' =>
+      rw [← eq_of_pure_mem h.mem]
+      rfl
+    | think s =>
+      obtain ⟨n, h⟩ := of_results_think h
+      cases h
+      contradiction
+  | succ n IH =>
+    induction s using recOn with
+    | pure a' =>
+      have := h.len_unique (results_pure _)
+      contradiction
+    | think s =>
+      rw [IH (results_think_iff.1 h)]
+      rfl
 
 theorem eq_thinkN' (s : Computation α) [_h : Terminates s] :
     s = thinkN (pure (get s)) (length s) :=
@@ -582,7 +596,7 @@ theorem map_think (f : α → β) : ∀ s, map f (think s) = think (map f s)
 
 @[simp]
 theorem destruct_map (f : α → β) (s) : destruct (map f s) = lmap f (rmap (map f) (destruct s)) := by
-  apply s.recOn <;> intro <;> simp
+  induction s using recOn <;> simp
 
 @[simp]
 theorem map_id : ∀ s : Computation α, map id s = s
@@ -623,9 +637,9 @@ theorem bind_pure (f : α → β) (s) : bind s (pure ∘ f) = map f s := by
     match c₁, c₂, h with
     | _, c₂, Or.inl (Eq.refl _) => rcases destruct c₂ with b | cb <;> simp
     | _, _, Or.inr ⟨s, rfl, rfl⟩ =>
-      apply recOn s <;> intro s
-      · simp
-      · simpa using Or.inr ⟨s, rfl, rfl⟩
+      induction s using recOn with
+      | pure s => simp
+      | think s => simpa using Or.inr ⟨s, rfl, rfl⟩
   · exact Or.inr ⟨s, rfl, rfl⟩
 
 @[simp]
@@ -642,11 +656,13 @@ theorem bind_assoc (s : Computation α) (f : α → Computation β) (g : β → 
     match c₁, c₂, h with
     | _, c₂, Or.inl (Eq.refl _) => rcases destruct c₂ with b | cb <;> simp
     | _, _, Or.inr ⟨s, rfl, rfl⟩ =>
-      apply recOn s <;> intro s
-      · simp only [BisimO, ret_bind]; generalize f s = fs
-        apply recOn fs <;> intro t <;> simp
-        · rcases destruct (g t) with b | cb <;> simp
-      · simpa  [BisimO] using Or.inr ⟨s, rfl, rfl⟩
+      induction s using recOn with
+      | pure s =>
+        simp only [BisimO, ret_bind]; generalize f s = fs
+        induction fs using recOn with
+        | pure t => rw [ret_bind]; rcases destruct (g t) with b | cb <;> simp
+        | think => simp
+      | think s => simpa [BisimO] using Or.inr ⟨s, rfl, rfl⟩
   · exact Or.inr ⟨s, rfl, rfl⟩
 
 theorem results_bind {s : Computation α} {f : α → Computation β} {a b m n} (h1 : Results s a m)
@@ -687,18 +703,25 @@ theorem length_bind (s : Computation α) (f : α → Computation β) [_T1 : Term
 
 theorem of_results_bind {s : Computation α} {f : α → Computation β} {b k} :
     Results (bind s f) b k → ∃ a m n, Results s a m ∧ Results (f a) b n ∧ k = n + m := by
-  induction k generalizing s with | zero => _ | succ n IH => _
-    <;> apply recOn s (fun a => _) fun s' => _ <;> intro e h
-  · simp only [ret_bind] at h
-    exact ⟨e, _, _, results_pure _, h, rfl⟩
-  · have := congr_arg head (eq_thinkN h)
-    contradiction
-  · simp only [ret_bind] at h
-    exact ⟨e, _, n + 1, results_pure _, h, rfl⟩
-  · simp only [think_bind, results_think_iff] at h
-    let ⟨a, m, n', h1, h2, e'⟩ := IH h
-    rw [e']
-    exact ⟨a, m.succ, n', results_think h1, h2, rfl⟩
+  induction k generalizing s with
+  | zero =>
+    induction s using recOn with intro h
+    | pure a =>
+      simp only [ret_bind] at h
+      exact ⟨a, _, _, results_pure _, h, rfl⟩
+    | think s' =>
+      have := congr_arg head (eq_thinkN h)
+      contradiction
+  | succ n IH =>
+    induction s using recOn with intro h
+    | pure a =>
+      simp only [ret_bind] at h
+      exact ⟨a, _, n + 1, results_pure _, h, rfl⟩
+    | think s' =>
+      simp only [think_bind, results_think_iff] at h
+      let ⟨a, m, n', h1, h2, e'⟩ := IH h
+      rw [e']
+      exact ⟨a, m.succ, n', results_think h1, h2, rfl⟩
 
 theorem exists_of_mem_bind {s : Computation α} {f : α → Computation β} {b} (h : b ∈ bind s f) :
     ∃ a ∈ s, b ∈ f a :=
@@ -796,15 +819,17 @@ theorem orElse_think (c₁ c₂ : Computation α) : (think c₁ <|> think c₂) 
 theorem empty_orElse (c) : (empty α <|> c) = c := by
   apply eq_of_bisim (fun c₁ c₂ => (empty α <|> c₂) = c₁) _ rfl
   intro s' s h; rw [← h]
-  apply recOn s <;> intro s <;> rw [think_empty] <;> simp
-  rw [← think_empty]
+  induction s using recOn with rw [think_empty]
+  | pure s => simp
+  | think s => simp only [BisimO, orElse_think, destruct_think]; rw [← think_empty]
 
 @[simp]
 theorem orElse_empty (c : Computation α) : (c <|> empty α) = c := by
   apply eq_of_bisim (fun c₁ c₂ => (c₂ <|> empty α) = c₁) _ rfl
   intro s' s h; rw [← h]
-  apply recOn s <;> intro s <;> rw [think_empty] <;> simp
-  rw [← think_empty]
+  induction s using recOn with rw [think_empty]
+  | pure s => simp
+  | think s => simp only [BisimO, orElse_think, destruct_think]; rw [← think_empty]
 
 /-- `c₁ ~ c₂` asserts that `c₁` and `c₂` either both terminate with the same result,
   or both loop forever. -/
@@ -1041,11 +1066,11 @@ variable {R : α → β → Prop} {C : Computation α → Computation β → Pro
 @[simp]
 theorem LiftRelAux.ret_left (R : α → β → Prop) (C : Computation α → Computation β → Prop) (a cb) :
     LiftRelAux R C (Sum.inl a) (destruct cb) ↔ ∃ b, b ∈ cb ∧ R a b := by
-  apply cb.recOn (fun b => _) fun cb => _
-  · intro b
+  induction cb using recOn with
+  | pure b =>
     exact
       ⟨fun h => ⟨_, ret_mem _, h⟩, fun ⟨b', mb, h⟩ => by rw [mem_unique (ret_mem _) mb]; exact h⟩
-  · intro
+  | think cb =>
     rw [destruct_think]
     exact ⟨fun ⟨b, h, r⟩ => ⟨b, think_mem h, r⟩, fun ⟨b, h, r⟩ => ⟨b, of_think_mem h, r⟩⟩
 
@@ -1067,10 +1092,9 @@ theorem LiftRelRec.lem {R : α → β → Prop} (C : Computation α → Computat
   · simp only [destruct_pure, LiftRelAux.ret_left] at h
     simp [h]
   · simp only [liftRel_think_left]
-    revert h
-    apply cb.recOn (fun b => _) fun cb' => _ <;> intros _ h
-    · simpa using h
-    · simpa [h] using IH _ h
+    induction cb using recOn with
+    | pure b => simpa using h
+    | think cb => simpa [h] using IH _ h
 
 theorem liftRel_rec {R : α → β → Prop} (C : Computation α → Computation β → Prop)
     (H : ∀ {ca cb}, C ca cb → LiftRelAux R C (destruct ca) (destruct cb)) (ca cb) (Hc : C ca cb) :

@@ -80,6 +80,7 @@ def recOnMul {motive : ℕ → Sort*} (zero : motive 0) (one : motive 1)
     | n + 1 => mul _ _ (prime_pow p n prime') (prime p prime')
   recOnPrimeCoprime zero prime_pow fun a b _ _ _ => mul a b
 
+@[elab_as_elim]
 lemma _root_.induction_on_primes {motive : ℕ → Prop} (zero : motive 0) (one : motive 1)
     (prime_mul : ∀ p a : ℕ, p.Prime → motive a → motive (p * a)) : ∀ n, motive n := by
   refine recOnPrimePow zero one ?_
@@ -89,15 +90,19 @@ lemma _root_.induction_on_primes {motive : ℕ → Prop} (zero : motive 0) (one 
   · rw [pow_succ', mul_assoc]
     exact prime_mul _ _ hp ih
 
-lemma prime_composite_induction {motive : ℕ → Prop} (zero : motive 0) (one : motive 1)
-    (prime : ∀ p : ℕ, p.Prime → motive p)
-    (composite : ∀ a, 2 ≤ a → motive a → ∀ b, 2 ≤ b → motive b → motive (a * b))
-    (n : ℕ) : motive n := by
-  refine induction_on_primes zero one ?_ _
-  rintro p (_ | _ | a) hp ha
-  · simpa
-  · simpa using prime _ hp
-  · exact composite _ hp.two_le (prime _ hp) _ a.one_lt_succ_succ ha
+@[elab_as_elim]
+lemma prime_composite_induction
+    {motive : ℕ → Prop} (zero : motive 0) (one : motive 1) (prime : ∀ p : ℕ, p.Prime → motive p)
+    (composite : ∀ a, 2 ≤ a → motive a → ∀ b, 2 ≤ b → motive b → motive (a * b)) (n : ℕ) :
+    motive n := by
+  induction n using induction_on_primes with
+  | zero => exact zero
+  | one => exact one
+  | prime_mul p a hp ha =>
+    match a with
+    | 0 => simpa
+    | 1 => simpa using prime _ hp
+    | b + 2 => exact composite _ hp.two_le (prime _ hp) _ (le_add_left 2 b) ha
 
 /-! ## Lemmas on multiplicative functions -/
 

@@ -86,6 +86,7 @@ def destruct : WSeq α → Computation (Option (α × WSeq α)) :=
     | some (some a, s') => Sum.inl (some (a, s'))
 
 /-- Recursion principle for weak sequences, compare with `List.recOn`. -/
+@[elab_as_elim]
 def recOn {motive : WSeq α → Sort v} (s : WSeq α) (nil : motive nil)
     (cons : ∀ x s, motive (cons x s)) (think : ∀ s, motive (think s)) : motive s :=
   Seq.recOn s nil fun o => Option.recOn o think cons
