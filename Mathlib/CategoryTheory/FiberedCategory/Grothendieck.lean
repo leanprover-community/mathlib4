@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.FiberedCategory.HasFibers
 /-!
 # The Grothendieck construction gives a fibered category
 
-In this file we show that the Grothendieck construction of a pseudofunctor `F`
+In this file we show that the Grothendieck applied to a pseudofunctor `F`
 gives a fibered category over the base category.
 
 We also provide a `HasFibers` instance to `∫ F`, such that the fiber over `S` is the
@@ -42,7 +42,7 @@ instance isHomLift_cartesianLift : IsHomLift (forget F) f (cartesianLift a f) :=
   IsHomLift.map (forget F) (cartesianLift a f)
 
 variable {a} in
-/-- Given some lift `g` of `f`, the canonical map from the domain of `g` to the domain of
+/-- Given some lift `φ'` of `g ≫ f`, the canonical map from the domain of `φ'` to the domain of
 the cartesian lift of `f`. -/
 abbrev homCartesianLift {a' : ∫ F} (g : a'.1 ⟶ R) (φ' : a' ⟶ ⟨S, a⟩)
     [IsHomLift (forget F) (g ≫ f) φ'] : a' ⟶ domainCartesianLift a f where
@@ -115,6 +115,7 @@ noncomputable instance : (Fiber.inducedFunctor (comp_const F S)).EssSurj := by
 
 noncomputable instance : (Fiber.inducedFunctor (comp_const F S)).IsEquivalence where
 
+/-- `HasFibers` instance for `∫ F`, where the fiber over `S` is `F.obj ⟨op S⟩`. -/
 noncomputable instance : HasFibers (forget F) where
   Fib S := F.obj ⟨op S⟩
   ι := ι F
