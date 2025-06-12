@@ -807,7 +807,6 @@ nonrec theorem neg_le_neg {i : Set α} (hi : MeasurableSet i) (h : v ≤[i] w) :
   rw [← restrict_apply _ hi hj₁, ← restrict_apply _ hi hj₁]
   exact h j hj₁
 
-@[simp]
 theorem neg_le_neg_iff {i : Set α} (hi : MeasurableSet i) : -w ≤[i] -v ↔ v ≤[i] w :=
   ⟨fun h => neg_neg v ▸ neg_neg w ▸ neg_le_neg _ _ hi h, fun h => neg_le_neg _ _ hi h⟩
 
