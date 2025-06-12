@@ -16,6 +16,7 @@ import Mathlib.Data.Rat.Floor
 import Mathlib.Tactic.NormNum.LegendreSymbol
 import Mathlib.Tactic.NormNum.Pow
 import Mathlib.Tactic.NormNum.RealSqrt
+import Mathlib.Tactic.Simproc.Factors
 
 /-!
 # Tests for `norm_num` extensions
