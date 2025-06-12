@@ -52,6 +52,15 @@ instance instContinuousMapClass : ContinuousMapClass C(X, R)₀ X R where
 instance instZeroHomClass : ZeroHomClass C(X, R)₀ X R where
   map_zero f := f.map_zero'
 
+/-- not marked as an instance because it would be a bad one in general, but it can
+be useful when working with `ContinuousMapZero` and the non-unital continuous
+functional calculus. -/
+def _root_.Set.zeroOfFactMem {X : Type*} [Zero X] (s : Set X) [Fact (0 ∈ s)] :
+    Zero s where
+  zero := ⟨0, Fact.out⟩
+
+scoped[ContinuousMapZero] attribute [instance] Set.zeroOfFactMem
+
 @[ext]
 lemma ext {f g : C(X, R)₀} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g h
 
@@ -107,9 +116,6 @@ lemma isClosedEmbedding_toContinuousMap [T1Space R] :
   isClosed_range := by
     rw [range_toContinuousMap]
     exact isClosed_singleton.preimage <| continuous_eval_const 0
-
-@[deprecated (since := "2024-10-20")]
-alias closedEmbedding_toContinuousMap := isClosedEmbedding_toContinuousMap
 
 @[fun_prop]
 lemma continuous_comp_left {X Y Z : Type*} [TopologicalSpace X]
@@ -292,9 +298,6 @@ lemma isUniformEmbedding_toContinuousMap :
   comap_uniformity := rfl
   injective _ _ h := ext fun x ↦ congr($(h) x)
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_toContinuousMap := isUniformEmbedding_toContinuousMap
-
 instance [T1Space R] [CompleteSpace C(X, R)] : CompleteSpace C(X, R)₀ :=
   completeSpace_iff_isComplete_range isUniformEmbedding_toContinuousMap.isUniformInducing
     |>.mpr isClosedEmbedding_toContinuousMap.isClosed_range.isComplete
@@ -304,9 +307,6 @@ lemma isUniformEmbedding_comp {Y : Type*} [UniformSpace Y] [Zero Y] (g : C(Y, R)
   isUniformEmbedding_toContinuousMap.of_comp_iff.mp <|
     ContinuousMap.isUniformEmbedding_comp g.toContinuousMap hg |>.comp
       isUniformEmbedding_toContinuousMap
-
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_comp := isUniformEmbedding_comp
 
 /-- The uniform equivalence `C(X, R)₀ ≃ᵤ C(Y, R)₀` induced by a homeomorphism of the domains
 sending `0 : X` to `0 : Y`. -/
@@ -367,6 +367,10 @@ variable {α : Type*} {𝕜 : Type*} {R : Type*} [TopologicalSpace α] [CompactS
 noncomputable instance [MetricSpace R] [Zero R]: MetricSpace C(α, R)₀ :=
   ContinuousMapZero.isUniformEmbedding_toContinuousMap.comapMetricSpace _
 
+lemma isometry_toContinuousMap [MetricSpace R] [Zero R] :
+    Isometry (toContinuousMap : C(α, R)₀ → C(α, R)) :=
+  fun _ _ ↦ rfl
+
 noncomputable instance [NormedAddCommGroup R] : Norm C(α, R)₀ where
   norm f := ‖(f : C(α, R))‖
 
@@ -378,7 +382,8 @@ noncomputable instance [NormedCommRing R] : NonUnitalNormedCommRing C(α, R)₀ 
   norm_mul_le f g := norm_mul_le (f : C(α, R)) g
   mul_comm f g := mul_comm f g
 
-instance [NormedField 𝕜] [NormedCommRing R] [NormedAlgebra 𝕜 R] : NormedSpace 𝕜 C(α, R)₀ where
+noncomputable instance [NormedField 𝕜] [NormedCommRing R] [NormedAlgebra 𝕜 R] :
+    NormedSpace 𝕜 C(α, R)₀ where
   norm_smul_le r f := norm_smul_le r (f : C(α, R))
 
 instance [NormedCommRing R] [StarRing R] [CStarRing R] : CStarRing C(α, R)₀ where

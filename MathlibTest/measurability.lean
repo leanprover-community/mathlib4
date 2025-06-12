@@ -94,21 +94,23 @@ example [TopologicalSpace α] [BorelSpace α] [NormedAddCommGroup β] [BorelSpac
     (hF : ∀ i, Measurable (F i)) : AEMeasurable (∑ i ∈ s, (fun x => F (i+1) x - F i x)) μ := by
   measurability
 
-example : Measurable (fun x : ℝ => Real.exp (2 * inner 3 x)) := by measurability
+open scoped RealInnerProductSpace
 
-example : StronglyMeasurable (fun x : ℝ => Real.exp (2 * inner 3 x)) := by measurability
+example : Measurable (fun x : ℝ => Real.exp (2 * ⟪3, x⟫)) := by measurability
+
+example : StronglyMeasurable (fun x : ℝ => Real.exp (2 * ⟪3, x⟫)) := by measurability
 
 example {γ : MeasureTheory.Measure ℝ} :
-  AEMeasurable (fun x : ℝ => Real.exp (2 * inner 3 x)) γ := by measurability
+  AEMeasurable (fun x : ℝ => Real.exp (2 * ⟪3, x⟫)) γ := by measurability
 
 example {γ : MeasureTheory.Measure ℝ} :
-  AEStronglyMeasurable (fun x : ℝ => Real.exp (2 * inner 3 x)) γ := by measurability
+  AEStronglyMeasurable (fun x : ℝ => Real.exp (2 * ⟪3, x⟫)) γ := by measurability
 
 example {γ : MeasureTheory.Measure ℝ} [SigmaFinite γ] :
-  FinStronglyMeasurable (fun x : ℝ => Real.exp (2 * inner 3 x)) γ := by measurability
+  FinStronglyMeasurable (fun x : ℝ => Real.exp (2 * ⟪3, x⟫)) γ := by measurability
 
 example {γ : MeasureTheory.Measure ℝ} [SigmaFinite γ] :
-  AEFinStronglyMeasurable (fun x : ℝ => Real.exp (2 * inner 3 x)) γ := by measurability
+  AEFinStronglyMeasurable (fun x : ℝ => Real.exp (2 * ⟪3, x⟫)) γ := by measurability
 
 /-- An older version of the tactic failed in the presence of a negated hypothesis due to an
 internal call to `apply_assumption`. -/
