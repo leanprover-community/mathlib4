@@ -24,7 +24,7 @@ Angelo Vistoli
 
 namespace CategoryTheory.Pseudofunctor.Grothendieck
 
-open Functor Opposite Bicategory
+open Functor Opposite Bicategory Fiber
 
 variable {𝒮 : Type*} [Category 𝒮] {F : Pseudofunctor (LocallyDiscrete 𝒮ᵒᵖ) Cat}
 
@@ -90,42 +90,30 @@ def compIso : (ι F S) ⋙ forget F ≅ (const (F.obj ⟨op S⟩)).obj S :=
   NatIso.ofComponents (fun a => eqToIso rfl)
 
 lemma comp_const : (ι F S) ⋙ forget F = (const (F.obj ⟨op S⟩)).obj S :=
-  Functor.ext_of_iso (compIso F S) (by simp) (by simp)
+  Functor.ext_of_iso (compIso F S) (fun _ ↦ rfl) (fun _ => rfl)
 
-noncomputable instance : Functor.Full (Fiber.inducedFunctor (comp_const F S)) where
+noncomputable instance : (Fiber.inducedFunctor (comp_const F S)).Full where
   map_surjective {X Y} f := by
-    have := f.2 -- TODO: synthesize this
-    have hf : (Fiber.fiberInclusion.map f).base = 𝟙 S := by
-      simpa using (IsHomLift.fac (forget F) (𝟙 S) f.1).symm
-    use (Fiber.fiberInclusion.map f).2 ≫ eqToHom ?_ ≫ (F.mapId ⟨op S⟩).hom.app Y
-    rotate_left
-    -- TODO: more simp lemmas, should not need this...
-    · simp [Fiber.inducedFunctor, hf]
-      simp [Fiber.fiberInclusion]
-    ext
-    · simp [Fiber.inducedFunctor, hf]
-      simp [Fiber.fiberInclusion]
-    · simp
+    have hf : (fiberInclusion.map f).base = 𝟙 S := by
+      simpa using (IsHomLift.fac (forget F) (𝟙 S) (fiberInclusion.map f)).symm
+    use (fiberInclusion.map f).2 ≫ eqToHom (by simp [hf]) ≫ (F.mapId ⟨op S⟩).hom.app Y
+    ext <;> simp [hf]
 
-instance : Functor.Faithful (Fiber.inducedFunctor (comp_const F S)) where
-  map_injective := by
-    intros a b f g heq
-    -- can be made a one liner...
-    rw [← Subtype.val_inj] at heq
-    simp only [Fiber.inducedFunctor] at heq -- TODO...
-    obtain ⟨_, heq₂⟩ := (Hom.ext_iff _ _).1 heq
-    simpa [cancel_mono] using heq₂
+instance : (Fiber.inducedFunctor (comp_const F S)).Faithful where
+  map_injective {a b} := by
+    intro f g heq
+    replace heq := fiberInclusion.congr_map heq
+    simpa [cancel_mono] using ((Hom.ext_iff _ _).1 heq).2
 
-noncomputable instance : Functor.EssSurj (Fiber.inducedFunctor (comp_const F S)) := by
+noncomputable instance : (Fiber.inducedFunctor (comp_const F S)).EssSurj := by
   apply essSurj_of_surj
   intro Y
-  simp only [Fiber.inducedFunctor] -- TODO...
-  have hYS : S = Y.1.1 := by simpa using Y.2.symm
-  use (hYS.symm ▸ Y.1.2)
-  apply Subtype.val_inj.1
+  have hYS : (fiberInclusion.obj Y).1 = S := by simpa using Y.2
+  use (hYS ▸ (fiberInclusion.obj Y).2) -- TODO: maybe this should be a functor
+  apply fiberInclusion_obj_inj
   ext <;> simp [hYS]
 
-noncomputable instance : Functor.IsEquivalence (Fiber.inducedFunctor (comp_const F S)) where
+noncomputable instance : (Fiber.inducedFunctor (comp_const F S)).IsEquivalence where
 
 noncomputable instance : HasFibers (forget F) where
   Fib S := F.obj ⟨op S⟩
