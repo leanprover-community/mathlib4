@@ -109,7 +109,7 @@ noncomputable instance : (Fiber.inducedFunctor (comp_const F S)).EssSurj := by
   apply essSurj_of_surj
   intro Y
   have hYS : (fiberInclusion.obj Y).1 = S := by simpa using Y.2
-  use (hYS ▸ (fiberInclusion.obj Y).2) -- TODO: maybe this should be a functor
+  use hYS ▸ (fiberInclusion.obj Y).2 -- TODO: maybe this should be a functor
   apply fiberInclusion_obj_inj
   ext <;> simp [hYS]
 
