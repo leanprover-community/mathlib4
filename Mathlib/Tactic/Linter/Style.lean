@@ -562,6 +562,7 @@ def showLinter : Linter where run := withSetOptionIn fun stx => do
     for tree in (← getInfoTrees) do
       tree.foldInfoM (init := ()) fun ci i _ => do
         let .ofTacticInfo tac := i | return
+        unless tac.stx.isOfKind ``Lean.Parser.Tactic.show do return
         let (goal :: goals) := tac.goalsBefore | return
         let (goal' :: goals') := tac.goalsAfter | return
         if goals != goals' then return -- `show` didn't act on first goal -> can't replace with `change`
