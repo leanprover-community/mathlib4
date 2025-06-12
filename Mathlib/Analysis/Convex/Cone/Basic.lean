@@ -51,7 +51,9 @@ namespace ProperCone
 section Module
 variable {C C₁ C₂ : ProperCone R E} {r : R} {x : E}
 
-/-- Alias of `ClosedSubmodule.toSubmodule` for convenience and discoverability. -/
+/-- Any proper cone can be seen as a pointed cone.
+
+This is an alias of `ClosedSubmodule.toSubmodule` for convenience and discoverability. -/
 @[coe] abbrev toPointedCone (C : ProperCone R E) : PointedCone R E := C.toSubmodule
 
 instance : Coe (ProperCone R E) (PointedCone R E) := ⟨toPointedCone⟩
