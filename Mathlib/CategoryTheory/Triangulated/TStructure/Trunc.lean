@@ -804,7 +804,7 @@ lemma isGE_iff_isIso_truncGEπ_app (n : ℤ) (X : C) :
       (inv_rot_of_distTriang _ (contractible_distinguished X))
       (t.triangleLTGE_distinguished n X) (Iso.refl X)
       (t.isLE_of_iso (shiftFunctor C (-1 : ℤ)).mapZeroObject.symm _)
-      (by dsimp ; infer_instance) (by dsimp ; infer_instance) (by dsimp ; infer_instance)
+      (by dsimp; infer_instance) (by dsimp; infer_instance) (by dsimp; infer_instance)
     dsimp at he
     have : (truncGEπ t n).app X = e.hom.hom₃ := by
       have eq := e.hom.comm₂
