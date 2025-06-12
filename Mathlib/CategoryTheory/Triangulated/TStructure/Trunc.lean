@@ -915,7 +915,7 @@ lemma liftTruncLT_ι {X Y : C} (f : X ⟶ Y) (n₀ n₁ : ℤ) (h : n₀ + 1 = n
 lemma descTruncGE' {X Y : C} (f : X ⟶ Y) (n : ℤ) [t.IsGE Y n] :
   ∃ (f' : (t.truncGE n).obj X ⟶ Y), f = (t.truncGEπ n).app X ≫ f' :=
   Triangle.yoneda_exact₂ _ (t.triangleLTGE_distinguished n X) f
-    (t.zero_of_isLE_of_isGE _ (n-1)  n (by linarith) (by dsimp ; infer_instance) inferInstance)
+    (t.zero_of_isLE_of_isGE _ (n-1)  n (by linarith) (by dsimp; infer_instance) inferInstance)
 
 noncomputable def descTruncGE {X Y : C} (f : X ⟶ Y) (n : ℤ) [t.IsGE Y n] :
     (t.truncGE n).obj X ⟶ Y := (t.descTruncGE' f n).choose
