@@ -330,8 +330,8 @@ def connectShortComplexι : S ⟶ (connectShortComplex S T e φ hφ).shortComple
   τ₂ := 𝟙 _
   τ₃ := e.hom ≫ T.f
 
-instance : IsIso (connectShortComplexι S T e φ hφ).τ₁ := by dsimp ; infer_instance
-instance : IsIso (connectShortComplexι S T e φ hφ).τ₂ := by dsimp ; infer_instance
+instance : IsIso (connectShortComplexι S T e φ hφ).τ₁ := by dsimp; infer_instance
+instance : IsIso (connectShortComplexι S T e φ hφ).τ₂ := by dsimp; infer_instance
 instance [Mono T.f] : Mono (connectShortComplexι S T e φ hφ).τ₃ := mono_comp _ _
 
 @[simps]
