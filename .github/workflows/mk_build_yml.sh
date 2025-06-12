@@ -39,7 +39,7 @@ on:
 
 name: continuous integration
 EOF
-  include "github.sha" pr "true" "" ubuntu-latest
+  include "github.sha" pr "github.repository == 'leanprover-community\/mathlib4'" "" ubuntu-latest
 }
 
 bors_yml() {
