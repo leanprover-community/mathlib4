@@ -152,8 +152,8 @@ end Uniqueness
 namespace AnalyticOnNhd
 
 /-- If an analytic function vanishes around a point, then it is uniformly zero along
-a connected set. Superseded by `eqOn_zero_of_preconnected_of_locally_zero` which does not assume
-completeness of the target space. -/
+a connected set. Superseded by `AnalyticOnNhd.eqOn_zero_of_preconnected_of_eventuallyEq_zero` which
+does not assume completeness of the target space. -/
 theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f : E → F} {U : Set E}
     (hf : AnalyticOnNhd 𝕜 f U) (hU : IsPreconnected U)
     {z₀ : E} (h₀ : z₀ ∈ U) (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
@@ -198,7 +198,7 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
 /-- The *identity principle* for analytic functions: If an analytic function vanishes in a whole
 neighborhood of a point `z₀`, then it is uniformly zero along a connected set. For a one-dimensional
 version assuming only that the function vanishes at some points arbitrarily close to `z₀`, see
-`eqOn_zero_of_preconnected_of_frequently_eq_zero`. -/
+`AnalyticOnNhd.eqOn_zero_of_preconnected_of_frequently_eq_zero`. -/
 theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : E → F} {U : Set E}
     (hf : AnalyticOnNhd 𝕜 f U) (hU : IsPreconnected U)
     {z₀ : E} (h₀ : z₀ ∈ U) (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
@@ -217,7 +217,7 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : E → F} {U : Set E}
 /-- The *identity principle* for analytic functions: If two analytic functions coincide in a whole
 neighborhood of a point `z₀`, then they coincide globally along a connected set.
 For a one-dimensional version assuming only that the functions coincide at some points
-arbitrarily close to `z₀`, see `eqOn_of_preconnected_of_frequently_eq`. -/
+arbitrarily close to `z₀`, see `AnalyticOnNhd.eqOn_of_preconnected_of_frequently_eq`. -/
 theorem eqOn_of_preconnected_of_eventuallyEq {f g : E → F} {U : Set E} (hf : AnalyticOnNhd 𝕜 f U)
     (hg : AnalyticOnNhd 𝕜 g U) (hU : IsPreconnected U) {z₀ : E} (h₀ : z₀ ∈ U) (hfg : f =ᶠ[𝓝 z₀] g) :
     EqOn f g U := by
@@ -228,7 +228,7 @@ theorem eqOn_of_preconnected_of_eventuallyEq {f g : E → F} {U : Set E} (hf : A
 /-- The *identity principle* for analytic functions: If two analytic functions on a normed space
 coincide in a neighborhood of a point `z₀`, then they coincide everywhere.
 For a one-dimensional version assuming only that the functions coincide at some points
-arbitrarily close to `z₀`, see `eq_of_frequently_eq`. -/
+arbitrarily close to `z₀`, see `AnalyticOnNhd.eq_of_frequently_eq`. -/
 theorem eq_of_eventuallyEq {f g : E → F} [PreconnectedSpace E] (hf : AnalyticOnNhd 𝕜 f univ)
     (hg : AnalyticOnNhd 𝕜 g univ) {z₀ : E} (hfg : f =ᶠ[𝓝 z₀] g) : f = g :=
   funext fun x =>
