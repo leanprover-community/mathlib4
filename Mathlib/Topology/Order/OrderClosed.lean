@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
+import Mathlib.Topology.Order.LeftRight
 import Mathlib.Topology.Separation.Hausdorff
 
 /-!
@@ -274,6 +275,12 @@ protected theorem PredOrder.nhdsLT [PredOrder α] : 𝓝[<] a = ⊥ := by
 
 @[deprecated (since := "2024-12-21")] protected alias PredOrder.nhdsWithin_Iio := PredOrder.nhdsLT
 
+theorem PredOrder.nhdsGT_eq_nhdsNE [PredOrder α] (a : α) : 𝓝[>] a = 𝓝[≠] a := by
+  rw [← nhdsLT_sup_nhdsGT, PredOrder.nhdsLT, bot_sup_eq]
+
+theorem PredOrder.nhdsGE_eq_nhds [PredOrder α] (a : α) : 𝓝[≥] a = 𝓝 a := by
+  rw [← nhdsLT_sup_nhdsGE, PredOrder.nhdsLT, bot_sup_eq]
+
 theorem Ico_mem_nhdsLT_of_mem (H : b ∈ Ioc a c) : Ico a c ∈ 𝓝[<] b :=
   mem_of_superset (Ioo_mem_nhdsLT_of_mem H) Ioo_subset_Ico_self
 
@@ -540,7 +547,6 @@ in another file.
 theorem Ioo_mem_nhdsGT_of_mem (H : b ∈ Ico a c) : Ioo a c ∈ 𝓝[>] b :=
   mem_nhdsWithin.2
     ⟨Iio c, isOpen_Iio, H.2, by rw [inter_comm, Ioi_inter_Iio]; exact Ioo_subset_Ioo_left H.1⟩
-      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: swap `'`?
 
 @[deprecated (since := "2024-12-22")] alias Ioo_mem_nhdsWithin_Ioi := Ioo_mem_nhdsGT_of_mem
 
@@ -555,6 +561,12 @@ protected theorem CovBy.nhdsGT (h : a ⋖ b) : 𝓝[>] a = ⊥ := h.toDual.nhdsL
 protected theorem SuccOrder.nhdsGT [SuccOrder α] : 𝓝[>] a = ⊥ := PredOrder.nhdsLT (α := αᵒᵈ)
 
 @[deprecated (since := "2024-12-22")] alias SuccOrder.nhdsWithin_Ioi := SuccOrder.nhdsGT
+
+theorem SuccOrder.nhdsLT_eq_nhdsNE [SuccOrder α] (a : α) : 𝓝[<] a = 𝓝[≠] a :=
+  PredOrder.nhdsGT_eq_nhdsNE (α := αᵒᵈ) a
+
+theorem SuccOrder.nhdsLE_eq_nhds [SuccOrder α] (a : α) : 𝓝[≤] a = 𝓝 a :=
+  PredOrder.nhdsGE_eq_nhds (α := αᵒᵈ) a
 
 theorem Ioc_mem_nhdsGT_of_mem (H : b ∈ Ico a c) : Ioc a c ∈ 𝓝[>] b :=
   mem_of_superset (Ioo_mem_nhdsGT_of_mem H) Ioo_subset_Ioc_self
@@ -703,7 +715,7 @@ theorem isClosed_le_prod : IsClosed { p : α × α | p.1 ≤ p.2 } :=
 
 theorem isClosed_le [TopologicalSpace β] {f g : β → α} (hf : Continuous f) (hg : Continuous g) :
     IsClosed { b | f b ≤ g b } :=
-  continuous_iff_isClosed.mp (hf.prod_mk hg) _ isClosed_le_prod
+  continuous_iff_isClosed.mp (hf.prodMk hg) _ isClosed_le_prod
 
 instance : ClosedIicTopology α where
   isClosed_Iic _ := isClosed_le continuous_id continuous_const
@@ -721,10 +733,13 @@ theorem isClosed_Icc {a b : α} : IsClosed (Icc a b) :=
 theorem closure_Icc (a b : α) : closure (Icc a b) = Icc a b :=
   isClosed_Icc.closure_eq
 
+theorem le_of_tendsto_of_tendsto_of_frequently {f g : β → α} {b : Filter β} {a₁ a₂ : α}
+    (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : ∃ᶠ x in b, f x ≤ g x) : a₁ ≤ a₂ :=
+  t.isClosed_le'.mem_of_frequently_of_tendsto h (hf.prodMk_nhds hg)
+
 theorem le_of_tendsto_of_tendsto {f g : β → α} {b : Filter β} {a₁ a₂ : α} [NeBot b]
     (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : f ≤ᶠ[b] g) : a₁ ≤ a₂ :=
-  have : Tendsto (fun b => (f b, g b)) b (𝓝 (a₁, a₂)) := hf.prod_mk_nhds hg
-  show (a₁, a₂) ∈ { p : α × α | p.1 ≤ p.2 } from t.isClosed_le'.mem_of_tendsto this h
+  le_of_tendsto_of_tendsto_of_frequently hf hg <| Eventually.frequently h
 
 alias tendsto_le_of_eventuallyLE := le_of_tendsto_of_tendsto
 
@@ -745,13 +760,13 @@ theorem ContinuousWithinAt.closure_le [TopologicalSpace β] {f g : β → α} {s
     (hx : x ∈ closure s) (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x)
     (h : ∀ y ∈ s, f y ≤ g y) : f x ≤ g x :=
   show (f x, g x) ∈ { p : α × α | p.1 ≤ p.2 } from
-    OrderClosedTopology.isClosed_le'.closure_subset ((hf.prod hg).mem_closure hx h)
+    OrderClosedTopology.isClosed_le'.closure_subset ((hf.prodMk hg).mem_closure hx h)
 
 /-- If `s` is a closed set and two functions `f` and `g` are continuous on `s`,
 then the set `{x ∈ s | f x ≤ g x}` is a closed set. -/
 theorem IsClosed.isClosed_le [TopologicalSpace β] {f g : β → α} {s : Set β} (hs : IsClosed s)
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) : IsClosed ({ x ∈ s | f x ≤ g x }) :=
-  (hf.prod hg).preimage_isClosed_of_isClosed hs OrderClosedTopology.isClosed_le'
+  (hf.prodMk hg).preimage_isClosed_of_isClosed hs OrderClosedTopology.isClosed_le'
 
 theorem le_on_closure [TopologicalSpace β] {f g : β → α} {s : Set β} (h : ∀ x ∈ s, f x ≤ g x)
     (hf : ContinuousOn f (closure s)) (hg : ContinuousOn g (closure s)) ⦃x⦄ (hx : x ∈ closure s) :
@@ -766,6 +781,26 @@ theorem IsClosed.epigraph [TopologicalSpace β] {f : β → α} {s : Set β} (hs
 theorem IsClosed.hypograph [TopologicalSpace β] {f : β → α} {s : Set β} (hs : IsClosed s)
     (hf : ContinuousOn f s) : IsClosed { p : β × α | p.1 ∈ s ∧ p.2 ≤ f p.1 } :=
   (hs.preimage continuous_fst).isClosed_le continuousOn_snd (hf.comp continuousOn_fst Subset.rfl)
+
+/-- The set of monotone functions on a set is closed. -/
+theorem isClosed_monotoneOn [Preorder β] {s : Set β} : IsClosed {f : β → α | MonotoneOn f s} := by
+  simp only [isClosed_iff_clusterPt, clusterPt_principal_iff_frequently]
+  intro g hg a ha b hb hab
+  have hmain (x) : Tendsto (fun f' ↦ f' x) (𝓝 g) (𝓝 (g x)) := continuousAt_apply x _
+  exact le_of_tendsto_of_tendsto_of_frequently (hmain a) (hmain b) (hg.mono fun g h ↦ h ha hb hab)
+
+/-- The set of monotone functions is closed. -/
+theorem isClosed_monotone [Preorder β] : IsClosed {f : β → α | Monotone f} := by
+  simp_rw [← monotoneOn_univ]
+  exact isClosed_monotoneOn
+
+/-- The set of antitone functions on a set is closed. -/
+theorem isClosed_antitoneOn [Preorder β] {s : Set β} : IsClosed {f : β → α | AntitoneOn f s} :=
+  isClosed_monotoneOn (α := αᵒᵈ) (β := β)
+
+/-- The set of antitone functions is closed. -/
+theorem isClosed_antitone [Preorder β] : IsClosed {f : β → α | Antitone f} :=
+  isClosed_monotone (α := αᵒᵈ) (β := β)
 
 end Preorder
 
@@ -787,7 +822,7 @@ variable [TopologicalSpace α] [LinearOrder α] [OrderClosedTopology α]
 
 theorem isOpen_lt [TopologicalSpace β] {f g : β → α} (hf : Continuous f) (hg : Continuous g) :
     IsOpen { b | f b < g b } := by
-  simpa only [lt_iff_not_le] using (isClosed_le hg hf).isOpen_compl
+  simpa only [lt_iff_not_ge] using (isClosed_le hg hf).isOpen_compl
 
 theorem isOpen_lt_prod : IsOpen { p : α × α | p.1 < p.2 } :=
   isOpen_lt continuous_fst continuous_snd
@@ -904,16 +939,15 @@ theorem continuous_max : Continuous fun p : α × α => max p.1 p.2 :=
 
 protected theorem Filter.Tendsto.max {b : Filter β} {a₁ a₂ : α} (hf : Tendsto f b (𝓝 a₁))
     (hg : Tendsto g b (𝓝 a₂)) : Tendsto (fun b => max (f b) (g b)) b (𝓝 (max a₁ a₂)) :=
-  (continuous_max.tendsto (a₁, a₂)).comp (hf.prod_mk_nhds hg)
+  (continuous_max.tendsto (a₁, a₂)).comp (hf.prodMk_nhds hg)
 
 protected theorem Filter.Tendsto.min {b : Filter β} {a₁ a₂ : α} (hf : Tendsto f b (𝓝 a₁))
     (hg : Tendsto g b (𝓝 a₂)) : Tendsto (fun b => min (f b) (g b)) b (𝓝 (min a₁ a₂)) :=
-  (continuous_min.tendsto (a₁, a₂)).comp (hf.prod_mk_nhds hg)
+  (continuous_min.tendsto (a₁, a₂)).comp (hf.prodMk_nhds hg)
 
 protected theorem Filter.Tendsto.max_right {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :
     Tendsto (fun i => max a (f i)) l (𝓝 a) := by
-  convert ((continuous_max.comp (@Continuous.Prod.mk α α _ _ a)).tendsto a).comp h
-  simp
+  simpa only [sup_idem] using (tendsto_const_nhds (x := a)).max h
 
 protected theorem Filter.Tendsto.max_left {l : Filter β} {a : α} (h : Tendsto f l (𝓝 a)) :
     Tendsto (fun i => max (f i) a) l (𝓝 a) := by

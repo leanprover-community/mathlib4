@@ -27,7 +27,7 @@ to add a `(h : ¬IsField A)` assumption whenever this is explicitly needed.
 ## References
 
 * [D. Marcus, *Number Fields*][marcus1977number]
-* [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
+* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
 
 ## Tags
@@ -114,9 +114,8 @@ to `(y : R) • x ∈ integralClosure R L`. -/
 theorem exists_integral_multiples (s : Finset L) :
     ∃ y ≠ (0 : A), ∀ x ∈ s, IsIntegral A (y • x) :=
   have := IsLocalization.isAlgebraic K (nonZeroDivisors A)
-  have := Algebra.IsAlgebraic.trans' A (algebraMap K L).injective
-  Algebra.IsAlgebraic.exists_integral_multiples (IsScalarTower.algebraMap_eq A K L ▸
-    (algebraMap K L).injective.comp (IsFractionRing.injective _ _)) _
+  have := Algebra.IsAlgebraic.trans A K L
+  Algebra.IsAlgebraic.exists_integral_multiples ..
 
 variable (L)
 

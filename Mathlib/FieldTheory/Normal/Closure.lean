@@ -18,11 +18,12 @@ minimal polynomial of every element of `K` over `F` splits in `L`, and that `L` 
 by the roots of such minimal polynomials. These conditions uniquely characterize `L/F` up to
 `F`-algebra isomorphisms (`IsNormalClosure.equiv`).
 
-The explicit construction `normalClosure F K L` of a field extension `K/F` inside another
-field extension `L/F` is the smallest intermediate field of `L/F` that contains the image
-of every `F`-algebra embedding `K →ₐ[F] L`. It satisfies the `IsNormalClosure` predicate
-if `L/F` satisfies the abovementioned splitting condition, in particular if `L/K/F` form
-a tower and `L/F` is normal.
+The explicit construction `IntermediateField.normalClosure F K L` of a field extension `K/F`
+inside another field extension `L/F` is the smallest intermediate field of
+`L/F` that contains the image of every `F`-algebra embedding `K →ₐ[F] L`.
+It satisfies the `IsNormalClosure` predicate if `L/F` satisfies the
+abovementioned splitting condition, in particular if `L/K/F` form a tower and
+`L/F` is normal.
 -/
 
 open IntermediateField IsScalarTower Polynomial
@@ -43,7 +44,7 @@ class IsNormalClosure : Prop where
 
 /-- The normal closure of `K/F` in `L/F`. -/
 @[stacks 0BMF]
-noncomputable def normalClosure : IntermediateField F L :=
+noncomputable def IntermediateField.normalClosure : IntermediateField F L :=
   ⨆ f : K →ₐ[F] L, f.fieldRange
 
 lemma normalClosure_def : normalClosure F K L = ⨆ f : K →ₐ[F] L, f.fieldRange :=

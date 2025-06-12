@@ -17,7 +17,9 @@ noncomputable section
 
 variable {I : Type*} {A : I → Type*}
 
+#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 instance [∀ i, NonUnitalCStarAlgebra (A i)] : NonUnitalCStarAlgebra (lp A ∞) where
+  norm_mul_self_le := CStarRing.norm_mul_self_le
 
 instance [∀ i, NonUnitalCommCStarAlgebra (A i)] : NonUnitalCommCStarAlgebra (lp A ∞) where
   mul_comm := mul_comm
@@ -27,9 +29,11 @@ instance [∀ i, NonUnitalCommCStarAlgebra (A i)] : NonUnitalCommCStarAlgebra (l
 -- aside from `∀ i, NormOneClass (A i)`, this holds automatically for C⋆-algebras though.
 instance [∀ i, Nontrivial (A i)] [∀ i, CStarAlgebra (A i)] : NormedRing (lp A ∞) where
   dist_eq := dist_eq_norm
-  norm_mul := norm_mul_le
+  norm_mul_le := norm_mul_le
 
+#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 instance [∀ i, Nontrivial (A i)] [∀ i, CommCStarAlgebra (A i)] : CommCStarAlgebra (lp A ∞) where
   mul_comm := mul_comm
+  norm_mul_self_le := CStarRing.norm_mul_self_le
 
 end

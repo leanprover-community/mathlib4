@@ -52,20 +52,17 @@ namespace Field
 open Ring FreeCommRing Polynomial Language
 
 /-- A generic monic polynomial of degree `n` as an element of the
-free commutative ring in `n+1` variables, with a variable for each
+free commutative ring in `n + 1` variables, with a variable for each
 of the `n` non-leading coefficients of the polynomial and one variable (`Fin.last n`)
-for `X`.  -/
+for `X`. -/
 def genericMonicPoly (n : ℕ) : FreeCommRing (Fin (n + 1)) :=
   of (Fin.last _) ^ n + ∑ i : Fin n, of i.castSucc * of (Fin.last _) ^ (i : ℕ)
 
-theorem lift_genericMonicPoly [CommRing K] [Nontrivial K] {n : ℕ} (v : Fin (n+1) → K) :
+theorem lift_genericMonicPoly [CommRing K] [Nontrivial K] {n : ℕ} (v : Fin (n + 1) → K) :
     FreeCommRing.lift v (genericMonicPoly n) =
     (((monicEquivDegreeLT n).trans (degreeLTEquiv K n).toEquiv).symm (v ∘ Fin.castSucc)).1.eval
       (v (Fin.last _)) := by
-  simp only [genericMonicPoly, map_add, map_pow, lift_of, map_sum, map_mul, monicEquivDegreeLT,
-    degreeLTEquiv, Equiv.symm_trans_apply, LinearEquiv.coe_toEquiv_symm, EquivLike.coe_coe,
-    LinearEquiv.coe_symm_mk, Function.comp_apply, Equiv.coe_fn_symm_mk, eval_add, eval_pow, eval_X,
-    eval_finset_sum, eval_monomial]
+  simp [genericMonicPoly, monicEquivDegreeLT, degreeLTEquiv, eval_finset_sum]
 
 /-- A sentence saying every monic polynomial of degree `n` has a root. -/
 noncomputable def genericMonicPolyHasRoot (n : ℕ) : Language.ring.Sentence :=
@@ -210,7 +207,7 @@ theorem finite_ACF_prime_not_realize_of_ACF_zero_realize
         Term.realize_relabel, Sum.elim_comp_inl, realize_termOfFreeCommRing, map_natCast,
         realize_zero, ← CharP.charP_iff_prime_eq_zero hp]
       intro _
-      exact hqp <| CharP.eq K inferInstance inferInstance
+      exact hqp <| CharP.eq K this inferInstance
   let s : Finset Nat.Primes := T0.attach.biUnion (fun φ => f φ.1 (hT0 φ.2))
   have hs : ∀ (p : Nat.Primes) ψ, ψ ∈ T0 → p ∉ s → Theory.ACF p ⊨ᵇ ψ := by
     intro p ψ hψ hpψ

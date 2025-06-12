@@ -30,7 +30,7 @@ We prove the integrability of other functions for `t` in the interior of that in
 * `ProbabilityTheory.integrable_rpow_abs_mul_exp_of_mem_interior`: for `v` in the interior of the
   interval in which `exp (t * X)` is integrable, for all nonnegative `p : ℝ`,
   `|X| ^ p * exp (v * X)` is integrable.
-* `ProbabilityTheory.memℒp_of_mem_interior_integrableExpSet`: if 0 belongs to the interior of
+* `ProbabilityTheory.memLp_of_mem_interior_integrableExpSet`: if 0 belongs to the interior of
   `integrableExpSet X μ`, then `X` is in `ℒp` for all finite `p`.
 
 -/
@@ -153,9 +153,9 @@ lemma integrable_exp_mul_abs_add (ht_int_pos : Integrable (fun ω ↦ exp ((v + 
     · simp only [ht, zero_mul, zero_add, add_zero] at ht_int_pos ⊢
       exact ht_int_pos.1
     have hX : AEMeasurable X μ := aemeasurable_of_integrable_exp_mul ?_ ht_int_pos ht_int_neg
-    swap; · rw [← sub_ne_zero]; simp [ht]
-    refine AEMeasurable.aestronglyMeasurable ?_
-    exact measurable_exp.comp_aemeasurable ((hX.abs.const_mul _).add (hX.const_mul _))
+    · fun_prop
+    · rw [← sub_ne_zero]
+      simp [ht]
   · simp only [norm_eq_abs, abs_exp]
     conv_rhs => rw [abs_of_nonneg (by positivity)]
     -- ⊢ exp (t * |X ω| + v * X ω) ≤ exp ((v + t) * X ω) + exp ((v - t) * X ω)
@@ -265,8 +265,7 @@ lemma integrable_rpow_abs_mul_exp_add_of_integrable_exp_mul {x : ℝ}
   have hX : AEMeasurable X μ := aemeasurable_of_integrable_exp_mul ?_ h_int_pos h_int_neg
   swap; · rw [← sub_ne_zero]; simp [ht]
   rw [← integrable_norm_iff]
-  swap
-  · exact AEMeasurable.aestronglyMeasurable <| by fun_prop
+  swap; · fun_prop
   simp only [norm_mul, norm_pow, norm_eq_abs, sq_abs, abs_exp]
   have h_le a : |X a| ^ p * exp (v * X a + x * |X a|)
       ≤ (p / (|t| - x)) ^ p * exp (v * X a + |t| * |X a|) := by
@@ -288,8 +287,7 @@ lemma integrable_rpow_abs_mul_exp_add_of_integrable_exp_mul {x : ℝ}
   · refine Integrable.const_mul ?_ _
     simp_rw [add_comm (v * X _)]
     exact integrable_exp_abs_mul_abs_add h_int_pos h_int_neg
-  · refine AEMeasurable.aestronglyMeasurable ?_
-    exact AEMeasurable.mul (by fun_prop) (measurable_exp.comp_aemeasurable (by fun_prop))
+  · fun_prop
   · simp only [sq_abs, norm_mul, norm_pow, norm_eq_abs, abs_exp, norm_div, norm_ofNat]
     simp_rw [abs_rpow_of_nonneg (abs_nonneg _), abs_abs]
     refine (h_le ω).trans_eq ?_
@@ -343,14 +341,12 @@ lemma integrable_rpow_mul_exp_of_integrable_exp_mul (ht : t ≠ 0)
   · simp_rw [norm_eq_abs, abs_mul, abs_exp]
     have h := integrable_rpow_abs_mul_exp_of_integrable_exp_mul ht ht_int_pos ht_int_neg hp
     refine h.mono' ?_ ?_
-    · exact ((hX.pow_const _).abs.mul
-        (measurable_exp.comp_aemeasurable (hX.const_mul _))).aestronglyMeasurable
+    · fun_prop
     · refine ae_of_all _ fun ω ↦ ?_
       simp only [norm_mul, norm_eq_abs, abs_abs, abs_exp]
       gcongr
       exact abs_rpow_le_abs_rpow _ _
-  · exact ((hX.pow_const _).mul
-      (measurable_exp.comp_aemeasurable (hX.const_mul _))).aestronglyMeasurable
+  · fun_prop
 
 /-- If `exp ((v + t) * X)` and `exp ((v - t) * X)` are integrable, then for all `n : ℕ`,
 `X ^ n * exp (v * X)` is integrable. -/
@@ -529,15 +525,18 @@ lemma integrable_pow_of_mem_interior_integrableExpSet
 
 /-- If 0 belongs to the interior of `integrableExpSet X μ`, then `X` is in `ℒp` for all
 finite `p`. -/
-lemma memℒp_of_mem_interior_integrableExpSet (h : 0 ∈ interior (integrableExpSet X μ)) (p : ℝ≥0) :
-    Memℒp X p μ := by
+lemma memLp_of_mem_interior_integrableExpSet (h : 0 ∈ interior (integrableExpSet X μ)) (p : ℝ≥0) :
+    MemLp X p μ := by
   have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet h
   by_cases hp_zero : p = 0
-  · simp only [hp_zero, ENNReal.coe_zero, memℒp_zero_iff_aestronglyMeasurable]
+  · simp only [hp_zero, ENNReal.coe_zero, memLp_zero_iff_aestronglyMeasurable]
     exact hX.aestronglyMeasurable
   rw [← integrable_norm_rpow_iff hX.aestronglyMeasurable (mod_cast hp_zero) (by simp)]
   simp only [norm_eq_abs, ENNReal.coe_toReal]
   exact integrable_rpow_abs_of_mem_interior_integrableExpSet h p.2
+
+@[deprecated (since := "2025-02-21")]
+alias memℒp_of_mem_interior_integrableExpSet := memLp_of_mem_interior_integrableExpSet
 
 section Complex
 
@@ -549,8 +548,8 @@ lemma integrable_cexp_mul_of_re_mem_integrableExpSet (hX : AEMeasurable X μ)
     (hz : z.re ∈ integrableExpSet X μ) :
     Integrable (fun ω ↦ cexp (z * X ω)) μ := by
   rw [← integrable_norm_iff]
-  · simpa [Complex.norm_eq_abs, Complex.abs_exp] using hz
-  · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
+  · simpa [Complex.norm_exp] using hz
+  · fun_prop
 
 lemma integrable_cexp_mul_of_re_mem_interior_integrableExpSet
     (hz : z.re ∈ interior (integrableExpSet X μ)) :
@@ -563,8 +562,8 @@ lemma integrable_rpow_abs_mul_cexp_of_re_mem_interior_integrableExpSet
     Integrable (fun ω ↦ (|X ω| ^ p : ℝ) * cexp (z * X ω)) μ := by
   have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet hz
   rw [← integrable_norm_iff]
-  swap; · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
-  simpa [abs_rpow_of_nonneg (abs_nonneg _), Complex.abs_exp]
+  swap; · fun_prop
+  simpa [abs_rpow_of_nonneg (abs_nonneg _), Complex.norm_exp]
     using integrable_rpow_abs_mul_exp_of_mem_interior_integrableExpSet hz hp
 
 lemma integrable_pow_abs_mul_cexp_of_re_mem_interior_integrableExpSet
@@ -578,13 +577,13 @@ lemma integrable_rpow_mul_cexp_of_re_mem_interior_integrableExpSet
     Integrable (fun ω ↦ (X ω ^ p : ℝ) * cexp (z * X ω)) μ := by
   have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet hz
   rw [← integrable_norm_iff]
-  swap; · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
-  simp only [norm_mul, norm_real, Real.norm_eq_abs, Complex.norm_eq_abs, Complex.abs_exp, mul_re,
-    ofReal_re, ofReal_im, mul_zero, sub_zero, Complex.abs_ofReal]
+  swap; · fun_prop
+  simp only [norm_mul, norm_real, Complex.norm_exp, mul_re, ofReal_re,
+    ofReal_im, mul_zero, sub_zero]
   refine (integrable_rpow_abs_mul_exp_of_mem_interior_integrableExpSet hz hp).mono ?_ ?_
-  · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
+  · fun_prop
   refine ae_of_all _ fun ω ↦ ?_
-  simp only [norm_mul, Real.norm_eq_abs, Complex.abs_abs, Real.abs_exp]
+  simp only [norm_mul, Real.norm_eq_abs, Real.abs_exp]
   gcongr
   exact abs_rpow_le_abs_rpow _ _
 

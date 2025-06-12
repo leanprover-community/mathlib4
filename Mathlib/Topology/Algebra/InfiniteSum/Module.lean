@@ -25,15 +25,18 @@ theorem Summable.const_smul (b : γ) (hf : Summable f) : Summable fun i ↦ b �
 
 /-- Infinite sums commute with scalar multiplication. Version for scalars living in a `Monoid`, but
   requiring a summability hypothesis. -/
-theorem tsum_const_smul [T2Space α] (b : γ) (hf : Summable f) : ∑' i, b • f i = b • ∑' i, f i :=
+protected theorem Summable.tsum_const_smul [T2Space α] (b : γ) (hf : Summable f) :
+    ∑' i, b • f i = b • ∑' i, f i :=
   (hf.hasSum.const_smul _).tsum_eq
+
+@[deprecated (since := "2025-04-12")] alias tsum_const_smul := Summable.tsum_const_smul
 
 /-- Infinite sums commute with scalar multiplication. Version for scalars living in a `Group`, but
   not requiring any summability hypothesis. -/
 lemma tsum_const_smul' {γ : Type*} [Group γ] [DistribMulAction γ α] [ContinuousConstSMul γ α]
     [T2Space α] (g : γ) : ∑' (i : β), g • f i = g • ∑' (i : β), f i := by
   by_cases hf : Summable f
-  · exact tsum_const_smul g hf
+  · exact hf.tsum_const_smul g
   rw [tsum_eq_zero_of_not_summable hf]
   simp only [smul_zero]
   let mul_g : α ≃+ α := DistribMulAction.toAddEquiv α g
@@ -46,7 +49,7 @@ lemma tsum_const_smul' {γ : Type*} [Group γ] [DistribMulAction γ α] [Continu
 /-- Infinite sums commute with scalar multiplication. Version for scalars living in a
   `DivisionRing`; no summability hypothesis. This could be made to work for a
   `[GroupWithZero γ]` if there was such a thing as `DistribMulActionWithZero`. -/
-lemma tsum_const_smul'' {γ : Type*} [DivisionRing γ] [Module γ α] [ContinuousConstSMul γ α]
+lemma tsum_const_smul'' {γ : Type*} [DivisionSemiring γ] [Module γ α] [ContinuousConstSMul γ α]
     [T2Space α] (g : γ) : ∑' (i : β), g • f i = g • ∑' (i : β), f i := by
   rcases eq_or_ne g 0 with rfl | hg
   · simp
@@ -69,8 +72,11 @@ theorem HasSum.smul_const {r : R} (hf : HasSum f r) (a : M) : HasSum (fun z ↦ 
 theorem Summable.smul_const (hf : Summable f) (a : M) : Summable fun z ↦ f z • a :=
   (hf.hasSum.smul_const _).summable
 
-theorem tsum_smul_const [T2Space M] (hf : Summable f) (a : M) : ∑' z, f z • a = (∑' z, f z) • a :=
+protected theorem Summable.tsum_smul_const [T2Space M] (hf : Summable f) (a : M) :
+    ∑' z, f z • a = (∑' z, f z) • a :=
   (hf.hasSum.smul_const _).tsum_eq
+
+@[deprecated (since := "2025-04-12")] alias tsum_smul_const := Summable.tsum_smul_const
 
 end SMulConst
 
@@ -191,6 +197,8 @@ noncomputable def MulAction.automorphize [Group α] [MulAction α β] (f : β �
   congr 1
   simp only [mul_smul]
 
+-- we can't use `to_additive`, because it tries to translate `•` into `+ᵥ`
+
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/
 lemma MulAction.automorphize_smul_left [Group α] [MulAction α β] (f : β → M)
@@ -229,8 +237,6 @@ lemma AddAction.automorphize_smul_left [AddGroup α] [AddAction α β]  (f : β 
   simp_rw [H₁]
   exact tsum_const_smul'' _
 
-attribute [to_additive existing MulAction.automorphize_smul_left] AddAction.automorphize_smul_left
-
 section
 
 variable {G : Type*} [Group G] {Γ : Subgroup G}
@@ -263,8 +269,5 @@ lemma QuotientAddGroup.automorphize_smul_left (f : G → M) (g : G ⧸ Γ → R)
   AddAction.automorphize_smul_left f g
 
 end
-
-attribute [to_additive existing QuotientGroup.automorphize_smul_left]
-  QuotientAddGroup.automorphize_smul_left
 
 end automorphize

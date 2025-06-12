@@ -23,28 +23,28 @@ where the rational number `m/n` is in lowest terms. The result is that for any `
 either almost all `x` or almost no `x`.
 
 This result was proved by Gallagher in 1959
-[P. Gallagher, *Approximation by reduced fractions*](Gallagher1961). It is formalised here as
+[P. Gallagher, *Approximation by reduced fractions*][Gallagher1961]. It is formalised here as
 `AddCircle.addWellApproximable_ae_empty_or_univ` except with `x` belonging to the circle `ℝ ⧸ ℤ`
 since this turns out to be more natural.
 
 Given a particular `δ`, the Duffin-Schaeffer conjecture (now a theorem) gives a criterion for
 deciding which of the two cases in the conclusion of Gallagher's theorem actually occurs. It was
 proved by Koukoulopoulos and Maynard in 2019
-[D. Koukoulopoulos, J. Maynard, *On the Duffin-Schaeffer conjecture*](KoukoulopoulosMaynard2020).
+[D. Koukoulopoulos, J. Maynard, *On the Duffin-Schaeffer conjecture*][KoukoulopoulosMaynard2020].
 We do *not* include a formalisation of the Koukoulopoulos-Maynard result here.
 
 ## Main definitions and results:
 
- * `approxOrderOf`: in a seminormed group `A`, given `n : ℕ` and `δ : ℝ`, `approxOrderOf A n δ`
-   is the set of elements within a distance `δ` of a point of order `n`.
- * `wellApproximable`: in a seminormed group `A`, given a sequence of distances `δ₁, δ₂, ...`,
-   `wellApproximable A δ` is the limsup as `n → ∞` of the sets `approxOrderOf A n δₙ`. Thus, it
-   is the set of points that lie in infinitely many of the sets `approxOrderOf A n δₙ`.
- * `AddCircle.addWellApproximable_ae_empty_or_univ`: *Gallagher's ergodic theorem* says that for
-   the (additive) circle `𝕊`, for any sequence of distances `δ`, the set
-   `addWellApproximable 𝕊 δ` is almost empty or almost full.
- * `NormedAddCommGroup.exists_norm_nsmul_le`: a general version of Dirichlet's approximation theorem
- * `AddCircle.exists_norm_nsmul_le`: Dirichlet's approximation theorem
+* `approxOrderOf`: in a seminormed group `A`, given `n : ℕ` and `δ : ℝ`, `approxOrderOf A n δ`
+  is the set of elements within a distance `δ` of a point of order `n`.
+* `wellApproximable`: in a seminormed group `A`, given a sequence of distances `δ₁, δ₂, ...`,
+  `wellApproximable A δ` is the limsup as `n → ∞` of the sets `approxOrderOf A n δₙ`. Thus, it
+  is the set of points that lie in infinitely many of the sets `approxOrderOf A n δₙ`.
+* `AddCircle.addWellApproximable_ae_empty_or_univ`: *Gallagher's ergodic theorem* says that for
+  the (additive) circle `𝕊`, for any sequence of distances `δ`, the set
+  `addWellApproximable 𝕊 δ` is almost empty or almost full.
+* `NormedAddCommGroup.exists_norm_nsmul_le`: a general version of Dirichlet's approximation theorem
+* `AddCircle.exists_norm_nsmul_le`: Dirichlet's approximation theorem
 
 ## TODO
 
@@ -306,9 +306,9 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     obtain ⟨p, hp⟩ := h
     rw [hE₁ p]
     cases hp
-    · cases' hA p with _ h; · contradiction
+    · rcases hA p with _ | h; · contradiction
       simp only [μ, h, union_ae_eq_univ_of_ae_eq_univ_left]
-    · cases' hB p with _ h; · contradiction
+    · rcases hB p with _ | h; · contradiction
       simp only [μ, h, union_ae_eq_univ_of_ae_eq_univ_left,
         union_ae_eq_univ_of_ae_eq_univ_right]
 
@@ -316,13 +316,13 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
 
 See also `AddCircle.exists_norm_nsmul_le`. -/
 lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type*}
-    [NormedAddCommGroup A] [CompactSpace A] [ConnectedSpace A]
+    [NormedAddCommGroup A] [CompactSpace A] [PreconnectedSpace A]
     [MeasurableSpace A] [BorelSpace A] {μ : Measure A} [μ.IsAddHaarMeasure]
     (ξ : A) {n : ℕ} (hn : 0 < n) (δ : ℝ) (hδ : μ univ ≤ (n + 1) • μ (closedBall (0 : A) (δ/2))) :
     ∃ j ∈ Icc 1 n, ‖j • ξ‖ ≤ δ := by
   have : IsFiniteMeasure μ := CompactSpace.isFiniteMeasure
   let B : Icc 0 n → Set A := fun j ↦ closedBall ((j : ℕ) • ξ) (δ/2)
-  have hB : ∀ j, IsClosed (B j) := fun j ↦ isClosed_ball
+  have hB : ∀ j, IsClosed (B j) := fun j ↦ isClosed_closedBall
   suffices ¬ Pairwise (Disjoint on B) by
     obtain ⟨i, j, hij, x, hx⟩ := exists_lt_mem_inter_of_not_pairwise_disjoint this
     refine ⟨j - i, ⟨le_tsub_of_add_le_left hij, ?_⟩, ?_⟩
@@ -336,8 +336,8 @@ lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type*}
     rw [← (isClosed_iUnion_of_finite hB).measure_eq_univ_iff_eq (μ := μ)]
     refine le_antisymm (μ.mono (subset_univ _)) ?_
     simp_rw [measure_iUnion h (fun _ ↦ measurableSet_closedBall), tsum_fintype,
-      B, μ.addHaar_closedBall_center, Finset.sum_const, Finset.card_univ, Nat.card_fintypeIcc,
-      tsub_zero]
+      B, μ.addHaar_closedBall_center, Finset.sum_const, Finset.card_univ, Fintype.card_Icc,
+      Nat.card_Icc, tsub_zero]
     exact hδ
   replace hδ : 0 ≤ δ/2 := by
     by_contra contra

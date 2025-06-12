@@ -1,10 +1,15 @@
 import Mathlib.Tactic.Eval
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Sort
+import Mathlib.Util.Qq
 
 #guard_expr eval% 2^10 =ₛ 1024
 
 #guard_expr (eval% 2^10 : Int) =ₛ (1024 : Int)
+
+#guard_expr
+  (eval% Multiset.powerset ({1, 2, 3} : Multiset ℕ)) =
+    {0, {1}, {2}, {1, 2}, {3}, {1, 3}, {2, 3}, {1, 2, 3}}
 
 -- https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/How.20to.20simplify.20this.20proof.20without.20using.20a.20have.20statement.3F/near/422294189
 section from_zulip
@@ -12,6 +17,7 @@ section from_zulip
 /--
 error: failed to synthesize
   Lean.ToExpr (Finset (Finset ℕ))
+
 Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
@@ -36,14 +42,11 @@ open Qq Lean
 /-- `Finset α` can be converted to an expr only if there is some way to find `DecidableEq α`. -/
 unsafe nonrec instance Finset.toExpr
     {α : Type u} [ToLevel.{u}] [ToExpr α] [HasInstance (DecidableEq α)] : ToExpr (Finset α) :=
-  have u' : Level := ToLevel.toLevel.{u}
-  have α' : Q(Type u') := Lean.ToExpr.toTypeExpr α
+  haveI u' : Level := Lean.toLevel.{u}
+  haveI α' : Q(Type u') := Lean.toTypeExpr α
   letI : Q(DecidableEq $α') := HasInstance.expr (DecidableEq α)
   { toTypeExpr := q(Finset $α')
-    toExpr := fun x => show Q(Finset $α') from
-      match show List Q($α') from x.val.unquot.reverse.map toExpr with
-      | [] => q(∅)
-      | x0 :: xs => List.foldl (fun s x => q(insert $x $s)) q({$x0}) xs }
+    toExpr x := show Q(Finset $α') from mkSetLiteralQ q(Finset $α') (x.val.unquot.map toExpr) }
 
 #guard_expr
   (eval% Finset.powerset ({1, 2, 3} : Finset ℕ)) =

@@ -59,7 +59,7 @@ instance (f : X ⟶ Y) (y : Y) : IsPreimmersion (f.fiberι y) :=
 
 /-- The scheme theoretic fiber of `f` at `y` is homeomorphic to `f ⁻¹' {y}`. -/
 def Scheme.Hom.fiberHomeo (f : X.Hom Y) (y : Y) : f.fiber y ≃ₜ f.base ⁻¹' {y} :=
-  .trans (.ofIsEmbedding _ (f.fiberι y).isEmbedding) (.setCongr (f.range_fiberι y))
+  .trans (f.fiberι y).isEmbedding.toHomeomorph (.setCongr (f.range_fiberι y))
 
 @[simp]
 lemma Scheme.Hom.fiberHomeo_apply (f : X.Hom Y) (y : Y) (x : f.fiber y) :
@@ -101,7 +101,7 @@ instance (f : X ⟶ Y) (y : Y) [LocallyOfFiniteType f] : JacobsonSpace (f.fiber 
 instance (f : X ⟶ Y) (y : Y) [IsFinite f] : Finite (f.fiber y) := by
   have H : IsFinite (f.fiberToSpecResidueField y) := MorphismProperty.pullback_snd _ _ inferInstance
   have : IsArtinianRing Γ(f.fiber y, ⊤) :=
-    @IsArtinianRing.of_finite (Y.residueField y) Γ(f.fiber y, ⊤) _ _ (show _ from _) _
+    @IsArtinianRing.of_finite (Y.residueField y) Γ(f.fiber y, ⊤) _ _ (show _ from _) _ _
       ((HasAffineProperty.iff_of_isAffine.mp H).2.comp (.of_surjective _ (Scheme.ΓSpecIso
         (Y.residueField y)).commRingCatIsoToRingEquiv.symm.surjective))
   exact .of_injective (β := PrimeSpectrum _) _ (f.fiber y).isoSpec.hom.homeomorph.injective

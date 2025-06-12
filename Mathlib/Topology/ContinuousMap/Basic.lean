@@ -5,7 +5,8 @@ Authors: Nicolò Cavalleri
 -/
 import Mathlib.Data.Set.UnionLift
 import Mathlib.Topology.ContinuousMap.Defs
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Defs
+import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Continuous bundled maps
@@ -49,21 +50,24 @@ protected theorem continuousAt (f : C(α, β)) (x : α) : ContinuousAt f x :=
 theorem map_specializes (f : C(α, β)) {x y : α} (h : x ⤳ y) : f x ⤳ f y :=
   h.map f.2
 
-section
-
-variable (α β)
+section DiscreteTopology
+variable [DiscreteTopology α]
 
 /--
 The continuous functions from `α` to `β` are the same as the plain functions when `α` is discrete.
 -/
 @[simps]
-def equivFnOfDiscrete [DiscreteTopology α] : C(α, β) ≃ (α → β) :=
+def equivFnOfDiscrete : C(α, β) ≃ (α → β) :=
   ⟨fun f => f,
     fun f => ⟨f, continuous_of_discreteTopology⟩,
     fun _ => by ext; rfl,
     fun _ => by ext; rfl⟩
 
-end
+@[simp] lemma coe_equivFnOfDiscrete : ⇑equivFnOfDiscrete = (DFunLike.coe : C(α, β) → α → β) := rfl
+
+@[simp] lemma equivFnOfDiscrete_symm_apply (f : α → β) : equivFnOfDiscrete.symm f = f := rfl
+
+end DiscreteTopology
 
 variable (α)
 
@@ -84,7 +88,7 @@ theorem coe_const (b : β) : ⇑(const α b) = Function.const α b :=
   rfl
 
 /-- `Function.const α b` as a bundled continuous function of `b`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def constPi : C(β, α → β) where
   toFun b := Function.const α b
 
@@ -154,12 +158,12 @@ variable {α₁ α₂ β₁ β₂ : Type*} [TopologicalSpace α₁] [Topological
   [TopologicalSpace β₂]
 
 /-- `Prod.fst : (x, y) ↦ x` as a bundled continuous map. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def fst : C(α × β, α) where
   toFun := Prod.fst
 
 /-- `Prod.snd : (x, y) ↦ y` as a bundled continuous map. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def snd : C(α × β, β) where
   toFun := Prod.snd
 
@@ -227,7 +231,7 @@ theorem pi_eval (f : ∀ i, C(A, X i)) (a : A) : (pi f) a = fun i : I => (f i) a
   rfl
 
 /-- Evaluation at point as a bundled continuous map. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def eval (i : I) : C(∀ j, X j, X i) where
   toFun := Function.eval i
 
@@ -303,7 +307,7 @@ noncomputable def liftCover : C(α, β) :=
     Set.iUnion_eq_univ_iff.2 fun x ↦ (hS x).imp fun _ ↦ mem_of_mem_nhds
   mk (Set.liftCover S (fun i ↦ φ i) hφ H) <| continuous_of_cover_nhds hS fun i ↦ by
     rw [continuousOn_iff_continuous_restrict]
-    simpa (config := { unfoldPartialApp := true }) only [Set.restrict, Set.liftCover_coe]
+    simpa +unfoldPartialApp only [Set.restrict, Set.liftCover_coe]
       using map_continuous (φ i)
 
 variable {S φ hφ hS}
@@ -325,13 +329,10 @@ variable (A : Set (Set α)) (F : ∀ s ∈ A, C(s, β))
 /-- A family `F s` of continuous maps `C(s, β)`, where (1) the domains `s` are taken from a set `A`
 of sets in `α` which contain a neighbourhood of each point in `α` and (2) the functions `F s` agree
 pairwise on intersections, can be glued to construct a continuous map in `C(α, β)`. -/
-noncomputable def liftCover' : C(α, β) := by
-  let S : A → Set α := (↑)
+noncomputable def liftCover' : C(α, β) :=
   let F : ∀ i : A, C(i, β) := fun i => F i i.prop
-  refine liftCover S F (fun i j => hF i i.prop j j.prop) ?_
-  intro x
-  obtain ⟨s, hs, hsx⟩ := hA x
-  exact ⟨⟨s, hs⟩, hsx⟩
+  liftCover ((↑) : A → Set α) F (fun i j => hF i i.prop j j.prop)
+    fun x => let ⟨s, hs, hsx⟩ := hA x; ⟨⟨s, hs⟩, hsx⟩
 
 variable {A F hF hA}
 
@@ -341,9 +342,8 @@ variable {A F hF hA}
 @[simp]
 theorem liftCover_coe' {s : Set α} {hs : s ∈ A} (x : s) : liftCover' A F hF hA x = F s hs x :=
   let x' : ((↑) : A → Set α) ⟨s, hs⟩ := x
-  by delta liftCover'; exact liftCover_coe x'
+  by delta liftCover'; exact ContinuousMap.liftCover_coe x'
 
--- Porting note: porting program suggested `ext <| liftCover_coe'`
 @[simp]
 theorem liftCover_restrict' {s : Set α} {hs : s ∈ A} :
     (liftCover' A F hF hA).restrict s = F s hs := ext <| liftCover_coe' (hF := hF) (hA := hA)
@@ -434,13 +434,6 @@ variable (f : α ≃ₜ β) (g : β ≃ₜ γ)
 
 instance instContinuousMapClass : ContinuousMapClass (α ≃ₜ β) α β where
   map_continuous f := f.continuous_toFun
-
-/-- The forward direction of a homeomorphism, as a bundled continuous map. -/
-@[simps, deprecated _root_.toContinuousMap (since := "2024-10-12")]
-protected def toContinuousMap (e : α ≃ₜ β) : C(α, β) :=
-  ⟨e, e.continuous_toFun⟩
-
-attribute [deprecated ContinuousMap.coe_apply (since := "2024-10-12")] toContinuousMap_apply
 
 @[simp]
 theorem coe_refl : (Homeomorph.refl α : C(α, α)) = ContinuousMap.id α :=
