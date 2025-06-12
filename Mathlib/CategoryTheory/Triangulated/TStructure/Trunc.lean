@@ -1064,8 +1064,8 @@ lemma isIso_truncGEmap_iff {Y Z : C} (g : Y ⟶ Z) (n₀ n₁ : ℤ) (hn₁ : n�
   · rintro ⟨X, f, h, mem, _⟩
     obtain ⟨e, he⟩ := t.triangle_iso_exists n₀ n₁ (by linarith) _ _
       (t.triangleLEGE_distinguished n₀ n₁ hn₁ Y) mem (Iso.refl _)
-      (by dsimp ; infer_instance) (by dsimp ; infer_instance)
-      (by dsimp ; infer_instance) (by dsimp ; infer_instance)
+      (by dsimp; infer_instance) (by dsimp; infer_instance)
+      (by dsimp; infer_instance) (by dsimp; infer_instance)
     suffices ((t.truncGE n₁).map g) = e.hom.hom₃ by
       rw [this]
       infer_instance
