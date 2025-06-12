@@ -33,7 +33,8 @@ def monoidalClosedHomEquiv (M N P : ModuleCat.{u} R) :
     ext : 1
     apply TensorProduct.ext'
     intro m n
-    simp only [Hom.hom₂_ofHom₂, LinearMap.comp_apply, hom_comp, MonoidalCategory.tensorLeft_obj]
+    simp only [Hom.hom₂_ofHom₂, LinearMap.comp_apply, hom_comp,
+      MonoidalCategory.curriedTensor_obj_obj]
     erw [MonoidalCategory.braiding_hom_apply m n, TensorProduct.lift.tmul]
   right_inv _ := rfl
 
