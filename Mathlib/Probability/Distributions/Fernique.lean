@@ -105,9 +105,6 @@ lemma ENNReal.tsum_ofReal_exp_lt_top {c : ℝ} (hc : c < 0) {f : ℕ → ℝ} (h
     have h_sum : Summable fun i : ℕ ↦ rexp (i * c) := Real.summable_exp_nat_mul_iff.mpr hc
     simp [← ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) h_sum]
 
-lemma aux {c : ℝ} (hc : c < 0) : ∑' i, .ofReal (rexp (c * 2 ^ i)) < ∞ :=
-  ENNReal.tsum_ofReal_exp_lt_top hc (fun i ↦ mod_cast Nat.le_two_pow i)
-
 end Aux
 
 section ArithmeticGeometricSequence
@@ -242,6 +239,8 @@ open Filter
 
 variable {a : ℝ}
 
+section AnnulusIntegralBound
+
 private noncomputable def normSeq (a : ℝ) : ℕ → ℝ
 | 0 => a
 | n + 1 => √2 * normSeq a n + a
@@ -342,38 +341,11 @@ lemma measure_gt_normSeq_le_exp [IsProbabilityMeasure μ]
   · positivity
   · positivity
 
-lemma measure_gt_normSeq_le_exp_normSeq [IsProbabilityMeasure μ]
-    (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)
-    (ha_gt : 2⁻¹ < μ {x | ‖x‖ ≤ a}) (ha_lt : μ {x | ‖x‖ ≤ a} < 1) (n : ℕ) :
-    μ {x | normSeq a n < ‖x‖}
-      ≤ μ {x | ‖x‖ ≤ a} * .ofReal (rexp (- Real.log (μ {x | ‖x‖ ≤ a} / (1 - μ {x | ‖x‖ ≤ a})).toReal
-        * normSeq a (n + 1) ^ 2 * a⁻¹ ^ 2 / (4 * (1 + √2) ^ 2))) := by
-  refine (measure_gt_normSeq_le_exp h_rot ha_gt ha_lt n).trans ?_
-  gcongr
-  simp only [ENNReal.toReal_div, neg_mul, neg_div, neg_le_neg_iff]
-  simp_rw [mul_assoc, mul_div_assoc]
-  gcongr
-  · refine Real.log_nonneg ?_
-    rw [one_le_div]
-    · refine (ENNReal.toReal_le_toReal (by finiteness) (by finiteness)).mpr ?_
-      refine tsub_le_iff_left.mpr ?_
-      rw [← two_mul]
-      rw [inv_eq_one_div, ENNReal.div_lt_iff (by simp) (by simp), mul_comm] at ha_gt
-      exact ha_gt.le
-    · simp only [ENNReal.toReal_pos_iff, tsub_pos_iff_lt, ha_lt, true_and]
-      finiteness
-  · by_cases ha : a = 0
-    · simp [ha]
-    field_simp [ha]
-    rw [div_le_iff₀ (by positivity)]
-    refine (normSeq_add_one_le n).trans_eq (by ring)
-
 private noncomputable def someFun (c : ℝ≥0∞) : ℝ :=
   Real.log (c.toReal / (1 - c).toReal) / (8 * (1 + √2) ^ 2)
 
 lemma someFun_pos {c : ℝ≥0∞} (hc_gt : (2 : ℝ≥0∞)⁻¹ < c) (hc_lt : c < 1) : 0 < someFun c := by
-  refine div_pos ?_ (by positivity)
-  refine Real.log_pos ?_
+  refine div_pos (Real.log_pos ?_) (by positivity)
   rw [one_lt_div_iff]
   refine Or.inl ⟨?_, ?_⟩
   · simp only [ENNReal.toReal_pos_iff, tsub_pos_iff_lt, hc_lt, true_and]
@@ -383,75 +355,26 @@ lemma someFun_pos {c : ℝ≥0∞} (hc_gt : (2 : ℝ≥0∞)⁻¹ < c) (hc_lt : 
     rw [← two_mul]
     rwa [inv_eq_one_div, ENNReal.div_lt_iff (by simp) (by simp), mul_comm] at hc_gt
 
+lemma someFun_nonneg {c : ℝ≥0∞} (hc_ge : (2 : ℝ≥0∞)⁻¹ ≤ c) (hc_le : c ≤ 1) : 0 ≤ someFun c := by
+  by_cases hc1 : c = 2⁻¹
+  · simp [someFun, hc1]
+  by_cases hc2 : c = 1
+  · simp [someFun, hc2]
+  exact (someFun_pos (lt_of_le_of_ne' hc_ge hc1) (lt_of_le_of_ne hc_le hc2)).le
+
 lemma someFun_mono {c d : ℝ≥0∞} (hc : (2 : ℝ≥0∞)⁻¹ < c) (hd : d < 1) (h : c ≤ d) :
     someFun c ≤ someFun d := by
   unfold someFun
   gcongr
   · refine div_pos ?_ ?_
     · rw [ENNReal.toReal_pos_iff]
-      constructor
-      · -- todo: positivity doesn't work here?
-        refine lt_trans ?_ hc
-        norm_num
-      · refine h.trans_lt (by finiteness)
+      exact ⟨lt_trans (by norm_num) hc, h.trans_lt (by finiteness)⟩
     · simp only [ENNReal.toReal_pos_iff, tsub_pos_iff_lt]
       exact ⟨h.trans_lt hd, by finiteness⟩
   · simp only [ENNReal.toReal_pos_iff, tsub_pos_iff_lt, hd, true_and]
     finiteness
   · finiteness
   · finiteness
-
-lemma measure_gt_normSeq_le_exp_someFun_mul_normSeq [IsProbabilityMeasure μ]
-    (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)
-    (ha_gt : 2⁻¹ < μ {x | ‖x‖ ≤ a}) (ha_lt : μ {x | ‖x‖ ≤ a} < 1) (n : ℕ) :
-    μ {x | normSeq a n < ‖x‖}
-      ≤ μ {x | ‖x‖ ≤ a} * .ofReal (rexp (- 2 * someFun (μ {x | ‖x‖ ≤ a})
-        * normSeq a (n + 1) ^ 2 * a⁻¹ ^ 2)) := by
-    refine (measure_gt_normSeq_le_exp_normSeq h_rot ha_gt ha_lt n).trans_eq ?_
-    congr
-    unfold someFun
-    by_cases ha : a = 0
-    · simp [ha]
-    field_simp
-    ring
-
-open Metric in
-lemma todo [IsProbabilityMeasure μ]
-    (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)
-    (ha_gt : 2⁻¹ < μ {x | ‖x‖ ≤ a}) (ha_lt : μ {x | ‖x‖ ≤ a} < 1) (n : ℕ) :
-    ∫⁻ x in (closedBall 0 (normSeq a (n + 1)) \ closedBall 0 (normSeq a n)),
-        .ofReal (rexp (someFun (μ {x | ‖x‖ ≤ a}) * a⁻¹ ^ 2 * ‖x‖ ^ 2)) ∂μ
-      ≤ μ {x | ‖x‖ ≤ a}
-        * .ofReal (rexp (- someFun (μ {x | ‖x‖ ≤ a}) * normSeq a (n + 1) ^ 2 * a⁻¹ ^ 2)) :=
-  let t := normSeq a
-  let c := μ {x | ‖x‖ ≤ a}
-  calc ∫⁻ x in (closedBall 0 (t (n + 1)) \ closedBall 0 (t n)),
-        .ofReal (rexp (someFun c * a⁻¹ ^ 2 * ‖x‖ ^ 2)) ∂μ
-  _ ≤ .ofReal (rexp (someFun c * a⁻¹ ^ 2 * t (n + 1) ^ 2)) * μ {x | t n < ‖x‖} := by
-    let C := someFun c * a⁻¹ ^ 2
-    calc ∫⁻ x in (closedBall 0 (t (n + 1)) \ closedBall 0 (t n)), .ofReal (rexp (C * ‖x‖ ^ 2)) ∂μ
-    _ ≤ ∫⁻ x in (closedBall 0 (t (n + 1)) \ closedBall 0 (t n)),
-        .ofReal (rexp (C * t (n + 1) ^ 2)) ∂μ := by
-      refine setLIntegral_mono (by fun_prop) fun x hx ↦ ?_
-      gcongr
-      · exact mul_nonneg (someFun_pos ha_gt ha_lt).le (by positivity)
-      · simp only [Set.mem_diff, mem_closedBall, dist_zero_right, not_le] at hx
-        exact hx.1
-    _ = .ofReal (rexp (C * t (n + 1) ^ 2)) * μ (closedBall 0 (t (n + 1)) \ closedBall 0 (t n)) := by
-      simp only [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter, C, t]
-    _ ≤ .ofReal (rexp (C * t (n + 1) ^ 2)) * μ {x | t n < ‖x‖} := by
-      gcongr
-      intro x
-      simp
-  _ ≤ .ofReal (rexp (someFun c * a⁻¹ ^ 2 * t (n + 1) ^ 2))
-      * c * .ofReal (rexp (- 2 * someFun c * t (n + 1) ^ 2 * a⁻¹ ^ 2)) := by
-    conv_rhs => rw [mul_assoc]
-    gcongr
-    exact measure_gt_normSeq_le_exp_someFun_mul_normSeq h_rot ha_gt ha_lt n
-  _ = c * .ofReal (rexp (- someFun c * t (n + 1) ^ 2 * a⁻¹ ^ 2)) := by
-    rw [mul_comm _ c, mul_assoc, ← ENNReal.ofReal_mul (by positivity), ← Real.exp_add]
-    congr
-    ring
 
 private lemma someFun_mul_normSeq_add_one_le {c : ℝ≥0∞} (hc_gt : (2 : ℝ≥0∞)⁻¹ < c) (hc_lt : c < 1)
     (n : ℕ) :
@@ -480,7 +403,7 @@ private lemma someFun_mul_normSeq_add_one_le {c : ℝ≥0∞} (hc_gt : (2 : ℝ�
     ring
 
 open Metric in
-lemma todo' [IsProbabilityMeasure μ]
+lemma lintegral_closedBall_diff_exp_someFun_mul_sq_le [IsProbabilityMeasure μ]
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)
     (ha_gt : 2⁻¹ < μ {x | ‖x‖ ≤ a}) (ha_lt : μ {x | ‖x‖ ≤ a} < 1) (n : ℕ) :
     ∫⁻ x in (closedBall 0 (normSeq a (n + 1)) \ closedBall 0 (normSeq a n)),
@@ -521,22 +444,56 @@ lemma todo' [IsProbabilityMeasure μ]
     field_simp
     ring
 
+end AnnulusIntegralBound
+
+section IntegralBound
+
 open Metric in
-lemma some_integral_todo [IsProbabilityMeasure μ]
+lemma lintegral_exp_mul_sq_norm_le [IsProbabilityMeasure μ]
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)
     (ha_pos : 0 < a)
-    (ha_gt : 2⁻¹ < μ {x | ‖x‖ ≤ a}) (ha_lt : μ {x | ‖x‖ ≤ a} < 1) :
-    ∫⁻ x, .ofReal (rexp (someFun (μ {x | ‖x‖ ≤ a}) * a⁻¹ ^ 2 * ‖x‖ ^ 2)) ∂μ
+    {c' : ℝ≥0∞} (hc' : c' ≤ μ {x | ‖x‖ ≤ a}) (hc'_gt : 2⁻¹ < c') :
+    ∫⁻ x, .ofReal (rexp (someFun c' * a⁻¹ ^ 2 * ‖x‖ ^ 2)) ∂μ
       ≤ μ {x | ‖x‖ ≤ a} *
-       (.ofReal (rexp (someFun (μ {x | ‖x‖ ≤ a})))
-        + ∑' n, .ofReal (rexp
-          (- 2⁻¹ * Real.log (μ {x | ‖x‖ ≤ a} / (1 - μ {x | ‖x‖ ≤ a})).toReal * 2 ^ n))) := by
+       (.ofReal (rexp (someFun c'))
+        + ∑' n, .ofReal (rexp (- 2⁻¹ * Real.log (c' / (1 - c')).toReal * 2 ^ n))) := by
   let t := normSeq a
   let c := μ {x | ‖x‖ ≤ a}
-  let C := someFun c * a⁻¹ ^ 2
+  let C := someFun c' * a⁻¹ ^ 2
+  have ha_gt : 2⁻¹ < c := hc'_gt.trans_le hc'
+  have hc'_le : c' ≤ 1 := hc'.trans prob_le_one
   change ∫⁻ x, .ofReal (rexp (C * ‖x‖ ^ 2)) ∂μ
-      ≤ c * (.ofReal (rexp (someFun c))
-            + ∑' n, .ofReal (rexp (- 2⁻¹ * Real.log (c / (1 - c)).toReal * 2 ^ n)))
+      ≤ c * (.ofReal (rexp (someFun c'))
+            + ∑' n, .ofReal (rexp (- 2⁻¹ * Real.log (c' / (1 - c')).toReal * 2 ^ n)))
+  have ht_int_zero : ∫⁻ x in closedBall 0 a, .ofReal (rexp (C * ‖x‖ ^ 2)) ∂μ
+      ≤ μ {x | ‖x‖ ≤ a} * .ofReal (rexp (someFun c')) := by
+    calc ∫⁻ x in closedBall 0 a, .ofReal (rexp (C * ‖x‖ ^ 2)) ∂μ
+    _ ≤ ∫⁻ x in closedBall 0 a, .ofReal (rexp (C * a ^ 2)) ∂μ := by
+      refine setLIntegral_mono (by fun_prop) fun x hx ↦ ?_
+      gcongr
+      · exact mul_nonneg (someFun_nonneg hc'_gt.le hc'_le) (by positivity)
+      · simpa using hx
+    _ = μ {x | ‖x‖ ≤ a} * .ofReal (rexp (someFun c')) := by
+      simp only [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter]
+      rw [mul_comm]
+      field_simp [C]
+      congr
+      ext
+      simp
+  by_cases ha : μ {x | ‖x‖ ≤ a} = 1
+  · simp [c, ha] at ht_int_zero ⊢
+    refine le_add_right ((le_of_eq ?_).trans ht_int_zero)
+    rw [← setLIntegral_univ]
+    refine setLIntegral_congr ?_
+    rw [← ae_iff_prob_eq_one ?_] at ha
+    · filter_upwards [ha] with x hx
+      suffices x ∈ Set.univ ↔ x ∈ closedBall 0 a by simpa [Set.mem_def] using this
+      simp [hx]
+    · refine measurable_to_prop ?_
+      rw [show (fun x : E ↦ ‖x‖ ≤ a) ⁻¹' {True} = {x : E | ‖x‖ ≤ a} by ext; simp]
+      exact measurableSet_le (by fun_prop) (by fun_prop)
+  have ha_lt : μ {x | ‖x‖ ≤ a} < 1 := lt_of_le_of_ne prob_le_one ha
+  have hc'_lt : c' < 1 := lt_of_le_of_lt hc' ha_lt
   have h_iUnion : (Set.univ : Set E)
       = closedBall 0 a ∪ ⋃ n, closedBall 0 (t (n + 1)) \ closedBall 0 (t n) := by
     ext x
@@ -554,32 +511,65 @@ lemma some_integral_todo [IsProbabilityMeasure μ]
     gcongr
     exact lintegral_iUnion_le _ _
   refine this.trans ?_
-  have ht_int_zero : ∫⁻ x in closedBall 0 a, .ofReal (rexp (C * ‖x‖ ^ 2)) ∂μ
-      ≤ μ {x | ‖x‖ ≤ a} * .ofReal (rexp (C * a ^ 2)) := by
-    calc ∫⁻ x in closedBall 0 a, .ofReal (rexp (C * ‖x‖ ^ 2)) ∂μ
-    _ ≤ ∫⁻ x in closedBall 0 a, .ofReal (rexp (C * a ^ 2)) ∂μ := by
-      refine setLIntegral_mono (by fun_prop) fun x hx ↦ ?_
-      gcongr
-      · exact mul_nonneg (someFun_pos ha_gt ha_lt).le (by positivity)
-      · simpa using hx
-    _ = μ {x | ‖x‖ ≤ a} * .ofReal (rexp (C * a ^ 2)) := by
-      simp only [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter]
-      rw [mul_comm]
-      congr
-      ext
-      simp
   rw [mul_add]
   gcongr
-  · convert ht_int_zero
-    field_simp [C]
+  · exact ht_int_zero
   rw [← ENNReal.tsum_mul_left]
   gcongr with n
-  exact todo' h_rot ha_gt ha_lt n
+  refine (le_trans ?_ (lintegral_closedBall_diff_exp_someFun_mul_sq_le h_rot
+    (hc'_gt.trans_le hc') ha_lt n)).trans ?_
+  · gcongr
+    field_simp [C]
+    gcongr
+    exact someFun_mono hc'_gt ha_lt hc'
+  gcongr _ * ENNReal.ofReal (rexp ?_)
+  simp only [ENNReal.toReal_div, neg_mul, neg_le_neg_iff, Nat.ofNat_pos, pow_pos, mul_le_mul_right,
+    inv_pos, mul_le_mul_left, C]
+  gcongr
+  · refine div_pos ?_ ?_
+    all_goals rw [ENNReal.toReal_pos_iff]
+    · exact ⟨lt_trans (by norm_num) hc'_gt, by finiteness⟩
+    · simp only [tsub_pos_iff_lt, hc'_lt, true_and, C]
+      finiteness
+  · simp only [ENNReal.toReal_pos_iff, tsub_pos_iff_lt, C]
+    exact ⟨ha_lt, by finiteness⟩
+  · finiteness
+  · finiteness
 
-open Metric Filter in
+lemma lintegral_exp_mul_sq_norm_le' [IsProbabilityMeasure μ]
+    (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)
+    {c' : ℝ≥0∞} (hc' : c' ≤ μ {x | ‖x‖ ≤ a}) (hc'_gt : 2⁻¹ < c') :
+    ∫⁻ x, .ofReal (rexp (someFun c' * a⁻¹ ^ 2 * ‖x‖ ^ 2)) ∂μ
+      ≤ .ofReal (rexp (someFun c'))
+        + ∑' n, .ofReal (rexp (- 2⁻¹ * Real.log (c' / (1 - c')).toReal * 2 ^ n)) := by
+  by_cases ha : a = 0
+  · simp only [ha, inv_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, mul_zero,
+      zero_mul, Real.exp_zero, ENNReal.ofReal_one, lintegral_const, measure_univ, mul_one,
+      ENNReal.toReal_div, neg_mul]
+    refine le_add_right ?_
+    rw [← ENNReal.ofReal_one]
+    gcongr
+    simp only [Real.one_le_exp_iff]
+    exact someFun_nonneg hc'_gt.le (hc'.trans prob_le_one)
+  have ha_pos : 0 < a := by
+    refine lt_of_le_of_ne' ?_ ha
+    by_contra h_neg
+    have : {x : E | ‖x‖ ≤ a} = ∅ := by
+      ext x
+      simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false, not_le]
+      exact (not_le.mp h_neg).trans_le (norm_nonneg _)
+    simp only [this, measure_empty, nonpos_iff_eq_zero] at hc'
+    simp [hc'] at hc'_gt
+  refine (lintegral_exp_mul_sq_norm_le h_rot ha_pos hc' hc'_gt).trans ?_
+  conv_rhs => rw [← one_mul (ENNReal.ofReal _ + _)]
+  gcongr
+  exact prob_le_one
+
+end IntegralBound
+
 /-- Auxiliary lemma for `exists_integrable_exp_sq_of_map_rotation_eq_self`.
-The assumption `h_meas_Ioo : ∃ a, 0 < a ∧ 2⁻¹ < μ {x | ‖x‖ ≤ a} ∧ μ {x | ‖x‖ ≤ a} < 1` is not
-needed and will be removed in that more general theorem. -/
+The assumptions on `a` and `μ {x | ‖x‖ ≤ a}` are not needed and will be removed in that more
+general theorem. -/
 lemma exists_integrable_exp_sq_of_map_rotation_eq_self' [IsProbabilityMeasure μ]
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)
     {a : ℝ} (ha_pos : 0 < a) (ha_gt : 2⁻¹ < μ {x | ‖x‖ ≤ a}) (ha_lt : μ {x | ‖x‖ ≤ a} < 1) :
@@ -587,7 +577,7 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self' [IsProbabilityMeasure μ
   let c := μ {x | ‖x‖ ≤ a}
   have hc_pos : 0 < c := lt_of_lt_of_le (by simp) ha_gt.le
   replace hc_lt : c < 1 := ha_lt
-  have hc_lt_top : c < ∞ := lt_top_of_lt hc_lt
+  have hc_lt_top : c < ∞ := measure_lt_top _ _
   have hc_one_sub_lt_top : 1 - c < ∞ := lt_top_of_lt (b := 2) (tsub_le_self.trans_lt (by simp))
   have h_one_sub_lt_self : 1 - c < c := by
     refine ENNReal.sub_lt_of_lt_add hc_lt.le ?_
@@ -599,10 +589,9 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self' [IsProbabilityMeasure μ
   -- main part of the proof: prove integrability by bounding the measure of a sequence of annuli
   simp only [HasFiniteIntegral, ← ofReal_norm_eq_enorm, Real.norm_eq_abs, Real.abs_exp]
   -- `⊢ ∫⁻ (a : E), ENNReal.ofReal (rexp (C * ‖a‖ ^ 2)) ∂μ < ⊤`
-  refine (some_integral_todo h_rot ha_pos ha_gt hc_lt).trans_lt ?_
-  refine ENNReal.mul_lt_top hc_lt_top ?_
+  refine (lintegral_exp_mul_sq_norm_le' h_rot le_rfl ha_gt).trans_lt ?_
   refine ENNReal.add_lt_top.mpr ⟨ENNReal.ofReal_lt_top, ?_⟩
-  refine aux ?_
+  refine ENNReal.tsum_ofReal_exp_lt_top ?_ (fun i ↦ mod_cast Nat.le_two_pow i)
   refine mul_neg_of_neg_of_pos ?_ ?_
   · simp
   · refine Real.log_pos ?_
@@ -612,89 +601,6 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self' [IsProbabilityMeasure μ
       not_false_eq_true, true_and]
     rw [ENNReal.toReal_lt_toReal hc_one_sub_lt_top.ne hc_lt_top.ne]
     exact .inl h_one_sub_lt_self
-
-private noncomputable def someConst : ℝ := Real.log 3 / (8 * (1 + √2) ^ 2)
-
-lemma someConst_pos : 0 < someConst := by unfold someConst; positivity
-
-lemma someConst_eq_someFun : someConst = someFun (3 / 4 : ℝ≥0∞) := by
-  unfold someConst someFun
-  congr
-  simp only [ENNReal.toReal_div, ENNReal.toReal_ofNat]
-  rw [ENNReal.toReal_sub_of_le ?_ (by simp)]
-  · simp only [ENNReal.toReal_one, ENNReal.toReal_div, ENNReal.toReal_ofNat]
-    norm_num
-  · refine (ENNReal.div_le_iff (by simp) (by finiteness)).mpr ?_
-    norm_num
-
-lemma someConst_le_someFun {c : ℝ≥0∞} (hc_ge : (3 : ℝ≥0∞)/4 ≤ c) (hc_lt : c < 1) :
-    someConst ≤ someFun c := by
-  rw [someConst_eq_someFun]
-  refine someFun_mono ?_ hc_lt hc_ge
-  have : (4 : ℝ≥0∞) = 2 * 2 := by norm_cast
-  rw [ENNReal.lt_div_iff_mul_lt (by simp) (by simp), this, ← mul_assoc,
-    ENNReal.inv_mul_cancel (by simp) (by simp), one_mul]
-  norm_num
-
-lemma measure_gt_normSeq_le_exp_someConst_mul_normSeq [IsProbabilityMeasure μ]
-    (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)
-    (ha_ge : (3 : ℝ≥0∞) / 4 ≤ μ {x | ‖x‖ ≤ a}) (ha_lt : μ {x | ‖x‖ ≤ a} < 1) (n : ℕ) :
-    μ {x | normSeq a n < ‖x‖}
-      ≤ μ {x | ‖x‖ ≤ a} * .ofReal (rexp (- 2 * someConst * normSeq a (n + 1) ^ 2 * a⁻¹ ^ 2)) := by
-  refine (measure_gt_normSeq_le_exp_someFun_mul_normSeq h_rot ?_ ha_lt n).trans ?_
-  · refine lt_of_lt_of_le ?_ ha_ge
-    have : (4 : ℝ≥0∞) = 2 * 2 := by norm_cast
-    rw [ENNReal.lt_div_iff_mul_lt (by simp) (by simp), this, ← mul_assoc,
-      ENNReal.inv_mul_cancel (by simp) (by simp), one_mul]
-    norm_cast
-  gcongr _ * ENNReal.ofReal (rexp ?_)
-  simp only [neg_mul, inv_pow, neg_le_neg_iff]
-  gcongr
-  exact someConst_le_someFun ha_ge ha_lt
-
-lemma measure_gt_le_exp_someConst_mul_of_pos [IsProbabilityMeasure μ]
-    (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)
-    (ha_pos : 0 < a)
-    (ha_ge : (3 : ℝ≥0∞) / 4 ≤ μ {x | ‖x‖ ≤ a}) (ha_lt : μ {x | ‖x‖ ≤ a} < 1) {t : ℝ}
-    (ht : a < t) :
-    μ {x | t < ‖x‖} ≤ μ {x | ‖x‖ ≤ a} * .ofReal (rexp (- 2 * someConst * t ^ 2 * a⁻¹ ^ 2)) := by
-  have h := exists_between' (normSeq_strictMono ha_pos) (normSeq_tendsto_atTop ha_pos) t
-  simp only [not_le.mpr ht, false_or, normSeq_zero] at h
-  obtain ⟨n, hn, hn_succ⟩ := h
-  calc μ {x | t < ‖x‖}
-  _ ≤ μ {x | normSeq a n < ‖x‖} := by
-    gcongr
-    intro x hx
-    simp only [Set.mem_setOf_eq] at hx ⊢
-    exact hn.trans hx
-  _ ≤ μ {x | ‖x‖ ≤ a} * .ofReal (rexp (-2 * someConst * normSeq a (n + 1) ^ 2 * a⁻¹ ^ 2)) :=
-    measure_gt_normSeq_le_exp_someConst_mul_normSeq h_rot ha_ge ha_lt n
-  _ ≤ μ {x | ‖x‖ ≤ a} * .ofReal (rexp (-2 * ProbabilityTheory.someConst * t ^ 2 * a⁻¹ ^ 2)) := by
-    gcongr _ * ENNReal.ofReal (rexp ?_)
-    simp_rw [neg_mul]
-    simp only [inv_pow, neg_le_neg_iff]
-    have : 0 < someConst := someConst_pos
-    have : 0 < t := ha_pos.trans ht
-    gcongr
-
-lemma measure_gt_le_exp_someConst_mul [IsProbabilityMeasure μ]
-    (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)
-    (ha_ge : (3 : ℝ≥0∞) / 4 ≤ μ {x | ‖x‖ ≤ a}) (ha_lt : μ {x | ‖x‖ ≤ a} < 1) {t : ℝ}
-    (ht : a < t) :
-    μ {x | t < ‖x‖} ≤ .ofReal (rexp (- 2 * someConst * t ^ 2 * a⁻¹ ^ 2)) := by
-  by_cases ha : a = 0
-  · simp [ha, prob_le_one]
-  have ha_pos : 0 < a := by
-    refine lt_of_le_of_ne ?_ (Ne.symm ha)
-    by_contra h_neg
-    have : {x : E | ‖x‖ ≤ a} = ∅ := by
-      ext x
-      simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false, not_le]
-      exact (not_le.mp h_neg).trans_le (norm_nonneg _)
-    simp [this] at ha_ge
-  refine (measure_gt_le_exp_someConst_mul_of_pos h_rot ha_pos ha_ge ha_lt ht).trans ?_
-  conv_rhs => rw [← one_mul (ENNReal.ofReal _)]
-  gcongr
 
 end MainProof
 
@@ -732,11 +638,10 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self_of_isProbabilityMeasure
       simp only [Set.mem_setOf_eq] at hx ⊢
       exact hx.trans (mod_cast hab)
   have hb' : ∀ᵐ x ∂μ, ‖x‖ ≤ b := by
-    rw [ae_iff]
-    change μ {x | ‖x‖ ≤ b}ᶜ = 0
-    rw [prob_compl_eq_one_sub]
-    · simp [hb]
-    · exact measurableSet_le (by fun_prop) (by fun_prop)
+    rwa [ae_iff_prob_eq_one]
+    refine measurable_to_prop ?_
+    rw [show (fun x : E ↦ ‖x‖ ≤ b) ⁻¹' {True} = {x : E | ‖x‖ ≤ b} by ext; simp]
+    exact measurableSet_le (by fun_prop) (by fun_prop)
   refine ⟨1, by positivity, ?_⟩
   refine integrable_of_le_of_le (g₁ := 0) (g₂ := fun _ ↦ rexp (b ^ 2)) (by fun_prop)
     ?_ ?_ (integrable_const _) (integrable_const _)
