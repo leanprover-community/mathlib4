@@ -27,7 +27,7 @@ show three versions of Beck's monadicity theorem, and the reflexive (crude) mona
 * `D` has and `G` preserves reflexive coequalizers, and `G` reflects isomorphisms, see
   `CategoryTheory.Monad.monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms`
 
-This file has been adapted to `Mathlib.CategoryTheory.Monad.Comonadicity`.
+This file has been adapted to `Mathlib/CategoryTheory/Monad/Comonadicity.lean`.
 Please try to keep them in sync.
 
 ## Tags
@@ -220,7 +220,7 @@ theorem comparisonAdjunction_counit_app
 
 end MonadicityInternal
 
-open CategoryTheory Adjunction Monad MonadicityInternal
+open MonadicityInternal
 
 variable {C : Type u₁} {D : Type u₂}
 variable [Category.{v₁} C] [Category.{v₁} D]
@@ -383,7 +383,7 @@ instance {A B} (f g : A ⟶ B) [IsReflexivePair f g] [PreservesColimitOfIsReflex
 instance [PreservesColimitOfIsReflexivePair G] : ∀ X : Algebra adj.toMonad,
     PreservesColimit (parallelPair (F.map X.a)
       (NatTrans.app adj.counit (F.obj X.A))) G :=
- fun _ => PreservesColimitOfIsReflexivePair.out _ _
+  fun _ => PreservesColimitOfIsReflexivePair.out _ _
 
 variable [PreservesColimitOfIsReflexivePair G]
 
