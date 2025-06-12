@@ -32,9 +32,7 @@ is that some theorems about the group actions will not apply when since this
 
 -/
 
--- TODO
--- assert_not_exists GroupWithZero
-assert_not_exists Ring
+assert_not_exists MonoidWithZero
 
 variable (α M G : Type*)
 
@@ -102,11 +100,11 @@ theorem toConjAct_ofConjAct (x : ConjAct G) : toConjAct (ofConjAct x) = x :=
 theorem ofConjAct_toConjAct (x : G) : ofConjAct (toConjAct x) = x :=
   rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
+@[simp]
 theorem ofConjAct_one : ofConjAct (1 : ConjAct G) = 1 :=
   rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
+@[simp]
 theorem toConjAct_one : toConjAct (1 : G) = 1 :=
   rfl
 
@@ -118,11 +116,11 @@ theorem ofConjAct_inv (x : ConjAct G) : ofConjAct x⁻¹ = (ofConjAct x)⁻¹ :=
 theorem toConjAct_inv (x : G) : toConjAct x⁻¹ = (toConjAct x)⁻¹ :=
   rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
+@[simp]
 theorem ofConjAct_mul (x y : ConjAct G) : ofConjAct (x * y) = ofConjAct x * ofConjAct y :=
   rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
+@[simp]
 theorem toConjAct_mul (x y : G) : toConjAct (x * y) = toConjAct x * toConjAct y :=
   rfl
 
@@ -250,7 +248,6 @@ theorem _root_.MulAut.conjNormal_symm_apply {H : Subgroup G} [H.Normal] (g : G) 
   rw [inv_inv]
   rfl
 
-@[simp]
 theorem _root_.MulAut.conjNormal_inv_apply {H : Subgroup G} [H.Normal] (g : G) (h : H) :
     ↑((MulAut.conjNormal g)⁻¹ h) = g⁻¹ * h * g :=
   MulAut.conjNormal_symm_apply g h

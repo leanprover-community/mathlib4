@@ -188,7 +188,7 @@ theorem exists_disjoint_subfamily_covering_enlargement_closedBall
     apply closedBall_subset_closedBall'
     linarith
   refine ⟨u, ut'.trans fun a ha => ha.1, u_disj, fun a ha => ?_⟩
-  rcases le_or_lt 0 (r a) with (h'a | h'a)
+  rcases le_or_gt 0 (r a) with (h'a | h'a)
   · exact A a ⟨ha, h'a⟩
   · rcases ht with ⟨b, rb⟩
     rcases A b ⟨rb.1, rb.2⟩ with ⟨c, cu, _⟩
@@ -413,8 +413,8 @@ protected def vitaliFamily [PseudoMetricSpace α] [MeasurableSpace α] [OpensMea
     obtain ⟨r, μr, rpos, rε⟩ :
         ∃ r, μ (closedBall x (3 * r)) ≤ C * μ (closedBall x r) ∧ r ∈ Ioc (0 : ℝ) ε :=
       ((h x).and_eventually (Ioc_mem_nhdsGT εpos)).exists
-    refine
-      ⟨closedBall x r, ⟨isClosed_ball, ?_, ⟨r, Subset.rfl, μr⟩⟩, closedBall_subset_closedBall rε⟩
+    refine ⟨closedBall x r, ⟨isClosed_closedBall, ?_, ⟨r, Subset.rfl, μr⟩⟩,
+      closedBall_subset_closedBall rε⟩
     exact (nonempty_ball.2 rpos).mono ball_subset_interior_closedBall
   covering := by
     intro s f fsubset ffine

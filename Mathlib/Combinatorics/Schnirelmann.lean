@@ -20,7 +20,7 @@ we must exclude `0` from the infimum, and from the intersection.
 
 * Simple bounds on the Schnirelmann density, that it is between 0 and 1 are given in
   `schnirelmannDensity_nonneg` and `schnirelmannDensity_le_one`.
-* `schnirelmannDensity_le_of_not_mem`: If `k ∉ A`, the density can be easily upper-bounded by
+* `schnirelmannDensity_le_of_notMem`: If `k ∉ A`, the density can be easily upper-bounded by
   `1 - k⁻¹`
 
 ## Implementation notes
@@ -88,7 +88,7 @@ lemma schnirelmannDensity_le_one : schnirelmannDensity A ≤ 1 :=
 /--
 If `k` is omitted from the set, its Schnirelmann density is upper bounded by `1 - k⁻¹`.
 -/
-lemma schnirelmannDensity_le_of_not_mem {k : ℕ} (hk : k ∉ A) :
+lemma schnirelmannDensity_le_of_notMem {k : ℕ} (hk : k ∉ A) :
     schnirelmannDensity A ≤ 1 - (k⁻¹ : ℝ) := by
   rcases k.eq_zero_or_pos with rfl | hk'
   · simpa using schnirelmannDensity_le_one
@@ -100,9 +100,15 @@ lemma schnirelmannDensity_le_of_not_mem {k : ℕ} (hk : k ∉ A) :
   rw [← Ioo_insert_right hk', filter_insert, if_neg hk]
   exact filter_subset _ _
 
+@[deprecated (since := "2025-05-23")]
+alias schnirelmannDensity_le_of_not_mem := schnirelmannDensity_le_of_notMem
+
 /-- The Schnirelmann density of a set not containing `1` is `0`. -/
-lemma schnirelmannDensity_eq_zero_of_one_not_mem (h : 1 ∉ A) : schnirelmannDensity A = 0 :=
-  ((schnirelmannDensity_le_of_not_mem h).trans (by simp)).antisymm schnirelmannDensity_nonneg
+lemma schnirelmannDensity_eq_zero_of_one_notMem (h : 1 ∉ A) : schnirelmannDensity A = 0 :=
+  ((schnirelmannDensity_le_of_notMem h).trans (by simp)).antisymm schnirelmannDensity_nonneg
+
+@[deprecated (since := "2025-05-23")]
+alias schnirelmannDensity_eq_zero_of_one_not_mem := schnirelmannDensity_eq_zero_of_one_notMem
 
 /-- The Schnirelmann density is increasing with the set. -/
 lemma schnirelmannDensity_le_of_subset {B : Set ℕ} [DecidablePred (· ∈ B)] (h : A ⊆ B) :
@@ -117,7 +123,7 @@ lemma schnirelmannDensity_eq_one_iff : schnirelmannDensity A = 1 ↔ {0}ᶜ ⊆ 
   · rw [← not_imp_not, not_le]
     simp only [Set.not_subset, forall_exists_index, true_and, and_imp, Set.mem_singleton_iff]
     intro x hx hx'
-    apply (schnirelmannDensity_le_of_not_mem hx').trans_lt
+    apply (schnirelmannDensity_le_of_notMem hx').trans_lt
     simpa only [one_div, sub_lt_self_iff, inv_pos, Nat.cast_pos, pos_iff_ne_zero] using hx
   · intro h
     refine le_ciInf fun ⟨n, hn⟩ => ?_
@@ -183,7 +189,7 @@ lemma exists_of_schnirelmannDensity_eq_zero {ε : ℝ} (hε : 0 < ε) (hA : schn
 end
 
 @[simp] lemma schnirelmannDensity_empty : schnirelmannDensity ∅ = 0 :=
-  schnirelmannDensity_eq_zero_of_one_not_mem (by simp)
+  schnirelmannDensity_eq_zero_of_one_notMem (by simp)
 
 /-- The Schnirelmann density of any finset is `0`. -/
 lemma schnirelmannDensity_finset (A : Finset ℕ) : schnirelmannDensity A = 0 := by
@@ -192,7 +198,7 @@ lemma schnirelmannDensity_finset (A : Finset ℕ) : schnirelmannDensity A = 0 :=
   intro ε hε
   wlog hε₁ : ε ≤ 1 generalizing ε
   · obtain ⟨n, hn, hn'⟩ := this 1 zero_lt_one le_rfl
-    exact ⟨n, hn, hn'.trans_le (le_of_not_le hε₁)⟩
+    exact ⟨n, hn, hn'.trans_le (le_of_not_ge hε₁)⟩
   let n : ℕ := ⌊#A / ε⌋₊ + 1
   have hn : 0 < n := Nat.succ_pos _
   use n, hn
@@ -207,10 +213,10 @@ lemma schnirelmannDensity_finite {A : Set ℕ} [DecidablePred (· ∈ A)] (hA : 
   (schnirelmannDensity_eq_one_iff_of_zero_mem (by simp)).2 (by simp)
 
 lemma schnirelmannDensity_setOf_even : schnirelmannDensity (setOf Even) = 0 :=
-  schnirelmannDensity_eq_zero_of_one_not_mem <| by simp
+  schnirelmannDensity_eq_zero_of_one_notMem <| by simp
 
 lemma schnirelmannDensity_setOf_prime : schnirelmannDensity (setOf Nat.Prime) = 0 :=
-  schnirelmannDensity_eq_zero_of_one_not_mem <| by simp [Nat.not_prime_one]
+  schnirelmannDensity_eq_zero_of_one_notMem <| by simp [Nat.not_prime_one]
 
 /--
 The Schnirelmann density of the set of naturals which are `1 mod m` is `m⁻¹`, for any `m ≠ 1`.

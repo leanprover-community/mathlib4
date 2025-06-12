@@ -109,9 +109,7 @@ end IsLocalRing
 
 section IsUnramifiedAt
 
-universe u
-
-variable (R : Type u) {S : Type u} [CommRing R] [CommRing S] [Algebra R S]
+variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
 noncomputable
 instance (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] :
@@ -133,7 +131,8 @@ lemma isUnramifiedAt_iff_map_eq [EssFiniteType R S]
     Localization.isLocalHom_localRingHom _ _ _ Ideal.LiesOver.over
   have : EssFiniteType (Localization.AtPrime p) (Localization.AtPrime q) := .of_comp R _ _
   trans Algebra.FormallyUnramified (Localization.AtPrime p) (Localization.AtPrime q)
-  · exact ⟨fun _ ↦ .of_comp R _ _, fun _ ↦ .comp _ (Localization.AtPrime p) _⟩
+  · exact ⟨fun _ ↦ .of_comp R _ _,
+      fun _ ↦ Algebra.FormallyUnramified.comp _ (Localization.AtPrime p) _⟩
   rw [FormallyUnramified.iff_map_maximalIdeal_eq]
   congr!
   rw [RingHom.algebraMap_toAlgebra, ← Localization.AtPrime.map_eq_maximalIdeal,

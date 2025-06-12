@@ -3,7 +3,7 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Ring.Basic
 import Mathlib.Analysis.Normed.Group.Ultra
 
 /-!
@@ -65,7 +65,7 @@ lemma norm_natCast_le_one (n : ℕ) :
 
 lemma nnnorm_intCast_le_one (z : ℤ) :
     ‖(z : R)‖₊ ≤ 1 := by
-  induction z <;>
+  cases z <;>
   simpa only [Int.ofNat_eq_coe, Int.cast_natCast, Int.cast_negSucc, Nat.cast_one, nnnorm_neg]
     using nnnorm_natCast_le_one _ _
 

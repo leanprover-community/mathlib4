@@ -42,7 +42,7 @@ structure ContinuousAlgEquiv (R A B : Type*) [CommSemiring R]
     [Algebra R B] extends A ≃ₐ[R] B, A ≃ₜ B
 
 @[inherit_doc]
-notation:50 A " ≃A[" R "]" B => ContinuousAlgEquiv R A B
+notation:50 A " ≃A[" R "] " B => ContinuousAlgEquiv R A B
 
 attribute [nolint docBlame] ContinuousAlgEquiv.toHomeomorph
 
@@ -53,8 +53,8 @@ attribute [nolint docBlame] ContinuousAlgEquiv.toHomeomorph
 -/
 class ContinuousAlgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
     [Semiring A] [TopologicalSpace A] [Semiring B] [TopologicalSpace B]
-    [Algebra R A] [Algebra R B] [EquivLike F A B]
-    extends AlgEquivClass F R A B, HomeomorphClass F A B : Prop
+    [Algebra R A] [Algebra R B] [EquivLike F A B] : Prop
+    extends AlgEquivClass F R A B, HomeomorphClass F A B
 
 namespace ContinuousAlgEquiv
 
@@ -76,8 +76,8 @@ instance equivLike : EquivLike (A ≃A[R] B) A B where
   coe f := f.toFun
   inv f := f.invFun
   coe_injective' f g h₁ h₂ := by
-    cases' f with f' _
-    cases' g with g' _
+    obtain ⟨f', _⟩ := f
+    obtain ⟨g', _⟩ := g
     rcases f' with ⟨⟨_, _⟩, _⟩
     rcases g' with ⟨⟨_, _⟩, _⟩
     congr
@@ -285,13 +285,13 @@ theorem preimage_symm_preimage (e : A ≃A[R] B) (S : Set A) : e ⁻¹' (e.symm 
   e.symm.symm_preimage_preimage S
 
 theorem isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂] [Ring E₁]
-    [UniformAddGroup E₁] [Algebra R E₁] [Ring E₂] [UniformAddGroup E₂] [Algebra R E₂]
+    [IsUniformAddGroup E₁] [Algebra R E₁] [Ring E₂] [IsUniformAddGroup E₂] [Algebra R E₂]
     (e : E₁ ≃A[R] E₂) : IsUniformEmbedding e :=
   e.toAlgEquiv.isUniformEmbedding e.toContinuousAlgHom.uniformContinuous
     e.symm.toContinuousAlgHom.uniformContinuous
 
 theorem _root_.AlgEquiv.isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂]
-    [Ring E₁] [UniformAddGroup E₁] [Algebra R E₁] [Ring E₂] [UniformAddGroup E₂] [Algebra R E₂]
+    [Ring E₁] [IsUniformAddGroup E₁] [Algebra R E₁] [Ring E₂] [IsUniformAddGroup E₂] [Algebra R E₂]
     (e : E₁ ≃ₐ[R] E₂) (h₁ : Continuous e) (h₂ : Continuous e.symm) :
     IsUniformEmbedding e :=
   ContinuousAlgEquiv.isUniformEmbedding { e with continuous_toFun := h₁ }

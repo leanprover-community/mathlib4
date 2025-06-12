@@ -15,7 +15,7 @@ in a bicategory which are built out of associators and unitors
 are equal.
 
 This file mainly deals with the type class setup for the coherence tactic. The actual front end
-tactic is given in `Mathlib.Tactic.CategoryTheory.Coherence` at the same time as the coherence
+tactic is given in `Mathlib/Tactic/CategoryTheory/Coherence.lean` at the same time as the coherence
 tactic for monoidal categories.
 -/
 
