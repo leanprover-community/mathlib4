@@ -70,8 +70,8 @@ lemma mk_le_mk_iff (a b : ℤ) :
 lemma mk_lt_mk_iff (a b : ℤ) :
     mk a < mk b ↔ a < b := some_some_lt_some_some_iff a b
 
-instance : OrderTop ℤt := by dsimp [ℤt] ; infer_instance
-instance : OrderBot ℤt := by dsimp [ℤt] ; infer_instance
+instance : OrderTop ℤt := by dsimp [ℤt]; infer_instance
+instance : OrderBot ℤt := by dsimp [ℤt]; infer_instance
 
 @[simp]
 lemma le_bot_mk_iff (a : ℤ) :
