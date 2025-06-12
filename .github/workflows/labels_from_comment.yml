@@ -28,7 +28,7 @@ jobs:
           const removeAwaitingAuthor = commentLines.includes('-awaiting-author');
           const removeWip = commentLines.includes('-WIP');
 
-          if (removeAwatingAuthor) {
+          if (removeAwaitingAuthor) {
             await github.rest.issues.removeLabel({ owner, repo, issue_number, name: 'awaiting-author' }).catch(() => {});
           }
 
