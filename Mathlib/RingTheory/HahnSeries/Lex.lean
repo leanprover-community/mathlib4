@@ -26,7 +26,7 @@ variable {Γ : Type*} {R : Type*}
 variable [LinearOrder Γ] [Zero R] [PartialOrder R]
 
 variable (Γ R) in
-instance instPartialOrder : PartialOrder (Lex (HahnSeries Γ R)) :=
+instance : PartialOrder (Lex (HahnSeries Γ R)) :=
   PartialOrder.lift (toLex <| ofLex · |>.coeff) fun x y ↦ by simp
 
 theorem lt_iff (a b : Lex (HahnSeries Γ R)) :
@@ -42,9 +42,8 @@ variable [LinearOrder Γ] [Zero R] [LinearOrder R]
 
 variable (Γ R) in
 noncomputable
-instance instLinearOrder : LinearOrder (Lex (HahnSeries Γ R)) where
-  le_total := by
-    intro a b
+instance : LinearOrder (Lex (HahnSeries Γ R)) where
+  le_total a b := by
     rcases eq_or_ne a b with hab | hab
     · exact Or.inl hab.le
     · have hab := Function.ne_iff.mp <| HahnSeries.ext_iff.ne.mp hab
@@ -64,7 +63,6 @@ instance instLinearOrder : LinearOrder (Lex (HahnSeries Γ R)) where
       obtain hi | hi := lt_or_gt_of_ne hne
       · exact Or.inl (le_of_lt ⟨i, hji, hi⟩)
       · exact Or.inr (le_of_lt ⟨i, fun j hj ↦ (hji j hj).symm, hi⟩)
-
   toDecidableLE := Classical.decRel _
 
 theorem leadingCoeff_pos_iff {x : Lex (HahnSeries Γ R)} : 0 < (ofLex x).leadingCoeff ↔ 0 < x := by
@@ -96,11 +94,11 @@ theorem leadingCoeff_nonneg_iff {x : Lex (HahnSeries Γ R)} :
     0 ≤ (ofLex x).leadingCoeff ↔ 0 ≤ x := by
   constructor
   · intro h
-    obtain heq | hlt := eq_or_lt_of_le h
+    obtain heq | hlt := h.eq_or_lt
     · exact le_of_eq (leadingCoeff_eq_iff.mp heq.symm).symm
     · exact (leadingCoeff_pos_iff.mp hlt).le
   · intro h
-    obtain rfl | hlt := eq_or_lt_of_le h
+    obtain rfl | hlt := h.eq_or_lt
     · simp
     · exact (leadingCoeff_pos_iff.mpr hlt).le
 
@@ -119,11 +117,10 @@ variable {Γ : Type*} {R : Type*}
 variable [LinearOrder Γ] [LinearOrder R] [AddCommGroup R] [IsOrderedAddMonoid R]
 
 variable (Γ) in
-instance instIsOrderedAddMonoid (R : Type*) [PartialOrder R] [AddCommGroup R]
-    [IsOrderedAddMonoid R] : IsOrderedAddMonoid (Lex (HahnSeries Γ R)) where
-  add_le_add_left := by
-    intro a b hab c
-    obtain rfl | hlt := eq_or_lt_of_le hab
+instance (R : Type*) [PartialOrder R] [AddCommGroup R] [IsOrderedAddMonoid R] :
+    IsOrderedAddMonoid (Lex (HahnSeries Γ R)) where
+  add_le_add_left a b hab c := by
+    obtain rfl | hlt := hab.eq_or_lt
     · simp
     · apply le_of_lt
       rw [lt_iff] at hlt ⊢
