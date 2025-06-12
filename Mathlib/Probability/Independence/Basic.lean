@@ -604,8 +604,9 @@ theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : Measur
   simp only [IndepFun, IndepSet, Kernel.indepFun_iff_indepSet_preimage hf hg, ae_dirac_eq,
     Filter.eventually_pure, Kernel.const_apply]
 
-theorem indepFun_iff_map_prod_eq_prod_map_map {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
-    [IsFiniteMeasure μ] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+theorem indepFun_iff_map_prod_eq_prod_map_map' {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+    (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
+    (σf : SigmaFinite (μ.map f)) (σg : SigmaFinite (μ.map g)) :
     IndepFun f g μ ↔ μ.map (fun ω ↦ (f ω, g ω)) = (μ.map f).prod (μ.map g) := by
   rw [indepFun_iff_measure_inter_preimage_eq_mul]
   have h₀ {s : Set β} {t : Set β'} (hs : MeasurableSet s) (ht : MeasurableSet t) :
@@ -618,6 +619,12 @@ theorem indepFun_iff_map_prod_eq_prod_map_map {mβ : MeasurableSpace β} {mβ' :
     rw [← (h₀ hs ht).1, ← (h₀ hs ht).2, h s t hs ht]
   · intro h s t hs ht
     rw [(h₀ hs ht).1, (h₀ hs ht).2, h, Measure.prod_prod]
+
+theorem indepFun_iff_map_prod_eq_prod_map_map {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+    [IsFiniteMeasure μ] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+    IndepFun f g μ ↔ μ.map (fun ω ↦ (f ω, g ω)) = (μ.map f).prod (μ.map g) := by
+  apply indepFun_iff_map_prod_eq_prod_map_map' hf hg
+   <;> apply IsFiniteMeasure.toSigmaFinite
 
 theorem iIndepFun_iff_map_fun_eq_pi_map [Fintype ι] {β : ι → Type*}
     {m : ∀ i, MeasurableSpace (β i)} {f : Π i, Ω → β i} [IsProbabilityMeasure μ]
@@ -960,13 +967,28 @@ section Monoid
 variable {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M]
 
 @[to_additive]
+theorem IndepFun.map_mul_eq_map_mconv_map₀'
+    {f g : Ω → M} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
+    (σf : SigmaFinite (μ.map f)) (σg : SigmaFinite (μ.map g)) (hfg : IndepFun f g μ) :
+    μ.map (f * g) = (μ.map f) ∗ₘ (μ.map g) := by
+  conv in f * g => change (fun x ↦ x.1 * x.2) ∘ (fun ω ↦ (f ω, g ω))
+  rw [← measurable_mul.aemeasurable.map_map_of_aemeasurable (hf.prodMk hg),
+    (indepFun_iff_map_prod_eq_prod_map_map' hf hg σf σg).mp hfg, Measure.mconv]
+
+@[to_additive]
+theorem IndepFun.map_mul_eq_map_mconv_map'
+    {f g : Ω → M} (hf : Measurable f) (hg : Measurable g)
+    (σf : SigmaFinite (μ.map f)) (σg : SigmaFinite (μ.map g)) (hfg : IndepFun f g μ) :
+    μ.map (f * g) = (μ.map f) ∗ₘ (μ.map g) :=
+  hfg.map_mul_eq_map_mconv_map₀' hf.aemeasurable hg.aemeasurable σf σg
+
+@[to_additive]
 theorem IndepFun.map_mul_eq_map_mconv_map₀
     [IsFiniteMeasure μ] {f g : Ω → M} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     (hfg : IndepFun f g μ) :
     μ.map (f * g) = (μ.map f) ∗ₘ (μ.map g) := by
-  conv in f * g => change (fun x ↦ x.1 * x.2) ∘ (fun ω ↦ (f ω, g ω))
-  rw [← measurable_mul.aemeasurable.map_map_of_aemeasurable (hf.prodMk hg),
-    (indepFun_iff_map_prod_eq_prod_map_map hf hg).mp hfg, Measure.mconv]
+  apply hfg.map_mul_eq_map_mconv_map₀' hf hg
+    <;> apply IsFiniteMeasure.toSigmaFinite
 
 @[to_additive]
 theorem IndepFun.map_mul_eq_map_mconv_map
