@@ -236,7 +236,7 @@ noncomputable def internal (φ : Hom h₁ h₂) : h₁.internal ⟶ h₂.interna
         dsimp
         rw [internal_presheaf_add, internal_presheaf_add]
         simp only [Category.assoc, φ.map_add, prod.lift_map_assoc]))
-  naturality _ _ _ := by ext ; apply Category.assoc
+  naturality _ _ _ := by ext; apply Category.assoc
 
 -- simp does not work with this lemma, only erw, why?
 lemma internal_app_apply (φ : Hom h₁ h₂) (X : C) (x : X ⟶ G₁) :
