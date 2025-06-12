@@ -604,7 +604,7 @@ lemma gaussianReal_add_gaussianReal_of_indepFun {Ω} {mΩ : MeasurableSpace Ω} 
     (hX : P.map X = gaussianReal m₁ v₁) (hY : P.map Y = gaussianReal m₂ v₂) :
     P.map (X + Y) = gaussianReal (m₁ + m₂) (v₁ + v₂) := by
   rw [hXY.map_add_eq_map_conv_map₀, hX, hY, gaussianReal_conv_gaussianReal]
-  <;> apply AEMeasurable.of_map_ne_zero <;> simp [NeZero.ne , *]
+    <;> apply AEMeasurable.of_map_ne_zero <;> simp [NeZero.ne, *]
 
 end GaussianReal
 
