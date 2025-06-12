@@ -255,24 +255,18 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
     | _, _, ⟨s, s', rfl, rfl, r⟩ =>
       suffices head s = head s' ∧ R (tail s) (tail s') from
         And.imp id (fun r => ⟨tail s, tail s', by cases s; rfl, by cases s'; rfl, r⟩) this
-      have h := bisim r
-      induction s using recOn with
-      | pure r' =>
-        induction s' using recOn with
-        | pure =>
-          constructor <;> dsimp at h
-          · rw [h]
-          · rw [h] at r
-            rwa [tail_pure, tail_pure, h]
-        | think =>
-          rw [destruct_pure, destruct_think] at h
-          exact False.elim h
-      | think r' =>
-        induction s' using recOn with
-        | pure =>
-          rw [destruct_pure, destruct_think] at h
-          exact False.elim h
-        | think => simp_all
+      have h := bisim r; revert r h
+      refine recOn s ?_ ?_ <;> intro r' <;> refine recOn s' ?_ ?_ <;> intro a' r h
+      · constructor <;> dsimp at h
+        · rw [h]
+        · rw [h] at r
+          rw [tail_pure, tail_pure,h]
+          assumption
+      · rw [destruct_pure, destruct_think] at h
+        exact False.elim h
+      · rw [destruct_pure, destruct_think] at h
+        exact False.elim h
+      · simp_all
   · exact ⟨s₁, s₂, rfl, rfl, r⟩
 
 end Bisim
