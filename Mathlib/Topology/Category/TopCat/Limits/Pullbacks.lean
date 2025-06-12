@@ -165,7 +165,7 @@ def pullbackHomeoPreimage
 
 theorem isInducing_pullback_to_prod {X Y Z : TopCat.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) :
     IsInducing <| ⇑(prod.lift (pullback.fst f g) (pullback.snd f g)) :=
-  ⟨by simp [prod_topology, pullback_topology, induced_compose, ← coe_comp]⟩
+  ⟨by simp [prod_topology, pullback_topology, induced_compose, ← coe_comp, -ContinuousMap.coe_comp]⟩
 
 @[deprecated (since := "2024-10-28")] alias inducing_pullback_to_prod := isInducing_pullback_to_prod
 
@@ -246,7 +246,7 @@ theorem pullback_map_isEmbedding {W X Y Z S T : TopCat.{u}} (f₁ : W ⟶ S) (f�
       ?_
   suffices
     IsEmbedding (prod.lift (pullback.fst f₁ f₂) (pullback.snd f₁ f₂) ≫ Limits.prod.map i₁ i₂) by
-    simpa [← coe_comp] using this
+    simpa [← coe_comp, -ContinuousMap.coe_comp] using this
   rw [coe_comp]
   exact (isEmbedding_prodMap H₁ H₂).comp (isEmbedding_pullback_to_prod _ _)
 
@@ -284,7 +284,7 @@ lemma snd_isEmbedding_of_left {X Y S : TopCat} {f : X ⟶ S} (H : IsEmbedding f)
   convert (homeoOfIso (asIso (pullback.snd (𝟙 S) g))).isEmbedding.comp
       (pullback_map_isEmbedding (i₂ := 𝟙 Y)
         f g (𝟙 S) g H (homeoOfIso (Iso.refl _)).isEmbedding (𝟙 _) rfl (by simp))
-  simp [homeoOfIso, ← coe_comp]
+  simp [homeoOfIso, ← coe_comp, -ContinuousMap.coe_comp]
 
 @[deprecated (since := "2024-10-26")]
 alias snd_embedding_of_left_embedding := snd_isEmbedding_of_left
@@ -294,7 +294,7 @@ theorem fst_isEmbedding_of_right {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
   convert (homeoOfIso (asIso (pullback.fst f (𝟙 S)))).isEmbedding.comp
       (pullback_map_isEmbedding (i₁ := 𝟙 X)
         f g f (𝟙 _) (homeoOfIso (Iso.refl _)).isEmbedding H (𝟙 _) rfl (by simp))
-  simp [homeoOfIso, ← coe_comp]
+  simp [homeoOfIso, ← coe_comp, -ContinuousMap.coe_comp]
 
 @[deprecated (since := "2024-10-26")]
 alias fst_embedding_of_right_embedding := fst_isEmbedding_of_right
@@ -313,14 +313,14 @@ theorem snd_isOpenEmbedding_of_left {X Y S : TopCat} {f : X ⟶ S} (H : IsOpenEm
   convert (homeoOfIso (asIso (pullback.snd (𝟙 S) g))).isOpenEmbedding.comp
       (pullback_map_isOpenEmbedding (i₂ := 𝟙 Y) f g (𝟙 _) g H
         (homeoOfIso (Iso.refl _)).isOpenEmbedding (𝟙 _) rfl (by simp))
-  simp [homeoOfIso, ← coe_comp]
+  simp [homeoOfIso, ← coe_comp, -ContinuousMap.coe_comp]
 
 theorem fst_isOpenEmbedding_of_right {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
     (H : IsOpenEmbedding g) : IsOpenEmbedding <| ⇑(pullback.fst f g) := by
   convert (homeoOfIso (asIso (pullback.fst f (𝟙 S)))).isOpenEmbedding.comp
       (pullback_map_isOpenEmbedding (i₁ := 𝟙 X) f g f (𝟙 _)
         (homeoOfIso (Iso.refl _)).isOpenEmbedding H (𝟙 _) rfl (by simp))
-  simp [homeoOfIso, ← coe_comp]
+  simp [homeoOfIso, ← coe_comp, -ContinuousMap.coe_comp]
 
 /-- If `X ⟶ S`, `Y ⟶ S` are open embeddings, then so is `X ×ₛ Y ⟶ S`. -/
 theorem isOpenEmbedding_of_pullback {X Y S : TopCat} {f : X ⟶ S} {g : Y ⟶ S}

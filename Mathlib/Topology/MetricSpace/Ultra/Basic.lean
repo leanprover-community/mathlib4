@@ -138,7 +138,7 @@ lemma isClosed_ball (x : X) (r : ℝ) : IsClosed (ball x r) := by
       simp [h.not_ge] at hy
     | inr hd =>
       use r
-      simp [h, hy, ← Set.le_iff_subset, le_compl_iff_disjoint_left, hd]
+      simp [h, hy, ← Set.le_iff_subset, -Set.le_eq_subset, le_compl_iff_disjoint_left, hd]
 
 lemma isClopen_ball : IsClopen (ball x r) := ⟨isClosed_ball x r, isOpen_ball⟩
 

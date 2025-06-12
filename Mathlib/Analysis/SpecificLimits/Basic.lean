@@ -304,7 +304,7 @@ theorem hasSum_geometric_of_lt_one {r : ℝ} (h₁ : 0 ≤ r) (h₂ : r < 1) :
   have : Tendsto (fun n ↦ (r ^ n - 1) * (r - 1)⁻¹) atTop (𝓝 ((0 - 1) * (r - 1)⁻¹)) :=
     ((tendsto_pow_atTop_nhds_zero_of_lt_one h₁ h₂).sub tendsto_const_nhds).mul tendsto_const_nhds
   (hasSum_iff_tendsto_nat_of_nonneg (pow_nonneg h₁) _).mpr <| by
-    simp_all [neg_inv, geom_sum_eq, div_eq_mul_inv]
+    simp_all [← inv_neg, geom_sum_eq, div_eq_mul_inv]
 
 theorem summable_geometric_of_lt_one {r : ℝ} (h₁ : 0 ≤ r) (h₂ : r < 1) :
     Summable fun n : ℕ ↦ r ^ n :=
