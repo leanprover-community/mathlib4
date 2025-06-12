@@ -30,8 +30,9 @@ theorem FG.map {R S : Type*} [Semiring R] [Semiring S] {I : Ideal R} (h : I.FG) 
     rw [Finset.coe_image, ← Ideal.map_span, hs]
 
 theorem fg_ker_comp {R S A : Type*} [CommRing R] [CommRing S] [CommRing A] (f : R →+* S)
-    (g : S →+* A) (hf : f.ker.FG) (hg : g.ker.FG) (hsur : Function.Surjective f) :
-    (g.comp f).ker.FG := by
+    (g : S →+* A) (hf : (RingHom.ker f).FG) (hg : (RingHom.ker g).FG)
+    (hsur : Function.Surjective f) :
+    (RingHom.ker (g.comp f)).FG := by
   letI : Algebra R S := RingHom.toAlgebra f
   letI : Algebra R A := RingHom.toAlgebra (g.comp f)
   letI : Algebra S A := RingHom.toAlgebra g
@@ -53,7 +54,7 @@ theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (
     use n + m
     rw [← Ideal.add_eq_sup, add_pow, Ideal.sum_eq_sup, Finset.sup_le_iff]
     refine fun i _ => Ideal.mul_le_right.trans ?_
-    obtain h | h := le_or_lt n i
+    obtain h | h := le_or_gt n i
     · apply Ideal.mul_le_right.trans ((Ideal.pow_le_pow_right h).trans hn)
     · apply Ideal.mul_le_left.trans
       refine (Ideal.pow_le_pow_right ?_).trans hm

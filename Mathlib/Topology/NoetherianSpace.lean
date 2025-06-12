@@ -3,6 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.Sets.Closeds
 
 /-!
@@ -70,12 +71,11 @@ protected theorem _root_.Topology.IsInducing.noetherianSpace [NoetherianSpace α
 @[deprecated (since := "2024-10-28")]
 alias _root_.Inducing.noetherianSpace := IsInducing.noetherianSpace
 
-/-- [Stacks: Lemma 0052 (1)](https://stacks.math.columbia.edu/tag/0052)-/
+@[stacks 0052 "(1)"]
 instance NoetherianSpace.set [NoetherianSpace α] (s : Set α) : NoetherianSpace s :=
   IsInducing.subtypeVal.noetherianSpace
 
-variable (α)
-
+variable (α) in
 open List in
 theorem noetherianSpace_TFAE :
     TFAE [NoetherianSpace α,
@@ -90,18 +90,11 @@ theorem noetherianSpace_TFAE :
   tfae_have 3 → 4 := fun h s => h s
   tfae_finish
 
-variable {α}
-
 theorem noetherianSpace_iff_isCompact : NoetherianSpace α ↔ ∀ s : Set α, IsCompact s :=
   (noetherianSpace_TFAE α).out 0 2
 
 instance [NoetherianSpace α] : WellFoundedLT (Closeds α) :=
   Iff.mp ((noetherianSpace_TFAE α).out 0 1) ‹_›
-
-@[deprecated "No deprecation message was provided." (since := "2024-10-07")]
-theorem NoetherianSpace.wellFounded_closeds [NoetherianSpace α] :
-    WellFounded fun s t : Closeds α => s < t :=
-  wellFounded_lt
 
 instance {α} : NoetherianSpace (CofiniteTopology α) := by
   simp only [noetherianSpace_iff_isCompact, isCompact_iff_ultrafilter_le_nhds,
@@ -191,7 +184,7 @@ theorem NoetherianSpace.exists_finset_irreducible [NoetherianSpace α] (s : Clos
   simpa [Set.exists_finite_iff_finset, Finset.sup_id_eq_sSup]
     using NoetherianSpace.exists_finite_set_closeds_irreducible s
 
-/-- [Stacks: Lemma 0052 (2)](https://stacks.math.columbia.edu/tag/0052) -/
+@[stacks 0052 "(2)"]
 theorem NoetherianSpace.finite_irreducibleComponents [NoetherianSpace α] :
     (irreducibleComponents α).Finite := by
   obtain ⟨S : Set (Set α), hSf, hSc, hSi, hSU⟩ :=
@@ -201,16 +194,14 @@ theorem NoetherianSpace.finite_irreducibleComponents [NoetherianSpace α] :
   rcases isIrreducible_iff_sUnion_isClosed.1 hs.1 S hSc (hSU ▸ Set.subset_univ _) with ⟨t, htS, ht⟩
   rwa [ht.antisymm (hs.2 (hSi _ htS) ht)]
 
-/-- [Stacks: Lemma 0052 (3)](https://stacks.math.columbia.edu/tag/0052) -/
+@[stacks 0052 "(3)"]
 theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [NoetherianSpace α]
     (Z : Set α) (H : Z ∈ irreducibleComponents α) :
     ∃ o : Set α, IsOpen o ∧ o ≠ ∅ ∧ o ≤ Z := by
   classical
-
   let ι : Set (Set α) := irreducibleComponents α \ {Z}
   have hι : ι.Finite := NoetherianSpace.finite_irreducibleComponents.subset Set.diff_subset
   have hι' : Finite ι := by rwa [Set.finite_coe_iff]
-
   let U := Z \ ⋃ (x : ι), x
   have hU0 : U ≠ ∅ := fun r ↦ by
     obtain ⟨Z', hZ'⟩ := isIrreducible_iff_sUnion_isClosed.mp H.1 hι.toFinset
@@ -223,7 +214,6 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
         exact r)
     simp only [Set.Finite.mem_toFinset, Set.mem_diff, Set.mem_singleton_iff] at hZ'
     exact hZ'.1.2 <| le_antisymm (H.2 hZ'.1.1.1 hZ'.2) hZ'.2
-
   have hU1 : U = (⋃ (x : ι), x.1) ᶜ := by
     rw [Set.compl_eq_univ_diff]
     refine le_antisymm (Set.diff_subset_diff le_top <| subset_refl _) ?_
@@ -233,7 +223,7 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
     rintro a -
     by_cases h : a ∈ U
     · exact ⟨U, Set.mem_insert _ _, h⟩
-    · rw [Set.mem_diff, Decidable.not_and_iff_or_not_not, not_not, Set.mem_iUnion] at h
+    · rw [Set.mem_diff, Decidable.not_and_iff_not_or_not, not_not, Set.mem_iUnion] at h
       rcases h with (h|⟨i, hi⟩)
       · refine ⟨irreducibleComponent a, Or.inr ?_, mem_irreducibleComponent⟩
         simp only [ι, Set.mem_diff, Set.mem_singleton_iff]
@@ -241,7 +231,6 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
         rintro rfl
         exact h mem_irreducibleComponent
       · exact ⟨i, Or.inr i.2, hi⟩
-
   refine ⟨U, hU1 ▸ isOpen_compl_iff.mpr ?_, hU0, sdiff_le⟩
   exact isClosed_iUnion_of_finite fun i ↦ isClosed_of_mem_irreducibleComponents i.1 i.2.1
 

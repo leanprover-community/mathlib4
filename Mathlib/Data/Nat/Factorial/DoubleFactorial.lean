@@ -3,10 +3,10 @@ Copyright (c) 2023 Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Positivity.Core
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Double factorials

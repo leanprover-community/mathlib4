@@ -13,8 +13,8 @@ import Plausible
 import ImportGraph.Imports
 
 -- Import common Batteries tactics and commands
-import Batteries.Tactic.Where
 import Batteries.Tactic.Basic
+import Batteries.Tactic.Case
 import Batteries.Tactic.HelpCmd
 
 -- Import syntax for leansearch
@@ -25,7 +25,7 @@ import Mathlib.Tactic.Linter.Lint
 
 -- Now import all tactics defined in Mathlib that do not require theory files.
 import Mathlib.Tactic.ApplyCongr
--- ApplyFun imports `Mathlib.Order.Monotone.Basic`
+-- ApplyFun imports `Mathlib/Order/Monotone/Basic.lean`
 -- import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.ApplyAt
 import Mathlib.Tactic.ApplyWith
@@ -47,11 +47,10 @@ import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Tactic.DeprecateTo
-import Mathlib.Tactic.DeriveToExpr
+import Mathlib.Tactic.ErwQuestion
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.ExistsI
 import Mathlib.Tactic.ExtractGoal
-import Mathlib.Tactic.ExtractLets
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.Find
 -- `gcongr` currently imports `Algebra.Order.Field.Power` and thence `Algebra.CharZero.Lemmas`
@@ -75,9 +74,8 @@ import Mathlib.Tactic.Observe
 import Mathlib.Tactic.OfNat
 -- `positivity` imports `Data.Nat.Factorial.Basic`, but hopefully this can be rearranged.
 -- import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.ProjectionNotation
 import Mathlib.Tactic.Propose
-import Mathlib.Tactic.PushNeg
+import Mathlib.Tactic.Push
 import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Relation.Rfl
@@ -98,7 +96,7 @@ import Mathlib.Tactic.SudoSetOption
 import Mathlib.Tactic.SwapVar
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.TermCongr
--- TFAE imports `Mathlib.Data.List.TFAE` and thence `Mathlib.Data.List.Basic`.
+-- TFAE imports `Mathlib/Data/List/TFAE.lean` and thence `Mathlib/Data/List/Basic.lean`.
 -- import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.ToExpr
 import Mathlib.Tactic.ToLevel
@@ -129,11 +127,13 @@ import hierarchy.
 -/
 
 /-!
-# Register tactics with `hint`.
+# Register tactics with `hint`. Tactics are tried in reverse registration order.
 -/
 
 section Hint
 
+register_hint trivial
+register_hint tauto
 register_hint split
 register_hint intro
 register_hint aesop

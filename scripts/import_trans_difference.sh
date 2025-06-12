@@ -67,7 +67,7 @@ git checkout "${currCommit}"
 
 printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</details>\n' "$(
   printf "|Files|Import difference|\n|-|-|\n"
-  (awk -F, -v all="${all}" -v ghLimit='261752' -v newFiles="$(
+  (gawk -F, -v all="${all}" -v ghLimit='261752' -v newFiles="$(
       # we pass the "A"dded files with respect to master, converting them to module names
       git diff --name-only --diff-filter=A master | tr '\n' , | sed 's=\.lean,=,=g; s=/=.=g'
     )" '
@@ -85,15 +85,21 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
         outputLength+=length(fil)+4
         nums[diff[fil]]++
         # we add "(new file)" next to the modules whose name appears in `newModules`
-        reds[diff[fil]]=sprintf("%s `%s`%s", reds[diff[fil]], fil, (fil in newModules)? " (new file)" : "")
+        # we separate entries with a line break, so that later we can sort the modules
+        # with the same number of import differences easily
+        reds[diff[fil]]=sprintf("%s `%s`%s\n", reds[diff[fil]], fil, (fil in newModules)? " (new file)" : "")
       }
     }
     if ((all == 0) && (ghLimit/2 <= outputLength)) {
       printf("There are %s files with changed transitive imports taking up over %s characters: this is too many to display!\nYou can run `scripts/import_trans_difference.sh all` locally to see the whole output.", fileCount, outputLength)
     } else {
       for(x in reds) {
-        if (nums[x] <= 2) { printf("|%s|%s|\n", reds[x], x) }
-        else { printf("|<details><summary>%s files</summary>%s</details>|%s|\n", nums[x], reds[x], x) }
+        sorted=""
+        split(reds[x], toSort, "\n")
+        asort(toSort)
+        for(i in toSort) {sorted=sorted toSort[i]}
+        if (nums[x] <= 2) { printf("|%s|%s|\n", sorted, x) }
+        else { printf("|<details><summary>%s files</summary>%s</details>|%s|\n", nums[x], sorted, x) }
       }
     }
   }' transImports*.txt | sort -t'|' -n -k3

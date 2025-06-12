@@ -3,7 +3,10 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.Finsupp.Defs
+import Mathlib.Algebra.BigOperators.Group.List.Basic
+import Mathlib.Algebra.Group.Embedding
+import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Data.Finsupp.Single
 import Mathlib.Data.List.GetD
 
 /-!
@@ -43,7 +46,7 @@ This is a computable version of the `Finsupp.onFinset` construction.
 -/
 def toFinsupp : ℕ →₀ M where
   toFun i := getD l i 0
-  support := (Finset.range l.length).filter fun i => getD l i 0 ≠ 0
+  support := {i ∈ Finset.range l.length | getD l i 0 ≠ 0}
   mem_support_toFun n := by
     simp only [Ne, Finset.mem_filter, Finset.mem_range, and_iff_right_iff_imp]
     contrapose!
@@ -58,7 +61,7 @@ theorem toFinsupp_apply (i : ℕ) : (l.toFinsupp : ℕ → M) i = l.getD i 0 :=
   rfl
 
 theorem toFinsupp_support :
-    l.toFinsupp.support = (Finset.range l.length).filter (getD l · 0 ≠ 0) :=
+    l.toFinsupp.support = {i ∈ Finset.range l.length | getD l i 0 ≠ 0} :=
   rfl
 
 theorem toFinsupp_apply_lt (hn : n < l.length) : l.toFinsupp n = l[n] :=
@@ -80,17 +83,6 @@ theorem toFinsupp_singleton (x : M) [DecidablePred (getD [x] · 0 ≠ 0)] :
     toFinsupp [x] = Finsupp.single 0 x := by
   ext ⟨_ | i⟩ <;> simp [Finsupp.single_apply, (Nat.zero_lt_succ _).ne]
 
-@[deprecated "This lemma is unused, and can be proved by `simp`." (since := "2024-06-12")]
-theorem toFinsupp_cons_apply_zero (x : M) (xs : List M)
-    [DecidablePred (getD (x::xs) · 0 ≠ 0)] : (x::xs).toFinsupp 0 = x :=
-  rfl
-
-@[deprecated "This lemma is unused, and can be proved by `simp`." (since := "2024-06-12")]
-theorem toFinsupp_cons_apply_succ (x : M) (xs : List M) (n : ℕ)
-    [DecidablePred (getD (x::xs) · 0 ≠ 0)] [DecidablePred (getD xs · 0 ≠ 0)] :
-    (x::xs).toFinsupp n.succ = xs.toFinsupp n :=
-  rfl
-
 theorem toFinsupp_append {R : Type*} [AddZeroClass R] (l₁ l₂ : List R)
     [DecidablePred (getD (l₁ ++ l₂) · 0 ≠ 0)] [DecidablePred (getD l₁ · 0 ≠ 0)]
     [DecidablePred (getD l₂ · 0 ≠ 0)] :
@@ -98,7 +90,7 @@ theorem toFinsupp_append {R : Type*} [AddZeroClass R] (l₁ l₂ : List R)
       toFinsupp l₁ + (toFinsupp l₂).embDomain (addLeftEmbedding l₁.length) := by
   ext n
   simp only [toFinsupp_apply, Finsupp.add_apply]
-  cases lt_or_le n l₁.length with
+  cases lt_or_ge n l₁.length with
   | inl h =>
     rw [getD_append _ _ _ _ h, Finsupp.embDomain_notin_range, add_zero]
     rintro ⟨k, rfl : length l₁ + k = n⟩
@@ -125,15 +117,18 @@ theorem toFinsupp_concat_eq_toFinsupp_add_single {R : Type*} [AddZeroClass R] (x
     addLeftEmbedding_apply, add_zero]
 
 
-theorem toFinsupp_eq_sum_map_enum_single {R : Type*} [AddMonoid R] (l : List R)
+theorem toFinsupp_eq_sum_mapIdx_single {R : Type*} [AddMonoid R] (l : List R)
     [DecidablePred (getD l · 0 ≠ 0)] :
-    toFinsupp l = (l.enum.map fun nr : ℕ × R => Finsupp.single nr.1 nr.2).sum := by
+    toFinsupp l = (l.mapIdx fun n r => Finsupp.single n r).sum := by
   /- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `induction` fails to substitute `l = []` in
   `[DecidablePred (getD l · 0 ≠ 0)]`, so we manually do some `revert`/`intro` as a workaround -/
   revert l; intro l
   induction l using List.reverseRecOn with
   | nil => exact toFinsupp_nil
   | append_singleton x xs ih =>
-    classical simp [toFinsupp_concat_eq_toFinsupp_add_single, enum_append, ih]
+    classical simp [toFinsupp_concat_eq_toFinsupp_add_single, ih]
+
+@[deprecated (since := "2025-01-28")]
+alias toFinsupp_eq_sum_map_enum_single := toFinsupp_eq_sum_mapIdx_single
 
 end List

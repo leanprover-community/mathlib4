@@ -3,15 +3,14 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Basic
 import Mathlib.Logic.Embedding.Basic
+import Mathlib.Algebra.Group.Defs
 
 /-!
 # The embedding of a cancellative semigroup into itself by multiplication by a fixed element.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 variable {G : Type*}
 
@@ -36,7 +35,7 @@ def mulRightEmbedding [Mul G] [IsRightCancelMul G] (g : G) : G ↪ G where
   inj' := mul_left_injective g
 
 @[to_additive]
-theorem mulLeftEmbedding_eq_mulRightEmbedding [CommSemigroup G] [IsCancelMul G] (g : G) :
+theorem mulLeftEmbedding_eq_mulRightEmbedding [CommMagma G] [IsCancelMul G] (g : G) :
     mulLeftEmbedding g = mulRightEmbedding g := by
   ext
   exact mul_comm _ _

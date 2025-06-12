@@ -1,19 +1,21 @@
 /-
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van Doorn
+Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van Doorn, Bhavik Mehta
 -/
+import Mathlib.Order.Antisymmetrization
+import Mathlib.Order.Hom.WithTopBot
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Interval.Set.WithBotTop
-import Mathlib.Order.Antisymmetrization
 
 /-!
 # The covering relation
 
-This file defines the covering relation in an order. `b` is said to cover `a` if `a < b` and there
-is no element in between. We say that `b` weakly covers `a` if `a ≤ b` and there is no element
-between `a` and `b`. In a partial order this is equivalent to `a ⋖ b ∨ a = b`, in a preorder this
-is equivalent to `a ⋖ b ∨ (a ≤ b ∧ b ≤ a)`
+This file proves properties of the covering relation in an order.
+We say that `b` *covers* `a` if `a < b` and there is no element in between.
+We say that `b` *weakly covers* `a` if `a ≤ b` and there is no element between `a` and `b`.
+In a partial order this is equivalent to `a ⋖ b ∨ a = b`,
+in a preorder this is equivalent to `a ⋖ b ∨ (a ≤ b ∧ b ≤ a)`
 
 ## Notation
 
@@ -32,20 +34,11 @@ section Preorder
 
 variable [Preorder α] [Preorder β] {a b c : α}
 
-/-- `WCovBy a b` means that `a = b` or `b` covers `a`.
-This means that `a ≤ b` and there is no element in between.
--/
-def WCovBy (a b : α) : Prop :=
-  a ≤ b ∧ ∀ ⦃c⦄, a < c → ¬c < b
-
-/-- Notation for `WCovBy a b`. -/
-infixl:50 " ⩿ " => WCovBy
-
 theorem WCovBy.le (h : a ⩿ b) : a ≤ b :=
   h.1
 
 theorem WCovBy.refl (a : α) : a ⩿ a :=
-  ⟨le_rfl, fun _ hc => hc.not_lt⟩
+  ⟨le_rfl, fun _ hc => hc.not_gt⟩
 
 @[simp] lemma WCovBy.rfl : a ⩿ a := WCovBy.refl a
 
@@ -53,7 +46,7 @@ protected theorem Eq.wcovBy (h : a = b) : a ⩿ b :=
   h ▸ WCovBy.rfl
 
 theorem wcovBy_of_le_of_le (h1 : a ≤ b) (h2 : b ≤ a) : a ⩿ b :=
-  ⟨h1, fun _ hac hcb => (hac.trans hcb).not_le h2⟩
+  ⟨h1, fun _ hac hcb => (hac.trans hcb).not_ge h2⟩
 
 alias LE.le.wcovBy_of_le := wcovBy_of_le_of_le
 
@@ -86,10 +79,10 @@ instance WCovBy.isRefl : IsRefl α (· ⩿ ·) :=
   ⟨WCovBy.refl⟩
 
 theorem WCovBy.Ioo_eq (h : a ⩿ b) : Ioo a b = ∅ :=
-  eq_empty_iff_forall_not_mem.2 fun _ hx => h.2 hx.1 hx.2
+  eq_empty_iff_forall_notMem.2 fun _ hx => h.2 hx.1 hx.2
 
 theorem wcovBy_iff_Ioo_eq : a ⩿ b ↔ a ≤ b ∧ Ioo a b = ∅ :=
-  and_congr_right' <| by simp [eq_empty_iff_forall_not_mem]
+  and_congr_right' <| by simp [eq_empty_iff_forall_notMem]
 
 lemma WCovBy.of_le_of_le (hac : a ⩿ c) (hab : a ≤ b) (hbc : b ≤ c) : b ⩿ c :=
   ⟨hbc, fun _x hbx hxc ↦ hac.2 (hab.trans_lt hbx) hxc⟩
@@ -196,13 +189,6 @@ section LT
 
 variable [LT α] {a b : α}
 
-/-- `CovBy a b` means that `b` covers `a`: `a < b` and there is no element in between. -/
-def CovBy (a b : α) : Prop :=
-  a < b ∧ ∀ ⦃c⦄, a < c → ¬c < b
-
-/-- Notation for `CovBy a b`. -/
-infixl:50 " ⋖ " => CovBy
-
 theorem CovBy.lt (h : a ⋖ b) : a < b :=
   h.1
 
@@ -222,9 +208,6 @@ theorem not_covBy [DenselyOrdered α] : ¬a ⋖ b := fun h =>
 theorem denselyOrdered_iff_forall_not_covBy : DenselyOrdered α ↔ ∀ a b : α, ¬a ⋖ b :=
   ⟨fun h _ _ => @not_covBy _ _ _ _ h, fun h =>
     ⟨fun _ _ hab => exists_lt_lt_of_not_covBy hab <| h _ _⟩⟩
-
-@[deprecated (since := "2024-04-04")]
-alias densely_ordered_iff_forall_not_covBy := denselyOrdered_iff_forall_not_covBy
 
 @[simp]
 theorem toDual_covBy_toDual_iff : toDual b ⋖ toDual a ↔ a ⋖ b :=
@@ -257,7 +240,7 @@ protected theorem CovBy.wcovBy (h : a ⋖ b) : a ⩿ b :=
   ⟨h.le, h.2⟩
 
 theorem WCovBy.covBy_of_not_le (h : a ⩿ b) (h2 : ¬b ≤ a) : a ⋖ b :=
-  ⟨h.le.lt_of_not_le h2, h.2⟩
+  ⟨h.le.lt_of_not_ge h2, h.2⟩
 
 theorem WCovBy.covBy_of_lt (h : a ⩿ b) (h2 : a < b) : a ⋖ b :=
   ⟨h2, h.2⟩
@@ -275,7 +258,7 @@ theorem covBy_iff_wcovBy_and_lt : a ⋖ b ↔ a ⩿ b ∧ a < b :=
   ⟨fun h => ⟨h.wcovBy, h.lt⟩, fun h => h.1.covBy_of_lt h.2⟩
 
 theorem covBy_iff_wcovBy_and_not_le : a ⋖ b ↔ a ⩿ b ∧ ¬b ≤ a :=
-  ⟨fun h => ⟨h.wcovBy, h.lt.not_le⟩, fun h => h.1.covBy_of_not_le h.2⟩
+  ⟨fun h => ⟨h.wcovBy, h.lt.not_ge⟩, fun h => h.1.covBy_of_not_le h.2⟩
 
 theorem wcovBy_iff_covBy_or_le_and_le : a ⩿ b ↔ a ⋖ b ∨ a ≤ b ∧ b ≤ a :=
   ⟨fun h => or_iff_not_imp_right.mpr fun h' => h.covBy_of_not_le fun hba => h' ⟨h.le, hba⟩,
@@ -306,7 +289,7 @@ theorem CovBy.Ioo_eq (h : a ⋖ b) : Ioo a b = ∅ :=
   h.wcovBy.Ioo_eq
 
 theorem covBy_iff_Ioo_eq : a ⋖ b ↔ a < b ∧ Ioo a b = ∅ :=
-  and_congr_right' <| by simp [eq_empty_iff_forall_not_mem]
+  and_congr_right' <| by simp [eq_empty_iff_forall_notMem]
 
 theorem CovBy.of_image (f : α ↪o β) (h : f a ⋖ f b) : a ⋖ b :=
   ⟨f.lt_iff_lt.mp h.lt, fun _ hac hcb => h.2 (f.lt_iff_lt.mpr hac) (f.lt_iff_lt.mpr hcb)⟩
@@ -410,11 +393,11 @@ theorem CovBy.unique_right (hb : a ⋖ b) (hc : a ⋖ c) : b = c :=
 /-- If `a`, `b`, `c` are consecutive and `a < x < c` then `x = b`. -/
 theorem CovBy.eq_of_between {x : α} (hab : a ⋖ b) (hbc : b ⋖ c) (hax : a < x) (hxc : x < c) :
     x = b :=
-  le_antisymm (le_of_not_lt fun h => hbc.2 h hxc) (le_of_not_lt <| hab.2 hax)
+  le_antisymm (le_of_not_gt fun h => hbc.2 h hxc) (le_of_not_gt <| hab.2 hax)
 
 theorem covBy_iff_lt_iff_le_left {x y : α} : x ⋖ y ↔ ∀ {z}, z < y ↔ z ≤ x where
   mp := fun hx _z ↦ ⟨hx.le_of_lt, fun hz ↦ hz.trans_lt hx.lt⟩
-  mpr := fun H ↦ ⟨H.2 le_rfl, fun _z hx hz ↦ (H.1 hz).not_lt hx⟩
+  mpr := fun H ↦ ⟨H.2 le_rfl, fun _z hx hz ↦ (H.1 hz).not_gt hx⟩
 
 theorem covBy_iff_le_iff_lt_left {x y : α} : x ⋖ y ↔ ∀ {z}, z ≤ x ↔ z < y := by
   simp_rw [covBy_iff_lt_iff_le_left, iff_comm]
@@ -442,6 +425,19 @@ lemma LT.lt.exists_disjoint_Iio_Ioi (h : a < b) :
     exact ⟨c, ha, c, hb, fun _ h₁ _ => lt_trans h₁⟩
 
 end LinearOrder
+
+namespace Bool
+
+@[simp] theorem wcovBy_iff : ∀ {a b : Bool}, a ⩿ b ↔ a ≤ b := by unfold WCovBy; decide
+@[simp] theorem covBy_iff : ∀ {a b : Bool}, a ⋖ b ↔ a < b := by unfold CovBy; decide
+
+instance instDecidableRelWCovBy : DecidableRel (· ⩿ · : Bool → Bool → Prop) := fun _ _ ↦
+  decidable_of_iff _ wcovBy_iff.symm
+
+instance instDecidableRelCovBy : DecidableRel (· ⋖ · : Bool → Bool → Prop) := fun _ _ ↦
+  decidable_of_iff _ covBy_iff.symm
+
+end Bool
 
 namespace Set
 variable {s t : Set α} {a : α}
@@ -520,10 +516,10 @@ theorem fst_eq_or_snd_eq_of_wcovBy : x ⩿ y → x.1 = y.1 ∨ x.2 = y.2 := by
       (mk_lt_mk.2 <| Or.inr ⟨le_rfl, hab.2.lt_of_le h.1.2⟩)
 
 theorem _root_.WCovBy.fst (h : x ⩿ y) : x.1 ⩿ y.1 :=
-  ⟨h.1.1, fun _ h₁ h₂ => h.2 (mk_lt_mk_iff_left.2 h₁) ⟨⟨h₂.le, h.1.2⟩, fun hc => h₂.not_le hc.1⟩⟩
+  ⟨h.1.1, fun _ h₁ h₂ => h.2 (mk_lt_mk_iff_left.2 h₁) ⟨⟨h₂.le, h.1.2⟩, fun hc => h₂.not_ge hc.1⟩⟩
 
 theorem _root_.WCovBy.snd (h : x ⩿ y) : x.2 ⩿ y.2 :=
-  ⟨h.1.2, fun _ h₁ h₂ => h.2 (mk_lt_mk_iff_right.2 h₁) ⟨⟨h.1.1, h₂.le⟩, fun hc => h₂.not_le hc.2⟩⟩
+  ⟨h.1.2, fun _ h₁ h₂ => h.2 (mk_lt_mk_iff_right.2 h₁) ⟨⟨h.1.1, h₂.le⟩, fun hc => h₂.not_ge hc.2⟩⟩
 
 theorem mk_wcovBy_mk_iff_left : (a₁, b) ⩿ (a₂, b) ↔ a₁ ⩿ a₂ := by
   refine ⟨WCovBy.fst, (And.imp mk_le_mk_iff_left.2) fun h c h₁ h₂ => ?_⟩
@@ -569,6 +565,138 @@ theorem covBy_iff : x ⋖ y ↔ x.1 ⋖ y.1 ∧ x.2 = y.2 ∨ x.2 ⋖ y.2 ∧ x.
   exact mk_covBy_mk_iff
 
 end Prod
+
+namespace Pi
+
+section Preorder
+
+variable {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] {a b : (i : ι) → α i}
+
+lemma _root_.WCovBy.eval (h : a ⩿ b) (i : ι) : a i ⩿ b i := by
+  classical
+  refine ⟨h.1 i, fun ci h₁ h₂ ↦ ?_⟩
+  have hcb : Function.update a i ci ≤ b := by simpa [update_le_iff, h₂.le] using fun j hj ↦ h.1 j
+  refine h.2 (by simpa) (lt_of_le_not_ge hcb ?_)
+  simp [le_update_iff, h₂.not_ge]
+
+lemma exists_forall_antisymmRel_of_covBy (h : a ⋖ b) :
+    ∃ i, ∀ j ≠ i, AntisymmRel (· ≤ ·) (a j) (b j) := by
+  classical
+  simp only [CovBy, Pi.lt_def, not_and, and_imp, forall_exists_index, not_exists] at h
+  obtain ⟨⟨hab, ⟨i, hi⟩⟩, h⟩ := h
+  refine ⟨i, fun j hj ↦ ?_⟩
+  let c : (i : ι) → α i := Function.update a i (b i)
+  have h₁ : c ≤ b := by simpa [update_le_iff, c] using fun k hk ↦ hab k
+  have h₂ : ¬ c j < b j := h (by simp [c, hi.le]) i (by simpa [c]) h₁ j
+  exact ⟨hab j, by simpa [lt_iff_le_not_ge, hab j, c, hj] using h₂⟩
+
+lemma exists_forall_antisymmRel_of_wcovBy [Nonempty ι] (h : a ⩿ b) :
+    ∃ i, ∀ j ≠ i, AntisymmRel (· ≤ ·) (a j) (b j) := by
+  rw [wcovBy_iff_covBy_or_le_and_le] at h
+  obtain h | h := h
+  · exact exists_forall_antisymmRel_of_covBy h
+  · inhabit ι
+    exact ⟨default, fun j hj ↦ ⟨h.left j, h.right j⟩⟩
+
+/--
+A characterisation of the `WCovBy` relation in products of preorders. See `Pi.wcovBy_iff` for the
+(more common) version in products of partial orders.
+-/
+lemma wcovBy_iff_antisymmRel [Nonempty ι] :
+    a ⩿ b ↔ ∃ i, a i ⩿ b i ∧ ∀ j ≠ i, AntisymmRel (· ≤ ·) (a j) (b j) := by
+  constructor
+  · intro h
+    obtain ⟨i, hi⟩ := exists_forall_antisymmRel_of_wcovBy h
+    exact ⟨i, h.eval _, hi⟩
+  rintro ⟨i, hab, h⟩
+  refine ⟨fun j ↦ (eq_or_ne j i).elim (· ▸ hab.1) (h j · |>.1), fun c hac hcb ↦ ?_⟩
+  have haci : a i < c i := by
+    obtain ⟨hac, j, hj⟩ := Pi.lt_def.1 hac
+    exact (eq_or_ne j i).elim (· ▸ hj) fun hj' ↦
+      ((lt_of_antisymmRel_of_lt (h j hj').symm hj).not_ge (hcb.le j)).elim
+  have hcbi : c i < b i := by
+    obtain ⟨hcb, j, hj⟩ := Pi.lt_def.1 hcb
+    exact (eq_or_ne j i).elim (· ▸ hj) fun hj' ↦
+      ((lt_of_lt_of_antisymmRel hj (h j hj').symm).not_ge (hac.le j)).elim
+  exact hab.2 haci hcbi
+
+/--
+A characterisation of the `CovBy` relation in products of preorders. See `Pi.covBy_iff` for the
+(more common) version in products of partial orders.
+-/
+lemma covBy_iff_antisymmRel :
+    a ⋖ b ↔ ∃ i, a i ⋖ b i ∧ ∀ j ≠ i, AntisymmRel (· ≤ ·) (a j) (b j) := by
+  constructor
+  · intro h
+    obtain ⟨j, hj⟩ := (Pi.lt_def.1 h.1).2
+    have : Nonempty ι := ⟨j⟩
+    obtain ⟨i, hi⟩ := exists_forall_antisymmRel_of_wcovBy h.wcovBy
+    obtain rfl : i = j := by_contra fun this ↦ (hi j (Ne.symm this)).2.not_gt hj
+    exact ⟨i, covBy_iff_wcovBy_and_lt.2 ⟨h.wcovBy.eval i, hj⟩, hi⟩
+  rintro ⟨i, hi, h⟩
+  have : Nonempty ι := ⟨i⟩
+  refine covBy_iff_wcovBy_and_lt.2 ⟨wcovBy_iff_antisymmRel.2 ⟨i, hi.wcovBy, h⟩, ?_⟩
+  exact Pi.lt_def.2 ⟨fun j ↦ (eq_or_ne j i).elim (· ▸ hi.1.le) (h j · |>.1), i, hi.1⟩
+
+end Preorder
+
+section PartialOrder
+
+variable {ι : Type*} {α : ι → Type*} [∀ i, PartialOrder (α i)] {a b : (i : ι) → α i}
+
+lemma exists_forall_eq_of_covBy (h : a ⋖ b) : ∃ i, ∀ j ≠ i, a j = b j := by
+  obtain ⟨i, hi⟩ := exists_forall_antisymmRel_of_covBy h
+  exact ⟨i, fun j hj ↦ AntisymmRel.eq (hi _ hj)⟩
+
+lemma exists_forall_eq_of_wcovBy [Nonempty ι] (h : a ⩿ b) : ∃ i, ∀ j ≠ i, a j = b j := by
+  obtain ⟨i, hi⟩ := exists_forall_antisymmRel_of_wcovBy h
+  exact ⟨i, fun j hj ↦ AntisymmRel.eq (hi _ hj)⟩
+
+lemma wcovBy_iff [Nonempty ι] : a ⩿ b ↔ ∃ i, a i ⩿ b i ∧ ∀ j ≠ i, a j = b j := by
+  simp [wcovBy_iff_antisymmRel]
+
+lemma covBy_iff : a ⋖ b ↔ ∃ i, a i ⋖ b i ∧ ∀ j ≠ i, a j = b j := by
+  simp [covBy_iff_antisymmRel]
+
+lemma wcovBy_iff_exists_right_eq [Nonempty ι] [DecidableEq ι] :
+    a ⩿ b ↔ ∃ i x, a i ⩿ x ∧ b = Function.update a i x := by
+  rw [wcovBy_iff]
+  constructor
+  · rintro ⟨i, hi, h⟩
+    exact ⟨i, b i, hi, by simpa [Function.eq_update_iff, eq_comm] using h⟩
+  · rintro ⟨i, x, h, rfl⟩
+    exact ⟨i, by simpa +contextual⟩
+
+lemma covBy_iff_exists_right_eq [DecidableEq ι] :
+    a ⋖ b ↔ ∃ i x, a i ⋖ x ∧ b = Function.update a i x := by
+  rw [covBy_iff]
+  constructor
+  · rintro ⟨i, hi, h⟩
+    exact ⟨i, b i, hi, by simpa [Function.eq_update_iff, eq_comm] using h⟩
+  · rintro ⟨i, x, h, rfl⟩
+    exact ⟨i, by simpa +contextual⟩
+
+lemma wcovBy_iff_exists_left_eq [Nonempty ι] [DecidableEq ι] :
+    a ⩿ b ↔ ∃ i x, x ⩿ b i ∧ a = Function.update b i x := by
+  rw [wcovBy_iff]
+  constructor
+  · rintro ⟨i, hi, h⟩
+    exact ⟨i, a i, hi, by simpa [Function.eq_update_iff, eq_comm] using h⟩
+  · rintro ⟨i, x, h, rfl⟩
+    exact ⟨i, by simpa +contextual⟩
+
+lemma covBy_iff_exists_left_eq [DecidableEq ι] :
+    a ⋖ b ↔ ∃ i x, x ⋖ b i ∧ a = Function.update b i x := by
+  rw [covBy_iff]
+  constructor
+  · rintro ⟨i, hi, h⟩
+    exact ⟨i, a i, hi, by simpa [Function.eq_update_iff, eq_comm] using h⟩
+  · rintro ⟨i, x, h, rfl⟩
+    exact ⟨i, by simpa +contextual⟩
+
+end PartialOrder
+
+end Pi
 
 namespace WithTop
 

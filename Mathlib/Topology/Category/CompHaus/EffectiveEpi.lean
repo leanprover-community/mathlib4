@@ -11,7 +11,7 @@ import Mathlib.Topology.Category.CompHausLike.EffectiveEpi
 
 This file proves that `EffectiveEpi`, `Epi` and `Surjective` are all equivalent in `CompHaus`.
 As a consequence we deduce from the material in
-`Mathlib.Topology.Category.CompHausLike.EffectiveEpi` that `CompHaus` is `Preregular`
+`Mathlib/Topology/Category/CompHausLike/EffectiveEpi.lean` that `CompHaus` is `Preregular`
 and `Precoherent`.
 
 We also prove that for a finite family of morphisms in `CompHaus` with fixed
@@ -28,8 +28,6 @@ equivalent.
 universe u
 
 open CategoryTheory Limits CompHausLike
-
-attribute [local instance] ConcreteCategory.instFunLike
 
 namespace CompHaus
 

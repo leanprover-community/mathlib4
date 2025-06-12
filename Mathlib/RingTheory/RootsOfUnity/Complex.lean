@@ -104,7 +104,7 @@ theorem IsPrimitiveRoot.nnnorm_eq_one {ζ : ℂ} {n : ℕ} (h : IsPrimitiveRoot 
 
 theorem IsPrimitiveRoot.arg_ext {n m : ℕ} {ζ μ : ℂ} (hζ : IsPrimitiveRoot ζ n)
     (hμ : IsPrimitiveRoot μ m) (hn : n ≠ 0) (hm : m ≠ 0) (h : ζ.arg = μ.arg) : ζ = μ :=
-  Complex.ext_abs_arg ((hζ.norm'_eq_one hn).trans (hμ.norm'_eq_one hm).symm) h
+  Complex.ext_norm_arg ((hζ.norm'_eq_one hn).trans (hμ.norm'_eq_one hm).symm) h
 
 theorem IsPrimitiveRoot.arg_eq_zero_iff {n : ℕ} {ζ : ℂ} (hζ : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
     ζ.arg = 0 ↔ ζ = 1 :=
@@ -123,24 +123,13 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
   rw [Complex.isPrimitiveRoot_iff _ _ hn] at h
   obtain ⟨i, h, hin, rfl⟩ := h
   rw [mul_comm, ← mul_assoc, Complex.exp_mul_I]
-  refine ⟨if i * 2 ≤ n then i else i - n, ?_, ?_, ?_⟩
-  on_goal 2 =>
+  refine ⟨if i * 2 ≤ n then i else i - n, ?_, ?isCoprime, by omega⟩
+  case isCoprime =>
     replace hin := Nat.isCoprime_iff_coprime.mpr hin
     split_ifs
     · exact hin
     · convert hin.add_mul_left_left (-1) using 1
       rw [mul_neg_one, sub_eq_add_neg]
-  on_goal 2 =>
-    split_ifs with h₂
-    · exact mod_cast h
-    suffices (i - n : ℤ).natAbs = n - i by
-      rw [this]
-      apply tsub_lt_self hn.bot_lt
-      contrapose! h₂
-      rw [Nat.eq_zero_of_le_zero h₂, zero_mul]
-      exact zero_le _
-    rw [← Int.natAbs_neg, neg_sub, Int.natAbs_eq_iff]
-    exact Or.inl (Int.ofNat_sub h.le).symm
   split_ifs with h₂
   · convert Complex.arg_cos_add_sin_mul_I _
     · push_cast; rfl
@@ -181,3 +170,8 @@ lemma Complex.norm_eq_one_of_mem_rootsOfUnity {ζ : ℂˣ} {n : ℕ} [NeZero n]
   norm_cast
   rw [_root_.mem_rootsOfUnity] at hζ
   rw [hζ, Units.val_one]
+
+theorem Complex.conj_rootsOfUnity {ζ : ℂˣ} {n : ℕ} [NeZero n] (hζ : ζ ∈ rootsOfUnity n ℂ) :
+    (starRingEnd ℂ) ζ = ζ⁻¹ := by
+  rw [← Units.mul_eq_one_iff_eq_inv, conj_mul', norm_eq_one_of_mem_rootsOfUnity hζ, ofReal_one,
+    one_pow]

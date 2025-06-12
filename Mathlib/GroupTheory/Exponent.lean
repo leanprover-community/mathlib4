@@ -47,8 +47,6 @@ universe u
 
 variable {G : Type u}
 
-open scoped Classical
-
 namespace Monoid
 
 section Monoid
@@ -63,6 +61,7 @@ variable (G) [Monoid G]
 def ExponentExists :=
   ∃ n, 0 < n ∧ ∀ g : G, g ^ n = 1
 
+open scoped Classical in
 /-- The exponent of a group is the smallest positive integer `n` such that `g ^ n = 1` for all
   `g ∈ G` if it exists, otherwise it is zero by convention. -/
 @[to_additive
@@ -122,6 +121,17 @@ theorem exponent_eq_zero_iff : exponent G = 0 ↔ ¬ExponentExists G :=
 theorem exponent_eq_zero_of_order_zero {g : G} (hg : orderOf g = 0) : exponent G = 0 :=
   exponent_eq_zero_iff.mpr fun h ↦ h.orderOf_pos g |>.ne' hg
 
+@[to_additive]
+theorem exponent_eq_sInf :
+    Monoid.exponent G = sInf {d : ℕ | 0 < d ∧ ∀ x : G, x ^ d = 1} := by
+  by_cases h : Monoid.ExponentExists G
+  · have h' : {d : ℕ | 0 < d ∧ ∀ x : G, x ^ d = 1}.Nonempty := h
+    rw [Monoid.exponent, dif_pos h, Nat.sInf_def h']
+    congr
+  · have : {d | 0 < d ∧ ∀ (x : G), x ^ d = 1} = ∅ :=
+      Set.eq_empty_of_forall_notMem fun n hn ↦ h ⟨n, hn⟩
+    rw [Monoid.exponent_eq_zero_iff.mpr h, this, Nat.sInf_empty]
+
 /-- The exponent is zero iff for all nonzero `n`, one can find a `g` such that `g ^ n ≠ 1`. -/
 @[to_additive "The exponent is zero iff for all nonzero `n`, one can find a `g` such that
 `n • g ≠ 0`."]
@@ -132,6 +142,7 @@ theorem exponent_eq_zero_iff_forall : exponent G = 0 ↔ ∀ n > 0, ∃ g : G, g
 
 @[to_additive exponent_nsmul_eq_zero]
 theorem pow_exponent_eq_one (g : G) : g ^ exponent G = 1 := by
+  classical
   by_cases h : ExponentExists G
   · simp_rw [exponent, dif_pos h]
     exact (Nat.find_spec h).2 g
@@ -150,6 +161,7 @@ theorem exponent_pos_of_exists (n : ℕ) (hpos : 0 < n) (hG : ∀ g : G, g ^ n =
 
 @[to_additive]
 theorem exponent_min' (n : ℕ) (hpos : 0 < n) (hG : ∀ g : G, g ^ n = 1) : exponent G ≤ n := by
+  classical
   rw [exponent, dif_pos]
   · apply Nat.find_min'
     exact ⟨hpos, hG⟩
@@ -199,7 +211,7 @@ theorem exponent_dvd_iff_forall_pow_eq_one {n : ℕ} : exponent G ∣ n ↔ ∀ 
       apply exponent_min' _ h
       simp_rw [← pow_eq_mod_exponent]
       exact hG
-    exact h₂.not_le h₃
+    exact h₂.not_ge h₃
 
 @[to_additive]
 alias ⟨_, exponent_dvd_of_forall_pow_eq_one⟩ := exponent_dvd_iff_forall_pow_eq_one
@@ -233,7 +245,7 @@ theorem _root_.Nat.Prime.exists_orderOf_eq_pow_factorization_exponent {p : ℕ} 
     suffices key : ¬exponent G ∣ exponent G / p by
       rwa [exponent_dvd_iff_forall_pow_eq_one, not_forall] at key
     exact fun hd =>
-      hp.one_lt.not_le
+      hp.one_lt.not_ge
         ((mul_le_iff_le_one_left he).mp <|
           Nat.le_of_dvd he <| Nat.mul_dvd_of_dvd_div (Nat.dvd_of_mem_primeFactors h) hd)
   obtain ⟨k, hk : exponent G = p ^ _ * k⟩ := Nat.ordProj_dvd _ _
@@ -428,7 +440,7 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
   obtain ⟨g, hg⟩ := hp.exists_orderOf_eq_pow_factorization_exponent G
   suffices orderOf t < orderOf (t ^ p ^ k * g) by
     rw [ht] at this
-    exact this.not_le (le_csSup hfin.bddAbove <| Set.mem_range_self _)
+    exact this.not_ge (le_csSup hfin.bddAbove <| Set.mem_range_self _)
   have hpk : p ^ k ∣ orderOf t := Nat.ordProj_dvd _ _
   have hpk' : orderOf (t ^ p ^ k) = orderOf t / p ^ k := by
     rw [orderOf_pow' t (pow_ne_zero k hp.ne_zero), Nat.gcd_eq_right hpk]
@@ -438,8 +450,8 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
     apply Or.resolve_right (Nat.coprime_or_dvd_of_prime hp _)
     nth_rw 1 [← pow_one p]
     have : 1 = (Nat.factorization (orderOf (t ^ p ^ k))) p + 1 := by
-     rw [hpk', Nat.factorization_div hpk]
-     simp [k, hp]
+      rw [hpk', Nat.factorization_div hpk]
+      simp [k, hp]
     rw [this]
     -- Porting note: convert made to_additive complain
     apply Nat.pow_succ_factorization_not_dvd (hG.orderOf_pos <| t ^ p ^ k).ne' hp
@@ -467,6 +479,7 @@ theorem exponent_eq_iSup_orderOf (h : ∀ g : G, 0 < orderOf g) :
     simp_rw [Set.mem_range, exists_exists_eq_and]
     exact ⟨g, hx⟩
 
+open scoped Classical in
 @[to_additive]
 theorem exponent_eq_iSup_orderOf' :
     exponent G = if ∃ g : G, orderOf g = 0 then 0 else ⨆ g : G, orderOf g := by
@@ -495,11 +508,6 @@ end Monoid
 section Group
 
 variable [Group G] {n m : ℤ}
-
-@[to_additive (attr := deprecated Monoid.one_lt_exponent (since := "2024-02-17"))
-  AddGroup.one_lt_exponent]
-lemma Group.one_lt_exponent [Finite G] [Nontrivial G] : 1 < Monoid.exponent G :=
-  Monoid.one_lt_exponent
 
 @[to_additive]
 theorem Group.exponent_dvd_card [Fintype G] : Monoid.exponent G ∣ Fintype.card G :=
@@ -541,6 +549,7 @@ open Finset Monoid
 @[to_additive]
 theorem Monoid.exponent_pi_eq_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoid (M i)] {j : ι}
     (hj : exponent (M j) = 0) : exponent ((i : ι) → M i) = 0 := by
+  classical
   rw [@exponent_eq_zero_iff, ExponentExists] at hj ⊢
   push_neg at hj ⊢
   peel hj with n hn _
@@ -608,11 +617,13 @@ theorem Commute.of_orderOf_dvd_two [IsCancelMul G] (h : ∀ g : G, orderOf g ∣
     Commute a b := by
   simp_rw [orderOf_dvd_iff_pow_eq_one] at h
   rw [commute_iff_eq, ← mul_right_inj a, ← mul_left_inj b]
+  -- We avoid `group` here to minimize imports while low in the hierarchy;
+  -- typically it would be better to invoke the tactic.
   calc
-    a * (a * b) * b = a ^ 2 * b ^ 2 := by simp only [pow_two]; group
+    a * (a * b) * b = a ^ 2 * b ^ 2 := by simp [pow_two, mul_assoc]
     _ = 1 := by rw [h, h, mul_one]
     _ = (a * b) ^ 2 := by rw [h]
-    _ = a * (b * a) * b := by simp only [pow_two]; group
+    _ = a * (b * a) * b := by simp [pow_two, mul_assoc]
 
 /-- In a cancellative monoid of exponent two, all elements commute. -/
 @[to_additive]
@@ -642,26 +653,30 @@ lemma inv_eq_self_of_orderOf_eq_two {x : G} (hx : orderOf x = 2) :
     x⁻¹ = x :=
   inv_eq_of_mul_eq_one_left <| pow_two (a := x) ▸ hx ▸ pow_orderOf_eq_one x
 
--- TODO: delete
-/-- Any group of exponent two is abelian. -/
-@[to_additive (attr := reducible,
-  deprecated "No deprecation message was provided." (since := "2024-02-17"))
-  "Any additive group of exponent two is abelian."]
-def instCommGroupOfExponentTwo (hG : Monoid.exponent G = 2) : CommGroup G where
-  mul_comm := mul_comm_of_exponent_two hG
-
 @[to_additive]
-lemma mul_not_mem_of_orderOf_eq_two {x y : G} (hx : orderOf x = 2)
+lemma mul_notMem_of_orderOf_eq_two {x y : G} (hx : orderOf x = 2)
     (hy : orderOf y = 2) (hxy : x ≠ y) : x * y ∉ ({x, y, 1} : Set G) := by
-  simp only [Set.mem_singleton_iff, Set.mem_insert_iff, mul_right_eq_self, mul_left_eq_self,
+  simp only [Set.mem_singleton_iff, Set.mem_insert_iff, mul_eq_left, mul_eq_right,
     mul_eq_one_iff_eq_inv, inv_eq_self_of_orderOf_eq_two hy, not_or]
   aesop
 
+@[deprecated (since := "2025-05-23")]
+alias add_not_mem_of_addOrderOf_eq_two := add_notMem_of_addOrderOf_eq_two
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias mul_not_mem_of_orderOf_eq_two := mul_notMem_of_orderOf_eq_two
+
 @[to_additive]
-lemma mul_not_mem_of_exponent_two (h : Monoid.exponent G = 2) {x y : G}
+lemma mul_notMem_of_exponent_two (h : Monoid.exponent G = 2) {x y : G}
     (hx : x ≠ 1) (hy : y ≠ 1) (hxy : x ≠ y) : x * y ∉ ({x, y, 1} : Set G) :=
-  mul_not_mem_of_orderOf_eq_two (orderOf_eq_prime (h ▸ Monoid.pow_exponent_eq_one x) hx)
+  mul_notMem_of_orderOf_eq_two (orderOf_eq_prime (h ▸ Monoid.pow_exponent_eq_one x) hx)
     (orderOf_eq_prime (h ▸ Monoid.pow_exponent_eq_one y) hy) hxy
+
+@[deprecated (since := "2025-05-23")]
+alias add_not_mem_of_exponent_two := add_notMem_of_exponent_two
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias mul_not_mem_of_exponent_two := mul_notMem_of_exponent_two
 
 end Group
 

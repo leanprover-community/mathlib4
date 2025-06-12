@@ -39,17 +39,14 @@ section Uniqueness
 
 open ContinuousMultilinearMap
 
-theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p : E[×n]→L[𝕜] F}
+theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p : E [×n]→L[𝕜] F}
     (h : (fun y => p fun _ => y) =O[𝓝 0] fun y => ‖y‖ ^ (n + 1)) (y : E) : (p fun _ => y) = 0 := by
   obtain ⟨c, c_pos, hc⟩ := h.exists_pos
   obtain ⟨t, ht, t_open, z_mem⟩ := eventually_nhds_iff.mp (isBigOWith_iff.mp hc)
   obtain ⟨δ, δ_pos, δε⟩ := (Metric.isOpen_iff.mp t_open) 0 z_mem
   clear h hc z_mem
-  cases' n with n
+  rcases n with - | n
   · exact norm_eq_zero.mp (by
-      -- Porting note: the symmetric difference of the `simpa only` sets:
-      -- added `zero_add, pow_one`
-      -- removed `zero_pow, Ne.def, Nat.one_ne_zero, not_false_iff`
       simpa only [fin0_apply_norm, norm_eq_zero, norm_zero, zero_add, pow_one,
         mul_zero, norm_le_zero_iff] using ht 0 (δε (Metric.mem_ball_self δ_pos)))
   · refine Or.elim (Classical.em (y = 0))
@@ -70,9 +67,7 @@ theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p :
           simpa only [norm_pow, _root_.norm_norm] using ht (k • y) (δε (mem_ball_zero_iff.mpr h₁))
           --simpa only [norm_pow, norm_norm] using ht (k • y) (δε (mem_ball_zero_iff.mpr h₁))
         _ = ‖k‖ ^ n.succ * (‖k‖ * (c * ‖y‖ ^ (n.succ + 1))) := by
-          -- Porting note: added `Nat.succ_eq_add_one` since otherwise `ring` does not conclude.
-          simp only [norm_smul, mul_pow, Nat.succ_eq_add_one]
-          -- Porting note: removed `rw [pow_succ]`, since it now becomes superfluous.
+          simp only [norm_smul, mul_pow]
           ring
     have h₃ : ‖k‖ * (c * ‖y‖ ^ (n.succ + 1)) < ε :=
       inv_mul_cancel_right₀ h₀.ne.symm ε ▸
@@ -108,7 +103,7 @@ theorem HasFPowerSeriesAt.apply_eq_zero {p : FormalMultilinearSeries 𝕜 E F} {
 /-- A one-dimensional formal multilinear series representing the zero function is zero. -/
 theorem HasFPowerSeriesAt.eq_zero {p : FormalMultilinearSeries 𝕜 𝕜 E} {x : 𝕜}
     (h : HasFPowerSeriesAt 0 p x) : p = 0 := by
-  ext n x
+  ext n
   rw [← mkPiRing_apply_one_eq_self (p n)]
   simp [h.apply_eq_zero n 1]
 
@@ -157,8 +152,8 @@ end Uniqueness
 namespace AnalyticOnNhd
 
 /-- If an analytic function vanishes around a point, then it is uniformly zero along
-a connected set. Superseded by `eqOn_zero_of_preconnected_of_locally_zero` which does not assume
-completeness of the target space. -/
+a connected set. Superseded by `AnalyticOnNhd.eqOn_zero_of_preconnected_of_eventuallyEq_zero` which
+does not assume completeness of the target space. -/
 theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f : E → F} {U : Set E}
     (hf : AnalyticOnNhd 𝕜 f U) (hU : IsPreconnected U)
     {z₀ : E} (h₀ : z₀ ∈ U) (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
@@ -183,7 +178,7 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
     EMetric.mem_closure_iff.1 xu (r / 2) (ENNReal.half_pos hp.r_pos.ne')
   let q := p.changeOrigin (y - x)
   have has_series : HasFPowerSeriesOnBall f q y (r / 2) := by
-    have A : (‖y - x‖₊ : ℝ≥0∞) < r / 2 := by rwa [edist_comm, edist_eq_coe_nnnorm_sub] at hxy
+    have A : (‖y - x‖₊ : ℝ≥0∞) < r / 2 := by rwa [edist_comm, edist_eq_enorm_sub] at hxy
     have := hp.changeOrigin (A.trans_le ENNReal.half_le_self)
     simp only [add_sub_cancel] at this
     apply this.mono (ENNReal.half_pos hp.r_pos.ne')
@@ -203,7 +198,7 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
 /-- The *identity principle* for analytic functions: If an analytic function vanishes in a whole
 neighborhood of a point `z₀`, then it is uniformly zero along a connected set. For a one-dimensional
 version assuming only that the function vanishes at some points arbitrarily close to `z₀`, see
-`eqOn_zero_of_preconnected_of_frequently_eq_zero`. -/
+`AnalyticOnNhd.eqOn_zero_of_preconnected_of_frequently_eq_zero`. -/
 theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : E → F} {U : Set E}
     (hf : AnalyticOnNhd 𝕜 f U) (hU : IsPreconnected U)
     {z₀ : E} (h₀ : z₀ ∈ U) (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
@@ -222,7 +217,7 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : E → F} {U : Set E}
 /-- The *identity principle* for analytic functions: If two analytic functions coincide in a whole
 neighborhood of a point `z₀`, then they coincide globally along a connected set.
 For a one-dimensional version assuming only that the functions coincide at some points
-arbitrarily close to `z₀`, see `eqOn_of_preconnected_of_frequently_eq`. -/
+arbitrarily close to `z₀`, see `AnalyticOnNhd.eqOn_of_preconnected_of_frequently_eq`. -/
 theorem eqOn_of_preconnected_of_eventuallyEq {f g : E → F} {U : Set E} (hf : AnalyticOnNhd 𝕜 f U)
     (hg : AnalyticOnNhd 𝕜 g U) (hU : IsPreconnected U) {z₀ : E} (h₀ : z₀ ∈ U) (hfg : f =ᶠ[𝓝 z₀] g) :
     EqOn f g U := by
@@ -233,7 +228,7 @@ theorem eqOn_of_preconnected_of_eventuallyEq {f g : E → F} {U : Set E} (hf : A
 /-- The *identity principle* for analytic functions: If two analytic functions on a normed space
 coincide in a neighborhood of a point `z₀`, then they coincide everywhere.
 For a one-dimensional version assuming only that the functions coincide at some points
-arbitrarily close to `z₀`, see `eq_of_frequently_eq`. -/
+arbitrarily close to `z₀`, see `AnalyticOnNhd.eq_of_frequently_eq`. -/
 theorem eq_of_eventuallyEq {f g : E → F} [PreconnectedSpace E] (hf : AnalyticOnNhd 𝕜 f univ)
     (hg : AnalyticOnNhd 𝕜 g univ) {z₀ : E} (hfg : f =ᶠ[𝓝 z₀] g) : f = g :=
   funext fun x =>

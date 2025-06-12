@@ -197,18 +197,23 @@ theorem res_length (x : ℕ → α) (n : ℕ) : (res x n).length = n := by induc
 /-- The restrictions of `x` and `y` to `n` are equal if and only if `x m = y m` for all `m < n`. -/
 theorem res_eq_res {x y : ℕ → α} {n : ℕ} :
     res x n = res y n ↔ ∀ ⦃m⦄, m < n → x m = y m := by
-  constructor <;> intro h <;> induction' n with n ih; · simp
-  · intro m hm
-    rw [Nat.lt_succ_iff_lt_or_eq] at hm
-    simp only [res_succ, cons.injEq] at h
-    cases' hm with hm hm
-    · exact ih h.2 hm
-    rw [hm]
-    exact h.1
-  · simp
-  simp only [res_succ, cons.injEq]
-  refine ⟨h (Nat.lt_succ_self _), ih fun m hm => ?_⟩
-  exact h (hm.trans (Nat.lt_succ_self _))
+  constructor <;> intro h
+  · induction n with
+    | zero => simp
+    | succ n ih =>
+      intro m hm
+      rw [Nat.lt_succ_iff_lt_or_eq] at hm
+      simp only [res_succ, cons.injEq] at h
+      rcases hm with hm | hm
+      · exact ih h.2 hm
+      rw [hm]
+      exact h.1
+  · induction n with
+    | zero => simp
+    | succ n ih =>
+      simp only [res_succ, cons.injEq]
+      refine ⟨h (Nat.lt_succ_self _), ih fun m hm => ?_⟩
+      exact h (hm.trans (Nat.lt_succ_self _))
 
 theorem res_injective : Injective (@res α) := by
   intro x y h
@@ -442,7 +447,7 @@ theorem exists_disjoint_cylinder {s : Set (∀ n, E n)} (hs : IsClosed s) {x : �
     (hx : x ∉ s) : ∃ n, Disjoint s (cylinder x n) := by
   rcases eq_empty_or_nonempty s with (rfl | hne)
   · exact ⟨0, by simp⟩
-  have A : 0 < infDist x s := (hs.not_mem_iff_infDist_pos hne).1 hx
+  have A : 0 < infDist x s := (hs.notMem_iff_infDist_pos hne).1 hx
   obtain ⟨n, hn⟩ : ∃ n, (1 / 2 : ℝ) ^ n < infDist x s := exists_pow_lt_of_lt_one A one_half_lt_one
   refine ⟨n, disjoint_left.2 fun y ys hy => ?_⟩
   apply lt_irrefl (infDist x s)
@@ -620,7 +625,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
         -- common part to `x` and `y` -- then `f x = f y`.
         by_cases H : longestPrefix x s < firstDiff x y ∨ longestPrefix y s < firstDiff x y
         · have : cylinder x (longestPrefix x s) = cylinder y (longestPrefix y s) := by
-            cases' H with H H
+            rcases H with H | H
             · exact cylinder_longestPrefix_eq_of_longestPrefix_lt_firstDiff hs hne H xs ys
             · symm
               rw [firstDiff_comm] at H
@@ -681,7 +686,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
   let s : Set (ℕ → ℕ) := { x | (⋂ n : ℕ, closedBall (u (x n)) ((1 / 2) ^ n)).Nonempty }
   let g : s → α := fun x => x.2.some
   have A : ∀ (x : s) (n : ℕ), dist (g x) (u ((x : ℕ → ℕ) n)) ≤ (1 / 2) ^ n := fun x n =>
-    (mem_iInter.1 x.2.some_mem n : _)
+    (mem_iInter.1 x.2.some_mem n :)
   have g_cont : Continuous g := by
     refine continuous_iff_continuousAt.2 fun y => ?_
     refine continuousAt_of_locally_lipschitz zero_lt_one 4 fun x hxy => ?_
@@ -732,7 +737,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
       rw [mul_zero] at this
       exact
         squeeze_zero (fun n => diam_nonneg) (fun n => diam_closedBall (pow_nonneg I0.le _)) this
-    refine nonempty_iInter_of_nonempty_biInter (fun n => isClosed_ball)
+    refine nonempty_iInter_of_nonempty_biInter (fun n => isClosed_closedBall)
       (fun n => isBounded_closedBall) (fun N ↦ ?_) L
     obtain ⟨y, hxy, ys⟩ : ∃ y, y ∈ ball x ((1 / 2) ^ N) ∩ s :=
       clusterPt_principal_iff.1 hx _ (ball_mem_nhds x (pow_pos I0 N))
@@ -782,7 +787,7 @@ theorem dist_summable (x y : ∀ i, F i) :
 
 theorem min_dist_le_dist_pi (x y : ∀ i, F i) (i : ι) :
     min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) ≤ dist x y :=
-  le_tsum (dist_summable x y) i fun j _ => le_min (by simp) dist_nonneg
+  (dist_summable x y).le_tsum i fun j _ => le_min (by simp) dist_nonneg
 
 theorem dist_le_dist_pi_of_dist_lt {x y : ∀ i, F i} {i : ι} (h : dist x y < (1 / 2) ^ encode i) :
     dist (x i) (y i) ≤ dist x y := by
@@ -817,8 +822,8 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
           min_le_right _ _
     calc dist x z ≤ ∑' i, (min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) +
           min ((1 / 2) ^ encode i : ℝ) (dist (y i) (z i))) :=
-        tsum_le_tsum I (dist_summable x z) ((dist_summable x y).add (dist_summable y z))
-      _ = dist x y + dist y z := tsum_add (dist_summable x y) (dist_summable y z)
+        (dist_summable x z).tsum_le_tsum I ((dist_summable x y).add (dist_summable y z))
+      _ = dist x y + dist y z := (dist_summable x y).tsum_add (dist_summable y z)
   eq_of_dist_eq_zero hxy := by
     ext1 n
     rw [← dist_le_zero, ← hxy]
@@ -850,19 +855,21 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
           dist x y = ∑' i : ι, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i)) := rfl
           _ = (∑ i ∈ K, min ((1 / 2) ^ encode i : ℝ) (dist (x i) (y i))) +
                 ∑' i : ↑(K : Set ι)ᶜ, min ((1 / 2) ^ encode (i : ι) : ℝ) (dist (x i) (y i)) :=
-            (sum_add_tsum_compl (dist_summable _ _)).symm
+            (Summable.sum_add_tsum_compl (dist_summable _ _)).symm
           _ ≤ (∑ i ∈ K, dist (x i) (y i)) +
                 ∑' i : ↑(K : Set ι)ᶜ, ((1 / 2) ^ encode (i : ι) : ℝ) := by
-            refine add_le_add (Finset.sum_le_sum fun i _ => min_le_right _ _) ?_
-            refine tsum_le_tsum (fun i => min_le_left _ _) ?_ ?_
+            gcongr
+            · apply min_le_right
             · apply Summable.subtype (dist_summable x y) (↑K : Set ι)ᶜ
             · apply Summable.subtype summable_geometric_two_encode (↑K : Set ι)ᶜ
+            · apply min_le_left
           _ < (∑ _i ∈ K, δ) + ε / 2 := by
             apply add_lt_add_of_le_of_lt _ hK
             refine Finset.sum_le_sum fun i hi => (hxy i ?_).le
             simpa using hi
-          _ ≤ ε / 2 + ε / 2 :=
-            (add_le_add_right (by simpa only [Finset.sum_const, nsmul_eq_mul] using hδ.le) _)
+          _ ≤ ε / 2 + ε / 2 := by
+            gcongr
+            simpa using hδ.le
           _ = ε := add_halves _
     · simp only [le_iInf_iff, le_principal_iff]
       intro i ε εpos

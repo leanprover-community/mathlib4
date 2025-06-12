@@ -155,7 +155,7 @@ lemma generate_presieveOfSections
     rw [X.basicOpen_mul, hf₃, inf_eq_right]
     exact X.basicOpen_le _
   · rintro ⟨f₁, hf₁s, f₂, rfl⟩
-    refine ⟨U.basicOpen f₁, ⟨f₂ |_ᵣ _, ?_⟩, ⟨f₁, rfl⟩, ⟨f₁, hf₁s, rfl⟩, rfl⟩
+    refine ⟨U.basicOpen f₁, ⟨f₂ |_ _, ?_⟩, ⟨f₁, rfl⟩, ⟨f₁, hf₁s, rfl⟩, rfl⟩
     exact (X.basicOpen_res _ _).trans (X.basicOpen_mul _ _).symm
 
 lemma generate_presieveOfSections_mem_grothendieckTopology

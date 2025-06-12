@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Sites.IsSheafFor
-import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Limits.Types.Shapes
 import Mathlib.Tactic.ApplyFun
 
 /-!
@@ -45,8 +45,9 @@ noncomputable section
 
 /--
 The middle object of the fork diagram given in Equation (3) of [MM92], as well as the fork diagram
-of <https://stacks.math.columbia.edu/tag/00VM>.
+of the Stacks entry.
 -/
+@[stacks 00VM "This is the middle object of the fork diagram there."]
 def FirstObj : Type max v u :=
   ∏ᶜ fun f : ΣY, { f : Y ⟶ X // R f } => P.obj (op f.1)
 
@@ -78,8 +79,9 @@ instance : Inhabited (FirstObj P ((⊥ : Sieve X) : Presieve X)) :=
 
 /--
 The left morphism of the fork diagram given in Equation (3) of [MM92], as well as the fork diagram
-of <https://stacks.math.columbia.edu/tag/00VM>.
+of the Stacks entry.
 -/
+@[stacks 00VM "This is the left morphism of the fork diagram there."]
 def forkMap : P.obj (op X) ⟶ FirstObj P R :=
   Pi.lift fun f => P.map f.2.1.op
 
@@ -95,7 +97,7 @@ namespace Sieve
 to check a family is compatible.
 -/
 def SecondObj : Type max v u :=
-  ∏ᶜ fun f : Σ(Y Z : _) (_ : Z ⟶ Y), { f' : Y ⟶ X // S f' } => P.obj (op f.2.1)
+  ∏ᶜ fun f : Σ (Y Z : _) (_ : Z ⟶ Y), { f' : Y ⟶ X // S f' } => P.obj (op f.2.1)
 
 variable {P S}
 
@@ -176,15 +178,17 @@ namespace Presieve
 variable [R.hasPullbacks]
 
 /--
-The rightmost object of the fork diagram of https://stacks.math.columbia.edu/tag/00VM, which
+The rightmost object of the fork diagram of the Stacks entry, which
 contains the data used to check a family of elements for a presieve is compatible.
 -/
-@[simp] def SecondObj : Type max v u :=
+@[simp, stacks 00VM "This is the rightmost object of the fork diagram there."]
+def SecondObj : Type max v u :=
   ∏ᶜ fun fg : (ΣY, { f : Y ⟶ X // R f }) × ΣZ, { g : Z ⟶ X // R g } =>
     haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
     P.obj (op (pullback fg.1.2.1 fg.2.2.1))
 
-/-- The map `pr₀*` of <https://stacks.math.columbia.edu/tag/00VL>. -/
+/-- The map `pr₀*` of the Stacks entry. -/
+@[stacks 00VM "This is the map `pr₀*` there."]
 def firstMap : FirstObj P R ⟶ SecondObj P R :=
   Pi.lift fun fg =>
     haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
@@ -193,7 +197,8 @@ def firstMap : FirstObj P R ⟶ SecondObj P R :=
 instance [HasPullbacks C] : Inhabited (SecondObj P (⊥ : Presieve X)) :=
   ⟨firstMap _ _ default⟩
 
-/-- The map `pr₁*` of <https://stacks.math.columbia.edu/tag/00VL>. -/
+/-- The map `pr₁*` of the Stacks entry. -/
+@[stacks 00VM "This is the map `pr₁*` there."]
 def secondMap : FirstObj P R ⟶ SecondObj P R :=
   Pi.lift fun fg =>
     haveI := Presieve.hasPullbacks.has_pullbacks fg.1.2.2 fg.2.2.2
@@ -224,9 +229,8 @@ theorem compatible_iff (x : FirstObj P R) :
     rw [Types.limit_ext_iff'] at t
     simpa [firstMap, secondMap] using t ⟨⟨⟨Y, f, hf⟩, Z, g, hg⟩⟩
 
-/-- `P` is a sheaf for `R`, iff the fork given by `w` is an equalizer.
-See <https://stacks.math.columbia.edu/tag/00VM>.
--/
+/-- `P` is a sheaf for `R`, iff the fork given by `w` is an equalizer. -/
+@[stacks 00VM]
 theorem sheaf_condition : R.IsSheafFor P ↔ Nonempty (IsLimit (Fork.ofι _ (w P R))) := by
   rw [Types.type_equalizer_iff_unique,
     ← Equiv.forall_congr_right (firstObjEqFamily P R).toEquiv.symm]
@@ -255,10 +259,11 @@ variable {B : C} {I : Type} (X : I → C) (π : (i : I) → X i ⟶ B)
 -- TODO: allow `I : Type w`
 
 /--
-The middle object of the fork diagram of <https://stacks.math.columbia.edu/tag/00VM>.
+The middle object of the fork diagram of the Stacks entry.
 The difference between this and `Equalizer.FirstObj P (ofArrows X π)` arises if the family of
 arrows `π` contains duplicates. The `Presieve.ofArrows` doesn't see those.
 -/
+@[stacks 00VM "The middle object of the fork diagram there."]
 def FirstObj : Type w := ∏ᶜ (fun i ↦ P.obj (op (X i)))
 
 @[ext]
@@ -269,10 +274,11 @@ lemma FirstObj.ext (z₁ z₂ : FirstObj P X) (h : ∀ i, (Pi.π _ i : FirstObj 
   exact h i
 
 /--
-The rightmost object of the fork diagram of https://stacks.math.columbia.edu/tag/00VM.
+The rightmost object of the fork diagram of the Stacks entry.
 The difference between this and `Equalizer.Presieve.SecondObj P (ofArrows X π)` arises if the
 family of arrows `π` contains duplicates. The `Presieve.ofArrows` doesn't see those.
 -/
+@[stacks 00VM "The rightmost object of the fork diagram there."]
 def SecondObj : Type w  :=
   ∏ᶜ (fun (ij : I × I) ↦ P.obj (op (pullback (π ij.1) (π ij.2))))
 
@@ -322,10 +328,8 @@ theorem compatible_iff (x : FirstObj P X) : (Arrows.Compatible P π ((Types.prod
     apply_fun Pi.π (fun (ij : I × I) ↦ P.obj (op (pullback (π ij.1) (π ij.2)))) ⟨i, j⟩ at t
     simpa [firstMap, secondMap] using t
 
-/--
-`P` is a sheaf for `Presieve.ofArrows X π`, iff the fork given by `w` is an equalizer.
-See <https://stacks.math.columbia.edu/tag/00VM>.
--/
+/-- `P` is a sheaf for `Presieve.ofArrows X π`, iff the fork given by `w` is an equalizer. -/
+@[stacks 00VM]
 theorem sheaf_condition : (Presieve.ofArrows X π).IsSheafFor P ↔
     Nonempty (IsLimit (Fork.ofι (forkMap P X π) (w P X π))) := by
   rw [Types.type_equalizer_iff_unique, isSheafFor_arrows_iff]

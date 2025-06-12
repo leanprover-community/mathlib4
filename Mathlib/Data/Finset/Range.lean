@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Insert
+import Mathlib.Data.Multiset.Range
 import Mathlib.Order.Interval.Set.Defs
 
 /-!
@@ -25,12 +26,7 @@ finite sets, finset
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
-assert_not_exists List.sublistsLen
-assert_not_exists Multiset.powerset
-
-assert_not_exists CompleteLattice
-
-assert_not_exists OrderedCommMonoid
+assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice OrderedCommMonoid
 
 open Multiset Subtype Function
 
@@ -74,13 +70,15 @@ theorem range_one : range 1 = {0} :=
   rfl
 
 theorem range_succ : range (succ n) = insert n (range n) :=
-  eq_of_veq <| (Multiset.range_succ n).trans <| (ndinsert_of_not_mem not_mem_range_self).symm
+  eq_of_veq <| (Multiset.range_succ n).trans <| (ndinsert_of_notMem notMem_range_self).symm
 
 theorem range_add_one : range (n + 1) = insert n (range n) :=
   range_succ
 
-theorem not_mem_range_self : n ∉ range n :=
-  Multiset.not_mem_range_self
+theorem notMem_range_self : n ∉ range n :=
+  Multiset.notMem_range_self
+
+@[deprecated (since := "2025-05-23")] alias not_mem_range_self := notMem_range_self
 
 theorem self_mem_range_succ (n : ℕ) : n ∈ range (n + 1) :=
   Multiset.self_mem_range_succ n
