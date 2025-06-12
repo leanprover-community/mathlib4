@@ -24,7 +24,7 @@ variable {C : Type*} [Category C] [Preadditive C]
   (sq : Square C) [HasBinaryBiproduct sq.X₂ sq.X₃]
 
 /-- The cokernel cofork attached to a commutative square in a preadditive category. -/
-noncomputable abbrev cokernelCofork  :
+noncomputable abbrev cokernelCofork :
     CokernelCofork (biprod.lift sq.f₁₂ (-sq.f₁₃)) :=
   CokernelCofork.ofπ (biprod.desc sq.f₂₄ sq.f₃₄) (by simp [sq.fac])
 
@@ -46,7 +46,7 @@ noncomputable def IsPushout.isColimitCokernelCofork (h : sq.IsPushout) :
   h.isColimitEquivIsColimitCokernelCofork h.isColimit
 
 /-- The kernel fork attached to a commutative square in a preadditive category. -/
-noncomputable abbrev kernelFork  :
+noncomputable abbrev kernelFork :
     KernelFork (biprod.desc sq.f₂₄ (-sq.f₃₄)) :=
   KernelFork.ofι (biprod.lift sq.f₁₂ sq.f₁₃) (by simp [sq.fac])
 

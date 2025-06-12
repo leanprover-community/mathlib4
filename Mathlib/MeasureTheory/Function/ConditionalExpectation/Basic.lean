@@ -109,9 +109,11 @@ def condExpUnexpander : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 /-- info: μ[f|m] : α → E -/
-#guard_msgs in #check μ[f | m]
+#guard_msgs in
+#check μ[f | m]
 /-- info: μ[f|m] sorry : E -/
-#guard_msgs in #check μ[f | m] (sorry : α)
+#guard_msgs in
+#check μ[f | m] (sorry : α)
 
 theorem condExp_of_not_le (hm_not : ¬m ≤ m₀) : μ[f|m] = 0 := by rw [condExp, dif_neg hm_not]
 
@@ -336,7 +338,7 @@ theorem condExp_finset_sum {ι : Type*} {s : Finset ι} {f : ι → α → E}
   classical
   induction s using Finset.induction_on with
   | empty => rw [Finset.sum_empty, Finset.sum_empty, condExp_zero]
-  | @insert i s his heq =>
+  | insert i s his heq =>
     rw [Finset.sum_insert his, Finset.sum_insert his]
     exact (condExp_add (hf i <| Finset.mem_insert_self i s)
       (integrable_finset_sum' _ <| Finset.forall_of_forall_insert hf) _).trans

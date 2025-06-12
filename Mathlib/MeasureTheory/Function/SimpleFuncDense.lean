@@ -31,12 +31,10 @@ by a sequence of simple functions.
 * `α →ₛ β` (local notation): the type of simple functions `α → β`.
 -/
 
+open Set Function Filter TopologicalSpace EMetric MeasureTheory
+open scoped Topology ENNReal
 
-open Set Function Filter TopologicalSpace ENNReal EMetric Finset
-
-open Topology ENNReal MeasureTheory
-
-variable {α β ι E F 𝕜 : Type*}
+variable {α β : Type*}
 
 noncomputable section
 
@@ -85,16 +83,19 @@ theorem nearestPtInd_succ (e : ℕ → α) (N : ℕ) (x : α) :
   simp
 
 theorem nearestPtInd_le (e : ℕ → α) (N : ℕ) (x : α) : nearestPtInd e N x ≤ N := by
-  induction' N with N ihN; · simp
-  simp only [nearestPtInd_succ]
-  split_ifs
-  exacts [le_rfl, ihN.trans N.le_succ]
+  induction N with
+  | zero => simp
+  | succ N ihN =>
+    simp only [nearestPtInd_succ]
+    split_ifs
+    exacts [le_rfl, ihN.trans N.le_succ]
 
 theorem edist_nearestPt_le (e : ℕ → α) (x : α) {k N : ℕ} (hk : k ≤ N) :
     edist (nearestPt e N x) x ≤ edist (e k) x := by
-  induction' N with N ihN generalizing k
-  · simp [nonpos_iff_eq_zero.1 hk, le_refl]
-  · simp only [nearestPt, nearestPtInd_succ, map_apply]
+  induction N generalizing k with
+  | zero => simp [nonpos_iff_eq_zero.1 hk, le_refl]
+  | succ N ihN =>
+    simp only [nearestPt, nearestPtInd_succ, map_apply]
     split_ifs with h
     · rcases hk.eq_or_lt with (rfl | hk)
       exacts [le_rfl, (h k (Nat.lt_succ_iff.1 hk)).le]
@@ -152,9 +153,9 @@ theorem tendsto_approxOn {f : β → α} (hf : Measurable f) {s : Set α} {y₀ 
     Tendsto (fun n => approxOn f hf s y₀ h₀ n x) atTop (𝓝 <| f x) := by
   haveI : Nonempty s := ⟨⟨y₀, h₀⟩⟩
   rw [← @Subtype.range_coe _ s, ← image_univ, ← (denseRange_denseSeq s).closure_eq] at hx
-  simp (config := { iota := false }) only [approxOn, coe_comp]
+  simp -iota only [approxOn, coe_comp]
   refine tendsto_nearestPt (closure_minimal ?_ isClosed_closure hx)
-  simp (config := { iota := false }) only [Nat.range_casesOn, closure_union, range_comp]
+  simp -iota only [Nat.range_casesOn, closure_union, range_comp]
   exact
     Subset.trans (image_closure_subset_closure_image continuous_subtype_val)
       subset_union_right
