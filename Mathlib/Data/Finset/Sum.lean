@@ -97,7 +97,7 @@ theorem disjSum_strictMono_right (s : Finset α) :
     StrictMono (s.disjSum : Finset β → Finset (α ⊕ β)) := fun _ _ =>
   disjSum_ssubset_disjSum_of_subset_of_ssubset Subset.rfl
 
-@[deprecated disjSum_strictMono_right (since := "2025-06-11")]
+@[deprecated (since := "2025-06-11")]
 alias disj_sum_strictMono_right := disjSum_strictMono_right
 
 @[simp] lemma disjSum_inj {α β : Type*} {s₁ s₂ : Finset α} {t₁ t₂ : Finset β} :
