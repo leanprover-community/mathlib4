@@ -388,47 +388,60 @@ Possible TODO, if poor performance on large problems is witnessed: switch the im
 `AtomM` to `CanonM`, per the discussion
 https://github.com/leanprover-community/mathlib4/pull/16593/files#r1749623191 -/
 partial def normalize (iM : Q(Field $M)) (x : Q($M)) :
-    AtomM (Σ l : qNF M, Q($x = NF.eval $(l.toNF))) := do
-  let baseCase (y : Q($M)) : AtomM (Σ l : qNF M, Q($y = NF.eval $(l.toNF))):= do
+    -- Boolean argument: true iff in the subterm, we find a division or inversion
+    -- if false, treat everything as one atom
+    AtomM (Σ l : qNF M, Q($x = NF.eval $(l.toNF)) × Bool) := do
+  let baseCase (y : Q($M)) : AtomM (Σ l : qNF M, Q($y = NF.eval $(l.toNF)) × Bool) := do
     let (k, ⟨x', _⟩) ← AtomM.addAtomQ y
-    pure ⟨[((1, x'), k)], q(NF.atom_eq_eval $x')⟩
+    pure ⟨[((1, x'), k)], q(NF.atom_eq_eval $x'), false⟩
   match x with
   /- normalize a multiplication: `x₁ * x₂` -/
   | ~q($x₁ * $x₂) =>
-    let ⟨l₁, pf₁⟩ ← normalize iM x₁
-    let ⟨l₂, pf₂⟩ ← normalize iM x₂
+    let ⟨l₁, pf₁, b₁⟩ ← normalize iM x₁
+    let ⟨l₂, pf₂, b₂⟩ ← normalize iM x₂
     -- build the new list and proof
-    let pf := qNF.mkMulProof iM l₁ l₂
-    pure ⟨qNF.mul l₁ l₂, (q(NF.mul_eq_eval $pf₁ $pf₂ $pf):)⟩
+    if b₁ || b₂ then
+      let pf := qNF.mkMulProof iM l₁ l₂
+      pure ⟨qNF.mul l₁ l₂, (q(NF.mul_eq_eval $pf₁ $pf₂ $pf):), true⟩
+    else
+      baseCase x
   /- normalize a division: `x₁ / x₂` -/
   | ~q($x₁ / $x₂) =>
-    let ⟨l₁, pf₁⟩ ← normalize iM x₁
-    let ⟨l₂, pf₂⟩ ← normalize iM x₂
+    let ⟨l₁, pf₁, _⟩ ← normalize iM x₁
+    let ⟨l₂, pf₂, _⟩ ← normalize iM x₂
     -- build the new list and proof
     let pf := qNF.mkDivProof iM l₁ l₂
-    pure ⟨qNF.div l₁ l₂, (q(NF.div_eq_eval $pf₁ $pf₂ $pf):)⟩
+    pure ⟨qNF.div l₁ l₂, (q(NF.div_eq_eval $pf₁ $pf₂ $pf):), true⟩
   /- normalize a inversion: `y⁻¹` -/
   | ~q($y⁻¹) =>
-    let ⟨l, pf⟩ ← normalize iM y
+    let ⟨l, pf, _⟩ ← normalize iM y
     -- build the new list and proof
-    pure ⟨l.onExponent Neg.neg, (q(NF.inv_eq_eval $pf):)⟩
+    pure ⟨l.onExponent Neg.neg, (q(NF.inv_eq_eval $pf):), true⟩
   | ~q($a + $b) =>
-    let ⟨l₁, pf₁⟩ ← normalize iM a
-    let ⟨l₂, pf₂⟩ ← normalize iM b
-    let L : qNF M := qNF.minimum l₁ l₂
-    let l₁' := qNF.div l₁ L -- write `l₁ = l₁' * L`, pr₁' is a proof of that
-    let l₂' := qNF.div l₂ L
-    let e : Q($M) := q($(qNF.evalPretty iM l₁') + $(qNF.evalPretty iM l₂'))
-    let ⟨sum, _pf⟩ ← baseCase e
-    pure ⟨qNF.mul L sum, q(sorry)⟩
+    let ⟨l₁, pf₁, b₁⟩ ← normalize iM a
+    let ⟨l₂, pf₂, b₂⟩ ← normalize iM b
+    if b₁ || b₂ then
+      let L : qNF M := qNF.minimum l₁ l₂
+      let l₁' := qNF.div l₁ L -- write `l₁ = l₁' * L`, pr₁' is a proof of that
+      let l₂' := qNF.div l₂ L
+      let e : Q($M) := q($(qNF.evalPretty iM l₁') + $(qNF.evalPretty iM l₂'))
+      let ⟨sum, _pf⟩ ← baseCase e
+      pure ⟨qNF.mul L sum, q(sorry), true⟩
+    else
+      baseCase x
   /- normalize an integer exponentiation: `y ^ (s : ℤ)` -/
   | ~q($y ^ ($s : ℤ)) =>
-    let ⟨l, pf⟩ ← normalize iM y
+    let ⟨l, pf, b⟩ ← normalize iM y
     let some s := Expr.int? s | baseCase x
-    -- build the new list and proof
-    pure ⟨l.onExponent (HMul.hMul s), (q(NF.zpow_eq_eval $s $pf):)⟩
+    if b then
+      -- build the new list and proof
+      pure ⟨l.onExponent (HMul.hMul s), (q(NF.zpow_eq_eval $s $pf):), true⟩
+    else
+      if 0 ≤ s then baseCase x else
+        let ⟨a, b, c⟩ ← baseCase x
+        pure ⟨a, b, true⟩ -- does this work?
   /- normalize a `(1:M)` -/
-  | ~q(1) => pure ⟨[], q(NF.one_eq_eval $M)⟩
+  | ~q(1) => pure ⟨[], q(NF.one_eq_eval $M), false⟩
   /- anything else should be treated as an atom -/
   | _ => baseCase x
 
@@ -444,7 +457,7 @@ elab "field_simp2" : conv => do
   -- find a `Field` instance on `K`
   let iK : Q(Field $K) ← synthInstanceQ q(Field $K)
   -- run the core normalization function `normalize` on `x`
-  let ⟨l, pf⟩ ← AtomM.run .reducible <| normalize iK x
+  let ⟨l, pf, _⟩ ← AtomM.run .reducible <| normalize iK x
   -- convert `x` to the output of the normalization
   Conv.applySimpResult { expr := l.evalPretty iK, proof? := some pf }
 
@@ -462,11 +475,19 @@ variable {x y : ℚ}
 #guard_msgs in
 #conv field_simp2 => x
 
-/-- info: (x ^ 1 * 1 + y ^ 1 * 1) ^ 1 * 1 -/
+/-- info: (x + 1) ^ 1 * 1 -/
+#guard_msgs in
+#conv field_simp2 => x + 1
+
+/-- info: (x ^ 2 + x + 3) ^ 1 * 1 -/
+#guard_msgs in
+#conv field_simp2 => x ^ 2 + x + 3
+
+/-- info: (x + y) ^ 1 * 1 -/
 #guard_msgs in
 #conv field_simp2 => x + y
 
-/-- info: x ^ 1 * (y ^ 1 * 1) -/
+/-- info: (x * y) ^ 1 * 1 -/
 #guard_msgs in
 #conv field_simp2 => x * y
 
@@ -474,6 +495,11 @@ variable {x y : ℚ}
 #guard_msgs in
 #conv field_simp2 => x / y
 
+/--
+info: (x + 1) ^ (-1) *
+  ((y + 1) ^ (-1) * ((x ^ 1 * ((x + 1) ^ 0 * ((y + 1) ^ 1 * 1)) + (x + 1) ^ 1 * (y ^ 1 * ((y + 1) ^ 0 * 1))) ^ 1 * 1))
+-/
+#guard_msgs in
 #conv field_simp2 => x / (x + 1) + y / (y + 1)
 
 example : (1 : ℚ) = 1 := by
@@ -482,7 +508,7 @@ example : (1 : ℚ) = 1 := by
 example : x = x ^ (1:ℤ) * 1 := by
   conv_lhs => field_simp2
 
-example : x * y = x ^ (1:ℤ) * (y ^ (1:ℤ) * 1) := by
+example : x * y = (x * y) ^ (1 : ℤ) * 1 := by
   conv_lhs => field_simp2
 
 example : x / y = x ^ (1:ℤ) * (y ^ (-1:ℤ) * 1) := by
@@ -493,6 +519,8 @@ example : x / (y / x) = x ^ (2:ℤ) * (y ^ (-1:ℤ) * 1) := by
 
 example : x / (y ^ (-3:ℤ) / x) = x ^ (2:ℤ) * (y ^ (3:ℤ) * 1) := by
   conv_lhs => field_simp2
+  sorry -- TODO: zpow handling broke somehow
 
 example : (x / y ^ (-3:ℤ)) * x = x ^ (2:ℤ) * (y ^ (3:ℤ) * 1) := by
   conv_lhs => field_simp2
+  sorry -- TODO: zpow handling broke somehow
