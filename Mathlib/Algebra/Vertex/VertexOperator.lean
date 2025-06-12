@@ -255,6 +255,16 @@ theorem binomCompLeft_apply_coeff (k l n : ℤ) (v : V) :
       ∑ᶠ (m : ℕ), Int.negOnePow m • Ring.choose n m • A.coeff (l - n + m) (B.coeff (k - m) v) := by
   rw [binomCompLeft, coeff_apply_apply, LinearMap.smul_apply, binomialPow_smul_coeff _ lex_basis_lt]
   exact finsum_congr fun _ ↦ by congr 2; simp; abel_nf
+/-!
+theorem binomCompLeft_one_left_nat_coeff (n : ℕ) (g : ℤ ×ₗ ℤ) :
+    (binomCompLeft 1 B n).coeff g =
+      ∑ i ≤ n, (Int.negOnePow i) • (hasseDeriv i B).coeff ((ofLex g).1 - i) := by
+  ext v
+  rw [show g = toLex ((ofLex g).1, (ofLex g).2) by rfl, binomCompLeft_apply_coeff]
+  simp only [coeff_apply_apply, one_apply, Equiv.symm_apply_apply, LinearMap.zero_apply,
+    HahnModule.of_symm_zero, Prod.mk.eta, toLex_ofLex, HahnSeries.coeff_zero]
+-/
+
 
 /-- `(X - Y)^n B(Y) A(X)` as a linear map from `V` to `V((Y))((X))` -/
 def binomCompRight (n : ℤ) : HVertexOperator (ℤ ×ₗ ℤ) R V V :=
@@ -324,7 +334,7 @@ theorem isLocalToOrderLeqAdd (m n : ℕ) (h : IsLocalToOrderLeq A B n) :
     rw [ih k (l-1), ih (k-1) l, coeff_smul, sub_smul]
     simp [coeff_single_smul, neg_add_eq_sub, ← toLex_sub]
 
-def isLocal_symm (n : ℕ) (h : IsLocalToOrderLeq A B n) : IsLocalToOrderLeq B A n := by
+theorem isLocal_symm (n : ℕ) (h : IsLocalToOrderLeq A B n) : IsLocalToOrderLeq B A n := by
   intro k l
   dsimp [IsLocalToOrderLeq, binomCompLeft, binomCompRight] at *
   rw [coeff_smul _ (Int.negOnePow n : R), Pi.smul_apply, h l k]
@@ -344,6 +354,122 @@ theorem isLocal_with_hasseDeriv_left (m n : ℕ) (h : IsLocalToOrderLeq A B n) :
 -/
 
 end Local
+
+section ResidueProduct
+
+open HVertexOperator
+
+/-- The left side of the `m`-th residue product, given by the residue of `(x-y)^m A(x)B(y) dx` at
+`x = 0`, where we formally expand `(x-y)^m` as `x^m(1-y/x)^m` in `R((x))((y))` using binomials
+(i.e., in the domain where `x` is big). -/
+noncomputable def resProdLeft (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
+  LexResRight (binomCompLeft A B m) (-1 : ℤ)
+
+theorem coeff_resProdLeft_apply (A B : VertexOperator R V) (m n : ℤ) (v : V) :
+    (A.resProdLeft B m).coeff n v =
+      ∑ᶠ i : ℕ, Int.negOnePow i • Ring.choose m i •
+        (coeff A (-1 - m + i)) ((coeff B (n - i)) v) := by
+  dsimp only [resProdLeft, LexResRight, Int.reduceNeg, coeff_of_coeff]
+  rw [binomCompLeft_apply_coeff]
+
+theorem resProdLeft_apply_ncoeff (A B : VertexOperator R V) (m n : ℤ) (v : V) :
+    ((A.resProdLeft B m)[[n]]) v =
+      ∑ᶠ i : ℕ, Int.negOnePow i • Ring.choose m i •
+        (A[[m - i]] • (B[[n + i]] • v)) := by
+  have : (A.resProdLeft B m)[[n]] = (A.resProdLeft B m).coeff (-n - 1) := rfl
+  rw [this, coeff_resProdLeft_apply]
+  refine finsum_congr ?_
+  intro i
+  congr 3
+  · rw [coeff_eq_ncoeff, show (-(-1 - m + i) - 1) = (m - i) by omega]
+  · rw [coeff_eq_ncoeff, show -(-n - 1 - i) - 1 = n + i by omega, Module.End.smul_def]
+
+/-- The right side of the `m`-th residue product, given by the residue of `(x-y)^m B(x)A(y) dx` at
+`x = 0`, where we formally expand `(x-y)^m` as `(-y)^m(1-x/y)^m` using binomials (i.e., in the
+domain where `x` is big). -/
+noncomputable def resProdRight (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
+  LexResLeft (-1 : ℤ) (binomCompRight A B m)
+
+theorem coeff_resProdRight_apply (A B : VertexOperator R V) (m n : ℤ) (v : V) :
+    (A.resProdRight B m).coeff n v =
+      (Int.negOnePow m) • ∑ᶠ i : ℕ, Int.negOnePow i • Ring.choose m i •
+        (coeff B (n - m + i)) ((coeff A (-1 - i)) v) := by
+  dsimp only [resProdRight, LexResLeft, Int.reduceNeg, coeff_of_coeff]
+  simp only [LinearMap.coe_mk, AddHom.coe_mk, coeff_of_coeff, binomCompRight_apply_coeff]
+
+theorem resProdRight_apply_ncoeff (A B : VertexOperator R V) (m n : ℤ) (v : V) :
+    ((A.resProdRight B m)[[n]]) v =
+      (Int.negOnePow m) • ∑ᶠ i : ℕ, Int.negOnePow i • Ring.choose m i •
+        (B[[m + n - i]] • (A[[i]] • v)) := by
+  have : (A.resProdRight B m)[[n]] = (A.resProdRight B m).coeff (-n - 1) := rfl
+  rw [this, coeff_resProdRight_apply]
+  congr 1
+  refine finsum_congr ?_
+  intro i
+  congr 3
+  · rw [coeff_eq_ncoeff, show -(-n - 1 - m + i) - 1 = (m + n - i) by omega]
+  · rw [coeff_eq_ncoeff, show -((-1 : ℤ) - i) - 1 = i by omega, Module.End.smul_def]
+
+/-- The the `m`-th residue product of vertex operators. -/
+noncomputable def resProd (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
+  resProdLeft A B m + resProdRight A B m
+
+
+
+/-!
+theorem subLeft_smul_HComp_one_left_eq (A : VertexOperator R V) {m : ℤ} {k n : ℕ} :
+    HVertexOperator.coeff ((subLeft R ^ k) • comp (1 : VertexOperator R V) A)
+      (toLex (m, Int.negSucc n)) = 0 := by
+  induction k generalizing m n with
+  | zero => simp
+  | succ k ih => simp [pow_succ', mul_smul, ih]
+
+theorem res_prod_left_one_nat (A : VertexOperator R V) (m : ℕ) : res_prod_left 1 A m = 0 := by
+  ext
+  rw [res_prod_left, ResRight, zpow_natCast, of_coeff_apply, Equiv.symm_apply_apply,
+    show -1 = Int.negSucc 0 by exact rfl]
+  simp_rw [subLeft_smul_HComp_one_left_eq]
+  simp
+
+
+theorem res_prod_neg_one_one_left (A : VertexOperator R V) : res_prod 1 A (-1) = A := by
+  ext x n
+
+  sorry
+
+--residue products with 1, interaction with Hasse derivatives.
+
+/-- A(x)B(y)C(z) - B(y)A(x)C(z) = C(z)A(x)B(y) - C(z)B(y)A(x). For any integers k,l,m, and any
+n satisfying (k₀ - k) + (l₀ - l) + (m₀ - m) - 1 ≤ n, the previous equation times
+(x-y)^m(y-z)^l(x-z)^k(y-z)^n holds.  Here, k₀ is locality order of AC, l₀ is order of BC, m₀ is
+order of AB. -/
+lemma comp_local (A B C : VertexOperator R V) (n : ℤ) (k l m : ℕ)
+    (hAB : isLocaltoOrderLeq A B k) (hAC : isLocaltoOrderLeq A C l)
+    (hBC : isLocaltoOrderLeq B C m) :
+    (X_A - X_B)^{k-n} (X_B - X_C)^m (X_A - X_C)^l (X_A - X_B)^n comp (comp A B) C =
+    (X_A - X_B)^{k-n} (X_B - X_C)^m (X_A - X_C)^l (X_A - X_B)^n comp C (comp A B) := by
+
+
+/-- Dong's Lemma: if vertex operators `A` `B` `C` are pairwise local, then `A` is local to `B_n C`
+for all integers `n`. -/
+theorem local_residue_product (A B C : VertexOperator R V) (n : ℤ) (k l m : ℕ)
+    (hAB : isLocaltoOrderLeq A B k) (hAC : isLocaltoOrderLeq A C l)
+    (hBC : isLocaltoOrderLeq B C m) : isLocaltoOrderLeq (resProd A B n) C (k + l + m - n + 3) := by
+  sorry  -- suffices to show triple products are equal after multiplying by
+  --`(X_A - X_B)^{k-n} (X_B - X_C)^m (X_A - X_C)^l`
+
+Cauchy-Jacobi : `[A(x),[B(y),C(z)]] + [B(y),[C(z),A(x)]] + [C(z),[A(x),B(y)]] = 0`.  This means, for
+any k,l,m ∈ ℤ, the `x^k y^l z^m` coefficient vanishes, or equivalently, the usual Jacobi for
+`A.coeff k`, `B.coeff l`, and `C.coeff m`. We expand the 12 terms as cancelling Hahn series, and
+multiply by integer powers of `(x-y)`, `(x-z)`, and `(y-z)`.
+
+It may be better to work on the level of coefficient functions for locality. Then, commutators are
+just formal functions, and we can multiply by Finsupps.  So IsLocal means commutator is annihilated
+by a power of `(X-Y)`.
+
+-/
+
+end ResidueProduct
 
 /-!
 section Composite
@@ -505,84 +631,5 @@ def isLocalToOrderLeq (R: Type*) (V : Type*) [CommRing R] [AddCommGroup V] [Modu
 def isLocal (R: Type*) (V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
     (A B : VertexOperator R V) : Prop := ∃(n : ℕ), isLocalToOrderLeq R V A B n
 -/
-section ResidueProduct
-
-open HVertexOperator
-/-!
-/-- The left side of the `m`-th residue product, given by the residue of `(x-y)^m A(x)B(y)` at
-`x=0`, where we formally expand `(x-y)^m` as `x^m(1-y/x)^m` in `R((x))((y))` using binomials. -/
-noncomputable def res_prod_left (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
-  ResRight ((subLeft R) ^ m • comp A B) (-1 : ℤ)
-
-/-- The right side of the `m`-th residue product, given by the residue of `(x-y)^m B(x)A(y)` at
-`x=0`, where we formally expand `(x-y)^m` as `(-y)^m(1-x/y)^m` using binomials (i.e., in the domain
-where `x` is big). -/
-noncomputable def res_prod_right (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
-  ResRight ((subRight R) ^ m • comp B A) (-1 : ℤ)
-
-/-- The the `m`-th residue product of vertex operators -/
-noncomputable def res_prod (A B : VertexOperator R V) (m : ℤ) : VertexOperator R V :=
-  res_prod_left A B m + res_prod_right A B m
-
-theorem subLeft_smul_HComp_one_left_eq (A : VertexOperator R V) {m : ℤ} {k n : ℕ} :
-    HVertexOperator.coeff ((subLeft R ^ k) • comp (1 : VertexOperator R V) A)
-      (toLex (m, Int.negSucc n)) = 0 := by
-  induction k generalizing m n with
-  | zero => simp
-  | succ k ih => simp [pow_succ', mul_smul, ih]
-
-/-!
-theorem coeff_res_prod_left (A B : VertexOperator R V) (m k : ℤ) :
-    (res_prod_left A B m).coeff k = sum i?
--/
-
-theorem res_prod_left_one_nat (A : VertexOperator R V) (m : ℕ) : res_prod_left 1 A m = 0 := by
-  ext
-  rw [res_prod_left, ResRight, zpow_natCast, of_coeff_apply, Equiv.symm_apply_apply,
-    show -1 = Int.negSucc 0 by exact rfl]
-  simp_rw [subLeft_smul_HComp_one_left_eq]
-  simp
-
-
-theorem res_prod_neg_one_one_left (A : VertexOperator R V) : res_prod 1 A (-1) = A := by
-  ext x n
-
-  sorry
-
---residue products with 1, interaction with Hasse derivatives.
-
-/-- A(x)B(y)C(z) - B(y)A(x)C(z) = C(z)A(x)B(y) - C(z)B(y)A(x). For any integers k,l,m, and any
-n satisfying (k₀ - k) + (l₀ - l) + (m₀ - m) - 1 ≤ n, the previous equation times
-(x-y)^m(y-z)^l(x-z)^k(y-z)^n holds.  Here, k₀ is locality order of AC, l₀ is order of BC, m₀ is
-order of AB. -/
-lemma comp_local (A B C : VertexOperator R V) (n : ℤ) (k l m : ℕ)
-    (hAB : isLocaltoOrderLeq A B k) (hAC : isLocaltoOrderLeq A C l)
-    (hBC : isLocaltoOrderLeq B C m) :
-    (X_A - X_B)^{k-n} (X_B - X_C)^m (X_A - X_C)^l (X_A - X_B)^n comp (comp A B) C =
-    (X_A - X_B)^{k-n} (X_B - X_C)^m (X_A - X_C)^l (X_A - X_B)^n comp C (comp A B) := by
-
-
-/-- Dong's Lemma: if vertex operators `A` `B` `C` are pairwise local, then `A` is local to `B_n C`
-for all integers `n`. -/
-theorem local_residue_product (A B C : VertexOperator R V) (n : ℤ) (k l m : ℕ)
-    (hAB : isLocaltoOrderLeq A B k) (hAC : isLocaltoOrderLeq A C l)
-    (hBC : isLocaltoOrderLeq B C m) : isLocaltoOrderLeq (resProd A B n) C (k + l + m - n + 3) := by
-  sorry  -- suffices to show triple products are equal after multiplying by
-  --`(X_A - X_B)^{k-n} (X_B - X_C)^m (X_A - X_C)^l`
-
-Cauchy-Jacobi : `[A(x),[B(y),C(z)]] + [B(y),[C(z),A(x)]] + [C(z),[A(x),B(y)]] = 0`.  This means, for
-any k,l,m ∈ ℤ, the `x^k y^l z^m` coefficient vanishes, or equivalently, the usual Jacobi for
-`A.coeff k`, `B.coeff l`, and `C.coeff m`. We expand the 12 terms as cancelling Hahn series, and
-multiply by integer powers of `(x-y)`, `(x-z)`, and `(y-z)`.
-
-It may be better to work on the level of coefficient functions for locality. Then, commutators are
-just formal functions, and we can multiply by Finsupps.  So IsLocal means commutator is annihilated
-by a power of `(X-Y)`.
-
-
-
--/
-
-end ResidueProduct
 
 end VertexOperator

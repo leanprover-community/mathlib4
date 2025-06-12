@@ -356,14 +356,14 @@ theorem revLexComp_apply_apply_apply_coeff (A : HVertexOperator Γ R V W)
 
 /-- The restriction of a heterogeneous vertex operator on a lex product to an element of the left
 factor, as a linear map. -/
-def ResLeft (g' : Γ₁) : HVertexOperator (Γ₁ ×ₗ Γ) R V W →ₗ[R] HVertexOperator Γ R V W where
+def LexResLeft (g' : Γ₁) : HVertexOperator (Γ₁ ×ₗ Γ) R V W →ₗ[R] HVertexOperator Γ R V W where
   toFun A := HVertexOperator.of_coeff (fun g => coeff A (toLex (g', g)))
     (fun v => Set.PartiallyWellOrderedOn.fiberProdLex (A v).isPWO_support' _)
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
 theorem coeff_ResLeft (A : HVertexOperator (Γ₁ ×ₗ Γ) R V W) (g' : Γ₁) (g : Γ) :
-    coeff (ResLeft g' A) g = coeff A (toLex (g', g)) :=
+    coeff (LexResLeft g' A) g = coeff A (toLex (g', g)) :=
   rfl
 
 theorem coeff_left_lex_supp.isPWO (A : HVertexOperator (Γ ×ₗ Γ₁) R V W) (g' : Γ₁) (v : V) :

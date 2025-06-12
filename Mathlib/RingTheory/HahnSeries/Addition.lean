@@ -117,10 +117,6 @@ theorem coeff_add {x y : HahnSeries Γ R} {a : Γ} : (x + y).coeff a = x.coeff a
 
 @[deprecated (since := "2025-01-31")] alias add_coeff := coeff_add
 
-@[simp] theorem single_add (a : Γ) (r s : R) : single a (r + s) = single a r + single a s := by
-  classical
-  ext : 1; exact Pi.single_add (f := fun _ => R) a r s
-
 instance : AddMonoid (HahnSeries Γ R) := fast_instance%
   coeff_injective.addMonoid _
     coeff_zero' coeff_add' (fun _ _ => coeff_smul' _ _)
