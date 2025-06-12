@@ -78,18 +78,21 @@ theorem mul_eq_eval₂ [Field M] (r₁ r₂ : ℤ) (x : M) (hx : x ≠ 0)
   congr! 1
   rw [mul_comm]
 
-theorem mul_eq_eval₃ [Field M] {a₁ : ℤ × M} (a₂ : ℤ × M)
-    {l₁ l₂ l : NF M} (h : (a₁ ::ᵣ l₁).eval * l₂.eval = l.eval) :
+theorem mul_eq_eval₃ [DivisionCommMonoid M] {a₁ : ℤ × M} (a₂ : ℤ × M) {l₁ l₂ l : NF M}
+    (h : (a₁ ::ᵣ l₁).eval * l₂.eval = l.eval) :
     (a₁ ::ᵣ l₁).eval * (a₂ ::ᵣ l₂).eval = (a₂ ::ᵣ l).eval := by
   simp only [eval_cons, ← h]
-  ring
+  nth_rw 4 [mul_comm]
+  simp only [mul_assoc]
+  congr! 2
+  rw [mul_comm]
 
-theorem mul_eq_eval [Field M] {l₁ l₂ l : NF M} {x₁ x₂ : M} (hx₁ : x₁ = l₁.eval)
+theorem mul_eq_eval [DivisionMonoid M] {l₁ l₂ l : NF M} {x₁ x₂ : M} (hx₁ : x₁ = l₁.eval)
     (hx₂ : x₂ = l₂.eval) (h : l₁.eval * l₂.eval = l.eval) :
     x₁ * x₂ = l.eval := by
   rw [hx₁, hx₂, h]
 
-theorem div_eq_eval₁ [Field M](a₁ : ℤ × M) {a₂ : ℤ × M} {l₁ l₂ l : NF M}
+theorem div_eq_eval₁ [DivisionMonoid M](a₁ : ℤ × M) {a₂ : ℤ × M} {l₁ l₂ l : NF M}
     (h : l₁.eval / (a₂ ::ᵣ l₂).eval = l.eval) :
     (a₁ ::ᵣ l₁).eval / (a₂ ::ᵣ l₂).eval = (a₁ ::ᵣ l).eval := by
   simp only [eval_cons, ← h, div_eq_mul_inv, mul_assoc]
@@ -103,15 +106,15 @@ theorem div_eq_eval₂ [Field M] (r₁ r₂ : ℤ) (x : M) (hx : x ≠ 0) {l₁ 
   congr! 1
   rw [mul_comm]
 
-theorem div_eq_eval₃ [Field M] {a₁ : ℤ × M} (a₂ : ℤ × M) {l₁ l₂ l : NF M}
+theorem div_eq_eval₃ [DivisionCommMonoid M] {a₁ : ℤ × M} (a₂ : ℤ × M) {l₁ l₂ l : NF M}
     (h : (a₁ ::ᵣ l₁).eval / l₂.eval = l.eval) :
     (a₁ ::ᵣ l₁).eval / (a₂ ::ᵣ l₂).eval = ((-a₂.1, a₂.2) ::ᵣ l).eval := by
   simp only [eval_cons, zpow_neg, mul_inv, div_eq_mul_inv, ← h, ← mul_assoc]
   congr! 1
   rw [mul_comm, mul_assoc]
 
-theorem div_eq_eval [Field M] {l₁ l₂ l : NF M} {x₁ x₂ : M} (hx₁ : x₁ = l₁.eval) (hx₂ : x₂ = l₂.eval)
-    (h : l₁.eval / l₂.eval = l.eval) :
+theorem div_eq_eval [DivisionMonoid M] {l₁ l₂ l : NF M} {x₁ x₂ : M} (hx₁ : x₁ = l₁.eval)
+    (hx₂ : x₂ = l₂.eval) (h : l₁.eval / l₂.eval = l.eval) :
     x₁ / x₂ = l.eval := by
   rw [hx₁, hx₂, h]
 
@@ -124,16 +127,16 @@ theorem _root_.List.prod_inv₀ {K : Type*} [DivisionCommMonoid K] :
   | [] => by simp
   | x :: xs => by simp [mul_comm, prod_inv₀ xs]
 
-theorem eval_inv [Field M] (l : NF M) : (l⁻¹).eval = l.eval⁻¹ := by
+theorem eval_inv [DivisionCommMonoid M] (l : NF M) : (l⁻¹).eval = l.eval⁻¹ := by
   simp only [NF.eval, List.map_map, List.prod_inv₀, NF.instInv]
   congr
   ext p
   simp
 
-theorem zero_div_eq_eval [Field M] (l : NF M) : 1 / l.eval = (l⁻¹).eval := by
+theorem zero_div_eq_eval [DivisionCommMonoid M] (l : NF M) : 1 / l.eval = (l⁻¹).eval := by
   simp [eval_inv]
 
-theorem inv_eq_eval [Field M] {l : NF M} {x : M} (h : x = l.eval) :
+theorem inv_eq_eval [DivisionCommMonoid M] {l : NF M} {x : M} (h : x = l.eval) :
     x⁻¹ = (l⁻¹).eval := by
   rw [h, eval_inv]
 
@@ -149,14 +152,15 @@ theorem _root_.List.prod_zpow {β : Type*} [DivisionCommMonoid β] {r : ℤ} {l 
   let fr : β →* β := ⟨⟨fun b ↦ b ^ r, one_zpow r⟩, (mul_zpow · · r)⟩
   map_list_prod fr l
 
-theorem eval_zpow [Field M] {l : NF M} {x : M} (h : x = l.eval) (r : ℤ) : (l ^ r).eval = x ^ r := by
+theorem eval_zpow [DivisionCommMonoid M] {l : NF M} {x : M} (h : x = l.eval) (r : ℤ) :
+    (l ^ r).eval = x ^ r := by
   unfold NF.eval at h ⊢
   simp only [h, prod_zpow, map_map, NF.zpow_apply]
   congr
   ext p
   simp [← zpow_mul, mul_comm]
 
-theorem zpow_eq_eval [Field M] {l : NF M} (r : ℤ) {x : M} (hx : x = l.eval) :
+theorem zpow_eq_eval [DivisionCommMonoid M] {l : NF M} (r : ℤ) {x : M} (hx : x = l.eval) :
     x ^ r = (l ^ r).eval := by
   rw [hx, eval_zpow]
   rfl
@@ -167,17 +171,23 @@ theorem eq_cons_cons [DivInvMonoid M] {r₁ r₂ : ℤ} (m : M) {l₁ l₂ : NF 
   simp only [NF.eval, NF.cons] at *
   simp [h1, h2]
 
-theorem eq_cons_const [Field M] {r : ℤ} (m : M) {n : M}
-    {l : NF M} (h1 : r = 0) (h2 : l.eval = n) :
+theorem eq_cons_const [DivisionMonoid M] {r : ℤ} (m : M) {n : M} {l : NF M} (h1 : r = 0)
+    (h2 : l.eval = n) :
     ((r, m) ::ᵣ l).eval = n := by
   simp only [NF.eval, NF.cons] at *
   simp [h1, h2]
 
-theorem eq_const_cons [Field M] {r : ℤ} (m : M) {n : M}
-    {l : NF M} (h1 : 0 = r) (h2 : n = l.eval) :
+theorem eq_const_cons [DivisionMonoid M] {r : ℤ} (m : M) {n : M} {l : NF M} (h1 : 0 = r)
+    (h2 : n = l.eval) :
     n = ((r, m) ::ᵣ l).eval := by
   simp only [NF.eval, NF.cons] at *
   simp [← h1, h2]
+
+theorem eq_of_eval_eq_eval [DivisionMonoid M]
+    {l₁ l₂ : NF M} {l₁' : NF M} {l₂' : NF M} {x₁ x₂ : M} (hx₁ : x₁ = l₁'.eval) (hx₂ : x₂ = l₂'.eval)
+    (h₁ : l₁.eval = l₁'.eval) (h₂ : l₂.eval = l₂'.eval) (h : l₁.eval = l₂.eval) :
+    x₁ = x₂ := by
+  rw [hx₁, hx₂, ← h₁, ← h₂, h]
 
 end NF
 
