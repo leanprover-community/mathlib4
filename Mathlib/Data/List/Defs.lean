@@ -218,9 +218,7 @@ def extractp (p : α → Prop) [DecidablePred p] : List α → Option α × List
       let (a', l') := extractp p l
       (a', a :: l')
 
-/-- Notation for calculating the product of a `List`
--/
-
+/-- Notation for calculating the product of a `List` -/
 instance instSProd : SProd (List α) (List β) (List (α × β)) where
   sprod := List.product
 
@@ -480,7 +478,5 @@ theorem length_mapAccumr₂ :
   | _, [], [], _ => rfl
 
 end MapAccumr
-
-alias ⟨eq_or_mem_of_mem_cons, _⟩ := mem_cons
 
 end List

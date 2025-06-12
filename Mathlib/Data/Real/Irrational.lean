@@ -104,7 +104,7 @@ theorem irrational_sqrt_ratCast_iff_of_nonneg {q : ℚ} (hq : 0 ≤ q) :
 
 theorem irrational_sqrt_ratCast_iff {q : ℚ} :
     Irrational (√q) ↔ ¬IsSquare q ∧ 0 ≤ q := by
-  obtain hq | hq := le_or_lt 0 q
+  obtain hq | hq := le_or_gt 0 q
   · simp_rw [irrational_sqrt_ratCast_iff_of_nonneg hq, and_iff_left hq]
   · rw [sqrt_eq_zero_of_nonpos (Rat.cast_nonpos.2 hq.le)]
     simp_rw [not_irrational_zero, false_iff, not_and, not_le, hq, implies_true]

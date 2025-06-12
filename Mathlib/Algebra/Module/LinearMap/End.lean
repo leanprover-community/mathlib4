@@ -346,7 +346,7 @@ variable (S)
 
 /-- Applying a linear map at `v : M`, seen as `S`-linear map from `M →ₗ[R] M₂` to `M₂`.
 
- See `LinearMap.applyₗ` for a version where `S = R`. -/
+See `LinearMap.applyₗ` for a version where `S = R`. -/
 @[simps]
 def applyₗ' : M →+ (M →ₗ[R] M₂) →ₗ[S] M₂ where
   toFun v :=

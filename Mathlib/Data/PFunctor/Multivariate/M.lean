@@ -14,23 +14,23 @@ as the greatest fixpoint of a polynomial functor.
 
 ## Main definitions
 
- * `M.mk`     - constructor
- * `M.dest`   - destructor
- * `M.corec`  - corecursor: useful for formulating infinite, productive computations
- * `M.bisim`  - bisimulation: proof technique to show the equality of infinite objects
+* `M.mk`     - constructor
+* `M.dest`   - destructor
+* `M.corec`  - corecursor: useful for formulating infinite, productive computations
+* `M.bisim`  - bisimulation: proof technique to show the equality of infinite objects
 
 ## Implementation notes
 
 Dual view of M-types:
 
- * `mp`: polynomial functor
- * `M`: greatest fixed point of a polynomial functor
+* `mp`: polynomial functor
+* `M`: greatest fixed point of a polynomial functor
 
 Specifically, we define the polynomial functor `mp` as:
 
- * A := a possibly infinite tree-like structure without information in the nodes
- * B := given the tree-like structure `t`, `B t` is a valid path
-   from the root of `t` to any given node.
+* A := a possibly infinite tree-like structure without information in the nodes
+* B := given the tree-like structure `t`, `B t` is a valid path
+  from the root of `t` to any given node.
 
 As a result `mp α` is made of a dataless tree and a function from
 its valid paths to values of `α`
@@ -40,8 +40,8 @@ that `A` is a possibly infinite tree.
 
 ## Reference
 
- * Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
-   [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
+* Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
+  [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/
 
 
@@ -250,12 +250,10 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
   introv Hr
   specialize h _ _ Hr
   clear Hr
-
   revert h
   rcases M.dest P x with ⟨ax, fx⟩
   rcases M.dest P y with ⟨ay, fy⟩
   intro h
-
   rw [map_eq, map_eq] at h
   injection h with h₀ h₁
   subst ay
