@@ -76,6 +76,13 @@ theorem exists_maximal [Nontrivial α] : ∃ M : Ideal α, M.IsMaximal :=
   let ⟨I, ⟨hI, _⟩⟩ := exists_le_maximal (⊥ : Ideal α) bot_ne_top
   ⟨I, hI⟩
 
+theorem ne_top_iff_exists_maximal {I : Ideal α} : I ≠ ⊤ ↔ ∃ M : Ideal α, M.IsMaximal ∧ I ≤ M := by
+  refine ⟨exists_le_maximal I, ?_⟩
+  contrapose!
+  rintro rfl _ hMmax
+  rw [top_le_iff]
+  exact IsMaximal.ne_top hMmax
+
 instance [Nontrivial α] : Nontrivial (Ideal α) := by
   rcases@exists_maximal α _ _ with ⟨M, hM, _⟩
   exact nontrivial_of_ne M ⊤ hM
