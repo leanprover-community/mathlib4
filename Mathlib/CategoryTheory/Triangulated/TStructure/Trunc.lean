@@ -876,7 +876,7 @@ lemma to_truncLE_obj_ext (n : ℤ) (Y : C) {X : C}
   obtain ⟨g, hg⟩ := Triangle.coyoneda_exact₂ _ (inv_rot_of_distTriang _
     (t.triangleLEGT_distinguished n X)) f hf
   have hg' := t.zero_of_isLE_of_isGE g n (n+2) (by linarith) (by infer_instance)
-    (by dsimp ; apply (t.isGE_shift _ (n+1) (-1) (n+2) (by linarith)))
+    (by dsimp; apply (t.isGE_shift _ (n+1) (-1) (n+2) (by linarith)))
   rw [hg, hg', zero_comp]
 
 lemma to_truncLT_obj_ext (n : ℤ) (Y : C) {X : C}
