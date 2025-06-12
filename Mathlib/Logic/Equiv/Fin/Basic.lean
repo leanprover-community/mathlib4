@@ -304,7 +304,7 @@ This is like `finProdFinEquiv.symm` but with `m` infinite.
 See `Nat.div_mod_unique` for a similar propositional statement. -/
 @[simps]
 def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n where
-  toFun a := (a / n, ↑a)
+  toFun a := (a / n, Fin.ofNat n a)
   invFun p := p.1 * n + ↑p.2
   -- TODO: is there a canonical order of `*` and `+` here?
   left_inv _ := Nat.div_add_mod' _ _
@@ -320,10 +320,10 @@ See `Int.ediv_emod_unique` for a similar propositional statement. -/
 def Int.divModEquiv (n : ℕ) [NeZero n] : ℤ ≃ ℤ × Fin n where
   -- TODO: could cast from int directly if we import `Data.ZMod.Defs`, though there are few lemmas
   -- about that coercion.
-  toFun a := (a / n, ↑(a.natMod n))
+  toFun a := (a / n, Fin.ofNat n (a.natMod n))
   invFun p := p.1 * n + ↑p.2
   left_inv a := by
-    simp_rw [Fin.coe_natCast_eq_mod, natCast_mod, natMod,
+    simp_rw [Fin.val_ofNat, natCast_mod, natMod,
       toNat_of_nonneg (emod_nonneg _ <| natCast_eq_zero.not.2 (NeZero.ne n)), emod_emod,
       ediv_add_emod']
   right_inv := fun ⟨q, r, hrn⟩ => by

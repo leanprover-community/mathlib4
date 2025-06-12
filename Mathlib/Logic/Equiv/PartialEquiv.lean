@@ -196,6 +196,9 @@ theorem left_inv {x : α} (h : x ∈ e.source) : e.symm (e x) = x :=
 theorem right_inv {x : β} (h : x ∈ e.target) : e (e.symm x) = x :=
   e.right_inv' h
 
+theorem target_subset_range : e.target ⊆ range e :=
+  fun x hx ↦ ⟨e.symm x, right_inv e hx⟩
+
 theorem eq_symm_apply {x : α} {y : β} (hx : x ∈ e.source) (hy : y ∈ e.target) :
     x = e.symm y ↔ e x = y :=
   ⟨fun h => by rw [← e.right_inv hy, h], fun h => by rw [← e.left_inv hx, h]⟩
@@ -875,6 +878,22 @@ theorem pi_trans (ei : ∀ i, PartialEquiv (αi i) (βi i)) (ei' : ∀ i, Partia
   ext <;> simp [forall_and]
 
 end Pi
+
+lemma surjective_of_target_eq_univ (h : e.target = univ) :
+    Surjective e :=
+  surjective_iff_surjOn_univ.mpr <| e.surjOn.mono (by simp) (by simp [h])
+
+lemma injective_of_source_eq_univ (h : e.source = univ) :
+    Injective e := by
+  simpa [injective_iff_injOn_univ, h] using e.injOn
+
+lemma injective_symm_of_target_eq_univ (h : e.target = univ) :
+    Injective e.symm :=
+  e.symm.injective_of_source_eq_univ h
+
+lemma surjective_symm_of_source_eq_univ (h : e.source = univ) :
+    Surjective e.symm :=
+  e.symm.surjective_of_target_eq_univ h
 
 end PartialEquiv
 
