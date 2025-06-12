@@ -1,7 +1,6 @@
 import Lake
 
-/- Adaptation note for nightly-2025-06-09: we now need to `open Lean` to access `LeanOption`. -/
-open Lake DSL Lean
+open Lake DSL
 
 /-!
 ## Mathlib dependencies on upstream projects
