@@ -68,6 +68,8 @@ instance : SetLike (ProperCone R E) E where
 
 @[simp] lemma mem_toPointedCone : x ∈ C.toPointedCone ↔ x ∈ C := .rfl
 
+@[deprecated (since := "2025-06-11")] alias mem_coe := mem_toPointedCone
+
 lemma pointed_toConvexCone (C : ProperCone R E) : (C : ConvexCone R E).Pointed :=
   C.toPointedCone.pointed_toConvexCone
 
