@@ -203,10 +203,9 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
       let .some (val,tp) ← getValType | return
       /- Find all arguments to `Algebra.Property A B` which are of the form
         `RingHom.toAlgebra x` or `Algebra.toModule (RingHom.toAlgebra x)`. -/
-      let algebra_args ← tp.getAppArgs.mapM <| fun x => liftMetaM do
+      let ringHom_args ← tp.getAppArgs.filterMapM <| fun x => liftMetaM do
         let y := (← whnfUntil x ``Algebra.toModule) >>= (·.getAppArgs.back?)
-        whnfUntil (y.getD x) ``RingHom.toAlgebra
-      let ringHom_args := algebra_args.filterMap <| (· >>= (·.getAppArgs.back?))
+        return (← whnfUntil (y.getD x) ``RingHom.toAlgebra) >>= (·.getAppArgs.back?)
       /- Check that we're not reproving a local hypothesis, and that all involved `RingHom`s are
         indeed arguments to the tactic. -/
       unless (← synthInstance? tp).isSome || !(← ringHom_args.allM (fun z => t.anyM
