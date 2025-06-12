@@ -26,7 +26,7 @@ def reverseRecOn {motive : List α → Sort*} (l : List α) (nil : motive [])
 termination_by l.length
 decreasing_by
   simp_wf
-  rw [← length_reverse l, h, length_cons]
+  rw [← length_reverse (as := l), h, length_cons]
   simp [Nat.lt_succ]
 
 @[simp]
@@ -105,7 +105,7 @@ theorem bidirectionalRec_cons_append {motive : List α → Sort*}
         (bidirectionalRec nil singleton cons_append init)) =
       cast (congr_arg motive <| by simp [hinit, hlast])
         (cons_append a ys b (bidirectionalRec nil singleton cons_append ys)) by
-    rw [this (x :: xs) _ (by rw [dropLast_append_cons, dropLast_single, append_nil]) _ (by simp)]
+    rw [this (x :: xs) _ (by rw [dropLast_append_cons, dropLast_singleton, append_nil]) _ (by simp)]
     simp
   rintro ys init rfl last rfl
   rfl

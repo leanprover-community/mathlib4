@@ -160,9 +160,7 @@ instance : SetLike (AffineSubspace k P) P where
 
 /-- A point is in an affine subspace coerced to a set if and only if it is in that affine
 subspace. -/
--- Porting note: removed `simp`, proof is `simp only [SetLike.mem_coe]`
-theorem mem_coe (p : P) (s : AffineSubspace k P) : p ∈ (s : Set P) ↔ p ∈ s :=
-  Iff.rfl
+theorem mem_coe (p : P) (s : AffineSubspace k P) : p ∈ (s : Set P) ↔ p ∈ s := by simp
 
 variable {k P}
 
@@ -491,8 +489,7 @@ instance : CompleteLattice (AffineSubspace k P) :=
     inf_le_left := fun _ _ => Set.inter_subset_left
     inf_le_right := fun _ _ => Set.inter_subset_right
     le_sInf := fun S s₁ hs₁ => by
-      -- Porting note: surely there is an easier way?
-      refine Set.subset_sInter (t := (s₁ : Set P)) ?_
+      apply Set.subset_sInter
       rintro t ⟨s, _hs, rfl⟩
       exact Set.subset_iInter (hs₁ s)
     top :=
@@ -543,7 +540,7 @@ theorem exists_of_lt {s₁ s₂ : AffineSubspace k P} (h : s₁ < s₂) : ∃ p 
 and there is a point only in the second. -/
 theorem lt_iff_le_and_exists (s₁ s₂ : AffineSubspace k P) :
     s₁ < s₂ ↔ s₁ ≤ s₂ ∧ ∃ p ∈ s₂, p ∉ s₁ := by
-  rw [lt_iff_le_not_le, not_le_iff_exists]
+  rw [lt_iff_le_not_ge, not_le_iff_exists]
 
 /-- If an affine subspace is nonempty and contained in another with the same direction, they are
 equal. -/
@@ -676,11 +673,13 @@ instance : Nonempty (⊤ : AffineSubspace k P) := inferInstanceAs (Nonempty (⊤
 variable {P}
 
 /-- No points are in `⊥`. -/
-theorem not_mem_bot (p : P) : p ∉ (⊥ : AffineSubspace k P) :=
-  Set.not_mem_empty p
+theorem notMem_bot (p : P) : p ∉ (⊥ : AffineSubspace k P) :=
+  Set.notMem_empty p
+
+@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 instance isEmpty_bot : IsEmpty (⊥ : AffineSubspace k P) :=
-  Subtype.isEmpty_of_false fun _ ↦ not_mem_bot _ _ _
+  Subtype.isEmpty_of_false fun _ ↦ notMem_bot _ _ _
 
 variable (P)
 
@@ -832,7 +831,7 @@ variable (k : Type*) {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k
 
 variable {ι : Type*}
 
-open AffineSubspace Set
+open AffineSubspace
 
 section
 
@@ -865,6 +864,7 @@ variable {k}
 
 /-- An induction principle for span membership. If `p` holds for all elements of `s` and is
 preserved under certain affine combinations, then `p` holds for all elements of the span of `s`. -/
+@[elab_as_elim]
 theorem affineSpan_induction {x : P} {s : Set P} {p : P → Prop} (h : x ∈ affineSpan k s)
     (mem : ∀ x : P, x ∈ s → p x)
     (smul_vsub_vadd : ∀ (c : k) (u v w : P), p u → p v → p w → p (c • (u -ᵥ v) +ᵥ w)) : p x :=
@@ -874,20 +874,19 @@ theorem affineSpan_induction {x : P} {s : Set P} {p : P → Prop} (h : x ∈ aff
 @[elab_as_elim]
 theorem affineSpan_induction' {s : Set P} {p : ∀ x, x ∈ affineSpan k s → Prop}
     (mem : ∀ (y) (hys : y ∈ s), p y (subset_affineSpan k _ hys))
-    (smul_vsub_vadd :
-      ∀ (c : k) (u hu v hv w hw),
-        p u hu →
-          p v hv → p w hw → p (c • (u -ᵥ v) +ᵥ w) (AffineSubspace.smul_vsub_vadd_mem _ _ hu hv hw))
+    (smul_vsub_vadd : ∀ (c : k) (u hu v hv w hw), p u hu → p v hv → p w hw →
+      p (c • (u -ᵥ v) +ᵥ w) (AffineSubspace.smul_vsub_vadd_mem _ _ hu hv hw))
     {x : P} (h : x ∈ affineSpan k s) : p x h := by
-  refine Exists.elim ?_ fun (hx : x ∈ affineSpan k s) (hc : p x hx) => hc
-  -- Porting note: Lean couldn't infer the motive
-  refine affineSpan_induction (p := fun y => ∃ z, p y z) h ?_ ?_
-  · exact fun y hy => ⟨subset_affineSpan _ _ hy, mem y hy⟩
-  · exact fun c u v w hu hv hw =>
-      Exists.elim hu fun hu' hu =>
-        Exists.elim hv fun hv' hv =>
-          Exists.elim hw fun hw' hw =>
-            ⟨AffineSubspace.smul_vsub_vadd_mem _ _ hu' hv' hw',
+  suffices ∃ (hx : x ∈ affineSpan k s), p x hx from this.elim fun hx hc ↦ hc
+  -- TODO: `induction h using affineSpan_induction` gives the error:
+  -- extra targets for '@affineSpan_induction'
+  -- It seems that the `induction` tactic has decided to ignore the clause
+  -- `using affineSpan_induction` and use `Exists.rec` instead.
+  refine affineSpan_induction h ?mem ?smul_vsub_vadd
+  · exact fun y hy ↦ ⟨subset_affineSpan _ _ hy, mem y hy⟩
+  · exact fun c u v w hu hv hw ↦
+      hu.elim fun hu' hu ↦ hv.elim fun hv' hv ↦ hw.elim fun hw' hw ↦
+        ⟨AffineSubspace.smul_vsub_vadd_mem _ _ hu' hv' hw',
               smul_vsub_vadd _ _ _ _ _ _ _ hu hv hw⟩
 
 variable (k)

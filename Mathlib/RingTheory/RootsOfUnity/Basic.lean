@@ -58,7 +58,7 @@ def rootsOfUnity (k : ℕ) (M : Type*) [CommMonoid M] : Subgroup Mˣ where
 theorem mem_rootsOfUnity (k : ℕ) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ ζ ^ k = 1 :=
   Iff.rfl
 
-/-- A variant of `mem_rootsOfUnity` using `ζ : M`. -/
+/-- A variant of `mem_rootsOfUnity` using `ζ : Mˣ`. -/
 theorem mem_rootsOfUnity' (k : ℕ) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ (ζ : M) ^ k = 1 := by
   rw [mem_rootsOfUnity]; norm_cast
 
@@ -213,7 +213,7 @@ theorem card_rootsOfUnity : Fintype.card (rootsOfUnity k R) ≤ k := by
 
 variable {k R}
 
-theorem map_rootsOfUnity_eq_pow_self [FunLike F R R] [RingHomClass F R R] (σ : F)
+theorem map_rootsOfUnity_eq_pow_self [FunLike F R R] [MonoidHomClass F R R] (σ : F)
     (ζ : rootsOfUnity k R) :
     ∃ m : ℕ, σ (ζ : Rˣ) = ((ζ : Rˣ) : R) ^ m := by
   obtain ⟨m, hm⟩ := MonoidHom.map_cyclic (restrictRootsOfUnity σ k)

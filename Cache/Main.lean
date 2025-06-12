@@ -48,17 +48,6 @@ Valid arguments are:
   'Mathlib/**/Order/*.lean'.
 "
 
-open Lean System in
-/-- Note that this normalizes the path strings, which is needed when running from a unix shell
-(which uses `/` in paths) on windows (which uses `\` in paths) as otherwise our filename keys won't
-match. -/
-def toPaths (args : List String) : List FilePath :=
-  args.map fun arg =>
-    if arg.endsWith ".lean" then
-      FilePath.mk arg |>.normalize
-    else
-      mkFilePath (arg.toName.components.map Name.toString) |>.withExtension "lean"
-
 /-- Commands which (potentially) call `curl` for downloading files -/
 def curlArgs : List String :=
   ["get", "get!", "get-", "put", "put!", "put-unpacked", "commit", "commit!"]
@@ -66,6 +55,16 @@ def curlArgs : List String :=
 /-- Commands which (potentially) call `leantar` for decompressing downloaded files -/
 def leanTarArgs : List String :=
   ["get", "get!", "pack", "pack!", "unpack", "lookup"]
+
+/-- Parses an optional `--repo` option. -/
+def parseRepo (args : List String) : IO (Option String × List String) := do
+  if let arg :: args := args then
+    if arg.startsWith "--" then
+      if let some repo := arg.dropPrefix? "--repo=" then
+        return (some repo.toString, args)
+      else
+        throw <| IO.userError s!"unknown option: {arg}"
+  return (none, args)
 
 open Cache IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
@@ -78,6 +77,7 @@ def main (args : List String) : IO Unit := do
     Process.exit 0
   CacheM.run do
 
+  let (repo?, args) ← parseRepo args
   let mut roots : Std.HashMap Lean.Name FilePath ← parseArgs args
   if roots.isEmpty then do
     -- No arguments means to start from `Mathlib.lean`
@@ -85,24 +85,20 @@ def main (args : List String) : IO Unit := do
     let mod := `Mathlib
     let sp := (← read).srcSearchPath
     let sourceFile ← Lean.findLean sp mod
-    roots := Std.HashMap.empty.insert mod sourceFile
+    roots := roots.insert mod sourceFile
 
-  -- We pass any following arguments to `getHashMemo`,
-  -- so we can use the cache on `Archive` or `Counterexamples`.
-  let extraRoots : Array FilePath :=
-    roots.keys.toArray.map (·.components.map toString |> mkFilePath |>.withExtension "lean")
-
-  let hashMemo ← getHashMemo extraRoots
+  let hashMemo ← getHashMemo roots
   let hashMap := hashMemo.hashMap
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
   if leanTarArgs.contains (args.headD "") then validateLeanTar
   let get (args : List String) (force := false) (decompress := true) := do
-    let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByFilePaths (toPaths args)
-    getFiles hashMap force force goodCurl decompress
+    let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByRootModules roots.keys
+    getFiles repo? hashMap force force goodCurl decompress
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do
-    putFiles (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getToken)
+    let repo := repo?.getD MATHLIBREPO
+    putFiles repo (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getToken)
   match args with
   | "get"  :: args => get args
   | "get!" :: args => get args (force := true)
@@ -125,5 +121,5 @@ def main (args : List String) : IO Unit := do
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
     commit hashMap true (← getToken)
   | ["collect"] => IO.println "TODO"
-  | "lookup" :: args => lookup hashMap (toPaths args)
+  | "lookup" :: _ => lookup hashMap roots.keys
   | _ => println help

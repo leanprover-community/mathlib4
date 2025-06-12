@@ -40,6 +40,7 @@ Criteria for `X ^ n - C a` to be irreducible is given:
 
 TODO: criteria for even `n`. See [serge_lang_algebra] VI,§9.
 
+TODO: relate Kummer extensions of degree 2 with the class `Algebra.IsQuadraticExtension`.
 -/
 universe u
 

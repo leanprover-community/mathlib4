@@ -25,19 +25,19 @@ open Simplicial SimplicialObject SimplexCategory
 namespace SSet.StrictSegal
 
 /-- Any `StrictSegal` simplicial set is a `Quasicategory`. -/
-instance quasicategory {X : SSet.{u}} [StrictSegal X] : Quasicategory X := by
+theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := by
   apply quasicategory_of_filler X
   intro n i σ₀ h₀ hₙ
-  use spineToSimplex <| Path.map (horn.spineId i h₀ hₙ) σ₀
+  use sx.spineToSimplex <| Path.map (horn.spineId i h₀ hₙ) σ₀
   intro j hj
-  apply spineInjective
+  apply sx.spineInjective
   ext k
   dsimp only [spineEquiv, spine_arrow, Function.comp_apply, Equiv.coe_fn_mk]
   rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
   let ksucc := k.succ.castSucc
   obtain hlt | hgt | heq : ksucc < j ∨ j < ksucc ∨ j = ksucc := by omega
-  · rw [← spine_arrow, spine_δ_arrow_lt _ hlt]
-    dsimp only [Path.map, spine_arrow, Fin.coe_eq_castSucc]
+  · rw [← spine_arrow, spine_δ_arrow_lt sx _ hlt]
+    dsimp only [Path.map_arrow, spine_arrow, Fin.coe_eq_castSucc]
     apply congr_arg
     apply Subtype.ext
     dsimp [horn.face, CosimplicialObject.δ]
@@ -45,8 +45,8 @@ instance quasicategory {X : SSet.{u}} [StrictSegal X] : Quasicategory X := by
       Quiver.Hom.unop_op, stdSimplex.yonedaEquiv_map, Equiv.apply_symm_apply,
       mkOfSucc_δ_lt hlt]
     rfl
-  · rw [← spine_arrow, spine_δ_arrow_gt _ hgt]
-    dsimp only [Path.map, spine_arrow, Fin.coe_eq_castSucc]
+  · rw [← spine_arrow, spine_δ_arrow_gt sx _ hgt]
+    dsimp only [Path.map_arrow, spine_arrow, Fin.coe_eq_castSucc]
     apply congr_arg
     apply Subtype.ext
     dsimp [horn.face, CosimplicialObject.δ]
@@ -68,14 +68,14 @@ instance quasicategory {X : SSet.{u}} [StrictSegal X] : Quasicategory X := by
       have hi : ((horn.spineId i h₀ hₙ).map σ₀).interval k 2 (by omega) =
           X.spine 2 (σ₀.app _ triangle) := by
         ext m
-        dsimp [spine_arrow, Path.interval, Path.map]
+        dsimp [spine_arrow, Path.map_interval, Path.map_arrow]
         rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
         apply congr_arg
         apply Subtype.ext
         ext a : 1
         fin_cases a <;> fin_cases m <;> rfl
-      rw [← spine_arrow, spine_δ_arrow_eq _ heq, hi]
-      simp only [spineToDiagonal, diagonal, spineToSimplex_spine]
+      rw [← spine_arrow, spine_δ_arrow_eq sx _ heq, hi]
+      simp only [spineToDiagonal, diagonal, spineToSimplex_spine_apply]
       rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality, types_comp_apply]
       apply congr_arg
       apply Subtype.ext
@@ -88,5 +88,9 @@ instance quasicategory {X : SSet.{u}} [StrictSegal X] : Quasicategory X := by
       simp only [Fin.isValue, Equiv.apply_symm_apply, triangle]
       rw [mkOfSucc_δ_eq heq]
       fin_cases z <;> rfl
+
+/-- Any simplicial set satisfying `IsStrictSegal` is a `Quasicategory`. -/
+instance quasicategory' (X : SSet.{u}) [IsStrictSegal X] : Quasicategory X :=
+  quasicategory <| ofIsStrictSegal X
 
 end SSet.StrictSegal

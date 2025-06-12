@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Algebra.Algebra.Spectrum
+import Mathlib.Algebra.Algebra.Spectrum.Basic
 import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!

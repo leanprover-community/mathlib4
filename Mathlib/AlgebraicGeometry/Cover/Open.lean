@@ -130,6 +130,7 @@ end AffineOpenCover
 /-- A choice of an affine open cover of a scheme. -/
 @[simps]
 def affineOpenCover (X : Scheme.{u}) : X.AffineOpenCover where
+  obj := _
   J := X.affineCover.J
   map := X.affineCover.map
   f := X.affineCover.f
@@ -144,6 +145,7 @@ The morphism in the category of open covers which proves that this is indeed a r
 `AlgebraicGeometry.Scheme.OpenCover.fromAffineRefinement`.
 -/
 def OpenCover.affineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) : X.AffineOpenCover where
+  obj := _
   J := (𝓤.bind fun j => (𝓤.obj j).affineCover).J
   map := (𝓤.bind fun j => (𝓤.obj j).affineCover).map
   f := (𝓤.bind fun j => (𝓤.obj j).affineCover).f
@@ -198,9 +200,9 @@ def affineOpenCoverOfSpanRangeEqTop {R : CommRingCat} {ι : Type*} (s : ι → R
     exact this.choose
   covers x := by
     generalize_proofs H
-    let i := (H x).choose
+    let i := H.choose
     have := PrimeSpectrum.localization_away_comap_range (Localization.Away (s i)) (s i)
-    exact (eq_iff_iff.mp congr(x ∈ $this)).mpr (H x).choose_spec
+    exact (eq_iff_iff.mp congr(x ∈ $this)).mpr H.choose_spec
 
 /-- Given any open cover `𝓤`, this is an affine open cover which refines it. -/
 def OpenCover.fromAffineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) :
