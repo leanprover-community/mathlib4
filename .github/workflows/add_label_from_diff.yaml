@@ -8,6 +8,12 @@ on:
       - scripts/autolabel.lean
       - .github/workflows/add_label_from_diff.yaml
 
+# Limit permissions for GITHUB_TOKEN for the entire workflow
+permissions:
+  contents: read
+  pull-requests: write  # Only allow PR comments/labels
+  # All other permissions are implicitly 'none'
+
 jobs:
   add_topic_label:
     name: Add topic label

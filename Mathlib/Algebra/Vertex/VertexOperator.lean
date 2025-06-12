@@ -28,9 +28,8 @@ In this file we introduce vertex operators as linear maps to Laurent series.
 * API for SMul by integer powers of suitable MVPolynomials, like `(X i) - (X j)`
 
 ## References
-* G. Mason `Vertex rings and Pierce bundles` ArXiv 1707.00328
-* A. Matsuo, K. Nagatomo `On axioms for a vertex algebra and locality of quantum fields`
-  arXiv:hep-th/9706118
+* [G. Mason *Vertex rings and Pierce bundles*][mason2017]
+* [A. Matsuo, K. Nagatomo, *On axioms for a vertex algebra and locality of quantum fields*][matsuo1997]
 * H. Li's paper on local systems?
 -/
 
