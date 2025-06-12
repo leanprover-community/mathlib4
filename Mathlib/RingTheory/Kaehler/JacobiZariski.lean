@@ -377,8 +377,9 @@ lemma δ_eq_δAux (x : Q.ker) (hx) :
       LinearEquiv.apply_symm_apply, z]
     ext
     swap; · rfl
-    change 0 = (LinearMap.fst T Q.toExtension.CotangentSpace (T ⊗[S] P.toExtension.CotangentSpace) ∘ₗ
-      (CotangentSpace.compEquiv Q P).toLinearMap) ((Q.comp P).toExtension.cotangentComplex y)
+  change 0 = (LinearMap.fst T Q.toExtension.CotangentSpace
+        (T ⊗[S] P.toExtension.CotangentSpace) ∘ₗ (CotangentSpace.compEquiv Q P).toLinearMap)
+      ((Q.comp P).toExtension.cotangentComplex y)
     rw [CotangentSpace.fst_compEquiv, Extension.CotangentSpace.map_cotangentComplex, hy, hx]
 
 lemma δ_eq_δ {ι₁ : Type u₁} {ι₂ : Type u₂} {ι₃ : Type u₃} (Q : Generators S T ι₁)

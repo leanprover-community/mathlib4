@@ -313,7 +313,8 @@ def tensorKaehlerQuotKerSqEquiv :
 @[simp]
 lemma tensorKaehlerQuotKerSqEquiv_tmul_D (s t) :
     tensorKaehlerQuotKerSqEquiv R P S (s ⊗ₜ .D _ _ (Ideal.Quotient.mk _ t)) = s ⊗ₜ .D _ _ t := by
-  change s • (derivationQuotKerSq R P S).liftKaehlerDifferential (.D _ _ (Ideal.Quotient.mk _ t)) = _
+  change s • (derivationQuotKerSq R P S).liftKaehlerDifferential
+    (.D _ _ (Ideal.Quotient.mk _ t)) = _
   simp [smul_tmul']
 
 @[simp]
