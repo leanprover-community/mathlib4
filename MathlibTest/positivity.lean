@@ -1,6 +1,7 @@
 import Mathlib.Tactic.Positivity
 import Mathlib.Data.Complex.Trigonometric
 import Mathlib.Data.Real.Sqrt
+import Mathlib.Data.ENNReal.Basic
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
@@ -206,6 +207,60 @@ example (a : ℤ) : 0 ≤ a⁺ := by positivity
 example (a : ℤ) (ha : 0 < a) : 0 < a⁺ := by positivity
 example (a : ℤ) : 0 ≤ a⁻ := by positivity
 
+
+section ENNReal
+
+open scoped ENNReal
+variable {a b : ℝ≥0∞}
+
+example : 0 ≤ a := by positivity
+example (ha : a ≠ 0) : 0 < a := by positivity
+example : 0 ≤ a + b := by positivity
+example (ha : a ≠ 0) : 0 < a + b := by positivity
+example : 0 < a + 5 := by positivity
+example : 0 < 2 * a + 3 := by positivity
+example (ha : 0 < a) : 0 < a + b := by positivity
+
+example : 0 ≤ a * b := by positivity
+example (ha : a ≠ 0) : 0 < 2 * a := by positivity
+example (ha : a ≠ 0) : 0 < a * 37 := by positivity
+example (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a * b := by positivity
+example (ha : a ≠ 0) : 0 ≤ a * b := by positivity
+
+end ENNReal
+
+section EReal
+
+private axiom test_sorry : ∀ {α}, α
+
+-- Missing positivity extension: literals in EReal
+example : 0 < (5 : EReal) := by
+  fail_if_success positivity
+  exact test_sorry
+
+variable {a b : EReal}
+
+example (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a + b := by positivity
+example (ha : 0 ≤ a) (hb : 0 < b) : 0 < a + b := by positivity
+example (ha : 0 < a) (hb : 0 ≤ b) : 0 < a + b := by positivity
+
+example (_ha : 0 ≤ a) : 0 < a + 5 := by
+  fail_if_success positivity
+  exact test_sorry
+
+example {ha : 0 ≤ a} {hb : 0 ≤ b} : 0 ≤ a * b := by positivity
+-- These tests will only pass after #25094.
+-- example (ha : 0 < a) : 0 < 2 * a := by positivity
+-- example (ha : 0 < a) : 0 < a * 37 := by positivity
+example (_ha : 0 ≤ a) : 0 < 2 * a + 3 := by
+  fail_if_success positivity
+  exact test_sorry
+example (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by positivity
+example (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a * b := by positivity
+example {a b : EReal} (ha : 0 < a) (ha : 0 < b) : 0 < a * b := by positivity
+
+end EReal
+
 /-! ### Exponentiation -/
 
 example [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α]
@@ -348,8 +403,10 @@ example {a : ℝ≥0∞} : 0 ≤ a := by positivity
 
 example {a : ℕ} : (0 : ℤ) ≤ a := by positivity
 example {a : ℕ} : (0 : ℚ) ≤ a := by positivity
+example {a : ℕ} : (0 : EReal) ≤ a := by positivity
 example {a : ℕ} (ha : 0 < a) : (0 : ℤ) < a := by positivity
 example {a : ℕ} (ha : 0 < a) : (0 : ℚ) < a := by positivity
+example {a : ℕ} (ha : 0 < a) : (0 : EReal) < a := by positivity
 example {a : ℤ} (ha : a ≠ 0) : (a : ℚ) ≠ 0 := by positivity
 example {a : ℤ} (ha : 0 ≤ a) : (0 : ℚ) ≤ a := by positivity
 example {a : ℤ} (ha : 0 < a) : (0 : ℚ) < a := by positivity

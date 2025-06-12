@@ -77,12 +77,6 @@ theorem ker_mk_eq (r : Setoid α) : ker (@Quotient.mk'' _ r) = r :=
 theorem ker_apply_mk_out {f : α → β} (a : α) : f (⟦a⟧ : Quotient (Setoid.ker f)).out = f a :=
   @Quotient.mk_out _ (Setoid.ker f) a
 
-set_option linter.deprecated false in
-@[deprecated ker_apply_mk_out (since := "2024-10-19")]
-theorem ker_apply_mk_out' {f : α → β} (a : α) :
-    f (Quotient.mk _ a : Quotient <| Setoid.ker f).out' = f a :=
-  @Quotient.mk_out' _ (Setoid.ker f) a
-
 theorem ker_def {f : α → β} {x y : α} : ker f x y ↔ f x = f y :=
   Iff.rfl
 
@@ -173,7 +167,7 @@ instance : PartialOrder (Setoid α) where
   lt r s := r ≤ s ∧ ¬s ≤ r
   le_refl _ _ _ := id
   le_trans _ _ _ hr hs _ _ h := hs <| hr h
-  lt_iff_le_not_le _ _ := Iff.rfl
+  lt_iff_le_not_ge _ _ := Iff.rfl
   le_antisymm _ _ h1 h2 := Setoid.ext fun _ _ => ⟨fun h => h1 h, fun h => h2 h⟩
 
 /-- The complete lattice of equivalence relations on a type, with bottom element `=`

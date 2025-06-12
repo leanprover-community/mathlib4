@@ -282,18 +282,6 @@ def Scheme.restrictFunctor : X.Opens ⥤ Over X where
     ext1
     exact (X.homOfLE_homOfLE i.le j.le).symm
 
-@[deprecated (since := "2024-10-20")]
-alias Scheme.restrictFunctor_map_ofRestrict := Scheme.homOfLE_ι
-@[deprecated (since := "2024-10-20")]
-alias Scheme.restrictFunctor_map_ofRestrict_assoc := Scheme.homOfLE_ι_assoc
-
-@[deprecated (since := "2024-10-20")]
-alias Scheme.restrictFunctor_map_base := Scheme.homOfLE_base
-@[deprecated (since := "2024-10-20")]
-alias Scheme.restrictFunctor_map_app_aux := Scheme.ι_image_homOfLE_le_ι_image
-@[deprecated (since := "2024-10-20")]
-alias Scheme.restrictFunctor_map_app := Scheme.homOfLE_app
-
 /-- The functor that restricts to open subschemes and then takes global section is
 isomorphic to the structure sheaf. -/
 @[simps!]
@@ -349,17 +337,6 @@ lemma Scheme.Hom.isoOpensRange_inv_comp {X Y : Scheme.{u}} (f : X.Hom Y) [IsOpen
     f.isoOpensRange.inv ≫ f = f.opensRange.ι := by
   simp [isoOpensRange]
 
-@[deprecated (since := "2024-10-20")]
-alias Scheme.restrictRestrict := Scheme.Hom.isoImage
-@[deprecated (since := "2024-10-20")]
-alias Scheme.restrictRestrict_hom_restrict := Scheme.Hom.isoImage_hom_ι
-@[deprecated (since := "2024-10-20")]
-alias Scheme.restrictRestrict_inv_restrict_restrict := Scheme.Hom.isoImage_inv_ι
-@[deprecated (since := "2024-10-20")]
-alias Scheme.restrictRestrict_hom_restrict_assoc := Scheme.Hom.isoImage_hom_ι_assoc
-@[deprecated (since := "2024-10-20")]
-alias Scheme.restrictRestrict_inv_restrict_restrict_assoc := Scheme.Hom.isoImage_inv_ι_assoc
-
 /-- `(⊤ : X.Opens)` as a scheme is isomorphic to `X`. -/
 @[simps hom]
 def Scheme.topIso (X : Scheme) : ↑(⊤ : X.Opens) ≅ X where
@@ -397,8 +374,6 @@ lemma Scheme.isoOfEq_rfl (X : Scheme.{u}) (U : X.Opens) : X.isoOfEq (refl U) = I
   ext1
   rw [← cancel_mono U.ι, Scheme.isoOfEq_hom_ι, Iso.refl_hom, Category.id_comp]
 
-@[deprecated (since := "2024-10-20")] alias Scheme.restrictIsoOfEq := Scheme.isoOfEq
-
 end
 
 /-- The restriction of an isomorphism onto an open set. -/
@@ -418,8 +393,6 @@ lemma Scheme.Hom.preimageIso_hom_ι {X Y : Scheme.{u}} (f : X.Hom Y) [IsIso (C :
 lemma Scheme.Hom.preimageIso_inv_ι {X Y : Scheme.{u}} (f : X.Hom Y) [IsIso (C := Scheme) f]
     (U : Y.Opens) : (f.preimageIso U).inv ≫ (f ⁻¹ᵁ U).ι ≫ f = U.ι :=
   IsOpenImmersion.isoOfRangeEq_inv_fac _ _ _
-
-@[deprecated (since := "2024-10-20")] alias Scheme.restrictMapIso := Scheme.Hom.preimageIso
 
 /-- If `U ≤ V` are opens of `X`, the restriction of `U` to `V` is isomorphic to `U`. -/
 noncomputable def Scheme.Opens.isoOfLE {X : Scheme.{u}} {U V : X.Opens}
@@ -458,11 +431,6 @@ theorem pullbackRestrictIsoRestrict_inv_fst {X Y : Scheme.{u}} (f : X ⟶ Y) (U 
 theorem pullbackRestrictIsoRestrict_hom_ι {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) :
     (pullbackRestrictIsoRestrict f U).hom ≫ (f ⁻¹ᵁ U).ι = pullback.fst f _ := by
   delta pullbackRestrictIsoRestrict; simp
-
-@[deprecated (since := "2024-10-20")]
-alias pullbackRestrictIsoRestrict_hom_restrict := pullbackRestrictIsoRestrict_hom_ι
-@[deprecated (since := "2024-10-20")]
-alias pullbackRestrictIsoRestrict_hom_restrict_assoc := pullbackRestrictIsoRestrict_hom_ι_assoc
 
 /-- The restriction of a morphism `X ⟶ Y` onto `X |_{f ⁻¹ U} ⟶ Y |_ U`. -/
 def morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) : (f ⁻¹ᵁ U).toScheme ⟶ U :=

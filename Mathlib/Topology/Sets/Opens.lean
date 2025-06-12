@@ -244,18 +244,12 @@ instance instFrame : Frame (Opens α) := .ofMinimalAxioms frameMinimalAxioms
 theorem isOpenEmbedding' (U : Opens α) : IsOpenEmbedding (Subtype.val : U → α) :=
   U.isOpen.isOpenEmbedding_subtypeVal
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding' := isOpenEmbedding'
-
 theorem isOpenEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
     IsOpenEmbedding (Set.inclusion <| SetLike.coe_subset_coe.2 i) where
   toIsEmbedding := .inclusion i
   isOpen_range := by
     rw [Set.range_inclusion i]
     exact U.isOpen.preimage continuous_subtype_val
-
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_of_le := isOpenEmbedding_of_le
 
 theorem not_nonempty_iff_eq_bot (U : Opens α) : ¬Set.Nonempty (U : Set α) ↔ U = ⊥ := by
   rw [← coe_inj, coe_bot, ← Set.not_nonempty_iff_eq_empty]
@@ -324,6 +318,12 @@ lemma IsBasis.le_iff {α} {t₁ t₂ : TopologicalSpace α}
     t₁ ≤ t₂ ↔ ∀ U ∈ Us, IsOpen[t₁] U := by
   conv_lhs => rw [hUs.eq_generateFrom]
   simp [Set.subset_def, le_generateFrom_iff_subset_isOpen]
+
+lemma IsBasis.of_isInducing {B : Set (Opens β)} (H : IsBasis B) {f : α → β} (h : IsInducing f) :
+    IsBasis { ⟨f ⁻¹' U, U.2.preimage h.continuous⟩ | U ∈ B } := by
+  simp only [IsBasis] at H ⊢
+  convert H.isInducing h
+  ext; simp
 
 @[simp]
 theorem isCompactElement_iff (s : Opens α) :

@@ -128,7 +128,7 @@ theorem map_ofNat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F 
     f ofNat(n) = f 0 + ofNat(n) := map_nat f n
 
 @[scoped simp]
-theorem map_const_add [AddCommSemigroup G] [Add H] [AddConstMapClass F G H a b]
+theorem map_const_add [AddCommMagma G] [Add H] [AddConstMapClass F G H a b]
     (f : F) (x : G) : f (a + x) = f x + b := by
   rw [add_comm, map_add_const]
 
@@ -253,7 +253,7 @@ protected theorem rel_map_of_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddM
     rcases existsUnique_sub_zsmul_mem_Ioc ha y l with ⟨n, hny, -⟩
     rcases lt_trichotomy n 0 with hn | rfl | hn
     · -- Since `l ≤ x ≤ y`, the case `n < 0` is impossible
-      refine absurd ?_ hxy.not_le
+      refine absurd ?_ hxy.not_ge
       calc
         y ≤ l + a + n • a := sub_le_iff_le_add.1 hny.2
         _ = l + (n + 1) • a := by rw [add_comm n, add_smul, one_smul, add_assoc]
