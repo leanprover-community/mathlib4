@@ -179,8 +179,8 @@ lemma sqrt_succ_le_succ_sqrt (n : ℕ) : sqrt n.succ ≤ n.sqrt.succ :=
     (by refine add_le_add (Nat.mul_le_mul_right _ ?_) ?_ <;> exact Nat.le_add_right _ 2) _
 
 lemma add_one_sqrt_le_of_ne_zero {n : ℕ} (hn : n ≠ 0) : (n + 1).sqrt ≤ n :=
-  le_induction le_rfl (fun n hn ih ↦ le_trans n.succ.sqrt_succ_le_succ_sqrt
-    <| by simp [Nat.add_le_add_iff_right, ih]) n (one_le_iff_ne_zero.mpr hn)
+  le_induction le_rfl (fun n _ ih ↦ le_trans n.succ.sqrt_succ_le_succ_sqrt (succ_le_succ ih)) n
+    (Nat.pos_of_ne_zero hn)
 
 lemma exists_mul_self (x : ℕ) : (∃ n, n * n = x) ↔ sqrt x * sqrt x = x :=
   ⟨fun ⟨n, hn⟩ ↦ by rw [← hn, sqrt_eq], fun h ↦ ⟨sqrt x, h⟩⟩
