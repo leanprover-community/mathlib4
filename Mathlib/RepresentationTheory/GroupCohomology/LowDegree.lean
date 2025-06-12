@@ -937,7 +937,7 @@ variable [DecidableEq G]
 short complex associated to the complex of inhomogeneous cochains of `A`. -/
 @[simps! hom inv]
 def shortComplexH1Iso : (inhomogeneousCochains A).sc 1 ≅ shortComplexH1 A :=
-    (inhomogeneousCochains A).isoSc' 0 1 2 (by simp) (by simp) ≪≫
+  (inhomogeneousCochains A).isoSc' 0 1 2 (by simp) (by simp) ≪≫
     isoMk (zeroCochainsIso A) (oneCochainsIso A) (twoCochainsIso A)
       (comp_dZero_eq A) (comp_dOne_eq A)
 
@@ -968,6 +968,15 @@ lemma toCocycles_comp_isoOneCocycles_hom :
   simp [← cancel_mono (shortComplexH1 A).moduleCatLeftHomologyData.i, comp_dZero_eq,
     shortComplexH1_f]
 
+lemma cocyclesMk_1_eq (x : oneCocycles A) :
+    cocyclesMk ((oneCochainsIso A).inv x) (by
+      simp [← inhomogeneousCochains.d_def, oneCocycles.dOne_apply x]) =
+      (isoOneCocycles A).inv x := by
+  apply_fun (forget₂ _ Ab).map ((inhomogeneousCochains A).iCycles 1) using
+    (AddCommGrp.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
+  simpa only [HomologicalComplex.i_cyclesMk] using
+    (isoOneCocycles_inv_comp_iCocycles_apply _ x).symm
+
 /-- The 1st group cohomology of `A`, defined as the 1st cohomology of the complex of inhomogeneous
 cochains, is isomorphic to `oneCocycles A ⧸ oneCoboundaries A`, which is a simpler type. -/
 def isoH1 : groupCohomology A 1 ≅ H1 A :=
@@ -990,8 +999,8 @@ isomorphic to the 2nd short complex associated to the complex of inhomogeneous c
 def shortComplexH2Iso :
     (inhomogeneousCochains A).sc 2 ≅ shortComplexH2 A :=
   (inhomogeneousCochains A).isoSc' 1 2 3 (by simp) (by simp) ≪≫
-  isoMk (oneCochainsIso A) (twoCochainsIso A) (threeCochainsIso A)
-    (comp_dOne_eq A) (comp_dTwo_eq A)
+    isoMk (oneCochainsIso A) (twoCochainsIso A) (threeCochainsIso A)
+      (comp_dOne_eq A) (comp_dTwo_eq A)
 
 /-- The 2-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `twoCocycles A`, which is a simpler type. -/
@@ -1019,6 +1028,15 @@ lemma toCocycles_comp_isoTwoCocycles_hom :
       (oneCochainsIso A).hom ≫ (shortComplexH2 A).moduleCatLeftHomologyData.f' := by
   simp [← cancel_mono (shortComplexH2 A).moduleCatLeftHomologyData.i, comp_dOne_eq,
     shortComplexH2_f]
+
+lemma cocyclesMk_2_eq (x : twoCocycles A) :
+    cocyclesMk ((twoCochainsIso A).inv x) (by
+      simp [← inhomogeneousCochains.d_def, twoCocycles.dTwo_apply x]) =
+      (isoTwoCocycles A).inv x := by
+  apply_fun (forget₂ _ Ab).map ((inhomogeneousCochains A).iCycles 2) using
+    (AddCommGrp.mono_iff_injective _).1 <| (forget₂ _ _).map_mono _
+  simpa only [HomologicalComplex.i_cyclesMk] using
+    (isoTwoCocycles_inv_comp_iCocycles_apply _ x).symm
 
 /-- The 2nd group cohomology of `A`, defined as the 2nd cohomology of the complex of inhomogeneous
 cochains, is isomorphic to `twoCocycles A ⧸ twoCoboundaries A`, which is a simpler type. -/

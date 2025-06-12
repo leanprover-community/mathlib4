@@ -115,6 +115,18 @@ noncomputable abbrev cocyclesMap (n : ℕ) :
     groupCohomology.cocycles A n ⟶ groupCohomology.cocycles B n :=
   HomologicalComplex.cyclesMap (cochainsMap f φ) n
 
+@[simp]
+lemma cocyclesMap_id : cocyclesMap (MonoidHom.id G) (𝟙 B) n = 𝟙 _ :=
+  HomologicalComplex.cyclesMap_id _ _
+
+@[reassoc]
+lemma cocyclesMap_comp {G H K : Type u} [Group G] [DecidableEq G] [Group H] [DecidableEq H]
+    [Group K] [DecidableEq K] {A : Rep k K} {B : Rep k H} {C : Rep k G} (f : H →* K) (g : G →* H)
+    (φ : (Action.res _ f).obj A ⟶ B) (ψ : (Action.res _ g).obj B ⟶ C) (n : ℕ) :
+    cocyclesMap (f.comp g) ((Action.res _ g).map φ ≫ ψ) n =
+      cocyclesMap f φ n ≫ cocyclesMap g ψ n := by
+  simp [cocyclesMap, ← HomologicalComplex.cyclesMap_comp, ← cochainsMap_comp]
+
 @[reassoc]
 theorem cocyclesMap_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
     cocyclesMap (MonoidHom.id G) (φ ≫ ψ) n =
@@ -127,6 +139,21 @@ this is the induced map `Hⁿ(H, A) ⟶ Hⁿ(G, B)` sending `x : Hⁿ → A` to
 noncomputable abbrev map (n : ℕ) :
     groupCohomology A n ⟶ groupCohomology B n :=
   HomologicalComplex.homologyMap (cochainsMap f φ) n
+
+@[reassoc, elementwise]
+theorem π_map (n : ℕ) :
+    π A n ≫ map f φ n = cocyclesMap f φ n ≫ π B n := by
+  simp [map, cocyclesMap]
+
+@[simp]
+lemma map_id : map (MonoidHom.id G) (𝟙 B) n = 𝟙 _ := HomologicalComplex.homologyMap_id _ _
+
+@[reassoc]
+lemma map_comp {G H K : Type u} [Group G] [DecidableEq G] [Group H] [DecidableEq H]
+    [Group K] [DecidableEq K] {A : Rep k K} {B : Rep k H} {C : Rep k G} (f : H →* K) (g : G →* H)
+    (φ : (Action.res _ f).obj A ⟶ B) (ψ : (Action.res _ g).obj B ⟶ C) (n : ℕ) :
+    map (f.comp g) ((Action.res _ g).map φ ≫ ψ) n = map f φ n ≫ map g ψ n := by
+  simp [map, ← HomologicalComplex.homologyMap_comp, ← cochainsMap_comp]
 
 @[reassoc]
 theorem map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
