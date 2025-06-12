@@ -69,7 +69,7 @@ lemma C_mul_mod {n j : ℕ} (hn : 3 ≤ n) (hj : j ∈ Set.Ico 1 n) (cpj : Copri
       omega
     have hk₂ : k - 1 ∈ Set.Ico 1 n := ⟨le_sub_of_add_le hk₁, (sub_le ..).trans_lt hk.2⟩
     rw [← C_mul_mod hn hj cpj hC hk₂, hC.2 _ b₁ nej]
-    rcases nej.lt_or_lt with h | h
+    rcases nej.lt_or_gt with h | h
     · rw [Int.natAbs_sub_nat_of_lt h.le]
       have b₂ : j - k * j % n ∈ Set.Ico 1 n := by
         refine ⟨(?_ : 0 < _), (sub_le ..).trans_lt hj.2⟩
