@@ -363,9 +363,13 @@ theorem coe_equivRange (hinj : Injective f) (hclo : IsClosed (range f)) :
     (f.equivRange hinj hclo : E → LinearMap.range f) = f.rangeRestrict :=
   rfl
 
-@[simp]
+#adaptation_note
+/--
+As of nightly-2025-06-12, the simpNF linter is giving a nonsensical suggestion here.
+-/
+@[simp, nolint simpNF]
 lemma equivRange_symm_toLinearEquiv (hinj : Injective f) (hclo : IsClosed (range f)) :
-    (f.equivRange hinj hclo).toLinearEquiv.symm =
+    (f.equivRange hinj hclo).symm.toLinearEquiv =
       (LinearEquiv.ofInjective f.toLinearMap hinj).symm := rfl
 
 @[simp]
