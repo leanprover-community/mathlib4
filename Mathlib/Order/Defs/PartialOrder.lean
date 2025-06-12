@@ -5,6 +5,7 @@ Authors: Leonardo de Moura
 -/
 import Batteries.Tactic.Trans
 import Mathlib.Tactic.ExtendDoc
+import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.TypeStar
@@ -44,7 +45,7 @@ class Preorder (α : Type*) extends LE α, LT α where
 
 @[deprecated (since := "2025-05-11")] alias Preorder.lt_iff_le_not_le := Preorder.lt_iff_le_not_ge
 
-variable [Preorder α] {a b c : α}
+variable [Preorder α] {a b c d : α}
 
 /-- The relation `≤` on a preorder is reflexive. -/
 @[refl, simp] lemma le_refl : ∀ a : α, a ≤ a := Preorder.le_refl
@@ -118,6 +119,32 @@ instance (priority := 900) : @Trans α α α GE.ge GE.ge GE.ge := ⟨ge_trans⟩
 instance (priority := 900) : @Trans α α α GT.gt GT.gt GT.gt := ⟨gt_trans⟩
 instance (priority := 900) : @Trans α α α GT.gt GE.ge GT.gt := ⟨lt_of_lt_of_le'⟩
 instance (priority := 900) : @Trans α α α GE.ge GT.gt GT.gt := ⟨lt_of_le_of_lt'⟩
+
+namespace GCongr
+
+-- The `≤`-transitivity lemmas aren't strictly needed
+-- but it is a very common case, so we tag them anyways
+@[gcongr] theorem le_imp_le (h₁ : c ≤ a) (h₂ : b ≤ d) : a ≤ b → c ≤ d :=
+  fun h => le_trans (le_trans h₁ h) h₂
+
+attribute [gcongr] le_trans ge_trans
+
+@[gcongr] theorem lt_imp_lt (h₁ : c ≤ a) (h₂ : b ≤ d) : a < b → c < d :=
+  fun h => lt_of_lt_of_le (lt_of_le_of_lt h₁ h) h₂
+
+attribute [gcongr] lt_of_le_of_lt lt_of_le_of_lt'
+
+@[gcongr] theorem gt_imp_gt (h₁ : a ≤ c) (h₂ : d ≤ b) : a > b → c > d := lt_imp_lt h₂ h₁
+
+@[gcongr] theorem gt_imp_gt_left (h : a ≤ b) : c > b → c > a := lt_of_le_of_lt h
+
+@[gcongr] theorem gt_imp_gt_right (h : b ≤ a) : b > c → a > c := lt_of_le_of_lt' h
+
+/-- See if the term is `a < b` and the goal is `a ≤ b`. -/
+@[gcongr_forward] def exactLeOfLt : Mathlib.Tactic.GCongr.ForwardExt where
+  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``le_of_lt #[h])
+
+end GCongr
 
 /-- `<` is decidable if `≤` is. -/
 def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α
