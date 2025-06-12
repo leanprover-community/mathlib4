@@ -86,6 +86,16 @@ theorem relindex_comap (f : G' →* G) (K : Subgroup G') :
     relindex (comap f H) K = relindex H (map f K) := by
   rw [relindex, subgroupOf, comap_comap, index_comap, ← f.map_range, K.range_subtype]
 
+@[to_additive]
+theorem relindex_map_map_of_injective {f : G →* G'} (H K : Subgroup G) (hf : Function.Injective f) :
+    relindex (map f H) (map f K) = relindex H K := by
+  rw [← Subgroup.relindex_comap, Subgroup.comap_map_eq_self_of_injective hf]
+
+@[to_additive]
+theorem relindex_map_map (f : G →* G') (H K : Subgroup G) :
+    (map f H).relindex (map f K) = (H ⊔ f.ker).relindex (K ⊔ f.ker) := by
+  rw [← comap_map_eq, ← comap_map_eq, relindex_comap, (gc_map_comap f).l_u_l_eq_l]
+
 variable {H K L}
 
 @[to_additive relindex_mul_index]
@@ -536,7 +546,8 @@ lemma _root_.AddSubgroup.relindex_toSubgroup {G : Type*} [AddGroup G] (H K : Add
 section FiniteIndex
 
 /-- Typeclass for finite index subgroups. -/
-class _root_.AddSubgroup.FiniteIndex {G : Type*} [AddGroup G] (H : AddSubgroup G) : Prop where
+@[mk_iff] class _root_.AddSubgroup.FiniteIndex {G : Type*} [AddGroup G] (H : AddSubgroup G) : Prop
+    where
   /-- The additive subgroup has finite index;
   recall that `AddSubgroup.index` returns 0 when the index is infinite. -/
   index_ne_zero : H.index ≠ 0
@@ -546,12 +557,16 @@ alias _root_AddSubgroup.FiniteIndex.finiteIndex := AddSubgroup.FiniteIndex.index
 
 variable (H) in
 /-- Typeclass for finite index subgroups. -/
-@[to_additive] class FiniteIndex : Prop where
+@[mk_iff, to_additive] class FiniteIndex : Prop where
   /-- The subgroup has finite index;
   recall that `Subgroup.index` returns 0 when the index is infinite. -/
   index_ne_zero : H.index ≠ 0
 
 @[deprecated (since := "2025-04-13")] alias FiniteIndex.finiteIndex := FiniteIndex.index_ne_zero
+
+@[to_additive]
+theorem not_finiteIndex_iff : 
+    ¬ H.FiniteIndex ↔ H.index = 0 := by simp [finiteIndex_iff]
 
 /-- Typeclass for a subgroup `H` to have finite index in a subgroup `K`. -/
 class _root_.AddSubgroup.IsFiniteRelIndex {G : Type*} [AddGroup G] (H K : AddSubgroup G) :
@@ -570,10 +585,6 @@ variable (H K) in
 instance IsFiniteRelIndex.to_finiteIndex_subgroupOf [H.IsFiniteRelIndex K] :
     (H.subgroupOf K).FiniteIndex where
   index_ne_zero := relindex_ne_zero
-
-@[to_additive]
-theorem finiteIndex_iff : H.FiniteIndex ↔ H.index ≠ 0 :=
-  ⟨fun h ↦ h.index_ne_zero, fun h ↦ ⟨h⟩⟩
 
 /-- A finite index subgroup has finite quotient. -/
 @[to_additive "A finite index subgroup has finite quotient"]
