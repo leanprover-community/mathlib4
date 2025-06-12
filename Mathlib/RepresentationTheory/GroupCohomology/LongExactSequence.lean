@@ -24,13 +24,56 @@ This allows us to specialize API about long exact sequences to group cohomology.
 
 -/
 
-universe u
+universe u v
+
+namespace CategoryTheory.ShortComplex.ShortExact
+
+variable {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type v}
+  [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory.{v} C FC] [HasForget₂ C Ab.{v}]
+  [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology]
+  {ι : Type*} {c : ComplexShape ι}
+
+variable {S : ShortComplex (HomologicalComplex C c)} (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j)
+
+include hS in
+theorem d_eq_zero_of_f_eq_d_apply
+    (x₂ : ((forget₂ C Ab).obj (S.X₂.X i))) (x₁ : ((forget₂ C Ab).obj (S.X₁.X j)))
+    (hx₁ : ((forget₂ C Ab).map (S.f.f j)) x₁ = ((forget₂ C Ab).map (S.X₂.d i j)) x₂) (k : ι) :
+    ((forget₂ C Ab).map (S.X₁.d j k)) x₁ = 0 := by
+  have := hS.mono_f
+  apply (Preadditive.mono_iff_injective (S.f.f k)).1 inferInstance
+  rw [← ConcreteCategory.forget₂_comp_apply, ← HomologicalComplex.Hom.comm,
+    ConcreteCategory.forget₂_comp_apply, hx₁, ← ConcreteCategory.forget₂_comp_apply,
+    HomologicalComplex.d_comp_d, Functor.map_zero, map_zero]
+  rfl
+
+end CategoryTheory.ShortComplex.ShortExact
+namespace LinearMap
+
+variable {R M M₂ : Type*} [Semiring R]
+
+lemma ker_compLeft [AddCommMonoid M] [AddCommMonoid M₂]
+    [Module R M] [Module R M₂] (f : M →ₗ[R] M₂) (I : Type*) :
+    LinearMap.ker (f.compLeft I) = Submodule.pi (Set.univ : Set I) (fun _ => LinearMap.ker f) :=
+  Submodule.ext fun _ => ⟨fun (hx : _ = _) i _ => congr_fun hx i,
+    fun hx => funext fun i => hx i trivial⟩
+
+lemma range_compLeft [AddCommMonoid M] [AddCommMonoid M₂]
+    [Module R M] [Module R M₂] (f : M →ₗ[R] M₂) (I : Type*) :
+    LinearMap.range (f.compLeft I) =
+      Submodule.pi (Set.univ : Set I) (fun _ => LinearMap.range f) :=
+  Submodule.ext fun _ => ⟨fun ⟨y, hy⟩ i _ => ⟨y i, congr_fun hy i⟩, fun hx => by
+    choose y hy using hx
+    exact ⟨fun i => y i trivial, funext fun i => hy i trivial⟩⟩
+
+end LinearMap
 
 namespace groupCohomology
 
 open CategoryTheory ShortComplex
 
-variable {k G : Type u} [CommRing k] [Group G] {X : ShortComplex (Rep k G)} (hX : ShortExact X)
+variable {k G : Type u} [CommRing k] [Group G] [DecidableEq G]
+  {X : ShortComplex (Rep k G)} (hX : ShortExact X)
 
 include hX
 
@@ -87,58 +130,54 @@ noncomputable abbrev cocyclesMkOfCompEqD {i j : ℕ} {y : (Fin i → G) → X.X�
     cocycles X.X₁ j :=
   cocyclesMk x <| by simpa using
     ((map_cochainsFunctor_shortExact hX).d_eq_zero_of_f_eq_d_apply i j y x
-      (by simpa [cochainsMap_id_f_eq_compLeft] using hx) (j + 1))
+      (by simpa [cochainsMap_id_f_hom_eq_compLeft] using hx) (j + 1))
 
 theorem δ_apply {i j : ℕ} (hij : i + 1 = j)
     (z : (Fin i → G) → X.X₃) (hz : (inhomogeneousCochains X.X₃).d i j z = 0)
     (y : (Fin i → G) → X.X₂) (hy : (cochainsMap (MonoidHom.id G) X.g).f i y = z)
     (x : (Fin j → G) → X.X₁) (hx : X.f.hom ∘ x = (inhomogeneousCochains X.X₂).d i j y) :
     δ hX i j hij (groupCohomologyπ X.X₃ i <| cocyclesMk z (by subst hij; simpa using hz)) =
-      groupCohomologyπ X.X₁ j (cocyclesMkOfCompEqD hx) := by
+      groupCohomologyπ X.X₁ j (cocyclesMkOfCompEqD hX hx) := by
   exact (map_cochainsFunctor_shortExact hX).δ_apply i j hij z hz y hy x
-    (by simpa [cochainsMap_id_f_eq_compLeft] using hx) (j + 1) (by simp)
+    (by simpa [cochainsMap_id_f_hom_eq_compLeft] using hx) (j + 1) (by simp)
 
-theorem memOneCocycles_of_comp_eq_dZero {y : X.X₂} {x : G → X.X₁} (hx : X.f.hom ∘ x = dZero X.X₂ y) :
-    MemOneCocycles x := by
+theorem mem_oneCocycles_of_comp_eq_dZero
+    {y : X.X₂} {x : G → X.X₁} (hx : X.f.hom ∘ x = dZero X.X₂ y) :
+    x ∈ oneCocycles X.X₁ := by
   apply Function.Injective.comp_left ((Rep.mono_iff_injective X.f).1 hX.2)
   have := congr($((mapShortComplexH1 (MonoidHom.id G) X.f).comm₂₃.symm) x)
-  have := congr($(dZero_comp_dOne X.X₂) y)
   simp_all [shortComplexH1, LinearMap.compLeft]
 
 theorem δ₀_apply (z : X.X₃.ρ.invariants) (y : X.X₂)
     (hy : X.g.hom y = z) (x : G → X.X₁) (hx : X.f.hom ∘ x = dZero X.X₂ y) :
-    δ hX 0 1 rfl ((H0Iso X.X₃).inv z) =
-      groupCohomologyπ X.X₁ 1 (mkOneCocycles x <| memOneCocycles_of_comp_eq_dZero hX hx) := by
-  have := δ_apply hX rfl ((zeroCochainsIso X.X₃).inv z.1) ?_
-    ((zeroCochainsIso X.X₂).inv y) ?_ ((oneCochainsIso X.X₁).inv x) ?_
-  convert this
-  · rw [mk_eq_zeroCocyclesIso_inv_apply]
-    rfl
-  · sorry
-  · funext
-    simp [zeroCochainsIso, hy]
-  · sorry
+    δ hX 0 1 rfl ((H0Iso X.X₃).inv z) = groupCohomologyπ X.X₁ 1
+      ((isoOneCocycles X.X₁).inv ⟨x, mem_oneCocycles_of_comp_eq_dZero hX hx⟩) := by
+  simpa [H0Iso, ← cocyclesMk_1_eq X.X₁, ← cocyclesMk_0_eq z] using
+    δ_apply hX rfl ((zeroCochainsIso X.X₃).inv z.1) (by simp) ((zeroCochainsIso X.X₂).inv y)
+    (by ext; simp [← hy, zeroCochainsIso]) ((oneCochainsIso X.X₁).inv x) <| by
+      ext g
+      simpa [← hx] using congr_fun (congr($((CommSq.vert_inv
+        ⟨cochainsMap_f_1_comp_oneCochainsIso (MonoidHom.id G) X.f⟩).w) x)) g
 
-theorem memCocycles₂_of_comp_eq_dOne
+theorem mem_twoCocycles_of_comp_eq_dOne
     {y : G → X.X₂} {x : G × G → X.X₁} (hx : X.f.hom ∘ x = dOne X.X₂ y) :
-    MemTwoCocycles x := by
+    x ∈ twoCocycles X.X₁ := by
   apply Function.Injective.comp_left ((Rep.mono_iff_injective X.f).1 hX.2)
   have := congr($((mapShortComplexH2 (MonoidHom.id G) X.f).comm₂₃.symm) x)
-  have := congr($(dOne_comp_dTwo X.X₂) y)
   simp_all [shortComplexH2, LinearMap.compLeft]
 
-theorem δ₁_apply (z : G → X.X₃) (hz : MemOneCocycles z) (y : G → X.X₂)
+set_option trace.profiler true in
+theorem δ₁_apply (z : oneCocycles X.X₃) (y : G → X.X₂)
     (hy : X.g.hom ∘ y = z) (x : G × G → X.X₁) (hx : X.f.hom ∘ x = dOne X.X₂ y) :
-    δ hX 1 2 rfl (groupCohomologyπ _ 1 <| mkOneCocycles z hz) =
-      groupCohomologyπ X.X₁ _ (mkTwoCocycles x <| memCocycles₂_of_comp_eq_dOne hX hx) := by
-  have := δ_apply hX rfl ((oneCochainsIso X.X₃).inv z) ?_
-    ((oneCochainsIso X.X₂).inv y) ?_ ((twoCochainsIso X.X₁).inv x) ?_
-  convert this
-  · sorry
-  · funext g
-    simp [oneCochainsIso, ← hy]
-  · simp
-    sorry
+    δ hX 1 2 rfl (groupCohomologyπ _ 1 <| (isoOneCocycles X.X₃).inv z) = groupCohomologyπ X.X₁ _
+      ((isoTwoCocycles X.X₁).inv ⟨x, mem_twoCocycles_of_comp_eq_dOne hX hx⟩) := by
+  simpa [H0Iso, ← cocyclesMk_2_eq X.X₁, ← cocyclesMk_1_eq X.X₃] using
+    δ_apply hX rfl ((oneCochainsIso X.X₃).inv z) (by simp [oneCocycles.dOne_apply z])
+    ((oneCochainsIso X.X₂).inv y) (by ext; simp [oneCochainsIso, ← hy])
+    ((twoCochainsIso X.X₁).inv x) <| by
+      ext g
+      simpa [← hx] using congr_fun (congr($((CommSq.vert_inv
+        ⟨cochainsMap_f_2_comp_twoCochainsIso (MonoidHom.id G) X.f⟩).w) x)) g
 
 open Limits
 
