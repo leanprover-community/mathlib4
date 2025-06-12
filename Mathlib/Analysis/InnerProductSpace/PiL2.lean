@@ -350,7 +350,7 @@ instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
         replace h := congr_fun h i
         simp only [LinearEquiv.comp_coe, map_smul, LinearEquiv.coe_coe,
           LinearEquiv.trans_apply, WithLp.linearEquiv_symm_apply, WithLp.equiv_symm_single,
-          LinearIsometryEquiv.coe_toLinearEquiv] at h ⊢
+          LinearIsometryEquiv.coe_symm_toLinearEquiv] at h ⊢
         rw [h]
 
 @[simp]
