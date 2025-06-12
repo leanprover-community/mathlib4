@@ -1028,8 +1028,8 @@ lemma isIso_truncLTmap_iff {X Y : C} (f : X ⟶ Y) (n : ℤ) :
   · rintro ⟨Z, g, h, mem, _⟩
     obtain ⟨e, he⟩ := t.triangle_iso_exists (n-1) n (by linarith)  _ _ mem
       (t.triangleLTGE_distinguished n Y) (Iso.refl _)
-      (by dsimp ; infer_instance) (by dsimp ; infer_instance)
-      (by dsimp ; infer_instance) (by dsimp ; infer_instance)
+      (by dsimp; infer_instance) (by dsimp; infer_instance)
+      (by dsimp; infer_instance) (by dsimp; infer_instance)
     suffices ((t.truncLT n).map f) = e.hom.hom₁ by
       rw [this]
       infer_instance
