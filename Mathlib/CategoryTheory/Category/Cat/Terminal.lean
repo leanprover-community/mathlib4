@@ -29,13 +29,11 @@ namespace CategoryTheory
 
 namespace Cat
 
+/-- The constant functor to the default object of a category whose underlying type is inhabited. -/
+def toInhabited {T : Type u} [Category.{v} T] [Inhabited T]
+    (X : Type u') [Category.{v'} X] : X ⥤ T := (const X).obj default
 section
 variable {T : Type u} [Category.{v} T] [Unique T] [IsDiscrete T]
-
-/-- The unique functor to the discrete category on a unique object. -/
-def toDiscreteUnique (X : Type u') [Category.{v'} X] : X ⥤ T where
-  obj := fun _ ↦ default
-  map := fun _ ↦ 𝟙 _
 
 /-- Any two functors to a discrete category on a unique object are *equal*. -/
 theorem toDiscreteUnique_ext {X : Type u'} [Category.{v'} X] (F G : X ⥤ T) : F = G :=
@@ -43,7 +41,7 @@ theorem toDiscreteUnique_ext {X : Type u'} [Category.{v'} X] (F G : X ⥤ T) : F
 
 /-- A discrete category with a unique object is terminal. -/
 def isDiscreteUnique.isTerminal : IsTerminal (Cat.of T) :=
-  IsTerminal.ofUniqueHom (fun X ↦ toDiscreteUnique (T := T) X)
+  IsTerminal.ofUniqueHom (fun X ↦ toInhabited (T := T) X)
     (fun _ _ ↦ toDiscreteUnique_ext (T := T) _ _)
 
 end
