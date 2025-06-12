@@ -757,10 +757,122 @@ end ofMulDistribMulAction
 
 section Cohomology
 
+/-- We define the 0th group cohomology of a `k`-linear `G`-representation `A`, `H⁰(G, A)`, to be
+the invariants of the representation, `Aᴳ`. -/
+abbrev H0 := ModuleCat.of k A.ρ.invariants
+
+/-- We define the 1st group cohomology of a `k`-linear `G`-representation `A`, `H¹(G, A)`, to be
+1-cocycles (i.e. `Z¹(G, A) := Ker(d¹ : Fun(G, A) → Fun(G², A)`) modulo 1-coboundaries
+(i.e. `B¹(G, A) := Im(d⁰: A → Fun(G, A))`). -/
+abbrev H1 := (shortComplexH1 A).moduleCatLeftHomologyData.H
+
+/-- The quotient map `Z¹(G, A) → H¹(G, A).` -/
+abbrev H1π : ModuleCat.of k (oneCocycles A) ⟶ H1 A :=
+  (shortComplexH1 A).moduleCatLeftHomologyData.π
+
+variable {A} in
+lemma H1π_eq_zero_iff (x : oneCocycles A) : H1π A x = 0 ↔ ⇑x ∈ oneCoboundaries A := by
+  show (LinearMap.range ((dZero A).hom.codRestrict (oneCocycles A) _)).mkQ _ = 0 ↔ _
+  simp [LinearMap.range_codRestrict, oneCoboundaries]
+
+@[elab_as_elim]
+theorem H1_induction_on {C : H1 A → Prop}
+    (h : ∀ x : oneCocycles A, C (Submodule.Quotient.mk x)) (x : H1 A) :
+    C x := Quotient.inductionOn' x h
+
+/-- We define the 2nd group cohomology of a `k`-linear `G`-representation `A`, `H²(G, A)`, to be
+2-cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo 2-coboundaries
+(i.e. `B²(G, A) := Im(d¹: Fun(G, A) → Fun(G², A))`). -/
+abbrev H2 := (shortComplexH2 A).moduleCatLeftHomologyData.H
+
+/-- The quotient map `Z²(G, A) → H²(G, A).` -/
+abbrev H2π : ModuleCat.of k (twoCocycles A) ⟶ H2 A :=
+  (shortComplexH2 A).moduleCatLeftHomologyData.π
+
+variable {A} in
+lemma H2π_eq_zero_iff (x : twoCocycles A) : H2π A x = 0 ↔ ⇑x ∈ twoCoboundaries A := by
+  show (LinearMap.range ((dOne A).hom.codRestrict (twoCocycles A) _)).mkQ _ = 0 ↔ _
+  simp [LinearMap.range_codRestrict, twoCoboundaries]
+
+@[elab_as_elim]
+theorem H2_induction_on {C : H2 A → Prop}
+    (h : ∀ x : twoCocycles A, C (Submodule.Quotient.mk x)) (x : H2 A) :
+    C x := Quotient.inductionOn' x h
+
+end Cohomology
+
+section H0
+
+/-- When the representation on `A` is trivial, then `H⁰(G, A)` is all of `A.` -/
+def H0IsoOfIsTrivial [A.IsTrivial] :
+    H0 A ≅ A.V := (LinearEquiv.ofTop _ (invariants_eq_top A.ρ)).toModuleIso
+
+@[deprecated (since := "2025-05-09")]
+noncomputable alias H0LequivOfIsTrivial := H0IsoOfIsTrivial
+
+@[simp]
+theorem H0IsoOfIsTrivial_hom_hom [A.IsTrivial] :
+    (H0IsoOfIsTrivial A).hom.hom = A.ρ.invariants.subtype := rfl
+
+@[deprecated (since := "2025-05-09")]
+alias H0LequivOfIsTrivial_eq_subtype := H0IsoOfIsTrivial_hom_hom
+
+theorem H0IsoOfIsTrivial_hom_apply [A.IsTrivial] (x : H0 A) :
+    (H0IsoOfIsTrivial A).hom x = x := rfl
+
+@[deprecated (since := "2025-05-09")]
+alias H0LequivOfIsTrivial_apply := H0IsoOfIsTrivial_hom_apply
+
+@[simp]
+theorem H0IsoOfIsTrivial_inv_apply [A.IsTrivial] (x : A) :
+    (H0IsoOfIsTrivial A).inv x = x := rfl
+
+@[deprecated (since := "2025-05-09")]
+alias H0LequivOfIsTrivial_symm_apply := H0IsoOfIsTrivial_inv_apply
+
+end H0
+
+section H1
+
+/-- When `A : Rep k G` is a trivial representation of `G`, `H¹(G, A)` is isomorphic to the
+group homs `G → A`. -/
+def H1IsoOfIsTrivial [A.IsTrivial] :
+    H1 A ≅ ModuleCat.of k (Additive G →+ A) :=
+  (Submodule.quotEquivOfEqBot _ (by
+    simp [shortComplexH1, LinearMap.codRestrict, Submodule.eq_bot_iff])).toModuleIso ≪≫
+  (oneCocyclesIsoOfIsTrivial A)
+
+@[deprecated (since := "2025-05-09")]
+noncomputable alias H1LequivOfIsTrivial := H1IsoOfIsTrivial
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+theorem H1π_comp_H1IsoOfIsTrivial_hom [A.IsTrivial] :
+    H1π A ≫ (H1IsoOfIsTrivial A).hom = (oneCocyclesIsoOfIsTrivial A).hom := by
+  ext; rfl
+
+@[deprecated (since := "2025-05-09")]
+alias H1LequivOfIsTrivial_comp_H1π := H1π_comp_H1IsoOfIsTrivial_hom
+
+theorem H1IsoOfIsTrivial_H1π_apply_apply [A.IsTrivial]
+    (f : oneCocycles A) (x : Additive G) :
+    (H1IsoOfIsTrivial A).hom (H1π A f) x = f x.toMul := by simp
+
+@[deprecated (since := "2025-05-09")]
+alias H1LequivOfIsTrivial_comp_H1_π_apply_apply := H1IsoOfIsTrivial_H1π_apply_apply
+
+theorem H1IsoOfIsTrivial_inv_apply [A.IsTrivial] (f : Additive G →+ A) :
+    (H1IsoOfIsTrivial A).inv f = H1π A ((oneCocyclesIsoOfIsTrivial A).inv f) := rfl
+
+@[deprecated (since := "2025-05-09")]
+alias H1LequivOfIsTrivial_symm_apply := H1IsoOfIsTrivial_inv_apply
+
+end H1
+
+section groupCohomologyIso
+
 open ShortComplex
 
-section CocyclesIso
-section zeroCocyclesIso
+section H0
 
 instance : Mono (shortComplexH0 A).f := by
   rw [ModuleCat.mono_iff_injective]
@@ -784,35 +896,40 @@ def dZeroArrowIso :
 
 /-- The 0-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `A.ρ.invariants`, which is a simpler type. -/
-def zeroCocyclesIso : cocycles A 0 ≅ ModuleCat.of k A.ρ.invariants :=
+def isoZeroCocycles : cocycles A 0 ≅ H0 A :=
   KernelFork.mapIsoOfIsLimit
     ((inhomogeneousCochains A).cyclesIsKernel 0 1 (by simp)) (shortComplexH0_exact A).fIsKernel
       (dZeroArrowIso A)
 
-@[deprecated (since := "2025-06-11")]
-noncomputable alias isoZeroCocycles := zeroCocyclesIso
-
 @[reassoc (attr := simp), elementwise (attr := simp)]
-lemma zeroCocyclesIso_hom_comp_f :
-    (zeroCocyclesIso A).hom ≫ (shortComplexH0 A).f =
+lemma isoZeroCocycles_hom_comp_f :
+    (isoZeroCocycles A).hom ≫ (shortComplexH0 A).f =
       iCocycles A 0 ≫ (zeroCochainsIso A).hom := by
-  dsimp [zeroCocyclesIso]
+  dsimp [isoZeroCocycles]
   apply KernelFork.mapOfIsLimit_ι
 
-@[deprecated (since := "2025-06-11")]
-alias isoZeroCocycles_hom_comp_subtype := zeroCocyclesIso_hom_comp_f
+@[deprecated (since := "2025-05-09")]
+alias isoZeroCocycles_hom_comp_subtype := isoZeroCocycles_hom_comp_f
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-lemma zeroCocyclesIso_inv_comp_iCocycles :
-    (zeroCocyclesIso A).inv ≫ iCocycles A 0 =
+lemma isoZeroCocycles_inv_comp_iCocycles :
+    (isoZeroCocycles A).inv ≫ iCocycles A 0 =
       (shortComplexH0 A).f ≫ (zeroCochainsIso A).inv := by
-  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, zeroCocyclesIso_hom_comp_f]
+  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, isoZeroCocycles_hom_comp_f]
 
-@[deprecated (since := "2025-06-11")]
-alias isoZeroCocycles_inv_comp_iCocycles := zeroCocyclesIso_inv_comp_iCocycles
+/-- The 0th group cohomology of `A`, defined as the 0th cohomology of the complex of inhomogeneous
+cochains, is isomorphic to the invariants of the representation on `A`. -/
+def isoH0 : groupCohomology A 0 ≅ H0 A :=
+  (CochainComplex.isoHomologyπ₀ _).symm ≪≫ isoZeroCocycles A
 
-end zeroCocyclesIso
-section isoOneCocycles
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma π_comp_isoH0_hom  :
+    π A 0 ≫ (isoH0 A).hom = (isoZeroCocycles A).hom := by
+  simp [isoH0]
+
+end H0
+
+section H1
 
 variable [DecidableEq G]
 
@@ -851,8 +968,19 @@ lemma toCocycles_comp_isoOneCocycles_hom :
   simp [← cancel_mono (shortComplexH1 A).moduleCatLeftHomologyData.i, comp_dZero_eq,
     shortComplexH1_f]
 
-end isoOneCocycles
-section isoTwoCocycles
+/-- The 1st group cohomology of `A`, defined as the 1st cohomology of the complex of inhomogeneous
+cochains, is isomorphic to `oneCocycles A ⧸ oneCoboundaries A`, which is a simpler type. -/
+def isoH1 : groupCohomology A 1 ≅ H1 A :=
+  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (shortComplexH1Iso A) _ _)
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma π_comp_isoH1_hom  :
+    π A 1 ≫ (isoH1 A).hom = (isoOneCocycles A).hom ≫ H1π A := by
+  simp [isoH1, isoOneCocycles, π, HomologicalComplex.homologyπ, leftHomologyπ]
+
+end H1
+
+section H2
 
 variable [DecidableEq G]
 
@@ -892,159 +1020,6 @@ lemma toCocycles_comp_isoTwoCocycles_hom :
   simp [← cancel_mono (shortComplexH2 A).moduleCatLeftHomologyData.i, comp_dOne_eq,
     shortComplexH2_f]
 
-end isoTwoCocycles
-end CocyclesIso
-
-section H0
-
-/-- We define the 0th group cohomology of a `k`-linear `G`-representation `A`, `H⁰(G, A)`, to be
-the invariants of the representation, `Aᴳ`. -/
-abbrev H0 := ModuleCat.of k A.ρ.invariants
-
-section
-
-variable [DecidableEq G]
-
-/-- The 0th group cohomology of `A`, defined as the 0th cohomology of the complex of inhomogeneous
-cochains, is isomorphic to the invariants of the representation on `A`. -/
-def isoH0 : groupCohomology A 0 ≅ H0 A :=
-  (CochainComplex.isoHomologyπ₀ _).symm ≪≫ zeroCocyclesIso A
-
-@[reassoc (attr := simp), elementwise (attr := simp)]
-lemma π_comp_isoH0_hom  :
-    π A 0 ≫ (isoH0 A).hom = (zeroCocyclesIso A).hom := by
-  simp [isoH0]
-
-end
-section IsTrivial
-
-variable [A.IsTrivial]
-
-/-- When the representation on `A` is trivial, then `H⁰(G, A)` is all of `A.` -/
-def H0IsoOfIsTrivial :
-    H0 A ≅ A.V := (LinearEquiv.ofTop _ (invariants_eq_top A.ρ)).toModuleIso
-
-@[deprecated (since := "2025-05-09")]
-noncomputable alias H0LequivOfIsTrivial := H0IsoOfIsTrivial
-
-@[simp]
-theorem H0IsoOfIsTrivial_hom_hom :
-    (H0IsoOfIsTrivial A).hom.hom = A.ρ.invariants.subtype := rfl
-
-@[deprecated (since := "2025-05-09")]
-alias H0LequivOfIsTrivial_eq_subtype := H0IsoOfIsTrivial_hom_hom
-
-theorem H0IsoOfIsTrivial_hom_apply (x : H0 A) :
-    (H0IsoOfIsTrivial A).hom x = x := rfl
-
-@[deprecated (since := "2025-05-09")]
-alias H0LequivOfIsTrivial_apply := H0IsoOfIsTrivial_hom_apply
-
-@[simp]
-theorem H0IsoOfIsTrivial_inv_apply (x : A) :
-    (H0IsoOfIsTrivial A).inv x = x := rfl
-
-@[deprecated (since := "2025-05-09")]
-alias H0LequivOfIsTrivial_symm_apply := H0IsoOfIsTrivial_inv_apply
-
-end IsTrivial
-end H0
-section H1
-
-/-- We define the 1st group cohomology of a `k`-linear `G`-representation `A`, `H¹(G, A)`, to be
-1-cocycles (i.e. `Z¹(G, A) := Ker(d¹ : Fun(G, A) → Fun(G², A)`) modulo 1-coboundaries
-(i.e. `B¹(G, A) := Im(d⁰: A → Fun(G, A))`). -/
-abbrev H1 := (shortComplexH1 A).moduleCatLeftHomologyData.H
-
-/-- The quotient map `Z¹(G, A) → H¹(G, A).` -/
-abbrev H1π : ModuleCat.of k (oneCocycles A) ⟶ H1 A :=
-  (shortComplexH1 A).moduleCatLeftHomologyData.π
-
-variable {A} in
-lemma H1π_eq_zero_iff (x : oneCocycles A) : H1π A x = 0 ↔ ⇑x ∈ oneCoboundaries A := by
-  show (LinearMap.range ((dZero A).hom.codRestrict (oneCocycles A) _)).mkQ _ = 0 ↔ _
-  simp [LinearMap.range_codRestrict, oneCoboundaries]
-
-@[elab_as_elim]
-theorem H1_induction_on {C : H1 A → Prop}
-    (h : ∀ x : oneCocycles A, C (Submodule.Quotient.mk x)) (x : H1 A) :
-    C x := Quotient.inductionOn' x h
-
-section
-variable [DecidableEq G]
-
-/-- The 1st group cohomology of `A`, defined as the 1st cohomology of the complex of inhomogeneous
-cochains, is isomorphic to `oneCocycles A ⧸ oneCoboundaries A`, which is a simpler type. -/
-def isoH1 : groupCohomology A 1 ≅ H1 A :=
-  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (shortComplexH1Iso A) _ _)
-
-@[reassoc (attr := simp), elementwise (attr := simp)]
-lemma π_comp_isoH1_hom  :
-    π A 1 ≫ (isoH1 A).hom = (isoOneCocycles A).hom ≫ H1π A := by
-  simp [isoH1, isoOneCocycles, π, HomologicalComplex.homologyπ, leftHomologyπ]
-
-end
-section IsTrivial
-
-variable [A.IsTrivial]
-
-/-- When `A : Rep k G` is a trivial representation of `G`, `H¹(G, A)` is isomorphic to the
-group homs `G → A`. -/
-def H1IsoOfIsTrivial :
-    H1 A ≅ ModuleCat.of k (Additive G →+ A) :=
-  (Submodule.quotEquivOfEqBot _ (by
-    simp [shortComplexH1, LinearMap.codRestrict, Submodule.eq_bot_iff])).toModuleIso ≪≫
-  (oneCocyclesIsoOfIsTrivial A)
-
-@[deprecated (since := "2025-05-09")]
-noncomputable alias H1LequivOfIsTrivial := H1IsoOfIsTrivial
-
-@[reassoc (attr := simp), elementwise (attr := simp)]
-theorem H1π_comp_H1IsoOfIsTrivial_hom :
-    H1π A ≫ (H1IsoOfIsTrivial A).hom = (oneCocyclesIsoOfIsTrivial A).hom := by
-  ext; rfl
-
-@[deprecated (since := "2025-05-09")]
-alias H1LequivOfIsTrivial_comp_H1π := H1π_comp_H1IsoOfIsTrivial_hom
-
-theorem H1IsoOfIsTrivial_H1π_apply_apply
-    (f : oneCocycles A) (x : Additive G) :
-    (H1IsoOfIsTrivial A).hom (H1π A f) x = f x.toMul := by simp
-
-@[deprecated (since := "2025-05-09")]
-alias H1LequivOfIsTrivial_comp_H1_π_apply_apply := H1IsoOfIsTrivial_H1π_apply_apply
-
-theorem H1IsoOfIsTrivial_inv_apply (f : Additive G →+ A) :
-    (H1IsoOfIsTrivial A).inv f = H1π A ((oneCocyclesIsoOfIsTrivial A).inv f) := rfl
-
-@[deprecated (since := "2025-05-09")]
-alias H1LequivOfIsTrivial_symm_apply := H1IsoOfIsTrivial_inv_apply
-
-end IsTrivial
-end H1
-section H2
-
-/-- We define the 2nd group cohomology of a `k`-linear `G`-representation `A`, `H²(G, A)`, to be
-2-cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo 2-coboundaries
-(i.e. `B²(G, A) := Im(d¹: Fun(G, A) → Fun(G², A))`). -/
-abbrev H2 := (shortComplexH2 A).moduleCatLeftHomologyData.H
-
-/-- The quotient map `Z²(G, A) → H²(G, A).` -/
-abbrev H2π : ModuleCat.of k (twoCocycles A) ⟶ H2 A :=
-  (shortComplexH2 A).moduleCatLeftHomologyData.π
-
-variable {A} in
-lemma H2π_eq_zero_iff (x : twoCocycles A) : H2π A x = 0 ↔ ⇑x ∈ twoCoboundaries A := by
-  show (LinearMap.range ((dOne A).hom.codRestrict (twoCocycles A) _)).mkQ _ = 0 ↔ _
-  simp [LinearMap.range_codRestrict, twoCoboundaries]
-
-@[elab_as_elim]
-theorem H2_induction_on {C : H2 A → Prop}
-    (h : ∀ x : twoCocycles A, C (Submodule.Quotient.mk x)) (x : H2 A) :
-    C x := Quotient.inductionOn' x h
-
-variable [DecidableEq G]
-
 /-- The 2nd group cohomology of `A`, defined as the 2nd cohomology of the complex of inhomogeneous
 cochains, is isomorphic to `twoCocycles A ⧸ twoCoboundaries A`, which is a simpler type. -/
 def isoH2 : groupCohomology A 2 ≅ H2 A :=
@@ -1056,5 +1031,7 @@ lemma π_comp_isoH2_hom  :
   simp [isoH2, isoTwoCocycles, π, HomologicalComplex.homologyπ, leftHomologyπ]
 
 end H2
-end Cohomology
+
+end groupCohomologyIso
+
 end groupCohomology

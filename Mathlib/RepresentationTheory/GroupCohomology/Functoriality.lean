@@ -240,12 +240,9 @@ instance mono_H0Map_of_mono {A B : Rep k G} (f : A ⟶ B) [Mono f] :
 
 variable [DecidableEq G] [DecidableEq H] in
 @[reassoc (attr := simp), elementwise (attr := simp)]
-theorem cocyclesMap_comp_zeroCocyclesIso_hom :
-    cocyclesMap f φ 0 ≫ (zeroCocyclesIso B).hom = (zeroCocyclesIso A).hom ≫ H0Map f φ := by
+theorem cocyclesMap_comp_isoZeroCocycles_hom :
+    cocyclesMap f φ 0 ≫ (isoZeroCocycles B).hom = (isoZeroCocycles A).hom ≫ H0Map f φ := by
   simp [← cancel_mono (shortComplexH0 B).f]
-
-@[deprecated (since := "2025-06-11")]
-alias cocyclesMap_comp_isoZeroCocycles_hom := cocyclesMap_comp_zeroCocyclesIso_hom
 
 variable [DecidableEq G] [DecidableEq H] in
 @[reassoc (attr := simp), elementwise (attr := simp)]
