@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.GroupWithZero.Bounds
 import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Topology.MetricSpace.Sequences
+import Mathlib.Topology.UnitInterval
 
 /-!
 # smoothingSeminorm
@@ -461,7 +462,7 @@ theorem isNonarchimedean_smoothingFun (hμ1 : μ 1 ≤ 1) (hna : IsNonarchimedea
       limsup (fun n : ℕ => μ (x ^ mu (ψ n)) ^ (1 / (ψ n : ℝ)) * μ (y ^ nu (ψ n)) ^ (1 / (ψ n : ℝ)))
         atTop ≤ limsup (fun n : ℕ => μ (x ^ mu (ψ n)) ^ (1 / (ψ n : ℝ))) atTop *
           limsup (fun n : ℕ => μ (y ^ nu (ψ n)) ^ (1 / (ψ n : ℝ))) atTop :=
-      limsup_mul_le (Eventually.of_forall (fun n => rpow_nonneg (apply_nonneg _ _) _))
+      limsup_mul_le (Frequently.of_forall (fun n => rpow_nonneg (apply_nonneg _ _) _))
         (μ_bddAbove μ hμ1 hmu_le x ψ).isBoundedUnder_of_range
         (Eventually.of_forall (fun n => rpow_nonneg (apply_nonneg _ _) _))
         (μ_bddAbove μ hμ1 hnu_le y ψ).isBoundedUnder_of_range

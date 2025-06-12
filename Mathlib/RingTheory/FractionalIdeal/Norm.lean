@@ -18,13 +18,13 @@ ideal of `R` and `I.den` an element of `R⁰` such that `I.den • I = I.num`.
 
 ## Main definitions and results
 
- * `FractionalIdeal.absNorm`: the norm as a zero preserving morphism with values in `ℚ`.
- * `FractionalIdeal.absNorm_eq'`: the value of the norm does not depend on the choice of
-   `I.num` and `I.den`.
- * `FractionalIdeal.abs_det_basis_change`: the norm is given by the determinant
-    of the basis change matrix.
- * `FractionalIdeal.absNorm_span_singleton`: the norm of a principal fractional ideal is the
-   norm of its generator
+* `FractionalIdeal.absNorm`: the norm as a zero preserving morphism with values in `ℚ`.
+* `FractionalIdeal.absNorm_eq'`: the value of the norm does not depend on the choice of
+  `I.num` and `I.den`.
+* `FractionalIdeal.abs_det_basis_change`: the norm is given by the determinant
+  of the basis change matrix.
+* `FractionalIdeal.absNorm_span_singleton`: the norm of a principal fractional ideal is the
+  norm of its generator
 -/
 
 namespace FractionalIdeal
@@ -56,17 +56,14 @@ on (integral) ideals. -/
 noncomputable def absNorm : FractionalIdeal R⁰ K →*₀ ℚ where
   toFun I := (Ideal.absNorm I.num : ℚ) / |Algebra.norm ℤ (I.den : R)|
   map_zero' := by
-    dsimp only
     rw [num_zero_eq, Submodule.zero_eq_bot, Ideal.absNorm_bot, Nat.cast_zero, zero_div]
     exact IsFractionRing.injective R K
   map_one' := by
-    dsimp only
     rw [absNorm_div_norm_eq_absNorm_div_norm 1 ⊤ (by simp [Submodule.one_eq_range]),
       Ideal.absNorm_top, Nat.cast_one, OneMemClass.coe_one, map_one, abs_one,
       Int.cast_one,
       one_div_one]
   map_mul' I J := by
-    dsimp only
     rw [absNorm_div_norm_eq_absNorm_div_norm (I.den * J.den) (I.num * J.num) (by
         have : Algebra.linearMap R K = (IsScalarTower.toAlgHom R R K).toLinearMap := rfl
         rw [coe_mul, this, Submodule.map_mul, ← this, ← den_mul_self_eq_num, ← den_mul_self_eq_num]
@@ -91,7 +88,7 @@ theorem absNorm_one : absNorm (1 : FractionalIdeal R⁰ K) = 1 := by convert abs
 
 theorem absNorm_eq_zero_iff [NoZeroDivisors K] {I : FractionalIdeal R⁰ K} :
     absNorm I = 0 ↔ I = 0 := by
-  refine ⟨fun h ↦ zero_of_num_eq_bot zero_not_mem_nonZeroDivisors ?_, fun h ↦ h ▸ absNorm_bot⟩
+  refine ⟨fun h ↦ zero_of_num_eq_bot zero_notMem_nonZeroDivisors ?_, fun h ↦ h ▸ absNorm_bot⟩
   rw [absNorm_eq, div_eq_zero_iff] at h
   refine Ideal.absNorm_eq_zero_iff.mp <| Nat.cast_eq_zero.mp <| h.resolve_right ?_
   simp [Algebra.norm_eq_zero_iff]

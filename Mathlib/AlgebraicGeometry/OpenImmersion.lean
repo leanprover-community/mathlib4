@@ -75,9 +75,6 @@ variable {X Y : Scheme.{u}} (f : Scheme.Hom X Y) [H : IsOpenImmersion f]
 theorem isOpenEmbedding : IsOpenEmbedding f.base :=
   H.base_open
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding := isOpenEmbedding
-
 /-- The image of an open immersion as an open set. -/
 @[simps]
 def opensRange : Y.Opens :=
@@ -418,9 +415,9 @@ theorem _root_.AlgebraicGeometry.isIso_iff_stalk_iso {X Y : Scheme.{u}} (f : X �
     convert_to
       IsIso
         (TopCat.isoOfHomeo
-            (Homeomorph.homeomorphOfContinuousOpen
-              (.ofBijective _ ⟨h₂.injective, (TopCat.epi_iff_surjective _).mp h₁⟩) h₂.continuous
-              h₂.isOpenMap)).hom
+          (Equiv.toHomeomorphOfContinuousOpen
+            (.ofBijective _ ⟨h₂.injective, (TopCat.epi_iff_surjective _).mp h₁⟩) h₂.continuous
+            h₂.isOpenMap)).hom
     infer_instance
   · intro H; exact ⟨inferInstance, (TopCat.homeoOfIso (asIso f.base)).isOpenEmbedding⟩
 
@@ -585,7 +582,7 @@ commutes with these maps.
 def lift (H' : Set.range g.base ⊆ Set.range f.base) : Y ⟶ X :=
   ⟨LocallyRingedSpace.IsOpenImmersion.lift f.toLRSHom g.toLRSHom H'⟩
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 theorem lift_fac (H' : Set.range g.base ⊆ Set.range f.base) : lift f g H' ≫ f = g :=
   Scheme.Hom.ext' <| LocallyRingedSpace.IsOpenImmersion.lift_fac f.toLRSHom g.toLRSHom H'
 
@@ -594,6 +591,14 @@ theorem lift_uniq (H' : Set.range g.base ⊆ Set.range f.base) (l : Y ⟶ X) (hl
   Scheme.Hom.ext' <| LocallyRingedSpace.IsOpenImmersion.lift_uniq
     f.toLRSHom g.toLRSHom H' l.toLRSHom congr(($hl).toLRSHom)
 
+theorem isPullback_lift_id
+    {X U Y : Scheme.{u}} (f : X ⟶ Y) (g : U ⟶ Y) [IsOpenImmersion g]
+    (H : Set.range f.base ⊆ Set.range g.base) :
+    IsPullback (IsOpenImmersion.lift g f H) (𝟙 _) g f := by
+  convert IsPullback.of_id_snd.paste_horiz (IsKernelPair.id_of_mono g)
+  · exact (Category.comp_id _).symm
+  · simp
+
 /-- Two open immersions with equal range are isomorphic. -/
 def isoOfRangeEq [IsOpenImmersion g] (e : Set.range f.base = Set.range g.base) : X ≅ Y where
   hom := lift g f (le_of_eq e)
@@ -601,13 +606,13 @@ def isoOfRangeEq [IsOpenImmersion g] (e : Set.range f.base = Set.range g.base) :
   hom_inv_id := by rw [← cancel_mono f]; simp
   inv_hom_id := by rw [← cancel_mono g]; simp
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 lemma isoOfRangeEq_hom_fac {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z)
     [IsOpenImmersion f] [IsOpenImmersion g] (e : Set.range f.base = Set.range g.base) :
     (isoOfRangeEq f g e).hom ≫ g = f :=
   lift_fac _ _ (le_of_eq e)
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 lemma isoOfRangeEq_inv_fac {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z)
     [IsOpenImmersion f] [IsOpenImmersion g] (e : Set.range f.base = Set.range g.base) :
     (isoOfRangeEq f g e).inv ≫ f = g :=

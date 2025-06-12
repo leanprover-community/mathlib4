@@ -87,7 +87,8 @@ lemma enorm_eq_nnnorm (x : E) : ‖x‖ₑ = ‖x‖₊ := rfl
 @[simp, norm_cast] lemma coe_lt_enorm : r < ‖x‖ₑ ↔ r < ‖x‖₊ := by simp [enorm]
 @[simp, norm_cast] lemma enorm_lt_coe : ‖x‖ₑ < r ↔ ‖x‖₊ < r := by simp [enorm]
 
-@[simp] lemma enorm_ne_top : ‖x‖ₑ ≠ ∞ := by simp [enorm]
+@[aesop (rule_sets := [finiteness]) safe apply, simp]
+lemma enorm_ne_top : ‖x‖ₑ ≠ ∞ := by simp [enorm]
 @[simp] lemma enorm_lt_top : ‖x‖ₑ < ∞ := by simp [enorm]
 
 end ENorm
@@ -852,6 +853,13 @@ section ENorm
 lemma enorm_one' {E : Type*} [TopologicalSpace E] [ENormedMonoid E] : ‖(1 : E)‖ₑ = 0 := by
   rw [ENormedMonoid.enorm_eq_zero]
 
+@[to_additive exists_enorm_lt]
+lemma exists_enorm_lt' (E : Type*) [TopologicalSpace E] [ENormedMonoid E]
+    [hbot : NeBot (𝓝[≠] (1 : E))] {c : ℝ≥0∞} (hc : c ≠ 0) : ∃ x ≠ (1 : E), ‖x‖ₑ < c :=
+  frequently_iff_neBot.mpr hbot |>.and_eventually
+    (ContinuousENorm.continuous_enorm.tendsto' 1 0 (by simp) |>.eventually_lt_const hc.bot_lt)
+    |>.exists
+
 @[to_additive (attr := simp) enorm_neg]
 lemma enorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [enorm]
 
@@ -932,6 +940,11 @@ lemma enorm_pos' {a : E} : 0 < ‖a‖ₑ ↔ a ≠ 1 :=
   pos_iff_ne_zero.trans enorm_ne_zero'
 
 end ENormedMonoid
+
+instance : ENormedAddCommMonoid ℝ≥0∞ where
+  continuous_enorm := continuous_id
+  enorm_eq_zero := by simp
+  enorm_add_le := by simp
 
 open Set in
 @[to_additive]
@@ -1043,6 +1056,9 @@ theorem nnnorm_of_nonneg (hr : 0 ≤ r) : ‖r‖₊ = ⟨r, hr⟩ :=
 lemma enorm_of_nonneg (hr : 0 ≤ r) : ‖r‖ₑ = .ofReal r := by
   simp [enorm, nnnorm_of_nonneg hr, ENNReal.ofReal, toNNReal, hr]
 
+lemma enorm_ofReal_of_nonneg {a : ℝ} (ha : 0 ≤ a) : ‖ENNReal.ofReal a‖ₑ = ‖a‖ₑ:= by
+  simp [Real.enorm_of_nonneg, ha]
+
 @[simp] lemma nnnorm_abs (r : ℝ) : ‖|r|‖₊ = ‖r‖₊ := by simp [nnnorm]
 @[simp] lemma enorm_abs (r : ℝ) : ‖|r|‖ₑ = ‖r‖ₑ := by simp [enorm]
 
@@ -1081,6 +1097,7 @@ end NNReal
 section SeminormedCommGroup
 
 variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E} {r : ℝ}
+variable {ε : Type*} [TopologicalSpace ε] [ENormedCommMonoid ε]
 
 @[to_additive]
 theorem dist_inv (x y : E) : dist x⁻¹ y = dist x y⁻¹ := by
@@ -1098,9 +1115,21 @@ theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x =
   · exact norm_mul_le' x y
 
 @[bound]
-theorem norm_sum_le {ι E} [SeminormedAddCommGroup E] (s : Finset ι) (f : ι → E) :
+theorem enorm_sum_le {ε} [TopologicalSpace ε] [ENormedAddCommMonoid ε] (s : Finset ι) (f : ι → ε) :
+    ‖∑ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ :=
+  s.le_sum_of_subadditive enorm enorm_zero enorm_add_le f
+
+@[bound]
+theorem norm_sum_le {E} [SeminormedAddCommGroup E] (s : Finset ι) (f : ι → E) :
     ‖∑ i ∈ s, f i‖ ≤ ∑ i ∈ s, ‖f i‖ :=
   s.le_sum_of_subadditive norm norm_zero norm_add_le f
+
+@[to_additive existing]
+theorem enorm_prod_le (s : Finset ι) (f : ι → ε) : ‖∏ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ := by
+  rw [← Multiplicative.ofAdd_le, ofAdd_sum]
+  refine Finset.le_prod_of_submultiplicative (Multiplicative.ofAdd ∘ enorm) ?_ (fun x y => ?_) _ _
+  · simp
+  · exact enorm_mul_le' x y
 
 @[to_additive existing]
 theorem norm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ i ∈ s, f i‖ ≤ ∑ i ∈ s, ‖f i‖ := by
@@ -1108,6 +1137,11 @@ theorem norm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ i ∈ s, f i‖ ≤
   refine Finset.le_prod_of_submultiplicative (Multiplicative.ofAdd ∘ norm) ?_ (fun x y => ?_) _ _
   · simp only [comp_apply, norm_one', ofAdd_zero]
   · exact norm_mul_le' x y
+
+@[to_additive]
+theorem enorm_prod_le_of_le (s : Finset ι) {f : ι → ε} {n : ι → ℝ≥0∞} (h : ∀ b ∈ s, ‖f b‖ₑ ≤ n b) :
+    ‖∏ b ∈ s, f b‖ₑ ≤ ∑ b ∈ s, n b :=
+  (enorm_prod_le s f).trans <| Finset.sum_le_sum h
 
 @[to_additive]
 theorem norm_prod_le_of_le (s : Finset ι) {f : ι → E} {n : ι → ℝ} (h : ∀ b ∈ s, ‖f b‖ ≤ n b) :

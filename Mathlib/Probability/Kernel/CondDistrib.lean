@@ -139,7 +139,7 @@ theorem condDistrib_ae_eq_of_measure_eq_compProd (hX : Measurable X) (hY : Measu
 section Integrability
 
 theorem integrable_toReal_condDistrib (hX : AEMeasurable X μ) (hs : MeasurableSet s) :
-    Integrable (fun a => (condDistrib Y X μ (X a) s).toReal) μ := by
+    Integrable (fun a => (condDistrib Y X μ (X a)).real s) μ := by
   refine integrable_toReal_of_lintegral_ne_top ?_ ?_
   · exact Measurable.comp_aemeasurable (Kernel.measurable_coe _ hs) hX
   · refine ne_of_lt ?_
@@ -212,15 +212,17 @@ theorem setLIntegral_condDistrib_of_measurableSet (hX : Measurable X) (hY : AEMe
 /-- For almost every `a : α`, the `condDistrib Y X μ` kernel applied to `X a` and a measurable set
 `s` is equal to the conditional expectation of the indicator of `Y ⁻¹' s`. -/
 theorem condDistrib_ae_eq_condExp (hX : Measurable X) (hY : Measurable Y) (hs : MeasurableSet s) :
-    (fun a => (condDistrib Y X μ (X a) s).toReal) =ᵐ[μ] μ⟦Y ⁻¹' s|mβ.comap X⟧ := by
+    (fun a => (condDistrib Y X μ (X a)).real s) =ᵐ[μ] μ⟦Y ⁻¹' s|mβ.comap X⟧ := by
   refine ae_eq_condExp_of_forall_setIntegral_eq hX.comap_le ?_ ?_ ?_ ?_
   · exact (integrable_const _).indicator (hY hs)
   · exact fun t _ _ => (integrable_toReal_condDistrib hX.aemeasurable hs).integrableOn
   · intro t ht _
+    simp_rw [measureReal_def]
     rw [integral_toReal ((measurable_condDistrib hs).mono hX.comap_le le_rfl).aemeasurable
       (Eventually.of_forall fun ω => measure_lt_top (condDistrib Y X μ (X ω)) _),
-      integral_indicator_const _ (hY hs), Measure.restrict_apply (hY hs), smul_eq_mul, mul_one,
-      inter_comm, setLIntegral_condDistrib_of_measurableSet hX hY.aemeasurable hs ht]
+      integral_indicator_const _ (hY hs), measureReal_restrict_apply (hY hs), smul_eq_mul, mul_one,
+      inter_comm, setLIntegral_condDistrib_of_measurableSet hX hY.aemeasurable hs ht,
+      measureReal_def]
   · exact (measurable_condDistrib hs).ennreal_toReal.aestronglyMeasurable
 
 @[deprecated (since := "2025-01-21")] alias condDistrib_ae_eq_condexp := condDistrib_ae_eq_condExp

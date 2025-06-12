@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.Algebra.Group.ULift
-import Mathlib.Algebra.Group.Subgroup.Pointwise
+import Mathlib.Algebra.GroupWithZero.Subgroup
 import Mathlib.Algebra.Module.NatInt
 import Mathlib.GroupTheory.QuotientGroup.Defs
 import Mathlib.Tactic.NormNum.Eq
