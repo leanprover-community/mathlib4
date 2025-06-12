@@ -47,7 +47,7 @@ abbrev Flag.labels_in {α ι : Type*} (F : Flag α ι) (t : Set α) : Prop := �
 
 /--
 Given a flag `F = (G, θ)` and set `t ⊆ V(G)` containing `im(θ)` `F.induce t`
-is the flag induced by `t` with the same labels_eq.
+is the flag induced by `t` with the same labels_eq. i,e, `⟨G[t], θ∣ₜ⟩`
 -/
 def Flag.induce {α ι : Type*} (F : Flag α ι) (t : Set α) (ht : F ⊆ₗt) : Flag t ι :=
   ⟨F.G.induce t, ⟨fun i ↦ ⟨F.θ i, ht i⟩, fun h ↦ by simp_all⟩⟩
@@ -101,6 +101,10 @@ abbrev FlagIso.refl : F₁ ≃f F₁ :=
 /-- The inverse of a flag isomorphism. -/
 abbrev FlagIso.symm  (f : F₁ ≃f F₂) : F₂ ≃f F₁ :=
   ⟨RelIso.symm f.toRelIso, by ext; simp [f.labels_eq]⟩
+
+/-- Composition of flag isomorphisms. -/
+abbrev FlagIso.trans  (f₁₂ : F₁ ≃f F₂) (f₂₃ : F₂ ≃f F₃) : F₁ ≃f F₃ :=
+  ⟨f₁₂.toRelIso.trans f₂₃.toRelIso, by ext; simp [f₁₂.labels_eq, f₂₃.labels_eq]⟩
 
 /-- Composition of flag embeddings. -/
 abbrev FlagEmbedding.trans (f₁₂ : F₁ ↪f F₂) (f₂₃ : F₂ ↪f F₃) : F₁ ↪f F₃ :=
