@@ -41,7 +41,7 @@ variable [CommGroup G] [LinearOrder G] [IsOrderedMonoid G] {a b c : G}
   · simp [ha.le, hb.le, mabs_of_le_one, mul_le_one', mul_comm]
   have : (|a * b|ₘ = a⁻¹ * b ↔ b ≤ 1) ↔
     (|a * b|ₘ = |a|ₘ * |b|ₘ ↔ 1 ≤ a ∧ 1 ≤ b ∨ a ≤ 1 ∧ b ≤ 1) := by
-    simp [ha.le, ha.not_le, hb, mabs_of_le_one, mabs_of_one_le]
+    simp [ha.le, ha.not_ge, hb, mabs_of_le_one, mabs_of_one_le]
   refine this.mp ⟨fun h ↦ ?_, fun h ↦ by simp only [h.antisymm hb, mabs_of_lt_one ha, mul_one]⟩
   obtain ab | ab := le_or_gt (a * b) 1
   · refine (eq_one_of_inv_eq' ?_).le
@@ -197,7 +197,7 @@ theorem eq_of_mabs_div_le_one (h : |a / b|ₘ ≤ 1) : a = b :=
 
 @[to_additive]
 lemma eq_of_mabs_div_lt_all {x y : G} (h : ∀ ε > 1, |x / y|ₘ < ε) : x = y :=
-  eq_of_mabs_div_le_one <| forall_lt_iff_le'.mp h
+  eq_of_mabs_div_le_one <| le_of_forall_gt h
 
 @[to_additive]
 lemma eq_of_mabs_div_le_all [DenselyOrdered G] {x y : G} (h : ∀ ε > 1, |x / y|ₘ ≤ ε) : x = y :=

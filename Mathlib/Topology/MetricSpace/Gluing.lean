@@ -163,8 +163,8 @@ theorem Sum.mem_uniformity_iff_glueDist (hε : 0 < ε) (s : Set ((X ⊕ Y) × (X
     refine ⟨min (min δX δY) ε, lt_min (lt_min δX0 δY0) hε, ?_⟩
     rintro (a | a) (b | b) h <;> simp only [lt_min_iff] at h
     · exact hX h.1.1
-    · exact absurd h.2 (le_glueDist_inl_inr _ _ _ _ _).not_lt
-    · exact absurd h.2 (le_glueDist_inr_inl _ _ _ _ _).not_lt
+    · exact absurd h.2 (le_glueDist_inl_inr _ _ _ _ _).not_gt
+    · exact absurd h.2 (le_glueDist_inr_inl _ _ _ _ _).not_gt
     · exact hY h.1.2
   · rintro ⟨ε, ε0, H⟩
     constructor <;> exact ⟨ε, ε0, fun _ _ h => H _ _ h⟩
