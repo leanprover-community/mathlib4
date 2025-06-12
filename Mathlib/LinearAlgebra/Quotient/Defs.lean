@@ -15,10 +15,10 @@ import Mathlib.GroupTheory.QuotientGroup.Defs
 
 ## Main definitions
 
- * `Submodule.Quotient.mk`: a function sending an element of `M` to `M ⧸ p`
- * `Submodule.Quotient.module`: `M ⧸ p` is a module
- * `Submodule.Quotient.mkQ`: a linear map sending an element of `M` to `M ⧸ p`
- * `Submodule.quotEquivOfEq`: if `p` and `p'` are equal, their quotients are equivalent
+* `Submodule.Quotient.mk`: a function sending an element of `M` to `M ⧸ p`
+* `Submodule.Quotient.module`: `M ⧸ p` is a module
+* `Submodule.Quotient.mkQ`: a linear map sending an element of `M` to `M ⧸ p`
+* `Submodule.quotEquivOfEq`: if `p` and `p'` are equal, their quotients are equivalent
 
 -/
 

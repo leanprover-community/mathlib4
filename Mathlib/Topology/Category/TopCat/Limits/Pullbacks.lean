@@ -337,7 +337,7 @@ theorem fst_iso_of_right_embedding_range_subset {X Y S : TopCat} (f : X ⟶ S) {
     (hg : IsEmbedding g) (H : Set.range f ⊆ Set.range g) :
     IsIso (pullback.fst f g) := by
   let esto : (pullback f g : TopCat) ≃ₜ X :=
-    (Homeomorph.ofIsEmbedding _ (fst_isEmbedding_of_right f hg)).trans
+    (fst_isEmbedding_of_right f hg).toHomeomorph.trans
       { toFun := Subtype.val
         invFun := fun x =>
           ⟨x, by
@@ -350,7 +350,7 @@ theorem fst_iso_of_right_embedding_range_subset {X Y S : TopCat} (f : X ⟶ S) {
 theorem snd_iso_of_left_embedding_range_subset {X Y S : TopCat} {f : X ⟶ S} (hf : IsEmbedding f)
     (g : Y ⟶ S) (H : Set.range g ⊆ Set.range f) : IsIso (pullback.snd f g) := by
   let esto : (pullback f g : TopCat) ≃ₜ Y :=
-    (Homeomorph.ofIsEmbedding _ (snd_isEmbedding_of_left hf g)).trans
+    (snd_isEmbedding_of_left hf g).toHomeomorph.trans
       { toFun := Subtype.val
         invFun := fun x =>
           ⟨x, by
