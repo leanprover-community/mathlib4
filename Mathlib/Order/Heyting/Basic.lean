@@ -129,7 +129,7 @@ end Pi
 /-- A generalized Heyting algebra is a lattice with an additional binary operation `⇨` called
 Heyting implication such that `(a ⇨ ·)` is right adjoint to `(a ⊓ ·)`.
 
- This generalizes `HeytingAlgebra` by not requiring a bottom element. -/
+This generalizes `HeytingAlgebra` by not requiring a bottom element. -/
 class GeneralizedHeytingAlgebra (α : Type*) extends Lattice α, OrderTop α, HImp α where
   /-- `(a ⇨ ·)` is right adjoint to `(a ⊓ ·)` -/
   le_himp_iff (a b c : α) : a ≤ b ⇨ c ↔ a ⊓ b ≤ c

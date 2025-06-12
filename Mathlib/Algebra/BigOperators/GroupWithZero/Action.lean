@@ -130,6 +130,6 @@ theorem prod_smul
     ∏ i ∈ s, b i • f i = (∏ i ∈ s, b i) • ∏ i ∈ s, f i := by
   induction s using Finset.cons_induction_on with
   | empty =>  simp
-  | cons hj ih => rw [prod_cons, ih, smul_mul_smul_comm, ← prod_cons hj, ← prod_cons hj]
+  | cons _ _ hj ih => rw [prod_cons, ih, smul_mul_smul_comm, ← prod_cons hj, ← prod_cons hj]
 
 end Finset

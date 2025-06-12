@@ -144,6 +144,9 @@ theorem withDensity_absolutelyContinuous {m : MeasurableSpace α} (μ : Measure 
   rw [withDensity_apply _ hs₁]
   exact setLIntegral_measure_zero _ _ hs₂
 
+instance noAtoms_withDensity [NoAtoms μ] (f : α → ℝ≥0∞) : NoAtoms (μ.withDensity f) where
+  measure_singleton _ := withDensity_absolutelyContinuous μ f (measure_singleton _)
+
 @[simp]
 theorem withDensity_zero : μ.withDensity 0 = 0 := by
   ext1 s hs
@@ -316,7 +319,7 @@ theorem aemeasurable_withDensity_ennreal_iff' {f : α → ℝ≥0}
       rw [ha this]
     · rw [ae_restrict_iff' A.compl]
       filter_upwards [hf'_ae] with a ha ha_null
-      have ha_null : f' a = 0 := Function.nmem_support.mp ha_null
+      have ha_null : f' a = 0 := Function.notMem_support.mp ha_null
       rw [ha_null] at ha ⊢
       rw [ha]
       simp only [ENNReal.coe_zero, zero_mul]
@@ -672,6 +675,14 @@ theorem prod_withDensity₀ {f : α → ℝ≥0∞} {g : β → ℝ≥0∞}
 theorem prod_withDensity {f : α → ℝ≥0∞} {g : β → ℝ≥0∞} (hf : Measurable f) (hg : Measurable g) :
     (μ.withDensity f).prod (ν.withDensity g) = (μ.prod ν).withDensity (fun z ↦ f z.1 * g z.2) :=
   prod_withDensity₀ hf.aemeasurable hg.aemeasurable
+
+-- `prod_smul_left` is in the `Prod` file. This lemma is here because this is the file in which
+-- we prove the instance that gives `SFinite (c • ν)`.
+lemma Measure.prod_smul_right (c : ℝ≥0∞) : μ.prod (c • ν) = c • (μ.prod ν) := by
+  ext s hs
+  simp_rw [Measure.prod_apply hs, Measure.smul_apply, Measure.prod_apply hs, smul_eq_mul]
+  rw [lintegral_const_mul]
+  exact measurable_measure_prodMk_left hs
 
 end Prod
 

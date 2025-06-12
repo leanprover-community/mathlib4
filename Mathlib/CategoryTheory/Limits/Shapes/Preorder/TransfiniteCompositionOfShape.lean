@@ -110,7 +110,7 @@ noncomputable def map (F : C ⥤ D) [PreservesWellOrderContinuousOfShape J F]
 /-- A transfinite composition of shape `J` induces a transfinite composition
 of shape `Set.Iic j` for any `j : J`. -/
 @[simps]
-def iic (j : J) :
+noncomputable def iic (j : J) :
     TransfiniteCompositionOfShape (Set.Iic j) (c.F.map (homOfLE bot_le : ⊥ ⟶ j)) where
   F := (Set.initialSegIic j).monotone.functor ⋙ c.F
   isoBot := Iso.refl _

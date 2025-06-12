@@ -263,7 +263,7 @@ instance Prod.instNeBotNhdsWithinIio [Preorder X] [Preorder Y] {x : X × Y}
   exact nhdsWithin_mono _ fun _ ⟨h₁, h₂⟩ ↦ Prod.lt_iff.2 <| .inl ⟨h₁, h₂.le⟩
 
 instance Prod.instNeBotNhdsWithinIoi [Preorder X] [Preorder Y] {x : X × Y}
-    [hx₁: (𝓝[>] x.1).NeBot] [hx₂ : (𝓝[>] x.2).NeBot] : (𝓝[>] x).NeBot := by
+    [hx₁ : (𝓝[>] x.1).NeBot] [hx₂ : (𝓝[>] x.2).NeBot] : (𝓝[>] x).NeBot := by
   refine (hx₁.prod hx₂).mono ?_
   rw [← nhdsWithin_prod_eq]
   exact nhdsWithin_mono _ fun _ ⟨h₁, h₂⟩ ↦ Prod.lt_iff.2 <| .inl ⟨h₁, h₂.le⟩
@@ -587,6 +587,12 @@ lemma Topology.isInducing_prod_const {y : Y} {f : X → Z} :
 
 @[deprecated (since := "2024-10-28")] alias inducing_prod_const := isInducing_prod_const
 
+lemma isInducing_prodMkLeft (y : Y) : IsInducing (fun x : X ↦ (x, y)) :=
+  .of_comp (.prodMk_left y) continuous_fst .id
+
+lemma isInducing_prodMkRight (x : X) : IsInducing (Prod.mk x : Y → X × Y) :=
+  .of_comp (.prodMk_right x) continuous_snd .id
+
 lemma Topology.IsEmbedding.prodMap {f : X → Y} {g : Z → W} (hf : IsEmbedding f)
     (hg : IsEmbedding g) : IsEmbedding (Prod.map f g) where
   toIsInducing := hf.isInducing.prodMap hg.isInducing
@@ -609,11 +615,14 @@ lemma isEmbedding_graph {f : X → Y} (hf : Continuous f) : IsEmbedding fun x =>
 @[deprecated (since := "2024-10-26")]
 alias embedding_graph := isEmbedding_graph
 
-lemma isEmbedding_prodMk (x : X) : IsEmbedding (Prod.mk x : Y → X × Y) :=
+lemma isEmbedding_prodMkLeft (y : Y) : IsEmbedding (fun x : X ↦ (x, y)) :=
+  .of_comp (.prodMk_left y) continuous_fst .id
+
+lemma isEmbedding_prodMkRight (x : X) : IsEmbedding (Prod.mk x : Y → X × Y) :=
   .of_comp (.prodMk_right x) continuous_snd .id
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_prod_mk := isEmbedding_prodMk
+@[deprecated (since := "2025-06-12")] alias isEmbedding_prodMk := isEmbedding_prodMkRight
+@[deprecated (since := "2024-10-26")] alias embedding_prod_mk := isEmbedding_prodMkRight
 
 theorem IsOpenQuotientMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenQuotientMap f)
     (hg : IsOpenQuotientMap g) : IsOpenQuotientMap (Prod.map f g) :=
@@ -965,7 +974,7 @@ variable {W X Y Z}
 @[simps!]
 def sumProdDistrib : (X ⊕ Y) × Z ≃ₜ (X × Z) ⊕ (Y × Z) :=
   Homeomorph.symm <|
-    homeomorphOfContinuousOpen (Equiv.sumProdDistrib X Y Z).symm
+    (Equiv.sumProdDistrib X Y Z).symm.toHomeomorphOfContinuousOpen
         ((continuous_inl.prodMap continuous_id).sumElim
           (continuous_inr.prodMap continuous_id)) <|
       (isOpenMap_inl.prodMap IsOpenMap.id).sumElim (isOpenMap_inr.prodMap IsOpenMap.id)
