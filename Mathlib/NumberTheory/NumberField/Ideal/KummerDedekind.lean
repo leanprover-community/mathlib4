@@ -47,7 +47,7 @@ theorem exponent_eq_one_iff :
 theorem not_dvd_exponent_iff {p : ℕ} [Fact (Nat.Prime p)] :
     ¬ p ∣ exponent θ ↔ comap (algebraMap ℤ (𝓞 K)) (conductor ℤ θ) ⊔ span {(p : ℤ)} = ⊤ := by
   rw [sup_comm, IsCoatom.sup_eq_top_iff, ← under_def, ← Ideal.dvd_iff_le,
-    Int.ideal_eq_span_absNorm_self (under ℤ (conductor ℤ θ)),
+    ← Int.ideal_span_absNorm_eq_self (under ℤ (conductor ℤ θ)),
     span_singleton_dvd_span_singleton_iff_dvd, Int.natCast_dvd_natCast, exponent]
   exact isMaximal_def.mp <| Int.ideal_span_isMaximal_of_prime p
 
