@@ -547,6 +547,10 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           # Only return if PR is still open
           filterOutClosed: true
+          # We need to pass in the commit that CI is actually running on.
+          # Otherwise, PRs from forks will not see the right metadata.
+          # See also: https://github.com/8BitJonny/gh-get-current-pr/issues/293
+          sha: "${{ github.event.pull_request.head.sha }}"
 
       - if: contains(steps.PR.outputs.pr_labels, 'bench-after-CI')
         name: If `bench-after-CI` is present, add a `!bench` comment.
