@@ -129,7 +129,10 @@ lemma FlagIso.symm_eq {α β ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι}
      : F₁.θ = e.symm.toFun ∘ F₂.θ := by
   ext x; simp [e.labels_eq];
 
-def FlagIso.embeddings_equiv_of_equiv {α α' β β' ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι}
+/--
+Pairs of isomorphic flags have equivalent embeddings
+-/
+def FlagIso.flagEmbeddings_equiv_of_flagIso {α α' β β' ι : Type*} {F₁ : Flag α ι} {F₂ : Flag β ι}
     {F₁' : Flag α' ι} {F₂' : Flag β' ι}  (e₁ : F₁ ≃f F₁') (e₂ : F₂ ≃f F₂') :
     (F₁ ↪f F₂) ≃ (F₁' ↪f F₂') where
   toFun := fun f ↦ (e₁.symm.toEmbedding.trans f).trans e₂.toEmbedding
@@ -137,7 +140,15 @@ def FlagIso.embeddings_equiv_of_equiv {α α' β β' ι : Type*} {F₁ : Flag α
   left_inv := fun _ ↦ by ext; simp
   right_inv := fun _ ↦ by ext; simp
 
-
+/--
+Given a pair of isomorphic flags `F` and `F'` and a pair of isomorphic graphs `H` and `H'`
+and an injective map `θ : ι ↪ β`, the embeddings of `F` in `H` are equivalent to the embeddings
+of `F'` in `(H', e ∘ θ)`.
+-/
+def Iso.flagEmbeddings_equiv {α α' β β' ι : Type*} {F : Flag α ι} {F' : Flag α' ι}
+    {f : F ≃f F'} {H : SimpleGraph β} {H' : SimpleGraph β'} {θ : ι ↪ β} {e :  H ≃g H'} :
+    (F ↪f ⟨H, θ⟩) ≃ (F' ↪f ⟨H', θ.trans (e : β ↪ β')⟩) :=
+  f.flagEmbeddings_equiv_of_flagIso (⟨e, by ext; simp⟩)
 
 /--
 `F` is a `σ`-flag iff the labelled subgraph given by `θ` is `σ`
