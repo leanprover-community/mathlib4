@@ -9,6 +9,19 @@ import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Proper
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.RingTheory.TensorProduct.Basic
 
+/-!
+# Projective space
+
+## Main definitions
+
+- `AlgebraicGeometry.ProjectiveSpace`: `ℙ(n; S)` is the projective `n`-space over `S`.
+- `AlgebraicGeometry.ProjectiveSpace.SpecIso`: `ℙ(n; Spec R) ≅ Proj R[n]`
+- `AlgebraicGeometry.ProjectiveSpace.openCover`: the canonical cover of `ℙ(n; S)` by `n` affine
+  charts. The `i`ᵗʰ chart is `𝔸({k // k ≠ i}; S) ⟶ ℙ(n; S)`, and represents the open set where
+  the function `Xᵢ` does not vanish.
+
+-/
+
 universe v w u
 
 section MOVE
