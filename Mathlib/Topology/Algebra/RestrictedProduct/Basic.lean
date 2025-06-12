@@ -242,22 +242,26 @@ instance [Π i, CommMonoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
     CommMonoid (Πʳ i, [R i, B i]_[𝓕]) :=
   DFunLike.coe_injective.commMonoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
+instance instZSMul [Π i, SubNegMonoid (R i)] [∀ i, AddSubgroupClass (S i) (R i)] :
+    SMul ℤ (Πʳ i, [R i, B i]_[𝓕]) where
+  smul n x := ⟨fun i ↦ n • x i, x.2.mono fun _ hi ↦ zsmul_mem hi n⟩
+
+@[to_additive existing instZSMul]
 instance [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)] :
     Pow (Πʳ i, [R i, B i]_[𝓕]) ℤ where
   pow x n := ⟨fun i ↦ x i ^ n, x.2.mono fun _ hi ↦ zpow_mem hi n⟩
 
+@[to_additive]
 lemma zpow_apply [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)]
     (x : Πʳ i, [R i, B i]_[𝓕]) (n : ℤ) (i : ι) : (x ^ n) i = x i ^ n :=
   rfl
 
+@[to_additive]
 instance [Π i, AddMonoidWithOne (R i)] [∀ i, AddSubmonoidWithOneClass (S i) (R i)] :
     NatCast (Πʳ i, [R i, B i]_[𝓕]) where
   natCast n := ⟨fun _ ↦ n, .of_forall fun _ ↦ natCast_mem _ n⟩
 
-instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
-    IntCast (Πʳ i, [R i, B i]_[𝓕]) where
-  intCast n := ⟨fun _ ↦ n, .of_forall fun _ ↦ intCast_mem _ n⟩
-
+@[to_additive]
 instance [Π i, AddGroup (R i)] [∀ i, AddSubgroupClass (S i) (R i)] :
     AddGroup (Πʳ i, [R i, B i]_[𝓕]) :=
   haveI : ∀ i, SMulMemClass (S i) ℤ (R i) := fun _ ↦ AddSubgroupClass.zsmulMemClass
@@ -270,6 +274,16 @@ instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] :
     Group (Πʳ i, [R i, B i]_[𝓕]) :=
   DFunLike.coe_injective.group _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+@[to_additive]
+instance [Π i, CommGroup (R i)] [∀ i, SubgroupClass (S i) (R i)] :
+    CommGroup (Πʳ i, [R i, B i]_[𝓕]) :=
+  DFunLike.coe_injective.commGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
+    IntCast (Πʳ i, [R i, B i]_[𝓕]) where
+  intCast n := ⟨fun _ ↦ n, .of_forall fun _ ↦ intCast_mem _ n⟩
 
 instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
     Ring (Πʳ i, [R i, B i]_[𝓕]) :=
