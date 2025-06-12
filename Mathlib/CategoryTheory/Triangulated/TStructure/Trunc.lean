@@ -776,8 +776,8 @@ lemma isLE_iff_isIso_truncLEι_app (n : ℤ) (X : C) :
   · intro
     obtain ⟨e, he⟩ := t.triangle_iso_exists n (n+1) (by linarith) _ _
       (contractible_distinguished X) (t.triangleLEGT_distinguished n X)
-      (Iso.refl X) (by dsimp ; infer_instance)
-      (by dsimp ; infer_instance) (by dsimp ; infer_instance) (by dsimp ; infer_instance)
+      (Iso.refl X) (by dsimp; infer_instance)
+      (by dsimp; infer_instance) (by dsimp; infer_instance) (by dsimp; infer_instance)
     dsimp at he
     have : (truncLEι t n).app X = e.inv.hom₁ := by
       have he' : e.inv.hom₂ = 𝟙 X := by
