@@ -84,8 +84,6 @@ section Injectivity
 
 variable [IsNoetherianRing R] [Module.Finite R N] (I)
 
-open LinearMap
-
 /-- Adic completion preserves injectivity of finite modules over a Noetherian ring. -/
 theorem map_injective {f : M →ₗ[R] N} (hf : Function.Injective f) :
     Function.Injective (map I f) := by

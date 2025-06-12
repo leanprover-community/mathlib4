@@ -267,7 +267,7 @@ lemma Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
   intro a b hab
   obtain ha | ha := le_total 0 a
   · exact pow_lt_pow_left₀ hab ha hn₀
-  obtain hb | hb := lt_or_le 0 b
+  obtain hb | hb := lt_or_ge 0 b
   · exact (hn.pow_nonpos ha).trans_lt (pow_pos hb _)
   obtain ⟨c, hac⟩ := exists_add_of_le ha
   obtain ⟨d, hbd⟩ := exists_add_of_le hb
@@ -281,6 +281,18 @@ lemma Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
     _ = b ^ n + (c ^ n + d ^ n) := by rw [add_left_comm, hn.pow_add_pow_eq_zero hbd.symm, add_zero]
   refine lt_of_add_lt_add_right (a := a + b) ?_
   rwa [add_rotate', ← hbd, add_zero, add_left_comm, ← add_assoc, ← hac, zero_add]
+
+lemma Odd.pow_injective {n : ℕ} (hn : Odd n) : Injective (· ^ n : R → R) :=
+  hn.strictMono_pow.injective
+
+lemma Odd.pow_lt_pow {n : ℕ} (hn : Odd n) {a b : R} : a ^ n < b ^ n ↔ a < b :=
+  hn.strictMono_pow.lt_iff_lt
+
+lemma Odd.pow_le_pow {n : ℕ} (hn : Odd n) {a b : R} : a ^ n ≤ b ^ n ↔ a ≤ b :=
+  hn.strictMono_pow.le_iff_le
+
+lemma Odd.pow_inj {n : ℕ} (hn : Odd n) {a b : R} : a ^ n = b ^ n ↔ a = b :=
+  hn.pow_injective.eq_iff
 
 lemma sq_pos_iff {a : R} : 0 < a ^ 2 ↔ a ≠ 0 := even_two.pow_pos_iff two_ne_zero
 

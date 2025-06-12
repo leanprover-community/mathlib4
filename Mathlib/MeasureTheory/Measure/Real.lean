@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
-import Mathlib.Tactic.Finiteness
 
 /-!
 # Measures as real-valued functions
@@ -144,7 +143,7 @@ theorem measureReal_biUnion_finset_le (s : Finset β) (f : β → Set α) :
   classical
   induction s using Finset.induction_on with
   | empty => simp
-  | insert hx IH =>
+  | insert _ _ hx IH =>
     simp only [hx, Finset.mem_insert, iUnion_iUnion_eq_or_left, not_false_eq_true,
       Finset.sum_insert]
     exact (measureReal_union_le _ _).trans (by gcongr)

@@ -58,7 +58,7 @@ lemma as an `apply` rule, tag it with `@[bound]`.  It will be automatically conv
 Score `0` lemmas turn into `norm apply` rules, and score `0 < s` lemmas turn into `safe apply s`
 rules.  The score is roughly lexicographic ordering on the counts of the three type (guessing,
 general, involving-zero), and tries to minimize the complexity of hypotheses we have to prove.
-See `Mathlib.Tactic.Bound.Attribute` for the full algorithm.
+See `Mathlib/Tactic/Bound/Attribute.lean` for the full algorithm.
 
 To register a lemma as a `forward` rule, tag it with `@[bound_forward]`.  The most important
 builtin forward rule is `le_of_lt`, so that strict inequalities can be used to prove weak
@@ -257,3 +257,9 @@ macro_rules
   | `(tactic| bound%$tk [$[$ts],*]) => do
     let haves ← ts.mapM fun (t : Term) => withRef t `(tactic| have := $t)
     `(tactic| ($haves;*; bound%$tk))
+
+/-!
+We register `bound` with the `hint` tactic.
+-/
+
+register_hint bound

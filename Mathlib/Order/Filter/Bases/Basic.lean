@@ -223,7 +223,7 @@ theorem HasBasis.ex_mem (h : l.HasBasis p s) : ∃ i, p i :=
   (h.mem_iff.mp univ_mem).imp fun _ => And.left
 
 protected theorem HasBasis.nonempty (h : l.HasBasis p s) : Nonempty ι :=
-  nonempty_of_exists h.ex_mem
+  h.ex_mem.nonempty
 
 protected theorem IsBasis.hasBasis (h : IsBasis p s) : HasBasis h.filter p s :=
   ⟨fun t => by simp only [h.mem_filter_iff, exists_prop]⟩
@@ -521,8 +521,11 @@ theorem mem_iff_inf_principal_compl {f : Filter α} {s : Set α} : s ∈ f ↔ f
     ⟨fun h hs => by simpa [Set.not_nonempty_empty] using h s hs, fun hs t ht =>
       inter_compl_nonempty_iff.2 fun hts => hs <| mem_of_superset ht hts⟩
 
-theorem not_mem_iff_inf_principal_compl {f : Filter α} {s : Set α} : s ∉ f ↔ NeBot (f ⊓ 𝓟 sᶜ) :=
+theorem notMem_iff_inf_principal_compl {f : Filter α} {s : Set α} : s ∉ f ↔ NeBot (f ⊓ 𝓟 sᶜ) :=
   (not_congr mem_iff_inf_principal_compl).trans neBot_iff.symm
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_iff_inf_principal_compl := notMem_iff_inf_principal_compl
 
 @[simp]
 theorem disjoint_principal_right {f : Filter α} {s : Set α} : Disjoint f (𝓟 s) ↔ sᶜ ∈ f := by

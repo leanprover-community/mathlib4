@@ -23,7 +23,7 @@ with the applicatives `id` and `comp`
 
 ## References
 
- * Hackage: <https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Bitraversable.html>
+* Hackage: <https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Bitraversable.html>
 
 ## Tags
 

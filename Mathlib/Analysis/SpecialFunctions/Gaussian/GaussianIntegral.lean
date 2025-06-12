@@ -220,7 +220,7 @@ theorem integral_gaussian_sq_complex {b : ℂ} (hb : 0 < b.re) :
 
 theorem integral_gaussian (b : ℝ) : ∫ x : ℝ, exp (-b * x ^ 2) = √(π / b) := by
   -- First we deal with the crazy case where `b ≤ 0`: then both sides vanish.
-  rcases le_or_lt b 0 with (hb | hb)
+  rcases le_or_gt b 0 with (hb | hb)
   · rw [integral_undef, sqrt_eq_zero_of_nonpos]
     · exact div_nonpos_of_nonneg_of_nonpos pi_pos.le hb
     · simpa only [not_lt, integrable_exp_neg_mul_sq_iff] using hb
@@ -316,7 +316,7 @@ theorem integral_gaussian_complex_Ioi {b : ℂ} (hb : 0 < re b) :
 -- The Gaussian integral on the half-line, `∫ x in Ioi 0, exp (-b * x^2)`, for real `b`.
 theorem integral_gaussian_Ioi (b : ℝ) :
     ∫ x in Ioi (0 : ℝ), exp (-b * x ^ 2) = √(π / b) / 2 := by
-  rcases le_or_lt b 0 with (hb | hb)
+  rcases le_or_gt b 0 with (hb | hb)
   · rw [integral_undef, sqrt_eq_zero_of_nonpos, zero_div]
     · exact div_nonpos_of_nonneg_of_nonpos pi_pos.le hb
     · rwa [← IntegrableOn, integrableOn_Ioi_exp_neg_mul_sq_iff, not_lt]
@@ -332,7 +332,7 @@ theorem integral_gaussian_Ioi (b : ℝ) :
 theorem Real.Gamma_one_half_eq : Real.Gamma (1 / 2) = √π := by
   rw [Gamma_eq_integral one_half_pos, ← integral_comp_rpow_Ioi_of_pos zero_lt_two]
   convert congr_arg (fun x : ℝ => 2 * x) (integral_gaussian_Ioi 1) using 1
-  · rw [← integral_mul_left]
+  · rw [← integral_const_mul]
     refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_
     dsimp only
     have : (x ^ (2 : ℝ)) ^ (1 / (2 : ℝ) - 1) = x⁻¹ := by

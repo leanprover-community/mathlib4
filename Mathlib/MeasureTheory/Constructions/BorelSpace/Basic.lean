@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Group.Arithmetic
-import Mathlib.Topology.GDelta.UniformSpace
+import Mathlib.Topology.GDelta.MetrizableSpace
 import Mathlib.Topology.Instances.EReal.Lemmas
 import Mathlib.Topology.Instances.Rat
 
@@ -294,6 +294,10 @@ theorem IsCompact.measure_closure [R1Space γ] {K : Set γ} (hK : IsCompact K) (
 theorem measurableSet_closure : MeasurableSet (closure s) :=
   isClosed_closure.measurableSet
 
+@[measurability]
+theorem measurableSet_frontier : MeasurableSet (frontier s) :=
+  measurableSet_closure.diff measurableSet_interior
+
 theorem measurable_of_isOpen {f : δ → γ} (hf : ∀ s, IsOpen s → MeasurableSet (f ⁻¹' s)) :
     Measurable f := by
   rw [‹BorelSpace γ›.measurable_eq]
@@ -506,11 +510,16 @@ instance (priority := 100) ContinuousInv.measurableInv [Inv γ] [ContinuousInv �
     MeasurableInv γ := ⟨continuous_inv.measurable⟩
 
 @[to_additive]
-instance (priority := 100) ContinuousSMul.measurableSMul {M α} [TopologicalSpace M]
+instance (priority := 100) ContinuousConstSMul.toMeasurableConstSMul {M α} [TopologicalSpace α]
+    [MeasurableSpace α] [BorelSpace α] [SMul M α] [ContinuousConstSMul M α] :
+    MeasurableConstSMul M α where
+  measurable_const_smul _ := (continuous_const_smul _).measurable
+
+@[to_additive]
+instance (priority := 100) ContinuousSMul.toMeasurableSMul {M α} [TopologicalSpace M]
     [TopologicalSpace α] [MeasurableSpace M] [MeasurableSpace α] [OpensMeasurableSpace M]
-    [BorelSpace α] [SMul M α] [ContinuousSMul M α] : MeasurableSMul M α :=
-  ⟨fun _ => (continuous_const_smul _).measurable, fun _ =>
-    (continuous_id.smul continuous_const).measurable⟩
+    [BorelSpace α] [SMul M α] [ContinuousSMul M α] : MeasurableSMul M α where
+  measurable_smul_const _ := (continuous_id.smul continuous_const).measurable
 
 section Homeomorph
 
@@ -582,7 +591,7 @@ end
 
 section BorelSpace
 
-variable [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] [TopologicalSpace β]
+variable [TopologicalSpace α] [mα : MeasurableSpace α] [BorelSpace α] [mβ : TopologicalSpace β]
   [MeasurableSpace β] [BorelSpace β] [TopologicalSpace γ] [MeasurableSpace γ] [BorelSpace γ]
   [MeasurableSpace δ]
 
@@ -629,7 +638,7 @@ instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α]
 protected theorem Topology.IsEmbedding.measurableEmbedding {f : α → β} (h₁ : IsEmbedding f)
     (h₂ : MeasurableSet (range f)) : MeasurableEmbedding f :=
   show MeasurableEmbedding
-      (((↑) : range f → β) ∘ (Homeomorph.ofIsEmbedding f h₁).toMeasurableEquiv) from
+      (((↑) : range f → β) ∘ h₁.toHomeomorph.toMeasurableEquiv) from
     (MeasurableEmbedding.subtype_coe h₂).comp (MeasurableEquiv.measurableEmbedding _)
 
 @[deprecated (since := "2024-10-26")]
@@ -686,5 +695,21 @@ instance EReal.measurableSpace : MeasurableSpace EReal :=
 
 instance EReal.borelSpace : BorelSpace EReal :=
   ⟨rfl⟩
+
+namespace MeasureTheory.Measure.IsFiniteMeasureOnCompacts
+
+variable {mα} in
+protected theorem map (μ : Measure α) [IsFiniteMeasureOnCompacts μ] (f : α ≃ₜ β) :
+    IsFiniteMeasureOnCompacts (μ.map f) := by
+  refine ⟨fun K hK ↦ ?_⟩
+  rw [← f.toMeasurableEquiv_coe, MeasurableEquiv.map_apply]
+  exact IsCompact.measure_lt_top (f.isCompact_preimage.2 hK)
+
+variable {mβ} in
+protected theorem comap (μ : Measure β) [IsFiniteMeasureOnCompacts μ] (f : α ≃ₜ β) :
+    IsFiniteMeasureOnCompacts (μ.comap f) :=
+  IsFiniteMeasureOnCompacts.comap' μ f.continuous f.measurableEmbedding
+
+end MeasureTheory.Measure.IsFiniteMeasureOnCompacts
 
 end BorelSpace
