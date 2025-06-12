@@ -33,7 +33,7 @@ theorem integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 0 < p) (hq : -1 < q) :
       ring_nf
     _ = (1 / p) * Gamma ((q + 1) / p) := by
       rw [Gamma_eq_integral (div_pos (neg_lt_iff_pos_add.mp hq) hp)]
-      simp_rw [show 1 / p - 1 + q / p = (q + 1) / p - 1 by field_simp; ring, ← integral_mul_left,
+      simp_rw [show 1 / p - 1 + q / p = (q + 1) / p - 1 by field_simp; ring, ← integral_const_mul,
         ← mul_assoc]
 
 theorem integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 0 < p) (hq : -1 < q) (hb : 0 < b) :
@@ -51,7 +51,7 @@ theorem integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 0 < p) (hq : -1 <
         mul_zero, smul_eq_mul]
       all_goals positivity
     _ = b ^ (-(q + 1) / p) * (1 / p) * Gamma ((q + 1) / p) := by
-      rw [integral_mul_left, integral_rpow_mul_exp_neg_rpow _ hq, mul_assoc, ← mul_assoc,
+      rw [integral_const_mul, integral_rpow_mul_exp_neg_rpow _ hq, mul_assoc, ← mul_assoc,
         ← rpow_neg_one, ← rpow_mul, ← rpow_add]
       · congr; ring
       all_goals positivity
@@ -83,9 +83,9 @@ theorem Complex.integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 1 ≤ p) (hq : 
       simp_rw [mul_one]
       congr! 2; ring
     _ = 2 * π * ∫ x in Ioi (0 : ℝ), x * |x| ^ q * rexp (-|x| ^ p) := by
-      simp_rw [integral_const, Measure.restrict_apply MeasurableSet.univ, Set.univ_inter,
-        volume_Ioo, sub_neg_eq_add, ← two_mul, ENNReal.toReal_ofReal (by positivity : 0 ≤ 2 * π),
-        smul_eq_mul, mul_one, mul_comm]
+      simp_rw [integral_const, measureReal_restrict_apply MeasurableSet.univ, Set.univ_inter,
+        volume_real_Ioo_of_le (a := -π) (b := π) (by linarith [pi_nonneg]),
+        sub_neg_eq_add, ← two_mul, smul_eq_mul, mul_one, mul_comm]
     _ = 2 * π * ∫ x in Ioi (0 : ℝ), x ^ (q + 1) * rexp (-x ^ p) := by
       congr 1
       refine setIntegral_congr_fun measurableSet_Ioi (fun x hx => ?_)
@@ -110,9 +110,9 @@ theorem Complex.integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 1 ≤ p) 
       simp_rw [mul_one]
       congr! 2; ring
     _ = 2 * π * ∫ x in Ioi (0 : ℝ), x * |x| ^ q * rexp (- b * |x| ^ p) := by
-      simp_rw [integral_const, Measure.restrict_apply MeasurableSet.univ, Set.univ_inter,
-        volume_Ioo, sub_neg_eq_add, ← two_mul, ENNReal.toReal_ofReal (by positivity : 0 ≤ 2 * π),
-        smul_eq_mul, mul_one, mul_comm]
+      simp_rw [integral_const, measureReal_restrict_apply MeasurableSet.univ, Set.univ_inter,
+        volume_real_Ioo_of_le (a := -π) (b := π) (by linarith [pi_nonneg]),
+        sub_neg_eq_add, ← two_mul, smul_eq_mul, mul_one, mul_comm]
     _ = 2 * π * ∫ x in Ioi (0 : ℝ), x ^ (q + 1) * rexp (-b * x ^ p) := by
       congr 1
       refine setIntegral_congr_fun measurableSet_Ioi (fun x hx => ?_)

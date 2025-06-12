@@ -134,7 +134,7 @@ elab_rules : tactic
   | `(tactic| extract_goal $cfg:config $[using $name?]?) => do
     let name ← if let some name := name?
                 then pure name.getId
-                else mkAuxName ((← getCurrNamespace) ++ `extracted) 1
+                else mkAuxDeclName `extracted
     let msg ← withoutModifyingEnv <| withoutModifyingState do
       let g ← getMainGoal
       let g ← do match cfg with

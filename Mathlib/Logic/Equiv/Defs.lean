@@ -21,7 +21,7 @@ In this file we define two types:
   not equality!) to express that various `Type`s or `Sort`s are equivalent.
 
 * `Equiv.Perm α`: the group of permutations `α ≃ α`. More lemmas about `Equiv.Perm` can be found in
-  `Mathlib.GroupTheory.Perm`.
+  `Mathlib/GroupTheory/Perm.lean`.
 
 Then we define
 
@@ -44,10 +44,10 @@ Then we define
   - `Equiv.decidableEq` takes `e : α ≃ β` and `[DecidableEq β]` and returns `DecidableEq α`.
 
   More definitions of this kind can be found in other files.
-  E.g., `Mathlib.Algebra.Equiv.TransferInstance` does it for many algebraic type classes like
+  E.g., `Mathlib/Algebra/Equiv/TransferInstance.lean` does it for many algebraic type classes like
   `Group`, `Module`, etc.
 
-Many more such isomorphisms and operations are defined in `Mathlib.Logic.Equiv.Basic`.
+Many more such isomorphisms and operations are defined in `Mathlib/Logic/Equiv/Basic.lean`.
 
 ## Tags
 
@@ -193,6 +193,12 @@ instance permUnique [Subsingleton α] : Unique (Perm α) :=
 
 theorem Perm.subsingleton_eq_refl [Subsingleton α] (e : Perm α) : e = Equiv.refl α :=
   Subsingleton.elim _ _
+
+protected theorem nontrivial {α β} (e : α ≃ β) [Nontrivial β] : Nontrivial α :=
+  e.surjective.nontrivial
+
+theorem nontrivial_congr {α β} (e : α ≃ β) : Nontrivial α ↔ Nontrivial β :=
+  ⟨fun _ ↦ e.symm.nontrivial, fun _ ↦ e.nontrivial⟩
 
 /-- Transfer `DecidableEq` across an equivalence. -/
 protected def decidableEq (e : α ≃ β) [DecidableEq β] : DecidableEq α :=
@@ -391,6 +397,7 @@ def equivEmptyEquiv (α : Sort u) : α ≃ Empty ≃ IsEmpty α :=
 def propEquivPEmpty {p : Prop} (h : ¬p) : p ≃ PEmpty := @equivPEmpty p <| IsEmpty.prop_iff.2 h
 
 /-- If both `α` and `β` have a unique element, then `α ≃ β`. -/
+@[simps]
 def ofUnique (α β : Sort _) [Unique.{u} α] [Unique.{v} β] : α ≃ β where
   toFun := default
   invFun := default
@@ -400,6 +407,7 @@ def ofUnique (α β : Sort _) [Unique.{u} α] [Unique.{v} β] : α ≃ β where
 @[deprecated (since := "2024-12-26")] alias equivOfUnique := ofUnique
 
 /-- If `α` has a unique element, then it is equivalent to any `PUnit`. -/
+@[simps!]
 def equivPUnit (α : Sort u) [Unique α] : α ≃ PUnit.{v} := ofUnique α _
 
 /-- The `Sort` of proofs of a true proposition is equivalent to `PUnit`. -/
@@ -658,6 +666,19 @@ abbrev sigmaCongrRight {α} {β : α → Sort _} (F : ∀ a, Perm (β a)) : Perm
   Equiv.sigmaCongrRight_refl
 
 end Perm
+
+/-- `Function.swap` as an equivalence. -/
+@[simps -fullyApplied]
+def functionSwap (α β : Sort*) (γ : α → β → Sort*) :
+    ((a : α) → (b : β) → γ a b) ≃ ((b : β) → (a : α) → γ a b) where
+  toFun := Function.swap
+  invFun := Function.swap
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+theorem _root_.Function.swap_bijective {α β : Sort*} {γ : α → β → Sort*} :
+    Function.Bijective (@Function.swap _ _ γ) :=
+  functionSwap _ _ _ |>.bijective
 
 /-- An equivalence `f : α₁ ≃ α₂` generates an equivalence between `Σ a, β (f a)` and `Σ a, β a`. -/
 @[simps apply] def sigmaCongrLeft {α₁ α₂ : Type*} {β : α₂ → Sort _} (e : α₁ ≃ α₂) :
