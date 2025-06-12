@@ -205,7 +205,7 @@ lemma linear_right_summable (z : ℂ) (c k : ℤ) (hk : 2 ≤ k) :
   simp only [zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow, ← abs_inv]
   apply Asymptotics.IsBigO.pow (Asymptotics.IsBigO.abs_right (linear_inv_isBigO_right c z))
 
-/-- For `z : ℂ` the function `c : ℤ ↦ ((c z + d) ^ k)⁻¹` is  Summable for `2 ≤ k`. -/
+/-- For `z : ℂ` the function `c : ℤ ↦ ((c z + d) ^ k)⁻¹` is Summable for `2 ≤ k`. -/
 lemma linear_left_summable (z : ℂ) (hz : z ≠ 0) (d k : ℤ) (hk : 2 ≤ k) :
   Summable fun c : ℤ ↦ (((c : ℂ) * z + d) ^ k)⁻¹ := by
   apply summable_inv_of_isBigO_rpow_inv (a := k) (by norm_cast)
