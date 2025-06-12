@@ -102,7 +102,7 @@
   "Mathlib.Tactic.Find",
   "Mathlib.Tactic.Finiteness",
   "Mathlib.Tactic.GCongr",
-  "Mathlib.Tactic.GCongr.CoreAttrs",
+  "Mathlib.Tactic.GRewrite.Elab",
   "Mathlib.Tactic.Generalize",
   "Mathlib.Tactic.GeneralizeProofs",
   "Mathlib.Tactic.Group",
