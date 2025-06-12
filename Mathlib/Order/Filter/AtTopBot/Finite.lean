@@ -109,7 +109,7 @@ theorem Eventually.atTop_of_arithmetic {p : ℕ → Prop} {n : ℕ} (hn : n ≠ 
   rw [← Nat.div_add_mod b n]
   have hlt := Nat.mod_lt b hn.bot_lt
   refine hN _ hlt _ ?_
-  rw [ge_iff_le, Nat.le_div_iff_mul_le hn.bot_lt, mul_comm]
+  rw [Nat.le_div_iff_mul_le hn.bot_lt, mul_comm]
   exact (Finset.le_sup (f := (n * N ·)) (Finset.mem_range.2 hlt)).trans hb
 
 /-- Given an antitone basis `s : ℕ → Set α` of a filter, extract an antitone subbasis `s ∘ φ`,

@@ -305,7 +305,7 @@ uniformity is not discrete. -/
 lemma atTopIsCauchy : Cauchy (atTop : Filter ℕ) := by
   rw [HasBasis_counterUniformity.cauchy_iff]
   refine ⟨atTop_neBot, fun i _ ↦ ?_⟩
-  simp_rw [mem_fundamentalEntourage, mem_atTop_sets, ge_iff_le]
+  simp_rw [mem_fundamentalEntourage, mem_atTop_sets]
   exact ⟨Ici i, ⟨⟨i, fun _ hb ↦ hb⟩, fun _ hx _ hy ↦ Or.inl ⟨hx, hy⟩⟩⟩
 
 /-- We find the same result about the identity map found in `idIsCauchy`, without using any metric

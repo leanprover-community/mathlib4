@@ -108,7 +108,7 @@ theorem frequently_measure_inter_ne_zero (hf : Conservative f μ) (hs : NullMeas
   obtain ⟨N, hN, hmax⟩ : ∃ N, μ (t N) ≠ 0 ∧ ∀ n > N, μ (t n) = 0 := by
     rw [Nat.frequently_atTop_iff_infinite, not_infinite] at H
     convert exists_max_image _ (·) H ⟨0, by simpa⟩ using 4
-    rw [gt_iff_lt, ← not_le, not_imp_comm, mem_setOf]
+    rw [← not_le, not_imp_comm, mem_setOf]
   have htm {n : ℕ} : NullMeasurableSet (t n) μ :=
     hs.inter <| hs.preimage <| hf.toQuasiMeasurePreserving.iterate n
   -- Then all `t n`, `n > N`, are null sets, hence `T = t N \ ⋃ n > N, t n` has positive measure.
@@ -146,7 +146,7 @@ theorem measure_mem_forall_ge_image_notMem_eq_zero (hf : Conservative f μ)
       (hs.preimage <| hf.toQuasiMeasurePreserving.iterate m).compl
   rcases (hf.exists_gt_measure_inter_ne_zero this H) n with ⟨m, hmn, hm⟩
   rcases nonempty_of_measure_ne_zero hm with ⟨x, ⟨_, hxn⟩, hxm, -⟩
-  exact hxn m hmn.lt.le hxm
+  exact hxn m hmn.le hxm
 
 @[deprecated (since := "2025-05-23")]
 alias measure_mem_forall_ge_image_not_mem_eq_zero := measure_mem_forall_ge_image_notMem_eq_zero

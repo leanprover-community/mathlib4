@@ -269,7 +269,7 @@ lemma IsIntegralCurve.periodic_xor_injective [BoundarylessManifold I M]
   push_neg at h
   obtain ⟨a, b, heq, hne⟩ := h
   refine ⟨|a - b|, ?_, ?_⟩
-  · rw [gt_iff_lt, abs_pos, sub_ne_zero]
+  · rw [abs_pos, sub_ne_zero]
     exact hne
   · by_cases hab : a - b < 0
     · rw [abs_of_neg hab, neg_sub]

@@ -228,7 +228,7 @@ theorem mellin_convergent_zero_of_isBigO {b : ℝ} {f : ℝ → ℝ}
     (hf : f =O[𝓝[>] 0] (· ^ (-b))) {s : ℝ} (hs : b < s) :
     ∃ c : ℝ, 0 < c ∧ IntegrableOn (fun t : ℝ => t ^ (s - 1) * f t) (Ioc 0 c) := by
   obtain ⟨d, _, hd'⟩ := hf.exists_pos
-  simp_rw [IsBigOWith, eventually_nhdsWithin_iff, Metric.eventually_nhds_iff, gt_iff_lt] at hd'
+  simp_rw [IsBigOWith, eventually_nhdsWithin_iff, Metric.eventually_nhds_iff] at hd'
   obtain ⟨ε, hε, hε'⟩ := hd'
   refine ⟨ε, hε, integrableOn_Ioc_iff_integrableOn_Ioo.mpr ⟨?_, ?_⟩⟩
   · refine AEStronglyMeasurable.mul ?_ (hfc.mono_set Ioo_subset_Ioi_self)
