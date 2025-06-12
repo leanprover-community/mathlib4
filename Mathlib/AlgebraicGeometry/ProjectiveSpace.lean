@@ -13,6 +13,16 @@ universe v w u
 
 section MOVE
 
+namespace CategoryTheory
+
+theorem hom_comp_apply {C : Type u} [Category.{v, u} C] {FC : C → C → Type*}
+      {CC : C → Type w} [(X Y : C) → FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
+      {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (x : CC X) :
+    (f ≫ g) x = g (f x) :=
+  congr_fun (hom_comp f g) x
+
+end CategoryTheory
+
 namespace Localization
 
 @[simp] lemma awayLift_mk_self {R : Type*} [CommSemiring R]
@@ -487,6 +497,10 @@ noncomputable abbrev away₂Inl {σ : Type*} (R : Type*) [CommRing R] (i j : σ)
     MvPolynomial {k // k ≠ i} R →+* away₂ R i j :=
   algebraMap _ _
 
+@[simp] lemma away₂Inl_comp_C {σ : Type*} (R : Type*) [CommRing R] (i j : σ) :
+    (away₂Inl R i j).comp C = algebraMap _ _ :=
+  rfl
+
 @[simp] lemma away₂Inl_apply {σ : Type*} (R : Type*) [CommRing R] (i j : σ) (p) :
     away₂Inl R i j p = algebraMap _ _ p := rfl
 
@@ -502,6 +516,27 @@ noncomputable abbrev away₂Inl {σ : Type*} (R : Type*) [CommRing R] (i j : σ)
 @[simps!] noncomputable def away₂Inr {σ : Type*} (R : Type*) [CommRing R] (i j : σ) :
     MvPolynomial {k // k ≠ j} R →+* away₂ R i j :=
   away₂InrAlgHom R i j
+
+@[simp] lemma away₂Inr_comp_C {σ : Type*} (R : Type*) [CommRing R] (i j : σ) :
+    (away₂Inr R i j).comp C = algebraMap _ _ :=
+  RingHom.ext (aeval_C _)
+
+noncomputable instance {σ : Type*} (R : Type*) [CommRing R] (i j : σ) :
+    Invertible (away₂Inl R i j (dehomogenise i (X j))) := by
+  refine ⟨Away.invSelf _, ?_, ?_⟩ <;> rw [Away.invSelf, away₂Inl, ← mk_one_eq_algebraMap,
+    Localization.mk_mul, mul_one, one_mul, mk_self_mk]
+
+-- This is deliberately not tagged with `@[simp]`.
+lemma invOn_away₂Inl_XJ {σ : Type*} (R : Type*) [CommRing R] (i j : σ) :
+    ⅟ (away₂Inl R i j (dehomogenise i (X j))) =
+      Localization.mk 1 ⟨dehomogenise i (X j), Submonoid.mem_powers _⟩ :=
+  rfl
+
+lemma away₂Inr_X {σ : Type*} (R : Type*) [CommRing R] (i j : σ) (k : {k // k ≠ j}) :
+    away₂Inr R i j (X k) = away₂Inl R i j (dehomogenise i (X k)) *
+        ⅟ (away₂Inl R i j (dehomogenise i (X j))) := by
+  rw [away₂Inr_apply, eval₂_X, away₂Inl_apply, ← mk_one_eq_algebraMap, invOn_away₂Inl_XJ,
+    Localization.mk_mul, mul_one, one_mul]
 
 @[simp] lemma ringEquivAwayMul_symm_comp_away₂Inl {σ : Type*} (R : Type*) [CommRing R] (i j : σ) :
     (RingHomClass.toRingHom (ringEquivAwayMul R i j).symm).comp (away₂Inl R i j) =
@@ -788,6 +823,24 @@ lemma AffineSpace.SpecIso_comp_map {n : Type v} {R : Type max u v} [CommRing R] 
   rw [← AffineSpace.map_comp_SpecIso, map_Spec_map, Category.assoc, Category.assoc,
     Iso.inv_hom_id, Category.comp_id, CommRingCat.hom_ofHom]
 
+-- Causes a loop with `Scheme.ΓSpecIso_inv_naturality` if tagged with `@[simp]`.
+lemma Spec.map_app_top {R S : CommRingCat.{u}} (f : R ⟶ S) :
+    (Spec.map f).app ⊤ = (Scheme.ΓSpecIso R).hom ≫ f ≫ (Scheme.ΓSpecIso S).inv :=
+  (Iso.inv_comp_eq ..).1 (Scheme.ΓSpecIso_inv_naturality ..).symm
+
+-- Causes a loop with `Scheme.ΓSpecIso_inv_naturality` if tagged with `@[simp]`.
+lemma Spec.map_appTop {R S : CommRingCat.{u}} (f : R ⟶ S) :
+    (Spec.map f).appTop = (Scheme.ΓSpecIso R).hom ≫ f ≫ (Scheme.ΓSpecIso S).inv :=
+  Spec.map_app_top f
+
+@[simp] lemma Spec.map_app_top_hom {R S : CommRingCat.{u}} (f : R ⟶ S) (x : R) :
+    ((Spec.map f).app ⊤).hom ((Scheme.ΓSpecIso R).inv x) = (Scheme.ΓSpecIso S).inv (f x) :=
+  ConcreteCategory.congr_hom (Scheme.ΓSpecIso_inv_naturality f).symm x
+
+@[simp] lemma Spec.map_appTop_hom {R S : CommRingCat.{u}} (f : R ⟶ S) (x : R) :
+    (Spec.map f).appTop ((Scheme.ΓSpecIso R).inv x) = (Scheme.ΓSpecIso S).inv (f x) :=
+  Spec.map_app_top_hom f x
+
 end AlgebraicGeometry
 
 end MOVE
@@ -933,8 +986,12 @@ abbrev opens₂ (i j : n) : Scheme.{max u v} :=
   pullback (terminal.from S) (terminal.from (Spec <| .of <| away₂ (ULift.{max u v} ℤ) i j))
 
 @[simps -isSimp]
-instance open₂Over : (opens₂ S i j).CanonicallyOver S where
+instance opens₂Over : (opens₂ S i j).CanonicallyOver S where
   hom := pullback.fst _ _
+
+/-- The map from `opens₂ S i j` to the integral model. -/
+def opens₂ToSpec : opens₂ S i j ⟶ Spec (.of (away₂ (ULift.{max u v} ℤ) i j)) :=
+  pullback.snd _ _
 
 /-- The inclusion `opens₂ S i j` into `Xᵢ ≠ 0`. -/
 def opens₂Fst (i j : n) : opens₂ S i j ⟶ (openCover n S).obj i :=
@@ -945,6 +1002,20 @@ def opens₂Fst (i j : n) : opens₂ S i j ⟶ (openCover n S).obj i :=
 def opens₂Snd (i j : n) : opens₂ S i j ⟶ (openCover n S).obj j :=
   pullback.map _ _ _ _ (𝟙 S) (Spec.map <| CommRingCat.ofHom <| away₂Inr _ i j) (𝟙 _)
     (terminal.hom_ext ..) (terminal.hom_ext ..)
+
+instance : HomIsOver (opens₂Fst S i j) S :=
+  ⟨by rw [opens₂Fst, openCover_obj_over, pullback.map_fst, opens₂Over_over, Category.comp_id]⟩
+
+instance : HomIsOver (opens₂Snd S i j) S :=
+  ⟨by rw [opens₂Snd, openCover_obj_over, pullback.map_fst, opens₂Over_over, Category.comp_id]⟩
+
+lemma opens₂Fst_comp_toSpec : opens₂Fst.{v, u} S i j ≫ AffineSpace.toSpecMvPoly _ _ =
+    opens₂ToSpec.{v, u} S i j ≫ Spec.map (CommRingCat.ofHom (away₂Inl _ i j)) := by
+  rw [opens₂Fst, AffineSpace.toSpecMvPoly, pullback.map_snd]; rfl
+
+lemma opens₂Snd_comp_toSpec : opens₂Snd.{v, u} S i j ≫ AffineSpace.toSpecMvPoly _ _ =
+    opens₂ToSpec.{v, u} S i j ≫ Spec.map (CommRingCat.ofHom (away₂Inr _ i j)) := by
+  rw [opens₂Snd, AffineSpace.toSpecMvPoly, pullback.map_snd]; rfl
 
 /-- The intersection (i.e. pullback) of the basic opens on `ℙ(n; S)` defined by `Xᵢ` and `Xⱼ`
 is `S × ℤ[{k // k ≠ i}, 1/Xⱼ]`. -/
@@ -961,6 +1032,13 @@ lemma pullbackOpenCover_hom_opens₂Fst :
 lemma pullbackOpenCover_hom_opens₂Snd :
     (pullbackOpenCover S i j).hom ≫ opens₂Snd S i j = pullback.snd _ _ := by
   refine pullback.hom_ext ?_ ?_ <;> simp [opens₂Snd, pullbackOpenCover]
+
+instance : HomIsOver (pullbackOpenCover S i j).hom S :=
+  ⟨by simp_rw [← comp_over (f := opens₂Fst S i j) S, ← Category.assoc,
+    pullbackOpenCover_hom_opens₂Fst, pullback_fst_over]⟩
+
+instance : HomIsOver (pullbackOpenCover S i j).inv S :=
+  ⟨by rw [Iso.inv_comp_eq, comp_over]⟩
 
 instance : IsOpenImmersion (opens₂Fst S i j) := by
   rw [← (Iso.inv_comp_eq _).2 (pullbackOpenCover_hom_opens₂Fst S i j).symm]; infer_instance
@@ -984,6 +1062,26 @@ lemma range_opens₂Snd : Set.range (opens₂Snd S i j).base =
   rw [Scheme.id.base, hom_id, Set.range_id, Set.preimage_univ, Set.univ_inter]
   exact congr_arg _ (PrimeSpectrum.localization_away_comap_range ..)
 
+@[simp] lemma opens₂Snd_appTop_coord (k : {k // k ≠ j}) :
+    (opens₂Snd.{v, u} S i j).appTop (AffineSpace.coord S k) =
+      (opens₂ToSpec.{v, u} S i j).appTop.hom ((Scheme.ΓSpecIso _).inv
+        (away₂Inr _ _ _ (X k))) := by
+  rw [AffineSpace.coord, AffineSpace.toSpecMvPolyIntEquiv_apply]
+  refine (hom_comp_apply ..).symm.trans ?_
+  rw [← Scheme.comp_appTop, opens₂Snd_comp_toSpec, Scheme.comp_appTop, hom_comp_apply,
+    Spec.map_appTop_hom]
+  rfl
+
+@[simp] lemma opens₂Fst_appTop_coord (k : {k // k ≠ i}) :
+    (opens₂Fst.{v, u} S i j).appTop (AffineSpace.coord S k) =
+      (opens₂ToSpec.{v, u} S i j).appTop.hom ((Scheme.ΓSpecIso _).inv
+        (away₂Inl _ _ _ (X k))) := by
+  rw [AffineSpace.coord, AffineSpace.toSpecMvPolyIntEquiv_apply]
+  refine (hom_comp_apply ..).symm.trans ?_
+  rw [← Scheme.comp_appTop, opens₂Fst_comp_toSpec, Scheme.comp_appTop, hom_comp_apply,
+    Spec.map_appTop_hom]
+  rfl
+
 end pullback
 
 variable {S₁ S₂ S₃ : Scheme.{max u v}}
@@ -1001,6 +1099,9 @@ lemma map_comp (f : S₁ ⟶ S₂) (g : S₂ ⟶ S₃) : map n (f ≫ g) = map n
 def mapIso (f : S₁ ≅ S₂) : ℙ(n; S₁) ≅ ℙ(n; S₂) :=
   ⟨map n f.hom, map n f.inv, by rw [← map_comp, f.hom_inv_id, map_id],
     by rw [← map_comp, f.inv_hom_id, map_id]⟩
+
+lemma map_over (f : S₁ ⟶ S₂) : map n f ≫ ℙ(n; S₂) ↘ S₂ = ℙ(n; S₁) ↘ S₁ ≫ f := by
+  rw [map, over_over, pullback.map_fst, over_over]
 
 /-
 instance uniqueIntModule (R : Type u) [AddCommGroup R] : Unique (Module ℤ R) :=
@@ -1020,14 +1121,13 @@ instance (R : Type max u v) [CommRing R] (i j : n) :
 
 section affine
 
-variable (R : Type max u v) [CommRing R] (i j : n)
+variable {n} (R : Type max u v) [CommRing R] (i j : n)
 
 theorem Spec_away₂Inl_range :
     Set.range (ConcreteCategory.hom (Spec.map (CommRingCat.ofHom (away₂Inl R i j))).base) =
       SetLike.coe (PrimeSpectrum.basicOpen (dehomogenise i (X (R:=R) j))) :=
   PrimeSpectrum.localization_away_comap_range ..
 
-variable {n} in
 def opens₂IsoSpecAway₂ (R : Type max u v) [CommRing R] (i j : n) :
     opens₂ (Spec (.of R)) i j ≅ Spec (.of (away₂ R i j)) := by
   refine AlgebraicGeometry.IsOpenImmersion.isoOfRangeEq
@@ -1041,15 +1141,70 @@ def opens₂IsoSpecAway₂ (R : Type max u v) [CommRing R] (i j : n) :
   rw [map_dehomogenise, map_X]
   exact Set.image_preimage_eq _ (ConcreteCategory.bijective_of_isIso _).surjective
 
-lemma opens₂IsoSpecAway₂_hom_comp_away₂Inl :
-    (opens₂IsoSpecAway₂ R i j).hom ≫ Spec.map (CommRingCat.ofHom (away₂Inl R i j)) =
-      opens₂Fst (Spec (.of R)) i j ≫ (AffineSpace.SpecIso {k // k ≠ i} (.of R)).hom :=
+@[reassoc] lemma opens₂IsoSpecAway₂_hom_comp_away₂Inl :
+    (opens₂IsoSpecAway₂.{v, u} R i j).hom ≫ Spec.map (CommRingCat.ofHom (away₂Inl R i j)) =
+      opens₂Fst.{v, u} (Spec (.of R)) i j ≫ (AffineSpace.SpecIso {k // k ≠ i} (.of R)).hom :=
   IsOpenImmersion.isoOfRangeEq_hom_fac ..
 
-lemma opens₂IsoSpecAway₂_hom_comp_away₂Inr :
-    (opens₂IsoSpecAway₂ R i j).hom ≫ Spec.map (CommRingCat.ofHom (away₂Inr R i j)) =
-      opens₂Snd (Spec (.of R)) i j ≫ (AffineSpace.SpecIso {k // k ≠ j} (.of R)).hom := by
-  _
+lemma opens₂IsoSpecAway₂_hom_comp_algebraMap :
+    (opens₂IsoSpecAway₂.{v, u} R i j).hom ≫
+        Spec.map (CommRingCat.ofHom (algebraMap R (away₂ R i j))) =
+      opens₂.{v, u} (Spec (.of R)) i j ↘ Spec (.of R) := by
+  rw [← away₂Inl_comp_C, CommRingCat.ofHom_comp, Spec.map_comp, ← Category.assoc,
+    opens₂IsoSpecAway₂_hom_comp_away₂Inl, ← comp_over (f := opens₂Fst _ i j), Category.assoc]
+  exact congr_arg _ <| Eq.symm <| (Iso.inv_comp_eq ..).1 <| AffineSpace.SpecIso_inv_over ..
+
+lemma opens₂IsoSpecAway₂_hom_appTop_away₂Inl (k : {k // k ≠ i}) :
+    (opens₂IsoSpecAway₂.{v, u} R i j).hom.appTop ((Scheme.ΓSpecIso _).inv
+        (away₂Inl R i j (X k))) =
+      (opens₂ToSpec.{v, u} (Spec (.of R)) i j).appTop
+        ((Scheme.ΓSpecIso _).inv (away₂Inl _ i j (X k))) := by
+  have := CategoryTheory.congr_fun (congr_arg Scheme.Hom.appTop <|
+    opens₂IsoSpecAway₂_hom_comp_away₂Inl R i j) ((Scheme.ΓSpecIso _).inv (X k))
+  rw [← CommRingCat.hom_ofHom (away₂Inl (ULift.{max u v, 0} ℤ) i j), ← Spec.map_appTop_hom,
+    ← hom_comp_apply, ← hom_comp_apply, ← Scheme.comp_appTop, ← opens₂Fst_comp_toSpec]
+  simp only [Scheme.comp_appTop, hom_comp_apply] at this ⊢
+  convert this
+  · rw [Spec.map_appTop_hom]; simp only [CommRingCat.hom_ofHom]
+  · rw [← AffineSpace.SpecIso_inv_appTop_coord (.of R), ← hom_comp_apply, ← hom_comp_apply,
+      ← Scheme.comp_appTop, Iso.hom_inv_id, Scheme.id_appTop]; rfl
+
+lemma opens₂IsoSpecAway₂_hom_appTop_away₂Inl_dehomogenise (k : n) :
+    (opens₂IsoSpecAway₂.{v, u} R i j).hom.appTop ((Scheme.ΓSpecIso _).inv
+        (away₂Inl R i j (dehomogenise i (X k)))) =
+      (opens₂ToSpec.{v, u} (Spec (.of R)) i j).appTop
+        ((Scheme.ΓSpecIso _).inv (away₂Inl _ i j (dehomogenise i (X k)))) := by
+  by_cases h : k = i
+  · simp only [h, dehomogenise_X_self, map_one]
+  · rw [dehomogenise_X_of_ne h, dehomogenise_X_of_ne h, opens₂IsoSpecAway₂_hom_appTop_away₂Inl]
+
+section
+
+attribute [local instance] Invertible.map
+
+lemma opens₂IsoSpecAway₂_hom_appTop_away₂Inl_invOf_dehomogenise :
+    (opens₂IsoSpecAway₂.{v, u} R i j).hom.appTop ((Scheme.ΓSpecIso _).inv
+        (⅟ (away₂Inl R i j (dehomogenise i (X j))))) =
+      (opens₂ToSpec.{v, u} (Spec (.of R)) i j).appTop
+        ((Scheme.ΓSpecIso _).inv (⅟ (away₂Inl _ i j (dehomogenise i (X j))))) := by
+  simp_rw [map_invOf, opens₂IsoSpecAway₂_hom_appTop_away₂Inl_dehomogenise.{v, u} R i j j]
+
+end
+
+@[reassoc] lemma opens₂IsoSpecAway₂_hom_comp_away₂Inr :
+    (opens₂IsoSpecAway₂.{v, u} R i j).hom ≫ Spec.map (CommRingCat.ofHom (away₂Inr R i j)) =
+      opens₂Snd.{v, u} (Spec (.of R)) i j ≫ (AffineSpace.SpecIso {k // k ≠ j} (.of R)).hom := by
+  rw [← Iso.comp_inv_eq]
+  refine AffineSpace.hom_ext ?_ fun k ↦ ?_
+  · rw [Category.assoc, AffineSpace.SpecIso_inv_over, Category.assoc, ← Spec.map_comp,
+      ← CommRingCat.ofHom_comp, away₂Inr_comp_C, opens₂IsoSpecAway₂_hom_comp_algebraMap, comp_over]
+  simp only [openCover_obj, Category.assoc, Scheme.comp_appTop, CommRingCat.hom_comp,
+    RingHom.coe_comp, Function.comp_apply]
+  refine Eq.trans ?_ (opens₂Snd_appTop_coord ..).symm
+  rw [AffineSpace.SpecIso_inv_appTop_coord, Spec.map_appTop_hom, ← CommRingCat.Hom.hom,
+    ← CommRingCat.Hom.hom, ← CommRingCat.Hom.hom, CommRingCat.hom_ofHom, away₂Inr_X, away₂Inr_X]
+  simp_rw [map_mul, opens₂IsoSpecAway₂_hom_appTop_away₂Inl_dehomogenise.{v, u},
+    opens₂IsoSpecAway₂_hom_appTop_away₂Inl_invOf_dehomogenise.{v, u}]
 
 /- Notes:
 `SpecIso` is constructed using multiple steps. First we construct all of the intermediate objects:
@@ -1078,14 +1233,22 @@ We also note that we use other comparison isomorphisms to move between the "Proj
   `R[{Xₖ // k ≠ j}] ⟶ away₂ R i j`. These two maps are called `away₂Inl R i j` and `away₂Inr R i j`.
 -/
 
-#check algEquivAwayMul
 /-- `ℙ(n; Spec R)` is isomorphic to `Proj R[n]`. -/
 def SpecIso (R : Type max u v) [CommRing R] :
     ℙ(n; Spec (.of R)) ≅ Proj (homogeneousSubmodule n R) where
   hom := Scheme.Cover.glueMorphisms (openCover n _)
     (fun i ↦ (AffineSpace.SpecIso {k // k ≠ i} (.of R)).hom ≫
       (Proj.openCoverMvPolynomial n R).map i)
-    (fun i j ↦ by simp [-openCover_map]; rw [← Proj.pullbackOpenCoverMvPolynomial_hom_inl])
+    (fun i j ↦ by
+      dsimp only
+      rw [← pullbackOpenCover_hom_opens₂Fst, Category.assoc,
+        ← opens₂IsoSpecAway₂_hom_comp_away₂Inl_assoc.{v, u} R i j,
+        ← pullbackOpenCover_hom_opens₂Snd, Category.assoc,
+        ← opens₂IsoSpecAway₂_hom_comp_away₂Inr_assoc.{v, u} R i j,
+        ← (Iso.inv_comp_eq ..).2 (Proj.pullbackOpenCoverMvPolynomial_hom_inl ..).symm,
+        ← (Iso.inv_comp_eq ..).2 (Proj.pullbackOpenCoverMvPolynomial_hom_inr ..).symm,
+        Category.assoc, Category.assoc]
+      simp_rw [openCover_J, pullback.condition])
   inv := Scheme.Cover.glueMorphisms
     (Proj.openCoverOfISupEqTop
       (homogeneousSubmodule n R) (.X) (fun _ ↦ isHomogeneous_X _ _) (fun _ ↦ zero_lt_one)
@@ -1096,13 +1259,8 @@ def SpecIso (R : Type max u v) [CommRing R] :
   hom_inv_id := _
   inv_hom_id := _
 
-#check Scheme.OpenCover
-#check Scheme.Hom
-#check Scheme.Cover.glueMorphisms
-#check Scheme.Cover.ι_glueMorphisms
-#check Scheme.Cover.hom_ext
-#check AffineSpace.SpecIso
-#check Proj.awayι
+#check opens₂IsoSpecAway₂_hom_comp_away₂Inr
+#check Proj.openCoverMvPolynomial_map
 
 end affine
 
