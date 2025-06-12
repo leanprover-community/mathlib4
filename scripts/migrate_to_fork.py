@@ -487,8 +487,9 @@ def find_existing_pr(branch: str, username: str) -> Optional[Dict[str, Any]]:
 
     try:
         # Search for all PRs with this branch name, then filter by head repository
+        # Include isDraft to preserve draft status during migration
         result = run_command(['gh', 'pr', 'list', '--repo', 'leanprover-community/mathlib4',
-                             '--head', f'{branch}', '--json', 'number,title,url,state,headRepositoryOwner'],
+                             '--head', f'{branch}', '--json', 'number,title,url,state,headRepositoryOwner,isDraft'],
                             check=False)
 
         if result.returncode == 0 and result.stdout.strip():
@@ -501,12 +502,14 @@ def find_existing_pr(branch: str, username: str) -> Optional[Dict[str, Any]]:
                     if head_repo_owner == 'leanprover-community':
                         # PR from main repo
                         old_style_pr = pr
-                        print_success(f"Found existing open PR from main repo: #{pr['number']} - {pr['title']}")
+                        draft_status = " (draft)" if pr.get('isDraft', False) else ""
+                        print_success(f"Found existing open PR from main repo: #{pr['number']} - {pr['title']}{draft_status}")
                         print(f"URL: {pr['url']}")
                     elif head_repo_owner == username:
                         # PR from user's fork
                         fork_style_pr = pr
-                        print_success(f"Found existing open PR from your fork: #{pr['number']} - {pr['title']}")
+                        draft_status = " (draft)" if pr.get('isDraft', False) else ""
+                        print_success(f"Found existing open PR from your fork: #{pr['number']} - {pr['title']}{draft_status}")
                         print(f"URL: {pr['url']}")
                 else:
                     # Closed PR - just mention it
@@ -551,7 +554,10 @@ def create_new_pr_from_fork(branch: str, username: str, old_pr: Optional[Dict[st
         # Get PR details
         if old_pr:
             title = old_pr['title']
+            is_draft = old_pr.get('isDraft', False)
             print(f"Using title from old PR: {title}")
+            if is_draft:
+                print_success("Original PR is a draft - new PR will also be created as draft")
 
             # Fetch full PR details including body and labels
             print("Fetching complete PR details...")
@@ -581,6 +587,7 @@ def create_new_pr_from_fork(branch: str, username: str, old_pr: Optional[Dict[st
             title = get_user_input("Enter PR title")
             body = ''
             labels = []
+            is_draft = False
 
         # Create PR from fork
         cmd = ['gh', 'pr', 'create',
@@ -588,6 +595,10 @@ def create_new_pr_from_fork(branch: str, username: str, old_pr: Optional[Dict[st
                '--head', f'{username}:{branch}',
                '--title', title,
                '--body', body]
+
+        # Add draft flag if the original PR was a draft
+        if old_pr and is_draft:
+            cmd.append('--draft')
 
         result = run_command(cmd)
 
