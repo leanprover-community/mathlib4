@@ -1023,7 +1023,18 @@ instance const_isClosed: IsClosed (ConstF (G := G) : Set (LipschitzH (G := G))) 
 -- The space 'GL(W)' of invertible continuous linear functions from W to W
 abbrev GL_W := (W (G := G) →L[ℂ] W (G := G))ˣ
 
+#synth LieGroup (modelWithCornersSelf ℂ ((W (G := G) →L[ℂ] W (G := G)))) 1 (GL_W (G := G))
 
+#synth TopologicalSpace ((W (G := G) →L[ℂ] W (G := G)))ˣ
+
+
+#synth NormedRing (((W (G := G) →L[ℂ] W (G := G))))
+
+#synth FiniteDimensional ℂ (((W (G := G) →L[ℂ] W (G := G))))
+
+-- Homeomorph.isCompact_preimage
+
+instance proper_linear_w: ProperSpace (((W (G := G) →L[ℂ] W (G := G)))) := FiniteDimensional.proper_rclike ℂ (((W (G := G) →L[ℂ] W (G := G))))
 --#synth NormedSpace ℂ (GL_W (G := G))
 --#synth MetricSpace (GL_W (G := G))
 
@@ -1295,16 +1306,44 @@ noncomputable def rho_g := ((GRepW (G := G)).restrict ((GRepW_base (G := G)).ran
 
 def rho_g_closure := _root_.closure (rho_g (G := G)).carrier
 
-instance GL_W_proper: ProperSpace (GL_W (G := G)) := by
-  unfold GL_W
-  apply FiniteDimensional.RCLike.properSpace_submodule
+-- instance GL_W_proper: ProperSpace (GL_W (G := G)) := by
+--   unfold GL_W
+--   apply FiniteDimensional.proper
 
-
+def embedding_val := Units.isEmbedding_val_mk' (M := (W (G := G) →L[ℂ] W (G := G))) (f := ContinuousLinearMap.inverse) (by
+  intro x hx
+  have foo := ContDiffAt.continuousAt (ContinuousLinearMap.IsInvertible.contDiffAt_map_inverse (e := x) (n := 0) (by
+    simp at hx
+    obtain ⟨u, hu⟩ := hx
+    apply ContinuousLinearMap.IsInvertible.of_inverse (g := u.inv)
+    .
+      simp
+      have mul_inv := u.val_inv
+      dsimp [HMul.hMul, Mul.mul] at mul_inv
+      rw [hu] at mul_inv
+      exact mul_inv
+    . simp
+      have inv_val := u.inv_val
+      dsimp [HMul.hMul, Mul.mul] at inv_val
+      rw [hu] at inv_val
+      exact inv_val
+  ))
+  apply ContinuousAt.continuousWithinAt
+  exact foo
+  -- ContinuousLinearMap.IsInvertible.contDiffAt_map_inverse
+)
 --   apply FiniteDimensional.proper_rclike (K := ℂ)
 
 -- In the Vikman paper, rho_g is precompact, and the closure of rho_g is a compact subgroup
+-- LinearMap.finiteDimensional
 theorem compact_rho_g: IsCompact (rho_g_closure (G := G)) := by
   unfold rho_g_closure rho_g
+  let val := Units.val (α := (W (G := G) →L[ℂ] W (G := G)))
+  have units_val_openMap := (Units.isOpenMap_val (R := (W (G := G) →L[ℂ] W (G := G))))
+  have units_val_openMap := (Units.isEmbedding_val₀ (G₀ := (W (G := G) →L[ℂ] W (G := G))))
+  --have compact_iff := Topology.IsEmbedding.isCompact_iff (X := GL_W (G := G))
+  --  (Y := (W (G := G) →L[ℂ] W (G := G))) (f := Units.val (α := (W (G := G) →L[ℂ] W (G := G)))) (Units.isOpenMap_val (R := (W (G := G) →L[ℂ] W (G := G))))
+  rw [Topology.IsEmbedding.isCompact_iff Units.isEmbedding_val₀]
   apply Bornology.IsBounded.isCompact_closure
   rw [Metric.isBounded_iff]
   use 2
@@ -1984,6 +2023,7 @@ lemma f_conv_mu (f: G → ℝ) (hf: ConvExists f (mu (S := S))) (g: G): (Conv (S
 def NTupleSum (n: ℕ) (f: G → ℝ): ℝ := ∑ s : (Fin n → S), f ((List.ofFn s).unattach.prod)
 --∑ s ∈ (Finset.pi (Finset.range (n + 1))) (fun _ => S), f (List.ofFn (n := n + 1) (fun m => s m.val (by simp))).prod
 
+-- Proposition 3.12, item 3, in Vikman
 -- The 'm + 1' terms are due to the fact that 'muConv 0' still applies mu once (without any convolution)
 theorem mu_conv_eq_sum (m: ℕ) (g: G): muConv m g = (((1 : ℝ) / (#(S) : ℝ)) ^ (m + 1)) * (NTupleSum (S := S) (m + 1) (delta g))  := by
   induction m with
@@ -2023,7 +2063,13 @@ theorem mu_conv_eq_sum (m: ℕ) (g: G): muConv m g = (((1 : ℝ) / (#(S) : ℝ))
         rw [← hx] at g_in_s
         simp at g_in_s
   | succ n ih =>
-    sorry
+    conv =>
+      lhs
+      equals ((1 : ℝ) / (#(S) : ℝ)) * ∑ s ∈ S, muConv (n)   =>
+        rw [Nat.iterate_succ']
+        rw [muConv]
+        simp only [Nat.iterate, Function.comp_apply, muConv, mu]
+        rw [NTupleSum]
 
 -- structure ListPrefix {T: Type*} (n: ℕ) (head: T) (suffix target: List T): Prop where
 --   suffix_neq: suffix ≠ []
