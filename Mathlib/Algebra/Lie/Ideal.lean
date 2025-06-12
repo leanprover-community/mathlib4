@@ -360,7 +360,7 @@ end LieHom
 
 namespace LieIdeal
 variable [LieAlgebra R L] [LieModule R L M] [LieModule R L M']
-variable {f : L →ₗ⁅R⁆ L'} {I : LieIdeal R L} {J : LieIdeal R L'}
+variable {f : L →ₗ⁅R⁆ L'} {I I₂ : LieIdeal R L} {J : LieIdeal R L'}
 
 @[simp]
 theorem map_eq_bot_iff : I.map f = ⊥ ↔ I ≤ f.ker := by
@@ -480,6 +480,32 @@ theorem incl_idealRange : I.incl.idealRange = I := by
 theorem incl_isIdealMorphism : I.incl.IsIdealMorphism := by
   rw [I.incl.isIdealMorphism_def, incl_idealRange]
   exact (I : LieSubalgebra R L).incl_range.symm
+
+variable {I}
+
+theorem comap_incl_eq_bot (h : I₂ ≤ I) : comap I.incl I₂ = ⊥ ↔ I₂ = ⊥ := by
+  rw [eq_bot_iff]
+  constructor
+  · intro hI₂
+    rw [eq_bot_iff]
+    intro x hx
+    unfold comap at hI₂
+    simp only [incl_coe, toLieSubalgebra_toSubmodule, le_bot_iff,
+      LieSubmodule.mk_eq_bot_iff] at hI₂
+    rw [Submodule.eq_bot_iff] at hI₂
+    rw [LieSubmodule.mem_bot]
+    specialize hI₂ ⟨x, h hx⟩ hx
+    rw [LieSubmodule.mk_eq_zero] at hI₂
+    assumption
+  · intro hI₂
+    rw [hI₂]
+    intro x hx
+    rw [LieSubmodule.mem_bot]
+    unfold comap at hx
+    simp only [incl_coe, toLieSubalgebra_toSubmodule, LieSubmodule.bot_toSubmodule,
+      Submodule.comap_bot, LieSubmodule.mem_mk_iff', LinearMap.mem_ker] at hx
+    rw [LieSubmodule.mk_eq_zero]
+    assumption
 
 end LieIdeal
 
