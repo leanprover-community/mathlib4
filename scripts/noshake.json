@@ -212,6 +212,8 @@
   "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Topology.Category.UniformSpace":
   ["Mathlib.CategoryTheory.Monad.Limits"],
+  "Mathlib.Topology.Algebra.RestrictedProduct.Basic":
+  ["Mathlib.Order.Filter.Cofinite"],
   "Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology":
   ["Mathlib.Topology.Algebra.UniformRing"],
   "Mathlib.Tactic.Widget.StringDiagram":
@@ -266,6 +268,7 @@
   ["Mathlib.Data.Subtype", "Mathlib.Util.TermReduce"],
   "Mathlib.Tactic.ITauto": ["Batteries.Tactic.Init", "Mathlib.Logic.Basic"],
   "Mathlib.Tactic.Group": ["Mathlib.Algebra.Group.Commutator"],
+  "Mathlib.Tactic.GCongr.CoreAttrs": ["Mathlib.Tactic.GCongr.Core"],
   "Mathlib.Tactic.GCongr.Core":
   ["Mathlib.Order.Defs", "Mathlib.Order.Defs.PartialOrder"],
   "Mathlib.Tactic.GCongr": ["Mathlib.Tactic.Positivity.Core"],
@@ -525,6 +528,7 @@
   ["Mathlib.Algebra.Group.Pointwise.Finset.Basic"],
   "Mathlib.Algebra.Group.Pi.Basic": ["Batteries.Tactic.Classical"],
   "Mathlib.Algebra.Group.Idempotent": ["Mathlib.Data.Subtype"],
+  "Mathlib.Algebra.Group.Even": ["Mathlib.Data.Set.Operations"],
   "Mathlib.Algebra.Group.Defs":
   ["Mathlib.Algebra.Notation.Defs", "Mathlib.Tactic.OfNat"],
   "Mathlib.Algebra.GeomSum": ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
