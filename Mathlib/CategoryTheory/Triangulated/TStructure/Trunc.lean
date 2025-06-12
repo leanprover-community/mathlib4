@@ -863,7 +863,7 @@ lemma from_truncGE_obj_ext (n : ℤ) (X : C) {Y : C}
   obtain ⟨g, hg⟩ := Triangle.yoneda_exact₃ _
     (t.triangleLTGE_distinguished n X) f hf
   have hg' := t.zero_of_isLE_of_isGE g (n-2) n (by linarith)
-    (by dsimp ; exact t.isLE_shift _ (n-1) 1 (n-2) (by linarith)) (by infer_instance)
+    (by dsimp; exact t.isLE_shift _ (n-1) 1 (n-2) (by linarith)) (by infer_instance)
   rw [hg, hg', comp_zero]
 
 lemma to_truncLE_obj_ext (n : ℤ) (Y : C) {X : C}
