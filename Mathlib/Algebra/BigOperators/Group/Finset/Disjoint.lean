@@ -10,6 +10,8 @@ import Mathlib.Order.Disjointed
 # Decomposing products into disjoint parts
 -/
 
+/-- Given a sequence of finite sets `s₀ ⊆ s₁ ⊆ s₂ ⋯`, the product of `gᵢ` over `i ∈ sₙ` is equal
+to `∏_{i ∈ s₀} gᵢ` * `∏_{j < n, i ∈ sⱼ₊₁ \ sⱼ} gᵢ`. -/
 @[to_additive]
 lemma Finset.prod_eq_prod_range_sdiff
     {α β : Type*} [DecidableEq α] [CommMonoid β] (s : ℕ → Finset α) (hs : Monotone s)
