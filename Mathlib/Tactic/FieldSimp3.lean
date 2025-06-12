@@ -358,6 +358,22 @@ def mkDivProof (iM : Q(Field $M)) (l₁ l₂ : qNF M) :
       let pf := mkDivProof iM (((a₁, x₁), k₁) :: t₁) t₂
       (q(NF.div_eq_eval₃ ($a₂, $x₂) $pf):)
 
+-- minimum of the
+partial /- TODO figure out why! -/ def minimum : qNF M → qNF M → qNF M
+| [], [] => []
+| [], ((n, e), i) :: rest | ((n, e), i) :: rest, [] =>
+  if 0 ≤ n then (minimum [] rest) else ((n, e), i) :: (minimum [] rest)
+| ((n, e), i) :: rest, ((n', e'), i') :: rest' =>
+    -- should factor into a separate definition
+    if i < i' then
+      if 0 ≤ n then minimum rest (((n', e'), i') :: rest')
+      else ((n, e), i) :: minimum rest (((n', e'), i') :: rest')
+    else if i = i' then
+      ((min n n', e), i) :: minimum rest rest'
+    else
+      if 0 ≤ n' then minimum rest' (((n, e), i) :: rest)
+      else ((n', e'), i') :: minimum rest' (((n, e), i) :: rest)
+
 end qNF
 
 /-! ### Core of the `field_simp` tactic -/
@@ -373,8 +389,8 @@ Possible TODO, if poor performance on large problems is witnessed: switch the im
 https://github.com/leanprover-community/mathlib4/pull/16593/files#r1749623191 -/
 partial def normalize (iM : Q(Field $M)) (x : Q($M)) :
     AtomM (Σ l : qNF M, Q($x = NF.eval $(l.toNF))) := do
-  let baseCase := do
-    let (k, ⟨x', _⟩) ← AtomM.addAtomQ x
+  let baseCase (y : Q($M)) : AtomM (Σ l : qNF M, Q($y = NF.eval $(l.toNF))):= do
+    let (k, ⟨x', _⟩) ← AtomM.addAtomQ y
     pure ⟨[((1, x'), k)], q(NF.atom_eq_eval $x')⟩
   match x with
   /- normalize a multiplication: `x₁ * x₂` -/
@@ -396,16 +412,25 @@ partial def normalize (iM : Q(Field $M)) (x : Q($M)) :
     let ⟨l, pf⟩ ← normalize iM y
     -- build the new list and proof
     pure ⟨l.onExponent Neg.neg, (q(NF.inv_eq_eval $pf):)⟩
+  | ~q($a + $b) =>
+    let ⟨l₁, pf₁⟩ ← normalize iM a
+    let ⟨l₂, pf₂⟩ ← normalize iM b
+    let L : qNF M := qNF.minimum l₁ l₂
+    let l₁' := qNF.div l₁ L -- write `l₁ = l₁' * L`, pr₁' is a proof of that
+    let l₂' := qNF.div l₂ L
+    let e : Q($M) := q($(qNF.evalPretty iM l₁') + $(qNF.evalPretty iM l₂'))
+    let ⟨sum, _pf⟩ ← baseCase e
+    pure ⟨qNF.mul L sum, q(sorry)⟩
   /- normalize an integer exponentiation: `y ^ (s : ℤ)` -/
   | ~q($y ^ ($s : ℤ)) =>
     let ⟨l, pf⟩ ← normalize iM y
-    let some s := Expr.int? s | baseCase
+    let some s := Expr.int? s | baseCase x
     -- build the new list and proof
     pure ⟨l.onExponent (HMul.hMul s), (q(NF.zpow_eq_eval $s $pf):)⟩
   /- normalize a `(1:M)` -/
   | ~q(1) => pure ⟨[], q(NF.one_eq_eval $M)⟩
   /- anything else should be treated as an atom -/
-  | _ => baseCase
+  | _ => baseCase x
 
 open Elab Tactic
 
@@ -437,7 +462,7 @@ variable {x y : ℚ}
 #guard_msgs in
 #conv field_simp2 => x
 
-/-- info: (x + y) ^ 1 * 1 -/
+/-- info: (x ^ 1 * 1 + y ^ 1 * 1) ^ 1 * 1 -/
 #guard_msgs in
 #conv field_simp2 => x + y
 
