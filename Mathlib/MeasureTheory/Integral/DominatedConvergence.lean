@@ -364,7 +364,7 @@ theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
       dsimp [indicator]
       split_ifs <;> simp
     · have : ∀ᵐ t ∂μ, t < b₀ ∨ b₀ < t := by
-        filter_upwards [compl_mem_ae_iff.mpr hb₀] with x hx using Ne.lt_or_lt hx
+        filter_upwards [compl_mem_ae_iff.mpr hb₀] with x hx using Ne.lt_or_gt hx
       apply this.mono
       rintro x₀ (hx₀ | hx₀) -
       · have : ∀ᶠ x in 𝓝[Icc b₁ b₂] b₀, {t : ℝ | t ≤ x}.indicator f x₀ = f x₀ := by
