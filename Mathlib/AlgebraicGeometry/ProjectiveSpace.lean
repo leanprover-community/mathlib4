@@ -1041,6 +1041,16 @@ def opens₂IsoSpecAway₂ (R : Type max u v) [CommRing R] (i j : n) :
   rw [map_dehomogenise, map_X]
   exact Set.image_preimage_eq _ (ConcreteCategory.bijective_of_isIso _).surjective
 
+lemma opens₂IsoSpecAway₂_hom_comp_away₂Inl :
+    (opens₂IsoSpecAway₂ R i j).hom ≫ Spec.map (CommRingCat.ofHom (away₂Inl R i j)) =
+      opens₂Fst (Spec (.of R)) i j ≫ (AffineSpace.SpecIso {k // k ≠ i} (.of R)).hom :=
+  IsOpenImmersion.isoOfRangeEq_hom_fac ..
+
+lemma opens₂IsoSpecAway₂_hom_comp_away₂Inr :
+    (opens₂IsoSpecAway₂ R i j).hom ≫ Spec.map (CommRingCat.ofHom (away₂Inr R i j)) =
+      opens₂Snd (Spec (.of R)) i j ≫ (AffineSpace.SpecIso {k // k ≠ j} (.of R)).hom := by
+  _
+
 /- Notes:
 `SpecIso` is constructed using multiple steps. First we construct all of the intermediate objects:
 1. `ℙ(n; S)` has a canonical open cover by `i ↦ 𝔸({k // k ≠ i}, S)`.
