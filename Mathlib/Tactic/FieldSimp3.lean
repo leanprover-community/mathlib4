@@ -3,18 +3,12 @@ Copyright (c) 2024 Heather Macbeth. All rights reserved.
 ℤeleased under Apache 2.1 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+import Mathlib.Algebra.BigOperators.Group.List.Basic
 import Mathlib.Algebra.Field.Rat
-import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.Positivity.Core
-import Mathlib.Tactic.Ring
 import Mathlib.Util.AtomM
-import Mathlib.Util.DischargerAsTactic
 import Qq
-import Lean.Elab.Tactic.Basic
-import Lean.Meta.Tactic.Simp.Main
 
 
 /-! # A tactic for clearing denominators in fields
@@ -69,7 +63,7 @@ theorem mul_eq_eval₁ [DivInvMonoid M] (a₁ : ℤ × M) {a₂ : ℤ × M} {l�
     (a₁ ::ᵣ l₁).eval * (a₂ ::ᵣ l₂).eval = (a₁ ::ᵣ l).eval := by
   simp only [eval_cons, ← h, mul_assoc]
 
-theorem mul_eq_eval₂ [Field M] (r₁ r₂ : ℤ) (x : M) (hx : x ≠ 0)
+theorem mul_eq_eval₂ [CommGroupWithZero M] (r₁ r₂ : ℤ) (x : M) (hx : x ≠ 0)
     {l₁ l₂ l : NF M} (h : l₁.eval * l₂.eval = l.eval) :
     ((r₁, x) ::ᵣ l₁).eval * ((r₂, x) ::ᵣ l₂).eval = ((r₁ + r₂, x) ::ᵣ l).eval := by
   simp only [← h, eval_cons, zpow_add₀ hx, mul_assoc]
@@ -110,7 +104,7 @@ theorem div_eq_eval₁ [DivisionMonoid M](a₁ : ℤ × M) {a₂ : ℤ × M} {l�
     (a₁ ::ᵣ l₁).eval / (a₂ ::ᵣ l₂).eval = (a₁ ::ᵣ l).eval := by
   simp only [eval_cons, ← h, div_eq_mul_inv, mul_assoc]
 
-theorem div_eq_eval₂ [Field M] (r₁ r₂ : ℤ) (x : M) (hx : x ≠ 0) {l₁ l₂ l : NF M}
+theorem div_eq_eval₂ [CommGroupWithZero M] (r₁ r₂ : ℤ) (x : M) (hx : x ≠ 0) {l₁ l₂ l : NF M}
     (h : l₁.eval / l₂.eval = l.eval) :
     ((r₁, x) ::ᵣ l₁).eval / ((r₂, x) ::ᵣ l₂).eval = ((r₁ - r₂, x) ::ᵣ l).eval := by
   simp only [← h, eval_cons, zpow_sub₀ hx, div_eq_mul_inv, mul_inv, mul_zpow, zpow_neg, mul_assoc]
@@ -124,7 +118,7 @@ theorem div_eq_eval₂' [DivisionCommMonoid M] {r₁ r₂ : ℤ} (hr₁ : 0 ≤ 
     ((r₁, x) ::ᵣ l₁).eval / ((r₂, x) ::ᵣ l₂).eval = ((r₁ - r₂, x) ::ᵣ l).eval := by
   lift r₁ to ℕ using hr₁
   let s₂ := - r₂
-  have : r₂ = -s₂ := by ring
+  have : r₂ = -s₂ := by rw [neg_neg]
   rw [this]
   have hs₂ : 0 ≤ s₂ := by rwa [neg_nonneg]
   clear_value s₂
@@ -244,6 +238,13 @@ abbrev qNF (M : Q(Type v)) := List ((ℤ × Q($M)) × ℕ)
 namespace qNF
 
 variable {M : Q(Type v)}
+
+/-- Build a transparent expression for the product of powers represented by `l : qNF M`. The logic
+of the `field_simp` tactic requires that `l.evalPretty iM` be definitionally equal to
+`q(NF.eval $(l.toNF))`. -/
+def evalPretty (iM : Q(Field $M)) : qNF M → Q($M)
+  | [] => q(1)
+  | ((r, x), _) :: t => q($x ^ $r * $(evalPretty iM t))
 
 /-- Given `l` of type `qNF M`, i.e. a list of `(ℤ × Q($M)) × ℕ`s (two `Expr`s and a natural
 number), build an `Expr` representing an object of type `NF M` (i.e. `List (ℤ × M)`) in the
@@ -421,11 +422,10 @@ elab "field_simp2" : conv => do
   let ⟨u, K, _⟩ ← inferTypeQ' x
   -- find a `Field` instance on `K`
   let iK : Q(Field $K) ← synthInstanceQ q(Field $K)
-  -- run the core normalization function `normalize` on `x`, relative to the atoms
+  -- run the core normalization function `normalize` on `x`
   let ⟨l, pf⟩ ← AtomM.run .reducible <| normalize iK x
-  let e : Expr ← mkAppM `Mathlib.Tactic.FieldSimp.NF.eval #[l.toNF]
   -- convert `x` to the output of the normalization
-  Conv.applySimpResult { expr := e, proof? := some pf }
+  Conv.applySimpResult { expr := l.evalPretty iK, proof? := some pf }
 
 end Mathlib.Tactic.FieldSimp
 
@@ -433,23 +433,23 @@ open Mathlib.Tactic.FieldSimp
 
 variable {x y : ℚ}
 
-/-- info: NF.eval [] -/
+/-- info: 1 -/
 #guard_msgs in
 #conv field_simp2 => (1 : ℚ)
 
-/-- info: ((1, x) ::ᵣ []).eval -/
+/-- info: x ^ 1 * 1 -/
 #guard_msgs in
 #conv field_simp2 => (x)
 
-/-- info: ((1, x + y) ::ᵣ []).eval -/
+/-- info: (x + y) ^ 1 * 1 -/
 #guard_msgs in
 #conv field_simp2 => (x + y)
 
-/-- info: ((1, x) ::ᵣ ((1, y) ::ᵣ [])).eval -/
+/-- info: x ^ 1 * (y ^ 1 * 1) -/
 #guard_msgs in
 #conv field_simp2 => (x * y)
 
-/-- info: ((1, x) ::ᵣ ((-1, y) ::ᵣ [])).eval -/
+/-- info: x ^ 1 * (y ^ (-1) * 1) -/
 #guard_msgs in
 #conv field_simp2 => x / y
 
@@ -457,16 +457,12 @@ variable {x y : ℚ}
 
 example : (1 : ℚ) = 1 := by
   conv_lhs => field_simp2
-  rfl
 
 example : x = x ^ (1:ℤ) * 1 := by
   conv_lhs => field_simp2
-  rfl
 
 example : x * y = x ^ (1:ℤ) * (y ^ (1:ℤ) * 1) := by
   conv_lhs => field_simp2
-  rfl
 
 example : x / y = x ^ (1:ℤ) * (y ^ (-1:ℤ) * 1) := by
   conv_lhs => field_simp2
-  rfl
