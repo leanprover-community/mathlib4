@@ -163,14 +163,14 @@ but it is intended to behave well only when the list is admissible. -/
 def standardσ (L : List ℕ) {m₁ m₂ : ℕ} (h : m₂ + L.length = m₁) : mk m₁ ⟶ mk m₂ :=
   match L with
   | .nil => eqToHom (by congr; aesop)
-  | .cons a t => standardσ t (by subst h; simp only [List.length_cons]; omega) ≫ σ a
+  | .cons a t => standardσ t (by subst h; simp only [List.length_cons]; omega) ≫ σ (Fin.ofNat _ a)
 
 @[simp]
 lemma standardσ_nil (m : ℕ) : standardσ .nil (by simp) = 𝟙 (mk m) := rfl
 
 @[simp, reassoc]
 lemma standardσ_cons (L : List ℕ) (a : ℕ) {m₁ m₂ : ℕ} (h : m₂ + (a :: L).length = m₁) :
-    standardσ (L.cons a) h = standardσ L (by dsimp at h; omega) ≫ σ a := rfl
+    standardσ (L.cons a) h = standardσ L (by dsimp at h; omega) ≫ σ (Fin.ofNat _ a) := rfl
 
 @[reassoc]
 lemma standardσ_comp_standardσ (L₁ L₂ : List ℕ) {m₁ m₂ m₃ : ℕ}
@@ -260,14 +260,14 @@ lemma standardσ_simplicialInsert (hL : IsAdmissible (m + 1) L) (j : ℕ) (hj : 
     (m₁ : ℕ) (hm₁ : m + L.length + 1 = m₁):
     standardσ (m₂ := m) (simplicialInsert j L) (m₁ := m₁)
       (by simpa only [simplicialInsert_length, add_assoc]) =
-    standardσ (m₂ := m + 1) L (by omega) ≫ σ j := by
+    standardσ (m₂ := m + 1) L (by omega) ≫ σ (Fin.ofNat _ j) := by
   induction L generalizing m j with
   | nil => simp [standardσ, simplicialInsert]
   | cons a L h_rec =>
     simp only [List.length_cons, simplicialInsert, Category.id_comp]
     split_ifs
     · simp
-    · have : σ (a : Fin (m + 2)) ≫ σ j = σ ((j + 1 : ℕ)) ≫ σ a := by
+    · have : σ (Fin.ofNat (m + 2) a) ≫ σ (.ofNat _ j) = σ (.ofNat _ (j + 1)) ≫ σ (.ofNat _ a) := by
         convert σ_comp_σ_nat (n := m) a j (by omega) (by omega) ( by omega) <;> simp <;> omega
       simp only [standardσ_cons, Category.assoc, this,
         h_rec hL.tail (j + 1) (by omega) (by simp only [List.length_cons] at hm₁; omega)]
@@ -301,8 +301,8 @@ theorem exists_normal_form_P_σ {x y : SimplexCategoryGenRel} (f : x ⟶ y) (hf 
       subst h₂'
       haveI := standardσ (m₁ := m + 1 + L₁.length) [] (by simp +arith [simplicialInsert_length]) ≫=
         (standardσ_simplicialInsert L₁ hL₁ k k.prop _ rfl).symm
-      simp only [Fin.cast_val_eq_self, standardσ_comp_standardσ_assoc, List.append_eq,
-        List.append_nil] at this
+      simp only [Fin.ofNat_eq_cast, Fin.cast_val_eq_self, standardσ_comp_standardσ_assoc,
+        List.append_eq, List.append_nil] at this
       simp [this, standardσ_comp_standardσ]
 
 section MemIsAdmissible
