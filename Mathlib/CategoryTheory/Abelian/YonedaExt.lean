@@ -201,8 +201,8 @@ instance : Epi E.shortComplex.g := by
   have h : (E.K.sc' (n+1) (n+2) (n+3)).Exact := by
     refine' ShortComplex.exact_of_iso
       ((HomologicalComplex.natIsoSc' C (ComplexShape.up ℤ) (n+1) (n+2) (n+3)
-        (by simp only [CochainComplex.prev] ; linarith)
-        (by simp only [CochainComplex.next] ; linarith)).app E.K) _
+        (by simp only [CochainComplex.prev]; linarith)
+        (by simp only [CochainComplex.next]; linarith)).app E.K) _
     rw [ShortComplex.exact_iff_isZero_homology]
     apply E.hK'
   rw [ShortComplex.exact_iff_epi _
