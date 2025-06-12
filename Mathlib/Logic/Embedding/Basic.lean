@@ -119,12 +119,12 @@ theorem apply_eq_iff_eq {α β} (f : α ↪ β) (x y : α) : f x = f y ↔ x = y
   EmbeddingLike.apply_eq_iff_eq f
 
 /-- The identity map as a `Function.Embedding`. -/
-@[refl, simps (config := { simpRhs := true })]
+@[refl, simps +simpRhs]
 protected def refl (α : Sort*) : α ↪ α :=
   ⟨id, injective_id⟩
 
 /-- Composition of `f : α ↪ β` and `g : β ↪ γ`. -/
-@[trans, simps (config := { simpRhs := true })]
+@[trans, simps +simpRhs]
 protected def trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : α ↪ γ :=
   ⟨g ∘ f, g.injective.comp f.injective⟩
 
@@ -148,7 +148,7 @@ theorem equiv_symm_toEmbedding_trans_toEmbedding {α β : Sort*} (e : α ≃ β)
   simp
 
 /-- Transfer an embedding along a pair of equivalences. -/
-@[simps! (config := { fullyApplied := false, simpRhs := true })]
+@[simps! -fullyApplied +simpRhs]
 protected def congr {α : Sort u} {β : Sort v} {γ : Sort w} {δ : Sort x} (e₁ : α ≃ β) (e₂ : γ ≃ δ)
     (f : α ↪ γ) : β ↪ δ :=
   (Equiv.toEmbedding e₁.symm).trans (f.trans e₂.toEmbedding)
@@ -170,7 +170,8 @@ is already occupied by some `f a'`, then swap the values at these two points. -/
 def setValue {α β : Sort*} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = a)]
     [∀ a', Decidable (f a' = b)] : α ↪ β :=
   ⟨fun a' => if a' = a then b else if f a' = b then f a else f a', by
-    intro x y (h : ite _ _ _ = ite _ _ _)
+    intro x y h
+    simp only at h
     split_ifs at h <;> (try subst b) <;> (try simp only [f.injective.eq_iff] at *) <;> cc⟩
 
 @[simp]
@@ -230,6 +231,15 @@ def punit {β : Sort*} (b : β) : PUnit ↪ β :=
   ⟨fun _ => b, by
     rintro ⟨⟩ ⟨⟩ _
     rfl⟩
+
+/-- The equivalence `one ↪ α` with `α`, for `Unique one`. -/
+def oneEmbeddingEquiv {one α : Type*} [Unique one] : (one ↪ α) ≃ α where
+  toFun f := f default
+  invFun a := {
+    toFun := fun _ ↦ a
+    inj' x y h := by simp [Unique.uniq inferInstance] }
+  left_inv f := by ext; simp [Unique.uniq]
+  right_inv a := rfl
 
 /-- Fixing an element `b : β` gives an embedding `α ↪ α × β`. -/
 @[simps]

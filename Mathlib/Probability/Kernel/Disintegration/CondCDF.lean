@@ -177,16 +177,16 @@ theorem preCDF_le_one (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
 
 lemma setIntegral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) {s : Set α} (hs : MeasurableSet s)
     [IsFiniteMeasure ρ] :
-    ∫ x in s, (preCDF ρ r x).toReal ∂ρ.fst = (ρ.IicSnd r s).toReal := by
+    ∫ x in s, (preCDF ρ r x).toReal ∂ρ.fst = (ρ.IicSnd r).real s := by
   rw [integral_toReal]
-  · rw [setLIntegral_preCDF_fst _ _ hs]
+  · rw [setLIntegral_preCDF_fst _ _ hs, measureReal_def]
   · exact measurable_preCDF.aemeasurable
   · refine ae_restrict_of_ae ?_
     filter_upwards [preCDF_le_one ρ] with a ha
     exact (ha r).trans_lt ENNReal.one_lt_top
 
 lemma integral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) [IsFiniteMeasure ρ] :
-    ∫ x, (preCDF ρ r x).toReal ∂ρ.fst = (ρ.IicSnd r univ).toReal := by
+    ∫ x, (preCDF ρ r x).toReal ∂ρ.fst = (ρ.IicSnd r).real univ := by
   rw [← setIntegral_univ, setIntegral_preCDF_fst ρ _ MeasurableSet.univ]
 
 lemma integrable_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℚ) :
@@ -221,12 +221,12 @@ lemma isRatCondKernelCDFAux_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure �
   tendsto_integral_of_monotone a s _ hs_tendsto := by
     simp_rw [Kernel.const_apply, integral_preCDF_fst ρ]
     have h := ρ.tendsto_IicSnd_atTop MeasurableSet.univ
-    have h0 : Tendsto ENNReal.toReal (𝓝 (ρ.fst univ)) (𝓝 (ρ.fst univ).toReal) :=
+    have h0 : Tendsto ENNReal.toReal (𝓝 (ρ.fst univ)) (𝓝 (ρ.fst.real univ)) :=
       ENNReal.continuousAt_toReal (measure_ne_top _ _)
     exact h0.comp (h.comp hs_tendsto)
   integrable _ q := integrable_preCDF ρ q
   setIntegral a s hs q := by rw [Kernel.const_apply, Kernel.const_apply,
-    setIntegral_preCDF_fst _ _ hs, Measure.IicSnd_apply _ _ hs]
+    setIntegral_preCDF_fst _ _ hs, measureReal_def, measureReal_def, Measure.IicSnd_apply _ _ hs]
 
 lemma isRatCondKernelCDF_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
     IsRatCondKernelCDF (fun p r ↦ (preCDF ρ r p.2).toReal)
@@ -300,11 +300,11 @@ theorem integrable_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : 
   (isCondKernelCDF_condCDF ρ).integrable () x
 
 theorem setIntegral_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ) {s : Set α}
-    (hs : MeasurableSet s) : ∫ a in s, condCDF ρ a x ∂ρ.fst = (ρ (s ×ˢ Iic x)).toReal :=
+    (hs : MeasurableSet s) : ∫ a in s, condCDF ρ a x ∂ρ.fst = ρ.real (s ×ˢ Iic x) :=
   (isCondKernelCDF_condCDF ρ).setIntegral () hs x
 
 theorem integral_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℝ) :
-    ∫ a, condCDF ρ a x ∂ρ.fst = (ρ (univ ×ˢ Iic x)).toReal :=
+    ∫ a, condCDF ρ a x ∂ρ.fst = ρ.real (univ ×ˢ Iic x) :=
   (isCondKernelCDF_condCDF ρ).integral () x
 
 section Measure

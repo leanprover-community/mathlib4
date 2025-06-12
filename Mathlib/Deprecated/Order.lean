@@ -3,7 +3,7 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 import Mathlib.Order.RelClasses
 
 /-!
@@ -297,7 +297,7 @@ variable [MulOneClass α] [Zero α] [LinearOrder α] {a b c : α}
 -- proven with `a0 : 0 ≤ a` as `exists_square_le`
 @[deprecated "No replacement." (since := "2025-02-27")]
 theorem exists_square_le' [PosMulStrictMono α] (a0 : 0 < a) : ∃ b : α, b * b ≤ a := by
-  obtain ha | ha := lt_or_le a 1
+  obtain ha | ha := lt_or_ge a 1
   · exact ⟨a, (mul_lt_of_lt_one_right a0 ha).le⟩
   · exact ⟨1, by rwa [mul_one]⟩
 

@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Group.End
 import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Order.Group.Instances
 
 /-!
 # Maps (semi)conjugating a shift to a shift
@@ -129,7 +128,7 @@ theorem map_ofNat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F 
     f ofNat(n) = f 0 + ofNat(n) := map_nat f n
 
 @[scoped simp]
-theorem map_const_add [AddCommSemigroup G] [Add H] [AddConstMapClass F G H a b]
+theorem map_const_add [AddCommMagma G] [Add H] [AddConstMapClass F G H a b]
     (f : F) (x : G) : f (a + x) = f x + b := by
   rw [add_comm, map_add_const]
 
@@ -229,7 +228,7 @@ theorem map_int_add' [AddCommGroupWithOne G] [AddGroup H] [AddConstMapClass F G 
 theorem map_int_add [AddCommGroupWithOne G] [AddGroupWithOne H] [AddConstMapClass F G H 1 1]
     (f : F) (n : ℤ) (x : G) : f (↑n + x) = f x + n := by simp
 
-theorem map_fract {R : Type*} [LinearOrderedRing R] [FloorRing R] [AddGroup H]
+theorem map_fract {R : Type*} [Ring R] [LinearOrder R] [FloorRing R] [AddGroup H]
     [FunLike F R H] [AddConstMapClass F R H 1 b] (f : F) (x : R) :
     f (Int.fract x) = f x - ⌊x⌋ • b :=
   map_sub_int' ..
@@ -237,7 +236,8 @@ theorem map_fract {R : Type*} [LinearOrderedRing R] [FloorRing R] [AddGroup H]
 open scoped Relator in
 /-- Auxiliary lemmas for the "monotonicity on a fundamental interval implies monotonicity" lemmas.
 We formulate it for any relation so that the proof works both for `Monotone` and `StrictMono`. -/
-protected theorem rel_map_of_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [AddGroup H]
+protected theorem rel_map_of_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G]
+    [Archimedean G] [AddGroup H]
     [AddConstMapClass F G H a b] {f : F} {R : H → H → Prop} [IsTrans H R]
     [hR : CovariantClass H H (fun x y ↦ y + x) R] (ha : 0 < a) {l : G}
     (hf : ∀ x ∈ Icc l (l + a), ∀ y ∈ Icc l (l + a), x < y → R (f x) (f y)) :
@@ -253,7 +253,7 @@ protected theorem rel_map_of_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [
     rcases existsUnique_sub_zsmul_mem_Ioc ha y l with ⟨n, hny, -⟩
     rcases lt_trichotomy n 0 with hn | rfl | hn
     · -- Since `l ≤ x ≤ y`, the case `n < 0` is impossible
-      refine absurd ?_ hxy.not_le
+      refine absurd ?_ hxy.not_ge
       calc
         y ≤ l + a + n • a := sub_le_iff_le_add.1 hny.2
         _ = l + (n + 1) • a := by rw [add_comm n, add_smul, one_smul, add_assoc]
@@ -278,23 +278,27 @@ protected theorem rel_map_of_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [
         refine hR (k • b) (hf _ ?_ _ ?_ ?_) <;> simpa
       · assumption
 
-theorem monotone_iff_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [OrderedAddCommGroup H]
+theorem monotone_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
+    [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
     Monotone f ↔ MonotoneOn f (Icc l (l + a)) :=
   ⟨(Monotone.monotoneOn · _), fun hf ↦ monotone_iff_forall_lt.2 <|
     AddConstMapClass.rel_map_of_Icc ha fun _x hx _y hy hxy ↦ hf hx hy hxy.le⟩
 
-theorem antitone_iff_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [OrderedAddCommGroup H]
+theorem antitone_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
+    [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
     Antitone f ↔ AntitoneOn f (Icc l (l + a)) :=
   monotone_iff_Icc (H := Hᵒᵈ) ha l
 
-theorem strictMono_iff_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [OrderedAddCommGroup H]
+theorem strictMono_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
+    [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
     StrictMono f ↔ StrictMonoOn f (Icc l (l + a)) :=
   ⟨(StrictMono.strictMonoOn · _), AddConstMapClass.rel_map_of_Icc ha⟩
 
-theorem strictAnti_iff_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [OrderedAddCommGroup H]
+theorem strictAnti_iff_Icc [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G]
+    [AddCommGroup H] [PartialOrder H] [IsOrderedAddMonoid H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
     StrictAnti f ↔ StrictAntiOn f (Icc l (l + a)) :=
   strictMono_iff_Icc (H := Hᵒᵈ) ha l
@@ -456,7 +460,8 @@ end AddCommGroup
 
 section FloorRing
 
-variable {R G : Type*} [LinearOrderedRing R] [FloorRing R] [AddGroup G] (a : G)
+variable {R G : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R] [AddGroup G]
+  (a : G)
 
 /-- A map `f : R →+c[1, a] G` is defined by its values on `Set.Ico 0 1`. -/
 def mkFract : (Ico (0 : R) 1 → G) ≃ (R →+c[1, a] G) where

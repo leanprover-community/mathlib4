@@ -19,7 +19,7 @@ topological affine spaces (since we have not defined these yet).
 
 ## Main definitions:
 
- * `ContinuousAffineMap`
+* `ContinuousAffineMap`
 
 ## Notation:
 

@@ -28,10 +28,8 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 namespace WithOne
 
 @[to_additive]
-instance involutiveInv [InvolutiveInv α] : InvolutiveInv (WithOne α) :=
-  { WithOne.inv with
-    inv_inv := fun a =>
-      (Option.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, Option.map_id, id] }
+instance instInvolutiveInv [InvolutiveInv α] : InvolutiveInv (WithOne α) where
+  inv_inv a := (Option.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, Option.map_id, id]
 
 section
 

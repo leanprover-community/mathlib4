@@ -40,13 +40,15 @@ lemma natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p*q).natDegree = p.natDegre
   rw [← Nat.cast_inj (R := WithBot ℕ), ← degree_eq_natDegree (mul_ne_zero hp hq),
     Nat.cast_add, ← degree_eq_natDegree hp, ← degree_eq_natDegree hq, degree_mul]
 
+omit [NoZeroDivisors R] in
 variable (p) in
-lemma natDegree_smul (ha : a ≠ 0) : (a • p).natDegree = p.natDegree := by
+lemma natDegree_smul {R' : Type*} [Zero R'] [SMulWithZero R' R] [NoZeroSMulDivisors R' R] {a : R'}
+    (ha : a ≠ 0) : (a • p).natDegree = p.natDegree := by
   by_cases hp : p = 0
   · simp only [hp, smul_zero]
   · apply natDegree_eq_of_le_of_coeff_ne_zero
     · exact (natDegree_smul_le _ _).trans (le_refl _)
-    · simpa only [coeff_smul, coeff_natDegree, smul_eq_mul, ne_eq, mul_eq_zero,
+    · simpa only [coeff_smul, coeff_natDegree, ne_eq, smul_eq_zero,
         leadingCoeff_eq_zero, not_or] using ⟨ha, hp⟩
 
 @[simp]
@@ -68,12 +70,12 @@ lemma degree_le_of_dvd (h1 : p ∣ q) (h2 : q ≠ 0) : degree p ≤ degree q := 
 
 lemma eq_zero_of_dvd_of_degree_lt (h₁ : p ∣ q) (h₂ : degree q < degree p) : q = 0 := by
   by_contra hc
-  exact (lt_iff_not_ge _ _).mp h₂ (degree_le_of_dvd h₁ hc)
+  exact lt_iff_not_ge.mp h₂ (degree_le_of_dvd h₁ hc)
 
 lemma eq_zero_of_dvd_of_natDegree_lt (h₁ : p ∣ q) (h₂ : natDegree q < natDegree p) :
     q = 0 := by
   by_contra hc
-  exact (lt_iff_not_ge _ _).mp h₂ (natDegree_le_of_dvd h₁ hc)
+  exact lt_iff_not_ge.mp h₂ (natDegree_le_of_dvd h₁ hc)
 
 lemma not_dvd_of_degree_lt (h0 : q ≠ 0) (hl : q.degree < p.degree) : ¬p ∣ q := by
   by_contra hcontra

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
 import Mathlib.MeasureTheory.Constructions.Pi
-import Mathlib.MeasureTheory.Integral.Lebesgue
 
 /-!
 # Marginals of multivariate functions
@@ -172,7 +171,7 @@ theorem lmarginal_insert (f : (∀ i, X i) → ℝ≥0∞) (hf : Measurable f) {
 theorem lmarginal_erase (f : (∀ i, X i) → ℝ≥0∞) (hf : Measurable f) {i : δ}
     (hi : i ∈ s) (x : ∀ i, X i) :
     (∫⋯∫⁻_s, f ∂μ) x = ∫⁻ xᵢ, (∫⋯∫⁻_(erase s i), f ∂μ) (Function.update x i xᵢ) ∂μ i := by
-  simpa [insert_erase hi] using lmarginal_insert _ hf (not_mem_erase i s) x
+  simpa [insert_erase hi] using lmarginal_insert _ hf (notMem_erase i s) x
 
 /-- Peel off a single integral from a `lmarginal` integral at the end (compare with
 `lmarginal_insert`, which peels off an integral at the beginning). -/
@@ -187,7 +186,7 @@ theorem lmarginal_insert' (f : (∀ i, X i) → ℝ≥0∞) (hf : Measurable f) 
 theorem lmarginal_erase' (f : (∀ i, X i) → ℝ≥0∞) (hf : Measurable f) {i : δ}
     (hi : i ∈ s) :
     ∫⋯∫⁻_s, f ∂μ = ∫⋯∫⁻_(erase s i), (fun x ↦ ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i) ∂μ := by
-  simpa [insert_erase hi] using lmarginal_insert' _ hf (not_mem_erase i s)
+  simpa [insert_erase hi] using lmarginal_insert' _ hf (notMem_erase i s)
 
 @[simp] theorem lmarginal_univ [Fintype δ] {f : (∀ i, X i) → ℝ≥0∞} :
     ∫⋯∫⁻_univ, f ∂μ = fun _ => ∫⁻ x, f x ∂Measure.pi μ := by
@@ -207,20 +206,23 @@ theorem lmarginal_image [DecidableEq δ'] {e : δ' → δ} (he : Injective e) (s
     measurable_pi_iff.mpr <| fun i ↦ measurable_pi_apply (e i)
   induction s using Finset.induction generalizing x with
   | empty => simp
-  | insert hi ih =>
+  | insert _ _ hi ih =>
     rw [image_insert, lmarginal_insert _ (hf.comp h) (he.mem_finset_image.not.mpr hi),
       lmarginal_insert _ hf hi]
     simp_rw [ih, ← update_comp_eq_of_injective' x he]
 
-theorem lmarginal_update_of_not_mem {i : δ}
+theorem lmarginal_update_of_notMem {i : δ}
     {f : (∀ i, X i) → ℝ≥0∞} (hf : Measurable f) (hi : i ∉ s) (x : ∀ i, X i) (y : X i) :
     (∫⋯∫⁻_s, f ∂μ) (Function.update x i y) = (∫⋯∫⁻_s, f ∘ (Function.update · i y) ∂μ) x := by
   induction s using Finset.induction generalizing x with
   | empty => simp
-  | @insert i' s hi' ih =>
+  | insert i' s hi' ih =>
     rw [lmarginal_insert _ hf hi', lmarginal_insert _ (hf.comp measurable_update_left) hi']
     have hii' : i ≠ i' := mt (by rintro rfl; exact mem_insert_self i s) hi
     simp_rw [update_comm hii', ih (mt Finset.mem_insert_of_mem hi)]
+
+@[deprecated (since := "2025-05-23")]
+alias lmarginal_update_of_not_mem := lmarginal_update_of_notMem
 
 theorem lmarginal_eq_of_subset {f g : (∀ i, X i) → ℝ≥0∞} (hst : s ⊆ t)
     (hf : Measurable f) (hg : Measurable g) (hfg : ∫⋯∫⁻_s, f ∂μ = ∫⋯∫⁻_s, g ∂μ) :

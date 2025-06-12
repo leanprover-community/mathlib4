@@ -81,7 +81,7 @@ theorem cross_self (v : Fin 3 → R) : v ×₃ v = 0 := by
 @[simp]
 theorem dot_self_cross (v w : Fin 3 → R) : v ⬝ᵥ v ×₃ w = 0 := by
   rw [cross_apply, vec3_dotProduct]
-  norm_num
+  dsimp only [Matrix.cons_val]
   ring
 
 /-- The cross product of two vectors is perpendicular to the second vector. -/
@@ -92,21 +92,21 @@ theorem dot_cross_self (v w : Fin 3 → R) : w ⬝ᵥ v ×₃ w = 0 := by
 /-- Cyclic permutations preserve the triple product. See also `triple_product_eq_det`. -/
 theorem triple_product_permutation (u v w : Fin 3 → R) : u ⬝ᵥ v ×₃ w = v ⬝ᵥ w ×₃ u := by
   simp_rw [cross_apply, vec3_dotProduct]
-  norm_num
+  dsimp only [Matrix.cons_val]
   ring
 
 /-- The triple product of `u`, `v`, and `w` is equal to the determinant of the matrix
     with those vectors as its rows. -/
 theorem triple_product_eq_det (u v w : Fin 3 → R) : u ⬝ᵥ v ×₃ w = Matrix.det ![u, v, w] := by
   rw [vec3_dotProduct, cross_apply, det_fin_three]
-  norm_num
+  dsimp only [Matrix.cons_val]
   ring
 
 /-- The scalar quadruple product identity, related to the Binet-Cauchy identity. -/
 theorem cross_dot_cross (u v w x : Fin 3 → R) :
     u ×₃ v ⬝ᵥ w ×₃ x = u ⬝ᵥ w * v ⬝ᵥ x - u ⬝ᵥ x * v ⬝ᵥ w := by
   simp_rw [cross_apply, vec3_dotProduct]
-  norm_num
+  dsimp only [Matrix.cons_val]
   ring
 
 end ProductsProperties
@@ -116,7 +116,7 @@ section LeibnizProperties
 /-- The cross product satisfies the Leibniz lie property. -/
 theorem leibniz_cross (u v w : Fin 3 → R) : u ×₃ (v ×₃ w) = u ×₃ v ×₃ w + v ×₃ (u ×₃ w) := by
   simp_rw [cross_apply, vec3_add]
-  apply vec3_eq <;> norm_num <;> ring
+  apply vec3_eq <;> dsimp <;> ring
 
 /-- The three-dimensional vectors together with the operations + and ×₃ form a Lie ring.
     Note we do not make this an instance as a conflicting one already exists
@@ -164,3 +164,23 @@ lemma crossProduct_ne_zero_iff_linearIndependent {F : Type*} [Field F] {v w : Fi
   simp only [smul_eq_mul, mul_comm (w 0), mul_comm (w 1), mul_comm (w 2), h1] at h20 h21 h22
   rw [hv', cons_eq_zero_iff, cons_eq_zero_iff, cons_eq_zero_iff, zero_empty] at hv
   exact hv ⟨(h20 trivial).2, (h21 trivial).2, (h22 trivial).2, rfl⟩
+
+/-- The scalar triple product expansion of the vector triple product. -/
+theorem cross_cross_eq_smul_sub_smul (u v w : Fin 3 → R) :
+    u ×₃ v ×₃ w = (u ⬝ᵥ w) • v - (v ⬝ᵥ w) • u := by
+  simp_rw [cross_apply, vec3_dotProduct]
+  ext i
+  fin_cases i <;>
+  · simp only [Fin.isValue, Nat.succ_eq_add_one, Nat.reduceAdd, Fin.reduceFinMk, cons_val,
+      Pi.sub_apply, Pi.smul_apply, smul_eq_mul]
+    ring
+
+/-- Alternative form of the scalar triple product expansion of the vector triple product. -/
+theorem cross_cross_eq_smul_sub_smul' (u v w : Fin 3 → R) :
+    u ×₃ (v ×₃ w) = (u ⬝ᵥ w) • v - (v ⬝ᵥ u) • w := by
+  simp_rw [cross_apply, vec3_dotProduct]
+  ext i
+  fin_cases i <;>
+  · simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, cons_val, cons_val_one,
+      cons_val_zero, Fin.reduceFinMk, Pi.sub_apply, Pi.smul_apply, smul_eq_mul]
+    ring
