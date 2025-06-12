@@ -54,7 +54,7 @@ theorem isSheafFor_extensive_of_preservesFiniteProducts {X : C} (S : Presieve X)
   have : (ofArrows Z (Cofan.mk X π).inj).hasPullbacks :=
     (inferInstance : (ofArrows Z π).hasPullbacks)
   cases nonempty_fintype α
-  exact isSheafFor_of_preservesProduct _ _ hc
+  exact isSheafFor_of_preservesProduct F _ hc
 
 instance {α : Type} [Finite α] (Z : α → C) : (ofArrows Z (fun i ↦ Sigma.ι Z i)).Extensive :=
   ⟨⟨α, inferInstance, Z, (fun i ↦ Sigma.ι Z i), rfl, ⟨coproductIsCoproduct _⟩⟩⟩
