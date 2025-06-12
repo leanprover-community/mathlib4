@@ -12,7 +12,7 @@ This file implements diffeomorphisms.
 
 ## Definitions
 
-* `Diffeomorph I I' M M' n`:  `n`-times continuously differentiable diffeomorphism between
+* `Diffeomorph I I' M M' n`: `n`-times continuously differentiable diffeomorphism between
   `M` and `M'` with respect to I and I'; we do not introduce a separate definition for the case
   `n = ∞` or `n = ω`; we use notation instead.
 * `Diffeomorph.toHomeomorph`: reinterpret a diffeomorphism as a homeomorphism.
@@ -457,15 +457,8 @@ instance instIsManifoldtransContinuousLinearEquiv [IsManifold I n M] :
   refine isManifold_of_contDiffOn (I.transContinuousLinearEquiv e) n M fun e₁ e₂ h₁ h₂ => ?_
   refine e.contDiff.comp_contDiffOn
       (((contDiffGroupoid n I).compatible h₁ h₂).1.comp e.symm.contDiff.contDiffOn ?_)
-  simp only [ModelWithCorners.target_eq, PartialEquiv.restr_coe_symm,
-    Equiv.toPartialEquiv_symm_apply, LinearEquiv.coe_toEquiv_symm, symm_toLinearEquiv,
-    EquivLike.coe_coe, coe_toLinearEquiv, ModelWithCorners.coe_transContinuousLinearEquiv_symm,
-    PartialHomeomorph.trans_toPartialEquiv, PartialHomeomorph.symm_toPartialEquiv,
-    PartialEquiv.trans_source, PartialEquiv.symm_source, PartialHomeomorph.coe_coe_symm,
-    preimage_inter, preimage_comp, ModelWithCorners.coe_transContinuousLinearEquiv, range_comp,
-    mapsTo_iff_subset_preimage]
-  gcongr
-  rw [ContinuousLinearEquiv.image_eq_preimage]
+  simp [preimage_comp, range_comp, mapsTo_iff_subset_preimage,
+    ContinuousLinearEquiv.image_eq_preimage]
 
 variable (I M)
 
