@@ -156,7 +156,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
           rw [mem_image]
           exact ⟨{i}, by solve_by_elim, card_singleton i⟩
     -- Need to get `a_i ≤ r`, here phrased as: there is some `a < r` with `a+1 = a_i`.
-    exact ⟨⟨(ab i).1 - 1, by omega⟩, (ab i).2 - 1, by omega⟩
+    exact ⟨⟨(ab i).1 - 1, by grind⟩, (ab i).2 - 1, by grind⟩
   -- To get our contradiction, it suffices to prove `n ≤ r * s`
   apply not_le_of_gt hn
   -- Which follows from considering the cardinalities of the subset above, since `ab` is injective.
