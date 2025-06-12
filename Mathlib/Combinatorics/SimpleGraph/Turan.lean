@@ -367,7 +367,7 @@ theorem card_edgeFinset_turanGraph {n r : ℕ} :
         show (n % r + r * (n / r) + n % r) * (r * (n / r)) * (r - 1) =
           (2 * ((n % r) * (n / r) * (r - 1)) + r * (r - 1) * (n / r) ^ 2) * r by ring]
       rw [Nat.mul_div_mul_right _ _ hr, Nat.mul_add_div zero_lt_two]
-    rcases lt_or_le n r with h | h
+    rcases lt_or_ge n r with h | h
     · rw [Nat.mod_eq_of_lt h, tsub_self, zero_mul, Nat.zero_div, zero_add]
       have := card_edgeFinset_top_eq_card_choose_two (V := Fin n)
       rw [Fintype.card_fin] at this; convert this
