@@ -116,7 +116,7 @@ theorem ofDual_compares_ofDual [LT α] {a b : αᵒᵈ} {o : Ordering} :
   exacts [Iff.rfl, eq_comm, Iff.rfl]
 
 theorem cmp_compares [LinearOrder α] (a b : α) : (cmp a b).Compares a b := by
-  obtain h | h | h := lt_trichotomy a b <;> simp [cmp, cmpUsing, h, h.not_lt]
+  obtain h | h | h := lt_trichotomy a b <;> simp [cmp, cmpUsing, h, h.not_gt]
 
 theorem Ordering.Compares.cmp_eq [LinearOrder α] {a b : α} {o : Ordering} (h : o.Compares a b) :
     cmp a b = o :=

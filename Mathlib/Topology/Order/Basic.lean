@@ -545,7 +545,7 @@ theorem countable_setOf_covBy_right [OrderTopology α] [SecondCountableTopology 
     simpa only [IsBot, not_forall, not_le] using hx.right.right.right
   choose! z hz h'z using this
   have : PairwiseDisjoint t fun x => Ioc (z x) x := fun x xt x' x't hxx' => by
-    rcases hxx'.lt_or_lt with (h' | h')
+    rcases hxx'.lt_or_gt with (h' | h')
     · refine disjoint_left.2 fun u ux ux' => xt.2.2.1 ?_
       refine h'z x' x't ⟨ux'.1.trans_le (ux.2.trans (hy x xt.1).le), ?_⟩
       by_contra! H

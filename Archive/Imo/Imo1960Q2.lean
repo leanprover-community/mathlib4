@@ -46,7 +46,7 @@ theorem isGood_iff {x} : IsGood x ↔ x ∈ Ico (-1/2) (45/8) \ {0} := by
   | inl hx2 =>
     -- Next, if `x < -1/2`, then the square root is undefined.
     have : 2 * x + 1 < 0 := by linarith
-    simp [hx2.not_le, isGood_iff', this.not_le]
+    simp [hx2.not_ge, isGood_iff', this.not_ge]
   | inr hx2 =>
     -- Now, if `x ≥ -1/2`, `x ≠ 0`, then the expression is well-defined.
     have hx2' : 0 ≤ 2 * x + 1 := by linarith
