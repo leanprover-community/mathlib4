@@ -1,6 +1,21 @@
+/-
+Copyright (c) 2025 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
 import Mathlib.RingTheory.DedekindDomain.Factorization
 import Mathlib.RingTheory.DedekindDomain.Different
 import Mathlib.NumberTheory.NumberField.Discriminant.Basic
+
+/-!
+
+# (Absolute) Discriminant and Different Ideal
+
+## Main results
+- `NumberField.absNorm_differentIdeal`:
+  The norm of `differentIdeal ℤ 𝒪` is the absolute discriminant.
+
+-/
 
 variable {K 𝒪 : Type*} [Field K] [NumberField K] [CommRing 𝒪] [Algebra 𝒪 K]
 variable [IsFractionRing 𝒪 K] [IsIntegralClosure 𝒪 ℤ K] [IsDedekindDomain 𝒪] [CharZero 𝒪]
