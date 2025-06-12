@@ -1488,11 +1488,10 @@ import Mathlib.Analysis.Convex.Birkhoff
 import Mathlib.Analysis.Convex.Body
 import Mathlib.Analysis.Convex.Caratheodory
 import Mathlib.Analysis.Convex.Combination
+import Mathlib.Analysis.Convex.Cone.Basic
 import Mathlib.Analysis.Convex.Cone.Closure
 import Mathlib.Analysis.Convex.Cone.Extension
 import Mathlib.Analysis.Convex.Cone.InnerDual
-import Mathlib.Analysis.Convex.Cone.Pointed
-import Mathlib.Analysis.Convex.Cone.Proper
 import Mathlib.Analysis.Convex.Continuous
 import Mathlib.Analysis.Convex.Contractible
 import Mathlib.Analysis.Convex.Deriv
@@ -2046,6 +2045,7 @@ import Mathlib.CategoryTheory.FiberedCategory.Cartesian
 import Mathlib.CategoryTheory.FiberedCategory.Cocartesian
 import Mathlib.CategoryTheory.FiberedCategory.Fiber
 import Mathlib.CategoryTheory.FiberedCategory.Fibered
+import Mathlib.CategoryTheory.FiberedCategory.HasFibers
 import Mathlib.CategoryTheory.FiberedCategory.HomLift
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Filtered.Connected
@@ -2137,6 +2137,7 @@ import Mathlib.CategoryTheory.Join.Sum
 import Mathlib.CategoryTheory.LiftingProperties.Adjunction
 import Mathlib.CategoryTheory.LiftingProperties.Basic
 import Mathlib.CategoryTheory.LiftingProperties.Limits
+import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
 import Mathlib.CategoryTheory.Limits.Bicones
 import Mathlib.CategoryTheory.Limits.ColimitLimit
 import Mathlib.CategoryTheory.Limits.Comma
@@ -2281,6 +2282,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 import Mathlib.CategoryTheory.Limits.Sifted
 import Mathlib.CategoryTheory.Limits.SmallComplete
+import Mathlib.CategoryTheory.Limits.Types.ColimitType
 import Mathlib.CategoryTheory.Limits.Types.Colimits
 import Mathlib.CategoryTheory.Limits.Types.Filtered
 import Mathlib.CategoryTheory.Limits.Types.Images
@@ -3583,6 +3585,7 @@ import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 import Mathlib.FieldTheory.Tower
 import Mathlib.Geometry.Convex.Cone.Basic
+import Mathlib.Geometry.Convex.Cone.Pointed
 import Mathlib.Geometry.Euclidean.Altitude
 import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
 import Mathlib.Geometry.Euclidean.Angle.Oriented.Basic
@@ -5358,6 +5361,7 @@ import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.Polynomial.Bernstein
 import Mathlib.RingTheory.Polynomial.Chebyshev
 import Mathlib.RingTheory.Polynomial.Content
+import Mathlib.RingTheory.Polynomial.ContentIdeal
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
@@ -5721,6 +5725,9 @@ import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.GCongr.CoreAttrs
 import Mathlib.Tactic.GCongr.ForwardAttr
+import Mathlib.Tactic.GRewrite
+import Mathlib.Tactic.GRewrite.Core
+import Mathlib.Tactic.GRewrite.Elab
 import Mathlib.Tactic.Generalize
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.Group
@@ -6002,6 +6009,8 @@ import Mathlib.Topology.Algebra.ProperAction.Basic
 import Mathlib.Topology.Algebra.ProperAction.ProperlyDiscontinuous
 import Mathlib.Topology.Algebra.ProperConstSMul
 import Mathlib.Topology.Algebra.RestrictedProduct
+import Mathlib.Topology.Algebra.RestrictedProduct.Basic
+import Mathlib.Topology.Algebra.RestrictedProduct.TopologicalSpace
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.Ring.Compact
 import Mathlib.Topology.Algebra.Ring.Ideal
@@ -6127,6 +6136,7 @@ import Mathlib.Topology.Connected.Basic
 import Mathlib.Topology.Connected.Clopen
 import Mathlib.Topology.Connected.LocPathConnected
 import Mathlib.Topology.Connected.LocallyConnected
+import Mathlib.Topology.Connected.PathComponentOne
 import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Connected.Separation
 import Mathlib.Topology.Connected.TotallyDisconnected
