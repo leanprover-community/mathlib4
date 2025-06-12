@@ -110,74 +110,62 @@ lemma ZLattice.sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq �
     exact fun i ↦ Icc_subset_Icc (by simpa) (by simpa) (hx i)
   have (k : ℕ) : #(s (k + 1) \ s k) ≤ 2 * d * (2 * k + 3) ^ (d - 1) := by
     trans (2 * k + 3) ^ d - (2 * k + 1) ^ d
-    · rw [card_sdiff]
-      · simp only [Fintype.card_piFinset, Int.card_Icc, prod_const, card_univ, s, sub_neg_eq_add]
-        gcongr <;> norm_cast <;> omega
-      · exact hs (by simp)
+    · simp only [le_add_iff_nonneg_right, zero_le, hs, card_sdiff, s]
+      simp only [Fintype.card_piFinset, Int.card_Icc, sub_neg_eq_add, prod_const, card_univ, s]
+      gcongr <;> norm_cast <;> omega
     · have := abs_pow_sub_pow_le (α := ℤ) ↑(2 * k + 3) ↑(2 * k + 1) d
-      simp only [Nat.cast_add, Nat.cast_mul, Nat.cast_ofNat, Nat.cast_one,
-        add_sub_add_left_eq_sub, Int.reduceSub, Nat.abs_ofNat, s] at this
+      norm_num at this
       zify
       convert this using 3
-      · rw [abs_eq_self.mpr, Nat.cast_sub]
-        · simp
-        · gcongr; omega
-        · rw [sub_nonneg]
-          gcongr; omega
-      · rw [max_eq_left, abs_eq_self.mpr]
-        · positivity
-        gcongr; omega
+      · rw [abs_eq_self.mpr (sub_nonneg.mpr (by gcongr; omega)), Nat.cast_sub (by gcongr; omega)]
+        simp
+      · rw [max_eq_left (by gcongr; omega), abs_eq_self.mpr (by positivity)]
   let ε := normBound b
   have hε : 0 < ε := normBound_pos b
   calc ∑ p ∈ s n, ‖∑ i, p i • b i‖ ^ r
       = ∑ k ∈ range n, ∑ p ∈ (s (k + 1) \ s k), ‖∑ i, p i • b i‖ ^ r := by
-        rw [Finset.sum_eq_sum_range_sdiff _ @hs]
-        simp [hs0, hr'.ne]
+        simp [Finset.sum_eq_sum_range_sdiff _ @hs, hs0, hr'.ne]
     _ ≤ ∑ k ∈ range n, ∑ p ∈ (s (k + 1) \ s k), ((k + 1) * ε) ^ r := by
         gcongr ∑ k ∈ Finset.range n, ∑ p ∈ (s (k + 1) \ s k), ?_ with k hk v hv
         rw [← Nat.cast_one, ← Nat.cast_add]
         refine Real.rpow_le_rpow_of_nonpos (by positivity) ?_ hr'.le
         obtain ⟨j, hj⟩ : ∃ i, v i ∉ Icc (-k : ℤ) k := by simpa [s] using (mem_sdiff.mp hv).2
-        rw [mul_comm]
-        refine ZLattice.le_norm_of_le_abs_repr b _ _ j ?_
+        refine mul_comm _ ε ▸ ZLattice.le_norm_of_le_abs_repr b _ _ j ?_
         suffices ↑k + 1 ≤ |v j| by simpa [Finsupp.single_apply] using this
         by_contra! H
         rw [Int.lt_add_one_iff, abs_le, ← Finset.mem_Icc] at H
         exact hj H
-    _ = ∑ k ∈ range n, #(s (k + 1) \ s k) * ((k + 1) * ε) ^ r := by
-      simp only [sum_const, nsmul_eq_mul]
-    _ ≤ ∑ k ∈ range n, ↑(2 * d * (2 * k + 3) ^ (d - 1)) * ((k + 1) * ε) ^ r := by
-      gcongr with k hk
-      · exact this _
     _ ≤ ∑ k ∈ range n, ↑(2 * d * (3 * (k + 1)) ^ (d - 1)) * ((k + 1) * ε) ^ r := by
-      gcongr; omega
+        simp only [sum_const, nsmul_eq_mul]
+        gcongr with k hk
+        refine (this _).trans ?_
+        gcongr
+        omega
     _ = 2 * d * 3 ^ (d - 1) * ε ^ r * ∑ k ∈ range n, (k + 1) ^ (d - 1) * (k + 1 : ℝ) ^ r := by
-      simp_rw [Finset.mul_sum]
-      congr with k
-      push_cast
-      rw [Real.mul_rpow, mul_pow]
-      · group
-      · positivity
-      · exact (ZLattice.normBound_pos b).le
+        simp_rw [Finset.mul_sum]
+        congr with k
+        push_cast
+        rw [Real.mul_rpow (by positivity) (by positivity), mul_pow]
+        group
     _ = 2 * d * 3 ^ (d - 1) * ε ^ r * ∑ k ∈ range n, (↑(k + 1) : ℝ) ^ (d - 1 + r) := by
-      congr with k
-      rw [← Real.rpow_natCast, ← Real.rpow_add (by positivity), Nat.cast_sub hd]
-      norm_cast
+        congr with k
+        rw [← Real.rpow_natCast, ← Real.rpow_add (by positivity), Nat.cast_sub hd]
+        norm_cast
     _ ≤ 2 * d * 3 ^ (d - 1) * ε ^ r * ∑ k ∈ range (n + 1), (k : ℝ) ^ (d - 1 + r) := by
-      gcongr
-      rw [Finset.sum_range_succ', le_add_iff_nonneg_right]
-      positivity
+        gcongr
+        rw [Finset.sum_range_succ', le_add_iff_nonneg_right]
+        positivity
     _ ≤ 2 * d * 3 ^ (d - 1) * ε ^ r * ∑' k : ℕ, (k : ℝ) ^ (d - 1 + r) := by
-      gcongr
-      refine sum_le_tsum _ (fun _ _ ↦ by positivity) ?_
-      rw [Real.summable_nat_rpow]
-      linarith
+        gcongr
+        refine Summable.sum_le_tsum _ (fun _ _ ↦ by positivity) (Real.summable_nat_rpow.mpr ?_)
+        linarith
 
 variable (L)
 
 lemma ZLattice.exists_finset_sum_norm_rpow_le_tsum :
     ∃ A > (0 : ℝ), ∀ r < (-Module.finrank ℤ L : ℝ), ∀ s : Finset L,
       ∑ z ∈ s, ‖z‖ ^ r ≤ A ^ r * ∑' k : ℕ, (k : ℝ) ^ (Module.finrank ℤ L - 1 + r) := by
+  classical
   cases subsingleton_or_nontrivial L
   · refine ⟨1, zero_lt_one, fun r hr s ↦ ?_⟩
     have hr : r ≠ 0 := by linarith
@@ -198,8 +186,8 @@ lemma ZLattice.exists_finset_sum_norm_rpow_le_tsum :
       ⟨u.image e.symm.toEmbedding, Finset.coe_injective
         (by simpa using (e.image_symm_image _).symm)⟩
     dsimp
-    simp only [LinearEquiv.coe_addEquiv_apply, EmbeddingLike.apply_eq_iff_eq,
-      imp_self, implies_true, Finset.sum_image, ge_iff_le]
+    simp only [EmbeddingLike.apply_eq_iff_eq, implies_true, Set.injOn_of_eq_iff_eq,
+      Finset.sum_image, ge_iff_le]
     obtain ⟨n, hn⟩ : ∃ n : ℕ, u ⊆ Fintype.piFinset fun _ : I ↦ Finset.Icc (-n : ℤ) n := by
       obtain ⟨r, hr, hr'⟩ := u.finite_toSet.isCompact.isBounded.subset_closedBall_lt 0 0
       refine ⟨⌊r⌋.toNat, fun x hx ↦ ?_⟩
@@ -254,13 +242,13 @@ lemma ZLattice.summable_norm_rpow (r : ℝ) (hr : r < -Module.finrank ℤ L) :
 lemma ZLattice.tsum_norm_rpow_le (r : ℝ) (hr : r < -Module.finrank ℤ L) :
     ∑' z : L, ‖z‖ ^ r ≤
       tsumNormRPowBound L ^ r * ∑' k : ℕ, (k : ℝ) ^ (Module.finrank ℤ L - 1 + r) :=
-  tsum_le_of_sum_le (summable_norm_rpow L r hr) (tsumNormRPowBound_spec L r hr)
+  Summable.tsum_le_of_sum_le (summable_norm_rpow L r hr) (tsumNormRPowBound_spec L r hr)
 
 lemma ZLattice.summable_norm_sub_rpow (r : ℝ) (hr : r < -Module.finrank ℤ L) (x : E) :
     Summable fun z : L ↦ ‖z - x‖ ^ r := by
   cases subsingleton_or_nontrivial L
   · exact .of_finite
-  refine Summable.of_norm_bounded_eventually _
+  refine Summable.of_norm_bounded_eventually
     (.mul_left ((1 / 2) ^ r) (summable_norm_rpow L r hr)) ?_
   have H : IsClosed (X := E) L := @AddSubgroup.isClosed_of_discrete _ _ _ _ _
     L.toAddSubgroup (inferInstanceAs (DiscreteTopology L))
