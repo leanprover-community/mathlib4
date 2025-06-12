@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 
 import Mathlib.Algebra.Module.Presentation.Basic
+import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.Logic.UnivLE
 
@@ -68,7 +69,7 @@ noncomputable def presentationFinsupp (G : Type w₀) :
   R := PEmpty.{w₁ + 1}
   relation := by rintro ⟨⟩
   toSolution := Relations.solutionFinsupp _
-  toIsPresentation := Relations.solutionFinsupp_isPresentation _
+  toIsPresentation := by exact Relations.solutionFinsupp_isPresentation _
 
 lemma free_iff_exists_presentation :
     Free A M ↔ ∃ (p : Presentation.{v, w₁} A M), IsEmpty p.R := by

@@ -41,9 +41,9 @@ private theorem abc_subcall {a b c w : k[X]} {hw : w ≠ 0} (wab : w = wronskian
     a.natDegree + b.natDegree + c.natDegree = (a * b * c).natDegree := by
       rw [Polynomial.natDegree_mul ab_nz hc, Polynomial.natDegree_mul ha hb]
     _ = ((divRadical (a * b * c)) * (radical (a * b * c))).natDegree := by
-      rw [mul_comm _ (radical _), radical_mul_divRadical (a * b * c)]
+      rw [mul_comm _ (radical _), radical_mul_divRadical]
     _ = abc_dr.natDegree + abc_r.natDegree := by
-      rw [← Polynomial.natDegree_mul (divRadical_ne_zero abc_nz) (radical_ne_zero (a * b * c))]
+      rw [← Polynomial.natDegree_mul (divRadical_ne_zero abc_nz) radical_ne_zero]
     _ < a.natDegree + b.natDegree + abc_r.natDegree := by
       exact Nat.add_lt_add_right abc_dr_ndeg_lt _
 
@@ -84,8 +84,8 @@ protected theorem Polynomial.abc
   by_cases hw : w = 0
   · right
     rw [hw] at wab wbc
-    cases' hab.wronskian_eq_zero_iff.mp wab.symm with ga gb
-    cases' hbc.wronskian_eq_zero_iff.mp wbc.symm with _ gc
+    obtain ⟨ga, gb⟩ := hab.wronskian_eq_zero_iff.mp wab.symm
+    obtain ⟨_, gc⟩ := hbc.wronskian_eq_zero_iff.mp wbc.symm
     exact ⟨ga, gb, gc⟩
   · left
     -- use the subcall three times, using the symmetry in `a, b, c`

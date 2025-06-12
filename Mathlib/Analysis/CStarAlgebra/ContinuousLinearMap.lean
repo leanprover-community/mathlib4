@@ -12,6 +12,8 @@ We place this here because, for reasons related to the import hierarchy, it shou
 in earlier files.
 -/
 
+#adaptation_note /-- 2025-03-29 for lean4#7717 had to add `norm_mul_self_le` field. -/
 noncomputable
 instance {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E] [CompleteSpace E] :
     CStarAlgebra (E →L[ℂ] E) where
+  norm_mul_self_le := CStarRing.norm_mul_self_le

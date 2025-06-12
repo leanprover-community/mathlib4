@@ -217,8 +217,7 @@ def Trident.ofι [Nonempty J] {P : C} (ι : P ⟶ X) (w : ∀ j₁ j₂, ι ≫ 
   π :=
     { app := fun X => WalkingParallelFamily.casesOn X ι (ι ≫ f (Classical.arbitrary J))
       naturality := fun i j f => by
-        dsimp
-        cases' f with _ k
+        obtain - | k := f
         · simp
         · simp [w (Classical.arbitrary J) k] }
 
@@ -232,12 +231,10 @@ def Cotrident.ofπ [Nonempty J] {P : C} (π : Y ⟶ P) (w : ∀ j₁ j₂, f j�
   ι :=
     { app := fun X => WalkingParallelFamily.casesOn X (f (Classical.arbitrary J) ≫ π) π
       naturality := fun i j f => by
-        dsimp
-        cases' f with _ k
+        obtain - | k := f
         · simp
         · simp [w (Classical.arbitrary J) k] }
 
--- See note [dsimp, simp]
 theorem Trident.ι_ofι [Nonempty J] {P : C} (ι : P ⟶ X) (w : ∀ j₁ j₂, ι ≫ f j₁ = ι ≫ f j₂) :
     (Trident.ofι ι w).ι = ι :=
   rfl
@@ -405,7 +402,7 @@ def Cocone.ofCotrident {F : WalkingParallelFamily J ⥤ C} (t : Cotrident fun j 
   pt := t.pt
   ι :=
     { app := fun X => eqToHom (by cases X <;> aesop_cat) ≫ t.ι.app X
-      naturality := fun j j' g => by cases g <;> dsimp <;> simp [Cotrident.app_one t] }
+      naturality := fun j j' g => by cases g <;> simp [Cotrident.app_one t] }
 
 @[simp]
 theorem Cone.ofTrident_π {F : WalkingParallelFamily J ⥤ C} (t : Trident fun j => F.map (line j))
@@ -677,13 +674,13 @@ abbrev HasWideCoequalizers :=
 theorem hasWideEqualizers_of_hasLimit_parallelFamily
     [∀ {J : Type w} {X Y : C} {f : J → (X ⟶ Y)}, HasLimit (parallelFamily f)] :
     HasWideEqualizers.{w} C := fun _ =>
-  { has_limit := fun F => hasLimitOfIso (diagramIsoParallelFamily F).symm }
+  { has_limit := fun F => hasLimit_of_iso (diagramIsoParallelFamily F).symm }
 
 /-- If `C` has all colimits of diagrams `parallelFamily f`, then it has all wide coequalizers -/
 theorem hasWideCoequalizers_of_hasColimit_parallelFamily
     [∀ {J : Type w} {X Y : C} {f : J → (X ⟶ Y)}, HasColimit (parallelFamily f)] :
     HasWideCoequalizers.{w} C := fun _ =>
-  { has_colimit := fun F => hasColimitOfIso (diagramIsoParallelFamily F) }
+  { has_colimit := fun F => hasColimit_of_iso (diagramIsoParallelFamily F) }
 
 instance (priority := 10) hasEqualizers_of_hasWideEqualizers [HasWideEqualizers.{w} C] :
     HasEqualizers C :=

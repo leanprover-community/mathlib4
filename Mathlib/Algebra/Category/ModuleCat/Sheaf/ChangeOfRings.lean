@@ -55,7 +55,7 @@ noncomputable def restrictHomEquivOfIsLocallySurjective
     apply hM₂.isSeparated _ _ (Presheaf.imageSieve_mem J α r')
     rintro Y p ⟨r : R.obj _, hr⟩
     have hg : ∀ (z : M₁.obj X), g.app _ (M₁.map p.op z) = M₂.map p.op (g.app X z) :=
-      fun z ↦ congr_fun ((forget _).congr_map (g.naturality p.op)) z
+      fun z ↦ CategoryTheory.congr_fun (g.naturality p.op) z
     change M₂.map p.op (g.app X (r' • m)) = M₂.map p.op (r' • show M₂.obj X from g.app X m)
     dsimp at hg ⊢
     rw [← hg, M₂.map_smul, ← hg, ← hr]

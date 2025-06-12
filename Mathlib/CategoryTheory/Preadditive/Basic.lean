@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Jakob von Raumer
 -/
 import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.GroupWithZero.Action.Units
+import Mathlib.Algebra.Group.Action.Units
 import Mathlib.Algebra.Module.End
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
@@ -54,6 +54,7 @@ variable (C : Type u) [Category.{v} C]
 
 /-- A category is called preadditive if `P ⟶ Q` is an abelian group such that composition is
     linear in both variables. -/
+@[stacks 00ZY]
 class Preadditive where
   homGroup : ∀ P Q : C, AddCommGroup (P ⟶ Q) := by infer_instance
   add_comp : ∀ (P Q R : C) (f f' : P ⟶ Q) (g : Q ⟶ R), (f + f') ≫ g = f ≫ g + f' ≫ g := by
@@ -99,7 +100,7 @@ instance inducedCategory : Preadditive.{v} (InducedCategory C F) where
 
 end InducedCategory
 
-instance fullSubcategory (Z : C → Prop) : Preadditive.{v} (FullSubcategory Z) where
+instance fullSubcategory (Z : ObjectProperty C) : Preadditive Z.FullSubcategory where
   homGroup P Q := @Preadditive.homGroup C _ _ P.obj Q.obj
   add_comp _ _ _ _ _ _ := add_comp _ _ _ _ _ _
   comp_add _ _ _ _ _ _ := comp_add _ _ _ _ _ _
@@ -167,6 +168,12 @@ theorem comp_sum {P Q R : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J →
 theorem sum_comp {P Q R : C} {J : Type*} (s : Finset J) (f : J → (P ⟶ Q)) (g : Q ⟶ R) :
     (∑ j ∈ s, f j) ≫ g = ∑ j ∈ s, f j ≫ g :=
   map_sum (rightComp P g) _ _
+
+@[reassoc]
+theorem sum_comp' {P Q R S : C} {J : Type*} (s : Finset J) (f : J → (P ⟶ Q)) (g : J → (Q ⟶ R))
+    (h : R ⟶ S) : (∑ j ∈ s, f j ≫ g j) ≫ h = ∑ j ∈ s, f j ≫ g j ≫ h := by
+  simp only [← Category.assoc]
+  apply sum_comp
 
 instance {P Q : C} {f : P ⟶ Q} [Epi f] : Epi (-f) :=
   ⟨fun g g' H => by rwa [neg_comp, neg_comp, ← comp_neg, ← comp_neg, cancel_epi, neg_inj] at H⟩

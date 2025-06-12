@@ -357,7 +357,7 @@ theorem FamilyOfElements.IsAmalgamation.compPresheafMap {x : FamilyOfElements P 
 
 theorem is_compatible_of_exists_amalgamation (x : FamilyOfElements P R)
     (h : ∃ t, x.IsAmalgamation t) : x.Compatible := by
-  cases' h with t ht
+  obtain ⟨t, ht⟩ := h
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ comm
   rw [← ht _ h₁, ← ht _ h₂, ← FunctorToTypes.map_comp_apply, ← op_comp, comm]
   simp
@@ -460,15 +460,12 @@ theorem extension_iff_amalgamation {P : Cᵒᵖ ⥤ Type v₁} (x : S.functor �
   constructor
   · rintro rfl Y f hf
     rw [yonedaEquiv_naturality]
-    dsimp
     simp [yonedaEquiv_apply]
-  -- See note [dsimp, simp].
   · intro h
     ext Y ⟨f, hf⟩
     convert h f hf
     rw [yonedaEquiv_naturality]
-    dsimp [yonedaEquiv]
-    simp
+    simp [yonedaEquiv]
 
 /-- The yoneda version of the sheaf condition is equivalent to the sheaf condition.
 
@@ -490,7 +487,6 @@ to `P` can be (uniquely) extended to all of `yoneda.obj X`.
    S  →  P
    ↓  ↗
    yX
-
 -/
 noncomputable def IsSheafFor.extend {P : Cᵒᵖ ⥤ Type v₁} (h : IsSheafFor P (S : Presieve X))
     (f : S.functor ⟶ P) : yoneda.obj X ⟶ P :=
@@ -504,7 +500,6 @@ that the triangle below commutes, provided `P` is a sheaf for `S`
    S  →  P
    ↓  ↗
    yX
-
 -/
 @[reassoc (attr := simp)]
 theorem IsSheafFor.functorInclusion_comp_extend {P : Cᵒᵖ ⥤ Type v₁} (h : IsSheafFor P S.arrows)

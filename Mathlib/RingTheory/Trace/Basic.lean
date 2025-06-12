@@ -20,24 +20,24 @@ the roots of the minimal polynomial of `s` over `R`.
 
 ## Main definitions
 
- * `Algebra.embeddingsMatrix A C b : Matrix κ (B →ₐ[A] C) C` is the matrix whose
-   `(i, σ)` coefficient is `σ (b i)`.
- * `Algebra.embeddingsMatrixReindex A C b e : Matrix κ κ C` is the matrix whose `(i, j)`
-   coefficient is `σⱼ (b i)`, where `σⱼ : B →ₐ[A] C` is the embedding corresponding to `j : κ`
-   given by a bijection `e : κ ≃ (B →ₐ[A] C)`.
+* `Algebra.embeddingsMatrix A C b : Matrix κ (B →ₐ[A] C) C` is the matrix whose
+  `(i, σ)` coefficient is `σ (b i)`.
+* `Algebra.embeddingsMatrixReindex A C b e : Matrix κ κ C` is the matrix whose `(i, j)`
+  coefficient is `σⱼ (b i)`, where `σⱼ : B →ₐ[A] C` is the embedding corresponding to `j : κ`
+  given by a bijection `e : κ ≃ (B →ₐ[A] C)`.
 
 ## Main results
 
- * `trace_eq_sum_embeddings`: the trace of `x : K(x)` is the sum of all embeddings of `x` into an
-   algebraically closed field
- * `traceForm_nondegenerate`: the trace form over a separable extension is a nondegenerate
-   bilinear form
+* `trace_eq_sum_embeddings`: the trace of `x : K(x)` is the sum of all embeddings of `x` into an
+  algebraically closed field
+* `traceForm_nondegenerate`: the trace form over a separable extension is a nondegenerate
+  bilinear form
 * `traceForm_dualBasis_powerBasis_eq`: The dual basis of a powerbasis `{1, x, x²...}` under the
-   trace form is `aᵢ / f'(x)`, with `f` being the minpoly of `x` and `f / (X - x) = ∑ aᵢxⁱ`.
+  trace form is `aᵢ / f'(x)`, with `f` being the minpoly of `x` and `f / (X - x) = ∑ aᵢxⁱ`.
 
 ## References
 
- * https://en.wikipedia.org/wiki/Field_trace
+* https://en.wikipedia.org/wiki/Field_trace
 
 -/
 
@@ -332,9 +332,9 @@ theorem traceMatrix_of_basis [Fintype κ] [DecidableEq κ] (b : Basis κ A B) :
 theorem traceMatrix_of_basis_mulVec (b : Basis ι A B) (z : B) :
     traceMatrix A b *ᵥ b.equivFun z = fun i => trace A B (z * b i) := by
   ext i
-  rw [← col_apply (ι := Fin 1) (traceMatrix A b *ᵥ b.equivFun z) i 0, col_mulVec,
+  rw [← replicateCol_apply (ι := Fin 1) (traceMatrix A b *ᵥ b.equivFun z) i 0, replicateCol_mulVec,
     Matrix.mul_apply, traceMatrix]
-  simp only [col_apply, traceForm_apply]
+  simp only [replicateCol_apply, traceForm_apply]
   conv_lhs =>
     congr
     rfl
@@ -490,11 +490,11 @@ lemma traceForm_dualBasis_powerBasis_eq [FiniteDimensional K L] [Algebra.IsSepar
     map_pow, RingHom.coe_coe, AlgHom.coe_coe, finset_sum_coeff, coeff_smul, coeff_map, smul_eq_mul,
     coeff_X_pow, ← Fin.ext_iff, @eq_comm _ i] at this
   rw [PowerBasis.coe_basis]
-  simp only [RingHom.map_ite_one_zero, traceForm_apply]
+  simp only [MonoidWithZeroHom.map_ite_one_zero, traceForm_apply]
   rw [← this, trace_eq_sum_embeddings (E := AlgebraicClosure K)]
   apply Finset.sum_congr rfl
   intro σ _
-  simp only [_root_.map_mul, map_div₀, map_pow]
+  simp only [map_mul, map_div₀, map_pow]
   ring
 
 end DetNeZero

@@ -20,7 +20,7 @@ This file provides infrastructure to compute with filters.
 
 open Set Filter
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO write doc strings
+-- TODO write doc strings
 /-- A `CFilter α σ` is a realization of a filter (base) on `α`,
   represented by a type `σ` together with operations for the top element and
   the binary `inf` operation. -/
@@ -46,13 +46,13 @@ section
 
 variable [PartialOrder α] (F : CFilter α σ)
 
+/-
+A DFunLike instance would not be mathematically meaningful here, since the coercion to f cannot b
+injective.
+-/
 instance : CoeFun (CFilter α σ) fun _ ↦ σ → α :=
   ⟨CFilter.f⟩
 
-/- Porting note: Due to the CoeFun instance, the lhs of this lemma has a variable (f) as its head
-symbol (simpnf linter problem). Replacing it with a DFunLike instance would not be mathematically
-meaningful here, since the coercion to f cannot be injective, hence need to remove @[simp]. -/
--- @[simp]
 theorem coe_mk (f pt inf h₁ h₂ a) : (@CFilter.mk α σ _ f pt inf h₁ h₂) a = f a :=
   rfl
 
@@ -86,7 +86,7 @@ theorem mem_toFilter_sets (F : CFilter (Set α) σ) {a : Set α} : a ∈ F.toFil
 
 end CFilter
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO write doc strings
+-- TODO write doc strings
 /-- A realizer for filter `f` is a cfilter which generates `f`. -/
 structure Filter.Realizer (f : Filter α) where
   σ : Type*
@@ -267,7 +267,7 @@ protected def bind {f : Filter α} {m : α → Filter β} (F : f.Realizer) (G : 
         simp only [mem_iUnion, forall_exists_index]
         exact fun i h₁ h₂ ↦ ⟨i, F.F.inf_le_right _ _ h₁, (G i).F.inf_le_right _ _ h₂⟩ },
     filter_eq <| Set.ext fun _ ↦ by
-      cases' F with _ F _; subst f
+      obtain ⟨_, F, _⟩ := F; subst f
       simp only [CFilter.toFilter, iUnion_subset_iff, Sigma.exists, Filter.mem_sets, mem_bind]
       exact
         ⟨fun ⟨s, f, h⟩ ↦

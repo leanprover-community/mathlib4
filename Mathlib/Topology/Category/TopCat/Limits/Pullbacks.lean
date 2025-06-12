@@ -56,11 +56,7 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
       · exact ofHom
           { toFun := fun x =>
               ⟨⟨S.fst x, S.snd x⟩, by simpa using ConcreteCategory.congr_hom S.condition x⟩
-            continuous_toFun := by
-              apply Continuous.subtype_mk <| Continuous.prod_mk ?_ ?_
-              · exact (PullbackCone.fst S).hom.continuous_toFun
-              · exact (PullbackCone.snd S).hom.continuous_toFun
-          }
+            continuous_toFun := by fun_prop }
       refine ⟨?_, ?_, ?_⟩
       · delta pullbackCone
         ext a
@@ -138,14 +134,11 @@ theorem range_pullback_to_prod {X Y Z : TopCat} (f : X ⟶ Z) (g : Y ⟶ Z) :
     simp [pullback.condition]
   · rintro (h : f (_, _).1 = g (_, _).2)
     use (pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, h⟩
-    -- new `change` after https://github.com/leanprover-community/mathlib4/pull/13170
-    -- should be removed when we redo limits for `ConcreteCategory` instead of `HasForget`
-    change (forget TopCat).map _ _ = _
     apply Concrete.limit_ext
     rintro ⟨⟨⟩⟩ <;>
-    erw [← CategoryTheory.comp_apply, ← CategoryTheory.comp_apply, limit.lift_π] <;> -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
-    -- This used to be `simp` before https://github.com/leanprover/lean4/pull/2644
-    aesop_cat
+      rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply, limit.lift_π] <;>
+      -- This used to be `simp` before https://github.com/leanprover/lean4/pull/2644
+      aesop_cat
 
 /-- The pullback along an embedding is (isomorphic to) the preimage. -/
 noncomputable
@@ -162,12 +155,10 @@ def pullbackHomeoPreimage
     convert x.prop
     exact Exists.choose_spec (p := fun y ↦ g y = f (↑x : X × Y).1) _
   right_inv := fun _ ↦ rfl
-  continuous_toFun := by
-    apply Continuous.subtype_mk
-    exact continuous_fst.comp continuous_subtype_val
+  continuous_toFun := by fun_prop
   continuous_invFun := by
     apply Continuous.subtype_mk
-    refine continuous_prod_mk.mpr ⟨continuous_subtype_val, hg.isInducing.continuous_iff.mpr ?_⟩
+    refine continuous_subtype_val.prodMk <| hg.isInducing.continuous_iff.mpr ?_
     convert hf.comp continuous_subtype_val
     ext x
     exact Exists.choose_spec x.2
@@ -196,7 +187,7 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
   · rintro ⟨y, rfl⟩
     simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range]
     rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply]
-    simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, CategoryTheory.comp_apply]
+    simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
     exact ⟨exists_apply_eq_apply _ _, exists_apply_eq_apply _ _⟩
   rintro ⟨⟨x₁, hx₁⟩, ⟨x₂, hx₂⟩⟩
   have : f₁ x₁ = f₂ x₂ := by
@@ -205,28 +196,12 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
       ConcreteCategory.comp_apply, ConcreteCategory.comp_apply, hx₁, hx₂,
       ← ConcreteCategory.comp_apply, pullback.condition, ConcreteCategory.comp_apply]
   use (pullbackIsoProdSubtype f₁ f₂).inv ⟨⟨x₁, x₂⟩, this⟩
-  -- `change` should be removed when we redo limits for `ConcreteCategory` instead of `HasForget`
-  change (forget TopCat).map _ _ = _
   apply Concrete.limit_ext
   rintro (_ | _ | _) <;>
-  erw [← CategoryTheory.comp_apply, ← CategoryTheory.comp_apply] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
-  · simp only [Category.assoc, limit.lift_π, PullbackCone.mk_π_app_one]
-    simp only [cospan_one, pullbackIsoProdSubtype_inv_fst_assoc, ConcreteCategory.comp_apply,
-      CategoryTheory.comp_apply]
-    -- Work around the `ConcreteCategory`/`HasForget` mismatch:
-    change g₁ (i₁ ((pullbackFst f₁ f₂) ⟨(x₁, x₂), this⟩)) = (limit.π (cospan g₁ g₂) none) _
-    simp [pullbackFst_apply, hx₁, ← limit.w _ WalkingCospan.Hom.inl, cospan_map_inl]
-  · simp only [cospan_left, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
-      pullbackIsoProdSubtype_inv_fst_assoc, CategoryTheory.comp_apply]
-    -- Work around the `ConcreteCategory`/`HasForget` mismatch:
-    change i₁ ((pullbackFst f₁ f₂) ⟨(x₁, x₂), this⟩) =
-      limit.π (cospan g₁ g₂) (some WalkingPair.left) _
-    simp [hx₁]
-  · simp only [cospan_right, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
-      pullbackIsoProdSubtype_inv_snd_assoc, CategoryTheory.comp_apply]
-    change i₂ (pullbackSnd f₁ f₂ ⟨(x₁, x₂), this⟩) =
-      limit.π (cospan g₁ g₂) (some WalkingPair.right) _
-    simp [hx₂]
+  rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply]
+  · simp [hx₁, ← limit.w _ WalkingCospan.Hom.inl]
+  · simp [hx₁]
+  · simp [hx₂]
 
 theorem pullback_fst_range {X Y S : TopCat} (f : X ⟶ S) (g : Y ⟶ S) :
     Set.range (pullback.fst f g) = { x : X | ∃ y : Y, f x = g y } := by
@@ -303,17 +278,13 @@ theorem pullback_map_isOpenEmbedding {W X Y Z S T : TopCat.{u}} (f₁ : W ⟶ S)
     · apply ContinuousMap.continuous_toFun
     · exact H₂.isOpen_range
 
-@[deprecated (since := "2024-10-18")]
-alias pullback_map_openEmbedding_of_open_embeddings := pullback_map_isOpenEmbedding
-
 
 lemma snd_isEmbedding_of_left {X Y S : TopCat} {f : X ⟶ S} (H : IsEmbedding f) (g : Y ⟶ S) :
     IsEmbedding <| ⇑(pullback.snd f g) := by
   convert (homeoOfIso (asIso (pullback.snd (𝟙 S) g))).isEmbedding.comp
       (pullback_map_isEmbedding (i₂ := 𝟙 Y)
         f g (𝟙 S) g H (homeoOfIso (Iso.refl _)).isEmbedding (𝟙 _) rfl (by simp))
-  erw [← coe_comp]
-  simp
+  simp [homeoOfIso, ← coe_comp]
 
 @[deprecated (since := "2024-10-26")]
 alias snd_embedding_of_left_embedding := snd_isEmbedding_of_left
@@ -323,8 +294,7 @@ theorem fst_isEmbedding_of_right {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
   convert (homeoOfIso (asIso (pullback.fst f (𝟙 S)))).isEmbedding.comp
       (pullback_map_isEmbedding (i₁ := 𝟙 X)
         f g f (𝟙 _) (homeoOfIso (Iso.refl _)).isEmbedding H (𝟙 _) rfl (by simp))
-  erw [← coe_comp]
-  simp
+  simp [homeoOfIso, ← coe_comp]
 
 @[deprecated (since := "2024-10-26")]
 alias fst_embedding_of_right_embedding := fst_isEmbedding_of_right
@@ -343,22 +313,14 @@ theorem snd_isOpenEmbedding_of_left {X Y S : TopCat} {f : X ⟶ S} (H : IsOpenEm
   convert (homeoOfIso (asIso (pullback.snd (𝟙 S) g))).isOpenEmbedding.comp
       (pullback_map_isOpenEmbedding (i₂ := 𝟙 Y) f g (𝟙 _) g H
         (homeoOfIso (Iso.refl _)).isOpenEmbedding (𝟙 _) rfl (by simp))
-  erw [← coe_comp]
-  simp
-
-@[deprecated (since := "2024-10-18")]
-alias snd_openEmbedding_of_left_openEmbedding := snd_isOpenEmbedding_of_left
+  simp [homeoOfIso, ← coe_comp]
 
 theorem fst_isOpenEmbedding_of_right {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
     (H : IsOpenEmbedding g) : IsOpenEmbedding <| ⇑(pullback.fst f g) := by
   convert (homeoOfIso (asIso (pullback.fst f (𝟙 S)))).isOpenEmbedding.comp
       (pullback_map_isOpenEmbedding (i₁ := 𝟙 X) f g f (𝟙 _)
         (homeoOfIso (Iso.refl _)).isOpenEmbedding H (𝟙 _) rfl (by simp))
-  erw [← coe_comp]
-  simp
-
-@[deprecated (since := "2024-10-18")]
-alias fst_openEmbedding_of_right_openEmbedding := fst_isOpenEmbedding_of_right
+  simp [homeoOfIso, ← coe_comp]
 
 /-- If `X ⟶ S`, `Y ⟶ S` are open embeddings, then so is `X ×ₛ Y ⟶ S`. -/
 theorem isOpenEmbedding_of_pullback {X Y S : TopCat} {f : X ⟶ S} {g : Y ⟶ S}
@@ -371,14 +333,11 @@ theorem isOpenEmbedding_of_pullback {X Y S : TopCat} {f : X ⟶ S} {g : Y ⟶ S}
 @[deprecated (since := "2024-10-30")]
 alias isOpenEmbedding_of_pullback_open_embeddings := isOpenEmbedding_of_pullback
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_of_pullback_open_embeddings := isOpenEmbedding_of_pullback
-
 theorem fst_iso_of_right_embedding_range_subset {X Y S : TopCat} (f : X ⟶ S) {g : Y ⟶ S}
     (hg : IsEmbedding g) (H : Set.range f ⊆ Set.range g) :
     IsIso (pullback.fst f g) := by
   let esto : (pullback f g : TopCat) ≃ₜ X :=
-    (Homeomorph.ofIsEmbedding _ (fst_isEmbedding_of_right f hg)).trans
+    (fst_isEmbedding_of_right f hg).toHomeomorph.trans
       { toFun := Subtype.val
         invFun := fun x =>
           ⟨x, by
@@ -391,7 +350,7 @@ theorem fst_iso_of_right_embedding_range_subset {X Y S : TopCat} (f : X ⟶ S) {
 theorem snd_iso_of_left_embedding_range_subset {X Y S : TopCat} {f : X ⟶ S} (hf : IsEmbedding f)
     (g : Y ⟶ S) (H : Set.range g ⊆ Set.range f) : IsIso (pullback.snd f g) := by
   let esto : (pullback f g : TopCat) ≃ₜ Y :=
-    (Homeomorph.ofIsEmbedding _ (snd_isEmbedding_of_left hf g)).trans
+    (snd_isEmbedding_of_left hf g).toHomeomorph.trans
       { toFun := Subtype.val
         invFun := fun x =>
           ⟨x, by

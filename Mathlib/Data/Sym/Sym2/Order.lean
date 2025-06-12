@@ -42,4 +42,13 @@ def sortEquiv [LinearOrder α] : Sym2 α ≃ { p : α × α // p.1 ≤ p.2 } whe
   right_inv := Subtype.rec <| Prod.rec fun x y hxy =>
     Subtype.ext <| Prod.ext (by simp [hxy]) (by simp [hxy])
 
+/-- In a linear order, two symmetric squares are equal if and only if
+they have the same infimum and supremum. -/
+theorem inf_eq_inf_and_sup_eq_sup [LinearOrder α] {s t : Sym2 α} :
+    s.inf = t.inf ∧ s.sup = t.sup ↔ s = t := by
+  induction' s with a b
+  induction' t with c d
+  obtain hab | hba := le_total a b <;> obtain hcd | hdc := le_total c d <;>
+    aesop (add unsafe le_antisymm)
+
 end Sym2

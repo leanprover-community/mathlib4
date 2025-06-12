@@ -24,7 +24,7 @@ We also include some constructions specific to the case when `A = R` is a ring; 
 `x ↦ ψ (r * x)`.
 
 For more refined results of a number-theoretic nature (primitive characters, Gauss sums, etc)
-see `Mathlib.NumberTheory.LegendreSymbol.AddCharacter`.
+see `Mathlib/NumberTheory/LegendreSymbol/AddCharacter.lean`.
 
 # Implementation notes
 
@@ -61,7 +61,7 @@ monoid, which intertwine addition in `A` with multiplication in `M`.
 
 We only put the typeclasses needed for the definition, although in practice we are usually
 interested in much more specific cases (e.g. when `A` is a group and `M` a commutative ring).
- -/
+-/
 structure AddChar where
   /-- The underlying function.
 

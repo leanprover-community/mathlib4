@@ -3,7 +3,9 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Analysis.Convex.Contractible
 import Mathlib.Analysis.Convex.Topology
+import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
 import Mathlib.Topology.Algebra.Module.Cardinality
 
@@ -122,6 +124,47 @@ section NormedSpace
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
+section Ball
+
+namespace Metric
+
+theorem ball_contractible {x : E} {r : ℝ} (hr : 0 < r) :
+    ContractibleSpace (ball x r) :=
+  Convex.contractibleSpace (convex_ball _ _) (by simpa)
+
+theorem eball_contractible {x : E} {r : ENNReal} (hr : 0 < r) :
+    ContractibleSpace (EMetric.ball x r) := by
+  cases r with
+  | top =>
+    rw [eball_top_eq_univ, (Homeomorph.Set.univ E).contractibleSpace_iff]
+    exact RealTopologicalVectorSpace.contractibleSpace
+  | coe r =>
+    rw [emetric_ball_nnreal]
+    apply ball_contractible
+    simpa using hr
+
+theorem isPathConnected_ball {x : E} {r : ℝ} (hr : 0 < r) :
+    IsPathConnected (ball x r) := by
+  rw [isPathConnected_iff_pathConnectedSpace]
+  exact @ContractibleSpace.instPathConnectedSpace _ _ (ball_contractible hr)
+
+theorem isPathConnected_eball {x : E} {r : ENNReal} (hr : 0 < r) :
+    IsPathConnected (EMetric.ball x r) := by
+  rw [isPathConnected_iff_pathConnectedSpace]
+  exact @ContractibleSpace.instPathConnectedSpace _ _ (eball_contractible hr)
+
+theorem isConnected_ball {x : E} {r : ℝ} (hr : 0 < r) :
+    IsConnected (ball x r) :=
+  (isPathConnected_ball hr).isConnected
+
+theorem isConnected_eball {x : E} {r : ENNReal} (hr : 0 < r) :
+    IsConnected (EMetric.ball x r) :=
+  (isPathConnected_eball hr).isConnected
+
+end Metric
+
+end Ball
+
 /-- In a real vector space of dimension `> 1`, any sphere of nonnegative radius is
 path connected. -/
 theorem isPathConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr : 0 ≤ r) :
@@ -161,7 +204,7 @@ theorem isConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr : 0
 /-- In a real vector space of dimension `> 1`, any sphere is preconnected. -/
 theorem isPreconnected_sphere (h : 1 < Module.rank ℝ E) (x : E) (r : ℝ) :
     IsPreconnected (sphere x r) := by
-  rcases le_or_lt 0 r with hr|hr
+  rcases le_or_gt 0 r with hr|hr
   · exact (isConnected_sphere h x hr).isPreconnected
   · simpa [hr] using isPreconnected_empty
 
@@ -170,7 +213,7 @@ end NormedSpace
 section
 
 variable {F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
-  [TopologicalAddGroup F] [ContinuousSMul ℝ F]
+  [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
 
 /-- Let `E` be a linear subspace in a real vector space.
 If `E` has codimension at least two, its complement is path-connected. -/
