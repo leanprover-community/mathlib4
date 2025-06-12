@@ -353,7 +353,7 @@ theorem unfolds_head_eq : ∀ s : Stream' α, unfolds head tail s = s := fun s =
 
 theorem interleave_eq (s₁ s₂ : Stream' α) : s₁ ⋈ s₂ = head s₁::head s₂::(tail s₁ ⋈ tail s₂) := by
   let t := tail s₁ ⋈ tail s₂
-  show s₁ ⋈ s₂ = head s₁::head s₂::t
+  change s₁ ⋈ s₂ = head s₁::head s₂::t
   unfold interleave; unfold corecOn; rw [corec_eq]; dsimp; rw [corec_eq]; rfl
 
 theorem tail_interleave (s₁ s₂ : Stream' α) : tail (s₁ ⋈ s₂) = s₂ ⋈ tail s₁ := by

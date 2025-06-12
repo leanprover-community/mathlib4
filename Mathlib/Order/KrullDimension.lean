@@ -171,7 +171,7 @@ that begin at `a`.
 -/
 lemma coheight_eq_iSup_head_eq (a : α) :
     coheight a = ⨆ (p : LTSeries α) (_ : p.head = a), ↑(p.length) := by
-  show height (α := αᵒᵈ) a = ⨆ (p : LTSeries α) (_ : p.head = a), ↑(p.length)
+  change height (α := αᵒᵈ) a = ⨆ (p : LTSeries α) (_ : p.head = a), ↑(p.length)
   rw [height_eq_iSup_last_eq]
   apply Equiv.iSup_congr ⟨RelSeries.reverse, RelSeries.reverse, RelSeries.reverse_reverse,
     RelSeries.reverse_reverse⟩
@@ -1016,7 +1016,7 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
 
 @[simp]
 lemma krullDim_enat : krullDim ℕ∞ = ⊤ := by
-  show (krullDim (WithTop ℕ) = ⊤)
+  change (krullDim (WithTop ℕ) = ⊤)
   simp only [krullDim_WithTop, krullDim_nat]
   rfl
 

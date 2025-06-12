@@ -238,7 +238,7 @@ theorem neg_identical_neg {x y : PGame} : -x ≡ -y ↔ x ≡ y :=
 
 @[simp]
 theorem neg_equiv_neg_iff {x y : PGame} : -x ≈ -y ↔ x ≈ y := by
-  show Equiv (-x) (-y) ↔ Equiv x y
+  change Equiv (-x) (-y) ↔ Equiv x y
   rw [Equiv, Equiv, neg_le_neg_iff, neg_le_neg_iff, and_comm]
 
 @[simp]

@@ -103,7 +103,7 @@ lemma isScalarTower_of_section_of_ker_sqZero :
   constructor
   intro p s m
   ext
-  show g (p • s) * m = p * (g s * m)
+  change g (p • s) * m = p * (g s * m)
   simp only [Algebra.smul_def, map_mul, mul_assoc, mul_left_comm _ (g s)]
   congr 1
   rw [← sub_eq_zero, ← Ideal.mem_bot, ← hf', pow_two, ← sub_mul]
@@ -270,11 +270,11 @@ def derivationQuotKerSq :
       simp only [smul_eq_mul, Derivation.leibniz, tmul_add, ← smul_tmul, Algebra.smul_def,
         mul_one, RingHom.mem_ker.mp hx, RingHom.mem_ker.mp hy, zero_tmul, zero_add]
     · intro x y hx hy; simp only [map_add, hx, hy, tmul_add, zero_add]
-  · show (1 : S) ⊗ₜ[P] KaehlerDifferential.D R P 1 = 0; simp
+  · change (1 : S) ⊗ₜ[P] KaehlerDifferential.D R P 1 = 0; simp
   · intro a b
     obtain ⟨a, rfl⟩ := Submodule.Quotient.mk_surjective _ a
     obtain ⟨b, rfl⟩ := Submodule.Quotient.mk_surjective _ b
-    show (1 : S) ⊗ₜ[P] KaehlerDifferential.D R P (a * b) =
+    change (1 : S) ⊗ₜ[P] KaehlerDifferential.D R P (a * b) =
       Ideal.Quotient.mk _ a • ((1 : S) ⊗ₜ[P] KaehlerDifferential.D R P b) +
       Ideal.Quotient.mk _ b • ((1 : S) ⊗ₜ[P] KaehlerDifferential.D R P a)
     simp only [← Ideal.Quotient.algebraMap_eq, IsScalarTower.algebraMap_smul,
@@ -313,7 +313,7 @@ def tensorKaehlerQuotKerSqEquiv :
 @[simp]
 lemma tensorKaehlerQuotKerSqEquiv_tmul_D (s t) :
     tensorKaehlerQuotKerSqEquiv R P S (s ⊗ₜ .D _ _ (Ideal.Quotient.mk _ t)) = s ⊗ₜ .D _ _ t := by
-  show s • (derivationQuotKerSq R P S).liftKaehlerDifferential (.D _ _ (Ideal.Quotient.mk _ t)) = _
+  change s • (derivationQuotKerSq R P S).liftKaehlerDifferential (.D _ _ (Ideal.Quotient.mk _ t)) = _
   simp [smul_tmul']
 
 @[simp]
@@ -470,7 +470,7 @@ theorem Algebra.FormallySmooth.iff_subsingleton_and_projective :
         Subsingleton (Algebra.H1Cotangent R S) ∧ Module.Projective S (Ω[S⁄R]) := by
   refine (Algebra.FormallySmooth.iff_injective_and_projective
     (Generators.self R S).algebraMap_surjective).trans (and_congr ?_ Iff.rfl)
-  show Function.Injective (Generators.self R S).toExtension.cotangentComplex ↔ _
+  change Function.Injective (Generators.self R S).toExtension.cotangentComplex ↔ _
   rw [← LinearMap.ker_eq_bot, ← Submodule.subsingleton_iff_eq_bot]
   simp [H1Cotangent, Extension.H1Cotangent]
 
@@ -539,7 +539,7 @@ def homInfinitesimal (P₁ P₂ : Extension R S) [FormallySmooth R P₁.Ring] :
     ⟨2, show P₂.infinitesimal.ker ^ 2 = ⊥ by
       rw [ker_infinitesimal]; exact Ideal.cotangentIdeal_square _⟩
   { toRingHom := (Ideal.Quotient.liftₐ (P₁.ker ^ 2) lift (by
-        show P₁.ker ^ 2 ≤ RingHom.ker lift
+        change P₁.ker ^ 2 ≤ RingHom.ker lift
         rw [pow_two, Ideal.mul_le]
         have : ∀ r ∈ P₁.ker, lift r ∈ P₂.infinitesimal.ker :=
           fun r hr ↦ (FormallySmooth.liftOfSurjective_apply _
@@ -568,7 +568,7 @@ lemma H1Cotangent.equivOfFormallySmooth_toLinearMap {P₁ P₂ : Extension R S} 
     (H1Cotangent.equivOfFormallySmooth P₁ P₂).toLinearMap = map f := by
   ext1 x
   refine (LinearEquiv.symm_apply_eq _).mpr ?_
-  show ((map (P₁.homInfinitesimal P₂)).restrictScalars S ∘ₗ map P₁.toInfinitesimal) x =
+  change ((map (P₁.homInfinitesimal P₂)).restrictScalars S ∘ₗ map P₁.toInfinitesimal) x =
     ((map P₂.toInfinitesimal).restrictScalars S ∘ₗ map f) x
   rw [← map_comp, ← map_comp, map_eq]
 

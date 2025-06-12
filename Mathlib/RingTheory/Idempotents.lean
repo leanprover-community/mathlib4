@@ -455,7 +455,7 @@ lemma RingHom.prod_bijective_of_isIdempotentElem {e f : R} (he : IsIdempotentEle
   let o (i : Fin 2) : R := match i with
     | 0 => e
     | 1 => f
-  show Function.Bijective
+  change Function.Bijective
     (piFinTwoEquiv _ ∘ Pi.ringHom (fun i : Fin 2 ↦ Ideal.Quotient.mk (Ideal.span {o i})))
   rw [(Equiv.bijective _).of_comp_iff']
   apply pi_bijective_of_isIdempotentElem

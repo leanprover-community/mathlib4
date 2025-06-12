@@ -111,7 +111,7 @@ lemma ι_preimage_self : U.ι ⁻¹ᵁ U = ⊤ :=
 instance ι_appLE_isIso :
     IsIso (U.ι.appLE U ⊤ U.ι_preimage_self.ge) := by
   simp only [ι, ofRestrict_appLE]
-  show IsIso (X.presheaf.map (eqToIso U.ι_image_top).hom.op)
+  change IsIso (X.presheaf.map (eqToIso U.ι_image_top).hom.op)
   infer_instance
 
 lemma ι_app_self : U.ι.app U = X.presheaf.map (eqToHom (X := U.ι ''ᵁ _) (by simp)).op := rfl

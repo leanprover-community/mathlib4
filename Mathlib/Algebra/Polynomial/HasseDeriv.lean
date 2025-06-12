@@ -217,7 +217,7 @@ theorem hasseDeriv_mul (f g : R[X]) :
     hasseDeriv k (f * g) = ∑ ij ∈ antidiagonal k, hasseDeriv ij.1 f * hasseDeriv ij.2 g := by
   let D k := (@hasseDeriv R _ k).toAddMonoidHom
   let Φ := @AddMonoidHom.mul R[X] _
-  show
+  change
     (compHom (D k)).comp Φ f g =
       ∑ ij ∈ antidiagonal k, ((compHom.comp ((compHom Φ) (D ij.1))).flip (D ij.2) f) g
   simp only [← finset_sum_apply]

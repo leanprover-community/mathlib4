@@ -217,7 +217,7 @@ theorem ContinuousAt.comp_div_cases {f g : α → G₀} (h : α → G₀ → β)
     (hg : ContinuousAt g a) (hh : g a ≠ 0 → ContinuousAt (↿h) (a, f a / g a))
     (h2h : g a = 0 → Tendsto (↿h) (𝓝 a ×ˢ ⊤) (𝓝 (h a 0))) :
     ContinuousAt (fun x => h x (f x / g x)) a := by
-  show ContinuousAt (↿h ∘ fun x => (x, f x / g x)) a
+  change ContinuousAt (↿h ∘ fun x => (x, f x / g x)) a
   by_cases hga : g a = 0
   · rw [ContinuousAt]
     simp_rw [comp_apply, hga, div_zero]

@@ -490,7 +490,7 @@ theorem coe_ideal_mul_inv [h : IsDedekindDomain A] (I : Ideal A) (hI0 : I ≠ �
   clear hi
   induction' i with i ih
   · rw [pow_zero]; exact one_mem_inv_coe_ideal hI0
-  · show x ^ i.succ ∈ (I⁻¹ : FractionalIdeal A⁰ K)
+  · change x ^ i.succ ∈ (I⁻¹ : FractionalIdeal A⁰ K)
     rw [pow_succ']; exact x_mul_mem _ ih
 
 /-- Nonzero fractional ideals in a Dedekind domain are units.

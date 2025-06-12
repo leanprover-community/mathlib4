@@ -127,7 +127,7 @@ theorem induction_on {motive : HNNExtension G A B φ → Prop}
       ⟨HNNExtension.t, t⟩ (by intro a; ext; simp [equiv_eq_conj, mul_assoc])
   have hf : S.subtype.comp f = MonoidHom.id _ :=
     hom_ext (by ext; simp [f]) (by simp [f])
-  show motive (MonoidHom.id _ x)
+  change motive (MonoidHom.id _ x)
   rw [← hf]
   exact (f x).2
 
