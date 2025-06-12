@@ -116,7 +116,7 @@ instance {F : Type u → Type v} : LawfulFunctor (FreeM F) where
 
 /-- Bind operation for the `FreeM` monad. -/
 protected def bind {a b : Type _} {F : Type u → Type v} (x : FreeM F a) (f : a → FreeM F b) :
-FreeM F b :=
+  FreeM F b :=
   match x with
   | .pure a => f a
   | .liftBind op cont => .liftBind op (fun z => FreeM.bind  (cont z) f)
@@ -137,24 +137,26 @@ lemma pure_eq_pure {F : Type u → Type v} {α : Type w} (a : α) :
 /-- The `liftBind` constructor is semantically equivalent to `(lift op) >>= cont`. -/
 lemma liftBind_eq_lift_bind {F : Type u → Type v} {ι : Type u} {α : Type u}
     (op : F ι) (cont : ι → FreeM F α) :
-    FreeM.liftBind op cont = (lift op) >>= cont := by
-    simp [lift, bind, FreeM.bind]
+    FreeM.liftBind op cont = (lift op) >>= cont := by rfl
 
 instance {F : Type u → Type v} : LawfulMonad (FreeM F) := LawfulMonad.mk'
   (bind_pure_comp := by {
     intro _ _ f x;
-    induction' x with a b op cont ih
-    · simp only [bind, FreeM.bind, Functor.map, Pure.pure, map]
-    · simp only [Functor.map, bind, FreeM.bind, map, Pure.pure, map] at *; simp only [ih]
+    induction x with
+    | pure a => rfl
+    | liftBind op cont ih =>
+      simp only [bind, FreeM.bind, Functor.map, Pure.pure, map] at *
+      simp only [ih]
   })
-  (id_map := by intro x y; induction' y with a b op cont ih'; all_goals {simp})
-  (pure_bind := by
-    intro α β x f
-    simp [bind, FreeM.bind])
+  (id_map := id_map)
+  (pure_bind := by intros; rfl)
   (bind_assoc := by
-    intro _ _ _ x f g; induction' x with a b op cont ih;
-    · simp only [bind, FreeM.bind]
-    · simp only [bind, FreeM.bind, ih] at *; simp [ih])
+    intro _ _ _ x f g
+    induction x with
+    | pure a => rfl
+    | liftBind op cont ih =>
+      simp only [bind, FreeM.bind] at ih ⊢
+      simp [ih])
 
 
 /--
@@ -172,7 +174,7 @@ protected def mapM {F : Type u → Type v} {M : Type u → Type w} [Monad M] {α
 @[simp]
 lemma mapM_pure {F : Type u → Type v} {M : Type u → Type w} [Monad M] {α : Type u}
     (interp : {β : Type u} → F β → M β) (a : α) :
-    (pure a : FreeM F α).mapM interp = pure a := by simp [FreeM.mapM]
+    (pure a : FreeM F α).mapM interp = pure a := by rfl
 
 @[simp]
 lemma mapM_liftBind {F : Type u → Type v} {M : Type u → Type w} [Monad M] {α β : Type u}
@@ -248,34 +250,31 @@ instance {σ : Type u} : MonadStateOf σ (FreeState σ) where
       FreeM.liftBind (StateF.set s') (fun _ => FreeM.pure a))
 
 @[simp]
-lemma get_def {σ : Type u} : (get : FreeState σ σ) = FreeM.lift StateF.get := by
-simp [get, getThe, MonadStateOf.get]
+lemma get_def {σ : Type u} : (get : FreeState σ σ) = FreeM.lift StateF.get := by rfl
 
 @[simp]
 lemma set_def {σ : Type u} (s : σ) : (set s : FreeState σ PUnit) =
-    FreeM.liftBind (StateF.set s) (fun _ => FreeM.pure PUnit.unit) := by
-    simp [set, MonadStateOf.set]
+    FreeM.liftBind (StateF.set s) (fun _ => FreeM.pure PUnit.unit) := by rfl
 
 instance {σ : Type u} : MonadState σ (FreeState σ) := inferInstance
 
 lemma bind_pure {F : Type u → Type v} {α β : Type u} (a : α) (f : α → FreeM F β) :
-    (pure a >>= f) = f a := by simp only [pure_bind]
+    (pure a >>= f) = f a := by rfl
 
 @[simp]
 lemma bind_liftBind {F : Type u → Type v} {α β γ : Type u} (op : F α) (cont : α → FreeM F β)
 (f : β → FreeM F γ) :
-    (FreeM.liftBind op cont >>= f) = FreeM.liftBind op (fun x => cont x >>= f) := by
-    simp [bind, FreeM.bind]
+    (FreeM.liftBind op cont >>= f) = FreeM.liftBind op (fun x => cont x >>= f) := by rfl
 
 lemma map_pure {F : Type u → Type v} {α β : Type u} (f : α → β) (a : α) :
     (f <$> pure a : FreeM F β) = FreeM.pure (f a) := by
-    simp [Functor.map, map]
+    rfl
 
 @[simp]
 lemma map_liftBind {F : Type u → Type v} {α β γ : Type u} (f : β → γ) (op : F α)
 (cont : α → FreeM F β) :
     (f <$> FreeM.liftBind op cont : FreeM F γ) = FreeM.liftBind op (fun x => f <$> cont x)
-    := by simp [Functor.map, map]
+    := by rfl
 
 /-- Interpret `StateF` operations into `StateM`. -/
 def stateInterp {σ : Type u} : {α : Type u} → StateF σ α → StateM σ α
@@ -289,13 +288,14 @@ def toStateM {σ α : Type u} (comp : FreeState σ α) : StateM σ α :=
 
 /-- `toStateM` is the unique interpreter extending `stateInterp`. -/
 theorem toStateM_unique {σ α : Type u} (g : FreeState σ α → StateM σ α)
-    (h : ExtendsHandler stateInterp g) : g = toStateM := (extendsHandler_iff stateInterp g).mp h
+    (h : ExtendsHandler stateInterp g) : g = toStateM :=
+    (extendsHandler_iff stateInterp g).mp h
 
 /-- Run a state computation, returning both the result and final state. -/
 def run {σ : Type u} {α : Type v} (comp : FreeState σ α) (s₀ : σ) : α × σ :=
   match comp with
   | .pure a => (a, s₀)
-  | .liftBind StateF.get k     => run (k s₀) s₀
+  | .liftBind StateF.get k => run (k s₀) s₀
   | .liftBind (StateF.set s') k => run (k PUnit.unit) s'
 
 /--
@@ -305,14 +305,10 @@ recursive interpreter `run` for `FreeState`.
 @[simp]
 theorem toStateM_eq_run {σ α : Type u} (comp : FreeState σ α) (s₀ : σ) :
     toStateM comp s₀ = run comp s₀ := by
-  induction' comp with a b op cont ih generalizing s₀
-  · simp [toStateM, FreeM.mapM, pure, run, StateT.pure]
-  · simp only [run, FreeM.mapM, stateInterp] at *
-    rcases op
-    · simp only [MonadStateOf.get, bind, StateT.bind, StateT.get, run] at *
-      apply ih
-    · simp only [MonadStateOf.set, bind, StateT.bind, StateT.set, run, PUnit.unit] at *
-      apply ih
+    induction comp generalizing s₀ with
+    | pure a => rfl
+    | liftBind op cont ih =>
+      cases op <;> apply ih
 
 @[simp]
 lemma run_pure {σ : Type u} {α : Type v} (a : α) (s₀ : σ) :
@@ -332,15 +328,15 @@ def evalState {σ : Type u} {α : Type v} (c : FreeState σ α) (s₀ : σ) : α
 
 @[simp]
 lemma evalState_pure {σ : Type u} {α : Type v} (a : α) (s₀ : σ) :
-    evalState (pure a : FreeState σ α) s₀ = a := by simp [evalState]
+    evalState (pure a : FreeState σ α) s₀ = a := by rfl
 
 @[simp]
 lemma evalState_get {σ : Type u} {α : Type v} (k : σ → FreeState σ α) (s₀ : σ) :
-    evalState (.liftBind StateF.get k) s₀ = evalState (k s₀) s₀ := by simp [evalState]
+    evalState (.liftBind StateF.get k) s₀ = evalState (k s₀) s₀ := by rfl
 
 @[simp]
 lemma evalState_set {σ : Type u} {α : Type v} (s' : σ) (k : PUnit → FreeState σ α) (s₀ : σ) :
-    evalState (.liftBind (StateF.set s') k) s₀ = evalState (k PUnit.unit) s' := by simp [evalState]
+    evalState (.liftBind (StateF.set s') k) s₀ = evalState (k PUnit.unit) s' := by rfl
 
 /-- Run a state computation, returning only the final state. -/
 def execState {σ : Type u} {α : Type v} (c : FreeState σ α) (s₀ : σ) : σ :=
@@ -348,15 +344,15 @@ def execState {σ : Type u} {α : Type v} (c : FreeState σ α) (s₀ : σ) : σ
 
 @[simp]
 lemma execState_pure {σ : Type u} {α : Type v} (a : α) (s₀ : σ) :
-    execState (pure a : FreeState σ α) s₀ = s₀ := by simp [execState]
+    execState (pure a : FreeState σ α) s₀ = s₀ := by rfl
 
 @[simp]
 lemma execState_get {σ : Type u} {α : Type v} (k : σ → FreeState σ α) (s₀ : σ) :
-    execState (.liftBind StateF.get k) s₀ = execState (k s₀) s₀ := by simp [execState]
+    execState (.liftBind StateF.get k) s₀ = execState (k s₀) s₀ := by rfl
 
 @[simp]
 lemma execState_set {σ : Type u} {α : Type v} (s' : σ) (k : PUnit → FreeState σ α) (s₀ : σ) :
-    execState (.liftBind (StateF.set s') k) s₀ = execState (k PUnit.unit) s' := by simp [execState]
+    execState (.liftBind (StateF.set s') k) s₀ = execState (k PUnit.unit) s' := by rfl
 
 
 end FreeState
@@ -402,7 +398,7 @@ def tell {ω : Type u} (w : ω) : FreeWriter ω PUnit :=
 
 @[simp]
 lemma tell_def {ω : Type u} (w : ω) :
-    tell w = FreeM.lift (WriterF.tell w) := by simp [tell]
+    tell w = FreeM.lift (WriterF.tell w) := by rfl
 
 /--
 Interprets a `FreeWriter` computation by recursively traversing the tree, accumulating
@@ -431,13 +427,11 @@ theorem toWriterT_eq_run {ω : Type u} [Monoid ω] {α} (comp : FreeWriter ω α
 
 @[simp]
 lemma run_pure {ω : Type u} [Monoid ω] {α} (a : α) :
-    run (pure a : FreeWriter ω α) = (a, 1) := by simp [run]
+    run (pure a : FreeWriter ω α) = (a, 1) := by rfl
 
 @[simp]
 lemma run_liftBind_tell {ω : Type u} [Monoid ω] {α} (w : ω) (k : PUnit → FreeWriter ω α) :
-    run (.liftBind (WriterF.tell w) k) =
-    let (a, w') := run (k PUnit.unit)
-    (a, w * w') := by simp [run]
+    run (.liftBind (WriterF.tell w) k) = (let (a, w') := run (k PUnit.unit); (a, w * w')) := rfl
 
 /--
 `listen` captures the log produced by a subcomputation incrementally. It traverses the computation,
@@ -452,7 +446,7 @@ def listen {ω : Type u} [Monoid ω] {α : Type v} : FreeWriter ω α → FreeWr
 
 @[simp]
 lemma listen_pure {ω : Type u} [Monoid ω] {α} (a : α) :
-    listen (pure a : FreeWriter ω α) = .pure (a, 1) := by simp [listen]
+    listen (pure a : FreeWriter ω α) = .pure (a, 1) := by rfl
 
 @[simp]
 lemma listen_liftBind_tell {ω : Type u} [Monoid ω] {α} (w : ω)
@@ -461,7 +455,7 @@ lemma listen_liftBind_tell {ω : Type u} [Monoid ω] {α} (w : ω)
       FreeM.liftBind (WriterF.tell w) (fun _ =>
         listen (k PUnit.unit) >>= fun (a, w') =>
           pure (a, w * w')) := by
-  simp [listen]
+  rfl
 
 /--
 `pass` allows a subcomputation to modify its own log. After traversing the computation and
@@ -474,12 +468,11 @@ def pass {ω : Type u} [Monoid ω] {α} (m : FreeWriter ω (α × (ω → ω))) 
 
 @[simp]
 lemma pass_def {ω : Type u} [Monoid ω] {α} (m : FreeWriter ω (α × (ω → ω))) :
-    pass m =
-    let ((a, f), w) := run m
-    FreeM.liftBind (WriterF.tell (f w)) (fun _ => .pure a) := by simp [pass]
+    pass m = (let ((a, f), w) := run m; FreeM.liftBind (WriterF.tell (f w)) (fun _ => .pure a)) :=
+    rfl
 
 instance {ω : Type u} [Monoid ω] : MonadWriter ω (FreeWriter ω) where
-  tell w := FreeM.liftBind (WriterF.tell w) (fun _ => .pure PUnit.unit)
+  tell := tell
   listen := listen
   pass := pass
 
@@ -519,7 +512,7 @@ instance {r : Type u} : LawfulMonad (FreeCont r) := inferInstance
 
 /-- Interpret `ContF r` operations into `ContT r Id`. -/
 def contInterp {r : Type u} {α : Type v} : ContF r α → ContT r Id α
-  | ContF.callCC g => fun k => g (fun a => k a)
+  | ContF.callCC g => fun k => pure (g (fun a => (k a).run))
 
 /-- Convert a `FreeCont` computation into a `ContT` computation. This is the canonical
 interpreter derived from `mapM`. -/
@@ -542,23 +535,24 @@ recursive interpreter `run` for `FreeCont`.
 @[simp]
 theorem toContT_eq_run {r α : Type u} (comp : FreeCont r α) (k : α → r) :
     toContT comp k = run comp k := by
-  induction' comp with a b op cont ih
-  · simp [toContT, FreeM.mapM, pure, run]
-  · simp only [toContT, FreeM.mapM] at *
-    rcases op
-    · simp only [run, bind] at *
+    induction comp with
+    | pure a => rfl
+    | liftBind op cont ih =>
+      simp only [toContT, FreeM.mapM]
+      cases op
+      simp only [run, bind]
       congr
       funext x
       apply ih
 
 @[simp]
 lemma run_pure {r : Type u} {α : Type v} (a : α) (k : α → r) :
-    run (pure a : FreeCont r α) k = k a := by simp [run]
+    run (pure a : FreeCont r α) k = k a := by rfl
 
 @[simp]
 lemma run_liftBind_callCC {r : Type u} {α β : Type v} (g : (α → r) → r)
 (cont : α → FreeCont r β) (k : β → r) :
-    run (.liftBind (ContF.callCC g) cont) k = g (fun a => run (cont a) k) := by simp [run]
+    run (.liftBind (ContF.callCC g) cont) k = g (fun a => run (cont a) k) := by rfl
 
 /-- Call with current continuation for the Free continuation monad. -/
 def callCC {r : Type u} {α β : Type v} (f : MonadCont.Label α (FreeCont r) β → FreeCont r α) :
@@ -572,7 +566,7 @@ lemma callCC_def {r : Type u} {α β : Type v} (f : MonadCont.Label α (FreeCont
     callCC f =
     FreeM.liftBind (ContF.callCC (fun k =>
       run (f ⟨fun x => FreeM.liftBind (ContF.callCC (fun _ => k x)) FreeM.pure⟩) k
-    )) FreeM.pure := by simp [callCC]
+    )) FreeM.pure := by rfl
 
 instance {r : Type u} : MonadCont (FreeCont r) where
   callCC := FreeCont.callCC
