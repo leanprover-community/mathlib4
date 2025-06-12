@@ -175,15 +175,15 @@ protected theorem inv_mem {x : L} : x ∈ S → x⁻¹ ∈ S :=
 protected theorem div_mem {x y : L} : x ∈ S → y ∈ S → x / y ∈ S :=
   div_mem
 
-/-- Product of a list of elements in an intermediate_field is in the intermediate_field. -/
+/-- Product of a list of elements in an intermediate field is in the intermediate field. -/
 protected theorem list_prod_mem {l : List L} : (∀ x ∈ l, x ∈ S) → l.prod ∈ S :=
   list_prod_mem
 
-/-- Sum of a list of elements in an intermediate field is in the intermediate_field. -/
+/-- Sum of a list of elements in an intermediate field is in the intermediate field. -/
 protected theorem list_sum_mem {l : List L} : (∀ x ∈ l, x ∈ S) → l.sum ∈ S :=
   list_sum_mem
 
-/-- Product of a multiset of elements in an intermediate field is in the intermediate_field. -/
+/-- Product of a multiset of elements in an intermediate field is in the intermediate field. -/
 protected theorem multiset_prod_mem (m : Multiset L) : (∀ a ∈ m, a ∈ S) → m.prod ∈ S :=
   multiset_prod_mem m
 
@@ -191,7 +191,7 @@ protected theorem multiset_prod_mem (m : Multiset L) : (∀ a ∈ m, a ∈ S) �
 protected theorem multiset_sum_mem (m : Multiset L) : (∀ a ∈ m, a ∈ S) → m.sum ∈ S :=
   multiset_sum_mem m
 
-/-- Product of elements of an intermediate field indexed by a `Finset` is in the intermediate_field.
+/-- Product of elements of an intermediate field indexed by a `Finset` is in the intermediate field.
 -/
 protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → L} (h : ∀ c ∈ t, f c ∈ S) :
     (∏ i ∈ t, f i) ∈ S :=
@@ -260,7 +260,7 @@ theorem toIntermediateField_toSubalgebra (S : IntermediateField K L) :
   ext
   rfl
 
-/-- Turn a subalgebra satisfying `IsField` into an intermediate_field. -/
+/-- Turn a subalgebra satisfying `IsField` into an intermediate field. -/
 def Subalgebra.toIntermediateField' (S : Subalgebra K L) (hS : IsField S) : IntermediateField K L :=
   S.toIntermediateField fun x hx => by
     by_cases hx0 : x = 0
@@ -298,16 +298,16 @@ instance toField : Field S :=
 @[norm_cast]
 theorem coe_sum {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∑ i, f i) : L) = ∑ i, (f i : L) := by
   classical
-    induction' (Finset.univ : Finset ι) using Finset.induction_on with i s hi H
-    · simp
-    · rw [Finset.sum_insert hi, AddMemClass.coe_add, H, Finset.sum_insert hi]
+    induction (Finset.univ : Finset ι) using Finset.induction_on with
+    | empty => simp
+    | insert i s hi H => rw [Finset.sum_insert hi, AddMemClass.coe_add, H, Finset.sum_insert hi]
 
 @[norm_cast]
 theorem coe_prod {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∏ i, f i) : L) = ∏ i, (f i : L) := by
   classical
-    induction' (Finset.univ : Finset ι) using Finset.induction_on with i s hi H
-    · simp
-    · rw [Finset.prod_insert hi, MulMemClass.coe_mul, H, Finset.prod_insert hi]
+    induction (Finset.univ : Finset ι) using Finset.induction_on with
+    | empty => simp
+    | insert i s hi H => rw [Finset.prod_insert hi, MulMemClass.coe_mul, H, Finset.prod_insert hi]
 
 /-!
 `IntermediateField`s inherit structure from their `Subfield` coercions.
@@ -404,7 +404,7 @@ instance isScalarTower_mid {R : Type*} [Semiring R] [Algebra L R] [Algebra K R]
     [IsScalarTower K L R] : IsScalarTower K S R :=
   IsScalarTower.subalgebra' _ _ _ S.toSubalgebra
 
-/-- Specialize `is_scalar_tower_mid` to the common case where the top field is `L`. -/
+/-- Specialize `isScalarTower_mid` to the common case where the top field is `L`. -/
 instance isScalarTower_mid' : IsScalarTower K S L :=
   inferInstance
 
@@ -607,7 +607,7 @@ variable {S}
 
 section Tower
 
-/-- Lift an intermediate_field of an intermediate_field. -/
+/-- Lift an intermediate field of an intermediate field. -/
 def lift {F : IntermediateField K L} (E : IntermediateField K F) : IntermediateField K L :=
   E.map (val F)
 

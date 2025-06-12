@@ -23,7 +23,7 @@ field `K` and its torsion subgroup.
 `|norm ℚ x| = 1`.
 
 * `NumberField.Units.mem_torsion`: a unit `x : (𝓞 K)ˣ` is torsion iff `w x = 1` for all infinite
-places `w` of `K`.
+  places `w` of `K`.
 
 ## Tags
 number field, units
@@ -96,6 +96,7 @@ protected theorem norm [NumberField K] (x : (𝓞 K)ˣ) :
     |Algebra.norm ℚ (x : K)| = 1 := by
   rw [← RingOfIntegers.coe_norm, isUnit_iff_norm.mp x.isUnit]
 
+variable {K} in
 theorem pos_at_place (x : (𝓞 K)ˣ) (w : InfinitePlace K) :
     0 < w x := pos_iff.mpr (coe_ne_zero x)
 
