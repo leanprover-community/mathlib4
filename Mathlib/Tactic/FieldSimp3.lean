@@ -5,16 +5,16 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+import Mathlib.Algebra.Field.Rat
+import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Tactic.NormNum.Core
+import Mathlib.Tactic.Positivity.Core
 import Mathlib.Tactic.Ring
 import Mathlib.Util.AtomM
-import Lean.Elab.Tactic.Basic
-import Lean.Meta.Tactic.Simp.Main
-import Mathlib.Algebra.Group.Units.Basic
-import Mathlib.Tactic.Positivity.Core
-import Mathlib.Tactic.NormNum.Core
 import Mathlib.Util.DischargerAsTactic
 import Qq
-import Mathlib.Algebra.Field.Rat
+import Lean.Elab.Tactic.Basic
+import Lean.Meta.Tactic.Simp.Main
 
 
 /-! # A tactic for clearing denominators in fields
@@ -26,7 +26,7 @@ open Meta Elab Qq Mathlib.Tactic List
 
 namespace Mathlib.Tactic.FieldSimp
 
-/-! ### Theory of lists of pairs (scalar, vector)
+/-! ### Theory of lists of pairs (exponent, atom)
 
 This section contains the lemmas which are orchestrated by the `field_simp` tactic
 to prove goals in fields.  The basic object which these lemmas concern is `NF M`, a type synonym
@@ -84,11 +84,10 @@ theorem mul_eq_eval₃ [Field M] {a₁ : ℤ × M} (a₂ : ℤ × M)
   simp only [eval_cons, ← h]
   ring
 
-theorem mul_eq_eval [Field M] {l₁ l₂ l : NF M} {l₁' : NF M} {l₂' : NF M}
-    {x₁ x₂ : M} (hx₁ : x₁ = l₁'.eval) (hx₂ : x₂ = l₂'.eval) (h₁ : l₁.eval = l₁'.eval)
-    (h₂ : l₂.eval = l₂'.eval) (h : l₁.eval * l₂.eval = l.eval) :
+theorem mul_eq_eval [Field M] {l₁ l₂ l : NF M} {x₁ x₂ : M} (hx₁ : x₁ = l₁.eval)
+    (hx₂ : x₂ = l₂.eval) (h : l₁.eval * l₂.eval = l.eval) :
     x₁ * x₂ = l.eval := by
-  rw [hx₁, hx₂, ← h₁, ← h₂, h]
+  rw [hx₁, hx₂, h]
 
 theorem div_eq_eval₁ [Field M](a₁ : ℤ × M) {a₂ : ℤ × M} {l₁ l₂ l : NF M}
     (h : l₁.eval / (a₂ ::ᵣ l₂).eval = l.eval) :
@@ -111,12 +110,10 @@ theorem div_eq_eval₃ [Field M] {a₁ : ℤ × M} (a₂ : ℤ × M) {l₁ l₂ 
   congr! 1
   rw [mul_comm, mul_assoc]
 
-theorem div_eq_eval [Field M] {l₁ l₂ l : NF M} {l₁' : NF M} {l₂' : NF M} {l₁'' : NF M}
-    {l₂'' : NF M} {x₁ x₂ : M} (hx₁ : x₁ = l₁''.eval) (hx₂ : x₂ = l₂''.eval)
-    (h₁' : l₁'.eval = l₁''.eval) (h₂' : l₂'.eval = l₂''.eval) (h₁ : l₁.eval = l₁'.eval)
-    (h₂ : l₂.eval = l₂'.eval) (h : l₁.eval - l₂.eval = l.eval) :
-    x₁ - x₂ = l.eval := by
-  rw [hx₁, hx₂, ← h₁', ← h₂', ← h₁, ← h₂, h]
+theorem div_eq_eval [Field M] {l₁ l₂ l : NF M} {x₁ x₂ : M} (hx₁ : x₁ = l₁.eval) (hx₂ : x₂ = l₂.eval)
+    (h : l₁.eval / l₂.eval = l.eval) :
+    x₁ / x₂ = l.eval := by
+  rw [hx₁, hx₂, h]
 
 instance : Inv (NF M) where
   inv l := l.map fun (a, x) ↦ (-a, x)
@@ -136,10 +133,9 @@ theorem eval_inv [Field M] (l : NF M) : (l⁻¹).eval = l.eval⁻¹ := by
 theorem zero_div_eq_eval [Field M] (l : NF M) : 1 / l.eval = (l⁻¹).eval := by
   simp [eval_inv]
 
-theorem inv_eq_eval [Field M] {l : NF M} {l₀ : NF M} (hl : l.eval = l₀.eval) {x : M}
-    (h : x = l₀.eval) :
+theorem inv_eq_eval [Field M] {l : NF M} {x : M} (h : x = l.eval) :
     x⁻¹ = (l⁻¹).eval := by
-  rw [h, ← hl, eval_inv]
+  rw [h, eval_inv]
 
 instance : Pow (NF M) ℤ where
   pow l r := l.map fun (a, x) ↦ (r * a, x)
@@ -160,10 +156,9 @@ theorem eval_zpow [Field M] {l : NF M} {x : M} (h : x = l.eval) (r : ℤ) : (l ^
   ext p
   simp [← zpow_mul, mul_comm]
 
-theorem zpow_eq_eval [Field M] {l : NF M} {l₀ : NF M} {s : ℤ} {r : ℤ}
-    {x : M} (hx : x = l₀.eval) (hl : l.eval = l₀.eval) (hs : x ^ r = x ^ s) :
-    x ^ s = (l ^ r).eval := by
-  rw [← hs, hx, ← hl, eval_zpow]
+theorem zpow_eq_eval [Field M] {l : NF M} (r : ℤ) {x : M} (hx : x = l.eval) :
+    x ^ r = (l ^ r).eval := by
+  rw [hx, eval_zpow]
   rfl
 
 theorem eq_cons_cons [DivInvMonoid M] {r₁ r₂ : ℤ} (m : M) {l₁ l₂ : NF M} (h1 : r₁ = r₂)
@@ -188,11 +183,11 @@ end NF
 
 variable {u v : Level}
 
-/-! ### Lists of expressions representing scalars and vectors, and operations on such lists -/
+/-! ### Lists of expressions representing exponents and atoms, and operations on such lists -/
 
 /-- Basic meta-code "normal form" object of the `field_simp` tactic: a type synonym
-for a list of ordered triples comprising expressions representing terms of two types `ℤ` and `M`
-(where typically `M` is a field), together with a natural number "index".
+for a list of ordered triples comprising an expression representing a term of a type `M` (where
+typically `M` is a field), together with an integer "power" and a natural number "index".
 
 The natural number represents the index of the `M` term in the `AtomM` monad: this is not enforced,
 but is sometimes assumed in operations.  Thus when items `((a₁, x₁), k)` and `((a₂, x₂), k)`
@@ -203,30 +198,30 @@ that the expressions `x₁` and `x₂` are the same.  It is also expected that t
 By forgetting the natural number indices, an expression representing a `Mathlib.Tactic.FieldSimp.NF`
 object can be built from a `FieldSimp.qNF` object; this construction is provided as
 `Mathlib.Tactic.FieldSimp.qNF.toNF`. -/
-abbrev qNF (M : Q(Type v)) := List ((Q(ℤ) × Q($M)) × ℕ) -- FIXME change from Q(ℤ) to ℤ
+abbrev qNF (M : Q(Type v)) := List ((ℤ × Q($M)) × ℕ)
 
 namespace qNF
 
 variable {M : Q(Type v)}
 
-/-- Given `l` of type `qNF M`, i.e. a list of `(Q(ℤ) × Q($M)) × ℕ`s (two `Expr`s and a natural
+/-- Given `l` of type `qNF M`, i.e. a list of `(ℤ × Q($M)) × ℕ`s (two `Expr`s and a natural
 number), build an `Expr` representing an object of type `NF M` (i.e. `List (ℤ × M)`) in the
-in the obvious way: by forgetting the natural numbers and gluing together the `Expr`s. -/
+in the obvious way: by forgetting the natural numbers and gluing together the integers and `Expr`s.
+-/
 def toNF (l : qNF M) : Q(NF $M) :=
   let l' : List Q(ℤ × $M) := (l.map Prod.fst).map (fun (a, x) ↦ q(($a, $x)))
   let qt : List Q(ℤ × $M) → Q(List (ℤ × $M)) := List.rec q([]) (fun e _ l ↦ q($e ::ᵣ $l))
   qt l'
 
-/-- Given `l` of type `qNF M`, i.e. a list of `(Q(ℤ) × Q($M)) × ℕ`s (two `Expr`s and a natural
+/-- Given `l` of type `qNF M`, i.e. a list of `(ℤ × Q($M)) × ℕ`s (two `Expr`s and a natural
 number), apply an expression representing a function with domain `ℤ` to each of the `Q(ℤ)`
 components. -/
-def onScalar (l : qNF M) (f : Q(ℤ → ℤ)) :
-    qNF M :=
-  l.map fun ((a, x), k) ↦ ((q($f $a), x), k)
+def onExponent (l : qNF M) (f : ℤ → ℤ) : qNF M :=
+  l.map fun ((a, x), k) ↦ ((f a, x), k)
 
-/-- Given two terms `l₁`, `l₂` of type `qNF M`, i.e. lists of `(Q(ℤ) × Q($M)) × ℕ`s (two `Expr`s
-and a natural number), construct another such term `l`, which will have the property that in the
-`ℤ`-module `$M`, the product of the "multiplicative linear combinations" represented by `l₁` and
+/-- Given two terms `l₁`, `l₂` of type `qNF M`, i.e. lists of `(ℤ × Q($M)) × ℕ`s (an integer, an
+`Expr` and a natural number), construct another such term `l`, which will have the property that in
+the field `$M`, the product of the "multiplicative linear combinations" represented by `l₁` and
 `l₂` is the multiplicative linear combination represented by `l`.
 
 The construction assumes, to be valid, that the lists `l₁` and `l₂` are in strictly increasing order
@@ -235,7 +230,7 @@ the same `ℕ`-component `k`, then the expressions `x₁` and `x₂` are equal.
 
 The construction is as follows: merge the two lists, except that if pairs `(a₁, x₁)` and `(a₂, x₂)`
 appear in `l₁`, `l₂` respectively with the same `ℕ`-component `k`, then contribute a term
-`(a₁ * a₂, x₁)` to the output list with `ℕ`-component `k`. -/
+`(a₁ + a₂, x₁)` to the output list with `ℕ`-component `k`. -/
 def mul : qNF M → qNF M → qNF M
   | [], l => l
   | l, [] => l
@@ -243,34 +238,35 @@ def mul : qNF M → qNF M → qNF M
     if k₁ < k₂ then
       ((a₁, x₁), k₁) :: mul t₁ (((a₂, x₂), k₂) :: t₂)
     else if k₁ = k₂ then
-      ((q($a₁ * $a₂), x₁), k₁) :: mul t₁ t₂
+      ((a₁ + a₂, x₁), k₁) :: mul t₁ t₂
     else
       ((a₂, x₂), k₂) :: mul (((a₁, x₁), k₁) :: t₁) t₂
 
--- /-- Given two terms `l₁`, `l₂` of type `qNF M`, i.e. lists of `(Q(ℤ) × Q($M)) × ℕ`s (two `Expr`s
--- and a natural number), recursively construct a proof that in the `ℤ`-module `$M`, the sum of the
--- "linear combinations" represented by `l₁` and `l₂` is the linear combination represented by
--- `FieldSimp.qNF.mul l₁ l₁`. -/
--- def mkAddProof {iM : Q(Field $M)}
---     (l₁ l₂ : qNF M) :
---     Q(NF.eval $(l₁.toNF) * NF.eval $(l₂.toNF) = NF.eval $((qNF.mul l₁ l₂).toNF)) :=
---   match l₁, l₂ with
---   | [], l => (q(zero_mul (NF.eval $(l.toNF))):)
---   | l, [] => (q(mul_zero (NF.eval $(l.toNF))):)
---   | ((a₁, x₁), k₁) :: t₁, ((a₂, x₂), k₂) :: t₂ =>
---     if k₁ < k₂ then
---       let pf := mkAddProof t₁ (((a₂, x₂), k₂) :: t₂)
---       (q(NF.mul_eq_eval₁ ($a₁, $x₁) $pf):)
---     else if k₁ = k₂ then
---       let pf := mkAddProof t₁ t₂
---       (q(NF.mul_eq_eval₂ $a₁ $a₂ $x₁ $pf):)
---     else
---       let pf := mkAddProof (((a₁, x₁), k₁) :: t₁) t₂
---       (q(NF.mul_eq_eval₃ ($a₂, $x₂) $pf):)
+/-- Given two terms `l₁`, `l₂` of type `qNF M`, i.e. lists of `(ℤ × Q($M)) × ℕ`s (an integer, an
+`Expr` and a natural number), recursively construct a proof that in the field `$M`, the product of
+the "multiplicative linear combinations" represented by `l₁` and `l₂` is the multiplicative linear
+combination represented by `FieldSimp.qNF.mul l₁ l₁`. -/
+def mkMulProof (iM : Q(Field $M)) (l₁ l₂ : qNF M) :
+    Q((NF.eval $(l₁.toNF)) * NF.eval $(l₂.toNF) = NF.eval $((qNF.mul l₁ l₂).toNF)) :=
+  match l₁, l₂ with
+  | [], l => (q(one_mul (NF.eval $(l.toNF))):)
+  | l, [] => (q(mul_one (NF.eval $(l.toNF))):)
+  | ((a₁, x₁), k₁) :: t₁, ((a₂, x₂), k₂) :: t₂ =>
+    if k₁ < k₂ then
+      let pf := mkMulProof iM t₁ (((a₂, x₂), k₂) :: t₂)
+      (q(NF.mul_eq_eval₁ ($a₁, $x₁) $pf):)
+    else if k₁ = k₂ then
+      let pf := mkMulProof iM t₁ t₂
+      let hx₁ : Q($x₁ ≠ 0) := q(sorry) -- FIXME we won't have this in general, need a case split on
+      -- signs of `k₁` and `k₂`
+      (q(NF.mul_eq_eval₂ $a₁ $a₂ $x₁ $hx₁ $pf):)
+    else
+      let pf := mkMulProof iM (((a₁, x₁), k₁) :: t₁) t₂
+      (q(NF.mul_eq_eval₃ ($a₂, $x₂) $pf):)
 
-/-- Given two terms `l₁`, `l₂` of type `qNF M`, i.e. lists of `(Q(ℤ) × Q($M)) × ℕ`s (two `Expr`s
-and a natural number), construct another such term `l`, which will have the property that in the
-`ℤ`-module `$M`, the quotient of the "multiplicative linear combinations" represented by `l₁` and
+/-- Given two terms `l₁`, `l₂` of type `qNF M`, i.e. lists of `(ℤ × Q($M)) × ℕ`s (an integer, an
+`Expr` and a natural number), construct another such term `l`, which will have the property that in
+the field `$M`, the quotient of the "multiplicative linear combinations" represented by `l₁` and
 `l₂` is the multiplicative linear combination represented by `l`.
 
 The construction assumes, to be valid, that the lists `l₁` and `l₂` are in strictly increasing order
@@ -282,39 +278,41 @@ that if pairs `(a₁, x₁)` and `(a₂, x₂)` appear in `l₁`, `l₂` respect
 `ℕ`-component `k`, then contribute a term `(a₁ - a₂, x₁)` to the output list with `ℕ`-component `k`.
 -/
 def div : qNF M → qNF M → qNF M
-  | [], l => l.onScalar q(Neg.neg)
+  | [], l => l.onExponent Neg.neg
   | l, [] => l
   | ((a₁, x₁), k₁) :: t₁, ((a₂, x₂), k₂) :: t₂ =>
     if k₁ < k₂ then
       ((a₁, x₁), k₁) :: div t₁ (((a₂, x₂), k₂) :: t₂)
     else if k₁ = k₂ then
-      ((q($a₁ - $a₂), x₁), k₁) :: div t₁ t₂
+      ((a₁ - a₂, x₁), k₁) :: div t₁ t₂
     else
-      ((q(-$a₂), x₂), k₂) :: div (((a₁, x₁), k₁) :: t₁) t₂
+      ((-a₂, x₂), k₂) :: div (((a₁, x₁), k₁) :: t₁) t₂
 
--- /-- Given two terms `l₁`, `l₂` of type `qNF M`, i.e. lists of `(Q(ℤ) × Q($M)) × ℕ`s (two `Expr`s
--- and a natural number), recursively construct a proof that in the field `$M`, the quotient
--- of the "multiplicative linear combinations" represented by `l₁` and `l₂` is the multiplicative
--- linear combination represented by `FieldSimp.qNF.div l₁ l₁`. -/
--- def mkSubProof (iM : Q(AddCommGroup $M))  (l₁ l₂ : qNF M) :
---     Q(NF.eval $(l₁.toNF) - NF.eval $(l₂.toNF) = NF.eval $((qNF.div l₁ l₂).toNF)) :=
---   match l₁, l₂ with
---   | [], l => (q(NF.zero_div_eq_eval $(l.toNF)):)
---   | l, [] => (q(div_zero (NF.eval $(l.toNF))):)
---   | ((a₁, x₁), k₁) ::ᵣ t₁, ((a₂, x₂), k₂) ::ᵣ t₂ =>
---     if k₁ < k₂ then
---       let pf := mkSubProof iℤ iM iℤM t₁ (((a₂, x₂), k₂) ::ᵣ t₂)
---       (q(NF.div_eq_eval₁ ($a₁, $x₁) $pf):)
---     else if k₁ = k₂ then
---       let pf := mkSubProof iℤ iM iℤM t₁ t₂
---       (q(NF.div_eq_eval₂ $a₁ $a₂ $x₁ $pf):)
---     else
---       let pf := mkSubProof iℤ iM iℤM (((a₁, x₁), k₁) ::ᵣ t₁) t₂
---       (q(NF.div_eq_eval₃ ($a₂, $x₂) $pf):)
+/-- Given two terms `l₁`, `l₂` of type `qNF M`, i.e. lists of `(ℤ × Q($M)) × ℕ`s (an integer, an
+`Expr` and a natural number), recursively construct a proof that in the field `$M`, the quotient
+of the "multiplicative linear combinations" represented by `l₁` and `l₂` is the multiplicative
+linear combination represented by `FieldSimp.qNF.div l₁ l₁`. -/
+def mkDivProof (iM : Q(Field $M)) (l₁ l₂ : qNF M) :
+    Q(NF.eval $(l₁.toNF) / NF.eval $(l₂.toNF) = NF.eval $((qNF.div l₁ l₂).toNF)) :=
+  match l₁, l₂ with
+  | [], l => (q(NF.zero_div_eq_eval $(l.toNF)):)
+  | l, [] => (q(div_zero (NF.eval $(l.toNF))):)
+  | ((a₁, x₁), k₁) :: t₁, ((a₂, x₂), k₂) :: t₂ =>
+    if k₁ < k₂ then
+      let pf := mkDivProof iM t₁ (((a₂, x₂), k₂) :: t₂)
+      (q(NF.div_eq_eval₁ ($a₁, $x₁) $pf):)
+    else if k₁ = k₂ then
+      let pf := mkDivProof iM t₁ t₂
+      let hx₁ : Q($x₁ ≠ 0) := q(sorry) -- FIXME we won't have this in general, need a case split on
+      -- signs of `k₁` and `k₂`
+      (q(NF.div_eq_eval₂ $a₁ $a₂ $x₁ $hx₁ $pf):)
+    else
+      let pf := mkDivProof iM (((a₁, x₁), k₁) :: t₁) t₂
+      (q(NF.div_eq_eval₃ ($a₂, $x₂) $pf):)
 
 end qNF
 
-/-! ### Core of the `module` tactic -/
+/-! ### Core of the `field_simp` tactic -/
 
 variable {M : Q(Type v)}
 
@@ -328,44 +326,38 @@ https://github.com/leanprover-community/mathlib4/pull/16593/files#r1749623191 -/
 partial def normalize (iM : Q(Field $M)) (x : Q($M)) :
     AtomM (Σ l : qNF M, Q($x = NF.eval $(l.toNF))) := do
   match x with
-  /- normalize an multiplication: `x₁ * x₂` -/
+  /- normalize a multiplication: `x₁ * x₂` -/
   | ~q($x₁ * $x₂) =>
     let ⟨l₁, pf₁⟩ ← normalize iM x₁
     let ⟨l₂, pf₂⟩ ← normalize iM x₂
     -- build the new list and proof
-    -- let pf := qNF.mkAddProof iℤM l₁ l₂
-    -- pure ⟨u, qNF.mul l₁ l₂, (q(NF.mul_eq_eval $pf₁' $pf₂' $pf₁ $pf₂ $pf):)⟩
-    pure ⟨qNF.mul l₁ l₂, q(sorry)⟩
+    let pf := qNF.mkMulProof iM l₁ l₂
+    pure ⟨qNF.mul l₁ l₂, (q(NF.mul_eq_eval $pf₁ $pf₂ $pf):)⟩
   /- normalize a division: `x₁ - x₂` -/
-  | ~q(@HDiv.hDiv _ _ _ (@instHDiv _ $iM') $x₁ $x₂) =>
+  | ~q($x₁ / $x₂) =>
     let ⟨l₁, pf₁⟩ ← normalize iM x₁
     let ⟨l₂, pf₂⟩ ← normalize iM x₂
-    assumeInstancesCommute
     -- build the new list and proof
-    -- let pf := qNF.mkSubProof iM' l₁ l₂
-    -- pure ⟨u, qNF.div l₁ l₂,
-    --   q(NF.div_eq_eval $pf₁'' $pf₂'' $pf₁' $pf₂' $pf₁ $pf₂ $pf)⟩
-    pure ⟨qNF.div l₁ l₂,
-      q(sorry)⟩
+    let pf := qNF.mkDivProof iM l₁ l₂
+    pure ⟨qNF.div l₁ l₂, (q(NF.div_eq_eval $pf₁ $pf₂ $pf):)⟩
   /- normalize a inversion: `y⁻¹` -/
-  | ~q(@Inv.inv _ $iM' $y) =>
+  | ~q($y⁻¹) =>
     let ⟨l, pf⟩ ← normalize iM y
     -- build the new list and proof
-    -- pure ⟨u, l.onScalar q(Neg.neg), (q(NF.inv_eq_eval $pf $pf₀):)⟩
-    pure ⟨l.onScalar q(Neg.neg), q(sorry)⟩
-  /- normalize a scalar multiplication: `y ^ (s₀ : ℤ)` -/
+    pure ⟨l.onExponent Neg.neg, (q(NF.inv_eq_eval $pf):)⟩
+  /- normalize an integer exponentiation: `y ^ (s : ℤ)` -/
   | ~q($y ^ ($s : ℤ)) =>
     let ⟨l, pf⟩ ← normalize iM y
-      -- build the new list and proof
-    -- pure ⟨u, l.onScalar q(HMul.hMul $s), (q(NF.zpow_eq_eval $pf₀ $pf_l $pf_r):)⟩
-    pure ⟨l.onScalar q(HMul.hMul $s), q(sorry)⟩
+    let some s := Expr.int? s | throwError "foo" -- treat as atom in this case
+    -- build the new list and proof
+    pure ⟨l.onExponent (HMul.hMul s), (q(NF.zpow_eq_eval $s $pf):)⟩
   /- normalize a `(1:M)` -/
   | ~q(1) =>
     pure ⟨[], q(NF.one_eq_eval $M)⟩
   /- anything else should be treated as an atom -/
   | _ =>
     let (k, ⟨x', _⟩) ← AtomM.addAtomQ x
-    pure ⟨[((q(1), x'), k)], q(NF.atom_eq_eval $x')⟩
+    pure ⟨[((1, x'), k)], q(NF.atom_eq_eval $x')⟩
 
 open Elab Tactic
 
