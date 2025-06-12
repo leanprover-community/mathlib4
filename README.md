@@ -54,7 +54,7 @@ for quick reference.
 The complete documentation for contributing to ``mathlib`` is located
 [on the community guide contribute to mathlib](https://leanprover-community.github.io/contribute/index.html)
 
-You may want to subscribe to the `mathlib4` stream to introduce yourself and your plan to the community.
+You may want to subscribe to the `mathlib4` channel on [Zulip](https://leanprover.zulipchat.com/) to introduce yourself and your plan to the community.
 Often you can find community members willing to help you get started and advise you on the fit and
 feasibility of your project.
 
