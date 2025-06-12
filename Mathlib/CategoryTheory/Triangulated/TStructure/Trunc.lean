@@ -1159,7 +1159,7 @@ instance (X : C) (a b : ℤ) [t.IsGE X a] : t.IsGE ((t.truncLT b).obj X) a :=
 instance (X : C) (a b : ℤ) [t.IsLE X b] : t.IsLE ((t.truncGE a).obj X) b := by
   rw [t.isLE_iff_isZero_truncGE_obj b (b+1) rfl]
   have := t.isIso₂_truncGE_map_of_LE _ ((t.triangleLEGE_distinguished (a-1) a (by linarith) X))
-    b (b+1) rfl (by dsimp ; infer_instance)
+    b (b+1) rfl (by dsimp; infer_instance)
   dsimp at this
   exact IsZero.of_iso (t.isZero_truncGE_obj_of_isLE b (b+1) rfl X)
     (asIso ((t.truncGE (b+1)).map ((t.truncGEπ  a).app X))).symm
