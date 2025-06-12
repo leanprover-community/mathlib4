@@ -225,12 +225,18 @@ theorem notMem_setOf_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p 
 theorem setOf_mem_eq {s : Set α} : { x | x ∈ s } = s :=
   rfl
 
+@[deprecated "This lemma abuses the `Set α := α → Prop` defeq.
+If you think you need it you have already taken a wrong turn." (since := "2025-06-10")]
 theorem setOf_set {s : Set α} : setOf s = s :=
   rfl
 
+@[deprecated "This lemma abuses the `Set α := α → Prop` defeq.
+If you think you need it you have already taken a wrong turn." (since := "2025-06-10")]
 theorem setOf_app_iff {p : α → Prop} {x : α} : { x | p x } x ↔ p x :=
   Iff.rfl
 
+@[deprecated "This lemma abuses the `Set α := α → Prop` defeq.
+If you think you need it you have already taken a wrong turn." (since := "2025-06-10")]
 theorem mem_def {a : α} {s : Set α} : a ∈ s ↔ s a :=
   Iff.rfl
 
