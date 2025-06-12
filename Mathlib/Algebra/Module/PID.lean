@@ -141,7 +141,7 @@ theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ p
     · symm; convert Ideal.torsionOf_eq_span_pow_pOrder hp hM y
       rw [← pow_add, Nat.sub_add_cancel hk]
   · use 0
-    rw [zero_smul, smul_zero, ← Nat.sub_add_cancel (le_of_not_le hk), pow_add, mul_smul, hM',
+    rw [zero_smul, smul_zero, ← Nat.sub_add_cancel (le_of_not_ge hk), pow_add, mul_smul, hM',
       smul_zero]
 
 open Submodule.Quotient
