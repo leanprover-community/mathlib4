@@ -30,17 +30,17 @@ This file defines the Selmer group $K(S, n)$ and some basic facts.
 
 ## Main definitions
 
- * `IsDedekindDomain.selmerGroup`: the Selmer group.
- * TODO: maps in the sequence.
+* `IsDedekindDomain.selmerGroup`: the Selmer group.
+* TODO: maps in the sequence.
 
 ## Main statements
 
- * TODO: proofs of exactness of the sequence.
- * TODO: proofs of finiteness for global fields.
+* TODO: proofs of exactness of the sequence.
+* TODO: proofs of finiteness for global fields.
 
 ## Notations
 
- * `K⟮S, n⟯`: the Selmer group with parameters `K`, `S`, and `n`.
+* `K⟮S, n⟯`: the Selmer group with parameters `K`, `S`, and `n`.
 
 ## Implementation notes
 
@@ -132,6 +132,8 @@ theorem valuation_of_unit_eq (x : Rˣ) :
 
 /-- The multiplicative `v`-adic valuation on `Kˣ` modulo `n`-th powers. -/
 def valuationOfNeZeroMod (n : ℕ) : (K/n) →* Multiplicative (ZMod n) :=
+  -- TODO: this definition does a lot of defeq abuse between `Multiplicative` and `Additive`,
+  -- so we need `erw` below.
   (Int.quotientZMultiplesNatEquivZMod n).toMultiplicative.toMonoidHom.comp <|
     QuotientGroup.map (powMonoidHom n : Kˣ →* Kˣ).range
       (AddSubgroup.toSubgroup (AddSubgroup.zmultiples (n : ℤ)))
@@ -184,7 +186,7 @@ theorem valuation_ker_eq :
     by_cases hv : v ∈ S
     · exact congr_fun hx' ⟨v, hv⟩
     · exact hx v hv
-  · exact fun hx' => funext fun v => hx' v <| Set.not_mem_empty v
+  · exact fun hx' => funext fun v => hx' v <| Set.notMem_empty v
 
 /-- The natural homomorphism from `Rˣ` to `K⟮∅, n⟯`. -/
 def fromUnit {n : ℕ} : Rˣ →* K⟮(∅ : Set <| HeightOneSpectrum R),n⟯ where

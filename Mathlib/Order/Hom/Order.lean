@@ -15,7 +15,7 @@ monotone functions.
 
 ## Main definitions
 
- * `OrderHom.CompleteLattice`: if `β` is a complete lattice, so is `α →o β`
+* `OrderHom.instCompleteLattice`: if `β` is a complete lattice, so is `α →o β`
 
 ## Tags
 

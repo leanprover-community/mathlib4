@@ -246,11 +246,11 @@ theorem IsLittleO.rpow (hr : 0 < r) (hg : 0 ≤ᶠ[l] g) (h : f =o[l] g) :
   refine (h.forall_isBigOWith ?_).rpow ?_ ?_ hg <;> positivity
 
 protected lemma IsBigO.sqrt (hfg : f =O[l] g) (hg : 0 ≤ᶠ[l] g) :
-    (Real.sqrt <| f ·) =O[l] (Real.sqrt <| g ·) := by
+    (fun x ↦ √(f x)) =O[l] (fun x ↦ √(g x)) := by
   simpa [Real.sqrt_eq_rpow] using hfg.rpow one_half_pos.le hg
 
 protected lemma IsLittleO.sqrt (hfg : f =o[l] g) (hg : 0 ≤ᶠ[l] g) :
-    (Real.sqrt <| f ·) =o[l] (Real.sqrt <| g ·) := by
+    (fun x ↦ √(f x)) =o[l] (fun x ↦ √(g x)) := by
   simpa [Real.sqrt_eq_rpow] using hfg.rpow one_half_pos hg
 
 protected lemma IsTheta.sqrt (hfg : f =Θ[l] g) (hf : 0 ≤ᶠ[l] f) (hg : 0 ≤ᶠ[l] g) :
@@ -326,7 +326,7 @@ theorem isLittleO_exp_neg_mul_rpow_atTop {a : ℝ} (ha : 0 < a) (b : ℝ) :
 
 theorem isLittleO_log_rpow_atTop {r : ℝ} (hr : 0 < r) : log =o[atTop] fun x => x ^ r :=
   calc
-    log =O[atTop] fun x => r * log x := isBigO_self_const_mul _ hr.ne' _ _
+    log =O[atTop] fun x => r * log x := isBigO_self_const_mul hr.ne' _ _
     _ =ᶠ[atTop] fun x => log (x ^ r) :=
       ((eventually_gt_atTop 0).mono fun _ hx => (log_rpow hx _).symm)
     _ =o[atTop] fun x => x ^ r := isLittleO_log_id_atTop.comp_tendsto (tendsto_rpow_atTop hr)

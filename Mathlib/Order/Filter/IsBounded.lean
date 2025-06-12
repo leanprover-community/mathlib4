@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Rémy Degenne
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
+import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Order.Filter.Cofinite
 
 /-!
@@ -168,7 +168,7 @@ theorem not_isBoundedUnder_of_tendsto_atTop [Preorder β] [NoMaxOrder β] {f : �
   obtain ⟨b', h⟩ := exists_gt b
   have hb' := (tendsto_atTop.mp hf) b'
   have : { x : α | f x ≤ b } ∩ { x : α | b' ≤ f x } = ∅ :=
-    eq_empty_of_subset_empty fun x hx => (not_le_of_lt h) (le_trans hx.2 hx.1)
+    eq_empty_of_subset_empty fun x hx => (not_le_of_gt h) (le_trans hx.2 hx.1)
   exact (nonempty_of_mem (hb.and hb')).ne_empty this
 
 theorem not_isBoundedUnder_of_tendsto_atBot [Preorder β] [NoMinOrder β] {f : α → β} {l : Filter α}
@@ -273,7 +273,7 @@ lemma IsCobounded.frequently_ge [LinearOrder α] [NeBot f] (cobdd : IsCobounded 
   · exact ⟨t, .of_forall fun r ↦ tbot r⟩
   refine ⟨t', fun ev ↦ ?_⟩
   specialize ht t' (by filter_upwards [ev] with _ h using (not_le.mp h).le)
-  exact not_lt_of_le ht ht'
+  exact not_lt_of_ge ht ht'
 
 /-- For nontrivial filters in linear orders, coboundedness for `≥` implies frequent boundedness
 from above. -/
@@ -396,19 +396,21 @@ end add_and_sum
 
 section mul
 
-lemma isBoundedUnder_le_mul_of_nonneg [Mul α] [Zero α] [Preorder α] [PosMulMono α]
-    [MulPosMono α] {f : Filter ι} {u v : ι → α} (h₁ : 0 ≤ᶠ[f] u)
-    (h₂ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u)
-    (h₃ : 0 ≤ᶠ[f] v)
+lemma isBoundedUnder_le_mul_of_nonneg [Preorder α] [Mul α] [Zero α] [PosMulMono α]
+    [MulPosMono α] {f : Filter ι} {u v : ι → α} (h₁ : ∃ᶠ x in f, 0 ≤ u x)
+    (h₂ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u) (h₃ : 0 ≤ᶠ[f] v)
     (h₄ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f v) :
     IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f (u * v) := by
   obtain ⟨U, hU⟩ := h₂.eventually_le
   obtain ⟨V, hV⟩ := h₄.eventually_le
   refine isBoundedUnder_of_eventually_le (a := U * V) ?_
-  filter_upwards [hU, hV, h₁, h₃] with x x_U x_V u_0 v_0
-  exact mul_le_mul x_U x_V v_0 (u_0.trans x_U)
+  filter_upwards [hU, hV, h₃] with x x_U x_V v_0
+  have U_0 : 0 ≤ U := by
+    obtain ⟨y, y_0, y_U⟩ := (h₁.and_eventually hU).exists
+    exact y_0.trans y_U
+  exact (mul_le_mul_of_nonneg_right x_U v_0).trans (mul_le_mul_of_nonneg_left x_V U_0)
 
-lemma isCoboundedUnder_ge_mul_of_nonneg [Mul α] [Zero α] [LinearOrder α] [PosMulMono α]
+lemma isCoboundedUnder_ge_mul_of_nonneg [LinearOrder α] [Mul α] [Zero α] [PosMulMono α]
     [MulPosMono α] {f : Filter ι} [f.NeBot] {u v : ι → α} (h₁ : 0 ≤ᶠ[f] u)
     (h₂ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u)
     (h₃ : 0 ≤ᶠ[f] v)
@@ -416,9 +418,10 @@ lemma isCoboundedUnder_ge_mul_of_nonneg [Mul α] [Zero α] [LinearOrder α] [Pos
     IsCoboundedUnder (fun x1 x2 ↦ x1 ≥ x2) f (u * v) := by
   obtain ⟨U, hU⟩ := h₂.eventually_le
   obtain ⟨V, hV⟩ := h₄.frequently_le
-  exact IsCoboundedUnder.of_frequently_le (a := U * V)
-    <| (hV.and_eventually (hU.and (h₁.and h₃))).mono fun x ⟨x_V, x_U, u_0, v_0⟩ ↦
-    mul_le_mul x_U x_V v_0 (u_0.trans x_U)
+  refine IsCoboundedUnder.of_frequently_le (a := U * V) ?_
+  apply (hV.and_eventually (hU.and (h₁.and h₃))).mono
+  intro x ⟨x_V, x_U, u_0, v_0⟩
+  exact (mul_le_mul_of_nonneg_right x_U v_0).trans (mul_le_mul_of_nonneg_left x_V (u_0.trans x_U))
 
 end mul
 
@@ -471,12 +474,14 @@ theorem _root_.OrderIso.isBoundedUnder_ge_comp [LE α] [LE β] (e : α ≃o β) 
   OrderIso.isBoundedUnder_le_comp e.dual
 
 @[to_additive (attr := simp)]
-theorem isBoundedUnder_le_inv [OrderedCommGroup α] {l : Filter β} {u : β → α} :
+theorem isBoundedUnder_le_inv [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
+    {l : Filter β} {u : β → α} :
     (IsBoundedUnder (· ≤ ·) l fun x => (u x)⁻¹) ↔ IsBoundedUnder (· ≥ ·) l u :=
   (OrderIso.inv α).isBoundedUnder_ge_comp
 
 @[to_additive (attr := simp)]
-theorem isBoundedUnder_ge_inv [OrderedCommGroup α] {l : Filter β} {u : β → α} :
+theorem isBoundedUnder_ge_inv [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
+    {l : Filter β} {u : β → α} :
     (IsBoundedUnder (· ≥ ·) l fun x => (u x)⁻¹) ↔ IsBoundedUnder (· ≤ ·) l u :=
   (OrderIso.inv α).isBoundedUnder_le_comp
 
@@ -507,7 +512,8 @@ theorem isBoundedUnder_ge_inf [SemilatticeInf α] {f : Filter β} {u v : β → 
       f.IsBoundedUnder (· ≥ ·) u ∧ f.IsBoundedUnder (· ≥ ·) v :=
   isBoundedUnder_le_sup (α := αᵒᵈ)
 
-theorem isBoundedUnder_le_abs [LinearOrderedAddCommGroup α] {f : Filter β} {u : β → α} :
+theorem isBoundedUnder_le_abs [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
+    {f : Filter β} {u : β → α} :
     (f.IsBoundedUnder (· ≤ ·) fun a => |u a|) ↔
       f.IsBoundedUnder (· ≤ ·) u ∧ f.IsBoundedUnder (· ≥ ·) u :=
   isBoundedUnder_le_sup.trans <| and_congr Iff.rfl isBoundedUnder_le_neg
@@ -516,7 +522,6 @@ theorem isBoundedUnder_le_abs [LinearOrderedAddCommGroup α] {f : Filter β} {u 
 in complete and conditionally complete lattices but let automation fill automatically the
 boundedness proofs in complete lattices, we use the tactic `isBoundedDefault` in the statements,
 in the form `(hf : f.IsBounded (≥) := by isBoundedDefault)`. -/
-
 macro "isBoundedDefault" : tactic =>
   `(tactic| first
     | apply isCobounded_le_of_bot
@@ -537,7 +542,7 @@ theorem Monotone.isBoundedUnder_le_comp_iff [Nonempty β] [LinearOrder β] [Preo
   refine ⟨?_, fun h => h.isBoundedUnder (α := β) hg⟩
   rintro ⟨c, hc⟩; rw [eventually_map] at hc
   obtain ⟨b, hb⟩ : ∃ b, ∀ a ≥ b, c < g a := eventually_atTop.1 (hg'.eventually_gt_atTop c)
-  exact ⟨b, hc.mono fun x hx => not_lt.1 fun h => (hb _ h.le).not_le hx⟩
+  exact ⟨b, hc.mono fun x hx => not_lt.1 fun h => (hb _ h.le).not_ge hx⟩
 
 theorem Monotone.isBoundedUnder_ge_comp_iff [Nonempty β] [LinearOrder β] [Preorder γ] [NoMinOrder γ]
     {g : β → γ} {f : α → β} {l : Filter α} (hg : Monotone g) (hg' : Tendsto g atBot atBot) :

@@ -127,7 +127,7 @@ lemma continuousOn_cosKernel (a : UnitAddCircle) : ContinuousOn (cosKernel a) (I
 
 lemma evenKernel_functional_equation (a : UnitAddCircle) (x : ℝ) :
     evenKernel a x = 1 / x ^ (1 / 2 : ℝ) * cosKernel a (1 / x) := by
-  rcases le_or_lt x 0 with hx | hx
+  rcases le_or_gt x 0 with hx | hx
   · rw [evenKernel_undef _ hx, cosKernel_undef, mul_zero]
     exact div_nonpos_of_nonneg_of_nonpos zero_le_one hx
   induction a using QuotientAddGroup.induction_on with | H a =>
@@ -255,7 +255,9 @@ def hurwitzEvenFEPair (a : UnitAddCircle) : WeakFEPair ℂ where
     measurableSet_Ioi
   hg_int := (continuous_ofReal.comp_continuousOn (continuousOn_cosKernel a)).locallyIntegrableOn
     measurableSet_Ioi
+  k := 1 / 2
   hk := one_half_pos
+  ε := 1
   hε := one_ne_zero
   f₀ := if a = 0 then 1 else 0
   hf_top r := by
