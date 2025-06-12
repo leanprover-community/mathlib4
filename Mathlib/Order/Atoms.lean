@@ -251,7 +251,7 @@ section Pairwise
 
 theorem IsAtom.inf_eq_bot_of_ne [SemilatticeInf α] [OrderBot α] {a b : α} (ha : IsAtom a)
     (hb : IsAtom b) (hab : a ≠ b) : a ⊓ b = ⊥ :=
-  hab.not_le_or_not_le.elim (ha.lt_iff.1 ∘ inf_lt_left.2) (hb.lt_iff.1 ∘ inf_lt_right.2)
+  hab.not_le_or_not_ge.elim (ha.lt_iff.1 ∘ inf_lt_left.2) (hb.lt_iff.1 ∘ inf_lt_right.2)
 
 theorem IsAtom.disjoint_of_ne [SemilatticeInf α] [OrderBot α] {a b : α} (ha : IsAtom a)
     (hb : IsAtom b) (hab : a ≠ b) : Disjoint a b :=
@@ -1020,7 +1020,7 @@ theorem Lattice.isStronglyAtomic [OrderBot α] [IsUpperModularLattice α] [IsAto
     IsStronglyAtomic α where
   exists_covBy_le_of_lt a b hab := by
     obtain ⟨s, hsb, h⟩ := isLUB_atoms b
-    refine by_contra fun hcon ↦ hab.not_le <| (isLUB_le_iff hsb).2 fun x hx ↦ ?_
+    refine by_contra fun hcon ↦ hab.not_ge <| (isLUB_le_iff hsb).2 fun x hx ↦ ?_
     simp_rw [not_exists, and_comm (b := _ ≤ _), not_and] at hcon
     specialize hcon (x ⊔ a) (sup_le (hsb.1 hx) hab.le)
     obtain (hbot | h_inf) := (h x hx).bot_covBy.eq_or_eq (c := x ⊓ a) (by simp) (by simp)

@@ -6,28 +6,23 @@ Authors: Amelia Livingston
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.AlgebraicTopology.ExtraDegeneracy
 import Mathlib.CategoryTheory.Abelian.Ext
-import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RepresentationTheory.Rep
 import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
 /-!
-# The structure of the `k[G]`-module `k[Gⁿ]`
+# The standard and bar resolutions of `k` as a trivial `k`-linear `G`-representation
 
-This file contains facts about an important `k[G]`-module structure on `k[Gⁿ]`, where `k` is a
-commutative ring and `G` is a group. The module structure arises from the representation
-`G →* End(k[Gⁿ])` induced by the diagonal action of `G` on `Gⁿ.`
+Given a commutative ring `k` and a group `G`, this file defines two projective resolutions of `k`
+as a trivial `k`-linear `G`-representation.
 
-In particular, we define an isomorphism of `k`-linear `G`-representations between `k[Gⁿ⁺¹]` and
-`k[G] ⊗ₖ k[Gⁿ]` (on which `G` acts by `ρ(g₁)(g₂ ⊗ x) = (g₁ * g₂) ⊗ x`).
+The first one, the standard resolution, has objects `k[Gⁿ⁺¹]` equipped with the diagonal
+representation, and differential defined by `(g₀, ..., gₙ) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ)`.
 
-This allows us to define a `k[G]`-basis on `k[Gⁿ⁺¹]`, by mapping the natural `k[G]`-basis of
-`k[G] ⊗ₖ k[Gⁿ]` along the isomorphism.
-
-We then define the standard resolution of `k` as a trivial representation, by
-taking the alternating face map complex associated to an appropriate simplicial `k`-linear
-`G`-representation. This simplicial object is the `Rep.linearization` of the simplicial `G`-set
-given by the universal cover of the classifying space of `G`, `EG`. We prove this simplicial
-`G`-set `EG` is isomorphic to the Čech nerve of the natural arrow of `G`-sets `G ⟶ {pt}`.
+We define this as the alternating face map complex associated to an appropriate simplicial
+`k`-linear `G`-representation. This simplicial object is the `linearization` of the simplicial
+`G`-set given by the universal cover of the classifying space of `G`, `EG`. We prove this
+simplicial `G`-set `EG` is isomorphic to the Čech nerve of the natural arrow of `G`-sets
+`G ⟶ {pt}`.
 
 We then use this isomorphism to deduce that as a complex of `k`-modules, the standard resolution
 of `k` as a trivial `G`-representation is homotopy equivalent to the complex with `k` at 0 and 0
@@ -36,6 +31,23 @@ elsewhere.
 Putting this material together allows us to define `Rep.standardResolution`, the
 standard projective resolution of `k` as a trivial `k`-linear `G`-representation.
 
+We then construct the bar resolution. The `n`th object in this complex is the representation on
+`Gⁿ →₀ k[G]` defined pointwise by the left regular representation on `k[G]`. The differentials are
+defined by sending `(g₀, ..., gₙ)` to
+`g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
+`j = 0, ... , n - 1`.
+
+In `RepresentationTheory.Rep` we define an isomorphism `Rep.diagonalSuccIsoFree` between
+`k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])` sending `(g₀, ..., gₙ) ↦ g₀·(g₀⁻¹g₁, ..., gₙ₋₁⁻¹gₙ)`.
+We show that this isomorphism defines a commutative square with the bar resolution differential and
+the standard resolution differential, and thus conclude that the bar resolution differential
+squares to zero and that `Rep.diagonalSuccIsoFree` defines an isomorphism between the two
+complexes. We carry the exactness properties across this isomorphism to conclude the bar resolution
+is a projective resolution too, in `Rep.barResolution`.
+
+In `RepresentationTheory.GroupCohomology.Basic`, we then use `Rep.barResolution` to define the
+inhomogeneous cochains of a representation, useful for computing group cohomology.
+
 ## Main definitions
 
  * `groupCohomology.resolution.ofMulActionBasis`
@@ -43,22 +55,7 @@ standard projective resolution of `k` as a trivial `k`-linear `G`-representation
  * `Rep.standardComplex.forget₂ToModuleCatHomotopyEquiv`
  * `Rep.standardResolution`
 
-## Implementation notes
-
-We express `k[G]`-module structures on a module `k`-module `V` using the `Representation`
-definition. We avoid using instances `Module (G →₀ k) V` so that we do not run into possible
-scalar action diamonds.
-
-We also use the category theory library to bundle the type `k[Gⁿ]` - or more generally `k[H]` when
-`H` has `G`-action - and the representation together, as a term of type `Rep k G`, and call it
-`Rep.ofMulAction k G H.` This enables us to express the fact that certain maps are
-`G`-equivariant by constructing morphisms in the category `Rep k G`, i.e., representations of `G`
-over `k`.
 -/
-
-/- Porting note: most altered proofs in this file involved changing `simp` to `rw` or `erw`, so
-https://github.com/leanprover-community/mathlib4/issues/5026 and
-https://github.com/leanprover-community/mathlib4/issues/5164 are relevant. -/
 
 suppress_compilation
 
@@ -162,94 +159,6 @@ end Basis
 
 end groupCohomology.resolution
 
-namespace Rep
-
-variable (n) [Group G] (A : Rep k G)
-
-open groupCohomology.resolution
-
-/-- Given a `k`-linear `G`-representation `A`, the set of representation morphisms
-`Hom(k[Gⁿ⁺¹], A)` is `k`-linearly isomorphic to the set of functions `Gⁿ → A`. -/
-noncomputable def diagonalHomEquiv :
-    (Rep.diagonal k G (n + 1) ⟶ A) ≃ₗ[k] (Fin n → G) → A :=
-  Linear.homCongr k
-        ((diagonalSuccIsoTensorTrivial k G n).trans
-          ((Representation.ofMulAction k G G).repOfTprodIso 1))
-        (Iso.refl _) ≪≫ₗ
-      (Rep.MonoidalClosed.linearHomEquivComm _ _ _ ≪≫ₗ Rep.leftRegularHomEquiv _) ≪≫ₗ
-    (Finsupp.llift A k k (Fin n → G)).symm
-
-variable {n A}
-
-/-- Given a `k`-linear `G`-representation `A`, `diagonalHomEquiv` is a `k`-linear isomorphism of
-the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. This lemma says that this
-sends a morphism of representations `f : k[Gⁿ⁺¹] ⟶ A` to the function
-`(g₁, ..., gₙ) ↦ f(1, g₁, g₁g₂, ..., g₁g₂...gₙ).` -/
-theorem diagonalHomEquiv_apply (f : Rep.diagonal k G (n + 1) ⟶ A) (x : Fin n → G) :
-    diagonalHomEquiv n A f x = f.hom (Finsupp.single (Fin.partialProd x) 1) := by
-/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
-  unfold diagonalHomEquiv
-  simpa only [LinearEquiv.trans_apply, Rep.leftRegularHomEquiv_apply,
-    MonoidalClosed.linearHomEquivComm_hom, Finsupp.llift_symm_apply, TensorProduct.curry_apply,
-    Linear.homCongr_apply, Iso.refl_hom, Iso.trans_inv, Action.comp_hom, ModuleCat.comp_def,
-    LinearMap.comp_apply, Representation.repOfTprodIso_inv_apply,
-    diagonalSucc_inv_single_single (1 : G) x, one_smul, one_mul] -/
-  change f.hom ((diagonalSuccIsoTensorTrivial k G n).inv.hom
-    (Finsupp.single 1 1 ⊗ₜ[k] Finsupp.single x 1)) = _
-  rw [diagonalSuccIsoTensorTrivial_inv_hom_single_single, one_smul, one_mul]
-
-/-- Given a `k`-linear `G`-representation `A`, `diagonalHomEquiv` is a `k`-linear isomorphism of
-the set of representation morphisms `Hom(k[Gⁿ⁺¹], A)` with `Fun(Gⁿ, A)`. This lemma says that the
-inverse map sends a function `f : Gⁿ → A` to the representation morphism sending
-`(g₀, ... gₙ) ↦ ρ(g₀)(f(g₀⁻¹g₁, g₁⁻¹g₂, ..., gₙ₋₁⁻¹gₙ))`, where `ρ` is the representation attached
-to `A`. -/
-theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) → G) :
-    ((diagonalHomEquiv n A).symm f).hom (Finsupp.single x 1) =
-      A.ρ (x 0) (f fun i : Fin n => (x (Fin.castSucc i))⁻¹ * x i.succ) := by
-  unfold diagonalHomEquiv
-/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
-  simp only [LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
-    Rep.leftRegularHomEquiv_symm_apply, Linear.homCongr_symm_apply, Action.comp_hom, Iso.refl_inv,
-    Category.comp_id, Rep.MonoidalClosed.linearHomEquivComm_symm_hom, Iso.trans_hom,
-    ModuleCat.comp_def, LinearMap.comp_apply, Representation.repOfTprodIso_apply,
-    diagonalSucc_hom_single x (1 : k), TensorProduct.uncurry_apply, Rep.leftRegularHom_hom,
-    Finsupp.lift_apply, ihom_obj_ρ_def, Rep.ihom_obj_ρ_apply, Finsupp.sum_single_index, zero_smul,
-    one_smul, Rep.of_ρ, Rep.Action_ρ_eq_ρ, Rep.trivial_def (x 0)⁻¹, Finsupp.llift_apply A k k] -/
-  simp only [LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
-    leftRegularHomEquiv_symm_apply, Linear.homCongr_symm_apply, Iso.trans_hom, Iso.refl_inv,
-    Category.comp_id, Action.comp_hom, MonoidalClosed.linearHomEquivComm_symm_hom,
-    ModuleCat.hom_comp, LinearMap.comp_apply, Action.tensorObj_V,
-    diagonalSuccIsoTensorTrivial_hom_hom_single x 1]
-  -- The prototype linter that checks if `erw` could be replaced with `rw` would time out
-  -- if it replaces the next `erw`s with `rw`s. So we focus down on the relevant part.
-  conv_lhs =>
-    erw [TensorProduct.uncurry_apply, Finsupp.lift_apply, Finsupp.sum_single_index]
-    · simp only [one_smul]
-      erw [Representation.linHom_apply]
-      simp only [LinearMap.comp_apply, MonoidHom.one_apply, Module.End.one_apply]
-      erw [Finsupp.llift_apply]
-      rw [Finsupp.lift_apply]
-      erw [Finsupp.sum_single_index]
-      · rw [one_smul]
-      · rw [zero_smul]
-    · rw [zero_smul]
-
-/-- Auxiliary lemma for defining group cohomology, used to show that the isomorphism
-`diagonalHomEquiv` commutes with the differentials in two complexes which compute
-group cohomology. -/
-theorem diagonalHomEquiv_symm_partialProd_succ (f : (Fin n → G) → A) (g : Fin (n + 1) → G)
-    (a : Fin (n + 1)) :
-    ((diagonalHomEquiv n A).symm f).hom (Finsupp.single (Fin.partialProd g ∘ a.succ.succAbove) 1)
-      = f (Fin.contractNth a (· * ·) g) := by
-  rw [diagonalHomEquiv_symm_apply]
-  simp only [Function.comp_apply, Fin.succ_succAbove_zero, Fin.partialProd_zero, map_one,
-    Fin.succ_succAbove_succ, Module.End.one_apply, Fin.partialProd_succ]
-  congr
-  ext
-  rw [← Fin.partialProd_succ, Fin.inv_partialProd_mul_eq_contractNth]
-
-end Rep
-
 variable (G)
 
 /-- The simplicial `G`-set sending `[n]` to `Gⁿ⁺¹` equipped with the diagonal action of `G`. -/
@@ -336,7 +245,7 @@ variable (k)
 face map complex of a simplicial `k`-linear `G`-representation. -/
 def Rep.standardComplex [Monoid G] :=
   (AlgebraicTopology.alternatingFaceMapComplex (Rep k G)).obj
-    (classifyingSpaceUniversalCover G ⋙ Rep.linearization k G)
+    (classifyingSpaceUniversalCover G ⋙ linearization k G)
 
 @[deprecated (since := "2025-06-06")]
 alias groupCohomology.resolution := Rep.standardComplex
@@ -489,5 +398,79 @@ def standardResolution.extIso (V : Rep k G) (n : ℕ) :
 
 @[deprecated (since := "2025-06-06")]
 alias groupCohomology.extIso := Rep.standardResolution.extIso
+
+namespace barComplex
+
+open Rep Finsupp
+
+variable (n)
+
+/-- The differential from `Gⁿ⁺¹ →₀ k[G]` to `Gⁿ →₀ k[G]` in the bar resolution of `k` as a trivial
+`k`-linear `G`-representation. It sends `(g₀, ..., gₙ)` to
+`g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
+`j = 0, ... , n - 1`. -/
+def d : free k G Gⁿ⁺¹ ⟶ free k G Gⁿ :=
+  freeLift _ fun g => single (fun i => g i.succ) (single (g 0) 1) +
+    Finset.univ.sum fun j : Fin (n + 1) =>
+      single (Fin.contractNth j (· * ·) g) (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1)))
+
+variable {k G} in
+lemma d_single (x : Gⁿ⁺¹) :
+    (d k G n).hom (single x (single 1 1)) = single (fun i => x i.succ) (Finsupp.single (x 0) 1) +
+      Finset.univ.sum fun j : Fin (n + 1) =>
+        single (Fin.contractNth j (· * ·) x)  (single (1 : G) ((-1 : k) ^ ((j : ℕ) + 1))) := by
+  simp [d]
+
+lemma d_comp_diagonalSuccIsoFree_inv_eq :
+    d k G n ≫ (diagonalSuccIsoFree k G n).inv =
+      (diagonalSuccIsoFree k G (n + 1)).inv ≫ (standardComplex k G).d (n + 1) n :=
+  free_ext _ _ fun i => by
+    simpa [diagonalSuccIsoFree_inv_hom_single_single (k := k), d_single (k := k),
+      standardComplex.d_eq, standardComplex.d_of (k := k) (Fin.partialProd i), Fin.sum_univ_succ,
+      Fin.partialProd_contractNth] using
+      congr(single $(by ext j; exact (Fin.partialProd_succ' i j).symm) 1)
+
+end barComplex
+
+open barComplex
+
+/-- The projective resolution of `k` as a trivial `k`-linear `G`-representation with `n`th
+differential `(Gⁿ⁺¹ →₀ k[G]) → (Gⁿ →₀ k[G])` sending `(g₀, ..., gₙ)` to
+`g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
+`j = 0, ... , n - 1`. -/
+noncomputable abbrev barComplex : ChainComplex (Rep k G) ℕ :=
+  ChainComplex.of (fun n => free k G (Fin n → G)) (fun n => d k G n) fun _ => by
+    ext x
+    simp [(diagonalSuccIsoFree k G _).comp_inv_eq.1 (d_comp_diagonalSuccIsoFree_inv_eq k G _)]
+
+namespace barComplex
+
+@[simp]
+theorem d_def : (barComplex k G).d (n + 1) n = d k G n := ChainComplex.of_d _ _ _ _
+
+/-- Isomorphism between the bar resolution and standard resolution, with `n`th map
+`(Gⁿ →₀ k[G]) → k[Gⁿ⁺¹]` sending `(g₁, ..., gₙ) ↦ (1, g₁, g₁g₂, ..., g₁...gₙ)`. -/
+def isoStandardComplex : barComplex k G ≅ standardComplex k G :=
+  HomologicalComplex.Hom.isoOfComponents (fun i => (diagonalSuccIsoFree k G i).symm) fun i j => by
+    rintro (rfl : j + 1 = i)
+    simp only [ChainComplex.of_x, Iso.symm_hom, d_def, d_comp_diagonalSuccIsoFree_inv_eq]
+
+end barComplex
+
+/-- The chain complex `barComplex k G` as a projective resolution of `k` as a trivial
+`k`-linear `G`-representation. -/
+@[simps complex]
+def barResolution : ProjectiveResolution (Rep.trivial k G k) where
+  complex := barComplex k G
+  projective n := inferInstanceAs <| Projective (free k G (Fin n → G))
+  π := (isoStandardComplex k G).hom ≫ standardComplex.εToSingle₀ k G
+
+/-- Given a `k`-linear `G`-representation `V`, `Extⁿ(k, V)` (where `k` is the trivial `k`-linear
+`G`-representation) is isomorphic to the `n`th cohomology group of `Hom(P, V)`, where `P` is the
+bar resolution of `k`. -/
+def barResolution.extIso (V : Rep k G) (n : ℕ) :
+    ((Ext k (Rep k G) n).obj (Opposite.op <| Rep.trivial k G k)).obj V ≅
+      ((barComplex k G).linearYonedaObj k V).homology n :=
+  (barResolution k G).isoExt n V
 
 end Rep
