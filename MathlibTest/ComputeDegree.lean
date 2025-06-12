@@ -64,6 +64,9 @@ example [Ring R] : coeff (1 : R[X]) n = if n = 0 then 1 else 0 := by compute_deg
 
 example [Ring R] (h : (0 : R) = 6) : coeff (1 : R[X]) 1 = 6 := by compute_degree!
 
+example [Ring R] {S : Type*} [SMulZeroClass S R] {a : S} : coeff (a • X) 1 = a • (1 : R) := by
+  compute_degree!
+
 /-! Test error messages -/
 
 /--
@@ -226,10 +229,18 @@ example : natDegree (7 * X : R[X]) ≤ 1 := by compute_degree
 example {a : R} : natDegree (a • X ^ 5 : R[X]) ≤ 5 := by
   compute_degree
 
+example {S : Type*} [SMulZeroClass S R] {a : S} : natDegree (a • X ^ 5 : R[X]) ≤ 5 := by
+  compute_degree
+
+example {S : Type*} [SMulZeroClass S R] {a : S} : degree (a • X ^ 5 : R[X]) ≤ 5 := by
+  compute_degree!
+
 example {a : R} (a0 : a ≠ 0) : natDegree (a • X ^ 5 + X : R[X]) = 5 := by
   compute_degree!
 
 example {a : R} (a0 : a ≠ 0) : degree (a • X ^ 5 + X ^ 2 : R[X]) = 5 := by
   compute_degree!; rfl
+
+example : (3 • X ^ 2 : ℚ[X]).natDegree = 2 := by compute_degree!
 
 end tests_from_mathlib3
