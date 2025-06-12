@@ -78,6 +78,11 @@ theorem modEq_iff_dvd : a ≡ b [ZMOD n] ↔ n ∣ b - a := by
   rw [ModEq, eq_comm]
   simp [emod_eq_emod_iff_emod_sub_eq_zero, dvd_iff_emod_eq_zero]
 
+@[gcongr]
+theorem GCongr.dvd_imp_dvd (h : a ≡ b [ZMOD n]) : n ∣ a → n ∣ b := by
+  simp only [dvd_iff_emod_eq_zero]
+  exact (Eq.symm h).trans
+
 theorem modEq_iff_add_fac {a b n : ℤ} : a ≡ b [ZMOD n] ↔ ∃ t, b = a + n * t := by
   rw [modEq_iff_dvd]
   exact exists_congr fun t => sub_eq_iff_eq_add'
