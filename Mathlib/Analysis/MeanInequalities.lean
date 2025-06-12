@@ -16,7 +16,7 @@ import Mathlib.Data.Real.ConjExponents
 In this file we prove several inequalities for finite sums, including AM-GM inequality,
 HM-GM inequality, Young's inequality, Hölder inequality, and Minkowski inequality. Versions for
 integrals of some of these inequalities are available in
-`Mathlib.MeasureTheory.Integral.MeanInequalities`.
+`Mathlib/MeasureTheory/Integral/MeanInequalities.lean`.
 
 ## Main theorems
 
@@ -548,15 +548,15 @@ theorem inner_le_Lp_mul_Lq_tsum {f g : ι → ℝ≥0} {p q : ℝ} (hpq : p.Hold
     intro s
     refine le_trans (inner_le_Lp_mul_Lq s f g hpq) (mul_le_mul ?_ ?_ bot_le bot_le)
     · rw [NNReal.rpow_le_rpow_iff (one_div_pos.mpr hpq.pos)]
-      exact sum_le_tsum _ (fun _ _ => zero_le _) hf
+      exact hf.sum_le_tsum _ (fun _ _ => zero_le _)
     · rw [NNReal.rpow_le_rpow_iff (one_div_pos.mpr hpq.symm.pos)]
-      exact sum_le_tsum _ (fun _ _ => zero_le _) hg
+      exact hg.sum_le_tsum _ (fun _ _ => zero_le _)
   have bdd : BddAbove (Set.range fun s => ∑ i ∈ s, f i * g i) := by
     refine ⟨(∑' i, f i ^ p) ^ (1 / p) * (∑' i, g i ^ q) ^ (1 / q), ?_⟩
     rintro a ⟨s, rfl⟩
     exact H₁ s
   have H₂ : Summable _ := (hasSum_of_isLUB _ (isLUB_ciSup bdd)).summable
-  exact ⟨H₂, tsum_le_of_sum_le H₂ H₁⟩
+  exact ⟨H₂, H₂.tsum_le_of_sum_le H₁⟩
 
 theorem summable_mul_of_Lp_Lq {f g : ι → ℝ≥0} {p q : ℝ} (hpq : p.HolderConjugate q)
     (hf : Summable fun i => f i ^ p) (hg : Summable fun i => g i ^ q) :
@@ -656,7 +656,7 @@ theorem Lp_add_le_tsum {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Sum
     rw [one_div, ← NNReal.rpow_inv_le_iff pos, ← one_div]
     refine le_trans (Lp_add_le s f g hp) (add_le_add ?_ ?_) <;>
         rw [NNReal.rpow_le_rpow_iff (one_div_pos.mpr pos)] <;>
-      refine sum_le_tsum _ (fun _ _ => zero_le _) ?_
+      refine Summable.sum_le_tsum _ (fun _ _ => zero_le _) ?_
     exacts [hf, hg]
   have bdd : BddAbove (Set.range fun s => ∑ i ∈ s, (f i + g i) ^ p) := by
     refine ⟨((∑' i, f i ^ p) ^ (1 / p) + (∑' i, g i ^ p) ^ (1 / p)) ^ p, ?_⟩
@@ -665,7 +665,7 @@ theorem Lp_add_le_tsum {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Sum
   have H₂ : Summable _ := (hasSum_of_isLUB _ (isLUB_ciSup bdd)).summable
   refine ⟨H₂, ?_⟩
   rw [one_div, NNReal.rpow_inv_le_iff pos, ← one_div]
-  exact tsum_le_of_sum_le H₂ H₁
+  exact H₂.tsum_le_of_sum_le H₁
 
 theorem summable_Lp_add {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Summable fun i => f i ^ p)
     (hg : Summable fun i => g i ^ p) : Summable fun i => (f i + g i) ^ p :=
@@ -917,14 +917,14 @@ lemma inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) 
   have hp₁ : p⁻¹ < 1 := inv_lt_one_of_one_lt₀ hp
   by_cases H : (∑ i ∈ s, w i) ^ (1 - p⁻¹) = 0 ∨ (∑ i ∈ s, w i * f i ^ p) ^ p⁻¹ = 0
   · replace H : (∀ i ∈ s, w i = 0) ∨ ∀ i ∈ s, w i = 0 ∨ f i = 0 := by
-      simpa [hp₀, hp₁, hp₀.not_lt, hp₁.not_lt, sum_eq_zero_iff_of_nonneg] using H
+      simpa [hp₀, hp₁, hp₀.not_gt, hp₁.not_gt, sum_eq_zero_iff_of_nonneg] using H
     have (i) (hi : i ∈ s) : w i * f i = 0 := by rcases H with H | H <;> simp [H i hi]
     simp [sum_eq_zero this]
   push_neg at H
   by_cases H' : (∑ i ∈ s, w i) ^ (1 - p⁻¹) = ⊤ ∨ (∑ i ∈ s, w i * f i ^ p) ^ p⁻¹ = ⊤
   · rcases H' with H' | H' <;> simp [H', -one_div, -sum_eq_zero_iff, -rpow_eq_zero_iff, H]
   replace H' : (∀ i ∈ s, w i ≠ ⊤) ∧ ∀ i ∈ s, w i * f i ^ p ≠ ⊤ := by
-    simpa [rpow_eq_top_iff,hp₀, hp₁, hp₀.not_lt, hp₁.not_lt, sum_eq_top, not_or] using H'
+    simpa [rpow_eq_top_iff,hp₀, hp₁, hp₀.not_gt, hp₁.not_gt, sum_eq_top, not_or] using H'
   have := coe_le_coe.2 <| NNReal.inner_le_weight_mul_Lp s hp.le (fun i ↦ ENNReal.toNNReal (w i))
     fun i ↦ ENNReal.toNNReal (f i)
   rw [coe_mul] at this
@@ -935,7 +935,7 @@ lemma inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) 
   · obtain hw | hw := eq_or_ne (w i) 0
     · simp [hw]
     rw [coe_toNNReal (H'.1 _ hi), coe_toNNReal]
-    simpa [mul_eq_top, hw, hp₀, hp₀.not_lt, H'.1 _ hi] using H'.2 _ hi
+    simpa [mul_eq_top, hw, hp₀, hp₀.not_gt, H'.1 _ hi] using H'.2 _ hi
   · convert rfl with i hi
     exact coe_toNNReal (H'.1 _ hi)
 

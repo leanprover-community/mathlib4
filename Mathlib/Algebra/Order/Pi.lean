@@ -21,22 +21,13 @@ variable {f : I → Type*}
 
 namespace Pi
 
+/-- The product of a family of ordered commutative monoids is an ordered commutative monoid. -/
 @[to_additive
       "The product of a family of ordered additive commutative monoids is
 an ordered additive commutative monoid."]
 instance isOrderedMonoid {ι : Type*} {Z : ι → Type*} [∀ i, CommMonoid (Z i)]
     [∀ i, PartialOrder (Z i)] [∀ i, IsOrderedMonoid (Z i)] :
     IsOrderedMonoid (∀ i, Z i) where
-  mul_le_mul_left _ _ w _ := fun i => mul_le_mul_left' (w i) _
-
-/-- The product of a family of ordered commutative monoids is an ordered commutative monoid. -/
-@[to_additive
-      "The product of a family of ordered additive commutative monoids is
-an ordered additive commutative monoid."]
-instance orderedCommMonoid {ι : Type*} {Z : ι → Type*} [∀ i, OrderedCommMonoid (Z i)] :
-    OrderedCommMonoid (∀ i, Z i) where
-  __ := Pi.partialOrder
-  __ := Pi.commMonoid
   mul_le_mul_left _ _ w _ := fun i => mul_le_mul_left' (w i) _
 
 @[to_additive]
@@ -62,46 +53,12 @@ instance isOrderedCancelMonoid [∀ i, CommMonoid <| f i] [∀ i, PartialOrder <
     IsOrderedCancelMonoid (∀ i : I, f i) where
   le_of_mul_le_mul_left _ _ _ h i := le_of_mul_le_mul_left' (h i)
 
-@[to_additive]
-instance orderedCancelCommMonoid [∀ i, OrderedCancelCommMonoid <| f i] :
-    OrderedCancelCommMonoid (∀ i : I, f i) where
-  __ := Pi.commMonoid
-  le_of_mul_le_mul_left _ _ _ h i := le_of_mul_le_mul_left' (h i)
-  mul_le_mul_left _ _ c h i := mul_le_mul_left' (c i) (h i)
-
-@[to_additive]
-instance orderedCommGroup [∀ i, OrderedCommGroup <| f i] : OrderedCommGroup (∀ i : I, f i) where
-  __ := Pi.commGroup
-  __ := Pi.orderedCommMonoid
-  npow := Monoid.npow
-
 instance isOrderedRing [∀ i, Semiring (f i)] [∀ i, PartialOrder (f i)] [∀ i, IsOrderedRing (f i)] :
     IsOrderedRing (∀ i, f i) where
   add_le_add_left _ _ hab _ := fun _ => add_le_add_left (hab _) _
   zero_le_one := fun i => zero_le_one (α := f i)
   mul_le_mul_of_nonneg_left _ _ _ hab hc := fun _ => mul_le_mul_of_nonneg_left (hab _) <| hc _
   mul_le_mul_of_nonneg_right _ _ _ hab hc := fun _ => mul_le_mul_of_nonneg_right (hab _) <| hc _
-
-instance orderedSemiring [∀ i, OrderedSemiring (f i)] : OrderedSemiring (∀ i, f i) where
-  __ := Pi.semiring
-  __ := Pi.partialOrder
-  add_le_add_left _ _ hab _ := fun _ => add_le_add_left (hab _) _
-  zero_le_one := fun i => zero_le_one (α := f i)
-  mul_le_mul_of_nonneg_left _ _ _ hab hc := fun _ => mul_le_mul_of_nonneg_left (hab _) <| hc _
-  mul_le_mul_of_nonneg_right _ _ _ hab hc := fun _ => mul_le_mul_of_nonneg_right (hab _) <| hc _
-
-instance orderedCommSemiring [∀ i, OrderedCommSemiring (f i)] : OrderedCommSemiring (∀ i, f i) where
-  __ := Pi.commSemiring
-  __ := Pi.orderedSemiring
-
-instance orderedRing [∀ i, OrderedRing (f i)] : OrderedRing (∀ i, f i) where
-  __ := Pi.ring
-  __ := Pi.orderedSemiring
-  mul_nonneg _ _ ha hb := fun _ => mul_nonneg (ha _) (hb _)
-
-instance orderedCommRing [∀ i, OrderedCommRing (f i)] : OrderedCommRing (∀ i, f i) where
-  __ := Pi.commRing
-  __ := Pi.orderedRing
 
 end Pi
 

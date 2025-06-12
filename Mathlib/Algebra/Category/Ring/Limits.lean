@@ -96,7 +96,7 @@ def limitConeIsLimit : IsLimit (limitCone F) := by
     rfl
   · intro x y
     simp only [Functor.comp_obj, Equiv.toFun_as_coe, Functor.mapCone_pt, Functor.mapCone_π_app,
-          forget_map, map_mul]
+      forget_map, map_mul]
     rw [← equivShrink_mul]
     rfl
   · simp only [Functor.mapCone_π_app, forget_map, map_zero]
@@ -423,8 +423,7 @@ instance limitCommRing :
 All we need to do is notice that the limit point has a `CommRing` instance available,
 and then reuse the existing limit.
 -/
-instance :
-   CreatesLimit F (forget₂ CommRingCat.{u} RingCat.{u}) :=
+instance : CreatesLimit F (forget₂ CommRingCat.{u} RingCat.{u}) :=
   /-
     A terse solution here would be
     ```
@@ -466,9 +465,7 @@ def limitCone : Cone F :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
   liftLimit (limit.isLimit (F ⋙ forget₂ CommRingCat.{u} RingCat.{u}))
 
-/-- The chosen cone is a limit cone.
-(Generally, you'll just want to use `limit.cone F`.)
--/
+/-- The chosen cone is a limit cone. (Generally, you'll just want to use `limit.cone F`.) -/
 def limitConeIsLimit : IsLimit (limitCone.{v, u} F) :=
   liftedLimitIsLimit _
 

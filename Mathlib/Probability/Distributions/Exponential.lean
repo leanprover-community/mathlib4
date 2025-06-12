@@ -60,14 +60,14 @@ lemma lintegral_exponentialPDF_of_nonpos {x r : ℝ} (hx : x ≤ 0) :
     ∫⁻ y in Iio x, exponentialPDF r y = 0 := lintegral_gammaPDF_of_nonpos hx
 
 /-- The exponential pdf is measurable. -/
-@[measurability]
+@[fun_prop, measurability]
 lemma measurable_exponentialPDFReal (r : ℝ) : Measurable (exponentialPDFReal r) :=
   measurable_gammaPDFReal 1 r
 
 -- The exponential pdf is strongly measurable -/
-@[measurability]
- lemma stronglyMeasurable_exponentialPDFReal (r : ℝ) :
-     StronglyMeasurable (exponentialPDFReal r) := stronglyMeasurable_gammaPDFReal 1 r
+@[fun_prop, measurability]
+lemma stronglyMeasurable_exponentialPDFReal (r : ℝ) :
+    StronglyMeasurable (exponentialPDFReal r) := stronglyMeasurable_gammaPDFReal 1 r
 
 /-- The exponential pdf is positive for all positive reals -/
 lemma exponentialPDFReal_pos {x r : ℝ} (hr : 0 < r) (hx : 0 < x) :

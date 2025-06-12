@@ -3,7 +3,9 @@ Copyright (c) 2023 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
-import Mathlib.Analysis.Convex.Cone.Pointed
+import Mathlib.Geometry.Convex.Cone.Pointed
+import Mathlib.Topology.Algebra.ConstMulAction
+import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Closure of cones
@@ -15,7 +17,7 @@ defining maps between proper cones. The current API is basic and should be exten
 
 namespace ConvexCone
 
-variable {𝕜 : Type*} [OrderedSemiring 𝕜]
+variable {𝕜 : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [ContinuousAdd E] [SMul 𝕜 E]
   [ContinuousConstSMul 𝕜 E]
 
@@ -46,7 +48,7 @@ end ConvexCone
 
 namespace PointedCone
 
-variable {𝕜 : Type*} [OrderedSemiring 𝕜]
+variable {𝕜 : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [ContinuousAdd E] [Module 𝕜 E]
   [ContinuousConstSMul 𝕜 E]
 

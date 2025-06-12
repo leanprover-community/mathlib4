@@ -133,7 +133,7 @@ theorem permutations'Aux_eq_permutationsAux2 (t : α) (ts : List α) :
   induction' ts with a ts ih; · rfl
   simp only [permutations'Aux, ih, cons_append, permutationsAux2_snd_cons, append_nil, id_eq,
     cons.injEq, true_and]
-  simp (config := { singlePass := true }) only [← permutationsAux2_append]
+  simp +singlePass only [← permutationsAux2_append]
   simp [map_permutationsAux2]
 
 theorem mem_permutationsAux2 {t : α} {ts : List α} {ys : List α} {l l' : List α} :
@@ -238,7 +238,7 @@ theorem permutationsAux_append (is is' ts : List α) :
   congr 2
   funext _
   rw [map_permutationsAux2]
-  simp (config := { singlePass := true }) only [← permutationsAux2_comp_append]
+  simp +singlePass only [← permutationsAux2_comp_append]
   simp only [id, append_assoc]
 
 theorem permutations_append (is ts : List α) :
@@ -406,7 +406,7 @@ theorem count_permutations'Aux_self [DecidableEq α] (l : List α) (x : α) :
   · rw [permutations'Aux, count_cons_self]
     by_cases hx : x = y
     · subst hx
-      simpa [takeWhile, Nat.succ_inj', DecEq_eq] using IH _
+      simpa [takeWhile, Nat.succ_inj, DecEq_eq] using IH _
     · rw [takeWhile]
       simp only [mem_map, cons.injEq, Ne.symm hx, false_and, and_false, exists_false,
         not_false_iff, count_eq_zero_of_not_mem, Nat.zero_add, hx, decide_false, length_nil]
@@ -427,7 +427,7 @@ theorem injective_permutations'Aux (x : α) : Function.Injective (permutations'A
     ← get_permutations'Aux t x s.length (by simp [hl])]
   simp only [get_eq_getElem, h, hl]
 
-theorem nodup_permutations'Aux_of_not_mem (s : List α) (x : α) (hx : x ∉ s) :
+theorem nodup_permutations'Aux_of_notMem (s : List α) (x : α) (hx : x ∉ s) :
     Nodup (permutations'Aux x s) := by
   induction' s with y s IH
   · simp
@@ -438,8 +438,11 @@ theorem nodup_permutations'Aux_of_not_mem (s : List α) (x : α) (hx : x ∉ s) 
     · exact IH hx.right
     · simp
 
+@[deprecated (since := "2025-05-23")]
+alias nodup_permutations'Aux_of_not_mem := nodup_permutations'Aux_of_notMem
+
 theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'Aux x s) ↔ x ∉ s := by
-  refine ⟨fun h H ↦ ?_, nodup_permutations'Aux_of_not_mem _ _⟩
+  refine ⟨fun h H ↦ ?_, nodup_permutations'Aux_of_notMem _ _⟩
   obtain ⟨⟨k, hk⟩, hk'⟩ := get_of_mem H
   rw [nodup_iff_injective_get] at h
   apply k.succ_ne_self.symm
