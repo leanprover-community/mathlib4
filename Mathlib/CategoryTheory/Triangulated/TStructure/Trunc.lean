@@ -1148,7 +1148,7 @@ lemma isIso₂_truncGE_map_of_LE (T : Triangle C) (hT : T ∈ distTriang C)
 instance (X : C) (a b : ℤ) [t.IsGE X a] : t.IsGE ((t.truncLE b).obj X) a := by
   rw [t.isGE_iff_isZero_truncLE_obj (a-1) a (by linarith)]
   have := t.isIso₁_truncLE_map_of_GE _ ((t.triangleLEGE_distinguished b (b+1) rfl X))
-    (a-1) a (by linarith) (by dsimp ; infer_instance)
+    (a-1) a (by linarith) (by dsimp; infer_instance)
   dsimp at this
   exact IsZero.of_iso (t.isZero_truncLE_obj_of_isGE (a-1) a (by linarith) X)
     (asIso ((t.truncLE (a - 1)).map ((t.truncLEι b).app X)))
