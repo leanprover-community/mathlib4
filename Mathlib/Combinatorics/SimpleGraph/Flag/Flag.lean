@@ -24,9 +24,9 @@ set_option linter.style.header false
 -/
 
 namespace SimpleGraph
+variable {α β δ ι : Type*} {k : ℕ} (e : δ ≃ ι) (f : α ≃ β)
 
-variable {α β ι : Type*} {k : ℕ}
-
+#check e.embeddingCongr f -- (δ ↪ α) ≃ (ι ↪ β) :=
 /--
 A `Flag α ι` consists of `G : SimpleGraph α` and a labelling of `ι` vertices of `G` by an
 injective map `θ : ι ↪ α`. (We call this a `σ`-flag if the labelled subgraph is
