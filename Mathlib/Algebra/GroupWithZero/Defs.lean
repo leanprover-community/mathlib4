@@ -20,7 +20,7 @@ members.
 * `CommGroupWithZero`
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 universe u
 
@@ -205,7 +205,8 @@ variable [GroupWithZero G₀] {a : G₀}
 
 @[simp] lemma inv_zero : (0 : G₀)⁻¹ = 0 := GroupWithZero.inv_zero
 
-@[simp] lemma mul_inv_cancel₀ (h : a ≠ 0) : a * a⁻¹ = 1 := GroupWithZero.mul_inv_cancel a h
+@[simp high] -- should take priority over `IsUnit.mul_inv_cancel`
+lemma mul_inv_cancel₀ (h : a ≠ 0) : a * a⁻¹ = 1 := GroupWithZero.mul_inv_cancel a h
 
 -- See note [lower instance priority]
 instance (priority := 100) GroupWithZero.toMulDivCancelClass : MulDivCancelClass G₀ where
@@ -231,13 +232,13 @@ section GroupWithZero
 
 variable [GroupWithZero G₀] {a b : G₀}
 
-@[simp]
+@[simp high] -- should take priority over `IsUnit.mul_inv_cancel_right`
 theorem mul_inv_cancel_right₀ (h : b ≠ 0) (a : G₀) : a * b * b⁻¹ = a :=
   calc
     a * b * b⁻¹ = a * (b * b⁻¹) := mul_assoc _ _ _
     _ = a := by simp [h]
 
-@[simp]
+@[simp high] -- should take priority over `IsUnit.mul_inv_cancel_left`
 theorem mul_inv_cancel_left₀ (h : a ≠ 0) (b : G₀) : a * (a⁻¹ * b) = b :=
   calc
     a * (a⁻¹ * b) = a * a⁻¹ * b := (mul_assoc _ _ _).symm

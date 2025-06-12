@@ -15,7 +15,7 @@ Lemmas about divisibility in groups and monoids with zero.
 
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 variable {α : Type*}
 

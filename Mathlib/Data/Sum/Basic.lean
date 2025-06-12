@@ -201,7 +201,7 @@ open Sum
 
 namespace Function
 
-theorem Injective.sumElim {f : α → γ} {g : β → γ} (hf : Injective f) (hg : Injective g)
+theorem Injective.sumElim {γ : Sort*} {f : α → γ} {g : β → γ} (hf : Injective f) (hg : Injective g)
     (hfg : ∀ a b, f a ≠ g b) : Injective (Sum.elim f g)
   | inl _, inl _, h => congr_arg inl <| hf h
   | inl _, inr _, h => (hfg _ _ h).elim
@@ -241,7 +241,7 @@ namespace Sum
 open Function
 
 @[simp]
-theorem elim_injective {f : α → γ} {g : β → γ} :
+theorem elim_injective {γ : Sort*} {f : α → γ} {g : β → γ} :
     Injective (Sum.elim f g) ↔ Injective f ∧ Injective g ∧ ∀ a b, f a ≠ g b where
   mp h := ⟨h.comp inl_injective, h.comp inr_injective, fun _ _ => h.ne inl_ne_inr⟩
   mpr | ⟨hf, hg, hfg⟩ => hf.sumElim hg hfg
