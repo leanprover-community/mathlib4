@@ -15,7 +15,7 @@ TODO: expand this doc-string!
 
 -/
 
-section -- TODO: upstream; written by Ben Eltschig
+section -- PRed in #25524
 
 /-- The canonical linear homeomorphism between `EuclideanSpace 𝕜 (ι ⊕ κ)` and
 `EuclideanSpace 𝕜 ι × EuclideanSpace 𝕜 κ`. Note that this is not an isometry because
@@ -146,31 +146,6 @@ lemma prodAssoc_symm_apply (p₁ : E) (p₂ : E') (p₃ : E'') :
 
 end prodAssoc
 
-section prodCongr -- already present, but differently named: #25513 renames these
-
-variable {R M₁ M₂ M₃ M₄ : Type*} [Semiring R]
-  [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
-  [Module R M₁] [Module R M₂] [Module R M₃] [Module R M₄]
-  [TopologicalSpace M₁] [TopologicalSpace M₂] [TopologicalSpace M₃] [TopologicalSpace M₄]
-
-/-- Product of continuous linear equivalences; the maps come from `Equiv.prodCongr`.
-This is `LinearEquiv.prodCongr` as a continuous linear equivalence. -/
-def prodCongr (e₁ : M₁ ≃L[R] M₂) (e₂ : M₃ ≃L[R] M₄) : (M₁ × M₃) ≃L[R] M₂ × M₄ := e₁.prod e₂
-
-theorem prodCongr_symm (e₁ : M₁ ≃L[R] M₂) (e₂ : M₃ ≃L[R] M₄) :
-    (e₁.prodCongr e₂).symm = e₁.symm.prodCongr e₂.symm := prod_symm e₁ e₂
-
-@[simp]
-theorem prodCongr_apply (e₁ : M₁ ≃L[R] M₂) (e₂ : M₃ ≃L[R] M₄) (p) :
-    e₁.prodCongr e₂ p = (e₁ p.1, e₂ p.2) := prod_apply e₁ e₂ p
-
-@[simp, norm_cast]
-lemma coe_prodCongr (e₁ : M₁ ≃L[R] M₂) (e₂ : M₃ ≃L[R] M₄) :
-    (e₁.prodCongr e₂ : (M₁ × M₃) →L[R] M₂ × M₄) = (e₁ : M₁ →L[R] M₂).prodMap (e₂ : M₃ →L[R] M₄) :=
-  rfl
-
-end prodCongr
-
 end ContinuousLinearEquiv
 
 end
@@ -278,7 +253,7 @@ noncomputable instance {n : ℕ} [NeZero n] :
 -- TODO: make an instance/ figure out why Lean complains about synthesisation order!
 def instTrans (h : SliceModel F I I') (h' : SliceModel F' I' I'') : SliceModel (F × F') I I'' where
   equiv := (ContinuousLinearEquiv.prodAssoc 𝕜 E F F').symm.trans
-    ((h.equiv.prod (ContinuousLinearEquiv.refl 𝕜 F')).trans h'.equiv)
+    ((h.equiv.prodCongr (ContinuousLinearEquiv.refl 𝕜 F')).trans h'.equiv)
   map := h'.map ∘ h.map
   hmap := h'.hmap.comp h.hmap
   compatible := by -- paste the two commutative diagrams together
