@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Ken Lee, Chris Hughes
 -/
 import Mathlib.Algebra.Group.Action.Units
+import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Hom.Defs
@@ -16,9 +17,9 @@ import Mathlib.Tactic.Ring
 ## Main definition
 
 * `IsCoprime x y`: that `x` and `y` are coprime, defined to be the existence of `a` and `b` such
-that `a * x + b * y = 1`. Note that elements with no common divisors (`IsRelPrime`) are not
-necessarily coprime, e.g., the multivariate polynomials `x₁` and `x₂` are not coprime.
-The two notions are equivalent in Bézout rings, see `isRelPrime_iff_isCoprime`.
+  that `a * x + b * y = 1`. Note that elements with no common divisors (`IsRelPrime`) are not
+  necessarily coprime, e.g., the multivariate polynomials `x₁` and `x₂` are not coprime.
+  The two notions are equivalent in Bézout rings, see `isRelPrime_iff_isCoprime`.
 
 This file also contains lemmas about `IsRelPrime` parallel to `IsCoprime`.
 
@@ -372,7 +373,7 @@ section abs
 variable [LinearOrder R] [AddLeftMono R]
 
 lemma abs_left_iff (x y : R) : IsCoprime |x| y ↔ IsCoprime x y := by
-  cases le_or_lt 0 x with
+  cases le_or_gt 0 x with
   | inl h => rw [abs_of_nonneg h]
   | inr h => rw [abs_of_neg h, IsCoprime.neg_left_iff]
 
@@ -392,7 +393,8 @@ end abs
 
 end CommRing
 
-theorem sq_add_sq_ne_zero {R : Type*} [LinearOrderedCommRing R] {a b : R} (h : IsCoprime a b) :
+theorem sq_add_sq_ne_zero {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
+    {a b : R} (h : IsCoprime a b) :
     a ^ 2 + b ^ 2 ≠ 0 := by
   intro h'
   obtain ⟨ha, hb⟩ := (add_eq_zero_iff_of_nonneg (sq_nonneg _) (sq_nonneg _)).mp h'

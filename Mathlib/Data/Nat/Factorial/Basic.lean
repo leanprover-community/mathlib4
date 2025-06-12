@@ -68,6 +68,7 @@ theorem factorial_pos : ∀ n, 0 < n !
 theorem factorial_ne_zero (n : ℕ) : n ! ≠ 0 :=
   ne_of_gt (factorial_pos _)
 
+@[gcongr]
 theorem factorial_dvd_factorial {m n} (h : m ≤ n) : m ! ∣ n ! := by
   induction h with
   | refl => exact Nat.dvd_refl _
@@ -87,7 +88,7 @@ theorem factorial_mul_pow_le_factorial : ∀ {m n : ℕ}, m ! * (m + 1) ^ n ≤ 
     exact Nat.mul_le_mul factorial_mul_pow_le_factorial (succ_le_succ (le_add_right _ _))
 
 theorem factorial_lt (hn : 0 < n) : n ! < m ! ↔ n < m := by
-  refine ⟨fun h => not_le.mp fun hmn => Nat.not_le_of_lt h (factorial_le hmn), fun h => ?_⟩
+  refine ⟨fun h => not_le.mp fun hmn => Nat.not_le_of_gt h (factorial_le hmn), fun h => ?_⟩
   have : ∀ {n}, 0 < n → n ! < (n + 1)! := by
     intro k hk
     rw [factorial_succ, succ_mul, Nat.lt_add_left_iff_pos]
@@ -151,7 +152,7 @@ theorem add_factorial_lt_factorial_add {i n : ℕ} (hi : 2 ≤ i) (hn : 1 ≤ n)
 
 theorem add_factorial_succ_le_factorial_add_succ (i : ℕ) (n : ℕ) :
     i + (n + 1)! ≤ (i + (n + 1))! := by
-  cases (le_or_lt (2 : ℕ) i)
+  cases (le_or_gt (2 : ℕ) i)
   · rw [← Nat.add_assoc]
     apply Nat.le_of_lt
     apply add_factorial_succ_lt_factorial_add_succ
@@ -454,7 +455,7 @@ lemma two_pow_mul_factorial_le_factorial_two_mul (n : ℕ) : 2 ^ n * n ! ≤ (2 
   rw [Nat.mul_comm, Nat.two_mul]
   calc
     _ ≤ (n + 1)! * (n + 2) ^ (n + 1) :=
-      Nat.mul_le_mul_left _ (pow_le_pow_left (le_add_left _ _) _)
+      Nat.mul_le_mul_left _ (Nat.pow_le_pow_left (le_add_left _ _) _)
     _ ≤ _ := Nat.factorial_mul_pow_le_factorial
 
 end Nat

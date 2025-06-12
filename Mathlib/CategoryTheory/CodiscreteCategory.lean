@@ -17,7 +17,7 @@ and use this type alias to provide a `Category` instance
 whose Hom type are Unit types.
 
 `Codiscrete.functor` promotes a function `f : C → A` (for any category `C`) to a functor
- `f : C ⥤ Codiscrete A`.
+`f : C ⥤ Codiscrete A`.
 
 Similarly, `Codiscrete.natTrans` and `Codiscrete.natIso` promote `I`-indexed families of morphisms,
 or `I`-indexed families of isomorphisms to natural transformations or natural isomorphism.

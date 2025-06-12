@@ -164,9 +164,9 @@ class CompleteLattice (α : Type*) extends Lattice α, CompleteSemilatticeSup α
   protected bot_le : ∀ x : α, ⊥ ≤ x
 
 -- see Note [lower instance priority]
-instance (priority := 100) CompleteLattice.toBoundedOrder [h : CompleteLattice α] :
+instance (priority := 100) CompleteLattice.toBoundedOrder [CompleteLattice α] :
     BoundedOrder α :=
-  { h with }
+  { ‹CompleteLattice α› with }
 
 /-- Create a `CompleteLattice` from a `PartialOrder` and `InfSet`
 that returns the greatest lower bound of a set. Usually this constructor provides
@@ -263,15 +263,19 @@ def completeLatticeOfCompleteSemilatticeSup (α : Type*) [CompleteSemilatticeSup
 /-- A complete linear order is a linear order whose lattice structure is complete. -/
 -- Note that we do not use `extends LinearOrder α`,
 -- and instead construct the forgetful instance manually.
-class CompleteLinearOrder (α : Type*) extends CompleteLattice α, BiheytingAlgebra α where
+class CompleteLinearOrder (α : Type*) extends CompleteLattice α, BiheytingAlgebra α, Ord α where
   /-- A linear order is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableLE : DecidableLE α
+  toDecidableLE : DecidableLE α
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ decidableLE
+  toDecidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ toDecidableLE
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableLT : DecidableLT α := @decidableLTOfDecidableLE _ _ decidableLE
+  toDecidableLT : DecidableLT α := @decidableLTOfDecidableLE _ _ toDecidableLE
+  compare a b := compareOfLessAndEq a b
+  /-- Comparison via `compare` is equal to the canonical comparison given decidable `<` and `=`. -/
+  compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by
+    compareOfLessAndEq_rfl
 
 instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : LinearOrder α where
   __ := i
@@ -365,6 +369,12 @@ theorem lt_iSup_iff {f : ι → α} : a < iSup f ↔ ∃ i, a < f i :=
 
 theorem iInf_lt_iff {f : ι → α} : iInf f < a ↔ ∃ i, f i < a :=
   sInf_lt_iff.trans exists_range_iff
+
+theorem lt_biSup_iff {s : Set β} {f : β → α} : a < ⨆ i ∈ s, f i ↔ ∃ i ∈ s, a < f i := by
+  simp [lt_iSup_iff]
+
+theorem biInf_lt_iff {s : Set β} {f : β → α} : ⨅ i ∈ s, f i < a ↔ ∃ i ∈ s, f i < a := by
+  simp [iInf_lt_iff]
 
 end CompleteLinearOrder
 

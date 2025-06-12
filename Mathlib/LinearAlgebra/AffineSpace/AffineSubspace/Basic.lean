@@ -441,8 +441,8 @@ theorem direction_sup {s₁ s₂ : AffineSubspace k P} {p₁ p₂ : P} (hp₁ : 
       sInf_le_sInf fun p hp =>
         Set.Subset.trans
           (Set.singleton_subset_iff.2
-            (vsub_mem_vsub (mem_spanPoints k p₂ _ (Set.mem_union_right _ hp₂))
-              (mem_spanPoints k p₁ _ (Set.mem_union_left _ hp₁))))
+            (vsub_mem_vsub (mem_affineSpan k (Set.mem_union_right _ hp₂))
+              (mem_affineSpan k (Set.mem_union_left _ hp₁))))
           hp
 
 /-- The direction of the sup of two affine subspaces with a common point is the sup of the two
@@ -507,8 +507,7 @@ variable (f : P₁ →ᵃ[k] P₂)
 @[simp]
 theorem AffineMap.vectorSpan_image_eq_submodule_map {s : Set P₁} :
     Submodule.map f.linear (vectorSpan k s) = vectorSpan k (f '' s) := by
-  rw [vectorSpan_def, vectorSpan_def, f.image_vsub_image, Submodule.span_image]
-  -- Porting note: Lean unfolds things too far with `simp` here.
+  simp [vectorSpan_def, f.image_vsub_image]
 
 namespace AffineSubspace
 
@@ -565,19 +564,15 @@ theorem map_map (s : AffineSubspace k P₁) (f : P₁ →ᵃ[k] P₂) (g : P₂ 
 @[simp]
 theorem map_direction (s : AffineSubspace k P₁) :
     (s.map f).direction = s.direction.map f.linear := by
-  rw [direction_eq_vectorSpan, direction_eq_vectorSpan, coe_map,
-    AffineMap.vectorSpan_image_eq_submodule_map]
-  -- Porting note: again, Lean unfolds too aggressively with `simp`
+  simp [direction_eq_vectorSpan, AffineMap.vectorSpan_image_eq_submodule_map]
 
 theorem map_span (s : Set P₁) : (affineSpan k s).map f = affineSpan k (f '' s) := by
   rcases s.eq_empty_or_nonempty with (rfl | ⟨p, hp⟩)
-  · rw [image_empty, span_empty, span_empty, map_bot]
-    -- Porting note: I don't know exactly why this `simp` was broken.
+  · simp
   apply ext_of_direction_eq
   · simp [direction_affineSpan]
-  · exact
-      ⟨f p, mem_image_of_mem f (subset_affineSpan k _ hp),
-        subset_affineSpan k _ (mem_image_of_mem f hp)⟩
+  · exact ⟨f p, mem_image_of_mem f (subset_affineSpan k _ hp),
+          subset_affineSpan k _ (mem_image_of_mem f hp)⟩
 
 section inclusion
 variable {S₁ S₂ : AffineSubspace k P₁} [Nonempty S₁] [Nonempty S₂]
@@ -822,7 +817,6 @@ theorem Parallel.vectorSpan_eq {s₁ s₂ : Set P} (h : affineSpan k s₁ ∥ af
 theorem affineSpan_parallel_iff_vectorSpan_eq_and_eq_empty_iff_eq_empty {s₁ s₂ : Set P} :
     affineSpan k s₁ ∥ affineSpan k s₂ ↔ vectorSpan k s₁ = vectorSpan k s₂ ∧ (s₁ = ∅ ↔ s₂ = ∅) := by
   repeat rw [← direction_affineSpan, ← affineSpan_eq_bot k]
-  -- Porting note: more issues with `simp`
   exact parallel_iff_direction_eq_and_eq_bot_iff_eq_bot
 
 theorem affineSpan_pair_parallel_iff_vectorSpan_eq {p₁ p₂ p₃ p₄ : P} :

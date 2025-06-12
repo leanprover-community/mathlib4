@@ -145,7 +145,7 @@ instance (priority := 100) completable : CompletableTopField K :=
         rcases Valued.mem_nhds_zero.mp U_in with ⟨γ₀, hU⟩
         exists γ₀, M, M_in
         intro x xM
-        apply le_of_not_lt _
+        apply le_of_not_gt _
         intro hyp
         have : x ∈ U ∩ M := ⟨hU hyp, xM⟩
         rwa [H] at this
@@ -275,7 +275,6 @@ noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
     rw [← v.map_zero (R := K), ← Valued.extension_extends (0 : K)]
     rfl
   map_one' := by
-    simp only
     rw [← Completion.coe_one, Valued.extension_extends (1 : K)]
     exact Valuation.map_one _
   map_mul' x y := by

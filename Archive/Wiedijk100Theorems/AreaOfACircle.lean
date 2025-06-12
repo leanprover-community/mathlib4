@@ -5,7 +5,7 @@ Authors: James Arthur, Benjamin Davidson, Andrew Souther
 -/
 import Mathlib.Analysis.SpecialFunctions.Sqrt
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
-import Mathlib.MeasureTheory.Integral.FundThmCalculus
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 
 /-!

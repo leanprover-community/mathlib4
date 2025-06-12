@@ -6,7 +6,7 @@ Authors: Christopher Hoskin
 
 import Mathlib.Topology.UniformSpace.Cauchy
 import Mathlib.Analysis.Convex.Hull
-import Mathlib.Topology.Algebra.UniformGroup.Basic
+import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 /-!
@@ -29,7 +29,7 @@ open Set Pointwise
 
 variable (E : Type*) {s : Set E}
 variable [AddCommGroup E] [Module ℝ E]
-variable [UniformSpace E] [UniformAddGroup E] [lcs : LocallyConvexSpace ℝ E] [ContinuousSMul ℝ E]
+variable [UniformSpace E] [IsUniformAddGroup E] [lcs : LocallyConvexSpace ℝ E] [ContinuousSMul ℝ E]
 
 theorem totallyBounded_convexHull (hs : TotallyBounded s) :
     TotallyBounded (convexHull ℝ s) := by

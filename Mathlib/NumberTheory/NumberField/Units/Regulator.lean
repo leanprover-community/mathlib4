@@ -41,8 +41,8 @@ variable [NumberField K]
 
 open scoped Classical in
 /--
-A equiv between `Fin (rank K)`, use to index the family of units, and `{w // w ≠ w₀}` the index of
-the `logSpace`.
+An `equiv` between `Fin (rank K)`, used to index the family of units, and `{w // w ≠ w₀}`
+the index of the `logSpace`.
 -/
 def equivFinRank : Fin (rank K) ≃ {w : InfinitePlace K // w ≠ w₀} :=
   Fintype.equivOfCardEq <| by
@@ -55,29 +55,28 @@ open Matrix
 variable {K}
 
 /--
-A family of units is of maximal rank if it generates a subgroup of `(𝓞 K)ˣ` of finite index, see
-`isMaxRank_iff_closure_finiteIndex`.
+A family of units is of maximal rank if its image by `logEmbedding` is linearly independent
+over `ℝ`.
 -/
-abbrev isMaxRank (u : Fin (rank K) → (𝓞 K)ˣ) : Prop :=
+abbrev IsMaxRank (u : Fin (rank K) → (𝓞 K)ˣ) : Prop :=
   LinearIndependent ℝ (fun i ↦ logEmbedding K (Additive.ofMul (u i)))
 
+open scoped Classical in
 /--
 The images by `logEmbedding` of a family of units of maximal rank form a basis of `logSpace K`.
 -/
-def basisOfIsMaxRank {u : Fin (rank K) → (𝓞 K)ˣ} (hu : isMaxRank u) :
-    Basis (Fin (rank K)) ℝ (logSpace K) := by
-  classical
-  exact (basisOfPiSpaceOfLinearIndependent
+def basisOfIsMaxRank {u : Fin (rank K) → (𝓞 K)ˣ} (hu : IsMaxRank u) :
+    Basis (Fin (rank K)) ℝ (logSpace K) :=
+  (basisOfPiSpaceOfLinearIndependent
     ((linearIndependent_equiv (equivFinRank K).symm).mpr hu)).reindex (equivFinRank K).symm
 
 @[simp]
-theorem basisOfIsMaxRank_apply {u : Fin (rank K) → (𝓞 K)ˣ} (hu : isMaxRank u) (i : Fin (rank K)) :
+theorem basisOfIsMaxRank_apply {u : Fin (rank K) → (𝓞 K)ˣ} (hu : IsMaxRank u) (i : Fin (rank K)) :
     (basisOfIsMaxRank hu) i = logEmbedding K (Additive.ofMul (u i)) := by
-  classical
   simp [basisOfIsMaxRank, Basis.coe_reindex,  Equiv.symm_symm, Function.comp_apply,
     coe_basisOfPiSpaceOfLinearIndependent]
 
-theorem span_basisOfIsMaxRank {u : Fin (rank K) → (𝓞 K)ˣ} (hu : isMaxRank u) :
+theorem span_basisOfIsMaxRank {u : Fin (rank K) → (𝓞 K)ˣ} (hu : IsMaxRank u) :
     (span ℤ (Set.range (basisOfIsMaxRank hu))).toAddSubgroup =
       AddSubgroup.map (logEmbedding K) (Subgroup.closure (Set.range u)).toAddSubgroup := by
   rw [Subgroup.toAddSubgroup_closure, AddMonoidHom.map_closure, ← span_int_eq_addSubgroup_closure]
@@ -89,14 +88,14 @@ theorem finiteIndex_iff_sup_torsion_finiteIndex (s : Subgroup (𝓞 K)ˣ) :
   rw [Subgroup.finiteIndex_iff, ← Subgroup.relindex_mul_index (le_sup_left : s ≤ s ⊔ torsion K)]
   refine Nat.mul_ne_zero ?_ (Subgroup.finiteIndex_iff.mp h)
   rw [Subgroup.relindex_sup_left]
-  exact Subgroup.FiniteIndex.finiteIndex
+  exact Subgroup.FiniteIndex.index_ne_zero
 
 open Subgroup in
 /--
 A family of units is of maximal rank iff the index of the subgroup it generates has finite index.
 -/
 theorem isMaxRank_iff_closure_finiteIndex {u : Fin (rank K) → (𝓞 K)ˣ} :
-    isMaxRank u ↔ (closure (Set.range u)).FiniteIndex := by
+    IsMaxRank u ↔ (closure (Set.range u)).FiniteIndex := by
   classical
   have h₁ : (closure (Set.range u) ⊔ torsion K).index ≠ 0 ↔
       Finite (unitLattice K ⧸ span ℤ (Set.range ((logEmbeddingEquiv K) ∘ Additive.toMul.symm ∘
@@ -118,53 +117,53 @@ theorem isMaxRank_iff_closure_finiteIndex {u : Fin (rank K) → (𝓞 K)ˣ} :
     rintro _ ⟨i, rfl⟩
     exact ⟨Additive.ofMul (u i), mem_top, rfl⟩
   rw [finiteIndex_iff_sup_torsion_finiteIndex, finiteIndex_iff, h₁, finiteQuotient_iff,
-    unitLattice_rank, ← Set.finrank, isMaxRank, linearIndependent_iff_card_eq_finrank_span,
+    unitLattice_rank, ← Set.finrank, IsMaxRank, linearIndependent_iff_card_eq_finrank_span,
     Real.finrank_eq_int_finrank_of_discrete h₂, Set.finrank, Set.finrank, ← finrank_map_subtype_eq,
     map_span, ← Set.range_comp', eq_comm]
   simp
 
+open scoped Classical in
 /--
 The regulator of a family of units of `K`.
 -/
-def regOfFamily (u : Fin (rank K) → (𝓞 K)ˣ) : ℝ := by
-  classical
-  by_cases hu : isMaxRank u
-  · exact ZLattice.covolume (span ℤ (Set.range (basisOfIsMaxRank  hu)))
-  · exact 0
+def regOfFamily (u : Fin (rank K) → (𝓞 K)ˣ) : ℝ :=
+  if hu : IsMaxRank u then
+    ZLattice.covolume (span ℤ (Set.range (basisOfIsMaxRank  hu)))
+  else 0
 
-theorem regOfFamily_eq_zero {u : Fin (rank K) → (𝓞 K)ˣ} (hu : ¬ isMaxRank u) :
+theorem regOfFamily_eq_zero {u : Fin (rank K) → (𝓞 K)ˣ} (hu : ¬ IsMaxRank u) :
     regOfFamily u = 0 := by
   rw [regOfFamily, dif_neg hu]
 
 open scoped Classical in
-theorem regOfFamily_of_isMaxRank {u : Fin (rank K) → (𝓞 K)ˣ} (hu : isMaxRank u) :
+theorem regOfFamily_of_isMaxRank {u : Fin (rank K) → (𝓞 K)ˣ} (hu : IsMaxRank u) :
     regOfFamily u = ZLattice.covolume (span ℤ (Set.range (basisOfIsMaxRank  hu))) := by
   rw [regOfFamily, dif_pos hu]
 
-theorem regOfFamily_pos {u : Fin (rank K) → (𝓞 K)ˣ} (hu : isMaxRank u) :
+theorem regOfFamily_pos {u : Fin (rank K) → (𝓞 K)ˣ} (hu : IsMaxRank u) :
     0 < regOfFamily u := by
   classical
   rw [regOfFamily_of_isMaxRank hu]
   exact ZLattice.covolume_pos _ volume
 
-theorem regOfFamily_ne_zero {u : Fin (rank K) → (𝓞 K)ˣ} (hu : isMaxRank u) :
+theorem regOfFamily_ne_zero {u : Fin (rank K) → (𝓞 K)ˣ} (hu : IsMaxRank u) :
     regOfFamily u ≠ 0 := (regOfFamily_pos hu).ne'
 
 theorem regOfFamily_ne_zero_iff {u : Fin (rank K) → (𝓞 K)ˣ} :
-    regOfFamily u ≠ 0 ↔ isMaxRank u :=
+    regOfFamily u ≠ 0 ↔ IsMaxRank u :=
   ⟨by simpa using (fun hu ↦ regOfFamily_eq_zero hu).mt, fun hu ↦ regOfFamily_ne_zero hu⟩
 
 open scoped Classical in
 theorem regOfFamily_eq_det' (u : Fin (rank K) → (𝓞 K)ˣ) :
     regOfFamily u =
       |(of fun i ↦ logEmbedding K (Additive.ofMul (u ((equivFinRank K).symm i)))).det| := by
-  by_cases hu : isMaxRank u
+  by_cases hu : IsMaxRank u
   · rw [regOfFamily_of_isMaxRank hu, ZLattice.covolume_eq_det _
       (((basisOfIsMaxRank hu).restrictScalars ℤ).reindex (equivFinRank K)), Basis.coe_reindex]
     congr with i
     simp [basisOfIsMaxRank_apply hu]
   · rw [regOfFamily_eq_zero hu, det_eq_zero_of_not_linearIndependent_rows, abs_zero]
-    rwa [isMaxRank, ← linearIndependent_equiv (equivFinRank K).symm] at hu
+    rwa [IsMaxRank, ← linearIndependent_equiv (equivFinRank K).symm] at hu
 
 open scoped Classical in
 /--
@@ -213,8 +212,7 @@ theorem regOfFamily_eq_det (u : Fin (rank K) → (𝓞 K)ˣ) (w' : InfinitePlace
     (e : {w // w ≠ w'} ≃ Fin (rank K)) :
     regOfFamily u =
       |(of fun i w : {w // w ≠ w'} ↦ (mult w.val : ℝ) * Real.log (w.val (u (e i) : K))).det| := by
-  rw [regOfFamily_eq_det', abs_det_eq_abs_det u e (equivFinRank K).symm]
-  simp [logEmbedding]
+  simp [regOfFamily_eq_det', abs_det_eq_abs_det u e (equivFinRank K).symm, logEmbedding]
 
 open scoped Classical in
 /--
@@ -255,7 +253,7 @@ open scoped Classical in
 def regulator : ℝ := ZLattice.covolume (unitLattice K)
 
 theorem isMaxRank_fundSystem :
-    isMaxRank (fundSystem K) := by
+    IsMaxRank (fundSystem K) := by
   classical
   convert ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K)).linearIndependent
   rw [logEmbedding_fundSystem, Basis.ofZLatticeBasis_apply]
@@ -278,6 +276,35 @@ theorem regulator_pos : 0 < regulator K :=
 theorem regulator_ne_zero : regulator K ≠ 0 :=
   (regulator_pos K).ne'
 
+open scoped Classical in
+theorem regulator_eq_det' :
+    regulator K = |(Matrix.of fun i ↦
+      logEmbedding K (Additive.ofMul (fundSystem K ((equivFinRank K).symm i)))).det| := by
+  rw [regulator_eq_regOfFamily_fundSystem, regOfFamily_eq_det']
+
+open scoped Classical in
+/--
+For any infinite place `w'`, the regulator is equal to the absolute value of the determinant
+of the matrix with entries `(mult w * log w (fundSystem K i))_i` for `w ≠ w'`.
+-/
+theorem regulator_eq_det (w' : InfinitePlace K) (e : {w // w ≠ w'} ≃ Fin (rank K)) :
+    regulator K =
+      |(Matrix.of fun i w : {w // w ≠ w'} ↦ (mult w.val : ℝ) *
+        Real.log (w.val (fundSystem K (e i) : K))).det| := by
+  rw [regulator_eq_regOfFamily_fundSystem, regOfFamily_eq_det]
+
+open scoped Classical in
+/--
+The degree of `K` times the regulator of the family `u` is equal to the absolute value of the
+determinant of the matrix whose columns are
+`(mult w * log w (fundSystem K i))_i, w` and the column `(mult w)_w`.
+-/
+theorem finrank_mul_regulator_eq_det (w' : InfinitePlace K) (e : {w // w ≠ w'} ≃ Fin (rank K)) :
+    finrank ℚ K * regulator K =
+      |(Matrix.of (fun i w : InfinitePlace K ↦
+        if h : i = w' then (w.mult : ℝ) else w.mult * (w (fundSystem K (e ⟨i, h⟩))).log)).det| := by
+  rw [regulator_eq_regOfFamily_fundSystem, finrank_mul_regOfFamily_eq_det]
+
 end regulator
 
 section index
@@ -286,12 +313,12 @@ open ZLattice
 
 variable {K}
 
-theorem regOfFamily_div_regOfFamily {u v : Fin (rank K) → (𝓞 K)ˣ} (hv : isMaxRank v)
+theorem regOfFamily_div_regOfFamily {u v : Fin (rank K) → (𝓞 K)ˣ} (hv : IsMaxRank v)
     (h : Subgroup.closure (Set.range u) ⊔ torsion K ≤ Subgroup.closure (Set.range v) ⊔ torsion K) :
     regOfFamily u / regOfFamily v = (Subgroup.closure (Set.range u) ⊔ (torsion K)).relindex
       (Subgroup.closure (Set.range v) ⊔ (torsion K)) := by
   classical
-  by_cases hu : isMaxRank u
+  by_cases hu : IsMaxRank u
   · have : span ℤ (Set.range (basisOfIsMaxRank hu)) ≤ span ℤ (Set.range (basisOfIsMaxRank hv)) := by
       rw [← toAddSubgroup_le, span_basisOfIsMaxRank hu, span_basisOfIsMaxRank hv,
         ← map_logEmbedding_sup_torsion (Subgroup.closure (Set.range u)).toAddSubgroup,

@@ -596,7 +596,7 @@ theorem comp_apply (f : BoundedLatticeHom β γ) (g : BoundedLatticeHom α β) (
   rfl
 
 @[simp]
--- Porting note: `simp`-normal form of `coe_comp_lattice_hom`
+-- `simp`-normal form of `coe_comp_lattice_hom`
 theorem coe_comp_lattice_hom' (f : BoundedLatticeHom β γ) (g : BoundedLatticeHom α β) :
     (⟨(f : SupHom β γ).comp g, map_inf (f.comp g)⟩ : LatticeHom α γ) =
       (f : LatticeHom β γ).comp g :=
@@ -607,7 +607,7 @@ theorem coe_comp_lattice_hom (f : BoundedLatticeHom β γ) (g : BoundedLatticeHo
   rfl
 
 @[simp]
--- Porting note: `simp`-normal form of `coe_comp_sup_hom`
+-- `simp`-normal form of `coe_comp_sup_hom`
 theorem coe_comp_sup_hom' (f : BoundedLatticeHom β γ) (g : BoundedLatticeHom α β) :
     ⟨f ∘ g, map_sup (f.comp g)⟩ = (f : SupHom β γ).comp g :=
   rfl
@@ -617,7 +617,7 @@ theorem coe_comp_sup_hom (f : BoundedLatticeHom β γ) (g : BoundedLatticeHom α
   rfl
 
 @[simp]
--- Porting note: `simp`-normal form of `coe_comp_inf_hom`
+-- `simp`-normal form of `coe_comp_inf_hom`
 theorem coe_comp_inf_hom' (f : BoundedLatticeHom β γ) (g : BoundedLatticeHom α β) :
     ⟨f ∘ g, map_inf (f.comp g)⟩ = (f : InfHom β γ).comp g :=
   rfl

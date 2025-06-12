@@ -10,7 +10,7 @@ import Mathlib.Data.Set.BooleanAlgebra
 # The set lattice
 
 This file is a collection of results on the complete atomic boolean algebra structure of `Set α`.
-Notation for the complete lattice operations can be found in `Mathlib.Order.SetNotation`.
+Notation for the complete lattice operations can be found in `Mathlib/Order/SetNotation.lean`.
 
 ## Main declarations
 * `Set.sInter_eq_biInter`, `Set.sUnion_eq_biInter`: Shows that `⋂₀ s = ⋂ x ∈ s, x` and
@@ -740,8 +740,10 @@ theorem mem_sUnion_of_mem {x : α} {t : Set α} {S : Set (Set α)} (hx : x ∈ t
   ⟨t, ht, hx⟩
 
 -- is this theorem really necessary?
-theorem not_mem_of_not_mem_sUnion {x : α} {t : Set α} {S : Set (Set α)} (hx : x ∉ ⋃₀ S)
+theorem notMem_of_notMem_sUnion {x : α} {t : Set α} {S : Set (Set α)} (hx : x ∉ ⋃₀ S)
     (ht : t ∈ S) : x ∉ t := fun h => hx ⟨t, ht, h⟩
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_sUnion := notMem_of_notMem_sUnion
 
 theorem sInter_subset_of_mem {S : Set (Set α)} {t : Set α} (tS : t ∈ S) : ⋂₀ S ⊆ t :=
   sInf_le tS
@@ -908,16 +910,16 @@ theorem sUnion_eq_univ_iff {c : Set (Set α)} : ⋃₀ c = univ ↔ ∀ a, ∃ b
 
 -- classical
 theorem iInter_eq_empty_iff {f : ι → Set α} : ⋂ i, f i = ∅ ↔ ∀ x, ∃ i, x ∉ f i := by
-  simp [Set.eq_empty_iff_forall_not_mem]
+  simp [Set.eq_empty_iff_forall_notMem]
 
 -- classical
 theorem iInter₂_eq_empty_iff {s : ∀ i, κ i → Set α} :
     ⋂ (i) (j), s i j = ∅ ↔ ∀ a, ∃ i j, a ∉ s i j := by
-  simp only [eq_empty_iff_forall_not_mem, mem_iInter, not_forall]
+  simp only [eq_empty_iff_forall_notMem, mem_iInter, not_forall]
 
 -- classical
 theorem sInter_eq_empty_iff {c : Set (Set α)} : ⋂₀ c = ∅ ↔ ∀ a, ∃ b ∈ c, a ∉ b := by
-  simp [Set.eq_empty_iff_forall_not_mem]
+  simp [Set.eq_empty_iff_forall_notMem]
 
 -- classical
 @[simp]
@@ -1160,6 +1162,13 @@ theorem directedOn_sUnion {r} {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S)
   rw [sUnion_eq_iUnion]
   exact directedOn_iUnion (directedOn_iff_directed.mp hd) (fun i ↦ h i.1 i.2)
 
+theorem pairwise_iUnion₂ {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S)
+    (r : α → α → Prop) (h : ∀ s ∈ S, s.Pairwise r) : (⋃ s ∈ S, s).Pairwise r := by
+  simp only [Set.Pairwise, Set.mem_iUnion, exists_prop, forall_exists_index, and_imp]
+  intro x S hS hx y T hT hy hne
+  obtain ⟨U, hU, hSU, hTU⟩ := hd S hS T hT
+  exact h U hU (hSU hx) (hTU hy) hne
+
 end Directed
 
 end Set
@@ -1284,7 +1293,7 @@ theorem biUnion_diff_biUnion_subset (s₁ s₂ : Set α) :
 
 /-- If `t` is an indexed family of sets, then there is a natural map from `Σ i, t i` to `⋃ i, t i`
 sending `⟨i, x⟩` to `x`. -/
-def sigmaToiUnion (x : Σi, t i) : ⋃ i, t i :=
+def sigmaToiUnion (x : Σ i, t i) : ⋃ i, t i :=
   ⟨x.2, mem_iUnion.2 ⟨x.1, x.2.2⟩⟩
 
 theorem sigmaToiUnion_surjective : Surjective (sigmaToiUnion t)

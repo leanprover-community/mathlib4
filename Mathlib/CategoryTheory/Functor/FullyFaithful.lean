@@ -161,6 +161,16 @@ lemma map_bijective (X Y : C) :
     Function.Bijective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
   hF.homEquiv.bijective
 
+@[simp]
+lemma preimage_id {X : C} :
+    hF.preimage (𝟙 (F.obj X)) = 𝟙 X :=
+  hF.map_injective (by simp)
+
+@[simp, reassoc]
+lemma preimage_comp {X Y Z : C} (f : F.obj X ⟶ F.obj Y) (g : F.obj Y ⟶ F.obj Z) :
+    hF.preimage (f ≫ g) = hF.preimage f ≫ hF.preimage g :=
+  hF.map_injective (by simp)
+
 lemma full : F.Full where
   map_surjective := hF.map_surjective
 
@@ -244,8 +254,8 @@ instance Faithful.id : Functor.Faithful (𝟭 C) := { }
 variable {D : Type u₂} [Category.{v₂} D] {E : Type u₃} [Category.{v₃} E]
 variable (F F' : C ⥤ D) (G : D ⥤ E)
 
-instance Faithful.comp [F.Faithful] [G.Faithful] :
-    (F ⋙ G).Faithful where map_injective p := F.map_injective (G.map_injective p)
+instance Faithful.comp [F.Faithful] [G.Faithful] : (F ⋙ G).Faithful where
+  map_injective p := F.map_injective (G.map_injective p)
 
 theorem Faithful.of_comp [(F ⋙ G).Faithful] : F.Faithful :=
   -- Porting note: (F ⋙ G).map_injective.of_comp has the incorrect type
