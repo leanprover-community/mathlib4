@@ -3,11 +3,10 @@ Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn, Sabbir Rahman
 -/
-import Mathlib.Algebra.GroupWithZero.Commute
-import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Order.Ring.Pow
 import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Algebra.Ring.Int.Parity
+import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Lemmas about powers in ordered fields.
@@ -17,72 +16,6 @@ import Mathlib.Algebra.Ring.Int.Parity
 variable {α : Type*}
 
 open Function Int
-
-section LinearOrderedSemifield
-
-variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {a b : α} {m n : ℤ}
-
-/-! ### Integer powers -/
-
-@[deprecated zpow_le_zpow_right₀ (since := "2024-10-08")]
-theorem zpow_le_of_le (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n := zpow_le_zpow_right₀ ha h
-
-@[deprecated zpow_le_one_of_nonpos₀ (since := "2024-10-08")]
-theorem zpow_le_one_of_nonpos (ha : 1 ≤ a) (hn : n ≤ 0) : a ^ n ≤ 1 :=
-  zpow_le_one_of_nonpos₀ ha hn
-
-@[deprecated one_le_zpow₀ (since := "2024-10-08")]
-theorem one_le_zpow_of_nonneg (ha : 1 ≤ a) (hn : 0 ≤ n) : 1 ≤ a ^ n :=
-  one_le_zpow₀ ha hn
-
-@[deprecated zpow_pos (since := "2024-10-08")]
-protected theorem Nat.zpow_pos_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : 0 < (a : α) ^ n :=
-  zpow_pos (mod_cast h) _
-
-@[deprecated zpow_ne_zero (since := "2024-10-08")]
-theorem Nat.zpow_ne_zero_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : (a : α) ^ n ≠ 0 :=
-  zpow_ne_zero _ (mod_cast h.ne')
-
-@[deprecated zpow_right_strictMono₀ (since := "2024-10-08")]
-theorem zpow_strictMono (hx : 1 < a) : StrictMono (a ^ · : ℤ → α) :=
-  zpow_right_strictMono₀ hx
-
-@[deprecated zpow_right_strictAnti₀ (since := "2024-10-08")]
-theorem zpow_strictAnti (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti (a ^ · : ℤ → α) :=
-  zpow_right_strictAnti₀ h₀ h₁
-
-@[deprecated zpow_lt_zpow_iff_right₀ (since := "2024-10-08")]
-theorem zpow_lt_iff_lt (hx : 1 < a) : a ^ m < a ^ n ↔ m < n :=
-  zpow_lt_zpow_iff_right₀ hx
-
-@[deprecated zpow_le_zpow_iff_right₀ (since := "2024-10-08")]
-theorem zpow_le_iff_le (hx : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
-  zpow_le_zpow_iff_right₀ hx
-
-@[deprecated div_le_self (since := "2024-10-08")]
-theorem div_pow_le (ha : 0 ≤ a) (hb : 1 ≤ b) (k : ℕ) : a / b ^ k ≤ a :=
-  div_le_self ha <| one_le_pow₀ hb
-
-@[deprecated zpow_right_injective₀ (since := "2024-10-08")]
-theorem zpow_injective (h₀ : 0 < a) (h₁ : a ≠ 1) : Injective (a ^ · : ℤ → α) :=
-  zpow_right_injective₀ h₀ h₁
-
-@[deprecated zpow_right_inj₀ (since := "2024-10-08")]
-theorem zpow_inj (h₀ : 0 < a) (h₁ : a ≠ 1) : a ^ m = a ^ n ↔ m = n :=
-  zpow_right_inj₀ h₀ h₁
-
-@[deprecated "No deprecation message was provided." (since := "2024-10-08")]
-theorem zpow_le_max_of_min_le {x : α} (hx : 1 ≤ x) {a b c : ℤ} (h : min a b ≤ c) :
-    x ^ (-c) ≤ max (x ^ (-a)) (x ^ (-b)) :=
-  have : Antitone fun n : ℤ => x ^ (-n) := fun _ _ h => zpow_le_zpow_right₀ hx (neg_le_neg h)
-  (this h).trans_eq this.map_min
-
-@[deprecated "No deprecation message was provided." (since := "2024-10-08")]
-theorem zpow_le_max_iff_min_le {x : α} (hx : 1 < x) {a b c : ℤ} :
-    x ^ (-c) ≤ max (x ^ (-a)) (x ^ (-b)) ↔ min a b ≤ c := by
-  simp_rw [le_max_iff, min_le_iff, zpow_le_zpow_iff_right₀ hx, neg_le_neg_iff]
-
-end LinearOrderedSemifield
 
 section LinearOrderedField
 
@@ -134,9 +67,8 @@ lemma zpow_eq_zpow_iff_of_ne_zero₀ (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b �
     simp only [Int.ofNat_eq_coe, ne_eq, Nat.cast_eq_zero, zpow_natCast, Int.even_coe_nat] at *
     exact pow_eq_pow_iff_of_ne_zero hn
   | Int.negSucc m => by
-    rw [show Int.negSucc m = -↑(m + 1) by rfl] at *
-    simp only [ne_eq, neg_eq_zero, Nat.cast_eq_zero, zpow_neg, zpow_natCast, inv_inj, even_neg,
-      Int.even_coe_nat] at *
+    simp only [← neg_ofNat_succ, ne_eq, neg_eq_zero, Nat.cast_eq_zero, zpow_neg, zpow_natCast,
+      inv_inj, even_neg, Int.even_coe_nat] at *
     exact pow_eq_pow_iff_of_ne_zero hn
 
 lemma zpow_eq_zpow_iff_cases₀ : a ^ n = b ^ n ↔ n = 0 ∨ a = b ∨ a = -b ∧ Even n := by
@@ -153,8 +85,9 @@ lemma zpow_eq_neg_zpow_iff₀ (hb : b ≠ 0) : a ^ n = -b ^ n ↔ a = -b ∧ Odd
   | Int.ofNat m => by
     simp [pow_eq_neg_pow_iff, hb]
   | Int.negSucc m => by
-    rw [show Int.negSucc m = -↑(m + 1) by rfl]
-    simp [-Nat.cast_add, -Int.natCast_add, neg_inv, pow_eq_neg_pow_iff, hb]
+    simp only [← neg_ofNat_succ, zpow_neg, inv_pow, ← inv_neg, pow_eq_neg_pow_iff hb, inv_inj,
+      zpow_natCast]
+    simp [parity_simps]
 
 lemma zpow_eq_neg_one_iff₀ : a ^ n = -1 ↔ a = -1 ∧ Odd n := by
   simpa using zpow_eq_neg_zpow_iff₀ (α := α) one_ne_zero
@@ -175,7 +108,7 @@ theorem Nat.cast_le_pow_div_sub (H : 1 < a) (n : ℕ) : (n : α) ≤ a ^ n / (a 
 end LinearOrderedField
 
 namespace Mathlib.Meta.Positivity
-open Lean Meta Qq Function
+open Lean Meta Qq
 
 /-- The `positivity` extension which identifies expressions of the form `a ^ (b : ℤ)`,
 such that `positivity` successfully recognises both `a` and `b`. -/
@@ -220,9 +153,9 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
     match ra with
     | .positive pa =>
       try
-        let _a ← synthInstanceQ (q(Semifield $α) : Q(Type u))
-        let _a ← synthInstanceQ (q(LinearOrder $α) : Q(Type u))
-        let _a ← synthInstanceQ (q(IsStrictOrderedRing $α) : Q(Prop))
+        let _a ← synthInstanceQ q(Semifield $α)
+        let _a ← synthInstanceQ q(LinearOrder $α)
+        let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
         haveI' : $e =Q $a ^ $b := ⟨⟩
         assumeInstancesCommute
         pure (.positive q(zpow_pos $pa $b))
@@ -233,8 +166,9 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
         let iα ← synthInstanceQ q(IsStrictOrderedRing $α)
         orElse (← catchNone (ofNonneg q(le_of_lt $pa) sα oα iα))
           (ofNonzero q(ne_of_gt $pa) q(inferInstance))
-    | .nonnegative pa => ofNonneg pa (← synthInstanceQ (_ : Q(Type u)))
-                           (← synthInstanceQ (_ : Q(Type u))) (← synthInstanceQ (_ : Q(Prop)))
+    | .nonnegative pa =>
+      ofNonneg pa (← synthInstanceQ (_ : Q(Type u)))
+                  (← synthInstanceQ (_ : Q(Type u))) (← synthInstanceQ (_ : Q(Prop)))
     | .nonzero pa => ofNonzero pa (← synthInstanceQ (_ : Q(Type u)))
     | .none => pure .none
 

@@ -15,8 +15,7 @@ import Mathlib.Algebra.GroupWithZero.Pointwise.Finset
 This file proves properties of pointwise operations of finsets in a group with zero.
 -/
 
--- TODO
--- assert_not_exists Ring
+assert_not_exists Ring
 
 open scoped Pointwise
 
@@ -30,17 +29,18 @@ protected def smulZeroClass [Zero β] [SMulZeroClass α β] : SMulZeroClass α (
 
 /-- If the scalar multiplication `(· • ·) : α → β → β` is distributive,
 then so is `(· • ·) : α → Finset β → Finset β`. -/
-protected def distribSMul [AddZeroClass β] [DistribSMul α β] : DistribSMul α (Finset β) :=
+protected noncomputable def distribSMul [AddZeroClass β] [DistribSMul α β] :
+    DistribSMul α (Finset β) :=
   coe_injective.distribSMul coeAddMonoidHom coe_smul_finset
 
 /-- A distributive multiplicative action of a monoid on an additive monoid `β` gives a distributive
 multiplicative action on `Finset β`. -/
-protected def distribMulAction [Monoid α] [AddMonoid β] [DistribMulAction α β] :
+protected noncomputable def distribMulAction [Monoid α] [AddMonoid β] [DistribMulAction α β] :
     DistribMulAction α (Finset β) :=
   coe_injective.distribMulAction coeAddMonoidHom coe_smul_finset
 
 /-- A multiplicative action of a monoid on a monoid `β` gives a multiplicative action on `Set β`. -/
-protected def mulDistribMulAction [Monoid α] [Monoid β] [MulDistribMulAction α β] :
+protected noncomputable def mulDistribMulAction [Monoid α] [Monoid β] [MulDistribMulAction α β] :
     MulDistribMulAction α (Finset β) :=
   coe_injective.mulDistribMulAction coeMonoidHom coe_smul_finset
 

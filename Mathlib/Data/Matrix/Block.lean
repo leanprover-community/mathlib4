@@ -438,7 +438,7 @@ theorem blockDiagonal_pow [DecidableEq m] [Fintype o] [Fintype m] [Semiring α]
   map_pow (blockDiagonalRingHom m o α) M n
 
 @[simp]
-theorem blockDiagonal_smul {R : Type*} [Monoid R] [AddMonoid α] [DistribMulAction R α] (x : R)
+theorem blockDiagonal_smul {R : Type*} [Zero α] [SMulZeroClass R α] (x : R)
     (M : o → Matrix m n α) : blockDiagonal (x • M) = x • blockDiagonal M := by
   ext
   simp only [blockDiagonal_apply, Pi.smul_apply, smul_apply]

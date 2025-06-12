@@ -136,7 +136,6 @@ def Cone.fromCostructuredArrow (F : J ⥤ C) : CostructuredArrow (const J) F ⥤
     { hom := f.left
       w := fun j => by
         convert congr_fun (congr_arg NatTrans.app f.w) j
-        dsimp
         simp }
 
 /-- The category of cones on `F` is just the comma category `(Δ ↓ F)`, where `Δ` is the constant
@@ -296,7 +295,6 @@ def Cocone.fromStructuredArrow (F : J ⥤ C) : StructuredArrow F (const J) ⥤ C
     { hom := f.right
       w := fun j => by
         convert (congr_fun (congr_arg NatTrans.app f.w) j).symm
-        dsimp
         simp }
 
 /-- The category of cocones on `F` is just the comma category `(F ↓ Δ)`, where `Δ` is the constant
