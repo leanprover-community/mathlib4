@@ -243,7 +243,7 @@ theorem le_inducedMap_mul_self_of_mem_cutMap (ha : 0 < a) (b : β) (hb : b ∈ c
 /-- Preparatory lemma for `inducedOrderRingHom`. -/
 theorem exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self (ha : 0 < a) (b : β)
     (hba : b < inducedMap α β a * inducedMap α β a) : ∃ c ∈ cutMap β (a * a), b < c := by
-  obtain hb | hb := lt_or_le b 0
+  obtain hb | hb := lt_or_ge b 0
   · refine ⟨0, ?_, hb⟩
     rw [← Rat.cast_zero, coe_mem_cutMap_iff, Rat.cast_zero]
     exact mul_self_pos.2 ha.ne'
