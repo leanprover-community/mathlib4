@@ -34,8 +34,7 @@ instance [HasZeroObject C₁] (X₁ : C₁) (K₂ : CochainComplex C₂ ℤ) (x�
             (F.map (singleObjXIsoOfEq (.up ℤ) x₁ X₁ x₁ rfl).inv).app _ ≫ s.ι.app ⟨⟨x₁, x₂⟩, by simp⟩
           fac s := by
             rintro ⟨⟨p, q⟩, hpq⟩
-            simp only [Set.mem_preimage, ComplexShape.instTotalComplexShape_π,
-              Set.mem_singleton_iff] at hpq
+            simp only [Set.mem_preimage, Set.mem_singleton_iff, ComplexShape.π_def] at hpq
             by_cases hp : p = x₁
             · subst hp
               obtain rfl : q = x₂ := by omega
@@ -71,7 +70,7 @@ noncomputable def mapBifunctorSingle₁XIso
       ιMapBifunctor ((single C₁ (.up ℤ) 0).obj X₁) K₂ F (.up ℤ) 0 n n (by simp)
   hom_inv_id := by
     ext p q hpq
-    simp only [ComplexShape.instTotalComplexShape_π] at hpq
+    simp only [ComplexShape.π_def] at hpq
     by_cases hp : p = 0
     · subst hp
       obtain rfl : n = q := by omega

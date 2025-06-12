@@ -143,18 +143,16 @@ open Limits
 open MorphismProperty
 
 variable (J C) in
-lemma isStableUnderColimitsOfShape_monomorphisms
+instance isStableUnderColimitsOfShape_monomorphisms
     [HasColimitsOfShape J C] [(colim : (J ⥤ C) ⥤ C).PreservesMonomorphisms] :
-    (monomorphisms C).IsStableUnderColimitsOfShape J := by
-  intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
-  have (j : J) : Mono (f.app j) := hf _
-  have := NatTrans.mono_of_mono_app f
-  exact colim.map_mono' f hc₁ hc₂ _ (by simp)
+    (monomorphisms C).IsStableUnderColimitsOfShape J where
+  condition X₁ X₂ c₁ c₂ hc₁ hc₂ f hf φ hφ := by
+    have (j : J) : Mono (f.app j) := hf _
+    have := NatTrans.mono_of_mono_app f
+    apply colim.map_mono' f hc₁ hc₂ φ (by simp [hφ])
 
 instance [HasCoproducts.{u'} C] [AB4OfSize.{u'} C] :
     IsStableUnderCoproducts.{u'} (monomorphisms C) where
-  isStableUnderCoproductsOfShape _ :=
-    isStableUnderColimitsOfShape_monomorphisms _ _
 
 end MorphismProperty
 
@@ -197,18 +195,19 @@ lemma quasiIso_functorCategory_iff {C : Type*} [Category C] [Abelian C]
     simp
     infer_instance
 
-lemma isStableUnderColimitsOfShape_quasiIso
+instance isStableUnderColimitsOfShape_quasiIso
     (C : Type*) [Category C] [Abelian C]
     {ι : Type*} (c : ComplexShape ι) (J : Type*) [Category J]
     [HasColimitsOfShape J C] [HasExactColimitsOfShape J C] :
     (HomologicalComplex.quasiIso C c).IsStableUnderColimitsOfShape J := by
   suffices ∀ ⦃F₁ F₂ : J ⥤ HomologicalComplex C c⦄ (f : F₁ ⟶ F₂)
-    (hf : (quasiIso C c).functorCategory J f), QuasiIso (colimMap f) by
-      intro F₁ F₂ c₁ c₂ h₁ h₂ f hf
-      refine ((quasiIso C c).arrow_mk_iso_iff
-        (Arrow.isoMk (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) h₁)
-          (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) h₂)
-          (colimit.hom_ext (by simp)))).1 (this f hf)
+    (hf : (quasiIso C c).functorCategory J f), QuasiIso (colimMap f) from
+      ⟨by
+        intro F₁ F₂ c₁ c₂ h₁ h₂ f hf φ hφ
+        refine ((quasiIso C c).arrow_mk_iso_iff
+          (Arrow.isoMk (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) h₁)
+            (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) h₂)
+            (colimit.hom_ext (by aesop)))).1 (this f hf)⟩
   intro F₁ F₂ f hf
   have : QuasiIso ((functorEquivalence.inverse C c J).map f) := by
     rwa [quasiIso_functorCategory_iff]
@@ -227,11 +226,10 @@ lemma isStableUnderColimitsOfShape_preservesQuasiIso
       (preservesQuasiIso (C₁ := C₁) (C₂ := C₂) (c₁ := c₁) (c₂ := c₂)) := by
   intro F c hc hF K₁ L₁ f hf
   simp only [MorphismProperty.inverseImage_iff]
-  have pif := isColimitOfPreserves ((evaluation _ _).obj K₁) hc
   let hcK := isColimitOfPreserves ((evaluation _ _).obj K₁) hc
   let hcL := isColimitOfPreserves ((evaluation _ _).obj L₁) hc
-  convert isStableUnderColimitsOfShape_quasiIso C₂ c₂ J _ _ _ _
-    hcK hcL (whiskerLeft F ((evaluation _ _).map f)) (fun j ↦ hF j _ hf)
-  exact hcK.hom_ext (fun j ↦ by rw [hcK.fac]; simp)
+  exact MorphismProperty.colimitsOfShape_le _
+    (MorphismProperty.colimitsOfShape.mk' _ _ _ _ hcK hcL
+    ((whiskerLeft F ((evaluation _ _).map f))) (fun j ↦ hF j _ hf) _ (fun j ↦ by simp))
 
 end HomologicalComplex

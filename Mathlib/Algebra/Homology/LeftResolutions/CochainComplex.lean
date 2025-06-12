@@ -58,11 +58,10 @@ instance quasiIso_leftResolutionπ_app [HasExactColimitsOfShape ℤ A]
     [∀ K, QuasiIso (α.app K)] (K : CochainComplex A ℤ) :
     QuasiIso ((leftResolutionπ α).app K) := by
   let φ := colimMap (((whiskeringRight _ _ _).map α).app K.filtrationLEMinus)
-  have : QuasiIso φ := ((HomologicalComplex.isStableUnderColimitsOfShape_quasiIso
-      A (.up ℤ) ℤ).colimMap _ (fun n ↦ by
+  have : QuasiIso φ := (HomologicalComplex.quasiIso A (.up ℤ)).colimMap _ (fun n ↦ by
     dsimp
     simp only [HomologicalComplex.mem_quasiIso_iff]
-    infer_instance))
+    infer_instance)
   dsimp only [leftResolutionπ]
   change QuasiIso (φ ≫ _)
   infer_instance

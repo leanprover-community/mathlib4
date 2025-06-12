@@ -409,7 +409,7 @@ section
 
 variable [IsTriangulated C] [P.IsTriangulated]
 
-example : Pretriangulated (P.trW.Localization) := inferInstance
+noncomputable example : Pretriangulated (P.trW.Localization) := inferInstance
 example : IsTriangulated (P.trW.Localization) := inferInstance
 example : P.trW.Q.IsTriangulated := inferInstance
 
@@ -446,7 +446,7 @@ instance : HasZeroObject P.FullSubcategory where
 
 attribute [local simp] ObjectProperty.fullyFaithfulι fullyFaithfulInducedFunctor
 
-instance : Pretriangulated P.FullSubcategory where
+noncomputable instance : Pretriangulated P.FullSubcategory where
   distinguishedTriangles := fun T => P.ι.mapTriangle.obj T ∈ distTriang C
   isomorphic_distinguished := fun T₁ hT₁ T₂ e =>
     isomorphic_distinguished _ hT₁ _ (P.ι.mapTriangle.mapIso e)

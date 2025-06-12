@@ -261,7 +261,7 @@ lemma homRestrict_hasLift (ψ : K ⟶ L.extend e) :
     e.HasLift (e.homRestrict ψ) := by
   intro j hj i' hij'
   have : (L.extend e).d i' (e.f j) = 0 := by
-    apply (L.isZero_extend_X e i' (hj.not_mem hij')).eq_of_src
+    apply (L.isZero_extend_X e i' (hj.notMem hij')).eq_of_src
   dsimp [homRestrict]
   rw [homRestrict.f_eq ψ rfl, restrictionXIso, eqToIso_refl, Iso.refl_hom, id_comp,
     ← ψ.comm_assoc, this, zero_comp, comp_zero]
@@ -327,7 +327,7 @@ lemma homRestrict'_hasDesc (ψ : L.extend e ⟶ K) :
     e.HasDesc (e.homRestrict' ψ) := by
   intro i hi j' hij'
   have : (L.extend e).d (e.f i) j' = 0 := by
-    apply (L.isZero_extend_X e j' (hi.not_mem hij')).eq_of_tgt
+    apply (L.isZero_extend_X e j' (hi.notMem hij')).eq_of_tgt
   dsimp [homRestrict']
   rw [homRestrict'.f_eq ψ rfl, restrictionXIso, eqToIso_refl, Iso.refl_inv, assoc, assoc]
   dsimp

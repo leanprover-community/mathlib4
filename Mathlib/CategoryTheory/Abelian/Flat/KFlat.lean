@@ -61,7 +61,7 @@ namespace CochainComplex
 open HomologicalComplex
 
 abbrev KFlat := (quasiIso A (.up ℤ)).KFlat
-abbrev ιKFlat : KFlat A ⥤ CochainComplex A ℤ := MorphismProperty.ιKFlat _
+noncomputable abbrev ιKFlat : KFlat A ⥤ CochainComplex A ℤ := MorphismProperty.ιKFlat _
 
 variable {A}
 
@@ -155,9 +155,6 @@ lemma kFlat_iff_preserves_acyclic (K : HomotopyCategory A (.up ℤ)) :
         (_ : subcategoryAcyclic A Z), subcategoryAcyclic A (K ⊗ Z) ∧
           subcategoryAcyclic A (Z ⊗ K) := by
   rw [kFlat_iff_preservesQuasiIso]
-  -- cf #24735
-  change preservesQuasiIso ((curriedTensor _).obj K) ∧
-    preservesQuasiIso ((curriedTensor _).flip.obj K) ↔ _
   simp only [preservesQuasiIso_iff_preserves_acyclic]
   constructor
   · rintro ⟨h₁, h₂⟩ Z hZ
@@ -373,9 +370,9 @@ abbrev R : LocalizerMorphism (HomologicalComplex.quasiIso A (ComplexShape.up ℤ
   functor := HomotopyCategory.quotient _ _
   map _ _ _ _ := by simpa [HomotopyCategory.quotient_map_mem_quasiIso_iff]
 
-abbrev T := (HomologicalComplex.quasiIso A (.up ℤ)).localizerMorphismKFlat
+noncomputable abbrev T := (HomologicalComplex.quasiIso A (.up ℤ)).localizerMorphismKFlat
 
-abbrev B := (HomotopyCategory.quasiIso A (.up ℤ)).localizerMorphismKFlat
+noncomputable abbrev B := (HomotopyCategory.quasiIso A (.up ℤ)).localizerMorphismKFlat
 
 def WL : MorphismProperty (HomologicalComplex.quasiIso A (.up ℤ)).KFlat :=
   (HomologicalComplex.homotopyEquivalences A (.up ℤ)).inverseImage (T A).functor
@@ -392,7 +389,8 @@ instance : (L A).functor.Full where
     obtain ⟨g, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective f
     exact ⟨g, rfl⟩
 
-def iso : (T A).functor ⋙ (R A).functor ≅ (L A).functor ⋙ (B A).functor := Iso.refl _
+noncomputable def iso : (T A).functor ⋙ (R A).functor ≅ (L A).functor ⋙ (B A).functor :=
+  Iso.refl _
 
 variable {A} in
 lemma kFlat_cylinder (K : CochainComplex A ℤ)

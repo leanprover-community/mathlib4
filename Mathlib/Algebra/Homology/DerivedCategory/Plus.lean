@@ -152,7 +152,7 @@ instance : (Qh (C := C)).mapArrow.EssSurj :=
 
 variable {C}
 
-abbrev TStructure.t : TStructure (DerivedCategory.Plus C) :=
+noncomputable abbrev TStructure.t : TStructure (DerivedCategory.Plus C) :=
   (DerivedCategory.TStructure.t (C := C)).plus.tStructure DerivedCategory.TStructure.t
 
 abbrev IsGE (X : Plus C) (n : ℤ) : Prop := Plus.TStructure.t.IsGE X n

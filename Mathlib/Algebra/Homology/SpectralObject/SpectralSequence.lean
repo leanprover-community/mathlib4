@@ -220,7 +220,6 @@ def mkDataE₂CohomologicalFin (l : ℕ) :
     ext
     rw [← Int.ofNat_inj]
     dsimp at h₁ h₂ ⊢
-    simp only [sub_nonneg, tsub_le_iff_right, Nat.cast_add, Nat.cast_one]
     rw [Int.toNat_of_nonneg (by omega)]
     omega
   hc₁₃ r hr := by
@@ -229,7 +228,7 @@ def mkDataE₂CohomologicalFin (l : ℕ) :
     dsimp at h₁ h₂ ⊢
     have : b₂ + (r - 1) = a₂ := by omega
     rw [this]
-    simp only [Int.toNat_ofNat, Fin.clamp]
+    simp only [Int.toNat_natCast, Fin.clamp]
     apply le_antisymm
     · simp only [le_min_iff, le_refl, true_and]
       omega
@@ -711,7 +710,6 @@ lemma kf_w :
       (f₃ data pq' i₁ i₂ hi₁ hi₂) (f₄ data r hr pq' i₂ i₃ hi₂ hi₃) hn₁'
       rfl (by rw [hi₀', data.i₀_prev r r' hrr' hr pq' pq'' h]) hi₀ hi₁ hi₂ hi₃,
       assoc, Iso.inv_hom_id_assoc]
-    dsimp
     erw [EMap_fourδ₁Toδ₀_d_assoc, zero_comp]
   · rw [HomologicalComplex.shape _ _ _ h, comp_zero]
 
@@ -796,7 +794,6 @@ lemma cc_w :
       (by linarith [data.hc r hr pq pq' h]) hi₀ hi₁ (by rw [hi₂, data.hc₀₂ r hr _ _ h])
       (by rw [hi₃, data.hc₁₃ r hr _ _ h]) (by rw [hi₃', data.i₃_next r r' hrr' hr _ _ h]) rfl,
       assoc, assoc, Iso.inv_hom_id_assoc]
-    dsimp
     erw [d_EMap_fourδ₄Toδ₃]
     rw [comp_zero]
   · rw [HomologicalComplex.shape _ _ _ h, zero_comp]

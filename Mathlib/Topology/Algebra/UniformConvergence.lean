@@ -22,7 +22,7 @@ space of continuous linear maps between two topological vector spaces.
 
 ## Implementation notes
 
-Like in `Mathlib.Topology.UniformSpace.UniformConvergenceTopology`, we use the type aliases
+Like in `Mathlib/Topology/UniformSpace/UniformConvergenceTopology.lean`, we use the type aliases
 `UniformFun` (denoted `α →ᵤ β`) and `UniformOnFun` (denoted `α →ᵤ[𝔖] β`) for functions from `α`
 to `β` endowed with the structures of uniform convergence and `𝔖`-convergence.
 
@@ -264,6 +264,26 @@ protected theorem UniformOnFun.hasBasis_nhds_one (𝔖 : Set <| Set α) (h𝔖�
       (fun SV : Set α × Set G => SV.1 ∈ 𝔖 ∧ SV.2 ∈ (𝓝 1 : Filter G)) fun SV =>
       { f : α →ᵤ[𝔖] G | ∀ x ∈ SV.1, f x ∈ SV.2 } :=
   UniformOnFun.hasBasis_nhds_one_of_basis 𝔖 h𝔖₁ h𝔖₂ (basis_sets _)
+
+@[to_additive (attr := simp)]
+lemma UniformOnFun.ofFun_prod {β : Type*} [CommMonoid β] {f : ι → α → β} (I : Finset ι) :
+    ofFun 𝔖 (∏ i ∈ I, f i) = ∏ i ∈ I, ofFun 𝔖 (f i) :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma UniformOnFun.toFun_prod {β : Type*} [CommMonoid β] {f : ι → α → β} (I : Finset ι) :
+    toFun 𝔖 (∏ i ∈ I, f i) = ∏ i ∈ I, toFun 𝔖 (f i) :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma UniformFun.ofFun_prod {β : Type*} [CommMonoid β] {f : ι → α → β} (I : Finset ι) :
+    ofFun (∏ i ∈ I, f i) = ∏ i ∈ I, ofFun (f i) :=
+  rfl
+
+@[to_additive (attr := simp)]
+lemma UniformFun.toFun_prod {β : Type*} [CommMonoid β] {f : ι → α → β} (I : Finset ι) :
+    toFun (∏ i ∈ I, f i) = ∏ i ∈ I, toFun (f i) :=
+  rfl
 
 end Group
 

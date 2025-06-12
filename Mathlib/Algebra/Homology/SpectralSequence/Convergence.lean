@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.SpectralSequence.PageInfinity
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+import Mathlib.Order.Preorder.Finite
 
 /-!
 # Convergence of spectral sequences
@@ -316,11 +317,11 @@ lemma exists_sub_eq (n : σ) (i j : α n) (hij : i ≤ j) :
   have hS' : S.Nonempty := ⟨0, by
     change WithBot.some i ≤ s.sub n j 0
     simpa only [s.sub_zero, WithBot.coe_le_coe] using hij⟩
-  obtain ⟨l, hl, hl'⟩ := Set.Finite.exists_maximal_wrt id S hS hS'
-  refine ⟨l, le_antisymm ?_ hl⟩
+  obtain ⟨l, hl⟩ := Set.Finite.exists_maximalFor id S hS hS'
+  refine ⟨l, le_antisymm ?_ hl.prop⟩
   by_contra!
   rw [lt_iff_le_pred', ← sub_one, s.sub_sub n j l 1 _ rfl] at this
-  have := hl' (l + 1) this (by simp)
+  have := hl.le_of_le this (by simp)
   simp at this
 
 lemma exists_sub_le (n : σ) (i : WithBot (α n)) (j : α n) :

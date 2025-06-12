@@ -182,7 +182,7 @@ noncomputable def leftUnitor : (bifunctor L W).obj ((L').obj (𝟙_ C)) ≅ 𝟭
 lemma leftUnitor_hom_app (X : C) :
     (leftUnitor L W).hom.app ((L').obj X) =
       ((counit L W).app (𝟙_ C)).app X ≫ (L').map (λ_ X).hom := by
-  simpa using Functor.leftDerivedNatTrans_fac_app _ _
+  simpa using Functor.leftDerivedNatTrans_app _ _
       (tensorUnitLeftCounit L W) (L').rightUnitor.hom W
       (whiskerRight (leftUnitorNatIso C).hom (L') ≫ (L').leftUnitor.hom) X
 
@@ -193,7 +193,7 @@ noncomputable def rightUnitor : (bifunctor L W).flip.obj ((L').obj (𝟙_ C)) �
 lemma rightUnitor_hom_app (X : C) :
     (rightUnitor L W).hom.app ((L').obj X) =
       ((counit L W).app X).app (𝟙_ C) ≫ (L').map (ρ_ X).hom := by
-  simpa using Functor.leftDerivedNatTrans_fac_app
+  simpa using Functor.leftDerivedNatTrans_app
     ((bifunctor L W).flip.obj ((L').obj (𝟙_ C))) (𝟭 _)
     (tensorUnitRightCounit L W) (L').rightUnitor.hom W
       (whiskerRight (rightUnitorNatIso C).hom (L') ≫ (L').leftUnitor.hom) X

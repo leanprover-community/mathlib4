@@ -193,7 +193,7 @@ lemma cofanOfIsZeroButOne_ι_self :
     (cofanOfIsZeroButOne X i hX).inj i = 𝟙 _ :=
   dif_pos rfl
 
-def isColimitCofanOfIsZeroButOne :
+noncomputable def isColimitCofanOfIsZeroButOne :
     IsColimit (cofanOfIsZeroButOne X i hX) :=
   mkCofanColimit _ (fun s => s.inj i) (fun s j => by
     by_cases hj : j = i

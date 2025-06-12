@@ -1,119 +1,161 @@
 /-
-Copyright (c) 2024 Joël Riou. All rights reserved.
+Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Predicate
 import Mathlib.CategoryTheory.Functor.KanExtension.Basic
+import Mathlib.CategoryTheory.Localization.Predicate
 
 /-!
-# Left derived functor
+# Left derived functors
+
+In this file, given a functor `F : C ⥤ H`, and `L : C ⥤ D` that is a
+localization functor for `W : MorphismProperty C`, we define
+`F.totalLeftDerived L W : D ⥤ H` as the right Kan extension of `F`
+along `L`: it is defined if the type class `F.HasLeftDerivedFunctor W`
+asserting the existence of a right Kan extension is satisfied.
+(The name `totalLeftDerived` is to avoid name-collision with
+`Functor.leftDerived` which are the left derived functors in
+the context of abelian categories.)
+
+Given `LF : D ⥤ H` and `α : L ⋙ RF ⟶ F`, we also introduce a type class
+`F.IsLeftDerivedFunctor α W` saying that `α` is a right Kan extension of `F`
+along the localization functor `L`.
+
+(This file was obtained by dualizing the results in the file
+`Mathlib.CategoryTheory.Functor.Derived.RightDerived`.)
+
+## References
+
+* https://ncatlab.org/nlab/show/derived+functor
 
 -/
 
 namespace CategoryTheory
 
-open Category Limits
+open Limits
 
 namespace Functor
 
-variable {C D H : Type _} [Category C] [Category D] [Category H]
-  (LF LF' LF'' : H ⥤ D) {F F' F'' : C ⥤ D} (e : F ≅ F') {L : C ⥤ H}
-  (α : L ⋙ LF ⟶ F) (α' : L ⋙ LF' ⟶ F') (α'' : L ⋙ LF'' ⟶ F'') (α'₂ : L ⋙ LF' ⟶ F)
+variable {C C' D D' H H' : Type _} [Category C] [Category C']
+  [Category D] [Category D'] [Category H] [Category H']
+  (LF'' LF' LF : D ⥤ H) {F F' F'' : C ⥤ H} (e : F ≅ F') {L : C ⥤ D}
+  (α'' : L ⋙ LF'' ⟶ F'') (α' : L ⋙ LF' ⟶ F') (α'₂ : L ⋙ LF' ⟶ F) (α : L ⋙ LF ⟶ F)
   (W : MorphismProperty C)
 
-@[mk_iff]
-class IsLeftDerivedFunctor [L.IsLocalization W] : Prop where
-  isRightKanExtension' : LF.IsRightKanExtension α
+/-- A functor `LF : D ⥤ H` is a left derived functor of `F : C ⥤ H`
+if it is equipped with a natural transformation `α : L ⋙ LF ⟶ F`
+which makes it a right Kan extension of `F` along `L`,
+where `L : C ⥤ D` is a localization functor for `W : MorphismProperty C`. -/
+class IsLeftDerivedFunctor (LF : D ⥤ H) {F : C ⥤ H} {L : C ⥤ D} (α : L ⋙ LF ⟶ F)
+    (W : MorphismProperty C) [L.IsLocalization W] : Prop where
+  isRightKanExtension (LF α) : LF.IsRightKanExtension α
 
-lemma IsLeftDerivedFunctor.isRightKanExtension [L.IsLocalization W] [LF.IsLeftDerivedFunctor α W] :
-    LF.IsRightKanExtension α :=
-  IsLeftDerivedFunctor.isRightKanExtension' W
+lemma isLeftDerivedFunctor_iff_isRightKanExtension [L.IsLocalization W] :
+    LF.IsLeftDerivedFunctor α W ↔ LF.IsRightKanExtension α := by
+  constructor
+  · exact fun _ => IsLeftDerivedFunctor.isRightKanExtension LF α W
+  · exact fun h => ⟨h⟩
 
-lemma isLeftDerivedFunctor_iff_of_iso [L.IsLocalization W] (e : LF ≅ LF')
-    (comm : whiskerLeft L e.hom ≫ α'₂ = α) :
-    LF.IsLeftDerivedFunctor α W ↔ LF'.IsLeftDerivedFunctor α'₂ W := by
-  simpa only [isLeftDerivedFunctor_iff] using isRightKanExtension_iff_of_iso e α α'₂ comm
+variable {RF RF'} in
+lemma isLeftDerivedFunctor_iff_of_iso (α' : L ⋙ LF' ⟶ F) (W : MorphismProperty C)
+    [L.IsLocalization W] (e : LF ≅ LF') (comm : whiskerLeft L e.hom ≫ α' = α) :
+    LF.IsLeftDerivedFunctor α W ↔ LF'.IsLeftDerivedFunctor α' W := by
+  simp only [isLeftDerivedFunctor_iff_isRightKanExtension]
+  exact isRightKanExtension_iff_of_iso e _ _ comm
 
 section
 
 variable [L.IsLocalization W] [LF.IsLeftDerivedFunctor α W]
-  [LF'.IsLeftDerivedFunctor α' W] [LF''.IsLeftDerivedFunctor α'' W]
 
-noncomputable def leftDerivedLift (G : H ⥤ D) (β : L ⋙ G ⟶ F) : G ⟶ LF :=
+/-- Constructor for natural transformations to a left derived functor. -/
+noncomputable def leftDerivedLift (G : D ⥤ H) (β : L ⋙ G ⟶ F) : G ⟶ LF :=
   have := IsLeftDerivedFunctor.isRightKanExtension LF α W
   LF.liftOfIsRightKanExtension α G β
 
 @[reassoc (attr := simp)]
-lemma leftDerived_fac (G : H ⥤ D) (β : L ⋙ G ⟶ F) :
+lemma leftDerived_fac (G : D ⥤ H) (β : L ⋙ G ⟶ F) :
     whiskerLeft L (LF.leftDerivedLift α W G β) ≫ α = β :=
   have := IsLeftDerivedFunctor.isRightKanExtension LF α W
   LF.liftOfIsRightKanExtension_fac α G β
 
 @[reassoc (attr := simp)]
-lemma leftDerived_fac_app (G : H ⥤ D) (β : L ⋙ G ⟶ F) (X : C):
-    (LF.leftDerivedLift α W G β).app (L.obj X) ≫ α.app X = β.app X:=
+lemma leftDerived_fac_app (G : D ⥤ H) (β : L ⋙ G ⟶ F) (X : C) :
+    (LF.leftDerivedLift α W G β).app (L.obj X) ≫ α.app X = β.app X :=
   have := IsLeftDerivedFunctor.isRightKanExtension LF α W
   LF.liftOfIsRightKanExtension_fac_app α G β X
 
 include W in
-lemma leftDerived_ext (G : H ⥤ D) (γ₁ γ₂ : G ⟶ LF)
+lemma leftDerived_ext (G : D ⥤ H) (γ₁ γ₂ : G ⟶ LF)
     (hγ : whiskerLeft L γ₁ ≫ α = whiskerLeft L γ₂ ≫ α) : γ₁ = γ₂ :=
   have := IsLeftDerivedFunctor.isRightKanExtension LF α W
   LF.hom_ext_of_isRightKanExtension α γ₁ γ₂ hγ
 
-noncomputable def leftDerivedNatTrans (τ : F ⟶ F') : LF ⟶ LF' :=
-  LF'.leftDerivedLift α' W LF (α ≫ τ)
+/-- The natural transformation `LF' ⟶ LF` on left derived functors that is
+induced by a natural transformation `F' ⟶ F`. -/
+noncomputable def leftDerivedNatTrans (τ : F' ⟶ F) : LF' ⟶ LF :=
+  LF.leftDerivedLift α W LF' (α' ≫ τ)
 
-omit [LF.IsLeftDerivedFunctor α W] in
 @[reassoc (attr := simp)]
-lemma leftDerivedNatTrans_fac (τ : F ⟶ F') :
-    whiskerLeft L (leftDerivedNatTrans LF LF' α α' W τ) ≫ α' =
-    α ≫ τ := by
+lemma leftDerivedNatTrans_fac (τ : F' ⟶ F) :
+    whiskerLeft L (leftDerivedNatTrans LF' LF α' α W τ) ≫ α = α' ≫ τ := by
   dsimp only [leftDerivedNatTrans]
   simp
 
-omit [LF.IsLeftDerivedFunctor α W] in
 @[reassoc (attr := simp)]
-lemma leftDerivedNatTrans_fac_app (τ : F ⟶ F') (X : C) :
-  (leftDerivedNatTrans LF LF' α α' W τ).app (L.obj X) ≫ α'.app X =
-    α.app X ≫ τ.app X := by
+lemma leftDerivedNatTrans_app (τ : F' ⟶ F) (X : C) :
+    (leftDerivedNatTrans LF' LF α' α W τ).app (L.obj X) ≫ α.app X =
+    α'.app X ≫ τ.app X := by
   dsimp only [leftDerivedNatTrans]
   simp
 
 @[simp]
 lemma leftDerivedNatTrans_id :
     leftDerivedNatTrans LF LF α α W (𝟙 F) = 𝟙 LF :=
-  leftDerived_ext LF α W _ _ _ (by aesop_cat)
+  leftDerived_ext LF α W _ _ _ (by simp)
 
-omit [LF.IsLeftDerivedFunctor α W] in
-@[simp]
-lemma leftDerivedNatTrans_comp (τ : F ⟶ F') (τ' : F' ⟶ F'') :
-  leftDerivedNatTrans LF LF' α α' W τ ≫ leftDerivedNatTrans LF' LF'' α' α'' W τ' =
-    leftDerivedNatTrans LF LF'' α α'' W (τ ≫ τ') :=
-  leftDerived_ext LF'' α'' W _ _ _ (by aesop_cat)
+variable [LF'.IsLeftDerivedFunctor α' W]
 
+@[reassoc (attr := simp)]
+lemma leftDerivedNatTrans_comp (τ' : F'' ⟶ F') (τ : F' ⟶ F) :
+    leftDerivedNatTrans LF'' LF' α'' α' W τ' ≫ leftDerivedNatTrans LF' LF α' α W τ =
+    leftDerivedNatTrans LF'' LF α'' α W (τ' ≫ τ) :=
+  leftDerived_ext LF α W _ _ _ (by simp)
+
+/-- The natural isomorphism `LF' ≅ LF` on left derived functors that is
+induced by a natural isomorphism `F' ≅ F`. -/
 @[simps]
-noncomputable def leftDerivedNatIso (τ : F ≅ F') :
-    LF ≅ LF' where
-  hom := leftDerivedNatTrans LF LF' α α' W τ.hom
-  inv := leftDerivedNatTrans LF' LF α' α W τ.inv
+noncomputable def leftDerivedNatIso (τ : F' ≅ F) :
+    LF' ≅ LF where
+  hom := leftDerivedNatTrans LF' LF α' α W τ.hom
+  inv := leftDerivedNatTrans LF LF' α α' W τ.inv
 
-@[simp]
-noncomputable def leftDerivedFunctorUnique [LF'.IsLeftDerivedFunctor α'₂ W] : LF ≅ LF' :=
-  leftDerivedNatIso LF LF' α α'₂ W (Iso.refl F)
+/-- Uniqueness (up to a natural isomorphism) of the left derived functor. -/
+noncomputable abbrev leftDerivedUnique [LF'.IsLeftDerivedFunctor α'₂ W] : LF' ≅ LF :=
+  leftDerivedNatIso LF' LF α'₂ α W (Iso.refl F)
+
+lemma isLeftDerivedFunctor_iff_isIso_leftDerivedLift (G : D ⥤ H) (β : L ⋙ G ⟶ F) :
+    G.IsLeftDerivedFunctor β W ↔ IsIso (LF.leftDerivedLift α W G β) := by
+  rw [isLeftDerivedFunctor_iff_isRightKanExtension]
+  have := IsLeftDerivedFunctor.isRightKanExtension _ α W
+  exact isRightKanExtension_iff_isIso _ α _ (by simp)
 
 end
 
-variable (F L)
+variable (F)
 
+/-- A functor `F : C ⥤ H` has a left derived functor with respect to
+`W : MorphismProperty C` if it has a right Kan extension along
+`W.Q : C ⥤ W.Localization` (or any localization functor `L : C ⥤ D`
+for `W`, see `hasLeftDerivedFunctor_iff`). -/
 class HasLeftDerivedFunctor : Prop where
   hasRightKanExtension' : HasRightKanExtension W.Q F
 
+variable (L)
 variable [L.IsLocalization W]
 
 lemma hasLeftDerivedFunctor_iff :
-    HasLeftDerivedFunctor F W ↔ HasRightKanExtension L F := by
+    F.HasLeftDerivedFunctor W ↔ HasRightKanExtension L F := by
   have : HasLeftDerivedFunctor F W ↔ HasRightKanExtension W.Q F :=
     ⟨fun h => h.hasRightKanExtension', fun h => ⟨h⟩⟩
   rw [this, hasRightExtension_iff_postcomp₁ (Localization.compUniqFunctor W.Q L W) F]
@@ -142,34 +184,40 @@ lemma HasLeftDerivedFunctor.mk' [LF.IsLeftDerivedFunctor α W] :
 
 section
 
-variable [F.HasLeftDerivedFunctor W] (L W)
+variable (F) [F.HasLeftDerivedFunctor W] (L W)
 
-noncomputable def totalLeftDerived : H ⥤ D :=
+/-- Given a functor `F : C ⥤ H`, and a localization functor `L : D ⥤ H` for `W`,
+this is the left derived functor `D ⥤ H` of `F`, i.e. the right Kan extension
+of `F` along `L`. -/
+noncomputable def totalLeftDerived : D ⥤ H :=
   have := HasLeftDerivedFunctor.hasRightKanExtension F L W
   rightKanExtension L F
 
+/-- The canonical natural transformation `L ⋙ F.totalLeftDerived L W ⟶ F`. -/
 noncomputable def totalLeftDerivedCounit : L ⋙ F.totalLeftDerived L W ⟶ F :=
   have := HasLeftDerivedFunctor.hasRightKanExtension F L W
   rightKanExtensionCounit L F
 
-instance : (F.totalLeftDerived L W).IsLeftDerivedFunctor (F.totalLeftDerivedCounit L W) W where
-  isRightKanExtension' := by
+instance : (F.totalLeftDerived L W).IsLeftDerivedFunctor
+    (F.totalLeftDerivedCounit L W) W where
+  isRightKanExtension := by
     dsimp [totalLeftDerived, totalLeftDerivedCounit]
     infer_instance
 
 end
 
 instance [IsIso α] : LF.IsLeftDerivedFunctor α W where
-  isRightKanExtension' :=
+  isRightKanExtension :=
     letI lifting : Localization.Lifting L W F LF := ⟨asIso α⟩
     ⟨⟨IsTerminal.ofUniqueHom
       (fun G => CostructuredArrow.homMk
         (Localization.liftNatTrans L W (L ⋙ G.left) F G.left LF G.hom) (by
           ext X
           dsimp
-          simp only [Localization.liftNatTrans_app, comp_obj, assoc]
+          simp only [Localization.liftNatTrans_app, comp_obj, Category.assoc]
           dsimp [Localization.Lifting.iso, lifting]
-          simp only [NatIso.isIso_inv_app, comp_obj, IsIso.inv_hom_id, comp_id, id_comp]))
+          simp only [NatIso.isIso_inv_app, comp_obj, IsIso.inv_hom_id,
+            Category.comp_id, Category.id_comp]))
       (fun G φ => by
         ext1
         apply Localization.natTrans_ext L W
@@ -179,9 +227,9 @@ instance [IsIso α] : LF.IsLeftDerivedFunctor α W where
         dsimp [Localization.Lifting.iso, lifting]
         simpa using NatTrans.congr_app φ.w X)⟩⟩
 
-example (G : H ⥤ D) : G.IsLeftDerivedFunctor (𝟙 (L ⋙ G)) W := inferInstance
+example (G : D ⥤ H) : G.IsLeftDerivedFunctor (𝟙 (L ⋙ G)) W := inferInstance
 
-instance (G : H ⥤ D) : (L ⋙ G).HasLeftDerivedFunctor W :=
+instance (G : D ⥤ H) : (L ⋙ G).HasLeftDerivedFunctor W :=
   HasLeftDerivedFunctor.mk' G (𝟙 _)
 
 lemma hasLeftDerivedFunctor_of_inverts (F : C ⥤ D) (hF : W.IsInvertedBy F) :
@@ -195,7 +243,7 @@ lemma isIso_leftDerivedFunctor_counit_iff_inverts [LF.IsLeftDerivedFunctor α W]
     exact MorphismProperty.IsInvertedBy.of_iso W (asIso α)
       (MorphismProperty.IsInvertedBy.of_comp W L (Localization.inverts L W) LF)
   · intro hF
-    rw [show α = whiskerLeft L (leftDerivedFunctorUnique LF
+    rw [show α = whiskerLeft L (leftDerivedUnique LF
           (Localization.lift F hF L) α (Localization.fac F hF L).hom W).hom ≫
         (Localization.fac F hF L).hom by simp]
     infer_instance

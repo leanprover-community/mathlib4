@@ -156,7 +156,7 @@ lemma hasPointwiseRightDerivedFunctor_of_inverts
 lemma isRightDerivedFunctor_of_inverts
     [L.IsLocalization W] (F' : D ⥤ H) (e : L ⋙ F' ≅ F) :
     F'.IsRightDerivedFunctor e.inv W where
-  isLeftKanExtension' :=
+  isLeftKanExtension :=
     (isPointwiseLeftKanExtensionOfIso W e.symm).isLeftKanExtension
 
 variable {W} in

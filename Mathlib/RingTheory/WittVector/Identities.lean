@@ -187,12 +187,11 @@ theorem iterate_verschiebung_mul (x y : 𝕎 R) (i j : ℕ) :
   · rw [iterate_add_apply]
   · rw [mul_comm]
 
--- Porting note: `ring_nf` doesn't handle powers yet; needed to add `Nat.pow_succ` rewrite
 theorem iterate_frobenius_coeff (x : 𝕎 R) (i k : ℕ) :
     (frobenius^[i] x).coeff k = x.coeff k ^ p ^ i := by
   induction' i with i ih
   · simp
-  · rw [iterate_succ_apply', coeff_frobenius_charP, ih, Nat.pow_succ]
+  · rw [iterate_succ_apply', coeff_frobenius_charP, ih]
     ring_nf
 
 /-- This is a slightly specialized form of [Hazewinkel, *Witt Vectors*][Haze09] 6.2 equation 5. -/

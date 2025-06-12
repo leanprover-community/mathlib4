@@ -480,7 +480,7 @@ variable (W) in
 /-- The localization functor to the constructed localized category for a morphism property
 that has left calculus of fractions. -/
 @[simps obj]
-def Q : C ⥤ Localization W where
+noncomputable def Q : C ⥤ Localization W where
   obj X := X
   map f := Hom.mk (ofHom W f)
   map_id _ := rfl
@@ -490,7 +490,8 @@ def Q : C ⥤ Localization W where
     simp [ofHom]
 
 /-- The morphism on `Localization W` that is induced by a left fraction. -/
-abbrev homMk {X Y : C} (f : W.LeftFraction X Y) : (Q W).obj X ⟶ (Q W).obj Y := Hom.mk f
+noncomputable abbrev homMk {X Y : C} (f : W.LeftFraction X Y) : (Q W).obj X ⟶ (Q W).obj Y :=
+  Hom.mk f
 
 lemma homMk_eq_hom_mk {X Y : C} (f : W.LeftFraction X Y) : homMk f = Hom.mk f := rfl
 
@@ -516,7 +517,10 @@ lemma homMk_eq_iff_leftFractionRel {X Y : C} (z₁ z₂ : W.LeftFraction X Y) :
     homMk z₁ = homMk z₂ ↔ LeftFractionRel z₁ z₂ :=
   @Equivalence.quot_mk_eq_iff _ _ (equivalenceLeftFractionRel W X Y) _ _
 
-def Qinv {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj Y ⟶ (Q W).obj X := homMk (ofInv s hs)
+/-- The morphism in `Localization W` that is the formal inverse of a morphism
+which belongs to `W`. -/
+noncomputable def Qinv {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj Y ⟶ (Q W).obj X :=
+  homMk (ofInv s hs)
 
 lemma Q_map_comp_Qinv {X Y Y' : C} (f : X ⟶ Y') (s : Y ⟶ Y') (hs : W s) :
     (Q W).map f ≫ Qinv s hs = homMk (mk f s hs) := by
@@ -525,7 +529,7 @@ lemma Q_map_comp_Qinv {X Y Y' : C} (f : X ⟶ Y') (s : Y ⟶ Y') (hs : W s) :
   simp
 
 @[simps]
-def Qiso {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj X ≅ (Q W).obj Y where
+noncomputable def Qiso {X Y : C} (s : X ⟶ Y) (hs : W s) : (Q W).obj X ≅ (Q W).obj Y where
   hom := (Q W).map s
   inv := Qinv s hs
   hom_inv_id := by

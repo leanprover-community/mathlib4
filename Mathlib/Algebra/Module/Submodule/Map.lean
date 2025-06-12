@@ -329,7 +329,7 @@ theorem le_map_of_comap_le_of_surjective (h : q.comap f ≤ p) : q ≤ p.map f :
   map_comap_eq_of_surjective hf q ▸ map_mono h
 
 theorem lt_map_of_comap_lt_of_surjective (h : q.comap f < p) : q < p.map f := by
-  rw [lt_iff_le_not_le] at h ⊢; rw [map_le_iff_le_comap]
+  rw [lt_iff_le_not_ge] at h ⊢; rw [map_le_iff_le_comap]
   exact h.imp_left (le_map_of_comap_le_of_surjective hf)
 
 end GaloisInsertion
@@ -633,6 +633,21 @@ end Submodule
 namespace LinearMap
 
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₁] [Module R M] [Module R M₁]
+
+/-- The `LinearMap` from the preimage of a submodule to itself.
+
+This is the linear version of `AddMonoidHom.addSubmonoidComap`
+and `AddMonoidHom.addSubgroupComap`. -/
+@[simps!]
+def submoduleComap (f : M →ₗ[R] M₁) (q : Submodule R M₁) : q.comap f →ₗ[R] q :=
+  f.restrict fun _ ↦ Submodule.mem_comap.1
+
+theorem submoduleComap_surjective_of_surjective (f : M →ₗ[R] M₁) (q : Submodule R M₁)
+    (hf : Surjective f) : Surjective (f.submoduleComap q) := fun y ↦ by
+  obtain ⟨x, hx⟩ := hf y
+  use ⟨x, Submodule.mem_comap.mpr (hx ▸ y.2)⟩
+  apply Subtype.val_injective
+  simp [hx]
 
 /-- A linear map between two modules restricts to a linear map from any submodule p of the
 domain onto the image of that submodule.

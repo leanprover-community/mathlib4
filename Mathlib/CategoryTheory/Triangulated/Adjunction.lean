@@ -113,8 +113,7 @@ lemma isTriangulated_rightAdjoint [F.IsTriangulated] : G.IsTriangulated where
         simpa [homEquiv_unit, h₁'] using congr_arg (adj.homEquiv _ _).toFun hβ.symm)
     refine isomorphic_distinguished _ mem _ (Iso.symm ?_)
     refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (asIso (adj.homEquiv Z T.obj₃ h)) ?_ ?_ ?_
-    · dsimp
-      simp
+    · simp
     · apply (adj.homEquiv _ _).symm.injective
       dsimp
       simp only [homEquiv_unit, homEquiv_counit, Functor.map_comp, assoc,

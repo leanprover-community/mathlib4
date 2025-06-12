@@ -85,7 +85,7 @@ theorem perm_inv_on_of_perm_on_finite {f : Perm α} {p : α → Prop} [Finite { 
   `Equiv.Perm.subtypePerm`. -/
 abbrev subtypePermOfFintype (f : Perm α) {p : α → Prop} [Finite { x // p x }]
     (h : ∀ x, p x → p (f x)) : Perm { x // p x } :=
-  f.subtypePerm fun x => ⟨h x, fun h₂ => f.inv_apply_self x ▸ perm_inv_on_of_perm_on_finite h h₂⟩
+  f.subtypePerm fun x => ⟨fun h₂ => f.inv_apply_self x ▸ perm_inv_on_of_perm_on_finite h h₂, h x⟩
 
 @[simp]
 theorem subtypePermOfFintype_apply (f : Perm α) {p : α → Prop} [Finite { x // p x }]
@@ -214,9 +214,9 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
         · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1 (τ x)).resolve_right hxτ,
             mem_coe, mem_support]
 
-theorem mem_fixedPoints_iff_apply_mem_of_mem_centralizer {g p : Perm α}
+theorem apply_mem_fixedPoints_iff_mem_of_mem_centralizer {g p : Perm α}
     (hp : p ∈ Subgroup.centralizer {g}) {x : α} :
-    x ∈ Function.fixedPoints g ↔ p x ∈ Function.fixedPoints g :=  by
+    p x ∈ Function.fixedPoints g ↔ x ∈ Function.fixedPoints g :=  by
   simp only [Subgroup.mem_centralizer_singleton_iff] at hp
   simp only [Function.mem_fixedPoints_iff]
   rw [← mul_apply, ← hp, mul_apply, EmbeddingLike.apply_eq_iff_eq]

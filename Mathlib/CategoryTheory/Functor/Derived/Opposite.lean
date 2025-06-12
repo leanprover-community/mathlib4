@@ -29,13 +29,15 @@ variable
 lemma isLeftDerivedFunctor_iff_op :
     F'.IsLeftDerivedFunctor α W ↔
       F'.op.IsRightDerivedFunctor (F := F.op) (L := L.op) (NatTrans.op α) W.op := by
-  rw [isLeftDerivedFunctor_iff, isRightDerivedFunctor_iff,
+  rw [isLeftDerivedFunctor_iff_isRightKanExtension,
+    isRightDerivedFunctor_iff_isLeftKanExtension,
     isRightKanExtension_iff_op]
 
 lemma isRightDerivedFunctor_iff_op :
     F'.IsRightDerivedFunctor β W ↔
       F'.op.IsLeftDerivedFunctor (F := F.op) (L := L.op) (NatTrans.op β) W.op := by
-  rw [isLeftDerivedFunctor_iff, isRightDerivedFunctor_iff,
+  rw [isLeftDerivedFunctor_iff_isRightKanExtension,
+    isRightDerivedFunctor_iff_isLeftKanExtension,
     isLeftKanExtension_iff_op]
 
 instance [F'.IsLeftDerivedFunctor α W] :

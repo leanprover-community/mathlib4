@@ -208,11 +208,9 @@ noncomputable def minusResolutionFunctor : CochainComplex.Minus A ⥤ CochainCom
     exact ⟨i, inferInstance⟩⟩
   map {K L} φ := HomologicalComplex₂.total.map (Λ.bicomplexFunctor.map φ) (ComplexShape.up ℤ)
   map_id K := by
-    dsimp
     erw [Λ.bicomplexFunctor.map_id, HomologicalComplex₂.total.map_id]
     rfl
   map_comp φ ψ := by
-    dsimp
     erw [Λ.bicomplexFunctor.map_comp, HomologicalComplex₂.total.map_comp]
     rfl
 

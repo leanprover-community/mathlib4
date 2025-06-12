@@ -71,7 +71,7 @@ def functorNatOp
       app (n + 1) ≫ G.map (homOfLE (by linarith)).op) : F ⟶ G :=
   NatTrans.leftOp (@functorNat _ _ G.rightOp F.rightOp (fun n => (app n).op) (fun n => by
     dsimp
-    simp only [← op_comp, H]))
+    simp only [← CategoryTheory.op_comp, H]))
 
 @[simp]
 lemma functorNatOp_app (H : ∀ (n : ℕ), F.map (homOfLE (by linarith)).op ≫ app n =
@@ -251,7 +251,6 @@ noncomputable def double : HomologicalComplex C c where
     rintro ⟨rfl, rfl⟩
     exact hij h)
   d_comp_d' i j k _ _ := by
-    dsimp
     by_cases h : i = n₀ ∧ j = n₁
     · rw [dif_pos h]
       by_cases h'' : j = n₀ ∧ k = n₁

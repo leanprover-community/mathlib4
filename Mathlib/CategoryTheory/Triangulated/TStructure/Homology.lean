@@ -225,7 +225,7 @@ class ContainsHeart : Prop where
 
 variable [hS : S.ContainsHeart t]
 
-instance : (S.tStructure t).HasHeart where
+noncomputable instance : (S.tStructure t).HasHeart where
   H := t.Heart
   ι := S.lift t.ιHeart (fun X => hS.subset _ (t.ιHeart_obj_mem X))
   additive_ι := ⟨fun {X Y f g} => S.ι.map_injective (by simp)⟩
@@ -240,7 +240,7 @@ instance : (S.tStructure t).HasHeart where
     · intro hX
       exact ⟨_, ⟨S.ι.preimageIso (t.ιHeartObjHeartMkIso _ hX)⟩⟩
 
-def ιHeartIso : (S.tStructure t).ιHeart ⋙ S.ι ≅ t.ιHeart := Iso.refl _
+noncomputable def ιHeartIso : (S.tStructure t).ιHeart ⋙ S.ι ≅ t.ιHeart := Iso.refl _
 
 variable [t.HasHomology₀]
 
@@ -271,9 +271,9 @@ namespace TStructure
 
 variable (t : TStructure C) [IsTriangulated C]
 
-abbrev tPlus := t.plus.tStructure t
-abbrev tMinus := t.minus.tStructure t
-abbrev tBounded := t.bounded.tStructure t
+noncomputable abbrev tPlus := t.plus.tStructure t
+noncomputable abbrev tMinus := t.minus.tStructure t
+noncomputable abbrev tBounded := t.bounded.tStructure t
 
 section
 
@@ -1083,7 +1083,7 @@ lemma heartShortExactδ_unique (δ : t.ιHeart.obj S.X₃ ⟶ (t.ιHeart.obj S.X
     simpa using h₁.symm
   simpa using h₂.symm
 
-def mapHeartShortExactTriangle {S₁ S₂ : ShortComplex t.Heart} (φ : S₁ ⟶ S₂)
+noncomputable def mapHeartShortExactTriangle {S₁ S₂ : ShortComplex t.Heart} (φ : S₁ ⟶ S₂)
     (hS₁ : S₁.ShortExact) (hS₂ : S₂.ShortExact) :
     t.heartShortExactTriangle S₁ hS₁ ⟶ t.heartShortExactTriangle S₂ hS₂ where
   hom₁ := t.ιHeart.map φ.τ₁

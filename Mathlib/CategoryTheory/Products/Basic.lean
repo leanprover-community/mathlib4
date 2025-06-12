@@ -236,7 +236,7 @@ def prod (F : A ⥤ B) (G : C ⥤ D) : A × C ⥤ B × D where
   map f := (F.map f.1, G.map f.2)
 
 /- Because of limitations in Lean 3's handling of notations, we do not setup a notation `F × G`.
-   You can use `F.prod G` as a "poor man's infix", or just write `functor.prod F G`. -/
+You can use `F.prod G` as a "poor man's infix", or just write `functor.prod F G`. -/
 /-- Similar to `prod`, but both functors start from the same category `A` -/
 @[simps]
 def prod' (F : A ⥤ B) (G : A ⥤ C) : A ⥤ B × C where
@@ -286,7 +286,7 @@ def prod' {F G : A ⥤ B × C} (τ₁ : F ⋙ Prod.fst _ _ ⟶ G ⋙ Prod.fst _ 
     · exact τ₂.naturality f }
 
 /- Again, it is inadvisable in Lean 3 to setup a notation `α × β`;
-   use instead `α.prod β` or `NatTrans.prod α β`. -/
+use instead `α.prod β` or `NatTrans.prod α β`. -/
 
 end NatTrans
 
