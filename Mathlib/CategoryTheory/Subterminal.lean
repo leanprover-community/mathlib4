@@ -111,10 +111,10 @@ to the lattice of open subsets of `X`. More generally, if `C` is a topos, this i
 "external truth values".
 -/
 def Subterminals (C : Type u₁) [Category.{v₁} C] :=
-  FullSubcategory fun A : C => IsSubterminal A
+  ObjectProperty.FullSubcategory fun A : C => IsSubterminal A
 
 instance (C : Type u₁) [Category.{v₁} C] :
-  Category (Subterminals C) := FullSubcategory.category _
+  Category (Subterminals C) := ObjectProperty.FullSubcategory.category _
 
 instance [HasTerminal C] : Inhabited (Subterminals C) :=
   ⟨⟨⊤_ C, isSubterminal_of_terminal⟩⟩
@@ -122,13 +122,13 @@ instance [HasTerminal C] : Inhabited (Subterminals C) :=
 /-- The inclusion of the subterminal objects into the original category. -/
 @[simps!]
 def subterminalInclusion : Subterminals C ⥤ C :=
-  fullSubcategoryInclusion _
+  ObjectProperty.ι _
 
 instance (C : Type u₁) [Category.{v₁} C] : (subterminalInclusion C).Full :=
-  FullSubcategory.full _
+  ObjectProperty.full_ι _
 
 instance (C : Type u₁) [Category.{v₁} C] : (subterminalInclusion C).Faithful :=
-  FullSubcategory.faithful _
+  ObjectProperty.faithful_ι _
 
 instance subterminals_thin (X Y : Subterminals C) : Subsingleton (X ⟶ Y) :=
   ⟨fun f g => Y.2 f g⟩

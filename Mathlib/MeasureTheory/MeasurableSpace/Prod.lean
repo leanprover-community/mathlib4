@@ -85,7 +85,7 @@ lemma MeasurableEmbedding.prodMap {α β γ δ : Type*} {mα : MeasurableSpace �
       simp_rw [Prod.map, ← prod_image_image_eq]
       exact (hg.measurableSet_image.mpr ht₁).prod (hf.measurableSet_image.mpr ht₂)
     | compl s _ ihs =>
-      rw [← range_diff_image (hg.injective.prodMap hf.injective), range_prod_map]
+      rw [← range_diff_image (hg.injective.prodMap hf.injective), range_prodMap]
       exact .diff (.prod hg.measurableSet_range hf.measurableSet_range) ihs
     | iUnion f _ _ ihf =>
       simpa only [image_iUnion] using .iUnion ihf

@@ -3,8 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Topology.Continuous
 import Mathlib.Topology.Defs.Induced
-import Mathlib.Topology.Basic
 
 /-!
 # Ordering on topologies and (co)induced topologies
@@ -218,7 +218,7 @@ theorem IsClosed.mono (hs : IsClosed[t₂] s) (h : t₁ ≤ t₂) : IsClosed[t�
   (@isOpen_compl_iff α s t₁).mp <| hs.isOpen_compl.mono h
 
 theorem closure.mono (h : t₁ ≤ t₂) : closure[t₁] s ⊆ closure[t₂] s :=
-  @closure_minimal _ s (@closure _ t₂ s) t₁ subset_closure (IsClosed.mono isClosed_closure h)
+  @closure_minimal _ t₁ s (@closure _ t₂ s) subset_closure (IsClosed.mono isClosed_closure h)
 
 theorem isOpen_implies_isOpen_iff : (∀ s, IsOpen[t₁] s → IsOpen[t₂] s) ↔ t₂ ≤ t₁ :=
   Iff.rfl
@@ -283,7 +283,7 @@ theorem mem_nhds_discrete {x : α} {s : Set α} :
 end DiscreteTopology
 
 theorem le_of_nhds_le_nhds (h : ∀ x, @nhds α t₁ x ≤ @nhds α t₂ x) : t₁ ≤ t₂ := fun s => by
-  rw [@isOpen_iff_mem_nhds _ _ t₁, @isOpen_iff_mem_nhds α _ t₂]
+  rw [@isOpen_iff_mem_nhds _ t₁, @isOpen_iff_mem_nhds _ t₂]
   exact fun hs a ha => h _ (hs _ ha)
 
 theorem eq_bot_of_singletons_open {t : TopologicalSpace α} (h : ∀ x, IsOpen[t] {x}) : t = ⊥ :=

@@ -3,8 +3,7 @@ Copyright (c) 2021 Hunter Monroe. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hunter Monroe, Kyle Miller, Alena Gusakov
 -/
-import Mathlib.Combinatorics.SimpleGraph.Finite
-import Mathlib.Combinatorics.SimpleGraph.Maps
+import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
 import Mathlib.Data.Fintype.Powerset
 
 /-!
@@ -136,6 +135,9 @@ protected def coe (G' : Subgraph G) : SimpleGraph G'.verts where
   loopless v h := loopless G v (G'.adj_sub h)
 
 @[simp]
+theorem Adj.adj_sub' (G' : Subgraph G) (u v : G'.verts) (h : G'.Adj u v) : G.Adj u v :=
+  G'.adj_sub h
+
 theorem coe_adj_sub (G' : Subgraph G) (u v : G'.verts) (h : G'.coe.Adj u v) : G.Adj u v :=
   G'.adj_sub h
 
@@ -164,7 +166,6 @@ protected def spanningCoe (G' : Subgraph G) : SimpleGraph V where
   symm := G'.symm
   loopless v hv := G.loopless v (G'.adj_sub hv)
 
-@[simp]
 theorem Adj.of_spanningCoe {G' : Subgraph G} {u v : G'.verts} (h : G'.spanningCoe.Adj u v) :
     G.Adj u v :=
   G'.adj_sub h
@@ -255,8 +256,6 @@ theorem mem_verts_of_mem_edge {G' : Subgraph G} {e : Sym2 V} {v : V} (he : e ∈
   rcases Sym2.mem_iff.mp hv with (rfl | rfl)
   · exact G'.edge_vert he
   · exact G'.edge_vert (G'.symm he)
-
-@[deprecated (since := "2024-10-01")] alias mem_verts_if_mem_edge := mem_verts_of_mem_edge
 
 /-- The `incidenceSet` is the set of edges incident to a given vertex. -/
 def incidenceSet (G' : Subgraph G) (v : V) : Set (Sym2 V) := {e ∈ G'.edgeSet | v ∈ e}
@@ -593,7 +592,7 @@ def topEquiv : (⊤ : Subgraph G).coe ≃g G where
 
 /-- The bottom of the `Subgraph G` lattice is equivalent to the empty graph on the empty
 vertex type. -/
-def botEquiv : (⊥ : Subgraph G).coe ≃g (⊥ : SimpleGraph Empty) where
+def botEquiv : (⊥ : Subgraph G).coe ≃g emptyGraph Empty where
   toFun v := v.property.elim
   invFun v := v.elim
   left_inv := fun ⟨_, h⟩ ↦ h.elim
@@ -987,7 +986,7 @@ protected abbrev restrict {G' : G.Subgraph} : G.Subgraph → G'.coe.Subgraph :=
 
 @[simp]
 lemma verts_coeSubgraph {G' : Subgraph G} (G'' : Subgraph G'.coe) :
-    G''.coeSubgraph.verts = (G''.verts : Set V) := rfl
+    (Subgraph.coeSubgraph G'').verts = (G''.verts : Set V) := rfl
 
 lemma coeSubgraph_adj {G' : G.Subgraph} (G'' : G'.coe.Subgraph) (v w : V) :
     (G'.coeSubgraph G'').Adj v w ↔
@@ -1047,7 +1046,7 @@ theorem deleteEdges_verts : (G'.deleteEdges s).verts = G'.verts :=
   rfl
 
 @[simp]
-theorem deleteEdges_adj (v w : V) : (G'.deleteEdges s).Adj v w ↔ G'.Adj v w ∧ ¬s(v, w) ∈ s :=
+theorem deleteEdges_adj (v w : V) : (G'.deleteEdges s).Adj v w ↔ G'.Adj v w ∧ s(v, w) ∉ s :=
   Iff.rfl
 
 @[simp]
@@ -1219,7 +1218,7 @@ theorem deleteVerts_verts : (G'.deleteVerts s).verts = G'.verts \ s :=
   rfl
 
 theorem deleteVerts_adj {u v : V} :
-    (G'.deleteVerts s).Adj u v ↔ u ∈ G'.verts ∧ ¬u ∈ s ∧ v ∈ G'.verts ∧ ¬v ∈ s ∧ G'.Adj u v := by
+    (G'.deleteVerts s).Adj u v ↔ u ∈ G'.verts ∧ u ∉ s ∧ v ∈ G'.verts ∧ v ∉ s ∧ G'.Adj u v := by
   simp [and_assoc]
 
 @[simp]

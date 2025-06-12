@@ -6,7 +6,7 @@ Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 import Mathlib.Data.Set.Prod
 import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.ModelTheory.LanguageMap
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Basics on First-Order Syntax
@@ -31,6 +31,7 @@ This file defines first-order terms, formulas, sentences, and theories in a styl
   above a particular index.
 - `FirstOrder.Language.Term.subst` and `FirstOrder.Language.BoundedFormula.subst` substitute
   variables with given terms.
+- `FirstOrder.Language.Term.substFunc` instead substitutes function definitions with given terms.
 - Language maps can act on syntactic objects with functions such as
   `FirstOrder.Language.LHom.onFormula`.
 - `FirstOrder.Language.Term.constantsVarsEquiv` and
@@ -169,6 +170,10 @@ def Functions.apply₁ (f : L.Functions 1) (t : L.Term α) : L.Term α :=
 def Functions.apply₂ (f : L.Functions 2) (t₁ t₂ : L.Term α) : L.Term α :=
   func f ![t₁, t₂]
 
+/-- The representation of a function symbol as a term, on fresh variables indexed by Fin. -/
+def Functions.term {n : ℕ} (f : L.Functions n) : L.Term (Fin n) :=
+  func f Term.var
+
 namespace Term
 
 /-- Sends a term with constants to a term with extra variables. -/
@@ -236,6 +241,18 @@ def liftAt {n : ℕ} (n' m : ℕ) : L.Term (α ⊕ (Fin n)) → L.Term (α ⊕ (
 def subst : L.Term α → (α → L.Term β) → L.Term β
   | var a, tf => tf a
   | func f ts, tf => func f fun i => (ts i).subst tf
+
+/-- Substitutes the functions in a given term with expressions. -/
+@[simp]
+def substFunc : L.Term α → (∀ {n : ℕ}, L.Functions n → L'.Term (Fin n)) → L'.Term α
+  | var a, _ => var a
+  | func f ts, tf => (tf f).subst fun i ↦ (ts i).substFunc tf
+
+@[simp]
+theorem substFunc_term (t : L.Term α) : t.substFunc Functions.term = t := by
+  induction t
+  · rfl
+  · simp only [substFunc, Functions.term, subst, ‹∀_, _›]
 
 end Term
 
@@ -742,21 +759,21 @@ protected abbrev imp : L.Formula α → L.Formula α → L.Formula α :=
   BoundedFormula.imp
 
 variable (β) in
-/-- `iAlls f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula β` by universally
+/-- `iAlls f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula α` by universally
 quantifying over all variables `Sum.inr _`. -/
 noncomputable def iAlls [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
   let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin β))
   (BoundedFormula.relabel (fun a => Sum.map id e a) φ).alls
 
 variable (β) in
-/-- `iExs f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula β` by existentially
+/-- `iExs f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula α` by existentially
 quantifying over all variables `Sum.inr _`. -/
 noncomputable def iExs [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
   let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin β))
   (BoundedFormula.relabel (fun a => Sum.map id e a) φ).exs
 
 variable (β) in
-/-- `iExsUnique f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula β` by existentially
+/-- `iExsUnique f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula α` by existentially
 quantifying over all variables `Sum.inr _` and asserting that the solution should be unique -/
 noncomputable def iExsUnique [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
   iExs β <| φ ⊓ iAlls β
