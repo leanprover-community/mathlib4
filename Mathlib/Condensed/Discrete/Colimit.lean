@@ -263,10 +263,10 @@ lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u + 1
       isoFinYoneda, locallyConstantIsoFinYoneda, finYoneda_obj, LocallyConstant.toFun_eq_coe,
       NatTrans.comp_app, pointwiseLeftKanExtension_obj, lanPresheafExt_inv, Iso.trans_inv,
       Iso.symm_inv, whiskerLeft_comp, lanPresheafNatIso_hom_app, Opposite.op_unop, colimit.map_desc,
-      id_eq, Functor.comp_map, op_map, colimit.ι_desc, Cocones.precompose_obj_pt,
-      Profinite.Extend.cocone_pt, Cocones.precompose_obj_ι, Category.assoc, const_obj_obj,
-      whiskerLeft_app, NatIso.ofComponents_hom_app, NatIso.ofComponents_inv_app,
-      Profinite.Extend.cocone_ι_app, counitApp, colimit.ι_desc_assoc]
+      colimit.ι_desc, Cocones.precompose_obj_pt, Profinite.Extend.cocone_pt,
+      Cocones.precompose_obj_ι, Category.assoc, const_obj_obj, whiskerLeft_app,
+      NatIso.ofComponents_hom_app, NatIso.ofComponents_inv_app, Profinite.Extend.cocone_ι_app,
+      counitApp, colimit.ι_desc_assoc]
   erw [(counitApp.{u, u + 1} X).naturality]
   simp only [← Category.assoc]
   congr
@@ -537,10 +537,10 @@ lemma isoLocallyConstantOfIsColimit_inv (X : LightProfinite.{u}ᵒᵖ ⥤ Type u
       isoFinYoneda, locallyConstantIsoFinYoneda, finYoneda_obj, LocallyConstant.toFun_eq_coe,
       NatTrans.comp_app, pointwiseLeftKanExtension_obj, lanPresheafExt_inv, Iso.trans_inv,
       Iso.symm_inv, whiskerLeft_comp, lanPresheafNatIso_hom_app, Opposite.op_unop, colimit.map_desc,
-      id_eq, Functor.comp_map, op_map, colimit.ι_desc, Cocones.precompose_obj_pt,
-      LightProfinite.Extend.cocone_pt, Cocones.precompose_obj_ι, Category.assoc, const_obj_obj,
-      whiskerLeft_app, NatIso.ofComponents_hom_app, NatIso.ofComponents_inv_app,
-      LightProfinite.Extend.cocone_ι_app, counitApp, colimit.ι_desc_assoc]
+      colimit.ι_desc, Cocones.precompose_obj_pt, LightProfinite.Extend.cocone_pt,
+      Cocones.precompose_obj_ι, Category.assoc, const_obj_obj, whiskerLeft_app,
+      NatIso.ofComponents_hom_app, NatIso.ofComponents_inv_app, LightProfinite.Extend.cocone_ι_app,
+      counitApp, colimit.ι_desc_assoc]
   erw [(counitApp.{u, u} X).naturality]
   simp only [← Category.assoc]
   congr

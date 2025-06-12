@@ -27,10 +27,10 @@ The file sets up the (semi)ring structure on univariate power series.
 We provide the natural inclusion from polynomials to formal power series.
 
 Additional results can be found in:
-* `Mathlib.RingTheory.PowerSeries.Trunc`, truncation of power series;
-* `Mathlib.RingTheory.PowerSeries.Inverse`, about inverses of power series,
+* `Mathlib/RingTheory/PowerSeries/Trunc.lean`, truncation of power series;
+* `Mathlib/RingTheory/PowerSeries/Inverse.lean`, about inverses of power series,
   and the fact that power series over a local ring form a local ring;
-* `Mathlib.RingTheory.PowerSeries.Order`, the order of a power series at 0,
+* `Mathlib/RingTheory/PowerSeries/Order.lean`, the order of a power series at 0,
   and application to the fact that power series over an integral domain form an integral domain.
 
 ## Implementation notes

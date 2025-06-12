@@ -66,9 +66,12 @@ variable (X : LocallyRingedSpace.{u})
 def toΓSpecFun : X → PrimeSpectrum (Γ.obj (op X)) := fun x =>
   comap (X.presheaf.Γgerm x).hom (IsLocalRing.closedPoint (X.presheaf.stalk x))
 
-theorem not_mem_prime_iff_unit_in_stalk (r : Γ.obj (op X)) (x : X) :
+theorem notMem_prime_iff_unit_in_stalk (r : Γ.obj (op X)) (x : X) :
     r ∉ (X.toΓSpecFun x).asIdeal ↔ IsUnit (X.presheaf.Γgerm x r) := by
   simp [toΓSpecFun, IsLocalRing.closedPoint]
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_prime_iff_unit_in_stalk := notMem_prime_iff_unit_in_stalk
 
 /-- The preimage of a basic open in `Spec Γ(X)` under the unit is the basic
 open in `X` defined by the same element (they are equal as sets). -/
@@ -78,7 +81,7 @@ theorem toΓSpec_preimage_basicOpen_eq (r : Γ.obj (op X)) :
       dsimp
       simp only [Set.mem_preimage, SetLike.mem_coe]
       rw [X.toRingedSpace.mem_top_basicOpen]
-      exact not_mem_prime_iff_unit_in_stalk ..
+      exact notMem_prime_iff_unit_in_stalk ..
 
 /-- `toΓSpecFun` is continuous. -/
 theorem toΓSpec_continuous : Continuous X.toΓSpecFun := by
@@ -216,7 +219,7 @@ def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
     apply isUnit_of_mul_isUnit_left (y := t')
     rw [he]
     refine IsLocalization.map_units S (⟨r, ?_⟩ : p.asIdeal.primeCompl)
-    apply (not_mem_prime_iff_unit_in_stalk _ _ _).mpr
+    apply (notMem_prime_iff_unit_in_stalk _ _ _).mpr
     rw [← toStalk_stalkMap_toΓSpec, CommRingCat.comp_apply]
     erw [← he]
     rw [RingHom.map_mul]
