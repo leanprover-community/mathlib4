@@ -1241,32 +1241,48 @@ lemma quotient_norm_eq_norm (f: LipschitzH (G := G)): ‖(Submodule.Quotient.mk 
 noncomputable instance GL_W_opNorm : Norm (GL_W (G := G)) where
   norm := fun f => ‖f.val‖
 
+-- noncomputable instance GL_W_psuedoMetric: PseudoMetricSpace (GL_W (G := G)) := PseudoMetricSpace.ofDistTopology
+--   (dist := fun f g => ‖f.val - g.val‖)
+--   (dist_self := by simp)
+--   (dist_comm := by
+--     intro x y
+--     simp
+--     conv =>
+--       rhs
+--       arg 1
+--       equals -(x.val - y.val) =>
+--         simp
+--     rw [ContinuousLinearMap.opNorm_neg]
+--   )
+--   sorry
+--   sorry
+
 -- Unfortunately, we cannot use 'NormedGroup', since we have a multiplicate group,
 -- but we want our distance function to be ‖f - g‖, not ‖f * g⁻¹‖
-noncomputable instance GL_W_psuedoMetric: PseudoMetricSpace (GL_W (G := G)) where
-  dist := fun f g => ‖f.val - g.val‖
-  dist_self := by
-    simp
-  dist_comm := by
-    intro x y
-    conv =>
-      rhs
-      arg 1
-      equals -(x.val - y.val) =>
-        simp
-    rw [ContinuousLinearMap.opNorm_neg]
-  dist_triangle := by
-    intro x y z
-    conv =>
-      lhs
-      arg 1
-      equals (x.val - y.val + y.val - z.val) =>
-        simp
+-- noncomputable instance GL_W_psuedoMetric: PseudoMetricSpace (GL_W (G := G)) where
+--   dist := fun f g => ‖f.val - g.val‖
+--   dist_self := by
+--     simp
+--   dist_comm := by
+--     intro x y
+--     conv =>
+--       rhs
+--       arg 1
+--       equals -(x.val - y.val) =>
+--         simp
+--     rw [ContinuousLinearMap.opNorm_neg]
+--   dist_triangle := by
+--     intro x y z
+--     conv =>
+--       lhs
+--       arg 1
+--       equals (x.val - y.val + y.val - z.val) =>
+--         simp
 
-    have triangle := ContinuousLinearMap.opNorm_add_le (f := x.val - y.val) (g := y.val - z.val)
-    field_simp at triangle
-    field_simp
-    exact triangle
+--     have triangle := ContinuousLinearMap.opNorm_add_le (f := x.val - y.val) (g := y.val - z.val)
+--     field_simp at triangle
+--     field_simp
+--     exact triangle
 
 -- noncomputable instance GL_W_NormedGroup : SeminormedGroup (GL_W (G := G)) := {
 --   norm := GL_W_opNorm.norm,
@@ -1300,7 +1316,7 @@ lemma GLW_preseves_norm (g: G) (w: W (G := G)): ‖(GRepW (G := G) (GRepW_base g
   rw [quotient_norm_eq_norm]
 
 -- We want the topology to come from our metric space 'GL_W_psuedoMetric', not from the units
-attribute [-instance] Units.instTopologicalSpaceUnits
+--attribute [-instance] Units.instTopologicalSpaceUnits
 -- The image of G under our representation: ρ(G) in the Vikman paper
 noncomputable def rho_g := ((GRepW (G := G)).restrict ((GRepW_base (G := G)).range)).range
 
@@ -1341,47 +1357,72 @@ def isembedding_units_val := Units.isEmbedding_val_mk' (M := (W (G := G) →L[�
 )
 --   apply FiniteDimensional.proper_rclike (K := ℂ)
 
+--#synth Bornology (GL_W (G := G))
+
+set_option maxHeartbeats 500000
+
 -- In the Vikman paper, rho_g is precompact, and the closure of rho_g is a compact subgroup
 -- LinearMap.finiteDimensional
 theorem compact_rho_g: IsCompact (rho_g_closure (G := G)) := by
-  unfold rho_g_closure rho_g
-  rw [Topology.IsEmbedding.isCompact_iff isembedding_units_val]
-  let val := Units.val (α := (W (G := G) →L[ℂ] W (G := G)))
-  have units_val_openMap := (Units.isOpenMap_val (R := (W (G := G) →L[ℂ] W (G := G))))
-  have units_val_openMap := (Units.isEmbedding_val₀ (G₀ := (W (G := G) →L[ℂ] W (G := G))))
+  --unfold rho_g_closure rho_g
+  unfold rho_g_closure
+  rw [Topology.IsEmbedding.isCompact_iff (isembedding_units_val (G := G))]
+
+  -- rw [Topology.IsEmbedding.closure_eq_preimage_closure_image (isembedding_units_val (G := G))]
+
+  -- apply Topology.IsClosedEmbedding.isCompact_preimage
+  -- . apply Continuous.isClosedEmbedding
+  -- apply IsCompact.preimage_continuous
+
+
+  have compact_closure_of: IsCompact (_root_.closure (Units.val '' _root_.closure (rho_g (G := G)).carrier)) := by
+    rw [closure_image_closure (by exact Units.continuous_val)]
+    apply Bornology.IsBounded.isCompact_closure
+    rw [Metric.isBounded_iff]
+    use 2
+    intro p hp q hq
+    rw [Set.mem_image] at hp
+    rw [Set.mem_image] at hq
+    simp [rho_g] at hp
+    simp [rho_g] at hq
+    obtain ⟨a, p_eq_a_rep⟩ := hp
+    obtain ⟨b, q_eq_b_rep⟩ := hq
+    simp [dist]
+    rw [ContinuousLinearMap.seminorm]
+    apply csInf_le (by
+      simp [BddBelow]
+      apply Set.nonempty_of_mem (x := 0)
+      rw [mem_lowerBounds]
+      simp
+      intro x hx _
+      exact hx
+    )
+    simp
+    intro x
+    rw [sub_eq_add_neg]
+    have norm_triangle := norm_add_le (p x) (- q x)
+    simp only [norm_neg] at norm_triangle
+    rw [← p_eq_a_rep, ← q_eq_b_rep] at norm_triangle
+    rw [GLW_preseves_norm] at norm_triangle
+    rw [GLW_preseves_norm] at norm_triangle
+    rw [two_mul]
+    rw [p_eq_a_rep] at norm_triangle
+    rw [q_eq_b_rep] at norm_triangle
+    exact norm_triangle
+
+
+  --have foo := Topology.IsEmbedding.isCompact_iff (isembedding_units_val (G := G))
+
+  --rw [Topology.IsEmbedding.isCompact_iff isembedding_units_val]
+  --let val := Units.val (α := (W (G := G) →L[ℂ] W (G := G)))
+  --have units_val_openMap := (Units.isOpenMap_val (R := (W (G := G) →L[ℂ] W (G := G))))
+  --have units_val_openMap := (Units.isEmbedding_val₀ (G₀ := (W (G := G) →L[ℂ] W (G := G))))
   --have compact_iff := Topology.IsEmbedding.isCompact_iff (X := GL_W (G := G))
   --  (Y := (W (G := G) →L[ℂ] W (G := G))) (f := Units.val (α := (W (G := G) →L[ℂ] W (G := G)))) (Units.isOpenMap_val (R := (W (G := G) →L[ℂ] W (G := G))))
-  rw [Topology.IsEmbedding.isCompact_iff Units.isEmbedding_val₀]
-  apply Bornology.IsBounded.isCompact_closure
-  rw [Metric.isBounded_iff]
-  use 2
-  intro p hp q hq
-  simp at hp
-  simp at hq
-  obtain ⟨a, p_eq_a_rep⟩ := hp
-  obtain ⟨b, q_eq_b_rep⟩ := hq
-  simp [dist]
-  rw [ContinuousLinearMap.norm_def]
-  apply csInf_le (by
-    simp [BddBelow]
-    apply Set.nonempty_of_mem (x := 0)
-    rw [mem_lowerBounds]
-    simp
-    intro x hx _
-    exact hx
-  )
-  simp
-  intro x
-  rw [sub_eq_add_neg]
-  have norm_triangle := norm_add_le (p.val x) (- q.val x)
-  simp only [norm_neg] at norm_triangle
-  rw [← p_eq_a_rep, ← q_eq_b_rep] at norm_triangle
-  rw [GLW_preseves_norm] at norm_triangle
-  rw [GLW_preseves_norm] at norm_triangle
-  rw [two_mul]
-  rw [p_eq_a_rep] at norm_triangle
-  rw [q_eq_b_rep] at norm_triangle
-  exact norm_triangle
+  --rw [Topology.IsEmbedding.isCompact_iff Units.isEmbedding_val₀]
+
+
+
 
 
 -- Section 3.3 in Vikmanm, "Construction of a representation"
@@ -2196,7 +2237,6 @@ structure PreservesProd (T: Type*) (l h: List G) (γ: G) where
   prod_eq: l.prod = h.prod
   same_sum: (l.map (fun s => if s = γ then 1 else 0)).sum = (h.map (fun s => if s = γ then 1 else 0)).sum
 
-set_option maxHeartbeats 500000
 
 abbrev countElemOrInv {T: Type*} [ht: Group T] [heq: DecidableEq T] {E: Set T} (l: List E) (γ: T): ℤ := (l.map (fun (s: E) => if s = γ then 1 else if s = γ⁻¹ then -1 else 0)).sum
 abbrev isElemOrInv {T: Type*} [ht: Group T] [heq: DecidableEq T] (g: T): T → Bool := fun a => decide (a = g ∨ a = g⁻¹)
