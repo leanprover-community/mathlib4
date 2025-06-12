@@ -550,7 +550,7 @@ jobs:
       # Combine the output from the previous action with the metadata supplied by GitHub itself.
       - id: PR
         shell: bash
-        runs: |
+        run: |
           echo "number=${{ steps.PR_from_push.outputs.number || github.event.pull_request.number }}" >> $GITHUB_OUTPUT
           echo "pr_labels=${{ steps.PR_from_push.outputs.pr_labels || github.event.pull_request.labels }}" >> $GITHUB_OUTPUT
 
