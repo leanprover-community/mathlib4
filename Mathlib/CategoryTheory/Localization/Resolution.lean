@@ -24,11 +24,11 @@ Similar definitions are done from left resolutions.
 ## Future works
 
 * formalize right derivability structures as localizer morphisms admitting right resolutions
-and forming a Guitart exact square, as it is defined in
-[the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008] (TODO @joelriou)
+  and forming a Guitart exact square, as it is defined in
+  [the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008] (TODO @joelriou)
 * show that if `C` is an abelian category with enough injectives, there is a derivability
-structure associated to the inclusion of the full subcategory of complexes of injective
-objects into the bounded below homotopy category of `C` (TODO @joelriou)
+  structure associated to the inclusion of the full subcategory of complexes of injective
+  objects into the bounded below homotopy category of `C` (TODO @joelriou)
 * formalize dual results
 
 ## References

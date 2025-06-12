@@ -66,7 +66,7 @@ theorem ppred_eq_none : ∀ {n : ℕ}, ppred n = none ↔ n = 0
 theorem psub_eq_some {m : ℕ} : ∀ {n k}, psub m n = some k ↔ k + n = m
   | 0, k => by simp [eq_comm]
   | n + 1, k => by
-    apply Option.bind_eq_some.trans
+    apply Option.bind_eq_some_iff.trans
     simp only [psub_eq_some, ppred_eq_some]
     simp [add_comm, add_left_comm]
 

@@ -635,7 +635,9 @@ theorem mem_support_iff : n ∈ p.support ↔ p.coeff n ≠ 0 := by
   rcases p with ⟨⟩
   simp
 
-theorem not_mem_support_iff : n ∉ p.support ↔ p.coeff n = 0 := by simp
+theorem notMem_support_iff : n ∉ p.support ↔ p.coeff n = 0 := by simp
+
+@[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
 
 theorem coeff_C : coeff (C a) n = ite (n = 0) a 0 := by
   convert coeff_monomial (a := a) (m := n) (n := 0) using 2
