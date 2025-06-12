@@ -971,7 +971,8 @@ theorem IndepFun.map_mul_eq_map_mconv_map₀
 @[to_additive]
 theorem IndepFun.map_mul_eq_map_mconv_map
     [IsFiniteMeasure μ] {f g : Ω → M} (hf : Measurable f) (hg : Measurable g)
-    (hfg : IndepFun f g μ) : μ.map (f * g) = (μ.map f) ∗ₘ (μ.map g) :=
+    (hfg : IndepFun f g μ) :
+    μ.map (f * g) = (μ.map f) ∗ₘ (μ.map g) :=
   hfg.map_mul_eq_map_mconv_map₀ hf.aemeasurable hg.aemeasurable
 
 end Monoid
