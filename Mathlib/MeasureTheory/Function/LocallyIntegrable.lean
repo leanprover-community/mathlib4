@@ -509,7 +509,8 @@ theorem MonotoneOn.memLp_top (hmono : MonotoneOn f s) {a b : X}
 alias MonotoneOn.memℒp_top := MonotoneOn.memLp_top
 
 theorem MonotoneOn.memLp_of_measure_ne_top (hmono : MonotoneOn f s) {a b : X}
-    (ha : IsLeast s a) (hb : IsGreatest s b) (hs : μ s ≠ ∞) (h's : MeasurableSet s) :
+    (ha : IsLeast s a) (hb : IsGreatest s b)
+    (hs : μ s ≠ ∞ := by finiteness) (h's : MeasurableSet s) :
     MemLp f p (μ.restrict s) :=
   (hmono.memLp_top ha hb h's).mono_exponent_of_measure_support_ne_top (s := univ)
     (by simp) (by simpa using hs) le_top
@@ -536,7 +537,8 @@ theorem AntitoneOn.memLp_top (hanti : AntitoneOn f s) {a b : X}
 alias AntitoneOn.memℒp_top := AntitoneOn.memLp_top
 
 theorem AntitoneOn.memLp_of_measure_ne_top (hanti : AntitoneOn f s) {a b : X}
-    (ha : IsLeast s a) (hb : IsGreatest s b) (hs : μ s ≠ ∞) (h's : MeasurableSet s) :
+    (ha : IsLeast s a) (hb : IsGreatest s b)
+    (hs : μ s ≠ ∞ := by finiteness) (h's : MeasurableSet s) :
     MemLp f p (μ.restrict s) :=
   MonotoneOn.memLp_of_measure_ne_top (E := Eᵒᵈ) hanti ha hb hs h's
 
@@ -551,7 +553,8 @@ theorem AntitoneOn.memLp_isCompact [IsFiniteMeasureOnCompacts μ] (hs : IsCompac
 alias AntitoneOn.memℒp_isCompact := AntitoneOn.memLp_isCompact
 
 theorem MonotoneOn.integrableOn_of_measure_ne_top (hmono : MonotoneOn f s) {a b : X}
-    (ha : IsLeast s a) (hb : IsGreatest s b) (hs : μ s ≠ ∞) (h's : MeasurableSet s) :
+    (ha : IsLeast s a) (hb : IsGreatest s b)
+    (hs : μ s ≠ ∞ := by finiteness) (h's : MeasurableSet s) :
     IntegrableOn f s μ :=
   memLp_one_iff_integrable.1 (hmono.memLp_of_measure_ne_top ha hb hs h's)
 
@@ -560,7 +563,8 @@ theorem MonotoneOn.integrableOn_isCompact [IsFiniteMeasureOnCompacts μ] (hs : I
   memLp_one_iff_integrable.1 (hmono.memLp_isCompact hs)
 
 theorem AntitoneOn.integrableOn_of_measure_ne_top (hanti : AntitoneOn f s) {a b : X}
-    (ha : IsLeast s a) (hb : IsGreatest s b) (hs : μ s ≠ ∞) (h's : MeasurableSet s) :
+    (ha : IsLeast s a) (hb : IsGreatest s b)
+    (hs : μ s ≠ ∞ := by finiteness) (h's : MeasurableSet s) :
     IntegrableOn f s μ :=
   memLp_one_iff_integrable.1 (hanti.memLp_of_measure_ne_top ha hb hs h's)
 
