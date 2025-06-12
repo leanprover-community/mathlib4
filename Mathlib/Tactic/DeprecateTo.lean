@@ -6,7 +6,7 @@ Authors: Damiano Testa
 import Lean.Meta.Tactic.TryThis
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Lemma
-import Std.Time
+import Std.Time.Format
 
 /-!
 #  `deprecate to` -- a deprecation tool
