@@ -74,7 +74,7 @@ variable {C}
 lemma of_eq_of_iso {X Y : C} (e : X ≅ Y) :
     of X = of Y := by
   simpa using additivity (ShortComplex.mk (0 : 0 ⟶ X) e.hom zero_comp)
-    (shortExact_of_isZero_of_isIso _ (isZero_zero C) (by dsimp ; infer_instance))
+    (shortExact_of_isZero_of_isIso _ (isZero_zero C) (by dsimp; infer_instance))
 
 end GrothendieckGroup
 
