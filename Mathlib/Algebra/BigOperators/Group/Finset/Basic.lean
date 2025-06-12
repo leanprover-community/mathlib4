@@ -183,10 +183,10 @@ theorem prod_disjSum (s : Finset ι) (t : Finset κ) (f : ι ⊕ κ → M) :
   rw [← map_inl_disjUnion_map_inr, prod_disjUnion, prod_map, prod_map]
   rfl
 
-@[deprecated sum_disjSum (since := "2025-06-11")]
+@[deprecated (since := "2025-06-11")]
 alias sum_disj_sum := sum_disjSum
 
-@[to_additive existing, deprecated prod_disjSum (since := "2025-06-11")]
+@[to_additive existing, deprecated (since := "2025-06-11")]
 alias prod_disj_sum := prod_disjSum
 
 @[to_additive]

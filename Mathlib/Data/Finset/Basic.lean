@@ -377,7 +377,7 @@ theorem filter_disjUnion (s : Finset α) (t : Finset α) (h : Disjoint s t) :
     filter p (disjUnion s t h) = (filter p s).disjUnion (filter p t) (disjoint_filter_filter h) :=
   eq_of_veq <| Multiset.filter_add _ _ _
 
-@[deprecated filter_disjUnion (since := "2025-06-11")]
+@[deprecated (since := "2025-06-11")]
 alias filter_disj_union := filter_disjUnion
 
 theorem filter_cons {a : α} (s : Finset α) (ha : a ∉ s) :
