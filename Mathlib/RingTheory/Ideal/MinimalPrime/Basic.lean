@@ -124,6 +124,12 @@ theorem Ideal.minimalPrimes_eq_subsingleton_self [I.IsPrime] : I.minimalPrimes =
   · rintro (rfl : J = I)
     exact ⟨⟨inferInstance, rfl.le⟩, fun _ h _ => h.2⟩
 
+variable (R) in
+theorem IsDomain.minimalPrimes_eq_singleton_bot [IsDomain R] :
+    minimalPrimes R = {⊥} :=
+  have := Ideal.bot_prime (α := R)
+  Ideal.minimalPrimes_eq_subsingleton_self
+
 end
 
 section

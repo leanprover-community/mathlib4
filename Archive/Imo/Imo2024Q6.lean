@@ -203,7 +203,7 @@ lemma apply_fExample_add_apply_of_fract_le {x y : ℚ} (h : Int.fract y ≤ Int.
 
 lemma aquaesulian_fExample : Aquaesulian fExample := by
   intro x y
-  rcases lt_or_le (Int.fract x) (Int.fract y) with h | h
+  rcases lt_or_ge (Int.fract x) (Int.fract y) with h | h
   · rw [add_comm (fExample x), add_comm x]
     exact .inr (apply_fExample_add_apply_of_fract_le h.le)
   · exact .inl (apply_fExample_add_apply_of_fract_le h)

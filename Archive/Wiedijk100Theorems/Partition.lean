@@ -337,8 +337,9 @@ theorem same_gf [Field α] (m : ℕ) :
     (partialOddGF m * (range m).prod fun i => 1 - (X : PowerSeries α) ^ (m + i + 1)) =
       partialDistinctGF m := by
   rw [partialOddGF, partialDistinctGF]
-  induction' m with m ih
-  · simp
+  induction m with
+  | zero => simp
+  | succ m ih => ?_
   set! π₀ : PowerSeries α := ∏ i ∈ range m, (1 - X ^ (m + 1 + i + 1)) with hπ₀
   set! π₁ : PowerSeries α := ∏ i ∈ range m, (1 - X ^ (2 * i + 1))⁻¹ with hπ₁
   set! π₂ : PowerSeries α := ∏ i ∈ range m, (1 - X ^ (m + i + 1)) with hπ₂
