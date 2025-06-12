@@ -12,7 +12,8 @@ import Mathlib.CategoryTheory.FiberedCategory.HomLift
 This file defines cocartesian resp. strongly cocartesian morphisms with respect to a functor
 `p : 𝒳 ⥤ 𝒮`.
 
-This file has been adapted from `FiberedCategory/Cartesian`, please try to change them in sync.
+This file has been adapted from `Mathlib/CategoryTheory/FiberedCategory/Cartesian.lean`,
+please try to change them in sync.
 
 ## Main definitions
 

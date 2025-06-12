@@ -3,10 +3,9 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Lu-Ming Zhang
 -/
-import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
-import Mathlib.LinearAlgebra.Matrix.Trace
 import Mathlib.LinearAlgebra.Matrix.Symmetric
+import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
 # Adjacency Matrices
@@ -38,7 +37,7 @@ properties to computational properties of the matrix.
 
 open Matrix
 
-open Finset Matrix SimpleGraph
+open Finset SimpleGraph
 
 variable {V α : Type*}
 
@@ -128,8 +127,6 @@ end IsAdjMatrix
 end Compl
 
 end Matrix
-
-open Matrix
 
 namespace SimpleGraph
 

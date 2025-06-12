@@ -28,7 +28,7 @@ the data that is not used for the construction of the homotopy category) and the
 analogously defined `SSet.hoFunctor₂ : SSet.Truncated.{u} 2 ⥤ Cat.{u,u}` implemented relative to
 the syntax of the 2-truncated simplex category.
 
-In the file `Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction` we show the functor
+In the file `Mathlib/AlgebraicTopology/SimplicialSet/NerveAdjunction.lean` we show the functor
 `SSet.hoFunctor` to be left adjoint to the nerve by providing an analogous decomposition of the
 nerve functor, made by possible by the fact that nerves of categories are 2-coskeletal, and then
 composing a pair of adjunctions, which factor through the category of 2-truncated simplicial sets.

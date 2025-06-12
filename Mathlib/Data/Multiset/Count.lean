@@ -166,8 +166,10 @@ theorem one_le_count_iff_mem {a : α} {s : Multiset α} : 1 ≤ count a s ↔ a 
   rw [succ_le_iff, count_pos]
 
 @[simp]
-theorem count_eq_zero_of_not_mem {a : α} {s : Multiset α} (h : a ∉ s) : count a s = 0 :=
+theorem count_eq_zero_of_notMem {a : α} {s : Multiset α} (h : a ∉ s) : count a s = 0 :=
   by_contradiction fun h' => h <| count_pos.1 (Nat.pos_of_ne_zero h')
+
+@[deprecated (since := "2025-05-23")] alias count_eq_zero_of_not_mem := count_eq_zero_of_notMem
 
 lemma count_ne_zero {a : α} : count a s ≠ 0 ↔ a ∈ s := Nat.pos_iff_ne_zero.symm.trans count_pos
 
@@ -232,7 +234,7 @@ theorem count_eq_of_nodup [DecidableEq α] {a : α} {s : Multiset α} (d : Nodup
     count a s = if a ∈ s then 1 else 0 := by
   split_ifs with h
   · exact count_eq_one_of_mem d h
-  · exact count_eq_zero_of_not_mem h
+  · exact count_eq_zero_of_notMem h
 
 end Nodup
 

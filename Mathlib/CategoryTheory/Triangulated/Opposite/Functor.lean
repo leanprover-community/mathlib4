@@ -170,7 +170,7 @@ noncomputable def mapTriangleOpCompTriangleOpEquivalenceFunctorApp (T : Triangle
     (triangleOpEquivalence D).functor.obj (op (F.mapTriangle.obj T)) ≅
       F.op.mapTriangle.obj ((triangleOpEquivalence C).functor.obj (op T)) :=
   Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
-    (by dsimp; simp) (by dsimp; simp) (by
+    (by simp) (by simp) (by
       dsimp
       simp only [map_comp, shift_map_op, map_id, comp_id, op_comp, op_unop,
         map_opShiftFunctorEquivalence_counitIso_inv_app_unop,

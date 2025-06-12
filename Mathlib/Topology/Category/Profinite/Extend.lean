@@ -19,8 +19,8 @@ epimorphic for all `i`. Then `G.obj S` is isomorphic to a limit indexed by
 We also provide the dual result for a functor of the form `G : Profiniteᵒᵖ ⥤ C`.
 
 We apply this to define `Profinite.diagram'`, `Profinite.asLimitCone'`, and `Profinite.asLimit'`,
-analogues to their unprimed versions in `Mathlib.Topology.Category.Profinite.AsLimit`, in which the
-indexing category is `StructuredArrow S toProfinite` instead of `DiscreteQuotient S`.
+analogues to their unprimed versions in `Mathlib/Topology/Category/Profinite/AsLimit.lean`, in which
+the indexing category is `StructuredArrow S toProfinite` instead of `DiscreteQuotient S`.
 -/
 
 universe u w

@@ -33,11 +33,9 @@ instance (C : Type u) [Category.{v} C] [MonoidalCategory C] :
     (left_unitality' := by
       intros
       ext ⟨⟨⟩, f⟩; dsimp at f
-      dsimp
       simp)
     (right_unitality' := fun X => by
       ext ⟨f, ⟨⟩⟩; dsimp at f
-      dsimp
       simp [unitors_inv_equal])
 
 end CategoryTheory

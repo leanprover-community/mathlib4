@@ -75,7 +75,7 @@ theorem Ideal.nonempty_minimalPrimes (h : I ≠ ⊤) : Nonempty I.minimalPrimes 
 theorem Ideal.eq_bot_of_minimalPrimes_eq_empty (h : I.minimalPrimes = ∅) : I = ⊤ := by
   by_contra hI
   obtain ⟨p, hp⟩ := Ideal.nonempty_minimalPrimes hI
-  exact Set.not_mem_empty p (h ▸ hp)
+  exact Set.notMem_empty p (h ▸ hp)
 
 @[simp]
 theorem Ideal.radical_minimalPrimes : I.radical.minimalPrimes = I.minimalPrimes := by
@@ -124,6 +124,12 @@ theorem Ideal.minimalPrimes_eq_subsingleton_self [I.IsPrime] : I.minimalPrimes =
   · rintro (rfl : J = I)
     exact ⟨⟨inferInstance, rfl.le⟩, fun _ h _ => h.2⟩
 
+variable (R) in
+theorem IsDomain.minimalPrimes_eq_singleton_bot [IsDomain R] :
+    minimalPrimes R = {⊥} :=
+  have := Ideal.bot_prime (α := R)
+  Ideal.minimalPrimes_eq_subsingleton_self
+
 end
 
 section
@@ -132,7 +138,7 @@ variable {R : Type*} [CommSemiring R]
 
 theorem Ideal.minimalPrimes_top : (⊤ : Ideal R).minimalPrimes = ∅ := by
   ext p
-  simp only [Set.not_mem_empty, iff_false]
+  simp only [Set.notMem_empty, iff_false]
   intro h
   exact h.1.1.ne_top (top_le_iff.mp h.1.2)
 
@@ -144,7 +150,7 @@ theorem Ideal.minimalPrimes_eq_empty_iff (I : Ideal R) :
     have ⟨M, hM, hM'⟩ := Ideal.exists_le_maximal I h
     have ⟨p, hp⟩ := Ideal.exists_minimalPrimes_le hM'
     rw [e] at hp
-    apply Set.not_mem_empty _ hp.1
+    apply Set.notMem_empty _ hp.1
   · rintro rfl
     exact Ideal.minimalPrimes_top
 

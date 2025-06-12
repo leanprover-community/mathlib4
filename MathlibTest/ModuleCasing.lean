@@ -4,12 +4,15 @@ import Mathlib.Tactic.Linter.TextBased
 Unit tests for the module name case check in the text-based linters.
 -/
 
-open Mathlib.Linter.TextBased
+open Lean.Linter Mathlib.Linter.TextBased
 
 /-- Some unit tests for `modulesNotUpperCamelCase` -/
 def testModulesNotUpperCamelCase : IO Unit := do
   -- Explicitly enable the linter, although it is enabled by default.
-  let opts : Lean.Options := linter.modulesUpperCamelCase.set {} true
+  let opts : LinterOptions := {
+    toOptions := linter.modulesUpperCamelCase.set {} true
+    linterSets := {}
+  }
 
   assert!((← modulesNotUpperCamelCase opts #[]) == 0)
   assert!((← modulesNotUpperCamelCase opts #[`Mathlib.Fine]) == 0)

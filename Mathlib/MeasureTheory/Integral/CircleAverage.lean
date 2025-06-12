@@ -17,11 +17,11 @@ radius `R`, equipped with the rotation-invariant measure of total volume one. Li
 compositions of `f` with `circleMap` and avoids the need to manually elemininate `2 * π` every time
 an average is computed.
 
-Note: Like the interval average defined in `Mathlib.MeasureTheory.Integral.IntervalAverage`, the
-`circleAverage` defined here is a purely measure-theoretic average. It should not be confused with
-`circleIntegral`, which is the path integral over the circle path. The relevant integrability
+Note: Like the interval average defined in `Mathlib/MeasureTheory/Integral/IntervalAverage.lean`,
+the `circleAverage` defined here is a purely measure-theoretic average. It should not be confused
+with `circleIntegral`, which is the path integral over the circle path. The relevant integrability
 property `circleAverage` is `CircleIntegrable`, as defined in
-`Mathlib.MeasureTheory.Integral.CircleIntegral`.
+`Mathlib/MeasureTheory/Integral/CircleIntegral.lean`.
 
 Implementation Note: Like `circleMap`, `circleAverage`s are defined for negative radii. The theorem
 `circleAverage_congr_negRadius` shows that the average is independent of the radius' sign.

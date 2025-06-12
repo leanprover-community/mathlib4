@@ -11,7 +11,7 @@ on:
 jobs:
   monitor-failures:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    if: ${{ github.repository == 'leanprover-community/mathlib4' && github.event.workflow_run.conclusion == 'failure' }}
 
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2

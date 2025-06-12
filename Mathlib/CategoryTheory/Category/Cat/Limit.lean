@@ -133,7 +133,6 @@ def limitConeIsLimit (F : J ⥤ Cat.{v, v}) : IsLimit (limitCone F) where
       intro j
       simp [Types.Limit.lift_π_apply', ← w j]
     · intro X Y f
-      dsimp
       simp [fun j => Functor.congr_hom (w j).symm f]
 
 end HasLimits

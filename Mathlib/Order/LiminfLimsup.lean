@@ -842,17 +842,17 @@ theorem limsup_le_iff {x : β} (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by is
     limsup u f ≤ x ↔ ∀ y > x, ∀ᶠ a in f, u a < y := by
   refine ⟨fun h _ h' ↦ eventually_lt_of_limsup_lt (h.trans_lt h') h₂, fun h ↦ ?_⟩
   --Two cases: Either `x` is a cluster point from above, or it is not.
-  --In the first case, we use `forall_lt_iff_le'` and split an interval.
+  --In the first case, we use `forall_gt_iff_le` and split an interval.
   --In the second case, the function `u` must eventually be smaller or equal to `x`.
   by_cases h' : ∀ y > x, ∃ z, x < z ∧ z < y
-  · rw [← forall_lt_iff_le']
+  · rw [← forall_gt_iff_le]
     intro y x_y
     rcases h' y x_y with ⟨z, x_z, z_y⟩
     exact (limsup_le_of_le h₁ ((h z x_z).mono (fun _ ↦ le_of_lt))).trans_lt z_y
   · apply limsup_le_of_le h₁
     set_option push_neg.use_distrib true in push_neg at h'
     rcases h' with ⟨z, x_z, hz⟩
-    exact (h z x_z).mono  <| fun w hw ↦ (or_iff_left (not_le_of_lt hw)).1 (hz (u w))
+    exact (h z x_z).mono  <| fun w hw ↦ (or_iff_left (not_le_of_gt hw)).1 (hz (u w))
 
 /- A version of `limsup_le_iff` with large inequalities in densely ordered spaces.-/
 lemma limsup_le_iff' [DenselyOrdered β] {x : β}
@@ -860,7 +860,7 @@ lemma limsup_le_iff' [DenselyOrdered β] {x : β}
     (h₂ : IsBoundedUnder (· ≤ ·) f u := by isBoundedDefault) :
     limsup u f ≤ x ↔ ∀ y > x, ∀ᶠ (a : α) in f, u a ≤ y := by
   refine ⟨fun h _ h' ↦ (eventually_lt_of_limsup_lt (h.trans_lt h') h₂).mono fun _ ↦ le_of_lt, ?_⟩
-  rw [← forall_lt_iff_le']
+  rw [← forall_gt_iff_le]
   intro h y x_y
   obtain ⟨z, x_z, z_y⟩ := exists_between x_y
   exact (limsup_le_of_le h₁ (h z x_z)).trans_lt z_y
@@ -880,7 +880,7 @@ theorem le_limsup_iff {x : β} (h₁ : f.IsCoboundedUnder (· ≤ ·) u := by is
   · apply le_limsup_of_frequently_le _ h₂
     set_option push_neg.use_distrib true in push_neg at h'
     rcases h' with ⟨z, z_x, hz⟩
-    exact (h z z_x).mono <| fun w hw ↦ (or_iff_right (not_le_of_lt hw)).1 (hz (u w))
+    exact (h z z_x).mono <| fun w hw ↦ (or_iff_right (not_le_of_gt hw)).1 (hz (u w))
 
 /- A version of `le_limsup_iff` with large inequalities in densely ordered spaces.-/
 lemma le_limsup_iff' [DenselyOrdered β] {x : β}

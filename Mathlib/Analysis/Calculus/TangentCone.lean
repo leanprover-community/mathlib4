@@ -26,10 +26,10 @@ of the derivative. This is why their names reflect their uses, and not how they 
 
 ## Implementation details
 
-Note that this file is imported by `Mathlib.Analysis.Calculus.FDeriv.Basic`. Hence, derivatives are
-not defined yet. The property of uniqueness of the derivative is therefore proved in
-`Mathlib.Analysis.Calculus.FDeriv.Basic`, but based on the properties of the tangent cone we prove
-here.
+Note that this file is imported by `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`. Hence, derivatives
+are not defined yet. The property of uniqueness of the derivative is therefore proved in
+`Mathlib/Analysis/Calculus/FDeriv/Basic.lean`, but based on the properties of the tangent cone we
+prove here.
 -/
 
 
@@ -52,7 +52,7 @@ def tangentConeAt (s : Set E) (x : E) : Set E :=
 /-- A property ensuring that the tangent cone to `s` at `x` spans a dense subset of the whole space.
 The main role of this property is to ensure that the differential within `s` at `x` is unique,
 hence this name. The uniqueness it asserts is proved in `UniqueDiffWithinAt.eq` in
-`Mathlib.Analysis.Calculus.FDeriv.Basic`.
+`Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 To avoid pathologies in dimension 0, we also require that `x` belongs to the closure of `s` (which
 is automatic when `E` is not `0`-dimensional). -/
 @[mk_iff]
@@ -66,7 +66,7 @@ alias UniqueDiffWithinAt.dense_tangentCone := UniqueDiffWithinAt.dense_tangentCo
 /-- A property ensuring that the tangent cone to `s` at any of its points spans a dense subset of
 the whole space. The main role of this property is to ensure that the differential along `s` is
 unique, hence this name. The uniqueness it asserts is proved in `UniqueDiffOn.eq` in
-`Mathlib.Analysis.Calculus.FDeriv.Basic`. -/
+`Mathlib/Analysis/Calculus/FDeriv/Basic.lean`. -/
 def UniqueDiffOn (s : Set E) : Prop :=
   ∀ x ∈ s, UniqueDiffWithinAt 𝕜 s x
 

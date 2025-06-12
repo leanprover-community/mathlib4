@@ -147,7 +147,7 @@ namespace EMetric
 variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} {s t : Set α}
 
 theorem inseparable_iff : Inseparable x y ↔ edist x y = 0 := by
-  simp [inseparable_iff_mem_closure, mem_closure_iff, edist_comm, forall_lt_iff_le']
+  simp [inseparable_iff_mem_closure, mem_closure_iff, edist_comm, forall_gt_iff_le]
 
 alias ⟨_root_.Inseparable.edist_eq_zero, _⟩ := EMetric.inseparable_iff
 

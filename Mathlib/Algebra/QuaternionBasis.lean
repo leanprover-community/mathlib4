@@ -3,6 +3,7 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Algebra.Quaternion
 import Mathlib.Tactic.Ring
 
@@ -141,6 +142,20 @@ def liftHom : ℍ[R,c₁,c₂,c₃] →ₐ[R] A :=
       map_one' := q.lift_one
       map_add' := q.lift_add
       map_mul' := q.lift_mul } q.lift_smul
+
+@[simp]
+theorem range_liftHom (B : Basis A c₁ c₂ c₃) :
+    (liftHom B).range = Algebra.adjoin R {B.i, B.j, B.k} := by
+  apply le_antisymm
+  · rintro x ⟨y, rfl⟩
+    refine add_mem (add_mem (add_mem ?_ ?_) ?_) ?_
+    · exact algebraMap_mem _ _
+    all_goals
+      exact Subalgebra.smul_mem _ (Algebra.subset_adjoin <| by simp) _
+  · rw [Algebra.adjoin_le_iff]
+    rintro x (rfl | rfl | rfl)
+      <;> [use (Basis.self R).i; use (Basis.self R).j; use (Basis.self R).k]
+    all_goals simp [lift]
 
 /-- Transform a `QuaternionAlgebra.Basis` through an `AlgHom`. -/
 @[simps i j k]

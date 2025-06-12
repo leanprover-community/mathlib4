@@ -167,9 +167,10 @@ theorem sign_of_cycleType' (σ : Perm α) :
 theorem sign_of_cycleType (f : Perm α) :
     sign f = (-1 : ℤˣ) ^ (f.cycleType.sum + Multiset.card f.cycleType) := by
   rw [sign_of_cycleType']
-  induction' f.cycleType using Multiset.induction_on with a s ihs
-  · rfl
-  · rw [Multiset.map_cons, Multiset.prod_cons, Multiset.sum_cons, Multiset.card_cons, ihs]
+  induction f.cycleType using Multiset.induction_on with
+  | empty => rfl
+  | cons a s ihs =>
+    rw [Multiset.map_cons, Multiset.prod_cons, Multiset.sum_cons, Multiset.card_cons, ihs]
     simp only [pow_add, pow_one, mul_neg_one, neg_mul, mul_neg, mul_assoc, mul_one]
 
 @[simp]
@@ -251,7 +252,7 @@ theorem Disjoint.cycleType_noncommProd {ι : Type*} {k : ι → Perm α} {s : Fi
   | insert i s hi hrec =>
     have hs' : (s : Set ι).Pairwise fun i j ↦ Disjoint (k i) (k j) :=
       hs.mono (by simp only [Finset.coe_insert, Set.subset_insert])
-    rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, Finset.sum_insert hi]
+    rw [Finset.noncommProd_insert_of_notMem _ _ _ _ hi, Finset.sum_insert hi]
     rw [Equiv.Perm.Disjoint.cycleType_mul, hrec hs']
     apply disjoint_noncommProd_right
     intro j hj
@@ -479,7 +480,7 @@ end VectorsProdEqOne
 `p` in `G`. This is known as Cauchy's theorem. -/
 theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (p : ℕ)
     [hp : Fact p.Prime] (hdvd : p ∣ Fintype.card G) : ∃ x : G, orderOf x = p := by
-  have hp' : p - 1 ≠ 0 := mt tsub_eq_zero_iff_le.mp (not_le_of_lt hp.out.one_lt)
+  have hp' : p - 1 ≠ 0 := mt tsub_eq_zero_iff_le.mp (not_le_of_gt hp.out.one_lt)
   have Scard :=
     calc
       p ∣ Fintype.card G ^ (p - 1) := hdvd.trans (dvd_pow (dvd_refl _) hp')

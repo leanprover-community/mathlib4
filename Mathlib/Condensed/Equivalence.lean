@@ -19,8 +19,8 @@ between sheaves on these two sites. With the terminology of nLab, `Stonean` is a
 Since Stonean spaces are the projective objects in `CompHaus`, which has enough projectives,
 and the notions of effective epimorphism, epimorphism and surjective continuous map are equivalent
 in `CompHaus` and `Stonean`, we can use the general setup in
-`Mathlib.CategoryTheory.Sites.Coherent.SheafComparison` to deduce the equivalence of categories.
-We give the corresponding statements for `Profinite` as well.
+`Mathlib/CategoryTheory/Sites/Coherent/SheafComparison.lean` to deduce the equivalence of
+categories. We give the corresponding statements for `Profinite` as well.
 
 ## Main results
 

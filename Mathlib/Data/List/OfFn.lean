@@ -54,20 +54,11 @@ theorem ofFn_succ' {n} (f : Fin (succ n) → α) :
   · rw [ofFn_succ, IH, ofFn_succ, concat_cons, Fin.castSucc_zero]
     congr
 
-/-- Note this matches the convention of `List.ofFn_succ'`, putting the `Fin m` elements first. -/
-theorem ofFn_add {m n} (f : Fin (m + n) → α) :
-    List.ofFn f =
-      (List.ofFn fun i => f (Fin.castAdd n i)) ++ List.ofFn fun j => f (Fin.natAdd m j) := by
-  induction' n with n IH
-  · rw [ofFn_zero, append_nil, Fin.castAdd_zero, Fin.cast_refl]
-    rfl
-  · rw [ofFn_succ', ofFn_succ', IH, append_concat]
-    rfl
-
 @[simp]
 theorem ofFn_fin_append {m n} (a : Fin m → α) (b : Fin n → α) :
     List.ofFn (Fin.append a b) = List.ofFn a ++ List.ofFn b := by
-  simp_rw [ofFn_add, Fin.append_left, Fin.append_right]
+  simp_rw [ofFn_add]
+  simp [Fin.append_left', Fin.append_right]
 
 /-- This breaks a list of `m*n` items into `m` groups each containing `n` elements. -/
 theorem ofFn_mul {m n} (f : Fin (m * n) → α) :

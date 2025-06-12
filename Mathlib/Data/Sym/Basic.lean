@@ -170,8 +170,10 @@ lemma «exists» {p : Sym α n → Prop} :
   simp [Sym]
 
 @[simp]
-theorem not_mem_nil (a : α) : ¬ a ∈ (nil : Sym α 0) :=
-  Multiset.not_mem_zero a
+theorem notMem_nil (a : α) : a ∉ (nil : Sym α 0) :=
+  Multiset.notMem_zero a
+
+@[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
 
 @[simp]
 theorem mem_cons : a ∈ b ::ₛ s ↔ a = b ∨ a ∈ s :=
@@ -540,16 +542,19 @@ theorem filter_ne_fill
   sigma_sub_ext
     (by
       rw [filterNe, ← val_eq_coe, Subtype.coe_mk, val_eq_coe, coe_fill]
-      rw [filter_add, filter_eq_self.2, add_eq_left, eq_zero_iff_forall_not_mem]
+      rw [filter_add, filter_eq_self.2, add_eq_left, eq_zero_iff_forall_notMem]
       · intro b hb
         rw [mem_filter, Sym.mem_coe, mem_replicate] at hb
         exact hb.2 hb.1.2.symm
       · exact fun a ha ha' => h <| ha'.symm ▸ ha)
 
-theorem count_coe_fill_self_of_not_mem [DecidableEq α] {a : α} {i : Fin (n + 1)} {s : Sym α (n - i)}
+theorem count_coe_fill_self_of_notMem [DecidableEq α] {a : α} {i : Fin (n + 1)} {s : Sym α (n - i)}
     (hx : a ∉ s) :
     count a (fill a i s : Multiset α) = i := by
   simp [coe_fill, coe_replicate, hx]
+
+@[deprecated (since := "2025-05-23")]
+alias count_coe_fill_self_of_not_mem := count_coe_fill_self_of_notMem
 
 theorem count_coe_fill_of_ne [DecidableEq α] {a x : α} {i : Fin (n + 1)} {s : Sym α (n - i)}
     (hx : x ≠ a) :
@@ -585,12 +590,15 @@ theorem encode_of_none_mem [DecidableEq α] (s : Sym (Option α) n.succ) (h : no
   dif_pos h
 
 @[simp]
-theorem encode_of_not_none_mem [DecidableEq α] (s : Sym (Option α) n.succ) (h : ¬none ∈ s) :
+theorem encode_of_none_notMem [DecidableEq α] (s : Sym (Option α) n.succ) (h : none ∉ s) :
     encode s =
       Sum.inr
         (s.attach.map fun o =>
           o.1.get <| Option.ne_none_iff_isSome.1 <| ne_of_mem_of_not_mem o.2 h) :=
   dif_neg h
+
+@[deprecated (since := "2025-05-23")]
+alias encode_of_not_none_mem := encode_of_none_notMem
 
 /-- Inverse of `Sym_option_succ_equiv.decode`. -/
 def decode : Sym (Option α) n ⊕ Sym α n.succ → Sym (Option α) n.succ
@@ -609,7 +617,7 @@ theorem decode_inr (s : Sym α n.succ) : decode (Sum.inr s) = s.map Embedding.so
 theorem decode_encode [DecidableEq α] (s : Sym (Option α) n.succ) : decode (encode s) = s := by
   by_cases h : none ∈ s
   · simp [h]
-  · simp only [decode, h, not_false_iff, encode_of_not_none_mem, Embedding.some_apply, map_map,
+  · simp only [decode, h, not_false_iff, encode_of_none_notMem, Embedding.some_apply, map_map,
       comp_apply, Option.some_get]
     convert s.attach_map_coe
 

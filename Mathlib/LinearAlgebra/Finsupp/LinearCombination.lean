@@ -57,7 +57,7 @@ theorem linearCombination_apply (l : α →₀ R) : linearCombination R v l = l.
 theorem linearCombination_apply_of_mem_supported {l : α →₀ R} {s : Finset α}
     (hs : l ∈ supported R R (↑s : Set α)) : linearCombination R v l = s.sum fun i => l i • v i :=
   Finset.sum_subset hs fun x _ hxg =>
-    show l x • v x = 0 by rw [not_mem_support_iff.1 hxg, zero_smul]
+    show l x • v x = 0 by rw [notMem_support_iff.1 hxg, zero_smul]
 
 @[simp]
 theorem linearCombination_single (c : R) (a : α) :
@@ -321,7 +321,7 @@ theorem Finsupp.linearCombination_eq_fintype_linearCombination_apply (x : α →
   apply Finset.sum_subset
   · exact Finset.subset_univ _
   · intro x _ hx
-    rw [Finsupp.not_mem_support_iff.mp hx]
+    rw [Finsupp.notMem_support_iff.mp hx]
     exact zero_smul _ _
 
 theorem Finsupp.linearCombination_eq_fintype_linearCombination :

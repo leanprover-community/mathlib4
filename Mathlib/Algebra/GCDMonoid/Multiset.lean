@@ -71,7 +71,7 @@ theorem normalize_lcm (s : Multiset α) : normalize s.lcm = s.lcm :=
 @[simp]
 nonrec theorem lcm_eq_zero_iff [Nontrivial α] (s : Multiset α) : s.lcm = 0 ↔ (0 : α) ∈ s := by
   induction s using Multiset.induction_on with
-  | empty => simp only [lcm_zero, one_ne_zero, not_mem_zero]
+  | empty => simp only [lcm_zero, one_ne_zero, notMem_zero]
   | cons a s ihs => simp only [mem_cons, lcm_cons, lcm_eq_zero_iff, ihs, @eq_comm _ a]
 
 variable [DecidableEq α]

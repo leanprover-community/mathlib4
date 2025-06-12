@@ -302,7 +302,7 @@ theorem degree_add_le {f g : MvPolynomial σ R} :
     exact m.le_degree hf
   · right
     apply m.le_degree
-    simp only [not_mem_support_iff] at hf
+    simp only [notMem_support_iff] at hf
     simpa only [mem_support_iff, coeff_add, hf, zero_add] using hb
 
 theorem degree_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degree f) :

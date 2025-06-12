@@ -812,8 +812,6 @@ namespace Equiv
 
 open FirstOrder FirstOrder.Language FirstOrder.Language.Structure
 
-open FirstOrder
-
 variable {L : Language} {M : Type*} {N : Type*} [L.Structure M]
 
 /-- A structure induced by a bijection. -/

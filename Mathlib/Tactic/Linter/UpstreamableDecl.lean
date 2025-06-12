@@ -12,7 +12,7 @@ The `upstreamableDecl` linter detects declarations that could be moved to a file
 import hierarchy. This is intended to assist with splitting files.
 -/
 
-open Lean Elab Command
+open Lean Elab Command Linter
 
 /-- Does this declaration come from the current file? -/
 def Lean.Name.isLocal (env : Environment) (decl : Name) : Bool :=
@@ -86,12 +86,12 @@ namespace DoubleImports
 
 @[inherit_doc Mathlib.Linter.linter.upstreamableDecl]
 def upstreamableDeclLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.upstreamableDecl (← getOptions) do
+    unless getLinterValue linter.upstreamableDecl (← getLinterOptions) do
       return
     if (← get).messages.hasErrors then
       return
-    let skipDef := !Linter.getLinterValue linter.upstreamableDecl.defs (← getOptions)
-    let skipPrivate := !Linter.getLinterValue linter.upstreamableDecl.private (← getOptions)
+    let skipDef := !getLinterValue linter.upstreamableDecl.defs (← getLinterOptions)
+    let skipPrivate := !getLinterValue linter.upstreamableDecl.private (← getLinterOptions)
     if stx == (← `(command| set_option $(mkIdent `linter.upstreamableDecl) true)) then return
     let env ← getEnv
     let id ← getId stx

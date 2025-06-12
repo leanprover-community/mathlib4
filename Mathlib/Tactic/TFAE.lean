@@ -56,16 +56,16 @@ We omit `many (ppSpace >> letIdBinder)`, as it makes no sense to add extra argum
 private def tfaeHaveIdLhs := leading_parser
   (binder <|> hygieneInfo)  >> tfaeType
 /- See `haveIdDecl`. E.g. `h : 1 → 3 := term`. -/
-private def tfaeHaveIdDecl   := leading_parser (withAnonymousAntiquot := false)
+private def tfaeHaveIdDecl := leading_parser (withAnonymousAntiquot := false)
   atomic (tfaeHaveIdLhs >> " := ") >> termParser
 /- See `haveEqnsDecl`. E.g. `h : 1 → 3 | p => f p`. -/
 private def tfaeHaveEqnsDecl := leading_parser (withAnonymousAntiquot := false)
   tfaeHaveIdLhs >> matchAlts
 /- See `letPatDecl`. E.g. `⟨mp, mpr⟩ : 1 ↔ 3 := term`. -/
-private def tfaeHavePatDecl  := leading_parser (withAnonymousAntiquot := false)
+private def tfaeHavePatDecl := leading_parser (withAnonymousAntiquot := false)
   atomic (termParser >> pushNone >> " : " >> tfaeType >> " := ") >> termParser
 /- See `haveDecl`. Any of `tfaeHaveIdDecl`, `tfaeHavePatDecl`, or `tfaeHaveEqnsDecl`. -/
-private def tfaeHaveDecl     := leading_parser (withAnonymousAntiquot := false)
+private def tfaeHaveDecl := leading_parser (withAnonymousAntiquot := false)
   tfaeHaveIdDecl <|> (ppSpace >> tfaeHavePatDecl) <|> tfaeHaveEqnsDecl
 
 end Parser

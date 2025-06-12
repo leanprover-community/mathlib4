@@ -35,12 +35,17 @@ theorem mulSupport_eq_preimage (f : α → M) : mulSupport f = f ⁻¹' {1}ᶜ :
   rfl
 
 @[to_additive]
-theorem nmem_mulSupport {f : α → M} {x : α} : x ∉ mulSupport f ↔ f x = 1 :=
+theorem notMem_mulSupport {f : α → M} {x : α} : x ∉ mulSupport f ↔ f x = 1 :=
   not_not
+
+@[deprecated (since := "2025-05-24")] alias nmem_support := notMem_support
+
+@[to_additive existing, deprecated (since := "2025-05-24")]
+alias nmem_mulSupport := notMem_mulSupport
 
 @[to_additive]
 theorem compl_mulSupport {f : α → M} : (mulSupport f)ᶜ = { x | f x = 1 } :=
-  ext fun _ => nmem_mulSupport
+  ext fun _ => notMem_mulSupport
 
 @[to_additive (attr := simp)]
 theorem mem_mulSupport {f : α → M} {x : α} : x ∈ mulSupport f ↔ f x ≠ 1 :=
@@ -66,7 +71,7 @@ theorem ext_iff_mulSupport {f g : α → M} :
     f = g ↔ f.mulSupport = g.mulSupport ∧ ∀ x ∈ f.mulSupport, f x = g x :=
   ⟨fun h ↦ h ▸ ⟨rfl, fun _ _ ↦ rfl⟩, fun ⟨h₁, h₂⟩ ↦ funext fun x ↦ by
     if hx : x ∈ f.mulSupport then exact h₂ x hx
-    else rw [nmem_mulSupport.1 hx, nmem_mulSupport.1 (mt (Set.ext_iff.1 h₁ x).2 hx)]⟩
+    else rw [notMem_mulSupport.1 hx, notMem_mulSupport.1 (mt (Set.ext_iff.1 h₁ x).2 hx)]⟩
 
 @[to_additive]
 theorem mulSupport_update_of_ne_one [DecidableEq α] (f : α → M) (x : α) {y : M} (hy : y ≠ 1) :
@@ -88,7 +93,7 @@ theorem mulSupport_extend_one_subset {f : α → M'} {g : α → N} :
     mulSupport (f.extend g 1) ⊆ f '' mulSupport g :=
   mulSupport_subset_iff'.mpr fun x hfg ↦ by
     by_cases hf : ∃ a, f a = x
-    · rw [extend, dif_pos hf, ← nmem_mulSupport]
+    · rw [extend, dif_pos hf, ← notMem_mulSupport]
       rw [← Classical.choose_spec hf] at hfg
       exact fun hg ↦ hfg ⟨_, hg, rfl⟩
     · rw [extend_apply' _ _ _ hf]; rfl
@@ -102,7 +107,7 @@ theorem mulSupport_extend_one {f : α → M'} {g : α → N} (hf : f.Injective) 
 @[to_additive]
 theorem mulSupport_disjoint_iff {f : α → M} {s : Set α} :
     Disjoint (mulSupport f) s ↔ EqOn f 1 s := by
-  simp_rw [← subset_compl_iff_disjoint_right, mulSupport_subset_iff', not_mem_compl_iff, EqOn,
+  simp_rw [← subset_compl_iff_disjoint_right, mulSupport_subset_iff', notMem_compl_iff, EqOn,
     Pi.one_apply]
 
 @[to_additive]

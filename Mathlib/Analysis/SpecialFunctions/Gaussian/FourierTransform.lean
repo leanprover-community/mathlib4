@@ -93,7 +93,7 @@ theorem verticalIntegral_norm_le (hb : 0 < b.re) (c : ℝ) {T : ℝ} (hT : 0 ≤
       rw [mul_assoc]
   · intro y hy
     have absy : |y| ≤ |c| := by
-      rcases le_or_lt 0 c with (h | h)
+      rcases le_or_gt 0 c with (h | h)
       · rw [uIoc_of_le h] at hy
         rw [abs_of_nonneg h, abs_of_pos hy.1]
         exact hy.2
@@ -286,7 +286,7 @@ theorem integral_cexp_neg_sum_mul_add {ι : Type*} [Fintype ι] {b : ι → ℂ}
     ∫ v : ι → ℝ, cexp (- ∑ i, b i * (v i : ℂ) ^ 2 + ∑ i, c i * v i)
       = ∏ i, (π / b i) ^ (1 / 2 : ℂ) * cexp (c i ^ 2 / (4 * b i)) := by
   simp_rw [← Finset.sum_neg_distrib, ← Finset.sum_add_distrib, Complex.exp_sum, ← neg_mul]
-  rw [integral_fintype_prod_eq_prod (f := fun i (v : ℝ) ↦ cexp (-b i * v ^ 2 + c i * v))]
+  rw [integral_fintype_prod_volume_eq_prod (f := fun i (v : ℝ) ↦ cexp (-b i * v ^ 2 + c i * v))]
   congr with i
   have : (-b i).re < 0 := by simpa using hb i
   convert integral_cexp_quadratic this (c i) 0 using 1 <;> simp [div_neg]

@@ -120,7 +120,7 @@ variable {ι} (R : ι → Type*) [∀ i, CommSemiring (R i)] [∀ i, Nontrivial 
 theorem toPiLocalization_not_surjective_of_infinite [Infinite ι] :
     ¬ Function.Surjective (toPiLocalization (Π i, R i)) := fun surj ↦ by
   classical
-  have ⟨J, max, nmem⟩ := PrimeSpectrum.exists_maximal_nmem_range_sigmaToPi_of_infinite R
+  have ⟨J, max, notMem⟩ := PrimeSpectrum.exists_maximal_notMem_range_sigmaToPi_of_infinite R
   obtain ⟨r, hr⟩ := surj (Function.update 0 ⟨J, max⟩ 1)
   have : r = 0 := funext fun i ↦ toPiLocalization_injective _ <| funext fun I ↦ by
     replace hr := congr_fun hr ⟨_, I.2.comap_piEvalRingHom⟩
@@ -128,7 +128,7 @@ theorem toPiLocalization_not_surjective_of_infinite [Infinite ι] :
     simp_rw [toPiLocalization_apply_apply,
       ← Localization.AtPrime.mapPiEvalRingHom_algebraMap_apply, hr]
     rw [Function.update_of_ne]; · simp_rw [Pi.zero_apply, map_zero]
-    exact fun h ↦ nmem ⟨⟨i, I.1, I.2.isPrime⟩, PrimeSpectrum.ext congr($h.1)⟩
+    exact fun h ↦ notMem ⟨⟨i, I.1, I.2.isPrime⟩, PrimeSpectrum.ext congr($h.1)⟩
   replace hr := congr_fun hr ⟨J, max⟩
   rw [this, map_zero, Function.update_self] at hr
   exact zero_ne_one hr

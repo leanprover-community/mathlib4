@@ -33,7 +33,6 @@ variable [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] [PseudoEMetricSpace
 
 /-- Similarity between indexed sets of vertices v₁ and v₂.
 Use `open scoped Similar` to access the `v₁ ∼ v₂` notation. -/
-
 def Similar (v₁ : ι → P₁) (v₂ : ι → P₂) : Prop :=
   ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (edist (v₁ i₁) (v₁ i₂) = r * edist (v₂ i₁) (v₂ i₂))
 

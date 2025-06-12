@@ -57,7 +57,7 @@ noncomputable section
 
 universe u v
 
-open Polynomial IsLocalRing Polynomial Function List
+open Polynomial IsLocalRing Function List
 
 theorem isLocalHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
     (h : I ≤ Ideal.jacobson ⊥) : IsLocalHom (Ideal.Quotient.mk I) := by

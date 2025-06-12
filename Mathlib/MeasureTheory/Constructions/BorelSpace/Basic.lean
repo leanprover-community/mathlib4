@@ -591,7 +591,7 @@ end
 
 section BorelSpace
 
-variable [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] [TopologicalSpace β]
+variable [TopologicalSpace α] [mα : MeasurableSpace α] [BorelSpace α] [mβ : TopologicalSpace β]
   [MeasurableSpace β] [BorelSpace β] [TopologicalSpace γ] [MeasurableSpace γ] [BorelSpace γ]
   [MeasurableSpace δ]
 
@@ -695,5 +695,21 @@ instance EReal.measurableSpace : MeasurableSpace EReal :=
 
 instance EReal.borelSpace : BorelSpace EReal :=
   ⟨rfl⟩
+
+namespace MeasureTheory.Measure.IsFiniteMeasureOnCompacts
+
+variable {mα} in
+protected theorem map (μ : Measure α) [IsFiniteMeasureOnCompacts μ] (f : α ≃ₜ β) :
+    IsFiniteMeasureOnCompacts (μ.map f) := by
+  refine ⟨fun K hK ↦ ?_⟩
+  rw [← f.toMeasurableEquiv_coe, MeasurableEquiv.map_apply]
+  exact IsCompact.measure_lt_top (f.isCompact_preimage.2 hK)
+
+variable {mβ} in
+protected theorem comap (μ : Measure β) [IsFiniteMeasureOnCompacts μ] (f : α ≃ₜ β) :
+    IsFiniteMeasureOnCompacts (μ.comap f) :=
+  IsFiniteMeasureOnCompacts.comap' μ f.continuous f.measurableEmbedding
+
+end MeasureTheory.Measure.IsFiniteMeasureOnCompacts
 
 end BorelSpace

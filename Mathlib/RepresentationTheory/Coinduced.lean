@@ -167,7 +167,7 @@ such that for all `g : G`, `h : H`, `f (φ g * h) = A.ρ g (f h)`, is `k`-linear
 to the `G`-representation morphisms `k[H] ⟶ A`.
 -/
 @[simps]
-noncomputable def coindVLEquiv :
+noncomputable def coindVEquiv :
     A.ρ.coindV φ ≃ₗ[k] ((Action.res _ φ).obj (leftRegular k H) ⟶ A) where
   toFun f := {
     hom := ModuleCat.ofHom <| linearCombination _ f.1
@@ -182,10 +182,10 @@ noncomputable def coindVLEquiv :
   right_inv x := coind'_ext φ fun _ => by simp
 
 /-- `coind φ A` and `coind' φ A` are isomorphic representations, with the underlying
-`k`-linear equivalence given by `coindVLEquiv`. -/
+`k`-linear equivalence given by `coindVEquiv`. -/
 @[simps! hom_hom_hom inv_hom_hom]
 noncomputable def coindIso : coind φ A ≅ coind' φ A :=
-  Action.mkIso (coindVLEquiv φ A).toModuleIso fun h => by
+  Action.mkIso (coindVEquiv φ A).toModuleIso fun h => by
     ext
     simp [ModuleCat.endRingEquiv, leftRegularHomEquiv_symm_apply (leftRegular k H)]
 
@@ -206,7 +206,7 @@ section Adjunction
 `A`, there is a `k`-linear equivalence between the `G`-representation morphisms `B ⟶ A` and the
 `H`-representation morphisms `B ⟶ coind φ A`. -/
 @[simps]
-noncomputable def resCoindHomLEquiv (B : Rep k H) (A : Rep k G) :
+noncomputable def resCoindHomEquiv (B : Rep k H) (A : Rep k G) :
     ((Action.res _ φ).obj B ⟶ A) ≃ₗ[k] (B ⟶ coind φ A) where
   toFun f := {
     hom := ModuleCat.ofHom <| (LinearMap.pi fun h => f.hom.hom ∘ₗ Rep.ρ B h).codRestrict _
@@ -230,7 +230,7 @@ adjoint to the restriction functor along `φ`. -/
 @[simps! counit_app_hom_hom unit_app_hom_hom]
 noncomputable abbrev resCoindAdjunction : Action.res _ φ ⊣ coindFunctor k φ :=
   Adjunction.mkOfHomEquiv {
-    homEquiv X Y := (resCoindHomLEquiv φ X Y).toEquiv
+    homEquiv X Y := (resCoindHomEquiv φ X Y).toEquiv
     homEquiv_naturality_left_symm := by intros; rfl
     homEquiv_naturality_right := by intros; ext; rfl }
 

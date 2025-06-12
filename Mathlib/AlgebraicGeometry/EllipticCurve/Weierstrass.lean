@@ -40,7 +40,7 @@ field of `R` are precisely the `X`-coordinates of the non-zero 2-torsion points 
 ## Main statements
 
 * `WeierstrassCurve.twoTorsionPolynomial_disc`: the discriminant of a Weierstrass curve is a
-    constant factor of the cubic discriminant of its 2-torsion polynomial.
+  constant factor of the cubic discriminant of its 2-torsion polynomial.
 
 ## Implementation notes
 

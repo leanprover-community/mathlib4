@@ -54,7 +54,6 @@ def coalgebraToOver : Coalgebra (prodComonad X) ⥤ Over X where
     Over.homMk f.f
       (by
         rw [Over.mk_hom, ← f.h_assoc]
-        dsimp
         simp)
 
 /-- The backward direction of the equivalence from coalgebras for the product comonad to the over
@@ -101,7 +100,6 @@ def algebraToUnder : Monad.Algebra (coprodMonad X) ⥤ Under X where
     Under.homMk f.f
       (by
         rw [Under.mk_hom, Category.assoc, ← f.h]
-        dsimp
         simp)
 
 /-- The backward direction of the equivalence from algebras for the coproduct monad to the under

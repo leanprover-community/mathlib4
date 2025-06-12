@@ -56,7 +56,7 @@ def curryObj (F : C × D ⥤ E) : C ⥤ D ⥤ E where
     { app := fun Y => F.map (f, 𝟙 Y)
       naturality := fun {Y} {Y'} g => by simp [← F.map_comp] }
   map_id := fun X => by ext Y; exact F.map_id _
-  map_comp := fun f g => by ext Y; dsimp; simp [← F.map_comp]
+  map_comp := fun f g => by ext Y; simp [← F.map_comp]
 
 /-- The currying functor, taking a functor `(C × D) ⥤ E` and producing a functor `C ⥤ (D ⥤ E)`.
 -/

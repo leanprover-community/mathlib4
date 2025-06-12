@@ -48,13 +48,13 @@ namespace CategoryTheory.Limits.Types
 example : HasProducts.{v} (Type v) := inferInstance
 example [UnivLE.{v, u}] : HasProducts.{v} (Type u) := inferInstance
 
--- This shortcut instance is required in `Mathlib.CategoryTheory.Closed.Types`,
+-- This shortcut instance is required in `Mathlib/CategoryTheory/Closed/Types.lean`,
 -- although I don't understand why, and wish it wasn't.
 instance : HasProducts.{v} (Type v) := inferInstance
 
 /-- A restatement of `Types.Limit.lift_π_apply` that uses `Pi.π` and `Pi.lift`. -/
 -- The increased `@[simp]` priority here results in a minor speed up in
--- `Mathlib.CategoryTheory.Sites.EqualizerSheafCondition`.
+-- `Mathlib/CategoryTheory/Sites/EqualizerSheafCondition.lean`.
 @[simp 1001]
 theorem pi_lift_π_apply {β : Type v} [Small.{u} β] (f : β → Type u) {P : Type u}
     (s : ∀ b, P ⟶ f b) (b : β) (x : P) :
@@ -307,7 +307,6 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
           else g ((Equiv.ofInjective _ h₂).symm ⟨x, (this x).resolve_left h⟩)
       · intro T f g
         funext x
-        dsimp
         simp [h₁.eq_iff]
       · intro T f g
         funext x

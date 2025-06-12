@@ -96,30 +96,59 @@ theorem sl_bracket [Fintype n] (A B : sl n R) : ⁅A, B⁆.val = A.val * B.val -
 
 section ElementaryBasis
 
-variable {n R} [Fintype n] (i j : n)
+variable {n R} [Fintype n] (i j k : n)
 
-/-- When `i ≠ j`, the elementary matrices are elements of `sl n R`, in fact they are part of a
-natural basis of `sl n R`. -/
-def Eb (h : i ≠ j) (r : R) : sl n R :=
-  ⟨Matrix.single i j r,
-    show Matrix.single i j r ∈ LinearMap.ker (Matrix.traceLinearMap n R R) from
-      Matrix.trace_single_eq_of_ne i j r h⟩
+/-- When `i ≠ j`, the single-element matrices are elements of `sl n R`.
+
+Along with some elements produced by `singleSubSingle`, these form a natural basis of `sl n R`. -/
+def single (h : i ≠ j) : R →ₗ[R] sl n R :=
+  Matrix.singleLinearMap R i j |>.codRestrict _ fun r => Matrix.trace_single_eq_of_ne i j r h
+
+@[deprecated (since := "2025-05-06")] alias Eb := single
 
 @[simp]
-theorem eb_val (h : i ≠ j) (r : R) : (Eb i j h r).val = Matrix.single i j r :=
+theorem val_single (h : i ≠ j) (r : R) : (single i j h r).val = Matrix.single i j r :=
   rfl
+
+@[deprecated (since := "2025-05-06")] alias eb_val := val_single
+
+/-- The matrices with matching positive and negative elements on the diagonal are elements of
+`sl n R`. Along with `single`, a subset of these form a basis for `sl n R`. -/
+def singleSubSingle : R →ₗ[R] sl n R :=
+  LinearMap.codRestrict _ (Matrix.singleLinearMap R i i - Matrix.singleLinearMap R j j) fun r =>
+    LinearMap.sub_mem_ker_iff.mpr <| by simp
+
+@[simp]
+theorem val_singleSubSingle (r : R) :
+    (singleSubSingle i j r).val = Matrix.single i i r - Matrix.single j j r :=
+  rfl
+
+@[simp]
+theorem singleSubSingle_add_singleSubSingle (r : R) :
+    singleSubSingle i j r + singleSubSingle j k r = singleSubSingle i k r := by
+  ext : 1; simp [add_sub_add_comm]
+
+@[simp]
+theorem singleSubSingle_sub_singleSubSingle (r : R) :
+    singleSubSingle i k r - singleSubSingle i j r = singleSubSingle j k r := by
+  ext : 1; simp [add_sub_add_comm]
+
+@[simp]
+theorem singleSubSingle_sub_singleSubSingle' (r : R) :
+    singleSubSingle i k r - singleSubSingle j k r = singleSubSingle i j r := by
+  ext : 1; simp [add_sub_add_comm]
 
 end ElementaryBasis
 
 theorem sl_non_abelian [Fintype n] [Nontrivial R] (h : 1 < Fintype.card n) :
     ¬IsLieAbelian (sl n R) := by
   rcases Fintype.exists_pair_of_one_lt_card h with ⟨i, j, hij⟩
-  let A := Eb i j hij (1 : R)
-  let B := Eb j i hij.symm (1 : R)
+  let A := single i j hij (1 : R)
+  let B := single j i hij.symm (1 : R)
   intro c
   have c' : A.val * B.val = B.val * A.val := by
     rw [← sub_eq_zero, ← sl_bracket, c.trivial, ZeroMemClass.coe_zero]
-  simpa [A, B, single, Matrix.mul_apply, hij.symm] using congr_fun (congr_fun c' i) i
+  simpa [A, B, Matrix.single, Matrix.mul_apply, hij.symm] using congr_fun (congr_fun c' i) i
 
 end SpecialLinear
 

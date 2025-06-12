@@ -259,7 +259,7 @@ theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] {x : R}
         assumption_mod_cast
       · have := ha.1
         contradiction
-    · simp [Multiset.count_eq_zero_of_not_mem hmem]
+    · simp [Multiset.count_eq_zero_of_notMem hmem]
   · rw [or_iff_not_imp_right]
     intro hu
     rcases eq_or_ne a 0 with rfl | h0

@@ -117,7 +117,7 @@ lemma IsStrictMinor.isMinor (h : N <m M) : N ≤m M :=
   h.lt.le
 
 lemma IsStrictMinor.not_isMinor (h : N <m M) : ¬ (M ≤m N) :=
-  h.lt.not_le
+  h.lt.not_ge
 
 lemma IsStrictMinor.ssubset (h : N <m M) : N.E ⊂ M.E :=
   h.isMinor.subset.ssubset_of_ne (fun hE ↦ h.ne (h.isMinor.eq_of_ground_subset hE.symm.subset).symm)

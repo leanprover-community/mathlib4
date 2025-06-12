@@ -158,7 +158,7 @@ theorem right_lt_sup : b < a ⊔ b ↔ ¬a ≤ b :=
   le_sup_right.lt_iff_ne.trans <| not_congr right_eq_sup
 
 theorem left_or_right_lt_sup (h : a ≠ b) : a < a ⊔ b ∨ b < a ⊔ b :=
-  h.not_le_or_not_le.symm.imp left_lt_sup.2 right_lt_sup.2
+  h.not_le_or_not_ge.symm.imp left_lt_sup.2 right_lt_sup.2
 
 theorem le_iff_exists_sup : a ≤ b ↔ ∃ c, b = a ⊔ c := by
   constructor
@@ -227,7 +227,7 @@ theorem sup_eq_sup_iff_right : a ⊔ c = b ⊔ c ↔ a ≤ b ⊔ c ∧ b ≤ a �
   ⟨fun h => ⟨h ▸ le_sup_left, h.symm ▸ le_sup_left⟩, fun h => sup_congr_right h.1 h.2⟩
 
 theorem Ne.lt_sup_or_lt_sup (hab : a ≠ b) : a < a ⊔ b ∨ b < a ⊔ b :=
-  hab.symm.not_le_or_not_le.imp left_lt_sup.2 right_lt_sup.2
+  hab.symm.not_le_or_not_ge.imp left_lt_sup.2 right_lt_sup.2
 
 /-- If `f` is monotone, `g` is antitone, and `f ≤ g`, then for all `a`, `b` we have `f a ≤ g b`. -/
 theorem Monotone.forall_le_of_antitone {β : Type*} [Preorder β] {f g : α → β} (hf : Monotone f)
@@ -493,12 +493,10 @@ def Lattice.mk' {α : Type*} [Max α] [Min α] (sup_comm : ∀ a b : α, a ⊔ b
     calc
       b ⊔ b = b ⊔ b ⊓ (b ⊔ b) := by rw [inf_sup_self]
       _ = b := by rw [sup_inf_self]
-
   have inf_idem : ∀ b : α, b ⊓ b = b := fun b =>
     calc
       b ⊓ b = b ⊓ (b ⊔ b ⊓ b) := by rw [sup_inf_self]
       _ = b := by rw [inf_sup_self]
-
   let semilatt_inf_inst := SemilatticeInf.mk' inf_comm inf_assoc inf_idem
   let semilatt_sup_inst := SemilatticeSup.mk' sup_comm sup_assoc sup_idem
   have partial_order_eq : @SemilatticeSup.toPartialOrder _ semilatt_sup_inst =

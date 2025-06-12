@@ -293,7 +293,7 @@ section
 variable [loc : IsLocalization S P]
 
 variable (P) in
-@[simp]
+-- Cannot be @[simp] because `S` can not be inferred by `simp`.
 theorem exists_mem_algebraMap_eq {x : R} {I : Ideal R} (h : S ≤ nonZeroDivisors R) :
     (∃ x', x' ∈ I ∧ algebraMap R P x' = algebraMap R P x) ↔ x ∈ I :=
   ⟨fun ⟨_, hx', Eq⟩ => IsLocalization.injective _ h Eq ▸ hx', fun h => ⟨x, h, rfl⟩⟩
@@ -400,7 +400,6 @@ instance orderBot : OrderBot (FractionalIdeal S P) where
 theorem bot_eq_zero : (⊥ : FractionalIdeal S P) = 0 :=
   rfl
 
-@[simp]
 theorem le_zero_iff {I : FractionalIdeal S P} : I ≤ 0 ↔ I = 0 :=
   le_bot_iff
 
@@ -580,6 +579,13 @@ theorem coe_natCast (n : ℕ) : ((n : FractionalIdeal S P) : Submodule R P) = n 
 instance commSemiring : CommSemiring (FractionalIdeal S P) :=
   Function.Injective.commSemiring _ Subtype.coe_injective coe_zero coe_one coe_add coe_mul
     (fun _ _ => coe_nsmul _ _) coe_pow coe_natCast
+
+instance : CanonicallyOrderedAdd (FractionalIdeal S P) where
+  exists_add_of_le h := ⟨_, (sup_eq_right.mpr h).symm⟩
+  le_self_add _ _ := le_sup_left
+
+instance : IsOrderedRing (FractionalIdeal S P) :=
+  CanonicallyOrderedAdd.toIsOrderedRing
 
 end Semiring
 

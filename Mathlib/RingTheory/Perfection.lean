@@ -371,7 +371,7 @@ theorem preVal_mk {x : O} (hx : (Ideal.Quotient.mk _ x : ModP O p) ≠ 0) :
     preVal K v O p (Ideal.Quotient.mk _ x) = v (algebraMap O K x) := by
   obtain ⟨r, hr⟩ : ∃ (a : O), a * (p : O) = (Ideal.Quotient.mk _ x).out - x :=
     Ideal.mem_span_singleton'.1 <| Ideal.Quotient.eq.1 <| Quotient.sound' <| Quotient.mk_out' _
-  refine (if_neg hx).trans (v.map_eq_of_sub_lt <| lt_of_not_le ?_)
+  refine (if_neg hx).trans (v.map_eq_of_sub_lt <| lt_of_not_ge ?_)
   rw [← RingHom.map_sub, ← hr, hv.le_iff_dvd]
   exact fun hprx =>
     hx (Ideal.Quotient.eq_zero_iff_mem.2 <| Ideal.mem_span_singleton.2 <| dvd_of_mul_left_dvd hprx)
@@ -400,7 +400,7 @@ theorem preVal_add (x y : ModP O p) :
 
 theorem v_p_lt_preVal {x : ModP O p} : v p < preVal K v O p x ↔ x ≠ 0 := by
   refine ⟨fun h hx => by rw [hx, preVal_zero] at h; exact not_lt_zero' h,
-    fun h => lt_of_not_le fun hp => h ?_⟩
+    fun h => lt_of_not_ge fun hp => h ?_⟩
   obtain ⟨r, rfl⟩ := Ideal.Quotient.mk_surjective x
   rw [preVal_mk hv h, ← map_natCast (algebraMap O K) p, hv.le_iff_dvd] at hp
   · rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton]; exact hp
@@ -414,7 +414,7 @@ theorem preVal_eq_zero {x : ModP O p} : preVal K v O p x = 0 ↔ x = 0 :=
 
 theorem v_p_lt_val {x : O} :
     v p < v (algebraMap O K x) ↔ (Ideal.Quotient.mk _ x : ModP O p) ≠ 0 := by
-  rw [lt_iff_not_le, not_iff_not, ← map_natCast (algebraMap O K) p, hv.le_iff_dvd,
+  rw [lt_iff_not_ge, not_iff_not, ← map_natCast (algebraMap O K) p, hv.le_iff_dvd,
     Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton]
 
 open NNReal

@@ -20,14 +20,15 @@ import Mathlib.Data.Set.Basic
 
 ## See also
 
-See `Mathlib.GroupTheory.Subsemigroup.Center` for the definition of the center as a subsemigroup:
+See `Mathlib/GroupTheory/Subsemigroup/Center.lean` for the definition of the center as a
+subsemigroup:
 * `Subsemigroup.center`: the center of a semigroup
 * `AddSubsemigroup.center`: the center of an additive semigroup
 
 We provide `Submonoid.center`, `AddSubmonoid.center`, `Subgroup.center`, `AddSubgroup.center`,
 `Subsemiring.center`, and `Subring.center` in other files.
 
-See `Mathlib.GroupTheory.Subsemigroup.Centralizer` for the definition of the centralizer
+See `Mathlib/GroupTheory/Subsemigroup/Centralizer.lean` for the definition of the centralizer
 as a subsemigroup:
 * `Subsemigroup.centralizer`: the centralizer of a subset of a semigroup
 * `AddSubsemigroup.centralizer`: the centralizer of a subset of an additive semigroup

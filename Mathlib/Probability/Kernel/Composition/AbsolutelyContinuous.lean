@@ -13,8 +13,8 @@ This file contains some results about the absolute continuity of the composition
 kernels which use an assumption `CountableOrCountablyGenerated α β` on the measurable spaces.
 
 Results that hold without that assumption are in files about the definitions of compositions and
-products, like `Mathlib.Probability.Kernel.Composition.MeasureCompProd` and
-`Mathlib.Probability.Kernel.Composition.MeasureComp`.
+products, like `Mathlib/Probability/Kernel/Composition/MeasureCompProd.lean` and
+`Mathlib/Probability/Kernel/Composition/MeasureComp.lean`.
 
 The assumption ensures the measurability of the sets where two kernels are absolutely continuous
 or mutually singular.

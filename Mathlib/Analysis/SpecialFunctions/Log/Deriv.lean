@@ -38,7 +38,7 @@ theorem hasStrictDerivAt_log_of_pos (hx : 0 < x) : HasStrictDerivAt log x⁻¹ x
   rwa [exp_log hx] at this
 
 theorem hasStrictDerivAt_log (hx : x ≠ 0) : HasStrictDerivAt log x⁻¹ x := by
-  rcases hx.lt_or_lt with hx | hx
+  rcases hx.lt_or_gt with hx | hx
   · convert (hasStrictDerivAt_log_of_pos (neg_pos.mpr hx)).comp x (hasStrictDerivAt_neg x) using 1
     · ext y; exact (log_neg_eq_log y).symm
     · field_simp [hx.ne]
@@ -73,7 +73,7 @@ theorem contDiffAt_log {n : WithTop ℕ∞} {x : ℝ} : ContDiffAt ℝ n log x �
     · convert hasDerivAt_exp (log y)
       rw [exp_log hy]
     · exact analyticAt_rexp.contDiffAt
-  rcases hx.lt_or_lt with hx | hx
+  rcases hx.lt_or_gt with hx | hx
   · have : ContDiffAt ℝ n (log ∘ (fun y ↦ -y)) x := by
       apply ContDiffAt.comp
       apply A _ (Left.neg_pos_iff.mpr hx)
@@ -261,7 +261,7 @@ theorem hasSum_pow_div_log_of_abs_lt_one {x : ℝ} (h : |x| < 1) :
     refine (tendsto_const_nhds.mul ?_).div_const _
     exact tendsto_pow_atTop_nhds_zero_of_lt_one (abs_nonneg _) h
   show Summable fun n : ℕ => x ^ (n + 1) / (n + 1)
-  refine .of_norm_bounded _ (summable_geometric_of_lt_one (abs_nonneg _) h) fun i => ?_
+  refine .of_norm_bounded (summable_geometric_of_lt_one (abs_nonneg _) h) fun i => ?_
   calc
     ‖x ^ (i + 1) / (i + 1)‖ = |x| ^ (i + 1) / (i + 1) := by
       have : (0 : ℝ) ≤ i + 1 := le_of_lt (Nat.cast_add_one_pos i)

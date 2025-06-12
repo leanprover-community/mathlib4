@@ -19,9 +19,9 @@ logarithm between `EReal` and `ℝ≥0∞` respect the operations. Note that the
 on `ℝ≥0∞` is enforced by measure theory. Subtraction, defined as `x - y = x + (-y)`, does not have
 nice properties but is sometimes convenient to have.
 
-There is also a `CommMonoidWithZero` structure on `EReal`, but `Mathlib.Data.EReal.Basic` only
+There is also a `CommMonoidWithZero` structure on `EReal`, but `Mathlib/Data/EReal/Basic.lean` only
 provides `MulZeroOneClass` because a proof of associativity by hand would have 125 cases.
-The `CommMonoidWithZero` instance is instead delivered in `Mathlib.Data.EReal.Inv`.
+The `CommMonoidWithZero` instance is instead delivered in `Mathlib/Data/EReal/Inv.lean`.
 
 We define `0 * x = x * 0 = 0` for any `x`, with the other cases defined non-ambiguously.
 This does not distribute with addition, as `⊥ = ⊥ + ⊤ = 1 * ⊥ + (-1) * ⊥ ≠ (1 - 1) * ⊥ = 0 * ⊥ = 0`.
@@ -138,7 +138,7 @@ theorem addLECancellable_coe (x : ℝ) : AddLECancellable (x : EReal)
 
 -- TODO: add `MulLECancellable.strictMono*` etc
 theorem add_lt_add_right_coe {x y : EReal} (h : x < y) (z : ℝ) : x + z < y + z :=
-  not_le.1 <| mt (addLECancellable_coe z).add_le_add_iff_right.1 h.not_le
+  not_le.1 <| mt (addLECancellable_coe z).add_le_add_iff_right.1 h.not_ge
 
 theorem add_lt_add_left_coe {x y : EReal} (h : x < y) (z : ℝ) : (z : EReal) + x < z + y := by
   simpa [add_comm] using add_lt_add_right_coe h z
@@ -566,13 +566,13 @@ lemma coe_mul_top_of_pos {x : ℝ} (h : 0 < x) : (x : EReal) * ⊤ = ⊤ :=
   if_pos h
 
 lemma coe_mul_top_of_neg {x : ℝ} (h : x < 0) : (x : EReal) * ⊤ = ⊥ :=
-  (if_neg h.not_lt).trans (if_neg h.ne)
+  (if_neg h.not_gt).trans (if_neg h.ne)
 
 lemma top_mul_coe_of_pos {x : ℝ} (h : 0 < x) : (⊤ : EReal) * x = ⊤ :=
   if_pos h
 
 lemma top_mul_coe_of_neg {x : ℝ} (h : x < 0) : (⊤ : EReal) * x = ⊥ :=
-  (if_neg h.not_lt).trans (if_neg h.ne)
+  (if_neg h.not_gt).trans (if_neg h.ne)
 
 lemma mul_top_of_pos : ∀ {x : EReal}, 0 < x → x * ⊤ = ⊤
   | ⊥, h => absurd h not_lt_bot
@@ -602,13 +602,13 @@ lemma coe_mul_bot_of_pos {x : ℝ} (h : 0 < x) : (x : EReal) * ⊥ = ⊥ :=
   if_pos h
 
 lemma coe_mul_bot_of_neg {x : ℝ} (h : x < 0) : (x : EReal) * ⊥ = ⊤ :=
-  (if_neg h.not_lt).trans (if_neg h.ne)
+  (if_neg h.not_gt).trans (if_neg h.ne)
 
 lemma bot_mul_coe_of_pos {x : ℝ} (h : 0 < x) : (⊥ : EReal) * x = ⊥ :=
   if_pos h
 
 lemma bot_mul_coe_of_neg {x : ℝ} (h : x < 0) : (⊥ : EReal) * x = ⊤ :=
-  (if_neg h.not_lt).trans (if_neg h.ne)
+  (if_neg h.not_gt).trans (if_neg h.ne)
 
 lemma mul_bot_of_pos : ∀ {x : EReal}, 0 < x → x * ⊥ = ⊥
   | ⊥, h => absurd h not_lt_bot

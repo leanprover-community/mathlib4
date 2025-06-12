@@ -123,7 +123,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
       = ∫⋯∫⁻_insert i s,
             f ^ (1 - (s.card : ℝ) * p) * ∏ j ∈ insert i s, (∫⋯∫⁻_{j}, f ∂μ) ^ p ∂μ := by
           -- unfold `T` and reformulate the exponents
-          simp_rw [T, card_insert_of_not_mem hi]
+          simp_rw [T, card_insert_of_notMem hi]
           congr!
           push_cast
           ring
@@ -226,7 +226,7 @@ theorem T_lmarginal_antitone [Fintype ι] [∀ i, SigmaFinite (μ i)]
   · rw [← lmarginal_union μ f hf]
     · rw [← insert_compl_insert hi]
       rfl
-    rw [Finset.disjoint_singleton_left, not_mem_compl]
+    rw [Finset.disjoint_singleton_left, notMem_compl]
     exact mem_insert_self i s
   · -- the main nontrivial point is to check that an exponent `p` satisfying `0 ≤ p` and
     -- `(#ι - 1) * p ≤ 1` is in the valid range for the inductive-step lemma
@@ -534,8 +534,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
     exact hu.continuous.memLp_of_hasCompactSupport (μ := μ) h2u |>.eLpNorm_lt_top
   have h5u : (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ 0 :=
     ENNReal.rpow_pos (pos_iff_ne_zero.mpr h3u) h4u |>.ne'
-  have h6u : (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ ∞ :=
-    ENNReal.rpow_ne_top_of_nonneg (div_nonneg zero_le_one hq.symm.nonneg) h4u
+  have h6u : (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ ∞ := by finiteness
   have h7u := hu.continuous -- for fun_prop
   let v : E → ℝ := fun x ↦ ‖u x‖ ^ (γ : ℝ)
   have hv : ContDiff ℝ 1 v := hu.norm_rpow h1γ

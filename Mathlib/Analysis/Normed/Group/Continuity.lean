@@ -145,11 +145,10 @@ theorem Filter.Tendsto.norm' (h : Tendsto f l (𝓝 a)) : Tendsto (fun x => ‖f
 theorem Filter.Tendsto.nnnorm' (h : Tendsto f l (𝓝 a)) : Tendsto (fun x => ‖f x‖₊) l (𝓝 ‖a‖₊) :=
   Tendsto.comp continuous_nnnorm'.continuousAt h
 
-@[to_additive Filter.Tendsto.enorm]
-lemma Filter.Tendsto.enorm' (h : Tendsto f l (𝓝 a)) : Tendsto (‖f ·‖ₑ) l (𝓝 ‖a‖ₑ) :=
-  .comp continuous_enorm.continuousAt h
 
 end
+
+
 
 section
 
@@ -165,6 +164,16 @@ theorem Continuous.nnnorm' : Continuous f → Continuous fun x => ‖f x‖₊ :
 
 end
 end SeminormedGroup
+
+section ContinuousENorm
+
+variable [TopologicalSpace E] [ContinuousENorm E] {a : E} {l : Filter α} {f : α → E}
+
+@[to_additive Filter.Tendsto.enorm]
+lemma Filter.Tendsto.enorm' (h : Tendsto f l (𝓝 a)) : Tendsto (‖f ·‖ₑ) l (𝓝 ‖a‖ₑ) :=
+  .comp continuous_enorm.continuousAt h
+
+end ContinuousENorm
 
 section SeminormedGroup
 

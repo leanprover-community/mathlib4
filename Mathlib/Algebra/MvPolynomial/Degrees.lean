@@ -400,7 +400,7 @@ theorem totalDegree_add_eq_left_of_totalDegree_lt {p q : MvPolynomial σ R}
     obtain ⟨b, hb₁, hb₂⟩ :=
       p.support.exists_mem_eq_sup (Finsupp.support_nonempty_iff.mpr hp) fun m : σ →₀ ℕ =>
         Multiset.card (toMultiset m)
-    have hb : ¬b ∈ q.support := by
+    have hb : b ∉ q.support := by
       contrapose! h
       rw [totalDegree_eq p, hb₂, totalDegree_eq]
       apply Finset.le_sup h

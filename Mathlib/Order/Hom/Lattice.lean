@@ -9,7 +9,7 @@ import Mathlib.Order.Hom.Basic
 # Unbounded lattice homomorphisms
 
 This file defines unbounded lattice homomorphisms. _Bounded_ lattice homomorphisms are defined in
-`Mathlib.Order.Hom.BoundedLattice`.
+`Mathlib/Order/Hom/BoundedLattice.lean`.
 
 We use the `DFunLike` design, so each type of morphisms has a companion typeclass which is meant to
 be satisfied by itself and all stricter types.

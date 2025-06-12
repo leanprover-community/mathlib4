@@ -12,7 +12,7 @@ import Mathlib.Tactic.Linter.Header
 The "DocString" linter validates style conventions regarding doc-string formatting.
 -/
 
-open Lean Elab
+open Lean Elab Linter
 
 namespace Mathlib.Linter
 
@@ -47,7 +47,7 @@ namespace Style
 
 @[inherit_doc Mathlib.Linter.linter.style.docString]
 def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.style.docString (← getOptions) do
+  unless getLinterValue linter.style.docString (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return

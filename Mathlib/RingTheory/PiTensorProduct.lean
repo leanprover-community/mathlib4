@@ -256,8 +256,6 @@ instance instCommSemiring : CommSemiring (⨂[R] i, A i) where
 
 section
 
-open Function
-
 variable [Fintype ι]
 
 variable (R ι)

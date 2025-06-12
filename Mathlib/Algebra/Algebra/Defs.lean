@@ -10,14 +10,14 @@ import Mathlib.Algebra.Module.LinearMap.Defs
 
 In this file we define associative unital `Algebra`s over commutative (semi)rings.
 
-* algebra homomorphisms `AlgHom` are defined in `Mathlib.Algebra.Algebra.Hom`;
+* algebra homomorphisms `AlgHom` are defined in `Mathlib/Algebra/Algebra/Hom.lean`;
 
-* algebra equivalences `AlgEquiv` are defined in `Mathlib.Algebra.Algebra.Equiv`;
+* algebra equivalences `AlgEquiv` are defined in `Mathlib/Algebra/Algebra/Equiv.lean`;
 
-* `Subalgebra`s are defined in `Mathlib.Algebra.Algebra.Subalgebra`;
+* `Subalgebra`s are defined in `Mathlib/Algebra/Algebra/Subalgebra.lean`;
 
 * The category `AlgCat R` of `R`-algebras is defined in the file
-  `Mathlib.Algebra.Category.Algebra.Basic`.
+  `Mathlib/Algebra/Category/Algebra/Basic.lean`.
 
 See the implementation notes for remarks about non-associative and non-unital algebras.
 
