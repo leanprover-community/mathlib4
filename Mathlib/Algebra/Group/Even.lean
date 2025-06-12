@@ -6,6 +6,7 @@ Authors: Damiano Testa
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Equiv.Opposite
 import Mathlib.Algebra.Group.TypeTags.Basic
+import Mathlib.Data.Set.Operations
 
 /-!
 # Squares and even elements
@@ -50,6 +51,11 @@ for some root `r : α`. -/
 @[to_additive "An element `a` of a type `α` with addition satisfies `Even a` if `a = r + r`,
 for some `r : α`."]
 def IsSquare (a : α) : Prop := ∃ r, a = r * r
+
+@[to_additive]
+lemma isSquare_iff_exists_mul_self (a : α) : IsSquare a ↔ ∃ r, a = r * r := .rfl
+
+@[to_additive] alias ⟨IsSquare.exists_mul_self, _⟩ := isSquare_iff_exists_mul_self
 
 @[to_additive (attr := simp)] lemma IsSquare.mul_self (r : α) : IsSquare (r * r) := ⟨r, rfl⟩
 
@@ -101,7 +107,13 @@ variable [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F �
 
 @[to_additive]
 lemma IsSquare.map {a : α} (f : F) : IsSquare a → IsSquare (f a) :=
-  fun ⟨r, _⟩ => ⟨f r, by simp_all⟩
+  fun ⟨r, _⟩ => ⟨f r, by simp [*]⟩
+
+@[to_additive]
+lemma isSquare_subset_image_isSquare {f : F} (hf : Function.Surjective f) :
+    {b | IsSquare b} ⊆ f '' {a | IsSquare a} := fun b ⟨s, _⟩ => by
+  rcases hf s with ⟨r, rfl⟩
+  exact ⟨r * r, by simp [*]⟩
 
 end MonoidHom
 
