@@ -226,7 +226,7 @@ def comp (φ : Hom h₁ h₂) (ψ : Hom h₂ h₃) : Hom h₁ h₃ where
 @[simp] lemma assoc (φ₁ : Hom h₁ h₂) (φ₂ : Hom h₂ h₃) (φ₃ : Hom h₃ h₄) :
   (φ₁.comp φ₂).comp φ₃ = φ₁.comp (φ₂.comp φ₃) := by aesop_cat
 
-def internal (φ : Hom h₁ h₂) : h₁.internal ⟶ h₂.internal where
+noncomputable def internal (φ : Hom h₁ h₂) : h₁.internal ⟶ h₂.internal where
   app X :=
     letI := h₁.presheafObj X.unop
     letI := h₂.presheafObj X.unop
