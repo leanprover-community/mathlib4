@@ -273,7 +273,6 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
           rw [destruct_pure, destruct_think] at h
           exact False.elim h
         | think => simp_all
-
   · exact ⟨s₁, s₂, rfl, rfl, r⟩
 
 end Bisim
