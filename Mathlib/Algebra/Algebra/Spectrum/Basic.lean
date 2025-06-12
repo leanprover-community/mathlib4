@@ -326,7 +326,8 @@ lemma inv₀_mem_iff {r : R} {a : Aˣ} :
   obtain (rfl | hr) := eq_or_ne r 0
   · simp [zero_mem_iff]
   · lift r to Rˣ using hr.isUnit
-    simp [inv_mem_iff]
+    rw [inv_mem_iff]
+    simp
 
 lemma inv₀_mem_inv_iff {r : R} {a : Aˣ} :
     r⁻¹ ∈ spectrum R (↑a⁻¹ : A) ↔ r ∈ spectrum R (a : A) := by

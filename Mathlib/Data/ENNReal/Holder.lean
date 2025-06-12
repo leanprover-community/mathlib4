@@ -81,7 +81,8 @@ lemma inv_inv_add_inv : (p⁻¹ + q⁻¹)⁻¹ = r := by
 
 include q in
 lemma le : r ≤ p := by
-  simp [← ENNReal.inv_le_inv, ← @inv_inv_add_inv p q r, inv_inv]
+  rw [← ENNReal.inv_le_inv]
+  simp [← @inv_inv_add_inv p q r, inv_inv]
 
 include q in
 protected lemma inv_le_inv : p⁻¹ ≤ r⁻¹ := by

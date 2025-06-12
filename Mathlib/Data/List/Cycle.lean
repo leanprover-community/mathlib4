@@ -744,12 +744,12 @@ nonrec theorem prev_reverse_eq_next' (s : Cycle α) (hs : Nodup s.reverse) (x : 
 -- `simp` cannot infer the proofs: see `next_reverse_eq_prev'` for `@[simp]` lemma.
 theorem next_reverse_eq_prev (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s) :
     s.reverse.next (nodup_reverse_iff.mpr hs) x (mem_reverse_iff.mpr hx) = s.prev hs x hx := by
-  simp [← prev_reverse_eq_next]
+  simp [← prev_reverse_eq_next, - prev_reverse_eq_next']
 
 @[simp]
 theorem next_reverse_eq_prev' (s : Cycle α) (hs : Nodup s.reverse) (x : α) (hx : x ∈ s.reverse) :
     s.reverse.next hs x hx = s.prev (nodup_reverse_iff.mp hs) x (mem_reverse_iff.mp hx) := by
-  simp [← prev_reverse_eq_next]
+  simp [← prev_reverse_eq_next, - prev_reverse_eq_next']
 
 @[simp]
 nonrec theorem next_mem (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s) : s.next hs x hx ∈ s := by

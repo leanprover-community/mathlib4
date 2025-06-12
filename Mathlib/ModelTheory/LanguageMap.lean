@@ -338,7 +338,8 @@ instance isRelational_constantsOn [_ie : IsEmpty α] : IsRelational (constantsOn
   fun n => Nat.casesOn n _ie inferInstance
 
 theorem card_constantsOn : (constantsOn α).card = #α := by
-  simp [card_eq_card_functions_add_card_relations, sum_nat_eq_add_sum_succ]
+  rw [card_eq_card_functions_add_card_relations, sum_nat_eq_add_sum_succ]
+  simp
 
 /-- Gives a `constantsOn α` structure to a type by assigning each constant a value. -/
 def constantsOn.structure (f : α → M) : (constantsOn α).Structure M where

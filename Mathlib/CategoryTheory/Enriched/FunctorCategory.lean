@@ -446,7 +446,7 @@ lemma functorHomEquiv_comp [HasFunctorEnrichedHom V F₁ F₂] [HasEnrichedHom V
   dsimp
   ext k
   rw [homEquiv_comp, assoc, assoc, assoc, assoc, assoc, end_.lift_π, enrichedComp_π]
-  simp [← tensor_comp_assoc]
+  simp [← tensor_comp_assoc, -tensor_comp]
 
 attribute [local instance] functorEnrichedCategory
 
