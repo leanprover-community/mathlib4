@@ -962,7 +962,8 @@ variable {M : Type*} [Monoid M] [MeasurableSpace M] [MeasurableMul₂ M]
 @[to_additive]
 theorem IndepFun.map_mul_eq_map_mconv_map₀
     [IsFiniteMeasure μ] {f g : Ω → M} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
-    (hfg : IndepFun f g μ) : μ.map (f * g) = (μ.map f) ∗ₘ (μ.map g) := by
+    (hfg : IndepFun f g μ) :
+    μ.map (f * g) = (μ.map f) ∗ₘ (μ.map g) := by
   conv in f * g => change (fun x ↦ x.1 * x.2) ∘ (fun ω ↦ (f ω, g ω))
   rw [← measurable_mul.aemeasurable.map_map_of_aemeasurable (hf.prodMk hg),
     (indepFun_iff_map_prod_eq_prod_map_map hf hg).mp hfg, Measure.mconv]
