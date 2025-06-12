@@ -15,7 +15,7 @@ A type is *nontrivial* if it contains at least two elements. This is useful in p
 
 We introduce a typeclass `Nontrivial` formalizing this property.
 
-Basic results about nontrivial types are in `Mathlib.Logic.Nontrivial.Basic`.
+Basic results about nontrivial types are in `Mathlib/Logic/Nontrivial/Basic.lean`.
 -/
 
 variable {α : Type*} {β : Type*}

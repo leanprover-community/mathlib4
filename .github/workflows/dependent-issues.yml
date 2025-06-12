@@ -9,6 +9,7 @@ jobs:
   cancel:
     name: 'Cancel Previous Runs (dependent issues)'
     runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
     # timeout-minutes: 3
     steps:
       - uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # 0.12.1
@@ -18,6 +19,7 @@ jobs:
 
   check:
     runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
     steps:
       - uses: z0al/dependent-issues@75d554cd9494b6e1766bc9d08a81c26444ad5c5a
         env:

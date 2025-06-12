@@ -78,7 +78,7 @@ open Lean Meta Qq Function
 @[positivity algebraMap _ _ _]
 def evalAlgebraMap : PositivityExt where eval {u β} _zβ _pβ e := do
   let ~q(@algebraMap $α _ $instα $instβ $instαβ $a) := e | throwError "not `algebraMap`"
-  let pα ← synthInstanceQ (q(PartialOrder $α) : Q(Type u_1))
+  let pα ← synthInstanceQ q(PartialOrder $α)
   match ← core q(inferInstance) pα a with
   | .positive pa =>
     let _instαSemiring ← synthInstanceQ q(Semiring $α)

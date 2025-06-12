@@ -110,7 +110,11 @@ variable [Zero α] [Zero β] [SMul α β]
 /-- Mixin typeclass on a scalar action of a metric space `α` on a metric space `β` both with
 distinguished points `0`, requiring compatibility of the action in the sense that
 `dist (x • y₁) (x • y₂) ≤ dist x 0 * dist y₁ y₂` and
-`dist (x₁ • y) (x₂ • y) ≤ dist x₁ x₂ * dist y 0`. -/
+`dist (x₁ • y) (x₂ • y) ≤ dist x₁ x₂ * dist y 0`.
+
+If `[NormedDivisionRing α] [SeminormedAddCommGroup β] [Module α β]` are assumed, then prefer writing
+`[NormSMulClass α β]` instead of using `[IsBoundedSMul α β]`, since while equivalent, typeclass
+search can only infer the latter from the former and not vice versa. -/
 class IsBoundedSMul : Prop where
   dist_smul_pair' : ∀ x : α, ∀ y₁ y₂ : β, dist (x • y₁) (x • y₂) ≤ dist x 0 * dist y₁ y₂
   dist_pair_smul' : ∀ x₁ x₂ : α, ∀ y : β, dist (x₁ • y) (x₂ • y) ≤ dist x₁ x₂ * dist y 0
