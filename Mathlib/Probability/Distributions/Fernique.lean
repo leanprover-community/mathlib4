@@ -586,9 +586,8 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self' [IsProbabilityMeasure μ
   let C : ℝ := someFun c * a⁻¹ ^ 2
   have hC_pos : 0 < C := mul_pos (someFun_pos ha_gt hc_lt) (by positivity)
   refine ⟨C, hC_pos, ⟨by fun_prop, ?_⟩⟩
-  -- main part of the proof: prove integrability by bounding the measure of a sequence of annuli
   simp only [HasFiniteIntegral, ← ofReal_norm_eq_enorm, Real.norm_eq_abs, Real.abs_exp]
-  -- `⊢ ∫⁻ (a : E), ENNReal.ofReal (rexp (C * ‖a‖ ^ 2)) ∂μ < ⊤`
+  -- `⊢ ∫⁻ x, ENNReal.ofReal (rexp (C * ‖x‖ ^ 2)) ∂μ < ∞`
   refine (lintegral_exp_mul_sq_norm_le' h_rot le_rfl ha_gt).trans_lt ?_
   refine ENNReal.add_lt_top.mpr ⟨ENNReal.ofReal_lt_top, ?_⟩
   refine ENNReal.tsum_ofReal_exp_lt_top ?_ (fun i ↦ mod_cast Nat.le_two_pow i)
