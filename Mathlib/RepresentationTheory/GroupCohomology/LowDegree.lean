@@ -912,6 +912,9 @@ lemma π_comp_H0Iso_hom  :
     π A 0 ≫ (H0Iso A).hom = (zeroCocyclesIso A).hom := by
   simp [← cancel_mono (shortComplexH0 A).f, H0Iso]
 
+@[deprecated (since := "2025-06-12")]
+alias groupCohomologyπ_comp_isoH0_hom := π_comp_H0Iso_hom
+
 @[elab_as_elim]
 theorem H0_induction_on {C : H0 A → Prop} (x : H0 A)
     (h : ∀ x : A.ρ.invariants, C ((H0Iso A).inv x)) : C x := by
@@ -1004,7 +1007,7 @@ lemma π_comp_H1Iso_hom  :
   simp [H1Iso, isoOneCocycles, π, HomologicalComplex.homologyπ, leftHomologyπ]
 
 @[deprecated (since := "2025-06-12")]
-noncomputable alias π_comp_isoH1_hom := π_comp_H1Iso_hom
+alias groupCohomologyπ_comp_isoH1_hom := π_comp_H1Iso_hom
 
 section IsTrivial
 
@@ -1098,7 +1101,7 @@ lemma π_comp_H2Iso_hom  :
   simp [H2Iso, isoTwoCocycles, π, HomologicalComplex.homologyπ, leftHomologyπ]
 
 @[deprecated (since := "2025-06-12")]
-noncomputable alias π_comp_isoH2_hom := π_comp_H2Iso_hom
+alias groupCohomologyπ_comp_isoH2_hom := π_comp_H2Iso_hom
 
 end H2
 end Cohomology
