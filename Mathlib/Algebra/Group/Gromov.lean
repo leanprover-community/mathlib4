@@ -1310,7 +1310,7 @@ def rho_g_closure := _root_.closure (rho_g (G := G)).carrier
 --   unfold GL_W
 --   apply FiniteDimensional.proper
 
-def embedding_val := Units.isEmbedding_val_mk' (M := (W (G := G) →L[ℂ] W (G := G))) (f := ContinuousLinearMap.inverse) (by
+def isembedding_units_val := Units.isEmbedding_val_mk' (M := (W (G := G) →L[ℂ] W (G := G))) (f := ContinuousLinearMap.inverse) (by
   intro x hx
   have foo := ContDiffAt.continuousAt (ContinuousLinearMap.IsInvertible.contDiffAt_map_inverse (e := x) (n := 0) (by
     simp at hx
@@ -1331,6 +1331,13 @@ def embedding_val := Units.isEmbedding_val_mk' (M := (W (G := G) →L[ℂ] W (G 
   apply ContinuousAt.continuousWithinAt
   exact foo
   -- ContinuousLinearMap.IsInvertible.contDiffAt_map_inverse
+) (by
+  intro u
+  have mul_inv := u.val_inv
+  dsimp [HMul.hMul, Mul.mul] at mul_inv
+  apply ContinuousLinearMap.inverse_eq
+  . exact u.val_inv
+  . exact u.inv_val
 )
 --   apply FiniteDimensional.proper_rclike (K := ℂ)
 
@@ -1338,6 +1345,7 @@ def embedding_val := Units.isEmbedding_val_mk' (M := (W (G := G) →L[ℂ] W (G 
 -- LinearMap.finiteDimensional
 theorem compact_rho_g: IsCompact (rho_g_closure (G := G)) := by
   unfold rho_g_closure rho_g
+  rw [Topology.IsEmbedding.isCompact_iff isembedding_units_val]
   let val := Units.val (α := (W (G := G) →L[ℂ] W (G := G)))
   have units_val_openMap := (Units.isOpenMap_val (R := (W (G := G) →L[ℂ] W (G := G))))
   have units_val_openMap := (Units.isEmbedding_val₀ (G₀ := (W (G := G) →L[ℂ] W (G := G))))
