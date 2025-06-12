@@ -8,17 +8,18 @@ direct write access to the main repository to using a fork-based workflow.
 Features:
 1. Validates current branch (prevents migration of system branches like master, nightly-testing)
 2. Checks GitHub CLI installation and authentication with OS-specific installation instructions
-3. Creates or syncs user's fork of mathlib4
-4. Sets up git remotes correctly (upstream → leanprover-community/mathlib4, origin → user's fork)
-5. Detects if migration has already been completed and skips unnecessary steps
-6. Migrates current branch to fork with proper upstream tracking
-7. Intelligently handles existing PRs:
+3. Validates GitHub CLI token has required scopes (repo, workflow) with clear error messages
+4. Automatically detects SSH connectivity to GitHub and chooses appropriate protocol (SSH preferred, HTTPS fallback)
+5. Creates or syncs user's fork of mathlib4
+6. Sets up git remotes correctly (upstream → leanprover-community/mathlib4, origin → user's fork)
+7. Detects if migration has already been completed and skips unnecessary steps
+8. Migrates current branch to fork with proper upstream tracking
+9. Intelligently handles existing PRs:
    - Detects open PRs from main repo and offers to migrate them to fork-based PRs
    - Detects existing fork-based PRs and confirms no migration needed
    - Handles edge cases with both main repo and fork PRs requiring manual cleanup
-8. Uses fast delete/re-add approach for remote changes to avoid slow branch tracking updates
-9. Provides comprehensive status reporting and next steps
-10. Respects user's existing remote naming preferences (if user declines to rename remotes,
+10. Uses fast delete/re-add approach for remote changes to avoid slow branch tracking updates
+11. Respects user's existing remote naming preferences (if user declines to rename remotes,
     the script will use whatever remote names point to the correct repositories)
 
 Usage:
@@ -26,9 +27,11 @@ Usage:
   python3 scripts/migrate_to_fork.py -y        # Auto-accept all prompts
 
 Requirements:
-  - GitHub CLI (gh) installed and authenticated (gh auth login)
+  - GitHub CLI (gh) installed and authenticated with required scopes:
+    gh auth login --scopes 'repo,workflow'
   - Git repository must be the mathlib4 repository
   - User must be on a feature branch (not master, nightly-testing, or lean-pr-testing-*)
+  - SSH access to GitHub is recommended but not required (will fallback to HTTPS)
 
 The script is safe to run multiple times and will skip already-completed migration steps.
 """
@@ -134,9 +137,76 @@ def check_gh_installation() -> bool:
             print("Please run: gh auth login")
             return False
         print_success("GitHub CLI is authenticated")
+
+        # Check token scopes
+        if not check_gh_token_scopes():
+            return False
+
         return True
     except Exception:
         print_error("Failed to check GitHub CLI authentication status.")
+        return False
+
+
+def check_gh_token_scopes() -> bool:
+    """Check if the GitHub CLI token has required scopes."""
+    try:
+        # Get current token scopes
+        result = run_command(['gh', 'auth', 'status', '--show-token'], check=False)
+        if result.returncode != 0:
+            # Fallback: try to make a test API call that requires repo scope
+            result = run_command(['gh', 'api', 'user'], check=False)
+            if result.returncode != 0:
+                print_error("GitHub CLI token lacks required permissions.")
+                print("Please re-authenticate with required scopes:")
+                print("  gh auth login --scopes 'repo,workflow'")
+                return False
+            print_warning("Could not verify token scopes, but basic API access works")
+            return True
+
+        # Parse the output to check for required scopes
+        auth_output = result.stdout
+        if 'repo' not in auth_output or 'workflow' not in auth_output:
+            print_error("GitHub CLI token lacks required scopes.")
+            print("Required scopes: repo, workflow")
+            print("Please re-authenticate with required scopes:")
+            print("  gh auth login --scopes 'repo,workflow'")
+            return False
+
+        print_success("GitHub CLI token has required scopes")
+        return True
+
+    except Exception as e:
+        # Try a fallback test - attempt to access repo API
+        try:
+            result = run_command(['gh', 'api', 'user/repos', '--limit', '1'], check=False)
+            if result.returncode != 0:
+                print_error("GitHub CLI token lacks required 'repo' scope.")
+                print("Please re-authenticate with required scopes:")
+                print("  gh auth login --scopes 'repo,workflow'")
+                return False
+            print_success("GitHub CLI token appears to have required permissions")
+            return True
+        except Exception:
+            print_warning(f"Could not verify token scopes: {e}")
+            print("If you encounter permission errors, try re-authenticating:")
+            print("  gh auth login --scopes 'repo,workflow'")
+            return True  # Continue with warning
+
+
+def check_ssh_github_access() -> bool:
+    """Check if SSH access to GitHub is available."""
+    try:
+        # Test SSH connection to GitHub
+        result = run_command(['ssh', '-T', 'git@github.com'], check=False)
+        # SSH to GitHub returns exit code 1 for successful authentication
+        # but exit code 255 for connection failures
+        if result.returncode == 1:
+            # Check if the output contains successful authentication message
+            if 'successfully authenticated' in result.stderr:
+                return True
+        return False
+    except Exception:
         return False
 
 
@@ -155,11 +225,26 @@ def get_github_username() -> str:
         sys.exit(1)
 
 
+def get_remote_url(repo_name: str, use_ssh: bool = True) -> str:
+    """Get the appropriate remote URL (SSH or HTTPS) for a repository."""
+    if use_ssh:
+        return f"git@github.com:{repo_name}.git"
+    else:
+        return f"https://github.com/{repo_name}.git"
+
+
 def check_and_create_fork(username: str, auto_accept: bool = False) -> str:
     """Check if user has a fork, create one if needed."""
     print_step(3, "Checking for fork of mathlib4")
 
     repo_name = f"{username}/mathlib4"
+
+    # Determine if we should use SSH
+    use_ssh = check_ssh_github_access()
+    if use_ssh:
+        print_success("SSH access to GitHub is available - will use SSH URLs")
+    else:
+        print_warning("SSH access to GitHub not available - will use HTTPS URLs")
 
     # Check if fork exists
     try:
@@ -176,7 +261,7 @@ def check_and_create_fork(username: str, auto_accept: bool = False) -> str:
                 print_warning(f"Failed to sync fork automatically: {e}")
                 print("You may need to sync manually later")
 
-            return f"git@github.com:{repo_name}.git"
+            return get_remote_url(repo_name, use_ssh)
     except Exception:
         pass
 
@@ -187,7 +272,7 @@ def check_and_create_fork(username: str, auto_accept: bool = False) -> str:
             print("Creating fork...")
             run_command(['gh', 'repo', 'fork', 'leanprover-community/mathlib4', '--clone=false'])
             print_success(f"Fork created: {repo_name}")
-            return f"git@github.com:{repo_name}.git"
+            return get_remote_url(repo_name, use_ssh)
         except Exception as e:
             print_error(f"Failed to create fork: {e}")
             sys.exit(1)
@@ -220,8 +305,10 @@ def setup_remotes(username: str, fork_url: str, auto_accept: bool = False) -> st
     print_step(4, "Setting up git remotes")
 
     remotes = get_current_remotes()
-    upstream_url = "git@github.com:leanprover-community/mathlib4.git"
-    upstream_https = "https://github.com/leanprover-community/mathlib4.git"
+
+    # Determine URL format based on SSH availability
+    use_ssh = check_ssh_github_access()
+    upstream_url = get_remote_url("leanprover-community/mathlib4", use_ssh)
 
     # Handle upstream remote
     upstream_remote = None
@@ -250,6 +337,9 @@ def setup_remotes(username: str, fork_url: str, auto_accept: bool = False) -> st
         print("Adding upstream remote...")
         run_command(['git', 'remote', 'add', 'upstream', upstream_url])
         print_success("Added upstream remote")
+
+    # Update the remote info after writing to it!
+    remotes = get_current_remotes()
 
     # Handle origin remote (fork)
     origin_remote = None
