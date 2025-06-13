@@ -134,7 +134,7 @@ theorem Hσ_eq_zero (q : ℕ) : (Hσ q : K[X] ⟶ K[X]).f 0 = 0 := by
     erw [ChainComplex.of_d]
     rw [AlternatingFaceMapComplex.objD, Fin.sum_univ_two, Fin.val_zero, Fin.val_one, pow_zero,
       pow_one, one_smul, neg_smul, one_smul, comp_add, comp_neg, add_neg_eq_zero,
-      ← Fin.castSucc_zero, ← Fin.succ_zero_eq_one, δ_comp_σ_self, δ_comp_σ_succ]
+      ← Fin.succ_zero_eq_one, δ_comp_σ_succ, δ_comp_σ_self' X (by rw [Fin.castSucc_zero'])]
   · rw [hσ'_eq_zero (Nat.succ_pos q) (c_mk 1 0 rfl), zero_comp]
 
 /-- The maps `hσ' q n m hnm` are natural on the simplicial object -/
