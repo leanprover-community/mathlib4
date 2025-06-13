@@ -54,7 +54,7 @@ def finSuccEquiv' (i : Fin (n + 1)) : Fin (n + 1) ≃ Option (Fin n) where
   toFun := i.insertNth none some
   invFun x := x.casesOn' i (Fin.succAbove i)
   left_inv x := Fin.succAboveCases i (by simp) (fun j => by simp) x
-  right_inv x := by cases x <;> dsimp <;> simp
+  right_inv x := by cases x <;> simp
 
 @[simp]
 theorem finSuccEquiv'_at (i : Fin (n + 1)) : (finSuccEquiv' i) i = none := by
@@ -220,7 +220,7 @@ def Equiv.embeddingFinSucc (n : ℕ) (ι : Type*) :
 def finSumFinEquiv : Fin m ⊕ Fin n ≃ Fin (m + n) where
   toFun := Sum.elim (Fin.castAdd n) (Fin.natAdd m)
   invFun i := @Fin.addCases m n (fun _ => Fin m ⊕ Fin n) Sum.inl Sum.inr i
-  left_inv x := by rcases x with y | y <;> dsimp <;> simp
+  left_inv x := by rcases x with y | y <;> simp
   right_inv x := by refine Fin.addCases (fun i => ?_) (fun i => ?_) x <;> simp
 
 @[simp]
@@ -304,7 +304,7 @@ This is like `finProdFinEquiv.symm` but with `m` infinite.
 See `Nat.div_mod_unique` for a similar propositional statement. -/
 @[simps]
 def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n where
-  toFun a := (a / n, ↑a)
+  toFun a := (a / n, Fin.ofNat n a)
   invFun p := p.1 * n + ↑p.2
   -- TODO: is there a canonical order of `*` and `+` here?
   left_inv _ := Nat.div_add_mod' _ _
@@ -320,17 +320,17 @@ See `Int.ediv_emod_unique` for a similar propositional statement. -/
 def Int.divModEquiv (n : ℕ) [NeZero n] : ℤ ≃ ℤ × Fin n where
   -- TODO: could cast from int directly if we import `Data.ZMod.Defs`, though there are few lemmas
   -- about that coercion.
-  toFun a := (a / n, ↑(a.natMod n))
+  toFun a := (a / n, Fin.ofNat n (a.natMod n))
   invFun p := p.1 * n + ↑p.2
   left_inv a := by
-    simp_rw [Fin.coe_natCast_eq_mod, natCast_mod, natMod,
+    simp_rw [Fin.val_ofNat, natCast_mod, natMod,
       toNat_of_nonneg (emod_nonneg _ <| natCast_eq_zero.not.2 (NeZero.ne n)), emod_emod,
       ediv_add_emod']
   right_inv := fun ⟨q, r, hrn⟩ => by
     simp only [Fin.val_mk, Prod.mk_inj, Fin.ext_iff]
     obtain ⟨h1, h2⟩ := Int.natCast_nonneg r, Int.ofNat_lt.2 hrn
     rw [Int.add_comm, add_mul_ediv_right _ _ (natCast_eq_zero.not.2 (NeZero.ne n)),
-      ediv_eq_zero_of_lt h1 h2, natMod, add_mul_emod_self, emod_eq_of_lt h1 h2, toNat_natCast]
+      ediv_eq_zero_of_lt h1 h2, natMod, add_mul_emod_self_right, emod_eq_of_lt h1 h2, toNat_natCast]
     exact ⟨q.zero_add, Fin.val_cast_of_lt hrn⟩
 
 /-- Promote a `Fin n` into a larger `Fin m`, as a subtype where the underlying

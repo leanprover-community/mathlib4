@@ -299,6 +299,14 @@ theorem symm_toRingEquiv : (e.symm : A₂ ≃+* A₁) = (e : A₁ ≃+* A₂).sy
   rfl
 
 @[simp]
+theorem symm_toAddEquiv : (e.symm : A₂ ≃+ A₁) = (e : A₁ ≃+ A₂).symm :=
+  rfl
+
+@[simp]
+theorem symm_toMulEquiv : (e.symm : A₂ ≃* A₁) = (e : A₁ ≃* A₂).symm :=
+  rfl
+
+@[simp]
 theorem apply_symm_apply (e : A₁ ≃ₐ[R] A₂) : ∀ x, e (e.symm x) = x :=
   e.toEquiv.apply_symm_apply
 
@@ -487,8 +495,14 @@ theorem toLinearEquiv_refl : (AlgEquiv.refl : A₁ ≃ₐ[R] A₁).toLinearEquiv
   rfl
 
 @[simp]
-theorem toLinearEquiv_symm (e : A₁ ≃ₐ[R] A₂) : e.toLinearEquiv.symm = e.symm.toLinearEquiv :=
+theorem toLinearEquiv_symm (e : A₁ ≃ₐ[R] A₂) : e.symm.toLinearEquiv = e.toLinearEquiv.symm :=
   rfl
+
+@[simp]
+theorem coe_toLinearEquiv (e : A₁ ≃ₐ[R] A₂) : ⇑e.toLinearEquiv = e := rfl
+
+@[simp]
+theorem coe_symm_toLinearEquiv (e : A₁ ≃ₐ[R] A₂) : ⇑e.toLinearEquiv.symm = e.symm := rfl
 
 @[simp]
 theorem toLinearEquiv_trans (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) :
@@ -661,6 +675,10 @@ instance : MulDistribMulAction (A₁ ≃ₐ[R] A₁) A₁ˣ where
 @[simp]
 theorem smul_units_def (f : A₁ ≃ₐ[R] A₁) (x : A₁ˣ) :
     f • x = Units.map f x := rfl
+
+@[simp]
+lemma _root_.MulSemiringAction.toRingEquiv_algEquiv (σ : A₁ ≃ₐ[R] A₁) :
+    MulSemiringAction.toRingEquiv _ A₁ σ = σ := rfl
 
 @[simp]
 theorem algebraMap_eq_apply (e : A₁ ≃ₐ[R] A₂) {y : R} {x : A₁} :

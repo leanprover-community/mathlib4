@@ -96,15 +96,11 @@ theorem map {F R S : Type*} [Star R] [Star S] [FunLike F R S] [StarHomClass F R 
     {x : R} (hx : IsSelfAdjoint x) (f : F) : IsSelfAdjoint (f x) :=
   show star (f x) = f x from map_star f x ▸ congr_arg f hx
 
-@[deprecated (since := "2024-09-07")] alias starHom_apply := map
-
 /- note: this lemma is *not* marked as `simp` so that Lean doesn't look for a `[TrivialStar R]`
 instance every time it sees `⊢ IsSelfAdjoint (f x)`, which will likely occur relatively often. -/
 theorem _root_.isSelfAdjoint_map {F R S : Type*} [Star R] [Star S] [FunLike F R S]
     [StarHomClass F R S] [TrivialStar R] (f : F) (x : R) : IsSelfAdjoint (f x) :=
   (IsSelfAdjoint.all x).map f
-
-@[deprecated (since := "2024-09-07")] alias _root_.isSelfAdjoint_starHom_apply := isSelfAdjoint_map
 
 section AddMonoid
 
@@ -286,12 +282,12 @@ end Semifield
 section SMul
 
 @[aesop safe apply]
-theorem smul [Star R] [AddMonoid A] [StarAddMonoid A] [SMul R A] [StarModule R A]
+theorem smul [Star R] [Star A] [SMul R A] [StarModule R A]
     {r : R} (hr : IsSelfAdjoint r) {x : A} (hx : IsSelfAdjoint x) :
     IsSelfAdjoint (r • x) := by
   simp only [isSelfAdjoint_iff, star_smul, hr.star_eq, hx.star_eq]
 
-theorem smul_iff [Monoid R] [StarMul R] [AddMonoid A] [StarAddMonoid A]
+theorem smul_iff [Monoid R] [StarMul R] [Star A]
     [MulAction R A] [StarModule R A] {r : R} (hr : IsSelfAdjoint r) (hu : IsUnit r) {x : A} :
     IsSelfAdjoint (r • x) ↔ IsSelfAdjoint x := by
   refine ⟨fun hrx ↦ ?_, .smul hr⟩
@@ -339,6 +335,9 @@ theorem star_val_eq {x : selfAdjoint R} : star (x : R) = x :=
 
 instance : Inhabited (selfAdjoint R) :=
   ⟨0⟩
+
+@[simp]
+lemma isSelfAdjoint {x : selfAdjoint R} : IsSelfAdjoint (x : R) := by simp [isSelfAdjoint_iff]
 
 end AddGroup
 

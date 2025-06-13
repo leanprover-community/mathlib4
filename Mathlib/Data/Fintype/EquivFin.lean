@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.List.NodupEquivFin
-import Mathlib.Order.WellFounded
 
 /-!
 # Equivalences between `Fintype`, `Fin` and `Finite`
@@ -42,7 +41,7 @@ universe u v
 
 variable {α β γ : Type*}
 
-open Finset Function
+open Finset
 
 namespace Fintype
 
@@ -421,17 +420,6 @@ noncomputable def fintypeOrInfinite (α : Type*) : Fintype α ⊕' Infinite α :
 
 end
 
-theorem Finset.exists_minimal {α : Type*} [Preorder α] (s : Finset α) (h : s.Nonempty) :
-    ∃ m ∈ s, ∀ x ∈ s, ¬x < m := by
-  obtain ⟨c, hcs : c ∈ s⟩ := h
-  have : WellFounded (@LT.lt { x // x ∈ s } _) := Finite.wellFounded_of_trans_of_irrefl _
-  obtain ⟨⟨m, hms : m ∈ s⟩, -, H⟩ := this.has_min Set.univ ⟨⟨c, hcs⟩, trivial⟩
-  exact ⟨m, hms, fun x hx hxm => H ⟨x, hx⟩ trivial hxm⟩
-
-theorem Finset.exists_maximal {α : Type*} [Preorder α] (s : Finset α) (h : s.Nonempty) :
-    ∃ m ∈ s, ∀ x ∈ s, ¬m < x :=
-  @Finset.exists_minimal αᵒᵈ _ s h
-
 namespace Infinite
 
 theorem of_not_fintype (h : Fintype α → False) : Infinite α :=
@@ -454,13 +442,15 @@ theorem of_surjective_from_set {s : Set α} (hs : s ≠ Set.univ) {f : s → α}
     Infinite α :=
   of_injective_to_set hs (injective_surjInv hf)
 
-theorem exists_not_mem_finset [Infinite α] (s : Finset α) : ∃ x, x ∉ s :=
+theorem exists_notMem_finset [Infinite α] (s : Finset α) : ∃ x, x ∉ s :=
   not_forall.1 fun h => Fintype.false ⟨s, h⟩
+
+@[deprecated (since := "2025-05-23")] alias exists_not_mem_finset := exists_notMem_finset
 
 -- see Note [lower instance priority]
 instance (priority := 100) (α : Type*) [Infinite α] : Nontrivial α :=
-  ⟨let ⟨x, _hx⟩ := exists_not_mem_finset (∅ : Finset α)
-    let ⟨y, hy⟩ := exists_not_mem_finset ({x} : Finset α)
+  ⟨let ⟨x, _hx⟩ := exists_notMem_finset (∅ : Finset α)
+    let ⟨y, hy⟩ := exists_notMem_finset ({x} : Finset α)
     ⟨y, x, by simpa only [mem_singleton] using hy⟩⟩
 
 protected theorem nonempty (α : Type*) [Infinite α] : Nonempty α := by infer_instance
@@ -486,7 +476,7 @@ end Infinite
 instance : Infinite ℕ :=
   Infinite.of_not_fintype <| by
     intro h
-    exact (Finset.range _).card_le_univ.not_lt ((Nat.lt_succ_self _).trans_eq (card_range _).symm)
+    exact (Finset.range _).card_le_univ.not_gt ((Nat.lt_succ_self _).trans_eq (card_range _).symm)
 
 instance Int.infinite : Infinite ℤ :=
   Infinite.of_injective Int.ofNat fun _ _ => Int.ofNat.inj
@@ -531,7 +521,7 @@ private noncomputable def natEmbeddingAux (α : Type*) [Infinite α] : ℕ → �
   | n =>
     letI := Classical.decEq α
     Classical.choose
-      (exists_not_mem_finset
+      (exists_notMem_finset
         ((Multiset.range n).pmap (fun m (_ : m < n) => natEmbeddingAux _ m) fun _ =>
             Multiset.mem_range.1).toFinset)
 
@@ -540,10 +530,10 @@ private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
   rintro m n h
   letI := Classical.decEq α
   wlog hmlen : m ≤ n generalizing m n
-  · exact (this h.symm <| le_of_not_le hmlen).symm
+  · exact (this h.symm <| le_of_not_ge hmlen).symm
   by_contra hmn
   have hmn : m < n := lt_of_le_of_ne hmlen hmn
-  refine (Classical.choose_spec (exists_not_mem_finset
+  refine (Classical.choose_spec (exists_notMem_finset
     ((Multiset.range n).pmap (fun m (_ : m < n) ↦ natEmbeddingAux α m)
       (fun _ ↦ Multiset.mem_range.1)).toFinset)) ?_
   refine Multiset.mem_toFinset.2 (Multiset.mem_pmap.2 ⟨m, Multiset.mem_range.2 hmn, ?_⟩)
@@ -567,7 +557,7 @@ theorem exists_superset_card_eq [Infinite α] (s : Finset α) (n : ℕ) (hn : #s
   · rcases hn.eq_or_lt with hn' | hn'
     · exact ⟨s, subset_refl _, hn'⟩
     obtain ⟨t, hs, ht⟩ := IH _ (Nat.le_of_lt_succ hn')
-    obtain ⟨x, hx⟩ := exists_not_mem_finset t
+    obtain ⟨x, hx⟩ := exists_notMem_finset t
     refine ⟨Finset.cons x t hx, hs.trans (Finset.subset_cons _), ?_⟩
     simp [hx, ht]
 
