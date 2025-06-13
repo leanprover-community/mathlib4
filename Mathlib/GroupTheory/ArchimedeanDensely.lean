@@ -6,7 +6,7 @@ Authors: Yakov Pechersky
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.Group.Units
-import Mathlib.Algebra.Order.Hom.Monoid
+import Mathlib.Algebra.Order.Hom.MonoidWithZero
 import Mathlib.Data.Int.Interval
 import Mathlib.GroupTheory.Archimedean
 
