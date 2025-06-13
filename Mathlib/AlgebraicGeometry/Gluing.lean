@@ -535,7 +535,7 @@ lemma fst_inv_eq_snd_inv
       (F.map k₂.2.1).isoOpensRange.inv ≫ F.map k₂.2.2 := by
   apply Scheme.hom_ext_of_forall
   intro x
-  obtain ⟨l, hli, hlj, y, hy₁, hy₂⟩ := Functor.IsLocallyDirected.cond (F ⋙ forget) k₁.2.1 k₂.2.1
+  obtain ⟨l, hli, hlj, y, hy₁, hy₂⟩ := (F ⋙ forget).exists_map_eq_of_isLocallyDirected k₁.2.1 k₂.2.1
     ((pullback.fst _ _ ≫ (F.map k₁.2.1).isoOpensRange.inv).base x)
     ((pullback.snd _ _ ≫ (F.map k₂.2.1).isoOpensRange.inv).base x) (by
       simp only [Functor.comp_obj, forget_obj, Functor.comp_map, forget_map, ← comp_base_apply,
@@ -736,10 +736,10 @@ def isColimitForgetToLocallyRingedSpace :
   uniq s m hm := by
     rw [← Iso.inv_comp_eq]
     refine Multicoequalizer.hom_ext _ _ _ fun i ↦ ?_
+    conv_lhs => rw [← ι.eq_def]
     dsimp
     simp [cocone, ← hm, glueDataι_naturality,
       ← GlueData.ι_isoLocallyRingedSpace_inv, -ι_gluedIso_inv_assoc, -ι_gluedIso_inv]
-    rfl
 
 instance : HasColimit F := ⟨_, isColimit F⟩
 
