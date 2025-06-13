@@ -74,6 +74,10 @@ instance bicategory.strict : Bicategory.Strict Cat.{v, u} where
 instance category : LargeCategory.{max v u} Cat.{v, u} :=
   StrictBicategory.category Cat.{v, u}
 
+@[ext]
+theorem natTrans_ext {C D : Cat} {F G : C ⟶ D} {η θ : F ⟶ G} (h : η.app = θ.app) :
+    η = θ := NatTrans.ext' h
+
 @[simp]
 theorem id_obj {C : Cat} (X : C) : (𝟙 C : C ⥤ C).obj X = X :=
   rfl

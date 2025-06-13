@@ -33,8 +33,6 @@ namespace CategoryTheory
 
 open Category Bicategory
 
-open Bicategory
-
 universe w₁ w₂ w₃ v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
