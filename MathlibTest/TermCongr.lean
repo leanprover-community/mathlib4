@@ -153,6 +153,19 @@ example {A : Nat → Type} (f g : T2 A) (h : f = g) (n : Nat) : f.1 n = g.1 n :=
   have := congr($hh n) -- (4) didn't work, is overapplied
   exact this
 
+/-!
+A couple more over-applied functions.
+-/
+axiom fn {α : Type} (x : α) (h : x = x) : α
+
+example (f g : Nat → Nat) (h : f = g) (m n : Nat) (h' : m = n) :
+    fn f rfl m = fn g rfl n :=
+  congr(fn $h _ $h')
+
+example (f g : Nat → Nat) (h : f = g) (m n : Nat) (h' : m = n) :
+    fn (fn f rfl) rfl m = fn (fn g rfl) rfl n :=
+  congr(fn (fn $h _) _ $h')
+
 end Overapplied
 
 namespace SubsingletonDependence
