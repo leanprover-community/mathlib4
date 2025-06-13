@@ -460,7 +460,6 @@ lemma lintegral_exp_mul_sq_norm_le [IsProbabilityMeasure μ]
   let t := normSeq a
   let c := μ {x | ‖x‖ ≤ a}
   let C := someFun c' * a⁻¹ ^ 2
-  have ha_gt : 2⁻¹ < c := hc'_gt.trans_le hc'
   have hc'_le : c' ≤ 1 := hc'.trans prob_le_one
   change ∫⁻ x, .ofReal (rexp (C * ‖x‖ ^ 2)) ∂μ
       ≤ c * (.ofReal (rexp (someFun c'))
@@ -575,7 +574,6 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self' [IsProbabilityMeasure μ
     {a : ℝ} (ha_pos : 0 < a) (ha_gt : 2⁻¹ < μ {x | ‖x‖ ≤ a}) (ha_lt : μ {x | ‖x‖ ≤ a} < 1) :
     ∃ C, 0 < C ∧ Integrable (fun x ↦ rexp (C * ‖x‖ ^ 2)) μ := by
   let c := μ {x | ‖x‖ ≤ a}
-  have hc_pos : 0 < c := lt_of_lt_of_le (by simp) ha_gt.le
   replace hc_lt : c < 1 := ha_lt
   have hc_lt_top : c < ∞ := measure_lt_top _ _
   have hc_one_sub_lt_top : 1 - c < ∞ := lt_top_of_lt (b := 2) (tsub_le_self.trans_lt (by simp))
