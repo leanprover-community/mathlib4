@@ -476,7 +476,6 @@ def curry [LocallyCompactSpace X] [LocallyCompactSpace Y] : C(X × Y, Z) ≃ₜ 
 def continuousMapOfUnique [Unique X] : Y ≃ₜ C(X, Y) where
   toFun := const X
   invFun f := f default
-  left_inv _ := rfl
   right_inv f := by
     ext x
     rw [Unique.eq_default x]

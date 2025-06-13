@@ -59,8 +59,6 @@ def Types.sections.equivFixedPoints :
     J.sections ≃ MulAction.fixedPoints M (J.obj (SingleObj.star M)) where
   toFun s := ⟨s.val _, s.property⟩
   invFun p := ⟨fun _ ↦ p.val, p.property⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The limit of `J : SingleObj M ⥤ Type u` is equivalent to the fixed points of the
 induced action on `J.obj (SingleObj.star M)`. -/

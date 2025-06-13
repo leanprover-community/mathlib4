@@ -33,8 +33,6 @@ def sectionsEquiv {J : Type*} [Category J] (K : J ⥤ Type u) :
     K.sections ≃ (K ⋙ uliftFunctor.{v, u}).sections where
   toFun := fun ⟨u, hu⟩ => ⟨fun j => ⟨u j⟩, fun f => by simp [hu f]⟩
   invFun := fun ⟨u, hu⟩ => ⟨fun j => (u j).down, @fun j j' f => by simp [← hu f]⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /--
 The functor `uliftFunctor : Type u ⥤ Type (max u v)` preserves limits of arbitrary size.
