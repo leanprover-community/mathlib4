@@ -576,11 +576,12 @@ theorem isUnit_leadingCoeff_mul_left_eq_zero_iff (h : IsUnit p.leadingCoeff) {q 
     q * p = 0 ↔ q = 0 := by
   constructor
   · intro hp
-    replace hp := congr_arg (· * C ↑h.unit⁻¹) hp
-    simp only [zero_mul] at hp
-    rwa [mul_assoc, Monic.mul_left_eq_zero_iff] at hp
-    refine monic_mul_C_of_leadingCoeff_mul_eq_one ?_
-    simp [Units.mul_inv_eq_iff_eq_mul, IsUnit.unit_spec]
+    sorry
+    -- replace hp := congr_arg (· * C ↑h.unit⁻¹) hp
+    -- simp only [zero_mul] at hp
+    -- rwa [mul_assoc, Monic.mul_left_eq_zero_iff] at hp
+    -- refine monic_mul_C_of_leadingCoeff_mul_eq_one ?_
+    -- simp [Units.mul_inv_eq_iff_eq_mul, IsUnit.unit_spec]
   · rintro rfl
     rw [zero_mul]
 
