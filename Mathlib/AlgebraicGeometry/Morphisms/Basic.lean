@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.Pullbacks
-import Mathlib.AlgebraicGeometry.Limits
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.Data.List.TFAE
 
