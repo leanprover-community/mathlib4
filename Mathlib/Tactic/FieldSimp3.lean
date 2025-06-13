@@ -194,6 +194,36 @@ theorem zpow_eq_eval [DivisionCommMonoid M] {l : NF M} (r : ℤ) {x : M} (hx : x
 theorem zpow_zero_eq_eval [DivisionCommMonoid M] (x : M) : x ^ (0:ℤ) = NF.eval [] := by
   rw [zpow_zero, one_eq_eval]
 
+instance : Pow (NF M) ℕ where
+  pow l r := l.map fun (a, x) ↦ (r * a, x)
+
+@[simp] theorem pow_apply (r : ℕ) (l : NF M) : l ^ r = l.map fun (a, x) ↦ (r * a, x) :=
+  rfl
+
+-- in the library somewhere?
+theorem _root_.List.prod_pow {β : Type*} [CommMonoid β] {r : ℕ} {l : List β} :
+    l.prod ^ r = (map (fun x ↦ x ^ r) l).prod :=
+  let fr : β →* β := ⟨⟨fun b ↦ b ^ r, one_pow r⟩, (mul_pow · · r)⟩
+  map_list_prod fr l
+
+theorem eval_pow [DivisionCommMonoid M] {l : NF M} {x : M} (h : x = l.eval) (r : ℕ) :
+    (l ^ r).eval = x ^ r := by
+  unfold NF.eval at h ⊢
+  simp only [h, prod_pow, map_map, NF.pow_apply]
+  congr! 2
+  ext p
+  dsimp
+  rw [mul_comm, zpow_mul]
+  norm_cast
+
+theorem pow_eq_eval [DivisionCommMonoid M] {l : NF M} (r : ℕ) {x : M} (hx : x = l.eval) :
+    x ^ r = (l ^ r).eval := by
+  rw [hx, eval_pow]
+  rfl
+
+theorem pow_zero_eq_eval [DivisionCommMonoid M] (x : M) : x ^ (0:ℕ) = NF.eval [] := by
+  rw [pow_zero, one_eq_eval]
+
 theorem eq_cons_cons [DivInvMonoid M] {r₁ r₂ : ℤ} (m : M) {l₁ l₂ : NF M} (h1 : r₁ = r₂)
     (h2 : l₁.eval = l₂.eval) :
     ((r₁, m) ::ᵣ l₁).eval = ((r₂, m) ::ᵣ l₂).eval := by
@@ -471,6 +501,15 @@ partial def normalize (iM : Q(Field $M)) (x : Q($M)) :
       let ⟨l, pf⟩ ← normalize iM y
       -- build the new list and proof
       pure ⟨l.onExponent (HMul.hMul s), (q(NF.zpow_eq_eval $s $pf):)⟩
+  /- normalize an integer exponentiation: `y ^ (s : ℤ)` -/
+  | ~q($y ^ ($s : ℕ)) =>
+    let some s := Expr.nat? s | baseCase x
+    if s = 0 then
+      pure ⟨[], (q(NF.pow_zero_eq_eval $y):)⟩
+    else
+      let ⟨l, pf⟩ ← normalize iM y
+      -- build the new list and proof
+      pure ⟨l.onExponent (HMul.hMul s), (q(NF.pow_eq_eval $s $pf):)⟩
   /- normalize a `(1:M)` -/
   | ~q(1) => pure ⟨[], q(NF.one_eq_eval $M)⟩
   /- anything else should be treated as an atom -/
@@ -504,14 +543,13 @@ variable {x y z : ℚ}
 #conv field_simp2 => (1 : ℚ)
 
 -- Combining powers of a single atom.
--- TODO: many of these are not quite what we could like!
 section
 
-/-- info: x ^ 0 -/
+/-- info: 1 -/
 #guard_msgs in
 #conv field_simp2 => x ^ 0
 
-/-- info: x ^ 1 -/
+/-- info: x -/
 #guard_msgs in
 #conv field_simp2 => x ^ 1
 
@@ -523,15 +561,15 @@ section
 #guard_msgs in
 #conv field_simp2 => x ^ 2
 
-/-- info: x ^ 1 * x ^ 2 -/
+/-- info: x ^ 3 -/
 #guard_msgs in
 #conv field_simp2 => x ^ 1 * x ^ 2
 
 /-- info: x ^ 2 -/
 #guard_msgs in
-#conv field_simp2 => x * x -- should be x²
+#conv field_simp2 => x * x
 
-/-- info: x ^ 3 * x ^ 42 -/
+/-- info: x ^ 45 -/
 #guard_msgs in
 #conv field_simp2 => x ^ 3 * x ^ 42
 
@@ -563,13 +601,13 @@ end
 #guard_msgs in
 #conv field_simp2 => x / x
 
-/-- info: x ^ 3 * x ^ (-1) -/
+/-- info: x ^ 2 -/
 #guard_msgs in
-#conv field_simp2 => x ^ 3 * x⁻¹ -- should be x²
+#conv field_simp2 => x ^ 3 * x⁻¹
 
-/-- info: x * (x ^ 4) ^ (-1) -/
+/-- info: x ^ (-3) -/
 #guard_msgs in
-#conv field_simp2 => x / x ^ 4 -- TODO, should simplify this!
+#conv field_simp2 => x / x ^ 4
 
 -- If x is non-zero, we do cancel.
 section
@@ -587,12 +625,12 @@ variable {hx : x ≠ 0}
 #guard_msgs in
 #conv field_simp2 => x / x
 
-/-- info: x ^ 3 * x ^ (-1) -/
+/-- info: x ^ 2 -/
 #guard_msgs in
-#conv field_simp2 => x ^ 3 * x⁻¹ -- should be x²
+#conv field_simp2 => x ^ 3 * x⁻¹
 
-/-- info: x * (x ^ 4) ^ (-1) -/
-#guard_msgs in -- TODO: should simplify this
+/-- info: x ^ (-3) -/
+#guard_msgs in
 #conv field_simp2 => x / x ^ 4
 
 end
@@ -600,17 +638,17 @@ end
 -- Combining this works also when other atoms are "in the way".
 -- TODO: these tests are broken
 
-/-- info: x ^ 1 * (y * (x ^ 2 * y ^ 3)) -/
+/-- info: x ^ 3 * y ^ 4 -/
 #guard_msgs in
 #conv field_simp2 => x ^1 * y * x ^2 * y ^ 3
 
-/-- info: x ^ 1 * x ^ 2 -/
+/-- info: x ^ 3 -/
 #guard_msgs in
 #conv field_simp2 => x ^ 1 * y * x ^2 * y⁻¹
 
 variable {y' : ℚ} (hy' : y' ≠ 0)
 
-/-- info: x ^ 1 * x ^ 2 -/
+/-- info: x ^ 3 -/
 #guard_msgs in
 #conv field_simp2 => x ^ 1 * y * x ^2 * y⁻¹
 
@@ -692,4 +730,22 @@ example : x * y + x * z = x * (y + z) := by
   conv_lhs => field_simp2
 
 example : x / (x * y + x * z) = (y + z) ^ (-1:ℤ) := by
+  conv_lhs => field_simp2
+
+example : ((x ^ (2:ℤ)) ^ 3) = x ^ (6:ℤ) := by
+  conv_lhs => field_simp2
+
+example : x ^ 3 * x⁻¹ = x ^ (2:ℤ) := by
+  conv_lhs => field_simp2
+
+example : x / x ^ 4 = x ^ (-3:ℤ) := by
+  conv_lhs => field_simp2
+
+example : x ^ 1 * x ^ 2 = x ^ (3:ℤ) := by
+  conv_lhs => field_simp2
+
+example : x * x = x ^ (2:ℤ) := by
+  conv_lhs => field_simp2
+
+example : x ^ 3 * x ^ 42 = x ^ (45:ℤ) := by
   conv_lhs => field_simp2
