@@ -294,13 +294,13 @@ def Subfield.toIntermediateField (S : Subfield L) (algebra_map_mem : ∀ x, alge
 
 @[simp]
 theorem Subfield.toIntermediateField_toSubfield (S : Subfield L)
-    (algebra_map_mem : ∀ (x : K), (algebraMap K L) x ∈ S) :
+    (algebra_map_mem : ∀ x, (algebraMap K L) x ∈ S) :
     (S.toIntermediateField algebra_map_mem).toSubfield = S := rfl
 
 @[simp]
 theorem Subfield.coe_toIntermediateField (S : Subfield L)
-    (algebra_map_mem : ∀ (x : K), (algebraMap K L) x ∈ S) :
-    ((S.toIntermediateField algebra_map_mem) : Set L)= S := rfl
+    (algebra_map_mem : ∀ x, (algebraMap K L) x ∈ S) :
+    ((S.toIntermediateField algebra_map_mem) : Set L) = S := rfl
 
 namespace IntermediateField
 

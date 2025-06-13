@@ -203,7 +203,7 @@ open IntermediateField in
 /--
 A totally complex field that has a unique complex conjugation is CM.
 -/
-theorem of_isConj_unique {σ : K ≃ₐ[ℚ] K} (hσ : ∀ φ : K →+* ℂ, IsConj φ σ) :
+theorem of_for_all_isConj {σ : K ≃ₐ[ℚ] K} (hσ : ∀ φ : K →+* ℂ, IsConj φ σ) :
     IsCMField K := by
   have : IsTotallyReal (fixedField (Subgroup.zpowers σ)) := ⟨fun w ↦ by
     obtain ⟨W, rfl⟩ := w.comap_surjective (K := K)
@@ -220,7 +220,7 @@ theorem of_isConj_unique {σ : K ≃ₐ[ℚ] K} (hσ : ∀ φ : K →+* ℂ, IsC
 /--
 A totally complex abelian extension of `ℚ` is CM.
 -/
-instance of_abelian [IsGalois ℚ K] [IsMulCommutative (K ≃ₐ[ℚ] K)] :
+instance of_isMulCommutative [IsGalois ℚ K] [IsMulCommutative (K ≃ₐ[ℚ] K)] :
     IsCMField K := by
   let φ : K →+* ℂ := Classical.choice (inferInstance : Nonempty _)
   obtain ⟨σ, hσ₁⟩ : ∃ σ : K ≃ₐ[ℚ] K, ComplexEmbedding.IsConj φ σ :=
@@ -230,8 +230,8 @@ instance of_abelian [IsGalois ℚ K] [IsMulCommutative (K ≃ₐ[ℚ] K)] :
     intro ψ
     obtain ⟨ν, rfl⟩ := ComplexEmbedding.exists_comp_symm_eq_of_comp_eq (k := ℚ) φ ψ (by ext; simp)
     rw [show σ = ν.symm⁻¹ * σ * ν.symm by simp]
-    exact hσ₁.comp
-  exact of_isConj_unique K hσ₂
+    exact hσ₁.comp _
+  exact of_for_all_isConj K hσ₂
 
 variable [IsCMField K]
 
