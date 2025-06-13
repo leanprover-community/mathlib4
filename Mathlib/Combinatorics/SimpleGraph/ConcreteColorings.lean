@@ -174,6 +174,6 @@ lemma two_colorable_iff_forall_loop_not_odd {α : Type*} {G : SimpleGraph α} :
     have : ((Nonempty.some (c.connected_toSimpleGraph ⟨_, hv⟩ a)).length) % 2 =
         (Nonempty.some (c.connected_toSimpleGraph ⟨_, hv⟩ b)).length % 2 := by
       simp_rw [← Fin.val_natCast, ← Fin.ofNat_eq_cast, he]
-    refine (Nat.even_iff.mpr (by omega)).add_one
+    exact (Nat.even_iff.mpr (by omega)).add_one
 
 end SimpleGraph
