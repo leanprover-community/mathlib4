@@ -3,7 +3,7 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Faithful
+import Mathlib.Algebra.MvPolynomial.Nilpotent
 import Mathlib.Algebra.Order.Ring.Finset
 import Mathlib.FieldTheory.PurelyInseparable.Tower
 import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
@@ -13,50 +13,24 @@ import Mathlib.RingTheory.Polynomial.GaussLemma
 
 /-!
 
-Foo
+# Separably generated extensions
+
+We aim to formalize the following result:
+
+Let `K/k` be a finitely generated field extension with characteristic `p > 0`, then TFAE
+1. `K/k` is separably generated
+2. If `{ sᵢ } ⊆ K` is an arbitrary `k`-linearly independent set,
+  `{ sᵢᵖ } ⊆ K` is also `k`-linearly independent
+3. `K ⊗ₖ k^{1/p}` is reduced
+4. `K` is geometrically reduced over `k`.
+
+## Main result
+- `exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow`: (2) => (1)
 
 -/
 
 noncomputable section
-
-section InOtherPR
-
-theorem MvPolynomial.isUnit_iff_of_isDomain {σ R : Type*} [CommRing R] [IsDomain R]
-    {P : MvPolynomial σ R} :
-    IsUnit P ↔ IsUnit (P.coeff 0) ∧ (∀ i, i ≠ 0 → P.coeff i = 0) := by
-  classical
-  refine ⟨fun H ↦ ⟨H.map constantCoeff, ?_⟩, fun ⟨h₁, h₂⟩ ↦ ?_⟩
-  · intros n hn
-    obtain ⟨i, hi⟩ : ∃ i, n i ≠ 0 := by simpa [Finsupp.ext_iff] using hn
-    let e := (optionEquivLeft _ _).symm.trans (renameEquiv R (Equiv.optionSubtypeNe i))
-    have H := (Polynomial.coeff_isUnit_isNilpotent_of_isUnit (H.map e.symm)).2 (n i) hi
-    simp only [ne_eq, isNilpotent_iff_eq_zero] at H
-    have : coeff _ ((e.symm P).coeff _) = _ :=
-      optionEquivLeft_coeff_coeff _ _ (n.equivMapDomain (Equiv.optionSubtypeNe i).symm)
-        (renameEquiv R (Equiv.optionSubtypeNe i).symm P)
-    simp only [ne_eq, Finsupp.equivMapDomain_apply, Equiv.symm_symm, Equiv.optionSubtypeNe_apply,
-      Option.casesOn'_none, renameEquiv_apply, H, coeff_zero] at this
-    rwa [Finsupp.equivMapDomain_eq_mapDomain,
-      coeff_rename_mapDomain _ (Equiv.optionSubtypeNe i).symm.injective, eq_comm] at this
-  · convert h₁.map C
-    ext m
-    rw [coeff_C]
-    split_ifs with h
-    · rw [h]
-    · exact h₂ _ (.symm h)
-
-theorem MvPolynomial.isUnit_iff_totalDegree_of_isDomain {σ R : Type*} [CommRing R] [IsDomain R]
-    {P : MvPolynomial σ R} :
-    IsUnit P ↔ IsUnit (P.coeff 0) ∧ P.totalDegree = 0 := by
-  convert isUnit_iff_of_isDomain (P := P)
-  rw [totalDegree_eq_zero_iff]
-  simp [not_imp_comm (a := _ = (0 : R)), Finsupp.ext_iff]
-
-end InOtherPR
-
 namespace Algebra
-
-universe u
 
 section
 
@@ -128,7 +102,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_adjoin
       apply hF.2
       rw [totalDegree_eq_zero_iff_eq_C.mp this]
       convert C.map_zero
-      simpa [this] using isUnit_iff_totalDegree_of_isDomain.not.mp hq₁q₂.2
+      simpa [this] using isUnit_iff_totalDegree_of_isReduced.not.mp hq₁q₂.2
   -- By the minimality of total degree and the linearly independent condition,
   -- there exists some `Xᵢᵈ` with `p ∤ d` appearing in `F`.
   obtain ⟨i, hi⟩ : ∃ i, ∃ σ ∈ F.support, ¬ p ∣ σ i := by
@@ -302,6 +276,7 @@ Then `K/k` is finite separably generated.
 
 TODO: show that this is an if and only if.
 -/
+@[stacks 030W "(2) => (1) finitely genenerated case"]
 lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
     (Hfg : IntermediateField.FG (F := k) (E := K) ⊤) :
     ∃ s : Finset K, IsTranscendenceBasis k ((↑) : s → K) ∧
