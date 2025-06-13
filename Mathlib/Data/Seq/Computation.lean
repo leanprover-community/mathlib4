@@ -503,24 +503,17 @@ theorem length_thinkN (s : Computation α) [_h : Terminates s] (n) :
   (results_thinkN n (results_of_terminates _)).length
 
 theorem eq_thinkN {s : Computation α} {a n} (h : Results s a n) : s = thinkN (pure a) n := by
-  induction n generalizing s with
-  | zero =>
-    induction s using recOn with
-    | pure a' =>
-      rw [← eq_of_pure_mem h.mem]
-      rfl
-    | think s =>
-      obtain ⟨n, h⟩ := of_results_think h
-      cases h
-      contradiction
-  | succ n IH =>
-    induction s using recOn with
-    | pure a' =>
-      have := h.len_unique (results_pure _)
-      contradiction
-    | think s =>
-      rw [IH (results_think_iff.1 h)]
-      rfl
+  induction n generalizing s with | zero | succ n IH <;>
+  induction s using recOn with | pure a' | think s
+  · rw [← eq_of_pure_mem h.mem]
+    rfl
+  · obtain ⟨n, h⟩ := of_results_think h
+    cases h
+    contradiction
+  · have := h.len_unique (results_pure _)
+    contradiction
+  · rw [IH (results_think_iff.1 h)]
+    rfl
 
 theorem eq_thinkN' (s : Computation α) [_h : Terminates s] :
     s = thinkN (pure (get s)) (length s) :=
@@ -696,25 +689,18 @@ theorem length_bind (s : Computation α) (f : α → Computation β) [_T1 : Term
 
 theorem of_results_bind {s : Computation α} {f : α → Computation β} {b k} :
     Results (bind s f) b k → ∃ a m n, Results s a m ∧ Results (f a) b n ∧ k = n + m := by
-  induction k generalizing s with
-  | zero =>
-    induction s using recOn with intro h
-    | pure a =>
-      simp only [ret_bind] at h
-      exact ⟨a, _, _, results_pure _, h, rfl⟩
-    | think s' =>
-      have := congr_arg head (eq_thinkN h)
-      contradiction
-  | succ n IH =>
-    induction s using recOn with intro h
-    | pure a =>
-      simp only [ret_bind] at h
-      exact ⟨a, _, n + 1, results_pure _, h, rfl⟩
-    | think s' =>
-      simp only [think_bind, results_think_iff] at h
-      let ⟨a, m, n', h1, h2, e'⟩ := IH h
-      rw [e']
-      exact ⟨a, m.succ, n', results_think h1, h2, rfl⟩
+  induction k generalizing s with | zero | succ n IH <;>
+  induction s using recOn with intro h | pure a | think s'
+  · simp only [ret_bind] at h
+    exact ⟨_, _, _, results_pure _, h, rfl⟩
+  · have := congr_arg head (eq_thinkN h)
+    contradiction
+  · simp only [ret_bind] at h
+    exact ⟨_, _, n + 1, results_pure _, h, rfl⟩
+  · simp only [think_bind, results_think_iff] at h
+    let ⟨a, m, n', h1, h2, e'⟩ := IH h
+    rw [e']
+    exact ⟨a, m.succ, n', results_think h1, h2, rfl⟩
 
 theorem exists_of_mem_bind {s : Computation α} {f : α → Computation β} {b} (h : b ∈ bind s f) :
     ∃ a ∈ s, b ∈ f a :=
