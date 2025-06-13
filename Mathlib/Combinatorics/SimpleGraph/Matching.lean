@@ -170,7 +170,6 @@ lemma IsMatching.exists_of_disjoint_sets_of_equiv {s t : Set V} (h : Disjoint s 
       · exact hadj ⟨v, _⟩
       · exact (hadj ⟨w, _⟩).symm
     edge_vert := by aesop }
-
   simp only [Subgraph.IsMatching, Set.mem_union, true_and]
   intro v hv
   rcases hv with hl | hr

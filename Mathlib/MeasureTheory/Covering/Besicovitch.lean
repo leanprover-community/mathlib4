@@ -431,13 +431,13 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
       hlast := by
         intro a ha
         have I : (a : ℕ) < N := ha
-        have : G a < G (Fin.last N) := by dsimp; simp [G, I.ne, (hg a I).1]
+        have : G a < G (Fin.last N) := by simp [G, I.ne, (hg a I).1]
         exact Gab _ _ this
       inter := by
         intro a ha
         have I : (a : ℕ) < N := ha
         have J : G (Fin.last N) = i := by dsimp; simp only [G, if_true, eq_self_iff_true]
-        have K : G a = g a := by dsimp [G]; simp [I.ne, (hg a I).1]
+        have K : G a = g a := by simp [G, I.ne, (hg a I).1]
         convert dist_le_add_of_nonempty_closedBall_inter_closedBall (hg _ I).2.1 }
   -- this is a contradiction
   exact hN.false sc

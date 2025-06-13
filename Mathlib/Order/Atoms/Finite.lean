@@ -14,8 +14,8 @@ import Mathlib.Order.Preorder.Finite
 This module contains some results on atoms and simple lattices in the finite context.
 
 ## Main results
-  * `Finite.to_isAtomic`, `Finite.to_isCoatomic`: Finite partial orders with bottom resp. top
-    are atomic resp. coatomic.
+* `Finite.to_isAtomic`, `Finite.to_isCoatomic`: Finite partial orders with bottom resp. top
+  are atomic resp. coatomic.
 
 -/
 

@@ -468,7 +468,6 @@ to a morphism `R[S⁻¹] →* T`. -/
 @[to_additive "The universal lift from a morphism `R →+ T`, which maps elements of `S` to
   additive-units of `T`, to a morphism `AddOreLocalization R S →+ T`."]
 def universalMulHom (hf : ∀ s : S, f s = fS s) : R[S⁻¹] →* T where
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
   toFun x :=
     x.liftExpand (fun r s => ((fS s)⁻¹ : Units T) * f r) fun r t s ht => by
       simp only [smul_eq_mul]
@@ -480,7 +479,6 @@ def universalMulHom (hf : ∀ s : S, f s = fS s) : R[S⁻¹] →* T where
       simp only [one_mul, Units.inv_mul]
   map_one' := by beta_reduce; rw [OreLocalization.one_def, liftExpand_of]; simp
   map_mul' x y := by
-    beta_reduce
     induction' x with r₁ s₁
     induction' y with r₂ s₂
     rcases oreDivMulChar' r₁ r₂ s₁ s₂ with ⟨ra, sa, ha, ha'⟩; rw [ha']; clear ha'

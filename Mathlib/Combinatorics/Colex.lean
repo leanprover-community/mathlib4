@@ -57,7 +57,7 @@ Related files are:
 colex, colexicographic, binary
 -/
 
-open Finset Function
+open Function
 
 variable {α β : Type*}
 
@@ -495,8 +495,6 @@ lemma isInitSeg_iff_exists_initSeg :
   exact ⟨isInitSeg_initSeg, initSeg_nonempty⟩
 
 end Colex
-
-open Colex
 
 /-!
 ### Colex on `ℕ`

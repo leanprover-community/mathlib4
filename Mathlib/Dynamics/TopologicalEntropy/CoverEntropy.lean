@@ -133,7 +133,7 @@ lemma IsDynCoverOf.iterate_le_pow {T : X → X} {F : Set X} (F_inv : MapsTo T F 
   -- Deal with the edge cases: `F = ∅` or `m = 0`.
   rcases F.eq_empty_or_nonempty with rfl | F_nemp
   · exact ⟨∅, by simp⟩
-  have _ : Nonempty X := nonempty_of_exists F_nemp
+  have _ : Nonempty X := F_nemp.nonempty
   have s_nemp := h.nonempty F_nemp
   obtain ⟨x, x_F⟩ := F_nemp
   rcases m.eq_zero_or_pos with rfl | m_pos

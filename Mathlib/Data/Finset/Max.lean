@@ -245,6 +245,8 @@ theorem min'_eq_inf' : s.min' H = s.inf' H id := rfl
 @[simp]
 theorem max'_singleton (a : α) : ({a} : Finset α).max' (singleton_nonempty _) = a := by simp [max']
 
+theorem min'_le_max' (hs : s.Nonempty) : s.min' hs ≤ s.max' hs := min'_le _ _ (max'_mem _ _)
+
 theorem min'_lt_max' {i j} (H1 : i ∈ s) (H2 : j ∈ s) (H3 : i ≠ j) :
     s.min' ⟨i, H1⟩ < s.max' ⟨i, H1⟩ :=
   isGLB_lt_isLUB_of_ne (s.isLeast_min' _).isGLB (s.isGreatest_max' _).isLUB H1 H2 H3
@@ -422,7 +424,6 @@ theorem card_le_of_interleaved {s t : Finset α}
       _ < f y :=
         (Finset.lt_inf_iff <| WithTop.coe_lt_top a).2 fun b hb =>
           WithTop.coe_lt_coe.2 <| hay.trans (by simpa using (mem_filter.1 hb).2)
-
   calc
     s.card = (s.image f).card := (card_image_of_injOn f_mono.injOn).symm
     _ ≤ (insert ⊤ (t.image (↑)) : Finset (WithTop α)).card :=

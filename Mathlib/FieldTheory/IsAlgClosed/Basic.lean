@@ -270,7 +270,7 @@ alias surjective_comp_algebraMap_of_isAlgebraic := surjective_restrictDomain_of_
 variable [Algebra.IsAlgebraic K L] (K L M)
 
 /-- Less general version of `lift`. -/
-private noncomputable irreducible_def lift_aux : L →ₐ[K] M :=
+private noncomputable irreducible_def liftAux : L →ₐ[K] M :=
   Classical.choice <| IntermediateField.nonempty_algHom_of_adjoin_splits
     (fun x _ ↦ ⟨Algebra.IsIntegral.isIntegral x, splits_codomain (minpoly K x)⟩)
     (IntermediateField.adjoin_univ K L)
@@ -303,8 +303,18 @@ noncomputable irreducible_def lift : S →ₐ[R] M := by
   letI := FractionRing.liftAlgebra R (FractionRing S)
   have := FractionRing.isScalarTower_liftAlgebra R M
   have := FractionRing.isScalarTower_liftAlgebra R (FractionRing S)
-  let f : FractionRing S →ₐ[FractionRing R] M := lift_aux (FractionRing R) (FractionRing S) M
+  let f : FractionRing S →ₐ[FractionRing R] M := liftAux (FractionRing R) (FractionRing S) M
   exact (f.restrictScalars R).comp ((Algebra.ofId S (FractionRing S)).restrictScalars R)
+
+theorem nonempty_algEquiv_or_of_finrank_eq_two {F F' : Type*} (E : Type*)
+    [Field F] [Field F'] [Field E] [Algebra F F'] [Algebra F E]
+    [Algebra.IsAlgebraic F E] [IsAlgClosed F'] (h : Module.finrank F F' = 2) :
+    Nonempty (E ≃ₐ[F] F) ∨ Nonempty (E ≃ₐ[F] F') := by
+  have emb : E →ₐ[F] F' := lift
+  have e := AlgEquiv.ofInjectiveField emb
+  have := Subalgebra.isSimpleOrder_of_finrank h
+  obtain h | h := IsSimpleOrder.eq_bot_or_eq_top emb.range <;> rw [h] at e
+  exacts [.inl ⟨e.trans <| Algebra.botEquiv ..⟩, .inr ⟨e.trans Subalgebra.topEquiv⟩]
 
 noncomputable instance (priority := 100) perfectRing (p : ℕ) [Fact p.Prime] [CharP k p]
     [IsAlgClosed k] : PerfectRing k p :=

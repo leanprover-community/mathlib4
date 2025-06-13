@@ -615,9 +615,6 @@ end Set
 
 /-! ### Instances -/
 
-
-open Finset
-
 section Preorder
 
 variable [Preorder α] [Preorder β]

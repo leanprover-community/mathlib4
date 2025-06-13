@@ -580,8 +580,8 @@ theorem mul_upcrossingsBefore_le (hf : a ≤ f N ω) (hab : a < b) :
           ∑ k ∈ Finset.range (upcrossingsBefore a b f N ω),
             (stoppedValue f (upperCrossingTime a b f N (k + 1)) ω -
               stoppedValue f (lowerCrossingTime a b f N k) ω) := by
-        refine Finset.sum_le_sum fun i hi =>
-          le_sub_of_le_upcrossingsBefore (zero_lt_iff.2 hN) hab ?_
+        gcongr ∑ k ∈ _, ?_ with i hi
+        refine le_sub_of_le_upcrossingsBefore (zero_lt_iff.2 hN) hab ?_
         rwa [Finset.mem_range] at hi
       _ ≤ ∑ k ∈ Finset.range N, (stoppedValue f (upperCrossingTime a b f N (k + 1)) ω -
           stoppedValue f (lowerCrossingTime a b f N k) ω) := by

@@ -38,11 +38,11 @@ conservative dynamical system, Poincare recurrence theorem
 
 noncomputable section
 
-open Set Filter MeasureTheory Finset Function TopologicalSpace Topology
+namespace MeasureTheory
+
+open Set Filter Finset Function TopologicalSpace Topology
 
 variable {α : Type*} [MeasurableSpace α] {f : α → α} {s : Set α} {μ : Measure α}
-
-namespace MeasureTheory
 
 open Measure
 
