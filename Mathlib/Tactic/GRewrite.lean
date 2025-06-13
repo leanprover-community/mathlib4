@@ -10,8 +10,6 @@ import Mathlib.Tactic.GRewrite.Elab
 # The generalized rewriting tactic
 
 The `grw`/`grewrite` tactic is a generalization of the `rewrite` tactic that works with relations
-other than equality.
-
-This file also imports the `positivity` tactic so that it can be used in `grewrite`.
+other than equality. The core implementation of `grewrite` is in the file `Tactic.GRewrite.Core`
 
 -/
