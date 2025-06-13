@@ -87,10 +87,10 @@ private abbrev LazyM := ReaderT Context <| StateT LazyEntry MetaM
 
 private def mkLabelledStar (mvarId : MVarId) : LazyM Key :=
   modifyGet fun entry =>
-    if let some stars := entry.stars? then
+    if let some stars := entry.labelledStars? then
       match stars.idxOf? mvarId with
       | some idx => (.labelledStar idx, entry)
-      | none => (.labelledStar stars.size, { entry with stars? := stars.push mvarId })
+      | none => (.labelledStar stars.size, { entry with labelledStars? := stars.push mvarId })
     else
       (.star, entry)
 
@@ -107,7 +107,7 @@ private def withLams (lambdas : List FVarId) (key : Key) : StateT LazyEntry Meta
   | [] => return key
   | _ :: tail =>
     -- Add `key` and `lambdas.length - 1` lambdas to the result, returning the final lambda.
-    modify ({ · with results := tail.foldl (init := [key]) (fun _ => .lam :: ·) })
+    modify ({ · with computedKeys := tail.foldl (init := [key]) (fun _ => .lam :: ·) })
     return .lam
 
 @[inline]
@@ -173,7 +173,7 @@ private def cacheEtaPossibilities (e original : Expr) (lambdas : List FVarId) (r
   | .app f a, fvarId :: _ =>
     if isStarWithArg (.fvar fvarId) a && !f.getAppFn.isMVar then
       match entry.cache.find? original with
-      | some (key :: keys) => return [(key, { entry with results := keys })]
+      | some (key :: keys) => return [(key, { entry with computedKeys := keys })]
       | some [] => panic! "cached list of eta possibilities is empty"
       | none =>
         let entry := { entry with stack := .cache original [] :: entry.stack }
@@ -325,8 +325,7 @@ where
       let rec reduce := do
         match ← whnfD (fnType.instantiateRevRange j i args) with
         | .forallE _ d b bi => cont i d b bi
-        | fnType =>
-          throwFunctionExpected fnType
+        | fnType => throwFunctionExpected fnType
       match fnType with
       | .forallE _ d b bi => cont j d b bi
       | _ => reduce
@@ -352,23 +351,23 @@ private def processPrevious (entry : LazyEntry) : MetaM LazyEntry := do
   withLCtx lctx localInsts do withConfig (fun _ => cfg) do withTransparency transparency do
   expr.withApp fun fn args => do
 
-  let stackArgs (entry : LazyEntry) : MetaM LazyEntry := do
-    let entries ← getStackEntries fn args bvars
-    return { entry with stack := entries.reverseAux entry.stack }
+    let stackArgs (entry : LazyEntry) : MetaM LazyEntry := do
+      let entries ← getStackEntries fn args bvars
+      return { entry with stack := entries.reverseAux entry.stack }
 
-  match fn with
-  | .forallE n d b bi =>
-    let d' := .expr (← mkExprInfo d bvars)
-    let b' ← withLocalDecl n bi d fun fvar =>
-      return .expr (← mkExprInfo (b.instantiate1 fvar) (fvar.fvarId! :: bvars))
-    return { entry with stack := d' :: b' :: entry.stack }
-  | .proj n _ a =>
-    let entry ← stackArgs entry
-    if isClass (← getEnv) n then
-      return { entry with stack := .star :: entry.stack }
-    else
-      return { entry with stack := .expr (← mkExprInfo a bvars) :: entry.stack }
-  | _ => stackArgs entry
+    match fn with
+    | .forallE n d b bi =>
+      let d' := .expr (← mkExprInfo d bvars)
+      let b' ← withLocalDecl n bi d fun fvar =>
+        return .expr (← mkExprInfo (b.instantiate1 fvar) (fvar.fvarId! :: bvars))
+      return { entry with stack := d' :: b' :: entry.stack }
+    | .proj n _ a =>
+      let entry ← stackArgs entry
+      if isClass (← getEnv) n then
+        return { entry with stack := .star :: entry.stack }
+      else
+        return { entry with stack := .expr (← mkExprInfo a bvars) :: entry.stack }
+    | _ => stackArgs entry
 
 /--
 Adds `key` to the `value` list in every `.cache` entry in `stack`. This needs to be done with
@@ -383,9 +382,9 @@ private def updateCaches (stack : List StackEntry) (key : Key) : List StackEntry
 /-- A single step in evaluating a `LazyEntry`. Allow multiple different outcomes. -/
 def evalLazyEntryWithEta (entry : LazyEntry) :
     MetaM (Option (List (Key × LazyEntry))) := do
-  if let key :: results := entry.results then
+  if let key :: computedKeys := entry.computedKeys then
     -- If there is already a result available, use it.
-    return some [(key, { entry with results, stack := updateCaches entry.stack key })]
+    return some [(key, { entry with computedKeys, stack := updateCaches entry.stack key })]
   else withMCtx entry.mctx do
     let entry ← processPrevious entry
     let result ← evalLazyEntryWithEtaAux entry
@@ -396,9 +395,9 @@ def evalLazyEntryWithEta (entry : LazyEntry) :
 /-- A single step in evaluating a `LazyEntry`. Don't allow multiple different outcomes. -/
 private def evalLazyEntry (entry : LazyEntry) :
     MetaM (Option (Key × LazyEntry)) := do
-  if let key :: results := entry.results then
+  if let key :: computedKeys := entry.computedKeys then
     -- If there is already a result available, use it.
-    return some (key, { entry with results, stack := updateCaches entry.stack key })
+    return some (key, { entry with computedKeys, stack := updateCaches entry.stack key })
   else withMCtx entry.mctx do
     let entry ← processPrevious entry
     let result ← evalLazyEntryAux entry

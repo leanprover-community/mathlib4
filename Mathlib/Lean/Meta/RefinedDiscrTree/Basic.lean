@@ -220,7 +220,7 @@ structure LazyEntry where
   It is `none` if we use `.star` instead of `labelledStar`,
   for example when encoding the lookup expression.
   -/
-  stars?   : Option (Array MVarId)
+  labelledStars?   : Option (Array MVarId)
   /--
   The `Key`s that have already been computed.
 
@@ -228,7 +228,7 @@ structure LazyEntry where
   is cached, or when there are lambda binders (because it depends on the body whether the lambda key
   should be indexed or not). In that case the remaining `Key`s are stored in `results`.
   -/
-  results  : List Key := []
+  computedKeys  : List Key := []
   /-- The cache of past computations that have multiple possible outcomes. -/
   cache    : AssocList Expr (List Key) := {}
 deriving Inhabited
@@ -237,13 +237,13 @@ deriving Inhabited
 def mkInitLazyEntry (labelledStars : Bool) : MetaM LazyEntry :=
   return {
     mctx := ← getMCtx
-    stars? := if labelledStars then some #[] else none
+    labelledStars? := if labelledStars then some #[] else none
   }
 
 private def LazyEntry.format (entry : LazyEntry) : Format := Id.run do
   let mut parts := #[f!"stack: {entry.stack}"]
-  unless entry.results == [] do
-    parts := parts.push f!"results: {entry.results}"
+  unless entry.computedKeys == [] do
+    parts := parts.push f!"results: {entry.computedKeys}"
   if let some info := entry.previous then
     parts := parts.push f!"todo: {info.expr}"
   return Format.joinSep parts.toList ", "
@@ -258,7 +258,7 @@ Discrimination tree trie. See `RefinedDiscrTree`.
 
 A `Trie` will normally have exactly one of the following
 - nonempty `values`
-- nonempty`stars` or `children`
+- nonempty `stars`, `labelledStars` and/or `children`
 - nonempty `pending`
 But defining it as a structure that can have all at the same time turns out to be easier.
 -/

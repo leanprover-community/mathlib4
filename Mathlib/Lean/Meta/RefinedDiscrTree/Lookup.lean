@@ -62,18 +62,18 @@ private def evalNode (trie : TrieIndex) : TreeM α (Trie α) := do
   let node := (← get)[trie]!
   if node.pending.isEmpty then
     return node
-  setTrie trie default
-  let mut { values, star, labelledStars, children, .. } := node
-  for (entry, value) in node.pending do
+  setTrie trie default -- reduce the reference count to `node` to be 1
+  let mut { values, star, labelledStars, children, pending } := node
+  for (entry, value) in pending do
     let some newEntries ← evalLazyEntryWithEta entry | values := values.push value
     for (key, entry) in newEntries do
       let entry := (entry, value)
       match key with
-      | .labelledStar id =>
-        if let some trie := labelledStars[id]? then
+      | .labelledStar label =>
+        if let some trie := labelledStars[label]? then
           addLazyEntryToTrie trie entry
         else
-          labelledStars := labelledStars.insert id (← newTrie entry)
+          labelledStars := labelledStars.insert label (← newTrie entry)
       | .star =>
         if let some trie := star then
           addLazyEntryToTrie trie entry
@@ -102,50 +102,11 @@ structure MatchResult (α : Type) where
   arrays of non-empty arrays so that we can defer concatenating results until
   needed.
   -/
-  elts : Array (Array (Array α)) := #[]
+  elts : Std.HashMap Nat (Array (Array α)) := {}
   deriving Inhabited
-namespace MatchResult
 
-private def push (r : MatchResult α) (score : Nat) (e : Array α) : MatchResult α :=
-  if e.isEmpty then
-    r
-  else if score < r.elts.size then
-    { elts := r.elts.modify score (·.push e) }
-  else
-    let rec loop (a : Array (Array (Array α))) :=
-        if a.size < score then
-          loop (a.push #[])
-        else
-          { elts := a.push #[e] }
-    termination_by score - a.size
-    loop r.elts
-
-/--
-Number of elements in result
--/
-partial def size (mr : MatchResult α) : Nat :=
-  mr.elts.foldl (fun i a => a.foldl (fun n a => n + a.size) i) 0
-
-/--
-Append results to array
--/
-@[specialize]
-partial def appendResults (mr : MatchResult α) (a : Array β) (f : Nat → α → β) : Array β :=
-  let aa := mr.elts
-  let n := aa.size
-  Nat.fold (n := n) (init := a) fun i _ r =>
-    let j := n-1-i
-    let b := aa[j]
-    b.foldl (init := r) (· ++ ·.map (f j))
-
-/--
-Convert a `MatchResult` into a `Array`, with better matches at the start of the array.
--/
-def toArray (mr : MatchResult α) : Array α :=
-  mr.elts.foldr (init := #[]) fun a r => a.foldl (init := r) (· ++ ·)
-
-end MatchResult
-
+private def MatchResult.push (mr : MatchResult α) (score : Nat) (e : Array α) : MatchResult α :=
+  { elts := mr.elts.alter score fun | some arr => arr.push e | none => #[e] }
 
 /-
 A partial match captures the intermediate state of a match execution.
@@ -266,6 +227,7 @@ private partial def getMatchLoop (todo : Array PartialMatch) (result : MatchResu
     | key :: keys =>
       let pMatch := { pMatch with keys }
       match key with
+      -- `key` is not a `.labelledStar`
       | .star =>
         if unify then
           let todo ← matchQueryStar pMatch.trie pMatch todo
