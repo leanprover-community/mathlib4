@@ -457,7 +457,6 @@ noncomputable def coconeOfHasColimitCurryCompColim : Cocone G :=
         have := (Q.obj y.1).w f₂
         dsimp [Q] at this ⊢
         rw [← colimit.w (F := curry.obj G ⋙ colim) (f := f₁)]
-        dsimp
         simp [Category.assoc, Category.comp_id, Prod.fac' (f₁, f₂),
           G.map_comp, ι_colimMap_assoc, curry_obj_map_app, reassoc_of% this] } }
 
