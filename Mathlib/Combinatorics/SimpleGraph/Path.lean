@@ -1355,10 +1355,10 @@ end ConnectedComponent
 Given graph homomorphisms from each connected component of `G` to `H` this is the `G →g H`
 -/
 def homOfConnectedComponents (G : SimpleGraph V) {H : SimpleGraph V'}
-    (C : (c : G.ConnectedComponent) → (G.induce c) →g H ) : G →g H where
+    (C : (c : G.ConnectedComponent) → (c.toSimpleGraph) →g H ) : G →g H where
   toFun := fun x ↦ (C (G.connectedComponentMk _)) _
   map_rel' := fun hab ↦ by
-    have h : (G.induce (G.connectedComponentMk _).supp).Adj ⟨_, rfl⟩
+    have h : (G.connectedComponentMk _).toSimpleGraph.Adj ⟨_, rfl⟩
         ⟨_, ((G.connectedComponentMk _).mem_supp_congr_adj hab).1 rfl⟩ := by simpa using hab
     convert (C (G.connectedComponentMk _)).map_rel h using 3 <;>
       rw [ConnectedComponent.connectedComponentMk_eq_of_adj hab]

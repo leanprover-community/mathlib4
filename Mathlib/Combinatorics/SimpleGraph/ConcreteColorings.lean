@@ -166,13 +166,14 @@ lemma two_colorable_iff_forall_loop_not_odd {α : Type*} {G : SimpleGraph α} :
   · apply colorable_iff_forall_connectedComponents.2
     intro c
     obtain ⟨_, hv⟩ := c.nonempty_supp
-    use fun a ↦ (c.connected_induce_supp ⟨_, hv⟩ a).some.length
+    use fun a ↦ Fin.ofNat 2 ((c.connected_toSimpleGraph ⟨_, hv⟩ a).some.length)
     intro a b hab he
-    apply h _ <| (((c.connected_induce_supp ⟨_, hv⟩ a).some.concat hab).append
-                 (c.connected_induce_supp ⟨_, hv⟩ b).some.reverse).map (Embedding.induce c).toHom
+    apply h _ <| (((c.connected_toSimpleGraph ⟨_, hv⟩ a).some.concat hab).append
+                 (c.connected_toSimpleGraph ⟨_, hv⟩ b).some.reverse).map c.toSimpleGraph_hom
     rw [length_map, length_append, length_concat, length_reverse, add_right_comm]
-    have : 0 = ((Nonempty.some (c.connected_induce_supp ⟨_, hv⟩ a)).length : Fin 2) +
-        (Nonempty.some (c.connected_induce_supp ⟨_, hv⟩ b)).length := by fin_omega
-    exact (Nat.even_iff.mpr <| Fin.zero_eq_mk.mp (by norm_cast at this)).add_one
+    have : ((Nonempty.some (c.connected_toSimpleGraph ⟨_, hv⟩ a)).length) % 2 =
+       (Nonempty.some (c.connected_toSimpleGraph ⟨_, hv⟩ b)).length % 2 := by
+        simp_rw [← Fin.val_natCast, ← Fin.ofNat_eq_cast, he]
+    exact (Nat.even_iff.mpr (by omega)).add_one
 
 end SimpleGraph

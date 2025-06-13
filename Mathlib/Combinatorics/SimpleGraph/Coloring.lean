@@ -239,7 +239,7 @@ theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
       exact C.valid hvw
 
 theorem colorable_iff_forall_connectedComponents {n : ℕ} :
-    G.Colorable n ↔ ∀ c : G.ConnectedComponent, (G.induce c).Colorable n :=
+    G.Colorable n ↔ ∀ c : G.ConnectedComponent, (c.toSimpleGraph).Colorable n :=
   ⟨fun ⟨C⟩ _ ↦ ⟨fun v ↦ C v, fun h h1 ↦ C.valid h h1⟩,
    fun h ↦ ⟨G.homOfConnectedComponents (fun c ↦ (h c).some)⟩⟩
 
