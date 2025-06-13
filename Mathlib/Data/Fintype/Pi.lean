@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Pi
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Set.Finite.Basic
 
 /-!
@@ -147,23 +147,157 @@ theorem Fintype.piFinset_univ {α : Type*} {β : α → Type*} [DecidableEq α] 
       (Finset.univ : Finset (∀ a, β a)) :=
   rfl
 
-/-- There are finitely many embeddings between finite types.
+/-- `Fin.snoc` for `r`-ordered tuples. -/
+def RelHom.snoc {s : β → β → Prop} {n : ℕ} {r : Fin (n + 1) → Fin (n + 1) → Prop}
+  (xs : Fin.castSucc ⁻¹'o r →r s) (x : β)
+  (hx : r (Fin.last n) (Fin.last n) → s x x)
+  (hxs : ∀ a : Fin n,
+    (r a.castSucc (Fin.last n) → s (xs a) x) ∧
+    (r (Fin.last n) a.castSucc → s x (xs a))) :
+    r →r s where
+  toFun := Fin.snoc xs x
+  map_rel' {v w} hs := by
+    cases v using Fin.lastCases <;> cases w using Fin.lastCases
+    · simpa using hx hs
+    · simpa using (hxs _).right hs
+    · simpa using (hxs _).left hs
+    · simpa using xs.map_rel hs
 
-This instance used to be computable (using `DecidableEq` arguments), but
-it makes things a lot harder to work with here.
+@[simp]
+theorem RelHom.coe_snoc
+    {s : β → β → Prop} {n : ℕ} {r : Fin (n + 1) → Fin (n + 1) → Prop}
+    (xs : Fin.castSucc ⁻¹'o r →r s) (x : β) (hx hxs) :
+    ⇑(xs.snoc x hx hxs) = Fin.snoc xs x :=
+  rfl
+
+theorem RelHom.snoc_inj
+    {s : β → β → Prop} {n : ℕ} {r : Fin (n + 1) → Fin (n + 1) → Prop}
+    (xs : Fin.castSucc ⁻¹'o r →r s) (x : β) (hx hxs)
+    (ys : Fin.castSucc ⁻¹'o r →r s) (y : β) (hy hys) :
+    xs.snoc x hx hxs = ys.snoc y hy hys ↔ xs = ys ∧ x = y := by
+  simp_rw [← DFunLike.coe_injective.eq_iff, coe_snoc, Fin.snoc_injective2.eq_iff]
+
+section Fintype
+
+open Option Finset Fin Fintype Equiv Function
+
+-- We show a `Fintype` instance for an abstract hom from `Fin n` to `β`,
+-- and then transfer this to arbitrary finite types using
+-- `Fintype.truncFinBijection` and `Fintype.truncEquivFin`.
+
+-- For performance reasons, the fintype is constructed inductively
+-- instead of simply filtering all homs for valid ones.
+private def pairRelFintypeAux {n β} [Fintype β]
+    (motive : Fin n → Fin n → β → β → Bool) :
+    Fintype { f : Fin n → β // ∀ a b, motive a b (f a) (f b)} :=
+  -- induct on the cardinality of the domain
+  match n with
+  | 0 =>
+    -- empty hom
+    ⟨{⟨finZeroElim, by simp⟩}, by simp⟩
+  | n + 1 =>
+    letI ih := { f : Fin n → β // ∀ a b, motive (castSucc a) (castSucc b) (f a) (f b)}
+    letI : Fintype ih := pairRelFintypeAux _
+    -- pair the valid homs previously obtained with all possible choices for the new target
+    { elems := univ.filterMap
+        (fun p : ih × β ↦
+          if h : motive (last n) (last n) p.snd p.snd ∧
+              ∀ (a : Fin n),
+                (motive a.castSucc (last n) (p.fst.val a) p.snd) ∧
+                (motive (last n) a.castSucc p.snd (p.fst.val a)) then
+            some ⟨snoc p.fst.val p.snd, fun a b => by
+              cases a using snoc <;> cases b using snoc <;> aesop⟩
+          else
+            none)
+        fun v w _ hbv hbw => by
+          simp_rw [Option.mem_def, dite_none_right_eq_some] at hbv hbw
+          obtain ⟨_, hv⟩ := hbv
+          obtain ⟨_, hw⟩ := hbw
+          have hvw := hv.trans hw.symm
+          rwa [some_inj, Subtype.ext_iff, snoc_inj, Subtype.val_inj,
+            ← Prod.eq_iff_fst_eq_snd_eq] at hvw
+      complete C := by
+        -- show this map is surjective
+        rw [mem_filterMap]
+        use (⟨C.val ∘ castSucc, fun a b => C.prop ..⟩, C.val (last n)), @mem_univ ..
+        rw [dif_pos ⟨C.prop .., fun _ => ⟨C.prop .., C.prop ..⟩⟩, some_inj]
+        ext i
+        cases i using snoc <;> simp }
+
+/--
+We derive a `Fintype` for functions that satisfy an
+arbitrary predicate `motive` between all pairs of arguments.
+This is used in `Function.Embedding.fintype`, `RelHom.instFintype` and `RelEmbedding.instFintype`.
+Not recommended if your `[DecidableEq α]` is very slow.
 -/
-noncomputable instance _root_.Function.Embedding.fintype {α β} [Fintype α] [Fintype β] :
-    Fintype (α ↪ β) := by
-  classical exact Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding α β)
+def pairRelFintype {α β} [Fintype α] [Fintype β] [DecidableEq α]
+    (motive : α → α → (x : β) → (y : β) → [Decidable (x = y)] → Prop)
+    -- this is so that typeclass inference will see `inst`
+    (_ : ∀ a b x y inst, Decidable (@motive a b x y inst) := by intros; infer_instance) :
+    Fintype { f : α → β // ∀ a b inst, @motive a b (f a) (f b) inst } :=
+  (truncFinBijection β).recOnSubsingleton fun ⟨b, hb⟩ ↦
+    (truncEquivFin α).recOnSubsingleton fun a ↦
+      haveI := fun x y => (decidable_of_iff' (x = y) hb.injective.eq_iff)
+      letI motive' := fun u v x y => decide (motive (a.symm u) (a.symm v) (b x) (b y))
+      (pairRelFintypeAux motive').ofBijective
+        (fun f => ⟨b ∘ f.val ∘ a, fun u v inst => by
+          rw [Subsingleton.elim inst]
+          simpa [motive'] using f.prop (a u) (a v)⟩) <|
+      ((a.symm.arrowCongr (.ofBijective b hb)).subtypeEquiv <| fun g => by
+        refine ⟨fun h u v inst => ?_, fun h u v => ?_⟩
+        · rw [Subsingleton.elim inst]
+          simpa [motive'] using h (a u) (a v)
+        · simpa [motive'] using h (a.symm u) (a.symm v)).bijective
 
-instance RelHom.instFintype {α β} [Fintype α] [Fintype β] [DecidableEq α] {r : α → α → Prop}
-    {s : β → β → Prop} [DecidableRel r] [DecidableRel s] : Fintype (r →r s) :=
-  Fintype.ofEquiv {f : α → β // ∀ {x y}, r x y → s (f x) (f y)} <| Equiv.mk
-    (fun f ↦ ⟨f.1, f.2⟩) (fun f ↦ ⟨f.1, f.2⟩) (fun _ ↦ rfl) (fun _ ↦ rfl)
+end Fintype
 
-noncomputable instance RelEmbedding.instFintype {α β} [Fintype α] [Fintype β]
-    {r : α → α → Prop} {s : β → β → Prop} : Fintype (r ↪r s) :=
-  Fintype.ofInjective _ RelEmbedding.toEmbedding_injective
+/-- There are finitely many embeddings between finite types. -/
+instance _root_.Function.Embedding.fintype {α β} [Fintype α] [Fintype β] [DecidableEq α] :
+    Fintype (α ↪ β) :=
+  (pairRelFintype (fun (a b : α) (x y : β) _ => x = y → a = b)).ofEquiv
+    (f := (Equiv.subtypeEquivRight (by simp [Injective])).trans
+      (Equiv.subtypeInjectiveEquivEmbedding α β))
+
+/--
+The type `r →r s` is equivalent to the type of
+functions `f` which satisfy `r a b → s (f a) (f b)` for all `a` and `b`.
+-/
+@[simps]
+def RelHom.equivSubtype {α β} {r : α → α → Prop} {s : β → β → Prop} :
+    r →r s ≃ { f : α → β // ∀ a b, r a b → s (f a) (f b)} where
+  toFun f := ⟨f, @f.map_rel⟩
+  invFun f := ⟨f.val, @f.prop⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+instance RelHom.instFintype {α β} {r : α → α → Prop} {s : β → β → Prop}
+    [Fintype α] [Fintype β] [DecidableEq α] [DecidableRel r]
+    -- this odd typeclass argument is so I can use it in `SimpleGraph.instFintypeColoring`
+    [∀ a b [Decidable (a = b)], Decidable (s a b)] : Fintype (r →r s) :=
+  (pairRelFintype fun a b x y _ => r a b → s x y).ofEquiv
+    (f := (RelHom.equivSubtype.trans (Equiv.subtypeEquivRight (by simp))).symm)
+
+/--
+The type `r ↪r s` is equivalent to the type of injective
+functions `f` which satisfy `s (f a) (f b) ↔ r a b` for all `a` and `b`.
+-/
+@[simps]
+def RelEmbedding.equivSubtype {α β} {r : α → α → Prop} {s : β → β → Prop} :
+    r ↪r s ≃ { f : α ↪ β // ∀ a b, s (f a) (f b) ↔ r a b} where
+  toFun f := ⟨f.toEmbedding, @f.map_rel_iff⟩
+  invFun f := ⟨⟨f.val, f.val.injective⟩, @f.prop⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+instance RelEmbedding.instFintype {α β} {r : α → α → Prop} {s : β → β → Prop}
+    [Fintype α] [Fintype β] [DecidableEq α] [DecidableRel r] [DecidableRel s] : Fintype (r ↪r s) :=
+  (pairRelFintype fun a b x y _ => (x = y → a = b) ∧ (s x y ↔ r a b)).ofEquiv
+    (f := (RelEmbedding.equivSubtype.trans
+      ((Equiv.subtypeEquivOfSubtype' (Equiv.subtypeInjectiveEquivEmbedding ..).symm).trans
+        ((Equiv.subtypeSubtypeEquivSubtypeInter Injective fun f =>
+            ∀ a b, s (f a) (f b) ↔ r a b).trans
+          (Equiv.subtypeEquivRight (fun g => by
+            simp [forall_and, Injective]))))).symm)
 
 @[simp]
 theorem Finset.univ_pi_univ {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
