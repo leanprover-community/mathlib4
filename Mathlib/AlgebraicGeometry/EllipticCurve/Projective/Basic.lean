@@ -256,15 +256,34 @@ lemma X_eq_iff_of_Z_ne_zero {P Q : F × F × F} (hPz : P z ≠ 0) (hQz : Q z ≠
     P x * Q z = Q x * P z ↔ P x / P z = Q x / Q z :=
   (div_eq_div_iff hPz hQz).symm
 
+lemma Y_sub_Y_of_isUnit_Z {P Q : R × R × R} (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z) :
+    P y * Q z - Q y * P z = P z * Q z * (P y * hPz.unit⁻¹ - Q y * hQz.unit⁻¹) := by
+  nth_rw 1 [mul_comm <| _ * _, sub_mul, mul_comm <| P z]
+  simp_rw [mul_mul_mul_comm, IsUnit.val_inv_mul, mul_one]
+
+lemma Y_sub_Y_of_Z_ne_zero {P Q : F × F × F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
+    P y * Q z - Q y * P z = P z * Q z * (P y / P z - Q y / Q z) := by
+  simp_rw [Y_sub_Y_of_isUnit_Z hPz.isUnit hQz.isUnit, Units.val_inv_eq_inv_val, IsUnit.unit_spec,
+    div_eq_mul_inv]
+
 lemma Y_eq_iff_of_isUnit_Z {P Q : R × R × R} (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z) :
-    P y * Q z = Q y * P z ↔ P y * hPz.unit⁻¹ = Q y * hQz.unit⁻¹ :=
-  (Units.mul_inv_eq_mul_inv_iff _ _ hPz.unit hQz.unit).symm
+    P y * Q z = Q y * P z ↔ P y * hPz.unit⁻¹ = Q y * hQz.unit⁻¹ := by
+  rw [← sub_eq_zero, Y_sub_Y_of_isUnit_Z hPz hQz, (hPz.mul hQz).mul_right_eq_zero, sub_eq_zero]
 
 @[deprecated (since := "2025-05-26")] alias Y_eq_iff := Y_eq_iff_of_isUnit_Z
 
 lemma Y_eq_iff_of_Z_ne_zero {P Q : F × F × F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
-    P y * Q z = Q y * P z ↔ P y / P z = Q y / Q z :=
-  (div_eq_div_iff hPz hQz).symm
+    P y * Q z = Q y * P z ↔ P y / P z = Q y / Q z := by
+  simp_rw [Y_eq_iff_of_isUnit_Z hPz.isUnit hQz.isUnit, Units.val_inv_eq_inv_val, IsUnit.unit_spec,
+    div_eq_mul_inv]
+
+lemma Y_ne_iff_of_isUnit_Z {P Q : R × R × R} (hPz : IsUnit <| P z) (hQz : IsUnit <| Q z) :
+    IsUnit (P y * Q z - Q y * P z) ↔ IsUnit (P y * hPz.unit⁻¹ - Q y * hQz.unit⁻¹) := by
+  simp_rw [Y_sub_Y_of_isUnit_Z hPz hQz, IsUnit.mul_iff, hPz, hQz, true_and]
+
+lemma Y_ne_iff_of_Z_ne_zero {P Q : F × F × F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
+    P y * Q z ≠ Q y * P z ↔ P y / P z ≠ Q y / Q z := by
+  rw [ne_eq, Y_eq_iff_of_Z_ne_zero hPz hQz]
 
 /-! ## Weierstrass equations in projective coordinates -/
 
@@ -285,6 +304,12 @@ lemma eval_polynomial (P : R × R × R) : eval ![P x, P y, P z] W'.polynomial =
   eval_simp
   rfl
 
+lemma eval_polynomial_smul (P : R × R × R) (u : R) :
+    eval (![(u • P) x, (u • P) y, (u • P) z]) W'.polynomial =
+      u ^ 3 * eval ![P x, P y, P z] W'.polynomial := by
+  rw [eval_polynomial, eval_polynomial, smul_eq]
+  ring1
+
 lemma eval_polynomial_of_isUnit_Z {P : R × R × R} (hPz : IsUnit <| P z) :
     eval ![P x, P y, P z] W'.polynomial =
       W'.toAffine.polynomial.evalEval (P x * hPz.unit⁻¹) (P y * hPz.unit⁻¹) * P z ^ 3 := by
@@ -297,9 +322,8 @@ lemma eval_polynomial_of_isUnit_Z {P : R × R × R} (hPz : IsUnit <| P z) :
 lemma eval_polynomial_of_Z_ne_zero {P : F × F × F} (hPz : P z ≠ 0) :
     eval ![P x, P y, P z] W.polynomial =
       W.toAffine.polynomial.evalEval (P x / P z) (P y / P z) * P z ^ 3 := by
-  simp_rw [div_eq_mul_inv]
-  convert eval_polynomial_of_isUnit_Z hPz.isUnit using 4 <;>
-    exact hPz.isUnit.unit.val_inv_eq_inv_val.symm
+  simp_rw [eval_polynomial_of_isUnit_Z hPz.isUnit, Units.val_inv_eq_inv_val, IsUnit.unit_spec,
+    div_eq_mul_inv]
 
 variable (W') in
 /-- The proposition that a projective point representative `(x, y, z)` lies in a Weierstrass curve
@@ -314,11 +338,9 @@ lemma equation_iff (P : R × R × R) : W'.Equation P ↔
       - (P x ^ 3 + W'.a₂ * P x ^ 2 * P z + W'.a₄ * P x * P z ^ 2 + W'.a₆ * P z ^ 3) = 0 := by
   rw [Equation, eval_polynomial]
 
-lemma equation_smul (P : R × R × R) {u : R} (hu : IsUnit u) : W'.Equation (u • P) ↔ W'.Equation P :=
-  have hP (u : R) {P : R × R × R} (hP : W'.Equation P) : W'.Equation <| u • P := by
-    rw [equation_iff] at hP ⊢
-    linear_combination (norm := (rw [smul_eq]; ring1)) u ^ 3 * hP
-  ⟨fun h => by convert hP ↑hu.unit⁻¹ h; rw [smul_smul, hu.val_inv_mul, one_smul], hP u⟩
+lemma equation_smul (P : R × R × R) {u : R} (hu : IsUnit u) :
+    W'.Equation (u • P) ↔ W'.Equation P := by
+  simp_rw [Equation, eval_polynomial_smul, (hu.pow 3).mul_right_eq_zero]
 
 lemma equation_of_equiv {P Q : R × R × R} (h : P ≈ Q) : W'.Equation P ↔ W'.Equation Q := by
   rcases h with ⟨u, rfl⟩
@@ -340,8 +362,8 @@ lemma equation_of_isUnit_Z {P : R × R × R} (hPz : IsUnit <| P z) :
 
 lemma equation_of_Z_ne_zero {P : F × F × F} (hPz : P z ≠ 0) :
     W.Equation P ↔ W.toAffine.Equation (P x / P z) (P y / P z) := by
-  simp_rw [div_eq_mul_inv]
-  convert equation_of_isUnit_Z hPz.isUnit using 3 <;> exact hPz.isUnit.unit.val_inv_eq_inv_val.symm
+  simp_rw [equation_of_isUnit_Z hPz.isUnit, Units.val_inv_eq_inv_val, IsUnit.unit_spec,
+    div_eq_mul_inv]
 
 lemma X_eq_zero_of_Z_eq_zero [NoZeroDivisors R] {P : R × R × R} (hP : W'.Equation P)
     (hPz : P z = 0) : P x = 0 :=
@@ -367,6 +389,12 @@ lemma eval_polynomialX (P : R × R × R) : eval ![P x, P y, P z] W'.polynomialX 
   eval_simp
   rfl
 
+lemma eval_polynomialX_smul (P : R × R × R) (u : R) :
+    eval (![(u • P) x, (u • P) y, (u • P) z]) W'.polynomialX =
+      u ^ 2 * eval ![P x, P y, P z] W'.polynomialX := by
+  rw [eval_polynomialX, eval_polynomialX, smul_eq]
+  ring1
+
 lemma eval_polynomialX_of_isUnit_Z {P : R × R × R} (hPz : IsUnit <| P z) :
     eval ![P x, P y, P z] W'.polynomialX =
       W'.toAffine.polynomialX.evalEval (P x * hPz.unit⁻¹) (P y * hPz.unit⁻¹) * P z ^ 2 := by
@@ -378,9 +406,8 @@ lemma eval_polynomialX_of_isUnit_Z {P : R × R × R} (hPz : IsUnit <| P z) :
 lemma eval_polynomialX_of_Z_ne_zero {P : F × F × F} (hPz : P z ≠ 0) :
     eval ![P x, P y, P z] W.polynomialX =
       W.toAffine.polynomialX.evalEval (P x / P z) (P y / P z) * P z ^ 2 := by
-  simp_rw [div_eq_mul_inv]
-  convert eval_polynomialX_of_isUnit_Z hPz.isUnit using 4 <;>
-    exact hPz.isUnit.unit.val_inv_eq_inv_val.symm
+  simp_rw [eval_polynomialX_of_isUnit_Z hPz.isUnit, Units.val_inv_eq_inv_val, IsUnit.unit_spec,
+    div_eq_mul_inv]
 
 variable (W') in
 /-- The partial derivative `W_Y(X, Y, Z)` with respect to `Y` of the polynomial `W(X, Y, Z)`
@@ -400,6 +427,12 @@ lemma eval_polynomialY (P : R × R × R) :
   eval_simp
   rfl
 
+lemma eval_polynomialY_smul (P : R × R × R) (u : R) :
+    eval (![(u • P) x, (u • P) y, (u • P) z]) W'.polynomialY =
+      u ^ 2 * eval ![P x, P y, P z] W'.polynomialY := by
+  rw [eval_polynomialY, eval_polynomialY, smul_eq]
+  ring1
+
 lemma eval_polynomialY_of_isUnit_Z {P : R × R × R} (hPz : IsUnit <| P z) :
     eval ![P x, P y, P z] W'.polynomialY =
       W'.toAffine.polynomialY.evalEval (P x * hPz.unit⁻¹) (P y * hPz.unit⁻¹) * P z ^ 2 := by
@@ -410,9 +443,8 @@ lemma eval_polynomialY_of_isUnit_Z {P : R × R × R} (hPz : IsUnit <| P z) :
 lemma eval_polynomialY_of_Z_ne_zero {P : F × F × F} (hPz : P z ≠ 0) :
     eval ![P x, P y, P z] W.polynomialY =
       W.toAffine.polynomialY.evalEval (P x / P z) (P y / P z) * P z ^ 2 := by
-  simp_rw [div_eq_mul_inv]
-  convert eval_polynomialY_of_isUnit_Z hPz.isUnit using 4 <;>
-    exact hPz.isUnit.unit.val_inv_eq_inv_val.symm
+  simp_rw [eval_polynomialY_of_isUnit_Z hPz.isUnit, Units.val_inv_eq_inv_val, IsUnit.unit_spec,
+    div_eq_mul_inv]
 
 variable (W') in
 /-- The partial derivative `W_Z(X, Y, Z)` with respect to `Z` of the polynomial `W(X, Y, Z)`
@@ -432,6 +464,12 @@ lemma eval_polynomialZ (P : R × R × R) : eval ![P x, P y, P z] W'.polynomialZ 
   rw [polynomialZ_eq]
   eval_simp
   rfl
+
+lemma eval_polynomialZ_smul (P : R × R × R) (u : R) :
+    eval (![(u • P) x, (u • P) y, (u • P) z]) W'.polynomialZ =
+      u ^ 2 * eval ![P x, P y, P z] W'.polynomialZ := by
+  rw [eval_polynomialZ, eval_polynomialZ, smul_eq]
+  ring1
 
 /-- Euler's homogeneous function theorem in projective coordinates. -/
 theorem polynomial_relation (P : R × R × R) : 3 * eval ![P x, P y, P z] W'.polynomial =
@@ -460,15 +498,9 @@ lemma nonsingular_iff (P : R × R × R) : W'.Nonsingular P ↔ W'.Equation P ∧
   rw [Nonsingular, eval_polynomialX, eval_polynomialY, eval_polynomialZ]
 
 lemma nonsingular_smul (P : R × R × R) {u : R} (hu : IsUnit u) :
-    W'.Nonsingular (u • P) ↔ W'.Nonsingular P :=
-  have hP {u : R} (hu : IsUnit u) {P : R × R × R} (hP : W'.Nonsingular <| u • P) :
-      W'.Nonsingular P := by
-    rcases (nonsingular_iff _).mp hP with ⟨hP, hP'⟩
-    refine (nonsingular_iff P).mpr ⟨(equation_smul P hu).mp hP, ?_⟩
-    simp_rw [Ideal.span_insert, ← Ideal.span_singleton_mul_left_unit (hu.pow 2) <| _ - _,
-      ← Ideal.span_singleton_mul_left_unit (hu.pow 2) <| _ + _, ← hP', smul_eq, Ideal.span_insert]
-    ring_nf
-  ⟨hP hu, fun h => hP hu.unit⁻¹.isUnit <| by rwa [smul_smul, hu.val_inv_mul, one_smul]⟩
+    W'.Nonsingular (u • P) ↔ W'.Nonsingular P := by
+  simp_rw [Nonsingular, equation_smul P hu, eval_polynomialX_smul, eval_polynomialY_smul,
+    eval_polynomialZ_smul, Ideal.span_insert, Ideal.span_singleton_mul_left_unit <| hu.pow 2]
 
 lemma nonsingular_of_equiv {P Q : R × R × R} (h : P ≈ Q) : W'.Nonsingular P ↔ W'.Nonsingular Q := by
   rcases h with ⟨u, rfl⟩
@@ -497,9 +529,8 @@ lemma nonsingular_of_isUnit_Z {P : R × R × R} (hPz : IsUnit <| P z) :
 
 lemma nonsingular_of_Z_ne_zero {P : F × F × F} (hPz : P z ≠ 0) :
     W.Nonsingular P ↔ W.toAffine.Nonsingular (P x / P z) (P y / P z) := by
-  simp_rw [div_eq_mul_inv]
-  convert nonsingular_of_isUnit_Z hPz.isUnit using 3 <;>
-    exact hPz.isUnit.unit.val_inv_eq_inv_val.symm
+  simp_rw [nonsingular_of_isUnit_Z hPz.isUnit, Units.val_inv_eq_inv_val, IsUnit.unit_spec,
+    div_eq_mul_inv]
 
 lemma nonsingular_iff_of_isUnit_Z {P : R × R × R} (hPz : IsUnit <| P z) : W'.Nonsingular P ↔
     W'.Equation P ∧ Ideal.span {eval ![P x, P y, P z] W'.polynomialX,
