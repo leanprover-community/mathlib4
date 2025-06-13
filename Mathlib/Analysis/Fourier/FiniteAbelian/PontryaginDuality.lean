@@ -7,6 +7,7 @@ import Mathlib.Algebra.DirectSum.AddChar
 import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 import Mathlib.GroupTheory.FiniteAbelian.Basic
+import Mathlib.Topology.Instances.AddCircle.Real
 
 /-!
 # Pontryagin duality for finite abelian groups
