@@ -97,12 +97,10 @@ structure MatchResult (α : Type) where
   /--
   The elements in the match result.
 
-  The top-level array represents an array from `score` values to the
-  results with that score. The elements of this array are themselves
-  arrays of non-empty arrays so that we can defer concatenating results until
-  needed.
+  The `Nat` in the tree map represents the `score` of the results.
+  The elements are arrays of arrays, where each sub-array corresponds to one discr tree pattern.
   -/
-  elts : Std.HashMap Nat (Array (Array α)) := {}
+  elts : Std.TreeMap Nat (Array (Array α)) := {}
   deriving Inhabited
 
 private def MatchResult.push (mr : MatchResult α) (score : Nat) (e : Array α) : MatchResult α :=
