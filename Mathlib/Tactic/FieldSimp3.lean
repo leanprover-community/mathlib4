@@ -92,9 +92,6 @@ theorem atom_eq_eval [DivInvMonoid M] (x : M) : x = NF.eval [(1, x)] := by simp 
 variable (M) in
 theorem one_eq_eval [DivInvMonoid M] : (1:M) = NF.eval (M := M) [] := rfl
 
-theorem eval_cons_zero [DivInvMonoid M] {a : M} {l : NF M} : ((0, a) ::ᵣ l).eval = l.eval := by
-  simp
-
 theorem mul_eq_eval₁ [DivisionCommMonoid M] (a₁ : ℤ × M) {a₂ : ℤ × M} {l₁ l₂ l : NF M}
     (h : l₁.eval * (a₂ ::ᵣ l₂).eval = l.eval) :
     (a₁ ::ᵣ l₁).eval * (a₂ ::ᵣ l₂).eval = (a₁ ::ᵣ l).eval := by
@@ -102,27 +99,29 @@ theorem mul_eq_eval₁ [DivisionCommMonoid M] (a₁ : ℤ × M) {a₂ : ℤ × M
   congr! 1
   rw [mul_comm, mul_assoc]
 
-theorem mul_eq_eval₂ [CommGroupWithZero M] (r₁ r₂ : ℤ) (x : M) (hx : x ≠ 0)
+theorem mul_eq_eval₂ [CommGroupWithZero M] {r₁ r₂ : ℤ} (hr : r₁ + r₂ = 0) (x : M) (hx : x ≠ 0)
     {l₁ l₂ l : NF M} (h : l₁.eval * l₂.eval = l.eval) :
-    ((r₁, x) ::ᵣ l₁).eval * ((r₂, x) ::ᵣ l₂).eval = ((r₁ + r₂, x) ::ᵣ l).eval := by
+    ((r₁, x) ::ᵣ l₁).eval * ((r₂, x) ::ᵣ l₂).eval = ((0, x) ::ᵣ l).eval := by
+  rw [← hr]
   simp only [← h, eval_cons, zpow_add₀ hx, mul_assoc]
   congr! 1
   simp only [← mul_assoc]
   congr! 1
   rw [mul_comm]
 
-theorem mul_eq_eval₂' [DivisionCommMonoid M] {r₁ r₂ : ℤ} (hr₁ : 0 ≤ r₁) (hr₂ : 0 ≤ r₂) (x : M)
+theorem mul_eq_eval₂' [CommGroupWithZero M] {r₁ r₂ : ℤ} (hr : r₁ + r₂ ≠ 0) (x : M)
     {l₁ l₂ l : NF M} (h : l₁.eval * l₂.eval = l.eval) :
     ((r₁, x) ::ᵣ l₁).eval * ((r₂, x) ::ᵣ l₂).eval = ((r₁ + r₂, x) ::ᵣ l).eval := by
-  lift r₁ to ℕ using hr₁
-  lift r₂ to ℕ using hr₂
   simp only [← h, eval_cons]
-  norm_cast
-  simp only [pow_add, mul_assoc]
+  obtain rfl | h := eq_or_ne x 0
+  · rw [zero_zpow _ hr]
+    obtain hr₁ | hr₂ : r₁ ≠ 0 ∨ r₂ ≠ 0 := by omega
+    · simp [zero_zpow _ hr₁]
+    · simp [zero_zpow _ hr₂]
+  simp only [zpow_add₀ h, mul_assoc]
   congr! 1
   simp only [← mul_assoc]
-  congr! 1
-  rw [mul_comm]
+  rw [mul_comm (x ^ r₁)]
 
 theorem mul_eq_eval₃ [DivInvMonoid M] {a₁ : ℤ × M} (a₂ : ℤ × M) {l₁ l₂ l : NF M}
     (h : (a₁ ::ᵣ l₁).eval * l₂.eval = l.eval) :
@@ -141,27 +140,26 @@ theorem div_eq_eval₁ [DivisionCommMonoid M] (a₁ : ℤ × M) {a₂ : ℤ × M
   congr! 1
   rw [mul_comm]
 
-theorem div_eq_eval₂ [CommGroupWithZero M] (r₁ r₂ : ℤ) (x : M) (hx : x ≠ 0) {l₁ l₂ l : NF M}
-    (h : l₁.eval / l₂.eval = l.eval) :
-    ((r₁, x) ::ᵣ l₁).eval / ((r₂, x) ::ᵣ l₂).eval = ((r₁ - r₂, x) ::ᵣ l).eval := by
+theorem div_eq_eval₂ [CommGroupWithZero M] {r₁ r₂ : ℤ} (hr : r₁ - r₂ = 0) (x : M) (hx : x ≠ 0)
+    {l₁ l₂ l : NF M} (h : l₁.eval / l₂.eval = l.eval) :
+    ((r₁, x) ::ᵣ l₁).eval / ((r₂, x) ::ᵣ l₂).eval = ((0, x) ::ᵣ l).eval := by
+  rw [← hr]
   simp only [← h, eval_cons, zpow_sub₀ hx, div_eq_mul_inv, mul_inv, mul_zpow, zpow_neg, mul_assoc]
   congr! 1
   simp only [← mul_assoc]
   congr! 1
   rw [mul_comm]
 
-theorem div_eq_eval₂' [DivisionCommMonoid M] {r₁ r₂ : ℤ} (hr₁ : 0 ≤ r₁) (hr₂ : r₂ ≤ 0) (x : M)
+theorem div_eq_eval₂' [CommGroupWithZero M] {r₁ r₂ : ℤ} (hr : r₁ - r₂ ≠ 0) (x : M)
     {l₁ l₂ l : NF M} (h : l₁.eval / l₂.eval = l.eval) :
     ((r₁, x) ::ᵣ l₁).eval / ((r₂, x) ::ᵣ l₂).eval = ((r₁ - r₂, x) ::ᵣ l).eval := by
-  lift r₁ to ℕ using hr₁
-  let s₂ := - r₂
-  have : r₂ = -s₂ := by rw [neg_neg]
-  rw [this]
-  have hs₂ : 0 ≤ s₂ := by rwa [neg_nonneg]
-  clear_value s₂
-  lift s₂ to ℕ using hs₂
   simp only [← h, eval_cons, sub_neg_eq_add, zpow_neg]
-  norm_cast
+  obtain rfl | h := eq_or_ne x 0
+  · rw [zero_zpow _ hr]
+    obtain hr₁ | hr₂ : r₁ ≠ 0 ∨ r₂ ≠ 0 := by omega
+    · simp [zero_zpow _ hr₁]
+    · simp [zero_zpow _ hr₂]
+  simp only [zpow_sub₀ h, mul_assoc]
   simp only [pow_add, div_eq_mul_inv, mul_inv, mul_assoc, inv_inv]
   congr! 1
   simp only [← mul_assoc]
@@ -384,20 +382,16 @@ def mkMulProof (iM : Q(Field $M)) (l₁ l₂ : qNF M) :
       (q(NF.mul_eq_eval₁ ($a₁, $x₁) $pf):)
     else if k₁ = k₂ then
       let pf := mkMulProof iM t₁ t₂
-      let pf' :=
-        if 0 ≤ a₁ && 0 ≤ a₂ then
-          let h₁ : Q(0 ≤ $a₁) := q(sorry) -- how do you quote a proof of a `ℤ` inequality?
-          let h₂ : Q(0 ≤ $a₂) := q(sorry)
-          (q(NF.mul_eq_eval₂' $h₁ $h₂ $x₁ $pf):)
-        else
-          let hx₁ : Q($x₁ ≠ 0) := q(sorry) -- use the discharger here
-          (q(NF.mul_eq_eval₂ $a₁ $a₂ $x₁ $hx₁ $pf):)
       if a₁ + a₂ = 0 then
-        let pf' : Q((NF.eval $(l₁.toNF)) * NF.eval $(l₂.toNF)
-            = NF.eval $(qNF.toNF (((0, x₁), k₁) :: (qNF.mul l₁ l₂)))) := pf'
-        (q(Eq.trans $pf' NF.eval_cons_zero):)
+        -- how do you quote a proof of a `ℤ` equality?
+        let h : Q($a₁ + $a₂ = 0) := (q(Eq.refl (0:ℤ)):)
+        let hx₁ : Q($x₁ ≠ 0) := q(sorry) -- use the discharger here
+        (q(NF.mul_eq_eval₂ $h $x₁ $hx₁ $pf):)
       else
-        pf'
+        -- how do you quote a proof of a `ℤ` disequality?
+        let z : Q(decide ($a₁ + $a₂ ≠ 0) = true) := (q(Eq.refl true):)
+        let h : Q($a₁ + $a₂ ≠ 0) := q(of_decide_eq_true $z)
+        (q(NF.mul_eq_eval₂' $h $x₁ $pf):)
     else
       let pf := mkMulProof iM (((a₁, x₁), k₁) :: t₁) t₂
       (q(NF.mul_eq_eval₃ ($a₂, $x₂) $pf):)
@@ -444,20 +438,16 @@ def mkDivProof (iM : Q(Field $M)) (l₁ l₂ : qNF M) :
       (q(NF.div_eq_eval₁ ($a₁, $x₁) $pf):)
     else if k₁ = k₂ then
       let pf := mkDivProof iM t₁ t₂
-      let pf' :=
-        if 0 ≤ a₁ && a₂ ≤ 0 then
-          let h₁ : Q(0 ≤ $a₁) := q(sorry) -- how do you quote a proof of a `ℤ` inequality?
-          let h₂ : Q($a₂ ≤ 0) := q(sorry)
-          (q(NF.div_eq_eval₂' $h₁ $h₂ $x₁ $pf):)
-        else
-          let hx₁ : Q($x₁ ≠ 0) := q(sorry) -- use the discharger here
-          (q(NF.div_eq_eval₂ $a₁ $a₂ $x₁ $hx₁ $pf):)
       if a₁ - a₂ = 0 then
-        let pf' : Q((NF.eval $(l₁.toNF)) / NF.eval $(l₂.toNF)
-          = NF.eval $(qNF.toNF (((0, x₁), k₁) :: (qNF.div l₁ l₂)))) := pf'
-        (q(Eq.trans $pf' NF.eval_cons_zero):)
+        -- how do you quote a proof of a `ℤ` equality?
+        let h : Q($a₁ - $a₂ = 0) := (q(Eq.refl (0:ℤ)):)
+        let hx₁ : Q($x₁ ≠ 0) := q(sorry) -- use the discharger here
+        (q(NF.div_eq_eval₂ $h $x₁ $hx₁ $pf):)
       else
-        pf'
+        -- how do you quote a proof of a `ℤ` disequality?
+        let z : Q(decide ($a₁ - $a₂ ≠ 0) = true) := (q(Eq.refl true):)
+        let h : Q($a₁ - $a₂ ≠ 0) := q(of_decide_eq_true $z)
+        (q(NF.div_eq_eval₂' $h $x₁ $pf):)
     else
       let pf := mkDivProof iM (((a₁, x₁), k₁) :: t₁) t₂
       (q(NF.div_eq_eval₃ ($a₂, $x₂) $pf):)
