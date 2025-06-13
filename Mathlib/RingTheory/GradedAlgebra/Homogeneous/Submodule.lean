@@ -16,7 +16,7 @@ operations on them.
 
 For any `p : Submodule A M`:
 * `Submodule.IsHomogeneous ℳ p`: The property that a submodule is closed under `GradedModule.proj`.
-* `HomogeneousSubmodule A ℳ`: The structure extending submodules which satisfy
+* `HomogeneousSubmodule 𝒜 ℳ`: The structure extending submodules which satisfy
   `Submodule.IsHomogeneous`.
 * `Submodule.homogeneousCore p 𝒜 ℳ`: The largest homogeneous submodule smaller than `p`.
 * `Submodule.homogeneousHull p 𝒜 ℳ`: The smallest homogeneous ideal larger than `p`.
