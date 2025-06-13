@@ -1194,7 +1194,7 @@ theorem sumElim_inr {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →�
 lemma prod_sumElim {ι₁ ι₂ α M : Type*} [Zero α] [CommMonoid M]
     (f₁ : ι₁ →₀ α) (f₂ : ι₂ →₀ α) (g : ι₁ ⊕ ι₂ → α → M) :
     (f₁.sumElim f₂).prod g = f₁.prod (g ∘ Sum.inl) * f₂.prod (g ∘ Sum.inr) := by
-  simp [Finsupp.prod, Finset.prod_disj_sum]
+  simp [Finsupp.prod, Finset.prod_disjSum]
 
 /-- The equivalence between `(α ⊕ β) →₀ γ` and `(α →₀ γ) × (β →₀ γ)`.
 
