@@ -217,6 +217,12 @@ theorem dist_eq_iSup : dist f g = ⨆ x : α, dist (f x) (g x) := by
 theorem nndist_eq_iSup : nndist f g = ⨆ x : α, nndist (f x) (g x) :=
   Subtype.ext <| dist_eq_iSup.trans <| by simp_rw [val_eq_coe, coe_iSup, coe_nndist]
 
+theorem edist_eq_iSup : edist f g = ⨆ x, edist (f x) (g x) := by
+  simp_rw [edist_nndist, nndist_eq_iSup]
+  refine ENNReal.coe_iSup ⟨nndist f g, ?_⟩
+  rintro - ⟨x, hx, rfl⟩
+  exact nndist_coe_le_nndist x
+
 theorem tendsto_iff_tendstoUniformly {ι : Type*} {F : ι → α →ᵇ β} {f : α →ᵇ β} {l : Filter ι} :
     Tendsto F l (𝓝 f) ↔ TendstoUniformly (fun i => F i) f l :=
   Iff.intro
