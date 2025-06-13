@@ -366,6 +366,16 @@ lemma isSheafFor_singleton_iff {F : Cᵒᵖ ⥤ Type*} {X Y : C} {f : X ⟶ Y}
   rw [Types.type_equalizer_iff_unique, Presieve.isSheafFor_singleton]
   simp_rw [h]
 
+/-- Special case of `isSheafFor_singleton_iff` with `c = pullback.cone f f`. -/
+lemma isSheafFor_singleton_iff_of_hasPullback {F : Cᵒᵖ ⥤ Type*} {X Y : C} {f : X ⟶ Y}
+    [HasPullback f f] :
+    Presieve.IsSheafFor F (.singleton f) ↔
+      Nonempty
+        (IsLimit (Fork.ofι (F.map f.op) (f := F.map (pullback.fst f f).op)
+          (g := F.map (pullback.snd f f).op)
+          (by simp [← Functor.map_comp, ← op_comp, pullback.condition]))) :=
+  isSheafFor_singleton_iff (pullback.cone f f) (pullback.isLimit f f)
+
 end Presieve
 
 end
