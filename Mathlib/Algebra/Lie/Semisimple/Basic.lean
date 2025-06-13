@@ -83,16 +83,13 @@ instance : LieModule.IsIrreducible R L L := by
   contrapose! _i
   infer_instance
 
-variable {R L} in
-lemma eq_top_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : I = ⊤ :=
-  (IsSimple.eq_bot_or_eq_top I).resolve_left hI.1
-
-lemma isAtom_top : IsAtom (⊤ : LieIdeal R L) :=
-  ⟨bot_ne_top.symm, fun _ h ↦ h.eq_bot⟩
+protected lemma isAtom_top : IsAtom (⊤ : LieIdeal R L) := isAtom_top
 
 variable {R L} in
-@[simp] lemma isAtom_iff_eq_top (I : LieIdeal R L) : IsAtom I ↔ I = ⊤ :=
-  ⟨eq_top_of_isAtom I, fun h ↦ h ▸ isAtom_top R L⟩
+protected lemma isAtom_iff_eq_top (I : LieIdeal R L) : IsAtom I ↔ I = ⊤ := isAtom_iff_eq_top
+
+variable {R L} in
+lemma eq_top_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : I = ⊤ := isAtom_iff_eq_top.mp hI
 
 instance : HasTrivialRadical R L := by
   rw [hasTrivialRadical_iff_no_abelian_ideals]
@@ -241,7 +238,7 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
   constructor
   -- `j` brackets to `0` with `z`, since `⁅j, z⁆` is contained in `⁅J, K⁆ ≤ J ⊓ K`,
   -- and `J ⊓ K = ⊥` by the independence of the atoms.
-  · apply (sSupIndep_isAtom.disjoint_sSup (hs hJs) hs'S (Finset.not_mem_erase _ _)).le_bot
+  · apply (sSupIndep_isAtom.disjoint_sSup (hs hJs) hs'S (Finset.notMem_erase _ _)).le_bot
     apply LieSubmodule.lie_le_inf
     apply LieSubmodule.lie_mem_lie j.2
     simpa only [K, Finset.sup_id_eq_sSup] using hz

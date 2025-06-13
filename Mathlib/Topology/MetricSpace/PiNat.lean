@@ -447,7 +447,7 @@ theorem exists_disjoint_cylinder {s : Set (∀ n, E n)} (hs : IsClosed s) {x : �
     (hx : x ∉ s) : ∃ n, Disjoint s (cylinder x n) := by
   rcases eq_empty_or_nonempty s with (rfl | hne)
   · exact ⟨0, by simp⟩
-  have A : 0 < infDist x s := (hs.not_mem_iff_infDist_pos hne).1 hx
+  have A : 0 < infDist x s := (hs.notMem_iff_infDist_pos hne).1 hx
   obtain ⟨n, hn⟩ : ∃ n, (1 / 2 : ℝ) ^ n < infDist x s := exists_pow_lt_of_lt_one A one_half_lt_one
   refine ⟨n, disjoint_left.2 fun y ys hy => ?_⟩
   apply lt_irrefl (infDist x s)
@@ -858,16 +858,18 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
             (Summable.sum_add_tsum_compl (dist_summable _ _)).symm
           _ ≤ (∑ i ∈ K, dist (x i) (y i)) +
                 ∑' i : ↑(K : Set ι)ᶜ, ((1 / 2) ^ encode (i : ι) : ℝ) := by
-            refine add_le_add (Finset.sum_le_sum fun i _ => min_le_right _ _) ?_
-            refine Summable.tsum_le_tsum (fun i => min_le_left _ _) ?_ ?_
+            gcongr
+            · apply min_le_right
             · apply Summable.subtype (dist_summable x y) (↑K : Set ι)ᶜ
             · apply Summable.subtype summable_geometric_two_encode (↑K : Set ι)ᶜ
+            · apply min_le_left
           _ < (∑ _i ∈ K, δ) + ε / 2 := by
             apply add_lt_add_of_le_of_lt _ hK
             refine Finset.sum_le_sum fun i hi => (hxy i ?_).le
             simpa using hi
-          _ ≤ ε / 2 + ε / 2 :=
-            (add_le_add_right (by simpa only [Finset.sum_const, nsmul_eq_mul] using hδ.le) _)
+          _ ≤ ε / 2 + ε / 2 := by
+            gcongr
+            simpa using hδ.le
           _ = ε := add_halves _
     · simp only [le_iInf_iff, le_principal_iff]
       intro i ε εpos

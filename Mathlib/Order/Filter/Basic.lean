@@ -130,9 +130,9 @@ theorem exists_mem_and_iff {P : Set α → Prop} {Q : Set α → Prop} (hP : Ant
   · rintro ⟨u, huf, hPu, hQu⟩
     exact ⟨⟨u, huf, hPu⟩, u, huf, hQu⟩
 
+@[deprecated forall_swap (since := "2025-06-10")]
 theorem forall_in_swap {β : Type*} {p : Set α → β → Prop} :
-    (∀ a ∈ f, ∀ (b), p a b) ↔ ∀ (b), ∀ a ∈ f, p a b :=
-  Set.forall_in_swap
+    (∀ a ∈ f, ∀ (b), p a b) ↔ ∀ (b), ∀ a ∈ f, p a b := by tauto
 
 end Filter
 
@@ -142,6 +142,8 @@ namespace Filter
 variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type*} {ι : Sort x}
 
 theorem mem_principal_self (s : Set α) : s ∈ 𝓟 s := Subset.rfl
+
+theorem eventually_mem_principal (s : Set α) : ∀ᶠ x in 𝓟 s, x ∈ s := mem_principal_self s
 
 section Lattice
 
@@ -348,13 +350,17 @@ theorem NeBot.nonempty_of_mem {f : Filter α} (hf : NeBot f) {s : Set α} (hs : 
   @Filter.nonempty_of_mem α f hf s hs
 
 @[simp]
-theorem empty_not_mem (f : Filter α) [NeBot f] : ¬∅ ∈ f := fun h => (nonempty_of_mem h).ne_empty rfl
+theorem empty_notMem (f : Filter α) [NeBot f] : ∅ ∉ f := fun h => (nonempty_of_mem h).ne_empty rfl
+
+@[deprecated (since := "2025-05-23")] alias empty_not_mem := empty_notMem
 
 theorem nonempty_of_neBot (f : Filter α) [NeBot f] : Nonempty α :=
-  nonempty_of_exists <| nonempty_of_mem (univ_mem : univ ∈ f)
+  Exists.nonempty <| nonempty_of_mem (univ_mem : univ ∈ f)
 
-theorem compl_not_mem {f : Filter α} {s : Set α} [NeBot f] (h : s ∈ f) : sᶜ ∉ f := fun hsc =>
+theorem compl_notMem {f : Filter α} {s : Set α} [NeBot f] (h : s ∈ f) : sᶜ ∉ f := fun hsc =>
   (nonempty_of_mem (inter_mem h hsc)).ne_empty <| inter_compl_self s
+
+@[deprecated (since := "2025-05-23")] alias compl_not_mem := compl_notMem
 
 theorem filter_eq_bot_of_isEmpty [IsEmpty α] (f : Filter α) : f = ⊥ :=
   empty_mem_iff_bot.mp <| univ_mem' isEmptyElim
@@ -695,7 +701,7 @@ theorem eventually_iff_all_subsets {f : Filter α} {p : α → Prop} :
 
 theorem Eventually.frequently {f : Filter α} [NeBot f] {p : α → Prop} (h : ∀ᶠ x in f, p x) :
     ∃ᶠ x in f, p x :=
-  compl_not_mem h
+  compl_notMem h
 
 theorem Frequently.of_forall {f : Filter α} [NeBot f] {p : α → Prop} (h : ∀ x, p x) :
     ∃ᶠ x in f, p x :=

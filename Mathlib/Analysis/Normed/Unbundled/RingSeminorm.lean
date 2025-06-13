@@ -28,7 +28,7 @@ For a ring `R`:
 
 ## Notes
 
-The corresponding hom classes are defined in `Mathlib.Analysis.Order.Hom.Basic` to be used by
+The corresponding hom classes are defined in `Mathlib/Analysis/Order/Hom/Basic.lean` to be used by
 absolute values.
 
 ## References
@@ -264,7 +264,7 @@ instance [DecidableEq R] : Inhabited (RingNorm R) :=
 
 end NonUnitalRing
 
-/-- The `NormedRing` stucture on a ring `R` determined by a `RingNorm`. -/
+/-- The `NormedRing` structure on a ring `R` determined by a `RingNorm` -/
 -- See note |reducible non instances]
 abbrev toNormedRing [Ring R] (f : RingNorm R) : NormedRing R where
   __ := ‹Ring R›

@@ -133,7 +133,7 @@ scoped notation "ρ_" => MonoidalCategoryStruct.rightUnitor
 
 /-- The property that the pentagon relation is satisfied by four objects
 in a category equipped with a `MonoidalCategoryStruct`. -/
-def Pentagon {C :Type u} [Category.{v} C] [MonoidalCategoryStruct C]
+def Pentagon {C : Type u} [Category.{v} C] [MonoidalCategoryStruct C]
     (Y₁ Y₂ Y₃ Y₄ : C) : Prop :=
   (α_ Y₁ Y₂ Y₃).hom ▷ Y₄ ≫ (α_ Y₁ (Y₂ ⊗ Y₃) Y₄).hom ≫ Y₁ ◁ (α_ Y₂ Y₃ Y₄).hom =
     (α_ (Y₁ ⊗ Y₂) Y₃ Y₄).hom ≫ (α_ Y₁ Y₂ (Y₃ ⊗ Y₄)).hom
@@ -797,12 +797,10 @@ def curriedTensor : C ⥤ C ⥤ C where
 variable {C}
 
 /-- Tensoring on the left with a fixed object, as a functor. -/
-@[simps!]
-def tensorLeft (X : C) : C ⥤ C := (curriedTensor C).obj X
+abbrev tensorLeft (X : C) : C ⥤ C := (curriedTensor C).obj X
 
 /-- Tensoring on the right with a fixed object, as a functor. -/
-@[simps!]
-def tensorRight (X : C) : C ⥤ C := (curriedTensor C).flip.obj X
+abbrev tensorRight (X : C) : C ⥤ C := (curriedTensor C).flip.obj X
 
 variable (C)
 
@@ -1000,5 +998,36 @@ lemma whiskerLeft_app_tensor_app {X' Y' : J} (f : X' ⟶ Y') (X : J) :
   simpa using tensor_naturality α β (𝟙 X) f
 
 end NatTrans
+
+section ObjectProperty
+
+/-- The restriction of a monoidal category along an object property
+that's closed under the monoidal structure. -/
+-- See note [reducible non instances]
+noncomputable abbrev MonoidalCategory.fullSubcategory
+    {C : Type u} [Category.{v} C] [MonoidalCategory C] (P : ObjectProperty C)
+    (tensorUnit : P (𝟙_ C))
+    (tensorObj : ∀ X Y, P X → P Y → P (X ⊗ Y)) :
+    MonoidalCategory P.FullSubcategory where
+  tensorObj X Y := ⟨X.1 ⊗ Y.1, tensorObj X.1 Y.1 X.2 Y.2⟩
+  whiskerLeft X _ _ f := X.1 ◁ f
+  whiskerRight f X := MonoidalCategoryStruct.whiskerRight (C := C) f X.1
+  tensorHom f g := MonoidalCategoryStruct.tensorHom (C := C) f g
+  tensorUnit := ⟨𝟙_ C, tensorUnit⟩
+  associator X Y Z := P.fullyFaithfulι.preimageIso (α_ X.1 Y.1 Z.1)
+  leftUnitor X := P.fullyFaithfulι.preimageIso (λ_ X.1)
+  rightUnitor X := P.fullyFaithfulι.preimageIso (ρ_ X.1)
+  tensorHom_def := tensorHom_def (C := C)
+  tensor_id X Y := tensor_id X.1 Y.1
+  tensor_comp := tensor_comp (C := C)
+  whiskerLeft_id X Y := MonoidalCategory.whiskerLeft_id X.1 Y.1
+  id_whiskerRight X Y := MonoidalCategory.id_whiskerRight X.1 Y.1
+  associator_naturality := associator_naturality (C := C)
+  leftUnitor_naturality := leftUnitor_naturality (C := C)
+  rightUnitor_naturality := rightUnitor_naturality (C := C)
+  pentagon W X Y Z := pentagon W.1 X.1 Y.1 Z.1
+  triangle X Y := triangle X.1 Y.1
+
+end ObjectProperty
 
 end CategoryTheory

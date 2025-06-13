@@ -49,7 +49,7 @@ presheafed spaces, sheafed spaces, and locally ringed spaces.
 
 noncomputable section
 
-universe u
+universe v u
 
 open TopologicalSpace CategoryTheory Opposite Topology
 
@@ -409,30 +409,35 @@ together into a morphism `X ⟶ Y`.
 Note:
 If `X` is exactly (defeq to) the gluing of `U i`, then using `Multicoequalizer.desc` suffices.
 -/
-def glueMorphisms {Y : Scheme} (f : ∀ x, 𝒰.obj x ⟶ Y)
+def glueMorphisms (𝒰 : OpenCover.{v} X) {Y : Scheme.{u}} (f : ∀ x, 𝒰.obj x ⟶ Y)
     (hf : ∀ x y, pullback.fst (𝒰.map x) (𝒰.map y) ≫ f x = pullback.snd _ _ ≫ f y) :
     X ⟶ Y := by
-  refine inv 𝒰.fromGlued ≫ ?_
+  refine inv 𝒰.ulift.fromGlued ≫ ?_
   fapply Multicoequalizer.desc
-  · exact f
+  · exact fun i ↦ f _
   rintro ⟨i, j⟩
-  change pullback.fst _ _ ≫ f i = (_ ≫ _) ≫ f j
+  dsimp
+  change pullback.fst _ _ ≫ f _ = (_ ≫ _) ≫ f _
   simp [pullbackSymmetry_hom_comp_fst]
-  exact hf i j
+  exact hf _ _
 
-@[simp, reassoc]
-theorem ι_glueMorphisms {Y : Scheme} (f : ∀ x, 𝒰.obj x ⟶ Y)
-    (hf : ∀ x y, pullback.fst (𝒰.map x) (𝒰.map y) ≫ f x = pullback.snd _ _ ≫ f y)
-    (x : 𝒰.J) : 𝒰.map x ≫ 𝒰.glueMorphisms f hf = f x := by
-  rw [← ι_fromGlued, Category.assoc, glueMorphisms, IsIso.hom_inv_id_assoc]
-  erw [Multicoequalizer.π_desc]
-
-theorem hom_ext {Y : Scheme} (f₁ f₂ : X ⟶ Y) (h : ∀ x, 𝒰.map x ≫ f₁ = 𝒰.map x ≫ f₂) : f₁ = f₂ := by
-  rw [← cancel_epi 𝒰.fromGlued]
+theorem hom_ext (𝒰 : OpenCover.{v} X) {Y : Scheme} (f₁ f₂ : X ⟶ Y)
+    (h : ∀ x, 𝒰.map x ≫ f₁ = 𝒰.map x ≫ f₂) : f₁ = f₂ := by
+  rw [← cancel_epi 𝒰.ulift.fromGlued]
   apply Multicoequalizer.hom_ext
   intro x
   rw [fromGlued, Multicoequalizer.π_desc_assoc, Multicoequalizer.π_desc_assoc]
-  exact h x
+  exact h _
+
+@[simp, reassoc]
+theorem ι_glueMorphisms (𝒰 : OpenCover.{v} X) {Y : Scheme} (f : ∀ x, 𝒰.obj x ⟶ Y)
+    (hf : ∀ x y, pullback.fst (𝒰.map x) (𝒰.map y) ≫ f x = pullback.snd _ _ ≫ f y)
+    (x : 𝒰.J) : 𝒰.map x ≫ 𝒰.glueMorphisms f hf = f x := by
+  refine (𝒰.ulift.pullbackCover (𝒰.map x)).hom_ext _ _ fun i ↦ ?_
+  dsimp only [ulift_J, ulift_obj, ulift_map, pullbackCover_obj, pullbackCover_map]
+  simp_rw [pullback.condition_assoc, ← ulift_map, ← ι_fromGlued, Category.assoc, glueMorphisms,
+    IsIso.hom_inv_id_assoc, ulift_map, hf]
+  erw [Multicoequalizer.π_desc]
 
 end Cover
 

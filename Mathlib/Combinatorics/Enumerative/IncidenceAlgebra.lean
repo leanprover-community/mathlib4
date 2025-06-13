@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
 import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Module.Pi
+import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 
 /-!
 # Incidence algebras
@@ -569,11 +569,11 @@ lemma moebius_inversion_top (f g : α → 𝕜) (h : ∀ x, g x = ∑ y ∈ Ici 
     _ = ∑ y ∈ Ici x, ∑ z ∈ Ici y, (1 : IncidenceAlgebra 𝕜 α) x z * f z := by
       simp only [mu_mul_zeta 𝕜, one_apply, ite_mul, one_mul, zero_mul, sum_ite_eq, mem_Ici, le_refl,
         ↓reduceIte, ← add_sum_Ioi_eq_sum_Ici, left_eq_add]
-      exact sum_eq_zero fun y hy ↦ if_neg (mem_Ioi.mp hy).not_le
+      exact sum_eq_zero fun y hy ↦ if_neg (mem_Ioi.mp hy).not_ge
     _ = f x := by
       simp only [one_apply, ite_mul, one_mul, zero_mul, sum_ite_eq, mem_Ici,
         ← add_sum_Ioi_eq_sum_Ici, le_refl, ↓reduceIte, add_eq_left]
-      exact sum_eq_zero fun y hy ↦ if_neg (mem_Ioi.mp hy).not_le
+      exact sum_eq_zero fun y hy ↦ if_neg (mem_Ioi.mp hy).not_ge
 
 end InversionTop
 

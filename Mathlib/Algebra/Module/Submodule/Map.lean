@@ -258,6 +258,21 @@ theorem map_comap_le [RingHomSurjective σ₁₂] (f : F) (q : Submodule R₂ M�
 theorem le_comap_map [RingHomSurjective σ₁₂] (f : F) (p : Submodule R M) : p ≤ comap f (map f p) :=
   (gc_map_comap f).le_u_l _
 
+section submoduleOf
+
+/-- For any `R` submodules `p` and `q`, `p ⊓ q` as a submodule of `q`. -/
+def submoduleOf (p q : Submodule R M) : Submodule R q :=
+  Submodule.comap q.subtype p
+
+/-- If `p ≤ q`, then `p` as a subgroup of `q` is isomorphic to `p`. -/
+def submoduleOfEquivOfLe {p q : Submodule R M} (h : p ≤ q) : p.submoduleOf q ≃ₗ[R] p where
+  toFun m := ⟨m.1, m.2⟩
+  invFun m := ⟨⟨m.1, h m.2⟩, m.2⟩
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+end submoduleOf
+
 section GaloisInsertion
 
 variable [RingHomSurjective σ₁₂] {f : F}
@@ -312,7 +327,7 @@ theorem le_map_of_comap_le_of_surjective (h : q.comap f ≤ p) : q ≤ p.map f :
   map_comap_eq_of_surjective hf q ▸ map_mono h
 
 theorem lt_map_of_comap_lt_of_surjective (h : q.comap f < p) : q < p.map f := by
-  rw [lt_iff_le_not_le] at h ⊢; rw [map_le_iff_le_comap]
+  rw [lt_iff_le_not_ge] at h ⊢; rw [map_le_iff_le_comap]
   exact h.imp_left (le_map_of_comap_le_of_surjective hf)
 
 end GaloisInsertion
@@ -616,6 +631,21 @@ end Submodule
 namespace LinearMap
 
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₁] [Module R M] [Module R M₁]
+
+/-- The `LinearMap` from the preimage of a submodule to itself.
+
+This is the linear version of `AddMonoidHom.addSubmonoidComap`
+and `AddMonoidHom.addSubgroupComap`. -/
+@[simps!]
+def submoduleComap (f : M →ₗ[R] M₁) (q : Submodule R M₁) : q.comap f →ₗ[R] q :=
+  f.restrict fun _ ↦ Submodule.mem_comap.1
+
+theorem submoduleComap_surjective_of_surjective (f : M →ₗ[R] M₁) (q : Submodule R M₁)
+    (hf : Surjective f) : Surjective (f.submoduleComap q) := fun y ↦ by
+  obtain ⟨x, hx⟩ := hf y
+  use ⟨x, Submodule.mem_comap.mpr (hx ▸ y.2)⟩
+  apply Subtype.val_injective
+  simp [hx]
 
 /-- A linear map between two modules restricts to a linear map from any submodule p of the
 domain onto the image of that submodule.

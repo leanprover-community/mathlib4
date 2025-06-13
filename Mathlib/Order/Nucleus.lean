@@ -142,7 +142,7 @@ instance : CompleteLattice (Nucleus X) := completeLatticeOfCompleteSemilatticeIn
 
 end CompleteLattice
 section Frame
-variable [Order.Frame X] {n : Nucleus X} {x y : X}
+variable [Order.Frame X] {n m : Nucleus X} {x y : X}
 
 lemma map_himp_le : n (x ⇨ y) ≤ x ⇨ n y := by
   rw [le_himp_iff]
@@ -228,6 +228,19 @@ instance : Frame (range n) := .ofMinimalAxioms range.instFrameMinimalAxioms
 /-- The restriction of a nucleus to its range forms a Galois insertion with the forgetful map from
 the range to the original frame. -/
 def giRestrict (n : Nucleus X) : GaloisInsertion n.restrict Subtype.val := n.giAux
+
+lemma comp_eq_right_iff_le : n ∘ m = m ↔ n ≤ m where
+  mpr h := funext_iff.mpr <| fun _ ↦ le_antisymm (le_trans (h (m _)) (m.idempotent' _)) le_apply
+  mp h := by
+    rw [← coe_le_coe, ← h]
+    exact fun _ ↦ monotone le_apply
+
+@[simp] lemma range_subset_range : range m ⊆ range n ↔ n ≤ m where
+  mp h x := by
+    rw [← mem_range.mp (Set.range_subset_iff.mp h x)]
+    exact n.monotone m.le_apply
+  mpr h :=
+    range_subset_range_iff_exists_comp.mpr ⟨m, (comp_eq_right_iff_le.mpr h).symm⟩
 
 end Frame
 end Nucleus

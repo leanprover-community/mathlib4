@@ -20,7 +20,7 @@ When `p q : ℝ≥0∞` are Hölder conjugate (i.e., `HolderConjugate p q`), we 
 natural map `ContinuousLinearMap.lpPairing : Lp E p μ →L[𝕜] Lp F q μ →L[𝕜] G` given by
 `fun f g ↦ ∫ x, B (f x) (g x) ∂μ`. When `B := (NormedSpace.inclusionInDoubleDual 𝕜 E).flip`, this
 is the natural map `Lp (Dual 𝕜 E) p μ →L[𝕜] Dual 𝕜 (Lp E q μ)`.
- -/
+-/
 
 open ENNReal MeasureTheory Lp
 open scoped NNReal
@@ -171,10 +171,9 @@ lemma coeFn_lpSMul (f : Lp 𝕜 p μ) (g : Lp E q μ) :
 protected lemma norm_smul_le (f : Lp 𝕜 p μ) (g : Lp E q μ) :
     ‖f • g‖ ≤ ‖f‖ * ‖g‖ := by
   simp only [Lp.norm_def, ← ENNReal.toReal_mul, coeFn_lpSMul]
-  refine ENNReal.toReal_mono ?_ ?_
-  · exact ENNReal.mul_ne_top (eLpNorm_ne_top f) (eLpNorm_ne_top g)
-  · rw [eLpNorm_congr_ae (coeFn_lpSMul f g)]
-    exact eLpNorm_smul_le_mul_eLpNorm (Lp.aestronglyMeasurable g) (Lp.aestronglyMeasurable f)
+  refine ENNReal.toReal_mono (by finiteness) ?_
+  rw [eLpNorm_congr_ae (coeFn_lpSMul f g)]
+  exact eLpNorm_smul_le_mul_eLpNorm (Lp.aestronglyMeasurable g) (Lp.aestronglyMeasurable f)
 
 end MulActionWithZero
 

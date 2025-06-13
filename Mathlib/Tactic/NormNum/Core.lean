@@ -145,7 +145,7 @@ def eval (e : Expr) (post := false) : MetaM Simp.Result := do
 /-- Erases a name marked `norm_num` by adding it to the state's `erased` field and
   removing it from the state's list of `Entry`s. -/
 def NormNums.eraseCore (d : NormNums) (declName : Name) : NormNums :=
- { d with erased := d.erased.insert declName }
+  { d with erased := d.erased.insert declName }
 
 /--
 Erase a name marked as a `norm_num` attribute.

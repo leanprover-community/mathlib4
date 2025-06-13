@@ -16,12 +16,12 @@ This file defines a bundled type of absolute values `AbsoluteValue R S`.
 
 ## Main definitions
 
- * `AbsoluteValue R S` is the type of absolute values on `R` mapping to `S`.
- * `AbsoluteValue.abs` is the "standard" absolute value on `S`, mapping negative `x` to `-x`.
- * `AbsoluteValue.toMonoidWithZeroHom`: absolute values mapping to a
-   linear ordered field preserve `0`, `*` and `1`
- * `IsAbsoluteValue`: a type class stating that `f : β → α` satisfies the axioms of an absolute
-   value
+* `AbsoluteValue R S` is the type of absolute values on `R` mapping to `S`.
+* `AbsoluteValue.abs` is the "standard" absolute value on `S`, mapping negative `x` to `-x`.
+* `AbsoluteValue.toMonoidWithZeroHom`: absolute values mapping to a
+  linear ordered field preserve `0`, `*` and `1`
+* `IsAbsoluteValue`: a type class stating that `f : β → α` satisfies the axioms of an absolute
+  value
 -/
 
 variable {ι α R S : Type*}
@@ -360,7 +360,7 @@ variable [Field R] [Semifield S] [LinearOrder S] [IsStrictOrderedRing S] [Exists
 
 lemma IsNontrivial.exists_abv_gt_one (h : v.IsNontrivial) : ∃ x, 1 < v x := by
   obtain ⟨x, hx₀, hx₁⟩ := h
-  rcases hx₁.lt_or_lt with h | h
+  rcases hx₁.lt_or_gt with h | h
   · refine ⟨x⁻¹, ?_⟩
     rw [map_inv₀]
     exact (one_lt_inv₀ <| v.pos hx₀).mpr h

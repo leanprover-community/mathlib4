@@ -16,14 +16,14 @@ the roots of the minimal polynomial of `s` over `R`.
 
 ## Main definitions
 
- * `Algebra.trace R S x`: the trace of an element `s` of an `R`-algebra `S`
- * `Algebra.traceForm R S`: bilinear form sending `x`, `y` to the trace of `x * y`
- * `Algebra.traceMatrix R b`: the matrix whose `(i j)`-th element is the trace of `b i * b j`.
+* `Algebra.trace R S x`: the trace of an element `s` of an `R`-algebra `S`
+* `Algebra.traceForm R S`: bilinear form sending `x`, `y` to the trace of `x * y`
+* `Algebra.traceMatrix R b`: the matrix whose `(i j)`-th element is the trace of `b i * b j`.
 
 ## Main results
 
- * `trace_algebraMap_of_basis`, `trace_algebraMap`: if `x : K`, then `Tr_{L/K} x = [L : K] x`
- * `trace_trace_of_basis`, `trace_trace`: `Tr_{L/K} (Tr_{F/L} x) = Tr_{F/K} x`
+* `trace_algebraMap_of_basis`, `trace_algebraMap`: if `x : K`, then `Tr_{L/K} x = [L : K] x`
+* `trace_trace_of_basis`, `trace_trace`: `Tr_{L/K} (Tr_{F/L} x) = Tr_{F/K} x`
 
 ## Implementation notes
 
@@ -37,7 +37,7 @@ For now, the definitions assume `S` is commutative, so the choice doesn't matter
 
 ## References
 
- * https://en.wikipedia.org/wiki/Field_trace
+* https://en.wikipedia.org/wiki/Field_trace
 
 -/
 

@@ -42,18 +42,24 @@ theorem prod_insert [DecidableEq ι] : a ∉ s → ∏ x ∈ insert a s, f x = f
 the product over `s`, as long as `a` is in `s` or `f a = 1`. -/
 @[to_additive (attr := simp) "The sum of `f` over `insert a s` is the same as
 the sum over `s`, as long as `a` is in `s` or `f a = 0`."]
-theorem prod_insert_of_eq_one_if_not_mem [DecidableEq ι] (h : a ∉ s → f a = 1) :
+theorem prod_insert_of_eq_one_if_notMem [DecidableEq ι] (h : a ∉ s → f a = 1) :
     ∏ x ∈ insert a s, f x = ∏ x ∈ s, f x := by
   by_cases hm : a ∈ s
   · simp_rw [insert_eq_of_mem hm]
   · rw [prod_insert hm, h hm, one_mul]
 
+@[deprecated (since := "2025-05-23")]
+alias sum_insert_of_eq_zero_if_not_mem := sum_insert_of_eq_zero_if_notMem
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias prod_insert_of_eq_one_if_not_mem := prod_insert_of_eq_one_if_notMem
+
 /-- The product of `f` over `insert a s` is the same as
 the product over `s`, as long as `f a = 1`. -/
-@[to_additive (attr := simp) "The sum of `f` over `insert a s` is the same as
+@[to_additive "The sum of `f` over `insert a s` is the same as
 the sum over `s`, as long as `f a = 0`."]
-theorem prod_insert_one [DecidableEq ι] (h : f a = 1) : ∏ x ∈ insert a s, f x = ∏ x ∈ s, f x :=
-  prod_insert_of_eq_one_if_not_mem fun _ => h
+theorem prod_insert_one [DecidableEq ι] (h : f a = 1) : ∏ x ∈ insert a s, f x = ∏ x ∈ s, f x := by
+  simp [h]
 
 @[to_additive (attr := simp)]
 theorem prod_singleton (f : ι → M) (a : ι) : ∏ x ∈ singleton a, f x = f a :=
@@ -62,11 +68,11 @@ theorem prod_singleton (f : ι → M) (a : ι) : ∏ x ∈ singleton a, f x = f 
 @[to_additive]
 theorem prod_pair [DecidableEq ι] {a b : ι} (h : a ≠ b) :
     (∏ x ∈ ({a, b} : Finset ι), f x) = f a * f b := by
-  rw [prod_insert (not_mem_singleton.2 h), prod_singleton]
+  rw [prod_insert (notMem_singleton.2 h), prod_singleton]
 
 @[to_additive (attr := simp)]
 theorem prod_image [DecidableEq ι] {s : Finset κ} {g : κ → ι} :
-    (∀ x ∈ s, ∀ y ∈ s, g x = g y → x = y) → ∏ x ∈ s.image g, f x = ∏ x ∈ s, f (g x) :=
+    Set.InjOn g s → ∏ x ∈ s.image g, f x = ∏ x ∈ s, f (g x) :=
   fold_image
 
 @[to_additive]
@@ -172,15 +178,21 @@ theorem prod_subset (h : s₁ ⊆ s₂) (hf : ∀ x ∈ s₂, x ∉ s₁ → f x
   prod_subset_one_on_sdiff h (by simpa) fun _ _ => rfl
 
 @[to_additive (attr := simp)]
-theorem prod_disj_sum (s : Finset ι) (t : Finset κ) (f : ι ⊕ κ → M) :
+theorem prod_disjSum (s : Finset ι) (t : Finset κ) (f : ι ⊕ κ → M) :
     ∏ x ∈ s.disjSum t, f x = (∏ x ∈ s, f (Sum.inl x)) * ∏ x ∈ t, f (Sum.inr x) := by
   rw [← map_inl_disjUnion_map_inr, prod_disjUnion, prod_map, prod_map]
   rfl
 
+@[deprecated (since := "2025-06-11")]
+alias sum_disj_sum := sum_disjSum
+
+@[to_additive existing, deprecated (since := "2025-06-11")]
+alias prod_disj_sum := prod_disjSum
+
 @[to_additive]
 lemma prod_sum_eq_prod_toLeft_mul_prod_toRight (s : Finset (ι ⊕ κ)) (f : ι ⊕ κ → M) :
     ∏ x ∈ s, f x = (∏ x ∈ s.toLeft, f (Sum.inl x)) * ∏ x ∈ s.toRight, f (Sum.inr x) := by
-  rw [← Finset.toLeft_disjSum_toRight (u := s), Finset.prod_disj_sum, Finset.toLeft_disjSum,
+  rw [← Finset.toLeft_disjSum_toRight (u := s), Finset.prod_disjSum, Finset.toLeft_disjSum,
     Finset.toRight_disjSum]
 
 @[to_additive]
@@ -318,6 +330,15 @@ theorem prod_eq_single {s : Finset ι} {f : ι → M} (a : ι) (h₀ : ∀ b ∈
   by_cases (prod_eq_single_of_mem a · h₀) fun this =>
     (prod_congr rfl fun b hb => h₀ b hb <| by rintro rfl; exact this hb).trans <|
       prod_const_one.trans (h₁ this).symm
+
+@[to_additive]
+lemma prod_eq_ite [DecidableEq ι] {s : Finset ι} {f : ι → M} (a : ι)
+    (h₀ : ∀ b ∈ s, b ≠ a → f b = 1) :
+    ∏ x ∈ s, f x = if a ∈ s then f a else 1 := by
+  by_cases h : a ∈ s
+  · simp [Finset.prod_eq_single_of_mem a h h₀, h]
+  · replace h₀ : ∀ b ∈ s, f b = 1 := by aesop
+    simp +contextual [h₀]
 
 @[to_additive]
 lemma prod_union_eq_left [DecidableEq ι] (hs : ∀ a ∈ s₂, a ∉ s₁ → f a = 1) :
@@ -497,7 +518,7 @@ theorem exists_ne_one_of_prod_ne_one (h : ∏ x ∈ s, f x ≠ 1) : ∃ a ∈ s,
 @[to_additive]
 theorem prod_range_succ_comm (f : ℕ → M) (n : ℕ) :
     (∏ x ∈ range (n + 1), f x) = f n * ∏ x ∈ range n, f x := by
-  rw [range_succ, prod_insert not_mem_range_self]
+  rw [range_succ, prod_insert notMem_range_self]
 
 @[to_additive]
 theorem prod_range_succ (f : ℕ → M) (n : ℕ) :
@@ -540,8 +561,8 @@ theorem prod_list_map_count [DecidableEq ι] (l : List ι) (f : ι → M) :
   | cons a s IH =>
   simp only [List.map, List.prod_cons, toFinset_cons, IH]
   by_cases has : a ∈ s.toFinset
-  · rw [insert_eq_of_mem has, ← insert_erase has, prod_insert (not_mem_erase _ _),
-      prod_insert (not_mem_erase _ _), ← mul_assoc, count_cons_self, pow_succ']
+  · rw [insert_eq_of_mem has, ← insert_erase has, prod_insert (notMem_erase _ _),
+      prod_insert (notMem_erase _ _), ← mul_assoc, count_cons_self, pow_succ']
     congr 1
     refine prod_congr rfl fun x hx => ?_
     rw [count_cons_of_ne (ne_of_mem_erase hx).symm]
@@ -723,7 +744,7 @@ See `Multiset.prod_map_erase` for the `Multiset` version. -/
 See `Multiset.sum_map_erase` for the `Multiset` version."]
 theorem mul_prod_erase [DecidableEq ι] (s : Finset ι) (f : ι → M) {a : ι} (h : a ∈ s) :
     (f a * ∏ x ∈ s.erase a, f x) = ∏ x ∈ s, f x := by
-  rw [← prod_insert (not_mem_erase a s), insert_erase h]
+  rw [← prod_insert (notMem_erase a s), insert_erase h]
 
 /-- A variant of `Finset.mul_prod_erase` with the multiplication swapped. -/
 @[to_additive "A variant of `Finset.add_sum_erase` with the addition swapped."]
@@ -739,14 +760,14 @@ theorem prod_erase [DecidableEq ι] (s : Finset ι) {f : ι → M} {a : ι} (h :
   rw [← sdiff_singleton_eq_erase]
   refine prod_subset sdiff_subset fun x hx hnx => ?_
   rw [sdiff_singleton_eq_erase] at hnx
-  rwa [eq_of_mem_of_not_mem_erase hx hnx]
+  rwa [eq_of_mem_of_notMem_erase hx hnx]
 
 @[to_additive]
 theorem prod_erase_lt_of_one_lt {κ : Type*} [DecidableEq ι] [CommMonoid κ] [LT κ]
     [MulLeftStrictMono κ] {s : Finset ι} {d : ι} (hd : d ∈ s) {f : ι → κ}
     (hdf : 1 < f d) : ∏ m ∈ s.erase d, f m < ∏ m ∈ s, f m := by
   conv in ∏ m ∈ s, f m => rw [← Finset.insert_erase hd]
-  rw [Finset.prod_insert (Finset.not_mem_erase d s)]
+  rw [Finset.prod_insert (Finset.notMem_erase d s)]
   exact lt_mul_of_one_lt_left' _ hdf
 
 /-- If a product is 1 and the function is 1 except possibly at one
@@ -760,7 +781,7 @@ theorem eq_one_of_prod_eq_one {s : Finset ι} {f : ι → M} {a : ι} (hp : ∏ 
     by_cases h : x = a
     · rw [h]
       rw [h] at hx
-      rw [← prod_subset (singleton_subset_iff.2 hx) fun t ht ha => h1 t ht (not_mem_singleton.1 ha),
+      rw [← prod_subset (singleton_subset_iff.2 hx) fun t ht ha => h1 t ht (notMem_singleton.1 ha),
         prod_singleton] at hp
       exact hp
     · exact h1 x hx h
@@ -1022,8 +1043,8 @@ theorem prod_toFinset {M : Type*} [DecidableEq ι] [CommMonoid M] (f : ι → M)
     ∀ {l : List ι} (_hl : l.Nodup), l.toFinset.prod f = (l.map f).prod
   | [], _ => by simp
   | a :: l, hl => by
-    let ⟨not_mem, hl⟩ := List.nodup_cons.mp hl
-    simp [Finset.prod_insert (mt List.mem_toFinset.mp not_mem), prod_toFinset _ hl]
+    let ⟨notMem, hl⟩ := List.nodup_cons.mp hl
+    simp [Finset.prod_insert (mt List.mem_toFinset.mp notMem), prod_toFinset _ hl]
 
 @[simp]
 theorem sum_toFinset_count_eq_length [DecidableEq ι] (l : List ι) :

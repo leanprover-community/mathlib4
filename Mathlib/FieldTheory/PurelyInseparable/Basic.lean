@@ -412,6 +412,10 @@ theorem isPurelyInseparable_iff_finSepDegree_eq_one :
   ⟨fun _ ↦ IsPurelyInseparable.finSepDegree_eq_one F E,
     fun h ↦ isPurelyInseparable_of_finSepDegree_eq_one h⟩
 
+lemma isSeparable_iff_finInsepDegree_eq_one  :
+    Algebra.IsSeparable F K ↔ finInsepDegree F K = 1 := by
+  rw [← separableClosure.eq_top_iff, ← IntermediateField.finrank_eq_one_iff_eq_top, finInsepDegree]
+
 variable {F E} in
 /-- An algebraic extension is purely inseparable if and only if all of its finite dimensional
 subextensions are purely inseparable. -/

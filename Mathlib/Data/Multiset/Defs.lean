@@ -195,8 +195,10 @@ alias Le.subset := subset_of_le
 theorem mem_of_le (h : s ≤ t) : a ∈ s → a ∈ t :=
   mem_of_subset (subset_of_le h)
 
-theorem not_mem_mono (h : s ⊆ t) : a ∉ t → a ∉ s :=
+theorem notMem_mono (h : s ⊆ t) : a ∉ t → a ∉ s :=
   mt <| @h _
+
+@[deprecated (since := "2025-05-23")] alias not_mem_mono := notMem_mono
 
 @[simp]
 theorem coe_le {l₁ l₂ : List α} : (l₁ : Multiset α) ≤ l₂ ↔ l₁ <+~ l₂ :=

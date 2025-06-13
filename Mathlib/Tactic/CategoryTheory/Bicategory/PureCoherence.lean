@@ -262,7 +262,7 @@ instance : MkEqOfNaturality BicategoryM where
 
 open Elab.Tactic
 
-/-- Close the goal of the form `η = θ`, where `η` and `θ` are 2-isomorphisms made up only of
+/-- Close the goal of the form `η.hom = θ.hom`, where `η` and `θ` are 2-isomorphisms made up only of
 associators, unitors, and identities.
 ```lean
 example {B : Type} [Bicategory B] {a : B} :

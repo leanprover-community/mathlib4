@@ -183,7 +183,7 @@ instance topologicalSpaceCoconePtOfCoconeForget :
 of the underlying cocone of types, this is a cocone for `F` whose point is
 `c.pt` with the supremum of the coinduced topologies by the maps `c.ι.app j`. -/
 @[simps pt ι_app]
-def coconeOfCoconeForget  : Cocone F where
+def coconeOfCoconeForget : Cocone F where
   pt := of (coconePtOfCoconeForget c)
   ι :=
     { app j := ofHom (ContinuousMap.mk (c.ι.app j) (by

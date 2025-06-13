@@ -291,14 +291,26 @@ theorem IsTranscendenceBasis.to_subtype_range' (hx : IsTranscendenceBasis R x) {
     (ht : range x = t) : IsTranscendenceBasis R ((↑) : t → A) :=
   ht ▸ hx.to_subtype_range
 
+lemma IsTranscendenceBasis.of_comp {x : ι → A} (f : A →ₐ[R] A') (h : Function.Injective f)
+    (H : IsTranscendenceBasis R (f ∘ x)) :
+    IsTranscendenceBasis R x := by
+  refine ⟨(AlgHom.algebraicIndependent_iff f h).mp H.1, ?_⟩
+  intro s hs hs'
+  have := H.2 (f '' s)
+    ((algebraicIndependent_image h.injOn).mp ((AlgHom.algebraicIndependent_iff f h).mpr hs))
+    (by rw [Set.range_comp]; exact Set.image_mono hs')
+  rwa [Set.range_comp, (Set.image_injective.mpr h).eq_iff] at this
+
+lemma IsTranscendenceBasis.of_comp_algebraMap [Algebra A A'] [IsScalarTower R A A']
+    [FaithfulSMul A A'] {x : ι → A} (H : IsTranscendenceBasis R (algebraMap A A' ∘ x)) :
+    IsTranscendenceBasis R x :=
+  .of_comp (IsScalarTower.toAlgHom R A A') (FaithfulSMul.algebraMap_injective A A') H
+
+/-- Also see `IsTranscendenceBasis.algebraMap_comp`
+for the composition with a algebraic extension. -/
 theorem AlgEquiv.isTranscendenceBasis (e : A ≃ₐ[R] A') (hx : IsTranscendenceBasis R x) :
-    IsTranscendenceBasis R (e ∘ x) := by
-  refine ⟨by apply hx.1.map' (id e.injective : Injective e.toAlgHom), fun s hs hxs ↦ ?_⟩
-  rw [AlgebraicIndepOn, ← e.symm.toAlgHom.algebraicIndependent_iff e.symm.injective] at hs
-  rw [range_comp, hx.2 _ hs.to_subtype_range, ← range_comp, ← comp_assoc, range_comp]
-  · convert s.image_id <;> (ext; simp)
-  rintro _ ⟨i, rfl⟩
-  exact ⟨⟨_, hxs ⟨i, rfl⟩⟩, by simp⟩
+    IsTranscendenceBasis R (e ∘ x) :=
+  .of_comp e.symm.toAlgHom e.symm.injective (by convert hx; ext; simp)
 
 theorem AlgEquiv.isTranscendenceBasis_iff (e : A ≃ₐ[R] A') :
     IsTranscendenceBasis R (e ∘ x) ↔ IsTranscendenceBasis R x :=

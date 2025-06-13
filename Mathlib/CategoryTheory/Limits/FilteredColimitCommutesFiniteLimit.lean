@@ -28,8 +28,8 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 
 -- Various pieces of algebra that have previously been spuriously imported here:
 assert_not_exists map_ne_zero Field
- -- TODO: We should morally be able to strengthen this to `assert_not_exists GroupWithZero`, but
- -- finiteness currently relies on more algebra than it needs.
+-- TODO: We should morally be able to strengthen this to `assert_not_exists GroupWithZero`, but
+-- finiteness currently relies on more algebra than it needs.
 
 universe w v₁ v₂ v u₁ u₂ u
 
@@ -154,8 +154,7 @@ open CategoryTheory.Prod
 
 variable [IsFiltered K]
 
-/-- This follows this proof from
-* Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
+/-- This follows this proof from `Borceux, Handbook of categorical algebra 1, Theorem 2.13.4`
 although with different names.
 -/
 theorem colimitLimitToLimitColimit_surjective :
@@ -397,7 +396,6 @@ theorem ι_colimitLimitIso_limit_π (F : J ⥤ K ⥤ C) (a) (b) :
   simp only [← Category.assoc, Iso.comp_inv_eq,
     Limits.colimitObjIsoColimitCompEvaluation_ι_app_hom,
     Limits.HasColimit.isoOfNatIso_ι_hom, NatIso.ofComponents_hom_app]
-  dsimp
   simp
 
 end

@@ -498,11 +498,11 @@ theorem S_comp_two_mul_X (n : ℤ) : (S R n).comp (2 * X) = U R n := by
 
 theorem S_sq_add_S_sq (n : ℤ) : S R n ^ 2 + S R (n + 1) ^ 2 - X * S R n * S R (n + 1) = 1 := by
   induction n with
-  | hz => simp; ring
-  | hp n ih =>
+  | zero => simp; ring
+  | succ n ih =>
     have h₁ := S_add_two R n
     linear_combination (norm := ring_nf) (S R (2 + n) - S R n) * h₁ + ih
-  | hn n ih =>
+  | pred n ih =>
     have h₁ := S_sub_one R (-n)
     linear_combination (norm := ring_nf) (S R (-1 - n) - S R (1 - n)) * h₁ + ih
 

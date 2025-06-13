@@ -29,8 +29,7 @@ In this case the first condition is automatic, and in the second condition we ma
 
 * `HenselianRing`: a typeclass on commutative rings,
   asserting that the ring is Henselian at the ideal `I`.
-* `HenselianLocalRing`: a typeclass on commutative rings,
-   asserting that the ring is local Henselian.
+* `HenselianLocalRing`: a typeclass on commutative rings, asserting that the ring is local Henselian
 * `Field.henselian`: fields are Henselian local rings
 * `Henselian.TFAE`: equivalent ways of expressing the Henselian property for local rings
 * `IsAdicComplete.henselianRing`:
@@ -58,7 +57,7 @@ noncomputable section
 
 universe u v
 
-open Polynomial IsLocalRing Polynomial Function List
+open Polynomial IsLocalRing Function List
 
 theorem isLocalHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
     (h : I ≤ Ideal.jacobson ⊥) : IsLocalHom (Ideal.Quotient.mk I) := by

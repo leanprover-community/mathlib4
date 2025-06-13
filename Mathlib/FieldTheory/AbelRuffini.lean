@@ -20,12 +20,12 @@ by radicals, then its minimal polynomial has solvable Galois group.
 ## Main results
 
 * the Abel-Ruffini Theorem `solvableByRad.isSolvable'` : An irreducible polynomial with a root
-that is solvable by radicals has a solvable Galois group.
+  that is solvable by radicals has a solvable Galois group.
 -/
 
 noncomputable section
 
-open Polynomial IntermediateField
+open Polynomial
 
 section AbelRuffini
 
@@ -294,6 +294,8 @@ theorem induction3 {α : solvableByRad F E} {n : ℕ} (hn : n ≠ 0) (hα : P (�
       obtain ⟨q, _, rfl⟩ := hq
       rw [sub_comp, X_comp, C_comp]
       exact gal_X_pow_sub_C_isSolvable n q
+
+open IntermediateField
 
 /-- An auxiliary induction lemma, which is generalized by `solvableByRad.isSolvable`. -/
 theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (hα : P α) (hβ : P β) : P γ := by

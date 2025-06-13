@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.Analysis.Convolution
+import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
 import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
 import Mathlib.Analysis.Analytic.IsolatedZeros
@@ -305,7 +306,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
       exact ⟨hx, hn⟩
     · simp_rw [mul_comm]
       refine (Tendsto.comp (continuous_ofReal.tendsto _) ?_).const_mul _
-      convert tendsto_one_plus_div_pow_exp (-x) using 1
+      convert Real.tendsto_one_add_div_pow_exp (-x) using 1
       ext1 n
       rw [neg_div, ← sub_eq_add_neg]
   -- let `convert` identify the remaining goals
@@ -322,8 +323,8 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
     rw [ae_restrict_iff' measurableSet_Ioi]
     filter_upwards with x hx
     dsimp only [f]
-    rcases lt_or_le (n : ℝ) x with (hxn | hxn)
-    · rw [indicator_of_not_mem (not_mem_Ioc_of_gt hxn), norm_zero,
+    rcases lt_or_ge (n : ℝ) x with (hxn | hxn)
+    · rw [indicator_of_notMem (notMem_Ioc_of_gt hxn), norm_zero,
         mul_nonneg_iff_right_nonneg_of_pos (exp_pos _)]
       exact rpow_nonneg (le_of_lt hx) _
     · rw [indicator_of_mem (mem_Ioc.mpr ⟨mem_Ioi.mp hx, hxn⟩), norm_mul, Complex.norm_of_nonneg
@@ -337,7 +338,7 @@ theorem GammaSeq_tendsto_Gamma (s : ℂ) : Tendsto (GammaSeq s) atTop (𝓝 <| G
     rw [Gamma]
     apply this
     rw [neg_lt]
-    rcases lt_or_le 0 (re s) with (hs | hs)
+    rcases lt_or_ge 0 (re s) with (hs | hs)
     · exact (neg_neg_of_pos hs).trans_le (Nat.cast_nonneg _)
     · refine (Nat.lt_floor_add_one _).trans_le ?_
       rw [sub_eq_neg_add, Nat.floor_add_one (neg_nonneg.mpr hs), Nat.cast_add_one]
@@ -514,7 +515,7 @@ theorem differentiable_one_div_Gamma : Differentiable ℂ fun s : ℂ => (Gamma 
     rw [Nat.cast_zero, neg_lt_zero] at hs
     suffices ∀ m : ℕ, s ≠ -↑m from (differentiableAt_Gamma _ this).inv (Gamma_ne_zero this)
     rintro m rfl
-    apply hs.not_le
+    apply hs.not_ge
     simp
   | succ n ihn =>
     rw [funext one_div_Gamma_eq_self_mul_one_div_Gamma_add_one]

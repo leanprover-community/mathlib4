@@ -22,7 +22,7 @@ for `n : ℕ`, and let `f` be a function from `E` to `F`.
 * `HasFiniteFPowerSeriesAt f p x n`: on some ball of center `x` with positive radius, holds
   `HasFiniteFPowerSeriesOnBall f p x n r`.
 * `CPolynomialAt 𝕜 f x`: there exists a power series `p` and a natural number `n` such that
-   holds `HasFPowerSeriesAt f p x n`.
+  holds `HasFPowerSeriesAt f p x n`.
 * `CPolynomialOn 𝕜 f s`: the function `f` is analytic at every point of `s`.
 
 In this file, we develop the basic properties of these notions, notably:

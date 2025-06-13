@@ -201,7 +201,7 @@ def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L'
       obtain rfl | hij := Decidable.eq_or_ne i j
       · simp_rw [lie_of_same, toAddMonoid_of, LinearMap.toAddMonoidHom_coe, LieHom.coe_toLinearMap,
           LieHom.map_lie]
-      · simp_rw [lie_of_of_ne _ hij.symm, map_zero,  LinearMap.toAddMonoidHom_coe,
+      · simp_rw [lie_of_of_ne _ hij.symm, map_zero, LinearMap.toAddMonoidHom_coe,
           LieHom.coe_toLinearMap, hf hij.symm x y] }
 
 end Algebras

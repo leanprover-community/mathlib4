@@ -9,6 +9,7 @@ import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Fintype.Pi
+import Mathlib.Order.Preorder.Finite
 
 /-!
 # Dissociation and span
@@ -131,28 +132,28 @@ lemma exists_subset_mulSpan_card_le_of_forall_mulDissociated
     (hs : ∀ s', s' ⊆ s → MulDissociated (s' : Set α) → s'.card ≤ d) :
     ∃ s', s' ⊆ s ∧ s'.card ≤ d ∧ s ⊆ mulSpan s' := by
   classical
-  obtain ⟨s', hs', hs'max⟩ :=
-    exists_maximal (s.powerset.filter fun s' : Finset α ↦ MulDissociated (s' : Set α))
+  obtain ⟨s', hs'⟩ :=
+   (s.powerset.filter fun s' : Finset α ↦ MulDissociated (s' : Set α)).exists_maximal
       ⟨∅, mem_filter.2 ⟨empty_mem_powerset _, by simp⟩⟩
-  simp only [mem_filter, mem_powerset, lt_eq_subset, and_imp] at hs' hs'max
-  refine ⟨s', hs'.1, hs _ hs'.1 hs'.2, fun a ha ↦ ?_⟩
+  simp only [mem_filter, mem_powerset, lt_eq_subset, and_imp] at hs'
+  refine ⟨s', hs'.1.1, hs _ hs'.1.1 hs'.1.2, fun a ha ↦ ?_⟩
   by_cases ha' : a ∈ s'
   · exact subset_mulSpan ha'
   obtain ⟨t, u, ht, hu, htu⟩ := not_mulDissociated_iff_exists_disjoint.1 fun h ↦
-    hs'max _ (insert_subset_iff.2 ⟨ha, hs'.1⟩) h <| ssubset_insert ha'
+    hs'.not_gt ⟨insert_subset_iff.2 ⟨ha, hs'.1.1⟩, h⟩ <| ssubset_insert ha'
   by_cases hat : a ∈ t
   · have : a = (∏ b ∈ u, b) / ∏ b ∈ t.erase a, b := by
       rw [prod_erase_eq_div hat, htu.2.2, div_div_self']
     rw [this]
     exact prod_div_prod_mem_mulSpan
-      ((subset_insert_iff_of_not_mem <| disjoint_left.1 htu.1 hat).1 hu) (subset_insert_iff.1 ht)
-  rw [coe_subset, subset_insert_iff_of_not_mem hat] at ht
+      ((subset_insert_iff_of_notMem <| disjoint_left.1 htu.1 hat).1 hu) (subset_insert_iff.1 ht)
+  rw [coe_subset, subset_insert_iff_of_notMem hat] at ht
   by_cases hau : a ∈ u
   · have : a = (∏ b ∈ t, b) / ∏ b ∈ u.erase a, b := by
       rw [prod_erase_eq_div hau, htu.2.2, div_div_self']
     rw [this]
     exact prod_div_prod_mem_mulSpan ht (subset_insert_iff.1 hu)
-  · rw [coe_subset, subset_insert_iff_of_not_mem hau] at hu
-    cases not_mulDissociated_iff_exists_disjoint.2 ⟨t, u, ht, hu, htu⟩ hs'.2
+  · rw [coe_subset, subset_insert_iff_of_notMem hau] at hu
+    cases not_mulDissociated_iff_exists_disjoint.2 ⟨t, u, ht, hu, htu⟩ hs'.1.2
 
 end Finset

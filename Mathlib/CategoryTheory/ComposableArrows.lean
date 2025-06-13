@@ -31,7 +31,6 @@ In the namespace `CategoryTheory.ComposableArrows`, we provide constructors
 like `mk₁ f`, `mk₂ f g`, `mk₃ f g h` for `ComposableArrows C n` for small `n`.
 
 TODO (@joelriou):
-* redefine `Arrow C` as `ComposableArrow C 1`?
 * construct some elements in `ComposableArrows m (Fin (n + 1))` for small `n`
   the precomposition with which shall induce functors
   `ComposableArrows C n ⥤ ComposableArrows C m` which correspond to simplicial operations
@@ -205,7 +204,7 @@ lemma ext {F G : ComposableArrows C n} (h : ∀ i, F.obj i = G.obj i)
     (w : ∀ (i : ℕ) (hi : i < n), F.map' i (i + 1) =
       eqToHom (h _) ≫ G.map' i (i + 1) ≫ eqToHom (h _).symm) : F = G :=
   Functor.ext_of_iso
-    (isoMk (fun i => eqToIso (h i)) (fun i hi => by simp [w i hi])) h (fun _ => rfl)
+    (isoMk (fun i => eqToIso (h i)) (fun i hi => by simp [w i hi])) h
 
 /-- Constructor for morphisms in `ComposableArrows C 0`. -/
 @[simps!]

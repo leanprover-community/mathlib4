@@ -504,7 +504,7 @@ theorem sModNat_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sModNat (2 ^ p - 1) k : �
   have h2 : 1 ≤ 2 ^ p := by omega
   induction k with
   | zero =>
-    rw [sModNat, sMod, Int.ofNat_emod]
+    rw [sModNat, sMod, Int.natCast_emod]
     simp [h2]
   | succ k ih =>
     rw [sModNat, sMod, ← ih]
@@ -515,7 +515,7 @@ theorem sModNat_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sModNat (2 ^ p - 1) k : �
         _         ≤ 2 ^ p - 1 := by zify at h1; exact Int.sub_le_sub_right h1 _
     zify [h2, h3]
     rw [← add_sub_assoc, sub_eq_add_neg, add_assoc, add_comm _ (-2), ← add_assoc,
-      Int.add_emod_self, ← sub_eq_add_neg]
+      Int.add_emod_right, ← sub_eq_add_neg]
 
 /-- Tail-recursive version of `sModNat`. -/
 def sModNatTR (q : ℕ) (k : Nat) : ℕ :=

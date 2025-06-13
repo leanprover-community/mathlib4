@@ -377,7 +377,7 @@ theorem tangentMap_tangentBundle_pure [Is : IsManifold I 1 M]
     · exact differentiableAt_const _
     · exact ModelWithCorners.uniqueDiffWithinAt_image I
     · exact differentiableAt_id'.prodMk (differentiableAt_const _)
-  simp (config := { unfoldPartialApp := true }) only [Bundle.zeroSection, tangentMap, mfderiv, A,
+  simp +unfoldPartialApp only [Bundle.zeroSection, tangentMap, mfderiv, A,
     if_pos, chartAt, FiberBundle.chartedSpace_chartAt, TangentBundle.trivializationAt_apply,
     tangentBundleCore, Function.comp_def, ContinuousLinearMap.map_zero, mfld_simps]
   rw [← fderivWithin_inter N] at B
@@ -418,8 +418,6 @@ bundles. -/
     TangentBundle (I.prod I') (M × M') ≃ (TangentBundle I M) × (TangentBundle I' M') where
   toFun p := (⟨p.1.1, p.2.1⟩, ⟨p.1.2, p.2.2⟩)
   invFun p := ⟨(p.1.1, p.2.1), (p.1.2, p.2.2)⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 lemma equivTangentBundleProd_eq_tangentMap_prod_tangentMap :
     equivTangentBundleProd I M I' M' = fun (p : TangentBundle (I.prod I') (M × M')) ↦

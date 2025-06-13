@@ -25,17 +25,17 @@ There are many proofs of Rademacher's theorem. We follow the one by Morrey, whic
 elementary but maybe the most elegant once necessary prerequisites are set up.
 * Step 0: without loss of generality, one may assume that `f` is real-valued.
 * Step 1: Since a one-dimensional Lipschitz function has bounded variation, it is differentiable
-almost everywhere. With a Fubini argument, it follows that given any vector `v` then `f` is ae
-differentiable in the direction of `v`. See `LipschitzWith.ae_lineDifferentiableAt`.
+  almost everywhere. With a Fubini argument, it follows that given any vector `v` then `f` is ae
+  differentiable in the direction of `v`. See `LipschitzWith.ae_lineDifferentiableAt`.
 * Step 2: the line derivative `LineDeriv ℝ f x v` is ae linear in `v`. Morrey proves this by a
-duality argument, integrating against a smooth compactly supported function `g`, passing the
-derivative to `g` by integration by parts, and using the linearity of the derivative of `g`.
-See `LipschitzWith.ae_lineDeriv_sum_eq`.
+  duality argument, integrating against a smooth compactly supported function `g`, passing the
+  derivative to `g` by integration by parts, and using the linearity of the derivative of `g`.
+  See `LipschitzWith.ae_lineDeriv_sum_eq`.
 * Step 3: consider a countable dense set `s` of directions. Almost everywhere, the function `f`
-is line-differentiable in all these directions and the line derivative is linear. Approximating
-any direction by a direction in `s` and using the fact that `f` is Lipschitz to control the error,
-it follows that `f` is Fréchet-differentiable at these points.
-See `LipschitzWith.hasFDerivAt_of_hasLineDerivAt_of_closure`.
+  is line-differentiable in all these directions and the line derivative is linear. Approximating
+  any direction by a direction in `s` and using the fact that `f` is Lipschitz to control the error,
+  it follows that `f` is Fréchet-differentiable at these points.
+  See `LipschitzWith.hasFDerivAt_of_hasLineDerivAt_of_closure`.
 
 ## References
 
@@ -148,11 +148,11 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
       _ = (C * ‖v‖) *‖g x‖ := by field_simp [norm_smul, abs_of_nonneg t_pos.le]; ring
       _ = K.indicator (fun x ↦ (C * ‖v‖) * ‖g x‖) x := by rw [indicator_of_mem hx]
     · have A : f x = 0 := by
-        rw [← Function.nmem_support]
+        rw [← Function.notMem_support]
         contrapose! hx
         exact self_subset_cthickening _ (subset_tsupport _ hx)
       have B : f (x + t • v) = 0 := by
-        rw [← Function.nmem_support]
+        rw [← Function.notMem_support]
         contrapose! hx
         apply mem_cthickening_of_dist_le _ _ (‖v‖) (tsupport f) (subset_tsupport _ hx)
         simp only [dist_eq_norm, sub_add_cancel_left, norm_neg, norm_smul, Real.norm_eq_abs,

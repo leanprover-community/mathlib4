@@ -65,7 +65,7 @@ lemma prod_lt_prod (hf : ∀ i ∈ s, 0 < f i) (hfg : ∀ i ∈ s, f i ≤ g i)
     ∏ i ∈ s, f i < ∏ i ∈ s, g i := by
   classical
   obtain ⟨i, hi, hilt⟩ := hlt
-  rw [← insert_erase hi, prod_insert (not_mem_erase _ _), prod_insert (not_mem_erase _ _)]
+  rw [← insert_erase hi, prod_insert (notMem_erase _ _), prod_insert (notMem_erase _ _)]
   have := posMulStrictMono_iff_mulPosStrictMono.1 ‹PosMulStrictMono R›
   refine mul_lt_mul_of_pos_of_nonneg' hilt ?_ ?_ ?_
   · exact prod_le_prod (fun j hj => le_of_lt (hf j (mem_of_mem_erase hj)))
@@ -114,6 +114,24 @@ lemma prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h
   · apply prod_nonneg
     simp only [and_imp, mem_sdiff, mem_singleton]
     exact fun j hj hji ↦ le_trans (hg j hj) (hgf j hj hji)
+
+theorem le_prod_of_submultiplicative_on_pred_of_nonneg {M : Type*} [CommMonoid M] (f : M → R)
+    (p : M → Prop) (h_nonneg : ∀ a, 0 ≤ f a) (h_one : f 1 ≤ 1)
+    (h_mul : ∀ a b, p a → p b → f (a * b) ≤ f a * f b) (hp_mul : ∀ a b, p a → p b → p (a * b))
+    (s : Finset ι) (g : ι → M) (hps : ∀ a, a ∈ s → p (g a)) :
+    f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) := by
+  apply le_trans (Multiset.le_prod_of_submultiplicative_on_pred_of_nonneg f p h_nonneg h_one
+    h_mul hp_mul _ ?_) (by simp [Multiset.map_map])
+  intro _ ha
+  obtain ⟨i, hi, rfl⟩ := Multiset.mem_map.mp ha
+  exact hps i hi
+
+theorem le_prod_of_submultiplicative_of_nonneg {M : Type*} [CommMonoid M]
+    (f : M → R) (h_nonneg : ∀ a, 0 ≤ f a) (h_one : f 1 ≤ 1)
+    (h_mul : ∀ x y : M, f (x * y) ≤ f x * f y) (s : Finset ι) (g : ι → M) :
+    f (∏ i ∈ s, g i) ≤ ∏ i ∈ s, f (g i) :=
+  le_trans (Multiset.le_prod_of_submultiplicative_of_nonneg f h_nonneg h_one h_mul _)
+    (by simp [Multiset.map_map])
 
 end OrderedCommSemiring
 
@@ -263,7 +281,6 @@ def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
     have body : Q($α) := Expr.betaRev f #[i]
     let rbody ← core zα pα body
     let _instαmon ← synthInstanceQ q(CommMonoidWithZero $α)
-
     -- Try to show that the product is positive
     let p_pos : Option Q(0 < $e) := ← do
       let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
@@ -275,7 +292,6 @@ def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
       let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)
       return some q(prod_pos fun i _ ↦ $pr i)
     if let some p_pos := p_pos then return .positive p_pos
-
     -- Try to show that the product is nonnegative
     let p_nonneg : Option Q(0 ≤ $e) := ← do
       let .some pbody := rbody.toNonneg
@@ -287,7 +303,6 @@ def evalFinsetProd : PositivityExt where eval {u α} zα pα e := do
       assertInstancesCommute
       return some q(prod_nonneg fun i _ ↦ $pr i)
     if let some p_nonneg := p_nonneg then return .nonnegative p_nonneg
-
     -- Fall back to showing that the product is nonzero
     let pbody ← rbody.toNonzero
     let pr : Q(∀ i, $f i ≠ 0) ← mkLambdaFVars #[i] pbody (binderInfoForMVars := .default)

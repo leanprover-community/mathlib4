@@ -25,7 +25,8 @@ inverse isomorphisms.
 
 We show that the composition of (lax) monoidal functors gives a (lax) monoidal functor.
 
-See `Mathlib.CategoryTheory.Monoidal.NaturalTransformation` for monoidal natural transformations.
+See `Mathlib/CategoryTheory/Monoidal/NaturalTransformation.lean` for monoidal natural
+transformations.
 
 We show in `Mathlib.CategoryTheory.Monoidal.Mon_` that lax monoidal functors take monoid objects
 to monoid objects.
@@ -941,7 +942,7 @@ lemma rightAdjointLaxMonoidal_μ (X Y : D) :
     letI := adj.rightAdjointLaxMonoidal
     μ G X Y = adj.homEquiv _ _ (δ F _ _ ≫ (adj.counit.app X ⊗ adj.counit.app Y)) := rfl
 
-/-- When `adj : F ⊣ G` is an adjunction, with `F` oplax monoidal and `G` monoidal,
+/-- When `adj : F ⊣ G` is an adjunction, with `F` oplax monoidal and `G` lax-monoidal,
 this typeclass expresses compatibilities between the adjunction and the (op)lax
 monoidal structures. -/
 class IsMonoidal [G.LaxMonoidal] : Prop where

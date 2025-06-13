@@ -24,7 +24,7 @@ We also include some constructions specific to the case when `A = R` is a ring; 
 `x ↦ ψ (r * x)`.
 
 For more refined results of a number-theoretic nature (primitive characters, Gauss sums, etc)
-see `Mathlib.NumberTheory.LegendreSymbol.AddCharacter`.
+see `Mathlib/NumberTheory/LegendreSymbol/AddCharacter.lean`.
 
 # Implementation notes
 
@@ -129,8 +129,6 @@ def toMonoidHomEquiv : AddChar A M ≃ (Multiplicative A →* M) where
   { toFun := f.toFun
     map_zero_eq_one' := f.map_one'
     map_add_eq_mul' := f.map_mul' }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp, norm_cast] lemma coe_toMonoidHomEquiv (ψ : AddChar A M) :
     ⇑(toMonoidHomEquiv ψ) = ψ ∘ Multiplicative.toAdd := rfl
@@ -163,8 +161,6 @@ def toAddMonoidHomEquiv : AddChar A M ≃ (A →+ Additive M) where
   { toFun := f.toFun
     map_zero_eq_one' := f.map_zero'
     map_add_eq_mul' := f.map_add' }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp, norm_cast]
 lemma coe_toAddMonoidHomEquiv (ψ : AddChar A M) :

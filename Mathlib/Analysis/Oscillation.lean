@@ -39,14 +39,17 @@ noncomputable def oscillationWithin [TopologicalSpace E] (f : E → F) (D : Set 
   ENNReal := ⨅ S ∈ (𝓝[D] x).map f, diam S
 
 /-- The oscillation of `f` at `x` within a neighborhood `D` of `x` is equal to `oscillation f x` -/
-theorem oscillationWithin_nhd_eq_oscillation [TopologicalSpace E] (f : E → F) (D : Set E) (x : E)
+theorem oscillationWithin_nhds_eq_oscillation [TopologicalSpace E] (f : E → F) (D : Set E) (x : E)
     (hD : D ∈ 𝓝 x) : oscillationWithin f D x = oscillation f x := by
   rw [oscillation, oscillationWithin, nhdsWithin_eq_nhds.2 hD]
+
+@[deprecated (since := "2025-05-22")]
+alias oscillationWithin_nhd_eq_oscillation := oscillationWithin_nhds_eq_oscillation
 
 /-- The oscillation of `f` at `x` within `univ` is equal to `oscillation f x` -/
 theorem oscillationWithin_univ_eq_oscillation [TopologicalSpace E] (f : E → F) (x : E) :
     oscillationWithin f univ x = oscillation f x :=
-  oscillationWithin_nhd_eq_oscillation f univ x Filter.univ_mem
+  oscillationWithin_nhds_eq_oscillation f univ x Filter.univ_mem
 
 namespace ContinuousWithinAt
 

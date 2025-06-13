@@ -16,9 +16,9 @@ scalars.
 
 ## Main definitions
 
- * `LieAlgebra.ExtendScalars.instLieAlgebra`
- * `LieAlgebra.ExtendScalars.instLieModule`
- * `LieAlgebra.RestrictScalars.lieAlgebra`
+* `LieAlgebra.ExtendScalars.instLieAlgebra`
+* `LieAlgebra.ExtendScalars.instLieModule`
+* `LieAlgebra.RestrictScalars.lieAlgebra`
 
 ## Tags
 
@@ -43,7 +43,7 @@ private def bracket' : A ⊗[R] L →ₗ[A] A ⊗[R] M →ₗ[A] A ⊗[R] M :=
   TensorProduct.curry <|
     TensorProduct.AlgebraTensorModule.map
         (LinearMap.mul' A A) (LieModule.toModuleHom R L M : L ⊗[R] M →ₗ[R] M) ∘ₗ
-      (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R A A L A M).toLinearMap
+      (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R R A A A L A M).toLinearMap
 
 @[simp]
 private theorem bracket'_tmul (s t : A) (x : L) (m : M) :

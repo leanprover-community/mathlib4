@@ -5,8 +5,6 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Int.Bitwise
 import Mathlib.Data.Int.Order.Lemmas
-import Mathlib.Data.Set.Function
-import Mathlib.Data.Set.Monotone
 import Mathlib.Order.Interval.Set.Defs
 
 /-!
@@ -69,16 +67,16 @@ theorem natAbs_inj_of_nonpos_of_nonneg {a b : ℤ} (ha : a ≤ 0) (hb : 0 ≤ b)
 theorem natAbs_coe_sub_coe_le_of_le {a b n : ℕ} (a_le_n : a ≤ n) (b_le_n : b ≤ n) :
     natAbs (a - b : ℤ) ≤ n := by
   rw [← Nat.cast_le (α := ℤ), natCast_natAbs]
-  exact abs_sub_le_of_nonneg_of_le (ofNat_nonneg a) (ofNat_le.mpr a_le_n)
-    (ofNat_nonneg b) (ofNat_le.mpr b_le_n)
+  exact abs_sub_le_of_nonneg_of_le (natCast_nonneg a) (ofNat_le.mpr a_le_n)
+    (natCast_nonneg b) (ofNat_le.mpr b_le_n)
 
 /-- A specialization of `abs_sub_lt_of_nonneg_of_lt` for working with the signed subtraction
   of natural numbers. -/
 theorem natAbs_coe_sub_coe_lt_of_lt {a b n : ℕ} (a_lt_n : a < n) (b_lt_n : b < n) :
     natAbs (a - b : ℤ) < n := by
   rw [← Nat.cast_lt (α := ℤ), natCast_natAbs]
-  exact abs_sub_lt_of_nonneg_of_lt (ofNat_nonneg a) (ofNat_lt.mpr a_lt_n)
-    (ofNat_nonneg b) (ofNat_lt.mpr b_lt_n)
+  exact abs_sub_lt_of_nonneg_of_lt (natCast_nonneg a) (ofNat_lt.mpr a_lt_n)
+    (natCast_nonneg b) (ofNat_lt.mpr b_lt_n)
 
 section Intervals
 

@@ -129,7 +129,7 @@ it is the monic polynomial with smallest degree that has `x` as its root. -/
 theorem min {p : A[X]} (pmonic : p.Monic) (hp : Polynomial.aeval x p = 0) :
     degree (minpoly A x) ≤ degree p := by
   delta minpoly; split_ifs with hx
-  · exact le_of_not_lt (degree_lt_wf.not_lt_min _ hx ⟨pmonic, hp⟩)
+  · exact le_of_not_gt (degree_lt_wf.not_lt_min _ hx ⟨pmonic, hp⟩)
   · simp only [degree_zero, bot_le]
 
 theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
@@ -161,10 +161,10 @@ theorem subsingleton [Subsingleton B] : minpoly A x = 1 := by
   nontriviality A
   have := minpoly.min A x monic_one (Subsingleton.elim _ _)
   rw [degree_one] at this
-  rcases le_or_lt (minpoly A x).degree 0 with h | h
+  rcases le_or_gt (minpoly A x).degree 0 with h | h
   · rwa [(monic ⟨1, monic_one, by simp [eq_iff_true_of_subsingleton]⟩ :
            (minpoly A x).Monic).degree_le_zero_iff_eq_one] at h
-  · exact (this.not_lt h).elim
+  · exact (this.not_gt h).elim
 
 end Ring
 
@@ -242,13 +242,13 @@ variable {x : B}
 /-- If `a` strictly divides the minimal polynomial of `x`, then `x` cannot be a root for `a`. -/
 theorem aeval_ne_zero_of_dvdNotUnit_minpoly {a : A[X]} (hx : IsIntegral A x) (hamonic : a.Monic)
     (hdvd : DvdNotUnit a (minpoly A x)) : Polynomial.aeval x a ≠ 0 := by
-  refine fun ha => (min A x hamonic ha).not_lt (degree_lt_degree ?_)
+  refine fun ha => (min A x hamonic ha).not_gt (degree_lt_degree ?_)
   obtain ⟨_, c, hu, he⟩ := hdvd
   have hcm := hamonic.of_mul_monic_left (he.subst <| monic hx)
   rw [he, hamonic.natDegree_mul hcm]
   -- TODO: port Nat.lt_add_of_zero_lt_left from lean3 core
   apply lt_add_of_pos_right
-  refine (lt_of_not_le fun h => hu ?_)
+  refine (lt_of_not_ge fun h => hu ?_)
   rw [eq_C_of_natDegree_le_zero h, ← Nat.eq_zero_of_le_zero h, ← leadingCoeff, hcm.leadingCoeff,
     C_1]
   exact isUnit_one

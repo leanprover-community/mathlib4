@@ -70,7 +70,7 @@ lemma le_rieszMeasure_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤
   intro x
   by_cases hx : x ∈ tsupport f
   · simpa using le_trans (hf x).2 (hg.1 x hx)
-  · simp [image_eq_zero_of_nmem_tsupport hx]
+  · simp [image_eq_zero_of_notMem_tsupport hx]
 
 /-- If `f` assumes the value `1` on a compact set `K` then `rieszMeasure K ≤ Λ f`. -/
 lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : Set X}
@@ -225,7 +225,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     _ = ∑ n, Λ (g n • f) := by simp
     _ ≤ ∑ n, Λ ((y n + ε') • g n) := ?_
     _ = ∑ n, (y n + ε') * Λ (g n) := by simp
-    -- That `y n + ε'` can be negative is bad in the inequalities so we artifically include `|a|`.
+    -- That `y n + ε'` can be negative is bad in the inequalities so we artificially include `|a|`.
     _ = ∑ n, (|a| + y n + ε') * Λ (g n) - |a| * ∑ n, Λ (g n) :=
       by simp [add_assoc, add_mul |a|, Finset.sum_add_distrib, Finset.mul_sum]
     _ ≤ ∑ n, (|a| + y n + ε') * (μ.real (E n) + ε' / N) - |a| * ∑ n, Λ (g n) := ?_
@@ -241,7 +241,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
       ← Finset.sum_mul, ← Finset.sum_apply]
     by_cases hx : x ∈ tsupport f
     · simp [hg.2.1 hx]
-    · simp [image_eq_zero_of_nmem_tsupport hx]
+    · simp [image_eq_zero_of_notMem_tsupport hx]
   · -- Use that `f ≤ y n + ε'` on `V n`
     gcongr with n hn
     apply monotone_of_nonneg hΛ
@@ -250,7 +250,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     · rw [smul_eq_mul, mul_comm]
       apply mul_le_mul_of_nonneg_right ?_ (hg.2.2.1 n x).1
       exact le_of_lt <| (hV n).2.1 x <| mem_of_subset_of_mem (hg.1 n) hx
-    · simp [image_eq_zero_of_nmem_tsupport hx]
+    · simp [image_eq_zero_of_notMem_tsupport hx]
   · -- Use that `Λ (g n) ≤ μ (V n)).toReal ≤ μ (E n)).toReal + ε' / N`
     gcongr with n hn
     · calc
@@ -268,9 +268,8 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
             exact ⟨WithTop.lt_top_iff_ne_top.mpr (hE' n), ENNReal.ofReal_lt_top⟩
         _ ≤ _ := by
           rw [← ENNReal.toReal_ofReal (div_nonneg (le_of_lt hε'.1) (Nat.cast_nonneg _))]
-          apply ENNReal.toReal_le_add (hV n).2.2
-          · exact hE' n
-          · exact ENNReal.ofReal_ne_top
+          apply ENNReal.toReal_le_add (hV n).2.2 (hE' n)
+          · finiteness
   · -- Use that `μ K ≤ Λ (∑ n, g n)`
     gcongr
     rw [← map_sum Λ g _]

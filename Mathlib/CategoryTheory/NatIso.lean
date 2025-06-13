@@ -30,9 +30,6 @@ we put some declarations that are specifically about natural isomorphisms in the
 namespace so that they are available using dot notation.
 -/
 
-
-open CategoryTheory
-
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 

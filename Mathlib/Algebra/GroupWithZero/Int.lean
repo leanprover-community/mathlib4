@@ -10,6 +10,8 @@ import Mathlib.Algebra.GroupWithZero.WithZero
 # Lemmas about `ℤₘ₀`.
 -/
 
+assert_not_exists Ring
+
 local notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
 
 namespace WithZero

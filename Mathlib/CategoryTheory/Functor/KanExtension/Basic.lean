@@ -559,7 +559,7 @@ noncomputable def coconeOfIsLeftKanExtension (c : Cocone F) : Cocone F' where
 left Kan extension `F' : D ⥤ H` of `F` along `L : C ⥤ D`, then `coconeOfIsLeftKanExtension α c` is
 a colimit cocone, too. -/
 @[simps]
-def isColimitCoconeOfIsLeftKanExtension {c : Cocone F} (hc : IsColimit c) :
+noncomputable def isColimitCoconeOfIsLeftKanExtension {c : Cocone F} (hc : IsColimit c) :
     IsColimit (F'.coconeOfIsLeftKanExtension α c) where
   desc s := hc.desc (Cocone.mk _ (α ≫ whiskerLeft L s.ι))
   fac s := by
@@ -610,7 +610,7 @@ noncomputable def coneOfIsRightKanExtension (c : Cone F) : Cone F' where
 right Kan extension `F' : D ⥤ H` of `F` along `L : C ⥤ D`, then `coneOfIsRightKanExtension α c` is
 a limit cone, too. -/
 @[simps]
-def isLimitConeOfIsRightKanExtension {c : Cone F} (hc : IsLimit c) :
+noncomputable def isLimitConeOfIsRightKanExtension {c : Cone F} (hc : IsLimit c) :
     IsLimit (F'.coneOfIsRightKanExtension α c) where
   lift s := hc.lift (Cone.mk _ (whiskerLeft L s.π ≫ α))
   fac s := by

@@ -121,7 +121,9 @@ theorem chain'_succ (n m : ℕ) : Chain' (fun a b => b = succ a) (Ico n m) := by
   · rw [eq_nil_of_le (le_of_not_gt h)]
     trivial
 
-theorem not_mem_top {n m : ℕ} : m ∉ Ico n m := by simp
+theorem notMem_top {n m : ℕ} : m ∉ Ico n m := by simp
+
+@[deprecated (since := "2025-05-23")] alias not_mem_top := notMem_top
 
 theorem filter_lt_of_top_le {n m l : ℕ} (hml : m ≤ l) :
     ((Ico n m).filter fun x => x < l) = Ico n m :=

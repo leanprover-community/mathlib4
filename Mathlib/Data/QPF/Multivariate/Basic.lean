@@ -57,14 +57,14 @@ matched because they preserve the properties of QPF. The latter example,
 
 ## Related modules
 
- * constructions
-   * Fix
-   * Cofix
-   * Quot
-   * Comp
-   * Sigma / Pi
-   * Prj
-   * Const
+* constructions
+  * Fix
+  * Cofix
+  * Quot
+  * Comp
+  * Sigma / Pi
+  * Prj
+  * Const
 
 each proves that some operations on functors preserves the QPF structure
 -/
@@ -149,8 +149,6 @@ theorem liftR_iff {α : TypeVec n} (r : ∀ ⦃i⦄, α i → α i → Prop) (x 
   rw [yeq, ← abs_map]; rfl
 
 open Set
-
-open MvFunctor (LiftP LiftR)
 
 theorem mem_supp {α : TypeVec n} (x : F α) (i) (u : α i) :
     u ∈ supp x i ↔ ∀ a f, abs ⟨a, f⟩ = x → u ∈ f i '' univ := by

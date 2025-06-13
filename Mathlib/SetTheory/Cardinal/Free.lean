@@ -78,7 +78,7 @@ theorem mk_freeGroup [Nonempty α] : #(FreeGroup α) = max #α ℵ₀ := by
   apply le_antisymm
   · apply (mk_le_of_injective (FreeGroup.toWord_injective (α := α))).trans_eq
     simp [Cardinal.mk_list_eq_max_mk_aleph0]
-    obtain hα | hα := lt_or_le #α ℵ₀
+    obtain hα | hα := lt_or_ge #α ℵ₀
     · simp only [hα.le, max_eq_right, max_eq_right_iff]
       exact (mul_lt_aleph0 hα (nat_lt_aleph0 2)).le
     · rw [max_eq_left hα, max_eq_left (hα.trans <| Cardinal.le_mul_right two_ne_zero),
@@ -114,7 +114,7 @@ instance nonempty_commRing [Nonempty α] : Nonempty (CommRing α) := by
     have : NeZero (Fintype.card α) := ⟨by inhabit α; simp⟩
     classical
     obtain ⟨e⟩ := Fintype.truncEquivFin α
-    exact ⟨e.commRing⟩
+    exact ⟨open scoped Fin.CommRing in e.commRing⟩
   · have ⟨e⟩ : Nonempty (α ≃ FreeCommRing α) := by simp [← Cardinal.eq]
     exact ⟨e.commRing⟩
 

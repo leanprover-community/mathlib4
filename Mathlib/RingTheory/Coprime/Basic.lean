@@ -17,9 +17,9 @@ import Mathlib.Tactic.Ring
 ## Main definition
 
 * `IsCoprime x y`: that `x` and `y` are coprime, defined to be the existence of `a` and `b` such
-that `a * x + b * y = 1`. Note that elements with no common divisors (`IsRelPrime`) are not
-necessarily coprime, e.g., the multivariate polynomials `x₁` and `x₂` are not coprime.
-The two notions are equivalent in Bézout rings, see `isRelPrime_iff_isCoprime`.
+  that `a * x + b * y = 1`. Note that elements with no common divisors (`IsRelPrime`) are not
+  necessarily coprime, e.g., the multivariate polynomials `x₁` and `x₂` are not coprime.
+  The two notions are equivalent in Bézout rings, see `isRelPrime_iff_isCoprime`.
 
 This file also contains lemmas about `IsRelPrime` parallel to `IsCoprime`.
 
@@ -373,7 +373,7 @@ section abs
 variable [LinearOrder R] [AddLeftMono R]
 
 lemma abs_left_iff (x y : R) : IsCoprime |x| y ↔ IsCoprime x y := by
-  cases le_or_lt 0 x with
+  cases le_or_gt 0 x with
   | inl h => rw [abs_of_nonneg h]
   | inr h => rw [abs_of_neg h, IsCoprime.neg_left_iff]
 

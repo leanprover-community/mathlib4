@@ -471,6 +471,8 @@ Q505798:
 
 Q510197:
   title: Tutte theorem
+  decl: SimpleGraph.tutte
+  authors: Pim Otte
 
 Q512897:
   title: Brooks's theorem
@@ -934,6 +936,9 @@ Q867839:
 
 Q869647:
   title: Szpilrajn extension theorem
+  decl: extend_partialOrder
+  authors: Bhavik Mehta
+  date: 2021
 
 Q872088:
   title: Boolean prime ideal theorem
@@ -2391,6 +2396,9 @@ Q3527233:
 
 Q3527241:
   title: Krull's principal ideal theorem
+  decl: Ideal.height_le_one_of_isPrincipal_of_mem_minimalPrimes
+  authors: Andrew Yang
+  date: 2023
 
 Q3527245:
   title: Six exponentials theorem

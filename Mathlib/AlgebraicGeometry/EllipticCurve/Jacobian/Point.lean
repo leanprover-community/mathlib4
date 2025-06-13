@@ -3,7 +3,7 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Group
+import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
 import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Formula
 
 /-!
@@ -18,22 +18,22 @@ This file defines the group law on nonsingular Jacobian points.
 
 ## Main definitions
 
- * `WeierstrassCurve.Jacobian.neg`: the negation of a point representative.
- * `WeierstrassCurve.Jacobian.negMap`: the negation of a point class.
- * `WeierstrassCurve.Jacobian.add`: the addition of two point representatives.
- * `WeierstrassCurve.Jacobian.addMap`: the addition of two point classes.
- * `WeierstrassCurve.Jacobian.Point`: a nonsingular Jacobian point.
- * `WeierstrassCurve.Jacobian.Point.neg`: the negation of a nonsingular Jacobian point.
- * `WeierstrassCurve.Jacobian.Point.add`: the addition of two nonsingular Jacobian points.
- * `WeierstrassCurve.Jacobian.Point.toAffineAddEquiv`: the equivalence between the type of
-    nonsingular Jacobian points with the type of nonsingular points `W⟮F⟯` in affine coordinates.
+* `WeierstrassCurve.Jacobian.neg`: the negation of a point representative.
+* `WeierstrassCurve.Jacobian.negMap`: the negation of a point class.
+* `WeierstrassCurve.Jacobian.add`: the addition of two point representatives.
+* `WeierstrassCurve.Jacobian.addMap`: the addition of two point classes.
+* `WeierstrassCurve.Jacobian.Point`: a nonsingular Jacobian point.
+* `WeierstrassCurve.Jacobian.Point.neg`: the negation of a nonsingular Jacobian point.
+* `WeierstrassCurve.Jacobian.Point.add`: the addition of two nonsingular Jacobian points.
+* `WeierstrassCurve.Jacobian.Point.toAffineAddEquiv`: the equivalence between the type of
+  nonsingular Jacobian points with the type of nonsingular points `W⟮F⟯` in affine coordinates.
 
 ## Main statements
 
- * `WeierstrassCurve.Jacobian.nonsingular_neg`: negation preserves the nonsingular condition.
- * `WeierstrassCurve.Jacobian.nonsingular_add`: addition preserves the nonsingular condition.
- * `WeierstrassCurve.Jacobian.Point.instAddCommGroup`: the type of nonsingular Jacobian points forms
-    an abelian group under addition.
+* `WeierstrassCurve.Jacobian.nonsingular_neg`: negation preserves the nonsingular condition.
+* `WeierstrassCurve.Jacobian.nonsingular_add`: addition preserves the nonsingular condition.
+* `WeierstrassCurve.Jacobian.Point.instAddCommGroup`: the type of nonsingular Jacobian points forms
+  an abelian group under addition.
 
 ## Implementation notes
 

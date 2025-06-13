@@ -16,8 +16,8 @@ This file contains some results on absolute values applied to integers.
 
 ## Main results
 
- * `AbsoluteValue.map_units_int`: an absolute value sends all units of `ℤ` to `1`
- * `Int.natAbsHom`: `Int.natAbs` bundled as a `MonoidWithZeroHom`
+* `AbsoluteValue.map_units_int`: an absolute value sends all units of `ℤ` to `1`
+* `Int.natAbsHom`: `Int.natAbs` bundled as a `MonoidWithZeroHom`
 -/
 
 

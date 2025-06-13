@@ -152,7 +152,7 @@ lemma changeOriginSeriesTerm_changeOriginIndexEquiv_symm (n t) :
   have : ∀ (m) (hm : n = m), p n (t.piecewise (fun _ ↦ x) fun _ ↦ y) =
       p m ((t.map (finCongr hm).toEmbedding).piecewise (fun _ ↦ x) fun _ ↦ y) := by
     rintro m rfl
-    simp (config := { unfoldPartialApp := true }) [Finset.piecewise]
+    simp +unfoldPartialApp [Finset.piecewise]
   simp_rw [changeOriginSeriesTerm_apply, eq_comm]; apply this
 
 theorem changeOriginSeries_summable_aux₁ {r r' : ℝ≥0} (hr : (r + r' : ℝ≥0∞) < p.radius) :
@@ -187,7 +187,8 @@ theorem changeOriginSeries_summable_aux₃ {r : ℝ≥0} (hr : ↑r < p.radius) 
   refine NNReal.summable_of_le
     (fun n => ?_) (NNReal.summable_sigma.1 <| p.changeOriginSeries_summable_aux₂ hr k).2
   simp only [NNReal.tsum_mul_right]
-  exact mul_le_mul' (p.nnnorm_changeOriginSeries_le_tsum _ _) le_rfl
+  gcongr
+  apply p.nnnorm_changeOriginSeries_le_tsum
 
 theorem le_changeOriginSeries_radius (k : ℕ) : p.radius ≤ (p.changeOriginSeries k).radius :=
   ENNReal.le_of_forall_nnreal_lt fun _r hr =>
@@ -209,11 +210,11 @@ theorem changeOrigin_radius : p.radius - ‖x‖₊ ≤ (p.changeOrigin x).radiu
   rw [lt_tsub_iff_right, add_comm] at hr
   have hr' : (‖x‖₊ : ℝ≥0∞) < p.radius := (le_add_right le_rfl).trans_lt hr
   apply le_radius_of_summable_nnnorm
-  have : ∀ k : ℕ,
+  have (k : ℕ) :
       ‖p.changeOrigin x k‖₊ * r ^ k ≤
         (∑' s : Σl : ℕ, { s : Finset (Fin (k + l)) // s.card = l }, ‖p (k + s.1)‖₊ * ‖x‖₊ ^ s.1) *
-          r ^ k :=
-    fun k => mul_le_mul_right' (p.nnnorm_changeOrigin_le k hr') (r ^ k)
+          r ^ k := by
+    gcongr; exact p.nnnorm_changeOrigin_le k hr'
   refine NNReal.summable_of_le this ?_
   simpa only [← NNReal.tsum_mul_right] using
     (NNReal.summable_sigma.1 (p.changeOriginSeries_summable_aux₁ hr)).2
@@ -264,7 +265,7 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
   set f : (Σ k l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) → F := fun s =>
     p.changeOriginSeriesTerm s.1 s.2.1 s.2.2 s.2.2.2 (fun _ => x) fun _ => y
   have hsf : Summable f := by
-    refine .of_nnnorm_bounded _ (p.changeOriginSeries_summable_aux₁ h) ?_
+    refine .of_nnnorm_bounded (p.changeOriginSeries_summable_aux₁ h) ?_
     rintro ⟨k, l, s, hs⟩
     dsimp only [Subtype.coe_mk]
     exact p.nnnorm_changeOriginSeriesTerm_apply_le _ _ _ _ _ _
@@ -277,7 +278,7 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
       refine HasSum.sigma_of_hasSum this (fun l => ?_) ?_
       · simp only [changeOriginSeries, ContinuousMultilinearMap.sum_apply]
         apply hasSum_fintype
-      · refine .of_nnnorm_bounded _
+      · refine .of_nnnorm_bounded
           (p.changeOriginSeries_summable_aux₂ (mem_emetric_ball_zero_iff.1 x_mem_ball) k)
             fun s => ?_
         refine (ContinuousMultilinearMap.le_opNNNorm _ _).trans_eq ?_

@@ -347,7 +347,7 @@ lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ)
         · refine Set.disjoint_sUnion_right.mpr fun u huS => ?_
           refine Set.disjoint_sUnion_left.mpr fun v huV => ?_
           refine disjoint_memPartition t n (mem_of_mem_diff huV) (hS_subset huS) ?_
-          exact ne_of_mem_of_not_mem huS (not_mem_of_mem_diff huV) |>.symm
+          exact ne_of_mem_of_not_mem huS (notMem_of_mem_diff huV) |>.symm
         · rw [codisjoint_iff]
           simp only [sup_eq_union, top_eq_univ]
           rw [← sUnion_memPartition t n, union_comm, ← sUnion_union, union_diff_cancel hS_subset]

@@ -20,10 +20,10 @@ scalar multiplication as a homomorphism from `α × β` to `β`.
 
 ## See also
 
-* `Mathlib.Algebra.Group.Action.Option`
-* `Mathlib.Algebra.Group.Action.Pi`
-* `Mathlib.Algebra.Group.Action.Sigma`
-* `Mathlib.Algebra.Group.Action.Sum`
+* `Mathlib/Algebra/Group/Action/Option.lean`
+* `Mathlib/Algebra/Group/Action/Pi.lean`
+* `Mathlib/Algebra/Group/Action/Sigma.lean`
+* `Mathlib/Algebra/Group/Action/Sum.lean`
 
 # Porting notes
 

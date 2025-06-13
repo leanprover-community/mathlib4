@@ -83,7 +83,7 @@ theorem numDerangements_succ (n : ℕ) :
   induction n with
   | zero => rfl
   | succ n hn =>
-    simp only [numDerangements_add_two, hn, pow_succ, Int.ofNat_mul, Int.ofNat_add]
+    simp only [numDerangements_add_two, hn, pow_succ, Int.natCast_mul, Int.natCast_add]
     ring
 
 theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
@@ -115,4 +115,4 @@ theorem numDerangements_sum (n : ℕ) :
     intro x hx
     have h_le : x ≤ n := Finset.mem_range_succ_iff.mp hx
     rw [Nat.succ_sub h_le, Nat.ascFactorial_succ, add_right_comm, add_tsub_cancel_of_le h_le,
-      Int.ofNat_mul, Int.ofNat_add, mul_left_comm, Nat.cast_one]
+      Int.natCast_mul, Int.natCast_add, mul_left_comm, Nat.cast_one]

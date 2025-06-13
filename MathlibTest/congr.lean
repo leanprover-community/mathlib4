@@ -98,7 +98,7 @@ example {ι κ : Type u} (f : ι → α) (g : κ → α) :
     Set.image f Set.univ = Set.image g Set.univ := by
   congr!
   guard_target = Set.image f Set.univ = Set.image g Set.univ
-  congr! (config := {typeEqs := true})
+  congr! +typeEqs
   · guard_target = ι = κ
     exact test_sorry
   · guard_target = HEq f g
@@ -132,7 +132,7 @@ example (α β) [inst1 : Add α] [inst2 : Add β] (x : α) (y : β) : HEq (x + x
   -- But with typeEqs we can get it to generate the congruence anyway:
   have : α = β := test_sorry
   have : HEq inst1 inst2 := test_sorry
-  congr! (config := { typeEqs := true })
+  congr! +typeEqs
   guard_target = HEq x y
   exact test_sorry
   guard_target = HEq x y
@@ -148,7 +148,7 @@ example (prime : Nat → Prop) (n : Nat) :
 
 example (prime : Nat → Prop) (n : Nat) :
     prime (2 * n + 1) = prime (n + n + 1) := by
-  congr! (config := {etaExpand := true})
+  congr! +etaExpand
   · guard_target =ₛ (fun (x y : Nat) => x * y) = (fun (x y : Nat) => x + y)
     exact test_sorry
   · guard_target = 2 = n
@@ -214,7 +214,7 @@ example (c : Prop → Prop → Prop → Prop) (x x' y z z' : Prop)
     (h₀ : x ↔ x') (h₁ : z ↔ z') : c x y z ↔ c x' y z' := by
   congr!
 
-example {α β γ δ} {F : ∀{α β}, (α → β) → γ → δ} {f g : α → β} {s : γ} (h : ∀ (x : α), f x = g x) :
+example {α β γ δ} {F : ∀ {α β}, (α → β) → γ → δ} {f g : α → β} {s : γ} (h : ∀ (x : α), f x = g x) :
     F f s = F g s := by
   congr!
   funext
@@ -287,7 +287,7 @@ example : n = m → 3 + n = m + 3 := by
   apply add_comm
 
 example (x y x' y' : Nat) (hx : x = x') (hy : y = y') : x + y = x' + y' := by
-  congr! (config := { closePre := false, closePost := false })
+  congr! -closePre -closePost
   exact hx
   exact hy
 
@@ -295,14 +295,14 @@ example (x y x' : Nat) (hx : id x = id x') : x + y = x' + y := by
   congr!
 
 example (x y x' : Nat) (hx : id x = id x') : x + y = x' + y := by
-  congr! (config := { closePost := false })
+  congr! -closePost
   exact hx
 
 set_option linter.unusedTactic false in
 example : { f : Nat → Nat // f = id } :=
   ⟨?_, by
     -- prevents `rfl` from solving for `?m` in `?m = id`:
-    congr! (config := { closePre := false, closePost := false })
+    congr! -closePre -closePost
     ext x
     exact Nat.zero_add x⟩
 
@@ -343,7 +343,7 @@ x : α
 example
     {α : Type} (inst1 : BEq α) [LawfulBEq α] (inst2 : BEq α) [LawfulBEq α] (xs : List α) (x : α) :
     @List.erase _ inst1 xs x = @List.erase _ inst2 xs x := by
-  congr! (config := { beqEq := false })
+  congr! -beqEq
 
 
 /-!

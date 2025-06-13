@@ -12,7 +12,7 @@ import Mathlib.Data.Rat.Floor
 
 ## Summary
 We show that the continued fraction for a value `v`, as defined in
-`Mathlib.Algebra.ContinuedFractions.Basic`, terminates if and only if `v` corresponds to a
+`Mathlib/Algebra/ContinuedFractions/Basic.lean`, terminates if and only if `v` corresponds to a
 rational number, that is `↑v = q` for some `q : ℚ`.
 
 ## Main Theorems
@@ -163,7 +163,7 @@ theorem coe_stream_nth_rat_eq (v_eq_q : v = (↑q : K)) (n : ℕ) :
       IntFractPair.stream v n := by
   induction n with
   | zero =>
-    simp only [IntFractPair.stream, Option.map_some', coe_of_rat_eq v_eq_q]
+    simp only [IntFractPair.stream, Option.map_some, coe_of_rat_eq v_eq_q]
   | succ n IH =>
     rw [v_eq_q] at IH
     cases stream_q_nth_eq : IntFractPair.stream q n with
@@ -276,7 +276,7 @@ theorem stream_nth_fr_num_le_fr_num_sub_n_rat :
   | succ n IH =>
     intro ifp_succ_n stream_succ_nth_eq
     suffices ifp_succ_n.fr.num + 1 ≤ (IntFractPair.of q).fr.num - n by
-      rw [Int.ofNat_succ, sub_add_eq_sub_sub]
+      rw [Int.natCast_succ, sub_add_eq_sub_sub]
       solve_by_elim [le_sub_right_of_add_le]
     rcases succ_nth_stream_eq_some_iff.mp stream_succ_nth_eq with ⟨ifp_n, stream_nth_eq, -⟩
     have : ifp_succ_n.fr.num < ifp_n.fr.num :=

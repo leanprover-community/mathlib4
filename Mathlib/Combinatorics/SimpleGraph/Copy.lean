@@ -194,8 +194,6 @@ instance [Fintype {f : G →g H // Injective f}] : Fintype (G.Copy H) :=
   .ofEquiv {f : G →g H // Injective f} {
     toFun f := ⟨f.1, f.2⟩
     invFun f := ⟨f.1, f.2⟩
-    left_inv _ := rfl
-    right_inv _ := rfl
   }
 
 end Copy
@@ -321,7 +319,7 @@ lemma free_bot (h : A ≠ ⊥) : A.Free (⊥ : SimpleGraph β) := by
   intro ⟨f, hf⟩
   absurd f.map_mem_edgeSet h.choose_spec
   rw [edgeSet_bot]
-  exact Set.not_mem_empty (h.choose.map f)
+  exact Set.notMem_empty (h.choose.map f)
 
 end Free
 

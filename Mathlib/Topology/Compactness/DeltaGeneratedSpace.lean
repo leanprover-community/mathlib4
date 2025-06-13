@@ -15,7 +15,7 @@ locally path-connected, sequential and in particular compactly generated.
 
 See https://ncatlab.org/nlab/show/Delta-generated+topological+space.
 
-Adapted from `Mathlib.Topology.Compactness.CompactlyGeneratedSpace`.
+Adapted from `Mathlib/Topology/Compactness/CompactlyGeneratedSpace.lean`.
 
 ## TODO
 * All locally path-connected first-countable spaces are delta-generated - in particular, all normed

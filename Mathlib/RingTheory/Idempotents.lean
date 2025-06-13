@@ -69,10 +69,13 @@ lemma OrthogonalIdempotents.mul_sum_of_mem (he : OrthogonalIdempotents e)
   classical
   simp [Finset.mul_sum, he.mul_eq, h]
 
-lemma OrthogonalIdempotents.mul_sum_of_not_mem (he : OrthogonalIdempotents e)
+lemma OrthogonalIdempotents.mul_sum_of_notMem (he : OrthogonalIdempotents e)
     {i : I} {s : Finset I} (h : i ∉ s) : e i * ∑ j ∈ s, e j = 0 := by
   classical
   simp [Finset.mul_sum, he.mul_eq, h]
+
+@[deprecated (since := "2025-05-23")]
+alias OrthogonalIdempotents.mul_sum_of_not_mem := OrthogonalIdempotents.mul_sum_of_notMem
 
 lemma OrthogonalIdempotents.map (he : OrthogonalIdempotents e) :
     OrthogonalIdempotents (f ∘ e) := by
@@ -148,7 +151,7 @@ lemma CompleteOrthogonalIdempotents.unique_iff [Unique I] :
 
 lemma CompleteOrthogonalIdempotents.single {I : Type*} [Fintype I] [DecidableEq I]
     (R : I → Type*) [∀ i, Semiring (R i)] :
-    CompleteOrthogonalIdempotents (Pi.single (f := R) · 1) := by
+    CompleteOrthogonalIdempotents (Pi.single (M := R) · 1) := by
   refine ⟨⟨by simp [IsIdempotentElem, ← Pi.single_mul], ?_⟩, Finset.univ_sum_single 1⟩
   intros i j hij
   ext k
@@ -256,8 +259,8 @@ lemma OrthogonalIdempotents.lift_of_isNilpotent_ker_aux
     obtain ⟨e₀, h₃, h₄, h₅, h₆⟩ :=
       exists_isIdempotentElem_mul_eq_zero_of_ker_isNilpotent f h _ (he' 0) (he.idem 0) _
       h₁.isIdempotentElem_sum
-      (by simp [Finset.mul_sum, h₂', he.mul_eq, Fin.succ_ne_zero, eq_comm])
-      (by simp [Finset.sum_mul, h₂', he.mul_eq, Fin.succ_ne_zero])
+      (by simp [Finset.mul_sum, h₂', he.mul_eq, eq_comm])
+      (by simp [Finset.sum_mul, h₂', he.mul_eq])
     refine ⟨_, (h₁.option _ h₃ h₅ h₆).embedding (finSuccEquiv n).toEmbedding, funext fun i ↦ ?_⟩
     obtain ⟨_ | i, rfl⟩ := (finSuccEquiv n).symm.surjective i <;> simp [*]
 
@@ -391,7 +394,7 @@ lemma OrthogonalIdempotents.prod_one_sub {I : Type*} {e : I → R}
   induction s using Finset.cons_induction with
   | empty => simp
   | cons a s has ih =>
-    simp [ih, sub_mul, mul_sub, he.mul_sum_of_not_mem has, sub_sub]
+    simp [ih, sub_mul, mul_sub, he.mul_sum_of_notMem has, sub_sub]
 
 variable {I : Type*} [Fintype I] {e : I → R}
 
@@ -435,12 +438,44 @@ lemma CompleteOrthogonalIdempotents.bijective_pi' (he : CompleteOrthogonalIdempo
       Ideal.Quotient.mk (Ideal.span {e' i})) := ⟨_, funext (by simp), he.bijective_pi⟩
   exact h
 
-lemma bijective_pi_of_isIdempotentElem (e : I → R)
+lemma RingHom.pi_bijective_of_isIdempotentElem (e : I → R)
     (he : ∀ i, IsIdempotentElem (e i))
     (he₁ : ∀ i j, i ≠ j → (1 - e i) * (1 - e j) = 0) (he₂ : ∏ i, e i = 0) :
     Function.Bijective (Pi.ringHom fun i ↦ Ideal.Quotient.mk (Ideal.span {e i})) :=
   (CompleteOrthogonalIdempotents.of_prod_one_sub
       ⟨fun i ↦ (he i).one_sub, he₁⟩ (by simpa using he₂)).bijective_pi'
+
+@[deprecated (since := "2025-01-05")]
+alias bijective_pi_of_isIdempotentElem := RingHom.pi_bijective_of_isIdempotentElem
+
+lemma RingHom.prod_bijective_of_isIdempotentElem {e f : R} (he : IsIdempotentElem e)
+    (hf : IsIdempotentElem f) (hef₁ : e + f = 1) (hef₂ : e * f = 0) :
+    Function.Bijective ((Ideal.Quotient.mk <| Ideal.span {e}).prod
+      (Ideal.Quotient.mk <| Ideal.span {f})) := by
+  let o (i : Fin 2) : R := match i with
+    | 0 => e
+    | 1 => f
+  show Function.Bijective
+    (piFinTwoEquiv _ ∘ Pi.ringHom (fun i : Fin 2 ↦ Ideal.Quotient.mk (Ideal.span {o i})))
+  rw [(Equiv.bijective _).of_comp_iff']
+  apply pi_bijective_of_isIdempotentElem
+  · intro i
+    fin_cases i <;> simpa [o]
+  · intro i j hij
+    fin_cases i <;> fin_cases j <;> simp at hij ⊢ <;>
+      simp [o, mul_comm, sub_mul, mul_sub, hef₂, ← hef₁]
+  · simpa
+
+variable (R) in
+/-- If `e` and `f` are idempotent elements such that `e + f = 1` and `e * f = 0`,
+`S` is isomorphic as an `R`-algebra to `S ⧸ (e) × S ⧸ (f)`. -/
+@[simps! -isSimp apply, simps! apply_fst apply_snd]
+noncomputable def AlgEquiv.prodQuotientOfIsIdempotentElem
+    {S : Type*} [CommRing S] [Algebra R S] {e f : S} (he : IsIdempotentElem e)
+    (hf : IsIdempotentElem f) (hef₁ : e + f = 1) (hef₂ : e * f = 0) :
+    S ≃ₐ[R] (S ⧸ Ideal.span {e}) × S ⧸ Ideal.span {f} :=
+  AlgEquiv.ofBijective ((Ideal.Quotient.mkₐ _ _).prod (Ideal.Quotient.mkₐ _ _)) <|
+    RingHom.prod_bijective_of_isIdempotentElem he hf hef₁ hef₂
 
 end CommRing
 

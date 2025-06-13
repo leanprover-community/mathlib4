@@ -83,7 +83,7 @@ theorem injective_quotient_le_comap_map (P : Ideal R[X]) :
 R[x] / P → (R / (P ∩ R))[x] / (P / (P ∩ R))
 ```
 commutes.  It is used, for instance, in the proof of `quotient_mk_comp_C_is_integral_of_jacobson`,
-in the file `Mathlib.RingTheory.Jacobson.Polynomial`.
+in the file `Mathlib/RingTheory/Jacobson/Polynomial.lean`.
 -/
 theorem quotient_mk_maps_eq (P : Ideal R[X]) :
     ((Quotient.mk (map (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) P)).comp C).comp

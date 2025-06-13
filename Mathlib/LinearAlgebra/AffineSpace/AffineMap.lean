@@ -526,6 +526,7 @@ theorem lineMap_symm (p₀ p₁ : P1) :
   rw [comp_lineMap]
   simp
 
+@[simp]
 theorem lineMap_apply_one_sub (p₀ p₁ : P1) (c : k) : lineMap p₀ p₁ (1 - c) = lineMap p₁ p₀ c := by
   rw [lineMap_symm p₀, comp_apply]
   congr

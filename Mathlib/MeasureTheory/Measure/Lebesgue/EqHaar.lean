@@ -76,7 +76,7 @@ theorem Basis.parallelepiped_basisFun (ι : Type*) [Fintype ι] :
     · exact zero_le_one
 
 /-- A parallelepiped can be expressed on the standard basis. -/
-theorem Basis.parallelepiped_eq_map  {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
+theorem Basis.parallelepiped_eq_map {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
     [NormedSpace ℝ E] (b : Basis ι ℝ E) :
     b.parallelepiped = (PositiveCompacts.piIcc01 ι).map b.equivFun.symm
       b.equivFunL.symm.continuous b.equivFunL.symm.isOpenMap := by
@@ -516,7 +516,7 @@ theorem addHaar_real_closedBall_eq_addHaar_real_ball [Nontrivial E] (x : E) (r :
   simp [measureReal_def, addHaar_closedBall_eq_addHaar_ball μ x r]
 
 theorem addHaar_sphere_of_ne_zero (x : E) {r : ℝ} (hr : r ≠ 0) : μ (sphere x r) = 0 := by
-  rcases hr.lt_or_lt with (h | h)
+  rcases hr.lt_or_gt with (h | h)
   · simp only [empty_diff, measure_empty, ← closedBall_diff_ball, closedBall_eq_empty.2 h]
   · rw [← closedBall_diff_ball,
       measure_diff ball_subset_closedBall measurableSet_ball.nullMeasurableSet

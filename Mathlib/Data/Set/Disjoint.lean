@@ -36,11 +36,17 @@ theorem _root_.Disjoint.inter_eq : Disjoint s t → s ∩ t = ∅ :=
 theorem disjoint_left : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → a ∉ t :=
   disjoint_iff_inf_le.trans <| forall_congr' fun _ => not_and
 
-alias ⟨_root_.Disjoint.not_mem_of_mem_left, _⟩ := disjoint_left
+alias ⟨_root_.Disjoint.notMem_of_mem_left, _⟩ := disjoint_left
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.Disjoint.not_mem_of_mem_left := Disjoint.notMem_of_mem_left
 
 theorem disjoint_right : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ t → a ∉ s := by rw [disjoint_comm, disjoint_left]
 
-alias ⟨_root_.Disjoint.not_mem_of_mem_right, _⟩ := disjoint_right
+alias ⟨_root_.Disjoint.notMem_of_mem_right, _⟩ := disjoint_right
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.Disjoint.not_mem_of_mem_right := Disjoint.notMem_of_mem_right
 
 lemma not_disjoint_iff : ¬Disjoint s t ↔ ∃ x, x ∈ s ∧ x ∈ t :=
   Set.disjoint_iff.not.trans <| not_forall.trans <| exists_congr fun _ ↦ not_not
@@ -118,6 +124,10 @@ theorem diff_ssubset_left_iff : s \ t ⊂ s ↔ (s ∩ t).Nonempty :=
 theorem _root_.HasSubset.Subset.diff_ssubset_of_nonempty (hst : s ⊆ t) (hs : s.Nonempty) :
     t \ s ⊂ t := by
   simpa [inter_eq_self_of_subset_right hst]
+
+theorem disjoint_range_iff {β γ : Sort*} {x : β → α} {y : γ → α} :
+    Disjoint (range x) (range y) ↔ ∀ i j, x i ≠ y j := by
+  simp [Set.disjoint_iff_forall_ne]
 
 end Set
 

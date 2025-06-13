@@ -332,10 +332,10 @@ lemma tensorH1CotangentOfIsLocalization_toLinearMap
   simp only [AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars,
     LinearEquiv.coe_coe, LinearMap.liftBaseChange_tmul, one_smul]
   simp only [tensorH1CotangentOfIsLocalization, Generators.toExtension_Ring,
-    Generators.toExtension_commRing, Generators.self_vars, Generators.toExtension_algebra₂,
+    Generators.toExtension_commRing, Generators.toExtension_algebra₂,
     AlgHom.toRingHom_eq_coe, Extension.tensorH1Cotangent,
     LinearEquiv.ofBijective_apply, LinearMap.liftBaseChange_tmul, one_smul,
-    Extension.equivH1CotangentOfFormallySmooth,  LinearEquiv.trans_apply]
+    Extension.equivH1CotangentOfFormallySmooth, LinearEquiv.trans_apply]
   letI P : Extension R S := (Generators.self R S).toExtension
   letI M' := M.comap (algebraMap P.Ring S)
   letI fQ : Localization M' →ₐ[R] T := IsLocalization.liftAlgHom (M := M')

@@ -80,7 +80,7 @@ lemma IsCaratheodory.biUnion_of_finite {ι : Type*} {s : ι → Set α} {t : Set
   lift t to Finset ι using ht
   induction t using Finset.induction_on with
   | empty => simp
-  | @insert i t hi IH =>
+  | insert i t hi IH =>
     simp only [Finset.mem_coe, Finset.mem_insert, iUnion_iUnion_eq_or_left] at h ⊢
     exact m.isCaratheodory_union (h _ <| Or.inl rfl) (IH fun _ hj ↦ h _ <| Or.inr hj)
 

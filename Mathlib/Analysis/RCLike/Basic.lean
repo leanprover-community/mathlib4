@@ -138,8 +138,15 @@ theorem ofReal_zero : ((0 : ℝ) : K) = 0 :=
   algebraMap.coe_zero
 
 @[rclike_simps]
-theorem zero_re' : re (0 : K) = (0 : ℝ) :=
+theorem zero_re : re (0 : K) = (0 : ℝ) :=
   map_zero re
+
+@[deprecated (since := "2025-05-29")]
+alias zero_re' := zero_re
+
+@[rclike_simps]
+theorem zero_im : im (0 : K) = (0 : ℝ) :=
+  map_zero im
 
 @[norm_cast]
 theorem ofReal_one : ((1 : ℝ) : K) = 1 :=
@@ -694,6 +701,10 @@ theorem norm_sq_re_add_conj (x : K) : ‖x + conj x‖ ^ 2 = re (x + conj x) ^ 2
 
 theorem norm_sq_re_conj_add (x : K) : ‖conj x + x‖ ^ 2 = re (conj x + x) ^ 2 := by
   rw [add_comm, norm_sq_re_add_conj]
+
+instance : NormSMulClass ℤ K where
+  norm_smul r x := by
+    rw [zsmul_eq_mul, norm_mul, ← ofReal_intCast, norm_ofReal, Int.norm_eq_abs]
 
 /-! ### Cauchy sequences -/
 

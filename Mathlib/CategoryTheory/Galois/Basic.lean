@@ -26,6 +26,9 @@ the definitions in Lenstras notes (see below for a reference).
 * `IsConnected`       : an object of a category is connected if it is not initial
                         and does not have non-trivial subobjects
 
+Any fiber functor `F` induces an equivalence with the category of finite, discrete `Aut F`-types.
+This is proven in `Mathlib/CategoryTheory/Galois/Equivalence.lean`.
+
 ## Implementation details
 
 We mostly follow Def 3.1 in Lenstras notes. In axiom (G3)
@@ -170,7 +173,7 @@ section
 
 /-- If `F` is a fiber functor and `E` is an equivalence between categories of finite types,
 then `F ⋙ E` is again a fiber functor. -/
-lemma comp_right (E : FintypeCat.{w} ⥤ FintypeCat.{t}) [E.IsEquivalence] :
+instance comp_right (E : FintypeCat.{w} ⥤ FintypeCat.{t}) [E.IsEquivalence] :
     FiberFunctor (F ⋙ E) where
   preservesQuotientsByFiniteGroups _ := comp_preservesColimitsOfShape F E
 

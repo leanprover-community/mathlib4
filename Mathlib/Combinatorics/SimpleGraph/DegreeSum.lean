@@ -79,7 +79,7 @@ theorem dart_edge_fiber_card [DecidableEq V] (e : Sym2 V) (h : e ∈ G.edgeSet) 
   obtain ⟨v, w⟩ := e
   let d : G.Dart := ⟨(v, w), h⟩
   convert congr_arg card d.edge_fiber
-  rw [card_insert_of_not_mem, card_singleton]
+  rw [card_insert_of_notMem, card_singleton]
   rw [mem_singleton]
   exact d.symm_ne.symm
 
@@ -103,18 +103,17 @@ lemma two_mul_card_edgeFinset : 2 * #G.edgeFinset = #(univ.filter fun (x, y) ↦
   refine card_bij' (fun d _ ↦ (d.fst, d.snd)) (fun xy h ↦ ⟨xy, (mem_filter.1 h).2⟩) ?_ ?_ ?_ ?_
     <;> simp
 
-variable [DecidableEq V]
-
 /-- The degree-sum formula only counting over the vertices that form edges.
 
 See `SimpleGraph.sum_degrees_eq_twice_card_edges` for the general version. -/
 theorem sum_degrees_support_eq_twice_card_edges :
     ∑ v ∈ G.support, G.degree v = 2 * #G.edgeFinset := by
+  classical
   simp_rw [← sum_degrees_eq_twice_card_edges,
     ← sum_add_sum_compl G.support.toFinset, left_eq_add]
   apply Finset.sum_eq_zero
   intro v hv
-  rw [degree_eq_zero_iff_not_mem_support]
+  rw [degree_eq_zero_iff_notMem_support]
   rwa [mem_compl, Set.mem_toFinset] at hv
 
 end DegreeSum

@@ -149,7 +149,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
         convert rfl
         ext ω
         change (ε : ℝ) ≤ _ ∨ _ < (ε : ℝ) ↔ _
-        simp only [le_or_lt, Set.mem_univ]
+        simp only [le_or_gt, Set.mem_univ]
       · rw [disjoint_iff_inf_le]
         rintro ω ⟨hω₁, hω₂⟩
         change (ε : ℝ) ≤ _ at hω₁
@@ -191,7 +191,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
         convert rfl
         ext ω
         change _ ↔ (ε : ℝ) ≤ _ ∨ _ < (ε : ℝ)
-        simp only [le_or_lt, Set.mem_univ]
+        simp only [le_or_gt, Set.mem_univ]
       · rw [disjoint_iff_inf_le]
         rintro ω ⟨hω₁, hω₂⟩
         change (ε : ℝ) ≤ _ at hω₁

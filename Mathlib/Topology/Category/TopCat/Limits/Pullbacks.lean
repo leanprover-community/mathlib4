@@ -154,7 +154,6 @@ def pullbackHomeoPreimage
     apply hg.injective
     convert x.prop
     exact Exists.choose_spec (p := fun y ↦ g y = f (↑x : X × Y).1) _
-  right_inv := fun _ ↦ rfl
   continuous_toFun := by fun_prop
   continuous_invFun := by
     apply Continuous.subtype_mk
@@ -337,27 +336,23 @@ theorem fst_iso_of_right_embedding_range_subset {X Y S : TopCat} (f : X ⟶ S) {
     (hg : IsEmbedding g) (H : Set.range f ⊆ Set.range g) :
     IsIso (pullback.fst f g) := by
   let esto : (pullback f g : TopCat) ≃ₜ X :=
-    (Homeomorph.ofIsEmbedding _ (fst_isEmbedding_of_right f hg)).trans
+    (fst_isEmbedding_of_right f hg).toHomeomorph.trans
       { toFun := Subtype.val
         invFun := fun x =>
           ⟨x, by
             rw [pullback_fst_range]
-            exact ⟨_, (H (Set.mem_range_self x)).choose_spec.symm⟩⟩
-        left_inv := fun ⟨_, _⟩ => rfl
-        right_inv := fun x => rfl }
+            exact ⟨_, (H (Set.mem_range_self x)).choose_spec.symm⟩⟩ }
   convert (isoOfHomeo esto).isIso_hom
 
 theorem snd_iso_of_left_embedding_range_subset {X Y S : TopCat} {f : X ⟶ S} (hf : IsEmbedding f)
     (g : Y ⟶ S) (H : Set.range g ⊆ Set.range f) : IsIso (pullback.snd f g) := by
   let esto : (pullback f g : TopCat) ≃ₜ Y :=
-    (Homeomorph.ofIsEmbedding _ (snd_isEmbedding_of_left hf g)).trans
+    (snd_isEmbedding_of_left hf g).toHomeomorph.trans
       { toFun := Subtype.val
         invFun := fun x =>
           ⟨x, by
             rw [pullback_snd_range]
-            exact ⟨_, (H (Set.mem_range_self x)).choose_spec⟩⟩
-        left_inv := fun ⟨_, _⟩ => rfl
-        right_inv := fun x => rfl }
+            exact ⟨_, (H (Set.mem_range_self x)).choose_spec⟩⟩ }
   convert (isoOfHomeo esto).isIso_hom
 
 theorem pullback_snd_image_fst_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set X) :

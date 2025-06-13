@@ -134,8 +134,7 @@ def spine (m : ℕ) (h : m ≤ n + 1 := by omega) (Δ : X _⦋m⦌ₙ₊₁) : P
     dsimp only [tr, trunc, SimplicialObject.Truncated.trunc, incl,
       whiskeringLeft_obj_obj, id_eq, Functor.comp_map, Functor.op_map,
       Quiver.Hom.unop_op]
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp, δ_one_mkOfSucc,
-      Fin.coe_castSucc, Fin.coe_eq_castSucc]
+    rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp, δ_one_mkOfSucc]
   arrow_tgt i := by
     dsimp only [tr, trunc, SimplicialObject.Truncated.trunc, incl,
       whiskeringLeft_obj_obj, id_eq, Functor.comp_map, Functor.op_map,

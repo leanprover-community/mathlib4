@@ -282,7 +282,7 @@ theorem isConnected_iff_sUnion_disjoint_open {s : Set α} :
   refine ⟨fun ⟨hne, h⟩ U hU hUo hsU => ?_, fun h => ⟨?_, fun u v hu hv hs hsuv => ?_⟩⟩
   · induction U using Finset.induction_on with
     | empty => exact absurd (by simpa using hsU) hne.not_subset_empty
-    | @insert u U uU IH =>
+    | insert u U uU IH =>
       simp only [← forall_cond_comm, Finset.forall_mem_insert, Finset.exists_mem_insert,
         Finset.coe_insert, sUnion_insert, implies_true, true_and] at *
       refine (h _ hUo.1 (⋃₀ ↑U) (isOpen_sUnion hUo.2) hsU ?_).imp_right ?_
@@ -549,13 +549,13 @@ theorem isPreconnected_of_forall_constant {s : Set α}
   unfold IsPreconnected
   by_contra!
   rcases this with ⟨u, v, u_op, v_op, hsuv, ⟨x, x_in_s, x_in_u⟩, ⟨y, y_in_s, y_in_v⟩, H⟩
-  have hy : y ∉ u := fun y_in_u => eq_empty_iff_forall_not_mem.mp H y ⟨y_in_s, ⟨y_in_u, y_in_v⟩⟩
+  have hy : y ∉ u := fun y_in_u => eq_empty_iff_forall_notMem.mp H y ⟨y_in_s, ⟨y_in_u, y_in_v⟩⟩
   have : ContinuousOn u.boolIndicator s := by
     apply (continuousOn_boolIndicator_iff_isClopen _ _).mpr ⟨_, _⟩
     · rw [preimage_subtype_coe_eq_compl hsuv H]
       exact (v_op.preimage continuous_subtype_val).isClosed_compl
     · exact u_op.preimage continuous_subtype_val
-  simpa [(u.mem_iff_boolIndicator _).mp x_in_u, (u.not_mem_iff_boolIndicator _).mp hy] using
+  simpa [(u.mem_iff_boolIndicator _).mp x_in_u, (u.notMem_iff_boolIndicator _).mp hy] using
     hs _ this x x_in_s y y_in_s
 
 /-- A `PreconnectedSpace` version of `isPreconnected_of_forall_constant` -/
@@ -563,3 +563,16 @@ theorem preconnectedSpace_of_forall_constant
     (hs : ∀ f : α → Bool, Continuous f → ∀ x y, f x = f y) : PreconnectedSpace α :=
   ⟨isPreconnected_of_forall_constant fun f hf x _ y _ =>
       hs f (continuous_iff_continuousOn_univ.mpr hf) x y⟩
+
+theorem preconnectedSpace_iff_clopen :
+    PreconnectedSpace α ↔ ∀ s : Set α, IsClopen s → s = ∅ ∨ s = Set.univ := by
+  refine ⟨fun _ _ => isClopen_iff.mp, fun h ↦ ?_⟩
+  refine preconnectedSpace_of_forall_constant fun f hf x y ↦ ?_
+  have : f ⁻¹' {false} = (f ⁻¹' {true})ᶜ := by
+    rw [← Set.preimage_compl, Bool.compl_singleton, Bool.not_true]
+  obtain (h | h) := h _ ((isClopen_discrete {true}).preimage hf) <;> simp_all
+
+theorem connectedSpace_iff_clopen :
+    ConnectedSpace α ↔ Nonempty α ∧ ∀ s : Set α, IsClopen s → s = ∅ ∨ s = Set.univ := by
+  rw [connectedSpace_iff_univ, IsConnected, ← preconnectedSpace_iff_univ,
+    preconnectedSpace_iff_clopen, Set.nonempty_iff_univ_nonempty]

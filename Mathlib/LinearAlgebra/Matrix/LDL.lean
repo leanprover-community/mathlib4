@@ -13,9 +13,9 @@ decomposed as `S = LDLᴴ` where `L` is a lower-triangular matrix and `D` is a d
 
 ## Main definitions
 
- * `LDL.lower` is the lower triangular matrix `L`.
- * `LDL.lowerInv` is the inverse of the lower triangular matrix `L`.
- * `LDL.diag` is the diagonal matrix `D`.
+* `LDL.lower` is the lower triangular matrix `L`.
+* `LDL.lowerInv` is the inverse of the lower triangular matrix `L`.
+* `LDL.diag` is the diagonal matrix `D`.
 
 ## Main result
 
@@ -35,7 +35,7 @@ section set_options
 
 set_option quotPrecheck false
 local notation "⟪" x ", " y "⟫ₑ" =>
-  @inner 𝕜 _ _ ((WithLp.equiv 2 _).symm x) ((WithLp.equiv _ _).symm y)
+  inner 𝕜 ((WithLp.equiv 2 _).symm x) ((WithLp.equiv _ _).symm y)
 
 open Matrix
 

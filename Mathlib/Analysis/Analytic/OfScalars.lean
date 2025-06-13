@@ -11,13 +11,13 @@ import Mathlib.Analysis.Analytic.Basic
 This file contains API for analytic functions `∑ cᵢ • xⁱ` defined in terms of scalars
 `c₀, c₁, c₂, …`.
 ## Main definitions / results:
- * `FormalMultilinearSeries.ofScalars`: the formal power series `∑ cᵢ • xⁱ`.
- * `FormalMultilinearSeries.ofScalarsSum`: the sum of such a power series, if it exists, and zero
-   otherwise.
- * `FormalMultilinearSeries.ofScalars_radius_eq_(zero/inv/top)_of_tendsto`:
-   the ratio test for an analytic function defined in terms of a formal power series `∑ cᵢ • xⁱ`.
- * `FormalMultilinearSeries.ofScalars_radius_eq_inv_of_tendsto_ENNReal`:
-   the ratio test for an analytic function using `ENNReal` division for all values `ℝ≥0∞`.
+* `FormalMultilinearSeries.ofScalars`: the formal power series `∑ cᵢ • xⁱ`.
+* `FormalMultilinearSeries.ofScalarsSum`: the sum of such a power series, if it exists, and zero
+  otherwise.
+* `FormalMultilinearSeries.ofScalars_radius_eq_(zero/inv/top)_of_tendsto`:
+  the ratio test for an analytic function defined in terms of a formal power series `∑ cᵢ • xⁱ`.
+* `FormalMultilinearSeries.ofScalars_radius_eq_inv_of_tendsto_ENNReal`:
+  the ratio test for an analytic function using `ENNReal` division for all values `ℝ≥0∞`.
 -/
 
 namespace FormalMultilinearSeries
@@ -78,7 +78,7 @@ theorem ofScalars_series_eq_iff [Nontrivial E] (c' : ℕ → 𝕜) :
   ⟨fun e => ofScalars_series_injective 𝕜 E e, _root_.congrArg _⟩
 
 theorem ofScalars_apply_zero (n : ℕ) :
-    (ofScalars E c n fun _ => 0) = Pi.single (f := fun _ => E) 0 (c 0 • 1) n := by
+    ofScalars E c n (fun _ => 0) = Pi.single (M := fun _ => E) 0 (c 0 • 1) n := by
   rw [ofScalars]
   cases n <;> simp
 
@@ -191,7 +191,7 @@ theorem ofScalars_radius_ge_inv_of_tendsto {r : ℝ≥0} (hr : r ≠ 0)
   by_cases hrz : r' = 0
   · simp [hrz]
   apply FormalMultilinearSeries.le_radius_of_summable_norm
-  refine Summable.of_norm_bounded_eventually (fun n ↦ ‖‖c n‖ * r' ^ n‖) ?_ ?_
+  refine Summable.of_norm_bounded_eventually (g := fun n ↦ ‖‖c n‖ * r' ^ n‖) ?_ ?_
   · refine summable_of_ratio_test_tendsto_lt_one hr' ?_ ?_
     · refine (hc.eventually_ne (NNReal.coe_ne_zero.mpr hr)).mp (Eventually.of_forall ?_)
       aesop
@@ -237,7 +237,7 @@ theorem ofScalars_radius_eq_top_of_tendsto (hc : ∀ᶠ n in atTop, c n ≠ 0)
   · apply Summable.comp_nat_add (k := 1)
     simp [hrz]
     exact (summable_const_iff 0).mpr rfl
-  · refine Summable.of_norm_bounded_eventually (fun n ↦ ‖‖c n‖ * r' ^ n‖) ?_ ?_
+  · refine Summable.of_norm_bounded_eventually (g := fun n ↦ ‖‖c n‖ * r' ^ n‖) ?_ ?_
     · apply summable_of_ratio_test_tendsto_lt_one zero_lt_one (hc.mp (Eventually.of_forall ?_))
       · simp only [norm_norm]
         exact mul_zero (_ : ℝ) ▸ tendsto_succ_norm_div_norm _ hrz (NNReal.coe_zero ▸ hc')

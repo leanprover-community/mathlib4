@@ -17,9 +17,11 @@ It is important to note that this definition is somewhat non-standard; it is **n
 equivalent to "every point has a neighborhood on which the convergence is uniform", which is the
 definition more commonly encountered in the literature. The reason is that in our definition the
 neighborhood `v` of `x` can depend on the entourage `u`; so our condition is *a priori* weaker than
-the usual one, although the two conditions are equivalent if the domain is locally compact.
+the usual one, although the two conditions are equivalent if the domain is locally compact. See
+`tendstoLocallyUniformlyOn_of_forall_exists_nhds` for the one-way implication; the equivalence
+assuming local compactness is part of `tendstoLocallyUniformlyOn_TFAE`.
 
-We adopt this weaker condition because it is more general but apppears to be sufficient for
+We adopt this weaker condition because it is more general but appears to be sufficient for
 the standard applications of locally-uniform convergence (in particular, for proving that a
 locally-uniform limit of continuous functions is continuous).
 
@@ -29,7 +31,7 @@ We also define variants for locally uniform convergence on a subset, called
 ## Tags
 
 Uniform limit, uniform convergence, tends uniformly to
- -/
+-/
 
 noncomputable section
 
@@ -58,7 +60,7 @@ theorem tendstoLocallyUniformlyOn_iff_forall_tendsto :
     TendstoLocallyUniformlyOn F f p s ↔
       ∀ x ∈ s, Tendsto (fun y : ι × α => (f y.2, F y.1 y.2)) (p ×ˢ 𝓝[s] x) (𝓤 β) :=
   forall₂_swap.trans <| forall₄_congr fun _ _ _ _ => by
-    rw [mem_map, mem_prod_iff_right]; rfl
+    simp_rw [mem_map, mem_prod_iff_right, mem_preimage]
 
 nonrec theorem IsOpen.tendstoLocallyUniformlyOn_iff_forall_tendsto (hs : IsOpen s) :
     TendstoLocallyUniformlyOn F f p s ↔
@@ -155,6 +157,35 @@ theorem TendstoLocallyUniformly.comp [TopologicalSpace γ] (h : TendstoLocallyUn
   rw [← tendstoLocallyUniformlyOn_univ] at h ⊢
   rw [continuous_iff_continuousOn_univ] at cg
   exact h.comp _ (mapsTo_univ _ _) cg
+
+/-- If every `x ∈ s` has a neighbourhood within `s` on which `F i` tends uniformly to `f`, then
+`F i` tends locally uniformly on `s` to `f`.
+
+Note this is **not** a tautology, since our definition of `TendstoLocallyUniformlyOn` is slightly
+more general (although the conditions are equivalent if `β` is locally compact and `s` is open,
+see `tendstoLocallyUniformlyOn_TFAE`). -/
+lemma tendstoLocallyUniformlyOn_of_forall_exists_nhds
+    (h : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, TendstoUniformlyOn F f p t) :
+    TendstoLocallyUniformlyOn F f p s := by
+  refine tendstoLocallyUniformlyOn_iff_forall_tendsto.mpr fun x hx ↦ ?_
+  obtain ⟨t, ht, htr⟩ := h x hx
+  rw [tendstoUniformlyOn_iff_tendsto] at htr
+  exact htr.mono_left <| prod_mono_right _ <| le_principal_iff.mpr ht
+
+@[deprecated (since := "2025-05-22")] alias tendstoLocallyUniformlyOn_of_forall_exists_nhd :=
+  tendstoLocallyUniformlyOn_of_forall_exists_nhds
+
+/-- If every `x` has a neighbourhood on which `F i` tends uniformly to `f`, then `F i` tends
+locally uniformly to `f`. (Special case of `tendstoLocallyUniformlyOn_of_forall_exists_nhds`
+where `s = univ`.) -/
+lemma tendstoLocallyUniformly_of_forall_exists_nhds
+    (h : ∀ x, ∃ t ∈ 𝓝 x, TendstoUniformlyOn F f p t) :
+    TendstoLocallyUniformly F f p :=
+  tendstoLocallyUniformlyOn_univ.mp
+    <| tendstoLocallyUniformlyOn_of_forall_exists_nhds (by simpa using h)
+
+@[deprecated (since := "2025-05-22")] alias tendstoLocallyUniformly_of_forall_exists_nhd :=
+  tendstoLocallyUniformly_of_forall_exists_nhds
 
 theorem tendstoLocallyUniformlyOn_TFAE [LocallyCompactSpace α] (G : ι → α → β) (g : α → β)
     (p : Filter ι) (hs : IsOpen s) :

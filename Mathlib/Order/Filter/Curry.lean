@@ -37,7 +37,7 @@ describing the product of two sets, namely `s ×ˢ t = fst ⁻¹' s ∩ snd ⁻�
 
 * `Filter.eventually_curry_iff`: An alternative definition of a curried filter
 * `Filter.curry_le_prod`: Something that is eventually true on the a product filter is eventually
-   true on the curried filter
+  true on the curried filter
 
 ## Tags
 

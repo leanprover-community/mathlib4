@@ -158,7 +158,7 @@ theorem IsTopologicalBasis.diff_empty {s : Set (Set α)} (h : IsTopologicalBasis
     IsTopologicalBasis (s \ {∅}) :=
   isTopologicalBasis_of_isOpen_of_nhds (fun _ hu ↦ h.isOpen hu.1) fun a _ ha hu ↦
     have ⟨t, hts, ht⟩ := h.isOpen_iff.mp hu a ha
-    ⟨t, ⟨hts, ne_of_mem_of_not_mem' ht.1 <| not_mem_empty _⟩, ht⟩
+    ⟨t, ⟨hts, ne_of_mem_of_not_mem' ht.1 <| notMem_empty _⟩, ht⟩
 
 protected theorem IsTopologicalBasis.mem_nhds {a : α} {s : Set α} {b : Set (Set α)}
     (hb : IsTopologicalBasis b) (hs : s ∈ b) (ha : a ∈ s) : s ∈ 𝓝 a :=
@@ -532,7 +532,7 @@ protected theorem IsTopologicalBasis.iInf {β : Type*} {ι : Type*} {t : ι → 
     refine isOpen_biInter_finset fun i hi ↦
       (h_basis i).isOpen (t := t i) (hU i hi) |>.mono (iInf_le _ _)
   · intro a u ha hu
-    rcases (nhds_iInf (t := t) (a := a)).symm ▸ hasBasis_iInf'
+    rcases (nhds_iInf (t := t) (a := a)).symm ▸ HasBasis.iInf'
       (fun i ↦ (h_basis i).nhds_hasBasis (t := t i)) |>.mem_iff.1 (hu.mem_nhds ha)
       with ⟨⟨F, U⟩, ⟨hF, hU⟩, hUu⟩
     refine ⟨_, ⟨U, hF.toFinset, ?_, rfl⟩, ?_, ?_⟩ <;> simp only [Finite.mem_toFinset, mem_iInter]
@@ -581,7 +581,7 @@ lemma isOpenMap_eval (i : ι) : IsOpenMap (Function.eval i : (∀ i, π i) → �
   by_cases hi : i ∈ s
   · rw [eval_image_pi (mod_cast hi) h]
     exact hU _ hi
-  · rw [eval_image_pi_of_not_mem (mod_cast hi), if_pos h]
+  · rw [eval_image_pi_of_notMem (mod_cast hi), if_pos h]
     exact isOpen_univ
 
 end
@@ -714,7 +714,7 @@ variable (α)
 theorem exists_countable_basis [SecondCountableTopology α] :
     ∃ b : Set (Set α), b.Countable ∧ ∅ ∉ b ∧ IsTopologicalBasis b := by
   obtain ⟨b, hb₁, hb₂⟩ := @SecondCountableTopology.is_open_generated_countable α _ _
-  refine ⟨_, ?_, not_mem_diff_of_mem ?_, (isTopologicalBasis_of_subbasis hb₂).diff_empty⟩
+  refine ⟨_, ?_, notMem_diff_of_mem ?_, (isTopologicalBasis_of_subbasis hb₂).diff_empty⟩
   exacts [((countable_setOf_finite_subset hb₁).image _).mono diff_subset, rfl]
 
 /-- A countable topological basis of `α`. -/
@@ -727,8 +727,10 @@ theorem countable_countableBasis [SecondCountableTopology α] : (countableBasis 
 instance encodableCountableBasis [SecondCountableTopology α] : Encodable (countableBasis α) :=
   (countable_countableBasis α).toEncodable
 
-theorem empty_nmem_countableBasis [SecondCountableTopology α] : ∅ ∉ countableBasis α :=
+theorem empty_notMem_countableBasis [SecondCountableTopology α] : ∅ ∉ countableBasis α :=
   (exists_countable_basis α).choose_spec.2.1
+
+@[deprecated (since := "2025-05-24")] alias empty_nmem_countableBasis := empty_notMem_countableBasis
 
 theorem isBasis_countableBasis [SecondCountableTopology α] :
     IsTopologicalBasis (countableBasis α) :=
@@ -746,7 +748,7 @@ theorem isOpen_of_mem_countableBasis [SecondCountableTopology α] {s : Set α}
 
 theorem nonempty_of_mem_countableBasis [SecondCountableTopology α] {s : Set α}
     (hs : s ∈ countableBasis α) : s.Nonempty :=
-  nonempty_iff_ne_empty.2 <| ne_of_mem_of_not_mem hs <| empty_nmem_countableBasis α
+  nonempty_iff_ne_empty.2 <| ne_of_mem_of_not_mem hs <| empty_notMem_countableBasis α
 
 variable (α)
 
@@ -756,6 +758,24 @@ instance (priority := 100) SecondCountableTopology.to_firstCountableTopology
   ⟨fun _ => HasCountableBasis.isCountablyGenerated <|
       ⟨(isBasis_countableBasis α).nhds_hasBasis,
         (countable_countableBasis α).mono inter_subset_left⟩⟩
+
+-- see Note [lower instance priority]
+instance (priority := 100) [Countable α] [FirstCountableTopology α] :
+    SecondCountableTopology α where
+  is_open_generated_countable := by
+    -- The countable union of the countable neighborhood bases at each point is a countable basis.
+    choose b hxb hbb using fun x : α => (nhds_basis_opens x).exists_antitone_subbasis
+    use range b.uncurry, countable_range b.uncurry
+    apply le_antisymm
+    · rw [le_generateFrom_iff_subset_isOpen]
+      rintro _ ⟨⟨x, n⟩, rfl⟩
+      exact (hxb x n).right
+    · rw [le_iff_nhds]
+      intro x
+      rw [(hbb x).ge_iff]
+      intro n _
+      refine @IsOpen.mem_nhds α (generateFrom (range b.uncurry)) x (b x n) ?_ (hxb x n).left
+      exact isOpen_generateFrom_of_mem ⟨⟨x, n⟩, rfl⟩
 
 /-- If `β` is a second-countable space, then its induced topology via
 `f` on `α` is also second-countable. -/

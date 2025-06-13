@@ -189,7 +189,6 @@ variable [RingHomIsometric σ₁₂] [RingHomIsometric σ₂₃] (f g : E →SL[
 /-- The fundamental property of the operator norm: `‖f x‖ ≤ ‖f‖ * ‖x‖`. -/
 theorem le_opNorm : ‖f x‖ ≤ ‖f‖ * ‖x‖ := (isLeast_opNorm f).1.2 x
 
-
 theorem dist_le_opNorm (x y : E) : dist (f x) (f y) ≤ ‖f‖ * dist x y := by
   simp_rw [dist_eq_norm, ← map_sub, f.le_opNorm]
 
@@ -279,8 +278,8 @@ theorem opNorm_smul_le {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F]
     (c : 𝕜') (f : E →SL[σ₁₂] F) : ‖c • f‖ ≤ ‖c‖ * ‖f‖ :=
   (c • f).opNorm_le_bound (mul_nonneg (norm_nonneg _) (opNorm_nonneg _)) fun _ => by
     rw [smul_apply, norm_smul, mul_assoc]
-    exact mul_le_mul_of_nonneg_left (le_opNorm _ _) (norm_nonneg _)
-
+    gcongr
+    apply le_opNorm
 
 /-- Operator seminorm on the space of continuous (semi)linear maps, as `Seminorm`.
 
@@ -323,10 +322,9 @@ instance toNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F]
 
 /-- The operator norm is submultiplicative. -/
 theorem opNorm_comp_le (f : E →SL[σ₁₂] F) : ‖h.comp f‖ ≤ ‖h‖ * ‖f‖ :=
-  csInf_le bounds_bddBelow
-    ⟨mul_nonneg (opNorm_nonneg _) (opNorm_nonneg _), fun x => by
-      rw [mul_assoc]
-      exact h.le_opNorm_of_le (f.le_opNorm x)⟩
+  csInf_le bounds_bddBelow ⟨by positivity, fun x => by
+    rw [mul_assoc]
+    exact h.le_opNorm_of_le (f.le_opNorm x)⟩
 
 /-- Continuous linear maps form a seminormed ring with respect to the operator norm. -/
 instance toSeminormedRing : SeminormedRing (E →L[𝕜] E) :=
@@ -347,6 +345,13 @@ theorem opNorm_subsingleton [Subsingleton E] : ‖f‖ = 0 := by
   intro x
   simp [Subsingleton.elim x 0]
 
+/-- The fundamental property of the operator norm, expressed with extended norms:
+`‖f x‖ₑ ≤ ‖f‖ₑ * ‖x‖ₑ`. -/
+lemma le_opNorm_enorm (x : E) : ‖f x‖ₑ ≤ ‖f‖ₑ * ‖x‖ₑ := by
+  simp_rw [← ofReal_norm]
+  rw [← ENNReal.ofReal_mul (by positivity)]
+  gcongr
+  exact f.le_opNorm x
 
 end OpNorm
 
@@ -405,8 +410,8 @@ theorem mkContinuous_norm_le (f : E →ₛₗ[σ₁₂] F) {C : ℝ} (hC : 0 ≤
 then its norm is bounded by the bound or zero if bound is negative. -/
 theorem mkContinuous_norm_le' (f : E →ₛₗ[σ₁₂] F) {C : ℝ} (h : ∀ x, ‖f x‖ ≤ C * ‖x‖) :
     ‖f.mkContinuous C h‖ ≤ max C 0 :=
-  ContinuousLinearMap.opNorm_le_bound _ (le_max_right _ _) fun x =>
-    (h x).trans <| mul_le_mul_of_nonneg_right (le_max_left _ _) (norm_nonneg x)
+  ContinuousLinearMap.opNorm_le_bound _ (le_max_right _ _) fun x => (h x).trans <| by
+    gcongr; apply le_max_left
 
 end LinearMap
 

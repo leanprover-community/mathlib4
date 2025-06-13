@@ -371,7 +371,7 @@ theorem disjoint_range {i₁ i₂ : Fin c.length} (h : i₁ ≠ i₂) :
     Disjoint (Set.range (c.embedding i₁)) (Set.range (c.embedding i₂)) := by
   classical
     wlog h' : i₁ < i₂
-    · exact (this c h.symm (h.lt_or_lt.resolve_left h')).symm
+    · exact (this c h.symm (h.lt_or_gt.resolve_left h')).symm
     by_contra d
     obtain ⟨x, hx₁, hx₂⟩ :
       ∃ x : Fin n, x ∈ Set.range (c.embedding i₁) ∧ x ∈ Set.range (c.embedding i₂) :=
@@ -433,7 +433,7 @@ theorem blocksFun_congr {n₁ n₂ : ℕ} (c₁ : Composition n₁) (c₂ : Comp
 
 /-- Two compositions (possibly of different integers) coincide if and only if they have the
 same sequence of blocks. -/
-theorem sigma_eq_iff_blocks_eq {c : Σn, Composition n} {c' : Σn, Composition n} :
+theorem sigma_eq_iff_blocks_eq {c : Σ n, Composition n} {c' : Σ n, Composition n} :
     c = c' ↔ c.2.blocks = c'.2.blocks := by
   refine ⟨fun H => by rw [H], fun H => ?_⟩
   rcases c with ⟨n, c⟩
@@ -570,7 +570,6 @@ theorem ne_single_iff {n : ℕ} (hn : 0 < n) {c : Composition n} :
         _ < ∑ k, c.blocksFun k :=
           Finset.single_lt_sum ji (Finset.mem_univ _) (Finset.mem_univ _) (c.one_le_blocksFun j)
             fun _ _ _ => zero_le _
-
     simpa using Fintype.card_eq_one_of_forall_eq this
 
 variable {m : ℕ}
@@ -1023,7 +1022,7 @@ theorem CompositionAsSet.toComposition_boundaries (c : CompositionAsSet n) :
     · simpa [c.card_boundaries_eq_succ_length] using i.2
     · simp [Composition.boundary, Composition.sizeUpTo, ← hi]
   · rintro ⟨i, i_lt, hi⟩
-    refine ⟨i, by simp, ?_⟩
+    refine ⟨Fin.ofNat _ i, by simp, ?_⟩
     rw [c.card_boundaries_eq_succ_length] at i_lt
     simp [Composition.boundary, Nat.mod_eq_of_lt i_lt, Composition.sizeUpTo, hi]
 

@@ -136,7 +136,7 @@ theorem tendstoInMeasure_of_tendsto_ae_of_stronglyMeasurable [IsFiniteMeasure μ
   suffices { x : α | ε ≤ dist (f n x) (g x) } ⊆ t from (measure_mono this).trans ht
   rw [← Set.compl_subset_compl]
   intro x hx
-  rw [Set.mem_compl_iff, Set.nmem_setOf_iff, dist_comm, not_le]
+  rw [Set.mem_compl_iff, Set.notMem_setOf_iff, dist_comm, not_le]
   exact hN n hn x hx
 
 /-- Convergence a.e. implies convergence in measure in a finite measure space. -/
@@ -269,10 +269,10 @@ theorem exists_seq_tendstoInMeasure_atTop_iff [IsFiniteMeasure μ]
   obtain ⟨ε, hε, h2⟩ := h1
   obtain ⟨δ, ns, hδ, hns, h3⟩ : ∃ (δ : ℝ≥0) (ns : ℕ → ℕ), 0 < δ ∧ StrictMono ns ∧
       ∀ n, δ ≤ (μ {x | ε ≤ dist (f (ns n) x) (g x)}).toNNReal := by
-    obtain ⟨s, hs, h4⟩ := not_tendsto_iff_exists_frequently_nmem.1 h2
+    obtain ⟨s, hs, h4⟩ := not_tendsto_iff_exists_frequently_notMem.1 h2
     obtain ⟨δ, hδ, h5⟩ := NNReal.nhds_zero_basis.mem_iff.1 hs
     obtain ⟨ns, hns, h6⟩ := extraction_of_frequently_atTop h4
-    exact ⟨δ, ns, hδ, hns, fun n ↦ Set.not_mem_Iio.1 (Set.not_mem_subset h5 (h6 n))⟩
+    exact ⟨δ, ns, hδ, hns, fun n ↦ Set.notMem_Iio.1 (Set.notMem_subset h5 (h6 n))⟩
   refine ⟨ns, hns, fun ns' _ ↦ ?_⟩
   by_contra h6
   have h7 := tendstoInMeasure_iff_tendsto_toNNReal.mp <|

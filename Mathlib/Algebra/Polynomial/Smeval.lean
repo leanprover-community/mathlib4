@@ -18,7 +18,7 @@ is a generalization of `Algebra.Polynomial.Eval`.
 ## Main definitions
 
 * `Polynomial.smeval`: function for evaluating a polynomial with coefficients in a `Semiring`
-`R` at an element `x` of an `AddCommMonoid` `S` that has natural number powers and an `R`-action.
+  `R` at an element `x` of an `AddCommMonoid` `S` that has natural number powers and an `R`-action.
 * `smeval.linearMap`: the `smeval` function as an `R`-linear map, when `S` is an `R`-module.
 * `smeval.algebraMap`: the `smeval` function as an `R`-algebra map, when `S` is an `R`-algebra.
 
@@ -170,7 +170,7 @@ end Neg
 section NatPowAssoc
 
 /-!
-In the module docstring for algebras at `Mathlib.Algebra.Algebra.Basic`, we see that
+In the module docstring for algebras at `Mathlib/Algebra/Algebra/Basic.lean`, we see that
 `[CommSemiring R] [Semiring S] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S]` is an
 equivalent way to express `[CommSemiring R] [Semiring S] [Algebra R S]` that allows one to relax
 the defining structures independently.  For non-associative power-associative algebras (e.g.,

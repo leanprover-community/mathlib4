@@ -69,23 +69,24 @@ structure Hom (P Q : Karoubi C) where
   /-- a morphism between the underlying objects -/
   f : P.X ⟶ Q.X
   /-- compatibility of the given morphism with the given idempotents -/
-  comm : f = P.p ≫ f ≫ Q.p := by aesop_cat
+  comm : P.p ≫ f ≫ Q.p = f := by aesop_cat
 
 instance [Preadditive C] (P Q : Karoubi C) : Inhabited (Hom P Q) :=
   ⟨⟨0, by rw [zero_comp, comp_zero]⟩⟩
 
 @[reassoc (attr := simp)]
-theorem p_comp {P Q : Karoubi C} (f : Hom P Q) : P.p ≫ f.f = f.f := by rw [f.comm, ← assoc, P.idem]
+theorem p_comp {P Q : Karoubi C} (f : Hom P Q) : P.p ≫ f.f = f.f := by
+  rw [← f.comm, ← assoc, P.idem]
 
 @[reassoc (attr := simp)]
 theorem comp_p {P Q : Karoubi C} (f : Hom P Q) : f.f ≫ Q.p = f.f := by
-  rw [f.comm, assoc, assoc, Q.idem]
+  rw [← f.comm, assoc, assoc, Q.idem]
 
 @[reassoc]
 theorem p_comm {P Q : Karoubi C} (f : Hom P Q) : P.p ≫ f.f = f.f ≫ Q.p := by rw [p_comp, comp_p]
 
 theorem comp_proof {P Q R : Karoubi C} (g : Hom Q R) (f : Hom P Q) :
-    f.f ≫ g.f = P.p ≫ (f.f ≫ g.f) ≫ R.p := by rw [assoc, comp_p, ← assoc, p_comp]
+    P.p ≫ (f.f ≫ g.f) ≫ R.p = f.f ≫ g.f := by simp
 
 /-- The category structure on the karoubi envelope of a category. -/
 instance : Category (Karoubi C) where
@@ -144,7 +145,7 @@ variable {C}
 
 @[simps add]
 instance instAdd [Preadditive C] {P Q : Karoubi C} : Add (P ⟶ Q) where
-  add f g := ⟨f.f + g.f, by rw [add_comp, comp_add, ← f.comm, ← g.comm]⟩
+  add f g := ⟨f.f + g.f, by rw [add_comp, comp_add, f.comm, g.comm]⟩
 
 @[simps neg]
 instance instNeg [Preadditive C] {P Q : Karoubi C} : Neg (P ⟶ Q) where

@@ -67,7 +67,7 @@ protected irreducible_def Module.rank : Cardinal :=
 theorem rank_le_card : Module.rank R M ≤ #M :=
   (Module.rank_def _ _).trans_le (ciSup_le' fun _ ↦ mk_set_le _)
 
-lemma nonempty_linearIndependent_set : Nonempty {s : Set M // LinearIndepOn R id s } :=
+instance nonempty_linearIndependent_set : Nonempty {s : Set M // LinearIndepOn R id s} :=
   ⟨⟨∅, linearIndepOn_empty _ _⟩⟩
 
 end
@@ -369,17 +369,6 @@ theorem LinearMap.rank_le_of_surjective (f : M →ₗ[R] M₁) (h : Surjective f
   rw [← rank_range_of_surjective f h]
   apply rank_range_le
 
-@[nontriviality, simp]
-theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
-  haveI := Module.subsingleton R M
-  have : Nonempty { s : Set M // LinearIndepOn R id s} := ⟨⟨∅, linearIndepOn_empty _ _⟩⟩
-  rw [Module.rank_def, ciSup_eq_of_forall_le_of_forall_lt_exists_gt]
-  · rintro ⟨s, hs⟩
-    rw [Cardinal.mk_le_one_iff_set_subsingleton]
-    apply subsingleton_of_subsingleton
-  intro w hw
-  exact ⟨⟨{0}, LinearIndepOn.of_subsingleton⟩, hw.trans_eq (Cardinal.mk_singleton _).symm⟩
-
 lemma rank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Algebra S R] [Module S M]
     [IsScalarTower S R M] (L L' : Submodule R M) {s : S} (hr : IsSMulRegular M s)
     (h : ∀ x ∈ L, s • x ∈ L') :
@@ -389,6 +378,28 @@ lemma rank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Algebra S R] [Modul
 
 @[deprecated (since := "2024-11-21")]
 alias rank_le_of_smul_regular := rank_le_of_isSMulRegular
+
+variable (R R' M) in
+lemma Module.rank_top_le_rank_of_isScalarTower [Module R' M]
+    [SMulWithZero R R'] [IsScalarTower R R' M] [FaithfulSMul R R'] [IsScalarTower R R' R'] :
+    Module.rank R' M ≤ Module.rank R M := by
+  rw [Module.rank, Module.rank]
+  exact ciSup_le' fun ⟨s, hs⟩ ↦ le_ciSup_of_le (Cardinal.bddAbove_range _)
+    ⟨s, hs.restrict_scalars (by simpa [← faithfulSMul_iff_injective_smul_one])⟩ le_rfl
+
+variable (R R') in
+lemma Module.lift_rank_bot_le_lift_rank_of_isScalarTower (T : Type w) [Module R R']
+    [NonAssocSemiring T] [Module R T] [Module R' T] [IsScalarTower R' T T] [FaithfulSMul R' T]
+    [IsScalarTower R R' T] :
+    Cardinal.lift.{w} (Module.rank R R') ≤ Cardinal.lift (Module.rank R T) :=
+  LinearMap.lift_rank_le_of_injective ((LinearMap.toSpanSingleton R' T 1).restrictScalars R) <|
+    (faithfulSMul_iff_injective_smul_one R' T).mp ‹_›
+
+variable (R R') in
+lemma Module.rank_bot_le_rank_of_isScalarTower (T : Type u') [Module R R'] [NonAssocSemiring T]
+    [Module R T] [Module R' T] [IsScalarTower R' T T] [FaithfulSMul R' T] [IsScalarTower R R' T] :
+    Module.rank R R' ≤ Module.rank R T := by
+  simpa using Module.lift_rank_bot_le_lift_rank_of_isScalarTower R R' T
 
 end
 

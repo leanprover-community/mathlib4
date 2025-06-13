@@ -49,7 +49,7 @@ variable [HasPullbacks C]
 
 /-- In a category with pullbacks, a morphism `f : X ⟶ Y` induces a functor `Over Y ⥤ Over X`,
 by pulling back a morphism along `f`. -/
-@[simps! (config := { simpRhs := true}) obj_left obj_hom map_left]
+@[simps! +simpRhs obj_left obj_hom map_left]
 def pullback {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
   obj g := Over.mk (pullback.snd g.hom f)
   map := fun g {h} {k} =>
@@ -105,7 +105,7 @@ open Limits
 
 /-- The category over any object `X` factors through the category over the terminal object `T`. -/
 @[simps!]
-noncomputable def forgetMapTerminal {T : C} (hT : IsTerminal T)  :
+noncomputable def forgetMapTerminal {T : C} (hT : IsTerminal T) :
     forget X ≅ map (hT.from X) ⋙ (equivalenceOfIsTerminal hT).functor :=
   NatIso.ofComponents fun X ↦ .refl _
 

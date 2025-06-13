@@ -65,7 +65,7 @@ theorem Module.finrank_mul_finrank : finrank F K * finrank K A = finrank F A := 
 
 end Tower
 
-variable {R : Type u} {M M₁ : Type v} {M' : Type v'}
+variable {R : Type u} {S : Type*} {M M₁ : Type v} {M' : Type v'}
 variable [Semiring R] [StrongRankCondition R]
 variable [AddCommMonoid M] [Module R M] [Module.Free R M]
 variable [AddCommMonoid M'] [Module R M'] [Module.Free R M']
@@ -191,6 +191,35 @@ theorem finite_iff_of_rank_eq_nsmul {W} [AddCommMonoid W] [Module R W] [Module.F
     Module.Finite R M ↔ Module.Finite R W := by
   simp only [← rank_lt_aleph0_iff, hVW, nsmul_lt_aleph0_iff_of_ne_zero hn]
 
+variable (R S M) in
+omit [Module.Free R M] in
+/-- Also see `Module.finrank_top_le_finrank_of_isScalarTower`
+for a version with different typeclass constraints. -/
+lemma finrank_top_le_finrank_of_isScalarTower_of_free [Semiring S] [StrongRankCondition S]
+    [Module S M] [Module R S] [FaithfulSMul R S] [Module.Finite R S]
+    [IsScalarTower R S S] [IsScalarTower R S M] [Module.Free S M] :
+    finrank S M ≤ finrank R M := by
+  by_cases H : Module.Finite S M
+  · have := Module.Finite.trans (R := R) S M
+    exact finrank_top_le_finrank_of_isScalarTower R S M
+  · rw [finrank, Cardinal.toNat_eq_zero.mpr (.inr _)]
+    · exact zero_le _
+    · rwa [← not_lt, Module.rank_lt_aleph0_iff]
+
+variable (R) in
+/-- Also see `Module.finrank_bot_le_finrank_of_isScalarTower`
+for a version with different typeclass constraints. -/
+lemma finrank_bot_le_finrank_of_isScalarTower_of_free (S T : Type*) [Semiring S] [Semiring T]
+    [Module R T] [Module S T] [Module R S] [IsScalarTower R S T]
+    [IsScalarTower S T T] [FaithfulSMul S T] [Module.Finite S T] [Module.Free R S] :
+    finrank R S ≤ finrank R T := by
+  by_cases H : Module.Finite R S
+  · have := Module.Finite.trans (R := R) S T
+    exact finrank_bot_le_finrank_of_isScalarTower R S T
+  · rw [finrank, Cardinal.toNat_eq_zero.mpr (.inr _)]
+    · exact zero_le _
+    · rwa [← not_lt, Module.rank_lt_aleph0_iff]
+
 variable (R M)
 
 /-- A finite rank free module has a basis indexed by `Fin (finrank R M)`. -/
@@ -222,3 +251,11 @@ theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
     fun hv => by rw [hv, LinearEquiv.map_zero, Finsupp.zero_apply]⟩
 
 end Module
+
+namespace Algebra
+
+instance (R S : Type*) [CommSemiring R] [StrongRankCondition R] [Semiring S] [Algebra R S]
+    [IsQuadraticExtension R S] :
+    Module.Finite R S := finite_of_finrank_eq_succ <| IsQuadraticExtension.finrank_eq_two R S
+
+end Algebra

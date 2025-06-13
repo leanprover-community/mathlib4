@@ -22,9 +22,9 @@ additionally have the following data:
 
 * `F` should be a topological space;
 * There should be a topology on `Bundle.TotalSpace F E`, for which the projection to `B` is
-a fiber bundle with fiber `F` (in particular, each fiber `E x` is homeomorphic to `F`);
+  a fiber bundle with fiber `F` (in particular, each fiber `E x` is homeomorphic to `F`);
 * For each `x`, the fiber `E x` should be a topological space, and the injection
-from `E x` to `Bundle.TotalSpace F E` should be an embedding;
+  from `E x` to `Bundle.TotalSpace F E` should be an embedding;
 * There should be a distinguished set of bundle trivializations, the "trivialization atlas"
 * There should be a choice of bundle trivialization at each point, which belongs to this atlas.
 
@@ -126,10 +126,10 @@ gluing and quotienting construction above, and to declare above each `x` that th
 but thinking that it corresponds to the `F` coming from the choice of one trivialization around `x`.
 This has several practical advantages:
 * without any work, one gets a topological space structure on the fiber. And if `F` has more
-structure it is inherited for free by the fiber.
+  structure it is inherited for free by the fiber.
 * In the case of the tangent bundle of manifolds, this implies that on vector spaces the derivative
-(from `F` to `F`) and the manifold derivative (from `TangentSpace I x` to `TangentSpace I' (f x)`)
-are equal.
+  (from `F` to `F`) and the manifold derivative (from `TangentSpace I x` to `TangentSpace I' (f x)`)
+  are equal.
 
 A drawback is that some silly constructions will typecheck: in the case of the tangent bundle, one
 can add two vectors in different tangent spaces (as they both are elements of `F` from the point of
@@ -317,7 +317,7 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
   obtain ⟨ea, hea⟩ : ∃ ea : Trivialization F (π F E), a ∈ ea.baseSet :=
     ⟨trivializationAt F E a, mem_baseSet_trivializationAt F E a⟩
   -- If `a < b`, then `[a, b] = ∅`, and the statement is trivial
-  rcases lt_or_le b a with _ | hab
+  rcases lt_or_ge b a with _ | hab
   · exact ⟨ea, by simp [*]⟩
   /- Let `s` be the set of points `x ∈ [a, b]` such that `E` is trivializable over `[a, x]`.
     We need to show that `b ∈ s`. Let `c = Sup s`. We will show that `c ∈ s` and `c = b`. -/
@@ -351,7 +351,7 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
   rcases hc.2.eq_or_lt with heq | hlt
   · exact ⟨ec, heq ▸ hec⟩
   rsuffices ⟨d, hdcb, hd⟩ : ∃ d ∈ Ioc c b, ∃ e : Trivialization F (π F E), Icc a d ⊆ e.baseSet
-  · exact ((hsc.1 ⟨⟨hc.1.trans hdcb.1.le, hdcb.2⟩, hd⟩).not_lt hdcb.1).elim
+  · exact ((hsc.1 ⟨⟨hc.1.trans hdcb.1.le, hdcb.2⟩, hd⟩).not_gt hdcb.1).elim
   /- Since the base set of `ec` is open, it includes `[c, d)` (hence, `[a, d)`) for some
     `d ∈ (c, b]`. -/
   obtain ⟨d, hdcb, hd⟩ : ∃ d ∈ Ioc c b, Ico c d ⊆ ec.baseSet :=
@@ -680,7 +680,7 @@ instance fiberBundle : FiberBundle F Z.Fiber where
     rw [(Z.localTrivAt b).nhds_eq_comap_inf_principal (mk_mem_localTrivAt_source _ _ _), comap_inf,
       comap_principal, comap_comap]
     simp only [Function.comp_def, localTrivAt_apply_mk, Trivialization.coe_coe,
-      ← (isEmbedding_prodMk b).nhds_eq_comap]
+      ← (isEmbedding_prodMkRight b).nhds_eq_comap]
     convert_to 𝓝 x = 𝓝 x ⊓ 𝓟 univ
     · congr
       exact eq_univ_of_forall (mk_mem_localTrivAt_source Z _)
