@@ -65,7 +65,7 @@ private def evalNode (trie : TrieIndex) : TreeM α (Trie α) := do
   setTrie trie default -- reduce the reference count to `node` to be 1
   let mut { values, star, labelledStars, children, pending } := node
   for (entry, value) in pending do
-    let some newEntries ← evalLazyEntryWithEta entry | values := values.push value
+    let some newEntries ← evalLazyEntry entry true | values := values.push value
     for (key, entry) in newEntries do
       let entry := (entry, value)
       match key with
@@ -106,6 +106,12 @@ structure MatchResult (α : Type) where
 private def MatchResult.push (mr : MatchResult α) (score : Nat) (e : Array α) : MatchResult α :=
   { elts := mr.elts.alter score fun | some arr => arr.push e | none => #[e] }
 
+/--
+Convert a `MatchResult` into a `Array`, with better matches at the start of the array.
+-/
+def MatchResult.toArray (mr : MatchResult α) : Array α :=
+  mr.elts.foldr (init := #[]) fun _ a r => a.foldl (init := r) (· ++ ·)
+
 /-
 A partial match captures the intermediate state of a match execution.
 
@@ -126,10 +132,7 @@ private structure PartialMatch where
 
 
 /--
-Add to the `todo` stack all matches that result from a `.star` or `.labelledStar _` in the
-query expression.
-
-Currently, `.star` and `.labelledStar _` from the query expression are treated the same.
+Add to the `todo` stack all matches that result from a `.star` in the query expression.
 -/
 private partial def matchQueryStar (trie : TrieIndex) (pMatch : PartialMatch)
     (todo : Array PartialMatch) (skip : Nat := 1) : TreeM α (Array PartialMatch) := do

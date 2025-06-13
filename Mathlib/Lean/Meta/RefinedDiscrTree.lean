@@ -102,22 +102,14 @@ namespace Lean.Meta.RefinedDiscrTree
 variable {α : Type}
 
 /-- Creates the core context used for initializing a tree using the current context. -/
-private def treeCtx (ctx : Core.Context) : Core.Context := {
-    fileName := ctx.fileName
-    fileMap := ctx.fileMap
-    options := ctx.options
-    maxRecDepth := ctx.maxRecDepth
-    maxHeartbeats := 0
-    ref := ctx.ref
-    diag := getDiag ctx.options
-  }
+private def withTreeCtx (ctx : Core.Context) : Core.Context :=
+  { ctx with maxHeartbeats := 0, diag := getDiag ctx.options }
 
 /-- Returns candidates from all imported modules that match the expression. -/
 def findImportMatches
     (ext : EnvExtension (IO.Ref (Option (RefinedDiscrTree α))))
     (addEntry : Name → ConstantInfo → MetaM (List (α × List (Key × LazyEntry)))) (ty : Expr)
     (constantsPerTask : Nat := 1000) (capacityPerTask : Nat := 128) : MetaM (MatchResult α) := do
-  let cctx ← readThe Core.Context
   let ngen ← getNGen
   let (cNGen, ngen) := ngen.mkChild
   setNGen ngen
@@ -125,8 +117,8 @@ def findImportMatches
   let ref := EnvExtension.getState ext (← getEnv)
   let importTree ← (← ref.get).getDM do
     profileitM Exception  "RefinedDiscrTree import initialization" (← getOptions) <|
-      createImportedDiscrTree
-        (treeCtx cctx) cNGen (← getEnv) addEntry constantsPerTask capacityPerTask
+      withTheReader Core.Context withTreeCtx <|
+        createImportedDiscrTree cNGen (← getEnv) addEntry constantsPerTask capacityPerTask
   let (importCandidates, importTree) ← getMatch importTree ty false false
   ref.set (some importTree)
   return importCandidates
