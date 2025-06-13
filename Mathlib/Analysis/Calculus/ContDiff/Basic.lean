@@ -62,7 +62,7 @@ theorem iteratedFDerivWithin_succ_const (n : ℕ) (c : F) :
     simp [iteratedFDerivWithin_succ_eq_comp_left, iteratedFDerivWithin_zero_eq_comp, comp_def]
   | succ n IH =>
     rw [iteratedFDerivWithin_succ_eq_comp_left, IH]
-    simp only [Pi.zero_def, comp_def, fderivWithin_const, map_zero]
+    simp only [Pi.zero_def, comp_def, fderivWithin_fun_const, map_zero]
 
 @[simp]
 theorem iteratedFDerivWithin_zero_fun {i : ℕ} :
