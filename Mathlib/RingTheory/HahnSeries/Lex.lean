@@ -20,13 +20,11 @@ it is an ordered group when `R` is.
 
 namespace HahnSeries
 
-variable {Γ : Type*} [LinearOrder Γ] {R : Type*}
+variable {Γ R : Type*} [LinearOrder Γ]
 
 section PartialOrder
-
 variable [Zero R] [PartialOrder R]
 
-variable (Γ R) in
 instance : PartialOrder (Lex (HahnSeries Γ R)) :=
   PartialOrder.lift (toLex <| ofLex · |>.coeff) fun x y ↦ by simp
 
@@ -37,10 +35,8 @@ theorem lt_iff (a b : Lex (HahnSeries Γ R)) :
 end PartialOrder
 
 section LinearOrder
-
 variable [Zero R] [LinearOrder R]
 
-variable (Γ R) in
 noncomputable
 instance : LinearOrder (Lex (HahnSeries Γ R)) where
   le_total a b := by
@@ -112,10 +108,8 @@ theorem leadingCoeff_nonpos_iff {x : Lex (HahnSeries Γ R)} :
 end LinearOrder
 
 section OrderedMonoid
-
 variable [PartialOrder R] [AddCommMonoid R] [AddLeftStrictMono R] [IsOrderedAddMonoid R]
 
-variable (Γ R) in
 instance : IsOrderedAddMonoid (Lex (HahnSeries Γ R)) where
   add_le_add_left a b hab c := by
     obtain rfl | hlt := hab.eq_or_lt
@@ -131,7 +125,6 @@ instance : IsOrderedAddMonoid (Lex (HahnSeries Γ R)) where
 end OrderedMonoid
 
 section OrderedGroup
-
 variable [LinearOrder R] [AddCommGroup R] [IsOrderedAddMonoid R]
 
 theorem support_abs (x : Lex (HahnSeries Γ R)) : (ofLex |x|).support = (ofLex x).support := by
