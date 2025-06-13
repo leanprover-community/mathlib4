@@ -294,6 +294,7 @@ def evalPrettyMonomial (iM : Q(Field $M)) (r : ℤ) (x : Q($M)) :
   match r with
   | 0 => unreachable! -- design of tactic is supposed to prevent this, let's panic if we see it
   | 1 => return ⟨x, q(zpow_one $x)⟩
+  | .ofNat r => return ⟨q($x ^ $r), q(zpow_natCast $x $r)⟩
   | r => return ⟨q($x ^ $r), q(rfl)⟩
 
 /-- Build a transparent expression for the product of powers represented by `l : qNF M`. -/
@@ -702,13 +703,13 @@ example : x * y = x * y := by
 example : x / y = x * y ^ (-1:ℤ) := by
   conv_lhs => field_simp2
 
-example : x / (y / x) = x ^ (2:ℤ) * y ^ (-1:ℤ) := by
+example : x / (y / x) = x ^ 2 * y ^ (-1:ℤ) := by
   conv_lhs => field_simp2
 
-example : x / (y ^ (-3:ℤ) / x) = x ^ (2:ℤ) * y ^ (3:ℤ) := by
+example : x / (y ^ (-3:ℤ) / x) = x ^ 2 * y ^ 3 := by
   conv_lhs => field_simp2
 
-example : (x / y ^ (-3:ℤ)) * x = x ^ (2:ℤ) * y ^ (3:ℤ) := by
+example : (x / y ^ (-3:ℤ)) * x = x ^ 2 * y ^ 3 := by
   conv_lhs => field_simp2
 
 example : (x * y) / (y * x) = 1 := by
@@ -720,7 +721,7 @@ example : (x * y) * (y * x)⁻¹ = 1 := by
 example : x ^ (0:ℤ) * y = y := by
   conv_lhs => field_simp2
 
-example : y * (y + x) ^ (0:ℤ) * y = y ^ (2:ℤ) := by
+example : y * (y + x) ^ (0:ℤ) * y = y ^ 2 := by
   conv_lhs => field_simp2
 
 example : x * y * z = x * (y * z) := by
@@ -732,20 +733,20 @@ example : x * y + x * z = x * (y + z) := by
 example : x / (x * y + x * z) = (y + z) ^ (-1:ℤ) := by
   conv_lhs => field_simp2
 
-example : ((x ^ (2:ℤ)) ^ 3) = x ^ (6:ℤ) := by
+example : ((x ^ (2:ℤ)) ^ 3) = x ^ 6 := by
   conv_lhs => field_simp2
 
-example : x ^ 3 * x⁻¹ = x ^ (2:ℤ) := by
+example : x ^ 3 * x⁻¹ = x ^ 2 := by
   conv_lhs => field_simp2
 
 example : x / x ^ 4 = x ^ (-3:ℤ) := by
   conv_lhs => field_simp2
 
-example : x ^ 1 * x ^ 2 = x ^ (3:ℤ) := by
+example : x ^ 1 * x ^ 2 = x ^ 3 := by
   conv_lhs => field_simp2
 
-example : x * x = x ^ (2:ℤ) := by
+example : x * x = x ^ 2 := by
   conv_lhs => field_simp2
 
-example : x ^ 3 * x ^ 42 = x ^ (45:ℤ) := by
+example : x ^ 3 * x ^ 42 = x ^ 45 := by
   conv_lhs => field_simp2
