@@ -14,6 +14,9 @@ In a simple graph,
 
 * A *trail* is a walk whose edges each appear no more than once.
 
+* A *circuit* is a nonempty trail whose first and last vertices are the
+  same.
+
 * A *path* is a trail whose vertices appear no more than once.
 
 * A *cycle* is a nonempty trail whose first and last vertices are the
