@@ -512,18 +512,15 @@ abbrev PseudoMetricSpace.ofSeminormedSpaceCore {𝕜 E : Type*} [NormedField �
     PseudoMetricSpace E where
   dist x y := ‖x - y‖
   dist_self x := by
-    show ‖x - x‖ = 0
     simp only [sub_self]
     have : (0 : E) = (0 : 𝕜) • (0 : E) := by simp
     rw [this, core.norm_smul]
     simp
   dist_comm x y := by
-    show ‖x - y‖ = ‖y - x‖
     have : y - x = (-1 : 𝕜) • (x - y) := by simp
     rw [this, core.norm_smul]
     simp
   dist_triangle x y z := by
-    show ‖x - z‖ ≤ ‖x - y‖ + ‖y - z‖
     have : x - z = (x - y) + (y - z) := by abel
     rw [this]
     exact core.norm_triangle _ _
