@@ -274,7 +274,7 @@ def shortComplexH1 : ShortComplex (ModuleCat k) :=
   mk (dZero A) (dOne A) (dZero_comp_dOne A)
 
 /-- The short complex `Fun(G, A) --dOne--> Fun(G × G, A) --dTwo--> Fun(G × G × G, A)`. -/
-@[simps!-isSimp f g]
+@[simps! -isSimp f g]
 def shortComplexH2 : ShortComplex (ModuleCat k) :=
   mk (dOne A) (dTwo A) (dOne_comp_dTwo A)
 
