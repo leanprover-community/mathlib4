@@ -140,7 +140,7 @@ class MonoidalLeftAction [MonoidalCategory C] extends
     aesop_cat
 
   whiskerLeft_actionHomLeft (c : C) {c' c'' : C} (f : c' ⟶ c'') (d : D) :
-      (c ◁ f) ⊵ₗ d = (σ_ₗ _ _ _).hom ≫ c ⊴ₗ (f ⊵ₗ d) ≫ (σ_ₗ _ _ _).inv := by
+      (c ◁ f) ⊵ₗ d = (σ_ₗ _ _ _).hom ≫ c ⊴ₗ f ⊵ₗ d ≫ (σ_ₗ _ _ _).inv := by
     aesop_cat
 
   whiskerRight_actionHomLeft {c c' : C} (c'' : C) (f : c ⟶ c') (d : D) :
@@ -165,6 +165,7 @@ class MonoidalLeftAction [MonoidalCategory C] extends
 attribute [reassoc] MonoidalLeftAction.actionHom_def
 attribute [reassoc, simp] MonoidalLeftAction.id_actionHomLeft
 attribute [reassoc, simp] MonoidalLeftAction.actionHomRight_id
+attribute [reassoc, simp] MonoidalLeftAction.whiskerLeft_actionHomLeft
 attribute [simp, reassoc] MonoidalLeftAction.actionHom_comp
 attribute [reassoc] MonoidalLeftAction.actionAssocIso_naturality
 attribute [reassoc] MonoidalLeftAction.actionUnitIso_naturality
@@ -227,16 +228,7 @@ theorem comp_actionHomLeft {w x y : C} (f : w ⟶ x) (g : x ⟶ y) (z : D) :
 @[reassoc, simp]
 theorem actionHomLeft_action {x x' : C} (f : x ⟶ x') (y : C) (z : D) :
     f ⊵ₗ (y ⊙ₗ z) = (σ_ₗ x y z).inv ≫ (f ▷ y) ⊵ₗ z ≫ (σ_ₗ x' y z).hom := by
-  simp only [← id_actionHom, ← tensorHom_id, ← actionHom_id]
-  rw [actionAssocIso_naturality]
-  simp [actionHom_id]
-
-@[reassoc, simp]
-theorem action_assoc (x : C) {y y' : C} (f : y ⟶ y') (z : D) :
-    (x ◁ f) ⊵ₗ z = (σ_ₗ x y z).hom ≫ x ⊴ₗ f ⊵ₗ z ≫ (σ_ₗ x y' z).inv := by
-  simp only [← id_actionHom, ← tensorHom_id, ← actionHom_id]
-  rw [← Category.assoc, ← actionAssocIso_naturality]
-  simp
+  simp [whiskerRight_actionHomLeft]
 
 @[reassoc]
 theorem action_exchange {w x : C} {y z : D} (f : w ⟶ x) (g : y ⟶ z) :
