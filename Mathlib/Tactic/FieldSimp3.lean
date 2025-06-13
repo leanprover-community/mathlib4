@@ -503,6 +503,119 @@ variable {x y z : ℚ}
 #guard_msgs in
 #conv field_simp2 => (1 : ℚ)
 
+-- Combining powers of a single atom.
+-- TODO: many of these are not quite what we could like!
+section
+
+/-- info: x ^ 0 -/
+#guard_msgs in
+#conv field_simp2 => x ^ 0
+
+/-- info: x ^ 1 -/
+#guard_msgs in
+#conv field_simp2 => x ^ 1
+
+/-- info: x -/
+#guard_msgs in
+#conv field_simp2 => x
+
+/-- info: x ^ 2 -/
+#guard_msgs in
+#conv field_simp2 => x ^ 2
+
+/-- info: x ^ 1 * x ^ 2 -/
+#guard_msgs in
+#conv field_simp2 => x ^ 1 * x ^ 2
+
+/-- info: x ^ 2 -/
+#guard_msgs in
+#conv field_simp2 => x * x -- should be x²
+
+/-- info: x ^ 3 * x ^ 42 -/
+#guard_msgs in
+#conv field_simp2 => x ^ 3 * x ^ 42
+
+section -- variable exponents are not supported
+variable {k : ℤ}
+
+/-- info: x ^ k * x ^ 2 -/
+#guard_msgs in
+#conv field_simp2 => x ^ k * x ^ 2
+
+end
+
+/-- info: x ^ (-3) -/
+#guard_msgs in
+#conv field_simp2 =>x ^ (-1 : ℤ) * x ^ (-2 : ℤ)
+
+-- Cancellation: if x could be zero, we cannot cancel x * x⁻¹.
+-- TODO: right now, we always cancel (which we should not)
+
+/-- info: 1 -/
+#guard_msgs in
+#conv field_simp2 => x * x⁻¹
+
+/-- info: 1 -/
+#guard_msgs in
+#conv field_simp2 => x⁻¹ * x
+
+/-- info: 1 -/
+#guard_msgs in
+#conv field_simp2 => x / x
+
+/-- info: x ^ 3 * x ^ (-1) -/
+#guard_msgs in
+#conv field_simp2 => x ^ 3 * x⁻¹ -- should be x²
+
+/-- info: x * (x ^ 4) ^ (-1) -/
+#guard_msgs in
+#conv field_simp2 => x / x ^ 4 -- TODO, should simplify this!
+
+-- If x is non-zero, we do cancel.
+section
+variable {hx : x ≠ 0}
+
+/-- info: 1 -/
+#guard_msgs in
+#conv field_simp2 => x * x⁻¹
+
+/-- info: 1 -/
+#guard_msgs in
+#conv field_simp2 => x⁻¹ * x
+
+/-- info: 1 -/
+#guard_msgs in
+#conv field_simp2 => x / x
+
+/-- info: x ^ 3 * x ^ (-1) -/
+#guard_msgs in
+#conv field_simp2 => x ^ 3 * x⁻¹ -- should be x²
+
+/-- info: x * (x ^ 4) ^ (-1) -/
+#guard_msgs in -- TODO: should simplify this
+#conv field_simp2 => x / x ^ 4
+
+end
+
+-- Combining this works also when other atoms are "in the way".
+-- TODO: these tests are broken
+
+/-- info: x ^ 1 * (y * (x ^ 2 * y ^ 3)) -/
+#guard_msgs in
+#conv field_simp2 => x ^1 * y * x ^2 * y ^ 3
+
+/-- info: x ^ 1 * x ^ 2 -/
+#guard_msgs in
+#conv field_simp2 => x ^ 1 * y * x ^2 * y⁻¹
+
+variable {y' : ℚ} (hy' : y' ≠ 0)
+
+/-- info: x ^ 1 * x ^ 2 -/
+#guard_msgs in
+#conv field_simp2 => x ^ 1 * y * x ^2 * y⁻¹
+
+end
+
 /-- info: x -/
 #guard_msgs in
 #conv field_simp2 => x
