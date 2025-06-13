@@ -308,6 +308,21 @@ theorem nontrivial_iff_two_le : Nontrivial (Fin n) ↔ 2 ≤ n := by
   rcases n with (_ | _ | n) <;>
   simp [Fin.nontrivial, not_nontrivial, Nat.succ_le_iff]
 
+/-- If working with more than two elements, we can always pick a third distinct from two existing
+elements. -/
+theorem exists_ne_and_ne_of_two_lt (i j : Fin n) (h : 2 < n) : ∃ k, k ≠ i ∧ k ≠ j := by
+  have : NeZero n := ⟨by omega⟩
+  rcases i with ⟨i, hi⟩
+  rcases j with ⟨j, hj⟩
+  simp_rw [← Fin.val_ne_iff]
+  by_cases h0 : 0 ≠ i ∧ 0 ≠ j
+  · exact ⟨0, h0⟩
+  · by_cases h1 : 1 ≠ i ∧ 1 ≠ j
+    · exact ⟨⟨1, by omega⟩, h1⟩
+    · refine ⟨⟨2, by omega⟩, ?_⟩
+      dsimp only
+      omega
+
 section Monoid
 
 instance inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) :=
@@ -404,6 +419,14 @@ lemma natCast_mono (hbn : b ≤ n) (hab : a ≤ b) : (a : Fin (n + 1)) ≤ b :=
 
 lemma natCast_strictMono (hbn : b ≤ n) (hab : a < b) : (a : Fin (n + 1)) < b :=
   (natCast_lt_natCast (hab.le.trans hbn) hbn).2 hab
+
+@[simp]
+lemma castLE_natCast {m n : ℕ} [NeZero m] (h : m ≤ n) (a : ℕ) :
+    letI : NeZero n := ⟨Nat.pos_iff_ne_zero.mp (lt_of_lt_of_le m.pos_of_neZero h)⟩
+    Fin.castLE h (a.cast : Fin m) = (a % m : ℕ) := by
+  ext
+  simp only [coe_castLE, val_natCast]
+  rw [Nat.mod_eq_of_lt (a := a % m) (lt_of_lt_of_le (Nat.mod_lt _ m.pos_of_neZero) h)]
 
 end OfNatCoe
 
