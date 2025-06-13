@@ -358,7 +358,7 @@ lemma isSheafFor_singleton_iff {F : Cᵒᵖ ⥤ Type*} {X Y : C} {f : X ⟶ Y}
       Nonempty
         (IsLimit (Fork.ofι (F.map f.op) (f := F.map c.fst.op) (g := F.map c.snd.op)
           (by simp [← Functor.map_comp, ← op_comp, c.condition]))) := by
-  have h (x : F.obj (op X)) :(∀ {Z : C} (p₁ p₂ : Z ⟶ X),
+  have h (x : F.obj (op X)) : (∀ {Z : C} (p₁ p₂ : Z ⟶ X),
       p₁ ≫ f = p₂ ≫ f → F.map p₁.op x = F.map p₂.op x) ↔ F.map c.fst.op x = F.map c.snd.op x := by
     refine ⟨fun H ↦ H _ _ c.condition, fun H Z p₁ p₂ h ↦ ?_⟩
     rw [← PullbackCone.IsLimit.lift_fst hc _ _ h, op_comp, FunctorToTypes.map_comp_apply, H]

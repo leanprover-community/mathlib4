@@ -402,6 +402,7 @@ theorem isAmalgamation_sieveExtend {R : Presieve X} (x : FamilyOfElements P R) (
   dsimp [FamilyOfElements.sieveExtend]
   rw [← ht _, ← FunctorToTypes.map_comp_apply, ← op_comp, hf.choose_spec.choose_spec.choose_spec.2]
 
+@[simp]
 lemma FamilyOfElements.isAmalgamation_singleton_iff {X Y : C} (f : X ⟶ Y)
     (x : (singleton f).FamilyOfElements P) (y : P.obj (op Y)) :
     x.IsAmalgamation y ↔ P.map f.op y = x f ⟨⟩ := by
