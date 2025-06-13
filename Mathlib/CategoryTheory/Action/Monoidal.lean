@@ -113,28 +113,40 @@ end
 noncomputable section
 
 /-- Upgrading the functor `Action V G ⥤ (SingleObj G ⥤ V)` to a monoidal functor. -/
-@[simps!]
 instance FunctorCategoryEquivalence.functorMonoidal :
     (FunctorCategoryEquivalence.functor (V := V) (G := G)).Monoidal :=
   inferInstanceAs (Monoidal.equivalenceTransported
     (Action.functorCategoryEquivalence V G).symm).inverse.Monoidal
 
-@[simps!]
 instance functorCategoryEquivalenceFunctorMonoidal :
     (functorCategoryEquivalence V G).functor.Monoidal := by
   dsimp only [functorCategoryEquivalence_functor]; infer_instance
 
 /-- Upgrading the functor `(SingleObj G ⥤ V) ⥤ Action V G` to a monoidal functor. -/
-@[simps!]
 instance FunctorCategoryEquivalence.inverseMonoidal :
     (FunctorCategoryEquivalence.inverse (V := V) (G := G)).Monoidal :=
   inferInstanceAs (Monoidal.equivalenceTransported
     (Action.functorCategoryEquivalence V G).symm).functor.Monoidal
 
-@[simps!]
 instance functorCategoryEquivalenceInverseMonoidal :
     (functorCategoryEquivalence V G).inverse.Monoidal := by
   dsimp only [functorCategoryEquivalence_inverse]; infer_instance
+
+@[simp]
+lemma FunctorCategoryEquivalence.functor_ε :
+    ε (FunctorCategoryEquivalence.functor (V := V) (G := G)) = 𝟙 _ := rfl
+
+@[simp]
+lemma FunctorCategoryEquivalence.functor_η :
+    η (FunctorCategoryEquivalence.functor (V := V) (G := G)) = 𝟙 _ := rfl
+
+@[simp]
+lemma FunctorCategoryEquivalence.functor_μ (A B : Action V G) :
+    μ FunctorCategoryEquivalence.functor A B = 𝟙 _ := rfl
+
+@[simp]
+lemma FunctorCategoryEquivalence.functor_δ (A B : Action V G) :
+    δ FunctorCategoryEquivalence.functor A B = 𝟙 _ := rfl
 
 variable (H : Type*) [Group H]
 
