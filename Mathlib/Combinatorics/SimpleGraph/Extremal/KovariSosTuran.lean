@@ -170,7 +170,7 @@ theorem card_edgeFinset_le_of_completeBipartiteGraph_free
       apply sub_ne_zero_of_ne ∘ ne_of_gt
       exact (card α).cast_inv_le_one.trans_lt one_lt_two
     simp [h_two_sub_one_div_ne_zero]
-  · rcases lt_or_le (∑ v, G.degree v : ℝ) ((card V)*(card α-1) : ℝ) with h_sum_lt | h_avg
+  · rcases lt_or_ge (∑ v, G.degree v : ℝ) ((card V)*(card α-1) : ℝ) with h_sum_lt | h_avg
     -- if avg degree less than `card a-1`
     · rw [← Nat.cast_sum, sum_degrees_eq_twice_card_edges,
         Nat.cast_mul, Nat.cast_two, ← lt_div_iff₀' zero_lt_two] at h_sum_lt
