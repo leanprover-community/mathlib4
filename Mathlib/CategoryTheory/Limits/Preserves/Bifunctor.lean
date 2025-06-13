@@ -17,8 +17,6 @@ the hypothesis that the curried functor `F : C₁ × C₂ ⥤ C` preserves limit
 $\lim_{(j_1,j_2)} G(K_1(j_1), K_2(j_2)) \simeq G(\lim K_1, \lim K_2)$
 out of this typeclass.
 
-We show (see `CategoryTheory.Limits.PreservesColimit₂.of_preservesColimits_in_each_variable`)
-that if `G` preserves colimits in each variable, then `G` `PreservesColimit₂`.
 -/
 
 namespace CategoryTheory
@@ -121,8 +119,6 @@ instance [HasLimit K₁] [HasLimit K₂] [PreservesLimit₂ K₁ K₂ G] :
 
 namespace PreservesColimit₂
 
-section
-
 variable [PreservesColimit₂ K₁ K₂ G]
 
 /-- Given a `PreservesColimit₂` instance, extract the isomorphism between
@@ -164,6 +160,8 @@ lemma map_ι_comp_isoObjConePointsOfIsColimit_hom (j : J₁ × J₂) :
   simp
 
 end
+
+section
 
 variable (K₁ K₂) [HasColimit K₁] [HasColimit K₂]
 
@@ -230,7 +228,7 @@ instance of_preservesColimits_in_each_variable
     ⟨IsColimit.ofCoconeUncurry P <| IsColimit.precomposeHomEquiv E₀ _ <|
       IsColimit.ofIsoColimit (isColimitOfPreserves _ hc₁) E₁.symm⟩
 
-theorem of_preservesColimit₂_flip [PreservesColimit₂ K₁ K₂ G] : PreservesColimit₂ K₂ K₁ G.flip where
+theorem of_preservesColimit₂_flip : PreservesColimit₂ K₂ K₁ G.flip where
   nonempty_isColimit_mapCocone₂ {c₁} hc₁ {c₂} hc₂ := by
     constructor
     let E₀ : uncurry.obj (whiskeringLeft₂ C|>.obj K₂|>.obj K₁|>.obj G.flip) ≅
@@ -248,8 +246,6 @@ theorem of_preservesColimit₂_flip [PreservesColimit₂ K₁ K₂ G] : Preserve
 end PreservesColimit₂
 
 namespace PreservesLimit₂
-
-section
 
 variable [PreservesLimit₂ K₁ K₂ G]
 
@@ -291,6 +287,8 @@ lemma isoObjConePointsOfIsColimit_inv_comp_map_π (j : J₁ × J₂) :
   simp
 
 end
+
+section
 
 variable (K₁) (K₂) [HasLimit K₁] [HasLimit K₂]
 
@@ -357,7 +355,7 @@ instance of_preservesLimits_in_each_variable
     ⟨IsLimit.ofConeOfConeUncurry P <| IsLimit.postcomposeHomEquiv E₀ _ <|
       IsLimit.ofIsoLimit (isLimitOfPreserves _ hc₁) E₁.symm⟩
 
-theorem of_preservesLimit₂_flip [PreservesLimit₂ K₁ K₂ G] : PreservesLimit₂ K₂ K₁ G.flip where
+theorem of_preservesLimit₂_flip : PreservesLimit₂ K₂ K₁ G.flip where
   nonempty_isLimit_mapCone₂ {c₁} hc₁ {c₂} hc₂ := by
     constructor
     let E₀ : uncurry.obj (whiskeringLeft₂ C|>.obj K₂|>.obj K₁|>.obj G.flip) ≅
