@@ -261,8 +261,8 @@ def commMonToLaxBraidedObj (A : CommMon_ C) :
     Discrete PUnit.{u + 1} ⥤ C := (Functor.const _).obj A.X
 
 instance (A : CommMon_ C) : (commMonToLaxBraidedObj A).LaxMonoidal where
-  ε' := η[A.X]
-  μ' _ _ := μ[A.X]
+  ε := η[A.X]
+  «μ» _ _ := μ[A.X]
 
 open Functor.LaxMonoidal
 
