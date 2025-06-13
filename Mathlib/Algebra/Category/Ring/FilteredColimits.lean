@@ -221,8 +221,8 @@ def colimitCocone : Cocone F where
 
 
 /-- The proposed colimit cocone is a colimit in `CommSemiRingCat`. -/
-def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F := by
-  exact isColimitOfReflects (forget₂ _ SemiRingCat)
+def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F :=
+  isColimitOfReflects (forget₂ _ SemiRingCat)
     (SemiRingCat.FilteredColimits.colimitCoconeIsColimit
           (F ⋙ forget₂ CommSemiRingCat SemiRingCat))
 
