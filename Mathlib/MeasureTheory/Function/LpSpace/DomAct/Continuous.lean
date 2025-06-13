@@ -5,22 +5,22 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Basic
 import Mathlib.MeasureTheory.Function.LpSpace.ContinuousCompMeasurePreserving
-import Mathlib.Topology.Algebra.Constructions.DomMulAct
+import Mathlib.Topology.Algebra.Constructions.DomAct
 
 /-!
-# Continuity of the action of `Mᵈᵐᵃ` on `MeasureSpace.Lp E p μ`
+# Continuity of the action of `Mᵈᵃ` on `MeasureSpace.Lp E p μ`
 
 In this file we prove that under certain conditions,
-the action of `Mᵈᵐᵃ` on `MeasureTheory.Lp E p μ` is continuous in both variables.
+the action of `Mᵈᵃ` on `MeasureTheory.Lp E p μ` is continuous in both variables.
 
-Recall that `Mᵈᵐᵃ` acts on `MeasureTheory.Lp E p μ`
+Recall that `Mᵈᵃ` acts on `MeasureTheory.Lp E p μ`
 by `mk c • f = MeasureTheory.Lp.compMeasurePreserving (c • ·) _ f`.
 This action is defined, if `M` acts on `X` by mesaure preserving maps.
 
 If `M` acts on `X` by continuous maps
 preserving a locally finite measure
 which is inner regular for finite measure sets with respect to compact sets,
-then the action of `Mᵈᵐᵃ` on `Lp E p μ` described above, `1 ≤ p < ∞`,
+then the action of `Mᵈᵃ` on `Lp E p μ` described above, `1 ≤ p < ∞`,
 is continuous in both arguments.
 
 In particular, it applies to the case when `X = M` is a locally compact topological group,
@@ -32,7 +32,7 @@ measure theory, group action, domain action, continuous action, Lp space
 -/
 
 open scoped ENNReal
-open DomMulAct
+open DomAct
 
 namespace MeasureTheory
 
@@ -46,11 +46,11 @@ variable {X M E : Type*}
   {p : ℝ≥0∞} [Fact (1 ≤ p)] [hp : Fact (p ≠ ∞)]
 
 @[to_additive]
-instance Lp.instContinuousSMulDomMulAct : ContinuousSMul Mᵈᵐᵃ (Lp E p μ) where
+instance Lp.instContinuousSMulDomAct : ContinuousSMul Mᵈᵃ (Lp E p μ) where
   continuous_smul :=
-    let g : C(Mᵈᵐᵃ × Lp E p μ, C(X, X)) :=
+    let g : C(Mᵈᵃ × Lp E p μ, C(X, X)) :=
       (ContinuousMap.mk (fun a : M × X ↦ a.1 • a.2) continuous_smul).curry.comp <|
-        .comp (.mk DomMulAct.mk.symm) ContinuousMap.fst
+        .comp (.mk DomAct.mk.symm) ContinuousMap.fst
     continuous_snd.compMeasurePreservingLp g.continuous _ Fact.out
 
 end MeasureTheory
