@@ -80,59 +80,6 @@ def monoidalOppositeLeftAction [MonoidalRightAction C D] :
         MonoidalRightAction.actionHom_associator
           (unmop c₃) (unmop c₂) (unmop c₁) d|>.symm
 
-open Opposite
-
-@[simps]
-def oppositeLeftAction [MonoidalLeftAction C D] :
-    MonoidalLeftAction Cᵒᵖ Dᵒᵖ where
-  actionObj c d := by exact op <| c.unop ⊙ₗ d.unop
-  actionHomLeft {c c'} f d := by exact (f.unop ⊵ₗ (unop d)).op
-  actionHomRight c {d d'} f := by exact ((unop c) ⊴ₗ f.unop).op
-  actionHom {c c'} {d d} f g := by exact (f.unop ⊙ₗ g.unop).op
-  actionAssocIso _ _ _ := by exact Iso.op <| (σ_ₗ _ _ _|>.symm)
-  actionUnitIso _ := by exact Iso.op <| (υ_ₗ _|>.symm)
-
-  actionHom_def
-    | op f, op g => by
-        apply Quiver.Hom.unop_inj
-        simpa [MonoidalLeftAction.action_exchange] using
-          MonoidalLeftAction.actionHom_def f g
-  actionAssocIso_naturality
-    | op f, op g, op h => by
-        apply Quiver.Hom.unop_inj
-        haveI := (σ_ₗ (unop _) (unop _) (unop _)).inv ≫= MonoidalLeftAction.actionAssocIso_naturality f g h
-        simp only [Iso.inv_hom_id_assoc] at this
-        simp [← this]
-  actionUnitIso_naturality _ := by
-      apply Quiver.Hom.unop_inj
-      simp
-  whiskerRight_actionHomLeft _ _ _ := by
-      apply Quiver.Hom.unop_inj
-      simp
-  associator_actionHom
-    | op c, op c', op c'', op d => by
-        apply Quiver.Hom.unop_inj
-        haveI := IsIso.inv_eq_inv.mpr <| MonoidalLeftAction.associator_actionHom c c' c'' d
-        simp only [IsIso.inv_comp, IsIso.Iso.inv_hom, Category.assoc, IsIso.inv_comp_eq,
-          IsIso.comp_inv_eq] at this
-        simp [this]
-  leftUnitor_actionHom _ _ := by
-      apply Quiver.Hom.unop_inj
-      apply IsIso.inv_eq_inv.mp
-      simp
-
-  --   MonoidalLeftAction.actionAssocIso_naturality _ _ _
-  -- actionUnitIso_naturality _ :=
-  --   MonoidaLeftAction.actionUnitIso_naturality _
-  -- rightUnitor_actionHom c d :=
-  --   MonoidalLeftAction.actionHom_leftUnitor _ _
-  -- associator_actionHom c₁ c₂ c₃ d := by
-  --   simpa only [mop_tensorObj, mop_hom_associator,
-  --     MonoidalRightAction.actionHomRight_inv_hom_assoc] using
-  --     (d ᵣ⊴ (α_ (unop c₃) (unop c₂) (unop c₁)).inv) ≫=
-  --       MonoidalLeftAction.actionHom_associator
-  --         (unop c₃) (unop c₂) (unop c₁) d|>.symm
-
 end MonoidalLeftAction
 
 namespace MonoidalRightAction
