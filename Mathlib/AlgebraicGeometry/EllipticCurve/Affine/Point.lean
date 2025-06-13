@@ -42,11 +42,11 @@ This file defines the group law on nonsingular points `W⟮F⟯` in affine coord
 ## Main statements
 
 * `WeierstrassCurve.Affine.CoordinateRing.instIsDomainCoordinateRing`: the affine coordinate ring
-    of a Weierstrass curve is an integral domain.
+  of a Weierstrass curve is an integral domain.
 * `WeierstrassCurve.Affine.CoordinateRing.degree_norm_smul_basis`: the degree of the norm of an
-    element in the affine coordinate ring in terms of its power basis.
+  element in the affine coordinate ring in terms of its power basis.
 * `WeierstrassCurve.Affine.Point.instAddCommGroup`: the type of nonsingular points `W⟮F⟯` in affine
-    coordinates forms an abelian group under addition.
+  coordinates forms an abelian group under addition.
 
 ## Notations
 
@@ -434,7 +434,7 @@ lemma degree_norm_smul_basis [IsDomain R] (p q : R[X]) :
         rcases hq' : q.degree with _ | dq -- `hq' : ` should be redundant
         · exact (hq hq').elim -- `hq'` should be `rfl`
         · rw [hq'] at hdpq hdq -- line should be redundant
-          rcases le_or_lt dp (dq + 1) with hpq | hpq
+          rcases le_or_gt dp (dq + 1) with hpq | hpq
           · convert (degree_sub_eq_right_of_degree_lt <| (degree_sub_le _ _).trans_lt <|
                       max_lt_iff.mpr ⟨hdp.trans_lt _, hdpq.trans_lt _⟩).trans
               (max_eq_right_of_lt _).symm <;> rw [hdq] <;>
@@ -544,7 +544,7 @@ lemma add_of_Y_eq {x₁ x₂ y₁ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h�
     (hx : x₁ = x₂) (hy : y₁ = W.negY x₂ y₂) : some h₁ + some h₂ = 0 := by
   simpa only [add_def, add] using dif_pos ⟨hx, hy⟩
 
-@[simp]
+-- Removing `@[simp]`, because `hy` causes a maximum recursion depth error in the simpNF linter.
 lemma add_self_of_Y_eq {x₁ y₁ : F} {h₁ : W.Nonsingular x₁ y₁} (hy : y₁ = W.negY x₁ y₁) :
     some h₁ + some h₁ = 0 :=
   add_of_Y_eq rfl hy

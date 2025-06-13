@@ -347,7 +347,7 @@ theorem injective : Function.Injective (eval C) := by
   intro ⟨a, ha⟩ ⟨b, hb⟩ h
   dsimp [eval] at h
   by_contra! hne
-  cases hne.lt_or_lt with
+  cases hne.lt_or_gt with
   | inl h' => apply hb; rw [← h]; exact Submodule.subset_span ⟨a, h', rfl⟩
   | inr h' => apply ha; rw [h]; exact Submodule.subset_span ⟨b, h', rfl⟩
 
