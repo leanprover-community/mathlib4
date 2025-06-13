@@ -246,10 +246,6 @@ theorem leadingCoeff_add_eq_right {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
     (x := addOppositeEquiv.symm (.op y))
     (y := addOppositeEquiv.symm (.op x))
 
-theorem single_add {g : Γ} {a b : R} : single g (a + b) = single g a + single g b := by
-  ext g'
-  by_cases h : g' = g <;> simp [h]
-
 theorem ne_zero_of_eq_add_single [Zero Γ] {x y : HahnSeries Γ R}
     (hxy : x = y + single x.order x.leadingCoeff) (hy : y ≠ 0) : x ≠ 0 := by
   by_contra h
@@ -389,11 +385,6 @@ theorem single_sub (a : Γ) (r s : R) : single a (r - s) = single a r - single a
 @[simp]
 theorem single_neg (a : Γ) (r : R) : single a (-r) = -single a r :=
   map_neg (single.addMonoidHom a) _
-
-@[simp]
-theorem single_neg (g : Γ) (r : R) :
-    single g (-r) = -single g r := by
-  rw [eq_neg_iff_add_eq_zero, ← single_add, single_eq_zero_iff, neg_add_eq_zero]
 
 @[simp]
 theorem support_neg {x : HahnSeries Γ R} : (-x).support = x.support := by
