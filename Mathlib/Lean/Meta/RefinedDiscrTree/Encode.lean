@@ -29,53 +29,6 @@ To compute all the keys at once, we have
 
 namespace Lean.Meta.RefinedDiscrTree
 
-/-- This is a copy of the same private function defined for `DiscrTree`.
-
-Return `true` if `e` is one of the following
-- A nat literal (numeral)
-- `Nat.zero`
-- `Nat.succ x` where `isNumeral x`
-- `OfNat.ofNat _ x _` where `isNumeral x` -/
-private partial def isNumeral (e : Expr) : Bool :=
-  if e.isRawNatLit then true
-  else
-    let f := e.getAppFn
-    if !f.isConst then false
-    else
-      let fName := f.constName!
-      if fName == ``Nat.succ && e.getAppNumArgs == 1 then isNumeral e.appArg!
-      else if fName == ``OfNat.ofNat && e.getAppNumArgs == 3 then isNumeral (e.getArg! 1)
-      else if fName == ``Nat.zero && e.getAppNumArgs == 0 then true
-      else false
-
-/-- This is a copy of the same private function defined for `DiscrTree`.
-
-Return `some n` if `e` is definitionally equal to the natural number `n`. -/
-private partial def toNatLit? (e : Expr) : Option Literal :=
-  if isNumeral e then
-    if let some n := loop e then
-      some (.natVal n)
-    else
-      none
-  else
-    none
-where
-  loop (e : Expr) : Option Nat := do
-    let f := e.getAppFn
-    match f with
-    | .lit (.natVal n) => return n
-    | .const fName .. =>
-      if fName == ``Nat.succ && e.getAppNumArgs == 1 then
-        let r ← loop e.appArg!
-        return r+1
-      else if fName == ``OfNat.ofNat && e.getAppNumArgs == 3 then
-        loop (e.getArg! 1)
-      else if fName == ``Nat.zero && e.getAppNumArgs == 0 then
-        return 0
-      else
-        failure
-    | _ => failure
-
 /-- The context for the `LazyM` monad -/
 private structure Context where
   /-- Variables that come from a lambda or forall binder.
@@ -109,6 +62,9 @@ private def withLams (lambdas : List FVarId) (key : Key) : StateT LazyEntry Meta
     -- Add `key` and `lambdas.length - 1` lambdas to the result, returning the final lambda.
     modify ({ · with computedKeys := tail.foldl (init := [key]) (fun _ => .lam :: ·) })
     return .lam
+
+open private Lean.Meta.DiscrTree.pushArgs in Lean.Meta.DiscrTree.mkPathAux in
+open private Lean.Meta.DiscrTree.toNatLit? in Lean.Meta.DiscrTree.pushArgs in
 
 @[inline]
 private def encodingStepAux (e : Expr) (lambdas : List FVarId) (root : Bool) : LazyM Key := do
