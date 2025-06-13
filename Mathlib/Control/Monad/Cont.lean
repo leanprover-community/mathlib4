@@ -42,6 +42,15 @@ class LawfulMonadCont (m : Type u → Type v) [Monad m] [MonadCont m] : Prop
 
 export LawfulMonadCont (callCC_bind_right callCC_bind_left callCC_dummy)
 
+/--
+The continuation transformer.
+
+Given a return type `r`, a type transformer (typically a monad) `m`, and a type `α`,
+it represents computations that take a continuation function from `α` to `m r` and return an `m r`.
+
+This allows for continuation-passing style programming, where control flow can be manipulated by
+capturing and invoking continuations.
+-/
 def ContT (r : Type u) (m : Type u → Type v) (α : Type w) :=
   (α → m r) → m r
 
@@ -54,15 +63,22 @@ export MonadCont (Label goto)
 
 variable {r : Type u} {m : Type u → Type v} {α β : Type w}
 
+/-- Run a continuation computation by providing a continuation function.
+This is just the identity function since `ContT r m α` is defined as a function type. -/
 def run : ContT r m α → (α → m r) → m r :=
   id
 
+/-- Map a function over the final result of a continuation computation.
+This composes the given function with the continuation computation. -/
 def map (f : m r → m r) (x : ContT r m α) : ContT r m α :=
   f ∘ x
 
 theorem run_contT_map_contT (f : m r → m r) (x : ContT r m α) : run (map f x) = f ∘ run x :=
   rfl
 
+/-- Transform the continuation of a computation.
+Takes a function that transforms continuations and a computation, and returns a new computation
+with the transformed continuation. -/
 def withContT (f : (β → m r) → α → m r) (x : ContT r m α) : ContT r m β := fun g => x <| f g
 
 theorem run_withContT (f : (β → m r) → α → m r) (x : ContT r m α) :
