@@ -505,8 +505,6 @@ lemma isPrime_iff_isMaximal (p : Ideal R) : p.IsPrime ↔ p.IsMaximal :=
 def primeSpectrumEquivMaximalSpectrum : PrimeSpectrum R ≃ MaximalSpectrum R where
   toFun I := ⟨I.asIdeal, isPrime_iff_isMaximal I.asIdeal |>.mp I.isPrime⟩
   invFun I := ⟨I.asIdeal, isPrime_iff_isMaximal I.asIdeal |>.mpr I.isMaximal⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 lemma primeSpectrumEquivMaximalSpectrum_comp_asIdeal :
     MaximalSpectrum.asIdeal ∘ primeSpectrumEquivMaximalSpectrum =
