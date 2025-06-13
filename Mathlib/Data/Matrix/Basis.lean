@@ -191,44 +191,35 @@ theorem ext_linearMap
   LinearMap.toAddMonoidHom_injective <| ext_addMonoidHom fun i j =>
     congrArg LinearMap.toAddMonoidHom <| h i j
 
-variable {R} (S) in
+section liftLinear
+variable {R} (S)
+variable [Fintype m] [Fintype n] [Semiring R] [Semiring S] [AddCommMonoid α] [AddCommMonoid β]
+variable [Module R α] [Module R β] [Module S β] [SMulCommClass R S β]
+
 /-- Families of linear maps acting on each element are equivalent to linear maps from a matrix.
 
 This can be thought of as the matrix versoin of `LinearMap.lsum`. -/
-def liftLinear
-    [Fintype m] [Fintype n] [Semiring R] [Semiring S] [AddCommMonoid α] [AddCommMonoid β]
-    [Module R α] [Module R β] [Module S β] [SMulCommClass R S β] :
-    (m → n → α →ₗ[R] β) ≃ₗ[S] (Matrix m n α →ₗ[R] β) :=
-  LinearEquiv.piCongrRight (fun _ => LinearMap.lsum R _ S)
-    ≪≫ₗ LinearMap.lsum R _ S ≪≫ₗ LinearEquiv.congrLeft _ _ (ofLinearEquiv _)
+def liftLinear : (m → n → α →ₗ[R] β) ≃ₗ[S] (Matrix m n α →ₗ[R] β) :=
+  LinearEquiv.piCongrRight (fun _ => LinearMap.lsum R _ S) ≪≫ₗ LinearMap.lsum R _ S ≪≫ₗ
+    LinearEquiv.congrLeft _ _ (ofLinearEquiv _)
 
-variable {R} (S) in
 @[simp]
-theorem liftLinear_piSingle
-    [Fintype m] [Fintype n] [Semiring R] [Semiring S] [AddCommMonoid α] [AddCommMonoid β]
-    [Module R α] [Module R β] [Module S β] [SMulCommClass R S β]
-    (f : m → n → α →ₗ[R] β) (i : m) (j : n) (a : α) :
+theorem liftLinear_piSingle (f : m → n → α →ₗ[R] β) (i : m) (j : n) (a : α) :
     liftLinear S f (Matrix.single i j a) = f i j a := by
   dsimp [liftLinear, -LinearMap.lsum_apply, LinearEquiv.congrLeft, LinearEquiv.piCongrRight]
   simp_rw [of_symm_single, LinearMap.lsum_piSingle]
 
-variable {R} (S) in
 @[simp]
-theorem liftLinear_comp_singleLinearMap
-    [Fintype m] [Fintype n] [Semiring R] [Semiring S] [AddCommMonoid α] [AddCommMonoid β]
-    [Module R α] [Module R β] [Module S β] [SMulCommClass R S β]
-    (f : m → n → α →ₗ[R] β) (i : m) (j : n) :
+theorem liftLinear_comp_singleLinearMap (f : m → n → α →ₗ[R] β) (i : m) (j : n) :
     liftLinear S f ∘ₗ Matrix.singleLinearMap _ i j = f i j :=
   LinearMap.ext <| liftLinear_piSingle S f i j
 
-variable {R} (S) in
 @[simp]
-theorem liftLinear_singleLinearMap
-    [Fintype m] [Fintype n] [Semiring R] [Semiring S] [AddCommMonoid α]
-    [Module R α] [Module S α] [SMulCommClass R S α] :
-    liftLinear S (Matrix.singleLinearMap R) = .id (M := Matrix m n α) := by
-  ext
-  simp
+theorem liftLinear_singleLinearMap [Module S α] [SMulCommClass R S α] :
+    liftLinear S (Matrix.singleLinearMap R) = .id (M := Matrix m n α) :=
+  ext_linearMap _ <| liftLinear_comp_singleLinearMap _ _
+
+end liftLinear
 
 end ext
 
