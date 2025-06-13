@@ -44,8 +44,8 @@ the order.
 
 -/
 
-section Pre
-variable {M: Type*}
+section ArchimedeanOrder
+variable {M : Type*}
 
 variable (M) in
 /-- Type synonym to equip a ordered group with a new `Preorder` defined by the infinitesimal order
@@ -132,7 +132,7 @@ def orderHom (f : M →*o N) : MulArchimedeanOrder M →o MulArchimedeanOrder N 
 
 end MulArchimedeanOrder
 
-end Pre
+end ArchimedeanOrder
 
 variable {M : Type*}
 variable [CommGroup M] [LinearOrder M] [IsOrderedMonoid M] {a b : M}
