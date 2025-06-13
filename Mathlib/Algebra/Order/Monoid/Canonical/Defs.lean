@@ -309,6 +309,10 @@ instance (priority := 10) of_gt' {M : Type*} [AddZeroClass M] [Preorder M] [Cano
     [One M] {y : M}
     [Fact (1 < y)] : NeZero y := of_gt <| @Fact.out (1 < y) _
 
+theorem of_ge {M} [AddZeroClass M] [PartialOrder M] [CanonicallyOrderedAdd M]
+    {x y : M} [NeZero x] (h : x ≤ y) : NeZero y :=
+  of_pos <| lt_of_lt_of_le (pos x) h
+
 end NeZero
 
 set_option linter.deprecated false in
