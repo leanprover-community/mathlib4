@@ -53,8 +53,8 @@ import Mathlib.Tactic.ExistsI
 import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.Find
-import Mathlib.Tactic.GCongr.CoreAttrs
-import Mathlib.Tactic.GRewrite.Elab
+import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.GRewrite
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.GuardHypNums
