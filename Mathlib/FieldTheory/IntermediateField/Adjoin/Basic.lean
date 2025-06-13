@@ -304,7 +304,7 @@ lemma finrank_eq_one_iff_eq_top {K : IntermediateField F E} :
   exact x.2
 
 theorem bot_eq_top_iff_finrank_eq_one :
-    (⊥ :IntermediateField F E) = ⊤ ↔ Module.finrank F E = 1 := by
+    (⊥ : IntermediateField F E) = ⊤ ↔ Module.finrank F E = 1 := by
   rw [← IntermediateField.finrank_bot', ← finrank_eq_one_iff_eq_top]
 
 variable (F E) in
