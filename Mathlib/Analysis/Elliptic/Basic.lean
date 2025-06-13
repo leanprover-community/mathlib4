@@ -10,14 +10,6 @@ variable {X : Type*} [NormedAddCommGroup X]
 
 variable {L}
 
-lemma ProperSpace.of_isClosed {X : Type*} [PseudoMetricSpace X] [ProperSpace X]
-    {s : Set X} (hs : IsClosed s) :
-    ProperSpace s := by
-  constructor
-  intro x r
-  exact hs.isClosedEmbedding_subtypeVal.isProperMap.isCompact_preimage
-    (isCompact_closedBall x.1 r)
-
 lemma IsZLattice.exists_forall_norm_lt_mul_imp_abs_repr_lt
     {ι : Type*} (b : Basis ι ℤ L) :
     ∃ (ε : ℝ), 0 < ε ∧ ∀ (x : L) (n : ℕ), ‖x‖ < n * ε → ∀ i, |b.repr x i| < n := by
@@ -42,7 +34,7 @@ lemma IsZLattice.exists_forall_norm_lt_mul_imp_abs_repr_lt
     (isOpen_set_pi Set.finite_univ fun _ _ ↦ isOpen_Ioo)
   obtain ⟨ε, hε, hε'⟩ := Metric.isOpen_iff.mp this 0 (by simp)
   refine ⟨ε, hε, fun x n hxn i ↦ ?_⟩
-  have hn : (n : ℝ) ≠ 0 := fun e ↦ hxn.not_le (by simp [e])
+  have hn : (n : ℝ) ≠ 0 := fun e ↦ hxn.not_ge (by simp [e])
   have : ‖(n : ℝ)⁻¹ • x.1‖ < ε := by
     rwa [norm_smul, norm_inv, inv_mul_lt_iff₀ (by positivity), Real.norm_natCast]
   have : (n : ℝ)⁻¹ * |(b.repr x i : ℝ)| < 1 := by
@@ -82,9 +74,9 @@ lemma Finset.prod_eq_prod_range_sdiff
   · rintro i - j - e
     simp only [Function.onFun, disjoint_iff_inter_eq_empty]
     wlog h : j < i generalizing i j
-    · rw [← this e.symm (lt_of_le_of_ne (le_of_not_lt h) e), inter_comm]
+    · rw [← this e.symm (lt_of_le_of_ne (le_of_not_gt h) e), inter_comm]
     ext x
-    simp only [mem_inter, mem_sdiff, not_mem_empty, iff_false, not_and, Decidable.not_not, and_imp]
+    simp only [mem_inter, mem_sdiff, notMem_empty, iff_false, not_and, Decidable.not_not, and_imp]
     exact fun _ h₁ h₂ ↦ (h₁ (hf h h₂)).elim
   · rw [disjoint_iff_inter_eq_empty]
     ext x
@@ -170,7 +162,7 @@ lemma IsZLattice.sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq
       positivity
     _ ≤ 2 * d * 3 ^ (d - 1) * ε ^ r * ∑' k : ℕ, (k : ℝ) ^ (d - 1 + r) := by
       gcongr
-      refine sum_le_tsum _ (fun _ _ ↦ by positivity) ?_
+      refine Summable.sum_le_tsum _ (fun _ _ ↦ by positivity) ?_
       rw [Real.summable_nat_rpow]
       linarith
 
@@ -199,8 +191,8 @@ lemma IsZLattice.exists_finset_sum_norm_rpow_le_tsum :
       ⟨u.image e.symm.toEmbedding, Finset.coe_injective
         (by simpa using (e.image_symm_image _).symm)⟩
     dsimp
-    simp only [LinearEquiv.coe_addEquiv_apply, EmbeddingLike.apply_eq_iff_eq,
-      imp_self, implies_true, Finset.sum_image, ge_iff_le]
+    simp only [EmbeddingLike.apply_eq_iff_eq, implies_true, Set.injOn_of_eq_iff_eq,
+      Finset.sum_image, ge_iff_le]
     obtain ⟨n, hn⟩ : ∃ n : ℕ, u ⊆ Fintype.piFinset fun _ : I ↦ Finset.Icc (-n : ℤ) n := by
       obtain ⟨r, hr, hr'⟩ := u.finite_toSet.isCompact.isBounded.subset_closedBall_lt 0 0
       refine ⟨⌊r⌋.toNat, fun x hx ↦ ?_⟩
@@ -249,18 +241,18 @@ lemma IsZLattice.summable_norm_rpow (r : ℝ) (hr : r < -(Module.finrank ℤ L))
 lemma IsZLattice.tsum_norm_rpow_le (r : ℝ) (hr : r < -(Module.finrank ℤ L)) :
     ∑' z : L, ‖z‖ ^ r ≤
       (tsumNormRPowBound L) ^ r * ∑' k : ℕ, (k : ℝ) ^ (Module.finrank ℤ L - 1 + r) :=
-  tsum_le_of_sum_le (summable_norm_rpow L r hr) (tsumNormRPowBound_spec L r hr)
+  Summable.tsum_le_of_sum_le (summable_norm_rpow L r hr) (tsumNormRPowBound_spec L r hr)
 
 lemma IsZLattice.summable_norm_sub_rpow (r : ℝ) (hr : r < -(Module.finrank ℤ L)) (x : E) :
     Summable fun z : L ↦ ‖z - x‖ ^ r := by
   cases subsingleton_or_nontrivial L
   · exact .of_finite
-  refine Summable.of_norm_bounded_eventually _
+  refine Summable.of_norm_bounded_eventually
     (.mul_left ((1 / 2) ^ r) (IsZLattice.summable_norm_rpow L r hr)) ?_
   have H : IsClosed (X := E) L := @AddSubgroup.isClosed_of_discrete _ _ _ _ _
     L.toAddSubgroup (inferInstanceAs (DiscreteTopology L))
   have := ProperSpace.of_isClosed H
-  refine ((Metric.isCompact_of_isClosed_isBounded Metric.isClosed_ball
+  refine ((Metric.isCompact_of_isClosed_isBounded Metric.isClosed_closedBall
     ((Metric.isBounded_closedBall (x := (0 : L)) (r := 2 * ‖x‖)))).finite inferInstance).subset ?_
   intro t ht
   by_cases ht₁ : ‖t‖ = 0
@@ -280,50 +272,6 @@ lemma IsZLattice.summable_norm_sub_rpow (r : ℝ) (hr : r < -(Module.finrank ℤ
 lemma IsZLattice.summable_norm_sub_zpow (r : ℤ) (hr : r < -(Module.finrank ℤ L)) (x : E) :
     Summable fun z : L ↦ ‖z - x‖ ^ r := by
   exact_mod_cast summable_norm_sub_rpow L r (by exact_mod_cast hr) x
-
-theorem IsOpen.eqOn_of_fderiv_eq
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    {𝕜 G : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
-    [NormedSpace 𝕜 E] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-    {f g : E → G} {s : Set E} {x : E}
-    (hs : IsOpen s) (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s)
-    (hg : DifferentiableOn 𝕜 g s)
-    (hf' : ∀ x ∈ s, fderiv 𝕜 f x = fderiv 𝕜 g x) (hx : x ∈ s) (hfgx : f x = g x) :
-    s.EqOn f g := by
-  suffices IsOpen (s ∩ { a | f a = g a }) by
-    delta Set.EqOn
-    by_contra! H
-    obtain ⟨x', hx', hfgx'⟩ := H
-    have hf' := hf.continuousOn.comp_continuous continuous_subtype_val (fun x ↦ x.2)
-    have hg' := hg.continuousOn.comp_continuous continuous_subtype_val (fun x ↦ x.2)
-    obtain ⟨t, ht, ht'⟩ := Topology.IsInducing.subtypeVal.isClosed_iff.mp (isClosed_eq hf' hg')
-    have ht'' : ∀ a ∈ s, a ∈ t ↔ f a = g a := by simpa [Set.ext_iff] using ht'
-    obtain ⟨y, h₁, h₂, h₃⟩ := hs' _ _ this ht.isOpen_compl (fun x hx ↦
-      (by simp [ht'' x hx, hx, eq_or_ne])) ⟨x, hx, hx, hfgx⟩ ⟨x', hx', (ht'' _ hx').not.mpr hfgx'⟩
-    cases h₃ ((ht'' _ h₁).mpr h₂.2)
-  refine Metric.isOpen_iff.mpr fun y ⟨hy, hy'⟩ ↦ ?_
-  obtain ⟨r, hr, h⟩ := Metric.isOpen_iff.mp hs y hy
-  refine ⟨r, hr, Set.subset_inter h ?_⟩
-  refine (convex_ball y r).eqOn_of_fderivWithin_eq (hf.mono h) (hg.mono h) ?_ ?_ ?_ hy'
-  · exact Metric.isOpen_ball.uniqueDiffOn
-  · intro z hz
-    simpa only [fderivWithin_of_isOpen Metric.isOpen_ball hz] using hf' z (h hz)
-  · exact Metric.mem_ball_self hr
-
-theorem IsOpen.eqOn_of_deriv_eq
-    {𝕜 G : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
-    [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-    {f g : 𝕜 → G} {s : Set 𝕜} {x : 𝕜}
-    (hs : IsOpen s) (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s)
-    (hg : DifferentiableOn 𝕜 g s)
-    (hf' : ∀ x ∈ s, deriv f x = deriv g x) (hx : x ∈ s) (hfgx : f x = g x) :
-    s.EqOn f g :=
-  letI := IsRCLikeNormedField.rclike 𝕜
-  hs.eqOn_of_fderiv_eq hs' hf hg (fun x hx ↦ ContinuousLinearMap.ext_ring (hf' x hx)) hx hfgx
-
-lemma AbsoluteValue.map_sub_comm {R S : Type*} [Ring R] [OrderedCommRing S] [NoZeroDivisors S]
-    (v : AbsoluteValue R S) (a b : R) : v (a - b) = v (b - a) := by
-  rw [← v.map_neg (a - b), neg_sub]
 
 lemma deriv_one_div_sub_pow (r : ℕ) (z w : ℂ) :
     deriv (fun z : ℂ ↦ 1 / (z - w) ^ r) z = - (r / (z - w) ^ (r + 1)) := by
@@ -372,43 +320,29 @@ lemma iteratedDeriv_one_div_sub_pow' (i : ℕ) (r : ℕ) (z w : ℂ) :
 lemma Nat.two_ascFactorial (i) : Nat.ascFactorial 2 i = i.factorial * (i + 1) := by
   rw [← Nat.one_ascFactorial, mul_comm, add_comm, ← Nat.succ_ascFactorial, one_mul]
 
-
-lemma Complex.tsum_eq_one_div_sub_sq (w z : ℂ) (hz : z.abs < w.abs) :
+lemma Complex.tsum_eq_one_div_sub_sq (w z : ℂ) (hz : ‖z‖ < ‖w‖) :
     ∑' i : ℕ, (i + 1) * w ^ (- ↑(i + 2) : ℤ) * z ^ i = 1 / (z - w) ^ 2 := by
   convert Complex.taylorSeries_eq_on_ball' (f := fun z ↦ 1 / (z - w) ^ 2)
-    (show z ∈ Metric.ball 0 w.abs by simpa using hz) _ using 4 with i
+    (show z ∈ Metric.ball 0 ‖w‖ by simpa using hz) _ using 4 with i
   · rw [iteratedDeriv_one_div_sub_pow, eq_inv_mul_iff_mul_eq₀ (by norm_cast; positivity),
       ← mul_assoc, mul_comm ((-1) ^ _), mul_assoc _ ((-1) ^ _), Nat.two_ascFactorial]
     congr 1
     · norm_cast
     rw [zpow_neg, zpow_natCast, zero_sub, ← neg_one_mul w, mul_pow]
     ring_nf
+    rw [mul_assoc, ← mul_pow, inv_mul_cancel₀ (by simp)]
     norm_num
   · simp
   · exact .div (by fun_prop) (by fun_prop) (by simp [sub_eq_zero, imp_not_comm])
 
-lemma iteratedDeriv_add' {𝕜 : Type*} [NontriviallyNormedField 𝕜] {F : Type*} [NormedAddCommGroup F]
-    [NormedSpace 𝕜 F] {n : ℕ} {x : 𝕜} {f g : 𝕜 → F}
-    (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
-    iteratedDeriv n (f + g) x = iteratedDeriv n f x + iteratedDeriv n g x := by
-  have := (hf.eventually (by simp)).and (hg.eventually (by simp))
-  obtain ⟨t, h, ht, hxt⟩ := mem_nhds_iff.mp this
-  have hft : ContDiffOn 𝕜 n f t := fun a ha ↦ (h ha).1.contDiffWithinAt
-  have hgt : ContDiffOn 𝕜 n g t := fun a ha ↦ (h ha).2.contDiffWithinAt
-  convert iteratedDerivWithin_add hxt ht.uniqueDiffOn hft hgt using 1
-  · exact (DFunLike.congr_fun (iteratedFDerivWithin_of_isOpen n ht hxt) _).symm
-  · congr 1
-    · exact (DFunLike.congr_fun (iteratedFDerivWithin_of_isOpen n ht hxt) _).symm
-    · exact (DFunLike.congr_fun (iteratedFDerivWithin_of_isOpen n ht hxt) _).symm
-
-lemma Complex.tsum_add_const_mul_pow (z a : ℂ) (hz : z.abs < 1) :
+lemma Complex.tsum_add_const_mul_pow (z a : ℂ) (hz : ‖z‖ < 1) :
     ∑' i : ℕ, (i + a) * z ^ i = (a - 1) * 1 / (1 - z) + 1 / (1 - z) ^ 2 := by
   convert Complex.taylorSeries_eq_on_ball'
     (f := (fun z ↦ (a - 1) * (1 / (1 - z) ^ 1)) + (fun z ↦ 1 / (1 - z) ^ 2))
     (show z ∈ Metric.ball 0 1 by simpa using hz) _ using 1
   · rw [sub_zero]
     congr! 3 with i
-    rw [iteratedDeriv_add', iteratedDeriv_const_mul, iteratedDeriv_one_div_sub_pow',
+    rw [iteratedDeriv_add, iteratedDeriv_const_mul, iteratedDeriv_one_div_sub_pow',
       iteratedDeriv_one_div_sub_pow', Nat.two_ascFactorial, Nat.one_ascFactorial]
     · simp only [sub_zero, one_pow, ne_eq, one_ne_zero, not_false_eq_true, div_self, mul_one,
         Nat.cast_mul, Nat.cast_add, Nat.cast_one]
@@ -430,15 +364,15 @@ lemma Real.tsum_add_const_mul_pow (a z : ℝ) (hz : |z| < 1) :
     ∑' i : ℕ, (i + a) * z ^ i = (a - 1) * 1 / (1 - z) + 1 / (1 - z) ^ 2 := by
   exact_mod_cast Complex.tsum_add_const_mul_pow z a (by simpa)
 
-lemma tsum_eq_one_div_sub_sq_sub_one_div_sq (w z x : ℂ) (hz : (z - x).abs < (w - x).abs) :
+lemma tsum_eq_one_div_sub_sq_sub_one_div_sq (w z x : ℂ) (hz : ‖z - x‖ < ‖w - x‖) :
     1 / (z - w) ^ 2 - 1 / w ^ 2 = ∑' i : ℕ,
       ((i + 1) * (w - x) ^ (- ↑(i + 2) : ℤ) - i.casesOn (w ^ (-2 : ℤ)) 0) * (z - x) ^ i := by
   have := Complex.tsum_eq_one_div_sub_sq (w - x) (z - x) hz
   rw [sub_sub_sub_cancel_right] at this
-  rw [← this, ← tsum_ite_eq 0 (1 / w ^ 2), ← tsum_sub]
+  rw [← this, ← tsum_ite_eq 0 (1 / w ^ 2), ← Summable.tsum_sub]
   · simp_rw [sub_mul]
     congr! 3 with i
-    cases' i with i <;> simp [zpow_ofNat]
+    cases i <;> simp [zpow_ofNat]
   · by_contra H
     obtain rfl : z = w := by
       simpa [sub_eq_zero] using this.symm.trans (tsum_eq_zero_of_not_summable H)
@@ -455,60 +389,6 @@ def optionProdEquiv {α β : Type*} : Option α × β ≃ β ⊕ α × β where
   | .inl _ => rfl
   | .inr (_, _) => rfl
 
-def Finset.sumEquiv {α β : Type*} : Finset (α ⊕ β) ≃ Finset α × Finset β where
-  toFun s := (s.toLeft, s.toRight)
-  invFun s := disjSum s.1 s.2
-  left_inv s := toLeft_disjSum_toRight
-  right_inv s := by simp
-
-open Filter in
-lemma Finset.tendsto_toLeft_atTop_atTop {α β : Type*} :
-    Tendsto (toLeft (α := α) (β := β)) atTop atTop := by
-  intro s hs
-  simp only [mem_atTop_sets, ge_iff_le, le_eq_subset, Filter.mem_map, Set.mem_preimage] at hs ⊢
-  obtain ⟨t, H⟩ := hs
-  exact ⟨disjSum t ∅, fun b hb ↦ H _ (by simpa [← coe_subset, Set.subset_def] using hb)⟩
-
-open Filter in
-lemma Finset.tendsto_toRight_atTop_atTop {α β : Type*} :
-    Tendsto (toRight (α := α) (β := β)) atTop atTop := by
-  intro s hs
-  simp only [mem_atTop_sets, ge_iff_le, le_eq_subset, Filter.mem_map, Set.mem_preimage] at hs ⊢
-  obtain ⟨t, H⟩ := hs
-  exact ⟨disjSum ∅ t, fun b hb ↦ H _ (by simpa [← coe_subset, Set.subset_def] using hb)⟩
-
-open Filter Finset in
-@[to_additive]
-lemma HasProd.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M]
-    {f : α ⊕ β → M} {a b : M}
-    (h₁ : HasProd (f ∘ Sum.inl) a) (h₂ : HasProd (f ∘ Sum.inr) b) : HasProd f (a * b) := by
-  have : Tendsto ((∏ b ∈ ·, f b) ∘ sumEquiv.symm) (atTop.map sumEquiv) (nhds (a * b)) := by
-    have H : atTop.map (sumEquiv (α := α) (β := β)) ≤ atTop ×ˢ atTop := by
-      simp only [sumEquiv, Equiv.coe_fn_mk, le_prod, Tendsto, Filter.map_map, Function.comp_def]
-      exact ⟨tendsto_toLeft_atTop_atTop, tendsto_toRight_atTop_atTop⟩
-    convert (tendsto_mul.comp (nhds_prod_eq (x := a) (y := b) ▸ Tendsto.prod_map h₁ h₂)).mono_left H
-    ext
-    simp [sumEquiv]
-  simpa [Tendsto, Filter.map_map, Function.comp_assoc] using this
-
-open Filter Finset in
-@[to_additive]
-lemma Multipliable.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M]
-    (f : α ⊕ β → M)
-    (h₁ : Multipliable (f ∘ Sum.inl)) (h₂ : Multipliable (f ∘ Sum.inr)) : Multipliable f :=
-  ⟨_, .sum h₁.choose_spec h₂.choose_spec⟩
-
-lemma sub_sq_comm {R : Type*} [CommRing R] (a b : R) : (a - b) ^ 2 = (b - a) ^ 2 := by ring
-
-@[simp]
-lemma sq_nonpos_iff {α : Type*}
-    [Semiring α] [LinearOrder α] [IsRightCancelAdd α] [ZeroLEOneClass α]
-    [ExistsAddOfLE α] [PosMulMono α] [AddLeftStrictMono α] [NoZeroDivisors α] (r : α) :
-    r ^ 2 ≤ 0 ↔ r = 0 := by
-  trans r ^ 2 = 0
-  · rw [le_antisymm_iff, and_iff_left (sq_nonneg r)]
-  · exact sq_eq_zero_iff
-
 lemma not_continuousAt_inv_sq_sub (x : ℂ) : ¬ ContinuousAt (fun z ↦ ((z - x) ^ 2)⁻¹) x := by
   intro H
   have := H (U := Metric.ball 0 1) (Metric.isOpen_ball.mem_nhds (by simp))
@@ -517,29 +397,16 @@ lemma not_continuousAt_inv_sq_sub (x : ℂ) : ¬ ContinuousAt (fun z ↦ ((z - x
     ext a
     by_cases hx : a = x
     · simp [hx]
-    · simp +contextual [hx, inv_lt_one_iff₀, Complex.dist_eq, sq_nonpos_iff, le_of_lt]
+    · simp +contextual [hx, inv_lt_one_iff₀, Complex.dist_eq, sq_nonpos_iff, le_of_lt, sub_eq_zero]
   have := isOpen_singleton_of_finite_mem_nhds _ this (Set.finite_singleton x)
   exact not_isOpen_singleton _ this
-
-@[simp]
-lemma FormalMultilinearSeries.derivSeries_coeff_one
-      {𝕜 : Type*} [NontriviallyNormedField 𝕜] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-      (p : FormalMultilinearSeries 𝕜 𝕜 F) (n : ℕ) :
-    p.derivSeries.coeff n 1 = (n + 1) • p.coeff (n + 1) :=
-  p.derivSeries_apply_diag _ _
 
 @[simp]
 lemma Nat.rec_succ {C : ℕ → Sort*} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) (n : ℕ) :
     Nat.rec (motive := C) h0 h ofNat(n + 1) = h n (Nat.rec h0 h n) := rfl
 
-theorem AnalyticAt.deriv
-    {𝕜 : Type*} [NontriviallyNormedField 𝕜] {F : Type*} [NormedAddCommGroup F]
-    [NormedSpace 𝕜 F] [CompleteSpace F] {f : 𝕜 → F} {x : 𝕜} (h : AnalyticAt 𝕜 f x) :
-    AnalyticAt 𝕜 (deriv f) x := by
-  obtain ⟨r, hr, h⟩ := h.exists_ball_analyticOnNhd
-  exact h.deriv x (by simp [hr])
-
-lemma Int.le_floor_add_one {α : Type*} [LinearOrderedRing α] [FloorRing α] (a : α) :
+lemma Int.le_floor_add_one {α : Type*}
+    [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α] (a : α) :
     a ≤ ↑⌊a⌋ + 1 :=
   (Int.le_ceil a).trans (by norm_cast; exact Int.ceil_le_floor_add_one a)
 
@@ -611,7 +478,7 @@ instance : DiscreteTopology L.lattice := by
 
 instance : IsZLattice ℝ L.lattice := by
   simp_rw [L.lattice_eq_span_range_basis]
-  exact ZSpan.isZLattice L.basis
+  infer_instance
 
 lemma PeriodPairs.isClosed_lattice : IsClosed (X := ℂ) L.lattice :=
   @AddSubgroup.isClosed_of_discrete _ _ _ _ _ L.lattice.toAddSubgroup
@@ -630,7 +497,7 @@ lemma PeriodPairs.ω₁_mem_lattice : L.ω₁ ∈ L.lattice := Submodule.subset_
 lemma PeriodPairs.ω₂_mem_lattice : L.ω₂ ∈ L.lattice := Submodule.subset_span (by simp)
 
 def PeriodPairs.latticeBasis : Basis (Fin 2) ℤ L.lattice :=
-  (Basis.span (v := ![L.ω₁, L.ω₂]) (L.indep.restrict_scalars_algebras Int.cast_injective)).map
+  (Basis.span (v := ![L.ω₁, L.ω₂]) (L.indep.restrict_scalars' _)).map
     (.ofEq _ _ (by simp [lattice, Set.pair_comm L.ω₂ L.ω₁]))
 
 @[simp]
@@ -656,57 +523,56 @@ lemma PeriodPairs.latticeEquiv_symm_apply (x : ℤ × ℤ) :
 open Topology Filter in
 lemma PeriodPairs.tendstoLocallyUniformly_aux (f : L.lattice → ℂ → ℂ)
     (u : ℝ → L.lattice → ℝ) (hu : ∀ r > 0, Summable (u r))
-    (hf : ∀ r > 0, ∀ᶠ (R : ℝ) in atTop, ∀ x, x.abs < r →
-      ∀ l : L.lattice, l.1.abs = R → (f l x).abs ≤ u r l) :
+    (hf : ∀ r > 0, ∀ᶠ (R : ℝ) in atTop, ∀ x, ‖x‖ < r →
+      ∀ l : L.lattice, ‖l.1‖ = R → ‖f l x‖ ≤ u r l) :
     TendstoLocallyUniformly (∑ i ∈ ·, f i ·) (∑' j, f j ·) Filter.atTop := by
   rw [tendstoLocallyUniformly_iff_filter]
   intro x
   obtain ⟨r, hr, hr'⟩ : ∃ r, 0 < r ∧ 𝓝 x ≤ 𝓟 (Metric.ball 0 r) :=
-    ⟨x.abs + 1, by positivity, Filter.le_principal_iff.mpr (Metric.isOpen_ball.mem_nhds (by simp))⟩
+    ⟨‖x‖ + 1, by positivity, Filter.le_principal_iff.mpr (Metric.isOpen_ball.mem_nhds (by simp))⟩
   refine .mono_right ?_ hr'
   rw [← tendstoUniformlyOn_iff_tendstoUniformlyOnFilter]
   refine tendstoUniformlyOn_tsum_of_cofinite_eventually (hu r hr) ?_
   obtain ⟨R, hR⟩ := eventually_atTop.mp (hf r hr)
   refine (isCompact_iff_finite.mp (isCompact_closedBall (0 : L.lattice) R)).subset ?_
   intros l hl
-  simp only [Metric.mem_ball, dist_zero_right, Complex.norm_eq_abs, Set.mem_compl_iff,
-    Set.mem_setOf_eq, not_forall, not_le, Metric.mem_closedBall, AddSubgroupClass.coe_norm] at hl ⊢
+  simp only [Metric.mem_ball, dist_zero_right, Set.mem_compl_iff, Set.mem_setOf_eq, not_forall,
+    not_le, Metric.mem_closedBall, AddSubgroupClass.coe_norm] at hl ⊢
   obtain ⟨s, hs, hs'⟩ := hl
   contrapose! hs'
   exact hR _ hs'.le _ hs _ rfl
 
-lemma PeriodPairs.℘_bound (r : ℝ) (hr : r > 0) (s : ℂ) (hs : Complex.abs s < r)
-    (l : ℂ) (h : 2 * r ≤ Complex.abs ↑l) :
-    Complex.abs (1 / (s - l) ^ 2 - 1 / l ^ 2) ≤ 10 * r * ‖l‖ ^ (-3 : ℝ) := by
+lemma PeriodPairs.℘_bound (r : ℝ) (hr : r > 0) (s : ℂ) (hs : ‖s‖ < r)
+    (l : ℂ) (h : 2 * r ≤ ‖l‖) :
+    ‖1 / (s - l) ^ 2 - 1 / l ^ 2‖ ≤ 10 * r * ‖l‖ ^ (-3 : ℝ) := by
   have : s ≠ ↑l := by rintro rfl; exfalso; linarith
-  have : 0 < Complex.abs ↑l := by
+  have : 0 < ‖l‖ := by
     suffices l ≠ 0 by simpa
     rintro rfl
-    simp only [ZeroMemClass.coe_zero, AbsoluteValue.map_zero] at h
+    simp only [norm_zero] at h
     linarith
   calc
-    _ = Complex.abs ((↑l ^ 2 - (s - ↑l) ^ 2) / ((s - ↑l) ^ 2 * ↑l ^ 2)) := by
+    _ = ‖(↑l ^ 2 - (s - ↑l) ^ 2) / ((s - ↑l) ^ 2 * ↑l ^ 2)‖ := by
       rw [div_sub_div, one_mul, mul_one]
       · simpa [sub_eq_zero]
       · simpa
-    _ = ((l ^ 2 - (s - l) ^ 2).abs / ((s - ↑l).abs ^ 2 * l.abs ^ 2)) := by simp
-    _ ≤ ((l ^ 2 - (s - l) ^ 2).abs / ((l.abs / 2) ^ 2 * l.abs ^ 2)) := by
+    _ = ‖l ^ 2 - (s - l) ^ 2‖ / (‖s - l‖ ^ 2 * ‖l‖ ^ 2) := by simp
+    _ ≤ ‖l ^ 2 - (s - l) ^ 2‖ / ((‖l‖ / 2) ^ 2 * ‖l‖ ^ 2) := by
       gcongr
-      rw [AbsoluteValue.map_sub_comm]
-      refine le_trans ?_ (Complex.abs.le_sub _ _)
-      linarith
-    _ = (s * (2 * l - s)).abs / (l.abs ^ 4 / 4) := by
+      rw [norm_sub_rev]
+      exact .trans (by linarith) (norm_sub_norm_le l s)
+    _ = ‖s * (2 * l - s)‖ / (‖l‖ ^ 4 / 4) := by
       congr 1
       · rw [sq_sub_sq]; simp [← sub_add, two_mul, sub_add_eq_add_sub]
       · ring
-    _ = (s.abs * (2 * l - s).abs) / (l.abs ^ 4 / 4) := by simp
-    _ = (4 * s.abs * (2 * l - s).abs) / l.abs ^ 4 := by field_simp; ring
-    _ ≤ (4 * r * (2.5 * l.abs)) / l.abs ^ 4 := by
-      gcongr (4 * ?_ * ?_) / l.abs ^ 4
-      refine (Complex.abs.sub_le_add _ _).trans ?_
-      simp only [AbsoluteValue.map_mul, Complex.abs_ofNat]
+    _ = (‖s‖ * ‖2 * l - s‖) / (‖l‖ ^ 4 / 4) := by simp
+    _ = (4 * ‖s‖ * ‖2 * l - s‖) / ‖l‖ ^ 4 := by field_simp; ring
+    _ ≤ (4 * r * (2.5 * ‖l‖)) / ‖l‖ ^ 4 := by
+      gcongr (4 * ?_ * ?_) / ‖l‖ ^ 4
+      refine (norm_sub_le _ _).trans ?_
+      simp only [Complex.norm_mul, Complex.norm_ofNat]
       linarith
-    _ = 10 * r / l.abs ^ 3 := by field_simp; ring
+    _ = 10 * r / ‖l‖ ^ 3 := by field_simp; ring
     _ = _ := by norm_cast
 
 section ℘Except
@@ -761,7 +627,7 @@ lemma PeriodPairs.℘Except_add (l₀ : L.lattice) (z : ℂ) :
   trans L.℘Except l₀ z +
     ∑' i : L.lattice, if i.1 = l₀.1 then (1 / (z - l₀.1) ^ 2 - 1 / l₀.1 ^ 2) else 0
   · simp
-  rw [℘Except, ← tsum_add]
+  rw [℘Except, ← Summable.tsum_add]
   · congr with w; split_ifs <;> simp only [zero_add, add_zero, *]
   · exact ⟨_, L.hasSum_℘Except _ _⟩
   · exact summable_of_finite_support ((Set.finite_singleton l₀).subset (by simp_all))
@@ -823,13 +689,13 @@ lemma PeriodPairs.tendstoLocallyUniformly_℘'Except (l₀ : ℂ) :
   · simp; positivity
   have : s ≠ ↑l := by rintro rfl; exfalso; linarith
   have : l ≠ 0 := by rintro rfl; simp_all; linarith
-  simp only [map_neg_eq_map, map_div₀, Complex.abs_ofNat, AbsoluteValue.map_pow,
-    AddSubgroupClass.coe_norm, Complex.norm_eq_abs]
-  rw [Real.rpow_neg (by positivity), ← div_eq_mul_inv, div_le_div_iff₀, AbsoluteValue.map_sub_comm]
-  · refine LE.le.trans_eq (b := 2 * (2 * (l - s).abs) ^ 3) ?_ (by ring)
+  simp only [Complex.norm_div, norm_neg, Complex.norm_ofNat, norm_pow, AddSubgroupClass.coe_norm]
+  rw [Real.rpow_neg (by positivity), ← div_eq_mul_inv, div_le_div_iff₀, norm_sub_rev]
+  · refine LE.le.trans_eq (b := 2 * (2 * ‖l - s‖) ^ 3) ?_ (by ring)
     norm_cast
     gcongr
-    refine le_trans ?_ (mul_le_mul le_rfl (Complex.abs.le_sub _ _) (by linarith) (by linarith))
+    refine le_trans ?_ (mul_le_mul le_rfl (norm_sub_norm_le _ _) (by linarith) (by linarith))
+    norm_cast at *
     linarith
   · exact pow_pos (by simpa [sub_eq_zero]) _
   · exact Real.rpow_pos_of_pos (by simpa) _
@@ -982,7 +848,7 @@ lemma PeriodPairs.℘'Except_sub (l₀ : L.lattice) (z : ℂ) :
     L.℘'Except l₀ z - 2 / (z - l₀) ^ 3 = L.℘' z := by
   trans L.℘'Except l₀ z + ∑' i : L.lattice, if i.1 = l₀.1 then (- 2 / (z - l₀) ^ 3) else 0
   · simp [sub_eq_add_neg, neg_div]
-  rw [℘', ℘'Except, ← tsum_add, ← tsum_neg]
+  rw [℘', ℘'Except, ← Summable.tsum_add, ← tsum_neg]
   · congr with w; split_ifs <;> simp only [zero_add, add_zero, *, neg_div]
   · exact ⟨_, L.hasSum_℘'Except _ _⟩
   · exact summable_of_finite_support ((Set.finite_singleton l₀).subset (by simp_all))
@@ -1081,23 +947,23 @@ lemma PeriodPairs.coeff_℘ExceptSeries (l₀ x : ℂ) (i : ℕ) :
     (L.℘ExceptSeries l₀ x).coeff i = ∑' l : L.lattice, L.℘ExceptSeriesSummand l₀ x i l := by
   delta ℘ExceptSeriesSummand
   rw [℘ExceptSeries, FormalMultilinearSeries.coeff_ofScalars]
-  cases' i with i
-  · simp [℘Except, sub_sq_comm x, zpow_ofNat]
-  · dsimp
+  cases i with
+  | zero => simp [℘Except, sub_sq_comm x, zpow_ofNat]
+  | succ i =>
+    dsimp
     split_ifs with hl₀
     · trans (i + 2) * (L.sumInvPow x (i + 3) -
         ∑' l : L.lattice, if l = ⟨l₀, hl₀⟩ then (l₀ - x) ^ (-↑(i + 3) : ℤ) else 0)
       · congr 2
         rw [tsum_ite_eq, zpow_neg, zpow_natCast]
-      · rw [sumInvPow, ← tsum_sub]
+      · rw [sumInvPow, ← Summable.tsum_sub]
         · rw [← tsum_mul_left]
-          simp_rw [Subtype.ext_iff]
+          simp_rw [Subtype.ext_iff, zpow_neg]
           congr with l
           split_ifs with e
           · simp only [e, zpow_neg, zpow_natCast, sub_self, mul_zero]
-          · rw [zpow_neg, zpow_natCast, ← one_add_one_eq_two, ← add_assoc]
-            simp
-        · refine Summable.of_norm_bounded _
+          · norm_cast; ring
+        · refine Summable.of_norm_bounded
             (IsZLattice.summable_norm_sub_zpow L.lattice (-↑(i + 3)) ?_ x) fun l ↦ ?_
           · simp; linarith
           · rw [← zpow_natCast, ← zpow_neg, ← norm_zpow]
@@ -1108,26 +974,26 @@ lemma PeriodPairs.coeff_℘ExceptSeries (l₀ x : ℂ) (i : ℕ) :
       simp [add_assoc, one_add_one_eq_two]
 
 lemma PeriodPairs.summable_℘ExceptSeriesSummand (l₀ z x : ℂ)
-    (hx : ∀ l : L.lattice, l.1 ≠ l₀ → (z - x).abs < (l - x).abs) :
+    (hx : ∀ l : L.lattice, l.1 ≠ l₀ → ‖z - x‖ < ‖l - x‖) :
     Summable (Function.uncurry fun b c ↦ L.℘ExceptSeriesSummand l₀ x b c * (z - x) ^ b) := by
   obtain ⟨ε, hε, hε'⟩ : ∃ ε : ℝ, 1 < ε ∧
-      ∀ l : L.lattice, l.1 ≠ l₀ → (z - x).abs * ε < (l - x).abs := by
+      ∀ l : L.lattice, l.1 ≠ l₀ → ‖z - x‖ * ε < ‖l - x‖ := by
     obtain ⟨δ, hδ, h⟩ := Disjoint.exists_cthickenings (by
       simp only [Set.disjoint_iff_inter_eq_empty, Set.mem_diff, Set.mem_inter_iff, not_lt, not_and,
         Metric.mem_closedBall, Complex.dist_eq, Set.ext_iff, SetLike.mem_coe, Set.mem_singleton_iff,
         Set.mem_empty_iff_false, iff_false, Decidable.not_not, not_imp_comm (a := _ = _)] at hx ⊢
       exact fun x h₁ h₂ ↦ hx ⟨x, h₂⟩ h₁)
-        (isCompact_closedBall x (z - x).abs) (L.isClosed_lattice_sdiff {l₀})
+        (isCompact_closedBall x ‖z - x‖) (L.isClosed_lattice_sdiff {l₀})
     by_cases hz : z = x
     · refine ⟨2, one_lt_two, fun l hl ↦ by simpa [hz] using hx l hl⟩
-    have : 0 < Complex.abs (z - x) := by simp [sub_eq_zero, hz]
-    refine ⟨δ / (z - x).abs + 1, by simp; positivity, fun l hl ↦ ?_⟩
+    have : 0 < ‖z - x‖ := by simp [sub_eq_zero, hz]
+    refine ⟨δ / ‖z - x‖ + 1, by simp; positivity, fun l hl ↦ ?_⟩
     rw [mul_add, mul_one, mul_div, mul_div_cancel_left₀ _ this.ne']
     rw [cthickening_closedBall hδ.le (by positivity)] at h
     have := Set.subset_compl_iff_disjoint_left.mpr h (Metric.self_subset_cthickening _ ⟨l.2, hl⟩)
     simpa [Complex.dist_eq] using this
   let e : ℕ × L.lattice ≃ L.lattice ⊕ (ℕ × L.lattice) :=
-    (Equiv.prodCongrLeft fun a ↦ (Denumerable.eqv (Option ℕ)).symm).trans optionProdEquiv
+    (Equiv.prodCongrLeft fun a ↦ (Denumerable.eqv (Option ℕ)).symm).trans (by exact? )
   have he₁ : e.symm ∘ Sum.inl = Prod.mk 0 := rfl
   have he₂ : e.symm ∘ Sum.inr = Prod.map Nat.succ id := rfl
   rw [← e.symm.summable_iff]
@@ -1138,7 +1004,7 @@ lemma PeriodPairs.summable_℘ExceptSeriesSummand (l₀ z x : ℂ)
     simp only [Nat.cast_add, Nat.cast_ofNat, neg_add_rev, Int.reduceNeg, zpow_neg, Pi.zero_apply,
       Function.comp_def, Function.uncurry, Prod.map_snd, id_eq, Prod.map_fst, Nat.succ_eq_add_one,
       Nat.cast_one, sub_zero]
-    refine Summable.of_norm_bounded (fun p : ℕ × L.lattice ↦
+    refine Summable.of_norm_bounded (g := fun p : ℕ × L.lattice ↦
         ((p.1 + 2) * ε ^ (- p.1 : ℤ)) * (‖p.2 - x‖ ^ (-3 : ℤ) * ‖z - x‖)) ?_ ?_
     · refine Summable.mul_of_nonneg (f := fun p : ℕ ↦ ((p + 2) * ε ^ (- p : ℤ)))
         (g := fun p : L.lattice ↦ ‖p - x‖ ^ (-3 : ℤ) * ‖z - x‖) ?_ ?_ ?_ ?_
@@ -1166,20 +1032,19 @@ lemma PeriodPairs.summable_℘ExceptSeriesSummand (l₀ z x : ℂ)
       rw [pow_succ (n := p.1)]
       refine mul_le_mul ?_ ?_ (by positivity) (by positivity)
       · norm_cast
-        rw [Complex.abs_natCast]
       · simp only [← mul_assoc]
         refine mul_le_mul ?_ le_rfl (by positivity) (by positivity)
         rw [pow_add, mul_inv_rev, mul_assoc, mul_comm ((ε ^ p.1)⁻¹)]
         refine mul_le_mul le_rfl ?_ (by positivity) (by positivity)
         rw [← inv_pow, ← inv_pow, ← mul_pow]
         gcongr
-        have : (z - x).abs * ε < (p.2 - x).abs := hε' p.2 hp
-        have h : 0 < (p.2 - x).abs := (show 0 ≤ ‖z - x‖ * ε by positivity).trans_lt this
+        have : ‖z - x‖ * ε < ‖p.2 - x‖ := hε' p.2 hp
+        have h : 0 < ‖p.2 - x‖ := (show 0 ≤ ‖z - x‖ * ε by positivity).trans_lt this
         rw [inv_mul_le_iff₀ h, le_mul_inv_iff₀ (by positivity)]
         exact this.le
 
 lemma PeriodPairs.℘Except_eq_tsum (l₀ z x : ℂ)
-    (hx : ∀ l : L.lattice, l.1 ≠ l₀ → (z - x).abs < (l - x).abs) :
+    (hx : ∀ l : L.lattice, l.1 ≠ l₀ → ‖z - x‖ < ‖l - x‖) :
     L.℘Except l₀ z = ∑' i : ℕ, (L.℘ExceptSeries l₀ x).coeff i * (z - x) ^ i := by
   trans ∑' (l : L.lattice) (i : ℕ), if l.1 = l₀ then 0 else
       ((i + 1) * (l.1 - x) ^ (- ↑(i + 2) : ℤ) - i.casesOn (l.1 ^ (-2 : ℤ)) 0) * (z - x) ^ i
@@ -1191,11 +1056,11 @@ lemma PeriodPairs.℘Except_eq_tsum (l₀ z x : ℂ)
   trans ∑' (l : ↥L.lattice) (i : ℕ), L.℘ExceptSeriesSummand l₀ x i l * (z - x) ^ i
   · simp only [℘ExceptSeriesSummand, ← tsum_mul_right, ite_mul, zero_mul]
   · simp_rw [coeff_℘ExceptSeries, ← tsum_mul_right]
-    apply tsum_comm
+    apply Summable.tsum_comm
     exact L.summable_℘ExceptSeriesSummand l₀ z x hx
 
 lemma PeriodPairs.℘ExceptSeries_hasSum (l₀ z x : ℂ)
-    (hx : ∀ l : L.lattice, l.1 ≠ l₀ → (z - x).abs < (l - x).abs) :
+    (hx : ∀ l : L.lattice, l.1 ≠ l₀ → ‖z - x‖ < ‖l - x‖) :
     HasSum (fun i ↦ (L.℘ExceptSeries l₀ x).coeff i * (z - x) ^ i) (L.℘Except l₀ z) := by
   refine (Summable.hasSum_iff ?_).mpr (L.℘Except_eq_tsum l₀ z x hx).symm
   simp_rw [coeff_℘ExceptSeries, ← tsum_mul_right]
@@ -1214,7 +1079,7 @@ lemma PeriodPairs.hasFPowerSeriesOnBall_℘Except (l₀ x : ℂ) (r : NNReal) (h
       simpa using Set.subset_compl_comm.mp hr ⟨l.2, hl⟩
   · exact ENNReal.coe_pos.mpr hr0
   · intro z hz
-    replace hz : Complex.abs z < r := by simpa using hz
+    replace hz : ‖z‖ < r := by simpa using hz
     have := L.℘ExceptSeries_hasSum l₀ (x + z) x
     simp only [add_sub_cancel_left] at this
     convert this (fun l hl ↦ hz.trans (by simpa using Set.subset_compl_comm.mp hr ⟨l.2, hl⟩)) with i
@@ -1245,7 +1110,7 @@ lemma PeriodPairs.hasFPowerSeriesOnBall_℘'Except (l₀ x : ℂ) (r : NNReal) (
   refine .congr ?_ ((L.eqOn_deriv_℘Except_℘'Except l₀).mono (subset_trans ?_ hr))
   · have := (L.hasFPowerSeriesOnBall_℘Except l₀ x r hr0 hr).fderiv
     convert (ContinuousLinearMap.apply ℂ ℂ (1 : ℂ)).comp_hasFPowerSeriesOnBall this
-    ext n i
+    ext n
     simp only [FormalMultilinearSeries.apply_eq_prod_smul_coeff, smul_eq_mul,
       ContinuousLinearMap.compFormalMultilinearSeries_apply,
       ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply, map_smul,
@@ -1294,12 +1159,12 @@ lemma PeriodPairs.coeff_℘Series (x : ℂ) (i : ℕ) :
     ← L.℘ExceptSeriesSummand_of_not_mem _ L.ω₁_div_two_not_mem_lattice]
 
 lemma PeriodPairs.summable_℘SeriesSummand (z x : ℂ)
-    (hx : ∀ l : L.lattice, (z - x).abs < (l - x).abs) :
+    (hx : ∀ l : L.lattice, ‖z - x‖ < ‖l - x‖) :
     Summable (Function.uncurry fun b c ↦ L.℘SeriesSummand x b c * (z - x) ^ b) := by
   simp_rw [← L.℘ExceptSeriesSummand_of_not_mem _ L.ω₁_div_two_not_mem_lattice]
   refine L.summable_℘ExceptSeriesSummand _ z x fun l hl ↦ hx l
 
-lemma PeriodPairs.℘Series_hasSum (z x : ℂ) (hx : ∀ l : L.lattice, (z - x).abs < (l - x).abs) :
+lemma PeriodPairs.℘Series_hasSum (z x : ℂ) (hx : ∀ l : L.lattice, ‖z - x‖ < ‖l - x‖) :
     HasSum (fun i ↦ (L.℘Series x).coeff i * (z - x) ^ i) (L.℘ z) := by
   simp_rw [← L.℘ExceptSeries_of_not_mem _ L.ω₁_div_two_not_mem_lattice,
     ← L.℘Except_of_not_mem _ L.ω₁_div_two_not_mem_lattice]
@@ -1343,9 +1208,9 @@ lemma PeriodPairs.meromorphicAt_℘ (x : ℂ) : MeromorphicAt L.℘ x := by
   · exact (L.analyticOnNhd_℘ x hx).meromorphicAt
 
 lemma PeriodPairs.order_℘ (l₀ : ℂ) (h : l₀ ∈ L.lattice) :
-    (L.meromorphicAt_℘ l₀).order = -2 := by
+    meromorphicOrderAt L.℘ l₀ = -2 := by
   trans ↑(-2 : ℤ)
-  · rw [MeromorphicAt.order_eq_int_iff]
+  · rw [meromorphicOrderAt_eq_int_iff (L.meromorphicAt_℘ l₀)]
     refine ⟨fun z ↦ (z - l₀) ^ 2 * L.℘Except l₀ z + 1 - (z - l₀) ^ 2 / l₀ ^ 2, ?_, ?_, ?_⟩
     · refine .sub (.add (.mul (by fun_prop) ?_) (by fun_prop)) ?_
       · exact L.analyticOnNhd_℘Except l₀ l₀ (by simp)
@@ -1357,6 +1222,7 @@ lemma PeriodPairs.order_℘ (l₀ : ℂ) (h : l₀ ∈ L.lattice) :
       rintro z (hz : _ ≠ _)
       have : (z - l₀) ^ 2 ≠ 0 := by simpa [sub_eq_zero]
       simp [← L.ite_eq_one_sub_sq_mul_℘ l₀ h, if_neg hz, inv_mul_cancel_left₀ this, zpow_ofNat]
+
   · norm_num
 
 end Analytic
@@ -1372,7 +1238,7 @@ lemma HasFPowerSeriesOnBall.exists_eq_add_mul_sub (f : ℂ → ℂ) (a : ℕ →
     · refine hf.1.trans ?_
       unfold FormalMultilinearSeries.radius
       simp only [FormalMultilinearSeries.norm_apply_eq_norm_coef,
-        FormalMultilinearSeries.coeff_ofScalars, Complex.norm_eq_abs, iSup_le_iff]
+        FormalMultilinearSeries.coeff_ofScalars, iSup_le_iff]
       intro r' b hrb
       by_cases hr' : r' = 0
       · simp [hr']
@@ -1383,7 +1249,7 @@ lemma HasFPowerSeriesOnBall.exists_eq_add_mul_sub (f : ℂ → ℂ) (a : ℕ →
     · rintro y hy
       have := (hasSum_nat_add_iff' 1).mpr (hf.3 hy)
       simp only [FormalMultilinearSeries.apply_eq_prod_smul_coeff, prod_const, card_univ,
-        Fintype.card_fin, FormalMultilinearSeries.coeff_ofScalars, smul_eq_mul, add_right_eq_self,
+        Fintype.card_fin, FormalMultilinearSeries.coeff_ofScalars, smul_eq_mul, add_eq_left,
         add_sub_cancel_left, range_one, sum_singleton, pow_zero, one_mul] at this ⊢
       split_ifs with hy'
       · simp only [hy', zero_pow_eq, ite_mul, one_mul, zero_mul]
@@ -1424,7 +1290,7 @@ lemma PeriodPairs.sumInvPow_zero : L.sumInvPow 0 = L.G := by
 lemma PeriodPairs.G_eq_zero_of_odd (n : ℕ) (hn : Odd n) : L.G n = 0 := by
   rw [← CharZero.eq_neg_self_iff, G, ← tsum_neg, ← (Equiv.neg _).tsum_eq]
   congr with l
-  simp [neg_inv, hn.neg_pow]
+  simp only [Equiv.neg_apply, NegMemClass.coe_neg, neg_inv, hn.neg_pow]
 
 def PeriodPairs.g₂ : ℂ := 60 * L.G 4
 
