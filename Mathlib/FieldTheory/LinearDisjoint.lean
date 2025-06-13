@@ -636,7 +636,7 @@ theorem algEquiv_of_isAlgebraic (H : A.LinearDisjoint L)
     (H.isField_of_isAlgebraic halg))
 
 /--
-If `A` and `B` are linear disjoint extensions of `F` and `b` is a (finite) `F`-basis of `B`,
+If `A` and `B` are linearly disjoint extensions of `F` and `b` is a (finite) `F`-basis of `B`,
 then it is also a `A`-basis of `E = A ⊔ B`.
 -/
 noncomputable def _root_.Basis.ofLinearDisjoint [FiniteDimensional F A] (h₁ : A.LinearDisjoint B)
