@@ -148,6 +148,7 @@ lemma FunctorCategoryEquivalence.functor_μ (A B : Action V G) :
 lemma FunctorCategoryEquivalence.functor_δ (A B : Action V G) :
     δ FunctorCategoryEquivalence.functor A B = 𝟙 _ := rfl
 
+
 variable (H : Type*) [Group H]
 
 instance [RightRigidCategory V] : RightRigidCategory (SingleObj H ⥤ V) := by
