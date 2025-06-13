@@ -64,8 +64,8 @@ variable {α : Sort u} {β : Sort v} {γ : Sort w}
 structure Equiv (α : Sort*) (β : Sort _) where
   protected toFun : α → β
   protected invFun : β → α
-  protected left_inv : LeftInverse invFun toFun
-  protected right_inv : RightInverse invFun toFun
+  protected left_inv : LeftInverse invFun toFun := by intro; first | rfl | ext <;> rfl
+  protected right_inv : RightInverse invFun toFun := by intro; first |  rfl | ext <;> rfl
 
 @[inherit_doc]
 infixl:25 " ≃ " => Equiv
@@ -537,7 +537,6 @@ def piUnique [Unique α] (β : α → Sort*) : (∀ i, β i) ≃ β default wher
   toFun f := f default
   invFun := uniqueElim
   left_inv f := by ext i; cases Unique.eq_default i; rfl
-  right_inv _ := rfl
 
 /-- If `α` has a unique term, then the type of function `α → β` is equivalent to `β`. -/
 @[simps! -fullyApplied apply symm_apply]
@@ -554,7 +553,6 @@ def arrowPUnitOfIsEmpty (α β : Sort*) [IsEmpty α] : (α → β) ≃ PUnit.{u}
   toFun _ := PUnit.unit
   invFun _ := isEmptyElim
   left_inv _ := funext isEmptyElim
-  right_inv _ := rfl
 
 /-- The sort of maps from `Empty` is equivalent to `PUnit`. -/
 def emptyArrowEquivPUnit (α : Sort*) : (Empty → α) ≃ PUnit.{u} := arrowPUnitOfIsEmpty _ _
@@ -574,16 +572,12 @@ section
 def psigmaEquivSigma {α} (β : α → Type*) : (Σ' i, β i) ≃ Σ i, β i where
   toFun a := ⟨a.1, a.2⟩
   invFun a := ⟨a.1, a.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- A `PSigma`-type is equivalent to the corresponding `Sigma`-type. -/
 @[simps apply symm_apply]
 def psigmaEquivSigmaPLift {α} (β : α → Sort*) : (Σ' i, β i) ≃ Σ i : PLift α, PLift (β i.down) where
   toFun a := ⟨PLift.up a.1, PLift.up a.2⟩
   invFun a := ⟨a.1.down, a.2.down⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- A family of equivalences `Π a, β₁ a ≃ β₂ a` generates an equivalence between `Σ' a, β₁ a` and
 `Σ' a, β₂ a`. -/
@@ -631,8 +625,6 @@ theorem sigmaCongrRight_refl {α} {β : α → Type*} :
 def psigmaEquivSubtype {α : Type v} (P : α → Prop) : (Σ' i, P i) ≃ Subtype P where
   toFun x := ⟨x.1, x.2⟩
   invFun x := ⟨x.1, x.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- A `Sigma` with `PLift` fibers is equivalent to the subtype. -/
 def sigmaPLiftEquivSubtype {α : Type v} (P : α → Prop) : (Σ i, PLift (P i)) ≃ Subtype P :=
@@ -673,8 +665,6 @@ def functionSwap (α β : Sort*) (γ : α → β → Sort*) :
     ((a : α) → (b : β) → γ a b) ≃ ((b : β) → (a : α) → γ a b) where
   toFun := Function.swap
   invFun := Function.swap
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 theorem _root_.Function.swap_bijective {α β : Sort*} {γ : α → β → Sort*} :
     Function.Bijective (@Function.swap _ _ γ) :=
@@ -713,16 +703,12 @@ def sigmaAssoc {α : Type*} {β : α → Type*} (γ : ∀ a : α, β a → Type*
     (Σ ab : Σ a : α, β a, γ ab.1 ab.2) ≃ Σ a : α, Σ b : β a, γ a b where
   toFun x := ⟨x.1.1, ⟨x.1.2, x.2⟩⟩
   invFun x := ⟨⟨x.1, x.2.1⟩, x.2.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The dependent product of sorts is associative up to an equivalence. -/
 def pSigmaAssoc {α : Sort*} {β : α → Sort*} (γ : ∀ a : α, β a → Sort*) :
     (Σ' ab : Σ' a : α, β a, γ ab.1 ab.2) ≃ Σ' a : α, Σ' b : β a, γ a b where
   toFun x := ⟨x.1.1, ⟨x.1.2, x.2⟩⟩
   invFun x := ⟨⟨x.1, x.2.1⟩, x.2.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 end
 
@@ -890,7 +876,6 @@ def sumIsLeft : {x : α ⊕ β // x.isLeft} ≃ α where
   toFun x := x.1.getLeft x.2
   invFun a := ⟨.inl a, Sum.isLeft_inl⟩
   left_inv | ⟨.inl _a, _⟩ => rfl
-  right_inv _a := rfl
 
 /-- The right summand of `α ⊕ β` is equivalent to `β`. -/
 @[simps]
@@ -898,6 +883,5 @@ def sumIsRight : {x : α ⊕ β // x.isRight} ≃ β where
   toFun x := x.1.getRight x.2
   invFun b := ⟨.inr b, Sum.isRight_inr⟩
   left_inv | ⟨.inr _b, _⟩ => rfl
-  right_inv _b := rfl
 
 end Equiv
