@@ -45,7 +45,6 @@ the order.
 -/
 
 section Pre
-
 variable {M: Type*}
 
 variable (M) in
@@ -78,14 +77,12 @@ theorem val_of (a : M) : val (of a) = a := rfl
 
 variable [Group M] [Lattice M]
 
-variable (M) in
 @[to_additive]
-instance instLE : LE (MulArchimedeanOrder M) where
+instance : LE (MulArchimedeanOrder M) where
   le a b := ∃ n, |b.val|ₘ ≤ |a.val|ₘ ^ n
 
-variable (M) in
 @[to_additive]
-instance instLT : LT (MulArchimedeanOrder M) where
+instance : LT (MulArchimedeanOrder M) where
   lt a b := ∀ n, |b.val|ₘ ^ n < |a.val|ₘ
 
 @[to_additive]
@@ -97,9 +94,8 @@ theorem lt_def {a b : MulArchimedeanOrder M} : a < b ↔ ∀ n, |b.val|ₘ ^ n <
 variable {M: Type*}
 variable [CommGroup M] [LinearOrder M] [IsOrderedMonoid M] {a b : M}
 
-variable (M) in
 @[to_additive]
-instance instPreorder : Preorder (MulArchimedeanOrder M) where
+instance : Preorder (MulArchimedeanOrder M) where
   le_refl a := ⟨1, by simp⟩
   le_trans a b c := by
     intro ⟨m, hm⟩ ⟨n, hn⟩
@@ -114,9 +110,8 @@ instance instPreorder : Preorder (MulArchimedeanOrder M) where
     obtain h := (h 1).le
     exact ⟨1, by simpa using h⟩
 
-variable (M) in
 @[to_additive]
-instance instIsTotal : IsTotal (MulArchimedeanOrder M) (· ≤ ·) where
+instance : IsTotal (MulArchimedeanOrder M) (· ≤ ·) where
   total a b := by
     obtain hab | hab := le_total |a.val|ₘ |b.val|ₘ
     · exact .inr ⟨1, by simpa using hab⟩
@@ -193,10 +188,9 @@ theorem mk_div_comm (a b : M) : mk (a / b) = mk (b / a) := by
 theorem mk_mabs (a : M) : mk |a|ₘ = mk a :=
   mk_eq_mk.mpr ⟨⟨1, by simp⟩, ⟨1, by simp⟩⟩
 
-variable (M) in
 @[to_additive]
 noncomputable
-instance instLinearOrder : LinearOrder (MulArchimedeanClass M) := by
+instance : LinearOrder (MulArchimedeanClass M) := by
   classical
   unfold MulArchimedeanClass
   infer_instance
@@ -207,11 +201,10 @@ theorem mk_le_mk : mk a ≤ mk b ↔ ∃ n, |b|ₘ ≤ |a|ₘ ^ n := .rfl
 @[to_additive]
 theorem mk_lt_mk : mk a < mk b ↔ ∀ n, |b|ₘ ^ n < |a|ₘ := .rfl
 
-variable (M) in
 /-- 1 is in its own class, which is also the largest class. -/
 @[to_additive "0 is in its own class, which is also the largest class."]
 noncomputable
-instance instOrderTop : OrderTop (MulArchimedeanClass M) where
+instance : OrderTop (MulArchimedeanClass M) where
   top := mk 1
   le_top A := by
     induction A using ind with | mk a
@@ -377,7 +370,6 @@ theorem mk_eq_mk_of_mulArchimedean [MulArchimedean M] (ha : a ≠ 1) (hb : b ≠
   exact mk_eq_mk.mpr ⟨hm, hn⟩
 
 section Hom
-
 variable {N : Type*} [CommGroup N] [LinearOrder N] [IsOrderedMonoid N]
 
 /-- An `OrderMonoidHom` can be lifted to an `OrderHom` over archimedean classes. -/
