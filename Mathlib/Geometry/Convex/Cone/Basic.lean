@@ -36,8 +36,7 @@ While `Convex R` is a predicate on sets, `ConvexCone R M` is a bundled convex co
 * [Emo Welzl and Bernd Gärtner, *Cone Programming*][welzl_garter]
 -/
 
-
-assert_not_exists NormedSpace Real Cardinal
+assert_not_exists TopologicalSpace Real Cardinal
 
 open Set LinearMap Pointwise
 
