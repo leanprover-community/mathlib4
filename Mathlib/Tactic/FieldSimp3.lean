@@ -243,13 +243,6 @@ namespace qNF
 
 variable {M : Q(Type v)}
 
-/-- Build a transparent expression for the product of powers represented by `l : qNF M`. The logic
-of the `field_simp` tactic requires that `l.evalPretty iM` be definitionally equal to
-`q(NF.eval $(l.toNF))`. -/
-def evalPretty (iM : Q(Field $M)) : qNF M → Q($M)
-  | [] => q(1)
-  | ((r, x), _) :: t => q($x ^ $r * $(evalPretty iM t))
-
 /-- Given `l` of type `qNF M`, i.e. a list of `(ℤ × Q($M)) × ℕ`s (two `Expr`s and a natural
 number), build an `Expr` representing an object of type `NF M` (i.e. `List (ℤ × M)`) in the
 in the obvious way: by forgetting the natural numbers and gluing together the integers and `Expr`s.
@@ -264,6 +257,26 @@ number), apply an expression representing a function with domain `ℤ` to each o
 components. -/
 def onExponent (l : qNF M) (f : ℤ → ℤ) : qNF M :=
   l.map fun ((a, x), k) ↦ ((f a, x), k)
+
+/-- Build a transparent expression for the product of powers represented by `l : qNF M`. -/
+def evalPrettyMonomial (iM : Q(Field $M)) (r : ℤ) (x : Q($M)) :
+    MetaM (Σ e : Q($M), Q($x ^ $r = $e)) := do
+  match r with
+  | 0 => unreachable! -- design of tactic is supposed to prevent this, let's panic if we see it
+  | 1 => return ⟨x, q(zpow_one $x)⟩
+  | r => return ⟨q($x ^ $r), q(rfl)⟩
+
+/-- Build a transparent expression for the product of powers represented by `l : qNF M`. -/
+def evalPretty (iM : Q(Field $M)) (l : qNF M) : MetaM (Σ e : Q($M), Q(NF.eval $(l.toNF) = $e)) := do
+  match l with
+  | [] => return ⟨q(1), q(rfl)⟩
+  | [((r, x), _)] =>
+    let ⟨e, pf⟩ ← evalPrettyMonomial iM r x
+    return ⟨e, q(Eq.trans (mul_one _) $pf)⟩
+  | ((r, x), _) :: t =>
+    let ⟨e, pf_e⟩ ← evalPrettyMonomial iM r x
+    let ⟨t', pf⟩ ← evalPretty iM t
+    return ⟨q($e * $t'), (q(congr_arg₂ HMul.hMul $pf_e $pf):)⟩
 
 /-- Given two terms `l₁`, `l₂` of type `qNF M`, i.e. lists of `(ℤ × Q($M)) × ℕ`s (an integer, an
 `Expr` and a natural number), construct another such term `l`, which will have the property that in
@@ -444,7 +457,9 @@ partial def normalize (iM : Q(Field $M)) (x : Q($M)) :
     let L : qNF M := qNF.minimum l₁ l₂
     let l₁' := qNF.div l₁ L -- write `l₁ = l₁' * L`, pr₁' is a proof of that
     let l₂' := qNF.div l₂ L
-    let e : Q($M) := q($(qNF.evalPretty iM l₁') + $(qNF.evalPretty iM l₂'))
+    let ⟨e₁, _⟩ ← qNF.evalPretty iM l₁'
+    let ⟨e₂, _⟩ ← qNF.evalPretty iM l₂'
+    let e : Q($M) := q($e₁ + $e₂)
     let ⟨sum, _pf⟩ ← baseCase e
     pure ⟨qNF.mul L sum, q(sorry)⟩
   /- normalize an integer exponentiation: `y ^ (s : ℤ)` -/
@@ -474,28 +489,29 @@ elab "field_simp2" : conv => do
   let iK : Q(Field $K) ← synthInstanceQ q(Field $K)
   -- run the core normalization function `normalize` on `x`
   let ⟨l, pf⟩ ← AtomM.run .reducible <| normalize iK x
+  let ⟨e, pf'⟩ ← l.evalPretty iK
   -- convert `x` to the output of the normalization
-  Conv.applySimpResult { expr := l.evalPretty iK, proof? := some pf }
+  Conv.applySimpResult { expr := e, proof? := some (← mkAppM `Eq.trans #[pf, pf']) }
 
 end Mathlib.Tactic.FieldSimp
 
 open Mathlib.Tactic.FieldSimp
 
-variable {x y : ℚ}
+variable {x y z : ℚ}
 
 /-- info: 1 -/
 #guard_msgs in
 #conv field_simp2 => (1 : ℚ)
 
-/-- info: x ^ 1 * 1 -/
+/-- info: x -/
 #guard_msgs in
 #conv field_simp2 => x
 
-/-- info: (x ^ 1 * 1 + y ^ 1 * 1) ^ 1 * 1 -/
+/-- info: x + y -/
 #guard_msgs in
 #conv field_simp2 => x + y
 
-/-- info: x ^ 1 * (y ^ 1 * 1) -/
+/-- info: x * y -/
 #guard_msgs in
 #conv field_simp2 => x * y
 
@@ -507,39 +523,41 @@ variable {x y : ℚ}
 #guard_msgs in
 #conv field_simp2 => (x * y) * (y * x)⁻¹
 
-/-- info: y ^ 1 * 1 -/
+/-- info: y -/
 #guard_msgs in
 #conv field_simp2 => x ^ (0:ℤ) * y
 
-/-- info: y ^ 2 * 1 -/
+/-- info: y ^ 2 -/
 #guard_msgs in
 #conv field_simp2 => y * (y + x) ^ (0:ℤ) * y
 
-/-- info: x ^ 1 * (y ^ (-1) * 1) -/
+/-- info: x * y ^ (-1) -/
 #guard_msgs in
 #conv field_simp2 => x / y
 
+/-- info: (x + 1) ^ (-1) * ((y + 1) ^ (-1) * (x * (y + 1) + (x + 1) * y)) -/
+#guard_msgs in
 #conv field_simp2 => x / (x + 1) + y / (y + 1)
 
 example : (1 : ℚ) = 1 := by
   conv_lhs => field_simp2
 
-example : x = x ^ (1:ℤ) * 1 := by
+example : x = x := by
   conv_lhs => field_simp2
 
-example : x * y = x ^ (1:ℤ) * (y ^ (1:ℤ) * 1) := by
+example : x * y = x * y := by
   conv_lhs => field_simp2
 
-example : x / y = x ^ (1:ℤ) * (y ^ (-1:ℤ) * 1) := by
+example : x / y = x * y ^ (-1:ℤ) := by
   conv_lhs => field_simp2
 
-example : x / (y / x) = x ^ (2:ℤ) * (y ^ (-1:ℤ) * 1) := by
+example : x / (y / x) = x ^ (2:ℤ) * y ^ (-1:ℤ) := by
   conv_lhs => field_simp2
 
-example : x / (y ^ (-3:ℤ) / x) = x ^ (2:ℤ) * (y ^ (3:ℤ) * 1) := by
+example : x / (y ^ (-3:ℤ) / x) = x ^ (2:ℤ) * y ^ (3:ℤ) := by
   conv_lhs => field_simp2
 
-example : (x / y ^ (-3:ℤ)) * x = x ^ (2:ℤ) * (y ^ (3:ℤ) * 1) := by
+example : (x / y ^ (-3:ℤ)) * x = x ^ (2:ℤ) * y ^ (3:ℤ) := by
   conv_lhs => field_simp2
 
 example : (x * y) / (y * x) = 1 := by
@@ -548,8 +566,17 @@ example : (x * y) / (y * x) = 1 := by
 example : (x * y) * (y * x)⁻¹ = 1 := by
   conv_lhs => field_simp2
 
-example : x ^ (0:ℤ) * y = y ^ (1:ℤ) * 1 := by
+example : x ^ (0:ℤ) * y = y := by
   conv_lhs => field_simp2
 
-example : y * (y + x) ^ (0:ℤ) * y = y ^ (2:ℤ) * 1 := by
+example : y * (y + x) ^ (0:ℤ) * y = y ^ (2:ℤ) := by
+  conv_lhs => field_simp2
+
+example : x * y * z = x * (y * z) := by
+  conv_lhs => field_simp2
+
+example : x * y + x * z = x * (y + z) := by
+  conv_lhs => field_simp2
+
+example : x / (x * y + x * z) = (y + z) ^ (-1:ℤ) := by
   conv_lhs => field_simp2
