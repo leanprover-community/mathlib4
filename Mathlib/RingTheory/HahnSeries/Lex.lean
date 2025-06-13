@@ -20,10 +20,11 @@ it is an ordered group when `R` is.
 
 namespace HahnSeries
 
+variable {Γ : Type*} [LinearOrder Γ] {R : Type*}
+
 section PartialOrder
 
-variable {Γ : Type*} {R : Type*}
-variable [LinearOrder Γ] [Zero R] [PartialOrder R]
+variable [Zero R] [PartialOrder R]
 
 variable (Γ R) in
 instance : PartialOrder (Lex (HahnSeries Γ R)) :=
@@ -37,8 +38,7 @@ end PartialOrder
 
 section LinearOrder
 
-variable {Γ : Type*} {R : Type*}
-variable [LinearOrder Γ] [Zero R] [LinearOrder R]
+variable [Zero R] [LinearOrder R]
 
 variable (Γ R) in
 noncomputable
@@ -111,14 +111,12 @@ theorem leadingCoeff_nonpos_iff {x : Lex (HahnSeries Γ R)} :
 
 end LinearOrder
 
-section OrderedGroup
+section OrderedMonoid
 
-variable {Γ : Type*}
-variable [LinearOrder Γ]
+variable [PartialOrder R] [AddCommMonoid R] [AddLeftStrictMono R] [IsOrderedAddMonoid R]
 
-variable (Γ) in
-instance (R : Type*) [PartialOrder R] [AddCommMonoid R] [AddLeftStrictMono R]
-    [IsOrderedAddMonoid R] : IsOrderedAddMonoid (Lex (HahnSeries Γ R)) where
+variable (Γ R) in
+instance : IsOrderedAddMonoid (Lex (HahnSeries Γ R)) where
   add_le_add_left a b hab c := by
     obtain rfl | hlt := hab.eq_or_lt
     · simp
@@ -130,7 +128,10 @@ instance (R : Type*) [PartialOrder R] [AddCommMonoid R] [AddLeftStrictMono R]
         simpa using congrArg ((ofLex c).coeff j + ·) (hj j hji)
       · simpa using add_lt_add_left hi ((ofLex c).coeff i)
 
-variable {R : Type*}
+end OrderedMonoid
+
+section OrderedGroup
+
 variable [LinearOrder R] [AddCommGroup R] [IsOrderedAddMonoid R]
 
 theorem support_abs (x : Lex (HahnSeries Γ R)) : (ofLex |x|).support = (ofLex x).support := by
