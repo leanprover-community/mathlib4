@@ -168,8 +168,6 @@ def invariantsEquivRepHom (X Y : Rep k G) : (linHom X.ρ Y.ρ).invariants ≃ₗ
   map_smul' _ _ := rfl
   invFun f := ⟨f.hom.hom, fun g =>
     (mem_invariants_iff_comm _ g).2 (ModuleCat.hom_ext_iff.mp (f.comm g))⟩
-  left_inv _ := by ext; rfl
-  right_inv _ := by ext; rfl
 
 end Rep
 
