@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
 import Mathlib.Tactic.GRewrite.Elab
-import Mathlib.Tactic.GCongr
 
 /-!
 
