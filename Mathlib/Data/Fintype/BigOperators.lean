@@ -106,8 +106,6 @@ theorem Fintype.prod_eq_mul_prod_subtype_ne [DecidableEq α] (f : α → M) (a :
 
 end
 
-open Finset
-
 section Pi
 variable {ι κ : Type*} {α : ι → Type*} [DecidableEq ι] [DecidableEq κ]
 
@@ -235,8 +233,6 @@ nonrec theorem Fintype.prod_dite [Fintype α] {p : α → Prop} [DecidablePred p
   · exact (Equiv.subtypeEquivRight <| by simp).prod_comp fun x : { x // ¬p x } => g x x.2
 
 section
-
-open Finset
 
 variable {α₁ : Type*} {α₂ : Type*} {M : Type*} [Fintype α₁] [Fintype α₂] [CommMonoid M]
 

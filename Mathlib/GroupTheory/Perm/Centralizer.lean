@@ -198,7 +198,7 @@ theorem mem_ker_toPermHom_iff :
 
 end OnCycleFactors
 
-open OnCycleFactors Subgroup
+open OnCycleFactors
 
 /-- A `Basis` of a permutation is a choice of an element in each of its cycles -/
 structure Basis (g : Equiv.Perm α) where
@@ -432,7 +432,7 @@ end Basis
 
 namespace OnCycleFactors
 
-open Basis BigOperators Nat Equiv.Perm Equiv Subgroup
+open Basis BigOperators Nat Equiv.Perm
 
 theorem mem_range_toPermHom_iff {τ} : τ ∈ (toPermHom g).range ↔
     ∀ c, #(τ c).val.support = #c.val.support := by
@@ -478,8 +478,6 @@ theorem nat_card_range_toPermHom :
 
 section Kernel
 /- Here, we describe the kernel of `g.OnCycleFactors.toPermHom` -/
-
-open BigOperators Nat OnCycleFactors Subgroup
 
 variable (g) in
 /-- The parametrization of the kernel of `toPermHom` -/
@@ -591,7 +589,7 @@ end Kernel
 
 section Sign
 
-open Equiv Function MulAction Finset
+open Function
 
 variable {a : Type*} (g : Perm α) (k : Perm (fixedPoints g))
     (v : (c : g.cycleFactorsFinset) → Subgroup.zpowers (c : Perm α))

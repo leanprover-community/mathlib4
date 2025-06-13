@@ -193,7 +193,7 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCom
 theorem finrank_lt_finrank_of_lt {s t : Submodule K V} [FiniteDimensional K t] (hst : s < t) :
     finrank K s < finrank K t :=
   (comapSubtypeEquivOfLe hst.le).finrank_eq.symm.trans_lt <|
-    finrank_lt <| by simp [not_le_of_lt hst]
+    finrank_lt <| by simp [not_le_of_gt hst]
 
 theorem finrank_strictMono [FiniteDimensional K V] :
     StrictMono fun s : Submodule K V => finrank K s := fun _ _ => finrank_lt_finrank_of_lt
@@ -386,7 +386,7 @@ theorem ker_pow_le_ker_pow_finrank [FiniteDimensional K V] (f : End K V) (m : �
   by_cases h_cases : m < finrank K V
   · rw [← add_tsub_cancel_of_le (Nat.le_of_lt h_cases), add_comm, pow_add]
     apply LinearMap.ker_le_ker_comp
-  · rw [ker_pow_eq_ker_pow_finrank_of_le (le_of_not_lt h_cases)]
+  · rw [ker_pow_eq_ker_pow_finrank_of_le (le_of_not_gt h_cases)]
 
 end End
 

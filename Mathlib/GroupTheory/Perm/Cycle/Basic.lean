@@ -429,7 +429,6 @@ theorem IsCycle.swap_mul {α : Type*} [DecidableEq α] {f : Perm α} (hf : IsCyc
       calc
         (f ^ (i - 1) : Perm α) (f x) = (f ^ (i - 1) * f ^ (1 : ℤ) : Perm α) x := by simp
         _ = y := by rwa [← zpow_add, sub_add_cancel]
-
     isCycle_swap_mul_aux₂ (i - 1) hy hi⟩
 
 theorem IsCycle.sign {f : Perm α} (hf : IsCycle f) : sign f = -(-1) ^ #f.support :=
@@ -596,7 +595,7 @@ theorem IsCycle.pow_eq_pow_iff [Finite β] {f : Perm β} (hf : IsCycle f) {a b :
       exact ⟨x, hx, by simp [h]⟩
     · rintro ⟨x, hx, hx'⟩
       wlog hab : a ≤ b generalizing a b
-      · exact (this hx'.symm (le_of_not_le hab)).symm
+      · exact (this hx'.symm (le_of_not_ge hab)).symm
       suffices f ^ (b - a) = 1 by
         rw [pow_sub _ hab, mul_inv_eq_one] at this
         rw [this]

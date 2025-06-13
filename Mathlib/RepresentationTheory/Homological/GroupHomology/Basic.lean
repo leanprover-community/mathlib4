@@ -56,9 +56,12 @@ definition. We avoid using instances `Module (MonoidAlgebra k G) A` so that we d
 possible scalar action diamonds.
 
 Note that the existing definition of `Tor` in `Mathlib.CategoryTheory.Monoidal.Tor` is for monoidal
-categories, and the bifunctor we use here does not define a monoidal structure on `Rep k G` in
-general. It corresponds to tensoring modules over `k[G]`, but currently mathlib's `TensorProduct`
-is only defined for commutative rings.
+categories, and the bifunctor we need to derive here maps to `ModuleCat k`. Hence we define
+`Rep.Tor k G n` by instead left-deriving the second argument of `Rep.coinvariantsTensor k G`:
+$(A, B) \mapsto (A \otimes_k B)_G$. The functor `Rep.coinvariantsTensor k G` is naturally
+isomorphic to the functor sending `A, B` to `A ⊗[k[G]] B`, where we give `A` the `k[G]ᵐᵒᵖ`-module
+structure defined by `g • a := A.ρ g⁻¹ a`, but currently mathlib's `TensorProduct` is only defined
+for commutative rings.
 
 ## TODO
 
@@ -96,7 +99,7 @@ lemma isZero_Tor_succ_of_projective (X Y : Rep k G) [Projective Y] (n : ℕ) :
 
 /-- Given a `k`-linear `G`-representation `A`, this is the chain complex `(A ⊗[k] P)_G`, where
 `P` is the bar resolution of `k` as a trivial representation. -/
-def coinvariantsTensorBarResolution [DecidableEq G] :=
+abbrev coinvariantsTensorBarResolution [DecidableEq G] :=
   (((coinvariantsTensor k G).obj A).mapHomologicalComplex _).obj (barComplex k G)
 
 end Rep
@@ -129,15 +132,10 @@ theorem d_eq [DecidableEq G] :
     d A n = (coinvariantsTensorFreeLEquiv A (Fin (n + 1) → G)).toModuleIso.inv ≫
       (coinvariantsTensorBarResolution A).d (n + 1) n ≫
       (coinvariantsTensorFreeLEquiv A (Fin n → G)).toModuleIso.hom := by
-  ext g a : 3
-  simp only [LinearMap.coe_comp, Function.comp_apply, lsingle_apply]
-  rw [d_single]
-  simp_all [finsuppToCoinvariantsTensorFree_single (A := A) g,
-    coinvariantsTensorFreeToFinsupp_mk_tmul_single (A := A) (α := Fin n → G),
-    instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj,
-    instMonoidalCategoryStruct_whiskerLeft, ModuleCat.MonoidalCategory.whiskerLeft,
-    coinvariantsTensorBarResolution, TensorProduct.tmul_add, Coinvariants.map,
-    TensorProduct.tmul_sum, map_sum, map_add, barComplex.d_single (k := k) _ g]
+  ext : 3
+  simp [d_single (k := k), ModuleCat.MonoidalCategory.tensorObj,
+    ModuleCat.MonoidalCategory.whiskerLeft, tensorObj_def, whiskerLeft_def, TensorProduct.tmul_add,
+    TensorProduct.tmul_sum, barComplex.d_single (k := k)]
 
 end inhomogeneousChains
 
