@@ -159,7 +159,7 @@ private def encodingStepWithEta (e : Expr) (root : Bool)
     (entry : LazyEntry) : ReaderT Context MetaM (List (Key × LazyEntry)) :=
   lambdaTelescopeReduce e []
     (fun lambdas => return [← (withLams lambdas .star).run entry])
-    (fun e lambdas => cacheEtaPossibilities e lambdas root entry)
+    (fun e lambdas => etaPossibilities e lambdas root entry)
 
 /-- A single step in encoding an `Expr` into `Key`s. -/
 private def encodingStep (e : Expr) (root : Bool) : LazyM Key := do
@@ -183,8 +183,8 @@ private def initializeLazyEntry (e : Expr) (labelledStars : Bool) : MetaM (Key �
   ((encodingStep e true).run { bvars := [] }).run (← mkInitLazyEntry labelledStars)
 
 
-/-- Auxiliary function for `evalLazyEntryWithEta` -/
-private partial def evalLazyEntryWithEtaAux (entry : LazyEntry) :
+/-- Auxiliary function for `evalLazyEntry` -/
+private partial def evalLazyEntryAux (entry : LazyEntry) (eta : Bool) :
     MetaM (Option (List (Key × LazyEntry))) := do
   match entry.stack with
   | [] => return none
@@ -196,22 +196,10 @@ private partial def evalLazyEntryWithEtaAux (entry : LazyEntry) :
     | .expr { expr, bvars, lctx, localInsts, cfg, transparency } =>
       withLCtx lctx localInsts do
       withConfig (fun _ => cfg) do withTransparency transparency do
-      return some (← encodingStepWithEta expr false entry |>.run { bvars := bvars })
-
-/-- Auxiliary function for `evalLazyEntry` -/
-private partial def evalLazyEntryAux (entry : LazyEntry) :
-    MetaM (Option (Key × LazyEntry)) := do
-  match entry.stack with
-  | [] => return none
-  | stackEntry :: stack =>
-    let entry := { entry with stack }
-    match stackEntry with
-    | .star =>
-      return some (.star, entry)
-    | .expr { expr, bvars, lctx, localInsts, cfg, transparency } =>
-      withLCtx lctx localInsts do
-      withConfig (fun _ => cfg) do withTransparency transparency do
-      return some (← encodingStep expr false |>.run { bvars := bvars } |>.run entry)
+        if eta then
+          return some (← encodingStepWithEta expr false entry |>.run { bvars := bvars })
+        else
+          return some [← encodingStep expr false |>.run { bvars := bvars } |>.run entry]
 
 /-- Determine for each argument whether it should be ignored,
 and return a list consisting of one `StackEntry` for each argument. -/
@@ -279,26 +267,14 @@ private def processPrevious (entry : LazyEntry) : MetaM LazyEntry := do
     | _ => stackArgs entry
 
 /-- A single step in evaluating a `LazyEntry`. Allow multiple different outcomes. -/
-def evalLazyEntryWithEta (entry : LazyEntry) :
+def evalLazyEntry (entry : LazyEntry) (eta : Bool) :
     MetaM (Option (List (Key × LazyEntry))) := do
   if let key :: computedKeys := entry.computedKeys then
     -- If there is already a result available, use it.
     return some [(key, { entry with computedKeys })]
   else withMCtx entry.mctx do
     let entry ← processPrevious entry
-    evalLazyEntryWithEtaAux entry
-
-
-/-- A single step in evaluating a `LazyEntry`. Don't allow multiple different outcomes. -/
-private def evalLazyEntry (entry : LazyEntry) :
-    MetaM (Option (Key × LazyEntry)) := do
-  if let key :: computedKeys := entry.computedKeys then
-    -- If there is already a result available, use it.
-    return some (key, { entry with computedKeys })
-  else withMCtx entry.mctx do
-    let entry ← processPrevious entry
-    evalLazyEntryAux entry
-
+    evalLazyEntryAux entry eta
 
 /-- Return all encodings of `e` as a `Array Key`. This is used for testing. -/
 partial def encodeExprWithEta (e : Expr) (labelledStars : Bool) : MetaM (Array (Array Key)) :=
@@ -315,7 +291,7 @@ where
     else -- use an if-then-else instead of if-then-return, so that `go` is tail recursive
       let (keys, entry) := todo.back
       let todo := todo.pop
-      match ← evalLazyEntryWithEta entry with
+      match ← evalLazyEntry entry true with
       | some xs =>
         let rec /--
           This variation on `List.fold` ensures that the array `keys`
@@ -331,8 +307,9 @@ where
 
 /-- Completely evaluate a `LazyEntry`. -/
 partial def LazyEntry.toList (entry : LazyEntry) (result : List Key := []) : MetaM (List Key) := do
-  match ← evalLazyEntry entry with
-  | some (key, entry') => entry'.toList (key :: result)
+  match ← evalLazyEntry entry false with
+  | some [(key, entry')] => entry'.toList (key :: result)
+  | some _ => panic! "`evalLazyEntry` with `eta := false` can only give a singleton list"
   | none => return result.reverse
 
 /-- Return the canonical encoding of `e` as a `Array Key`.
