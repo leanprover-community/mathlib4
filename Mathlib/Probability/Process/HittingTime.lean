@@ -221,7 +221,7 @@ theorem hitting_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFounde
     {f : Filtration ι m} {u : ι → Ω → β} {s : Set β} {n n' : ι} (hu : Adapted f u)
     (hs : MeasurableSet s) : IsStoppingTime f (hitting u s n n') := by
   intro i
-  rcases le_or_lt n' i with hi | hi
+  rcases le_or_gt n' i with hi | hi
   · have h_le : ∀ ω, hitting u s n n' ω ≤ i := fun x => (hitting_le x).trans hi
     simp [h_le]
   · have h_set_eq_Union : {ω | hitting u s n n' ω ≤ i} = ⋃ j ∈ Set.Icc n i, u j ⁻¹' s := by
@@ -254,7 +254,7 @@ theorem isStoppingTime_hitting_isStoppingTime [ConditionallyCompleteLinearOrder 
     (⋃ i ≤ n, {x | τ x = i} ∩ {x | hitting u s i N x ≤ n}) ∪
       ⋃ i > n, {x | τ x = i} ∩ {x | hitting u s i N x ≤ n} := by
     ext x
-    simp [← exists_or, ← or_and_right, le_or_lt]
+    simp [← exists_or, ← or_and_right, le_or_gt]
   have h₂ : ⋃ i > n, {x | τ x = i} ∩ {x | hitting u s i N x ≤ n} = ∅ := by
     ext x
     simp only [gt_iff_lt, Set.mem_iUnion, Set.mem_inter_iff, Set.mem_setOf_eq, exists_prop,
@@ -287,7 +287,7 @@ variable {u : ι → Ω → β} {s : Set β}
 
 theorem hitting_bot_le_iff {i n : ι} {ω : Ω} (hx : ∃ j, j ≤ n ∧ u j ω ∈ s) :
     hitting u s ⊥ n ω ≤ i ↔ ∃ j ≤ i, u j ω ∈ s := by
-  rcases lt_or_le i n with hi | hi
+  rcases lt_or_ge i n with hi | hi
   · rw [hitting_le_iff_of_lt _ hi]
     simp
   · simp only [(hitting_le ω).trans hi, true_iff]
