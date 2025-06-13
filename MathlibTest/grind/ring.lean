@@ -2,7 +2,7 @@ import Mathlib.Algebra.Ring.GrindInstances
 import Mathlib.Algebra.Order.Field.Defs
 
 /-!
-# Preliminary tests for `grind ` using Mathlib typeclasses.
+# Preliminary tests for `grind` using Mathlib typeclasses.
 
 These are far from exhaustive tests, for now just testing the minimal functionality for `grind`
 using Mathlib's `CommRing` typeclass.
