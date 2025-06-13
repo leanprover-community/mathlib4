@@ -131,7 +131,8 @@ class MonoidalLeftAction [MonoidalCategory C] extends
 
   actionAssocIso_naturality
       {c₁ c₂ c₃ c₄ : C} {d₁ d₂ : D} (f : c₁ ⟶ c₂) (g : c₃ ⟶ c₄) (h : d₁ ⟶ d₂) :
-      ((f ⊗ g) ⊙ₗ h) ≫ (σ_ₗ c₂ c₄ d₂).hom = (σ_ₗ c₁ c₃ d₁).hom ≫ (f ⊙ₗ g ⊙ₗ h) := by
+      ((f ⊗ g) ⊙ₗ h) ≫ (σ_ₗ c₂ c₄ d₂).hom =
+        (σ_ₗ c₁ c₃ d₁).hom ≫ (f ⊙ₗ g ⊙ₗ h) := by
     aesop_cat
 
   actionUnitIso_naturality {d d' : D} (f : d ⟶ d') :
