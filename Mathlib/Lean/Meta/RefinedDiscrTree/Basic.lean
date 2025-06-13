@@ -177,19 +177,10 @@ inductive StackEntry where
   | star
   /-- `.expr` is an expression that will be indexed. -/
   | expr (info : ExprInfo)
-  /--
-  `.cache` is a cache entry, used for computations that can have multiple outcomes,
-  so that they always give the same outcome.
-
-  Whenever a new `Key` is computed, it is added to the `valueRev` list in
-  all `.cache` entries in the stack. At the end, `valueRev` needs to be reversed.
-  -/
-  | cache (key : Expr) (valueRev : List Key)
 
 private def StackEntry.format : StackEntry → Format
   | .star => f!".star"
   | .expr info => f!".expr {info.expr}"
-  | .cache key valueRev => f!".cache {key} {valueRev}"
 
 instance : ToFormat StackEntry := ⟨StackEntry.format⟩
 
@@ -224,13 +215,11 @@ structure LazyEntry where
   /--
   The `Key`s that have already been computed.
 
-  Sometimes, more than one `Key` ends up being computed in one go. This happens when the result
-  is cached, or when there are lambda binders (because it depends on the body whether the lambda key
+  Sometimes, more than one `Key` ends up being computed in one go. This happens when
+  there are lambda binders (because it depends on the body whether the lambda key
   should be indexed or not). In that case the remaining `Key`s are stored in `results`.
   -/
   computedKeys  : List Key := []
-  /-- The cache of past computations that have multiple possible outcomes. -/
-  cache    : AssocList Expr (List Key) := {}
 deriving Inhabited
 
 /-- Creates a `LazyEntry` using the current metavariable context. -/
