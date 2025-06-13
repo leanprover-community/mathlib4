@@ -582,8 +582,8 @@ end FractionalIdeal
 
 section div
 
-/-- In a dedekind domain, for every ideals `0 < I ≤ J` there exists `a` such that `J = I + ⟨a⟩`.
-This property uniquely characterizes dedekind domains. -/
+/-- In a Dedekind domain, for every ideals `0 < I ≤ J` there exists `a` such that `J = I + ⟨a⟩`.
+TODO: Show that this property uniquely characterizes dedekind domains. -/
 lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : I ≠ 0) :
     ∃ a, I ⊔ Ideal.span {a} = J := by
   classical
@@ -635,7 +635,8 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
   · refine Ideal.mul_mono_right ?_ (ha p' hp's)
     exact Ideal.prod_le_inf.trans (Finset.inf_le (b := q) (by simpa [hq] using hqp))
 
-/-- In a dedekind domain, any ideal is spanned by two elements. -/
+/-- In a Dedekind domain, any ideal is spanned by two elements, where one of the element
+could be any fixed non-zero element in the ideal. -/
 lemma IsDedekindDomain.exists_eq_span_pair {I : Ideal R} {x : R} (hxI : x ∈ I) (hx : x ≠ 0) :
     ∃ y, I = .span {x, y} := by
   obtain ⟨y, rfl⟩ := exists_sup_span_eq (I.span_singleton_le_iff_mem.mpr hxI) (by simpa)
@@ -672,41 +673,44 @@ lemma IsDedekindDomain.exists_add_spanSingleton_mul_eq
     simp_rw [← FractionalIdeal.coeIdeal_span_singleton, ← FractionalIdeal.coeIdeal_mul,
       ← hx, ← FractionalIdeal.coeIdeal_sup]
 
-/-- `c / b (mod a)` is an arbitrary `x` such that `c = bx + a`.
+namespace FractionalIdeal
+
+/-- `c.divMod b a` (i.e. `c / b mod a`) is an arbitrary `x` such that `c = bx + a`.
 This is zero if the above is not possible, i.e. when `a = 0` or `b = 0` or `¬ a ≤ c`. -/
 noncomputable
-def FractionalIdeal.divMod (c b a : FractionalIdeal R⁰ K) : K :=
+def divMod (c b a : FractionalIdeal R⁰ K) : K :=
   letI := Classical.propDecidable
   if h : a ≤ c ∧ a ≠ 0 ∧ b ≠ 0 then
     (IsDedekindDomain.exists_add_spanSingleton_mul_eq h.1 h.2.1 h.2.2).choose else 0
 
-lemma FractionalIdeal.divMod_spec
+
+lemma divMod_spec
     {a b c : FractionalIdeal R⁰ K} (hac : a ≤ c) (ha : a ≠ 0) (hb : b ≠ 0) :
     a + spanSingleton R⁰ (c.divMod b a) * b = c := by
   rw [divMod, dif_pos ⟨hac, ha, hb⟩]
   exact (IsDedekindDomain.exists_add_spanSingleton_mul_eq hac ha hb).choose_spec
 
 @[simp]
-lemma FractionalIdeal.divMod_zero_left {I J : FractionalIdeal R⁰ K} : I.divMod 0 J = 0 := by
+lemma divMod_zero_left {I J : FractionalIdeal R⁰ K} : I.divMod 0 J = 0 := by
   simp [divMod]
 
 @[simp]
-lemma FractionalIdeal.divMod_zero_right {I J : FractionalIdeal R⁰ K} : I.divMod J 0 = 0 := by
+lemma divMod_zero_right {I J : FractionalIdeal R⁰ K} : I.divMod J 0 = 0 := by
   simp [divMod]
 
 @[simp]
-lemma FractionalIdeal.zero_divMod {I J : FractionalIdeal R⁰ K} :
+lemma zero_divMod {I J : FractionalIdeal R⁰ K} :
     (0 : FractionalIdeal R⁰ K).divMod I J = 0 := by
   simp [divMod, ← and_assoc]
 
-lemma FractionalIdeal.divMod_zero_of_not_le {a b c : FractionalIdeal R⁰ K} (hac : ¬ a ≤ c) :
+lemma divMod_zero_of_not_le {a b c : FractionalIdeal R⁰ K} (hac : ¬ a ≤ c) :
     c.divMod b a = 0 := by
   simp [divMod, hac]
 
 /-- Let `I J I' J'` be nonzero fractional ideals in a dedekind domain with `J ≤ I` and `J' ≤ I'`.
 If `I/J = I'/J'` in the group of fractional ideals, then `I/J ≃ I'/J'` as quotient `R`-modules. -/
 noncomputable
-def FractionalIdeal.quotientEquiv (I J I' J' : FractionalIdeal R⁰ K)
+def quotientEquiv (I J I' J' : FractionalIdeal R⁰ K)
     (H : I * J' = I' * J) (h : J ≤ I) (h' : J' ≤ I') (hJ' : J' ≠ 0) (hI : I ≠ 0) :
     (I ⧸ J.coeToSubmodule.comap I.coeToSubmodule.subtype) ≃ₗ[R]
       I' ⧸ J'.coeToSubmodule.comap I'.coeToSubmodule.subtype := by
@@ -762,5 +766,7 @@ def FractionalIdeal.quotientEquiv (I J I' J' : FractionalIdeal R⁰ K)
     · exact le_trans (divMod_spec h' hJ' hI).ge (by simp)
     · exact le_trans (by simp) (divMod_spec h' hJ' hI).le
     · exact h'
+
+end FractionalIdeal
 
 end div
