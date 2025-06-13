@@ -238,9 +238,9 @@ theorem lsum_piSingle (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring 
   simp_rw [lsum_apply, sum_apply, comp_apply, proj_apply, apply_single, Fintype.sum_pi_single']
 
 @[simp high]
-theorem lsum_single {ι R : Type*} [Fintype ι] [DecidableEq ι] [CommSemiring R] {M : ι → Type*}
-    [(i : ι) → AddCommMonoid (M i)] [(i : ι) → Module R (M i)] :
-    LinearMap.lsum R M R (LinearMap.single R M) = LinearMap.id :=
+theorem lsum_single (S) [Fintype ι] [Semiring S]
+    [∀ i, Module S (φ i)] [∀ i, SMulCommClass R S (φ i)] :
+    LinearMap.lsum R φ S (LinearMap.single R φ) = LinearMap.id :=
   LinearMap.ext fun x => by simp [Finset.univ_sum_single]
 
 variable {R φ}
