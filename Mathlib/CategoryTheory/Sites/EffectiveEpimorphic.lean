@@ -137,7 +137,7 @@ theorem Sieve.effectiveEpimorphic_singleton {X Y : C} (f : Y ⟶ X) :
     constructor
     apply Nonempty.map (effectiveEpiStructOfIsColimit _) h
   · rintro ⟨h⟩
-    show Nonempty _
+    change Nonempty _
     rw [Sieve.generateSingleton_eq]
     apply Nonempty.map (isColimitOfEffectiveEpiStruct _) h
 
@@ -250,7 +250,7 @@ theorem Sieve.effectiveEpimorphic_family {B : C} {α : Type*}
     constructor
     apply Nonempty.map (effectiveEpiFamilyStructOfIsColimit _ _) h
   · rintro ⟨h⟩
-    show Nonempty _
+    change Nonempty _
     rw [Sieve.generateFamily_eq]
     apply Nonempty.map (isColimitOfEffectiveEpiFamilyStruct _ _) h
 

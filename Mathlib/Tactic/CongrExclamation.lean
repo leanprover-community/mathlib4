@@ -414,7 +414,7 @@ This is a non-dependent version of `pi_congr` that allows the domains to be diff
 private theorem implies_congr' {α α' : Sort u} {β β' : Sort v} (h : α = α') (h' : α' → β = β') :
     (α → β) = (α' → β') := by
   cases h
-  show (∀ (x : α), (fun _ => β) x) = _
+  change (∀ (x : α), (fun _ => β) x) = _
   rw [funext h']
 
 /-- A version of `Lean.MVarId.congrImplies?` that uses `implies_congr'`

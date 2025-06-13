@@ -252,7 +252,7 @@ lemma exists_lift_of_germInjective_aux {U : X.Opens} {x : X} (hxU)
     { φ.hom with commutes' := DFunLike.congr_fun (congr_arg CommRingCat.Hom.hom e) }
   let ψ : Γ(X, s.inf W ⊓ U) →ₐ[R] X.presheaf.stalk x :=
     { (X.presheaf.germ _ x H).hom with commutes' := fun x ↦ X.presheaf.germ_res_apply _ _ _ _ }
-  show AlgHom.range φ' ≤ AlgHom.range ψ
+  change AlgHom.range φ' ≤ AlgHom.range ψ
   rw [← Algebra.map_top, ← hs, AlgHom.map_adjoin, Algebra.adjoin_le_iff]
   rintro _ ⟨i, hi, rfl : φ i = _⟩
   refine ⟨X.presheaf.map (homOfLE (inf_le_left.trans (Finset.inf_le hi))).op (f i), ?_⟩
@@ -285,15 +285,15 @@ lemma exists_lift_of_germInjective {x : X} [X.IsGermInjectiveAt x] {U : X.Opens}
   refine ⟨V', hxV', CommRingCat.ofHom (e.symm.toRingHom.comp
     (φ.hom.codRestrict _ (fun x ↦ hf' (hV ⟨x, rfl⟩)))), iV'V.trans iVU, hV', ?_, ?_⟩
   · ext a
-    show φ a = (e (e.symm _)).1
+    change φ a = (e (e.symm _)).1
     simp only [RingEquiv.apply_symm_apply]
     rfl
   · ext a
     apply e.injective
-    show e _ = e (e.symm _)
+    change e _ = e (e.symm _)
     rw [RingEquiv.apply_symm_apply]
     ext
-    show X.presheaf.germ _ _ _ (X.presheaf.map _ _) = (φRA ≫ φ) a
+    change X.presheaf.germ _ _ _ (X.presheaf.map _ _) = (φRA ≫ φ) a
     rw [TopCat.Presheaf.germ_res_apply, ‹φRA ≫ φ = _›]
     rfl
 

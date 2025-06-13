@@ -126,7 +126,7 @@ def lpPairing (B : E →L[𝕜] F →L[𝕜] G) : Lp E p μ →L[𝕜] Lp F q μ
 
 lemma lpPairing_eq_integral (f : Lp E p μ) (g : Lp F q μ) :
     B.lpPairing μ p q f g = ∫ x, B (f x) (g x) ∂μ := by
-  show L1.integralCLM _ = _
+  change L1.integralCLM _ = _
   rw [← L1.integral_def, L1.integral_eq_integral]
   exact integral_congr_ae <| B.coeFn_holder _ _
 

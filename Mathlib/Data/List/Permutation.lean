@@ -310,7 +310,7 @@ private theorem DecEq_eq [DecidableEq α] :
     List.instBEq = @instBEqOfDecidableEq (List α) instDecidableEqList :=
   congr_arg BEq.mk <| by
     funext l₁ l₂
-    show (l₁ == l₂) = _
+    change (l₁ == l₂) = _
     rw [Bool.eq_iff_iff, @beq_iff_eq _ (_), decide_eq_true_iff]
 
 theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
@@ -327,7 +327,7 @@ theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
           map (cons c) ((permutations'Aux a l).flatMap (permutations'Aux b)) := by
     intros a' b'
     simp only [flatMap_map, permutations'Aux]
-    show (permutations'Aux _ l).flatMap (fun a => ([b' :: c :: a] ++
+    change (permutations'Aux _ l).flatMap (fun a => ([b' :: c :: a] ++
       map (cons c) (permutations'Aux _ a))) ~ _
     refine (flatMap_append_perm _ (fun x => [b' :: c :: x]) _).symm.trans ?_
     rw [← map_eq_flatMap, ← map_flatMap]

@@ -116,7 +116,7 @@ theorem T_two : T R 2 = 2 * X ^ 2 - 1 := by
 theorem T_neg (n : ℤ) : T R (-n) = T R n := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => rfl
-  | one => show 2 * X * 1 - X = X; ring
+  | one => change 2 * X * 1 - X = X; ring
   | add_two n ih1 ih2 =>
     have h₁ := T_add_two R n
     have h₂ := T_sub_two R (-n)
@@ -326,7 +326,7 @@ theorem C_two : C R 2 = X ^ 2 - 2 := by
 theorem C_neg (n : ℤ) : C R (-n) = C R n := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => rfl
-  | one => show X * 2 - X = X; ring
+  | one => change X * 2 - X = X; ring
   | add_two n ih1 ih2 =>
     have h₁ := C_add_two R n
     have h₂ := C_sub_two R (-n)

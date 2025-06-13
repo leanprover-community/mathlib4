@@ -756,7 +756,7 @@ protected theorem sup'_comm {t : Finset γ} (hs : s.Nonempty) (ht : t.Nonempty) 
 
 theorem sup'_induction {p : α → Prop} (hp : ∀ a₁, p a₁ → ∀ a₂, p a₂ → p (a₁ ⊔ a₂))
     (hs : ∀ b ∈ s, p (f b)) : p (s.sup' H f) := by
-  show @WithBot.recBotCoe α (fun _ => Prop) True p ↑(s.sup' H f)
+  change @WithBot.recBotCoe α (fun _ => Prop) True p ↑(s.sup' H f)
   rw [coe_sup']
   refine sup_induction trivial (fun a₁ h₁ a₂ h₂ ↦ ?_) hs
   match a₁, a₂ with

@@ -110,7 +110,7 @@ end PartialOrder
 theorem atom_le_iSup [Order.Frame α] {a : α} (ha : IsAtom a) {f : ι → α} :
     a ≤ iSup f ↔ ∃ i, a ≤ f i := by
   refine ⟨?_, fun ⟨i, hi⟩ => le_trans hi (le_iSup _ _)⟩
-  show (a ≤ ⨆ i, f i) → _
+  change (a ≤ ⨆ i, f i) → _
   refine fun h => of_not_not fun ha' => ?_
   push_neg at ha'
   have ha'' : Disjoint a (⨆ i, f i) :=

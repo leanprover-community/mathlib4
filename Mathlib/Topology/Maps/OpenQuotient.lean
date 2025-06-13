@@ -113,7 +113,7 @@ lemma coinduced_eq_induced_of_isOpenQuotientMap_of_isInducing
     (H : q ⁻¹' (q '' (Set.range f)) ⊆ Set.range f) :
     ‹TopologicalSpace A›.coinduced p = ‹TopologicalSpace D›.induced g := by
   ext U
-  show IsOpen (p ⁻¹' U) ↔ ∃ V, _
+  change IsOpen (p ⁻¹' U) ↔ ∃ V, _
   simp_rw [hf.isOpen_iff,
     (Set.image_surjective.mpr hq.surjective).exists,
     ← hq.isQuotientMap.isOpen_preimage]

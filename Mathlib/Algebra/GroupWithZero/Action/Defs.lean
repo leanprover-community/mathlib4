@@ -164,7 +164,7 @@ variable (A)
 def SMulWithZero.compHom (f : ZeroHom M₀' M₀) : SMulWithZero M₀' A where
   smul := (f · • ·)
   smul_zero m := smul_zero (f m)
-  zero_smul m := by show (f 0) • m = 0; rw [map_zero, zero_smul]
+  zero_smul m := by change (f 0) • m = 0; rw [map_zero, zero_smul]
 
 end Zero
 
@@ -241,8 +241,8 @@ variable (A)
 /-- Compose a `MulActionWithZero` with a `MonoidWithZeroHom`, with action `f r' • m` -/
 def MulActionWithZero.compHom (f : M₀' →*₀ M₀) : MulActionWithZero M₀' A where
   __ := SMulWithZero.compHom A f.toZeroHom
-  mul_smul r s m := by show f (r * s) • m = f r • f s • m; simp [mul_smul]
-  one_smul m := by show f 1 • m = m; simp
+  mul_smul r s m := by change f (r * s) • m = f r • f s • m; simp [mul_smul]
+  one_smul m := by change f 1 • m = m; simp
 
 end MonoidWithZero
 

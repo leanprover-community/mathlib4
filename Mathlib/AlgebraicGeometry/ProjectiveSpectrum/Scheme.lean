@@ -614,7 +614,7 @@ lemma awayToSection_apply (f : A) (x p) :
       IsLocalization.map (M := Submonoid.powers f) (T := p.1.1.toIdeal.primeCompl) _
         (RingHom.id _) (Submonoid.powers_le.mpr p.2) x.val := by
   obtain ⟨x, rfl⟩ := HomogeneousLocalization.mk_surjective x
-  show (HomogeneousLocalization.mapId 𝒜 _ _).val = _
+  change (HomogeneousLocalization.mapId 𝒜 _ _).val = _
   dsimp [HomogeneousLocalization.mapId, HomogeneousLocalization.map]
   rw [Localization.mk_eq_mk', Localization.mk_eq_mk', IsLocalization.map_mk']
   rfl
@@ -654,7 +654,7 @@ open HomogeneousLocalization IsLocalRing
 lemma toSpec_base_apply_eq_comap {f} (x : Proj| pbo f) :
     (toSpec 𝒜 f).base x = PrimeSpectrum.comap (mapId 𝒜 (Submonoid.powers_le.mpr x.2))
       (closedPoint (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal)) := by
-  show PrimeSpectrum.comap (awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.Γgerm x).hom
+  change PrimeSpectrum.comap (awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.Γgerm x).hom
         (IsLocalRing.closedPoint ((Proj| pbo f).presheaf.stalk x)) = _
   rw [awayToΓ_ΓToStalk, CommRingCat.hom_comp, PrimeSpectrum.comap_comp]
   exact congr(PrimeSpectrum.comap _ $(@IsLocalRing.comap_closedPoint

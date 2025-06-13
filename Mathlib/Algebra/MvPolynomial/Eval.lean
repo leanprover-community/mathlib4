@@ -220,7 +220,7 @@ theorem eval₂_congr (g₁ g₂ : σ → S₁)
 
 theorem eval₂_assoc (q : S₂ → MvPolynomial σ R) (p : MvPolynomial S₂ R) :
     eval₂ f (fun t => eval₂ f g (q t)) p = eval₂ f g (eval₂ C q p) := by
-  show _ = eval₂Hom f g (eval₂ C q p)
+  change _ = eval₂Hom f g (eval₂ C q p)
   rw [eval₂_comp_left (eval₂Hom f g)]; congr with a; simp
 
 end Eval₂

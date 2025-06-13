@@ -485,11 +485,11 @@ def H1Cotangent.mapEquiv (e : S ≃ₐ[R] S') :
   { toFun := map R R S S'
     invFun := map R R S' S
     left_inv x := by
-      show ((map R R S' S).restrictScalars S ∘ₗ map R R S S') x = x
+      change ((map R R S' S).restrictScalars S ∘ₗ map R R S S') x = x
       rw [map, map, ← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq,
         Extension.H1Cotangent.map_id, LinearMap.id_apply]
     right_inv x := by
-      show ((map R R S S').restrictScalars S' ∘ₗ map R R S' S) x = x
+      change ((map R R S S').restrictScalars S' ∘ₗ map R R S' S) x = x
       rw [map, map, ← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq,
         Extension.H1Cotangent.map_id, LinearMap.id_apply]
     map_add' := LinearMap.map_add (map R R S S')

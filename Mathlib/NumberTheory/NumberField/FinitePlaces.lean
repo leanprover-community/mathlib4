@@ -309,7 +309,7 @@ open scoped NumberField
 lemma equivHeightOneSpectrum_symm_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) :
     (equivHeightOneSpectrum.symm v) x = ‖embedding v x‖ := by
   have : v = (equivHeightOneSpectrum.symm v).maximalIdeal := by
-    show v = equivHeightOneSpectrum (equivHeightOneSpectrum.symm v)
+    change v = equivHeightOneSpectrum (equivHeightOneSpectrum.symm v)
     exact (Equiv.apply_symm_apply _ v).symm
   convert (norm_embedding_eq (equivHeightOneSpectrum.symm v) x).symm
 

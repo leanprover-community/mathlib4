@@ -495,3 +495,49 @@ def aux : Nat := 1
 def aux' : Nat := 1
 
 end openClassical
+
+/- Tests for the `show` linter -/
+section showLinter
+
+set_option linter.style.show true
+
+-- The linter doesn't complain if the goal stays the same
+
+#guard_msgs in
+example : 1 + 2 = 3 := by
+  show 1 + 2 = 3
+  rfl
+
+-- Binder names are ignored
+
+#guard_msgs in
+example : ∀ a : Nat, a = a := by
+  show ∀ b : Nat, b = b
+  intro
+  rfl
+
+-- Goal changes are linted
+
+/--
+warning: The `show` tactic should only be used to indicate intermediate goal states for readability.
+However, this tactic invocation changed the goal. Please use `change` instead for these purposes.
+note: this linter can be disabled with `set_option linter.style.show false`
+-/
+#guard_msgs in
+example : (fun a => a) 1 = 1 := by
+  show 1 = 1
+  rfl
+
+-- Assigning meta-variables in the goal is also linted
+
+/--
+warning: The `show` tactic should only be used to indicate intermediate goal states for readability.
+However, this tactic invocation changed the goal. Please use `change` instead for these purposes.
+note: this linter can be disabled with `set_option linter.style.show false`
+-/
+#guard_msgs in
+example := by
+  show 1 = 1
+  rfl
+
+end showLinter
