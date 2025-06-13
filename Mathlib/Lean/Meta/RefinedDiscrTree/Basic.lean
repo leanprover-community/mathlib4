@@ -158,7 +158,7 @@ structure ExprInfo where
   /-- The `Meta.Config` used by this entry. -/
   cfg : Config
   /-- The current transparency level. Recall that unification uses the `default`
-  transparency level when unifying implicit arguments. So we index implicit arguments-/
+  transparency level when unifying implicit arguments. So we index implicit arguments -/
   transparency : TransparencyMode
 
 /-- Creates an `ExprInfo` using the current context. -/
