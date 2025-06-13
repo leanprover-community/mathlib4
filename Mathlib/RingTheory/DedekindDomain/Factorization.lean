@@ -708,7 +708,8 @@ lemma divMod_zero_of_not_le {a b c : FractionalIdeal R⁰ K} (hac : ¬ a ≤ c) 
   simp [divMod, hac]
 
 /-- Let `I J I' J'` be nonzero fractional ideals in a dedekind domain with `J ≤ I` and `J' ≤ I'`.
-If `I/J = I'/J'` in the group of fractional ideals, then `I/J ≃ I'/J'` as quotient `R`-modules. -/
+If `I/J = I'/J'` in the group of fractional ideals (i.e. ` I * J' = I' * J`),
+then `I/J ≃ I'/J'` as quotient `R`-modules. -/
 noncomputable
 def quotientEquiv (I J I' J' : FractionalIdeal R⁰ K)
     (H : I * J' = I' * J) (h : J ≤ I) (h' : J' ≤ I') (hJ' : J' ≠ 0) (hI : I ≠ 0) :
