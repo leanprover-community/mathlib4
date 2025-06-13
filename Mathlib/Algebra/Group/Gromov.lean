@@ -1362,6 +1362,7 @@ def isembedding_units_val := Units.isEmbedding_val_mk' (M := (W (G := G) →L[�
 )
 
 def unit_val_isometry := Topology.IsEmbedding.to_isometry (isembedding_units_val (G := G))
+def units_val_inducing := (isembedding_units_val (G := G).isInducing)
 
 noncomputable instance GL_W_psuedo: PseudoMetricSpace (GL_W (G := G)) := Topology.IsInducing.comapPseudoMetricSpace (isembedding_units_val (G := G).isInducing)
 --   apply FiniteDimensional.proper_rclike (K := ℂ)
@@ -1392,6 +1393,7 @@ noncomputable instance GL_W_psuedo: PseudoMetricSpace (GL_W (G := G)) := Topolog
 --#synth Bornology (GL_W (G := G))
 
 set_option maxHeartbeats 500000
+set_option synthInstance.maxHeartbeats 40000
 
 -- In the Vikman paper, rho_g is precompact, and the closure of rho_g is a compact subgroup
 -- LinearMap.finiteDimensional
@@ -1400,13 +1402,62 @@ theorem compact_rho_g: IsCompact (rho_g_closure (G := G)) := by
   unfold rho_g_closure
   rw [Topology.IsEmbedding.isCompact_iff (isembedding_units_val (G := G))]
   rw [Metric.isCompact_iff_isClosed_bounded]
+  have closed_original: IsClosed (_root_.closure (rho_g (G := G)).carrier) := by
+    apply isClosed_closure
   refine ⟨?_, ?_⟩
   .
-    apply Metric.isClosed_of_pairwise_le_dist (ε := (1: ℝ)/ 2) (by simp)
-    intro x hx y hy x_ne
-    rw [Set.mem_image] at hx
-    rw [Set.mem_image] at hy
-    simp [dist]
+    rw [← isOpen_compl_iff]
+    rw [isOpen_iff_forall_mem_open]
+    intro x hx
+    by_cases invertible: ∃ x_unit: GL_W (G := G), x_unit.val = x
+    .
+      obtain ⟨x_unit, hx_unit⟩ := invertible
+      rw [← isOpen_compl_iff] at closed_original
+      rw [Metric.isOpen_iff] at closed_original
+      obtain ⟨r, r_gt_zero, ball_r⟩ := closed_original x_unit (by
+        rw [← hx_unit] at hx
+        simp at hx
+        simp
+        exact fun a ↦ hx x_unit a rfl
+      )
+      have ball_r_subset := Isometry.mapsTo_ball (unit_val_isometry (G := G)) x_unit r
+      apply Set.MapsTo.image_subset at ball_r_subset
+      --rw [Set.MapsTo] at ball_r_subset
+      -- specialize ball_r_subset (x := x_unit) (by
+      --   apply Metric.mem_closedBall_self
+      --   linarith
+      -- )
+      use Units.val '' Metric.ball (x_unit) (r)
+      refine ⟨?_, ?_, ?_⟩
+      .
+        intro a ha
+        specialize ball_r_subset ha
+        simp
+        simp at ball_r_subset
+        simp at ha
+        obtain ⟨p, p_mem, p_eq⟩ := ha
+        specialize ball_r p_mem
+        simp at ball_r
+        intro x hx
+        by_contra!
+        rw [← p_eq] at this
+        norm_cast at this
+        rw [this] at hx
+        contradiction
+      .
+        apply Topology.IsInducing.isOpenMap
+        . apply units_val_inducing
+        . sorry
+        . simp
+      .
+        rw [← hx_unit]
+        simp
+        use x_unit
+        simp
+        exact r_gt_zero
+
+
+
 
 
 
