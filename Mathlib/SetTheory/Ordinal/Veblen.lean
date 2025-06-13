@@ -212,7 +212,7 @@ theorem veblenWith_le_veblenWith_iff :
     veblenWith f o₁ a ≤ veblenWith f o₂ b ↔
       o₁ = o₂ ∧ a ≤ b ∨ o₁ < o₂ ∧ a ≤ veblenWith f o₂ b ∨ o₂ < o₁ ∧ veblenWith f o₁ a ≤ b := by
   rw [← not_lt, ← cmp_eq_gt_iff, cmp_veblenWith hf]
-  aesop (add simp [not_lt_of_le, lt_asymm])
+  aesop (add simp [not_lt_of_ge, lt_asymm])
 
 /-- `veblenWith f o₁ a = veblenWith f o₂ b` iff one of the following holds:
 * `o₁ = o₂` and `a = b`
