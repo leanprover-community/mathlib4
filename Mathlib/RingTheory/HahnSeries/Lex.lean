@@ -113,20 +113,25 @@ end LinearOrder
 
 section OrderedGroup
 
-variable {Γ : Type*} {R : Type*}
-variable [LinearOrder Γ] [LinearOrder R] [AddCommGroup R] [IsOrderedAddMonoid R]
+variable {Γ : Type*}
+variable [LinearOrder Γ]
 
 variable (Γ) in
-instance (R : Type*) [PartialOrder R] [AddCommGroup R] [IsOrderedAddMonoid R] :
-    IsOrderedAddMonoid (Lex (HahnSeries Γ R)) where
+instance (R : Type*) [PartialOrder R] [AddCommMonoid R] [AddLeftStrictMono R]
+    [IsOrderedAddMonoid R] : IsOrderedAddMonoid (Lex (HahnSeries Γ R)) where
   add_le_add_left a b hab c := by
     obtain rfl | hlt := hab.eq_or_lt
     · simp
     · apply le_of_lt
       rw [lt_iff] at hlt ⊢
-      obtain ⟨i, hi⟩ := hlt
-      use i
-      aesop
+      obtain ⟨i, hj, hi⟩ := hlt
+      refine ⟨i, ?_, ?_⟩
+      · intro j hji
+        simpa using congrArg ((ofLex c).coeff j + ·) (hj j hji)
+      · simpa using add_lt_add_left hi ((ofLex c).coeff i)
+
+variable {R : Type*}
+variable [LinearOrder R] [AddCommGroup R] [IsOrderedAddMonoid R]
 
 theorem support_abs (x : Lex (HahnSeries Γ R)) : (ofLex |x|).support = (ofLex x).support := by
   obtain hle | hge := le_total x 0
