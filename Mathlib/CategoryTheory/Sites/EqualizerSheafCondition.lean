@@ -367,6 +367,32 @@ theorem sheaf_condition : (Presieve.ofArrows X π).IsSheafFor P ↔
 
 end Arrows
 
+/-- The sheaf condition for a single morphism is the same as the canonical fork diagram being
+limiting. -/
+lemma isSheafFor_singleton_iff {F : Cᵒᵖ ⥤ Type*} {X Y : C} {f : X ⟶ Y}
+    (c : PullbackCone f f) (hc : IsLimit c) :
+    Presieve.IsSheafFor F (.singleton f) ↔
+      Nonempty
+        (IsLimit (Fork.ofι (F.map f.op) (f := F.map c.fst.op) (g := F.map c.snd.op)
+          (by simp [← Functor.map_comp, ← op_comp, c.condition]))) := by
+  have h (x : F.obj (op X)) : (∀ {Z : C} (p₁ p₂ : Z ⟶ X),
+      p₁ ≫ f = p₂ ≫ f → F.map p₁.op x = F.map p₂.op x) ↔ F.map c.fst.op x = F.map c.snd.op x := by
+    refine ⟨fun H ↦ H _ _ c.condition, fun H Z p₁ p₂ h ↦ ?_⟩
+    rw [← PullbackCone.IsLimit.lift_fst hc _ _ h, op_comp, FunctorToTypes.map_comp_apply, H]
+    simp [← FunctorToTypes.map_comp_apply, ← op_comp]
+  rw [Types.type_equalizer_iff_unique, Presieve.isSheafFor_singleton]
+  simp_rw [h]
+
+/-- Special case of `isSheafFor_singleton_iff` with `c = pullback.cone f f`. -/
+lemma isSheafFor_singleton_iff_of_hasPullback {F : Cᵒᵖ ⥤ Type*} {X Y : C} {f : X ⟶ Y}
+    [HasPullback f f] :
+    Presieve.IsSheafFor F (.singleton f) ↔
+      Nonempty
+        (IsLimit (Fork.ofι (F.map f.op) (f := F.map (pullback.fst f f).op)
+          (g := F.map (pullback.snd f f).op)
+          (by simp [← Functor.map_comp, ← op_comp, pullback.condition]))) :=
+  isSheafFor_singleton_iff (pullback.cone f f) (pullback.isLimit f f)
+
 end Presieve
 
 end
