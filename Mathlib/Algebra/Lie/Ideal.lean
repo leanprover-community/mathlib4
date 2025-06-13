@@ -482,31 +482,27 @@ theorem incl_isIdealMorphism : I.incl.IsIdealMorphism := by
   exact (I : LieSubalgebra R L).incl_range.symm
 
 variable {I}
+/- begin contributions -/
+theorem comap_bot_le_of_injective (hf : Function.Injective f) : comap f ⊥ ≤ I := by
+  refine le_trans (fun x hx => ?_) bot_le
+  rw [mem_comap, LieSubmodule.mem_bot, ← f.map_zero] at hx
+  exact Eq.symm (hf hx) ▸ Submodule.zero_mem ⊥
 
-theorem comap_incl_eq_bot (h : I₂ ≤ I) : comap I.incl I₂ = ⊥ ↔ I₂ = ⊥ := by
-  rw [eq_bot_iff]
+theorem comap_bot_of_injective (hf : Function.Injective f) : comap f ⊥ = ⊥ :=
+  le_bot_iff.mp (comap_bot_le_of_injective f hf)
+
+theorem comap_incl_eq_bot (h : I₂ ≤ I) : (comap I.incl I₂) = ⊥ ↔ I₂ = ⊥ := by
   constructor
   · intro hI₂
     rw [eq_bot_iff]
     intro x hx
-    unfold comap at hI₂
-    simp only [incl_coe, toLieSubalgebra_toSubmodule, le_bot_iff,
-      LieSubmodule.mk_eq_bot_iff] at hI₂
-    rw [Submodule.eq_bot_iff] at hI₂
+    simp only [comap, incl_coe, toLieSubalgebra_toSubmodule, le_bot_iff,
+      LieSubmodule.mk_eq_bot_iff, Submodule.eq_bot_iff] at hI₂
     rw [LieSubmodule.mem_bot]
-    specialize hI₂ ⟨x, h hx⟩ hx
-    rw [LieSubmodule.mk_eq_zero] at hI₂
-    assumption
-  · intro hI₂
-    rw [hI₂]
-    intro x hx
-    rw [LieSubmodule.mem_bot]
-    unfold comap at hx
-    simp only [incl_coe, toLieSubalgebra_toSubmodule, LieSubmodule.bot_toSubmodule,
-      Submodule.comap_bot, LieSubmodule.mem_mk_iff', LinearMap.mem_ker] at hx
-    rw [LieSubmodule.mk_eq_zero]
-    assumption
-
+    exact (LieSubmodule.mk_eq_zero _ _).mp (hI₂ ⟨x, h hx⟩ hx)
+  · rintro ⟨_⟩
+    exact comap_bot_of_injective I.incl I.incl_injective
+/- end contributions -/
 end LieIdeal
 
 end LieSubmoduleMapAndComap
