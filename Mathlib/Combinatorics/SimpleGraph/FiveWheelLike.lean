@@ -273,7 +273,7 @@ variable [DecidableEq α]
 private lemma eq_of_card_le_two_of_ne (hab : a ≠ b) (had : a ≠ d) (hbc : b ≠ c)
     (hc2 : #{a, b, c, d} ≤ 2) : c = a ∧ d = b := by
   by_contra! hf
-  apply hc2.not_lt <| two_lt_card_iff.2 _
+  apply hc2.not_gt <| two_lt_card_iff.2 _
   by_cases h : a = c <;> aesop
 
 /--
@@ -387,7 +387,7 @@ lemma exists_isFiveWheelLike_succ_of_not_adj_le_two (hW : ∀ ⦃y⦄, y ∈ s �
   have wa : ∀ ⦃w⦄, w ∈ W → w ≠ a → w ≠ b → G.Adj w x := by
     intro _ hz haz hbz
     by_contra! hf
-    apply h2.not_lt
+    apply h2.not_gt
     exact two_lt_card.2 ⟨_, by simp [has, hcj], _, by simp [hbt, hdj], _,
                          mem_filter.2 ⟨hz, by rwa [adj_comm] at hf⟩, hab, haz.symm, hbz.symm⟩
   have h1s : insert w₁ s ⊆ W := by
@@ -519,7 +519,7 @@ theorem colorable_of_cliqueFree_lt_minDegree [Fintype α] [DecidableRel G.Adj]
     -- But the minimum degree of `G`, and hence of `H`, is too large for it to be `Wᵣ₊₁,ₖ₊₁`-free,
     -- a contradiction.
     have hD := hw.minDegree_le_of_cliqueFree_FiveWheelLikeFree_succ hmcf.1 <| hm _ <| lt_add_one _
-    exact (hd.trans_le <| minDegree_le_minDegree hle).not_le <| hD.trans <| kr_bound hlt
+    exact (hd.trans_le <| minDegree_le_minDegree hle).not_ge <| hD.trans <| kr_bound hlt
 
 end AES
 end SimpleGraph
