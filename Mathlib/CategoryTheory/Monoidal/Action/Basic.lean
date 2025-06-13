@@ -215,7 +215,7 @@ theorem unit_actionHomRight {x y : D} (f : x ⟶ y) :
 
 @[reassoc, simp]
 theorem tensor_actionHomRight (x y : C) {z z' : D} (f : z ⟶ z') :
-    ((x ⊗ y) ⊴ₗ f) = (σ_ₗ x y z).hom ≫ x ⊴ₗ y ⊴ₗ f ≫ (σ_ₗ x y z').inv := by
+    (x ⊗ y) ⊴ₗ f = (σ_ₗ x y z).hom ≫ x ⊴ₗ y ⊴ₗ f ≫ (σ_ₗ x y z').inv := by
   simp only [← id_actionHom, ← actionHom_id]
   rw [← Category.assoc, ← actionAssocIso_naturality]
   simp
@@ -242,7 +242,7 @@ theorem actionHom_def' {x₁ y₁ : C} {x₂ y₂ : D} (f : x₁ ⟶ y₁) (g : 
 
 @[reassoc (attr := simp)]
 theorem actionHomRight_hom_inv (x : C) {y z : D} (f : y ≅ z) :
-    (x ⊴ₗ f.hom ≫ x ⊴ₗ f.inv) = 𝟙 (x ⊙ₗ y : D) := by
+    x ⊴ₗ f.hom ≫ x ⊴ₗ f.inv = 𝟙 (x ⊙ₗ y : D) := by
   rw [← actionHomRight_comp, Iso.hom_inv_id, actionHomRight_id]
 
 @[reassoc (attr := simp)]
@@ -316,9 +316,7 @@ def actionAssocNatIso :
 
 /-- Bundle `υ_ₗ _` as an isomorphism of functors. -/
 @[simps!]
-def actionUnitNatIso :
-    actionLeft D (𝟙_ C) ≅ 𝟭 D :=
-  NatIso.ofComponents (fun _ ↦ υ_ₗ _)
+def actionUnitNatIso : actionLeft D (𝟙_ C) ≅ 𝟭 D := NatIso.ofComponents (υ_ₗ ·)
 
 end
 
