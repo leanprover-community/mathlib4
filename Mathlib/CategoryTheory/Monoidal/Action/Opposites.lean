@@ -16,9 +16,6 @@ on `D`. We also construct a right `C`-action on `D`from the data of a left
 `Cᴹᵒᵖ`-action on `D`. Conversely, given left/right `C`-actions on `D`,
 we construct a`Cᴹᵒᵖ` actions with the conjugate variance.
 
-We construct similar actions for `Cᵒᵖ`, namely, left/right `Cᵒᵖ`-actions
-on `Dᵒᵖ` from left/right-actions of `C` on `D`, and vice-versa.
-
 These constructions are not made instances in order to avoid instance loops,
 you should bring them as local instances if you intend to use them.
 
