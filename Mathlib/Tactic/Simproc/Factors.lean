@@ -9,7 +9,8 @@ import Mathlib.Tactic.NormNum.Prime
 /-!
 # `simproc` for `Nat.primeFactorsList`
 
-Note that since `norm_num` can only produce numerals, we can't use it here.
+Note that since `norm_num` can only produce numerals,
+we can't register this as a `norm_num` extension.
 -/
 
 open Nat
@@ -85,7 +86,7 @@ private partial def evalPrimeFactorsListAux
     -- the factor is less than `n`, so we are not done; remove it to get `m`
     let m := n / b
     have em : Q(ℕ) := mkRawNatLit m
-    have ehm : Q(IsNat $em $em) := q(⟨rfl⟩)
+    have ehm : Q(IsNat (OfNat.ofNat $em) $em) := q(⟨rfl⟩)
     if h_ba_eq : b = a then
       -- if the factor is our minimum `a`, then recurse without changing the minimum
       have eh : Q($eal * $em = $en) :=
@@ -98,7 +99,7 @@ private partial def evalPrimeFactorsListAux
       -- Otherwise when we recurse, we should use `b` as the new minimum factor. Note that
       -- we must use `evalMinFac.core` to get a proof that `b` is what we computed it as.
       have eb : Q(ℕ) := mkRawNatLit b
-      have ehb : Q(IsNat $eb $eb) := q(⟨rfl⟩)
+      have ehb : Q(IsNat (OfNat.ofNat $eb) $eb) := q(⟨rfl⟩)
       have ehbm : Q($eb * $em = $en) :=
         have : b * m = n := Nat.mul_div_cancel' (minFac_dvd _)
         (q(Eq.refl $en) : Expr)
