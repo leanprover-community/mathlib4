@@ -68,6 +68,8 @@ class GradeOrder (𝕆 α : Type*) [Preorder 𝕆] [Preorder α] where
   /-- `grade` preserves `CovBy`. -/
   covBy_grade ⦃a b : α⦄ : a ⋖ b → grade a ⋖ grade b
 
+attribute [instance low] GradeOrder.toPreorder
+
 /-- An `𝕆`-graded order where minimal elements have minimal grades. -/
 class GradeMinOrder (𝕆 α : Type*) [Preorder 𝕆] [Preorder α] extends GradeOrder 𝕆 α where
   /-- Minimal elements have minimal grades. -/

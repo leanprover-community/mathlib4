@@ -75,6 +75,8 @@ class SemilatticeSup (α : Type u) extends PartialOrder α where
   /-- The supremum is the *least* upper bound -/
   protected sup_le : ∀ a b c : α, a ≤ c → b ≤ c → sup a b ≤ c
 
+attribute [instance low] SemilatticeSup.toPartialOrder
+
 instance SemilatticeSup.toMax [SemilatticeSup α] : Max α where max a b := SemilatticeSup.sup a b
 
 /--
@@ -274,6 +276,8 @@ class SemilatticeInf (α : Type u) extends PartialOrder α where
   protected inf_le_right : ∀ a b : α, inf a b ≤ b
   /-- The infimum is the *greatest* lower bound -/
   protected le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ inf b c
+
+attribute [instance low] SemilatticeInf.toPartialOrder
 
 instance SemilatticeInf.toMin [SemilatticeInf α] : Min α where min a b := SemilatticeInf.inf a b
 

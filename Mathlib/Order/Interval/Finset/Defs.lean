@@ -118,6 +118,8 @@ class LocallyFiniteOrder (α : Type*) [Preorder α] where
   /-- `x ∈ finsetIoo a b ↔ a < x ∧ x < b` -/
   finset_mem_Ioo : ∀ a b x : α, x ∈ finsetIoo a b ↔ a < x ∧ x < b
 
+attribute [instance low] LocallyFiniteOrder.toPreorder
+
 /-- This mixin class describes an order where all intervals bounded below are finite. This is
 slightly weaker than `LocallyFiniteOrder` + `OrderTop` as it allows empty types. -/
 class LocallyFiniteOrderTop (α : Type*) [Preorder α] where
@@ -130,6 +132,8 @@ class LocallyFiniteOrderTop (α : Type*) [Preorder α] where
   /-- `x ∈ finsetIoi a ↔ a < x` -/
   finset_mem_Ioi : ∀ a x : α, x ∈ finsetIoi a ↔ a < x
 
+attribute [instance low] LocallyFiniteOrderTop.toPreorder
+
 /-- This mixin class describes an order where all intervals bounded above are finite. This is
 slightly weaker than `LocallyFiniteOrder` + `OrderBot` as it allows empty types. -/
 class LocallyFiniteOrderBot (α : Type*) [Preorder α] where
@@ -141,6 +145,8 @@ class LocallyFiniteOrderBot (α : Type*) [Preorder α] where
   finset_mem_Iic : ∀ a x : α, x ∈ finsetIic a ↔ x ≤ a
   /-- `x ∈ finsetIio a ↔ x < a` -/
   finset_mem_Iio : ∀ a x : α, x ∈ finsetIio a ↔ x < a
+
+attribute [instance low] LocallyFiniteOrderBot.toPreorder
 
 /-- A constructor from a definition of `Finset.Icc` alone, the other ones being derived by removing
 the ends. As opposed to `LocallyFiniteOrder.ofIcc`, this one requires `DecidableLE` but
