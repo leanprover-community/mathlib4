@@ -38,11 +38,11 @@ conservative dynamical system, Poincare recurrence theorem
 
 noncomputable section
 
-open Set Filter MeasureTheory Finset Function TopologicalSpace Topology
+namespace MeasureTheory
+
+open Set Filter Finset Function TopologicalSpace Topology
 
 variable {α : Type*} [MeasurableSpace α] {f : α → α} {s : Set α} {μ : Measure α}
-
-namespace MeasureTheory
 
 open Measure
 
@@ -219,7 +219,7 @@ protected theorem iterate (hf : Conservative f μ) (n : ℕ) : Conservative f^[n
   refine ⟨f^[k] x, hk, m, ?_, ?_⟩
   · intro hm
     rw [hm, mul_zero, eq_comm, tsub_eq_zero_iff_le] at this
-    exact this.not_lt hkl
+    exact this.not_gt hkl
   · rwa [← iterate_mul, this, ← iterate_add_apply, tsub_add_cancel_of_le]
     exact hkl.le
 

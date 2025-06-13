@@ -160,8 +160,6 @@ namespace normalClosure
 noncomputable def algHomEquiv : (K →ₐ[F] normalClosure F K L) ≃ (K →ₐ[F] L) where
   toFun := (normalClosure F K L).val.comp
   invFun f := f.codRestrict _ fun x ↦ f.fieldRange_le_normalClosure ⟨x, rfl⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[stacks 0BMG "(1) normality."]
 instance normal [h : Normal F L] : Normal F (normalClosure F K L) := by

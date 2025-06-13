@@ -363,8 +363,9 @@ lemma rpow_algebraMap {x : ℝ≥0} {y : ℝ} :
     (algebraMap ℝ≥0 A x) ^ y = algebraMap ℝ≥0 A (x ^ y) := by
   rw [rpow_def, cfc_algebraMap ..]
 
-lemma rpow_add {a : A} {x y : ℝ} (ha : 0 ∉ spectrum ℝ≥0 a) :
+lemma rpow_add {a : A} {x y : ℝ} (ha : IsUnit a) :
     a ^ (x + y) = a ^ x * a ^ y := by
+  have ha' : 0 ∉ spectrum ℝ≥0 a := spectrum.zero_notMem _ ha
   simp only [rpow_def, NNReal.rpow_eq_pow]
   rw [← cfc_mul _ _ a]
   refine cfc_congr ?_
@@ -372,14 +373,24 @@ lemma rpow_add {a : A} {x y : ℝ} (ha : 0 ∉ spectrum ℝ≥0 a) :
   have : z ≠ 0 := by aesop
   simp [NNReal.rpow_add this _ _]
 
--- TODO: relate to a strict positivity condition
 lemma rpow_rpow [IsTopologicalRing A] [T2Space A]
-    (a : A) (x y : ℝ) (ha₁ : 0 ∉ spectrum ℝ≥0 a) (hx : x ≠ 0) (ha₂ : 0 ≤ a := by cfc_tac) :
+    (a : A) (x y : ℝ) (ha₁ : IsUnit a) (hx : x ≠ 0) (ha₂ : 0 ≤ a := by cfc_tac) :
     (a ^ x) ^ y = a ^ (x * y) := by
+  have ha₁' : 0 ∉ spectrum ℝ≥0 a := spectrum.zero_notMem _ ha₁
   simp only [rpow_def]
   rw [← cfc_comp _ _ a ha₂]
   refine cfc_congr fun _ _ => ?_
   simp [NNReal.rpow_mul]
+
+lemma rpow_rpow_inv [IsTopologicalRing A] [T2Space A]
+    (a : A) (x : ℝ) (ha₁ : IsUnit a) (hx : x ≠ 0) (ha₂ : 0 ≤ a := by cfc_tac) :
+    (a ^ x) ^ x⁻¹ = a := by
+  rw [rpow_rpow a x x⁻¹ ha₁ hx ha₂, mul_inv_cancel₀ hx, rpow_one a ha₂]
+
+lemma rpow_inv_rpow [IsTopologicalRing A] [T2Space A]
+    (a : A) (x : ℝ) (ha₁ : IsUnit a) (hx : x ≠ 0) (ha₂ : 0 ≤ a := by cfc_tac) :
+    (a ^ x⁻¹) ^ x = a := by
+  simpa using rpow_rpow_inv a x⁻¹ ha₁ (inv_ne_zero hx) ha₂
 
 lemma rpow_rpow_of_exponent_nonneg [IsTopologicalRing A] [T2Space A] (a : A) (x y : ℝ)
     (hx : 0 ≤ x) (hy : 0 ≤ y) (ha₂ : 0 ≤ a := by cfc_tac) : (a ^ x) ^ y = a ^ (x * y) := by
@@ -388,18 +399,18 @@ lemma rpow_rpow_of_exponent_nonneg [IsTopologicalRing A] [T2Space A] (a : A) (x 
   refine cfc_congr fun _ _ => ?_
   simp [NNReal.rpow_mul]
 
-lemma rpow_mul_rpow_neg {a : A} (x : ℝ) (ha : 0 ∉ spectrum ℝ≥0 a)
+lemma rpow_mul_rpow_neg {a : A} (x : ℝ) (ha : IsUnit a)
     (ha' : 0 ≤ a := by cfc_tac) : a ^ x * a ^ (-x) = 1 := by
   rw [← rpow_add ha, add_neg_cancel, rpow_zero a]
 
-lemma rpow_neg_mul_rpow {a : A} (x : ℝ) (ha : 0 ∉ spectrum ℝ≥0 a)
+lemma rpow_neg_mul_rpow {a : A} (x : ℝ) (ha : IsUnit a)
     (ha' : 0 ≤ a := by cfc_tac) : a ^ (-x) * a ^ x = 1 := by
   rw [← rpow_add ha, neg_add_cancel, rpow_zero a]
 
 lemma rpow_neg_one_eq_inv (a : Aˣ) (ha : (0 : A) ≤ a := by cfc_tac) :
     a ^ (-1 : ℝ) = (↑a⁻¹ : A) := by
   refine a.inv_eq_of_mul_eq_one_left ?_ |>.symm
-  simpa [rpow_one (a : A)] using rpow_neg_mul_rpow 1 (spectrum.zero_notMem ℝ≥0 a.isUnit)
+  simpa [rpow_one (a : A)] using rpow_neg_mul_rpow 1 a.isUnit
 
 lemma rpow_neg_one_eq_cfc_inv {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A]
     [StarOrderedRing A] [NormedAlgebra ℝ A] [NonnegSpectrumClass ℝ A]
@@ -424,6 +435,37 @@ lemma rpow_intCast (a : Aˣ) (n : ℤ) (ha : (0 : A) ≤ a := by cfc_tac) :
   refine cfc_congr fun _ _ => ?_
   simp
 
+/-- `a ^ x` bundled as an element of `Aˣ` for `a : Aˣ`. -/
+@[simps]
+noncomputable def _root_.Units.cfcRpow (a : Aˣ) (x : ℝ) (ha : (0 : A) ≤ a := by cfc_tac) : Aˣ :=
+  ⟨(a : A) ^ x, (a : A) ^ (-x), rpow_mul_rpow_neg x (by simp), rpow_neg_mul_rpow x (by simp)⟩
+
+@[aesop safe apply]
+lemma _root_.IsUnit.cfcRpow {a : A} (ha : IsUnit a) (x : ℝ) (ha_nonneg : 0 ≤ a := by cfc_tac) :
+    IsUnit (a ^ x) :=
+  ha.unit.cfcRpow x |>.isUnit
+
+lemma spectrum_rpow (a : A) (x : ℝ)
+    (h : ContinuousOn (· ^ x) (spectrum ℝ≥0 a) := by cfc_cont_tac)
+    (ha : 0 ≤ a := by cfc_tac) :
+    spectrum ℝ≥0 (a ^ x) = (· ^ x) '' spectrum ℝ≥0 a :=
+  cfc_map_spectrum (· ^ x : ℝ≥0 → ℝ≥0) a ha h
+
+lemma isUnit_rpow_iff (a : A) (y : ℝ) (hy : y ≠ 0) (ha : 0 ≤ a := by cfc_tac) :
+    IsUnit (a ^ y) ↔ IsUnit a := by
+  nontriviality A
+  refine ⟨fun h => ?_, fun h => h.cfcRpow y ha⟩
+  rw [rpow_def] at h
+  by_cases hf : ContinuousOn (fun x : ℝ≥0 => x ^ y) (spectrum ℝ≥0 a)
+  · rw [isUnit_cfc_iff _ a hf] at h
+    refine spectrum.isUnit_of_zero_notMem ℝ≥0 ?_
+    intro h0
+    specialize h 0 h0
+    simp only [ne_eq, NNReal.rpow_eq_zero_iff, true_and, Decidable.not_not] at h
+    exact hy h
+  · rw [cfc_apply_of_not_continuousOn a hf] at h
+    exact False.elim <| not_isUnit_zero h
+
 section prod
 
 variable [IsTopologicalRing A] [T2Space A]
@@ -436,16 +478,18 @@ variable {B : Type*} [PartialOrder B] [Ring B] [StarRing B] [TopologicalSpace B]
 
 /- Note that there is higher-priority instance of `Pow (A × B) ℝ` coming from the `Pow` instance for
 products, hence the direct use of `rpow` here. -/
-lemma rpow_map_prod {a : A} {b : B} {x : ℝ} (ha : 0 ∉ spectrum ℝ≥0 a) (hb : 0 ∉ spectrum ℝ≥0 b)
+lemma rpow_map_prod {a : A} {b : B} {x : ℝ} (ha : IsUnit a) (hb : IsUnit b)
     (ha' : 0 ≤ a := by cfc_tac) (hb' : 0 ≤ b := by cfc_tac) :
     rpow (a, b) x = (a ^ x, b ^ x) := by
+  have ha'' : 0 ∉ spectrum ℝ≥0 a := spectrum.zero_notMem _ ha
+  have hb'' : 0 ∉ spectrum ℝ≥0 b := spectrum.zero_notMem _ hb
   simp only [rpow_def]
   unfold rpow
   refine cfc_map_prod (R := ℝ≥0) (S := ℝ) _ a b (by cfc_cont_tac) ?_
   rw [Prod.le_def]
   constructor <;> simp [ha', hb']
 
-lemma rpow_eq_rpow_prod {a : A} {b : B} {x : ℝ} (ha : 0 ∉ spectrum ℝ≥0 a) (hb : 0 ∉ spectrum ℝ≥0 b)
+lemma rpow_eq_rpow_prod {a : A} {b : B} {x : ℝ} (ha : IsUnit a) (hb : IsUnit b)
     (ha' : 0 ≤ a := by cfc_tac) (hb' : 0 ≤ b := by cfc_tac) :
     rpow (a, b) x = (a, b) ^ x := rpow_map_prod ha hb
 
@@ -466,14 +510,15 @@ variable {ι : Type*} {C : ι → Type*} [∀ i, PartialOrder (C i)] [∀ i, Rin
 
 /- Note that there is a higher-priority instance of `Pow (∀ i, B i) ℝ` coming from the `Pow`
 instance for pi types, hence the direct use of `rpow` here. -/
-lemma rpow_map_pi {c : ∀ i, C i} {x : ℝ} (hc : ∀ i, 0 ∉ spectrum ℝ≥0 (c i))
+lemma rpow_map_pi {c : ∀ i, C i} {x : ℝ} (hc : ∀ i, IsUnit (c i))
     (hc' : ∀ i, 0 ≤ c i := by cfc_tac) :
     rpow c x = fun i => (c i) ^ x := by
+  have hc'' : ∀ i, 0 ∉ spectrum ℝ≥0 (c i) := fun i => spectrum.zero_notMem _ (hc i)
   simp only [rpow_def]
   unfold rpow
   exact cfc_map_pi (S := ℝ) _ c
 
-lemma rpow_eq_rpow_pi {c : ∀ i, C i} {x : ℝ} (hc : ∀ i, 0 ∉ spectrum ℝ≥0 (c i))
+lemma rpow_eq_rpow_pi {c : ∀ i, C i} {x : ℝ} (hc : ∀ i, IsUnit (c i))
     (hc' : ∀ i, 0 ≤ c i := by cfc_tac) :
     rpow c x = c ^ x := rpow_map_pi hc
 
@@ -511,7 +556,7 @@ lemma sqrt_algebraMap {r : ℝ≥0} : sqrt (algebraMap ℝ≥0 A r) = algebraMap
 lemma sqrt_one : sqrt (1 : A) = 1 := by simp [sqrt_eq_cfc]
 
 -- TODO: relate to a strict positivity condition
-lemma sqrt_rpow {a : A} {x : ℝ} (h : 0 ∉ spectrum ℝ≥0 a)
+lemma sqrt_rpow {a : A} {x : ℝ} (h : IsUnit a)
     (hx : x ≠ 0) : sqrt (a ^ x) = a ^ (x / 2) := by
   by_cases hnonneg : 0 ≤ a
   case pos =>
@@ -520,7 +565,7 @@ lemma sqrt_rpow {a : A} {x : ℝ} (h : 0 ∉ spectrum ℝ≥0 a)
     simp [sqrt_eq_cfc, rpow_def, cfc_apply_of_not_predicate a hnonneg]
 
 -- TODO: relate to a strict positivity condition
-lemma rpow_sqrt (a : A) (x : ℝ) (h : 0 ∉ spectrum ℝ≥0 a)
+lemma rpow_sqrt (a : A) (x : ℝ) (h : IsUnit a)
     (ha : 0 ≤ a := by cfc_tac) : (sqrt a) ^ x = a ^ (x / 2) := by
   rw [sqrt_eq_rpow, div_eq_mul_inv, one_mul,
       rpow_rpow _ _ _ h (by norm_num), inv_mul_eq_div]
@@ -545,6 +590,26 @@ lemma rpow_sqrt_nnreal {a : A} {x : ℝ≥0}
   case neg =>
     have h₁ : 0 ≤ (x : ℝ) := NNReal.zero_le_coe
     rw [sqrt_eq_rpow, rpow_rpow_of_exponent_nonneg _ _ _ (by norm_num) h₁, one_div_mul_eq_div]
+
+lemma isUnit_nnrpow_iff (a : A) (y : ℝ≥0) (hy : y ≠ 0) (ha : 0 ≤ a := by cfc_tac) :
+    IsUnit (a ^ y) ↔ IsUnit a := by
+  rw [nnrpow_eq_rpow (pos_of_ne_zero hy)]
+  refine isUnit_rpow_iff a y ?_ ha
+  exact_mod_cast hy
+
+@[aesop safe apply]
+lemma _root_.IsUnit.cfcNNRpow (a : A) (y : ℝ≥0) (ha_unit : IsUnit a) (hy : y ≠ 0)
+    (ha : 0 ≤ a := by cfc_tac) : IsUnit (a ^ y) :=
+  (isUnit_nnrpow_iff a y hy ha).mpr ha_unit
+
+lemma isUnit_sqrt_iff (a : A) (ha : 0 ≤ a := by cfc_tac) : IsUnit (sqrt a) ↔ IsUnit a := by
+  rw [sqrt_eq_rpow]
+  exact isUnit_rpow_iff a _ (by norm_num) ha
+
+@[aesop safe apply]
+lemma _root_.IsUnit.cfcSqrt (a : A) (ha_unit : IsUnit a) (ha : 0 ≤ a := by cfc_tac) :
+    IsUnit (sqrt a) :=
+  (isUnit_sqrt_iff a ha).mpr ha_unit
 
 end unital_vs_nonunital
 
