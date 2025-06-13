@@ -325,9 +325,13 @@ The `pf?` function is responsible for finally unifying the type of `pf` with `lh
 def CongrResult.mk' (lhs rhs : Expr) (pf : Expr) : CongrResult where
   lhs := lhs
   rhs := rhs
-  pf? := some fun
-    | .eq => do ensureSidesDefeq (← toEqPf)
-    | .heq => do ensureSidesDefeq (← toHEqPf)
+  pf? :=
+    if (isRefl? pf).isSome then
+      none
+    else
+      some fun
+      | .eq => do ensureSidesDefeq (← toEqPf)
+      | .heq => do ensureSidesDefeq (← toHEqPf)
 where
   /-- Given a `pf` of an `Iff`, `Eq`, or `HEq`, return a proof of `Eq`.
   If `pf` is not obviously any of these, weakly try inserting `propext` to make an `Iff`
@@ -480,7 +484,8 @@ partial def mkCongrOfAux (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr)
       trace[Elab.congr] "hole processing succeeded"
       return res
     if lhs == rhs then
-      return { lhs, rhs, pf? := none }
+      -- There should not be any cHoles, but to be safe let's remove them.
+      return { lhs := removeCHoles lhs, rhs := removeCHoles rhs, pf? := none }
     if (hasCHole mvarCounterSaved lhs).isNone && (hasCHole mvarCounterSaved rhs).isNone then
       -- It's safe to fastforward if the lhs and rhs are defeq and have no congruence holes.
       -- This is more conservative than necessary since congruence holes might only be inside
@@ -574,79 +579,103 @@ partial def mkCongrOfApp (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr)
     return ← CongrResult.mkDefault' mvarCounterSaved lhs rhs
   -- Optimization: congruences often have a shared prefix (e.g. some type parameters an instances)
   -- so if there's a shared prefix we use it.
-  let (f, f') := getJointAppFns lhs rhs
+  let mut (f, f') := getJointAppFns lhs rhs
   let arity := arity - f.getAppNumArgs
   trace[Elab.congr] "app, updated arity {arity}"
   if f != f' then
     unless ← isDefEq (← inferType f) (← inferType f') do
       trace[Elab.congr] "app desync (function types)"
       return ← CongrResult.mkDefault' mvarCounterSaved lhs rhs
-  let info ← getFunInfoNArgs f arity
-  -- Sometimes functions are "overapplied", meaning the natural arity of the function is less
-  -- than `arity`. In this case, we need to split the congruence up, since `mkHCongrWithArity'`
-  -- can't work when it is given too high of an arity.
-  if info.getArity < arity then
-    let overage := arity - info.getArity
-    trace[Elab.congr] "app overapplied with overage of {overage}"
-    -- Insert an mdata node to split up the application and then try `mkCongrOfApp` again.
-    -- The mdata changes the effective arity of the application.
-    let lhs' := mkAppN (.mdata {} (lhs.getBoundedAppFn overage)) (lhs.getBoundedAppArgs overage)
-    let rhs' := mkAppN (.mdata {} (rhs.getBoundedAppFn overage)) (rhs.getBoundedAppArgs overage)
-    return ← mkCongrOfApp (depth + 1) mvarCounterSaved lhs' rhs'
-  let fnRes ← mkCongrOfAux (depth + 1) mvarCounterSaved f f'
-  trace[Elab.congr] "mkCongrOf functions {f}, {f'} has isRfl = {fnRes.isRfl}"
-  let lhsFnArgs := lhs.getBoundedAppArgs arity
-  let rhsFnArgs := rhs.getBoundedAppArgs arity
-  if !fnRes.isRfl then
-    -- If there's a nontrivial proof, then since mkHCongrWithArity fixes the function
-    -- we need to handle this ourselves.
-    let lhs := mkAppN fnRes.lhs lhsFnArgs
-    let lhs' := mkAppN fnRes.rhs lhsFnArgs
-    let rhs := mkAppN fnRes.rhs rhsFnArgs
-    let mut pf ← fnRes.eq
-    for arg in lhsFnArgs do
-      pf ← mkCongrFun pf arg
-    let res1 := CongrResult.mk' lhs lhs' pf
-    let res2 ← mkCongrOfAux (depth + 1) mvarCounterSaved lhs' rhs
-    return res1.trans res2
-  let thm ← mkHCongrWithArity' fnRes.lhs arity
-  let mut args := #[]
-  let mut lhsArgs := #[]
-  let mut rhsArgs := #[]
-  let mut nontriv : Bool := false
-  for lhs' in lhsFnArgs, rhs' in rhsFnArgs, kind in thm.argKinds do
-    match kind with
-    | .eq =>
-      let res ← mkCongrOfAux (depth + 1) mvarCounterSaved lhs' rhs'
-      nontriv := nontriv || !res.isRfl
-      args := args |>.push res.lhs |>.push res.rhs |>.push (← res.eq)
-      lhsArgs := lhsArgs.push res.lhs
-      rhsArgs := rhsArgs.push res.rhs
-    | .heq =>
-      let res ← mkCongrOfAux (depth + 1) mvarCounterSaved lhs' rhs'
-      nontriv := nontriv || !res.isRfl
-      args := args |>.push res.lhs |>.push res.rhs |>.push (← res.heq)
-      lhsArgs := lhsArgs.push res.lhs
-      rhsArgs := rhsArgs.push res.rhs
-    | .subsingletonInst =>
-      -- Warning: we're not processing any congruence holes here.
-      -- Users shouldn't be intentionally placing them in such arguments anyway.
-      -- We can't throw an error because these arguments might incidentally have
-      -- congruence holes by unification.
-      nontriv := true
-      let lhs := removeCHoles lhs'
-      let rhs := removeCHoles rhs'
-      args := args |>.push lhs |>.push rhs
-      lhsArgs := lhsArgs.push lhs
-      rhsArgs := rhsArgs.push rhs
-    | _ => panic! "unexpected hcongr argument kind"
-  let lhs := mkAppN fnRes.lhs lhsArgs
-  let rhs := mkAppN fnRes.rhs rhsArgs
-  if nontriv then
-    return CongrResult.mk' lhs rhs (mkAppN thm.proof args)
-  else
-    -- `lhs` and `rhs` *should* be defeq, but use `mkDefault` just to be safe.
-    CongrResult.mkDefault lhs rhs
+  -- First try using `congr`/`congrFun` to build a proof as far as possible.
+  -- We update `f`, `f'`, and `finfo` as we go.
+  let lhsArgs := lhs.getBoundedAppArgs arity
+  let rhsArgs := rhs.getBoundedAppArgs arity
+  /-
+  - `i` is index into `lhsArgs`/`rhsArgs`.
+  - `finfo` is the funinfo of `f` applied to the first `finfoIdx` arguments
+  - `f` and `f'` are the current head functions, after the first `i` arguments have been applied.
+  -/
+  let rec go (i : Nat) (finfo : FunInfo) (finfoIdx : Nat) (f f' : Expr) (pf : Expr) :
+      M CongrResult := do
+    if i ≥ arity then
+      return CongrResult.mk' f f' pf
+    else
+      let mut finfo := finfo
+      let mut finfoIdx := finfoIdx
+      unless i - finfoIdx < finfo.paramInfo.size do
+        finfo ← getFunInfoNArgs f (arity - finfoIdx)
+        finfoIdx := i
+      let info := finfo.paramInfo[i - finfoIdx]!
+      let a := lhsArgs[i]!
+      let a' := rhsArgs[i]!
+      let ra ← mkCongrOfAux (depth + 1) mvarCounterSaved a a'
+      if ra.isRfl then
+        trace[Elab.congr] "app, arg {i} by rfl"
+        go (i + 1) finfo finfoIdx (.app f ra.lhs) (.app f' ra.rhs) (← mkCongrFun pf ra.lhs)
+      else if !info.hasFwdDeps then
+        trace[Elab.congr] "app, arg {i} by eq"
+        go (i + 1) finfo finfoIdx (.app f ra.lhs) (.app f' ra.rhs) (← mkCongr pf (← ra.eq))
+      else
+        -- Otherwise, we can make progress with an hcongr lemma.
+        -- Update the FunInfo if necessary to make as much progress as possible:
+        if finfoIdx < i && finfoIdx + finfo.getArity < arity then
+          finfo ← getFunInfoNArgs f (arity - finfoIdx)
+          finfoIdx := i
+        trace[Elab.congr] "app, hcongr of {finfo.getArity} arguments"
+        if (isRefl? pf).isNone then
+          trace[Elab.congr] "app, hcongr needs transitivity"
+          -- If there's a nontrivial proof, then since `mkHCongrWithArity'` fixes the function,
+          -- we need to use transitivity to make the functions be the same.
+          let lhsArgs' := (lhsArgs.extract i).map removeCHoles
+          let lhs := mkAppN f lhsArgs'
+          let lhs' := mkAppN f' lhsArgs'
+          let mut pf' := pf
+          for arg in lhsArgs' do
+            pf' ← mkCongrFun pf' arg
+          let res1 := CongrResult.mk' lhs lhs' pf'
+          let res2 ← go i finfo finfoIdx f' f' (← mkEqRefl f')
+          return res1.trans res2
+        else
+          let thm ← mkHCongrWithArity' f finfo.getArity
+          let mut args := #[]
+          let mut lhsArgs' := #[]
+          let mut rhsArgs' := #[]
+          for lhs' in lhsArgs[i:], rhs' in rhsArgs[i:], kind in thm.argKinds do
+            match kind with
+            | .eq =>
+              let ares ← mkCongrOfAux (depth + 1) mvarCounterSaved lhs' rhs'
+              args := args |>.push ares.lhs |>.push ares.rhs |>.push (← ares.eq)
+              lhsArgs' := lhsArgs'.push ares.lhs
+              rhsArgs' := rhsArgs'.push ares.rhs
+            | .heq =>
+              let ares ← mkCongrOfAux (depth + 1) mvarCounterSaved lhs' rhs'
+              args := args |>.push ares.lhs |>.push ares.rhs |>.push (← ares.heq)
+              lhsArgs' := lhsArgs'.push ares.lhs
+              rhsArgs' := rhsArgs'.push ares.rhs
+            | .subsingletonInst =>
+              -- Warning: we're not processing any congruence holes here.
+              -- Users shouldn't be intentionally placing them in such arguments anyway.
+              -- We can't throw an error because these arguments might incidentally have
+              -- congruence holes by unification.
+              let lhs := removeCHoles lhs'
+              let rhs := removeCHoles rhs'
+              args := args |>.push lhs |>.push rhs
+              lhsArgs' := lhsArgs'.push lhs
+              rhsArgs' := rhsArgs'.push rhs
+            | _ => panic! "unexpected hcongr argument kind"
+          let lhs := mkAppN f lhsArgs'
+          let rhs := mkAppN f' rhsArgs'
+          let res := CongrResult.mk' lhs rhs (mkAppN thm.proof args)
+          if i + 1 < arity then
+            -- There are more arguments after this. The only way this can work is if
+            -- `res` can prove an equality.
+            go (i + finfo.getArity) finfo finfoIdx lhs rhs (← res.eq)
+          else
+            -- Otherwise, we can return `res`, which might only be a HEq.
+            return res
+  let res ← mkCongrOfAux (depth + 1) mvarCounterSaved f f'
+  let pf ← res.eq
+  go 0 (← getFunInfoNArgs f arity) 0 res.lhs res.rhs pf
 
 end
 

@@ -55,6 +55,11 @@ example [Decidable p] (x y : Nat) (h : x = y) : True := by
   guard_hyp this :ₛ (if p then 1 else x) = (if p then 1 else y)
   trivial
 
+example [Decidable p] (x y : Nat) (h : x = y) : True := by
+  have := congr(if p then $h else 1)
+  guard_hyp this :ₛ (if p then x else 1) = (if p then y else 1)
+  trivial
+
 example (x y z w : Nat) (h : x = y) (h' : z = w) : 1 + x * z^2 = 1 + y * w^2 := by
   refine congr(1 + $(?_) * $(?_)^2)
   · exact h
@@ -71,6 +76,9 @@ example (p q : Prop) (h : p = q) : p ↔ q := by
   refine congr($(?_))
   guard_target = p ↔ q
   exact congr($h)
+
+example (p p' q q' : Prop) (hp : p ↔ p') (hq : q ↔ q') : (p → q) ↔ (p' → q') :=
+  congr($hp → $hq)
 
 example (p q : Prop) (h : p = q) : Nonempty p = Nonempty q := congr(Nonempty $h)
 
@@ -158,6 +166,7 @@ def f {α : Type} [DecidableEq α] (n : α) (_ : n = n) : α := n
 lemma test (n n' : Nat) (h : n = n') (hn : n = n) (hn' : n' = n') :
     f n hn = f n' hn' := by
   have := congr(f $h ‹_›) -- without expected type
+  guard_hyp this :ₛ f n hn = f n' hn'
   exact congr(f $h _) -- with expected type
 
 end SubsingletonDependence
