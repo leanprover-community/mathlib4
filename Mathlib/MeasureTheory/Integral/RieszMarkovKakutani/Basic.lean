@@ -10,10 +10,9 @@ import Mathlib.Topology.PartitionOfUnity
 /-!
 #  Riesz–Markov–Kakutani representation theorem
 
-This file prepares technical definitions and results for the Riesz-Markov-Kakutani representation
-theorem on a locally compact T2 space `X`. As a special case, the statements about linear
-functionals on bounded continuous functions follows. Actual theorems, depending on the
-linearity (`ℝ`, `ℝ≥0` or `ℂ`), are proven in separate files (`Real.lean`, `NNReal.lean`...)
+This file will prove the Riesz-Markov-Kakutani representation theorem on a locally compact
+T2 space `X`. As a special case, the statements about linear functionals on bounded continuous
+functions follows.
 
 To make use of the existing API, the measure is constructed from a content `λ` on the
 compact subsets of a locally compact space X, rather than the usual construction of open sets in the

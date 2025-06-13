@@ -100,7 +100,7 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
     constructor
     · intro h
       rcases h with ⟨f, hf⟩
-      convert f.nodup
+      convert  Set.mem_def.mpr f.nodup
       rw [hf]
       rfl
     · intro h

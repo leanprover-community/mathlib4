@@ -6,7 +6,6 @@ Authors: Oliver Nash
 import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.Algebra.Lie.Weights.Cartan
 import Mathlib.RingTheory.Finiteness.Nilpotent
-import Mathlib.Data.Int.Interval
 
 /-!
 # Chains of roots and weights

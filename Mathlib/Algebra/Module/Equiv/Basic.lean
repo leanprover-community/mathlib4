@@ -234,10 +234,6 @@ theorem coe_toNatLinearEquiv : ⇑e.toNatLinearEquiv = e :=
   rfl
 
 @[simp]
-theorem coe_symm_toNatLinearEquiv : ⇑e.toNatLinearEquiv.symm = e.symm :=
-  rfl
-
-@[simp]
 theorem toNatLinearEquiv_toAddEquiv : ↑e.toNatLinearEquiv = e :=
   rfl
 
@@ -247,7 +243,7 @@ theorem _root_.LinearEquiv.toAddEquiv_toNatLinearEquiv (e : M ≃ₗ[ℕ] M₂) 
   DFunLike.coe_injective rfl
 
 @[simp]
-theorem toNatLinearEquiv_symm : e.symm.toNatLinearEquiv = e.toNatLinearEquiv.symm :=
+theorem toNatLinearEquiv_symm : e.toNatLinearEquiv.symm = e.symm.toNatLinearEquiv :=
   rfl
 
 @[simp]
@@ -256,7 +252,7 @@ theorem toNatLinearEquiv_refl : (AddEquiv.refl M).toNatLinearEquiv = LinearEquiv
 
 @[simp]
 theorem toNatLinearEquiv_trans (e₂ : M₂ ≃+ M₃) :
-    (e.trans e₂).toNatLinearEquiv = e.toNatLinearEquiv.trans e₂.toNatLinearEquiv :=
+    e.toNatLinearEquiv.trans e₂.toNatLinearEquiv = (e.trans e₂).toNatLinearEquiv :=
   rfl
 
 end AddCommMonoid
@@ -276,10 +272,6 @@ theorem coe_toIntLinearEquiv : ⇑e.toIntLinearEquiv = e :=
   rfl
 
 @[simp]
-theorem coe_symm_toIntLinearEquiv : ⇑e.toIntLinearEquiv.symm = e.symm :=
-  rfl
-
-@[simp]
 theorem toIntLinearEquiv_toAddEquiv : ↑e.toIntLinearEquiv = e := by
   ext
   rfl
@@ -290,7 +282,7 @@ theorem _root_.LinearEquiv.toAddEquiv_toIntLinearEquiv (e : M ≃ₗ[ℤ] M₂) 
   DFunLike.coe_injective rfl
 
 @[simp]
-theorem toIntLinearEquiv_symm : e.symm.toIntLinearEquiv = e.toIntLinearEquiv.symm :=
+theorem toIntLinearEquiv_symm : e.toIntLinearEquiv.symm = e.symm.toIntLinearEquiv :=
   rfl
 
 @[simp]
@@ -299,7 +291,7 @@ theorem toIntLinearEquiv_refl : (AddEquiv.refl M).toIntLinearEquiv = LinearEquiv
 
 @[simp]
 theorem toIntLinearEquiv_trans (e₂ : M₂ ≃+ M₃) :
-    (e.trans e₂).toIntLinearEquiv = e.toIntLinearEquiv.trans e₂.toIntLinearEquiv :=
+    e.toIntLinearEquiv.trans e₂.toIntLinearEquiv = (e.trans e₂).toIntLinearEquiv :=
   rfl
 
 end AddCommGroup

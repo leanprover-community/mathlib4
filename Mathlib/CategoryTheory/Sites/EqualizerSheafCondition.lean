@@ -30,7 +30,7 @@ equalizer diagrams.
 -/
 
 
-universe t w v u
+universe w v u
 
 namespace CategoryTheory
 
@@ -254,8 +254,9 @@ variable (P : Cᵒᵖ ⥤ Type w) {X : C} (R : Presieve X) (S : Sieve X)
 
 open Presieve
 
-variable {B : C} {I : Type t} [Small.{w} I] (X : I → C) (π : (i : I) → X i ⟶ B)
+variable {B : C} {I : Type} (X : I → C) (π : (i : I) → X i ⟶ B)
     [(Presieve.ofArrows X π).hasPullbacks]
+-- TODO: allow `I : Type w`
 
 /--
 The middle object of the fork diagram of the Stacks entry.
@@ -315,13 +316,9 @@ theorem w : forkMap P X π ≫ firstMap P X π = forkMap P X π ≫ secondMap P 
 /--
 The family of elements given by `x : FirstObj P S` is compatible iff `firstMap` and `secondMap`
 map it to the same point.
-See `CategoryTheory.Equalizer.Presieve.Arrows.compatible_iff_of_small` for a version with
-less universe assumptions.
 -/
-theorem compatible_iff {I : Type w} (X : I → C) (π : (i : I) → X i ⟶ B)
-    [(Presieve.ofArrows X π).hasPullbacks] (x : FirstObj P X) :
-    (Arrows.Compatible P π ((Types.productIso _).hom x)) ↔
-      firstMap P X π x = secondMap P X π x := by
+theorem compatible_iff (x : FirstObj P X) : (Arrows.Compatible P π ((Types.productIso _).hom x)) ↔
+    firstMap P X π x = secondMap P X π x := by
   rw [Arrows.pullbackCompatible_iff]
   constructor
   · intro t
@@ -331,32 +328,18 @@ theorem compatible_iff {I : Type w} (X : I → C) (π : (i : I) → X i ⟶ B)
     apply_fun Pi.π (fun (ij : I × I) ↦ P.obj (op (pullback (π ij.1) (π ij.2)))) ⟨i, j⟩ at t
     simpa [firstMap, secondMap] using t
 
-/-- Version of `CategoryTheory.Equalizer.Presieve.Arrows.compatible_iff` for a small
-indexing type. -/
-lemma compatible_iff_of_small (x : FirstObj P X) :
-    (Arrows.Compatible P π ((equivShrink _).symm ((Types.Small.productIso _).hom x))) ↔
-      firstMap P X π x = secondMap P X π x := by
-  rw [Arrows.pullbackCompatible_iff]
-  refine ⟨fun t ↦ ?_, fun t i j ↦ ?_⟩
-  · ext ij
-    simpa [firstMap, secondMap] using t ij.1 ij.2
-  · apply_fun Pi.π (fun (ij : I × I) ↦ P.obj (op (pullback (π ij.1) (π ij.2)))) ⟨i, j⟩ at t
-    simpa [firstMap, secondMap] using t
-
 /-- `P` is a sheaf for `Presieve.ofArrows X π`, iff the fork given by `w` is an equalizer. -/
 @[stacks 00VM]
 theorem sheaf_condition : (Presieve.ofArrows X π).IsSheafFor P ↔
     Nonempty (IsLimit (Fork.ofι (forkMap P X π) (w P X π))) := by
   rw [Types.type_equalizer_iff_unique, isSheafFor_arrows_iff]
-  simp only [FirstObj]
-  rw [← Equiv.forall_congr_right ((equivShrink _).trans (Types.Small.productIso _).toEquiv.symm)]
-  simp_rw [← compatible_iff_of_small, ← Iso.toEquiv_fun, Equiv.trans_apply, Equiv.apply_symm_apply,
-    Equiv.symm_apply_apply]
+  erw [← Equiv.forall_congr_right (Types.productIso _).toEquiv.symm]
+  simp_rw [← compatible_iff, ← Iso.toEquiv_fun, Equiv.apply_symm_apply]
   apply forall₂_congr
   intro x _
   apply existsUnique_congr
   intro t
-  rw [Equiv.eq_symm_apply, ← Equiv.symm_apply_eq]
+  erw [Equiv.eq_symm_apply]
   constructor
   · intro q
     funext i

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.TypeTags.Hom
+import Mathlib.Algebra.Ring.Hom.Basic
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Algebra.Ring.Parity
 
@@ -118,7 +119,7 @@ lemma _root_.Odd.intCast (hn : Odd n) : Odd (n : α) := hn.map (castRingHom α)
 end Ring
 
 theorem cast_dvd_cast [Ring α] (m n : ℤ) (h : m ∣ n) : (m : α) ∣ (n : α) :=
-  map_dvd (Int.castRingHom α) h
+  RingHom.map_dvd (Int.castRingHom α) h
 
 end cast
 

@@ -191,16 +191,7 @@ lemma _root_.IsometryEquiv.toDilationEquiv_apply (e : X ≃ᵢ Y) (x : X) :
 
 @[simp]
 lemma _root_.IsometryEquiv.toDilationEquiv_symm (e : X ≃ᵢ Y) :
-    e.symm.toDilationEquiv = e.toDilationEquiv.symm :=
-  rfl
-
-@[simp]
-lemma _root_.IsometryEquiv.coe_toDilationEquiv (e : X ≃ᵢ Y) : ⇑e.toDilationEquiv = e :=
-  rfl
-
-@[simp]
-lemma _root_.IsometryEquiv.coe_symm_toDilationEquiv (e : X ≃ᵢ Y) :
-    ⇑e.toDilationEquiv.symm = e.symm :=
+    e.toDilationEquiv.symm = e.symm.toDilationEquiv :=
   rfl
 
 @[simp]
@@ -219,15 +210,11 @@ def toHomeomorph (e : X ≃ᵈ Y) : X ≃ₜ Y where
   __ := e.toEquiv
 
 @[simp]
-lemma toHomeomorph_symm (e : X ≃ᵈ Y) : e.symm.toHomeomorph = e.toHomeomorph.symm :=
-  rfl
-
-@[simp]
 lemma coe_toHomeomorph (e : X ≃ᵈ Y) : ⇑e.toHomeomorph = e :=
   rfl
 
 @[simp]
-lemma coe_symm_toHomeomorph (e : X ≃ᵈ Y) : ⇑e.toHomeomorph.symm = e.symm :=
+lemma toHomeomorph_symm (e : X ≃ᵈ Y) : e.toHomeomorph.symm = e.symm.toHomeomorph :=
   rfl
 
 end PseudoEMetricSpace

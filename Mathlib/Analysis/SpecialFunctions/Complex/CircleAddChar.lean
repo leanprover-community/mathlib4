@@ -6,7 +6,6 @@ Authors: David Loeffler
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
 import Mathlib.RingTheory.RootsOfUnity.AlgebraicallyClosed
-import Mathlib.Topology.Instances.AddCircle.Real
 
 /-!
 # Additive characters valued in the unit circle

@@ -7,7 +7,6 @@ import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.MeasureTheory.Measure.Haar.Quotient
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 import Mathlib.Topology.Algebra.Order.Floor
-import Mathlib.Topology.Instances.AddCircle.Real
 
 /-!
 # Integrals of periodic functions

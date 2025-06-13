@@ -7,7 +7,7 @@ See the `Mathlib.Geometry.Convex` folder for the results that do not need a norm
 ## Topics
 
 The topics currently covered are:
-* Strongly convex functions, uniformly convex functions
+* Strongly convex functions, uniformly convex functiosn
 * The product of convex functions is convex
 * Continuity of convex functions
 * Functions with positive second derivative are convex

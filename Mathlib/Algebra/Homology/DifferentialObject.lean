@@ -41,18 +41,14 @@ abbrev objEqToHom {i j : β} (h : i = j) :
 theorem objEqToHom_refl (i : β) : X.objEqToHom (refl i) = 𝟙 _ :=
   rfl
 
--- Removing `@[simp]`, because it is in the opposite direction of `eqToHom_naturality`.
--- Having both causes an infinite loop in the simpNF linter.
-@[reassoc]
+@[reassoc (attr := simp)]
 theorem objEqToHom_d {x y : β} (h : x = y) :
     X.objEqToHom h ≫ X.d y = X.d x ≫ X.objEqToHom (by cases h; rfl) := by cases h; simp
 
 @[reassoc (attr := simp)]
 theorem d_squared_apply {x : β} : X.d x ≫ X.d _ = 0 := congr_fun X.d_squared _
 
--- Removing `@[simp]`, because it is in the opposite direction of `eqToHom_naturality`.
--- Having both causes an infinite loop in the simpNF linter.
-@[reassoc]
+@[reassoc (attr := simp)]
 theorem eqToHom_f' {X Y : DifferentialObject ℤ (GradedObjectWithShift b V)} (f : X ⟶ Y) {x y : β}
     (h : x = y) : X.objEqToHom h ≫ f.f y = f.f x ≫ Y.objEqToHom h := by cases h; simp
 
@@ -83,7 +79,7 @@ def dgoToHomologicalComplex :
       shape := fun i j w => by dsimp at w; convert dif_neg w
       d_comp_d' := fun i j k hij hjk => by
         dsimp at hij hjk; substs hij hjk
-        simp [objEqToHom_d_assoc] }
+        simp }
   map {X Y} f :=
     { f := f.f
       comm' := fun i j h => by

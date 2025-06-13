@@ -178,15 +178,10 @@ def Ultrafilter.extend (f : α → γ) : Ultrafilter α → γ :=
 
 variable [T2Space γ]
 
-@[simp]
-lemma ultrafilter_extend_extends (f : α → γ) : Ultrafilter.extend f ∘ pure = f := by
+theorem ultrafilter_extend_extends (f : α → γ) : Ultrafilter.extend f ∘ pure = f := by
   letI : TopologicalSpace α := ⊥
   haveI : DiscreteTopology α := ⟨rfl⟩
   exact funext (isDenseInducing_pure.extend_eq continuous_of_discreteTopology)
-
-@[simp]
-lemma ultrafilter_extend_pure (f : α → γ) (a : α) : Ultrafilter.extend f (pure a) = f a :=
-  congr_fun (ultrafilter_extend_extends f) a
 
 variable [CompactSpace γ]
 
@@ -286,14 +281,8 @@ lemma preStoneCechCompat {F G : Ultrafilter α} {x : α} (hF : ↑F ≤ 𝓝 x) 
 def preStoneCechExtend : PreStoneCech α → β :=
   Quot.lift (Ultrafilter.extend g) fun _ _ ⟨_, hF, hG⟩ ↦ preStoneCechCompat hg hF hG
 
-@[simp]
-lemma preStoneCechExtend_extends : preStoneCechExtend hg ∘ preStoneCechUnit = g :=
+theorem preStoneCechExtend_extends : preStoneCechExtend hg ∘ preStoneCechUnit = g :=
   ultrafilter_extend_extends g
-
-@[simp]
-lemma preStoneCechExtend_preStoneCechUnit (a : α) :
-    preStoneCechExtend hg (preStoneCechUnit a) = g a :=
-  congr_fun (preStoneCechExtend_extends hg) a
 
 lemma eq_if_preStoneCechUnit_eq {a b : α} (h : preStoneCechUnit a = preStoneCechUnit b) :
     g a = g b := by
@@ -371,15 +360,10 @@ variable [CompactSpace β]
 def stoneCechExtend : StoneCech α → β :=
   T2Quotient.lift (continuous_preStoneCechExtend hg)
 
-@[simp]
-lemma stoneCechExtend_extends : stoneCechExtend hg ∘ stoneCechUnit = g := by
+theorem stoneCechExtend_extends : stoneCechExtend hg ∘ stoneCechUnit = g := by
   ext x
   rw [stoneCechExtend, Function.comp_apply, stoneCechUnit, T2Quotient.lift_mk]
   apply congrFun (preStoneCechExtend_extends hg)
-
-@[simp]
-lemma stoneCechExtend_stoneCechUnit (a : α) : stoneCechExtend hg (stoneCechUnit a) = g a :=
-  congr_fun (stoneCechExtend_extends hg) a
 
 theorem continuous_stoneCechExtend : Continuous (stoneCechExtend hg) :=
   continuous_coinduced_dom.mpr (continuous_preStoneCechExtend hg)

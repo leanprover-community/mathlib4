@@ -50,7 +50,8 @@ theorem volume_preserving_equiv_pi : MeasurePreserving measurableEquivPi := by
   convert (measurableEquivPi.symm.measurable.measurePreserving volume).symm
   rw [← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar,
     measurableEquivPi, Homeomorph.toMeasurableEquiv_symm_coe,
-    ContinuousLinearEquiv.coe_symm_toHomeomorph, Basis.map_addHaar, eq_comm]
+    ContinuousLinearEquiv.symm_toHomeomorph, ContinuousLinearEquiv.coe_toHomeomorph,
+    Basis.map_addHaar, eq_comm]
   exact (Basis.addHaar_eq_iff _ _).mpr Complex.orthonormalBasisOneI.volume_parallelepiped
 
 theorem volume_preserving_equiv_real_prod : MeasurePreserving measurableEquivRealProd :=

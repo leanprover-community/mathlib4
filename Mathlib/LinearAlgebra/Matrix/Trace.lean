@@ -239,14 +239,16 @@ variable [Fintype n] [AddCommMonoid α] (i j : n) (c : α)
 
 @[simp]
 theorem trace_single_eq_of_ne (h : i ≠ j) : trace (single i j c) = 0 := by
-  simp [trace, h]
+  -- Porting note: added `-diag_apply`
+  simp [trace, -diag_apply, h]
 
 @[deprecated (since := "2025-05-05")]
 alias StdBasisMatrix.trace_zero := trace_single_eq_of_ne
 
 @[simp]
 theorem trace_single_eq_same : trace (single i i c) = c := by
-  simp [trace]
+  -- Porting note: added `-diag_apply`
+  simp [trace, -diag_apply]
 
 @[deprecated (since := "2025-05-05")]
 alias StdBasisMatrix.trace_eq := trace_single_eq_same

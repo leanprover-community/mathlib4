@@ -239,6 +239,8 @@ variable {p} in
 theorem val_smul (r : R) (x : p) : (↑(r • x) : M) = r • (x : M) :=
   rfl
 
+-- Porting note: no longer needed because of defeq structure eta
+
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
 @[to_additive "Embedding of a submodule `p` to the ambient space `M`."]
 protected def subtype : p →[R] M where

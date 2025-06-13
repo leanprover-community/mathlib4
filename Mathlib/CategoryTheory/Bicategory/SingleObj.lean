@@ -22,14 +22,13 @@ One could go much further: the bicategory of monoidal categories
 is equivalent to the bicategory consisting of
 * single object bicategories,
 * pseudofunctors, and
-* (oplax) natural transformations `η` such that `η.app Unit.unit = 𝟙 _`.
+* (oplax) natural transformations `η` such that `η.app PUnit.unit = 𝟙 _`.
 -/
 
-universe v u
 
 namespace CategoryTheory
 
-variable (C : Type u) [Category.{v} C] [MonoidalCategory C]
+variable (C : Type*) [Category C] [MonoidalCategory C]
 
 /-- Promote a monoidal category to a bicategory with a single object.
 (The objects of the monoidal category become the 1-morphisms,
@@ -37,8 +36,8 @@ with composition given by tensor product,
 and the morphisms of the monoidal category become the 2-morphisms.)
 -/
 @[nolint unusedArguments]
-def MonoidalSingleObj (C : Type u) [Category.{v} C] [MonoidalCategory C] :=
-  Unit
+def MonoidalSingleObj (C : Type*) [Category C] [MonoidalCategory C] :=
+  PUnit
 -- The `Inhabited` instance should be constructed by a deriving handler.
 -- https://github.com/leanprover-community/mathlib4/issues/380
 
@@ -64,7 +63,7 @@ namespace MonoidalSingleObj
 /-- The unique object in the bicategory obtained by "promoting" a monoidal category. -/
 @[nolint unusedArguments]
 protected def star : MonoidalSingleObj C :=
-  Unit.unit
+  PUnit.unit
 
 /-- The monoidal functor from the endomorphisms of the single object
 when we promote a monoidal category to a single object bicategory,

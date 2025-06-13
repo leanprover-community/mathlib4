@@ -163,7 +163,7 @@ theorem antipode_comul₁ (A : C) [Hopf_Class A] :
     rw [Bimon_.compatibility]
   slice_lhs 1 3 =>
     rw [antipode_left]
-  simp [Mon_Class.tensorObj.one_def]
+  simp
 
 /--
 Auxiliary calculation for `antipode_comul`.

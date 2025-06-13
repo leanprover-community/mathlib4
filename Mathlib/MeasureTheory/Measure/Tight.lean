@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Josha Dekker
 -/
 import Mathlib.MeasureTheory.Measure.RegularityCompacts
-import Mathlib.Topology.Order.Lattice
 
 /-!
 # Tight sets of measures

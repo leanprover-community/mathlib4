@@ -587,12 +587,6 @@ lemma Topology.isInducing_prod_const {y : Y} {f : X → Z} :
 
 @[deprecated (since := "2024-10-28")] alias inducing_prod_const := isInducing_prod_const
 
-lemma isInducing_prodMkLeft (y : Y) : IsInducing (fun x : X ↦ (x, y)) :=
-  .of_comp (.prodMk_left y) continuous_fst .id
-
-lemma isInducing_prodMkRight (x : X) : IsInducing (Prod.mk x : Y → X × Y) :=
-  .of_comp (.prodMk_right x) continuous_snd .id
-
 lemma Topology.IsEmbedding.prodMap {f : X → Y} {g : Z → W} (hf : IsEmbedding f)
     (hg : IsEmbedding g) : IsEmbedding (Prod.map f g) where
   toIsInducing := hf.isInducing.prodMap hg.isInducing
@@ -615,14 +609,11 @@ lemma isEmbedding_graph {f : X → Y} (hf : Continuous f) : IsEmbedding fun x =>
 @[deprecated (since := "2024-10-26")]
 alias embedding_graph := isEmbedding_graph
 
-lemma isEmbedding_prodMkLeft (y : Y) : IsEmbedding (fun x : X ↦ (x, y)) :=
-  .of_comp (.prodMk_left y) continuous_fst .id
-
-lemma isEmbedding_prodMkRight (x : X) : IsEmbedding (Prod.mk x : Y → X × Y) :=
+lemma isEmbedding_prodMk (x : X) : IsEmbedding (Prod.mk x : Y → X × Y) :=
   .of_comp (.prodMk_right x) continuous_snd .id
 
-@[deprecated (since := "2025-06-12")] alias isEmbedding_prodMk := isEmbedding_prodMkRight
-@[deprecated (since := "2024-10-26")] alias embedding_prod_mk := isEmbedding_prodMkRight
+@[deprecated (since := "2024-10-26")]
+alias embedding_prod_mk := isEmbedding_prodMk
 
 theorem IsOpenQuotientMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenQuotientMap f)
     (hg : IsOpenQuotientMap g) : IsOpenQuotientMap (Prod.map f g) :=

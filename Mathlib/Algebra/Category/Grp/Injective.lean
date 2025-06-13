@@ -9,7 +9,7 @@ import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.Category.ModuleCat.Injective
 import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.Topology.Instances.AddCircle.Defs
+import Mathlib.Topology.Instances.AddCircle
 
 /-!
 # Injective objects in the category of abelian groups

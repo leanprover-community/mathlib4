@@ -59,9 +59,7 @@ section DotProduct
 
 variable [Fintype m] [Fintype n]
 
-/-- `dotProduct v w` is the sum of the entrywise products `v i * w i`.
-
-See also `dotProductEquiv`. -/
+/-- `dotProduct v w` is the sum of the entrywise products `v i * w i` -/
 def dotProduct [Mul α] [AddCommMonoid α] (v w : m → α) : α :=
   ∑ i, v i * w i
 
@@ -589,8 +587,7 @@ open Matrix
 namespace Matrix
 
 /-- For two vectors `w` and `v`, `vecMulVec w v i j` is defined to be `w i * v j`.
-Put another way, `vecMulVec w v` is exactly `replicateCol ι w * replicateRow ι v` for
-`Unique ι`; see `vecMulVec_eq`. -/
+    Put another way, `vecMulVec w v` is exactly `col w * row v`. -/
 def vecMulVec [Mul α] (w : m → α) (v : n → α) : Matrix m n α :=
   of fun x y => w x * v y
 

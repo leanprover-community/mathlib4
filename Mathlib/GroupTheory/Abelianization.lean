@@ -219,6 +219,7 @@ end Abelianization
 
 section AbelianizationCongr
 
+-- Porting note: `[Group G]` should not be necessary here
 variable {G} {H : Type v} [Group H]
 
 /-- Equivalent groups have equivalent abelianizations -/

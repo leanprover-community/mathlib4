@@ -52,12 +52,8 @@ variable (α : Type v) [CommRing α] [StarRing α]
 /-- `Matrix.unitaryGroup n` is the group of `n` by `n` matrices where the star-transpose is the
 inverse.
 -/
-abbrev unitaryGroup : Submonoid (Matrix n n α) :=
+abbrev unitaryGroup :=
   unitary (Matrix n n α)
-
--- the group and star structure is already defined in another file
-example : Group (unitaryGroup n α) := inferInstance
-example : StarMul (unitaryGroup n α) := inferInstance
 
 end
 
@@ -181,32 +177,13 @@ variable (n) (α)
 
 /-- `Matrix.specialUnitaryGroup` is the group of unitary `n` by `n` matrices where the determinant
 is 1. (This definition is only correct if 2 is invertible.) -/
-def specialUnitaryGroup : Submonoid (Matrix n n α) := unitaryGroup n α ⊓ MonoidHom.mker detMonoidHom
+abbrev specialUnitaryGroup := unitaryGroup n α ⊓ MonoidHom.mker detMonoidHom
 
 variable {n} {α}
-
-theorem specialUnitaryGroup_le_unitaryGroup : specialUnitaryGroup n α ≤ unitaryGroup n α :=
-  inf_le_left
 
 theorem mem_specialUnitaryGroup_iff :
     A ∈ specialUnitaryGroup n α ↔ A ∈ unitaryGroup n α ∧ A.det = 1 :=
   Iff.rfl
-
-instance : StarMul (specialUnitaryGroup n α) where
-  star A := ⟨star A, by simpa using A.prop.1, by have := A.prop.2; simp_all [star_eq_conjTranspose]⟩
-  star_mul A B := Subtype.ext <| star_mul A.1 B.1
-  star_involutive A := Subtype.ext <| star_involutive A.1
-
-@[simp, norm_cast]
-theorem specialUnitaryGroup.coe_star (A : specialUnitaryGroup n α) : (star A).1 = star A.1 := rfl
-
-instance : Inv (specialUnitaryGroup n α) where inv := star
-
-theorem star_eq_inv (A : specialUnitaryGroup n α) : star A = A⁻¹ :=
-  rfl
-
-instance : Group (specialUnitaryGroup n α) where
-  inv_mul_cancel A := Subtype.ext A.prop.1.1
 
 end specialUnitaryGroup
 
@@ -224,12 +201,14 @@ inverse. -/
 abbrev orthogonalGroup := unitaryGroup n β
 
 theorem mem_orthogonalGroup_iff {A : Matrix n n β} :
-    A ∈ Matrix.orthogonalGroup n β ↔ A * Aᵀ = 1 :=
-  mem_unitaryGroup_iff
+    A ∈ Matrix.orthogonalGroup n β ↔ A * star A = 1 := by
+  refine ⟨And.right, fun hA => ⟨?_, hA⟩⟩
+  simpa only [mul_eq_one_comm] using hA
 
 theorem mem_orthogonalGroup_iff' {A : Matrix n n β} :
-    A ∈ Matrix.orthogonalGroup n β ↔ Aᵀ * A = 1 :=
-  mem_unitaryGroup_iff'
+    A ∈ Matrix.orthogonalGroup n β ↔ star A * A = 1 := by
+  refine ⟨And.left, fun hA => ⟨hA, ?_⟩⟩
+  rwa [mul_eq_one_comm] at hA
 
 end OrthogonalGroup
 
@@ -241,13 +220,9 @@ attribute [local instance] starRingOfComm
 
 /-- `Matrix.specialOrthogonalGroup n` is the group of orthogonal `n` by `n` where the determinant
 is one. (This definition is only correct if 2 is invertible.) -/
-abbrev specialOrthogonalGroup : Submonoid (Matrix n n β) := specialUnitaryGroup n β
+abbrev specialOrthogonalGroup := specialUnitaryGroup n β
 
 variable {n} {β} {A : Matrix n n β}
-
--- the group and star structure is automatic from `specialUnitaryGroup`
-example : Group (specialOrthogonalGroup n β) := inferInstance
-example : StarMul (specialOrthogonalGroup n β) := inferInstance
 
 theorem mem_specialOrthogonalGroup_iff :
     A ∈ specialOrthogonalGroup n β ↔ A ∈ orthogonalGroup n β ∧ A.det = 1 :=
