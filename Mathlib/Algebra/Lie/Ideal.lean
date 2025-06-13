@@ -484,28 +484,21 @@ theorem incl_isIdealMorphism : I.incl.IsIdealMorphism := by
 variable {I}
 
 theorem comap_incl_eq_bot (h : I₂ ≤ I) : comap I.incl I₂ = ⊥ ↔ I₂ = ⊥ := by
-  rw [eq_bot_iff]
+  unfold comap
   constructor
   · intro hI₂
     rw [eq_bot_iff]
     intro x hx
-    unfold comap at hI₂
-    simp only [incl_coe, toLieSubalgebra_toSubmodule, le_bot_iff,
-      LieSubmodule.mk_eq_bot_iff] at hI₂
-    rw [Submodule.eq_bot_iff] at hI₂
     rw [LieSubmodule.mem_bot]
-    specialize hI₂ ⟨x, h hx⟩ hx
-    rw [LieSubmodule.mk_eq_zero] at hI₂
-    assumption
+    rw [LieSubmodule.mk_eq_bot_iff, toLieSubalgebra_toSubmodule, incl_coe,
+      Submodule.eq_bot_iff] at hI₂
+    exact (LieSubmodule.mk_eq_zero _ _).mp (hI₂ ⟨x, h hx⟩ hx)
   · intro hI₂
-    rw [hI₂]
+    rw [hI₂, eq_bot_iff]
     intro x hx
-    rw [LieSubmodule.mem_bot]
-    unfold comap at hx
-    simp only [incl_coe, toLieSubalgebra_toSubmodule, LieSubmodule.bot_toSubmodule,
-      Submodule.comap_bot, LieSubmodule.mem_mk_iff', LinearMap.mem_ker] at hx
-    rw [LieSubmodule.mk_eq_zero]
-    assumption
+    rw [LieSubmodule.mem_mk_iff', toLieSubalgebra_toSubmodule, LieSubmodule.bot_toSubmodule,
+      Submodule.comap_bot, LinearMap.mem_ker, incl_coe] at hx
+    exact (LieSubmodule.mem_bot x).mpr ((LieSubmodule.mk_eq_zero _ _).mpr hx)
 
 end LieIdeal
 
