@@ -596,17 +596,17 @@ instance isIso_actionHom {x y : D} {x' y' : C}
   ⟨(inv f) ᵣ⊙ (inv g), by simp [← actionHom_comp]⟩
 
 @[simp]
-lemma actionHomLeft_inv {x y : D} (f : x ⟶ y) [IsIso f] (z : C) :
+lemma inv_actionHomLeft {x y : D} (f : x ⟶ y) [IsIso f] (z : C) :
     inv (f ᵣ⊵ z) = inv f ᵣ⊵ z :=
   IsIso.inv_eq_of_hom_inv_id <| hom_inv_actionHomLeft' f z
 
 @[simp]
-lemma actionHomRight_inv (x : D) {y z : C} (f : y ⟶ z) [IsIso f] :
+lemma inv_actionHomRight (x : D) {y z : C} (f : y ⟶ z) [IsIso f] :
     inv (x ᵣ⊴ f) = x ᵣ⊴ inv f :=
   IsIso.inv_eq_of_hom_inv_id <| actionHomRight_hom_inv' x f
 
 @[simp]
-lemma actionHom_inv
+lemma inv_actionHom
     {x y : D} {x' y' : C}
     (f : x ⟶ y) (g : x' ⟶ y') [IsIso f] [IsIso g] :
     inv (f ᵣ⊙ g) = (inv f) ᵣ⊙ (inv g) :=
