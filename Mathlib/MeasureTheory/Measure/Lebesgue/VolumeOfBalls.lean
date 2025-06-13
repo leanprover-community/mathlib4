@@ -202,7 +202,7 @@ theorem MeasureTheory.volume_sum_rpow_lt [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) 
       .ofReal ((2 * Gamma (1 / p + 1)) ^ card ι / Gamma (card ι / p + 1)) := by
   have h₁ (x : ι → ℝ) : 0 ≤ ∑ i, |x i| ^ p := by positivity
   have h₂ : ∀ x : ι → ℝ, 0 ≤ (∑ i, |x i| ^ p) ^ (1 / p) := fun x => rpow_nonneg (h₁ x) _
-  obtain hr | hr := le_or_lt r 0
+  obtain hr | hr := le_or_gt r 0
   · have : {x : ι → ℝ | (∑ i, |x i| ^ p) ^ (1 / p) < r} = ∅ := by
       ext x
       refine ⟨fun hx => ?_, fun hx => hx.elim⟩
@@ -275,7 +275,7 @@ theorem Complex.volume_sum_rpow_lt [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : �
       .ofReal ((π * Real.Gamma (2 / p + 1)) ^ card ι / Real.Gamma (2 * card ι / p + 1)) := by
   have h₁ (x : ι → ℂ) : 0 ≤ ∑ i, ‖x i‖ ^ p := by positivity
   have h₂ : ∀ x : ι → ℂ, 0 ≤ (∑ i, ‖x i‖ ^ p) ^ (1 / p) := fun x => rpow_nonneg (h₁ x) _
-  obtain hr | hr := le_or_lt r 0
+  obtain hr | hr := le_or_gt r 0
   · have : {x : ι → ℂ | (∑ i, ‖x i‖ ^ p) ^ (1 / p) < r} = ∅ := by
       ext x
       refine ⟨fun hx => ?_, fun hx => hx.elim⟩
@@ -331,9 +331,9 @@ theorem volume_ball (x : EuclideanSpace ℝ ι) (r : ℝ) :
       rw [Measure.addHaar_ball _ _ hr, this, ofReal_pow hr, finrank_euclideanSpace]
     rw [← ((volume_preserving_measurableEquiv _).symm).measure_preimage
       measurableSet_ball.nullMeasurableSet]
-    convert (volume_sum_rpow_lt_one ι one_le_two) using 4
-    · simp_rw [ball_zero_eq _ zero_le_one, one_pow, Real.rpow_two, sq_abs,
-        Set.setOf_app_iff]
+    simp only [Set.preimage, ball_zero_eq _ zero_le_one, one_pow, Set.mem_setOf_eq]
+    convert volume_sum_rpow_lt_one ι one_le_two using 4
+    · simp [one_pow, Real.rpow_two, sq_abs, EuclideanSpace.measurableEquiv]
     · rw [Gamma_add_one (by norm_num), Gamma_one_half_eq, ← mul_assoc, mul_div_cancel₀ _
         two_ne_zero, one_mul]
 
