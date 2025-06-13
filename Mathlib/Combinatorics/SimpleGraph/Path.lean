@@ -1351,9 +1351,7 @@ lemma connected_toSimpleGraph (C : ConnectedComponent G) : (C.toSimpleGraph).Con
 
 end ConnectedComponent
 
-/--
-Given graph homomorphisms from each connected component of `G` to `H` this is the `G →g H`
--/
+/-- Given graph homomorphisms from each connected component of `G` to `H` this is the `G →g H` -/
 def homOfConnectedComponents (G : SimpleGraph V) {H : SimpleGraph V'}
     (C : (c : G.ConnectedComponent) → (c.toSimpleGraph) →g H ) : G →g H where
   toFun := fun x ↦ (C (G.connectedComponentMk _)) _

@@ -172,8 +172,8 @@ lemma two_colorable_iff_forall_loop_not_odd {α : Type*} {G : SimpleGraph α} :
                  (c.connected_toSimpleGraph ⟨_, hv⟩ b).some.reverse).map c.toSimpleGraph_hom
     rw [length_map, length_append, length_concat, length_reverse, add_right_comm]
     have : ((Nonempty.some (c.connected_toSimpleGraph ⟨_, hv⟩ a)).length) % 2 =
-       (Nonempty.some (c.connected_toSimpleGraph ⟨_, hv⟩ b)).length % 2 := by
-        simp_rw [← Fin.val_natCast, ← Fin.ofNat_eq_cast, he]
-    exact (Nat.even_iff.mpr (by omega)).add_one
+        (Nonempty.some (c.connected_toSimpleGraph ⟨_, hv⟩ b)).length % 2 := by
+      simp_rw [← Fin.val_natCast, ← Fin.ofNat_eq_cast, he]
+    refine (Nat.even_iff.mpr (by omega)).add_one
 
 end SimpleGraph
