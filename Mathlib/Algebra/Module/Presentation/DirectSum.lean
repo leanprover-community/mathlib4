@@ -63,8 +63,6 @@ noncomputable def directSumEquiv :
       linearCombination_var_relation := fun ⟨i, r⟩ ↦ by
         rw [← (t i).linearCombination_var_relation r]
         apply Finsupp.linearCombination_embDomain }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- Given `solution : ∀ (i : ι), (relations i).Solution (M i)`, this is the
 canonical solution of `Relations.directSum relations` in `⨁ i, M i`. -/

@@ -32,7 +32,6 @@ private def typeToCatObjectsAdjHomEquiv : (typeToCat.obj X ⟶ C) ≃ (X ⟶ Cat
   left_inv F := Functor.ext (fun _ ↦ rfl) (fun ⟨_⟩ ⟨_⟩ f => by
     obtain rfl := Discrete.eq_of_hom f
     simp)
-  right_inv _ := rfl
 
 private def typeToCatObjectsAdjCounitApp : (Cat.objects ⋙ typeToCat).obj C ⥤ C where
   obj := Discrete.as
