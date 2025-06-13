@@ -16,6 +16,42 @@ import Mathlib.Util.AtomM
 open Lean hiding Module
 open Meta Elab Qq Mathlib.Tactic List
 
+namespace List
+variable {M : Type*}
+
+def prod' {M : Type*} [Mul M] [One M] : List M → M := foldr (fun a t ↦ t * a) 1
+
+@[simp]
+theorem prod'_cons [Mul M] [One M] {a} {l : List M} : (a :: l).prod' = l.prod' * a := rfl
+
+@[simp]
+theorem prod'_nil [Mul M] [One M] : (([] : List M)).prod' = 1 := rfl
+
+-- generalize library `List.prod_inv`
+theorem prod'_inv₀ {K : Type*} [DivisionCommMonoid K] :
+    ∀ (L : List K), L.prod'⁻¹ = (map (fun x ↦ x⁻¹) L).prod'
+  | [] => by simp
+  | x :: xs => by simp [mul_comm, prod'_inv₀ xs]
+
+theorem _root_.map_list_prod' {M : Type*} {N : Type*} [Monoid M] [Monoid N] {F : Type*}
+    [FunLike F M N] [MonoidHomClass F M N] (f : F) (l : List M) :
+    f l.prod' = (map (⇑f) l).prod' :=
+  sorry
+
+-- in the library somewhere?
+theorem prod'_zpow {β : Type*} [DivisionCommMonoid β] {r : ℤ} {l : List β} :
+    l.prod' ^ r = (map (fun x ↦ x ^ r) l).prod' :=
+  let fr : β →* β := ⟨⟨fun b ↦ b ^ r, one_zpow r⟩, (mul_zpow · · r)⟩
+  map_list_prod' fr l
+
+-- in the library somewhere?
+theorem _root_.List.prod'_pow {β : Type*} [CommMonoid β] {r : ℕ} {l : List β} :
+    l.prod' ^ r = (map (fun x ↦ x ^ r) l).prod' :=
+  let fr : β →* β := ⟨⟨fun b ↦ b ^ r, one_pow r⟩, (mul_pow · · r)⟩
+  map_list_prod' fr l
+
+end List
+
 namespace Mathlib.Tactic.FieldSimp
 
 /-! ### Theory of lists of pairs (exponent, atom)
@@ -43,13 +79,13 @@ def cons (p : ℤ × M) (l : NF M) : NF M := p :: l
 /-- Evaluate a `FieldSimp.NF M` object `l`, i.e. a list of pairs in `ℤ × M`, to an element of `M`,
 by forming the "multiplicative linear combination" it specifies: raise each `M` term to the power of
 the corresponding `ℤ` term, then multiply them all together. -/
-def eval [DivInvMonoid M] (l : NF M) : M := (l.map (fun (⟨r, x⟩ : ℤ × M) ↦ x ^ r)).prod
+def eval [DivInvMonoid M] (l : NF M) : M := (l.map (fun (⟨r, x⟩ : ℤ × M) ↦ x ^ r)).prod'
 
 @[simp] theorem eval_cons [DivInvMonoid M] (p : ℤ × M) (l : NF M) :
-    (p ::ᵣ l).eval = p.2 ^ p.1 * l.eval := by
+    (p ::ᵣ l).eval = l.eval * p.2 ^ p.1 := by
   unfold eval cons
   rw [List.map_cons]
-  rw [List.prod_cons]
+  rw [List.prod'_cons]
 
 theorem atom_eq_eval [DivInvMonoid M] (x : M) : x = NF.eval [(1, x)] := by simp [eval]
 
@@ -59,10 +95,12 @@ theorem one_eq_eval [DivInvMonoid M] : (1:M) = NF.eval (M := M) [] := rfl
 theorem eval_cons_zero [DivInvMonoid M] {a : M} {l : NF M} : ((0, a) ::ᵣ l).eval = l.eval := by
   simp
 
-theorem mul_eq_eval₁ [DivInvMonoid M] (a₁ : ℤ × M) {a₂ : ℤ × M} {l₁ l₂ l : NF M}
+theorem mul_eq_eval₁ [DivisionCommMonoid M] (a₁ : ℤ × M) {a₂ : ℤ × M} {l₁ l₂ l : NF M}
     (h : l₁.eval * (a₂ ::ᵣ l₂).eval = l.eval) :
     (a₁ ::ᵣ l₁).eval * (a₂ ::ᵣ l₂).eval = (a₁ ::ᵣ l).eval := by
   simp only [eval_cons, ← h, mul_assoc]
+  congr! 1
+  rw [mul_comm, mul_assoc]
 
 theorem mul_eq_eval₂ [CommGroupWithZero M] (r₁ r₂ : ℤ) (x : M) (hx : x ≠ 0)
     {l₁ l₂ l : NF M} (h : l₁.eval * l₂.eval = l.eval) :
@@ -86,24 +124,22 @@ theorem mul_eq_eval₂' [DivisionCommMonoid M] {r₁ r₂ : ℤ} (hr₁ : 0 ≤ 
   congr! 1
   rw [mul_comm]
 
-theorem mul_eq_eval₃ [DivisionCommMonoid M] {a₁ : ℤ × M} (a₂ : ℤ × M) {l₁ l₂ l : NF M}
+theorem mul_eq_eval₃ [DivInvMonoid M] {a₁ : ℤ × M} (a₂ : ℤ × M) {l₁ l₂ l : NF M}
     (h : (a₁ ::ᵣ l₁).eval * l₂.eval = l.eval) :
     (a₁ ::ᵣ l₁).eval * (a₂ ::ᵣ l₂).eval = (a₂ ::ᵣ l).eval := by
-  simp only [eval_cons, ← h]
-  nth_rw 4 [mul_comm]
-  simp only [mul_assoc]
-  congr! 2
-  rw [mul_comm]
+  simp only [eval_cons, ← h, mul_assoc]
 
 theorem mul_eq_eval [DivisionMonoid M] {l₁ l₂ l : NF M} {x₁ x₂ : M} (hx₁ : x₁ = l₁.eval)
     (hx₂ : x₂ = l₂.eval) (h : l₁.eval * l₂.eval = l.eval) :
     x₁ * x₂ = l.eval := by
   rw [hx₁, hx₂, h]
 
-theorem div_eq_eval₁ [DivisionMonoid M](a₁ : ℤ × M) {a₂ : ℤ × M} {l₁ l₂ l : NF M}
+theorem div_eq_eval₁ [DivisionCommMonoid M] (a₁ : ℤ × M) {a₂ : ℤ × M} {l₁ l₂ l : NF M}
     (h : l₁.eval / (a₂ ::ᵣ l₂).eval = l.eval) :
     (a₁ ::ᵣ l₁).eval / (a₂ ::ᵣ l₂).eval = (a₁ ::ᵣ l).eval := by
   simp only [eval_cons, ← h, div_eq_mul_inv, mul_assoc]
+  congr! 1
+  rw [mul_comm]
 
 theorem div_eq_eval₂ [CommGroupWithZero M] (r₁ r₂ : ℤ) (x : M) (hx : x ≠ 0) {l₁ l₂ l : NF M}
     (h : l₁.eval / l₂.eval = l.eval) :
@@ -136,8 +172,6 @@ theorem div_eq_eval₃ [DivisionCommMonoid M] {a₁ : ℤ × M} (a₂ : ℤ × M
     (h : (a₁ ::ᵣ l₁).eval / l₂.eval = l.eval) :
     (a₁ ::ᵣ l₁).eval / (a₂ ::ᵣ l₂).eval = ((-a₂.1, a₂.2) ::ᵣ l).eval := by
   simp only [eval_cons, zpow_neg, mul_inv, div_eq_mul_inv, ← h, ← mul_assoc]
-  congr! 1
-  rw [mul_comm, mul_assoc]
 
 theorem div_eq_eval [DivisionMonoid M] {l₁ l₂ l : NF M} {x₁ x₂ : M} (hx₁ : x₁ = l₁.eval)
     (hx₂ : x₂ = l₂.eval) (h : l₁.eval / l₂.eval = l.eval) :
@@ -154,7 +188,7 @@ theorem _root_.List.prod_inv₀ {K : Type*} [DivisionCommMonoid K] :
   | x :: xs => by simp [mul_comm, prod_inv₀ xs]
 
 theorem eval_inv [DivisionCommMonoid M] (l : NF M) : (l⁻¹).eval = l.eval⁻¹ := by
-  simp only [NF.eval, List.map_map, List.prod_inv₀, NF.instInv]
+  simp only [NF.eval, List.map_map, List.prod'_inv₀, NF.instInv]
   congr
   ext p
   simp
@@ -181,7 +215,7 @@ theorem _root_.List.prod_zpow {β : Type*} [DivisionCommMonoid β] {r : ℤ} {l 
 theorem eval_zpow [DivisionCommMonoid M] {l : NF M} {x : M} (h : x = l.eval) (r : ℤ) :
     (l ^ r).eval = x ^ r := by
   unfold NF.eval at h ⊢
-  simp only [h, prod_zpow, map_map, NF.zpow_apply]
+  simp only [h, List.prod'_zpow, map_map, NF.zpow_apply]
   congr
   ext p
   simp [← zpow_mul, mul_comm]
@@ -209,7 +243,7 @@ theorem _root_.List.prod_pow {β : Type*} [CommMonoid β] {r : ℕ} {l : List β
 theorem eval_pow [DivisionCommMonoid M] {l : NF M} {x : M} (h : x = l.eval) (r : ℕ) :
     (l ^ r).eval = x ^ r := by
   unfold NF.eval at h ⊢
-  simp only [h, prod_pow, map_map, NF.pow_apply]
+  simp only [h, prod'_pow, map_map, NF.pow_apply]
   congr! 2
   ext p
   dsimp
@@ -262,7 +296,7 @@ The natural number represents the index of the `M` term in the `AtomM` monad: th
 but is sometimes assumed in operations.  Thus when items `((a₁, x₁), k)` and `((a₂, x₂), k)`
 appear in two different `FieldSimp.qNF` objects (i.e. with the same `ℕ`-index `k`), it is expected
 that the expressions `x₁` and `x₂` are the same.  It is also expected that the items in a
-`FieldSimp.qNF` list are in strictly increasing order by natural-number index.
+`FieldSimp.qNF` list are in strictly decreasing order by natural-number index.
 
 By forgetting the natural number indices, an expression representing a `Mathlib.Tactic.FieldSimp.NF`
 object can be built from a `FieldSimp.qNF` object; this construction is provided as
@@ -303,18 +337,18 @@ def evalPretty (iM : Q(Field $M)) (l : qNF M) : MetaM (Σ e : Q($M), Q(NF.eval $
   | [] => return ⟨q(1), q(rfl)⟩
   | [((r, x), _)] =>
     let ⟨e, pf⟩ ← evalPrettyMonomial iM r x
-    return ⟨e, q(Eq.trans (mul_one _) $pf)⟩
+    return ⟨e, q(Eq.trans (one_mul _) $pf)⟩
   | ((r, x), _) :: t =>
     let ⟨e, pf_e⟩ ← evalPrettyMonomial iM r x
     let ⟨t', pf⟩ ← evalPretty iM t
-    return ⟨q($e * $t'), (q(congr_arg₂ HMul.hMul $pf_e $pf):)⟩
+    return ⟨q($t' * $e), (q(congr_arg₂ HMul.hMul $pf $pf_e):)⟩
 
 /-- Given two terms `l₁`, `l₂` of type `qNF M`, i.e. lists of `(ℤ × Q($M)) × ℕ`s (an integer, an
 `Expr` and a natural number), construct another such term `l`, which will have the property that in
 the field `$M`, the product of the "multiplicative linear combinations" represented by `l₁` and
 `l₂` is the multiplicative linear combination represented by `l`.
 
-The construction assumes, to be valid, that the lists `l₁` and `l₂` are in strictly increasing order
+The construction assumes, to be valid, that the lists `l₁` and `l₂` are in strictly decreasing order
 by `ℕ`-component, and that if pairs `(a₁, x₁)` and `(a₂, x₂)` appear in `l₁`, `l₂` respectively with
 the same `ℕ`-component `k`, then the expressions `x₁` and `x₂` are equal.
 
@@ -325,7 +359,7 @@ def mul : qNF M → qNF M → qNF M
   | [], l => l
   | l, [] => l
   | ((a₁, x₁), k₁) :: t₁, ((a₂, x₂), k₂) :: t₂ =>
-    if k₁ < k₂ then
+    if k₁ > k₂ then
       ((a₁, x₁), k₁) :: mul t₁ (((a₂, x₂), k₂) :: t₂)
     else if k₁ = k₂ then
       if a₁ + a₂ = 0 then
@@ -345,7 +379,7 @@ def mkMulProof (iM : Q(Field $M)) (l₁ l₂ : qNF M) :
   | [], l => (q(one_mul (NF.eval $(l.toNF))):)
   | l, [] => (q(mul_one (NF.eval $(l.toNF))):)
   | ((a₁, x₁), k₁) :: t₁, ((a₂, x₂), k₂) :: t₂ =>
-    if k₁ < k₂ then
+    if k₁ > k₂ then
       let pf := mkMulProof iM t₁ (((a₂, x₂), k₂) :: t₂)
       (q(NF.mul_eq_eval₁ ($a₁, $x₁) $pf):)
     else if k₁ = k₂ then
@@ -373,7 +407,7 @@ def mkMulProof (iM : Q(Field $M)) (l₁ l₂ : qNF M) :
 the field `$M`, the quotient of the "multiplicative linear combinations" represented by `l₁` and
 `l₂` is the multiplicative linear combination represented by `l`.
 
-The construction assumes, to be valid, that the lists `l₁` and `l₂` are in strictly increasing order
+The construction assumes, to be valid, that the lists `l₁` and `l₂` are in strictly decreasing order
 by `ℕ`-component, and that if pairs `(a₁, x₁)` and `(a₂, x₂)` appear in `l₁`, `l₂` respectively with
 the same `ℕ`-component `k`, then the expressions `x₁` and `x₂` are equal.
 
@@ -385,7 +419,7 @@ def div : qNF M → qNF M → qNF M
   | [], l => l.onExponent Neg.neg
   | l, [] => l
   | ((a₁, x₁), k₁) :: t₁, ((a₂, x₂), k₂) :: t₂ =>
-    if k₁ < k₂ then
+    if k₁ > k₂ then
       ((a₁, x₁), k₁) :: div t₁ (((a₂, x₂), k₂) :: t₂)
     else if k₁ = k₂ then
       if a₁ - a₂ = 0 then
@@ -405,7 +439,7 @@ def mkDivProof (iM : Q(Field $M)) (l₁ l₂ : qNF M) :
   | [], l => (q(NF.one_div_eq_eval $(l.toNF)):)
   | l, [] => (q(div_one (NF.eval $(l.toNF))):)
   | ((a₁, x₁), k₁) :: t₁, ((a₂, x₂), k₂) :: t₂ =>
-    if k₁ < k₂ then
+    if k₁ > k₂ then
       let pf := mkDivProof iM t₁ (((a₂, x₂), k₂) :: t₂)
       (q(NF.div_eq_eval₁ ($a₁, $x₁) $pf):)
     else if k₁ = k₂ then
@@ -435,7 +469,7 @@ partial /- TODO figure out why! -/ def minimum : qNF M → qNF M → qNF M
   if 0 ≤ n then (minimum [] rest) else ((n, e), i) :: (minimum [] rest)
 | ((n, e), i) :: rest, ((n', e'), i') :: rest' =>
     -- should factor into a separate definition
-    if i < i' then
+    if i > i' then
       if 0 ≤ n then minimum rest (((n', e'), i') :: rest')
       else ((n, e), i) :: minimum rest (((n', e'), i') :: rest')
     else if i = i' then
@@ -461,6 +495,7 @@ partial def normalize (iM : Q(Field $M)) (x : Q($M)) :
     AtomM (Σ l : qNF M, Q($x = NF.eval $(l.toNF))) := do
   let baseCase (y : Q($M)) : AtomM (Σ l : qNF M, Q($y = NF.eval $(l.toNF))):= do
     let (k, ⟨x', _⟩) ← AtomM.addAtomQ y
+    trace[debug] "{y} is the {k}-th atom"
     pure ⟨[((1, x'), k)], q(NF.atom_eq_eval $x')⟩
   match x with
   /- normalize a multiplication: `x₁ * x₂` -/
@@ -651,7 +686,7 @@ variable {y' : ℚ} (hy' : y' ≠ 0)
 
 /-- info: x ^ 3 -/
 #guard_msgs in
-#conv field_simp2 => x ^ 1 * y * x ^2 * y⁻¹
+#conv field_simp2 => x ^ 1 * y * x ^ 2 * y⁻¹
 
 end
 
@@ -671,6 +706,10 @@ end
 #guard_msgs in
 #conv field_simp2 => (x * y) / (y * x)
 
+/-- info: x * (y + 1) -/
+#guard_msgs in
+#conv field_simp2 => x * y + x * 1
+
 /-- info: 1 -/
 #guard_msgs in
 #conv field_simp2 => (x * y) * (y * x)⁻¹
@@ -687,7 +726,7 @@ end
 #guard_msgs in
 #conv field_simp2 => x / y
 
-/-- info: (x + 1) ^ (-1) * ((y + 1) ^ (-1) * (x * (y + 1) + (x + 1) * y)) -/
+/-- info: (x + 1) ^ (-1) * (y + 1) ^ (-1) * (x * (y + 1) + (x + 1) * y) -/
 #guard_msgs in
 #conv field_simp2 => x / (x + 1) + y / (y + 1)
 
@@ -724,7 +763,7 @@ example : x ^ (0:ℤ) * y = y := by
 example : y * (y + x) ^ (0:ℤ) * y = y ^ 2 := by
   conv_lhs => field_simp2
 
-example : x * y * z = x * (y * z) := by
+example : x * y * z = x * y * z := by
   conv_lhs => field_simp2
 
 example : x * y + x * z = x * (y + z) := by
