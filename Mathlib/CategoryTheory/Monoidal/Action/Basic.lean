@@ -302,6 +302,22 @@ instance isIso_actionHom {x y : C} {x' y' : D}
     IsIso (f ⊙ₗ g) :=
   ⟨(inv f) ⊙ₗ (inv g), by simp [← actionHom_comp]⟩
 
+@[simp]
+lemma inv_actionHomLeft {x y : C} (f : x ⟶ y) [IsIso f] (z : D) :
+    inv (f ⊵ₗ z) = inv f ⊵ₗ z :=
+  IsIso.inv_eq_of_hom_inv_id <| hom_inv_actionHomLeft' f z
+
+@[simp]
+lemma inv_actionHomRight (x : C) {y z : D} (f : y ⟶ z) [IsIso f] :
+    inv (x ⊴ₗ f) = x ⊴ₗ inv f :=
+  IsIso.inv_eq_of_hom_inv_id <| actionHomRight_hom_inv' x f
+
+@[simp]
+lemma inv_actionHom {x y : C} {x' y' : D}
+    (f : x ⟶ y) (g : x' ⟶ y') [IsIso f] [IsIso g] :
+    inv (f ⊙ₗ g) = (inv f) ⊙ₗ (inv g) :=
+  IsIso.inv_eq_of_hom_inv_id <| by simp [← actionHom_comp]
+
 section
 
 variable (C D)
