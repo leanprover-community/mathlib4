@@ -119,6 +119,34 @@ example (f g : Nat → Nat → Prop) (h : f = g) :
     (∀ x, ∃ y, f x y) ↔ (∀ x, ∃ y, g x y) :=
   congr(∀ _, ∃ _, $(by rw [h]))
 
+namespace Overapplied
+/-!
+Overapplied functions need to be handled too. This one is for `Subtype.val`, which has arity 3,
+but in examples (3) and (4) it's used with arity 4.
+-/
+
+def T1 (A : Nat → Type) := ∀ n, A n
+def T2 (A : Nat → Type) := { f : ∀ n, A n // f = f }
+
+example {A : Nat → Type} (f g : ∀ n, A n) (h : f = g) (n : Nat) : f n = g n := by
+  have := congr($h n) -- (1) worked, not overapplied
+  exact this
+
+example {A : Nat → Type} (f g : T1 A) (h : f = g) (n : Nat) : f n = g n := by
+  have := congr($h n) -- (2) worked, not overapplied
+  exact this
+
+example {A : Nat → Type} (f g : T2 A) (h : f = g) (n : Nat) : f.1 n = g.1 n := by
+  have := congr($h.1 n) -- (3) didn't work, is overapplied
+  exact this
+
+example {A : Nat → Type} (f g : T2 A) (h : f = g) (n : Nat) : f.1 n = g.1 n := by
+  have hh := congr($h.1) -- works
+  have := congr($hh n) -- (4) didn't work, is overapplied
+  exact this
+
+end Overapplied
+
 namespace SubsingletonDependence
 /-!
 The congruence theorem generator had a bug that leaked fvars.
