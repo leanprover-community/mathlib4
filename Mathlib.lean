@@ -1129,6 +1129,7 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Basic
 import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Formula
 import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Point
 import Mathlib.AlgebraicGeometry.EllipticCurve.ModelsWithJ
+import Mathlib.AlgebraicGeometry.EllipticCurve.Modular.TateNormalForm
 import Mathlib.AlgebraicGeometry.EllipticCurve.NormalForms
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Basic
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Formula
