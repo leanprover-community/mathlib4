@@ -199,27 +199,6 @@ private def initializeLazyEntry (e : Expr) (labelledStars : Bool) : MetaM (Key �
   ((encodingStep e true).run { bvars := [] }).run (← mkInitLazyEntry labelledStars)
 
 
-/-- If there is a loose `.bvar` returns `none`. Otherwise returns the index
-of the next branch of the expression. -/
-private partial def hasLooseBVarsAux (depth : Nat) (keys : List Key) : Option (List Key) :=
-  match keys with
-  | [] => none
-  | key :: keys =>  match key with
-    | .const _ nargs
-    | .fvar _ nargs   => recurse nargs keys
-    | .bvar i nargs   => if i ≥ depth then none else recurse nargs keys
-    | .lam            => hasLooseBVarsAux (depth + 1) keys
-    | .forall         => hasLooseBVarsAux depth keys >>= hasLooseBVarsAux (depth + 1)
-    | .proj _ _ nargs => recurse (nargs + 1) keys
-    | _               => some keys
-where
-  recurse (nargs : Nat) (keys : List Key) : Option (List Key) :=
-    nargs.foldRevM (init := keys) fun _ _ => hasLooseBVarsAux depth
-
-/-- Determine whether `keys` contains a loose bound variable. -/
-private def hasLooseBVars (keys : List Key) : Bool :=
-  hasLooseBVarsAux 0 keys |>.isNone
-
 /-- Auxiliary function for `evalLazyEntryWithEta` -/
 private partial def evalLazyEntryWithEtaAux (entry : LazyEntry) :
     MetaM (Option (List (Key × LazyEntry))) := do
