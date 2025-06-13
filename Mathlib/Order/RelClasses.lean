@@ -11,7 +11,8 @@ import Batteries.WF
 /-!
 # Unbundled relation classes
 
-In this file we prove some properties of `Is*` classes defined in `Mathlib/Order/Defs.lean`.
+In this file we prove some properties of `Is*` classes defined in
+`Mathlib/Order/Defs/Unbundled.lean`.
 The main difference between these classes and the usual order classes (`Preorder` etc) is that
 usual classes extend `LE` and/or `LT` while these classes take a relation as an explicit argument.
 -/
