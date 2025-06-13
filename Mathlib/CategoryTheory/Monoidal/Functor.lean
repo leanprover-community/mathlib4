@@ -166,14 +166,6 @@ def ofTensorHom : F.LaxMonoidal where
   right_unitality := fun X => by
     simp_rw [← id_tensorHom, right_unitality]
 
-lemma ofTensorHom_ε :
-    letI := (ofTensorHom ε μ μ_natural associativity left_unitality right_unitality)
-    ε = ε := rfl
-
-lemma ofTensorHom_μ :
-    letI := (ofTensorHom ε μ μ_natural associativity left_unitality right_unitality)
-    μ = μ := rfl
-
 end
 
 @[simps]
