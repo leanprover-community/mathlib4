@@ -790,6 +790,24 @@ def uniformEquivUniformFun (h : univ ∈ 𝔖) : (α →ᵤ[𝔖] β) ≃ᵤ (α
     filter_upwards [UniformOnFun.gen_mem_uniformity _ _ h hU] with f hf x using hf x (mem_univ _)
   uniformContinuous_invFun := uniformContinuous_ofUniformFun _ _
 
+/-- If `𝔖` and `𝔗` are families of sets in `α`, then the identity map
+`(α →ᵤ[𝔗] β) → (α →ᵤ[𝔖] β)` is uniformly continuous if every `s ∈ 𝔖` is containined in a finite
+union of elements of `𝔗`.
+
+With more API around `Order.Ideal`, this could be phrased in that language instead. -/
+lemma uniformContinuous_ofFun_toFun (𝔗 : Set (Set α)) (h : ∀ s ∈ 𝔖, ∃ T ⊆ 𝔗, T.Finite ∧ s ⊆ ⋃₀ T) :
+    UniformContinuous (ofFun 𝔗 ∘ toFun 𝔖 : (α →ᵤ[𝔗] β) → α →ᵤ[𝔖] β) := by
+  simp only [UniformContinuous, UniformOnFun.uniformity_eq, iInf₂_comm (ι₂ := Set (β × β))]
+  refine tendsto_iInf_iInf fun V ↦ tendsto_iInf_iInf fun hV ↦ ?_
+  simp only [tendsto_iInf, tendsto_principal, Filter.Eventually, mem_biInf_principal]
+  intro s hs
+  obtain ⟨T, hT𝔗, hT, hsT⟩ := h s hs
+  refine ⟨T, hT, hT𝔗, fun f hf ↦ ?_⟩
+  simp only [UniformOnFun.gen, Set.mem_iInter, Set.mem_setOf_eq, Function.comp_apply] at hf ⊢
+  intro x hx
+  obtain ⟨t, ht, hxt⟩ := Set.mem_sUnion.mp <| hsT hx
+  exact hf t ht x hxt
+
 /-- Let `u₁`, `u₂` be two uniform structures on `γ` and `𝔖₁ 𝔖₂ : Set (Set α)`. If `u₁ ≤ u₂` and
 `𝔖₂ ⊆ 𝔖₁` then `𝒱(α, γ, 𝔖₁, u₁) ≤ 𝒱(α, γ, 𝔖₂, u₂)`. -/
 protected theorem mono ⦃u₁ u₂ : UniformSpace γ⦄ (hu : u₁ ≤ u₂) ⦃𝔖₁ 𝔖₂ : Set (Set α)⦄
