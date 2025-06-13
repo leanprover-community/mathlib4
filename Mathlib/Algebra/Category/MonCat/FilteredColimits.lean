@@ -67,7 +67,6 @@ lemma M.map_mk {j k : J} (f : j ⟶ k) (x : F.obj j) :
     M.mk F ⟨k, F.map f x⟩ = M.mk F ⟨j, x⟩ :=
   M.mk_eq _ _ _ ⟨k, 𝟙 _, f, by simp⟩
 
-
 variable [IsFiltered J]
 
 /-- As `J` is nonempty, we can pick an arbitrary object `j₀ : J`. We use this object to define the
