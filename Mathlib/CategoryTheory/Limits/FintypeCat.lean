@@ -90,13 +90,13 @@ instance nonempty_pi_of_nonempty {ι : Type*} [Finite ι] (X : ι → FintypeCat
 
 /-- The colimit type of a functor from a finite category to Types that only
 involves finite objects is finite. -/
-noncomputable instance finite_colimitType {J : Type} [SmallCategory J] [FinCategory J]
+instance finite_colimitType {J : Type} [SmallCategory J] [FinCategory J]
     (K : J ⥤ Type*) [∀ j, Finite (K.obj j)] : Finite K.ColimitType :=
   Quot.finite _
 
 /-- Any functor from a finite category to Types that only involves finite objects,
 has a finite colimit. -/
-noncomputable def finite_of_isColimit {J : Type} [SmallCategory J] [FinCategory J]
+lemma finite_of_isColimit {J : Type} [SmallCategory J] [FinCategory J]
     {K : J ⥤ Type*} [∀ j, Finite (K.obj j)] {c : Cocone K} (hc : IsColimit c) :
     Finite c.pt :=
   Finite.of_equiv _ ((Types.isColimit_iff_coconeTypesIsColimit c).1 ⟨hc⟩).equiv
