@@ -277,7 +277,7 @@ theorem ContinuousLinearEquiv.iteratedFDerivWithin_comp_left (g : F ≃L[𝕜] G
 /-- Iterated derivatives commute with left composition by continuous linear equivalences- -/
 theorem ContinuousLinearEquiv.iteratedFDeriv_comp_left {f : E → F} {x : E} (g : F ≃L[𝕜] G) {i : ℕ} :
     iteratedFDeriv 𝕜 i (g ∘ f) x =
-      (g : F →L[𝕜] G).compContinuousMultilinearMap (iteratedFDeriv 𝕜 i f x) := by
+      g.toContinuousLinearMap.compContinuousMultilinearMap (iteratedFDeriv 𝕜 i f x) := by
   simp only [← iteratedFDerivWithin_univ]
   apply g.iteratedFDerivWithin_comp_left f uniqueDiffOn_univ trivial
 
