@@ -6,7 +6,6 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Bool.Basic
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Order.ULift
-import Mathlib.Tactic.GCongr.CoreAttrs
 
 /-!
 # (Semi-)lattices
@@ -48,10 +47,6 @@ of `sup` over `inf`, on the left or on the right.
 semilattice, lattice
 
 -/
-
-/-- See if the term is `a ⊂ b` and the goal is `a ⊆ b`. -/
-@[gcongr_forward] def exactSubsetOfSSubset : Mathlib.Tactic.GCongr.ForwardExt where
-  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``subset_of_ssubset #[h])
 
 universe u v w
 

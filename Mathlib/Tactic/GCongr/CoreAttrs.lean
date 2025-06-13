@@ -22,7 +22,6 @@ attribute [gcongr] mt
   And.imp And.imp_left And.imp_right
   imp_imp_imp imp_trans imp_trans'
   forall_imp Exists.imp
-  Nat.succ_le_succ
   List.Sublist.append List.Sublist.append_left List.Sublist.append_right
   List.Sublist.reverse List.drop_sublist_drop_left List.Sublist.drop
   List.Perm.append_left List.Perm.append_right List.Perm.append List.Perm.map
