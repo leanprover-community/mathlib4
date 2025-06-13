@@ -11,10 +11,10 @@ import Mathlib.CategoryTheory.Functor.Trifunctor
 # Left actions from a monoidal category on a category
 
 Given a monoidal category `C`, and a category `D`, we define a left action of
-`C` on `D` as the data of an object `c ⊙ d` of `D` for every
-`c : C` and `d : D`, as well as the data required to turn `- ⊙ -` into
+`C` on `D` as the data of an object `c ⊙ₗ d` of `D` for every
+`c : C` and `d : D`, as well as the data required to turn `- ⊙ₗ -` into
 a bifunctor, along with structure natural isomorphisms
-`(- ⊗ -) ⊙ - ≅ - ⊙ - ⊙ -` and `𝟙_ C ⊙ - ≅ -`, subject to coherence conditions.
+`(- ⊗ -) ⊙ₗ - ≅ - ⊙ₗ - ⊙ₗ -` and `𝟙_ C ⊙ₗ - ≅ -`, subject to coherence conditions.
 
 
 ## References
@@ -44,26 +44,26 @@ variable [Category C] [Category D]
 /-- A class that carries the non-Prop data required to define a left action of a
 monoidal category `C` on a category `D`, to set up notations. -/
 class MonoidalLeftActionStruct [MonoidalCategoryStruct C] where
-  /-- The left action on objects. This is denoted `c ⊙ d`. -/
+  /-- The left action on objects. This is denoted `c ⊙ₗ d`. -/
   actionObj : C → D → D
   /-- The left action of a map `f : c ⟶ c'` in `C` on an object `d` in `D`.
   If we are to consider the action as a functor `Α : C ⥤ D ⥤ D`,
-  this is (Α.map f).obj d`. This is denoted `f ⊵ d` -/
+  this is (Α.map f).obj d`. This is denoted `f ⊵ₗ d` -/
   actionHomLeft {c c' : C} (f : c ⟶ c') (d : D) :
     actionObj c d ⟶ actionObj c' d
   /-- The action of an object `c : C` on a map `f : d ⟶ d'` in `D`.
   If we are to consider the action as a functor `Α : C ⥤ D ⥤ D`,
-  this is (Α.obj c).map f`. This is denoted `c ⊴ f`. -/
+  this is (Α.obj c).map f`. This is denoted `c ⊴ₗ f`. -/
   actionHomRight (c : C) {d d' : D} (f : d ⟶ d') :
     actionObj c d ⟶ actionObj c d'
   /-- The action of a pair of maps `f : c ⟶ c'` and `d ⟶ d'`. By default,
   this is defined in terms of `actionHomLeft` and `actionHomRight`. -/
   actionHom {c c' : C} {d d' : D} (f : c ⟶ c') (g : d ⟶ d') :
     actionObj c d ⟶ actionObj c' d' := actionHomLeft f d ≫ actionHomRight c' g
-  /-- The structural isomorphism `(c ⊗ c') ⊙ d ≅ c ⊙ (c' ⊙ d)`. -/
+  /-- The structural isomorphism `(c ⊗ c') ⊙ₗ d ≅ c ⊙ₗ (c' ⊙ₗ d)`. -/
   actionAssocIso (c c' : C) (d : D) :
     actionObj (c ⊗ c') d ≅ actionObj c (actionObj c' d)
-  /-- The structural isomorphism between `𝟙_ C ⊙ d` and `d`. -/
+  /-- The structural isomorphism between `𝟙_ C ⊙ₗ d` and `d`. -/
   actionUnitIso (d : D) : actionObj (𝟙_ C) d ≅ d
 
 namespace MonoidalLeftAction
