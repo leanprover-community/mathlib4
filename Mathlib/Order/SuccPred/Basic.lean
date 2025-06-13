@@ -54,8 +54,6 @@ class SuccOrder (α : Type*) [Preorder α] where
   /-- Proof that `succ a` is the least element greater than `a` -/
   succ_le_of_lt {a b} : a < b → succ a ≤ b
 
-attribute [instance low] SuccOrder.toPreorder
-
 /-- Order equipped with a sensible predecessor function. -/
 @[ext]
 class PredOrder (α : Type*) [Preorder α] where
@@ -67,8 +65,6 @@ class PredOrder (α : Type*) [Preorder α] where
   min_of_le_pred {a} : a ≤ pred a → IsMin a
   /-- Proof that `pred b` is the greatest element less than `b` -/
   le_pred_of_lt {a b} : a < b → a ≤ pred b
-
-attribute [instance low] PredOrder.toPreorder
 
 instance [Preorder α] [SuccOrder α] :
     PredOrder αᵒᵈ where
