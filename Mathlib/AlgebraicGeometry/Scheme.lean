@@ -280,6 +280,9 @@ unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢
 nonrec def forget : Scheme.{u} ⥤ Type u := Scheme.forgetToTop ⋙ forget TopCat
 
 /-- forgetful functor to `Scheme` is the same as coercion -/
+-- Schemes are often coerced as types, and it would be useful to have definitionally equal types
+-- to be reducibly equal. The alternative is to make `forget` reducible but that option has
+-- poor performance consequences.
 unif_hint forget_obj_eq_coe (X : Scheme) where ⊢
   forget.obj X ≟ (X : Type*)
 
