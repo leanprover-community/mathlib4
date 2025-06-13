@@ -29,7 +29,8 @@ In this file we introduce vertex operators as linear maps to Laurent series.
 
 ## References
 * [G. Mason *Vertex rings and Pierce bundles*][mason2017]
-* [A. Matsuo, K. Nagatomo, *On axioms for a vertex algebra and locality of quantum fields*][matsuo1997]
+* [A. Matsuo, K. Nagatomo, *On axioms for a vertex algebra and locality of quantum
+  fields*][matsuo1997]
 * H. Li's paper on local systems?
 -/
 

@@ -150,7 +150,7 @@ theorem removeNth_removeNth {n : ℕ} {α : Sort*} (m : Fin (n + 2) → α)
 
 theorem succAbove_succ_eq_succAbove_castSucc {n : ℕ} {i j : Fin n} (h : i ≠ j) :
     i.succ.succAbove j = i.castSucc.succAbove j := by
-  rcases h.lt_or_lt with hlt | hlt
+  rcases h.lt_or_gt with hlt | hlt
   · rw [succAbove_succ_of_lt _ _ hlt, succAbove_castSucc_of_le _ _ hlt.le]
   · rw [succAbove_succ_of_le _ _ hlt.le, succAbove_castSucc_of_lt _ _ hlt]
 
@@ -172,7 +172,7 @@ end fromDeRham
 
 theorem negOnePow_succAbove_add_predAbove {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) :
     Int.negOnePow ((i.succAbove j : ℤ) + (j.predAbove i : ℤ)) = Int.negOnePow (i + j + 1 : ℕ) := by
-  rcases lt_or_le j.castSucc i with hji | hij
+  rcases lt_or_ge j.castSucc i with hji | hij
   · have : 0 < (i : ℕ) := (Nat.zero_le j).trans_lt hji
     rw [succAbove_of_castSucc_lt _ _ hji, coe_castSucc, predAbove_of_castSucc_lt _ _ hji, coe_pred,
       Int.ofNat_add_out, ← Nat.add_sub_assoc this ↑j, Int.negOnePow_sub_eq_negOnePow_add,
