@@ -49,8 +49,8 @@ universe u v w
 
 namespace SimpleGraph
 
-variable {V : Type u} {V' : Type v} {V'' : Type w}
-variable (G : SimpleGraph V) (G' : SimpleGraph V') (G'' : SimpleGraph V'')
+variable {V : Type u} {V' : Type v}
+variable (G : SimpleGraph V) (G' : SimpleGraph V')
 
 namespace Walk
 
@@ -641,7 +641,7 @@ end Walk
 
 namespace Walk
 
-variable {G G' G''}
+variable {G G'}
 variable (f : G →g G') {u v : V} (p : G.Walk u v)
 variable {p f}
 
