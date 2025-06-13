@@ -297,7 +297,7 @@ theorem exists_mk0_eq_mk0 [IsDedekindDomain S] [Algebra.IsAlgebraic R S] (I : (I
   simp only [Algebra.smul_def] at lt
   rw [←
     sub_eq_zero.mp (b_min _ (I.1.sub_mem (I.1.mul_mem_left _ ha) (I.1.mul_mem_left _ b_mem)) lt)]
-  refine mul_dvd_mul_right (dvd_trans (RingHom.map_dvd _ ?_) hr') _
+  refine mul_dvd_mul_right (dvd_trans (map_dvd _ ?_) hr') _
   exact Multiset.dvd_prod (Multiset.mem_map.mpr ⟨_, r_mem, rfl⟩)
 
 /-- `ClassGroup.mkMMem` is a specialization of `ClassGroup.mk0` to (the finite set of)
