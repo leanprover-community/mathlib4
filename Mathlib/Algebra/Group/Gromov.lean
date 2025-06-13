@@ -1363,6 +1363,7 @@ def isembedding_units_val := Units.isEmbedding_val_mk' (M := (W (G := G) →L[�
 
 def unit_val_isometry := Topology.IsEmbedding.to_isometry (isembedding_units_val (G := G))
 def units_val_inducing := (isembedding_units_val (G := G).isInducing)
+def units_openMap := Units.isOpenMap_val (R := (W (G := G) →L[ℂ] W (G := G)))
 
 noncomputable instance GL_W_psuedo: PseudoMetricSpace (GL_W (G := G)) := Topology.IsInducing.comapPseudoMetricSpace (isembedding_units_val (G := G).isInducing)
 --   apply FiniteDimensional.proper_rclike (K := ℂ)
@@ -1445,10 +1446,8 @@ theorem compact_rho_g: IsCompact (rho_g_closure (G := G)) := by
         rw [this] at hx
         contradiction
       .
-        apply Topology.IsInducing.isOpenMap
-        . apply units_val_inducing
-        . sorry
-        . simp
+        apply units_openMap
+        simp
       .
         rw [← hx_unit]
         simp
