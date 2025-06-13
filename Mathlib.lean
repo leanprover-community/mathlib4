@@ -2330,6 +2330,7 @@ import Mathlib.CategoryTheory.Localization.SmallShiftedHom
 import Mathlib.CategoryTheory.Localization.StructuredArrow
 import Mathlib.CategoryTheory.Localization.Triangulated
 import Mathlib.CategoryTheory.Localization.Trifunctor
+import Mathlib.CategoryTheory.LocallyDirected
 import Mathlib.CategoryTheory.Monad.Adjunction
 import Mathlib.CategoryTheory.Monad.Algebra
 import Mathlib.CategoryTheory.Monad.Basic
@@ -5866,6 +5867,7 @@ import Mathlib.Tactic.SetLike
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simproc.ExistsAndEq
+import Mathlib.Tactic.Simproc.Factors
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Tactic.SplitIfs
