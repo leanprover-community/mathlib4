@@ -137,6 +137,10 @@ lemma exists_mem_of_isClosed_of_nonempty
   simpa using this
 
 include hc in
+/--
+A variant of `exists_mem_of_isClosed_of_nonempty` where the closed sets are only defined 
+for the objects over a given `j : I`.
+-/
 @[stacks 01Z3]
 lemma exists_mem_of_isClosed_of_nonempty'
     [IsCofilteredOrEmpty I]
