@@ -601,7 +601,7 @@ local notation3:max "↓"j:arg => Equiv.symm (equivShrink _) j
 /-- (Implemetation detail)
 The glue data associated to a locally directed diagram.
 
-One usually do not want to use this directly, and instead use the generic `colimit` API.
+One usually does not want to use this directly, and instead use the generic `colimit` API.
 -/
 def glueData : Scheme.GlueData where
   J := Shrink.{u} J
@@ -673,7 +673,7 @@ lemma glueDataι_naturality {i j : Shrink.{u} J} (f : ↓i ⟶ ↓j) :
 /-- (Implemetation detail)
 The cocone associated to a locally directed diagram.
 
-One usually do not want to use this directly, and instead use the generic `colimit` API.
+One usually does not want to use this directly, and instead use the generic `colimit` API.
 -/
 def cocone : Cocone F where
   pt := (glueData F).glued
@@ -685,7 +685,7 @@ def cocone : Cocone F where
 /-- (Implemetation detail)
 The cocone associated to a locally directed diagram is a colimit.
 
-One usually do not want to use this directly, and instead use the generic `colimit` API.
+One usually does not want to use this directly, and instead use the generic `colimit` API.
 -/
 noncomputable
 def isColimit : IsColimit (cocone F) where
@@ -708,7 +708,7 @@ def isColimit : IsColimit (cocone F) where
 /-- (Implemetation detail)
 The cocone associated to a locally directed diagram is a colimit as locally ringed spaces.
 
-One usually do not want to use this directly, and instead use the generic `colimit` API.
+One usually does not want to use this directly, and instead use the generic `colimit` API.
 -/
 noncomputable
 def isColimitForgetToLocallyRingedSpace :
