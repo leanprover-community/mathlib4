@@ -121,7 +121,7 @@ lemma add_toBilin (bm : Basis ι R M) (Q₁ Q₂ : QuadraticMap R M N) :
   obtain h | rfl | h := lt_trichotomy i j
   · simp [h.ne, h, toBilin_apply, polar_add]
   · simp [toBilin_apply]
-  · simp [h.ne', h.not_lt, toBilin_apply, polar_add]
+  · simp [h.ne', h.not_gt, toBilin_apply, polar_add]
 
 variable (S) [CommSemiring S] [Algebra S R]
 variable [Module S N] [IsScalarTower S R N]
@@ -133,7 +133,7 @@ lemma smul_toBilin (bm : Basis ι R M) (s : S) (Q : QuadraticMap R M N) :
   obtain h | rfl | h := lt_trichotomy i j
   · simp [h.ne, h, toBilin_apply, polar_smul]
   · simp [toBilin_apply]
-  · simp [h.ne', h.not_lt, toBilin_apply]
+  · simp [h.ne', h.not_gt, toBilin_apply]
 
 /-- `QuadraticMap.toBilin` as an S-linear map -/
 @[simps]
