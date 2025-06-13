@@ -1,18 +1,15 @@
-import Mathlib.Algebra.Azumaya.Basic
-import Mathlib.Algebra.CharP.IntermediateField
+/-
+Copyright (c) 2025 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
 import Mathlib.Algebra.GroupWithZero.Action.Faithful
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Order.Monoid.Prod
-import Mathlib.Algebra.Order.Monoid.Submonoid
-import Mathlib.Algebra.Order.Ring.Star
+import Mathlib.Algebra.Order.Ring.Finset
 import Mathlib.FieldTheory.PurelyInseparable.Tower
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
 import Mathlib.RingTheory.HopkinsLevitzki
-import Mathlib.RingTheory.MvPolynomial.MonomialOrder
-import Mathlib.RingTheory.Polynomial.GaussLemma
 import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
+import Mathlib.RingTheory.Polynomial.GaussLemma
 
 /-!
 
@@ -54,45 +51,6 @@ theorem MvPolynomial.isUnit_iff_totalDegree_of_isDomain {σ R : Type*} [CommRing
   convert isUnit_iff_of_isDomain (P := P)
   rw [totalDegree_eq_zero_iff]
   simp [not_imp_comm (a := _ = (0 : R)), Finsupp.ext_iff]
-
-lemma Polynomial.mapAlgHom_comp' {R A B C : Type*} [CommSemiring R] [Semiring A]
-    [Semiring B] [Algebra R A] [Algebra R B] [Semiring C] [Algebra R C]
-    (f : B →ₐ[R] C) (g : A →ₐ[R] B) :
-    (mapAlgHom f).comp (mapAlgHom g) = mapAlgHom (f.comp g) := by
-  apply AlgHom.ext
-  intro x
-  simp [AlgHom.comp_algebraMap, map_map]
-  congr
-#min_imports
-lemma Finset.mul_sup {R : Type*} [LinearOrder R] [NonUnitalNonAssocSemiring R]
-    [CanonicallyOrderedAdd R] [OrderBot R] {ι : Type*} (s : Finset ι) (f : ι → R) (a : R) :
-    a * s.sup f = s.sup (a * f ·) := by
-  classical
-  induction s using Finset.induction with
-  | empty => simp [bot_eq_zero]
-  | insert _ _ _ IH => simp only [Finset.sup_insert, ← IH, Nat.mul_max_mul_left, mul_max]
-
-lemma Fin.range_snoc {n : ℕ} {α} (f : Fin n → α) (x : α) :
-    Set.range (Fin.snoc f x) = insert x (Set.range f) := by
-  ext; simp [Fin.exists_fin_succ', or_comm, eq_comm]
-
-lemma IsIntegral.of_surjective_algebraMap {R S : Type*} [CommRing R] [Nontrivial R] [CommRing S]
-    [Algebra R S] (H : Function.Surjective (algebraMap R S)) : Algebra.IsIntegral R S :=
-  .of_surjective (IsScalarTower.toAlgHom R R S) H
-
-lemma _root_.IntermediateField.restrictScalars_le_iff (K : Type*) {L E : Type*} [Field K] [Field L]
-    [Field E] [Algebra K L] [Algebra K E] [Algebra L E] [IsScalarTower K L E]
-    {E₁ E₂ : IntermediateField L E} : E₁.restrictScalars K ≤ E₂.restrictScalars K ↔ E₁ ≤ E₂ := .rfl
-
-lemma _root_.IntermediateField.FG.of_restrictScalars {K L E : Type*} [Field K] [Field L] [Field E]
-    [Algebra K L] [Algebra K E] [Algebra L E] [IsScalarTower K L E]
-    {E' : IntermediateField L E} (H : (E'.restrictScalars K).FG) : E'.FG := by
-  obtain ⟨s, hs⟩ := H
-  refine ⟨s, le_antisymm ?_ ?_⟩
-  · rw [IntermediateField.adjoin_le_iff]
-    exact (IntermediateField.subset_adjoin K _).trans_eq congr(($hs : Set E))
-  · rw [← IntermediateField.restrictScalars_le_iff K, ← hs, IntermediateField.adjoin_le_iff]
-    exact IntermediateField.subset_adjoin L _
 
 end InOtherPR
 
@@ -215,8 +173,8 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_adjoin
         rw [totalDegree_eq_zero_iff_eq_C.mp hF''0, aeval_C, map_eq_zero] at hF''
         rw [totalDegree_eq_zero_iff_eq_C.mp hF''0, hF'', map_zero]
       replace this := hpm.trans (this.trans_eq (one_mul _).symm)
-      exact hp.one_lt.not_le ((mul_le_mul_iff_of_pos_right hF''0'.bot_lt).mp this)
-    rw [totalDegree, Finset.mul_sup, Finset.sup_le_iff, ← hm]
+      exact hp.one_lt.not_ge ((mul_le_mul_iff_of_pos_right hF''0'.bot_lt).mp this)
+    rw [totalDegree, Finset.mul_sup₀, Finset.sup_le_iff, ← hm]
     intro σ hσ
     obtain ⟨σ, hσ₂, rfl⟩ := Finset.mem_image.mp (Finsupp.mapDomain_support hσ)
     refine le_trans ?_ (Finset.le_sup σ.2)
@@ -255,7 +213,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_adjoin
       rw [renameEquiv_apply, Finsupp.equivMapDomain_eq_mapDomain,
         coeff_rename_mapDomain _ (finSuccEquiv' i).injective,
         Finsupp.mapDomain_equiv_apply, finSuccEquiv'_symm_none, H, coeff_zero, eq_comm,
-        ← not_mem_support_iff] at this
+        ← notMem_support_iff] at this
       exact this hσ
     · trans algebraMap _ _ (F'.coeff (σ i)); swap; · simp only [hF'i, map_zero]
       simp only [aeval_rename, Polynomial.coe_mapAlgHom, Polynomial.coeff_map,
@@ -272,7 +230,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_adjoin
   -- which implies that the latter set is a transcendental basis.
   have : Algebra.IsAlgebraic (adjoin k (Set.range (a ∘ i.succAbove))) K := by
     refine ha'.isAlgebraic_iff.mpr fun j ↦ ?_
-    by_cases hij : i = j
+    by_cases hij : i = Fin.castSucc j
     · exact ⟨F', fun e ↦ by simp [e] at hF'', by simpa [hij] using hF'⟩
     refine isAlgebraic_algebraMap (R := Algebra.adjoin k _) ⟨_, Algebra.subset_adjoin ?_⟩
     rw [Set.range_comp, Fin.range_succAbove]
@@ -301,7 +259,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_adjoin
       (this.isPrimitive hFi).irreducible_iff_irreducible_map_fraction_map
         (K := FractionRing (MvPolynomial (Fin n) k)).mp this
     convert this.map (Polynomial.mapAlgEquiv Hi.1.aevalEquivField)
-    simp only [F', Polynomial.mapAlgHom_comp', ← AlgEquiv.coe_algHom, AlgEquiv.toAlgHom_eq_coe,
+    simp only [F', Polynomial.mapAlgHom_comp, ← AlgEquiv.coe_algHom, AlgEquiv.toAlgHom_eq_coe,
       ← AlgHom.comp_apply, Polynomial.mapAlgEquiv_toAlgHom, F'']
     congr
     ext j : 3
@@ -355,7 +313,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
     obtain ⟨s, hs⟩ := Hfg
     have : Algebra.IsAlgebraic (adjoin k (s : Set K)) K := by
       rw [← isAlgebraic_adjoin_iff_top, hs, Algebra.isAlgebraic_iff_isIntegral]
-      refine .of_surjective_algebraMap topEquiv.surjective
+      refine Algebra.isIntegral_of_surjective topEquiv.surjective
     obtain ⟨t, hts, ht⟩ := exists_isTranscendenceBasis_subset (R := k) (s : Set K)
     have ht' : t.Finite := s.finite_toSet.subset hts
     refine ⟨_, ht'.toFinset, (by convert ht <;> ext <;> simp), rfl⟩
