@@ -129,7 +129,7 @@ end
 
 noncomputable section SmallCategory
 
-open MonoidalCategory ChosenFiniteProducts
+open MonoidalCategory CartesianMonoidalCategory
 
 namespace IsSifted
 
@@ -148,18 +148,18 @@ lemma factorization_prod_comparison_colim :
     (HasColimit.isoOfNatIso ((externalProductCompDiagIso _ _).app (X, Y)).symm).hom ≫
       colimit.pre _ _ ≫
         (PreservesColimit₂.isoColimitUncurryWhiskeringLeft₂ X Y <| curriedTensor <| Type u).hom =
-    ChosenFiniteProducts.prodComparison colim X Y := by
+    CartesianMonoidalCategory.prodComparison colim X Y := by
   apply colimit.hom_ext
   intro j
-  dsimp [externalProductBifunctor, ChosenFiniteProducts.prodComparison,
-    externalProductBifunctorUncurried]
+  dsimp [externalProductBifunctor, CartesianMonoidalCategory.prodComparison,
+    externalProductBifunctorCurried]
   aesop_cat
 
 variable [IsSifted C]
 
 /-- If `C` is sifted, the canonical product comparison map for the `colim` functor
 `(C ⥤ Type) ⥤ Type` is an isomorphism. -/
-instance : IsIso (ChosenFiniteProducts.prodComparison colim X Y) := by
+instance : IsIso (CartesianMonoidalCategory.prodComparison colim X Y) := by
   rw [← factorization_prod_comparison_colim]
   iterate apply IsIso.comp_isIso' <;> infer_instance
 
@@ -212,7 +212,7 @@ theorem isSiftedOrEmpty_of_colimit_preservesBinaryProducts
       isoWhiskerLeft _ <| NatIso.ofComponents (fun _ ↦ Iso.refl _)
     _ ≅ colimit (_ ⊗ _) := HasColimit.isoOfNatIso
       (NatIso.ofComponents (fun _ ↦ Iso.refl _)).symm
-    _ ≅ (colimit _) ⊗ (colimit _) := ChosenFiniteProducts.prodComparisonIso colim _ _
+    _ ≅ (colimit _) ⊗ (colimit _) := CartesianMonoidalCategory.prodComparisonIso colim _ _
     _ ≅ PUnit ⊗ PUnit := (Coyoneda.colimitCoyonedaIso _) ⊗ (Coyoneda.colimitCoyonedaIso _)
     _ ≅ PUnit := λ_ _
 
