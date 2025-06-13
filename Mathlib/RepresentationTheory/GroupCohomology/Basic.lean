@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Homology.Opposite
+import Mathlib.Algebra.Homology.ConcreteCategory
 import Mathlib.RepresentationTheory.GroupCohomology.Resolution
 import Mathlib.Tactic.CategoryTheory.Slice
 
@@ -165,7 +166,7 @@ abbrev cocycles (n : ℕ) : ModuleCat k := (inhomogeneousCochains A).cycles n
 
 variable {A} in
 /-- Make an `n`-cocycle out of an element of the kernel of the `n`th differential. -/
-abbrev cocyclesMk {n : ℕ} (f : (Fin n → G) → A) (h : inhomogeneousCochains.d n A f = 0) :
+abbrev cocyclesMk {n : ℕ} (f : (Fin n → G) → A) (h : inhomogeneousCochains.d A n f = 0) :
     cocycles A n :=
   (inhomogeneousCochains A).cyclesMk f (n + 1) (by simp) (by simp [h])
 
@@ -179,7 +180,7 @@ abbrev toCocycles (i j : ℕ) : (inhomogeneousCochains A).X i ⟶ cocycles A j :
   (inhomogeneousCochains A).toCycles i j
 
 variable {A} in
-theorem iCocycles_mk {n : ℕ} (f : (Fin n → G) → A) (h : inhomogeneousCochains.d n A f = 0) :
+theorem iCocycles_mk {n : ℕ} (f : (Fin n → G) → A) (h : inhomogeneousCochains.d A n f = 0) :
     iCocycles A n (cocyclesMk f h) = f := by
   exact (inhomogeneousCochains A).i_cyclesMk (i := n) f (n + 1) (by simp) (by simp [h])
 

@@ -26,8 +26,6 @@ This allows us to specialize API about long exact sequences to group cohomology.
 
 universe u v
 
-namespace CategoryTheory.ShortComplex.ShortExact
-
 namespace groupCohomology
 
 open CategoryTheory ShortComplex
@@ -85,6 +83,20 @@ noncomputable abbrev δ (i j : ℕ) (hij : i + 1 = j) :
     groupCohomology X.X₃ i ⟶ groupCohomology X.X₁ j :=
   (map_cochainsFunctor_shortExact hX).δ i j hij
 
+open Limits
+
+theorem epi_δ_of_isZero (n : ℕ) (h : IsZero (groupCohomology X.X₂ (n + 1))) :
+    Epi (δ hX n (n + 1) rfl) := SnakeInput.epi_δ _ h
+
+theorem mono_δ_of_isZero (n : ℕ) (h : IsZero (groupCohomology X.X₂ n)) :
+    Mono (δ hX n (n + 1) rfl) := SnakeInput.mono_δ _ h
+
+theorem isIso_δ_of_isZero (n : ℕ) (h : IsZero (groupCohomology X.X₂ n))
+    (hs : IsZero (groupCohomology X.X₂ (n + 1))) :
+    IsIso (δ hX n (n + 1) rfl) := SnakeInput.isIso_δ _ h hs
+
+/-- Given an exact sequence of `G`-representations `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0`, this expresses an
+`n + 1`-cochain `x : Gⁿ⁺¹ → X₁` such that `f ∘ x ∈ Bⁿ⁺¹(G, X₂)` as a cocycle. -/
 noncomputable abbrev cocyclesMkOfCompEqD {i j : ℕ} {y : (Fin i → G) → X.X₂}
     {x : (Fin j → G) → X.X₁} (hx : X.f.hom ∘ x = (inhomogeneousCochains X.X₂).d i j y) :
     cocycles X.X₁ j :=
@@ -96,11 +108,12 @@ theorem δ_apply {i j : ℕ} (hij : i + 1 = j)
     (z : (Fin i → G) → X.X₃) (hz : (inhomogeneousCochains X.X₃).d i j z = 0)
     (y : (Fin i → G) → X.X₂) (hy : (cochainsMap (MonoidHom.id G) X.g).f i y = z)
     (x : (Fin j → G) → X.X₁) (hx : X.f.hom ∘ x = (inhomogeneousCochains X.X₂).d i j y) :
-    δ hX i j hij (groupCohomologyπ X.X₃ i <| cocyclesMk z (by subst hij; simpa using hz)) =
-      groupCohomologyπ X.X₁ j (cocyclesMkOfCompEqD hX hx) := by
+    δ hX i j hij (π X.X₃ i <| cocyclesMk z (by subst hij; simpa using hz)) =
+      π X.X₁ j (cocyclesMkOfCompEqD hX hx) := by
   exact (map_cochainsFunctor_shortExact hX).δ_apply i j hij z hz y hy x
     (by simpa [cochainsMap_id_f_hom_eq_compLeft] using hx) (j + 1) (by simp)
 
+omit [DecidableEq G] in
 theorem mem_oneCocycles_of_comp_eq_dZero
     {y : X.X₂} {x : G → X.X₁} (hx : X.f.hom ∘ x = dZero X.X₂ y) :
     x ∈ oneCocycles X.X₁ := by
@@ -110,7 +123,7 @@ theorem mem_oneCocycles_of_comp_eq_dZero
 
 theorem δ₀_apply (z : X.X₃.ρ.invariants) (y : X.X₂)
     (hy : X.g.hom y = z) (x : G → X.X₁) (hx : X.f.hom ∘ x = dZero X.X₂ y) :
-    δ hX 0 1 rfl ((H0Iso X.X₃).inv z) = groupCohomologyπ X.X₁ 1
+    δ hX 0 1 rfl ((H0Iso X.X₃).inv z) = π X.X₁ 1
       ((isoOneCocycles X.X₁).inv ⟨x, mem_oneCocycles_of_comp_eq_dZero hX hx⟩) := by
   simpa [H0Iso, ← cocyclesMk_1_eq X.X₁, ← cocyclesMk_0_eq z] using
     δ_apply hX rfl ((zeroCochainsIso X.X₃).inv z.1) (by simp) ((zeroCochainsIso X.X₂).inv y)
@@ -119,6 +132,7 @@ theorem δ₀_apply (z : X.X₃.ρ.invariants) (y : X.X₂)
       simpa [← hx] using congr_fun (congr($((CommSq.vert_inv
         ⟨cochainsMap_f_1_comp_oneCochainsIso (MonoidHom.id G) X.f⟩).w) x)) g
 
+omit [DecidableEq G] in
 theorem mem_twoCocycles_of_comp_eq_dOne
     {y : G → X.X₂} {x : G × G → X.X₁} (hx : X.f.hom ∘ x = dOne X.X₂ y) :
     x ∈ twoCocycles X.X₁ := by
@@ -126,10 +140,9 @@ theorem mem_twoCocycles_of_comp_eq_dOne
   have := congr($((mapShortComplexH2 (MonoidHom.id G) X.f).comm₂₃.symm) x)
   simp_all [shortComplexH2, LinearMap.compLeft]
 
-set_option trace.profiler true in
 theorem δ₁_apply (z : oneCocycles X.X₃) (y : G → X.X₂)
     (hy : X.g.hom ∘ y = z) (x : G × G → X.X₁) (hx : X.f.hom ∘ x = dOne X.X₂ y) :
-    δ hX 1 2 rfl (groupCohomologyπ _ 1 <| (isoOneCocycles X.X₃).inv z) = groupCohomologyπ X.X₁ _
+    δ hX 1 2 rfl (π _ 1 <| (isoOneCocycles X.X₃).inv z) = π X.X₁ _
       ((isoTwoCocycles X.X₁).inv ⟨x, mem_twoCocycles_of_comp_eq_dOne hX hx⟩) := by
   simpa [H0Iso, ← cocyclesMk_2_eq X.X₁, ← cocyclesMk_1_eq X.X₃] using
     δ_apply hX rfl ((oneCochainsIso X.X₃).inv z) (by simp [oneCocycles.dOne_apply z])
@@ -138,10 +151,5 @@ theorem δ₁_apply (z : oneCocycles X.X₃) (y : G → X.X₂)
       ext g
       simpa [← hx] using congr_fun (congr($((CommSq.vert_inv
         ⟨cochainsMap_f_2_comp_twoCochainsIso (MonoidHom.id G) X.f⟩).w) x)) g
-
-open Limits
-
-theorem epi_δ_of_isZero (n : ℕ) (h : IsZero (groupCohomology X.X₂ (n + 1))) :
-    Epi (δ hX n (n + 1) rfl) := SnakeInput.epi_δ _ h
 
 end groupCohomology
