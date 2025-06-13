@@ -13,6 +13,7 @@ import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.MeasureTheory.Constructions.UnitInterval
 import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
 /-! # Riemannian manifolds
 
@@ -20,7 +21,7 @@ A Riemannian manifold `M` is a real manifold such that its tangent spaces are en
 scalar product, depending smoothly on the point, and such that `M` has an emetric space
 structure for which the distance is the infimum of lengths of paths. -/
 
-open Bundle Bornology Set
+open Bundle Bornology Set MeasureTheory
 open scoped Manifold ENNReal ContDiff Topology
 
 local notation "⟪" x ", " y "⟫" => inner ℝ x y
@@ -210,6 +211,69 @@ lemma mfderiv_subtype_coe_Icc_one (z : Icc x y) :
 
 end ToMove
 
+namespace Manifold
+
+variable [∀ (x : M), ENorm (TangentSpace I x)]
+
+variable (I) in
+/-- The length on `Icc x y` of a path into a manifold, where the path is defined on the whole real
+line.
+
+We use the whole real line to avoid subtype hell in API, but this is equivalent to
+considering functions on the manifold with boundary `Icc x y`, see
+`lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc`.
+
+We use `mfderiv` instead of `mfderivWithin` as these coincide (apart from the two endpoints which
+have zero measure) and `mfderiv` is easier to manipulate. -/
+def pathELength (γ : ℝ → M) (x y : ℝ) : ℝ≥0∞ :=
+  ∫⁻ t in Icc x y, ‖mfderiv 𝓘(ℝ) I γ t 1‖ₑ
+
+lemma pathELength_eq_add {γ : ℝ → M} {x y z : ℝ} (h : x ≤ y) (h' : y ≤ z) :
+    pathELength I γ x z = pathELength I γ x y + pathELength I γ y z := by
+  have : Icc x z = Icc x y ∪ Ioc y z := (Icc_union_Ioc_eq_Icc h h').symm
+  rw [pathELength, this, lintegral_union measurableSet_Ioc]; swap
+  · exact disjoint_iff_forall_ne.mpr (fun a ha b hb ↦ (ha.2.trans_lt hb.1).ne)
+  rw [restrict_Ioc_eq_restrict_Icc]
+  rfl
+
+attribute [local instance] Measure.Subtype.measureSpace
+
+lemma lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc {x y : ℝ}
+    [h : Fact (x < y)] {γ : Icc x y → M} :
+    ∫⁻ t, ‖mfderiv (𝓡∂ 1) I γ t 1‖ₑ = pathELength I (γ ∘ (projIcc x y h.out.le)) x y := by
+  have A : ∫⁻ t, ‖mfderiv (𝓡∂ 1) I γ t 1‖ₑ =
+      ∫⁻ t in Icc x y, ‖mfderivWithin 𝓘(ℝ) I (γ ∘ (projIcc x y h.out.le)) (Icc x y) t 1‖ₑ := by
+    simp_rw [← mfderivWithin_comp_projIcc_one]
+    have : MeasurePreserving (Subtype.val : Icc x y → ℝ) volume
+      (volume.restrict (Icc x y)) := measurePreserving_subtype_coe measurableSet_Icc
+    rw [← MeasureTheory.MeasurePreserving.lintegral_comp_emb this
+      (MeasurableEmbedding.subtype_coe measurableSet_Icc)]
+    congr
+    ext t
+    have : t = projIcc x y h.out.le (t : ℝ) := by simp
+    congr
+  rw [A, pathELength, ← restrict_Ioo_eq_restrict_Icc]
+  apply lintegral_congr_ae
+  filter_upwards [self_mem_ae_restrict measurableSet_Ioo] with x hx
+  congr
+  rw [mfderivWithin_of_mem_nhds (Icc_mem_nhds hx.1 hx.2)]
+
+#check intervalIntegral.integral_comp_mul_deriv'''
+
+lemma pathELength_comp (γ : ℝ → M) {f : ℝ → ℝ} {x y : ℝ} (h : x ≤ y) (hf : MonotoneOn f (Icc x y))
+    (h'f : ContDiffOn ℝ 1 f (Icc x y)) :
+    pathELength I γ (f x) (f y) = pathELength I (γ ∘ f) x y := by
+  simp only [pathELength]
+  have A (t)  : ‖(mfderiv 𝓘(ℝ, ℝ) I (γ ∘ f) t) 1‖ₑ
+    = ‖(mfderiv 𝓘(ℝ, ℝ) I γ (f t)) 1‖ₑ * ‖deriv f t‖ₑ := sorry
+  simp_rw [A]
+
+
+#exit
+
+
+
+end Manifold
 
 section
 
