@@ -34,7 +34,6 @@ resulting expression: e.g. `1 * X + 0` becomes `X`.
 
 open Lean Meta Simp
 open Lean.Elab
-open Tactic
 open Qq
 
 namespace Tactic
@@ -262,6 +261,8 @@ partial def derive (expensive := false) (e : Expr) : MetaM Simp.Result := do
   let r ← r.mkEqTrans (← Simp.main r.expr ctx (methods := { pre, post, discharge? := discharge })).1
 
   return r
+
+open Tactic
 
 /-- Reduce all numeric subexpressions of the goal modulo their characteristic. -/
 partial def reduceModCharTarget (expensive := false) : TacticM Unit := do
