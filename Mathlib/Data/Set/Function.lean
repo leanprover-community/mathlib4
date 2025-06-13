@@ -106,8 +106,11 @@ section MapsTo
 theorem mapsTo' : MapsTo f s t ↔ f '' s ⊆ t :=
   image_subset_iff.symm
 
-theorem mapsTo_prod_map_diagonal : MapsTo (Prod.map f f) (diagonal α) (diagonal β) :=
+theorem mapsTo_prodMap_diagonal : MapsTo (Prod.map f f) (diagonal α) (diagonal β) :=
   diagonal_subset_iff.2 fun _ => rfl
+
+@[deprecated (since := "2025-04-18")]
+alias mapsTo_prod_map_diagonal := mapsTo_prodMap_diagonal
 
 theorem MapsTo.subset_preimage (hf : MapsTo f s t) : s ⊆ f ⁻¹' t := hf
 
@@ -245,6 +248,9 @@ theorem injOn_singleton (f : α → β) (a : α) : InjOn f {a} :=
   subsingleton_singleton.injOn f
 
 @[simp] lemma injOn_pair {b : α} : InjOn f {a, b} ↔ f a = f b → a = b := by unfold InjOn; aesop
+
+@[simp low] lemma injOn_of_eq_iff_eq (s : Set α) (h : ∀ x y, f x = f y ↔ x = y) : Set.InjOn f s :=
+  fun x _ y _ => (h x y).mp
 
 theorem InjOn.eq_iff {x y} (h : InjOn f s) (hx : x ∈ s) (hy : y ∈ s) : f x = f y ↔ x = y :=
   ⟨h hx hy, fun h => h ▸ rfl⟩
@@ -657,7 +663,7 @@ induces a bijection from the image of `s` to the image of `t`, as long as `g` is
 is injective on the image of `s`.
 -/
 theorem bijOn_image_image {p₁ : α → γ} {p₂ : β → δ} {g : γ → δ} (comm : ∀ a, p₂ (f a) = g (p₁ a))
-    (hbij : BijOn f s t) (hinj: InjOn g (p₁ '' s)) : BijOn g (p₁ '' s) (p₂ '' t) := by
+    (hbij : BijOn f s t) (hinj : InjOn g (p₁ '' s)) : BijOn g (p₁ '' s) (p₂ '' t) := by
   obtain ⟨h1, h2, h3⟩ := hbij
   refine ⟨?_, hinj, ?_⟩
   · rintro _ ⟨a, ha, rfl⟩
@@ -884,11 +890,10 @@ namespace Function
 
 variable {s : Set α} {f : α → β} {a : α} {b : β}
 
-attribute [local instance] Classical.propDecidable
-
 /-- Construct the inverse for a function `f` on domain `s`. This function is a right inverse of `f`
 on `f '' s`. For a computable version, see `Function.Embedding.invOfMemRange`. -/
 noncomputable def invFunOn [Nonempty α] (f : α → β) (s : Set α) (b : β) : α :=
+  open scoped Classical in
   if h : ∃ a, a ∈ s ∧ f a = b then Classical.choose h else Classical.choice ‹Nonempty α›
 
 variable [Nonempty α]
@@ -1045,13 +1050,15 @@ theorem preimage_invFun_of_mem [n : Nonempty α] {f : α → β} (hf : Injective
       leftInverse_invFun hf _, hf.mem_set_image]
   · simp only [mem_preimage, invFun_neg hx, h, hx, mem_union, mem_compl_iff, not_false_iff, or_true]
 
-theorem preimage_invFun_of_not_mem [n : Nonempty α] {f : α → β} (hf : Injective f) {s : Set α}
+theorem preimage_invFun_of_notMem [n : Nonempty α] {f : α → β} (hf : Injective f) {s : Set α}
     (h : Classical.choice n ∉ s) : invFun f ⁻¹' s = f '' s := by
   ext x
   rcases em (x ∈ range f) with (⟨a, rfl⟩ | hx)
   · rw [mem_preimage, leftInverse_invFun hf, hf.mem_set_image]
   · have : x ∉ f '' s := fun h' => hx (image_subset_range _ _ h')
     simp only [mem_preimage, invFun_neg hx, h, this]
+
+@[deprecated (since := "2025-05-23")] alias preimage_invFun_of_not_mem := preimage_invFun_of_notMem
 
 lemma BijOn.symm {g : β → α} (h : InvOn f g t s) (hf : BijOn f s t) : BijOn g t s :=
   ⟨h.2.mapsTo hf.surjOn, h.1.injOn, h.2.surjOn hf.mapsTo⟩
@@ -1139,15 +1146,21 @@ theorem injOn_preimage (h : Semiconj f fa fb) {s : Set β} (hb : InjOn fb s)
 
 end Semiconj
 
-theorem update_comp_eq_of_not_mem_range' {α : Sort*} {β : Type*} {γ : β → Sort*} [DecidableEq β]
+theorem update_comp_eq_of_notMem_range' {α : Sort*} {β : Type*} {γ : β → Sort*} [DecidableEq β]
     (g : ∀ b, γ b) {f : α → β} {i : β} (a : γ i) (h : i ∉ Set.range f) :
     (fun j => update g i a (f j)) = fun j => g (f j) :=
   (update_comp_eq_of_forall_ne' _ _) fun x hx => h ⟨x, hx⟩
 
-/-- Non-dependent version of `Function.update_comp_eq_of_not_mem_range'` -/
-theorem update_comp_eq_of_not_mem_range {α : Sort*} {β : Type*} {γ : Sort*} [DecidableEq β]
+@[deprecated (since := "2025-05-23")]
+alias update_comp_eq_of_not_mem_range' := update_comp_eq_of_notMem_range'
+
+/-- Non-dependent version of `Function.update_comp_eq_of_notMem_range'` -/
+theorem update_comp_eq_of_notMem_range {α : Sort*} {β : Type*} {γ : Sort*} [DecidableEq β]
     (g : β → γ) {f : α → β} {i : β} (a : γ) (h : i ∉ Set.range f) : update g i a ∘ f = g ∘ f :=
-  update_comp_eq_of_not_mem_range' g a h
+  update_comp_eq_of_notMem_range' g a h
+
+@[deprecated (since := "2025-05-23")]
+alias update_comp_eq_of_not_mem_range := update_comp_eq_of_notMem_range
 
 theorem insert_injOn (s : Set α) : sᶜ.InjOn fun a => insert a s := fun _a ha _ _ =>
   (insert_inj ha).1

@@ -182,7 +182,7 @@ and this array has the same length as the one returned by `Lean.Expr.getAppArgs`
 def getAppApps (e : Expr) : Array Expr :=
   let dummy := mkSort levelZero
   let nargs := e.getAppNumArgs
-  getAppAppsAux e (mkArray nargs dummy) (nargs-1)
+  getAppAppsAux e (.replicate nargs dummy) (nargs-1)
 
 /-- Erase proofs in an expression by replacing them with `sorry`s.
 

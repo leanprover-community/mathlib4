@@ -123,9 +123,9 @@ lemma binEntropy_nonpos_of_one_le (hp : 1 ≤ p) : binEntropy p ≤ 0 := by
 lemma binEntropy_eq_zero : binEntropy p = 0 ↔ p = 0 ∨ p = 1 := by
   refine ⟨fun h ↦ ?_, by rintro (rfl | rfl) <;> simp⟩
   contrapose! h
-  obtain hp₀ | hp₀ := h.1.lt_or_lt
+  obtain hp₀ | hp₀ := h.1.lt_or_gt
   · exact (binEntropy_neg_of_neg hp₀).ne
-  obtain hp₁ | hp₁ := h.2.lt_or_lt.symm
+  obtain hp₁ | hp₁ := h.2.lt_or_gt.symm
   · exact (binEntropy_neg_of_one_lt hp₁).ne
   · exact (binEntropy_pos hp₀ hp₁).ne'
 
@@ -136,10 +136,10 @@ lemma binEntropy_lt_log_two : binEntropy p < log 2 ↔ p ≠ 2⁻¹ := by
     simp at h
   wlog hp : p < 2⁻¹
   · have hp : 1 - p < 2⁻¹ := by
-      rw [sub_lt_comm]; norm_num at *; linarith (config := { splitNe := true })
+      rw [sub_lt_comm]; norm_num at *; linarith +splitNe
     rw [← binEntropy_one_sub]
     exact this hp.ne hp
-  obtain hp₀ | hp₀ := le_or_lt p 0
+  obtain hp₀ | hp₀ := le_or_gt p 0
   · exact (binEntropy_nonpos_of_nonpos hp₀).trans_lt <| log_pos <| by norm_num
   have hp₁ : 0 < 1 - p := sub_pos.2 <| hp.trans <| by norm_num
   calc
@@ -345,7 +345,7 @@ lemma deriv2_qaryEntropy :
     filter_upwards [eventually_ne_nhds xne0, eventually_ne_nhds xne1]
       with y xne0 h2 using deriv_qaryEntropy xne0 h2
   -- Pathological case where we use junk value (because function not differentiable)
-  · have : p = 0 ∨ p = 1 := Decidable.or_iff_not_and_not.mpr is_x_where_nondiff
+  · have : p = 0 ∨ p = 1 := Decidable.or_iff_not_not_and_not.mpr is_x_where_nondiff
     rw [deriv_zero_of_not_differentiableAt]
     · simp_all only [ne_eq, not_and, Decidable.not_not]
       cases this <;> simp_all only [

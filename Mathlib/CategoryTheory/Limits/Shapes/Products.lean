@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Discrete.Basic
 
 /-!
 # Categorical (co)products
@@ -102,7 +102,7 @@ lemma hasCoproduct_of_equiv_of_iso (f : α → C) (g : β → C)
 lemma hasProduct_of_equiv_of_iso (f : α → C) (g : β → C)
     [HasProduct f] (e : β ≃ α) (iso : ∀ j, g j ≅ f (e j)) : HasProduct g := by
   have : HasLimit ((Discrete.equivalence e).functor ⋙ Discrete.functor f) :=
-    hasLimitEquivalenceComp _
+    hasLimit_equivalence_comp _
   have α : Discrete.functor g ≅ (Discrete.equivalence e).functor ⋙ Discrete.functor f :=
     Discrete.natIso (fun ⟨j⟩ => iso j)
   exact hasLimit_of_iso α.symm

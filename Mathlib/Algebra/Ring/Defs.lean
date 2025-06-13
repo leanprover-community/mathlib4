@@ -36,7 +36,7 @@ the present file is about their interaction.
 
 
 /-!
-Previously an import dependency on `Mathlib.Algebra.Group.Basic` had crept in.
+Previously an import dependency on `Mathlib/Algebra/Group/Basic.lean` had crept in.
 In general, the `.Defs` files in the basic algebraic hierarchy should only depend on earlier `.Defs`
 files, without importing `.Basic` theory development.
 
@@ -351,13 +351,6 @@ instance (priority := 100) Ring.toNonUnitalRing : NonUnitalRing α :=
 -- A (unital, associative) ring is a not-necessarily-associative ring
 -- see Note [lower instance priority]
 instance (priority := 100) Ring.toNonAssocRing : NonAssocRing α :=
-  { ‹Ring α› with }
-
-/-- The instance from `Ring` to `Semiring` happens often in linear algebra, for which all the basic
-definitions are given in terms of semirings, but many applications use rings or fields. We increase
-a little bit its priority above 100 to try it quickly, but remaining below the default 1000 so that
-more specific instances are tried first. -/
-instance (priority := 200) : Semiring α :=
   { ‹Ring α› with }
 
 end Ring

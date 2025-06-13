@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
 import Mathlib.Tactic.FunProp.FunctionData
-import Batteries.Data.RBMap.Basic
 import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 
 /-!
@@ -16,6 +15,7 @@ this file defines environment extension for `funProp`
 
 namespace Mathlib
 open Lean Meta
+open Std (TreeSet)
 
 namespace Meta.FunProp
 
@@ -88,7 +88,7 @@ structure Context where
   /-- fun_prop config -/
   config : Config := {}
   /-- Name to unfold -/
-  constToUnfold : Batteries.RBSet Name Name.quickCmp :=
+  constToUnfold : TreeSet Name Name.quickCmp :=
     .ofArray defaultNamesToUnfold _
   /-- Custom discharger to satisfy theorem hypotheses. -/
   disch : Expr → MetaM (Option Expr) := fun _ => pure .none
@@ -98,19 +98,19 @@ structure Context where
 /-- General theorem about a function property used for transition and morphism theorems -/
 structure GeneralTheorem where
   /-- function property name -/
-  funPropName   : Name
+  funPropName : Name
   /-- theorem name -/
-  thmName     : Name
+  thmName : Name
   /-- discrimination tree keys used to index this theorem -/
-  keys        : List (RefinedDiscrTree.Key × RefinedDiscrTree.LazyEntry)
+  keys : List (RefinedDiscrTree.Key × RefinedDiscrTree.LazyEntry)
   /-- priority -/
-  priority    : Nat  := eval_prio default
+  priority : Nat  := eval_prio default
   deriving Inhabited
 
 /-- Structure holding transition or morphism theorems for `fun_prop` tactic. -/
 structure GeneralTheorems where
   /-- Discrimination tree indexing theorems. -/
-  theorems     : RefinedDiscrTree GeneralTheorem := {}
+  theorems : RefinedDiscrTree GeneralTheorem := {}
   deriving Inhabited
 
 /-- `fun_prop` state -/
@@ -125,7 +125,7 @@ structure State where
   /-- Log progress and failures messages that should be displayed to the user at the end. -/
   msgLog : List String := []
   /-- `RefinedDiscrTree` is lazy, so we store the partially evaluated tree. -/
-  morTheorems        : GeneralTheorems
+  morTheorems : GeneralTheorems
   /-- `RefinedDiscrTree` is lazy, so we store the partially evaluated tree. -/
   transitionTheorems : GeneralTheorems
 
@@ -136,6 +136,7 @@ def Context.increaseTransitionDepth (ctx : Context) : Context :=
 /-- Monad to run `fun_prop` tactic in. -/
 abbrev FunPropM := ReaderT FunProp.Context <| StateT FunProp.State MetaM
 
+set_option linter.style.docString false in
 /-- Result of `funProp`, it is a proof of function property `P f` -/
 structure Result where
   /-- -/

@@ -396,8 +396,6 @@ def disjSups : Finset α := {ab ∈ s ×ˢ t | Disjoint ab.1 ab.2}.image fun ab 
 @[inherit_doc]
 scoped[FinsetFamily] infixl:74 " ○ " => Finset.disjSups
 
-open FinsetFamily
-
 variable {s t u} {a b c : α}
 
 @[simp]
@@ -473,8 +471,6 @@ instance : @Std.Commutative (Finset α) (· ○ ·) := ⟨disjSups_comm⟩
 
 end DisjSups
 
-open FinsetFamily
-
 section DistribLattice
 
 variable [DecidableEq α]
@@ -509,8 +505,6 @@ def diffs : Finset α → Finset α → Finset α := image₂ (· \ ·)
 scoped[FinsetFamily] infixl:74 " \\\\ " => Finset.diffs
   -- This notation is meant to have higher precedence than `\` and `⊓`, but still within the
   -- realm of other binary notation
-
-open FinsetFamily
 
 variable {s t} {a b c : α}
 
@@ -591,8 +585,6 @@ def compls : Finset α → Finset α := map ⟨compl, compl_injective⟩
 
 @[inherit_doc]
 scoped[FinsetFamily] postfix:max "ᶜˢ" => Finset.compls
-
-open FinsetFamily
 
 variable {s t} {a : α}
 

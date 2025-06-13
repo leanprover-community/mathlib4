@@ -5,6 +5,7 @@ Authors: Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
@@ -50,19 +51,19 @@ instance smulCommClass [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :
     SMulCommClass (Finset α) (Finset β) (Finset γ) :=
   ⟨fun s t u => coe_injective <| by simp_rw [coe_smul, smul_comm]⟩
 
-@[to_additive vaddAssocClass]
+@[to_additive]
 instance isScalarTower [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α β (Finset γ) :=
   ⟨fun a b s => by simp only [← image_smul, image_image, smul_assoc, Function.comp_def]⟩
 
 variable [DecidableEq β]
 
-@[to_additive vaddAssocClass']
+@[to_additive]
 instance isScalarTower' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower α (Finset β) (Finset γ) :=
   ⟨fun a s t => coe_injective <| by simp only [coe_smul_finset, coe_smul, smul_assoc]⟩
 
-@[to_additive vaddAssocClass'']
+@[to_additive]
 instance isScalarTower'' [SMul α β] [SMul α γ] [SMul β γ] [IsScalarTower α β γ] :
     IsScalarTower (Finset α) (Finset β) (Finset γ) :=
   ⟨fun a s t => coe_injective <| by simp only [coe_smul_finset, coe_smul, smul_assoc]⟩
@@ -72,12 +73,18 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
     IsCentralScalar α (Finset β) :=
   ⟨fun a s => coe_injective <| by simp only [coe_smul_finset, coe_smul, op_smul_eq_smul]⟩
 
+#adaptation_note /-- nightly-2025-04-07
+This now needs to be marked as noncomputable because of its dependence on `Set.monoid`.
+We should either find a way to rewrite this definition to avoid this,
+or request via @kim-em and @zwarich that changes in https://github.com/leanprover/lean4/pull/7824
+be revisited to avoid needing as many `noncomputable`s.
+-/
 /-- A multiplicative action of a monoid `α` on a type `β` gives a multiplicative action of
 `Finset α` on `Finset β`. -/
 @[to_additive
       "An additive action of an additive monoid `α` on a type `β` gives an additive action
       of `Finset α` on `Finset β`"]
-protected def mulAction [DecidableEq α] [Monoid α] [MulAction α β] :
+protected noncomputable def mulAction [DecidableEq α] [Monoid α] [MulAction α β] :
     MulAction (Finset α) (Finset β) where
   mul_smul _ _ _ := image₂_assoc mul_smul
   one_smul s := image₂_singleton_left.trans <| by simp_rw [one_smul, image_id']
@@ -146,8 +153,8 @@ theorem pairwiseDisjoint_smul_iff {s : Set α} {t : Finset α} :
 end IsLeftCancelMul
 
 @[to_additive]
-theorem image_smul_distrib [DecidableEq α] [DecidableEq β] [Monoid α] [Monoid β] [FunLike F α β]
-    [MonoidHomClass F α β] (f : F) (a : α) (s : Finset α) : (a • s).image f = f a • s.image f :=
+theorem image_smul_distrib [DecidableEq α] [DecidableEq β] [Mul α] [Mul β] [FunLike F α β]
+    [MulHomClass F α β] (f : F) (a : α) (s : Finset α) : (a • s).image f = f a • s.image f :=
   image_comm <| map_mul _ _
 
 section Group
