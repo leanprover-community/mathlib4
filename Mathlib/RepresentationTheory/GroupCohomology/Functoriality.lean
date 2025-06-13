@@ -380,7 +380,7 @@ lemma H1π_comp_map :
   simp [H1π, Iso.inv_comp_eq, ← cocyclesMap_comp_isoOneCocycles_hom_assoc]
 
 @[deprecated (since := "2025-06-12")]
-alias H1_comp_H1Map := H1π_comp_map
+alias H1π_comp_H1Map := H1π_comp_map
 
 @[simp]
 theorem map_1_one (φ : (Action.res _ 1).obj A ⟶ B) :
@@ -550,7 +550,7 @@ lemma H2π_comp_map :
   simp [H2π, Iso.inv_comp_eq, ← cocyclesMap_comp_isoTwoCocycles_hom_assoc]
 
 @[deprecated (since := "2025-06-12")]
-alias H2_comp_H2Map := H2π_comp_map
+alias H2π_comp_H2Map := H2π_comp_map
 
 end H2
 
