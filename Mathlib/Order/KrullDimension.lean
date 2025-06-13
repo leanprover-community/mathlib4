@@ -572,7 +572,7 @@ theorem bot_lt_krullDim [Nonempty α] : ⊥ < krullDim α :=
 lemma krullDim_nonpos_iff_forall_isMax : krullDim α ≤ 0 ↔ ∀ x : α, IsMax x := by
   simp only [krullDim, iSup_le_iff, isMax_iff_forall_not_lt]
   refine ⟨fun H x y h ↦ (H ⟨1, ![x, y],
-    fun i ↦ by obtain rfl := Subsingleton.elim i 0; simpa⟩).not_lt (by simp), ?_⟩
+    fun i ↦ by obtain rfl := Subsingleton.elim i 0; simpa⟩).not_gt (by simp), ?_⟩
   · rintro H ⟨_ | n, l, h⟩
     · simp
     · cases H (l 0) (l 1) (h 0)
@@ -587,7 +587,7 @@ lemma krullDim_le_one_iff : krullDim α ≤ 1 ↔ ∀ x : α, IsMin x ∨ IsMax 
   push_neg
   constructor
   · rintro ⟨⟨_ | _ | n, l, hl⟩, hl'⟩
-    iterate 2 · cases hl'.not_le (by simp)
+    iterate 2 · cases hl'.not_ge (by simp)
     exact ⟨l 1, ⟨l 0, hl 0⟩, l 2, hl 1⟩
   · rintro ⟨x, ⟨y, hxy⟩, z, hzx⟩
     exact ⟨⟨2, ![y, x, z], fun i ↦ by fin_cases i <;> simpa⟩, by simp⟩
@@ -659,10 +659,10 @@ lemma krullDim_eq_top [InfiniteDimensionalOrder α] :
   le_antisymm le_top <| le_iSup_iff.mpr <| fun m hm ↦ match m, hm with
   | ⊥, hm => False.elim <| by
     haveI : Inhabited α := ⟨LTSeries.withLength _ 0 0⟩
-    exact not_le_of_lt (WithBot.bot_lt_coe _ : ⊥ < (0 : WithBot (WithTop ℕ))) <| hm default
+    exact not_le_of_gt (WithBot.bot_lt_coe _ : ⊥ < (0 : WithBot (WithTop ℕ))) <| hm default
   | some ⊤, _ => le_refl _
   | some (some m), hm => by
-    refine (not_lt_of_le (hm (LTSeries.withLength _ (m + 1))) ?_).elim
+    refine (not_lt_of_ge (hm (LTSeries.withLength _ (m + 1))) ?_).elim
     rw [WithBot.some_eq_coe, ← WithBot.coe_natCast, WithBot.coe_lt_coe,
       WithTop.some_eq_coe, ← WithTop.coe_natCast, WithTop.coe_lt_coe]
     simp
@@ -1044,7 +1044,7 @@ lemma height_le_of_krullDim_preimage_le (x : α) :
   generalize h' : Order.height (f x) = n
   cases n with | top => simp | coe n =>
     induction n using Nat.strong_induction_on generalizing x with | h n ih =>
-    refine height_le_iff.mpr fun p hp ↦ le_of_not_lt fun h_len ↦ ?_
+    refine height_le_iff.mpr fun p hp ↦ le_of_not_gt fun h_len ↦ ?_
     let i : Fin (p.length + 1) := ⟨p.length - (m + 1), Nat.sub_lt_succ p.length _⟩
     suffices h'' : f (p i) < f x by
       obtain ⟨n', hn'⟩ : ∃ (n' : ℕ), n' = height (f (p i)) := ENat.ne_top_iff_exists.mp
@@ -1054,10 +1054,10 @@ lemma height_le_of_krullDim_preimage_le (x : α) :
       have := (length_le_height_last (p := p.take i)).trans <| ih n' h_lt (p i) hn'.symm
       rw [RelSeries.take_length, ENat.coe_sub, Nat.cast_add, Nat.cast_one, tsub_le_iff_right,
         add_assoc, add_comm _ (_ + 1), ← add_assoc, ← mul_add_one] at this
-      refine not_lt_of_le ?_ (h_len.trans_le this)
+      refine not_lt_of_ge ?_ (h_len.trans_le this)
       gcongr
       rwa [← ENat.coe_one, ← ENat.coe_add, ENat.coe_le_coe]
-    refine (f.monotone ((p.monotone (Fin.le_last _)).trans hp)).lt_of_not_le fun h'' ↦ ?_
+    refine (f.monotone ((p.monotone (Fin.le_last _)).trans hp)).lt_of_not_ge fun h'' ↦ ?_
     let q' : LTSeries α := p.drop i
     let q : LTSeries (f ⁻¹' {f x}) := ⟨q'.length, fun j ↦ ⟨q' j, le_antisymm
       (f.monotone (le_trans (b := q'.last) (q'.monotone (Fin.le_last _)) (p.last_drop _ ▸ hp)))

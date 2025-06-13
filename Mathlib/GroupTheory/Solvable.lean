@@ -124,10 +124,11 @@ theorem solvable_of_ker_le_range {G' G'' : Type*} [Group G'] [Group G''] (f : G'
   obtain ⟨m, hm⟩ := id hG'
   refine ⟨⟨n + m, le_bot_iff.mp (Subgroup.map_bot f ▸ hm ▸ ?_)⟩⟩
   clear hm
-  induction' m with m hm
-  · exact f.range_eq_map ▸ ((derivedSeries G n).map_eq_bot_iff.mp
+  induction m with
+  | zero =>
+    exact f.range_eq_map ▸ ((derivedSeries G n).map_eq_bot_iff.mp
       (le_bot_iff.mp ((map_derivedSeries_le_derivedSeries g n).trans hn.le))).trans hfg
-  · exact commutator_le_map_commutator hm hm
+  | succ m hm => exact commutator_le_map_commutator hm hm
 
 theorem solvable_of_solvable_injective (hf : Function.Injective f) [IsSolvable G'] :
     IsSolvable G :=
@@ -155,9 +156,9 @@ theorem IsSolvable.commutator_lt_top_of_nontrivial [hG : IsSolvable G] [Nontrivi
   obtain ⟨n, hn⟩ := hG
   contrapose! hn
   refine ne_of_eq_of_ne ?_ top_ne_bot
-  induction' n with n h
-  · exact derivedSeries_zero G
-  · rwa [derivedSeries_succ, h]
+  induction n with
+  | zero => exact derivedSeries_zero G
+  | succ n h => rwa [derivedSeries_succ, h]
 
 theorem IsSolvable.commutator_lt_of_ne_bot [IsSolvable G] {H : Subgroup G} (hH : H ≠ ⊥) :
     ⁅H, H⁆ < H := by
@@ -178,10 +179,11 @@ theorem isSolvable_iff_commutator_lt [WellFoundedLT (Subgroup G)] :
     rw [← (map_injective (subtype_injective _)).eq_iff, Subgroup.map_bot] at hn ⊢
     rw [← hn]
     clear hn
-    induction' n with n ih
-    · rw [derivedSeries_succ, derivedSeries_zero, derivedSeries_zero, map_commutator,
+    induction n with
+    | zero =>
+      rw [derivedSeries_succ, derivedSeries_zero, derivedSeries_zero, map_commutator,
         ← MonoidHom.range_eq_map, ← MonoidHom.range_eq_map, range_subtype, range_subtype]
-    · rw [derivedSeries_succ, map_commutator, ih, derivedSeries_succ, map_commutator]
+    | succ n ih => rw [derivedSeries_succ, map_commutator, ih, derivedSeries_succ, map_commutator]
 
 end Solvable
 
