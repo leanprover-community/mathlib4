@@ -564,7 +564,7 @@ theorem finprod_mem_one (s : Set α) : (∏ᶠ i ∈ s, (1 : M)) = 1 := by simp
 
 /-- If a function `f` equals `1` on a set `s`, then the product of `f i` over `i ∈ s` equals `1`. -/
 @[to_additive
-      "If a function `f` equals `0` on a set `s`, then the product of `f i` over `i ∈ s`
+      "If a function `f` equals `0` on a set `s`, then the sum of `f i` over `i ∈ s`
       equals `0`."]
 theorem finprod_mem_of_eqOn_one (hf : s.EqOn f 1) : ∏ᶠ i ∈ s, f i = 1 := by
   rw [← finprod_mem_one s]
