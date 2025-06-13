@@ -186,7 +186,6 @@ def equivOfIso {C D : Cat} (γ : C ≅ D) : C ≌ D where
 /-- Under certain hypotheses, an equivalence of categories actually
 defines an isomorphism in `Cat`. -/
 @[simps]
-@[simps]
 def isoOfEquiv {C D : Cat.{v, u}} (e : C ≌ D)
     (h₁ : ∀ (X : C), e.inverse.obj (e.functor.obj X) = X)
     (h₂ : ∀ (Y : D), e.functor.obj (e.inverse.obj Y) = Y)
