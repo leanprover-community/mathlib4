@@ -1030,6 +1030,11 @@ abbrev GL_W := (W (G := G) →L[ℂ] W (G := G))ˣ
 
 #synth NormedRing (((W (G := G) →L[ℂ] W (G := G))))
 
+#synth NormedAddCommGroup (((W (G := G) →L[ℂ] W (G := G))))
+
+lemma opnorm_continuous: Continuous fun (f: (W (G := G) →L[ℂ] W (G := G))) => ‖f‖ := by
+  apply continuous_norm
+
 #synth FiniteDimensional ℂ (((W (G := G) →L[ℂ] W (G := G))))
 
 -- Homeomorph.isCompact_preimage
@@ -1355,7 +1360,34 @@ def isembedding_units_val := Units.isEmbedding_val_mk' (M := (W (G := G) →L[�
   . exact u.val_inv
   . exact u.inv_val
 )
+
+def unit_val_isometry := Topology.IsEmbedding.to_isometry (isembedding_units_val (G := G))
+
+noncomputable instance GL_W_psuedo: PseudoMetricSpace (GL_W (G := G)) := Topology.IsInducing.comapPseudoMetricSpace (isembedding_units_val (G := G).isInducing)
 --   apply FiniteDimensional.proper_rclike (K := ℂ)
+--#synth FiniteDimensional ℂ  (GL_W (G := G))
+
+-- noncomputable instance GL_W_proper: ProperSpace (GL_W (G := G)) := {
+--   isCompact_closedBall := by
+--     intro w r
+--     apply isCompact_of_finite_subcover
+--     intro cov_ty cover h_cover_open covers_ball
+
+--     rw [← Isometry.preimage_closedBall unit_val_isometry]
+--     -- In the vector space M_n_x (not-necessarily-invertible matrices), the closed ball is compact
+--     have matrix_ball_compact: IsCompact (Metric.closedBall (w.val) r) := by
+--       apply isCompact_closedBall
+
+--     have ball_inv := Isometry.preimage_closedBall (unit_val_isometry (G := G)) w r
+
+--     have ball_image_cover: (Metric.closedBall (w.val) r) ⊆ ⋃ i, Units.val '' (cover i) := by
+--       intro p hp
+--       rw [Isometry.preimage_closedBall unit_val_isometry] at hp
+--       simp
+
+
+-- }
+
 
 --#synth Bornology (GL_W (G := G))
 
@@ -1366,6 +1398,28 @@ set_option maxHeartbeats 500000
 theorem compact_rho_g: IsCompact (rho_g_closure (G := G)) := by
   --unfold rho_g_closure rho_g
   unfold rho_g_closure
+  rw [Topology.IsEmbedding.isCompact_iff (isembedding_units_val (G := G))]
+  rw [Metric.isCompact_iff_isClosed_bounded]
+  refine ⟨?_, ?_⟩
+  .
+    apply Metric.isClosed_of_pairwise_le_dist (ε := (1: ℝ)/ 2) (by simp)
+    intro x hx y hy x_ne
+    rw [Set.mem_image] at hx
+    rw [Set.mem_image] at hy
+    simp [dist]
+
+
+
+  rw [Topology.IsEmbedding.closure_eq_preimage_closure_image (isembedding_units_val (G := G))]
+  rw [Topology.IsInducing.isCompact_preimage_iff]
+  . sorry
+  . apply (isembedding_units_val (G := G)).isInducing
+  .
+    rw [IsClosed.closure_eq]
+    . simp
+    .
+
+    simp
   rw [Topology.IsEmbedding.isCompact_iff (isembedding_units_val (G := G))]
 
   -- rw [Topology.IsEmbedding.closure_eq_preimage_closure_image (isembedding_units_val (G := G))]
@@ -1410,6 +1464,9 @@ theorem compact_rho_g: IsCompact (rho_g_closure (G := G)) := by
     rw [q_eq_b_rep] at norm_triangle
     exact norm_triangle
 
+  have foo := image_closure_subset_closure_image (Units.continuous_val) (s := _root_.closure (rho_g (G := G)).carrier)
+  rw [image_closure_of_isCompact]
+  . exact compact_closure_of
 
   --have foo := Topology.IsEmbedding.isCompact_iff (isembedding_units_val (G := G))
 
