@@ -56,6 +56,9 @@ theorem atom_eq_eval [DivInvMonoid M] (x : M) : x = NF.eval [(1, x)] := by simp 
 variable (M) in
 theorem one_eq_eval [DivInvMonoid M] : (1:M) = NF.eval (M := M) [] := rfl
 
+theorem eval_cons_zero [DivInvMonoid M] {a : M} {l : NF M} : ((0, a) ::ᵣ l).eval = l.eval := by
+  simp
+
 theorem mul_eq_eval₁ [DivInvMonoid M] (a₁ : ℤ × M) {a₂ : ℤ × M} {l₁ l₂ l : NF M}
     (h : l₁.eval * (a₂ ::ᵣ l₂).eval = l.eval) :
     (a₁ ::ᵣ l₁).eval * (a₂ ::ᵣ l₂).eval = (a₁ ::ᵣ l).eval := by
@@ -188,6 +191,9 @@ theorem zpow_eq_eval [DivisionCommMonoid M] {l : NF M} (r : ℤ) {x : M} (hx : x
   rw [hx, eval_zpow]
   rfl
 
+theorem zpow_zero_eq_eval [DivisionCommMonoid M] (x : M) : x ^ (0:ℤ) = NF.eval [] := by
+  rw [zpow_zero, one_eq_eval]
+
 theorem eq_cons_cons [DivInvMonoid M] {r₁ r₂ : ℤ} (m : M) {l₁ l₂ : NF M} (h1 : r₁ = r₂)
     (h2 : l₁.eval = l₂.eval) :
     ((r₁, m) ::ᵣ l₁).eval = ((r₂, m) ::ᵣ l₂).eval := by
@@ -278,7 +284,10 @@ def mul : qNF M → qNF M → qNF M
     if k₁ < k₂ then
       ((a₁, x₁), k₁) :: mul t₁ (((a₂, x₂), k₂) :: t₂)
     else if k₁ = k₂ then
-      ((a₁ + a₂, x₁), k₁) :: mul t₁ t₂
+      if a₁ + a₂ = 0 then
+        mul t₁ t₂
+      else
+        ((a₁ + a₂, x₁), k₁) :: mul t₁ t₂
     else
       ((a₂, x₂), k₂) :: mul (((a₁, x₁), k₁) :: t₁) t₂
 
@@ -297,13 +306,20 @@ def mkMulProof (iM : Q(Field $M)) (l₁ l₂ : qNF M) :
       (q(NF.mul_eq_eval₁ ($a₁, $x₁) $pf):)
     else if k₁ = k₂ then
       let pf := mkMulProof iM t₁ t₂
-      if 0 ≤ a₁ && 0 ≤ a₂ then
-        let h₁ : Q(0 ≤ $a₁) := q(sorry) -- how do you quote a proof of a `ℤ` inequality?
-        let h₂ : Q(0 ≤ $a₂) := q(sorry)
-        (q(NF.mul_eq_eval₂' $h₁ $h₂ $x₁ $pf):)
+      let pf' :=
+        if 0 ≤ a₁ && 0 ≤ a₂ then
+          let h₁ : Q(0 ≤ $a₁) := q(sorry) -- how do you quote a proof of a `ℤ` inequality?
+          let h₂ : Q(0 ≤ $a₂) := q(sorry)
+          (q(NF.mul_eq_eval₂' $h₁ $h₂ $x₁ $pf):)
+        else
+          let hx₁ : Q($x₁ ≠ 0) := q(sorry) -- use the discharger here
+          (q(NF.mul_eq_eval₂ $a₁ $a₂ $x₁ $hx₁ $pf):)
+      if a₁ + a₂ = 0 then
+        let pf' : Q((NF.eval $(l₁.toNF)) * NF.eval $(l₂.toNF)
+            = NF.eval $(qNF.toNF (((0, x₁), k₁) :: (qNF.mul l₁ l₂)))) := pf'
+        (q(Eq.trans $pf' NF.eval_cons_zero):)
       else
-        let hx₁ : Q($x₁ ≠ 0) := q(sorry) -- use the discharger here
-        (q(NF.mul_eq_eval₂ $a₁ $a₂ $x₁ $hx₁ $pf):)
+        pf'
     else
       let pf := mkMulProof iM (((a₁, x₁), k₁) :: t₁) t₂
       (q(NF.mul_eq_eval₃ ($a₂, $x₂) $pf):)
@@ -328,7 +344,10 @@ def div : qNF M → qNF M → qNF M
     if k₁ < k₂ then
       ((a₁, x₁), k₁) :: div t₁ (((a₂, x₂), k₂) :: t₂)
     else if k₁ = k₂ then
-      ((a₁ - a₂, x₁), k₁) :: div t₁ t₂
+      if a₁ - a₂ = 0 then
+        div t₁ t₂
+      else
+        ((a₁ - a₂, x₁), k₁) :: div t₁ t₂
     else
       ((-a₂, x₂), k₂) :: div (((a₁, x₁), k₁) :: t₁) t₂
 
@@ -347,13 +366,20 @@ def mkDivProof (iM : Q(Field $M)) (l₁ l₂ : qNF M) :
       (q(NF.div_eq_eval₁ ($a₁, $x₁) $pf):)
     else if k₁ = k₂ then
       let pf := mkDivProof iM t₁ t₂
-      if 0 ≤ a₁ && a₂ ≤ 0 then
-        let h₁ : Q(0 ≤ $a₁) := q(sorry) -- how do you quote a proof of a `ℤ` inequality?
-        let h₂ : Q($a₂ ≤ 0) := q(sorry)
-        (q(NF.div_eq_eval₂' $h₁ $h₂ $x₁ $pf):)
+      let pf' :=
+        if 0 ≤ a₁ && a₂ ≤ 0 then
+          let h₁ : Q(0 ≤ $a₁) := q(sorry) -- how do you quote a proof of a `ℤ` inequality?
+          let h₂ : Q($a₂ ≤ 0) := q(sorry)
+          (q(NF.div_eq_eval₂' $h₁ $h₂ $x₁ $pf):)
+        else
+          let hx₁ : Q($x₁ ≠ 0) := q(sorry) -- use the discharger here
+          (q(NF.div_eq_eval₂ $a₁ $a₂ $x₁ $hx₁ $pf):)
+      if a₁ - a₂ = 0 then
+        let pf' : Q((NF.eval $(l₁.toNF)) / NF.eval $(l₂.toNF)
+          = NF.eval $(qNF.toNF (((0, x₁), k₁) :: (qNF.div l₁ l₂)))) := pf'
+        (q(Eq.trans $pf' NF.eval_cons_zero):)
       else
-        let hx₁ : Q($x₁ ≠ 0) := q(sorry) -- use the discharger here
-        (q(NF.div_eq_eval₂ $a₁ $a₂ $x₁ $hx₁ $pf):)
+        pf'
     else
       let pf := mkDivProof iM (((a₁, x₁), k₁) :: t₁) t₂
       (q(NF.div_eq_eval₃ ($a₂, $x₂) $pf):)
@@ -423,10 +449,13 @@ partial def normalize (iM : Q(Field $M)) (x : Q($M)) :
     pure ⟨qNF.mul L sum, q(sorry)⟩
   /- normalize an integer exponentiation: `y ^ (s : ℤ)` -/
   | ~q($y ^ ($s : ℤ)) =>
-    let ⟨l, pf⟩ ← normalize iM y
     let some s := Expr.int? s | baseCase x
-    -- build the new list and proof
-    pure ⟨l.onExponent (HMul.hMul s), (q(NF.zpow_eq_eval $s $pf):)⟩
+    if s = 0 then
+      pure ⟨[], (q(NF.zpow_zero_eq_eval $y):)⟩
+    else
+      let ⟨l, pf⟩ ← normalize iM y
+      -- build the new list and proof
+      pure ⟨l.onExponent (HMul.hMul s), (q(NF.zpow_eq_eval $s $pf):)⟩
   /- normalize a `(1:M)` -/
   | ~q(1) => pure ⟨[], q(NF.one_eq_eval $M)⟩
   /- anything else should be treated as an atom -/
@@ -470,6 +499,22 @@ variable {x y : ℚ}
 #guard_msgs in
 #conv field_simp2 => x * y
 
+/-- info: 1 -/
+#guard_msgs in
+#conv field_simp2 => (x * y) / (y * x)
+
+/-- info: 1 -/
+#guard_msgs in
+#conv field_simp2 => (x * y) * (y * x)⁻¹
+
+/-- info: y ^ 1 * 1 -/
+#guard_msgs in
+#conv field_simp2 => x ^ (0:ℤ) * y
+
+/-- info: y ^ 2 * 1 -/
+#guard_msgs in
+#conv field_simp2 => y * (y + x) ^ (0:ℤ) * y
+
 /-- info: x ^ 1 * (y ^ (-1) * 1) -/
 #guard_msgs in
 #conv field_simp2 => x / y
@@ -495,4 +540,16 @@ example : x / (y ^ (-3:ℤ) / x) = x ^ (2:ℤ) * (y ^ (3:ℤ) * 1) := by
   conv_lhs => field_simp2
 
 example : (x / y ^ (-3:ℤ)) * x = x ^ (2:ℤ) * (y ^ (3:ℤ) * 1) := by
+  conv_lhs => field_simp2
+
+example : (x * y) / (y * x) = 1 := by
+  conv_lhs => field_simp2
+
+example : (x * y) * (y * x)⁻¹ = 1 := by
+  conv_lhs => field_simp2
+
+example : x ^ (0:ℤ) * y = y ^ (1:ℤ) * 1 := by
+  conv_lhs => field_simp2
+
+example : y * (y + x) ^ (0:ℤ) * y = y ^ (2:ℤ) * 1 := by
   conv_lhs => field_simp2
