@@ -393,11 +393,10 @@ theorem IsBigO.comp_tendsto (hfg : f =O[l] g) {k : β → α} {l' : Filter β} (
     (f ∘ k) =O[l'] (g ∘ k) :=
   isBigO_iff_isBigOWith.2 <| hfg.isBigOWith.imp fun _c h => h.comp_tendsto hk
 
-lemma IsBigO.of_neg_int {f : ℤ → E} {g : ℤ → F} (hf : f =O[cofinite] g) :
+lemma IsBigO.comp_neg_int {f : ℤ → E} {g : ℤ → F} (hf : f =O[cofinite] g) :
     (fun n => f (-n)) =O[cofinite] fun n => g (-n) := by
   rw [← Equiv.neg_apply]
-  apply Asymptotics.IsBigO.comp_tendsto hf
-  refine Function.Injective.tendsto_cofinite (Equiv.injective (Equiv.neg ℤ))
+  exact hf.comp_tendsto (Equiv.neg ℤ).injective.tendsto_cofinite
 
 theorem IsLittleO.comp_tendsto (hfg : f =o[l] g) {k : β → α} {l' : Filter β} (hk : Tendsto k l' l) :
     (f ∘ k) =o[l'] (g ∘ k) :=
