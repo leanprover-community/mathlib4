@@ -84,16 +84,16 @@ scoped infixr:81 " ⊵ₗ " => MonoidalLeftActionStruct.actionHomLeft
 scoped infixr:81 " ⊴ₗ " => MonoidalLeftActionStruct.actionHomRight
 
 /-- Notation for `actionHom`, the bifunctorial action of morphisms in `C` and
-`D` on `- ⊙ -`. -/
+`D` on `- ⊙ₗ -`. -/
 scoped infixr:70 " ⊙ₗ " => MonoidalLeftActionStruct.actionHom
 
 /-- Notation for `actionAssocIso`, the structural isomorphism
-`- ⊗ - ⊙ - ≅ - ⊙ - ⊙ -`. -/
+`- ⊗ - ⊙ₗ - ≅ - ⊙ₗ - ⊙ₗ -`. -/
 scoped notation "σ_ₗ " => MonoidalLeftActionStruct.actionAssocIso
 
-/-- Notation for `actionUnitIso`, the structural isomorphism `𝟙_ C ⊙ - ≅ -`. -/
+/-- Notation for `actionUnitIso`, the structural isomorphism `𝟙_ C ⊙ₗ - ≅ -`. -/
 scoped notation "υ_ₗ " => MonoidalLeftActionStruct.actionUnitIso
-/-- Notation for `actionUnitIso`, the structural isomorphism `𝟙_ C ⊙ - ≅ -`,
+/-- Notation for `actionUnitIso`, the structural isomorphism `𝟙_ C ⊙ₗ - ≅ -`,
 allowing one to specify the acting category. -/
 scoped notation "υ_ₗ["J"]" => MonoidalLeftActionStruct.actionUnitIso (C := J)
 
