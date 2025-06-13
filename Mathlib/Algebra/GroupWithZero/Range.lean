@@ -8,7 +8,7 @@ Authors: Antoine Chambert-Loir, Filippo A. E. Nuccio
 -- import Mathlib.Algebra.Group.WithOne.Basic
 -- import Mathlib.Algebra.GroupWithZero.Units.Basic
 -- import Mathlib.Tactic.NthRewrite
--- import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Abel
 -- import Mathlib.Algebra.Group.Submonoid.Basic
 -- import Mathlib.Algebra.Group.Subgroup.Lattice
 import Mathlib.Algebra.GroupWithZero.WithZero
@@ -293,38 +293,38 @@ lemma valueGroup_eq_range {X W : Type*} [GroupWithZero X] [FunLike W X B]
 --   mul_inv_cancel := sorry
 --   div_eq_mul_inv := sorry
 
-open Subgroup in
-theorem mem_valueMonoid_iff_of_comm (y : Bˣ) :
-    y ∈ valueMonoid f ↔ ∃ a, f a ≠ 0 ∧ ∃ x, f a * y = f x := by sorry
-
-
-#exit
+-- open Subgroup in
+-- theorem mem_valueMonoid_iff_of_comm (y : Bˣ) :
+--     y ∈ valueMonoid f ↔ ∃ a, f a ≠ 0 ∧ ∃ x, f a * y = f x := by sorry
+--
+--
+-- #exit
 end GroupWithZero
 section CommGroupWithZero
-
+--
 variable [MonoidWithZero A] [Nontrivial A] [CommGroupWithZero B] [MonoidWithZeroHomClass F A B]
-variable{f}
-variable (h : ∀ {a}, f a ≠ 0 ↔ a ≠ 0) -- IS THIS A TYPECLASS?
+-- variable{f}
+-- variable (h : ∀ {a}, f a ≠ 0 ↔ a ≠ 0) -- IS THIS A TYPECLASS?
+open Valuation
 
 open Subgroup in
 theorem mem_NZDRange₀_iff_of_comm (y : Bˣ) :
-    y ∈ (nonZeroDivisors_range h) ↔ ∃ a, f a ≠ 0 ∧ ∃ x, f a * y = f x := by
+    y ∈ (valueGroup f) ↔ ∃ a, f a ≠ 0 ∧ ∃ x, f a * y = f x := by
   refine ⟨fun hy ↦ ?_, fun ⟨a, ha, ⟨x, hy⟩⟩ ↦ ?_⟩
-  · simp only [union_singleton, Submonoid.mem_mk, Subsemigroup.mem_mk, mem_insert_iff,
-    mem_image, Subsemigroup.mem_carrier, Submonoid.mem_toSubsemigroup,
-    Subgroup.mem_toSubmonoid] at hy
-    rcases hy with hy | ⟨u, hu, huy⟩
-    · exact ⟨1, by simp, 0, by simp [hy]⟩
-    induction hu using closure_induction generalizing y with
-    | mem c hc =>
-      obtain ⟨a, ha⟩ := hc
-      exact ⟨1, by simp [← huy], a, by simp [ha, huy]⟩
-    | one => exact ⟨1, by simp, 1, by simp [← huy]⟩
+  · simp only [valueGroup, valueMonoid, Submonoid.coe_set_mk, Subsemigroup.coe_set_mk] at hy
+    induction hy using closure_induction with
+    | mem _ h =>
+      obtain ⟨a, ha⟩ := h
+      exact ⟨a, ha.symm ▸ Units.ne_zero _, ⟨a * a, by simp [← ha]⟩⟩
+    | one => exact ⟨1, by simp, 1, by simp⟩
     | mul c d hc hd hcy hdy =>
-      obtain ⟨u, hu, ⟨a, ha⟩⟩ := hcy c (refl _)
-      obtain ⟨v, hv, ⟨b, hb⟩⟩ := hdy d (refl _)
-      exact ⟨u * v, by simp [hu, hv], a * b,
-        by simpa [map_mul, ← huy, Units.val_mul, ← ha, ← hb] using mul_mul_mul_comm ..⟩
+      obtain ⟨u, hu, ⟨a, ha⟩⟩ := hcy-- c (refl _)
+      obtain ⟨v, hv, ⟨b, hb⟩⟩ := hdy-- d (refl _)
+      refine ⟨u * v, by simp [hu, hv], a * b, ?_⟩
+      simp [map_mul, Units.val_mul, ← hb, ← ha]
+      sorry
+
+        -- by simpa [map_mul, ← huy, Units.val_mul, ← ha, ← hb] using mul_mul_mul_comm ..⟩
     | inv c hc hcy  =>
       obtain ⟨u, hu, ⟨a, ha⟩⟩ := hcy _ (refl _)
       exact ⟨a, by simp [← ha, hu], u, by simp [← huy, ← ha]⟩
