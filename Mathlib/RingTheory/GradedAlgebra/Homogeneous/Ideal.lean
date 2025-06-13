@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
 import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Submodule
-import Mathlib.RingTheory.Ideal.BigOperators
 import Mathlib.RingTheory.Ideal.Maps
 
 /-!

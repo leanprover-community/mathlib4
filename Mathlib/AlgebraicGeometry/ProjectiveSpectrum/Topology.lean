@@ -7,6 +7,7 @@ import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Sets.Opens
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.RingTheory.Ideal.BigOperators
 
 /-!
 # Projective spectrum of a graded ring
