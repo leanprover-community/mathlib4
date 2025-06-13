@@ -17,13 +17,13 @@ homomorphism `f : α →o β` is a function `α → β` along with a proof that 
 
 In this file we define the following bundled monotone maps:
 * `OrderHom α β` a.k.a. `α →o β`: Preorder homomorphism.
-    An `OrderHom α β` is a function `f : α → β` such that `a₁ ≤ a₂ → f a₁ ≤ f a₂`
+  An `OrderHom α β` is a function `f : α → β` such that `a₁ ≤ a₂ → f a₁ ≤ f a₂`
 * `OrderEmbedding α β` a.k.a. `α ↪o β`: Relation embedding.
-    An `OrderEmbedding α β` is an embedding `f : α ↪ β` such that `a ≤ b ↔ f a ≤ f b`.
-    Defined as an abbreviation of `@RelEmbedding α β (≤) (≤)`.
+  An `OrderEmbedding α β` is an embedding `f : α ↪ β` such that `a ≤ b ↔ f a ≤ f b`.
+  Defined as an abbreviation of `@RelEmbedding α β (≤) (≤)`.
 * `OrderIso`: Relation isomorphism.
-    An `OrderIso α β` is an equivalence `f : α ≃ β` such that `a ≤ b ↔ f a ≤ f b`.
-    Defined as an abbreviation of `@RelIso α β (≤) (≤)`.
+  An `OrderIso α β` is an equivalence `f : α ≃ β` such that `a ≤ b ↔ f a ≤ f b`.
+  Defined as an abbreviation of `@RelIso α β (≤) (≤)`.
 
 We also define many `OrderHom`s. In some cases we define two versions, one with `ₘ` suffix and
 one without it (e.g., `OrderHom.compₘ` and `OrderHom.comp`). This means that the former
@@ -539,7 +539,7 @@ variable [Preorder α] [Preorder β] (f : α ↪o β)
 
 /-- `<` is preserved by order embeddings of preorders. -/
 def ltEmbedding : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop) :=
-  { f with map_rel_iff' := by intros; simp [lt_iff_le_not_le, f.map_rel_iff] }
+  { f with map_rel_iff' := by intros; simp [lt_iff_le_not_ge, f.map_rel_iff] }
 
 @[simp]
 theorem ltEmbedding_apply (x : α) : f.ltEmbedding x = f x :=
@@ -784,8 +784,14 @@ theorem symm_injective : Function.Injective (symm : α ≃o β → β ≃o α) :
   symm_bijective.injective
 
 @[simp]
-theorem toEquiv_symm (e : α ≃o β) : e.toEquiv.symm = e.symm.toEquiv :=
+theorem toEquiv_symm (e : α ≃o β) : e.symm.toEquiv = e.toEquiv.symm :=
   rfl
+
+@[simp]
+theorem coe_toEquiv (e : α ≃o β) : ⇑e.toEquiv = e := rfl
+
+@[simp]
+theorem coe_symm_toEquiv (e : α ≃o β) : ⇑e.toEquiv.symm = e.symm := rfl
 
 /-- Composition of two order isomorphisms is an order isomorphism. -/
 @[trans]
@@ -939,8 +945,14 @@ theorem toRelIsoLT_apply (e : α ≃o β) (x : α) : e.toRelIsoLT x = e x :=
   rfl
 
 @[simp]
-theorem toRelIsoLT_symm (e : α ≃o β) : e.toRelIsoLT.symm = e.symm.toRelIsoLT :=
+theorem toRelIsoLT_symm (e : α ≃o β) : e.symm.toRelIsoLT = e.toRelIsoLT.symm :=
   rfl
+
+@[simp]
+theorem coe_toRelIsoLT (e : α ≃o β) : ⇑e.toRelIsoLT = e := rfl
+
+@[simp]
+theorem coe_symm_toRelIsoLT (e : α ≃o β) : ⇑e.toRelIsoLT.symm = e.symm := rfl
 
 /-- Converts a `RelIso (<) (<)` into an `OrderIso`. -/
 def ofRelIsoLT {α β} [PartialOrder α] [PartialOrder β]
