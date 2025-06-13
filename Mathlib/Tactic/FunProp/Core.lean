@@ -287,7 +287,7 @@ def letCase (funPropDecl : FunPropDecl) (e : Expr) (f : Expr)
     -- let binding can be pulled out of the lambda function
     if ¬(yValue.hasLooseBVar 0) then
       let body := yBody.swapBVars 0 1
-      let e' := .letE yName yType yValue (nonDep := false)
+      let e' := mkLet yName yType yValue
         (e.setArg (funPropDecl.funArgId) (.lam xName xType body xBi))
       return ← funProp e'
 
