@@ -25,11 +25,6 @@ variable [Module.Finite ℤ 𝒪]
 
 open nonZeroDivisors
 
-@[simp]
-lemma Submodule.toIntSubmodule_toAddSubgroup {R M : Type*}
-    [Ring R] [AddCommGroup M] [Module R M] (N : Submodule R M) :
-    N.toAddSubgroup.toIntSubmodule = N.restrictScalars ℤ := rfl
-
 lemma NumberField.absNorm_differentIdeal : (differentIdeal ℤ 𝒪).absNorm = (discr K).natAbs := by
   refine (differentIdeal ℤ 𝒪).toAddSubgroup.relindex_top_right.symm.trans ?_
   rw [← Submodule.comap_map_eq_of_injective (f := Algebra.linearMap 𝒪 K)
@@ -55,12 +50,10 @@ lemma NumberField.absNorm_differentIdeal : (differentIdeal ℤ 𝒪).absNorm = (
   · rw [Submodule.toAddSubgroup_le, ← FractionalIdeal.coe_one]
     exact FractionalIdeal.one_le_dual_one ℤ ℚ (L := K) (B := 𝒪)
   · apply AddSubgroup.toIntSubmodule.injective
-    rw [AddSubgroup.toIntSubmodule_closure, hb]
-    rfl
+    rw [AddSubgroup.toIntSubmodule_closure, hb, Submodule.toIntSubmodule_toAddSubgroup]
   · apply AddSubgroup.toIntSubmodule.injective
     rw [AddSubgroup.toIntSubmodule_closure, ← LinearMap.BilinForm.dualSubmodule_span_of_basis, hb]
     simp
-    rfl
   · simp only [Basis.det_apply, discr, Algebra.discr]
     rw [← eq_intCast (algebraMap ℤ ℚ), RingHom.map_det]
     congr! 2
