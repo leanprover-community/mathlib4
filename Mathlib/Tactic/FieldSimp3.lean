@@ -272,29 +272,12 @@ theorem pow_eq_eval [DivisionCommMonoid M] {l : NF M} (r : ℕ) {x : M} (hx : x 
 theorem pow_zero_eq_eval [DivisionCommMonoid M] (x : M) : x ^ (0:ℕ) = NF.eval [] := by
   rw [pow_zero, one_eq_eval]
 
-theorem eq_cons_cons [DivInvMonoid M] {r₁ r₂ : ℤ} (m : M) {l₁ l₂ : NF M} (h1 : r₁ = r₂)
-    (h2 : l₁.eval = l₂.eval) :
-    ((r₁, m) ::ᵣ l₁).eval = ((r₂, m) ::ᵣ l₂).eval := by
-  simp only [NF.eval, NF.cons] at *
-  simp [h1, h2]
 
-theorem eq_cons_const [DivisionMonoid M] {r : ℤ} (m : M) {n : M} {l : NF M} (h1 : r = 0)
-    (h2 : l.eval = n) :
-    ((r, m) ::ᵣ l).eval = n := by
-  simp only [NF.eval, NF.cons] at *
-  simp [h1, h2]
-
-theorem eq_const_cons [DivisionMonoid M] {r : ℤ} (m : M) {n : M} {l : NF M} (h1 : 0 = r)
-    (h2 : n = l.eval) :
-    n = ((r, m) ::ᵣ l).eval := by
-  simp only [NF.eval, NF.cons] at *
-  simp [← h1, h2]
-
-theorem eq_of_eval_eq_eval [DivisionMonoid M]
-    {l₁ l₂ : NF M} {l₁' : NF M} {l₂' : NF M} {x₁ x₂ : M} (hx₁ : x₁ = l₁'.eval) (hx₂ : x₂ = l₂'.eval)
-    (h₁ : l₁.eval = l₁'.eval) (h₂ : l₂.eval = l₂'.eval) (h : l₁.eval = l₂.eval) :
+theorem eq_of_eq_mul [Mul M] {x₁ x₂ x₁' x₂' X₁ X₁' X₂ X₂' d : M}
+    (h₁ : x₁ = X₁) (h₂ : x₂ = X₂) (h₁' : d * X₁' = X₁) (h₂' : d * X₂' = X₂)
+    (h₁'' : X₁' = x₁') (h₂'' : X₂' = x₂') (h : x₁' = x₂') :
     x₁ = x₂ := by
-  rw [hx₁, hx₂, ← h₁, ← h₂, h]
+  rw [h₁, h₂, ← h₁', ← h₂', h₁'', h₂'', h]
 
 end NF
 
@@ -484,6 +467,11 @@ partial /- TODO figure out why! -/ def minimum : qNF M → qNF M → qNF M
       if 0 ≤ n' then minimum rest' (((n, e), i) :: rest)
       else ((n', e'), i') :: minimum rest' (((n, e), i) :: rest)
 
+def negPart : qNF M → qNF M
+  | [] => []
+  | ((n, e), i) :: rest =>
+    if 0 ≤ n then negPart rest else ((n, e), i) :: negPart rest
+
 end qNF
 
 /-! ### Core of the `field_simp` tactic -/
@@ -563,6 +551,22 @@ partial def normalize (iM : Q(Field $M)) (x : Q($M)) :
   /- anything else should be treated as an atom -/
   | _ => baseCase x
 
+/-- Given `e₁` and `e₂`, construct a new goal which is sufficient to prove `e₁ = e₂`. -/
+def proveEq (iM : Q(Field $M)) (e₁ e₂ : Q($M)) : AtomM (MVarId × Q($e₁ = $e₂)) := do
+  let ⟨l₁, pf₁⟩ ← normalize iM e₁
+  let ⟨l₂, pf₂⟩ ← normalize iM e₂
+  let L := qNF.negPart (qNF.minimum l₁ l₂)
+  let l₁' := qNF.div l₁ L
+  let l₂' := qNF.div l₂ L
+  let pf₁' : Q((NF.eval $(L.toNF)) * NF.eval $(l₁'.toNF) = NF.eval $(l₁.toNF)) :=
+    qNF.mkMulProof iM L l₁'
+  let pf₂' : Q((NF.eval $(L.toNF)) * NF.eval $(l₂'.toNF) = NF.eval $(l₂.toNF)) :=
+    qNF.mkMulProof iM L l₂'
+  let ⟨e₁', pf₁''⟩ ← l₁'.evalPretty iM
+  let ⟨e₂', pf₂''⟩ ← l₂'.evalPretty iM
+  let mvar ← mkFreshExprMVarQ q($e₁' = $e₂')
+  return ⟨Expr.mvarId! mvar, q(NF.eq_of_eq_mul $pf₁ $pf₂ $pf₁' $pf₂' $pf₁'' $pf₂'' $mvar)⟩
+
 open Elab Tactic
 
 /-- Conv tactic for field_simp normalisation.
@@ -579,6 +583,19 @@ elab "field_simp2" : conv => do
   let ⟨e, pf'⟩ ← l.evalPretty iK
   -- convert `x` to the output of the normalization
   Conv.applySimpResult { expr := e, proof? := some (← mkAppM `Eq.trans #[pf, pf']) }
+
+elab "field_simp2" : tactic => liftMetaTactic fun g ↦ do
+  -- find the expression `x` to `conv` on
+  let t ← g.getType
+  let some ⟨_, a, b⟩ := t.eq? | throwError "field_simp proves only equality goals"
+  -- infer `u` and `K : Q(Type u)` such that `x : Q($K)`
+  let ⟨u, K, a⟩ ← inferTypeQ' a
+  -- find a `Field` instance on `K`
+  let iK : Q(Field $K) ← synthInstanceQ q(Field $K)
+  -- run the core equality-proving mechanism on `x`
+  let ⟨g', pf⟩ ← AtomM.run .reducible <| proveEq iK a b
+  g.assign pf
+  return [g']
 
 end Mathlib.Tactic.FieldSimp
 
@@ -742,66 +759,33 @@ end
 #guard_msgs in
 #conv field_simp2 => x / (x + 1) + y / (y + 1)
 
-example : (1 : ℚ) = 1 := by
-  conv_lhs => field_simp2
-
-example : x = x := by
-  conv_lhs => field_simp2
-
-example : x * y = x * y := by
-  conv_lhs => field_simp2
-
-example : x / y = x * y ^ (-1:ℤ) := by
-  conv_lhs => field_simp2
-
-example : x / (y / x) = x ^ 2 * y ^ (-1:ℤ) := by
-  conv_lhs => field_simp2
-
-example : x / (y ^ (-3:ℤ) / x) = x ^ 2 * y ^ 3 := by
-  conv_lhs => field_simp2
-
-example : (x / y ^ (-3:ℤ)) * x = x ^ 2 * y ^ 3 := by
-  conv_lhs => field_simp2
-
-example : (x * y) / (y * x) = 1 := by
-  conv_lhs => field_simp2
-
-example : (x * y) * (y * x)⁻¹ = 1 := by
-  conv_lhs => field_simp2
-
-example : x ^ (0:ℤ) * y = y := by
-  conv_lhs => field_simp2
-
-example : y * (y + x) ^ (0:ℤ) * y = y ^ 2 := by
-  conv_lhs => field_simp2
-
-example : x * y * z = x * y * z := by
-  conv_lhs => field_simp2
-
-example : x * y + x * z = x * (y + z) := by
-  conv_lhs => field_simp2
-
-example : x / (x * y + x * z) = (y + z) ^ (-1:ℤ) := by
-  conv_lhs => field_simp2
-
-example : ((x ^ (2:ℤ)) ^ 3) = x ^ 6 := by
-  conv_lhs => field_simp2
-
-example : x ^ 3 * x⁻¹ = x ^ 2 := by
-  conv_lhs => field_simp2
-
-example : x / x ^ 4 = x ^ (-3:ℤ) := by
-  conv_lhs => field_simp2
-
-example : x ^ 1 * x ^ 2 = x ^ 3 := by
-  conv_lhs => field_simp2
-
-example : x * x = x ^ 2 := by
-  conv_lhs => field_simp2
-
-example : x ^ 3 * x ^ 42 = x ^ 45 := by
-  conv_lhs => field_simp2
+example : (1 : ℚ) = 1 := by conv_lhs => field_simp2
+example : x = x := by conv_lhs => field_simp2
+example : x * y = x * y := by conv_lhs => field_simp2
+example : x / y = x * y ^ (-1:ℤ) := by conv_lhs => field_simp2
+example : x / (y / x) = x ^ 2 * y ^ (-1:ℤ) := by conv_lhs => field_simp2
+example : x / (y ^ (-3:ℤ) / x) = x ^ 2 * y ^ 3 := by conv_lhs => field_simp2
+example : (x / y ^ (-3:ℤ)) * x = x ^ 2 * y ^ 3 := by conv_lhs => field_simp2
+example : (x * y) / (y * x) = 1 := by conv_lhs => field_simp2
+example : (x * y) * (y * x)⁻¹ = 1 := by conv_lhs => field_simp2
+example : x ^ (0:ℤ) * y = y := by conv_lhs => field_simp2
+example : y * (y + x) ^ (0:ℤ) * y = y ^ 2 := by conv_lhs => field_simp2
+example : x * y * z = x * y * z := by conv_lhs => field_simp2
+example : x * y + x * z = x * (y + z) := by conv_lhs => field_simp2
+example : x / (x * y + x * z) = (y + z) ^ (-1:ℤ) := by conv_lhs => field_simp2
+example : ((x ^ (2:ℤ)) ^ 3) = x ^ 6 := by conv_lhs => field_simp2
+example : x ^ 3 * x⁻¹ = x ^ 2 := by conv_lhs => field_simp2
+example : x / x ^ 4 = x ^ (-3:ℤ) := by conv_lhs => field_simp2
+example : x ^ 1 * x ^ 2 = x ^ 3 := by conv_lhs => field_simp2
+example : x * x = x ^ 2 := by conv_lhs => field_simp2
+example : x ^ 3 * x ^ 42 = x ^ 45 := by conv_lhs => field_simp2
 
 example : x / (x + 1) + y / (y + 1)
     = (x + 1) ^ (-1:ℤ) * (y + 1) ^ (-1:ℤ) * (x * (y + 1) + (x + 1) * y) := by
   conv_lhs => field_simp2
+
+/-! ### Equality goals -/
+
+example : (1:ℚ) / 3 + 1 / 6 = 1 / 2 := by
+  field_simp2
+  sorry
