@@ -129,7 +129,7 @@ instance {V : Type u} [AddCommGroup V] [Module k V] :
     IsTrivial (Rep.trivial k G V) where
 
 instance {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V) [ρ.IsTrivial] :
-    IsTrivial (Rep.of ρ) := ‹_›
+    IsTrivial (Rep.of ρ) where
 
 instance {H V : Type u} [Group H] [AddCommGroup V] [Module k V] (ρ : Representation k H V)
     (f : G →* H) [Representation.IsTrivial (ρ.comp f)] :
@@ -205,20 +205,6 @@ theorem tensor_ρ {A B : Rep k G} : (A ⊗ B).ρ = A.ρ.tprod B.ρ := rfl
 lemma res_obj_ρ {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H) (g : G) :
     DFunLike.coe (F := G →* (A →ₗ[k] A)) (ρ ((Action.res _ f).obj A)) g = A.ρ (f g) := rfl
 
-@[simp]
-theorem tensor_ρ {A B : Rep k G} : (A ⊗ B).ρ = A.ρ.tprod B.ρ := rfl
-
-end
-section Res
-
-variable {H : Type u} [Monoid H] (f : G →* H) (A : Rep k H)
-
-@[simp]
-lemma coe_res_obj_ρ (g : G) :
-    @DFunLike.coe (no_index G →* (A →ₗ[k] A)) _ _ _
-      (Rep.ρ ((Action.res _ f).obj A)) g = A.ρ (f g) := rfl
-
-end Res
 section Linearization
 
 variable (k G)
@@ -399,7 +385,7 @@ noncomputable def leftRegularHomEquiv (A : Rep k G) : (leftRegular k G ⟶ A) �
   left_inv f := by ext; simp [← hom_comm_apply f]
   right_inv x := by simp
 
-theorem leftRegularHomEquiv_symm_hom_single {A : Rep k G} (x : A) (g : G) :
+theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
     ((leftRegularHomEquiv A).symm x).hom (Finsupp.single g 1) = A.ρ g x := by
   simp
 
