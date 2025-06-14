@@ -3,7 +3,7 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.Analysis.Calculus.Deriv.Slope
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
@@ -1212,13 +1212,9 @@ theorem integral_target_eq_integral_abs_det_fderiv_smul {f : PartialHomeomorph E
   intro x hx
   exact (hf' x hx).hasFDerivWithinAt
 
-#where
-
 variable {t : Set ℝ} {g : ℝ → ℝ} {g' : ℝ → ℝ}
 
-lemma foo {a x : ℝ} (hf : MonotoneOn g t) (hx : HasDerivWithinAt g a t x)
-    (h'x : (𝓝[t \ {x}] x).NeBot) : 0 ≤ a := by
-  have W := hasDerivWithinAt_iff_tendsto_slope.1 hx
+#check countable_setOf_isolated_right
 
 /-- Change of variable formula for differentiable functions, set version: if a function `f` is
 injective and differentiable on a measurable set `s`, then the measure of `f '' s` is given by the
@@ -1227,6 +1223,23 @@ Note that the measurability of `f '' s` is given by `measurable_image_of_fderivW
 theorem lintegral_abs_det_fderiv_eq_addHaar_image_glou (ht : MeasurableSet t)
     (hf' : ∀ x ∈ t, HasDerivWithinAt g (g' x) t x) (hf : MonotoneOn g t) :
     (∫⁻ x in t, ENNReal.ofReal (g' x)) = volume (g '' t) := by
+  let a := {x ∈ t | ∃ y > x, t ∩ Ioo x y = ∅}
+  have : a.Countable := by
+    have : ∀ x ∈ a, ∃ y > x, t ∩ Ioo x y = ∅ := fun x hx ↦ hx.2
+    choose! f hf h'f using this
+    apply Set.PairwiseDisjoint.countable_of_Ioo (y := f) _ hf
+    intro x hx y hy hxy
+    simp only [Ioo_disjoint_Ioo, le_sup_iff, inf_le_iff]
+    rcases lt_or_gt_of_ne hxy with hxy | hxy
+    · have : y ∉
+
+
+
+
+
+
+#exit
+
   let s := {x ∈ t | g' x ≠ 0 ∧ (𝓝[t ∩ Ioi x] x).NeBot}
   have : StrictMonoOn g s := by
     intro x hx y hy hxy
@@ -1236,7 +1249,7 @@ theorem lintegral_abs_det_fderiv_eq_addHaar_image_glou (ht : MeasurableSet t)
     have : (𝓝[t ∩ Ioi x] x).NeBot := hx.2.2
     have A : 0 ≤ g' x := by
       have : x ∈ t := hx.1
-      exact?
+      apply HasDerivWithinAt.nonneg_of_monotoneOn
 
 
 
