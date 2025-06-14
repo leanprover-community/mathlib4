@@ -80,7 +80,7 @@ theorem sin_angle_mul_norm_eq_sin_angle_mul_norm (x y : V) :
   ring_nf
 
 /-- A variant of the law of sines, (two given sides are nonzero), vector angle form. -/
-theorem sin_angle_div_norm_eq_sin_angle_div_norm (x y : V) (hx : x ≠ 0) (hxy: x - y ≠ 0) :
+theorem sin_angle_div_norm_eq_sin_angle_div_norm (x y : V) (hx : x ≠ 0) (hxy : x - y ≠ 0) :
     Real.sin (angle x y) / ‖x - y‖ = Real.sin (angle y (x - y)) / ‖x‖ := by
   field_simp; exact sin_angle_mul_norm_eq_sin_angle_mul_norm x y
 
