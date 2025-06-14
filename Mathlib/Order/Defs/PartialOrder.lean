@@ -133,14 +133,14 @@ This means that `a ≤ b` and there is no element in between.
 def WCovBy (a b : α) : Prop :=
   a ≤ b ∧ ∀ ⦃c⦄, a < c → ¬c < b
 
-/-- Notation for `WCovBy a b`. -/
+@[inherit_doc]
 infixl:50 " ⩿ " => WCovBy
 
 /-- `CovBy a b` means that `b` covers `a`: `a < b` and there is no element in between. -/
 def CovBy {α : Type*} [LT α] (a b : α) : Prop :=
   a < b ∧ ∀ ⦃c⦄, a < c → ¬c < b
 
-/-- Notation for `CovBy a b`. -/
+@[inherit_doc]
 infixl:50 " ⋖ " => CovBy
 
 end Preorder
