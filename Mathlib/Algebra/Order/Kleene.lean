@@ -58,7 +58,7 @@ variable {α β ι : Type*} {π : ι → Type*}
 /-- An idempotent semiring is a semiring with the additional property that addition is idempotent.
 -/
 class IdemSemiring (α : Type u) extends Semiring α, SemilatticeSup α where
-  protected sup := (· + ·)
+  protected max := (· + ·)
   protected add_eq_sup : ∀ a b : α, a + b = a ⊔ b := by
     intros
     rfl
@@ -106,7 +106,7 @@ abbrev IdemSemiring.ofSemiring [Semiring α] (h : ∀ a : α, a + a = a) : IdemS
     le_trans := fun a b c hab hbc ↦ by
       rw [← hbc, ← add_assoc, hab]
     le_antisymm := fun a b hab hba ↦ by rwa [← hba, add_comm]
-    sup := (· + ·)
+    max := (· + ·)
     le_sup_left := fun a b ↦ by
       rw [← add_assoc, h]
     le_sup_right := fun a b ↦ by

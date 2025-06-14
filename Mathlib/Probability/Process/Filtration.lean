@@ -161,11 +161,11 @@ noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) w
   le_refl _ _ := le_rfl
   le_trans _ _ _ h_fg h_gh i := (h_fg i).trans (h_gh i)
   le_antisymm _ _ h_fg h_gf := Filtration.ext <| funext fun i => (h_fg i).antisymm (h_gf i)
-  sup := (· ⊔ ·)
+  max := (· ⊔ ·)
   le_sup_left _ _ _ := le_sup_left
   le_sup_right _ _ _ := le_sup_right
   sup_le _ _ _ h_fh h_gh i := sup_le (h_fh i) (h_gh _)
-  inf := (· ⊓ ·)
+  min := (· ⊓ ·)
   inf_le_left _ _ _ := inf_le_left
   inf_le_right _ _ _ := inf_le_right
   le_inf _ _ _ h_fg h_fh i := le_inf (h_fg i) (h_fh i)

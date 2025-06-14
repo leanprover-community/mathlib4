@@ -31,14 +31,14 @@ open Tropical
 
 instance instSemilatticeInfTropical [SemilatticeInf R] : SemilatticeInf (Tropical R) :=
   { Tropical.instPartialOrderTropical with
-    inf := fun x y ↦ trop (untrop x ⊓ untrop y)
+    min := fun x y ↦ trop (untrop x ⊓ untrop y)
     le_inf := fun _ _ _ ↦ @SemilatticeInf.le_inf R _ _ _ _
     inf_le_left := fun _ _ ↦ inf_le_left
     inf_le_right := fun _ _ ↦ inf_le_right }
 
 instance instSemilatticeSupTropical [SemilatticeSup R] : SemilatticeSup (Tropical R) :=
   { Tropical.instPartialOrderTropical with
-    sup := fun x y ↦ trop (untrop x ⊔ untrop y)
+    max := fun x y ↦ trop (untrop x ⊔ untrop y)
     sup_le := fun _ _ _ ↦ @SemilatticeSup.sup_le R _ _ _ _
     le_sup_left := fun _ _ ↦ le_sup_left
     le_sup_right := fun _ _ ↦ le_sup_right }

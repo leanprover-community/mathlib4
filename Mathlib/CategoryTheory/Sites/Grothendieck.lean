@@ -396,7 +396,7 @@ instance : OrderTop (J.Cover X) :=
 
 instance : SemilatticeInf (J.Cover X) :=
   { (inferInstance : Preorder _) with
-    inf := fun S T => ⟨S ⊓ T, J.intersection_covering S.condition T.condition⟩
+    min := fun S T => ⟨S ⊓ T, J.intersection_covering S.condition T.condition⟩
     le_antisymm := fun _ _ h1 h2 => ext _ _ fun {Y} f => ⟨by apply h1, by apply h2⟩
     inf_le_left := fun _ _ _ _ hf => hf.1
     inf_le_right := fun _ _ _ _ hf => hf.2

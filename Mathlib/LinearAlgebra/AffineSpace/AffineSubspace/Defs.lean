@@ -477,13 +477,13 @@ instance : CompleteLattice (AffineSubspace k P) :=
   {
     PartialOrder.lift ((↑) : AffineSubspace k P → Set P)
       coe_injective with
-    sup := fun s₁ s₂ => affineSpan k (s₁ ∪ s₂)
+    max := fun s₁ s₂ => affineSpan k (s₁ ∪ s₂)
     le_sup_left := fun _ _ =>
       Set.Subset.trans Set.subset_union_left (subset_spanPoints k _)
     le_sup_right := fun _ _ =>
       Set.Subset.trans Set.subset_union_right (subset_spanPoints k _)
     sup_le := fun _ _ _ hs₁ hs₂ => spanPoints_subset_coe_of_subset_coe (Set.union_subset hs₁ hs₂)
-    inf := fun s₁ s₂ =>
+    min := fun s₁ s₂ =>
       mk (s₁ ∩ s₂) fun c _ _ _ hp₁ hp₂ hp₃ =>
         ⟨s₁.smul_vsub_vadd_mem c hp₁.1 hp₂.1 hp₃.1, s₂.smul_vsub_vadd_mem c hp₁.2 hp₂.2 hp₃.2⟩
     inf_le_left := fun _ _ => Set.inter_subset_left

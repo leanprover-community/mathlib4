@@ -113,7 +113,7 @@ protected lemma sup_apply [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [A
 
 instance [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [AddRightMono R] :
     SemilatticeSup (PseudoMetric X R) where
-  sup := max
+  max := max
   le_sup_left := by simp [← PseudoMetric.coe_le_coe, Pi.le_def]
   le_sup_right := by simp [← PseudoMetric.coe_le_coe, Pi.le_def]
   sup_le _ _ _ := fun h h' _ _ ↦ sup_le (h _ _) (h' _ _)

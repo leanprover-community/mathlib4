@@ -221,7 +221,7 @@ theorem strictAnti_snd : StrictAnti (Prod.snd ∘ toProd : Concept α β r → S
 
 instance instLatticeConcept : Lattice (Concept α β r) :=
   { Concept.instSemilatticeInfConcept with
-    sup := (· ⊔ ·)
+    max := (· ⊔ ·)
     le_sup_left := fun _ _ => snd_subset_snd_iff.1 inter_subset_left
     le_sup_right := fun _ _ => snd_subset_snd_iff.1 inter_subset_right
     sup_le := fun c d e => by
@@ -255,11 +255,11 @@ instance : InfSet (Concept α β r) :=
 instance : CompleteLattice (Concept α β r) :=
   { Concept.instLatticeConcept,
     Concept.instBoundedOrderConcept with
-    sup := Concept.instSupConcept.max
+    max := Concept.instSupConcept.max
     le_sSup := fun _ _ hc => snd_subset_snd_iff.1 <| biInter_subset_of_mem hc
     sSup_le := fun _ _ hc =>
       snd_subset_snd_iff.1 <| subset_iInter₂ fun d hd => snd_subset_snd_iff.2 <| hc d hd
-    inf := Concept.instInfConcept.min
+    min := Concept.instInfConcept.min
     sInf_le := fun _ _ => biInter_subset_of_mem
     le_sInf := fun _ _ => subset_iInter₂ }
 
