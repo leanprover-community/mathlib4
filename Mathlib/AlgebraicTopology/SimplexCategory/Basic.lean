@@ -899,7 +899,7 @@ theorem toCat.obj_eq_Fin (n : ℕ) : toCat.obj ⦋n⦌ = Fin (n + 1) := rfl
 def isTerminalZero : IsTerminal (⦋0⦌ : SimplexCategory) :=
   IsTerminal.ofUniqueHom (fun _ ↦ const _ ⦋0⦌ 0) (fun _ _ => eq_const_to_zero _)
 
-instance {n} : Unique (⦋n⦌ ⟶ ⦋0⦌) :=
+instance uniqueHomToZero {n} : Unique (⦋n⦌ ⟶ ⦋0⦌) :=
   Limits.isTerminalEquivUnique _ _ |>.toFun SimplexCategory.isTerminalZero _
 
 end SimplexCategory
