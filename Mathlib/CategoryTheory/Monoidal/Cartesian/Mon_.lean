@@ -181,21 +181,22 @@ alias Mon_ClassOfRepresentableBy_yonedaMonObjRepresentableBy :=
 /-- The yoneda embedding for `Mon_C` is fully faithful. -/
 def yonedaMonFullyFaithful : yonedaMon (C := C).FullyFaithful where
   preimage {M N} α :=
-  { hom := α.app (op M.X) (𝟙 M.X)
-    one_hom := by
-      dsimp only [yonedaMon_obj] at α ⊢
-      rw [← yonedaMon_naturality, Category.comp_id,
-        ← Category.id_comp η[M.X], toUnit_unique (𝟙 _) (toUnit _),
-        ← Category.id_comp η[N.X], toUnit_unique (𝟙 _) (toUnit _)]
-      exact (α.app _).hom.map_one
-    mul_hom := by
-      dsimp only [yonedaMon_obj] at α ⊢
-      rw [← yonedaMon_naturality, Category.comp_id, ← Category.id_comp μ[M.X], ← lift_fst_snd]
-      refine ((α.app _).hom.map_mul _ _).trans ?_
-      show lift _ _ ≫ μ[N.X] = _
-      congr 1
-      ext <;> simp only [lift_fst, tensorHom_fst, lift_snd, tensorHom_snd,
-        ← yonedaMon_naturality, Category.comp_id] }
+    { hom := α.app (op M.X) (𝟙 M.X)
+      is_mon_hom :=
+        { one_hom := by
+            dsimp only [yonedaMon_obj] at α ⊢
+            rw [← yonedaMon_naturality, Category.comp_id,
+              ← Category.id_comp η[M.X], toUnit_unique (𝟙 _) (toUnit _),
+              ← Category.id_comp η[N.X], toUnit_unique (𝟙 _) (toUnit _)]
+            exact (α.app _).hom.map_one
+          mul_hom := by
+            dsimp only [yonedaMon_obj] at α ⊢
+            rw [← yonedaMon_naturality, Category.comp_id, ← Category.id_comp μ[M.X], ← lift_fst_snd]
+            refine ((α.app _).hom.map_mul _ _).trans ?_
+            show lift _ _ ≫ μ[N.X] = _
+            congr 1
+            ext <;> simp only [lift_fst, tensorHom_fst, lift_snd, tensorHom_snd,
+              ← yonedaMon_naturality, Category.comp_id] } }
   map_preimage {M N} α := by
     ext Y f
     dsimp only [yonedaMon_obj, yonedaMon_map_app, MonCat.hom_ofHom]
