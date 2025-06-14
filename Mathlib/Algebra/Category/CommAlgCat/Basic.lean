@@ -13,9 +13,7 @@ This file defines the bundled category `CommAlgCat` of commutative algebras over
 ring `R` along with the forgetful functors to `CommRingCat` and `AlgCat`.
 -/
 
-namespace CategoryTheory
-
-open Limits
+open CategoryTheory Limits
 
 universe v u
 
@@ -178,5 +176,3 @@ def commAlgCatEquivUnder (R : CommRingCat) : CommAlgCat R ≌ Under R where
   unitIso := NatIso.ofComponents fun A ↦
     CommAlgCat.isoMk { toRingEquiv := .refl A, commutes' _ := rfl }
   counitIso := .refl _
-
-end CategoryTheory
