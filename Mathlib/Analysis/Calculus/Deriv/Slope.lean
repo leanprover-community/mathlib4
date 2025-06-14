@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Slope
+import Mathlib.Topology.Algebra.Module.PerfectSpace
 
 /-!
 # Derivative as the limit of the slope
@@ -23,7 +24,6 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 
 derivative, slope
 -/
-
 
 universe u v
 
@@ -146,30 +146,66 @@ lemma HasDerivAt.continuousAt_div [DecidableEq 𝕜] {f : 𝕜 → 𝕜} {c a : 
   rw [← slope_fun_def_field]
   exact continuousAt_update_same.mpr <| hasDerivAt_iff_tendsto_slope.mp hf
 
-lemma HasDerivWithinAt.nonneg_of_monotoneOn [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [OrderTopology 𝕜]
-    {f : 𝕜 → 𝕜} {f' : 𝕜}
-    (hx : (𝓝[s \ {x}] x).NeBot)
-    (hd : HasDerivWithinAt f f' s x) (hf : MonotoneOn f s) : 0 ≤ f' := by
-  have : ContinuousWithinAt f s x := hd.continuousWithinAt
+section Order
 
+variable [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    [OrderTopology 𝕜] {g : 𝕜 → 𝕜} {g' : 𝕜}
 
-  have : Tendsto (slope f x) (𝓝[s \ {x}] x) (𝓝 f') :=
+lemma HasDerivWithinAt.nonneg_of_monotoneOn (hx : AccPt x (𝓟 s))
+    (hd : HasDerivWithinAt g g' s x) (hg : MonotoneOn g s) : 0 ≤ g' := by
+  have :  (𝓝[s \ {x}] x).NeBot := accPt_principal_iff_nhdsWithin.mp hx
+  have h'g : MonotoneOn g (insert x s) :=
+    hg.insert_of_continuousWithinAt hx.clusterPt hd.continuousWithinAt
+  have : Tendsto (slope g x) (𝓝[s \ {x}] x) (𝓝 g') :=
     hasDerivWithinAt_iff_tendsto_slope.mp hd
   apply ge_of_tendsto this
   filter_upwards [self_mem_nhdsWithin] with y hy
   simp only [mem_diff, mem_singleton_iff] at hy
   rcases lt_or_gt_of_ne hy.2 with h'y | h'y
-  · simp [slope]
+  · simp only [slope, vsub_eq_sub, smul_eq_mul]
     apply mul_nonneg_of_nonpos_of_nonpos
     · simpa using h'y.le
-    · simp
-      apply hf hy.1 _ h'y.le
+    · simp only [tsub_le_iff_right, zero_add]
+      exact h'g (by simp [hy]) (by simp) h'y.le
+  · simp only [slope, vsub_eq_sub, smul_eq_mul]
+    apply mul_nonneg
+    · simpa using h'y.le
+    · simp only [sub_nonneg]
+      exact h'g (by simp) (by simp [hy]) h'y.le
+
+
+omit [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [OrderTopology 𝕜] in
+lemma foo {E : Type*} [AddCommGroup E] [Module 𝕜 E] [Nontrivial E] [TopologicalSpace E]
+    [ContinuousAdd E] [ContinuousSMul 𝕜 E] :
+    PerfectSpace E := by
+  refine ⟨fun x hx ↦ ?_⟩
+  let ⟨r, hr₀, hr⟩ := NormedField.exists_norm_lt_one 𝕜
+  obtain ⟨c, hc⟩ : ∃ (c : E), c ≠ 0 := exists_ne 0
+  have A : Tendsto (fun (n : ℕ) ↦ x + r ^ n • c) atTop (𝓝 (x + (0 : 𝕜) • c)) := by
+    apply Tendsto.add tendsto_const_nhds
+    exact (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hr).smul tendsto_const_nhds
+  have B : Tendsto (fun (n : ℕ) ↦ x + r ^ n • c) atTop (𝓝[univ \ {x}] x) := by
+    simp only [zero_smul, add_zero] at A
+    simp [tendsto_nhdsWithin_iff, A, hc, norm_pos_iff.mp hr₀]
+  exact accPt_principal_iff_nhdsWithin.mpr ((atTop_neBot.map _).mono B)
 
 
 
 
 
-#exit
+
+
+
+lemma HasDerivAt.nonneg_of_monotone (hd : HasDerivAt g g' x) (hg : Monotone g) : 0 ≤ g' := by
+  rw [← hasDerivWithinAt_univ] at hd
+  apply hd.nonneg_of_monotoneOn _ (hg.monotoneOn _)
+  have : PerfectSpace 𝕜 := sorry
+  exact PerfectSpace.univ_preperfect _ (mem_univ _)
+
+
+
+
+end Order
 
 end NormedField
 
