@@ -257,7 +257,6 @@ def ofSubsingleton [Subsingleton ι] (i : ι) :
     (map_continuous f).comp (continuous_apply i)⟩
   invFun f := ⟨(MultilinearMap.ofSubsingleton R M₂ M₃ i).symm f.toMultilinearMap,
     (map_continuous f).comp <| continuous_pi fun _ ↦ continuous_id⟩
-  left_inv _ := rfl
   right_inv f := toMultilinearMap_injective <|
     (MultilinearMap.ofSubsingleton R M₂ M₃ i).apply_symm_apply f.toMultilinearMap
 
@@ -307,8 +306,6 @@ def prodEquiv :
   toFun f := f.1.prod f.2
   invFun f := ((ContinuousLinearMap.fst _ _ _).compContinuousMultilinearMap f,
     (ContinuousLinearMap.snd _ _ _).compContinuousMultilinearMap f)
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 theorem prod_ext_iff {f g : ContinuousMultilinearMap R M₁ (M₂ × M₃)} :
     f = g ↔ (ContinuousLinearMap.fst _ _ _).compContinuousMultilinearMap f =
@@ -355,8 +352,6 @@ def piEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
     (∀ i, ContinuousMultilinearMap R M₁ (M' i)) ≃ ContinuousMultilinearMap R M₁ (∀ i, M' i) where
   toFun := ContinuousMultilinearMap.pi
   invFun f i := (ContinuousLinearMap.proj i : _ →L[R] M' i).compContinuousMultilinearMap f
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- An equivalence of the index set defines an equivalence between the spaces of continuous
 multilinear maps. This is the forward map of this equivalence. -/
