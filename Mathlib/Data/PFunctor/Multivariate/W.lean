@@ -13,34 +13,34 @@ as the least fixpoint of a polynomial functor.
 
 ## Main definitions
 
- * `W_mk`     - constructor
- * `W_dest    - destructor
- * `W_rec`    - recursor: basis for defining functions by structural recursion on `P.W α`
- * `W_rec_eq` - defining equation for `W_rec`
- * `W_ind`    - induction principle for `P.W α`
+* `W_mk`     - constructor
+* `W_dest    - destructor
+* `W_rec`    - recursor: basis for defining functions by structural recursion on `P.W α`
+* `W_rec_eq` - defining equation for `W_rec`
+* `W_ind`    - induction principle for `P.W α`
 
 ## Implementation notes
 
 Three views of M-types:
 
- * `wp`: polynomial functor
- * `W`: data type inductively defined by a triple:
+* `wp`: polynomial functor
+* `W`: data type inductively defined by a triple:
      shape of the root, data in the root and children of the root
- * `W`: least fixed point of a polynomial functor
+* `W`: least fixed point of a polynomial functor
 
 Specifically, we define the polynomial functor `wp` as:
 
- * A := a tree-like structure without information in the nodes
- * B := given the tree-like structure `t`, `B t` is a valid path
-   (specified inductively by `W_path`) from the root of `t` to any given node.
+* A := a tree-like structure without information in the nodes
+* B := given the tree-like structure `t`, `B t` is a valid path
+  (specified inductively by `W_path`) from the root of `t` to any given node.
 
 As a result `wp α` is made of a dataless tree and a function from
 its valid paths to values of `α`
 
 ## Reference
 
- * Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
-   [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
+* Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
+  [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/
 
 
