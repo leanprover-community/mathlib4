@@ -146,15 +146,30 @@ lemma HasDerivAt.continuousAt_div [DecidableEq 𝕜] {f : 𝕜 → 𝕜} {c a : 
   rw [← slope_fun_def_field]
   exact continuousAt_update_same.mpr <| hasDerivAt_iff_tendsto_slope.mp hf
 
-lemma HasDerivWithinAt.nonneg_of_monotoneOn [Preorder 𝕜] [ClosedIciTopology 𝕜]
+lemma HasDerivWithinAt.nonneg_of_monotoneOn [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [OrderTopology 𝕜]
     {f : 𝕜 → 𝕜} {f' : 𝕜}
     (hx : (𝓝[s \ {x}] x).NeBot)
     (hd : HasDerivWithinAt f f' s x) (hf : MonotoneOn f s) : 0 ≤ f' := by
+  have : ContinuousWithinAt f s x := hd.continuousWithinAt
+
+
   have : Tendsto (slope f x) (𝓝[s \ {x}] x) (𝓝 f') :=
     hasDerivWithinAt_iff_tendsto_slope.mp hd
   apply ge_of_tendsto this
   filter_upwards [self_mem_nhdsWithin] with y hy
-  simp [slope]
+  simp only [mem_diff, mem_singleton_iff] at hy
+  rcases lt_or_gt_of_ne hy.2 with h'y | h'y
+  · simp [slope]
+    apply mul_nonneg_of_nonpos_of_nonpos
+    · simpa using h'y.le
+    · simp
+      apply hf hy.1 _ h'y.le
+
+
+
+
+
+#exit
 
 end NormedField
 
