@@ -95,15 +95,17 @@ universe u v w
 
 namespace FreeM
 
+variable {F : Type u → Type v}
+
 /-- Map a function over a `FreeM` monad. -/
-def map {α β : Type w} {F : Type u → Type v} (f : α → β) : FreeM F α → FreeM F β
+def map {α β : Type w} (f : α → β) : FreeM F α → FreeM F β
   | .pure a => .pure (f a)
   | .liftBind op cont => .liftBind op (fun z => FreeM.map f (cont z))
 
-instance {F : Type u → Type v} : Functor (FreeM F) where
+instance: Functor (FreeM F) where
   map := .map
 
-instance {F : Type u → Type v} : LawfulFunctor (FreeM F) where
+instance : LawfulFunctor (FreeM F) where
   map_const := rfl
   id_map x := by
     simp [Functor.map]
@@ -118,7 +120,7 @@ instance {F : Type u → Type v} : LawfulFunctor (FreeM F) where
     | liftBind op cont ih => simp [FreeM.map, ih]
 
 /-- Bind operation for the `FreeM` monad. -/
-protected def bind {a b : Type w} {F : Type u → Type v} (x : FreeM F a) (f : a → FreeM F b) :
+protected def bind {a b : Type w} (x : FreeM F a) (f : a → FreeM F b) :
   FreeM F b :=
   match x with
   | .pure a => f a
@@ -126,23 +128,23 @@ protected def bind {a b : Type w} {F : Type u → Type v} (x : FreeM F a) (f : a
 
 /-- Lift an operation from the effect signature `f` into the `FreeM f` monad. -/
 @[simp]
-def lift {F : Type u → Type v} {ι : Type u} (op : F ι) : FreeM F ι :=
+def lift {ι : Type u} (op : F ι) : FreeM F ι :=
   .liftBind op FreeM.pure
 
-instance {F : Type u → Type v} : Monad (FreeM F) where
+instance : Monad (FreeM F) where
   pure := .pure
   bind := .bind
 
 @[simp]
-lemma pure_eq_pure {F : Type u → Type v} {α : Type w} (a : α) :
+lemma pure_eq_pure {α : Type w} (a : α) :
     (.pure a : FreeM F α) = pure a := rfl
 
 /-- The `liftBind` constructor is semantically equivalent to `(lift op) >>= cont`. -/
-lemma liftBind_eq_lift_bind {F : Type u → Type v} {ι : Type u} {α : Type u}
+lemma liftBind_eq_lift_bind {ι : Type u} {α : Type u}
     (op : F ι) (cont : ι → FreeM F α) :
     .liftBind op cont = (lift op) >>= cont := by rfl
 
-instance {F : Type u → Type v} : LawfulMonad (FreeM F) := LawfulMonad.mk'
+instance : LawfulMonad (FreeM F) := LawfulMonad.mk'
   (bind_pure_comp := by {
     intro _ _ f x;
     induction x with
@@ -169,23 +171,23 @@ function for the effect signature `f`.
 This function defines the *canonical interpreter* from the free monad `FreeM f` into the target
 monad `m`. It is the unique monad morphism that extends the effect handler
 `interp : ∀ {β}, F β → M β` via the universal property of `FreeM` -/
-protected def mapM {F : Type u → Type v} {M : Type u → Type w} [Monad M] {α : Type u} :
+protected def mapM {M : Type u → Type w} [Monad M] {α : Type u} :
     FreeM F α → ({β : Type u} → F β → M β) → M α
   | .pure a, _ => pure a
   | .liftBind op cont, interp => interp op >>= fun result => (cont result).mapM interp
 
 @[simp]
-lemma mapM_pure {F : Type u → Type v} {M : Type u → Type w} [Monad M] {α : Type u}
+lemma mapM_pure {M : Type u → Type w} [Monad M] {α : Type u}
     (interp : {β : Type u} → F β → M β) (a : α) :
     (pure a : FreeM F α).mapM interp = pure a := by rfl
 
 @[simp]
-lemma mapM_liftBind {F : Type u → Type v} {M : Type u → Type w} [Monad M] {α β : Type u}
+lemma mapM_liftBind {M : Type u → Type w} [Monad M] {α β : Type u}
     (interp : {γ : Type u} → F γ → M γ) (op : F β) (cont : β → FreeM F α) :
     (liftBind op cont).mapM interp = interp op >>=
     fun result => (cont result).mapM interp := by simp [FreeM.mapM]
 
-lemma mapM_lift {F : Type u → Type v} {M : Type u → Type w} [Monad M] [LawfulMonad M] {α : Type u}
+lemma mapM_lift {M : Type u → Type w} [Monad M] [LawfulMonad M] {α : Type u}
     (interp : {β : Type u} → F β → M β) (op : F α) :
     (lift op).mapM interp = interp op := by
   simp [FreeM.mapM, lift]
@@ -203,7 +205,7 @@ Formally, `g` satisfies the two equations:
 - `g (liftBind op k) = f op >>= fun x => g (k x)`
 -/
 def ExtendsHandler
-    {F : Type u → Type v} {M : Type u → Type w} [Monad M] {α : Type u}
+    {M : Type u → Type w} [Monad M] {α : Type u}
     (f : {ι : Type u} → F ι → M ι)
     (g : FreeM F α → M α) : Prop :=
   (∀ a, g (pure a) = pure a) ∧
@@ -261,20 +263,20 @@ lemma set_def {σ : Type u} (s : σ) : (set s : FreeState σ PUnit) =
 
 instance {σ : Type u} : MonadState σ (FreeState σ) := inferInstance
 
-lemma bind_pure {F : Type u → Type v} {α β : Type u} (a : α) (f : α → FreeM F β) :
+lemma bind_pure {α β : Type u} (a : α) (f : α → FreeM F β) :
     (pure a >>= f) = f a := by rfl
 
 @[simp]
-lemma bind_liftBind {F : Type u → Type v} {α β γ : Type u} (op : F α) (cont : α → FreeM F β)
+lemma bind_liftBind {α β γ : Type u} (op : F α) (cont : α → FreeM F β)
 (f : β → FreeM F γ) :
     (liftBind op cont >>= f) = liftBind op (fun x => cont x >>= f) := by rfl
 
-lemma map_pure {F : Type u → Type v} {α β : Type u} (f : α → β) (a : α) :
+lemma map_pure {α β : Type u} (f : α → β) (a : α) :
     (f <$> pure a : FreeM F β) = .pure (f a) := by
     rfl
 
 @[simp]
-lemma map_liftBind {F : Type u → Type v} {α β γ : Type u} (f : β → γ) (op : F α)
+lemma map_liftBind {α β γ : Type u} (f : β → γ) (op : F α)
 (cont : α → FreeM F β) :
     (f <$> liftBind op cont : FreeM F γ) = liftBind op (fun x => f <$> cont x)
     := by rfl
