@@ -77,7 +77,7 @@ def print_error(message: str) -> None:
 def run_command(cmd: List[str], capture_output: bool = True, check: bool = True) -> subprocess.CompletedProcess:
     """Run a command and return the result."""
     try:
-        result = subprocess.run(cmd, capture_output=capture_output, text=True, check=check)
+        result = subprocess.run(cmd, capture_output=capture_output, text=True, encoding="utf8", check=check)
         return result
     except subprocess.CalledProcessError as e:
         if not check:
