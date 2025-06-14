@@ -7,6 +7,22 @@ import Mathlib.CategoryTheory.Monoidal.Action.Basic
 import Mathlib.CategoryTheory.Monoidal.End
 import Mathlib.CategoryTheory.Monoidal.Opposite
 
+/-! # Actions as monoidal functors to endofunctor categories
+
+In this file, we show that given a right action of a monoidal category `C`
+on a category `D`, the curried action functor `C ⥤ D ⥤ D` is monoidal.
+Conversely, given a monoidal functor `C ⥤ D ⥤ D`, we can define a right action
+of `C` on `D`.
+
+The corresponding results are also available for left actions: given a left
+action of `C` on `D`, composing
+`CategoryTheory.MonoidalCategory.MonoidalLeftAction.curriedAction C D` with
+`CategoryTheory.MonoidalCategory.MonoidalOpposite.mopFunctor (D ⥤ D)` is
+monoidal, and conversely one can define a left action of `C` on `D` from a monoidal
+functor `C ⥤ (D ⥤ D)ᴹᵒᵖ`.
+
+-/
+
 namespace CategoryTheory.MonoidalCategory
 
 variable (C D : Type*)
@@ -118,6 +134,16 @@ def actionOfMonoidalFunctorToEndofunctorMop (F : C ⥤ (D ⥤ D)ᴹᵒᵖ) [F.Mo
       ← F.map_comp_assoc, Iso.hom_inv_id, Functor.map_id, Category.id_comp] at e
     simp [e, ← NatTrans.comp_app, ← unmop_comp]
 
+/-- If the (left) action of `C` on `D` comes from a monoidal functor
+`C ⥤ (D ⥤ D)ᴹᵒᵖ`, then `curriedActionMop C D` is naturally isomorphic to that
+functor. -/
+@[simps!]
+def curriedActionActionOfMonoidalFunctorToEndofunctorMopIso
+    (F : C ⥤ (D ⥤ D)ᴹᵒᵖ) [F.Monoidal] :
+    letI := actionOfMonoidalFunctorToEndofunctorMop F
+    curriedActionMop C D ≅ F :=
+  .refl _
+
 end MonoidalLeftAction
 
 namespace MonoidalRightAction
@@ -163,6 +189,15 @@ def actionOfMonoidalFunctorToEndofunctor (F : C ⥤ D ⥤ D) [F.Monoidal] :
       Functor.OplaxMonoidal.δ_natural F g h
     dsimp at e
     simp [reassoc_of% e]
+
+/-- If the action of `C` on `D` comes from a monoidal functor `C ⥤ (D ⥤ D)`,
+then `curriedActionMop C D` is naturally isomorphic to that functor. -/
+@[simps!]
+def curriedActionActionOfMonoidalFunctorToEndofunctorIso
+    (F : C ⥤ (D ⥤ D)) [F.Monoidal] :
+    letI := actionOfMonoidalFunctorToEndofunctor F
+    curriedAction C D ≅ F :=
+  .refl _
 
 end MonoidalRightAction
 
