@@ -1396,6 +1396,28 @@ noncomputable instance GL_W_psuedo: PseudoMetricSpace (GL_W (G := G)) := Topolog
 set_option maxHeartbeats 500000
 set_option synthInstance.maxHeartbeats 40000
 
+-- instance GL_Star_Mul: StarMul (W (G := G) →L[ℂ] W (G := G)) := {
+--   star := fun f => star f.toLinearMap
+-- }
+
+#synth NormedSpace ℂ (W (G := G) →L[ℂ] W (G := G))
+
+lemma rho_g_subset_unitary: (toEuclidean '' (Units.val '' ((rho_g (G := G)).carrier))) ⊆ (unitary _).carrier := by
+  sorry
+
+-- All norms are equivalent on finite-dimensional spaces:
+-- https://leanprover-community.github.io/mathlib4_docs/Mathlib/Analysis/Normed/Module/FiniteDimension.html
+
+lemma closed_image_rho_g: closure (Units.val '' (rho_g_closure (G := G))) = Units.val '' (closure (rho_g_closure (G := G))) := by
+  ext w
+  refine ⟨?_, ?_⟩
+  . sorry
+  .
+    intro hw
+    rw [Topology.IsEmbedding.closure_eq_preimage_closure_image (isembedding_units_val (G := G)) _]
+    simp
+
+
 -- In the Vikman paper, rho_g is precompact, and the closure of rho_g is a compact subgroup
 -- LinearMap.finiteDimensional
 theorem compact_rho_g: IsCompact (rho_g_closure (G := G)) := by
@@ -1454,6 +1476,9 @@ theorem compact_rho_g: IsCompact (rho_g_closure (G := G)) := by
         use x_unit
         simp
         exact r_gt_zero
+    .
+      simp at invertible
+      simp at hx
 
 
 
