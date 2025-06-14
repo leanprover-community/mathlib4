@@ -240,11 +240,11 @@ def checkAndSortRewriteLemmas (e : Expr) (rewrites : Array RewriteLemma) :
         Option.map (·, rw.name) <$> checkRewrite thm e rw.symm
       fun _ =>
         return none
-  let lt (a b : (Rewrite × Name)) :=
-    a.1.extraGoals.size < b.1.extraGoals.size || a.1.extraGoals.size == b.1.extraGoals.size &&
-      (!a.1.symm && b.1.symm || a.1.symm == b.1.symm &&
-        (a.2.toString.length < b.2.toString.length || a.2.toString.length == b.2.toString.length &&
-          Name.lt a.2 b.2))
+  let lt (a b : (Rewrite × Name)) := Ordering.isLT <|
+    (compare a.1.extraGoals.size b.1.extraGoals.size).then <|
+    (compare a.1.symm b.1.symm).then <|
+    (compare a.2.toString.length b.2.toString.length).then
+    (Name.cmp a.2 b.2)
   return rewrites.qsort lt
 
 /-- Return all applicable library rewrites of `e`.
