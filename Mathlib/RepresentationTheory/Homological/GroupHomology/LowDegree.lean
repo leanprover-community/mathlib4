@@ -12,8 +12,9 @@ Let `k` be a commutative ring and `G` a group. This file will give simple expres
 the group homology of a `k`-linear `G`-representation `A` in degrees 0, 1 and 2.
 In `RepresentationTheory.Homological.GroupHomology.Basic`, we define the `n`th group homology of
 `A` to be the homology of a complex `inhomogeneousChains A`, whose objects are `(Fin n →₀ G) → A`;
-this is unnecessarily unwieldy in low degree. Moreover, homology of a complex is defined as an
-abstract cokernel, whereas the definitions here will be explicit quotients of cycles by boundaries.
+this is unnecessarily unwieldy in low degree. Here, meanwhile, we will define the one and two
+cycles and boundaries as submodules of `G →₀ A` and `G × G →₀ A`, and provide maps to
+`H1` and `H2`.
 
 -/
 
@@ -65,14 +66,14 @@ theorem dZero_single (g : G) (a : A) : dZero A (single g a) = A.ρ g⁻¹ a - a 
   simp [dZero]
 
 theorem dZero_single_one (a : A) : dZero A (single 1 a) = 0 := by
-  simp [dZero] -- why can't it find the previous lemma
+  simp [dZero]
 
 theorem dZero_single_inv (g : G) (a : A) :
     dZero A (single g⁻¹ a) = - dZero A (single g (A.ρ g a)) := by
   simp [dZero]
 
-theorem range_dZero_eq_augmentationSubmodule :
-    LinearMap.range (dZero A).hom = augmentationSubmodule A.ρ := by
+theorem range_dZero_eq_coinvariantsKer :
+    LinearMap.range (dZero A).hom = Coinvariants.ker A.ρ := by
   symm
   apply Submodule.span_eq_of_le
   · rintro _ ⟨x, rfl⟩
@@ -82,19 +83,20 @@ theorem range_dZero_eq_augmentationSubmodule :
     induction' y using Finsupp.induction with _ _ _ _ _ h generalizing x
     · simp [← hy]
     · simpa [← hy, add_sub_add_comm, sum_add_index, dZero_single (G := G)]
-        using Submodule.add_mem _ (mem_augmentationSubmodule_of_eq _ _ _ rfl) (h rfl)
+        using Submodule.add_mem _ (Coinvariants.mem_ker_of_eq _ _ _ rfl) (h rfl)
 
-lemma mk_comp_dZero : Coinvariants.mk A.ρ ∘ₗ (dZero A).hom = 0 := by
-  ext x
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma dZero_comp_mk : dZero A ≫ ModuleCat.ofHom (Coinvariants.mk A.ρ) = 0 := by
+  ext
   simp [dZero]
 
 /-- The 0th differential in the complex of inhomogeneous chains of a `G`-representation `A` as a
 linear map into the `k`-submodule of `A` spanned by elements of the form
 `ρ(g)(x) - x, g ∈ G, x ∈ A`. -/
-def oneChainsToAugmentationSubmodule :
-    (G →₀ A) →ₗ[k] augmentationSubmodule A.ρ :=
-  (dZero A).hom.codRestrict _ <|
-    range_dZero_eq_augmentationSubmodule A ▸ LinearMap.mem_range_self _
+def oneChainsToCoinvariantsKer :
+    ModuleCat.of k (G →₀ A) ⟶ ModuleCat.of k (Coinvariants.ker A.ρ) :=
+  ModuleCat.ofHom <| (dZero A).hom.codRestrict _ <|
+    range_dZero_eq_coinvariantsKer A ▸ LinearMap.mem_range_self _
 
 @[simp]
 theorem dZero_eq_zero_of_isTrivial [A.IsTrivial] : dZero A = 0 := by
@@ -196,6 +198,11 @@ theorem comp_dZero_eq :
     simp [inhomogeneousChains.d_def, zeroChainsIso, oneChainsIso, dZero_single (G := G),
       Unique.eq_default (α := Fin 0 → G), sub_eq_add_neg, inhomogeneousChains.d_single (G := G)]
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
+theorem eq_dZero_comp_inv :
+    (oneChainsIso A).inv ≫ (inhomogeneousChains A).d 1 0 = dZero A ≫ (zeroChainsIso A).inv :=
+  (CommSq.horiz_inv ⟨comp_dZero_eq A⟩).w
+
 /-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
 says `dOne` gives a simpler expression for the 1st differential: that is, the following
 square commutes:
@@ -216,6 +223,11 @@ theorem comp_dOne_eq :
     simp [inhomogeneousChains.d_def, oneChainsIso, add_assoc, twoChainsIso, dOne_single (G := G),
       -Finsupp.domLCongr_apply, domLCongr_single, sub_eq_add_neg, Fin.contractNth,
       inhomogeneousChains.d_single (G := G)]
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+theorem eq_dOne_comp_inv :
+    (twoChainsIso A).inv ≫ (inhomogeneousChains A).d 2 1 = dOne A ≫ (oneChainsIso A).inv :=
+  (CommSq.horiz_inv ⟨comp_dOne_eq A⟩).w
 
 /-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
 says `dTwo` gives a simpler expression for the 2nd differential: that is, the following
@@ -239,12 +251,19 @@ theorem comp_dTwo_eq :
       inhomogeneousChains.d_single (G := G), add_rotate' (-(single (_ * _, _) _)),
       add_left_comm (single (_, _ * _) _)]
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
+theorem eq_dTwo_comp_inv :
+    (threeChainsIso A).inv ≫ (inhomogeneousChains A).d 3 2 = dTwo A ≫ (twoChainsIso A).inv :=
+  (CommSq.horiz_inv ⟨comp_dTwo_eq A⟩).w
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
 theorem dOne_comp_dZero : dOne A ≫ dZero A = 0 := by
   ext x g
   simp [dZero, dOne, sum_add_index, sum_sub_index, sub_sub_sub_comm, add_sub_add_comm]
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 theorem dTwo_comp_done : dTwo A ≫ dOne A = 0 := by
-  simp [(Iso.eq_inv_comp _).2 (comp_dOne_eq A), (Iso.eq_inv_comp _).2 (comp_dTwo_eq A)]
+  simp [← cancel_mono (oneChainsIso A).inv, ← eq_dOne_comp_inv, ← eq_dTwo_comp_inv_assoc]
 
 end
 end Differentials
