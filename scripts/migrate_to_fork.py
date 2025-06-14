@@ -188,8 +188,10 @@ def check_gh_token_scopes() -> bool:
             print_warning("Could not verify token scopes, but basic API access works")
             return True
 
-        # Parse the output to check for required scopes
-        auth_output = result.stdout
+        # Hackily check the output for required scopes
+        # Versions of gh before v2.31.0 print this info on stderr, not stdout.
+        # See https://github.com/cli/cli/issues/7447
+        auth_output = result.stdout + result.stderr
         if 'repo' not in auth_output:  # or 'workflow' not in auth_output:
             print_error("GitHub CLI token lacks required scopes.")
             print("Required scopes: repo, workflow")
