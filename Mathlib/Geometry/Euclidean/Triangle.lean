@@ -291,12 +291,11 @@ alias law_cos := dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_co
 theorem sin_angle_mul_dist_eq_sin_angle_mul_dist {p₁ p₂ p₃ : P} :
     Real.sin (∠ p₁ p₂ p₃) * dist p₂ p₃ = Real.sin (∠ p₃ p₁ p₂) * dist p₃ p₁ := by
   simp only [dist_comm p₂ p₃, angle]
-  rw [dist_eq_norm_vsub V p₃ p₂, dist_eq_norm_vsub V p₃ p₁]
-  rw [InnerProductGeometry.angle_comm, sin_angle_mul_norm_eq_sin_angle_mul_norm]
-  rw [vsub_sub_vsub_cancel_right, mul_eq_mul_right_iff]
+  rw [dist_eq_norm_vsub V p₃ p₂, dist_eq_norm_vsub V p₃ p₁, InnerProductGeometry.angle_comm,
+    sin_angle_mul_norm_eq_sin_angle_mul_norm, vsub_sub_vsub_cancel_right, mul_eq_mul_right_iff]
   left
-  rw [InnerProductGeometry.angle_comm, ← neg_vsub_eq_vsub_rev p₁ p₂]
-  rw [angle_neg_right, Real.sin_pi_sub]
+  rw [InnerProductGeometry.angle_comm, ← neg_vsub_eq_vsub_rev p₁ p₂, angle_neg_right,
+    Real.sin_pi_sub]
 
 alias law_sin := sin_angle_mul_dist_eq_sin_angle_mul_dist
 
@@ -308,15 +307,12 @@ theorem sin_angle_div_dist_eq_sin_angle_div_dist {p₁ p₂ p₃ : P} (h23: p₂
 
 /-- A variant of the law of sines, requiring that the points not be collinear. -/
 theorem dist_eq_dist_mul_sin_angle_div_sin_angle {p₁ p₂ p₃ : P}
-    (h : AffineIndependent ℝ ![p₁,p₂,p₃]) :
+    (h : ¬Collinear ℝ ({p₁, p₂, p₃} : Set P)) :
     dist p₁ p₂ = dist p₃ p₁ * Real.sin (∠ p₂ p₃ p₁) / Real.sin (∠ p₁ p₂ p₃) := by
-  have sin_gt_zero: Real.sin (∠ p₁ p₂ p₃) > 0 := by
-    apply sin_pos_of_not_collinear
-    rw [← affineIndependent_iff_not_collinear_set]
-    exact h
+  have sin_gt_zero : 0 < Real.sin (∠ p₁ p₂ p₃)  := by
+    apply sin_pos_of_not_collinear h
   field_simp [sin_gt_zero]
-  rw [mul_comm, mul_comm (dist p₃ p₁)]
-  rw [law_sin]
+  rw [mul_comm, mul_comm (dist p₃ p₁), law_sin]
 
 /-- **Isosceles Triangle Theorem**: Pons asinorum, angle-at-point form. -/
 theorem angle_eq_angle_of_dist_eq {p₁ p₂ p₃ : P} (h : dist p₁ p₂ = dist p₁ p₃) :
