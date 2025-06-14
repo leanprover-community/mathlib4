@@ -748,7 +748,7 @@ theorem map_eq_comap_of_inverse {f : Filter α} {m : α → β} {n : β → α} 
 theorem comap_equiv_symm (e : α ≃ β) (f : Filter α) : comap e.symm f = map e f :=
   (map_eq_comap_of_inverse e.self_comp_symm e.symm_comp_self).symm
 
-theorem map_swap_eq_comap_swap {f : Filter (α × β)} : Prod.swap <$> f = comap Prod.swap f :=
+theorem map_swap_eq_comap_swap {f : Filter (α × β)} : map Prod.swap f = comap Prod.swap f :=
   map_eq_comap_of_inverse Prod.swap_swap_eq Prod.swap_swap_eq
 
 /-- A useful lemma when dealing with uniformities. -/
