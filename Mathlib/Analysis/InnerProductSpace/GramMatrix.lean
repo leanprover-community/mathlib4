@@ -25,9 +25,7 @@ Results require `RCLike 𝕜`.
 
 open RCLike Real Matrix
 
-open scoped InnerProductSpace
-
-open scoped ComplexOrder
+open scoped InnerProductSpace ComplexOrder
 
 variable {E n : Type*}
 variable {α : Type*}
