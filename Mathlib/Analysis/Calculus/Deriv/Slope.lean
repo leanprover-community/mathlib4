@@ -150,6 +150,8 @@ section Order
 
 variable [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [OrderTopology 𝕜] {g : 𝕜 → 𝕜} {g' : 𝕜}
 
+/-- If a monotone function has a derivative within a set at a non-isolated point, then this
+derivative is nonnegative. -/
 lemma HasDerivWithinAt.nonneg_of_monotoneOn (hx : AccPt x (𝓟 s))
     (hd : HasDerivWithinAt g g' s x) (hg : MonotoneOn g s) : 0 ≤ g' := by
   have :  (𝓝[s \ {x}] x).NeBot := accPt_principal_iff_nhdsWithin.mp hx
@@ -172,6 +174,7 @@ lemma HasDerivWithinAt.nonneg_of_monotoneOn (hx : AccPt x (𝓟 s))
     · simp only [sub_nonneg]
       exact h'g (by simp) (by simp [hy]) h'y.le
 
+/-- The derivative within a set of a monotone function is nonnegative. -/
 lemma MonotoneOn.derivWithin_nonneg (hg : MonotoneOn g s) :
     0 ≤ derivWithin g s x := by
   by_cases hd : DifferentiableWithinAt 𝕜 g s x; swap
@@ -180,25 +183,40 @@ lemma MonotoneOn.derivWithin_nonneg (hg : MonotoneOn g s) :
   · simp [derivWithin_zero_of_not_accPt hx]
   exact hd.hasDerivWithinAt.nonneg_of_monotoneOn hx hg
 
+/-- If a monotone function has a derivative, then this derivative is nonnegative. -/
 lemma HasDerivAt.nonneg_of_monotone (hd : HasDerivAt g g' x) (hg : Monotone g) : 0 ≤ g' := by
   rw [← hasDerivWithinAt_univ] at hd
   apply hd.nonneg_of_monotoneOn _ (hg.monotoneOn _)
   exact PerfectSpace.univ_preperfect _ (mem_univ _)
 
+/-- The derivative of a monotone function is nonnegative. -/
 lemma Monotone.deriv_nonneg (hg : Monotone g) : 0 ≤ deriv g x := by
   rw [← derivWithin_univ]
   exact (hg.monotoneOn univ).derivWithin_nonneg
 
+/-- If an antitone function has a derivative within a set at a non-isolated point, then this
+derivative is nonpositive. -/
 lemma HasDerivWithinAt.nonpos_of_antitoneOn (hx : AccPt x (𝓟 s))
     (hd : HasDerivWithinAt g g' s x) (hg : AntitoneOn g s) : g' ≤ 0 := by
   have : MonotoneOn (-g) s := fun x hx y hy hxy ↦ by simpa using hg hx hy hxy
   simpa using hd.neg.nonneg_of_monotoneOn hx this
 
+/-- The derivative within a set of an antitone function is nonpositive. -/
 lemma AntitoneOn.derivWithin_nonpos (hg : AntitoneOn g s) :
     derivWithin g s x ≤ 0 := by
   have : MonotoneOn (-g) s := fun x hx y hy hxy ↦ by simpa using hg hx hy hxy
-  have W := this.derivWithin_nonneg (x := x)
-  rw [derivWithin_neg] at W
+  simpa [derivWithin.neg] using this.derivWithin_nonneg
+
+/-- If an antitone function has a derivative, then this derivative is nonpositive. -/
+lemma HasDerivAt.nonpos_of_antitone (hd : HasDerivAt g g' x) (hg : Antitone g) : g' ≤ 0 := by
+  rw [← hasDerivWithinAt_univ] at hd
+  apply hd.nonpos_of_antitoneOn _ (hg.antitoneOn _)
+  exact PerfectSpace.univ_preperfect _ (mem_univ _)
+
+/-- The derivative of an antitone function is nonpositive. -/
+lemma Antitone.deriv_nonpos (hg : Antitone g) : deriv g x ≤ 0 := by
+  rw [← derivWithin_univ]
+  exact (hg.antitoneOn univ).derivWithin_nonpos
 
 end Order
 
