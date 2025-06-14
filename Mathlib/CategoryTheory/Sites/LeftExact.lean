@@ -114,6 +114,7 @@ instance preservesLimits_diagramFunctor (X : C) [HasLimitsOfSize.{max t u v, max
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 variable [HasForget.{t} D]
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
+variable [∀ X : C, Small.{t, max u v} (J.Cover X)ᵒᵖ]
 
 /-- An auxiliary definition to be used in the proof that `J.plusFunctor D` commutes
 with finite limits. -/
@@ -122,6 +123,8 @@ def liftToPlusObjLimitObj {K : Type s} [SmallCategory K] [FinCategory K]
     [ReflectsLimitsOfShape K (forget D)] (F : K ⥤ Cᵒᵖ ⥤ D) (X : C)
     (S : Cone (F ⋙ J.plusFunctor D ⋙ (evaluation Cᵒᵖ D).obj (op X))) :
     S.pt ⟶ (J.plusObj (limit F)).obj (op X) :=
+  let x := (J.Cover X)ᵒᵖ
+  let F' := F ⋙ J.diagramFunctor D X
   let e := colimitLimitIso (F ⋙ J.diagramFunctor D X)
   let t : J.diagram (limit F) X ≅ limit (F ⋙ J.diagramFunctor D X) :=
     (isLimitOfPreserves (J.diagramFunctor D X) (limit.isLimit F)).conePointUniqueUpToIso
@@ -150,7 +153,7 @@ theorem liftToPlusObjLimitObj_fac {K : Type s} [SmallCategory K] [FinCategory K]
     [HasLimitsOfShape K D] [PreservesLimitsOfShape K (forget D)]
     [ReflectsLimitsOfShape K (forget D)] (F : K ⥤ Cᵒᵖ ⥤ D) (X : C)
     (S : Cone (F ⋙ J.plusFunctor D ⋙ (evaluation Cᵒᵖ D).obj (op X))) (k) :
-    liftToPlusObjLimitObj.{w, v, u} F X S ≫ (J.plusMap (limit.π F k)).app (op X) = S.π.app k := by
+    liftToPlusObjLimitObj F X S ≫ (J.plusMap (limit.π F k)).app (op X) = S.π.app k := by
   dsimp only [liftToPlusObjLimitObj]
   rw [← (limit.isLimit (F ⋙ J.plusFunctor D ⋙ (evaluation Cᵒᵖ D).obj (op X))).fac S k,
     Category.assoc]
@@ -177,7 +180,7 @@ instance preservesLimitsOfShape_plusFunctor
     PreservesLimitsOfShape K (J.plusFunctor D) := by
   constructor; intro F; apply preservesLimit_of_evaluation; intro X
   apply preservesLimit_of_preserves_limit_cone (limit.isLimit F)
-  refine ⟨fun S => liftToPlusObjLimitObj.{w, v, u} F X.unop S, ?_, ?_⟩
+  refine ⟨fun S => liftToPlusObjLimitObj F X.unop S, ?_, ?_⟩
   · intro S k
     apply liftToPlusObjLimitObj_fac
   · intro S m hm
@@ -205,7 +208,7 @@ instance preserveFiniteLimits_plusFunctor
   apply preservesFiniteLimits_of_preservesFiniteLimitsOfSize.{t}
   intro K _ _
   have : ReflectsLimitsOfShape K (forget D) := reflectsLimitsOfShape_of_reflectsIsomorphisms
-  apply preservesLimitsOfShape_plusFunctor.{w, v, u}
+  apply preservesLimitsOfShape_plusFunctor
 
 instance preservesLimitsOfShape_sheafification
     (K : Type t) [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
@@ -230,14 +233,15 @@ variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 variable {FD : D → D → Type*} {CD : D → Type t}
 variable [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory.{t} D FD]
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
-variable [PreservesLimits (forget D)]
 variable [∀ {X : C} (S : J.Cover X),
   PreservesLimitsOfShape (WalkingMulticospan S.shape) (forget D)]
 variable [(forget D).ReflectsIsomorphisms]
 variable (K : Type w')
 variable [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
 
-instance preservesLimitsOfShape_presheafToSheaf :
+instance preservesLimitsOfShape_presheafToSheaf
+    [PreservesLimits (forget D)]
+    [∀ X : C, Small.{t, max u v} (J.Cover X)ᵒᵖ] :
     PreservesLimitsOfShape K (plusPlusSheaf J D) := by
   let e := (FinCategory.equivAsType K).symm.trans (AsSmall.equiv.{0, 0, t})
   haveI : HasLimitsOfShape (AsSmall.{t} (FinCategory.AsType K)) D :=
@@ -256,7 +260,8 @@ instance preservesLimitsOfShape_presheafToSheaf :
     reflectsLimitsOfShape_of_reflectsIsomorphisms
   apply isLimitOfPreserves (J.sheafification D) hS
 
-instance preservesfiniteLimits_presheafToSheaf [HasFiniteLimits D] :
+instance preservesfiniteLimits_presheafToSheaf [PreservesLimits (forget D)]
+    [∀ X : C, Small.{t, max u v} (J.Cover X)ᵒᵖ] [HasFiniteLimits D] :
     PreservesFiniteLimits (plusPlusSheaf J D) := by
   apply preservesFiniteLimits_of_preservesFiniteLimitsOfSize.{t}
   intros
@@ -285,7 +290,10 @@ lemma toSheafify_plusPlusIsoSheafify_hom (P : Cᵒᵖ ⥤ D) :
   dsimp [GrothendieckTopology.toSheafify, plusPlusAdjunction]
   rw [Category.comp_id]
 
-instance [HasFiniteLimits D] : HasSheafify J D := HasSheafify.mk' J D (plusPlusAdjunction J D)
+instance [PreservesLimits (forget D)] [HasFiniteLimits D]
+    [∀ X : C, Small.{t, max u v} (J.Cover X)ᵒᵖ] :
+    HasSheafify J D :=
+  HasSheafify.mk' J D (plusPlusAdjunction J D)
 
 end
 
