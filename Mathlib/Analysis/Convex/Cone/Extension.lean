@@ -27,7 +27,7 @@ We prove two extension theorems:
 
 open Set LinearMap
 
-variable {𝕜 E F G : Type*}
+variable {E : Type*}
 
 /-!
 ### M. Riesz extension theorem

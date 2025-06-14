@@ -3,10 +3,10 @@ Copyright (c) 2022 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade, Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Cone.Closure
+import Mathlib.Geometry.Convex.Cone.Pointed
 import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 import Mathlib.Topology.Algebra.Order.Module
-import Mathlib.Topology.Order.OrderClosed
+import Mathlib.Topology.Order.DenselyOrdered
 
 /-!
 # Proper cones
@@ -17,10 +17,17 @@ cone. We then prove Farkas' lemma for conic programs following the proof in the 
 Farkas' lemma is equivalent to strong duality. So, once we have the definitions of conic and
 linear programs, the results from this file can be used to prove duality theorems.
 
+One can turn `C : PointedCone R E` + `hC : IsClosed C` into `C : ProperCone R E` in a tactic block
+by doing `lift C to ProperCone R E using hC`.
+
+One can also turn `C : ConvexCone 𝕜 E` + `hC : Set.Nonempty C ∧ IsClosed C` into
+`C : ProperCone 𝕜 E` in a tactic block by doing `lift C to ProperCone 𝕜 E using hC`,
+assuming `𝕜` is a dense topological field.
+
 ## TODO
 
 The next steps are:
-- Add convex_cone_class that extends set_like and replace the below instance
+- Add `ConvexConeClass` that extends `SetLike` and replace the below instance
 - Define primal and dual cone programs and prove weak duality.
 - Prove regular and strong duality for cone programs using Farkas' lemma (see reference).
 - Define linear programs and prove LP duality as a special case of cone duality.
@@ -33,6 +40,59 @@ The next steps are:
 -/
 
 open ContinuousLinearMap Filter Function Set
+
+/-!
+### Topological properties of convex cones
+
+This section proves topological results about convex cones.
+
+#### TODO
+
+Both results generalise to G-submodules.
+-/
+
+namespace ConvexCone
+variable {𝕜 M : Type*}
+
+section Module
+variable [Field 𝕜] [LinearOrder 𝕜] [AddCommGroup M] [Module 𝕜 M] [TopologicalSpace M]
+  {C : ConvexCone 𝕜 M} {s : Set M} {x : M}
+
+-- This is necessary for the proof below but triggers the `unusedSectionVars` linter.
+-- variable [IsStrictOrderedRing 𝕜] [IsTopologicalAddGroup M]
+
+/-- This is true essentially by `Submodule.span_eq_iUnion_nat`, except that `Submodule` currently
+doesn't support that use case. See
+https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/G-submodules/with/514426583 -/
+proof_wanted isOpen_hull (hs : IsOpen s) : IsOpen (hull 𝕜 s : Set M)
+
+end Module
+
+section ContinuousSMul
+variable [TopologicalSpace 𝕜] [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜] [OrderTopology 𝕜]
+  [DenselyOrdered 𝕜] [AddCommGroup M] [TopologicalSpace M] [Module 𝕜 M] [ContinuousSMul 𝕜 M]
+  {S : ConvexCone 𝕜 M}
+
+lemma Pointed.of_nonempty_of_isClosed (hS : (S : Set M).Nonempty) (hSclos : IsClosed (S : Set M)) :
+    S.Pointed := by
+  obtain ⟨x, hx⟩ := hS
+  let f : 𝕜 → M := (· • x)
+  -- The closure of `f (0, ∞)` is a subset of `K`
+  have hfS : closure (f '' Set.Ioi 0) ⊆ S :=
+    hSclos.closure_subset_iff.2 <| by rintro _ ⟨_, h, rfl⟩; exact S.smul_mem h hx
+  -- `f` is continuous at `0` from the right
+  have fc : ContinuousWithinAt f (Set.Ioi (0 : 𝕜)) 0 :=
+    (continuous_id.smul continuous_const).continuousWithinAt
+  -- `0 ∈ closure f (0, ∞) ⊆ K, 0 ∈ K`
+  simpa [f, Pointed, ← SetLike.mem_coe] using hfS <| fc.mem_closure_image <| by simp
+
+@[deprecated (since := "2025-04-18")]
+alias pointed_of_nonempty_of_isClosed := Pointed.of_nonempty_of_isClosed
+
+end ContinuousSMul
+end ConvexCone
+
+/-! ### Proper cones -/
 
 variable {R E F G : Type*} [Semiring R] [PartialOrder R] [IsOrderedRing R]
 variable [AddCommMonoid E] [TopologicalSpace E] [Module R E]
@@ -123,7 +183,7 @@ abbrev map (f : E →L[R] F) (C : ProperCone R E) : ProperCone R F :=
 
 @[simp, norm_cast]
 lemma coe_map (f : E →L[R] F) (C : ProperCone R E) :
-    C.map f = (C.toPointedCone.map (f : E →ₗ[R] F)).closure := rfl
+    C.map f = (C.toPointedCone.map (f : E →ₗ[R] F)).topologicalClosure := rfl
 
 @[simp]
 lemma mem_map {f : E →L[R] F} {C : ProperCone R E} {y : F} :
@@ -132,8 +192,7 @@ lemma mem_map {f : E →L[R] F} {C : ProperCone R E} {y : F} :
 end Module
 
 section PositiveCone
-variable {E : Type*} [AddCommGroup E] [TopologicalSpace E] [Module R E] [PartialOrder E]
-  [IsOrderedAddMonoid E] [OrderedSMul R E] [OrderClosedTopology E] {x : E}
+variable [PartialOrder E] [IsOrderedAddMonoid E] [PosSMulMono R E] [OrderClosedTopology E] {x : E}
 
 variable (R E) in
 /-- The positive cone is the proper cone formed by the set of nonnegative elements in an ordered
@@ -147,4 +206,12 @@ def positive : ProperCone R E where
 @[simp] lemma toPointedCone_positive : (positive R E).toPointedCone = .positive R E := rfl
 
 end PositiveCone
+
+instance canLift {𝕜 E : Type*} [TopologicalSpace 𝕜] [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜]
+    [OrderTopology 𝕜] [DenselyOrdered 𝕜] [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
+    [ContinuousSMul 𝕜 E] :
+    CanLift (ConvexCone 𝕜 E) (ProperCone 𝕜 E) (↑)
+     fun C ↦ (C : Set E).Nonempty ∧ IsClosed (C : Set E) where
+  prf C hC := ⟨⟨C.toPointedCone <| .of_nonempty_of_isClosed hC.1 hC.2, hC.2⟩, rfl⟩
+
 end ProperCone
