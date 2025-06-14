@@ -5,7 +5,7 @@ Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 import Mathlib.Algebra.ContinuedFractions.TerminatedStable
-import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.FieldSimp2
 import Mathlib.Tactic.Ring
 
 /-!
@@ -307,8 +307,8 @@ theorem succ_nth_conv_eq_squashGCF_nth_conv [Field K]
             (contsAux_eq_contsAux_squashGCF_of_le n'.le_succ).symm]
         symm
         simpa only [eq1, eq2, eq3, eq4, mul_div_cancel_right₀ _ b_ne_zero]
-      field_simp
-      congr 1 <;> ring
+      field_simp2
+      ring
 
 end Squash
 

@@ -10,6 +10,7 @@ import Mathlib.Order.Interval.Set.Infinite
 import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.RingTheory.PowerSeries.WellKnown
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.FieldSimp2
 
 /-!
 # Hilbert polynomials
@@ -88,8 +89,10 @@ lemma preHilbertPoly_eq_choose_sub_add [CharZero F] (d : ℕ) {k n : ℕ} (hkn :
   calc
   _ = (↑d !)⁻¹ * eval (↑(n - k + 1)) (ascPochhammer F d) := by simp [cast_sub hkn, preHilbertPoly]
   _ = (n - k + d).choose d := by
-    rw [ascPochhammer_nat_eq_natCast_ascFactorial];
-    field_simp [ascFactorial_eq_factorial_mul_choose]
+    rw [ascPochhammer_nat_eq_natCast_ascFactorial]
+    simp only [ascFactorial_eq_factorial_mul_choose, cast_mul]
+    field_simp2
+    rfl
 
 variable {F}
 
