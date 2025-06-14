@@ -79,6 +79,10 @@ lemma le_traceDual_traceDual {I : Submodule B L} :
     I ≤ Iᵛᵛ := le_traceDual_comm.mpr le_rfl
 
 @[simp]
+lemma restrictScalars_traceDual {I : Submodule B L} :
+  Iᵛ.restrictScalars A = (Algebra.traceForm K L).dualSubmodule (I.restrictScalars A) := rfl
+
+@[simp]
 lemma traceDual_bot :
     (⊥ : Submodule B L)ᵛ = ⊤ := by ext; simpa [mem_traceDual, -RingHom.mem_range] using zero_mem _
 
