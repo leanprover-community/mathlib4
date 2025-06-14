@@ -129,7 +129,7 @@ instance (V) [ReflQuiver V] : Category (FreeRefl V) :=
 
 /-- The quotient functor associated to a quotient category defines a natural map from the free
 category on the underlying quiver of a refl quiver to the free category on the reflexive quiver. -/
-abbrev FreeRefl.quotientFunctor (V) [ReflQuiver V] : Paths V ⥤ FreeRefl V :=
+def FreeRefl.quotientFunctor (V) [ReflQuiver V] : Paths V ⥤ FreeRefl V :=
   Quotient.functor (C := Paths V) (FreeReflRel (V := V))
 
 /-- This is a specialization of `Quotient.lift_unique'` rather than `Quotient.lift_unique`, hence
@@ -156,6 +156,7 @@ instance (V : Type*) [ReflQuiver V] [Unique V]
   uniq f := by
     letI : Unique (Paths V) := inferInstanceAs (Unique V)
     induction f using Quotient.induction with | @h x y f =>
+    rw [← FreeRefl.quotientFunctor]
     symm
     induction f using Paths.induction with
     | id =>
