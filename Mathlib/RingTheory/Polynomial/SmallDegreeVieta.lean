@@ -144,22 +144,16 @@ theorem quadratic_roots_iff_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0)
   rw [mem_roots (quadratic_ne_zero ha), quadratic_eq_zero_iff ha h]
 
 theorem factorize_quadratic_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
-    (h : discrim a b c = s * s) :
+      (h : discrim a b c = s * s) :
     a • X ^ 2 + b • X + C c = a • (X - C ((-b + s) / (2 * a))) * (X - C ((-b - s) / (2 * a))) := by
-    rw [Algebra.smul_mul_assoc]
-    ring_nf
-    rw [C_add, C_sub]
-    ring_nf
-    rw [smul_add, smul_add, add_comm _ (a • X ^ 2), add_assoc, add_assoc, add_right_inj, map_neg,
-      mul_neg, neg_mul, neg_neg, mul_assoc, mul_comm, ← C_2, ← C_mul, ← Algebra.smul_mul_assoc,
-      smul_C, smul_eq_mul a]
-    ring_nf
-    field_simp
-    congr
-    · ext n : 1; simp_all only [coeff_smul, smul_eq_mul, coeff_C_mul]
-    · rw [← C_pow, ← C_pow, div_pow, div_pow, sq s, ← h, discrim, ← C_sub]
-      field_simp
-      ring_nf
+  rw [smul_mul_assoc, sub_mul, mul_sub, mul_sub, sub_sub_eq_add_sub, ← pow_two, mul_comm, ← C_mul,
+    ← sub_add_eq_add_sub, sub_sub, ← add_mul, ← C_add, smul_add, smul_sub, ← smul_mul_assoc,
+    smul_C, smul_eq_mul, smul_C, smul_eq_mul, smul_eq_C_mul, smul_eq_C_mul, sub_eq_add_neg,
+    ← neg_mul, ← C_neg]
+  ring_nf
+  congr
+  · field_simp
+  · field_simp; simp [pow_two, ← h, discrim]; ring
 
 theorem quadratic_roots_of_discrim_ne_sq (ha : a ≠ 0) (h : ∀ s : R, discrim a b c ≠ s^2) :
     (a • X ^ 2 + b • X + C c).roots = ∅ := Multiset.eq_zero_of_forall_notMem (fun r => by
