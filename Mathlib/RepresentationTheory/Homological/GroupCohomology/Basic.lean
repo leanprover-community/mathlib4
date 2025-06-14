@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Homology.Opposite
-import Mathlib.RepresentationTheory.GroupCohomology.Resolution
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.Resolution
 import Mathlib.Tactic.CategoryTheory.Slice
 
 /-!
