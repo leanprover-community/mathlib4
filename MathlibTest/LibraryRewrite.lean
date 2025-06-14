@@ -36,20 +36,20 @@ Pattern n + m
   Nat.add_comm
 · n.add 1
   Nat.add_eq
-· (n + 1) ⊔ 1
-  Nat.add_left_max
-· 1 ⊔ (n + 1)
-  Nat.max_add_left
 · Nat.succ^[1] n
   Nat.succ_iterate
-· (n + 1) ⊔ n
-  Nat.add_right_max
-· n ⊔ (n + 1)
-  Nat.max_add_right
 · n + Nat.succ 1 - 1
   Nat.add_succ_sub_one
 · n.succ + 1 - 1
   Nat.succ_add_sub_one
+· max (n + 1) 1
+  Nat.add_left_max_self
+· max 1 (n + 1)
+  Nat.max_add_left_self
+· max (n + 1) n
+  Nat.add_right_max_self
+· max n (n + 1)
+  Nat.max_add_right_self
 
 Pattern x + 1
 · ∑ i ∈ Finset.range 2, n ^ i
@@ -66,9 +66,9 @@ Pattern x + 1
 Pattern a + b
 · 1 + n
   add_comm
-· n ⊔ 1 + n ⊓ 1
+· max n 1 + min n 1
   max_add_min
-· n ⊓ 1 + n ⊔ 1
+· min n 1 + max n 1
   min_add_max
 · n +ᵥ 1
   vadd_eq_add
@@ -136,10 +136,6 @@ Pattern a = b
 · ∀ (a : ℕ), a ∣ 5 ↔ a ∣ 2
   Nat.dvd_left_iff_eq
 · ↑5 = ↑2
-  Ordinal.natCast_inj
-· ↑5 = ↑2
-  Cardinal.natCast_inj
-· ↑5 = ↑2
   EReal.natCast_eq_iff
 · ∀ (a : ℕ), 5 ∣ a ↔ 2 ∣ a
   Nat.dvd_right_iff_eq
@@ -149,6 +145,8 @@ Pattern a = b
   Int.subNat_eq_zero_iff
 · Batteries.UnionFind.empty.Equiv 5 2
   Batteries.UnionFind.equiv_empty
+· Int.negSucc 5 + 1 = -↑2
+  Int.negSucc_add_one_eq_neg_ofNat_iff
 · -↑5 = Int.negSucc 2 + 1
   Int.neg_ofNat_eq_negSucc_add_one_iff
 · Nat.factorial 5 = Nat.factorial 2
@@ -171,7 +169,13 @@ Pattern a = b
   ⊢ 2 ≠ 1
   Nat.Prime.dvd_iff_eq
 
-Pattern a = b
+Pattern x = y
+· Id.run 5 = Id.run 2
+  Id.ext_iff
+· Additive.toMul 5 = Additive.toMul 2
+  Additive.ext_iff
+· Multiplicative.toAdd 5 = Multiplicative.toAdd 2
+  Multiplicative.ext_iff
 · ofLex 5 = ofLex 2
   ofLex_inj
 · ofDegLex 5 = ofDegLex 2
@@ -280,6 +284,9 @@ Pattern x / y
 · 0
   ⊢ n < 2
   Nat.div_eq_of_lt
+· n.divExact 2 ?h
+  ⊢ 2 ∣ n
+  Nat.divExact_eq_div
 · (n + 1) / 2
   ⊢ ¬2 ∣ n + 1
   Nat.succ_div_of_not_dvd
@@ -290,6 +297,9 @@ Pattern x / y
   ⊢ 0 < 2
   ⊢ 2 ≤ n
   Nat.div_eq_sub_div
+· n / 2 % ?c
+  ⊢ n < ?c
+  Nat.div_mod_eq_div
 · ?m * n / (?m * 2)
   ⊢ 0 < ?m
   Nat.mul_div_mul_left
@@ -349,6 +359,8 @@ Pattern ∑ i ∈ Finset.range n, f i
   Finset.sum_range_eq_add_Ico
 
 Pattern ∑ x ∈ s, h x (f x)
+· ∑ x ∈ (Finset.range n).attach, (↑x + 1)
+  Finsupp.sum_attach_index
 · (Finsupp.indicator (Finset.range n) fun x x => 1).sum HAdd.hAdd
   ⊢ ∀ a ∈ Finset.range n, a + 0 = 0
   Finsupp.sum_indicator_index
@@ -357,8 +369,8 @@ Pattern ∑ c ∈ s, g c a
 · (∑ c ∈ Finset.range n, HAdd.hAdd c) 1
   Finset.sum_apply
 
-Pattern ∑ x ∈ s, f x
-· Finset.fold (fun x1 x2 => x1 + x2) 0 (fun x => x + 1) (Finset.range n)
+Pattern ∑ i ∈ s, f i
+· Finset.fold (fun x1 x2 => x1 + x2) 0 (fun i => i + 1) (Finset.range n)
   Finset.sum_eq_fold
 · ∑' (x : ℕ), (↑(Finset.range n)).indicator (fun x => x + 1) x
   sum_eq_tsum_indicator
@@ -384,7 +396,7 @@ Pattern ∑ x ∈ s, f x
   Finset.noncommSum_eq_sum
 · ∑ i ∈ Finset.range n, if i ∈ Finset.range n then i + 1 else 0
   Finset.sum_extend_by_zero
-· ∑ x ∈ {x ∈ Finset.range n | x + 1 ≠ 0}, (x + 1)
+· ∑ x ∈ Finset.range n with x + 1 ≠ 0, (x + 1)
   Finset.sum_filter_ne_zero
 · 0
   ⊢ ∀ x ∈ Finset.range n, x + 1 = 0
@@ -418,11 +430,13 @@ Pattern Continuous f
   Metric.continuous_iff'
 · ∀ (s : Set ℚ), IsClosed s → IsClosed (Inv.inv ⁻¹' s)
   continuous_iff_isClosed
-· UniformSpace.toTopologicalSpace ≤ TopologicalSpace.induced Inv.inv UniformSpace.toTopologicalSpace
+· PseudoMetricSpace.toUniformSpace.toTopologicalSpace ≤
+    TopologicalSpace.induced Inv.inv PseudoMetricSpace.toUniformSpace.toTopologicalSpace
   continuous_iff_le_induced
 · ∀ (x : ℚ) (g : Ultrafilter ℚ), ↑g ≤ nhds x → Filter.Tendsto Inv.inv (↑g) (nhds x⁻¹)
   continuous_iff_ultrafilter
-· TopologicalSpace.coinduced Inv.inv UniformSpace.toTopologicalSpace ≤ UniformSpace.toTopologicalSpace
+· TopologicalSpace.coinduced Inv.inv PseudoMetricSpace.toUniformSpace.toTopologicalSpace ≤
+    PseudoMetricSpace.toUniformSpace.toTopologicalSpace
   continuous_iff_coinduced_le
 · ∀ (x : ℚ), ContinuousAt Inv.inv x
   continuous_iff_continuousAt
