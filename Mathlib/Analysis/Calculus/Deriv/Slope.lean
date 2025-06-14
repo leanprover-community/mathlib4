@@ -3,7 +3,7 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.LinearAlgebra.AffineSpace.Slope
 import Mathlib.Topology.Algebra.Module.PerfectSpace
 
@@ -148,8 +148,7 @@ lemma HasDerivAt.continuousAt_div [DecidableEq 𝕜] {f : 𝕜 → 𝕜} {c a : 
 
 section Order
 
-variable [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
-    [OrderTopology 𝕜] {g : 𝕜 → 𝕜} {g' : 𝕜}
+variable [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [OrderTopology 𝕜] {g : 𝕜 → 𝕜} {g' : 𝕜}
 
 lemma HasDerivWithinAt.nonneg_of_monotoneOn (hx : AccPt x (𝓟 s))
     (hd : HasDerivWithinAt g g' s x) (hg : MonotoneOn g s) : 0 ≤ g' := by
@@ -173,37 +172,33 @@ lemma HasDerivWithinAt.nonneg_of_monotoneOn (hx : AccPt x (𝓟 s))
     · simp only [sub_nonneg]
       exact h'g (by simp) (by simp [hy]) h'y.le
 
-
-omit [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [OrderTopology 𝕜] in
-lemma foo {E : Type*} [AddCommGroup E] [Module 𝕜 E] [Nontrivial E] [TopologicalSpace E]
-    [ContinuousAdd E] [ContinuousSMul 𝕜 E] :
-    PerfectSpace E := by
-  refine ⟨fun x hx ↦ ?_⟩
-  let ⟨r, hr₀, hr⟩ := NormedField.exists_norm_lt_one 𝕜
-  obtain ⟨c, hc⟩ : ∃ (c : E), c ≠ 0 := exists_ne 0
-  have A : Tendsto (fun (n : ℕ) ↦ x + r ^ n • c) atTop (𝓝 (x + (0 : 𝕜) • c)) := by
-    apply Tendsto.add tendsto_const_nhds
-    exact (tendsto_pow_atTop_nhds_zero_of_norm_lt_one hr).smul tendsto_const_nhds
-  have B : Tendsto (fun (n : ℕ) ↦ x + r ^ n • c) atTop (𝓝[univ \ {x}] x) := by
-    simp only [zero_smul, add_zero] at A
-    simp [tendsto_nhdsWithin_iff, A, hc, norm_pos_iff.mp hr₀]
-  exact accPt_principal_iff_nhdsWithin.mpr ((atTop_neBot.map _).mono B)
-
-
-
-
-
-
-
+lemma MonotoneOn.derivWithin_nonneg (hg : MonotoneOn g s) :
+    0 ≤ derivWithin g s x := by
+  by_cases hd : DifferentiableWithinAt 𝕜 g s x; swap
+  · simp [derivWithin_zero_of_not_differentiableWithinAt hd]
+  by_cases hx : AccPt x (𝓟 s); swap
+  · simp [derivWithin_zero_of_not_accPt hx]
+  exact hd.hasDerivWithinAt.nonneg_of_monotoneOn hx hg
 
 lemma HasDerivAt.nonneg_of_monotone (hd : HasDerivAt g g' x) (hg : Monotone g) : 0 ≤ g' := by
   rw [← hasDerivWithinAt_univ] at hd
   apply hd.nonneg_of_monotoneOn _ (hg.monotoneOn _)
-  have : PerfectSpace 𝕜 := sorry
   exact PerfectSpace.univ_preperfect _ (mem_univ _)
 
+lemma Monotone.deriv_nonneg (hg : Monotone g) : 0 ≤ deriv g x := by
+  rw [← derivWithin_univ]
+  exact (hg.monotoneOn univ).derivWithin_nonneg
 
+lemma HasDerivWithinAt.nonpos_of_antitoneOn (hx : AccPt x (𝓟 s))
+    (hd : HasDerivWithinAt g g' s x) (hg : AntitoneOn g s) : g' ≤ 0 := by
+  have : MonotoneOn (-g) s := fun x hx y hy hxy ↦ by simpa using hg hx hy hxy
+  simpa using hd.neg.nonneg_of_monotoneOn hx this
 
+lemma AntitoneOn.derivWithin_nonpos (hg : AntitoneOn g s) :
+    derivWithin g s x ≤ 0 := by
+  have : MonotoneOn (-g) s := fun x hx y hy hxy ↦ by simpa using hg hx hy hxy
+  have W := this.derivWithin_nonneg (x := x)
+  rw [derivWithin_neg] at W
 
 end Order
 
