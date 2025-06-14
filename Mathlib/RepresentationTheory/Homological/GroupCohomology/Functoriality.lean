@@ -3,8 +3,8 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.RepresentationTheory.HomologicalComplex.GroupCohomology.Basic
-import Mathlib.RepresentationTheory.HomologicalComplex.GroupCohomology.LowDegree
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 
 /-!
 # Functoriality of group cohomology

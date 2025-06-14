@@ -13,10 +13,11 @@ import Mathlib.RepresentationTheory.Invariants
 Let `k` be a commutative ring and `G` a group. This file gives simple expressions for
 the group cohomology of a `k`-linear `G`-representation `A` in degrees 0, 1 and 2.
 
-In `RepresentationTheory.GroupCohomology.Basic`, we define the `n`th group cohomology of `A` to be
-the cohomology of a complex `inhomogeneousCochains A`, whose objects are `(Fin n → G) → A`; this is
-unnecessarily unwieldy in low degree. Moreover, cohomology of a complex is defined as an abstract
-cokernel, whereas the definitions here are explicit quotients of cocycles by coboundaries.
+In `RepresentationTheory.Homological.GroupCohomology.Basic`, we define the `n`th group cohomology
+of `A` to be the cohomology of a complex `inhomogeneousCochains A`, whose objects are
+`(Fin n → G) → A`; this is unnecessarily unwieldy in low degree. Moreover, cohomology of a complex
+is defined as an abstract cokernel, whereas the definitions here are explicit quotients of cocycles
+by coboundaries.
 
 We also show that when the representation on `A` is trivial, `H¹(G, A) ≃ Hom(G, A)`.
 
@@ -28,7 +29,7 @@ multiplicative case, starting with the section `IsMulCocycle`, just mirrors the 
 unfortunately `@[to_additive]` can't deal with scalar actions.
 
 The file also contains an identification between the definitions in
-`RepresentationTheory.GroupCohomology.Basic`, `groupCohomology.cocycles A n` and
+`RepresentationTheory.Homological.GroupCohomology.Basic`, `groupCohomology.cocycles A n` and
 `groupCohomology A n`, and the `nCocycles` and `Hn A` in this file, for `n = 0, 1, 2`.
 
 ## Main definitions

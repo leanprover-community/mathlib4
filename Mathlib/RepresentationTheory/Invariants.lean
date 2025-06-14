@@ -28,8 +28,6 @@ open Representation
 
 namespace GroupAlgebra
 
-open MonoidAlgebra
-
 variable (k G : Type*) [CommSemiring k] [Group G]
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
