@@ -327,40 +327,13 @@ def filterRewrites {α} (e : Expr) (rewrites : Array α) (replacement : α → E
 
 /-! ### User interface -/
 
-/-- Return a unique name for a metavariable based on the given suggestion.
-Similar to `Lean.Meta.getUnusedUserName`, which is for free variables. -/
-partial def getUnusedMVarName (suggestion : Name) (names : PersistentHashMap Name MVarId)
-    (i : Option Nat := none) : Name :=
-  let name := match i with
-    | some i => match suggestion with
-      | .str p s => .str p s! "{s}_{i}"
-      | n => .str n s! "_{i}"
-    | none => suggestion
-  if names.contains name then
-    let i' : Nat := match i with
-      | some i => i+1
-      | none => 1
-    getUnusedMVarName suggestion names i'
-  else
-    name
-
 /-- Return the rewrite tactic that performs the rewrite. -/
-def tacticString (rw : Rewrite) (occ : Option Nat) (loc : Option Name)
-    (initNames : PersistentHashMap Name MVarId) : MetaM String := do
-  let mut initNames := initNames
-  for (mvarId, _) in rw.extraGoals do
-    unless ← mvarId.isAssigned do
-      let name ← mvarId.getTag
-      -- if the userName has macro scopes, it comes from a non-dependent arrow,
-      -- so we use `?_` instead
-      if name.hasMacroScopes then
-        mvarId.setTag `«_»
-      else
-        let name := getUnusedMVarName name initNames
-        mvarId.setTag name
-        initNames := initNames.insert name mvarId
-  let proof ← pasteString rw.proof
-  return mkRewrite occ rw.symm proof loc
+def tacticSyntax (rw : Rewrite) (occ : Option Nat) (loc : Option Name) :
+    MetaM (TSyntax `tactic) := do
+  -- we want the new metavariables to be printed as `?_`
+  for (mvarId, _) in rw.extraGoals do mvarId.setTag `«_»
+  let proof ← withOptions (pp.mvars.anonymous.set · false) (PrettyPrinter.delab rw.proof)
+  mkRewrite occ rw.symm proof loc
 
 open Widget ProofWidgets Jsx Server
 
@@ -384,9 +357,10 @@ structure RewriteInterface where
   makesNewMVars : Bool
 
 /-- Construct the `RewriteInterface` from a `Rewrite`. -/
-def Rewrite.toInterface (rw : Rewrite) (name : Name ⊕ FVarId) (occ : Option Nat) (loc : Option Name)
-    (initNames : PersistentHashMap Name MVarId) : MetaM RewriteInterface := do
-  let tactic ← tacticString rw occ loc initNames
+def Rewrite.toInterface (rw : Rewrite) (name : Name ⊕ FVarId) (occ : Option Nat)
+    (loc : Option Name) (range : Lsp.Range) : MetaM RewriteInterface := do
+  let tactic ← tacticSyntax rw occ loc
+  let tactic ← InteractiveUnfold.tacticPasteString tactic range
   let replacementString := Format.pretty (← ppExpr rw.replacement)
   let mut extraGoals := #[]
   for (mvarId, bi) in rw.extraGoals do
@@ -416,22 +390,22 @@ inductive Kind where
 
 /-- Return the Interfaces for rewriting `e`, both filtered and unfiltered. -/
 def getRewriteInterfaces (e : Expr) (occ : Option Nat) (loc : Option Name) (except : Option FVarId)
-    (initNames : PersistentHashMap Name MVarId) :
+    (range : Lsp.Range) :
     MetaM (Array (Array RewriteInterface × Kind) × Array (Array RewriteInterface × Kind)) := do
   let mut filtr := #[]
   let mut all := #[]
   for rewrites in ← getHypothesisRewrites e except do
-    let rewrites ← rewrites.mapM fun (rw, fvarId) => rw.toInterface (.inr fvarId) occ loc initNames
+    let rewrites ← rewrites.mapM fun (rw, fvarId) => rw.toInterface (.inr fvarId) occ loc range
     all := all.push (rewrites, .hypothesis)
     filtr := filtr.push (← filterRewrites e rewrites (·.replacement) (·.makesNewMVars), .hypothesis)
 
   for rewrites in ← getModuleRewrites e do
-    let rewrites ← rewrites.mapM fun (rw, name) => rw.toInterface (.inl name) occ loc initNames
+    let rewrites ← rewrites.mapM fun (rw, name) => rw.toInterface (.inl name) occ loc range
     all := all.push (rewrites, .fromFile)
     filtr := filtr.push (← filterRewrites e rewrites (·.replacement) (·.makesNewMVars), .fromFile)
 
   for rewrites in ← getImportRewrites e do
-    let rewrites ← rewrites.mapM fun (rw, name) => rw.toInterface (.inl name) occ loc initNames
+    let rewrites ← rewrites.mapM fun (rw, name) => rw.toInterface (.inl name) occ loc range
     all := all.push (rewrites, .fromCache)
     filtr := filtr.push (← filterRewrites e rewrites (·.replacement) (·.makesNewMVars), .fromCache)
   return (filtr, all)
@@ -506,7 +480,6 @@ private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
     let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
     Meta.withLCtx lctx md.localInstances do
 
-      let { userNames := initNames, .. } ← getMCtx
       let rootExpr ← loc.rootExpr
       let some (subExpr, occ) ← viewKAbstractSubExpr rootExpr loc.pos |
         return .text "expressions with bound variables are not supported"
@@ -518,7 +491,7 @@ private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
 
       let unfoldsHtml ← InteractiveUnfold.renderUnfolds subExpr occ location props.replaceRange doc
 
-      let (filtered, all) ← getRewriteInterfaces subExpr occ location loc.fvarId? initNames
+      let (filtered, all) ← getRewriteInterfaces subExpr occ location loc.fvarId? props.replaceRange
       let filtered ← renderRewrites subExpr filtered unfoldsHtml props.replaceRange doc false
       let all      ← renderRewrites subExpr all      unfoldsHtml props.replaceRange doc true
       return <FilterDetails

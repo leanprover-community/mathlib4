@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
 import Batteries.Lean.Position
+import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Lean.GoalsLocation
 import Mathlib.Lean.Meta.KAbstractPositions
-import Lean.Util.FoldConsts
 
 /-!
 
@@ -114,38 +114,28 @@ def filteredUnfolds (e : Expr) : MetaM (Array Expr) :=
 end InteractiveUnfold
 
 /-- Return the rewrite tactic string `rw (config := ..) [← ..] at ..` -/
-def mkRewrite (occ : Option Nat) (symm : Bool) (rewrite : String) (loc : Option Name) : String :=
-  let cfg := match occ with
-    | some n => s! " (config := \{ occs := .pos [{n}]})"
-    | none => ""
-  let loc := match loc with
-    | some n => s! " at {n}"
-    | none => ""
-  let symm := if symm then "← " else ""
-  s! "rw{cfg} [{symm}{rewrite}]{loc}"
-
-/--
-Return a string of the expression suitable for pasting into the editor.
-
-We ignore any options set by the user.
-
-We set `pp.universes` to false because new universe level metavariables are not understood
-by the elaborator.
-
-We set `pp.unicode.fun` to true as per Mathlib convention.
--/
-def pasteString (e : Expr) : MetaM String :=
-  withOptions (fun _ => Options.empty
-    |>.setBool `pp.universes false
-    |>.setBool `pp.unicode.fun true) do
-  return Format.pretty (← Meta.ppExpr e) (width := 90) (indent := 2)
+def mkRewrite (occ : Option Nat) (symm : Bool) (rewrite : Term) (loc : Option Name) :
+    CoreM (TSyntax `tactic) := do
+  let loc ← loc.mapM fun h => `(Lean.Parser.Tactic.location| at $(mkIdent h):term)
+  let rule ← if symm then `(Parser.Tactic.rwRule| ← $rewrite)
+                     else `(Parser.Tactic.rwRule| $rewrite:term)
+  match occ with
+  | some n => `(tactic| nth_rw $(Syntax.mkNatLit n):num [$rule] $(loc)?)
+  | none => `(tactic| rw [$rule] $(loc)?)
 
 namespace InteractiveUnfold
 
 /-- Return the tactic string that does the unfolding. -/
-def tacticString (e unfold : Expr) (occ : Option Nat) (loc : Option Name) : MetaM String := do
-  let rfl := s! "show {← pasteString (← mkEq e unfold)} from rfl"
-  return mkRewrite occ false rfl loc
+def tacticSyntax (e eNew : Expr) (occ : Option Nat) (loc : Option Name) :
+    MetaM (TSyntax `tactic) := do
+  let fromRfl ← `(show $(← PrettyPrinter.delab e) = $(← PrettyPrinter.delab eNew) from rfl)
+  mkRewrite occ false fromRfl loc
+
+def tacticPasteString (tac : TSyntax `tactic) (range : Lsp.Range) : CoreM String := do
+  let column := range.start.character
+  let indent := column + 2
+  -- the maximum line width in mathlib is 100
+  return (← PrettyPrinter.ppTactic tac).pretty 100 indent column
 
 /-- Render the unfolds of `e` as given by `filteredUnfolds`, with buttons at each suggestion
 for pasting the rewrite tactic. Return `none` when there are no unfolds. -/
@@ -155,7 +145,8 @@ def renderUnfolds (e : Expr) (occ : Option Nat) (loc : Option Name) (range : Lsp
   if results.isEmpty then
     return none
   let core ← results.mapM fun unfold => do
-    let tactic ← tacticString e unfold occ loc
+    let tactic ← tacticSyntax e unfold occ loc
+    let tactic ← tacticPasteString tactic range
     return <li> {
       .element "p" #[] <|
         #[<span className="font-code" style={json% { "white-space" : "pre-wrap" }}> {
