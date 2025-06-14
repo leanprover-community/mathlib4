@@ -148,11 +148,9 @@ theorem quadratic_roots_iff_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0)
     z ∈ (a • X ^ 2 + b • X + C c).roots ↔ z = (-b + s) / (2 * a) ∨ z = (-b - s) / (2 * a) := by
   rw [mem_roots (quadratic_ne_zero ha), quadratic_eq_zero_iff ha h]
 
-theorem quadratic_roots_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
+theorem factorize_quadratic_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
     (h : discrim a b c = s * s) :
-    (a • X ^ 2 + b • X + C c).roots = {(-b + s) / (2 * a), (-b - s) / (2 * a)} := by
-  have e1 : a • X ^ 2 + b • X + C c =
-      a • (X - C ((-b + s) / (2 * a))) * (X - C ((-b - s) / (2 * a))) := by
+    a • X ^ 2 + b • X + C c = a • (X - C ((-b + s) / (2 * a))) * (X - C ((-b - s) / (2 * a))) := by
     simp only [Algebra.smul_mul_assoc]
     ring_nf
     rw [C_add]
@@ -206,7 +204,12 @@ theorem quadratic_roots_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
       rw [mul_sub]
       rw [sub_sub_eq_add_sub]
       ring_nf
-  rw [e1, Polynomial.roots_mul (by rw [← e1]; exact quadratic_ne_zero ha)]
+
+theorem quadratic_roots_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
+    (h : discrim a b c = s * s) :
+    (a • X ^ 2 + b • X + C c).roots = {(-b + s) / (2 * a), (-b - s) / (2 * a)} := by
+  rw [factorize_quadratic_of_discrim_eq_sq ha h, Polynomial.roots_mul
+    (by rw [← factorize_quadratic_of_discrim_eq_sq ha h]; exact quadratic_ne_zero ha)]
   simp_all only [ne_eq, Algebra.smul_mul_assoc, not_false_eq_true, roots_smul_nonzero,
     roots_X_sub_C, Multiset.singleton_add, Multiset.insert_eq_cons]
 
