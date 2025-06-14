@@ -182,6 +182,13 @@ lemma test (n n' : Nat) (h : n = n') (hn : n = n) (hn' : n' = n') :
   guard_hyp this :ₛ f n hn = f n' hn'
   exact congr(f $h _) -- with expected type
 
+/-!
+Regression test for #25851. Make sure hcongr doesn't force the final result to be an equality.
+-/
+example (a a' : Nat) (h : a = a') (n : Fin a) (n' : Fin a') (hn : HEq n n') :
+    HEq (f n rfl) (f n' rfl) :=
+  congr(f (α := Fin $h) $hn rfl)
+
 end SubsingletonDependence
 
 section limitations

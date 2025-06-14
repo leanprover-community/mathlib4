@@ -602,7 +602,7 @@ partial def mkCongrOfApp (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr)
     else
       let mut finfo := finfo
       let mut finfoIdx := finfoIdx
-      unless i - finfoIdx < finfo.paramInfo.size do
+      unless i - finfoIdx < finfo.getArity do
         finfo ← getFunInfoNArgs f (arity - finfoIdx)
         finfoIdx := i
       let info := finfo.paramInfo[i - finfoIdx]!
@@ -618,7 +618,6 @@ partial def mkCongrOfApp (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr)
       else
         -- Otherwise, we can make progress with an hcongr lemma.
         -- There's no need to update the FunInfo since all `mkHCongrWithArity'` needs is the arity.
-        trace[Elab.congr] "app, hcongr of {finfo.getArity} arguments"
         if (isRefl? pf).isNone then
           trace[Elab.congr] "app, hcongr needs transitivity"
           -- If there's a nontrivial proof, then since `mkHCongrWithArity'` fixes the function,
@@ -633,10 +632,12 @@ partial def mkCongrOfApp (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr)
           let res2 ← go i finfo finfoIdx f' f' (← mkEqRefl f')
           return res1.trans res2
         else
-          -- Get an accurate measure of the arity of `f`.
+          -- Get an accurate measure of the arity of `f`, following `getFunInfoNArgs`.
           let fArity ←
             if finfoIdx == i then pure finfo.getArity
-            else forallBoundedTelescope (← inferType f) (some (arity - i)) fun xs _ => pure xs.size
+            else withAtLeastTransparency .default do
+              forallBoundedTelescope (← inferType f) (some (arity - i)) fun xs _ => pure xs.size
+          trace[Elab.congr] "app, args {i}-{i+arity-1} by hcongr, {arity} arguments"
           let thm ← mkHCongrWithArity' f fArity
           let mut args := #[]
           let mut lhsArgs' := #[]
@@ -667,10 +668,10 @@ partial def mkCongrOfApp (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr)
           let lhs' := mkAppN f lhsArgs'
           let rhs' := mkAppN f' rhsArgs'
           let res := CongrResult.mk' lhs' rhs' (mkAppN thm.proof args)
-          if i + 1 < arity then
+          if i + fArity < arity then
             -- There are more arguments after this. The only way this can work is if
             -- `res` can prove an equality.
-            go (i + finfo.getArity) finfo finfoIdx lhs' rhs' (← res.eq)
+            go (i + fArity) finfo finfoIdx lhs' rhs' (← res.eq)
           else
             -- Otherwise, we can return `res`, which might only be a HEq.
             return res
