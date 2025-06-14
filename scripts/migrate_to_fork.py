@@ -95,9 +95,9 @@ def run_command(cmd: List[str], capture_output: bool = True, check: bool = True)
         # Convert command to string if using shell
         if use_shell:
             cmd_str = ' '.join(cmd)
-            result = subprocess.run(cmd_str, shell=True, capture_output=capture_output, text=True, check=check)
+            result = subprocess.run(cmd_str, shell=True, capture_output=capture_output, text=True, encoding="utf8", check=check)
         else:
-            result = subprocess.run(cmd, capture_output=capture_output, text=True, check=check)
+            result = subprocess.run(cmd, capture_output=capture_output, text=True, encoding="utf8", check=check)
         return result
     except subprocess.CalledProcessError as e:
         if not check:
