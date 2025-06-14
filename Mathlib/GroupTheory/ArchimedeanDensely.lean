@@ -40,7 +40,7 @@ lemma Subgroup.mem_closure_singleton_iff_existsUnique_zpow {G : Type*}
   · suffices Function.Injective (a ^ · : ℤ → G) by
       rintro ⟨m, rfl⟩
       exact ⟨m, rfl, fun k hk ↦ this hk⟩
-    rcases ha.lt_or_lt with ha | ha
+    rcases ha.lt_or_gt with ha | ha
     · exact (zpow_right_strictAnti ha).injective
     · exact (zpow_right_strictMono ha).injective
   · exact fun h ↦ h.exists
@@ -153,7 +153,7 @@ lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
     rcases key with ⟨rfl, rfl⟩|⟨rfl, rfl⟩ <;>
     simp [this.right.le, this.right, mabs]
   · wlog ha : 1 ≤ a generalizing a
-    · convert @this (a⁻¹) ?_ (by simpa using le_of_not_le ha) using 4
+    · convert @this (a⁻¹) ?_ (by simpa using le_of_not_ge ha) using 4
       · simp
       · rwa [mabs_inv]
     rw [mabs, sup_eq_left.mpr ((inv_le_one'.mpr ha).trans ha)] at h

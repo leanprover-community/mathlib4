@@ -301,7 +301,7 @@ theorem isMaximal_of_irreducible [CommSemiring R] [IsPrincipalIdealRing R] {p : 
       rcases principal I with ⟨a, rfl⟩
       rw [Ideal.submodule_span_eq, Ideal.span_singleton_eq_top]
       rcases Ideal.span_singleton_le_span_singleton.1 (le_of_lt hI) with ⟨b, rfl⟩
-      refine (of_irreducible_mul hp).resolve_right (mt (fun hb => ?_) (not_le_of_lt hI))
+      refine (of_irreducible_mul hp).resolve_right (mt (fun hb => ?_) (not_le_of_gt hI))
       rw [Ideal.submodule_span_eq, Ideal.submodule_span_eq,
         Ideal.span_singleton_le_span_singleton, IsUnit.mul_right_dvd hb]⟩⟩
 

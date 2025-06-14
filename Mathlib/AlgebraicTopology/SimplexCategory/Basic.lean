@@ -275,10 +275,10 @@ theorem δ_comp_σ_of_le {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ j.ca
     δ i.castSucc ≫ σ j.succ = σ j ≫ δ i := by
   ext k : 3
   dsimp [σ, δ]
-  rcases le_or_lt i k with (hik | hik)
+  rcases le_or_gt i k with (hik | hik)
   · rw [Fin.succAbove_of_le_castSucc _ _ (Fin.castSucc_le_castSucc_iff.mpr hik),
     Fin.succ_predAbove_succ, Fin.succAbove_of_le_castSucc]
-    rcases le_or_lt k (j.castSucc) with (hjk | hjk)
+    rcases le_or_gt k (j.castSucc) with (hjk | hjk)
     · rwa [Fin.predAbove_of_le_castSucc _ _ hjk, Fin.castSucc_castPred]
     · rw [Fin.le_castSucc_iff, Fin.predAbove_of_castSucc_lt _ _ hjk, Fin.succ_pred]
       exact H.trans_lt hjk
@@ -330,9 +330,9 @@ theorem δ_comp_σ_of_gt {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : j.castSucc
     δ i.succ ≫ σ j.castSucc = σ j ≫ δ i := by
   ext k : 3
   dsimp [δ, σ]
-  rcases le_or_lt k i with (hik | hik)
+  rcases le_or_gt k i with (hik | hik)
   · rw [Fin.succAbove_of_castSucc_lt _ _ (Fin.castSucc_lt_succ_iff.mpr hik)]
-    rcases le_or_lt k (j.castSucc) with (hjk | hjk)
+    rcases le_or_gt k (j.castSucc) with (hjk | hjk)
     · rw [Fin.predAbove_of_le_castSucc _ _
       (Fin.castSucc_le_castSucc_iff.mpr hjk), Fin.castPred_castSucc,
       Fin.predAbove_of_le_castSucc _ _ hjk, Fin.succAbove_of_castSucc_lt, Fin.castSucc_castPred]
@@ -372,12 +372,12 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
       ext
       simp
     | succ k =>
-      rcases le_or_lt i k with (h | h)
+      rcases le_or_gt i k with (h | h)
       · simp_rw [Fin.predAbove_of_castSucc_lt i.castSucc _ (Fin.castSucc_lt_castSucc_iff.mpr
         (Fin.castSucc_lt_succ_iff.mpr h)), ← Fin.succ_castSucc, Fin.pred_succ,
         Fin.succ_predAbove_succ]
         rw [Fin.predAbove_of_castSucc_lt i _ (Fin.castSucc_lt_succ_iff.mpr _), Fin.pred_succ]
-        rcases le_or_lt k j with (hkj | hkj)
+        rcases le_or_gt k j with (hkj | hkj)
         · rwa [Fin.predAbove_of_le_castSucc _ _ (Fin.castSucc_le_castSucc_iff.mpr hkj),
           Fin.castPred_castSucc]
         · rw [Fin.predAbove_of_castSucc_lt _ _ (Fin.castSucc_lt_castSucc_iff.mpr hkj),
@@ -419,7 +419,7 @@ lemma factor_δ_spec {m n : ℕ} (f : ⦋m⦌ ⟶ ⦋n+1⦌) (j : Fin (n+2))
       simp_all
   | succ j =>
     rw [predAbove_of_castSucc_lt 0 _ (by simp), pred_succ]
-    rcases hj.lt_or_lt with (hj | hj)
+    rcases hj.lt_or_gt with (hj | hj)
     · rw [predAbove_of_le_castSucc j _]
       swap
       · exact (le_castSucc_iff.mpr hj)

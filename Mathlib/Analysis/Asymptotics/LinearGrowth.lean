@@ -9,7 +9,7 @@ import Mathlib.Analysis.SpecificLimits.Basic
 # Linear growth
 
 This file defines the linear growth of a sequence `u : ℕ → R`. This notion comes in two
-versions, using a `liminf` and a `limsup` respectively. Most properties are developped for
+versions, using a `liminf` and a `limsup` respectively. Most properties are developed for
 `R = EReal`.
 
 ## Main definitions
@@ -555,7 +555,7 @@ lemma _root_.Monotone.linearGrowthInf_comp {a : EReal} (h : Monotone u)
     apply le_antisymm _ (linearGrowthInf_comp_nonneg h u_0 v_top)
     apply (linearGrowthInf_monotone fun n ↦ h' (v n)).trans_eq
     exact linearGrowthInf_const zero_ne_bot zero_ne_top
-  · replace h' := (not_frequently.1 h1).mono fun _ hn ↦ le_of_not_le hn
+  · replace h' := (not_frequently.1 h1).mono fun _ hn ↦ le_of_not_ge hn
     apply le_antisymm
     · rw [← hv.limsup_eq] at ha ha' ⊢
       exact h.linearGrowthInf_comp_le ha ha'
@@ -582,7 +582,7 @@ lemma _root_.Monotone.linearGrowthSup_comp {a : EReal} (h : Monotone u)
     apply le_antisymm _ (linearGrowthSup_comp_nonneg h u_0 v_top)
     apply (linearGrowthSup_eventually_monotone (v_top.eventually u_1)).trans_eq
     exact linearGrowthSup_const zero_ne_bot zero_ne_top
-  · replace h' := (not_eventually.1 u_1).mono fun x hx ↦ (lt_of_not_le hx).le
+  · replace h' := (not_eventually.1 u_1).mono fun x hx ↦ (lt_of_not_ge hx).le
     apply le_antisymm
     · rw [← hv.limsup_eq] at ha ha' ⊢
       exact linearGrowthSup_comp_le h' ha ha' v_top

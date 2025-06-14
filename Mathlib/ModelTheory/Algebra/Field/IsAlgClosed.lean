@@ -62,10 +62,7 @@ theorem lift_genericMonicPoly [CommRing K] [Nontrivial K] {n : ℕ} (v : Fin (n 
     FreeCommRing.lift v (genericMonicPoly n) =
     (((monicEquivDegreeLT n).trans (degreeLTEquiv K n).toEquiv).symm (v ∘ Fin.castSucc)).1.eval
       (v (Fin.last _)) := by
-  simp only [genericMonicPoly, map_add, map_pow, lift_of, map_sum, map_mul, monicEquivDegreeLT,
-    degreeLTEquiv, Equiv.symm_trans_apply, LinearEquiv.coe_toEquiv_symm, EquivLike.coe_coe,
-    LinearEquiv.coe_symm_mk, Function.comp_apply, Equiv.coe_fn_symm_mk, eval_add, eval_pow, eval_X,
-    eval_finset_sum, eval_monomial]
+  simp [genericMonicPoly, monicEquivDegreeLT, degreeLTEquiv, eval_finset_sum]
 
 /-- A sentence saying every monic polynomial of degree `n` has a root. -/
 noncomputable def genericMonicPolyHasRoot (n : ℕ) : Language.ring.Sentence :=

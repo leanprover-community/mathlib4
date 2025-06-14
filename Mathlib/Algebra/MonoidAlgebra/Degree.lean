@@ -379,10 +379,10 @@ open Finsupp in
 lemma supDegree_add_eq_left (h : q.supDegree D < p.supDegree D) :
     (p + q).supDegree D = p.supDegree D := by
   apply (supDegree_add_le.trans <| sup_le le_rfl h.le).antisymm
-  obtain ⟨a, ha, he⟩ := exists_supDegree_mem_support D (ne_zero_of_not_supDegree_le h.not_le)
+  obtain ⟨a, ha, he⟩ := exists_supDegree_mem_support D (ne_zero_of_not_supDegree_le h.not_ge)
   rw [he] at h ⊢
   apply Finset.le_sup
-  rw [mem_support_iff, add_apply, apply_eq_zero_of_not_le_supDegree h.not_le, add_zero]
+  rw [mem_support_iff, add_apply, apply_eq_zero_of_not_le_supDegree h.not_ge, add_zero]
   exact mem_support_iff.mp ha
 
 lemma supDegree_add_eq_right (h : p.supDegree D < q.supDegree D) :
@@ -391,10 +391,10 @@ lemma supDegree_add_eq_right (h : p.supDegree D < q.supDegree D) :
 
 lemma leadingCoeff_add_eq_left (h : q.supDegree D < p.supDegree D) :
     (p + q).leadingCoeff D = p.leadingCoeff D := by
-  obtain ⟨a, he⟩ := supDegree_mem_range D (ne_zero_of_not_supDegree_le h.not_le)
+  obtain ⟨a, he⟩ := supDegree_mem_range D (ne_zero_of_not_supDegree_le h.not_ge)
   rw [leadingCoeff, supDegree_add_eq_left h, Finsupp.add_apply, ← leadingCoeff,
     apply_eq_zero_of_not_le_supDegree (D := D), add_zero]
-  rw [← he, Function.apply_invFun_apply (f := D), he]; exact h.not_le
+  rw [← he, Function.apply_invFun_apply (f := D), he]; exact h.not_ge
 
 lemma leadingCoeff_add_eq_right (h : p.supDegree D < q.supDegree D) :
     (p + q).leadingCoeff D = q.leadingCoeff D := by

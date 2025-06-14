@@ -331,7 +331,7 @@ theorem idealOfLE_le_of_le (R S : ValuationSubring K) (hR : A ≤ R) (hS : A ≤
     (by
       by_contra c; push_neg at c; replace c := monotone_mapOfLE R S h c
       rw [(mapOfLE _ _ _).map_one, mapOfLE_valuation_apply] at c
-      apply not_le_of_lt ((valuation_lt_one_iff S _).1 hx) c)
+      apply not_le_of_gt ((valuation_lt_one_iff S _).1 hx) c)
 
 /-- The equivalence between coarsenings of a valuation ring and its prime ideals. -/
 @[simps apply]
@@ -432,8 +432,6 @@ def unitGroupMulEquiv : A.unitGroup ≃* Aˣ where
       -- Porting note: was `Units.inv_mul x`
       inv_val := Subtype.ext (by simp) }
   invFun x := ⟨Units.map A.subtype.toMonoidHom x, A.valuation_unit x⟩
-  left_inv a := by ext; rfl
-  right_inv a := by ext; rfl
   map_mul' a b := by ext; rfl
 
 @[simp]

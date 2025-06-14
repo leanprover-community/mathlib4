@@ -274,14 +274,14 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   have hic : Int.natAbs i < Int.natAbs c := by
     apply Int.ofNat_lt.mp
     rw [← Int.eq_natAbs_of_nonneg (le_of_lt hc)]
-    apply gt_of_gt_of_ge _ (Int.natAbs_le_self_sq i)
+    apply lt_of_le_of_lt (Int.natAbs_le_self_sq i)
     rw [← hi, ht3]
-    apply gt_of_gt_of_ge _ (Int.le_self_sq m)
+    apply lt_of_le_of_lt (Int.le_self_sq m)
     exact lt_add_of_pos_right (m ^ 2) (sq_pos_of_ne_zero hn)
   have hic' : Int.natAbs c ≤ Int.natAbs i := by
     apply h.2 j k i
     exact ⟨hj0, hk0, hh.symm⟩
-  apply absurd (not_le_of_lt hic) (not_not.mpr hic')
+  apply absurd (not_le_of_gt hic) (not_not.mpr hic')
 
 end Fermat42
 

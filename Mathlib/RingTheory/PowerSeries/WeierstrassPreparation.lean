@@ -240,7 +240,7 @@ theorem coeff_seq_mem (k : ℕ) {i : ℕ} (hi : i ≥ (g.map (Ideal.Quotient.mk 
       nth_rw 1 [g.eq_X_pow_mul_shift_add_trunc n]
       rw [add_mul, mul_assoc, IsUnit.mul_val_inv, hs]
       ring
-    rw [key, map_sub, Polynomial.coeff_coe, coeff_trunc, if_neg hi.not_lt, zero_sub, neg_mem_iff,
+    rw [key, map_sub, Polynomial.coeff_coe, coeff_trunc, if_neg hi.not_gt, zero_sub, neg_mem_iff,
       pow_succ']
     refine coeff_mul_mem_ideal_of_coeff_left_mem_ideal' (fun i ↦ ?_) i
     refine coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal'
@@ -328,13 +328,13 @@ theorem eq_zero_of_mul_eq [IsHausdorff I A]
   | succ k ih =>
     rw [g.eq_X_pow_mul_shift_add_trunc (g.map (Ideal.Quotient.mk I)).order.toNat] at heq
     have h1 : ∀ i, coeff A i r ∈ I ^ (k + 1) := fun i ↦ by
-      rcases lt_or_le i (g.map (Ideal.Quotient.mk I)).order.toNat with hi | hi
+      rcases lt_or_ge i (g.map (Ideal.Quotient.mk I)).order.toNat with hi | hi
       · rw [← heq, pow_succ']
         refine coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal i (fun j hj ↦ ?_)
           (fun j _ ↦ ih j) i le_rfl
         rw [map_add, Polynomial.coeff_coe]
         refine Ideal.add_mem _ ?_ (g.coeff_trunc_order_mem I j)
-        simp_rw [coeff_X_pow_mul', if_neg (lt_of_le_of_lt hj hi).not_le, zero_mem]
+        simp_rw [coeff_X_pow_mul', if_neg (lt_of_le_of_lt hj hi).not_ge, zero_mem]
       simp_rw [Polynomial.coeff_coe,
         Polynomial.coeff_eq_zero_of_degree_lt (lt_of_lt_of_le hdeg (by simpa)), zero_mem]
     rw [add_mul, mul_comm (X ^ _), ← eq_sub_iff_add_eq] at heq
@@ -639,7 +639,7 @@ end IsLocalRing
 
 /-- If `f` is a polynomial over `A`, `g` and `h` are power series over `A`,
 then `PowerSeries.IsWeierstrassFactorizationAt g f h I` is a `Prop` which asserts that `f` is
-distingushed at `I`, `h` is a unit, such that `g = f * h`. -/
+distinguished at `I`, `h` is a unit, such that `g = f * h`. -/
 @[mk_iff]
 structure IsWeierstrassFactorizationAt (g : A⟦X⟧) (f : A[X]) (h : A⟦X⟧) (I : Ideal A) : Prop where
   isDistinguishedAt : f.IsDistinguishedAt I

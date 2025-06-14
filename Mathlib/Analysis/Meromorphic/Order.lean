@@ -229,9 +229,9 @@ lemma tendsto_nhds_of_meromorphicOrderAt_nonneg
 /-- A meromorphic function converges to infinity iff its order is negative. -/
 lemma tendsto_cobounded_iff_meromorphicOrderAt_neg (hf : MeromorphicAt f x) :
     Tendsto f (𝓝[≠] x) (Bornology.cobounded E) ↔ meromorphicOrderAt f x < 0 := by
-  rcases lt_or_le (meromorphicOrderAt f x) 0 with ho | ho
+  rcases lt_or_ge (meromorphicOrderAt f x) 0 with ho | ho
   · simp [ho, tendsto_cobounded_of_meromorphicOrderAt_neg]
-  · simp only [lt_iff_not_le, ho, not_true_eq_false, iff_false, ← tendsto_norm_atTop_iff_cobounded]
+  · simp only [lt_iff_not_ge, ho, not_true_eq_false, iff_false, ← tendsto_norm_atTop_iff_cobounded]
     obtain ⟨c, hc⟩ := tendsto_nhds_of_meromorphicOrderAt_nonneg hf ho
     exact not_tendsto_atTop_of_tendsto_nhds hc.norm
 
@@ -241,7 +241,7 @@ lemma tendsto_cobounded_iff_meromorphicOrderAt_neg (hf : MeromorphicAt f x) :
 /-- A meromorphic function converges to a limit iff its order is nonnegative. -/
 lemma tendsto_nhds_iff_meromorphicOrderAt_nonneg (hf : MeromorphicAt f x) :
     (∃ c, Tendsto f (𝓝[≠] x) (𝓝 c)) ↔ 0 ≤ meromorphicOrderAt f x := by
-  rcases lt_or_le (meromorphicOrderAt f x) 0 with ho | ho
+  rcases lt_or_ge (meromorphicOrderAt f x) 0 with ho | ho
   · simp only [← not_lt, ho, not_true_eq_false, iff_false, not_exists]
     intro c hc
     apply not_tendsto_atTop_of_tendsto_nhds hc.norm
@@ -259,7 +259,7 @@ lemma tendsto_ne_zero_iff_meromorphicOrderAt_eq_zero (hf : MeromorphicAt f x) :
   · simp [ho, tendsto_ne_zero_of_meromorphicOrderAt_eq_zero hf ho]
   simp only [ne_eq, ho, iff_false, not_exists, not_and]
   intro c c_ne hc
-  rcases ho.lt_or_lt with ho | ho
+  rcases ho.lt_or_gt with ho | ho
   · apply not_tendsto_atTop_of_tendsto_nhds hc.norm
     rw [tendsto_norm_atTop_iff_cobounded]
     exact tendsto_cobounded_of_meromorphicOrderAt_neg ho
@@ -272,7 +272,7 @@ lemma tendsto_ne_zero_iff_meromorphicOrderAt_eq_zero (hf : MeromorphicAt f x) :
 /-- A meromorphic function converges to zero iff its order is positive. -/
 lemma tendsto_zero_iff_meromorphicOrderAt_pos (hf : MeromorphicAt f x) :
     (Tendsto f (𝓝[≠] x) (𝓝 0)) ↔ 0 < meromorphicOrderAt f x := by
-  rcases lt_or_le 0 (meromorphicOrderAt f x) with ho | ho
+  rcases lt_or_ge 0 (meromorphicOrderAt f x) with ho | ho
   · simp [ho, tendsto_zero_of_meromorphicOrderAt_pos ho]
   simp only [← not_le, ho, not_true_eq_false, iff_false]
   intro hc

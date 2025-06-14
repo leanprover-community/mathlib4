@@ -1226,13 +1226,13 @@ theorem diam_eq {s : Set ℝ} (h : Bornology.IsBounded s) : Metric.diam s = sSup
 
 @[simp]
 theorem ediam_Ioo (a b : ℝ) : EMetric.diam (Ioo a b) = ENNReal.ofReal (b - a) := by
-  rcases le_or_lt b a with (h | h)
+  rcases le_or_gt b a with (h | h)
   · simp [h]
   · rw [Real.ediam_eq (isBounded_Ioo _ _), csSup_Ioo h, csInf_Ioo h]
 
 @[simp]
 theorem ediam_Icc (a b : ℝ) : EMetric.diam (Icc a b) = ENNReal.ofReal (b - a) := by
-  rcases le_or_lt a b with (h | h)
+  rcases le_or_gt a b with (h | h)
   · rw [Real.ediam_eq (isBounded_Icc _ _), csSup_Icc h, csInf_Icc h]
   · simp [h, h.le]
 

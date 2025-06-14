@@ -92,7 +92,7 @@ theorem mem_degreeLT {n : ℕ} {f : R[X]} : f ∈ degreeLT R n ↔ degree f < n 
   conv_rhs =>
     simp only [mem_support_iff]
     intro b
-    rw [Nat.cast_withBot, WithBot.coe_lt_coe, lt_iff_not_le, Ne, not_imp_not]
+    rw [Nat.cast_withBot, WithBot.coe_lt_coe, lt_iff_not_ge, Ne, not_imp_not]
   rfl
 
 @[mono]
@@ -221,7 +221,7 @@ theorem exists_degree_le_of_mem_span_of_finite {s : Set R[X]} (s_fin : s.Finite)
   obtain ⟨a, has, hmax⟩ := s_fin.exists_maximalFor degree s hs
   refine ⟨a, has, fun p hp => ?_⟩
   obtain ⟨p', hp', hpp'⟩ := exists_degree_le_of_mem_span hs hp
-  exact hpp'.trans <| not_lt.1 <| not_lt_iff_le_imp_le.2 <| hmax hp'
+  exact hpp'.trans <| not_lt.1 <| not_lt_iff_le_imp_ge.2 <| hmax hp'
 
 /-- The span of every finite set of polynomials is contained in a `degreeLE n` for some `n`. -/
 theorem span_le_degreeLE_of_finite {s : Set R[X]} (s_fin : s.Finite) :
@@ -786,10 +786,12 @@ theorem prime_C_iff : Prime (C r : MvPolynomial σ R) ↔ Prime r :=
       obtain ⟨s, a', b', rfl, rfl⟩ := exists_finset_rename₂ a b
       rw [← algebraMap_eq] at hd
       have : algebraMap R _ r ∣ a' * b' := by
-        convert killCompl Subtype.coe_injective |>.toRingHom.map_dvd hd <;> simp
+        convert _root_.map_dvd (killCompl Subtype.val_injective) hd
+        · simp
+        · simp
       rw [← rename_C ((↑) : s → σ)]
       let f := (rename (R := R) ((↑) : s → σ)).toRingHom
-      exact (((prime_C_iff_of_fintype s).2 hr).2.2 a' b' this).imp f.map_dvd f.map_dvd⟩⟩
+      exact (((prime_C_iff_of_fintype s).2 hr).2.2 a' b' this).imp (map_dvd f) (map_dvd f)⟩⟩
 
 variable {σ}
 
@@ -831,7 +833,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
       let ⟨N, HN⟩ := hm
       let ⟨s, hs⟩ := I.is_fg_degreeLE N
       have hm2 : ∀ k, I.leadingCoeffNth k ≤ M := fun k =>
-        Or.casesOn (le_or_lt k N) (fun h => HN ▸ I.leadingCoeffNth_mono h) fun h _ hx =>
+        Or.casesOn (le_or_gt k N) (fun h => HN ▸ I.leadingCoeffNth_mono h) fun h _ hx =>
           Classical.by_contradiction fun hxm =>
             haveI : IsNoetherian R R := inst
             have : ¬M < I.leadingCoeffNth k := by
@@ -849,7 +851,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
         intro p hp
         generalize hn : p.natDegree = k
         induction' k using Nat.strong_induction_on with k ih generalizing p
-        rcases le_or_lt k N with h | h
+        rcases le_or_gt k N with h | h
         · subst k
           refine hs2 ⟨Polynomial.mem_degreeLE.2
             (le_trans Polynomial.degree_le_natDegree <| WithBot.coe_le_coe.2 h), hp⟩

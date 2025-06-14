@@ -262,7 +262,7 @@ noncomputable def monotonicSequenceLimit [Preorder α] (a : ℕ →o α) :=
 
 theorem le_monotonicSequenceLimit [PartialOrder α] [WellFoundedGT α] (a : ℕ →o α) (m : ℕ) :
     a m ≤ monotonicSequenceLimit a := by
-  rcases le_or_lt m (monotonicSequenceLimitIndex a) with hm | hm
+  rcases le_or_gt m (monotonicSequenceLimitIndex a) with hm | hm
   · exact a.monotone hm
   · obtain h := WellFoundedGT.monotone_chain_condition a
     exact (Nat.sInf_mem (s := {n | ∀ m, n ≤ m → a n = a m}) h m hm.le).ge

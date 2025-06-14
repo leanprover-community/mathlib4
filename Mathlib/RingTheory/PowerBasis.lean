@@ -172,7 +172,7 @@ theorem minpolyGen_monic (pb : PowerBasis A S) : Monic (minpolyGen pb) := by
 
 theorem dim_le_natDegree_of_root (pb : PowerBasis A S) {p : A[X]} (ne_zero : p ≠ 0)
     (root : aeval pb.gen p = 0) : pb.dim ≤ p.natDegree := by
-  refine le_of_not_lt fun hlt => ne_zero ?_
+  refine le_of_not_gt fun hlt => ne_zero ?_
   rw [p.as_sum_range' _ hlt, Finset.sum_range]
   refine Fintype.sum_eq_zero _ fun i => ?_
   simp_rw [aeval_eq_sum_range' hlt, Finset.sum_range, ← pb.basis_eq_pow] at root
@@ -199,7 +199,7 @@ theorem minpolyGen_eq (pb : PowerBasis A S) : pb.minpolyGen = minpoly A pb.gen :
   nontriviality A
   refine minpoly.unique' A _ pb.minpolyGen_monic pb.aeval_minpolyGen fun q hq =>
     or_iff_not_imp_left.2 fun hn0 h0 => ?_
-  exact (pb.dim_le_degree_of_root hn0 h0).not_lt (pb.degree_minpolyGen ▸ hq)
+  exact (pb.dim_le_degree_of_root hn0 h0).not_gt (pb.degree_minpolyGen ▸ hq)
 
 theorem isIntegral_gen (pb : PowerBasis A S) : IsIntegral A pb.gen :=
   ⟨minpolyGen pb, minpolyGen_monic pb, aeval_minpolyGen pb⟩
@@ -407,7 +407,7 @@ theorem linearIndependent_pow [Algebra K S] (x : S) :
   refine Fintype.linearIndependent_iff.2 fun g hg i => ?_
   simp only at hg
   simp_rw [Algebra.smul_def, ← aeval_monomial, ← map_sum] at hg
-  apply (fun hn0 => (minpoly.degree_le_of_ne_zero K x (mt (fun h0 => ?_) hn0) hg).not_lt).mtr
+  apply (fun hn0 => (minpoly.degree_le_of_ne_zero K x (mt (fun h0 => ?_) hn0) hg).not_gt).mtr
   · simp_rw [← C_mul_X_pow_eq_monomial]
     exact (degree_eq_natDegree <| minpoly.ne_zero h).symm ▸ degree_sum_fin_lt _
   · apply_fun lcoeff K i at h0
@@ -442,11 +442,7 @@ variable [Algebra A S] [Algebra A S']
 
 theorem minpolyGen_map (pb : PowerBasis A S) (e : S ≃ₐ[A] S') :
     (pb.map e).minpolyGen = pb.minpolyGen := by
-  dsimp only [minpolyGen, map_dim]
-  -- Turn `Fin (pb.map e).dim` into `Fin pb.dim`
-  simp only [LinearEquiv.trans_apply, map_basis, Basis.map_repr, map_gen,
-    AlgEquiv.toLinearEquiv_apply, e.toLinearEquiv_symm, map_pow,
-    AlgEquiv.symm_apply_apply, sub_right_inj]
+  simp
 
 @[simp]
 theorem equivOfRoot_map (pb : PowerBasis A S) (e : S ≃ₐ[A] S') (h₁ h₂) :

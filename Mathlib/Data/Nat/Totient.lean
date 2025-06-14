@@ -148,7 +148,7 @@ theorem totient_div_of_dvd {n d : ℕ} (hnd : d ∣ n) :
       apply gcd_dvd_right
     rcases this with ⟨q, rfl⟩
     refine ⟨q, ⟨⟨(mul_lt_mul_left hd0).1 hb1, ?_⟩, rfl⟩⟩
-    rwa [gcd_mul_left, mul_right_eq_self_iff hd0] at hb2
+    rwa [gcd_mul_left, mul_eq_left hd0.ne'] at hb2
 
 theorem sum_totient (n : ℕ) : n.divisors.sum φ = n := by
   rcases n.eq_zero_or_pos with (rfl | hn)

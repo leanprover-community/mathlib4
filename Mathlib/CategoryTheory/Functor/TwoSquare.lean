@@ -60,8 +60,6 @@ the type of natural transformations `T ⋙ R ⟶ L ⋙ B`. -/
 def equivNatTrans : TwoSquare T L R B ≃ (T ⋙ R ⟶ L ⋙ B) where
   toFun := natTrans
   invFun := mk T L R B
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 variable {T L R B}
 

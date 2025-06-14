@@ -617,7 +617,7 @@ theorem coe_ennreal_nonneg (x : ℝ≥0∞) : (0 : EReal) ≤ x :=
 
 @[simp] theorem range_coe_ennreal : range ((↑) : ℝ≥0∞ → EReal) = Set.Ici 0 :=
   Subset.antisymm (range_subset_iff.2 coe_ennreal_nonneg) fun x => match x with
-    | ⊥ => fun h => absurd h bot_lt_zero.not_le
+    | ⊥ => fun h => absurd h bot_lt_zero.not_ge
     | ⊤ => fun _ => ⟨⊤, rfl⟩
     | (x : ℝ) => fun h => ⟨.some ⟨x, EReal.coe_nonneg.1 h⟩, rfl⟩
 

@@ -41,7 +41,7 @@ lemma eqOn_of_isIntegralCurveOn_Ioo [BoundarylessManifold I M]
     {a a' : ℝ} (hpos : 0 < a') (hle : a' ≤ a) :
     EqOn (γ a') (γ a) (Ioo (-a') a') := by
   apply isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless _ hv
-    (hγ a' (by positivity)) ((hγ a (gt_of_ge_of_gt hle hpos)).mono _)
+    (hγ a' (by positivity)) ((hγ a (lt_of_lt_of_le hpos hle)).mono _)
     (by rw [hγx a, hγx a'])
   · rw [mem_Ioo]
     exact ⟨neg_lt_zero.mpr hpos, by positivity⟩

@@ -268,7 +268,7 @@ provided independence is determined by its behaviour on finite sets. -/
         refine not_lt.1 fun hlt ↦ ?_
         obtain ⟨f, hfI, hfJ, hfi⟩ := indep_aug hJ hJfin heI₀i (hI₀fin.insert e) hlt
         have hfE₀ : f ∈ E₀ := mem_of_mem_of_subset hfI (insert_subset_insert subset_union_left)
-        exact hfJ <| insert_eq_self.1 <| le_imp_eq_iff_le_imp_le.2 (hJmax
+        exact hfJ <| insert_eq_self.1 <| le_imp_eq_iff_le_imp_ge'.2 (hJmax
           ⟨hB₀J.trans <| subset_insert _ _, hfi, insert_subset hfE₀ hJss⟩) (subset_insert _ _)
       -- But this means `|I₀| < |J|`, and extending `I₀` into `J` gives a contradiction
       rw [ncard_insert_of_notMem heI₀ hI₀fin, ← Nat.lt_iff_add_one_le] at hcard
@@ -355,7 +355,7 @@ protected def ofBddAugment (E : Set α) (Indep : Set α → Prop)
       suffices hcard : I.encard < B.encard by
         obtain ⟨e, heB, heI, hi⟩ := indep_aug hI hBmax.prop hcard
         exact ⟨e, ⟨heB, heI⟩, hi⟩
-      refine lt_of_not_le fun hle ↦ ?_
+      refine lt_of_not_ge fun hle ↦ ?_
       obtain ⟨x, hxnot, hxI⟩ := exists_insert_of_not_maximal indep_subset hI hImax
       have hlt : B.encard < (insert x I).encard := by
         rwa [encard_insert_of_notMem hxnot, ← not_le, ENat.add_one_le_iff, not_lt]

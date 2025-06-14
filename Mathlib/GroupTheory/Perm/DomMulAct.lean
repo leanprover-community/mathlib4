@@ -77,7 +77,6 @@ def stabilizerMulEquiv : (stabilizer (Perm α)ᵈᵐᵃ f)ᵐᵒᵖ ≃* (∀ i,
     ext a
     rw [smul_apply, symm_apply_apply, Perm.smul_def]
     apply comp_stabilizerEquiv_invFun⟩
-  left_inv _ := rfl
   right_inv g := by ext i a; apply stabilizerEquiv_invFun_eq
   map_mul' _ _ := rfl
 

@@ -54,9 +54,10 @@ theorem eq_one_of_noncommProd_eq_one_of_iSupIndep {ι : Type*} (s : Finset ι) (
     (heq1 : s.noncommProd f comm = 1) : ∀ i ∈ s, f i = 1 := by
   classical
     revert heq1
-    induction' s using Finset.induction_on with i s hnotMem ih
-    · simp
-    · have hcomm := comm.mono (Finset.coe_subset.2 <| Finset.subset_insert _ _)
+    induction s using Finset.induction_on with
+    | empty => simp
+    | insert i s hnotMem ih =>
+      have hcomm := comm.mono (Finset.coe_subset.2 <| Finset.subset_insert _ _)
       simp only [Finset.forall_mem_insert] at hmem
       have hmem_bsupr : s.noncommProd f hcomm ∈ ⨆ i ∈ (s : Set ι), K i := by
         refine Subgroup.noncommProd_mem _ _ ?_

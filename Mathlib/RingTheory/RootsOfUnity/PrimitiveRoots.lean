@@ -121,7 +121,7 @@ theorem isUnit (h : IsPrimitiveRoot ζ k) (h0 : 0 < k) : IsUnit ζ := by
   rw [← pow_succ', tsub_add_cancel_of_le h0.nat_succ_le, h.pow_eq_one]
 
 theorem pow_ne_one_of_pos_of_lt (h : IsPrimitiveRoot ζ k) (h0 : 0 < l) (hl : l < k) : ζ ^ l ≠ 1 :=
-  mt (Nat.le_of_dvd h0 ∘ h.dvd_of_pow_eq_one _) <| not_le_of_lt hl
+  mt (Nat.le_of_dvd h0 ∘ h.dvd_of_pow_eq_one _) <| not_le_of_gt hl
 
 theorem ne_one (h : IsPrimitiveRoot ζ k) (hk : 1 < k) : ζ ≠ 1 :=
   h.pow_ne_one_of_pos_of_lt zero_lt_one hk ∘ (pow_one ζ).trans
@@ -129,7 +129,7 @@ theorem ne_one (h : IsPrimitiveRoot ζ k) (hk : 1 < k) : ζ ≠ 1 :=
 theorem pow_inj (h : IsPrimitiveRoot ζ k) ⦃i j : ℕ⦄ (hi : i < k) (hj : j < k) (H : ζ ^ i = ζ ^ j) :
     i = j := by
   wlog hij : i ≤ j generalizing i j
-  · exact (this hj hi H.symm (le_of_not_le hij)).symm
+  · exact (this hj hi H.symm (le_of_not_ge hij)).symm
   apply le_antisymm hij
   rw [← tsub_eq_zero_iff_le]
   apply Nat.eq_zero_of_dvd_of_lt _ (lt_of_le_of_lt tsub_le_self hj)
@@ -187,7 +187,7 @@ theorem pow_iff_coprime (h : IsPrimitiveRoot ζ k) (h0 : 0 < k) (i : ℕ) :
   obtain ⟨a, ha⟩ := i.gcd_dvd_left k
   obtain ⟨b, hb⟩ := i.gcd_dvd_right k
   suffices b = k by
-    rwa [this, eq_comm, Nat.mul_left_eq_self_iff h0, ← Nat.coprime_iff_gcd_eq_one] at hb
+    rwa [this, eq_comm, Nat.mul_eq_right h0.ne', ← Nat.coprime_iff_gcd_eq_one] at hb
   rw [ha] at hi
   rw [mul_comm] at hb
   apply Nat.dvd_antisymm ⟨i.gcd k, hb⟩ (hi.dvd_of_pow_eq_one b _)

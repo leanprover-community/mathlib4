@@ -343,9 +343,9 @@ lemma succ_eq_of_lt_aleph0 {c : Cardinal} (h : c < ℵ₀) : Order.succ c = c + 
 
 theorem aleph0_le {c : Cardinal} : ℵ₀ ≤ c ↔ ∀ n : ℕ, ↑n ≤ c :=
   ⟨fun h _ => (nat_lt_aleph0 _).le.trans h, fun h =>
-    le_of_not_lt fun hn => by
+    le_of_not_gt fun hn => by
       rcases lt_aleph0.1 hn with ⟨n, rfl⟩
-      exact (Nat.lt_succ_self _).not_le (Nat.cast_le.1 (h (n + 1)))⟩
+      exact (Nat.lt_succ_self _).not_ge (Nat.cast_le.1 (h (n + 1)))⟩
 
 theorem isSuccPrelimit_aleph0 : IsSuccPrelimit ℵ₀ :=
   isSuccPrelimit_of_succ_lt fun a ha => by
@@ -451,9 +451,9 @@ theorem nsmul_lt_aleph0_iff {n : ℕ} {a : Cardinal} : n • a < ℵ₀ ↔ n = 
   | zero => simpa using nat_lt_aleph0 0
   | succ n =>
       simp only [Nat.succ_ne_zero, false_or]
-      induction' n with n ih
-      · simp
-      rw [succ_nsmul, add_lt_aleph0_iff, ih, and_self_iff]
+      induction n with
+      | zero => simp
+      | succ n ih => rw [succ_nsmul, add_lt_aleph0_iff, ih, and_self_iff]
 
 /-- See also `Cardinal.nsmul_lt_aleph0_iff` for a hypothesis-free version. -/
 theorem nsmul_lt_aleph0_iff_of_ne_zero {n : ℕ} {a : Cardinal} (h : n ≠ 0) : n • a < ℵ₀ ↔ a < ℵ₀ :=
@@ -623,12 +623,10 @@ theorem mk_emptyCollection (α : Type u) : #(∅ : Set α) = 0 :=
   mk_eq_zero _
 
 theorem mk_emptyCollection_iff {α : Type u} {s : Set α} : #s = 0 ↔ s = ∅ := by
-  constructor
-  · intro h
-    rw [mk_eq_zero_iff] at h
-    exact eq_empty_iff_forall_notMem.2 fun x hx => h.elim' ⟨x, hx⟩
-  · rintro rfl
-    exact mk_emptyCollection _
+  rw [mk_eq_zero_iff, isEmpty_coe_sort]
+
+lemma mk_set_ne_zero_iff {α : Type u} (s : Set α) : #s ≠ 0 ↔ s.Nonempty := by
+  rw [mk_ne_zero_iff, nonempty_coe_sort]
 
 @[simp]
 theorem mk_univ {α : Type u} : #(@univ α) = #α :=
@@ -826,6 +824,15 @@ theorem mk_diff_add_mk {S T : Set α} (h : T ⊆ S) : #(S \ T : Set α) + #T = #
   refine (mk_union_of_disjoint <| ?_).symm.trans <| by rw [diff_union_of_subset h]
   exact disjoint_sdiff_self_left
 
+lemma diff_nonempty_of_mk_lt_mk {S T : Set α} (h : #S < #T) : (T \ S).Nonempty := by
+  rw [← mk_set_ne_zero_iff]
+  intro h'
+  exact h.not_ge ((le_mk_diff_add_mk T S).trans (by simp [h']))
+
+lemma compl_nonempty_of_mk_lt_mk {S : Set α} (h : #S < #α) : Sᶜ.Nonempty := by
+  rw [← mk_univ (α := α)] at h
+  simpa [Set.compl_eq_univ_diff] using diff_nonempty_of_mk_lt_mk h
+
 theorem mk_union_le_aleph0 {α} {P Q : Set α} :
     #(P ∪ Q : Set α) ≤ ℵ₀ ↔ #P ≤ ℵ₀ ∧ #Q ≤ ℵ₀ := by
   simp only [le_aleph0_iff_subtype_countable, mem_union, setOf_mem_eq, Set.union_def,
@@ -989,6 +996,6 @@ theorem zero_powerlt {a : Cardinal} (h : a ≠ 0) : 0 ^< a = 1 := by
 @[simp]
 theorem powerlt_zero {a : Cardinal} : a ^< 0 = 0 := by
   convert Cardinal.iSup_of_empty _
-  exact Subtype.isEmpty_of_false fun x => mem_Iio.not.mpr (Cardinal.zero_le x).not_lt
+  exact Subtype.isEmpty_of_false fun x => mem_Iio.not.mpr (Cardinal.zero_le x).not_gt
 
 end Cardinal

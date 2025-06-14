@@ -178,6 +178,14 @@ theorem Monotone.compRel [Preorder β] {f g : β → Set (α × α)} (hf : Monot
 theorem compRel_mono {f g h k : Set (α × α)} (h₁ : f ⊆ h) (h₂ : g ⊆ k) : f ○ g ⊆ h ○ k :=
   fun _ ⟨z, h, h'⟩ => ⟨z, h₁ h, h₂ h'⟩
 
+@[gcongr]
+theorem compRel_left_mono {f g h : Set (α × α)} (h₁ : f ⊆ g) : f ○ h ⊆ g ○ h :=
+  fun _ ⟨z, h, h'⟩ => ⟨z, h₁ h, h'⟩
+
+@[gcongr]
+theorem compRel_right_mono {f g h : Set (α × α)} (h₁ : g ⊆ h) : f ○ g ⊆ f ○ h :=
+  fun _ ⟨z, h, h'⟩ => ⟨z, h, h₁ h'⟩
+
 theorem prodMk_mem_compRel {a b c : α} {s t : Set (α × α)} (h₁ : (a, c) ∈ s) (h₂ : (c, b) ∈ t) :
     (a, b) ∈ s ○ t :=
   ⟨c, h₁, h₂⟩
@@ -474,10 +482,10 @@ theorem comp_symm_of_uniformity {s : Set (α × α)} (hs : s ∈ 𝓤 α) :
   let ⟨t', ht', ht'₁, ht'₂⟩ := symm_of_uniformity ht₁
   ⟨t', ht', ht'₁ _ _, Subset.trans (monotone_id.compRel monotone_id ht'₂) ht₂⟩
 
-theorem uniformity_le_symm : 𝓤 α ≤ @Prod.swap α α <$> 𝓤 α := by
+theorem uniformity_le_symm : 𝓤 α ≤ map Prod.swap (𝓤 α) := by
   rw [map_swap_eq_comap_swap]; exact tendsto_swap_uniformity.le_comap
 
-theorem uniformity_eq_symm : 𝓤 α = @Prod.swap α α <$> 𝓤 α :=
+theorem uniformity_eq_symm : 𝓤 α = map Prod.swap (𝓤 α) :=
   le_antisymm uniformity_le_symm symm_le_uniformity
 
 @[simp]
@@ -541,13 +549,9 @@ theorem comp_comp_symm_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤
   rcases comp_symm_mem_uniformity_sets w_in with ⟨t, t_in, t_symm, t_sub⟩
   use t, t_in, t_symm
   have : t ⊆ t ○ t := subset_comp_self_of_mem_uniformity t_in
-  -- Porting note: Needed the following `have`s to make `mono` work
-  have ht := Subset.refl t
-  have hw := Subset.refl w
   calc
-    t ○ t ○ t ⊆ w ○ t := by mono
-    _ ⊆ w ○ (t ○ t) := by mono
-    _ ⊆ w ○ w := by mono
+    t ○ t ○ t ⊆ w ○ (t ○ t) := by gcongr
+    _ ⊆ w ○ w := by gcongr
     _ ⊆ s := w_sub
 
 /-!
@@ -630,7 +634,7 @@ theorem mem_nhds_uniformity_iff_right {x : α} {s : Set α} :
 theorem mem_nhds_uniformity_iff_left {x : α} {s : Set α} :
     s ∈ 𝓝 x ↔ { p : α × α | p.2 = x → p.1 ∈ s } ∈ 𝓤 α := by
   rw [uniformity_eq_symm, mem_nhds_uniformity_iff_right]
-  simp only [map_def, mem_map, preimage_setOf_eq, Prod.snd_swap, Prod.fst_swap]
+  simp only [mem_map, preimage_setOf_eq, Prod.snd_swap, Prod.fst_swap]
 
 theorem nhdsWithin_eq_comap_uniformity_of_mem {x : α} {T : Set α} (hx : x ∈ T) (S : Set α) :
     𝓝[S] x = (𝓤 α ⊓ 𝓟 (T ×ˢ S)).comap (Prod.mk x) := by

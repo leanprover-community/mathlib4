@@ -246,7 +246,7 @@ private theorem fixed_of_fixed1_aux1 [DecidableEq (Ideal B)] :
     simp only [Polynomial.coeff_monomial, Finset.sum_ite_eq', Finset.mem_range_succ_iff]
     split_ifs with hn
     · rw [← Polynomial.coeff_map, hq, Polynomial.coeff_X_pow_mul]
-    · rw [map_zero, eq_comm, Polynomial.coeff_eq_zero_of_natDegree_lt (lt_of_not_le hn)]
+    · rw [map_zero, eq_comm, Polynomial.coeff_eq_zero_of_natDegree_lt (lt_of_not_ge hn)]
   have hf : f.eval b = 0 := MulSemiringAction.eval_charpoly G b
   have hr : r.eval b ∈ Q := by
     rw [← Ideal.Quotient.eq_zero_iff_mem, ← Ideal.Quotient.algebraMap_eq] at hbQ ⊢

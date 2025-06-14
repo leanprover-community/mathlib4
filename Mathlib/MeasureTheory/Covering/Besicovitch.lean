@@ -169,14 +169,14 @@ namespace SatelliteConfig
 variable {α : Type*} [MetricSpace α] {N : ℕ} {τ : ℝ} (a : SatelliteConfig α N τ)
 
 theorem inter' (i : Fin N.succ) : dist (a.c i) (a.c (last N)) ≤ a.r i + a.r (last N) := by
-  rcases lt_or_le i (last N) with (H | H)
+  rcases lt_or_ge i (last N) with (H | H)
   · exact a.inter i H
   · have I : i = last N := top_le_iff.1 H
     have := (a.rpos (last N)).le
     simp only [I, add_nonneg this this, dist_self]
 
 theorem hlast' (i : Fin N.succ) (h : 1 ≤ τ) : a.r (last N) ≤ τ * a.r i := by
-  rcases lt_or_le i (last N) with (H | H)
+  rcases lt_or_ge i (last N) with (H | H)
   · exact (a.hlast i H).2
   · have : i = last N := top_le_iff.1 H
     rw [this]
@@ -279,7 +279,7 @@ theorem lastStep_nonempty :
   suffices H : Function.Injective p.index from not_injective_of_ordinal p.index H
   intro x y hxy
   wlog x_le_y : x ≤ y generalizing x y
-  · exact (this hxy.symm (le_of_not_le x_le_y)).symm
+  · exact (this hxy.symm (le_of_not_ge x_le_y)).symm
   rcases eq_or_lt_of_le x_le_y with (rfl | H); · rfl
   simp only [nonempty_def, not_exists, exists_prop, not_and, not_lt, not_le, mem_setOf_eq,
     not_forall] at h
@@ -421,7 +421,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
       h := by
         intro a b a_ne_b
         wlog G_le : G a ≤ G b generalizing a b
-        · exact (this a_ne_b.symm (le_of_not_le G_le)).symm
+        · exact (this a_ne_b.symm (le_of_not_ge G_le)).symm
         have G_lt : G a < G b := by
           rcases G_le.lt_or_eq with (H | H); · exact H
           have A : (a : ℕ) ≠ b := Fin.val_injective.ne a_ne_b
@@ -478,7 +478,7 @@ theorem exist_disjoint_covering_families {N : ℕ} {τ : ℝ} (hτ : 1 < τ)
       ∃ jy : Ordinal, jy < p.lastStep ∧ p.color jy = i ∧ y = p.index jy := by
       simpa only [s, exists_prop, mem_iUnion, mem_singleton_iff] using hy
     wlog jxy : jx ≤ jy generalizing jx jy
-    · exact (this jy jy_lt jyi hy jx jx_lt jxi hx x_ne_y.symm (le_of_not_le jxy)).symm
+    · exact (this jy jy_lt jyi hy jx jx_lt jxi hx x_ne_y.symm (le_of_not_ge jxy)).symm
     replace jxy : jx < jy := by
       rcases lt_or_eq_of_le jxy with (H | rfl); · { exact H }; · { exact (x_ne_y rfl).elim }
     let A : Set ℕ :=
@@ -530,7 +530,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
       (t : Set α).PairwiseDisjoint fun x => closedBall x (r x) := by
   classical
   -- exclude the trivial case where `μ s = 0`.
-  rcases le_or_lt (μ s) 0 with (hμs | hμs)
+  rcases le_or_gt (μ s) 0 with (hμs | hμs)
   · have : μ s = 0 := le_bot_iff.1 hμs
     refine ⟨∅, by simp only [Finset.coe_empty, empty_subset], ?_, ?_⟩
     · simp only [this, Finset.notMem_empty, diff_empty, iUnion_false, iUnion_empty,

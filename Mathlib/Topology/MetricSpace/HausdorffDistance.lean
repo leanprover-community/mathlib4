@@ -502,7 +502,7 @@ theorem infDist_le_infDist_add_dist : infDist x s ≤ infDist y s + dist x y := 
   simp only [infEdist_eq_top_iff, imp_self]
 
 theorem notMem_of_dist_lt_infDist (h : dist x y < infDist x s) : y ∉ s := fun hy =>
-  h.not_le <| infDist_le_dist_of_mem hy
+  h.not_ge <| infDist_le_dist_of_mem hy
 
 @[deprecated (since := "2025-05-23")] alias not_mem_of_dist_lt_infDist := notMem_of_dist_lt_infDist
 
@@ -591,10 +591,10 @@ theorem infDist_inter_closedBall_of_mem (h : y ∈ s) :
   refine le_antisymm ?_ (infDist_le_infDist_of_subset inter_subset_left ⟨y, h⟩)
   refine not_lt.1 fun hlt => ?_
   rcases (infDist_lt_iff ⟨y, h.1⟩).mp hlt with ⟨z, hzs, hz⟩
-  rcases le_or_lt (dist z x) (dist y x) with hle | hlt
-  · exact hz.not_le (infDist_le_dist_of_mem ⟨hzs, hle⟩)
+  rcases le_or_gt (dist z x) (dist y x) with hle | hlt
+  · exact hz.not_ge (infDist_le_dist_of_mem ⟨hzs, hle⟩)
   · rw [dist_comm z, dist_comm y] at hlt
-    exact (hlt.trans hz).not_le (infDist_le_dist_of_mem h)
+    exact (hlt.trans hz).not_ge (infDist_le_dist_of_mem h)
 
 theorem _root_.IsCompact.exists_infDist_eq_dist (h : IsCompact s) (hne : s.Nonempty) (x : α) :
     ∃ y ∈ s, infDist x s = dist x y :=

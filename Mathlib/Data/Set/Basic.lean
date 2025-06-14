@@ -192,6 +192,7 @@ instance : Inhabited (Set α) :=
 theorem mem_of_mem_of_subset {x : α} {s t : Set α} (hx : x ∈ s) (h : s ⊆ t) : x ∈ t :=
   h hx
 
+@[deprecated forall_swap (since := "2025-06-10")]
 theorem forall_in_swap {p : α → β → Prop} : (∀ a ∈ s, ∀ (b), p a b) ↔ ∀ (b), ∀ a ∈ s, p a b := by
   tauto
 
@@ -201,35 +202,18 @@ theorem setOf_inj {p q : α → Prop} : { x | p x } = { x | q x } ↔ p = q := I
 
 /-! ### Lemmas about `mem` and `setOf` -/
 
-theorem mem_setOf {a : α} {p : α → Prop} : a ∈ { x | p x } ↔ p a :=
-  Iff.rfl
-
-/-- This lemma is intended for use with `rw` where a membership predicate is needed,
-hence the explicit argument and the equality in the reverse direction from normal.
-See also `Set.mem_setOf_eq` for the reverse direction applied to an argument. -/
-theorem eq_mem_setOf (p : α → Prop) : p = (· ∈ {a | p a}) := rfl
-
-/-- If `h : a ∈ {x | p x}` then `h.out : p x`. These are definitionally equal, but this can
-nevertheless be useful for various reasons, e.g. to apply further projection notation or in an
-argument to `simp`. -/
-theorem _root_.Membership.mem.out {p : α → Prop} {a : α} (h : a ∈ { x | p x }) : p a :=
-  h
-
-theorem notMem_setOf_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p a :=
-  Iff.rfl
-
-@[deprecated (since := "2025-05-24")] alias nmem_setOf_iff := notMem_setOf_iff
-
-@[simp]
-theorem setOf_mem_eq {s : Set α} : { x | x ∈ s } = s :=
-  rfl
-
+@[deprecated "This lemma abuses the `Set α := α → Prop` defeq.
+If you think you need it you have already taken a wrong turn." (since := "2025-06-10")]
 theorem setOf_set {s : Set α} : setOf s = s :=
   rfl
 
+@[deprecated "This lemma abuses the `Set α := α → Prop` defeq.
+If you think you need it you have already taken a wrong turn." (since := "2025-06-10")]
 theorem setOf_app_iff {p : α → Prop} {x : α} : { x | p x } x ↔ p x :=
   Iff.rfl
 
+@[deprecated "This lemma abuses the `Set α := α → Prop` defeq.
+If you think you need it you have already taken a wrong turn." (since := "2025-06-10")]
 theorem mem_def {a : α} {s : Set α} : a ∈ s ↔ s a :=
   Iff.rfl
 
@@ -245,6 +229,9 @@ theorem setOf_subset {p : α → Prop} {s : Set α} : setOf p ⊆ s ↔ ∀ x, p
 @[simp]
 theorem setOf_subset_setOf {p q : α → Prop} : { a | p a } ⊆ { a | q a } ↔ ∀ a, p a → q a :=
   Iff.rfl
+
+@[gcongr]
+alias ⟨_, setOf_subset_setOf_of_imp⟩ := setOf_subset_setOf
 
 theorem setOf_and {p q : α → Prop} : { a | p a ∧ q a } = { a | p a } ∩ { a | q a } :=
   rfl
@@ -318,7 +305,7 @@ theorem Subset.antisymm_iff {a b : Set α} : a = b ↔ a ⊆ b ∧ b ⊆ a :=
 theorem eq_of_subset_of_subset {a b : Set α} : a ⊆ b → b ⊆ a → a = b :=
   Subset.antisymm
 
-theorem mem_of_subset_of_mem {s₁ s₂ : Set α} {a : α} (h : s₁ ⊆ s₂) : a ∈ s₁ → a ∈ s₂ :=
+@[gcongr] theorem mem_of_subset_of_mem {s₁ s₂ : Set α} {a : α} (h : s₁ ⊆ s₂) : a ∈ s₁ → a ∈ s₂ :=
   @h _
 
 theorem notMem_subset (h : s ⊆ t) : a ∉ t → a ∉ s :=
@@ -393,7 +380,7 @@ protected noncomputable def Nonempty.some (h : s.Nonempty) : α :=
 protected theorem Nonempty.some_mem (h : s.Nonempty) : h.some ∈ s :=
   Classical.choose_spec h
 
-theorem Nonempty.mono (ht : s ⊆ t) (hs : s.Nonempty) : t.Nonempty :=
+@[gcongr] theorem Nonempty.mono (ht : s ⊆ t) (hs : s.Nonempty) : t.Nonempty :=
   hs.imp ht
 
 theorem nonempty_of_not_subset (h : ¬s ⊆ t) : (s \ t).Nonempty :=
@@ -1509,5 +1496,3 @@ protected lemma setSubtypeComm_symm_apply (p : α → Prop) (s : {s // ∀ a ∈
   rfl
 
 end Equiv
-
-set_option linter.style.longFile 1700

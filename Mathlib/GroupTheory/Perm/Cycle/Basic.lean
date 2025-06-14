@@ -595,7 +595,7 @@ theorem IsCycle.pow_eq_pow_iff [Finite β] {f : Perm β} (hf : IsCycle f) {a b :
       exact ⟨x, hx, by simp [h]⟩
     · rintro ⟨x, hx, hx'⟩
       wlog hab : a ≤ b generalizing a b
-      · exact (this hx'.symm (le_of_not_le hab)).symm
+      · exact (this hx'.symm (le_of_not_ge hab)).symm
       suffices f ^ (b - a) = 1 by
         rw [pow_sub _ hab, mul_inv_eq_one] at this
         rw [this]

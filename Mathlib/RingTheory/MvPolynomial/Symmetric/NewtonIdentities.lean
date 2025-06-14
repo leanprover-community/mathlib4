@@ -109,7 +109,7 @@ private theorem pairMap_mem_pairs {k : ℕ} (t : Finset σ × σ) (h : t ∈ pai
     by_contra h2
     simp only [not_true_eq_false, and_true, not_forall, not_false_eq_true, exists_prop] at h2
     rw [← h2] at h
-    exact not_le_of_lt (sub_lt (card_pos.mpr ⟨t.snd, h1⟩) zero_lt_one) h
+    exact not_le_of_gt (sub_lt (card_pos.mpr ⟨t.snd, h1⟩) zero_lt_one) h
   · rw [pairMap_of_snd_notMem_fst σ h1]
     simp only [h1] at h
     simp only [card_cons, mem_cons, true_or, implies_true, and_true]

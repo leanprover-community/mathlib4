@@ -68,11 +68,11 @@ theorem coeff_inv_aux (n : ℕ) (a : R) (φ : R⟦X⟧) :
   · aesop
   · aesop
   · rintro ⟨i, j⟩ _hij
-    obtain H | H := le_or_lt n j
+    obtain H | H := le_or_gt n j
     · aesop
     rw [if_pos H, if_pos]
     · rfl
-    refine ⟨?_, fun hh ↦ H.not_le ?_⟩
+    refine ⟨?_, fun hh ↦ H.not_ge ?_⟩
     · rintro ⟨⟩
       simpa [Finsupp.single_eq_same] using le_of_lt H
     · simpa [Finsupp.single_eq_same] using hh ()

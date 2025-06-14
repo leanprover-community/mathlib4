@@ -187,8 +187,6 @@ theorem support_subset_iff {s : Set α} {f : α →₀ M} :
 def equivFunOnFinite [Finite α] : (α →₀ M) ≃ (α → M) where
   toFun := (⇑)
   invFun f := mk (Function.support f).toFinite.toFinset f fun _a => Set.Finite.mem_toFinset _
-  left_inv _f := ext fun _x => rfl
-  right_inv _f := rfl
 
 @[simp]
 theorem equivFunOnFinite_symm_coe {α} [Finite α] (f : α →₀ M) : equivFunOnFinite.symm f = f :=
