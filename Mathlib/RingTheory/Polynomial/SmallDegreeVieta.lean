@@ -138,8 +138,6 @@ lemma quadratic_ne_zero (ha : a ≠ 0) : (a • X ^ 2 + b • X + C c) ≠ 0 := 
   by_contra hx
   exact ha (congrFun (congrArg coeff hx) 2)
 
-
-
 theorem quadratic_roots_iff_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0)
     {z s : R} (h : discrim a b c = s * s) :
     z ∈ (a • X ^ 2 + b • X + C c).roots ↔ z = (-b + s) / (2 * a) ∨ z = (-b - s) / (2 * a) := by
