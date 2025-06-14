@@ -363,16 +363,25 @@ omit [IsNoetherianRing R] in
 lemma coe_nonnegRingKrullDim [Nontrivial R] : nonnegRingKrullDim R = ringKrullDim R := by
   simp only [nonnegRingKrullDim, ringKrullDim, Order.krullDim_eq_iSup_length]
 
-lemma Withbot.coe_biSup {ι : Type*} [Nonempty ι] {s : Set ι} (hs : s.Nonempty) {f : ι → ℕ∞}
-    (hf : BddAbove (Set.range f)) : ⨆ i ∈ s, f i = ⨆ i ∈ s, (f i : WithBot ℕ∞) := by
-  apply (WithBot.coe_iSup (OrderTop.bddAbove _)).trans
+lemma Ideal.primeHeight_add_nonnegRingKrullDim_quotient_eq_nonnegRingKrullDim
+    [IsCohenMacaulayLocalRing R] (p : Ideal R) [p.IsPrime] :
+    p.primeHeight + nonnegRingKrullDim (R ⧸ p) = nonnegRingKrullDim R := by
+  have h := p.primeHeight_add_ringKrullDim_quotient_eq_ringKrullDim
+  simp only [← coe_nonnegRingKrullDim] at h
+  norm_cast at h
+
+lemma Withbot.eNat_coe_biSup {ι : Type*} [Nonempty ι] {s : Set ι} (hs : s.Nonempty) {f : ι → ℕ∞} :
+    ⨆ i ∈ s, f i = ⨆ i ∈ s, (f i : WithBot ℕ∞) := by
   apply le_antisymm
-  · have h (i : ι) : (⨆ (_ : i ∈ s), f i) ≤ ⨆ i ∈ s, (f i : WithBot ℕ∞) := sorry
-    let g : ι → WithBot ℕ∞ := fun i ↦ (⨆ (_ : i ∈ s), f i : ℕ∞)
-    apply iSup_le_iff.mpr ?_
-    intro i
-    sorry
-  · sorry
+  · refine (WithBot.coe_iSup (OrderTop.bddAbove _)).trans_le <| iSup_le_iff.mpr (fun i ↦ ?_)
+    by_cases h : i ∈ s
+    · simp only [iSup_pos h]
+      apply le_biSup _ h
+    · simp only [iSup_neg h, bot_eq_zero', WithBot.coe_zero]
+      rcases hs with ⟨j, hj⟩
+      apply (WithBot.coe_nonneg.mpr (zero_le (f j))).trans
+      apply le_biSup _ hj
+  · exact iSup_le_iff.mpr (fun _ ↦ iSup_le_iff.mpr (fun hi ↦ WithBot.coe_le_coe.2 (le_biSup _ hi)))
 
 omit [IsNoetherianRing R] in
 lemma nonnegRingKrullDim_quotient_eq_iSup_quotient_minimalPrimes (I : Ideal R) (hI : I ≠ ⊤) :
@@ -404,6 +413,10 @@ lemma nonnegRingKrullDim_quotient_eq_iSup_quotient_minimalPrimes (I : Ideal R) (
 
 lemma Ideal.height_add_ringKrullDim_quotient_eq_ringKrullDim [IsCohenMacaulayLocalRing R]
     (I : Ideal R) (netop : I ≠ ⊤) : I.height + ringKrullDim (R ⧸ I) = ringKrullDim R := by
-  simp only [height, ringKrullDim_quotient_eq_iSup_quotient_minimalPrimes I]
-
-  sorry
+  have : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial netop
+  simp only [height, ← coe_nonnegRingKrullDim]
+  rw [nonnegRingKrullDim_quotient_eq_iSup_quotient_minimalPrimes I netop]
+  norm_cast
+  apply le_antisymm
+  · sorry
+  · sorry
