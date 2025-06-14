@@ -78,7 +78,7 @@ private theorem descend_spec {c u : Set α} (Pcu : P c u) :
   obtain ⟨x, uc, uu, s, huc, symmuc, ucu, rfl, huu, rfl, hn⟩ := Pcu
   have ho : IsOpen (descend s ○ uc ○ descend s) :=
     ((descend_open s).compRel huc).compRel (descend_open s)
-  use Prod.mk x ⁻¹' (descend s ○ uc○ descend s), ho.preimage (Continuous.prodMk_right x)
+  use Prod.mk x ⁻¹' (descend s ○ uc ○ descend s), ho.preimage (Continuous.prodMk_right x)
   constructor
   · apply ((Continuous.prodMk_right x).closure_preimage_subset _).trans
     apply preimage_mono
@@ -90,7 +90,7 @@ private theorem descend_spec {c u : Set α} (Pcu : P c u) :
     apply hn.trans'
     rw [closure_eq_inter_uniformity]
     apply iInter₂_subset_of_subset (descend s).1 (descend s).2
-    exact Eq.trans_subset (by simp [compRel_assoc])
+    exact Eq.trans_subset (by simp_rw [compRel_assoc])
       (compRel_mono (compRel_mono (descend_descends s) subset_rfl) (descend_descends s))
   have hucd : descend s ○ uc ○ descend s ∈ 𝓤 α :=
     mem_of_superset ucu
