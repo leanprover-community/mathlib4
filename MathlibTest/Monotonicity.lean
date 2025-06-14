@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.List.Defs
 import Mathlib.Tactic.Monotonicity
 import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.MonoLinter
+import Mathlib.Tactic.Linter.MonoLinter
 
 private axiom test_sorry : ∀ {α}, α
 open List Set
