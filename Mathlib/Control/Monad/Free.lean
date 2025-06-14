@@ -3,7 +3,6 @@ Copyright (c) 2025 Tanner Duve. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tanner Duve
 -/
-import Mathlib.CategoryTheory.Monad.Types
 import Mathlib.Control.Monad.Cont
 import Mathlib.Control.Monad.Writer
 import Mathlib.Tactic.Cases
@@ -85,8 +84,11 @@ inductive FreeM.{u, v, w} (f : Type u → Type v) (α : Type w) where
   | protected pure : α → FreeM f α
   | liftBind {ι : Type u} (op : f ι) (cont : ι → FreeM f α) : FreeM f α
 
--- Disable simpNF lints for auto-generated constructor lemmas, as they don't follow simp normal
--- form patterns. The LHS of these lemmas use `FreeM.pure` which simplifies to `pure` via `pure_eq_pure`.
+/-
+Disable simpNF lints for auto-generated constructor lemmas, as they don't follow simp normal
+form patterns. The LHS of these lemmas use `FreeM.pure` which simplifies to `pure` via
+`pure_eq_pure`.
+-/
 attribute [nolint simpNF] FreeM.pure.sizeOf_spec FreeM.pure.injEq
 
 universe u v w
