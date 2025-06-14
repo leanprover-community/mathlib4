@@ -21,7 +21,6 @@ in Lean 3, `refine` and `cases`. They have been superseded by Lean 4 tactics:
   tend to be more efficient on average.
 * `obtain`, `rcases` and `cases` replace `cases'`. Unlike the replacement tactics, `cases'`
   does not require the variables it introduces to be separated by case, which hinders readability.
-* `gcongr` replaces `mono`: XXX write more here!
 
 The `admit` tactic is a synonym for the much more common `sorry`, so the latter should be preferred.
 
@@ -58,13 +57,6 @@ required to be separated by case, which hinders readability.
 register_option linter.style.cases : Bool := {
   defValue := false
   descr := "enable the cases linter"
-}
-
-/-- The option `linter.style.mono` of the deprecated syntax linter flags usages of
-the `mono` tactic, which can usually be replaced by `gcongr`. -/
-register_option linter.style.mono : Bool := {
-  defValue := false
-  descr := "enable the mono linter"
 }
 
 /-- The option `linter.style.admit` of the deprecated syntax linter flags usages of
@@ -155,10 +147,6 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
       rargs.push (kind, stx,
         "The `admit` tactic is discouraged: \
          please strongly consider using the synonymous `sorry` instead.")
-    | `Lean.Parser.Tactic.Monotonicity.mono =>
-      rargs.push (kind, stx,
-        "The `mono` tactic is discouraged: \
-         please strongly consider using the better developed `gcongr` instead.")
     | ``Lean.Parser.Tactic.decide =>
       if isDecideNative stx then
         rargs.push (kind, stx, "Using `decide +native` is not allowed in mathlib: \
@@ -184,9 +172,7 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
               as in\nset_option {opt} {n} in\n-- reason for change\n...\n")
         else
           rargs
-    | _ =>
-      dbg_trace kind
-      rargs
+    | _ => rargs
   | _ => default
 
 /-- The deprecated syntax linter flags usages of deprecated syntax and suggests
@@ -202,7 +188,6 @@ def deprecatedSyntaxLinter : Linter where run stx := do
   unless getLinterValue linter.style.refine (← getLinterOptions) ||
       getLinterValue linter.style.cases (← getLinterOptions) ||
       getLinterValue linter.style.admit (← getLinterOptions) ||
-      getLinterValue linter.style.mono (← getLinterOptions) ||
       getLinterValue linter.style.maxHeartbeats (← getLinterOptions) ||
       getLinterValue linter.style.nativeDecide (← getLinterOptions) do
     return
@@ -220,7 +205,6 @@ def deprecatedSyntaxLinter : Linter where run stx := do
       | ``Lean.Parser.Tactic.refine' => Linter.logLintIf linter.style.refine stx' msg
       | `Mathlib.Tactic.cases' => Linter.logLintIf linter.style.cases stx' msg
       | ``Lean.Parser.Tactic.tacticAdmit => Linter.logLintIf linter.style.admit stx' msg
-      | `Lean.Parser.Tactic.Monotonicity.mono => Linter.logLintIf linter.style.mono stx' msg
       | ``Lean.Parser.Tactic.nativeDecide | ``Lean.Parser.Tactic.decide =>
         Linter.logLintIf linter.style.nativeDecide stx' msg
       | `MaxHeartbeats => Linter.logLintIf linter.style.maxHeartbeats stx' msg
