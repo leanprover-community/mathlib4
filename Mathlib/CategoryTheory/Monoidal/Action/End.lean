@@ -28,7 +28,7 @@ variable [MonoidalLeftAction C D]
 that takes value in the monoidal opposite of `D ⥤ D`. -/
 @[simps! obj_unmop_obj obj_unmop_map]
 def curriedActionMop : C ⥤ (D ⥤ D)ᴹᵒᵖ :=
-  (curriedAction C D) ⋙ (MonoidalOpposite.mopEquiv (D ⥤ D)).functor
+  (curriedAction C D) ⋙ mopFunctor _
 
 -- This simp lemma is necessary because the simps projection generated for
 -- unmop of a morphism is actually its underlying unmop field, rather than
