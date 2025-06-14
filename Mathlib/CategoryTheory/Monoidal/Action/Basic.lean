@@ -289,6 +289,35 @@ theorem inv_hom_actionHomLeft' {x y : C} (f : x ⟶ y) [IsIso f] (z : D) :
     inv f ⊵ₗ z ≫ f ⊵ₗ z = 𝟙 (y ⊙ₗ z) := by
   rw [← comp_actionHomLeft, IsIso.inv_hom_id, id_actionHomLeft]
 
+instance isIso_actionHomRight (x : C) {y z : D} (f : y ⟶ z) [IsIso f] :
+    IsIso (x ⊴ₗ f) :=
+  ⟨x ⊴ₗ inv f, by simp⟩
+
+instance isIso_actionHomLeft {x y : C} (f : x ⟶ y) [IsIso f] (z : D) :
+    IsIso (f ⊵ₗ z) :=
+  ⟨inv f ⊵ₗ z, by simp⟩
+
+instance isIso_actionHom {x y : C} {x' y' : D}
+    (f : x ⟶ y) (g : x' ⟶ y') [IsIso f] [IsIso g] :
+    IsIso (f ⊙ₗ g) :=
+  ⟨(inv f) ⊙ₗ (inv g), by simp [← actionHom_comp]⟩
+
+@[simp]
+lemma inv_actionHomLeft {x y : C} (f : x ⟶ y) [IsIso f] (z : D) :
+    inv (f ⊵ₗ z) = inv f ⊵ₗ z :=
+  IsIso.inv_eq_of_hom_inv_id <| hom_inv_actionHomLeft' f z
+
+@[simp]
+lemma inv_actionHomRight (x : C) {y z : D} (f : y ⟶ z) [IsIso f] :
+    inv (x ⊴ₗ f) = x ⊴ₗ inv f :=
+  IsIso.inv_eq_of_hom_inv_id <| actionHomRight_hom_inv' x f
+
+@[simp]
+lemma inv_actionHom {x y : C} {x' y' : D}
+    (f : x ⟶ y) (g : x' ⟶ y') [IsIso f] [IsIso g] :
+    inv (f ⊙ₗ g) = (inv f) ⊙ₗ (inv g) :=
+  IsIso.inv_eq_of_hom_inv_id <| by simp [← actionHom_comp]
+
 section
 
 variable (C D)
@@ -568,6 +597,36 @@ theorem actionHomRight_inv_hom' (x : D) {y z : C} (f : y ⟶ z) [IsIso f] :
 theorem inv_hom_actionHomLeft' {x y : D} (f : x ⟶ y) [IsIso f] (z : C) :
     inv f ᵣ⊵ z ≫ f ᵣ⊵ z = 𝟙 (y ᵣ⊙ z) := by
   rw [← comp_actionHomLeft, IsIso.inv_hom_id, id_actionHomLeft]
+
+instance isIso_actionHomLeft {x y : D} (f : x ⟶ y) [IsIso f] (z : C) :
+    IsIso (f ᵣ⊵ z) :=
+  ⟨inv f ᵣ⊵ z, by simp⟩
+
+instance isIso_actionHomRight (x : D) {y z : C} (f : y ⟶ z) [IsIso f] :
+    IsIso (x ᵣ⊴ f) :=
+  ⟨x ᵣ⊴ inv f, by simp⟩
+
+instance isIso_actionHom {x y : D} {x' y' : C}
+    (f : x ⟶ y) (g : x' ⟶ y') [IsIso f] [IsIso g] :
+    IsIso (f ᵣ⊙ g) :=
+  ⟨(inv f) ᵣ⊙ (inv g), by simp [← actionHom_comp]⟩
+
+@[simp]
+lemma inv_actionHomLeft {x y : D} (f : x ⟶ y) [IsIso f] (z : C) :
+    inv (f ᵣ⊵ z) = inv f ᵣ⊵ z :=
+  IsIso.inv_eq_of_hom_inv_id <| hom_inv_actionHomLeft' f z
+
+@[simp]
+lemma inv_actionHomRight (x : D) {y z : C} (f : y ⟶ z) [IsIso f] :
+    inv (x ᵣ⊴ f) = x ᵣ⊴ inv f :=
+  IsIso.inv_eq_of_hom_inv_id <| actionHomRight_hom_inv' x f
+
+@[simp]
+lemma inv_actionHom
+    {x y : D} {x' y' : C}
+    (f : x ⟶ y) (g : x' ⟶ y') [IsIso f] [IsIso g] :
+    inv (f ᵣ⊙ g) = (inv f) ᵣ⊙ (inv g) :=
+  IsIso.inv_eq_of_hom_inv_id <| by simp [← actionHom_comp]
 
 section
 
