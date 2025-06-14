@@ -179,7 +179,7 @@ theorem div_eq_eval [DivisionMonoid M] {l₁ l₂ l : NF M} {x₁ x₂ : M} (hx�
     x₁ / x₂ = l.eval := by
   rw [hx₁, hx₂, h]
 
-theorem add_eq_eval [Field M] {x₁ x₂ x₁' x₂' X₁ X₂ X₁' X₂' a b y : M}
+theorem add_eq_eval [Semifield M] {x₁ x₂ x₁' x₂' X₁ X₂ X₁' X₂' a b y : M}
     (h₁ : x₁ = X₁) (h₂ : x₂ = X₂)
     (h₁' : a * X₁' = X₁) (h₂' : a * X₂' = X₂)
     (h₁'' : X₁' = x₁') (h₂'' : X₂' = x₂')
@@ -320,7 +320,7 @@ def onExponent (l : qNF M) (f : ℤ → ℤ) : qNF M :=
   l.map fun ((a, x), k) ↦ ((f a, x), k)
 
 /-- Build a transparent expression for the product of powers represented by `l : qNF M`. -/
-def evalPrettyMonomial (iM : Q(Field $M)) (r : ℤ) (x : Q($M)) :
+def evalPrettyMonomial (iM : Q(Semifield $M)) (r : ℤ) (x : Q($M)) :
     MetaM (Σ e : Q($M), Q($x ^ $r = $e)) := do
   match r with
   | 0 => unreachable! -- design of tactic is supposed to prevent this, let's panic if we see it
@@ -329,7 +329,8 @@ def evalPrettyMonomial (iM : Q(Field $M)) (r : ℤ) (x : Q($M)) :
   | r => return ⟨q($x ^ $r), q(rfl)⟩
 
 /-- Build a transparent expression for the product of powers represented by `l : qNF M`. -/
-def evalPretty (iM : Q(Field $M)) (l : qNF M) : MetaM (Σ e : Q($M), Q(NF.eval $(l.toNF) = $e)) := do
+def evalPretty (iM : Q(Semifield $M)) (l : qNF M) :
+    MetaM (Σ e : Q($M), Q(NF.eval $(l.toNF) = $e)) := do
   match l with
   | [] => return ⟨q(1), q(rfl)⟩
   | [((r, x), _)] =>
@@ -370,7 +371,7 @@ def mul : qNF M → qNF M → qNF M
 `Expr` and a natural number), recursively construct a proof that in the field `$M`, the product of
 the "multiplicative linear combinations" represented by `l₁` and `l₂` is the multiplicative linear
 combination represented by `FieldSimp.qNF.mul l₁ l₁`. -/
-def mkMulProof (iM : Q(Field $M)) (l₁ l₂ : qNF M) :
+def mkMulProof (iM : Q(Semifield $M)) (l₁ l₂ : qNF M) :
     Q((NF.eval $(l₁.toNF)) * NF.eval $(l₂.toNF) = NF.eval $((qNF.mul l₁ l₂).toNF)) :=
   match l₁, l₂ with
   | [], l => (q(one_mul (NF.eval $(l.toNF))):)
@@ -426,7 +427,7 @@ def div : qNF M → qNF M → qNF M
 `Expr` and a natural number), recursively construct a proof that in the field `$M`, the quotient
 of the "multiplicative linear combinations" represented by `l₁` and `l₂` is the multiplicative
 linear combination represented by `FieldSimp.qNF.div l₁ l₁`. -/
-def mkDivProof (iM : Q(Field $M)) (l₁ l₂ : qNF M) :
+def mkDivProof (iM : Q(Semifield $M)) (l₁ l₂ : qNF M) :
     Q(NF.eval $(l₁.toNF) / NF.eval $(l₂.toNF) = NF.eval $((qNF.div l₁ l₂).toNF)) :=
   match l₁, l₂ with
   | [], l => (q(NF.one_div_eq_eval $(l.toNF)):)
@@ -485,7 +486,7 @@ where x1, x2, ... are distinct atoms in `M`, and c1, c2, ... are integers.
 Possible TODO, if poor performance on large problems is witnessed: switch the implementation from
 `AtomM` to `CanonM`, per the discussion
 https://github.com/leanprover-community/mathlib4/pull/16593/files#r1749623191 -/
-partial def normalize (iM : Q(Field $M)) (x : Q($M)) :
+partial def normalize (iM : Q(Semifield $M)) (x : Q($M)) :
     AtomM (Σ l : qNF M, Q($x = NF.eval $(l.toNF))) := do
   let baseCase (y : Q($M)) : AtomM (Σ l : qNF M, Q($y = NF.eval $(l.toNF))):= do
     let (k, ⟨x', _⟩) ← AtomM.addAtomQ y
@@ -551,8 +552,18 @@ partial def normalize (iM : Q(Field $M)) (x : Q($M)) :
   /- anything else should be treated as an atom -/
   | _ => baseCase x
 
+/-- The main algorithm behind the `field_simp` tactic: partially-normalizing an
+expression in a field `M` into the form x1 ^ c1 * x2 ^ c2 * ... x_k ^ c_k,
+where x1, x2, ... are distinct atoms in `M`, and c1, c2, ... are integers.
+
+Version with "pretty" output. -/
+def normalizePretty (iM : Q(Semifield $M)) (x : Q($M)) : AtomM (Σ x' : Q($M), Q($x = $x')) := do
+  let ⟨l, pf⟩ ← normalize iM x
+  let ⟨x', pf'⟩ ← l.evalPretty iM
+  return ⟨x', q(Eq.trans $pf $pf')⟩
+
 /-- Given `e₁` and `e₂`, construct a new goal which is sufficient to prove `e₁ = e₂`. -/
-def proveEq (iM : Q(Field $M)) (e₁ e₂ : Q($M)) : AtomM (MVarId × Q($e₁ = $e₂)) := do
+def proveEq (iM : Q(Semifield $M)) (e₁ e₂ : Q($M)) : AtomM (MVarId × Q($e₁ = $e₂)) := do
   let ⟨l₁, pf₁⟩ ← normalize iM e₁
   let ⟨l₂, pf₂⟩ ← normalize iM e₂
   let L := qNF.negPart (qNF.minimum l₁ l₂)
@@ -576,22 +587,21 @@ elab "field_simp2" : conv => do
   let x ← Conv.getLhs
   -- infer `u` and `K : Q(Type u)` such that `x : Q($K)`
   let ⟨u, K, _⟩ ← inferTypeQ' x
-  -- find a `Field` instance on `K`
-  let iK : Q(Field $K) ← synthInstanceQ q(Field $K)
-  -- run the core normalization function `normalize` on `x`
-  let ⟨l, pf⟩ ← AtomM.run .reducible <| normalize iK x
-  let ⟨e, pf'⟩ ← l.evalPretty iK
+  -- find a `Semifield` instance on `K`
+  let iK : Q(Semifield $K) ← synthInstanceQ q(Semifield $K)
+  -- run the core normalization function `normalizePretty` on `x`
+  let ⟨e, pf⟩ ← AtomM.run .reducible <| normalizePretty iK x
   -- convert `x` to the output of the normalization
-  Conv.applySimpResult { expr := e, proof? := some (← mkAppM `Eq.trans #[pf, pf']) }
+  Conv.applySimpResult { expr := e, proof? := some pf }
 
 elab "field_simp2" : tactic => liftMetaTactic fun g ↦ do
   -- find the expression `x` to `conv` on
-  let t ← g.getType
+  let t ← g.getType''
   let some ⟨_, a, b⟩ := t.eq? | throwError "field_simp proves only equality goals"
   -- infer `u` and `K : Q(Type u)` such that `x : Q($K)`
   let ⟨u, K, a⟩ ← inferTypeQ' a
-  -- find a `Field` instance on `K`
-  let iK : Q(Field $K) ← synthInstanceQ q(Field $K)
+  -- find a `Semifield` instance on `K`
+  let iK : Q(Semifield $K) ← synthInstanceQ q(Semifield $K)
   -- run the core equality-proving mechanism on `x`
   let ⟨g', pf⟩ ← AtomM.run .reducible <| proveEq iK a b
   g.assign pf
@@ -788,4 +798,18 @@ example : x / (x + 1) + y / (y + 1)
 
 example : (1:ℚ) / 3 + 1 / 6 = 1 / 2 := by
   field_simp2
+  norm_cast
+
+-- from PythagoreanTriples
+example {K : Type*} [Semifield K] (x y : K) :
+    2 * (x / (y + 1)) / (1 + (x / (y + 1)) ^ 2) = x := by
+  field_simp2
+  guard_target = 2 * x * (y + 1) = x * ((y + 1) ^ 2 + x ^ 2)
+  sorry
+
+-- from Set.IsoIoo
+example {K : Type*} [Field K] (x y z : K) :
+    ↑x / (1 - y) / (1 + y / (1 - y)) = z := by
+  field_simp2
+  guard_target = x = (1 - y + y) * z
   sorry
