@@ -37,7 +37,7 @@ the formula `c ⊙ₗ d := d ᵣ⊙ (mop c)`. -/
 @[simps -isSimp]
 def leftActionOfMonoidalOppositeRightAction [MonoidalRightAction Cᴹᵒᵖ D] :
     MonoidalLeftAction C D where
-  actionObj c d := d ᵣ⊙ (mop c)
+  actionObj c d := d ᵣ⊙ mop c
   actionHomLeft {c c'} f d := d ᵣ⊴ f.mop
   actionHomRight c {d d'} f := f ᵣ⊵ mop c
   actionHom {c c'} {d d} f g := g ᵣ⊙ f.mop
@@ -62,7 +62,7 @@ the formula `mop c ⊙ₗ d = d ᵣ⊙ c`. -/
 @[simps -isSimp]
 def monoidalOppositeLeftAction [MonoidalRightAction C D] :
     MonoidalLeftAction Cᴹᵒᵖ D where
-  actionObj c d := d ᵣ⊙ (unmop c)
+  actionObj c d := d ᵣ⊙ unmop c
   actionHomLeft {c c'} f d := d ᵣ⊴ f.unmop
   actionHomRight c {d d'} f := f ᵣ⊵ unmop c
   actionHom {c c'} {d d} f g := g ᵣ⊙ f.unmop
@@ -118,8 +118,8 @@ the formula `d ᵣ⊙ c := (mop c) ⊙ₗ d`. -/
 @[simps -isSimp]
 def rightActionOfMonoidalOppositeLeftAction [MonoidalLeftAction Cᴹᵒᵖ D] :
     MonoidalRightAction C D where
-  actionObj d c := (mop c) ⊙ₗ d
-  actionHomLeft {d d'} f c := (mop c) ⊴ₗ f
+  actionObj d c := mop c ⊙ₗ d
+  actionHomLeft {d d'} f c := mop c ⊴ₗ f
   actionHomRight d _ _ f := f.mop ⊵ₗ d
   actionHom {c c'} {d d'} f g := g.mop ⊙ₗ f
   actionAssocIso _ _ _ := σ_ₗ _ _ _
@@ -141,8 +141,8 @@ the formula `d ᵣ⊙ mop c = c ⊙ₗ d`. -/
 @[simps -isSimp]
 def monoidalOppositeRightAction [MonoidalLeftAction C D] :
     MonoidalRightAction Cᴹᵒᵖ D where
-  actionObj d c := (unmop c) ⊙ₗ d
-  actionHomLeft {d d'} f c := (unmop c) ⊴ₗ f
+  actionObj d c := unmop c ⊙ₗ d
+  actionHomLeft {d d'} f c := unmop c ⊴ₗ f
   actionHomRight d _ _ f := f.unmop ⊵ₗ d
   actionHom {c c'} {d d'} f g := g.unmop ⊙ₗ f
   actionAssocIso _ _ _ := σ_ₗ _ _ _
@@ -173,7 +173,7 @@ lemma monoidalOppositeRightAction_actionHomRight_mop
 
 lemma monoidalOppositeRightAction_actionRight_mop
     (c : C) {d d' : D} (f : d ⟶ d') :
-    f ᵣ⊵ (mop c) = c ⊴ₗ f := rfl
+    f ᵣ⊵ mop c = c ⊴ₗ f := rfl
 
 lemma monoidalOppositeRightAction_actionHom_mop_mop
     {c c' : D} {d d' : C} (f : c ⟶ c') (g : d ⟶ d') :
