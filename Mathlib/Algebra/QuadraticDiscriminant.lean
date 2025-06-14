@@ -114,17 +114,6 @@ theorem discrim_eq_zero_iff (ha : a ≠ 0) :
   refine ⟨fun hd => ?_, discrim_eq_zero_of_existsUnique ha⟩
   simp_rw [quadratic_eq_zero_iff_of_discrim_eq_zero ha hd, existsUnique_eq]
 
-theorem quadratic_factor (ha : a ≠ 0) {s : K} (h : discrim a b c = s * s) (x : K) :
-    a * (x * x) + b * x + c = a * (x - (-b + s) / (2 * a)) * (x - (-b - s) / (2 * a)) := by
-  ring_nf
-  rw [sq s, ← h, discrim]
-  ring_nf
-  have p2 : (2 : K) ^ 2 = (4 : K) := by norm_num
-  rw [add_comm _ (a * x ^ 2), mul_assoc, inv_mul_cancel₀ two_ne_zero, mul_one, mul_comm _ a⁻¹,
-    ← mul_assoc, ← mul_assoc, inv_mul_cancel₀ ha, one_mul, ← p2, mul_assoc, ← mul_pow,
-    inv_mul_cancel₀ two_ne_zero, one_pow, mul_one, mul_comm _ c, mul_assoc, ← mul_pow,
-    mul_inv_cancel₀ ha, one_pow, mul_one]
-
 end Field
 
 section LinearOrderedField
