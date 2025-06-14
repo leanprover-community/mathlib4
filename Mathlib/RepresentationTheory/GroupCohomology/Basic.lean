@@ -3,9 +3,6 @@ Copyright (c) 2023 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Homology.Opposite
-import Mathlib.RepresentationTheory.GroupCohomology.Resolution
-import Mathlib.Tactic.CategoryTheory.Slice
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
 
-deprecated_module "This file has been renamed to
-`Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic`" (since := "2025-06-14")
+deprecated_module (since := "2025-06-14")
