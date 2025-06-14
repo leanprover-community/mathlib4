@@ -3,6 +3,7 @@ Copyright (c) 2025 Qinchuan Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Qinchuan Zhang
 -/
+import Mathlib.Algebra.QuadraticDiscriminant
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import Mathlib.RingTheory.Polynomial.Vieta
@@ -99,5 +100,102 @@ lemma aroots_quadratic_eq_pair_iff_of_ne_zero' [CommRing T] [Field S] [Algebra T
   rw [aroots_def, show map (algebraMap T S) (C a * X ^ 2 + C b * X + C c) = C ((algebraMap T S) a) *
     X ^ 2 + C ((algebraMap T S) b) * X + C ((algebraMap T S) c) by simp]
   exact roots_quadratic_eq_pair_iff_of_ne_zero' ha
+
+/-
+Polynomial versions of results in `Algebra.QuadraticDiscriminant`
+-/
+section QuadraticDiscriminant
+
+variable [Field R]
+
+variable {a b c : R}
+
+/-- Roots of a quadratic equation. -/
+theorem quadratic_eq_zero_iff [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
+    (h : discrim a b c = s * s) (x : R) :
+    IsRoot (a • X ^ 2 + b • X + C c) x ↔ x = (-b + s) / (2 * a) ∨ x = (-b - s) / (2 * a) := by
+  simp only [IsRoot.def, eval_add, eval_smul, eval_pow, eval_X, smul_eq_mul, eval_C]
+  rw [sq, _root_.quadratic_eq_zero_iff ha h]
+
+/-- Root of a quadratic when its discriminant equals zero -/
+theorem quadratic_eq_zero_iff_of_discrim_eq_zero [NeZero (2 : R)] (ha : a ≠ 0)
+    (h : discrim a b c = 0) (x : R) : IsRoot (a • X ^ 2 + b • X + C c) x ↔ x = -b / (2 * a) := by
+  simp only [IsRoot.def, eval_add, eval_smul, eval_pow, eval_X, smul_eq_mul, eval_C]
+  rw [sq, _root_.quadratic_eq_zero_iff_of_discrim_eq_zero ha h]
+
+/-- A quadratic has no root if its discriminant has no square root. -/
+theorem quadratic_ne_zero_of_discrim_ne_sq (h : ∀ s : R, discrim a b c ≠ s^2) (x : R) :
+    ¬ IsRoot (a • X ^ 2 + b • X + C c) x := by
+  simp only [IsRoot.def, eval_add, eval_smul, eval_pow, eval_X, smul_eq_mul, eval_C]
+  rw [← ne_eq, sq]
+  exact _root_.quadratic_ne_zero_of_discrim_ne_sq h _
+
+lemma quadratic_ne_zero (ha : a ≠ 0) : (a • X ^ 2 + b • X + C c) ≠ 0 := by
+  have hc : (a • X ^ 2 + b • X + C c).coeff 2 = a := by
+    simp [coeff_add, coeff_C_mul, coeff_smul, coeff_X_of_ne_one (Nat.add_one_add_one_ne_one),
+      coeff_C_ne_zero (n:=2) ((Nat.zero_ne_add_one 1).symm)]
+  rw [← hc] at ha
+  by_contra hx
+  exact ha (congrFun (congrArg coeff hx) 2)
+
+theorem quadratic_roots_of_discrim_ne_sq (ha : a ≠ 0) (h : ∀ s : R, discrim a b c ≠ s^2) :
+    (a • X ^ 2 + b • X + C c).roots = ∅ := Multiset.eq_zero_of_forall_notMem (fun r => by
+  by_contra hc
+  exact (quadratic_ne_zero_of_discrim_ne_sq h _) ((mem_roots (quadratic_ne_zero ha)).mp hc))
+
+theorem quadratic_roots_iff_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0)
+    {z s : R} (h : discrim a b c = s * s) :
+    z ∈ (a • X ^ 2 + b • X + C c).roots ↔ z = (-b + s) / (2 * a) ∨ z = (-b - s) / (2 * a) := by
+  rw [mem_roots (quadratic_ne_zero ha), quadratic_eq_zero_iff ha h]
+
+theorem factorize_quadratic_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
+    (h : discrim a b c = s * s) :
+    a • X ^ 2 + b • X + C c = a • (X - C ((-b + s) / (2 * a))) * (X - C ((-b - s) / (2 * a))) := by
+    rw [Algebra.smul_mul_assoc]
+    ring_nf
+    rw [C_add]
+    rw [C_sub]
+    ring_nf
+    rw [smul_add]
+    rw [smul_add]
+    rw [add_comm _ (a • X ^ 2)]
+    rw [add_assoc]
+    rw [add_assoc]
+    rw [add_right_inj]
+    rw [map_neg, mul_neg, neg_mul, neg_neg]
+    rw [mul_assoc]
+    rw [mul_comm]
+    rw [← C_2]
+    rw [← C_mul]
+    rw [← Algebra.smul_mul_assoc]
+    rw [smul_C]
+    rw [← smul_eq_mul]
+    rw [smul_eq_mul a]
+    ring_nf
+    field_simp
+    congr
+    · ext n : 1; simp_all only [coeff_smul, smul_eq_mul, coeff_C_mul]
+    · rw [← C_pow]
+      rw [← C_pow]
+      rw [div_pow]
+      rw [div_pow]
+      rw [sq s]
+      rw [← h]
+      rw [discrim]
+      rw [← C_sub]
+      rw [smul_C]
+      rw [smul_eq_mul]
+      field_simp
+      ring_nf
+
+theorem quadratic_roots_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
+    (h : discrim a b c = s * s) :
+    (a • X ^ 2 + b • X + C c).roots = {(-b + s) / (2 * a), (-b - s) / (2 * a)} := by
+  rw [factorize_quadratic_of_discrim_eq_sq ha h, Polynomial.roots_mul
+    (by rw [← factorize_quadratic_of_discrim_eq_sq ha h]; exact quadratic_ne_zero ha)]
+  simp_all only [ne_eq, Algebra.smul_mul_assoc, not_false_eq_true, roots_smul_nonzero,
+    roots_X_sub_C, Multiset.singleton_add, Multiset.insert_eq_cons]
+
+end QuadraticDiscriminant
 
 end Polynomial
