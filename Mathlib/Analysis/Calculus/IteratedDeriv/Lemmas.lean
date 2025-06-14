@@ -54,7 +54,7 @@ theorem iteratedDerivWithin_const_sub (hn : 0 < n) (c : F) :
   obtain ⟨n, rfl⟩ := n.exists_eq_succ_of_ne_zero hn.ne'
   rw [iteratedDerivWithin_succ', iteratedDerivWithin_succ']
   congr with y
-  rw [derivWithin.neg]
+  rw [derivWithin.fun_neg]
   exact derivWithin_const_sub _
 
 @[deprecated (since := "2024-12-10")]

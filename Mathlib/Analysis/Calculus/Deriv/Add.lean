@@ -219,17 +219,27 @@ nonrec theorem HasDerivAt.neg (h : HasDerivAt f f' x) : HasDerivAt (fun x => -f 
 nonrec theorem HasStrictDerivAt.neg (h : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x => -f x) (-f') x := by simpa using h.neg.hasStrictDerivAt
 
-theorem derivWithin.neg : derivWithin (fun y => -f y) s x = -derivWithin f s x := by
+theorem derivWithin.fun_neg : derivWithin (fun y => -f y) s x = -derivWithin f s x := by
   by_cases hsx : UniqueDiffWithinAt 𝕜 s x
   · simp only [derivWithin, fderivWithin_neg hsx, ContinuousLinearMap.neg_apply]
   · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
-theorem deriv.neg : deriv (fun y => -f y) x = -deriv f x := by
+theorem derivWithin.neg : derivWithin (-f) s x = -derivWithin f s x :=
+  derivWithin.fun_neg
+
+theorem deriv.fun_neg : deriv (fun y => -f y) x = -deriv f x := by
   simp only [deriv, fderiv_neg, ContinuousLinearMap.neg_apply]
 
+theorem deriv.neg : deriv (-f) x = -deriv f x :=
+  deriv.fun_neg
+
 @[simp]
-theorem deriv.neg' : (deriv fun y => -f y) = fun x => -deriv f x :=
-  funext fun _ => deriv.neg
+theorem deriv.fun_neg' : (deriv fun y => -f y) = fun x => -deriv f x :=
+  funext fun _ => deriv.fun_neg
+
+@[simp]
+theorem deriv.neg' : deriv (-f) = -deriv f :=
+  deriv.fun_neg'
 
 end Neg
 
@@ -310,7 +320,7 @@ theorem HasStrictDerivAt.sub (hf : HasStrictDerivAt f f' x) (hg : HasStrictDeriv
 theorem derivWithin_sub (hf : DifferentiableWithinAt 𝕜 f s x)
     (hg : DifferentiableWithinAt 𝕜 g s x) :
     derivWithin (fun y => f y - g y) s x = derivWithin f s x - derivWithin g s x := by
-  simp only [sub_eq_add_neg, derivWithin_add hf hg.neg, derivWithin.neg]
+  simp only [sub_eq_add_neg, derivWithin_add hf hg.neg, derivWithin.fun_neg]
 
 @[simp]
 theorem deriv_sub (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
@@ -372,7 +382,7 @@ nonrec theorem HasDerivAt.const_sub (c : F) (hf : HasDerivAt f f' x) :
 
 theorem derivWithin_const_sub (c : F) :
     derivWithin (fun y => c - f y) s x = -derivWithin f s x := by
-  simp [sub_eq_add_neg, derivWithin.neg]
+  simp [sub_eq_add_neg, derivWithin.fun_neg]
 
 theorem deriv_const_sub (c : F) : deriv (fun y => c - f y) x = -deriv f x := by
   simp only [← derivWithin_univ, derivWithin_const_sub]

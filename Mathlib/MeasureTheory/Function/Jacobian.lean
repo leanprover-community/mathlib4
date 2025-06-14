@@ -1212,6 +1212,34 @@ theorem integral_target_eq_integral_abs_det_fderiv_smul {f : PartialHomeomorph E
   intro x hx
   exact (hf' x hx).hasFDerivWithinAt
 
+#where
+
+variable {t : Set ℝ} {g : ℝ → ℝ} {g' : ℝ → ℝ}
+
+lemma foo {a x : ℝ} (hf : MonotoneOn g t) (hx : HasDerivWithinAt g a t x)
+    (h'x : (𝓝[t \ {x}] x).NeBot) : 0 ≤ a := by
+  have W := hasDerivWithinAt_iff_tendsto_slope.1 hx
+
+/-- Change of variable formula for differentiable functions, set version: if a function `f` is
+injective and differentiable on a measurable set `s`, then the measure of `f '' s` is given by the
+integral of `|(f' x).det|` on `s`.
+Note that the measurability of `f '' s` is given by `measurable_image_of_fderivWithin`. -/
+theorem lintegral_abs_det_fderiv_eq_addHaar_image_glou (ht : MeasurableSet t)
+    (hf' : ∀ x ∈ t, HasDerivWithinAt g (g' x) t x) (hf : MonotoneOn g t) :
+    (∫⁻ x in t, ENNReal.ofReal (g' x)) = volume (g '' t) := by
+  let s := {x ∈ t | g' x ≠ 0 ∧ (𝓝[t ∩ Ioi x] x).NeBot}
+  have : StrictMonoOn g s := by
+    intro x hx y hy hxy
+    have A : t ∩ Ioo x y ∈ 𝓝[t ∩ Ioi x] x := by
+      simp only [nhdsWithin_inter, inter_mem_iff]
+      refine ⟨mem_inf_of_left self_mem_nhdsWithin, mem_inf_of_right (Ioo_mem_nhdsGT hxy)⟩
+    have : (𝓝[t ∩ Ioi x] x).NeBot := hx.2.2
+    have A : 0 ≤ g' x := by
+      have : x ∈ t := hx.1
+      exact?
+
+
+
 section withDensity
 
 lemma _root_.MeasurableEmbedding.withDensity_ofReal_comap_apply_eq_integral_abs_det_fderiv_mul
