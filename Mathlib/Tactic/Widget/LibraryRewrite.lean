@@ -514,12 +514,11 @@ private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
         return .text <| "The selected expression cannot be rewritten, because the motive is " ++
           "not type correct. This usually occurs when trying to rewrite a term that appears " ++
           "as a dependent argument."
-      let fvarId := loc.fvarId
-      let location ← fvarId.mapM FVarId.getUserName
+      let location ← loc.fvarId?.mapM FVarId.getUserName
 
       let unfoldsHtml ← InteractiveUnfold.renderUnfolds subExpr occ location props.replaceRange doc
 
-      let (filtered, all) ← getRewriteInterfaces subExpr occ location fvarId initNames
+      let (filtered, all) ← getRewriteInterfaces subExpr occ location loc.fvarId? initNames
       let filtered ← renderRewrites subExpr filtered unfoldsHtml props.replaceRange doc false
       let all      ← renderRewrites subExpr all      unfoldsHtml props.replaceRange doc true
       return <FilterDetails

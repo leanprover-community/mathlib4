@@ -25,7 +25,7 @@ def pos : GoalsLocation → Pos
   | ⟨_, .target pos⟩     => pos
 
 /-- The hypothesis specified by the `GoalsLocation`. -/
-def fvarId : GoalsLocation → Option FVarId
+def fvarId? : GoalsLocation → Option FVarId
   | ⟨_, .hyp fvarId⟩        => fvarId
   | ⟨_, .hypType fvarId _⟩  => fvarId
   | ⟨_, .hypValue fvarId _⟩ => fvarId
