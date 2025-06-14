@@ -27,24 +27,21 @@ open CategoryTheory Limits Functor
 
 namespace CategoryTheory
 
-namespace Cat
-
 /-- The constant functor to the default object of a category whose underlying type is inhabited. -/
-def toInhabited {T : Type u} [Category.{v} T] [Inhabited T]
+def Functor.toInhabited {T : Type u} [Category.{v} T] [Inhabited T]
     (X : Type u') [Category.{v'} X] : X ⥤ T := (const X).obj default
-section
-variable {T : Type u} [Category.{v} T] [Unique T] [IsDiscrete T]
 
 /-- Any two functors to a discrete category on a unique object are *equal*. -/
-theorem toDiscreteUnique_ext {X : Type u'} [Category.{v'} X] (F G : X ⥤ T) : F = G :=
+theorem Discrete.functor_ext_of_unique {T : Type u} [Category.{v} T] [Unique T] [IsDiscrete T]
+    {X : Type u'} [Category.{v'} X] (F G : X ⥤ T) : F = G :=
   Functor.ext fun X => by simp only [eq_iff_true_of_subsingleton]
+namespace Cat
 
 /-- A discrete category with a unique object is terminal. -/
-def isDiscreteUnique.isTerminal : IsTerminal (Cat.of T) :=
+def isDiscreteUnique.isTerminal {T : Type u} [Category.{v} T] [Unique T] [IsDiscrete T] :
+    IsTerminal (Cat.of T) :=
   IsTerminal.ofUniqueHom (fun X ↦ toInhabited (T := T) X)
-    (fun _ _ ↦ toDiscreteUnique_ext (T := T) _ _)
-
-end
+    (fun _ _ ↦ Discrete.functor_ext_of_unique (T := T) _ _)
 
 /-- Any `T : Cat.{u, u}` with a unique object and discrete homs is isomorphic to `⊤_ Cat.{u, u}.` -/
 noncomputable def terminalDiscreteUniqueIso
@@ -55,17 +52,12 @@ noncomputable def terminalDiscreteUniqueIso
 def isTerminalDiscretePUnit : IsTerminal (Cat.of (Discrete PUnit)) :=
   isDiscreteUnique.isTerminal
 
-section
-
-variable {T : Type u} [Category.{u} T] (H : IsTerminal (Cat.of T))
-
 /-- Any terminal object `T : Cat.{u, u}` is isomorphic to `Cat.of (Discrete PUnit)`. -/
-def isoDiscretePUnitOfIsTerminal : Cat.of T ≅ Cat.of (Discrete PUnit) := by
-  refine (IsTerminal.uniqueUpToIso H DiscretePUnit.isTerminal)
+def isoDiscretePUnitOfIsTerminal {T : Type u} [Category.{u} T] (hT : IsTerminal (Cat.of T)) :
+    Cat.of T ≅ Cat.of (Discrete PUnit) :=
+  IsTerminal.uniqueUpToIso hT isTerminalDiscretePUnit
 
-end
 
 end Cat
-
 
 end CategoryTheory
