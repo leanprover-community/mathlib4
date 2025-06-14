@@ -317,7 +317,8 @@ theorem isCyclic_units_of_prime_pow (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2) (n 
           replace this := Int.dvd_of_mul_dvd_mul_left (a := p)
             (by simp [hp.ne_zero]) this
           rw [← intCast_zmod_eq_zero_iff_dvd] at this
-          simp only [Int.cast_mul, Int.cast_pow, Int.cast_natCast, mul_eq_zero, pow_eq_zero_iff', ne_eq] at this
+          simp only [Int.cast_mul, Int.cast_pow, Int.cast_natCast,
+            mul_eq_zero, pow_eq_zero_iff', ne_eq] at this
           rcases this with this | this
           · replace this := this.1
             simp only [this, eq_comm, Units.ne_zero] at hx
@@ -375,18 +376,17 @@ theorem isCyclic_units_of_prime_pow (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2) (n 
       rw [hx, ← hg]
       exact orderOf_injective (Units.coeHom _) Units.coeHom_injective g
     have H1 : p - 1 ∣ orderOf (a : ZMod (p ^ (n + 2))) := by
-      rw [← H0]
-      rw [orderOf_dvd_iff_pow_eq_one]
-      suffices (a : ZMod p) = castHom (Dvd.intro_left (p.pow (n + 1)) rfl) _ (a : ZMod (p ^ (n + 2))) by
-        rw [this]
-        rw [← map_pow, pow_orderOf_eq_one, map_one]
+      rw [← H0, orderOf_dvd_iff_pow_eq_one]
+      suffices (a : ZMod p) =
+        castHom (Dvd.intro_left (p.pow (n + 1)) rfl) _ (a : ZMod (p ^ (n + 2))) by
+        rw [this, ← map_pow, pow_orderOf_eq_one, map_one]
       simp
     have H2 : orderOf ((a : ZMod (p ^ (n + 2))) ^ (p - 1)) = p ^ (n + 1) := by
       obtain ⟨c, hpc, hca⟩ := hb'
       rw [← Int.cast_pow, hca]
       simp only [Int.cast_add, Int.cast_one, Int.cast_mul, Int.cast_natCast, x, hau]
       rw [mul_comm]
-      exact orderOf_one_add_mul_prime p hp hp2 _ hpc _
+      exact orderOf_one_add_mul_prime hp hp2 _ hpc _
     have H2' := orderOf_pow_dvd (x := (a : ZMod (p ^ (n + 2)))) (p - 1)
     rw [H2] at H2'
     apply Nat.dvd_antisymm
@@ -395,7 +395,7 @@ theorem isCyclic_units_of_prime_pow (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2) (n 
     · apply Nat.Coprime.mul_dvd_of_dvd_of_dvd ?_ H2' H1
       simp
       refine (Nat.coprime_self_sub_right ?_).mpr ?_
-      exact NeZero.one_le
+      · exact NeZero.one_le
       exact Nat.gcd_one_right p
 
 theorem isCyclic_units_two_pow_iff (n : ℕ) :
