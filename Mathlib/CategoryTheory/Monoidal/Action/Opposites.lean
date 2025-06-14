@@ -121,8 +121,8 @@ def oppositeLeftAction [MonoidalLeftAction C D] :
   actionHomLeft f d := (f.unop ⊵ₗ unop d).op
   actionHomRight c _ _ f := (unop c ⊴ₗ f.unop).op
   actionHom f g := (f.unop ⊙ₗ g.unop).op
-  actionAssocIso _ _ _ := Iso.op <| (σ_ₗ _ _ _|>.symm)
-  actionUnitIso _ := Iso.op <| (υ_ₗ _|>.symm)
+  actionAssocIso _ _ _ := Iso.op <| (σ_ₗ _ _ _).symm
+  actionUnitIso _ := Iso.op <| (υ_ₗ _).symm
   actionHom_def
     | op f, op g => by
         apply Quiver.Hom.unop_inj
@@ -163,8 +163,8 @@ def leftActionOfOppositeLeftAction [MonoidalLeftAction Cᵒᵖ Dᵒᵖ] :
   actionHomLeft {c c'} f d := (f.op ⊵ₗ op d).unop
   actionHomRight c {d d'} f := (op c ⊴ₗ f.op).unop
   actionHom {c c'} {d d} f g := (f.op ⊙ₗ g.op).unop
-  actionAssocIso _ _ _ := Iso.unop <| (σ_ₗ _ _ _|>.symm)
-  actionUnitIso _ := Iso.unop <| (υ_ₗ _|>.symm)
+  actionAssocIso _ _ _ := Iso.unop <| (σ_ₗ _ _ _).symm
+  actionUnitIso _ := Iso.unop <| (υ_ₗ _).symm
   actionHom_def f g := by
     apply Quiver.Hom.op_inj
     simpa [MonoidalLeftAction.action_exchange] using
@@ -333,8 +333,8 @@ def oppositeRightAction [MonoidalRightAction C D] :
   actionHomLeft {c c'} f d := (f.unop ᵣ⊵ unop d).op
   actionHomRight c {d d'} f := (unop c ᵣ⊴ f.unop).op
   actionHom {c c'} {d d'} f g := (f.unop ᵣ⊙ g.unop : unop d' ᵣ⊙ unop c' ⟶ _).op
-  actionAssocIso _ _ _ := Iso.op <| (ᵣσ_ _ _ _|>.symm)
-  actionUnitIso _ := Iso.op <| (ᵣυ_ _|>.symm)
+  actionAssocIso _ _ _ := Iso.op <| (ᵣσ_ _ _ _).symm
+  actionUnitIso _ := Iso.op <| (ᵣυ_ _).symm
   actionHom_def
     | op f, op g => by
         apply Quiver.Hom.unop_inj
@@ -375,8 +375,8 @@ def rightActionOfOppositeRightAction [MonoidalRightAction Cᵒᵖ Dᵒᵖ] :
   actionHomLeft {c c'} f d := (f.op ᵣ⊵ op d).unop
   actionHomRight c {d d'} f := (op c ᵣ⊴ f.op).unop
   actionHom {c c'} {d d} f g := (f.op ᵣ⊙ g.op : op d ᵣ⊙ op c' ⟶ _).unop
-  actionAssocIso _ _ _ := Iso.unop <| (ᵣσ_ _ _ _|>.symm)
-  actionUnitIso _ := Iso.unop <| (ᵣυ_ _|>.symm)
+  actionAssocIso _ _ _ := Iso.unop <| (ᵣσ_ _ _ _).symm
+  actionUnitIso _ := Iso.unop <| (ᵣυ_ _).symm
   actionHom_def f g := by
     apply Quiver.Hom.op_inj
     simpa [MonoidalRightAction.action_exchange] using
@@ -412,7 +412,7 @@ attribute [local instance] oppositeRightAction
 variable [MonoidalRightAction C D]
 
 lemma oppositeRightAction_actionObj_op (d : D) (c : C) :
-    (op d) ᵣ⊙ (op c) = op (d ᵣ⊙ c) := rfl
+    op d ᵣ⊙ op c = op (d ᵣ⊙ c) := rfl
 
 lemma oppositeRightAction_actionHomLeft_op
     {d d' : D} (f : d ⟶ d') (c : C) :
@@ -437,7 +437,7 @@ attribute [local instance] rightActionOfOppositeRightAction
 variable [MonoidalRightAction Cᵒᵖ Dᵒᵖ]
 
 lemma rightActionOfOppositeRightAction_actionObj_unop (d : Dᵒᵖ) (c : Cᵒᵖ) :
-    (unop d) ᵣ⊙ (unop c) = unop (d ᵣ⊙ c) := rfl
+    unop d ᵣ⊙ unop c = unop (d ᵣ⊙ c) := rfl
 
 lemma rightActionOfOppositeRightAction_actionHomLeft_unop
     {d d' : Dᵒᵖ} (f : d ⟶ d') (c : Cᵒᵖ) :
