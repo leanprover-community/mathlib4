@@ -6,6 +6,7 @@ Authors: Johan Commelin, Jujian Zhang
 
 import Mathlib.RingTheory.TwoSidedIdeal.Basic
 import Mathlib.RingTheory.TwoSidedIdeal.Lattice
+import Mathlib.RingTheory.Congruence.Hom
 
 /-!
 # Kernel of a ring homomorphism as a two-sided ideal
@@ -30,17 +31,13 @@ variable (f : F)
 The kernel of a ring homomorphism, as a two-sided ideal.
 -/
 def ker : TwoSidedIdeal R :=
-  .mk
-  { r := fun x y ↦ f x = f y
-    iseqv := by constructor <;> aesop
-    mul' := by intro; simp_all [map_add]
-    add' := by intro; simp_all [map_mul] }
+  .mk <| .ker f
 
 @[simp]
-lemma ker_ringCon {x y : R} : (ker f).ringCon x y ↔ f x = f y := Iff.rfl
+lemma ker_ringCon : (ker f).ringCon = .ker f := rfl
 
 lemma mem_ker {x : R} : x ∈ ker f ↔ f x = 0 := by
-  rw [mem_iff, ker_ringCon, map_zero]
+  rw [mem_iff, ker_ringCon, RingCon.ker_rel, map_zero]
 
 lemma ker_eq_bot : ker f = ⊥ ↔ Function.Injective f := by
   fconstructor
