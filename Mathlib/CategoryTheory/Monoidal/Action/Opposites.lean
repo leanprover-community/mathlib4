@@ -112,6 +112,8 @@ end
 
 open Opposite
 
+/-- Define a left action of `Cᵒᵖ` on `Dᵒᵖ` from a left action of `C` on `D` via
+the formula `(op c) ⊙ₗ (op d) = op (c ⊙ₗ d)`. -/
 @[simps -isSimp]
 def oppositeLeftAction [MonoidalLeftAction C D] :
     MonoidalLeftAction Cᵒᵖ Dᵒᵖ where
@@ -152,6 +154,8 @@ def oppositeLeftAction [MonoidalLeftAction C D] :
       apply IsIso.inv_eq_inv.mp
       simp
 
+/-- Define a left action of `C` on `D` from a left action of `Cᵒᵖ` on `Dᵒᵖ` via
+the formula `c ⊙ₗ d = unop ((op c) ⊙ₗ (op d))`. -/
 @[simps -isSimp]
 def leftActionOfOppositeLeftAction [MonoidalLeftAction Cᵒᵖ Dᵒᵖ] :
     MonoidalLeftAction C D where
@@ -320,6 +324,8 @@ end
 
 open Opposite
 
+/-- Define a right action of `Cᵒᵖ` on `Dᵒᵖ` from a right action of `C` on `D` via
+the formula `(op d) ᵣ⊙ (op c) = op (d ᵣ⊙ c)`. -/
 @[simps -isSimp]
 def oppositeRightAction [MonoidalRightAction C D] :
     MonoidalRightAction Cᵒᵖ Dᵒᵖ where
@@ -360,6 +366,8 @@ def oppositeRightAction [MonoidalRightAction C D] :
       apply IsIso.inv_eq_inv.mp
       simp
 
+/-- Define a right action of `C` on `D` from a right action of `Cᵒᵖ` on `Dᵒᵖ` via
+the formula `d ᵣ⊙ c = unop ((op d) ᵣ⊙ (op c))`. -/
 @[simps -isSimp]
 def rightActionOfOppositeRightAction [MonoidalRightAction Cᵒᵖ Dᵒᵖ] :
     MonoidalRightAction C D where
