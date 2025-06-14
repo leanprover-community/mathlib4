@@ -133,7 +133,7 @@ def tacticSyntax (e eNew : Expr) (occ : Option Nat) (loc : Option Name) :
 
 def tacticPasteString (tac : TSyntax `tactic) (range : Lsp.Range) : CoreM String := do
   let column := range.start.character
-  let indent := column + 2
+  let indent := column
   -- the maximum line width in mathlib is 100
   return (← PrettyPrinter.ppTactic tac).pretty 100 indent column
 
