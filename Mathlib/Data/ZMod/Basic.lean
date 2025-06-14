@@ -141,6 +141,12 @@ theorem natCast_self (n : ℕ) : (n : ZMod n) = 0 :=
 theorem natCast_self' (n : ℕ) : (n + 1 : ZMod (n + 1)) = 0 := by
   rw [← Nat.cast_add_one, natCast_self (n + 1)]
 
+lemma natCast_pow_eq_zero_of_le (p : ℕ) {m n : ℕ} (h : n ≤ m) :
+    (p ^ m : ZMod (p ^ n)) = 0 := by
+  obtain ⟨q, rfl⟩ := Nat.exists_eq_add_of_le h
+  rw [pow_add, ← Nat.cast_pow]
+  simp
+
 section UniversalProperty
 
 variable {n : ℕ} {R : Type*}
@@ -521,6 +527,7 @@ theorem val_neg_one (n : ℕ) : (-1 : ZMod n.succ).val = n := by
   · dsimp [ZMod, ZMod.cast]
     rw [Fin.coe_neg_one]
 
+
 /-- `-1 : ZMod n` lifts to `n - 1 : R`. This avoids the characteristic assumption in `cast_neg`. -/
 theorem cast_neg_one {R : Type*} [Ring R] (n : ℕ) : cast (-1 : ZMod n) = (n - 1 : R) := by
   rcases n with - | n
@@ -812,6 +819,11 @@ theorem inv_mul_of_unit {n : ℕ} (a : ZMod n) (h : IsUnit a) : a⁻¹ * a = 1 :
 protected theorem inv_eq_of_mul_eq_one (n : ℕ) (a b : ZMod n) (h : a * b = 1) : a⁻¹ = b :=
   left_inv_eq_right_inv (inv_mul_of_unit a ⟨⟨a, b, h, mul_comm a b ▸ h⟩, rfl⟩) h
 
+@[simp]
+theorem inv_neg_one (n : ℕ) : (-1 : ZMod n)⁻¹ = -1 := by
+  refine ZMod.inv_eq_of_mul_eq_one n (-1) (-1) ?_
+  simp
+
 lemma inv_mul_eq_one_of_isUnit {n : ℕ} {a : ZMod n} (ha : IsUnit a) (b : ZMod n) :
     a⁻¹ * b = 1 ↔ a = b := by
   -- ideally, this would be `ha.inv_mul_eq_one`, but `ZMod n` is not a `DivisionMonoid`...
@@ -819,6 +831,7 @@ lemma inv_mul_eq_one_of_isUnit {n : ℕ} {a : ZMod n} (ha : IsUnit a) (b : ZMod 
   refine ⟨fun H ↦ ?_, fun H ↦ H ▸ a.inv_mul_of_unit ha⟩
   apply_fun (a * ·) at H
   rwa [← mul_assoc, a.mul_inv_of_unit ha, one_mul, mul_one, eq_comm] at H
+
 
 -- TODO: this equivalence is true for `ZMod 0 = ℤ`, but needs to use different functions.
 /-- Equivalence between the units of `ZMod n` and
@@ -893,6 +906,9 @@ lemma nontrivial_iff {n : ℕ} : Nontrivial (ZMod n) ↔ n ≠ 1 := by
 -- todo: this can be made a `Unique` instance.
 instance subsingleton_units : Subsingleton (ZMod 2)ˣ :=
   ⟨by decide⟩
+
+theorem coe_int_val_coe {n : ℕ} [NeZero n] (x : ℤ) :
+    ((x : ZMod n).val : ZMod n) = x := by simp
 
 @[simp]
 theorem add_self_eq_zero_iff_eq_zero {n : ℕ} (hn : Odd n) {a : ZMod n} :
@@ -1278,3 +1294,5 @@ def Nat.residueClassesEquiv (N : ℕ) [NeZero N] : ℕ ≃ ZMod N × ℕ where
         cast_id', id_eq, zero_add]
     · simp only [add_comm p.1.val, mul_add_div (NeZero.pos _),
         (Nat.div_eq_zero_iff).2 <| .inr p.1.val_lt, add_zero]
+
+

@@ -216,6 +216,12 @@ theorem isCyclic_of_surjective {F : Type*} [hH : IsCyclic G']
   exact ⟨n, (map_zpow _ _ _).symm⟩
 
 @[to_additive]
+theorem MulEquiv.isCyclic {M N : Type*} [CommGroup M] [CommGroup N] (e : M ≃* N) :
+    IsCyclic M ↔ IsCyclic N :=
+  ⟨fun _ ↦ isCyclic_of_surjective e e.surjective,
+    fun _ ↦ isCyclic_of_surjective e.symm e.symm.surjective⟩
+
+@[to_additive]
 theorem orderOf_eq_card_of_forall_mem_zpowers {g : α} (hx : ∀ x, x ∈ zpowers g) :
     orderOf g = Nat.card α := by
   rw [← Nat.card_zpowers, (zpowers g).eq_top_iff'.mpr hx, card_top]
@@ -920,3 +926,48 @@ lemma mulEquivOfOrderOfEq_symm_apply_gen : (mulEquivOfOrderOfEq hg hg' h).symm g
 end mulEquiv
 
 end generator
+
+section prod
+
+/-- The product of two finite groups is cyclic iff
+both of them are cyclic and their orders are coprime. -/
+@[to_additive "The product of two finite groups is cyclic iff
+both of them are cyclic and their orders are coprime."]
+theorem Group.isCyclic_prod_iff
+    {M N : Type*} [CommGroup M] [Finite M] [CommGroup N] [Finite N] :
+    IsCyclic (M × N) ↔
+      IsCyclic M ∧ IsCyclic N ∧ (Nat.card M).Coprime (Nat.card N) := by
+  simp only [IsCyclic.iff_exponent_eq_card, Monoid.exponent_prod, Nat.card_prod, lcm_eq_nat_lcm]
+  have : Fintype M := Fintype.ofFinite M
+  have : Fintype N := Fintype.ofFinite N
+  obtain ⟨p, hp⟩ := Group.exponent_dvd_card (G := M)
+  obtain ⟨q, hq⟩ := Group.exponent_dvd_card (G := N)
+  rw [← Nat.card_eq_fintype_card] at hp hq
+  set a := Monoid.exponent M
+  set b := Monoid.exponent N
+  set m := Nat.card M
+  set n := Nat.card N
+  rw [hp, hq, Nat.mul_mul_mul_comm]
+  have hab := Nat.lcm_dvd_mul a b
+  obtain ⟨r, hr⟩ := hab
+  rw [hr, mul_assoc, eq_comm, mul_right_eq_self₀, Nat.lcm_eq_zero_iff,
+    mul_eq_one]
+  have ha : a ≠ 0 := Monoid.exponent_ne_zero_of_finite
+  have hb : b ≠ 0 := Monoid.exponent_ne_zero_of_finite
+  simp [ha, hb]
+  rw [and_comm, ← and_assoc, and_congr_right_iff]
+  rintro ⟨rfl, rfl⟩
+  simp only [mul_one] at hp hq ⊢
+  rw [Nat.coprime_iff_gcd_eq_one]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [h, mul_one, eq_comm, Nat.lcm_eq_mul_iff] at hr
+    simpa [ha, hb] using  hr
+  · suffices a * b = a.lcm b by
+      rw [this, eq_comm, mul_right_eq_self₀, Nat.lcm_eq_zero_iff] at hr
+      simpa [ha, hb] using hr
+    rw [eq_comm, Nat.lcm_eq_mul_iff]
+    simp [h]
+
+end prod
+
+

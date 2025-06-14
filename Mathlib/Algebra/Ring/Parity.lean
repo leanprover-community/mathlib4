@@ -279,6 +279,16 @@ lemma Odd.of_mul_left (h : Odd (m * n)) : Odd m :=
 lemma Odd.of_mul_right (h : Odd (m * n)) : Odd n :=
   (odd_mul.mp h).2
 
+lemma odd_pow {e : ℕ} (hn : Odd n) : Odd (n ^ e) := by
+  induction e with
+  | zero => simp [pow_zero]
+  | succ e hrec => simp [pow_succ, Nat.odd_mul, hn, hrec]
+
+lemma odd_pow_iff {e : ℕ} (he : e ≠ 0) : Odd (n ^ e) ↔ Odd n := by
+  refine ⟨?_, fun h ↦ odd_pow h⟩
+  simp only [← Nat.not_even_iff_odd, not_imp_not, even_pow]
+  exact fun h ↦ ⟨h, he⟩
+
 lemma even_div : Even (m / n) ↔ m % (2 * n) / n = 0 := by
   rw [even_iff_two_dvd, dvd_iff_mod_eq_zero, ← Nat.mod_mul_right_div_self, mul_comm]
 
