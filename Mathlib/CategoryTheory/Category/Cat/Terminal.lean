@@ -25,23 +25,13 @@ universe v u v' u'
 
 open CategoryTheory Limits Functor
 
-namespace CategoryTheory
-
-/-- The constant functor to the default object of a category whose underlying type is inhabited. -/
-def Functor.toInhabited {T : Type u} [Category.{v} T] [Inhabited T]
-    (X : Type u') [Category.{v'} X] : X ⥤ T := (const X).obj default
-
-/-- Any two functors to a discrete category on a unique object are *equal*. -/
-theorem Discrete.functor_ext_of_unique {T : Type u} [Category.{v} T] [Unique T] [IsDiscrete T]
-    {X : Type u'} [Category.{v'} X] (F G : X ⥤ T) : F = G :=
-  Functor.ext fun X => by simp only [eq_iff_true_of_subsingleton]
-namespace Cat
+namespace CategoryTheory.Cat
 
 /-- A discrete category with a unique object is terminal. -/
 def isDiscreteUnique.isTerminal {T : Type u} [Category.{v} T] [Unique T] [IsDiscrete T] :
     IsTerminal (Cat.of T) :=
-  IsTerminal.ofUniqueHom (fun X ↦ toInhabited (T := T) X)
-    (fun _ _ ↦ Discrete.functor_ext_of_unique (T := T) _ _)
+  IsTerminal.ofUniqueHom (fun X ↦ (const X).obj (default : T))
+    (fun _ _ ↦ Functor.ext (by simp [eq_iff_true_of_subsingleton]))
 
 /-- Any `T : Cat.{u, u}` with a unique object and discrete homs is isomorphic to `⊤_ Cat.{u, u}.` -/
 noncomputable def terminalDiscreteUniqueIso
@@ -57,7 +47,4 @@ def isoDiscretePUnitOfIsTerminal {T : Type u} [Category.{u} T] (hT : IsTerminal 
     Cat.of T ≅ Cat.of (Discrete PUnit) :=
   IsTerminal.uniqueUpToIso hT isTerminalDiscretePUnit
 
-
-end Cat
-
-end CategoryTheory
+end CategoryTheory.Cat
