@@ -177,7 +177,6 @@ lemma dTwo_single_one_thd (g h : G) (a : A) :
     dTwo A (single (g, h, 1) a) = single (h, 1) (A.ρ g⁻¹ a) - single (g * h, 1) a := by
   simp [dTwo]
 
-section
 variable (A) [DecidableEq G]
 
 /-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
@@ -263,21 +262,20 @@ theorem dOne_comp_dZero : dOne A ≫ dZero A = 0 := by
   simp [dZero, dOne, sum_add_index, sum_sub_index, sub_sub_sub_comm, add_sub_add_comm]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-theorem dTwo_comp_done : dTwo A ≫ dOne A = 0 := by
+theorem dTwo_comp_dOne : dTwo A ≫ dOne A = 0 := by
   simp [← cancel_mono (oneChainsIso A).inv, ← eq_dOne_comp_inv, ← eq_dTwo_comp_inv_assoc]
 
-end
 end Differentials
 
 section Cycles
 
 /-- The 1-cycles `Z₁(G, A)` of `A : Rep k G`, defined as the kernel of the map
 `(G →₀ A) → A` sending `single g a ↦ ρ_A(g⁻¹)(a) - a`. -/
-def oneCycles : Submodule k (G →₀ A) := LinearMap.ker (dZero A)
+def oneCycles : Submodule k (G →₀ A) := LinearMap.ker (dZero A).hom
 
 /-- The 2-cycles `Z₂(G, A)` of `A : Rep k G`, defined as the kernel of the map
 `(G² →₀ A) → (G →₀ A)` sending `a·(g₁, g₂) ↦ ρ_A(g₁⁻¹)(a)·g₂ - a·g₁g₂ + a·g₁`. -/
-def twoCycles : Submodule k (G × G →₀ A) := LinearMap.ker (dOne A)
+def twoCycles : Submodule k (G × G →₀ A) := LinearMap.ker (dOne A).hom
 
 variable {A}
 
@@ -296,18 +294,18 @@ theorem single_mem_oneCycles_of_mem_invariants (g : G) (a : A) (ha : a ∈ A.ρ.
 
 theorem dOne_apply_mem_oneCycles [DecidableEq G] (x : G × G →₀ A) :
     dOne A x ∈ oneCycles A :=
-  congr($(dZero_comp_dOne A) x)
+  congr($(dOne_comp_dZero A) x)
 
 variable (A) in
 theorem oneCycles_eq_top_of_isTrivial [A.IsTrivial] : oneCycles A = ⊤ := by
-  rw [oneCycles, dZero_eq_zero_of_isTrivial, LinearMap.ker_zero]
+  rw [oneCycles, dZero_eq_zero_of_isTrivial, ModuleCat.hom_zero, LinearMap.ker_zero]
 
 variable (A) in
-/-- The natural inclusion `Z₁(G, A) →ₗ[k] C₁(G, A)` is an isomorphism when the representation
+/-- The natural inclusion `Z₁(G, A) ≅ C₁(G, A)` is an isomorphism when the representation
 on `A` is trivial. -/
-abbrev oneCyclesLequivOfIsTrivial [A.IsTrivial] :
-    oneCycles A ≃ₗ[k] (G →₀ A) :=
-  LinearEquiv.ofTop _ (oneCycles_eq_top_of_isTrivial A)
+abbrev oneCyclesIsoOfIsTrivial [A.IsTrivial] :
+    ModuleCat.of k (oneCycles A) ≅ ModuleCat.of k (G →₀ A) :=
+  (LinearEquiv.ofTop _ (oneCycles_eq_top_of_isTrivial A)).toModuleIso
 
 theorem mem_twoCycles_iff (x : G × G →₀ A) :
     x ∈ twoCycles A ↔ x.sum (fun g a => single g.2 (A.ρ g.1⁻¹ a) + single g.1 a) =
@@ -327,7 +325,7 @@ theorem single_mem_twoCycles_iff (g : G × G) (a : A) :
 
 theorem dTwo_apply_mem_twoCycles [DecidableEq G] (x : G × G × G →₀ A) :
     dTwo A x ∈ twoCycles A :=
-  congr($(dOne_comp_dTwo A) x)
+  congr($(dTwo_comp_dOne A) x)
 
 end Cycles
 
@@ -336,13 +334,13 @@ section Boundaries
 /-- The 1-boundaries `B₁(G, A)` of `A : Rep k G`, defined as the image of the map
 `(G² →₀ A) → (G →₀ A)` sending `a·(g₁, g₂) ↦ ρ_A(g₁⁻¹)(a)·g₂ - a·g₁g₂ + a·g₁`. -/
 def oneBoundaries : Submodule k (G →₀ A) :=
-  LinearMap.range (dOne A)
+  LinearMap.range (dOne A).hom
 
 /-- The 2-boundaries `B₂(G, A)` of `A : Rep k G`, defined as the image of the map
 `(G³ →₀ A) → (G² →₀ A)` sending
 `a·(g₁, g₂, g₃) ↦ ρ_A(g₁⁻¹)(a)·(g₂, g₃) - a·(g₁g₂, g₃) + a·(g₁, g₂g₃) - a·(g₁, g₂)`. -/
 def twoBoundaries : Submodule k (G × G →₀ A) :=
-  LinearMap.range (dTwo A)
+  LinearMap.range (dTwo A).hom
 
 variable {A}
 
@@ -373,7 +371,7 @@ end
 theorem single_one_mem_oneBoundaries (a : A) :
     single 1 a ∈ oneBoundaries A := by
   use single (1, 1) a
-  simp
+  simp [dOne]
 
 theorem single_ρ_self_add_single_inv_mem_oneBoundaries (g : G) (a : A) :
     single g (A.ρ g a) + single g⁻¹ a ∈ oneBoundaries A := by
@@ -384,7 +382,6 @@ theorem single_inv_ρ_self_add_single_mem_oneBoundaries (g : G) (a : A) :
     single g⁻¹ (A.ρ g⁻¹ a) + single g a ∈ oneBoundaries A := by
   rw [← dOne_single_inv_mul_ρ_add_single g 1]
   exact Set.mem_range_self _
-
 
 section
 
@@ -413,22 +410,22 @@ end
 lemma single_one_fst_sub_single_one_fst_mem_twoBoundaries (g h : G) (a : A) :
     single (1, g * h) a - single (1, g) a ∈ twoBoundaries A := by
   use single (1, g, h) a
-  simp
+  simp [dTwo]
 
 lemma single_one_fst_sub_single_one_snd_mem_twoBoundaries (g h : G) (a : A) :
     single (1, h) (A.ρ g⁻¹ a) - single (g, 1) a ∈ twoBoundaries A := by
   use single (g, 1, h) a
-  simp
+  simp [dTwo]
 
 lemma single_one_snd_sub_single_one_fst_mem_twoBoundaries (g h : G) (a : A) :
     single (g, 1) (A.ρ g a) - single (1, h) a ∈ twoBoundaries A := by
   use single (g, 1, h) (A.ρ g (-a))
-  simp
+  simp [dTwo_single (G := G)]
 
 lemma single_one_snd_sub_single_one_snd_mem_twoBoundaries (g h : G) (a : A) :
     single (h, 1) (A.ρ g⁻¹ a) - single (g * h, 1) a ∈ twoBoundaries A := by
   use single (g, h, 1) a
-  simp
+  simp [dTwo]
 
 end Boundaries
 end groupHomology
