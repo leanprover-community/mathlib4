@@ -200,6 +200,8 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
   | .isBool .. => failure
   | .isNat _ lit p =>
     if 0 < lit.natLit! then
+      -- NB. The `try` branch is actually a special case of the `catch` branch, hence could be removed.
+      -- However, this makes the tactic slower, as synthesising the `try` classes is a bit faster.
       try
         let _a ← synthInstanceQ q(Semiring $α)
         let _a ← synthInstanceQ q(PartialOrder $α)
@@ -221,6 +223,8 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
         haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
         pure (.positive q(pos_of_isNat' (A := $α) $p $p'))
     else
+      -- NB. The `try` branch is actually a special case of the `catch` branch, hence could be removed.
+      -- However, this makes the tactic slower, as synthesising the `try` classes is a bit faster.
       try
         let _a ← synthInstanceQ q(Semiring $α)
         let _a ← synthInstanceQ q(PartialOrder $α)
