@@ -3,7 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.GroupWithZero.Equiv
 import Mathlib.Algebra.GroupWithZero.Units.Basic
@@ -309,6 +309,33 @@ instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero
   natCast n := if n = 0 then 0 else (n : α)
   natCast_zero := rfl
   natCast_succ n := by cases n <;> simp
+
+variable {α : Type*} [AddGroup α]
+
+/-- The equivalence between the units of `WithZero (Multiplicative α)` and `α`. -/
+def log : (WithZero (Multiplicative α))ˣ ≃ α :=
+  unitsWithZeroEquiv.toEquiv.trans Multiplicative.toAdd
+
+/-- The equivalence between `α` and the units of `WithZero (Multiplicative α)`. -/
+def exp : α ≃ (WithZero (Multiplicative α))ˣ :=
+  Multiplicative.toAdd.symm.trans unitsWithZeroEquiv.symm.toEquiv
+
+@[simp] lemma log_symm : (log (α := α)).symm = exp := rfl
+@[simp] lemma exp_symm : (exp (α := α)).symm = log := rfl
+
+@[simp] lemma exp_log (γ : (WithZero (Multiplicative α))ˣ) : exp (log γ) = γ := by simp [← log_symm]
+@[simp] lemma log_exp (a : α) : log (exp a) = a := by simp [← exp_symm]
+
+@[simp] lemma log_one : log 1 = (0 : α) := rfl
+@[simp] lemma exp_zero : exp (0 : α) = 1 := by simp [exp, log]
+
+lemma log_apply (γ : (WithZero (Multiplicative α))ˣ) :
+    log γ = Multiplicative.toAdd (unitsWithZeroEquiv γ) :=
+  rfl
+
+lemma exp_apply (a : α) :
+    exp a = unitsWithZeroEquiv.symm (Multiplicative.ofAdd a) :=
+  rfl
 
 end WithZero
 
