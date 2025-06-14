@@ -538,7 +538,7 @@ partial def normalize (iM : Q(Semifield $M)) (x : Q($M)) :
       let ⟨l, pf⟩ ← normalize iM y
       -- build the new list and proof
       pure ⟨l.onExponent (HMul.hMul s), (q(NF.zpow_eq_eval $s $pf):)⟩
-  /- normalize an integer exponentiation: `y ^ (s : ℤ)` -/
+  /- normalize a natural number exponentiation: `y ^ (s : ℕ)` -/
   | ~q($y ^ ($s : ℕ)) =>
     let some s := Expr.nat? s | baseCase x
     if s = 0 then
@@ -595,7 +595,7 @@ elab "field_simp2" : conv => do
   Conv.applySimpResult { expr := e, proof? := some pf }
 
 elab "field_simp2" : tactic => liftMetaTactic fun g ↦ do
-  -- find the expression `x` to `conv` on
+  -- find the proposition `t` to prove
   let t ← g.getType''
   let some ⟨_, a, b⟩ := t.eq? | throwError "field_simp proves only equality goals"
   -- infer `u` and `K : Q(Type u)` such that `x : Q($K)`
@@ -659,7 +659,7 @@ end
 
 /-- info: x ^ (-3) -/
 #guard_msgs in
-#conv field_simp2 =>x ^ (-1 : ℤ) * x ^ (-2 : ℤ)
+#conv field_simp2 => x ^ (-1 : ℤ) * x ^ (-2 : ℤ)
 
 -- Cancellation: if x could be zero, we cannot cancel x * x⁻¹.
 -- TODO: right now, we always cancel (which we should not)
@@ -800,6 +800,15 @@ example : (1:ℚ) / 3 + 1 / 6 = 1 / 2 := by
   field_simp2
   norm_cast
 
+example : x / (x + y) + y / (x + y) = 1 := by
+  field_simp2
+  rfl
+
+example : ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 = 1 := by
+  field_simp2
+  guard_target = (x ^ 2 - y ^ 2) ^ 2 + x ^ 2 * y ^ 2 * 2 ^ 2 = (x ^ 2 + y ^ 2) ^ 2
+  sorry
+
 -- from PythagoreanTriples
 example {K : Type*} [Semifield K] (x y : K) :
     2 * (x / (y + 1)) / (1 + (x / (y + 1)) ^ 2) = x := by
@@ -809,7 +818,17 @@ example {K : Type*} [Semifield K] (x y : K) :
 
 -- from Set.IsoIoo
 example {K : Type*} [Field K] (x y z : K) :
-    ↑x / (1 - y) / (1 + y / (1 - y)) = z := by
+    x / (1 - y) / (1 + y / (1 - y)) = z := by
   field_simp2
   guard_target = x = (1 - y + y) * z
+  sorry
+
+/-! ### Tests from `field_simp` file -/
+
+/--
+Test that the discharger can clear nontrivial denominators in ℚ.
+-/
+example (x : ℚ) (h₀ : x ≠ 0) : (4 / x)⁻¹ * ((3 * x^3) / x)^2 * ((1 / (2 * x))⁻¹)^3 = 18 * x^8 := by
+  field_simp2
+  guard_target = x ^ 8 * 3 ^ 2 * 2 ^ 3 = 4 * x ^ 8 * 18
   sorry
