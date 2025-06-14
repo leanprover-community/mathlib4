@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Emily Riehl
 -/
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
 import Mathlib.CategoryTheory.Enriched.Basic
+import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 
 /-!
 # The strict bicategory associated to a Cat-enriched category
@@ -19,9 +20,11 @@ We provide this with an instance of a strict bicategory structure constructing
 `Bicategory.Strict (CatEnriched C)`.
 -/
 
+universe u v
 namespace CategoryTheory
 open Category
 
+section
 variable {C : Type*} [EnrichedCategory Cat C]
 
 /-- A type synonym for `C`, which should come equipped with a `Cat`-enriched category structure.
@@ -124,5 +127,120 @@ bicategory structure on `CatEnriched C` is strict. -/
 instance : Bicategory.Strict (CatEnriched C) where
 
 end CatEnriched
+
+end
+
+section
+variable {C : Type*} [Category C]
+
+/-- TODO: move and fix the name. -/
+def equivObj : Cat.chosenTerminal ⥤ C ≃ C where
+  toFun F := F.obj ⟨⟨⟨⟩⟩⟩
+  invFun := sorry
+  left_inv := sorry
+  right_inv := sorry
+
+/-- TODO: move and fix the name. -/
+@[simp]
+theorem equivObj_toFun (F : Cat.chosenTerminal ⥤ C) : equivObj F = F.obj ⟨⟨⟨⟩⟩⟩ := rfl
+
+variable [EnrichedOrdinaryCategory Cat C]
+
+/-- A type synonym for `C`, which should come equipped with a `Cat`-enriched category structure.
+This converts it to a strict bicategory where `Category (X ⟶ Y)` is `(X ⟶[Cat] Y)`. -/
+def CatEnrichedOrdinary (C : Type*) := C
+
+namespace CatEnrichedOrdinary
+
+instance : Category (CatEnrichedOrdinary C) := inferInstanceAs (Category C)
+
+instance : EnrichedCategory Cat (CatEnrichedOrdinary C) := inferInstanceAs (EnrichedCategory Cat C)
+
+instance : EnrichedOrdinaryCategory Cat (CatEnrichedOrdinary C) :=
+  inferInstanceAs (EnrichedOrdinaryCategory Cat C)
+
+/-- The hom-types in a `Cat`-enriched ordinary category are equivalent to the types
+underlying the hom-categories. -/
+def homEquiv {a b : CatEnrichedOrdinary C} : (a ⟶ b) ≃ (a ⟶[Cat] b).α :=
+  (eHomEquiv (V := Cat)).trans equivObj
+
+theorem homEquiv_comp {a b c : CatEnrichedOrdinary C} (f : a ⟶ b) (g : b ⟶ c) :
+    homEquiv (f ≫ g) = (eComp Cat a b c).obj ⟨homEquiv f, homEquiv g⟩ := by
+  unfold homEquiv
+  simp only [Equiv.trans_apply]
+  rw [eHomEquiv_comp]
+  rfl
+
+/-- A `Cat`-enriched ordinary category comes with hom-categories `X ⟶[Cat] Y` and the type of
+objects is equivalent to the type `X ⟶ Y` defined by the category structure on `C`. The following
+definition transfers the category structure to the latter type of objects. -/
+instance {X Y : CatEnrichedOrdinary C} : Category (X ⟶ Y) where
+  Hom f g := homEquiv f ⟶ homEquiv g
+  id f := 𝟙 _
+  comp α β := α ≫ β
+
+/-- The horizonal composition on 2-morphisms is defined using the action on arrows of the
+composition bifunctor from the enriched category structure. -/
+@[simp]
+def hComp {a b c : CatEnrichedOrdinary C} {f f' : a ⟶ b} {g g' : b ⟶ c}
+    (η : f ⟶ f') (θ : g ⟶ g') : f ≫ g ⟶ f' ≫ g' := by
+  show homEquiv (f ≫ g) ⟶ homEquiv (f' ≫ g')
+  exact eqToHom (homEquiv_comp f g) ≫ (eComp Cat a b c).map ⟨η, θ⟩ ≫
+    eqToHom (homEquiv_comp f' g').symm
+
+-- theorem hComp_nat {a b c : CatEnrichedOrdinary C} {f f' : a ⟶ b} {g g' : b ⟶ c}
+--     (η : f ⟶ f') (θ : g ⟶ g') :
+--     eqToHom (homEquiv_comp f g) ≫ (eComp Cat a b c).map (η, θ) =
+--       hComp η θ ≫ eqToHom (homEquiv_comp f' g') := sorry
+
+@[simp]
+theorem id_hComp_id {a b c : CatEnrichedOrdinary C} (f : a ⟶ b) (g : b ⟶ c) :
+    hComp (𝟙 f) (𝟙 g) = 𝟙 (f ≫ g) := by
+  unfold hComp
+  show _ ≫ (eComp Cat a b c).map (𝟙 _) ≫ _ = _
+  rw [Functor.map_id, id_comp, eqToHom_trans, eqToHom_refl]
+  rfl
+
+/-- The interchange law for horizontal and vertical composition of 2-cells in a bicategory. -/
+-- set_option pp.proofs true in
+@[simp]
+theorem hComp_comp {a b c : CatEnrichedOrdinary C} {f₁ f₂ f₃ : a ⟶ b} {g₁ g₂ g₃ : b ⟶ c}
+    (η : f₁ ⟶ f₂) (η' : f₂ ⟶ f₃) (θ : g₁ ⟶ g₂) (θ' : g₂ ⟶ g₃) :
+    hComp η θ ≫ hComp η' θ' = hComp (η ≫ η') (θ ≫ θ') := by
+  unfold hComp
+  dsimp
+  rw [← prod_comp (f := ⟨η, θ⟩) (g := (η', θ'))]
+  erw [(eComp Cat a b c).map_comp (X := (_, _)) (Y := (_, _)) (Z := (_, _))
+    (f := ⟨η, θ⟩) (g := (η', θ'))]
+  sorry
+
+instance : Bicategory (CatEnrichedOrdinary C) where
+  homCategory := inferInstance
+  whiskerLeft {_ _ _} f {_ _} η := hComp (𝟙 f) η
+  whiskerRight η h := hComp η (𝟙 h)
+  associator f g h := eqToIso (assoc f g h)
+  leftUnitor f := eqToIso (id_comp f)
+  rightUnitor f := eqToIso (comp_id f)
+  whiskerLeft_id := sorry
+  whiskerLeft_comp := sorry
+  id_whiskerLeft := sorry
+  comp_whiskerLeft := sorry
+  id_whiskerRight := sorry
+  comp_whiskerRight := sorry
+  whiskerRight_id := sorry
+  whiskerRight_comp := sorry
+  whisker_assoc := sorry
+  whisker_exchange := sorry
+  pentagon := sorry
+  triangle := sorry
+
+/-- As the associator and left and right unitors are defined as eqToIso of category axioms, the
+bicategory structure on `CatEnrichedOrdinary C` is strict. -/
+instance : Bicategory.Strict (CatEnrichedOrdinary C) := sorry
+
+
+end CatEnrichedOrdinary
+
+end
 
 end CategoryTheory
