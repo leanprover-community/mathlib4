@@ -430,7 +430,6 @@ theorem AddSubgroup.toIntSubmodule_toAddSubgroup (S : AddSubgroup M) :
     S.toIntSubmodule.toAddSubgroup = S :=
   AddSubgroup.toIntSubmodule.symm_apply_apply S
 
-@[simp]
 theorem Submodule.toAddSubgroup_toIntSubmodule (S : Submodule ℤ M) :
     S.toAddSubgroup.toIntSubmodule = S :=
   AddSubgroup.toIntSubmodule.apply_symm_apply S
