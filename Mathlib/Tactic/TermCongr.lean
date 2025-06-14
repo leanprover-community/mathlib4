@@ -448,6 +448,9 @@ def mkCongrOfCHole? (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM (Option Co
     throwCongrEx lhs rhs "Left-hand side lost its congruence hole annotation."
   | none, none => return none
 
+
+mutual
+
 /-- Walks along both `lhs` and `rhs` simultaneously to create a congruence lemma between them.
 
 Where they are desynchronized, we fall back to the base case (using `CongrResult.mkDefault'`)
@@ -477,67 +480,7 @@ partial def mkCongrOf (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
   match lhs, rhs with
   | .app .., .app .. =>
     trace[Elab.congr] "app"
-    let arity := lhs.getAppNumArgs
-    unless arity == rhs.getAppNumArgs do
-      trace[Elab.congr] "app desync (arity)"
-      return ← CongrResult.mkDefault' mvarCounterSaved lhs rhs
-    let f := lhs.getAppFn
-    let f' := rhs.getAppFn
-    unless ← isDefEq (← inferType f) (← inferType f') do
-      trace[Elab.congr] "app desync (function types)"
-      return ← CongrResult.mkDefault' mvarCounterSaved lhs rhs
-    let fnRes ← mkCongrOf (depth + 1) mvarCounterSaved f f'
-    trace[Elab.congr] "mkCongrOf functions {f}, {f'} has isRfl = {fnRes.isRfl}"
-    if !fnRes.isRfl then
-      -- If there's a nontrivial proof, then since mkHCongrWithArity fixes the function
-      -- we need to handle this ourselves.
-      let lhs := mkAppN fnRes.lhs lhs.getAppArgs
-      let lhs' := mkAppN fnRes.rhs lhs.getAppArgs
-      let rhs := mkAppN fnRes.rhs rhs.getAppArgs
-      let mut pf ← fnRes.eq
-      for arg in lhs.getAppArgs do
-        pf ← mkCongrFun pf arg
-      let res1 := CongrResult.mk' lhs lhs' pf
-      let res2 ← mkCongrOf (depth + 1) mvarCounterSaved lhs' rhs
-      return res1.trans res2
-    let thm ← mkHCongrWithArity' fnRes.lhs arity
-    let mut args := #[]
-    let mut lhsArgs := #[]
-    let mut rhsArgs := #[]
-    let mut nontriv : Bool := false
-    for lhs' in lhs.getAppArgs, rhs' in rhs.getAppArgs, kind in thm.argKinds do
-      match kind with
-      | .eq =>
-        let res ← mkCongrOf (depth + 1) mvarCounterSaved lhs' rhs'
-        nontriv := nontriv || !res.isRfl
-        args := args |>.push res.lhs |>.push res.rhs |>.push (← res.eq)
-        lhsArgs := lhsArgs.push res.lhs
-        rhsArgs := rhsArgs.push res.rhs
-      | .heq =>
-        let res ← mkCongrOf (depth + 1) mvarCounterSaved lhs' rhs'
-        nontriv := nontriv || !res.isRfl
-        args := args |>.push res.lhs |>.push res.rhs |>.push (← res.heq)
-        lhsArgs := lhsArgs.push res.lhs
-        rhsArgs := rhsArgs.push res.rhs
-      | .subsingletonInst =>
-        -- Warning: we're not processing any congruence holes here.
-        -- Users shouldn't be intentionally placing them in such arguments anyway.
-        -- We can't throw an error because these arguments might incidentally have
-        -- congruence holes by unification.
-        nontriv := true
-        let lhs := removeCHoles lhs'
-        let rhs := removeCHoles rhs'
-        args := args |>.push lhs |>.push rhs
-        lhsArgs := lhsArgs.push lhs
-        rhsArgs := rhsArgs.push rhs
-      | _ => panic! "unexpected hcongr argument kind"
-    let lhs := mkAppN fnRes.lhs lhsArgs
-    let rhs := mkAppN fnRes.rhs rhsArgs
-    if nontriv then
-      return CongrResult.mk' lhs rhs (mkAppN thm.proof args)
-    else
-      -- `lhs` and `rhs` *should* be defeq, but use `mkDefault` just to be safe.
-      CongrResult.mkDefault lhs rhs
+    mkCongrOfApp depth mvarCounterSaved lhs rhs
   | .lam .., .lam .. =>
     trace[Elab.congr] "lam"
     let resDom ← mkCongrOf (depth + 1) mvarCounterSaved lhs.bindingDomain! rhs.bindingDomain!
@@ -600,6 +543,75 @@ partial def mkCongrOf (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
   | _, _ =>
     trace[Elab.congr] "base case"
     CongrResult.mkDefault' mvarCounterSaved lhs rhs
+
+/--
+Generate congruence for applications `lhs` and `rhs`.
+-/
+partial def mkCongrOfApp (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr) :
+    MetaM CongrResult := do
+  let arity := lhs.getAppNumArgs
+  unless arity == rhs.getAppNumArgs do
+    trace[Elab.congr] "app desync (arity)"
+    return ← CongrResult.mkDefault' mvarCounterSaved lhs rhs
+  let f := lhs.getAppFn
+  let f' := rhs.getAppFn
+  unless ← isDefEq (← inferType f) (← inferType f') do
+    trace[Elab.congr] "app desync (function types)"
+    return ← CongrResult.mkDefault' mvarCounterSaved lhs rhs
+  let fnRes ← mkCongrOf (depth + 1) mvarCounterSaved f f'
+  trace[Elab.congr] "mkCongrOf functions {f}, {f'} has isRfl = {fnRes.isRfl}"
+  if !fnRes.isRfl then
+    -- If there's a nontrivial proof, then since mkHCongrWithArity fixes the function
+    -- we need to handle this ourselves.
+    let lhs := mkAppN fnRes.lhs lhs.getAppArgs
+    let lhs' := mkAppN fnRes.rhs lhs.getAppArgs
+    let rhs := mkAppN fnRes.rhs rhs.getAppArgs
+    let mut pf ← fnRes.eq
+    for arg in lhs.getAppArgs do
+      pf ← mkCongrFun pf arg
+    let res1 := CongrResult.mk' lhs lhs' pf
+    let res2 ← mkCongrOf (depth + 1) mvarCounterSaved lhs' rhs
+    return res1.trans res2
+  let thm ← mkHCongrWithArity' fnRes.lhs arity
+  let mut args := #[]
+  let mut lhsArgs := #[]
+  let mut rhsArgs := #[]
+  let mut nontriv : Bool := false
+  for lhs' in lhs.getAppArgs, rhs' in rhs.getAppArgs, kind in thm.argKinds do
+    match kind with
+    | .eq =>
+      let res ← mkCongrOf (depth + 1) mvarCounterSaved lhs' rhs'
+      nontriv := nontriv || !res.isRfl
+      args := args |>.push res.lhs |>.push res.rhs |>.push (← res.eq)
+      lhsArgs := lhsArgs.push res.lhs
+      rhsArgs := rhsArgs.push res.rhs
+    | .heq =>
+      let res ← mkCongrOf (depth + 1) mvarCounterSaved lhs' rhs'
+      nontriv := nontriv || !res.isRfl
+      args := args |>.push res.lhs |>.push res.rhs |>.push (← res.heq)
+      lhsArgs := lhsArgs.push res.lhs
+      rhsArgs := rhsArgs.push res.rhs
+    | .subsingletonInst =>
+      -- Warning: we're not processing any congruence holes here.
+      -- Users shouldn't be intentionally placing them in such arguments anyway.
+      -- We can't throw an error because these arguments might incidentally have
+      -- congruence holes by unification.
+      nontriv := true
+      let lhs := removeCHoles lhs'
+      let rhs := removeCHoles rhs'
+      args := args |>.push lhs |>.push rhs
+      lhsArgs := lhsArgs.push lhs
+      rhsArgs := rhsArgs.push rhs
+    | _ => panic! "unexpected hcongr argument kind"
+  let lhs := mkAppN fnRes.lhs lhsArgs
+  let rhs := mkAppN fnRes.rhs rhsArgs
+  if nontriv then
+    return CongrResult.mk' lhs rhs (mkAppN thm.proof args)
+  else
+    -- `lhs` and `rhs` *should* be defeq, but use `mkDefault` just to be safe.
+    CongrResult.mkDefault lhs rhs
+
+end
 
 /-! ### Elaborating congruence quotations -/
 
