@@ -60,6 +60,7 @@ where
         · rw [Nat.div_eq_zero_iff, or_iff_right (by omega), not_lt] at hn
           rw [log_div_base, ← Nat.sub_add_comm (one_le_of_lt (log_pos (lt_of_succ_le h) hn))]
           exact lt_of_succ_lt_succ hf
+  /-- Auxiliary function performing recursion for  `Nat.digitsAux`. -/
   go (n fuel : ℕ) (hfuel : (if n = 0 then 0 else b.log n + 2) < fuel) : List ℕ :=
     match n, fuel, hfuel with
     | 0, _, _ => []
