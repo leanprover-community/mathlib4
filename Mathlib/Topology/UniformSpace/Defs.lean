@@ -225,7 +225,7 @@ lemma prod_compRel_prod_of_inter_nonempty (hst : (s₂ ∩ t₁).Nonempty) :
     s₁ ×ˢ s₂ ○ t₁ ×ˢ t₂ = s₁ ×ˢ t₂ := by aesop
 
 lemma prod_compRel_prod_of_disjoint (hst : Disjoint s₂ t₁) : s₁ ×ˢ s₂ ○ t₁ ×ˢ t₂ = ∅ :=
-  eq_empty_of_forall_not_mem fun _ ⟨_z, ⟨_, hzs⟩, hzt, _⟩ ↦ Set.disjoint_left.1 hst hzs hzt
+  eq_empty_of_forall_notMem fun _ ⟨_z, ⟨_, hzs⟩, hzt, _⟩ ↦ Set.disjoint_left.1 hst hzs hzt
 
 lemma prod_compRel_prod (s₁ s₂ t₁ t₂ : Set α) [Decidable (Disjoint s₂ t₁)] :
     s₁ ×ˢ s₂ ○ t₁ ×ˢ t₂ = if Disjoint s₂ t₁ then ∅ else s₁ ×ˢ t₂ := by

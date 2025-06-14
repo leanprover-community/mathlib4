@@ -145,7 +145,7 @@ instance UniformSpace.toCompletelyRegularSpace : CompletelyRegularSpace α where
             (subset_comp_self_of_mem_uniformity (descend (descend ⟨O, hOu⟩)).2)).trans hccccO⟩
     }
     exact ⟨fun x => ⟨c.lim x, c.lim_mem_Icc x⟩, c.continuous_lim.subtype_mk c.lim_mem_Icc,
-      Subtype.ext (c.lim_of_mem_C x hxo), fun y hy => Subtype.ext (c.lim_of_nmem_U y (hyo hy))⟩
+      Subtype.ext (c.lim_of_mem_C x hxo), fun y hy => Subtype.ext (c.lim_of_notMem_U y (hyo hy))⟩
 
 end UniformSpace
 
@@ -253,7 +253,7 @@ private theorem u_l_le : (inducedUniformity α).toTopologicalSpace ≤ t := by
   rw [@isOpen_iff_ball_subset]
   intro x hx
   obtain ⟨f, hf, hf0, hf1⟩ :=
-    CompletelyRegularSpace.completely_regular x sᶜ hs.isClosed_compl (not_mem_compl_iff.mpr hx)
+    CompletelyRegularSpace.completely_regular x sᶜ hs.isClosed_compl (notMem_compl_iff.mpr hx)
   use ((fun p : α × α => dist (f p.fst : ℝ) (f p.snd)) ⁻¹' Iio 2⁻¹)
   constructor
   · have hf' : Continuous (fun i => (f i : ℝ)) := continuous_subtype_val.comp hf
