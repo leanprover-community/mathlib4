@@ -327,34 +327,6 @@ def filterRewrites {α} (e : Expr) (rewrites : Array α) (replacement : α → E
 
 /-! ### User interface -/
 
-open PrettyPrinter Delaborator SubExpr in
-/-- if `e` is an application of a rewrite lemma,
-return `e` as a string for pasting into the editor.
-
-if `explicit = true`, we print the lemma application explicitly. This is for when the rewrite
-creates new goals.
-We ignore `Options` set by the user. -/
-def printRewriteLemma (e : Expr) (explicit : Bool) : MetaM String :=
-  if explicit then
-    withOptions (fun _ => Options.empty
-      |>.setBool pp.universes.name false
-      |>.setBool pp.match.name false
-      |>.setBool pp.instances.name false
-      |>.setBool pp.unicode.fun.name true) do
-    let (stx, _) ← delabCore e (delab := delabExplicit)
-    return Format.pretty (← ppTerm stx) (width := 90) (indent := 2)
-  else
-    pasteString e
-where
-  /-- See `delabApp` and `delabAppCore`. -/
-  delabExplicit : Delab := do
-    let e ← getExpr
-    let paramKinds ← getParamKinds e.getAppFn e.getAppArgs
-    let delabAppFn (insertExplicit : Bool) : Delab := do
-      let stx ← if (← getExpr).consumeMData.isConst then withMDatasOptions delabConst else delab
-      if insertExplicit && !stx.raw.isOfKind ``Lean.Parser.Term.explicit then `(@$stx) else pure stx
-    delabAppExplicitCore false e.getAppNumArgs delabAppFn paramKinds
-
 /-- Return a unique name for a metavariable based on the given suggestion.
 Similar to `Lean.Meta.getUnusedUserName`, which is for free variables. -/
 partial def getUnusedMVarName (suggestion : Name) (names : PersistentHashMap Name MVarId)
@@ -373,7 +345,7 @@ partial def getUnusedMVarName (suggestion : Name) (names : PersistentHashMap Nam
     name
 
 /-- Return the rewrite tactic that performs the rewrite. -/
-def tacticString (rw : Rewrite) (occ : Option Nat) (loc : Option Name) (isLemma : Bool)
+def tacticString (rw : Rewrite) (occ : Option Nat) (loc : Option Name)
     (initNames : PersistentHashMap Name MVarId) : MetaM String := do
   let mut initNames := initNames
   for (mvarId, _) in rw.extraGoals do
@@ -387,7 +359,7 @@ def tacticString (rw : Rewrite) (occ : Option Nat) (loc : Option Name) (isLemma 
         let name := getUnusedMVarName name initNames
         mvarId.setTag name
         initNames := initNames.insert name mvarId
-  let proof ← printRewriteLemma rw.proof isLemma
+  let proof ← pasteString rw.proof
   return mkRewrite occ rw.symm proof loc
 
 open Widget ProofWidgets Jsx Server
@@ -414,7 +386,7 @@ structure RewriteInterface where
 /-- Construct the `RewriteInterface` from a `Rewrite`. -/
 def Rewrite.toInterface (rw : Rewrite) (name : Name ⊕ FVarId) (occ : Option Nat) (loc : Option Name)
     (initNames : PersistentHashMap Name MVarId) : MetaM RewriteInterface := do
-  let tactic ← tacticString rw occ loc (name matches .inl _) initNames
+  let tactic ← tacticString rw occ loc initNames
   let replacementString := Format.pretty (← ppExpr rw.replacement)
   let mut extraGoals := #[]
   for (mvarId, bi) in rw.extraGoals do
