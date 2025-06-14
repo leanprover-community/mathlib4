@@ -34,7 +34,7 @@ def padicValNat (p : ℕ) (n : ℕ) : ℕ :=
 theorem padicValNat_def' {n : ℕ} (hp : p ≠ 1) (hn : 0 < n) :
     padicValNat p n = multiplicity p n := by
   simp [padicValNat, hp, hn, multiplicity, emultiplicity, finiteMultiplicity_iff.2 ⟨hp, hn⟩]
-  convert (WithTop.untop'_coe ..).symm
+  convert (WithTop.untopD_coe ..).symm
 
 /-- A simplification of `padicValNat` when one input is prime, by analogy with
 `padicValRat_def`. -/
@@ -81,5 +81,5 @@ theorem le_padicValNat_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : �
     n ≤ padicValNat a b ↔ replicate n a <+~ b.primeFactorsList := by
   rw [← le_emultiplicity_iff_replicate_subperm_primeFactorsList ha hb,
     Nat.finiteMultiplicity_iff.2 ⟨ha.ne_one, Nat.pos_of_ne_zero hb⟩
-      |>.emultiplicity_eq_multiplicity,     ← padicValNat_def' ha.ne_one (Nat.pos_of_ne_zero hb),
+      |>.emultiplicity_eq_multiplicity, ← padicValNat_def' ha.ne_one (Nat.pos_of_ne_zero hb),
     Nat.cast_le]

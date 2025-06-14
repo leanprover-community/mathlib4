@@ -187,7 +187,7 @@ theorem iff_exists_smul_integral [IsReduced R] :
   ⟨(exists_integral_multiple ·), fun ⟨_, hy, int⟩ ↦
     of_smul_isIntegral (by rwa [isNilpotent_iff_eq_zero]) int⟩
 
-section trans
+section restrictScalars
 
 variable (R) [NoZeroDivisors S]
 
@@ -247,7 +247,7 @@ theorem _root_.IsIntegral.trans_isAlgebraic [alg : Algebra.IsAlgebraic R S]
   · have := Module.nontrivial S A
     exact h.isAlgebraic.restrictScalars _
 
-end trans
+end restrictScalars
 
 variable [nzd : NoZeroDivisors R] {a b : S} (ha : IsAlgebraic R a) (hb : IsAlgebraic R b)
 include ha
@@ -312,6 +312,28 @@ theorem IsAlgebraic.trans_isIntegral [Algebra.IsAlgebraic R S] [int : Algebra.Is
     Algebra.IsAlgebraic R A :=
   ⟨fun _ ↦ (int.1 _).trans_isAlgebraic _⟩
 
+variable {A}
+
+protected theorem IsIntegral.isAlgebraic_iff [Algebra.IsIntegral R S] [FaithfulSMul R S]
+    {a : A} : IsAlgebraic R a ↔ IsAlgebraic S a :=
+  ⟨.extendScalars (FaithfulSMul.algebraMap_injective ..), .restrictScalars_of_isIntegral _⟩
+
+theorem IsIntegral.isAlgebraic_iff_top [Algebra.IsIntegral R S]
+    [FaithfulSMul R S] : Algebra.IsAlgebraic R A ↔ Algebra.IsAlgebraic S A := by
+  simp_rw [Algebra.isAlgebraic_def, Algebra.IsIntegral.isAlgebraic_iff R S]
+
+protected theorem IsAlgebraic.isAlgebraic_iff [Algebra.IsAlgebraic R S] [FaithfulSMul R S]
+    {a : A} : IsAlgebraic R a ↔ IsAlgebraic S a :=
+  ⟨.extendScalars (FaithfulSMul.algebraMap_injective ..), .restrictScalars _⟩
+
+theorem IsAlgebraic.isAlgebraic_iff_top [Algebra.IsAlgebraic R S]
+    [FaithfulSMul R S] : Algebra.IsAlgebraic R A ↔ Algebra.IsAlgebraic S A := by
+  simp_rw [Algebra.isAlgebraic_def, Algebra.IsAlgebraic.isAlgebraic_iff R S]
+
+theorem IsAlgebraic.isAlgebraic_iff_bot [Algebra.IsAlgebraic S A] [FaithfulSMul S A] :
+    Algebra.IsAlgebraic R S ↔ Algebra.IsAlgebraic R A :=
+  ⟨fun _ ↦ .trans R S A, fun _ ↦ .tower_bot_of_injective (FaithfulSMul.algebraMap_injective S A)⟩
+
 end Algebra
 
 variable (R S)
@@ -322,6 +344,9 @@ def Subalgebra.algebraicClosure [IsDomain R] : Subalgebra R S where
   mul_mem' ha hb := ha.mul hb
   add_mem' ha hb := ha.add hb
   algebraMap_mem' := isAlgebraic_algebraMap
+
+theorem Subalgebra.mem_algebraicClosure [IsDomain R] {x : S} :
+    x ∈ algebraicClosure R S ↔ IsAlgebraic R x := Iff.rfl
 
 theorem integralClosure_le_algebraicClosure [IsDomain R] :
     integralClosure R S ≤ Subalgebra.algebraicClosure R S :=
@@ -361,33 +386,70 @@ theorem IsAlgebraic.of_mul [NoZeroDivisors R] {y z : S} (hy : y ∈ nonZeroDivis
   rw [mul_right_comm, eq, ← Algebra.smul_def] at this
   exact this.of_smul (mem_nonZeroDivisors_of_ne_zero hr)
 
+open Algebra in
+omit [Algebra R A] [IsScalarTower R S A] in
+theorem IsAlgebraic.adjoin_of_forall_isAlgebraic [NoZeroDivisors S] {s t : Set S}
+    (alg : ∀ x ∈ s \ t, IsAlgebraic (adjoin R t) x) {a : A}
+    (ha : IsAlgebraic (adjoin R s) a) : IsAlgebraic (adjoin R t) a := by
+  set Rs := adjoin R s
+  set Rt := adjoin R t
+  let Rts := adjoin Rt s
+  let _ : Algebra Rs Rts := (Subalgebra.inclusion
+    (T := Rts.restrictScalars R) <| adjoin_le <| by apply subset_adjoin).toAlgebra
+  have : IsScalarTower Rs Rts A := .of_algebraMap_eq fun ⟨a, _⟩ ↦ rfl
+  have : Algebra.IsAlgebraic Rt Rts := by
+    have := ha.nontrivial
+    have := Subtype.val_injective (p := (· ∈ Rs)).nontrivial
+    have := (isDomain_iff_noZeroDivisors_and_nontrivial Rt).mpr ⟨inferInstance, inferInstance⟩
+    rw [← Subalgebra.isAlgebraic_iff, isAlgebraic_adjoin_iff]
+    intro x hs
+    by_cases ht : x ∈ t
+    · exact isAlgebraic_algebraMap (⟨x, subset_adjoin ht⟩ : Rt)
+    exact alg _ ⟨hs, ht⟩
+  have : IsAlgebraic Rts a := ha.extendScalars (by apply Subalgebra.inclusion_injective)
+  exact this.restrictScalars Rt
+
 namespace Transcendental
 
 section
 
-variable (S) {a : A} (ha : Transcendental R a)
+variable (S) [NoZeroDivisors S] {a : A} (ha : Transcendental R a)
 include ha
 
-lemma extendScalars_of_isIntegral [NoZeroDivisors S] [Algebra.IsIntegral R S] :
+lemma extendScalars_of_isIntegral [Algebra.IsIntegral R S] :
     Transcendental S a := by
   contrapose ha
   rw [Transcendental, not_not] at ha ⊢
   exact ha.restrictScalars_of_isIntegral _
 
-lemma extendScalars [NoZeroDivisors S] [Algebra.IsAlgebraic R S] : Transcendental S a := by
+lemma extendScalars [Algebra.IsAlgebraic R S] : Transcendental S a := by
   contrapose ha
   rw [Transcendental, not_not] at ha ⊢
   exact ha.restrictScalars _
 
 end
 
-variable {a : S} (ha : Transcendental R a)
+variable [NoZeroDivisors S] {a : S} (ha : Transcendental R a)
 include ha
 
-protected lemma integralClosure [NoZeroDivisors S] : Transcendental (integralClosure R S) a :=
+protected lemma integralClosure : Transcendental (integralClosure R S) a :=
   ha.extendScalars_of_isIntegral _
 
-lemma subalgebraAlgebraicClosure [IsDomain R] [NoZeroDivisors S] :
+lemma subalgebraAlgebraicClosure [IsDomain R] :
     Transcendental (Subalgebra.algebraicClosure R S) a := ha.extendScalars _
 
 end Transcendental
+
+namespace Algebra
+
+variable (R S) [NoZeroDivisors S] [FaithfulSMul R S] {a : A}
+
+protected theorem IsIntegral.transcendental_iff [Algebra.IsIntegral R S] :
+    Transcendental R a ↔ Transcendental S a :=
+  ⟨(·.extendScalars_of_isIntegral _), (·.restrictScalars (FaithfulSMul.algebraMap_injective R S))⟩
+
+protected theorem IsAlgebraic.transcendental_iff [Algebra.IsAlgebraic R S] :
+    Transcendental R a ↔ Transcendental S a :=
+  ⟨(·.extendScalars _), (·.restrictScalars (FaithfulSMul.algebraMap_injective R S))⟩
+
+end Algebra

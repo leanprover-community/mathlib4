@@ -43,8 +43,8 @@ instances `AddMonoid G` and `ContMDiffAdd I n G`. -/
 class ContMDiffAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
-    (G : Type*) [Add G] [TopologicalSpace G] [ChartedSpace H G] extends IsManifold I n G :
-    Prop where
+    (G : Type*) [Add G] [TopologicalSpace G] [ChartedSpace H G] : Prop
+    extends IsManifold I n G where
   contMDiff_add : ContMDiff (I.prod I) I n fun p : G × G => p.1 + p.2
 
 @[deprecated (since := "2025-01-09")] alias SmoothAdd := ContMDiffAdd
@@ -57,8 +57,8 @@ and `ContMDiffMul I n G`. -/
 class ContMDiffMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
-    (G : Type*) [Mul G] [TopologicalSpace G] [ChartedSpace H G] extends IsManifold I n G :
-    Prop where
+    (G : Type*) [Mul G] [TopologicalSpace G] [ChartedSpace H G] : Prop
+    extends IsManifold I n G where
   contMDiff_mul : ContMDiff (I.prod I) I n fun p : G × G => p.1 * p.2
 
 @[deprecated (since := "2025-01-09")] alias SmoothMul := ContMDiffMul
@@ -125,7 +125,7 @@ variable [ContMDiffMul I n G] {f g : M → G} {s : Set M} {x : M}
 @[to_additive]
 theorem ContMDiffWithinAt.mul (hf : ContMDiffWithinAt I' I n f s x)
     (hg : ContMDiffWithinAt I' I n g s x) : ContMDiffWithinAt I' I n (f * g) s x :=
-  (contMDiff_mul I n).contMDiffAt.comp_contMDiffWithinAt x (hf.prod_mk hg)
+  (contMDiff_mul I n).contMDiffAt.comp_contMDiffWithinAt x (hf.prodMk hg)
 
 @[to_additive]
 nonrec theorem ContMDiffAt.mul (hf : ContMDiffAt I' I n f x) (hg : ContMDiffAt I' I n g x) :
@@ -192,7 +192,7 @@ theorem mdifferentiable_mul_right {a : G} : MDifferentiable I I (· * a) :=
   contMDiff_mul_right.mdifferentiable le_rfl
 
 @[to_additive]
-theorem mdifferentiableAt_mul_right  {a b : G} :
+theorem mdifferentiableAt_mul_right {a b : G} :
     MDifferentiableAt I I (· * a) b :=
   contMDiffAt_mul_right.mdifferentiableAt le_rfl
 
@@ -206,14 +206,14 @@ Used mostly through the notation `𝑳`.
 Lemmas involving `smoothLeftMul` with the notation `𝑳` usually use `L` instead of `𝑳` in the
 names. -/
 def smoothLeftMul : C^∞⟮I, G; I, G⟯ :=
-  ⟨leftMul g, contMDiff_mul_left⟩
+  ⟨(g * ·), contMDiff_mul_left⟩
 
 /-- Right multiplication by `g`. It is meant to mimic the usual notation in Lie groups.
 Used mostly through the notation `𝑹`.
 Lemmas involving `smoothRightMul` with the notation `𝑹` usually use `R` instead of `𝑹` in the
 names. -/
 def smoothRightMul : C^∞⟮I, G; I, G⟯ :=
-  ⟨rightMul g, contMDiff_mul_right⟩
+  ⟨(· * g), contMDiff_mul_right⟩
 
 -- Left multiplication. The abbreviation is `MIL`.
 @[inherit_doc] scoped[LieGroup] notation "𝑳" => smoothLeftMul
@@ -257,7 +257,7 @@ theorem smoothRightMul_one : (𝑹 I g') 1 = g' :=
 end
 
 -- Instance of product
-@[to_additive]
+@[to_additive prod]
 instance ContMDiffMul.prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) (G : Type*) [TopologicalSpace G] [ChartedSpace H G] [Mul G]
@@ -266,7 +266,7 @@ instance ContMDiffMul.prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Ty
     [ChartedSpace H' G'] [Mul G'] [ContMDiffMul I' n G'] : ContMDiffMul (I.prod I') n (G × G') :=
   { IsManifold.prod G G' with
     contMDiff_mul :=
-      ((contMDiff_fst.comp contMDiff_fst).mul (contMDiff_fst.comp contMDiff_snd)).prod_mk
+      ((contMDiff_fst.comp contMDiff_fst).mul (contMDiff_fst.comp contMDiff_snd)).prodMk
         ((contMDiff_snd.comp contMDiff_fst).mul (contMDiff_snd.comp contMDiff_snd)) }
 
 end ContMDiffMul
@@ -352,9 +352,10 @@ variable {ι 𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} {
 theorem ContMDiffWithinAt.prod (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) s x₀) :
     ContMDiffWithinAt I' I n (fun x ↦ ∏ i ∈ t, f i x) s x₀ := by
   classical
-  induction' t using Finset.induction_on with i K iK IH
-  · simp [contMDiffWithinAt_const]
-  · simp only [iK, Finset.prod_insert, not_false_iff]
+  induction t using Finset.induction_on with
+  | empty => simp [contMDiffWithinAt_const]
+  | insert i K iK IH =>
+    simp only [iK, Finset.prod_insert, not_false_iff]
     exact (h _ (Finset.mem_insert_self i K)).mul (IH fun j hj ↦ h _ <| Finset.mem_insert_of_mem hj)
 
 @[to_additive]
@@ -503,7 +504,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
   [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
 
-variable {f : M → G} {s : Set M} {x : M}  (c : G)
+variable {f : M → G} {s : Set M} {x : M} (c : G)
 
 @[to_additive]
 theorem ContMDiffWithinAt.div_const (hf : ContMDiffWithinAt I' I n f s x) :

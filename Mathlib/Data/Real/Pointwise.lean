@@ -3,10 +3,10 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Eric Wieser
 -/
+import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Pointwise
 import Mathlib.Data.Real.Archimedean
-import Mathlib.Data.Set.Pointwise.SMul
 
 /-!
 # Pointwise operations on sets of reals
@@ -28,7 +28,7 @@ open Set
 
 open Pointwise
 
-variable {ι : Sort*} {α : Type*} [LinearOrderedField α]
+variable {ι : Sort*} {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 
 section MulActionWithZero
 

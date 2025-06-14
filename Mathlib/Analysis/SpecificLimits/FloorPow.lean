@@ -231,7 +231,8 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
   calc
     (∑ i ∈ range N with j < c ^ i, (1 : ℝ) / (c ^ i) ^ 2) ≤
         ∑ i ∈ Ico ⌊Real.log j / Real.log c⌋₊ N, (1 : ℝ) / (c ^ i) ^ 2 := by
-      refine sum_le_sum_of_subset_of_nonneg (fun i hi ↦ ?_) (by intros; positivity)
+      gcongr
+      intro i hi
       simp only [mem_filter, mem_range] at hi
       simp only [hi.1, mem_Ico, and_true]
       apply Nat.floor_le_of_le
@@ -286,7 +287,7 @@ theorem sum_div_nat_floor_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c :
       gcongr
       exact fun k hk ↦ hk.trans_le <| Nat.floor_le (by positivity)
     _ ≤ ∑ i ∈ range N with j < c ^ i, (1 - c⁻¹)⁻¹ ^ 2 * ((1 : ℝ) / (c ^ i) ^ 2) := by
-      refine sum_le_sum fun i _hi => ?_
+      gcongr with i
       rw [mul_div_assoc', mul_one, div_le_div_iff₀]; rotate_left
       · apply sq_pos_of_pos
         refine zero_lt_one.trans_le ?_
