@@ -139,8 +139,8 @@ instance UniformSpace.toCompletelyRegularSpace : CompletelyRegularSpace α where
       open_U := hOo.preimage (Continuous.prodMk_right x)
       subset := (closure_minimal (preimage_mono hoC) (isClosed_ball x hC)).trans (preimage_mono hCO)
       hP _ Pcu _ _ := descend_spec Pcu
-      P_C_U := by
-        exact ⟨x, descend ⟨C, hCu⟩, O, _, hoo, hosymm, hou, rfl, hOo, rfl,
+      P_C_U :=
+        ⟨x, descend ⟨C, hCu⟩, O, _, hoo, hosymm, hou, rfl, hOo, rfl,
           (compRel_mono (compRel_mono subset_rfl (hoC.trans hCc))
             (subset_comp_self_of_mem_uniformity (descend (descend ⟨O, hOu⟩)).2)).trans hccccO⟩
     }
