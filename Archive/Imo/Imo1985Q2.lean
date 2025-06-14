@@ -37,7 +37,7 @@ open Nat
 
 /-- The conditions on the problem's coloring `C`.
 Although its domain is all of `ℕ`, we only care about its values in `Set.Ico 1 n`. -/
-def Condition (n j : ℕ) (C : ℕ → Bool) : Prop :=
+def Condition (n j : ℕ) (C : ℕ → Fin 2) : Prop :=
   (∀ i ∈ Set.Ico 1 n, C i = C (n - i)) ∧ (∀ i ∈ Set.Ico 1 n, i ≠ j → C i = C (j - i : ℤ).natAbs)
 
 lemma Int.natAbs_sub_nat_of_lt {a b : ℕ} (h : b ≤ a) : (a - b : ℤ).natAbs = a - b := by
@@ -51,9 +51,10 @@ lemma Nat.mod_sub_comm {a b n : ℕ} (h : b ≤ a % n) : a % n - b = (a - b) % n
   nth_rw 2 [← div_add_mod a n]; rw [Nat.add_sub_assoc h, mul_add_mod]
   exact (mod_eq_of_lt <| (sub_le ..).trans_lt (mod_lt a hn)).symm
 
-/-- For `1 ≤ k < n`, `k * j % n` has the same color as `j`. -/
+/-- For `1 ≤ k < n`, `k * j % n` has the same color as `j`. The proof is by induction on `k`,
+and for `k > 1` calls itself with `k := k - 1`. -/
 lemma C_mul_mod {n j : ℕ} (hn : 3 ≤ n) (hj : j ∈ Set.Ico 1 n) (cpj : Coprime n j)
-    {C : ℕ → Bool} (hC : Condition n j C) {k : ℕ} (hk : k ∈ Set.Ico 1 n) :
+    {C : ℕ → Fin 2} (hC : Condition n j C) {k : ℕ} (hk : k ∈ Set.Ico 1 n) :
     C (k * j % n) = C j := by
   rcases hk.1.eq_or_lt with rfl | (hk₁ : 1 + 1 ≤ k)
   · rw [one_mul, mod_eq_of_lt hj.2]
@@ -82,7 +83,7 @@ lemma C_mul_mod {n j : ℕ} (hn : 3 ≤ n) (hj : j ∈ Set.Ico 1 n) (cpj : Copri
     · rw [Int.natAbs_sub_nat_of_gt h.le, Nat.mod_sub_comm h.le, tsub_one_mul]
 
 theorem result {n j : ℕ} (hn : 3 ≤ n) (hj : j ∈ Set.Ico 1 n) (cpj : Coprime n j)
-    {C : ℕ → Bool} (hC : Condition n j C) {i : ℕ} (hi : i ∈ Set.Ico 1 n) :
+    {C : ℕ → Fin 2} (hC : Condition n j C) {i : ℕ} (hi : i ∈ Set.Ico 1 n) :
     C i = C j := by
   obtain ⟨v, hv⟩ := exists_mul_emod_eq_one_of_coprime cpj.symm (by omega)
   have hvi : i = (v * i % n) * j % n := by
