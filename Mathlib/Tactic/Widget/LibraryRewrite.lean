@@ -105,6 +105,8 @@ def addRewriteEntry (name : Name) (cinfo : ConstantInfo) :
   let some (lhs, rhs) := eqOrIff? eqn | return []
   let badMatch e :=
     e.getAppFn.isMVar ||
+    -- this extra check excludes general equality lemmas that apply at any equality
+    -- these are almost never useful, and there are very many of them.
     e.eq?.any fun (α, l, r) =>
       α.getAppFn.isMVar && l.getAppFn.isMVar && r.getAppFn.isMVar && l != r
   if badMatch lhs then
@@ -215,13 +217,13 @@ def checkRewrite (thm e : Expr) (symm : Bool) : MetaM (Option Rewrite) := do
   let lhs ← instantiateMVars lhs
   if lhs.toHeadIndex != e.toHeadIndex || lhs.headNumArgs != e.headNumArgs then
     return none
-  synthAppInstances `rw?? default mvars binderInfos
-    (synthAssignedInstances := !tactic.skipAssignedInstances.get (← getOptions)) false
+  synthAppInstances `rw?? default mvars binderInfos false false
   let mut extraGoals := #[]
   for mvar in mvars, bi in binderInfos do
-    unless bi.isInstImplicit do
-      unless ← mvar.mvarId!.isAssigned do
-        extraGoals := extraGoals.push (mvar.mvarId!, bi)
+    unless ← mvar.mvarId!.isAssigned do
+      -- we want the new metavariables to be printed as `?_`
+      mvar.mvarId!.setTag .anonymous
+      extraGoals := extraGoals.push (mvar.mvarId!, bi)
 
   let replacement ← instantiateMVars rhs
   let makesNewMVars := (replacement.findMVar? fun mvarId => mvars.any (·.mvarId! == mvarId)).isSome
@@ -330,8 +332,6 @@ def filterRewrites {α} (e : Expr) (rewrites : Array α) (replacement : α → E
 /-- Return the rewrite tactic that performs the rewrite. -/
 def tacticSyntax (rw : Rewrite) (occ : Option Nat) (loc : Option Name) :
     MetaM (TSyntax `tactic) := do
-  -- we want the new metavariables to be printed as `?_`
-  for (mvarId, _) in rw.extraGoals do mvarId.setTag `«_»
   let proof ← withOptions (pp.mvars.anonymous.set · false) (PrettyPrinter.delab rw.proof)
   mkRewrite occ rw.symm proof loc
 
