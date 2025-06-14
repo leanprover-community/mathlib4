@@ -467,6 +467,9 @@ theorem C_0 : C (0 : R) = 0 := by simp
 theorem C_1 : C (1 : R) = 1 :=
   rfl
 
+theorem C_2 : C (2 : R) = 2 :=
+  rfl
+
 theorem C_mul : C (a * b) = C a * C b :=
   C.map_mul a b
 

@@ -148,12 +148,96 @@ theorem quadratic_roots_iff_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0)
     z ∈ (a • X ^ 2 + b • X + C c).roots ↔ z = (-b + s) / (2 * a) ∨ z = (-b - s) / (2 * a) := by
   rw [mem_roots (quadratic_ne_zero ha), quadratic_eq_zero_iff ha h]
 
+#check Polynomial
+
 theorem quadratic_roots_of_discrim_eq_sq [DecidableEq R] [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
     (h : discrim a b c = s * s) :
-    (a • X ^ 2 + b • X + C c).roots.toFinset = {(-b + s) / (2 * a), (-b - s) / (2 * a)} := by
-  ext1 z
-  rw [Finset.mem_insert, Finset.mem_singleton, Multiset.mem_toFinset,
-    quadratic_roots_iff_of_discrim_eq_sq ha h]
+    (a • X ^ 2 + b • X + C c).roots = {(-b + s) / (2 * a), (-b - s) / (2 * a)} := by
+  have e1 : a • X ^ 2 + b • X + C c =
+      a • (X - C ((-b + s) / (2 * a))) * (X - C ((-b - s) / (2 * a))) := by
+    simp only [Algebra.smul_mul_assoc]
+    ring_nf
+    rw [C_add]
+    rw [C_sub]
+    ring_nf
+    rw [← C_pow]
+    ring_nf
+    rw [smul_add]
+    rw [smul_add]
+    rw [add_comm _ (a • X ^ 2)]
+    rw [add_assoc]
+    rw [add_assoc]
+    rw [add_right_inj]
+    rw [map_neg, mul_neg, neg_mul, neg_neg]
+    rw [C_mul]
+    rw [← C_pow]
+    rw [← C_sub]
+    rw [smul_C]
+    ring_nf
+    rw [smul_sub]
+    rw [← smul_mul_assoc]
+
+    --rw [smul_assoc]
+    rw [← Algebra.smul_mul_assoc]
+    rw [← smul_mul_assoc]
+    rw [mul_assoc]
+    rw [mul_comm _ 2]
+    rw [← C_2]
+    rw [← C_mul]
+    rw [mul_inv_cancel₀ two_ne_zero]
+    rw [C_1]
+    rw [mul_one]
+    rw [sq s]
+    rw [← h]
+    rw [discrim]
+    ring_nf
+    rw [smul_sub]
+    rw [smul_eq_mul a]
+    rw [mul_assoc a]
+    rw [mul_inv_cancel₀ ha]
+
+    rw [C_1]
+    have e2 : 2 * C (2 : R)⁻¹ = C (2 * 2⁻¹) := by
+      rw [map_mul]
+      rw [mul_left_inj']
+      rfl
+      have gg (a b c : R) (h : a ≠ 0) : b*a = c*a ↔ b = c := by exact mul_left_inj' h
+      rw [mul_cancel_right]
+      simp only [ne_eq, map_mul, mul_eq_mul_right_iff, map_eq_zero, inv_eq_zero]
+      apply Or.inl
+      rfl
+    rw [e2]
+   -- rw [monomial_mul_C]
+    --rw [← smul_eq_mul]
+    simp?
+    rw [← smul_eq_mul 2]
+    --rw [smul_C]
+
+
+
+    rw [smul_algebraMap]
+    simp only [map_neg, map_mul, mul_neg, neg_mul, neg_neg]
+
+    rw [← h, discrim]
+    ring_nf
+    have p2 : (2 : K) ^ 2 = (4 : K) := by norm_num
+    rw [add_comm _ (a * x ^ 2), mul_assoc, inv_mul_cancel₀ two_ne_zero, mul_one, mul_comm _ a⁻¹,
+      ← mul_assoc, ← mul_assoc, inv_mul_cancel₀ ha, one_mul, ← p2, mul_assoc, ← mul_pow,
+      inv_mul_cancel₀ two_ne_zero, one_pow, mul_one, mul_comm _ c, mul_assoc, ← mul_pow,
+      mul_inv_cancel₀ ha, one_pow, mul_one]
+
+
+
+
+    --simp only [Algebra.smul_mul_assoc]
+    ring_nf
+    convert e0
+    sorry
+  rw [e1, Polynomial.roots_mul (by rw [← e1]; exact quadratic_ne_zero ha)]
+  simp_all only [ne_eq, Algebra.smul_mul_assoc, not_false_eq_true, roots_smul_nonzero,
+    roots_X_sub_C, Multiset.singleton_add, Multiset.insert_eq_cons]
+
+
 
 end QuadraticDiscriminant
 
