@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
 import Mathlib.RingTheory.Coalgebra.Basic
-import Mathlib.LinearAlgebra.TensorProduct.Opposite
 
 /-!
 # MulOpposite of coalgebras
@@ -15,27 +14,26 @@ then `Aᵐᵒᵖ` is an `R`-coalgebra, where we define the comultiplication and 
 
 open scoped TensorProduct
 
-noncomputable instance MulOpposite.coalgebraStruct
-  {R A : Type*} [CommSemiring R] [AddCommMonoid A] [Module R A] [CoalgebraStruct R A] :
+variable {R A : Type*} [CommSemiring R] [AddCommMonoid A] [Module R A]
+
+noncomputable instance MulOpposite.coalgebraStruct [CoalgebraStruct R A] :
   CoalgebraStruct R Aᵐᵒᵖ where
   comul := (TensorProduct.map (opLinearEquiv R).toLinearMap (opLinearEquiv R).toLinearMap) ∘ₗ
     Coalgebra.comul ∘ₗ (opLinearEquiv R).symm.toLinearMap
   counit := Coalgebra.counit ∘ₗ (opLinearEquiv R).symm.toLinearMap
 
-lemma MulOpposite.comul_def
-  {R A : Type*} [CommSemiring R] [AddCommMonoid A] [Module R A] [CoalgebraStruct R A] :
+lemma MulOpposite.comul_def [CoalgebraStruct R A] :
   (CoalgebraStruct.comul (R := R) (A := Aᵐᵒᵖ)) =
     (TensorProduct.map (opLinearEquiv R).toLinearMap (opLinearEquiv R).toLinearMap) ∘ₗ
       CoalgebraStruct.comul ∘ₗ (opLinearEquiv R).symm.toLinearMap :=
 rfl
-lemma MulOpposite.counit_def
-  {R A : Type*} [CommSemiring R] [AddCommMonoid A] [Module R A] [CoalgebraStruct R A] :
+lemma MulOpposite.counit_def [CoalgebraStruct R A] :
   (CoalgebraStruct.counit (R := R) (A := Aᵐᵒᵖ)) =
     CoalgebraStruct.counit ∘ₗ (opLinearEquiv R).symm.toLinearMap :=
 rfl
 
 open MulOpposite TensorProduct in
-private lemma coassoc_aux_1 {R A : Type*} [CommSemiring R][AddCommMonoid A] [Module R A] :
+private lemma coassoc_aux_1 :
   (TensorProduct.assoc R Aᵐᵒᵖ Aᵐᵒᵖ Aᵐᵒᵖ).toLinearMap ∘ₗ
     (map (opLinearEquiv R (M:=A)).toLinearMap (opLinearEquiv R (M:=A)).toLinearMap).rTensor _
   = (map (opLinearEquiv R).toLinearMap (((opLinearEquiv R).toLinearMap.rTensor _)))
@@ -46,7 +44,7 @@ by
     simp
 
 open MulOpposite TensorProduct in
-private lemma coassoc_aux_2 {R A : Type*} [CommSemiring R] [AddCommMonoid A] [Module R A] :
+private lemma coassoc_aux_2 :
   (opLinearEquiv R).symm.toLinearMap.rTensor _
     ∘ₗ (map (opLinearEquiv R (M:=A)).toLinearMap (opLinearEquiv R (M:=A)).toLinearMap)
   = (MulOpposite.opLinearEquiv R).toLinearMap.lTensor A :=
@@ -56,7 +54,7 @@ by
     simp
 
 open MulOpposite TensorProduct in
-private lemma coassoc_aux_3 {R A : Type*} [CommSemiring R] [AddCommMonoid A] [Module R A] :
+private lemma coassoc_aux_3 :
   (map (opLinearEquiv R (M:=A)).toLinearMap
       (((opLinearEquiv R (M:=A)).toLinearMap.rTensor Aᵐᵒᵖ)))
         ∘ₗ ((TensorProduct.assoc R A A Aᵐᵒᵖ).toLinearMap)
@@ -70,8 +68,7 @@ by
     simp
 
 open CoalgebraStruct TensorProduct MulOpposite in
-private lemma MulOpposite_coassoc {R A : Type*} [CommSemiring R] [AddCommMonoid A] [Module R A]
-  [Coalgebra R A] :
+private lemma MulOpposite_coassoc [Coalgebra R A] :
     (TensorProduct.assoc R Aᵐᵒᵖ Aᵐᵒᵖ Aᵐᵒᵖ) ∘ₗ
       (comul (R := R) (A := Aᵐᵒᵖ)).rTensor Aᵐᵒᵖ ∘ₗ
         (comul (R := R) (A := Aᵐᵒᵖ)) =
@@ -98,8 +95,7 @@ by
   simp only [← LinearMap.comp_assoc, LinearMap.map_comp_lTensor]
 
 @[instance]
-noncomputable def MulOpposite.coalgebra
-  {R A : Type*} [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A] :
+noncomputable def MulOpposite.coalgebra [Coalgebra R A] :
     Coalgebra R Aᵐᵒᵖ where
   coassoc := MulOpposite_coassoc
   rTensor_counit_comp_comul := by
