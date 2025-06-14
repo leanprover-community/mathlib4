@@ -25,9 +25,12 @@ run_meta do
   for keys in ← encodeExprWithEta (labelledStars := true) q(Function.Bijective fun x : Int => Int.succ ($m x)) do
       logInfo m! "{← keysAsPattern keys}"
 
--- caching the way in which eta reduction is done (so we get 2 instead of 4 results):
 /--
 info: And (@Function.Bijective ℤ ℤ Int.succ) (@Function.Bijective ℤ ℤ Int.succ)
+---
+info: And (@Function.Bijective ℤ ℤ Int.succ) (@Function.Bijective ℤ ℤ (λ, Int.succ *))
+---
+info: And (@Function.Bijective ℤ ℤ (λ, Int.succ *)) (@Function.Bijective ℤ ℤ Int.succ)
 ---
 info: And (@Function.Bijective ℤ ℤ (λ, Int.succ *)) (@Function.Bijective ℤ ℤ (λ, Int.succ *))
 -/
