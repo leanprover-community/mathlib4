@@ -617,10 +617,7 @@ partial def mkCongrOfApp (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr)
         go (i + 1) finfo finfoIdx (.app f ra.lhs) (.app f' ra.rhs) (← mkCongr pf (← ra.eq))
       else
         -- Otherwise, we can make progress with an hcongr lemma.
-        -- Update the FunInfo if necessary to make as much progress as possible:
-        if finfoIdx < i && finfoIdx + finfo.getArity < arity then
-          finfo ← getFunInfoNArgs f (arity - finfoIdx)
-          finfoIdx := i
+        -- There's no need to update the FunInfo since all `mkHCongrWithArity'` needs is the arity.
         trace[Elab.congr] "app, hcongr of {finfo.getArity} arguments"
         if (isRefl? pf).isNone then
           trace[Elab.congr] "app, hcongr needs transitivity"
@@ -636,7 +633,11 @@ partial def mkCongrOfApp (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr)
           let res2 ← go i finfo finfoIdx f' f' (← mkEqRefl f')
           return res1.trans res2
         else
-          let thm ← mkHCongrWithArity' f finfo.getArity
+          -- Get an accurate measure of the arity of `f`.
+          let fArity ←
+            if finfoIdx == i then pure finfo.getArity
+            else forallBoundedTelescope (← inferType f) (some (arity - i)) fun xs _ => pure xs.size
+          let thm ← mkHCongrWithArity' f fArity
           let mut args := #[]
           let mut lhsArgs' := #[]
           let mut rhsArgs' := #[]
@@ -657,19 +658,19 @@ partial def mkCongrOfApp (depth : Nat) (mvarCounterSaved : Nat) (lhs rhs : Expr)
               -- Users shouldn't be intentionally placing them in such arguments anyway.
               -- We can't throw an error because these arguments might incidentally have
               -- congruence holes by unification.
-              let lhs := removeCHoles lhs'
-              let rhs := removeCHoles rhs'
-              args := args |>.push lhs |>.push rhs
-              lhsArgs' := lhsArgs'.push lhs
-              rhsArgs' := rhsArgs'.push rhs
+              let lhs' := removeCHoles lhs'
+              let rhs' := removeCHoles rhs'
+              args := args |>.push lhs' |>.push rhs'
+              lhsArgs' := lhsArgs'.push lhs'
+              rhsArgs' := rhsArgs'.push rhs'
             | _ => panic! "unexpected hcongr argument kind"
-          let lhs := mkAppN f lhsArgs'
-          let rhs := mkAppN f' rhsArgs'
-          let res := CongrResult.mk' lhs rhs (mkAppN thm.proof args)
+          let lhs' := mkAppN f lhsArgs'
+          let rhs' := mkAppN f' rhsArgs'
+          let res := CongrResult.mk' lhs' rhs' (mkAppN thm.proof args)
           if i + 1 < arity then
             -- There are more arguments after this. The only way this can work is if
             -- `res` can prove an equality.
-            go (i + finfo.getArity) finfo finfoIdx lhs rhs (← res.eq)
+            go (i + finfo.getArity) finfo finfoIdx lhs' rhs' (← res.eq)
           else
             -- Otherwise, we can return `res`, which might only be a HEq.
             return res
