@@ -721,7 +721,7 @@ theorem dist_pointReflection_self (x y : P) :
     dist (pointReflection 𝕜 x y) y = ‖(2 : 𝕜)‖ * dist x y := by
   rw [dist_pointReflection_self', two_nsmul, ← two_smul 𝕜, norm_smul, ← dist_eq_norm_vsub V]
 
-theorem pointReflection_fixed_iff [Invertible (2 : 𝕜)] {x y : P} :
+theorem pointReflection_fixed_iff [IsUnit (2 : 𝕜)] {x y : P} :
     pointReflection 𝕜 x y = y ↔ y = x :=
   AffineEquiv.pointReflection_fixed_iff_of_module 𝕜
 
