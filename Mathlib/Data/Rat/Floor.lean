@@ -27,7 +27,7 @@ open Int
 
 namespace Rat
 
-variable {α : Type*} [LinearOrderedField α] [FloorRing α]
+variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
 
 protected theorem floor_def' (a : ℚ) : a.floor = a.num / a.den := by
   rw [Rat.floor]
@@ -108,10 +108,12 @@ section NormNum
 
 open Mathlib.Meta.NormNum Qq
 
-theorem isNat_intFloor {R} [LinearOrderedRing R] [FloorRing R] (r : R) (m : ℕ) :
+theorem isNat_intFloor {R} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
+    (r : R) (m : ℕ) :
     IsNat r m → IsNat ⌊r⌋ m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-theorem isInt_intFloor {R} [LinearOrderedRing R] [FloorRing R] (r : R) (m : ℤ) :
+theorem isInt_intFloor {R} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
+    (r : R) (m : ℤ) :
     IsInt r m → IsInt ⌊r⌋ m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
 theorem isInt_intFloor_ofIsRat (r : α) (n : ℤ) (d : ℕ) :
@@ -126,28 +128,33 @@ theorem isInt_intFloor_ofIsRat (r : α) (n : ℤ) (d : ℕ) :
 @[norm_num ⌊_⌋]
 def evalIntFloor : NormNumExt where eval {u αZ} e := do
   match u, αZ, e with
-  | 0, ~q(ℤ), ~q(@Int.floor $α $instR $instF $x) =>
+  | 0, ~q(ℤ), ~q(@Int.floor $α $instR $instO $instF $x) =>
     match ← derive x with
     | .isBool .. => failure
     | .isNat _ _ pb => do
+      let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       return .isNat q(inferInstance) _ q(isNat_intFloor $x _ $pb)
     | .isNegNat _ _ pb => do
+      let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       -- floor always keeps naturals negative, so we can shortcut `.isInt`
       return .isNegNat q(inferInstance) _ q(isInt_intFloor _ _ $pb)
     | .isRat _ q n d h => do
-      let _i ← synthInstanceQ q(LinearOrderedField $α)
+      let _i ← synthInstanceQ q(Field $α)
+      let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       have z : Q(ℤ) := mkRawIntLit ⌊q⌋
       letI : $z =Q $n / $d := ⟨⟩
       return .isInt q(inferInstance) z ⌊q⌋ q(isInt_intFloor_ofIsRat _ $n $d $h)
   | _, _, _ => failure
 
-theorem isNat_intCeil {R} [LinearOrderedRing R] [FloorRing R] (r : R) (m : ℕ) :
+theorem isNat_intCeil {R} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
+    (r : R) (m : ℕ) :
     IsNat r m → IsNat ⌈r⌉ m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-theorem isInt_intCeil {R} [LinearOrderedRing R] [FloorRing R] (r : R) (m : ℤ) :
+theorem isInt_intCeil {R} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
+    (r : R) (m : ℤ) :
     IsInt r m → IsInt ⌈r⌉ m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
 theorem isInt_intCeil_ofIsRat (r : α) (n : ℤ) (d : ℕ) :
@@ -162,18 +169,21 @@ theorem isInt_intCeil_ofIsRat (r : α) (n : ℤ) (d : ℕ) :
 @[norm_num ⌈_⌉]
 def evalIntCeil : NormNumExt where eval {u αZ} e := do
   match u, αZ, e with
-  | 0, ~q(ℤ), ~q(@Int.ceil $α $instR $instF $x) =>
+  | 0, ~q(ℤ), ~q(@Int.ceil $α $instR $instO $instF $x) =>
     match ← derive x with
     | .isBool .. => failure
     | .isNat _ _ pb => do
+      let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       return .isNat q(inferInstance) _ q(isNat_intCeil $x _ $pb)
     | .isNegNat _ _ pb => do
+      let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       -- ceil always keeps naturals negative, so we can shortcut `.isInt`
       return .isNegNat q(inferInstance) _ q(isInt_intCeil _ _ $pb)
     | .isRat _ q n d h => do
-      let _i ← synthInstanceQ q(LinearOrderedField $α)
+      let _i ← synthInstanceQ q(Field $α)
+      let _i ← synthInstanceQ q(IsStrictOrderedRing $α)
       assertInstancesCommute
       have z : Q(ℤ) := mkRawIntLit ⌈q⌉
       letI : $z =Q (-(-$n / $d)) := ⟨⟩

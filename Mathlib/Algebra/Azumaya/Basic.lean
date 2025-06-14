@@ -40,10 +40,9 @@ lemma AlgHom.mulLeftRight_bij [h : IsAzumaya R A] :
 /-- The "canonical" isomorphism between `R ⊗ Rᵒᵖ` and `End R R` which is equal
   to `AlgHom.mulLeftRight R R`. -/
 noncomputable abbrev tensorEquivEnd : R ⊗[R] Rᵐᵒᵖ ≃ₐ[R] Module.End R R :=
-  Algebra.TensorProduct.lid R Rᵐᵒᵖ|>.trans <|
-  AlgEquiv.ofRingEquiv (f := Module.moduleEndSelf R) fun r ↦ by ext; simp
+  Algebra.TensorProduct.lid R Rᵐᵒᵖ|>.trans <| .moduleEndSelf R
 
-lemma coe_tensorEquivEnd: tensorEquivEnd R = AlgHom.mulLeftRight R R := by
+lemma coe_tensorEquivEnd : tensorEquivEnd R = AlgHom.mulLeftRight R R := by
   ext; simp
 
 instance id : IsAzumaya R R where
@@ -63,9 +62,9 @@ End R A   ------------> End R B
           e.conj
 ```
 -/
-lemma mulLeftRight_comp_congr (e : A ≃ₐ[R] B):
+lemma mulLeftRight_comp_congr (e : A ≃ₐ[R] B) :
     (AlgHom.mulLeftRight R B).comp (Algebra.TensorProduct.congr e e.op).toAlgHom =
-    (e.toLinearEquiv.algConj).toAlgHom.comp (AlgHom.mulLeftRight R A) := by
+    (e.toLinearEquiv.algConj R).toAlgHom.comp (AlgHom.mulLeftRight R A) := by
   apply AlgHom.ext
   intro a
   induction a using TensorProduct.induction_on with
@@ -80,7 +79,7 @@ theorem of_AlgEquiv (e : A ≃ₐ[R] B) [IsAzumaya R A] : IsAzumaya R B :=
   let _ : Module.Finite R B := .equiv e.toLinearEquiv
   ⟨Function.Bijective.of_comp_iff (AlgHom.mulLeftRight R B)
     (Algebra.TensorProduct.congr e e.op).bijective |>.1 <| by
-    erw [← AlgHom.coe_comp, mulLeftRight_comp_congr]
+    rw [← AlgEquiv.coe_algHom, ← AlgHom.coe_comp, mulLeftRight_comp_congr]
     simp [AlgHom.mulLeftRight_bij]⟩
 
 end IsAzumaya

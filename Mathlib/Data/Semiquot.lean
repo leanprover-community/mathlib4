@@ -22,11 +22,10 @@ predicate `S`) but are not completely determined.
   of the set `s`. The specific element of `s` that the VM computes
   is hidden by a quotient construction, allowing for the representation
   of nondeterministic functions. -/
-  -- Porting note: removed universe parameter
 structure Semiquot (α : Type*) where mk' ::
-  /-- Set containing some element of `α`-/
+  /-- Set containing some element of `α` -/
   s : Set α
-  /-- Assertion of non-emptiness via `Trunc`-/
+  /-- Assertion of non-emptiness via `Trunc` -/
   val : Trunc s
 
 namespace Semiquot
@@ -42,7 +41,7 @@ def mk {a : α} {s : Set α} (h : a ∈ s) : Semiquot α :=
 
 theorem ext_s {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ q₁.s = q₂.s := by
   refine ⟨congr_arg _, fun h => ?_⟩
-  cases' q₁ with _ v₁; cases' q₂ with _ v₂; congr
+  obtain ⟨_, v₁⟩ := q₁; obtain ⟨_, v₂⟩ := q₂; congr
   exact Subsingleton.helim (congrArg Trunc (congrArg Set.Elem h)) v₁ v₂
 
 theorem ext {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ ∀ a, a ∈ q₁ ↔ a ∈ q₂ :=

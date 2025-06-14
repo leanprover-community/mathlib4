@@ -49,6 +49,7 @@ boolean ring, generalized boolean algebra, boolean algebra, symmetric difference
 Heyting
 -/
 
+assert_not_exists RelIso
 
 open Function OrderDual
 
@@ -236,7 +237,9 @@ theorem le_bihimp_iff {a b c : α} : a ≤ b ⇔ c ↔ a ⊓ b ≤ c ∧ a ⊓ c
 theorem inf_le_bihimp {a b : α} : a ⊓ b ≤ a ⇔ b :=
   inf_le_inf le_himp le_himp
 
-theorem bihimp_eq_inf_himp_inf : a ⇔ b = a ⊔ b ⇨ a ⊓ b := by simp [himp_inf_distrib, bihimp]
+theorem bihimp_eq_sup_himp_inf : a ⇔ b = a ⊔ b ⇨ a ⊓ b := by simp [himp_inf_distrib, bihimp]
+
+@[deprecated (since := "2025-06-05")] alias bihimp_eq_inf_himp_inf := bihimp_eq_sup_himp_inf
 
 theorem Codisjoint.bihimp_eq_inf {a b : α} (h : Codisjoint a b) : a ⇔ b = a ⊓ b := by
   rw [bihimp, h.himp_eq_left, h.himp_eq_right]
@@ -372,7 +375,7 @@ theorem symmDiff_eq_sup : a ∆ b = a ⊔ b ↔ Disjoint a b := by
 theorem le_symmDiff_iff_left : a ≤ a ∆ b ↔ Disjoint a b := by
   refine ⟨fun h => ?_, fun h => h.symmDiff_eq_sup.symm ▸ le_sup_left⟩
   rw [symmDiff_eq_sup_sdiff_inf] at h
-  exact disjoint_iff_inf_le.mpr (le_sdiff_iff.1 <| inf_le_of_left_le h).le
+  exact disjoint_iff_inf_le.mpr (le_sdiff_right.1 <| inf_le_of_left_le h).le
 
 @[simp]
 theorem le_symmDiff_iff_right : b ≤ a ∆ b ↔ Disjoint a b := by

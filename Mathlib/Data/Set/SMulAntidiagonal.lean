@@ -27,7 +27,7 @@ section SMul
 variable [SMul G P] {s s₁ s₂ : Set G} {t t₁ t₂ : Set P} {a : P} {x : G × P}
 
 /-- `smulAntidiagonal s t a` is the set of all pairs of an element in `s` and an
-      element in `t` that scalar multiply to `a`.-/
+      element in `t` that scalar multiply to `a`. -/
 @[to_additive "`vaddAntidiagonal s t a` is the set of all pairs of an element in `s` and an
       element in `t` that vector-add to `a`."]
 def smulAntidiagonal (s : Set G) (t : Set P) (a : P) : Set (G × P) :=
@@ -96,20 +96,12 @@ theorem eq_of_fst_le_fst_of_snd_le_snd (h₁ : (x : G × P).1 ≤ (y : G × P).1
 @[to_additive VAddAntidiagonal.finite_of_isPWO]
 theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (smulAntidiagonal s t a).Finite := by
   refine Set.not_infinite.1 fun h => ?_
-  have h1 : (smulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.fst ⁻¹'o (· ≤ ·)) := fun f hf =>
-    hs (Prod.fst ∘ f) fun n => (mem_smulAntidiagonal.1 (hf n)).1
-  have h2 : (smulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.snd ⁻¹'o (· ≤ ·)) := fun f hf =>
-    ht (Prod.snd ∘ f) fun n => (mem_smulAntidiagonal.1 (hf n)).2.1
-  have isrfl : IsRefl (G × P) (Prod.fst ⁻¹'o fun x x_1 ↦ x ≤ x_1) := by
-    refine { refl := ?refl }
-    simp_all only [Order.Preimage, le_refl, Prod.forall, implies_true]
-  have istrns : IsTrans (G × P) (Prod.fst ⁻¹'o fun x x_1 ↦ x ≤ x_1) := by
-    refine { trans := ?trans }
-    simp_all only [Order.Preimage, Prod.forall]
-    exact fun a _ a_1 _ a_2 _ a_3 a_4 ↦ Preorder.le_trans a a_1 a_2 a_3 a_4
-  obtain ⟨g, hg⟩ :=
-    h1.exists_monotone_subseq (fun n => h.natEmbedding _ n) fun n => (h.natEmbedding _ n).2
-  obtain ⟨m, n, mn, h2'⟩ := h2 (fun x => (h.natEmbedding _) (g x)) fun n => (h.natEmbedding _ _).2
+  have h1 : (smulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.fst ⁻¹'o (· ≤ ·)) :=
+    fun f ↦ hs fun n ↦ ⟨_, (mem_smulAntidiagonal.1 (f n).2).1⟩
+  have h2 : (smulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.snd ⁻¹'o (· ≤ ·)) :=
+    fun f ↦ ht fun n ↦ ⟨_, (mem_smulAntidiagonal.1 (f n).2).2.1⟩
+  obtain ⟨g, hg⟩ := h1.exists_monotone_subseq fun n ↦ (h.natEmbedding _ n).2
+  obtain ⟨m, n, mn, h2'⟩ := h2 fun n ↦ h.natEmbedding _ _
   refine mn.ne (g.injective <| (h.natEmbedding _).injective ?_)
   exact eq_of_fst_le_fst_of_snd_le_snd (hg _ _ mn.le) h2'
 

@@ -161,6 +161,16 @@ lemma map_bijective (X Y : C) :
     Function.Bijective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
   hF.homEquiv.bijective
 
+@[simp]
+lemma preimage_id {X : C} :
+    hF.preimage (𝟙 (F.obj X)) = 𝟙 X :=
+  hF.map_injective (by simp)
+
+@[simp, reassoc]
+lemma preimage_comp {X Y Z : C} (f : F.obj X ⟶ F.obj Y) (g : F.obj Y ⟶ F.obj Z) :
+    hF.preimage (f ≫ g) = hF.preimage f ≫ hF.preimage g :=
+  hF.map_injective (by simp)
+
 lemma full : F.Full where
   map_surjective := hF.map_surjective
 
@@ -244,8 +254,8 @@ instance Faithful.id : Functor.Faithful (𝟭 C) := { }
 variable {D : Type u₂} [Category.{v₂} D] {E : Type u₃} [Category.{v₃} E]
 variable (F F' : C ⥤ D) (G : D ⥤ E)
 
-instance Faithful.comp [F.Faithful] [G.Faithful] :
-    (F ⋙ G).Faithful where map_injective p := F.map_injective (G.map_injective p)
+instance Faithful.comp [F.Faithful] [G.Faithful] : (F ⋙ G).Faithful where
+  map_injective p := F.map_injective (G.map_injective p)
 
 theorem Faithful.of_comp [(F ⋙ G).Faithful] : F.Faithful :=
   -- Porting note: (F ⋙ G).map_injective.of_comp has the incorrect type
@@ -310,12 +320,8 @@ theorem Faithful.div_comp (F : C ⥤ E) [F.Faithful] (G : D ⥤ E) [G.Faithful] 
     (h_obj : ∀ X, G.obj (obj X) = F.obj X) (map : ∀ {X Y}, (X ⟶ Y) → (obj X ⟶ obj Y))
     (h_map : ∀ {X Y} {f : X ⟶ Y}, HEq (G.map (map f)) (F.map f)) :
     Faithful.div F G obj @h_obj @map @h_map ⋙ G = F := by
-  -- Porting note: Have to unfold the structure twice because the first one recovers only the
-  -- prefunctor `F_pre`
-  cases' F with F_pre _ _; cases' G with G_pre _ _
-  cases' F_pre with F_obj _; cases' G_pre with G_obj _
+  obtain ⟨⟨F_obj, _⟩, _, _⟩ := F; obtain ⟨⟨G_obj, _⟩, _, _⟩ := G
   unfold Faithful.div Functor.comp
-  -- Porting note: unable to find the lean4 analogue to `unfold_projs`, works without it
   have : F_obj = G_obj ∘ obj := (funext h_obj).symm
   subst this
   congr
