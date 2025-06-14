@@ -52,7 +52,7 @@ noncomputable def terminalDiscreteUniqueIso
   terminalIsoIsTerminal isDiscreteUnique.isTerminal
 
 /-- The discrete category on `PUnit` is terminal. -/
-def DiscretePUnit.isTerminal : IsTerminal (Cat.of (Discrete PUnit)) :=
+def isTerminalDiscretePUnit : IsTerminal (Cat.of (Discrete PUnit)) :=
   isDiscreteUnique.isTerminal
 
 section
