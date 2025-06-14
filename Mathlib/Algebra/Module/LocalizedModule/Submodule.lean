@@ -171,7 +171,7 @@ instance : IsLocalizedModule p (M'.toLocalized₀ p f) where
         ← IsLocalizedModule.mk'_smul, ← Submonoid.smul_def, IsLocalizedModule.mk'_cancel_right]
   surj' := by
     rintro ⟨y, x, hx, s, rfl⟩
-    exact ⟨⟨⟨x, hx⟩, s⟩, by ext; simp⟩
+    exact ⟨⟨⟨x, hx⟩, s⟩, by ext; exact IsLocalizedModule.mk'_cancel' ..⟩
   exists_of_eq e := by simpa [Subtype.ext_iff] using
       IsLocalizedModule.exists_of_eq (S := p) (f := f) (congr_arg Subtype.val e)
 
@@ -190,8 +190,7 @@ open Pointwise
 lemma localized₀_le_localized₀_of_smul_le {P Q : Submodule R M} (x : p) (h : x • P ≤ Q) :
     P.localized₀ p f ≤ Q.localized₀ p f := by
   rintro - ⟨a, ha, r, rfl⟩
-  refine ⟨x • a, h ⟨a, ha, rfl⟩, x * r, ?_⟩
-  simp
+  exact ⟨x • a, h ⟨a, ha, rfl⟩, x * r, IsLocalizedModule.mk'_cancel_left ..⟩
 
 lemma localized'_le_localized'_of_smul_le {P Q : Submodule R M} (x : p) (h : x • P ≤ Q) :
     P.localized' S p f ≤ Q.localized' S p f :=
@@ -238,7 +237,8 @@ instance IsLocalizedModule.toLocalizedQuotient' (M' : Submodule R M) :
   exists_of_eq {m n} e := by
     obtain ⟨⟨m, rfl⟩, n, rfl⟩ := PProd.mk (mk_surjective _ m) (mk_surjective _ n)
     obtain ⟨x, hx, s, hs⟩ : f (m - n) ∈ _ := by simpa [Submodule.Quotient.eq] using e
-    obtain ⟨c, hc⟩ := exists_of_eq (S := p) (show f (s • (m - n)) = f x by simp [-map_sub, ← hs])
+    obtain ⟨c, hc⟩ := exists_of_eq (S := p)
+      (show f (s • (m - n)) = f x by simpa [← hs] using IsLocalizedModule.mk'_cancel' ..)
     exact ⟨c * s, by simpa only [← Quotient.mk_smul, Submodule.Quotient.eq,
       ← smul_sub, mul_smul, hc] using M'.smul_mem c hx⟩
 
@@ -271,7 +271,7 @@ lemma ker_localizedMap_eq_localized₀_ker (g : M →ₗ[R] P) :
   · obtain ⟨⟨a, b⟩, rfl⟩ := IsLocalizedModule.mk'_surjective p f x
     simp only [Function.uncurry_apply_pair, map_mk', mk'_eq_zero, eq_zero_iff p f'] at h
     obtain ⟨c, hc⟩ := h
-    refine ⟨c • a, by simpa, c * b, by simp⟩
+    refine ⟨c • a, by simpa, c * b, by simpa using IsLocalizedModule.mk'_cancel_left ..⟩
   · rintro ⟨m, hm, a, ha, rfl⟩
     simp [IsLocalizedModule.map_mk', hm]
 

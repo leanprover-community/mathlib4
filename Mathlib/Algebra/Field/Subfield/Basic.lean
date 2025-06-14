@@ -600,6 +600,7 @@ variable {X Y}
 instance [SMul K X] (F : Subfield K) : SMul F X :=
   inferInstanceAs (SMul F.toSubsemiring X)
 
+@[simp]
 theorem smul_def [SMul K X] {F : Subfield K} (g : F) (m : X) : g • m = (g : K) • m :=
   rfl
 
