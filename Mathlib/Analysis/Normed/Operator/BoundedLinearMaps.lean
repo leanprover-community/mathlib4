@@ -468,6 +468,20 @@ theorem ContinuousOn.clm_apply {f : X → (E →L[𝕜] F)} {g : X → E}
     ContinuousOn (fun x ↦ f x (g x)) s :=
   isBoundedBilinearMap_apply.continuous.comp_continuousOn (hf.prodMk hg)
 
+theorem ContinuousOn.continuousLinearMapCoprod
+    {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G} {s : Set X}
+    (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
+    ContinuousOn (fun x => (f x).coprod (g x)) s := by
+  simp only [← comp_fst_add_comp_snd]
+  exact (hf.clm_comp continuousOn_const).add (hg.clm_comp continuousOn_const)
+
+theorem Continuous.continuousLinearMapCoprod
+    {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G}
+    (hf : Continuous f) (hg : Continuous g) :
+    Continuous (fun x => (f x).coprod (g x)) := by
+  apply continuous_iff_continuousOn_univ.mpr
+  exact hf.continuousOn.continuousLinearMapCoprod hg.continuousOn
+
 end
 
 namespace ContinuousLinearEquiv
