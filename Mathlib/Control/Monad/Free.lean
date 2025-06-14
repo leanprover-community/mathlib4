@@ -101,7 +101,7 @@ def map {α β : Type w} {F : Type u → Type v} (f : α → β) : FreeM F α �
   | .liftBind op cont => .liftBind op (fun z => FreeM.map f (cont z))
 
 instance {F : Type u → Type v} : Functor (FreeM F) where
-  map := FreeM.map
+  map := .map
 
 instance {F : Type u → Type v} : LawfulFunctor (FreeM F) where
   map_const := rfl
@@ -127,20 +127,20 @@ protected def bind {a b : Type w} {F : Type u → Type v} (x : FreeM F a) (f : a
 /-- Lift an operation from the effect signature `f` into the `FreeM f` monad. -/
 @[simp]
 def lift {F : Type u → Type v} {ι : Type u} (op : F ι) : FreeM F ι :=
-  FreeM.liftBind op FreeM.pure
+  .liftBind op FreeM.pure
 
 instance {F : Type u → Type v} : Monad (FreeM F) where
-  pure := FreeM.pure
-  bind := FreeM.bind
+  pure := .pure
+  bind := .bind
 
 @[simp]
 lemma pure_eq_pure {F : Type u → Type v} {α : Type w} (a : α) :
-    (FreeM.pure a : FreeM F α) = pure a := rfl
+    (.pure a : FreeM F α) = pure a := rfl
 
 /-- The `liftBind` constructor is semantically equivalent to `(lift op) >>= cont`. -/
 lemma liftBind_eq_lift_bind {F : Type u → Type v} {ι : Type u} {α : Type u}
     (op : F ι) (cont : ι → FreeM F α) :
-    FreeM.liftBind op cont = (lift op) >>= cont := by rfl
+    .liftBind op cont = (lift op) >>= cont := by rfl
 
 instance {F : Type u → Type v} : LawfulMonad (FreeM F) := LawfulMonad.mk'
   (bind_pure_comp := by {
@@ -182,7 +182,7 @@ lemma mapM_pure {F : Type u → Type v} {M : Type u → Type w} [Monad M] {α : 
 @[simp]
 lemma mapM_liftBind {F : Type u → Type v} {M : Type u → Type w} [Monad M] {α β : Type u}
     (interp : {γ : Type u} → F γ → M γ) (op : F β) (cont : β → FreeM F α) :
-    (FreeM.liftBind op cont).mapM interp = interp op >>=
+    (liftBind op cont).mapM interp = interp op >>=
     fun result => (cont result).mapM interp := by simp [FreeM.mapM]
 
 lemma mapM_lift {F : Type u → Type v} {M : Type u → Type w} [Monad M] [LawfulMonad M] {α : Type u}
@@ -208,7 +208,7 @@ def ExtendsHandler
     (g : FreeM F α → M α) : Prop :=
   (∀ a, g (pure a) = pure a) ∧
   (∀ {ι} (op : F ι) (k : ι → FreeM F α),
-    g (FreeM.liftBind op k) = f op >>= fun x => g (k x))
+    g (liftBind op k) = f op >>= fun x => g (k x))
 
 /--
 The universal property of the free monad `FreeM`. That is, `mapM f` is the unique interpreter that
