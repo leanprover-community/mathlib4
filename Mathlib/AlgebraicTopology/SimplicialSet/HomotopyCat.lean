@@ -359,8 +359,6 @@ section
 /-- Since `⦋0⦌ : SimplexCategory` is terminal, `Δ[0]` has a unique point and thus
 `OneTruncation₂ ((truncation 2).obj Δ[0])` has a unique inhabitant. -/
 instance instUniqueOneTruncation₂DeltaZero : Unique (OneTruncation₂ ((truncation 2).obj Δ[0])) :=
-  letI : Unique (⦋0⦌ ⟶ ⦋0⦌) :=
-    Limits.isTerminalEquivUnique _ _ |>.toFun SimplexCategory.isTerminalZero _
   inferInstanceAs (Unique (ULift.{_, 0} (⦋0⦌ ⟶ ⦋0⦌)))
 
 /-- Since `⦋0⦌ : SimplexCategory` is terminal, `Δ[0]` has a unique edge and thus the homs of
@@ -372,8 +370,6 @@ instance (x y : OneTruncation₂ ((truncation 2).obj Δ[0])) : Unique (x ⟶ y) 
     exact 𝟙rq instUniqueOneTruncation₂DeltaZero.default
   uniq _ := by
     letI : Subsingleton (((truncation 2).obj Δ[0]).obj (.op ⦋1⦌₂)) :=
-      letI : Unique (⦋1⦌ ⟶ ⦋0⦌) :=
-        Limits.isTerminalEquivUnique _ _ |>.toFun SimplexCategory.isTerminalZero _
       inferInstanceAs (Subsingleton (ULift.{_, 0} (⦋1⦌ ⟶ ⦋0⦌)))
     ext
     exact this.allEq _ _
@@ -391,7 +387,7 @@ def hoFunctorDeltaZeroIsTerminal : IsTerminal (hoFunctor.obj (Δ[0])) := by
 
 /-- The homotopy category functor preserves generic terminal objects. -/
 noncomputable def hoFunctor.terminalIso : (hoFunctor.obj (⊤_ SSet)) ≅ (⊤_ Cat) :=
-  hoFunctor.mapIso (terminalIsoIsTerminal SSet.isTerminalDeltaZero) ≪≫
+  hoFunctor.mapIso (terminalIsoIsTerminal stdSimplex.isTerminalObj₀) ≪≫
     (terminalIsoIsTerminal hoFunctorDeltaZeroIsTerminal).symm
 
 instance hoFunctor.preservesTerminal : PreservesLimit (empty.{0} SSet) hoFunctor :=
