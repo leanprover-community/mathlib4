@@ -125,4 +125,17 @@ end IsLocalization
 
 end Functor
 
+namespace LocalizerMorphism
+
+lemma isLocalizedEquivalence_of_isLocalization (Φ : LocalizerMorphism W₁ W₂)
+    (W : MorphismProperty C₁) [Φ.functor.IsLocalization W] (hW : W ≤ W₁)
+    (hW' : W₂ ≤ W₁.map Φ.functor) :
+    Φ.IsLocalizedEquivalence := by
+  have : (Φ.functor ⋙ W₂.Q).IsLocalization W₁ :=
+    Functor.IsLocalization.comp Φ.functor W₂.Q W W₂ W₁
+      (fun _ _ _ h ↦ Localization.inverts W₂.Q W₂ _ (Φ.map _ h)) hW hW'
+  exact IsLocalizedEquivalence.of_isLocalization_of_isLocalization Φ W₂.Q
+
+end LocalizerMorphism
+
 end CategoryTheory

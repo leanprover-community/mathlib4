@@ -59,9 +59,9 @@ end
 section
 
 variable [Preadditive C₁] [HasZeroMorphisms C₂] [Preadditive D]
-  (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ)
+  (K₁ K₁' : CochainComplex C₁ ℤ) (φ : K₁ ⟶ K₁') (K₂ K₂' : CochainComplex C₂ ℤ) (ψ : K₂ ⟶ K₂')
   (F : C₁ ⥤ C₂ ⥤ D) [F.Additive] [∀ (X₁ : C₁), (F.obj X₁).PreservesZeroMorphisms] (x : ℤ)
-  [HasMapBifunctor K₁ K₂ F]
+  [HasMapBifunctor K₁ K₂ F] [HasMapBifunctor K₁ K₂' F] [HasMapBifunctor K₁' K₂ F]
 
 /-- Auxiliary definition for `mapBifunctorShift₁Iso`. -/
 @[simps! hom_f_f inv_f_f]
@@ -86,14 +86,67 @@ noncomputable def mapBifunctorShift₁Iso :
   HomologicalComplex₂.total.mapIso (mapBifunctorHomologicalComplexShift₁Iso K₁ K₂ F x) _ ≪≫
     (((F.mapBifunctorHomologicalComplex _ _).obj K₁).obj K₂).totalShift₁Iso x
 
+open HomologicalComplex
+
+variable {K₂ K₂'} in
+@[reassoc (attr := simp)]
+lemma mapBifunctorShift₁Iso_hom_naturality₂ :
+    mapBifunctorMap (𝟙 (K₁⟦x⟧)) ψ F _ ≫ (mapBifunctorShift₁Iso K₁ K₂' F x).hom =
+    (mapBifunctorShift₁Iso K₁ K₂ F x).hom ≫ (mapBifunctorMap (𝟙 K₁) ψ F _)⟦x⟧' := by
+  ext n p q h
+  simp [mapBifunctorShift₁Iso, HomologicalComplex₂.ι_totalShift₁Iso_hom_f _ _ _ _ _ _ _ rfl _ rfl,
+   HomologicalComplex₂.ι_totalShift₁Iso_hom_f_assoc _ _ _ _ _ _ _ rfl _ rfl]
+
+variable {K₁ K₁'} in
+@[reassoc (attr := simp)]
+lemma mapBifunctorShift₁Iso_hom_naturality₁ :
+    mapBifunctorMap (φ⟦x⟧') (𝟙 K₂) F _ ≫ (mapBifunctorShift₁Iso K₁' K₂ F x).hom =
+    (mapBifunctorShift₁Iso K₁ K₂ F x).hom ≫ (mapBifunctorMap φ (𝟙 K₂) F _)⟦x⟧' := by
+  ext n p q h
+  simp [mapBifunctorShift₁Iso,
+    HomologicalComplex₂.ι_totalShift₁Iso_hom_f _ _ _ _ _ _ _ rfl _ rfl,
+    HomologicalComplex₂.ι_totalShift₁Iso_hom_f_assoc _ _ _ _ _ _ _ rfl _ rfl]
+
+@[reassoc]
+lemma mapBifunctorShift₁Iso_hom_zero [HasMapBifunctor ((𝟭 _).obj K₁) K₂ F] :
+    (mapBifunctorShift₁Iso K₁ K₂ F 0).hom =
+    mapBifunctorMap ((shiftFunctorZero _ ℤ).hom.app K₁) (𝟙 K₂) F _ ≫
+        (shiftFunctorZero _ ℤ).inv.app (mapBifunctor K₁ K₂ F) := by
+  ext n p q h
+  simp [mapBifunctorShift₁Iso,
+    HomologicalComplex₂.ι_totalShift₁Iso_hom_f _ _ _ _ _ _ _
+      (add_zero p).symm _ (add_zero n).symm, shiftFunctorZero_hom_app_f,
+    shiftFunctorZero_inv_app_f, -eqToHom_naturality,
+    HomologicalComplex₂.shiftFunctor₁XXIso, eqToHom_map, XIsoOfEq]
+
+@[reassoc]
+lemma mapBifunctorShift₁Iso_hom_add (x x' : ℤ)
+    [HasMapBifunctor ((CategoryTheory.shiftFunctor (CochainComplex C₁ ℤ) x ⋙
+      CategoryTheory.shiftFunctor _ x').obj K₁) K₂ F] :
+    (mapBifunctorShift₁Iso K₁ K₂ F (x + x')).hom =
+      mapBifunctorMap ((shiftFunctorAdd _ x x').hom.app K₁) (𝟙 K₂) F _ ≫
+    (mapBifunctorShift₁Iso (K₁⟦x⟧) K₂ F x').hom ≫
+      ((mapBifunctorShift₁Iso K₁ K₂ F x).hom)⟦x'⟧' ≫
+        (shiftFunctorAdd _ x x').inv.app (mapBifunctor K₁ K₂ F) := by
+  ext n p q h
+  dsimp at h
+  simp [mapBifunctorShift₁Iso,
+    HomologicalComplex₂.ι_totalShift₁Iso_hom_f _ (x + x') p q n h (p + x' + x) (by omega)
+      (n + x' + x) (by omega),
+    HomologicalComplex₂.ι_totalShift₁Iso_hom_f_assoc _ x' p q n h _ rfl _ rfl,
+    HomologicalComplex₂.ι_totalShift₁Iso_hom_f_assoc _ x (p + x') q (n + x')
+      (by omega) _ rfl _ rfl,
+    HomologicalComplex₂.shiftFunctor₁XXIso, XIsoOfEq,
+    shiftFunctorAdd_hom_app_f, shiftFunctorAdd_inv_app_f, eqToHom_map]
+
 end
 
 section
 
 variable [HasZeroMorphisms C₁] [Preadditive C₂] [Preadditive D]
-  (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ)
+  (K₁ K₁' : CochainComplex C₁ ℤ) (φ : K₁ ⟶ K₁') (K₂ K₂' : CochainComplex C₂ ℤ) (ψ : K₂ ⟶ K₂')
   (F : C₁ ⥤ C₂ ⥤ D) [F.PreservesZeroMorphisms] [∀ (X₁ : C₁), (F.obj X₁).Additive] (y : ℤ)
-  [HasMapBifunctor K₁ K₂ F]
+  [HasMapBifunctor K₁ K₂ F] [HasMapBifunctor K₁' K₂ F] [HasMapBifunctor K₁ K₂' F]
 
 /-- Auxiliary definition for `mapBifunctorShift₂Iso`. -/
 @[simps! hom_f_f inv_f_f]
@@ -119,6 +172,62 @@ noncomputable def mapBifunctorShift₂Iso :
   HomologicalComplex₂.total.mapIso
     (mapBifunctorHomologicalComplexShift₂Iso K₁ K₂ F y) (ComplexShape.up ℤ) ≪≫
     (((F.mapBifunctorHomologicalComplex _ _).obj K₁).obj K₂).totalShift₂Iso y
+
+open HomologicalComplex
+
+variable {K₁ K₁'} in
+@[reassoc (attr := simp)]
+lemma mapBifunctorShift₂Iso_hom_naturality₁ :
+    mapBifunctorMap φ (𝟙 (K₂⟦y⟧)) F _ ≫ (mapBifunctorShift₂Iso K₁' K₂ F y).hom =
+      (mapBifunctorShift₂Iso K₁ K₂ F y).hom ≫ (mapBifunctorMap φ (𝟙 (K₂)) F _)⟦y⟧' := by
+  ext n p q h
+  simp [mapBifunctorShift₂Iso, HomologicalComplex₂.ι_totalShift₂Iso_hom_f _ _ _ _ _ _ _ rfl _ rfl,
+    HomologicalComplex₂.ι_totalShift₂Iso_hom_f_assoc _ _ _ _ _ _ _ rfl _ rfl]
+
+variable {K₂ K₂'} in
+@[reassoc (attr := simp)]
+lemma mapBifunctorShift₂Iso_hom_naturality₂ :
+    mapBifunctorMap (𝟙 K₁) (ψ⟦y⟧') F (.up ℤ) ≫ (K₁.mapBifunctorShift₂Iso K₂' F y).hom =
+      (K₁.mapBifunctorShift₂Iso K₂ F y).hom ≫ (mapBifunctorMap (𝟙 K₁) ψ F (.up ℤ))⟦y⟧' := by
+  ext n p q h
+  simp [mapBifunctorShift₂Iso, HomologicalComplex₂.ι_totalShift₂Iso_hom_f _ _ _ _ _ _ _ rfl _ rfl,
+    HomologicalComplex₂.ι_totalShift₂Iso_hom_f_assoc _ _ _ _ _ _ _ rfl _ rfl]
+
+@[reassoc]
+lemma mapBifunctorShift₂Iso_hom_zero [HasMapBifunctor K₁ ((𝟭 _).obj K₂) F] :
+    (mapBifunctorShift₂Iso K₁ K₂ F 0).hom =
+    HomologicalComplex.mapBifunctorMap (𝟙 K₁)
+      ((shiftFunctorZero _ ℤ).hom.app K₂ : _ ⟶ K₂) F (.up ℤ) ≫
+        (shiftFunctorZero _ ℤ).inv.app (mapBifunctor K₁ K₂ F) := by
+  ext n p q h
+  simp [mapBifunctorShift₂Iso, HomologicalComplex₂.ι_totalShift₂Iso_hom_f _ _ _ _ _ _ _
+    (add_zero q).symm _ (add_zero n).symm, HomologicalComplex₂.shiftFunctor₂XXIso,
+    shiftFunctorZero_inv_app_f, shiftFunctorZero_hom_app_f, XIsoOfEq, eqToHom_map,
+    -eqToHom_naturality]
+
+@[reassoc]
+lemma mapBifunctorShift₂Iso_hom_add (y y' : ℤ)
+  [HasMapBifunctor K₁
+    ((CategoryTheory.shiftFunctor _ y ⋙ CategoryTheory.shiftFunctor _ y').obj K₂) F] :
+    (mapBifunctorShift₂Iso K₁ K₂ F (y + y')).hom =
+      HomologicalComplex.mapBifunctorMap (𝟙 K₁)
+        ((shiftFunctorAdd (CochainComplex C₂ ℤ) y y').hom.app K₂) F _ ≫
+        (K₁.mapBifunctorShift₂Iso (K₂⟦y⟧) F y').hom ≫
+          ((K₁.mapBifunctorShift₂Iso K₂ F y).hom)⟦y'⟧' ≫
+        (shiftFunctorAdd _ y y').inv.app
+          (HomologicalComplex.mapBifunctor K₁ K₂ F (ComplexShape.up ℤ)) := by
+  ext n p q h
+  dsimp at h
+  simp [mapBifunctorShift₂Iso,
+    HomologicalComplex₂.ι_totalShift₂Iso_hom_f _ (y + y') p q n h
+      (q + y + y') (by omega) (n + y + y') (by omega),
+    HomologicalComplex₂.ι_totalShift₂Iso_hom_f_assoc _ y' p q n h (q + y') (by omega)
+      (n + y') (by omega),
+    HomologicalComplex₂.ι_totalShift₂Iso_hom_f_assoc _ y p (q + y') (n + y') (by omega)
+      (q + y + y') (by omega) (n + y + y') (by omega),
+    shiftFunctorAdd_hom_app_f, shiftFunctorAdd_inv_app_f, smul_smul,
+    HomologicalComplex₂.shiftFunctor₂XXIso, XIsoOfEq, eqToHom_map,
+    mul_add, Int.negOnePow_add, mul_comm (p * y).negOnePow]
 
 end
 
@@ -150,6 +259,32 @@ lemma mapBifunctorShift₁Iso_trans_mapBifunctorShift₂Iso :
   ext a b
   dsimp [HomologicalComplex₂.shiftFunctor₁₂CommIso]
   simp only [id_comp]
+
+end
+
+section
+
+noncomputable def bifunctorMapHomologicalComplexObjShiftIso
+    [Preadditive C₁] [HasZeroMorphisms C₂] [Preadditive D]
+    (F : C₁ ⥤ C₂ ⥤ D)
+    [F.Additive] [∀ (X₁ : C₁), (F.obj X₁).PreservesZeroMorphisms]
+      [∀ (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ), HasMapBifunctor K₁ K₂ F]
+    (K₁ : CochainComplex C₁ ℤ) (n : ℤ) :
+    (F.bifunctorMapHomologicalComplex (.up ℤ) (.up ℤ) (.up ℤ)).obj (K₁⟦n⟧) ≅
+      (F.bifunctorMapHomologicalComplex (.up ℤ) (.up ℤ) (.up ℤ)).obj K₁ ⋙
+        shiftFunctor _ n :=
+  NatIso.ofComponents (fun K₂ ↦ mapBifunctorShift₁Iso K₁ K₂ F n)
+
+noncomputable def bifunctorMapHomologicalComplexFlipObjShiftIso
+    [HasZeroMorphisms C₁] [Preadditive C₂] [Preadditive D]
+    (F : C₁ ⥤ C₂ ⥤ D)
+    [F.PreservesZeroMorphisms] [∀ (X₁ : C₁), (F.obj X₁).Additive]
+      [∀ (K₁ : CochainComplex C₁ ℤ) (K₂ : CochainComplex C₂ ℤ), HasMapBifunctor K₁ K₂ F]
+    (K₂ : CochainComplex C₂ ℤ) (n : ℤ) :
+    (F.bifunctorMapHomologicalComplex (.up ℤ) (.up ℤ) (.up ℤ)).flip.obj (K₂⟦n⟧) ≅
+      (F.bifunctorMapHomologicalComplex (.up ℤ) (.up ℤ) (.up ℤ)).flip.obj K₂ ⋙
+        shiftFunctor _ n :=
+  NatIso.ofComponents (fun K₁ ↦ mapBifunctorShift₂Iso K₁ K₂ F n)
 
 end
 

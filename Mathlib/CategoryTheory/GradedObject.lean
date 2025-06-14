@@ -5,8 +5,8 @@ Authors: Kim Morrison, Joël Riou
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Shift.Basic
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.CategoryTheory.Preadditive.Basic
+import Mathlib.Data.Set.Basic
 
 /-!
 # The category of graded objects
@@ -232,6 +232,35 @@ instance hasZeroObject [HasZeroObject C] [HasZeroMorphisms C] (β : Type w) :
 
 end
 
+section Preadditive
+
+variable {I : Type*} [Preadditive C] {X Y : GradedObject I C}
+
+instance : Add (X ⟶ Y) where
+  add φ₁ φ₂ i := φ₁ i + φ₂ i
+
+instance : Neg (X ⟶ Y) where
+  neg φ i := -φ i
+
+@[simp]
+theorem add_apply (φ₁ φ₂ : X ⟶ Y) (i : I) : (φ₁ + φ₂) i = φ₁ i + φ₂ i := rfl
+
+@[simp]
+theorem neg_apply (φ : X ⟶ Y) (i : I) : (-φ) i = -φ i := rfl
+
+instance : AddCommGroup (X ⟶ Y) where
+  add_assoc _ _ _ := by ext; dsimp; rw [add_assoc]
+  zero_add _ := by ext; dsimp; rw [zero_add]
+  add_zero _ := by ext; dsimp; rw [add_zero]
+  nsmul := nsmulRec
+  zsmul := zsmulRec
+  neg_add_cancel _ := by ext; dsimp; rw [neg_add_cancel]
+  add_comm _ _ := by ext; dsimp; rw [add_comm]
+
+instance : Preadditive (GradedObject I C) where
+
+end Preadditive
+
 end GradedObject
 
 namespace GradedObject
@@ -289,7 +318,7 @@ end GradedObject
 namespace GradedObject
 
 variable {I J K : Type*} {C : Type*} [Category C]
-  (X Y Z : GradedObject I C) (φ : X ⟶ Y) (e : X ≅ Y) (ψ : Y ⟶ Z) (p : I → J)
+  (X Y Z : GradedObject I C) (φ φ' : X ⟶ Y) (e : X ≅ Y) (ψ : Y ⟶ Z) (p : I → J)
 
 /-- If `X : GradedObject I C` and `p : I → J`, `X.mapObjFun p j` is the family of objects `X i`
 for `i : I` such that `p i = j`. -/
@@ -421,6 +450,18 @@ noncomputable def mapIso : X.mapObj p ≅ Y.mapObj p where
   hom := mapMap e.hom p
   inv := mapMap e.inv p
 
+variable (X Y) in
+@[simp]
+lemma mapMap_zero [HasZeroMorphisms C] : mapMap (0 : X ⟶ Y) p = 0 := by aesop_cat
+
+@[simp]
+lemma mapMap_add [Preadditive C] : mapMap (φ + φ') p = mapMap φ p + mapMap φ' p := by aesop_cat
+
+lemma isIso_mapMap_apply (j : J) (h : ∀ (i : I) (_ : p i = j), IsIso (φ i)) :
+    IsIso (mapMap φ p j) :=
+  ⟨Y.descMapObj p (fun i hi => (letI := h i hi; inv (φ i)) ≫ X.ιMapObj p i j hi),
+    by aesop_cat, by aesop_cat⟩
+
 variable (C)
 
 /-- Given a map `p : I → J`, this is the functor `GradedObject I C ⥤ GradedObject J C` which
@@ -484,6 +525,8 @@ lemma hasMap_comp [(X.mapObj p).HasMap q] : X.HasMap r :=
 
 end
 
+section HasZeroMorphisms
+
 variable [HasZeroMorphisms C] [DecidableEq J] (i : I) (j : J)
 
 /-- The canonical inclusion `X i ⟶ X.mapObj p j` when `p i = j`, the zero morphism otherwise. -/
@@ -503,6 +546,8 @@ lemma ιMapObjOrZero_mapMap :
   by_cases h : p i = j
   · simp only [ιMapObjOrZero_eq _ _ _ _ h, ι_mapMap]
   · simp only [ιMapObjOrZero_eq_zero _ _ _ _ h, zero_comp, comp_zero]
+
+end HasZeroMorphisms
 
 end GradedObject
 

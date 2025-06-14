@@ -42,7 +42,7 @@ namespace IsRightDerivabilityStructure
 section
 
 variable (Φ : LocalizerMorphism W₁ W₂)
-  [W₁.IsMultiplicative] [∀ X₂, IsConnected (Φ.RightResolution X₂)]
+  [∀ X₂, IsConnected (Φ.RightResolution X₂)]
   [Φ.arrow.HasRightResolutions] [W₂.ContainsIdentities]
 
 namespace Constructor
@@ -112,7 +112,52 @@ lemma mk' [Φ.IsLocalizedEquivalence] : Φ.IsRightDerivabilityStructure := by
 
 end
 
+section
+
+variable (Φ : LocalizerMorphism W₁ W₂) {D₁ D₂ : Type*} [Category D₁] [Category D₂]
+  (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂) [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
+  (F : D₁ ⥤ D₂)
+  [F.Full] [F.Faithful] [W₂.ContainsIdentities]
+  [∀ X₂, IsConnected (Φ.RightResolution X₂)]
+  [HasRightResolutions Φ.arrow]
+
+-- Kahn-Maltsiniotis, Lemme 6.5
+/-- Constructor for right derivability structures. -/
+lemma mk'' [CatCommSq Φ.functor L₁ L₂ F] : Φ.IsRightDerivabilityStructure := by
+  have : Φ.IsLocalizedEquivalence := by
+    have := Localization.essSurj L₂ W₂
+    have : F.EssSurj := ⟨fun Y => by
+      let R : Φ.RightResolution (L₂.objPreimage Y) := Classical.arbitrary _
+      exact ⟨L₁.obj R.X₁, ⟨(CatCommSq.iso Φ.functor L₁ L₂ F).symm.app R.X₁ ≪≫
+        (Localization.isoOfHom L₂ W₂ R.w R.hw).symm ≪≫ L₂.objObjPreimageIso Y⟩⟩⟩
+    have : F.IsEquivalence := { }
+    exact IsLocalizedEquivalence.mk' Φ L₁ L₂ F
+  apply mk'
+
+end
+
 end IsRightDerivabilityStructure
+
+/-- If a localizer morphism `Φ` is a localized equivalence, then it is a left
+derivability structure if the categories of left resolutions are connected and the
+categories of left resolutions of arrows are nonempty. -/
+
+lemma IsLeftDerivabilityStructure.mk' (Φ : LocalizerMorphism W₁ W₂)
+    [∀ (X₂ : C₂), IsConnected (Φ.LeftResolution X₂)]
+    [Φ.arrow.HasLeftResolutions] [W₂.ContainsIdentities] [Φ.IsLocalizedEquivalence] :
+    Φ.IsLeftDerivabilityStructure := by
+  rw [isLeftDerivabilityStructure_iff_op]
+  have : Φ.op.arrow.HasRightResolutions := by
+    rintro ⟨⟨X⟩, ⟨Y⟩, ⟨f : Y ⟶ X⟩⟩
+    have h : Φ.arrow.LeftResolution (Arrow.mk f) := Classical.arbitrary _
+    exact ⟨{
+      X₁ := Arrow.mk h.X₁.hom.op
+      w := Arrow.homMk h.w.right.op h.w.left.op (Quiver.Hom.unop_inj h.w.w.symm)
+      hw := ⟨h.hw.2, h.hw.1⟩
+    }⟩
+  have (X₂ : C₂ᵒᵖ) : IsConnected (Φ.op.RightResolution X₂) :=
+    isConnected_of_equivalent (LeftResolution.opEquivalence Φ X₂.unop)
+  apply IsRightDerivabilityStructure.mk'
 
 end LocalizerMorphism
 

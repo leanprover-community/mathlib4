@@ -3,7 +3,7 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
+import Mathlib.Algebra.Homology.Additive
 
 /-!
 # Bicomplexes
@@ -24,7 +24,8 @@ which is obtained by exchanging the horizontal and vertical directions.
 
 open CategoryTheory Limits
 
-variable (C : Type*) [Category C] [HasZeroMorphisms C]
+variable (C D : Type*) [Category C] [Category D] [HasZeroMorphisms C] [HasZeroMorphisms D]
+  (F : C ⥤ D)
   {I₁ I₂ : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂)
 
 /-- Given a category `C` and two complex shapes `c₁` and `c₂` on types `I₁` and `I₂`,
@@ -207,5 +208,18 @@ def XXIsoOfEq {x₁ y₁ : I₁} (h₁ : x₁ = y₁) {x₂ y₂ : I₂} (h₂ :
 lemma XXIsoOfEq_rfl (i₁ : I₁) (i₂ : I₂) :
     K.XXIsoOfEq _ _ _ (rfl : i₁ = i₁) (rfl : i₂ = i₂) = Iso.refl _ := rfl
 
-
 end HomologicalComplex₂
+
+namespace CategoryTheory
+
+namespace Functor
+
+variable {C D}
+
+abbrev mapHomologicalComplex₂ [F.PreservesZeroMorphisms] :
+    HomologicalComplex₂ C c₁ c₂ ⥤ HomologicalComplex₂ D c₁ c₂ :=
+  (F.mapHomologicalComplex c₂).mapHomologicalComplex c₁
+
+end Functor
+
+end CategoryTheory

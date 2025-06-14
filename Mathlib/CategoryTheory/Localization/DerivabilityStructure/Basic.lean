@@ -49,7 +49,6 @@ not depend of the choice of the localization functors.
 * Define the product derivability structure and formalize derived functors of
   functors in several variables
 
-
 ## References
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
@@ -184,6 +183,9 @@ instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).IsLeftDerivabil
     (Iso.refl _)]
   dsimp
   exact TwoSquare.guitartExact_id' W₁.Q
+
+instance [Φ.IsLeftDerivabilityStructure] : Φ.op.IsRightDerivabilityStructure := by
+  rwa [← isLeftDerivabilityStructure_iff_op]
 
 end LocalizerMorphism
 
