@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
 
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+import Mathlib.CategoryTheory.Bicategory.Basic
 import Mathlib.CategoryTheory.Opposites
-import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 
 /-!
 # Opposite bicategories
@@ -27,8 +26,10 @@ There are multiple notions of opposite categories for bicategories.
 
 ## TODO
 
-Provide various lemmas for going between `LocallyDiscrete Cᵒᵖ` and `(LocallyDiscrete C)ᵒᵖ`.
-Expand API (do after I have started using it)
+* Define the 2-cell dual `Cᶜᵒ`.
+* Provide various lemmas for going between `LocallyDiscrete Cᵒᵖ` and `(LocallyDiscrete C)ᵒᵖ`.
+
+Note: `Cᶜᵒᵒᵖ` is WIP by Joël Riou and Christian Mertner.
 
 -/
 
@@ -72,7 +73,7 @@ theorem unbop_bop (a : B) : unbop (bop a) = a :=
 def equivToOpposite : B ≃ Bᴮᵒᵖ where
   toFun := bop
   invFun := unbop
-  left_inv := unop_op -- todo whyyy is this typo OK??
+  left_inv := unbop_bop -- TODO: type with unop_op works here!!??
   right_inv := bop_unbop
 
 theorem bop_surjective : Function.Surjective (bop : B → Bᴮᵒᵖ) := equivToOpposite.surjective
@@ -93,52 +94,26 @@ theorem bop_eq_iff_eq_unbop {x : B} {y} : bop x = y ↔ x = unbop y :=
 theorem unbop_eq_iff_eq_bop {x} {y : B} : unbop x = y ↔ x = bop y :=
   equivToOpposite.symm.apply_eq_iff_eq_symm_apply
 
-end Bicategory.Opposite
-
-open Bicategory.Opposite
-
 variable {B : Type u} [Bicategory.{w, v} B]
-
-section
 
 /-- `Bᴮᵒᵖ` reverses the 1-morphisms in `B` -/
 instance Hom : Quiver Bᴮᵒᵖ where
   Hom := fun a b => (unbop b ⟶ unbop a)ᴮᵒᵖ
 
--- TODO: this should be bop1 w no fancy namespace
-
-namespace Quiver.Hom
 /-- The opposite of a 1-morphism in `B`. -/
-@[simps]
-abbrev bop1 {a b : B} (f : a ⟶ b) : bop b ⟶ bop a := Bicategory.Opposite.bop f
+abbrev _root_.Quiver.Hom.bop1 {a b : B} (f : a ⟶ b) : bop b ⟶ bop a :=
+  Bicategory.Opposite.bop f
 
 /-- Given a 1-morhpism in `Bᴮᵒᵖ`, we can take the "unopposite" back in `B`. -/
-abbrev unbop1 {a b : Bᴮᵒᵖ} (f : a ⟶ b) : unbop b ⟶ unbop a :=
+abbrev _root_.Quiver.Hom.unbop1 {a b : Bᴮᵒᵖ} (f : a ⟶ b) : unbop b ⟶ unbop a :=
   Bicategory.Opposite.unbop f
-
-theorem bop_inj {a b : B} : Function.Injective (bop1 (B := B) (a := a) (b := b)) :=
-  fun _ _ H => congr_arg Quiver.Hom.unbop1 H
-
-theorem unbop_inj {a b : Bᴮᵒᵖ} : Function.Injective (unbop1 (B := B) (a := a) (b := b)) :=
-  fun _ _ H => congr_arg Quiver.Hom.bop1 H
-
-@[simp]
-theorem unbop_bop {X Y : B} (f : X ⟶ Y) : f.bop1.unbop1 = f :=
-  rfl
-
-end Quiver.Hom
-
-end
-
-namespace Bicategory.Opposite
 
 /-- `Bᴮᵒᵖ` preserves the direction of all 2-morphisms in `B` -/
 @[simps]
 instance (a b : Bᴮᵒᵖ) : Quiver (a ⟶ b) where
-  Hom := fun f g => (f.unbop ⟶ g.unbop)ᴮᵒᵖ
+  Hom := fun f g => (f.unbop1 ⟶ g.unbop1)ᴮᵒᵖ
 
 /-- The 1-cell opposite of a 2-morphism `η : f ⟶ g` in `B`. -/
-@[simps]
 abbrev bop2 {a b : B} {f g : a ⟶ b} (η : f ⟶ g) : f.bop1 ⟶ g.bop1 :=
   bop η
 
@@ -146,9 +121,8 @@ abbrev bop2 {a b : B} {f g : a ⟶ b} (η : f ⟶ g) : f.bop1 ⟶ g.bop1 :=
 abbrev unbop2 {a b : Bᴮᵒᵖ} {f g : a ⟶ b} (η : f ⟶ g) : f.unbop ⟶ g.unbop :=
   unbop η
 
--- @[simps] here causes a loop!!!!
 instance homCategory {a b : Bᴮᵒᵖ} : Category.{w} (a ⟶ b) where
-  id := fun f => bop2 (𝟙 f.unbop)
+  id := fun f => bop2 (𝟙 f.unbop1)
   comp := fun η θ => bop2 (unbop2 η ≫ unbop2 θ)
   id_comp := fun {f g} η => by simp only [bop_unbop, Category.id_comp (unbop2 η)]
 
@@ -167,16 +141,15 @@ theorem unbop2_comp {a b : Bᴮᵒᵖ} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g 
   rfl
 
 @[simp]
-theorem unbop2_id {a b : Bᴮᵒᵖ} {f : a ⟶ b} : unbop2 (𝟙 f) = 𝟙 f.unbop :=
+theorem unbop2_id {a b : Bᴮᵒᵖ} {f : a ⟶ b} : unbop2 (𝟙 f) = 𝟙 f.unbop1 :=
   rfl
 
--- TODO: following two are already OK by simp, so maybe shouldn't be simp lemmas?
 @[simp]
 theorem unbop2_id_bop {a b : B} {f : a ⟶ b} : unbop2 (𝟙 f.bop1) = 𝟙 f :=
   rfl
 
 @[simp]
-theorem bop2_id_unbop {a b : Bᴮᵒᵖ} {f : a ⟶ b} : bop2 (𝟙 f.unbop) = 𝟙 f :=
+theorem bop2_id_unbop {a b : Bᴮᵒᵖ} {f : a ⟶ b} : bop2 (𝟙 f.unbop1) = 𝟙 f :=
   rfl
 
 /-- The natural functor from the hom-category `a ⟶ b` in `B` to its bicategorical opposite
@@ -190,7 +163,7 @@ def bopFunctor (a b : B) : (a ⟶ b) ⥤ (bop b ⟶ bop a) where
 `unbop b ⟶ unbop a`. -/
 @[simps]
 def unbopFunctor (a b : Bᴮᵒᵖ) : (a ⟶ b) ⥤ (unbop b ⟶ unbop a) where
-  obj f := f.unbop
+  obj f := f.unbop1
   map η := unbop2 η
 
 end Bicategory.Opposite
@@ -199,6 +172,8 @@ end Bicategory.Opposite
 namespace CategoryTheory.Iso
 
 open Bicategory.Opposite
+
+variable {B : Type u} [Bicategory.{w, v} B]
 
 /-- A 2-isomorphism in `B` gives a 2-isomorphism in `Bᴮᵒᵖ` -/
 @[simps!]
@@ -210,14 +185,13 @@ abbrev unbop2 {a b : Bᴮᵒᵖ} {f g : a ⟶ b} (η : f ≅ g) : f.unbop ≅ g.
   (unbopFunctor a b).mapIso η
 
 @[simp]
-theorem unbop2_bop2 {a b : Bᴮᵒᵖ} {f g : a ⟶ b} (η : f ≅ g) : η.unbop2.bop2 = η := by ext; rfl
-
-@[simp]
-theorem unbop2_bop {a b : Bᴮᵒᵖ} {f g : a ⟶ b} (η : f ≅ g) : η.unbop2.bop2 = η := by ext; rfl
+theorem unbop2_bop2 {a b : Bᴮᵒᵖ} {f g : a ⟶ b} (η : f ≅ g) : η.unbop2.bop2 = η := rfl
 
 end CategoryTheory.Iso
 
 namespace Bicategory.Opposite
+
+variable {B : Type u} [Bicategory.{w, v} B]
 
 /-- The 1-cell dual bicategory `Bᴮᵒᵖ`.
 
@@ -227,7 +201,7 @@ It is defined as follows.
 * The 2-morphisms `f ⟶ g` in `Bᴮᵒᵖ` are the 2-morphisms `f ⟶ g` in `B`. In other words, the
   directions of the 2-morphisms are preserved.
 -/
-@[simps!]
+@[simps!] -- TODO: custom simp lemmas
 instance bicategory : Bicategory.{w, v} Bᴮᵒᵖ where
   id := fun a => (𝟙 a.unbop).bop1
   comp := fun f g => (g.unbop1 ≫ f.unbop1).bop1
@@ -236,21 +210,17 @@ instance bicategory : Bicategory.{w, v} Bᴮᵒᵖ where
   associator f g h := (associator h.unbop g.unbop f.unbop).symm.bop2
   leftUnitor f := (rightUnitor f.unbop).bop2
   rightUnitor f := (leftUnitor f.unbop).bop2
-  whiskerLeft_id f g := unbop_injective <| id_whiskerRight g.unbop f.unbop
-  whiskerLeft_comp f g h i η θ := unbop_injective <| comp_whiskerRight (unbop2 η) (unbop2 θ) f.unbop
-  id_whiskerLeft η := unbop_injective <| whiskerRight_id (unbop2 η)
-  comp_whiskerLeft {a b c d} f g {h h'} η := unbop_injective <|
-    whiskerRight_comp (unbop2 η) g.unbop f.unbop
-  id_whiskerRight f g := unbop_injective <| whiskerLeft_id g.unbop f.unbop
-  comp_whiskerRight η θ i := unbop_injective <|
-    whiskerLeft_comp i.unbop (unbop2 η) (unbop2 θ)
-  whiskerRight_id η := unbop_injective <| id_whiskerLeft (unbop2 η)
-  whiskerRight_comp η g h := unbop_injective <| comp_whiskerLeft h.unbop g.unbop (unbop2 η)
-  whisker_assoc f g g' η i := by apply unbop_injective; dsimp; simp
-  whisker_exchange η θ := by apply unbop_injective; dsimp; simp [(whisker_exchange _ _).symm]
-  pentagon f g h i := by apply unbop_injective; dsimp; simp
-  triangle f g := by apply unbop_injective; dsimp; simp
-
--- TODO: initialize simps projections here...
+  whiskerLeft_id f g := congrArg bop <| id_whiskerRight g.unbop f.unbop
+  whiskerLeft_comp f g h i η θ := congrArg bop <| comp_whiskerRight (unbop2 η) (unbop2 θ) f.unbop
+  id_whiskerLeft η := congrArg bop <| whiskerRight_id (unbop2 η)
+  comp_whiskerLeft {a b c d} f g {h h'} η := congrArg bop <| whiskerRight_comp (unbop2 η) _ _
+  id_whiskerRight f g := congrArg bop <| whiskerLeft_id g.unbop f.unbop
+  comp_whiskerRight η θ i := congrArg bop <| whiskerLeft_comp i.unbop (unbop2 η) (unbop2 θ)
+  whiskerRight_id η := congrArg bop <| id_whiskerLeft (unbop2 η)
+  whiskerRight_comp η g h := congrArg bop <| comp_whiskerLeft h.unbop g.unbop (unbop2 η)
+  whisker_assoc f g g' η i := by apply congrArg bop; dsimp; simp
+  whisker_exchange η θ := congrArg bop <| (whisker_exchange _ _).symm
+  pentagon f g h i := congrArg bop <| pentagon_inv _ _ _ _
+  triangle f g := congrArg bop <| triangle_assoc_comp_right _ _
 
 end Bicategory.Opposite
