@@ -66,7 +66,7 @@ for commutative rings.
 ## TODO
 
 * API for homology in low degree: $\mathrm{H}_0, \mathrm{H}_1$ and $\mathrm{H}_2.$ For example,
-the corestriction-coinflation exact sequence.
+  the corestriction-coinflation exact sequence.
 * The long exact sequence in homology attached to a short exact sequence of representations.
 * Upgrading `groupHomologyIsoTor` to an isomorphism of derived functors.
 
