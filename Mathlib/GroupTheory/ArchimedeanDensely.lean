@@ -68,6 +68,39 @@ lemma Subgroup.zpowers_eq_zpowers_iff {G : Type*} [CommGroup G] [LinearOrder G] 
   refine hl.imp ?_ ?_ <;>
   simp +contextual
 
+lemma Int.addEquiv_eq_refl_or_neg (e : ℤ ≃+ ℤ) : e = .refl _ ∨ e = .neg _ := by
+  suffices e 1 = 1 ∨ - e 1 = 1 by simpa [AddEquiv.ext_int_iff, neg_eq_iff_eq_neg]
+  rw [← AddSubgroup.zmultiples_eq_zmultiples_iff]
+  simpa [e.surjective, eq_comm] using (e : ℤ →+ ℤ).map_zmultiples 1
+
+instance : Fintype (ℤ ≃+ ℤ) where
+  elems := .cons (.neg _) ({.refl _}) (by simp [AddEquiv.ext_int_iff])
+  complete x := by
+    obtain rfl | rfl := Int.addEquiv_eq_refl_or_neg x <;>
+    simp
+
+instance : Unique (ℤ ≃+o ℤ) where
+  uniq e := OrderAddMonoidIso.toAddEquiv_injective <|
+    Int.addEquiv_eq_refl_or_neg e |>.resolve_right fun H => by
+      replace H : e 1 = -1 := congr($H 1)
+      have h1 : 0 < e 1 := by
+        rw [← map_zero e, map_lt_map_iff]
+        simp
+      simp [H] at h1
+
+open OrderDual in
+instance : Unique (ℤ ≃+o ℤᵒᵈ) where
+  default := ⟨AddEquiv.neg ℤ |>.trans ⟨toDual, toDual_add⟩, by simp⟩
+  uniq e := OrderAddMonoidIso.toAddEquiv_injective <| by
+    simp only [OrderAddMonoidIso.toAddEquiv_eq_coe]
+    refine Int.addEquiv_eq_refl_or_neg ((e : ℤ ≃+ ℤᵒᵈ).trans ⟨toDual, toDual_add⟩)
+        |>.resolve_left fun H => by
+      replace H : e 1 = 1 := congr($H 1)
+      have h1 : 0 < e 1 := by
+        rw [← map_zero e, map_lt_map_iff]
+        simp
+      simp [H, ← ofDual_lt_ofDual] at h1
+
 open Subgroup in
 /-- In two linearly ordered groups, the closure of an element of one group
 is isomorphic (and order-isomorphic) to the closure of an element in the other group. -/
