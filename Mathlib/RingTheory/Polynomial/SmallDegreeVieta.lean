@@ -151,12 +151,10 @@ theorem quadratic_roots_iff_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0)
 theorem factorize_quadratic_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
     (h : discrim a b c = s * s) :
     a • X ^ 2 + b • X + C c = a • (X - C ((-b + s) / (2 * a))) * (X - C ((-b - s) / (2 * a))) := by
-    simp only [Algebra.smul_mul_assoc]
+    rw [Algebra.smul_mul_assoc]
     ring_nf
     rw [C_add]
     rw [C_sub]
-    ring_nf
-    rw [← C_pow]
     ring_nf
     rw [smul_add]
     rw [smul_add]
@@ -165,44 +163,29 @@ theorem factorize_quadratic_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s 
     rw [add_assoc]
     rw [add_right_inj]
     rw [map_neg, mul_neg, neg_mul, neg_neg]
-    rw [C_mul]
-    rw [← C_pow]
-    rw [← C_sub]
-    rw [smul_C]
-    ring_nf
-    rw [smul_sub]
-    rw [← smul_mul_assoc]
-
-    --rw [smul_assoc]
-    rw [← Algebra.smul_mul_assoc]
-    rw [← smul_mul_assoc]
     rw [mul_assoc]
-    rw [mul_comm _ 2]
+    rw [mul_comm]
     rw [← C_2]
     rw [← C_mul]
-    rw [mul_inv_cancel₀ two_ne_zero]
-    rw [C_1]
-    rw [mul_one]
-    rw [C_mul]
-    rw [mul_assoc]
-    rw [Algebra.smul_mul_assoc]
-    rw [mul_comm]
-    rw [mul_comm (C b)]
-    rw [← Algebra.smul_mul_assoc]
     rw [← Algebra.smul_mul_assoc]
     rw [smul_C]
-    rw [smul_eq_mul]
-    rw [mul_inv_cancel₀ ha]
-    rw [C_1, one_mul]
+    rw [← smul_eq_mul]
+    rw [smul_eq_mul a]
+    ring_nf
+    field_simp
     congr
     · ext n : 1; simp_all only [coeff_smul, smul_eq_mul, coeff_C_mul]
-    · rw [sq s]
+    · rw [← C_pow]
+      rw [← C_pow]
+      rw [div_pow]
+      rw [div_pow]
+      rw [sq s]
       rw [← h]
       rw [discrim]
-      ring_nf
+      rw [← C_sub]
+      rw [smul_C]
+      rw [smul_eq_mul]
       field_simp
-      rw [mul_sub]
-      rw [sub_sub_eq_add_sub]
       ring_nf
 
 theorem quadratic_roots_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
