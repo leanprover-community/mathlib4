@@ -60,7 +60,7 @@ section
 variable {T : Type u} [Category.{u} T] (H : IsTerminal (Cat.of T))
 
 /-- Any terminal object `T : Cat.{u, u}` is isomorphic to `Cat.of (Discrete PUnit)`. -/
-def isTerminalDiscretePUnitIso : Cat.of T ≅ Cat.of (Discrete PUnit) := by
+def isoDiscretePUnitOfIsTerminal : Cat.of T ≅ Cat.of (Discrete PUnit) := by
   refine (IsTerminal.uniqueUpToIso H DiscretePUnit.isTerminal)
 
 end
