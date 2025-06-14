@@ -12,7 +12,7 @@ import Mathlib.Algebra.Notation.Prod
 /-!
 # Dependent functions with finite support
 
-For a non-dependent version see `Mathlib.Data.Finsupp.Defs`.
+For a non-dependent version see `Mathlib/Data/Finsupp/Defs.lean`.
 
 ## Notation
 
@@ -412,8 +412,10 @@ theorem mk_apply : (mk s x : ∀ i, β i) i = if H : i ∈ s then x ⟨i, H⟩ e
 theorem mk_of_mem (hi : i ∈ s) : (mk s x : ∀ i, β i) i = x ⟨i, hi⟩ :=
   dif_pos hi
 
-theorem mk_of_not_mem (hi : i ∉ s) : (mk s x : ∀ i, β i) i = 0 :=
+theorem mk_of_notMem (hi : i ∉ s) : (mk s x : ∀ i, β i) i = 0 :=
   dif_neg hi
+
+@[deprecated (since := "2025-05-23")] alias mk_of_not_mem := mk_of_notMem
 
 theorem mk_injective (s : Finset ι) : Function.Injective (@mk ι β _ _ s) := by
   intro x y H
@@ -438,7 +440,6 @@ def equivFunOnFintype [Fintype ι] : (Π₀ i, β i) ≃ ∀ i, β i where
   toFun := (⇑)
   invFun f := ⟨f, Trunc.mk ⟨Finset.univ.1, fun _ => Or.inl <| Finset.mem_univ_val _⟩⟩
   left_inv _ := DFunLike.coe_injective rfl
-  right_inv _ := rfl
 
 @[simp]
 theorem equivFunOnFintype_symm_coe [Fintype ι] (f : Π₀ i, β i) : equivFunOnFintype.symm f = f :=
@@ -472,7 +473,7 @@ theorem single_eq_of_ne {i i' b} (h : i ≠ i') : (single i b : Π₀ i, β i) i
   simp only [single_apply, dif_neg h]
 
 theorem single_injective {i} : Function.Injective (single i : β i → Π₀ i, β i) := fun _ _ H =>
-  Pi.single_injective β i <| DFunLike.coe_injective.eq_iff.mpr H
+  Pi.single_injective i <| DFunLike.coe_injective.eq_iff.mpr H
 
 /-- Like `Finsupp.single_eq_single_iff`, but with a `HEq` due to dependent types -/
 theorem single_eq_single_iff (i j : ι) (xi : β i) (xj : β j) :
@@ -742,7 +743,7 @@ protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (
   induction' s using Trunc.induction_on with s
   obtain ⟨s, H⟩ := s
   induction' s using Multiset.induction_on with i s ih generalizing f
-  · have : f = 0 := funext fun i => (H i).resolve_left (Multiset.not_mem_zero _)
+  · have : f = 0 := funext fun i => (H i).resolve_left (Multiset.notMem_zero _)
     subst this
     exact h0
   have H2 : p (erase i ⟨f, Trunc.mk ⟨i ::ₘ s, H⟩⟩) := by
@@ -878,8 +879,10 @@ theorem support_zero : (0 : Π₀ i, β i).support = ∅ :=
 theorem mem_support_iff {f : Π₀ i, β i} {i : ι} : i ∈ f.support ↔ f i ≠ 0 :=
   f.mem_support_toFun _
 
-theorem not_mem_support_iff {f : Π₀ i, β i} {i : ι} : i ∉ f.support ↔ f i = 0 :=
+theorem notMem_support_iff {f : Π₀ i, β i} {i : ι} : i ∉ f.support ↔ f i = 0 :=
   not_iff_comm.1 mem_support_iff.symm
+
+@[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
 
 @[simp]
 theorem support_eq_empty {f : Π₀ i, β i} : f.support = ∅ ↔ f = 0 :=
@@ -1014,7 +1017,7 @@ theorem support_filter (f : Π₀ i, β i) : (f.filter p).support = {x ∈ f.sup
 
 theorem subtypeDomain_def (f : Π₀ i, β i) :
     f.subtypeDomain p = mk (f.support.subtype p) fun i => f i := by
-  ext i; by_cases h2 : f i ≠ 0 <;> try simp at h2; dsimp; simp [h2]
+  ext i; by_cases h2 : f i ≠ 0 <;> try simp at h2; simp [h2]
 
 @[simp]
 theorem support_subtypeDomain {f : Π₀ i, β i} :

@@ -54,7 +54,6 @@ def nerveEquiv (C : Type u) [Category.{v} C] : nerve C _⦋0⦌ ≃ C where
   toFun f := f.obj ⟨0, by omega⟩
   invFun f := (Functor.const _).obj f
   left_inv f := ComposableArrows.ext₀ rfl
-  right_inv f := rfl
 
 namespace nerve
 

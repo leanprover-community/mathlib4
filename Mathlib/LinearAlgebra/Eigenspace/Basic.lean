@@ -556,10 +556,9 @@ theorem hasEigenvalue_of_hasGenEigenvalue {f : End R M} {μ : R} {k : ℕ}
   hμ.lt zero_lt_one
 
 /-- Generalized eigenvalues are actually just eigenvalues. -/
-@[simp]
 theorem hasGenEigenvalue_iff_hasEigenvalue {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k) :
-    f.HasGenEigenvalue μ k ↔ f.HasEigenvalue μ :=
-  hasUnifEigenvalue_iff_hasUnifEigenvalue_one <| by simpa using hk
+    f.HasGenEigenvalue μ k ↔ f.HasEigenvalue μ := by
+  simp [hk]
 
 theorem maxGenEigenspace_eq_genEigenspace_finrank
     [FiniteDimensional K V] (f : End K V) (μ : K) :
@@ -672,7 +671,7 @@ theorem independent_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) (k : �
     (s.sup fun μ ↦ f.genEigenspace μ k) by
     simp_rw [iSupIndep_iff_supIndep_of_injOn (injOn_genEigenspace f k),
       Finset.supIndep_iff_disjoint_erase]
-    exact fun s μ _ ↦ this _ _ (s.not_mem_erase μ)
+    exact fun s μ _ ↦ this _ _ (s.notMem_erase μ)
   intro μ₁ s
   induction s using Finset.induction_on with
   | empty => simp
