@@ -738,6 +738,12 @@ theorem rat_dense (q : ℚ_[p]) {ε : ℝ} (hε : 0 < ε) : ∃ r : ℚ, ‖q - 
   let ⟨r, hr⟩ := rat_dense' q (ε := ε') (by simpa using hε'l)
   ⟨r, lt_trans (by simpa [Norm.norm] using hr) hε'r⟩
 
+lemma denseRange_ratCast : DenseRange (Rat.cast (K := ℚ_[p])) := by
+  rw [DenseRange, Metric.dense_iff]
+  intro x ε hε
+  obtain ⟨r, hr⟩ := Padic.rat_dense p x hε
+  exact ⟨r, by simpa [dist_eq_norm'], ⟨r, rfl⟩⟩
+
 end NormedSpace
 
 end Padic
