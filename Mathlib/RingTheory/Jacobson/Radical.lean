@@ -123,6 +123,9 @@ namespace Ring
 -- TODO: replace all `Ideal.jacobson ⊥` by this.
 abbrev jacobson : Ideal R := Module.jacobson R R
 
+theorem jacobson_eq_sInf_isMaximal : jacobson R = sInf {I : Ideal R | I.IsMaximal} := by
+  simp_rw [jacobson, Module.jacobson, Ideal.isMaximal_def]
+
 instance : (jacobson R).IsTwoSided :=
   ⟨fun b ha ↦ Module.le_comap_jacobson (f := LinearMap.toSpanSingleton R R b) ha⟩
 
@@ -191,7 +194,7 @@ theorem FG.jacobson_smul_lt {N : Submodule R M} (ne_bot : N ≠ ⊥) (fg : N.FG)
 /-- A form of Nakayama's lemma for modules over noncommutative rings. -/
 theorem FG.eq_bot_of_le_jacobson_smul {N : Submodule R M} (fg : N.FG)
     (le : N ≤ Ring.jacobson R • N) : N = ⊥ := by
-  contrapose! le; exact (jacobson_smul_lt le fg).not_le
+  contrapose! le; exact (jacobson_smul_lt le fg).not_ge
 
 end Submodule
 

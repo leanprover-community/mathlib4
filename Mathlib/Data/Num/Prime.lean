@@ -3,8 +3,8 @@ Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Num.Lemmas
 import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Data.Num.ZNum
 import Mathlib.Tactic.Ring
 
 /-!
@@ -57,7 +57,7 @@ def minFac : PosNum → PosNum
 
 @[simp]
 theorem minFac_to_nat (n : PosNum) : (minFac n : ℕ) = Nat.minFac n := by
-  cases' n with n
+  obtain - | n := n
   · rfl
   · rw [minFac, Nat.minFac_eq, if_neg]
     swap

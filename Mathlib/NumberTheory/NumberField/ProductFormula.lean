@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
 import Mathlib.NumberTheory.NumberField.FinitePlaces
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 
 /-!
 # The Product Formula for number fields
@@ -47,10 +48,10 @@ theorem FinitePlace.prod_eq_inv_abs_norm_int {x : 𝓞 K} (h_x_nezero : x ≠ 0)
     ← finprod_heightOneSpectrum_factorization h_span_nezero, Int.cast_natCast]
   let t₀ := {v : HeightOneSpectrum (𝓞 K) | x ∈ v.asIdeal}
   have h_fin₀ : t₀.Finite := by simp only [← dvd_span_singleton, finite_factors h_span_nezero, t₀]
-  let t₁ := (fun v : HeightOneSpectrum (𝓞 K) ↦ ‖embedding v x‖).mulSupport
+  let t₁ := (fun v : HeightOneSpectrum (𝓞 K) ↦ ‖embedding v (x : K)‖).mulSupport
   let t₂ :=
     (fun v : HeightOneSpectrum (𝓞 K) ↦ (absNorm (v.maxPowDividing (span {x})) : ℝ)).mulSupport
-  have h_fin₁ : t₁.Finite := h_fin₀.subset <| by simp [norm_eq_one_iff_not_mem, t₁, t₀]
+  have h_fin₁ : t₁.Finite := h_fin₀.subset <| by simp [norm_eq_one_iff_notMem, t₁, t₀]
   have h_fin₂ : t₂.Finite := by
     refine h_fin₀.subset ?_
     simp only [Set.le_eq_subset, mulSupport_subset_iff, Set.mem_setOf_eq, t₂, t₀,

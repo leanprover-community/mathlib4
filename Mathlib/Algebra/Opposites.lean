@@ -100,7 +100,7 @@ theorem unop_comp_op : (unop : αᵐᵒᵖ → α) ∘ op = id :=
 protected def rec' {F : αᵐᵒᵖ → Sort*} (h : ∀ X, F (op X)) : ∀ X, F X := fun X ↦ h (unop X)
 
 /-- The canonical bijection between `α` and `αᵐᵒᵖ`. -/
-@[to_additive (attr := simps (config := .asFn) apply symm_apply)
+@[to_additive (attr := simps -fullyApplied apply symm_apply)
   "The canonical bijection between `α` and `αᵃᵒᵖ`."]
 def opEquiv : α ≃ αᵐᵒᵖ :=
   ⟨op, unop, unop_op, op_unop⟩

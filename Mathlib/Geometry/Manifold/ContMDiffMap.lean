@@ -31,7 +31,7 @@ the trivial model) in the `Manifold` namespace. -/
 def ContMDiffMap :=
   { f : M → M' // ContMDiff I I' n f }
 
-@[deprecated (since := "024-11-21")] alias SmoothMap := ContMDiffMap
+@[deprecated (since := "2024-11-21")] alias SmoothMap := ContMDiffMap
 
 @[inherit_doc]
 scoped[Manifold] notation "C^" n "⟮" I ", " M "; " I' ", " M' "⟯" => ContMDiffMap I I' M M' n
@@ -108,7 +108,7 @@ def snd : C^n⟮I.prod I', M × M'; I', M'⟯ :=
 
 /-- Given two `C^n` maps `f` and `g`, this is the `C^n` map `x ↦ (f x, g x)`. -/
 def prodMk (f : C^n⟮J, N; I, M⟯) (g : C^n⟮J, N; I', M'⟯) : C^n⟮J, N; I.prod I', M × M'⟯ :=
-  ⟨fun x => (f x, g x), f.2.prod_mk g.2⟩
+  ⟨fun x => (f x, g x), f.2.prodMk g.2⟩
 
 end ContMDiffMap
 

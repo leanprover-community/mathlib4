@@ -30,7 +30,7 @@ namespace Functor
 
 variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳]
 
-/-- `Fiber p S` is the type of elements of `𝒳` mapping to `S` via `p`.  -/
+/-- `Fiber p S` is the type of elements of `𝒳` mapping to `S` via `p`. -/
 def Fiber (p : 𝒳 ⥤ 𝒮) (S : 𝒮) := { a : 𝒳 // p.obj a = S }
 
 namespace Fiber
@@ -65,7 +65,7 @@ def fiberInclusionCompIsoConst : fiberInclusion ⋙ p ≅ (const (Fiber p S)).ob
     (fun φ ↦ by simp [IsHomLift.fac' p (𝟙 S) (fiberInclusion.map φ)])
 
 lemma fiberInclusion_comp_eq_const : fiberInclusion ⋙ p = (const (Fiber p S)).obj S :=
-  Functor.ext (fun x ↦ x.2) (fun _ _ φ ↦ IsHomLift.fac' p (𝟙 S) (fiberInclusion.map φ))
+  Functor.ext_of_iso fiberInclusionCompIsoConst (fun x ↦ x.2)
 
 /-- The object of the fiber over `S` corresponding to a `a : 𝒳` such that `p(a) = S`. -/
 def mk {p : 𝒳 ⥤ 𝒮} {S : 𝒮} {a : 𝒳} (ha : p.obj a = S) : Fiber p S := ⟨a, ha⟩

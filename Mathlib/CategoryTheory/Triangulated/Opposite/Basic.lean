@@ -48,7 +48,6 @@ namespace Opposite
 with the shift by `ℤ` such that shifting by `n` on `Cᵒᵖ` corresponds to shifting
 by `-n` on `C`, the user shall have to do `open CategoryTheory.Pretriangulated.Opposite`
 in order to get this shift and the (pre)triangulated structure on `Cᵒᵖ`. -/
-
 private abbrev OppositeShiftAux :=
   PullbackShift (OppositeShift C ℤ)
     (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; omega))

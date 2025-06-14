@@ -84,8 +84,7 @@ namespace Compactum
 
 /-- The forgetful functor to Type* -/
 def forget : Compactum ⥤ Type* :=
-  Monad.forget _ --deriving CreatesLimits, Faithful
-  -- Porting note: deriving fails, adding manually. Note `CreatesLimits` now noncomputable
+  Monad.forget _
 
 instance : forget.Faithful :=
   show (Monad.forget _).Faithful from inferInstance
@@ -148,8 +147,7 @@ theorem join_distrib (X : Compactum) (uux : Ultrafilter (Ultrafilter X)) :
   rw [Monad.Algebra.assoc]
   rfl
 
--- Porting note: changes to X.A from X since Lean can't see through X to X.A below
-instance {X : Compactum} : TopologicalSpace X.A where
+instance {X : Compactum} : TopologicalSpace X where
   IsOpen U := ∀ F : Ultrafilter X, X.str F ∈ U → U ∈ F
   isOpen_univ _ _ := Filter.univ_sets _
   isOpen_inter _ _ h3 h4 _ h6 := Filter.inter_sets _ (h3 _ h6.1) (h4 _ h6.2)
@@ -163,7 +161,7 @@ theorem isClosed_iff {X : Compactum} (S : Set X) :
   · intro cond F h
     by_contra c
     specialize cond F c
-    rw [compl_mem_iff_not_mem] at cond
+    rw [compl_mem_iff_notMem] at cond
     contradiction
   · intro h1 F h2
     specialize h1 F
@@ -279,7 +277,7 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
     by_contra H
     rw [le_nhds_iff] at cond
     specialize cond Aᶜ H hA.isOpen_compl
-    rw [Ultrafilter.mem_coe, Ultrafilter.compl_mem_iff_not_mem] at cond
+    rw [Ultrafilter.mem_coe, Ultrafilter.compl_mem_iff_notMem] at cond
     contradiction
   -- If A ∈ F, then x ∈ cl A.
   have claim2 : ∀ A : Set X, A ∈ F → x ∈ cl A := by
@@ -430,7 +428,7 @@ instance faithful : compactumToCompHaus.Faithful where
     apply congrArg (fun f => f.hom.toFun) h
 
 /-- This definition is used to prove essential surjectivity of `compactumToCompHaus`. -/
-def isoOfTopologicalSpace {D : CompHaus} :
+noncomputable def isoOfTopologicalSpace {D : CompHaus} :
     compactumToCompHaus.obj (Compactum.ofTopologicalSpace D) ≅ D where
   hom := CompHausLike.ofHom _
     { toFun := id

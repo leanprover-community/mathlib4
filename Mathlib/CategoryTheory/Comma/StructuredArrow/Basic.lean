@@ -6,6 +6,7 @@ Authors: Adam Topaz, Kim Morrison
 import Mathlib.CategoryTheory.Comma.Basic
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 # The category of "structured arrows"
@@ -153,6 +154,13 @@ def isoMk {f f' : StructuredArrow S T} (g : f.right ≅ f'.right)
     f ≅ f' :=
   Comma.isoMk (eqToIso (by ext)) g (by simpa using w.symm)
 
+theorem obj_ext (x y : StructuredArrow S T) (hr : x.right = y.right)
+    (hh : x.hom ≫ T.map (eqToHom hr) = y.hom) : x = y := by
+  cases x
+  cases y
+  cases hr
+  aesop_cat
+
 theorem ext {A B : StructuredArrow S T} (f g : A ⟶ B) : f.right = g.right → f = g :=
   CommaMorphism.ext (Subsingleton.elim _ _)
 
@@ -219,13 +227,13 @@ theorem map_comp {f : S ⟶ S'} {f' : S' ⟶ S''} {h : StructuredArrow S'' T} :
   simp
 
 /-- An isomorphism `S ≅ S'` induces an equivalence `StructuredArrow S T ≌ StructuredArrow S' T`. -/
-@[simp]
+@[simps!]
 def mapIso (i : S ≅ S') : StructuredArrow S T ≌ StructuredArrow S' T :=
   Comma.mapLeftIso _ ((Functor.const _).mapIso i)
 
 /-- A natural isomorphism `T ≅ T'` induces an equivalence
     `StructuredArrow S T ≌ StructuredArrow S T'`. -/
-@[simp]
+@[simps!]
 def mapNatIso (i : T ≅ T') : StructuredArrow S T ≌ StructuredArrow S T' :=
   Comma.mapRightIso _ i
 
@@ -422,7 +430,6 @@ theorem mk_right (f : S.obj Y ⟶ T) : (mk f).right = ⟨⟨⟩⟩ :=
 theorem mk_hom_eq_self (f : S.obj Y ⟶ T) : (mk f).hom = f :=
   rfl
 
--- @[reassoc (attr := simp)] Porting note: simp can solve these
 @[reassoc]
 theorem w {A B : CostructuredArrow S T} (f : A ⟶ B) : S.map f.left ≫ B.hom = A.hom := by simp
 
@@ -500,6 +507,13 @@ def isoMk {f f' : CostructuredArrow S T} (g : f.left ≅ f'.left)
     (w : S.map g.hom ≫ f'.hom = f.hom := by aesop_cat) : f ≅ f' :=
   Comma.isoMk g (eqToIso (by ext)) (by simpa using w)
 
+theorem obj_ext (x y : CostructuredArrow S T) (hl : x.left = y.left)
+    (hh : S.map (eqToHom hl) ≫ y.hom = x.hom) : x = y := by
+  cases x
+  cases y
+  cases hl
+  aesop_cat
+
 theorem ext {A B : CostructuredArrow S T} (f g : A ⟶ B) (h : f.left = g.left) : f = g :=
   CommaMorphism.ext h (Subsingleton.elim _ _)
 
@@ -566,13 +580,13 @@ theorem map_comp {f : T ⟶ T'} {f' : T' ⟶ T''} {h : CostructuredArrow S T} :
 
 /-- An isomorphism `T ≅ T'` induces an equivalence
     `CostructuredArrow S T ≌ CostructuredArrow S T'`. -/
-@[simp]
+@[simps!]
 def mapIso (i : T ≅ T') : CostructuredArrow S T ≌ CostructuredArrow S T' :=
   Comma.mapRightIso _ ((Functor.const _).mapIso i)
 
 /-- A natural isomorphism `S ≅ S'` induces an equivalence
     `CostrucutredArrow S T ≌ CostructuredArrow S' T`. -/
-@[simp]
+@[simps!]
 def mapNatIso (i : S ≅ S') : CostructuredArrow S T ≌ CostructuredArrow S' T :=
   Comma.mapLeftIso _ i
 
