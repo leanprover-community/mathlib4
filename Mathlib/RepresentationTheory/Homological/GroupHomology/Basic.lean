@@ -153,6 +153,14 @@ noncomputable abbrev inhomogeneousChains [DecidableEq G] :
 
 open inhomogeneousChains
 
+variable {A n} in
+@[ext]
+theorem inhomogeneousChains.ext [DecidableEq G] {M : ModuleCat k}
+    {x y : (inhomogeneousChains A).X n ⟶ M}
+    (h : ∀ g, ModuleCat.ofHom (lsingle g) ≫ x = ModuleCat.ofHom (lsingle g) ≫ y) :
+    x = y :=
+  ModuleCat.hom_ext <| Finsupp.lhom_ext' fun g => ModuleCat.hom_ext_iff.1 (h g)
+
 theorem inhomogeneousChains.d_def [DecidableEq G] (n : ℕ) :
     (inhomogeneousChains A).d (n + 1) n = d A n := by
   simp [inhomogeneousChains]
