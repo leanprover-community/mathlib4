@@ -26,7 +26,7 @@ lemma MonotoneOn.insert_of_continuousWithinAt
     {f : α → β} (hf : MonotoneOn f s) (hx : ClusterPt x (𝓟 s)) (h'x : ContinuousWithinAt f s x) :
     MonotoneOn f (insert x s) := by
   have : (𝓝[s] x).NeBot := hx
-  apply MonotoneOn_insert_iff.2 ⟨fun b hb hbx ↦ ?_, fun b hb hxb ↦ ?_, hf⟩
+  apply monotoneOn_insert_iff.2 ⟨fun b hb hbx ↦ ?_, fun b hb hxb ↦ ?_, hf⟩
   · rcases hbx.eq_or_lt with rfl| hbx
     · exact le_rfl
     simp [ContinuousWithinAt] at h'x
