@@ -448,7 +448,6 @@ def mkCongrOfCHole? (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM (Option Co
     throwCongrEx lhs rhs "Left-hand side lost its congruence hole annotation."
   | none, none => return none
 
-
 mutual
 
 /-- Walks along both `lhs` and `rhs` simultaneously to create a congruence lemma between them.
