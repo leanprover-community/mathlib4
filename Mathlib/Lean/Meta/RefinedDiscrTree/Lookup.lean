@@ -113,8 +113,8 @@ def MatchResult.toArray (mr : MatchResult α) : Array α :=
   mr.elts.foldr (init := #[]) fun _ a r => a.foldl (init := r) (· ++ ·)
 
 /--
-Convert a `MatchResult` into an `Array` of `Array`s. Each block corresponds to one pattern,
-and with better matches at the start of the array.
+Convert a `MatchResult` into an `Array` of `Array`s. Each `Array` corresponds to one pattern.
+The better matching patterns are at the start of the array.
 -/
 def MatchResult.flatten (mr : MatchResult α) : Array (Array α) :=
   mr.elts.foldr (init := #[]) (fun _ arr cand => cand ++ arr)

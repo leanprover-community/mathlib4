@@ -392,7 +392,7 @@ theorem lintegral_add_measure (f : α → ℝ≥0∞) (μ ν : Measure α) :
   refine (ENNReal.iSup_add_iSup ?_).symm
   rintro ⟨φ, hφ⟩ ⟨ψ, hψ⟩
   refine ⟨⟨φ ⊔ ψ, sup_le hφ hψ⟩, ?_⟩
-  apply_rules [add_le_add, SimpleFunc.lintegral_mono, le_rfl] -- TODO: use `gcongr`
+  gcongr
   exacts [le_sup_left, le_sup_right]
 
 @[simp]
