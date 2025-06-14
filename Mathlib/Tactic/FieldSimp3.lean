@@ -33,10 +33,15 @@ theorem prod'_inv₀ {K : Type*} [DivisionCommMonoid K] :
   | [] => by simp
   | x :: xs => by simp [mul_comm, prod'_inv₀ xs]
 
+theorem prod'_hom {M : Type*} {N : Type*} [Monoid M] [Monoid N] (l : List M) {F : Type*}
+    [FunLike F M N] [MonoidHomClass F M N] (f : F) : (map f l).prod' = f l.prod' := by
+  simp only [prod', foldr_map, ← map_one f]
+  exact l.foldr_hom f (fun x y => (map_mul f y x).symm)
+
 theorem _root_.map_list_prod' {M : Type*} {N : Type*} [Monoid M] [Monoid N] {F : Type*}
     [FunLike F M N] [MonoidHomClass F M N] (f : F) (l : List M) :
     f l.prod' = (map (⇑f) l).prod' :=
-  sorry
+  (l.prod'_hom f).symm
 
 -- in the library somewhere?
 theorem prod'_zpow {β : Type*} [DivisionCommMonoid β] {r : ℤ} {l : List β} :
@@ -101,13 +106,11 @@ theorem mul_eq_eval₁ [DivisionCommMonoid M] (a₁ : ℤ × M) {a₂ : ℤ × M
 
 theorem mul_eq_eval₂ [CommGroupWithZero M] {r₁ r₂ : ℤ} (hr : r₁ + r₂ = 0) (x : M) (hx : x ≠ 0)
     {l₁ l₂ l : NF M} (h : l₁.eval * l₂.eval = l.eval) :
-    ((r₁, x) ::ᵣ l₁).eval * ((r₂, x) ::ᵣ l₂).eval = ((0, x) ::ᵣ l).eval := by
-  rw [← hr]
-  simp only [← h, eval_cons, zpow_add₀ hx, mul_assoc]
+    ((r₁, x) ::ᵣ l₁).eval * ((r₂, x) ::ᵣ l₂).eval = l.eval := by
+  simp only [← h, eval_cons, mul_assoc]
   congr! 1
-  simp only [← mul_assoc]
-  congr! 1
-  rw [mul_comm]
+  rw [mul_comm, mul_assoc, ← zpow_add₀ hx, add_comm, hr]
+  simp
 
 theorem mul_eq_eval₂' [CommGroupWithZero M] {r₁ r₂ : ℤ} (hr : r₁ + r₂ ≠ 0) (x : M)
     {l₁ l₂ l : NF M} (h : l₁.eval * l₂.eval = l.eval) :
@@ -142,13 +145,13 @@ theorem div_eq_eval₁ [DivisionCommMonoid M] (a₁ : ℤ × M) {a₂ : ℤ × M
 
 theorem div_eq_eval₂ [CommGroupWithZero M] {r₁ r₂ : ℤ} (hr : r₁ - r₂ = 0) (x : M) (hx : x ≠ 0)
     {l₁ l₂ l : NF M} (h : l₁.eval / l₂.eval = l.eval) :
-    ((r₁, x) ::ᵣ l₁).eval / ((r₂, x) ::ᵣ l₂).eval = ((0, x) ::ᵣ l).eval := by
-  rw [← hr]
-  simp only [← h, eval_cons, zpow_sub₀ hx, div_eq_mul_inv, mul_inv, mul_zpow, zpow_neg, mul_assoc]
+    ((r₁, x) ::ᵣ l₁).eval / ((r₂, x) ::ᵣ l₂).eval = l.eval := by
+  simp only [← h, eval_cons, div_eq_mul_inv, mul_inv, mul_zpow, ← zpow_neg, mul_assoc]
   congr! 1
-  simp only [← mul_assoc]
-  congr! 1
-  rw [mul_comm]
+  rw [mul_comm, mul_assoc]
+  nth_rewrite 2 [mul_comm]
+  rw [← zpow_add₀ hx, ← sub_eq_add_neg, hr]
+  simp
 
 theorem div_eq_eval₂' [CommGroupWithZero M] {r₁ r₂ : ℤ} (hr : r₁ - r₂ ≠ 0) (x : M)
     {l₁ l₂ l : NF M} (h : l₁.eval / l₂.eval = l.eval) :
@@ -175,6 +178,19 @@ theorem div_eq_eval [DivisionMonoid M] {l₁ l₂ l : NF M} {x₁ x₂ : M} (hx�
     (hx₂ : x₂ = l₂.eval) (h : l₁.eval / l₂.eval = l.eval) :
     x₁ / x₂ = l.eval := by
   rw [hx₁, hx₂, h]
+
+theorem add_eq_eval [Field M] {x₁ x₂ x₁' x₂' X₁ X₂ X₁' X₂' a b y : M}
+    (h₁ : x₁ = X₁) (h₂ : x₂ = X₂)
+    (h₁' : a * X₁' = X₁) (h₂' : a * X₂' = X₂)
+    (h₁'' : X₁' = x₁') (h₂'' : X₂' = x₂')
+    (H_atom : x₁' + x₂' = y)
+    (H_mul : a * y = b) :
+    x₁ + x₂ = b := by
+  rw [h₁, h₂, ← h₁'', ← h₂''] at *
+  rw [← H_mul, ← H_atom] at *
+  rw [← h₁', ← h₂'] at *
+  simp only at *
+  rw [mul_add]
 
 instance : Inv (NF M) where
   inv l := l.map fun (a, x) ↦ (-a, x)
@@ -485,7 +501,6 @@ partial def normalize (iM : Q(Field $M)) (x : Q($M)) :
     AtomM (Σ l : qNF M, Q($x = NF.eval $(l.toNF))) := do
   let baseCase (y : Q($M)) : AtomM (Σ l : qNF M, Q($y = NF.eval $(l.toNF))):= do
     let (k, ⟨x', _⟩) ← AtomM.addAtomQ y
-    trace[debug] "{y} is the {k}-th atom"
     pure ⟨[((1, x'), k)], q(NF.atom_eq_eval $x')⟩
   match x with
   /- normalize a multiplication: `x₁ * x₂` -/
@@ -511,13 +526,20 @@ partial def normalize (iM : Q(Field $M)) (x : Q($M)) :
     let ⟨l₁, pf₁⟩ ← normalize iM a
     let ⟨l₂, pf₂⟩ ← normalize iM b
     let L : qNF M := qNF.minimum l₁ l₂
-    let l₁' := qNF.div l₁ L -- write `l₁ = l₁' * L`, pr₁' is a proof of that
+    let l₁' := qNF.div l₁ L
     let l₂' := qNF.div l₂ L
-    let ⟨e₁, _⟩ ← qNF.evalPretty iM l₁'
-    let ⟨e₂, _⟩ ← qNF.evalPretty iM l₂'
+    let pf₁' : Q((NF.eval $(L.toNF)) * NF.eval $(l₁'.toNF) = NF.eval $(l₁.toNF)) :=
+      qNF.mkMulProof iM L l₁'
+    let pf₂' : Q((NF.eval $(L.toNF)) * NF.eval $(l₂'.toNF) = NF.eval $(l₂.toNF)) :=
+      qNF.mkMulProof iM L l₂'
+    let ⟨e₁, pf₁''⟩ ← qNF.evalPretty iM l₁'
+    let ⟨e₂, pf₂''⟩ ← qNF.evalPretty iM l₂'
     let e : Q($M) := q($e₁ + $e₂)
-    let ⟨sum, _pf⟩ ← baseCase e
-    pure ⟨qNF.mul L sum, q(sorry)⟩
+    let ⟨sum, pf_atom⟩ ← baseCase e
+    let L' := qNF.mul L sum
+    let pf_mul : Q((NF.eval $(L.toNF)) * NF.eval $(sum.toNF) = NF.eval $(L'.toNF)) :=
+      qNF.mkMulProof iM L sum
+    pure ⟨L', (q(NF.add_eq_eval $pf₁ $pf₂ $pf₁' $pf₂' $pf₁'' $pf₂'' $pf_atom $pf_mul):)⟩
   /- normalize an integer exponentiation: `y ^ (s : ℤ)` -/
   | ~q($y ^ ($s : ℤ)) =>
     let some s := Expr.int? s | baseCase x
@@ -778,4 +800,8 @@ example : x * x = x ^ 2 := by
   conv_lhs => field_simp2
 
 example : x ^ 3 * x ^ 42 = x ^ 45 := by
+  conv_lhs => field_simp2
+
+example : x / (x + 1) + y / (y + 1)
+    = (x + 1) ^ (-1:ℤ) * (y + 1) ^ (-1:ℤ) * (x * (y + 1) + (x + 1) * y) := by
   conv_lhs => field_simp2
