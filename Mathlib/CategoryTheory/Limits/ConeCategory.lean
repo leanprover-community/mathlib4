@@ -152,8 +152,8 @@ def Cone.isLimitEquivIsTerminal {F : J ⥤ C} (c : Cone F) : IsLimit c ≃ IsTer
   IsLimit.isoUniqueConeMorphism.toEquiv.trans
     { toFun := fun _ => IsTerminal.ofUnique _
       invFun := fun h s => ⟨⟨IsTerminal.from h s⟩, fun a => IsTerminal.hom_ext h a _⟩
-      left_inv := by aesop_cat
-      right_inv := by aesop_cat }
+      left_inv _ := by aesop_cat
+      right_inv _ := by aesop_cat }
 
 theorem hasLimit_iff_hasTerminal_cone (F : J ⥤ C) : HasLimit F ↔ HasTerminal (Cone F) :=
   ⟨fun _ => (Cone.isLimitEquivIsTerminal _ (limit.isLimit F)).hasTerminal, fun h =>
@@ -311,8 +311,8 @@ def Cocone.isColimitEquivIsInitial {F : J ⥤ C} (c : Cocone F) : IsColimit c �
   IsColimit.isoUniqueCoconeMorphism.toEquiv.trans
     { toFun := fun _ => IsInitial.ofUnique _
       invFun := fun h s => ⟨⟨IsInitial.to h s⟩, fun a => IsInitial.hom_ext h a _⟩
-      left_inv := by aesop_cat
-      right_inv := by aesop_cat }
+      left_inv _ := by aesop_cat
+      right_inv _ := by aesop_cat }
 
 theorem hasColimit_iff_hasInitial_cocone (F : J ⥤ C) : HasColimit F ↔ HasInitial (Cocone F) :=
   ⟨fun _ => (Cocone.isColimitEquivIsInitial _ (colimit.isColimit F)).hasInitial, fun h =>
