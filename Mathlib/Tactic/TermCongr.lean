@@ -453,8 +453,8 @@ def mkCongrOfCHole? (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM (Option Co
   | none, none => return none
 
 /--
-Given two applications of the same arity, returns the longest shared prefix,
-or else their head functions.
+Given two applications of the same arity, gives `Expr.getAppFn` of both,
+but if these functions are equal, gives the longest common prefix.
 -/
 private def getJointAppFns (e e' : Expr) : Expr × Expr :=
   if e == e' then
