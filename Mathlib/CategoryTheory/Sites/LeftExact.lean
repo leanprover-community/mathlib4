@@ -233,15 +233,13 @@ variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 variable {FD : D → D → Type*} {CD : D → Type t}
 variable [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory.{t} D FD]
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
-variable [∀ {X : C} (S : J.Cover X),
-  PreservesLimitsOfShape (WalkingMulticospan S.shape) (forget D)]
 variable [(forget D).ReflectsIsomorphisms]
+variable [∀ {X : C} (S : J.Cover X), PreservesLimitsOfShape (WalkingMulticospan S.shape) (forget D)]
 variable (K : Type w')
 variable [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
 
 instance preservesLimitsOfShape_presheafToSheaf
-    [PreservesLimits (forget D)]
-    [∀ X : C, Small.{t, max u v} (J.Cover X)ᵒᵖ] :
+    [PreservesLimits (forget D)] [∀ X : C, Small.{t, max u v} (J.Cover X)ᵒᵖ] :
     PreservesLimitsOfShape K (plusPlusSheaf J D) := by
   let e := (FinCategory.equivAsType K).symm.trans (AsSmall.equiv.{0, 0, t})
   haveI : HasLimitsOfShape (AsSmall.{t} (FinCategory.AsType K)) D :=
