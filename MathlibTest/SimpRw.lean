@@ -39,7 +39,7 @@ set_option linter.unusedTactic false in
 example : 1 = 2 := by
   let a := 2
   show 1 = a
-  simp_rw (config := {zeta := false}) []
+  simp_rw -zeta []
   guard_target =ₛ 1 = a
   exact test_sorry
 

@@ -13,21 +13,21 @@ curve of `v` is a function `γ : ℝ → M` such that the derivative of `γ` at 
 integral curve may only be defined for all `t` within some subset of `ℝ`.
 
 This is the first of a series of files, organised as follows:
-* `Mathlib.Geometry.Manifold.IntegralCurve.Basic` (this file): Basic definitions and lemmas relating
-them to each other and to continuity and differentiability
-* `Mathlib.Geometry.Manifold.IntegralCurve.Transform`: Lemmas about translating or scaling the
-domain of an integral curve by a constant
-* `Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique`: Local existence and uniqueness theorems for
-integral curves
+* `Mathlib/Geometry/Manifold/IntegralCurve/Basic.lean` (this file): Basic definitions and lemmas
+  relating them to each other and to continuity and differentiability
+* `Mathlib/Geometry/Manifold/IntegralCurve/Transform.lean`: Lemmas about translating or scaling the
+  domain of an integral curve by a constant
+* `Mathlib/Geometry/Manifold/IntegralCurve/ExistUnique.lean`: Local existence and uniqueness
+  theorems for integral curves
 
 ## Main definitions
 
 Let `v : M → TM` be a vector field on `M`, and let `γ : ℝ → M`.
 * `IsIntegralCurve γ v`: `γ t` is tangent to `v (γ t)` for all `t : ℝ`. That is, `γ` is a global
-integral curve of `v`.
+  integral curve of `v`.
 * `IsIntegralCurveOn γ v s`: `γ t` is tangent to `v (γ t)` for all `t ∈ s`, where `s : Set ℝ`.
 * `IsIntegralCurveAt γ v t₀`: `γ t` is tangent to `v (γ t)` for all `t` in some open interval
-around `t₀`. That is, `γ` is a local integral curve of `v`.
+  around `t₀`. That is, `γ` is a local integral curve of `v`.
 
 For `IsIntegralCurveOn γ v s` and `IsIntegralCurveAt γ v t₀`, even though `γ` is defined for all
 time, its value outside of the set `s` or a small interval around `t₀` is irrelevant and considered

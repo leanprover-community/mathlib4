@@ -145,6 +145,9 @@ def curry (F : Homotopy f₀ f₁) : C(I, C(X, Y)) :=
 theorem curry_apply (F : Homotopy f₀ f₁) (t : I) (x : X) : F.curry t x = F (t, x) :=
   rfl
 
+@[simp] theorem curry_zero (F : Homotopy f₀ f₁) : F.curry 0 = f₀ := by ext; simp
+@[simp] theorem curry_one (F : Homotopy f₀ f₁) : F.curry 1 = f₁ := by ext; simp
+
 /-- Continuously extending a curried homotopy to a function from `ℝ` to `C(X, Y)`.
 -/
 def extend (F : Homotopy f₀ f₁) : C(ℝ, C(X, Y)) :=
@@ -164,9 +167,16 @@ theorem extend_apply_coe (F : Homotopy f₀ f₁) (t : I) (x : X) : F.extend t x
   ContinuousMap.congr_fun (Set.IccExtend_val (zero_le_one' ℝ) F.curry t) x
 
 @[simp]
+theorem extend_of_mem_I (F : Homotopy f₀ f₁) {t : ℝ} (ht : t ∈ I) :
+    F.extend t = F.curry ⟨t, ht⟩ :=
+  Set.IccExtend_of_mem (zero_le_one' ℝ) F.curry ht
+
+theorem extend_zero (F : Homotopy f₀ f₁) : F.extend 0 = f₀ := by simp
+theorem extend_one (F : Homotopy f₀ f₁) : F.extend 1 = f₁ := by simp
+
 theorem extend_apply_of_mem_I (F : Homotopy f₀ f₁) {t : ℝ} (ht : t ∈ I) (x : X) :
-    F.extend t x = F (⟨t, ht⟩, x) :=
-  ContinuousMap.congr_fun (Set.IccExtend_of_mem (zero_le_one' ℝ) F.curry ht) x
+    F.extend t x = F (⟨t, ht⟩, x) := by
+  simp [ht]
 
 protected theorem congr_fun {F G : Homotopy f₀ f₁} (h : F = G) (x : I × X) : F x = G x :=
   ContinuousMap.congr_fun (congr_arg _ h) x
