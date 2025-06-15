@@ -112,7 +112,7 @@ open Lean Meta Elab.Tactic in
 doing the more expensive `aesop` tactic.
 
 This gives a speedup because `simp` (called by `aesop`) can be very slow.
-https://github.com/leanprover-community/mathlib4/pull/25475 contains recent measurements.
+https://github.com/leanprover-community/mathlib4/pull/25475 contains measurements from June 2025.
 
 Implementation notes:
 * `refine id ?_`:
