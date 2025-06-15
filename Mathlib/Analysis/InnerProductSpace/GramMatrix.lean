@@ -45,8 +45,22 @@ section SemiInnerProductSpace
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
+@[simp]
+lemma gram_zero : gram 𝕜 (0 : n → E) = 0 := Matrix.ext fun _ _ ↦ inner_zero_left _
+
+@[simp]
+lemma gram_single [DecidableEq n] (i : n) (x : E) :
+    gram 𝕜 (Pi.single i x) = Matrix.single i i ⟪x, x⟫_𝕜 := by
+  ext j k
+  obtain hij | rfl := ne_or_eq i j
+  · simp [hij]
+  obtain hik | rfl := ne_or_eq i k
+  · simp [hik]
+  simp
+
+variable (𝕜) in
 /-- A Gram matrix is Hermitian. -/
-lemma isHermitian_gram {v : n → E} : (gram 𝕜 v).IsHermitian :=
+lemma isHermitian_gram (v : n → E) : (gram 𝕜 v).IsHermitian :=
   Matrix.ext fun _ _ ↦ inner_conj_symm _ _
 
 theorem star_dotProduct_gram_mulVec [Fintype n] {v : n → E} (x : n → 𝕜) :
@@ -60,7 +74,7 @@ variable (𝕜) in
 /-- A Gram matrix is positive semidefinite. -/
 theorem posSemidef_gram [Fintype n] (v : n → E) :
     PosSemidef (gram 𝕜 v) := by
-  refine ⟨isHermitian_gram, fun x ↦ ?_⟩
+  refine ⟨isHermitian_gram _ _, fun x ↦ ?_⟩
   rw [star_dotProduct_gram_mulVec, le_iff_re_im]
   simp only [map_zero, inner_self_im, and_true, inner_self_nonneg]
 
