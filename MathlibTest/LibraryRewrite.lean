@@ -12,14 +12,14 @@ info: Pattern n + 1
   Nat.add_one
 · ack 0 n
   ack_zero
-· (Finset.Iic n).card
-  Nat.card_Iic
 · (2 ^ n).size
   Nat.size_pow
-· Fintype.card ↑(Set.Iic n)
-  Nat.card_fintypeIic
+· (Finset.Iic n).card
+  Nat.card_Iic
 · Nat.multichoose 2 n
   Nat.multichoose_two
+· Fintype.card ↑(Set.Iic n)
+  Nat.card_fintypeIic
 · (↑n + 1).toNat
   Int.toNat_ofNat_add_one
 · (n + 1).choose n
@@ -38,10 +38,10 @@ Pattern n + m
   Nat.add_eq
 · Nat.succ^[1] n
   Nat.succ_iterate
-· n + Nat.succ 1 - 1
-  Nat.add_succ_sub_one
 · n.succ + 1 - 1
   Nat.succ_add_sub_one
+· n + Nat.succ 1 - 1
+  Nat.add_succ_sub_one
 · max (n + 1) 1
   Nat.add_left_max_self
 · max 1 (n + 1)
@@ -66,22 +66,22 @@ Pattern x + 1
 Pattern a + b
 · 1 + n
   add_comm
+· n +ᵥ 1
+  vadd_eq_add
 · max n 1 + min n 1
   max_add_min
 · min n 1 + max n 1
   min_add_max
-· n +ᵥ 1
-  vadd_eq_add
 · AddOpposite.op 1 +ᵥ n
   op_vadd_eq_add
 · {n, 1}.sum
   Multiset.sum_pair
 · (addLeftEmbedding n) 1
   addLeftEmbedding_apply
-· (addRightEmbedding 1) n
-  addRightEmbedding_apply
 · (n ::ₘ {1}).esymm 1
   Multiset.esymm_pair_one
+· (addRightEmbedding 1) n
+  addRightEmbedding_apply
 · (OrderEmbedding.addLeft n) 1
   OrderEmbedding.addLeft_apply
 · (OrderEmbedding.addRight 1) n
@@ -111,36 +111,36 @@ Pattern a = b
   List.iota_inj
 · ↑5 = ↑2
   Num.of_nat_inj
-· Int.negSucc 5 = Int.negSucc 2
-  Int.negSucc_inj
-· 5 + 1 = 2 + 1
-  Nat.add_one_inj
-· 5 ^^^ 2 = 0
-  Nat.xor_eq_zero
 · ↑5 = ↑2
   Rat.natCast_inj
+· 5 ^^^ 2 = 0
+  Nat.xor_eq_zero
+· 5 + 1 = 2 + 1
+  Nat.add_one_inj
+· Int.negSucc 5 = Int.negSucc 2
+  Int.negSucc_inj
+· 5 * 5 = 2 * 2
+  Nat.mul_self_inj
 · Nonempty (Fin 5 ≃ Fin 2)
   Fin.equiv_iff_eq
 · Nat.divisors 5 = Nat.divisors 2
   Nat.divisors_inj
-· 5 * 5 = 2 * 2
-  Nat.mul_self_inj
 · Nat.succPNat 5 = Nat.succPNat 2
   Nat.succPNat_inj
 · compare 5 2 = Ordering.eq
   Nat.compare_eq_eq
-· (5 == 2) = true
-  Nat.beq_eq_true_eq
 · 5 ≡ 2 [MOD 0]
   Nat.modEq_zero_iff
+· (5 == 2) = true
+  Nat.beq_eq_true_eq
 · ∀ (a : ℕ), a ∣ 5 ↔ a ∣ 2
   Nat.dvd_left_iff_eq
 · ↑5 = ↑2
   EReal.natCast_eq_iff
-· ∀ (a : ℕ), 5 ∣ a ↔ 2 ∣ a
-  Nat.dvd_right_iff_eq
 · ↑5 = ↑2
   PartENat.natCast_inj
+· ∀ (a : ℕ), 5 ∣ a ↔ 2 ∣ a
+  Nat.dvd_right_iff_eq
 · Int.subNatNat 5 2 = 0
   Int.subNat_eq_zero_iff
 · Batteries.UnionFind.empty.Equiv 5 2
@@ -218,44 +218,6 @@ Pattern OfNat.ofNat n = m
 #guard_msgs in
 #rw?? 5=2
 
-/--
-info: Pattern n / 2
-· n.div2
-  Nat.div2_val
-· n >>> 1
-  Nat.shiftRight_one
-
-Pattern x / y
-· if 0 < 2 ∧ 2 ≤ n then (n - 2) / 2 + 1 else 0
-  Nat.div_eq
-· (n - n % 2) / 2
-  Nat.div_eq_sub_mod_div
-· {e ∈ Finset.range n | 2 ∣ e + 1}.card
-  Nat.card_multiples
-· {k ∈ Finset.range n.succ | k ≠ 0 ∧ 2 ∣ k}.card
-  Nat.card_multiples'
-· n ⌊/⌋ 2
-  Nat.floorDiv_eq_div
-· {x ∈ Finset.Ioc 0 n | 2 ∣ x}.card
-  Nat.Ioc_filter_dvd_card_eq_div
-· ⌊↑n / ↑2⌋₊
-  NNRat.floor_natCast_div_natCast
-· ⌊↑n / ↑2⌋₊
-  Rat.natFloor_natCast_div_natCast
-· 0
-  ⊢ n < 2
-  Nat.div_eq_of_lt
-· (n + 1) / 2
-  ⊢ ¬2 ∣ n + 1
-  Nat.succ_div_of_not_dvd
-· (n - 2) / 2 + 1
-  ⊢ 0 < 2
-  ⊢ 2 ≤ n
-  Nat.div_eq_sub_div
--/
-#guard_msgs in
-#rw?? n/2
-
 -- showing all rewrites:
 /--
 info: Pattern n / 2
@@ -271,10 +233,10 @@ Pattern x / y
   Nat.div_eq_sub_mod_div
 · {e ∈ Finset.range n | 2 ∣ e + 1}.card
   Nat.card_multiples
-· {k ∈ Finset.range n.succ | k ≠ 0 ∧ 2 ∣ k}.card
-  Nat.card_multiples'
 · n ⌊/⌋ 2
   Nat.floorDiv_eq_div
+· {k ∈ Finset.range n.succ | k ≠ 0 ∧ 2 ∣ k}.card
+  Nat.card_multiples'
 · {x ∈ Finset.Ioc 0 n | 2 ∣ x}.card
   Nat.Ioc_filter_dvd_card_eq_div
 · ⌊↑n / ↑2⌋₊
@@ -338,8 +300,6 @@ Pattern x / y
 #guard_msgs in
 #rw?? all n/2
 
-open BigOperators
-
 /--
 info: Pattern ∑ a ∈ s, (f a + b)
 · ∑ a ∈ Finset.range n, a + (Finset.range n).card • 1
@@ -386,18 +346,18 @@ Pattern ∑ i ∈ s, f i
   Finset.tsum_subtype
 · ∑' (x : ↑↑(Finset.range n)), (↑x + 1)
   Finset.tsum_subtype'
-· ∑ᶠ (i : ℕ) (_ : i ∈ ↑(Finset.range n)), (i + 1)
-  finsum_mem_coe_finset
 · ∑ i, (↑i + 1)
   Finset.sum_finset_coe
+· ∑ᶠ (i : ℕ) (_ : i ∈ ↑(Finset.range n)), (i + 1)
+  finsum_mem_coe_finset
 · ∑ᶠ (i : ℕ) (_ : i ∈ Finset.range n), (i + 1)
   finsum_mem_finset_eq_sum
 · (Finset.range n).noncommSum (fun n => n + 1) ⋯
   Finset.noncommSum_eq_sum
-· ∑ i ∈ Finset.range n, if i ∈ Finset.range n then i + 1 else 0
-  Finset.sum_extend_by_zero
 · ∑ x ∈ Finset.range n with x + 1 ≠ 0, (x + 1)
   Finset.sum_filter_ne_zero
+· ∑ i ∈ Finset.range n, if i ∈ Finset.range n then i + 1 else 0
+  Finset.sum_extend_by_zero
 · 0
   ⊢ ∀ x ∈ Finset.range n, x + 1 = 0
   Finset.sum_eq_zero
@@ -435,11 +395,11 @@ Pattern Continuous f
   continuous_iff_le_induced
 · ∀ (x : ℚ) (g : Ultrafilter ℚ), ↑g ≤ nhds x → Filter.Tendsto Inv.inv (↑g) (nhds x⁻¹)
   continuous_iff_ultrafilter
+· ∀ (x : ℚ), ContinuousAt Inv.inv x
+  continuous_iff_continuousAt
 · TopologicalSpace.coinduced Inv.inv PseudoMetricSpace.toUniformSpace.toTopologicalSpace ≤
     PseudoMetricSpace.toUniformSpace.toTopologicalSpace
   continuous_iff_coinduced_le
-· ∀ (x : ℚ), ContinuousAt Inv.inv x
-  continuous_iff_continuousAt
 · SeqContinuous Inv.inv
   continuous_iff_seqContinuous
 · ∀ (b : ℚ), Filter.Tendsto (fun x => (x⁻¹, b⁻¹)) (nhds b) (uniformity ℚ)
@@ -468,18 +428,18 @@ info: Pattern Nat.Coprime 2 n
 Pattern n.Coprime m
 · Nat.Coprime 3 2
   Nat.coprime_comm
-· Nat.gcd 2 3 = 1
-  Nat.coprime_iff_gcd_eq_one
 · IsRelPrime 2 3
   Nat.coprime_iff_isRelPrime
+· Nat.gcd 2 3 = 1
+  Nat.coprime_iff_gcd_eq_one
 · IsUnit ↑2
   ZMod.isUnit_iff_coprime
+· IsCoprime ↑2 ↑3
+  Nat.isCoprime_iff_coprime
 · (2 + 3).Coprime 3
   Nat.coprime_add_self_left
 · (3 + 2).Coprime 3
   Nat.coprime_self_add_left
-· IsCoprime ↑2 ↑3
-  Nat.isCoprime_iff_coprime
 · Nat.Coprime 2 (3 + 2)
   Nat.coprime_add_self_right
 · Nat.Coprime 2 (2 + 3)

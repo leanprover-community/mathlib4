@@ -181,6 +181,8 @@ structure Rewrite where
   proof : Expr
   /-- The replacement expression obtained from the rewrite -/
   replacement : Expr
+  /-- The size of the replacement when printed -/
+  stringLength : Nat
   /-- The extra goals created by the rewrite -/
   extraGoals : Array (MVarId × BinderInfo)
   /-- Whether the rewrite introduces a new metavariable in the replacement expression. -/
@@ -207,9 +209,10 @@ def checkRewrite (thm e : Expr) (symm : Bool) : MetaM (Option Rewrite) := do
       extraGoals := extraGoals.push (mvar.mvarId!, bi)
 
   let replacement ← instantiateMVars rhs
+  let stringLength := (← ppExpr replacement).pretty.length
   let makesNewMVars := (replacement.findMVar? fun mvarId => mvars.any (·.mvarId! == mvarId)).isSome
   let proof ← instantiateMVars (mkAppN thm mvars)
-  return some { symm, proof, replacement, extraGoals, makesNewMVars }
+  return some { symm, proof, replacement, stringLength, extraGoals, makesNewMVars }
 
 initialize
   registerTraceClass `rw??
@@ -226,7 +229,8 @@ def checkAndSortRewriteLemmas (e : Expr) (rewrites : Array RewriteLemma) :
   let lt (a b : (Rewrite × Name)) := Ordering.isLT <|
     (compare a.1.extraGoals.size b.1.extraGoals.size).then <|
     (compare a.1.symm b.1.symm).then <|
-    (compare a.2.toString.length b.2.toString.length).then
+    (compare a.2.toString.length b.2.toString.length).then <|
+    (compare a.1.stringLength b.1.stringLength).then <|
     (Name.cmp a.2 b.2)
   return rewrites.qsort lt
 
