@@ -3,7 +3,8 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Module.ULift
 import Mathlib.Data.Finsupp.Fintype
 import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.Logic.Small.Basic
@@ -48,7 +49,7 @@ universe.
 
 Note that if `M` does not fit in `w`, the reverse direction of this implication is still true as
 `Module.Free.of_basis`. -/
-theorem free_def [Small.{w,v} M] : Free R M ↔ ∃ I : Type w, Nonempty (Basis I R M) where
+theorem free_def [Small.{w, v} M] : Free R M ↔ ∃ I : Type w, Nonempty (Basis I R M) where
   mp h :=
     ⟨Shrink (Set.range h.exists_basis.some.2),
       ⟨(Basis.reindexRange h.exists_basis.some.2).reindex (equivShrink _)⟩⟩

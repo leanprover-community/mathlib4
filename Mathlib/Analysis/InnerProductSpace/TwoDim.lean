@@ -7,6 +7,7 @@ import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.Orientation
 import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.Data.Complex.Orientation
+import Mathlib.LinearAlgebra.Alternating.Curry
 import Mathlib.Tactic.LinearCombination
 
 /-!
@@ -92,7 +93,7 @@ irreducible_def areaForm : E →ₗ[ℝ] E →ₗ[ℝ] ℝ := by
     AlternatingMap.constLinearEquivOfIsEmpty.symm
   let y : E [⋀^Fin 1]→ₗ[ℝ] ℝ →ₗ[ℝ] E →ₗ[ℝ] ℝ :=
     LinearMap.llcomp ℝ E (E [⋀^Fin 0]→ₗ[ℝ] ℝ) ℝ z ∘ₗ AlternatingMap.curryLeftLinearMap
-  exact y ∘ₗ AlternatingMap.curryLeftLinearMap (R' := ℝ) o.volumeForm
+  exact y ∘ₗ AlternatingMap.curryLeftLinearMap o.volumeForm
 
 local notation "ω" => o.areaForm
 
@@ -172,9 +173,9 @@ irreducible_def rightAngleRotationAux₁ : E →ₗ[ℝ] E :=
 
 @[simp]
 theorem inner_rightAngleRotationAux₁_left (x y : E) : ⟪o.rightAngleRotationAux₁ x, y⟫ = ω x y := by
-  simp only [rightAngleRotationAux₁, LinearEquiv.trans_symm, LinearIsometryEquiv.toLinearEquiv_symm,
+  simp only [rightAngleRotationAux₁, LinearEquiv.trans_symm, LinearEquiv.symm_symm,
     LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, LinearEquiv.trans_apply,
-    LinearIsometryEquiv.coe_toLinearEquiv]
+    LinearIsometryEquiv.coe_symm_toLinearEquiv]
   rw [InnerProductSpace.toDual_symm_apply]
   norm_cast
 
