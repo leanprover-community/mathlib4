@@ -13,8 +13,9 @@ We define `curry : ((C × D) ⥤ E) ⥤ (C ⥤ (D ⥤ E))` and `uncurry : (C ⥤
 and verify that they provide an equivalence of categories
 `currying : (C ⥤ (D ⥤ E)) ≌ ((C × D) ⥤ E)`.
 
+This is used elsewhere to equip the category of small categories with a cartesian closed structure
+`cartesianClosed : CartesianClosed Cat.{u, u}`.
 -/
-
 
 namespace CategoryTheory
 
@@ -87,6 +88,16 @@ def currying : C ⥤ D ⥤ E ≌ C × D ⥤ E where
       rintro ⟨X₁, X₂⟩ ⟨Y₁, Y₂⟩ ⟨f₁, f₂⟩
       dsimp at f₁ f₂ ⊢
       simp only [← F.map_comp, prod_comp, Category.comp_id, Category.id_comp]))
+
+/-- The equivalence of functor categories given by flipping. -/
+@[simps!]
+def flipping : C ⥤ D ⥤ E ≌ D ⥤ C ⥤ E where
+  functor := flipFunctor _ _ _
+  inverse := flipFunctor _ _ _
+  unitIso := NatIso.ofComponents (fun _ ↦ NatIso.ofComponents
+    (fun _ ↦ NatIso.ofComponents (fun _ ↦ Iso.refl _)))
+  counitIso := NatIso.ofComponents (fun _ ↦ NatIso.ofComponents
+    (fun _ ↦ NatIso.ofComponents (fun _ ↦ Iso.refl _)))
 
 /-- The functor `uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E` is fully faithful. -/
 def fullyFaithfulUncurry : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).FullyFaithful :=
@@ -166,6 +177,27 @@ lemma uncurry_obj_curry_obj_flip_flip' (F₁ : B ⥤ C) (F₂ : D ⥤ E) (G : C 
   Functor.ext (by simp) (fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ⟨f₁, f₂⟩ => by
     dsimp
     simp only [Category.id_comp, Category.comp_id, ← G.map_comp, prod_comp])
+
+/-- The equivalence of types of bifunctors giving by flipping the arguments. -/
+@[simps!]
+def flippingEquiv : C ⥤ D ⥤ E ≃ D ⥤ C ⥤ E where
+  toFun F := F.flip
+  invFun F := F.flip
+  left_inv := fun _ ↦ rfl
+  right_inv := fun _ ↦ rfl
+
+/-- The equivalence of types of bifunctors given by currying. -/
+@[simps!]
+def curryingEquiv : C ⥤ D ⥤ E ≃ C × D ⥤ E where
+  toFun F := uncurry.obj F
+  invFun G := curry.obj G
+  left_inv := fun F ↦ curry_obj_uncurry_obj F
+  right_inv := fun G ↦ uncurry_obj_curry_obj G
+
+/-- The flipped equivalence of types of bifunctors given by currying. -/
+@[simps!]
+def curryingFlipEquiv : D ⥤ C ⥤ E ≃ C × D ⥤ E :=
+  flippingEquiv.trans curryingEquiv
 
 end Functor
 
