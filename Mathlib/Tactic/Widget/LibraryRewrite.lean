@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Anand Rao
 -/
 import Mathlib.Lean.Meta.RefinedDiscrTree
+import Mathlib.Tactic.ModuleBlacklist
 import Mathlib.Tactic.Widget.InteractiveUnfold
 import ProofWidgets.Component.FilterDetails
 
@@ -146,19 +147,6 @@ private initialize importedRewriteLemmasExt : EnvExtension ExtState ←
 
 /-! ### Computing the Rewrites -/
 
-/-- An option allowing the user to control which modules will not be considered in library search -/
-register_option librarySearch.excludedModules : String := {
-  defValue := "Init.Omega Init.Grind Mathlib.Tactic"
-  descr :=
-    "list of modules that should not be considered in library search (separated by white space)"
-}
-
-/-- Get the names of the modules that should not be considered in library search. -/
-def getLibrarySearchExcludedModules (o : Options) : List Name :=
-  (librarySearch.excludedModules.get o).splitOn.filterMap (match ·.toName with
-    | .anonymous => none
-    | name => name)
-
 /-- Get all potential rewrite lemmas from the imported environment.
 By setting the `librarySearch.excludedModules` option, all lemmas from certain modules
 can be excluded. -/
@@ -174,13 +162,8 @@ def getImportCandidates (e : Expr) : MetaM (Array (Array RewriteLemma)) := do
     -/
     (constantsPerTask := 5000) (capacityPerTask := 256) e
   let candidates := matchResult.flatten
-  let excludedModules := getLibrarySearchExcludedModules (← getOptions)
   let env ← getEnv
-  return candidates.map <|
-    Array.filter fun rw =>
-      let moduleIdx := env.const2ModIdx[rw.name]!
-      let moduleName := env.header.moduleNames[moduleIdx.toNat]!
-      !excludedModules.any (·.isPrefixOf moduleName)
+  return candidates.map <| Array.filter fun rw => !rw.name.hasBlacklistedModule env
 
 /-- Get all potential rewrite lemmas from the current file. Exclude lemmas from modules
 in the `librarySearch.excludedModules` option. -/
