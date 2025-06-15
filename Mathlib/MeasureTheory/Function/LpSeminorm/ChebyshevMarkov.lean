@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+import Mathlib.Tactic.Finiteness
 
 /-!
 # Chebyshev-Markov inequality in terms of Lp seminorms

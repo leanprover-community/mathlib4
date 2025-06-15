@@ -175,7 +175,7 @@ theorem completeSpace_lp_of_cauchy_complete_eLpNorm [hp : Fact (1 ≤ p)]
   specialize hf N n m hn hm
   rw [dist_def] at hf
   dsimp only [f1]
-  rwa [ENNReal.lt_ofReal_iff_toReal_lt]
+  rwa [ENNReal.lt_ofReal_iff_toReal_lt _]
   rw [eLpNorm_congr_ae (Lp.coeFn_sub _ _).symm]
   exact Lp.eLpNorm_ne_top _
 
@@ -317,7 +317,7 @@ theorem ae_tendsto_of_cauchy_eLpNorm [CompleteSpace E] {f : ℕ → α → E}
       exact hx.le
     · rw [← ENNReal.toReal_zero]
       exact
-        Tendsto.comp (g := ENNReal.toReal) (ENNReal.tendsto_toReal ENNReal.zero_ne_top)
+        Tendsto.comp (g := ENNReal.toReal) (ENNReal.tendsto_toReal (by finiteness))
           (ENNReal.tendsto_atTop_zero_of_tsum_ne_top hB)
   have hp1 : 1 ≤ p.toReal := by
     rw [← ENNReal.ofReal_le_iff_le_toReal hp_top, ENNReal.ofReal_one]

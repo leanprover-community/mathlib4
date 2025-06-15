@@ -667,12 +667,13 @@ theorem mul_rpow_eq_ite (x y : ℝ≥0∞) (z : ℝ) :
   rw [← coe_rpow_of_ne_zero (mul_ne_zero hx0 hy0), NNReal.mul_rpow]
   norm_cast
 
-theorem mul_rpow_of_ne_top {x y : ℝ≥0∞} (hx : x ≠ ⊤) (hy : y ≠ ⊤) (z : ℝ) :
+theorem mul_rpow_of_ne_top {x y : ℝ≥0∞}
+    (hx : x ≠ ⊤ := by finiteness) (hy : y ≠ ⊤ := by finiteness) (z : ℝ) :
     (x * y) ^ z = x ^ z * y ^ z := by simp [*, mul_rpow_eq_ite]
 
 @[norm_cast]
 theorem coe_mul_rpow (x y : ℝ≥0) (z : ℝ) : ((x : ℝ≥0∞) * y) ^ z = (x : ℝ≥0∞) ^ z * (y : ℝ≥0∞) ^ z :=
-  mul_rpow_of_ne_top coe_ne_top coe_ne_top z
+  mul_rpow_of_ne_top (z := z)
 
 theorem prod_coe_rpow {ι} (s : Finset ι) (f : ι → ℝ≥0) (r : ℝ) :
     ∏ i ∈ s, (f i : ℝ≥0∞) ^ r = ((∏ i ∈ s, f i : ℝ≥0) : ℝ≥0∞) ^ r := by
@@ -694,7 +695,7 @@ theorem prod_rpow_of_ne_top {ι} {s : Finset ι} {f : ι → ℝ≥0∞} (hf : �
   | empty => simp
   | insert i s hi ih =>
     have h2f : ∀ i ∈ s, f i ≠ ∞ := fun i hi ↦ hf i <| mem_insert_of_mem hi
-    rw [prod_insert hi, prod_insert hi, ih h2f, ← mul_rpow_of_ne_top <| hf i <| mem_insert_self ..]
+    rw [prod_insert hi, prod_insert hi, ih h2f, ← mul_rpow_of_ne_top (hf i <| mem_insert_self ..) _]
     apply prod_ne_top h2f
 
 theorem prod_rpow_of_nonneg {ι} {s : Finset ι} {f : ι → ℝ≥0∞} {r : ℝ} (hr : 0 ≤ r) :
