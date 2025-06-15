@@ -79,7 +79,7 @@ private lemma MDifferentiable.slashJ {f : ℍ → ℂ} (hf : MDifferentiable �
 /-- The weight `k` slash action of `GL(2, ℝ)` preserves holomorphic functions. -/
 lemma MDifferentiable.slash {f : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f)
     (k : ℤ) (g : GL (Fin 2) ℝ) : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f ∣[k] g) := by
-  rcases g.det_ne_zero.lt_or_lt with hg | hg
+  rcases g.det_ne_zero.lt_or_gt with hg | hg
   · have : g = J * (J * g) := by rw [← mul_assoc, ← sq, J_sq, one_mul]
     rw [this, SlashAction.slash_mul]
     apply (hf.slashJ k).slash_of_pos
