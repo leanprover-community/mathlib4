@@ -120,7 +120,7 @@ protected theorem bind_assoc (x : FreeM F α) (f : α → FreeM F β) (g : β �
 instance : Bind (FreeM F) where bind := .bind
 
 @[simp]
-theorem bind_eq_bindBind {α β : Type w} :
+theorem bind_eq_bind {α β : Type w} :
     Bind.bind = (FreeM.bind : FreeM F α → _ → FreeM F β) := rfl
 
 /-- Map a function over a `FreeM` monad. -/
@@ -132,7 +132,7 @@ instance: Functor (FreeM F) where
   map := .map
 
 @[simp]
-theorem map_eq_functorMap {α β : Type w} : Functor.map = FreeM.map (F := F) (α := α) (β := β) := rfl
+theorem map_eq_map {α β : Type w} : Functor.map = FreeM.map (F := F) (α := α) (β := β) := rfl
 
 /-- Lift an operation from the effect signature `f` into the `FreeM f` monad. -/
 def lift (op : F ι) : FreeM F ι :=
@@ -177,12 +177,12 @@ instance : LawfulFunctor (FreeM F) where
     induction x with
     | pure a => rfl
     | liftBind op cont ih =>
-      simp_all [map_eq_functorMap, lift_def, map, ih]
+      simp_all [map_eq_map, lift_def, map, ih]
   comp_map g h x := by
     induction x with
     | pure a => rfl
     | liftBind op cont ih =>
-      simp_all [map_eq_functorMap, lift_def, map, ih]
+      simp_all [map_eq_map, lift_def, map, ih]
 
 instance : Monad (FreeM F) where
 
@@ -191,7 +191,7 @@ instance : LawfulMonad (FreeM F) := LawfulMonad.mk'
     induction x with
     | pure a => rfl
     | liftBind op cont ih =>
-      simp only [FreeM.bind, bind_eq_bindBind, map_eq_functorMap, pure_eq_purePure, map] at *
+      simp only [FreeM.bind, bind_eq_bind, map_eq_map, pure_eq_purePure, map] at *
       simp only [ih]
   )
   (id_map := id_map)
@@ -229,7 +229,7 @@ lemma liftM_bind {M : Type u → Type w} [Monad M] [LawfulMonad M] {α β : Type
   induction x generalizing f with
   | pure a => simp only [← pure_eq_purePure, ← liftM_pure, pure_bind, bind, FreeM.bind]
   | liftBind op cont ih =>
-    simp_rw [bind_eq_bindBind] at *
+    simp_rw [bind_eq_bind] at *
     rw [FreeM.bind, ← liftM_liftBind, ← liftM_liftBind, bind_assoc]
     simp_rw [ih]
 
@@ -321,8 +321,7 @@ lemma bind_liftBind {α β γ : Type u} (op : F α) (cont : α → FreeM F β)
     liftBind op cont >>= f = liftBind op (fun x => cont x >>= f) := rfl
 
 @[simp]
-lemma map_liftBind {α β γ : Type u} (f : β → γ) (op : F α)
-(cont : α → FreeM F β) :
+lemma map_liftBind {α β γ : Type u} (f : β → γ) (op : F α) (cont : α → FreeM F β) :
     f <$> liftBind op cont = liftBind op (fun x => f <$> cont x) := rfl
 
 /-- Interpret `StateF` operations into `StateM`. -/
