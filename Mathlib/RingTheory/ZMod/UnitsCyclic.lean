@@ -289,7 +289,7 @@ theorem isCyclic_units_of_prime_pow (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2) (n 
     replace hg := orderOf_eq_card_of_zpowers_eq_top hg
     simp only [Nat.card_eq_fintype_card, card_units_eq_totient,
       Nat.totient_prime hp] at hg
-    set x : ℤ := g.val.cast with ha
+    set x : ℤ := g.val.cast
     replace hx : (x : ZMod p) = g := by simp [x]
     have hxp : Int.ModEq p (x ^ (p - 1)) 1 := by
       simp [← intCast_eq_intCast_iff, hx, ← hg, ← Units.val_pow_eq_pow_val, pow_orderOf_eq_one]
@@ -550,7 +550,7 @@ theorem isCyclic_units_of_odd_iff {n : ℕ} (hn : Odd n) :
     rw [← Finsupp.mem_support_iff, Nat.support_factorization,
       Nat.mem_primeFactors]
     exact ⟨hp, n.minFac_dvd, Nat.ne_of_odd_add hn⟩
-  set m2 := n / m1 with hm2
+  set m2 := n / m1
   have hm : n = m1 * m2 := by
     simp only [m1, Nat.ordCompl_of_not_prime]
     exact (Nat.ordProj_mul_ordCompl_eq_self n p).symm
@@ -635,7 +635,7 @@ theorem isCyclic_units_iff (n : ℕ) :
       · exfalso
         apply Nat.not_even_iff_odd.mpr hn
         simp [h]
-  · set a := n.factorization 2 with ha
+  · set a := n.factorization 2
     set m := n / 2 ^ a with hm
     have hm : n = 2 ^ a * m := by
       simp only [m, Nat.ordCompl_of_not_prime]
