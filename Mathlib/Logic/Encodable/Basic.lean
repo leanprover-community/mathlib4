@@ -136,7 +136,7 @@ theorem decode_unit_succ (n) : decode (succ n) = (none : Option PUnit) :=
 instance _root_.Option.encodable {α : Type*} [h : Encodable α] : Encodable (Option α) :=
   ⟨fun o => Option.casesOn o Nat.zero fun a => succ (encode a), fun n =>
     Nat.casesOn n (some none) fun m => (decode m).map some, fun o => by
-    cases o <;> dsimp; simp [encodek, Nat.succ_ne_zero]⟩
+    cases o <;> simp [encodek, Nat.succ_ne_zero]⟩
 
 @[simp]
 theorem encode_none [Encodable α] : encode (@none α) = 0 :=

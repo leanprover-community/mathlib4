@@ -17,8 +17,8 @@ In this file, we use the notion of "admissible absolute value" to prove
 finiteness of the class group for number fields and function fields.
 
 ## Main definitions
- - `ClassGroup.fintypeOfAdmissibleOfAlgebraic`: if `R` has an admissible absolute value,
-   its integral closure has a finite class group
+- `ClassGroup.fintypeOfAdmissibleOfAlgebraic`: if `R` has an admissible absolute value,
+  its integral closure has a finite class group
 -/
 
 open scoped nonZeroDivisors
@@ -157,8 +157,10 @@ noncomputable def finsetApprox : Finset R :=
   (Finset.univ.image fun xy : _ × _ => distinctElems bS adm xy.1 - distinctElems bS adm xy.2).erase
     0
 
-theorem finsetApprox.zero_not_mem : (0 : R) ∉ finsetApprox bS adm :=
-  Finset.not_mem_erase _ _
+theorem finsetApprox.zero_notMem : (0 : R) ∉ finsetApprox bS adm :=
+  Finset.notMem_erase _ _
+
+@[deprecated (since := "2025-05-23")] alias finsetApprox.zero_not_mem := finsetApprox.zero_notMem
 
 @[simp]
 theorem mem_finsetApprox {x : R} :
@@ -256,7 +258,7 @@ theorem prod_finsetApprox_ne_zero : algebraMap R S (∏ m ∈ finsetApprox bS ad
   refine mt ((injective_iff_map_eq_zero _).mp bS.algebraMap_injective _) ?_
   simp only [Finset.prod_eq_zero_iff, not_exists]
   rintro x ⟨hx, rfl⟩
-  exact finsetApprox.zero_not_mem bS adm hx
+  exact finsetApprox.zero_notMem bS adm hx
 
 theorem ne_bot_of_prod_finsetApprox_mem (J : Ideal S)
     (h : algebraMap _ _ (∏ m ∈ finsetApprox bS adm, m) ∈ J) : J ≠ ⊥ :=
@@ -295,7 +297,7 @@ theorem exists_mk0_eq_mk0 [IsDedekindDomain S] [Algebra.IsAlgebraic R S] (I : (I
   simp only [Algebra.smul_def] at lt
   rw [←
     sub_eq_zero.mp (b_min _ (I.1.sub_mem (I.1.mul_mem_left _ ha) (I.1.mul_mem_left _ b_mem)) lt)]
-  refine mul_dvd_mul_right (dvd_trans (RingHom.map_dvd _ ?_) hr') _
+  refine mul_dvd_mul_right (dvd_trans (map_dvd _ ?_) hr') _
   exact Multiset.dvd_prod (Multiset.mem_map.mpr ⟨_, r_mem, rfl⟩)
 
 /-- `ClassGroup.mkMMem` is a specialization of `ClassGroup.mk0` to (the finite set of)

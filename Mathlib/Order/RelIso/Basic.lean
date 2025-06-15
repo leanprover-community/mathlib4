@@ -114,6 +114,11 @@ protected theorem map_rel (f : r →r s) {a b} : r a b → s (f a) (f b) :=
 theorem coe_fn_toFun (f : r →r s) : f.toFun = (f : α → β) :=
   rfl
 
+@[simp]
+theorem coeFn_mk (f : α → β) (h : ∀ {a b}, r a b → s (f a) (f b)) :
+    RelHom.mk f @h = f :=
+  rfl
+
 /-- The map `coe_fn : (r →r s) → (α → β)` is injective. -/
 theorem coe_fn_injective : Injective fun (f : r →r s) => (f : α → β) :=
   DFunLike.coe_injective
@@ -133,10 +138,12 @@ protected def comp (g : s →r t) (f : r →r s) : r →r t :=
   ⟨fun x => g (f x), fun h => g.2 (f.2 h)⟩
 
 /-- A relation homomorphism is also a relation homomorphism between dual relations. -/
+@[simps]
 protected def swap (f : r →r s) : swap r →r swap s :=
   ⟨f, f.map_rel⟩
 
 /-- A function is a relation homomorphism from the preimage relation of `s` to `s`. -/
+@[simps]
 def preimage (f : α → β) (s : β → β → Prop) : f ⁻¹'o s →r s :=
   ⟨f, id⟩
 
@@ -179,11 +186,6 @@ structure RelEmbedding {α β : Type*} (r : α → α → Prop) (s : β → β �
 /-- A relation embedding with respect to a given pair of relations `r` and `s`
 is an embedding `f : α ↪ β` such that `r a b ↔ s (f a) (f b)`. -/
 infixl:25 " ↪r " => RelEmbedding
-
-/-- The induced relation on a subtype is an embedding under the natural inclusion. -/
-def Subtype.relEmbedding {X : Type*} (r : X → X → Prop) (p : X → Prop) :
-    (Subtype.val : Subtype p → X) ⁻¹'o r ↪r r :=
-  ⟨Embedding.subtype p, Iff.rfl⟩
 
 theorem preimage_equivalence {α β} (f : α → β) {s : β → β → Prop} (hs : Equivalence s) :
     Equivalence (f ⁻¹'o s) :=
@@ -274,10 +276,16 @@ theorem coe_trans (f : r ↪r s) (g : s ↪r t) : (f.trans g) = g ∘ f :=
 protected def swap (f : r ↪r s) : swap r ↪r swap s :=
   ⟨f.toEmbedding, f.map_rel_iff⟩
 
+@[simp]
+theorem swap_apply (f : r ↪r s) (a : α) : f.swap a = f a := rfl
+
 /-- If `f` is injective, then it is a relation embedding from the
   preimage relation of `s` to `s`. -/
 def preimage (f : α ↪ β) (s : β → β → Prop) : f ⁻¹'o s ↪r s :=
   ⟨f, Iff.rfl⟩
+
+@[simp]
+theorem preimage_apply (f : α ↪ β) (s : β → β → Prop) (a : α) : preimage f s a = f a := rfl
 
 theorem eq_preimage (f : r ↪r s) : r = f ⁻¹'o s := by
   ext a b
@@ -340,6 +348,12 @@ protected theorem isWellOrder : ∀ (_ : r ↪r s) [IsWellOrder β s], IsWellOrd
   | f, H => { f.isStrictTotalOrder with wf := f.wellFounded H.wf }
 
 end RelEmbedding
+
+/-- The induced relation on a subtype is an embedding under the natural inclusion. -/
+@[simps!]
+def Subtype.relEmbedding {X : Type*} (r : X → X → Prop) (p : X → Prop) :
+    (Subtype.val : Subtype p → X) ⁻¹'o r ↪r r :=
+  ⟨Embedding.subtype p, Iff.rfl⟩
 
 instance Subtype.wellFoundedLT [LT α] [WellFoundedLT α] (p : α → Prop) :
     WellFoundedLT (Subtype p) :=
@@ -713,6 +727,14 @@ lemma copy_eq (e : r ≃r s) (f : α → β) (g : β → α) (hf hg) : e.copy f 
 protected def preimage (f : α ≃ β) (s : β → β → Prop) : f ⁻¹'o s ≃r s :=
   ⟨f, Iff.rfl⟩
 
+-- `simps` crashes if asked to generate these
+@[simp]
+theorem preimage_apply (f : α ≃ β) (s : β → β → Prop) (a : α) : RelIso.preimage f s a = f a := rfl
+
+@[simp]
+theorem preimage_symm_apply (f : α ≃ β) (s : β → β → Prop) (a : β) :
+    (RelIso.preimage f s).symm a = f.symm a := rfl
+
 instance IsWellOrder.preimage {α : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
     IsWellOrder β (f ⁻¹'o r) :=
   @RelEmbedding.isWellOrder _ _ (f ⁻¹'o r) r (RelIso.preimage f r) _
@@ -725,6 +747,19 @@ instance IsWellOrder.ulift {α : Type u} (r : α → α → Prop) [IsWellOrder �
 @[simps! apply]
 noncomputable def ofSurjective (f : r ↪r s) (H : Surjective f) : r ≃r s :=
   ⟨Equiv.ofBijective f ⟨f.injective, H⟩, f.map_rel_iff⟩
+
+/-- Transport a `RelHom` across a pair of `RelIso`s, by pre- and post-composition.
+
+This is `Equiv.arrowCongr` for `RelHom`. -/
+@[simps]
+def relHomCongr {α₁ β₁ α₂ β₂}
+    {r₁ : α₁ → α₁ → Prop} {s₁ : β₁ → β₁ → Prop} {r₂ : α₂ → α₂ → Prop} {s₂ : β₂ → β₂ → Prop}
+    (e₁ : r₁ ≃r r₂) (e₂ : s₁ ≃r s₂) :
+    (r₁ →r s₁) ≃ (r₂ →r s₂) where
+  toFun f₁ := e₂.toRelEmbedding.toRelHom.comp <| f₁.comp e₁.symm.toRelEmbedding.toRelHom
+  invFun f₂ := e₂.symm.toRelEmbedding.toRelHom.comp <| f₂.comp e₁.toRelEmbedding.toRelHom
+  left_inv f₁ := by ext; simp
+  right_inv f₂ := by ext; simp
 
 /-- Given relation isomorphisms `r₁ ≃r s₁` and `r₂ ≃r s₂`, construct a relation isomorphism for the
 lexicographic orders on the sum.

@@ -376,7 +376,7 @@ theorem sum_eq_zero_of_mem_span_completeFamily {x : realSpace K}
   induction hx using Submodule.span_induction with
   | mem _ h =>
       obtain ⟨w, rfl⟩ := h
-      simp_rw [completeFamily,  dif_neg w.prop, sum_expMap_symm_apply (coe_ne_zero _),
+      simp_rw [completeFamily, dif_neg w.prop, sum_expMap_symm_apply (coe_ne_zero _),
         Units.norm, Rat.cast_one, Real.log_one]
   | zero => simp
   | add _ _ _ _ hx hy => simp [sum_add_distrib, hx, hy]
@@ -435,7 +435,7 @@ theorem abs_det_completeBasis_equivFunL_symm :
       Module.finrank ℚ K * regulator K := by
   classical
   rw [ContinuousLinearMap.det, ← LinearMap.det_toMatrix (completeBasis K), ← Matrix.det_transpose,
-    finrank_mul_regulator_eq_det K w₀ equivFinRank.symm]
+    regulator_eq_regOfFamily_fundSystem, finrank_mul_regOfFamily_eq_det _ w₀ equivFinRank.symm]
   congr 2 with w i
   rw [Matrix.transpose_apply, LinearMap.toMatrix_apply, Matrix.of_apply, ← Basis.equivFunL_apply,
     ContinuousLinearMap.coe_coe, ContinuousLinearEquiv.coe_apply,
@@ -498,10 +498,10 @@ theorem expMapBasis_apply' (x : realSpace K) :
 open scoped Classical in
 theorem expMapBasis_apply'' (x : realSpace K) :
     expMapBasis x = Real.exp (x w₀) • expMapBasis (fun i ↦ if i = w₀ then 0 else x i) := by
- rw [expMapBasis_apply', expMapBasis_apply', if_pos rfl, smul_smul, ← Real.exp_add, add_zero]
- conv_rhs =>
-   enter [2, w, 2, i]
-   rw [if_neg i.prop]
+  rw [expMapBasis_apply', expMapBasis_apply', if_pos rfl, smul_smul, ← Real.exp_add, add_zero]
+  conv_rhs =>
+    enter [2, w, 2, i]
+    rw [if_neg i.prop]
 
 theorem prod_expMapBasis_pow (x : realSpace K) :
     ∏ w, (expMapBasis x w) ^ w.mult = Real.exp (x w₀) ^ Module.finrank ℚ K := by
@@ -663,7 +663,7 @@ theorem normAtAllPlaces_normLeOne_eq_image :
     simp only [normAtAllPlaces_normLeOne, Set.mem_inter_iff, Set.mem_setOf_eq, expMapBasis_nonneg,
       Set.mem_preimage, logMap_expMapBasis, implies_true, and_true, norm_expMapBasis,
       pow_le_one_iff_of_nonneg (Real.exp_nonneg _) Module.finrank_pos.ne', Real.exp_le_one_iff,
-      ne_eq, pow_eq_zero_iff', Real.exp_ne_zero, false_and, not_false_eq_true,  Set.mem_univ_pi]
+      ne_eq, pow_eq_zero_iff', Real.exp_ne_zero, false_and, not_false_eq_true, Set.mem_univ_pi]
     refine ⟨fun ⟨h₁, h₂⟩ w ↦ ?_, fun h ↦ ⟨fun w hw ↦ by simpa [hw] using h w, by simpa using h w₀⟩⟩
     · split_ifs with hw
       · exact hw ▸ h₂

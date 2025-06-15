@@ -226,7 +226,7 @@ lemma isPrincipalIdealRing_of_compactSpace {F Γ₀} [Field F]
     -- and this `z` is either less than or greater than (or equal to) the threshold element
     split_ifs at hz' with h
     -- the `z` is inside closed ball case, which is a contradiction since we know `y` is outside
-    · simp [hy.not_le] at hz'
+    · simp [hy.not_ge] at hz'
     -- the `z` is gives a sphere, so we plug it in
     · simp only [Set.mem_setOf_eq, U] at hz'
       exact ⟨z, hz, hz'.symm⟩
@@ -267,7 +267,7 @@ lemma isPrincipalIdealRing_of_compactSpace {F Γ₀} [Field F]
     exact ⟨w, ⟨hwt, hw1⟩, rfl⟩
   rw [← hn'] at hm -- clean up what valuations we refer to
   -- to supply the contradiction, we have `v l < v n`, now prove that also `v n ≤ v l`
-  refine hm.left.not_le ?_
+  refine hm.left.not_ge ?_
   -- which is the case since `‖l‖ = u.max' ..` and the property of `Finset.max'`
   rw [hvl]
   refine Finset.le_max' _ _ ?_

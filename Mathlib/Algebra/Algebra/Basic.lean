@@ -116,6 +116,11 @@ theorem mem_algebraMapSubmonoid_of_mem {S : Type*} [Semiring S] [Algebra R S] {M
     (x : M) : algebraMap R S x ∈ algebraMapSubmonoid S M :=
   Set.mem_image_of_mem (algebraMap R S) x.2
 
+@[simp]
+lemma algebraMapSubmonoid_powers {S : Type*} [Semiring S] [Algebra R S] (r : R) :
+    Algebra.algebraMapSubmonoid S (.powers r) = Submonoid.powers (algebraMap R S r) := by
+  simp [Algebra.algebraMapSubmonoid]
+
 end Semiring
 
 section CommSemiring
@@ -289,18 +294,16 @@ end Int
 
 section FaithfulSMul
 
-instance (R : Type*) [NonAssocSemiring R] : FaithfulSMul R R := ⟨fun {r₁ r₂} h ↦ by simpa using h 1⟩
+theorem _root_.NeZero.of_faithfulSMul (R A : Type*) [Semiring R] [Semiring A] [Module R A]
+    [IsScalarTower R A A] [FaithfulSMul R A] (n : ℕ) [NeZero (n : R)] :
+    NeZero (n : A) :=
+  NeZero.nat_of_injective (f := ringHomEquivModuleIsScalarTower.symm ⟨_, ‹_›⟩) <|
+    (faithfulSMul_iff_injective_smul_one R A).mp ‹_›
 
-variable (R A : Type*) [CommSemiring R] [Semiring A]
+@[deprecated (since := "2025-01-31")]
+alias _root_.NeZero.of_noZeroSMulDivisors := NeZero.of_faithfulSMul
 
-lemma faithfulSMul_iff_injective_smul_one [Module R A] [IsScalarTower R A A] :
-    FaithfulSMul R A ↔ Injective (fun r : R ↦ r • (1 : A)) := by
-  refine ⟨fun ⟨h⟩ {r₁ r₂} hr ↦ h fun a ↦ ?_, fun h ↦ ⟨fun {r₁ r₂} hr ↦ h ?_⟩⟩
-  · simp only at hr
-    rw [← one_mul a, ← smul_mul_assoc, ← smul_mul_assoc, hr]
-  · simpa using hr 1
-
-variable [Algebra R A]
+variable (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 
 lemma faithfulSMul_iff_algebraMap_injective : FaithfulSMul R A ↔ Injective (algebraMap R A) := by
   rw [faithfulSMul_iff_injective_smul_one, Algebra.algebraMap_eq_smul_one']
@@ -328,13 +331,6 @@ lemma algebraMap_eq_one_iff {r : R} : algebraMap R A r = 1 ↔ r = 1 :=
 
 @[deprecated (since := "2025-01-31")]
 alias _root_.NoZeroSMulDivisors.algebraMap_eq_one_iff := algebraMap_eq_one_iff
-
-theorem _root_.NeZero.of_faithfulSMul (n : ℕ) [NeZero (n : R)] :
-    NeZero (n : A) :=
-  NeZero.nat_of_injective <| FaithfulSMul.algebraMap_injective R A
-
-@[deprecated (since := "2025-01-31")]
-alias _root_.NeZero.of_noZeroSMulDivisors := NeZero.of_faithfulSMul
 
 end FaithfulSMul
 
@@ -544,8 +540,6 @@ def LinearMap.extendScalarsOfSurjectiveEquiv (h : Surjective (algebraMap R S)) :
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun f := f.restrictScalars S
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- If `R →+* S` is surjective, then `R`-linear maps are also `S`-linear. -/
 abbrev LinearMap.extendScalarsOfSurjective (h : Surjective (algebraMap R S))

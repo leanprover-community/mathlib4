@@ -12,8 +12,8 @@ import Mathlib.RingTheory.Localization.Defs
 
 ## Main definitions
 
- * `IsLocalization.invSubmonoid M S` is the submonoid of `S = M⁻¹R` consisting of inverses of
-   each element `x ∈ M`
+* `IsLocalization.invSubmonoid M S` is the submonoid of `S = M⁻¹R` consisting of inverses of
+  each element `x ∈ M`
 
 ## Implementation notes
 
