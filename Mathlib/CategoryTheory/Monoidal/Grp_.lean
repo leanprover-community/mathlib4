@@ -80,11 +80,7 @@ def trivial : Grp_ C :=
 instance : Inhabited (Grp_ C) where
   default := trivial C
 
-/-- Make a group object from `Grp_Class`. -/
-@[simps X]
-def mk' (X : C) [Grp_Class X] : Grp_ C where
-  __ := Mon_.mk X
-  grp := { inv := Grp_Class.inv (X := X) }
+@[deprecated (since := "2025-06-15")] alias mk' := mk
 
 instance : Category (Grp_ C) :=
   InducedCategory.category Grp_.toMon_
@@ -247,13 +243,13 @@ theorem inv_hom [Grp_Class A] [Grp_Class B] (f : A ⟶ B) [IsMon_Hom f] : ι ≫
 lemma toMon_Class_injective {X : C} :
     Function.Injective (@Grp_Class.toMon_Class C ‹_› ‹_› X) := by
   intro h₁ h₂ e
-  let X₁ : Grp_ C := @Grp_.mk' _ _ _ X h₁
-  let X₂ : Grp_ C := @Grp_.mk' _ _ _ X h₂
-  suffices ι[X₁.X] = ι[X₂.X] by cases h₁; cases h₂; subst e this; rfl
+  let X₁ : Grp_ C := @Grp_.mk _ _ _ X h₁
+  let X₂ : Grp_ C := @Grp_.mk _ _ _ X h₂
+  suffices h₁.inv = h₂.inv by cases h₁; congr!
   apply lift_left_mul_ext (𝟙 _)
-  rw [left_inv, show μ[X₁.X] = μ[X₂.X] from congr(($e).mul),
-    show η[X₁.X] = η[X₂.X] from congr(($e).one)]
-  exact (left_inv X₂.X).symm
+  rw [left_inv]
+  convert @left_inv _ _ _ _ h₁ using 2
+  exacts [congr(($e.symm).mul), congr(($e.symm).one)]
 
 @[ext]
 lemma _root_.Grp_Class.ext {X : C} (h₁ h₂ : Grp_Class X)
