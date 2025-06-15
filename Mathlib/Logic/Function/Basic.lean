@@ -659,13 +659,11 @@ theorem _root_.Pi.map_injective
     Injective (Pi.map f) ↔ ∀ i, Injective (f i) where
   mp h i x y hxy := by
     classical
-    have : Inhabited (∀ i, α i):= ⟨fun _ => Classical.choice inferInstance⟩
-    replace h := @h
-      (Function.update default i x)
-      (Function.update default i y) ?_
+    have : Inhabited (∀ i, α i) := ⟨fun _ => Classical.choice inferInstance⟩
+    replace h := @h (Function.update default i x) (Function.update default i y) ?_
     · simpa using congrFun h i
     rw [Pi.map_update, Pi.map_update, hxy]
-  mpr := Injective.piMap
+  mpr := .piMap
 
 end Update
 
