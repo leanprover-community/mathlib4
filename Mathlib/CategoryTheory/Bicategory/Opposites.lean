@@ -5,7 +5,6 @@ Authors: Calle Sönne
 -/
 
 import Mathlib.CategoryTheory.Bicategory.Basic
-import Mathlib.CategoryTheory.Opposites
 
 /-!
 # Opposite bicategories
