@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Yury Kudryashov All rights reserved.
+Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
@@ -10,7 +10,7 @@ import Mathlib.Order.Filter.CountableInter
 
 In this file we prove some facts about a filter with countable intersections property on a type with
 a countable family of sets that separates points of the space. The main use case is the
-`MeasureTheory.Measure.ae` filter and a space with countably generated σ-algebra but lemmas apply,
+`MeasureTheory.ae` filter and a space with countably generated σ-algebra but lemmas apply,
 e.g., to the `residual` filter and a T₀ topological space with second countable topology.
 
 To avoid repetition of lemmas for different families of separating sets (measurable sets, open sets,
@@ -70,8 +70,6 @@ We formalize several versions of this theorem in
 filter, countable
 -/
 
-set_option autoImplicit true
-
 open Function Set Filter
 
 /-- We say that a type `α` has a *countable separating family of sets* satisfying a predicate
@@ -106,7 +104,7 @@ theorem exists_seq_separating (α : Type*) {p : Set α → Prop} {s₀} (hp : p 
   rcases exists_nonempty_countable_separating α hp t with ⟨S, hSne, hSc, hS⟩
   rcases hSc.exists_eq_range hSne with ⟨S, rfl⟩
   use S
-  simpa only [forall_range_iff] using hS
+  simpa only [forall_mem_range] using hS
 
 theorem HasCountableSeparatingOn.mono {α} {p₁ p₂ : Set α → Prop} {t₁ t₂ : Set α}
     [h : HasCountableSeparatingOn α p₁ t₁] (hp : ∀ s, p₁ s → p₂ s) (ht : t₂ ⊆ t₁) :
@@ -120,14 +118,27 @@ theorem HasCountableSeparatingOn.of_subtype {α : Type*} {p : Set α → Prop} {
     (hpq : ∀ U, q U → ∃ V, p V ∧ (↑) ⁻¹' V = U) : HasCountableSeparatingOn α p t := by
   rcases h.1 with ⟨S, hSc, hSq, hS⟩
   choose! V hpV hV using fun s hs ↦ hpq s (hSq s hs)
-  refine ⟨⟨V '' S, hSc.image _, ball_image_iff.2 hpV, fun x hx y hy h ↦ ?_⟩⟩
+  refine ⟨⟨V '' S, hSc.image _, forall_mem_image.2 hpV, fun x hx y hy h ↦ ?_⟩⟩
   refine congr_arg Subtype.val (hS ⟨x, hx⟩ trivial ⟨y, hy⟩ trivial fun U hU ↦ ?_)
   rw [← hV U hU]
   exact h _ (mem_image_of_mem _ hU)
 
+theorem HasCountableSeparatingOn.subtype_iff {α : Type*} {p : Set α → Prop} {t : Set α} :
+    HasCountableSeparatingOn t (fun u ↦ ∃ v, p v ∧ (↑) ⁻¹' v = u) univ ↔
+    HasCountableSeparatingOn α p t := by
+  constructor <;> intro h
+  · exact h.of_subtype <| fun s ↦ id
+  rcases h with ⟨S, Sct, Sp, hS⟩
+  use {Subtype.val ⁻¹' s | s ∈ S}, Sct.image _, ?_, ?_
+  · rintro u ⟨t, tS, rfl⟩
+    exact ⟨t, Sp _ tS, rfl⟩
+  rintro x - y - hxy
+  exact Subtype.val_injective <| hS _ (Subtype.coe_prop _) _ (Subtype.coe_prop _)
+    fun s hs ↦ hxy (Subtype.val ⁻¹' s) ⟨s, hs, rfl⟩
+
 namespace Filter
 
-variable {l : Filter α} [CountableInterFilter l] {f g : α → β}
+variable {α β : Type*} {l : Filter α} [CountableInterFilter l] {f g : α → β}
 
 /-!
 ### Filters supported on a (sub)singleton
@@ -155,8 +166,8 @@ theorem exists_subset_subsingleton_mem_of_forall_separating (p : Set α → Prop
     | inl hsl => simp only [hx.1.2 s ⟨hsS, hsl⟩, hy.1.2 s ⟨hsS, hsl⟩]
     | inr hsl => simp only [hx.2 s hsS hsl, hy.2 s hsS hsl]
   · exact inter_mem
-      (inter_mem hs ((countable_sInter_mem (hSc.mono (inter_subset_left _ _))).2 fun _ h ↦ h.2))
-      ((countable_bInter_mem hSc).2 fun U hU ↦ iInter_mem.2 id)
+      (inter_mem hs ((countable_sInter_mem (hSc.mono inter_subset_left)).2 fun _ h ↦ h.2))
+      ((countable_bInter_mem hSc).2 fun U hU ↦ iInter_mem'.2 id)
 
 theorem exists_mem_singleton_mem_of_mem_of_nonempty_of_forall_separating (p : Set α → Prop)
     {s : Set α} [HasCountableSeparatingOn α p s] (hs : s ∈ l) (hne : s.Nonempty)
@@ -242,3 +253,7 @@ theorem of_eventually_mem_of_forall_separating_preimage (p : Set β → Prop) {s
 theorem of_forall_separating_preimage (p : Set β → Prop) [HasCountableSeparatingOn β p univ]
     (h : ∀ U : Set β, p U → f ⁻¹' U =ᶠ[l] g ⁻¹' U) : f =ᶠ[l] g :=
   of_eventually_mem_of_forall_separating_preimage p (s := univ) univ_mem univ_mem h
+
+end EventuallyEq
+
+end Filter

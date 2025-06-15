@@ -3,10 +3,9 @@ Copyright (c) 2021 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.RingTheory.Localization.Basic
+import Mathlib.GroupTheory.MonoidLocalization.Basic
+import Mathlib.RingTheory.OreLocalization.Ring
 import Mathlib.Topology.Algebra.Ring.Basic
-
-#align_import topology.algebra.localization from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
 
 /-!
 
@@ -30,10 +29,9 @@ variable {R : Type*} [CommRing R] [TopologicalSpace R] {M : Submonoid R}
 to the equivalence class of `(x, 1)`. -/
 def Localization.ringTopology : RingTopology (Localization M) :=
   RingTopology.coinduced (Localization.monoidOf M).toFun
-#align localization.ring_topology Localization.ringTopology
 
 instance : TopologicalSpace (Localization M) :=
   Localization.ringTopology.toTopologicalSpace
 
-instance : TopologicalRing (Localization M) :=
-  Localization.ringTopology.toTopologicalRing
+instance : IsTopologicalRing (Localization M) :=
+  Localization.ringTopology.toIsTopologicalRing

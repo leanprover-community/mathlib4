@@ -29,8 +29,6 @@ and `S.homology`.
 
 -/
 
-set_option autoImplicit true
-
 namespace CategoryTheory
 
 open Category Limits
@@ -44,9 +42,9 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C] (S : ShortComplex C)
 `π : K ⟶ H` such that `i` identifies `K` to the kernel of `g : S.X₂ ⟶ S.X₃`,
 and that `π` identifies `H` to the cokernel of the induced map `f' : S.X₁ ⟶ K` -/
 structure LeftHomologyData where
-  /-- a choice of kernel of `S.g : S.X₂ ⟶ S.X₃`-/
+  /-- a choice of kernel of `S.g : S.X₂ ⟶ S.X₃` -/
   K : C
-  /-- a choice of cokernel of the induced morphism `S.f' : S.X₁ ⟶ K`-/
+  /-- a choice of cokernel of the induced morphism `S.f' : S.X₁ ⟶ K` -/
   H : C
   /-- the inclusion of cycles in `S.X₂` -/
   i : K ⟶ S.X₂
@@ -268,7 +266,6 @@ structure LeftHomologyMapData where
 namespace LeftHomologyMapData
 
 attribute [reassoc (attr := simp)] commi commf' commπ
-attribute [nolint simpNF] mk.injEq
 
 /-- The left homology map data associated to the zero morphism between two short complexes. -/
 @[simps]
@@ -390,10 +387,13 @@ section
 variable (S)
 variable [S.HasLeftHomology]
 
-/-- The left homology of a short complex, given by the `H` field of a chosen left homology data.  -/
+/-- The left homology of a short complex, given by the `H` field of a chosen left homology data. -/
 noncomputable def leftHomology : C := S.leftHomologyData.H
 
-/-- The cycles of a short complex, given by the `K` field of a chosen left homology data.  -/
+-- `S.leftHomology` is the simp normal form.
+@[simp] lemma leftHomologyData_H : S.leftHomologyData.H = S.leftHomology := rfl
+
+/-- The cycles of a short complex, given by the `K` field of a chosen left homology data. -/
 noncomputable def cycles : C := S.leftHomologyData.K
 
 /-- The "homology class" map `S.cycles ⟶ S.leftHomology`. -/
@@ -421,21 +421,22 @@ instance : Epi S.leftHomologyπ := by
   dsimp only [leftHomologyπ]
   infer_instance
 
-lemma leftHomology_ext_iff (f₁ f₂ : S.leftHomology ⟶ A) :
+lemma leftHomology_ext_iff {A : C} (f₁ f₂ : S.leftHomology ⟶ A) :
     f₁ = f₂ ↔ S.leftHomologyπ ≫ f₁ = S.leftHomologyπ ≫ f₂ := by
   rw [cancel_epi]
 
 @[ext]
-lemma leftHomology_ext (f₁ f₂ : S.leftHomology ⟶ A)
+lemma leftHomology_ext {A : C} (f₁ f₂ : S.leftHomology ⟶ A)
     (h : S.leftHomologyπ ≫ f₁ = S.leftHomologyπ ≫ f₂) : f₁ = f₂ := by
   simpa only [leftHomology_ext_iff] using h
 
-lemma cycles_ext_iff (f₁ f₂ : A ⟶ S.cycles) :
+lemma cycles_ext_iff {A : C} (f₁ f₂ : A ⟶ S.cycles) :
     f₁ = f₂ ↔ f₁ ≫ S.iCycles = f₂ ≫ S.iCycles := by
   rw [cancel_mono]
 
 @[ext]
-lemma cycles_ext (f₁ f₂ : A ⟶ S.cycles) (h : f₁ ≫ S.iCycles = f₂ ≫ S.iCycles) : f₁ = f₂ := by
+lemma cycles_ext {A : C} (f₁ f₂ : A ⟶ S.cycles) (h : f₁ ≫ S.iCycles = f₂ ≫ S.iCycles) :
+    f₁ = f₂ := by
   simpa only [cycles_ext_iff] using h
 
 lemma isIso_iCycles (hg : S.g = 0) : IsIso S.iCycles :=
@@ -889,7 +890,7 @@ namespace LeftHomologyMapData
 /-- This left homology map data expresses compatibilities of the left homology data
 constructed by `LeftHomologyData.ofEpiOfIsIsoOfMono` -/
 @[simps]
-def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₁)
+noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData S₁)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     LeftHomologyMapData φ h (LeftHomologyData.ofEpiOfIsIsoOfMono φ h) where
   φK := 𝟙 _
@@ -1010,8 +1011,8 @@ lemma hasCokernel [S.HasLeftHomology] [HasKernel S.g] :
   haveI : HasColimit (parallelPair h.f' 0) := ⟨⟨⟨_, h.hπ'⟩⟩⟩
   let e : parallelPair (kernel.lift S.g S.f S.zero) 0 ≅ parallelPair h.f' 0 :=
     parallelPair.ext (Iso.refl _) (IsLimit.conePointUniqueUpToIso (kernelIsKernel S.g) h.hi)
-      (by aesop_cat) (by aesop_cat)
-  exact hasColimitOfIso e
+      (by aesop_cat) (by simp)
+  exact hasColimit_of_iso e
 
 end HasLeftHomology
 
@@ -1028,7 +1029,7 @@ of short complexes to induce an isomorphism on cycles. -/
 lemma isIso_cyclesMap'_of_isIso_of_mono (φ : S₁ ⟶ S₂) (h₂ : IsIso φ.τ₂) (h₃ : Mono φ.τ₃)
     (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
     IsIso (cyclesMap' φ h₁ h₂) := by
-  refine' ⟨h₁.liftK (h₂.i ≫ inv φ.τ₂) _, _, _⟩
+  refine ⟨h₁.liftK (h₂.i ≫ inv φ.τ₂) ?_, ?_, ?_⟩
   · simp only [assoc, ← cancel_mono φ.τ₃, zero_comp, ← φ.comm₂₃, IsIso.inv_hom_id_assoc, h₂.wi]
   · simp only [← cancel_mono h₁.i, assoc, h₁.liftK_i, cyclesMap'_i_assoc,
       IsIso.hom_inv_id, comp_id, id_comp]

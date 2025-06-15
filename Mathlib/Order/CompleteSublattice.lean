@@ -3,6 +3,7 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Data.Set.Functor
 import Mathlib.Order.Sublattice
 import Mathlib.Order.Hom.CompleteLattice
 
@@ -14,12 +15,12 @@ under arbitrary suprema and infima. As a standard example one could take the com
 invariant submodules of some module with respect to a linear map.
 
 ## Main definitions:
-  * `CompleteSublattice`: the definition of a complete sublattice
-  * `CompleteSublattice.mk'`: an alternate constructor for a complete sublattice, demanding fewer
-    hypotheses
-  * `CompleteSublattice.instCompleteLattice`: a complete sublattice is a complete lattice
-  * `CompleteSublattice.map`: complete sublattices push forward under complete lattice morphisms.
-  * `CompleteSublattice.comap`: complete sublattices pull back under complete lattice morphisms.
+* `CompleteSublattice`: the definition of a complete sublattice
+* `CompleteSublattice.mk'`: an alternate constructor for a complete sublattice, demanding fewer
+  hypotheses
+* `CompleteSublattice.instCompleteLattice`: a complete sublattice is a complete lattice
+* `CompleteSublattice.map`: complete sublattices push forward under complete lattice morphisms.
+* `CompleteSublattice.comap`: complete sublattices pull back under complete lattice morphisms.
 
 -/
 
@@ -66,10 +67,10 @@ instance instTop : Top L where
   top := ⟨⊤, by simpa using L.sInfClosed' <| empty_subset _⟩
 
 instance instSupSet : SupSet L where
-  sSup s := ⟨sSup s, L.sSupClosed' image_val_subset⟩
+  sSup s := ⟨sSup <| (↑) '' s, L.sSupClosed' image_val_subset⟩
 
 instance instInfSet : InfSet L where
-  sInf s := ⟨sInf s, L.sInfClosed' image_val_subset⟩
+  sInf s := ⟨sInf <| (↑) '' s, L.sInfClosed' image_val_subset⟩
 
 theorem sSupClosed {s : Set α} (h : s ⊆ L) : sSup s ∈ L := L.sSupClosed' h
 
@@ -89,9 +90,25 @@ theorem coe_sSup' (S : Set L) : (↑(sSup S) : α) = ⨆ N ∈ S, (N : α) := by
 theorem coe_sInf' (S : Set L) : (↑(sInf S) : α) = ⨅ N ∈ S, (N : α) := by
   rw [coe_sInf, ← Set.image, sInf_image]
 
+-- Redeclaring to get proper keys for these instances
+instance : Max {x // x ∈ L} := Sublattice.instSupCoe
+instance : Min {x // x ∈ L} := Sublattice.instInfCoe
+
 instance instCompleteLattice : CompleteLattice L :=
   Subtype.coe_injective.completeLattice _
     Sublattice.coe_sup Sublattice.coe_inf coe_sSup' coe_sInf' coe_top coe_bot
+
+/-- The natural complete lattice hom from a complete sublattice to the original lattice. -/
+def subtype (L : CompleteSublattice α) : CompleteLatticeHom L α where
+  toFun := Subtype.val
+  map_sInf' _ := rfl
+  map_sSup' _ := rfl
+
+@[simp, norm_cast] lemma coe_subtype (L : CompleteSublattice α) : L.subtype = ((↑) : L → α) := rfl
+lemma subtype_apply (L : Sublattice α) (a : L) : L.subtype a = a := rfl
+
+lemma subtype_injective (L : CompleteSublattice α) :
+    Injective <| subtype L := Subtype.coe_injective
 
 /-- The push forward of a complete sublattice under a complete lattice hom is a complete
 sublattice. -/
