@@ -30,8 +30,8 @@ $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A),$ where $\mathrm{Ext}$ is taken i
 `Rep k G`.
 
 To talk about cohomology in low degree, please see the file
-`Mathlib/RepresentationTheory/GroupCohomology/LowDegree.lean`, which gives simpler expressions for
-`H⁰`, `H¹`, `H²` than the definition `groupCohomology` in this file.
+`Mathlib/RepresentationTheory/Homological/GroupCohomology/LowDegree.lean`, which gives simpler
+expressions for `H⁰`, `H¹`, `H²` than the definition `groupCohomology` in this file.
 
 ## Main definitions
 
