@@ -20,10 +20,14 @@ open OrderDual (toDual ofDual)
 
 variable {α β : Type*}
 
-lemma MonotoneOn.insert_of_continuousWithinAt
-    [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
-    [LinearOrder β] [TopologicalSpace β] [OrderClosedTopology β] {s : Set α} {x : α}
-    {f : α → β} (hf : MonotoneOn f s) (hx : ClusterPt x (𝓟 s)) (h'x : ContinuousWithinAt f s x) :
+section LinearOrder
+
+variable [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
+  [LinearOrder β]
+  {s : Set α} {x : α} {f : α → β}
+
+lemma MonotoneOn.insert_of_continuousWithinAt [TopologicalSpace β] [OrderClosedTopology β]
+    (hf : MonotoneOn f s) (hx : ClusterPt x (𝓟 s)) (h'x : ContinuousWithinAt f s x) :
     MonotoneOn f (insert x s) := by
   have : (𝓝[s] x).NeBot := hx
   apply monotoneOn_insert_iff.2 ⟨fun b hb hbx ↦ ?_, fun b hb hxb ↦ ?_, hf⟩
@@ -41,6 +45,65 @@ lemma MonotoneOn.insert_of_continuousWithinAt
     have : s ∩ Iio b ∈ 𝓝[s] x := inter_mem_nhdsWithin _ (Iio_mem_nhds hxb)
     filter_upwards [this] with y hy
     exact hf hy.1 hb (le_of_lt hy.2)
+
+/-- If a function is monotone on a set in a second countable topological space, then there
+are only countably many points that have several preimages. -/
+lemma MonotoneOn.countable_setOf_two_preimages [SecondCountableTopology α]
+    (hf : MonotoneOn f s) :
+    Set.Countable {c | ∃ x, ∃ y, x ∈ s ∧ y ∈ s ∧ x < y ∧ f x = c ∧ f y = c} := by
+  nontriviality α
+  let t := {c | ∃ x, ∃ y, x ∈ s ∧ y ∈ s ∧ x < y ∧ f x = c ∧ f y = c}
+  have : ∀ c ∈ t, ∃ x, ∃ y, x ∈ s ∧ y ∈ s ∧ x < y ∧ f x = c ∧ f y = c := fun c hc ↦ hc
+  choose! x y hxs hys hxy hfx hfy using this
+  let u := x '' t
+  suffices H : Set.Countable (x '' t) by
+    have : Set.InjOn x t := by
+      intro c hc d hd hcd
+      have : f (x c) = f (x d) := by simp [hcd]
+      rwa [hfx _ hc, hfx _ hd] at this
+    exact countable_of_injective_of_countable_image this H
+  apply Set.PairwiseDisjoint.countable_of_Ioo (y := fun a ↦ y (f a)); swap
+  · rintro a ⟨c, hc, rfl⟩
+    rw [hfx _ hc]
+    exact hxy _ hc
+  simp only [PairwiseDisjoint, Set.Pairwise, mem_image, onFun, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂]
+  intro c hc d hd hcd
+  wlog H : c < d generalizing c d with h
+  · apply (h d hd c hc hcd.symm ?_).symm
+    have : c ≠ d := fun h ↦ hcd (congrArg x h)
+    exact lt_of_le_of_ne (not_lt.1 H) this.symm
+  simp only [disjoint_iff_forall_ne, mem_Ioo, ne_eq, and_imp]
+  rintro a xca ayc b xda ayd rfl
+  rw [hfx _ hc] at ayc
+  have : x d ≤ y c := (xda.trans ayc).le
+  have : f (x d) ≤ f (y c) := hf (hxs _ hd) (hys _ hc) this
+  rw [hfx _ hd, hfy _ hc] at this
+  exact not_le.2 H this
+
+/-- If a function is monotone in a second countable topological space, then there
+are only countably many points that have several preimages. -/
+lemma Monotone.countable_setOf_two_preimages [SecondCountableTopology α]
+    (hf : Monotone f) :
+    Set.Countable {c | ∃ x, ∃ y, x < y ∧ f x = c ∧ f y = c} := by
+  rw [← monotoneOn_univ] at hf
+  simpa using hf.countable_setOf_two_preimages
+
+/-- If a function is antitone on a set in a second countable topological space, then there
+are only countably many points that have several preimages. -/
+lemma AntitoneOn.countable_setOf_two_preimages [SecondCountableTopology α]
+    (hf : AntitoneOn f s) :
+    Set.Countable {c | ∃ x, ∃ y, x ∈ s ∧ y ∈ s ∧ x < y ∧ f x = c ∧ f y = c} :=
+  (MonotoneOn.countable_setOf_two_preimages hf.dual_right :)
+
+/-- If a function is antitone in a second countable topological space, then there
+are only countably many points that have several preimages. -/
+lemma Antitone.countable_setOf_two_preimages [SecondCountableTopology α]
+    (hf : Antitone f) :
+    Set.Countable {c | ∃ x, ∃ y, x < y ∧ f x = c ∧ f y = c} :=
+  (Monotone.countable_setOf_two_preimages hf.dual_right :)
+
+end LinearOrder
 
 section ConditionallyCompleteLinearOrder
 
