@@ -11,39 +11,36 @@ import Mathlib.Algebra.Opposites
 -/
 
 variable {R} [Mul R]
+open MulOpposite
 
 @[to_additive (attr := simp)]
-theorem isLeftRegular_op {a : R} :
-    IsLeftRegular (MulOpposite.op a) ↔ IsRightRegular a :=
+theorem isLeftRegular_op {a : R} : IsLeftRegular (op a) ↔ IsRightRegular a :=
   MulOpposite.opEquiv.comp_injective _ |>.trans <| MulOpposite.opEquiv.injective_comp _ |>.symm
 
 @[to_additive (attr := simp)]
-theorem isRightRegular_op {a : R} :
-    IsRightRegular (MulOpposite.op a) ↔ IsLeftRegular a :=
+theorem isRightRegular_op {a : R} : IsRightRegular (op a) ↔ IsLeftRegular a :=
   MulOpposite.opEquiv.comp_injective _ |>.trans <| MulOpposite.opEquiv.injective_comp _ |>.symm
 
 @[to_additive (attr := simp)]
-theorem isRegular_op {a : R} : IsRegular (MulOpposite.op a) ↔ IsRegular a := by
+theorem isRegular_op {a : R} : IsRegular (op a) ↔ IsRegular a := by
   simp [isRegular_iff, and_comm]
 
-@[to_additive] alias ⟨_, IsLeftRegular.op⟩ := isLeftRegular_op
-@[to_additive] alias ⟨_, IsRightRegular.op⟩ := isRightRegular_op
-@[to_additive] alias ⟨_, IsRegular.op⟩ := isRegular_op
+@[to_additive] protected alias ⟨_, IsLeftRegular.op⟩ := isLeftRegular_op
+@[to_additive] protected alias ⟨_, IsRightRegular.op⟩ := isRightRegular_op
+@[to_additive] protected alias ⟨_, IsRegular.op⟩ := isRegular_op
 
 @[to_additive (attr := simp)]
-theorem isLeftRegular_unop {a : Rᵐᵒᵖ} :
-    IsLeftRegular (MulOpposite.unop a) ↔ IsRightRegular a :=
+theorem isLeftRegular_unop {a : Rᵐᵒᵖ} : IsLeftRegular a.unop ↔ IsRightRegular a :=
   isRightRegular_op.symm
 
 @[to_additive (attr := simp)]
-theorem isRightRegular_unop {a : Rᵐᵒᵖ} :
-    IsRightRegular (MulOpposite.unop a) ↔ IsLeftRegular a :=
+theorem isRightRegular_unop {a : Rᵐᵒᵖ} : IsRightRegular a.unop ↔ IsLeftRegular a :=
   isLeftRegular_op.symm
 
 @[to_additive (attr := simp)]
-theorem isRegular_unop {a : Rᵐᵒᵖ} : IsRegular (MulOpposite.unop a) ↔ IsRegular a :=
+theorem isRegular_unop {a : Rᵐᵒᵖ} : IsRegular a.unop ↔ IsRegular a :=
   isRegular_op.symm
 
-@[to_additive] alias ⟨_, IsLeftRegular.unop⟩ := isLeftRegular_unop
-@[to_additive] alias ⟨_, IsRightRegular.unop⟩ := isRightRegular_unop
-@[to_additive] alias ⟨_, IsRegular.unop⟩ := isRegular_unop
+@[to_additive] protected alias ⟨_, IsLeftRegular.unop⟩ := isLeftRegular_unop
+@[to_additive] protected alias ⟨_, IsRightRegular.unop⟩ := isRightRegular_unop
+@[to_additive] protected alias ⟨_, IsRegular.unop⟩ := isRegular_unop
