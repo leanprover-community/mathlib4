@@ -67,6 +67,16 @@ instance CategoryStruct.opposite : CategoryStruct.{v₁} Cᵒᵖ where
   comp f g := (g.unop ≫ f.unop).op
   id X := (𝟙 (unop X)).op
 
+end
+
+variable [Category.{v₁} C]
+
+/-- The opposite category. -/
+@[stacks 001M]
+instance Category.opposite : Category.{v₁} Cᵒᵖ where
+  comp f g := (g.unop ≫ f.unop).op
+  id X := (𝟙 (unop X)).op
+
 @[simp, reassoc]
 theorem op_comp {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g).op = g.op ≫ f.op :=
   rfl
@@ -90,18 +100,6 @@ theorem unop_id_op {X : C} : (𝟙 (op X)).unop = 𝟙 X :=
 @[simp]
 theorem op_id_unop {X : Cᵒᵖ} : (𝟙 (unop X)).op = 𝟙 X :=
   rfl
-
-end
-
-variable [Category.{v₁} C]
-
-/-- The opposite category. -/
-@[stacks 001M]
-instance Category.opposite : Category.{v₁} Cᵒᵖ where
-  toCategoryStruct := CategoryStruct.opposite
-  id_comp f := congrArg op <| Category.comp_id _
-  comp_id f := congrArg op <| Category.id_comp _
-  assoc f g h := congrArg op <| by simp
 
 section
 
