@@ -6,7 +6,7 @@ Authors: Julian Kuelshammer
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Nat
-import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.Data.Nat.Factorization.LCM
 import Mathlib.Tactic.Peel
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
