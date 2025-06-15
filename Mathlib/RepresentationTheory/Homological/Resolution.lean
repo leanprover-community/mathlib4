@@ -45,8 +45,8 @@ squares to zero and that `Rep.diagonalSuccIsoFree` defines an isomorphism betwee
 complexes. We carry the exactness properties across this isomorphism to conclude the bar resolution
 is a projective resolution too, in `Rep.barResolution`.
 
-In `RepresentationTheory.Homological.GroupCohomology.Basic`, we then use `Rep.barResolution` to
-define the inhomogeneous cochains of a representation, useful for computing group cohomology.
+In `RepresentationTheory.GroupCohomology.Basic`, we then use `Rep.barResolution` to define the
+inhomogeneous cochains of a representation, useful for computing group cohomology.
 
 ## Main definitions
 
