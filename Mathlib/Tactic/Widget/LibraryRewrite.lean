@@ -294,15 +294,19 @@ partial def isExplicitEq (t s : Expr) : MetaM Bool := do
     else
       isDefEq tArgs[i]! sArgs[i]!
 
-/-- Filter out duplicate rewrites or reflexive rewrites. -/
+/-- Filter out duplicate rewrites, reflexive rewrites
+or rewrites that have metavariables in the replacement expression. -/
 @[specialize]
 def filterRewrites {α} (e : Expr) (rewrites : Array α) (replacement : α → Expr)
     (makesNewMVars : α → Bool) : MetaM (Array α) :=
   withNewMCtxDepth do
   let mut filtered := #[]
   for rw in rewrites do
+    -- exclude rewrites that introduce new metavariables into the expression
     if makesNewMVars rw then continue
+    -- exclude a reflexive rewrite
     if ← isExplicitEq (replacement rw) e then continue
+    -- exclude two identical looking rewrites
     if ← filtered.anyM (isExplicitEq (replacement rw) <| replacement ·) then continue
     filtered := filtered.push rw
   return filtered
@@ -464,7 +468,7 @@ private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
 
       let rootExpr ← loc.rootExpr
       let some (subExpr, occ) ← viewKAbstractSubExpr rootExpr loc.pos |
-        return .text "rw??: expressions with bound variables are not supported"
+        return .text "rw??: expressions with bound variables are not yet supported"
       unless ← kabstractIsTypeCorrect rootExpr subExpr loc.pos do
         return .text <| "rw??: the selected expression cannot be rewritten, \
           because the motive is not type correct. \
@@ -488,10 +492,14 @@ def LibraryRewriteComponent : Component SelectInsertParams :=
   mk_rpc_widget% LibraryRewrite.rpc
 
 /--
-To use `rw??`, shift-click an expression in the tactic state.
-This gives a list of rewrite suggestions for the selected expression.
-Click on a suggestion to replace `rw??` by a tactic that performs this rewrite.
-Click on the filter icon (top right) to switch to an unfiltered view that also shows lemma names.
+`rw??` is an interactive library rewrite tactic. To use it, shift-click the expression in the
+tactic state that you want to rewrite. Then click on one of the rewrite suggestions. This will
+paste the relevant rewrite tactic into the editor.
+
+The suggestions are sorted by the match pattern of the rewrite lemmas.
+The results are also filtered: reflexive and duplicate rewrites, and rewrites that leave
+metavariables in the replacement expression are all filtered out. To see all suggestions,
+click on the filter button (▼) in the top right.
 -/
 elab stx:"rw??" : tactic => do
   let some range := (← getFileMap).rangeOfStx? stx | return
