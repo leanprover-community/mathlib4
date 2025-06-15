@@ -43,6 +43,7 @@ import re
 import argparse
 import os
 import platform
+from datetime import datetime
 from typing import Optional, Dict, Any, List
 
 
@@ -572,6 +573,83 @@ def find_existing_pr(branch: str, username: str) -> Optional[Dict[str, Any]]:
         return None
 
 
+def get_pr_comments_summary(pr_number: int) -> Optional[str]:
+    """Fetch all comments from a PR and format them as a dialogue summary.
+
+    Filters out bot comments (usernames ending with -bot) and formats
+    the remaining comments with poster name, time, and content.
+
+    Returns None if no comments or if fetching fails.
+    """
+    try:
+        # Fetch PR comments with all needed fields
+        result = run_command(['gh', 'pr', 'view', str(pr_number),
+                             '--repo', 'leanprover-community/mathlib4',
+                             '--json', 'comments'], check=False)
+
+        if result.returncode != 0:
+            print_warning(f"Could not fetch comments from PR #{pr_number}")
+            return None
+
+        pr_data = json.loads(result.stdout)
+        comments = pr_data.get('comments', [])
+
+        if not comments:
+            return None
+
+        # Filter out bot comments and format remaining ones
+        formatted_comments = []
+        for comment in comments:
+            author = comment.get('author', {}).get('login', 'unknown')
+
+            # Skip bot comments (usernames ending with -bot)
+            if author.endswith('-bot'):
+                continue
+
+            created_at = comment.get('createdAt', '')
+            body = comment.get('body', '').strip()
+            url = comment.get('url', '')
+
+            if body:  # Only include non-empty comments
+                # Format timestamp to be more readable
+                try:
+                    # GitHub API returns ISO format like: 2024-01-15T10:30:00Z
+                    dt = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+                    formatted_time = dt.strftime('%Y-%m-%d %H:%M UTC')
+                except Exception:
+                    formatted_time = created_at
+
+                # Format comment with author, time, and link back to original
+                comment_header = f"**@{author}** ([{formatted_time}]({url})):"
+                formatted_comment = f"{comment_header}\n{body}"
+                formatted_comments.append(formatted_comment)
+
+        if not formatted_comments:
+            return None
+
+        # Create the summary
+        summary_parts = [
+            f"## Comments from Original PR #{pr_number}",
+            "",
+            f"*This section contains {len(formatted_comments)} comment(s) from the original PR, excluding bot comments.*",
+            "",
+            "---",
+            ""
+        ]
+
+        # Add each comment separated by horizontal rules
+        for i, comment in enumerate(formatted_comments):
+            summary_parts.append(comment)
+            if i < len(formatted_comments) - 1:  # Don't add separator after last comment
+                summary_parts.extend(["", "---", ""])
+
+        return "\n".join(summary_parts)
+
+    except Exception as e:
+        print_warning(f"Failed to fetch comments summary: {e}")
+        return None
+
+
 def create_new_pr_from_fork(branch: str, username: str, old_pr: Optional[Dict[str, Any]] = None) -> str:
     """Create a new PR from the fork."""
     print_step(7, "Creating new PR from fork")
@@ -669,6 +747,21 @@ def create_new_pr_from_fork(branch: str, username: str, old_pr: Optional[Dict[st
                         print_warning(f"Failed to add comment for label '{label_name}': {comment_error}")
 
                 print_success(f"Added {len(label_names)} label comments as fallback")
+
+        # Add comments summary from original PR if available
+        if old_pr:
+            print("Fetching comments from original PR...")
+            comments_summary = get_pr_comments_summary(old_pr['number'])
+            if comments_summary:
+                try:
+                    run_command(['gh', 'pr', 'comment', new_pr_number,
+                               '--repo', 'leanprover-community/mathlib4',
+                               '--body', comments_summary])
+                    print_success("Added comments summary from original PR")
+                except Exception as e:
+                    print_warning(f"Failed to add comments summary: {e}")
+            else:
+                print("No comments found on original PR (or only bot comments)")
 
         return pr_url
 
