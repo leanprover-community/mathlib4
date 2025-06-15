@@ -89,16 +89,7 @@ def print_error(message: str) -> None:
 def run_command(cmd: List[str], capture_output: bool = True, check: bool = True) -> subprocess.CompletedProcess:
     """Run a command and return the result with Windows compatibility."""
     try:
-        # On Windows, we need to use shell=True for some commands
-        use_shell = platform.system() == 'Windows' and any(c in cmd[0] for c in ['|', '>', '<', '&'])
-
-        # Convert command to string if using shell
-        if use_shell:
-            cmd_str = ' '.join(cmd)
-            result = subprocess.run(cmd_str, shell=True, capture_output=capture_output, text=True, check=check)
-        else:
-            result = subprocess.run(cmd, capture_output=capture_output, text=True, check=check)
-        return result
+        return subprocess.run(cmd, capture_output=capture_output, text=True, check=check)
     except subprocess.CalledProcessError as e:
         if not check:
             return e
