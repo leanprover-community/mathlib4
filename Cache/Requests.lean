@@ -108,6 +108,15 @@ Exit the process with exit code 1 if any files failed to download. -/
 def downloadFiles
     (repo : String) (hashMap : IO.ModuleHashMap)
     (forceDownload : Bool) (parallel : Bool) (warnOnMissing : Bool): IO Unit := do
+  -- Make a preliminary quiet attempt to download Mathlib.Init if it exists in the hashMap
+  -- and we're not doing a force download (to avoid duplicate requests)
+  unless forceDownload do
+    if let some initHash := hashMap[`Mathlib.Init]? then
+      try
+        discard <| downloadFile repo initHash -- quietly attempt download, ignore result
+      catch
+        _ => pure () -- silently ignore any errors
+
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
   let size := hashMap.size
   if size > 0 then
