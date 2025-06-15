@@ -639,7 +639,7 @@ end IsLocalRing
 
 /-- If `f` is a polynomial over `A`, `g` and `h` are power series over `A`,
 then `PowerSeries.IsWeierstrassFactorizationAt g f h I` is a `Prop` which asserts that `f` is
-distingushed at `I`, `h` is a unit, such that `g = f * h`. -/
+distinguished at `I`, `h` is a unit, such that `g = f * h`. -/
 @[mk_iff]
 structure IsWeierstrassFactorizationAt (g : A⟦X⟧) (f : A[X]) (h : A⟦X⟧) (I : Ideal A) : Prop where
   isDistinguishedAt : f.IsDistinguishedAt I
