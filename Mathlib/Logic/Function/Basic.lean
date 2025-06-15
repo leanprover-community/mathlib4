@@ -646,7 +646,7 @@ theorem update_idem {α} [DecidableEq α] {β : α → Sort*} {a : α} (v w : β
   by_cases h : b = a <;> simp [update, h]
 
 @[simp]
-theorem Pi.map_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*} [∀ i, Nonempty (α i)]
+theorem _root_.Pi.map_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*}
     {f : ∀ i, α i → β i}
     (g : ∀ i, α i) (i : ι) (a : α i) :
     Pi.map f (Function.update g i a) = Function.update (Pi.map f g) i (f i a) := by
