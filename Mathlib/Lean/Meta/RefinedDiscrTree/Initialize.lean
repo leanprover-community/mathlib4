@@ -120,6 +120,7 @@ Note: It is expensive to create two new `IO.Ref`s for every `MetaM` operation,
   -- because it compiles to more performant code
   if constInfo.isUnsafe then pure tree else
   if LazyDiscrTree.blacklistInsertion env name then pure tree else
+  if Linter.isDeprecated env name then pure tree else
   /- For efficiency, we leave it up to the implementation of `act` to reset the states if needed -/
   -- mstate.modify fun s => { cache := s.cache }
   -- cstate.modify fun s => { env := s.env, cache := s.cache, ngen := s.ngen }

@@ -112,6 +112,13 @@ Convert a `MatchResult` into a `Array`, with better matches at the start of the 
 def MatchResult.toArray (mr : MatchResult α) : Array α :=
   mr.elts.foldr (init := #[]) fun _ a r => a.foldl (init := r) (· ++ ·)
 
+/--
+Convert a `MatchResult` into an `Array` of `Array`s. Each `Array` corresponds to one pattern.
+The better matching patterns are at the start of the array.
+-/
+def MatchResult.flatten (mr : MatchResult α) : Array (Array α) :=
+  mr.elts.foldr (init := #[]) (fun _ arr cand => cand ++ arr)
+
 /-
 A partial match captures the intermediate state of a match execution.
 
@@ -270,7 +277,7 @@ def getMatch (d : RefinedDiscrTree α) (e : Expr) (unify matchRootStar : Bool) :
         else
           matchTreeRootStar d.root
       else
-        throwError m! "The expression {e} has pattern `*`, so we don't return any match results."
+        return {}
     else
       let todo := matchKey key d.root pMatch #[]
       if matchRootStar then

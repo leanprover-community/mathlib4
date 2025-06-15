@@ -115,10 +115,14 @@ def findImportMatches
   setNGen ngen
   let _ : Inhabited (IO.Ref (Option (RefinedDiscrTree α))) := ⟨← IO.mkRef none⟩
   let ref := EnvExtension.getState ext (← getEnv)
-  let importTree ← (← ref.get).getDM do
+  -- empty the reference `ref`, so that the reference count stays 1
+  let importTree? ← ref.modifyGet fun tree? => (tree?, none)
+  let importTree ← importTree?.getDM do
     profileitM Exception  "RefinedDiscrTree import initialization" (← getOptions) <|
       withTheReader Core.Context withTreeCtx <|
         createImportedDiscrTree cNGen (← getEnv) addEntry constantsPerTask capacityPerTask
+  -- we trust that `getMatch` doesn't throw an error, because
+  -- otherwise we would lose our (only) reference to `importTree`
   let (importCandidates, importTree) ← getMatch importTree ty false false
   ref.set (some importTree)
   return importCandidates

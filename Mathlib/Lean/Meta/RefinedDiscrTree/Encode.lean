@@ -216,8 +216,10 @@ where
         if ← isIgnoredArg arg d bi then
           loop b (i+1) j (.star :: entries)
         else
-          -- Recall that `isDefEq` switches the transparency on implicit arguments.
-          let info ← (if bi.isExplicit then id else withInferTypeConfig) do mkExprInfo arg bvars
+          -- Recall that on implicit arguments `isDefEq` switches to `default` transparency.
+          -- We don't want such strong reducibility, but `instances` transparency can be useful.
+          let info ← (if bi.isExplicit then id else withReducibleAndInstances) do
+            mkExprInfo arg bvars
           loop b (i+1) j (.expr info :: entries)
       let rec reduce := do
         match ← whnfD (fnType.instantiateRevRange j i args) with
