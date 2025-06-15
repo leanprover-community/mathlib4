@@ -230,7 +230,7 @@ instance semilatticeInf : SemilatticeInf (E →ₗ.[R] F) where
       have hxy : (x : E) = inclusion fg_le x := rfl
       (fg_eq hxy).trans (gh_eq <| hxy.symm.trans hxz)⟩
   le_antisymm _ _ fg gf := eq_of_le_of_domain_eq fg (le_antisymm fg.1 gf.1)
-  inf f g := ⟨f.eqLocus g, f.toFun.comp <| inclusion fun _x hx => hx.fst⟩
+  min f g := ⟨f.eqLocus g, f.toFun.comp <| inclusion fun _x hx => hx.fst⟩
   le_inf := by
     intro f g h ⟨fg_le, fg_eq⟩ ⟨fh_le, fh_eq⟩
     exact ⟨fun x hx =>

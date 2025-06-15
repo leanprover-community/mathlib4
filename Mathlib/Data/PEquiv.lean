@@ -379,7 +379,7 @@ instance : OrderBot (α ≃. β) :=
 
 instance [DecidableEq α] [DecidableEq β] : SemilatticeInf (α ≃. β) :=
   { instPartialOrderPEquiv with
-    inf := fun f g =>
+    min := fun f g =>
       { toFun := fun a => if f a = g a then f a else none
         invFun := fun b => if f.symm b = g.symm b then f.symm b else none
         inv := fun a b => by
