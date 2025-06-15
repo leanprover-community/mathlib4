@@ -661,6 +661,7 @@ import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
 import Mathlib.Algebra.Module.LocalizedModule.Submodule
 import Mathlib.Algebra.Module.MinimalAxioms
 import Mathlib.Algebra.Module.NatInt
+import Mathlib.Algebra.Module.NestAlgebra
 import Mathlib.Algebra.Module.Opposite
 import Mathlib.Algebra.Module.PID
 import Mathlib.Algebra.Module.PUnit
@@ -4866,6 +4867,7 @@ import Mathlib.Order.Monotone.MonovaryOrder
 import Mathlib.Order.Monotone.Odd
 import Mathlib.Order.Monotone.Union
 import Mathlib.Order.Nat
+import Mathlib.Order.Nest
 import Mathlib.Order.Notation
 import Mathlib.Order.Nucleus
 import Mathlib.Order.OmegaCompletePartialOrder
