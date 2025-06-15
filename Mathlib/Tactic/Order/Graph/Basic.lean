@@ -40,7 +40,7 @@ namespace Graph
 def addEdge (g : Graph) (edge : Edge) : Graph :=
   g.modify edge.src fun edges => edges.push edge
 
-/-- Constructs a directed `Graph` using `≤` facts. -/
+/-- Constructs a directed `Graph` using `≤` facts. It ignores all other facts. -/
 def constructLeGraph (nVertexes : Nat) (facts : Array AtomicFact) : MetaM Graph := do
   let mut res : Graph := Array.replicate nVertexes #[]
   for fact in facts do
