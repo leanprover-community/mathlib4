@@ -555,18 +555,17 @@ variable {k G A : Type u} [CommRing k] [Group G] [AddCommGroup A] [Module k A]
   [DistribMulAction G A] [SMulCommClass G k A]
 
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a term
-`x : A` satisfying the 0-boundary condition, produces an element of the augmentation submodule for
-the representation on `A` induced by the `DistribMulAction`. -/
+`x : A` satisfying the 0-boundary condition, produces an element of the kernel of the quotient map
+`A → A_G` for the representation on `A` induced by the `DistribMulAction`. -/
 @[simps]
-def augmentationSubmoduleOfIsZeroBoundary (x : A) (hx : IsZeroBoundary G x) :
-    augmentationSubmodule (Representation.ofDistribMulAction k G A) :=
+def coinvariantsKerOfIsZeroBoundary (x : A) (hx : IsZeroBoundary G x) :
+    Coinvariants.ker (Representation.ofDistribMulAction k G A) :=
   ⟨x, by
     rcases (isZeroBoundary_iff G x).1 hx with ⟨y, rfl⟩
-    exact Submodule.finsupp_sum_mem _ _ _ _ fun g _ =>
-      mem_augmentationSubmodule_of_eq g (y g) _ rfl⟩
+    exact Submodule.finsuppSum_mem _ _ _ _ fun g _ => Coinvariants.mem_ker_of_eq g (y g) _ rfl⟩
 
-theorem isZeroBoundary_of_mem_augmentationSubmodule [DecidableEq G]
-    (x : A) (hx : x ∈ augmentationSubmodule (Representation.ofDistribMulAction k G A)) :
+theorem isZeroBoundary_of_mem_coinvariantsKer [DecidableEq G]
+    (x : A) (hx : x ∈ Coinvariants.ker (Representation.ofDistribMulAction k G A)) :
     IsZeroBoundary G x :=
   Submodule.span_induction (fun _ ⟨g, hg⟩ => ⟨single g.1⁻¹ g.2, by simp_all⟩) ⟨0, by simp⟩
     (fun _ _ _ _ ⟨X, hX⟩ ⟨Y, hY⟩ => ⟨X + Y, by simp_all [sum_add_index, add_sub_add_comm]⟩)
