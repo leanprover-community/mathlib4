@@ -90,14 +90,13 @@ form patterns. The LHS of these lemmas use `FreeM.pure` which simplifies to `pur
 `pure_eq_pure`.
 -/
 attribute [nolint simpNF] FreeM.pure.sizeOf_spec
-FreeM.pure.injEq FreeM.liftBind.sizeOf_spec FreeM.liftBind.injEq
+  FreeM.pure.injEq FreeM.liftBind.sizeOf_spec FreeM.liftBind.injEq
 
 universe u v w w' w''
 
 namespace FreeM
 
 variable {F : Type u → Type v} {ι : Type u} {α : Type w} {β : Type w'} {γ : Type w''}
-
 
 instance : Pure (FreeM F) where pure := .pure
 
@@ -533,7 +532,7 @@ inductive ContF (r : Type u) (α : Type v) where
 
 instance {r : Type u} : Functor (ContF r) where
   map f
-  | .callCC g => .callCC (fun k => g (k ∘ f))
+  | .callCC g => .callCC fun k => g (k ∘ f)
 
 /-- Continuation monad via the `FreeM` monad. -/
 abbrev FreeCont (r : Type u) := FreeM (ContF r)
@@ -574,8 +573,7 @@ theorem toContT_eq_run {r α : Type u} (comp : FreeCont r α) (k : α → r) :
       simp only [toContT, FreeM.liftM]
       cases op
       simp only [run, bind]
-      congr
-      funext x
+      congr with x
       apply ih
 
 @[simp]
