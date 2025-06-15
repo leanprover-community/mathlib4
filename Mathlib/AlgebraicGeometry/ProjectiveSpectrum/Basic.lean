@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Scheme
 import Mathlib.AlgebraicGeometry.AffineScheme
+import Mathlib.AlgebraicGeometry.Gluing
 
 /-!
 
@@ -23,7 +24,10 @@ In this file we provide basic properties of the scheme.
 - `AlgebraicGeometry.Proj.affineOpenCover`: The open cover of `Proj A` by `Spec (A_f)₀` for all
   homogeneous `f` of positive degree.
 - `AlgebraicGeometry.Proj.stalkIso`:
-The stalk of `Proj A` at `x` is the degree `0` part of the localization of `A` at `x`.
+  The stalk of `Proj A` at `x` is the degree `0` part of the localization of `A` at `x`.
+- `AlgebraicGeometry.Proj.fromOfGlobalSections`:
+  Given a map `f : A →+* Γ(X, ⊤)` such that the image of the irrelavent ideal under `f`
+  generates the whole ring, we can construct a map `X ⟶ Proj 𝒜`.
 
 -/
 
@@ -31,7 +35,9 @@ namespace AlgebraicGeometry.Proj
 
 open HomogeneousLocalization CategoryTheory
 
-variable {R A : Type*}
+universe u
+
+variable {R : Type*} {A : Type u}
 variable [CommRing R] [CommRing A] [Algebra R A]
 variable (𝒜 : ℕ → Submodule R A)
 variable [GradedAlgebra 𝒜]
@@ -178,6 +184,10 @@ noncomputable
 def awayι : Spec (.of (Away 𝒜 f)) ⟶ Proj 𝒜 :=
   (basicOpenIsoSpec 𝒜 f f_deg hm).inv ≫ (Proj.basicOpen 𝒜 f).ι
 
+@[reassoc]
+lemma basicOpenIsoSpec_inv_ι :
+  (basicOpenIsoSpec 𝒜 f f_deg hm).inv ≫ (Proj.basicOpen 𝒜 f).ι = awayι 𝒜 f f_deg hm := rfl
+
 instance : IsOpenImmersion (Proj.awayι 𝒜 f f_deg hm) :=
   IsOpenImmersion.comp _ _
 
@@ -286,6 +296,24 @@ lemma pullbackAwayιIso_inv_snd :
       Spec.map (CommRingCat.ofHom (awayMap 𝒜 f_deg (hx.trans (mul_comm _ _)))) := by
   rw [← pullbackAwayιIso_hom_SpecMap_awayMap_right, Iso.inv_hom_id_assoc]
 
+include hm' in
+lemma awayι_preimage_basicOpen :
+    awayι 𝒜 f f_deg hm ⁻¹ᵁ basicOpen 𝒜 g =
+      PrimeSpectrum.basicOpen (Away.isLocalizationElem f_deg g_deg) := by
+  ext1
+  trans Set.range (Spec.map (CommRingCat.ofHom (awayMap 𝒜 g_deg rfl))).base
+  · rw [← pullbackAwayιIso_inv_fst 𝒜 f_deg hm g_deg hm' rfl]
+    simp only [TopologicalSpace.Opens.map_coe, Scheme.Hom.coe_opensRange, Scheme.comp_coeBase,
+      TopCat.hom_comp, ContinuousMap.coe_comp, Set.range_comp]
+    rw [Set.range_eq_univ.mpr (by exact
+      (pullbackAwayιIso 𝒜 f_deg hm g_deg hm' rfl).inv.homeomorph.surjective),
+      ← opensRange_awayι _ _ g_deg hm']
+    simp [IsOpenImmersion.range_pullback_fst_of_right]
+  · letI := (awayMap (f := f) 𝒜 g_deg rfl).toAlgebra
+    letI := HomogeneousLocalization.Away.isLocalization_mul f_deg g_deg rfl hm.ne'
+    exact PrimeSpectrum.localization_away_comap_range _ _
+
+
 open TopologicalSpace.Opens in
 /-- Given a family of homogeneous elements `f` of positive degree that spans the irrelevant ideal,
 `Spec (A_f)₀ ⟶ Proj A` forms an affine open cover of `Proj A`. -/
@@ -328,5 +356,168 @@ def stalkIso (x : Proj 𝒜) :
   (stalkIso' 𝒜 x).toCommRingCatIso
 
 end stalk
+
+noncomputable section ofGlobalSection
+
+open Limits
+
+variable {X : Scheme.{u}} (f : A →+* Γ(X, ⊤)) {x x' : Γ(X, ⊤)} {t t' : A} {d d' : ℕ}
+
+/-- Given a graded ring `A` and a map `f : A →+* Γ(X, ⊤)`,
+for each homogeneous `t` of positive degree, it induces a map from `D(f(t)) ⟶ D₊(t)`. -/
+def toBasicOpenOfGlobalSections (H : f t = x) (h0d : 0 < d) (hd : t ∈ 𝒜 d) :
+    (X.basicOpen x).toScheme ⟶ basicOpen 𝒜 t := by
+  refine ?_ ≫ (basicOpenIsoSpec _ _ hd h0d).inv
+  refine (X.isoOfEq (X.toSpecΓ_preimage_basicOpen x)).inv ≫ X.toSpecΓ ∣_ _ ≫ ?_
+  refine (basicOpenIsoSpecAway _).hom ≫
+    Spec.map (CommRingCat.ofHom (RingHom.comp ?_ (algebraMap _ (Localization.Away t))))
+  refine IsLocalization.map (M := .powers t) (T := .powers x) _ f ?_
+  · rw [← Submonoid.map_le_iff_le_comap, Submonoid.map_powers]
+    simp [H]
+
+@[reassoc]
+lemma homOfLE_toBasicOpenOfGlobalSections_ι
+    {H : f t = x} {h0d : 0 < d} {hd : t ∈ 𝒜 d} {H' : f t' = x'} {h0d' : 0 < d'} {hd' : t' ∈ 𝒜 d'}
+    {s : A} (hts : t * s = t') {n : ℕ} (hn : d + n = d') (hs : s ∈ 𝒜 n) :
+    X.homOfLE (by aesop) ≫ toBasicOpenOfGlobalSections 𝒜 f H h0d hd ≫ (basicOpen 𝒜 t).ι =
+      toBasicOpenOfGlobalSections 𝒜 f H' h0d' hd' ≫ (basicOpen 𝒜 t').ι := by
+  simp only [toBasicOpenOfGlobalSections, Scheme.isoOfEq_inv,
+    ← Scheme.Hom.resLE_eq_morphismRestrict, CommRingCat.ofHom_comp, Spec.map_comp,
+    Scheme.Hom.map_resLE_assoc, Category.assoc, basicOpenIsoSpec_inv_ι]
+  have hx'x : PrimeSpectrum.basicOpen x' ≤ PrimeSpectrum.basicOpen x := by
+    aesop (add simp PrimeSpectrum.basicOpen_mul)
+  rw [← Scheme.Hom.resLE_map_assoc _ (by simp [X.toSpecΓ_preimage_basicOpen]) hx'x]
+  congr 1
+  simp only [← Iso.inv_comp_eq]
+  subst hts hn
+  rw [← SpecMap_awayMap_awayι (𝒜 := 𝒜) hd h0d
+    hs rfl, basicOpenIsoSpecAway_inv_homOfLE_assoc (R := Γ(X, ⊤)) x (f s) x' (by simp [← H', H]),
+    Iso.inv_hom_id_assoc]
+  simp only [← Category.assoc, ← Spec.map_comp, ← CommRingCat.ofHom_comp]
+  congr 3
+  ext
+  simp only [Fin.isValue, RingHom.coe_comp, Function.comp_apply,
+    HomogeneousLocalization.algebraMap_apply, HomogeneousLocalization.val_awayMap]
+  simp only [← RingHom.comp_apply]
+  congr 1
+  apply IsLocalization.ringHom_ext (M := .powers t)
+  ext i
+  simp [IsLocalization.Away.awayToAwayRight_eq]
+
+variable (f : A →+* Γ(X, ⊤)) (hf : (HomogeneousIdeal.irrelevant 𝒜).toIdeal.map f = ⊤)
+
+/-- Given a graded ring `A` and a map `f : A →+* Γ(X, ⊤)` such that the image of the
+irrelevant ideal under `f` generates the whole ring, the set of `D(f(r))` for homogeneous `r`
+of positive degree forms an open cover on `X`. -/
+def openCoverOfMapIrreleventEqTop : X.OpenCover :=
+  X.openCoverOfISupEqTop (fun ir : Σ' i r, 0 < i ∧ r ∈ 𝒜 i ↦
+    X.basicOpen (f ir.2.1)) (by
+    classical
+    have H : Ideal.span (Set.range fun x : Σ' i r, 0 < i ∧ r ∈ 𝒜 i ↦ x.2.1) =
+        (HomogeneousIdeal.irrelevant 𝒜).toIdeal := by
+      apply le_antisymm
+      · rw [Ideal.span_le, Set.range_subset_iff]
+        rintro ⟨i, r, hi0, hri⟩
+        simp [Subtype.ext_iff, -ZeroMemClass.coe_eq_zero,
+          DirectSum.decompose_of_mem_ne 𝒜 hri hi0.ne']
+      · intro x hx
+        rw [← DirectSum.sum_support_decompose 𝒜 x]
+        refine Ideal.sum_mem _ fun c hc ↦ ?_
+        have : c ≠ 0 := by contrapose! hc; simpa [hc] using hx
+        exact Ideal.subset_span ⟨⟨c, _, this.bot_lt, by simp⟩, rfl⟩
+    ext1
+    apply compl_injective
+    simp only [TopologicalSpace.Opens.coe_iSup, Set.compl_iUnion, ← Scheme.zeroLocus_singleton,
+      ← Scheme.zeroLocus_iUnion, Set.iUnion_singleton_eq_range, TopologicalSpace.Opens.coe_top,
+      Set.compl_univ]
+    rw [← Scheme.zeroLocus_span, Set.range_comp', ← Ideal.map_span, H, hf]
+    simp)
+
+/-- Given a graded ring `A` and a map `f : A →+* Γ(X, ⊤)` such that the image of the
+irrelavent ideal under `f` generates the whole ring, we can construct a map `X ⟶ Proj 𝒜`. -/
+def fromOfGlobalSections : X ⟶ Proj 𝒜 := by
+  refine (openCoverOfMapIrreleventEqTop 𝒜 f hf).glueMorphisms
+    (fun ri ↦ toBasicOpenOfGlobalSections 𝒜 f rfl ri.2.2.1 ri.2.2.2 ≫ Scheme.Opens.ι _) ?_
+  rintro x y
+  let e : pullback ((openCoverOfMapIrreleventEqTop 𝒜 f hf).map x)
+      ((openCoverOfMapIrreleventEqTop 𝒜 f hf).map y) ≅ (X.basicOpen (f (x.snd.fst * y.snd.fst))) :=
+    (isPullback_opens_inf _ _).isoPullback.symm ≪≫ X.isoOfEq (by simp)
+  rw [← cancel_epi e.inv]
+  trans toBasicOpenOfGlobalSections 𝒜 f rfl (Nat.add_pos_left x.2.2.1 y.1)
+    (SetLike.mul_mem_graded x.2.2.2 y.2.2.2) ≫ (Scheme.Opens.ι _)
+  · simpa [e, openCoverOfMapIrreleventEqTop, Scheme.isoOfEq_inv] using
+      homOfLE_toBasicOpenOfGlobalSections_ι _ _ rfl rfl y.2.2.2
+  · simpa [e, openCoverOfMapIrreleventEqTop, Scheme.isoOfEq_inv] using
+      (homOfLE_toBasicOpenOfGlobalSections_ι _ _ (mul_comm _ _) (add_comm _ _) x.2.2.2).symm
+
+lemma fromOfGlobalSections_preimage_basicOpen {r : A} {n : ℕ} (hn : 0 < n) (hr : r ∈ 𝒜 n) :
+    fromOfGlobalSections 𝒜 f hf ⁻¹ᵁ basicOpen 𝒜 r = X.basicOpen (f r) := by
+  apply le_antisymm
+  · intro x hx
+    obtain ⟨i, x, rfl⟩ := (openCoverOfMapIrreleventEqTop 𝒜 f hf).exists_eq x
+    simp only [TopologicalSpace.Opens.map_coe, Set.mem_preimage, SetLike.mem_coe,
+      ← Scheme.comp_base_apply, fromOfGlobalSections, Scheme.Cover.ι_glueMorphisms] at hx
+    simp only [openCoverOfMapIrreleventEqTop, Scheme.openCoverOfISupEqTop_obj,
+      toBasicOpenOfGlobalSections, Scheme.isoOfEq_inv, Category.assoc, basicOpenIsoSpec_inv_ι] at hx
+    simp only [Scheme.comp_coeBase, Scheme.homOfLE_base, homOfLE_leOfHom, TopCat.hom_comp,
+      ContinuousMap.comp_assoc, ContinuousMap.comp_apply, morphismRestrict_base,
+      TopologicalSpace.Opens.carrier_eq_coe] at hx
+    rw [← SetLike.mem_coe, ← Set.mem_preimage, ← TopologicalSpace.Opens.map_coe,
+      Proj.awayι_preimage_basicOpen (𝒜 := 𝒜) i.2.2.2 i.2.2.1 hr hn,
+      ← Set.mem_preimage, ← TopologicalSpace.Opens.map_coe, ← Function.Injective.mem_set_image
+      (Spec.map (CommRingCat.ofHom (algebraMap Γ(X, ⊤) _))).isOpenEmbedding.injective,
+      ← Scheme.comp_base_apply, basicOpenIsoSpecAway, IsOpenImmersion.isoOfRangeEq_hom_fac] at hx
+    rw [← Scheme.toSpecΓ_preimage_basicOpen, TopologicalSpace.Opens.map_coe, Set.mem_preimage]
+    refine Set.mem_of_subset_of_mem (Set.image_subset_iff.mpr ?_) hx
+    show PrimeSpectrum.basicOpen _ ≤ PrimeSpectrum.basicOpen _
+    simp only [CommRingCat.ofHom_comp, CommRingCat.hom_comp, CommRingCat.hom_ofHom,
+      RingHom.coe_comp, Function.comp_apply, HomogeneousLocalization.algebraMap_apply,
+      HomogeneousLocalization.Away.val_mk, Localization.mk_eq_mk', IsLocalization.map_mk', map_pow,
+      PrimeSpectrum.basicOpen_le_basicOpen_iff, IsLocalization.mk'_mem_iff]
+    exact Ideal.pow_mem_of_mem _ (Ideal.le_radical (Ideal.mem_span_singleton_self _)) _ i.2.2.1
+  · intro x hx
+    let I : (openCoverOfMapIrreleventEqTop 𝒜 f hf).J := ⟨n, r, hn, hr⟩
+    obtain ⟨x, rfl⟩ : x ∈ ((openCoverOfMapIrreleventEqTop 𝒜 f hf).map I).opensRange := by
+      simpa [openCoverOfMapIrreleventEqTop] using hx
+    simp only [TopologicalSpace.Opens.map_coe, Set.mem_preimage, SetLike.mem_coe,
+      ← Scheme.comp_base_apply, fromOfGlobalSections, Scheme.Cover.ι_glueMorphisms]
+    simp
+
+lemma fromOfGlobalSections_morphismRestrict {r : A} {n : ℕ} (hn : 0 < n) (hr : r ∈ 𝒜 n) :
+    (fromOfGlobalSections 𝒜 f hf) ∣_ (basicOpen 𝒜 r) =
+      (Scheme.isoOfEq _ (fromOfGlobalSections_preimage_basicOpen _ _ _ hn hr)).hom ≫
+        toBasicOpenOfGlobalSections 𝒜 f rfl hn hr := by
+  rw [← Iso.inv_comp_eq, ← cancel_mono (basicOpen 𝒜 r).ι]
+  simp only [Scheme.isoOfEq_inv, Category.assoc, morphismRestrict_ι, Scheme.homOfLE_ι_assoc,
+    fromOfGlobalSections]
+  exact (openCoverOfMapIrreleventEqTop 𝒜 f hf).ι_glueMorphisms _ _ ⟨_, _, hn, hr⟩
+
+lemma fromOfGlobalSections_resLE {r : A} {n : ℕ} (hn : 0 < n) (hr : r ∈ 𝒜 n) :
+    (fromOfGlobalSections 𝒜 f hf).resLE _ _
+      (fromOfGlobalSections_preimage_basicOpen _ _ _ hn hr).ge =
+      toBasicOpenOfGlobalSections 𝒜 f rfl hn hr := by
+  rw [← (Iso.inv_comp_eq _).mpr (fromOfGlobalSections_morphismRestrict 𝒜 f hf hn hr),
+    ← Scheme.Hom.resLE_eq_morphismRestrict]
+  simp [Scheme.isoOfEq_inv]
+
+@[reassoc]
+lemma fromOfGlobalSections_toSpecZero
+    (f : A →+* Γ(X, ⊤)) (hf : (HomogeneousIdeal.irrelevant 𝒜).toIdeal.map f = ⊤) :
+    fromOfGlobalSections 𝒜 f hf ≫ toSpecZero 𝒜 =
+      X.toSpecΓ ≫ Spec.map (CommRingCat.ofHom (f.comp (algebraMap _ _))) := by
+  refine (openCoverOfMapIrreleventEqTop 𝒜 f hf).hom_ext _ _ fun x ↦ ?_
+  simp only [fromOfGlobalSections, toBasicOpenOfGlobalSections, CommRingCat.ofHom_comp,
+    Category.assoc, Scheme.Cover.ι_glueMorphisms_assoc, basicOpenIsoSpec_inv_ι_assoc,
+    awayι_toSpecZero, Iso.inv_comp_eq]
+  simp only [openCoverOfMapIrreleventEqTop, Scheme.openCoverOfISupEqTop_obj,
+    Scheme.openCoverOfISupEqTop_map, Scheme.isoOfEq_hom_ι_assoc, ← morphismRestrict_ι_assoc]
+  congr 1
+  simp only [basicOpenIsoSpecAway, ← CommRingCat.ofHom_comp, ← Spec.map_comp, ← Iso.eq_inv_comp,
+    IsOpenImmersion.isoOfRangeEq_inv_fac_assoc, ← HomogeneousLocalization.algebraMap_eq]
+  congr 2
+  rw [RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq, IsScalarTower.algebraMap_eq _ A,
+    ← RingHom.comp_assoc, IsLocalization.map_comp, RingHom.comp_assoc]
+
+end ofGlobalSection
 
 end AlgebraicGeometry.Proj
