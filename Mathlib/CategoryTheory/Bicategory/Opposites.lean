@@ -30,7 +30,7 @@ There are multiple notions of opposite categories for bicategories.
 * Define the 2-cell dual `Cᶜᵒ`.
 * Provide various lemmas for going between `LocallyDiscrete Cᵒᵖ` and `(LocallyDiscrete C)ᵒᵖ`.
 
-Note: `Cᶜᵒᵒᵖ` is WIP by Joël Riou and Christian Merten.
+Note: `Cᶜᵒᵒᵖ` is WIP by Christian Merten.
 
 -/
 
