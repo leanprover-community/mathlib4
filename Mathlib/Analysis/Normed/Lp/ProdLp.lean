@@ -3,7 +3,6 @@ Copyright (c) 2023 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Sébastien Gouëzel, Jireh Loreaux
 -/
-
 import Mathlib.Analysis.MeanInequalities
 import Mathlib.Analysis.Normed.Lp.WithLp
 
@@ -32,7 +31,7 @@ statements for the coordinate functions, for instance.
 
 # Implementation notes
 
-This file is a straight-forward adaptation of `Mathlib.Analysis.Normed.Lp.PiLp`.
+This file is a straight-forward adaptation of `Mathlib/Analysis/Normed/Lp/PiLp.lean`.
 
 -/
 
@@ -356,8 +355,7 @@ abbrev prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
       rcases p.dichotomy with (rfl | h)
       · exact prod_sup_edist_ne_top_aux f g
       · rw [prod_edist_eq_add (zero_lt_one.trans_le h)]
-        refine ENNReal.rpow_ne_top_of_nonneg (by positivity) (ne_of_lt ?_)
-        simp [ENNReal.add_lt_top, ENNReal.rpow_lt_top_of_nonneg, edist_ne_top] )
+        finiteness)
     fun f g => by
     rcases p.dichotomy with (rfl | h)
     · rw [prod_edist_eq_sup, prod_dist_eq_sup]
@@ -371,23 +369,21 @@ abbrev prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
       · refine ENNReal.toReal_le_of_le_ofReal ?_ ?_
         · simp only [le_sup_iff, dist_nonneg, or_self]
         · simp [edist, PseudoMetricSpace.edist_dist, ENNReal.ofReal_le_ofReal]
-    · have h1 : edist f.fst g.fst ^ p.toReal ≠ ⊤ :=
-        ENNReal.rpow_ne_top_of_nonneg (zero_le_one.trans h) (edist_ne_top _ _)
-      have h2 : edist f.snd g.snd ^ p.toReal ≠ ⊤ :=
-        ENNReal.rpow_ne_top_of_nonneg (zero_le_one.trans h) (edist_ne_top _ _)
+    · have h1 : edist f.fst g.fst ^ p.toReal ≠ ⊤ := by finiteness
+      have h2 : edist f.snd g.snd ^ p.toReal ≠ ⊤ := by finiteness
       simp only [prod_edist_eq_add (zero_lt_one.trans_le h), dist_edist, ENNReal.toReal_rpow,
         prod_dist_eq_add (zero_lt_one.trans_le h), ← ENNReal.toReal_add h1 h2]
 
 attribute [local instance] WithLp.prodPseudoMetricAux
 
-theorem prod_lipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
-    LipschitzWith 1 (WithLp.equiv p (α × β)) := by
-  intro x y
+variable {α β} in
+private theorem edist_proj_le_edist_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β]
+    (x y : WithLp p (α × β)) :
+    edist x.fst y.fst ≤ edist x y ∧ edist x.snd y.snd ≤ edist x y := by
   rcases p.dichotomy with (rfl | h)
-  · simp [edist]
+  · simp [prod_edist_eq_sup]
   · have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel₀ 1 (zero_lt_one.trans_le h).ne'
     rw [prod_edist_eq_add (zero_lt_one.trans_le h)]
-    simp only [edist, forall_prop_of_true, one_mul, ENNReal.coe_one, sup_le_iff]
     constructor
     · calc
         edist x.fst y.fst ≤ (edist x.fst y.fst ^ p.toReal) ^ (1 / p.toReal) := by
@@ -401,6 +397,13 @@ theorem prod_lipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace
         _ ≤ (edist x.fst y.fst ^ p.toReal + edist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) := by
           gcongr
           simp only [self_le_add_left]
+
+theorem prod_lipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
+    LipschitzWith 1 (WithLp.equiv p (α × β)) := by
+  intro x y
+  change max _ _ ≤ _
+  rw [ENNReal.coe_one, one_mul, sup_le_iff]
+  exact edist_proj_le_edist_aux p x y
 
 theorem prod_antilipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     AntilipschitzWith ((2 : ℝ≥0) ^ (1 / p).toReal) (WithLp.equiv p (α × β)) := by
@@ -545,6 +548,30 @@ theorem prod_nndist_eq_sup [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : 
     push_cast
     exact prod_dist_eq_sup _ _
 
+theorem edist_fst_le [PseudoEMetricSpace α] [PseudoEMetricSpace β] (x y : WithLp p (α × β)) :
+    edist x.fst y.fst ≤ edist x y :=
+  (edist_proj_le_edist_aux p x y).1
+
+theorem edist_snd_le [PseudoEMetricSpace α] [PseudoEMetricSpace β] (x y : WithLp p (α × β)) :
+    edist x.snd y.snd ≤ edist x y :=
+  (edist_proj_le_edist_aux p x y).2
+
+theorem nndist_fst_le [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp p (α × β)) :
+    nndist x.fst y.fst ≤ nndist x y := by
+  simpa [← coe_nnreal_ennreal_nndist] using edist_fst_le x y
+
+theorem nndist_snd_le [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp p (α × β)) :
+    nndist x.snd y.snd ≤ nndist x y := by
+  simpa [← coe_nnreal_ennreal_nndist] using edist_snd_le x y
+
+theorem dist_fst_le [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp p (α × β)) :
+    dist x.fst y.fst ≤ dist x y :=
+  nndist_fst_le x y
+
+theorem dist_snd_le [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp p (α × β)) :
+    dist x.snd y.snd ≤ dist x y :=
+  nndist_snd_le x y
+
 variable (p α β)
 
 theorem prod_lipschitzWith_equiv [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
@@ -574,6 +601,35 @@ instance instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedA
     · simp only [prod_dist_eq_add (zero_lt_one.trans_le h),
         prod_norm_eq_add (zero_lt_one.trans_le h), dist_eq_norm]
       rfl
+
+section
+variable {β p}
+
+theorem enorm_fst_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
+    ‖x.fst‖ₑ ≤ ‖x‖ₑ := by
+  simpa using edist_fst_le x 0
+
+theorem enorm_snd_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
+    ‖x.snd‖ₑ ≤ ‖x‖ₑ := by
+  simpa using edist_snd_le x 0
+
+theorem nnnorm_fst_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
+    ‖x.fst‖₊ ≤ ‖x‖₊ := by
+  simpa using nndist_fst_le x 0
+
+theorem nnnorm_snd_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
+    ‖x.snd‖₊ ≤ ‖x‖₊ := by
+  simpa using nndist_snd_le x 0
+
+theorem norm_fst_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
+    ‖x.fst‖ ≤ ‖x‖ := by
+  simpa using dist_fst_le x 0
+
+theorem norm_snd_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
+    ‖x.snd‖ ≤ ‖x‖ := by
+  simpa using dist_snd_le x 0
+
+end
 
 /-- normed group instance on the product of two normed groups, using the `L^p` norm. -/
 instance instProdNormedAddCommGroup [NormedAddCommGroup α] [NormedAddCommGroup β] :
@@ -791,6 +847,17 @@ def prodEquivₗᵢ : WithLp ∞ (α × β) ≃ₗᵢ[𝕜] α × β where
   norm_map' := prod_norm_equiv
 
 end IsBoundedSMul
+
+instance instProdNormSMulClass [SeminormedRing 𝕜] [Module 𝕜 α] [Module 𝕜 β]
+    [NormSMulClass 𝕜 α] [NormSMulClass 𝕜 β] : NormSMulClass 𝕜 (WithLp p (α × β)) :=
+  .of_nnnorm_smul fun c f => by
+    rcases p.dichotomy with (rfl | hp)
+    · simp only [← prod_nnnorm_equiv, WithLp.equiv_smul, nnnorm_smul]
+    · have hp0 : 0 < p.toReal := zero_lt_one.trans_le hp
+      have hpt : p ≠ ⊤ := p.toReal_pos_iff_ne_top.mp hp0
+      rw [prod_nnnorm_eq_add hpt, prod_nnnorm_eq_add hpt, one_div, NNReal.rpow_inv_eq_iff hp0.ne',
+        NNReal.mul_rpow, ← NNReal.rpow_mul, inv_mul_cancel₀ hp0.ne', NNReal.rpow_one, mul_add,
+        ← NNReal.mul_rpow, ← NNReal.mul_rpow, smul_fst, smul_snd, nnnorm_smul, nnnorm_smul]
 
 section SeminormedAddCommGroup
 

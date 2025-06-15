@@ -18,10 +18,10 @@ following T. Wedhorn's unpublished notes “Adic Spaces” ([wedhorn_adic]).
 The definition of a valuation we use here is Definition 1.22 of [wedhorn_adic].
 A valuation on a ring `R` is a monoid homomorphism `v` to a linearly ordered
 commutative monoid with zero, that in addition satisfies the following two axioms:
- * `v 0 = 0`
- * `∀ x y, v (x + y) ≤ max (v x) (v y)`
+* `v 0 = 0`
+* `∀ x y, v (x + y) ≤ max (v x) (v y)`
 
-`Valuation R Γ₀`is the type of valuations `R → Γ₀`, with a coercion to the underlying
+`Valuation R Γ₀` is the type of valuations `R → Γ₀`, with a coercion to the underlying
 function. If `v` is a valuation from `R` to `Γ₀` then the induced group
 homomorphism `Units(R) → Γ₀` is called `unit_map v`.
 
@@ -35,6 +35,8 @@ sense. Note that we use 1.27(iii) of [wedhorn_adic] as the definition of equival
 ## Main definitions
 
 * `Valuation R Γ₀`, the type of valuations on `R` with values in `Γ₀`
+* `Valuation.IsNontrivial` is the class of non-trivial valuations, namely those for which there
+  is an element in the ring whose valuation is `≠ 0` and `≠ 1`.
 * `Valuation.IsEquiv`, the heterogeneous equivalence relation on valuations
 * `Valuation.supp`, the support of a valuation
 
@@ -49,8 +51,8 @@ sense. Note that we use 1.27(iii) of [wedhorn_adic] as the definition of equival
 
 In the `DiscreteValuation` locale:
 
- * `ℕₘ₀` is a shorthand for `WithZero (Multiplicative ℕ)`
- * `ℤₘ₀` is a shorthand for `WithZero (Multiplicative ℤ)`
+* `ℕₘ₀` is a shorthand for `WithZero (Multiplicative ℕ)`
+* `ℤₘ₀` is a shorthand for `WithZero (Multiplicative ℤ)`
 
 ## TODO
 
@@ -72,7 +74,7 @@ variable (F R) (Γ₀ : Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
 
 When you extend this structure, make sure to extend `ValuationClass`. -/
 structure Valuation extends R →*₀ Γ₀ where
-  /-- The valuation of a a sum is less that the sum of the valuations -/
+  /-- The valuation of a sum is less than or equal to the maximum of the valuations. -/
   map_add_le_max' : ∀ x y, toFun (x + y) ≤ max (toFun x) (toFun y)
 
 /-- `ValuationClass F α β` states that `F` is a type of valuations.
@@ -81,7 +83,7 @@ You should also extend this typeclass when you extend `Valuation`. -/
 class ValuationClass (F) (R Γ₀ : outParam Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
     [FunLike F R Γ₀] : Prop
   extends MonoidWithZeroHomClass F R Γ₀ where
-  /-- The valuation of a a sum is less that the sum of the valuations -/
+  /-- The valuation of a sum is less than or equal to the maximum of the valuations. -/
   map_add_le_max (f : F) (x y : R) : f (x + y) ≤ max (f x) (f y)
 
 export ValuationClass (map_add_le_max)
@@ -281,7 +283,7 @@ theorem map_add_of_distinct_val (h : v x ≠ v y) : v (x + y) = max (v x) (v y) 
     or_iff_not_imp_right.1 (le_iff_eq_or_lt.1 (v.map_add x y)) this
   intro h'
   wlog vyx : v y < v x generalizing x y
-  · refine this h.symm ?_ (h.lt_or_lt.resolve_right vyx)
+  · refine this h.symm ?_ (h.lt_or_gt.resolve_right vyx)
     rwa [add_comm, max_comm]
   rw [max_eq_left_of_lt vyx] at h'
   apply lt_irrefl (v x)
@@ -365,7 +367,7 @@ theorem val_eq_one_iff (v : Valuation K Γ₀) {x : K} : v x = 1 ↔ v x⁻¹ = 
 theorem val_le_one_or_val_inv_lt_one (v : Valuation K Γ₀) (x : K) : v x ≤ 1 ∨ v x⁻¹ < 1 := by
   by_cases h : x = 0
   · simp only [h, map_zero, zero_le', inv_zero, zero_lt_one, or_self]
-  · simp only [← one_lt_val_iff v h, le_or_lt]
+  · simp only [← one_lt_val_iff v h, le_or_gt]
 
 /--
 This theorem is a weaker version of `Valuation.val_le_one_or_val_inv_lt_one`, but more symmetric
@@ -387,7 +389,28 @@ end Group
 
 end Basic
 
--- end of section
+section IsNontrivial
+
+variable [Ring R] [LinearOrderedCommMonoidWithZero Γ₀] (v : Valuation R Γ₀)
+
+/-- A valuation on a ring is nontrivial if there exists an element with valuation
+not equal to `0` or `1`. -/
+class IsNontrivial : Prop where
+  exists_val_nontrivial : ∃ x : R, v x ≠ 0 ∧ v x ≠ 1
+
+/-- For fields, being nontrivial is equivalent to the existence of a unit with valuation
+not equal to `1`. -/
+lemma isNontrivial_iff_exists_unit {K : Type*} [Field K] {w : Valuation K Γ₀} :
+    w.IsNontrivial ↔ ∃ x : Kˣ, w x ≠ 1 :=
+  ⟨fun ⟨x, hx0, hx1⟩ ↦
+    have : Nontrivial Γ₀ := ⟨w x, 0, hx0⟩
+    ⟨Units.mk0 x (w.ne_zero_iff.mp hx0), hx1⟩,
+    fun ⟨x, hx⟩ ↦
+    have : Nontrivial Γ₀ := ⟨w x, 1, hx⟩
+    ⟨x, w.ne_zero_iff.mpr (Units.ne_zero x), hx⟩⟩
+
+end IsNontrivial
+
 namespace IsEquiv
 
 variable [Ring R] [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
@@ -625,7 +648,7 @@ section Monoid
 instance (R) (Γ₀) [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] :
     FunLike (AddValuation R Γ₀) R Γ₀ where
   coe v := v.toMonoidWithZeroHom.toFun
-  coe_injective' f g := by cases f; cases g; simp (config := {contextual := true})
+  coe_injective' f g := by cases f; cases g; simp +contextual
 
 variable [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] [LinearOrderedAddCommMonoidWithTop Γ'₀]
   (v : AddValuation R Γ₀)
@@ -916,8 +939,6 @@ def toAddValuation : Valuation R Γ₀ ≃ AddValuation R (Additive Γ₀)ᵒᵈ
   .trans (congr
     { toFun := fun x ↦ .ofAdd <| .toDual <| .toDual <| .ofMul x
       invFun := fun x ↦ x.toAdd.ofDual.ofDual.toMul
-      left_inv := fun _x ↦ rfl
-      right_inv := fun _x ↦ rfl
       map_mul' := fun _x _y ↦ rfl
       map_le_map_iff' := .rfl }) (AddValuation.ofValuation (R := R) (Γ₀ := (Additive Γ₀)ᵒᵈ))
 
@@ -927,8 +948,6 @@ def ofAddValuation : AddValuation R (Additive Γ₀)ᵒᵈ ≃ Valuation R Γ₀
   AddValuation.toValuation.trans <| congr <|
     { toFun := fun x ↦ x.toAdd.ofDual.ofDual.toMul
       invFun := fun x ↦ .ofAdd <| .toDual <| .toDual <| .ofMul x
-      left_inv := fun _x ↦ rfl
-      right_inv := fun _x ↦ rfl
       map_mul' := fun _x _y ↦ rfl
       map_le_map_iff' := .rfl }
 

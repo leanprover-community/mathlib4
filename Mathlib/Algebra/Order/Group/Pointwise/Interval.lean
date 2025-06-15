@@ -641,7 +641,7 @@ theorem image_const_mul_Ioi_zero (ha : 0 < a) :
 end PosMul
 
 variable {G₀ : Type*} [GroupWithZero G₀] [PartialOrder G₀] [PosMulReflectLT G₀]
-  [MulPosStrictMono G₀] {a : G₀}
+  [MulPosReflectLT G₀] {a : G₀}
 
 /-- The (pre)image under `inv` of `Ioo 0 a` is `Ioi a⁻¹`. -/
 theorem inv_Ioo_0_left (ha : 0 < a) : (Ioo 0 a)⁻¹ = Ioi a⁻¹ := by
@@ -706,39 +706,40 @@ end CommGroupWithZero
 ### Images under `x ↦ a * x + b` in a semifield
 -/
 
-section LinearOrderedSemifield
+section OrderedSemifield
 
-variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α] {a : α}
+variable {K : Type*} [DivisionSemiring K] [PartialOrder K] [PosMulReflectLT K]
+  [IsOrderedCancelAddMonoid K] [ExistsAddOfLE K] {a : K}
 
 @[simp]
-theorem image_affine_Icc' {a : α} (h : 0 < a) (b c d : α) :
+theorem image_affine_Icc' (h : 0 < a) (b c d : K) :
     (a * · + b) '' Icc c d = Icc (a * c + b) (a * d + b) := by
   suffices (· + b) '' ((a * ·) '' Icc c d) = Icc (a * c + b) (a * d + b) by
     rwa [Set.image_image] at this
   rw [image_mul_left_Icc' h, image_add_const_Icc]
 
 @[simp]
-theorem image_affine_Ico {a : α} (h : 0 < a) (b c d : α) :
+theorem image_affine_Ico (h : 0 < a) (b c d : K) :
     (a * · + b) '' Ico c d = Ico (a * c + b) (a * d + b) := by
   suffices (· + b) '' ((a * ·) '' Ico c d) = Ico (a * c + b) (a * d + b) by
     rwa [Set.image_image] at this
   rw [image_mul_left_Ico h, image_add_const_Ico]
 
 @[simp]
-theorem image_affine_Ioc {a : α} (h : 0 < a) (b c d : α) :
+theorem image_affine_Ioc (h : 0 < a) (b c d : K) :
     (a * · + b) '' Ioc c d = Ioc (a * c + b) (a * d + b) := by
   suffices (· + b) '' ((a * ·) '' Ioc c d) = Ioc (a * c + b) (a * d + b) by
     rwa [Set.image_image] at this
   rw [image_mul_left_Ioc h, image_add_const_Ioc]
 
 @[simp]
-theorem image_affine_Ioo {a : α} (h : 0 < a) (b c d : α) :
+theorem image_affine_Ioo (h : 0 < a) (b c d : K) :
     (a * · + b) '' Ioo c d = Ioo (a * c + b) (a * d + b) := by
   suffices (· + b) '' ((a * ·) '' Ioo c d) = Ioo (a * c + b) (a * d + b) by
     rwa [Set.image_image] at this
   rw [image_mul_left_Ioo h, image_add_const_Ioo]
 
-end LinearOrderedSemifield
+end OrderedSemifield
 
 /-!
 ### Multiplication and inverse in a field
@@ -845,7 +846,7 @@ theorem preimage_div_const_uIcc (ha : a ≠ 0) (b c : α) :
   simp only [div_eq_mul_inv, preimage_mul_const_uIcc (inv_ne_zero ha), inv_inv]
 
 lemma preimage_const_mul_Ioi_or_Iio (hb : a ≠ 0) {U V : Set α}
-    (hU : U ∈ {s | ∃ a, s = Ioi a ∨ s = Iio a}) (hV : V = HMul.hMul a ⁻¹' U) :
+    (hU : U ∈ {s | ∃ a, s = Ioi a ∨ s = Iio a}) (hV : V = (a * ·) ⁻¹' U) :
     V ∈ {s | ∃ a, s = Ioi a ∨ s = Iio a} := by
   obtain ⟨aU, (haU | haU)⟩ := hU <;>
   simp only [hV, haU, mem_setOf_eq] <;>

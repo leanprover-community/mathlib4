@@ -19,9 +19,9 @@ instead writing `N ≤m M` and `N <m M` for more convenient dot notation.
 
 # Main Declarations
 
-* `Matroid.IsMinor N M`, written `N ≤m M`,  means that `N = M ／ C ＼ D` for some
+* `Matroid.IsMinor N M`, written `N ≤m M`, means that `N = M ／ C ＼ D` for some
   subset `C` and `D` of `M.E`.
-* `Matroid.IsStrictMinor N M`, written `N <m M`,  means that `N = M ／ C ＼ D`
+* `Matroid.IsStrictMinor N M`, written `N <m M`, means that `N = M ／ C ＼ D`
   for some subsets `C` and `D` of `M.E` that are not both nonempty.
 * `Matroid.IsMinor.exists_eq_contract_delete_disjoint` : we can choose `C` and `D` disjoint.
 
@@ -108,7 +108,7 @@ lemma isStrictMinor_iff_isMinor_ne : N <m M ↔ N ≤m M ∧ N ≠ M :=
   lt_iff_le_and_ne (α := Matroid α)
 
 lemma IsStrictMinor.ne (h : N <m M) : N ≠ M :=
-  LT.lt.ne h
+  h.lt.ne
 
 lemma isStrictMinor_irrefl (M : Matroid α) : ¬ (M <m M) :=
   lt_irrefl M
@@ -117,7 +117,7 @@ lemma IsStrictMinor.isMinor (h : N <m M) : N ≤m M :=
   h.lt.le
 
 lemma IsStrictMinor.not_isMinor (h : N <m M) : ¬ (M ≤m N) :=
-  h.lt.not_le
+  h.lt.not_ge
 
 lemma IsStrictMinor.ssubset (h : N <m M) : N.E ⊂ M.E :=
   h.isMinor.subset.ssubset_of_ne (fun hE ↦ h.ne (h.isMinor.eq_of_ground_subset hE.symm.subset).symm)
