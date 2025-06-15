@@ -6,7 +6,6 @@ Authors: Andrew Yang
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.FieldTheory.Separable
 
 /-!
 # The residue field of a prime ideal
@@ -128,39 +127,5 @@ instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p]
     Ideal.ResidueField.mapₐ_apply, Ideal.ResidueField.map, IsLocalRing.ResidueField.map_map,
     ← IsLocalRing.ResidueField.map_comp, IsScalarTower.algebraMap_eq R A B,
     ← Localization.localRingHom_comp]
-
-attribute [local instance] Ideal.Quotient.field
-
-instance (p : Ideal A) [p.IsMaximal] (q : Ideal B) [q.IsMaximal] [q.LiesOver p]
-    [Algebra.IsSeparable (A ⧸ p) (B ⧸ q)] :
-    Algebra.IsSeparable p.ResidueField q.ResidueField := by
-  refine Algebra.IsSeparable.of_equiv_equiv
-    (.ofBijective _ p.bijective_algebraMap_quotient_residueField)
-    (.ofBijective _ q.bijective_algebraMap_quotient_residueField) ?_
-  ext x
-  simp [RingHom.algebraMap_toAlgebra, Algebra.ofId_apply]
-  rfl
-
-instance Algebra.isSeparable_quotient_of_isSeparable_residueField
-    (p : Ideal A) [p.IsMaximal] (q : Ideal B) [q.IsMaximal] [q.LiesOver p]
-    [Algebra.IsSeparable p.ResidueField q.ResidueField] :
-    Algebra.IsSeparable (A ⧸ p) (B ⧸ q) := by
-  refine Algebra.IsSeparable.of_equiv_equiv
-    (.symm <| .ofBijective _ p.bijective_algebraMap_quotient_residueField)
-    (.symm <| .ofBijective _ q.bijective_algebraMap_quotient_residueField) ?_
-  ext x
-  obtain ⟨x, rfl⟩ :=
-    (RingEquiv.ofBijective _ p.bijective_algebraMap_quotient_residueField).surjective x
-  obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-  apply (RingEquiv.ofBijective _ q.bijective_algebraMap_quotient_residueField).injective
-  simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, RingEquiv.symm_apply_apply,
-    RingEquiv.apply_symm_apply]
-  simp [RingHom.algebraMap_toAlgebra, Algebra.ofId_apply]
-  rfl
-
-lemma Algebra.isSeparable_residueField_iff
-    {p : Ideal A} [p.IsMaximal] {q : Ideal B} [q.IsMaximal] [q.LiesOver p] :
-    Algebra.IsSeparable p.ResidueField q.ResidueField ↔ Algebra.IsSeparable (A ⧸ p) (B ⧸ q) :=
-  ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 
 end LiesOver
