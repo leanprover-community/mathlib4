@@ -57,6 +57,6 @@ lemma scottContinuous_inf_left (b : β) : ScottContinuous fun a ↦ a ⊓ b := b
 
 /- The meet operation is Scott continuous -/
 lemma ScottContinuous.inf₂ : ScottContinuous fun (a, b) => (a ⊓ b : β) :=
-  ScottContinuous_prod_of_ScottContinuous scottContinuous_inf_right right_cont_inf
+  ScottContinuous_prod_of_ScottContinuous scottContinuous_inf_right scottContinuous_inf_left
 
 end CompleteLinearOrder
