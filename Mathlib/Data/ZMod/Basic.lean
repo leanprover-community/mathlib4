@@ -527,7 +527,6 @@ theorem val_neg_one (n : ℕ) : (-1 : ZMod n.succ).val = n := by
   · dsimp [ZMod, ZMod.cast]
     rw [Fin.coe_neg_one]
 
-
 /-- `-1 : ZMod n` lifts to `n - 1 : R`. This avoids the characteristic assumption in `cast_neg`. -/
 theorem cast_neg_one {R : Type*} [Ring R] (n : ℕ) : cast (-1 : ZMod n) = (n - 1 : R) := by
   rcases n with - | n
@@ -831,7 +830,6 @@ lemma inv_mul_eq_one_of_isUnit {n : ℕ} {a : ZMod n} (ha : IsUnit a) (b : ZMod 
   refine ⟨fun H ↦ ?_, fun H ↦ H ▸ a.inv_mul_of_unit ha⟩
   apply_fun (a * ·) at H
   rwa [← mul_assoc, a.mul_inv_of_unit ha, one_mul, mul_one, eq_comm] at H
-
 
 -- TODO: this equivalence is true for `ZMod 0 = ℤ`, but needs to use different functions.
 /-- Equivalence between the units of `ZMod n` and
@@ -1294,5 +1292,3 @@ def Nat.residueClassesEquiv (N : ℕ) [NeZero N] : ℕ ≃ ZMod N × ℕ where
         cast_id', id_eq, zero_add]
     · simp only [add_comm p.1.val, mul_add_div (NeZero.pos _),
         (Nat.div_eq_zero_iff).2 <| .inr p.1.val_lt, add_zero]
-
-

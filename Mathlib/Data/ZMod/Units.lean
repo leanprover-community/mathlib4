@@ -122,18 +122,15 @@ theorem coe_int_mul_inv_eq_one {n : ℕ} (x : ℤ) (h : IsCoprime x n) :
   apply coe_mul_inv_eq_one
   rwa [Int.isCoprime_iff_gcd_eq_one, Int.gcd_comm, Int.gcd_rec, ← val_intCast] at h
 
-theorem coe_int_inv_mul_eq_one {n : ℕ} (x : ℤ)
-    (h : IsCoprime x n) :
+theorem coe_int_inv_mul_eq_one {n : ℕ} (x : ℤ) (h : IsCoprime x n) :
     (x : ZMod n)⁻¹ * (x : ZMod n) = 1 := by
   rw [mul_comm, coe_int_mul_inv_eq_one x h]
 
-lemma coe_int_mul_val_inv {n : ℕ} [NeZero n] {m : ℤ}
-    (h : IsCoprime m n) :
+lemma coe_int_mul_val_inv {n : ℕ} [NeZero n] {m : ℤ} (h : IsCoprime m n) :
     (m * (m⁻¹ : ZMod n).val : ZMod n) = 1 := by
   rw [natCast_zmod_val, coe_int_mul_inv_eq_one _ h]
 
-lemma coe_int_val_inv_mul {n : ℕ} [NeZero n] {m : ℤ}
-    (h : IsCoprime m n) :
+lemma coe_int_val_inv_mul {n : ℕ} [NeZero n] {m : ℤ} (h : IsCoprime m n) :
     ((m⁻¹ : ZMod n).val : ZMod n) * m = 1 := by
   rw [mul_comm, coe_int_mul_val_inv h]
 
