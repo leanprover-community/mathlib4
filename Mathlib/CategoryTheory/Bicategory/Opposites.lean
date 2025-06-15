@@ -16,6 +16,8 @@ We construct the 1-cell opposite of a bicategory `B`, called `Bᴮᵒᵖ`. It is
 * The 2-morphisms `f ⟶ g` in `Bᴮᵒᵖ` are the 2-morphisms `f ⟶ g` in `B`. In other words, the
   directions of the 2-morphisms are preserved.
 
+Note that the standard notation for the opposite of a bicategory is `Bᵒᵖ`, however this clashes
+with the notation for the opposite of a 1-category, so we use `Bᴮᵒᵖ` instead.
 
 # Remarks
 There are multiple notions of opposite categories for bicategories.
