@@ -302,6 +302,12 @@ lemma aeval_equivPolynomial {S : Type*} [CommRing S] [Algebra S R]
   | single i m => rw [equivPolynomial_single, aeval_monomial, mul_comm, map_single,
       Algebra.linearMap_apply, eval_single, smul_eq_mul]
 
+@[simp]
+lemma eval_equivPolynomial (f : PolynomialModule R R) (x : R) :
+    Polynomial.eval x (equivPolynomial f) = (eval x) f := by
+  rw [← coe_aeval_eq_eval, aeval_equivPolynomial, eval_map',
+    Algebra.linearMap_apply, Algebra.id.map_eq_self]
+
 /-- `comp p q` is the composition of `p : R[X]` and `q : M[X]` as `q(p(x))`. -/
 @[simps!]
 noncomputable def comp (p : R[X]) : PolynomialModule R M →ₗ[R] PolynomialModule R M :=
