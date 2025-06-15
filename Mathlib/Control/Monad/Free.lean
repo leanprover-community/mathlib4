@@ -90,7 +90,8 @@ form patterns. The LHS of these lemmas use `FreeM.pure` which simplifies to `pur
 `pure_eq_pure`.
 -/
 attribute [nolint simpNF] FreeM.pure.sizeOf_spec
-  FreeM.pure.injEq FreeM.liftBind.sizeOf_spec FreeM.liftBind.injEq
+  FreeM.pure.injEq FreeM.liftBind.sizeOf_spec FreeM.liftBind.injEq FreeM.liftBind.injEq
+  FreeM.liftBind.sizeOf_spec
 
 universe u v w w' w''
 
@@ -137,8 +138,6 @@ theorem map_eq_map {α β : Type w} : Functor.map = FreeM.map (F := F) (α := α
 /-- Lift an operation from the effect signature `f` into the `FreeM f` monad. -/
 def lift (op : F ι) : FreeM F ι :=
   .liftBind op pure
-
-attribute [-simp] liftBind.injEq liftBind.sizeOf_spec
 
 /-- Rewrite `lift` to the constructor form so that simplification stays in constructor
 normal form. -/
