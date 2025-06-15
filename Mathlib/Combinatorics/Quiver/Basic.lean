@@ -66,6 +66,12 @@ def Hom.opEquiv {V} [Quiver V] {X Y : V} :
   toFun := Opposite.op
   invFun := Opposite.unop
 
+/-- To show that two Homs from the opposite category agree, it suffices to show they agree
+in the original category. -/
+@[ext]
+theorem Hom.unop_ext {V} [Quiver V] {X Y : Vᵒᵖ} {f g : X ⟶ Y} (h : f.unop = g.unop) : f = g :=
+  Hom.opEquiv.symm.injective h
+
 /-- A type synonym for a quiver with no arrows. -/
 def Empty (V : Type u) : Type u := V
 
