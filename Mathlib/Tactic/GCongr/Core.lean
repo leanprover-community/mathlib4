@@ -6,8 +6,8 @@ Authors: Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 import Lean
 import Batteries.Lean.Except
 import Batteries.Tactic.Exact
+import Mathlib.Lean.Elab.Term
 import Mathlib.Tactic.GCongr.ForwardAttr
-import Mathlib.Order.Defs.PartialOrder
 import Mathlib.Order.Defs.Unbundled
 
 /-!
@@ -307,10 +307,6 @@ open Elab Tactic
     goal.assignIfDefEq (← mkAppOptM ``Eq.subst #[h, m])
     goal.applyRfl
 
-/-- See if the term is `a < b` and the goal is `a ≤ b`. -/
-@[gcongr_forward] def exactLeOfLt : ForwardExt where
-  eval h goal := do goal.assignIfDefEq (← mkAppM ``le_of_lt #[h])
-
 /-- See if the term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`. -/
 @[gcongr_forward] def symmExact : ForwardExt where
   eval h goal := do (← goal.applySymm).assignIfDefEq h
@@ -588,7 +584,7 @@ elab "gcongr" template:(colGt term)?
     | throwError "gcongr failed, not a relation"
   -- Elaborate the template (e.g. `x * ?_ + _`), if the user gave one
   let template ← template.mapM fun e => do
-    let template ← Term.elabTerm e (← inferType lhs)
+    let template ← Term.elabPattern e (← inferType lhs)
     unless ← containsHole template do
       throwError "invalid template {template}, it doesn't contain any `?_`"
     pure template

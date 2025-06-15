@@ -79,6 +79,10 @@ lemma le_traceDual_traceDual {I : Submodule B L} :
     I ≤ Iᵛᵛ := le_traceDual_comm.mpr le_rfl
 
 @[simp]
+lemma restrictScalars_traceDual {I : Submodule B L} :
+  Iᵛ.restrictScalars A = (Algebra.traceForm K L).dualSubmodule (I.restrictScalars A) := rfl
+
+@[simp]
 lemma traceDual_bot :
     (⊥ : Submodule B L)ᵛ = ⊤ := by ext; simpa [mem_traceDual, -RingHom.mem_range] using zero_mem _
 
@@ -128,8 +132,9 @@ lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
     traceDual, traceForm_apply, Submodule.mem_comap, AlgEquiv.toLinearMap_apply,
     Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_setOf_eq]
   apply (FractionRing.algEquiv B L).forall_congr
-  simp only [restrictScalars_mem, traceForm_apply, AlgEquiv.toEquiv_eq_coe,
-    EquivLike.coe_coe, mem_comap, AlgEquiv.toLinearMap_apply, AlgEquiv.symm_apply_apply]
+  simp only [restrictScalars_mem, LinearEquiv.coe_coe, AlgEquiv.coe_symm_toLinearEquiv,
+    traceForm_apply, mem_one, AlgEquiv.toEquiv_eq_coe, EquivLike.coe_coe, mem_comap,
+    AlgEquiv.symm_apply_apply]
   refine fun {y} ↦ (forall_congr' fun hy ↦ ?_)
   rw [Algebra.trace_eq_of_equiv_equiv (FractionRing.algEquiv A K).toRingEquiv
     (FractionRing.algEquiv B L).toRingEquiv]
