@@ -20,7 +20,7 @@ functor from `Condensed C` to `C`.
 
 We also give the variant `LightCondensed.discreteUnderlyingAdj` for light condensed objects.
 
-The file `Mathlib.Condensed.Discrete.Characterization` defines a predicate `IsDiscrete` on
+The file `Mathlib/Condensed/Discrete/Characterization.lean` defines a predicate `IsDiscrete` on
 condensed and and light condensed objects, and provides several conditions on a (light) condensed
 set or module that characterize it as discrete.
 -/

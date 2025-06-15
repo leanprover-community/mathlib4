@@ -97,7 +97,7 @@ satisfies the inequality `‖f m‖ ≤ C * ∏ i, ‖m i‖`
 on a shell `ε / ‖c‖ < ‖m i‖ < ε` for some positive number `ε` and an elements `c : 𝕜`, `1 < ‖c‖`,
 then it satisfies this inequality for all `m`.
 
-If the domain is a Hausdorff space, then the continuity assumption is reduntant,
+If the domain is a Hausdorff space, then the continuity assumption is redundant,
 see `bound_of_shell` below. -/
 theorem bound_of_shell_of_continuous (f : E [⋀^ι]→ₗ[𝕜] F) (hfc : Continuous f)
     {ε : ℝ} {C : ℝ} (hε : 0 < ε) {c : 𝕜} (hc : 1 < ‖c‖)
@@ -286,7 +286,7 @@ section
   NNReal.eq <| norm_ofSubsingleton i f
 
 /-- `ContinuousAlternatingMap.ofSubsingleton` as a linear isometry. -/
-@[simps (config := {simpRhs := true})]
+@[simps +simpRhs]
 def ofSubsingletonLIE [Subsingleton ι] (i : ι) : (E →L[𝕜] F) ≃ₗᵢ[𝕜] (E [⋀^ι]→L[𝕜] F) where
   __ := ofSubsingleton 𝕜 E F i
   map_add' _ _ := rfl
@@ -320,8 +320,6 @@ def prodLIE : (E [⋀^ι]→L[𝕜] F) × (E [⋀^ι]→L[𝕜] G) ≃ₗᵢ[�
     (ContinuousLinearMap.snd 𝕜 F G).compContinuousAlternatingMap f)
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  left_inv _ := rfl
-  right_inv _ := rfl
   norm_map' f := opNorm_prod f.1 f.2
 
 variable (𝕜 E) in
@@ -406,7 +404,7 @@ def compContinuousAlternatingMapCLM : (F →L[𝕜] G) →L[𝕜] (E [⋀^ι]→
     simpa using f.norm_compContinuousAlternatingMap_le g
 
 /-- `ContinuousLinearMap.compContinuousAlternatingMap` as a bundled continuous linear equiv. -/
-@[simps (config := {simpRhs := true}) apply]
+@[simps +simpRhs apply]
 def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrRight (g : F ≃L[𝕜] G) :
     (E [⋀^ι]→L[𝕜] F) ≃L[𝕜] (E [⋀^ι]→L[𝕜] G) where
   __ := g.continuousAlternatingMapCongrRightEquiv
@@ -452,7 +450,10 @@ def ContinuousAlternatingMap.compContinuousLinearMapCLM (f : E →L[𝕜] F) :
       (g.norm_compContinuousLinearMap_le f).trans_eq (mul_comm _ _)
 
 /-- Given a continuous linear isomorphism between the domains,
-generate a continuous linear isomorphism between the spaces of continuous alternating maps. -/
+generate a continuous linear isomorphism between the spaces of continuous alternating maps.
+
+This is `ContinuousAlternatingMap.compContinuousLinearMap` as an equivalence,
+and is the continuous version of `AlternatingMap.domLCongr`. -/
 @[simps apply]
 def ContinuousLinearEquiv.continuousAlternatingMapCongrLeft (f : E ≃L[𝕜] F) :
     E [⋀^ι]→L[𝕜] G ≃L[𝕜] (F [⋀^ι]→L[𝕜] G) where

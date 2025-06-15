@@ -814,13 +814,13 @@ omit [F.OplaxMonoidal] in
 This is not made an instance because it would create a diamond for the oplax monoidal structure on
 the identity and composition of functors. -/
 def ofChosenFiniteProducts (F : C ⥤ D) : F.OplaxMonoidal where
-  η' := terminalComparison F
-  δ' X Y := prodComparison F X Y
-  δ'_natural_left f X' := by ext <;> simp [← Functor.map_comp]
-  δ'_natural_right X g := by ext <;> simp [← Functor.map_comp]
-  oplax_associativity' _ _ _ := by ext <;> simp [← Functor.map_comp]
-  oplax_left_unitality' _ := by ext; simp [← Functor.map_comp]
-  oplax_right_unitality' _ := by ext; simp [← Functor.map_comp]
+  η := terminalComparison F
+  δ X Y := prodComparison F X Y
+  δ_natural_left f X := by ext <;> simp [← Functor.map_comp]
+  δ_natural_right X g := by ext <;> simp [← Functor.map_comp]
+  oplax_associativity _ _ _ := by ext <;> simp [← Functor.map_comp]
+  oplax_left_unitality _ := by ext; simp [← Functor.map_comp]
+  oplax_right_unitality _ := by ext; simp [← Functor.map_comp]
 
 omit [F.OplaxMonoidal] in
 /-- Any functor between cartesian-monoidal categories is oplax monoidal in a unique way. -/
@@ -828,7 +828,7 @@ instance : Subsingleton F.OplaxMonoidal where
   allEq a b := by
     ext1
     · exact toUnit_unique _ _
-    · ext1; ext1; rw [← δ, ← δ, δ_of_cartesianMonoidalCategory, δ_of_cartesianMonoidalCategory]
+    · ext1; ext1; rw [δ_of_cartesianMonoidalCategory, δ_of_cartesianMonoidalCategory]
 
 end OplaxMonoidal
 
@@ -933,13 +933,7 @@ noncomputable instance instCartesianMonoidalCategory :
 
 lemma tensor_obj (X Y : F.EssImageSubcategory) : (X ⊗ Y).obj = X.obj ⊗ Y.obj := rfl
 
-lemma fst_def (X Y : F.EssImageSubcategory) : fst X Y = fst X.obj Y.obj := rfl
-lemma snd_def (X Y : F.EssImageSubcategory) : snd X Y = snd X.obj Y.obj := rfl
 lemma lift_def (f : T ⟶ X) (g : T ⟶ Y) : lift f g = lift (T := T.1) f g := rfl
-
-lemma whiskerLeft_def (X : F.EssImageSubcategory) (f : Y ⟶ Z) : X ◁ f = X.obj ◁ f := rfl
-lemma whiskerRight_def (f : Y ⟶ Z) (X : F.EssImageSubcategory) :
-    f ▷ X = MonoidalCategoryStruct.whiskerRight (C := D) f X.obj := rfl
 
 lemma associator_hom_def (X Y Z : F.EssImageSubcategory) :
     (α_ X Y Z).hom = (α_ X.obj Y.obj Z.obj).hom := rfl

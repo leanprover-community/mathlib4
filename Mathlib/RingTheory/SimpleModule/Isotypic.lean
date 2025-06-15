@@ -70,16 +70,16 @@ theorem LinearEquiv.isIsotypic_iff (e : M ≃ₗ[R] N) : IsIsotypic R M ↔ IsIs
 
 theorem isIsotypicOfType_submodule_iff {N : Submodule R M} :
     IsIsotypicOfType R N S ↔ ∀ m ≤ N, [IsSimpleModule R m] → Nonempty (m ≃ₗ[R] S) := by
-  rw [Subtype.forall', ← (Submodule.MapSubtype.relIso N).forall_congr_right]
+  rw [Subtype.forall', ← (Submodule.MapSubtype.orderIso N).forall_congr_right]
   have e := Submodule.equivMapOfInjective _ N.subtype_injective
-  simp_rw [Submodule.MapSubtype.relIso, Equiv.coe_fn_mk, ← (e _).isSimpleModule_iff]
+  simp_rw [Submodule.MapSubtype.orderIso, Equiv.coe_fn_mk, ← (e _).isSimpleModule_iff]
   exact forall₂_congr fun m _ ↦ ⟨fun ⟨e'⟩ ↦ ⟨(e m).symm.trans e'⟩, fun ⟨e'⟩ ↦ ⟨(e m).trans e'⟩⟩
 
 theorem isIsotypic_submodule_iff {N : Submodule R M} :
     IsIsotypic R N ↔ ∀ m ≤ N, [IsSimpleModule R m] → IsIsotypicOfType R N m := by
-  rw [Subtype.forall', ← (Submodule.MapSubtype.relIso N).forall_congr_right]
+  rw [Subtype.forall', ← (Submodule.MapSubtype.orderIso N).forall_congr_right]
   have e := Submodule.equivMapOfInjective _ N.subtype_injective
-  simp_rw [Submodule.MapSubtype.relIso, Equiv.coe_fn_mk, ← (e _).isSimpleModule_iff,
+  simp_rw [Submodule.MapSubtype.orderIso, Equiv.coe_fn_mk, ← (e _).isSimpleModule_iff,
     ← (e _).isIsotypicOfType_iff_type, IsIsotypic]
 
 section Finsupp
