@@ -70,6 +70,8 @@ class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α w
   compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by
     compareOfLessAndEq_rfl
 
+attribute [instance low] LinearOrder.toPartialOrder
+
 variable [LinearOrder α] {a b c : α}
 
 attribute [instance 900] LinearOrder.toDecidableLT
