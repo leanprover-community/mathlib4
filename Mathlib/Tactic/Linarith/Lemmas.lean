@@ -85,7 +85,7 @@ theorem mul_nonpos [IsOrderedRing α] {a b : α} (ha : a ≤ 0) (hb : 0 < b) : b
 theorem sub_nonpos_of_le [IsOrderedRing α] {a b : α} : a ≤ b → a - b ≤ 0 :=
   _root_.sub_nonpos_of_le
 
-theorem sub_neg_of_lt  [IsOrderedRing α] {a b : α} : a < b → a - b < 0 :=
+theorem sub_neg_of_lt [IsOrderedRing α] {a b : α} : a < b → a - b < 0 :=
   _root_.sub_neg_of_lt
 
 end Ring
