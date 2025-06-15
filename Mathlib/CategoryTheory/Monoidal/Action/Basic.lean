@@ -91,13 +91,13 @@ scoped infixr:70 " ⊙ₗ " => MonoidalLeftActionStruct.actionHom
 
 /-- Notation for `actionAssocIso`, the structural isomorphism
 `- ⊗ - ⊙ₗ - ≅ - ⊙ₗ - ⊙ₗ -`. -/
-scoped notation "σ_ₗ " => MonoidalLeftActionStruct.actionAssocIso
+scoped notation "αₗ " => MonoidalLeftActionStruct.actionAssocIso
 
 /-- Notation for `actionUnitIso`, the structural isomorphism `𝟙_ C ⊙ₗ - ≅ -`. -/
-scoped notation "υ_ₗ " => MonoidalLeftActionStruct.actionUnitIso
+scoped notation "λₗ " => MonoidalLeftActionStruct.actionUnitIso
 /-- Notation for `actionUnitIso`, the structural isomorphism `𝟙_ C ⊙ₗ - ≅ -`,
 allowing one to specify the acting category. -/
-scoped notation "υ_ₗ["J"]" => MonoidalLeftActionStruct.actionUnitIso (C := J)
+scoped notation "λₗ["J"]" => MonoidalLeftActionStruct.actionUnitIso (C := J)
 
 end MonoidalLeftAction
 
@@ -111,10 +111,10 @@ open scoped MonoidalLeftAction in
   `c ⊴ₗ f : c ⊙ₗ d ⟶ c ⊙ₗ d'`.
 - For every pair of morphisms `f : (c : C) ⟶ c'` and
   `f : (d : D) ⟶ d'`, a morphism `f ⊙ₗ f' : c ⊙ₗ d ⟶ c' ⊙ₗ d'`.
-- A structure isomorphism `σ_ₗ c c' d : c ⊗ c' ⊙ₗ d ≅ c ⊙ₗ c' ⊙ₗ d`.
-- A structure isomorphism `υ_ₗ d : (𝟙_ C) ⊙ₗ d ≅ d`.
+- A structure isomorphism `αₗ c c' d : c ⊗ c' ⊙ₗ d ≅ c ⊙ₗ c' ⊙ₗ d`.
+- A structure isomorphism `λₗ d : (𝟙_ C) ⊙ₗ d ≅ d`.
 Furthermore, we require identities that turn `- ⊙ₗ -` into a bifunctor,
-ensure naturality of `σ_ₗ` and `υ_ₗ`, and ensure compatibilies with
+ensure naturality of `αₗ` and `λₗ`, and ensure compatibilies with
 the associator and unitor isomorphisms in `C`. -/
 class MonoidalLeftAction [MonoidalCategory C] extends
     MonoidalLeftActionStruct C D where
@@ -133,35 +133,35 @@ class MonoidalLeftAction [MonoidalCategory C] extends
 
   actionAssocIso_naturality
       {c₁ c₂ c₃ c₄ : C} {d₁ d₂ : D} (f : c₁ ⟶ c₂) (g : c₃ ⟶ c₄) (h : d₁ ⟶ d₂) :
-      ((f ⊗ g) ⊙ₗ h) ≫ (σ_ₗ c₂ c₄ d₂).hom =
-        (σ_ₗ c₁ c₃ d₁).hom ≫ (f ⊙ₗ g ⊙ₗ h) := by
+      ((f ⊗ g) ⊙ₗ h) ≫ (αₗ c₂ c₄ d₂).hom =
+        (αₗ c₁ c₃ d₁).hom ≫ (f ⊙ₗ g ⊙ₗ h) := by
     aesop_cat
 
   actionUnitIso_naturality {d d' : D} (f : d ⟶ d') :
-      (υ_ₗ d).hom ≫ f = (𝟙_ C) ⊴ₗ f ≫ (υ_ₗ d').hom := by
+      (λₗ d).hom ≫ f = (𝟙_ C) ⊴ₗ f ≫ (λₗ d').hom := by
     aesop_cat
 
   whiskerLeft_actionHomLeft (c : C) {c' c'' : C} (f : c' ⟶ c'') (d : D) :
-      (c ◁ f) ⊵ₗ d = (σ_ₗ _ _ _).hom ≫ c ⊴ₗ f ⊵ₗ d ≫ (σ_ₗ _ _ _).inv := by
+      (c ◁ f) ⊵ₗ d = (αₗ _ _ _).hom ≫ c ⊴ₗ f ⊵ₗ d ≫ (αₗ _ _ _).inv := by
     aesop_cat
 
   whiskerRight_actionHomLeft {c c' : C} (c'' : C) (f : c ⟶ c') (d : D) :
-      (f ▷ c'') ⊵ₗ d = (σ_ₗ c c'' d).hom ≫
-        f ⊵ₗ (c'' ⊙ₗ d : D) ≫ (σ_ₗ c' c'' d).inv := by
+      (f ▷ c'') ⊵ₗ d = (αₗ c c'' d).hom ≫
+        f ⊵ₗ (c'' ⊙ₗ d : D) ≫ (αₗ c' c'' d).inv := by
     aesop_cat
 
   associator_actionHom (c₁ c₂ c₃ : C) (d : D) :
-      (α_ c₁ c₂ c₃).hom ⊵ₗ d ≫ (σ_ₗ c₁ (c₂ ⊗ c₃) d).hom ≫
-        c₁ ⊴ₗ (σ_ₗ c₂ c₃ d).hom =
-      (σ_ₗ (c₁ ⊗ c₂ : C) c₃ d).hom ≫ (σ_ₗ c₁ c₂ (c₃ ⊙ₗ d)).hom := by
+      (α_ c₁ c₂ c₃).hom ⊵ₗ d ≫ (αₗ c₁ (c₂ ⊗ c₃) d).hom ≫
+        c₁ ⊴ₗ (αₗ c₂ c₃ d).hom =
+      (αₗ (c₁ ⊗ c₂ : C) c₃ d).hom ≫ (αₗ c₁ c₂ (c₃ ⊙ₗ d)).hom := by
     aesop_cat
 
   leftUnitor_actionHom (c : C) (d : D) :
-      (λ_ c).hom ⊵ₗ d = (σ_ₗ _ _ _).hom ≫ (υ_ₗ _).hom := by
+      (λ_ c).hom ⊵ₗ d = (αₗ _ _ _).hom ≫ (λₗ _).hom := by
     aesop_cat
 
   rightUnitor_actionHom (c : C) (d : D) :
-      (ρ_ c).hom ⊵ₗ d = (σ_ₗ _ _ _).hom ≫ c ⊴ₗ (υ_ₗ _).hom := by
+      (ρ_ c).hom ⊵ₗ d = (αₗ _ _ _).hom ≫ c ⊴ₗ (λₗ _).hom := by
     aesop_cat
 
 attribute [reassoc] MonoidalLeftAction.actionHom_def
@@ -215,13 +215,13 @@ theorem actionHomRight_comp (w : C) {x y z : D} (f : x ⟶ y) (g : y ⟶ z) :
 
 @[reassoc, simp]
 theorem unit_actionHomRight {x y : D} (f : x ⟶ y) :
-    (𝟙_ C) ⊴ₗ f = (υ_ₗ x).hom ≫ f ≫ (υ_ₗ y).inv := by
+    (𝟙_ C) ⊴ₗ f = (λₗ x).hom ≫ f ≫ (λₗ y).inv := by
   rw [← Category.assoc, actionUnitIso_naturality]
   simp
 
 @[reassoc, simp]
 theorem tensor_actionHomRight (x y : C) {z z' : D} (f : z ⟶ z') :
-    (x ⊗ y) ⊴ₗ f = (σ_ₗ x y z).hom ≫ x ⊴ₗ y ⊴ₗ f ≫ (σ_ₗ x y z').inv := by
+    (x ⊗ y) ⊴ₗ f = (αₗ x y z).hom ≫ x ⊴ₗ y ⊴ₗ f ≫ (αₗ x y z').inv := by
   simp only [← id_actionHom, ← actionHom_id]
   rw [← Category.assoc, ← actionAssocIso_naturality]
   simp
@@ -233,7 +233,7 @@ theorem comp_actionHomLeft {w x y : C} (f : w ⟶ x) (g : x ⟶ y) (z : D) :
 
 @[reassoc, simp]
 theorem actionHomLeft_action {x x' : C} (f : x ⟶ x') (y : C) (z : D) :
-    f ⊵ₗ (y ⊙ₗ z) = (σ_ₗ x y z).inv ≫ (f ▷ y) ⊵ₗ z ≫ (σ_ₗ x' y z).hom := by
+    f ⊵ₗ (y ⊙ₗ z) = (αₗ x y z).inv ≫ (f ▷ y) ⊵ₗ z ≫ (αₗ x' y z).hom := by
   simp [whiskerRight_actionHomLeft]
 
 @[reassoc]
@@ -338,7 +338,7 @@ variable {D} in
 @[simps!]
 abbrev actionRight (d : D) : C ⥤ D := curriedAction C D|>.flip.obj d
 
-/-- Bundle `σ_ₗ _ _ _` as an isomorphism of trifunctors. -/
+/-- Bundle `αₗ _ _ _` as an isomorphism of trifunctors. -/
 @[simps!]
 def actionAssocNatIso :
     (Functor.postcompose₂.obj (curriedAction C D)|>.obj
@@ -347,11 +347,11 @@ def actionAssocNatIso :
       (curriedAction C D) :=
   NatIso.ofComponents fun _ ↦
     NatIso.ofComponents fun _ ↦
-     NatIso.ofComponents fun _ ↦ σ_ₗ _ _ _
+     NatIso.ofComponents fun _ ↦ αₗ _ _ _
 
-/-- Bundle `υ_ₗ _` as an isomorphism of functors. -/
+/-- Bundle `λₗ _` as an isomorphism of functors. -/
 @[simps!]
-def actionUnitNatIso : actionLeft D (𝟙_ C) ≅ 𝟭 D := NatIso.ofComponents (υ_ₗ ·)
+def actionUnitNatIso : actionLeft D (𝟙_ C) ≅ 𝟭 D := NatIso.ofComponents (λₗ ·)
 
 end
 
@@ -405,13 +405,13 @@ scoped infixr:70 " ᵣ⊙ " => MonoidalRightActionStruct.actionHom
 
 /-- Notation for `actionAssocIso`, the structural isomorphism
 `- ᵣ⊙ (- ⊗ -) ≅ (- ᵣ⊙ -) ᵣ⊙ -`. -/
-scoped notation "ᵣσ_ " => MonoidalRightActionStruct.actionAssocIso
+scoped notation "ᵣα " => MonoidalRightActionStruct.actionAssocIso
 
 /-- Notation for `actionUnitIso`, the structural isomorphism `- ᵣ⊙ 𝟙_ C  ≅ -`. -/
-scoped notation "ᵣυ_ " => MonoidalRightActionStruct.actionUnitIso
+scoped notation "ᵣρ " => MonoidalRightActionStruct.actionUnitIso
 /-- Notation for `actionUnitIso`, the structural isomorphism `- ᵣ⊙ 𝟙_ C  ≅ -`,
 allowing one to specify the acting category. -/
-scoped notation "ᵣυ_["J"]" => MonoidalRightActionStruct.actionUnitIso (C := J)
+scoped notation "ᵣρ["J"]" => MonoidalRightActionStruct.actionUnitIso (C := J)
 
 end MonoidalRightAction
 
@@ -425,10 +425,10 @@ open scoped MonoidalRightAction in
   `c ᵣ⊴ f : c ᵣ⊙ d ⟶ c ᵣ⊙ d'`.
 - For every pair of morphisms `f : (c : C) ⟶ c'` and
   `f : (d : D) ⟶ d'`, a morphism `f ᵣ⊙ f' : c ᵣ⊙ d ⟶ c' ᵣ⊙ d'`.
-- A structure isomorphism `ᵣσ_ c c' d : c ⊗ c' ᵣ⊙ d ≅ c ᵣ⊙ c' ᵣ⊙ d`.
-- A structure isomorphism `ᵣυ_ d : (𝟙_ C) ᵣ⊙ d ≅ d`.
+- A structure isomorphism `ᵣα c c' d : c ⊗ c' ᵣ⊙ d ≅ c ᵣ⊙ c' ᵣ⊙ d`.
+- A structure isomorphism `ᵣρ d : (𝟙_ C) ᵣ⊙ d ≅ d`.
 Furthermore, we require identities that turn `- ᵣ⊙ -` into a bifunctor,
-ensure naturality of `ᵣσ_` and `ᵣυ_`, and ensure compatibilies with
+ensure naturality of `ᵣα` and `ᵣρ`, and ensure compatibilies with
 the associator and unitor isomorphisms in `C`. -/
 class MonoidalRightAction [MonoidalCategory C] extends
     MonoidalRightActionStruct C D where
@@ -447,34 +447,34 @@ class MonoidalRightAction [MonoidalCategory C] extends
 
   actionAssocIso_naturality
       {d₁ d₂ : D} {c₁ c₂ c₃ c₄: C} (f : d₁ ⟶ d₂) (g : c₁ ⟶ c₂) (h : c₃ ⟶ c₄) :
-      (f ᵣ⊙ g ⊗ h) ≫ (ᵣσ_ d₂ c₂ c₄).hom =
-        (ᵣσ_ d₁ c₁ c₃).hom ≫ ((f ᵣ⊙ g) ᵣ⊙ h) := by
+      (f ᵣ⊙ g ⊗ h) ≫ (ᵣα d₂ c₂ c₄).hom =
+        (ᵣα d₁ c₁ c₃).hom ≫ ((f ᵣ⊙ g) ᵣ⊙ h) := by
     aesop_cat
 
   actionUnitIso_naturality {d d' : D} (f : d ⟶ d') :
-      (ᵣυ_ d).hom ≫ f = f ᵣ⊵ (𝟙_ C) ≫ (ᵣυ_ d').hom := by
+      (ᵣρ d).hom ≫ f = f ᵣ⊵ (𝟙_ C) ≫ (ᵣρ d').hom := by
     aesop_cat
 
   actionHomRight_whiskerRight {c' c'' : C} (f : c' ⟶ c'') (c : C) (d : D) :
-     d ᵣ⊴ (f ▷ c) = (ᵣσ_ _ _ _).hom ≫ ((d ᵣ⊴ f) ᵣ⊵ c) ≫ (ᵣσ_ _ _ _).inv := by
+     d ᵣ⊴ (f ▷ c) = (ᵣα _ _ _).hom ≫ ((d ᵣ⊴ f) ᵣ⊵ c) ≫ (ᵣα _ _ _).inv := by
     aesop_cat
 
   whiskerRight_actionHomLeft (c : C) {c' c'' : C} (f : c' ⟶ c'') (d : D) :
-     d ᵣ⊴ (c ◁ f) = (ᵣσ_ d c c').hom ≫ (d ᵣ⊙ c) ᵣ⊴ f ≫ (ᵣσ_ d c c'').inv := by
+     d ᵣ⊴ (c ◁ f) = (ᵣα d c c').hom ≫ (d ᵣ⊙ c) ᵣ⊴ f ≫ (ᵣα d c c'').inv := by
     aesop_cat
 
   actionHom_associator (c₁ c₂ c₃ : C) (d : D) :
-      d ᵣ⊴ (α_ c₁ c₂ c₃).hom ≫ (ᵣσ_ d c₁ (c₂ ⊗ c₃)).hom ≫
-        (ᵣσ_ (d ᵣ⊙ c₁ : D) c₂ c₃).hom =
-      (ᵣσ_ d (c₁ ⊗ c₂ : C) c₃).hom ≫ (ᵣσ_ d c₁ c₂).hom ᵣ⊵ c₃ := by
+      d ᵣ⊴ (α_ c₁ c₂ c₃).hom ≫ (ᵣα d c₁ (c₂ ⊗ c₃)).hom ≫
+        (ᵣα (d ᵣ⊙ c₁ : D) c₂ c₃).hom =
+      (ᵣα d (c₁ ⊗ c₂ : C) c₃).hom ≫ (ᵣα d c₁ c₂).hom ᵣ⊵ c₃ := by
     aesop_cat
 
   actionHom_leftUnitor (c : C) (d : D) :
-      d ᵣ⊴ (λ_ c).hom = (ᵣσ_ _ _ _).hom ≫ (ᵣυ_ _).hom ᵣ⊵ c := by
+      d ᵣ⊴ (λ_ c).hom = (ᵣα _ _ _).hom ≫ (ᵣρ _).hom ᵣ⊵ c := by
     aesop_cat
 
   actionHom_rightUnitor (c : C) (d : D) :
-      d ᵣ⊴ (ρ_ c).hom = (ᵣσ_ _ _ _).hom ≫ (ᵣυ_ _).hom := by
+      d ᵣ⊴ (ρ_ c).hom = (ᵣα _ _ _).hom ≫ (ᵣρ _).hom := by
     aesop_cat
 
 attribute [reassoc] MonoidalRightAction.actionHom_def
@@ -524,13 +524,13 @@ theorem actionHomRight_comp (w : D) {x y z : C} (f : x ⟶ y) (g : y ⟶ z) :
 
 @[reassoc, simp]
 theorem unit_actionHomRight {x y : D} (f : x ⟶ y) :
-    f ᵣ⊵ (𝟙_ C) = (ᵣυ_ x).hom ≫ f ≫ (ᵣυ_ y).inv := by
+    f ᵣ⊵ (𝟙_ C) = (ᵣρ x).hom ≫ f ≫ (ᵣρ y).inv := by
   rw [← Category.assoc, actionUnitIso_naturality]
   simp
 
 @[reassoc, simp]
 theorem actionHomLeft_tensor  {z z' : D} (f : z ⟶ z') (x y : C):
-    (f ᵣ⊵ (x ⊗ y)) = (ᵣσ_ z x y).hom ≫ (f ᵣ⊵ x) ᵣ⊵ y ≫ (ᵣσ_ z' x y).inv := by
+    (f ᵣ⊵ (x ⊗ y)) = (ᵣα z x y).hom ≫ (f ᵣ⊵ x) ᵣ⊵ y ≫ (ᵣα z' x y).inv := by
   simp only [← id_actionHom, ← actionHom_id]
   rw [← Category.assoc, ← actionAssocIso_naturality]
   simp
@@ -542,7 +542,7 @@ theorem comp_actionHomLeft {w x y : D} (f : w ⟶ x) (g : x ⟶ y) (z : C) :
 
 @[reassoc, simp]
 theorem action_actionHomRight (y : D) (z : C) {x x' : C} (f : x ⟶ x') :
-    (y ᵣ⊙ z) ᵣ⊴ f = (ᵣσ_ y z x).inv ≫ y ᵣ⊴ (z ◁ f) ≫ (ᵣσ_ y z x').hom := by
+    (y ᵣ⊙ z) ᵣ⊴ f = (ᵣα y z x).inv ≫ y ᵣ⊴ (z ◁ f) ≫ (ᵣα y z x').hom := by
   simp [whiskerRight_actionHomLeft]
 
 @[reassoc]
@@ -648,7 +648,7 @@ variable {D} in
 @[simps!]
 abbrev actionLeft (d : D) : C ⥤ D := curriedAction C D|>.flip.obj d
 
-/-- Bundle `ᵣσ_ _ _ _` as an isomorphism of trifunctors. -/
+/-- Bundle `ᵣα _ _ _` as an isomorphism of trifunctors. -/
 @[simps!]
 def actionAssocNatIso :
     (Functor.postcompose₂.obj (curriedAction C D)|>.obj
@@ -657,11 +657,11 @@ def actionAssocNatIso :
       (curriedAction C D)|>.flip :=
   NatIso.ofComponents fun _ ↦
     NatIso.ofComponents fun _ ↦
-     NatIso.ofComponents fun _ ↦ ᵣσ_ _ _ _
+     NatIso.ofComponents fun _ ↦ ᵣα _ _ _
 
-/-- Bundle `ᵣυ_ _` as an isomorphism of functors. -/
+/-- Bundle `ᵣρ _` as an isomorphism of functors. -/
 @[simps!]
-def actionUnitNatIso : actionRight D (𝟙_ C) ≅ 𝟭 D := NatIso.ofComponents (ᵣυ_ ·)
+def actionUnitNatIso : actionRight D (𝟙_ C) ≅ 𝟭 D := NatIso.ofComponents (ᵣρ ·)
 
 end
 
