@@ -275,15 +275,15 @@ lemma inner_indicatorConstLp_indicatorConstLp [CompleteSpace E] [NormedSpace ℝ
 /-- The inner product in `L2` of indicators of two sets with finite measure
 is the measure of the intersection. -/
 lemma inner_indicatorConstLp_one_indicatorConstLp_one
-    {v w : Set α} (hs : MeasurableSet v)
-    (ht : MeasurableSet w) (hμs : μ v ≠ ∞ := by finiteness) (hμt : μ w ≠ ∞ := by finiteness) :
-    ⟪indicatorConstLp 2 hs hμs (1 : 𝕜), indicatorConstLp 2 ht hμt (1 : 𝕜)⟫ = μ.real (v ∩ w) := by
+    (hs : MeasurableSet s) (ht : MeasurableSet t)
+    (hμs : μ s ≠ ∞ := by finiteness) (hμt : μ t ≠ ∞ := by finiteness) :
+    ⟪indicatorConstLp 2 hs hμs (1 : 𝕜), indicatorConstLp 2 ht hμt (1 : 𝕜)⟫ = μ.real (s ∩ t) := by
   simp [inner_indicatorConstLp_indicatorConstLp, RCLike.ofReal_alg]
 
 lemma real_inner_indicatorConstLp_one_indicatorConstLp_one
-    {v w : Set α} (hs : MeasurableSet v)
-    (ht : MeasurableSet w) (hμs : μ v ≠ ∞ := by finiteness) (hμt : μ w ≠ ∞ := by finiteness) :
-    ⟪indicatorConstLp 2 hs hμs (1 : ℝ), indicatorConstLp 2 ht hμt (1 : ℝ)⟫_ℝ = μ.real (v ∩ w) := by
+    (hs : MeasurableSet s) (ht : MeasurableSet t)
+    (hμs : μ s ≠ ∞ := by finiteness) (hμt : μ t ≠ ∞ := by finiteness) :
+    ⟪indicatorConstLp 2 hs hμs (1 : ℝ), indicatorConstLp 2 ht hμt (1 : ℝ)⟫_ℝ = μ.real (s ∩ t) := by
   simp [inner_indicatorConstLp_indicatorConstLp, RCLike.ofReal_alg]
 
 end IndicatorConstLp
