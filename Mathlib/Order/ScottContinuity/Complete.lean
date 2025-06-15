@@ -56,7 +56,7 @@ lemma right_cont_inf (b : β) : ScottContinuous fun a ↦ a ⊓ b := by
   refine ScottContinuous.of_map_sSup (fun d _ _ ↦ by rw [sSup_inf_eq_sSup_map])
 
 /- The meet operation is Scott continuous -/
-lemma ScottContinuousOn.inf₂ : ScottContinuous fun (a, b) => (a ⊓ b : β) :=
+lemma ScottContinuous.inf₂ : ScottContinuous fun (a, b) => (a ⊓ b : β) :=
   ScottContinuous_prod_of_ScottContinuous left_cont_inf right_cont_inf
 
 end CompleteLinearOrder
