@@ -52,7 +52,7 @@ lemma sSup_inf_eq_sSup_map (b : β) (d : Set β) :
 lemma scottContinuous_inf_right (a : β) : ScottContinuous fun b ↦ a ⊓ b := by
   refine ScottContinuous.of_map_sSup (fun d _ _ ↦ by rw [inf_sSup_eq_sSup_map])
 
-lemma right_cont_inf (b : β) : ScottContinuous fun a ↦ a ⊓ b := by
+lemma scottContinuous_inf_left (b : β) : ScottContinuous fun a ↦ a ⊓ b := by
   refine ScottContinuous.of_map_sSup (fun d _ _ ↦ by rw [sSup_inf_eq_sSup_map])
 
 /- The meet operation is Scott continuous -/
