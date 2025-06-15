@@ -509,6 +509,10 @@ instance forgetToTop_preserves_of_left : PreservesLimit (cospan f g) Scheme.forg
 instance forgetToTop_preserves_of_right : PreservesLimit (cospan g f) Scheme.forgetToTop :=
   preservesPullback_symmetry _ _ _
 
+instance : PreservesLimit (cospan f g) Scheme.forget := by delta Scheme.forget; infer_instance
+
+instance : PreservesLimit (cospan g f) Scheme.forget := by delta Scheme.forget; infer_instance
+
 theorem range_pullback_snd_of_left :
     Set.range (pullback.snd f g).base = (g ⁻¹ᵁ f.opensRange).1 := by
   rw [← show _ = (pullback.snd f g).base from
@@ -590,6 +594,11 @@ theorem lift_uniq (H' : Set.range g.base ⊆ Set.range f.base) (l : Y ⟶ X) (hl
     l = lift f g H' :=
   Scheme.Hom.ext' <| LocallyRingedSpace.IsOpenImmersion.lift_uniq
     f.toLRSHom g.toLRSHom H' l.toLRSHom congr(($hl).toLRSHom)
+
+@[reassoc]
+lemma comp_lift {Y' : Scheme} (g' : Y' ⟶ Y) (H : Set.range g.base ⊆ Set.range f.base) :
+    g' ≫ lift f g H = lift f (g' ≫ g) (.trans (by simp [Set.range_comp_subset_range]) H) := by
+  simp [← cancel_mono f]
 
 theorem isPullback_lift_id
     {X U Y : Scheme.{u}} (f : X ⟶ Y) (g : U ⟶ Y) [IsOpenImmersion g]

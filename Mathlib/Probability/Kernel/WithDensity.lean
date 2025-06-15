@@ -220,9 +220,9 @@ theorem isSFiniteKernel_withDensity_of_isFiniteKernel (κ : Kernel α β) [IsFin
       refine fun a => Pi.summable.mpr fun b => ?_
       suffices ∀ n, n ∉ Finset.range ⌈(f a b).toReal⌉₊ → fs n a b = 0 from
         summable_of_ne_finset_zero this
-      intro n hn_not_mem
-      rw [Finset.mem_range, not_lt] at hn_not_mem
-      exact h_zero a b n hn_not_mem
+      intro n hn_notMem
+      rw [Finset.mem_range, not_lt] at hn_notMem
+      exact h_zero a b n hn_notMem
     ext a b : 2
     rw [tsum_apply (Pi.summable.mpr h_sum_a), tsum_apply (h_sum_a a),
       ENNReal.tsum_eq_liminf_sum_nat]
