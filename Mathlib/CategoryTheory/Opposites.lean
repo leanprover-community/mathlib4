@@ -583,8 +583,6 @@ isomorphism between the original functors `F ≅ G`. -/
 protected def op (α : F ≅ G) : G.op ≅ F.op where
   hom := NatTrans.op α.hom
   inv := NatTrans.op α.inv
-  hom_inv_id := by ext; dsimp; rw [← op_comp]; rw [α.inv_hom_id_app]; rfl
-  inv_hom_id := by ext; dsimp; rw [← op_comp]; rw [α.hom_inv_id_app]; rfl
 
 @[simp]
 theorem op_refl : NatIso.op (Iso.refl F) = Iso.refl F.op := rfl
@@ -701,9 +699,6 @@ def op (e : C ≌ D) : Cᵒᵖ ≌ Dᵒᵖ where
   inverse := e.inverse.op
   unitIso := (NatIso.op e.unitIso).symm
   counitIso := (NatIso.op e.counitIso).symm
-  functor_unitIso_comp X := by
-    apply Quiver.Hom.unop_inj
-    simp
 
 /-- An equivalence between opposite categories gives an equivalence between the original categories.
 -/
@@ -773,14 +768,7 @@ variable (D : Type u₂) [Category.{v₂} D]
 def opUnopEquiv : (C ⥤ D)ᵒᵖ ≌ Cᵒᵖ ⥤ Dᵒᵖ where
   functor := opHom _ _
   inverse := opInv _ _
-  unitIso :=
-    NatIso.ofComponents (fun F => F.unop.opUnopIso.op)
-      (by
-        intro F G f
-        dsimp [opUnopIso]
-        rw [show f = f.unop.op by simp, ← op_comp, ← op_comp]
-        congr 1
-        aesop_cat)
+  unitIso := NatIso.ofComponents (fun F => F.unop.opUnopIso.op)
   counitIso := NatIso.ofComponents fun F => F.unopOpIso
 
 /-- The equivalence of functor categories induced by `leftOp` and `rightOp`.
@@ -793,14 +781,7 @@ def leftOpRightOpEquiv : (Cᵒᵖ ⥤ D)ᵒᵖ ≌ C ⥤ Dᵒᵖ where
   inverse :=
     { obj := fun F => op F.leftOp
       map := fun η => η.leftOp.op }
-  unitIso :=
-    NatIso.ofComponents (fun F => F.unop.rightOpLeftOpIso.op)
-      (by
-        intro F G η
-        dsimp
-        rw [show η = η.unop.op by simp, ← op_comp, ← op_comp]
-        congr 1
-        aesop_cat)
+  unitIso := NatIso.ofComponents (fun F => F.unop.rightOpLeftOpIso.op)
   counitIso := NatIso.ofComponents fun F => F.leftOpRightOpIso
 
 instance {F : C ⥤ D} [EssSurj F] : EssSurj F.op where
