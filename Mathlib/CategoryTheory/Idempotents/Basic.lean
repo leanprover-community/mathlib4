@@ -53,6 +53,13 @@ class IsIdempotentComplete : Prop where
   idempotents_split :
     ∀ (X : C) (p : X ⟶ X), p ≫ p = p → ∃ (Y : C) (i : Y ⟶ X) (e : X ⟶ Y), i ≫ e = 𝟙 Y ∧ e ≫ i = p
 
+variable {C} in
+lemma retract_of_isIdempotentComplete [IsIdempotentComplete C]
+    (Y : C) (p : Y ⟶ Y) (hp : p ≫ p = p) :
+    ∃ (X : C) (e : Retract X Y), e.r ≫ e.i = p := by
+  obtain ⟨X, j, q, hjq, hqj⟩ := IsIdempotentComplete.idempotents_split _ _ hp
+  exact ⟨X, Retract.mk j q hjq, hqj⟩
+
 namespace Idempotents
 
 /-- A category is idempotent complete iff for all idempotent endomorphisms,

@@ -177,6 +177,11 @@ noncomputable def ιTruncLE : K.truncLE e ⟶ K :=
 instance (i' : ι') : Mono ((K.ιTruncLE e).f i') :=
   inferInstanceAs (Mono ((K.op.πTruncGE e.op).f i').unop)
 
+lemma isIso_ιTruncLE_f (i : ι) (hi : ¬ e.BoundaryLE i) :
+    IsIso ((K.ιTruncLE e).f (e.f i)) := by
+  rw [← isIso_op_iff]
+  exact K.op.isIso_πTruncGE_f e.op i hi
+
 instance : Mono (K.ιTruncLE e) := mono_of_mono_f _ (fun _ => inferInstance)
 
 instance : (K.truncLE e).IsStrictlySupported e := by
