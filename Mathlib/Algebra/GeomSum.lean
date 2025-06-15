@@ -5,11 +5,13 @@ Authors: Neil Strickland
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Group.NatPowAssoc
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Ring.Opposite
-import Mathlib.Tactic.Abel
 import Mathlib.Algebra.Ring.Regular
+import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # Partial sums of geometric series
@@ -427,7 +429,7 @@ theorem Nat.pred_mul_geom_sum_le (a b n : ℕ) :
   calc
     ((b - 1) * ∑ i ∈ range n.succ, a / b ^ i) =
     (∑ i ∈ range n, a / b ^ (i + 1) * b) + a * b - ((∑ i ∈ range n, a / b ^ i) + a / b ^ n) := by
-      rw [tsub_mul, mul_comm, sum_mul, one_mul, sum_range_succ', sum_range_succ, pow_zero,
+      rw [Nat.sub_mul, mul_comm, sum_mul, one_mul, sum_range_succ', sum_range_succ, pow_zero,
         Nat.div_one]
     _ ≤ (∑ i ∈ range n, a / b ^ i) + a * b - ((∑ i ∈ range n, a / b ^ i) + a / b ^ n) := by
       gcongr with i hi
