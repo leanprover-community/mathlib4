@@ -324,6 +324,10 @@ def setup_remotes(username: str, fork_url: str, auto_accept: bool = False) -> st
     """
     print_step(4, "Setting up git remotes")
 
+    # this will remove tracking branches corresponding to branches on origin whose names
+    # differ only in case:
+    run_command(['git', 'fetch', '--prune'])
+
     remotes = get_current_remotes()
 
     # Determine URL format based on SSH availability
