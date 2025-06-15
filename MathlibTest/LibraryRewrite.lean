@@ -92,10 +92,8 @@ info: Pattern n + 1
   Nat.card_Iic
 · Nat.multichoose 2 n
   Nat.multichoose_two
-· Fintype.card ↑(Set.Iic n)
-  Nat.card_fintypeIic
 · (↑n + 1).toNat
-  Int.toNat_ofNat_add_one
+  Int.toNat_natCast_add_one
 · (n + 1).choose n
   Nat.choose_succ_self_right
 · (Finset.antidiagonal n).card
@@ -181,8 +179,6 @@ Pattern a = b
   Nat.succ_inj
 · ↑5 = ↑2
   Int.ofNat_inj
-· List.iota 5 = List.iota 2
-  List.iota_inj
 · ↑5 = ↑2
   Num.of_nat_inj
 · ↑5 = ↑2
@@ -378,8 +374,6 @@ Pattern ∑ i ∈ s, f i
   Finset.sum_eq_multiset_sum
 · ∑ x ∈ (Finset.range n).attach, (↑x + 1)
   Finset.sum_attach
-· (List.map (fun n => n + 1) (Finset.range n).toList).sum
-  Finset.sum_to_list
 · ∑ i, (↑i + 1)
   Finset.sum_coe_sort
 · ∑' (x : { x // x ∈ Finset.range n }), (↑x + 1)
@@ -390,6 +384,8 @@ Pattern ∑ i ∈ s, f i
   Finset.sum_finset_coe
 · ∑ᶠ (i : ℕ) (_ : i ∈ ↑(Finset.range n)), (i + 1)
   finsum_mem_coe_finset
+· (List.map (fun n => n + 1) (Finset.range n).toList).sum
+  Finset.sum_map_toList
 · ∑ᶠ (i : ℕ) (_ : i ∈ Finset.range n), (i + 1)
   finsum_mem_finset_eq_sum
 · (Finset.range n).noncommSum (fun n => n + 1) ⋯
