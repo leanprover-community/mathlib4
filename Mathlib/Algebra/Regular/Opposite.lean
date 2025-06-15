@@ -15,11 +15,11 @@ open MulOpposite
 
 @[to_additive (attr := simp)]
 theorem isLeftRegular_op {a : R} : IsLeftRegular (op a) ↔ IsRightRegular a :=
-  MulOpposite.opEquiv.comp_injective _ |>.trans <| MulOpposite.opEquiv.injective_comp _ |>.symm
+  opEquiv.comp_injective _ |>.trans <| opEquiv.injective_comp _ |>.symm
 
 @[to_additive (attr := simp)]
 theorem isRightRegular_op {a : R} : IsRightRegular (op a) ↔ IsLeftRegular a :=
-  MulOpposite.opEquiv.comp_injective _ |>.trans <| MulOpposite.opEquiv.injective_comp _ |>.symm
+  opEquiv.comp_injective _ |>.trans <| opEquiv.injective_comp _ |>.symm
 
 @[to_additive (attr := simp)]
 theorem isRegular_op {a : R} : IsRegular (op a) ↔ IsRegular a := by
