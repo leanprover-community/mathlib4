@@ -574,8 +574,8 @@ theorem inf_sSup_le_iSup_inf (a : α) (s : Set α) : a ⊓ sSup s ≤ ⨆ b ∈ 
   gc_inf_himp.l_sSup.le
 
 /-- `⊔` distributes over `⨅`. -/
-theorem iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s := by
-  sorry
+theorem iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s :=
+  gc_sdiff_sup.u_sInf.ge
 
 end CompleteBooleanAlgebra
 
