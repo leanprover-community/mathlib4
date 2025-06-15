@@ -147,10 +147,10 @@ theorem quadratic_eq_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
   · field_simp
   · field_simp; simp [pow_two, ← h, discrim]; ring
 
-theorem quadratic_roots_of_discrim_ne_sq (ha : a ≠ 0) (h : ∀ s : R, discrim a b c ≠ s^2) :
-    (a • X ^ 2 + b • X + C c).roots = ∅ := Multiset.eq_zero_of_forall_notMem (fun r => by
-  by_contra hc
-  exact (quadratic_ne_zero_of_discrim_ne_sq h _) ((mem_roots (quadratic_ne_zero ha)).mp hc))
+theorem roots_quadratic_of_discrim_ne_sq (ha : a ≠ 0) (h : ∀ s : R, discrim a b c ≠ s^2) :
+    (a • X ^ 2 + b • X + C c).roots = ∅ :=
+  Multiset.eq_zero_of_forall_notMem fun r hc => not_isRoot_of_discrim_ne_sq h r
+    ((mem_roots (quadratic_ne_zero ha)).mp hc)
 
 theorem quadratic_roots_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
     (h : discrim a b c = s * s) :
