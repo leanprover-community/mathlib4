@@ -135,7 +135,7 @@ section Constructor
 variable (pt : C) (ι : ∀ (j : J), (F.obj (op j)).obj j ⟶ pt)
   (hι : ∀ ⦃i j : J⦄ (f : i ⟶ j), (F.map f.op).app i ≫ ι i = (F.obj (op j)).map f ≫ ι j)
 
-/-- Constructor for wedges. -/
+/-- Constructor for cowedges. -/
 @[simps! pt]
 abbrev mk : Cowedge F :=
   Multicofork.ofπ _ pt ι (fun f ↦ hι f.hom)
