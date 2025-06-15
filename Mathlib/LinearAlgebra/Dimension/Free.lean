@@ -232,6 +232,12 @@ noncomputable def finBasis [Module.Finite R M] :
 noncomputable def finBasisOfFinrankEq [Module.Finite R M] {n : ℕ} (hn : finrank R M = n) :
     Basis (Fin n) R M := (finBasis R M).reindex (finCongr hn)
 
+/-- The isomorphism `M ≃ₗ[R] (Fin (Module.finrank R M) →₀  R)`.
+
+See `Module.Free.repr` for the equivalent construction for arbitrary free modules. -/
+noncomputable abbrev finRepr [Module.Finite R M] : M ≃ₗ[R] (Fin (Module.finrank R M) →₀ R) :=
+  (finBasis R M).repr
+
 variable {R M}
 
 /-- A free module with rank 1 has a basis with one element. -/
