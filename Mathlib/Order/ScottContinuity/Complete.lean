@@ -39,21 +39,11 @@ section CompleteLinearOrder
 
 variable [CompleteLinearOrder β]
 
-lemma inf_sSup_eq_sSup_map   (a : β) (d : Set β) :
-    a ⊓ sSup d = sSup ((fun b ↦ a ⊓ b) '' d) := eq_of_forall_ge_iff fun _ => by
-  simp only [inf_le_iff, sSup_le_iff, ← forall_or_left, Set.mem_image, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂]
-
-lemma sSup_inf_eq_sSup_map (b : β) (d : Set β) :
-    sSup d ⊓ b = sSup ((fun a ↦ a ⊓ b) '' d) := eq_of_forall_ge_iff fun _ => by
-  simp [inf_le_iff, sSup_le_iff, ← forall_or_right, Set.mem_image, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂]
-
 lemma scottContinuous_inf_right (a : β) : ScottContinuous fun b ↦ a ⊓ b := by
-  refine ScottContinuous.of_map_sSup (fun d _ _ ↦ by rw [inf_sSup_eq_sSup_map])
+  refine ScottContinuous.of_map_sSup (fun d _ _ ↦ by rw [inf_sSup_eq, sSup_image])
 
 lemma scottContinuous_inf_left (b : β) : ScottContinuous fun a ↦ a ⊓ b := by
-  refine ScottContinuous.of_map_sSup (fun d _ _ ↦ by rw [sSup_inf_eq_sSup_map])
+  refine ScottContinuous.of_map_sSup (fun d _ _ ↦ by rw [sSup_inf_eq, sSup_image])
 
 /- The meet operation is Scott continuous -/
 lemma ScottContinuous.inf₂ : ScottContinuous fun (a, b) => (a ⊓ b : β) :=
