@@ -139,6 +139,8 @@ theorem d_eq [DecidableEq G] :
 
 end inhomogeneousChains
 
+variable [DecidableEq G]
+
 /-- Given a `k`-linear `G`-representation `A`, this is the complex of inhomogeneous chains
 $$\dots \to \bigoplus_{G^1} A \to \bigoplus_{G^0} A \to 0$$
 which calculates the group homology of `A`. -/
@@ -153,11 +155,17 @@ noncomputable abbrev inhomogeneousChains [DecidableEq G] :
 
 open inhomogeneousChains
 
-theorem inhomogeneousChains.d_def [DecidableEq G] (n : ℕ) :
+variable {A n} in
+@[ext]
+theorem inhomogeneousChains.ext {M : ModuleCat k} {x y : (inhomogeneousChains A).X n ⟶ M}
+    (h : ∀ g, ModuleCat.ofHom (lsingle g) ≫ x = ModuleCat.ofHom (lsingle g) ≫ y) :
+    x = y := ModuleCat.hom_ext <| lhom_ext' fun g => ModuleCat.hom_ext_iff.1 (h g)
+
+theorem inhomogeneousChains.d_def (n : ℕ) :
     (inhomogeneousChains A).d (n + 1) n = d A n := by
   simp [inhomogeneousChains]
 
-theorem inhomogeneousChains.d_comp_d [DecidableEq G] :
+theorem inhomogeneousChains.d_comp_d :
     d A (n + 1) ≫ d A n = 0 := by
   simpa [ChainComplex.of] using ((inhomogeneousChains A).d_comp_d (n + 2) (n + 1) n)
 
@@ -201,9 +209,17 @@ def groupHomology (n : ℕ) : ModuleCat k :=
 
 /-- The natural map from `n`-cycles to `n`th group homology for a `k`-linear
 `G`-representation `A`. -/
-abbrev groupHomologyπ (n : ℕ) :
+abbrev π (n : ℕ) :
     cycles A n ⟶ groupHomology A n :=
   (inhomogeneousChains A).homologyπ n
+
+variable {A} in
+@[elab_as_elim]
+theorem groupHomology_induction_on {n : ℕ}
+    {C : groupHomology A n → Prop} (x : groupHomology A n)
+    (h : ∀ x : cycles A n, C (π A n x)) : C x := by
+  rcases (ModuleCat.epi_iff_surjective (π A n)).1 inferInstance x with ⟨y, rfl⟩
+  exact h y
 
 /-- The `n`th group homology of a `k`-linear `G`-representation `A` is isomorphic to
 `Torₙ(A, k)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
