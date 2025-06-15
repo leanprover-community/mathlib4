@@ -236,7 +236,6 @@ Formally, `g` satisfies the two equations:
 - `g (pure a) = pure a`
 - `g (liftBind op k) = f op >>= fun x => g (k x)`
 -/
-
 structure ExtendsHandler {M : Type u → Type w} [Monad M] {α : Type u}
     (f : {ι : Type u} → F ι → M ι)
     (g : FreeM F α → M α) : Prop where
