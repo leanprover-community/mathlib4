@@ -14,12 +14,14 @@ This file proves $\log(n+1) \le H_n \le 1 + \log(n)$ for all natural numbers $n$
 
 -/
 
-open BigOperators
+lemma harmonic_eq_sum_Icc {n : ℕ} : harmonic n = ∑ i ∈ Finset.Icc 1 n, (↑i)⁻¹ := by
+  rw [harmonic, Finset.range_eq_Ico, Finset.sum_Ico_add' (fun (i : ℕ) ↦ (i : ℚ)⁻¹) 0 n (c := 1)]
+  simp only [Finset.Ico_add_one_right_eq_Icc]
 
 theorem log_add_one_le_harmonic (n : ℕ) :
     Real.log ↑(n+1) ≤ harmonic n := by
-  calc _ = ∫ x in (1:ℕ)..↑(n+1), x⁻¹ := ?_
-       _ ≤ ∑ d in Finset.Icc 1 n, (d:ℝ)⁻¹ := ?_
+  calc _ = ∫ x in (1 : ℕ)..↑(n+1), x⁻¹ := ?_
+       _ ≤ ∑ d ∈ Finset.Icc 1 n, (d : ℝ)⁻¹ := ?_
        _ = harmonic n := ?_
   · rw [Nat.cast_one, integral_inv (by simp [(show ¬ (1 : ℝ) ≤ 0 by norm_num)]), div_one]
   · exact (inv_antitoneOn_Icc_right <| by norm_num).integral_le_sum_Ico (Nat.le_add_left 1 n)
@@ -35,8 +37,8 @@ theorem harmonic_le_one_add_log (n : ℕ) :
     Nat.cast_one, inv_one]
   refine add_le_add_left ?_ 1
   simp only [Nat.lt_one_iff, Finset.mem_Icc, Finset.Icc_erase_left]
-  calc ∑ d : ℕ in .Ico 2 (n + 1), (d : ℝ)⁻¹
-    _ = ∑ d in .Ico 2 (n + 1), (↑(d + 1) - 1)⁻¹ := ?_
+  calc ∑ d ∈ .Ico 2 (n + 1), (d : ℝ)⁻¹
+    _ = ∑ d ∈ .Ico 2 (n + 1), (↑(d + 1) - 1)⁻¹ := ?_
     _ ≤ ∫ x in (2).. ↑(n + 1), (x - 1)⁻¹  := ?_
     _ = ∫ x in (1)..n, x⁻¹ := ?_
     _ = Real.log ↑n := ?_

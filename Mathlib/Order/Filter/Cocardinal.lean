@@ -6,9 +6,8 @@ Authors: Josha Dekker
 import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Order.Filter.CardinalInter
-import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.SetTheory.Cardinal.Cofinality
-import Mathlib.Order.Filter.Bases
 
 /-!
 # The cocardinal filter
@@ -22,9 +21,7 @@ In this file we define `Filter.cocardinal hc`: the filter of sets with cardinali
 open Set Filter Cardinal
 
 universe u
-variable {ι : Type u} {α β : Type u}
-variable {c : Cardinal.{u}} {hreg : c.IsRegular}
-variable {l : Filter α}
+variable {α : Type u} {c : Cardinal.{u}} {hreg : c.IsRegular}
 
 namespace Filter
 
@@ -51,7 +48,6 @@ instance instCardinalInterFilter_cocardinal : CardinalInterFilter (cocardinal (�
     apply lt_of_le_of_lt (mk_sUnion_le _)
     apply mul_lt_of_lt hreg.aleph0_le (lt_of_le_of_lt mk_image_le hS)
     apply iSup_lt_of_isRegular hreg <| lt_of_le_of_lt mk_image_le hS
-    intro i
     aesop
 
 @[simp]
@@ -87,17 +83,22 @@ theorem _root_.Set.Finite.compl_mem_cocardinal {s : Set α} (hs : s.Finite) :
     sᶜ ∈ cocardinal α hreg :=
   compl_mem_cocardinal_of_card_lt <| lt_of_lt_of_le (Finite.lt_aleph0 hs) (hreg.aleph0_le)
 
-theorem eventually_cocardinal_nmem_of_card_lt  {s : Set α} (hs : #s < c) :
+theorem eventually_cocardinal_notMem_of_card_lt {s : Set α} (hs : #s < c) :
     ∀ᶠ x in cocardinal α hreg, x ∉ s :=
   compl_mem_cocardinal_of_card_lt hs
 
-theorem _root_.Finset.eventually_cocardinal_nmem (s : Finset α) :
+@[deprecated (since := "2025-05-24")]
+alias eventually_cocardinal_nmem_of_card_lt := eventually_cocardinal_notMem_of_card_lt
+
+theorem _root_.Finset.eventually_cocardinal_notMem (s : Finset α) :
     ∀ᶠ x in cocardinal α hreg, x ∉ s :=
-  eventually_cocardinal_nmem_of_card_lt <| lt_of_lt_of_le (finset_card_lt_aleph0 s) (hreg.aleph0_le)
+  eventually_cocardinal_notMem_of_card_lt <| (finset_card_lt_aleph0 s).trans_le (hreg.aleph0_le)
+
+@[deprecated (since := "2025-05-24")]
+alias _root_.Finset.eventually_cocardinal_nmem := _root_.Finset.eventually_cocardinal_notMem
 
 theorem eventually_cocardinal_ne (x : α) : ∀ᶠ a in cocardinal α hreg, a ≠ x := by
-  simp [Set.finite_singleton x]
-  exact hreg.nat_lt 1
+  simpa [Set.finite_singleton x] using hreg.nat_lt 1
 
 /-- The filter defined by all sets that have countable complements. -/
 abbrev cocountable : Filter α := cocardinal α Cardinal.isRegular_aleph_one

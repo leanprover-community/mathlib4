@@ -5,8 +5,7 @@ Authors: Riccardo Brasca
 -/
 import Mathlib.LinearAlgebra.Charpoly.Basic
 import Mathlib.LinearAlgebra.Matrix.Basis
-
-#align_import linear_algebra.charpoly.to_matrix from "leanprover-community/mathlib"@"baab5d3091555838751562e6caad33c844bea15e"
+import Mathlib.RingTheory.Finiteness.Prod
 
 /-!
 
@@ -69,7 +68,8 @@ theorem charpoly_toMatrix {ι : Type w} [DecidableEq ι] [Fintype ι] (b : Basis
       rw [basis_toMatrix_mul_linearMap_toMatrix_mul_basis_toMatrix]
     _ = det (scalar ι' X - C.mapMatrix (φ₁ P * φ₂ A' * φ₃ Q)) := by
       rw [reindexLinearEquiv_mul, reindexLinearEquiv_mul]
-    _ = det (scalar ι' X - C.mapMatrix (φ₁ P) * C.mapMatrix A' * C.mapMatrix (φ₃ Q)) := by simp [φ₂]
+    _ = det (scalar ι' X - C.mapMatrix (φ₁ P) * C.mapMatrix A' * C.mapMatrix (φ₃ Q)) := by
+      simp [φ₁, φ₂, φ₃, ι']
     _ = det (scalar ι' X * C.mapMatrix (φ₁ P) * C.mapMatrix (φ₃ Q) -
           C.mapMatrix (φ₁ P) * C.mapMatrix A' * C.mapMatrix (φ₃ Q)) := by
       rw [Matrix.mul_assoc ((scalar ι') X), hPQ, Matrix.mul_one]
@@ -85,7 +85,6 @@ theorem charpoly_toMatrix {ι : Type w} [DecidableEq ι] [Fintype ι] (b : Basis
     _ = det (scalar ι' X - C.mapMatrix A') := by
       rw [← det_mul, hPQ, det_one, one_mul]
     _ = f.charpoly := rfl
-#align linear_map.charpoly_to_matrix LinearMap.charpoly_toMatrix
 
 lemma charpoly_prodMap (f₁ : M₁ →ₗ[R] M₁) (f₂ : M₂ →ₗ[R] M₂) :
     (f₁.prodMap f₂).charpoly = f₁.charpoly * f₂.charpoly := by
