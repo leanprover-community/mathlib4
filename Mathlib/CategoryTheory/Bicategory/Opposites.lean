@@ -195,11 +195,11 @@ instance bicategory : Bicategory.{w, v} Bᴮᵒᵖ where
   comp_whiskerRight η θ i := congrArg bop <| whiskerLeft_comp i.unbop (unbop η) (unbop θ)
   whiskerRight_id η := congrArg bop <| id_whiskerLeft (unbop η)
   whiskerRight_comp η g h := congrArg bop <| comp_whiskerLeft h.unbop g.unbop (unbop η)
-  whisker_assoc f g g' η i := by apply congrArg bop; simp?
+  whisker_assoc f g g' η i := by apply congrArg bop; simp
   whisker_exchange η θ := congrArg bop <| (whisker_exchange _ _).symm
   pentagon f g h i := congrArg bop <| pentagon_inv _ _ _ _
   triangle f g := congrArg bop <| triangle_assoc_comp_right _ _
 
-attribute [-simp] bicategory_Hom
+attribute [-simp] bicategory_Hom -- this seems to cause issues with automation
 
 end Bicategory.Opposite
