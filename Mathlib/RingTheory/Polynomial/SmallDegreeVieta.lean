@@ -111,11 +111,10 @@ variable [Field R]
 variable {a b c : R}
 
 /-- Roots of a quadratic equation. -/
-theorem quadratic_eq_zero_iff [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
+theorem isRoot_quadratic_iff [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
     (h : discrim a b c = s * s) (x : R) :
     IsRoot (a • X ^ 2 + b • X + C c) x ↔ x = (-b + s) / (2 * a) ∨ x = (-b - s) / (2 * a) := by
-  simp only [IsRoot.def, eval_add, eval_smul, eval_pow, eval_X, smul_eq_mul, eval_C]
-  rw [sq, _root_.quadratic_eq_zero_iff ha h]
+  rw [← quadratic_eq_zero_iff ha h]; simp [pow_two]
 
 /-- Root of a quadratic when its discriminant equals zero -/
 theorem quadratic_eq_zero_iff_of_discrim_eq_zero [NeZero (2 : R)] (ha : a ≠ 0)
