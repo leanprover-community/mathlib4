@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Yury Kudryashov, Joseph Myers, Heather Macbeth, Kim Morrison, Yaël Dillies
 -/
 import Mathlib.Algebra.GroupWithZero.Action.Units
+import Mathlib.Algebra.Group.Action.TorsionFree
 import Mathlib.Algebra.Module.End
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
@@ -53,18 +54,6 @@ section AddCommGroup
 -- `R` can still be a semiring here
 variable [Semiring R] [AddCommGroup M] [Module R M]
 
-section SMulInjective
-
-variable (M) in
-theorem smul_right_injective [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) :
-    Function.Injective (c • · : M → M) :=
-  (injective_iff_map_eq_zero (smulAddHom R M c)).2 fun _ ha => (smul_eq_zero.mp ha).resolve_left hc
-
-theorem smul_right_inj [NoZeroSMulDivisors R M] {c : R} (hc : c ≠ 0) {x y : M} :
-    c • x = c • y ↔ x = y :=
-  (smul_right_injective M hc).eq_iff
-
-end SMulInjective
 
 section Nat
 
