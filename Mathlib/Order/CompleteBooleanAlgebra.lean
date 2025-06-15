@@ -571,7 +571,7 @@ variable [CompleteBooleanAlgebra α]
 
 /-- `⊓` distributes over `⨆`. -/
 theorem inf_sSup_le_iSup_inf (a : α) (s : Set α) : a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b :=
-  sorry
+  gc_inf_himp.l_sSup.le
 
 /-- `⊔` distributes over `⨅`. -/
 theorem iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s := by
