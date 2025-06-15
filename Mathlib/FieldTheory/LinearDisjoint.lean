@@ -3,9 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 import Mathlib.RingTheory.AlgebraicIndependent.RankAndCardinality
 import Mathlib.RingTheory.LinearDisjoint
+import Mathlib.RingTheory.Norm.Defs
+import Mathlib.RingTheory.Trace.Defs
 
 /-!
 
@@ -633,6 +634,71 @@ theorem algEquiv_of_isAlgebraic (H : A.LinearDisjoint L)
     B.LinearDisjoint L' :=
   .of_isField ((Algebra.TensorProduct.congr f1 f2).symm.toMulEquiv.isField _
     (H.isField_of_isAlgebraic halg))
+
+/--
+If `A` and `B` are linearly disjoint extensions of `F` and `b` is a (finite) `F`-basis of `B`,
+then it is also a `A`-basis of `E = A ⊔ B`.
+-/
+noncomputable def _root_.Basis.ofLinearDisjoint [FiniteDimensional F A] (h₁ : A.LinearDisjoint B)
+    (h₂ : A ⊔ B = ⊤) {ι : Type*} [Nonempty ι] [Finite ι] (b : Basis ι F B) :
+    Basis ι A E :=
+  have : Fintype ι := Fintype.ofFinite ι
+  basisOfLinearIndependentOfCardEqFinrank
+    (linearIndependent_right' h₁ b.linearIndependent)
+    (mul_left_cancel₀ (Module.finrank_pos.ne' : Module.finrank F A ≠ 0) (by
+      rw [← Module.finrank_eq_card_basis b, ← finrank_sup h₁,
+        Module.finrank_mul_finrank, h₂, finrank_top']))
+
+@[simp]
+theorem _root_.Basis.ofLinearDisjoint_apply [FiniteDimensional F A] (h₁ : A.LinearDisjoint B)
+    (h₂ : A ⊔ B = ⊤) {ι : Type*} [Nonempty ι] [Finite ι] (b : Basis ι F B) (i : ι) :
+    b.ofLinearDisjoint h₁ h₂ i = algebraMap B E (b i) := by
+  simp [Basis.ofLinearDisjoint]
+
+theorem _root_.Basis.ofLinearDisjoint_repr_apply [FiniteDimensional F A] (h₁ : A.LinearDisjoint B)
+    (h₂ : A ⊔ B = ⊤) {ι : Type*} [Nonempty ι] [Finite ι] (b : Basis ι F B) (x : B) (i : ι) :
+    (b.ofLinearDisjoint h₁ h₂).repr (algebraMap B E x) i = algebraMap F A (b.repr x i) := by
+  have : Fintype ι := Fintype.ofFinite ι
+  have h := ((b.ofLinearDisjoint h₁ h₂).sum_repr (algebraMap B E x)).trans
+    <| RingHom.congr_arg (algebraMap B E) (b.sum_repr x).symm
+  simp_rw [map_sum, Algebra.smul_def, map_mul, (b.ofLinearDisjoint_apply h₁ h₂ _).symm,
+    ← IsScalarTower.algebraMap_apply F B E, IsScalarTower.algebraMap_apply F A E,
+    ← Algebra.smul_def] at h
+  replace h := congr_arg ((↑) : (ι →₀ A) → ι → A) (congr_arg (b.ofLinearDisjoint h₁ h₂).repr h)
+  rw [(b.ofLinearDisjoint h₁ h₂).repr_sum_self, (b.ofLinearDisjoint h₁ h₂).repr_sum_self] at h
+  exact congr_fun h i
+
+theorem _root_.Basis.ofLinearDisjoint_leftMulMatrix_eq {F : Type*} {E : Type*} [Field F] [Field E]
+    [Algebra F E] {A B : IntermediateField F E} [FiniteDimensional F E] (h₁ : A.LinearDisjoint B)
+    (h₂ : A ⊔ B = ⊤) {ι : Type*} [Nonempty ι] [Fintype ι] [DecidableEq ι] (b : Basis ι F B)
+    (x : B) :
+    Algebra.leftMulMatrix (Basis.ofLinearDisjoint h₁ h₂ b) (algebraMap B E x) =
+      RingHom.mapMatrix (algebraMap F A) (Algebra.leftMulMatrix b x) := by
+  ext
+  simp [Algebra.leftMulMatrix_eq_repr_mul, ← b.ofLinearDisjoint_repr_apply h₁ h₂]
+
+/--
+If `A` and `B` are linearly disjoint, then `trace` and `algebraMap` commutes.
+-/
+theorem IntermediateField.LinearDisjoint.trace_algebraMap_eq [FiniteDimensional F E]
+    (h₁ : A.LinearDisjoint B) (h₂ : A ⊔ B = ⊤) (x : B) :
+    Algebra.trace A E (algebraMap B E x) = algebraMap F A (Algebra.trace F B x) := by
+  let b := Module.Free.chooseBasis F B
+  simp_rw [Algebra.trace_eq_matrix_trace b,
+    Algebra.trace_eq_matrix_trace (b.ofLinearDisjoint h₁ h₂),
+    Matrix.trace, map_sum, b.ofLinearDisjoint_leftMulMatrix_eq, RingHom.mapMatrix_apply,
+    Matrix.diag_apply, Matrix.map_apply]
+
+/--
+If `A` and `B` are linearly disjoint, then `norm` and `algebraMap` commutes.
+-/
+theorem IntermediateField.LinearDisjoint.norm_algebraMap_eq {F : Type*} {E : Type*} [Field F]
+    [Field E] [Algebra F E] {A B : IntermediateField F E} [FiniteDimensional F E]
+    (h₁ : A.LinearDisjoint B) (h₂ : A ⊔ B = ⊤) (x : B) :
+    Algebra.norm A (algebraMap B E x) = algebraMap F A (Algebra.norm F x) := by
+  let b := Module.Free.chooseBasis F B
+  simp_rw [Algebra.norm_eq_matrix_det b, Algebra.norm_eq_matrix_det (b.ofLinearDisjoint h₁ h₂),
+    b.ofLinearDisjoint_leftMulMatrix_eq, RingHom.map_det]
 
 end LinearDisjoint
 
