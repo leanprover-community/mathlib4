@@ -41,17 +41,29 @@ import sys
 import json
 import re
 import argparse
+import os
+import platform
+from datetime import datetime
 from typing import Optional, Dict, Any, List
 
 
 class Colors:
-    """ANSI color codes for terminal output."""
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    BLUE = '\033[94m'
-    BOLD = '\033[1m'
-    END = '\033[0m'
+    """ANSI color codes for terminal output with Windows compatibility."""
+    if platform.system() == 'Windows':
+        # Windows doesn't support ANSI colors by default, so we'll use empty strings
+        GREEN = ''
+        YELLOW = ''
+        RED = ''
+        BLUE = ''
+        BOLD = ''
+        END = ''
+    else:
+        GREEN = '\033[92m'
+        YELLOW = '\033[93m'
+        RED = '\033[91m'
+        BLUE = '\033[94m'
+        BOLD = '\033[1m'
+        END = '\033[0m'
 
 
 def print_step(step_num: int, description: str) -> None:
@@ -75,10 +87,9 @@ def print_error(message: str) -> None:
 
 
 def run_command(cmd: List[str], capture_output: bool = True, check: bool = True) -> subprocess.CompletedProcess:
-    """Run a command and return the result."""
+    """Run a command and return the result with Windows compatibility."""
     try:
-        result = subprocess.run(cmd, capture_output=capture_output, text=True, check=check)
-        return result
+        return subprocess.run(cmd, capture_output=capture_output, text=True, encoding="utf8", check=check)
     except subprocess.CalledProcessError as e:
         if not check:
             return e
@@ -124,9 +135,13 @@ def check_gh_installation() -> bool:
     except FileNotFoundError:
         print_error("GitHub CLI (gh) is not installed.")
         print("Please install it:")
-        print("  macOS: brew install gh")
-        print("  Ubuntu/Debian: sudo apt install gh")
-        print("  Or visit: https://cli.github.com/")
+        if platform.system() == 'Windows':
+            print("  Windows: winget install GitHub.cli")
+            print("  Or visit: https://cli.github.com/")
+        else:
+            print("  macOS: brew install gh")
+            print("  Ubuntu/Debian: sudo apt install gh")
+            print("  Or visit: https://cli.github.com/")
         return False
 
     # Check if authenticated
@@ -164,8 +179,10 @@ def check_gh_token_scopes() -> bool:
             print_warning("Could not verify token scopes, but basic API access works")
             return True
 
-        # Parse the output to check for required scopes
-        auth_output = result.stdout
+        # Hackily check the output for required scopes
+        # Versions of gh before v2.31.0 print this info on stderr, not stdout.
+        # See https://github.com/cli/cli/issues/7447
+        auth_output = result.stdout + result.stderr
         if 'repo' not in auth_output:  # or 'workflow' not in auth_output:
             print_error("GitHub CLI token lacks required scopes.")
             print("Required scopes: repo, workflow")
@@ -197,8 +214,11 @@ def check_gh_token_scopes() -> bool:
 def check_ssh_github_access() -> bool:
     """Check if SSH access to GitHub is available."""
     try:
+        # On Windows, we need to use the full path to ssh.exe
+        ssh_cmd = 'ssh.exe' if platform.system() == 'Windows' else 'ssh'
+
         # Test SSH connection to GitHub
-        result = run_command(['ssh', '-T', 'git@github.com'], check=False)
+        result = run_command([ssh_cmd, '-T', 'git@github.com'], check=False)
         # SSH to GitHub returns exit code 1 for successful authentication
         # but exit code 255 for connection failures
         if result.returncode == 1:
@@ -546,6 +566,83 @@ def find_existing_pr(branch: str, username: str) -> Optional[Dict[str, Any]]:
         return None
 
 
+def get_pr_comments_summary(pr_number: int) -> Optional[str]:
+    """Fetch all comments from a PR and format them as a dialogue summary.
+
+    Filters out bot comments (usernames ending with -bot) and formats
+    the remaining comments with poster name, time, and content.
+
+    Returns None if no comments or if fetching fails.
+    """
+    try:
+        # Fetch PR comments with all needed fields
+        result = run_command(['gh', 'pr', 'view', str(pr_number),
+                             '--repo', 'leanprover-community/mathlib4',
+                             '--json', 'comments'], check=False)
+
+        if result.returncode != 0:
+            print_warning(f"Could not fetch comments from PR #{pr_number}")
+            return None
+
+        pr_data = json.loads(result.stdout)
+        comments = pr_data.get('comments', [])
+
+        if not comments:
+            return None
+
+        # Filter out bot comments and format remaining ones
+        formatted_comments = []
+        for comment in comments:
+            author = comment.get('author', {}).get('login', 'unknown')
+
+            # Skip bot comments (usernames ending with -bot)
+            if author.endswith('-bot'):
+                continue
+
+            created_at = comment.get('createdAt', '')
+            body = comment.get('body', '').strip()
+            url = comment.get('url', '')
+
+            if body:  # Only include non-empty comments
+                # Format timestamp to be more readable
+                try:
+                    # GitHub API returns ISO format like: 2024-01-15T10:30:00Z
+                    dt = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+                    formatted_time = dt.strftime('%Y-%m-%d %H:%M UTC')
+                except Exception:
+                    formatted_time = created_at
+
+                # Format comment with author, time, and link back to original
+                comment_header = f"**@{author}** ([{formatted_time}]({url})):"
+                formatted_comment = f"{comment_header}\n{body}"
+                formatted_comments.append(formatted_comment)
+
+        if not formatted_comments:
+            return None
+
+        # Create the summary
+        summary_parts = [
+            f"## Comments from Original PR #{pr_number}",
+            "",
+            f"*This section contains {len(formatted_comments)} comment(s) from the original PR, excluding bot comments.*",
+            "",
+            "---",
+            ""
+        ]
+
+        # Add each comment separated by horizontal rules
+        for i, comment in enumerate(formatted_comments):
+            summary_parts.append(comment)
+            if i < len(formatted_comments) - 1:  # Don't add separator after last comment
+                summary_parts.extend(["", "---", ""])
+
+        return "\n".join(summary_parts)
+
+    except Exception as e:
+        print_warning(f"Failed to fetch comments summary: {e}")
+        return None
+
+
 def create_new_pr_from_fork(branch: str, username: str, old_pr: Optional[Dict[str, Any]] = None) -> str:
     """Create a new PR from the fork."""
     print_step(7, "Creating new PR from fork")
@@ -569,6 +666,7 @@ def create_new_pr_from_fork(branch: str, username: str, old_pr: Optional[Dict[st
 
                 original_body = pr_details.get('body', '') or ''
                 labels = pr_details.get('labels', [])
+                labels.append('migrated-from-branch')  # Add label for new PR
 
                 # Prepare the new body with migration notice
                 if original_body.strip():
@@ -642,6 +740,21 @@ def create_new_pr_from_fork(branch: str, username: str, old_pr: Optional[Dict[st
 
                 print_success(f"Added {len(label_names)} label comments as fallback")
 
+        # Add comments summary from original PR if available
+        if old_pr:
+            print("Fetching comments from original PR...")
+            comments_summary = get_pr_comments_summary(old_pr['number'])
+            if comments_summary:
+                try:
+                    run_command(['gh', 'pr', 'comment', new_pr_number,
+                               '--repo', 'leanprover-community/mathlib4',
+                               '--body', comments_summary])
+                    print_success("Added comments summary from original PR")
+                except Exception as e:
+                    print_warning(f"Failed to add comments summary: {e}")
+            else:
+                print("No comments found on original PR (or only bot comments)")
+
         return pr_url
 
     except Exception as e:
@@ -661,6 +774,12 @@ def close_old_pr_and_comment(old_pr: Dict[str, Any], new_pr_url: str) -> None:
                     '--body', comment])
         print_success("Added comment to old PR")
 
+        # Add migrated-to-fork label to old PR
+        run_command(['gh', 'pr', 'edit', str(old_pr['number']),
+                    '--repo', 'leanprover-community/mathlib4',
+                    '--add-label', 'migrated-to-fork'])
+        print_success("Added migrated-to-fork label to old PR")
+
         # Close old PR
         run_command(['gh', 'pr', 'close', str(old_pr['number']),
                     '--repo', 'leanprover-community/mathlib4'])
@@ -672,6 +791,14 @@ def close_old_pr_and_comment(old_pr: Dict[str, Any], new_pr_url: str) -> None:
 
 def main() -> None:
     """Main migration workflow."""
+    # Enable ANSI colors on Windows if possible
+    if platform.system() == 'Windows':
+        try:
+            # Enable ANSI colors on Windows 10+
+            os.system('')  # This enables ANSI colors in Windows terminal
+        except Exception:
+            pass  # If it fails, we'll use the no-color fallback
+
     # Parse command line arguments
     parser = argparse.ArgumentParser(description="Script to migrate contributors from direct write access to using forks.")
     parser.add_argument('-y', '--auto-accept', action='store_true', help="Auto-accept all prompts")
