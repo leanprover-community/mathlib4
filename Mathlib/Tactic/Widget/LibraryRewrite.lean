@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
+Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Anand Rao
 -/
@@ -204,8 +204,6 @@ def checkRewrite (thm e : Expr) (symm : Bool) : MetaM (Option Rewrite) := do
   let mut extraGoals := #[]
   for mvar in mvars, bi in binderInfos do
     unless ← mvar.mvarId!.isAssigned do
-      -- we want the new metavariables to be printed as `?_`
-      mvar.mvarId!.setTag .anonymous
       extraGoals := extraGoals.push (mvar.mvarId!, bi)
 
   let replacement ← instantiateMVars rhs
@@ -314,7 +312,9 @@ def filterRewrites {α} (e : Expr) (rewrites : Array α) (replacement : α → E
 
 /-- Return the rewrite tactic that performs the rewrite. -/
 def tacticSyntax (rw : Rewrite) (occ : Option Nat) (loc : Option Name) :
-    MetaM (TSyntax `tactic) := do
+    MetaM (TSyntax `tactic) := withoutModifyingMCtx do
+  -- we want the new metavariables to be printed as `?_` in the tactic syntax
+  for (mvarId, _) in rw.extraGoals do mvarId.setTag .anonymous
   let proof ← withOptions (pp.mvars.anonymous.set · false) (PrettyPrinter.delab rw.proof)
   mkRewrite occ rw.symm proof loc
 
@@ -343,7 +343,7 @@ structure RewriteInterface where
 def Rewrite.toInterface (rw : Rewrite) (name : Name ⊕ FVarId) (occ : Option Nat)
     (loc : Option Name) (range : Lsp.Range) : MetaM RewriteInterface := do
   let tactic ← tacticSyntax rw occ loc
-  let tactic ← InteractiveUnfold.tacticPasteString tactic range
+  let tactic ← tacticPasteString tactic range
   let replacementString := Format.pretty (← ppExpr rw.replacement)
   let mut extraGoals := #[]
   for (mvarId, bi) in rw.extraGoals do
@@ -453,11 +453,10 @@ private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
   let some loc := props.selectedLocations.back? |
     return .text "rw??: Please shift-click an expression."
   if loc.loc matches .hypValue .. then
-    return .text "rw doesn't work on the value of a let-bound free variable."
-  let some goal := props.goals[0]? |
-    return .text "There is no goal to solve!"
+    return .text "rw??: cannot rewrite in the value of a let variable."
+  let some goal := props.goals[0]? | return .text "rw??: there is no goal to solve!"
   if loc.mvarId != goal.mvarId then
-    return .text "The selected expression should be in the main goal."
+    return .text "rw??: the selected expression should be in the main goal."
   goal.ctx.val.runMetaM {} do
     let md ← goal.mvarId.getDecl
     let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
@@ -465,11 +464,11 @@ private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
 
       let rootExpr ← loc.rootExpr
       let some (subExpr, occ) ← viewKAbstractSubExpr rootExpr loc.pos |
-        return .text "expressions with bound variables are not supported"
+        return .text "rw??: expressions with bound variables are not supported"
       unless ← kabstractIsTypeCorrect rootExpr subExpr loc.pos do
-        return .text <| "The selected expression cannot be rewritten, because the motive is " ++
-          "not type correct. This usually occurs when trying to rewrite a term that appears " ++
-          "as a dependent argument."
+        return .text <| "rw??: the selected expression cannot be rewritten, \
+          because the motive is not type correct. \
+          This usually occurs when trying to rewrite a term that appears as a dependent argument."
       let location ← loc.fvarId?.mapM FVarId.getUserName
 
       let unfoldsHtml ← InteractiveUnfold.renderUnfolds subExpr occ location props.replaceRange doc

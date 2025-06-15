@@ -113,15 +113,21 @@ def filteredUnfolds (e : Expr) : MetaM (Array Expr) :=
 
 end InteractiveUnfold
 
-/-- Return the rewrite tactic string `rw (config := ..) [← ..] at ..` -/
-def mkRewrite (occ : Option Nat) (symm : Bool) (rewrite : Term) (loc : Option Name) :
+/-- Return syntax for the rewrite tactic `rw [e]`. -/
+def mkRewrite (occ : Option Nat) (symm : Bool) (e : Term) (loc : Option Name) :
     CoreM (TSyntax `tactic) := do
   let loc ← loc.mapM fun h => `(Lean.Parser.Tactic.location| at $(mkIdent h):term)
-  let rule ← if symm then `(Parser.Tactic.rwRule| ← $rewrite)
-                     else `(Parser.Tactic.rwRule| $rewrite:term)
+  let rule ← if symm then `(Parser.Tactic.rwRule| ← $e) else `(Parser.Tactic.rwRule| $e:term)
   match occ with
   | some n => `(tactic| nth_rw $(Syntax.mkNatLit n):num [$rule] $(loc)?)
   | none => `(tactic| rw [$rule] $(loc)?)
+
+/-- Given tactic syntax `tac` that we want to paste into the editor, return it as a string.
+This function respects the 100 character limit for long lines. -/
+def tacticPasteString (tac : TSyntax `tactic) (range : Lsp.Range) : CoreM String := do
+  let column := range.start.character
+  let indent := column
+  return (← PrettyPrinter.ppTactic tac).pretty 100 indent column
 
 namespace InteractiveUnfold
 
@@ -130,12 +136,6 @@ def tacticSyntax (e eNew : Expr) (occ : Option Nat) (loc : Option Name) :
     MetaM (TSyntax `tactic) := do
   let fromRfl ← `(show $(← PrettyPrinter.delab e) = $(← PrettyPrinter.delab eNew) from rfl)
   mkRewrite occ false fromRfl loc
-
-def tacticPasteString (tac : TSyntax `tactic) (range : Lsp.Range) : CoreM String := do
-  let column := range.start.character
-  let indent := column
-  -- the maximum line width in mathlib is 100
-  return (← PrettyPrinter.ppTactic tac).pretty 100 indent column
 
 /-- Render the unfolds of `e` as given by `filteredUnfolds`, with buttons at each suggestion
 for pasting the rewrite tactic. Return `none` when there are no unfolds. -/
