@@ -3,12 +3,13 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Analysis.Convex.Basic
+
+import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
 import Mathlib.Analysis.InnerProductSpace.Symmetric
 import Mathlib.Analysis.NormedSpace.RCLike
 import Mathlib.Analysis.RCLike.Lemmas
-import Mathlib.Algebra.DirectSum.Decomposition
+
 
 /-!
 # The orthogonal projection
@@ -585,6 +586,38 @@ variable (K)
 /-- The orthogonal projection has norm `≤ 1`. -/
 theorem orthogonalProjection_norm_le : ‖K.orthogonalProjection‖ ≤ 1 :=
   LinearMap.mkContinuous_norm_le _ (by norm_num) _
+
+/-- The orthogonal projection onto a closed subspace is norm non-increasing. -/
+theorem norm_orthogonalProjection_le (v : E) :
+    ‖orthogonalProjection K v‖ ≤ ‖v‖ := by calc
+  ‖orthogonalProjection K v‖ ≤ ‖orthogonalProjection K‖ * ‖v‖ := K.orthogonalProjection.le_opNorm _
+  _ ≤ 1 * ‖v‖ := by gcongr; exact orthogonalProjection_norm_le K
+  _ = _ := by simp
+
+/-- The orthogonal projection onto a closed subspace is a `1`-Lipschitz map. -/
+theorem norm_orthogonalProjection_apply :
+    LipschitzWith 1 (orthogonalProjection K) := by
+  apply ContinuousLinearMap.lipschitzWith_of_opNorm_le
+  apply orthogonalProjection_norm_le
+
+theorem norm_orthogonalProjection_ge_of_ne_bot (hK : K ≠ ⊥) :
+    1 ≤ ‖K.orthogonalProjection‖ := by
+  obtain ⟨x, ⟨hxK, hx_ne_zero⟩⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hK
+  set x' : E := (‖x‖⁻¹ : 𝕜) • x with hx
+  have hx'_mem : x' ∈ K := K.smul_mem _ hxK
+  have hx'_norm : ‖x'‖ = 1 := by
+    rw [hx]; exact norm_smul_inv_norm hx_ne_zero
+  have h_proj : K.orthogonalProjection x' = x' := orthogonalProjection_eq_self_iff.mpr hx'_mem
+  calc
+    1 = ‖x'‖ := symm hx'_norm
+    _ = ‖K.orthogonalProjection x'‖ := by simp only [AddSubgroupClass.coe_norm]; rw [h_proj]
+    _ ≤ ‖orthogonalProjection K‖ * ‖x'‖ := ContinuousLinearMap.le_opNorm _ _
+    _ = ‖orthogonalProjection K‖ := by rw [hx'_norm]; simp
+
+/-- The operator norm of the orthogonal projection onto a nontrivial subspace is `1`. -/
+theorem norm_orthogonalProjection (hK : K ≠ ⊥) :
+    ‖K.orthogonalProjection‖ = 1 :=
+  le_antisymm K.orthogonalProjection_norm_le (K.norm_orthogonalProjection_ge_of_ne_bot hK)
 
 variable (𝕜)
 
