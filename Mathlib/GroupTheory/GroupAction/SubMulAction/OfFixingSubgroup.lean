@@ -9,12 +9,10 @@ import Mathlib.Data.Set.Card
 import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
 import Mathlib.Tactic.Group
-
-
 /-!
 # SubMulActions on complements of invariant subsets
 
-- We define SubMulAction of an invariant subset in various contexts,
+- We define `SubMulAction` of an invariant subset in various contexts,
 especially stabilizers and fixing subgroups : `SubMulAction_of_compl`,
 `SubMulAction_of_stabilizer`, `SubMulAction_of_fixingSubgroup`.
 
@@ -28,10 +26,10 @@ open MulAction Function
 
 namespace SubMulAction
 
-variable (M : Type*) [Group M] {α : Type*} [MulAction M α]
+variable (M α : Type*) [Group M] [MulAction M α]
 
-/-- The SubMulAction of `fixingSubgroup M s` on the complement of `s`. -/
-@[to_additive "The SubAddAction of `fixingAddSubgroup M s` on the complement of `s`."]
+/-- The `SubMulAction` of `fixingSubgroup M s` on the complement of `s`. -/
+@[to_additive "The `SubAddAction` of `fixingAddSubgroup M s` on the complement of `s`."]
 def ofFixingSubgroup (s : Set α) : SubMulAction (fixingSubgroup M s) α where
   carrier := sᶜ
   smul_mem' := fun ⟨c, hc⟩ x ↦ by
@@ -76,7 +74,7 @@ theorem ofFixingSubgroupEmpty_equivariantMap_bijective :
     Bijective (ofFixingSubgroupEmpty_equivariantMap M α) := by
   constructor
   · rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
-    simp [Subtype.mk_eq_mk]; exact hxy
+    simpa [Subtype.mk.injEq] using hxy
   · exact fun x ↦ ⟨⟨x, (mem_ofFixingSubgroup_iff M).mp (Set.notMem_empty x)⟩, rfl⟩
 
 @[to_additive]
@@ -87,8 +85,6 @@ theorem of_fixingSubgroupEmpty_mapScalars_surjective :
   simp [mem_fixingSubgroup_iff]
 
 end Empty
-
-
 section FixingSubgroupInsert
 
 variable {α}
@@ -116,8 +112,8 @@ theorem mem_ofFixingSubgroup_insert_iff {a : α} {s : Set (ofStabilizer M a)} {x
   simp_rw [mem_ofFixingSubgroup_iff, mem_ofStabilizer_iff]
   aesop
 
-/-- The natural group morphism between fixing subgroups. -/
-@[to_additive "The natural group morphism between fixing additive subgroups."]
+/-- The natural group isomorphism between fixing subgroups. -/
+@[to_additive "The natural additive group isomorphism between fixing additive subgroups."]
 def fixingSubgroupInsertEquiv (a : α) (s : Set (ofStabilizer M a)) :
     fixingSubgroup M (insert a (Subtype.val '' s)) ≃* fixingSubgroup (stabilizer M a) s where
   toFun m := ⟨⟨(m : M), (mem_fixingSubgroup_iff M).mp m.prop a (Set.mem_insert _ _)⟩,
@@ -146,7 +142,7 @@ variable {M} in
 @[to_additive (attr := simp)]
 theorem ofFixingSubgroup_insert_map_apply {a : α} {s : Set (ofStabilizer M a)}
     {x : α} (hx : x ∈ ofFixingSubgroup M (insert a (Subtype.val '' s))) :
-    ↑((ofFixingSubgroup_insert_map M a s) ⟨x, hx⟩) = x :=
+    (ofFixingSubgroup_insert_map M a s) ⟨x, hx⟩ = x :=
   rfl
 
 @[to_additive]
@@ -229,7 +225,7 @@ def conjMap_ofFixingSubgroup (hg : g • t = s) :
 
 @[to_additive (attr := simp)]
 theorem conjMap_ofFixingSubgroup_coe_apply {hg : g • t = s} (x : ofFixingSubgroup M t) :
-    ↑(conjMap_ofFixingSubgroup _ _ hg x) = g • (x : α) := rfl
+    conjMap_ofFixingSubgroup _ _ hg x = g • (x : α) := rfl
 
 @[to_additive]
 theorem conjMap_ofFixingSubgroup_bijective {s t : Set α} {g : M} (hst : g • s = t) :
@@ -244,11 +240,11 @@ theorem conjMap_ofFixingSubgroup_bijective {s t : Set α} {g : M} (hst : g • s
 
 end FixingSubgroupConj
 
-/-- The identity between the iterated SubMulAction
-  of the fixingSubgroup and the SubMulAction of the fixingSubgroup
+/-- The identity between the iterated `SubMulAction`
+  of the `fixingSubgroup` and the `SubMulAction` of the `fixingSubgroup`
   of the union, as an equivariant map. -/
-@[to_additive "The identity between the iterated SubAddAction
-  of the fixingAddSubgroup and the SubAddAction of the fixingAddSubgroup
+@[to_additive "The identity between the iterated `SubAddAction`
+  of the `fixingAddSubgroup` and the `SubAddAction` of the `fixingAddSubgroup`
   of the union, as an equivariant map."]
 def map_ofFixingSubgroupUnion (s t : Set α) :
     let ψ : fixingSubgroup M (s ∪ t) →
@@ -362,7 +358,6 @@ open Function.Embedding Fin.Embedding
 noncomputable def ofFixingSubgroup.append
     {n : ℕ} {s : Set α} [Finite s] (x : Fin n ↪ ofFixingSubgroup M s) :
     Fin (s.ncard + n) ↪ α := by
-  classical
   have : Nonempty (Fin (s.ncard) ≃ s) :=
     Finite.card_eq.mp (by simp [Set.Nat.card_coe_set_eq])
   let y := (Classical.choice this).toEmbedding
