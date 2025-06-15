@@ -10,6 +10,7 @@ import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.WellFounded
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Data.Finset.Basic
 
 /-!
 # Atoms, Coatoms, and Simple Lattices
@@ -1220,3 +1221,33 @@ instance : IsAtomistic (Set α) := inferInstance
 instance : IsCoatomistic (Set α) := inferInstance
 
 end Set
+
+namespace Finset
+
+theorem isAtom_singleton (x : α) : IsAtom ({x} : Finset α) :=
+  ⟨singleton_ne_empty _, fun _ hs => ssubset_singleton_iff.mp hs⟩
+
+theorem isAtom_iff {s : Finset α} : IsAtom s ↔ ∃ x, s = {x} := by
+  refine
+    ⟨?_, by
+      rintro ⟨x, rfl⟩
+      exact isAtom_singleton x⟩
+  rw [isAtom_iff_le_of_ge, bot_eq_empty, ← nonempty_iff_ne_empty]
+  rintro ⟨⟨x, hx⟩, hs⟩
+  refine
+    ⟨x, eq_singleton_iff_unique_mem.2
+        ⟨hx, fun y hy => ?_ ⟩⟩
+  have h : s = {x} := le_antisymm (hs {x} (singleton_ne_empty x) (singleton_subset_iff.mpr hx))
+                        (singleton_subset_iff.mpr hx)
+  subst h
+  exact mem_singleton.mp hy
+
+instance : IsAtomistic (Finset α) where
+  isLUB_atoms b := by
+    use {{w} | w ∈ b}
+    simp only [IsLUB, IsLeast, upperBounds, Set.mem_setOf_eq, le_eq_subset, forall_exists_index,
+      and_imp, forall_apply_eq_imp_iff₂, singleton_subset_iff, imp_self, implies_true, lowerBounds,
+      true_and]
+    refine ⟨(fun ⦃a⦄ a ↦ a), fun a a_1 ↦ isAtom_singleton a⟩
+
+end Finset
