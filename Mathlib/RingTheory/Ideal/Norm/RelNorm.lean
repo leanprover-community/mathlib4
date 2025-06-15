@@ -35,8 +35,6 @@ namespace Ideal
 
 open Submodule
 
-attribute [local instance] FractionRing.liftAlgebra
-
 variable (R S : Type*) [CommRing R] [IsDomain R] {S : Type*} [CommRing S] [IsDomain S]
 variable [IsIntegrallyClosed R] [IsIntegrallyClosed S] [Algebra R S] [Module.Finite R S]
 variable [NoZeroSMulDivisors R S] [Algebra.IsSeparable (FractionRing R) (FractionRing S)]
@@ -145,7 +143,6 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
       Algebra.norm_algebraMap] at has
     apply IsFractionRing.injective Rₘ K
     simp only [map_mul, map_pow]
-    have : FiniteDimensional K L := Module.Finite_of_isLocalization R S _ _ R⁰
     rwa [Algebra.algebraMap_intNorm (L := L), ← IsScalarTower.algebraMap_apply,
       ← IsScalarTower.algebraMap_apply, Algebra.algebraMap_intNorm (L := L)]
   · intro a ha
