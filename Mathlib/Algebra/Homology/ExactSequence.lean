@@ -72,7 +72,7 @@ variable {n : ℕ} (S : ComposableArrows C n)
 two consecutive arrows are zero. -/
 structure IsComplex : Prop where
   /-- the composition of two consecutive arrows is zero -/
-  zero (i : ℕ) (hi : i + 2 ≤ n := by omega) :
+  zero (i : ℕ) (hi : i + 2 ≤ n := by grind) :
     S.map' i (i + 1) ≫ S.map' (i + 1) (i + 2) = 0
 
 attribute [reassoc] IsComplex.zero
@@ -80,8 +80,8 @@ attribute [reassoc] IsComplex.zero
 variable {S}
 
 @[reassoc]
-lemma IsComplex.zero' (hS : S.IsComplex) (i j k : ℕ) (hij : i + 1 = j := by omega)
-    (hjk : j + 1 = k := by omega) (hk : k ≤ n := by omega) :
+lemma IsComplex.zero' (hS : S.IsComplex) (i j k : ℕ) (hij : i + 1 = j := by grind)
+    (hjk : j + 1 = k := by grind) (hk : k ≤ n := by grind) :
     S.map' i j ≫ S.map' j k = 0 := by
   subst hij hjk
   exact hS.zero i hk
@@ -103,32 +103,32 @@ lemma isComplex₀ (S : ComposableArrows C 0) : S.IsComplex where
   zero i hi := by simp +decide at hi
 
 lemma isComplex₁ (S : ComposableArrows C 1) : S.IsComplex where
-  zero i hi := by omega
+  zero i hi := by grind
 
 variable (S)
 
 /-- The short complex consisting of maps `S.map' i j` and `S.map' j k` when we know
 that `S : ComposableArrows C n` satisfies `S.IsComplex`. -/
-abbrev sc' (hS : S.IsComplex) (i j k : ℕ) (hij : i + 1 = j := by omega)
-    (hjk : j + 1 = k := by omega) (hk : k ≤ n := by omega) :
+abbrev sc' (hS : S.IsComplex) (i j k : ℕ) (hij : i + 1 = j := by grind)
+    (hjk : j + 1 = k := by grind) (hk : k ≤ n := by grind) :
     ShortComplex C :=
   ShortComplex.mk (S.map' i j) (S.map' j k) (hS.zero' i j k)
 
 /-- The short complex consisting of maps `S.map' i (i + 1)` and `S.map' (i + 1) (i + 2)`
 when we know that `S : ComposableArrows C n` satisfies `S.IsComplex`. -/
-abbrev sc (hS : S.IsComplex) (i : ℕ) (hi : i + 2 ≤ n := by omega) :
+abbrev sc (hS : S.IsComplex) (i : ℕ) (hi : i + 2 ≤ n := by grind) :
     ShortComplex C :=
   S.sc' hS i (i + 1) (i + 2)
 
 /-- `F : ComposableArrows C n` is exact if it is a complex and that all short
 complexes consisting of two consecutive arrows are exact. -/
 structure Exact : Prop extends S.IsComplex where
-  exact (i : ℕ) (hi : i + 2 ≤ n := by omega) : (S.sc toIsComplex i).Exact
+  exact (i : ℕ) (hi : i + 2 ≤ n := by grind) : (S.sc toIsComplex i).Exact
 
 variable {S}
 
-lemma Exact.exact' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by omega)
-    (hjk : j + 1 = k := by omega) (hk : k ≤ n := by omega) :
+lemma Exact.exact' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by grind)
+    (hjk : j + 1 = k := by grind) (hk : k ≤ n := by grind) :
     (S.sc' hS.toIsComplex i j k).Exact := by
   subst hij hjk
   exact hS.exact i hk
@@ -136,8 +136,8 @@ lemma Exact.exact' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by omega)
 /-- Functoriality maps for `ComposableArrows.sc'`. -/
 @[simps]
 def sc'Map {S₁ S₂ : ComposableArrows C n} (φ : S₁ ⟶ S₂) (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex)
-    (i j k : ℕ) (hij : i + 1 = j := by omega)
-    (hjk : j + 1 = k := by omega) (hk : k ≤ n := by omega) :
+    (i j k : ℕ) (hij : i + 1 = j := by grind)
+    (hjk : j + 1 = k := by grind) (hk : k ≤ n := by grind) :
     S₁.sc' h₁ i j k ⟶ S₂.sc' h₂ i j k where
   τ₁ := φ.app _
   τ₂ := φ.app _
@@ -146,7 +146,7 @@ def sc'Map {S₁ S₂ : ComposableArrows C n} (φ : S₁ ⟶ S₂) (h₁ : S₁.
 /-- Functoriality maps for `ComposableArrows.sc`. -/
 @[simps!]
 def scMap {S₁ S₂ : ComposableArrows C n} (φ : S₁ ⟶ S₂) (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex)
-    (i : ℕ) (hi : i + 2 ≤ n := by omega) :
+    (i : ℕ) (hi : i + 2 ≤ n := by grind) :
     S₁.sc h₁ i ⟶ S₂.sc h₂ i :=
   sc'Map φ h₁ h₂ i (i + 1) (i + 2)
 
@@ -154,8 +154,8 @@ def scMap {S₁ S₂ : ComposableArrows C n} (φ : S₁ ⟶ S₂) (h₁ : S₁.I
 in `ComposableArrows C n`. -/
 @[simps]
 def sc'MapIso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂)
-    (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex) (i j k : ℕ) (hij : i + 1 = j := by omega)
-    (hjk : j + 1 = k := by omega) (hk : k ≤ n := by omega) :
+    (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex) (i j k : ℕ) (hij : i + 1 = j := by grind)
+    (hjk : j + 1 = k := by grind) (hk : k ≤ n := by grind) :
     S₁.sc' h₁ i j k ≅ S₂.sc' h₂ i j k where
   hom := sc'Map e.hom h₁ h₂ i j k
   inv := sc'Map e.inv h₂ h₁ i j k
@@ -167,7 +167,7 @@ in `ComposableArrows C n`. -/
 @[simps]
 def scMapIso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂)
     (h₁ : S₁.IsComplex) (h₂ : S₂.IsComplex)
-    (i : ℕ) (hi : i + 2 ≤ n := by omega) :
+    (i : ℕ) (hi : i + 2 ≤ n := by grind) :
     S₁.sc h₁ i ≅ S₂.sc h₂ i where
   hom := scMap e.hom h₁ h₂ i
   inv := scMap e.inv h₂ h₁ i
@@ -191,16 +191,16 @@ lemma exact₀ (S : ComposableArrows C 0) : S.Exact where
 
 lemma exact₁ (S : ComposableArrows C 1) : S.Exact where
   toIsComplex := S.isComplex₁
-  exact i hi := by exfalso; omega
+  exact i hi := by exfalso; grind
 
 lemma isComplex₂_iff (S : ComposableArrows C 2) :
     S.IsComplex ↔ S.map' 0 1 ≫ S.map' 1 2 = 0 := by
   constructor
   · intro h
-    exact h.zero 0 (by omega)
+    exact h.zero 0 (by grind)
   · intro h
     refine IsComplex.mk (fun i hi => ?_)
-    obtain rfl : i = 0 := by omega
+    obtain rfl : i = 0 := by grind
     exact h
 
 lemma isComplex₂_mk (S : ComposableArrows C 2) (w : S.map' 0 1 ≫ S.map' 1 2 = 0) :
@@ -221,10 +221,10 @@ lemma exact₂_iff (S : ComposableArrows C 2) (hS : S.IsComplex) :
     S.Exact ↔ (S.sc' hS 0 1 2).Exact := by
   constructor
   · intro h
-    exact h.exact 0 (by omega)
+    exact h.exact 0 (by grind)
   · intro h
     refine Exact.mk hS (fun i hi => ?_)
-    obtain rfl : i = 0 := by omega
+    obtain rfl : i = 0 := by grind
     exact h
 
 lemma exact₂_mk (S : ComposableArrows C 2) (w : S.map' 0 1 ≫ S.map' 1 2 = 0)
@@ -249,7 +249,7 @@ lemma exact_iff_δ₀ (S : ComposableArrows C (n + 2)) :
     · rw [exact₂_iff]; swap
       · rw [isComplex₂_iff]
         exact h.toIsComplex.zero 0
-      exact h.exact 0 (by omega)
+      exact h.exact 0 (by grind)
     · exact Exact.mk (IsComplex.mk (fun i hi => h.toIsComplex.zero (i + 1)))
         (fun i hi => h.exact (i + 1))
   · rintro ⟨h, h₀⟩
@@ -285,7 +285,7 @@ lemma exact_iff_δlast {n : ℕ} (S : ComposableArrows C (n + 2)) :
     · rw [exact₂_iff]; swap
       · rw [isComplex₂_iff]
         exact h.toIsComplex.zero n
-      exact h.exact n (by omega)
+      exact h.exact n (by grind)
   · rintro ⟨h, h'⟩
     refine Exact.mk (IsComplex.mk (fun i hi => ?_)) (fun i hi => ?_)
     · simp only [Nat.add_le_add_iff_right] at hi
