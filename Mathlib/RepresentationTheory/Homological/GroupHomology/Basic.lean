@@ -32,8 +32,8 @@ Hence our $d_n$ squares to zero, and we get
 $\mathrm{H}_n(G, A) \cong \mathrm{Tor}_n(A, k),$ where $\mathrm{Tor}$ is defined by deriving the
 second argument of the functor $(A, B) \mapsto (A \otimes_k B)_G.$
 
-To talk about homology in low degree, the file
-`Mathlib/RepresentationTheory/Homological/GroupHomology/LowDegree.lean` will eventually provide
+To talk about homology in low degree, please see the file
+`Mathlib/RepresentationTheory/Homological/GroupHomology/LowDegree.lean`, which provides
 API specialized to `H₀`, `H₁`, `H₂`.
 
 ## Main definitions
