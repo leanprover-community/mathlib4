@@ -196,13 +196,14 @@ theorem submodule_map_involute_eq_comap (p : Submodule R (CliffordAlgebra Q)) :
 
 @[simp]
 theorem ι_range_map_involute :
-    (ι Q).range.map (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q).toLinearMap =
+    (LinearMap.range (ι Q)).map (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q).toLinearMap =
       LinearMap.range (ι Q) :=
   (ι_range_map_lift _ _).trans (LinearMap.range_neg _)
 
 @[simp]
 theorem ι_range_comap_involute :
-    (ι Q).range.comap (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q).toLinearMap =
+    (LinearMap.range (ι Q)).comap
+      (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q).toLinearMap =
       LinearMap.range (ι Q) := by
   rw [← submodule_map_involute_eq_comap, ι_range_map_involute]
 
@@ -229,7 +230,7 @@ theorem submodule_map_reverse_eq_comap (p : Submodule R (CliffordAlgebra Q)) :
 
 @[simp]
 theorem ι_range_map_reverse :
-    (ι Q).range.map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q)
+    (LinearMap.range (ι Q)).map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q)
       = LinearMap.range (ι Q) := by
   rw [reverse, reverseOp, Submodule.map_comp, ι_range_map_lift, LinearMap.range_comp,
     ← Submodule.map_comp]
@@ -237,7 +238,7 @@ theorem ι_range_map_reverse :
 
 @[simp]
 theorem ι_range_comap_reverse :
-    (ι Q).range.comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q)
+    (LinearMap.range (ι Q)).comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q)
       = LinearMap.range (ι Q) := by
   rw [← submodule_map_reverse_eq_comap, ι_range_map_reverse]
 

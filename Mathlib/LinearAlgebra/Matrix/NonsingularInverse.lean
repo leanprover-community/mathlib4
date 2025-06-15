@@ -183,12 +183,15 @@ theorem coe_units_inv (A : (Matrix n n α)ˣ) : ↑A⁻¹ = (A⁻¹ : Matrix n n
   rw [← invOf_eq_nonsing_inv, invOf_units]
 
 /-- The nonsingular inverse is the same as the general `Ring.inverse`. -/
-theorem nonsing_inv_eq_ring_inverse : A⁻¹ = Ring.inverse A := by
+theorem nonsing_inv_eq_ringInverse : A⁻¹ = Ring.inverse A := by
   by_cases h_det : IsUnit A.det
   · cases (A.isUnit_iff_isUnit_det.mpr h_det).nonempty_invertible
     rw [← invOf_eq_nonsing_inv, Ring.inverse_invertible]
   · have h := mt A.isUnit_iff_isUnit_det.mp h_det
     rw [Ring.inverse_non_unit _ h, nonsing_inv_apply_not_isUnit A h_det]
+
+@[deprecated (since := "2025-04-22")]
+alias nonsing_inv_eq_ring_inverse := nonsing_inv_eq_ringInverse
 
 theorem transpose_nonsing_inv : A⁻¹ᵀ = Aᵀ⁻¹ := by
   rw [inv_def, inv_def, transpose_smul, det_transpose, adjugate_transpose]
@@ -422,7 +425,7 @@ theorem nonsing_inv_nonsing_inv (h : IsUnit A.det) : A⁻¹⁻¹ = A :=
       rw [Matrix.mul_assoc, A⁻¹.mul_nonsing_inv (A.isUnit_nonsing_inv_det h), Matrix.mul_one]
 
 theorem isUnit_nonsing_inv_det_iff {A : Matrix n n α} : IsUnit A⁻¹.det ↔ IsUnit A.det := by
-  rw [Matrix.det_nonsing_inv, isUnit_ring_inverse]
+  rw [Matrix.det_nonsing_inv, isUnit_ringInverse]
 
 @[simp]
 theorem isUnit_nonsing_inv_iff {A : Matrix n n α} : IsUnit A⁻¹ ↔ IsUnit A := by
@@ -553,7 +556,7 @@ theorem isUnit_diagonal {v : n → α} : IsUnit (diagonal v) ↔ IsUnit v := by
     (diagonalInvertibleEquivInvertible v).nonempty_congr]
 
 theorem inv_diagonal (v : n → α) : (diagonal v)⁻¹ = diagonal (Ring.inverse v) := by
-  rw [nonsing_inv_eq_ring_inverse]
+  rw [nonsing_inv_eq_ringInverse]
   by_cases h : IsUnit v
   · have := isUnit_diagonal.mpr h
     cases this.nonempty_invertible
@@ -609,12 +612,12 @@ theorem inv_inv_inv (A : Matrix n n α) : A⁻¹⁻¹⁻¹ = A⁻¹ := by
 /-- The `Matrix` version of `inv_add_inv'` -/
 theorem inv_add_inv {A B : Matrix n n α} (h : IsUnit A ↔ IsUnit B) :
     A⁻¹ + B⁻¹ = A⁻¹ * (A + B) * B⁻¹ := by
-  simpa only [nonsing_inv_eq_ring_inverse] using Ring.inverse_add_inverse h
+  simpa only [nonsing_inv_eq_ringInverse] using Ring.inverse_add_inverse h
 
 /-- The `Matrix` version of `inv_sub_inv'` -/
 theorem inv_sub_inv {A B : Matrix n n α} (h : IsUnit A ↔ IsUnit B) :
     A⁻¹ - B⁻¹ = A⁻¹ * (B - A) * B⁻¹ := by
-  simpa only [nonsing_inv_eq_ring_inverse] using Ring.inverse_sub_inverse h
+  simpa only [nonsing_inv_eq_ringInverse] using Ring.inverse_sub_inverse h
 
 theorem mul_inv_rev (A B : Matrix n n α) : (A * B)⁻¹ = B⁻¹ * A⁻¹ := by
   simp only [inv_def]
@@ -701,7 +704,7 @@ theorem inv_submatrix_equiv (A : Matrix m m α) (e₁ e₂ : n ≃ m) :
     letI := submatrixEquivInvertible A e₁ e₂
     rw [← invOf_eq_nonsing_inv, ← invOf_eq_nonsing_inv, invOf_submatrix_equiv_eq A]
   · have := (isUnit_submatrix_equiv e₁ e₂).not.mpr h
-    simp_rw [nonsing_inv_eq_ring_inverse, Ring.inverse_non_unit _ h, Ring.inverse_non_unit _ this,
+    simp_rw [nonsing_inv_eq_ringInverse, Ring.inverse_non_unit _ h, Ring.inverse_non_unit _ this,
       submatrix_zero, Pi.zero_apply]
 
 theorem inv_reindex (e₁ e₂ : n ≃ m) (A : Matrix n n α) : (reindex e₁ e₂ A)⁻¹ = reindex e₂ e₁ A⁻¹ :=

@@ -24,17 +24,9 @@ The main input for this is that the induced functor `H : C ⥤ Action FintypeCat
 preserves connectedness, which translates to the fact that `Aut F` acts transitively on
 the fibers of connected objects.
 
-## Implementation details
-
-We only show this for small categories, because the preservation of connectedness result as it
-is currently in Mathlib is only shown for
-`(C : Type u₁) [Category.{u₂} C] (F : C ⥤ FintypeCat.{u₂})` and by the definition of `Action`,
-this forces `u₁ = u₂` for the definition of `functorToAction`. Mathematically there should
-be no obstruction to generalizing the results of this file to arbitrary universes.
-
 -/
 
-universe u v
+universe u
 
 namespace CategoryTheory
 
@@ -42,7 +34,7 @@ namespace PreGaloisCategory
 
 open Limits Functor
 
-variable {C : Type u} [Category.{v} C] (F : C ⥤ FintypeCat.{u}) [GaloisCategory C] [FiberFunctor F]
+variable {C : Type*} [Category C] (F : C ⥤ FintypeCat.{u}) [GaloisCategory C] [FiberFunctor F]
 
 /--
 Let `X` be an object of a Galois category with fiber functor `F` and `Y` a sub-`Aut F`-set
