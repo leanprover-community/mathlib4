@@ -63,7 +63,8 @@ theorem monoidalClosed_curry {M N P : ModuleCat.{u} R} (f : M ⊗ N ⟶ P) (x : 
 @[simp]
 theorem monoidalClosed_uncurry
     {M N P : ModuleCat.{u} R} (f : N ⟶ M ⟶[ModuleCat.{u} R] P) (x : M) (y : N) :
-    MonoidalClosed.uncurry f (x ⊗ₜ[R] y) = (f y).hom x :=
+    DFunLike.coe (F := TensorProduct R M N →ₗ[R] P)
+      (MonoidalClosed.uncurry f).hom (x ⊗ₜ[R] y) = (f y).hom x :=
   rfl
 
 /-- Describes the counit of the adjunction `M ⊗ - ⊣ Hom(M, -)`. Given an `R`-module `N` this
