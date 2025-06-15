@@ -117,10 +117,10 @@ theorem isRoot_quadratic_iff [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
   rw [← quadratic_eq_zero_iff ha h]; simp [pow_two]
 
 /-- Root of a quadratic when its discriminant equals zero -/
-theorem quadratic_eq_zero_iff_of_discrim_eq_zero [NeZero (2 : R)] (ha : a ≠ 0)
-    (h : discrim a b c = 0) (x : R) : IsRoot (a • X ^ 2 + b • X + C c) x ↔ x = -b / (2 * a) := by
-  simp only [IsRoot.def, eval_add, eval_smul, eval_pow, eval_X, smul_eq_mul, eval_C]
-  rw [sq, _root_.quadratic_eq_zero_iff_of_discrim_eq_zero ha h]
+theorem isRoot_quadratic_iff_of_discrim_eq_zero [NeZero (2 : R)] (ha : a ≠ 0)
+    (h : discrim a b c = 0) (x : R) :
+    IsRoot (a • X ^ 2 + b • X + C c) x ↔ x = -b / (2 * a) := by
+  rw [← quadratic_eq_zero_iff_of_discrim_eq_zero ha h]; simp [pow_two]
 
 /-- A quadratic has no root if its discriminant has no square root. -/
 theorem quadratic_ne_zero_of_discrim_ne_sq (h : ∀ s : R, discrim a b c ≠ s^2) (x : R) :
