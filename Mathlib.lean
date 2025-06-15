@@ -998,8 +998,12 @@ import Mathlib.Algebra.Quaternion
 import Mathlib.Algebra.QuaternionBasis
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Regular.Basic
+import Mathlib.Algebra.Regular.Opposite
+import Mathlib.Algebra.Regular.Pi
 import Mathlib.Algebra.Regular.Pow
+import Mathlib.Algebra.Regular.Prod
 import Mathlib.Algebra.Regular.SMul
+import Mathlib.Algebra.Regular.ULift
 import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Algebra.Ring.Action.ConjAct
 import Mathlib.Algebra.Ring.Action.End
@@ -1239,6 +1243,7 @@ import Mathlib.AlgebraicTopology.Quasicategory.Nerve
 import Mathlib.AlgebraicTopology.Quasicategory.StrictSegal
 import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
 import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
+import Mathlib.AlgebraicTopology.SimplexCategory.Augmented
 import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 import Mathlib.AlgebraicTopology.SimplexCategory.Defs
 import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.Basic
@@ -3744,6 +3749,7 @@ import Mathlib.GroupTheory.GroupAction.Primitive
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.GroupTheory.GroupAction.SubMulAction
+import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.Support
@@ -3844,8 +3850,8 @@ import Mathlib.Lean.Meta.KAbstractPositions
 import Mathlib.Lean.Meta.RefinedDiscrTree
 import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
+import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
 import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
-import Mathlib.Lean.Meta.RefinedDiscrTree.Pi
 import Mathlib.Lean.Meta.Simp
 import Mathlib.Lean.Name
 import Mathlib.Lean.PrettyPrinter.Delaborator
@@ -4595,6 +4601,7 @@ import Mathlib.NumberTheory.NumberField.Completion
 import Mathlib.NumberTheory.NumberField.DedekindZeta
 import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 import Mathlib.NumberTheory.NumberField.Discriminant.Defs
+import Mathlib.NumberTheory.NumberField.Discriminant.Different
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.NumberTheory.NumberField.EquivReindex
 import Mathlib.NumberTheory.NumberField.FinitePlaces
@@ -5422,6 +5429,7 @@ import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 import Mathlib.RingTheory.QuotSMulTop
 import Mathlib.RingTheory.Radical
 import Mathlib.RingTheory.ReesAlgebra
+import Mathlib.RingTheory.Regular.Category
 import Mathlib.RingTheory.Regular.Depth
 import Mathlib.RingTheory.Regular.IsSMulRegular
 import Mathlib.RingTheory.Regular.RegularSequence
@@ -5720,7 +5728,6 @@ import Mathlib.Tactic.FunProp.Differentiable
 import Mathlib.Tactic.FunProp.Elab
 import Mathlib.Tactic.FunProp.FunctionData
 import Mathlib.Tactic.FunProp.Mor
-import Mathlib.Tactic.FunProp.StateList
 import Mathlib.Tactic.FunProp.Theorems
 import Mathlib.Tactic.FunProp.ToBatteries
 import Mathlib.Tactic.FunProp.Types
