@@ -90,6 +90,9 @@ theorem mod_modEq (a n) : a % n ≡ a [MOD n] :=
 
 namespace ModEq
 
+theorem self_mul_add : ModEq m (m * a + b) b := by
+  simp [Nat.ModEq]
+
 lemma of_dvd (d : m ∣ n) (h : a ≡ b [MOD n]) : a ≡ b [MOD m] :=
   modEq_of_dvd <| Int.ofNat_dvd.mpr d |>.trans h.dvd
 

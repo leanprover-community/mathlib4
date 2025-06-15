@@ -27,3 +27,13 @@ instance Int.euclideanDomain : EuclideanDomain ℤ :=
         rw [← mul_one a.natAbs, Int.natAbs_mul]
         rw [← Int.natAbs_pos] at b0
         exact Nat.mul_le_mul_left _ b0 }
+
+theorem Int.gcd_rec (m n : ℤ) : m.gcd n = (n % m).gcd m := by
+  simp only [Int.gcd]
+  by_cases hm : m = 0
+  · simp [hm]
+  rw [Int.natAbs_emod _ hm]
+  split_ifs with hn
+  · rw [← Nat.gcd_rec]
+  · rw [Nat.gcd_self_sub_left, Nat.gcd_rec]
+    exact le_of_lt (Nat.mod_lt _ (Int.natAbs_pos.mpr hm))

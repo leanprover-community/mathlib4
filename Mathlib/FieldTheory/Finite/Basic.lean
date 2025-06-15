@@ -544,6 +544,43 @@ instance instFiniteZModUnits : (n : ℕ) → Finite (ZMod n)ˣ
 | 0     => Finite.of_fintype ℤˣ
 | _ + 1 => inferInstance
 
+/-- Euler's totient function is only odd at `1` or `2`. -/
+theorem Nat.odd_totient_iff {n : ℕ} :
+    Odd (φ n) ↔ n = 1 ∨ n = 2 := by
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · set x : (ZMod n)ˣ := ⟨-1, -1, by simp, by simp⟩ with hx
+    suffices x = 1 by
+      rw [← Units.eq_iff, eq_comm, hx, ← sub_eq_zero,
+        Units.val_one, sub_neg_eq_add] at this
+      norm_num at this
+      rwa [← Nat.cast_two, ZMod.natCast_zmod_eq_zero_iff_dvd,
+        dvd_prime prime_two] at this
+    have H := ZMod.pow_totient x
+    suffices x ^ 2 = 1 by
+      rwa [h.exists_bit1.choose_spec, pow_succ, pow_mul, this, one_pow, one_mul] at H
+    simp [← Units.eq_iff, x]
+  · rintro (⟨rfl⟩ | ⟨rfl⟩)
+    · rw [show φ 1 = 1 by rfl, Nat.odd_iff]
+    · rw [show φ 2 = 1 by rfl, Nat.odd_iff]
+
+theorem Nat.odd_totient_iff_eq_one {n : ℕ} :
+    Odd (φ n) ↔ φ n = 1 := by
+  simp [Nat.odd_totient_iff, Nat.totient_eq_one_iff]
+
+/-- `Nat.totient m` and `Nat.totient n` are coprime iff one of them is 1. -/
+theorem Nat.totient_coprime_totient_iff (m n : ℕ) :
+    (φ m).Coprime (φ n) ↔ (m = 1 ∨ m = 2) ∨ (n = 1 ∨ n = 2) := by
+  by_cases hm : Odd (φ m)
+  · rw [Nat.odd_totient_iff] at hm
+    simp [hm, Nat.totient_eq_one_iff.mpr hm]
+  by_cases hn : Odd (φ n)
+  · rw [odd_totient_iff] at hn
+    simp [hn, totient_eq_one_iff.mpr hn]
+  · simp only [← Nat.odd_totient_iff, hm, hn]
+    rw [Nat.not_odd_iff_even, even_iff_two_dvd] at hm hn
+    simp only [or_self, iff_false, ne_eq, Prime.not_coprime_iff_dvd]
+    exact ⟨2, prime_two, hm, hn⟩
+
 open FiniteField
 
 namespace ZMod

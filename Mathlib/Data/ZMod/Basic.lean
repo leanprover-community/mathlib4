@@ -141,6 +141,12 @@ theorem natCast_self (n : ℕ) : (n : ZMod n) = 0 :=
 theorem natCast_self' (n : ℕ) : (n + 1 : ZMod (n + 1)) = 0 := by
   rw [← Nat.cast_add_one, natCast_self (n + 1)]
 
+lemma natCast_pow_eq_zero_of_le (p : ℕ) {m n : ℕ} (h : n ≤ m) :
+    (p ^ m : ZMod (p ^ n)) = 0 := by
+  obtain ⟨q, rfl⟩ := Nat.exists_eq_add_of_le h
+  rw [pow_add, ← Nat.cast_pow]
+  simp
+
 section UniversalProperty
 
 variable {n : ℕ} {R : Type*}
@@ -812,6 +818,11 @@ theorem inv_mul_of_unit {n : ℕ} (a : ZMod n) (h : IsUnit a) : a⁻¹ * a = 1 :
 protected theorem inv_eq_of_mul_eq_one (n : ℕ) (a b : ZMod n) (h : a * b = 1) : a⁻¹ = b :=
   left_inv_eq_right_inv (inv_mul_of_unit a ⟨⟨a, b, h, mul_comm a b ▸ h⟩, rfl⟩) h
 
+@[simp]
+theorem inv_neg_one (n : ℕ) : (-1 : ZMod n)⁻¹ = -1 := by
+  refine ZMod.inv_eq_of_mul_eq_one n (-1) (-1) ?_
+  simp
+
 lemma inv_mul_eq_one_of_isUnit {n : ℕ} {a : ZMod n} (ha : IsUnit a) (b : ZMod n) :
     a⁻¹ * b = 1 ↔ a = b := by
   -- ideally, this would be `ha.inv_mul_eq_one`, but `ZMod n` is not a `DivisionMonoid`...
@@ -893,6 +904,9 @@ lemma nontrivial_iff {n : ℕ} : Nontrivial (ZMod n) ↔ n ≠ 1 := by
 -- todo: this can be made a `Unique` instance.
 instance subsingleton_units : Subsingleton (ZMod 2)ˣ :=
   ⟨by decide⟩
+
+theorem coe_int_val_coe {n : ℕ} [NeZero n] (x : ℤ) :
+    ((x : ZMod n).val : ZMod n) = x := by simp
 
 @[simp]
 theorem add_self_eq_zero_iff_eq_zero {n : ℕ} (hn : Odd n) {a : ZMod n} :
