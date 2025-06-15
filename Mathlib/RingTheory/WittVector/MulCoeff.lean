@@ -35,7 +35,6 @@ variable {k : Type*} [CommRing k]
 
 local notation "𝕎" => WittVector p
 
--- Porting note: new notation
 local notation "𝕄" => MvPolynomial (Fin 2 × ℕ) ℤ
 
 open Finset MvPolynomial

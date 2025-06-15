@@ -385,8 +385,6 @@ def Arrow.equivSigma :
     Arrow T ≃ Σ (X Y : T), X ⟶ Y where
   toFun f := ⟨_, _, f.hom⟩
   invFun x := Arrow.mk x.2.2
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The equivalence `Arrow (Discrete S) ≃ S`. -/
 def Arrow.discreteEquiv (S : Type u) : Arrow (Discrete S) ≃ S where
@@ -396,7 +394,6 @@ def Arrow.discreteEquiv (S : Type u) : Arrow (Discrete S) ≃ S where
     rintro ⟨⟨_⟩, ⟨_⟩, f⟩
     obtain rfl := Discrete.eq_of_hom f
     rfl
-  right_inv _ := rfl
 
 /-- Extensionality lemma for functors `C ⥤ D` which uses as an assumption
 that the induced maps `Arrow C → Arrow D` coincide. -/

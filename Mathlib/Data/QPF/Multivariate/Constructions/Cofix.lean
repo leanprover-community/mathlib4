@@ -274,8 +274,6 @@ theorem Cofix.bisim {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop)
   · change f₀ _ j = f₁ _ j
     apply h' _ j
 
-open MvFunctor
-
 /-- Bisimulation principle using `LiftR'` to match and relate children of two trees. -/
 theorem Cofix.bisim₂ {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop)
     (h : ∀ x y, r x y → LiftR' (RelLast' α r) (Cofix.dest x) (Cofix.dest y)) :

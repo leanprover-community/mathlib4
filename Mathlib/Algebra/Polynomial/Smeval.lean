@@ -170,7 +170,7 @@ end Neg
 section NatPowAssoc
 
 /-!
-In the module docstring for algebras at `Mathlib.Algebra.Algebra.Basic`, we see that
+In the module docstring for algebras at `Mathlib/Algebra/Algebra/Basic.lean`, we see that
 `[CommSemiring R] [Semiring S] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S]` is an
 equivalent way to express `[CommSemiring R] [Semiring S] [Algebra R S]` that allows one to relax
 the defining structures independently.  For non-associative power-associative algebras (e.g.,

@@ -138,7 +138,7 @@ theorem card_le_one_iff_eq_bot [Finite H] : Nat.card H ≤ 1 ↔ H = ⊥ :=
 
 @[to_additive one_lt_card_iff_ne_bot]
 theorem one_lt_card_iff_ne_bot [Finite H] : 1 < Nat.card H ↔ H ≠ ⊥ :=
-  lt_iff_not_le.trans H.card_le_one_iff_eq_bot.not
+  lt_iff_not_ge.trans H.card_le_one_iff_eq_bot.not
 
 @[to_additive]
 theorem card_le_card_group [Finite G] : Nat.card H ≤ Nat.card G :=
@@ -177,10 +177,10 @@ theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgro
   | empty =>
     have : x = 1 := by
       ext i
-      exact h1 i (Finset.not_mem_empty i)
+      exact h1 i (Finset.notMem_empty i)
     rw [this]
     exact one_mem H
-  | insert i I hnmem ih =>
+  | insert i I hnotMem ih =>
     have : x = Function.update x i 1 * Pi.mulSingle i (x i) := by
       ext j
       by_cases heq : j = i

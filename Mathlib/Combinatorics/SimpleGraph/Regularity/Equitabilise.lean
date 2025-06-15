@@ -93,7 +93,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
     simp_rw [extend_parts, filter_insert, htn, n, m.succ_ne_self.symm.ite_eq_right_iff]
     split_ifs with ha
     · rw [hR₃, if_pos ha]
-    rw [card_insert_of_not_mem, hR₃, if_neg ha, tsub_add_cancel_of_le]
+    rw [card_insert_of_notMem, hR₃, if_neg ha, tsub_add_cancel_of_le]
     · exact hab.resolve_left ha
     · intro H; exact ht.ne_empty (le_sdiff_right.1 <| R.le <| filter_subset _ _ H)
   push_neg at h
@@ -131,7 +131,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
   simp only [extend_parts, filter_insert, htn, hn, m.succ_ne_self.symm.ite_eq_right_iff]
   split_ifs with h
   · rw [hR₃, if_pos h]
-  · rw [card_insert_of_not_mem, hR₃, if_neg h, Nat.sub_add_cancel (hab.resolve_left h)]
+  · rw [card_insert_of_notMem, hR₃, if_neg h, Nat.sub_add_cancel (hab.resolve_left h)]
     intro H; exact ht.ne_empty (le_sdiff_right.1 <| R.le <| filter_subset _ _ H)
 
 variable (h : a * m + b * (m + 1) = #s)

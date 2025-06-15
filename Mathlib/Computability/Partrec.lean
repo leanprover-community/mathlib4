@@ -46,9 +46,9 @@ private def wf_lbp (H : ∃ n, true ∈ p n ∧ ∀ k < n, (p k).Dom) : WellFoun
     let ⟨n, pn⟩ := H
     suffices ∀ m k, n ≤ k + m → Acc (lbp p) k by exact fun a => this _ _ (Nat.le_add_left _ _)
     intro m k kn
-    induction' m with m IH generalizing k <;> refine ⟨_, fun y r => ?_⟩ <;> rcases r with ⟨rfl, a⟩
-    · injection mem_unique pn.1 (a _ kn)
-    · exact IH _ (by rw [Nat.add_right_comm]; exact kn)⟩
+    induction m generalizing k with (refine ⟨_, fun y r => ?_⟩; rcases r with ⟨rfl, a⟩)
+    | zero => injection mem_unique pn.1 (a _ kn)
+    | succ m IH => exact IH _ (by rw [Nat.add_right_comm]; exact kn)⟩
 
 variable (H : ∃ n, true ∈ p n ∧ ∀ k < n, (p k).Dom)
 
@@ -414,7 +414,7 @@ theorem nat_rec {f : α → ℕ} {g : α →. σ} {h : α → ℕ × σ →. σ}
     (hh : Partrec₂ h) : Partrec fun a => (f a).rec (g a) fun y IH => IH.bind fun i => h a (y, i) :=
   (Nat.Partrec.prec' hf hg hh).of_eq fun n => by
     rcases e : decode (α := α) n with - | a <;> simp [e]
-    induction' f a with m IH <;> simp
+    induction f a with simp | succ m IH
     rw [IH, Part.bind_map]
     congr; funext s
     simp [encodek]
@@ -649,8 +649,9 @@ theorem nat_strong_rec (f : α → ℕ → σ) {g : α → List σ → Option σ
                 option_map (hg.comp (fst.comp <| fst.comp fst) snd)
                   (to₂ <| list_concat.comp (snd.comp fst) snd))).of_eq
       fun a => by
-      induction' a.2 with n IH; · rfl
-      simp [IH, H, List.range_succ]
+      induction a.2 with
+      | zero => rfl
+      | succ n IH => simp [IH, H, List.range_succ]
 
 theorem list_ofFn :
     ∀ {n} {f : Fin n → α → σ},
@@ -728,10 +729,11 @@ theorem fix_aux {α σ} (f : α →. σ ⊕ α) (a : α) (b : σ) :
   · rcases h with ⟨n, ⟨_x, h₁⟩, h₂⟩
     have : ∀ m a', Sum.inr a' ∈ F a m → b ∈ PFun.fix f a' → b ∈ PFun.fix f a := by
       intro m a' am ba
-      induction' m with m IH generalizing a' <;> simp [F] at am
-      · rwa [← am]
-      rcases am with ⟨a₂, am₂, fa₂⟩
-      exact IH _ am₂ (PFun.mem_fix_iff.2 (Or.inr ⟨_, fa₂, ba⟩))
+      induction m generalizing a' with simp [F] at am
+      | zero => rwa [← am]
+      | succ m IH =>
+        rcases am with ⟨a₂, am₂, fa₂⟩
+        exact IH _ am₂ (PFun.mem_fix_iff.2 (Or.inr ⟨_, fa₂, ba⟩))
     cases n <;> simp [F] at h₂
     rcases h₂ with (h₂ | ⟨a', am', fa'⟩)
     · obtain ⟨a', h⟩ := h₁ (Nat.lt_succ_self _)

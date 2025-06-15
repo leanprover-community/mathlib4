@@ -161,14 +161,14 @@ instance instPreorderSum : Preorder (α ⊕ β) :=
   { instLESum, instLTSum with
     le_refl := fun _ => LiftRel.refl _ _ _,
     le_trans := fun _ _ _ => LiftRel.trans _ _,
-    lt_iff_le_not_le := fun a b => by
+    lt_iff_le_not_ge := fun a b => by
       refine ⟨fun hab => ⟨hab.mono (fun _ _ => le_of_lt) fun _ _ => le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨hba⟩ | ⟨hba⟩)
-        · exact hba.not_lt (inl_lt_inl_iff.1 hab)
-        · exact hba.not_lt (inr_lt_inr_iff.1 hab)
+        · exact hba.not_gt (inl_lt_inl_iff.1 hab)
+        · exact hba.not_gt (inr_lt_inr_iff.1 hab)
       · rintro ⟨⟨hab⟩ | ⟨hab⟩, hba⟩
-        · exact LiftRel.inl (hab.lt_of_not_le fun h => hba <| LiftRel.inl h)
-        · exact LiftRel.inr (hab.lt_of_not_le fun h => hba <| LiftRel.inr h) }
+        · exact LiftRel.inl (hab.lt_of_not_ge fun h => hba <| LiftRel.inl h)
+        · exact LiftRel.inr (hab.lt_of_not_ge fun h => hba <| LiftRel.inr h) }
 
 theorem inl_mono : Monotone (inl : α → α ⊕ β) := fun _ _ => LiftRel.inl
 
@@ -341,15 +341,15 @@ instance preorder : Preorder (α ⊕ₗ β) :=
   { Lex.LE, Lex.LT with
     le_refl := refl_of (Lex (· ≤ ·) (· ≤ ·)),
     le_trans := fun _ _ _ => trans_of (Lex (· ≤ ·) (· ≤ ·)),
-    lt_iff_le_not_le := fun a b => by
+    lt_iff_le_not_ge := fun a b => by
       refine ⟨fun hab => ⟨hab.mono (fun _ _ => le_of_lt) fun _ _ => le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨hba⟩ | ⟨hba⟩ | ⟨b, a⟩)
-        · exact hba.not_lt (inl_lt_inl_iff.1 hab)
-        · exact hba.not_lt (inr_lt_inr_iff.1 hab)
+        · exact hba.not_gt (inl_lt_inl_iff.1 hab)
+        · exact hba.not_gt (inr_lt_inr_iff.1 hab)
         · exact not_inr_lt_inl hab
       · rintro ⟨⟨hab⟩ | ⟨hab⟩ | ⟨a, b⟩, hba⟩
-        · exact Lex.inl (hab.lt_of_not_le fun h => hba <| Lex.inl h)
-        · exact Lex.inr (hab.lt_of_not_le fun h => hba <| Lex.inr h)
+        · exact Lex.inl (hab.lt_of_not_ge fun h => hba <| Lex.inl h)
+        · exact Lex.inr (hab.lt_of_not_ge fun h => hba <| Lex.inr h)
         · exact Lex.sep _ _ }
 
 theorem toLex_mono : Monotone (@toLex (α ⊕ β)) := fun _ _ h => h.lex

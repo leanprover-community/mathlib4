@@ -32,8 +32,6 @@ variable {α : Type*} (M : α → Type*) (u : Ultrafilter α)
 
 open FirstOrder Filter
 
-open Filter
-
 namespace FirstOrder
 
 namespace Language

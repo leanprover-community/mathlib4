@@ -110,7 +110,7 @@ lemma LocalSubring.exists_valuationRing_of_isMax {R : LocalSubring K} (hR : IsMa
   · have : (p - 1).natTrailingDegree = 0 := by
       simp only [Polynomial.natTrailingDegree_eq_zero,
         Polynomial.coeff_sub, Polynomial.coeff_one_zero, ne_eq, sub_eq_zero]
-      exact .inr fun h ↦ (IsLocalRing.not_mem_maximalIdeal.mpr isUnit_one (h ▸ hp 0))
+      exact .inr fun h ↦ (IsLocalRing.notMem_maximalIdeal.mpr isUnit_one (h ▸ hp 0))
     rw [Polynomial.Monic.def, Polynomial.leadingCoeff_mul', Polynomial.reverse_leadingCoeff,
       Polynomial.trailingCoeff, this]
     · simp

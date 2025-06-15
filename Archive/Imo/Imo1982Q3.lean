@@ -42,8 +42,9 @@ lemma le_avg : ∑ k ∈ range (n + 1), x k ≤ (∑ k ∈ range n, x k) * (1 + 
   rw [sum_range_succ, mul_one_add, add_le_add_iff_left, mul_one_div,
     le_div_iff₀ (mod_cast hn.bot_lt), mul_comm, ← nsmul_eq_mul]
   conv_lhs => rw [← card_range n, ← sum_const]
-  refine sum_le_sum fun k hk ↦ hx (le_of_lt ?_)
-  simpa using hk
+  gcongr with i hi
+  refine hx <| le_of_lt ?_
+  simpa using hi
 
 /-- The main inequality used for part a. -/
 lemma ineq (h0 : x 0 = 1) (hp : ∀ k, 0 < x k) :

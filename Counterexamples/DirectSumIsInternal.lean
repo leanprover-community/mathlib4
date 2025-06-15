@@ -53,7 +53,7 @@ theorem withSign.isCompl : IsCompl ℤ≥0 ℤ≤0 := by
     exact le_antisymm (mem_withSign_neg_one.mp hx') (mem_withSign_one.mp hx)
   · rw [codisjoint_iff_le_sup]
     intro x _hx
-    obtain hp | hn := (le_refl (0 : ℤ)).le_or_le x
+    obtain hp | hn := (le_refl (0 : ℤ)).ge_or_le x
     · exact Submodule.mem_sup_left (mem_withSign_one.mpr hp)
     · exact Submodule.mem_sup_right (mem_withSign_neg_one.mpr hn)
 

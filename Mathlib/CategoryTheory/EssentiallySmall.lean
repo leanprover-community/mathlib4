@@ -222,6 +222,15 @@ theorem essentiallySmall_of_small_of_locallySmall [Small.{w} C] [LocallySmall.{w
     EssentiallySmall.{w} C :=
   (essentiallySmall_iff C).2 ⟨small_of_surjective Quotient.exists_rep, by infer_instance⟩
 
+instance small_skeleton_of_essentiallySmall [h : EssentiallySmall.{w} C] : Small.{w} (Skeleton C) :=
+  essentiallySmall_iff C |>.1 h |>.1
+
+variable {C} in
+theorem essentiallySmall_of_fully_faithful {D : Type u'} [Category.{v'} D] (F : C ⥤ D)
+    [F.Full] [F.Faithful] [EssentiallySmall.{w} D] : EssentiallySmall.{w} C :=
+  (essentiallySmall_iff C).2 ⟨small_of_injective F.mapSkeleton_injective,
+    locallySmall_of_faithful F⟩
+
 section FullSubcategory
 
 instance locallySmall_fullSubcategory [LocallySmall.{w} C] (P : ObjectProperty C) :

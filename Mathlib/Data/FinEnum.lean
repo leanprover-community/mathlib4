@@ -61,11 +61,11 @@ open Function
 
 @[simp]
 theorem mem_toList [FinEnum α] (x : α) : x ∈ toList α := by
-  simp [toList]; exists equiv x; simp
+  simp only [toList, List.mem_map, List.mem_finRange, true_and]; exists equiv x; simp
 
 @[simp]
 theorem nodup_toList [FinEnum α] : List.Nodup (toList α) := by
-  simp [toList]; apply List.Nodup.map <;> [apply Equiv.injective; apply List.nodup_finRange]
+  simp only [toList]; apply List.Nodup.map <;> [apply Equiv.injective; apply List.nodup_finRange]
 
 /-- create a `FinEnum` instance using a surjection -/
 def ofSurjective {β} (f : β → α) [DecidableEq α] [FinEnum β] (h : Surjective f) : FinEnum α :=
@@ -134,7 +134,7 @@ def Finset.enum [DecidableEq α] : List α → List (Finset α)
 theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
     s ∈ Finset.enum xs ↔ ∀ x ∈ s, x ∈ xs := by
   induction xs generalizing s with
-  | nil => simp [enum, eq_empty_iff_forall_not_mem]
+  | nil => simp [enum, eq_empty_iff_forall_notMem]
   | cons x xs ih =>
       simp only [enum, List.bind_eq_flatMap, List.mem_flatMap, List.mem_cons, List.mem_singleton,
         List.not_mem_nil, or_false, ih]
@@ -266,6 +266,6 @@ instance pfunFinEnum (p : Prop) [Decidable p] (α : p → Type) [∀ hp, FinEnum
     FinEnum (∀ hp : p, α hp) :=
   if hp : p then
     ofList ((toList (α hp)).map fun x _ => x) (by intro x; simpa using ⟨x hp, rfl⟩)
-  else ofList [fun hp' => (hp hp').elim] (by intro; simp; ext hp'; cases hp hp')
+  else ofList [fun hp' => (hp hp').elim] (by simp [funext_iff, hp])
 
 end List

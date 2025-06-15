@@ -71,7 +71,7 @@ lemma mk_goursatFst_eq_iff_mk_goursatSnd_eq {x y : G × H} (hx : x ∈ I) (hy : 
   have := normal_goursatFst hI₁
   have := normal_goursatSnd hI₂
   rw [eq_comm]
-  simp [QuotientGroup.eq_iff_div_mem]
+  simp only [QuotientGroup.eq_iff_div_mem, mem_goursatFst, mem_goursatSnd]
   constructor <;> intro h
   · simpa [Prod.mul_def, Prod.div_def] using div_mem (mul_mem h hx) hy
   · simpa [Prod.mul_def, Prod.div_def] using div_mem (mul_mem h hy) hx

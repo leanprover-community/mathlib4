@@ -23,8 +23,8 @@ A right adjoint is
 This is Lemma 4.5.13 in Riehl's *Category Theory in Context* [riehl2017].
 See also https://stacks.math.columbia.edu/tag/07RB for the statements about fully faithful functors.
 
-In the file `Mathlib.CategoryTheory.Monad.Adjunction`, we prove that in fact, if there exists an
-isomorphism `L ⋙ R ≅ 𝟭 C`, then the unit is an isomorphism, and similarly for the counit.
+In the file `Mathlib/CategoryTheory/Monad/Adjunction.lean`, we prove that in fact, if there exists
+an isomorphism `L ⋙ R ≅ 𝟭 C`, then the unit is an isomorphism, and similarly for the counit.
 See `CategoryTheory.Adjunction.isIso_unit_of_iso` and
 `CategoryTheory.Adjunction.isIso_counit_of_iso`.
 -/

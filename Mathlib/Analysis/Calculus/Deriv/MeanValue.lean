@@ -172,7 +172,7 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (f : ℝ → ℝ) 
   case pos =>
     intro hdiff
     replace hdiff := hdiff.hasDerivWithinAt
-    rw [hasDerivWithinAt_iff_tendsto_slope, Set.diff_singleton_eq_self not_mem_Ioi_self] at hdiff
+    rw [hasDerivWithinAt_iff_tendsto_slope, Set.diff_singleton_eq_self notMem_Ioi_self] at hdiff
     have h₀ : ∀ᶠ b in 𝓝[>] a,
         ∀ x ∈ Ioc a b, max (derivWithin f (Ioi a) a + 1) 0 < derivWithin f (Ioi a) x := by
       rw [(nhdsGT_basis a).eventually_iff]
@@ -216,7 +216,7 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (f : ℝ → ℝ) 
         rwa [derivWithin_of_mem_nhds this]
       rw [hx₂, max_lt_iff] at hb
       linarith
-    simp [Filter.eventually_false_iff_eq_bot, ← not_mem_closure_iff_nhdsWithin_eq_bot] at hcontra
+    simp [Filter.eventually_false_iff_eq_bot, ← notMem_closure_iff_nhdsWithin_eq_bot] at hcontra
 
 /-- A real function whose derivative tends to minus infinity from the right at a point is not
 differentiable on the right at that point -/

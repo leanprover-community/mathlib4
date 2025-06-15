@@ -933,13 +933,7 @@ noncomputable instance instCartesianMonoidalCategory :
 
 lemma tensor_obj (X Y : F.EssImageSubcategory) : (X ⊗ Y).obj = X.obj ⊗ Y.obj := rfl
 
-lemma fst_def (X Y : F.EssImageSubcategory) : fst X Y = fst X.obj Y.obj := rfl
-lemma snd_def (X Y : F.EssImageSubcategory) : snd X Y = snd X.obj Y.obj := rfl
 lemma lift_def (f : T ⟶ X) (g : T ⟶ Y) : lift f g = lift (T := T.1) f g := rfl
-
-lemma whiskerLeft_def (X : F.EssImageSubcategory) (f : Y ⟶ Z) : X ◁ f = X.obj ◁ f := rfl
-lemma whiskerRight_def (f : Y ⟶ Z) (X : F.EssImageSubcategory) :
-    f ▷ X = MonoidalCategoryStruct.whiskerRight (C := D) f X.obj := rfl
 
 lemma associator_hom_def (X Y Z : F.EssImageSubcategory) :
     (α_ X Y Z).hom = (α_ X.obj Y.obj Z.obj).hom := rfl

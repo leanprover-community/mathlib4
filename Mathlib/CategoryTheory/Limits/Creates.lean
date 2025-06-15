@@ -309,7 +309,6 @@ def createsLimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Fa
         { app := fun j => F.preimage (i.hom ≫ l.π.app j)
           naturality := fun Y Z f =>
             F.map_injective <| by
-              dsimp
               simpa using (l.w f).symm } }
     (Cones.ext i fun j => by simp only [Functor.map_preimage, Functor.mapCone_π_app])
 
@@ -446,7 +445,6 @@ def createsColimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.
         { app := fun j => F.preimage (l.ι.app j ≫ i.inv)
           naturality := fun Y Z f =>
             F.map_injective <| by
-              dsimp
               simpa [← cancel_mono i.hom] using l.w f } }
     (Cocones.ext i fun j => by simp)
 

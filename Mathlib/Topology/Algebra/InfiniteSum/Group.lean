@@ -304,7 +304,7 @@ protected theorem Multipliable.mulIndicator (hf : Multipliable f) (s : Set β) :
 theorem Multipliable.comp_injective {i : γ → β} (hf : Multipliable f) (hi : Injective i) :
     Multipliable (f ∘ i) := by
   simpa only [Set.mulIndicator_range_comp] using
-    (hi.multipliable_iff (fun x hx ↦ Set.mulIndicator_of_not_mem hx _)).2
+    (hi.multipliable_iff (fun x hx ↦ Set.mulIndicator_of_notMem hx _)).2
     (hf.mulIndicator (Set.range i))
 
 @[to_additive]
@@ -385,7 +385,7 @@ theorem Multipliable.tendsto_cofinite_one (hf : Multipliable f) : Tendsto f cofi
   intro e he
   rw [Filter.mem_map]
   rcases hf.vanishing he with ⟨s, hs⟩
-  refine s.eventually_cofinite_nmem.mono fun x hx ↦ ?_
+  refine s.eventually_cofinite_notMem.mono fun x hx ↦ ?_
   · simpa using hs {x} (disjoint_singleton_left.2 hx)
 
 @[to_additive]

@@ -10,8 +10,8 @@ import Mathlib.Order.Disjointed
 /-!
 # `Disjointed` for functions on a `SuccAddOrder`
 
-This file contains material excised from `Mathlib.Order.Disjointed` to avoid import dependencies
-from `Mathlib.Algebra.Order` into `Mathlib.Order`.
+This file contains material excised from `Mathlib/Order/Disjointed.lean` to avoid import
+dependencies from `Mathlib.Algebra.Order` into `Mathlib.Order`.
 
 ## TODO
 

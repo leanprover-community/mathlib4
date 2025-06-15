@@ -40,8 +40,10 @@ def indicator (s : Finset ι) (f : ∀ i ∈ s, α) : ι →₀ α where
 theorem indicator_of_mem (hi : i ∈ s) (f : ∀ i ∈ s, α) : indicator s f i = f i hi :=
   @dif_pos _ (id _) hi _ _ _
 
-theorem indicator_of_not_mem (hi : i ∉ s) (f : ∀ i ∈ s, α) : indicator s f i = 0 :=
+theorem indicator_of_notMem (hi : i ∉ s) (f : ∀ i ∈ s, α) : indicator s f i = 0 :=
   @dif_neg _ (id _) hi _ _ _
+
+@[deprecated (since := "2025-05-23")] alias indicator_of_not_mem := indicator_of_notMem
 
 variable (s i)
 
@@ -60,7 +62,7 @@ theorem support_indicator_subset : ((indicator s f).support : Set ι) ⊆ s := b
   intro i hi
   rw [mem_coe, mem_support_iff] at hi
   by_contra h
-  exact hi (indicator_of_not_mem h _)
+  exact hi (indicator_of_notMem h _)
 
 lemma single_eq_indicator (b : α) : single i b = indicator {i} (fun _ _ => b) := by
   classical

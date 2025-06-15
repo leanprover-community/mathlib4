@@ -330,7 +330,8 @@ theorem liftRel_map {δ} (R : α → β → Prop) (S : γ → δ → Prop) {s1 :
       simp only [exists_and_left, destruct_map]
       apply Computation.liftRel_map _ _ (liftRel_destruct h)
       intro o p h
-      rcases o with - | a <;> rcases p with - | b <;> simp
+      rcases o with - | a <;> rcases p with - | b
+      · simp
       · cases b; cases h
       · cases a; cases h
       · obtain ⟨a, s⟩ := a; obtain ⟨b, t⟩ := b
@@ -490,15 +491,19 @@ theorem join_append (S T : WSeq (WSeq α)) : join (append S T) ~ʷ append (join 
       (let ⟨s, S, T, h1, h2⟩ := h
       ⟨s, S, T, congr_arg destruct h1, congr_arg destruct h2⟩)
   rintro c1 c2 ⟨s, S, T, rfl, rfl⟩
-  induction' s using WSeq.recOn with a s s <;> simp
-  · induction' S using WSeq.recOn with s S S <;> simp
-    · induction' T using WSeq.recOn with s T T <;> simp
-      · refine ⟨s, nil, T, ?_, ?_⟩ <;> simp
-      · refine ⟨nil, nil, T, ?_, ?_⟩ <;> simp
-    · exact ⟨s, S, T, rfl, rfl⟩
+  induction' s using WSeq.recOn with a s s
+  · induction' S using WSeq.recOn with s S S
+    · simp only [nil_append, join_nil]
+      induction' T using WSeq.recOn with s T T
+      · simp
+      · simp only [join_cons, destruct_think, Computation.destruct_think, liftRelAux_inr_inr]
+        refine ⟨s, nil, T, ?_, ?_⟩ <;> simp
+      · simp only [join_think, destruct_think, Computation.destruct_think, liftRelAux_inr_inr]
+        refine ⟨nil, nil, T, ?_, ?_⟩ <;> simp
+    · simpa using ⟨s, S, T, rfl, rfl⟩
     · refine ⟨nil, S, T, ?_, ?_⟩ <;> simp
-  · exact ⟨s, S, T, rfl, rfl⟩
-  · exact ⟨s, S, T, rfl, rfl⟩
+  · simpa using ⟨s, S, T, rfl, rfl⟩
+  · simpa using ⟨s, S, T, rfl, rfl⟩
 
 @[simp]
 theorem bind_ret (f : α → β) (s) : bind s (ret ∘ f) ~ʷ map f s := by
@@ -532,20 +537,28 @@ theorem join_join (SS : WSeq (WSeq (WSeq α))) : join (join SS) ~ʷ join (map jo
     match c1, c2, h with
     | _, _, ⟨s, S, SS, rfl, rfl⟩ => by
       clear h
-      induction' s using WSeq.recOn with a s s <;> simp
-      · induction' S using WSeq.recOn with s S S <;> simp
-        · induction' SS using WSeq.recOn with S SS SS <;> simp
+      induction' s using WSeq.recOn with a s s
+      · induction' S using WSeq.recOn with s S S
+        · simp only [nil_append, join_nil]
+          induction' SS using WSeq.recOn with S SS SS
+          · simp
           · refine ⟨nil, S, SS, ?_, ?_⟩ <;> simp
           · refine ⟨nil, nil, SS, ?_, ?_⟩ <;> simp
-        · exact ⟨s, S, SS, rfl, rfl⟩
+        · simpa using ⟨s, S, SS, rfl, rfl⟩
         · refine ⟨nil, S, SS, ?_, ?_⟩ <;> simp
-      · exact ⟨s, S, SS, rfl, rfl⟩
-      · exact ⟨s, S, SS, rfl, rfl⟩
+      · simpa using ⟨s, S, SS, rfl, rfl⟩
+      · simpa using ⟨s, S, SS, rfl, rfl⟩
+
+@[simp]
+theorem bind_assoc_comp (s : WSeq α) (f : α → WSeq β) (g : β → WSeq γ) :
+    bind (bind s f) g ~ʷ bind s ((fun y : WSeq β => bind y g) ∘ f) := by
+  simp only [bind, map_join]
+  rw [← map_comp f (map g), ← Function.comp_def, comp_assoc, map_comp (map g ∘ f) join s]
+  exact join_join (map (map g ∘ f) s)
 
 @[simp]
 theorem bind_assoc (s : WSeq α) (f : α → WSeq β) (g : β → WSeq γ) :
     bind (bind s f) g ~ʷ bind s fun x : α => bind (f x) g := by
-  simp only [bind, map_join]; erw [← map_comp f (map g), map_comp (map g ∘ f) join]
-  apply join_join
+  exact bind_assoc_comp s f g
 
 end Stream'.WSeq

@@ -183,13 +183,13 @@ protected theorem inv_neg (q : ℚ) : (-q)⁻¹ = -q⁻¹ := by
 theorem num_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAbs b.natAbs) :
     (a / b : ℚ).num = a := by
   lift b to ℕ using hb0.le
-  simp only [Int.natAbs_natCast, Int.ofNat_pos] at h hb0
+  simp only [Int.natAbs_natCast, Int.natCast_pos] at h hb0
   rw [← Rat.divInt_eq_div, ← mk_eq_divInt _ _ hb0.ne' h]
 
 theorem den_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAbs b.natAbs) :
     ((a / b : ℚ).den : ℤ) = b := by
   lift b to ℕ using hb0.le
-  simp only [Int.natAbs_natCast, Int.ofNat_pos] at h hb0
+  simp only [Int.natAbs_natCast, Int.natCast_pos] at h hb0
   rw [← Rat.divInt_eq_div, ← mk_eq_divInt _ _ hb0.ne' h]
 
 theorem div_int_inj {a b c d : ℤ} (hb0 : 0 < b) (hd0 : 0 < d) (h1 : Nat.Coprime a.natAbs b.natAbs)

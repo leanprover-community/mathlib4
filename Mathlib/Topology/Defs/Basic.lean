@@ -7,11 +7,14 @@ import Mathlib.Order.SetNotation
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.FunProp
 import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Tactic.ToAdditive
+import Mathlib.Util.AssertExists
+
 /-!
 # Basic definitions about topological spaces
 
 This file contains definitions about topology that do not require imports
-other than `Mathlib.Data.Set.Lattice`.
+other than `Mathlib/Data/Set/Lattice.lean`.
 
 ## Main definitions
 

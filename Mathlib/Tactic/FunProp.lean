@@ -9,8 +9,6 @@ import Mathlib.Tactic.FunProp.Decl
 import Mathlib.Tactic.FunProp.Elab
 import Mathlib.Tactic.FunProp.FunctionData
 import Mathlib.Tactic.FunProp.Mor
-import Mathlib.Lean.Meta.RefinedDiscrTree
-import Mathlib.Tactic.FunProp.StateList
 import Mathlib.Tactic.FunProp.Theorems
 import Mathlib.Tactic.FunProp.ToBatteries
 import Mathlib.Tactic.FunProp.Types
@@ -47,7 +45,7 @@ Fails with the error:
 Issues:
   No theorems found for `Real.sin` in order to prove `Continuous fun x => x.sin`
 ```
-This can be easily fixed by importing `Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic`
+This can be easily fixed by importing `Mathlib/Analysis/SpecialFunctions/Trigonometric/Basic.lean`
 where the theorem `Real.continuous_sin` is marked with the `fun_prop` attribute.
 
 When the issue is not simply a few missing theorems, you can turn on the option:

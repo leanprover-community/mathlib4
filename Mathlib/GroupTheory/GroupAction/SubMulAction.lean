@@ -211,7 +211,7 @@ theorem copy_eq (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : p.copy s hs
 instance : Bot (SubMulAction R M) where
   bot :=
     { carrier := ∅
-      smul_mem' := fun _c h => Set.not_mem_empty h }
+      smul_mem' := fun _c h => Set.notMem_empty h }
 
 @[to_additive]
 instance : Inhabited (SubMulAction R M) :=
@@ -238,8 +238,6 @@ variable {p} in
 @[to_additive (attr := norm_cast, simp)]
 theorem val_smul (r : R) (x : p) : (↑(r • x) : M) = r • (x : M) :=
   rfl
-
--- Porting note: no longer needed because of defeq structure eta
 
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
 @[to_additive "Embedding of a submodule `p` to the ambient space `M`."]
@@ -411,8 +409,7 @@ theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
 instance : HasCompl (SubMulAction R M) where
   compl s := ⟨sᶜ, by simp⟩
 
-theorem compl_def (s : SubMulAction R M) :
-  sᶜ.carrier = (s : Set M)ᶜ := rfl
+theorem compl_def (s : SubMulAction R M) : sᶜ.carrier = (s : Set M)ᶜ := rfl
 
 end MulActionGroup
 

@@ -420,14 +420,14 @@ lemma natDegree_optionEquivLeft (p : MvPolynomial (Option S₁) R) :
     ext σ
     trans p.coeff (σ.embDomain .some + .single .none N)
     · simpa using optionEquivLeft_coeff_coeff R S₁ (σ.embDomain .some + .single .none N) p
-    simp only [coeff_zero, ← not_mem_support_iff]
+    simp only [coeff_zero, ← notMem_support_iff]
     intro H
     simpa using (degreeOf_lt_iff ((zero_le _).trans_lt hN)).mp hN _ H
   · rw [degreeOf_le_iff]
     intro σ hσ
     refine Polynomial.le_natDegree_of_ne_zero fun H ↦ ?_
     have := optionEquivLeft_coeff_coeff R S₁ σ p
-    rw [H, coeff_zero, eq_comm, ← not_mem_support_iff] at this
+    rw [H, coeff_zero, eq_comm, ← notMem_support_iff] at this
     exact this hσ
 
 lemma totalDegree_coeff_optionEquivLeft_add_le
@@ -663,7 +663,6 @@ theorem degree_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} (h : f ≠ 0) :
   -- TODO: these should be lemmas
   have h₀ : ∀ {α β : Type _} (f : α → β), (fun x => x) ∘ f = f := fun f => rfl
   have h₁ : ∀ {α β : Type _} (f : α → β), f ∘ (fun x => x) = f := fun f => rfl
-
   have h' : ((finSuccEquiv R n f).support.sup fun x => x) = degreeOf 0 f := by
     rw [degreeOf_eq_sup, support_finSuccEquiv, Finset.sup_image, h₀]
   rw [Polynomial.degree, ← h', Nat.cast_withBot,

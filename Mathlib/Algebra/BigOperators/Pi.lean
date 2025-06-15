@@ -77,7 +77,7 @@ lemma prod_indicator_apply (s : Finset ι) (f : ι → Set κ) (g : ι → κ �
     simp only [Finset.inf_set_eq_iInter, Set.mem_iInter] at hj
     exact Set.indicator_of_mem (hj _ hi) _
   · obtain ⟨i, hi, hj⟩ := by simpa using hj
-    exact Finset.prod_eq_zero hi <| Set.indicator_of_not_mem hj _
+    exact Finset.prod_eq_zero hi <| Set.indicator_of_notMem hj _
 
 lemma prod_indicator (s : Finset ι) (f : ι → Set κ) (g : ι → κ → α) :
     ∏ i ∈ s, (f i).indicator (g i) = (⋂ x ∈ s, f x).indicator (∏ i ∈ s, g i) := by

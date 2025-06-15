@@ -509,7 +509,7 @@ theorem AffineBasis.convexHull_eq_nonneg_coord {ι : Type*} (b : AffineBasis ι 
     by_cases hi : i ∈ s
     · rw [b.coord_apply_combination_of_mem hi hw₁]
       exact hw₀ i hi
-    · rw [b.coord_apply_combination_of_not_mem hi hw₁]
+    · rw [b.coord_apply_combination_of_notMem hi hw₁]
   · have hx' : x ∈ affineSpan R (range b) := by
       rw [b.tot]
       exact AffineSubspace.mem_top R E x

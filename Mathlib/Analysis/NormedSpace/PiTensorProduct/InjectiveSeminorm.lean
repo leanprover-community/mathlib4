@@ -239,18 +239,16 @@ induced by `PiTensorProduct.lift`, for every normed space `F`.
 -/
 @[simps]
 noncomputable def liftEquiv : ContinuousMultilinearMap 𝕜 E F ≃ₗ[𝕜] (⨂[𝕜] i, E i) →L[𝕜] F where
-  toFun f := LinearMap.mkContinuous (lift f.toMultilinearMap) ‖f‖
-    (fun x ↦ norm_eval_le_injectiveSeminorm f x)
+  toFun f := LinearMap.mkContinuous (lift f.toMultilinearMap) ‖f‖ fun x ↦
+    norm_eval_le_injectiveSeminorm f x
   map_add' f g := by ext _; simp only [ContinuousMultilinearMap.toMultilinearMap_add, map_add,
     LinearMap.mkContinuous_apply, LinearMap.add_apply, ContinuousLinearMap.add_apply]
   map_smul' a f := by ext _; simp only [ContinuousMultilinearMap.toMultilinearMap_smul, map_smul,
     LinearMap.mkContinuous_apply, LinearMap.smul_apply, RingHom.id_apply,
     ContinuousLinearMap.coe_smul', Pi.smul_apply]
-  invFun l := MultilinearMap.mkContinuous (lift.symm l.toLinearMap) ‖l‖ (fun x ↦ by
+  invFun l := MultilinearMap.mkContinuous (lift.symm l.toLinearMap) ‖l‖ fun x ↦ by
     simp only [lift_symm, LinearMap.compMultilinearMap_apply, ContinuousLinearMap.coe_coe]
-    refine le_trans (ContinuousLinearMap.le_opNorm _ _) (mul_le_mul_of_nonneg_left ?_
-      (norm_nonneg l))
-    exact injectiveSeminorm_tprod_le x)
+    exact ContinuousLinearMap.le_opNorm_of_le _ (injectiveSeminorm_tprod_le x)
   left_inv f := by ext x; simp only [LinearMap.mkContinuous_coe, LinearEquiv.symm_apply_apply,
       MultilinearMap.coe_mkContinuous, ContinuousMultilinearMap.coe_coe]
   right_inv l := by

@@ -146,11 +146,11 @@ lemma range_weylGroup_coweightHom :
     | mul w₁ w₂ hw₁ hw₂ h₁ h₂ =>
       simpa only [← Submonoid.mk_mul_mk _ w₁ w₂ hw₁ hw₂, map_mul] using Subgroup.mul_mem _ h₁ h₂
 
-/-- The permutation representation of the Weyl group induced by `reflection_perm`. -/
+/-- The permutation representation of the Weyl group induced by `reflectionPerm`. -/
 abbrev weylGroupToPerm := (Equiv.indexHom P).restrict P.weylGroup
 
 lemma range_weylGroupToPerm :
-    P.weylGroupToPerm.range = Subgroup.closure (range P.reflection_perm) := by
+    P.weylGroupToPerm.range = Subgroup.closure (range P.reflectionPerm) := by
   refine (Subgroup.closure_eq_of_le _ ?_ ?_).symm
   · rintro - ⟨i, rfl⟩
     simp only [MonoidHom.restrict_range, Subgroup.coe_map, Equiv.weightHom_apply, mem_image,

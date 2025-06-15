@@ -588,8 +588,7 @@ end LinearMap
 /-- The convolution of two real Gaussian distributions with means `m₁, m₂` and variances `v₁, v₂`
 is a real Gaussian distribution with mean `m₁ + m₂` and variance `v₁ + v₂`. -/
 lemma gaussianReal_conv_gaussianReal {m₁ m₂ : ℝ} {v₁ v₂ : ℝ≥0} :
-    -- `∗` notation not used because of ambiguous notation : `conv` vs `mconv`
-    (gaussianReal m₁ v₁).conv (gaussianReal m₂ v₂) = gaussianReal (m₁ + m₂) (v₁ + v₂) := by
+    (gaussianReal m₁ v₁) ∗ (gaussianReal m₂ v₂) = gaussianReal (m₁ + m₂) (v₁ + v₂) := by
   refine Measure.ext_of_charFun ?_
   ext t
   simp_rw [charFun_conv, charFun_gaussianReal]

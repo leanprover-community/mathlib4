@@ -384,7 +384,7 @@ theorem posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef := by
   refine ⟨hM.1, ?_⟩
   intro x
   by_cases hx : x = 0
-  · simp only [hx, zero_dotProduct, star_zero, RCLike.zero_re']
+  · simp only [hx, zero_dotProduct, star_zero, RCLike.zero_re]
     exact le_rfl
   · exact le_of_lt (hM.2 x hx)
 

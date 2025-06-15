@@ -9,7 +9,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 /-!
 # Theorems about invertible elements in a `GroupWithZero`
 
-We intentionally keep imports minimal here as this file is used by `Mathlib.Tactic.NormNum`.
+We intentionally keep imports minimal here as this file is used by `Mathlib/Tactic/NormNum.lean`.
 -/
 
 assert_not_exists DenselyOrdered Ring

@@ -44,6 +44,11 @@ variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
 
 variable {s t : Set M}
 
+lemma _root_.AddSubmonoid.toNatSubmodule_closure (s : Set M) :
+    (AddSubmonoid.closure s).toNatSubmodule = .span ℕ s :=
+  (Submodule.span_le.mpr AddSubmonoid.subset_closure).antisymm'
+    ((Submodule.span ℕ s).toAddSubmonoid.closure_le.mpr Submodule.subset_span)
+
 /-- A version of `Submodule.span_eq` for when the span is by a smaller ring. -/
 @[simp]
 theorem span_coe_eq_restrictScalars [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
@@ -262,9 +267,12 @@ theorem map_subtype_span_singleton {p : Submodule R M} (x : p) :
     map p.subtype (R ∙ x) = R ∙ (x : M) := by simp [← span_image]
 
 /-- `f` is an explicit argument so we can `apply` this theorem and obtain `h` as a new goal. -/
-theorem not_mem_span_of_apply_not_mem_span_image [RingHomSurjective σ₁₂] (f : F) {x : M}
+theorem notMem_span_of_apply_notMem_span_image [RingHomSurjective σ₁₂] (f : F) {x : M}
     {s : Set M} (h : f x ∉ Submodule.span R₂ (f '' s)) : x ∉ Submodule.span R s :=
   h.imp (apply_mem_span_image_of_mem_span f)
+
+@[deprecated (since := "2025-05-23")]
+alias not_mem_span_of_apply_not_mem_span_image := notMem_span_of_apply_notMem_span_image
 
 theorem iSup_toAddSubmonoid {ι : Sort*} (p : ι → Submodule R M) :
     (⨆ i, p i).toAddSubmonoid = ⨆ i, (p i).toAddSubmonoid := by
@@ -426,6 +434,11 @@ section AddCommGroup
 
 variable [Ring R] [AddCommGroup M] [Module R M]
 
+lemma _root_.AddSubgroup.toIntSubmodule_closure (s : Set M) :
+    (AddSubgroup.closure s).toIntSubmodule = .span ℤ s :=
+  (Submodule.span_le.mpr AddSubgroup.subset_closure).antisymm'
+    ((Submodule.span ℤ s).toAddSubgroup.closure_le.mpr Submodule.subset_span)
+
 @[simp]
 theorem span_neg (s : Set M) : span R (-s) = span R s :=
   calc
@@ -475,7 +488,7 @@ theorem isCoatom_comap_or_eq_top (f : F) {p : Submodule R₂ M₂} (hp : IsCoato
     IsCoatom (comap f p) ∨ comap f p = ⊤ :=
   or_iff_not_imp_right.mpr fun h ↦ ⟨h, fun q lt ↦ by
     rw [← comap_map_sup_of_comap_le lt.le, hp.2 (map f q ⊔ p), comap_top]
-    simpa only [right_lt_sup, map_le_iff_le_comap] using lt.not_le⟩
+    simpa only [right_lt_sup, map_le_iff_le_comap] using lt.not_ge⟩
 
 theorem isCoatom_comap_iff {f : F} (hf : Surjective f) {p : Submodule R₂ M₂} :
     IsCoatom (comap f p) ↔ IsCoatom p := by
@@ -554,7 +567,7 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V] {s : Submodule K V} {x :
 
 /-- There is no vector subspace between `s` and `(K ∙ x) ⊔ s`, `WCovBy` version. -/
 theorem wcovBy_span_singleton_sup (x : V) (s : Submodule K V) : WCovBy s ((K ∙ x) ⊔ s) := by
-  refine ⟨le_sup_right, fun q hpq hqp ↦ hqp.not_le ?_⟩
+  refine ⟨le_sup_right, fun q hpq hqp ↦ hqp.not_ge ?_⟩
   rcases SetLike.exists_of_lt hpq with ⟨y, hyq, hyp⟩
   obtain ⟨c, z, hz, rfl⟩ : ∃ c : K, ∃ z ∈ s, c • x + z = y := by
     simpa [mem_sup, mem_span_singleton] using hqp.le hyq
@@ -580,16 +593,22 @@ theorem disjoint_span_singleton : Disjoint s (K ∙ x) ↔ x ∈ s → x = 0 := 
 theorem disjoint_span_singleton' (x0 : x ≠ 0) : Disjoint s (K ∙ x) ↔ x ∉ s :=
   disjoint_span_singleton.trans ⟨fun h₁ h₂ => x0 (h₁ h₂), fun h₁ h₂ => (h₁ h₂).elim⟩
 
-lemma disjoint_span_singleton_of_not_mem (hx : x ∉ s) : Disjoint s (K ∙ x) := by
+lemma disjoint_span_singleton_of_notMem (hx : x ∉ s) : Disjoint s (K ∙ x) := by
   rw [disjoint_span_singleton]
   intro h
   contradiction
 
-lemma isCompl_span_singleton_of_isCoatom_of_not_mem (hs : IsCoatom s) (hx : x ∉ s) :
+@[deprecated (since := "2025-05-23")]
+alias disjoint_span_singleton_of_not_mem := disjoint_span_singleton_of_notMem
+
+lemma isCompl_span_singleton_of_isCoatom_of_notMem (hs : IsCoatom s) (hx : x ∉ s) :
     IsCompl s (K ∙ x) := by
-  refine ⟨disjoint_span_singleton_of_not_mem hx, ?_⟩
+  refine ⟨disjoint_span_singleton_of_notMem hx, ?_⟩
   rw [← covBy_top_iff] at hs
   simpa only [codisjoint_iff, sup_comm, not_lt_top_iff] using hs.2 (covBy_span_singleton_sup hx).1
+
+@[deprecated (since := "2025-05-23")]
+alias isCompl_span_singleton_of_isCoatom_of_not_mem := isCompl_span_singleton_of_isCoatom_of_notMem
 
 end DivisionRing
 

@@ -308,7 +308,7 @@ theorem finrank_eq_fixingSubgroup_index (L : IntermediateField k K) [IsGalois k 
     replace hfd := i.finiteDimensional
     rw [i.finrank_eq, this _ hfd] at hL'
     exact (Subgroup.index_antitone <| fixingSubgroup_le <|
-      IntermediateField.lift_le L').not_lt hL'
+      IntermediateField.lift_le L').not_gt hL'
   let E := normalClosure k L K
   have hle : L ≤ E := by simpa only [fieldRange_val] using L.val.fieldRange_le_normalClosure
   let L' := restrict hle

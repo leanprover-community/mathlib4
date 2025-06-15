@@ -39,7 +39,7 @@ All of these linters are enabled in mathlib by default, but disabled globally
 since they enforce conventions which are inherently subjective.
 -/
 
-open Lean Parser Elab Command Meta
+open Lean Parser Elab Command Meta Linter
 
 namespace Mathlib.Linter
 
@@ -94,7 +94,7 @@ so you can simply remove them. (Some tests will intentionally use one of these o
 in this case, simply allow the linter.)
 -/
 def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
-    unless Linter.getLinterValue linter.style.setOption (← getOptions) do
+    unless getLinterValue linter.style.setOption (← getLinterOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
@@ -140,7 +140,7 @@ namespace Style.missingEnd
 def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- Only run this linter at the end of a module.
     unless stx.isOfKind ``Lean.Parser.Command.eoi do return
-    if Linter.getLinterValue linter.style.missingEnd (← getOptions) &&
+    if getLinterValue linter.style.missingEnd (← getLinterOptions) &&
         !(← MonadState.get).messages.hasErrors then
       let sc ← getScopes
       -- The last scope is always the "base scope", corresponding to no active `section`s or
@@ -209,7 +209,7 @@ namespace Style
 
 @[inherit_doc linter.style.cdot]
 def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.style.cdot (← getOptions) do
+    unless getLinterValue linter.style.cdot (← getLinterOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
@@ -257,7 +257,7 @@ def findDollarSyntax : Syntax → Array Syntax
 
 @[inherit_doc linter.style.dollarSyntax]
 def dollarSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.style.dollarSyntax (← getOptions) do
+    unless getLinterValue linter.style.dollarSyntax (← getLinterOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
@@ -301,7 +301,7 @@ def findLambdaSyntax : Syntax → Array Syntax
 
 @[inherit_doc linter.style.lambdaSyntax]
 def lambdaSyntaxLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.style.lambdaSyntax (← getOptions) do
+    unless getLinterValue linter.style.lambdaSyntax (← getLinterOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
@@ -414,7 +414,7 @@ namespace Style.longLine
 
 @[inherit_doc Mathlib.Linter.linter.style.longLine]
 def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.style.longLine (← getOptions) do
+    unless getLinterValue linter.style.longLine (← getLinterOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
@@ -465,7 +465,7 @@ namespace Style.nameCheck
 
 @[inherit_doc linter.style.nameCheck]
 def doubleUnderscore: Linter where run := withSetOptionIn fun stx => do
-    unless Linter.getLinterValue linter.style.nameCheck (← getOptions) do
+    unless getLinterValue linter.style.nameCheck (← getLinterOptions) do
       return
     if (← get).messages.hasErrors then
       return
@@ -520,7 +520,7 @@ def extractOpenNames : Syntax → Array (TSyntax `ident)
 
 @[inherit_doc Mathlib.Linter.linter.style.openClassical]
 def openClassicalLinter : Linter where run stx := do
-    unless Linter.getLinterValue linter.style.openClassical (← getOptions) do
+    unless getLinterValue linter.style.openClassical (← getLinterOptions) do
       return
     if (← get).messages.hasErrors then
       return

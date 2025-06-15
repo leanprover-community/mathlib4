@@ -22,6 +22,8 @@ This file proves that one can adjoin a new zero element to a group and get a gro
   a monoid homomorphism `f : α →* β`.
 -/
 
+open Function
+
 assert_not_exists DenselyOrdered Ring
 
 namespace WithZero
@@ -34,6 +36,11 @@ instance one : One (WithZero α) where
   __ := ‹One α›
 
 @[simp, norm_cast] lemma coe_one : ((1 : α) : WithZero α) = 1 := rfl
+
+@[simp]
+lemma recZeroCoe_one {M N : Type*} [One M] (f : M → N) (z : N) :
+    recZeroCoe z f 1 = f 1 :=
+  rfl
 
 end One
 
@@ -89,7 +96,7 @@ theorem monoidWithZeroHom_ext ⦃f g : WithZero α →*₀ β⦄
 
 /-- The (multiplicative) universal property of `WithZero`. -/
 @[simps! symm_apply_apply]
-noncomputable nonrec def lift' : (α →* β) ≃ (WithZero α →*₀ β) where
+nonrec def lift' : (α →* β) ≃ (WithZero α →*₀ β) where
   toFun f :=
     { toFun := fun
         | 0 => 0
@@ -101,8 +108,6 @@ noncomputable nonrec def lift' : (α →* β) ≃ (WithZero α →*₀ β) where
         | (_ : α), 0 => (mul_zero _).symm
         | (_ : α), (_ : α) => map_mul f _ _ }
   invFun F := F.toMonoidHom.comp coeMonoidHom
-  left_inv _ := rfl
-  right_inv _ := monoidWithZeroHom_ext rfl
 
 lemma lift'_zero (f : α →* β) : lift' f (0 : WithZero α) = 0 := rfl
 
@@ -117,7 +122,7 @@ variable [MulOneClass β] [MulOneClass γ]
 
 /-- The `MonoidWithZero` homomorphism `WithZero α →* WithZero β` induced by a monoid homomorphism
   `f : α →* β`. -/
-noncomputable def map' (f : α →* β) : WithZero α →*₀ WithZero β := lift' (coeMonoidHom.comp f)
+def map' (f : α →* β) : WithZero α →*₀ WithZero β := lift' (coeMonoidHom.comp f)
 
 lemma map'_zero (f : α →* β) : map' f 0 = 0 := rfl
 
@@ -133,6 +138,11 @@ lemma map'_map'  (f : α →* β) (g : β →* γ) (x) : map' g (map' f x) = map
 @[simp]
 lemma map'_comp (f : α →* β) (g : β →* γ) : map' (g.comp f) = (map' g).comp (map' f) :=
   MonoidWithZeroHom.ext fun x => (map'_map' f g x).symm
+
+lemma map'_injective_iff {f : α →* β} : Injective (map' f) ↔ Injective f := by
+  simp [Injective, WithZero.forall]
+
+alias ⟨_, map'_injective⟩ := map'_injective_iff
 
 end MulOneClass
 
@@ -245,11 +255,11 @@ instance instGroupWithZero : GroupWithZero (WithZero α) where
     apply mul_inv_cancel
 
 /-- Any group is isomorphic to the units of itself adjoined with `0`. -/
+@[simps]
 def unitsWithZeroEquiv : (WithZero α)ˣ ≃* α where
   toFun a := unzero a.ne_zero
   invFun a := Units.mk0 a coe_ne_zero
   left_inv _ := Units.ext <| by simp only [coe_unzero, Units.mk0_val]
-  right_inv _ := rfl
   map_mul' _ _ := coe_inj.mp <| by simp only [Units.val_mul, coe_unzero, coe_mul]
 
 theorem coe_unitsWithZeroEquiv_eq_units_val (γ : (WithZero α)ˣ) :
@@ -257,6 +267,7 @@ theorem coe_unitsWithZeroEquiv_eq_units_val (γ : (WithZero α)ˣ) :
   simp only [WithZero.unitsWithZeroEquiv, MulEquiv.coe_mk, Equiv.coe_fn_mk, WithZero.coe_unzero]
 
 /-- Any group with zero is isomorphic to adjoining `0` to the units of itself. -/
+@[simps]
 def withZeroUnitsEquiv {G : Type*} [GroupWithZero G]
     [DecidablePred (fun a : G ↦ a = 0)] :
     WithZero Gˣ ≃* G where
@@ -266,28 +277,29 @@ def withZeroUnitsEquiv {G : Type*} [GroupWithZero G]
   right_inv _ := by simp only; split <;> simp_all
   map_mul' := (by induction · <;> induction · <;> simp [← WithZero.coe_mul])
 
+lemma withZeroUnitsEquiv_symm_apply_coe {G : Type*} [GroupWithZero G]
+    [DecidablePred (fun a : G ↦ a = 0)] (a : Gˣ) :
+    WithZero.withZeroUnitsEquiv.symm (a : G) = a := by
+  simp
+
 /-- A version of `Equiv.optionCongr` for `WithZero`. -/
-noncomputable def _root_.MulEquiv.withZero [Group β] (e : α ≃* β) :
-    WithZero α ≃* WithZero β where
-  toFun := map' e.toMonoidHom
-  invFun := map' e.symm.toMonoidHom
-  left_inv := (by induction · <;> simp)
-  right_inv := (by induction · <;> simp)
-  map_mul' := (by induction · <;> induction · <;> simp)
+@[simps!]
+def _root_.MulEquiv.withZero [Group β] :
+    (α ≃* β) ≃ (WithZero α ≃* WithZero β) where
+  toFun e := ⟨⟨map' e, map' e.symm, (by induction · <;> simp), (by induction · <;> simp)⟩,
+    (by induction · <;> induction · <;> simp)⟩
+  invFun e := ⟨⟨
+    fun x ↦ unzero (x := e x) (by simp [ne_eq, ← e.eq_symm_apply]),
+    fun x ↦ unzero (x := e.symm x) (by simp [e.symm_apply_eq]),
+    by intro; simp, by intro; simp⟩,
+    by intro; simp [← coe_inj]⟩
+  left_inv _ := by ext; simp
+  right_inv _ := by ext x; cases x <;> simp
 
 /-- The inverse of `MulEquiv.withZero`. -/
-protected noncomputable def _root_.MulEquiv.unzero [Group β] (e : WithZero α ≃* WithZero β) :
-    α ≃* β where
-  toFun x := unzero (x := e x) (by simp [ne_eq, ← e.eq_symm_apply])
-  invFun x := unzero (x := e.symm x) (by simp [e.symm_apply_eq])
-  left_inv _ := by simp
-  right_inv _ := by simp
-  map_mul' _ _ := by
-    simp only [coe_mul, map_mul]
-    generalize_proofs A B C
-    suffices ((unzero A : β) : WithZero β) = (unzero B) * (unzero C) by
-      rwa [← WithZero.coe_mul, WithZero.coe_inj] at this
-    simp
+abbrev _root_.MulEquiv.unzero [Group β] (e : WithZero α ≃* WithZero β) :
+    α ≃* β :=
+  _root_.MulEquiv.withZero.symm e
 
 end Group
 
@@ -299,3 +311,44 @@ instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero
   natCast_succ n := by cases n <;> simp
 
 end WithZero
+
+namespace MonoidWithZeroHom
+
+protected lemma map_eq_zero_iff {G₀ G₀' : Type*} [GroupWithZero G₀]
+    [MulZeroOneClass G₀'] [Nontrivial G₀']
+    {f : G₀ →*₀ G₀'} {x : G₀}:
+    f x = 0 ↔ x = 0 := by
+  refine ⟨?_, by simp +contextual⟩
+  contrapose!
+  intro hx H
+  lift x to G₀ˣ using isUnit_iff_ne_zero.mpr hx
+  apply one_ne_zero (α := G₀')
+  rw [← map_one f, ← Units.mul_inv x, map_mul, H, zero_mul]
+
+variable {M₀ N₀}
+
+@[simp]
+lemma one_apply_val_unit {M₀ N₀ : Type*} [MonoidWithZero M₀] [MulZeroOneClass N₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] [Nontrivial M₀] [NoZeroDivisors M₀] (x : M₀ˣ) :
+    (1 : M₀ →*₀ N₀) x = (1 : N₀) :=
+  one_apply_of_ne_zero x.ne_zero
+
+/-- The trivial group-with-zero hom is absorbing for composition. -/
+@[simp]
+lemma apply_one_apply_eq {M₀ N₀ G₀ : Type*} [MulZeroOneClass M₀] [Nontrivial M₀] [NoZeroDivisors M₀]
+    [MulZeroOneClass N₀] [MulZeroOneClass G₀] [DecidablePred fun x : M₀ ↦ x = 0]
+    (f : N₀ →*₀ G₀) (x : M₀) :
+    f ((1 : M₀ →*₀ N₀) x) = (1 : M₀ →*₀ G₀) x := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
+  · rw [one_apply_of_ne_zero hx, one_apply_of_ne_zero hx, map_one]
+
+/-- The trivial group-with-zero hom is absorbing for composition. -/
+@[simp]
+lemma comp_one {M₀ N₀ G₀ : Type*} [MulZeroOneClass M₀] [Nontrivial M₀] [NoZeroDivisors M₀]
+    [MulZeroOneClass N₀] [MulZeroOneClass G₀] [DecidablePred fun x : M₀ ↦ x = 0]
+    (f : N₀ →*₀ G₀) :
+    f.comp (1 : M₀ →*₀ N₀) = (1 : M₀ →*₀ G₀) :=
+  ext <| apply_one_apply_eq _
+
+end MonoidWithZeroHom

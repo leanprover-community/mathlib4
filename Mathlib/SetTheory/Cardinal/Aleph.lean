@@ -34,7 +34,7 @@ The following notations are scoped to the `Cardinal` namespace.
 
 - `ℵ_ o` is notation for `aleph o`. `ℵ₁` is notation for `ℵ_ 1`.
 - `ℶ_ o` is notation for `beth o`. The value `ℶ_ 1` equals the continuum `𝔠`, which is defined in
-  `Mathlib.SetTheory.Cardinal.Continuum`.
+  `Mathlib/SetTheory/Cardinal/Continuum.lean`.
 -/
 
 assert_not_exists Field Finsupp Module Cardinal.mul_eq_self
@@ -84,7 +84,7 @@ theorem not_bddAbove_isInitial : ¬ BddAbove {x | IsInitial x} := by
   rintro ⟨a, ha⟩
   have := ha (isInitial_ord (succ a.card))
   rw [ord_le] at this
-  exact (lt_succ _).not_le this
+  exact (lt_succ _).not_ge this
 
 /-- Initial ordinals are order-isomorphic to the cardinals. -/
 @[simps!]

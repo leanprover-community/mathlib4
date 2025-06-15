@@ -737,7 +737,8 @@ def updateDecl (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) 
 /-- Abstracts the nested proofs in the value of `decl` if it is a def. -/
 def declAbstractNestedProofs (decl : ConstantInfo) : MetaM ConstantInfo := do
   if decl matches .defnInfo _ then
-    return decl.updateValue <| ← Meta.abstractNestedProofs decl.name decl.value!
+    return decl.updateValue <| ← withDeclNameForAuxNaming decl.name do
+      Meta.abstractNestedProofs decl.value!
   else
     return decl
 

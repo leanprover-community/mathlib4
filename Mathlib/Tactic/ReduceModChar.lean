@@ -283,7 +283,7 @@ partial def reduceModCharHyp (expensive := false) (fvarId : FVarId) : TacticM Un
     let prf ← derive (expensive := expensive) hyp
     return (← applySimpResultToLocalDecl goal fvarId prf false).map (·.snd)
 
-open Parser.Tactic Elab.Tactic
+open Parser.Tactic
 
 /--
 The tactic `reduce_mod_char` looks for numeric expressions in characteristic `p`

@@ -126,6 +126,9 @@ def comulAlgHom : A →ₐ[R] A ⊗[R] A :=
 
 variable {R A}
 
+@[simp] lemma toLinearMap_counitAlgHom : (counitAlgHom R A).toLinearMap = counit := rfl
+@[simp] lemma toLinearMap_comulAlgHom : (comulAlgHom R A).toLinearMap = comul := rfl
+
 @[simp] lemma counit_algebraMap (r : R) : counit (R := R) (algebraMap R A r) = r :=
   (counitAlgHom R A).commutes r
 
@@ -172,7 +175,7 @@ as algebra homomorphisms that satisfy the coalgebra axioms to define
 a bialgebra structure on `A`. -/
 noncomputable
 abbrev ofAlgHom (comul : A →ₐ[R] (A ⊗[R] A)) (counit : A →ₐ[R] R)
-    (h_coassoc : (Algebra.TensorProduct.assoc R A A A).toAlgHom.comp
+    (h_coassoc : (Algebra.TensorProduct.assoc R R A A A).toAlgHom.comp
       ((Algebra.TensorProduct.map comul (.id R A)).comp comul)
       = (Algebra.TensorProduct.map (.id R A) comul).comp comul)
     (h_rTensor : (Algebra.TensorProduct.map counit (.id R A)).comp comul

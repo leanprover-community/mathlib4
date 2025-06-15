@@ -127,7 +127,7 @@ variable [CommRing R] [CommRing S] [CommRing A] [CommRing B] [Field F] [Field K]
   {W : Projective F}
 
 lemma smul_fin3 (P : Fin 3 → R) (u : R) : u • P = ![u * P x, u * P y, u * P z] := by
-  simp [← List.ofFn_inj]
+  simp [← List.ofFn_inj, List.ofFn_succ]
 
 lemma smul_fin3_ext (P : Fin 3 → R) (u : R) :
     (u • P) x = u * P x ∧ (u • P) y = u * P y ∧ (u • P) z = u * P z :=

@@ -20,7 +20,7 @@ If this number is above the current `maxHeartbeats`, we also print a `Try this:`
 -/
 
 
-open Lean Elab Command Meta
+open Lean Elab Command Meta Linter
 
 namespace Mathlib.CountHeartbeats
 
@@ -249,14 +249,14 @@ namespace CountHeartbeats
 
 @[inherit_doc Mathlib.Linter.linter.countHeartbeats]
 def countHeartbeatsLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.countHeartbeats (← getOptions) do
+  unless getLinterValue linter.countHeartbeats (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return
   let mut msgs := #[]
   if [``Lean.Parser.Command.declaration, `lemma].contains stx.getKind then
     let s ← get
-    if Linter.getLinterValue linter.countHeartbeatsApprox (← getOptions) then
+    if getLinterValue linter.countHeartbeatsApprox (← getLinterOptions) then
       elabCommand (← `(command| #count_heartbeats approximately in $(⟨stx⟩)))
     else
       elabCommand (← `(command| #count_heartbeats in $(⟨stx⟩)))

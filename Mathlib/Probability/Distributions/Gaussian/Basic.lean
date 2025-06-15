@@ -153,4 +153,31 @@ instance isGaussian_conv [SecondCountableTopology E]
       IsGaussian.map_eq_gaussianReal L, gaussianReal_conv_gaussianReal]
     congr <;> simp [variance_nonneg]
 
+instance (c : E) : IsGaussian (μ.map (fun x ↦ x + c)) := by
+  refine isGaussian_of_charFunDual_eq fun L ↦ ?_
+  rw [charFunDual_map_add_const, IsGaussian.charFunDual_eq, ← exp_add]
+  have hL_comp : L ∘ (fun x ↦ x + c) = fun x ↦ L x + L c := by ext; simp
+  rw [variance_map (by fun_prop) (by fun_prop), integral_map (by fun_prop) (by fun_prop),
+    hL_comp, variance_add_const (by fun_prop), integral_complex_ofReal, integral_complex_ofReal]
+  simp only [map_add, ofReal_add]
+  rw [integral_add (by fun_prop) (by fun_prop)]
+  congr
+  simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul, ofReal_add]
+  ring
+
+instance (c : E) : IsGaussian (μ.map (fun x ↦ c + x)) := by simp_rw [add_comm c]; infer_instance
+
+instance (c : E) : IsGaussian (μ.map (fun x ↦ x - c)) := by simp_rw [sub_eq_add_neg]; infer_instance
+
+instance : IsGaussian (μ.map (fun x ↦ -x)) := by
+  change IsGaussian (μ.map (ContinuousLinearEquiv.neg ℝ))
+  infer_instance
+
+instance (c : E) : IsGaussian (μ.map (fun x ↦ c - x)) := by
+  simp_rw [sub_eq_add_neg]
+  suffices IsGaussian ((μ.map (fun x ↦ -x)).map (fun x ↦ c + x)) by
+    rw [Measure.map_map (by fun_prop) (by fun_prop)] at this
+    convert this using 1
+  infer_instance
+
 end ProbabilityTheory

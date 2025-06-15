@@ -292,8 +292,6 @@ namespace SubMulAction.ofStabilizer
 
 open scoped BigOperators Pointwise Cardinal
 
-open MulAction Function.Embedding
-
 @[to_additive]
 theorem isMultiplyPretransitive_iff_of_conj
     {n : ℕ} {a b : α} {g : G} (hg : b = g • a) :
@@ -314,7 +312,7 @@ theorem isMultiplyPretransitive_iff [IsPretransitive G α] {n : ℕ} {a b : α} 
 @[to_additive
   "Multiple transitivity of a pretransitive action
   is equivalent to one less transitivity of stabilizer of a point
-  [Wielandt, th. 9.1, 1st part][Wielandt-1964]." ]
+  [Wielandt, th. 9.1, 1st part][Wielandt-1964]."]
 theorem isMultiplyPretransitive [IsPretransitive G α] {n : ℕ} {a : α} :
     IsMultiplyPretransitive G α n.succ ↔
       IsMultiplyPretransitive (stabilizer G a) (SubMulAction.ofStabilizer G a) n := by
