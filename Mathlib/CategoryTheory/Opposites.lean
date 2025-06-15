@@ -58,11 +58,12 @@ end Quiver
 
 namespace CategoryTheory
 
-variable [Category.{v₁} C]
+section
 
-/-- The opposite category. -/
-@[stacks 001M]
-instance Category.opposite : Category.{v₁} Cᵒᵖ where
+variable [CategoryStruct.{v₁} C]
+
+/-- The opposite `CategoryStruct`. -/
+instance CategoryStruct.opposite : CategoryStruct.{v₁} Cᵒᵖ where
   comp f g := (g.unop ≫ f.unop).op
   id X := (𝟙 (unop X)).op
 
@@ -89,6 +90,16 @@ theorem unop_id_op {X : C} : (𝟙 (op X)).unop = 𝟙 X :=
 @[simp]
 theorem op_id_unop {X : Cᵒᵖ} : (𝟙 (unop X)).op = 𝟙 X :=
   rfl
+
+end
+
+variable [Category.{v₁} C]
+
+/-- The opposite category. -/
+@[stacks 001M]
+instance Category.opposite : Category.{v₁} Cᵒᵖ where
+  comp f g := (g.unop ≫ f.unop).op
+  id X := (𝟙 (unop X)).op
 
 section
 
