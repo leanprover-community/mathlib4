@@ -176,7 +176,6 @@ lemma dTwo_single_one_thd (g h : G) (a : A) :
     dTwo A (single (g, h, 1) a) = single (h, 1) (A.ρ g⁻¹ a) - single (g * h, 1) a := by
   simp [dTwo]
 
-section
 variable (A) [DecidableEq G]
 
 /-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
@@ -262,9 +261,8 @@ theorem dOne_comp_dZero : dOne A ≫ dZero A = 0 := by
   simp [dZero, dOne, sum_add_index, sum_sub_index, sub_sub_sub_comm, add_sub_add_comm]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-theorem dTwo_comp_done : dTwo A ≫ dOne A = 0 := by
+theorem dTwo_comp_dOne : dTwo A ≫ dOne A = 0 := by
   simp [← cancel_mono (oneChainsIso A).inv, ← eq_dOne_comp_inv, ← eq_dTwo_comp_inv_assoc]
 
-end
 end Differentials
 end groupHomology
