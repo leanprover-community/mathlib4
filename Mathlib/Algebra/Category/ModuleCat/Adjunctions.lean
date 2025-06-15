@@ -354,7 +354,6 @@ def ext {F G : Free R C ⥤ D} [F.Additive] [F.Linear R] [G.Additive] [G.Linear 
       induction f using Finsupp.induction_linear with
       | zero => simp
       | add f₁ f₂ w₁ w₂ =>
-        -- Porting note: Using rw instead of simp
         rw [Functor.map_add, add_comp, w₁, w₂, Functor.map_add, comp_add]
       | single f' r =>
         rw [Iso.app_hom, Iso.app_hom, ← smul_single_one, F.map_smul, G.map_smul, smul_comp,

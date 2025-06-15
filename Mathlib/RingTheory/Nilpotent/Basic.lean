@@ -19,7 +19,7 @@ import Mathlib.Algebra.BigOperators.Finprod
 This file develops the basic theory of nilpotent elements. In particular it shows that the
 nilpotent elements are closed under many operations.
 
-For the definition of `nilradical`, see `Mathlib.RingTheory.Nilpotent.Lemmas`.
+For the definition of `nilradical`, see `Mathlib/RingTheory/Nilpotent/Lemmas.lean`.
 
 
 ## Main definitions
@@ -155,7 +155,7 @@ protected lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
   classical
   induction s using Finset.induction with
   | empty => simp
-  | @insert j s hj ih => ?_
+  | insert j s hj ih => ?_
   rw [Finset.sum_insert hj]
   apply Commute.isNilpotent_add
   · exact Commute.sum_right _ _ _ (fun i hi ↦ h_comm _ _ (by simp) (by simp [hi]))

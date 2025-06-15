@@ -93,7 +93,7 @@ theorem coprime_of_minimal {a b c : ℤ} (h : Minimal a b c) : IsCoprime a b := 
   have hf : Fermat42 a1 b1 c1 :=
     (Fermat42.mul (Int.natCast_ne_zero.mpr (Nat.Prime.ne_zero hp))).mpr h.1
   apply Nat.le_lt_asymm (h.2 _ _ _ hf)
-  rw [Int.natAbs_mul, lt_mul_iff_one_lt_left, Int.natAbs_pow, Int.natAbs_ofNat]
+  rw [Int.natAbs_mul, lt_mul_iff_one_lt_left, Int.natAbs_pow, Int.natAbs_natCast]
   · exact Nat.one_lt_pow two_ne_zero (Nat.Prime.one_lt hp)
   · exact Nat.pos_of_ne_zero (Int.natAbs_ne_zero.2 (ne_zero hf))
 
@@ -118,7 +118,7 @@ theorem exists_odd_minimal {a b c : ℤ} (h : Fermat42 a b c) :
   · rcases Int.emod_two_eq_zero_or_one b0 with hbp | hbp
     · exfalso
       have h1 : 2 ∣ (Int.gcd a0 b0 : ℤ) :=
-        Int.dvd_gcd (Int.dvd_of_emod_eq_zero hap) (Int.dvd_of_emod_eq_zero hbp)
+        Int.dvd_coe_gcd (Int.dvd_of_emod_eq_zero hap) (Int.dvd_of_emod_eq_zero hbp)
       rw [Int.isCoprime_iff_gcd_eq_one.mp (coprime_of_minimal hf)] at h1
       revert h1
       decide
@@ -274,14 +274,14 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   have hic : Int.natAbs i < Int.natAbs c := by
     apply Int.ofNat_lt.mp
     rw [← Int.eq_natAbs_of_nonneg (le_of_lt hc)]
-    apply gt_of_gt_of_ge _ (Int.natAbs_le_self_sq i)
+    apply lt_of_le_of_lt (Int.natAbs_le_self_sq i)
     rw [← hi, ht3]
-    apply gt_of_gt_of_ge _ (Int.le_self_sq m)
+    apply lt_of_le_of_lt (Int.le_self_sq m)
     exact lt_add_of_pos_right (m ^ 2) (sq_pos_of_ne_zero hn)
   have hic' : Int.natAbs c ≤ Int.natAbs i := by
     apply h.2 j k i
     exact ⟨hj0, hk0, hh.symm⟩
-  apply absurd (not_le_of_lt hic) (not_not.mpr hic')
+  apply absurd (not_le_of_gt hic) (not_not.mpr hic')
 
 end Fermat42
 

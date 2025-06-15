@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
+import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 
 /-!
 # Ergodic maps and measures
@@ -18,13 +19,13 @@ preserving condition is relaxed to quasi measure preserving.
 
 # Main definitions:
 
- * `PreErgodic`: the ergodicity condition without the measure preserving condition. This exists
-   to share code between the `Ergodic` and `QuasiErgodic` definitions.
- * `Ergodic`: the definition of ergodic maps / measures.
- * `QuasiErgodic`: the definition of quasi ergodic maps / measures.
- * `Ergodic.quasiErgodic`: an ergodic map / measure is quasi ergodic.
- * `QuasiErgodic.ae_empty_or_univ'`: when the map is quasi measure preserving, one may relax the
-   strict invariance condition to almost invariance in the ergodicity condition.
+* `PreErgodic`: the ergodicity condition without the measure preserving condition. This exists
+  to share code between the `Ergodic` and `QuasiErgodic` definitions.
+* `Ergodic`: the definition of ergodic maps / measures.
+* `QuasiErgodic`: the definition of quasi ergodic maps / measures.
+* `Ergodic.quasiErgodic`: an ergodic map / measure is quasi ergodic.
+* `QuasiErgodic.ae_empty_or_univ'`: when the map is quasi measure preserving, one may relax the
+  strict invariance condition to almost invariance in the ergodicity condition.
 
 -/
 
@@ -62,9 +63,11 @@ theorem measure_self_or_compl_eq_zero (hf : PreErgodic f μ) (hs : MeasurableSet
     (hs' : f ⁻¹' s = s) : μ s = 0 ∨ μ sᶜ = 0 := by
   simpa using hf.ae_empty_or_univ hs hs'
 
-theorem ae_mem_or_ae_nmem (hf : PreErgodic f μ) (hsm : MeasurableSet s) (hs : f ⁻¹' s = s) :
+theorem ae_mem_or_ae_notMem (hf : PreErgodic f μ) (hsm : MeasurableSet s) (hs : f ⁻¹' s = s) :
     (∀ᵐ x ∂μ, x ∈ s) ∨ ∀ᵐ x ∂μ, x ∉ s :=
   eventuallyConst_set.1 <| hf.aeconst_set hsm hs
+
+@[deprecated (since := "2025-05-24")] alias ae_mem_or_ae_nmem := ae_mem_or_ae_notMem
 
 /-- On a probability space, the (pre)ergodicity condition is a zero one law. -/
 theorem prob_eq_zero_or_one [IsProbabilityMeasure μ] (hf : PreErgodic f μ) (hs : MeasurableSet s)
@@ -127,10 +130,12 @@ theorem ae_empty_or_univ₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s 
 
 /-- For a quasi ergodic map, sets that are almost invariant (rather than strictly invariant) are
 still either almost empty or full. -/
-theorem ae_mem_or_ae_nmem₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s μ)
+theorem ae_mem_or_ae_notMem₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s μ)
     (hs : f ⁻¹' s =ᵐ[μ] s) :
     (∀ᵐ x ∂μ, x ∈ s) ∨ ∀ᵐ x ∂μ, x ∉ s :=
   eventuallyConst_set.mp <| hf.aeconst_set₀ hsm hs
+
+@[deprecated (since := "2025-05-24")] alias ae_mem_or_ae_nmem₀ := ae_mem_or_ae_notMem₀
 
 theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     (hf : QuasiErgodic f μ) (c : R) : QuasiErgodic f (c • μ) :=
