@@ -411,7 +411,7 @@ end big_operators
 section floor
 
 variable (R : Type*) [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing R]
-variable (K : Type*) [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorRing K]
+variable (K : Type*) [Field K] [LinearOrder K] [IsOrderedRing K] [FloorRing K]
 
 example : ⌊(-1 : R)⌋ = -1 := by norm_num
 example : ⌊(2 : R)⌋ = 2 := by norm_num

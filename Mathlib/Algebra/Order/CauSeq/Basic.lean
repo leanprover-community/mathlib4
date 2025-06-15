@@ -39,7 +39,7 @@ open IsAbsoluteValue
 
 section
 
-variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] [Ring β]
+variable [Field α] [LinearOrder α] [IsOrderedRing α] [Ring β]
   (abv : β → α) [IsAbsoluteValue abv]
 
 theorem rat_add_continuous_lemma {ε : α} (ε0 : 0 < ε) :
@@ -81,14 +81,14 @@ end
 
 /-- A sequence is Cauchy if the distance between its entries tends to zero. -/
 @[nolint unusedArguments]
-def IsCauSeq {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+def IsCauSeq {α : Type*} [Field α] [LinearOrder α] [IsOrderedRing α]
     {β : Type*} [Ring β] (abv : β → α) (f : ℕ → β) :
     Prop :=
   ∀ ε > 0, ∃ i, ∀ j ≥ i, abv (f j - f i) < ε
 
 namespace IsCauSeq
 
-variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] [Ring β]
+variable [Field α] [LinearOrder α] [IsOrderedRing α] [Ring β]
   {abv : β → α} [IsAbsoluteValue abv] {f g : ℕ → β}
 
 -- see Note [nolint_ge]
@@ -151,13 +151,13 @@ end IsCauSeq
 
 /-- `CauSeq β abv` is the type of `β`-valued Cauchy sequences, with respect to the absolute value
 function `abv`. -/
-def CauSeq {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+def CauSeq {α : Type*} [Field α] [LinearOrder α] [IsOrderedRing α]
     (β : Type*) [Ring β] (abv : β → α) : Type _ :=
   { f : ℕ → β // IsCauSeq abv f }
 
 namespace CauSeq
 
-variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+variable [Field α] [LinearOrder α] [IsOrderedRing α]
 
 section Ring
 

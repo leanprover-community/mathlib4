@@ -160,7 +160,7 @@ end OrderedSemiring
 
 section LinearOrderedField
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
+variable [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
 
 open scoped Classical in
 /-- To check convex independence, one only has to check finsets thanks to Carathéodory's theorem. -/

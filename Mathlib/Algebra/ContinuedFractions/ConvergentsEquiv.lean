@@ -322,7 +322,7 @@ In practice, one most commonly deals with regular continued fractions, which sat
 positivity criterion required here. The analogous result for them
 (see `ContFract.convs_eq_convs`) hence follows directly from this theorem.
 -/
-theorem convs_eq_convs' [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+theorem convs_eq_convs' [Field K] [LinearOrder K] [IsOrderedRing K]
     (s_pos : ∀ {gp : Pair K} {m : ℕ}, m < n → g.s.get? m = some gp → 0 < gp.a ∧ 0 < gp.b) :
     g.convs n = g.convs' n := by
   induction n generalizing g with
@@ -381,7 +381,7 @@ namespace ContFract
 
 /-- Shows that the recurrence relation (`convs`) and direct evaluation (`convs'`) of a
 (regular) continued fraction coincide. -/
-nonrec theorem convs_eq_convs' [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+nonrec theorem convs_eq_convs' [Field K] [LinearOrder K] [IsOrderedRing K]
     {c : ContFract K} :
     (↑c : GenContFract K).convs = (↑c : GenContFract K).convs' := by
   ext n

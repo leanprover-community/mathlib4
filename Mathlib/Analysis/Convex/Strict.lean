@@ -351,7 +351,7 @@ end OrderedRing
 
 section LinearOrderedField
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace E]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜] [TopologicalSpace E]
 
 section AddCommGroup
 
@@ -384,7 +384,7 @@ Relates `Convex` and `Set.OrdConnected`.
 
 section
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
   {s : Set 𝕜}
 
 /-- A set in a linear ordered field is strictly convex if and only if it is convex. -/

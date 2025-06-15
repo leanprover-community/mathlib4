@@ -89,7 +89,7 @@ example {a : ℤ} (hlt : 0 ≤ a) (hne : a ≠ 0) : 0 < a := by positivity
 
 section
 
-variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+variable [Field α] [LinearOrder α] [IsOrderedRing α]
 
 example : (1/4 - 2/3 : ℚ) ≠ 0 := by positivity
 example : (1/4 - 2/3 : α) ≠ 0 := by positivity
@@ -274,9 +274,9 @@ example [Semiring α] [PartialOrder α] [IsStrictOrderedRing α]
 
 example [Semifield α] [LinearOrder α] [IsStrictOrderedRing α]
     (a : α) : 0 < a ^ (0 : ℤ) := by positivity
-example [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+example [Field α] [LinearOrder α] [IsOrderedRing α]
     (a : α) : 0 ≤ a ^ (18 : ℤ) := by positivity
-example [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+example [Field α] [LinearOrder α] [IsOrderedRing α]
     (a : α) : 0 ≤ a ^ (-34 : ℤ) := by positivity
 example [Semifield α] [LinearOrder α] [IsStrictOrderedRing α]
     {a : α} {n : ℤ} (ha : 0 ≤ a) : 0 ≤ a ^ n := by positivity
@@ -452,7 +452,7 @@ end Integral
 
 example (f : ℕ → ℝ) : 0 ≤ ∑' n, f n ^ 2 := by positivity
 example (f : ℕ → ℝ≥0) (c : ℝ) (hc : 0 < c) : 0 ≤ ∑' n, c * f n := by positivity
-example [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+example [Field α] [LinearOrder α] [IsOrderedRing α]
     [TopologicalSpace α] [OrderClosedTopology α] (f : ℚ → α) :
     0 ≤ ∑' q, (f q)^2 := by
   positivity

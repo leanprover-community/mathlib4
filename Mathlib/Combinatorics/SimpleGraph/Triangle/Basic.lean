@@ -34,7 +34,7 @@ open Fintype (card)
 
 namespace SimpleGraph
 
-variable {α β 𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+variable {α β 𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜]
   {G H : SimpleGraph α} {ε δ : 𝕜}
 
 section LocallyLinear

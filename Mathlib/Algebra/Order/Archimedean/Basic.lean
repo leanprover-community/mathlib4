@@ -344,7 +344,7 @@ lemma exists_zpow_btwn_of_lt_mul {a b c : K} (h : a < b * c) (hb₀ : 0 < b) (hc
 end LinearOrderedSemifield
 
 section LinearOrderedField
-variable [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+variable [Field K] [LinearOrder K] [IsOrderedRing K]
 
 theorem archimedean_iff_nat_lt : Archimedean K ↔ ∀ x : K, ∃ n : ℕ, x < n :=
   ⟨@exists_nat_gt K _ _ _, fun H =>

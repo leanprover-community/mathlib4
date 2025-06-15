@@ -442,7 +442,7 @@ instance instIsZLatticeRealSpan {E ι : Type*} [NormedAddCommGroup E] [NormedSpa
 
 section NormedLinearOrderedField
 
-variable (K : Type*) [NormedField K] [LinearOrder K] [IsStrictOrderedRing K]
+variable (K : Type*) [NormedField K] [LinearOrder K] [IsOrderedRing K]
   [HasSolidNorm K] [FloorRing K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
 variable [ProperSpace E] (L : Submodule ℤ E) [DiscreteTopology L]
@@ -748,7 +748,7 @@ end comap
 
 section NormedLinearOrderedField_comap
 
-variable (K : Type*) [NormedField K] [LinearOrder K] [IsStrictOrderedRing K] [HasSolidNorm K]
+variable (K : Type*) [NormedField K] [LinearOrder K] [IsOrderedRing K] [HasSolidNorm K]
   [FloorRing K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
   [ProperSpace E]

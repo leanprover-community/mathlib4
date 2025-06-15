@@ -19,7 +19,7 @@ open Function Int
 
 section LinearOrderedField
 
-variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] {a b : α} {n : ℤ}
+variable [Field α] [LinearOrder α] [IsOrderedRing α] {a b : α} {n : ℤ}
 
 protected theorem Even.zpow_nonneg (hn : Even n) (a : α) : 0 ≤ a ^ n := by
   obtain ⟨k, rfl⟩ := hn; rw [zpow_add' (by simp [em'])]; exact mul_self_nonneg _

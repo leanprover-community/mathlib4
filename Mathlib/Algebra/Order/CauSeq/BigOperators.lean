@@ -16,7 +16,7 @@ This file proves some more lemmas about basic Cauchy sequences that involve fini
 open Finset IsAbsoluteValue
 
 namespace IsCauSeq
-variable {α β : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α] [Ring β]
+variable {α β : Type*} [Field α] [LinearOrder α] [IsOrderedRing α] [Ring β]
   {abv : β → α} [IsAbsoluteValue abv]
   {f g : ℕ → β} {a : ℕ → α}
 

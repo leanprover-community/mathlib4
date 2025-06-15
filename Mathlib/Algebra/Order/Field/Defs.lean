@@ -31,7 +31,7 @@ structure LinearOrderedSemifield (K : Type*) extends LinearOrderedCommSemiring K
 
 set_option linter.deprecated false in
 /-- A linear ordered field is a field with a linear order respecting the operations. -/
-@[deprecated "Use `[Field K] [LinearOrder K] [IsStrictOrderedRing K]` instead."
+@[deprecated "Use `[Field K] [LinearOrder K] [IsOrderedRing K]` instead."
   (since := "2025-04-10")]
 structure LinearOrderedField (K : Type*) extends LinearOrderedCommRing K, Field K
 

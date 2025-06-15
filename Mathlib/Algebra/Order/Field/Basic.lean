@@ -318,7 +318,7 @@ end LinearOrderedSemifield
 
 section
 
-variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] {a b c d : α} {n : ℤ}
+variable [Field α] [LinearOrder α] [IsOrderedRing α] {a b c d : α} {n : ℤ}
 
 /-! ### Lemmas about pos, nonneg, nonpos, neg -/
 

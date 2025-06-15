@@ -954,7 +954,7 @@ end OrderedRing
 
 section LinearOrderedField
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommMonoid E]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜] [AddCommMonoid E]
 
 section OrderedAddCommMonoid
 
@@ -1053,7 +1053,7 @@ end OrderIso
 
 
 section LinearOrderedField
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜]
 
 section OrderedAddCommMonoid
 variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]

@@ -33,7 +33,7 @@ end NormedField
 
 section LinearOrderedField
 
-variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜]
 
 theorem pow_div_pow_eventuallyEq_atTop {p q : ℕ} :
     (fun x : 𝕜 => x ^ p / x ^ q) =ᶠ[atTop] fun x => x ^ ((p : ℤ) - q) := by
@@ -146,7 +146,7 @@ end Real
 
 section NormedLinearOrderedField
 
-variable {R : Type*} [NormedField R] [LinearOrder R] [IsStrictOrderedRing R]
+variable {R : Type*} [NormedField R] [LinearOrder R] [IsOrderedRing R]
   [OrderTopology R] [FloorRing R]
 
 theorem Asymptotics.isEquivalent_nat_floor :

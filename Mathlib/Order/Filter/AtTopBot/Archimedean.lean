@@ -81,34 +81,34 @@ theorem Filter.Eventually.intCast_atBot [Ring R] [PartialOrder R] [IsStrictOrder
   rw [← Int.comap_cast_atBot (R := R)]; exact h.comap _
 
 @[simp]
-theorem Rat.comap_cast_atTop [Field R] [LinearOrder R] [IsStrictOrderedRing R] [Archimedean R] :
+theorem Rat.comap_cast_atTop [Field R] [LinearOrder R] [IsOrderedRing R] [Archimedean R] :
     comap ((↑) : ℚ → R) atTop = atTop :=
   comap_embedding_atTop (fun _ _ => Rat.cast_le) fun r =>
     let ⟨n, hn⟩ := exists_nat_ge r; ⟨n, by simpa⟩
 
-@[simp] theorem Rat.comap_cast_atBot [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+@[simp] theorem Rat.comap_cast_atBot [Field R] [LinearOrder R] [IsOrderedRing R]
     [Archimedean R] :
     comap ((↑) : ℚ → R) atBot = atBot :=
   comap_embedding_atBot (fun _ _ => Rat.cast_le) fun r =>
     let ⟨n, hn⟩ := exists_nat_ge (-r)
     ⟨-n, by simpa [neg_le]⟩
 
-theorem tendsto_ratCast_atTop_iff [Field R] [LinearOrder R] [IsStrictOrderedRing R] [Archimedean R]
+theorem tendsto_ratCast_atTop_iff [Field R] [LinearOrder R] [IsOrderedRing R] [Archimedean R]
     {f : α → ℚ}
     {l : Filter α} : Tendsto (fun n => (f n : R)) l atTop ↔ Tendsto f l atTop := by
   rw [← @Rat.comap_cast_atTop R, tendsto_comap_iff]; rfl
 
-theorem tendsto_ratCast_atBot_iff [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+theorem tendsto_ratCast_atBot_iff [Field R] [LinearOrder R] [IsOrderedRing R]
     [Archimedean R] {f : α → ℚ}
     {l : Filter α} : Tendsto (fun n => (f n : R)) l atBot ↔ Tendsto f l atBot := by
   rw [← @Rat.comap_cast_atBot R, tendsto_comap_iff]; rfl
 
-theorem Filter.Eventually.ratCast_atTop [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+theorem Filter.Eventually.ratCast_atTop [Field R] [LinearOrder R] [IsOrderedRing R]
     [Archimedean R] {p : R → Prop}
     (h : ∀ᶠ (x : R) in atTop, p x) : ∀ᶠ (n : ℚ) in atTop, p n := by
   rw [← Rat.comap_cast_atTop (R := R)]; exact h.comap _
 
-theorem Filter.Eventually.ratCast_atBot [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+theorem Filter.Eventually.ratCast_atBot [Field R] [LinearOrder R] [IsOrderedRing R]
     [Archimedean R] {p : R → Prop}
     (h : ∀ᶠ (x : R) in atBot, p x) : ∀ᶠ (n : ℚ) in atBot, p n := by
   rw [← Rat.comap_cast_atBot (R := R)]; exact h.comap _

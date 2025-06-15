@@ -231,7 +231,7 @@ theorem one_le_gauge_of_notMem (hs₁ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ
 
 section LinearOrderedField
 
-variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+variable {α : Type*} [Field α] [LinearOrder α] [IsOrderedRing α]
   [MulActionWithZero α ℝ] [OrderedSMul α ℝ]
 
 theorem gauge_smul_of_nonneg [MulActionWithZero α E] [IsScalarTower α ℝ (Set E)] {s : Set E} {a : α}

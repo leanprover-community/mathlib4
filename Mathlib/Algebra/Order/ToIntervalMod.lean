@@ -857,7 +857,7 @@ end LinearOrderedAddCommGroup
 
 section LinearOrderedField
 
-variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
+variable {α : Type*} [Field α] [LinearOrder α] [IsOrderedRing α] [FloorRing α]
   {p : α} (hp : 0 < p)
 
 theorem toIcoDiv_eq_floor (a b : α) : toIcoDiv hp a b = ⌊(b - a) / p⌋ := by

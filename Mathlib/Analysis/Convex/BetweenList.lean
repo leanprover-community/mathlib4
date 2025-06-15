@@ -178,7 +178,7 @@ end OrderedRing
 
 section LinearOrderedField
 
-variable [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+variable [Field R] [LinearOrder R] [IsOrderedRing R]
   [AddCommGroup V] [Module R V] [AddTorsor V P] {x y z : P}
 variable {R}
 

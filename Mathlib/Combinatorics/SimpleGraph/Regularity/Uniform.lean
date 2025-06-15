@@ -42,7 +42,7 @@ is less than `ε`.
 
 open Finset
 
-variable {α 𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+variable {α 𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜]
 
 /-! ### Graph uniformity -/
 

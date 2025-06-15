@@ -973,7 +973,7 @@ instance (priority := 100) PosSMulStrictMono.toPosSMulReflectLT [MulActionWithZe
 end LinearOrderedSemifield
 
 section Field
-variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+variable [Field α] [LinearOrder α] [IsOrderedRing α]
   [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β] [Module α β] {a : α} {b₁ b₂ : β}
 
 section PosSMulMono

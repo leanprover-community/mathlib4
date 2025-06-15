@@ -65,7 +65,7 @@ end Semifield
 
 section Field
 
-variable {K} [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorRing K]
+variable {K} [Field K] [LinearOrder K] [IsOrderedRing K] [FloorRing K]
 
 @[simp, norm_cast]
 theorem intFloor_cast (x : ℚ≥0) : ⌊(x : K)⌋ = ⌊(x : ℚ)⌋ := by

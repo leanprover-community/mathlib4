@@ -52,7 +52,7 @@ open GenContFract (of)
 
 open Int
 
-variable {K : Type*} {v : K} {n : ℕ} [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorRing K]
+variable {K : Type*} {v : K} {n : ℕ} [Field K] [LinearOrder K] [IsOrderedRing K] [FloorRing K]
 
 namespace GenContFract
 

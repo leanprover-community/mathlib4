@@ -124,7 +124,7 @@ theorem Filter.EventuallyEq.div_mul_cancel_atTop {α K : Type*}
 
 /-- If when `x` tends to `∞`, `g` tends to `∞` and `f x / g x` tends to a positive
   constant, then `f` tends to `∞`. -/
-theorem Tendsto.num {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+theorem Tendsto.num {α K : Type*} [Field K] [LinearOrder K] [IsOrderedRing K]
     [TopologicalSpace K] [OrderTopology K]
     {f g : α → K} {l : Filter α} (hg : Tendsto g l atTop) {a : K} (ha : 0 < a)
     (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
@@ -133,7 +133,7 @@ theorem Tendsto.num {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRin
 
 /-- If when `x` tends to `∞`, `g` tends to `∞` and `f x / g x` tends to a positive
   constant, then `f` tends to `∞`. -/
-theorem Tendsto.den {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+theorem Tendsto.den {α K : Type*} [Field K] [LinearOrder K] [IsOrderedRing K]
     [TopologicalSpace K] [OrderTopology K]
     [ContinuousInv K] {f g : α → K} {l : Filter α} (hf : Tendsto f l atTop) {a : K} (ha : 0 < a)
     (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
@@ -146,7 +146,7 @@ theorem Tendsto.den {α K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRin
 /-- If when `x` tends to `∞`, `f x / g x` tends to a positive constant, then `f` tends to `∞` if
   and only if `g` tends to `∞`. -/
 theorem Tendsto.num_atTop_iff_den_atTop {α K : Type*}
-    [Field K] [LinearOrder K] [IsStrictOrderedRing K] [TopologicalSpace K]
+    [Field K] [LinearOrder K] [IsOrderedRing K] [TopologicalSpace K]
     [OrderTopology K] [ContinuousInv K] {f g : α → K} {l : Filter α} {a : K} (ha : 0 < a)
     (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
     Tendsto f l atTop ↔ Tendsto g l atTop :=
@@ -171,7 +171,7 @@ theorem Nat.tendsto_pow_atTop_atTop_of_one_lt {m : ℕ} (h : 1 < m) :
   tsub_add_cancel_of_le (le_of_lt h) ▸ tendsto_add_one_pow_atTop_atTop_of_pos (tsub_pos_of_lt h)
 
 theorem tendsto_pow_atTop_nhds_zero_of_lt_one {𝕜 : Type*}
-    [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [Archimedean 𝕜]
+    [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜] [Archimedean 𝕜]
     [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} (h₁ : 0 ≤ r) (h₂ : r < 1) :
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝 0) :=
   h₁.eq_or_lt.elim
@@ -182,7 +182,7 @@ theorem tendsto_pow_atTop_nhds_zero_of_lt_one {𝕜 : Type*}
       (tendsto_inv_atTop_zero.comp this).congr fun n ↦ by simp)
 
 @[simp] theorem tendsto_pow_atTop_nhds_zero_iff {𝕜 : Type*}
-    [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [Archimedean 𝕜]
+    [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜] [Archimedean 𝕜]
     [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} :
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝 0) ↔ |r| < 1 := by
   rw [tendsto_zero_iff_abs_tendsto_zero]
@@ -200,7 +200,7 @@ theorem tendsto_pow_atTop_nhds_zero_of_lt_one {𝕜 : Type*}
   · simpa only [← abs_pow] using (tendsto_pow_atTop_nhds_zero_of_lt_one (abs_nonneg r)) h
 
 theorem tendsto_pow_atTop_nhdsWithin_zero_of_lt_one {𝕜 : Type*}
-    [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜]
     [Archimedean 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] {r : 𝕜} (h₁ : 0 < r) (h₂ : r < 1) :
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝[>] 0) :=
   tendsto_inf.2
@@ -681,7 +681,7 @@ lemma tendsto_nat_floor_mul_atTop {α : Type _}
   Tendsto.comp tendsto_nat_floor_atTop
     <| Tendsto.const_mul_atTop ha tendsto_natCast_atTop_atTop
 
-variable {R : Type*} [TopologicalSpace R] [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+variable {R : Type*} [TopologicalSpace R] [Field R] [LinearOrder R] [IsOrderedRing R]
   [OrderTopology R] [FloorRing R]
 
 theorem tendsto_nat_floor_mul_div_atTop {a : R} (ha : 0 ≤ a) :

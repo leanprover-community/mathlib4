@@ -27,7 +27,7 @@ open Int
 
 namespace Rat
 
-variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
+variable {α : Type*} [Field α] [LinearOrder α] [IsOrderedRing α] [FloorRing α]
 
 protected theorem floor_def' (a : ℚ) : a.floor = a.num / a.den := by
   rw [Rat.floor]

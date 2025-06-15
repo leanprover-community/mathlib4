@@ -302,7 +302,7 @@ end LinearOrderedRing
 
 section Rat
 
-variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α]
+variable [Field α] [LinearOrder α] [IsOrderedRing α] [Nontrivial α]
 
 -- Normalize to True
 example : (1 : ℚ) ≤ 1 := by norm_num1
@@ -519,7 +519,7 @@ end
 
 section
 
-variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+variable [Field α] [LinearOrder α] [IsOrderedRing α]
 example : (4 : α) / 2 = 2 := by norm_num1
 example : (4 : α) / 1 = 4 := by norm_num1
 example : (4 : α) / 3 = 4 / 3 := by norm_num1
@@ -585,7 +585,7 @@ attribute [-norm_num] Mathlib.Meta.NormNum.evalPow
 end norm_num_erase
 
 -- auto gen tests
-variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+variable [Field α] [LinearOrder α] [IsOrderedRing α]
 example : ((25 * (1 / 1)) + (30 - 16)) = (39 : α) := by norm_num1
 example : ((19 * (- 2 - 3)) / 6) = (-95/6 : α) := by norm_num1
 example : - (3 * 28) = (-84 : α) := by norm_num1

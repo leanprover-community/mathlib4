@@ -118,7 +118,7 @@ theorem cutMap_self (a : α) : cutMap α a = Iio a ∩ range (Rat.cast : ℚ →
 
 end DivisionRing
 
-variable (β) [IsStrictOrderedRing α] [Field β] [LinearOrder β] [IsStrictOrderedRing β]
+variable (β) [IsOrderedRing α] [Field β] [LinearOrder β] [IsOrderedRing β]
   {a a₁ a₂ : α} {b : β} {q : ℚ}
 
 theorem cutMap_coe (q : ℚ) : cutMap β (q : α) = Rat.cast '' {r : ℚ | (r : β) < q} := by
@@ -159,7 +159,7 @@ end CutMap
 
 section InducedMap
 
-variable (α β γ) [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+variable (α β γ) [Field α] [LinearOrder α] [IsOrderedRing α]
   [ConditionallyCompleteLinearOrderedField β] [ConditionallyCompleteLinearOrderedField γ]
 
 /-- The induced order preserving function from a linear ordered field to a conditionally complete
