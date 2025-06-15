@@ -44,8 +44,8 @@ def leftActionOfMonoidalOppositeRightAction [MonoidalRightAction Cᴹᵒᵖ D] :
   actionHomLeft {c c'} f d := d ᵣ⊴ f.mop
   actionHomRight c {d d'} f := f ᵣ⊵ mop c
   actionHom {c c'} {d d} f g := g ᵣ⊙ f.mop
-  actionAssocIso _ _ _ := ᵣσ_ _ _ _
-  actionUnitIso _ := ᵣυ_ _
+  actionAssocIso _ _ _ := ᵣα _ _ _
+  actionUnitIso _ := ᵣρ _
   actionHom_def _ _ := MonoidalRightAction.actionHom_def' _ _
   actionAssocIso_naturality _ _ _ :=
     MonoidalRightAction.actionAssocIso_naturality _ _ _
@@ -69,8 +69,8 @@ def monoidalOppositeLeftAction [MonoidalRightAction C D] :
   actionHomLeft {c c'} f d := d ᵣ⊴ f.unmop
   actionHomRight c {d d'} f := f ᵣ⊵ unmop c
   actionHom {c c'} {d d} f g := g ᵣ⊙ f.unmop
-  actionAssocIso _ _ _ := ᵣσ_ _ _ _
-  actionUnitIso _ := ᵣυ_ _
+  actionAssocIso _ _ _ := ᵣα _ _ _
+  actionUnitIso _ := ᵣρ _
   actionHom_def _ _ := MonoidalRightAction.actionHom_def' _ _
   actionAssocIso_naturality _ _ _ :=
     MonoidalRightAction.actionAssocIso_naturality _ _ _
@@ -106,7 +106,7 @@ lemma monoidalOppositeLeftAction_actionHom_mop_mop
     f.mop ⊙ₗ g = g ᵣ⊙ f := rfl
 
 lemma monoidalOppositeLeftAction_actionAssocIso_mop_mop (c c' : C) (d : D) :
-    σ_ₗ (mop c) (mop c') d = ᵣσ_ d c' c := rfl
+    αₗ (mop c) (mop c') d = ᵣα d c' c := rfl
 
 end
 
@@ -260,8 +260,8 @@ def rightActionOfMonoidalOppositeLeftAction [MonoidalLeftAction Cᴹᵒᵖ D] :
   actionHomLeft {d d'} f c := mop c ⊴ₗ f
   actionHomRight d _ _ f := f.mop ⊵ₗ d
   actionHom {c c'} {d d'} f g := g.mop ⊙ₗ f
-  actionAssocIso _ _ _ := σ_ₗ _ _ _
-  actionUnitIso _ := υ_ₗ _
+  actionAssocIso _ _ _ := αₗ _ _ _
+  actionUnitIso _ := λₗ _
   actionHom_def _ _ := MonoidalLeftAction.actionHom_def' _ _
   actionAssocIso_naturality _ _ _ :=
     MonoidalLeftAction.actionAssocIso_naturality _ _ _
@@ -283,8 +283,8 @@ def monoidalOppositeRightAction [MonoidalLeftAction C D] :
   actionHomLeft {d d'} f c := unmop c ⊴ₗ f
   actionHomRight d _ _ f := f.unmop ⊵ₗ d
   actionHom {c c'} {d d'} f g := g.unmop ⊙ₗ f
-  actionAssocIso _ _ _ := σ_ₗ _ _ _
-  actionUnitIso _ := υ_ₗ _
+  actionAssocIso _ _ _ := αₗ _ _ _
+  actionUnitIso _ := λₗ _
   actionHom_def _ _ := MonoidalLeftAction.actionHom_def' _ _
   actionAssocIso_naturality _ _ _ :=
     MonoidalLeftAction.actionAssocIso_naturality _ _ _
@@ -318,7 +318,7 @@ lemma monoidalOppositeRightAction_actionHom_mop_mop
     f ᵣ⊙ g.mop = g ⊙ₗ f := rfl
 
 lemma monoidalOppositeRightAction_actionAssocIso_mop_mop (c c' : C) (d : D) :
-    ᵣσ_ d (mop c) (mop c') = σ_ₗ c' c d := rfl
+    ᵣα d (mop c) (mop c') = αₗ c' c d := rfl
 
 end
 
