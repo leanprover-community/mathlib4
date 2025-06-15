@@ -115,7 +115,6 @@ we get a natural isomorphism between `inducedFunctor _ ⋙ fiberInclusion` and `
 @[simps!]
 def inducedFunctorCompIsoSelf : (inducedFunctor hF) ⋙ fiberInclusion ≅ F := .refl _
 
-@[simp]
 lemma inducedFunctor_comp : (inducedFunctor hF) ⋙ fiberInclusion = F := rfl
 
 @[simp]
