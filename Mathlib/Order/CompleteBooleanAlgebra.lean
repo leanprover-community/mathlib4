@@ -563,21 +563,7 @@ A complete Boolean algebra is a Boolean algebra that is also a complete distribu
 It is only completely distributive if it is also atomic.
 -/
 -- We do not directly extend `CompleteDistribLattice` to avoid having the `hnot` field
-class CompleteBooleanAlgebra (α) extends CompleteLattice α, BooleanAlgebra α where
-
-section CompleteBooleanAlgebra
-
-variable [CompleteBooleanAlgebra α]
-
-@[deprecated "use `inf_sSup_eq.le` instead" (since := "2025-06-15")]
-theorem inf_sSup_le_iSup_inf (a : α) (s : Set α) : a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b :=
-  gc_inf_himp.l_sSup.le
-
-@[deprecated "use `sup_sInf_eq.ge` instead" (since := "2025-06-15")]
-theorem iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s :=
-  gc_sdiff_sup.u_sInf.ge
-
-end CompleteBooleanAlgebra
+class CompleteBooleanAlgebra (α) extends CompleteLattice α, BooleanAlgebra α
 
 -- See note [lower instance priority]
 instance (priority := 100) CompleteBooleanAlgebra.toCompleteDistribLattice
@@ -603,6 +589,14 @@ instance OrderDual.instCompleteBooleanAlgebra [CompleteBooleanAlgebra α] :
 section CompleteBooleanAlgebra
 
 variable [CompleteBooleanAlgebra α] {s : Set α} {f : ι → α}
+
+@[deprecated "use `inf_sSup_eq.le` instead" (since := "2025-06-15")]
+theorem inf_sSup_le_iSup_inf (a : α) (s : Set α) : a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b :=
+  gc_inf_himp.l_sSup.le
+
+@[deprecated "use `sup_sInf_eq.ge` instead" (since := "2025-06-15")]
+theorem iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s :=
+  gc_sdiff_sup.u_sInf.ge
 
 theorem compl_iInf : (iInf f)ᶜ = ⨆ i, (f i)ᶜ :=
   le_antisymm
