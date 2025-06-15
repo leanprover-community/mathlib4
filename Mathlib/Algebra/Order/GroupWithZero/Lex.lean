@@ -19,7 +19,9 @@ linearly ordered group with zero itself with natural inclusions but only one pro
 One has to work with the lexicographic product of the units `αˣ ×ₗ βˣ` since otherwise,
 the plain product `αˣ × βˣ` would not be linearly ordered.
 
-TODO: Create the "LinOrdCommGrpWithZero" category.
+## TODO
+
+Create the "LinOrdCommGrpWithZero" category.
 
 -/
 
@@ -43,12 +45,12 @@ lemma coe_symm_toLexMulEquiv (G H : Type*) [MulOneClass G] [MulOneClass H] :
   rfl
 
 @[simp]
-lemma coe_toEquiv_toLexMulEquiv (G H : Type*) [MulOneClass G] [MulOneClass H] :
+lemma toEquiv_toLexMulEquiv (G H : Type*) [MulOneClass G] [MulOneClass H] :
     ⇑(toLexMulEquiv G H : G × H ≃ G ×ₗ H) = toLex :=
   rfl
 
 @[simp]
-lemma coe_symm_toEquiv_toLexMulEquiv (G H : Type*) [MulOneClass G] [MulOneClass H] :
+lemma toEquiv_symm_toLexMulEquiv (G H : Type*) [MulOneClass G] [MulOneClass H] :
     ⇑((toLexMulEquiv G H).symm : G ×ₗ H ≃ G × H) = ofLex :=
   rfl
 
@@ -57,7 +59,7 @@ namespace MonoidWithZeroHom
 variable {M₀ N₀ : Type*}
 
 lemma inl_mono [LinearOrderedCommGroupWithZero M₀] [GroupWithZero N₀] [Preorder N₀]
-    [DecidablePred fun x : M₀ ↦ x = 0] : Monotone (MonoidWithZeroHom.inl M₀ N₀) := by
+    [DecidablePred fun x : M₀ ↦ x = 0] : Monotone (inl M₀ N₀) := by
   refine (WithZero.map'_mono MonoidHom.inl_mono).comp ?_
   intro x y
   obtain rfl | ⟨x, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
@@ -65,11 +67,11 @@ lemma inl_mono [LinearOrderedCommGroupWithZero M₀] [GroupWithZero N₀] [Preor
   · simp [WithZero.zero_le, WithZero.withZeroUnitsEquiv]
 
 lemma inl_strictMono [LinearOrderedCommGroupWithZero M₀] [GroupWithZero N₀] [PartialOrder N₀]
-    [DecidablePred fun x : M₀ ↦ x = 0] : StrictMono (MonoidWithZeroHom.inl M₀ N₀) :=
+    [DecidablePred fun x : M₀ ↦ x = 0] : StrictMono (inl M₀ N₀) :=
   inl_mono.strictMono_of_injective inl_injective
 
 lemma inr_mono [GroupWithZero M₀] [Preorder M₀] [LinearOrderedCommGroupWithZero N₀]
-    [DecidablePred fun x : N₀ ↦ x = 0] : Monotone (MonoidWithZeroHom.inr M₀ N₀) := by
+    [DecidablePred fun x : N₀ ↦ x = 0] : Monotone (inr M₀ N₀) := by
   refine (WithZero.map'_mono MonoidHom.inr_mono).comp ?_
   intro x y
   obtain rfl | ⟨x, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
@@ -77,26 +79,19 @@ lemma inr_mono [GroupWithZero M₀] [Preorder M₀] [LinearOrderedCommGroupWithZ
   · simp [WithZero.zero_le, WithZero.withZeroUnitsEquiv]
 
 lemma inr_strictMono [GroupWithZero M₀] [PartialOrder M₀] [LinearOrderedCommGroupWithZero N₀]
-    [DecidablePred fun x : N₀ ↦ x = 0] : StrictMono (MonoidWithZeroHom.inr M₀ N₀) :=
+    [DecidablePred fun x : N₀ ↦ x = 0] : StrictMono (inr M₀ N₀) :=
   inr_mono.strictMono_of_injective inr_injective
 
 lemma fst_mono [LinearOrderedCommGroupWithZero M₀] [GroupWithZero N₀] [Preorder N₀] :
-    Monotone (MonoidWithZeroHom.fst M₀ N₀) := by
-  intro x y
-  cases x <;> cases y
-  · simp
-  · simp
-  · simp [WithZero.coe_le_iff]
-  · simp +contextual [fst, Prod.le_def]
+    Monotone (fst M₀ N₀) := by
+  refine WithZero.forall.mpr ?_
+  simp +contextual [WithZero.forall, Prod.le_def]
+
 
 lemma snd_mono [GroupWithZero M₀] [Preorder M₀] [LinearOrderedCommGroupWithZero N₀] :
-    Monotone (MonoidWithZeroHom.snd M₀ N₀) := by
-  intro x y
-  cases x <;> cases y
-  · simp
-  · simp
-  · simp [WithZero.coe_le_iff]
-  · simp +contextual [snd, Prod.le_def]
+    Monotone (snd M₀ N₀) := by
+  refine WithZero.forall.mpr ?_
+  simp [WithZero.forall, Prod.le_def]
 
 end MonoidWithZeroHom
 
