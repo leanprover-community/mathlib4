@@ -18,8 +18,8 @@ Results require `RCLike 𝕜`.
 
 ## Main results
 
-* `Matrix.gram_posSemidef` Gram matrices are positive semi-definite.
-* `Matrix.gram_posDef_iff_linearIndependent` Linear independence of `v` is
+* `Matrix.posSemidef_gram` Gram matrices are positive semi-definite.
+* `Matrix.posDef_gram_iff_linearIndependent` Linear independence of `v` is
   equivalent to positive definiteness of `gram 𝕜 v`.
 -/
 
@@ -33,12 +33,11 @@ variable {𝕜 : Type*}
 namespace Matrix
 
 /-- The entries of a Gram matrix are inner products of vectors in an inner product space. -/
-def gram (𝕜 : Type*) [Inner 𝕜 E] (v : n → E) : Matrix n n 𝕜 := of fun i j ↦ inner 𝕜 (v i) (v j)
+def gram (𝕜 : Type*) [Inner 𝕜 E] (v : n → E) : Matrix n n 𝕜 := of fun i j ↦ ⟪v i, v j⟫_𝕜
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜  _ _ x y
-
+@[simp]
 lemma gram_apply [Inner 𝕜 E] (v : n → E) (i j : n) :
-    (gram _ v) i j = ⟪v i, v j⟫ := rfl
+    (gram _ v) i j = ⟪v i, v j⟫_𝕜 := rfl
 
 variable [RCLike 𝕜]
 
@@ -51,22 +50,22 @@ lemma isHermitian_gram {v : n → E} : (gram 𝕜 v).IsHermitian :=
   Matrix.ext fun _ _ ↦ inner_conj_symm _ _
 
 theorem star_dotProduct_gram_mulVec [Fintype n] {v : n → E} (x : n → 𝕜) :
-    star x ⬝ᵥ (gram 𝕜 v) *ᵥ x = ⟪∑ i, x i • v i, ∑ i, x i • v i⟫ := by
-  trans ∑ i, ∑ j, conj (x i) * x j * ⟪v i, v j⟫
+    star x ⬝ᵥ (gram 𝕜 v) *ᵥ x = ⟪∑ i, x i • v i, ∑ i, x i • v i⟫_𝕜 := by
+  trans ∑ i, ∑ j, conj (x i) * x j * ⟪v i, v j⟫_𝕜
   · simp_rw [dotProduct, mul_assoc, ← Finset.mul_sum, mulVec, dotProduct, mul_comm, ← star_def,
       gram_apply, Pi.star_apply]
   · simp_rw [sum_inner, inner_sum, inner_smul_left, inner_smul_right, mul_assoc]
 
 variable (𝕜) in
 /-- A Gram matrix is positive semidefinite. -/
-theorem gram_posSemidef [Fintype n] (v : n → E) :
+theorem posSemidef_gram [Fintype n] (v : n → E) :
     PosSemidef (gram 𝕜 v) := by
   refine ⟨isHermitian_gram, fun x ↦ ?_⟩
   rw [star_dotProduct_gram_mulVec, le_iff_re_im]
   simp only [map_zero, inner_self_im, and_true, inner_self_nonneg]
 
 /-- In a seminormed space, positive definiteness of `gram 𝕜 v` implies linear independence of `v` -/
-theorem linearIndependent_of_gram_posDef [Fintype n] {v : n → E} (h_gram : PosDef (gram 𝕜 v)) :
+theorem linearIndependent_of_posDef_gram [Fintype n] {v : n → E} (h_gram : PosDef (gram 𝕜 v)) :
     LinearIndependent 𝕜 v := by
   rw [Fintype.linearIndependent_iff]
   intro y hy
@@ -85,10 +84,10 @@ section NormedInnerProductSpace
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 /-- In a normed space, linear independence of `v` implies positive definiteness of `gram 𝕜 v`. -/
-theorem gram_posDef_of_linearIndependent  [Fintype n]
+theorem posDef_gram_of_linearIndependent  [Fintype n]
     {v : n → E} (h_li : LinearIndependent 𝕜 v) : PosDef (gram 𝕜 v) := by
   rw [Fintype.linearIndependent_iff] at h_li
-  obtain ⟨h0, h1⟩ := gram_posSemidef (𝕜 := 𝕜) (v := v)
+  obtain ⟨h0, h1⟩ := posSemidef_gram (𝕜 := 𝕜) (v := v)
   refine ⟨h0, fun x hx ↦ (h1 x).lt_of_ne' ?_⟩
   specialize h_li x
   rw [← funext_iff, ← not_imp_not] at h_li
@@ -101,9 +100,9 @@ theorem gram_posDef_of_linearIndependent  [Fintype n]
 
 /-- In a normed space, linear independence of `v` is equivalent to positive definiteness of
 `gram 𝕜 v`. -/
-theorem gram_posDef_iff_linearIndependent [Fintype n] {v : n → E}  :
+theorem posDef_gram_iff_linearIndependent [Fintype n] {v : n → E} :
     PosDef (gram 𝕜 v) ↔ LinearIndependent 𝕜 v :=
-  ⟨linearIndependent_of_gram_posDef, gram_posDef_of_linearIndependent⟩
+  ⟨linearIndependent_of_posDef_gram, posDef_gram_of_linearIndependent⟩
 
 end NormedInnerProductSpace
 
