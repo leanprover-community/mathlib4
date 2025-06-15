@@ -98,8 +98,10 @@ variable [Category.{v₁} C]
 /-- The opposite category. -/
 @[stacks 001M]
 instance Category.opposite : Category.{v₁} Cᵒᵖ where
-  comp f g := (g.unop ≫ f.unop).op
-  id X := (𝟙 (unop X)).op
+  toCategoryStruct := CategoryStruct.opposite
+  id_comp f := congrArg op <| Category.comp_id _
+  comp_id f := congrArg op <| Category.id_comp _
+  assoc f g h := congrArg op <| by simp
 
 section
 
