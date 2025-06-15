@@ -4,7 +4,81 @@ import Mathlib
 -- set_option trace.profiler true
 -- set_option trace.rw?? true
 
-variable (n : Nat)
+variable (n : Nat) (p q : Prop)
+
+/--
+info: Pattern ∀ (p : P), P → Q p
+· p → q
+  forall_self_imp
+
+Pattern a → b → c
+· p ∧ p → q
+  and_imp
+
+Pattern ∀ (a : α) (b : β), p a b
+· ∀ (x : p ×' p), q
+  PProd.forall'
+
+Pattern ∀ (x : α), p x → b
+· (∃ (_ : p), p) → q
+  exists_imp
+
+Pattern ∀ (x : α) (h : p x), q x h
+· ∀ (x : { a // p }), q
+  Subtype.forall'
+
+Pattern a → b
+· ¬p ∨ (p → q)
+  imp_iff_not_or
+· (p → q) ∨ ¬p
+  imp_iff_or_not
+· ¬(p → q) → ¬p
+  not_imp_not
+· p → q ↔ p ∨ (p → q)
+  iff_or_self
+· p → q ↔ (p → q) ∨ p
+  iff_self_or
+· p ⇨ (p → q)
+  himp_iff_imp
+· p ↔ (p → q) ∧ p
+  iff_and_self
+· p ↔ p ∧ (p → q)
+  iff_self_and
+· Nonempty p → p → q
+  Nonempty.imp
+· ¬(p ∧ ¬(p → q))
+  not_and_not_right
+· (p → q) ∨ p ↔ p → q
+  or_iff_left_iff_imp
+· p ∧ (p → q) ↔ p
+  and_iff_left_iff_imp
+· p ∨ (p → q) ↔ p → q
+  or_iff_right_iff_imp
+· (p → q) ∧ p ↔ p
+  and_iff_right_iff_imp
+· ¬p
+  ⊢ ¬(p → q)
+  imp_iff_not
+· p → q
+  ⊢ p
+  imp_iff_right
+
+Pattern ∀ (i : ι), p i
+· ⨅ (_ : p), (p → q)
+  iInf_Prop_eq
+· p → p → p → q
+  forall_self_imp
+· ¬∃ (_ : p), ¬(p → q)
+  Classical.not_exists_not
+· True
+  ⊢ p → (p → q ↔ True)
+  forall_true_iff'
+· p → q
+  ⊢ p
+  forall_prop_of_true
+-/
+#guard_msgs in
+#rw?? p → p → q
 
 /--
 info: Pattern n + 1
