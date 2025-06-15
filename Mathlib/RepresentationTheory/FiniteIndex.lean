@@ -3,6 +3,7 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
+import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 import Mathlib.RepresentationTheory.Coinduced
 import Mathlib.RepresentationTheory.Induced
 
@@ -254,5 +255,9 @@ lemma coindResAdjunction_homEquiv_symm_apply
   simp only [coindResAdjunction, Adjunction.ofNatIsoLeft, indResAdjunction,
     Adjunction.mkOfHomEquiv_homEquiv]
   rfl
+
+instance : (Action.res (ModuleCat.{u} k) S.subtype).PreservesProjectiveObjects :=
+  (Action.res _ S.subtype).preservesProjectiveObjects_of_adjunction_of_preservesEpimorphisms
+    (resIndAdjunction k S)
 
 end Rep
