@@ -32,6 +32,9 @@ section
 variable {C}
 variable {X Y : C} (f : X ⟶ Y) {A B : Cᵒᵖ} (g : A ⟶ B)
 
+-- this isn't helpful here
+attribute [-ext] Quiver.Hom.unop_ext
+
 -- TODO: Generalize (this will work whenever f has a cokernel)
 -- (The abelian case is probably sufficient for most applications.)
 /-- The kernel of `f.op` is the opposite of `cokernel f`. -/
