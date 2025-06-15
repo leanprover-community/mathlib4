@@ -673,7 +673,6 @@ def create_new_pr_from_fork(branch: str, username: str, old_pr: Optional[Dict[st
 
                 original_body = pr_details.get('body', '') or ''
                 labels = pr_details.get('labels', [])
-                labels.append('migrated-to-fork')
                 labels.append('migrated-from-branch')  # Add label for new PR
 
                 # Prepare the new body with migration notice
