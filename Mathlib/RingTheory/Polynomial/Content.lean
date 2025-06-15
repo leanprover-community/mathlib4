@@ -258,7 +258,7 @@ theorem IsPrimitive.primPart_eq {p : R[X]} (hp : p.IsPrimitive) : p.primPart = p
 theorem isUnit_primPart_C (r : R) : IsUnit (C r).primPart := by
   by_cases h0 : r = 0
   · simp [h0]
-  unfold IsUnit
+  rw [isUnit_iff]
   refine
     ⟨⟨C ↑(normUnit r)⁻¹, C ↑(normUnit r), by rw [← RingHom.map_mul, Units.inv_mul, C_1], by
         rw [← RingHom.map_mul, Units.mul_inv, C_1]⟩,

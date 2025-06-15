@@ -86,9 +86,9 @@ divide `t`. -/
 def invertibleOfRingCharNotDvd {t : ℕ} (not_dvd : ¬ringChar K ∣ t) : Invertible (t : K) :=
   invertibleOfNonzero fun h => not_dvd ((ringChar.spec K t).mp h)
 
-theorem not_ringChar_dvd_of_invertible {t : ℕ} [Invertible (t : K)] : ¬ringChar K ∣ t := by
+theorem not_ringChar_dvd_of_invertible {t : ℕ} [IsUnit (t : K)] : ¬ringChar K ∣ t := by
   rw [← ringChar.spec, ← Ne]
-  exact Invertible.ne_zero (t : K)
+  exact IsUnit.ne_zero ‹_›
 
 /-- A natural number `t` is invertible in a semifield `K` of characteristic `p` if `p` does not
 divide `t`. -/
