@@ -412,7 +412,6 @@ theorem prod_leftInvSeq (ω : List B) : prod (lis ω) = (π ω)⁻¹ := by
 theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List.Nodup (ris ω) := by
   apply List.nodup_iff_getElem?_ne_getElem?.mpr
   intro j j' j_lt_j' j'_lt_length (dup : (rightInvSeq cs ω)[j]? = (rightInvSeq cs ω)[j']?)
-  show False
   replace j'_lt_length : j' < List.length ω := by simpa using j'_lt_length
   rw [getElem?_eq_getElem (by simp; omega), getElem?_eq_getElem (by simp; omega)] at dup
   apply Option.some_injective at dup

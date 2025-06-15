@@ -77,7 +77,6 @@ instance [Mul M] [CommSemigroup N] : Mul (M →ₙ* N) :=
   ⟨fun f g =>
     { toFun := fun m => f m * g m,
       map_mul' := fun x y => by
-        show f (x * y) * g (x * y) = f x * g x * (f y * g y)
         rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
 
 @[to_additive (attr := simp)]
