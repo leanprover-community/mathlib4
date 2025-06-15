@@ -86,7 +86,7 @@ theorem range_dZero_eq_coinvariantsKer :
         using Submodule.add_mem _ (Coinvariants.mem_ker_of_eq _ _ _ rfl) (h rfl)
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-lemma dZero_comp_mk : dZero A ≫ ModuleCat.ofHom (Coinvariants.mk A.ρ) = 0 := by
+lemma dZero_comp_coinvariantsMk : dZero A ≫ (coinvariantsMk k G).app A = 0 := by
   ext
   simp [dZero]
 
