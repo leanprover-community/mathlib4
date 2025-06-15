@@ -152,8 +152,8 @@ for message in messages:
             case 'labeled':
                 if LABEL_NAME == 'awaiting-author':
                     add_reaction('awaiting-author', 'writing')
-                elif LABEL_NAME == 'migrated-from-fork':
-                    add_reaction('migrated-to-fork', 'skip_forward')
+                elif LABEL_NAME == 'migrated-from-branch':
+                    add_reaction('migrated-from-branch', 'skip_forward')
             case 'unlabeled':
                 if LABEL_NAME == 'awaiting-author':
                     print('awaiting-author removed')

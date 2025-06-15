@@ -570,6 +570,7 @@ def create_new_pr_from_fork(branch: str, username: str, old_pr: Optional[Dict[st
                 original_body = pr_details.get('body', '') or ''
                 labels = pr_details.get('labels', [])
                 labels.append('migrated-to-fork')
+                labels.append('migrated-from-branch')  # Add label for new PR
 
                 # Prepare the new body with migration notice
                 if original_body.strip():
@@ -661,6 +662,12 @@ def close_old_pr_and_comment(old_pr: Dict[str, Any], new_pr_url: str) -> None:
                     '--repo', 'leanprover-community/mathlib4',
                     '--body', comment])
         print_success("Added comment to old PR")
+
+        # Add migrated-to-fork label to old PR
+        run_command(['gh', 'pr', 'edit', str(old_pr['number']),
+                    '--repo', 'leanprover-community/mathlib4',
+                    '--add-label', 'migrated-to-fork'])
+        print_success("Added migrated-to-fork label to old PR")
 
         # Close old PR
         run_command(['gh', 'pr', 'close', str(old_pr['number']),
