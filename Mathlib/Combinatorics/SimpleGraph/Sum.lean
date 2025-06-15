@@ -96,7 +96,6 @@ def Coloring.sumEquiv : (G ⊕g H).Coloring γ ≃ G.Coloring γ × H.Coloring �
   toFun c := ⟨c.sumLeft, c.sumRight⟩
   invFun p := p.1.sum p.2
   left_inv c := by simp [sum_sumLeft_sumRight c]
-  right_inv p := rfl
 
 /-- Color `G ⊕g H` with `Fin (n + m)` given a coloring of `G` with `Fin n` and a coloring of `H`
 with `Fin m` -/

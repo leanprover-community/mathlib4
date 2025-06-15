@@ -18,9 +18,10 @@ We define and prove basic results about the regulator of a number field `K`.
 
 * `NumberField.Units.regulator`: the regulator of the number field `K`.
 
-* `Number.Field.Units.regulator_eq_det`: For any infinite place `w'`, the regulator is equal to
-  the absolute value of the determinant of the matrix `(mult w * log w (fundSystem K i)))_i, w`
-  where `w` runs through the infinite places distinct from `w'`.
+* `Number.Field.Units.regOfFamily_eq_det`: For any infinite place `w'`, the regulator of the
+family `u` is equal to the absolute value of the determinant of the matrix
+`(mult w * log w (u i)))_i, w` where `w` runs through the infinite places distinct from `w'`.
+
 
 ## Tags
 number field, units, regulator
@@ -74,6 +75,46 @@ theorem basisOfIsMaxRank_apply {u : Fin (rank K) → (𝓞 K)ˣ} (hu : IsMaxRank
     (basisOfIsMaxRank hu) i = logEmbedding K (Additive.ofMul (u i)) := by
   simp [basisOfIsMaxRank, Basis.coe_reindex,  Equiv.symm_symm, Function.comp_apply,
     coe_basisOfPiSpaceOfLinearIndependent]
+
+theorem finiteIndex_iff_sup_torsion_finiteIndex (s : Subgroup (𝓞 K)ˣ) :
+    s.FiniteIndex ↔ (s ⊔ torsion K).FiniteIndex := by
+  refine ⟨fun h ↦ Subgroup.finiteIndex_of_le le_sup_left, fun h ↦ ?_⟩
+  rw [Subgroup.finiteIndex_iff, ← Subgroup.relindex_mul_index (le_sup_left : s ≤ s ⊔ torsion K)]
+  refine Nat.mul_ne_zero ?_ (Subgroup.finiteIndex_iff.mp h)
+  rw [Subgroup.relindex_sup_left]
+  exact Subgroup.FiniteIndex.index_ne_zero
+
+open Subgroup in
+/--
+A family of units is of maximal rank iff the index of the subgroup it generates has finite index.
+-/
+theorem isMaxRank_iff_closure_finiteIndex {u : Fin (rank K) → (𝓞 K)ˣ} :
+    IsMaxRank u ↔ (closure (Set.range u)).FiniteIndex := by
+  classical
+  have h₁ : (closure (Set.range u) ⊔ torsion K).index ≠ 0 ↔
+      Finite (unitLattice K ⧸ span ℤ (Set.range ((logEmbeddingEquiv K) ∘ Additive.toMul.symm ∘
+        QuotientGroup.mk ∘ u))) := by
+    change _ ↔ Finite ((unitLattice K).toAddSubgroup ⧸ (span ℤ (Set.range _)).toAddSubgroup)
+    rw [← AddSubgroup.index_ne_zero_iff_finite]
+    have := index_map (closure (Set.range u)) (QuotientGroup.mk' (torsion K))
+    rw [QuotientGroup.ker_mk', QuotientGroup.range_mk', index_top, mul_one] at this
+    rw [← this, ← index_toAddSubgroup, ← AddSubgroup.index_map_equiv
+      _ (logEmbeddingEquiv K).toAddEquiv, Set.range_comp, ← map_span (logEmbeddingEquiv K),
+      ← map_coe_toLinearMap, map_toAddSubgroup, span_int_eq_addSubgroup_closure,
+      MonoidHom.map_closure, toAddSubgroup_closure, Set.range_comp, Set.range_comp,
+      QuotientGroup.coe_mk',  Set.preimage_equiv_eq_image_symm]
+    exact Iff.rfl
+  have h₂ : DiscreteTopology
+      (span ℤ (Set.range fun i ↦ (logEmbedding K) (Additive.ofMul (u i)))) := by
+    refine DiscreteTopology.of_subset (inferInstance : DiscreteTopology (unitLattice K)) ?_
+    rw [SetLike.coe_subset_coe, Submodule.span_le]
+    rintro _ ⟨i, rfl⟩
+    exact ⟨Additive.ofMul (u i), mem_top, rfl⟩
+  rw [finiteIndex_iff_sup_torsion_finiteIndex, finiteIndex_iff, h₁, finiteQuotient_iff,
+    unitLattice_rank, ← Set.finrank, IsMaxRank, linearIndependent_iff_card_eq_finrank_span,
+    Real.finrank_eq_int_finrank_of_discrete h₂, Set.finrank, Set.finrank, ← finrank_map_subtype_eq,
+    map_span, ← Set.range_comp', eq_comm]
+  simp
 
 open scoped Classical in
 /--

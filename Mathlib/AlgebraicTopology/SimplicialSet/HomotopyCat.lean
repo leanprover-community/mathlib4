@@ -137,7 +137,6 @@ def OneTruncation₂.nerveEquiv :
   toFun X := X.obj' 0
   invFun X := .mk₀ X
   left_inv _ := ComposableArrows.ext₀ rfl
-  right_inv _ := rfl
 
 /-- A hom equivalence over the function `OneTruncation₂.nerveEquiv`. -/
 def OneTruncation₂.nerveHomEquiv (X Y : OneTruncation₂ ((SSet.truncation 2).obj (nerve C))) :

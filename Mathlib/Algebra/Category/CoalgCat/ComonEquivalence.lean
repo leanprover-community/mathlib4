@@ -126,9 +126,10 @@ theorem tensorObj_comul (K L : CoalgCat R) :
   rw [ofComonObjCoalgebraStruct_comul]
   dsimp only [Equivalence.symm_inverse, comonEquivalence_functor, toComon_obj]
   simp only [Comon_.monoidal_tensorObj_comon_comul, Equivalence.symm_inverse,
-    comonEquivalence_functor, toComon_obj, toComonObj_X, ModuleCat.of_coe, comul_def,
-    tensorμ_eq_tensorTensorTensorComm, ModuleCat.hom_comp, ModuleCat.hom_ofHom,
-    LinearEquiv.comp_toLinearMap_eq_iff]
+    comonEquivalence_functor, toComon_obj, toComonObj_X, ModuleCat.of_coe,
+    Mon_Class.tensorObj.mul_def, unop_comp, unop_tensorObj, unop_tensorHom,
+    BraidedCategory.unop_tensorμ, tensorμ_eq_tensorTensorTensorComm, ModuleCat.hom_comp,
+    ModuleCat.hom_ofHom, LinearEquiv.comp_toLinearMap_eq_iff]
   rfl
 
 theorem tensorHom_toLinearMap (f : M →ₗc[R] N) (g : P →ₗc[R] Q) :
@@ -150,6 +151,7 @@ theorem rightUnitor_hom_toLinearMap :
 
 open TensorProduct
 
+attribute [local simp] Mon_Class.tensorObj.one_def Mon_Class.tensorObj.mul_def in
 theorem comul_tensorObj :
     Coalgebra.comul (R := R) (A := (CoalgCat.of R M ⊗ CoalgCat.of R N : CoalgCat R))
       = Coalgebra.comul (A := M ⊗[R] N) := by
@@ -158,6 +160,7 @@ theorem comul_tensorObj :
     AlgebraTensorModule.tensorTensorTensorComm_eq]
   rfl
 
+attribute [local simp] Mon_Class.tensorObj.one_def Mon_Class.tensorObj.mul_def in
 theorem comul_tensorObj_tensorObj_right :
     Coalgebra.comul (R := R) (A := (CoalgCat.of R M ⊗
       (CoalgCat.of R N ⊗ CoalgCat.of R P) : CoalgCat R))
@@ -168,6 +171,7 @@ theorem comul_tensorObj_tensorObj_right :
     AlgebraTensorModule.tensorTensorTensorComm_eq]
   rfl
 
+attribute [local simp] Mon_Class.tensorObj.one_def Mon_Class.tensorObj.mul_def in
 theorem comul_tensorObj_tensorObj_left :
     Coalgebra.comul (R := R)
       (A := ((CoalgCat.of R M ⊗ CoalgCat.of R N) ⊗ CoalgCat.of R P : CoalgCat R))

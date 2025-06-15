@@ -451,7 +451,6 @@ theorem comp_lift {P' : Type*} [Monoid P'] (f : P →* P') (g₁ : M →* P) (g�
 def liftEquiv : (M →* P) × (N →* P) ≃ (M ∗ N →* P) where
   toFun fg := lift fg.1 fg.2
   invFun f := (f.comp inl, f.comp inr)
-  left_inv _ := rfl
   right_inv _ := Eq.symm <| lift_unique rfl rfl
 
 @[to_additive (attr := simp)]

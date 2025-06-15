@@ -680,8 +680,6 @@ lattices. -/
 def dual : SupBotHom α β ≃ InfTopHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨SupHom.dual f.toSupHom, f.map_bot'⟩
   invFun f := ⟨SupHom.dual.symm f.toInfHom, f.map_top'⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp] theorem dual_id : SupBotHom.dual (SupBotHom.id α) = InfTopHom.id _ := rfl
 
@@ -712,8 +710,6 @@ lattices. -/
 protected def dual : InfTopHom α β ≃ SupBotHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨InfHom.dual f.toInfHom, f.map_top'⟩
   invFun f := ⟨InfHom.dual.symm f.toSupHom, f.map_bot'⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp]
 theorem dual_id : InfTopHom.dual (InfTopHom.id α) = SupBotHom.id _ :=
@@ -746,8 +742,6 @@ bounded lattices. -/
 protected def dual : BoundedLatticeHom α β ≃ BoundedLatticeHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨LatticeHom.dual f.toLatticeHom, f.map_bot', f.map_top'⟩
   invFun f := ⟨LatticeHom.dual.symm f.toLatticeHom, f.map_bot', f.map_top'⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp]
 theorem dual_id : BoundedLatticeHom.dual (BoundedLatticeHom.id α) = BoundedLatticeHom.id _ :=

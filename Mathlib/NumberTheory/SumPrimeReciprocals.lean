@@ -76,8 +76,8 @@ theorem not_summable_one_div_on_primes :
     (fun n _ ↦ indicator_nonneg (fun p _ ↦ by positivity) _) h' using 2 with p hp
   obtain ⟨hp₁, hp₂⟩ := mem_setOf_eq ▸ Finset.mem_sdiff.mp hp
   have hpp := prime_of_mem_primesBelow hp₁
-  refine (indicator_of_mem (mem_def.mpr ⟨hpp, ?_⟩) fun n : ℕ ↦ (1 / n : ℝ)).symm
-  exact not_lt.mp <| (not_and_or.mp <| (not_congr mem_primesBelow).mp hp₂).neg_resolve_right hpp
+  refine (indicator_of_mem ?_ fun n : ℕ ↦ (1 / n : ℝ)).symm
+  exact ⟨hpp, by simpa [primesBelow, hpp] using hp₂⟩
 
 /-- The sum over the reciprocals of the primes diverges. -/
 theorem Nat.Primes.not_summable_one_div : ¬ Summable (fun p : Nat.Primes ↦ (1 / p : ℝ)) := by

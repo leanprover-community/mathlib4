@@ -110,10 +110,12 @@ theorem isCycle_finRotate {n : ℕ} : IsCycle (finRotate (n + 2)) := by
   clear hx'
   obtain ⟨x, hx⟩ := x
   rw [zpow_natCast, Fin.ext_iff, Fin.val_mk]
-  induction' x with x ih; · rfl
-  rw [pow_succ', Perm.mul_apply, coe_finRotate_of_ne_last, ih (lt_trans x.lt_succ_self hx)]
-  rw [Ne, Fin.ext_iff, ih (lt_trans x.lt_succ_self hx), Fin.val_last]
-  exact ne_of_lt (Nat.lt_of_succ_lt_succ hx)
+  induction x with
+  | zero => rfl
+  | succ x ih =>
+    rw [pow_succ', Perm.mul_apply, coe_finRotate_of_ne_last, ih (lt_trans x.lt_succ_self hx)]
+    rw [Ne, Fin.ext_iff, ih (lt_trans x.lt_succ_self hx), Fin.val_last]
+    exact ne_of_lt (Nat.lt_of_succ_lt_succ hx)
 
 theorem isCycle_finRotate_of_le {n : ℕ} (h : 2 ≤ n) : IsCycle (finRotate n) := by
   obtain ⟨m, rfl⟩ := exists_add_of_le h

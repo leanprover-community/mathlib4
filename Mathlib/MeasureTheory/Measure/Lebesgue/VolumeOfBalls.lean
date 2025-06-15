@@ -331,9 +331,9 @@ theorem volume_ball (x : EuclideanSpace ℝ ι) (r : ℝ) :
       rw [Measure.addHaar_ball _ _ hr, this, ofReal_pow hr, finrank_euclideanSpace]
     rw [← ((volume_preserving_measurableEquiv _).symm).measure_preimage
       measurableSet_ball.nullMeasurableSet]
-    convert (volume_sum_rpow_lt_one ι one_le_two) using 4
-    · simp_rw [ball_zero_eq _ zero_le_one, one_pow, Real.rpow_two, sq_abs,
-        Set.setOf_app_iff]
+    simp only [Set.preimage, ball_zero_eq _ zero_le_one, one_pow, Set.mem_setOf_eq]
+    convert volume_sum_rpow_lt_one ι one_le_two using 4
+    · simp [one_pow, Real.rpow_two, sq_abs, EuclideanSpace.measurableEquiv]
     · rw [Gamma_add_one (by norm_num), Gamma_one_half_eq, ← mul_assoc, mul_div_cancel₀ _
         two_ne_zero, one_mul]
 
