@@ -331,6 +331,24 @@ theorem hasProd_of_isLUB [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α]
   tendsto_atTop_isLUB (Finset.prod_mono_set' f) hf
 
 @[to_additive]
+lemma CompleteLinearOrder.hasProd_iSup [CommMonoid α] [CompleteLinearOrder α] [IsOrderedMonoid α]
+    [CanonicallyOrderedMul α] [TopologicalSpace α] [OrderTopology α] (f : ι → α) :
+    HasProd f (⨆ s : Finset ι, ∏ a ∈ s, f a) :=
+  hasProd_of_isLUB _ isLUB_iSup
+
+@[to_additive]
+lemma CompleteLinearOrder.multipliable [CommMonoid α] [CompleteLinearOrder α] [IsOrderedMonoid α]
+    [CanonicallyOrderedMul α] [TopologicalSpace α] [OrderTopology α] (f : ι → α) :
+    Multipliable f :=
+  ⟨_, hasProd_iSup f⟩
+
+@[to_additive]
+lemma CompleteLinearOrder.tprod_eq_iSup [CommMonoid α] [CompleteLinearOrder α] [IsOrderedMonoid α]
+    [CanonicallyOrderedMul α] [TopologicalSpace α] [OrderTopology α] {f : ι → α} :
+    ∏' i, f i = ⨆ s : Finset ι, ∏ a ∈ s, f a :=
+  (hasProd_iSup f).tprod_eq
+
+@[to_additive]
 theorem multipliable_mabs_iff [CommGroup α] [LinearOrder α] [IsOrderedMonoid α]
     [UniformSpace α] [IsUniformGroup α]
     [CompleteSpace α] {f : ι → α} : (Multipliable fun x ↦ mabs (f x)) ↔ Multipliable f :=
