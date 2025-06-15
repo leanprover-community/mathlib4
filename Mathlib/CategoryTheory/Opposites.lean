@@ -366,13 +366,13 @@ theorem op_comp {H : C ⥤ D} (α : F ⟶ G) (β : G ⟶ H) :
 @[reassoc]
 lemma op_whiskerRight {E : Type*} [Category E] {H : D ⥤ E} (α : F ⟶ G) :
     NatTrans.op (whiskerRight α H) =
-    (Functor.opComp G H).hom ≫ whiskerRight (NatTrans.op α) H.op ≫ (Functor.opComp _ _).inv := by
+    (Functor.opComp _ _).hom ≫ whiskerRight (NatTrans.op α) H.op ≫ (Functor.opComp _ _).inv := by
   aesop_cat
 
 @[reassoc]
 lemma op_whiskerLeft {E : Type*} [Category E] {H : E ⥤ C} (α : F ⟶ G) :
     NatTrans.op (whiskerLeft H α) =
-    (Functor.opComp H G).hom ≫ whiskerLeft H.op (NatTrans.op α) ≫ (Functor.opComp _ _).inv := by
+    (Functor.opComp _ _).hom ≫ whiskerLeft H.op (NatTrans.op α) ≫ (Functor.opComp _ _).inv := by
   aesop_cat
 
 /-- The "unopposite" of a natural transformation. -/
@@ -673,7 +673,7 @@ lemma op_associator {E E': Type*} [Category E] [Category E'] {F : C ⥤ D} {G : 
     NatIso.op (Functor.associator F G H) =
       Functor.opComp _ _ ≪≫ isoWhiskerLeft F.op (Functor.opComp _ _) ≪≫
         (Functor.associator F.op G.op H.op).symm ≪≫
-        isoWhiskerRight (Functor.opComp F G).symm H.op ≪≫ (Functor.opComp _ _).symm := by
+        isoWhiskerRight (Functor.opComp _ _).symm H.op ≪≫ (Functor.opComp _ _).symm := by
   aesop_cat
 
 lemma unop_leftUnitor {F : Cᵒᵖ ⥤ Dᵒᵖ} :
