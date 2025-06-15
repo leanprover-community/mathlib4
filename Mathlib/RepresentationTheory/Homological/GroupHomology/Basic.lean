@@ -32,6 +32,10 @@ Hence our $d_n$ squares to zero, and we get
 $\mathrm{H}_n(G, A) \cong \mathrm{Tor}_n(A, k),$ where $\mathrm{Tor}$ is defined by deriving the
 second argument of the functor $(A, B) \mapsto (A \otimes_k B)_G.$
 
+To talk about homology in low degree, the file
+`Mathlib/RepresentationTheory/Homological/GroupHomology/LowDegree.lean` will eventually provide
+API specialized to `H₀`, `H₁`, `H₂`.
+
 ## Main definitions
 
 * `Rep.Tor k G n`: the left-derived functors given by deriving the second argument of
@@ -66,7 +70,7 @@ for commutative rings.
 ## TODO
 
 * API for homology in low degree: $\mathrm{H}_0, \mathrm{H}_1$ and $\mathrm{H}_2.$ For example,
-the corestriction-coinflation exact sequence.
+  the corestriction-coinflation exact sequence.
 * The long exact sequence in homology attached to a short exact sequence of representations.
 * Upgrading `groupHomologyIsoTor` to an isomorphism of derived functors.
 
@@ -139,10 +143,12 @@ theorem d_eq [DecidableEq G] :
 
 end inhomogeneousChains
 
+variable [DecidableEq G]
+
 /-- Given a `k`-linear `G`-representation `A`, this is the complex of inhomogeneous chains
 $$\dots \to \bigoplus_{G^1} A \to \bigoplus_{G^0} A \to 0$$
 which calculates the group homology of `A`. -/
-noncomputable abbrev inhomogeneousChains [DecidableEq G] :
+noncomputable abbrev inhomogeneousChains :
     ChainComplex (ModuleCat k) ℕ :=
   ChainComplex.of (fun n => ModuleCat.of k ((Fin n → G) →₀ A))
     (fun n => inhomogeneousChains.d A n) fun n => by
@@ -153,25 +159,29 @@ noncomputable abbrev inhomogeneousChains [DecidableEq G] :
 
 open inhomogeneousChains
 
-theorem inhomogeneousChains.d_def [DecidableEq G] (n : ℕ) :
+variable {A n} in
+@[ext]
+theorem inhomogeneousChains.ext {M : ModuleCat k} {x y : (inhomogeneousChains A).X n ⟶ M}
+    (h : ∀ g, ModuleCat.ofHom (lsingle g) ≫ x = ModuleCat.ofHom (lsingle g) ≫ y) :
+    x = y := ModuleCat.hom_ext <| lhom_ext' fun g => ModuleCat.hom_ext_iff.1 (h g)
+
+theorem inhomogeneousChains.d_def (n : ℕ) :
     (inhomogeneousChains A).d (n + 1) n = d A n := by
   simp [inhomogeneousChains]
 
-theorem inhomogeneousChains.d_comp_d [DecidableEq G] :
+theorem inhomogeneousChains.d_comp_d :
     d A (n + 1) ≫ d A n = 0 := by
   simpa [ChainComplex.of] using ((inhomogeneousChains A).d_comp_d (n + 2) (n + 1) n)
 
 /-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous chains is isomorphic
 to `(A ⊗[k] P)_G`, where `P` is the bar resolution of `k` as a trivial `G`-representation. -/
-def inhomogeneousChainsIso [DecidableEq G] :
+def inhomogeneousChainsIso :
     inhomogeneousChains A ≅ coinvariantsTensorBarResolution A := by
   refine HomologicalComplex.Hom.isoOfComponents ?_ ?_
   · intro i
     apply (coinvariantsTensorFreeLEquiv A (Fin i → G)).toModuleIso.symm
   rintro i j rfl
   simp [d_eq, -LinearEquiv.toModuleIso_hom, -LinearEquiv.toModuleIso_inv]
-
-variable [DecidableEq G]
 
 /-- The `n`-cycles `Zₙ(G, A)` of a `k`-linear `G`-representation `A`, i.e. the kernel of the
 differential `Cₙ(G, A) ⟶ Cₙ₋₁(G, A)` in the complex of inhomogeneous chains. -/
@@ -201,9 +211,17 @@ def groupHomology (n : ℕ) : ModuleCat k :=
 
 /-- The natural map from `n`-cycles to `n`th group homology for a `k`-linear
 `G`-representation `A`. -/
-abbrev groupHomologyπ (n : ℕ) :
+abbrev groupHomology.π (n : ℕ) :
     cycles A n ⟶ groupHomology A n :=
   (inhomogeneousChains A).homologyπ n
+
+variable {A} in
+@[elab_as_elim]
+theorem groupHomology_induction_on {n : ℕ}
+    {C : groupHomology A n → Prop} (x : groupHomology A n)
+    (h : ∀ x : cycles A n, C (π A n x)) : C x := by
+  rcases (ModuleCat.epi_iff_surjective (π A n)).1 inferInstance x with ⟨y, rfl⟩
+  exact h y
 
 /-- The `n`th group homology of a `k`-linear `G`-representation `A` is isomorphic to
 `Torₙ(A, k)` (taken in `Rep k G`), where `k` is a trivial `k`-linear `G`-representation. -/
