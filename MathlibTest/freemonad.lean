@@ -3,7 +3,6 @@ import Mathlib.Data.String.Defs
 
 open FreeM
 
-
 -- Example FreeState computations
 
 example : FreeState.evalState (do
