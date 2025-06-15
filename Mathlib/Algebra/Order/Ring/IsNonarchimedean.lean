@@ -3,8 +3,6 @@ Copyright (c) 2025 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Fabrizio Barroero
 -/
-
-import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Data.Nat.Choose.Sum
 
