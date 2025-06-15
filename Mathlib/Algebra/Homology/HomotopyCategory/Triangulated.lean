@@ -18,7 +18,9 @@ assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Category Limits Pretriangulated ComposableArrows
 
-variable {C : Type*} [Category C] [Preadditive C] [HasBinaryBiproducts C]
+universe v
+
+variable {C : Type*} [Category.{v} C] [Preadditive C] [HasBinaryBiproducts C]
   {X₁ X₂ X₃ : CochainComplex C ℤ} (f : X₁ ⟶ X₂) (g : X₂ ⟶ X₃)
 
 namespace CochainComplex
@@ -87,9 +89,6 @@ lemma hom_inv_id : hom f g ≫ inv f g = 𝟙 _ := by
   ext n
   simp [hom, inv, lift_desc_f _ _ _ _ _ _ _ n (n+1) rfl, ext_from_iff _ (n + 1) _ rfl]
 
-set_option linter.style.maxHeartbeats false in
--- no reason was present for this heartbeat bump at the time of the creation of the linter
-set_option maxHeartbeats 400000 in
 /-- Given two composable morphisms `f` and `g` in the category of cochain complexes,
 this is the `homotopyInvHomId` field of the homotopy equivalence
 `mappingConeCompHomotopyEquiv f g` between `mappingCone g` and the mapping cone of
