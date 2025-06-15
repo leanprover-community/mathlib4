@@ -381,14 +381,14 @@ theorem exists_mem_smul_and_notMem_smul [IsPreprimitive G X]
   · -- B.subsingleton
     apply Set.Subsingleton.eq_singleton_of_mem hyp
     rw [Set.mem_iInter]; intro g; simp only [Set.mem_iInter, imp_self]
-  · -- B = ⊤ : contradiction
-    change B = ⊤ at hyp
+  · -- B = Set.univ: contradiction
+    change B = Set.univ at hyp
     exfalso; apply hA'
     suffices ∃ g : G, a ∈ g • A by
       obtain ⟨g, hg⟩ := this
-      have : B ≤ g • A := Set.biInter_subset_of_mem hg
-      rw [hyp, top_le_iff, ← eq_inv_smul_iff] at this
-      rw [this, Set.top_eq_univ, Set.smul_set_univ]
+      have : B ⊆ g • A := Set.biInter_subset_of_mem hg
+      rw [hyp, Set.univ_subset_iff, ← eq_inv_smul_iff] at this
+      rw [this, Set.smul_set_univ]
     -- ∃ (g : M), a ∈ g • A
     obtain ⟨x, hx⟩ := hA
     obtain ⟨g, hg⟩ := MulAction.exists_smul_eq G x a
