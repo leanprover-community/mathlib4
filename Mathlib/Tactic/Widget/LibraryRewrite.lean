@@ -183,6 +183,8 @@ structure Rewrite where
   replacement : Expr
   /-- The extra goals created by the rewrite -/
   extraGoals : Array (MVarId × BinderInfo)
+  /-- Whether the rewrite introduces a new metavariable in the replacement expression. -/
+  makesNewMVars : Bool
 
 /-- If `thm` can be used to rewrite `e`, return the rewrite. -/
 def checkRewrite (thm e : Expr) (symm : Bool) : MetaM (Option Rewrite) := do
@@ -205,8 +207,9 @@ def checkRewrite (thm e : Expr) (symm : Bool) : MetaM (Option Rewrite) := do
       extraGoals := extraGoals.push (mvar.mvarId!, bi)
 
   let replacement ← instantiateMVars rhs
+  let makesNewMVars := (replacement.findMVar? fun mvarId => mvars.any (·.mvarId! == mvarId)).isSome
   let proof ← instantiateMVars (mkAppN thm mvars)
-  return some { symm, proof, replacement, extraGoals }
+  return some { symm, proof, replacement, extraGoals, makesNewMVars }
 
 initialize
   registerTraceClass `rw??
@@ -293,10 +296,12 @@ partial def isExplicitEq (t s : Expr) : MetaM Bool := do
 
 /-- Filter out duplicate rewrites or reflexive rewrites. -/
 @[specialize]
-def filterRewrites {α} (e : Expr) (rewrites : Array α) (replacement : α → Expr) : MetaM (Array α) :=
+def filterRewrites {α} (e : Expr) (rewrites : Array α) (replacement : α → Expr)
+    (makesNewMVars : α → Bool) : MetaM (Array α) :=
   withNewMCtxDepth do
   let mut filtered := #[]
   for rw in rewrites do
+    if makesNewMVars rw then continue
     if ← isExplicitEq (replacement rw) e then continue
     if ← filtered.anyM (isExplicitEq (replacement rw) <| replacement ·) then continue
     filtered := filtered.push rw
@@ -331,6 +336,8 @@ structure RewriteInterface where
   prettyLemma : CodeWithInfos
   /-- The type of the lemma -/
   lemmaType : Expr
+  /-- Whether the rewrite introduces new metavariables with the replacement. -/
+  makesNewMVars : Bool
 
 /-- Construct the `RewriteInterface` from a `Rewrite`. -/
 def Rewrite.toInterface (rw : Rewrite) (name : Name ⊕ FVarId) (occ : Option Nat)
@@ -373,17 +380,17 @@ def getRewriteInterfaces (e : Expr) (occ : Option Nat) (loc : Option Name) (exce
   for rewrites in ← getHypothesisRewrites e except do
     let rewrites ← rewrites.mapM fun (rw, fvarId) => rw.toInterface (.inr fvarId) occ loc range
     all := all.push (rewrites, .hypothesis)
-    filtr := filtr.push (← filterRewrites e rewrites (·.replacement), .hypothesis)
+    filtr := filtr.push (← filterRewrites e rewrites (·.replacement) (·.makesNewMVars), .hypothesis)
 
   for rewrites in ← getModuleRewrites e do
     let rewrites ← rewrites.mapM fun (rw, name) => rw.toInterface (.inl name) occ loc range
     all := all.push (rewrites, .fromFile)
-    filtr := filtr.push (← filterRewrites e rewrites (·.replacement), .fromFile)
+    filtr := filtr.push (← filterRewrites e rewrites (·.replacement) (·.makesNewMVars), .fromFile)
 
   for rewrites in ← getImportRewrites e do
     let rewrites ← rewrites.mapM fun (rw, name) => rw.toInterface (.inl name) occ loc range
     all := all.push (rewrites, .fromCache)
-    filtr := filtr.push (← filterRewrites e rewrites (·.replacement), .fromCache)
+    filtr := filtr.push (← filterRewrites e rewrites (·.replacement) (·.makesNewMVars), .fromCache)
   return (filtr, all)
 
 /-- Render the matching side of the rewrite lemma.
@@ -528,12 +535,12 @@ def elabrw??Command : Command.CommandElab := fun stx =>
   let mut rewrites := #[]
   for rws in ← getModuleRewrites e do
     let rws ← if filter then
-      filterRewrites e rws (·.1.replacement)
+      filterRewrites e rws (·.1.replacement) (·.1.makesNewMVars)
       else pure rws
     rewrites := rewrites.push (rws, true)
   for rws in ← getImportRewrites e do
     let rws ← if filter then
-      filterRewrites e rws (·.1.replacement)
+      filterRewrites e rws (·.1.replacement) (·.1.makesNewMVars)
       else pure rws
     rewrites := rewrites.push (rws, false)
 
