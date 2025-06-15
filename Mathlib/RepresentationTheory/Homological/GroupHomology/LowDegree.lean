@@ -31,10 +31,10 @@ The file also contains an identification between the definitions in
 
 * `groupHomology.H0Iso A`: isomorphism between `H₀(G, A)` and the coinvariants `A_G` of the
   `G`-representation on `A`.
-* `grouphomology.H1π A`: epimorphism from the 1-cycles (i.e. `Z₁(G, A) := Ker(d₀ : (G →₀ A) → A`)
+* `groupHomology.H1π A`: epimorphism from the 1-cycles (i.e. `Z₁(G, A) := Ker(d₀ : (G →₀ A) → A`)
   to `H₁(G, A)`.
 * `groupHomology.H2π A`: epimorphism from the 2-cycles
-  (i.e. `Z₂(G, A) := Ker(d₂ : (G² →₀ A) → (G →₀ A)`) to `H₂(G, A)`.
+  (i.e. `Z₂(G, A) := Ker(d₁ : (G² →₀ A) → (G →₀ A)`) to `H₂(G, A)`.
 
 -/
 
