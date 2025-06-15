@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Algebra.Regular.Basic
+import Mathlib.Algebra.Regular.SMul
 
 /-!
 # Results about `IsRegular` and `ULift`
@@ -12,7 +13,12 @@ import Mathlib.Algebra.Regular.Basic
 
 universe u v
 
-variable {R : Type v} [Mul R]
+variable {α} {R : Type v}
+
+namespace ULift
+
+section
+variable [Mul R]
 
 @[to_additive (attr := simp)]
 theorem isLeftRegular_up {a : R} : IsLeftRegular (ULift.up.{u} a) ↔ IsLeftRegular a :=
@@ -37,3 +43,12 @@ theorem isRightRegular_down {a : ULift.{u} R} : IsRightRegular a.down ↔ IsRigh
 @[to_additive (attr := simp)]
 theorem isRegular_down {a : ULift.{u} R} : IsRegular a.down ↔ IsRegular a :=
   isRegular_up.symm
+
+end
+
+@[simp]
+theorem isSMulRegular_iff [SMul α R] {r : α} :
+    IsSMulRegular (ULift R) r ↔ IsSMulRegular R r :=
+  Equiv.ulift.symm.comp_injective _ |>.trans <| Equiv.ulift.symm.injective_comp _ |>.symm
+
+end ULift

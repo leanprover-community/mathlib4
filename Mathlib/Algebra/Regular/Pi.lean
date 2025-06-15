@@ -5,21 +5,36 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Regular.Basic
+import Mathlib.Algebra.Regular.SMul
 
 /-!
 # Results about `IsRegular` and pi types
 -/
 
-variable {ι : Type*} {R : ι → Type*} [∀ i, Mul (R i)]
+variable {ι α : Type*} {R : ι → Type*}
+
+namespace Pi
+
+section
+variable [∀ i, Mul (R i)]
 
 @[to_additive (attr := simp)]
-theorem Pi.isLeftRegular_iff {a : ∀ i, R i} : IsLeftRegular a ↔ ∀ i, IsLeftRegular (a i) :=
+theorem isLeftRegular_iff {a : ∀ i, R i} : IsLeftRegular a ↔ ∀ i, IsLeftRegular (a i) :=
   have (i) : Nonempty (R i) := ⟨a i⟩; Pi.map_injective
 
 @[to_additive (attr := simp)]
-theorem Pi.isRightRegular_iff {a : ∀ i, R i} : IsRightRegular a ↔ ∀ i, IsRightRegular (a i) :=
+theorem isRightRegular_iff {a : ∀ i, R i} : IsRightRegular a ↔ ∀ i, IsRightRegular (a i) :=
   have (i) : Nonempty (R i) := ⟨a i⟩; Iff.symm <| Pi.map_injective.symm
 
 @[to_additive (attr := simp)]
-theorem Pi.isRegular_iff {a : ∀ i, R i} : IsRegular a ↔ ∀ i, IsRegular (a i) := by
+theorem isRegular_iff {a : ∀ i, R i} : IsRegular a ↔ ∀ i, IsRegular (a i) := by
   simp [_root_.isRegular_iff, forall_and]
+
+end
+
+@[simp]
+theorem isSMulRegular_iff [∀ i, SMul α (R i)] {r : α} [∀ i, Nonempty (R i)]:
+    IsSMulRegular (∀ i, R i) r ↔ ∀ i, IsSMulRegular (R i) r :=
+  Pi.map_injective
+
+end Pi
