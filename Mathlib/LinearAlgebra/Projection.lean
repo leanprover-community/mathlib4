@@ -424,6 +424,48 @@ theorem eq_conj_prod_map' {f : E →ₗ[R] E} (h : IsProj p f) :
   · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inr, coprod_apply, map_zero,
       coe_subtype, zero_add, map_coe_ker, prodMap_apply, zero_apply, add_zero]
 
+theorem isIdempotentElem {R V : Type*} [Semiring R] [AddCommMonoid V] [Module R V]
+  {T : V →ₗ[R] V} {U : Submodule R V} (h : IsProj U T) :
+    IsIdempotentElem T :=
+by ext; exact h.2 _ (h.1 _)
+
+protected theorem range
+  {R V : Type*} [Semiring R] [AddCommMonoid V] [Module R V] {T : V →ₗ[R] V} {U : Submodule R V}
+    (h : IsProj U T) :
+  range T = U :=
+by
+  ext x
+  refine ⟨fun ⟨y, hy⟩ => ?_, fun hx => ⟨x, h.map_id x hx⟩⟩
+  rw [← hy]
+  exact h.map_mem y
+
+protected theorem top (S M : Type*) [Semiring S] [AddCommMonoid M] [Module S M] :
+  IsProj (⊤ : Submodule S M) (id (R := S)) :=
+⟨fun _ ↦ trivial, fun _ ↦ congrFun rfl⟩
+
+theorem _root_.LinearMap.subtype_top_comp_codRestrict_top_eq_id
+  {S M : Type*} [Semiring S] [AddCommMonoid M] [Module S M] :
+    (Submodule.subtype ⊤).comp (IsProj.top S M).codRestrict = LinearMap.id :=
+rfl
+
+theorem subtype_comp_codRestrict {S M : Type*} [Semiring S] [AddCommMonoid M]
+  [Module S M] {U : Submodule S M} {f : M →ₗ[S] M} (hf : IsProj U f) :
+    (Submodule.subtype U).comp hf.codRestrict = f :=
+rfl
+
+theorem submodule_eq_top_iff {S M : Type*} [Semiring S] [AddCommMonoid M] [Module S M]
+  {f : M →ₗ[S] M} {U : Submodule S M} (hf : IsProj U f) :
+    U = (⊤ : Submodule S M) ↔ (Submodule.subtype _).comp hf.codRestrict = LinearMap.id :=
+by
+  rw [subtype_comp_codRestrict]
+  constructor <;> rintro rfl
+  · ext
+    simp only [id_coe, id_eq, hf.2 _ mem_top]
+  · refine eq_top_iff'.mpr ?mpr.a
+    intro x
+    rw [← id_apply (R := S) x]
+    exact hf.map_mem x
+
 end IsProj
 
 end LinearMap
@@ -444,3 +486,98 @@ theorem IsProj.eq_conj_prodMap {f : E →ₗ[R] E} (h : IsProj p f) :
 end LinearMap
 
 end CommRing
+
+section
+variable {R E M : Type*} [Semiring R] [AddCommGroup E] [Module R E]
+  [AddCommMonoid M] [Module R M]
+
+open Submodule LinearMap
+
+/-- Given an idempotent linear operator `p`, we have
+  `x ∈ range p` if and only if `p(x) = x` for all `x`. -/
+theorem IsIdempotentElem.mem_range_iff {p : M →ₗ[R] M} (hp : IsIdempotentElem p) {x : M} :
+    x ∈ range p ↔ p x = x := by
+  simp_rw [mem_range]
+  refine ⟨fun ⟨y, hy⟩ => ?_, fun h => ⟨x, h⟩⟩
+  rw [← hy, ← Module.End.mul_apply, hp.eq]
+
+/-- Given an idempotent linear operator `q`,
+  we have `q ∘ p = p` iff `range p ⊆ range q` for all `p`. -/
+theorem IsIdempotentElem.comp_idempotent_iff
+  {q : M →ₗ[R] M} (hq : IsIdempotentElem q)
+  {E₂ : Type*} [AddCommMonoid E₂] [Module R E₂] (p : E₂ →ₗ[R] M) :
+    q.comp p = p ↔ range p ≤ range q :=
+by
+  simp_rw [LinearMap.ext_iff, comp_apply, ← hq.mem_range_iff,
+    SetLike.le_def, mem_range, forall_exists_index, forall_apply_eq_imp_iff]
+
+/-- If `p,q` are idempotent operators and `p ∘ q = p = q ∘ p`,
+  then `q - p` is an idempotent operator. -/
+theorem LinearMap.isIdempotentElem_sub_of
+  {p q : E →ₗ[R] E} (hp : IsIdempotentElem p)
+  (hq : IsIdempotentElem q)
+  (hpq : p.comp q = p) (hqp : q.comp p = p) :
+    IsIdempotentElem (q - p) := by
+  simp_rw [IsIdempotentElem, Module.End.mul_eq_comp, sub_comp, comp_sub, hpq, hqp,
+    ← Module.End.mul_eq_comp, hp.eq, hq.eq, sub_self, sub_zero]
+
+/-- If `p,q` are idempotent operators and `q - p` is also an idempotent
+  operator, then `p ∘ q = p = q ∘ p`. -/
+theorem LinearMap.commutes_of_isIdempotentElem_sub
+  [SMulCommClass R R E] [NoZeroSMulDivisors R E] [NeZero (2 : R)]
+  {p q : E →ₗ[R] E} (hp : IsIdempotentElem p) (hq : IsIdempotentElem q)
+    (hqp : IsIdempotentElem (q - p)) : p.comp q = p ∧ q.comp p = p :=
+by
+  simp_rw [IsIdempotentElem, Module.End.mul_eq_comp, comp_sub, sub_comp, ← Module.End.mul_eq_comp,
+    hp.eq, hq.eq, ← sub_add_eq_sub_sub, sub_right_inj, add_sub] at hqp
+  have h' : ((2 : R) • p : E →ₗ[R] E) = q.comp p + p.comp q :=
+    by
+    simp_rw [two_smul]
+    nth_rw 2 [← hqp]
+    simp_rw [Module.End.mul_eq_comp, add_sub_cancel, add_comm]
+  have H : ((2 : R) • p).comp q = q.comp (p.comp q) + p.comp q := by
+    simp_rw [h', add_comp, comp_assoc, ← Module.End.mul_eq_comp, hq.eq]
+  simp_rw [add_comm, two_smul, add_comp, add_right_inj] at H
+  have H' : q.comp ((2 : R) • p) = q.comp p + q.comp (p.comp q) := by
+    simp_rw [h', comp_add, ← comp_assoc, ← Module.End.mul_eq_comp, hq.eq]
+  simp_rw [two_smul, comp_add, add_right_inj] at H'
+  have H'' : q.comp p = p.comp q := by
+    simp_rw [H']
+    exact H.symm
+  rw [← H'', and_self_iff, ← smul_right_inj (two_ne_zero' R), h', ← H'', two_smul]
+
+/-- Given any idempotent operator `T`, then `IsCompl T.range T.ker`,
+ in other words, there exists unique `v ∈ range(T)` and `w ∈ ker(T)` such that `x = v + w`. -/
+theorem IsIdempotentElem.isCompl_range_ker
+  {T : E →ₗ[R] E} (h : IsIdempotentElem T) :
+  IsCompl (range T) (ker T) :=
+by
+  symm
+  constructor
+  · rw [disjoint_iff]
+    ext x
+    simp only [mem_bot, mem_inf, mem_ker, mem_range]
+    constructor
+    · intro h'
+      rcases h'.2 with ⟨y, hy⟩
+      rw [← hy, ← IsIdempotentElem.eq h, Module.End.mul_apply, hy]
+      exact h'.1
+    · intro h'
+      rw [h', map_zero]
+      simp only [true_and]
+      use x
+      simp only [h', map_zero, eq_self_iff_true]
+  · suffices ∀ x : E, ∃ v : ker T, ∃ w : range T, x = v + w
+      by
+      rw [codisjoint_iff]
+      ext x
+      rcases this x with ⟨v, w, hvw⟩
+      simp only [mem_top, iff_true, hvw]
+      apply add_mem_sup (SetLike.coe_mem v) (SetLike.coe_mem w)
+    intro x
+    use ⟨x - T x, ?_⟩, ⟨T x, ?_⟩
+    · simp only [Submodule.coe_mk, sub_add_cancel]
+    · rw [mem_ker, map_sub, ← Module.End.mul_apply, IsIdempotentElem.eq h, sub_self]
+    · rw [mem_range]; simp only [exists_apply_eq_apply]
+
+end
