@@ -569,11 +569,11 @@ section CompleteBooleanAlgebra
 
 variable [CompleteBooleanAlgebra α]
 
-/-- `⊓` distributes over `⨆`. -/
+@[deprecated "use `inf_sSup_eq.le` instead" (since := "2025-06-15")]
 theorem inf_sSup_le_iSup_inf (a : α) (s : Set α) : a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b :=
   gc_inf_himp.l_sSup.le
 
-/-- `⊔` distributes over `⨅`. -/
+@[deprecated "use `sup_sInf_eq.ge` instead" (since := "2025-06-15")]
 theorem iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s :=
   gc_sdiff_sup.u_sInf.ge
 
