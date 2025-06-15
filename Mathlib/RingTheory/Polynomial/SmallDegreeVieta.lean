@@ -130,10 +130,10 @@ theorem not_isRoot_of_discrim_ne_sq (h : ∀ s : R, discrim a b c ≠ s^2) (x : 
 lemma quadratic_ne_zero (ha : a ≠ 0) : a • X ^ 2 + b • X + C c ≠ 0 :=
   fun hx ↦ ha (by rw [show a = (a • X ^ 2 + b • X + C c).coeff 2 by simp [coeff_X], hx, coeff_zero])
 
-theorem quadratic_roots_iff_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0)
+theorem mem_roots_quadratic_iff_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0)
     {z s : R} (h : discrim a b c = s * s) :
     z ∈ (a • X ^ 2 + b • X + C c).roots ↔ z = (-b + s) / (2 * a) ∨ z = (-b - s) / (2 * a) := by
-  rw [mem_roots (quadratic_ne_zero ha), quadratic_eq_zero_iff ha h]
+  rw [mem_roots (quadratic_ne_zero ha), isRoot_quadratic_iff ha h]
 
 theorem factorize_quadratic_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
       (h : discrim a b c = s * s) :
