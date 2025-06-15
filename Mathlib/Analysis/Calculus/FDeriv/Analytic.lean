@@ -664,7 +664,7 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
       have A : HasFDerivAt (f.iteratedFDeriv n) (∑ e : Fin n ↪ ι,
           ((iteratedFDerivComponent f e.toEquivRange).linearDeriv (Pi.compRightL 𝕜 _ Subtype.val x))
             ∘L (Pi.compRightL 𝕜 _ Subtype.val)) x := by
-        apply HasFDerivAt.sum (fun s _hs ↦ ?_)
+        apply HasFDerivAt.fun_sum (fun s _hs ↦ ?_)
         exact (ContinuousMultilinearMap.hasFDerivAt _ _).comp x (ContinuousLinearMap.hasFDerivAt _)
       rwa [← H] at A
     ext v m
