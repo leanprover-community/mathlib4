@@ -25,7 +25,7 @@ private inductive Path where
   | type (next : Path) : Path
   | body (name : Name) (next : Path) : Path
 
-partial def Path.ofSubExprPos (expr : Expr) (pos : SubExpr.Pos) : MetaM Path :=
+private partial def Path.ofSubExprPos (expr : Expr) (pos : SubExpr.Pos) : MetaM Path :=
   go expr pos.toArray 0
 where
   go (expr : Expr) (pos : Array Nat) (i : Fin (pos.size + 1)) : MetaM Path :=
