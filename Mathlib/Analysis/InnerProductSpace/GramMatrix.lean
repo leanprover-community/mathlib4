@@ -42,7 +42,6 @@ lemma gram_apply [Inner 𝕜 E] (v : n → E) (i j : n) :
 variable [RCLike 𝕜]
 
 section SemiInnerProductSpace
-
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 @[simp]
@@ -94,7 +93,6 @@ theorem linearIndependent_of_posDef_gram [Fintype n] {v : n → E} (h_gram : Pos
 end SemiInnerProductSpace
 
 section NormedInnerProductSpace
-
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 /-- In a normed space, linear independence of `v` implies positive definiteness of `gram 𝕜 v`. -/
