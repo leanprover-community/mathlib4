@@ -411,10 +411,10 @@ scoped infixr:70 " ᵣ⊙ " => MonoidalRightActionStruct.actionHom
 scoped notation "ᵣα " => MonoidalRightActionStruct.actionAssocIso
 
 /-- Notation for `actionUnitIso`, the structural isomorphism `- ᵣ⊙ 𝟙_ C  ≅ -`. -/
-scoped notation "ᵣυ_ " => MonoidalRightActionStruct.actionUnitIso
+scoped notation "ᵣρ " => MonoidalRightActionStruct.actionUnitIso
 /-- Notation for `actionUnitIso`, the structural isomorphism `- ᵣ⊙ 𝟙_ C  ≅ -`,
 allowing one to specify the acting category. -/
-scoped notation "ᵣυ_["J"]" => MonoidalRightActionStruct.actionUnitIso (C := J)
+scoped notation "ᵣρ["J"]" => MonoidalRightActionStruct.actionUnitIso (C := J)
 
 end MonoidalRightAction
 
@@ -429,9 +429,9 @@ open scoped MonoidalRightAction in
 - For every pair of morphisms `f : (c : C) ⟶ c'` and
   `f : (d : D) ⟶ d'`, a morphism `f ᵣ⊙ f' : c ᵣ⊙ d ⟶ c' ᵣ⊙ d'`.
 - A structure isomorphism `ᵣα c c' d : c ⊗ c' ᵣ⊙ d ≅ c ᵣ⊙ c' ᵣ⊙ d`.
-- A structure isomorphism `ᵣυ_ d : (𝟙_ C) ᵣ⊙ d ≅ d`.
+- A structure isomorphism `ᵣρ d : (𝟙_ C) ᵣ⊙ d ≅ d`.
 Furthermore, we require identities that turn `- ᵣ⊙ -` into a bifunctor,
-ensure naturality of `ᵣα` and `ᵣυ_`, and ensure compatibilies with
+ensure naturality of `ᵣα` and `ᵣρ`, and ensure compatibilies with
 the associator and unitor isomorphisms in `C`. -/
 class MonoidalRightAction [MonoidalCategory C] extends
     MonoidalRightActionStruct C D where
@@ -455,7 +455,7 @@ class MonoidalRightAction [MonoidalCategory C] extends
     aesop_cat
 
   actionUnitIso_naturality {d d' : D} (f : d ⟶ d') :
-      (ᵣυ_ d).hom ≫ f = f ᵣ⊵ (𝟙_ C) ≫ (ᵣυ_ d').hom := by
+      (ᵣρ d).hom ≫ f = f ᵣ⊵ (𝟙_ C) ≫ (ᵣρ d').hom := by
     aesop_cat
 
   actionHomRight_whiskerRight {c' c'' : C} (f : c' ⟶ c'') (c : C) (d : D) :
@@ -473,11 +473,11 @@ class MonoidalRightAction [MonoidalCategory C] extends
     aesop_cat
 
   actionHom_leftUnitor (c : C) (d : D) :
-      d ᵣ⊴ (λ_ c).hom = (ᵣα _ _ _).hom ≫ (ᵣυ_ _).hom ᵣ⊵ c := by
+      d ᵣ⊴ (λ_ c).hom = (ᵣα _ _ _).hom ≫ (ᵣρ _).hom ᵣ⊵ c := by
     aesop_cat
 
   actionHom_rightUnitor (c : C) (d : D) :
-      d ᵣ⊴ (ρ_ c).hom = (ᵣα _ _ _).hom ≫ (ᵣυ_ _).hom := by
+      d ᵣ⊴ (ρ_ c).hom = (ᵣα _ _ _).hom ≫ (ᵣρ _).hom := by
     aesop_cat
 
 attribute [reassoc] MonoidalRightAction.actionHom_def
@@ -527,7 +527,7 @@ theorem actionHomRight_comp (w : D) {x y z : C} (f : x ⟶ y) (g : y ⟶ z) :
 
 @[reassoc, simp]
 theorem unit_actionHomRight {x y : D} (f : x ⟶ y) :
-    f ᵣ⊵ (𝟙_ C) = (ᵣυ_ x).hom ≫ f ≫ (ᵣυ_ y).inv := by
+    f ᵣ⊵ (𝟙_ C) = (ᵣρ x).hom ≫ f ≫ (ᵣρ y).inv := by
   rw [← Category.assoc, actionUnitIso_naturality]
   simp
 
@@ -664,7 +664,7 @@ def actionAssocNatIso :
 
 /-- Bundle `ᵣρ _` as an isomorphism of functors. -/
 @[simps!]
-def actionUnitNatIso : actionRight D (𝟙_ C) ≅ 𝟭 D := NatIso.ofComponents (ᵣυ_ ·)
+def actionUnitNatIso : actionRight D (𝟙_ C) ≅ 𝟭 D := NatIso.ofComponents (ᵣρ ·)
 
 end
 
