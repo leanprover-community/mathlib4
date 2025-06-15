@@ -41,17 +41,28 @@ import sys
 import json
 import re
 import argparse
+import os
+import platform
 from typing import Optional, Dict, Any, List
 
 
 class Colors:
-    """ANSI color codes for terminal output."""
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    BLUE = '\033[94m'
-    BOLD = '\033[1m'
-    END = '\033[0m'
+    """ANSI color codes for terminal output with Windows compatibility."""
+    if platform.system() == 'Windows':
+        # Windows doesn't support ANSI colors by default, so we'll use empty strings
+        GREEN = ''
+        YELLOW = ''
+        RED = ''
+        BLUE = ''
+        BOLD = ''
+        END = ''
+    else:
+        GREEN = '\033[92m'
+        YELLOW = '\033[93m'
+        RED = '\033[91m'
+        BLUE = '\033[94m'
+        BOLD = '\033[1m'
+        END = '\033[0m'
 
 
 def print_step(step_num: int, description: str) -> None:
@@ -75,9 +86,17 @@ def print_error(message: str) -> None:
 
 
 def run_command(cmd: List[str], capture_output: bool = True, check: bool = True) -> subprocess.CompletedProcess:
-    """Run a command and return the result."""
+    """Run a command and return the result with Windows compatibility."""
     try:
-        result = subprocess.run(cmd, capture_output=capture_output, text=True, check=check)
+        # On Windows, we need to use shell=True for some commands
+        use_shell = platform.system() == 'Windows' and any(c in cmd[0] for c in ['|', '>', '<', '&'])
+
+        # Convert command to string if using shell
+        if use_shell:
+            cmd_str = ' '.join(cmd)
+            result = subprocess.run(cmd_str, shell=True, capture_output=capture_output, text=True, check=check)
+        else:
+            result = subprocess.run(cmd, capture_output=capture_output, text=True, check=check)
         return result
     except subprocess.CalledProcessError as e:
         if not check:
@@ -124,9 +143,13 @@ def check_gh_installation() -> bool:
     except FileNotFoundError:
         print_error("GitHub CLI (gh) is not installed.")
         print("Please install it:")
-        print("  macOS: brew install gh")
-        print("  Ubuntu/Debian: sudo apt install gh")
-        print("  Or visit: https://cli.github.com/")
+        if platform.system() == 'Windows':
+            print("  Windows: winget install GitHub.cli")
+            print("  Or visit: https://cli.github.com/")
+        else:
+            print("  macOS: brew install gh")
+            print("  Ubuntu/Debian: sudo apt install gh")
+            print("  Or visit: https://cli.github.com/")
         return False
 
     # Check if authenticated
@@ -197,8 +220,11 @@ def check_gh_token_scopes() -> bool:
 def check_ssh_github_access() -> bool:
     """Check if SSH access to GitHub is available."""
     try:
+        # On Windows, we need to use the full path to ssh.exe
+        ssh_cmd = 'ssh.exe' if platform.system() == 'Windows' else 'ssh'
+
         # Test SSH connection to GitHub
-        result = run_command(['ssh', '-T', 'git@github.com'], check=False)
+        result = run_command([ssh_cmd, '-T', 'git@github.com'], check=False)
         # SSH to GitHub returns exit code 1 for successful authentication
         # but exit code 255 for connection failures
         if result.returncode == 1:
@@ -680,6 +706,14 @@ def close_old_pr_and_comment(old_pr: Dict[str, Any], new_pr_url: str) -> None:
 
 def main() -> None:
     """Main migration workflow."""
+    # Enable ANSI colors on Windows if possible
+    if platform.system() == 'Windows':
+        try:
+            # Enable ANSI colors on Windows 10+
+            os.system('')  # This enables ANSI colors in Windows terminal
+        except Exception:
+            pass  # If it fails, we'll use the no-color fallback
+
     # Parse command line arguments
     parser = argparse.ArgumentParser(description="Script to migrate contributors from direct write access to using forks.")
     parser.add_argument('-y', '--auto-accept', action='store_true', help="Auto-accept all prompts")
