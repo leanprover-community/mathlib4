@@ -73,9 +73,22 @@ These also prevent non-computable instances like `Int.normedCommRing` being used
 these instances non-computably.
 -/
 
+instance instDistrib : Distrib ℤ := inferInstance
+instance instLeftDistribClass : LeftDistribClass ℤ := inferInstance
+instance instRightDistribClass : RightDistribClass ℤ := inferInstance
+instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring ℤ := inferInstance
+instance instNonUnitalSemiring : NonUnitalSemiring ℤ := inferInstance
+instance instNonAssocSemiring : NonAssocSemiring ℤ := inferInstance
+instance instNonUnitalNonAssocRing : NonUnitalNonAssocRing ℤ := inferInstance
+instance instNonUnitalRing : NonUnitalRing ℤ := inferInstance
+instance instNonAssocRing : NonAssocRing ℤ := inferInstance
+instance instSemiring : Semiring ℤ := inferInstance
+instance instRing : Ring ℤ := inferInstance
+instance instNonUnitalNonAssocCommSemiring : NonUnitalNonAssocCommSemiring ℤ := inferInstance
+instance instNonUnitalCommSemiring : NonUnitalCommSemiring ℤ := inferInstance
 instance instCommSemiring : CommSemiring ℤ := inferInstance
-instance instSemiring     : Semiring ℤ     := inferInstance
-instance instRing         : Ring ℤ         := inferInstance
-instance instDistrib      : Distrib ℤ      := inferInstance
+instance instHasDistribNeg : HasDistribNeg ℤ := inferInstance
+instance instNonUnitalNonAssocCommRing : NonUnitalNonAssocCommRing ℤ := inferInstance
+instance instNonUnitalCommRing : NonUnitalCommRing ℤ := inferInstance
 
 end Int
