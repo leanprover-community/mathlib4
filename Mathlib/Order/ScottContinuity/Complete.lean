@@ -39,11 +39,11 @@ section CompleteLinearOrder
 
 variable [CompleteLinearOrder β]
 
-lemma scottContinuous_inf_right (a : β) : ScottContinuous fun b ↦ a ⊓ b := by
-  refine ScottContinuous.of_map_sSup (fun d _ _ ↦ by rw [inf_sSup_eq, sSup_image])
+lemma scottContinuous_inf_right (a : β) : ScottContinuous fun b ↦ a ⊓ b :=
+  .of_map_sSup (fun d _ _ ↦ by rw [inf_sSup_eq, sSup_image])
 
-lemma scottContinuous_inf_left (b : β) : ScottContinuous fun a ↦ a ⊓ b := by
-  refine ScottContinuous.of_map_sSup (fun d _ _ ↦ by rw [sSup_inf_eq, sSup_image])
+lemma scottContinuous_inf_left (b : β) : ScottContinuous fun a ↦ a ⊓ b :=
+  .of_map_sSup (fun d _ _ ↦ by rw [sSup_inf_eq, sSup_image])
 
 /- The meet operation is Scott continuous -/
 lemma ScottContinuous.inf₂ : ScottContinuous fun (a, b) => (a ⊓ b : β) :=
