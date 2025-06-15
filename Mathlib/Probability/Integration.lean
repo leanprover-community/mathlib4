@@ -138,7 +138,7 @@ theorem lintegral_prod_eq_prod_lintegral_of_indepFun {ι : Type*}
     simp only [← Finset.prod_apply, Finset.prod_cons, ← ihs]
     apply lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'
     · exact (x_mea j).aemeasurable
-    · exact s.aemeasurable_prod' (fun i _ ↦ (x_mea i).aemeasurable)
+    · exact s.aemeasurable_fun_prod (fun i _ ↦ (x_mea i).aemeasurable)
     · exact (iIndepFun.indepFun_finset_prod_of_notMem hX x_mea hj).symm
 
 /-- The product of two independent, integrable, real-valued random variables is integrable. -/
