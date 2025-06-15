@@ -171,6 +171,15 @@ protected theorem surjective (e : E) : Function.Surjective e :=
 protected theorem bijective (e : E) : Function.Bijective (e : α → β) :=
   ⟨EquivLike.injective e, EquivLike.surjective e⟩
 
+protected theorem injective_inv (e : E) : Function.Injective (EquivLike.inv e) :=
+  (right_inv e).injective
+
+protected theorem surjective_inv (e : E) : Function.Surjective (EquivLike.inv e) :=
+  (left_inv e).surjective
+
+protected theorem bijective_inv (e : E) : Function.Bijective (EquivLike.inv e) :=
+  ⟨EquivLike.injective_inv e, EquivLike.surjective_inv e⟩
+
 theorem apply_eq_iff_eq (f : E) {x y : α} : f x = f y ↔ x = y :=
   EmbeddingLike.apply_eq_iff_eq f
 
