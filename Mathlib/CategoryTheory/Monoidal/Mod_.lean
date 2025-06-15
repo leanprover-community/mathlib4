@@ -32,11 +32,11 @@ multiplication.
 See `MulAction` for the non-categorical version. -/
 class Mod_Class (X : D) where
   /-- The action map -/
-  smul : M ⊙ X ⟶ X
+  smul : M ⊙ₗ X ⟶ X
   /-- The identity acts trivially. -/
-  one_smul' (X) : η ⊵ X ≫ smul = (υ_ X).hom := by aesop_cat
+  one_smul' (X) : η ⊵ₗ X ≫ smul = (λₗ X).hom := by aesop_cat
   /-- The action map is compatible with multiplication. -/
-  mul_smul' (X) : μ ⊵ X ≫ smul = (σ_ M M X).hom ≫ M ⊴ smul ≫ smul := by aesop_cat
+  mul_smul' (X) : μ ⊵ₗ X ≫ smul = (αₗ M M X).hom ≫ M ⊴ₗ smul ≫ smul := by aesop_cat
 
 attribute [reassoc] Mod_Class.mul_smul' Mod_Class.one_smul'
 
@@ -51,15 +51,15 @@ namespace Mod_Class
 
 @[reassoc (attr := simp)]
 theorem one_smul (X : D) [Mod_Class M X] :
-    η ⊵ X ≫ γ[M,X] = (υ_[C] X).hom :=
+    η ⊵ₗ X ≫ γ[M,X] = (λₗ[C] X).hom :=
   Mod_Class.one_smul' X
 
 @[reassoc (attr := simp)]
 theorem mul_smul (X : D) [Mod_Class M X] :
-    μ ⊵ X ≫ γ = (σ_ M M X).hom ≫ M ⊴ γ ≫ γ := Mod_Class.mul_smul' X
+    μ ⊵ₗ X ≫ γ = (αₗ M M X).hom ≫ M ⊴ₗ γ ≫ γ := Mod_Class.mul_smul' X
 
-theorem assoc_flip (X : D) [Mod_Class M X] : M ⊴ γ ≫ γ =
-    (σ_ M M X).inv ≫ μ[M] ⊵ X ≫ γ := by
+theorem assoc_flip (X : D) [Mod_Class M X] : M ⊴ₗ γ ≫ γ =
+    (αₗ M M X).inv ≫ μ[M] ⊵ₗ X ≫ γ := by
   simp
 
 variable (M) in
@@ -72,7 +72,7 @@ abbrev regular : Mod_Class M M where
 module over the trivial monoid. -/
 @[simps]
 instance (X : D) : Mod_Class (𝟙_ C) X where
-  smul := υ_ _|>.hom
+  smul := λₗ _|>.hom
 
 @[ext]
 theorem ext {X : C} (h₁ h₂ : Mod_Class M X) (H : h₁.smul = h₂.smul) :
@@ -92,7 +92,7 @@ variable (A : C) [Mon_Class A]
 /-- A morphism in `D` is a morphism of `A`-module objects if it commutes with
 the action maps -/
 class IsMod_Hom {M N : D} [Mod_Class A M] [Mod_Class A N] (f : M ⟶ N) where
-  smul_hom : γ[M] ≫ f = A ⊴ f ≫ γ[N] := by aesop_cat
+  smul_hom : γ[M] ≫ f = A ⊴ₗ f ≫ γ[N] := by aesop_cat
 
 attribute [reassoc (attr := simp)] IsMod_Hom.smul_hom
 
@@ -121,7 +121,7 @@ namespace Mod_
 
 variable {A : C} [Mon_Class A] (M : Mod_ D A)
 
-theorem assoc_flip : A ⊴ γ ≫ γ = (σ_ A A M.X).inv ≫ μ ⊵ M.X ≫ γ := by simp
+theorem assoc_flip : A ⊴ₗ γ ≫ γ = (αₗ A A M.X).inv ≫ μ ⊵ₗ M.X ≫ γ := by simp
 
 /-- A morphism of monoid objects. -/
 @[ext]
@@ -138,7 +138,7 @@ taking a morphism without a [isMod_Hom] instance, as well as the relevant
 equality to put such an instance. -/
 @[simps!]
 def Hom.mk' {M N : Mod_ D A} (f : M.X ⟶ N.X)
-    (smul_hom : γ[M.X] ≫ f = A ⊴ f ≫ γ[N.X] := by aesop_cat) : Hom M N :=
+    (smul_hom : γ[M.X] ≫ f = A ⊴ₗ f ≫ γ[N.X] := by aesop_cat) : Hom M N :=
   letI : IsMod_Hom A f := ⟨smul_hom⟩
   ⟨f⟩
 
@@ -148,7 +148,7 @@ a `Mod_Class` instance (rather than bundled as `Mod_`),
 as well as the relevant equality to put such an instance. -/
 @[simps!]
 def Hom.mk'' {M N : D} [Mod_Class A M] [Mod_Class A N] (f : M ⟶ N)
-    (smul_hom : γ[M] ≫ f = A ⊴ f ≫ γ[N] := by aesop_cat) :
+    (smul_hom : γ[M] ≫ f = A ⊴ₗ f ≫ γ[N] := by aesop_cat) :
     Hom (.mk (A := A) M) (.mk (A := A) N) :=
   letI : IsMod_Hom A f := ⟨smul_hom⟩
   ⟨f⟩
@@ -212,7 +212,7 @@ monoid objects, `M` inherits an `A`-module structure via
 "restriction of scalars", i.e `γ[A, M] = f.hom ⊵ M ≫ γ[B, M]`. -/
 @[simps!]
 def scalarRestriction (M : D) [Mod_Class B M] : Mod_Class A M where
-  smul := f ⊵ M ≫ γ[B, M]
+  smul := f ⊵ₗ M ≫ γ[B, M]
   one_smul' := by
     rw [← comp_actionHomLeft_assoc]
     rw [IsMon_Hom.one_hom, Mod_Class.one_smul]
@@ -222,7 +222,7 @@ def scalarRestriction (M : D) [Mod_Class B M] : Mod_Class A M where
     simp only [actionHomLeft_action_assoc, Category.assoc, Iso.hom_inv_id_assoc,
       actionHomRight_comp]
     slice_rhs 4 6 => rw [Mod_Class.assoc_flip]
-    slice_rhs 2 4 => rw [← action_assoc]
+    slice_rhs 2 4 => rw [← whiskerLeft_actionHomLeft]
     slice_rhs 1 2 => rw [← comp_actionHomLeft]
     rw [← comp_actionHomLeft, Category.assoc, ← comp_actionHomLeft_assoc,
       IsMon_Hom.mul_hom, tensorHom_def, Category.assoc]
