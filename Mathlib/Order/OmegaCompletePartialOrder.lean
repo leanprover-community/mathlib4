@@ -9,7 +9,7 @@ import Mathlib.Order.CompleteLattice.Basic
 import Mathlib.Order.Iterate
 import Mathlib.Order.Part
 import Mathlib.Order.Preorder.Chain
-import Mathlib.Order.ScottContinuity.Basic
+import Mathlib.Order.ScottContinuity
 
 /-!
 # Omega Complete Partial Orders
