@@ -15,8 +15,7 @@ This file defines `rw??`, an interactive tactic that suggests rewrites for any e
 by the user.
 
 We use a (lazy) `RefinedDiscrTree` to lookup a list of candidate rewrite lemmas.
-We exclude lemmas defined in `Mathlib/Tactic/**` and `Init/Omega/**`, since these lemmas aren't
-supposed to ever be used directly.
+We exclude lemmas from blacklisted imports, as these lemmas aren't supposed to be used directly.
 
 After this, each lemma is checked one by one to see whether it is applicable.
 
@@ -26,12 +25,27 @@ Within each section, the lemmas are sorted by
 - rewrites with fewer extra goals come first
 - left-to-right rewrites come first
 - shorter lemma names come first
+- shorter replacement expressions come first (when taken as a string)
 - alphabetically ordered by lemma name
 
 The lemmas are optionally filtered to avoid duplicate rewrites, or trivial rewrites. This
 is controlled by the filter button on the top right of the results.
 
 When a rewrite lemma introduces new goals, these are shown after a `⊢`.
+
+## TODO
+
+Ways to improve `rw??`:
+- Modify the interface to allow creating a whole `rw [.., ..]` chain, without having to go into
+  the editor in between. For this to work, we will need a more general syntax,
+  something like `rw [..]??`, which would be pasted into the editor.
+- We could look for rewrites of partial applications of the selected expression.
+  For example, when clicking on `(f + g) x`, there should still be an `add_comm` suggestion.
+
+Ways to extend `rw??`:
+- Support generalized rewriting (`grw`)
+- Integrate rewrite search with the `calc?` widget so that a `calc` block can be created using
+  just point & click.
 
 -/
 
