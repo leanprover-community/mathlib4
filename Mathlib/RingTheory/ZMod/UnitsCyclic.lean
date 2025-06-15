@@ -635,7 +635,7 @@ theorem isCyclic_units_iff (n : ℕ) :
       · exfalso
         apply Nat.not_even_iff_odd.mpr hn
         simp [h]
-  · set a := n.factorization 2
+  · set a := n.factorization 2 with ha
     set m := n / 2 ^ a with hm
     have hm : n = 2 ^ a * m := by
       simp only [m, Nat.ordCompl_of_not_prime]
