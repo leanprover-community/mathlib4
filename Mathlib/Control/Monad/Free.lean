@@ -143,7 +143,7 @@ attribute [-simp] liftBind.injEq liftBind.sizeOf_spec
 
 /-- The `liftBind` constructor is semantically equivalent to `(lift op) >>= cont`. -/
 @[simp]
-lemma liftBind_eq_lift_bind (op : F ι) (cont : ι → FreeM F α) :
+lemma lift_bind_eq_liftBind (op : F ι) (cont : ι → FreeM F α) :
     (lift op).bind cont = .liftBind op cont :=
   rfl
 
@@ -162,12 +162,12 @@ instance : LawfulFunctor (FreeM F) where
     induction x with
     | pure a => rfl
     | liftBind op cont ih =>
-      simp_all [← map_eq_functorMap, liftBind_eq_lift_bind, map, ih]
+      simp_all [← map_eq_functorMap, lift_bind_eq_liftBind, map, ih]
   comp_map g h x := by
     induction x with
     | pure a => rfl
     | liftBind op cont ih =>
-      simp_all [← map_eq_functorMap, liftBind_eq_lift_bind, map, ih]
+      simp_all [← map_eq_functorMap, lift_bind_eq_liftBind, map, ih]
 
 instance : Monad (FreeM F) where
 
