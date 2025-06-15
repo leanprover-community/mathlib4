@@ -9,6 +9,7 @@ import Mathlib.LinearAlgebra.BilinearForm.DualLattice
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.RingTheory.Trace.Basic
+import Mathlib.RingTheory.RingHom.Finite
 
 /-!
 # Integral closure of Dedekind domains
@@ -246,9 +247,41 @@ instance integralClosure.isDedekindDomain_fractionRing [IsDedekindDomain A] :
     IsDedekindDomain (integralClosure A L) :=
   integralClosure.isDedekindDomain A (FractionRing A) L
 
+open nonZeroDivisors Algebra IsLocalization IsFractionRing IsScalarTower in
+instance [NoZeroSMulDivisors A C] [Module.Finite A C] :
+    IsLocalization (Algebra.algebraMapSubmonoid C A⁰) (FractionRing C) := by
+  refine ⟨fun ⟨s, r, hr, hrs⟩ ↦ ?_, fun z ↦ ?_, fun {x y} h ↦ ⟨1, ?_⟩⟩
+  · simp only [isUnit_iff_ne_zero, ne_eq, FaithfulSMul.algebraMap_eq_zero_iff]
+    intro hs
+    simp only [hs, FaithfulSMul.algebraMap_eq_zero_iff] at hrs
+    simp [hrs] at hr
+  · let B := Localization (algebraMapSubmonoid C A⁰)
+    have : IsDomain B := isDomain_localization <|
+      map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective _ _) rfl.le
+    let _ : Algebra B (FractionRing C) :=
+      (map _ (M := (algebraMapSubmonoid C A⁰)) (T := C⁰) (RingHom.id C) <|
+        le_nonZeroDivisors_of_noZeroDivisors <| fun ⟨r, hr0, hr⟩ ↦
+        by simp [(FaithfulSMul.algebraMap_eq_zero_iff _ _).mp hr] at hr0).toAlgebra
+    let hB := fieldOfFiniteDimensional (FractionRing A) B
+    have : IsScalarTower C B (FractionRing C) := by
+      refine localization_isScalarTower_of_submonoid_le B _ _ C⁰ (fun s hs ↦
+        mem_nonZeroDivisors_iff_ne_zero.mpr (fun h ↦ ?_))
+      rw [h] at hs
+      rcases hs with ⟨r, hr, hrS⟩
+      simp only [FaithfulSMul.algebraMap_eq_zero_iff] at hrS
+      simp [hrS] at hr
+    have : IsFractionRing B (FractionRing C) :=
+      isFractionRing_of_isDomain_of_isLocalization (algebraMapSubmonoid C A⁰) B _
+    rcases IsFractionRing.surjective_iff_isField.mpr hB.toIsField z with ⟨b, hb⟩
+    rcases IsLocalization.surj (algebraMapSubmonoid C A⁰) b with ⟨s, hs⟩
+    refine ⟨s, ?_⟩
+    apply_fun algebraMap B (FractionRing C) at hs
+    rwa [map_mul, hb, ← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply] at hs
+  · simpa using h
+
 attribute [local instance] FractionRing.liftAlgebra in
-instance [NoZeroSMulDivisors A C] [Module.Finite A C] [IsIntegrallyClosed C] :
-    IsLocalization (Algebra.algebraMapSubmonoid C A⁰) (FractionRing C) :=
-  IsIntegralClosure.isLocalization _ (FractionRing A) _ _
+instance [Module.Finite A C] [NoZeroSMulDivisors A C] :
+    FiniteDimensional (FractionRing A) (FractionRing C) :=
+  .of_isLocalization A C A⁰
 
 end IsIntegralClosure
