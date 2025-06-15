@@ -324,6 +324,12 @@ def setup_remotes(username: str, fork_url: str, auto_accept: bool = False) -> st
     """
     print_step(4, "Setting up git remotes")
 
+    # This will sync the local references with the upstream ones and delete refs to branches that
+    # don’t exist anymore on upstream repos.
+    # In particular, this will ensure the branches with duplicate names up to case that were recently
+    # deleted on the main repository do not cause trouble in the migration.
+    run_command(['git', 'fetch', '--all', '--prune'])
+
     remotes = get_current_remotes()
 
     # Determine URL format based on SSH availability
