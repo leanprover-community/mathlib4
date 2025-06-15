@@ -135,8 +135,8 @@ theorem mem_roots_quadratic_iff_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0)
     z ∈ (a • X ^ 2 + b • X + C c).roots ↔ z = (-b + s) / (2 * a) ∨ z = (-b - s) / (2 * a) := by
   rw [mem_roots (quadratic_ne_zero ha), isRoot_quadratic_iff ha h]
 
-theorem factorize_quadratic_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
-      (h : discrim a b c = s * s) :
+theorem quadratic_eq_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
+    (h : discrim a b c = s * s) :
     a • X ^ 2 + b • X + C c = a • (X - C ((-b + s) / (2 * a))) * (X - C ((-b - s) / (2 * a))) := by
   rw [smul_mul_assoc, sub_mul, mul_sub, mul_sub, sub_sub_eq_add_sub, ← pow_two, mul_comm, ← C_mul,
     ← sub_add_eq_add_sub, sub_sub, ← add_mul, ← C_add, smul_add, smul_sub, ← smul_mul_assoc,
