@@ -57,8 +57,8 @@ lemma gram_single [DecidableEq n] (i : n) (x : E) :
   · simp [hik]
   simp
 
-lemma gram_of_subtype (m : Set n) (v : n → E) : gram 𝕜 (m.restrict v) =
-    (gram 𝕜 v).submatrix (m.restrict id) (m.restrict id) := by
+lemma gram_of_subset (m : Set n) (v : n → E) : gram 𝕜 (m.restrict v) =
+    (gram 𝕜 v).submatrix (m.restrict id) (m.restrict id) :=
   rfl
 
 variable (𝕜) in
