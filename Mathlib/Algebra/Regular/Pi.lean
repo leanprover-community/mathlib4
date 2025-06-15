@@ -13,13 +13,13 @@ import Mathlib.Algebra.Regular.Basic
 variable {ι : Type*} {R : ι → Type*} [∀ i, Mul (R i)]
 
 @[to_additive (attr := simp)]
-theorem Pi.isLeftRegular_iff {a : ∀ i, (R i)} : IsLeftRegular a ↔ ∀ i, IsLeftRegular (a i) :=
+theorem Pi.isLeftRegular_iff {a : ∀ i, R i} : IsLeftRegular a ↔ ∀ i, IsLeftRegular (a i) :=
   have (i) : Nonempty (R i) := ⟨a i⟩; Pi.map_injective
 
 @[to_additive (attr := simp)]
-theorem Pi.isRightRegular_iff {a : ∀ i, (R i)} : IsRightRegular a ↔ ∀ i, IsRightRegular (a i) :=
+theorem Pi.isRightRegular_iff {a : ∀ i, R i} : IsRightRegular a ↔ ∀ i, IsRightRegular (a i) :=
   have (i) : Nonempty (R i) := ⟨a i⟩; Iff.symm <| Pi.map_injective.symm
 
 @[to_additive (attr := simp)]
-theorem Pi.isRegular_iff {a : ∀ i, (R i)} : IsRegular a ↔ ∀ i, IsRegular (a i) := by
+theorem Pi.isRegular_iff {a : ∀ i, R i} : IsRegular a ↔ ∀ i, IsRegular (a i) := by
   simp [_root_.isRegular_iff, forall_and]
