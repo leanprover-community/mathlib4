@@ -484,7 +484,7 @@ theorem isCyclic_units_four_mul_iff (n : ℕ) :
     exact Nat.succ_le_of_lt hn1
   simp only [Nat.ne_zero_of_lt hn0, Ne.symm (Nat.ne_of_lt hn1), or_self, iff_false]
   intro H
-  set m := n.factorization 2 with hm
+  set m := n.factorization 2
   set q := n / (2 ^ n.factorization 2) with hq
   have hn : n = 2 ^ m * q := (Nat.ordProj_mul_ordCompl_eq_self n 2).symm
   rw [hn, show 4 = 2 ^ 2 by rfl, ← mul_assoc, ← pow_add] at H
