@@ -5,8 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
 
-#align_import algebraic_topology.dold_kan.notations from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
-
 /-!
 
 # Notations for the Dold-Kan equivalence

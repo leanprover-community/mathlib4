@@ -61,16 +61,16 @@ the arrow is an effective epi.
 -/
 def isColimitOfEffectiveEpiStruct {X Y : C} (f : Y ⟶ X) (Hf : EffectiveEpiStruct f) :
     IsColimit (Sieve.generateSingleton f : Presieve X).cocone :=
-  letI D := FullSubcategory fun T : Over X => Sieve.generateSingleton f T.hom
+  letI D := ObjectProperty.FullSubcategory fun T : Over X => Sieve.generateSingleton f T.hom
   letI F : D ⥤ _ := (Sieve.generateSingleton f).arrows.diagram
   { desc := fun S => Hf.desc (S.ι.app ⟨Over.mk f, ⟨𝟙 _, by simp⟩⟩) <| by
       intro Z g₁ g₂ h
       let Y' : D := ⟨Over.mk f, 𝟙 _, by simp⟩
       let Z' : D := ⟨Over.mk (g₁ ≫ f), g₁, rfl⟩
       let g₁' : Z' ⟶ Y' := Over.homMk g₁
-      let g₂' : Z' ⟶ Y' := Over.homMk g₂ (by simp [h])
+      let g₂' : Z' ⟶ Y' := Over.homMk g₂ (by simp [Y', Z', h])
       change F.map g₁' ≫ _ = F.map g₂' ≫ _
-      simp only [S.w]
+      simp only [Y', F, S.w]
     fac := by
       rintro S ⟨T,g,hT⟩
       dsimp
@@ -102,18 +102,18 @@ def effectiveEpiStructOfIsColimit {X Y : C} (f : Y ⟶ X)
     Cocone (Sieve.generateSingleton f).arrows.diagram :=
     { pt := W
       ι := {
-        app := fun ⟨T,hT⟩ => hT.choose ≫ e
+        app := fun ⟨_,hT⟩ => hT.choose ≫ e
         naturality := by
           rintro ⟨A,hA⟩ ⟨B,hB⟩ (q : A ⟶ B)
           dsimp; simp only [← Category.assoc, Category.comp_id]
           apply h
           rw [Category.assoc, hB.choose_spec, hA.choose_spec, Over.w] } }
-  { desc := fun {W} e h => Hf.desc (aux e h)
+  { desc := fun {_} e h => Hf.desc (aux e h)
     fac := by
       intro W e h
       dsimp
       have := Hf.fac (aux e h) ⟨Over.mk f, 𝟙 _, by simp⟩
-      dsimp at this; rw [this]; clear this
+      dsimp [aux] at this; rw [this]; clear this
       nth_rewrite 2 [← Category.id_comp e]
       apply h
       generalize_proofs hh
@@ -170,7 +170,7 @@ the family is an effective epi.
 def isColimitOfEffectiveEpiFamilyStruct {B : C} {α : Type*}
     (X : α → C) (π : (a : α) → (X a ⟶ B)) (H : EffectiveEpiFamilyStruct X π) :
     IsColimit (Sieve.generateFamily X π : Presieve B).cocone :=
-  letI D := FullSubcategory fun T : Over B => Sieve.generateFamily X π T.hom
+  letI D := ObjectProperty.FullSubcategory fun T : Over B => Sieve.generateFamily X π T.hom
   letI F : D ⥤ _ := (Sieve.generateFamily X π).arrows.diagram
   { desc := fun S => H.desc (fun a => S.ι.app ⟨Over.mk (π a), ⟨a,𝟙 _, by simp⟩⟩) <| by
       intro Z a₁ a₂ g₁ g₂ h
@@ -181,7 +181,7 @@ def isColimitOfEffectiveEpiFamilyStruct {B : C} {α : Type*}
       let i₁ : Z' ⟶ A₁ := Over.homMk g₁
       let i₂ : Z' ⟶ A₂ := Over.homMk g₂
       change F.map i₁ ≫ _ = F.map i₂ ≫ _
-      simp only [S.w]
+      simp only [F, A₁, A₂, S.w]
     fac := by
       intro S ⟨T, a, (g : T.left ⟶ X a), hT⟩
       dsimp
@@ -214,19 +214,19 @@ def effectiveEpiFamilyStructOfIsColimit {B : C} {α : Type*}
     Cocone (Sieve.generateFamily X π).arrows.diagram := {
       pt := W
       ι := {
-        app := fun ⟨T,hT⟩ => hT.choose_spec.choose ≫ e hT.choose
+        app := fun ⟨_,hT⟩ => hT.choose_spec.choose ≫ e hT.choose
         naturality := by
           intro ⟨A,a,(g₁ : A.left ⟶ _),ha⟩ ⟨B,b,(g₂ : B.left ⟶ _),hb⟩ (q : A ⟶ B)
           dsimp; rw [Category.comp_id, ← Category.assoc]
           apply h; rw [Category.assoc]
           generalize_proofs h1 h2 h3 h4
           rw [h2.choose_spec, h4.choose_spec, Over.w] } }
-  { desc := fun {W} e h => H.desc (aux e h)
+  { desc := fun {_} e h => H.desc (aux e h)
     fac := by
       intro W e h a
       dsimp
       have := H.fac (aux e h) ⟨Over.mk (π a), a, 𝟙 _, by simp⟩
-      dsimp at this; rw [this]; clear this
+      dsimp [aux] at this; rw [this]; clear this
       conv_rhs => rw [← Category.id_comp (e a)]
       apply h
       generalize_proofs h1 h2
