@@ -540,3 +540,41 @@ variable (R S A)
     trdeg R S + trdeg S A = trdeg R A := by
   rw [← (trdeg R S).lift_id, ← (trdeg S A).lift_id, ← (trdeg R A).lift_id]
   exact lift_trdeg_add_eq R S A
+
+variable {R S} in
+/-- If `t ∪ {j}` is a transcendence basis and `j` is algebraic over `t ∪ {i}`, then `t ∪ {i}` is
+also a transcendence basis. -/
+lemma IsTranscendenceBasis.ne_of_isTranscendenceBasis_ne
+    [FaithfulSMul R S] [IsDomain S] (i j : ι) (v : ι → S)
+    (H₁ : IsTranscendenceBasis R fun x : {x // x ≠ i} ↦ v x)
+    (H₂ : IsAlgebraic (Algebra.adjoin R (v '' {j}ᶜ)) (v j)) :
+    IsTranscendenceBasis R fun x : {x // x ≠ j} ↦ v x := by
+  have := (algebraMap R S).domain_nontrivial
+  by_cases Hij : i = j
+  · exact Hij ▸ H₁
+  classical
+  refine (AlgebraicIndependent.isTranscendenceBasis_iff_isAlgebraic ?_).mpr ?_
+  · show AlgebraicIndepOn _ _ {j}ᶜ
+    convert_to AlgebraicIndepOn _ _ (insert i ({x | x ≠ i ∧ x ≠ j}))
+    · ext x; cases eq_or_ne x i <;> aesop
+    refine .insert (.mono H₁.1 ?_) ?_
+    · intro; aesop
+    · intro h
+      have : AlgebraicIndepOn R v (insert j ({x | x ≠ i ∧ x ≠ j})) := by
+        convert show AlgebraicIndepOn _ _ {i}ᶜ from H₁.1 using 1
+        ext x
+        cases eq_or_ne x j <;> aesop
+      apply ((AlgebraicIndepOn.insert_iff (by simp)).mp this).2
+      refine AlgebraicIndependent.matroid_closure_eq.le ?_
+      refine Set.subset_def.mp ?_ _ (AlgebraicIndependent.matroid_closure_eq.ge H₂)
+      rw [Matroid.closure_subset_closure_iff_subset_closure]
+      rintro _ ⟨j', hj', rfl⟩
+      obtain (rfl | H) := eq_or_ne j' i
+      · exact AlgebraicIndependent.matroid_closure_eq.ge h
+      · exact Matroid.subset_closure _ _ (by aesop_mat) (by aesop)
+  · refine H₁.isAlgebraic_iff.mpr fun j' ↦ ?_
+    by_cases H : j' = j
+    · subst H
+      convert H₂ <;> rw [Set.range_comp' (g := v), Subtype.range_val] <;> rfl
+    refine isAlgebraic_algebraMap (R := Algebra.adjoin R _) ⟨_, Algebra.subset_adjoin ?_⟩
+    exact ⟨⟨_, H⟩, rfl⟩
