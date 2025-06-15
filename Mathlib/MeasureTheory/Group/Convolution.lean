@@ -162,8 +162,8 @@ lemma map_conv_continuousLinearMap {E F : Type*} [AddCommMonoid E] [AddCommMonoi
     [OpensMeasurableSpace E] [BorelSpace F]
     {μ ν : Measure E} [SFinite μ] [SFinite ν]
     (L : E →L[ℝ] F) :
-    (μ ∗ ν).map L = (μ.map L).conv (ν.map L) := by
-  suffices (μ ∗ ν).map (L : E →+ F) = (μ.map (L : E →+ F)).conv (ν.map (L : E →+ F)) by simpa
+    (μ ∗ ν).map L = (μ.map L) ∗ (ν.map L) := by
+  suffices (μ ∗ ν).map (L : E →+ F) = (μ.map (L : E →+ F)) ∗ (ν.map (L : E →+ F)) by simpa
   rw [map_conv_addMonoidHom]
   rw [AddMonoidHom.coe_coe]
   fun_prop
