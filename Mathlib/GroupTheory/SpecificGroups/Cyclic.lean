@@ -931,7 +931,7 @@ section prod
 
 /-- The product of two finite groups is cyclic iff
 both of them are cyclic and their orders are coprime. -/
-@[to_additive "The product of two finite groups is cyclic iff
+@[to_additive "The product of two finite additive groups is cyclic iff
 both of them are cyclic and their orders are coprime."]
 theorem Group.isCyclic_prod_iff
     {M N : Type*} [CommGroup M] [Finite M] [CommGroup N] [Finite N] :
