@@ -351,7 +351,7 @@ theorem adjoint_toContinuousLinearMap (A : E →ₗ[𝕜] F) :
     haveI := FiniteDimensional.complete 𝕜 E
     haveI := FiniteDimensional.complete 𝕜 F
     LinearMap.toContinuousLinearMap (LinearMap.adjoint A) =
-      ContinuousLinearMap.adjoint (LinearMap.toContinuousLinearMap A) :=
+      ContinuousLinearMap.adjoint (LinearMap.toContinuousLinearMap (𝕜 := 𝕜) A) :=
   rfl
 
 theorem adjoint_eq_toCLM_adjoint (A : E →ₗ[𝕜] F) :
