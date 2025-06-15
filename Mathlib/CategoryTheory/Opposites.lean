@@ -58,11 +58,12 @@ end Quiver
 
 namespace CategoryTheory
 
-variable [Category.{v₁} C]
+section
 
-/-- The opposite category. -/
-@[stacks 001M]
-instance Category.opposite : Category.{v₁} Cᵒᵖ where
+variable [CategoryStruct.{v₁} C]
+
+/-- The opposite `CategoryStruct`. -/
+instance CategoryStruct.opposite : CategoryStruct.{v₁} Cᵒᵖ where
   comp f g := (g.unop ≫ f.unop).op
   id X := (𝟙 (unop X)).op
 
@@ -89,6 +90,16 @@ theorem unop_id_op {X : C} : (𝟙 (op X)).unop = 𝟙 X :=
 @[simp]
 theorem op_id_unop {X : Cᵒᵖ} : (𝟙 (unop X)).op = 𝟙 X :=
   rfl
+
+end
+
+variable [Category.{v₁} C]
+
+/-- The opposite category. -/
+@[stacks 001M]
+instance Category.opposite : Category.{v₁} Cᵒᵖ where
+  comp f g := (g.unop ≫ f.unop).op
+  id X := (𝟙 (unop X)).op
 
 section
 
@@ -355,13 +366,13 @@ theorem op_comp {H : C ⥤ D} (α : F ⟶ G) (β : G ⟶ H) :
 @[reassoc]
 lemma op_whiskerRight {E : Type*} [Category E] {H : D ⥤ E} (α : F ⟶ G) :
     NatTrans.op (whiskerRight α H) =
-    (Functor.opComp _ _).hom ≫ whiskerRight (NatTrans.op α) H.op ≫ (Functor.opComp _ _).inv := by
+    (Functor.opComp G H).hom ≫ whiskerRight (NatTrans.op α) H.op ≫ (Functor.opComp _ _).inv := by
   aesop_cat
 
 @[reassoc]
 lemma op_whiskerLeft {E : Type*} [Category E] {H : E ⥤ C} (α : F ⟶ G) :
     NatTrans.op (whiskerLeft H α) =
-    (Functor.opComp _ _).hom ≫ whiskerLeft H.op (NatTrans.op α) ≫ (Functor.opComp _ _).inv := by
+    (Functor.opComp H G).hom ≫ whiskerLeft H.op (NatTrans.op α) ≫ (Functor.opComp _ _).inv := by
   aesop_cat
 
 /-- The "unopposite" of a natural transformation. -/
@@ -662,7 +673,7 @@ lemma op_associator {E E': Type*} [Category E] [Category E'] {F : C ⥤ D} {G : 
     NatIso.op (Functor.associator F G H) =
       Functor.opComp _ _ ≪≫ isoWhiskerLeft F.op (Functor.opComp _ _) ≪≫
         (Functor.associator F.op G.op H.op).symm ≪≫
-        isoWhiskerRight (Functor.opComp _ _).symm H.op ≪≫ (Functor.opComp _ _).symm := by
+        isoWhiskerRight (Functor.opComp F G).symm H.op ≪≫ (Functor.opComp _ _).symm := by
   aesop_cat
 
 lemma unop_leftUnitor {F : Cᵒᵖ ⥤ Dᵒᵖ} :
