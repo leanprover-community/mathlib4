@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Yaël Dillies, Javier López-Contreras
 -/
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.FieldSimp2
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
 import Mathlib.RingTheory.Localization.AtPrime
 
@@ -111,7 +112,9 @@ def ofPrimeEquiv : Localization.AtPrime P ≃ₐ[A] (ofPrime A P).toSubring := b
   rw [IsLocalization.mk'_eq_iff_eq]
   congr 1
   ext
-  field_simp [H t, this, mul_comm]
+  simp only [Subring.coe_mul, this]
+  field_simp2
+  rfl
 
 instance : IsLocalization.AtPrime (ofPrime A P).toSubring P :=
   IsLocalization.isLocalization_of_algEquiv _ (ofPrimeEquiv A P)
