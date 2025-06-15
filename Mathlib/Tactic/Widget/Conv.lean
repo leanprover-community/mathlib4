@@ -18,70 +18,116 @@ a `conv` call zooming to the subexpression selected in the goal.
 
 open Lean Meta Server ProofWidgets
 
-private structure SolveReturn where
-  expr : Expr
-  val? : Option String
-  listRest : List Nat
+private inductive Path where
+  | node : Path
+  | arg (arg : Nat) (all : Bool) (next : Path) : Path
+  | fun (depth : Nat) : Path
+  | type (next : Path) : Path
+  | body (name : Name) (next : Path) : Path
 
-private def solveLevel (expr : Expr) (path : List Nat) : MetaM SolveReturn := match expr with
-  | Expr.app _ _ => do
-    let mut descExp := expr
-    let mut count := 0
-    let mut explicitList := []
+partial def Path.ofSubExprPos (expr : Expr) (pos : SubExpr.Pos) : MetaM Path :=
+  go expr pos.toArray 0
+where
+  go (expr : Expr) (pos : Array Nat) (i : Fin (pos.size + 1)) : MetaM Path :=
+    if h : i = Fin.last pos.size then pure .node else
+    let i := i.castLT (Fin.val_lt_last h)
+    if pos[i] = SubExpr.Pos.typeCoord then
+      throwError m!"conv mode does not support entering types{indentExpr expr}" else
+    let err := throwError m!"cannot access position {pos[i]} of{indentExpr expr}"
+    match expr with
+    | .bvar i => throwError m!"unexpected bound variable #{i}"
+    | .fvar _
+    | .mvar _
+    | .lit _
+    | .const _ _
+    | .sort _ => err
+    | .proj _ _ e =>
+      throwError m!"conv mode does not yet support entering projections{indentExpr expr}"
+    | .mdata _ e => go e pos i.castSucc
+    | .letE n t _ b _ =>
+      if pos[i] = 0 then
+        throwError m!"conv mode does not yet support entering let types{indentExpr expr}"
+      else if pos[i] = 1 then
+        throwError m!"conv mode does not yet support entering let values{indentExpr expr}"
+      else if pos[i] = 2 then do
+        let lctx ← getLCtx
+        let fvarId ← mkFreshFVarId
+        let lctx := lctx.mkLocalDecl fvarId n t
+        withReader (fun ctx => {ctx with lctx}) do
+          let e := b.instantiate1 (.fvar fvarId)
+          unless (← isTypeCorrect e) do
+            throwError m!"failed to abstract let-expression, \
+              result is not type correct{indentExpr expr}"
+          Path.body n <$> go e pos i.succ
+      else err
+    | .forallE n t b bi =>
+      if pos[i] = 0 then do
+        unless (← isProp t) || expr.isArrow do
+          throwError m!"conv mode only supports rewriting binder types \
+            when the binder type is a proposition{indentExpr expr}"
+        Path.type <$> go t pos i.succ
+      else if pos[i] = 1 then do
+        let lctx ← getLCtx
+        let fvarId ← mkFreshFVarId
+        let lctx := lctx.mkLocalDecl fvarId n t bi
+        withReader (fun ctx => {ctx with lctx})
+          (Path.body n <$> go (b.instantiate1 (.fvar fvarId)) pos i.succ)
+      else err
+    | .lam n t b bi =>
+      if pos[i] = 0 then
+        throwError m!"conv mode does not support rewriting \
+          the binder type of a lambda{indentExpr expr}"
+      else if pos[i] = 1 then do
+        let lctx ← getLCtx
+        let fvarId ← mkFreshFVarId
+        let lctx := lctx.mkLocalDecl fvarId n t bi
+        withReader (fun ctx => {ctx with lctx})
+          (Path.body n <$> go (b.instantiate1 (.fvar fvarId)) pos i.succ)
+      else err
+    | .app .. => appT expr pos i.castSucc [] none
+  appT (e : Expr) (p : Array Nat) (i : Fin (p.size + 1))
+      (acc : List Expr) (n : Option (Fin acc.length)) : MetaM Path :=
+    match e with
+    | .app f a =>
+      if let some u := n then appT f p i (a :: acc) (some u.succ)
+      else if h : i = Fin.last p.size then pure (Path.fun acc.length)
+      else let i := i.castLT (Fin.val_lt_last h)
+      if p[i] = 0 then appT f p i.succ (a :: acc) none
+      else if p[i] = 1 then appT f p i.succ (a :: acc) (some ⟨0, acc.length.zero_lt_succ⟩)
+      else throwError m!"cannot access position {p[i]} of{indentExpr e}"
+    | _ =>
+      if let some u := n then do
+        let c ← PrettyPrinter.Delaborator.getParamKinds e acc.toArray
+        if let some {bInfo := .default, ..} := c[u]? then
+          arg (((c.map (·.bInfo)).take u).count .default + 1)
+            false <$> go acc[u] p i
+        else arg (u + 1) true <$> go acc[u] p i
+      else arg 0 false <$> go e p i
 
-    -- we go through the application until we reach the end, counting how many explicit arguments
-    -- it has and noting whether they are explicit or implicit
-    while descExp.isApp do
-      if (← Lean.Meta.inferType descExp.appFn!).bindingInfo!.isExplicit then
-        explicitList := true::explicitList
-        count := count + 1
-      else
-        explicitList := false::explicitList
-      descExp := descExp.appFn!
+private def getName (n : Name) : String :=
+  match n with
+  | Name.str _ s => s
+  | _ => "_"
 
-    -- we get the correct `enter` command by subtracting the number of `true`s in our list
-    let mut mutablePath := path
-    let mut length := count
-    explicitList := List.reverse explicitList
-    while !mutablePath.isEmpty && mutablePath.head! == 0 do
-      if explicitList.head! == true then
-        count := count - 1
-      explicitList := explicitList.tail!
-      mutablePath := mutablePath.tail!
-
-    let mut nextExp := expr
-    while length > count do
-      nextExp := nextExp.appFn!
-      length := length - 1
-    nextExp := nextExp.appArg!
-
-    let pathRest := if mutablePath.isEmpty then [] else mutablePath.tail!
-
-    return { expr := nextExp, val? := toString count , listRest := pathRest }
-
-  | Expr.lam n _ b _ => do
-    let name := match n with
-      | Name.str _ s => s
-      | _ => panic! "no name found"
-    return { expr := b, val? := name, listRest := path.tail! }
-
-  | Expr.forallE n _ b _ => do
-    let name := match n with
-      | Name.str _ s => s
-      | _ => panic! "no name found"
-    return { expr := b, val? := name, listRest := path.tail! }
-
-  | Expr.mdata _ b => do
-    match b with
-      | Expr.mdata _ _ => return { expr := b, val? := none, listRest := path }
-      | _ => return { expr := b.appFn!.appArg!, val? := none, listRest := path.tail!.tail! }
-
-  | _ => do
-    return {
-      expr := ← (Lean.Core.viewSubexpr path.head! expr)
-      val? := toString (path.head! + 1)
-      listRest := path.tail!
-    }
+private def pathToString (path : Path) : String :=
+  let c := go path
+  if c.1 = [] then c.2
+  else if c.2 = "" then
+    s!"enter [{", ".intercalate (go path).1}]"
+  else
+    s!"enter [{", ".intercalate (go path).1}]; {(go path).2}"
+where
+  go : Path → List String × String
+    | Path.node => ([], "")
+    | Path.arg arg all next =>
+      (s!"{if all then "@" else ""}{arg}" :: (go next).1, (go next).2)
+    | Path.fun depth => ([], rep depth)
+    | Path.type next => ("1" :: (go next).1, (go next).2)
+    | Path.body name next => (getName name :: (go next).1, (go next).2)
+  rep : Nat → String
+    | 0 => ""
+    | 1 => "fun"
+    | n + 2 => s!"{rep (n + 1)}; fun"
 
 open Lean Syntax in
 /-- Return the link text and inserted text above and below of the conv widget. -/
@@ -92,30 +138,18 @@ def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
   let (fvar, subexprPos) ← match pos with
   | ⟨_, .target subexprPos⟩ => pure (none, subexprPos)
   | ⟨_, .hypType fvar subexprPos⟩ => pure (some fvar, subexprPos)
-  | ⟨_, .hypValue fvar subexprPos⟩ => pure (some fvar, subexprPos)
-  | _ => throwError "You must select something in the goal or in a local value."
-  let mut list := (SubExpr.Pos.toArray subexprPos).toList
-    let mut expr := goalType
-  let mut retList := []
+  | _ => throwError "You must select something in the goal or in the type of a local hypothesis."
+  let expr ← fvar.elim (pure goalType) fun fvarId => fvarId.getType
   -- generate list of commands for `enter`
-  while !list.isEmpty do
-    let res ← solveLevel expr list
-    expr := res.expr
-    retList := match res.val? with
-      | none => retList
-      | some val => val::retList
-    list := res.listRest
-
+  let path ← Path.ofSubExprPos expr subexprPos
   -- build `enter [...]` string
-  retList := List.reverse retList
+  let enterString := pathToString path
   -- prepare `enter` indentation
   let spc := String.replicate (SelectInsertParamsClass.replaceRange params).start.character ' '
   let loc ← match fvar with
   | some fvarId => pure s!"at {← fvarId.getUserName} "
   | none => pure ""
-  let mut enterval := s!"conv {loc}=>\n{spc}  enter {retList}"
-  if enterval.contains '0' then enterval := "Error: Not a valid conv target"
-  if retList.isEmpty then enterval := ""
+  let enterval := if enterString = "" then "" else s!"conv {loc}=>\n{spc}  {enterString}"
   return ("Generate conv", enterval, none)
 
 /-- Rpc function for the conv widget. -/
