@@ -170,7 +170,6 @@ lemma bind_liftBind_dot {α β γ : Type u} (op : F α) (cont : α → FreeM F �
     (f : β → FreeM F γ) :
     (liftBind op cont).bind f = liftBind op (fun x => (cont x).bind f) := rfl
 
-
 instance : LawfulFunctor (FreeM F) where
   map_const := rfl
   id_map x := by
