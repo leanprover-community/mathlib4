@@ -140,6 +140,7 @@ def insertEnter (locations : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
   | ⟨_, .hypType fvar subexprPos⟩ => pure (some fvar, subexprPos)
   | _ => throwError "You must select something in the goal or in the type of a local hypothesis."
   let expr ← fvar.elim (pure goalType) fun fvarId => fvarId.getType
+  let expr ← instantiateMVars expr
   -- generate list of commands for `enter`
   let path ← Path.ofSubExprPos expr subexprPos
   -- build `enter [...]` string
