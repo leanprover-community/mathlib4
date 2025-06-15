@@ -93,7 +93,7 @@ open Hollom
 /-- `toHollom` and `ofHollom` as an equivalence. -/
 @[simps]
 def equivHollom : ℕ × ℕ × ℕ ≃ Hollom where
-  toFun := toHollom; invFun := ofHollom; left_inv _ := rfl; right_inv _ := rfl
+  toFun := toHollom; invFun := ofHollom
 
 namespace Hollom
 

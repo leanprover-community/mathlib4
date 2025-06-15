@@ -234,7 +234,7 @@ instance instApplicativeComp : Applicative (Comp F G) :=
 
 end Comp
 
-variable {F : Type u → Type u} [Functor F]
+variable {F : Type u → Type v} [Functor F]
 
 /-- If we consider `x : F α` to, in some sense, contain values of type `α`,
 predicate `Liftp p x` holds iff every value contained by `x` satisfies `p`. -/

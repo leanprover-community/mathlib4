@@ -143,8 +143,8 @@ def contains (r : NamePrefixRel) (n₁ n₂ : Name) : Bool := (r.find n₁ n₂)
 def getAllLeft (r : NamePrefixRel) (n : Name) : NameSet := Id.run do
   let matchingPrefixes := n.prefixes.filter (fun prf ↦ r.containsKey prf)
   let mut allRules := NameSet.empty
-  for prfix in matchingPrefixes do
-    let some rules := RBMap.find? r prfix | unreachable!
+  for prefix_ in matchingPrefixes do
+    let some rules := RBMap.find? r prefix_ | unreachable!
     allRules := allRules.append rules
   allRules
 

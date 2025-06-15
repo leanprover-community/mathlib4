@@ -166,8 +166,6 @@ def NonUnitalRingHom.op {R S} [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSe
     (R →ₙ+* S) ≃ (Rᵐᵒᵖ →ₙ+* Sᵐᵒᵖ) where
   toFun f := { AddMonoidHom.mulOp f.toAddMonoidHom, MulHom.op f.toMulHom with }
   invFun f := { AddMonoidHom.mulUnop f.toAddMonoidHom, MulHom.unop f.toMulHom with }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The 'unopposite' of a non-unital ring hom `Rᵐᵒᵖ →ₙ+* Sᵐᵒᵖ`. Inverse to
 `NonUnitalRingHom.op`. -/
@@ -199,8 +197,6 @@ def RingHom.op {R S} [NonAssocSemiring R] [NonAssocSemiring S] :
     (R →+* S) ≃ (Rᵐᵒᵖ →+* Sᵐᵒᵖ) where
   toFun f := { AddMonoidHom.mulOp f.toAddMonoidHom, MonoidHom.op f.toMonoidHom with }
   invFun f := { AddMonoidHom.mulUnop f.toAddMonoidHom, MonoidHom.unop f.toMonoidHom with }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The 'unopposite' of a ring hom `Rᵐᵒᵖ →+* Sᵐᵒᵖ`. Inverse to `RingHom.op`. -/
 @[simp]

@@ -358,8 +358,6 @@ alias equiv_of_fintype_self_embedding_to_embedding := toEmbedding_equivOfFiniteS
     (α ↪ α) ≃ (α ≃ α) where
   toFun e := e.equivOfFiniteSelfEmbedding
   invFun e := e.toEmbedding
-  left_inv e := rfl
-  right_inv e := by ext; rfl
 
 /-- A constructive embedding of a fintype `α` in another fintype `β` when `card α ≤ card β`. -/
 def truncOfCardLE [Fintype α] [Fintype β] [DecidableEq α] [DecidableEq β]

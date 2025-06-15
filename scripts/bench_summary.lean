@@ -54,7 +54,7 @@ def formatPercent (reldiff : Float) : String :=
   let reldiff := reldiff * 10 ^ 4
   let sgn : Int := if reldiff < 0 then -1 else 1
   let reldiff := (.ofInt sgn) * reldiff
-  let (sgn, intDigs, decDigs) := intDecs (sgn * reldiff.toUInt32.val) 0 2
+  let (sgn, intDigs, decDigs) := intDecs (sgn * reldiff.toUInt32.toFin) 0 2
   -- the `if ... then ... else ...` makes sure that the output includes leading `0`s
   s!"({sgn}{intDigs}.{if decDigs < 10 then "0" else ""}{decDigs}%)"
 

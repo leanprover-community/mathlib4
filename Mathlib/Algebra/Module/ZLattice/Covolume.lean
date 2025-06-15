@@ -157,9 +157,7 @@ theorem volume_image_eq_volume_div_covolume' {E : Type*} [NormedAddCommGroup E]
     ← volume_image_eq_volume_div_covolume (ZLattice.comap ℝ L f.toLinearMap)
     (b.ofZLatticeComap ℝ L f.toLinearEquiv), Basis.ofZLatticeBasis_comap,
     ← f.image_symm_eq_preimage, ← Set.image_comp]
-  simp only [Basis.equivFun_apply, ContinuousLinearEquiv.symm_toLinearEquiv, Basis.map_equivFun,
-    LinearEquiv.symm_symm, Function.comp_apply, LinearEquiv.trans_apply,
-    ContinuousLinearEquiv.coe_toLinearEquiv, ContinuousLinearEquiv.apply_symm_apply]
+  simp
 
 end Basic
 

@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.Pullbacks
-import Mathlib.AlgebraicGeometry.Limits
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.Data.List.TFAE
 
@@ -300,7 +299,7 @@ lemma isLocalAtTarget [P.IsMultiplicative]
 
 lemma sigmaDesc {X : Scheme.{u}} {ι : Type v} [Small.{u} ι] {Y : ι → Scheme.{u}}
     {f : ∀ i, Y i ⟶ X} (hf : ∀ i, P (f i)) : P (Sigma.desc f) := by
-  rw [IsLocalAtSource.iff_of_openCover (P := P) (sigmaOpenCover _)]
+  rw [IsLocalAtSource.iff_of_openCover (P := P) (Scheme.IsLocallyDirected.openCover _)]
   exact fun i ↦ by simp [hf]
 
 instance top : IsLocalAtSource (⊤ : MorphismProperty Scheme.{u}) where
