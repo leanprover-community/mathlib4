@@ -564,10 +564,20 @@ It is only completely distributive if it is also atomic.
 -/
 -- We do not directly extend `CompleteDistribLattice` to avoid having the `hnot` field
 class CompleteBooleanAlgebra (α) extends CompleteLattice α, BooleanAlgebra α where
-  /-- `⊓` distributes over `⨆`. -/
-  inf_sSup_le_iSup_inf (a : α) (s : Set α) : a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b
-  /-- `⊔` distributes over `⨅`. -/
-  iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s
+
+section CompleteBooleanAlgebra
+
+variable [CompleteBooleanAlgebra α]
+
+/-- `⊓` distributes over `⨆`. -/
+theorem inf_sSup_le_iSup_inf (a : α) (s : Set α) : a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b :=
+  sorry
+
+/-- `⊔` distributes over `⨅`. -/
+theorem iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s := by
+  sorry
+
+end CompleteBooleanAlgebra
 
 -- See note [lower instance priority]
 instance (priority := 100) CompleteBooleanAlgebra.toCompleteDistribLattice
@@ -579,22 +589,16 @@ instance Prod.instCompleteBooleanAlgebra [CompleteBooleanAlgebra α] [CompleteBo
     CompleteBooleanAlgebra (α × β) where
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
-  inf_sSup_le_iSup_inf _ _ := inf_sSup_eq.le
-  iInf_sup_le_sup_sInf _ _ := sup_sInf_eq.ge
 
 instance Pi.instCompleteBooleanAlgebra {ι : Type*} {π : ι → Type*}
     [∀ i, CompleteBooleanAlgebra (π i)] : CompleteBooleanAlgebra (∀ i, π i) where
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
-  inf_sSup_le_iSup_inf _ _ := inf_sSup_eq.le
-  iInf_sup_le_sup_sInf _ _ := sup_sInf_eq.ge
 
 instance OrderDual.instCompleteBooleanAlgebra [CompleteBooleanAlgebra α] :
     CompleteBooleanAlgebra αᵒᵈ where
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
-  inf_sSup_le_iSup_inf _ _ := inf_sSup_eq.le
-  iInf_sup_le_sup_sInf _ _ := sup_sInf_eq.ge
 
 section CompleteBooleanAlgebra
 
@@ -660,8 +664,6 @@ instance (priority := 100) CompleteAtomicBooleanAlgebra.toCompleteBooleanAlgebra
     [CompleteAtomicBooleanAlgebra α] : CompleteBooleanAlgebra α where
   __ := CompletelyDistribLattice.toCompleteDistribLattice
   __ := ‹CompleteAtomicBooleanAlgebra α›
-  inf_sSup_le_iSup_inf _ _ := inf_sSup_eq.le
-  iInf_sup_le_sup_sInf _ _ := sup_sInf_eq.ge
 
 instance Prod.instCompleteAtomicBooleanAlgebra [CompleteAtomicBooleanAlgebra α]
     [CompleteAtomicBooleanAlgebra β] : CompleteAtomicBooleanAlgebra (α × β) where
@@ -813,16 +815,6 @@ protected abbrev Function.Injective.completeBooleanAlgebra [Max α] [Min α] [Su
     CompleteBooleanAlgebra α where
   __ := hf.completeLattice f map_sup map_inf map_sSup map_sInf map_top map_bot
   __ := hf.booleanAlgebra f map_sup map_inf map_top map_bot map_compl map_sdiff map_himp
-  inf_sSup_le_iSup_inf a s := by
-    change f (a ⊓ sSup s) ≤ f _
-    rw [← sSup_image, map_inf, map_sSup s, inf_iSup₂_eq]
-    simp_rw [← map_inf]
-    exact ((map_sSup _).trans iSup_image).ge
-  iInf_sup_le_sup_sInf a s := by
-    change f _ ≤ f (a ⊔ sInf s)
-    rw [← sInf_image, map_sup, map_sInf s, sup_iInf₂_eq]
-    simp_rw [← map_sup]
-    exact ((map_sInf _).trans iInf_image).le
 
 -- See note [reducible non-instances]
 /-- Pullback a `CompleteAtomicBooleanAlgebra` along an injection. -/
