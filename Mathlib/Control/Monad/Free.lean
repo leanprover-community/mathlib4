@@ -89,9 +89,8 @@ Disable simpNF lints for auto-generated constructor lemmas, as they don't follow
 form patterns. The LHS of these lemmas use `FreeM.pure` which simplifies to `pure` via
 `pure_eq_pure`.
 -/
-attribute [nolint simpNF] FreeM.pure.sizeOf_spec
-  FreeM.pure.injEq FreeM.liftBind.sizeOf_spec FreeM.liftBind.injEq FreeM.liftBind.injEq
-  FreeM.liftBind.sizeOf_spec
+attribute [nolint simpNF] FreeM.pure.sizeOf_spec FreeM.pure.injEq FreeM.liftBind.sizeOf_spec
+FreeM.liftBind.injEq
 
 universe u v w w' w''
 
