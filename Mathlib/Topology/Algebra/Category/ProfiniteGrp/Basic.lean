@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Nailin Guan, Yuyang Zhao
 -/
 import Mathlib.Algebra.Category.Grp.FiniteGrp
-import Mathlib.Topology.Algebra.ClosedSubgroup
+import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.Topology.Category.Profinite.Basic
 import Mathlib.Topology.Separation.Connected
@@ -94,7 +94,7 @@ structure ProfiniteAddGrp.Hom (A B : ProfiniteAddGrp.{u}) where
   hom' : A →ₜ+ B
 
 /-- The type of morphisms in `ProfiniteGrp`. -/
-@[to_additive (attr := ext) existing]
+@[to_additive existing (attr := ext)]
 structure ProfiniteGrp.Hom (A B : ProfiniteGrp.{u}) where
   private mk ::
   /-- The underlying `ContinuousMonoidHom`. -/
@@ -234,7 +234,7 @@ instance : HasForget₂ ProfiniteGrp Grp where
 
 /-- A closed subgroup of a profinite group is profinite. -/
 @[to_additive "A closed additive subgroup of a profinite additive group is profinite."]
-def ofClosedSubgroup {G : ProfiniteGrp} (H : ClosedSubgroup G)  : ProfiniteGrp :=
+def ofClosedSubgroup {G : ProfiniteGrp} (H : ClosedSubgroup G) : ProfiniteGrp :=
   letI : CompactSpace H := inferInstance
   of H.1
 

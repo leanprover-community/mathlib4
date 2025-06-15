@@ -13,22 +13,32 @@ import Mathlib.RingTheory.HahnSeries.Addition
 /-!
 # Multiplicative properties of Hahn series
 If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of formal series over `Γ` with
-coefficients in `R`, whose supports are partially well-ordered. With further structure on `R` and
-`Γ`, we can add further structure on `HahnSeries Γ R`.  We prove some facts about multiplying
-Hahn series.
+coefficients in `R`, whose supports are partially well-ordered. This module introduces
+multiplication and scalar multiplication on Hahn series. If `Γ` is an ordered cancellative
+commutative additive monoid and `R` is a semiring, then we get a semiring structure on
+`HahnSeries Γ R`. If `Γ` has an ordered vector-addition on `Γ'` and `R` has a scalar multiplication
+on `V`, we define `HahnModule Γ' R V` as a type alias for `HahnSeries Γ' V` that admits a scalar
+multiplication from `HahnSeries Γ R`. The scalar action of `R` on `HahnSeries Γ R` is compatible
+with the action of `HahnSeries Γ R` on `HahnModule Γ' R V`.
 
 ## Main Definitions
-  * `HahnModule` is a type alias for `HahnSeries`, which we use for defining scalar multiplication
+* `HahnModule` is a type alias for `HahnSeries`, which we use for defining scalar multiplication
   of `HahnSeries Γ R` on `HahnModule Γ' R V` for an `R`-module `V`, where `Γ'` admits an ordered
-  cancellative vector addition operation from `Γ`.
+  cancellative vector addition operation from `Γ`. The type alias allows us to avoid a potential
+  instance diamond.
+* `HahnModule.of` is the isomorphism from `HahnSeries Γ V` to `HahnModule Γ R V`.
+* `HahnSeries.C` is the `constant term` ring homomorphism `R →+* HahnSeries Γ R`.
+* `HahnSeries.embDomainRingHom` is the ring homomorphism `HahnSeries Γ R →+* HahnSeries Γ' R`
+  induced by an order embedding `Γ ↪o Γ'`.
 
 ## Main results
-  * If `R` is a (commutative) (semi-)ring, then so is `HahnSeries Γ R`.
-  * If `V` is an `R`-module, then `HahnModule Γ' R V` is a `HahnSeries Γ R`-module.
+* If `R` is a (commutative) (semi-)ring, then so is `HahnSeries Γ R`.
+* If `V` is an `R`-module, then `HahnModule Γ' R V` is a `HahnSeries Γ R`-module.
 
 ## TODO
-
-  * Scalar tower instances
+The following may be useful for composing vertex operators, but they seem to take time.
+* rightTensorMap: `HahnModule Γ' R U ⊗[R] V →ₗ[R] HahnModule Γ' R (U ⊗[R] V)`
+* leftTensorMap: `U ⊗[R] HahnModule Γ' R V →ₗ[R] HahnModule Γ' R (U ⊗[R] V)`
 
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
@@ -44,8 +54,11 @@ namespace HahnSeries
 
 variable [Zero Γ] [PartialOrder Γ]
 
-instance [Zero R] [One R] : One (HahnSeries Γ R) :=
-  ⟨single 0 1⟩
+instance [Zero R] [One R] : One (HahnSeries Γ R) where one := single 0 1
+instance [Zero R] [NatCast R] : NatCast (HahnSeries Γ R) where natCast n := single 0 n
+instance [Zero R] [IntCast R] : IntCast (HahnSeries Γ R) where intCast z := single 0 z
+instance [Zero R] [NNRatCast R] : NNRatCast (HahnSeries Γ R) where nnratCast q := single 0 q
+instance [Zero R] [RatCast R] : RatCast (HahnSeries Γ R) where ratCast q := single 0 q
 
 open Classical in
 @[simp]
@@ -55,9 +68,14 @@ theorem coeff_one [Zero R] [One R] {a : Γ} :
 
 @[deprecated (since := "2025-01-31")] alias one_coeff := coeff_one
 
-@[simp]
-theorem single_zero_one [Zero R] [One R] : single (0 : Γ) (1 : R) = 1 :=
-  rfl
+@[simp] theorem single_zero_one [Zero R] [One R] : single (0 : Γ) (1 : R) = 1 := rfl
+theorem single_zero_natCast [Zero R] [NatCast R] (n : ℕ) : single (0 : Γ) (n : R) = n := rfl
+theorem single_zero_intCast [Zero R] [IntCast R] (z : ℤ) : single (0 : Γ) (z : R) = z := rfl
+theorem single_zero_nnratCast [Zero R] [NNRatCast R] (q : ℚ≥0) : single (0 : Γ) (q : R) = q := rfl
+theorem single_zero_ratCast [Zero R] [RatCast R] (q : ℚ) : single (0 : Γ) (q : R) = q := rfl
+
+theorem single_zero_ofNat [Zero R] [NatCast R] (n : ℕ) [n.AtLeastTwo] :
+    single (0 : Γ) (ofNat(n) : R) = ofNat(n) := rfl
 
 @[simp]
 theorem support_one [MulZeroOneClass R] [Nontrivial R] : support (1 : HahnSeries Γ R) = {0} :=
@@ -79,16 +97,23 @@ theorem leadingCoeff_one [MulZeroOneClass R] : (1 : HahnSeries Γ R).leadingCoef
 
 @[simp]
 protected lemma map_one [MonoidWithZero R] [MonoidWithZero S] (f : R →*₀ S) :
-    (1 : HahnSeries Γ R).map f = (1 : HahnSeries Γ S) := by
-  ext g
-  by_cases h : g = 0 <;> simp [h]
+    (1 : HahnSeries Γ R).map f = (1 : HahnSeries Γ S) :=
+  HahnSeries.map_single (a := (0 : Γ)) f.toZeroHom |>.trans <| congrArg _ <| f.map_one
+
+instance [AddCommMonoidWithOne R] : AddCommMonoidWithOne (HahnSeries Γ R) where
+  natCast_zero := by simp [← single_zero_natCast]
+  natCast_succ n := by simp [← single_zero_natCast]
+
+instance [AddCommGroupWithOne R] : AddCommGroupWithOne (HahnSeries Γ R) where
+  intCast_ofNat n := by simp [← single_zero_natCast, ← single_zero_intCast]
+  intCast_negSucc n := by simp [← single_zero_natCast, ← single_zero_intCast]
 
 end HahnSeries
 
 /-- We introduce a type alias for `HahnSeries` in order to work with scalar multiplication by
 series. If we wrote a `SMul (HahnSeries Γ R) (HahnSeries Γ V)` instance, then when
 `V = HahnSeries Γ R`, we would have two different actions of `HahnSeries Γ R` on `HahnSeries Γ V`.
-See `Mathlib.Algebra.Polynomial.Module` for more discussion on this problem. -/
+See `Mathlib/Algebra/Polynomial/Module.lean` for more discussion on this problem. -/
 @[nolint unusedArguments]
 def HahnModule (Γ R V : Type*) [PartialOrder Γ] [Zero V] [SMul R V] :=
   HahnSeries Γ V
@@ -267,7 +292,7 @@ theorem coeff_single_smul_vadd [MulZeroClass R] [SMulWithZero R V] {r : R} {x : 
   · simp only [hx, smul_zero]
     rw [sum_congr _ fun _ _ => rfl, sum_empty]
     ext ⟨a1, a2⟩
-    simp only [not_mem_empty, not_and, Set.mem_singleton_iff, Classical.not_not,
+    simp only [notMem_empty, not_and, Set.mem_singleton_iff, Classical.not_not,
       mem_vaddAntidiagonal, Set.mem_setOf_eq, iff_false]
     rintro rfl h2 h1
     rw [IsCancelVAdd.left_cancel a1 a2 a h1] at h2
@@ -441,7 +466,7 @@ theorem coeff_mul_single_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeri
   · simp only [hx, zero_mul]
     rw [sum_congr _ fun _ _ => rfl, sum_empty]
     ext ⟨a1, a2⟩
-    simp only [not_mem_empty, not_and, Set.mem_singleton_iff, Classical.not_not,
+    simp only [notMem_empty, not_and, Set.mem_singleton_iff, Classical.not_not,
       mem_addAntidiagonal, Set.mem_setOf_eq, iff_false]
     rintro h2 rfl h1
     rw [← add_right_cancel h1] at hx
@@ -547,7 +572,7 @@ instance [NonUnitalSemiring R] : NonUnitalSemiring (HahnSeries Γ R) :=
     mul_assoc := mul_assoc' }
 
 instance [NonAssocSemiring R] : NonAssocSemiring (HahnSeries Γ R) :=
-  { AddMonoidWithOne.unary,
+  { inferInstanceAs (AddMonoidWithOne (HahnSeries Γ R)),
     inferInstanceAs (NonUnitalNonAssocSemiring (HahnSeries Γ R)) with
     one_mul := fun x => by
       ext
@@ -581,11 +606,12 @@ instance [NonUnitalRing R] : NonUnitalRing (HahnSeries Γ R) :=
 
 instance [NonAssocRing R] : NonAssocRing (HahnSeries Γ R) :=
   { inferInstanceAs (NonUnitalNonAssocRing (HahnSeries Γ R)),
-    inferInstanceAs (NonAssocSemiring (HahnSeries Γ R)) with }
+    inferInstanceAs (NonAssocSemiring (HahnSeries Γ R)),
+    inferInstanceAs (AddGroupWithOne (HahnSeries Γ R)) with }
 
 instance [Ring R] : Ring (HahnSeries Γ R) :=
   { inferInstanceAs (Semiring (HahnSeries Γ R)),
-    inferInstanceAs (AddCommGroup (HahnSeries Γ R)) with }
+    inferInstanceAs (AddCommGroupWithOne (HahnSeries Γ R)) with }
 
 instance [NonUnitalCommRing R] : NonUnitalCommRing (HahnSeries Γ R) :=
   { inferInstanceAs (NonUnitalCommSemiring (HahnSeries Γ R)),
@@ -640,6 +666,21 @@ instance instModule [Semiring R] [Module R V] : Module (HahnSeries Γ R)
   one_smul := fun _ => one_smul'
   add_smul := fun _ _ _ => add_smul Module.add_smul
   zero_smul := fun _ => zero_smul' }
+
+instance [Zero R] {S : Type*} [Zero S] [SMul R S] [SMulWithZero R V] [SMulWithZero S V]
+    [IsScalarTower R S V] : IsScalarTower R S (HahnSeries Γ V) where
+  smul_assoc r s a := by
+    ext
+    simp
+
+instance [Semiring R] [Module R V] : IsScalarTower R (HahnSeries Γ R) (HahnModule Γ' R V) where
+  smul_assoc r x a := by
+    rw [← HahnSeries.single_zero_mul_eq_smul, mul_smul', ← single_zero_smul_eq_smul Γ]
+
+instance SMulCommClass [CommSemiring R] [Module R V] :
+    SMulCommClass R (HahnSeries Γ R) (HahnModule Γ' R V) where
+  smul_comm r x y := by
+    rw [← single_zero_smul_eq_smul Γ, ← mul_smul', mul_comm, mul_smul', single_zero_smul_eq_smul Γ]
 
 instance instNoZeroSMulDivisors {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
     [Zero R] [SMulWithZero R V] [NoZeroSMulDivisors R V] :

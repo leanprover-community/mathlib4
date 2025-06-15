@@ -114,6 +114,7 @@ lemma hasBasis_nhds_zero [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] 
     (𝓝 0 : Filter (MvPowerSeries σ R)).HasBasis
       (fun Id : TwoSidedIdeal R × (σ →₀ ℕ) ↦ (Id.1 : Set R) ∈ 𝓝 0)
       (fun Id ↦ basis _ _ Id) := by
+  classical
   rw [nhds_pi]
   refine IsLinearTopology.hasBasis_twoSidedIdeal.pi_self.to_hasBasis ?_ ?_
   · intro ⟨D, I⟩ ⟨hD, hI⟩

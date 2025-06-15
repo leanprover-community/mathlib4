@@ -86,11 +86,11 @@ def associator (M : ModuleCat.{v} R) (N : ModuleCat.{w} R) (K : ModuleCat.{x} R)
 
 /-- (implementation) the left unitor for R-modules -/
 def leftUnitor (M : ModuleCat.{u} R) : ModuleCat.of R (R ⊗[R] M) ≅ M :=
-  (LinearEquiv.toModuleIso (TensorProduct.lid R M) : of R (R ⊗ M) ≅ of R M).trans (ofSelfIso M)
+  (TensorProduct.lid R M).toModuleIso
 
 /-- (implementation) the right unitor for R-modules -/
 def rightUnitor (M : ModuleCat.{u} R) : ModuleCat.of R (M ⊗[R] R) ≅ M :=
-  (LinearEquiv.toModuleIso (TensorProduct.rid R M) : of R (M ⊗ R) ≅ of R M).trans (ofSelfIso M)
+  (TensorProduct.rid R M).toModuleIso
 
 @[simps -isSimp]
 instance instMonoidalCategoryStruct : MonoidalCategoryStruct (ModuleCat.{u} R) where

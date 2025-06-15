@@ -88,7 +88,7 @@ theorem LinearMap.split_surjective_of_localization_maximal
       obtain ⟨a, ha, c, rfl⟩ := hf
       obtain ⟨g, rfl⟩ := ha
       use IsLocalizedModule.mk' (LocalizedModule.map I.primeCompl) g c
-      apply ((Module.End_isUnit_iff _).mp <| IsLocalizedModule.map_units
+      apply ((Module.End.isUnit_iff _).mp <| IsLocalizedModule.map_units
         (LocalizedModule.map I.primeCompl) c).injective
       dsimp
       conv_rhs => rw [← Submonoid.smul_def]
@@ -106,7 +106,7 @@ theorem LinearMap.split_surjective_of_localization_maximal
         IsLocalizedModule.mk'_surjective I.primeCompl (LocalizedModule.map I.primeCompl) g
       simp only [Function.uncurry_apply_pair, Submodule.restrictScalars_mem]
       refine ⟨f.comp g, ⟨g, rfl⟩, s, ?_⟩
-      apply ((Module.End_isUnit_iff _).mp <| IsLocalizedModule.map_units
+      apply ((Module.End.isUnit_iff _).mp <| IsLocalizedModule.map_units
          (LocalizedModule.map I.primeCompl) s).injective
       simp only [Module.algebraMap_end_apply, ← Submonoid.smul_def, IsLocalizedModule.mk'_cancel',
         ← LinearMap.map_smul_of_tower]
@@ -166,7 +166,7 @@ theorem Module.projective_of_localization_maximal'
       map_smul' := ?_ }
   · intros r m
     obtain ⟨r, s, rfl⟩ := IsLocalization.mk'_surjective P.primeCompl r
-    apply ((Module.End_isUnit_iff _).mp
+    apply ((Module.End.isUnit_iff _).mp
       (IsLocalizedModule.map_units (LocalizedModule.mkLinearMap P.primeCompl M) s)).1
     dsimp
     simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul,
