@@ -102,7 +102,7 @@ variable {F : Type u → Type v} {ι : Type u} {α : Type w} {β : Type w'} {γ 
 instance : Pure (FreeM F) where pure := .pure
 
 @[simp]
-theorem pure_eq_purePure : (pure : α → FreeM F α) = FreeM.pure := rfl
+theorem pure_eq_pure : (pure : α → FreeM F α) = FreeM.pure := rfl
 
 /-- Bind operation for the `FreeM` monad. -/
 protected def bind (x : FreeM F α) (f : α → FreeM F β) : FreeM F β :=
@@ -115,7 +115,7 @@ protected theorem bind_assoc (x : FreeM F α) (f : α → FreeM F β) (g : β �
   induction x with
   | pure a => rfl
   | liftBind op cont ih =>
-    simp [FreeM.bind,  ← pure_eq_purePure] at *
+    simp [FreeM.bind,  ← pure_eq_pure] at *
     simp [ih]
 
 instance : Bind (FreeM F) where bind := .bind
@@ -189,7 +189,7 @@ instance : LawfulMonad (FreeM F) := LawfulMonad.mk'
     induction x with
     | pure a => rfl
     | liftBind op cont ih =>
-      simp only [FreeM.bind, bind_eq_bind, map_eq_map, pure_eq_purePure, map] at *
+      simp only [FreeM.bind, bind_eq_bind, map_eq_map, pure_eq_pure, map] at *
       simp only [ih]
   )
   (id_map := id_map)
@@ -225,7 +225,7 @@ lemma liftM_bind {M : Type u → Type w} [Monad M] [LawfulMonad M] {α β : Type
     (interp : {β : Type u} → F β → M β) (x : FreeM F α) (f : α → FreeM F β) :
     (do let a ← x.liftM interp; (f a).liftM interp) = (x >>= f : FreeM F β).liftM interp := by
   induction x generalizing f with
-  | pure a => simp only [← pure_eq_purePure, ← liftM_pure, pure_bind, bind, FreeM.bind]
+  | pure a => simp only [← pure_eq_pure, ← liftM_pure, pure_bind, bind, FreeM.bind]
   | liftBind op cont ih =>
     simp_rw [bind_eq_bind] at *
     rw [FreeM.bind, ← liftM_liftBind, ← liftM_liftBind, bind_assoc]
@@ -235,7 +235,7 @@ lemma liftM_bind {M : Type u → Type w} [Monad M] [LawfulMonad M] {α β : Type
 lemma liftM_lift {M : Type u → Type w} [Monad M] [LawfulMonad M] {α : Type u}
     (interp : {β : Type u} → F β → M β) (op : F α) :
     (FreeM.liftBind op FreeM.pure).liftM interp = interp op := by
-  simp [← pure_eq_purePure, ← liftM_liftBind, ← liftM_pure]
+  simp [← pure_eq_pure, ← liftM_liftBind, ← liftM_pure]
 
 /--
 A predicate stating that `g : FreeM F α → M α` is an interpreter for the effect
