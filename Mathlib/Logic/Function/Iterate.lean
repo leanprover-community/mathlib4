@@ -172,14 +172,14 @@ theorem comp_iterate_pred_of_pos {n : ℕ} (hn : 0 < n) : f ∘ f^[n.pred] = f^[
 
 /-- A recursor for the iterate of a function. -/
 @[elab_as_elim]
-def Iterate.rec (motive : α → Sort*) {a : α} (id : motive a)
+def Iterate.rec (motive : α → Sort*) {a : α} (arg : motive a)
     {f : α → α} (app : ∀ a, motive a → motive (f a)) (n : ℕ) : motive (f^[n] a) :=
   match n with
-  | 0 => id
-  | m + 1 => Iterate.rec motive (app _ id) app m
+  | 0 => arg
+  | m + 1 => Iterate.rec motive (app _ arg) app m
 
-theorem Iterate.rec_zero (p : α → Sort*) {f : α → α} (h : ∀ a, p a → p (f a)) {a : α} (ha : p a) :
-    Iterate.rec p ha h 0 = ha :=
+theorem Iterate.rec_zero (motive : α → Sort*) {f : α → α} (app : ∀ a, motive a → motive (f a))
+    {a : α} (arg : motive a) : Iterate.rec motive arg app 0 = arg :=
   rfl
 
 variable {f} {m n : ℕ} {a : α}
