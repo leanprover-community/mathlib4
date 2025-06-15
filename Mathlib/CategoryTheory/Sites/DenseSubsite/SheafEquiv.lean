@@ -105,7 +105,7 @@ instance (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.a
   apply (config := { allowSynthFailures := true }) ReflectsIsomorphisms.reflects yoneda
   rw [NatTrans.isIso_iff_isIso_app]
   intro ⟨X⟩
-  simp only [comp_obj, sheafToPresheaf_obj, sheafPushforwardContinuous_obj_val_obj, yoneda_obj_obj,
+  simp only [comp_obj, sheafToPresheaf_obj, sheafPushforwardContinuous_obj_val, yoneda_obj_obj,
     id_obj, sheafToPresheaf_map, sheafAdjunctionCocontinuous_counit_app_val, ranAdjunction_counit]
   exact isIso_ranCounit_app_of_isDenseSubsite G J K Y U X
 

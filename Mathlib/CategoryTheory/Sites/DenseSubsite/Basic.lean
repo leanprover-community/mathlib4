@@ -429,6 +429,33 @@ noncomputable def restrictHomEquivHom : (G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) ≃
   left_inv := sheafHom_restrict_eq
   right_inv := sheafHom_eq _
 
+lemma restrictHomEquivHom_naturality_right_symm
+    (f : ℱ ⟶ ℱ'.val) {𝒢'} (g : ℱ' ⟶ 𝒢') :
+    (restrictHomEquivHom (G := G)).symm (f ≫ g.val) =
+      restrictHomEquivHom.symm f ≫ whiskerLeft _ g.val := rfl
+
+lemma restrictHomEquivHom_naturality_right
+    (f : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) {𝒢'} (g : ℱ' ⟶ 𝒢') :
+    restrictHomEquivHom (f ≫ whiskerLeft G.op g.val) =
+      restrictHomEquivHom f ≫ g.val := by
+  apply (restrictHomEquivHom (G := G)).symm.injective
+  simpa only [Equiv.symm_apply_apply] using
+    (restrictHomEquivHom_naturality_right_symm (G := G) (restrictHomEquivHom f) g).symm
+
+lemma restrictHomEquivHom_naturality_left_symm
+    {𝒢} (f : 𝒢 ⟶ ℱ) (g : ℱ ⟶ ℱ'.val) :
+    (restrictHomEquivHom (G := G)).symm (f ≫ g) =
+      whiskerLeft G.op f ≫ restrictHomEquivHom.symm g := rfl
+
+lemma restrictHomEquivHom_naturality_left
+    {𝒢} (f : 𝒢 ⟶ ℱ) (g : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
+    restrictHomEquivHom (whiskerLeft _ f ≫ g) =
+      f ≫ restrictHomEquivHom g := by
+  apply (restrictHomEquivHom (G := G)).symm.injective
+  simpa only [Equiv.symm_apply_apply] using
+    (restrictHomEquivHom_naturality_left_symm (G := G) (f := f)
+      (g := restrictHomEquivHom g)).symm
+
 /-- Given a locally-full and cover-dense functor `G` and a natural transformation of sheaves
 `α : ℱ ⟶ ℱ'`, if the pullback of `α` along `G` is iso, then `α` is also iso.
 -/
