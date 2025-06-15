@@ -21,7 +21,7 @@ namespace CategoryTheory
 
 open Bicategory Discrete
 
-universe w₂ w₁ v₂ v₁ v u₂ u₁ u
+universe w₂ w₁ w v₂ v₁ v u₂ u₁ u
 
 section
 
@@ -35,7 +35,7 @@ structure LocallyDiscrete (C : Type u) where
   /-- A wrapper for promoting any category to a bicategory,
   with the only 2-morphisms being equalities.
   -/
-  as : C
+  as : let _ := ULift.{w} C; C
 
 namespace LocallyDiscrete
 
@@ -56,8 +56,8 @@ instance [DecidableEq C] : DecidableEq (LocallyDiscrete C) :=
 instance [Inhabited C] : Inhabited (LocallyDiscrete C) :=
   ⟨⟨default⟩⟩
 
-instance categoryStruct [CategoryStruct.{v} C] : CategoryStruct (LocallyDiscrete C) where
-  Hom a b := Discrete (a.as ⟶ b.as)
+instance categoryStruct [CategoryStruct.{v} C] : CategoryStruct.{v} (LocallyDiscrete.{w} C) where
+  Hom a b := Discrete.{w} (a.as ⟶ b.as)
   id a := ⟨𝟙 a.as⟩
   comp f g := ⟨f.as ≫ g.as⟩
 
