@@ -169,40 +169,6 @@ Pattern a = b
   ⊢ 2 ≠ 1
   Nat.Prime.dvd_iff_eq
 
-Pattern x = y
-· Id.run 5 = Id.run 2
-  Id.ext_iff
-· Additive.toMul 5 = Additive.toMul 2
-  Additive.ext_iff
-· Multiplicative.toAdd 5 = Multiplicative.toAdd 2
-  Multiplicative.ext_iff
-· ofLex 5 = ofLex 2
-  ofLex_inj
-· ofDegLex 5 = ofDegLex 2
-  ofDegLex_inj
-· ofBoolAlg 5 = ofBoolAlg 2
-  ofBoolAlg_inj
-· ofBoolRing 5 = ofBoolRing 2
-  ofBoolRing_inj
-· SymAlg.unsym 5 = SymAlg.unsym 2
-  SymAlg.unsym_inj
-· OrderDual.ofDual 5 = OrderDual.ofDual 2
-  OrderDual.ofDual_inj
-· Specialization.ofEquiv 5 = Specialization.ofEquiv 2
-  Specialization.ofEquiv_inj
-· Topology.WithLower.ofLower 5 = Topology.WithLower.ofLower 2
-  Topology.WithLower.ofLower_inj
-· Topology.WithScott.ofScott 5 = Topology.WithScott.ofScott 2
-  Topology.WithScott.ofScott_inj
-· Topology.WithUpper.ofUpper 5 = Topology.WithUpper.ofUpper 2
-  Topology.WithUpper.ofUpper_inj
-· Topology.WithLawson.ofLawson 5 = Topology.WithLawson.ofLawson 2
-  Topology.WithLawson.ofLawson_inj
-· Topology.WithLowerSet.ofLowerSet 5 = Topology.WithLowerSet.ofLowerSet 2
-  Topology.WithLowerSet.ofLowerSet_inj
-· Topology.WithUpperSet.ofUpperSet 5 = Topology.WithUpperSet.ofUpperSet 2
-  Topology.WithUpperSet.ofUpperSet_inj
-
 Pattern m = OfNat.ofNat n
 · ↑5 = 2
   WithBot.coe_eq_ofNat
