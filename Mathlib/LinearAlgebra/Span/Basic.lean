@@ -44,6 +44,11 @@ variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
 
 variable {s t : Set M}
 
+lemma _root_.AddSubmonoid.toNatSubmodule_closure (s : Set M) :
+    (AddSubmonoid.closure s).toNatSubmodule = .span ℕ s :=
+  (Submodule.span_le.mpr AddSubmonoid.subset_closure).antisymm'
+    ((Submodule.span ℕ s).toAddSubmonoid.closure_le.mpr Submodule.subset_span)
+
 /-- A version of `Submodule.span_eq` for when the span is by a smaller ring. -/
 @[simp]
 theorem span_coe_eq_restrictScalars [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
@@ -429,6 +434,11 @@ section AddCommGroup
 
 variable [Ring R] [AddCommGroup M] [Module R M]
 
+lemma _root_.AddSubgroup.toIntSubmodule_closure (s : Set M) :
+    (AddSubgroup.closure s).toIntSubmodule = .span ℤ s :=
+  (Submodule.span_le.mpr AddSubgroup.subset_closure).antisymm'
+    ((Submodule.span ℤ s).toAddSubgroup.closure_le.mpr Submodule.subset_span)
+
 @[simp]
 theorem span_neg (s : Set M) : span R (-s) = span R s :=
   calc
@@ -478,7 +488,7 @@ theorem isCoatom_comap_or_eq_top (f : F) {p : Submodule R₂ M₂} (hp : IsCoato
     IsCoatom (comap f p) ∨ comap f p = ⊤ :=
   or_iff_not_imp_right.mpr fun h ↦ ⟨h, fun q lt ↦ by
     rw [← comap_map_sup_of_comap_le lt.le, hp.2 (map f q ⊔ p), comap_top]
-    simpa only [right_lt_sup, map_le_iff_le_comap] using lt.not_le⟩
+    simpa only [right_lt_sup, map_le_iff_le_comap] using lt.not_ge⟩
 
 theorem isCoatom_comap_iff {f : F} (hf : Surjective f) {p : Submodule R₂ M₂} :
     IsCoatom (comap f p) ↔ IsCoatom p := by
@@ -557,7 +567,7 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V] {s : Submodule K V} {x :
 
 /-- There is no vector subspace between `s` and `(K ∙ x) ⊔ s`, `WCovBy` version. -/
 theorem wcovBy_span_singleton_sup (x : V) (s : Submodule K V) : WCovBy s ((K ∙ x) ⊔ s) := by
-  refine ⟨le_sup_right, fun q hpq hqp ↦ hqp.not_le ?_⟩
+  refine ⟨le_sup_right, fun q hpq hqp ↦ hqp.not_ge ?_⟩
   rcases SetLike.exists_of_lt hpq with ⟨y, hyq, hyp⟩
   obtain ⟨c, z, hz, rfl⟩ : ∃ c : K, ∃ z ∈ s, c • x + z = y := by
     simpa [mem_sup, mem_span_singleton] using hqp.le hyq
