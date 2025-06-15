@@ -371,8 +371,8 @@ variable {E : Type u₃} [Category.{v₃} E] [MonoidalCategory E] [BraidedCatego
 which preserves the braiding.
 -/
 class Functor.LaxBraided (F : C ⥤ D) extends F.LaxMonoidal where
-  braided : ∀ X Y : C, μ F X Y ≫ F.map (β_ X Y).hom =
-    (β_ (F.obj X) (F.obj Y)).hom ≫ μ F Y X := by aesop_cat
+  braided : ∀ X Y : C, μ X Y ≫ F.map (β_ X Y).hom =
+    (β_ (F.obj X) (F.obj Y)).hom ≫ μ Y X := by aesop_cat
 
 namespace Functor.LaxBraided
 
