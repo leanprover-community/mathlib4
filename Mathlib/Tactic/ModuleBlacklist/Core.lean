@@ -16,13 +16,16 @@ It is similar in spirit to what is being done in https://github.com/leanprover/l
 
 open Lean
 
+/-- The environment extension used by `blacklist_import` -/
 initialize directoryBlackListExt : SimpleScopedEnvExtension Name (Std.HashSet Name) ←
   registerSimpleScopedEnvExtension {
     initial  := {}
     addEntry := .insert
   }
 
-elab "blacklist_dir" dirs:ident+ : command => do
+/-- `blacklist_import` marks the given files as implementation details, which should not be used
+by library search tactics. -/
+elab "blacklist_import" dirs:ident+ : command => do
   for dir in dirs do withRef dir do
     let dir := dir.getId
     if dir matches .anonymous then
@@ -31,7 +34,8 @@ elab "blacklist_dir" dirs:ident+ : command => do
       throwError "could not find any imported module starting with {dir}"
     directoryBlackListExt.add dir
 
-elab "whitelist_dir" dirs:ident+ : command => do
+/-- `whitelist_import X` reverses `blacklist_import X` for the current file. -/
+elab "whitelist_import" dirs:ident+ : command => do
   for dir in dirs do withRef dir do
     let dir := dir.getId
     if dir matches .anonymous then
@@ -40,8 +44,10 @@ elab "whitelist_dir" dirs:ident+ : command => do
       throwError "could not whitelist {dir} as it hasn't been blacklisted"
     modifyEnv (directoryBlackListExt.modifyState · (·.erase dir))
 
+/-- Is `moduleName` tagged with `blacklist_import`? -/
 def Lean.Name.isBlacklistedModule (moduleName : Name) (env : Environment) : Bool :=
   (directoryBlackListExt.getState env).any (·.isPrefixOf moduleName)
 
+/-- Is `constName` defined in a module tagged by `blacklist_import`? -/
 def Lean.Name.hasBlacklistedModule (constName : Name) (env : Environment) : Bool :=
   env.header.moduleNames[env.const2ModIdx[constName]!]!.isBlacklistedModule env

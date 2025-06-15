@@ -13,4 +13,4 @@ We blacklist `Init.Omega`, `Init.Grind` and `Mathlib.Tactic`.
 
 -/
 
-blacklist_dir Init.Omega Init.Grind Mathlib.Tactic
+blacklist_import Init.Omega Init.Grind Mathlib.Tactic

@@ -171,6 +171,8 @@ import Mathlib.Tactic.MinImports
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.ModCases
 import Mathlib.Tactic.Module
+import Mathlib.Tactic.ModuleBlacklist
+import Mathlib.Tactic.ModuleBlacklist.Core
 import Mathlib.Tactic.Monotonicity
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Tactic.Monotonicity.Basic
