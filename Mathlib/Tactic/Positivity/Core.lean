@@ -449,6 +449,12 @@ end Positivity
 end Mathlib.Tactic
 
 /-!
+We set up `positivity` as a first-pass discharger for `gcongr` side goals.
+-/
+
+macro_rules | `(tactic| gcongr_discharger) => `(tactic| positivity)
+
+/-!
 We register `positivity` with the `hint` tactic.
 -/
 

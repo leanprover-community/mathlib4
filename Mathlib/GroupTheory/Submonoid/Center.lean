@@ -173,8 +173,6 @@ def Submonoid.centerCongr [MulOneClass M] [MulOneClass N] (e : M ≃* N) : cente
 def Subsemigroup.centerToMulOpposite [Mul M] : center M ≃* center Mᵐᵒᵖ where
   toFun r := ⟨_, MulOpposite.op_mem_center_iff.mpr r.2⟩
   invFun r := ⟨_, MulOpposite.unop_mem_center_iff.mpr r.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_mul' r _ := Subtype.ext (congr_arg MulOpposite.op <| r.2.1 _)
 
 /-- The center of a monoid is isomorphic to the center of its opposite. -/

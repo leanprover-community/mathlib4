@@ -13,20 +13,20 @@ as the greatest fixpoint of a polynomial functor.
 -/
 
 
-universe u v w
+universe u uA uB v w
 
 open Nat Function
 
 open List
 
-variable (F : PFunctor.{u})
+variable (F : PFunctor.{uA, uB})
 
 namespace PFunctor
 
 namespace Approx
 
 /-- `CofixA F n` is an `n` level approximation of an M-type -/
-inductive CofixA : ℕ → Type u
+inductive CofixA : ℕ → Type (max uA uB)
   | continue : CofixA 0
   | intro {n} : ∀ a, (F.B a → CofixA n) → CofixA (succ n)
 
@@ -117,7 +117,7 @@ theorem P_corec (i : X) (n : ℕ) : Agree (sCorec f i n) (sCorec f i (succ n)) :
   apply n_ih
 
 /-- `Path F` provides indices to access internal nodes in `Corec F` -/
-def Path (F : PFunctor.{u}) :=
+def Path (F : PFunctor.{uA, uB}) :=
   List F.Idx
 
 instance Path.inhabited : Inhabited (Path F) :=
@@ -578,7 +578,7 @@ universe u' v'
 def corecOn {X : Type*} (x₀ : X) (f : X → F X) : M F :=
   M.corec f x₀
 
-variable {P : PFunctor.{u}} {α : Type*}
+variable {P : PFunctor.{uA, uB}} {α : Type*}
 
 theorem dest_corec (g : α → P α) (x : α) : M.dest (M.corec g x) = P.map (M.corec g) (g x) := by
   rw [corec_def, dest_mk]
@@ -643,10 +643,10 @@ def corec₁ {α : Type u} (F : ∀ X, (α → X) → α → P X) : α → M P :
 
 /-- corecursor where it is possible to return a fully formed value at any point
 of the computation -/
-def corec' {α : Type u} (F : ∀ {X : Type u}, (α → X) → α → M P ⊕ P X) (x : α) : M P :=
+def corec' {α : Type u} (F : ∀ {X : Type (max u uA uB)}, (α → X) → α → M P ⊕ P X) (x : α) : M P :=
   corec₁
     (fun _ rec (a : M P ⊕ α) =>
-      let y := a >>= F (rec ∘ Sum.inr)
+      let y := Sum.bind a (F (rec ∘ Sum.inr))
       match y with
       | Sum.inr y => y
       | Sum.inl y => P.map (rec ∘ Sum.inl) (M.dest y))
