@@ -335,10 +335,8 @@ abbrev actionRight (d : D) : C ⥤ D := curriedAction C D|>.flip.obj d
 /-- Bundle `αₗ _ _ _` as an isomorphism of trifunctors. -/
 @[simps!]
 def actionAssocNatIso :
-    (Functor.postcompose₂.obj (curriedAction C D)|>.obj
-      (curriedTensor C)) ≅
-    bifunctorComp₂₃Functor|>.obj (curriedAction C D)|>.obj
-      (curriedAction C D) :=
+    bifunctorComp₁₂ (curriedTensor C) (curriedAction C D) ≅ 
+    bifunctorComp₂₃ (curriedAction C D) (curriedAction C D) :=
   NatIso.ofComponents fun _ ↦
     NatIso.ofComponents fun _ ↦
      NatIso.ofComponents fun _ ↦ αₗ _ _ _
