@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Basic
 import Batteries.WF
 
 /-!
@@ -38,6 +38,7 @@ private def wf_lbp : WellFounded (@lbp p) :=
         match y, r with
         | _, ⟨rfl, _a⟩ => IH _ (by rw [Nat.add_right_comm]; exact kn)⟩⟩
 
+/-- Find the smallest `n` satisfying `p n`. Returns a subtype. -/
 protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
   @WellFounded.fix _ (fun k => (∀ n < k, ¬p n) → { n // p n ∧ ∀ m < n, ¬p m }) lbp (wf_lbp H)
     (fun m IH al =>
@@ -69,7 +70,7 @@ protected theorem find_min : ∀ {m : ℕ}, m < Nat.find H → ¬p m :=
   @(Nat.findX H).2.right
 
 protected theorem find_min' {m : ℕ} (h : p m) : Nat.find H ≤ m :=
-  Nat.le_of_not_lt fun l => Nat.find_min H l h
+  Nat.le_of_not_gt fun l => Nat.find_min H l h
 
 lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m, ¬ p n := by
   constructor
@@ -93,9 +94,35 @@ lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m,
 
 @[simp] lemma find_eq_zero (h : ∃ n : ℕ, p n) : Nat.find h = 0 ↔ p 0 := by simp [find_eq_iff]
 
-variable [DecidablePred q] in
-lemma find_mono (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} : Nat.find hp ≤ Nat.find hq :=
-  Nat.find_min' _ (h _ (Nat.find_spec hq))
+/-- If a predicate `q` holds at some `x` and implies `p` up to that `x`, then
+the earliest `xq` such that `q xq` is at least the smallest `xp` where `p xp`.
+The stronger version of `Nat.find_mono`, since this one needs
+implication only up to `Nat.find _` while the other requires `q` implying `p` everywhere. -/
+lemma find_mono_of_le [DecidablePred q] {x : ℕ} (hx : q x) (hpq : ∀ n ≤ x, q n → p n) :
+    Nat.find ⟨x, show p x from hpq _ le_rfl hx⟩ ≤ Nat.find ⟨x, hx⟩ :=
+  Nat.find_min' _ (hpq _ (Nat.find_min' _ hx) (Nat.find_spec ⟨x, hx⟩))
+
+/-- A weak version of `Nat.find_mono_of_le`, requiring `q` implies `p` everywhere.
+-/
+lemma find_mono [DecidablePred q] (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} :
+    Nat.find hp ≤ Nat.find hq :=
+  let ⟨_, hq⟩ := hq; find_mono_of_le hq fun _ _ ↦ h _
+
+/-- If a predicate `p` holds at some `x` and agrees with `q` up to that `x`, then
+their `Nat.find` agree. The stronger version of `Nat.find_congr'`, since this one needs
+agreement only up to `Nat.find _` while the other requires `p = q`.
+Usage of this lemma will likely be via `obtain ⟨x, hx⟩ := hp; apply Nat.find_congr hx` to unify `q`,
+or provide it explicitly with `rw [Nat.find_congr (q := q) hx]`.
+-/
+lemma find_congr [DecidablePred q] {x : ℕ} (hx : p x) (hpq : ∀ n ≤ x, p n ↔ q n) :
+    Nat.find ⟨x, hx⟩ = Nat.find ⟨x, show q x from hpq _ le_rfl |>.1 hx⟩ :=
+  le_antisymm (find_mono_of_le (hpq _ le_rfl |>.1 hx) fun _ h ↦ (hpq _ h).mpr)
+    (find_mono_of_le hx fun _ h ↦ (hpq _ h).mp)
+
+/-- A weak version of `Nat.find_congr`, requiring `p = q` everywhere. -/
+lemma find_congr' [DecidablePred q] {hp : ∃ n, p n} {hq : ∃ n, q n} (hpq : ∀ {n}, p n ↔ q n) :
+    Nat.find hp = Nat.find hq :=
+  let ⟨_, hp⟩ := hp; find_congr hp fun _ _ ↦ hpq
 
 lemma find_le {h : ∃ n, p n} (hn : p n) : Nat.find h ≤ n :=
   (Nat.find_le_iff _ _).2 ⟨n, le_refl _, hn⟩
@@ -193,7 +220,7 @@ lemma findGreatest_le (n : ℕ) : Nat.findGreatest P n ≤ n :=
   (findGreatest_eq_iff.1 rfl).1
 
 lemma le_findGreatest (hmb : m ≤ n) (hm : P m) : m ≤ Nat.findGreatest P n :=
-  le_of_not_lt fun hlt => (findGreatest_eq_iff.1 rfl).2.2 hlt hmb hm
+  le_of_not_gt fun hlt => (findGreatest_eq_iff.1 rfl).2.2 hlt hmb hm
 
 lemma findGreatest_mono_right (P : ℕ → Prop) [DecidablePred P] {m n} (hmn : m ≤ n) :
     Nat.findGreatest P m ≤ Nat.findGreatest P n := by

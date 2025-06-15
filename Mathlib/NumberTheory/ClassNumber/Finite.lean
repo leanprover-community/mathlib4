@@ -17,8 +17,8 @@ In this file, we use the notion of "admissible absolute value" to prove
 finiteness of the class group for number fields and function fields.
 
 ## Main definitions
- - `ClassGroup.fintypeOfAdmissibleOfAlgebraic`: if `R` has an admissible absolute value,
-   its integral closure has a finite class group
+- `ClassGroup.fintypeOfAdmissibleOfAlgebraic`: if `R` has an admissible absolute value,
+  its integral closure has a finite class group
 -/
 
 open scoped nonZeroDivisors
@@ -83,7 +83,7 @@ theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
 
 /-- If the `R`-integral element `a : S` has coordinates `< y` with respect to some basis `b`,
 its norm is strictly less than `normBound abv b * y ^ dim S`. -/
-theorem norm_lt {T : Type*} [LinearOrderedRing T] (a : S) {y : T}
+theorem norm_lt {T : Type*} [Ring T] [LinearOrder T] [IsStrictOrderedRing T] (a : S) {y : T}
     (hy : ∀ k, (abv (bS.repr a k) : T) < y) :
     (abv (Algebra.norm R a) : T) < normBound abv bS * y ^ Fintype.card ι := by
   obtain ⟨i⟩ := bS.index_nonempty
@@ -157,8 +157,10 @@ noncomputable def finsetApprox : Finset R :=
   (Finset.univ.image fun xy : _ × _ => distinctElems bS adm xy.1 - distinctElems bS adm xy.2).erase
     0
 
-theorem finsetApprox.zero_not_mem : (0 : R) ∉ finsetApprox bS adm :=
-  Finset.not_mem_erase _ _
+theorem finsetApprox.zero_notMem : (0 : R) ∉ finsetApprox bS adm :=
+  Finset.notMem_erase _ _
+
+@[deprecated (since := "2025-05-23")] alias finsetApprox.zero_not_mem := finsetApprox.zero_notMem
 
 @[simp]
 theorem mem_finsetApprox {x : R} :
@@ -198,7 +200,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
       try norm_cast; omega
     · exact Iff.mpr Int.cast_nonneg this
     · linarith
-  set μ : Fin (cardM bS adm).succ ↪ R := distinctElems bS adm with hμ
+  set μ : Fin (cardM bS adm).succ ↪ R := distinctElems bS adm
   let s : ι →₀ R := bS.repr a
   have s_eq : ∀ i, s i = bS.repr a i := fun i => rfl
   let qs : Fin (cardM bS adm).succ → ι → R := fun j i => μ j * s i / b
@@ -212,8 +214,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     rw [← bS.sum_repr a]
     simp only [μ, qs, rs, Finset.smul_sum, ← Finset.sum_add_distrib]
     refine Finset.sum_congr rfl fun i _ => ?_
--- Porting note `← hμ, ← r_eq` and the final `← μ_eq` were not needed.
-    rw [← hμ, ← r_eq, ← s_eq, ← mul_smul, μ_eq, add_smul, mul_smul, ← μ_eq]
+    rw [← s_eq, ← mul_smul, μ_eq, add_smul, mul_smul, ← μ_eq]
   obtain ⟨j, k, j_ne_k, hjk⟩ := adm.exists_approx hε hb fun j i => μ j * s i
   have hjk' : ∀ i, (abv (rs k i - rs j i) : ℝ) < abv b • ε := by simpa only [r_eq] using hjk
   let q := ∑ i, (qs k i - qs j i) • bS i
@@ -257,7 +258,7 @@ theorem prod_finsetApprox_ne_zero : algebraMap R S (∏ m ∈ finsetApprox bS ad
   refine mt ((injective_iff_map_eq_zero _).mp bS.algebraMap_injective _) ?_
   simp only [Finset.prod_eq_zero_iff, not_exists]
   rintro x ⟨hx, rfl⟩
-  exact finsetApprox.zero_not_mem bS adm hx
+  exact finsetApprox.zero_notMem bS adm hx
 
 theorem ne_bot_of_prod_finsetApprox_mem (J : Ideal S)
     (h : algebraMap _ _ (∏ m ∈ finsetApprox bS adm, m) ∈ J) : J ≠ ⊥ :=
@@ -296,7 +297,7 @@ theorem exists_mk0_eq_mk0 [IsDedekindDomain S] [Algebra.IsAlgebraic R S] (I : (I
   simp only [Algebra.smul_def] at lt
   rw [←
     sub_eq_zero.mp (b_min _ (I.1.sub_mem (I.1.mul_mem_left _ ha) (I.1.mul_mem_left _ b_mem)) lt)]
-  refine mul_dvd_mul_right (dvd_trans (RingHom.map_dvd _ ?_) hr') _
+  refine mul_dvd_mul_right (dvd_trans (map_dvd _ ?_) hr') _
   exact Multiset.dvd_prod (Multiset.mem_map.mpr ⟨_, r_mem, rfl⟩)
 
 /-- `ClassGroup.mkMMem` is a specialization of `ClassGroup.mk0` to (the finite set of)
@@ -348,7 +349,6 @@ noncomputable def fintypeOfAdmissibleOfFinite [IsIntegralClosure S R L] :
   letI := IsIntegralClosure.isFractionRing_of_finite_extension R K L S
   letI := IsIntegralClosure.isDedekindDomain R K L S
   choose s b hb_int using FiniteDimensional.exists_is_basis_integral R K L
--- Porting note: `this` and `f` below where solved at the end rather than being defined at first.
   have : LinearIndependent R ((Algebra.traceForm K L).dualBasis
       (traceForm_nondegenerate K L) b) := by
     apply (Basis.linearIndependent _).restrict_scalars

@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Topology.Instances.Irrational
 import Mathlib.Topology.Instances.Rat
-import Mathlib.Topology.Compactification.OnePoint
+import Mathlib.Topology.Compactification.OnePoint.Basic
 import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
@@ -76,7 +76,7 @@ instance : TotallyDisconnectedSpace ℚ := by
   refine ⟨fun s hsu hs x hx y hy => ?_⟩; clear hsu
   by_contra! H : x ≠ y
   wlog hlt : x < y
-  · apply this s hs y hy x hx H.symm <| H.lt_or_lt.resolve_left hlt
+  · apply this s hs y hy x hx H.symm <| H.lt_or_gt.resolve_left hlt
   rcases exists_irrational_btwn (Rat.cast_lt.2 hlt) with ⟨z, hz, hxz, hzy⟩
   have := hs.image _ continuous_coe_real.continuousOn
   rw [isPreconnected_iff_ordConnected] at this

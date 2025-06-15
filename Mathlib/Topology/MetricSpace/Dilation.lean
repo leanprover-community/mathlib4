@@ -111,7 +111,7 @@ theorem mk_coe (f : α →ᵈ β) (h) : Dilation.mk f h = f :=
 
 /-- Copy of a `Dilation` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def copy (f : α →ᵈ β) (f' : α → β) (h : f' = ⇑f) : α →ᵈ β where
   toFun := f'
   edist_eq' := h.symm ▸ f.edist_eq'
@@ -254,7 +254,7 @@ theorem antilipschitz : AntilipschitzWith (ratio f)⁻¹ (f : α → β) := fun 
     (ENNReal.mul_le_iff_le_inv (ENNReal.coe_ne_zero.2 hr) ENNReal.coe_ne_top).1 (edist_eq f x y).ge
 
 /-- A dilation from an emetric space is injective -/
-protected theorem injective {α : Type*} [EMetricSpace α] [FunLike F α β]  [DilationClass F α β]
+protected theorem injective {α : Type*} [EMetricSpace α] [FunLike F α β] [DilationClass F α β]
     (f : F) :
     Injective f :=
   (antilipschitz f).injective
@@ -369,9 +369,6 @@ theorem cancel_left {g : β →ᵈ γ} {f₁ f₂ : α →ᵈ β} (hg : Injectiv
 theorem isUniformInducing : IsUniformInducing (f : α → β) :=
   (antilipschitz f).isUniformInducing (lipschitz f).uniformContinuous
 
-@[deprecated (since := "2024-10-05")]
-alias uniformInducing := isUniformInducing
-
 theorem tendsto_nhds_iff {ι : Type*} {g : ι → α} {a : Filter ι} {b : α} :
     Filter.Tendsto g a (𝓝 b) ↔ Filter.Tendsto ((f : α → β) ∘ g) a (𝓝 (f b)) :=
   (Dilation.isUniformInducing f).isInducing.tendsto_nhds_iff
@@ -400,8 +397,7 @@ theorem mapsTo_emetric_ball (x : α) (r : ℝ≥0∞) :
 /-- A dilation maps closed balls to closed balls and scales the radius by `ratio f`. -/
 theorem mapsTo_emetric_closedBall (x : α) (r' : ℝ≥0∞) :
     MapsTo (f : α → β) (EMetric.closedBall x r') (EMetric.closedBall (f x) (ratio f * r')) :=
-  -- Porting note: Added `by exact`
-  fun y hy => (edist_eq f y x).trans_le <| mul_le_mul_left' (by exact hy) _
+  fun y hy => (edist_eq f y x).trans_le <| mul_le_mul_left' hy _
 
 theorem comp_continuousOn_iff {γ} [TopologicalSpace γ] {g : γ → α} {s : Set γ} :
     ContinuousOn ((f : α → β) ∘ g) s ↔ ContinuousOn g s :=
@@ -423,8 +419,6 @@ lemma isUniformEmbedding [PseudoEMetricSpace β] [DilationClass F α β] (f : F)
     IsUniformEmbedding f :=
   (antilipschitz f).isUniformEmbedding (lipschitz f).uniformContinuous
 
-@[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
-
 /-- A dilation from a metric space is an embedding -/
 theorem isEmbedding [PseudoEMetricSpace β] [DilationClass F α β] (f : F) :
     IsEmbedding (f : α → β) :=
@@ -437,8 +431,6 @@ alias embedding := isEmbedding
 lemma isClosedEmbedding [CompleteSpace α] [EMetricSpace β] [DilationClass F α β] (f : F) :
     IsClosedEmbedding f :=
   (antilipschitz f).isClosedEmbedding (lipschitz f).uniformContinuous
-
-@[deprecated (since := "2024-10-20")] alias closedEmbedding := isClosedEmbedding
 
 end EmetricDilation
 

@@ -3,11 +3,8 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Basis
-import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Properties of centers and centralizers
@@ -88,7 +85,6 @@ lemma centralizer_coe_image_includeLeft_eq_center_tensorProduct
       sum_of_support_subset (s := b.support) (hs := support_mapRange) (h := by aesop)]
     simpa only [Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul, LinearMap.flip_apply,
       TensorProduct.mk_apply, Finsupp.mapRange_apply] using hw
-
   · rintro ⟨w, rfl⟩
     rw [Subalgebra.mem_centralizer_iff]
     rintro _ ⟨x, hx, rfl⟩

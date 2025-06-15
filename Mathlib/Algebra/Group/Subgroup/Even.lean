@@ -12,6 +12,8 @@ import Mathlib.Algebra.Group.Subgroup.Defs
 This file defines the subgroup of squares / even elements in an abelian group.
 -/
 
+assert_not_exists RelIso MonoidWithZero
+
 namespace Subsemigroup
 variable {S : Type*} [CommSemigroup S]
 
