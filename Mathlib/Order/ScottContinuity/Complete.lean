@@ -49,7 +49,7 @@ lemma sSup_inf_eq_sSup_map (b : β) (d : Set β) :
   simp [inf_le_iff, sSup_le_iff, ← forall_or_right, Set.mem_image, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂]
 
-lemma left_cont_inf (a : β) : ScottContinuous fun b ↦ a ⊓ b := by
+lemma scottContinuous_inf_right (a : β) : ScottContinuous fun b ↦ a ⊓ b := by
   refine ScottContinuous.of_map_sSup (fun d _ _ ↦ by rw [inf_sSup_eq_sSup_map])
 
 lemma right_cont_inf (b : β) : ScottContinuous fun a ↦ a ⊓ b := by
