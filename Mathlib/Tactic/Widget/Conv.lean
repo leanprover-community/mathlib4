@@ -123,7 +123,7 @@ where
       (s!"{if all then "@" else ""}{arg}" :: (go next).1, (go next).2)
     | Path.fun depth => ([], rep depth)
     | Path.type next => ("1" :: (go next).1, (go next).2)
-    | Path.body name next => (getName name :: (go next).1, (go next).2)
+    | Path.body name next => (getName name.eraseMacroScopes :: (go next).1, (go next).2)
   rep : Nat → String
     | 0 => ""
     | 1 => "fun"
