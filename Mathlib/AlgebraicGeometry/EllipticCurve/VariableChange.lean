@@ -189,6 +189,38 @@ lemma variableChange_a₆ : (C • W).a₆ =
     C.u⁻¹ ^ 6 * (W.a₆ + C.r * W.a₄ + C.r ^ 2 * W.a₂ + C.r ^ 3 - C.t * W.a₃ - C.t ^ 2
       - C.r * C.t * W.a₁) := rfl
 
+lemma variableChange_inv_a₁ : (C⁻¹ • W).a₁ = C.u * W.a₁ - 2 * C.s := by
+  simp [VariableChange.inv_def]
+  field_simp
+  ring
+
+lemma variableChange_inv_a₂ :
+    (C⁻¹ • W).a₂ = C.u ^ 2 * W.a₂ + C.u * C.s * W.a₁ - 3 * C.r - C.s ^ 2 := by
+  simp [VariableChange.inv_def, pow_succ]
+  field_simp
+  ring
+
+lemma variableChange_inv_a₃ :
+    (C⁻¹ • W).a₃ = C.u ^ 3 * W.a₃ - C.u * C.r * W.a₁ + 2 * (C.r * C.s - C.t) := by
+  simp [VariableChange.inv_def, pow_succ]
+  field_simp
+  ring
+
+lemma variableChange_inv_a₄ : (C⁻¹ • W).a₄ =
+    C.u ^ 4 * W.a₄ + C.u ^ 3 * C.s * W.a₃ - 2 * C.u ^ 2 * C.r * W.a₂ +
+      C.u * (C.t - 2 * C.s * C.r) * W.a₁ + 3 * C.r ^ 2 + 2 * C.s * (C.r * C.s - C.t) := by
+  simp [VariableChange.inv_def, pow_succ]
+  field_simp
+  ring
+
+lemma variableChange_inv_a₆ : (C⁻¹ • W).a₆ =
+    C.u ^ 6 * W.a₆ - C.u ^ 4 * C.r * W.a₄ + C.u ^ 2 * C.r ^ 2 * W.a₂ - C.r ^ 3 -
+      C.u ^ 3 * (C.r * C.s - C.t) * W.a₃ - (C.r * C.s - C.t) ^ 2
+      + C.u * C.r * (C.r * C.s - C.t) * W.a₁ := by
+  simp [VariableChange.inv_def, pow_succ]
+  field_simp
+  ring
+
 @[simp]
 lemma variableChange_b₂ : (C • W).b₂ = C.u⁻¹ ^ 2 * (W.b₂ + 12 * C.r) := by
   simp only [b₂, variableChange_a₁, variableChange_a₂]
