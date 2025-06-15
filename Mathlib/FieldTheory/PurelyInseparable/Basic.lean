@@ -317,12 +317,12 @@ theorem IsPurelyInseparable.minpoly_eq_X_sub_C_pow (q : ℕ) [ExpChar F q] [IsPu
 variable (E) in
 lemma IsPurelyInseparable.finrank_eq_pow
     (q : ℕ) [ExpChar F q] [IsPurelyInseparable F E] [FiniteDimensional F E] :
-    ∃ n, Module.finrank F E = q ^ n := by
+    ∃ n, finrank F E = q ^ n := by
   suffices ∀ (F E : Type v) [Field F] [Field E] [Algebra F E] (q : ℕ) [ExpChar F q]
-      [IsPurelyInseparable F E] [FiniteDimensional F E], ∃ n, Module.finrank F E = q ^ n by
+      [IsPurelyInseparable F E] [FiniteDimensional F E], ∃ n, finrank F E = q ^ n by
     simpa using this (⊥ : IntermediateField F E) E q
   intros F E _ _ _ q _ _ _
-  generalize hd : Module.finrank F E = d
+  generalize hd : finrank F E = d
   induction d using Nat.strongRecOn generalizing F with
   | ind d IH =>
     by_cases h : (⊥ : IntermediateField F E) = ⊤
@@ -330,16 +330,14 @@ lemma IsPurelyInseparable.finrank_eq_pow
       exact ⟨0, ((pow_zero q).trans hd).symm⟩
     obtain ⟨x, -, hx⟩ := SetLike.exists_of_lt (lt_of_le_of_ne bot_le h:)
     obtain ⟨m, y, e⟩ := IsPurelyInseparable.minpoly_eq_X_pow_sub_C F q x
-    have : Module.finrank F F⟮x⟯ = q ^ m := by
-      rw [adjoin.finrank (Algebra.IsIntegral.isIntegral x), e, Polynomial.natDegree_sub_C,
-        Polynomial.natDegree_X_pow]
+    have : finrank F F⟮x⟯ = q ^ m := by
+      rw [adjoin.finrank (Algebra.IsIntegral.isIntegral x), e, natDegree_sub_C, natDegree_X_pow]
     obtain ⟨n, hn⟩ := IH _ (by
-      rw [← hd, ← Module.finrank_mul_finrank F F⟮x⟯, Nat.lt_mul_iff_one_lt_left Module.finrank_pos,
-        this]
+      rw [← hd, ← finrank_mul_finrank F F⟮x⟯, Nat.lt_mul_iff_one_lt_left finrank_pos, this]
       by_contra! H
       refine hx (finrank_adjoin_simple_eq_one_iff.mp (le_antisymm (this ▸ H) ?_))
       exact Nat.one_le_iff_ne_zero.mpr Module.finrank_pos.ne') (F⟮x⟯) rfl
-    exact ⟨m + n, by rw [← hd, ← Module.finrank_mul_finrank F F⟮x⟯, hn, pow_add, this]⟩
+    exact ⟨m + n, by rw [← hd, ← finrank_mul_finrank F F⟮x⟯, hn, pow_add, this]⟩
 
 variable (E)
 

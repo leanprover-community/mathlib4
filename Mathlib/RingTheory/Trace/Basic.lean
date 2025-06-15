@@ -278,18 +278,18 @@ end EqSumEmbeddings
 section NotIsSeparable
 
 lemma Algebra.trace_eq_zero_of_not_isSeparable (H : ¬ Algebra.IsSeparable K L) :
-    Algebra.trace K L = 0 := by
+    trace K L = 0 := by
   obtain ⟨p, hp⟩ := ExpChar.exists K
   have := expChar_ne_zero K p
   ext x
   by_cases h₀ : FiniteDimensional K L; swap
-  · rw [Algebra.trace_eq_zero_of_not_exists_basis]
+  · rw [trace_eq_zero_of_not_exists_basis]
     rintro ⟨s, ⟨b⟩⟩
     exact h₀ (Module.Finite.of_basis b)
   by_cases hx : IsSeparable K x
   · lift x to separableClosure K L using hx
-    rw [← IntermediateField.algebraMap_apply, ← Algebra.trace_trace (S := separableClosure K L),
-      Algebra.trace_algebraMap]
+    rw [← IntermediateField.algebraMap_apply, ← trace_trace (S := separableClosure K L),
+      trace_algebraMap]
     obtain ⟨n, hn⟩ := IsPurelyInseparable.finrank_eq_pow (separableClosure K L) L p
     cases n with
     | zero =>
@@ -304,16 +304,16 @@ lemma Algebra.trace_eq_zero_of_not_isSeparable (H : ¬ Algebra.IsSeparable K L) 
         rw [hn, pow_succ', MulAction.mul_smul, LinearMap.map_smul_of_tower, nsmul_eq_mul,
           CharP.cast_eq_zero, zero_mul, LinearMap.zero_apply]
   · rw [trace_eq_finrank_mul_minpoly_nextCoeff]
-    obtain ⟨g, hg₁, m, hg₂⟩ := (minpoly.irreducible
-      (Algebra.IsIntegral.isIntegral (R := K) x)).hasSeparableContraction p
+    obtain ⟨g, hg₁, m, hg₂⟩ :=
+      (minpoly.irreducible (IsIntegral.isIntegral (R := K) x)).hasSeparableContraction p
     cases m with
     | zero =>
       obtain rfl : g = minpoly K x := by simpa using hg₂
       cases hx hg₁
     | succ n =>
-      rw [Polynomial.nextCoeff, if_neg, ← hg₂, Polynomial.coeff_expand (by positivity),
+      rw [nextCoeff, if_neg, ← hg₂, coeff_expand (by positivity),
         if_neg, neg_zero, mul_zero, LinearMap.zero_apply]
-      · rw [Polynomial.natDegree_expand]
+      · rw [natDegree_expand]
         intro h
         have := Nat.dvd_sub (dvd_mul_left (p ^ (n + 1)) g.natDegree) h
         rw [tsub_tsub_cancel_of_le, Nat.dvd_one] at this
@@ -321,11 +321,11 @@ lemma Algebra.trace_eq_zero_of_not_isSeparable (H : ¬ Algebra.IsSeparable K L) 
           cases hx hg₁
         · rw [Nat.one_le_iff_ne_zero]
           have : g.natDegree ≠ 0 := fun e ↦ by
-            have := congr(Polynomial.natDegree $hg₂)
-            rw [Polynomial.natDegree_expand, e, zero_mul] at this
-            exact (minpoly.natDegree_pos (Algebra.IsIntegral.isIntegral (R := K) x)).ne this
+            have := congr(natDegree $hg₂)
+            rw [natDegree_expand, e, zero_mul] at this
+            exact (minpoly.natDegree_pos (IsIntegral.isIntegral x)).ne this
           positivity
-      · exact (minpoly.natDegree_pos (Algebra.IsIntegral.isIntegral (R := K) x)).ne'
+      · exact (minpoly.natDegree_pos (IsIntegral.isIntegral x)).ne'
 
 end NotIsSeparable
 
