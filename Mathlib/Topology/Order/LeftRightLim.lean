@@ -225,6 +225,25 @@ theorem countable_not_continuousWithinAt_Ioi [SecondCountableTopology β] :
   filter_upwards [this] with y hy
   apply (hf hy.2.le).trans_lt fvu
 
+omit hf in
+theorem _root_.MonotoneOn.countable_not_continuousWithinAt_Ioi [SecondCountableTopology β]
+    {s : Set α} (hf : MonotoneOn f s) :
+    Set.Countable { x ∈ s | ¬ContinuousWithinAt f (s ∩ Ioi x) x } := by
+  apply (countable_image_lt_image_Ioi_inter f).mono
+  rintro x (hx : ¬ContinuousWithinAt f (Ioi x) x)
+  dsimp
+  contrapose! hx
+  refine tendsto_order.2 ⟨fun m hm => ?_, fun u hu => ?_⟩
+  · filter_upwards [@self_mem_nhdsWithin _ _ x (Ioi x)] with y hy using hm.trans_le
+      (hf (le_of_lt hy))
+  rcases hx u hu with ⟨v, xv, fvu⟩
+  have : Ioo x v ∈ 𝓝[>] x := Ioo_mem_nhdsGT xv
+  filter_upwards [this] with y hy
+  apply (hf hy.2.le).trans_lt fvu
+
+
+#exit
+
 /-- In a second countable space, the set of points where a monotone function is not left-continuous
 is at most countable. Superseded by `countable_not_continuousAt` which gives the two-sided
 version. -/

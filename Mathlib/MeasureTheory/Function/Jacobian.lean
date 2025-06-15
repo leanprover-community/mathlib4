@@ -1216,6 +1216,23 @@ variable {t : Set ℝ} {g : ℝ → ℝ} {g' : ℝ → ℝ}
 
 #check countable_setOf_isolated_right
 
+#check measurable_image_of_fderivWithin
+
+#check Monotone.countable_not_continuousAt
+
+theorem foot (hg : MonotoneOn g t) :
+    Set.Countable {x ∈ t | ¬ ContinuousWithinAt g t x} := by
+
+
+#exit
+
+theorem foo (ht : MeasurableSet t) (hg : MonotoneOn g t) : MeasurableSet (g '' t) := by
+  let u : Set ℝ := {c | ∃ x, ∃ y, x ∈ t ∧ y ∈ t ∧ x < y ∧ g x = c ∧ g y = c}
+  have : Countable u := MonotoneOn.countable_setOf_two_preimages hg
+
+#exit
+
+
 /-- Change of variable formula for differentiable functions, set version: if a function `f` is
 injective and differentiable on a measurable set `s`, then the measure of `f '' s` is given by the
 integral of `|(f' x).det|` on `s`.
