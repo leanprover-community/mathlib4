@@ -152,13 +152,13 @@ theorem roots_quadratic_of_discrim_ne_sq (ha : a ≠ 0) (h : ∀ s : R, discrim 
   Multiset.eq_zero_of_forall_notMem fun r hc => not_isRoot_of_discrim_ne_sq h r
     ((mem_roots (quadratic_ne_zero ha)).mp hc)
 
-theorem quadratic_roots_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
+theorem roots_quadratic_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
     (h : discrim a b c = s * s) :
     (a • X ^ 2 + b • X + C c).roots = {(-b + s) / (2 * a), (-b - s) / (2 * a)} := by
-  rw [factorize_quadratic_of_discrim_eq_sq ha h, Polynomial.roots_mul
-    (by rw [← factorize_quadratic_of_discrim_eq_sq ha h]; exact quadratic_ne_zero ha)]
-  simp_all only [ne_eq, Algebra.smul_mul_assoc, not_false_eq_true, roots_smul_nonzero,
-    roots_X_sub_C, Multiset.singleton_add, Multiset.insert_eq_cons]
+  rw [quadratic_eq_of_discrim_eq_sq ha h, Polynomial.roots_mul
+      (quadratic_eq_of_discrim_eq_sq ha h ▸ quadratic_ne_zero ha),
+    roots_smul_nonzero _ ha, roots_X_sub_C, roots_X_sub_C]
+  rfl
 
 end QuadraticDiscriminant
 
