@@ -25,7 +25,7 @@ Results require `RCLike 𝕜`.
 
 open RCLike Real Matrix
 
-open scoped InnerProductSpace ComplexOrder
+open scoped InnerProductSpace ComplexOrder ComplexConjugate
 
 variable {E n : Type*}
 variable {α : Type*}
@@ -47,44 +47,36 @@ section SemiInnerProductSpace
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 /-- A Gram matrix is Hermitian. -/
-lemma isHermitian_gram {v : n → E} : (gram 𝕜 v).IsHermitian := by
-  refine IsHermitian.ext_iff.mpr (fun i j ↦ ?_)
-  rw [gram, of_apply, of_apply]
-  simp only [RCLike.star_def, inner_conj_symm]
+lemma isHermitian_gram {v : n → E} : (gram 𝕜 v).IsHermitian :=
+  Matrix.ext fun _ _ ↦ inner_conj_symm _ _
 
 theorem star_dotProduct_gram_mulVec [Fintype n] {v : n → E} (x : n → 𝕜) :
     star x ⬝ᵥ (gram 𝕜 v) *ᵥ x = ⟪∑ i, x i • v i, ∑ i, x i • v i⟫ := by
-  calc
-    star x ⬝ᵥ (gram 𝕜 v) *ᵥ x =
-    (∑ (i : n), ∑ (j : n), (starRingEnd 𝕜) (x i) * (x j) * ((gram 𝕜 v) i j)) := by
-      simp_rw [dotProduct, mul_assoc, ← Finset.mul_sum, mulVec, dotProduct, mul_comm, ← star_def]
-      rfl
-    _ = (∑ (i : n), ∑ (j : n), (starRingEnd 𝕜) (x i) * (x j) * ⟪v i, v j⟫) := by
-      simp_rw [gram_apply]
-    _ = ⟪∑ i, x i • v i, ∑ i, x i • v i⟫ := by
-      simp_rw [sum_inner, inner_sum, inner_smul_left, inner_smul_right, mul_assoc]
+  trans ∑ i, ∑ j, conj (x i) * x j * ⟪v i, v j⟫
+  · simp_rw [dotProduct, mul_assoc, ← Finset.mul_sum, mulVec, dotProduct, mul_comm, ← star_def,
+      gram_apply, Pi.star_apply]
+  · simp_rw [sum_inner, inner_sum, inner_smul_left, inner_smul_right, mul_assoc]
 
+variable (𝕜) in
 /-- A Gram matrix is positive semidefinite. -/
-theorem gram_posSemidef [Fintype n] {v : n → E} :
+theorem gram_posSemidef [Fintype n] (v : n → E) :
     PosSemidef (gram 𝕜 v) := by
   refine ⟨isHermitian_gram, fun x ↦ ?_⟩
   rw [star_dotProduct_gram_mulVec, le_iff_re_im]
-  simp only [map_zero, inner_self_im, and_true]
-  exact inner_self_nonneg
+  simp only [map_zero, inner_self_im, and_true, inner_self_nonneg]
 
 /-- In a seminormed space, positive definiteness of `gram 𝕜 v` implies linear independence of `v` -/
 theorem linearIndependent_of_gram_posDef [Fintype n] {v : n → E} (h_gram : PosDef (gram 𝕜 v)) :
     LinearIndependent 𝕜 v := by
   rw [Fintype.linearIndependent_iff]
-  obtain ⟨h0, h1⟩ := gram_posSemidef (𝕜 := 𝕜) (v := v)
   intro y hy
   obtain ⟨h1, h2⟩ := h_gram
   specialize h2 y
   rw [star_dotProduct_gram_mulVec, ← not_imp_not, ne_eq, Decidable.not_not, RCLike.pos_iff,
-    ← norm_sq_eq_re_inner] at h2
+    ← norm_sq_eq_re_inner, hy] at h2
   apply funext_iff.mp
   apply h2
-  simp [hy]
+  simp
 
 end SemiInnerProductSpace
 
@@ -97,18 +89,15 @@ theorem gram_posDef_of_linearIndependent  [Fintype n]
     {v : n → E} (h_li : LinearIndependent 𝕜 v) : PosDef (gram 𝕜 v) := by
   rw [Fintype.linearIndependent_iff] at h_li
   obtain ⟨h0, h1⟩ := gram_posSemidef (𝕜 := 𝕜) (v := v)
-  refine ⟨h0, fun x hx ↦ lt_of_le_of_ne (h1 x) ?_⟩
+  refine ⟨h0, fun x hx ↦ (h1 x).lt_of_ne' ?_⟩
   specialize h_li x
   rw [← funext_iff, ← not_imp_not] at h_li
   simp_rw [star_dotProduct_gram_mulVec]
-  intro j
+  intro hz
   apply h_li hx
   rw [← norm_eq_zero]
-  obtain j1 := congrArg (⇑re) j
-  rw [map_zero, ← norm_sq_eq_re_inner] at j1
-  obtain j1' := Eq.symm j1
-  rw [← sq_eq_zero_iff.symm] at j1'
-  exact j1'
+  have j1 := congrArg re hz
+  rwa [map_zero, ← norm_sq_eq_re_inner, sq_eq_zero_iff] at j1
 
 /-- In a normed space, linear independence of `v` is equivalent to positive definiteness of
 `gram 𝕜 v`. -/
