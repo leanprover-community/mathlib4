@@ -468,6 +468,17 @@ theorem ContinuousOn.clm_apply {f : X → (E →L[𝕜] F)} {g : X → E}
     ContinuousOn (fun x ↦ f x (g x)) s :=
   isBoundedBilinearMap_apply.continuous.comp_continuousOn (hf.prodMk hg)
 
+@[continuity, fun_prop]
+theorem ContinuousAt.clm_apply {X} [TopologicalSpace X] {f : X → (E →L[𝕜] F)} {g : X → E} {x : X}
+    (hf : ContinuousAt f x) (hg : ContinuousAt g x) : ContinuousAt (fun x ↦ (f x) (g x)) x :=
+  isBoundedBilinearMap_apply.continuous.continuousAt.comp₂ hf hg
+
+@[continuity, fun_prop]
+theorem ContinuousWithinAt.clm_apply {X} [TopologicalSpace X] {f : X → (E →L[𝕜] F)} {g : X → E}
+    {s : Set X} {x : X} (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
+    ContinuousWithinAt (fun x ↦ (f x) (g x)) s x :=
+  isBoundedBilinearMap_apply.continuous.continuousAt.comp_continuousWithinAt (hf.prodMk hg)
+
 end
 
 namespace ContinuousLinearEquiv

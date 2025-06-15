@@ -337,7 +337,7 @@ end TangentBundleInstances
 @[simp, mfld_simps]
 theorem trivializationAt_model_space_apply (p : TangentBundle I H) (x : H) :
     trivializationAt E (TangentSpace I) x p = (p.1, p.2) := by
-  simp [TangentBundle.trivializationAt_apply]
+  simp only [TangentBundle.trivializationAt_apply]
   have : fderivWithin 𝕜 (↑I ∘ ↑I.symm) (range I) (I p.proj) =
       fderivWithin 𝕜 id (range I) (I p.proj) :=
     fderivWithin_congr' (fun y hy ↦ by simp [hy]) (mem_range_self p.proj)
