@@ -87,7 +87,7 @@ theorem mem_mk {s : Set M} {h₁ h₂ x} : x ∈ mk (R := R) s h₁ h₂ ↔ x �
 theorem ext {S T : ConvexCone R M} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
   SetLike.ext h
 
-@[aesop safe apply (rule_sets := [SetLike])]
+@[aesop 90% (rule_sets := [SetLike])]
 theorem smul_mem {c : R} {x : M} (hc : 0 < c) (hx : x ∈ S) : c • x ∈ S :=
   S.smul_mem' hc hx
 
