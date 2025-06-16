@@ -251,16 +251,23 @@ private nonrec lemma Scheme.exists_ge_ge_comp_eq_comp_of_isAffine_of_locallyOfFi
 An auxiliary structure used to prove `Scheme.exists_ge_ge_comp_eq_comp_of_locallyOfFiniteType`.
 See the section docstring. -/
 structure existsGEGECompEqCompAux where
+  /-- (Implementation) The limit cone. See the section docstring. -/
   c : Cone D
+  /-- (Implementation) The limit cone is a limit. See the section docstring. -/
   hc : IsLimit c
+  /-- (Implementation) The index on which `a` and `b` lives. See the section docstring. -/
   i : I
+  /-- (Implementation) `a`. See the section docstring. -/
   a : D.obj i ⟶ X
   ha : t.app i = a ≫ f
+  /-- (Implementation) `b`. See the section docstring. -/
   b : D.obj i ⟶ X
   hb : t.app i = b ≫ f
   hab : c.π.app i ≫ a = c.π.app i ≫ b
+  /-- (Implementation) An open cover on `S`. See the section docstring. -/
   𝒰S : Scheme.OpenCover.{u} S
   [h𝒰S : ∀ i, IsAffine (𝒰S.obj i)]
+  /-- (Implementation) A family of open covers refining `𝒰S`. See the section docstring. -/
   𝒰X (i : (Scheme.Cover.pullbackCover 𝒰S f).J) : Scheme.OpenCover.{u} ((𝒰S.pullbackCover f).obj i)
   [h𝒰X : ∀ i j, IsAffine ((𝒰X i).obj j)]
 
