@@ -40,7 +40,7 @@ namespace NatTrans
 open Functor.LaxMonoidal
 
 /-- A natural transformation between (lax) monoidal functors is monoidal if it satisfies
-`ε F ≫ τ.app (𝟙_ C) = ε G` and `μ F X Y ≫ app (X ⊗ Y) = (app X ⊗ app Y) ≫ μ G X Y`. -/
+`ε F ≫ τ.app (𝟙_ C) = ε G` and `μ F X Y ≫ app (X ⊗ Y) = (app X ⊗ₘ app Y) ≫ μ G X Y`. -/
 class IsMonoidal : Prop where
   unit : ε F₁ ≫ τ.app (𝟙_ C) = ε F₂ := by aesop_cat
   tensor (X Y : C) : μ F₁ _ _ ≫ τ.app (X ⊗ Y) = (τ.app X ⊗ₘ τ.app Y) ≫ μ F₂ _ _ := by aesop_cat
