@@ -36,7 +36,7 @@ partial def simpIntroCore (g : MVarId) (ctx : Simp.Context) (simprocs : Simp.Sim
         pure <| ctx.setSimpTheorems simpTheorems
       else
         pure ctx
-    simpIntroCore g simpContext simprocs discharge? more ids'
+    simpIntroCore g ctx simprocs discharge? more ids'
   match t with
   | .letE .. => withFVar (← g.intro n)
   | .forallE (body := body) .. =>
