@@ -269,16 +269,14 @@ lemma IsStarProjection.eq_orthogonalProjection
 by
   letI := hp.range_hasOrthogonalProjection
   ext x
-  have : x ∈ LinearMap.range p ↔ p x = x := by
-    refine ⟨fun ⟨y, hy⟩ => ?_, fun h => ⟨x, h⟩⟩
-    rw [← hy, ← ContinuousLinearMap.mul_apply, hp.isIdempotentElem.eq]
   have : (LinearMap.range p).orthogonalProjection (p x) = p x := by
     simp [Submodule.orthogonalProjection_eq_self_iff]
   rw [← this]
-  simp
   symm
-  rw [← sub_eq_zero, ← ContinuousLinearMap.map_sub]
-  rw [Submodule.orthogonalProjection_eq_zero_iff, ← hp.ker_eq_ortho_adjoint_range,
+  simp only [coe_comp', Submodule.coe_subtypeL', Submodule.coe_subtype, Function.comp_apply,
+    SetLike.coe_eq_coe]
+  rw [← sub_eq_zero, ← ContinuousLinearMap.map_sub,
+    Submodule.orthogonalProjection_eq_zero_iff, ← hp.ker_eq_ortho_adjoint_range,
     mem_ker, map_sub, ← mul_apply, hp.isIdempotentElem.eq, sub_self]
 
 /-- an idempotent operator is positive if and only if it is self-adjoint -/
