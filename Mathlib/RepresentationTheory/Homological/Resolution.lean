@@ -475,7 +475,3 @@ def barResolution.extIso (V : Rep k G) (n : ℕ) :
   (barResolution k G).isoExt n V
 
 end Rep
-<<<<<<< HEAD
-=======
->>>>>>>> 6213db695457e666ff81f0246ba67c1e87b3c6b5:Mathlib/RepresentationTheory/Homological/Resolution.lean
->>>>>>> 6213db695457e666ff81f0246ba67c1e87b3c6b5

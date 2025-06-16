@@ -1043,7 +1043,3 @@ end H2
 end groupCohomologyIso
 
 end groupCohomology
-<<<<<<< HEAD
-=======
->>>>>>>> 6213db695457e666ff81f0246ba67c1e87b3c6b5:Mathlib/RepresentationTheory/Homological/GroupCohomology/LowDegree.lean
->>>>>>> 6213db695457e666ff81f0246ba67c1e87b3c6b5
