@@ -137,12 +137,12 @@ instance : MonoidalCategoryStruct AugmentedSimplexCategory where
 
 @[local simp]
 lemma id_tensorHom (x : AugmentedSimplexCategory) {y₁ y₂ : AugmentedSimplexCategory}
-    (f : y₁ ⟶ y₂) : 𝟙 x ⊗ f = x ◁ f :=
+    (f : y₁ ⟶ y₂) : 𝟙 x ⊗ₘ f = x ◁ f :=
   rfl
 
 @[local simp]
 lemma tensorHom_id {x₁ x₂ : AugmentedSimplexCategory} (y : AugmentedSimplexCategory)
-    (f : x₁ ⟶ x₂) : f ⊗ 𝟙 y = f ▷ y :=
+    (f : x₁ ⟶ x₂) : f ⊗ₘ 𝟙 y = f ▷ y :=
   rfl
 
 @[local simp]
@@ -229,7 +229,7 @@ theorem tensorObj_hom_ext {x y z : AugmentedSimplexCategory} (f g : x ⊗ y ⟶ 
 
 @[reassoc (attr := simp)]
 lemma φ₁_comp_tensorHom {x₁ y₁ x₂ y₂: AugmentedSimplexCategory}
-    (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) : φ₁ x₁ x₂ ≫ (f₁ ⊗ f₂) = f₁ ≫ φ₁ y₁ y₂ :=
+    (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) : φ₁ x₁ x₂ ≫ (f₁ ⊗ₘ f₂) = f₁ ≫ φ₁ y₁ y₂ :=
   match x₁, y₁, x₂, y₂, f₁, f₂ with
   | .of x₁, .of y₁, .of x₂, .of y₂, f₁, f₂ => by
     change φ₁' _ _ ≫ tensorHomOf _ _ = WithInitial.down f₁ ≫ φ₁' _ _
@@ -257,7 +257,7 @@ lemma φ₁_comp_tensorHom {x₁ y₁ x₂ y₂: AugmentedSimplexCategory}
 
 @[reassoc (attr := simp)]
 lemma φ₂_comp_tensorHom {x₁ y₁ x₂ y₂: AugmentedSimplexCategory}
-    (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) : φ₂ x₁ x₂ ≫ (f₁ ⊗ f₂) = f₂ ≫ φ₂ y₁ y₂ :=
+    (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) : φ₂ x₁ x₂ ≫ (f₁ ⊗ₘ f₂) = f₂ ≫ φ₂ y₁ y₂ :=
   match x₁, y₁, x₂, y₂, f₁, f₂ with
   | .of x₁, .of y₁, .of x₂, .of y₂, f₁, f₂ => by
     change φ₂' _ _ ≫ tensorHomOf _ _ = WithInitial.down f₂ ≫ φ₂' _ _
@@ -367,10 +367,10 @@ lemma φ₂_comp_φ₁_comp_associator (x y z : AugmentedSimplexCategory) :
 
 theorem tensor_comp {x₁ y₁ z₁ x₂ y₂ z₂ : AugmentedSimplexCategory}
     (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) (g₁ : y₁ ⟶ z₁) (g₂ : y₂ ⟶ z₂) :
-    (f₁ ≫ g₁) ⊗ (f₂ ≫ g₂) = (f₁ ⊗ f₂) ≫ (g₁ ⊗ g₂) := by
+    (f₁ ≫ g₁) ⊗ₘ (f₂ ≫ g₂) = (f₁ ⊗ₘ f₂) ≫ (g₁ ⊗ₘ g₂) := by
   aesop_cat
 
-theorem tensor_id (x y : AugmentedSimplexCategory) : (𝟙 x) ⊗ (𝟙 y) = 𝟙 (x ⊗ y) := by
+theorem tensor_id (x y : AugmentedSimplexCategory) : (𝟙 x) ⊗ₘ (𝟙 y) = 𝟙 (x ⊗ y) := by
   ext
   · simpa [φ₁, MonoidalCategoryStruct.whiskerLeft, MonoidalCategoryStruct.whiskerRight] using
       (tensor_comp (𝟙 x) (WithInitial.starInitial.to y) (𝟙 x) (𝟙 y)).symm
