@@ -48,9 +48,9 @@ def leftActionOfMonoidalOppositeRightAction [MonoidalRightAction Cᴹᵒᵖ D] :
   actionUnitIso _ := ρᵣ _
   actionHom_def _ _ := MonoidalRightAction.actionHom_def' _ _
   actionAssocIso_hom_naturality _ _ _ :=
-    MonoidalRightAction.actionAssocIso_naturality _ _ _
+    MonoidalRightAction.actionAssocIso_hom_naturality _ _ _
   actionUnitIso_hom_naturality _ :=
-    MonoidalRightAction.actionUnitIso_naturality _
+    MonoidalRightAction.actionUnitIso_hom_naturality _
   rightUnitor_actionHom c d :=
     MonoidalRightAction.actionHom_leftUnitor _ _
   associator_actionHom c₁ c₂ c₃ d := by
@@ -73,9 +73,9 @@ def monoidalOppositeLeftAction [MonoidalRightAction C D] :
   actionUnitIso _ := ρᵣ _
   actionHom_def _ _ := MonoidalRightAction.actionHom_def' _ _
   actionAssocIso_hom_naturality _ _ _ :=
-    MonoidalRightAction.actionAssocIso_naturality _ _ _
+    MonoidalRightAction.actionAssocIso_hom_naturality _ _ _
   actionUnitIso_hom_naturality _ :=
-    MonoidalRightAction.actionUnitIso_naturality _
+    MonoidalRightAction.actionUnitIso_hom_naturality _
   rightUnitor_actionHom c d :=
     MonoidalRightAction.actionHom_leftUnitor _ _
   associator_actionHom c₁ c₂ c₃ d := by
@@ -263,9 +263,9 @@ def rightActionOfMonoidalOppositeLeftAction [MonoidalLeftAction Cᴹᵒᵖ D] :
   actionAssocIso _ _ _ := αₗ _ _ _
   actionUnitIso _ := λₗ _
   actionHom_def _ _ := MonoidalLeftAction.actionHom_def' _ _
-  actionAssocIso_naturality _ _ _ :=
+  actionAssocIso_hom_naturality _ _ _ :=
     MonoidalLeftAction.actionAssocIso_hom_naturality _ _ _
-  actionUnitIso_naturality _ :=
+  actionUnitIso_hom_naturality _ :=
     MonoidalLeftAction.actionUnitIso_hom_naturality _
   actionHom_associator c₁ c₂ c₃ d := by
     simpa only [mop_tensorObj, mop_hom_associator,
@@ -286,9 +286,9 @@ def monoidalOppositeRightAction [MonoidalLeftAction C D] :
   actionAssocIso _ _ _ := αₗ _ _ _
   actionUnitIso _ := λₗ _
   actionHom_def _ _ := MonoidalLeftAction.actionHom_def' _ _
-  actionAssocIso_naturality _ _ _ :=
+  actionAssocIso_hom_naturality _ _ _ :=
     MonoidalLeftAction.actionAssocIso_hom_naturality _ _ _
-  actionUnitIso_naturality _ :=
+  actionUnitIso_hom_naturality _ :=
     MonoidalLeftAction.actionUnitIso_hom_naturality _
   actionHom_associator c₁ c₂ c₃ d := by
     simpa only [mop_tensorObj, mop_hom_associator,
