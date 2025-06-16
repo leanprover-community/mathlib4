@@ -201,8 +201,6 @@ theorem mulSingle_op₂ (op : ∀ i, M i → N i → O i) (h : ∀ i, op i 1 1 =
     mulSingle i (op i x₁ x₂) = fun j => op j (mulSingle i x₁ j) (mulSingle i x₂ j) :=
   Eq.symm <| funext <| apply_mulSingle₂ op h i x₁ x₂
 
-variable (f)
-
 @[to_additive]
 theorem mulSingle_injective (i : ι) : Function.Injective (mulSingle i : M i → ∀ i, M i) :=
   Function.update_injective _ i
