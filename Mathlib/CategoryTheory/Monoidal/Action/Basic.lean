@@ -128,7 +128,7 @@ class MonoidalLeftAction [MonoidalCategory C] extends
     aesop_cat
   actionAssocIso_hom_naturality
       {c₁ c₂ c₃ c₄ : C} {d₁ d₂ : D} (f : c₁ ⟶ c₂) (g : c₃ ⟶ c₄) (h : d₁ ⟶ d₂) :
-      ((f ⊗ g) ⊙ₗₘ h) ≫ (αₗ c₂ c₄ d₂).hom =
+      ((f ⊗ₘ g) ⊙ₗₘ h) ≫ (αₗ c₂ c₄ d₂).hom =
         (αₗ c₁ c₃ d₁).hom ≫ (f ⊙ₗₘ g ⊙ₗₘ h) := by
     aesop_cat
   actionUnitIso_hom_naturality {d d' : D} (f : d ⟶ d') :
@@ -168,7 +168,7 @@ attribute [simp, reassoc] MonoidalLeftAction.rightUnitor_actionHom
 @[simps!]
 instance selfAction [MonoidalCategory C] : MonoidalLeftAction C C where
   actionObj x y := x ⊗ y
-  actionHom f g := f ⊗ g
+  actionHom f g := f ⊗ₘ g
   actionUnitIso x := λ_ x
   actionAssocIso x y z := α_ x y z
   actionHomLeft f x := f ▷ x
@@ -235,7 +235,7 @@ theorem actionHom_def' {x₁ y₁ : C} {x₂ y₂ : D} (f : x₁ ⟶ y₁) (g : 
 theorem actionAssocIso_inv_naturality
     {c₁ c₂ c₃ c₄ : C} {d₁ d₂ : D} (f : c₁ ⟶ c₂) (g : c₃ ⟶ c₄) (h : d₁ ⟶ d₂) :
     (f ⊙ₗₘ g ⊙ₗₘ h) ≫ (αₗ c₂ c₄ d₂).inv =
-    (αₗ c₁ c₃ d₁).inv ≫ ((f ⊗ g) ⊙ₗₘ h) := by
+    (αₗ c₁ c₃ d₁).inv ≫ ((f ⊗ₘ g) ⊙ₗₘ h) := by
   rw [Iso.comp_inv_eq, Category.assoc, Eq.comm, Iso.inv_comp_eq, actionAssocIso_hom_naturality]
 
 @[reassoc]
