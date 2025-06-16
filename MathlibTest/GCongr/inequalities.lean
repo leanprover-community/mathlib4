@@ -258,4 +258,8 @@ example {a b : ℕ} (h1 : a ≤ 0) (h2 : 0 ≤ b)  : b < a + 1 → 0 < 0 + 1 := 
 example {a b : ℕ} (h1 : a ≤ 0) (_h2 : 0 ≤ b) : b < a + 1 → b < 0 + 1 := by gcongr
 example {a b : ℕ} (_h1 : a ≤ 0) (h2 : 0 ≤ b) : b < a + 1 → 0 < a + 1 := by gcongr
 
+/-! Test that `gcongr` with a pattern doesn't complain about type class inference problems. -/
+
+example {a b : ℕ} (h1 : a ≤ 0) (h2 : 0 ≤ b) : b ≤ a + 1 → 0 ≤ 0 + 1 := by gcongr ?_ ≤ ?_ + _
+
 end GCongrTests
