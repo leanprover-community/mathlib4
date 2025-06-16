@@ -421,10 +421,12 @@ partial def _root_.Lean.MVarId.gcongr
     -- then try to resolve the goal by the provided tactic `mainGoalDischarger`;
     -- if this fails, stop and report the existing goal.
     if let .mvar mvarId := tpl.getAppFn then
-      if let .syntheticOpaque ← mvarId.getKind then
-        try mainGoalDischarger g; return (true, names, #[])
-        catch ex =>
-          if GRewriteHole.isSome then throw ex else return (false, names, #[g])
+      if let some hole := GRewriteHole then
+        if hole == mvarId then mainGoalDischarger g; return (true, names, #[])
+      else
+        if let .syntheticOpaque ← mvarId.getKind then
+          try mainGoalDischarger g; return (true, names, #[])
+          catch _ => return (false, names, #[g])
     -- (ii) if the template is *not* `?_` then continue on.
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
   let rel ← withReducible g.getType'
