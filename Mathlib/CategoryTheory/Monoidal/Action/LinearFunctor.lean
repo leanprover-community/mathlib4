@@ -163,15 +163,15 @@ attribute [reassoc (attr := simp)] μₗ_comp_δₗ
 attribute [reassoc (attr := simp)] δₗ_comp_μₗ
 
 /-- A shorthand to bundle the μₗ as an isomorphism -/
-abbrev ℓ_ (c : C) (d : D) : c ⊙ₗ F.obj d ≅ F.obj (c ⊙ₗ d) where
+abbrev μₗIso (c : C) (d : D) : c ⊙ₗ F.obj d ≅ F.obj (c ⊙ₗ d) where
   hom := LaxLeftLinear.μₗ F c d
   inv := OplaxLeftLinear.δₗ F c d
 
 variable (c : C) (d : D)
 
-instance : IsIso (μₗ F c d) := Iso.isIso_hom (ℓ_ F c d)
+instance : IsIso (μₗ F c d) := Iso.isIso_hom (μₗIso F c d)
 
-instance : IsIso (δₗ F c d) := Iso.isIso_inv (ℓ_ F c d)
+instance : IsIso (δₗ F c d) := Iso.isIso_inv (μₗIso F c d)
 
 @[simp]
 lemma inv_μₗ :
@@ -253,28 +253,28 @@ class OplaxRightLinear
     [MonoidalRightAction C D] [MonoidalRightAction C D'] where
   /-- The oplax lineator morphism morphism. -/
   δᵣ (F) (d : D) (c : C) : F.obj (d ⊙ᵣ c) ⟶ (F.obj d) ⊙ᵣ c
-  δᵣ_naturality_right (F) {c c': C} (f : c ⟶ c') (d : D) :
+  δᵣ_naturality_right (F) (d : D) {c c': C} (f : c ⟶ c') :
     F.map (d ⊴ᵣ f) ≫ δᵣ d c' =
     δᵣ d c ≫ F.obj d ⊴ᵣ f := by aesop_cat
   δᵣ_naturality_left (F) {d d' : D} (f : d ⟶ d') (c : C) :
     F.map (f ⊵ᵣ c) ≫ δᵣ d' c =
     δᵣ d c ≫ F.map f ⊵ᵣ c := by aesop_cat
-  δᵣ_associativity (F) (c c' : C) (d : D) :
-    δᵣ (c ⊗ c') d ≫ (αᵣ _ _ _).hom =
-    F.map (αₗ _ _ _).hom ≫ δᵣ c (c' ⊙ᵣ d) ≫
-      c ⊵ᵣ δᵣ c' d := by aesop_cat
+  δᵣ_associativity (F) (d : D) (c c' : C) :
+    δᵣ d (c ⊗ c') ≫ (αᵣ _ _ _).hom =
+    F.map (αᵣ _ _ _).hom ≫ δᵣ (d ⊙ᵣ c) c' ≫
+      δᵣ d c ⊵ᵣ c' := by aesop_cat
   δᵣ_unitality_inv (F) (d : D) :
     (ρᵣ (F.obj d)).inv =
-    F.map (ρᵣ d).inv ≫ δᵣ (𝟙_ C) d := by aesop_cat
+    F.map (ρᵣ d).inv ≫ δᵣ d (𝟙_ C) := by aesop_cat
 
 namespace OplaxRightLinear
 
 -- These are [reassoc (attr := simp)] on the basis that analog lemmas for
 -- oplax monoidal functors are also [reassoc (attr := simp)].
-attribute [reassoc (attr := simp)] δₗ_naturality_right
-attribute [reassoc (attr := simp)] δₗ_naturality_left
-attribute [reassoc (attr := simp)] δₗ_associativity
-attribute [simp, reassoc] δₗ_unitality_inv
+attribute [reassoc (attr := simp)] δᵣ_naturality_right
+attribute [reassoc (attr := simp)] δᵣ_naturality_left
+attribute [reassoc (attr := simp)] δᵣ_associativity
+attribute [simp, reassoc] δᵣ_unitality_inv
 
 variable
   (F : D ⥤ D') {C : Type*} [Category C] [MonoidalCategory C]
@@ -282,35 +282,35 @@ variable
   [F.OplaxRightLinear C]
 
 @[reassoc (attr := simp)]
-lemma δₗ_associativity_inv (c c' : C) (d : D) :
-    δₗ F c (c' ⊙ₗ d) ≫
-      c ⊴ₗ δₗ F c' d ≫ (αₗ _ _ _).inv =
-    F.map (αₗ _ _ _).inv ≫ δₗ F (c ⊗ c' : C) d := by
-  simpa [-δₗ_associativity, -δₗ_associativity_assoc] using
-    F.map (αₗ _ _ _).inv ≫=
-      (δₗ_associativity F c c' d).symm =≫
-      (αₗ _ _ _).inv
+lemma δᵣ_associativity_inv (d : D) (c c' : C) :
+    δᵣ F (d ⊙ᵣ c) c' ≫
+      δᵣ F d c ⊵ᵣ c' ≫ (αᵣ _ _ _).inv =
+    F.map (αᵣ _ _ _).inv ≫ δᵣ F d (c ⊗ c' : C) := by
+  simpa [-δᵣ_associativity, -δᵣ_associativity_assoc] using
+    F.map (αᵣ _ _ _).inv ≫=
+      (δᵣ_associativity F d c c').symm =≫
+      (αᵣ _ _ _).inv
 
 @[reassoc (attr := simp)]
-lemma δₗ_unitality_hom (d : D) :
-    δₗ F (𝟙_ C) d ≫ (λₗ (F.obj d)).hom = F.map (λₗ d).hom := by
-  simpa [-δₗ_unitality_inv] using
-    F.map (λₗ[C] d).hom ≫=
-      (δₗ_unitality_inv F d).symm =≫
-      (λₗ[C] (F.obj d)).hom
+lemma δᵣ_unitality_hom (d : D) :
+    δᵣ F d (𝟙_ C) ≫ (ρᵣ (F.obj d)).hom = F.map (ρᵣ d).hom := by
+  simpa [-δᵣ_unitality_inv] using
+    F.map (ρᵣ[C] d).hom ≫=
+      (δᵣ_unitality_inv F d).symm =≫
+      (ρᵣ[C] (F.obj d)).hom
 
 end OplaxRightLinear
 
 /-- `F.RightLinear C` asserts that `F` is both lax and oplax left-linear,
-in a compatible way, i.e that `μₗ` is inverse to `δₗ`. -/
+in a compatible way, i.e that `μᵣ` is inverse to `δᵣ`. -/
 class RightLinear
     (F : D ⥤ D') (C : Type*) [Category C] [MonoidalCategory C]
     [MonoidalRightAction C D] [MonoidalRightAction C D'] extends
     F.LaxRightLinear C, F.OplaxRightLinear C where
-  μₗ_comp_δₗ (F) (c : C) (d : D) :
-    LaxRightLinear.μₗ F c d ≫ OplaxRightLinear.δₗ F c d = 𝟙 _
-  δₗ_comp_μₗ (F) (c : C) (d : D) :
-    OplaxRightLinear.δₗ F c d ≫ LaxRightLinear.μₗ F c d = 𝟙 _
+  μᵣ_comp_δᵣ (F) (d : D) (c : C) :
+    LaxRightLinear.μᵣ F d c ≫ OplaxRightLinear.δᵣ F d c = 𝟙 _
+  δᵣ_comp_μᵣ (F) (d : D) (c : C) :
+    OplaxRightLinear.δᵣ F d c ≫ LaxRightLinear.μᵣ F d c = 𝟙 _
 
 namespace RightLinear
 
@@ -321,31 +321,32 @@ variable
   [MonoidalRightAction C D] [MonoidalRightAction C D']
   [F.RightLinear C]
 
-attribute [reassoc (attr := simp)] μₗ_comp_δₗ
-attribute [reassoc (attr := simp)] δₗ_comp_μₗ
+attribute [reassoc (attr := simp)] μᵣ_comp_δᵣ
+attribute [reassoc (attr := simp)] δᵣ_comp_μᵣ
 
-/-- A shorthand to bundle the μₗ as an isomorphism -/
-abbrev ℓ_ (c : C) (d : D) : c ⊙ₗ F.obj d ≅ F.obj (c ⊙ₗ d) where
-  hom := LaxRightLinear.μₗ F c d
-  inv := OplaxRightLinear.δₗ F c d
+/-- A shorthand to bundle the μᵣ as an isomorphism -/
+abbrev μᵣIso (d : D) (c : C) : F.obj d ⊙ᵣ c ≅ F.obj (d ⊙ᵣ c) where
+  hom := LaxRightLinear.μᵣ F d c
+  inv := OplaxRightLinear.δᵣ F d c
 
 variable (c : C) (d : D)
 
-instance : IsIso (μₗ F c d) := Iso.isIso_hom (ℓ_ F c d)
+instance : IsIso (μᵣ F d c) := Iso.isIso_hom (μᵣIso F d c)
 
-instance : IsIso (δₗ F c d) := Iso.isIso_inv (ℓ_ F c d)
-
-@[simp]
-lemma inv_μₗ :
-    CategoryTheory.inv (μₗ F c d) = δₗ F c d :=
-  Eq.symm <| IsIso.eq_inv_of_hom_inv_id <| μₗ_comp_δₗ F c d
+instance : IsIso (δᵣ F d c) := Iso.isIso_inv (μᵣIso F d c)
 
 @[simp]
-lemma inv_δₗ :
-    CategoryTheory.inv (δₗ F c d) = μₗ F c d :=
-  Eq.symm <| IsIso.eq_inv_of_hom_inv_id <| δₗ_comp_μₗ F c d
+lemma inv_μᵣ :
+    CategoryTheory.inv (μᵣ F d c) = δᵣ F d c :=
+  Eq.symm <| IsIso.eq_inv_of_hom_inv_id <| μᵣ_comp_δᵣ F d c
+
+@[simp]
+lemma inv_δᵣ :
+    CategoryTheory.inv (δᵣ F d c) = μᵣ F d c :=
+  Eq.symm <| IsIso.eq_inv_of_hom_inv_id <| δᵣ_comp_μᵣ F d c
 
 end RightLinear
 
 end rightAction
+
 end CategoryTheory.Functor
