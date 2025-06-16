@@ -201,15 +201,15 @@ class LaxRightLinear
   /-- The "μᵣ" morphism. -/
   μᵣ (F) (d : D) (c : C) : F.obj d ⊙ᵣ c ⟶ F.obj (d ⊙ᵣ c)
   μᵣ_naturality_right (F) (d : D) {c c': C} (f : c ⟶ c') :
-    F.obj d ᵣ⊴ f ≫ μᵣ d c' = μᵣ d c ≫ F.map (d ᵣ⊴ f) := by aesop_cat
+    F.obj d ⊴ᵣ f ≫ μᵣ d c' = μᵣ d c ≫ F.map (d ⊴ᵣ f) := by aesop_cat
   μᵣ_naturality_left (F) {d d' : D} (f : d ⟶ d') (c : C) :
-    F.map f ᵣ⊵ c ≫ μᵣ d' c = μᵣ d c ≫ F.map (f ᵣ⊵ c) := by aesop_cat
+    F.map f ⊵ᵣ c ≫ μᵣ d' c = μᵣ d c ≫ F.map (f ⊵ᵣ c) := by aesop_cat
   μᵣ_associativity (F) (d : D) (c c' : C) :
-    μᵣ d (c ⊗ c') ≫ F.map (ᵣα _ _ _).hom =
-    (ᵣα (F.obj d) c c').hom ≫ (μᵣ d c) ᵣ⊵ c' ≫
+    μᵣ d (c ⊗ c') ≫ F.map (αᵣ _ _ _).hom =
+    (αᵣ (F.obj d) c c').hom ≫ (μᵣ d c) ⊵ᵣ c' ≫
       μᵣ (d ⊙ᵣ c) c' := by aesop_cat
   μᵣ_unitality (F) (d : D) :
-    (ᵣρ (F.obj d)).hom = μᵣ d (𝟙_ C) ≫ F.map (ᵣρ d).hom := by aesop_cat
+    (ρᵣ (F.obj d)).hom = μᵣ d (𝟙_ C) ≫ F.map (ρᵣ d).hom := by aesop_cat
 
 namespace LaxRightLinear
 
@@ -227,20 +227,20 @@ variable
 
 @[reassoc (attr := simp)]
 lemma μᵣ_associativity_inv (d : D) (c c' : C) :
-    μᵣ F d c ᵣ⊵ c' ≫ μᵣ F (d ⊙ᵣ c) c' ≫ F.map (ᵣα _ _ _).inv =
-    (ᵣα (F.obj d) c c' ).inv ≫ μᵣ F d (c ⊗ c') := by
+    μᵣ F d c ⊵ᵣ c' ≫ μᵣ F (d ⊙ᵣ c) c' ≫ F.map (αᵣ _ _ _).inv =
+    (αᵣ (F.obj d) c c' ).inv ≫ μᵣ F d (c ⊗ c') := by
   simpa [-μᵣ_associativity, -μᵣ_associativity_assoc] using
-    (ᵣα _ _ _).inv ≫=
+    (αᵣ _ _ _).inv ≫=
       (μᵣ_associativity F d c c').symm =≫
-      F.map (ᵣα _ _ _).inv
+      F.map (αᵣ _ _ _).inv
 
 @[reassoc (attr := simp)]
 lemma μᵣ_unitality_inv (d : D) :
-     (ᵣρ (F.obj d)).inv ≫ μᵣ F d (𝟙_ C) = F.map (ᵣρ d).inv := by
+     (ρᵣ (F.obj d)).inv ≫ μᵣ F d (𝟙_ C) = F.map (ρᵣ d).inv := by
   simpa [-μᵣ_unitality] using
-    (ᵣρ[C] (F.obj d)).inv ≫=
+    (ρᵣ[C] (F.obj d)).inv ≫=
       (μᵣ_unitality F d).symm =≫
-      F.map (ᵣρ[C] d).inv
+      F.map (ρᵣ[C] d).inv
 
 end LaxRightLinear
 
@@ -254,18 +254,18 @@ class OplaxRightLinear
   /-- The oplax lineator morphism morphism. -/
   δᵣ (F) (d : D) (c : C) : F.obj (d ⊙ᵣ c) ⟶ (F.obj d) ⊙ᵣ c
   δᵣ_naturality_right (F) {c c': C} (f : c ⟶ c') (d : D) :
-    F.map (d ᵣ⊴ f) ≫ δᵣ d c' =
-    δᵣ d c ≫ F.obj d ᵣ⊴ f := by aesop_cat
+    F.map (d ⊴ᵣ f) ≫ δᵣ d c' =
+    δᵣ d c ≫ F.obj d ⊴ᵣ f := by aesop_cat
   δᵣ_naturality_left (F) {d d' : D} (f : d ⟶ d') (c : C) :
-    F.map (f ᵣ⊵ c) ≫ δᵣ d' c =
-    δᵣ d c ≫ F.map f ᵣ⊵ c := by aesop_cat
+    F.map (f ⊵ᵣ c) ≫ δᵣ d' c =
+    δᵣ d c ≫ F.map f ⊵ᵣ c := by aesop_cat
   δᵣ_associativity (F) (c c' : C) (d : D) :
     δᵣ (c ⊗ c') d ≫ (αᵣ _ _ _).hom =
     F.map (αₗ _ _ _).hom ≫ δᵣ c (c' ⊙ᵣ d) ≫
-      c ᵣ⊵ δᵣ c' d := by aesop_cat
+      c ⊵ᵣ δᵣ c' d := by aesop_cat
   δᵣ_unitality_inv (F) (d : D) :
-    (ᵣρ (F.obj d)).inv =
-    F.map (ᵣρ d).inv ≫ δᵣ (𝟙_ C) d := by aesop_cat
+    (ρᵣ (F.obj d)).inv =
+    F.map (ρᵣ d).inv ≫ δᵣ (𝟙_ C) d := by aesop_cat
 
 namespace OplaxRightLinear
 
