@@ -459,7 +459,7 @@ previous assumptions. -/
     use ve - z
     have := mapDomain_comapDomain (α := S) Subtype.val Subtype.val_injective
       (v + dOne A ve) (fun x hx => ⟨⟨x, hS hx⟩, rfl⟩)
-    simp_all [v, mapOneCycles_hom, add_sub_assoc, sub_add_sub_cancel']
+    simp_all [mapOneCycles_hom, v, add_sub_assoc, sub_add_sub_cancel']
   /- And `v + d(ve) := x - dz + d(ve)` is a 1-cycle because `x` is. -/
   · have : v + dOne _ ve ∈ oneCycles A := Submodule.add_mem _
       (Submodule.sub_mem _ hxc <| dOne_apply_mem_oneCycles _) (dOne_apply_mem_oneCycles _)
