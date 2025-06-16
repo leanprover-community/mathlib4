@@ -5,10 +5,8 @@ Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.GroupWithZero.Range
 import Mathlib.Algebra.Order.Group.Cyclic
-import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.Algebra.Order.Group.Units
 import Mathlib.RingTheory.Valuation.Basic
-import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Discrete Valuations
@@ -22,57 +20,45 @@ equivalent to asking that `ofAdd (-1 : ℤ)` belongs to the image, in turn equiv
 
 
 ## Main Definitions
-* `IsDiscrete`: We define a `Γ`-valued valuation `v` to be discrete if `Γˣ` is cyclic and
-  `genLTOne Γˣ` belongs to the image of `v`.
+* `IsDiscrete`: We define a `Γ`-valued valuation `v` to be discrete if `Γˣ` is cyclic, nontrivial
+  and `genLTOne Γˣ` generates the value group of `v`.
 
 ## TODO
 * Define (pre)uniformizers for nontrivial discrete valuations.
-* Relate discrete valuations and discrete valuation rings.
+* Relate discrete valuations and discrete valuation rings (contained in the project
+  <https://github.com/mariainesdff/LocalClassFieldTheory>)
 -/
 
 namespace Valuation
 
-open Function Set LinearOrderedCommGroup MonoidHomWithZero Valuation
+open Set LinearOrderedCommGroup MonoidHomWithZero
 
-variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
+variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ] [IsCyclic Γˣ] [Nontrivial Γˣ]
 
-variable {A : Type*} [Ring A] /- [IsDomain A] -/ (v : Valuation A Γ)
-
--- variable {v} in
--- lemma ne_zero_iff' (hv : v.supp.primeCompl = nonZeroDivisors A) {a : A} : v a ≠ 0 ↔ a ≠ 0 := by
---   refine ⟨fun h ha ↦ (ha ▸ h) (Valuation.map_zero ..), fun h hva ↦ ?_⟩
---   · replace hva : a ∈ (v.supp : Set A) := hva
---     rw [← compl_compl (x := (v.supp : Set A)), mem_compl_iff] at hva
---     replace hva : a ∉ (v.supp).primeCompl := hva
---     simp only [hv, mem_nonZeroDivisors_iff_ne_zero, ne_eq, not_not] at hva
---     exact h hva
+variable {A : Type*} [Ring A] (v : Valuation A Γ)
 
 /-- Given a linearly ordered commutative group with zero `Γ` such that `Γˣ` is
 nontrivial cyclic, a valuation `v : A → Γ` on a ring `A` is *discrete*, if
 `genLTOne Γˣ` belongs to the image. Note that the latter is equivalent to
 asking that `1 : ℤ` belongs to the image of the corresponding additive valuation. -/
 class IsDiscrete : Prop where
-  -- supp_v' : v.supp.primeCompl = nonZeroDivisors A
-  exists_generator_lt_one' : ∃ (γ : Γˣ), Subgroup.zpowers γ = (valueGroup v) ∧ γ < 1
+  valueGroup_eq_zpowers : Subgroup.zpowers (genLTOne Γˣ) = (valueGroup v)
 
 namespace IsDiscrete
 
--- lemma supp_v [IsDiscrete v] : v.supp.primeCompl = nonZeroDivisors A := supp_v'
-
 lemma exists_generator_lt_one [IsDiscrete v] :
     ∃ (γ : Γˣ), Subgroup.zpowers γ = valueGroup v ∧ γ < 1 :=
-  exists_generator_lt_one'
+  ⟨_, valueGroup_eq_zpowers, Subgroup.genLTOne_lt_one ..⟩
 
 /-- Given a discrete valuation `v`, `Valuation.IsDiscrete.generator` is a generator of the value
-group that is `< 1`. -/
-noncomputable def generator [IsDiscrete v] : Γˣ := (exists_generator_lt_one v).choose
+group that is `< 1`: by definition, it coincides with `genLTOne Γˣ`. -/
+noncomputable abbrev generator [IsDiscrete v] : Γˣ := genLTOne Γˣ
 
 lemma generator_zpowers_eq_valueGroup [IsDiscrete v] :
-    (Subgroup.zpowers (generator v)) = valueGroup v :=
-  (exists_generator_lt_one v).choose_spec.1
+    (Subgroup.zpowers (generator v)) = valueGroup v := valueGroup_eq_zpowers
 
 lemma generator_lt_one [IsDiscrete v] : (generator v) < 1 :=
-  (exists_generator_lt_one v).choose_spec.2
+  Subgroup.genLTOne_lt_one ..
 
 lemma generator_zpowers_eq_range (K : Type*) [Field K] (w : Valuation K Γ) [IsDiscrete w] :
     Units.val '' (Subgroup.zpowers (generator w)) = range w \ {0} := by
@@ -86,27 +72,8 @@ lemma generator_mem_range (K : Type*) [Field K] (w : Valuation K Γ) [IsDiscrete
 
 lemma generator_ne_zero [IsDiscrete v] : (generator v : Γ) ≠ 0 := by simp
 
-lemma valueGroup_IsCyclic [IsDiscrete v] :
-    IsCyclic <| valueGroup v := by
-  rw [isCyclic_iff_exists_zpowers_eq_top]
-  rw [← generator_zpowers_eq_valueGroup]
-  let γ := generator v
-  have hγ : γ ∈ Subgroup.zpowers γ := by
-    simp
-  set η : Subgroup.zpowers γ := ⟨γ, hγ⟩ with hγ_def
-  use η
-  rw [eq_top_iff]
-  rintro ⟨g, hg⟩
-  rw [Subgroup.mem_zpowers_iff] at hg ⊢
-  obtain ⟨k, hk⟩ := hg
-  simp
-  use k
-  ext
-  rw [Units.ext_iff] at hk
-  exact hk
-
-lemma nontrivial_value_group [IsDiscrete v] : Nontrivial Γˣ :=
-  ⟨1, generator v, ne_of_gt <| generator_lt_one v⟩
+lemma valueGroup_IsCyclic [IsDiscrete v] : IsCyclic <| valueGroup v := by
+  apply Subgroup.isCyclic
 
 end IsDiscrete
 
