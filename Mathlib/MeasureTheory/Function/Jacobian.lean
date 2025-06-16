@@ -1099,8 +1099,8 @@ theorem map_withDensity_abs_det_fderiv_eq_addHaar (hs : MeasurableSet s)
     apply h'f.mono_ac
     exact withDensity_absolutelyContinuous _ _
   apply Measure.ext fun t ht => ?_
-  rw [map_apply_of_aemeasurable h''f ht, withDensity_apply₀ _ (h'f ht), Measure.restrict_apply ht,
-    restrict_restrict (h'f ht),
+  rw [map_apply_of_aemeasurable h''f ht, withDensity_apply₀ _ _, Measure.restrict_apply ht,
+    restrict_restrict _,
     lintegral_abs_det_fderiv_eq_addHaar_image μ ((h'f ht).inter hs)
       (fun x hx => (hf' x hx.2).mono inter_subset_right) (hf.mono inter_subset_right),
     image_preimage_inter]
