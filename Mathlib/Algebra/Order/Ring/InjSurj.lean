@@ -78,5 +78,9 @@ protected alias linearOrderedCommSemiring := Function.Injective.isStrictOrderedR
 protected alias linearOrderedRing := Function.Injective.isStrictOrderedRing
 @[deprecated (since := "2025-04-10")]
 protected alias linearOrderedCommRing := Function.Injective.isStrictOrderedRing
+@[deprecated (since := "2025-04-10")]
+alias linearOrderedSemifield := Function.Injective.isStrictOrderedRing
+@[deprecated (since := "2025-04-10")]
+alias linearOrderedField := Function.Injective.isStrictOrderedRing
 
 end Function.Injective

@@ -371,8 +371,8 @@ variable {E : Type u₃} [Category.{v₃} E] [MonoidalCategory E] [BraidedCatego
 which preserves the braiding.
 -/
 class Functor.LaxBraided (F : C ⥤ D) extends F.LaxMonoidal where
-  braided : ∀ X Y : C, μ F X Y ≫ F.map (β_ X Y).hom =
-    (β_ (F.obj X) (F.obj Y)).hom ≫ μ F Y X := by aesop_cat
+  braided : ∀ X Y : C, μ X Y ≫ F.map (β_ X Y).hom =
+    (β_ (F.obj X) (F.obj Y)).hom ≫ μ Y X := by aesop_cat
 
 namespace Functor.LaxBraided
 
@@ -484,6 +484,7 @@ end
 /-- A braided functor between braided monoidal categories is a monoidal functor
 which preserves the braiding.
 -/
+@[ext]
 class Functor.Braided (F : C ⥤ D) extends F.Monoidal, F.LaxBraided where
 
 @[simp, reassoc]
@@ -505,6 +506,9 @@ namespace Functor.Braided
 instance : (𝟭 C).Braided where
 
 instance (F : C ⥤ D) (G : D ⥤ E) [F.Braided] [G.Braided] : (F ⋙ G).Braided where
+
+lemma toMonoidal_injective (F : C ⥤ D) : Function.Injective
+    (@Braided.toMonoidal _ _ _ _ _ _ _ _ _ : F.Braided → F.Monoidal) := by rintro ⟨⟩ ⟨⟩ rfl; rfl
 
 end Functor.Braided
 

@@ -415,7 +415,7 @@ theorem Filter.Tendsto.mul_atBot' {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Ten
   Filter.Tendsto.mul_atTop' (α := αᵒᵈ) hf hg
 
 /-- In a linearly ordered commutative group with the order topology,
- if `f` tends to `atTop` and `g` tends to `C` then `f * g` tends to `atTop`. -/
+if `f` tends to `atTop` and `g` tends to `C` then `f * g` tends to `atTop`. -/
 @[to_additive atTop_add "In a linearly ordered additive commutative group with the order topology,
 if `f` tends to `atTop` and `g` tends to `C` then `f + g` tends to `atTop`."]
 theorem Filter.Tendsto.atTop_mul' {C : α} (hf : Tendsto f l atTop) (hg : Tendsto g l (𝓝 C)) :

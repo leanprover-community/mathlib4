@@ -22,26 +22,26 @@ is well-founded. In this file we define three especially-useful characterisation
 proofs that they are indeed equivalent to well-foundedness.
 
 ## Main definitions
- * `CompleteLattice.IsSupClosedCompact`
- * `CompleteLattice.IsSupFiniteCompact`
- * `CompleteLattice.IsCompactElement`
- * `IsCompactlyGenerated`
+* `CompleteLattice.IsSupClosedCompact`
+* `CompleteLattice.IsSupFiniteCompact`
+* `CompleteLattice.IsCompactElement`
+* `IsCompactlyGenerated`
 
 ## Main results
 The main result is that the following four conditions are equivalent for a complete lattice:
- * `well_founded (>)`
- * `CompleteLattice.IsSupClosedCompact`
- * `CompleteLattice.IsSupFiniteCompact`
- * `∀ k, CompleteLattice.IsCompactElement k`
+* `well_founded (>)`
+* `CompleteLattice.IsSupClosedCompact`
+* `CompleteLattice.IsSupFiniteCompact`
+* `∀ k, CompleteLattice.IsCompactElement k`
 
 This is demonstrated by means of the following four lemmas:
- * `CompleteLattice.WellFounded.isSupFiniteCompact`
- * `CompleteLattice.IsSupFiniteCompact.isSupClosedCompact`
- * `CompleteLattice.IsSupClosedCompact.wellFounded`
- * `CompleteLattice.isSupFiniteCompact_iff_all_elements_compact`
+* `CompleteLattice.WellFounded.isSupFiniteCompact`
+* `CompleteLattice.IsSupFiniteCompact.isSupClosedCompact`
+* `CompleteLattice.IsSupClosedCompact.wellFounded`
+* `CompleteLattice.isSupFiniteCompact_iff_all_elements_compact`
 
- We also show well-founded lattices are compactly generated
- (`CompleteLattice.isCompactlyGenerated_of_wellFounded`).
+We also show well-founded lattices are compactly generated
+(`CompleteLattice.isCompactlyGenerated_of_wellFounded`).
 
 ## References
 - [G. Călugăreanu, *Lattice Concepts of Module Theory*][calugareanu]
@@ -323,7 +323,7 @@ theorem WellFoundedLT.finite_of_sSupIndep [WellFoundedLT α] {s : Set α}
   have lt n : a (n + 1) < a n := (Disjoint.right_lt_sup_of_left_ne_bot
     ((hs (e n).2.1).mono_right <| iSup₂_le fun i hi ↦ le_sSup ?_) (e n).2.2).trans_le (sup_le n)
   · exact (RelEmbedding.natGT a lt).not_wellFounded_of_decreasing_seq wellFounded_lt
-  exact ⟨(e i).2.1, fun h ↦ n.lt_succ_self.not_le <| hi.trans_eq <| e.2 <| Subtype.val_injective h⟩
+  exact ⟨(e i).2.1, fun h ↦ n.lt_succ_self.not_ge <| hi.trans_eq <| e.2 <| Subtype.val_injective h⟩
 
 @[deprecated (since := "2024-11-24")]
 alias CompleteLattice.WellFoundedLT.finite_of_setIndependent := WellFoundedLT.finite_of_sSupIndep
@@ -442,7 +442,7 @@ theorem sSupIndep_iff_finite {s : Set α} :
     intro ht
     classical
       have h' := (h (insert a t) ?_ (t.mem_insert_self a)).eq_bot
-      · rwa [Finset.coe_insert, Set.insert_diff_self_of_not_mem] at h'
+      · rwa [Finset.coe_insert, Set.insert_diff_self_of_notMem] at h'
         exact fun con => ((Set.mem_diff a).1 (ht con)).2 (Set.mem_singleton a)
       · rw [Finset.coe_insert, Set.insert_subset_iff]
         exact ⟨ha, Set.Subset.trans ht diff_subset⟩⟩
@@ -625,7 +625,7 @@ theorem exists_sSupIndep_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a } = �
       exact con.mono_right ((sSup_le_sSup Set.diff_subset).trans le_sup_right)
     · have h : (s ∪ {a}) \ {x} = s \ {x} ∪ {a} := by
         simp only [Set.union_singleton]
-        rw [Set.insert_diff_of_not_mem]
+        rw [Set.insert_diff_of_notMem]
         rw [Set.mem_singleton_iff]
         exact Ne.symm xa
       rw [h, sSup_union, sSup_singleton]
