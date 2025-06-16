@@ -753,6 +753,7 @@ import Mathlib.Algebra.Order.Antidiag.Nat
 import Mathlib.Algebra.Order.Antidiag.Pi
 import Mathlib.Algebra.Order.Antidiag.Prod
 import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Order.Archimedean.Class
 import Mathlib.Algebra.Order.Archimedean.Hom
 import Mathlib.Algebra.Order.Archimedean.IndicatorCard
 import Mathlib.Algebra.Order.Archimedean.Submonoid
@@ -827,6 +828,7 @@ import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
 import Mathlib.Algebra.Order.GroupWithZero.Bounds
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Algebra.Order.GroupWithZero.Finset
+import Mathlib.Algebra.Order.GroupWithZero.Lex
 import Mathlib.Algebra.Order.GroupWithZero.Submonoid
 import Mathlib.Algebra.Order.GroupWithZero.Synonym
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
@@ -860,6 +862,7 @@ import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.Canonical.Basic
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Monoid.Defs
+import Mathlib.Algebra.Order.Monoid.Lex
 import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Monoid.Prod
@@ -1928,6 +1931,7 @@ import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+import Mathlib.CategoryTheory.Bicategory.Functor.Strict
 import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
 import Mathlib.CategoryTheory.Bicategory.Grothendieck
 import Mathlib.CategoryTheory.Bicategory.Kan.Adjunction
@@ -2052,6 +2056,7 @@ import Mathlib.CategoryTheory.FiberedCategory.Cartesian
 import Mathlib.CategoryTheory.FiberedCategory.Cocartesian
 import Mathlib.CategoryTheory.FiberedCategory.Fiber
 import Mathlib.CategoryTheory.FiberedCategory.Fibered
+import Mathlib.CategoryTheory.FiberedCategory.Grothendieck
 import Mathlib.CategoryTheory.FiberedCategory.HasFibers
 import Mathlib.CategoryTheory.FiberedCategory.HomLift
 import Mathlib.CategoryTheory.Filtered.Basic
@@ -3800,6 +3805,7 @@ import Mathlib.GroupTheory.QuotientGroup.Basic
 import Mathlib.GroupTheory.QuotientGroup.Defs
 import Mathlib.GroupTheory.QuotientGroup.Finite
 import Mathlib.GroupTheory.Rank
+import Mathlib.GroupTheory.RegularWreathProduct
 import Mathlib.GroupTheory.Schreier
 import Mathlib.GroupTheory.SchurZassenhaus
 import Mathlib.GroupTheory.SemidirectProduct
@@ -4320,6 +4326,7 @@ import Mathlib.MeasureTheory.Integral.IntegrationByParts
 import Mathlib.MeasureTheory.Integral.IntervalAverage
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
@@ -4882,6 +4889,7 @@ import Mathlib.Order.Preorder.Chain
 import Mathlib.Order.Preorder.Finite
 import Mathlib.Order.PrimeIdeal
 import Mathlib.Order.PrimeSeparator
+import Mathlib.Order.Prod.Lex.Hom
 import Mathlib.Order.PropInstances
 import Mathlib.Order.Radical
 import Mathlib.Order.Rel.GaloisConnection
@@ -5024,11 +5032,13 @@ import Mathlib.RepresentationTheory.Character
 import Mathlib.RepresentationTheory.Coinduced
 import Mathlib.RepresentationTheory.Coinvariants
 import Mathlib.RepresentationTheory.FDRep
-import Mathlib.RepresentationTheory.GroupCohomology.Basic
-import Mathlib.RepresentationTheory.GroupCohomology.Functoriality
-import Mathlib.RepresentationTheory.GroupCohomology.Hilbert90
-import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
-import Mathlib.RepresentationTheory.GroupCohomology.Resolution
+import Mathlib.RepresentationTheory.FiniteIndex
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.Hilbert90
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
+import Mathlib.RepresentationTheory.Homological.Resolution
 import Mathlib.RepresentationTheory.Induced
 import Mathlib.RepresentationTheory.Invariants
 import Mathlib.RepresentationTheory.Maschke
@@ -5175,6 +5185,7 @@ import Mathlib.RingTheory.GradedAlgebra.Radical
 import Mathlib.RingTheory.HahnSeries.Addition
 import Mathlib.RingTheory.HahnSeries.Basic
 import Mathlib.RingTheory.HahnSeries.HEval
+import Mathlib.RingTheory.HahnSeries.Lex
 import Mathlib.RingTheory.HahnSeries.Multiplication
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Summable
@@ -5358,6 +5369,7 @@ import Mathlib.RingTheory.Norm.Defs
 import Mathlib.RingTheory.Norm.Transitivity
 import Mathlib.RingTheory.NormTrace
 import Mathlib.RingTheory.Nullstellensatz
+import Mathlib.RingTheory.OrderOfVanishing
 import Mathlib.RingTheory.OreLocalization.Basic
 import Mathlib.RingTheory.OreLocalization.Cardinality
 import Mathlib.RingTheory.OreLocalization.OreSet
