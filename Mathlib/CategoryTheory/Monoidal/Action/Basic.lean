@@ -17,8 +17,8 @@ a bifunctor, along with structure natural isomorphisms
 `(- ⊗ -) ⊙ₗ - ≅ - ⊙ₗ - ⊙ₗ -` and `𝟙_ C ⊙ₗ - ≅ -`, subject to coherence conditions.
 
 We also define right actions, for these, the notation for the action of `c`
-on `d` is `d ᵣ⊙ c`, and the structure isomorphisms are of the form
-`- ᵣ⊙ (- ⊗ -) ≅ (- ᵣ⊙ -) ᵣ⊙ -` and `- ⊙ₗ 𝟙_ C ≅ -`.
+on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
+`- ⊙ᵣ (- ⊗ -) ≅ (- ⊙ᵣ -) ⊙ᵣ -` and `- ⊙ₗ 𝟙_ C ≅ -`.
 
 
 ## References
