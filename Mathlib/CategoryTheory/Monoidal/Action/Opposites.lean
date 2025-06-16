@@ -120,7 +120,7 @@ def oppositeLeftAction [MonoidalLeftAction C D] :
   actionObj c d := op <| c.unop ⊙ₗ d.unop
   actionHomLeft f d := (f.unop ⊵ₗ unop d).op
   actionHomRight c _ _ f := (unop c ⊴ₗ f.unop).op
-  actionHom f g := (f.unop ⊙ₗ g.unop).op
+  actionHom f g := (f.unop ⊙ₗₘ g.unop).op
   actionAssocIso _ _ _ := Iso.op <| (αₗ _ _ _).symm
   actionUnitIso _ := Iso.op <| (λₗ _).symm
   actionHom_def
@@ -128,14 +128,14 @@ def oppositeLeftAction [MonoidalLeftAction C D] :
         apply Quiver.Hom.unop_inj
         simpa [MonoidalLeftAction.action_exchange] using
           MonoidalLeftAction.actionHom_def f g
-  actionAssocIso_naturality
+  actionAssocIso_hom_naturality
     | op f, op g, op h => by
         apply Quiver.Hom.unop_inj
         haveI := (αₗ (unop _) (unop _) (unop _)).inv ≫=
-          MonoidalLeftAction.actionAssocIso_naturality f g h
+          MonoidalLeftAction.actionAssocIso_hom_naturality f g h
         simp only [Iso.inv_hom_id_assoc] at this
         simp [← this]
-  actionUnitIso_naturality _ := by
+  actionUnitIso_hom_naturality _ := by
       apply Quiver.Hom.unop_inj
       simp
   whiskerRight_actionHomLeft _ _ _ := by
@@ -162,20 +162,20 @@ def leftActionOfOppositeLeftAction [MonoidalLeftAction Cᵒᵖ Dᵒᵖ] :
   actionObj c d := unop <| op c ⊙ₗ op d
   actionHomLeft {c c'} f d := (f.op ⊵ₗ op d).unop
   actionHomRight c {d d'} f := (op c ⊴ₗ f.op).unop
-  actionHom {c c'} {d d} f g := (f.op ⊙ₗ g.op).unop
+  actionHom {c c'} {d d} f g := (f.op ⊙ₗₘ g.op).unop
   actionAssocIso _ _ _ := Iso.unop <| (αₗ _ _ _).symm
   actionUnitIso _ := Iso.unop <| (λₗ _).symm
   actionHom_def f g := by
     apply Quiver.Hom.op_inj
     simpa [MonoidalLeftAction.action_exchange] using
       MonoidalLeftAction.actionHom_def f.op g.op
-  actionAssocIso_naturality f g h := by
+  actionAssocIso_hom_naturality f g h := by
     apply Quiver.Hom.op_inj
     haveI := (αₗ (op _) (op _) (op _)).inv ≫=
-      MonoidalLeftAction.actionAssocIso_naturality f.op g.op h.op
+      MonoidalLeftAction.actionAssocIso_hom_naturality f.op g.op h.op
     simp only [Iso.inv_hom_id_assoc] at this
     simp [← this]
-  actionUnitIso_naturality _ := by
+  actionUnitIso_hom_naturality _ := by
       apply Quiver.Hom.op_inj
       simp
   whiskerRight_actionHomLeft _ _ _ := by
@@ -212,7 +212,7 @@ lemma oppositeLeftAction_actionRight_op
 
 lemma oppositeLeftAction_actionHom_op
     {c c' : C} {d d' : D} (f : c ⟶ c') (g : d ⟶ d') :
-    f.op ⊙ₗ g.op = op (f ⊙ₗ g) := rfl
+    f.op ⊙ₗₘ g.op = op (f ⊙ₗₘ g) := rfl
 
 lemma oppositeLeftAction_actionAssocIso_op (c c' : C) (d : D) :
     αₗ (op c) (op c') (op d) = (αₗ c c' d).symm.op := rfl
@@ -237,7 +237,7 @@ lemma leftActionOfOppositeLeftAction_actionRight_unop
 
 lemma leftActionOfOppositeLeftAction_actionHom_unop
     {c c' : Cᵒᵖ} {d d' : Dᵒᵖ} (f : c ⟶ c') (g : d ⟶ d') :
-    f.unop ⊙ₗ g.unop = unop (f ⊙ₗ g) := rfl
+    f.unop ⊙ₗₘ g.unop = unop (f ⊙ₗₘ g) := rfl
 
 lemma leftActionOfOppositeLeftAction_actionAssocIso_unop
     (c c' : Cᵒᵖ) (d : Dᵒᵖ) :
@@ -325,16 +325,16 @@ end
 open Opposite
 
 /-- Define a right action of `Cᵒᵖ` on `Dᵒᵖ` from a right action of `C` on `D` via
-the formula `(op d) ᵣ⊙ (op c) = op (d ᵣ⊙ c)`. -/
+the formula `(op d) ⊙ᵣ (op c) = op (d ⊙ᵣ c)`. -/
 @[simps -isSimp]
 def oppositeRightAction [MonoidalRightAction C D] :
     MonoidalRightAction Cᵒᵖ Dᵒᵖ where
-  actionObj c d := op <| c.unop ᵣ⊙ d.unop
-  actionHomLeft {c c'} f d := (f.unop ᵣ⊵ unop d).op
-  actionHomRight c {d d'} f := (unop c ᵣ⊴ f.unop).op
-  actionHom {c c'} {d d'} f g := (f.unop ᵣ⊙ g.unop : unop d' ᵣ⊙ unop c' ⟶ _).op
-  actionAssocIso _ _ _ := Iso.op <| (ᵣα _ _ _).symm
-  actionUnitIso _ := Iso.op <| (ᵣρ _).symm
+  actionObj c d := op <| c.unop ⊙ᵣ d.unop
+  actionHomLeft {c c'} f d := (f.unop ⊵ᵣ unop d).op
+  actionHomRight c {d d'} f := (unop c ⊴ᵣ f.unop).op
+  actionHom {c c'} {d d'} f g := (f.unop ⊙ᵣₘ g.unop).op
+  actionAssocIso _ _ _ := Iso.op <| (αᵣ _ _ _).symm
+  actionUnitIso _ := Iso.op <| (ρᵣ _).symm
   actionHom_def
     | op f, op g => by
         apply Quiver.Hom.unop_inj
@@ -343,7 +343,7 @@ def oppositeRightAction [MonoidalRightAction C D] :
   actionAssocIso_naturality
     | op f, op g, op h => by
         apply Quiver.Hom.unop_inj
-        haveI := (ᵣα (unop _) (unop _) (unop _)).inv ≫=
+        haveI := (αᵣ (unop _) (unop _) (unop _)).inv ≫=
           MonoidalRightAction.actionAssocIso_naturality f g h
         simp only [Iso.inv_hom_id_assoc] at this
         simp [← this]
@@ -367,23 +367,23 @@ def oppositeRightAction [MonoidalRightAction C D] :
       simp
 
 /-- Define a right action of `C` on `D` from a right action of `Cᵒᵖ` on `Dᵒᵖ` via
-the formula `d ᵣ⊙ c = unop ((op d) ᵣ⊙ (op c))`. -/
+the formula `d ⊙ᵣ c = unop ((op d) ⊙ᵣ (op c))`. -/
 @[simps -isSimp]
 def rightActionOfOppositeRightAction [MonoidalRightAction Cᵒᵖ Dᵒᵖ] :
     MonoidalRightAction C D where
-  actionObj c d := unop <| op c ᵣ⊙ op d
-  actionHomLeft {c c'} f d := (f.op ᵣ⊵ op d).unop
-  actionHomRight c {d d'} f := (op c ᵣ⊴ f.op).unop
-  actionHom {c c'} {d d} f g := (f.op ᵣ⊙ g.op : op d ᵣ⊙ op c' ⟶ _).unop
-  actionAssocIso _ _ _ := Iso.unop <| (ᵣα _ _ _).symm
-  actionUnitIso _ := Iso.unop <| (ᵣρ _).symm
+  actionObj c d := unop <| op c ⊙ᵣ op d
+  actionHomLeft {c c'} f d := (f.op ⊵ᵣ op d).unop
+  actionHomRight c {d d'} f := (op c ⊴ᵣ f.op).unop
+  actionHom {c c'} {d d} f g := (f.op ⊙ᵣₘ g.op).unop
+  actionAssocIso _ _ _ := Iso.unop <| (αᵣ _ _ _).symm
+  actionUnitIso _ := Iso.unop <| (ρᵣ _).symm
   actionHom_def f g := by
     apply Quiver.Hom.op_inj
     simpa [MonoidalRightAction.action_exchange] using
       MonoidalRightAction.actionHom_def f.op g.op
   actionAssocIso_naturality f g h := by
     apply Quiver.Hom.op_inj
-    haveI := (ᵣα (op _) (op _) (op _)).inv ≫=
+    haveI := (αᵣ (op _) (op _) (op _)).inv ≫=
       MonoidalRightAction.actionAssocIso_naturality f.op g.op h.op
     simp only [Iso.inv_hom_id_assoc] at this
     simp [← this]
@@ -412,22 +412,22 @@ attribute [local instance] oppositeRightAction
 variable [MonoidalRightAction C D]
 
 lemma oppositeRightAction_actionObj_op (d : D) (c : C) :
-    op d ᵣ⊙ op c = op (d ᵣ⊙ c) := rfl
+    op d ⊙ᵣ op c = op (d ⊙ᵣ c) := rfl
 
 lemma oppositeRightAction_actionHomLeft_op
     {d d' : D} (f : d ⟶ d') (c : C) :
-    f.op ᵣ⊵ op c = op (f ᵣ⊵ c) := rfl
+    f.op ⊵ᵣ op c = op (f ⊵ᵣ c) := rfl
 
 lemma oppositeRightAction_actionRight_op
     (d : D) {c c' : C} (f : c ⟶ c') :
-    op d ᵣ⊴ f.op = op (d ᵣ⊴ f) := rfl
+    op d ⊴ᵣ f.op = op (d ⊴ᵣ f) := rfl
 
 lemma oppositeRightAction_actionHom_op
     {d d' : D} {c c' : C} (f : d ⟶ d') (g : c ⟶ c') :
-    f.op ᵣ⊙ g.op = op (f ᵣ⊙ g) := rfl
+    f.op ⊙ᵣₘ g.op = op (f ⊙ᵣₘ g) := rfl
 
 lemma oppositeRightAction_actionAssocIso_op (d : D) (c c' : C) :
-    ᵣα (op d) (op c) (op c') = (ᵣα d c c').symm.op := rfl
+    αᵣ (op d) (op c) (op c') = (αᵣ d c c').symm.op := rfl
 
 end
 
@@ -437,22 +437,22 @@ attribute [local instance] rightActionOfOppositeRightAction
 variable [MonoidalRightAction Cᵒᵖ Dᵒᵖ]
 
 lemma rightActionOfOppositeRightAction_actionObj_unop (d : Dᵒᵖ) (c : Cᵒᵖ) :
-    unop d ᵣ⊙ unop c = unop (d ᵣ⊙ c) := rfl
+    unop d ⊙ᵣ unop c = unop (d ⊙ᵣ c) := rfl
 
 lemma rightActionOfOppositeRightAction_actionHomLeft_unop
     {d d' : Dᵒᵖ} (f : d ⟶ d') (c : Cᵒᵖ) :
-    f.unop ᵣ⊵ unop c = unop (f ᵣ⊵ c) := rfl
+    f.unop ⊵ᵣ unop c = unop (f ⊵ᵣ c) := rfl
 
 lemma rightActionOfOppositeRightAction_actionRight_unop
     (d : Dᵒᵖ) {c c' : Cᵒᵖ} (f : c ⟶ c') :
-    unop d ᵣ⊴ f.unop = unop (d ᵣ⊴ f) := rfl
+    unop d ⊴ᵣ f.unop = unop (d ⊴ᵣ f) := rfl
 
 lemma rightActionOfOppositeRightAction_actionHom_unop
     {d d' : Dᵒᵖ} {c c' : Cᵒᵖ} (f : d ⟶ d') (g : c ⟶ c') :
-    f.unop ᵣ⊙ g.unop = unop (f ᵣ⊙ g) := rfl
+    f.unop ⊙ᵣₘ g.unop = unop (f ⊙ᵣₘ g) := rfl
 
 lemma rightActionOfOppositeRightAction_actionAssocIso_unop (d : Dᵒᵖ) (c c' : Cᵒᵖ) :
-    ᵣα (unop d) (unop c) (unop c') = (ᵣα d c c').symm.unop := rfl
+    αᵣ (unop d) (unop c) (unop c') = (αᵣ d c c').symm.unop := rfl
 
 end
 
