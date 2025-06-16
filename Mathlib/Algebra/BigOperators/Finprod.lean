@@ -966,7 +966,7 @@ lemma finprod_mem_powerset_diff_elem {f : Set α → M} {s : Set α} {a : α} (h
     (has : a ∈ s) : ∏ᶠ t ∈ 𝒫 s, f t = (∏ᶠ t ∈ 𝒫 (s \ {a}), f t)
     * ∏ᶠ t ∈ 𝒫 (s \ {a}), f (insert a t) := by
   nth_rw 1 2 [← Set.insert_diff_self_of_mem has] -- second appearence hidden by notation
-  exact finprod_mem_powerset_insert (hs.subset Set.diff_subset) (not_mem_diff_of_mem rfl)
+  exact finprod_mem_powerset_insert (hs.subset Set.diff_subset) (notMem_diff_of_mem rfl)
 
 @[to_additive]
 theorem mul_finprod_cond_ne (a : α) (hf : (mulSupport f).Finite) :
