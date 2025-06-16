@@ -514,8 +514,8 @@ lemma setLIntegral_eq_of_support_subset {s : Set α} {f : α → ℝ≥0∞} (hs
 
 theorem setLIntegral_eq_const {f : α → ℝ≥0∞} (hf : Measurable f) (r : ℝ≥0∞) :
     ∫⁻ x in { x | f x = r }, f x ∂μ = r * μ { x | f x = r } := by
-  have : ∀ᵐ x ∂μ, x ∈ { x | f x = r } → f x = r := ae_of_all μ fun _ hx => hx
-  rw [setLIntegral_congr_fun_ae _ this]
+  have : ∀ x ∈ { x | f x = r }, f x = r := fun _ hx => hx
+  rw [setLIntegral_congr_fun _ this]
   · rw [lintegral_const, Measure.restrict_apply MeasurableSet.univ, Set.univ_inter]
   · exact hf (measurableSet_singleton r)
 
