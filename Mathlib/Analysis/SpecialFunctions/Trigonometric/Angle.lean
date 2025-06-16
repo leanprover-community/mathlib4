@@ -22,24 +22,20 @@ noncomputable section
 
 namespace Real
 
--- Porting note: can't derive `NormedAddCommGroup, Inhabited`
 /-- The type of angles -/
 def Angle : Type :=
   AddCircle (2 * π)
+-- The `NormedAddCommGroup, Inhabited` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 namespace Angle
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added due to missing instances due to no deriving
 instance : NormedAddCommGroup Angle :=
   inferInstanceAs (NormedAddCommGroup (AddCircle (2 * π)))
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added due to missing instances due to no deriving
 instance : Inhabited Angle :=
   inferInstanceAs (Inhabited (AddCircle (2 * π)))
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added due to missing instances due to no deriving
--- also, without this, a plain `QuotientAddGroup.mk`
--- causes coerced terms to be of type `ℝ ⧸ AddSubgroup.zmultiples (2 * π)`
 /-- The canonical map from `ℝ` to the quotient `Angle`. -/
 @[coe]
 protected def coe (r : ℝ) : Angle := QuotientAddGroup.mk r
@@ -90,6 +86,9 @@ theorem coe_nsmul (n : ℕ) (x : ℝ) : ↑(n • x : ℝ) = n • (↑x : Angle
 theorem coe_zsmul (z : ℤ) (x : ℝ) : ↑(z • x : ℝ) = z • (↑x : Angle) :=
   rfl
 
+theorem coe_eq_zero_iff {x : ℝ} : (x : Angle) = 0 ↔ ∃ n : ℤ, n • (2 * π) = x :=
+  AddCircle.coe_eq_zero_iff (2 * π)
+
 @[simp, norm_cast]
 theorem natCast_mul_eq_nsmul (x : ℝ) (n : ℕ) : ↑((n : ℝ) * x) = n • (↑x : Angle) := by
   simpa only [nsmul_eq_mul] using coeHom.map_nsmul x n
@@ -98,13 +97,9 @@ theorem natCast_mul_eq_nsmul (x : ℝ) (n : ℕ) : ↑((n : ℝ) * x) = n • (�
 theorem intCast_mul_eq_zsmul (x : ℝ) (n : ℤ) : ↑((n : ℝ) * x : ℝ) = n • (↑x : Angle) := by
   simpa only [zsmul_eq_mul] using coeHom.map_zsmul x n
 
-@[deprecated (since := "2024-05-25")] alias coe_nat_mul_eq_nsmul := natCast_mul_eq_nsmul
-@[deprecated (since := "2024-05-25")] alias coe_int_mul_eq_zsmul := intCast_mul_eq_zsmul
-
 theorem angle_eq_iff_two_pi_dvd_sub {ψ θ : ℝ} : (θ : Angle) = ψ ↔ ∃ k : ℤ, θ - ψ = 2 * π * k := by
   simp only [QuotientAddGroup.eq, AddSubgroup.zmultiples_eq_closure,
     AddSubgroup.mem_closure_singleton, zsmul_eq_mul', (sub_eq_neg_add _ _).symm, eq_comm]
-  -- Porting note: added `rw`, `simp [Angle.coe, QuotientAddGroup.eq]` doesn't fire otherwise
   rw [Angle.coe, Angle.coe, QuotientAddGroup.eq]
   simp only [AddSubgroup.zmultiples_eq_closure,
     AddSubgroup.mem_closure_singleton, zsmul_eq_mul', (sub_eq_neg_add _ _).symm, eq_comm]
@@ -225,7 +220,7 @@ theorem sin_eq_iff_coe_eq_or_add_eq_pi {θ ψ : ℝ} :
   constructor
   · intro Hsin
     rw [← cos_pi_div_two_sub, ← cos_pi_div_two_sub] at Hsin
-    cases' cos_eq_iff_coe_eq_or_eq_neg.mp Hsin with h h
+    rcases cos_eq_iff_coe_eq_or_eq_neg.mp Hsin with h | h
     · left
       rw [coe_sub, coe_sub] at h
       exact sub_right_inj.1 h
@@ -245,15 +240,15 @@ theorem sin_eq_iff_coe_eq_or_add_eq_pi {θ ψ : ℝ} :
       mul_zero]
 
 theorem cos_sin_inj {θ ψ : ℝ} (Hcos : cos θ = cos ψ) (Hsin : sin θ = sin ψ) : (θ : Angle) = ψ := by
-  cases' cos_eq_iff_coe_eq_or_eq_neg.mp Hcos with hc hc; · exact hc
-  cases' sin_eq_iff_coe_eq_or_add_eq_pi.mp Hsin with hs hs; · exact hs
+  rcases cos_eq_iff_coe_eq_or_eq_neg.mp Hcos with hc | hc; · exact hc
+  rcases sin_eq_iff_coe_eq_or_add_eq_pi.mp Hsin with hs | hs; · exact hs
   rw [eq_neg_iff_add_eq_zero, hs] at hc
   obtain ⟨n, hn⟩ : ∃ n, n • _ = _ := QuotientAddGroup.leftRel_apply.mp (Quotient.exact' hc)
   rw [← neg_one_mul, add_zero, ← sub_eq_zero, zsmul_eq_mul, ← mul_assoc, ← sub_mul, mul_eq_zero,
     eq_false (ne_of_gt pi_pos), or_false, sub_neg_eq_add, ← Int.cast_zero, ← Int.cast_one,
     ← Int.cast_ofNat, ← Int.cast_mul, ← Int.cast_add, Int.cast_inj] at hn
   have : (n * 2 + 1) % (2 : ℤ) = 0 % (2 : ℤ) := congr_arg (· % (2 : ℤ)) hn
-  rw [add_comm, Int.add_mul_emod_self] at this
+  rw [add_comm, Int.add_mul_emod_self_right] at this
   exact absurd this one_ne_zero
 
 /-- The sine of a `Real.Angle`. -/
@@ -749,13 +744,13 @@ theorem toReal_neg_iff_sign_neg {θ : Angle} : θ.toReal < 0 ↔ θ.sign = -1 :=
   · simp [h]
   · exact
       ⟨fun hn => False.elim (h.asymm hn), fun hn =>
-        False.elim (hn.not_le (sin_nonneg_of_nonneg_of_le_pi h.le (toReal_le_pi θ)))⟩
+        False.elim (hn.not_ge (sin_nonneg_of_nonneg_of_le_pi h.le (toReal_le_pi θ)))⟩
 
 theorem toReal_nonneg_iff_sign_nonneg {θ : Angle} : 0 ≤ θ.toReal ↔ 0 ≤ θ.sign := by
   rcases lt_trichotomy θ.toReal 0 with (h | h | h)
-  · refine ⟨fun hn => False.elim (h.not_le hn), fun hn => ?_⟩
+  · refine ⟨fun hn => False.elim (h.not_ge hn), fun hn => ?_⟩
     rw [toReal_neg_iff_sign_neg.1 h] at hn
-    exact False.elim (hn.not_lt (by decide))
+    exact False.elim (hn.not_gt (by decide))
   · simp [h, sign, ← sin_toReal]
   · refine ⟨fun _ => ?_, fun _ => h.le⟩
     rw [sign, ← sin_toReal, sign_nonneg_iff]

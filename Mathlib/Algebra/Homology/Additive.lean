@@ -111,7 +111,6 @@ def Functor.mapHomologicalComplex (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms]
     { X := fun i => F.obj (C.X i)
       d := fun i j => F.map (C.d i j)
       shape := fun i j w => by
-        dsimp only
         rw [C.shape _ _ w, F.map_zero]
       d_comp_d' := fun i j k _ _ => by rw [← F.map_comp, C.d_comp_d, F.map_zero] }
   map f :=
@@ -170,7 +169,7 @@ theorem NatTrans.mapHomologicalComplex_comp (c : ComplexShape ι) {F G H : W₁ 
       NatTrans.mapHomologicalComplex α c ≫ NatTrans.mapHomologicalComplex β c := by
   aesop_cat
 
-@[reassoc (attr := simp 1100)]
+@[reassoc]
 theorem NatTrans.mapHomologicalComplex_naturality {c : ComplexShape ι} {F G : W₁ ⥤ W₂}
     [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms]
     (α : F ⟶ G) {C D : HomologicalComplex W₁ c} (f : C ⟶ D) :

@@ -9,7 +9,7 @@ import Lake
 import Mathlib.Tactic.Linter.Header
 import /- -/ Mathlib.Tactic -- the `TextBased` linter does not flag this `broadImport`
 import Mathlib.Tactic.Have
-import Mathlib.Deprecated.Subfield
+import Mathlib.Deprecated.Aliases
 
 /--
 warning: In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter (see e.g. https://github.com/leanprover-community/mathlib4/pull/13779). Please consider carefully if this import is useful and make sure to benchmark it. If this is fine, feel free to silence this linter.
@@ -19,9 +19,6 @@ warning: Files in mathlib cannot import the whole tactic folder.
 note: this linter can be disabled with `set_option linter.style.header false`
 ---
 warning: 'Mathlib.Tactic.Have' defines a deprecated form of the 'have' tactic; please do not use it in mathlib.
-note: this linter can be disabled with `set_option linter.style.header false`
----
-warning: Files in the `Deprecated` directory are not supposed to be imported.
 note: this linter can be disabled with `set_option linter.style.header false`
 ---
 warning: Duplicate imports: 'Mathlib.Tactic.Linter.Header' already imported

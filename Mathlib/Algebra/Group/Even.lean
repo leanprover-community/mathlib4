@@ -3,8 +3,10 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Opposite
+import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Equiv.Opposite
 import Mathlib.Algebra.Group.TypeTags.Basic
+import Mathlib.Data.Set.Operations
 
 /-!
 # Squares and even elements
@@ -16,6 +18,11 @@ This file defines square and even elements in a monoid.
 * `IsSquare a` means that there is some `r` such that `a = r * r`
 * `Even a` means that there is some `r` such that `a = r + r`
 
+## Note
+
+* Many lemmas about `Even` / `IsSquare`, including important `simp` lemmas,
+  are in `Mathlib/Algebra/Ring/Parity.lean`.
+
 ## TODO
 
 * Try to generalize `IsSquare/Even` lemmas further. For example, there are still a few lemmas in
@@ -26,7 +33,8 @@ This file defines square and even elements in a monoid.
 
 ## See also
 
-`Mathlib.Algebra.Ring.Parity` for the definition of odd elements.
+`Mathlib/Algebra/Ring/Parity.lean` for the definition of odd elements as well as facts about
+`Even` / `IsSquare` in rings.
 -/
 
 assert_not_exists MonoidWithZero DenselyOrdered
@@ -39,21 +47,19 @@ section Mul
 variable [Mul α]
 
 /-- An element `a` of a type `α` with multiplication satisfies `IsSquare a` if `a = r * r`,
-for some `r : α`. -/
+for some root `r : α`. -/
 @[to_additive "An element `a` of a type `α` with addition satisfies `Even a` if `a = r + r`,
 for some `r : α`."]
 def IsSquare (a : α) : Prop := ∃ r, a = r * r
 
 @[to_additive]
-lemma isSquare_iff_exists_mul_self (a : α) : IsSquare a ↔ ∃ r, a = r * r := Iff.rfl
+lemma isSquare_iff_exists_mul_self (a : α) : IsSquare a ↔ ∃ r, a = r * r := .rfl
 
 alias ⟨IsSquare.exists_mul_self, _⟩ := isSquare_iff_exists_mul_self
 attribute [to_additive (attr := aesop unsafe 5% forward)] IsSquare.exists_mul_self
 
 @[to_additive (attr := simp, aesop safe apply)]
 lemma IsSquare.mul_self (r : α) : IsSquare (r * r) := ⟨r, rfl⟩
-
-@[to_additive, deprecated (since := "2024-08-27")] alias isSquare_mul_self := IsSquare.mul_self
 
 @[to_additive]
 lemma isSquare_op_iff {a : α} : IsSquare (op a) ↔ IsSquare a :=
@@ -95,18 +101,21 @@ end Add
 @[to_additive (attr := simp)]
 lemma IsSquare.one [MulOneClass α] : IsSquare (1 : α) := ⟨1, (mul_one _).symm⟩
 
-@[to_additive, deprecated (since := "2024-12-27")] alias isSquare_one := IsSquare.one
+@[deprecated (since := "2024-12-27")] alias isSquare_one := IsSquare.one
+@[deprecated (since := "2024-12-27")] alias even_zero := Even.zero
 
 section MonoidHom
 variable [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
 
 @[to_additive (attr := aesop unsafe 90% apply)]
-lemma IsSquare.map {a : α} (f : F) : IsSquare a → IsSquare (f a) := by aesop
+lemma IsSquare.map {a : α} (f : F) : IsSquare a → IsSquare (f a) :=
+  fun ⟨r, _⟩ => ⟨f r, by simp [*]⟩
 
-lemma exists_apply_eq_and_isSquare {b : β} {f : F} (hf : Function.Surjective f) :
-    IsSquare b → ∃ a, f a = b ∧ IsSquare a := fun ⟨s, _⟩ => by
+@[to_additive]
+lemma isSquare_subset_image_isSquare {f : F} (hf : Function.Surjective f) :
+    {b | IsSquare b} ⊆ f '' {a | IsSquare a} := fun b ⟨s, _⟩ => by
   rcases hf s with ⟨r, rfl⟩
-  use r * r; simp_all
+  exact ⟨r * r, by simp [*]⟩
 
 end MonoidHom
 
@@ -114,27 +123,29 @@ section Monoid
 variable [Monoid α] {n : ℕ} {a : α}
 
 @[to_additive even_iff_exists_two_nsmul]
-lemma isSquare_iff_exists_sq (a : α): IsSquare a ↔ ∃ r, a = r ^ 2 := by simp [IsSquare, pow_two]
+lemma isSquare_iff_exists_sq (a : α) : IsSquare a ↔ ∃ r, a = r ^ 2 := by simp [IsSquare, pow_two]
 
+@[to_additive Even.exists_two_nsmul
+  "Alias of the forwards direction of `even_iff_exists_two_nsmul`."]
 alias ⟨IsSquare.exists_sq, _⟩ := isSquare_iff_exists_sq
-attribute [to_additive Even.exists_two_nsmul
-  "Alias of the forwards direction of `even_iff_exists_two_nsmul`."] IsSquare.exists_sq
 
-@[to_additive (attr := simp) Even.two_nsmul]
+-- provable by simp in `Algebra.Ring.Parity`
+@[to_additive Even.two_nsmul]
 lemma IsSquare.sq (r : α) : IsSquare (r ^ 2) := ⟨r, pow_two _⟩
 
-@[deprecated (since := "2024-12-27")] alias even_two_nsmul := Even.two_nsmul
-
 @[deprecated (since := "2024-12-27")] alias IsSquare_sq := IsSquare.sq
+@[deprecated (since := "2024-12-27")] alias even_two_nsmul := Even.two_nsmul
 
 @[to_additive (attr := aesop unsafe 80% apply)]
 lemma IsSquare.pow (n : ℕ) (ha : IsSquare a) : IsSquare (a ^ n) := by
   aesop (add simp Commute.mul_pow)
 
+@[deprecated (since := "2025-01-19")] alias Even.nsmul := Even.nsmul_right
+
 @[to_additive (attr := aesop unsafe 90% apply)]
 lemma Even.isSquare_pow (hn : Even n) : ∀ a : α, IsSquare (a ^ n) := by aesop (add simp pow_add)
 
-@[deprecated (since := "2024-01-07")] alias Even.nsmul' := Even.even_nsmul
+@[deprecated (since := "2025-01-19")] alias Even.nsmul' := Even.nsmul_left
 
 end Monoid
 
@@ -148,10 +159,9 @@ variable [DivisionMonoid α] {a : α}
 @[to_additive (attr := simp)] lemma isSquare_inv : IsSquare a⁻¹ ↔ IsSquare a := by
   constructor <;> exact fun h => by simpa using (isSquare_op_iff.mpr h).map (MulEquiv.inv' α).symm
 
-alias ⟨_, IsSquare.inv⟩ := isSquare_inv
-attribute [to_additive] IsSquare.inv
+@[to_additive] alias ⟨_, IsSquare.inv⟩ := isSquare_inv
 
-@[to_additive (attr := aesop unsafe 80% apply)]
+@[to_additive (attr := aesop unsafe 80% apply) Even.zsmul_right]
 lemma IsSquare.zpow (n : ℤ) : IsSquare a → IsSquare (a ^ n) := by
   aesop (add simp Commute.mul_zpow)
 
@@ -161,7 +171,7 @@ end DivisionMonoid
 lemma IsSquare.div [DivisionCommMonoid α] {a b : α} (ha : IsSquare a) (hb : IsSquare b) :
     IsSquare (a / b) := by aesop (add simp div_eq_mul_inv)
 
-@[to_additive (attr := aesop unsafe 90% apply)]
+@[to_additive (attr := simp, aesop unsafe 90% apply) Even.zsmul_left]
 lemma Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquare (a ^ n) := by
   aesop (add simp zpow_add)
 

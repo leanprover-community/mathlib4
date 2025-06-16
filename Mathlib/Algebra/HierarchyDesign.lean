@@ -60,22 +60,22 @@ one should attempt to add the following constructions and results,
 when applicable:
 
 * Instances transferred elementwise to products, like `Prod.Monoid`.
-  See `Mathlib.Algebra.Group.Prod` for more examples.
+  See `Mathlib/Algebra/Group/Prod.lean` for more examples.
   ```
   instance Prod.Z [Z M] [Z N] : Z (M × N) := ...
   ```
 * Instances transferred elementwise to pi types, like `Pi.Monoid`.
-  See `Mathlib.Algebra.Group.Pi` for more examples.
+  See `Mathlib/Algebra/Group/Pi.lean` for more examples.
   ```
   instance Pi.Z [∀ i, Z <| f i] : Z (Π i : I, f i) := ...
   ```
 * Instances transferred to `MulOpposite M`, like `MulOpposite.Monoid`.
-  See `Mathlib.Algebra.Opposites` for more examples.
+  See `Mathlib/Algebra/Opposites.lean` for more examples.
   ```
   instance MulOpposite.Z [Z M] : Z (MulOpposite M) := ...
   ```
 * Instances transferred to `ULift M`, like `ULift.Monoid`.
-  See `Mathlib.Algebra.Group.ULift` for more examples.
+  See `Mathlib/Algebra/Group/ULift.lean` for more examples.
   ```
   instance ULift.Z [Z M] : Z (ULift M) := ...
   ```
@@ -83,7 +83,7 @@ when applicable:
   injective or surjective functions that agree on the data fields,
   like `Function.Injective.monoid` and `Function.Surjective.monoid`.
   We make these definitions `abbrev`, see note [reducible non-instances].
-  See `Mathlib.Algebra.Group.InjSurj` for more examples.
+  See `Mathlib/Algebra/Group/InjSurj.lean` for more examples.
   ```
   abbrev Function.Injective.Z [Z M₂] (f : M₁ → M₂) (hf : f.Injective)
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : Z M₁ := ...
@@ -92,17 +92,17 @@ when applicable:
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) : Z M₂ := ...
   ```
 * Instances transferred elementwise to `Finsupp`s, like `Finsupp.semigroup`.
-  See `Mathlib.Data.Finsupp.Pointwise` for more examples.
+  See `Mathlib/Data/Finsupp/Pointwise.lean` for more examples.
   ```
   instance FinSupp.Z [Z β] : Z (α →₀ β) := ...
   ```
 * Instances transferred elementwise to `Set`s, like `Set.monoid`.
-  See `Mathlib.Algebra.Pointwise` for more examples.
+  See `Mathlib/Algebra/Pointwise.lean` for more examples.
   ```
   instance Set.Z [Z α] : Z (Set α) := ...
   ```
 * Definitions for transferring the entire structure across an equivalence, like `Equiv.monoid`.
-  See `Mathlib.Data.Equiv.TransferInstance` for more examples. See also the `transport` tactic.
+  See `Mathlib/Data/Equiv/TransferInstance.lean` for more examples. See also the `transport` tactic.
   ```
   def Equiv.Z (e : α ≃ β) [Z β] : Z α := ...
   /-- When there is a new notion of `Z`-equiv: -/
@@ -139,7 +139,7 @@ etc., we also define "bundled" versions, which carry `category` instances.
 
 These bundled versions are usually named by appending `Cat`,
 so for example we have `AddCommGrp` as a bundled `AddCommGroup`, and `TopCommRingCat`
-(which bundles together `CommRing`, `TopologicalSpace`, and `TopologicalRing`).
+(which bundles together `CommRing`, `TopologicalSpace`, and `IsTopologicalRing`).
 
 These bundled versions have many appealing features:
 * a uniform notation for morphisms `X ⟶ Y`
@@ -182,8 +182,6 @@ briefly listing the parts of the API which still need to be provided.
 Hopefully this document makes it easy to assemble this list.
 
 Another alternative to a TODO list in the doc-strings is adding Github issues.
-
-
 -/
 
 
@@ -232,32 +230,22 @@ Therefore, if we create an instance that always applies, we set the priority of 
 100 (or something similar, which is below the default value of 1000).
 -/
 
-library_note "SetLike Aesop lemmas"/--
-The Aesop tactic (`aesop`) can automatically prove obvious facts about membership of
-algebraic substructures such as subgroups and subrings. Certain lemmas, whose conclusion is usually
-that a particular term is a member of a particular substructure, are registered
-as Aesop rules using the `aesop` attribute, according to the following principles:
-- Rules are in the `SetLike` ruleset: (rule_sets := [SetLike])
-- Membership lemmas with trivial hypotheses are registered as `simp` rules rather than Aesop rules.
-- Apply-style rules with nontrivial hypotheses are marked `unsafe`. This is because applying them
-  might not be provability-preserving in the context of more complex membership rules.
-  For instance, `mul_mem` is marked `unsafe`.
-- Unsafe rules should not be given a priority higher than 90%. This is the same probability
-  Aesop gives to safe rules when they generate metavariables. If the priority is too high, loops
-  generated in the presence of metavariables will time out Aesop.
-- Apply-style rules with simple hypotheses which fail quickly if they aren't provable are given
-  probability 90%. An example is `mul_mem`.
-- Rules that cause loops (even in the absence of metavariables) are given a priority of 5%.
-  An example is `SetLike.mem_of_subset`.
-- All other `unsafe` rules are given a probability between 5% and 90% based on how likely they are
-  to progress the proof state towards a solution. Apply-style rules should be given
-  a higher probability the more specific their conlusions and the more generic their hypotheses.
-  For instance, `Subgroup.mem_closure_of_mem` is given a lower probability than `mul_mem` because
-  its conclusion is more generic.
-- Aesop should not be invoking low-priority rules unless it can make no other progress.
-  If common usage patterns cause Aesop to invoke low-priority rules, additional lemmas should be
-  added at a higher priority to cover that case to improve performance and prevent timeouts.
-  For example, `Subgroup.closure_mem_of_mem` covers a common use case of `SetLike.mem_of_subset`.
-Some examples of the sorts of goals Aesop is set up to close can be found in the file
-MathlibTest/set_like.lean.
+library_note "instance argument order"/--
+When type class inference applies an instance, it attempts to solve the sub-goals from left to
+right (it used to be from right to left in lean 3). For example in
+```
+instance {p : α → Sort*} [∀ x, IsEmpty (p x)] [Nonempty α] : IsEmpty (∀ x, p x)
+```
+we make sure to write `[∀ x, IsEmpty (p x)]` on the left of `[Nonempty α]` to avoid an expensive
+search for `Nonempty α` when there is no instance for `∀ x, IsEmpty (p x)`.
+
+This helps to speed up failing type class searches, for example those triggered by `simp` lemmas.
+
+In some situations, we can't reorder type class assumptions because one depends on the other,
+for example in
+```
+instance {G : Type*} [Group G] [IsKleinFour G] : IsAddKleinFour (Additive G)
+```
+where the `Group G` instance appears in `IsKleinFour G`. Future work may be done to improve the
+type class synthesis order in this situation.
 -/

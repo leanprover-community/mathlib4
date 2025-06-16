@@ -81,6 +81,36 @@ example : True ∧ True ∧ True := by
   · guard_target = True; constructorm True
   · guard_target = True ∧ True; constructorm* True, _∧_
 
+example (n : Nat) : True := by
+  fail_if_success casesm! Nat  -- two constructors, so `casesm!` doesn't fire
+  trivial
+
+example (h : Array Nat) : True := by
+  casesm! Array _
+  trivial
+
+example (h : Array Nat) : True := by
+  casesm Array _
+  -- user facing name is preserved:
+  guard_hyp h : List Nat
+  trivial
+
+example (n : Nat) (h : n = 0) : True := by
+  casesm Nat
+  · trivial
+  · -- user facing name is preserved:
+    guard_hyp h : n + 1 = 0
+    trivial
+
+example (h : P ∧ Q) : True := by
+  casesm _ ∧ _
+  -- user facing name is not used here, because there are multiple new hypotheses.
+  fail_if_success guard_hyp h : P
+  rename_i p q
+  guard_hyp p : P
+  guard_hyp q : Q
+  trivial
+
 section AuxDecl
 variable {p q r : Prop}
 variable (h : p ∧ q ∨ p ∧ r)

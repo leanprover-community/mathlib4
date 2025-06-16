@@ -139,7 +139,7 @@ def mapSubmodule :
     simpa [← X_smul_of] using q.smul_mem (X : R[X]) hm⟩
   left_inv p := by ext; simp
   right_inv q := by ext; aesop
-  map_rel_iff' {p p'} := ⟨fun h x hx ↦ by aesop, fun h x hx ↦ by aesop⟩
+  map_rel_iff' {p p'} := ⟨fun h x hx ↦ by aesop (rule_sets := [SetLike!]), fun h x hx ↦ by aesop⟩
 
 @[simp] lemma mem_mapSubmodule_apply {p : (Algebra.lsmul R R M a).invtSubmodule} {m : AEval R M a} :
     m ∈ mapSubmodule R M a p ↔ (of R M a).symm m ∈ (p : Submodule R M) :=
@@ -157,8 +157,6 @@ def equiv_mapSubmodule :
     p ≃ₗ[R] mapSubmodule R M a ⟨p, hp⟩ where
   toFun x := ⟨of R M a x, by simp⟩
   invFun x := ⟨((of R M _).symm (x : AEval R M a)), by obtain ⟨x, hx⟩ := x; simpa using hx⟩
-  left_inv x := rfl
-  right_inv x := rfl
   map_add' x y := rfl
   map_smul' t x := rfl
 

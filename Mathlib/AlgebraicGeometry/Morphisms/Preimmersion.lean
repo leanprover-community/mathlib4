@@ -15,12 +15,6 @@ is an embedding and the induced morphisms of stalks are all surjective. This is 
 in the literature but it is useful for generalizing results on immersions to other maps including
 `Spec 𝒪_{X, x} ⟶ X` and inclusions of fibers `κ(x) ×ₓ Y ⟶ Y`.
 
-## TODO
-
-* Show preimmersions are local at the target.
-* Show preimmersions are stable under pullback.
-* Show that `Spec f` is a preimmersion for `f : R ⟶ S` if every `s : S` is of the form `f a / f b`.
-
 -/
 
 universe v u
@@ -32,7 +26,7 @@ namespace AlgebraicGeometry
 /-- A morphism of schemes `f : X ⟶ Y` is a preimmersion if the underlying map of
 topological spaces is an embedding and the induced morphisms of stalks are all surjective. -/
 @[mk_iff]
-class IsPreimmersion {X Y : Scheme} (f : X ⟶ Y) extends SurjectiveOnStalks f : Prop where
+class IsPreimmersion {X Y : Scheme} (f : X ⟶ Y) : Prop extends SurjectiveOnStalks f where
   base_embedding : IsEmbedding f.base
 
 lemma Scheme.Hom.isEmbedding {X Y : Scheme} (f : Hom X Y) [IsPreimmersion f] : IsEmbedding f.base :=
@@ -46,11 +40,6 @@ lemma isPreimmersion_eq_inf :
   ext
   rw [isPreimmersion_iff]
   rfl
-
-/-- Being surjective on stalks is local at the target. -/
-instance isSurjectiveOnStalks_isLocalAtTarget : IsLocalAtTarget
-    (stalkwise (Function.Surjective ·)) :=
-  stalkwiseIsLocalAtTarget_of_respectsIso RingHom.surjective_respectsIso
 
 namespace IsPreimmersion
 
@@ -69,12 +58,8 @@ instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsPreimmersion f]
     [IsPreimmersion g] : IsPreimmersion (f ≫ g) :=
   MorphismProperty.IsStableUnderComposition.comp_mem f g inferInstance inferInstance
 
-instance (priority := 900) {X Y} (f : X ⟶ Y) [IsPreimmersion f] : Mono f := by
-  refine (Scheme.forgetToLocallyRingedSpace ⋙
-    LocallyRingedSpace.forgetToSheafedSpace).mono_of_mono_map ?_
-  apply SheafedSpace.mono_of_base_injective_of_stalk_epi
-  · exact f.isEmbedding.injective
-  · exact fun x ↦ ConcreteCategory.epi_of_surjective _ (f.stalkMap_surjective x)
+instance (priority := 900) {X Y} (f : X ⟶ Y) [IsPreimmersion f] : Mono f :=
+  SurjectiveOnStalks.mono_of_injective f.isEmbedding.injective
 
 theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsPreimmersion g]
     [IsPreimmersion (f ≫ g)] : IsPreimmersion f where

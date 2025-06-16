@@ -57,6 +57,7 @@ end LightCondensed
 
 namespace LightCondSet
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 -- Note: `simp` can prove this when stated for `LightCondensed C` for a concrete category `C`.
 -- However, it doesn't seem to see through the abbreviation `LightCondSet`
 @[simp]

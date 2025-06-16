@@ -28,8 +28,8 @@ variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 variable {D : Type w₁} [Category.{max v u} D]
 variable {E : Type w₂} [Category.{max v u} E]
 variable (F : D ⥤ E)
-variable [∀ (α β : Type max v u) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) D]
-variable [∀ (α β : Type max v u) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) E]
+variable [∀ (J : MulticospanShape.{max v u, max v u}), HasLimitsOfShape (WalkingMulticospan J) D]
+variable [∀ (J : MulticospanShape.{max v u, max v u}), HasLimitsOfShape (WalkingMulticospan J) E]
 variable [∀ (X : C) (W : J.Cover X) (P : Cᵒᵖ ⥤ D), PreservesLimit (W.index P).multicospan F]
 variable (P : Cᵒᵖ ⥤ D)
 
@@ -52,7 +52,6 @@ theorem diagramCompIso_hom_ι (X : C) (W : (J.Cover X)ᵒᵖ) (i : W.unop.Arrow)
     (J.diagramCompIso F P X).hom.app W ≫ Multiequalizer.ι ((unop W).index (P ⋙ F)) i =
   F.map (Multiequalizer.ι _ _) := by
   delta diagramCompIso
-  dsimp
   simp
 
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]

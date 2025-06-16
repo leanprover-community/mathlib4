@@ -71,7 +71,7 @@ theorem IsClosed.isClosable {f : E →ₗ.[R] F} (hf : f.IsClosed) : f.IsClosabl
 /-- If `g` has a closable extension `f`, then `g` itself is closable. -/
 theorem IsClosable.leIsClosable {f g : E →ₗ.[R] F} (hf : f.IsClosable) (hfg : g ≤ f) :
     g.IsClosable := by
-  cases' hf with f' hf
+  obtain ⟨f', hf⟩ := hf
   have : g.graph.topologicalClosure ≤ f'.graph := by
     rw [← hf]
     exact Submodule.topologicalClosure_mono (le_graph_of_le hfg)
@@ -150,14 +150,14 @@ Note that we don't require that `f` is closable, due to the definition of the cl
 theorem closureHasCore (f : E →ₗ.[R] F) : f.closure.HasCore f.domain := by
   refine ⟨f.le_closure.1, ?_⟩
   congr
-  ext x y hxy
+  ext x h1 h2
   · simp only [domRestrict_domain, Submodule.mem_inf, and_iff_left_iff_imp]
     intro hx
     exact f.le_closure.1 hx
-  let z : f.closure.domain := ⟨y.1, f.le_closure.1 y.2⟩
-  have hyz : (y : E) = z := by simp [z]
+  let z : f.closure.domain := ⟨x, f.le_closure.1 h2⟩
+  have hyz : x = z := rfl
   rw [f.le_closure.2 hyz]
-  exact domRestrict_apply (hxy.trans hyz)
+  exact domRestrict_apply hyz
 
 /-! ### Topological properties of the inverse -/
 
@@ -177,8 +177,7 @@ theorem closure_inverse_graph (hf : LinearMap.ker f.toFun = ⊥) (hf' : f.IsClos
   have h1 := Set.image_equiv_eq_preimage_symm f.graph (LinearEquiv.prodComm R E F).toEquiv
   have h2 := Set.image_equiv_eq_preimage_symm (_root_.closure f.graph)
     (LinearEquiv.prodComm R E F).toEquiv
-  simp only [LinearEquiv.coe_toEquiv, LinearEquiv.prodComm_apply,
-    LinearEquiv.coe_toEquiv_symm] at h1 h2
+  simp only [LinearEquiv.coe_toEquiv, LinearEquiv.prodComm_apply] at h1 h2
   rw [h1, h2]
   apply continuous_swap.closure_preimage_subset
 

@@ -15,7 +15,7 @@ See also `IsSelfAdjoint`, which generalizes this definition to other star rings.
 
 ## Main definition
 
- * `Matrix.IsHermitian` : a matrix `A : Matrix n n α` is hermitian if `Aᴴ = A`.
+* `Matrix.IsHermitian` : a matrix `A : Matrix n n α` is hermitian if `Aᴴ = A`.
 
 ## Tags
 
@@ -30,7 +30,7 @@ variable {α β : Type*} {m n : Type*} {A : Matrix n n α}
 
 open scoped Matrix
 
-local notation "⟪" x ", " y "⟫" => @inner α _ _ x y
+local notation "⟪" x ", " y "⟫" => inner α x y
 
 section Star
 
@@ -48,7 +48,6 @@ theorem IsHermitian.eq {A : Matrix n n α} (h : A.IsHermitian) : Aᴴ = A := h
 protected theorem IsHermitian.isSelfAdjoint {A : Matrix n n α} (h : A.IsHermitian) :
     IsSelfAdjoint A := h
 
--- @[ext] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): incorrect `ext`, not a structure or a lemma proving `x = y`.
 theorem IsHermitian.ext {A : Matrix n n α} : (∀ i j, star (A j i) = A i j) → A.IsHermitian := by
   intro h; ext i j; exact h i j
 
@@ -271,15 +270,14 @@ theorem IsHermitian.coe_re_diag {A : Matrix n n α} (h : A.IsHermitian) :
 theorem isHermitian_iff_isSymmetric [Fintype n] [DecidableEq n] {A : Matrix n n α} :
     IsHermitian A ↔ A.toEuclideanLin.IsSymmetric := by
   rw [LinearMap.IsSymmetric, (WithLp.equiv 2 (n → α)).symm.surjective.forall₂]
-  simp only [toEuclideanLin_piLp_equiv_symm, EuclideanSpace.inner_piLp_equiv_symm, toLin'_apply,
-    star_mulVec, dotProduct_mulVec]
+  simp only [toEuclideanLin_piLp_equiv_symm, EuclideanSpace.inner_eq_star_dotProduct, toLin'_apply,
+    Equiv.apply_symm_apply, star_mulVec]
   constructor
   · rintro (h : Aᴴ = A) x y
-    rw [h]
+    rw [dotProduct_comm, ← dotProduct_mulVec, h, dotProduct_comm]
   · intro h
     ext i j
-    simpa only [(Pi.single_star i 1).symm, ← star_mulVec, mul_one, dotProduct_single,
-      single_vecMul, star_one, one_mul] using h (Pi.single i 1) (Pi.single j 1)
+    simpa [(Pi.single_star i 1).symm] using h (Pi.single i 1) (Pi.single j 1)
 
 end RCLike
 

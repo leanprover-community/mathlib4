@@ -7,6 +7,7 @@ import Mathlib.Order.Interval.Set.Image
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Topology.Order.DenselyOrdered
 import Mathlib.Topology.Order.Monotone
+import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 # Intermediate Value Theorem
@@ -258,14 +259,13 @@ theorem IsPreconnected.mem_intervals {s : Set α} (hs : IsPreconnected s) :
     simp only [insert_subset_iff, mem_insert_iff, mem_singleton_iff, true_or, or_true,
       singleton_subset_iff, and_self]
   · refine Or.inr <| Or.inr <| Or.inr <| Or.inr ?_
-    cases'
-      mem_Ici_Ioi_of_subset_of_subset (hs.Ioi_csInf_subset hb ha) fun x hx => csInf_le hb hx with
-      hs hs
+    rcases mem_Ici_Ioi_of_subset_of_subset (hs.Ioi_csInf_subset hb ha) fun x hx ↦
+      csInf_le hb hx with hs | hs
     · exact Or.inl hs
     · exact Or.inr (Or.inl hs)
   · iterate 6 apply Or.inr
-    cases' mem_Iic_Iio_of_subset_of_subset (hs.Iio_csSup_subset hb ha) fun x hx => le_csSup ha hx
-      with hs hs
+    rcases mem_Iic_Iio_of_subset_of_subset (hs.Iio_csSup_subset hb ha) fun x hx ↦
+      le_csSup ha hx with hs | hs
     · exact Or.inl hs
     · exact Or.inr (Or.inl hs)
   · iterate 8 apply Or.inr
@@ -304,11 +304,11 @@ theorem IsClosed.mem_of_ge_of_forall_exists_gt {a b : α} {s : Set α} (hs : IsC
   let c := sSup (s ∩ Icc a b)
   have c_mem : c ∈ S := hs.csSup_mem ⟨_, ha⟩ Sbd
   have c_le : c ≤ b := csSup_le ⟨_, ha⟩ fun x hx => hx.2.2
-  cases' eq_or_lt_of_le c_le with hc hc
+  rcases eq_or_lt_of_le c_le with hc | hc
   · exact hc ▸ c_mem.1
   exfalso
   rcases hgt c ⟨c_mem.1, c_mem.2.1, hc⟩ with ⟨x, xs, cx, xb⟩
-  exact not_lt_of_le (le_csSup Sbd ⟨xs, le_trans (le_csSup Sbd ha) (le_of_lt cx), xb⟩) cx
+  exact not_lt_of_ge (le_csSup Sbd ⟨xs, le_trans (le_csSup Sbd ha) (le_of_lt cx), xb⟩) cx
 
 /-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
 on a closed subset, contains `a`, and for any `a ≤ x < y ≤ b`, `x ∈ s`, the set `s ∩ (x, y]`
@@ -508,35 +508,35 @@ theorem exists_mem_Icc_isFixedPt_of_mapsTo {a b : α} {f : α → α} (hf : Cont
 
 theorem intermediate_value_Ico {a b : α} (hab : a ≤ b) {f : α → δ} (hf : ContinuousOn f (Icc a b)) :
     Ico (f a) (f b) ⊆ f '' Ico a b :=
-  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.2 (not_lt_of_le (he ▸ h.1))) fun hlt =>
+  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.2 (not_lt_of_ge (he ▸ h.1))) fun hlt =>
     @IsPreconnected.intermediate_value_Ico _ _ _ _ _ _ _ isPreconnected_Ico _ _ ⟨refl a, hlt⟩
       (right_nhdsWithin_Ico_neBot hlt) inf_le_right _ (hf.mono Ico_subset_Icc_self) _
       ((hf.continuousWithinAt ⟨hab, refl b⟩).mono Ico_subset_Icc_self)
 
 theorem intermediate_value_Ico' {a b : α} (hab : a ≤ b) {f : α → δ}
     (hf : ContinuousOn f (Icc a b)) : Ioc (f b) (f a) ⊆ f '' Ico a b :=
-  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.1 (not_lt_of_le (he ▸ h.2))) fun hlt =>
+  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.1 (not_lt_of_ge (he ▸ h.2))) fun hlt =>
     @IsPreconnected.intermediate_value_Ioc _ _ _ _ _ _ _ isPreconnected_Ico _ _ ⟨refl a, hlt⟩
       (right_nhdsWithin_Ico_neBot hlt) inf_le_right _ (hf.mono Ico_subset_Icc_self) _
       ((hf.continuousWithinAt ⟨hab, refl b⟩).mono Ico_subset_Icc_self)
 
 theorem intermediate_value_Ioc {a b : α} (hab : a ≤ b) {f : α → δ} (hf : ContinuousOn f (Icc a b)) :
     Ioc (f a) (f b) ⊆ f '' Ioc a b :=
-  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.2 (not_le_of_lt (he ▸ h.1))) fun hlt =>
+  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.2 (not_le_of_gt (he ▸ h.1))) fun hlt =>
     @IsPreconnected.intermediate_value_Ioc _ _ _ _ _ _ _ isPreconnected_Ioc _ _ ⟨hlt, refl b⟩
       (left_nhdsWithin_Ioc_neBot hlt) inf_le_right _ (hf.mono Ioc_subset_Icc_self) _
       ((hf.continuousWithinAt ⟨refl a, hab⟩).mono Ioc_subset_Icc_self)
 
 theorem intermediate_value_Ioc' {a b : α} (hab : a ≤ b) {f : α → δ}
     (hf : ContinuousOn f (Icc a b)) : Ico (f b) (f a) ⊆ f '' Ioc a b :=
-  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.1 (not_le_of_lt (he ▸ h.2))) fun hlt =>
+  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.1 (not_le_of_gt (he ▸ h.2))) fun hlt =>
     @IsPreconnected.intermediate_value_Ico _ _ _ _ _ _ _ isPreconnected_Ioc _ _ ⟨hlt, refl b⟩
       (left_nhdsWithin_Ioc_neBot hlt) inf_le_right _ (hf.mono Ioc_subset_Icc_self) _
       ((hf.continuousWithinAt ⟨refl a, hab⟩).mono Ioc_subset_Icc_self)
 
 theorem intermediate_value_Ioo {a b : α} (hab : a ≤ b) {f : α → δ} (hf : ContinuousOn f (Icc a b)) :
     Ioo (f a) (f b) ⊆ f '' Ioo a b :=
-  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.2 (not_lt_of_lt (he ▸ h.1))) fun hlt =>
+  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.2 (not_lt_of_gt (he ▸ h.1))) fun hlt =>
     @IsPreconnected.intermediate_value_Ioo _ _ _ _ _ _ _ isPreconnected_Ioo _ _
       (left_nhdsWithin_Ioo_neBot hlt) (right_nhdsWithin_Ioo_neBot hlt) inf_le_right inf_le_right _
       (hf.mono Ioo_subset_Icc_self) _ _
@@ -545,7 +545,7 @@ theorem intermediate_value_Ioo {a b : α} (hab : a ≤ b) {f : α → δ} (hf : 
 
 theorem intermediate_value_Ioo' {a b : α} (hab : a ≤ b) {f : α → δ}
     (hf : ContinuousOn f (Icc a b)) : Ioo (f b) (f a) ⊆ f '' Ioo a b :=
-  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.1 (not_lt_of_lt (he ▸ h.2))) fun hlt =>
+  Or.elim (eq_or_lt_of_le hab) (fun he _ h => absurd h.1 (not_lt_of_gt (he ▸ h.2))) fun hlt =>
     @IsPreconnected.intermediate_value_Ioo _ _ _ _ _ _ _ isPreconnected_Ioo _ _
       (right_nhdsWithin_Ioo_neBot hlt) (left_nhdsWithin_Ioo_neBot hlt) inf_le_right inf_le_right _
       (hf.mono Ioo_subset_Icc_self) _ _

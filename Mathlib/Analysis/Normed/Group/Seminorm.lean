@@ -5,7 +5,6 @@ Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
 import Mathlib.Data.NNReal.Defs
 import Mathlib.Order.ConditionallyCompleteLattice.Group
-import Mathlib.Tactic.GCongr.CoreAttrs
 
 /-!
 # Group seminorms
@@ -117,8 +116,9 @@ structure NonarchAddGroupNorm (G : Type*) [AddGroup G] extends NonarchAddGroupSe
 the additive group `α`.
 
 You should extend this class when you extend `NonarchAddGroupSeminorm`. -/
-class NonarchAddGroupSeminormClass (F : Type*) (α : outParam Type*) [AddGroup α] [FunLike F α ℝ]
-    extends NonarchimedeanHomClass F α ℝ : Prop where
+class NonarchAddGroupSeminormClass (F : Type*) (α : outParam Type*)
+    [AddGroup α] [FunLike F α ℝ] : Prop
+    extends NonarchimedeanHomClass F α ℝ where
   /-- The image of zero is zero. -/
   protected map_zero (f : F) : f 0 = 0
   /-- The seminorm is invariant under negation. -/
@@ -128,8 +128,8 @@ class NonarchAddGroupSeminormClass (F : Type*) (α : outParam Type*) [AddGroup �
 additive group `α`.
 
 You should extend this class when you extend `NonarchAddGroupNorm`. -/
-class NonarchAddGroupNormClass (F : Type*) (α : outParam Type*) [AddGroup α] [FunLike F α ℝ]
-    extends NonarchAddGroupSeminormClass F α : Prop where
+class NonarchAddGroupNormClass (F : Type*) (α : outParam Type*) [AddGroup α] [FunLike F α ℝ] : Prop
+    extends NonarchAddGroupSeminormClass F α where
   /-- If the image under the norm is zero, then the argument is zero. -/
   protected eq_zero_of_map_eq_zero (f : F) {a : α} : f a = 0 → a = 0
 
@@ -341,8 +341,7 @@ noncomputable instance : Min (GroupSeminorm E) :=
     { toFun := fun x => ⨅ y, p y + q (x / y)
       map_one' :=
         ciInf_eq_of_forall_ge_of_forall_gt_exists_lt
-          -- Porting note: replace `add_nonneg` with `positivity` once we have the extension
-          (fun _ => add_nonneg (apply_nonneg _ _) (apply_nonneg _ _)) fun r hr =>
+          (fun _ => by positivity) fun r hr =>
           ⟨1, by rwa [div_one, map_one_eq_zero p, map_one_eq_zero q, add_zero]⟩
       mul_le' := fun x y =>
         le_ciInf_add_ciInf fun u v => by
@@ -384,10 +383,8 @@ instance toOne [DecidableEq E] : One (AddGroupSeminorm E) :=
       map_zero' := if_pos rfl
       add_le' := fun x y => by
         by_cases hx : x = 0
-        · simp only
-          rw [if_pos hx, hx, zero_add, zero_add]
-        · simp only
-          rw [if_neg hx]
+        · rw [if_pos hx, hx, zero_add, zero_add]
+        · rw [if_neg hx]
           refine le_add_of_le_of_nonneg ?_ ?_ <;> split_ifs <;> norm_num
       neg' := fun x => by simp_rw [neg_eq_zero] }⟩
 
@@ -443,7 +440,6 @@ instance nonarchAddGroupSeminormClass :
   map_zero f := f.map_zero'
   map_neg_eq_map' f := f.neg'
 
--- Porting note: `simpNF` said the left hand side simplified to this
 @[simp]
 theorem toZeroHom_eq_coe : ⇑p.toZeroHom = p := by
   rfl
@@ -531,25 +527,21 @@ namespace GroupSeminorm
 
 variable [Group E] [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
-@[to_additive existing AddGroupSeminorm.toOne]
 instance toOne [DecidableEq E] : One (GroupSeminorm E) :=
   ⟨{  toFun := fun x => if x = 1 then 0 else 1
       map_one' := if_pos rfl
       mul_le' := fun x y => by
         by_cases hx : x = 1
-        · simp only
-          rw [if_pos hx, hx, one_mul, zero_add]
-        · simp only
-          rw [if_neg hx]
+        · rw [if_pos hx, hx, one_mul, zero_add]
+        · rw [if_neg hx]
           refine le_add_of_le_of_nonneg ?_ ?_ <;> split_ifs <;> norm_num
       inv' := fun x => by simp_rw [inv_eq_one] }⟩
 
-@[to_additive (attr := simp) existing AddGroupSeminorm.apply_one]
+@[simp]
 theorem apply_one [DecidableEq E] (x : E) : (1 : GroupSeminorm E) x = if x = 1 then 0 else 1 :=
   rfl
 
 /-- Any action on `ℝ` which factors through `ℝ≥0` applies to an `AddGroupSeminorm`. -/
-@[to_additive existing AddGroupSeminorm.toSMul]
 instance : SMul R (GroupSeminorm E) :=
   ⟨fun r p =>
     { toFun := fun x => r • p x
@@ -562,20 +554,18 @@ instance : SMul R (GroupSeminorm E) :=
         apply map_mul_le_add
       inv' := fun x => by simp_rw [map_inv_eq_map p] }⟩
 
-@[to_additive existing AddGroupSeminorm.isScalarTower]
 instance [SMul R' ℝ] [SMul R' ℝ≥0] [IsScalarTower R' ℝ≥0 ℝ] [SMul R R'] [IsScalarTower R R' ℝ] :
     IsScalarTower R R' (GroupSeminorm E) :=
   ⟨fun r a p => ext fun x => smul_assoc r a <| p x⟩
 
-@[to_additive (attr := simp, norm_cast) existing AddGroupSeminorm.coe_smul]
+@[simp, norm_cast]
 theorem coe_smul (r : R) (p : GroupSeminorm E) : ⇑(r • p) = r • ⇑p :=
   rfl
 
-@[to_additive (attr := simp) existing AddGroupSeminorm.smul_apply]
+@[simp]
 theorem smul_apply (r : R) (p : GroupSeminorm E) (x : E) : (r • p) x = r • p x :=
   rfl
 
-@[to_additive existing AddGroupSeminorm.smul_sup]
 theorem smul_sup (r : R) (p q : GroupSeminorm E) : r • (p ⊔ q) = r • p ⊔ r • q :=
   have Real.smul_max : ∀ x y : ℝ, r • max x y = max (r • x) (r • y) := fun x y => by
     simpa only [← smul_eq_mul, ← NNReal.smul_def, smul_one_smul ℝ≥0 r (_ : ℝ)] using
@@ -659,7 +649,6 @@ instance groupNormClass : GroupNormClass (GroupNorm E) E ℝ where
   map_inv_eq_map f := f.inv'
   eq_one_of_map_eq_zero f := f.eq_one_of_map_eq_zero' _
 
--- Porting note: `simpNF` told me the left-hand side simplified to this
 @[to_additive (attr := simp)]
 theorem toGroupSeminorm_eq_coe : ⇑p.toGroupSeminorm = p :=
   rfl
@@ -754,11 +743,10 @@ instance _root_.AddGroupNorm.toOne [AddGroup E] [DecidableEq E] : One (AddGroupN
 
 variable [Group E] [DecidableEq E]
 
-@[to_additive existing AddGroupNorm.toOne]
 instance toOne : One (GroupNorm E) :=
   ⟨{ (1 : GroupSeminorm E) with eq_one_of_map_eq_zero' := fun _ => zero_ne_one.ite_eq_left_iff.1 }⟩
 
-@[to_additive (attr := simp) existing AddGroupNorm.apply_one]
+@[simp]
 theorem apply_one (x : E) : (1 : GroupNorm E) x = if x = 1 then 0 else 1 :=
   rfl
 
@@ -784,7 +772,6 @@ instance nonarchAddGroupNormClass : NonarchAddGroupNormClass (NonarchAddGroupNor
   map_neg_eq_map' f := f.neg'
   eq_zero_of_map_eq_zero f := f.eq_zero_of_map_eq_zero' _
 
--- Porting note: `simpNF` told me the left-hand side simplified to this
 @[simp]
 theorem toNonarchAddGroupSeminorm_eq_coe : ⇑p.toNonarchAddGroupSeminorm = p :=
   rfl
