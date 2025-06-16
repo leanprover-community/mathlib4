@@ -404,7 +404,7 @@ is a user-provided template, first check that the template asks us to descend th
 match. -/
 partial def _root_.Lean.MVarId.gcongr
     (g : MVarId) (template : Option Expr) (names : List (TSyntax ``binderIdent))
-    (GRewriteHole : Option MVarId := none)
+    (grewriteHole : Option MVarId := none)
     (mainGoalDischarger : MVarId → MetaM Unit := gcongrForwardDischarger)
     (sideGoalDischarger : MVarId → MetaM Unit := gcongrDischarger) :
     MetaM (Bool × List (TSyntax ``binderIdent) × Array MVarId) := g.withContext do
@@ -421,7 +421,7 @@ partial def _root_.Lean.MVarId.gcongr
     -- then try to resolve the goal by the provided tactic `mainGoalDischarger`;
     -- if this fails, stop and report the existing goal.
     if let .mvar mvarId := tpl.getAppFn then
-      if let some hole := GRewriteHole then
+      if let some hole := grewriteHole then
         if hole == mvarId then mainGoalDischarger g; return (true, names, #[])
       else
         if let .syntheticOpaque ← mvarId.getKind then
@@ -442,17 +442,17 @@ partial def _root_.Lean.MVarId.gcongr
   let tplArgs ← if let some tpl := template then
     let some (tplHead, tplArgs) := getCongrAppFnArgs tpl
       | throwError "gcongr failed, the head of {tpl} is not a constant"
-    unless tplHead == lhsHead && tplArgs.size == rhsArgs.size do
-      throwError "expected {tplHead}, got {lhsHead}\n{lhs}"
-    unless tplHead == rhsHead && tplArgs.size == rhsArgs.size do
-      throwError "expected {tplHead}, got {rhsHead}\n{rhs}"
-    -- and also build an array of `Expr` corresponding to the arguments `_ ... _` to `tplHead` in
-    -- the template (these will be used in recursive calls later), and an array of booleans
-    -- according to which of these contain `?_`
-    tplArgs.mapM fun tpl => do
-      let hasHole ← if let some hole := GRewriteHole then
-        pure (tpl.findMVar? (· == hole)).isSome else containsHole tpl
-      return (some tpl, hasHole)
+    if let some hole := grewriteHole then
+      pure <| tplArgs.map fun tpl => (some tpl, (tpl.findMVar? (· == hole)).isSome)
+    else
+      unless tplHead == lhsHead && tplArgs.size == rhsArgs.size do
+        throwError "expected {tplHead}, got {lhsHead}\n{lhs}"
+      unless tplHead == rhsHead && tplArgs.size == rhsArgs.size do
+        throwError "expected {tplHead}, got {rhsHead}\n{rhs}"
+      -- and also build an array of `Expr` corresponding to the arguments `_ ... _` to `tplHead` in
+      -- the template (these will be used in recursive calls later), and an array of booleans
+      -- according to which of these contain `?_`
+      tplArgs.mapM fun tpl => return (some tpl, ← containsHole tpl)
   -- A. If there is no template, check that `lhs = rhs`
   else
     unless lhsHead == rhsHead && lhsArgs.size == rhsArgs.size do
@@ -513,7 +513,7 @@ partial def _root_.Lean.MVarId.gcongr
           pure e
         -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal with (if available) the
         -- appropriate template
-        let (_, names2, subgoals2) ← mvarId.gcongr tpl names2 GRewriteHole mainGoalDischarger
+        let (_, names2, subgoals2) ← mvarId.gcongr tpl names2 grewriteHole mainGoalDischarger
           sideGoalDischarger
         (names, subgoals) := (names2, subgoals ++ subgoals2)
       let mut out := #[]
