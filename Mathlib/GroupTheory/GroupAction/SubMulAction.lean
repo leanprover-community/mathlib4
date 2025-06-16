@@ -406,10 +406,13 @@ theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
   exact stabilizer_of_subMul.submonoid m
 
 /-- SubMulAction on the complement of an invariant subset -/
+@[to_additive "SubAddAction on the complement of an invariant subset"]
 instance : HasCompl (SubMulAction R M) where
   compl s := ⟨sᶜ, by simp⟩
 
-theorem compl_def (s : SubMulAction R M) : sᶜ.carrier = (s : Set M)ᶜ := rfl
+@[to_additive]
+theorem compl_def (s : SubMulAction R M) :
+  sᶜ.carrier = (s : Set M)ᶜ := rfl
 
 end MulActionGroup
 
