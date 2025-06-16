@@ -1213,79 +1213,14 @@ theorem integral_target_eq_integral_abs_det_fderiv_smul {f : PartialHomeomorph E
   exact (hf' x hx).hasFDerivWithinAt
 
 
-variable {α β : Type*} {t : Set α} {g : α → β}
-[TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] [LinearOrder α] [OrderTopology α]
-[PolishSpace α]
-[TopologicalSpace β] [MeasurableSpace β] [BorelSpace β] [LinearOrder β] [OrderTopology β]
+variable {g g' : ℝ → ℝ}  {t : Set ℝ}
 
-private theorem MeasurableSet.image_of_monotoneOn_of_continuousOn
-    (ht : MeasurableSet t) (hg : MonotoneOn g t) (h'g : ContinuousOn g t) :
-    MeasurableSet (g '' t) := by
-  /- We we will use that the image of a measurable set by a continuous injective map is measurable.
-  Therefore, we need to remove the injectivity default. There are only countably many points that
-  have several preimages, so this set is also measurable. -/
-  let u : Set β := {c | ∃ x, ∃ y, x ∈ t ∧ y ∈ t ∧ x < y ∧ g x = c ∧ g y = c}
-  have hu : Set.Countable u := MonotoneOn.countable_setOf_two_preimages hg
-  let t' := t ∩ g ⁻¹' u
-  have ht' : MeasurableSet t' := by
-    have : t' = ⋃ c ∈ u, t ∩ g⁻¹' {c} := by ext; simp [t']
-    rw [this]
-    apply MeasurableSet.biUnion hu (fun c hc ↦ ?_)
-    obtain ⟨v, hv, tv⟩ : ∃ v, OrdConnected v ∧ t ∩ g ⁻¹' {c} = t ∩ v :=
-      OrdConnected.preimage_monotoneOn ordConnected_singleton hg
-    rw [tv]
-    exact ht.inter hv.measurableSet
-  have : g '' t = g '' (t \ t') ∪ g '' t' := by simp [← image_union, t']
-  rw [this]
-  apply MeasurableSet.union
-  · apply (ht.diff ht').image_of_continuousOn_injOn (h'g.mono diff_subset)
-    intro x hx y hy hxy
-    contrapose! hxy
-    wlog H : x < y generalizing x y with h
-    · have : y < x := lt_of_le_of_ne (not_lt.1 H) hxy.symm
-      exact (h hy hx hxy.symm this).symm
-    intro h
-    apply hx.2
-    refine ⟨hx.1, ?_⟩
-    exact ⟨x, y, hx.1, hy.1, H, rfl, h.symm⟩
-  · apply Countable.measurableSet
-    apply hu.mono
-    simp [t']
+#check MeasurableSet.image_of_monotoneOn
 
-/-- The image of a measurable set under a monotone map is measurable. -/
-theorem MeasurableSet.image_of_monotoneOn
-    (ht : MeasurableSet t) (hg : MonotoneOn g t) : MeasurableSet (g '' t) := by
-  /- Since there are only countably many discontinuity points, the result follows by reduction to
-  the continuous case, which we have already proved. -/
-  let t' := {x ∈ t | ¬ ContinuousWithinAt g t x}
-  have ht' : Set.Countable t' := hg.countable_not_continuousWithinAt
-  have : g '' t = g '' (t \ t') ∪ g '' t' := by
-    rw [← image_union]
-    congr!
-    ext
-    simp only [sdiff_sep_self, not_not, mem_union, mem_setOf_eq, t']
-    tauto
-  rw [this]
-  apply MeasurableSet.union _ (ht'.image g).measurableSet
-  apply MeasurableSet.image_of_monotoneOn_of_continuousOn (ht.diff ht'.measurableSet)
-    (hg.mono diff_subset)
-  intro x hx
-  simp only [sdiff_sep_self, not_not, mem_setOf_eq, t'] at hx
-  exact hx.2.mono diff_subset
-
-/-- The image of a measurable set under a monotone map is measurable. -/
-theorem MeasurableSet.image_of_antitoneOn
-    (ht : MeasurableSet t) (hg : AntitoneOn g t) : MeasurableSet (g '' t) := by
-
-
-
-#exit
-
-
-/-- Change of variable formula for differentiable functions, set version: if a function `f` is
-injective and differentiable on a measurable set `s`, then the measure of `f '' s` is given by the
-integral of `|(f' x).det|` on `s`.
-Note that the measurability of `f '' s` is given by `measurable_image_of_fderivWithin`. -/
+/-- Change of variable formula for differentiable functions, set version: if a real function `g` is
+monotone and differentiable on a measurable set `t`, then the measure of `g '' t` is given by the
+integral of `g' x` on `t`.
+Note that the measurability of `g '' t` is given by `MeasurableSet.image_of_monotoneOn`. -/
 theorem lintegral_abs_det_fderiv_eq_addHaar_image_glou (ht : MeasurableSet t)
     (hf' : ∀ x ∈ t, HasDerivWithinAt g (g' x) t x) (hf : MonotoneOn g t) :
     (∫⁻ x in t, ENNReal.ofReal (g' x)) = volume (g '' t) := by
@@ -1303,19 +1238,7 @@ theorem lintegral_abs_det_fderiv_eq_addHaar_image_glou (ht : MeasurableSet t)
 
 
 
-
 #exit
-
-  let s := {x ∈ t | g' x ≠ 0 ∧ (𝓝[t ∩ Ioi x] x).NeBot}
-  have : StrictMonoOn g s := by
-    intro x hx y hy hxy
-    have A : t ∩ Ioo x y ∈ 𝓝[t ∩ Ioi x] x := by
-      simp only [nhdsWithin_inter, inter_mem_iff]
-      refine ⟨mem_inf_of_left self_mem_nhdsWithin, mem_inf_of_right (Ioo_mem_nhdsGT hxy)⟩
-    have : (𝓝[t ∩ Ioi x] x).NeBot := hx.2.2
-    have A : 0 ≤ g' x := by
-      have : x ∈ t := hx.1
-      apply HasDerivWithinAt.nonneg_of_monotoneOn
 
 
 
