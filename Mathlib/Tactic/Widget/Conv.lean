@@ -111,23 +111,16 @@ private def getName (n : Name) : String :=
 
 private def pathToString (path : Path) : String :=
   let c := go path
-  if c.1 = [] then c.2
-  else if c.2 = "" then
-    s!"enter [{", ".intercalate (go path).1}]"
-  else
-    s!"enter [{", ".intercalate (go path).1}]; {(go path).2}"
+  let cc := List.replicate c.2 "fun"
+  "; ".intercalate (if c.1 = [] then cc else s!"enter [{", ".intercalate c.1}]" :: cc)
 where
-  go : Path → List String × String
-    | Path.node => ([], "")
+  go : Path → List String × Nat
+    | Path.node => ([], 0)
     | Path.arg arg all next =>
       (s!"{if all then "@" else ""}{arg}" :: (go next).1, (go next).2)
-    | Path.fun depth => ([], rep depth)
+    | Path.fun depth => ([], depth)
     | Path.type next => ("1" :: (go next).1, (go next).2)
     | Path.body name next => (getName name.eraseMacroScopes :: (go next).1, (go next).2)
-  rep : Nat → String
-    | 0 => ""
-    | 1 => "fun"
-    | n + 2 => s!"{rep (n + 1)}; fun"
 
 open Lean Syntax in
 /-- Return the link text and inserted text above and below of the conv widget. -/
