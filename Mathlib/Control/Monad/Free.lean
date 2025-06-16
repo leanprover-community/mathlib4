@@ -577,15 +577,15 @@ recursive interpreter `run` for `FreeCont`.
 -/
 @[simp]
 theorem toContT_eq_run {r α : Type u} (comp : FreeCont r α) (k : α → r) :
-    toContT comp k = run comp k := by
-    induction comp with
-    | pure a => rfl
-    | liftBind op cont ih =>
-      simp only [toContT, FreeM.liftM]
-      cases op
-      simp only [run, bind]
-      congr with x
-      apply ih
+  toContT comp k = run comp k := by
+  induction comp with
+  | pure a => rfl
+  | liftBind op cont ih =>
+    simp only [toContT, FreeM.liftM]
+    cases op
+    simp only [run, bind]
+    congr with x
+    apply ih
 
 @[simp]
 lemma run_pure {r : Type u} {α : Type v} (a : α) (k : α → r) :
@@ -593,14 +593,13 @@ lemma run_pure {r : Type u} {α : Type v} (a : α) (k : α → r) :
 
 @[simp]
 lemma run_liftBind_callCC {r : Type u} {α β : Type v} (g : (α → r) → r)
-(cont : α → FreeCont r β) (k : β → r) :
+  (cont : α → FreeCont r β) (k : β → r) :
     run (liftBind (.callCC g) cont) k = g (fun a => run (cont a) k) := rfl
 
 /-- Call with current continuation for the Free continuation monad. -/
 def callCC {r : Type u} {α β : Type v} (f : MonadCont.Label α (FreeCont r) β → FreeCont r α) :
-FreeCont r α :=
-  liftBind (ContF.callCC (fun k =>
-    run (f ⟨fun x => liftBind (ContF.callCC (fun _ => k x)) pure⟩) k
+  FreeCont r α := liftBind (ContF.callCC (fun k =>
+  run (f ⟨fun x => liftBind (ContF.callCC (fun _ => k x)) pure⟩) k
   )) pure
 
 @[simp]
