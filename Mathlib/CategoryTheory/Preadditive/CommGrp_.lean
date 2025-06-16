@@ -43,7 +43,7 @@ always an equivalence, see `commGrpEquivalence`. -/
 @[simps]
 def toCommGrp : C ⥤ CommGrp_ C where
   obj X := ⟨X⟩
-  map {X Y} f := { hom := f }
+  map {X Y} f := .mk' f
 
 -- PROJECT: develop `ChosenFiniteCoproducts`, and construct `ChosenFiniteCoproducts` from
 -- `CartesianMonoidalCategory` in preadditive categories, to give this lemma a proper home.
