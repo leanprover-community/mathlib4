@@ -16,6 +16,7 @@ namespace Basis
 
 variable {ι R H : Type*} [Semiring R] [AddCommMonoid H] [Module R H]
 
+/-- the mulOpposite of a basis: `b.mulOpposite i ↦ MulOpposite.op (b i)` -/
 noncomputable def mulOpposite (b : Basis ι R H) : Basis ι R Hᵐᵒᵖ :=
 b.map (MulOpposite.opLinearEquiv R)
 
