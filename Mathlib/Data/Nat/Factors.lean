@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.BigOperators.Ring.List
-import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.List.Perm.Subperm
 import Mathlib.Data.List.Prime
 import Mathlib.Data.List.Sort
-import Mathlib.Data.List.Perm.Subperm
+import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # Prime numbers
@@ -83,6 +83,11 @@ theorem primeFactorsList_prime {p : ℕ} (hp : Nat.Prime p) : p.primeFactorsList
   have : Nat.minFac p = p := (Nat.prime_def_minFac.mp hp).2
   simp only [this, primeFactorsList, Nat.div_self (Nat.Prime.pos hp)]
 
+theorem primeFactorsList_prime_iff {p : ℕ} : p.primeFactorsList = [p] ↔ p.Prime := by
+  refine ⟨fun h ↦ ?_, primeFactorsList_prime⟩
+  apply h ▸ prime_of_mem_primeFactorsList
+  exact List.mem_singleton_self _
+
 theorem primeFactorsList_chain {n : ℕ} :
     ∀ {a}, (∀ p, Prime p → p ∣ n → a ≤ p) → List.Chain (· ≤ ·) a (primeFactorsList n) := by
   match n with
@@ -123,9 +128,20 @@ theorem primeFactorsList_eq_nil (n : ℕ) : n.primeFactorsList = [] ↔ n = 0 �
     · exact primeFactorsList_zero
     · exact primeFactorsList_one
 
-@[simp]
 theorem primeFactorsList_length_ne_zero (n : ℕ) : n.primeFactorsList.length ≠ 0 ↔ 2 ≤ n := by
   simp; omega
+
+@[simp]
+theorem primeFactorsList_length_eq_one (n : ℕ) : n.primeFactorsList.length = 1 ↔ n.Prime := by
+  refine ⟨fun h ↦ ?_, fun h ↦ primeFactorsList_prime h ▸ rfl⟩
+  rcases List.length_eq_one_iff.mp h with ⟨p, hp⟩
+  have : p = n := by
+    have : 2 ≤ n := n.primeFactorsList_length_ne_zero.mp (by simp +decide only [h])
+    have h₁ := n.prod_primeFactorsList (by omega)
+    simp only [hp, List.prod_singleton] at h₁
+    exact h₁
+  rw [this, primeFactorsList_prime_iff] at hp
+  exact hp
 
 open scoped List in
 theorem eq_of_perm_primeFactorsList {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
@@ -314,3 +330,5 @@ theorem four_dvd_or_exists_odd_prime_and_dvd_of_two_lt {n : ℕ} (n2 : 2 < n) :
   · exact Or.inr ⟨p, hp, hdvd, hodd⟩
 
 end Nat
+
+#min_imports
