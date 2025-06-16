@@ -1089,11 +1089,17 @@ For a version without measurability assumption but dealing with the restricted
 function `s.restrict f`, see `restrict_map_withDensity_abs_det_fderiv_eq_addHaar`.
 -/
 theorem map_withDensity_abs_det_fderiv_eq_addHaar (hs : MeasurableSet s)
-    (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf : InjOn f s) (h'f : Measurable f) :
+    (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf : InjOn f s) :
     Measure.map f ((μ.restrict s).withDensity fun x => ENNReal.ofReal |(f' x).det|) =
       μ.restrict (f '' s) := by
+  have h'f : AEMeasurable f (μ.restrict s) := by
+    apply ContinuousOn.aemeasurable (fun x hx ↦ ?_) hs
+    exact (hf' x hx).differentiableWithinAt.continuousWithinAt
+  have h''f : AEMeasurable f ((μ.restrict s).withDensity fun x => ENNReal.ofReal |(f' x).det|) := by
+    apply h'f.mono_ac
+    exact withDensity_absolutelyContinuous _ _
   apply Measure.ext fun t ht => ?_
-  rw [map_apply h'f ht, withDensity_apply _ (h'f ht), Measure.restrict_apply ht,
+  rw [map_apply_of_aemeasurable h''f ht, withDensity_apply₀ _ (h'f ht), Measure.restrict_apply ht,
     restrict_restrict (h'f ht),
     lintegral_abs_det_fderiv_eq_addHaar_image μ ((h'f ht).inter hs)
       (fun x hx => (hf' x hx.2).mono inter_subset_right) (hf.mono inter_subset_right),
@@ -1215,13 +1221,258 @@ theorem integral_target_eq_integral_abs_det_fderiv_smul {f : PartialHomeomorph E
 
 variable {g g' : ℝ → ℝ}  {t : Set ℝ}
 
-#check MeasurableSet.image_of_monotoneOn
+/-- Structure theorem for monotone differentiable functions.
 
-#check countable_setOf_isolated_right_within
+If a function `g` is monotone on a measurable set and has a derivative `g'`, one can decompose
+the set as a disjoint union `a ∪ b ∪ c` of measurable sets where `a` is countable (the isolated
+points,  where `g'` could be arbitrary), `g` is locally constant on `b` and `g' = 0` (the preimages
+of the countably many points with several preimages), and `g` is injective on `c` with nonnegative
+derivative (the other points). -/
+theorem exists_decomposition_of_monotoneOn_hasDerivWithinAt (ht : MeasurableSet t)
+    (hg : MonotoneOn g t) (hg' : ∀ x ∈ t, HasDerivWithinAt g (g' x) t x) :
+    ∃ (a b c : Set ℝ), a ∪ (b ∪ c) = t ∧ MeasurableSet a ∧ MeasurableSet b ∧ MeasurableSet c ∧
+    Disjoint a (b ∪ c) ∧ Disjoint b c ∧ a.Countable ∧ (g '' b).Countable ∧
+    (∀ x ∈ b, g' x = 0) ∧ (∀ x ∈ c, 0 ≤ g' x) ∧ InjOn g c := by
+  let a := {x ∈ t | 𝓝[t ∩ Ioi x] x = ⊥} ∪ {x ∈ t | 𝓝[t ∩ Iio x] x = ⊥}
+  have a_count : a.Countable :=
+    countable_setOf_isolated_right_within.union countable_setOf_isolated_left_within
+  let t₁ := t \ a
+  have ht₁ : MeasurableSet t₁ := ht.diff a_count.measurableSet
+  let u : Set ℝ := {c | ∃ x, ∃ y, x ∈ t₁ ∧ y ∈ t₁ ∧ x < y ∧ g x = c ∧ g y = c}
+  have hu : Set.Countable u := MonotoneOn.countable_setOf_two_preimages (hg.mono diff_subset)
+  let b := t₁ ∩ g ⁻¹' u
+  have hb : MeasurableSet b := by
+    have : b = ⋃ z ∈ u, t₁ ∩ g⁻¹' {z} := by ext; simp [b]
+    rw [this]
+    apply MeasurableSet.biUnion hu (fun z hz ↦ ?_)
+    obtain ⟨v, hv, tv⟩ : ∃ v, OrdConnected v ∧ (t \ a) ∩ g ⁻¹' {z} = (t \ a) ∩ v :=
+      OrdConnected.preimage_monotoneOn ordConnected_singleton (hg.mono diff_subset)
+    rw [tv]
+    exact (ht.diff a_count.measurableSet).inter hv.measurableSet
+  let c := t₁ \ b
+  have hc : MeasurableSet c := ht₁.diff hb
+  refine ⟨a, b, c, ?_, a_count.measurableSet, hb, hc, ?_, ?_, a_count, ?_, ?_, ?_, ?_⟩
+  · ext x
+    simp only [diff_self_inter, inter_union_diff, union_diff_self, mem_union, mem_setOf_eq,
+      or_iff_right_iff_imp, a, b, t₁, c]
+    tauto
+  · simpa [b, c, t₁] using disjoint_sdiff_right
+  · simpa [c] using disjoint_sdiff_right
+  · apply hu.mono
+    simp [b]
+  · /- We have to show that the derivative is `0` at `x ∈ b`. For that, we use that there is another
+    point `p` with `g p = g x`, by definition of `b`. If `p < x`, then `g` is locally constant to
+    the left of `x`. As `x` is not isolated to its left (since we are not in the set `a`), it
+    follows that `g' x = 0`. The same argument works if `x < p`, using the right neighborhood
+    instead. -/
+    intro x hx
+    obtain ⟨p, pt₁, px, gpx⟩ : ∃ p ∈ t₁, p ≠ x ∧ g p = g x := by
+      rcases hx.2 with ⟨p, q, pt₁, qt₁, pq, hp, hq⟩
+      rcases eq_or_ne p x with h'p | h'p
+      · exact ⟨q, qt₁, (h'p.symm.le.trans_lt pq).ne', hq⟩
+      · exact ⟨p, pt₁, h'p, hp⟩
+    rcases lt_or_gt_of_ne px with px | px
+    · have K : HasDerivWithinAt g 0 (t ∩ Ioo p x) x := by
+        have E (y) (hy : y ∈ t ∩ Ioo p x) : g y = g x := by
+          apply le_antisymm (hg hy.1 hx.1.1 hy.2.2.le)
+          rw [← gpx]
+          exact hg pt₁.1 hy.1 hy.2.1.le
+        have : HasDerivWithinAt (fun y ↦ g x) 0 (t ∩ Ioo p x) x :=
+          hasDerivWithinAt_const x (t ∩ Ioo p x) (g x)
+        exact this.congr E rfl
+      have K' : HasDerivWithinAt g (g' x) (t ∩ Ioo p x) x :=
+        (hg' x hx.1.1).mono inter_subset_left
+      apply UniqueDiffWithinAt.eq_deriv _ _ K' K
+      have J1 : (t ∩ Ioo p x) \ {x} = t ∩ Ioo p x := by simp
+      have J2 : 𝓝[t ∩ Ioo p x] x = 𝓝[t ∩ Iio x] x := by
+        simp [nhdsWithin_inter, nhdsWithin_Ioo_eq_nhdsLT px]
+      rw [uniqueDiffWithinAt_iff_accPt, accPt_principal_iff_nhdsWithin, J1, J2]
+      simp only [mem_inter_iff, mem_diff, hx.1.1, mem_union, mem_setOf_eq, true_and, not_or,
+        mem_preimage, b, t₁, a] at hx
+      exact neBot_iff.2 hx.1.2
+    · have K : HasDerivWithinAt g 0 (t ∩ Ioo x p) x := by
+        have E (y) (hy : y ∈ t ∩ Ioo x p) : g y = g x := by
+          apply le_antisymm  _ (hg hx.1.1 hy.1 hy.2.1.le)
+          rw [← gpx]
+          exact hg hy.1 pt₁.1 hy.2.2.le
+        have : HasDerivWithinAt (fun y ↦ g x) 0 (t ∩ Ioo x p) x :=
+          hasDerivWithinAt_const x (t ∩ Ioo x p) (g x)
+        exact this.congr E rfl
+      have K' : HasDerivWithinAt g (g' x) (t ∩ Ioo x p) x :=
+        (hg' x hx.1.1).mono inter_subset_left
+      apply UniqueDiffWithinAt.eq_deriv _ _ K' K
+      have J1 : (t ∩ Ioo x p) \ {x} = (t ∩ Ioo x p) := by simp
+      have J2 : 𝓝[t ∩ Ioo x p] x = 𝓝[t ∩ Ioi x] x := by
+        simp [nhdsWithin_inter, nhdsWithin_Ioo_eq_nhdsGT px]
+      rw [uniqueDiffWithinAt_iff_accPt, accPt_principal_iff_nhdsWithin, J1, J2]
+      simp only [mem_inter_iff, mem_diff, hx.1.1, mem_union, mem_setOf_eq, true_and, not_or,
+        mem_preimage, b, t₁, a] at hx
+      exact neBot_iff.2 hx.1.1
+  · /- We have to show that the derivative is nonnegative at points of `c`. As these points are
+    not isolated in `t`, this follows from the fact that `g` is monotone on `t`. -/
+    intro x hx
+    apply (hg' x hx.1.1).nonneg_of_monotoneOn _ hg
+    simp only [mem_diff, hx.1.1, mem_union, mem_setOf_eq, true_and, not_or, c, t₁, a, b] at hx
+    rw [accPt_principal_iff_nhdsWithin]
+    have : (𝓝[t ∩ Iio x] x).NeBot := neBot_iff.2 hx.1.2
+    apply this.mono
+    apply nhdsWithin_mono
+    rintro y ⟨yt, yx : y < x⟩
+    exact ⟨yt, by simpa using yx.ne⟩
+  · intro x hx y hy hxy
+    contrapose! hxy
+    wlog H : x < y generalizing x y with h
+    · have : y < x := lt_of_le_of_ne (not_lt.1 H) hxy.symm
+      exact (h hy hx hxy.symm this).symm
+    intro h
+    apply hx.2
+    refine ⟨hx.1, ?_⟩
+    exact ⟨x, y, hx.1, hy.1, H, rfl, h.symm⟩
 
-#check HasDerivWithinAt.hasFDerivWithinAt
+/-- Change of variable formula for differentiable functions, set version: if a real function `g` is
+monotone and differentiable on a measurable set `t`, then the measure of `g '' t` is given by the
+integral of `g' x` on `t`.
+Note that the measurability of `g '' t` is given by `MeasurableSet.image_of_monotoneOn`. -/
+theorem lintegral_deriv_eq_volume_image_of_monotoneOn (ht : MeasurableSet t)
+    (hg' : ∀ x ∈ t, HasDerivWithinAt g (g' x) t x) (hf : MonotoneOn g t) :
+    (∫⁻ x in t, ENNReal.ofReal (g' x)) = volume (g '' t) := by
+  rcases exists_decomposition_of_monotoneOn_hasDerivWithinAt ht hf hg' with
+    ⟨a, b, c, h_union, ha, hb, hc, h_disj, h_disj', a_count, gb_count, deriv_b, deriv_c, inj_c⟩
+  have I : ∫⁻ x in t, ENNReal.ofReal (g' x) = ∫⁻ x in c, ENNReal.ofReal (g' x) := by
+    have : ∫⁻ x in a, ENNReal.ofReal (g' x) = 0 := by
+      have : volume a = 0 := a_count.measure_zero volume
+      exact setLIntegral_measure_zero a _ this
+    rw [← h_union, lintegral_union (hb.union hc) h_disj, this, zero_add]
+    have : ∫⁻ x in b, ENNReal.ofReal (g' x) = 0 :=
+      setLIntegral_eq_zero hb (fun x hx ↦ by simp [deriv_b x hx])
+    rw [lintegral_union hc h_disj', this, zero_add]
+  have J : volume (g '' t) = volume (g '' c) := by
+    rw [← h_union, image_union, image_union]
+    have A : (g '' a ∪ (g '' b ∪ g '' c) : Set ℝ) =ᵐ[volume] (g '' b ∪ g '' c : Set ℝ) := by
+      refine union_ae_eq_right_of_ae_eq_empty (ae_eq_empty.mpr ?_)
+      exact (a_count.image _).measure_zero _
+    have B : (g '' b ∪ g '' c : Set ℝ) =ᵐ[volume] g '' c := by
+      refine union_ae_eq_right_of_ae_eq_empty (ae_eq_empty.mpr ?_)
+      exact gb_count.measure_zero _
+    exact measure_congr (A.trans B)
+  rw [I, J]
+  have ct : c ⊆ t := by
+    rw [← h_union]
+    exact subset_union_right.trans subset_union_right
+  let G' : ℝ → (ℝ →L[ℝ] ℝ) := fun x ↦ (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (g' x))
+  have hG' (x : ℝ) (hx : x ∈ c) : HasFDerivWithinAt g (G' x) c x :=
+    (hg' x (ct hx)).hasFDerivWithinAt.mono ct
+  have : ∫⁻ (x : ℝ) in c, ENNReal.ofReal (g' x)
+      = ∫⁻ (x : ℝ) in c, ENNReal.ofReal (|(G' x).det|) := by
+    apply setLIntegral_congr_fun hc (fun x hx ↦ ?_)
+    simp only [LinearMap.det_ring, ContinuousLinearMap.coe_coe, ContinuousLinearMap.smulRight_apply,
+      ContinuousLinearMap.one_apply, smul_eq_mul, one_mul, G']
+    rw [abs_of_nonneg (deriv_c x hx)]
+  rw [this]
+  exact lintegral_abs_det_fderiv_eq_addHaar_image _ hc hG' inj_c
 
-#check setLIntegral_congr_fun
+
+
+
+
+
+
+
+
+
+
+#exit
+
+
+  have t₂t : t₂ ⊆ t := diff_subset.trans diff_subset
+  have A' : (∫⁻ x in t₁, ENNReal.ofReal (g' x)) = (∫⁻ x in t₂, ENNReal.ofReal (g' x)) := by
+    have I : ∫⁻ (x : ℝ) in t', ENNReal.ofReal (g' x) = 0 := by
+      apply setLIntegral_eq_zero ht'
+      intro x hx
+      simp only [Pi.zero_apply, ENNReal.ofReal_eq_zero, t']
+      obtain ⟨p, pt₁, px, gpx⟩ : ∃ p ∈ t₁, p ≠ x ∧ g p = g x := by
+        rcases hx.2 with ⟨p, q, pt₁, qt₁, pq, hp, hq⟩
+        rcases eq_or_ne p x with h'p | h'p
+        · exact ⟨q, qt₁, (h'p.symm.le.trans_lt pq).ne', hq⟩
+        · exact ⟨p, pt₁, h'p, hp⟩
+      rcases lt_or_gt_of_ne px with px | px
+      · have K : HasDerivWithinAt g 0 (t ∩ Ioo p x) x := by
+          have E (y) (hy : y ∈ t ∩ Ioo p x) : g y = g x := by
+            apply le_antisymm (hg hy.1 hx.1.1 hy.2.2.le)
+            rw [← gpx]
+            exact hg pt₁.1 hy.1 hy.2.1.le
+          have : HasDerivWithinAt (fun y ↦ g x) 0 (t ∩ Ioo p x) x :=
+            hasDerivWithinAt_const x (t ∩ Ioo p x) (g x)
+          exact this.congr E rfl
+        have K' : HasDerivWithinAt g (g' x) (t ∩ Ioo p x) x :=
+          (hg' x hx.1.1).mono inter_subset_left
+        have : g' x = 0 := by
+          apply UniqueDiffWithinAt.eq_deriv _ _ K' K
+          have J1 : (t ∩ Ioo p x) \ {x} = (t ∩ Ioo p x) := by simp
+          have J2 : 𝓝[t ∩ Ioo p x] x = 𝓝[t ∩ Iio x] x := by
+            simp [nhdsWithin_inter, nhdsWithin_Ioo_eq_nhdsLT px]
+          rw [uniqueDiffWithinAt_iff_accPt, accPt_principal_iff_nhdsWithin, J1, J2]
+          have xt : x ∈ t := hx.1.1
+          simp only [mem_inter_iff, mem_diff, xt, mem_union, mem_setOf_eq, true_and, not_or,
+            mem_preimage, t', t₁, a] at hx
+          exact neBot_iff.2 hx.1.2
+        simp [this]
+      · have K : HasDerivWithinAt g 0 (t ∩ Ioo x p) x := by
+          have E (y) (hy : y ∈ t ∩ Ioo x p) : g y = g x := by
+            apply le_antisymm  _ (hg hx.1.1 hy.1 hy.2.1.le)
+            rw [← gpx]
+            exact hg hy.1 pt₁.1 hy.2.2.le
+          have : HasDerivWithinAt (fun y ↦ g x) 0 (t ∩ Ioo x p) x :=
+            hasDerivWithinAt_const x (t ∩ Ioo x p) (g x)
+          exact this.congr E rfl
+        have K' : HasDerivWithinAt g (g' x) (t ∩ Ioo x p) x :=
+          (hg' x hx.1.1).mono inter_subset_left
+        have : g' x = 0 := by
+          apply UniqueDiffWithinAt.eq_deriv _ _ K' K
+          have J1 : (t ∩ Ioo x p) \ {x} = (t ∩ Ioo x p) := by simp
+          have J2 : 𝓝[t ∩ Ioo x p] x = 𝓝[t ∩ Ioi x] x := by
+            simp [nhdsWithin_inter, nhdsWithin_Ioo_eq_nhdsGT px]
+          rw [uniqueDiffWithinAt_iff_accPt, accPt_principal_iff_nhdsWithin, J1, J2]
+          have xt : x ∈ t := hx.1.1
+          simp only [mem_inter_iff, mem_diff, xt, mem_union, mem_setOf_eq, true_and, not_or,
+            mem_preimage, t', t₁, a] at hx
+          exact neBot_iff.2 hx.1.1
+        simp [this]
+    have : t₁ = t₂ ∪ t' := by simp [t₂, t']
+    rw [this, lintegral_union ht', I, add_zero]
+    exact disjoint_sdiff_left
+  have B' : volume (g '' t₁) = volume (g '' t₂) := by
+    apply le_antisymm ?_ (measure_mono (image_mono diff_subset))
+    have : g '' t₁ = g '' (t₁ \ t') ∪ g '' t' := by simp [← image_union, t']
+    rw [this]
+    apply (measure_union_le _ _).trans_eq
+    have : volume (g '' t') = 0 := by
+      apply Countable.measure_zero
+      apply hu.mono
+      simp [t']
+    rw [this, add_zero]
+  rw [A', B']
+  /- Finally, we are left with a set on which `g` is injective. We can then apply the general
+  change of variables formula for injective functions. -/
+  have injOn_g : InjOn g t₂ := by
+    intro x hx y hy hxy
+    contrapose! hxy
+    wlog H : x < y generalizing x y with h
+    · have : y < x := lt_of_le_of_ne (not_lt.1 H) hxy.symm
+      exact (h hy hx hxy.symm this).symm
+    intro h
+    apply hx.2
+    refine ⟨hx.1, ?_⟩
+    exact ⟨x, y, hx.1, hy.1, H, rfl, h.symm⟩
+  let G' : ℝ → (ℝ →L[ℝ] ℝ) := fun x ↦ (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (g' x))
+  have hG' (x : ℝ) (hx : x ∈ t₂) : HasFDerivWithinAt g (G' x) t₂ x :=
+    (hg' x (t₂t hx)).hasFDerivWithinAt.mono t₂t
+  have : ∫⁻ (x : ℝ) in t₂, ENNReal.ofReal (g' x)
+      = ∫⁻ (x : ℝ) in t₂, ENNReal.ofReal (|(G' x).det|) := by
+    apply lintegral_congr_ae
+
+  rw [this]
+  exact lintegral_abs_det_fderiv_eq_addHaar_image _ ht₂ hG' injOn_g
 
 
 
