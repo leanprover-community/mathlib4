@@ -96,7 +96,7 @@ def actionOfMonoidalFunctorToEndofunctorMop (F : C ⥤ (D ⥤ D)ᴹᵒᵖ) [F.Mo
   actionHomRight c _ _ f := (F.obj c).unmop.map f
   actionAssocIso c c' d := Functor.Monoidal.μIso F c c'|>.unmop.app d|>.symm
   actionUnitIso d := Functor.Monoidal.εIso F|>.unmop.app d|>.symm
-  actionAssocIso_naturality {c₁ c₁' c₂ c₂' c₃ c₃'} f g h := by
+  actionAssocIso_hom_naturality {c₁ c₁' c₂ c₂' c₃ c₃'} f g h := by
     have e := congrArg (fun t ↦ t.unmop.app c₃) <|
       Functor.OplaxMonoidal.δ_natural F f g
     dsimp at e
@@ -157,22 +157,22 @@ is monoidal, where `D ⥤ D` has the composition monoidal structure. -/
 instance curriedActionMonoidal [MonoidalRightAction C D] :
     (curriedAction C D).Monoidal where
   ε := (actionUnitNatIso C D).inv
-  μ _ _ := {app _ := ᵣα _ _ _|>.inv}
-  δ _ _ := {app _ := ᵣα _ _ _|>.hom}
+  μ _ _ := {app _ := αᵣ _ _ _|>.inv}
+  δ _ _ := {app _ := αᵣ _ _ _|>.hom}
   η := (actionUnitNatIso C D).hom
   associativity c₁ c₂ c₃ := by
     ext d
     simpa [-actionHom_associator] using
       (IsIso.inv_eq_inv.mpr <| actionHom_associator c₁ c₂ c₃ d).symm =≫
-        d ᵣ⊴ (α_ c₁ c₂ c₃).hom
+        d ⊴ᵣ (α_ c₁ c₂ c₃).hom
   oplax_right_unitality x := by
     ext t
     simpa [-actionHom_rightUnitor] using
-      t ᵣ⊴ (ρ_ x).inv ≫= actionHom_rightUnitor x t
+      t ⊴ᵣ (ρ_ x).inv ≫= actionHom_rightUnitor x t
   oplax_left_unitality x := by
     ext t
     simpa [-actionHom_leftUnitor] using
-      t ᵣ⊴ (λ_ x).inv ≫= actionHom_leftUnitor x t
+      t ⊴ᵣ (λ_ x).inv ≫= actionHom_leftUnitor x t
 
 /-- A monoidal functor `F : C ⥤ D ⥤ D` can be thought of as a right action
 of `C` on `D`. -/
@@ -184,7 +184,7 @@ def actionOfMonoidalFunctorToEndofunctor (F : C ⥤ D ⥤ D) [F.Monoidal] :
   actionHomRight d _ _ f := (F.map f).app d
   actionAssocIso d c c' := Functor.Monoidal.μIso F c c'|>.app d|>.symm
   actionUnitIso d := Functor.Monoidal.εIso F|>.app d|>.symm
-  actionAssocIso_naturality {c₁ c₁' c₂ c₂' c₃ c₃'} f g h := by
+  actionAssocIso_hom_naturality {c₁ c₁' c₂ c₂' c₃ c₃'} f g h := by
     have e := congrArg (fun t ↦ t.app c₁) <|
       Functor.OplaxMonoidal.δ_natural F g h
     dsimp at e
