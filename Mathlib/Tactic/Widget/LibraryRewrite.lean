@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Anand Rao
 -/
 import Mathlib.Lean.Meta.RefinedDiscrTree
-import Mathlib.Tactic.ModuleBlacklist
 import Mathlib.Tactic.Widget.InteractiveUnfold
 import ProofWidgets.Component.FilterDetails
 
@@ -108,10 +107,17 @@ where
   | some (_, lhs, rhs) => some (lhs, rhs)
   | none => e.iff?
 
+-- TODO: remove this function when bumping to v4.22.0
+/-- Return true if the name is in a namespace associated to metaprogramming. -/
+def _root_.Lean.Name.isMetaprogramming (n : Name) : Bool :=
+  let components := n.components
+  components.head? == some `Lean || (components.any fun n => n == `Tactic || n == `Linter)
+
 /-- Try adding the lemma to the `RefinedDiscrTree`. -/
 def addRewriteEntry (name : Name) (cinfo : ConstantInfo) :
     MetaM (List (RewriteLemma × List (Key × LazyEntry))) := do
   if name matches .str _ "injEq" | .str _ "sizeOf_spec" then return [] else
+  if name.isMetaprogramming then return [] else
   -- we start with a fast-failing check to see if the lemma has the right shape
   let .const head _ := cinfo.type.getForallBody.getAppFn | return []
   unless head == ``Eq || head == ``Iff do return []
@@ -175,9 +181,7 @@ def getImportCandidates (e : Expr) : MetaM (Array (Array RewriteLemma)) := do
     which is the largest capacity it gets to reach.
     -/
     (constantsPerTask := 5000) (capacityPerTask := 256) e
-  let candidates := matchResult.flatten
-  let env ← getEnv
-  return candidates.map <| Array.filter fun rw => !rw.name.hasBlacklistedModule env
+  return matchResult.flatten
 
 /-- Get all potential rewrite lemmas from the current file. Exclude lemmas from modules
 in the `librarySearch.excludedModules` option. -/
