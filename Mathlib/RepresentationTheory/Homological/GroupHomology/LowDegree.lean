@@ -119,6 +119,12 @@ def oneChainsToCoinvariantsKer :
   ModuleCat.ofHom <| (dZero A).hom.codRestrict _ <|
     range_dZero_eq_coinvariantsKer A ▸ LinearMap.mem_range_self _
 
+lemma oneChainsToCoinvariantsKer_surjective :
+    Function.Surjective (oneChainsToCoinvariantsKer A) := by
+  rintro ⟨x, hx⟩
+  rcases range_dZero_eq_coinvariantsKer A ▸ hx with ⟨y, hy⟩
+  use y, Subtype.ext hy
+
 @[simp]
 theorem dZero_eq_zero_of_isTrivial [A.IsTrivial] : dZero A = 0 := by
   ext
