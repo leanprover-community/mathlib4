@@ -54,8 +54,8 @@ lemma lintegral_paretoPDF_of_le (hx : x ≤ t) :
     ∫⁻ y in Iio x, paretoPDF t r y = 0 := by
   rw [setLIntegral_congr_fun (g := fun _ ↦ 0) measurableSet_Iio]
   · rw [lintegral_zero, ← ENNReal.ofReal_zero]
-  · simp only [paretoPDF_eq, ge_iff_le, ENNReal.ofReal_eq_zero]
-    intro a (_ : a < _)
+  · intro a (_ : a < _)
+    simp only [paretoPDF_eq, ge_iff_le, ENNReal.ofReal_eq_zero]
     rw [if_neg (by linarith)]
 
 /-- The Pareto pdf is measurable. -/
