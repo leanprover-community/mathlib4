@@ -26,7 +26,7 @@ to transport over to `Option.{v}`. `ULiftable` is an attempt at improving the si
 
 
 ## Main definitions
-  * `ULiftable` class
+* `ULiftable` class
 
 ## Tags
 
@@ -90,6 +90,16 @@ def upMap {F : Type u₀ → Type u₁} {G : Type max u₀ v₀ → Type v₁} [
 def downMap {F : Type max u₀ v₀ → Type u₁} {G : Type u₀ → Type v₁} [ULiftable G F]
     [Functor F] {α β} (f : α → β) (x : F α) : G β :=
   down (Functor.map (ULift.up.{v₀} ∘ f) x : F (ULift β))
+
+/-- A version of `up` for a `PUnit` return type. -/
+abbrev up' {f : Type u₀ → Type u₁} {g : Type v₀ → Type v₁} [ULiftable f g] :
+    f PUnit → g PUnit :=
+  ULiftable.congr Equiv.punitEquivPUnit
+
+/-- A version of `down` for a `PUnit` return type. -/
+abbrev down' {f : Type u₀ → Type u₁} {g : Type v₀ → Type v₁} [ULiftable f g] :
+    g PUnit → f PUnit :=
+  (ULiftable.congr Equiv.punitEquivPUnit).symm
 
 theorem up_down {f : Type u₀ → Type u₁} {g : Type max u₀ v₀ → Type v₁} [ULiftable f g] {α}
     (x : g (ULift.{v₀} α)) : up (down x : f α) = x :=

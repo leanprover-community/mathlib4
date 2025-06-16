@@ -224,7 +224,7 @@ theorem uniqueBaseOn_indep_iff (hIE : I ⊆ E) : (uniqueBaseOn I E).Indep J ↔ 
 theorem uniqueBaseOn_isBasis_iff (hX : X ⊆ E) : (uniqueBaseOn I E).IsBasis J X ↔ J = X ∩ I := by
   rw [isBasis_iff_maximal]
   exact maximal_iff_eq (by simp [inter_subset_left.trans hX])
-    (by simp (config := {contextual := true}))
+    (by simp +contextual)
 
 theorem uniqueBaseOn_inter_isBasis (hX : X ⊆ E) : (uniqueBaseOn I E).IsBasis (X ∩ I) X := by
   rw [uniqueBaseOn_isBasis_iff hX]

@@ -22,9 +22,9 @@ The `WithVal` type synonym is used to define the completion of `R` with respect 
 fractions of a Dedekind domain with respect to a height-one prime ideal of the domain.
 
 ## Main definitions
- - `WithVal` : type synonym for a ring equipped with the topology coming from a valuation.
- - `WithVal.equiv` : the canonical ring equivalence between `WithValuation v` and `R`.
- - `Valuation.Completion` : the uniform space completion of a field `K` according to the
+- `WithVal` : type synonym for a ring equipped with the topology coming from a valuation.
+- `WithVal.equiv` : the canonical ring equivalence between `WithValuation v` and `R`.
+- `Valuation.Completion` : the uniform space completion of a field `K` according to the
   uniform structure defined by the specified valuation.
 -/
 
@@ -46,7 +46,7 @@ instance [Ring R] (v : Valuation R Γ₀) : Ring (WithVal v) := inferInstanceAs 
 
 instance [CommRing R] (v : Valuation R Γ₀) : CommRing (WithVal v) := inferInstanceAs (CommRing R)
 
-instance [Field R] (v : Valuation R Γ₀)  : Field (WithVal v) := inferInstanceAs (Field R)
+instance [Field R] (v : Valuation R Γ₀) : Field (WithVal v) := inferInstanceAs (Field R)
 
 instance [Ring R] (v : Valuation R Γ₀) : Inhabited (WithVal v) := ⟨0⟩
 

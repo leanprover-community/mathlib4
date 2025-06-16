@@ -32,7 +32,7 @@ variable {𝕜 E F α β ι : Type*}
 
 section OrderedSemiring
 
-variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜]
 
 section AddCommMonoid
 
@@ -402,7 +402,7 @@ theorem LinearOrder.convexOn_of_lt (hs : Convex 𝕜 s)
   wlog h : x < y
   · rw [add_comm (a • x), add_comm (a • f x)]
     rw [add_comm] at hab
-    exact this hs hf y hy x hx hxy.symm b a hb ha hab (hxy.lt_or_lt.resolve_left h)
+    exact this hs hf y hy x hx hxy.symm b a hb ha hab (hxy.lt_or_gt.resolve_left h)
   exact hf hx hy h ha hb hab
 
 /-- For a function on a convex set in a linearly ordered space (where the order and the algebraic
@@ -427,7 +427,7 @@ theorem LinearOrder.strictConvexOn_of_lt (hs : Convex 𝕜 s)
   wlog h : x < y
   · rw [add_comm (a • x), add_comm (a • f x)]
     rw [add_comm] at hab
-    exact this hs hf y hy x hx hxy.symm b a hb ha hab (hxy.lt_or_lt.resolve_left h)
+    exact this hs hf y hy x hx hxy.symm b a hb ha hab (hxy.lt_or_gt.resolve_left h)
   exact hf hx hy h ha hb hab
 
 /-- For a function on a convex set in a linearly ordered space (where the order and the algebraic
@@ -549,12 +549,12 @@ theorem ConcaveOn.openSegment_subset_strict_hypograph (hf : ConcaveOn 𝕜 s f) 
     openSegment 𝕜 p q ⊆ { p : E × β | p.1 ∈ s ∧ p.2 < f p.1 } :=
   hf.dual.openSegment_subset_strict_epigraph p q hp hq
 
-theorem ConvexOn.convex_strict_epigraph (hf : ConvexOn 𝕜 s f) :
+theorem ConvexOn.convex_strict_epigraph [ZeroLEOneClass 𝕜] (hf : ConvexOn 𝕜 s f) :
     Convex 𝕜 { p : E × β | p.1 ∈ s ∧ f p.1 < p.2 } :=
   convex_iff_openSegment_subset.mpr fun p hp q hq =>
     hf.openSegment_subset_strict_epigraph p q hp ⟨hq.1, hq.2.le⟩
 
-theorem ConcaveOn.convex_strict_hypograph (hf : ConcaveOn 𝕜 s f) :
+theorem ConcaveOn.convex_strict_hypograph [ZeroLEOneClass 𝕜] (hf : ConcaveOn 𝕜 s f) :
     Convex 𝕜 { p : E × β | p.1 ∈ s ∧ p.2 < f p.1 } :=
   hf.dual.convex_strict_epigraph
 
@@ -672,7 +672,7 @@ variable [SMul 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f g :
 theorem ConvexOn.le_left_of_right_le' (hf : ConvexOn 𝕜 s f) {x y : E} (hx : x ∈ s) (hy : y ∈ s)
     {a b : 𝕜} (ha : 0 < a) (hb : 0 ≤ b) (hab : a + b = 1) (hfy : f y ≤ f (a • x + b • y)) :
     f (a • x + b • y) ≤ f x :=
-  le_of_not_lt fun h ↦ lt_irrefl (f (a • x + b • y)) <|
+  le_of_not_gt fun h ↦ lt_irrefl (f (a • x + b • y)) <|
     calc
       f (a • x + b • y) ≤ a • f x + b • f y := hf.2 hx hy ha.le hb hab
       _ < a • f (a • x + b • y) + b • f (a • x + b • y) := add_lt_add_of_lt_of_le
@@ -893,7 +893,7 @@ end OrderedSemiring
 
 section OrderedCommSemiring
 
-variable [CommSemiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [AddCommMonoid E]
+variable [CommSemiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E]
 
 section OrderedAddCommMonoid
 
@@ -922,7 +922,7 @@ end OrderedCommSemiring
 
 section OrderedRing
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [AddCommGroup F]
+variable [Field 𝕜] [LinearOrder 𝕜] [AddCommGroup E] [AddCommGroup F]
 
 section OrderedAddCommMonoid
 
@@ -1007,7 +1007,7 @@ end LinearOrderedField
 
 section OrderIso
 
-variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜]
   [AddCommMonoid α] [PartialOrder α] [SMul 𝕜 α]
   [AddCommMonoid β] [PartialOrder β] [SMul 𝕜 β]
 
