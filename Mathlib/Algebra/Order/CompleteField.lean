@@ -126,7 +126,7 @@ theorem cutMap_coe (q : ℚ) : cutMap β (q : α) = Rat.cast '' {r : ℚ | (r : 
 
 variable [Archimedean α]
 
-omit [LinearOrder β] [IsStrictOrderedRing β] in
+omit [LinearOrder β] [IsOrderedRing β] in
 theorem cutMap_nonempty (a : α) : (cutMap β a).Nonempty :=
   Nonempty.image _ <| exists_rat_lt a
 

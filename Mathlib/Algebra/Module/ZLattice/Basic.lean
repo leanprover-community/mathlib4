@@ -103,7 +103,7 @@ theorem fundamentalDomain_reindex {ι' : Type*} (e : ι ≃ ι') :
   rw [Equiv.forall_congr' e]
   simp_rw [implies_true]
 
-variable [IsStrictOrderedRing K]
+variable [IsOrderedRing K]
 
 lemma fundamentalDomain_pi_basisFun [Fintype ι] :
     fundamentalDomain (Pi.basisFun ℝ ι) = Set.pi Set.univ fun _ : ι ↦ Set.Ico (0 : ℝ) 1 := by

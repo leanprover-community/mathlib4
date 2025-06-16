@@ -183,7 +183,7 @@ def FarFromTriangleFree : Prop := G.DeleteFar (fun H ↦ H.CliqueFree 3) <| ε *
 
 variable {G ε}
 
-omit [IsStrictOrderedRing 𝕜] in
+omit [IsOrderedRing 𝕜] in
 theorem farFromTriangleFree_iff :
     G.FarFromTriangleFree ε ↔ ∀ ⦃H : SimpleGraph α⦄, [DecidableRel H.Adj] → H ≤ G → H.CliqueFree 3 →
       ε * (card α ^ 2 : ℕ) ≤ #G.edgeFinset - #H.edgeFinset := deleteFar_iff
@@ -197,7 +197,7 @@ section DecidableEq
 
 variable [DecidableEq α]
 
-omit [IsStrictOrderedRing 𝕜] in
+omit [IsOrderedRing 𝕜] in
 theorem FarFromTriangleFree.cliqueFinset_nonempty' (hH : H ≤ G) (hG : G.FarFromTriangleFree ε)
     (hcard : #G.edgeFinset - #H.edgeFinset < ε * (card α ^ 2 : ℕ)) :
     (H.cliqueFinset 3).Nonempty :=

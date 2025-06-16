@@ -522,7 +522,7 @@ noncomputable def Archimedean.floorRing (R) [Ring R] [LinearOrder R] [IsStrictOr
 -- see Note [lower instance priority]
 /-- A linear ordered field that is a floor ring is archimedean. -/
 instance (priority := 100) FloorRing.archimedean (K) [Field K] [LinearOrder K]
-    [IsStrictOrderedRing K] [FloorRing K] :
+    [IsOrderedRing K] [FloorRing K] :
     Archimedean K := by
   rw [archimedean_iff_int_le]
   exact fun x => ⟨⌈x⌉, Int.le_ceil x⟩

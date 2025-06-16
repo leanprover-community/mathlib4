@@ -1203,7 +1203,7 @@ instance instRatCast : RatCast ℍ[R] where ratCast q := (q : R)
 
 @[norm_cast] lemma coe_ratCast (q : ℚ) : ↑(q : R) = (q : ℍ[R]) := rfl
 
-variable [LinearOrder R] [IsStrictOrderedRing R] (a b : ℍ[R])
+variable [LinearOrder R] [IsOrderedRing R] (a b : ℍ[R])
 
 @[simps -isSimp]
 instance instInv : Inv ℍ[R] :=

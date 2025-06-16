@@ -127,7 +127,7 @@ theorem Finset.centerMass_filter_ne_zero [∀ i, Decidable (w i ≠ 0)] :
 
 namespace Finset
 
-variable [LinearOrder R] [IsStrictOrderedRing R] [IsOrderedAddMonoid α] [OrderedSMul R α]
+variable [LinearOrder R] [IsOrderedRing R] [IsOrderedAddMonoid α] [OrderedSMul R α]
 
 theorem centerMass_le_sup {s : Finset ι} {f : ι → α} {w : ι → R} (hw₀ : ∀ i ∈ s, 0 ≤ w i)
     (hw₁ : 0 < ∑ i ∈ s, w i) :
@@ -149,7 +149,7 @@ lemma Finset.centerMass_of_sum_add_sum_eq_zero {s t : Finset ι}
     s.centerMass w z = t.centerMass w z := by
   simp [centerMass, eq_neg_of_add_eq_zero_right hw, eq_neg_of_add_eq_zero_left hz, ← neg_inv]
 
-variable [LinearOrder R] [IsStrictOrderedRing R] [IsOrderedAddMonoid α] [OrderedSMul R α]
+variable [LinearOrder R] [IsOrderedRing R] [IsOrderedAddMonoid α] [OrderedSMul R α]
 
 /-- The center of mass of a finite subset of a convex set belongs to the set
 provided that all weights are non-negative, and the total weight is positive. -/
@@ -240,7 +240,7 @@ lemma Finset.centerMass_id_mem_convexHull_of_nonpos (t : Finset E) {w : E → R}
     t.centerMass w id ∈ convexHull R (t : Set E) :=
   t.centerMass_mem_convexHull_of_nonpos hw₀ hws fun _ ↦ mem_coe.2
 
-omit [LinearOrder R] [IsStrictOrderedRing R] in
+omit [LinearOrder R] [IsOrderedRing R] in
 theorem affineCombination_eq_centerMass {ι : Type*} {t : Finset ι} {p : ι → E} {w : ι → R}
     (hw₂ : ∑ i ∈ t, w i = 1) : t.affineCombination R p w = centerMass t w p := by
   rw [affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one _ w _ hw₂ (0 : E),

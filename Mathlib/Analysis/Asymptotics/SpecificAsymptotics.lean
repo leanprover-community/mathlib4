@@ -66,7 +66,7 @@ section NormedLinearOrderedField
 variable {𝕜 : Type*} [NormedField 𝕜]
 
 theorem Asymptotics.isLittleO_pow_pow_atTop_of_lt
-    [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [OrderTopology 𝕜] {p q : ℕ} (hpq : p < q) :
+    [LinearOrder 𝕜] [IsOrderedRing 𝕜] [OrderTopology 𝕜] {p q : ℕ} (hpq : p < q) :
     (fun x : 𝕜 => x ^ p) =o[atTop] fun x => x ^ q := by
   refine (isLittleO_iff_tendsto' ?_).mpr (tendsto_pow_div_pow_atTop_zero hpq)
   exact (eventually_gt_atTop 0).mono fun x hx hxq => (pow_ne_zero q hx.ne' hxq).elim
