@@ -102,7 +102,7 @@ noncomputable abbrev cocyclesMkOfCompEqD {i j : ℕ} {y : (Fin i → G) → X.X�
     cocycles X.X₁ j :=
   cocyclesMk x <| by simpa using
     ((map_cochainsFunctor_shortExact hX).d_eq_zero_of_f_eq_d_apply i j y x
-      (by simpa [cochainsMap_id_f_hom_eq_compLeft] using hx) (j + 1))
+      (by simpa using hx) (j + 1))
 
 theorem δ_apply {i j : ℕ} (hij : i + 1 = j)
     (z : (Fin i → G) → X.X₃) (hz : (inhomogeneousCochains X.X₃).d i j z = 0)
@@ -111,7 +111,7 @@ theorem δ_apply {i j : ℕ} (hij : i + 1 = j)
     δ hX i j hij (π X.X₃ i <| cocyclesMk z (by subst hij; simpa using hz)) =
       π X.X₁ j (cocyclesMkOfCompEqD hX hx) := by
   exact (map_cochainsFunctor_shortExact hX).δ_apply i j hij z hz y hy x
-    (by simpa [cochainsMap_id_f_hom_eq_compLeft] using hx) (j + 1) (by simp)
+    (by simpa using hx) (j + 1) (by simp)
 
 omit [DecidableEq G] in
 theorem mem_oneCocycles_of_comp_eq_dZero
@@ -123,9 +123,8 @@ theorem mem_oneCocycles_of_comp_eq_dZero
 
 theorem δ₀_apply (z : X.X₃.ρ.invariants) (y : X.X₂)
     (hy : X.g.hom y = z) (x : G → X.X₁) (hx : X.f.hom ∘ x = dZero X.X₂ y) :
-    δ hX 0 1 rfl ((H0Iso X.X₃).inv z) = π X.X₁ 1
-      ((isoOneCocycles X.X₁).inv ⟨x, mem_oneCocycles_of_comp_eq_dZero hX hx⟩) := by
-  simpa [H0Iso, ← cocyclesMk_1_eq X.X₁, ← cocyclesMk_0_eq z] using
+    δ hX 0 1 rfl ((H0Iso X.X₃).inv z) = H1π X.X₁ ⟨x, mem_oneCocycles_of_comp_eq_dZero hX hx⟩ := by
+  simpa [H0Iso, H1π, ← cocyclesMk_1_eq X.X₁, ← cocyclesMk_0_eq z] using
     δ_apply hX rfl ((zeroCochainsIso X.X₃).inv z.1) (by simp) ((zeroCochainsIso X.X₂).inv y)
     (by ext; simp [← hy, zeroCochainsIso]) ((oneCochainsIso X.X₁).inv x) <| by
       ext g
@@ -142,9 +141,8 @@ theorem mem_twoCocycles_of_comp_eq_dOne
 
 theorem δ₁_apply (z : oneCocycles X.X₃) (y : G → X.X₂)
     (hy : X.g.hom ∘ y = z) (x : G × G → X.X₁) (hx : X.f.hom ∘ x = dOne X.X₂ y) :
-    δ hX 1 2 rfl (π _ 1 <| (isoOneCocycles X.X₃).inv z) = π X.X₁ _
-      ((isoTwoCocycles X.X₁).inv ⟨x, mem_twoCocycles_of_comp_eq_dOne hX hx⟩) := by
-  simpa [H0Iso, ← cocyclesMk_2_eq X.X₁, ← cocyclesMk_1_eq X.X₃] using
+    δ hX 1 2 rfl (H1π X.X₃ z) = H2π X.X₁ ⟨x, mem_twoCocycles_of_comp_eq_dOne hX hx⟩ := by
+  simpa [H1π, H2π, ← cocyclesMk_2_eq X.X₁, ← cocyclesMk_1_eq X.X₃] using
     δ_apply hX rfl ((oneCochainsIso X.X₃).inv z) (by simp [oneCocycles.dOne_apply z])
     ((oneCochainsIso X.X₂).inv y) (by ext; simp [oneCochainsIso, ← hy])
     ((twoCochainsIso X.X₁).inv x) <| by

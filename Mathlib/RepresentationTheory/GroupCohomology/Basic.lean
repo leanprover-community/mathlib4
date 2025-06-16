@@ -55,9 +55,6 @@ possible scalar action diamonds.
 
 ## TODO
 
-* API for cohomology in low degree: $\mathrm{H}^0, \mathrm{H}^1$ and $\mathrm{H}^2.$ For example,
-  the inflation-restriction exact sequence.
-* The long exact sequence in cohomology attached to a short exact sequence of representations.
 * Upgrading `groupCohomologyIsoExt` to an isomorphism of derived functors.
 * Profinite cohomology.
 
