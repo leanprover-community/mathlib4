@@ -79,10 +79,8 @@ def functorialityAdjunction : Cocones.functoriality K F ⊣ functorialityRightAd
   counit := functorialityCounit adj K
 
 include adj in
-/-- A left adjoint preserves colimits.
-
-See <https://stacks.math.columbia.edu/tag/0038>.
--/
+/-- A left adjoint preserves colimits. -/
+@[stacks 0038]
 lemma leftAdjoint_preservesColimits : PreservesColimitsOfSize.{v, u} F where
   preservesColimitsOfShape :=
     { preservesColimit :=
@@ -148,10 +146,10 @@ theorem hasColimit_comp_equivalence (E : C ⥤ D) [E.IsEquivalence] [HasColimit 
       isColimit := isColimitOfPreserves _ (colimit.isColimit K) }
 
 theorem hasColimit_of_comp_equivalence (E : C ⥤ D) [E.IsEquivalence] [HasColimit (K ⋙ E)] :
-    HasColimit K :=
-  @hasColimitOfIso _ _ _ _ (K ⋙ E ⋙ E.inv) K
-    (@hasColimit_comp_equivalence _ _ _ _ _ _ (K ⋙ E) E.inv _ _)
-    ((Functor.rightUnitor _).symm ≪≫ isoWhiskerLeft K E.asEquivalence.unitIso)
+    HasColimit K := by
+  rw [hasColimit_iff_of_iso
+    ((Functor.rightUnitor _).symm ≪≫ isoWhiskerLeft K E.asEquivalence.unitIso)]
+  exact hasColimit_comp_equivalence (K ⋙ E) E.inv
 
 /-- Transport a `HasColimitsOfShape` instance across an equivalence. -/
 theorem hasColimitsOfShape_of_equivalence (E : C ⥤ D) [E.IsEquivalence] [HasColimitsOfShape J D] :
@@ -203,10 +201,8 @@ def functorialityAdjunction' : functorialityLeftAdjoint adj K ⊣ Cones.functori
   counit := functorialityCounit' adj K
 
 include adj in
-/-- A right adjoint preserves limits.
-
-See <https://stacks.math.columbia.edu/tag/0038>.
--/
+/-- A right adjoint preserves limits. -/
+@[stacks 0038]
 lemma rightAdjoint_preservesLimits : PreservesLimitsOfSize.{v, u} G where
   preservesLimitsOfShape :=
     { preservesLimit :=
@@ -269,10 +265,10 @@ theorem hasLimit_comp_equivalence (E : D ⥤ C) [E.IsEquivalence] [HasLimit K] :
       isLimit := isLimitOfPreserves _ (limit.isLimit K) }
 
 theorem hasLimit_of_comp_equivalence (E : D ⥤ C) [E.IsEquivalence] [HasLimit (K ⋙ E)] :
-    HasLimit K :=
-  @hasLimitOfIso _ _ _ _ (K ⋙ E ⋙ E.inv) K
-    (@hasLimit_comp_equivalence _ _ _ _ _ _ (K ⋙ E) E.inv _ _)
-    (isoWhiskerLeft K E.asEquivalence.unitIso.symm ≪≫ Functor.rightUnitor _)
+    HasLimit K := by
+  rw [← hasLimit_iff_of_iso
+    (isoWhiskerLeft K E.asEquivalence.unitIso.symm ≪≫ Functor.rightUnitor _)]
+  exact hasLimit_comp_equivalence (K ⋙ E) E.inv
 
 /-- Transport a `HasLimitsOfShape` instance across an equivalence. -/
 theorem hasLimitsOfShape_of_equivalence (E : D ⥤ C) [E.IsEquivalence] [HasLimitsOfShape J C] :
@@ -292,8 +288,7 @@ def coconesIsoComponentHom {J : Type u} [Category.{v} J] {K : J ⥤ C} (Y : D)
     (t : ((cocones J D).obj (op (K ⋙ F))).obj Y) : (G ⋙ (cocones J C).obj (op K)).obj Y where
   app j := (adj.homEquiv (K.obj j) Y) (t.app j)
   naturality j j' f := by
-    erw [← adj.homEquiv_naturality_left, t.naturality]
-    dsimp
+    rw [← adj.homEquiv_naturality_left, ← Functor.comp_map, t.naturality]
     simp
 
 /-- auxiliary construction for `coconesIso` -/
@@ -303,7 +298,7 @@ def coconesIsoComponentInv {J : Type u} [Category.{v} J] {K : J ⥤ C} (Y : D)
   app j := (adj.homEquiv (K.obj j) Y).symm (t.app j)
   naturality j j' f := by
     erw [← adj.homEquiv_naturality_left_symm, ← adj.homEquiv_naturality_right_symm, t.naturality]
-    dsimp; simp
+    simp
 
 /-- auxiliary construction for `conesIso` -/
 @[simp]

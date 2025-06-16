@@ -84,8 +84,6 @@ def Subsemigroup.toAddSubsemigroup : Subsemigroup M ≃o AddSubsemigroup (Additi
   invFun S :=
     { carrier := Additive.ofMul ⁻¹' S
       mul_mem' := S.add_mem' }
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_rel_iff' := Iff.rfl
 
 /-- Additive subsemigroups of an additive semigroup `Additive M` are isomorphic to subsemigroups
@@ -125,8 +123,6 @@ def AddSubsemigroup.toSubsemigroup : AddSubsemigroup A ≃o Subsemigroup (Multip
   invFun S :=
     { carrier := Multiplicative.ofAdd ⁻¹' S
       add_mem' := S.mul_mem' }
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_rel_iff' := Iff.rfl
 
 /-- Subsemigroups of a semigroup `Multiplicative A` are isomorphic to additive subsemigroups
@@ -221,6 +217,7 @@ theorem map_map (g : N →ₙ* P) (f : M →ₙ* N) : (S.map f).map g = S.map (g
 
 -- The simpNF linter says that the LHS can be simplified via `Subsemigroup.mem_map`.
 -- However this is a higher priority lemma.
+-- It seems the side condition `hf` is not applied by `simpNF`.
 -- https://github.com/leanprover/std4/issues/207
 @[to_additive (attr := simp, nolint simpNF)]
 theorem mem_map_iff_mem {f : M →ₙ* N} (hf : Function.Injective f) {S : Subsemigroup M} {x : M} :
@@ -314,7 +311,7 @@ section GaloisCoinsertion
 variable {ι : Type*} {f : M →ₙ* N}
 
 /-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
-@[to_additive " `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. "]
+@[to_additive "`map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective."]
 def gciMapComap (hf : Function.Injective f) : GaloisCoinsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisCoinsertion fun S x => by simp [mem_comap, mem_map, hf.eq_iff]
 
@@ -367,7 +364,7 @@ variable {ι : Type*} {f : M →ₙ* N} (hf : Function.Surjective f)
 include hf
 
 /-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
-@[to_additive " `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. "]
+@[to_additive "`map f` and `comap f` form a `GaloisInsertion` when `f` is surjective."]
 def giMapComap : GaloisInsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisInsertion fun S x h =>
     let ⟨y, hy⟩ := hf x
@@ -428,7 +425,6 @@ def topEquiv : (⊤ : Subsemigroup M) ≃* M where
   toFun x := x
   invFun x := ⟨x, mem_top x⟩
   left_inv x := x.eta _
-  right_inv _ := rfl
   map_mul' _ _ := rfl
 
 @[to_additive (attr := simp)]
@@ -716,7 +712,7 @@ def subsemigroupCongr (h : S = T) : S ≃* T :=
 equivalence between `M` and `f.srange`.
 
 This is a bidirectional version of `MulHom.srangeRestrict`. -/
-@[to_additive (attr := simps (config := { simpRhs := true }))
+@[to_additive (attr := simps +simpRhs)
       "An additive semigroup homomorphism `f : M →+ N` with a left-inverse
       `g : N → M` defines an additive equivalence between `M` and `f.srange`.
       This is a bidirectional version of `AddHom.srangeRestrict`. "]

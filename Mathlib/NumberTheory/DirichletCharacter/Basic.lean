@@ -233,8 +233,6 @@ variable (χ)
 /-- A character is primitive if its level is equal to its conductor. -/
 def IsPrimitive : Prop := conductor χ = n
 
-@[deprecated (since := "2024-06-16")] alias isPrimitive := IsPrimitive
-
 lemma isPrimitive_def : IsPrimitive χ ↔ conductor χ = n := Iff.rfl
 
 lemma isPrimitive_one_level_one : IsPrimitive (1 : DirichletCharacter R 1) :=
@@ -283,8 +281,6 @@ lemma mul_def {n m : ℕ} {χ : DirichletCharacter R n} {ψ : DirichletCharacter
 lemma primitive_mul_isPrimitive {m : ℕ} (ψ : DirichletCharacter R m) :
     IsPrimitive (primitive_mul χ ψ) :=
   primitiveCharacter_isPrimitive _
-
-@[deprecated (since := "2024-06-16")] alias isPrimitive.primitive_mul := primitive_mul_isPrimitive
 
 /-
 ### Even and odd characters

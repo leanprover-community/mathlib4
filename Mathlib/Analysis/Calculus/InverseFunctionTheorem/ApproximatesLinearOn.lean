@@ -135,7 +135,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
     (f'symm : f'.NonlinearRightInverse) {ε : ℝ} {b : E} (ε0 : 0 ≤ ε) (hε : closedBall b ε ⊆ s) :
     SurjOn f (closedBall b ε) (closedBall (f b) (((f'symm.nnnorm : ℝ)⁻¹ - c) * ε)) := by
   intro y hy
-  rcases le_or_lt (f'symm.nnnorm : ℝ)⁻¹ c with hc | hc
+  rcases le_or_gt (f'symm.nnnorm : ℝ)⁻¹ c with hc | hc
   · refine ⟨b, by simp [ε0], ?_⟩
     have : dist y (f b) ≤ 0 :=
       (mem_closedBall.1 hy).trans (mul_nonpos_of_nonpos_of_nonneg (by linarith) ε0)
@@ -205,7 +205,6 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
         gcongr
         exact mem_closedBall'.1 hy
       _ = ε * (1 - c * f'symm.nnnorm) := by field_simp; ring
-
   /- Main inductive control: `f (u n)` becomes exponentially close to `y`, and therefore
     `dist (u (n+1)) (u n)` becomes exponentally small, making it possible to get an inductive
     bound on `dist (u n) b`, from which one checks that `u n` remains in the ball on which we
@@ -250,7 +249,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
   obtain ⟨x, hx⟩ : ∃ x, Tendsto u atTop (𝓝 x) := cauchySeq_tendsto_of_complete this
   -- As all the `uₙ` belong to the ball `closedBall b ε`, so does their limit `x`.
   have xmem : x ∈ closedBall b ε :=
-    isClosed_ball.mem_of_tendsto hx (Eventually.of_forall fun n => C n _ (D n).2)
+    isClosed_closedBall.mem_of_tendsto hx (Eventually.of_forall fun n => C n _ (D n).2)
   refine ⟨x, xmem, ?_⟩
   -- It remains to check that `f x = y`. This follows from continuity of `f` on `closedBall b ε`
   -- and from the fact that `f uₙ` is converging to `y` by construction.
@@ -267,7 +266,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
 
 theorem open_image (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRightInverse)
     (hs : IsOpen s) (hc : Subsingleton F ∨ c < f'symm.nnnorm⁻¹) : IsOpen (f '' s) := by
-  cases' hc with hE hc
+  rcases hc with hE | hc
   · exact isOpen_discrete _
   simp only [isOpen_iff_mem_nhds, nhds_basis_closedBall.mem_iff, forall_mem_image] at hs ⊢
   intro x hx
@@ -304,7 +303,7 @@ local notation "N" => ‖(f'.symm : F →L[𝕜] E)‖₊
 
 protected theorem antilipschitz (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) : AntilipschitzWith (N⁻¹ - c)⁻¹ (s.restrict f) := by
-  cases' hc with hE hc
+  rcases hc with hE | hc
   · exact AntilipschitzWith.of_subsingleton
   convert (f'.antilipschitz.restrict s).add_lipschitzWith hf.lipschitz_sub hc
   simp [restrict]
@@ -319,7 +318,7 @@ protected theorem injOn (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
 
 protected theorem surjective [CompleteSpace E] (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) univ c)
     (hc : Subsingleton E ∨ c < N⁻¹) : Surjective f := by
-  cases' hc with hE hc
+  rcases hc with hE | hc
   · haveI : Subsingleton F := (Equiv.subsingleton_congr f'.toEquiv).1 hE
     exact surjective_to_subsingleton _
   · apply forall_of_forall_mem_closedBall (fun y : F => ∃ a, f a = y) (f 0) _

@@ -36,6 +36,7 @@ structure FunPropDecls where
   decls : DiscrTree FunPropDecl := {}
   deriving Inhabited
 
+set_option linter.style.docString false in
 /-- -/
 abbrev FunPropDeclsExt := SimpleScopedEnvExtension FunPropDecl FunPropDecls
 
@@ -54,7 +55,7 @@ def addFunPropDecl (declName : Name) : MetaM Unit := do
 
   let info ← getConstInfo declName
 
-  let (xs,bi,b) ← forallMetaTelescope info.type
+  let (xs, bi, b) ← forallMetaTelescope info.type
 
   if ¬b.isProp then
     throwError "invalid fun_prop declaration, has to be `Prop` valued function"
@@ -90,19 +91,18 @@ def getFunProp? (e : Expr) : MetaM (Option (FunPropDecl × Expr)) := do
 
   let decls ← ext.decls.getMatch e (← read)
 
-  if decls.size = 0 then
+  if h : decls.size = 0 then
     return none
+  else
+    if decls.size > 1 then
+      throwError "fun_prop bug: expression {← ppExpr e} matches multiple function properties\n\
+        {decls.map (fun d => d.funPropName)}"
 
-  if decls.size > 1 then
-    throwError "\
-fun_prop bug: expression {← ppExpr e} matches multiple function properties
-{decls.map (fun d => d.funPropName)}"
+    let decl := decls[0]
+    unless decl.funArgId < e.getAppNumArgs do return none
+    let f := e.getArg! decl.funArgId
 
-  let decl := decls[0]!
-  unless decl.funArgId < e.getAppNumArgs do return none
-  let f := e.getArg! decl.funArgId
-
-  return (decl,f)
+    return (decl,f)
 
 /-- Is `e` a function property statement? -/
 def isFunProp (e : Expr) : MetaM Bool := do return (← getFunProp? e).isSome

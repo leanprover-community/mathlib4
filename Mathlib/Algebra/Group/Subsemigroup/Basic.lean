@@ -58,7 +58,7 @@ instance : IsConcreteSInf (Subsemigroup M) M where
 instance : CompleteLattice (Subsemigroup M) where
   __ := SetLike.toCompleteLattice (Subsemigroup M) M
   bot := ⊥
-  bot_le := fun _ _ hx => (Set.not_mem_empty _ hx).elim
+  bot_le := fun _ _ hx => (notMem_bot hx).elim
   top := ⊤
   le_top := fun _ _ _ => trivial
   inf := (· ⊓ ·)
@@ -94,6 +94,12 @@ instance [hn : Nonempty M] : Nontrivial (Subsemigroup M) :=
       refine absurd (?_ : x ∈ ⊥) not_mem_bot
       simp [h]⟩⟩
 
+@[deprecated (since := "2025-05-23")]
+alias _root_.AddSubsemigroup.not_mem_of_not_mem_closure := AddSubsemigroup.notMem_of_notMem_closure
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
+
 variable {S}
 
 open Set IsConcreteClosure
@@ -110,11 +116,7 @@ theorem closure_induction {p : (x : M) → x ∈ closure s → Prop}
   let S : Subsemigroup M :=
     { carrier := { x | ∃ hx, p x hx }
       mul_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, mul _ _ _ _ hpx hpy⟩ }
-  Exists.elim (closure_le (s := s) (l := S) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx)
-    fun _ ↦ id
-
-@[deprecated closure_induction (since := "2024-10-09")]
-alias closure_induction' := closure_induction
+  closure_le (S := S) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[to_additive (attr := elab_as_elim) "An induction principle for additive closure membership for

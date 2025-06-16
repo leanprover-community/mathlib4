@@ -22,7 +22,7 @@ This file also contains Doob's maximal inequality: given a non-negative submarti
   respect to a stopping time is a submartingale.
 * `MeasureTheory.maximal_ineq`: Doob's maximal inequality.
 
- -/
+-/
 
 
 open scoped NNReal ENNReal MeasureTheory ProbabilityTheory
@@ -149,7 +149,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
         convert rfl
         ext ω
         change (ε : ℝ) ≤ _ ∨ _ < (ε : ℝ) ↔ _
-        simp only [le_or_lt, Set.mem_univ]
+        simp only [le_or_gt, Set.mem_univ]
       · rw [disjoint_iff_inf_le]
         rintro ω ⟨hω₁, hω₂⟩
         change (ε : ℝ) ≤ _ at hω₁
@@ -191,7 +191,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
         convert rfl
         ext ω
         change _ ↔ (ε : ℝ) ≤ _ ∨ _ < (ε : ℝ)
-        simp only [le_or_lt, Set.mem_univ]
+        simp only [le_or_gt, Set.mem_univ]
       · rw [disjoint_iff_inf_le]
         rintro ω ⟨hω₁, hω₂⟩
         change (ε : ℝ) ≤ _ at hω₁

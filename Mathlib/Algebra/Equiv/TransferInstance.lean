@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Small.Defs
+import Mathlib.Algebra.Ring.Hom.InjSurj
 
 /-!
 # Transfer algebraic structures across `Equiv`s
@@ -205,7 +206,6 @@ protected abbrev semigroupWithZero [SemigroupWithZero β] : SemigroupWithZero α
   let zero := e.zero
   apply e.injective.semigroupWithZero _ <;> intros <;> exact e.apply_symm_apply _
 
-@[to_additive]
 noncomputable instance [Small.{v} α] [SemigroupWithZero α] : SemigroupWithZero (Shrink.{v} α) :=
   (equivShrink α).symm.semigroupWithZero
 
@@ -461,11 +461,6 @@ protected abbrev commRing [CommRing β] : CommRing α := by
 
 noncomputable instance [Small.{v} α] [CommRing α] : CommRing (Shrink.{v} α) :=
   (equivShrink α).symm.commRing
-
-include e in
-/-- Transfer `Nontrivial` across an `Equiv` -/
-protected theorem nontrivial [Nontrivial β] : Nontrivial α :=
-  e.surjective.nontrivial
 
 noncomputable instance [Small.{v} α] [Nontrivial α] : Nontrivial (Shrink.{v} α) :=
   (equivShrink α).symm.nontrivial

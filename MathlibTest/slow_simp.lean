@@ -6,7 +6,7 @@ This test file serves as a sentinel against bad simp lemmas.
 
 When this test file was first setup,
 the final declaration of this file took 12,000 heartbeats
-with the minimal import of `Mathlib.Topology.Category.TopCat.Basic`,
+with the minimal import of `Mathlib/Topology/Category/TopCat/Basic.lean`,
 but took over 260,000 heartbeats with `import Mathlib`.
 
 After deleting some bad simp lemmas that were being tried everywhere
@@ -51,16 +51,16 @@ instance : Category PointedSpace where
 
 end PointedSpace
 
-set_option maxHeartbeats 40000 in
+set_option maxHeartbeats 20000 in
 def PointedSpaceEquiv_inverse : Under (TopCat.of Unit) ⥤ PointedSpace where
   obj := fun X =>
   { carrier := X.right
     base := X.hom () }
   map := fun f =>
-  { map := f.right
+  { map := f.right.hom
     base := by
       have := f.w
-      replace this := DFunLike.congr_fun this ()
+      replace this := CategoryTheory.congr_fun this ()
       simp [-Under.w] at this
       simp
       exact this.symm }

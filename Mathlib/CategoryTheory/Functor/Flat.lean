@@ -3,6 +3,7 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.CategoryTheory.Filtered.Connected
 import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
@@ -84,7 +85,6 @@ theorem RepresentablyCoflat.id : RepresentablyCoflat (𝟭 C) := inferInstance
 
 -- this slow simp lemma causes a maxHeartbeats exception
 attribute [-simp] CostructuredArrow.right_eq_id in
-
 instance RepresentablyFlat.comp (G : D ⥤ E) [RepresentablyFlat F]
     [RepresentablyFlat G] : RepresentablyFlat (F ⋙ G) := by
   refine ⟨fun X => IsCofiltered.of_cone_nonempty.{0} _ (fun {J} _ _ H => ?_)⟩
@@ -141,6 +141,12 @@ instance [RepresentablyCoflat F] : RepresentablyFlat F.op :=
 instance RepresentablyCoflat.comp (G : D ⥤ E) [RepresentablyCoflat F] [RepresentablyCoflat G] :
     RepresentablyCoflat (F ⋙ G) :=
   (representablyFlat_op_iff _).1 <| inferInstanceAs <| RepresentablyFlat (F.op ⋙ G.op)
+
+lemma final_of_representablyFlat [h : RepresentablyFlat F] : F.Final where
+  out _ := IsCofiltered.isConnected _
+
+lemma initial_of_representablyCoflat [h : RepresentablyCoflat F] : F.Initial where
+  out _ := IsFiltered.isConnected _
 
 end RepresentablyFlat
 
@@ -231,7 +237,6 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
       -- Porting note: was `by tidy`, but `aesop` only works if max heartbeats
       -- is increased, so we replace it by the output of `tidy?`
       intro _; rfl
-
   -- Finally, since `fᵢ` factors through `F(gᵢ)`, the result follows.
   calc
     f₁ = 𝟙 _ ≫ f₁ := by simp

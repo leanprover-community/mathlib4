@@ -33,13 +33,13 @@ inductive tautological.R
 noncomputable def tautologicalRelations : Relations A where
   G := M
   R := tautological.R A M
-  relation r := match r with
+  relation
     | .add m₁ m₂ => Finsupp.single m₁ 1 + Finsupp.single m₂ 1 - Finsupp.single (m₁ + m₂) 1
     | .smul a m => a • Finsupp.single m 1 - Finsupp.single (a • m) 1
 
 variable {A M} in
 /-- Solutions of `tautologicalRelations A M` in an `A`-module `N` identify to `M →ₗ[A] N`. -/
-def tautologicalRelationsSolutionEquiv {N : Type w} [AddCommGroup N] [Module A N] :
+noncomputable def tautologicalRelationsSolutionEquiv {N : Type w} [AddCommGroup N] [Module A N] :
     (tautologicalRelations A M).Solution N ≃ (M →ₗ[A] N) where
   toFun s :=
     { toFun := s.var
@@ -54,16 +54,14 @@ def tautologicalRelationsSolutionEquiv {N : Type w} [AddCommGroup N] [Module A N
   invFun f :=
     { var := f
       linearCombination_var_relation := by rintro (_ | _) <;> simp }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The obvious solution of `tautologicalRelations A M` in the module `M`. -/
 @[simps! var]
-def tautologicalSolution : (tautologicalRelations A M).Solution M :=
+noncomputable def tautologicalSolution : (tautologicalRelations A M).Solution M :=
   tautologicalRelationsSolutionEquiv.symm .id
 
 /-- Any `A`-module admits a tautological presentation by generators and relations. -/
-def tautologicalSolutionIsPresentationCore :
+noncomputable def tautologicalSolutionIsPresentationCore :
     Relations.Solution.IsPresentationCore.{w} (tautologicalSolution A M) where
   desc s := tautologicalRelationsSolutionEquiv s
   postcomp_desc _ := rfl

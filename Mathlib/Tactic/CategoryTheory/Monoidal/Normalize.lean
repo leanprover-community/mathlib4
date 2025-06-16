@@ -10,7 +10,7 @@ import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
 # Normalization of morphisms in monoidal categories
 
 This file provides the implementation of the normalization given in
-`Mathlib.Tactic.CategoryTheory.Coherence.Normalize`. See this file for more details.
+`Mathlib/Tactic/CategoryTheory/Coherence/Normalize.lean`. See this file for more details.
 
 -/
 
@@ -37,7 +37,7 @@ theorem evalComp_nil_cons {f g h i j : C} (α : f ≅ g) (β : g ≅ h) (η : h 
   simp
 
 theorem evalComp_cons {f g h i j : C} (α : f ≅ g) (η : g ⟶ h) {ηs : h ⟶ i} {θ : i ⟶ j} {ι : h ⟶ j}
-    (e_ι : ηs ≫ θ = ι)  :
+    (e_ι : ηs ≫ θ = ι) :
     (α.hom ≫ η ≫ ηs) ≫ θ = α.hom ≫ η ≫ ι := by
   simp [e_ι]
 
@@ -175,7 +175,7 @@ theorem evalHorizontalCompAux_cons {f f' g g' h i : C} {η : f ⟶ g} {ηs : f' 
 
 theorem evalHorizontalCompAux'_whisker {f f' g g' h : C} {η : g ⟶ h} {θ : f' ⟶ g'}
     {ηθ : g ⊗ f' ⟶ h ⊗ g'} {η₁ : f ⊗ (g ⊗ f') ⟶ f ⊗ (h ⊗ g')}
-    {η₂ :  f ⊗ (g ⊗ f') ⟶ (f ⊗ h) ⊗ g'} {η₃ : (f ⊗ g) ⊗ f' ⟶ (f ⊗ h) ⊗ g'}
+    {η₂ : f ⊗ (g ⊗ f') ⟶ (f ⊗ h) ⊗ g'} {η₃ : (f ⊗ g) ⊗ f' ⟶ (f ⊗ h) ⊗ g'}
     (e_ηθ : η ⊗ θ = ηθ) (e_η₁ : f ◁ ηθ = η₁)
     (e_η₂ : η₁ ≫ (α_ _ _ _).inv = η₂) (e_η₃ : (α_ _ _ _).hom ≫ η₂ = η₃) :
     (f ◁ η) ⊗ θ = η₃ := by

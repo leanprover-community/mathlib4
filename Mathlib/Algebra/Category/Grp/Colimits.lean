@@ -12,12 +12,12 @@ import Mathlib.GroupTheory.QuotientGroup.Defs
 /-!
 # The category of additive commutative groups has all colimits.
 
-This file constructs colimits in the categpry of additive commutative groups, as
+This file constructs colimits in the category of additive commutative groups, as
 quotients of finitely supported functions.
 
 -/
 
-universe w u v
+universe u' w u v
 
 open CategoryTheory Limits
 
@@ -67,7 +67,7 @@ variable (c : Cocone F)
 /-- (implementation detail) Part of the universal property of the colimit cocone, but without
     assuming that `Quot F` lives in the correct universe. -/
 def Quot.desc [DecidableEq J] : Quot.{w} F →+ c.pt := by
-  refine QuotientAddGroup.lift _ (DFinsupp.sumAddHom c.ι.app) ?_
+  refine QuotientAddGroup.lift _ (DFinsupp.sumAddHom fun x => (c.ι.app x).hom) ?_
   dsimp
   rw [AddSubgroup.closure_le]
   intro _ ⟨_, _, _, _, eq⟩
@@ -94,16 +94,97 @@ lemma Quot.map_ι [DecidableEq J] {j j' : J} {f : j ⟶ j'} (x : F.obj j) :
   simp only [DFinsupp.singleAddHom_apply]
   exact AddSubgroup.subset_closure ⟨j, j', f, x, rfl⟩
 
+/--
+The obvious additive map from `Quot F` to `Quot (F ⋙ uliftFunctor.{u'})`.
+-/
+def quotToQuotUlift [DecidableEq J] : Quot F →+ Quot (F ⋙ uliftFunctor.{u'}) := by
+  refine QuotientAddGroup.lift (Relations F) (DFinsupp.sumAddHom (fun j ↦ (Quot.ι _ j).comp
+    AddEquiv.ulift.symm.toAddMonoidHom)) ?_
+  rw [AddSubgroup.closure_le]
+  intro _ hx
+  obtain ⟨j, j', u, a, rfl⟩ := hx
+  rw [SetLike.mem_coe, AddMonoidHom.mem_ker, map_sub, DFinsupp.sumAddHom_single,
+    DFinsupp.sumAddHom_single]
+  change Quot.ι (F ⋙ uliftFunctor) j' ((F ⋙ uliftFunctor).map u (AddEquiv.ulift.symm a)) - _ = _
+  rw [Quot.map_ι]
+  dsimp
+  rw [sub_self]
+
+lemma quotToQuotUlift_ι [DecidableEq J] (j : J) (x : F.obj j) :
+    quotToQuotUlift F (Quot.ι F j x) = Quot.ι _ j (ULift.up x) := by
+  dsimp [quotToQuotUlift, Quot.ι]
+  conv_lhs => erw [AddMonoidHom.comp_apply (QuotientAddGroup.mk' (Relations F))
+    (DFinsupp.singleAddHom _ j), QuotientAddGroup.lift_mk']
+  simp only [DFinsupp.singleAddHom_apply, DFinsupp.sumAddHom_single, AddMonoidHom.coe_comp,
+    AddMonoidHom.coe_coe, Function.comp_apply]
+  rfl
+
+/--
+The obvious additive map from `Quot (F ⋙ uliftFunctor.{u'})` to `Quot F`.
+-/
+def quotUliftToQuot [DecidableEq J] : Quot (F ⋙ uliftFunctor.{u'}) →+ Quot F := by
+  refine QuotientAddGroup.lift (Relations (F ⋙ uliftFunctor))
+    (DFinsupp.sumAddHom (fun j ↦ (Quot.ι _ j).comp AddEquiv.ulift.toAddMonoidHom)) ?_
+  rw [AddSubgroup.closure_le]
+  intro _ hx
+  obtain ⟨j, j', u, a, rfl⟩ := hx
+  rw [SetLike.mem_coe, AddMonoidHom.mem_ker, map_sub, DFinsupp.sumAddHom_single,
+    DFinsupp.sumAddHom_single]
+  change Quot.ι F j' (F.map u (AddEquiv.ulift a)) - _ = _
+  rw [Quot.map_ι]
+  dsimp
+  rw [sub_self]
+
+lemma quotUliftToQuot_ι [DecidableEq J] (j : J) (x : (F ⋙ uliftFunctor.{u'}).obj j) :
+    quotUliftToQuot F (Quot.ι _ j x) = Quot.ι F j x.down := by
+  dsimp [quotUliftToQuot, Quot.ι]
+  conv_lhs => erw [AddMonoidHom.comp_apply (QuotientAddGroup.mk' (Relations (F ⋙ uliftFunctor)))
+    (DFinsupp.singleAddHom _ j), QuotientAddGroup.lift_mk']
+  simp only [Functor.comp_obj, uliftFunctor_obj, DFinsupp.singleAddHom_apply,
+    DFinsupp.sumAddHom_single, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe, Function.comp_apply]
+  rfl
+
+/--
+The additive equivalence between `Quot F` and `Quot (F ⋙ uliftFunctor.{u'})`.
+-/
+@[simp]
+def quotQuotUliftAddEquiv [DecidableEq J] : Quot F ≃+ Quot (F ⋙ uliftFunctor.{u'}) where
+  toFun := quotToQuotUlift F
+  invFun := quotUliftToQuot F
+  left_inv x := by
+    conv_rhs => rw [← AddMonoidHom.id_apply _ x]
+    rw [← AddMonoidHom.comp_apply, Quot.addMonoidHom_ext F (f := (quotUliftToQuot F).comp
+      (quotToQuotUlift F)) (fun j a ↦ ?_)]
+    rw [AddMonoidHom.comp_apply, AddMonoidHom.id_apply, quotToQuotUlift_ι, quotUliftToQuot_ι]
+  right_inv x := by
+    conv_rhs => rw [← AddMonoidHom.id_apply _ x]
+    rw [← AddMonoidHom.comp_apply, Quot.addMonoidHom_ext _ (f := (quotToQuotUlift F).comp
+      (quotUliftToQuot F)) (fun j a ↦ ?_)]
+    rw [AddMonoidHom.comp_apply, AddMonoidHom.id_apply, quotUliftToQuot_ι, quotToQuotUlift_ι]
+    rfl
+  map_add' _ _ := by simp
+
+lemma Quot.desc_quotQuotUliftAddEquiv [DecidableEq J] (c : Cocone F) :
+    (Quot.desc (F ⋙ uliftFunctor.{u'}) (uliftFunctor.{u'}.mapCocone c)).comp
+    (quotQuotUliftAddEquiv F).toAddMonoidHom =
+    AddEquiv.ulift.symm.toAddMonoidHom.comp (Quot.desc F c) := by
+  refine Quot.addMonoidHom_ext _ (fun j a ↦ ?_)
+  dsimp
+  simp only [quotToQuotUlift_ι, Functor.comp_obj, uliftFunctor_obj, ι_desc,
+    Functor.const_obj_obj, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe, Function.comp_apply, ι_desc]
+  erw [Quot.ι_desc]
+  rfl
+
 /-- (implementation detail) A morphism of commutative additive groups `Quot F →+ A`
 induces a cocone on `F` as long as the universes work out.
 -/
 @[simps]
 def toCocone [DecidableEq J] {A : Type w} [AddCommGroup A] (f : Quot F →+ A) : Cocone F where
   pt := AddCommGrp.of A
-  ι := { app := fun j => f.comp (Quot.ι F j) }
+  ι.app j := ofHom <| f.comp (Quot.ι F j)
 
 lemma Quot.desc_toCocone_desc [DecidableEq J] {A : Type w} [AddCommGroup A] (f : Quot F →+ A)
-    (hc : IsColimit c) : (hc.desc (toCocone F f)).comp (Quot.desc F c) = f := by
+    (hc : IsColimit c) : (hc.desc (toCocone F f)).hom.comp (Quot.desc F c) = f := by
   refine Quot.addMonoidHom_ext F (fun j x ↦ ?_)
   rw [AddMonoidHom.comp_apply, ι_desc]
   change (c.ι.app j ≫ hc.desc (toCocone F f)) _ = _
@@ -134,14 +215,14 @@ noncomputable def isColimit_of_bijective_desc [DecidableEq J]
     obtain ⟨x, rfl⟩ := h.2 x
     dsimp
     rw [← AddEquiv.ofBijective_apply _ h, AddEquiv.symm_apply_apply]
-    suffices eq : m.comp (AddEquiv.ofBijective (Quot.desc F c) h) = Quot.desc F s by
+    suffices eq : m.hom.comp (AddEquiv.ofBijective (Quot.desc F c) h) = Quot.desc F s by
       rw [← eq]; rfl
     exact Quot.addMonoidHom_ext F (by simp [← hm])
 
 /-- (internal implementation) The colimit cocone of a functor `F`, implemented as a quotient of
 `DFinsupp (fun j ↦ F.obj j)`, under the assumption that said quotient is small.
 -/
-@[simps]
+@[simps pt ι_app]
 noncomputable def colimitCocone [DecidableEq J] [Small.{w} (Quot.{w} F)] : Cocone F where
   pt := AddCommGrp.of (Shrink (Quot F))
   ι :=
@@ -150,8 +231,6 @@ noncomputable def colimitCocone [DecidableEq J] [Small.{w} (Quot.{w} F)] : Cocon
       naturality _ _ _ := by
         ext
         dsimp
-        simp only [Category.comp_id, ofHom_apply, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe,
-          Function.comp_apply]
         change Shrink.addEquiv.symm _ = _
         rw [Quot.map_ι] }
 
@@ -159,9 +238,8 @@ noncomputable def colimitCocone [DecidableEq J] [Small.{w} (Quot.{w} F)] : Cocon
 theorem Quot.desc_colimitCocone [DecidableEq J] (F : J ⥤ AddCommGrp.{w}) [Small.{w} (Quot F)] :
     Quot.desc F (colimitCocone F) = (Shrink.addEquiv (α := Quot F)).symm.toAddMonoidHom := by
   refine Quot.addMonoidHom_ext F (fun j x ↦ ?_)
-  simp only [colimitCocone_pt, coe_of, AddEquiv.toAddMonoidHom_eq_coe, AddMonoidHom.coe_coe]
-  erw [Quot.ι_desc]
-  simp
+  simpa only [colimitCocone_pt, AddEquiv.toAddMonoidHom_eq_coe, AddMonoidHom.coe_coe]
+    using Quot.ι_desc F (colimitCocone F) j x
 
 /-- (internal implementation) The fact that the candidate colimit cocone constructed in
 `colimitCocone` is the colimit.
@@ -207,16 +285,17 @@ open QuotientAddGroup
 agrees with the usual group-theoretical quotient.
 -/
 noncomputable def cokernelIsoQuotient {G H : AddCommGrp.{u}} (f : G ⟶ H) :
-    cokernel f ≅ AddCommGrp.of (H ⧸ AddMonoidHom.range f) where
-  hom := cokernel.desc f (mk' _) <| by
+    cokernel f ≅ AddCommGrp.of (H ⧸ AddMonoidHom.range f.hom) where
+  hom := cokernel.desc f (ofHom (mk' _)) <| by
         ext x
+        dsimp only [hom_comp, hom_ofHom]
         apply Quotient.sound
         apply leftRel_apply.mpr
         fconstructor
         · exact -x
         · simp only [add_zero, AddMonoidHom.map_neg]
-  inv :=
-    QuotientAddGroup.lift _ (cokernel.π f) <| by
+  inv := ofHom <|
+    QuotientAddGroup.lift _ (cokernel.π f).hom <| by
       rintro _ ⟨x, rfl⟩
       exact cokernel.condition_apply f x
   hom_inv_id := by
@@ -225,6 +304,8 @@ noncomputable def cokernelIsoQuotient {G H : AddCommGrp.{u}} (f : G ⟶ H) :
     rfl
   inv_hom_id := by
     ext x
-    exact QuotientAddGroup.induction_on x <| cokernel.π_desc_apply f _ _
+    dsimp only [hom_comp, hom_ofHom, hom_zero, AddMonoidHom.coe_comp, coe_mk',
+      Function.comp_apply, AddMonoidHom.zero_apply, id_eq, lift_mk, hom_id, AddMonoidHom.coe_id]
+    exact QuotientAddGroup.induction_on (α := H) x <| cokernel.π_desc_apply f _ _
 
 end AddCommGrp

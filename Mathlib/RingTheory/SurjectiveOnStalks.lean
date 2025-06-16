@@ -183,9 +183,6 @@ lemma surjectiveOnStalks_iff_of_isLocalHom [IsLocalRing S] [IsLocalHom f] :
   refine ⟨(isUnit_of_map_unit f r hr).unit⁻¹ * y, ?_⟩
   apply hr.mul_right_injective
   apply hc.mul_right_injective
-  simp only [← _root_.map_mul, ← mul_assoc, IsUnit.mul_val_inv, one_mul, e]
-
-@[deprecated (since := "2024-10-10")]
-alias surjectiveOnStalks_iff_of_isLocalRingHom := surjectiveOnStalks_iff_of_isLocalHom
+  simp only [← map_mul, ← mul_assoc, IsUnit.mul_val_inv, one_mul, e]
 
 end RingHom

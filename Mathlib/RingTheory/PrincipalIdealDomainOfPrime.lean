@@ -22,15 +22,13 @@ variable {R : Type*} [CommRing R]
 theorem IsPrincipalIdealRing.of_prime (H : ∀ P : Ideal R, P.IsPrime → P.IsPrincipal) :
     IsPrincipalIdealRing R := by
   -- Suppose the set of `nonPrincipals` is not empty.
-  rw [← nonPrincipals_eq_empty_iff, Set.eq_empty_iff_forall_not_mem]
+  rw [← nonPrincipals_eq_empty_iff, Set.eq_empty_iff_forall_notMem]
   intro J hJ
   -- We will show a maximal element `I ∈ nonPrincipals R` (which exists by Zorn) is prime.
   obtain ⟨I, hJI, hI⟩ := zorn_le_nonempty₀ (nonPrincipals R) nonPrincipals_zorn _ hJ
-
   have Imax' : ∀ {J}, I < J → J.IsPrincipal := by
     intro K hK
     simpa [nonPrincipals] using hI.not_prop_of_gt hK
-
   by_cases hI1 : I = ⊤
   · subst hI1
     exact hI.prop top_isPrincipal
@@ -53,13 +51,13 @@ theorem IsPrincipalIdealRing.of_prime (H : ∀ P : Ideal R, P.IsPrime → P.IsPr
       (span_singleton_mul_span_singleton a b).ge.trans ?_
   · have hisup : i ∈ I ⊔ span {y} := Ideal.mem_sup_left hi
     have : y ∈ I ⊔ span {y} := Ideal.mem_sup_right (Ideal.mem_span_singleton_self y)
-    erw [ha, mem_span_singleton'] at hisup this
+    rw [ha, Ideal.submodule_span_eq, mem_span_singleton'] at hisup this
     obtain ⟨v, rfl⟩ := this
     obtain ⟨u, rfl⟩ := hisup
     have hucolon : u ∈ I.colon (span {v * a}) := by
       rw [Ideal.mem_colon_singleton, mul_comm v, ← mul_assoc]
       exact mul_mem_right _ _ hi
-    erw [hb, mem_span_singleton'] at hucolon
+    rw [hb, Ideal.submodule_span_eq, mem_span_singleton'] at hucolon
     obtain ⟨z, rfl⟩ := hucolon
     exact mem_span_singleton'.2 ⟨z, by ring⟩
   · rw [← Ideal.submodule_span_eq, ← ha, Ideal.sup_mul, sup_le_iff,

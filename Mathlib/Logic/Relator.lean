@@ -14,11 +14,11 @@ namespace Relator
 universe u₁ u₂ v₁ v₂
 
 /- TODO(johoelzl):
- * should we introduce relators of datatypes as recursive function or as inductive
+* should we introduce relators of datatypes as recursive function or as inductive
 predicate? For now we stick to the recursor approach.
- * relation lift for datatypes, Π, Σ, set, and subtype types
- * proof composition and identity laws
- * implement method to derive relators from datatype
+* relation lift for datatypes, Π, Σ, set, and subtype types
+* proof composition and identity laws
+* implement method to derive relators from datatype
 -/
 
 section
@@ -32,7 +32,7 @@ def LiftFun (f : α → γ) (g : β → δ) : Prop :=
   ∀⦃a b⦄, R a b → S (f a) (g b)
 
 /-- `(R ⇒ S) f g` means `LiftFun R S f g`. -/
-infixr:40 " ⇒ " => LiftFun
+scoped infixr:40 " ⇒ " => LiftFun
 
 end
 

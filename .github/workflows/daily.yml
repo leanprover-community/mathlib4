@@ -15,6 +15,7 @@ env:
 jobs:
   check-lean4checker:
     runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
     strategy:
       matrix:
         branch_type: [master, nightly]
@@ -30,12 +31,9 @@ jobs:
               : # Do nothing on failure, but suppress errors
           fi
 
-      - name: Install elan
-        run: |
-          set -o pipefail
-          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
-          ./elan-init -y --default-toolchain none
-          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+      # Checkout repository, so that we can fetch tags to decide which branch we want.
+      - name: Checkout branch or tag
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Fetch latest tags (if nightly)
         if: matrix.branch_type == 'nightly'
@@ -52,22 +50,19 @@ jobs:
             echo "BRANCH_REF=${{ env.LATEST_TAG }}" >> "$GITHUB_ENV"
           fi
 
+      # Checkout the branch or tag we want to test.
       - name: Checkout branch or tag
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: ${{ env.BRANCH_REF }}
 
-      - name: If using a lean-pr-release toolchain, uninstall
-        run: |
-          if [[ "$(cat lean-toolchain)" =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
-            printf 'Uninstalling transient toolchain %s\n' "$(cat lean-toolchain)"
-            elan toolchain uninstall "$(cat lean-toolchain)"
-          fi
-
-      - name: Print Lean and Lake versions
-        run: |
-          lean --version
-          lake --version
+      - name: Configure Lean
+        uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
+        with:
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: false
+          reinstall-transient-toolchain: true
 
       - name: Run lake exe cache get
         run: |
@@ -75,14 +70,21 @@ jobs:
 
       - name: Check environments using lean4checker
         id: lean4checker
+        continue-on-error: true
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
           # Read lean-toolchain file and checkout appropriate branch
           TOOLCHAIN=$(cat ../lean-toolchain)
+          printf '%s\n' "${TOOLCHAIN}"
           if [[ "$TOOLCHAIN" =~ ^leanprover/lean4:v ]]; then
             VERSION=${TOOLCHAIN#leanprover/lean4:}
             git checkout "$VERSION"
+          elif [[ "$TOOLCHAIN" =~ ^leanprover/lean4:nightly-[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+            # Extract the date part from the toolchain string
+            DATE=${TOOLCHAIN#leanprover/lean4:}
+            # Try to checkout nightly-testing-YYYY-MM-DD, fallback to nightly-testing
+            git checkout "nightly-testing-${DATE}" 2>/dev/null || git checkout nightly-testing
           else
             git checkout master
           fi
@@ -99,12 +101,13 @@ jobs:
 
       - name: Run mathlib_test_executable
         id: mathlib-test
+        continue-on-error: true
         run: |
           lake exe mathlib_test_executable
 
       - name: Post success message for lean4checker on Zulip
         if: steps.lean4checker.outcome == 'success'
-        uses: zulip/github-actions-zulip/send-message@v1
+        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
@@ -117,7 +120,7 @@ jobs:
 
       - name: Post success message for mathlib_test_executable on Zulip
         if: steps.mathlib-test.outcome == 'success'
-        uses: zulip/github-actions-zulip/send-message@v1
+        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
@@ -130,7 +133,7 @@ jobs:
 
       - name: Post failure message for lean4checker on Zulip
         if: steps.lean4checker.outcome == 'failure'
-        uses: zulip/github-actions-zulip/send-message@v1
+        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'
@@ -144,7 +147,7 @@ jobs:
 
       - name: Post failure message for mathlib_test_executable on Zulip
         if: steps.mathlib-test.outcome == 'failure'
-        uses: zulip/github-actions-zulip/send-message@v1
+        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'github-mathlib4-bot@leanprover.zulipchat.com'

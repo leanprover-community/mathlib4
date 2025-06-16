@@ -53,6 +53,7 @@ that for all `a, b : α` where `a ≤ b`, the equations `x ⊔ a = b` and `x ⊓
 generalized Boolean algebras, Boolean algebras, lattices, sdiff, compl
 -/
 
+assert_not_exists RelIso
 
 open Function OrderDual
 
@@ -292,8 +293,11 @@ theorem sdiff_lt (hx : y ≤ x) (hy : y ≠ ⊥) : x \ y < x := by
   rw [sdiff_eq_self_iff_disjoint', disjoint_iff] at h
   rw [← h, inf_eq_right.mpr hx]
 
+theorem sdiff_lt_left : x \ y < x ↔ ¬ Disjoint y x := by
+  rw [lt_iff_le_and_ne, Ne, sdiff_eq_self_iff_disjoint, and_iff_right sdiff_le]
+
 @[simp]
-theorem le_sdiff_iff : x ≤ y \ x ↔ x = ⊥ :=
+theorem le_sdiff_right : x ≤ y \ x ↔ x = ⊥ :=
   ⟨fun h => disjoint_self.1 (disjoint_sdiff_self_right.mono_right h), fun h => h.le.trans bot_le⟩
 
 @[simp] lemma sdiff_eq_right : x \ y = y ↔ x = ⊥ ∧ y = ⊥ := by
@@ -302,8 +306,8 @@ theorem le_sdiff_iff : x ≤ y \ x ↔ x = ⊥ :=
 lemma sdiff_ne_right : x \ y ≠ y ↔ x ≠ ⊥ ∨ y ≠ ⊥ := sdiff_eq_right.not.trans not_and_or
 
 theorem sdiff_lt_sdiff_right (h : x < y) (hz : z ≤ x) : x \ z < y \ z :=
-  (sdiff_le_sdiff_right h.le).lt_of_not_le
-    fun h' => h.not_le <| le_sdiff_sup.trans <| sup_le_of_le_sdiff_right h' hz
+  (sdiff_le_sdiff_right h.le).lt_of_not_ge
+    fun h' => h.not_ge <| le_sdiff_sup.trans <| sup_le_of_le_sdiff_right h' hz
 
 theorem sup_inf_inf_sdiff : x ⊓ y ⊓ z ⊔ y \ z = x ⊓ y ⊔ y \ z :=
   calc
@@ -446,13 +450,13 @@ theorem sup_eq_sdiff_sup_sdiff_sup_inf : x ⊔ y = x \ y ⊔ y \ x ⊔ x ⊓ y :
 
 theorem sup_lt_of_lt_sdiff_left (h : y < z \ x) (hxz : x ≤ z) : x ⊔ y < z := by
   rw [← sup_sdiff_cancel_right hxz]
-  refine (sup_le_sup_left h.le _).lt_of_not_le fun h' => h.not_le ?_
+  refine (sup_le_sup_left h.le _).lt_of_not_ge fun h' => h.not_ge ?_
   rw [← sdiff_idem]
   exact (sdiff_le_sdiff_of_sup_le_sup_left h').trans sdiff_le
 
 theorem sup_lt_of_lt_sdiff_right (h : x < z \ y) (hyz : y ≤ z) : x ⊔ y < z := by
   rw [← sdiff_sup_cancel hyz]
-  refine (sup_le_sup_right h.le _).lt_of_not_le fun h' => h.not_le ?_
+  refine (sup_le_sup_right h.le _).lt_of_not_ge fun h' => h.not_ge ?_
   rw [← sdiff_idem]
   exact (sdiff_le_sdiff_of_sup_le_sup_right h').trans sdiff_le
 
@@ -461,8 +465,7 @@ instance Prod.instGeneralizedBooleanAlgebra [GeneralizedBooleanAlgebra β] :
   sup_inf_sdiff _ _ := Prod.ext (sup_inf_sdiff _ _) (sup_inf_sdiff _ _)
   inf_inf_sdiff _ _ := Prod.ext (inf_inf_sdiff _ _) (inf_inf_sdiff _ _)
 
--- Porting note:
--- Once `pi_instance` has been ported, this is just `by pi_instance`.
+-- Porting note: Once `pi_instance` has been ported, this is just `by pi_instance`.
 instance Pi.instGeneralizedBooleanAlgebra {ι : Type*} {α : ι → Type*}
     [∀ i, GeneralizedBooleanAlgebra (α i)] : GeneralizedBooleanAlgebra (∀ i, α i) where
   sup_inf_sdiff := fun f g => funext fun a => sup_inf_sdiff (f a) (g a)
@@ -564,7 +567,7 @@ instance (priority := 100) BooleanAlgebra.toBiheytingAlgebra : BiheytingAlgebra 
   hnot := compl
   le_himp_iff a b c := by rw [himp_eq, isCompl_compl.le_sup_right_iff_inf_left_le]
   himp_bot _ := _root_.himp_eq.trans (bot_sup_eq _)
-  top_sdiff a := by rw [sdiff_eq, top_inf_eq]; rfl
+  top_sdiff a := by rw [sdiff_eq, top_inf_eq]
 
 @[simp]
 theorem hnot_eq_compl : ￢x = xᶜ :=
@@ -689,13 +692,19 @@ theorem codisjoint_himp_self_right : Codisjoint x (x ⇨ y) :=
 theorem himp_le : x ⇨ y ≤ z ↔ y ≤ z ∧ Codisjoint x z :=
   (@le_sdiff αᵒᵈ _ _ _ _).trans <| and_congr_right' <| @codisjoint_comm _ (_) _ _ _
 
-@[simp] lemma himp_le_iff : x ⇨ y ≤ x ↔ x = ⊤ :=
+@[simp] lemma himp_le_left : x ⇨ y ≤ x ↔ x = ⊤ :=
   ⟨fun h ↦ codisjoint_self.1 <| codisjoint_himp_self_right.mono_right h, fun h ↦ le_top.trans h.ge⟩
 
 @[simp] lemma himp_eq_left : x ⇨ y = x ↔ x = ⊤ ∧ y = ⊤ := by
   rw [codisjoint_himp_self_left.eq_iff]; aesop
 
 lemma himp_ne_right : x ⇨ y ≠ x ↔ x ≠ ⊤ ∨ y ≠ ⊤ := himp_eq_left.not.trans not_and_or
+
+lemma codisjoint_iff_compl_le_left : Codisjoint x y ↔ yᶜ ≤ x :=
+  hnot_le_iff_codisjoint_left.symm
+
+lemma codisjoint_iff_compl_le_right : Codisjoint x y ↔ xᶜ ≤ y :=
+  hnot_le_iff_codisjoint_right.symm
 
 end BooleanAlgebra
 
@@ -726,8 +735,6 @@ instance Pi.instBooleanAlgebra {ι : Type u} {α : ι → Type v} [∀ i, Boolea
   top_le_sup_compl _ _ := BooleanAlgebra.top_le_sup_compl _
 
 instance Bool.instBooleanAlgebra : BooleanAlgebra Bool where
-  __ := instDistribLattice
-  __ := linearOrder
   __ := instBoundedOrder
   compl := not
   inf_compl_le_bot a := a.and_not_self.le
@@ -796,7 +803,6 @@ This is not an instance, because it creates data using choice.
 -/
 noncomputable
 def booleanAlgebraOfComplemented [BoundedOrder α] [ComplementedLattice α] : BooleanAlgebra α where
-  __ := (inferInstanceAs (DistribLattice α))
   __ := (inferInstanceAs (BoundedOrder α))
   compl a := Classical.choose <| exists_isCompl a
   inf_compl_le_bot a := (Classical.choose_spec (exists_isCompl a)).disjoint.le_bot

@@ -26,7 +26,7 @@ open Qq
 initialize registerTraceClass `Tactic.field_simp
 
 /-- Constructs a trace message for the `discharge` function. -/
-private def dischargerTraceMessage {ε : Type*} (prop: Expr) :
+private def dischargerTraceMessage {ε : Type*} (prop : Expr) :
     Except ε (Option Expr) → SimpM MessageData
 | .error _ | .ok none => return m!"{crossEmoji} discharge {prop}"
 | .ok (some _) => return m!"{checkEmoji} discharge {prop}"
@@ -45,7 +45,7 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
     let pf? ← match prop with
     | ~q(($e : $α) ≠ $b) =>
         try
-          let res ← Mathlib.Meta.NormNum.derive (α := (q(Prop) : Q(Type))) prop
+          let res ← Mathlib.Meta.NormNum.derive prop
           match res with
           | .isTrue pf => pure (some pf)
           | _ => pure none
@@ -85,6 +85,26 @@ partial def discharge (prop : Expr) : SimpM (Option Expr) :=
 
 @[inherit_doc discharge]
 elab "field_simp_discharge" : tactic => wrapSimpDischarger Mathlib.Tactic.FieldSimp.discharge
+
+/-- The list of lemma's that aren't used in `field_simp`.
+
+`one_div`, `mul_eq_zero` and `one_divp` are excluded because we don't want those rewrites.
+
+The remaining constants are excluded for efficiency. These are lemmas consisting of just
+`*`, `/` and `=` that are applicable in a typeclass that can't be a field. -/
+def fieldSimpExcluded : List Name := [
+  ``one_div, ``mul_eq_zero, ``one_divp,
+
+  ``div_self', ``div_div_cancel, ``div_div_cancel_left,
+  ``div_mul_cancel, ``div_mul_cancel_left, ``div_mul_cancel_right,
+  ``mul_div_cancel, ``mul_div_cancel_left, ``mul_div_cancel_right,
+  ``div_div_div_cancel_left, ``div_div_div_cancel_right,
+  ``div_mul_div_cancel, ``div_mul_div_cancel', ``div_mul_mul_cancel,
+  ``mul_div_div_cancel, ``mul_mul_div_cancel,
+
+  ``div_eq_self,
+  ``mul_eq_right, ``mul_eq_left, ``right_eq_mul, ``left_eq_mul,
+  ``div_left_inj, ``div_right_inj, ``mul_left_inj, ``mul_right_inj]
 
 /--
 The goal of `field_simp` is to reduce an expression in a field to an expression of the form `n / d`
@@ -169,9 +189,7 @@ elab_rules : tactic
     simpOnlyBuiltins.foldlM (·.addConst ·) ({} : SimpTheorems)
   else do
     let thms0 ← getSimpTheorems
-    let thms0 ← thms0.erase (.decl ``one_div)
-    let thms0 ← thms0.erase (.decl `mul_eq_zero)
-    thms0.erase (.decl ``one_divp)
+    fieldSimpExcluded.foldlM (init := thms0) fun thms0 name => thms0.erase (.decl name)
 
   let some ext ← getSimpExtension? `field_simps | throwError "field_simps not found"
   let thms ← ext.getTheorems
@@ -195,3 +213,8 @@ elab_rules : tactic
   _ ← simpLocation r.ctx {} dis loc
 
 end Mathlib.Tactic.FieldSimp
+
+/-!
+ We register `field_simp` with the `hint` tactic.
+ -/
+register_hint field_simp

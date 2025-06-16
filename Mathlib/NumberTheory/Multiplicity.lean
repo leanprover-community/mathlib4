@@ -41,7 +41,7 @@ theorem dvd_geom_sum₂_iff_of_dvd_sub {x y p : R} (h : p ∣ x - y) :
     (p ∣ ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) ↔ p ∣ n * y ^ (n - 1) := by
   rw [← mem_span_singleton, ← Ideal.Quotient.eq] at h
   simp only [← mem_span_singleton, ← eq_zero_iff_mem, RingHom.map_geom_sum₂, h, geom_sum₂_self,
-    _root_.map_mul, map_pow, map_natCast]
+    map_mul, map_pow, map_natCast]
 
 theorem dvd_geom_sum₂_iff_of_dvd_sub' {x y p : R} (h : p ∣ x - y) :
     (p ∣ ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) ↔ p ∣ n * x ^ (n - 1) := by
@@ -53,7 +53,7 @@ theorem dvd_geom_sum₂_self {x y : R} (h : ↑n ∣ x - y) :
 
 theorem sq_dvd_add_pow_sub_sub (p x : R) (n : ℕ) :
     p ^ 2 ∣ (x + p) ^ n - x ^ (n - 1) * p * n - x ^ n := by
-  cases' n with n n
+  rcases n with - | n
   · simp only [pow_zero, Nat.cast_zero, sub_zero, sub_self, dvd_zero, mul_zero]
   · simp only [Nat.succ_sub_succ_eq_sub, tsub_zero, Nat.cast_succ, add_pow, Finset.sum_range_succ,
       Nat.choose_self, Nat.succ_sub _, tsub_self, pow_one, Nat.choose_succ_self_right, pow_zero,
@@ -90,15 +90,13 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
     (Ideal.Quotient.mk (span {s})) (∑ i ∈ range p, (a + (p : R) * b) ^ i * a ^ (p - 1 - i)) =
         ∑ i ∈ Finset.range p,
         mk (span {s}) ((a ^ (i - 1) * (↑p * b) * ↑i + a ^ i) * a ^ (p - 1 - i)) := by
-      simp_rw [s, RingHom.map_geom_sum₂, ← map_pow, h1, ← _root_.map_mul]
+      simp_rw [s, RingHom.map_geom_sum₂, ← map_pow, h1, ← map_mul]
     _ =
         mk (span {s})
             (∑ x ∈ Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
           mk (span {s}) (∑ x ∈ Finset.range p, a ^ (x + (p - 1 - x))) := by
       ring_nf
-      simp only [← pow_add, map_add, Finset.sum_add_distrib, ← map_sum]
-      congr
-      simp [pow_add a, mul_assoc]
+      simp_rw [← map_sum, sum_add_distrib, map_add]
     _ =
         mk (span {s})
             (∑ x ∈ Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
@@ -129,11 +127,11 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
     _ = mk (span {s}) (↑p * a ^ (p - 1)) := by
       have : Finset.sum (range p) (fun (x : ℕ) ↦ (x : R)) =
           ((Finset.sum (range p) (fun (x : ℕ) ↦ (x : ℕ)))) := by simp only [Nat.cast_sum]
-      simp only [add_left_eq_self, ← Finset.mul_sum, this]
+      simp only [add_eq_right, ← Finset.mul_sum, this]
       norm_cast
       simp only [Finset.sum_range_id]
       norm_cast
-      simp only [Nat.cast_mul, _root_.map_mul,
+      simp only [Nat.cast_mul, map_mul,
           Nat.mul_div_assoc p (even_iff_two_dvd.mp (Nat.Odd.sub_odd hp odd_one))]
       ring_nf
       rw [mul_assoc, mul_assoc]
@@ -164,7 +162,7 @@ theorem emultiplicity_geom_sum₂_eq_one :
   · rw [pow_one]
     exact dvd_geom_sum₂_self hxy
   rw [dvd_iff_dvd_of_dvd_sub hxy] at hx
-  cases' hxy with k hk
+  obtain ⟨k, hk⟩ := hxy
   rw [one_add_one_eq_two, eq_add_of_sub_eq' hk]
   refine mt (dvd_iff_dvd_of_dvd_sub (@odd_sq_dvd_geom_sum₂_sub _ _ y k _ hp1)).mp ?_
   rw [pow_two, mul_dvd_mul_iff_left hp.ne_zero]
@@ -182,13 +180,14 @@ alias multiplicity.pow_prime_sub_pow_prime := emultiplicity_pow_prime_sub_pow_pr
 
 theorem emultiplicity_pow_prime_pow_sub_pow_prime_pow (a : ℕ) :
     emultiplicity (↑p) (x ^ p ^ a - y ^ p ^ a) = emultiplicity (↑p) (x - y) + a := by
-  induction' a with a h_ind
-  · rw [Nat.cast_zero, add_zero, pow_zero, pow_one, pow_one]
-  rw [Nat.cast_add, Nat.cast_one, ← add_assoc, ← h_ind, pow_succ, pow_mul, pow_mul]
-  apply emultiplicity_pow_prime_sub_pow_prime hp hp1
-  · rw [← geom_sum₂_mul]
-    exact dvd_mul_of_dvd_right hxy _
-  · exact fun h => hx (hp.dvd_of_dvd_pow h)
+  induction a with
+  | zero => rw [Nat.cast_zero, add_zero, pow_zero, pow_one, pow_one]
+  | succ a h_ind =>
+    rw [Nat.cast_add, Nat.cast_one, ← add_assoc, ← h_ind, pow_succ, pow_mul, pow_mul]
+    apply emultiplicity_pow_prime_sub_pow_prime hp hp1
+    · rw [← geom_sum₂_mul]
+      exact dvd_mul_of_dvd_right hxy _
+    · exact fun h => hx (hp.dvd_of_dvd_pow h)
 
 @[deprecated (since := "2024-11-30")]
 alias multiplicity.pow_prime_pow_sub_pow_prime_pow := emultiplicity_pow_prime_pow_sub_pow_prime_pow
@@ -203,7 +202,7 @@ include hp hp1
 /-- **Lifting the exponent lemma** for odd primes. -/
 theorem Int.emultiplicity_pow_sub_pow {x y : ℤ} (hxy : ↑p ∣ x - y) (hx : ¬↑p ∣ x) (n : ℕ) :
     emultiplicity (↑p) (x ^ n - y ^ n) = emultiplicity (↑p) (x - y) + emultiplicity p n := by
-  cases' n with n
+  rcases n with - | n
   · simp only [emultiplicity_zero, add_top, pow_zero, sub_self]
   have h : FiniteMultiplicity _ _ := Nat.finiteMultiplicity_iff.mpr ⟨hp.ne_one, n.succ_pos⟩
   simp only [Nat.succ_eq_add_one] at h
@@ -265,20 +264,20 @@ end CommRing
 
 theorem pow_two_pow_sub_pow_two_pow [CommRing R] {x y : R} (n : ℕ) :
     x ^ 2 ^ n - y ^ 2 ^ n = (∏ i ∈ Finset.range n, (x ^ 2 ^ i + y ^ 2 ^ i)) * (x - y) := by
-  induction' n with d hd
-  · simp only [pow_zero, pow_one, range_zero, prod_empty, one_mul]
-  · suffices x ^ 2 ^ d.succ - y ^ 2 ^ d.succ = (x ^ 2 ^ d + y ^ 2 ^ d) * (x ^ 2 ^ d - y ^ 2 ^ d) by
+  induction n with
+  | zero => simp only [pow_zero, pow_one, range_zero, prod_empty, one_mul]
+  | succ d hd =>
+    suffices x ^ 2 ^ d.succ - y ^ 2 ^ d.succ = (x ^ 2 ^ d + y ^ 2 ^ d) * (x ^ 2 ^ d - y ^ 2 ^ d) by
       rw [this, hd, Finset.prod_range_succ, ← mul_assoc, mul_comm (x ^ 2 ^ d + y ^ 2 ^ d)]
     rw [Nat.succ_eq_add_one]
     ring
 
--- Porting note: simplified proof because `fin_cases` was not available in that case
 theorem Int.sq_mod_four_eq_one_of_odd {x : ℤ} : Odd x → x ^ 2 % 4 = 1 := by
   intro hx
   unfold Odd at hx
   rcases hx with ⟨_, rfl⟩
   ring_nf
-  rw [add_assoc, ← add_mul, Int.add_mul_emod_self]
+  rw [add_assoc, ← add_mul, Int.add_mul_emod_self_right]
   decide
 
 theorem Int.two_pow_two_pow_add_two_pow_two_pow {x y : ℤ} (hx : ¬2 ∣ x) (hxy : 4 ∣ x - y) (i : ℕ) :
@@ -289,7 +288,7 @@ theorem Int.two_pow_two_pow_add_two_pow_two_pow {x y : ℤ} (hx : ¬2 ∣ x) (hx
   refine emultiplicity_eq_coe.mpr ⟨?_, ?_⟩
   · rw [pow_one, ← even_iff_two_dvd]
     exact hx_odd.pow.add_odd hy_odd.pow
-  cases' i with i
+  rcases i with - | i
   · intro hxy'
     have : 2 * 2 ∣ 2 * x := by
       have := dvd_add hxy hxy'
@@ -316,7 +315,7 @@ theorem Int.two_pow_sub_pow' {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2
   have hx_odd : Odd x := by rwa [← Int.not_even_iff_odd, even_iff_two_dvd]
   have hxy_even : Even (x - y) := even_iff_two_dvd.mpr (dvd_trans (by decide) hxy)
   have hy_odd : Odd y := by simpa using hx_odd.sub_even hxy_even
-  cases' n with n
+  rcases n with - | n
   · simp only [pow_zero, sub_self, emultiplicity_zero, Int.ofNat_zero, add_top]
   have h : FiniteMultiplicity 2 n.succ := Nat.finiteMultiplicity_iff.mpr ⟨by norm_num, n.succ_pos⟩
   simp only [Nat.succ_eq_add_one] at h
@@ -328,8 +327,7 @@ theorem Int.two_pow_sub_pow' {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2
   · exact Int.prime_two
   · simpa only [even_iff_two_dvd] using hx_odd.pow.sub_odd hy_odd.pow
   · simpa only [even_iff_two_dvd, ← Int.not_even_iff_odd] using hx_odd.pow
-  erw [Int.natCast_dvd_natCast]
-  -- `erw` to deal with `2 : ℤ` vs `(2 : ℕ) : ℤ`
+  norm_cast
   contrapose! hpn
   rw [pow_succ]
   conv_rhs => rw [hk]
@@ -344,7 +342,7 @@ theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 
     replace hxy := (@even_neg _ _ (x - y)).mpr (even_iff_two_dvd.mpr hxy)
     convert Even.add_odd hxy hx
     abel
-  cases' hn with d hd
+  obtain ⟨d, hd⟩ := hn
   subst hd
   simp only [← two_mul, pow_mul]
   have hxy4 : 4 ∣ x ^ 2 - y ^ 2 := by
@@ -368,7 +366,7 @@ theorem Nat.two_pow_sub_pow {x y : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n 
       emultiplicity 2 (x + y) + emultiplicity 2 (x - y) + emultiplicity 2 n := by
   obtain hyx | hyx := le_total y x
   · iterate 3 rw [← Int.natCast_emultiplicity]
-    simp only [Int.ofNat_sub hyx, Int.ofNat_sub (pow_le_pow_left' hyx _), Int.ofNat_add,
+    simp only [Int.ofNat_sub hyx, Int.ofNat_sub (pow_le_pow_left' hyx _), Int.natCast_add,
       Int.natCast_pow]
     rw [← Int.natCast_dvd_natCast] at hx
     rw [← Int.natCast_dvd_natCast, Int.ofNat_sub hyx] at hxy
@@ -409,7 +407,7 @@ theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ}
 
 theorem pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) :
     padicValNat p (x ^ n + y ^ n) = padicValNat p (x + y) + padicValNat p n := by
-  cases' y with y
+  rcases y with - | y
   · contradiction
   rw [← Nat.cast_inj (R := ℕ∞), Nat.cast_add]
   iterate 3 rw [padicValNat_eq_emultiplicity]

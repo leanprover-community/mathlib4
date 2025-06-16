@@ -65,12 +65,8 @@ def Hom.opEquiv {V} [Quiver V] {X Y : V} :
     (X ⟶ Y) ≃ (Opposite.op Y ⟶ Opposite.op X) where
   toFun := Opposite.op
   invFun := Opposite.unop
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- A type synonym for a quiver with no arrows. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 def Empty (V : Type u) : Type u := V
 
 instance emptyQuiver (V : Type u) : Quiver.{u} (Empty V) := ⟨fun _ _ => PEmpty⟩
@@ -106,6 +102,37 @@ lemma homOfEq_injective {X X' Y Y' : V} (hX : X = X') (hY : Y = Y')
 
 @[simp]
 lemma homOfEq_rfl {X Y : V} (f : X ⟶ Y) : Quiver.homOfEq f rfl rfl = f := rfl
+
+lemma heq_of_homOfEq_ext {X Y X' Y' : V} (hX : X = X') (hY : Y = Y') {f : X ⟶ Y} {f' : X' ⟶ Y'}
+    (e : Quiver.homOfEq f hX hY = f') : HEq f f' := by
+  subst hX hY
+  rw [Quiver.homOfEq_rfl] at e
+  rw [e]
+
+lemma homOfEq_eq_iff {X X' Y Y' : V} (f : X ⟶ Y) (g : X' ⟶ Y')
+    (hX : X = X') (hY : Y = Y') :
+    Quiver.homOfEq f hX hY = g ↔ f = Quiver.homOfEq g hX.symm hY.symm := by
+  subst hX hY; simp
+
+lemma eq_homOfEq_iff {X X' Y Y' : V} (f : X ⟶ Y) (g : X' ⟶ Y')
+    (hX : X' = X) (hY : Y' = Y) :
+    f = Quiver.homOfEq g hX hY ↔ Quiver.homOfEq f hX.symm hY.symm = g := by
+  subst hX hY; simp
+
+lemma homOfEq_heq {X Y X' Y' : V} (hX : X = X') (hY : Y = Y') (f : X ⟶ Y) :
+    HEq (homOfEq f hX hY) f := by
+  cases hX; cases hY; rfl
+
+lemma homOfEq_heq_left_iff {X Y X' Y' : V} (f : X ⟶ Y) (g : X' ⟶ Y')
+    (hX : X = X') (hY : Y = Y') :
+    HEq (homOfEq f hX hY) g ↔ HEq f g := by
+  cases hX; cases hY; rfl
+
+lemma homOfEq_heq_right_iff {X Y X' Y' : V} (f : X ⟶ Y) (g : X' ⟶ Y')
+    (hX : X' = X) (hY : Y' = Y) :
+    HEq f (homOfEq g hX hY) ↔ HEq f g := by
+  cases hX; cases hY; rfl
+
 
 end
 

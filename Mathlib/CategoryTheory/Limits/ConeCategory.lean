@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Adjunction.Comma
-import Mathlib.CategoryTheory.Comma.Over
+import Mathlib.CategoryTheory.Comma.Over.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 
@@ -108,6 +108,7 @@ def Cone.mapConeToUnder {F : J ⥤ C} (c : Cone F) : (Under.forget c.pt).mapCone
 @[simps!]
 def Cone.fromStructuredArrow (F : C ⥤ D) {X : D} (G : J ⥤ StructuredArrow X F) :
     Cone (G ⋙ StructuredArrow.proj X F ⋙ F) where
+  pt := X
   π := { app := fun j => (G.obj j).hom }
 
 /-- Given a cone `c : Cone K` and a map `f : X ⟶ F.obj c.X`, we can construct a cone of structured
@@ -135,7 +136,6 @@ def Cone.fromCostructuredArrow (F : J ⥤ C) : CostructuredArrow (const J) F ⥤
     { hom := f.left
       w := fun j => by
         convert congr_fun (congr_arg NatTrans.app f.w) j
-        dsimp
         simp }
 
 /-- The category of cones on `F` is just the comma category `(Δ ↓ F)`, where `Δ` is the constant
@@ -267,6 +267,7 @@ def Cocone.mapCoconeToOver {F : J ⥤ C} (c : Cocone F) : (Over.forget c.pt).map
 @[simps!]
 def Cocone.fromCostructuredArrow (F : C ⥤ D) {X : D} (G : J ⥤ CostructuredArrow F X) :
     Cocone (G ⋙ CostructuredArrow.proj F X ⋙ F) where
+  pt := X
   ι := { app := fun j => (G.obj j).hom }
 
 /-- Given a cocone `c : Cocone K` and a map `f : F.obj c.X ⟶ X`, we can construct a cocone of
@@ -294,7 +295,6 @@ def Cocone.fromStructuredArrow (F : J ⥤ C) : StructuredArrow F (const J) ⥤ C
     { hom := f.right
       w := fun j => by
         convert (congr_fun (congr_arg NatTrans.app f.w) j).symm
-        dsimp
         simp }
 
 /-- The category of cocones on `F` is just the comma category `(F ↓ Δ)`, where `Δ` is the constant
