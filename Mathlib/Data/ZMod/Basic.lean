@@ -906,7 +906,8 @@ instance subsingleton_units : Subsingleton (ZMod 2)ˣ :=
   ⟨by decide⟩
 
 theorem coe_int_val_coe {n : ℕ} [NeZero n] (x : ℤ) :
-    ((x : ZMod n).val : ZMod n) = x := by simp
+    ((x : ZMod n).val : ZMod n) = x :=
+  natCast_zmod_val x
 
 @[simp]
 theorem add_self_eq_zero_iff_eq_zero {n : ℕ} (hn : Odd n) {a : ZMod n} :
