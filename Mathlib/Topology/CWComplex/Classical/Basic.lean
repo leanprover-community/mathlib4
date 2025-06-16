@@ -284,7 +284,7 @@ private lemma RelCWComplex.subset_of_eq_union_iUnion [RelCWComplex C D] (I J : �
     simp_rw [disjoint_union_right, disjoint_iUnion_right]
     exact ⟨disjointBase n i, fun m j ↦ disjoint_openCell_of_ne (by aesop)⟩
   rw [disjoint_of_subset_iff_left_eq_empty h] at h'
-  exact not_mem_empty _ (h' ▸ map_zero_mem_openCell n i)
+  exact notMem_empty _ (h' ▸ map_zero_mem_openCell n i)
 
 lemma RelCWComplex.eq_of_eq_union_iUnion [RelCWComplex C D] (I J : Π n, Set (cell C n))
     (hIJ : D ∪ ⋃ (n : ℕ) (j : I n), openCell (C := C) n j =
