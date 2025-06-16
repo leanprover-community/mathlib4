@@ -27,7 +27,6 @@ This is ultimately converted into a `Linexp` in the obvious way.
 `linearFormsAndMaxVar` is the main entry point into this file. Everything else is contained.
 -/
 
-open Mathlib.Ineq Batteries
 open Std (TreeMap)
 
 namespace Std.TreeMap

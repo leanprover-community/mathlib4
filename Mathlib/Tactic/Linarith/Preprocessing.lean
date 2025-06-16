@@ -93,7 +93,7 @@ end removeNegations
 
 section natToInt
 
-open Mathlib.Tactic.Zify
+open Zify
 
 /--
 `isNatProp tp` is true iff `tp` is an inequality or equality between natural numbers
