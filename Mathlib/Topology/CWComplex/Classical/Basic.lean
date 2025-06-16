@@ -225,7 +225,8 @@ lemma RelCWComplex.map_zero_mem_closedCell [RelCWComplex C D] (n : ℕ) (i : cel
 /-- This is an auxiliary lemma used to prove `RelCWComplex.eq_of_eq_union_iUnion`. -/
 private lemma RelCWComplex.subset_of_eq_union_iUnion [RelCWComplex C D] (I J : Π n, Set (cell C n))
     (hIJ : D ∪ ⋃ (n : ℕ) (j : I n), openCell (C := C) n j =
-      D ∪ ⋃ (n : ℕ) (j : J n), openCell (C := C) n j) (n : ℕ) : I n ⊆ J n := by
+      D ∪ ⋃ (n : ℕ) (j : J n), openCell (C := C) n j) (n : ℕ) :
+    I n ⊆ J n := by
   intro i hi
   by_contra hJ
   have h : openCell n i ⊆ D ∪ ⋃ n, ⋃ (j : J n), openCell (C := C) n j :=
@@ -239,14 +240,16 @@ private lemma RelCWComplex.subset_of_eq_union_iUnion [RelCWComplex C D] (I J : �
 
 lemma RelCWComplex.eq_of_eq_union_iUnion [RelCWComplex C D] (I J : Π n, Set (cell C n))
     (hIJ : D ∪ ⋃ (n : ℕ) (j : I n), openCell (C := C) n j =
-      D ∪ ⋃ (n : ℕ) (j : J n), openCell (C := C) n j) : I = J := by
+      D ∪ ⋃ (n : ℕ) (j : J n), openCell (C := C) n j) :
+    I = J := by
   ext n x
   exact ⟨fun h ↦ subset_of_eq_union_iUnion I J hIJ n h,
     fun h ↦ subset_of_eq_union_iUnion J I hIJ.symm n h⟩
 
 lemma CWComplex.eq_of_eq_union_iUnion [CWComplex C] (I J : Π n, Set (cell C n))
     (hIJ : ⋃ (n : ℕ) (j : I n), openCell (C := C) n j =
-      ⋃ (n : ℕ) (j : J n), openCell (C := C) n j) : I = J := by
+      ⋃ (n : ℕ) (j : J n), openCell (C := C) n j) :
+    I = J := by
   apply RelCWComplex.eq_of_eq_union_iUnion
   simp_rw [empty_union, hIJ]
 
