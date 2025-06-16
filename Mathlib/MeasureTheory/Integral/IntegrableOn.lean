@@ -590,6 +590,13 @@ theorem ContinuousOn.aemeasurable [TopologicalSpace α] [OpensMeasurableSpace α
   rw [piecewise_preimage, Set.ite, hu]
   exact (u_open.measurableSet.inter hs).union ((measurable_const ht.measurableSet).diff hs)
 
+theorem ContinuousOn.aemeasurable₀ [TopologicalSpace α] [OpensMeasurableSpace α] [MeasurableSpace β]
+    [TopologicalSpace β] [BorelSpace β] {f : α → β} {s : Set α} {μ : Measure α}
+    (hf : ContinuousOn f s) (hs : NullMeasurableSet s μ) : AEMeasurable f (μ.restrict s) := by
+  rcases hs.exists_measurable_subset_ae_eq with ⟨t, ts, ht, t_eq_s⟩
+  rw [← Measure.restrict_congr_set t_eq_s]
+  exact ContinuousOn.aemeasurable (hf.mono ts) ht
+
 /-- A function which is continuous on a separable set `s` is almost everywhere strongly measurable
 with respect to `μ.restrict s`. -/
 theorem ContinuousOn.aestronglyMeasurable_of_isSeparable [TopologicalSpace α]

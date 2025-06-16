@@ -763,6 +763,25 @@ theorem measurable_image_of_fderivWithin (hs : MeasurableSet s)
   haveI : DifferentiableOn ℝ f s := fun x hx => (hf' x hx).differentiableWithinAt
   hs.image_of_continuousOn_injOn (DifferentiableOn.continuousOn this) hf
 
+/-- If a function is differentiable and injective on a null measurable set,
+then the image is null measurable. -/
+theorem nullMeasurable_image_of_fderivWithin (hs : NullMeasurableSet s μ)
+    (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf : InjOn f s) :
+    NullMeasurableSet (f '' s) μ := by
+  rcases hs.exists_measurable_subset_ae_eq with ⟨t, ts, ht, t_eq_s⟩
+  have A : f '' s =ᵐ[μ] f '' t := by
+    have : s = t ∪ (s \ t) := by simp [union_eq_self_of_subset_left ts]
+    rw [this, image_union]
+    refine union_ae_eq_left_of_ae_eq_empty (ae_eq_empty.mpr ?_)
+    apply addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero _
+      (fun x hx ↦ ?_) (ae_eq_set.1 t_eq_s).2
+    exact (hf' x hx.1).differentiableWithinAt.mono diff_subset
+  apply NullMeasurableSet.congr _ A.symm
+  apply MeasurableSet.nullMeasurableSet
+  apply measurable_image_of_fderivWithin ht _ (hf.mono ts) (f' := f')
+  intro x hx
+  exact (hf' x (ts hx)).mono ts
+
 /-- If a function is differentiable and injective on a measurable set `s`, then its restriction
 to `s` is a measurable embedding. -/
 theorem measurableEmbedding_of_fderivWithin (hs : MeasurableSet s)
@@ -1082,28 +1101,55 @@ theorem lintegral_abs_det_fderiv_eq_addHaar_image (hs : MeasurableSet s)
     (addHaar_image_le_lintegral_abs_det_fderiv μ hs hf')
 
 /-- Change of variable formula for differentiable functions, set version: if a function `f` is
+injective and differentiable on a null measurable set `s`, then the measure of `f '' s` is given
+by the integral of `|(f' x).det|` on `s`.
+Note that the null-measurability of `f '' s` is given by `nullMeasurable_image_of_fderivWithin`. -/
+theorem lintegral_abs_det_fderiv_eq_addHaar_image₀ (hs : NullMeasurableSet s μ)
+    (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf : InjOn f s) :
+    (∫⁻ x in s, ENNReal.ofReal |(f' x).det| ∂μ) = μ (f '' s) := by
+  rcases hs.exists_measurable_subset_ae_eq with ⟨t, ts, ht, t_eq_s⟩
+  have A : μ (f '' s) = μ (f '' t) := by
+    apply measure_congr
+    have : s = t ∪ (s \ t) := by simp [union_eq_self_of_subset_left ts]
+    rw [this, image_union]
+    refine union_ae_eq_left_of_ae_eq_empty (ae_eq_empty.mpr ?_)
+    apply addHaar_image_eq_zero_of_differentiableOn_of_addHaar_eq_zero _
+      (fun x hx ↦ ?_) (ae_eq_set.1 t_eq_s).2
+    exact (hf' x hx.1).differentiableWithinAt.mono diff_subset
+  have B : (∫⁻ x in s, ENNReal.ofReal |(f' x).det| ∂μ)
+      = (∫⁻ x in t, ENNReal.ofReal |(f' x).det| ∂μ) :=
+    setLIntegral_congr t_eq_s.symm
+  rw [A, B, lintegral_abs_det_fderiv_eq_addHaar_image _ ht _ (hf.mono ts)]
+  intro x hx
+  exact (hf' x (ts hx)).mono ts
+
+/-- Change of variable formula for differentiable functions, set version: if a function `f` is
 injective and differentiable on a measurable set `s`, then the pushforward of the measure with
 density `|(f' x).det|` on `s` is the Lebesgue measure on the image set. This version requires
 that `f` is measurable, as otherwise `Measure.map f` is zero per our definitions.
 For a version without measurability assumption but dealing with the restricted
 function `s.restrict f`, see `restrict_map_withDensity_abs_det_fderiv_eq_addHaar`.
 -/
-theorem map_withDensity_abs_det_fderiv_eq_addHaar (hs : MeasurableSet s)
+theorem map_withDensity_abs_det_fderiv_eq_addHaar (hs : NullMeasurableSet s μ)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf : InjOn f s) :
     Measure.map f ((μ.restrict s).withDensity fun x => ENNReal.ofReal |(f' x).det|) =
       μ.restrict (f '' s) := by
   have h'f : AEMeasurable f (μ.restrict s) := by
-    apply ContinuousOn.aemeasurable (fun x hx ↦ ?_) hs
+    apply ContinuousOn.aemeasurable (fun x hx ↦ ?_)
     exact (hf' x hx).differentiableWithinAt.continuousWithinAt
   have h''f : AEMeasurable f ((μ.restrict s).withDensity fun x => ENNReal.ofReal |(f' x).det|) := by
     apply h'f.mono_ac
     exact withDensity_absolutelyContinuous _ _
   apply Measure.ext fun t ht => ?_
-  rw [map_apply_of_aemeasurable h''f ht, withDensity_apply₀ _ _, Measure.restrict_apply ht,
-    restrict_restrict _,
-    lintegral_abs_det_fderiv_eq_addHaar_image μ ((h'f ht).inter hs)
+  rw [map_apply_of_aemeasurable h''f ht, withDensity_apply₀ _ (h'f.nullMeasurableSet_preimage ht),
+    Measure.restrict_apply ht,
+    restrict_restrict₀ (h'f.nullMeasurableSet_preimage ht),
+    lintegral_abs_det_fderiv_eq_addHaar_image₀ μ _
       (fun x hx => (hf' x hx.2).mono inter_subset_right) (hf.mono inter_subset_right),
     image_preimage_inter]
+
+
+#exit
 
 /-- Change of variable formula for differentiable functions, set version: if a function `f` is
 injective and differentiable on a measurable set `s`, then the pushforward of the measure with
