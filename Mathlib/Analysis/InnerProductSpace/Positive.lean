@@ -206,6 +206,36 @@ end PartialOrder
 
 end ContinuousLinearMap
 
+/-- a self-adjoint idempotent operator is positive -/
+theorem IsIdempotentElem.isPositive_of_isSelfAdjoint [CompleteSpace E] {p : E →L[𝕜] E}
+  (hp : IsIdempotentElem p) (hpa : IsSelfAdjoint p) : p.IsPositive :=
+by
+  refine ⟨hpa, ?_⟩
+  rw [← hp.eq]
+  simp_rw [reApplyInnerSelf_apply, ContinuousLinearMap.mul_apply]
+  intro x
+  simp_rw [← ContinuousLinearMap.adjoint_inner_right _ _ x, isSelfAdjoint_iff'.mp hpa]
+  exact inner_self_nonneg
+
+/-- an idempotent operator is positive if and only if it is self-adjoint -/
+theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint [CompleteSpace E] {p : E →L[𝕜] E}
+  (hp : IsIdempotentElem p) : p.IsPositive ↔ IsSelfAdjoint p :=
+⟨fun h => h.1, fun h => hp.isPositive_of_isSelfAdjoint h⟩
+
+theorem orthogonalProjection_isIdempotentElem (U : Submodule 𝕜 E)
+  [U.HasOrthogonalProjection] :
+    IsIdempotentElem (U.subtypeL ∘L U.orthogonalProjection) :=
+by
+  ext
+  simp_rw [ContinuousLinearMap.mul_apply, ContinuousLinearMap.comp_apply, Submodule.subtypeL_apply,
+    Submodule.orthogonalProjection_mem_subspace_eq_self]
+
+theorem orthogonalProjection_isPositive [CompleteSpace E] {U : Submodule 𝕜 E}
+  [CompleteSpace U] :
+    (U.subtypeL ∘L U.orthogonalProjection).IsPositive :=
+(orthogonalProjection_isIdempotentElem U).isPositive_of_isSelfAdjoint
+  (orthogonalProjection_isSelfAdjoint U)
+
 namespace LinearMap
 
 variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
