@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan, David Renshaw
 -/
 import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Algebra.Order.Ring.Star
+import Mathlib.Algebra.Order.Star.Basic
+import Mathlib.Data.Int.NatAbs
 import Mathlib.Data.Nat.ModEq
 
 /-!
@@ -39,17 +40,6 @@ open Nat
 Although its domain is all of `ℕ`, we only care about its values in `Set.Ico 1 n`. -/
 def Condition (n j : ℕ) (C : ℕ → Fin 2) : Prop :=
   (∀ i ∈ Set.Ico 1 n, C i = C (n - i)) ∧ (∀ i ∈ Set.Ico 1 n, i ≠ j → C i = C (j - i : ℤ).natAbs)
-
-lemma Int.natAbs_sub_nat_of_lt {a b : ℕ} (h : b ≤ a) : (a - b : ℤ).natAbs = a - b := by
-  omega
-
-lemma Int.natAbs_sub_nat_of_gt {a b : ℕ} (h : a ≤ b) : (a - b : ℤ).natAbs = b - a := by
-  omega
-
-lemma Nat.mod_sub_comm {a b n : ℕ} (h : b ≤ a % n) : a % n - b = (a - b) % n := by
-  rcases n.eq_zero_or_pos with rfl | hn; · simp only [mod_zero]
-  nth_rw 2 [← div_add_mod a n]; rw [Nat.add_sub_assoc h, mul_add_mod]
-  exact (mod_eq_of_lt <| (sub_le ..).trans_lt (mod_lt a hn)).symm
 
 /-- For `1 ≤ k < n`, `k * j % n` has the same color as `j`. -/
 lemma C_mul_mod {n j : ℕ} (hn : 3 ≤ n) (hj : j ∈ Set.Ico 1 n) (cpj : Nat.Coprime n j)
