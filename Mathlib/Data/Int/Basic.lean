@@ -101,4 +101,14 @@ lemma eq_of_mod_eq_of_natAbs_sub_lt_natAbs {a b c : ℤ} (h1 : a % b = c)
 lemma natAbs_le_of_dvd_ne_zero (hmn : m ∣ n) (hn : n ≠ 0) : natAbs m ≤ natAbs n :=
   not_lt.mp (mt (eq_zero_of_dvd_of_natAbs_lt_natAbs hmn) hn)
 
+theorem gcd_rec (m n : ℤ) : m.gcd n = (n % m).gcd m := by
+  simp only [Int.gcd]
+  by_cases hm : m = 0
+  · simp only [hm, natAbs_zero, Nat.gcd_zero_left, emod_zero, Nat.gcd_zero_right]
+  rw [Int.natAbs_emod _ hm]
+  split_ifs with hn
+  · rw [← Nat.gcd_rec]
+  · rw [Nat.gcd_self_sub_left, Nat.gcd_rec]
+    exact le_of_lt (Nat.mod_lt _ (Int.natAbs_pos.mpr hm))
+
 end Int
