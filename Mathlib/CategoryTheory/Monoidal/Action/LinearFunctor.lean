@@ -8,14 +8,22 @@ import Mathlib.CategoryTheory.Monoidal.Action.Basic
 /-! # Functors that are linear with respect to an action
 
 Given a monoidal category `C` acting on the left or on the right on categories
-`D` and `D'`, we introduce the following typeclasses on functors `F : D ⥤ D` to
+`D` and `D'`, we introduce the following typeclasses on functors `F : D ⥤ D'` to
 express compatibility of `F` with the action of `C`:
-* `F.LaxLeftLinear C` bundles the "μₗ" as a morphism
-  `c ⊙ₗ F.obj d ⟶ F.obj (c ⊙ₗ d)`.
-* `F.LaxRightLinear` bundles the "μₗ" as a morphism
-  `F.obj d ⊙ᵣ c ⟶ F.obj (d ⊙ᵣ c)`.
-* `F.OplaxLeftLinear`.
-* `F.OplaxRightLinear`.
+* `F.LaxLeftLinear C` bundles the "lineator" as a morphism
+  `μₗ : c ⊙ₗ F.obj d ⟶ F.obj (c ⊙ₗ d)`.
+* `F.LaxRightLinear C` bundles the "lineator" as a morphism
+  `μᵣ : F.obj d ⊙ᵣ c ⟶ F.obj (d ⊙ᵣ c)`.
+* `F.OplaxLeftLinear C` bundles the "lineator" as a morphism
+  `δₗ : F.obj (c ⊙ₗ d) ⟶ c ⊙ₗ F.obj d `.
+* `F.OplaxRightLinear C` bundles the "lineator" as a morphism
+  `δᵣ : F.obj (d ⊙ᵣ d) ⟶ F.obj d ⊙ᵣ c`.
+* `F.LeftLinear C` expresses that `F` has both a `LaxLeftLinear C` and
+  an `F.OplaxLeftLinear C` structure, and that they are compatible, i.e
+  `δₗ F` is a left and right inverse to `μₗ`.
+* `F.RightLinear C` expresses that `F` has both a `LaxRightLinear C` and
+  an `F.OplaxRightLinear C` structure, and that they are compatible, i.e
+  `δᵣ F` is a left and right inverse to `μᵣ`.
 
 -/
 
