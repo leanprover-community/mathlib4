@@ -143,6 +143,12 @@ def tensorLeftIsoTensorRight (X : C) :
   hom := { app Y := (β_ X Y).hom }
   inv := { app Y := (β_ X Y).inv }
 
+variable (C) in
+/-- The braiding isomorphism as a natural isomorphism of bifunctors `C ⥤ C ⥤ C`. -/
+@[simps!]
+def curriedBraidingNatIso : curriedTensor C ≅ (curriedTensor C).flip :=
+  NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun Y ↦ β_ X Y))
+
 @[reassoc]
 theorem yang_baxter (X Y Z : C) :
     (α_ X Y Z).inv ≫ (β_ X Y).hom ▷ Z ≫ (α_ Y X Z).hom ≫
@@ -389,6 +395,17 @@ instance (F : C ⥤ D) (G : D ⥤ E) [F.LaxBraided] [G.LaxBraided] :
     slice_lhs 1 2 => rw [braided]
     simp only [Category.assoc]
 
+/--
+Given two lax monoidal, monoidally isomorphic functors, if one is lax braided, so is the other.
+-/
+def ofNatIso (F G : C ⥤ D) (i : F ≅ G) [F.LaxBraided] [G.LaxMonoidal]
+    [NatTrans.IsMonoidal i.hom]  : G.LaxBraided where
+  braided X Y := by
+    have (X Y : C) : μ G X Y = (i.inv.app X ⊗ i.inv.app Y) ≫ μ F X Y ≫ i.hom.app _ := by
+      simp [NatTrans.IsMonoidal.tensor X Y, ← tensor_comp_assoc]
+    rw [this X Y, this Y X, ← braiding_naturality_assoc, ← Functor.LaxBraided.braided_assoc]
+    simp
+
 end Functor.LaxBraided
 
 section
@@ -500,6 +517,15 @@ def symmetricCategoryOfFaithful {C D : Type*} [Category C] [Category D] [Monoida
     [MonoidalCategory D] [BraidedCategory C] [SymmetricCategory D] (F : C ⥤ D) [F.Braided]
     [F.Faithful] : SymmetricCategory C where
   symmetry X Y := F.map_injective (by simp)
+
+/-- Pull back a symmetric braiding along a fully faithful monoidal functor. -/
+noncomputable def symmetricCategoryOfFullyFaithful {C D : Type*} [Category C] [Category D]
+    [MonoidalCategory C] [MonoidalCategory D] (F : C ⥤ D) [F.Monoidal] [F.Full]
+    [F.Faithful] [SymmetricCategory D] : SymmetricCategory C :=
+  let h : BraidedCategory C := braidedCategoryOfFullyFaithful F
+  let _ : F.Braided := {
+    braided X Y := by simp [h, braidedCategoryOfFullyFaithful, braidedCategoryOfFaithful] }
+  symmetricCategoryOfFaithful F
 
 namespace Functor.Braided
 
