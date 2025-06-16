@@ -559,14 +559,15 @@ theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) :
     rw [PadicSeq.norm, dif_pos h] at hge
     exact not_lt_of_ge hge hε
   unfold PadicSeq.norm at hge; split_ifs at hge
-  apply not_le_of_gt _ hge
-  cases _root_.le_total N (stationaryPoint hne) with
-  | inl hgen =>
-    exact hN _ hgen _ hi
-  | inr hngen =>
-    have := stationaryPoint_spec hne le_rfl hngen
-    rw [← this]
-    exact hN _ le_rfl _ hi
+  · exact not_le_of_gt hε hge
+  · apply not_le_of_gt _ hge
+    cases _root_.le_total N (stationaryPoint hne) with
+    | inl hgen =>
+      exact hN _ hgen _ hi
+    | inr hngen =>
+      have := stationaryPoint_spec hne le_rfl hngen
+      rw [← this]
+      exact hN _ le_rfl _ hi
 
 /-- Theorems about `padicNormE` are named with a `'` so the names do not conflict with the
 equivalent theorems about `norm` (`‖ ‖`). -/

@@ -180,7 +180,7 @@ variable {f : k → E} {a b r : k}
 local notation "c" => lineMap a b r
 
 section
-omit [IsStrictOrderedRing k]
+omit [IsOrderedRing k]
 
 /-- Given `c = lineMap a b r`, `a < c`, the point `(c, f c)` is non-strictly below the
 segment `[(a, f a), (b, f b)]` if and only if `slope f a c ≤ slope f a b`. -/
