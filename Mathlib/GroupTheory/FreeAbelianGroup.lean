@@ -551,7 +551,7 @@ instance pemptyUnique : Unique (FreeAbelianGroup PEmpty) where
     rfl)
 
 /-- The free abelian group on a type with one term is isomorphic to `ℤ`. -/
-def punitEquiv (T : Type*) [Unique T] : FreeAbelianGroup T ≃+ ℤ where
+def uniqueEquiv (T : Type*) [Unique T] : FreeAbelianGroup T ≃+ ℤ where
   toFun := FreeAbelianGroup.lift fun _ ↦ (1 : ℤ)
   invFun n := n • of Inhabited.default
   left_inv z := FreeAbelianGroup.induction_on z
