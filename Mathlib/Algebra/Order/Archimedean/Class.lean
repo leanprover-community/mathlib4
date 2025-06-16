@@ -13,7 +13,7 @@ import Mathlib.Order.Antisymmetrization
 # Archimedean classes of a linearly ordered group
 
 This file defines archimedean classes of a given linearly ordered group. Archimedean classes
-measure to what extent the group fails to be Archimedean. For additive group, elements `a` and `b`.
+measure to what extent the group fails to be Archimedean. For additive group, elements `a` and `b`
 in the same class are "equivalent" in the sense that there exist two natural numbers
 `m` and `n` such that `|a| ≤ m • |b|` and `|b| ≤ n • |a|`. An element `a` in a higher class than `b`
 is "infinitesimal" to `b` in the sense that `n • |a| < |b|` for all natural number `n`.
@@ -63,11 +63,17 @@ namespace MulArchimedeanOrder
 
 /-- Create a `MulArchimedeanOrder` element from the underlying type. -/
 @[to_additive "Create a `ArchimedeanOrder` element from the underlying type."]
-def of (a : M) : MulArchimedeanOrder M := a
+def of : M ≃ MulArchimedeanOrder M := Equiv.refl _
 
 /-- Retrieve the underlying value from a `MulArchimedeanOrder` element. -/
 @[to_additive "Retrieve the underlying value from a `ArchimedeanOrder` element."]
-def val (a : MulArchimedeanOrder M) : M := a
+def val : MulArchimedeanOrder M ≃ M := Equiv.refl _
+
+@[to_additive (attr := simp)]
+theorem of_symm_eq : (of (M := M)).symm = val := rfl
+
+@[to_additive (attr := simp)]
+theorem val_symm_eq : (val (M := M)).symm = of := rfl
 
 @[to_additive (attr := simp)]
 theorem of_val (a : MulArchimedeanOrder M) : of (val a) = a := rfl
@@ -201,8 +207,10 @@ theorem mk_le_mk : mk a ≤ mk b ↔ ∃ n, |b|ₘ ≤ |a|ₘ ^ n := .rfl
 @[to_additive]
 theorem mk_lt_mk : mk a < mk b ↔ ∀ n, |b|ₘ ^ n < |a|ₘ := .rfl
 
-/-- 1 is in its own class, which is also the largest class. -/
-@[to_additive "0 is in its own class, which is also the largest class."]
+/-- 1 is in its own class (see `MulArchimedeanClass.mk_eq_top_iff`),
+which is also the largest class. -/
+@[to_additive "0 is in its own class (see `ArchimedeanClass.mk_eq_top_iff`),
+which is also the largest class."]
 noncomputable
 instance : OrderTop (MulArchimedeanClass M) where
   top := mk 1
