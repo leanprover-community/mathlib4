@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Joël Riou
 -/
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.RepresentationTheory.GroupCohomology.Basic
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
 import Mathlib.RepresentationTheory.Invariants
 
 /-!
@@ -13,10 +13,11 @@ import Mathlib.RepresentationTheory.Invariants
 Let `k` be a commutative ring and `G` a group. This file contains specialised API for
 the cocycles and group cohomology of a `k`-linear `G`-representation `A` in degrees 0, 1 and 2.
 
-In `RepresentationTheory.GroupCohomology.Basic`, we define the `n`th group cohomology of `A` to be
-the cohomology of a complex `inhomogeneousCochains A`, whose objects are `(Fin n → G) → A`; this is
-unnecessarily unwieldy in low degree. Here, meanwhile, we define the one and two cocycles and
-coboundaries as submodules of `Fun(G, A)` and `Fun(G × G, A)`, and provide maps to `H1` and `H2`.
+In `RepresentationTheory/Homological/GroupCohomology/Basic.lean`, we define the `n`th group
+cohomology of `A` to be the cohomology of a complex `inhomogeneousCochains A`, whose objects are
+`(Fin n → G) → A`; this is unnecessarily unwieldy in low degree. Here, meanwhile, we define the one
+and two cocycles and coboundaries as submodules of `Fun(G, A)` and `Fun(G × G, A)`, and provide
+maps to `H1` and `H2`.
 
 We also show that when the representation on `A` is trivial, `H¹(G, A) ≃ Hom(G, A)`.
 
@@ -28,8 +29,8 @@ multiplicative case, starting with the section `IsMulCocycle`, just mirrors the 
 unfortunately `@[to_additive]` can't deal with scalar actions.
 
 The file also contains an identification between the definitions in
-`RepresentationTheory/GroupCohomology/Basic.lean`, `groupCohomology.cocycles A n`, and the
-`nCocycles` in this file, for `n = 0, 1, 2`.
+`RepresentationTheory/Homological/GroupCohomology/Basic.lean`, `groupCohomology.cocycles A n`, and
+the `nCocycles` in this file, for `n = 0, 1, 2`.
 
 ## Main definitions
 
