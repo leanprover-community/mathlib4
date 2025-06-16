@@ -85,7 +85,7 @@ scoped infixr:81 " ⊴ₗ " => MonoidalLeftActionStruct.actionHomRight
 
 /-- Notation for `actionHom`, the bifunctorial action of morphisms in `C` and
 `D` on `- ⊙ₗ -`. -/
-scoped infixr:70 " ⊙ₗ " => MonoidalLeftActionStruct.actionHom
+scoped infixr:70 " ⊙ₗₘ " => MonoidalLeftActionStruct.actionHom
 
 /-- Notation for `actionAssocIso`, the structural isomorphism
 `- ⊗ - ⊙ₗ - ≅ - ⊙ₗ - ⊙ₗ -`. -/
@@ -117,19 +117,19 @@ the associator and unitor isomorphisms in `C`. -/
 class MonoidalLeftAction [MonoidalCategory C] extends
     MonoidalLeftActionStruct C D where
   actionHom_def {c c' : C} {d d' : D} (f : c ⟶ c') (g : d ⟶ d') :
-      f ⊙ₗ g = f ⊵ₗ d ≫ c' ⊴ₗ g := by
+      f ⊙ₗₘ g = f ⊵ₗ d ≫ c' ⊴ₗ g := by
     aesop_cat
   actionHomRight_id (c : C) (d : D) : c ⊴ₗ 𝟙 d = 𝟙 (c ⊙ₗ d) := by aesop_cat
   id_actionHomLeft (c : C) (d : D) : 𝟙 c ⊵ₗ d = 𝟙 (c ⊙ₗ d) := by aesop_cat
   actionHom_comp
       {c c' c'' : C} {d d' d'' : D} (f₁ : c ⟶ c') (f₂ : c' ⟶ c'')
       (g₁ : d ⟶ d') (g₂ : d' ⟶ d'') :
-      (f₁ ≫ f₂) ⊙ₗ (g₁ ≫ g₂) = (f₁ ⊙ₗ g₁) ≫ (f₂ ⊙ₗ g₂) := by
+      (f₁ ≫ f₂) ⊙ₗₘ (g₁ ≫ g₂) = (f₁ ⊙ₗₘ g₁) ≫ (f₂ ⊙ₗₘ g₂) := by
     aesop_cat
   actionAssocIso_hom_naturality
       {c₁ c₂ c₃ c₄ : C} {d₁ d₂ : D} (f : c₁ ⟶ c₂) (g : c₃ ⟶ c₄) (h : d₁ ⟶ d₂) :
-      ((f ⊗ g) ⊙ₗ h) ≫ (αₗ c₂ c₄ d₂).hom =
-        (αₗ c₁ c₃ d₁).hom ≫ (f ⊙ₗ g ⊙ₗ h) := by
+      ((f ⊗ g) ⊙ₗₘ h) ≫ (αₗ c₂ c₄ d₂).hom =
+        (αₗ c₁ c₃ d₁).hom ≫ (f ⊙ₗₘ g ⊙ₗₘ h) := by
     aesop_cat
   actionUnitIso_hom_naturality {d d' : D} (f : d ⟶ d') :
       (λₗ d).hom ≫ f = (𝟙_ C) ⊴ₗ f ≫ (λₗ d').hom := by
@@ -185,12 +185,12 @@ variable {C D} [MonoidalCategory C] [MonoidalLeftAction C D]
 
 @[simp]
 lemma id_actionHom (c : C) {d d' : D} (f : d ⟶ d') :
-    (𝟙 c) ⊙ₗ f = c ⊴ₗ f := by
+    (𝟙 c) ⊙ₗₘ f = c ⊴ₗ f := by
   simp [actionHom_def]
 
 @[simp]
 lemma actionHom_id {c c' : C} (f : c ⟶ c') (d : D) :
-    f ⊙ₗ (𝟙 d) = f ⊵ₗ d := by
+    f ⊙ₗₘ (𝟙 d) = f ⊵ₗ d := by
   simp [actionHom_def]
 
 @[reassoc, simp]
@@ -228,14 +228,14 @@ theorem action_exchange {w x : C} {y z : D} (f : w ⟶ x) (g : y ⟶ z) :
 
 @[reassoc]
 theorem actionHom_def' {x₁ y₁ : C} {x₂ y₂ : D} (f : x₁ ⟶ y₁) (g : x₂ ⟶ y₂) :
-    f ⊙ₗ g = x₁ ⊴ₗ g ≫ f ⊵ₗ y₂ :=
+    f ⊙ₗₘ g = x₁ ⊴ₗ g ≫ f ⊵ₗ y₂ :=
   action_exchange f g ▸ actionHom_def f g
 
 @[reassoc]
 theorem actionAssocIso_inv_naturality
     {c₁ c₂ c₃ c₄ : C} {d₁ d₂ : D} (f : c₁ ⟶ c₂) (g : c₃ ⟶ c₄) (h : d₁ ⟶ d₂) :
-    (f ⊙ₗ g ⊙ₗ h) ≫ (αₗ c₂ c₄ d₂).inv =
-    (αₗ c₁ c₃ d₁).inv ≫ ((f ⊗ g) ⊙ₗ h) := by
+    (f ⊙ₗₘ g ⊙ₗₘ h) ≫ (αₗ c₂ c₄ d₂).inv =
+    (αₗ c₁ c₃ d₁).inv ≫ ((f ⊗ g) ⊙ₗₘ h) := by
   rw [Iso.comp_inv_eq, Category.assoc, Eq.comm, Iso.inv_comp_eq, actionAssocIso_hom_naturality]
 
 @[reassoc]
@@ -293,8 +293,8 @@ instance isIso_actionHomLeft {x y : C} (f : x ⟶ y) [IsIso f] (z : D) :
 
 instance isIso_actionHom {x y : C} {x' y' : D}
     (f : x ⟶ y) (g : x' ⟶ y') [IsIso f] [IsIso g] :
-    IsIso (f ⊙ₗ g) :=
-  ⟨(inv f) ⊙ₗ (inv g), by simp [← actionHom_comp]⟩
+    IsIso (f ⊙ₗₘ g) :=
+  ⟨(inv f) ⊙ₗₘ (inv g), by simp [← actionHom_comp]⟩
 
 @[simp]
 lemma inv_actionHomLeft {x y : C} (f : x ⟶ y) [IsIso f] (z : D) :
@@ -309,7 +309,7 @@ lemma inv_actionHomRight (x : C) {y z : D} (f : y ⟶ z) [IsIso f] :
 @[simp]
 lemma inv_actionHom {x y : C} {x' y' : D}
     (f : x ⟶ y) (g : x' ⟶ y') [IsIso f] [IsIso g] :
-    inv (f ⊙ₗ g) = (inv f) ⊙ₗ (inv g) :=
+    inv (f ⊙ₗₘ g) = (inv f) ⊙ₗₘ (inv g) :=
   IsIso.inv_eq_of_hom_inv_id <| by simp [← actionHom_comp]
 
 section
