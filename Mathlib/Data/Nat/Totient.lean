@@ -239,6 +239,11 @@ theorem prime_iff_card_units (p : ℕ) [Fintype (ZMod p)ˣ] :
 theorem totient_two : φ 2 = 1 :=
   (totient_prime prime_two).trans rfl
 
+/-- Euler's totient function is only odd at `1` or `2`. -/
+theorem odd_totient_iff {n : ℕ} :
+    Odd (φ n) ↔ n = 1 ∨ n = 2 := by
+  rcases n with _ | _ | _ | _ <;> simp [Nat.totient_even]
+
 theorem totient_eq_one_iff : ∀ {n : ℕ}, n.totient = 1 ↔ n = 1 ∨ n = 2
   | 0 => by simp
   | 1 => by simp
@@ -250,6 +255,24 @@ theorem totient_eq_one_iff : ∀ {n : ℕ}, n.totient = 1 ↔ n = 1 ∨ n = 2
 
 theorem dvd_two_of_totient_le_one {a : ℕ} (han : 0 < a) (ha : a.totient ≤ 1) : a ∣ 2 := by
   rcases totient_eq_one_iff.mp <| le_antisymm ha <| totient_pos.2 han with rfl | rfl <;> norm_num
+
+theorem odd_totient_iff_eq_one {n : ℕ} :
+    Odd (φ n) ↔ φ n = 1 := by
+  simp [Nat.odd_totient_iff, Nat.totient_eq_one_iff]
+
+/-- `Nat.totient m` and `Nat.totient n` are coprime iff one of them is 1. -/
+theorem totient_coprime_totient_iff (m n : ℕ) :
+    (φ m).Coprime (φ n) ↔ (m = 1 ∨ m = 2) ∨ (n = 1 ∨ n = 2) := by
+  by_cases hm : Odd (φ m)
+  · rw [Nat.odd_totient_iff] at hm
+    simp [hm, Nat.totient_eq_one_iff.mpr hm]
+  by_cases hn : Odd (φ n)
+  · rw [odd_totient_iff] at hn
+    simp [hn, totient_eq_one_iff.mpr hn]
+  · simp only [← Nat.odd_totient_iff, hm, hn]
+    rw [Nat.not_odd_iff_even, even_iff_two_dvd] at hm hn
+    simp only [or_self, iff_false, ne_eq, Prime.not_coprime_iff_dvd]
+    exact ⟨2, prime_two, hm, hn⟩
 
 /-! ### Euler's product formula for the totient function
 
