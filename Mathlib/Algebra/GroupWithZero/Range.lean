@@ -66,30 +66,19 @@ lemma mem_valueMonoid_iff (b : Bˣ) : b ∈ valueMonoid f ↔ b ∈ (↑)⁻¹' 
 lemma valueMonoid_eq_closure : valueMonoid f = Submonoid.closure ((↑)⁻¹' (range f)) :=
   (valueMonoid f).closure_eq.symm
 
-/-- For a morphism of monoids with zero `f`, this is a smallest subgroup of the invertible
+/-- For a morphism of monoids with zero `f`, this is the smallest subgroup of the invertible
 elements in the codomain containing the range of `f`. -/
 def valueGroup : Subgroup Bˣ := closure (valueMonoid f)
 
 lemma valueGroup_def : valueGroup f = Subgroup.closure (valueMonoid f) := rfl
 
-/-- For a morphism of monoids with zero `f`, this is a smallest submonoid with zero of the
+/-- For a morphism of monoids with zero `f`, this is the smallest submonoid with zero of the
 codomain containing the range of `f`. -/
 abbrev valueMonoid₀ := WithZero (valueMonoid f)
 
 /-- For a morphism of monoids with zero `f`, this is a smallest subgroup with zero of the
 codomain containing the range of `f`. -/
 abbrev valueGroup₀ := WithZero (valueGroup f)
-
--- instance : CoeOut (valueGroup₀ f) B :=
---   ⟨fun x ↦ match x with | 0 => 0 | some b => b.1⟩
---
--- lemma coe_ne_zero [Nontrivial B] {x : valueGroup₀ f} (hx : x ≠ 0) : (↑x : B) ≠ 0 := by
---   obtain ⟨b, hb⟩ := Option.ne_none_iff_exists'.mp hx
---   simp [hb]
-
-instance : MonoidWithZero (valueMonoid₀ f) := inferInstance
-
-instance : GroupWithZero (valueGroup₀ f) := inferInstance
 
 lemma mem_valueMonoid
     {b : Bˣ} (hb : b.1 ∈ range f) : b ∈ valueMonoid f := by
@@ -110,68 +99,40 @@ end MonoidWithZero
 
 noncomputable section GroupWithZero
 
-variable [GroupWithZero B]
---
--- open WithZero in
--- def toValueGroup₀ [MonoidWithZero A] [MonoidWithZeroHomClass F A B] (f : F)
---     [DecidableEq B] : range f → valueGroup₀ f := by
---   rintro ⟨b, hb⟩
---   by_cases hb₀ : b = 0
---   · use 0
---   · use coe ⟨(Ne.isUnit hb₀).unit, mem_valueGroup f hb⟩
-
-variable [GroupWithZero A] [MonoidWithZeroHomClass F A B] {f}
+variable [GroupWithZero A]  [GroupWithZero B] [MonoidWithZeroHomClass F A B] {f}
 
 /- When the *domain* is itself a group with zero, the `valueMonoid` and the `valueGroup` coincide.-/
 lemma valueMonoid_eq_valueGroup : (valueMonoid f) = (valueGroup f).toSubmonoid := by
-  simp [valueGroup]
-  rw [Subgroup.closure_toSubmonoid]
-  rw [Eq.comm]
+  rw [valueGroup_def, Subgroup.closure_toSubmonoid, Eq.comm]
   apply Submonoid.closure_eq_of_le
-  · simp only [union_subset_iff, subset_refl, true_and, valueMonoid]
-    intro x ⟨y, hy⟩
-    simp at hy
+  · simp only [union_subset_iff, subset_refl, true_and]
+    intro _ ⟨y, hy⟩
     use y⁻¹
-    simp only [MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_comp, MonoidHom.coe_coe,
-      Function.comp_apply, map_inv₀]
-    rw [hy]
-    simp
-  · rw [Submonoid.closure_union]
-    simp
+    simp [hy]
+  · simp [Submonoid.closure_union]
 
+variable (f) in
 lemma valueMonoid_eq_valueGroup' : ((valueMonoid f) : Set Bˣ) = valueGroup f := by
-  rw [valueMonoid_eq_valueGroup]
-  rfl
+  rw [valueMonoid_eq_valueGroup, coe_toSubmonoid]
 
 lemma valueGroup_eq_range : Units.val '' (valueGroup f) = (range f \ {0}) := by
   ext x
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [← valueMonoid_eq_valueGroup'] at h
-    obtain ⟨y, ⟨hy, rfl⟩⟩  := h
-    simp only [Subgroup.coe_toSubmonoid, Subgroup.closure_eq, SetLike.mem_coe] at hy
-    simp
-    simp [valueMonoid] at hy
-    obtain ⟨a, ha⟩ := hy
+  · obtain ⟨y, ⟨hy, rfl⟩⟩ := h
+    simp only [mem_diff, mem_range, mem_singleton_iff, Units.ne_zero, not_false_eq_true, and_true]
+    obtain ⟨a, _⟩ := (valueMonoid_eq_valueGroup' f).symm ▸ hy
     use a
-  · rw [← valueMonoid_eq_valueGroup']
-    simp only [mem_diff, mem_range, mem_singleton_iff] at h
+  · simp only [mem_diff, mem_range, mem_singleton_iff] at h
     obtain ⟨⟨y, hy⟩, hx₀⟩ := h
     set u : Bˣ := Units.mk0 x hx₀ with hu
-    simp
-    use u
-    constructor
-    · apply mem_valueMonoid
-      rw [hu]
-      simp
-      use y
-    · rfl
+    refine ⟨u, ?_, rfl⟩
+    simpa [← valueMonoid_eq_valueGroup', hu, Units.val_mk0, mem_range] using ⟨y, hy⟩
 
 
 end GroupWithZero
 section CommGroupWithZero
 --
 variable [MonoidWithZero A] [CommGroupWithZero B] [MonoidWithZeroHomClass F A B]
-
 
 theorem mem_valueGroup_iff_of_comm (y : Bˣ) :
     y ∈ (valueGroup f) ↔ ∃ a, f a ≠ 0 ∧ ∃ x, f a * y = f x := by
@@ -191,37 +152,18 @@ theorem mem_valueGroup_iff_of_comm (y : Bˣ) :
       obtain ⟨u, hu, ⟨a, ha⟩⟩ := hcy
       exact ⟨a, by simp [← ha, hu], u, by simp [← ha]⟩
   · have hv : f x ≠ 0 := by
-      rw [← hy]
-      simp [ha]
+      simp only [← hy, ne_eq, mul_eq_zero, ha, Units.ne_zero, or_self, not_false_eq_true]
     let v := (Ne.isUnit hv).unit
     have hv₀ : f x = ↑v := rfl
-    rw [hv₀] at hy
     let u := (Ne.isUnit ha).unit
     have ha₀ : f a = ↑u := rfl
-    rw [ha₀] at hy
-    norm_cast at hy
-    rw [Eq.comm, ← inv_mul_eq_iff_eq_mul] at hy
+    rw_mod_cast [hv₀, ha₀, Eq.comm, ← inv_mul_eq_iff_eq_mul] at hy
     rw [← hy]
     apply Subgroup.mul_mem
     · apply inv_mem_valueGroup
       use a
     · apply mem_valueGroup
       use x
-
-
--- theorem mem_valueGroup₀_iff_of_comm (y : B) :
---     y ∈ range ((↑) : valueGroup₀ f → _) ↔ ∃ a, f a ≠ 0 ∧ ∃ x, f a * y = f x := by
---   by_cases hy : y ≠ 0
---   · refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
---     · obtain ⟨u, hu⟩ := h
---       replace hu : u ≠ 0 := sorry
---       have := coe_ne_zero f hu
---       have mm := (mem_valueGroup_iff_of_comm f)
-
-
-
-
-
 
 instance : CommGroupWithZero (valueGroup₀ f) where
   toGroupWithZero := inferInstance
