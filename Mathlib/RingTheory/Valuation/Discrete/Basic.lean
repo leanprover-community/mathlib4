@@ -33,7 +33,7 @@ namespace Valuation
 
 open Set LinearOrderedCommGroup MonoidHomWithZero
 
-variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ] [IsCyclic Γˣ] [Nontrivial Γˣ]
+variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ]
 
 variable {A : Type*} [Ring A] (v : Valuation A Γ)
 
@@ -42,24 +42,27 @@ nontrivial cyclic, a valuation `v : A → Γ` on a ring `A` is *discrete*, if
 `genLTOne Γˣ` belongs to the image. Note that the latter is equivalent to
 asking that `1 : ℤ` belongs to the image of the corresponding additive valuation. -/
 class IsDiscrete : Prop where
-  valueGroup_eq_zpowers : Subgroup.zpowers (genLTOne Γˣ) = (valueGroup v)
+  exists_generator_lt_one' : ∃ (γ : Γˣ), Subgroup.zpowers γ = (valueGroup v) ∧ γ < 1
 
 namespace IsDiscrete
 
 lemma exists_generator_lt_one [IsDiscrete v] :
     ∃ (γ : Γˣ), Subgroup.zpowers γ = valueGroup v ∧ γ < 1 :=
-  ⟨_, valueGroup_eq_zpowers, Subgroup.genLTOne_lt_one ..⟩
+  exists_generator_lt_one'
 
 /-- Given a discrete valuation `v`, `Valuation.IsDiscrete.generator` is a generator of the value
-group that is `< 1`: by definition, it coincides with `genLTOne Γˣ`. -/
-@[nolint unusedArguments]
-noncomputable abbrev generator [IsDiscrete v] : Γˣ := genLTOne Γˣ
+group that is `< 1`. -/
+noncomputable def generator [IsDiscrete v] : Γˣ := (exists_generator_lt_one v).choose
 
 lemma generator_zpowers_eq_valueGroup [IsDiscrete v] :
-    (Subgroup.zpowers (generator v)) = valueGroup v := valueGroup_eq_zpowers
+    (Subgroup.zpowers (generator v)) = valueGroup v :=
+  (exists_generator_lt_one v).choose_spec.1
 
 lemma generator_lt_one [IsDiscrete v] : (generator v) < 1 :=
-  Subgroup.genLTOne_lt_one ..
+  (exists_generator_lt_one v).choose_spec.2
+
+lemma generator_ne_one [IsDiscrete v] : (generator v) ≠ 1 :=
+  ne_of_lt <| generator_lt_one v
 
 lemma generator_zpowers_eq_range (K : Type*) [Field K] (w : Valuation K Γ) [IsDiscrete w] :
     Units.val '' (Subgroup.zpowers (generator w)) = range w \ {0} := by
@@ -72,6 +75,22 @@ lemma generator_mem_range (K : Type*) [Field K] (w : Valuation K Γ) [IsDiscrete
   exact ⟨generator w, by simp⟩
 
 lemma generator_ne_zero [IsDiscrete v] : (generator v : Γ) ≠ 0 := by simp
+
+lemma valueGroup_IsCyclic [IsDiscrete v] :
+    IsCyclic <| valueGroup v := by
+  rw [isCyclic_iff_exists_zpowers_eq_top, ← generator_zpowers_eq_valueGroup]
+  let η : Subgroup.zpowers (generator v) := ⟨generator v, by simp⟩
+  use η
+  rw [eq_top_iff]
+  rintro ⟨g, ⟨k, hk⟩⟩
+  simp only [Subgroup.mem_top, forall_const]
+  use k
+  ext
+  simp only [SubgroupClass.coe_zpow, ← hk]
+  rw [Units.val_zpow_eq_zpow_val]
+
+instance [IsDiscrete v] : Nontrivial (valueGroup v) :=
+  ⟨1, ⟨generator v, by simp [← generator_zpowers_eq_valueGroup]⟩, ne_of_gt <| generator_lt_one v⟩
 
 end IsDiscrete
 
