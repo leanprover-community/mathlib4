@@ -181,7 +181,7 @@ theorem abs_pow_sub_pow_le : |a ^ n - b ^ n| ≤ |a - b| * n * max |a| |b| ^ (n 
   rw [Nat.add_sub_cancel, pow_sub_pow_eq_sub_mul_geomSum, abs_mul, mul_assoc, Nat.cast_succ]
   gcongr
   · exact abs_nonneg _
-  exact abs_geomSum_le ..
+  · exact abs_geomSum_le ..
 
 end LinearOrderedCommRing
 
