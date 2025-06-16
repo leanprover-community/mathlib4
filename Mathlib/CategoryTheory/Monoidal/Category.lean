@@ -118,6 +118,8 @@ scoped infixl:81 " ▷ " => MonoidalCategoryStruct.whiskerRight
 
 /-- Notation for `tensorHom`, the tensor product of morphisms in a monoidal category -/
 scoped infixr:70 " ⊗ₘ " => MonoidalCategoryStruct.tensorHom
+-- TODO: Try setting this notation to `⊗` if the elaborator is improved and performs
+-- better than currently on overloaded notations.
 
 /-- Notation for `tensorUnit`, the two-sided identity of `⊗` -/
 scoped notation "𝟙_ " C:arg => MonoidalCategoryStruct.tensorUnit C
@@ -384,6 +386,8 @@ def tensorIso {X Y X' Y' : C} (f : X ≅ Y)
 
 /-- Notation for `tensorIso`, the tensor product of isomorphisms -/
 scoped infixr:70 " ⊗ᵢ " => tensorIso
+-- TODO: Try setting this notation to `⊗` if the elaborator is improved and performs
+-- better than currently on overloaded notations.
 
 theorem tensorIso_def {X Y X' Y' : C} (f : X ≅ Y) (g : X' ≅ Y') :
     f ⊗ᵢ g = whiskerRightIso f X' ≪≫ whiskerLeftIso Y g :=
