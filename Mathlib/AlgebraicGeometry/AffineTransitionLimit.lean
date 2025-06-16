@@ -195,6 +195,7 @@ section
 variable [∀ i, CompactSpace (D.obj i)] [LocallyOfFiniteType f] [IsCofiltered I]
 
 include hc in
+/-- Subsumed by `Scheme.exists_ge_ge_comp_eq_comp_of_locallyOfFiniteType`. -/
 private nonrec lemma Scheme.exists_ge_ge_comp_eq_comp_of_isAffine_of_locallyOfFiniteType
     [IsAffine S] [IsAffine X] [∀ i, IsAffine (D.obj i)] [IsAffine c.pt]
     {i : I} (a : D.obj i ⟶ X) (ha : t.app i = a ≫ f)
