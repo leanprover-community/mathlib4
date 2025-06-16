@@ -7,6 +7,7 @@ import Mathlib.Algebra.GroupWithZero.Idempotent
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Order.Notation
 import Mathlib.Tactic.Convert
+import Mathlib.Algebra.Group.Torsion
 
 /-!
 # Idempotent elements of a ring
@@ -76,3 +77,39 @@ lemma add_sub_mul (hp : IsIdempotentElem a) (hq : IsIdempotentElem b) :
 
 end CommRing
 end IsIdempotentElem
+
+lemma isIdempotentElem_sub_of {H : Type*} [NonAssocRing H] {p q : H}
+  (hp : IsIdempotentElem p) (hq : IsIdempotentElem q)
+  (hpq : p * q = p) (hqp : q * p = p) :
+    IsIdempotentElem (q - p) :=
+by simp_rw [IsIdempotentElem, sub_mul, mul_sub, hpq, hqp, hp.eq, hq.eq, sub_self, sub_zero]
+
+lemma commutes_of_isIdempotentElem_sub
+  {H : Type*} [Ring H] [IsAddTorsionFree H] {p q : H}
+  (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) (hqp : IsIdempotentElem (q - p)) :
+    p * q = p ∧ q * p = p :=
+by
+  simp_rw [IsIdempotentElem, mul_sub, sub_mul,
+    hp.eq, hq.eq, ← sub_add_eq_sub_sub, sub_right_inj, add_sub] at hqp
+  have h' : ((2 : ℕ) • p : H) = q * p + p * q := by
+    simp_rw [two_nsmul]
+    calc p + p = p + (p * q + q * p - p) := by rw [hqp]
+      _ = q * p + p * q := by simp_rw [add_sub_cancel, add_comm]
+  have H : ((2 : ℕ) • p) * q = q * (p * q) + p * q := by
+    simp_rw [h', add_mul, mul_assoc, hq.eq]
+  simp_rw [add_comm, two_nsmul, add_mul, add_right_inj] at H
+  have H' : q * ((2 : ℕ) • p) = q * p + q * (p * q) := by
+    simp_rw [h', mul_add, ← mul_assoc, hq.eq]
+  simp_rw [two_nsmul, mul_add, add_right_inj] at H'
+  have H'' : q * p = p * q := by
+    simp_rw [H']
+    exact H.symm
+  rw [← H'', and_self_iff]
+  rw [← H'', ← two_nsmul, nsmul_right_inj (Nat.zero_ne_add_one 1).symm] at h'
+  exact h'.symm
+
+theorem isIdempotentElem_sub_iff {H : Type*} [Ring H] [IsAddTorsionFree H] {p q : H}
+  (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
+    IsIdempotentElem (q - p) ↔ p * q = p ∧ q * p = p :=
+⟨commutes_of_isIdempotentElem_sub hp hq,
+ fun ⟨h1, h2⟩ => isIdempotentElem_sub_of hp hq h1 h2⟩

@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.LinearAlgebra.Prod
+import Mathlib.Algebra.Ring.Idempotent
 
 /-!
 # Projection to a subspace
@@ -514,32 +515,16 @@ by
 theorem LinearMap.isIdempotentElem_sub_of {p q : E →ₗ[R] E} (hp : IsIdempotentElem p)
   (hq : IsIdempotentElem q) (hpq : p.comp q = p) (hqp : q.comp p = p) :
     IsIdempotentElem (q - p) := by
-  simp_rw [IsIdempotentElem, Module.End.mul_eq_comp, sub_comp, comp_sub, hpq, hqp,
-    ← Module.End.mul_eq_comp, hp.eq, hq.eq, sub_self, sub_zero]
+  exact _root_.isIdempotentElem_sub_of hp hq hpq hqp
 
 /-- If `p,q` are idempotent operators and `q - p` is also an idempotent
   operator, then `p ∘ q = p = q ∘ p`. -/
 theorem LinearMap.commutes_of_isIdempotentElem_sub [NoZeroSMulDivisors ℕ E] {p q : E →ₗ[R] E}
   (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) (hqp : IsIdempotentElem (q - p)) :
     p.comp q = p ∧ q.comp p = p :=
-by
-  simp_rw [IsIdempotentElem, Module.End.mul_eq_comp, comp_sub, sub_comp, ← Module.End.mul_eq_comp,
-    hp.eq, hq.eq, ← sub_add_eq_sub_sub, sub_right_inj, add_sub] at hqp
-  have h' : ((2 : ℕ) • p : E →ₗ[R] E) = q.comp p + p.comp q :=
-    by
-    simp_rw [two_smul]
-    nth_rw 2 [← hqp]
-    simp_rw [Module.End.mul_eq_comp, add_sub_cancel, add_comm]
-  have H : ((2 : ℕ) • p).comp q = q.comp (p.comp q) + p.comp q := by
-    simp_rw [h', add_comp, comp_assoc, ← Module.End.mul_eq_comp, hq.eq]
-  simp_rw [add_comm, two_smul, add_comp, add_right_inj] at H
-  have H' : q.comp ((2 : ℕ) • p) = q.comp p + q.comp (p.comp q) := by
-    simp_rw [h', comp_add, ← comp_assoc, ← Module.End.mul_eq_comp, hq.eq]
-  simp_rw [two_smul, comp_add, add_right_inj] at H'
-  have H'' : q.comp p = p.comp q := by
-    simp_rw [H']
-    exact H.symm
-  rw [← H'', and_self_iff, ← smul_right_inj (two_ne_zero), h', ← H'', two_smul]
+  letI : IsAddTorsionFree (E →ₗ[R] E) :=
+    noZeroSMulDivisors_nat_iff_isAddTorsionFree.mp instNoZeroSMulDivisors
+  _root_.commutes_of_isIdempotentElem_sub hp hq hqp
 
 /-- Given any idempotent operator `T`, then `IsCompl T.range T.ker`,
  in other words, there exists unique `v ∈ range(T)` and `w ∈ ker(T)` such that `x = v + w`. -/
