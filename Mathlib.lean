@@ -3481,6 +3481,7 @@ import Mathlib.Data.ZMod.QuotientGroup
 import Mathlib.Data.ZMod.QuotientRing
 import Mathlib.Data.ZMod.Units
 import Mathlib.Data.ZMod.ValMinAbs
+import Mathlib.Data.ZMod.Zero
 import Mathlib.Deprecated.Aliases
 import Mathlib.Deprecated.AnalyticManifold
 import Mathlib.Deprecated.Cardinal.Continuum

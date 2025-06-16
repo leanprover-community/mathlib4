@@ -7,7 +7,9 @@ Authors: Antoine Chambert-Loir
 import Mathlib.Analysis.Normed.Ring.Lemmas
 import Mathlib.Data.Int.Star
 import Mathlib.Data.Nat.Choose.Dvd
+import Mathlib.Data.ZMod.Coprime
 import Mathlib.Data.ZMod.Units
+import Mathlib.Data.ZMod.Zero
 import Mathlib.GroupTheory.SpecificGroups.ZGroup
 import Mathlib.RingTheory.Prime
 import Mathlib.RingTheory.Int.Basic
@@ -53,16 +55,6 @@ The proofs follow [Ireland and Rosen,
 open scoped Nat
 
 namespace ZMod
-
-theorem coe_int_isUnit_iff_isCoprime (n : ℤ) (m : ℕ) :
-    IsUnit (n : ZMod m) ↔ IsCoprime (m : ℤ) n := by
-  rw [Int.isCoprime_iff_nat_coprime, Nat.coprime_comm,
-    ← isUnit_iff_coprime, Associated.isUnit_iff]
-  simpa only [eq_intCast, @Int.cast_natCast] using
-    Associated.map (Int.castRingHom _) (Int.associated_natAbs _)
-
-instance : IsDomain (ZMod 0) :=
-  Equiv.isDomain (RingEquiv.refl ℤ).symm
 
 theorem isCyclic_units_zero :
     IsCyclic (ZMod 0)ˣ := inferInstance
