@@ -998,8 +998,12 @@ import Mathlib.Algebra.Quaternion
 import Mathlib.Algebra.QuaternionBasis
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Regular.Basic
+import Mathlib.Algebra.Regular.Opposite
+import Mathlib.Algebra.Regular.Pi
 import Mathlib.Algebra.Regular.Pow
+import Mathlib.Algebra.Regular.Prod
 import Mathlib.Algebra.Regular.SMul
+import Mathlib.Algebra.Regular.ULift
 import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Algebra.Ring.Action.ConjAct
 import Mathlib.Algebra.Ring.Action.End
@@ -1239,6 +1243,7 @@ import Mathlib.AlgebraicTopology.Quasicategory.Nerve
 import Mathlib.AlgebraicTopology.Quasicategory.StrictSegal
 import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
 import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
+import Mathlib.AlgebraicTopology.SimplexCategory.Augmented
 import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 import Mathlib.AlgebraicTopology.SimplexCategory.Defs
 import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.Basic
@@ -1923,6 +1928,7 @@ import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+import Mathlib.CategoryTheory.Bicategory.Functor.Strict
 import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
 import Mathlib.CategoryTheory.Bicategory.Grothendieck
 import Mathlib.CategoryTheory.Bicategory.Kan.Adjunction
@@ -3745,6 +3751,7 @@ import Mathlib.GroupTheory.GroupAction.Primitive
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.GroupTheory.GroupAction.SubMulAction
+import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.Support
@@ -4316,6 +4323,7 @@ import Mathlib.MeasureTheory.Integral.IntegrationByParts
 import Mathlib.MeasureTheory.Integral.IntervalAverage
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
@@ -5171,6 +5179,7 @@ import Mathlib.RingTheory.GradedAlgebra.Radical
 import Mathlib.RingTheory.HahnSeries.Addition
 import Mathlib.RingTheory.HahnSeries.Basic
 import Mathlib.RingTheory.HahnSeries.HEval
+import Mathlib.RingTheory.HahnSeries.Lex
 import Mathlib.RingTheory.HahnSeries.Multiplication
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Summable
@@ -5424,6 +5433,7 @@ import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 import Mathlib.RingTheory.QuotSMulTop
 import Mathlib.RingTheory.Radical
 import Mathlib.RingTheory.ReesAlgebra
+import Mathlib.RingTheory.Regular.Category
 import Mathlib.RingTheory.Regular.Depth
 import Mathlib.RingTheory.Regular.IsSMulRegular
 import Mathlib.RingTheory.Regular.RegularSequence

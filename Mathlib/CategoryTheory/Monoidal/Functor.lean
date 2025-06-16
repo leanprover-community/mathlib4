@@ -48,7 +48,6 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
   {E : Type u₃} [Category.{v₃} E] [MonoidalCategory.{v₃} E]
   {C' : Type u₁'} [Category.{v₁'} C']
 
-
 namespace Functor
 
 -- The direction of `left_unitality` and `right_unitality` as simp lemmas may look strange:
