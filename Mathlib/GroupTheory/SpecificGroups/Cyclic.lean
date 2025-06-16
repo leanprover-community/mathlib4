@@ -938,35 +938,14 @@ theorem Group.isCyclic_prod_iff
     IsCyclic (M × N) ↔
       IsCyclic M ∧ IsCyclic N ∧ (Nat.card M).Coprime (Nat.card N) := by
   simp only [IsCyclic.iff_exponent_eq_card, Monoid.exponent_prod, Nat.card_prod, lcm_eq_nat_lcm]
-  have : Fintype M := Fintype.ofFinite M
-  have : Fintype N := Fintype.ofFinite N
-  obtain ⟨p, hp⟩ := Group.exponent_dvd_card (G := M)
-  obtain ⟨q, hq⟩ := Group.exponent_dvd_card (G := N)
-  rw [← Nat.card_eq_fintype_card] at hp hq
-  set a := Monoid.exponent M
-  set b := Monoid.exponent N
-  set m := Nat.card M
-  set n := Nat.card N
-  rw [hp, hq, Nat.mul_mul_mul_comm]
-  have hab := Nat.lcm_dvd_mul a b
-  obtain ⟨r, hr⟩ := hab
-  rw [hr, mul_assoc, eq_comm, mul_right_eq_self₀, Nat.lcm_eq_zero_iff,
-    mul_eq_one]
-  have ha : a ≠ 0 := Monoid.exponent_ne_zero_of_finite
-  have hb : b ≠ 0 := Monoid.exponent_ne_zero_of_finite
-  simp [ha, hb]
-  rw [and_comm, ← and_assoc, and_congr_right_iff]
-  rintro ⟨rfl, rfl⟩
-  simp only [mul_one] at hp hq ⊢
-  rw [Nat.coprime_iff_gcd_eq_one]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [h, mul_one, eq_comm, Nat.lcm_eq_mul_iff] at hr
-    simpa [ha, hb] using  hr
-  · suffices a * b = a.lcm b by
-      rw [this, eq_comm, mul_right_eq_self₀, Nat.lcm_eq_zero_iff] at hr
-      simpa [ha, hb] using hr
-    rw [eq_comm, Nat.lcm_eq_mul_iff]
-    simp [h]
+  refine ⟨fun h ↦ ?_, fun ⟨hM, hN, hMN⟩ ↦ by rw [hM, hN, hMN.lcm_eq_mul]⟩
+  have h1 := dvd_antisymm (Nat.lcm_dvd_mul (Nat.card M) (Nat.card N))
+    (h ▸ lcm_dvd_lcm exponent_dvd_nat_card exponent_dvd_nat_card)
+  simp_rw [Nat.lcm_eq_mul_iff, Nat.card_pos.ne', false_or, ← Nat.coprime_iff_gcd_eq_one] at h1
+  have h2 := h ▸ Nat.lcm_dvd_mul (Monoid.exponent M) (Monoid.exponent N)
+  refine ⟨dvd_antisymm exponent_dvd_nat_card ?_, dvd_antisymm exponent_dvd_nat_card ?_, h1⟩
+  · exact ((h1.of_dvd_right exponent_dvd_nat_card).dvd_mul_right).mp (dvd_of_mul_right_dvd h2)
+  · exact ((h1.symm.of_dvd_right exponent_dvd_nat_card).dvd_mul_left).mp (dvd_of_mul_left_dvd h2)
 
 end prod
 
