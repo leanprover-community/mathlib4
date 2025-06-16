@@ -52,6 +52,7 @@ lemma exists_generator_lt_one [IsDiscrete v] :
 
 /-- Given a discrete valuation `v`, `Valuation.IsDiscrete.generator` is a generator of the value
 group that is `< 1`: by definition, it coincides with `genLTOne Γˣ`. -/
+@[nolint unusedArguments]
 noncomputable abbrev generator [IsDiscrete v] : Γˣ := genLTOne Γˣ
 
 lemma generator_zpowers_eq_valueGroup [IsDiscrete v] :
@@ -71,9 +72,6 @@ lemma generator_mem_range (K : Type*) [Field K] (w : Valuation K Γ) [IsDiscrete
   exact ⟨generator w, by simp⟩
 
 lemma generator_ne_zero [IsDiscrete v] : (generator v : Γ) ≠ 0 := by simp
-
-lemma valueGroup_IsCyclic [IsDiscrete v] : IsCyclic <| valueGroup v := by
-  apply Subgroup.isCyclic
 
 end IsDiscrete
 
