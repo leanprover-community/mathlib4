@@ -725,6 +725,7 @@ import Mathlib.Algebra.MvPolynomial.Expand
 import Mathlib.Algebra.MvPolynomial.Funext
 import Mathlib.Algebra.MvPolynomial.Invertible
 import Mathlib.Algebra.MvPolynomial.Monad
+import Mathlib.Algebra.MvPolynomial.Nilpotent
 import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.Algebra.MvPolynomial.Polynomial
 import Mathlib.Algebra.MvPolynomial.Rename
@@ -997,8 +998,12 @@ import Mathlib.Algebra.Quaternion
 import Mathlib.Algebra.QuaternionBasis
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Regular.Basic
+import Mathlib.Algebra.Regular.Opposite
+import Mathlib.Algebra.Regular.Pi
 import Mathlib.Algebra.Regular.Pow
+import Mathlib.Algebra.Regular.Prod
 import Mathlib.Algebra.Regular.SMul
+import Mathlib.Algebra.Regular.ULift
 import Mathlib.Algebra.Ring.Action.Basic
 import Mathlib.Algebra.Ring.Action.ConjAct
 import Mathlib.Algebra.Ring.Action.End
@@ -1238,6 +1243,7 @@ import Mathlib.AlgebraicTopology.Quasicategory.Nerve
 import Mathlib.AlgebraicTopology.Quasicategory.StrictSegal
 import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
 import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
+import Mathlib.AlgebraicTopology.SimplexCategory.Augmented
 import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 import Mathlib.AlgebraicTopology.SimplexCategory.Defs
 import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.Basic
@@ -1922,6 +1928,7 @@ import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+import Mathlib.CategoryTheory.Bicategory.Functor.Strict
 import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
 import Mathlib.CategoryTheory.Bicategory.Grothendieck
 import Mathlib.CategoryTheory.Bicategory.Kan.Adjunction
@@ -2046,6 +2053,7 @@ import Mathlib.CategoryTheory.FiberedCategory.Cartesian
 import Mathlib.CategoryTheory.FiberedCategory.Cocartesian
 import Mathlib.CategoryTheory.FiberedCategory.Fiber
 import Mathlib.CategoryTheory.FiberedCategory.Fibered
+import Mathlib.CategoryTheory.FiberedCategory.Grothendieck
 import Mathlib.CategoryTheory.FiberedCategory.HasFibers
 import Mathlib.CategoryTheory.FiberedCategory.HomLift
 import Mathlib.CategoryTheory.Filtered.Basic
@@ -2200,6 +2208,7 @@ import Mathlib.CategoryTheory.Limits.Over
 import Mathlib.CategoryTheory.Limits.Pi
 import Mathlib.CategoryTheory.Limits.Preorder
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Limits.Preserves.Bifunctor
 import Mathlib.CategoryTheory.Limits.Preserves.Creates.Finite
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
@@ -2328,6 +2337,7 @@ import Mathlib.CategoryTheory.Localization.SmallShiftedHom
 import Mathlib.CategoryTheory.Localization.StructuredArrow
 import Mathlib.CategoryTheory.Localization.Triangulated
 import Mathlib.CategoryTheory.Localization.Trifunctor
+import Mathlib.CategoryTheory.LocallyDirected
 import Mathlib.CategoryTheory.Monad.Adjunction
 import Mathlib.CategoryTheory.Monad.Algebra
 import Mathlib.CategoryTheory.Monad.Basic
@@ -3740,6 +3750,7 @@ import Mathlib.GroupTheory.GroupAction.Primitive
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.GroupTheory.GroupAction.SubMulAction
+import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.Support
@@ -3840,8 +3851,8 @@ import Mathlib.Lean.Meta.KAbstractPositions
 import Mathlib.Lean.Meta.RefinedDiscrTree
 import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
+import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
 import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
-import Mathlib.Lean.Meta.RefinedDiscrTree.Pi
 import Mathlib.Lean.Meta.Simp
 import Mathlib.Lean.Name
 import Mathlib.Lean.PrettyPrinter.Delaborator
@@ -4311,6 +4322,7 @@ import Mathlib.MeasureTheory.Integral.IntegrationByParts
 import Mathlib.MeasureTheory.Integral.IntervalAverage
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
@@ -4591,6 +4603,7 @@ import Mathlib.NumberTheory.NumberField.Completion
 import Mathlib.NumberTheory.NumberField.DedekindZeta
 import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 import Mathlib.NumberTheory.NumberField.Discriminant.Defs
+import Mathlib.NumberTheory.NumberField.Discriminant.Different
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.NumberTheory.NumberField.EquivReindex
 import Mathlib.NumberTheory.NumberField.FinitePlaces
@@ -5165,6 +5178,7 @@ import Mathlib.RingTheory.GradedAlgebra.Radical
 import Mathlib.RingTheory.HahnSeries.Addition
 import Mathlib.RingTheory.HahnSeries.Basic
 import Mathlib.RingTheory.HahnSeries.HEval
+import Mathlib.RingTheory.HahnSeries.Lex
 import Mathlib.RingTheory.HahnSeries.Multiplication
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Summable
@@ -5349,6 +5363,7 @@ import Mathlib.RingTheory.Norm.Defs
 import Mathlib.RingTheory.Norm.Transitivity
 import Mathlib.RingTheory.NormTrace
 import Mathlib.RingTheory.Nullstellensatz
+import Mathlib.RingTheory.OrderOfVanishing
 import Mathlib.RingTheory.OreLocalization.Basic
 import Mathlib.RingTheory.OreLocalization.Cardinality
 import Mathlib.RingTheory.OreLocalization.OreSet
@@ -5419,6 +5434,7 @@ import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 import Mathlib.RingTheory.QuotSMulTop
 import Mathlib.RingTheory.Radical
 import Mathlib.RingTheory.ReesAlgebra
+import Mathlib.RingTheory.Regular.Category
 import Mathlib.RingTheory.Regular.Depth
 import Mathlib.RingTheory.Regular.IsSMulRegular
 import Mathlib.RingTheory.Regular.RegularSequence
@@ -5717,7 +5733,6 @@ import Mathlib.Tactic.FunProp.Differentiable
 import Mathlib.Tactic.FunProp.Elab
 import Mathlib.Tactic.FunProp.FunctionData
 import Mathlib.Tactic.FunProp.Mor
-import Mathlib.Tactic.FunProp.StateList
 import Mathlib.Tactic.FunProp.Theorems
 import Mathlib.Tactic.FunProp.ToBatteries
 import Mathlib.Tactic.FunProp.Types
@@ -5864,6 +5879,7 @@ import Mathlib.Tactic.SetLike
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simproc.ExistsAndEq
+import Mathlib.Tactic.Simproc.Factors
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Tactic.SplitIfs
