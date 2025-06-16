@@ -42,12 +42,12 @@ variable [MonoidalPreadditive C]
 
 namespace MonoidalPreadditive
 
--- The priority setting will not be needed when we replace `𝟙 X ⊗ f` by `X ◁ f`.
+-- The priority setting will not be needed when we replace `𝟙 X ⊗ₘ f` by `X ◁ f`.
 @[simp (low)]
 theorem tensor_zero {W X Y Z : C} (f : W ⟶ X) : f ⊗ₘ (0 : Y ⟶ Z) = 0 := by
   simp [tensorHom_def]
 
--- The priority setting will not be needed when we replace `f ⊗ 𝟙 X` by `f ▷ X`.
+-- The priority setting will not be needed when we replace `f ⊗ₘ 𝟙 X` by `f ▷ X`.
 @[simp (low)]
 theorem zero_tensor {W X Y Z : C} (f : Y ⟶ Z) : (0 : W ⟶ X) ⊗ₘ f = 0 := by
   simp [tensorHom_def]
