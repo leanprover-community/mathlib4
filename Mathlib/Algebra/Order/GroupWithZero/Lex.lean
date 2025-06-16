@@ -139,10 +139,21 @@ theorem fst_comp_inl : (fst _ _).comp (inl α β) = .id α := by
   obtain rfl | ⟨_, rfl⟩ := GroupWithZero.eq_zero_or_unit x <;>
   simp
 
-theorem inlₗ_mul_inrₗ_eq_coe_toLex {m : α} {n : β} (hm : m ≠ 0) (hn : n ≠ 0) :
-    (inl α β m * inr α β n) = toLex (Units.mk0 _ hm, Units.mk0 _ hn) := by
+variable {α β}
+
+lemma inl_eq_coe_inlₗ {m : α} (hm : m ≠ 0) :
+    inl α β m = OrderMonoidHom.inlₗ αˣ βˣ (Units.mk0 _ hm) := by
   lift m to αˣ using isUnit_iff_ne_zero.mpr hm
+  simp
+
+lemma inr_eq_coe_inrₗ {n : β} (hn : n ≠ 0) :
+    inr α β n = OrderMonoidHom.inrₗ αˣ βˣ (Units.mk0 _ hn) := by
   lift n to βˣ using isUnit_iff_ne_zero.mpr hn
-  simp [← toLex_mul, ← WithZero.coe_mul]
+  simp
+
+theorem inl_mul_inr_eq_coe_toLex {m : α} {n : β} (hm : m ≠ 0) (hn : n ≠ 0) :
+    inl α β m * inr α β n = toLex (Units.mk0 _ hm, Units.mk0 _ hn) := by
+  rw [inl_eq_coe_inlₗ hm, inr_eq_coe_inrₗ hn,
+      ← WithZero.coe_mul, OrderMonoidHom.inlₗ_mul_inrₗ_eq_toLex]
 
 end LinearOrderedCommGroupWithZero

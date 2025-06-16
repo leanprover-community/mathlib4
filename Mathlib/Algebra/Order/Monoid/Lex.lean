@@ -17,7 +17,9 @@ and the lexicographic product.
 The product of ordered monoids `α × β` is an ordered monoid itself with both natural inclusions
 and projections, making it the coproduct as well.
 
-TODO: Create the "OrdCommMon" category.
+## TODO
+
+Create the "OrdCommMon" category.
 
 -/
 
@@ -97,7 +99,7 @@ lexicographic M ×ₗ N. -/
 @[to_additive (attr := simps!) "Given ordered additive monoids M, N, the natural inclusion ordered
 homomorphism from N to the lexicographic M ×ₗ N."]
 def inrₗ : β →*o (α ×ₗ β) where
-  __ := (Prod.Lex.toLexOrderHom).comp (inr α β)
+  __ := Prod.Lex.toLexOrderHom.comp (inr α β)
   map_one' := rfl
   map_mul' := by simp [← toLex_mul]
 
@@ -132,11 +134,11 @@ theorem snd_comp_inr : (snd α β).comp (inr α β) = .id β :=
   rfl
 
 @[to_additive]
-theorem inl_mul_inr_eq_mk (m : α) (n : β) : (inl α β m * inr α β n) = (m, n) := by
+theorem inl_mul_inr_eq_mk (m : α) (n : β) : inl α β m * inr α β n = (m, n) := by
   simp
 
 @[to_additive]
-theorem inlₗ_mul_inrₗ_eq_toLex (m : α) (n : β) : (inlₗ α β m * inrₗ α β n) = toLex (m, n) := by
+theorem inlₗ_mul_inrₗ_eq_toLex (m : α) (n : β) : inlₗ α β m * inrₗ α β n = toLex (m, n) := by
   simp [← toLex_mul]
 
 variable {α β}

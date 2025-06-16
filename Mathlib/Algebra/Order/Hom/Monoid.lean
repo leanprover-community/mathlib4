@@ -934,7 +934,7 @@ theorem toMonoidWithZeroHom_eq_coe (f : α →*₀o β) : f.toMonoidWithZeroHom 
 
 @[simp]
 theorem toMonoidWithZeroHom_mk (f : α →*₀ β) (hf : Monotone f) :
-    ((OrderMonoidWithZeroHom.mk f hf) : α →*₀ β) = ⟨f, f.map_one, f.map_mul⟩ := by
+    ((OrderMonoidWithZeroHom.mk f hf) : α →*₀ β) = f := by
   rfl
 
 @[simp]
@@ -947,7 +947,7 @@ theorem toOrderMonoidHom_eq_coe (f : α →*₀o β) : f.toOrderMonoidHom = f :=
   rfl
 
 @[simp]
-lemma comp_coe_orderMonoidHom (f : β →*₀o γ) (g : α →*₀o β) :
+lemma toOrderMonoidHom_comp (f : β →*₀o γ) (g : α →*₀o β) :
     (f.comp g : α →*o γ) = (f : β →*o γ).comp g :=
   rfl
 
