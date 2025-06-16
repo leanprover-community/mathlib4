@@ -619,7 +619,7 @@ variable (R S T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [
 
 open TensorProduct Algebra.TensorProduct CommRingCat RingHomClass
 
-/-- The isomorphism between the fibre product of two schemes `Spec S` and `Spec T`
+/-- The isomorphism between the fibred product of two schemes `Spec S` and `Spec T`
 over a scheme `Spec R` and the `Spec` of the tensor product `S ⊗[R] T`. -/
 noncomputable
 def pullbackSpecIso :
