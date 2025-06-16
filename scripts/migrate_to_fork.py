@@ -92,13 +92,7 @@ def run_command(cmd: List[str], capture_output: bool = True, check: bool = True)
         return subprocess.run(cmd, capture_output=capture_output, text=True, encoding="utf8", check=check)
     except subprocess.CalledProcessError as e:
         if not check:
-            # Return a CompletedProcess-like object instead of the exception
-            return subprocess.CompletedProcess(
-                args=e.cmd,
-                returncode=e.returncode,
-                stdout=e.stdout if hasattr(e, 'stdout') else '',
-                stderr=e.stderr if hasattr(e, 'stderr') else ''
-            )
+            return e
         print_error(f"Command failed: {' '.join(cmd)}")
         print_error(f"Error: {e.stderr if e.stderr else str(e)}")
         sys.exit(1)
