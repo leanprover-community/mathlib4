@@ -7,6 +7,7 @@ import Mathlib.Analysis.Complex.Polynomial.UnitTrinomial
 import Mathlib.FieldTheory.KrullTopology
 import Mathlib.GroupTheory.Perm.ClosureSwap
 import Mathlib.NumberTheory.NumberField.Discriminant.Basic
+import Mathlib.NumberTheory.RamificationInertia.Galois
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 import Mathlib.RingTheory.Invariant.Basic
@@ -23,13 +24,7 @@ This file proves irreducibility of the Selmer polynomials `X ^ n - X - 1`.
 TODO: Show that the Selmer polynomials have full Galois group.
 -/
 
-/-- If `α` is equivalent to `β`, then `Perm α` is isomorphic to `Perm β`. (#24816) -/
-def Equiv.permCongrHom {α β : Type*} (e : α ≃ β) : Equiv.Perm α ≃* Equiv.Perm β where
-  toFun x := e.symm.trans (x.trans e)
-  invFun y := e.trans (y.trans e.symm)
-  left_inv _ := by ext; simp
-  right_inv _ := by ext; simp
-  map_mul' _ _ := by ext; simp
+alias Equiv.permCongrHom := Equiv.Perm.permCongrHom
 
 section Inertia
 
@@ -51,6 +46,44 @@ instance IsIntegralClosure.SMulCommClass [FiniteDimensional K L] :
 
 end Galois
 
+section inertiadef
+
+variable {A : Type*} [CommRing A] [IsDedekindDomain A] {p : Ideal A} (hpb : p ≠ ⊥) [p.IsMaximal]
+  (B : Type*) [CommRing B] [IsDedekindDomain B] [Algebra A B] [Module.Finite A B]
+  (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L]
+  [IsFractionRing B L] [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
+  [FiniteDimensional K L]
+
+noncomputable def inertiaSubgroup : Subgroup (L ≃ₐ[K] L) :=
+  (Ideal.Quotient.stabilizerHom  P G).ker.map (MulAction.stabilizer G Q).subtype
+
+end inertiadef
+
+section inertia
+
+#check Algebra.IsInvariant
+
+variable {A : Type*} [CommRing A] [IsDedekindDomain A] {p : Ideal A} (hpb : p ≠ ⊥) [p.IsMaximal]
+  (B : Type*) [CommRing B] [IsDedekindDomain B] [Algebra A B] [Module.Finite A B]
+  (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L]
+  [IsFractionRing B L] [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
+  [FiniteDimensional K L]
+
+noncomputable def inertiaSubgroup : Subgroup (L ≃ₐ[K] L) :=
+  (Ideal.Quotient.stabilizerHom  P G).ker.map (MulAction.stabilizer G Q).subtype
+
+theorem card_inertiaSubgroup :
+    Nat.card (inertiaSubgroup P Q G) = Ideal.ramificationIdx (algebraMap A B) P Q := by
+  have h1 : (MulAction.stabilizer G Q).index = (Ideal.primesOver P B).ncard := by
+    have key := MulAction.index_stabilizer_of_transitive G (⟨Q, _⟩ : Ideal.primesOver P B)
+    sorry
+  have h2 : Nat.card ((B ⧸ Q) ≃ₐ[A ⧸ P] B ⧸ Q) = Ideal.inertiaDeg P Q := by
+    rw [Ideal.inertiaDeg_algebraMap]
+
+  sorry
+
+end inertia
+
 section inertia
 
 variable (A K L B : Type*) [CommRing A] [CommRing B] [Field K] [Field L]
@@ -61,10 +94,12 @@ variable (A K L B : Type*) [CommRing A] [CommRing B] [Field K] [Field L]
   [FiniteDimensional K L] [IsGalois K L]
   (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
 
-noncomputable def inertiaSubgroup :=
+noncomputable def inertiaSubgroup : Subgroup (L ≃ₐ[K] L) :=
   let _ := IsIntegralClosure.MulSemiringAction A K L B
   (Ideal.Quotient.stabilizerHom Q P (L ≃ₐ[K] L)).ker.map
     (MulAction.stabilizer (L ≃ₐ[K] L) Q).subtype
+
+theorem card_intertiaSubgroup : Nat.card (inertiaSubgroup A K L B P Q) =
 
 end inertia
 
@@ -224,7 +259,7 @@ theorem switchinglemma {F : Type*} [Field F] (p : F[X])
         (Gal.galActionHom p E₂)
        := by
   ext
-  simp [permCongrHom, Gal.galActionHom, Polynomial.Gal.smul_def]
+  simp [permCongrHom, Perm.permCongrHom, Gal.galActionHom, Polynomial.Gal.smul_def]
 
 attribute [-instance] Polynomial.Gal.galActionAux -- should be local to PolynomialGaloisGroup.lean
 
