@@ -259,6 +259,9 @@ instance instCommGroupUnits {α} [CommMonoid α] : CommGroup αˣ where
 @[to_additive (attr := simp, norm_cast)]
 lemma val_pow_eq_pow_val (n : ℕ) : ↑(a ^ n) = (a ^ n : α) := rfl
 
+@[to_additive (attr := simp, norm_cast)]
+lemma inv_pow_eq_pow_inv (n : ℕ) : ↑(a ^ n)⁻¹ = (a⁻¹ ^ n : α) := rfl
+
 end Monoid
 
 section DivisionMonoid
@@ -467,7 +470,7 @@ theorem mul_iff [CommMonoid M] {x y : M} : IsUnit (x * y) ↔ IsUnit x ∧ IsUni
 
 section Monoid
 
-variable [Monoid M] {a : M}
+variable [Monoid M] {a b : M}
 
 /-- The element of the group of units, corresponding to an element of a monoid which is a unit. When
 `α` is a `DivisionMonoid`, use `IsUnit.unit'` instead. -/
@@ -479,7 +482,7 @@ protected noncomputable def unit (h : IsUnit a) : Mˣ :=
 
 @[to_additive (attr := simp)]
 theorem unit_of_val_units {a : Mˣ} (h : IsUnit (a : M)) : h.unit = a :=
-  Units.ext <| rfl
+  Units.ext rfl
 
 @[to_additive (attr := simp)]
 theorem unit_spec (h : IsUnit a) : ↑h.unit = a :=
@@ -488,6 +491,14 @@ theorem unit_spec (h : IsUnit a) : ↑h.unit = a :=
 @[to_additive (attr := simp)]
 theorem unit_one (h : IsUnit (1 : M)) : h.unit = 1 :=
   Units.eq_iff.1 rfl
+
+@[to_additive]
+theorem unit_mul (ha : IsUnit a) (hb : IsUnit b) : (ha.mul hb).unit = ha.unit * hb.unit :=
+  Units.ext rfl
+
+@[to_additive]
+theorem unit_pow (h : IsUnit a) (n : ℕ) : (h.pow n).unit = h.unit ^ n :=
+  Units.ext rfl
 
 @[to_additive (attr := simp)]
 theorem val_inv_mul (h : IsUnit a) : ↑h.unit⁻¹ * a = 1 :=
@@ -546,8 +557,17 @@ lemma inv (h : IsUnit a) : IsUnit a⁻¹ := by
   rw [← hu, ← Units.val_inv_eq_inv_val]
   exact Units.isUnit _
 
-@[to_additive] lemma div (ha : IsUnit a) (hb : IsUnit b) : IsUnit (a / b) := by
+@[to_additive]
+lemma unit_inv (h : IsUnit a) : h.inv.unit = h.unit⁻¹ :=
+  Units.ext h.unit.val_inv_eq_inv_val.symm
+
+@[to_additive]
+lemma div (ha : IsUnit a) (hb : IsUnit b) : IsUnit (a / b) := by
   rw [div_eq_mul_inv]; exact ha.mul hb.inv
+
+@[to_additive]
+lemma unit_div (ha : IsUnit a) (hb : IsUnit b) : (ha.div hb).unit = ha.unit / hb.unit :=
+  Units.ext (ha.unit.val_div_eq_div_val hb.unit).symm
 
 @[to_additive]
 protected lemma div_mul_cancel_right (h : IsUnit b) (a : α) : b / (a * b) = a⁻¹ := by
