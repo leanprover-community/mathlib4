@@ -53,7 +53,7 @@ def functorObjObj (A : C ⥤ D) [Mon_Class A] (X : C) : Mon_ D where
 
 /-- A monoid object in a functor category induces a functor to the category of monoid objects. -/
 @[simps]
-def functorObj (A : C ⥤ D) [Mon_Class A]  : C ⥤ Mon_ D where
+def functorObj (A : C ⥤ D) [Mon_Class A] : C ⥤ Mon_ D where
   obj := functorObjObj A
   map f :=
     { hom := A.map f
