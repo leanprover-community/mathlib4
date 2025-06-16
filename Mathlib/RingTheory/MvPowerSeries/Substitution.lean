@@ -37,7 +37,7 @@ for commutative *semirings*.
 ## Implementation note
 
 Evaluation of a power series at adequate elements has been defined
-in `Mathlib.RingTheory.MvPowerSeries.Evaluation`.
+in `Mathlib/RingTheory/MvPowerSeries/Evaluation.lean`.
 The goal here is to check the relevant hypotheses:
 * The ring of coefficients is endowed the discrete topology.
 * The main condition rewrites as having nilpotent constant coefficient
@@ -52,8 +52,8 @@ as it is discrete.
 ## TODO
 
 * `MvPowerSeries.IsNilpotent_subst` asserts that the constant coefficient
-of a legit substitution is nilpotent; prove that the converse holds when
-the kernel of `algebraMap R S` is a nilideal.
+  of a legit substitution is nilpotent; prove that the converse holds when
+  the kernel of `algebraMap R S` is a nilideal.
 -/
 
 namespace MvPowerSeries
@@ -189,7 +189,8 @@ theorem substAlgHom_eq_aeval
   exact DiscreteUniformity.eq_bot.symm
 
 @[simp]
-theorem coe_substAlgHom (ha : HasSubst a) : ⇑(substAlgHom ha) = subst (R := R) a := by
+theorem coe_substAlgHom (ha : HasSubst a) :
+    ⇑(substAlgHom ha) = subst (R := R) a := by
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
   rw [substAlgHom_eq_aeval, coe_aeval ha.hasEval, subst_eq_eval₂]
@@ -266,7 +267,7 @@ theorem coeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ →₀ �
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
   have := ((hasSum_aeval ha.hasEval f).map (coeff S e) (continuous_coeff S e))
-  rw [← coe_substAlgHom ha, substAlgHom,  ← this.tsum_eq, tsum_def, dif_pos this.summable]
+  rw [← coe_substAlgHom ha, substAlgHom, ← this.tsum_eq, tsum_def, dif_pos this.summable]
   exact if_pos (coeff_subst_finite ha f e)
 
 theorem constantCoeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
@@ -503,7 +504,8 @@ theorem rescale_eq_subst (a : σ → R) (f : MvPowerSeries σ R) :
   · intro hn
     simpa using hn
 
-/-- Rescale a multivariate power series, as an `AlgHom` in the scaling parameters. -/
+/-- Rescale a multivariate power series, as an `AlgHom` in the scaling parameters,
+by multiplying each variable `x` by the value `a x`. -/
 noncomputable def rescaleAlgHom (a : σ → R) :
     MvPowerSeries σ R →ₐ[R] MvPowerSeries σ R :=
   substAlgHom (HasSubst.smul_X a)

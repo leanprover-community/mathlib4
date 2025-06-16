@@ -165,15 +165,21 @@ theorem tendsto_inv_atTop_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝 0)
   tendsto_inv_atTop_nhdsGT_zero.mono_right inf_le_left
 
 /-- The function `x ↦ x⁻¹` tends to `-∞` on the left of `0`. -/
-theorem tendsto_inv_zero_atBot : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[<] (0 : 𝕜)) atBot :=
+theorem tendsto_inv_nhdsLT_zero : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[<] (0 : 𝕜)) atBot :=
   inv_nhdsLT_zero.le
 
+@[deprecated (since := "2025-04-23")]
+alias tendsto_inv_zero_atBot := tendsto_inv_nhdsLT_zero
+
 /-- The function `r ↦ r⁻¹` tends to `0` on the left as `r → -∞`. -/
-theorem tendsto_inv_atBot_zero' : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝[<] (0 : 𝕜)) :=
+theorem tendsto_inv_atBot_nhdsLT_zero : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝[<] (0 : 𝕜)) :=
   inv_atBot₀.le
 
+@[deprecated (since := "2025-04-23")]
+alias tendsto_inv_atBot_zero' := tendsto_inv_atBot_nhdsLT_zero
+
 theorem tendsto_inv_atBot_zero : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝 0) :=
-  tendsto_inv_atBot_zero'.mono_right inf_le_left
+  tendsto_inv_atBot_nhdsLT_zero.mono_right inf_le_left
 
 theorem Filter.Tendsto.div_atTop {a : 𝕜} (h : Tendsto f l (𝓝 a)) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x / g x) l (𝓝 0) := by
@@ -206,7 +212,7 @@ theorem Filter.Tendsto.inv_tendsto_nhdsGT_zero (h : Tendsto f l (𝓝[>] 0)) : T
 alias Filter.Tendsto.inv_tendsto_zero := Filter.Tendsto.inv_tendsto_nhdsGT_zero
 
 theorem Filter.Tendsto.inv_tendsto_nhdsLT_zero (h : Tendsto f l (𝓝[<] 0)) : Tendsto f⁻¹ l atBot :=
-  tendsto_inv_zero_atBot.comp h
+  tendsto_inv_nhdsLT_zero.comp h
 
 /-- If `g` tends to zero and there exists a constant `C : 𝕜` such that eventually `|f x| ≤ C`,
   then the product `f * g` tends to zero. -/

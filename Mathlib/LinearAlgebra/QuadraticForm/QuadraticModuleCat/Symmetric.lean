@@ -15,7 +15,7 @@ In this file we show:
 
 ## Implementation notes
 
-This file essentially mirrors `Mathlib/Algebra/Category/AlgebraCat/Symmetric.lean`.
+This file essentially mirrors `Mathlib/Algebra/Category/AlgCat/Symmetric.lean`.
 -/
 
 suppress_compilation

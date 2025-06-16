@@ -77,7 +77,7 @@ lemma prod_indicator_apply (s : Finset ι) (f : ι → Set κ) (g : ι → κ �
     simp only [Finset.inf_set_eq_iInter, Set.mem_iInter] at hj
     exact Set.indicator_of_mem (hj _ hi) _
   · obtain ⟨i, hi, hj⟩ := by simpa using hj
-    exact Finset.prod_eq_zero hi <| Set.indicator_of_not_mem hj _
+    exact Finset.prod_eq_zero hi <| Set.indicator_of_notMem hj _
 
 lemma prod_indicator (s : Finset ι) (f : ι → Set κ) (g : ι → κ → α) :
     ∏ i ∈ s, (f i).indicator (g i) = (⋂ x ∈ s, f x).indicator (∏ i ∈ s, g i) := by
@@ -198,7 +198,7 @@ lemma Pi.single_induction [AddCommMonoid M] (p : (ι → M) → Prop) (f : ι �
   rw [← Finset.univ_sum_single f]
   exact Finset.sum_induction _ _ add zero (by simp [single])
 
-@[to_additive (attr := elab_as_elim) existing]
+@[to_additive existing (attr := elab_as_elim)]
 lemma Pi.mulSingle_induction [CommMonoid M] (p : (ι → M) → Prop) (f : ι → M)
     (one : p 1) (mul : ∀ f g, p f → p g → p (f * g))
     (mulSingle : ∀ i m, p (Pi.mulSingle i m)) : p f := by
