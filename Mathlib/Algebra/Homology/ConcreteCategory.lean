@@ -65,6 +65,18 @@ lemma δ_apply' (x₃ : (forget₂ C Ab).obj (S.X₃.homology i))
     (forget₂ C Ab).map (hS.δ i j hij) x₃ = (forget₂ C Ab).map (S.X₁.homologyπ j) x₁ :=
   (HomologicalComplex.HomologySequence.snakeInput hS i j hij).δ_apply' x₃ x₂ x₁ h₂ h₁
 
+include hS in
+theorem d_eq_zero_of_f_eq_d_apply
+    (x₂ : ((forget₂ C Ab).obj (S.X₂.X i))) (x₁ : ((forget₂ C Ab).obj (S.X₁.X j)))
+    (hx₁ : ((forget₂ C Ab).map (S.f.f j)) x₁ = ((forget₂ C Ab).map (S.X₂.d i j)) x₂) (k : ι) :
+    ((forget₂ C Ab).map (S.X₁.d j k)) x₁ = 0 := by
+  have := hS.mono_f
+  apply (Preadditive.mono_iff_injective (S.f.f k)).1 inferInstance
+  rw [← ConcreteCategory.forget₂_comp_apply, ← HomologicalComplex.Hom.comm,
+    ConcreteCategory.forget₂_comp_apply, hx₁, ← ConcreteCategory.forget₂_comp_apply,
+    HomologicalComplex.d_comp_d, Functor.map_zero, map_zero]
+  rfl
+
 lemma δ_apply (x₃ : (forget₂ C Ab).obj (S.X₃.X i))
     (hx₃ : (forget₂ C Ab).map (S.X₃.d i j) x₃ = 0)
     (x₂ : (forget₂ C Ab).obj (S.X₂.X i)) (hx₂ : (forget₂ C Ab).map (S.g.f i) x₂ = x₃)
@@ -73,12 +85,8 @@ lemma δ_apply (x₃ : (forget₂ C Ab).obj (S.X₃.X i))
     (k : ι) (hk : c.next j = k) :
     (forget₂ C Ab).map (hS.δ i j hij)
       ((forget₂ C Ab).map (S.X₃.homologyπ i) (S.X₃.cyclesMk x₃ j (c.next_eq' hij) hx₃)) =
-        (forget₂ C Ab).map (S.X₁.homologyπ j) (S.X₁.cyclesMk x₁ k hk (by
-          have := hS.mono_f
-          apply (Preadditive.mono_iff_injective (S.f.f k)).1 inferInstance
-          rw [← ConcreteCategory.forget₂_comp_apply, ← HomologicalComplex.Hom.comm,
-            ConcreteCategory.forget₂_comp_apply, hx₁, ← ConcreteCategory.forget₂_comp_apply,
-            HomologicalComplex.d_comp_d, Functor.map_zero, map_zero]; rfl)) := by
+        (forget₂ C Ab).map (S.X₁.homologyπ j) (S.X₁.cyclesMk x₁ k hk
+          (d_eq_zero_of_f_eq_d_apply hS _ _ x₂ x₁ hx₁ _)) := by
   refine hS.δ_apply' i j hij _ ((forget₂ C Ab).map (S.X₂.pOpcycles i) x₂) _ ?_ ?_
   · rw [← ConcreteCategory.forget₂_comp_apply, ← ConcreteCategory.forget₂_comp_apply,
       HomologicalComplex.p_opcyclesMap, Functor.map_comp, ConcreteCategory.comp_apply,

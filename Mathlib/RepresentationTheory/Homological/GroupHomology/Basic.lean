@@ -3,8 +3,7 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Homology.Opposite
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+import Mathlib.Algebra.Homology.ConcreteCategory
 import Mathlib.RepresentationTheory.Coinvariants
 import Mathlib.RepresentationTheory.Homological.Resolution
 import Mathlib.Tactic.CategoryTheory.Slice
@@ -189,9 +188,21 @@ abbrev cycles (n : ℕ) : ModuleCat k := (inhomogeneousChains A).cycles n
 
 open HomologicalComplex
 
+variable {A} in
+/-- Make an `n + 1`-cycle out of an element of the kernel of the `n`th differential. -/
+abbrev cyclesMk {m : ℕ} (n : ℕ) (h : (ComplexShape.down ℕ).next m = n) (f : (Fin m → G) →₀ A)
+    (hf : (inhomogeneousChains A).d m n f = 0) : cycles A m :=
+  (inhomogeneousChains A).cyclesMk f n h hf
+
 /-- The natural inclusion of the `n`-cycles `Zₙ(G, A)` into the `n`-chains `Cₙ(G, A).` -/
 abbrev iCycles (n : ℕ) : cycles A n ⟶ (inhomogeneousChains A).X n :=
   (inhomogeneousChains A).iCycles n
+
+variable {A} in
+theorem iCycles_mk {m n : ℕ} (h : (ComplexShape.down ℕ).next m = n) (f : (Fin m → G) →₀ A)
+    (hf : (inhomogeneousChains A).d m n f = 0) :
+    iCycles A m (cyclesMk n h f hf) = f := by
+  exact (inhomogeneousChains A).i_cyclesMk f n h hf
 
 /-- This is the map from `i`-chains to `j`-cycles induced by the differential in the complex of
 inhomogeneous chains. -/

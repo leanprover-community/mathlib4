@@ -706,6 +706,10 @@ lemma coinvariantsMk_comp_zeroOpcyclesIso_inv :
       (zeroChainsIso A).inv ≫ (inhomogeneousChains A).pOpcycles 0 :=
   (CommSq.vert_inv ⟨pOpcycles_comp_opcyclesIso_hom A⟩).w
 
+lemma cyclesMk_0_eq (x : A) :
+    cyclesMk 0 (by simp) ((zeroChainsIso A).inv x) (by simp) = (zeroCyclesIso A).inv x :=
+  (ModuleCat.mono_iff_injective <| iCycles A 0).1 inferInstance <| by rw [iCycles_mk]; simp
+
 end zeroCyclesIso
 
 section isoOneCycles
@@ -745,6 +749,14 @@ lemma toCycles_comp_isoOneCycles_hom :
   simp [← cancel_mono (shortComplexH1 A).moduleCatLeftHomologyData.i, comp_dOne_eq,
     shortComplexH1_f]
 
+lemma cyclesMk_1_eq (x : oneCycles A) :
+    cyclesMk 0 (by simp) ((oneChainsIso A).inv x) (by simp) =
+      (isoOneCycles A).inv x :=
+  (ModuleCat.mono_iff_injective <| iCycles A 1).1 inferInstance <| by
+    rw [iCycles_mk]
+    simp only [ChainComplex.of_x, isoOneCycles_inv_comp_iCycles_apply]
+    rfl
+
 end isoOneCycles
 
 section isoTwoCycles
@@ -783,6 +795,14 @@ lemma toCycles_comp_isoTwoCycles_hom :
         (shortComplexH2 A).moduleCatLeftHomologyData.f' := by
   simp [← cancel_mono (shortComplexH2 A).moduleCatLeftHomologyData.i, comp_dTwo_eq,
     shortComplexH2_f]
+
+lemma cyclesMk_2_eq (x : twoCycles A) :
+    cyclesMk 1 (by simp) ((twoChainsIso A).inv x) (by simp) =
+      (isoTwoCycles A).inv x :=
+  (ModuleCat.mono_iff_injective <| iCycles A 2).1 inferInstance <| by
+    rw [iCycles_mk]
+    simp only [ChainComplex.of_x, isoTwoCycles_inv_comp_iCycles_apply]
+    rfl
 
 end isoTwoCycles
 
