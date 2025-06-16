@@ -358,7 +358,7 @@ partial def linarith (only_on : Bool) (hyps : List Expr) (cfg : LinarithConfig :
     linarithTraceProofs "linarith is running on the following hypotheses:" hyps
     runLinarith cfg target_type g hyps
 
-end Mathlib.Tactic.Linarith
+end Linarith
 
 /-! ### User facing functions -/
 
@@ -453,18 +453,16 @@ def elabLinarithArg (tactic : Name) (t : Term) : TacticM Expr := Term.withoutErr
     throwErrorAt t "Argument passed to {tactic} has metavariables:{indentD e}"
   return e
 
-open Mathlib.Tactic.Linarith
-
 /--
 Allow elaboration of `LinarithConfig` arguments to tactics.
 -/
-declare_config_elab elabLinarithConfig LinarithConfig
+declare_config_elab elabLinarithConfig Linarith.LinarithConfig
 
 elab_rules : tactic
   | `(tactic| linarith $[!%$bang]? $cfg:optConfig $[only%$o]? $[[$args,*]]?) => withMainContext do
     let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg `linarith)
     let cfg := (← elabLinarithConfig cfg).updateReducibility bang.isSome
-    commitIfNoEx do liftMetaFinishingTactic <| linarith o.isSome args.toList cfg
+    commitIfNoEx do liftMetaFinishingTactic <| Linarith.linarith o.isSome args.toList cfg
 
 -- TODO restore this when `add_tactic_doc` is ported
 -- add_tactic_doc
@@ -473,6 +471,7 @@ elab_rules : tactic
 --   decl_names := [`tactic.interactive.linarith],
 --   tags       := ["arithmetic", "decision procedure", "finishing"] }
 
+open Linarith
 
 elab_rules : tactic
   | `(tactic| nlinarith $[!%$bang]? $cfg:optConfig $[only%$o]? $[[$args,*]]?) => withMainContext do
@@ -480,7 +479,7 @@ elab_rules : tactic
     let cfg := (← elabLinarithConfig cfg).updateReducibility bang.isSome
     let cfg := { cfg with
       preprocessors := cfg.preprocessors.concat nlinarithExtras }
-    commitIfNoEx do liftMetaFinishingTactic <| linarith o.isSome args.toList cfg
+    commitIfNoEx do liftMetaFinishingTactic <| Linarith.linarith o.isSome args.toList cfg
 
 -- TODO restore this when `add_tactic_doc` is ported
 -- add_tactic_doc
@@ -488,3 +487,5 @@ elab_rules : tactic
 --   category   := doc_category.tactic,
 --   decl_names := [`tactic.interactive.nlinarith],
 --   tags       := ["arithmetic", "decision procedure", "finishing"] }
+
+end Mathlib.Tactic
