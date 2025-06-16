@@ -650,23 +650,18 @@ theorem isCyclic_units_iff (n : ℕ) :
     by_cases hn4 : 4 ∣ n
     · obtain ⟨q, rfl⟩ := hn4
       rw [isCyclic_units_four_mul_iff]
-      simp at h0 h4
-      simp [h0, h4]
+      simp only [mul_eq_zero, OfNat.ofNat_ne_zero, false_or, ne_eq, not_false_eq_true,
+        mul_eq_left₀] at h0 h4
+      simp only [h0, h4, or_self, false_iff, not_exists, not_and, not_or]
       intro l hl hol e he
       have : ¬ Even (l ^ e) := by
-        rw [Nat.not_even_iff_odd]
-        apply Nat.odd_pow hol
-      constructor
-      · intro H
-        apply this
-        rw [← H]
-        exact hn
-      · intro H
-        rw [show 4 = 2 * 2 by rfl, mul_assoc] at H
-        simp only [mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, or_false] at H
-        apply this
-        rw [← H]
-        exact even_two_mul q
+        simp only [Nat.not_even_iff_odd, hol.pow]
+      refine ⟨fun H ↦ this ?_, fun H ↦ this ?_⟩
+      · rwa [← H]
+      · suffices 2 * q = l ^ e by
+          simp only [← this, even_two_mul]
+        apply Nat.mul_left_cancel Nat.two_pos
+        simp [← H, ← mul_assoc]
     · have ha1 : a = 1 := by
         apply le_antisymm _ (Nat.one_le_iff_ne_zero.mpr ha0)
         rw [← not_lt]
@@ -679,13 +674,11 @@ theorem isCyclic_units_iff (n : ℕ) :
       rw [ha1, pow_one] at hm
       have hoddm : Odd m := by
         rw [← Nat.not_even_iff_odd, even_iff_two_dvd]
-        intro ha1' ; apply hn4
-        obtain ⟨q, hq⟩ := ha1'
+        rintro ⟨q, hq⟩
+        apply hn4
         rw [hm, hq, ← mul_assoc]
         exact Nat.dvd_mul_right 4 q
-      rw [hm]
-      rw [isCyclic_units_of_two_mul_odd_iff _ hoddm]
-      rw [isCyclic_units_of_odd_iff hoddm]
+      rw [hm, isCyclic_units_of_two_mul_odd_iff _ hoddm, isCyclic_units_of_odd_iff hoddm]
       apply exists_congr
       intro l
       simp only [exists_and_left, mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, or_false,
@@ -695,19 +688,14 @@ theorem isCyclic_units_iff (n : ℕ) :
       intro e
       constructor
       · intro he
-        refine ⟨?_, Or.inr he⟩
-        apply Nat.pos_of_ne_zero
+        refine ⟨Nat.pos_of_ne_zero ?_, Or.inr he⟩
         rintro ⟨rfl⟩
         apply h2
         simp [hm, he]
       · rintro ⟨h1e, (he | he)⟩
         · exfalso
-          suffices Odd (l ^ e) by
-            rw [← Nat.not_even_iff_odd] at this
-            apply this
-            rw [← he]
-            exact even_two_mul m
-          apply Nat.odd_pow hol
+          apply Nat.not_odd_iff_even.mpr (even_two_mul m)
+          simp only [he, hol.pow]
         · exact he
 
 end ZMod
