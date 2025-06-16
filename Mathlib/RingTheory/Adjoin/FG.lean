@@ -128,6 +128,13 @@ theorem FG.prod {S : Subalgebra R A} {T : Subalgebra R B} (hS : S.FG) (hT : T.FG
       (Set.Finite.image _ (Set.Finite.union ht.1 (Set.finite_singleton _))),
     Algebra.adjoin_inl_union_inr_eq_prod R s t⟩
 
+theorem fg_sup {B B' : Subalgebra R A} (hB : Subalgebra.FG B) (hB' : Subalgebra.FG B') :
+    Subalgebra.FG (B ⊔ B') :=
+  let ⟨s, hs, hsB⟩ := Subalgebra.fg_def.1 hB
+  let ⟨s', hs', hsB'⟩ := Subalgebra.fg_def.1 hB'
+  Subalgebra.fg_def.2 ⟨s ∪ s', Set.Finite.union hs hs',
+    (by rw [Algebra.adjoin_union, hsB, hsB'])⟩
+
 section
 
 theorem FG.map {S : Subalgebra R A} (f : A →ₐ[R] B) (hs : S.FG) : (S.map f).FG := by
