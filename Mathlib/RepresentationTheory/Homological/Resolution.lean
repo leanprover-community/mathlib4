@@ -45,8 +45,9 @@ squares to zero and that `Rep.diagonalSuccIsoFree` defines an isomorphism betwee
 complexes. We carry the exactness properties across this isomorphism to conclude the bar resolution
 is a projective resolution too, in `Rep.barResolution`.
 
-In `RepresentationTheory.Homological.Group(Co)homology.Basic`, we then use `Rep.barResolution` to
-define the inhomogeneous (co)chains of a representation, useful for computing group (co)homology.
+In `RepresentationTheory/Homological/Group(Co)homology/Basic.lean`, we then use
+`Rep.barResolution` to define the inhomogeneous (co)chains of a representation, useful for
+computing group (co)homology.
 
 ## Main definitions
 
@@ -474,3 +475,7 @@ def barResolution.extIso (V : Rep k G) (n : ℕ) :
   (barResolution k G).isoExt n V
 
 end Rep
+<<<<<<< HEAD
+=======
+>>>>>>>> 6213db695457e666ff81f0246ba67c1e87b3c6b5:Mathlib/RepresentationTheory/Homological/Resolution.lean
+>>>>>>> 6213db695457e666ff81f0246ba67c1e87b3c6b5

@@ -30,8 +30,8 @@ $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A),$ where $\mathrm{Ext}$ is taken i
 `Rep k G`.
 
 To talk about cohomology in low degree, please see the file
-`Mathlib/RepresentationTheory/GroupCohomology/LowDegree.lean`, which gives simpler expressions for
-`H⁰`, `H¹`, `H²` than the definition `groupCohomology` in this file.
+`Mathlib/RepresentationTheory/Homological/GroupCohomology/LowDegree.lean`, which gives simpler
+expressions for `H⁰`, `H¹`, `H²` than the definition `groupCohomology` in this file.
 
 ## Main definitions
 
@@ -208,3 +208,7 @@ lemma isZero_groupCohomology_succ_of_subsingleton
     [Group G] [Subsingleton G] (A : Rep k G) (n : ℕ) :
     Limits.IsZero (groupCohomology A (n + 1)) :=
   (isZero_Ext_succ_of_projective (Rep.trivial k G k) A n).of_iso <| groupCohomologyIsoExt _ _
+<<<<<<< HEAD
+=======
+>>>>>>>> 6213db695457e666ff81f0246ba67c1e87b3c6b5:Mathlib/RepresentationTheory/Homological/GroupCohomology/Basic.lean
+>>>>>>> 6213db695457e666ff81f0246ba67c1e87b3c6b5

@@ -152,6 +152,8 @@ please do not add new entries to these files. PRs removing (the need for) entrie
   This reaction is ✌️ (`:peace_sign:`) for delegated, `:bors:` for PRs sent to bors,
   `:merge` for merged PRs, ✍️ (`:writing:`) for PRs awaiting-author,
   🔨 (`:hammer:`) for maintainer-merged PRs and `:closed-pr:` for closed PRs.
+  PRs which were migrated to a fork (as indicated by the `migrated-to-fork` label)
+  additionally receive a reaction ... (`skip_forward`).
   Two of these are custom emojis configured on zulip.
 - `late_importers.sh` is the main script used by the `latest_import.yml` action: it formats
   the `linter.minImports` output, summarizing the data in a table.  See the module docs of
