@@ -446,12 +446,12 @@ class MonoidalRightAction [MonoidalCategory C] extends
       (g₁ : c ⟶ c') (g₂ : c' ⟶ c'') :
       (f₁ ≫ f₂) ⊙ᵣₘ (g₁ ≫ g₂) = (f₁ ⊙ᵣₘ g₁) ≫ (f₂ ⊙ᵣₘ g₂) := by
     aesop_cat
-  actionAssocIso_naturality
+  actionAssocIso_hom_naturality
       {d₁ d₂ : D} {c₁ c₂ c₃ c₄: C} (f : d₁ ⟶ d₂) (g : c₁ ⟶ c₂) (h : c₃ ⟶ c₄) :
       (f ⊙ᵣₘ g ⊗ₘ h) ≫ (αᵣ d₂ c₂ c₄).hom =
         (αᵣ d₁ c₁ c₃).hom ≫ ((f ⊙ᵣₘ g) ⊙ᵣₘ h) := by
     aesop_cat
-  actionUnitIso_naturality {d d' : D} (f : d ⟶ d') :
+  actionUnitIso_hom_naturality {d d' : D} (f : d ⟶ d') :
       (ρᵣ d).hom ≫ f = f ⊵ᵣ (𝟙_ C) ≫ (ρᵣ d').hom := by
     aesop_cat
   actionHomRight_whiskerRight {c' c'' : C} (f : c' ⟶ c'') (c : C) (d : D) :
@@ -477,8 +477,8 @@ attribute [reassoc, simp] MonoidalRightAction.id_actionHomLeft
 attribute [reassoc, simp] MonoidalRightAction.actionHomRight_id
 attribute [reassoc, simp] MonoidalRightAction.actionHomRight_whiskerRight
 attribute [simp, reassoc] MonoidalRightAction.actionHom_comp
-attribute [reassoc] MonoidalRightAction.actionAssocIso_naturality
-attribute [reassoc] MonoidalRightAction.actionUnitIso_naturality
+attribute [reassoc] MonoidalRightAction.actionAssocIso_hom_naturality
+attribute [reassoc] MonoidalRightAction.actionUnitIso_hom_naturality
 attribute [reassoc (attr := simp)] MonoidalRightAction.actionHom_associator
 attribute [simp, reassoc] MonoidalRightAction.actionHom_leftUnitor
 attribute [simp, reassoc] MonoidalRightAction.actionHom_rightUnitor
@@ -520,14 +520,14 @@ theorem actionHomRight_comp (w : D) {x y z : C} (f : x ⟶ y) (g : y ⟶ z) :
 @[reassoc, simp]
 theorem unit_actionHomRight {x y : D} (f : x ⟶ y) :
     f ⊵ᵣ (𝟙_ C) = (ρᵣ x).hom ≫ f ≫ (ρᵣ y).inv := by
-  rw [← Category.assoc, actionUnitIso_naturality]
+  rw [← Category.assoc, actionUnitIso_hom_naturality]
   simp
 
 @[reassoc, simp]
 theorem actionHomLeft_tensor  {z z' : D} (f : z ⟶ z') (x y : C):
     (f ⊵ᵣ (x ⊗ y)) = (αᵣ z x y).hom ≫ (f ⊵ᵣ x) ⊵ᵣ y ≫ (αᵣ z' x y).inv := by
   simp only [← id_actionHom, ← actionHom_id]
-  rw [← Category.assoc, ← actionAssocIso_naturality]
+  rw [← Category.assoc, ← actionAssocIso_hom_naturality]
   simp
 
 @[reassoc, simp]
@@ -549,6 +549,18 @@ theorem action_exchange {w x : D} {y z : C} (f : w ⟶ x) (g : y ⟶ z) :
 theorem actionHom_def' {x₁ y₁ : D} {x₂ y₂ : C} (f : x₁ ⟶ y₁) (g : x₂ ⟶ y₂) :
     f ⊙ᵣₘ g = x₁ ⊴ᵣ g ≫ f ⊵ᵣ y₂ :=
   action_exchange f g ▸ actionHom_def f g
+
+@[reassoc]
+theorem actionAssocIso_inv_naturality
+    {d₁ d₂ : D} {c₁ c₂ c₃ c₄: C} (f : d₁ ⟶ d₂) (g : c₁ ⟶ c₂) (h : c₃ ⟶ c₄) :
+    ((f ⊙ᵣₘ g) ⊙ᵣₘ h) ≫ (αᵣ d₂ c₂ c₄).inv =
+    (αᵣ d₁ c₁ c₃).inv ≫ (f ⊙ᵣₘ g ⊗ₘ h) := by
+  rw [Iso.comp_inv_eq, Category.assoc, Eq.comm, Iso.inv_comp_eq, actionAssocIso_hom_naturality]
+
+@[reassoc]
+theorem actionUnitIso_inv_naturality {d d' : D} (f : d ⟶ d') :
+      (ρᵣ d).inv ≫ f ⊵ᵣ (𝟙_ C) = f ≫ (ρᵣ d').inv := by
+  rw [Iso.inv_comp_eq, ← Category.assoc, Eq.comm, Iso.comp_inv_eq, actionUnitIso_hom_naturality]
 
 @[reassoc (attr := simp)]
 theorem actionHomRight_hom_inv (x : D) {y z : C} (f : y ≅ z) :
