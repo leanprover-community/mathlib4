@@ -442,11 +442,7 @@ variable [Algebra A S] [Algebra A S']
 
 theorem minpolyGen_map (pb : PowerBasis A S) (e : S ≃ₐ[A] S') :
     (pb.map e).minpolyGen = pb.minpolyGen := by
-  dsimp only [minpolyGen, map_dim]
-  -- Turn `Fin (pb.map e).dim` into `Fin pb.dim`
-  simp only [LinearEquiv.trans_apply, map_basis, Basis.map_repr, map_gen,
-    AlgEquiv.toLinearEquiv_apply, e.toLinearEquiv_symm, map_pow,
-    AlgEquiv.symm_apply_apply, sub_right_inj]
+  simp
 
 @[simp]
 theorem equivOfRoot_map (pb : PowerBasis A S) (e : S ≃ₐ[A] S') (h₁ h₂) :
