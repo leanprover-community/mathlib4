@@ -66,12 +66,10 @@ theorem isCyclic_units_two :
     IsCyclic (ZMod 2)ˣ := inferInstance
 
 theorem isCyclic_units_four :
-    IsCyclic (ZMod 4)ˣ :=
-  have _ : Fact (Nat.Prime 2) := ⟨Nat.prime_two⟩
-  have : Nat.card (ZMod 4)ˣ = 2 := by
-    simp only [Nat.card_eq_fintype_card, card_units_eq_totient]
-    rfl
-  isCyclic_of_prime_card this
+    IsCyclic (ZMod 4)ˣ := by
+  apply isCyclic_of_prime_card (p := 2)
+  simp only [Nat.card_eq_fintype_card, card_units_eq_totient]
+  rfl
 
 /- The multiplicative group of `ZMod p` is cyclic. -/
 theorem isCyclic_units_prime {p : ℕ} (hp : p.Prime) :
@@ -81,18 +79,10 @@ theorem isCyclic_units_prime {p : ℕ} (hp : p.Prime) :
 
 theorem not_isCyclic_units_eight :
     ¬ IsCyclic (ZMod 8)ˣ := by
-  rw [isCyclic_iff_exists_orderOf_eq_natCard]
-  push_neg
-  simp
-  rw [show φ 8 = 4 from rfl]
-  suffices ∀ (g : (ZMod 8)ˣ), orderOf g ∣ 2 by
-    intro g hg
-    specialize this g
-    rw [hg] at this
-    revert this
-    decide
-  simp only [orderOf_dvd_iff_pow_eq_one]
-  decide
+  rw [IsCyclic.iff_exponent_eq_card, Nat.card_eq_fintype_card, card_units_eq_totient]
+  have h : Monoid.exponent (ZMod 8)ˣ ∣ 2 := Monoid.exponent_dvd_of_forall_pow_eq_one (by decide)
+  intro (h' : Monoid.exponent (ZMod 8)ˣ = 4)
+  simp [h'] at h
 
 -- Ireland & Rosen, 4.1, Lemma 3
 theorem pow_modEq_pow_succ_of_modEq_pow (p : ℕ) (hp : p.Prime) (n : ℕ) (hn : 1 ≤ n)
