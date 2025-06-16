@@ -92,7 +92,13 @@ def run_command(cmd: List[str], capture_output: bool = True, check: bool = True)
         return subprocess.run(cmd, capture_output=capture_output, text=True, encoding="utf8", check=check)
     except subprocess.CalledProcessError as e:
         if not check:
-            return e
+            # Return a CompletedProcess-like object instead of the exception
+            return subprocess.CompletedProcess(
+                args=e.cmd,
+                returncode=e.returncode,
+                stdout=e.stdout if hasattr(e, 'stdout') else '',
+                stderr=e.stderr if hasattr(e, 'stderr') else ''
+            )
         print_error(f"Command failed: {' '.join(cmd)}")
         print_error(f"Error: {e.stderr if e.stderr else str(e)}")
         sys.exit(1)
@@ -325,7 +331,7 @@ def setup_remotes(username: str, fork_url: str, auto_accept: bool = False) -> st
     print_step(4, "Setting up git remotes")
 
     # This will sync the local references with the upstream ones and delete refs to branches that
-    # don’t exist anymore on upstream repos.
+    # don't exist anymore on upstream repos.
     # In particular, this will ensure the branches with duplicate names up to case that were recently
     # deleted on the main repository do not cause trouble in the migration.
     run_command(['git', 'fetch', '--all', '--prune'])
@@ -667,20 +673,45 @@ def create_new_pr_from_fork(branch: str, username: str, old_pr: Optional[Dict[st
             try:
                 result = run_command(['gh', 'pr', 'view', str(old_pr['number']),
                                     '--repo', 'leanprover-community/mathlib4',
-                                    '--json', 'body,labels'])
-                pr_details = json.loads(result.stdout)
+                                    '--json', 'body,labels'], check=False)
 
-                original_body = pr_details.get('body', '') or ''
-                labels = pr_details.get('labels', [])
-                labels.append('migrated-from-branch')  # Add label for new PR
-
-                # Prepare the new body with migration notice
-                if original_body.strip():
-                    body = f"{original_body}\n\n---\n\n*This PR continues the work from #{old_pr['number']}.*\n\n*Original PR: {old_pr['url']}*"
+                if result.returncode != 0:
+                    print_warning(f"Failed to fetch PR details (exit code {result.returncode}): {result.stderr}")
+                    # Fallback to simple body
+                    body = f"This PR continues the work from #{old_pr['number']}.\n\nOriginal PR: {old_pr['url']}"
+                    labels = []
                 else:
-                    body = f"*This PR continues the work from #{old_pr['number']}.*\n\n*Original PR: {old_pr['url']}*"
+                    if not result.stdout.strip():
+                        print_warning("Empty response from gh pr view command")
+                        # Fallback to simple body
+                        body = f"This PR continues the work from #{old_pr['number']}.\n\nOriginal PR: {old_pr['url']}"
+                        labels = []
+                    else:
+                        try:
+                            pr_details = json.loads(result.stdout)
+                        except json.JSONDecodeError as json_err:
+                            print_warning(f"Invalid JSON response from gh command: {json_err}")
+                            print_warning(f"Raw output: {result.stdout[:200]}...")
+                            # Fallback to simple body
+                            body = f"This PR continues the work from #{old_pr['number']}.\n\nOriginal PR: {old_pr['url']}"
+                            labels = []
+                        else:
+                            original_body = pr_details.get('body', '') or ''
+                            labels = pr_details.get('labels', [])
+                            # Add migrated-from-branch label as a proper label dictionary
+                            labels.append({
+                                'name': 'migrated-from-branch',
+                                'description': 'PR migrated to fork-based workflow',
+                                'color': 'DDDDDD'  # Gray color
+                            })
 
-                print_success(f"Found {len(labels)} labels to copy: {', '.join([label['name'] for label in labels])}" if labels else "No labels found on original PR")
+                            # Prepare the new body with migration notice
+                            if original_body.strip():
+                                body = f"{original_body}\n\n---\n\n*This PR continues the work from #{old_pr['number']}.*\n\n*Original PR: {old_pr['url']}*"
+                            else:
+                                body = f"*This PR continues the work from #{old_pr['number']}.*\n\n*Original PR: {old_pr['url']}*"
+
+                            print_success(f"Found {len(labels)} labels to copy: {', '.join([label['name'] for label in labels])}" if labels else "No labels found on original PR")
 
             except Exception as e:
                 print_warning(f"Could not fetch full PR details: {e}")
