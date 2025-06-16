@@ -2765,6 +2765,9 @@ import Mathlib.Computability.DFA
 import Mathlib.Computability.Encoding
 import Mathlib.Computability.EpsilonNFA
 import Mathlib.Computability.Halting
+import Mathlib.Computability.LTS.Basic
+import Mathlib.Computability.LTS.Bisimulation
+import Mathlib.Computability.LTS.TraceEq
 import Mathlib.Computability.Language
 import Mathlib.Computability.MyhillNerode
 import Mathlib.Computability.NFA
