@@ -53,7 +53,7 @@ class MonoidalLeftActionStruct [MonoidalCategoryStruct C] where
   actionObj : C → D → D
   /-- The left action of a map `f : c ⟶ c'` in `C` on an object `d` in `D`.
   If we are to consider the action as a functor `Α : C ⥤ D ⥤ D`,
-  this is (Α.map f).obj d`. This is denoted `f ⊵ₗ d` -/
+  this is (Α.map f).app d`. This is denoted `f ⊵ₗ d` -/
   actionHomLeft {c c' : C} (f : c ⟶ c') (d : D) :
     actionObj c d ⟶ actionObj c' d
   /-- The action of an object `c : C` on a map `f : d ⟶ d'` in `D`.
@@ -90,7 +90,7 @@ scoped infixr:81 " ⊴ₗ " => MonoidalLeftActionStruct.actionHomRight
 
 /-- Notation for `actionHom`, the bifunctorial action of morphisms in `C` and
 `D` on `- ⊙ₗ -`. -/
-scoped infixr:70 " ⊙ₗ " => MonoidalLeftActionStruct.actionHom
+scoped infixr:70 " ⊙ₗₘ " => MonoidalLeftActionStruct.actionHom
 
 /-- Notation for `actionAssocIso`, the structural isomorphism
 `- ⊗ - ⊙ₗ - ≅ - ⊙ₗ - ⊙ₗ -`. -/
@@ -122,47 +122,38 @@ the associator and unitor isomorphisms in `C`. -/
 class MonoidalLeftAction [MonoidalCategory C] extends
     MonoidalLeftActionStruct C D where
   actionHom_def {c c' : C} {d d' : D} (f : c ⟶ c') (g : d ⟶ d') :
-      f ⊙ₗ g = f ⊵ₗ d ≫ c' ⊴ₗ g := by
+      f ⊙ₗₘ g = f ⊵ₗ d ≫ c' ⊴ₗ g := by
     aesop_cat
-
   actionHomRight_id (c : C) (d : D) : c ⊴ₗ 𝟙 d = 𝟙 (c ⊙ₗ d) := by aesop_cat
   id_actionHomLeft (c : C) (d : D) : 𝟙 c ⊵ₗ d = 𝟙 (c ⊙ₗ d) := by aesop_cat
-
   actionHom_comp
       {c c' c'' : C} {d d' d'' : D} (f₁ : c ⟶ c') (f₂ : c' ⟶ c'')
       (g₁ : d ⟶ d') (g₂ : d' ⟶ d'') :
-      (f₁ ≫ f₂) ⊙ₗ (g₁ ≫ g₂) = (f₁ ⊙ₗ g₁) ≫ (f₂ ⊙ₗ g₂) := by
+      (f₁ ≫ f₂) ⊙ₗₘ (g₁ ≫ g₂) = (f₁ ⊙ₗₘ g₁) ≫ (f₂ ⊙ₗₘ g₂) := by
     aesop_cat
-
-  actionAssocIso_naturality
+  actionAssocIso_hom_naturality
       {c₁ c₂ c₃ c₄ : C} {d₁ d₂ : D} (f : c₁ ⟶ c₂) (g : c₃ ⟶ c₄) (h : d₁ ⟶ d₂) :
-      ((f ⊗ g) ⊙ₗ h) ≫ (αₗ c₂ c₄ d₂).hom =
-        (αₗ c₁ c₃ d₁).hom ≫ (f ⊙ₗ g ⊙ₗ h) := by
+      ((f ⊗ₘ g) ⊙ₗₘ h) ≫ (αₗ c₂ c₄ d₂).hom =
+        (αₗ c₁ c₃ d₁).hom ≫ (f ⊙ₗₘ g ⊙ₗₘ h) := by
     aesop_cat
-
-  actionUnitIso_naturality {d d' : D} (f : d ⟶ d') :
+  actionUnitIso_hom_naturality {d d' : D} (f : d ⟶ d') :
       (λₗ d).hom ≫ f = (𝟙_ C) ⊴ₗ f ≫ (λₗ d').hom := by
     aesop_cat
-
   whiskerLeft_actionHomLeft (c : C) {c' c'' : C} (f : c' ⟶ c'') (d : D) :
       (c ◁ f) ⊵ₗ d = (αₗ _ _ _).hom ≫ c ⊴ₗ f ⊵ₗ d ≫ (αₗ _ _ _).inv := by
     aesop_cat
-
   whiskerRight_actionHomLeft {c c' : C} (c'' : C) (f : c ⟶ c') (d : D) :
       (f ▷ c'') ⊵ₗ d = (αₗ c c'' d).hom ≫
         f ⊵ₗ (c'' ⊙ₗ d : D) ≫ (αₗ c' c'' d).inv := by
     aesop_cat
-
   associator_actionHom (c₁ c₂ c₃ : C) (d : D) :
       (α_ c₁ c₂ c₃).hom ⊵ₗ d ≫ (αₗ c₁ (c₂ ⊗ c₃) d).hom ≫
         c₁ ⊴ₗ (αₗ c₂ c₃ d).hom =
       (αₗ (c₁ ⊗ c₂ : C) c₃ d).hom ≫ (αₗ c₁ c₂ (c₃ ⊙ₗ d)).hom := by
     aesop_cat
-
   leftUnitor_actionHom (c : C) (d : D) :
       (λ_ c).hom ⊵ₗ d = (αₗ _ _ _).hom ≫ (λₗ _).hom := by
     aesop_cat
-
   rightUnitor_actionHom (c : C) (d : D) :
       (ρ_ c).hom ⊵ₗ d = (αₗ _ _ _).hom ≫ c ⊴ₗ (λₗ _).hom := by
     aesop_cat
@@ -172,8 +163,8 @@ attribute [reassoc, simp] MonoidalLeftAction.id_actionHomLeft
 attribute [reassoc, simp] MonoidalLeftAction.actionHomRight_id
 attribute [reassoc, simp] MonoidalLeftAction.whiskerLeft_actionHomLeft
 attribute [simp, reassoc] MonoidalLeftAction.actionHom_comp
-attribute [reassoc] MonoidalLeftAction.actionAssocIso_naturality
-attribute [reassoc] MonoidalLeftAction.actionUnitIso_naturality
+attribute [reassoc] MonoidalLeftAction.actionAssocIso_hom_naturality
+attribute [reassoc] MonoidalLeftAction.actionUnitIso_hom_naturality
 attribute [reassoc (attr := simp)] MonoidalLeftAction.associator_actionHom
 attribute [simp, reassoc] MonoidalLeftAction.leftUnitor_actionHom
 attribute [simp, reassoc] MonoidalLeftAction.rightUnitor_actionHom
@@ -184,7 +175,7 @@ A monoidal category acts on itself on the left through the tensor product.
 @[simps!]
 instance selfLeftAction [MonoidalCategory C] : MonoidalLeftAction C C where
   actionObj x y := x ⊗ y
-  actionHom f g := f ⊗ g
+  actionHom f g := f ⊗ₘ g
   actionUnitIso x := λ_ x
   actionAssocIso x y z := α_ x y z
   actionHomLeft f x := f ▷ x
@@ -203,12 +194,12 @@ variable {C D} [MonoidalCategory C] [MonoidalLeftAction C D]
 
 @[simp]
 lemma id_actionHom (c : C) {d d' : D} (f : d ⟶ d') :
-    (𝟙 c) ⊙ₗ f = c ⊴ₗ f := by
+    (𝟙 c) ⊙ₗₘ f = c ⊴ₗ f := by
   simp [actionHom_def]
 
 @[simp]
 lemma actionHom_id {c c' : C} (f : c ⟶ c') (d : D) :
-    f ⊙ₗ (𝟙 d) = f ⊵ₗ d := by
+    f ⊙ₗₘ (𝟙 d) = f ⊵ₗ d := by
   simp [actionHom_def]
 
 @[reassoc, simp]
@@ -219,14 +210,14 @@ theorem actionHomRight_comp (w : C) {x y z : D} (f : x ⟶ y) (g : y ⟶ z) :
 @[reassoc, simp]
 theorem unit_actionHomRight {x y : D} (f : x ⟶ y) :
     (𝟙_ C) ⊴ₗ f = (λₗ x).hom ≫ f ≫ (λₗ y).inv := by
-  rw [← Category.assoc, actionUnitIso_naturality]
+  rw [← Category.assoc, actionUnitIso_hom_naturality]
   simp
 
 @[reassoc, simp]
 theorem tensor_actionHomRight (x y : C) {z z' : D} (f : z ⟶ z') :
     (x ⊗ y) ⊴ₗ f = (αₗ x y z).hom ≫ x ⊴ₗ y ⊴ₗ f ≫ (αₗ x y z').inv := by
   simp only [← id_actionHom, ← actionHom_id]
-  rw [← Category.assoc, ← actionAssocIso_naturality]
+  rw [← Category.assoc, ← actionAssocIso_hom_naturality]
   simp
 
 @[reassoc, simp]
@@ -246,8 +237,20 @@ theorem action_exchange {w x : C} {y z : D} (f : w ⟶ x) (g : y ⟶ z) :
 
 @[reassoc]
 theorem actionHom_def' {x₁ y₁ : C} {x₂ y₂ : D} (f : x₁ ⟶ y₁) (g : x₂ ⟶ y₂) :
-    f ⊙ₗ g = x₁ ⊴ₗ g ≫ f ⊵ₗ y₂ :=
+    f ⊙ₗₘ g = x₁ ⊴ₗ g ≫ f ⊵ₗ y₂ :=
   action_exchange f g ▸ actionHom_def f g
+
+@[reassoc]
+theorem actionAssocIso_inv_naturality
+    {c₁ c₂ c₃ c₄ : C} {d₁ d₂ : D} (f : c₁ ⟶ c₂) (g : c₃ ⟶ c₄) (h : d₁ ⟶ d₂) :
+    (f ⊙ₗₘ g ⊙ₗₘ h) ≫ (αₗ c₂ c₄ d₂).inv =
+    (αₗ c₁ c₃ d₁).inv ≫ ((f ⊗ₘ g) ⊙ₗₘ h) := by
+  rw [Iso.comp_inv_eq, Category.assoc, Eq.comm, Iso.inv_comp_eq, actionAssocIso_hom_naturality]
+
+@[reassoc]
+theorem actionUnitIso_inv_naturality {d d' : D} (f : d ⟶ d') :
+      (λₗ d).inv ≫ (𝟙_ C) ⊴ₗ f = f ≫ (λₗ d').inv := by
+  rw [Iso.inv_comp_eq, ← Category.assoc, Eq.comm, Iso.comp_inv_eq, actionUnitIso_hom_naturality]
 
 @[reassoc (attr := simp)]
 theorem actionHomRight_hom_inv (x : C) {y z : D} (f : y ≅ z) :
@@ -299,8 +302,8 @@ instance isIso_actionHomLeft {x y : C} (f : x ⟶ y) [IsIso f] (z : D) :
 
 instance isIso_actionHom {x y : C} {x' y' : D}
     (f : x ⟶ y) (g : x' ⟶ y') [IsIso f] [IsIso g] :
-    IsIso (f ⊙ₗ g) :=
-  ⟨(inv f) ⊙ₗ (inv g), by simp [← actionHom_comp]⟩
+    IsIso (f ⊙ₗₘ g) :=
+  ⟨(inv f) ⊙ₗₘ (inv g), by simp [← actionHom_comp]⟩
 
 @[simp]
 lemma inv_actionHomLeft {x y : C} (f : x ⟶ y) [IsIso f] (z : D) :
@@ -315,7 +318,7 @@ lemma inv_actionHomRight (x : C) {y z : D} (f : y ⟶ z) [IsIso f] :
 @[simp]
 lemma inv_actionHom {x y : C} {x' y' : D}
     (f : x ⟶ y) (g : x' ⟶ y') [IsIso f] [IsIso g] :
-    inv (f ⊙ₗ g) = (inv f) ⊙ₗ (inv g) :=
+    inv (f ⊙ₗₘ g) = (inv f) ⊙ₗₘ (inv g) :=
   IsIso.inv_eq_of_hom_inv_id <| by simp [← actionHom_comp]
 
 section
@@ -344,10 +347,8 @@ abbrev actionRight (d : D) : C ⥤ D := curriedAction C D|>.flip.obj d
 /-- Bundle `αₗ _ _ _` as an isomorphism of trifunctors. -/
 @[simps!]
 def actionAssocNatIso :
-    (Functor.postcompose₂.obj (curriedAction C D)|>.obj
-      (curriedTensor C)) ≅
-    bifunctorComp₂₃Functor|>.obj (curriedAction C D)|>.obj
-      (curriedAction C D) :=
+    bifunctorComp₁₂ (curriedTensor C) (curriedAction C D) ≅
+    bifunctorComp₂₃ (curriedAction C D) (curriedAction C D) :=
   NatIso.ofComponents fun _ ↦
     NatIso.ofComponents fun _ ↦
      NatIso.ofComponents fun _ ↦ αₗ _ _ _
