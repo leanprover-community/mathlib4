@@ -18,13 +18,17 @@ natural number.
 * `Int.natAbsHom`: `Int.natAbs` bundled as a `MonoidWithZeroHom`.
 -/
 
+namespace Int
+
 /-- `Int.natAbs` as a bundled `MonoidWithZeroHom`. -/
 @[simps]
-def Int.natAbsHom : ℤ →*₀ ℕ where
+def natAbsHom : ℤ →*₀ ℕ where
   toFun := Int.natAbs
   map_mul' := Int.natAbs_mul
   map_one' := Int.natAbs_one
   map_zero' := Int.natAbs_zero
 
-lemma Int.natAbs_sub_nat_of_lt {a b : ℕ} (h : b ≤ a) : (a - b : ℤ).natAbs = a - b := by omega
-lemma Int.natAbs_sub_nat_of_gt {a b : ℕ} (h : a ≤ b) : (a - b : ℤ).natAbs = b - a := by omega
+lemma natAbs_sub_nat_of_le {a b : ℕ} (h : b ≤ a) : Int.natAbs (↑a - ↑b) = a - b := by omega
+lemma natAbs_sub_nat_of_ge {a b : ℕ} (h : a ≤ b) : Int.natAbs (↑a - ↑b) = b - a := by omega
+
+end Int
