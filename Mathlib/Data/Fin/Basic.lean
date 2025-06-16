@@ -96,8 +96,6 @@ lemma ne_last_of_lt {a b : Fin (n + 1)} (hab : a < b) : a ≠ last n :=
 def equivSubtype : Fin n ≃ { i // i < n } where
   toFun a := ⟨a.1, a.2⟩
   invFun a := ⟨a.1, a.2⟩
-  left_inv := fun ⟨_, _⟩ => rfl
-  right_inv := fun ⟨_, _⟩ => rfl
 
 section coe
 
@@ -148,6 +146,13 @@ section Order
 /-!
 ### order
 -/
+
+/-- `Fin.lt_or_ge` is an alias of `Fin.lt_or_le`.
+It is preferred since it follows the mathlib naming convention. -/
+protected alias lt_or_ge := Fin.lt_or_le
+/-- `Fin.le_or_gt` is an alias of `Fin.le_or_lt`.
+It is preferred since it follows the mathlib naming convention. -/
+protected alias le_or_gt := Fin.le_or_lt
 
 theorem le_iff_val_le_val {a b : Fin n} : a ≤ b ↔ (a : ℕ) ≤ b :=
   Iff.rfl
@@ -303,6 +308,21 @@ theorem nontrivial_iff_two_le : Nontrivial (Fin n) ↔ 2 ≤ n := by
   rcases n with (_ | _ | n) <;>
   simp [Fin.nontrivial, not_nontrivial, Nat.succ_le_iff]
 
+/-- If working with more than two elements, we can always pick a third distinct from two existing
+elements. -/
+theorem exists_ne_and_ne_of_two_lt (i j : Fin n) (h : 2 < n) : ∃ k, k ≠ i ∧ k ≠ j := by
+  have : NeZero n := ⟨by omega⟩
+  rcases i with ⟨i, hi⟩
+  rcases j with ⟨j, hj⟩
+  simp_rw [← Fin.val_ne_iff]
+  by_cases h0 : 0 ≠ i ∧ 0 ≠ j
+  · exact ⟨0, h0⟩
+  · by_cases h1 : 1 ≠ i ∧ 1 ≠ j
+    · exact ⟨⟨1, by omega⟩, h1⟩
+    · refine ⟨⟨2, by omega⟩, ?_⟩
+      dsimp only
+      omega
+
 section Monoid
 
 instance inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) :=
@@ -312,11 +332,6 @@ instance inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) :=
 @[simp]
 theorem default_eq_zero (n : ℕ) [NeZero n] : (default : Fin n) = 0 :=
   rfl
-
-instance instNatCast [NeZero n] : NatCast (Fin n) where
-  natCast i := Fin.ofNat n i
-
-lemma natCast_def [NeZero n] (a : ℕ) : (a : Fin n) = ⟨a % n, mod_lt _ n.pos_of_neZero⟩ := rfl
 
 end Monoid
 
@@ -347,8 +362,11 @@ lemma val_sub_one_of_ne_zero [NeZero n] {i : Fin n} (hi : i ≠ 0) : (i - 1).val
 
 section OfNatCoe
 
+-- We allow the coercion from `Nat` to `Fin` in this section.
+open Fin.NatCast
+
 @[simp]
-theorem ofNat_eq_cast (n : ℕ) [NeZero n] (a : ℕ) : Fin.ofNat n a = a :=
+theorem ofNat_eq_cast (n : ℕ) [NeZero n] (a : ℕ) : Fin.ofNat n a = (a : Fin n) :=
   rfl
 
 @[deprecated ofNat_eq_cast (since := "2025-05-30")]
@@ -401,6 +419,14 @@ lemma natCast_mono (hbn : b ≤ n) (hab : a ≤ b) : (a : Fin (n + 1)) ≤ b :=
 
 lemma natCast_strictMono (hbn : b ≤ n) (hab : a < b) : (a : Fin (n + 1)) < b :=
   (natCast_lt_natCast (hab.le.trans hbn) hbn).2 hab
+
+@[simp]
+lemma castLE_natCast {m n : ℕ} [NeZero m] (h : m ≤ n) (a : ℕ) :
+    letI : NeZero n := ⟨Nat.pos_iff_ne_zero.mp (lt_of_lt_of_le m.pos_of_neZero h)⟩
+    Fin.castLE h (a.cast : Fin m) = (a % m : ℕ) := by
+  ext
+  simp only [coe_castLE, val_natCast]
+  rw [Nat.mod_eq_of_lt (a := a % m) (lt_of_lt_of_le (Nat.mod_lt _ m.pos_of_neZero) h)]
 
 end OfNatCoe
 
@@ -675,12 +701,14 @@ theorem succ_ne_last_of_lt {p i : Fin n} (h : i < p) : succ i ≠ last n := by
   · rw [succ_ne_last_iff, Ne, Fin.ext_iff]
     exact ((le_last _).trans_lt' h).ne
 
+open Fin.NatCast in
 @[norm_cast, simp]
-theorem coe_eq_castSucc {a : Fin n} : (a : Fin (n + 1)) = castSucc a := by
+theorem coe_eq_castSucc {a : Fin n} : ((a : Nat) : Fin (n + 1)) = castSucc a := by
   ext
   exact val_cast_of_lt (Nat.lt.step a.is_lt)
 
-theorem coe_succ_lt_iff_lt {n : ℕ} {j k : Fin n} : (j : Fin <| n + 1) < k ↔ j < k := by
+open Fin.NatCast in
+theorem coe_succ_lt_iff_lt {n : ℕ} {j k : Fin n} : (j : Fin (n + 1)) < k ↔ j < k := by
   simp only [coe_eq_castSucc, castSucc_lt_castSucc_iff]
 
 @[simp]
@@ -1113,7 +1141,7 @@ lemma succ_succAbove_zero {n : ℕ} [NeZero n] (i : Fin n) : succAbove i.succ 0 
 /-- `succ` commutes with `succAbove`. -/
 @[simp] lemma succ_succAbove_succ {n : ℕ} (i : Fin (n + 1)) (j : Fin n) :
     i.succ.succAbove j.succ = (i.succAbove j).succ := by
-  obtain h | h := i.lt_or_le (succ j)
+  obtain h | h := i.lt_or_ge (succ j)
   · rw [succAbove_of_lt_succ _ _ h, succAbove_succ_of_lt _ _ h]
   · rwa [succAbove_of_castSucc_lt _ _ h, succAbove_succ_of_le, succ_castSucc]
 
@@ -1121,7 +1149,7 @@ lemma succ_succAbove_zero {n : ℕ} [NeZero n] (i : Fin n) : succAbove i.succ 0 
 @[simp]
 lemma castSucc_succAbove_castSucc {n : ℕ} {i : Fin (n + 1)} {j : Fin n} :
     i.castSucc.succAbove j.castSucc = (i.succAbove j).castSucc := by
-  rcases i.le_or_lt (castSucc j) with (h | h)
+  rcases i.le_or_gt (castSucc j) with (h | h)
   · rw [succAbove_of_le_castSucc _ _ h, succAbove_castSucc_of_le _ _ h, succ_castSucc]
   · rw [succAbove_of_castSucc_lt _ _ h, succAbove_castSucc_of_lt _ _ h]
 
@@ -1287,21 +1315,21 @@ lemma succ_succAbove_predAbove {n : ℕ} {p : Fin n} {i : Fin (n + 1)} (h : i �
 then back to `Fin n` by subtracting one from anything above `p` is the identity. -/
 @[simp]
 lemma predAbove_succAbove (p : Fin n) (i : Fin n) : p.predAbove ((castSucc p).succAbove i) = i := by
-  obtain h | h := p.le_or_lt i
+  obtain h | h := p.le_or_gt i
   · rw [succAbove_castSucc_of_le _ _ h, predAbove_succ_of_le _ _ h]
   · rw [succAbove_castSucc_of_lt _ _ h, predAbove_castSucc_of_le _ _ <| Fin.le_of_lt h]
 
 /-- `succ` commutes with `predAbove`. -/
 @[simp] lemma succ_predAbove_succ (a : Fin n) (b : Fin (n + 1)) :
     a.succ.predAbove b.succ = (a.predAbove b).succ := by
-  obtain h | h := Fin.le_or_lt (succ a) b
+  obtain h | h := Fin.le_or_gt (succ a) b
   · rw [predAbove_of_castSucc_lt _ _ h, predAbove_succ_of_le _ _ h, succ_pred]
   · rw [predAbove_of_lt_succ _ _ h, predAbove_succ_of_lt _ _ h, succ_castPred_eq_castPred_succ]
 
 /-- `castSucc` commutes with `predAbove`. -/
 @[simp] lemma castSucc_predAbove_castSucc {n : ℕ} (a : Fin n) (b : Fin (n + 1)) :
     a.castSucc.predAbove b.castSucc = (a.predAbove b).castSucc := by
-  obtain h | h := a.castSucc.lt_or_le b
+  obtain h | h := a.castSucc.lt_or_ge b
   · rw [predAbove_of_castSucc_lt _ _ h, predAbove_castSucc_of_lt _ _ h,
       castSucc_pred_eq_pred_castSucc]
   · rw [predAbove_of_le_castSucc _ _ h, predAbove_castSucc_of_le _ _ h, castSucc_castPred]
@@ -1456,6 +1484,7 @@ lemma sub_succ_le_sub_of_le {n : ℕ} {u v : Fin (n + 2)} (h : u < v) : v - (u +
 
 end AddGroup
 
+open Fin.NatCast in
 @[simp]
 theorem coe_natCast_eq_mod (m n : ℕ) [NeZero m] :
     ((n : Fin m) : ℕ) = n % m :=
@@ -1489,3 +1518,5 @@ protected theorem zero_mul' [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
 end Mul
 
 end Fin
+
+set_option linter.style.longFile 1700
