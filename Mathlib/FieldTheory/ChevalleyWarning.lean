@@ -139,7 +139,6 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
   -- We are now ready to apply the main machine, proven before.
   apply F.sum_eval_eq_zero
   -- It remains to verify the crucial assumption of this machine
-  show F.totalDegree < (q - 1) * Fintype.card σ
   calc
     F.totalDegree ≤ ∑ i ∈ s, (1 - f i ^ (q - 1)).totalDegree := totalDegree_finset_prod s _
     _ ≤ ∑ i ∈ s, (q - 1) * (f i).totalDegree := sum_le_sum fun i _ => ?_

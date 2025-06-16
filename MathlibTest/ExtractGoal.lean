@@ -167,6 +167,9 @@ example : ∀ n, n < n + 1 := by
 info: theorem _example.extracted_1 (m : ℕ) (this : m < m.succ.succ) : m < m + 1 := sorry
 ---
 warning: declaration uses 'sorry'
+---
+warning: 'show _' tactic does nothing
+note: this linter can be disabled with `set_option linter.unusedTactic false`
 -/
 #guard_msgs in
 example : ∀ n, n < n + 1 := by
