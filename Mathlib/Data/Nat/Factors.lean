@@ -331,4 +331,3 @@ theorem four_dvd_or_exists_odd_prime_and_dvd_of_two_lt {n : ℕ} (n2 : 2 < n) :
 
 end Nat
 
-#min_imports
