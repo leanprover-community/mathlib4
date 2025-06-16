@@ -225,3 +225,106 @@ instance Sublocale.instCoframeMinimalAxioms : Order.Coframe.MinimalAxioms (Sublo
 
 instance Sublocale.instCoframe : Order.Coframe (Sublocale X) :=
   .ofMinimalAxioms instCoframeMinimalAxioms
+
+lemma Sublocale.univ_eq_top : (⟨univ, fun _ _ ↦ trivial, fun _ _ a ↦ a⟩ : Sublocale X) = ⊤ :=
+  le_antisymm le_top (fun _ _ ↦ trivial)
+
+lemma Sublocale.singleton_top_eq_bot : (⟨{⊤}, by simp, by simp⟩ : Sublocale X) = ⊥ :=
+  le_antisymm (fun i h ↦ by simp_all [top_mem]) bot_le
+
+@[ext]
+structure Open (X : Type*) [Order.Frame X] where
+  element : X
+
+namespace Open
+
+instance : PartialOrder (Open X) where
+  le x y := x.element ≤ y.element
+  le_refl _ := le_refl _
+  le_trans _ _ _ h1 h2 := le_trans h1 h2
+  le_antisymm _ _ h1 h2 := by ext; exact le_antisymm h1 h2
+
+variable {U V : Open X}
+
+def get_element : Open X ≃o X where
+  toFun x := x.element
+  invFun x := ⟨x⟩
+  left_inv x := rfl
+  right_inv x := rfl
+  map_rel_iff' := by aesop
+
+instance : Coe (Open X) X where
+  coe U := U.get_element
+
+lemma le_def : U ≤ V ↔ U.get_element ≤ V.get_element := ge_iff_le
+
+def toNucleus (U : Open X) : Nucleus X where
+  toFun x := U ⇨ x
+  map_inf' _ _ := himp_inf_distrib _ _ _
+  idempotent' _ := le_of_eq himp_idem
+  le_apply' _ := le_himp
+
+instance : Coe (Open X) (Nucleus X) where
+  coe U := U.toNucleus
+
+instance : CompleteLattice (Open X) := get_element.symm.toGaloisInsertion.liftCompleteLattice
+
+instance : Order.Frame (Open X) := .ofMinimalAxioms ⟨fun a s ↦ by
+  simp_rw [Open.le_def]; simp [inf_sSup_eq, le_iSup_iff]⟩
+
+lemma test (U : Open X) : U.toNucleus.toSublocale = nucleusIsoSublocale U.toNucleus := rfl
+
+lemma test2 (n : Nucleus X) : OrderDual.ofDual n = n := rfl
+
+lemma test3 (n : Nucleus X) : OrderDual.toDual n = n := rfl
+
+def toSublocale : FrameHom (Open X) (Sublocale X) where
+  toFun U := U.toNucleus.toSublocale
+  map_sSup' s := by
+    simp_rw [test, ← Set.image_image]
+    change _ = sSup (⇑nucleusIsoSublocale '' (toNucleus '' s))
+    rw [← map_sSup]
+    congr
+    ext x
+    simp only [toNucleus, map_sSup, test2, Nucleus.coe_mk, InfHom.coe_mk, ofDual_sSup,
+      Nucleus.sInf_apply, mem_preimage, mem_image, iInf_exists]
+    apply le_antisymm
+    · simp only [test3, le_iInf_iff, and_imp, forall_apply_eq_imp_iff₂, Nucleus.coe_mk,
+      InfHom.coe_mk]
+      exact fun _ h ↦ himp_le_himp (le_sSup (by simp [h])) (le_refl _)
+    · simp only [test3, iInf_le_iff, le_iInf_iff, and_imp, forall_apply_eq_imp_iff₂, Nucleus.coe_mk,
+      InfHom.coe_mk]
+      intro b h
+      simpa [inf_sSup_eq] using fun a h1 ↦ h a h1
+  map_inf' a b := by
+    simp_rw [test]
+    rw [← map_inf]
+    congr
+    ext x
+    simp only [toNucleus, map_inf, test2, Nucleus.coe_mk, InfHom.coe_mk, ofDual_inf]
+    rw [← sSup_pair, ← sInf_upperBounds_eq_csSup]
+    simp only [@Nucleus.sInf_apply, upperBounds_insert, upperBounds_singleton,
+     Ici_inter_Ici, mem_Ici, sup_le_iff]
+    apply le_antisymm
+    · simp only [← Nucleus.coe_le_coe, Nucleus.coe_mk, InfHom.coe_mk, Pi.le_def, le_iInf_iff,
+      and_imp]
+      intro i h1 h2
+      rw [← himp_himp, ← @i.idempotent _ _ x]
+      exact le_trans (h1 (get_element b ⇨ x)) (le_trans Nucleus.map_himp_le (h2 (i x)))
+    · simp only [← Nucleus.coe_le_coe, Nucleus.coe_mk, InfHom.coe_mk, Pi.le_def, le_himp_iff,
+      iInf_inf, iInf_le_iff, le_inf_iff, le_iInf_iff, and_imp]
+      intro y h1
+      let h2 := h1 (a ⊓ b).toNucleus
+      simp only [toNucleus, map_inf, Nucleus.coe_mk, InfHom.coe_mk, le_himp_iff] at h2
+      rcases h2 with ⟨h2, h3⟩
+      refine le_trans' (h2 ?_ ?_) (le_inf (by rfl) (le_inf_iff.mpr h3))
+      · intro i
+        rw [← inf_assoc]
+        exact inf_le_of_left_le himp_inf_le
+      · rw [inf_comm]
+        intro i
+        rw [← inf_assoc]
+        exact inf_le_of_left_le himp_inf_le
+  map_top' := by simp [Nucleus.toSublocale, Open.toNucleus, ← Sublocale.univ_eq_top]
+
+end Open
