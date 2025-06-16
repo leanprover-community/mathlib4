@@ -334,8 +334,6 @@ namespace Matrix
 
 section Transpose
 
-open Matrix
-
 @[simp]
 theorem transpose_transpose (M : Matrix m n α) : Mᵀᵀ = M := by
   ext
