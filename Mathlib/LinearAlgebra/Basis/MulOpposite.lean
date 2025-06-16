@@ -36,7 +36,7 @@ theorem mulOpposite_repr_apply' (b : Basis ι R H) (x : H) :
 
 end Basis
 
-instance {R H : Type*} [DivisionRing R] [AddCommGroup H] [Module R H]
+instance FiniteDimensional.mulOpposite {R H : Type*} [DivisionRing R] [AddCommGroup H] [Module R H]
   [FiniteDimensional R H] : FiniteDimensional R Hᵐᵒᵖ :=
 FiniteDimensional.of_finite_basis
   (Basis.ofVectorSpace R H).mulOpposite
