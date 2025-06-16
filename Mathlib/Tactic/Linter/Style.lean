@@ -543,7 +543,7 @@ end Style.openClassical
 
 /--
 The "show" linter emits a warning if the `show` tactic changed the goal. `show` should only be used
-to indicate intermediate goal states for proof readibility. When the goal is actually changed,
+to indicate intermediate goal states for proof readability. When the goal is actually changed,
 `change` should be preferred.
 -/
 register_option linter.style.show : Bool := {
