@@ -169,7 +169,7 @@ theorem inv_inv (A : C) [Grp_Class A] : CategoryTheory.inv ι = ι[A] := by
 
 @[reassoc]
 theorem mul_inv [BraidedCategory C] (A : C) [Grp_Class A] :
-    μ ≫ ι = (β_ A A).hom ≫ (ι ⊗ ι) ≫ μ := by
+    μ ≫ ι = (β_ A A).hom ≫ (ι ⊗ₘ ι) ≫ μ := by
   apply lift_left_mul_ext μ
   nth_rw 2 [← Category.comp_id μ]
   rw [← comp_lift, Category.assoc, left_inv, ← Category.assoc (β_ A A).hom,
@@ -180,7 +180,7 @@ theorem mul_inv [BraidedCategory C] (A : C) [Grp_Class A] :
 
 @[reassoc (attr := simp)]
 theorem tensorHom_inv_inv_mul [BraidedCategory C] (A : C) [Grp_Class A] :
-    (ι[A] ⊗ ι[A]) ≫ μ = (β_ A A).hom ≫ μ ≫ ι := by
+    (ι[A] ⊗ₘ ι[A]) ≫ μ = (β_ A A).hom ≫ μ ≫ ι := by
   rw [mul_inv A, SymmetricCategory.symmetry_assoc]
 
 /-- The map `(· * f)`. -/
@@ -306,7 +306,7 @@ end
 section
 
 variable {M N : Grp_ C} (f : M.X ≅ N.X) (one_f : η[M.X] ≫ f.hom = η[N.X] := by aesop_cat)
-  (mul_f : μ[M.X] ≫ f.hom = (f.hom ⊗ f.hom) ≫ μ[N.X] := by aesop_cat)
+  (mul_f : μ[M.X] ≫ f.hom = (f.hom ⊗ₘ f.hom) ≫ μ[N.X] := by aesop_cat)
 
 /-- Constructor for isomorphisms in the category `Grp_ C`. -/
 def mkIso : M ≅ N :=
