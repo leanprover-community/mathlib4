@@ -30,7 +30,7 @@ partial def simpIntroCore (g : MVarId) (ctx : Simp.Context) (simprocs : Simp.Sim
   let n := if var.isIdent then var.getId else `_
   let withFVar := fun (fvar, g) ↦ g.withContext do
     Term.addLocalVarInfo var (mkFVar fvar)
-    let simpContext : Simp.Context ←
+    let ctx : Simp.Context ←
       if (← Meta.isProp <| ← fvar.getType) then
         let simpTheorems ← ctx.simpTheorems.addTheorem (.fvar fvar) (.fvar fvar)
         pure <| ctx.setSimpTheorems simpTheorems
