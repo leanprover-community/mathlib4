@@ -769,7 +769,8 @@ theorem leftAssocTensor_obj (X) : (leftAssocTensor C).obj X = (X.1 ⊗ X.2.1) �
   rfl
 
 @[simp]
-theorem leftAssocTensor_map {X Y} (f : X ⟶ Y) : (leftAssocTensor C).map f = (f.1 ⊗ₘ f.2.1) ⊗ₘ f.2.2 :=
+theorem leftAssocTensor_map {X Y} (f : X ⟶ Y) :
+    (leftAssocTensor C).map f = (f.1 ⊗ₘ f.2.1) ⊗ₘ f.2.2 :=
   rfl
 
 /-- The right-associated triple tensor product as a functor. -/
@@ -782,7 +783,8 @@ theorem rightAssocTensor_obj (X) : (rightAssocTensor C).obj X = X.1 ⊗ X.2.1 �
   rfl
 
 @[simp]
-theorem rightAssocTensor_map {X Y} (f : X ⟶ Y) : (rightAssocTensor C).map f = f.1 ⊗ₘ f.2.1 ⊗ₘ f.2.2 :=
+theorem rightAssocTensor_map {X Y} (f : X ⟶ Y) :
+    (rightAssocTensor C).map f = f.1 ⊗ₘ f.2.1 ⊗ₘ f.2.2 :=
   rfl
 
 /-- The tensor product bifunctor `C ⥤ C ⥤ C` of a monoidal category. -/
