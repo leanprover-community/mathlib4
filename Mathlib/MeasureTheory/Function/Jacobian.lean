@@ -1212,23 +1212,72 @@ theorem integral_target_eq_integral_abs_det_fderiv_smul {f : PartialHomeomorph E
   intro x hx
   exact (hf' x hx).hasFDerivWithinAt
 
-variable {t : Set ℝ} {g : ℝ → ℝ} {g' : ℝ → ℝ}
 
-#check countable_setOf_isolated_right
+variable {α β : Type*} {t : Set α} {g : α → β}
+[TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] [LinearOrder α] [OrderTopology α]
+[PolishSpace α]
+[TopologicalSpace β] [MeasurableSpace β] [BorelSpace β] [LinearOrder β] [OrderTopology β]
 
-#check measurable_image_of_fderivWithin
+private theorem MeasurableSet.image_of_monotoneOn_of_continuousOn
+    (ht : MeasurableSet t) (hg : MonotoneOn g t) (h'g : ContinuousOn g t) :
+    MeasurableSet (g '' t) := by
+  /- We we will use that the image of a measurable set by a continuous injective map is measurable.
+  Therefore, we need to remove the injectivity default. There are only countably many points that
+  have several preimages, so this set is also measurable. -/
+  let u : Set β := {c | ∃ x, ∃ y, x ∈ t ∧ y ∈ t ∧ x < y ∧ g x = c ∧ g y = c}
+  have hu : Set.Countable u := MonotoneOn.countable_setOf_two_preimages hg
+  let t' := t ∩ g ⁻¹' u
+  have ht' : MeasurableSet t' := by
+    have : t' = ⋃ c ∈ u, t ∩ g⁻¹' {c} := by ext; simp [t']
+    rw [this]
+    apply MeasurableSet.biUnion hu (fun c hc ↦ ?_)
+    obtain ⟨v, hv, tv⟩ : ∃ v, OrdConnected v ∧ t ∩ g ⁻¹' {c} = t ∩ v :=
+      OrdConnected.preimage_monotoneOn ordConnected_singleton hg
+    rw [tv]
+    exact ht.inter hv.measurableSet
+  have : g '' t = g '' (t \ t') ∪ g '' t' := by simp [← image_union, t']
+  rw [this]
+  apply MeasurableSet.union
+  · apply (ht.diff ht').image_of_continuousOn_injOn (h'g.mono diff_subset)
+    intro x hx y hy hxy
+    contrapose! hxy
+    wlog H : x < y generalizing x y with h
+    · have : y < x := lt_of_le_of_ne (not_lt.1 H) hxy.symm
+      exact (h hy hx hxy.symm this).symm
+    intro h
+    apply hx.2
+    refine ⟨hx.1, ?_⟩
+    exact ⟨x, y, hx.1, hy.1, H, rfl, h.symm⟩
+  · apply Countable.measurableSet
+    apply hu.mono
+    simp [t']
 
-#check Monotone.countable_not_continuousAt
+/-- The image of a measurable set under a monotone map is measurable. -/
+theorem MeasurableSet.image_of_monotoneOn
+    (ht : MeasurableSet t) (hg : MonotoneOn g t) : MeasurableSet (g '' t) := by
+  /- Since there are only countably many discontinuity points, the result follows by reduction to
+  the continuous case, which we have already proved. -/
+  let t' := {x ∈ t | ¬ ContinuousWithinAt g t x}
+  have ht' : Set.Countable t' := hg.countable_not_continuousWithinAt
+  have : g '' t = g '' (t \ t') ∪ g '' t' := by
+    rw [← image_union]
+    congr!
+    ext
+    simp only [sdiff_sep_self, not_not, mem_union, mem_setOf_eq, t']
+    tauto
+  rw [this]
+  apply MeasurableSet.union _ (ht'.image g).measurableSet
+  apply MeasurableSet.image_of_monotoneOn_of_continuousOn (ht.diff ht'.measurableSet)
+    (hg.mono diff_subset)
+  intro x hx
+  simp only [sdiff_sep_self, not_not, mem_setOf_eq, t'] at hx
+  exact hx.2.mono diff_subset
 
-theorem foot (hg : MonotoneOn g t) :
-    Set.Countable {x ∈ t | ¬ ContinuousWithinAt g t x} := by
+/-- The image of a measurable set under a monotone map is measurable. -/
+theorem MeasurableSet.image_of_antitoneOn
+    (ht : MeasurableSet t) (hg : AntitoneOn g t) : MeasurableSet (g '' t) := by
 
 
-#exit
-
-theorem foo (ht : MeasurableSet t) (hg : MonotoneOn g t) : MeasurableSet (g '' t) := by
-  let u : Set ℝ := {c | ∃ x, ∃ y, x ∈ t ∧ y ∈ t ∧ x < y ∧ g x = c ∧ g y = c}
-  have : Countable u := MonotoneOn.countable_setOf_two_preimages hg
 
 #exit
 
