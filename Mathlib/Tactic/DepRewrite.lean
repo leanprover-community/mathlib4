@@ -123,7 +123,7 @@ If inserting more casts is acceptable, use `(castMode := .all)`."
 return `⋯ ▸ e : te[p/x,rfl/h]`.
 Otherwise return `none`. -/
 def castBack? (e te x h : Expr) : MetaM (Option Expr) := do
-  if !te.hasFVar || !te.hasAnyFVar (fun f => f == x.fvarId! || f == h.fvarId!) then
+  if !te.hasAnyFVar (fun f => f == x.fvarId! || f == h.fvarId!) then
     return none
   let motive ←
     withLocalDeclD `x' (← inferType x) fun x' => do
@@ -169,18 +169,26 @@ partial def visitAndCast (e : Expr) (et? : Option Expr) : M Expr := do
   trace[depRewrite.cast] "casting{indentExpr e'}\nto expected type{indentExpr et}"
   let ctx ← read
   checkCastAllowed e' te' ctx.cfg.castMode
-  -- Try casting from the inferred type,
-  -- and if that doesn't work,
-  -- casting to the expected type.
-  if let some e'' ← castBack? e' te' ctx.x ctx.h then
+
+  /- Try casting from the inferred type (x ↦ p),
+  and to the expected type (p ↦ x).
+  In certain cases we need to cast in both directions (see `bool_dep_test`). -/
+  match ← castBack? e' te' ctx.x ctx.h with
+  | some e'' =>
     let te'' ← inferType e''
     if ← withAtLeastTransparency .default <| withNewMCtxDepth <| isDefEq te'' et then
-      trace[depRewrite.cast] "from inferred type (x ↦ p):{indentExpr e'}"
+      trace[depRewrite.cast] "done with one cast (x ↦ p):{indentExpr e''}"
       return e''
-  let motive ← mkLambdaFVars #[ctx.x, ctx.h] et
-  let e' ← mkEqRec motive e' ctx.h
-  trace[depRewrite.cast] "to expected type (p ↦ x):{indentExpr e'}"
-  return e'
+
+    let motive ← mkLambdaFVars #[ctx.x, ctx.h] et
+    let e''' ← mkEqRec motive e'' ctx.h
+    trace[depRewrite.cast] "done with two casts (x ↦ p, p ↦ x):{indentExpr e'''}"
+    return e'''
+  | none =>
+    let motive ← mkLambdaFVars #[ctx.x, ctx.h] et
+    let e'' ← mkEqRec motive e' ctx.h
+    trace[depRewrite.cast] "done with one cast (x ↦ p):{indentExpr e''}"
+    return e''
 
 /-- Like `visitAndCast`, but does not insert casts at the top level.
 The expected types of certain subterms are computed from `et?`. -/

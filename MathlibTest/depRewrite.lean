@@ -110,7 +110,7 @@ example : P fun (lt : 0 < n) => @Fin.mk n 0 (@id (0 < n) lt) := by
 -- forall
 example : P (forall (lt : 0 < n), @Eq (Fin n) ⟨0, lt⟩ ⟨0, lt⟩) := by
   rewrite! [eq]
-  guard_target =ₐ P (forall (lt : 0 < m), @Eq (Fin m) ⟨0, eq ▸ lt⟩ ⟨0, eq ▸ lt⟩)
+  guard_target = P (forall (lt : 0 < m), @Eq (Fin m) ⟨0, lt⟩ ⟨0, lt⟩)
   exact test_sorry
 
 /-- error: Will not cast
@@ -186,6 +186,20 @@ b : B n
 example (f : B n → Nat) (b : B n) :
     f b = f b := by
   rewrite! [eq]
+  exact test_sorry
+
+-- Test that requires casting twice.
+theorem bool_dep_test
+    (b : Bool)
+    (β : Bool → Sort u)
+    (f : ∀ b, β (b && false))
+    (h : false = b) :
+    @P (β false) (f false) := by
+  rw! (castMode := .all) [h]
+  guard_target =
+    @P (β b) (h.rec (motive := fun x _ => β x) <|
+      h.symm.rec (motive := fun x _ => β (x && false)) <|
+        f b)
   exact test_sorry
 
 /-! Tests for proof-only mode, rewriting compound terms (non-fvars). -/
