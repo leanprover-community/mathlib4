@@ -755,7 +755,7 @@ def openCover : (colimit F).OpenCover :=
     fun i ↦ (glueData F).openCover).copy J F.obj (colimit.ι F)
     ((equivShrink J).trans <| (Equiv.uniqueSigma fun (_ : Unit) ↦ Shrink J).symm)
     (fun _ ↦ F.mapIso (eqToIso (by simp [GlueData.openCover, glueData]))) fun i ↦ by
-  change colimit.ι F i = _ ≫ (glueData F).ι (equivShrink J i) ≫ _
+  show colimit.ι F i = _ ≫ (glueData F).ι (equivShrink J i) ≫ _
   simp [← Category.assoc, ← Iso.comp_inv_eq, cocone]
 
 @[simp] lemma openCover_J : (openCover F).J = J := rfl
