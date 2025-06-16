@@ -1000,8 +1000,10 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   let f : ∀ i, H i →* G := fun i => FreeGroup.lift fun _ => a i
   let X' : ι → Set α := fun i => X i ∪ Y i
   apply lift_injective_of_ping_pong f _ X'
-  · exact fun i => Set.Nonempty.inl (hXnonempty i)
-  · intro i j hij
+  · show ∀ i, (X' i).Nonempty
+    exact fun i => Set.Nonempty.inl (hXnonempty i)
+  · show Pairwise (Disjoint on X')
+    intro i j hij
     simp only [X']
     apply Disjoint.union_left <;> apply Disjoint.union_right
     · exact hXdisj hij
