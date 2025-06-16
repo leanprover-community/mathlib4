@@ -89,16 +89,7 @@ def print_error(message: str) -> None:
 def run_command(cmd: List[str], capture_output: bool = True, check: bool = True) -> subprocess.CompletedProcess:
     """Run a command and return the result with Windows compatibility."""
     try:
-        # On Windows, we need to use shell=True for some commands
-        use_shell = platform.system() == 'Windows' and any(c in cmd[0] for c in ['|', '>', '<', '&'])
-
-        # Convert command to string if using shell
-        if use_shell:
-            cmd_str = ' '.join(cmd)
-            result = subprocess.run(cmd_str, shell=True, capture_output=capture_output, text=True, check=check)
-        else:
-            result = subprocess.run(cmd, capture_output=capture_output, text=True, check=check)
-        return result
+        return subprocess.run(cmd, capture_output=capture_output, text=True, encoding="utf8", check=check)
     except subprocess.CalledProcessError as e:
         if not check:
             return e
@@ -188,8 +179,10 @@ def check_gh_token_scopes() -> bool:
             print_warning("Could not verify token scopes, but basic API access works")
             return True
 
-        # Parse the output to check for required scopes
-        auth_output = result.stdout
+        # Hackily check the output for required scopes
+        # Versions of gh before v2.31.0 print this info on stderr, not stdout.
+        # See https://github.com/cli/cli/issues/7447
+        auth_output = result.stdout + result.stderr
         if 'repo' not in auth_output:  # or 'workflow' not in auth_output:
             print_error("GitHub CLI token lacks required scopes.")
             print("Required scopes: repo, workflow")
@@ -330,6 +323,12 @@ def setup_remotes(username: str, fork_url: str, auto_accept: bool = False) -> st
     Returns the name of the remote that points to the user's fork.
     """
     print_step(4, "Setting up git remotes")
+
+    # This will sync the local references with the upstream ones and delete refs to branches that
+    # don’t exist anymore on upstream repos.
+    # In particular, this will ensure the branches with duplicate names up to case that were recently
+    # deleted on the main repository do not cause trouble in the migration.
+    run_command(['git', 'fetch', '--all', '--prune'])
 
     remotes = get_current_remotes()
 
