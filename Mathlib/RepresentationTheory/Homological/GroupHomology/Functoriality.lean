@@ -302,6 +302,11 @@ noncomputable abbrev mapOneCycles :
   ShortComplex.cyclesMap' (mapShortComplexH1 f φ) (shortComplexH1 A).moduleCatLeftHomologyData
     (shortComplexH1 B).moduleCatLeftHomologyData
 
+lemma mapOneCycles_hom :
+    (mapOneCycles f φ).hom = (fOne f φ).hom.restrict (fun x _ => by
+      have := congr($((mapShortComplexH1 f φ).comm₂₃) x); simp_all [oneCycles, shortComplexH1]) :=
+  rfl
+
 @[reassoc, elementwise]
 lemma mapOneCycles_comp_i :
     mapOneCycles f φ ≫ (shortComplexH1 B).moduleCatLeftHomologyData.i =
@@ -348,7 +353,7 @@ instance mapOneCycles_quotientGroupMk'_epi :
   choose! s hs using QuotientGroup.mk_surjective (s := S)
   have hs₁ : QuotientGroup.mk ∘ s = id := funext hs
   refine ⟨⟨mapDomain s x, ?_⟩, Subtype.ext <| by
-    rw [coe_mapOneCycles]; simp [← mapDomain_comp, hs₁]⟩
+    simp [mapOneCycles_hom, ← mapDomain_comp, hs₁]⟩
   simpa [mem_oneCycles_iff, ← (mem_oneCycles_iff _).1 hx, sum_mapDomain_index_inj (f := s)
       (fun x y h => by rw [← hs x, ← hs y, h])]
     using Finsupp.sum_congr fun a b => QuotientGroup.induction_on a fun a => by
@@ -435,10 +440,9 @@ previous assumptions. -/
     refine (H1π_eq_iff _ _).2 ?_
   /- Indeed, `v + d(ve) - x = d(ve - z) ∈ B₁(G, A)`, since `v := x - dz`. -/
     use ve - z
-    rw [coe_mapOneCycles]
     have := mapDomain_comapDomain (α := S) Subtype.val Subtype.val_injective
       (v + dOne A ve) (fun x hx => ⟨⟨x, hS hx⟩, rfl⟩)
-    simp_all [v, add_sub_assoc, sub_add_sub_cancel']
+    simp_all [mapOneCycles_hom, v, add_sub_assoc, sub_add_sub_cancel']
   /- And `v + d(ve) := x - dz + d(ve)` is a 1-cycle because `x` is. -/
   · have : v + dOne _ ve ∈ oneCycles A := Submodule.add_mem _
       (Submodule.sub_mem _ hxc <| dOne_apply_mem_oneCycles _) (dOne_apply_mem_oneCycles _)
@@ -515,6 +519,11 @@ noncomputable abbrev mapTwoCycles :
     ModuleCat.of k (twoCycles A) ⟶ ModuleCat.of k (twoCycles B) :=
   ShortComplex.cyclesMap' (mapShortComplexH2 f φ) (shortComplexH2 A).moduleCatLeftHomologyData
     (shortComplexH2 B).moduleCatLeftHomologyData
+
+lemma mapTwoCycles_hom :
+    (mapTwoCycles f φ).hom = (fTwo f φ).hom.restrict (fun x _ => by
+      have := congr($((mapShortComplexH2 f φ).comm₂₃) x); simp_all [twoCycles, shortComplexH2]) :=
+  rfl
 
 @[reassoc, elementwise]
 lemma mapTwoCycles_comp_i :
