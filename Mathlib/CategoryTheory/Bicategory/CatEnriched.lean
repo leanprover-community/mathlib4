@@ -20,7 +20,7 @@ We provide this with an instance of a strict bicategory structure constructing
 `Bicategory.Strict (CatEnriched C)`.
 -/
 
-universe u v
+universe u v u' v'
 namespace CategoryTheory
 open Category
 
@@ -58,6 +58,11 @@ def hComp {a b c : CatEnriched C} {f f' : a ⟶ b} {g g' : b ⟶ c}
 @[simp]
 theorem id_hComp_id {a b c : CatEnriched C} (f : a ⟶ b) (g : b ⟶ c) :
     hComp (𝟙 f) (𝟙 g) = 𝟙 (f ≫ g) := Functor.map_id ..
+
+@[simp]
+theorem eqToHom_hComp_eqToHom {a b c : CatEnriched C}
+    {f f' : a ⟶ b} (α : f = f') {g g' : b ⟶ c} (β : g = g') :
+    hComp (eqToHom α) (eqToHom β) = eqToHom (α ▸ β ▸ rfl) := by cases α; cases β; simp
 
 /-- The interchange law for horizontal and vertical composition of 2-cells in a bicategory. -/
 @[simp]
@@ -131,20 +136,24 @@ end CatEnriched
 end
 
 section
-variable {C : Type*} [Category C]
+variable {C : Type u} [Category.{v} C]
 
 /-- TODO: move and fix the name. -/
 def equivObj : Cat.chosenTerminal ⥤ C ≃ C where
-  toFun F := F.obj ⟨⟨⟨⟩⟩⟩
-  invFun := sorry
-  left_inv := sorry
-  right_inv := sorry
+  toFun F := F.obj ⟨⟨()⟩⟩
+  invFun := (Functor.const _).obj
+  left_inv _ := by
+    apply Functor.ext
+    · rintro ⟨⟨⟨⟩⟩⟩ ⟨⟨⟨⟩⟩⟩ ⟨⟨⟨⟨⟩⟩⟩⟩
+      simp; exact (Functor.map_id _ _).symm
+    · intro; rfl
+  right_inv _ := rfl
 
 /-- TODO: move and fix the name. -/
 @[simp]
 theorem equivObj_toFun (F : Cat.chosenTerminal ⥤ C) : equivObj F = F.obj ⟨⟨⟨⟩⟩⟩ := rfl
 
-variable [EnrichedOrdinaryCategory Cat C]
+variable [EnrichedOrdinaryCategory Cat.{v',u'} C]
 
 /-- A type synonym for `C`, which should come equipped with a `Cat`-enriched category structure.
 This converts it to a strict bicategory where `Category (X ⟶ Y)` is `(X ⟶[Cat] Y)`. -/
@@ -159,33 +168,79 @@ instance : EnrichedCategory Cat (CatEnrichedOrdinary C) := inferInstanceAs (Enri
 instance : EnrichedOrdinaryCategory Cat (CatEnrichedOrdinary C) :=
   inferInstanceAs (EnrichedOrdinaryCategory Cat C)
 
+def toBase (a : CatEnrichedOrdinary C) : CatEnriched C := a
+
 /-- The hom-types in a `Cat`-enriched ordinary category are equivalent to the types
 underlying the hom-categories. -/
-def homEquiv {a b : CatEnrichedOrdinary C} : (a ⟶ b) ≃ (a ⟶[Cat] b).α :=
+def homEquiv {a b : CatEnrichedOrdinary C} : (a ⟶ b) ≃ (a.toBase ⟶ b.toBase) :=
   (eHomEquiv (V := Cat)).trans equivObj
 
-theorem homEquiv_comp {a b c : CatEnrichedOrdinary C} (f : a ⟶ b) (g : b ⟶ c) :
-    homEquiv (f ≫ g) = (eComp Cat a b c).obj ⟨homEquiv f, homEquiv g⟩ := by
+theorem homEquiv_id {a : CatEnrichedOrdinary C} :
+    homEquiv (𝟙 a) = 𝟙 a.toBase := by
   unfold homEquiv
   simp only [Equiv.trans_apply]
-  rw [eHomEquiv_comp]
-  rfl
+  rw [eHomEquiv_id]; rfl
+
+theorem homEquiv_comp {a b c : CatEnrichedOrdinary C} (f : a ⟶ b) (g : b ⟶ c) :
+    homEquiv (f ≫ g) = homEquiv f ≫ homEquiv g := by
+  unfold homEquiv
+  simp only [Equiv.trans_apply]
+  rw [eHomEquiv_comp]; rfl
+
+structure Hom {X Y : CatEnrichedOrdinary C} (f g : X ⟶ Y) where mk' ::
+  base' : homEquiv f ⟶ homEquiv g
+instance {X Y : CatEnrichedOrdinary C} : Quiver (X ⟶ Y) where
+  Hom f g := Hom f g
+
+def Hom.base {X Y : CatEnrichedOrdinary C} {f g : X ⟶ Y} (α : f ⟶ g) :
+    homEquiv f ⟶ homEquiv g := α.base'
+
+def Hom.mk {X Y : CatEnrichedOrdinary C} {f g : X ⟶ Y} (α : homEquiv f ⟶ homEquiv g) :
+    f ⟶ g := .mk' α
+
+@[simp] theorem mk_base {X Y : CatEnrichedOrdinary C} {f g : X ⟶ Y} (α : f ⟶ g) :
+    Hom.mk (Hom.base α) = α := rfl
+
+@[simp] theorem base_mk {X Y : CatEnrichedOrdinary C} {f g : X ⟶ Y} (α : homEquiv f ⟶ homEquiv g) :
+    Hom.base (Hom.mk α) = α := rfl
+
+instance {X Y : CatEnrichedOrdinary C} : CategoryStruct (X ⟶ Y) where
+  id f := Hom.mk (𝟙 (homEquiv f))
+  comp α β := Hom.mk (Hom.base α ≫ Hom.base β)
+
+theorem Hom.id_eq {X Y : CatEnrichedOrdinary C} (f : X ⟶ Y) :
+    𝟙 f = Hom.mk (𝟙 (homEquiv f)) := rfl
+
+@[simp] theorem Hom.base_id {X Y : CatEnrichedOrdinary C} (f : X ⟶ Y) :
+    Hom.base (𝟙 f) = 𝟙 (homEquiv f) := rfl
+
+theorem Hom.comp_eq {X Y : CatEnrichedOrdinary C} {f g h : X ⟶ Y}
+    (α : f ⟶ g) (β : g ⟶ h) : (α ≫ β) = Hom.mk (Hom.base α ≫ Hom.base β) := rfl
+
+@[simp] theorem Hom.base_comp {X Y : CatEnrichedOrdinary C} {f g h : X ⟶ Y}
+    (α : f ⟶ g) (β : g ⟶ h) : Hom.base (α ≫ β) = (Hom.base α ≫ Hom.base β) := rfl
+
+theorem Hom.mk_comp {X Y : CatEnrichedOrdinary C} {f g h : X ⟶ Y}
+    (α : homEquiv f ⟶ homEquiv g) (β : homEquiv g ⟶ homEquiv h) :
+    Hom.mk (α ≫ β) = (Hom.mk α ≫ Hom.mk β) := rfl
+
+@[ext] theorem Hom.ext {X Y : CatEnrichedOrdinary C} {f g : X ⟶ Y} (α β : f ⟶ g)
+    (H : Hom.base α = Hom.base β) : α = β := by cases α; cases β; cases H; rfl
 
 /-- A `Cat`-enriched ordinary category comes with hom-categories `X ⟶[Cat] Y` and the type of
 objects is equivalent to the type `X ⟶ Y` defined by the category structure on `C`. The following
 definition transfers the category structure to the latter type of objects. -/
 instance {X Y : CatEnrichedOrdinary C} : Category (X ⟶ Y) where
-  Hom f g := homEquiv f ⟶ homEquiv g
-  id f := 𝟙 _
-  comp α β := α ≫ β
+
+@[simp] theorem Hom.base_eqToHom {X Y : CatEnrichedOrdinary C} {f g : X ⟶ Y} (α : f = g) :
+    Hom.base (eqToHom α) = eqToHom (congrArg _ α) := by cases α; rfl
 
 /-- The horizonal composition on 2-morphisms is defined using the action on arrows of the
 composition bifunctor from the enriched category structure. -/
-@[simp]
 def hComp {a b c : CatEnrichedOrdinary C} {f f' : a ⟶ b} {g g' : b ⟶ c}
-    (η : f ⟶ f') (θ : g ⟶ g') : f ≫ g ⟶ f' ≫ g' := by
-  show homEquiv (f ≫ g) ⟶ homEquiv (f' ≫ g')
-  exact eqToHom (homEquiv_comp f g) ≫ (eComp Cat a b c).map ⟨η, θ⟩ ≫
+    (η : f ⟶ f') (θ : g ⟶ g') : f ≫ g ⟶ f' ≫ g' :=
+  .mk <|
+    eqToHom (homEquiv_comp f g) ≫ CatEnriched.hComp (Hom.base η) (Hom.base θ) ≫
     eqToHom (homEquiv_comp f' g').symm
 
 -- theorem hComp_nat {a b c : CatEnrichedOrdinary C} {f f' : a ⟶ b} {g g' : b ⟶ c}
@@ -195,11 +250,12 @@ def hComp {a b c : CatEnrichedOrdinary C} {f f' : a ⟶ b} {g g' : b ⟶ c}
 
 @[simp]
 theorem id_hComp_id {a b c : CatEnrichedOrdinary C} (f : a ⟶ b) (g : b ⟶ c) :
-    hComp (𝟙 f) (𝟙 g) = 𝟙 (f ≫ g) := by
-  unfold hComp
-  show _ ≫ (eComp Cat a b c).map (𝟙 _) ≫ _ = _
-  rw [Functor.map_id, id_comp, eqToHom_trans, eqToHom_refl]
-  rfl
+    hComp (𝟙 f) (𝟙 g) = 𝟙 (f ≫ g) := by simp [hComp, Hom.id_eq]
+
+@[simp]
+theorem eqToHom_hComp_eqToHom {a b c : CatEnrichedOrdinary C}
+    {f f' : a ⟶ b} (α : f = f') {g g' : b ⟶ c} (β : g = g') :
+    hComp (eqToHom α) (eqToHom β) = eqToHom (α ▸ β ▸ rfl) := by cases α; cases β; simp
 
 /-- The interchange law for horizontal and vertical composition of 2-cells in a bicategory. -/
 -- set_option pp.proofs true in
@@ -207,12 +263,42 @@ theorem id_hComp_id {a b c : CatEnrichedOrdinary C} (f : a ⟶ b) (g : b ⟶ c) 
 theorem hComp_comp {a b c : CatEnrichedOrdinary C} {f₁ f₂ f₃ : a ⟶ b} {g₁ g₂ g₃ : b ⟶ c}
     (η : f₁ ⟶ f₂) (η' : f₂ ⟶ f₃) (θ : g₁ ⟶ g₂) (θ' : g₂ ⟶ g₃) :
     hComp η θ ≫ hComp η' θ' = hComp (η ≫ η') (θ ≫ θ') := by
-  unfold hComp
-  dsimp
-  rw [← prod_comp (f := ⟨η, θ⟩) (g := (η', θ'))]
-  erw [(eComp Cat a b c).map_comp (X := (_, _)) (Y := (_, _)) (Z := (_, _))
-    (f := ⟨η, θ⟩) (g := (η', θ'))]
-  sorry
+  simp [hComp, ← CatEnriched.hComp_comp, Hom.comp_eq]
+
+theorem id_hComp {a b : CatEnrichedOrdinary C} {f f' : a ⟶ b} (η : f ⟶ f') :
+    hComp (𝟙 (𝟙 a)) η = eqToHom (id_comp f) ≫ η ≫ eqToHom (id_comp f').symm := by
+  ext
+  simp [hComp, ← heq_eq_eq]
+  rw [homEquiv_id]; simp [CatEnriched.id_hComp_heq]
+
+theorem id_hComp_heq {a b : CatEnrichedOrdinary C} {f f' : a ⟶ b} (η : f ⟶ f') :
+    HEq (hComp (𝟙 (𝟙 a)) η) η := by simp [id_hComp]
+
+theorem hComp_id {a b : CatEnrichedOrdinary C} {f f' : a ⟶ b} (η : f ⟶ f') :
+    hComp η (𝟙 (𝟙 b)) = eqToHom (comp_id f) ≫ η ≫ eqToHom (comp_id f').symm := by
+  ext
+  simp [hComp, ← heq_eq_eq]
+  rw [homEquiv_id]; simp [CatEnriched.hComp_id_heq]
+
+theorem hComp_id_heq {a b : CatEnrichedOrdinary C} {f f' : a ⟶ b} (η : f ⟶ f') :
+    HEq (hComp η (𝟙 (𝟙 b))) η := by simp [hComp_id]
+
+theorem id_eq_eqToHom {C} [Category C] (X : C) : 𝟙 X = eqToHom rfl := rfl
+
+theorem hComp_assoc {a b c d : CatEnrichedOrdinary C} {f f' : a ⟶ b} {g g' : b ⟶ c} {h h' : c ⟶ d}
+    (η : f ⟶ f') (θ : g ⟶ g') (κ : h ⟶ h') :
+    hComp (hComp η θ) κ =
+      eqToHom (assoc f g h) ≫ hComp η (hComp θ κ) ≫ eqToHom (assoc f' g' h').symm := by
+  ext
+  simp [hComp, ← heq_eq_eq]
+  conv => enter [1,2]; exact ((id_comp _).trans (comp_id _)).symm
+  conv => enter [2,1]; exact ((id_comp _).trans (comp_id _)).symm
+  iterate 4 rw [← CatEnriched.hComp_comp, id_eq_eqToHom, CatEnriched.eqToHom_hComp_eqToHom]
+  simp [CatEnriched.hComp_assoc_heq]
+
+theorem hComp_assoc_heq {a b c d : CatEnrichedOrdinary C}
+    {f f' : a ⟶ b} {g g' : b ⟶ c} {h h' : c ⟶ d} (η : f ⟶ f') (θ : g ⟶ g') (κ : h ⟶ h') :
+    HEq (hComp (hComp η θ) κ) (hComp η (hComp θ κ)) := by simp [hComp_assoc]
 
 instance : Bicategory (CatEnrichedOrdinary C) where
   homCategory := inferInstance
@@ -221,22 +307,17 @@ instance : Bicategory (CatEnrichedOrdinary C) where
   associator f g h := eqToIso (assoc f g h)
   leftUnitor f := eqToIso (id_comp f)
   rightUnitor f := eqToIso (comp_id f)
-  whiskerLeft_id := sorry
-  whiskerLeft_comp := sorry
-  id_whiskerLeft := sorry
-  comp_whiskerLeft := sorry
-  id_whiskerRight := sorry
-  comp_whiskerRight := sorry
-  whiskerRight_id := sorry
-  whiskerRight_comp := sorry
-  whisker_assoc := sorry
-  whisker_exchange := sorry
-  pentagon := sorry
-  triangle := sorry
+  id_whiskerLeft := by simp [id_hComp]
+  comp_whiskerLeft := by simp [← hComp_assoc]
+  whiskerRight_id := by simp [hComp_id]
+  whiskerRight_comp := by simp [hComp_assoc]
+  whisker_assoc := by simp [hComp_assoc]
+  pentagon := by simp [id_eq_eqToHom, -eqToHom_refl]
+  triangle := by simp [id_eq_eqToHom, -eqToHom_refl]
 
 /-- As the associator and left and right unitors are defined as eqToIso of category axioms, the
 bicategory structure on `CatEnrichedOrdinary C` is strict. -/
-instance : Bicategory.Strict (CatEnrichedOrdinary C) := sorry
+instance : Bicategory.Strict (CatEnrichedOrdinary C) where
 
 
 end CatEnrichedOrdinary
