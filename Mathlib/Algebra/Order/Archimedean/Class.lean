@@ -97,7 +97,7 @@ theorem le_def {a b : MulArchimedeanOrder M} : a ≤ b ↔ ∃ n, |b.val|ₘ ≤
 @[to_additive]
 theorem lt_def {a b : MulArchimedeanOrder M} : a < b ↔ ∀ n, |b.val|ₘ ^ n < |a.val|ₘ := .rfl
 
-variable {M: Type*}
+variable {M : Type*}
 variable [CommGroup M] [LinearOrder M] [IsOrderedMonoid M] {a b : M}
 
 @[to_additive]
@@ -299,7 +299,7 @@ theorem mk_mul_eq_mk_right (h : mk b < mk a) : mk (a * b) = mk b :=
 /-- The product over a set of an elements in distinct classes is in the lowest class. -/
 @[to_additive "The sum over a set of an elements in distinct classes is in the lowest class."]
 theorem mk_prod {ι : Type*} [LinearOrder ι] {s : Finset ι} (hnonempty : s.Nonempty)
-    {a : ι → M}  :
+    {a : ι → M} :
     StrictMonoOn (mk ∘ a) s → mk (∏ i ∈ s, (a i)) = mk (a (s.min' hnonempty)) := by
   induction hnonempty using Finset.Nonempty.cons_induction with
   | singleton i => simp
