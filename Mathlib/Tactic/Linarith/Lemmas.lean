@@ -19,7 +19,7 @@ Those in the `Linarith` namespace should stay here.
 Those outside the `Linarith` namespace may be deleted as they are ported to mathlib4.
 -/
 
-namespace Linarith
+namespace Mathlib.Tactic.Linarith
 
 universe u
 theorem lt_irrefl {α : Type u} [Preorder α] {a : α} : ¬a < a := _root_.lt_irrefl a
@@ -112,14 +112,4 @@ lemma zero_mul_eq {α} {R : α → α → Prop} [Semiring α] {a b : α} (h : a 
     a * b = 0 := by
   simp [h]
 
-end Linarith
-
-section
-open Function
--- These lemmas can be removed when their originals are ported.
-
-theorem lt_zero_of_zero_gt {α : Type*} [Zero α] [LT α] {a : α} (h : 0 > a) : a < 0 := h
-
-theorem le_zero_of_zero_ge {α : Type*} [Zero α] [LE α] {a : α} (h : 0 ≥ a) : a ≤ 0 := h
-
-end
+end Mathlib.Tactic.Linarith
