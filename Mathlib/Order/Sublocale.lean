@@ -272,39 +272,30 @@ instance : CompleteLattice (Open X) := get_element.symm.toGaloisInsertion.liftCo
 instance : Order.Frame (Open X) := .ofMinimalAxioms ⟨fun a s ↦ by
   simp_rw [Open.le_def]; simp [inf_sSup_eq, le_iSup_iff]⟩
 
-lemma test (U : Open X) : U.toNucleus.toSublocale = nucleusIsoSublocale U.toNucleus := rfl
-
-lemma test2 (n : Nucleus X) : OrderDual.ofDual n = n := rfl
-
-lemma test3 (n : Nucleus X) : OrderDual.toDual n = n := rfl
-
 def toSublocale : FrameHom (Open X) (Sublocale X) where
   toFun U := U.toNucleus.toSublocale
   map_sSup' s := by
-    simp_rw [test, ← Set.image_image]
+    simp_rw [← Set.image_image]
     change _ = sSup (⇑nucleusIsoSublocale '' (toNucleus '' s))
     rw [← map_sSup]
     congr
     ext x
-    simp only [toNucleus, map_sSup, test2, Nucleus.coe_mk, InfHom.coe_mk, ofDual_sSup,
-      Nucleus.sInf_apply, mem_preimage, mem_image, iInf_exists]
+    change _ = (sInf (toNucleus '' s)) x
+    simp only [toNucleus, map_sSup, Nucleus.coe_mk, InfHom.coe_mk, ofDual_sSup, Nucleus.sInf_apply,
+      mem_preimage, mem_image, iInf_exists]
     apply le_antisymm
-    · simp only [test3, le_iInf_iff, and_imp, forall_apply_eq_imp_iff₂, Nucleus.coe_mk,
-      InfHom.coe_mk]
+    · simp only [le_iInf_iff, and_imp, forall_apply_eq_imp_iff₂, Nucleus.coe_mk, InfHom.coe_mk]
       exact fun _ h ↦ himp_le_himp (le_sSup (by simp [h])) (le_refl _)
-    · simp only [test3, iInf_le_iff, le_iInf_iff, and_imp, forall_apply_eq_imp_iff₂, Nucleus.coe_mk,
+    · simp only [iInf_le_iff, le_iInf_iff, and_imp, forall_apply_eq_imp_iff₂, Nucleus.coe_mk,
       InfHom.coe_mk]
       intro b h
       simpa [inf_sSup_eq] using fun a h1 ↦ h a h1
   map_inf' a b := by
-    simp_rw [test]
+    change nucleusIsoSublocale _ = nucleusIsoSublocale _ ⊓ nucleusIsoSublocale _
     rw [← map_inf]
     congr
     ext x
-    simp only [toNucleus, map_inf, test2, Nucleus.coe_mk, InfHom.coe_mk, ofDual_inf]
-    rw [← sSup_pair, ← sInf_upperBounds_eq_csSup]
-    simp only [@Nucleus.sInf_apply, upperBounds_insert, upperBounds_singleton,
-     Ici_inter_Ici, mem_Ici, sup_le_iff]
+    simp only [map_inf, mem_setOf_eq]
     apply le_antisymm
     · simp only [← Nucleus.coe_le_coe, Nucleus.coe_mk, InfHom.coe_mk, Pi.le_def, le_iInf_iff,
       and_imp]
