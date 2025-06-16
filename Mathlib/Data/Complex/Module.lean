@@ -8,7 +8,6 @@ import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Data.Complex.Basic
 import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.Data.Real.Star
-import Mathlib.Data.ZMod.Defs
 
 /-!
 # Complex number as a vector space over `ℝ`
@@ -476,7 +475,6 @@ def Complex.selfAdjointEquiv : selfAdjoint ℂ ≃ₗ[ℝ] ℝ where
   toFun := fun z ↦ (z : ℂ).re
   invFun := fun x ↦ ⟨x, conj_ofReal x⟩
   left_inv := fun z ↦ Subtype.ext <| conj_eq_iff_re.mp z.property.star_eq
-  right_inv := fun _ ↦ rfl
   map_add' := by simp
   map_smul' := by simp
 
