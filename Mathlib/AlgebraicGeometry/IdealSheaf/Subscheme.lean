@@ -343,7 +343,7 @@ private lemma gluedTo_injective :
   obtain ⟨ia, a : I.glueDataObj ia, rfl⟩ :=
     I.glueData.toGlueData.ι_jointly_surjective forget a
   obtain ⟨ib, b : I.glueDataObj ib, rfl⟩ :=
-    I.glueData.toGlueData.ι_jointly_surjective (Scheme.forgetToTop ⋙ forget _) b
+    I.glueData.toGlueData.ι_jointly_surjective forget b
   change (I.glueData.ι ia).base a = (I.glueData.ι ib).base b
   have : ((I.glueDataObjι ia).base a).1 = ((I.glueDataObjι ib).base b).1 := by
     have : (I.glueData.ι ia ≫ I.gluedTo).base a =
