@@ -57,6 +57,29 @@ theorem isLocalHomeomorphOn_iff_isOpenEmbedding_restrict {f : X → Y} :
 
 namespace IsLocalHomeomorphOn
 
+variable {f s}
+
+theorem discreteTopology_of_image (h : IsLocalHomeomorphOn f s)
+    [DiscreteTopology (f '' s)] : DiscreteTopology s :=
+  singletons_open_iff_discrete.mp fun x ↦ by
+    obtain ⟨e, hx, rfl⟩ := h x x.2
+    have ⟨U, hU, eq⟩ := isOpen_discrete {(⟨_, _, x.2, rfl⟩ : e '' s)}
+    refine ⟨e.source ∩ e ⁻¹' U, e.continuousOn_toFun.isOpen_inter_preimage e.open_source hU,
+      subset_antisymm (fun x' mem ↦ Subtype.ext <| e.injOn mem.1 hx ?_) ?_⟩
+    · exact Subtype.ext_iff.mp (eq.subset (a := ⟨_, x', x'.2, rfl⟩) mem.2)
+    · rintro x rfl; exact ⟨hx, eq.superset rfl⟩
+
+theorem discreteTopology_image_iff (h : IsLocalHomeomorphOn f s) (hs : IsOpen s) :
+    DiscreteTopology (f '' s) ↔ DiscreteTopology s := by
+  refine ⟨fun _ ↦ h.discreteTopology_of_image, ?_⟩
+  simp_rw [← singletons_open_iff_discrete]
+  rintro hX ⟨_, x, hx, rfl⟩
+  obtain ⟨e, hxe, rfl⟩ := h x hx
+  refine ⟨e '' {x}, e.isOpen_image_of_subset_source ?_ (Set.singleton_subset_iff.mpr hxe), ?_⟩
+  · simpa using hs.isOpenMap_subtype_val _ (hX ⟨x, hx⟩)
+  · ext; simp [Subtype.ext_iff]
+
+variable (f s) in
 /-- Proves that `f` satisfies `IsLocalHomeomorphOn f s`. The condition `h` is weaker than the
 definition of `IsLocalHomeomorphOn f s`, since it only requires `e : PartialHomeomorph X Y` to
 agree with `f` on its source `e.source`, as opposed to on the whole space `X`. -/
@@ -78,7 +101,7 @@ lemma PartialHomeomorph.isLocalHomeomorphOn (e : PartialHomeomorph X Y) :
     IsLocalHomeomorphOn e e.source :=
   fun _ hx ↦ ⟨e, hx, rfl⟩
 
-variable {g f s t}
+variable {g t}
 
 theorem mono {t : Set X} (hf : IsLocalHomeomorphOn f t) (hst : s ⊆ t) : IsLocalHomeomorphOn f s :=
   fun x hx ↦ hf x (hst hx)
@@ -150,9 +173,25 @@ theorem Topology.IsOpenEmbedding.isLocalHomeomorph (hf : IsOpenEmbedding f) : Is
   isLocalHomeomorph_iff_isOpenEmbedding_restrict.mpr fun _ ↦
     ⟨_, Filter.univ_mem, hf.comp (Homeomorph.Set.univ X).isOpenEmbedding⟩
 
-variable (f)
-
 namespace IsLocalHomeomorph
+
+/-- A space that admits a local homeomorphism to a discrete space is itself discrete. -/
+theorem comap_discreteTopology (h : IsLocalHomeomorph f)
+    [DiscreteTopology Y] : DiscreteTopology X :=
+  (Homeomorph.Set.univ X).discreteTopology_iff.mp h.isLocalHomeomorphOn.discreteTopology_of_image
+
+theorem discreteTopology_range_iff (h : IsLocalHomeomorph f) :
+    DiscreteTopology (Set.range f) ↔ DiscreteTopology X := by
+  rw [← Set.image_univ, ← (Homeomorph.Set.univ X).discreteTopology_iff]
+  exact h.isLocalHomeomorphOn.discreteTopology_image_iff isOpen_univ
+
+/-- If there is a surjective local homeomorphism between two spaces and one of them is discrete,
+then both spaces are discrete. -/
+theorem discreteTopology_iff_of_surjective (h : IsLocalHomeomorph f) (hs : Function.Surjective f) :
+    DiscreteTopology X ↔ DiscreteTopology Y := by
+  rw [← (Homeomorph.Set.univ Y).discreteTopology_iff, ← hs.range_eq, h.discreteTopology_range_iff]
+
+variable (f)
 
 /-- Proves that `f` satisfies `IsLocalHomeomorph f`. The condition `h` is weaker than the
 definition of `IsLocalHomeomorph f`, since it only requires `e : PartialHomeomorph X Y` to
@@ -198,19 +237,10 @@ theorem isOpenEmbedding_of_injective (hf : IsLocalHomeomorph f) (hi : f.Injectiv
     IsOpenEmbedding f :=
   .of_continuous_injective_isOpenMap hf.continuous hi hf.isOpenMap
 
-/-- A surjective embedding is a homeomorphism. -/
-noncomputable def _root_.Topology.IsEmbedding.toHomeomorph_of_surjective (hf : IsEmbedding f)
-    (hsurj : Function.Surjective f) : X ≃ₜ Y :=
-  Homeomorph.homeomorphOfContinuousOpen (Equiv.ofBijective f ⟨hf.injective, hsurj⟩)
-    hf.continuous (hf.isOpenEmbedding_of_surjective hsurj).isOpenMap
-
-@[deprecated (since := "2024-10-26")]
-alias _root_.Embedding.toHomeomeomorph_of_surjective := IsEmbedding.toHomeomorph_of_surjective
-
 /-- A bijective local homeomorphism is a homeomorphism. -/
 noncomputable def toHomeomorph_of_bijective (hf : IsLocalHomeomorph f) (hb : f.Bijective) :
     X ≃ₜ Y :=
-  Homeomorph.homeomorphOfContinuousOpen (Equiv.ofBijective f hb) hf.continuous hf.isOpenMap
+  (Equiv.ofBijective f hb).toHomeomorphOfContinuousOpen hf.continuous hf.isOpenMap
 
 /-- Continuous local sections of a local homeomorphism are open embeddings. -/
 theorem isOpenEmbedding_of_comp (hf : IsLocalHomeomorph g) (hgf : IsOpenEmbedding (g ∘ f))
