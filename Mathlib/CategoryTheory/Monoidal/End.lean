@@ -29,6 +29,10 @@ variable (C : Type u) [Category.{v} C]
 /-- The category of endofunctors of any category is a monoidal category,
 with tensor product given by composition of functors
 (and horizontal composition of natural transformations).
+
+Note: due to the fact that composition of functors in mathlib is reversed compared to the
+one usually found in the literature, this monoidal structure is in fact the monoidal
+opposite of the one usually considered in the literature.
 -/
 def endofunctorMonoidalCategory : MonoidalCategory (C ⥤ C) where
   tensorObj F G := F ⋙ G
