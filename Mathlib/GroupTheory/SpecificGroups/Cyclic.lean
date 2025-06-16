@@ -948,5 +948,3 @@ theorem Group.isCyclic_prod_iff
   · exact ((h1.symm.of_dvd_right exponent_dvd_nat_card).dvd_mul_left).mp (dvd_of_mul_left_dvd h2)
 
 end prod
-
-
