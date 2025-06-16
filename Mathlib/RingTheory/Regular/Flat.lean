@@ -124,7 +124,7 @@ theorem RingTheory.Sequence.IsWeaklyRegular.of_flat_isBaseChange {rs : List R}
       exact ⟨reg.1.of_flat_isBaseChange hf, ih hg reg.2 len⟩
 
 end Flat
-
+/-
 section FaithfullyFlat
 
 variable {R S M N: Type*} [CommRing R] [CommRing S] [Algebra R S] [FaithfullyFlat R S]
@@ -138,7 +138,7 @@ theorem RingTheory.Sequence.IsRegular.of_faithfullyFlat_isBaseChange {rs : List 
     (reg : IsRegular M rs) : IsRegular N (rs.map (algebraMap R S)) := sorry
 
 end FaithfullyFlat
-
+ -/
 section IsLocalizedModule
 
 variable {R : Type*} [CommRing R] (S : Submonoid R)
