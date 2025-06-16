@@ -404,7 +404,7 @@ is a user-provided template, first check that the template asks us to descend th
 match. -/
 partial def _root_.Lean.MVarId.gcongr
     (g : MVarId) (template : Option Expr) (names : List (TSyntax ``binderIdent))
-    (inGRewrite : Bool := false)
+    (GRewriteHole : Option MVarId := none)
     (mainGoalDischarger : MVarId → MetaM Unit := gcongrForwardDischarger)
     (sideGoalDischarger : MVarId → MetaM Unit := gcongrDischarger) :
     MetaM (Bool × List (TSyntax ``binderIdent) × Array MVarId) := g.withContext do
@@ -424,7 +424,7 @@ partial def _root_.Lean.MVarId.gcongr
       if let .syntheticOpaque ← mvarId.getKind then
         try mainGoalDischarger g; return (true, names, #[])
         catch ex =>
-          if inGRewrite then throw ex else return (false, names, #[g])
+          if GRewriteHole.isSome then throw ex else return (false, names, #[g])
     -- (ii) if the template is *not* `?_` then continue on.
   -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
   let rel ← withReducible g.getType'
@@ -447,7 +447,10 @@ partial def _root_.Lean.MVarId.gcongr
     -- and also build an array of `Expr` corresponding to the arguments `_ ... _` to `tplHead` in
     -- the template (these will be used in recursive calls later), and an array of booleans
     -- according to which of these contain `?_`
-    tplArgs.mapM fun tpl => return (some tpl, ← containsHole tpl)
+    tplArgs.mapM fun tpl => do
+      let hasHole ← if let some hole := GRewriteHole then
+        pure (tpl.findMVar? (· == hole)).isSome else containsHole tpl
+      return (some tpl, hasHole)
   -- A. If there is no template, check that `lhs = rhs`
   else
     unless lhsHead == rhsHead && lhsArgs.size == rhsArgs.size do
@@ -508,7 +511,7 @@ partial def _root_.Lean.MVarId.gcongr
           pure e
         -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal with (if available) the
         -- appropriate template
-        let (_, names2, subgoals2) ← mvarId.gcongr tpl names2 inGRewrite mainGoalDischarger
+        let (_, names2, subgoals2) ← mvarId.gcongr tpl names2 GRewriteHole mainGoalDischarger
           sideGoalDischarger
         (names, subgoals) := (names2, subgoals ++ subgoals2)
       let mut out := #[]

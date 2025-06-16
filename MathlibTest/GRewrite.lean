@@ -294,3 +294,9 @@ example (h : p → q) (h' : q → r) : p → r := by
   exact h'
 
 end apply
+
+example : ∃ n, n < 2 := by
+  refine ⟨?_, ?_⟩
+  swap
+  grw [← one_lt_two]
+  apply zero_lt_one
