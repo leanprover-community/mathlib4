@@ -935,6 +935,21 @@ lemma isLUB_of_element_prod_set {β : Type*} [Preorder β] {t : Set β} [het : N
       exact right_mem_Iic
     · exact mem_of_mem_inter_right hu
 
+lemma isLUB_of_set_prod_element {β : Type*} [Preorder β] {b : β} [hes : Nonempty s] {u : α}
+    (hu : IsLUB s u) : IsLUB (s ×ˢ {b}) (u,b) := by
+  rw [IsLUB,
+    upperBounds_prod_of_nonempty_eq (nonempty_subtype.mpr (nonempty_subtype.mp hes)) (by aesop),
+    upperBounds_singleton]
+  constructor
+  · exact ⟨hu.1, left_mem_Ici⟩
+  · rw [lowerBounds_prod_of_nonempty_eq
+      (nonempty_subtype.mpr ⟨u, mem_of_mem_inter_left hu⟩) (nonempty_subtype.mpr Set.nonempty_Ici)]
+    simp
+    constructor
+    · exact mem_of_mem_inter_right hu
+    · rw [lowerBounds_Ici]
+      exact right_mem_Iic
+
 end Preorder
 
 section PartialOrder
