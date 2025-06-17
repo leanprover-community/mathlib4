@@ -20,7 +20,7 @@ the category of lax monoidal functors from the unit monoidal category to `C`.  W
 
 universe v₁ v₂ v₃ u₁ u₂ u₃ u
 
-open CategoryTheory MonoidalCategory Functor.LaxMonoidal Functor.OplaxMonoidal
+open Function CategoryTheory MonoidalCategory Functor.LaxMonoidal Functor.OplaxMonoidal
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 
@@ -180,8 +180,11 @@ instance : Category (Mon_ C) where
 instance {M N : Mon_ C} (f : M ⟶ N) : IsMon_Hom f.hom := f.is_mon_hom
 
 @[ext]
-lemma Hom.ext' {X Y : Mon_ C} {f g : X ⟶ Y} (w : f.hom = g.hom) : f = g :=
+lemma Hom.ext' {M N : Mon_ C} {f g : M ⟶ N} (w : f.hom = g.hom) : f = g :=
   Hom.ext w
+
+lemma hom_injective {M N : Mon_ C} : Injective (Hom.hom : (M ⟶ N) → (M.X ⟶ N.X)) :=
+  fun _ _ ↦ Hom.ext
 
 @[simp]
 theorem id_hom' (M : Mon_ C) : (𝟙 M : Hom M M).hom = 𝟙 M.X :=
