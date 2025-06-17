@@ -828,14 +828,13 @@ protected lemma MemLp.piecewise {f : α → ε} [DecidablePred (· ∈ s)] {g} (
   rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp_zero hp_top, ← lintegral_add_compl _ hs,
     ENNReal.add_lt_top]
   constructor
-  · have h : ∀ᵐ x ∂μ, x ∈ s → ‖Set.piecewise s f g x‖ₑ ^ p.toReal = ‖f x‖ₑ ^ p.toReal := by
-      filter_upwards with a ha using by simp [ha]
+  · have h (x) (hx : x ∈ s) : ‖Set.piecewise s f g x‖ₑ ^ p.toReal = ‖f x‖ₑ ^ p.toReal := by
+      simp [hx]
     rw [setLIntegral_congr_fun hs h]
     exact lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp_zero hp_top hf.2
-  · have h : ∀ᵐ x ∂μ, x ∈ sᶜ → ‖Set.piecewise s f g x‖ₑ ^ p.toReal = ‖g x‖ₑ ^ p.toReal := by
-      filter_upwards with a ha
-      have ha' : a ∉ s := ha
-      simp [ha']
+  · have h (x) (hx : x ∈ sᶜ) : ‖Set.piecewise s f g x‖ₑ ^ p.toReal = ‖g x‖ₑ ^ p.toReal := by
+      have hx' : x ∉ s := hx
+      simp [hx']
     rw [setLIntegral_congr_fun hs.compl h]
     exact lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp_zero hp_top hg.2
 
