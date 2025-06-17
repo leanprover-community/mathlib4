@@ -119,7 +119,7 @@ private def add : X[S⁻¹] → X[S⁻¹] → X[S⁻¹] := fun x =>
     (by
       rintro ⟨r₁, s₁⟩ ⟨r₂, s₂⟩ ⟨sb, rb, hb, hb'⟩
       induction' x with r₃ s₃
-      show add'' _ _ _ _ = add'' _ _ _ _
+      change add'' _ _ _ _ = add'' _ _ _ _
       dsimp only at *
       rcases oreCondition (s₃ : R) s₂ with ⟨rc, sc, hc⟩
       rcases oreCondition rc sb with ⟨rd, sd, hd⟩

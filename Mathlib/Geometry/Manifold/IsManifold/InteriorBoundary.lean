@@ -176,7 +176,7 @@ instance [BoundarylessManifold I M] : IsEmpty (I.boundary M) :=
 lemma Boundaryless.iff_boundary_eq_empty : I.boundary M = ∅ ↔ BoundarylessManifold I M := by
   refine ⟨fun h ↦ { isInteriorPoint' := ?_ }, fun a ↦ boundary_eq_empty⟩
   intro x
-  show x ∈ I.interior M
+  change x ∈ I.interior M
   rw [← compl_interior, compl_empty_iff] at h
   rw [h]
   trivial
@@ -206,7 +206,7 @@ lemma interior_prod :
   · replace hp : (I.prod J).IsInteriorPoint p := hp
     rw [IsInteriorPoint, ← aux] at hp
     exact hp
-  · show (I.prod J).IsInteriorPoint p
+  · change (I.prod J).IsInteriorPoint p
     rw [IsInteriorPoint, ← aux, mem_prod]
     obtain h := Set.mem_prod.mp hp
     rw [ModelWithCorners.interior] at h

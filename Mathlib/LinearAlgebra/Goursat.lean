@@ -74,7 +74,7 @@ lemma goursat_surjective : ∃ e : (M ⧸ L.goursatFst) ≃ₗ[R] N ⧸ L.goursa
     L.toAddSubgroup.goursat_surjective hL₁ hL₂
   -- check R-linearity of the map
   have (r : R) (x : M ⧸ L.goursatFst) : e (r • x) = r • e x := by
-    show (r • x, r • e x) ∈ e.toAddMonoidHom.graph
+    change (r • x, r • e x) ∈ e.toAddMonoidHom.graph
     rw [← he, ← Prod.smul_mk]
     have : (x, e x) ∈ e.toAddMonoidHom.graph := rfl
     rw [← he, AddMonoidHom.mem_range] at this

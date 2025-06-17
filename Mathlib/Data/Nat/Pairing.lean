@@ -59,9 +59,11 @@ alias pair_unpair' := pair_eq_of_unpair_eq
 @[simp]
 theorem unpair_pair (a b : ℕ) : unpair (pair a b) = (a, b) := by
   dsimp only [pair]; split_ifs with h
-  · have be : sqrt (b * b + a) = b := sqrt_add_eq _ (le_trans (le_of_lt h) (Nat.le_add_left _ _))
+  · show unpair (b * b + a) = (a, b)
+    have be : sqrt (b * b + a) = b := sqrt_add_eq _ (le_trans (le_of_lt h) (Nat.le_add_left _ _))
     simp [unpair, be, Nat.add_sub_cancel_left, h]
-  · have ae : sqrt (a * a + (a + b)) = a := by
+  · show unpair (a * a + a + b) = (a, b)
+    have ae : sqrt (a * a + (a + b)) = a := by
       rw [sqrt_add_eq]
       exact Nat.add_le_add_left (le_of_not_gt h) _
     simp [unpair, ae, Nat.not_lt_zero, Nat.add_assoc, Nat.add_sub_cancel_left]

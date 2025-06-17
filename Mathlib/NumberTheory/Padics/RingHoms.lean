@@ -634,7 +634,7 @@ end
 
 @[simp]
 theorem lift_self (z : ℤ_[p]) : lift zmod_cast_comp_toZModPow z = z := by
-  show _ = RingHom.id _ z
+  change _ = RingHom.id _ z
   rw [lift_unique zmod_cast_comp_toZModPow (RingHom.id ℤ_[p])]
   intro; rw [RingHom.comp_id]
 
@@ -655,7 +655,7 @@ theorem toZModPow_eq_iff_ext {R : Type*} [NonAssocSemiring R] {g g' : R →+* �
     ext x : 1
     apply ext_of_toZModPow.mp
     intro n
-    show (toZModPow n).comp g x = (toZModPow n).comp g' x
+    change (toZModPow n).comp g x = (toZModPow n).comp g' x
     rw [hg n]
   · rintro rfl _
     rfl

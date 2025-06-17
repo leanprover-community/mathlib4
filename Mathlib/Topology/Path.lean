@@ -139,7 +139,7 @@ def symm (γ : Path x y) : Path y x where
 @[simp]
 theorem symm_symm (γ : Path x y) : γ.symm.symm = γ := by
   ext t
-  show γ (σ (σ t)) = γ t
+  change γ (σ (σ t)) = γ t
   rw [unitInterval.symm_symm]
 
 theorem symm_bijective : Function.Bijective (Path.symm : Path x y → Path y x) :=

@@ -33,11 +33,11 @@ instance CommRing.toGrindCommRing [s : CommRing α] :
     ofNat_succ
     | 0 => by simp [zero_add]
     | 1 => by
-      show Nat.cast 2 = 1 + 1
+      change Nat.cast 2 = 1 + 1
       rw [one_add_one_eq_two]
       rfl
     | n + 2 => by
-      show Nat.cast (n + 2 + 1) = Nat.cast (n + 2) + 1
+      change Nat.cast (n + 2 + 1) = Nat.cast (n + 2) + 1
       rw [← AddMonoidWithOne.natCast_succ]
     intCast_ofNat
     | 0 => Int.cast_zero
