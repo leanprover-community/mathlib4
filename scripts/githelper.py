@@ -83,13 +83,13 @@ def run_check(*cmd: str) -> None:
 
 def ask_yes_no(prompt: str) -> bool:
     while True:
-        response = input(f"{prompt} [y/n]: ")
+        response = input(f"{prompt} [Y/n]: ").strip()
         if response.lower() in {"y", "yes"}:
             return True
         if response.lower() in {"n", "no"}:
             return False
         if not response:
-            continue
+            return True
         print("Response not recognized, please answer 'y' or 'n'.")
     return False  # Unreachable
 
