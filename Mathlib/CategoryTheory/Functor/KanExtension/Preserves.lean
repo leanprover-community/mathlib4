@@ -111,7 +111,7 @@ def LeftExtension.coconeAtWhiskerRightIso (E : LeftExtension L F) (c : C) :
 
 /-- If `G` preserves any pointwise left Kan extension of `F` along `L` at `c`, then it preserves
 all of them. -/
-def PreservesPointwiseLeftKanExtensionAt.mk' (c : C) {E : LeftExtension L F}
+lemma PreservesPointwiseLeftKanExtensionAt.mk' (c : C) {E : LeftExtension L F}
   (hE : E.IsPointwiseLeftKanExtensionAt c)
   (hGE : (LeftExtension.postcompose₂ L F G|>.obj E).IsPointwiseLeftKanExtensionAt c) :
     G.PreservesPointwiseLeftKanExtensionAt F L c where
@@ -362,7 +362,7 @@ def RightExtension.coneAtWhiskerRightIso (E : RightExtension L F) (c : C) :
 
 /-- If `G` preserves any pointwise right Kan extension of `F` along `L` at `c`, then it preserves
 all of them. -/
-def PreservesPointwiseRightKanExtensionAt.mk' (c : C) {E : RightExtension L F}
+lemma PreservesPointwiseRightKanExtensionAt.mk' (c : C) {E : RightExtension L F}
   (hE : E.IsPointwiseRightKanExtensionAt c)
   (hGE : (RightExtension.postcompose₂ L F G|>.obj E).IsPointwiseRightKanExtensionAt c) :
     G.PreservesPointwiseRightKanExtensionAt F L c where
