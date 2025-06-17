@@ -179,6 +179,8 @@ theorem isIntegral [Finite G] : Algebra.IsIntegral A B := by
     (charpoly_mem_lifts A B G b) (monic_charpoly G b)
   exact ⟨p, hp2, by rw [← eval_map, hp1, eval_charpoly]⟩
 
+variable {A B}
+
 /-- `G` acts transitively on the prime ideals of `B` above a given prime ideal of `A`. -/
 theorem exists_smul_of_under_eq [Finite G] [SMulCommClass G A B]
     (P Q : Ideal B) [hP : P.IsPrime] [hQ : Q.IsPrime]
@@ -200,6 +202,13 @@ theorem exists_smul_of_under_eq [Finite G] [SMulCommClass G A B]
   obtain ⟨g, -, hg⟩ := this P Q hPQ
   obtain ⟨g', -, hg'⟩ := this Q (g • P) ((P.under_smul A g).trans hPQ).symm
   exact ⟨g, le_antisymm hg (smul_eq_of_le_smul (hg.trans hg') ▸ hg')⟩
+
+theorem orbit_eq_primesOver [Finite G] [SMulCommClass G A B] (P : Ideal A) (Q : Ideal B)
+    [hP : Q.LiesOver P] [hQ : Q.IsPrime] : MulAction.orbit G Q = P.primesOver B := by
+  refine Set.ext fun R ↦ ⟨fun ⟨g, hg⟩ ↦ hg ▸ ⟨hQ.smul g, hP.smul g⟩, fun h ↦ ?_⟩
+  have : R.IsPrime := h.1
+  obtain ⟨g, hg⟩ := exists_smul_of_under_eq A B G Q R (hP.over.symm.trans h.2.over)
+  exact ⟨g, hg.symm⟩
 
 end Algebra.IsInvariant
 
