@@ -226,21 +226,18 @@ theorem orderOf_one_add_mul_prime {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (a : 
     apply orderOf_eq_prime_pow
     · rw [← Int.cast_natCast, ← Int.cast_mul, ← Int.cast_one, ← Int.cast_add,
         ← Int.cast_pow, intCast_eq_intCast_iff]
+      rw [Nat.cast_pow, add_assoc]
       intro H
       apply ha
-      rw [← intCast_zmod_eq_zero_iff_dvd]
-      rw [← Int.cast_zero]
-      rw [intCast_eq_intCast_iff]
-      have := one_add_mul_prime_pow_modeq hp hp2 a n
-      simp [Nat.cast_pow, add_assoc] at H
-      replace this := Int.ModEq.trans (Int.ModEq.symm this) H
-      rw [← Nat.cast_pow, ← intCast_eq_intCast_iff, Int.cast_add, add_eq_left] at this
-      rw [← Int.cast_zero] at this
-      rw [intCast_eq_intCast_iff] at this
-      rw [← add_assoc n 1 1, pow_succ _ (n + 1), mul_comm a, Nat.cast_mul] at this
-      rw [← mul_zero ((p : ℤ) ^ (n + 1)), Nat.cast_pow] at this
-      apply Int.ModEq.mul_left_cancel' _ this
-      simp [hp.ne_zero]
+      suffices Int.ModEq p a 0 by
+        exact Int.dvd_of_emod_eq_zero this
+      apply Int.ModEq.mul_left_cancel' (c := p ^ (n + 1))
+        (by simp [hp.ne_zero])
+      apply Int.ModEq.add_left_cancel' 1
+      simp only [mul_zero, add_zero, ← pow_succ, add_assoc]
+      rw [mul_comm]
+      apply Int.ModEq.trans _ H
+      exact (one_add_mul_prime_pow_modeq hp hp2 a n).symm
     · rw [← Int.cast_natCast, ← Int.cast_mul, ← Int.cast_one, ← Int.cast_add,
         ← Int.cast_pow, intCast_eq_intCast_iff]
       have := one_add_mul_prime_pow_modeq hp hp2 a (n + 1)
@@ -259,126 +256,49 @@ theorem orderOf_one_add_mul_prime {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (a : 
 /-- If p is an odd prime, then `(ZMod (p ^ n))ˣ` is cyclic for all n -/
 theorem isCyclic_units_of_prime_pow (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2) (n : ℕ) :
     IsCyclic (ZMod (p ^ n))ˣ := by
-  haveI _ : Fact (p.Prime) := ⟨hp⟩
-  have H1 : IsCyclic (ZMod p)ˣ :=
-    isCyclic_of_subgroup_isDomain (Units.coeHom _) Units.coeHom_injective
-  match n with
-  | 0 => simp [isCyclic_of_subsingleton]
-  | 1 => rw [pow_one]; exact H1
-  | n + 2 =>
-    rw [isCyclic_iff_exists_zpowers_eq_top] at H1
-    obtain ⟨g, hg⟩ := H1
-    replace hg := orderOf_eq_card_of_zpowers_eq_top hg
-    simp only [Nat.card_eq_fintype_card, card_units_eq_totient,
-      Nat.totient_prime hp] at hg
-    set x : ℤ := g.val.cast
-    replace hx : (x : ZMod p) = g := by simp [x]
-    have hxp : Int.ModEq p (x ^ (p - 1)) 1 := by
-      simp [← intCast_eq_intCast_iff, hx, ← hg, ← Units.val_pow_eq_pow_val, pow_orderOf_eq_one]
-    set a := if Int.ModEq (p ^ 2) (x ^ (p - 1)) 1 then x + p else x with a_def
-    have hxa : Int.ModEq p a x := by
-      rw [a_def]; split_ifs
-      · exact Int.add_modEq_right
-      · simp
-    have hap : Int.ModEq p (a ^ (p - 1)) 1 :=
-      (Int.ModEq.pow (p - 1) hxa).trans hxp
-    have hap2 : ¬ Int.ModEq (p ^ 2) (a ^ (p - 1)) 1 := by
-      rw [a_def]; split_ifs with H
-      · intro H'
-        have := Int.ModEq.trans H' (Int.ModEq.symm H)
-        rw [← Nat.cast_pow, ← intCast_eq_intCast_iff] at this
-        simp only [Int.cast_pow, Int.cast_add, Int.cast_natCast] at this
-        rw [add_comm, add_pow, ← Finset.sum_erase_add (a := 0)] at this
-        rw [pow_zero, one_mul, Nat.sub_zero, Nat.choose_zero_right,
-          Nat.cast_one, mul_one, add_eq_right] at this
-        rw [Finset.sum_eq_single 1] at this
-        · simp only [pow_one, Nat.sub_sub, Nat.reduceAdd, Nat.choose_one_right] at this
-          rw [← Int.cast_natCast p, ← Int.cast_natCast (p - 1),
-            ← Int.cast_pow, ← Int.cast_mul, ← Int.cast_mul] at this
-          rw [intCast_zmod_eq_zero_iff_dvd, Nat.cast_pow, pow_two, mul_assoc] at this
-          replace this := Int.dvd_of_mul_dvd_mul_left (a := p)
-            (by simp [hp.ne_zero]) this
-          rw [← intCast_zmod_eq_zero_iff_dvd] at this
-          simp only [Int.cast_mul, Int.cast_pow, Int.cast_natCast,
-            mul_eq_zero, pow_eq_zero_iff', ne_eq] at this
-          rcases this with this | this
-          · replace this := this.1
-            simp only [this, eq_comm, Units.ne_zero] at hx
-          · replace this : (((p - 1) : ℕ) : ZMod p) + 1 = 1 := by
-              rw [this, zero_add]
-            nth_rewrite 2 [← Nat.cast_one] at this
-            rw [← Nat.cast_add] at this
-            apply Nat.Prime.ne_one hp
-            rw [← one_eq_zero_iff, ← this, Nat.sub_add_cancel (NeZero.one_le)]
-            exact natCast_self p
-        · intro i hi hi1
-          convert zero_mul _
-          convert zero_mul _
-          simp only [Finset.mem_erase, ne_eq, Finset.mem_range, a] at hi
-          suffices 2 ≤ i by
-            obtain ⟨j, hj⟩ := Nat.exists_eq_add_of_le this
-            rw [hj, pow_add, ← Nat.cast_pow, natCast_self, zero_mul]
-          rw [Nat.two_le_iff]
-          exact ⟨hi.1, hi1⟩
-        · intro H; exfalso
-          apply not_lt.mpr (Nat.Prime.two_le hp)
-          apply Nat.lt_succ_of_le
-          simpa using H
-        · simp
-      exact H
-    replace hx : (a : ZMod p) = g := by
-      rw [← intCast_eq_intCast_iff] at hxa
-      rw [hxa, hx]
-    have hb' : ∃ c : ℤ, ¬ ↑p ∣ c ∧ a ^ (p - 1) = 1 + p * c := by
-      obtain ⟨c, hc⟩ := Int.modEq_iff_add_fac.mp hap.symm
-      refine ⟨c, ?_, hc⟩
-      intro hpc
-      apply hap2
-      apply Int.ModEq.symm
-      rw [Int.modEq_iff_add_fac]
-      obtain ⟨c, rfl⟩ := hpc
-      use c
-      rw [hc]; ring
-    rw [isCyclic_iff_exists_zpowers_eq_top]
-    let hau : (ZMod (p ^ (n + 2)))ˣ := by
-      apply coe_int_unitOfIsCoprime a
-      rw [Nat.cast_pow, IsCoprime.pow_right_iff (Nat.zero_lt_succ _)]
-      · rw [isCoprime_comm, ← ZMod.coe_int_isUnit_iff_isCoprime]
-        rw [← intCast_eq_intCast_iff] at hxa
-        rw [hx]
-        exact Units.isUnit g
-    use hau
-    rw [← Subgroup.card_eq_iff_eq_top, Nat.card_zpowers]
-    simp only [Nat.card_eq_fintype_card, card_units_eq_totient]
-    rw [Nat.totient_prime_pow hp (Nat.zero_lt_succ _)]
-    simp only [Nat.succ_eq_add_one, add_tsub_cancel_right, x]
-    simp [← orderOf_injective (Units.coeHom _) Units.coeHom_injective]
-    simp only [coe_unitOfIsCoprime, Units.val_one, hau]
-    have H0 : orderOf (a : ZMod p) = p - 1 := by
-      rw [hx, ← hg]
-      exact orderOf_injective (Units.coeHom _) Units.coeHom_injective g
-    have H1 : p - 1 ∣ orderOf (a : ZMod (p ^ (n + 2))) := by
-      rw [← H0, orderOf_dvd_iff_pow_eq_one]
-      suffices (a : ZMod p) =
-        castHom (Dvd.intro_left (p.pow (n + 1)) rfl) _ (a : ZMod (p ^ (n + 2))) by
-        rw [this, ← map_pow, pow_orderOf_eq_one, map_one]
-      simp
-    have H2 : orderOf ((a : ZMod (p ^ (n + 2))) ^ (p - 1)) = p ^ (n + 1) := by
-      obtain ⟨c, hpc, hca⟩ := hb'
-      rw [← Int.cast_pow, hca]
-      simp only [Int.cast_add, Int.cast_one, Int.cast_mul, Int.cast_natCast, x, hau]
-      rw [mul_comm]
-      exact orderOf_one_add_mul_prime hp hp2 _ hpc _
-    have H2' := orderOf_pow_dvd (x := (a : ZMod (p ^ (n + 2)))) (p - 1)
-    rw [H2] at H2'
-    apply Nat.dvd_antisymm
-    · rw [orderOf_dvd_iff_pow_eq_one, mul_comm, pow_mul]
-      rw [← orderOf_dvd_iff_pow_eq_one, H2]
-    · apply Nat.Coprime.mul_dvd_of_dvd_of_dvd ?_ H2' H1
-      simp
-      refine (Nat.coprime_self_sub_right ?_).mpr ?_
-      · exact NeZero.one_le
-      exact Nat.gcd_one_right p
+  have _ : NeZero (p ^ n) := ⟨pow_ne_zero n hp.ne_zero⟩
+  have _ : Fact (p.Prime) := ⟨hp⟩
+  rcases Nat.eq_zero_or_pos n with hn0 | hnpos
+  · rw [hn0, pow_zero]; infer_instance
+  change 1 ≤ n at hnpos
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le' hnpos
+  let a := (((1 + p) : ℕ) : ZMod (p ^ (n + 1)))
+  have ha : IsUnit a := by
+    unfold a
+    rw [ZMod.isUnit_iff_coprime]
+    apply Nat.Coprime.pow_right
+    simp only [Nat.coprime_add_self_left, Nat.coprime_one_left_eq_true]
+  have ha' : orderOf ha.unit = p ^ n := by
+    simp only [←
+      orderOf_injective _ Units.coeHom_injective ha.unit,
+      Units.coeHom_apply, IsUnit.unit_spec]
+    simp only [a, Nat.cast_add, Nat.cast_one]
+    convert orderOf_one_add_mul_prime hp hp2 1 _ _ using 1
+    · simp
+    · exact Prime.not_dvd_one (Nat.prime_iff_prime_int.mp hp)
+  obtain ⟨c, hc⟩ := isCyclic_iff_exists_orderOf_eq_natCard.mp (isCyclic_units_prime hp)
+  rw [Nat.card_eq_fintype_card, ZMod.card_units] at hc
+  obtain ⟨(b : (ZMod (p ^ (n + 1)))ˣ), rfl⟩ :=
+    ZMod.unitsMap_surjective (Dvd.intro_left (p ^ n) rfl) c
+  have : p - 1 ∣ orderOf b := by
+    rw [← hc]
+    exact orderOf_map_dvd _ b
+  obtain ⟨k, hk⟩ := this
+  rw [isCyclic_iff_exists_orderOf_eq_natCard]
+  use ha.unit * b ^ k
+  have : orderOf (b ^ k) = p - 1 := by
+    rw [orderOf_pow, hk, Nat.gcd_mul_left_left]
+    apply Nat.mul_div_cancel
+    apply Nat.pos_of_mul_pos_left
+    rw [← hk]
+    exact orderOf_pos b
+  rw [Commute.orderOf_mul_eq_mul_orderOf_of_coprime (Commute.all _ _),
+    this, Nat.card_eq_fintype_card, ZMod.card_units_eq_totient,
+    Nat.totient_prime_pow_succ hp, ← ha']
+  rw [ha', this]
+  apply Nat.Coprime.pow_left
+  rw [Nat.coprime_self_sub_right hp.pos]
+  simp
 
 theorem isCyclic_units_two_pow_iff (n : ℕ) :
     IsCyclic (ZMod (2 ^ n))ˣ ↔ n ≤ 2 := by
@@ -470,16 +390,12 @@ theorem isCyclic_units_four_mul_iff (n : ℕ) :
   set q := n / (2 ^ n.factorization 2) with hq
   have hn : n = 2 ^ m * q := (Nat.ordProj_mul_ordCompl_eq_self n 2).symm
   rw [hn, show 4 = 2 ^ 2 by rfl, ← mul_assoc, ← pow_add] at H
-  -- obtain ⟨q, hn : n = 2 ^ m * q⟩ := n.ordProj_dvd 2
   have hq0 : q ≠ 0 := fun hq ↦ by simp [hn, hq, mul_zero] at hn1
   have _ : NeZero q := ⟨hq0⟩
   have hq2 : (2 ^ (2 + m)).Coprime q := by
-    rw [Nat.coprime_pow_left_iff (Nat.pos_of_neZero _)]
-    rw [Nat.prime_two.coprime_iff_not_dvd]
-    rw [hq]
+    rw [Nat.coprime_pow_left_iff (Nat.pos_of_neZero _), Nat.prime_two.coprime_iff_not_dvd, hq]
     apply Nat.not_dvd_ordCompl Nat.prime_two (Nat.ne_zero_of_lt hn0)
-  let e := chineseRemainder hq2
-  let f := (Units.mapEquiv e.toMulEquiv).trans  MulEquiv.prodUnits
+  let f := (Units.mapEquiv (chineseRemainder hq2).toMulEquiv).trans  MulEquiv.prodUnits
   rw [f.isCyclic, Group.isCyclic_prod_iff, isCyclic_units_two_pow_iff] at H
   simp only [add_le_iff_nonpos_right, nonpos_iff_eq_zero, Nat.card_eq_fintype_card,
     card_units_eq_totient] at H
