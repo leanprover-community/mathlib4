@@ -709,10 +709,10 @@ lemma tmul_mem_baseChange_of_mem (a : A) {m : M} (hm : m ∈ p) :
 lemma baseChange_eq_span : p.baseChange A = span A (p.map (TensorProduct.mk R A M 1)) := by
   refine le_antisymm ?_ ?_
   · rw [baseChange, LinearMap.range_le_iff_comap, eq_top_iff,
-      ← Submodule.span_eq_top_of_span_eq_top R A _ (TensorProduct.span_tmul_eq_top R ..), span_le]
+      ← span_eq_top_of_span_eq_top R A _ (span_tmul_eq_top R ..), span_le]
     refine fun _ ⟨a, m, h⟩ ↦ ?_
     rw [← h, SetLike.mem_coe, mem_comap, LinearMap.baseChange_tmul, ← mul_one a, ← smul_eq_mul,
-      ← TensorProduct.smul_tmul']
+      ← smul_tmul']
     exact smul_mem _ a (subset_span ⟨m, m.2, rfl⟩)
   · refine span_le.2 fun _ ⟨m, hm, h⟩ ↦ h ▸ ⟨1 ⊗ₜ[R] ⟨m, hm⟩, rfl⟩
 
@@ -721,12 +721,8 @@ lemma baseChange_bot : (⊥ : Submodule R M).baseChange A = ⊥ := by simp [base
 
 @[simp]
 lemma baseChange_top : (⊤ : Submodule R M).baseChange A = ⊤ := by
-  rw [baseChange_eq_span, map_top, eq_top_iff,
-    ← Submodule.span_eq_top_of_span_eq_top R A _ (TensorProduct.span_tmul_eq_top R ..)]
-  refine span_le.2 ?_
-  rintro - ⟨a, m, rfl⟩
-  rw [← mul_one a, ← smul_eq_mul, ← TensorProduct.smul_tmul']
-  exact smul_mem _ a (subset_span ⟨m, rfl⟩)
+  rw [eq_top_iff, ← span_eq_top_of_span_eq_top R A _ (span_tmul_eq_top R ..)]
+  exact span_le.2 fun _ ⟨a, m, h⟩ ↦ h ▸ tmul_mem_baseChange_of_mem _ trivial
 
 @[simp]
 lemma baseChange_span (s : Set M) :
