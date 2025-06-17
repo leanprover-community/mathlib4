@@ -70,12 +70,17 @@ theorem le_maximalIdeal {J : Ideal R} (hJ : J ≠ ⊤) : J ≤ maximalIdeal R :=
   rcases Ideal.exists_le_maximal J hJ with ⟨M, hM1, hM2⟩
   rwa [← eq_maximalIdeal hM1]
 
+theorem le_maximalIdeal_of_isPrime (p : Ideal R) [hp : p.IsPrime] : p ≤ maximalIdeal R :=
+  le_maximalIdeal hp.ne_top
+
 /--
 An element `x` of a commutative local semiring is not contained in the maximal ideal
 iff it is a unit.
 -/
-theorem not_mem_maximalIdeal {x : R} : x ∉ maximalIdeal R ↔ IsUnit x := by
+theorem notMem_maximalIdeal {x : R} : x ∉ maximalIdeal R ↔ IsUnit x := by
   simp only [mem_maximalIdeal, mem_nonunits_iff, not_not]
+
+@[deprecated (since := "2025-05-23")] alias not_mem_maximalIdeal := notMem_maximalIdeal
 
 theorem isField_iff_maximalIdeal_eq : IsField R ↔ maximalIdeal R = ⊥ :=
   not_iff_not.mp

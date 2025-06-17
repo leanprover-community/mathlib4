@@ -101,8 +101,6 @@ def MulHom.op {M N} [Mul M] [Mul N] : (M →ₙ* N) ≃ (Mᵐᵒᵖ →ₙ* Nᵐ
   invFun f :=
     { toFun := unop ∘ f ∘ MulOpposite.op,
       map_mul' x y := congrArg unop (f.map_mul (MulOpposite.op y) (MulOpposite.op x)) }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The 'unopposite' of a semigroup homomorphism `Mᵐᵒᵖ →ₙ* Nᵐᵒᵖ`. Inverse to `MulHom.op`. -/
 @[to_additive (attr := simp)
@@ -122,8 +120,6 @@ def AddHom.mulOp {M N} [Add M] [Add N] : AddHom M N ≃ AddHom Mᵐᵒᵖ Nᵐ�
     { toFun := MulOpposite.unop ∘ f ∘ MulOpposite.op,
       map_add' :=
         fun x y => congrArg MulOpposite.unop (f.map_add (MulOpposite.op x) (MulOpposite.op y)) }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The 'unopposite' of an additive semigroup hom `αᵐᵒᵖ →+ βᵐᵒᵖ`. Inverse to
 `AddHom.mul_op`. -/
@@ -144,8 +140,6 @@ def MonoidHom.op {M N} [MulOneClass M] [MulOneClass N] : (M →* N) ≃ (Mᵐᵒ
   invFun f :=
     { toFun := unop ∘ f ∘ MulOpposite.op, map_one' := congrArg unop f.map_one,
       map_mul' x y := congrArg unop (f.map_mul (MulOpposite.op y) (MulOpposite.op x)) }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The 'unopposite' of a monoid homomorphism `Mᵐᵒᵖ →* Nᵐᵒᵖ`. Inverse to `MonoidHom.op`. -/
 @[to_additive (attr := simp)
@@ -172,8 +166,6 @@ def AddMonoidHom.mulOp {M N} [AddZeroClass M] [AddZeroClass N] : (M →+ N) ≃ 
       map_zero' := congrArg MulOpposite.unop f.map_zero,
       map_add' :=
         fun x y => congrArg MulOpposite.unop (f.map_add (MulOpposite.op x) (MulOpposite.op y)) }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The 'unopposite' of an additive monoid hom `αᵐᵒᵖ →+ βᵐᵒᵖ`. Inverse to
 `AddMonoidHom.mul_op`. -/
@@ -186,8 +178,6 @@ def AddMonoidHom.mulUnop {α β} [AddZeroClass α] [AddZeroClass β] : (αᵐᵒ
 def AddEquiv.mulOp {α β} [Add α] [Add β] : α ≃+ β ≃ (αᵐᵒᵖ ≃+ βᵐᵒᵖ) where
   toFun f := opAddEquiv.symm.trans (f.trans opAddEquiv)
   invFun f := opAddEquiv.trans (f.trans opAddEquiv.symm)
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The 'unopposite' of an iso `αᵐᵒᵖ ≃+ βᵐᵒᵖ`. Inverse to `AddEquiv.mul_op`. -/
 @[simp]
@@ -208,8 +198,6 @@ def MulEquiv.op {α β} [Mul α] [Mul β] : α ≃* β ≃ (αᵐᵒᵖ ≃* β�
       left_inv x := by simp,
       right_inv x := by simp,
       map_mul' x y := congr_arg unop (map_mul f (MulOpposite.op y) (MulOpposite.op x)) }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The 'unopposite' of an iso `αᵐᵒᵖ ≃* βᵐᵒᵖ`. Inverse to `MulEquiv.op`. -/
 @[to_additive (attr := simp)
