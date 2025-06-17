@@ -34,7 +34,9 @@ namespace Algebra
 -- `Generators.{w, u₁, u₂}` depends on three universe variables and
 -- to improve performance of universe unification, it should hold that
 -- `w > u₁` and `w > u₂` in the lexicographic order. For more details
--- see https://github.com/leanprover-community/mathlib4/pull/21129
+-- see https://github.com/leanprover-community/mathlib4/issues/26018
+-- TODO: this remains an unsolved problem, ideally the lexicographic
+-- order does not affect performance
 universe w₁ w₂ w₃ w₄ w₅ u₁ u₂ u₃
 
 variable {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] [Algebra R S]
