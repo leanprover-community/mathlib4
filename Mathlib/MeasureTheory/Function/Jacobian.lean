@@ -1425,18 +1425,20 @@ function `f` is injective and differentiable on a measurable set `s`, then a fun
 `g : E → F` is integrable on `f '' s` if and only if `|(f' x).det| • g ∘ f` is
 integrable on `s`. -/
 theorem integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn (ht : MeasurableSet t)
-    (hg' : ∀ x ∈ t, HasDerivWithinAt g (g' x) t x) (hg : MonotoneOn g t) (u : ℝ → E) :
-    IntegrableOn u (g '' t) ↔ IntegrableOn (fun x => (g' x) • u (g x)) t := by
+    (hg' : ∀ x ∈ t, HasDerivWithinAt g (g' x) t x) (hg : MonotoneOn g t) (u : ℝ → F) :
+    IntegrableOn u (g '' t) ↔ IntegrableOn (fun x ↦ (g' x) • u (g x)) t := by
   rcases exists_decomposition_of_monotoneOn_hasDerivWithinAt ht hg hg' with
     ⟨a, b, c, h_union, ha, hb, hc, h_disj, h_disj', a_count, gb_count, deriv_b, deriv_c, inj_c⟩
-  have : IntegrableOn (fun x => (g' x) • u (g x)) t
+  have I : IntegrableOn (fun x => (g' x) • u (g x)) t
       ↔ IntegrableOn (fun x => (g' x) • u (g x)) c := by
-    have : IntegrableOn (fun x ↦ g' x • u (g x)) a :=
+    have A : IntegrableOn (fun x ↦ g' x • u (g x)) a :=
       IntegrableOn.of_measure_zero (a_count.measure_zero volume)
-
-    simp only [← h_union, integrableOn_union, this, true_and]
-
-  have : IntegrableOn u (g '' t) ↔ IntegrableOn u (g '' c) := by
+    have B : IntegrableOn (fun x ↦ g' x • u (g x)) b := by
+      have : IntegrableOn (fun x ↦ (0 : F)) b := by simp
+      apply this.congr_fun (fun x hx ↦ ?_) hb
+      simp [deriv_b x hx]
+    simp only [← h_union, integrableOn_union, A, B, true_and]
+  have J : IntegrableOn u (g '' t) ↔ IntegrableOn u (g '' c) := by
     apply integrableOn_congr_set_ae
     rw [← h_union, image_union, image_union]
     have A : (g '' a ∪ (g '' b ∪ g '' c) : Set ℝ) =ᵐ[volume] (g '' b ∪ g '' c : Set ℝ) := by
@@ -1446,6 +1448,21 @@ theorem integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn (ht : Measu
       refine union_ae_eq_right_of_ae_eq_empty (ae_eq_empty.mpr ?_)
       exact gb_count.measure_zero _
     exact A.trans B
+  rw [I, J]
+  have ct : c ⊆ t := by
+    rw [← h_union]
+    exact subset_union_right.trans subset_union_right
+  let G' : ℝ → (ℝ →L[ℝ] ℝ) := fun x ↦ (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (g' x))
+  have hG' (x : ℝ) (hx : x ∈ c) : HasFDerivWithinAt g (G' x) c x :=
+    (hg' x (ct hx)).hasFDerivWithinAt.mono ct
+  rw [integrableOn_image_iff_integrableOn_abs_det_fderiv_smul _ hc hG' inj_c]
+  apply integrableOn_congr_fun (fun x hx ↦ ?_) hc
+  simp only [LinearMap.det_ring, ContinuousLinearMap.coe_coe, ContinuousLinearMap.smulRight_apply,
+    ContinuousLinearMap.one_apply, smul_eq_mul, one_mul, G']
+  rw [abs_of_nonneg (deriv_c x hx)]
+
+
+
 
 
 
