@@ -377,7 +377,7 @@ lemma norm_iteratedFDeriv_fourierPowSMulRight
   have I₃ m : ‖iteratedFDeriv ℝ m (T ∘ (ContinuousLinearMap.pi (fun (_ : Fin n) ↦ L))) v‖ ≤
       n.descFactorial m * ‖L‖ ^ n * ‖v‖ ^ (n - m) := by
     apply (I₂ m).trans (le_of_eq _)
-    rcases le_or_lt m n with hm | hm
+    rcases le_or_gt m n with hm | hm
     · rw [show ‖L‖ ^ n = ‖L‖ ^ (m + (n - m)) by rw [Nat.add_sub_cancel' hm], pow_add]
       ring
     · simp only [Nat.descFactorial_eq_zero_iff_lt.mpr hm, CharP.cast_eq_zero, mul_one, zero_mul]
@@ -763,7 +763,7 @@ lemma hasDerivAt_fourierIntegral
     suffices Integrable fun v ↦ ContinuousLinearMap.smulRight (L v) (f v) by
       simpa only [fourierSMulRight, neg_smul, neg_mul, Pi.smul_apply] using this.smul (-2 * π * I)
     convert ((ContinuousLinearMap.ring_lmap_equiv_self ℝ
-      E).symm.toContinuousLinearEquiv.toContinuousLinearMap).integrable_comp hf' using 2 with v
+      E).symm.toContinuousLinearEquiv.toContinuousLinearMap).integrable_comp hf' using 2 with _ v
     apply ContinuousLinearMap.ext_ring
     rw [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.flip_apply,
       ContinuousLinearMap.mul_apply', one_mul, ContinuousLinearMap.map_smul]

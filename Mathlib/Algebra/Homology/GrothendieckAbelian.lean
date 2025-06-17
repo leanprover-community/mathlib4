@@ -65,7 +65,6 @@ instance isGrothendieckAbelian [Abelian C] [IsGrothendieckAbelian.{w} C]
     [c.HasNoLoop] [Small.{w} ι] :
     IsGrothendieckAbelian.{w} (HomologicalComplex C c) where
   hasSeparator := by
-    have := Classical.typeDecidableEq ι
     have : HasCoproductsOfShape ι C :=
       hasColimitsOfShape_of_equivalence (Discrete.equivalence (equivShrink.{w} ι)).symm
     infer_instance

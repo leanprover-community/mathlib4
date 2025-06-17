@@ -36,6 +36,16 @@ noncomputable def selfAdjoint.expUnitary (a : selfAdjoint A) : unitary A :=
 
 open selfAdjoint
 
+@[simp]
+lemma selfAdjoint.expUnitary_zero : expUnitary (0 : selfAdjoint A) = 1 := by
+  ext
+  simp
+
+@[fun_prop]
+lemma selfAdjoint.continuous_expUnitary : Continuous (expUnitary : selfAdjoint A → unitary A) := by
+  simp only [continuous_induced_rng, Function.comp_def, selfAdjoint.expUnitary_coe]
+  fun_prop
+
 theorem Commute.expUnitary_add {a b : selfAdjoint A} (h : Commute (a : A) (b : A)) :
     expUnitary (a + b) = expUnitary a * expUnitary b := by
   ext
