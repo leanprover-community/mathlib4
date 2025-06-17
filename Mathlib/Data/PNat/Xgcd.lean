@@ -402,7 +402,6 @@ theorem gcd_props :
   intros d w x y z a' b'
   let u := XgcdType.start a b
   let ur := u.reduce
-
   have _ : d = ur.a := rfl
   have hb : d = ur.b := u.reduce_isReduced'
   have ha' : (a' : ℕ) = w + x := gcdA'_coe a b

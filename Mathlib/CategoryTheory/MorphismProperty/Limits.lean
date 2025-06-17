@@ -227,7 +227,7 @@ theorem pullback_map [HasPullbacks C]
           ((Over.pullback _).map (Over.homMk _ e₂.symm : Over.mk g ⟶ Over.mk g')).left) ≫
         (pullbackSymmetry _ _).hom ≫
           ((Over.pullback g').map (Over.homMk _ e₁.symm : Over.mk f ⟶ Over.mk f')).left := by
-    ext <;> dsimp <;> simp
+    ext <;> simp
   rw [this]
   apply P.comp_mem <;> rw [P.cancel_left_of_respectsIso]
   exacts [baseChange_map _ (Over.homMk _ e₂.symm : Over.mk g ⟶ Over.mk g') h₂,

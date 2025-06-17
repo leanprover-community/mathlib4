@@ -285,7 +285,6 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
   let E : Submodule R N3 := Submodule.span R {l23 (l12 n1)}
   have hE : Nontrivial E :=
     ⟨0, ⟨⟨l23 (l12 n1), Submodule.mem_span_singleton_self _⟩, Subtype.coe_ne_coe.1 hn1.symm⟩⟩
-
   -- Since `N1 ⊗ M -> N2 ⊗ M -> N3 ⊗ M` is exact, we have `l23 (l12 n1) ⊗ₜ m = 0` for all `m : M`.
   have eq1 : ∀ (m : M), l23 (l12 n1) ⊗ₜ[R] m = 0 := fun m ↦
     ex.apply_apply_eq_zero (n1 ⊗ₜ[R] m)
@@ -313,7 +312,6 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
       smul_zero, map_zero]
   have : Subsingleton (E ⊗[R] M) := subsingleton_iff_forall_eq 0 |>.2 fun x =>
     show x ∈ (⊥ : Submodule R _) from eq0 ▸ ⟨⟩
-
   -- but `E ⊗ M = 0` implies `E = 0` because `M` is faithfully flat and this is a contradiction.
   exact not_subsingleton_iff_nontrivial.2 inferInstance <| fl.rTensor_reflects_triviality R M E
 
@@ -329,7 +327,6 @@ lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
     rw [Submodule.subsingleton_quotient_iff_eq_top, Submodule.range_inclusion,
       Submodule.comap_subtype_eq_top] at triv_coh
     exact le_antisymm triv_coh complex
-
   -- Since `M` is faithfully flat, we need only to show that `H ⊗ M` is trivial.
   suffices Subsingleton (H ⊗[R] M) from rTensor_reflects_triviality R M H
   let e : H ⊗[R] M ≃ₗ[R] _ := TensorProduct.quotientTensorEquiv _ _
@@ -350,7 +347,6 @@ lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
     have mem : x ⊗ₜ[R] m ∈ LinearMap.ker (l23.rTensor M) := by simp [hx]
     rw [LinearMap.exact_iff.1 ex] at mem
     obtain ⟨y, hy⟩ := mem
-
     refine ⟨LinearMap.rTensor M (LinearMap.rangeRestrict _ ∘ₗ LinearMap.rangeRestrict l12) y,
       Module.Flat.rTensor_preserves_injective_linearMap (LinearMap.ker l23).subtype
       Subtype.val_injective ?_⟩

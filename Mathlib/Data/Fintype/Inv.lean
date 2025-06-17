@@ -136,8 +136,6 @@ end Choose
 
 section BijectionInverse
 
-open Function
-
 variable [Fintype α] [DecidableEq β] {f : α → β}
 
 /-- `bijInv f` is the unique inverse to a bijection `f`. This acts
