@@ -3,6 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
+import Mathlib.Algebra.Ring.Hom.InjSurj
 import Mathlib.Algebra.Field.Equiv
 import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Algebra.Order.Ring.Int

@@ -194,7 +194,7 @@ theorem sum_sq_le_of_mem_box (hx : x ∈ box n d) : ∑ i : Fin n, x i ^ 2 ≤ n
   rw [mem_box] at hx
   have : ∀ i, x i ^ 2 ≤ (d - 1) ^ 2 := fun i =>
     Nat.pow_le_pow_left (Nat.le_sub_one_of_lt (hx i)) _
-  exact (sum_le_card_nsmul univ _ _ fun i _ => this i).trans (by rw [card_fin, smul_eq_mul])
+  exact (sum_le_card_nsmul univ _ _ fun i _ => this i).trans (by rw [Finset.card_fin, smul_eq_mul])
 
 theorem sum_eq : (∑ i : Fin n, d * (2 * d + 1) ^ (i : ℕ)) = ((2 * d + 1) ^ n - 1) / 2 := by
   refine (Nat.div_eq_of_eq_mul_left zero_lt_two ?_).symm
@@ -234,8 +234,7 @@ theorem exists_large_sphere_aux (n d : ℕ) : ∃ k ∈ range (n * (d - 1) ^ 2 +
   refine exists_le_card_fiber_of_nsmul_le_card_of_maps_to (fun x hx => ?_) nonempty_range_succ ?_
   · rw [mem_range, Nat.lt_succ_iff]
     exact sum_sq_le_of_mem_box hx
-  · rw [card_range, _root_.nsmul_eq_mul, mul_div_assoc', cast_add_one, mul_div_cancel_left₀,
-      card_box]
+  · rw [card_range, nsmul_eq_mul, mul_div_assoc', cast_add_one, mul_div_cancel_left₀, card_box]
     exact (cast_add_one_pos _).ne'
 
 theorem exists_large_sphere (n d : ℕ) :
@@ -481,7 +480,7 @@ theorem lower_bound_le_one (hN : 1 ≤ N) (hN' : N ≤ 4096) :
 theorem roth_lower_bound : (N : ℝ) * exp (-4 * √(log N)) ≤ rothNumberNat N := by
   obtain rfl | hN := Nat.eq_zero_or_pos N
   · norm_num
-  obtain h₁ | h₁ := le_or_lt 4096 N
+  obtain h₁ | h₁ := le_or_gt 4096 N
   · exact (roth_lower_bound_explicit h₁).le
   · apply (lower_bound_le_one hN h₁.le).trans
     simpa using rothNumberNat.monotone hN

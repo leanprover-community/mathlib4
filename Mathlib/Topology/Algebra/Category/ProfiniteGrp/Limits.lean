@@ -115,7 +115,7 @@ theorem toLimit_injective (P : ProfiniteGrp.{u}) : Function.Injective (toLimit P
   rw [← MonoidHom.ker_eq_bot_iff, Subgroup.eq_bot_iff_forall]
   intro x h
   by_contra xne1
-  rcases exist_openNormalSubgroup_sub_open_nhd_of_one (isOpen_compl_singleton)
+  rcases exist_openNormalSubgroup_sub_open_nhds_of_one (isOpen_compl_singleton)
     (Set.mem_compl_singleton_iff.mpr fun a => xne1 a.symm) with ⟨H, hH⟩
   exact hH ((QuotientGroup.eq_one_iff x).mp (congrFun (Subtype.val_inj.mpr h) H)) rfl
 

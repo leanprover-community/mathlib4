@@ -197,7 +197,7 @@ Over a perfect field a much stronger result is true, see
 lemma eq_zero_of_isNilpotent_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H)
     (hx' : _root_.IsNilpotent (ad K L x)) : x = 0 := by
   suffices ⟨x, hx⟩ ∈ LinearMap.ker (traceForm K H L) by
-    simp at this
+    simp only [ker_traceForm_eq_bot_of_isCartanSubalgebra, Submodule.mem_bot] at this
     exact (AddSubmonoid.mk_eq_zero H.toAddSubmonoid).mp this
   simp only [LinearMap.mem_ker]
   ext y
