@@ -393,7 +393,7 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
           | _ => throwUnsupportedSyntax
         return ids.toList }
 
-/-- An extensions that stores all the declarations that need their arguments reordered when
+/-- An extension that stores all the declarations that need their arguments reordered when
 applying `@[to_additive]`. It is applied using the `to_additive (reorder := ...)` syntax. -/
 initialize reorderAttr : NameMapExtension (List (List Nat)) ←
   registerNameMapExtension _
