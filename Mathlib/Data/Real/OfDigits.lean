@@ -6,9 +6,6 @@ import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.MoveAdd
 import Mathlib.Tactic.Rify
 
-noncomputable def reprReal (x : ℝ) (b : ℕ) [NeZero b] : ℕ → Fin b :=
-  fun i ↦ Fin.ofNat _ <| ⌊x * b^(i + 1)⌋₊ % b
-
 noncomputable def ofDigitsTerm {b : ℕ} [NeZero b] (digits : ℕ → Fin b) : ℕ → ℝ :=
   fun i ↦ (digits i) * (b⁻¹ : ℝ)^(i + 1)
 
@@ -121,6 +118,9 @@ theorem ofDigits_close {b : ℕ} [NeZero b] {x y : ℕ → Fin b} {n : ℕ} (hxy
     ofDigits_nonneg (digits := fun i ↦ y (i + n)), ofDigits_le_one (digits := fun i ↦ x (i + n)),
     ofDigits_le_one (digits := fun i ↦ y (i + n))]
 
+noncomputable def reprReal (x : ℝ) (b : ℕ) [NeZero b] : ℕ → Fin b :=
+  fun i ↦ Fin.ofNat _ <| ⌊x * b^(i + 1)⌋₊ % b
+
 lemma ofDigits_reprReal_partial_sum_eq {x : ℝ} {b : ℕ} [inst : NeZero b] (hb : 1 < b)
     (hx : x ∈ Set.Ico 0 1) {n : ℕ} :
     b^n * ∑ i ∈ Finset.range n, ofDigitsTerm (reprReal x b) i = ⌊b^n * x⌋₊ := by
@@ -203,5 +203,3 @@ theorem reprReal_ofDigits (b : ℕ) [NeZero b] (x : ℝ) (hb : 1 < b) (hx : x �
   rw [← Summable.hasSum_iff]
   · exact ofDigits_HasSum x b hb hx
   · exact ofDigitsTerm_Summable
-
-#min_imports
