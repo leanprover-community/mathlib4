@@ -87,48 +87,27 @@ theorem contentIdeal_FG : p.contentIdeal.FG := ⟨p.coeffs, rfl⟩
 
 theorem contentIdeal_map_eq_map_contentIdeal (f : R →+* S) :
     (p.map f).contentIdeal = p.contentIdeal.map f := by
-  rw [contentIdeal_def, contentIdeal_def, map_span]
-  have h0s (s : Set S) : span s = span (s ∪ {0}) := by
-    rw [Set.union_singleton, span, span, Submodule.span_insert_zero]
-  rw [h0s, h0s (f '' p.coeffs)]
+  suffices span ((map f p).coeffs ∪ {0}) = span (f '' p.coeffs ∪ {0}) by
+    simpa [contentIdeal_def, map_span]
   congr 1
   ext s
   by_cases hs : s = 0
   · simp [hs]
-  · simp_all only [Set.union_singleton, Set.mem_insert_iff, Set.mem_image, Finset.mem_coe,
-    mem_coeffs_iff, mem_support_iff, false_or, coeff_map]
-    constructor
-    · intro hs
-      obtain ⟨n, hn1, hn2⟩ := hs
-      use p.coeff n
-      refine ⟨?_, hn2.symm⟩
-      use n
-      simp only [and_true]
-      by_contra!
-      rw [this] at hn1
-      exact hn1 f.map_zero
-    · intro hs
-      obtain ⟨r, ⟨n, _, _⟩, hr2⟩ := hs
-      use n
-      simp_all
+  · aesop (add simp mem_coeffs_iff)
 
 theorem contentIdeal_mul_le_mul_contentIdeal (q : R[X]) :
     (p * q).contentIdeal ≤ p.contentIdeal * q.contentIdeal := by
   rw [contentIdeal_def, span_le]
-  intro r hr
-  rw [Finset.mem_coe, mem_coeffs_iff] at hr
-  obtain ⟨n, _, hr⟩ := hr
-  rw [SetLike.mem_coe, hr, coeff_mul]
-  exact Ideal.sum_mem _ <|
-    fun i _ ↦ Submodule.mul_mem_mul (p.coeff_mem_contentIdeal i.1) (q.coeff_mem_contentIdeal i.2)
+  simp only [Set.subset_def, Finset.mem_coe, mem_coeffs_iff]
+  rintro r ⟨n, _, rfl⟩
+  simp [coeff_mul, _root_.sum_mem, Submodule.mul_mem_mul, coeff_mem_contentIdeal]
 
 section CommSemiring
 
 variable {R : Type*} [CommSemiring R] {p q : R[X]}
 
 theorem contentIdeal_le_contentIdeal_of_dvd (hpq : p ∣ q) : q.contentIdeal ≤ p.contentIdeal := by
-  obtain ⟨p', hp'⟩ := hpq
-  rw [hp']
+  obtain ⟨p', rfl⟩ := hpq
   exact le_trans (p.contentIdeal_mul_le_mul_contentIdeal p') mul_le_right
 
 theorem _root_.Submodule.IsPrincipal.contentIdeal_generator_dvd_coeff
@@ -194,17 +173,16 @@ theorem mul_contentIdeal_le_radical_contentIdeal_mul :
   intro P ⟨hpq, hPprime⟩
   rw [hPprime.mul_le]
   rw [← Ideal.mk_ker (I := P)] at hpq ⊢
-  simp only [← map_eq_bot_iff_le_ker, ← contentIdeal_map_eq_map_contentIdeal, Polynomial.map_mul,
-    contentIdeal_eq_bot_iff, mul_eq_zero] at hpq ⊢
-  exact hpq
+  simpa only [← map_eq_bot_iff_le_ker, ← contentIdeal_map_eq_map_contentIdeal, Polynomial.map_mul,
+    contentIdeal_eq_bot_iff, mul_eq_zero] using hpq
 
 theorem contentIdeal_mul_eq_top_of_contentIdeal_eq_top (hp : p.contentIdeal = ⊤)
     (hq : q.contentIdeal = ⊤)  : (p * q).contentIdeal = ⊤ := by
   rw [← Ideal.radical_eq_top]
   apply le_antisymm le_top
   calc
-  ⊤ = p.contentIdeal * q.contentIdeal := by simp [hp, hq]
-  _ ≤ ((p * q).contentIdeal).radical := mul_contentIdeal_le_radical_contentIdeal_mul
+    ⊤ = p.contentIdeal * q.contentIdeal := by simp [hp, hq]
+    _ ≤ ((p * q).contentIdeal).radical := mul_contentIdeal_le_radical_contentIdeal_mul
 
 end Ring
 section NormalizedGCDMonoid
