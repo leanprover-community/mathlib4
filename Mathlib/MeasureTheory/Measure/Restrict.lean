@@ -117,6 +117,9 @@ theorem restrict_le_self : μ.restrict s ≤ μ :=
     μ.restrict s t = μ (t ∩ s) := restrict_apply ht
     _ ≤ μ t := measure_mono inter_subset_left
 
+theorem absolutelyContinuous_restrict : μ.restrict s ≪ μ :=
+  Measure.absolutelyContinuous_of_le Measure.restrict_le_self
+
 variable (μ)
 
 theorem restrict_eq_self (h : s ⊆ t) : μ.restrict t s = μ s :=
@@ -576,12 +579,15 @@ theorem ae_restrict_iff' {p : α → Prop} (hs : MeasurableSet s) :
     (∀ᵐ x ∂μ.restrict s, p x) ↔ ∀ᵐ x ∂μ, x ∈ s → p x :=
   ae_restrict_iff'₀ hs.nullMeasurableSet
 
+theorem absolutelyContinuous_restrict : μ.restrict s ≪ μ :=
+  Measure.absolutelyContinuous_of_le Measure.restrict_le_self
+
 theorem _root_.Filter.EventuallyEq.restrict {f g : α → δ} {s : Set α} (hfg : f =ᵐ[μ] g) :
     f =ᵐ[μ.restrict s] g := by
   -- note that we cannot use `ae_restrict_iff` since we do not require measurability
   refine hfg.filter_mono ?_
   rw [Measure.ae_le_iff_absolutelyContinuous]
-  exact Measure.absolutelyContinuous_of_le Measure.restrict_le_self
+  exact absolutelyContinuous_restrict
 
 theorem ae_restrict_mem₀ (hs : NullMeasurableSet s μ) : ∀ᵐ x ∂μ.restrict s, x ∈ s :=
   (ae_restrict_iff'₀ hs).2 (Filter.Eventually.of_forall fun _ => id)

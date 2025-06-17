@@ -1123,6 +1123,27 @@ theorem lintegral_abs_det_fderiv_eq_addHaar_image₀ (hs : NullMeasurableSet s �
   intro x hx
   exact (hf' x (ts hx)).mono ts
 
+variable {μ} in
+lemma absolutelyContinuous_restrict : μ.restrict s ≪ μ := by
+  intro t ht
+  apply le_antisymm ?_ (zero_le _)
+  exact (restrict_le_self t).trans_eq ht
+
+lemma foo (hs : NullMeasurableSet s μ) {t : Set E} :
+    NullMeasurableSet (t ∩ s) μ ↔ NullMeasurableSet t (μ.restrict s) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · have A : NullMeasurableSet (t \ s) (μ.restrict s) := by
+      apply NullMeasurableSet.of_null
+      rw [Measure.restrict_apply₀' hs]
+      simp
+    have B : NullMeasurableSet (t ∩ s) (μ.restrict s) :=
+      h.mono_ac absolutelyContinuous_restrict
+    simpa using A.union B
+  · obtain ⟨t', -, ht', t't⟩ : ∃ t' ⊇ t, MeasurableSet t' ∧ t' =ᵐ[μ.restrict s] t :=
+      h.exists_measurable_superset_ae_eq
+    have W := ae_restrict_eq
+#exit
+
 /-- Change of variable formula for differentiable functions, set version: if a function `f` is
 injective and differentiable on a measurable set `s`, then the pushforward of the measure with
 density `|(f' x).det|` on `s` is the Lebesgue measure on the image set. This version requires
@@ -1135,7 +1156,7 @@ theorem map_withDensity_abs_det_fderiv_eq_addHaar (hs : NullMeasurableSet s μ)
     Measure.map f ((μ.restrict s).withDensity fun x => ENNReal.ofReal |(f' x).det|) =
       μ.restrict (f '' s) := by
   have h'f : AEMeasurable f (μ.restrict s) := by
-    apply ContinuousOn.aemeasurable (fun x hx ↦ ?_)
+    apply ContinuousOn.aemeasurable₀ (fun x hx ↦ ?_) hs
     exact (hf' x hx).differentiableWithinAt.continuousWithinAt
   have h''f : AEMeasurable f ((μ.restrict s).withDensity fun x => ENNReal.ofReal |(f' x).det|) := by
     apply h'f.mono_ac
@@ -1147,7 +1168,8 @@ theorem map_withDensity_abs_det_fderiv_eq_addHaar (hs : NullMeasurableSet s μ)
     lintegral_abs_det_fderiv_eq_addHaar_image₀ μ _
       (fun x hx => (hf' x hx.2).mono inter_subset_right) (hf.mono inter_subset_right),
     image_preimage_inter]
-
+  --have W := nullMeasurableSet_restrict
+  sorry
 
 #exit
 
