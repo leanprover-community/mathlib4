@@ -49,28 +49,32 @@ section EMetric
 
 variable [PseudoEMetricSpace β]
 
+noncomputable instance : EDist (α →ᵤ β) where
+  edist f g := ⨆ x, edist (toFun f x) (toFun g x)
+
+lemma edist_def (f g : α →ᵤ β) :
+    edist f g = ⨆ x, edist (toFun f x) (toFun g x) :=
+  rfl
+
+lemma edist_le {f g : α →ᵤ β} {C : ℝ≥0∞} :
+    edist f g ≤ C ↔ ∀ x, edist (toFun f x) (toFun g x) ≤ C :=
+  iSup_le_iff
+
 /-- The natural `EMetric` structure on `α →ᵤ β` given by `edist f g = ⨆ x, edist (f x) (g x)`. -/
 noncomputable instance : PseudoEMetricSpace (α →ᵤ β) where
-  edist f g := ⨆ x, edist (f x) (g x)
-  edist_self := by simp
-  edist_comm := by simp [edist_comm]
+  edist_self := by simp [edist_def]
+  edist_comm := by simp [edist_def, edist_comm]
   edist_triangle f₁ f₂ f₃ := calc
     ⨆ x, edist (f₁ x) (f₃ x) ≤ ⨆ x, edist (f₁ x) (f₂ x) + edist (f₂ x) (f₃ x) :=
       iSup_mono fun _ ↦ edist_triangle _ _ _
     _ ≤ (⨆ x, edist (f₁ x) (f₂ x)) + (⨆ x, edist (f₂ x) (f₃ x)) := iSup_add_le _ _
   toUniformSpace := inferInstance
   uniformity_edist := by
-    rw [UniformFun.hasBasis_uniformity_of_basis α β uniformity_basis_edist |>.eq_biInf]
-    simp only [Function.comp_apply, UniformFun.gen, Set.mem_setOf_eq]
-    refine le_antisymm ?_ <| iInf₂_mono ?_
-    · refine iInf₂_mono' fun ε hε ↦ ?_
-      obtain ⟨δ, hδ, hδε⟩ := exists_between hε
-      exact ⟨δ, hδ, by simpa [iSup_lt_iff] using fun f g h ↦ ⟨δ, hδε, fun x ↦ (h x).le⟩⟩
-    · simpa using fun ε hε f g h x ↦ (le_iSup _ x).trans_lt h
-
-lemma edist_def (f g : α →ᵤ β) :
-    edist f g = ⨆ x, edist (toFun f x) (toFun g x) :=
-  rfl
+    suffices 𝓤 (α →ᵤ β) = comap (fun x ↦ edist x.1 x.2) (𝓝 0) by
+      simp [this, ENNReal.nhds_zero_basis.comap _ |>.eq_biInf, Set.Iio]
+    rw [ENNReal.nhds_zero_basis_Iic.comap _ |>.eq_biInf]
+    rw [UniformFun.hasBasis_uniformity_of_basis α β uniformity_basis_edist_le |>.eq_biInf]
+    simp [UniformFun.gen, edist_le, Set.Iic]
 
 noncomputable instance {β : Type*} [EMetricSpace β] : EMetricSpace (α →ᵤ β) where
   eq_of_edist_eq_zero {f g} h := funext fun x ↦ eq_of_edist_eq_zero <| le_antisymm
@@ -78,7 +82,7 @@ noncomputable instance {β : Type*} [EMetricSpace β] : EMetricSpace (α →ᵤ 
 
 lemma lipschitzWith_iff {f : γ → α →ᵤ β} {K : ℝ≥0} :
     LipschitzWith K f ↔ ∀ c, LipschitzWith K (fun x ↦ toFun (f x) c) := by
-  simp [LipschitzWith, edist_def, forall_comm (α := α), toFun, ofFun]
+  simp [LipschitzWith, edist_le, forall_comm (α := α)]
 
 lemma lipschitzWith_ofFun_iff {f : γ → α → β} {K : ℝ≥0} :
     LipschitzWith K (fun x ↦ ofFun (f x)) ↔ ∀ c, LipschitzWith K (f · c) :=
@@ -97,10 +101,26 @@ lemma lipschitzOnWith_iff {f : γ → α →ᵤ β} {K : ℝ≥0} {s : Set γ} :
   simp [lipschitzOnWith_iff_restrict, lipschitzWith_iff]
   rfl
 
+lemma lipschitzOnWith_ofFun_iff {f : γ → α → β} {K : ℝ≥0} {s : Set γ} :
+    LipschitzOnWith K (fun x ↦ ofFun (f x)) s ↔ ∀ c, LipschitzOnWith K (f · c) s :=
+  lipschitzOnWith_iff
+
+/-- If `f : α → γ → β` is a family of a functions, all of which are Lipschitz with the
+same constant, then the family is uniformly equicontinuous. -/
+lemma _root_.LipschitzOnWith.uniformEquicontinuousOn (f : α → γ → β) (K : ℝ≥0) {s : Set γ}
+    (h : ∀ c, LipschitzOnWith K (f c) s) : UniformEquicontinuousOn f s := by
+  rw [uniformEquicontinuousOn_iff_uniformContinuousOn]
+  rw [← lipschitzOnWith_ofFun_iff] at h
+  exact h.uniformContinuousOn
+
+lemma edist_eval_le {f g : α →ᵤ β} {x : α} :
+    edist (toFun f x) (toFun g x) ≤ edist f g :=
+  le_iSup (fun x ↦ edist (toFun f x) (toFun g x)) x
+
 lemma lipschitzWith_eval (x : α) :
     LipschitzWith 1 (fun f : α →ᵤ β ↦ f x) := by
   intro f g
-  simpa [edist_def] using le_iSup (fun y ↦ edist (toFun f y) (toFun g y)) x
+  simpa using edist_eval_le
 
 end EMetric
 
@@ -117,17 +137,23 @@ noncomputable instance [BoundedSpace β] : PseudoMetricSpace (α →ᵤ β) :=
       all_goals trivial)
     (fun _ _ ↦ by simp [edist_def, ENNReal.toReal_iSup (fun _ ↦ edist_ne_top _ _), dist_edist])
 
+lemma dist_def [BoundedSpace β] (f g : α →ᵤ β) :
+    dist f g = ⨆ x, dist (toFun f x) (toFun g x) :=
+  rfl
+
+lemma dist_le [BoundedSpace β] {f g : α →ᵤ β} {C : ℝ} (hC : 0 ≤ C) :
+    dist f g ≤ C ↔ ∀ x, dist (toFun f x) (toFun g x) ≤ C := by
+  simp_rw [dist_edist, ← ENNReal.le_ofReal_iff_toReal_le (edist_ne_top _ _) hC, edist_le]
+
 noncomputable instance [BoundedSpace β] : BoundedSpace (α →ᵤ β) where
   bounded_univ := by
     rw [Metric.isBounded_iff_ediam_ne_top, ← lt_top_iff_ne_top]
     refine lt_of_le_of_lt ?_ <| BoundedSpace.bounded_univ (α := β) |>.ediam_ne_top.lt_top
-    simp only [EMetric.diam_le_iff, Set.mem_univ, edist_def, iSup_le_iff, forall_const]
+    simp only [EMetric.diam_le_iff, Set.mem_univ, edist_le, forall_const]
     exact fun f g x ↦ EMetric.edist_le_diam_of_mem (by trivial) (by trivial)
 
-noncomputable instance {β : Type*} [MetricSpace β] [BoundedSpace β] : MetricSpace (α →ᵤ β) where
-  eq_of_dist_eq_zero {f g} h := by
-    rw [dist_edist, ENNReal.toReal_eq_zero_iff] at h
-    exact eq_of_edist_eq_zero <| h.resolve_right <| edist_ne_top f g
+noncomputable instance {β : Type*} [MetricSpace β] [BoundedSpace β] : MetricSpace (α →ᵤ β) :=
+  .ofT0PseudoMetricSpace _
 
 open BoundedContinuousFunction in
 lemma isometry_ofFun_boundedContinuousFunction [TopologicalSpace α] :
@@ -162,48 +188,64 @@ lemma continuous_of_forall_lipschitzWith {f : γ → α →ᵤ[𝔖] β} (K : Se
     (h : ∀ s ∈ 𝔖, ∀ c ∈ s, LipschitzWith (K s) (fun x ↦ toFun 𝔖 (f x) c)) :
     Continuous f := by
   rw [UniformOnFun.continuous_rng_iff]
-  revert h
-  congr! with h s hs
-  refine LipschitzWith.continuous (K := K s) ?_
+  refine fun s hs ↦ LipschitzWith.continuous (K := K s) ?_
   rw [UniformFun.lipschitzWith_iff]
   rintro ⟨y, hy⟩
   exact h s hs y hy
 
-variable [Finite 𝔖]
+--TODO: move
+lemma isUniformInducing_pi_restrict :
+    IsUniformInducing
+      (fun f : α →ᵤ[𝔖] β ↦ fun s : 𝔖 ↦ UniformFun.ofFun ((s : Set α).restrict (toFun 𝔖 f))) := by
+  simp_rw [isUniformInducing_iff_uniformSpace, Pi.uniformSpace_eq, UniformSpace.comap_iInf,
+    ← UniformSpace.comap_comap, iInf_subtype]
+  rfl
 
-noncomputable instance : PseudoEMetricSpace (α →ᵤ[𝔖] β) where
-  edist f g := ⨆ x ∈ ⋃₀ 𝔖, edist (f x) (g x)
-  edist_self := by simp
-  edist_comm := by simp [edist_comm]
-  edist_triangle f₁ f₂ f₃ := calc
-    ⨆ x ∈ ⋃₀ 𝔖, edist (f₁ x) (f₃ x) ≤ ⨆ x ∈ ⋃₀ 𝔖, edist (f₁ x) (f₂ x) + edist (f₂ x) (f₃ x) :=
-      iSup₂_mono fun _ _ ↦ edist_triangle _ _ _
-    _ ≤ (⨆ x ∈ ⋃₀ 𝔖, edist (f₁ x) (f₂ x)) + (⨆ x ∈ ⋃₀ 𝔖, edist (f₂ x) (f₃ x)) := iSup₂_add_le _ _
-  toUniformSpace := inferInstance
-  uniformity_edist := by
-    trans ⨅ ε > 0, Filter.principal {p | ⨆ x ∈ ⋃₀ 𝔖, edist (p.1 x) (p.2 x) ≤ ε}
-    · rw [UniformOnFun.uniformity_eq_of_basis β 𝔖 uniformity_basis_edist_le]
-      simp [UniformOnFun.gen, iSup_le_iff, toFun, ofFun, iInf₂_comm (ι₂ := ℝ≥0∞),
-        iInf_principal_finite ‹_›, Set.iInter_setOf, forall_comm (α := α)]
-    refine le_antisymm ?_ (iInf₂_mono ?_)
-    · refine iInf₂_mono' fun ε hε ↦ ?_
-      obtain ⟨δ, hδ, hδε⟩ := exists_between hε
-      exact ⟨δ, hδ, by simpa [iSup_lt_iff] using fun f g h ↦ ⟨δ, hδε, h⟩⟩
-    · simp only [gt_iff_lt, iSup_le_iff, Filter.le_principal_iff, Filter.mem_principal,
-        Set.setOf_subset_setOf, Prod.forall]
-      exact fun ε hε f g h x hx ↦ (le_iSup₂ (f := fun x _ ↦ edist (f x) (g x)) x hx).trans h.le
+@[nolint unusedArguments]
+noncomputable instance [Finite 𝔖] : EDist (α →ᵤ[𝔖] β) where
+  edist f g := ⨆ x ∈ ⋃₀ 𝔖, edist (toFun 𝔖 f x) (toFun 𝔖 g x)
 
-lemma edist_def (f g : α →ᵤ[𝔖] β) :
+lemma edist_def [Finite 𝔖] (f g : α →ᵤ[𝔖] β) :
     edist f g = ⨆ x ∈ ⋃₀ 𝔖, edist (toFun 𝔖 f x) (toFun 𝔖 g x) :=
   rfl
 
-lemma edist_def' (f g : α →ᵤ[𝔖] β) :
+lemma edist_def' [Finite 𝔖] (f g : α →ᵤ[𝔖] β) :
     edist f g = ⨆ s ∈ 𝔖, ⨆ x ∈ s, edist (toFun 𝔖 f x) (toFun 𝔖 g x) := by
   simp [edist_def, iSup_and, iSup_comm (ι := α)]
 
+lemma edist_eq_restrict_sUnion [Finite 𝔖] {f g : α →ᵤ[𝔖] β} :
+    edist f g = edist
+      (UniformFun.ofFun ((⋃₀ 𝔖).restrict (toFun 𝔖 f)))
+      (UniformFun.ofFun ((⋃₀ 𝔖).restrict (toFun 𝔖 g))) :=
+  iSup_subtype'
+
+lemma edist_eq_pi_restrict [Fintype 𝔖] {f g : α →ᵤ[𝔖] β} :
+    edist f g = edist
+      (fun s : 𝔖 ↦ UniformFun.ofFun ((s : Set α).restrict (toFun 𝔖 f)))
+      (fun s : 𝔖 ↦ UniformFun.ofFun ((s : Set α).restrict (toFun 𝔖 g))) := by
+  simp_rw [edist_def', iSup_subtype', edist_pi_def, Finset.sup_univ_eq_iSup]
+  rfl
+
+variable [Finite 𝔖]
+
+noncomputable instance : PseudoEMetricSpace (α →ᵤ[𝔖] β) where
+  edist_self f := by simp [edist_eq_restrict_sUnion]
+  edist_comm := by simp [edist_eq_restrict_sUnion, edist_comm]
+  edist_triangle f₁ f₂ f₃ := by simp [edist_eq_restrict_sUnion, edist_triangle]
+  toUniformSpace := inferInstance
+  uniformity_edist := by
+    let _ := Fintype.ofFinite 𝔖;
+    simp_rw [← isUniformInducing_pi_restrict.comap_uniformity,
+      PseudoEMetricSpace.uniformity_edist, comap_iInf, comap_principal, edist_eq_pi_restrict,
+      Set.preimage_setOf_eq]
+
+lemma edist_le {f g : α →ᵤ[𝔖] β} {C : ℝ≥0∞} :
+    edist f g ≤ C ↔ ∀ x ∈ ⋃₀ 𝔖, edist (toFun 𝔖 f x) (toFun 𝔖 g x) ≤ C := by
+  simp_rw [edist_def, iSup₂_le_iff]
+
 lemma lipschitzWith_iff {f : γ → α →ᵤ[𝔖] β} {K : ℝ≥0} :
     LipschitzWith K f ↔ ∀ c ∈ ⋃₀ 𝔖, LipschitzWith K (fun x ↦ toFun 𝔖 (f x) c) := by
-  simp [LipschitzWith, edist_def, toFun, ofFun]
+  simp [LipschitzWith, edist_le]
   tauto
 
 lemma lipschitzOnWith_iff {f : γ → α →ᵤ[𝔖] β} {K : ℝ≥0} {s : Set γ} :
@@ -247,14 +289,11 @@ noncomputable instance [BoundedSpace β] : PseudoMetricSpace (α →ᵤ[𝔖] β
       refine (iSup₂_le fun x _ ↦ EMetric.edist_le_diam_of_mem ?_ ?_).trans_lt this |>.ne
       all_goals trivial)
     (fun _ _ ↦ by
-      simp only [dist_edist, edist_def, iSup_sigma']
+      simp only [dist_edist, edist_def, ← ENNReal.toReal_iSup (fun _ ↦ edist_ne_top _ _)]
       rw [ENNReal.toReal_iSup]
-      · congr!
-        rw [ENNReal.toReal_iSup]
-        exact (fun _ ↦ edist_ne_top _ _)
-      · have := BoundedSpace.bounded_univ (α := β) |>.ediam_ne_top.lt_top
-        refine fun x ↦ lt_of_le_of_lt (iSup_le fun hx ↦ ?_) this |>.ne
-        exact EMetric.edist_le_diam_of_mem (by trivial) (by trivial))
+      have := BoundedSpace.bounded_univ (α := β) |>.ediam_ne_top.lt_top
+      refine fun x ↦ lt_of_le_of_lt (iSup_le fun hx ↦ ?_) this |>.ne
+      exact EMetric.edist_le_diam_of_mem (by trivial) (by trivial))
 
 noncomputable instance [BoundedSpace β] : BoundedSpace (α →ᵤ[𝔖] β) where
   bounded_univ := by
