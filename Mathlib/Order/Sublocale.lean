@@ -232,6 +232,9 @@ lemma Sublocale.univ_eq_top : (⟨univ, fun _ _ ↦ trivial, fun _ _ a ↦ a⟩ 
 lemma Sublocale.singleton_top_eq_bot : (⟨{⊤}, by simp, by simp⟩ : Sublocale X) = ⊥ :=
   le_antisymm (fun i h ↦ by simp_all [top_mem]) bot_le
 
+/--
+An open sublocale is defined by an element of the locale.
+-/
 @[ext]
 structure Open (X : Type*) [Order.Frame X] where
   element : X
@@ -246,6 +249,9 @@ instance : PartialOrder (Open X) where
 
 variable {U V : Open X}
 
+/--
+The order of open sublocales is determined by their element.
+-/
 def get_element : Open X ≃o X where
   toFun x := x.element
   invFun x := ⟨x⟩
@@ -258,6 +264,10 @@ instance : Coe (Open X) X where
 
 lemma le_def : U ≤ V ↔ U.get_element ≤ V.get_element := ge_iff_le
 
+/--
+The nucleus corresponding to an open Sublocale with the Element `U` has the function
+`fun x ↦ U ⇨ x`.
+-/
 def toNucleus (U : Open X) : Nucleus X where
   toFun x := U ⇨ x
   map_inf' _ _ := himp_inf_distrib _ _ _
@@ -272,6 +282,10 @@ instance : CompleteLattice (Open X) := get_element.symm.toGaloisInsertion.liftCo
 instance : Order.Frame (Open X) := .ofMinimalAxioms ⟨fun a s ↦ by
   simp_rw [Open.le_def]; simp [inf_sSup_eq, le_iSup_iff]⟩
 
+/--
+The map from open sublocales to their corresponding sublocale is a `FrameHom`. It preserves finite
+meets and arbitrary joins.
+-/
 def toSublocale : FrameHom (Open X) (Sublocale X) where
   toFun U := U.toNucleus.toSublocale
   map_sSup' s := by
