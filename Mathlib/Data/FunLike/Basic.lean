@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Logic.Function.Basic
+import Mathlib.Logic.Unique
 import Mathlib.Util.CompileInductive
 import Mathlib.Tactic.Simps.NotationClass
 
@@ -201,7 +202,12 @@ theorem exists_ne {f g : F} (h : f ≠ g) : ∃ x, f x ≠ g x :=
 
 /-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search. -/
 lemma subsingleton_cod [∀ a, Subsingleton (β a)] : Subsingleton F :=
-  ⟨fun _ _ ↦ coe_injective <| Subsingleton.elim _ _⟩
+  coe_injective.subsingleton
+
+include β in
+/-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search. -/
+lemma subsingleton_dom [IsEmpty α] : Subsingleton F :=
+  coe_injective.subsingleton
 
 end DFunLike
 
