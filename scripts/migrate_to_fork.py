@@ -602,6 +602,8 @@ def get_pr_comments_summary(pr_number: int) -> Optional[str]:
             # Skip bot comments (usernames ending with -bot, except 'FR-vdash-bot')
             if author.endswith('-bot') and not author == 'FR-vdash-bot':
                 continue
+            if author == 'leanprover-community-bot-assistant':
+                continue
 
             created_at = comment.get('createdAt', '')
             body = comment.get('body', '').strip()
