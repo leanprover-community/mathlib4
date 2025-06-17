@@ -354,8 +354,7 @@ lemma even_nat_card_aut_of_not_isUnramified [IsGalois k K] (hw : ¬ IsUnramified
     by_contra e
     exact H (Nat.finite_of_card_ne_zero e)
 
-lemma even_card_aut_of_not_isUnramified [IsGalois k K] [FiniteDimensional k K]
-    (hw : ¬ IsUnramified k w) :
+lemma even_card_aut_of_not_isUnramified [IsGalois k K] (hw : ¬ IsUnramified k w) :
     Even (Nat.card <| K ≃ₐ[k] K) :=
   even_nat_card_aut_of_not_isUnramified hw
 

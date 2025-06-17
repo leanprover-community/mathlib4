@@ -445,10 +445,7 @@ variable {p : F[X]}
 
 theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.IsSplittingField F E]
     (hp : p.Separable) (K : Type*) [Field K] [Algebra F K] [Algebra K E] [IsScalarTower F K E]
-    {x : E} (hx : x ∈ p.aroots E)
-    -- these are both implied by `hFE`, but as they carry data this makes the lemma more general
-    [Finite (K →ₐ[F] E)]
-    [Finite (K⟮x⟯.restrictScalars F →ₐ[F] E)] :
+    {x : E} (hx : x ∈ p.aroots E) :
     Nat.card (K⟮x⟯.restrictScalars F →ₐ[F] E) = Nat.card (K →ₐ[F] E) * finrank K K⟮x⟯ := by
   have h : IsIntegral K x := (isIntegral_of_noetherian (IsNoetherian.iff_fg.2 hFE) x).tower_top
   have h1 : p ≠ 0 := fun hp => by
@@ -463,10 +460,10 @@ theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.I
       Σ f : K →ₐ[F] E, @AlgHom K K⟮x⟯ E _ _ _ _ (RingHom.toAlgebra f) := by
     change (K⟮x⟯ →ₐ[F] E) ≃ Σ f : K →ₐ[F] E, _
     exact algHomEquivSigma
-  haveI : ∀ f : K →ₐ[F] E, Fintype (@AlgHom K K⟮x⟯ E _ _ _ _ (RingHom.toAlgebra f)) := fun f => by
-    have := Fintype.ofEquiv _ key_equiv
-    apply Fintype.ofInjective (Sigma.mk f) fun _ _ H => eq_of_heq (Sigma.ext_iff.mp H).2
-  have := Fintype.ofFinite (K →ₐ[F] E)
+  haveI : ∀ f : K →ₐ[F] E, Finite (@AlgHom K K⟮x⟯ E _ _ _ _ (RingHom.toAlgebra f)) := fun f => by
+    have := Finite.of_equiv _ key_equiv
+    apply Finite.of_injective (Sigma.mk f) fun _ _ H => eq_of_heq (Sigma.ext_iff.mp H).2
+  have : FiniteDimensional F K := FiniteDimensional.left F K E
   rw [Nat.card_congr key_equiv, Nat.card_sigma, IntermediateField.adjoin.finrank h,
     Nat.card_eq_fintype_card]
   apply Finset.sum_const_nat
