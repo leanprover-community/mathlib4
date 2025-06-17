@@ -382,10 +382,10 @@ def setup_remotes(username: str, fork_url: str, auto_accept: bool = False) -> st
                 print_success("Set origin to your fork")
                 fork_remote_name = 'origin'
             else:
-                # User wants to keep existing origin, use 'fork' instead
-                run_command(['git', 'remote', 'add', 'fork', fork_url])
-                print_warning("Added fork as 'fork' remote instead of 'origin'")
-                fork_remote_name = 'fork'
+                # User wants to keep existing origin, ask for alternative name
+                fork_remote_name = get_user_input("What would you like to name the remote for your fork?", "fork")
+                run_command(['git', 'remote', 'add', fork_remote_name, fork_url])
+                print_success(f"Added fork as '{fork_remote_name}' remote")
         else:
             # 'origin' doesn't exist, safe to add it
             run_command(['git', 'remote', 'add', 'origin', fork_url])
