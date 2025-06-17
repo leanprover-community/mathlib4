@@ -136,14 +136,25 @@ flagging some line-breaking changes.
 partial
 def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError :=
   if M.trim.isEmpty then as else
+  -- We try as hard as possible to scan the strings one character at a time.
+  -- However, single line comments introduced with `--` pretty-print differently than `/--`.
+  -- So, we first look ahead for `/--`: the linter will later ignore doc-strings, so it does not
+  -- matter too much what we do here and we simply drop `/--` from the original string and the
+  -- pretty-printed one, before continuing.
+  -- Next, if we already dealt with `/--`, finding a `--` means that this is a single line comment
+  -- (or possibly a comment embedded in a doc-string, which is ok, since we eventually discard
+  -- doc-strings).  In this case, we drop everything until the following line break in the
+  -- original syntax, and for the same amount of characters in the pretty-printed one, since the
+  -- pretty-printer *erases* the line break at the end of a single line comment.
   if L.take 3 == "/--" && M.take 3 == "/--" then
     parallelScanAux as (L.drop 3) (M.drop 3) else
   if L.take 2 == "--" then
     let newL := L.dropWhile (· != '\n')
     let diff := L.length - newL.length
-    -- Assumption: if L contains an embedded inline comment, so does M (modulo additional whitespace).
-    -- This holds because we call this function with M being a pretty-printed version of L.
-    -- If the pretty-printer changes in the future, this code should be adjusted.
+    -- Assumption: if `L` contains an embedded inline comment, so does `M`
+    -- (modulo additional whitespace).
+    -- This holds because we call this function with `M` being a pretty-printed version of `L`.
+    -- If the pretty-printer changes in the future, this code may need to be adjusted.
     let newM := M.dropWhile (· != '-') |>.drop diff
     parallelScanAux as newL.trimLeft newM.trimLeft else
   if L.take 2 == "-/" then
@@ -170,7 +181,7 @@ def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError 
       if m.isWhitespace then
         parallelScanAux (pushFormatError as (mkFormatError L M "missing space")) L ms.trimLeft
     else
-      -- If this code is reached, L and M differ in other changes but whitespace.
+      -- If this code is reached, then `L` and `M` differ by something other than whitespace.
       -- This should not happen in practice.
       pushFormatError as (mkFormatError ls ms "Oh no! (Unreachable?)")
 
