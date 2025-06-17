@@ -14,7 +14,7 @@ into the Hilbert cube (`ℕ → unitInterval`).
 
 open Classical in
 /-- Any compact metric space can be embedded into the Hilbert cube. -/
-theorem exists_closed_embedding_to_hilbert (X : Type*) [MetricSpace X] [CompactSpace X] :
+theorem exists_closed_embedding_to_hilbert_cube (X : Type*) [MetricSpace X] [CompactSpace X] :
     ∃ f : X → (ℕ → unitInterval), Topology.IsClosedEmbedding f := by
   let f : X → (ℕ → unitInterval) :=
     if h : Nonempty X then
