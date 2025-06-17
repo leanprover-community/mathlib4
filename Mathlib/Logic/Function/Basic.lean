@@ -238,6 +238,17 @@ theorem Bijective.of_comp_iff' {f : α → β} (hf : Bijective f) (g : γ → α
     Function.Bijective (f ∘ g) ↔ Function.Bijective g :=
   and_congr (Injective.of_comp_iff hf.injective _) (Surjective.of_comp_iff' hf _)
 
+/-- If the codomain of an injective function is a subsingleton, then the domain
+is a subsingleton as well. -/
+protected theorem Injective.subsingleton (hf : Injective f) [Subsingleton β] : Subsingleton α :=
+  ⟨fun _ _ ↦ hf <| Subsingleton.elim _ _⟩
+
+/-- If the domain of a surjective function is a subsingleton, then the codomain is a subsingleton as
+well. -/
+protected theorem Surjective.subsingleton [Subsingleton α] (hf : Surjective f) : Subsingleton β :=
+  ⟨hf.forall₂.2 fun x y ↦ congr_arg f <| Subsingleton.elim x y⟩
+
+
 /-- **Cantor's diagonal argument** implies that there are no surjective functions from `α`
 to `Set α`. -/
 theorem cantor_surjective {α} (f : α → Set α) : ¬Surjective f

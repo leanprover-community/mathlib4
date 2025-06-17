@@ -185,16 +185,6 @@ namespace Function
 
 variable {β : Sort*} {f : α → β}
 
-/-- If the codomain of an injective function is a subsingleton, then the domain
-is a subsingleton as well. -/
-protected theorem Injective.subsingleton (hf : Injective f) [Subsingleton β] : Subsingleton α :=
-  ⟨fun _ _ ↦ hf <| Subsingleton.elim _ _⟩
-
-/-- If the domain of a surjective function is a subsingleton, then the codomain is a subsingleton as
-well. -/
-protected theorem Surjective.subsingleton [Subsingleton α] (hf : Surjective f) : Subsingleton β :=
-  ⟨hf.forall₂.2 fun x y ↦ congr_arg f <| Subsingleton.elim x y⟩
-
 /-- If the domain of a surjective function is a singleton,
 then the codomain is a singleton as well. -/
 protected def Surjective.unique {α : Sort u} (f : α → β) (hf : Surjective f) [Unique.{u} α] :
