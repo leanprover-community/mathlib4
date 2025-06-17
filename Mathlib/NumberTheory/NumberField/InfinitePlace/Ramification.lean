@@ -381,7 +381,7 @@ lemma isUnramifiedIn_comap [IsGalois k K] {w : InfinitePlace K} :
   obtain ⟨σ, rfl⟩ := exists_smul_eq_of_comap_eq hv
   rwa [isUnramified_smul_iff] at H
 
-lemma even_card_aut_of_not_isUnramifiedIn [IsGalois k K] [FiniteDimensional k K]
+lemma even_card_aut_of_not_isUnramifiedIn [IsGalois k K]
     {w : InfinitePlace k} (hw : ¬ w.IsUnramifiedIn K) :
     Even (Nat.card <| K ≃ₐ[k] K) := by
   obtain ⟨v, rfl⟩ := comap_surjective (K := K) w
@@ -497,7 +497,7 @@ lemma NumberField.InfinitePlace.isUnramifiedIn [IsUnramifiedAtInfinitePlaces k K
 
 variable {K}
 
-lemma IsUnramifiedAtInfinitePlaces_of_odd_card_aut [IsGalois k K] [FiniteDimensional k K]
+lemma IsUnramifiedAtInfinitePlaces_of_odd_card_aut [IsGalois k K]
     (h : Odd (Nat.card <| K ≃ₐ[k] K)) : IsUnramifiedAtInfinitePlaces k K :=
   ⟨fun _ ↦ not_not.mp (Nat.not_even_iff_odd.2 h ∘ InfinitePlace.even_card_aut_of_not_isUnramified)⟩
 
