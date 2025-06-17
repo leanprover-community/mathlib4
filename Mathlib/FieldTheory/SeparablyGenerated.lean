@@ -31,11 +31,11 @@ Let `K/k` be a finitely generated field extension with characteristic `p > 0`, t
 
 noncomputable section
 
+open MvPolynomial
+
 section minMvPoly
 
 variable (R : Type*) {A ι : Type*} [CommRing R] [CommRing A] [Algebra R A] (a : ι → A)
-
-open MvPolynomial
 
 open scoped Classical in
 /-- An arbitrary nonzero multivariate polynomial that evaluates to 0 at a given vector `a`
@@ -45,7 +45,7 @@ def minMvPoly : MvPolynomial ι R :=
     totalDegree.argminOn {F | F.aeval a = 0 ∧ F ≠ 0} <| by
       rw [algebraicIndependent_iff] at h; push_neg at h; exact h
 
-theorem aeval_minMvPoly : (minMvPoly R a).aeval a = 0 := by
+@[simp] theorem aeval_minMvPoly : (minMvPoly R a).aeval a = 0 := by
   rw [minMvPoly]; split_ifs; · simp
   exact (totalDegree.argminOn_mem {F | F.aeval a = 0 ∧ _} _).1
 
@@ -63,10 +63,38 @@ theorem totalDegree_minMvPoly_le (p : MvPolynomial ι R) (hp : p ≠ 0) (hap : a
   rw [minMvPoly, dif_neg fun h ↦ hp (h.eq_zero_of_aeval_eq_zero p hap)]
   exact totalDegree.argminOn_le _ (.intro hap hp)
 
-theorem irreducible_minMvPoly [NoZeroDivisors R] : Irreducible (minMvPoly R a) := by
+theorem  (Polynomial.aeval (a i)) ((Polynomial.mapAlgHom (aeval fun j ↦ a ↑j)) F) = 0 := by
   _
 
+
+theorem isAlgebraic_of_mem_vars_minMvPoly (i : ι) (hi : i ∈ (minMvPoly R a).vars) :
+    IsAlgebraic (Algebra.adjoin R (a '' {i}ᶜ)) (a i) := by
+  _
+
+
 end minMvPoly
+
+section Field
+
+variable (R : Type*) {A ι : Type*} [Field R] [CommRing A] [Algebra R A] (a : ι → A)
+
+theorem irreducible_minMvPoly [IsDomain A] (h : ¬ AlgebraicIndependent R a) :
+    Irreducible (minMvPoly R a) := by
+  refine ⟨fun hu ↦ ?_, fun q₁ q₂ e ↦ ?_⟩
+  · have ⟨r, hr, eq⟩ := isUnit_iff_eq_C_of_isReduced.mp hu
+    have := eq ▸ aeval_minMvPoly R a
+    exact hr.ne_zero (by simpa using this)
+  wlog h₁ : aeval a q₁ = 0 generalizing q₁ q₂
+  · exact .symm (this q₂ q₁ (e.trans (mul_comm ..)) <| by simpa [h₁] using congr(aeval a $e))
+  have ne : q₁ * q₂ ≠ 0 := e ▸ minMvPoly_ne_zero h
+  rw [ne_eq, mul_eq_zero, not_or] at ne
+  have := totalDegree_minMvPoly_le q₁ ne.1 h₁
+  rw [e, totalDegree_mul_of_isDomain ne.1 ne.2, add_le_iff_nonpos_right, nonpos_iff_eq_zero] at this
+  refine .inr (isUnit_iff_totalDegree_of_isReduced.mpr ⟨?_, this⟩)
+  rw [totalDegree_eq_zero_iff_eq_C.mp this] at ne
+  simpa using ne.2
+
+end Field
 
 
 
@@ -74,7 +102,6 @@ section
 
 attribute [local instance 2000] Polynomial.isScalarTower Algebra.toSMul IsScalarTower.right
 
-open MvPolynomial
 open scoped IntermediateField
 
 variable {k K ι : Type*} [Field k] [Field K] [Algebra k K] (p : ℕ) [ExpChar k p] (hp : p.Prime)
