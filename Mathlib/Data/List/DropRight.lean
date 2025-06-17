@@ -53,7 +53,7 @@ theorem rdrop_eq_reverse_drop_reverse : l.rdrop n = reverse (l.reverse.drop n) :
   induction' l using List.reverseRecOn with xs x IH generalizing n
   · simp
   · cases n
-    · simp [take_append]
+    · simp [take_length_add_append]
     · simp [take_append, IH]
 
 @[simp]
