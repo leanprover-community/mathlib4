@@ -645,22 +645,20 @@ def curriedAction : C ⥤ D ⥤ D where
       naturality _ _ _ := by simp [action_exchange] }
 
 variable {C} in
-/-- Bundle `d ↦ c ⊙ᵣ d` as a functor. -/
+/-- Bundle `d ↦ d ⊙ᵣ c` as a functor. -/
 @[simps!]
 abbrev actionRight (c : C) : D ⥤ D := curriedAction C D|>.obj c
 
 variable {D} in
-/-- Bundle `c ↦ c ⊙ᵣ d` as a functor. -/
+/-- Bundle `c ↦ d ⊙ᵣ c` as a functor. -/
 @[simps!]
 abbrev actionLeft (d : D) : C ⥤ D := curriedAction C D|>.flip.obj d
 
 /-- Bundle `αᵣ _ _ _` as an isomorphism of trifunctors. -/
 @[simps!]
 def actionAssocNatIso :
-    (Functor.postcompose₂.obj (curriedAction C D)|>.obj
-      (curriedTensor C)) ≅
-    bifunctorComp₂₃Functor|>.obj (curriedAction C D)|>.obj
-      (curriedAction C D)|>.flip :=
+    bifunctorComp₁₂ (curriedTensor C) (curriedAction C D) ≅
+    (bifunctorComp₂₃ (curriedAction C D) (curriedAction C D)).flip :=
   NatIso.ofComponents fun _ ↦
     NatIso.ofComponents fun _ ↦
      NatIso.ofComponents fun _ ↦ αᵣ _ _ _
