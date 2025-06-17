@@ -514,7 +514,7 @@ def pass {ω : Type u} [Monoid ω] {α} (m : FreeWriter ω (α × (ω → ω))) 
 
 @[simp]
 lemma pass_def {ω : Type u} [Monoid ω] {α} (m : FreeWriter ω (α × (ω → ω))) :
-    pass m = (let ((a, f), w) := run m; liftBind (.tell (f w)) (fun _ => .pure a)) := rfl
+    pass m = let ((a, f), w) := run m; liftBind (.tell (f w)) fun _ => .pure a := rfl
 
 instance {ω : Type u} [Monoid ω] : MonadWriter ω (FreeWriter ω) where
   tell := tell
@@ -556,7 +556,7 @@ instance {r : Type u} : LawfulMonad (FreeCont r) := inferInstance
 
 /-- Interpret `ContF r` operations into `ContT r Id`. -/
 def contInterp {r : Type u} {α : Type v} : ContF r α → ContT r Id α
-  | .callCC g => fun k => pure (g (fun a => (k a).run))
+  | .callCC g, k => pure (g fun a => (k a).run)
 
 /-- Convert a `FreeCont` computation into a `ContT` computation. This is the canonical
 interpreter derived from `liftM`. -/
