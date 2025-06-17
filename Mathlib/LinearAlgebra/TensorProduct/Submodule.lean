@@ -3,9 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+import Mathlib.LinearAlgebra.DirectSum.Finsupp
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 /-!
 
@@ -258,6 +259,44 @@ theorem mulRightMap_eq_mulMap_comp {ι : Type*} [DecidableEq ι] (n : ι → N) 
     mulRightMap M n = mulMap M N ∘ₗ LinearMap.lTensor M (Finsupp.linearCombination R n) ∘ₗ
       (TensorProduct.finsuppScalarRight R M ι).symm.toLinearMap := by
   ext; simp
+
+variable {M : Type w} (A : Type v) [Semiring A] [Algebra R A]
+  [AddCommMonoid M] [Module R M] (p : Submodule R M)
+
+/-- If `A` is an `R`-algebra, any `R`-submodule `p` of an `R`-module `M` may be pushed forward to
+an `A`-submodule of `A ⊗ M`.
+
+This "base change" operation is also known as "extension of scalars". -/
+def baseChange : Submodule A (A ⊗[R] M) :=
+  LinearMap.range (p.subtype.baseChange A)
+
+variable {A p} in
+lemma tmul_mem_baseChange_of_mem (a : A) {m : M} (hm : m ∈ p) :
+    a ⊗ₜ[R] m ∈ p.baseChange A :=
+  ⟨a ⊗ₜ[R] ⟨m, hm⟩, rfl⟩
+
+lemma baseChange_eq_span : p.baseChange A = span A (p.map (TensorProduct.mk R A M 1)) := by
+  refine le_antisymm ?_ ?_
+  · rw [baseChange, LinearMap.range_le_iff_comap, eq_top_iff,
+      ← Submodule.span_eq_top_of_span_eq_top R A _ (TensorProduct.span_tmul_eq_top R ..), span_le]
+    refine fun _ ⟨a, m, h⟩ ↦ ?_
+    rw [← h, SetLike.mem_coe, mem_comap, LinearMap.baseChange_tmul, ← mul_one a, ← smul_eq_mul,
+      ← TensorProduct.smul_tmul']
+    exact smul_mem _ a (subset_span ⟨m, m.2, rfl⟩)
+  · refine span_le.2 fun _ ⟨m, hm, h⟩ ↦ h ▸ ⟨1 ⊗ₜ[R] ⟨m, hm⟩, rfl⟩
+
+@[simp]
+lemma baseChange_bot : (⊥ : Submodule R M).baseChange A = ⊥ := by simp [baseChange_eq_span]
+
+@[simp]
+lemma baseChange_top : (⊤ : Submodule R M).baseChange A = ⊤ :=
+  LinearMap.range_eq_top.2 <| LinearMap.lTensor_surjective _
+    (LinearMap.range_eq_top.1 <| Submodule.range_subtype _)
+
+@[simp]
+lemma baseChange_span (s : Set M) :
+    (span R s).baseChange A = span A (TensorProduct.mk R A M 1 '' s) := by
+  rw [baseChange_eq_span, map_span, span_span_of_tower]
 
 end Semiring
 
