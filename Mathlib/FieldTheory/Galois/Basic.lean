@@ -505,7 +505,6 @@ theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separ
     rw [IntermediateField.adjoin_zero]
   intro K x hx hK
   simp only [P] at *
-  rw [Nat.card_eq_fintype_card]
   rw [of_separable_splitting_field_aux hp K (Multiset.mem_toFinset.mp hx), hK, finrank_mul_finrank]
   symm
   refine LinearEquiv.finrank_eq ?_
