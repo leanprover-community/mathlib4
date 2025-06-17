@@ -23,26 +23,36 @@ of reals as sequences of digits in positional system.
 -/
 
 /-- Term of `ofDigits` sum. -/
-noncomputable def ofDigitsTerm {b : ℕ} [NeZero b] (digits : ℕ → Fin b) : ℕ → ℝ :=
+noncomputable def ofDigitsTerm {b : ℕ} (digits : ℕ → Fin b) : ℕ → ℝ :=
   fun i ↦ (digits i) * ((b : ℝ)^(i + 1))⁻¹
 
-theorem ofDigitsTerm_nonneg {b : ℕ} [NeZero b] {digits : ℕ → Fin b} {n : ℕ} :
+theorem ofDigitsTerm_nonneg {b : ℕ} {digits : ℕ → Fin b} {n : ℕ} :
     0 ≤ ofDigitsTerm digits n := by
   simp only [ofDigitsTerm]
   positivity
 
-theorem ofDigitsTerm_le {b : ℕ} [NeZero b] {digits : ℕ → Fin b} {n : ℕ} :
+theorem ofDigitsTerm_le {b : ℕ} {digits : ℕ → Fin b} {n : ℕ} :
     ofDigitsTerm digits n ≤ (b - 1) * ((b : ℝ)^(n + 1))⁻¹ := by
+  have hb : 0 < b := by
+    by_contra! hb
+    rw [nonpos_iff_eq_zero] at hb
+    subst hb
+    exact IsEmpty.false (digits)
   simp only [ofDigitsTerm]
   gcongr
-  rw [← Nat.cast_pred (Nat.pos_of_neZero _)]
+  rw [← Nat.cast_pred hb]
   norm_cast
   omega
 
-theorem ofDigitsTerm_Summable {b : ℕ} [NeZero b] {digits : ℕ → Fin b} :
+theorem ofDigitsTerm_Summable {b : ℕ} {digits : ℕ → Fin b} :
     Summable (ofDigitsTerm digits) := by
-  by_cases hb : b = 1
-  · subst hb
+  have hb : 0 < b := by
+    by_contra! hb
+    rw [nonpos_iff_eq_zero] at hb
+    subst hb
+    exact IsEmpty.false (digits)
+  by_cases hb' : b = 1
+  · subst hb'
     have : ofDigitsTerm digits = 0 := by
       ext i
       simp [ofDigitsTerm]
@@ -50,7 +60,6 @@ theorem ofDigitsTerm_Summable {b : ℕ} [NeZero b] {digits : ℕ → Fin b} :
     eta_expand
     simp [summable_const_iff]
   replace hb : 1 < b := by
-    have := NeZero.ne b
     omega
   have h := summable_geometric_of_lt_one (r := (b⁻¹ : ℝ)) (by simp)
     (by rify at hb; exact inv_lt_one_of_one_lt₀ hb)
@@ -68,34 +77,37 @@ theorem ofDigitsTerm_Summable {b : ℕ} [NeZero b] {digits : ℕ → Fin b} :
   · rw [inv_pow]
 
 /-- The number `0.d₀d₁d₂...` in the system with base `b`. -/
-noncomputable def ofDigits {b : ℕ} [NeZero b] (digits : ℕ → Fin b) : ℝ :=
+noncomputable def ofDigits {b : ℕ} (digits : ℕ → Fin b) : ℝ :=
   ∑' n, ofDigitsTerm digits n
 
-theorem ofDigits_nonneg {b : ℕ} [NeZero b] {digits : ℕ → Fin b} : 0 ≤ ofDigits digits := by
+theorem ofDigits_nonneg {b : ℕ} {digits : ℕ → Fin b} : 0 ≤ ofDigits digits := by
   simp only [ofDigits]
   apply tsum_nonneg
   intro i
   exact ofDigitsTerm_nonneg
 
-theorem ofDigits_le_one {b : ℕ} [NeZero b] {digits : ℕ → Fin b}  :
+theorem ofDigits_le_one {b : ℕ} {digits : ℕ → Fin b}  :
     ofDigits digits ≤ 1 := by
-  by_cases hb : ¬(1 < b)
-  · replace hb : b = 1 := by
-      have := NeZero.ne b
-      omega
+  have hb : 0 < b := by
+    by_contra! hb
+    rw [nonpos_iff_eq_zero] at hb
     subst hb
+    exact IsEmpty.false (digits)
+  by_cases hb' : ¬(1 < b)
+  · replace hb' : b = 1 := by
+      omega
+    subst hb'
     simp [ofDigits, ofDigitsTerm]
-  push_neg at hb
+  push_neg at hb'
+  rify at hb'
   have hb_inv_nonneg : 0 ≤ (b⁻¹ : ℝ) := by simp
   have hb_inv_lt_one : (b⁻¹ : ℝ) < 1 := by
-    rify at hb
-    exact inv_lt_one_of_one_lt₀ hb
+    exact inv_lt_one_of_one_lt₀ hb'
   simp only [ofDigits]
   let g (i : ℕ) : ℝ := (1 - (b⁻¹ : ℝ)) * (b⁻¹ : ℝ)^i
   have hg_summable : Summable g := by
     apply Summable.mul_left
-    apply summable_geometric_of_lt_one (by simp)
-      (by rify at hb; exact inv_lt_one_of_one_lt₀ hb)
+    apply summable_geometric_of_lt_one (by simp) (inv_lt_one_of_one_lt₀ hb')
   convert Summable.tsum_mono (ofDigitsTerm_Summable) hg_summable _
   · simp [g, tsum_mul_left, ← inv_pow]
     rw [tsum_geometric_of_lt_one hb_inv_nonneg hb_inv_lt_one, mul_inv_cancel₀]
@@ -107,7 +119,7 @@ theorem ofDigits_le_one {b : ℕ} [NeZero b] {digits : ℕ → Fin b}  :
     left
     rw [pow_succ']
 
-lemma ofDigits_eq_partial_sum_add_ofDigits {b : ℕ} [NeZero b] (a : ℕ → Fin b) (n : ℕ) :
+lemma ofDigits_eq_partial_sum_add_ofDigits {b : ℕ} (a : ℕ → Fin b) (n : ℕ) :
     ofDigits a = (∑ i ∈ Finset.range n, ofDigitsTerm a i) +
       ((b : ℝ)^n)⁻¹ * ofDigits (fun i ↦ a (i + n)) := by
   simp [ofDigits]
@@ -118,7 +130,7 @@ lemma ofDigits_eq_partial_sum_add_ofDigits {b : ℕ} [NeZero b] (a : ℕ → Fin
   simp [ofDigitsTerm]
   ring
 
-theorem ofDigits_close_of_common_prefix {b : ℕ} [NeZero b] {x y : ℕ → Fin b} {n : ℕ}
+theorem ofDigits_close_of_common_prefix {b : ℕ} {x y : ℕ → Fin b} {n : ℕ}
     (hxy : ∀ i < n, x i = y i) :
     |ofDigits x - ofDigits y| ≤ ((b : ℝ)^n)⁻¹ := by
   rw [ofDigits_eq_partial_sum_add_ofDigits x n, ofDigits_eq_partial_sum_add_ofDigits y n]
@@ -135,6 +147,7 @@ theorem ofDigits_close_of_common_prefix {b : ℕ} [NeZero b] {x y : ℕ → Fin 
     ofDigits_nonneg (digits := fun i ↦ y (i + n)), ofDigits_le_one (digits := fun i ↦ x (i + n)),
     ofDigits_le_one (digits := fun i ↦ y (i + n))]
 
+/-- Converts a real number `x` into sequence of its digits in base `b`. -/
 noncomputable def toDigits (x : ℝ) (b : ℕ) [NeZero b] : ℕ → Fin b :=
   fun i ↦ Fin.ofNat _ <| ⌊x * b^(i + 1)⌋₊ % b
 
