@@ -290,22 +290,16 @@ lemma exists_index : ∃ (i' : I) (hii' : i' ⟶ A.i),
   let W := Scheme.Pullback.diagonalCoverDiagonalRange f A.𝒰S A.𝒰X
   by_contra! h
   let Z (i' : I) (hii' : i' ⟶ A.i) :=
-    (D.map hii' ≫ pullback.lift A.a A.b (A.ha.symm.trans A.hb)).base ⁻¹'
-      W.carrierᶜ
+    (D.map hii' ≫ pullback.lift A.a A.b (A.ha.symm.trans A.hb)).base ⁻¹' Wᶜ
   have hZ (i') (hii' : i' ⟶ A.i) : IsClosed (Z i' hii') :=
     (W.isOpen.isClosed_compl).preimage <| Scheme.Hom.continuous _
   obtain ⟨s, hs⟩ := exists_mem_of_isClosed_of_nonempty' D A.c A.hc Z hZ h
-    (fun _ _ ↦ (hZ _ _).isCompact)
-    (fun i i' hii' hij ↦ by simp [Z, Set.MapsTo])
-  have := hs A.i (𝟙 A.i)
-  simp [Z] at this
-  apply this
-  apply Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange
-  rw [← Scheme.comp_base_apply]
+    (fun _ _ ↦ (hZ _ _).isCompact) (fun i i' hii' hij ↦ by simp [Z, Set.MapsTo])
+  refine hs A.i (𝟙 A.i) (Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange _ _ _ ?_)
   use (A.c.π.app A.i ≫ A.a).base s
-  rw [← Scheme.comp_base_apply]
-  congr 5
-  apply pullback.hom_ext <;> simp [hab]
+  have H : A.c.π.app A.i ≫ A.a ≫ pullback.diagonal f =
+      A.c.π.app A.i ≫ pullback.lift A.a A.b (A.ha.symm.trans A.hb) := by ext <;> simp [hab]
+  simp [← Scheme.comp_base_apply, - Scheme.comp_coeBase, H]
 
 /-- (Implementation)
 The index `i'` such that `a` and `b` restricted onto `i'` maps into the diagonal components.
