@@ -181,8 +181,8 @@ theorem contentIdeal_mul_eq_top_of_contentIdeal_eq_top (hp : p.contentIdeal = �
   rw [← Ideal.radical_eq_top]
   apply le_antisymm le_top
   calc
-  ⊤ = p.contentIdeal * q.contentIdeal := by simp [hp, hq]
-  _ ≤ ((p * q).contentIdeal).radical := mul_contentIdeal_le_radical_contentIdeal_mul
+    ⊤ = p.contentIdeal * q.contentIdeal := by simp [hp, hq]
+    _ ≤ ((p * q).contentIdeal).radical := mul_contentIdeal_le_radical_contentIdeal_mul
 
 end Ring
 section NormalizedGCDMonoid
