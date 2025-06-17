@@ -25,15 +25,33 @@ This file provides embedding of any archimedean groups into reals.
 -/
 
 
+theorem Rat.mkRat_add_mkRat_of_den (n₁ n₂ : Int) {d : Nat} (z : d ≠ 0)  :
+    mkRat n₁ d + mkRat n₂ d = mkRat (n₁ + n₂) d := by
+  rw [Rat.mkRat_add_mkRat _ _ z z, ← add_mul, Rat.mkRat_mul_right z]
+
 namespace Archimedean
 
 variable {M : Type*}
 variable [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]
 
+/-- Set of rational numbers that are less than the "number" `x / one`. Formally,
+ these are numbers `p / q` such that `p • one < q • x`. -/
 abbrev ratLt (one x : M) : Set ℚ := {r | r.num • one < r.den • x}
 
+theorem mkRat_mem_ratLt {num : ℤ} {den : ℕ} (hden: den ≠ 0) {one x : M} :
+    mkRat num den ∈ ratLt one x ↔ num • one < den • x := by
+  rw [Set.mem_setOf]
+  obtain ⟨m, hm0, hnum, hden⟩ := Rat.mkRat_num_den hden (show mkRat num den = _ by rfl)
+  have hnum : num = (mkRat num den).num * m := hnum
+  have hden : den = (mkRat num den).den * m := hden
+  conv in num • one => rw [hnum, mul_comm, ← smul_smul, natCast_zsmul]
+  conv in den • x => rw [hden, mul_comm, ← smul_smul]
+  exact (smul_lt_smul_iff_of_pos_left (Nat.zero_lt_of_ne_zero hm0)).symm
+
+/-- `ratLt` as a set of real numbers. -/
 abbrev ratLt' (one x : M) : Set ℝ := (Rat.castHom ℝ) '' (ratLt one x)
 
+/-- Mapping `M` to `ℝ`, defined as the supremum of `ratLt' one x`. -/
 noncomputable
 abbrev embed_real (one : M) (x : M) := sSup (ratLt' one x)
 
@@ -66,11 +84,43 @@ theorem ratLt_nonempty {one : M} (hpos : 0 < one) (x : M) : (ratLt one x).Nonemp
 open Pointwise in
 theorem ratLt_add {one : M} (hpos : 0 < one) (x y : M) :
     ratLt one (x + y) = ratLt one x + ratLt one y := by
-  unfold ratLt
   ext a
   rw [Set.mem_add]
   constructor
-  · sorry
+  · /- Given `a ∈ ratLt one (x + y)`, find `u ∈ ratLt one x`, `v ∈ ratLt one y`
+       such that `u + v = a`.
+       In a naive attempt, one can take the denominator `d` of `a`,
+       and find the largest `u = p / d < x / one`
+       However, `d` could be too "coarse", and `v = a - u` could be 1/d too large than `y / one`
+       To ensure a large enough denominator, we take `d * k`, where
+       `one + one ≤ k • (d • (x + y) - a.num • one)` -/
+    intro h
+    rw [Set.mem_setOf_eq] at h
+    have : 0 < a.den • (x + y) - a.num • one := sub_pos.mpr h
+    obtain ⟨k, hk⟩ := Archimedean.arch (one + one) this
+    have hk0 : k ≠ 0 := by
+      contrapose! hk
+      rw [hk]
+      simpa using hpos
+    have hka0 : k * a.den ≠ 0 := mul_ne_zero hk0 a.den_ne_zero
+    obtain ⟨m, ⟨hm1, hm2⟩, _⟩ := existsUnique_add_zsmul_mem_Ico hpos 0 (k • a.den • x - one)
+    refine ⟨mkRat m (k * a.den), ?_, mkRat (k * a.num - m) (k * a.den) , ?_, ?_⟩
+    · rw [mkRat_mem_ratLt hka0, ← smul_smul]
+      simpa using hm2
+    · have hk' : one + (k • a.num • one - k • a.den • y) ≤ k • a.den • x - one := by
+        rw [smul_add, smul_sub, smul_add] at hk
+        rw [le_sub_iff_add_le, ← sub_le_iff_le_add] at hk
+        rw [le_sub_iff_add_le]
+        convert hk using 1
+        abel
+      have h : one + (k • a.num • one - k • a.den • y) ≤ m • one := by
+        simpa using hk'.trans hm1
+      have : k • a.num • one - k • a.den • y < m • one := by
+        exact lt_of_lt_of_le (lt_add_of_pos_left _ hpos) h
+      rw [mkRat_mem_ratLt hka0, sub_smul, sub_lt_comm, ← smul_smul, ← smul_smul, natCast_zsmul]
+      exact this
+    · rw [Rat.mkRat_add_mkRat_of_den _ _ hka0]
+      rw [add_sub_cancel, Rat.mkRat_mul_left hk0, Rat.mkRat_num_den']
   · intro ⟨u, hu, v, hv, huv⟩
     rw [← huv]
     rw [Set.mem_setOf_eq] at hu hv ⊢
@@ -131,8 +181,6 @@ theorem embed_real_zero {one : M} (hpos: 0 < one) : embed_real one 0 = 0 := by
     obtain ⟨y, hxy, hy⟩ := exists_rat_btwn h'
     exact ⟨y, by simpa using hy, hxy⟩
 
-
-open Pointwise in
 theorem embed_real_add {one : M} (hpos: 0 < one) (x y : M) :
     embed_real one (x + y) = embed_real one x + embed_real one y := by
   unfold embed_real
@@ -142,18 +190,14 @@ theorem embed_real_add {one : M} (hpos: 0 < one) (x y : M) :
 
 theorem embed_real_strictMono {one : M} (hpos: 0 < one) : StrictMono (embed_real one) := by
   intro x y h
-  let z := y - x
-  have hz : 0 < z := sub_pos.mpr h
-  have hy : y = z + x := Eq.symm (sub_add_cancel y x)
+  have hyz : 0 < y - x := sub_pos.mpr h
+  have hy : y = y - x + x := (sub_add_cancel y x).symm
   apply lt_of_sub_pos
   rw [hy, embed_real_add hpos, add_sub_cancel_right]
-
-  obtain ⟨n, hn⟩ := Archimedean.arch one hz
-
-  have : (Rat.mk' 1 (n + 1) (by simp) (by simp) : ℝ) ∈ ratLt' one z := by
-    simpa using hn.trans_lt <| nsmul_lt_nsmul_left hz (show n < n + 1 by simp)
-
-  apply lt_csSup_of_lt (ratLt'_bddAbove hpos z) this
+  obtain ⟨n, hn⟩ := Archimedean.arch one hyz
+  have : (Rat.mk' 1 (n + 1) (by simp) (by simp) : ℝ) ∈ ratLt' one (y - x) := by
+    simpa using hn.trans_lt <| nsmul_lt_nsmul_left hyz (show n < n + 1 by simp)
+  apply lt_csSup_of_lt (ratLt'_bddAbove hpos (y - x)) this
   rw [Rat.cast_pos, ← Rat.num_pos]
   simp only [zero_lt_one]
 
