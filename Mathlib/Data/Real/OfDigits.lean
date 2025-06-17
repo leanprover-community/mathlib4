@@ -1,6 +1,26 @@
+/-
+Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasilii Nesterov
+-/
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Tactic.MoveAdd
 import Mathlib.Tactic.Rify
+
+/-!
+# Representation of reals in positional system
+
+This file defines `ofDigits` and `toDigits` functions which allows to work with the representations
+of reals as sequences of digits in positional system.
+
+## Main Definitions
+
+* `ofDigits`: takes a sequence of digits `(d₀, d₁, ...)` (as an `ℕ → Fin b`),
+  and returns the real number `0.d₀d₁d₂...`.
+* `toDigits`: takes a real number and returns the sequence of its digits.
+
+* `toDigits_ofDigits` states that `ofDigits (toDigits x b) = x`.
+-/
 
 /-- Term of `ofDigits` sum. -/
 noncomputable def ofDigitsTerm {b : ℕ} [NeZero b] (digits : ℕ → Fin b) : ℕ → ℝ :=
