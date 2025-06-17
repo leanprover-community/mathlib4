@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Logic.Function.Basic
+import Mathlib.Logic.IsEmpty
 import Mathlib.Util.CompileInductive
 import Mathlib.Tactic.Simps.NotationClass
 
