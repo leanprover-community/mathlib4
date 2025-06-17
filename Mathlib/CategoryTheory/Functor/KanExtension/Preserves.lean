@@ -432,7 +432,7 @@ end
 
 /-- A functor that preserves the limit of `(StructuredArrow.proj L c ⋙ F)` preserves
 the pointwise right Kan extension of `F` along `L` at c. -/
-instance preservesPointwiseRightKanExtensionAtOfPreservesColimit (c : C)
+instance preservesPointwiseRightKanExtensionAtOfPreservesLimit (c : C)
     [Limits.PreservesLimit (StructuredArrow.proj c L ⋙ F) G] :
     G.PreservesPointwiseRightKanExtensionAt F L c where
   preserves E p :=
