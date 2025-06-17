@@ -61,8 +61,8 @@ to learn about it as well!
   The target state mostly matches the state after of a freshly cloned fork (`gh repo clone <fork>`)
   and looks like this:
 
-  - The branch `upstream` points to `leanprover-community/mathlib4`
-  - The branch `origin` points to the contributor's own fork
+  - The remote `upstream` points to `leanprover-community/mathlib4`
+  - The remote `origin` points to the contributor's own fork
   - The `gh` default repo points to `leanprover-community/mathlib4`
   - `master`s remote is `upstream` but its pushRemote is `origin`
 
