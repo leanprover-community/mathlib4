@@ -898,8 +898,8 @@ theorem le_of_isLUB_le_isGLB {x y} (ha : IsGLB s a) (hb : IsLUB s b) (hab : b �
     _ ≤ a := hab
     _ ≤ y := ha.1 hy
 
-lemma upperBounds_prod_of_nonempty_eq {β : Type*} [Preorder β] {t : Set β} [hes : Nonempty s]
-    [het : Nonempty t] : upperBounds (s ×ˢ t) = upperBounds s ×ˢ upperBounds t := le_antisymm
+lemma upperBounds_prod_of_nonempty_eq {β : Type*} [Preorder β] {t : Set β} (hes : Nonempty s)
+    (het : Nonempty t) : upperBounds (s ×ˢ t) = upperBounds s ×ˢ upperBounds t := le_antisymm
   (fun ⟨u₁, u₂⟩ hu => by
     simp [upperBounds] at hu
     constructor
@@ -909,8 +909,8 @@ lemma upperBounds_prod_of_nonempty_eq {β : Type*} [Preorder β] {t : Set β} [h
       exact fun b hb => (hu a b ha hb).2)
   (fun (a, b) hab (c, d) hcd => ⟨hab.1 hcd.1,hab.2 hcd.2⟩)
 
-lemma lowerBounds_prod_of_nonempty_eq {β : Type*} [Preorder β] {t : Set β} [hes : Nonempty s]
-    [het : Nonempty t] : lowerBounds (s ×ˢ t) = lowerBounds s ×ˢ lowerBounds t := le_antisymm
+lemma lowerBounds_prod_of_nonempty_eq {β : Type*} [Preorder β] {t : Set β} (hes : Nonempty s)
+    (het : Nonempty t) : lowerBounds (s ×ˢ t) = lowerBounds s ×ˢ lowerBounds t := le_antisymm
   (fun ⟨u₁, u₂⟩ hu => by
     simp [lowerBounds] at hu
     constructor
@@ -919,6 +919,37 @@ lemma lowerBounds_prod_of_nonempty_eq {β : Type*} [Preorder β] {t : Set β} [h
     · obtain ⟨a, ha⟩ : Nonempty s := hes
       exact fun b hb => (hu a b ha hb).2)
   (fun (a, b) hab (c, d) hcd => ⟨hab.1 hcd.1,hab.2 hcd.2⟩)
+
+lemma isLUB_of_element_prod_set {β : Type*} [Preorder β] {t : Set β} [het : Nonempty t] {u : β}
+    (hu : IsLUB t u) : IsLUB ({a} ×ˢ t) (a,u) := by
+  rw [IsLUB]
+  rw [upperBounds_prod_of_nonempty_eq (by aesop)]
+  simp
+  rw [IsLeast]
+  constructor
+  · rw [prodMk_mem_set_prod_eq]
+    constructor
+    · exact left_mem_Ici
+    · exact hu.1
+  · rw [lowerBounds_prod_of_nonempty_eq (by
+      simp_all only [nonempty_subtype, mem_Ici]
+      obtain ⟨w, h⟩ := het
+      apply Exists.intro
+      · rfl)]
+    simp
+    constructor
+    · exact fun ⦃a_1⦄ a ↦ a
+    · exact mem_of_mem_inter_right hu
+    have e1 : u ∈ upperBounds t := by
+      exact mem_of_mem_inter_left hu
+    aesop
+  have e1 : u ∈ upperBounds t := by
+    exact mem_of_mem_inter_left hu
+  aesop
+
+
+
+
 
 end Preorder
 
