@@ -58,17 +58,6 @@ noncomputable def Ideal.inertiaSubgroup : Subgroup G :=
 
 end inertiadef
 
-namespace Ideal
-
-variable {A B : Type*} [CommSemiring A] [Semiring B] [Algebra A B] {P : Ideal B} {p : Ideal A}
-  {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B] (g : G)
-
--- PRed
-instance LiesOver.smul [h : P.LiesOver p] : (g • P).LiesOver p :=
-  ⟨h.over.trans (under_smul A P g).symm⟩
-
-end Ideal
-
 section orbit
 
 open Ideal
@@ -99,6 +88,8 @@ variable {A : Type*} [CommRing A] [IsDedekindDomain A] {P : Ideal A} (hP : P ≠
   [FiniteDimensional K L] [hKL : IsGalois K L]
   (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]
   [Algebra.IsInvariant A B G]
+
+-- need general galois group to have same cardinality as field extension
 
 include hP K L in
 theorem Ideal.card_inertiaSubgroup :
@@ -193,28 +184,30 @@ attribute [local instance] Gal.splits_ℚ_ℂ
 open NumberField
 
 variable (K : Type*) [Field K] [NumberField K] [IsGalois ℚ K]
-  (G : Type*) [Group G] [MulSemiringAction G (𝓞 K)]
+  (G : Type*) [Group G] [MulSemiringAction G K] [MulSemiringAction G (𝓞 K)] [SMulCommClass G ℚ K]
 
 theorem keythm :
     ⨆ (q : Ideal (𝓞 K)) (hq : q.IsMaximal), Ideal.inertiaSubgroup (q.under ℤ) q G = ⊤ := by
   -- key idea: fixed field of this subgroup has no ramified primes
   let H := ⨆ (q : Ideal (𝓞 K)) (hq : q.IsMaximal), Ideal.inertiaSubgroup (q.under ℤ) q G
-  let F := fixedField H -- or FixedPoints.intermediateField H ?
+  let F : IntermediateField ℚ K := FixedPoints.intermediateField H
   change H = ⊤
   suffices h : F = ⊥ by
-    rw [← fixingSubgroup_fixedField H]
-    change fixingSubgroup F = ⊤
-    rw [h, IntermediateField.fixingSubgroup_bot]
+    -- rw [← fixingSubgroup_fixedField H]
+    -- change fixingSubgroup F = ⊤
+    -- rw [h, IntermediateField.fixingSubgroup_bot]
+    sorry
   have : H.Normal := sorry
   have : IsGalois ℚ F := sorry
-  have key0 : ∀ (q : Ideal (𝓞 K)) (hq : q.IsMaximal), inertiaSubgroup q ≤ H := by
+  have key0 : ∀ (q : Ideal (𝓞 K)) (hq : q.IsMaximal),
+      Ideal.inertiaSubgroup (q.under ℤ) q G ≤ H := by
     intro q hq
     exact le_iSup_of_le q (le_iSup_of_le hq le_rfl)
-  have key : ∀ (q : Ideal (𝓞 F)) (hq : q.IsMaximal), inertiaSubgroup q = ⊥ := by
-    intro q hq
-    -- take prime of K lying over F
-    -- inertia subgroup in F is quotient by H
-    sorry
+  -- have key : ∀ (q : Ideal (𝓞 F)) (hq : q.IsMaximal), inertiaSubgroup q = ⊥ := by
+  --   intro q hq
+  --   -- take prime of K lying over F
+  --   -- inertia subgroup in F is quotient by H
+  --   sorry
   suffices h : ¬ 1 < Module.finrank ℚ F by
     rw [← IntermediateField.finrank_eq_one_iff]
     rw [not_lt] at h
