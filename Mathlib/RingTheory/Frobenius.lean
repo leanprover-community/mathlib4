@@ -238,7 +238,7 @@ lemma exists_primesOver_isConj (P : Ideal R)
       (∀ Q₁ Q₂, IsConj (σ Q₁) (σ Q₂)) := by
   obtain ⟨⟨Q, hQ₁, hQ₂⟩, hQ₃⟩ := hP
   have (Q' : Ideal.primesOver P S) : ∃ σ : G, Q'.1 = σ • Q :=
-    Algebra.IsInvariant.exists_smul_of_under_eq G _ _ (hQ₂.over.symm.trans Q'.2.2.over)
+    Algebra.IsInvariant.exists_smul_of_under_eq R S G _ _ (hQ₂.over.symm.trans Q'.2.2.over)
   choose τ hτ using this
   obtain ⟨σ, hσ⟩ := exists_of_isInvariant R G Q
   refine ⟨fun Q' ↦ τ Q' * σ * (τ Q')⁻¹, fun Q' ↦ hτ Q' ▸ hσ.conj (τ Q'), fun Q₁ Q₂ ↦

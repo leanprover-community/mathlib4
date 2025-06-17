@@ -67,7 +67,8 @@ lemma Algebra.IsInvariant.exists_smul_of_under_eq_of_profinite
     map_id N := by ext ⟨⟨x⟩, hx⟩; rfl
     map_comp f g := by ext ⟨⟨x⟩, hx⟩; rfl }
   have (N) : Nonempty (F.obj N) := by
-    obtain ⟨g, hg⟩ := exists_smul_of_under_eq (G ⧸ N.1.1) (P.under _) (Q.under _) hPQ
+    obtain ⟨g, hg⟩ := Algebra.IsInvariant.exists_smul_of_under_eq A
+      (B' N.1.1) (G ⧸ N.1.1) (P.under _) (Q.under _) hPQ
     exact ⟨g, hg⟩
   obtain ⟨s, hs⟩ := nonempty_sections_of_finite_cofiltered_system F
   let a := (ProfiniteGrp.of G).isoLimittoFiniteQuotientFunctor.inv.hom

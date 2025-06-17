@@ -179,8 +179,6 @@ theorem isIntegral [Finite G] : Algebra.IsIntegral A B := by
     (charpoly_mem_lifts A B G b) (monic_charpoly G b)
   exact ⟨p, hp2, by rw [← eval_map, hp1, eval_charpoly]⟩
 
-variable {A B}
-
 /-- `G` acts transitively on the prime ideals of `B` above a given prime ideal of `A`. -/
 theorem exists_smul_of_under_eq [Finite G] [SMulCommClass G A B]
     (P Q : Ideal B) [hP : P.IsPrime] [hQ : Q.IsPrime]
