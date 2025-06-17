@@ -102,6 +102,9 @@ theorem integrableOn_univ : IntegrableOn f univ μ ↔ Integrable f μ := by
 theorem integrableOn_zero : IntegrableOn (fun _ => (0 : ε')) s μ :=
   integrable_zero _ _ _
 
+theorem IntegrableOn.of_measure_zero (hs : μ s = 0) : IntegrableOn f s μ := by
+  simp [IntegrableOn, Measure.restrict_eq_zero.2 hs]
+
 @[simp]
 theorem integrableOn_const_iff {C : ε'} (hC : ‖C‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn (fun _ ↦ C) s μ ↔ C = 0 ∨ μ s < ∞ := by

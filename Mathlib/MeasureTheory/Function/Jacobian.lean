@@ -1429,8 +1429,25 @@ theorem integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn (ht : Measu
     IntegrableOn u (g '' t) ↔ IntegrableOn (fun x => (g' x) • u (g x)) t := by
   rcases exists_decomposition_of_monotoneOn_hasDerivWithinAt ht hg hg' with
     ⟨a, b, c, h_union, ha, hb, hc, h_disj, h_disj', a_count, gb_count, deriv_b, deriv_c, inj_c⟩
+  have : IntegrableOn (fun x => (g' x) • u (g x)) t
+      ↔ IntegrableOn (fun x => (g' x) • u (g x)) c := by
+    have : IntegrableOn (fun x ↦ g' x • u (g x)) a :=
+      IntegrableOn.of_measure_zero (a_count.measure_zero volume)
+
+    simp only [← h_union, integrableOn_union, this, true_and]
+
   have : IntegrableOn u (g '' t) ↔ IntegrableOn u (g '' c) := by
     apply integrableOn_congr_set_ae
+    rw [← h_union, image_union, image_union]
+    have A : (g '' a ∪ (g '' b ∪ g '' c) : Set ℝ) =ᵐ[volume] (g '' b ∪ g '' c : Set ℝ) := by
+      refine union_ae_eq_right_of_ae_eq_empty (ae_eq_empty.mpr ?_)
+      exact (a_count.image _).measure_zero _
+    have B : (g '' b ∪ g '' c : Set ℝ) =ᵐ[volume] g '' c := by
+      refine union_ae_eq_right_of_ae_eq_empty (ae_eq_empty.mpr ?_)
+      exact gb_count.measure_zero _
+    exact A.trans B
+
+
 
 
 
