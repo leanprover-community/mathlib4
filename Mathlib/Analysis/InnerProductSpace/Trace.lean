@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Iván Renison
 -/
 import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.LinearAlgebra.Trace
 
 /-!
@@ -27,5 +28,16 @@ lemma trace_eq_sum_inner (T : E →ₗ[𝕜] E) (b : OrthonormalBasis ι 𝕜 E)
   intro i
   rw [Matrix.diag_apply, T.toMatrix_apply, b.coe_toBasis, b.coe_toBasis_repr_apply,
     b.repr_apply_apply]
+
+variable [FiniteDimensional 𝕜 E]
+
+lemma IsSymmetric.trace_eq_sum_eigenvalues {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
+    T.trace 𝕜 E = ∑i, hT.eigenvalues rfl i := by
+  let b := hT.eigenvectorBasis rfl
+  rw [T.trace_eq_sum_inner b, RCLike.ofReal_sum]
+  apply Fintype.sum_congr
+  intro i
+  rw [hT.apply_eigenvectorBasis, inner_smul_real_right, inner_self_eq_norm_sq_to_K, b.norm_eq_one]
+  simp [RCLike.ofReal_alg]
 
 end LinearMap
