@@ -447,9 +447,9 @@ theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.I
     (hp : p.Separable) (K : Type*) [Field K] [Algebra F K] [Algebra K E] [IsScalarTower F K E]
     {x : E} (hx : x ∈ p.aroots E)
     -- these are both implied by `hFE`, but as they carry data this makes the lemma more general
-    [Fintype (K →ₐ[F] E)]
-    [Fintype (K⟮x⟯.restrictScalars F →ₐ[F] E)] :
-    Fintype.card (K⟮x⟯.restrictScalars F →ₐ[F] E) = Fintype.card (K →ₐ[F] E) * finrank K K⟮x⟯ := by
+    [Finite (K →ₐ[F] E)]
+    [Finite (K⟮x⟯.restrictScalars F →ₐ[F] E)] :
+    Nat.card (K⟮x⟯.restrictScalars F →ₐ[F] E) = Nat.card (K →ₐ[F] E) * finrank K K⟮x⟯ := by
   have h : IsIntegral K x := (isIntegral_of_noetherian (IsNoetherian.iff_fg.2 hFE) x).tower_top
   have h1 : p ≠ 0 := fun hp => by
     rw [hp, Polynomial.aroots_zero] at hx
@@ -466,11 +466,12 @@ theorem of_separable_splitting_field_aux [hFE : FiniteDimensional F E] [sp : p.I
   haveI : ∀ f : K →ₐ[F] E, Fintype (@AlgHom K K⟮x⟯ E _ _ _ _ (RingHom.toAlgebra f)) := fun f => by
     have := Fintype.ofEquiv _ key_equiv
     apply Fintype.ofInjective (Sigma.mk f) fun _ _ H => eq_of_heq (Sigma.ext_iff.mp H).2
-  rw [Fintype.card_congr key_equiv, Fintype.card_sigma, IntermediateField.adjoin.finrank h]
+  have := Fintype.ofFinite (K →ₐ[F] E)
+  rw [Nat.card_congr key_equiv, Nat.card_sigma, IntermediateField.adjoin.finrank h,
+    Nat.card_eq_fintype_card]
   apply Finset.sum_const_nat
   intro f _
   rw [← @IntermediateField.card_algHom_adjoin_integral K _ E _ _ x E _ (RingHom.toAlgebra f) h]
-  · congr!
   · exact Polynomial.Separable.of_dvd ((Polynomial.separable_map (algebraMap F K)).mpr hp) h2
   · refine Polynomial.splits_of_splits_of_dvd _ (Polynomial.map_ne_zero h1) ?_ h2
     -- Porting note: use unification instead of synthesis for one argument of `algebraMap_eq`
