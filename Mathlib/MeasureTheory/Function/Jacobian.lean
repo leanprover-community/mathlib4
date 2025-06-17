@@ -1124,12 +1124,8 @@ theorem lintegral_abs_det_fderiv_eq_addHaar_image₀ (hs : NullMeasurableSet s �
   exact (hf' x (ts hx)).mono ts
 
 /-- Change of variable formula for differentiable functions, set version: if a function `f` is
-injective and differentiable on a measurable set `s`, then the pushforward of the measure with
-density `|(f' x).det|` on `s` is the Lebesgue measure on the image set. This version requires
-that `f` is measurable, as otherwise `Measure.map f` is zero per our definitions.
-For a version without measurability assumption but dealing with the restricted
-function `s.restrict f`, see `restrict_map_withDensity_abs_det_fderiv_eq_addHaar`.
--/
+injective and differentiable on a null measurable set `s`, then the pushforward of the measure with
+density `|(f' x).det|` on `s` is the Lebesgue measure on the image set. -/
 theorem map_withDensity_abs_det_fderiv_eq_addHaar (hs : NullMeasurableSet s μ)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf : InjOn f s) :
     Measure.map f ((μ.restrict s).withDensity fun x => ENNReal.ofReal |(f' x).det|) =
@@ -1141,23 +1137,18 @@ theorem map_withDensity_abs_det_fderiv_eq_addHaar (hs : NullMeasurableSet s μ)
     apply h'f.mono_ac
     exact withDensity_absolutelyContinuous _ _
   apply Measure.ext fun t ht => ?_
-  rw [map_apply_of_aemeasurable h''f ht, withDensity_apply₀ _ (h'f.nullMeasurableSet_preimage ht),
-    Measure.restrict_apply ht,
-    restrict_restrict₀ (h'f.nullMeasurableSet_preimage ht),
-    lintegral_abs_det_fderiv_eq_addHaar_image₀ μ _
+  have h't : NullMeasurableSet (f ⁻¹' t) (μ.restrict s) := h'f.nullMeasurableSet_preimage ht
+  rw [map_apply_of_aemeasurable h''f ht, withDensity_apply₀ _ h't,
+    Measure.restrict_apply ht, restrict_restrict₀ h't,
+    lintegral_abs_det_fderiv_eq_addHaar_image₀ μ ((nullMeasurableSet_restrict hs).1 h't)
       (fun x hx => (hf' x hx.2).mono inter_subset_right) (hf.mono inter_subset_right),
     image_preimage_inter]
-  --have W := nullMeasurableSet_restrict
-  sorry
-
-#exit
 
 /-- Change of variable formula for differentiable functions, set version: if a function `f` is
 injective and differentiable on a measurable set `s`, then the pushforward of the measure with
 density `|(f' x).det|` on `s` is the Lebesgue measure on the image set. This version is expressed
 in terms of the restricted function `s.restrict f`.
-For a version for the original function, but with a measurability assumption,
-see `map_withDensity_abs_det_fderiv_eq_addHaar`.
+For a version for the original function, see `map_withDensity_abs_det_fderiv_eq_addHaar`.
 -/
 theorem restrict_map_withDensity_abs_det_fderiv_eq_addHaar (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf : InjOn f s) :
@@ -1177,7 +1168,7 @@ theorem restrict_map_withDensity_abs_det_fderiv_eq_addHaar (hs : MeasurableSet s
       μ.restrict (u '' s) := by
     rw [hF, ← Measure.map_map u_meas measurable_subtype_coe, map_comap_subtype_coe hs,
       restrict_withDensity hs]
-    exact map_withDensity_abs_det_fderiv_eq_addHaar μ hs u' (hf.congr uf.symm) u_meas
+    exact map_withDensity_abs_det_fderiv_eq_addHaar μ hs.nullMeasurableSet u' (hf.congr uf.symm)
   rw [uf.image_eq] at A
   have : F = s.restrict f := by
     ext x
@@ -1376,24 +1367,26 @@ theorem exists_decomposition_of_monotoneOn_hasDerivWithinAt (ht : MeasurableSet 
     refine ⟨hx.1, ?_⟩
     exact ⟨x, y, hx.1, hy.1, H, rfl, h.symm⟩
 
-/-- Change of variable formula for differentiable functions, set version: if a real function `g` is
-monotone and differentiable on a measurable set `t`, then the measure of `g '' t` is given by the
-integral of `g' x` on `t`.
-Note that the measurability of `g '' t` is given by `MeasurableSet.image_of_monotoneOn`. -/
-theorem lintegral_deriv_eq_volume_image_of_monotoneOn (ht : MeasurableSet t)
-    (hg' : ∀ x ∈ t, HasDerivWithinAt g (g' x) t x) (hf : MonotoneOn g t) :
-    (∫⁻ x in t, ENNReal.ofReal (g' x)) = volume (g '' t) := by
-  rcases exists_decomposition_of_monotoneOn_hasDerivWithinAt ht hf hg' with
+/- Change of variable formula for differentiable functions: if a real function `g` is
+monotone and differentiable on a measurable set `t`, then the Lebesgue integral of a function
+`u : ℝ → ℝ≥0∞` on `f '' t` coincides with the integral of `(g' x) * u ∘ f` on `s`.
+Note that the measurability of `g '' s` is given by `MeasurableSet.image_of_monotoneOn`. -/
+theorem lintegral_image_eq_lintegral_deriv_mul_of_monotoneOn (ht : MeasurableSet t)
+    (hg' : ∀ x ∈ t, HasDerivWithinAt g (g' x) t x) (hg : MonotoneOn g t) (u : ℝ → ℝ≥0∞) :
+    ∫⁻ x in g '' t, u x = ∫⁻ x in t, ENNReal.ofReal (g' x) * u (g x) := by
+  rcases exists_decomposition_of_monotoneOn_hasDerivWithinAt ht hg hg' with
     ⟨a, b, c, h_union, ha, hb, hc, h_disj, h_disj', a_count, gb_count, deriv_b, deriv_c, inj_c⟩
-  have I : ∫⁻ x in t, ENNReal.ofReal (g' x) = ∫⁻ x in c, ENNReal.ofReal (g' x) := by
-    have : ∫⁻ x in a, ENNReal.ofReal (g' x) = 0 := by
+  have I : ∫⁻ x in t, ENNReal.ofReal (g' x) * u (g x)
+      = ∫⁻ x in c, ENNReal.ofReal (g' x) * u (g x) := by
+    have : ∫⁻ x in a, ENNReal.ofReal (g' x) * u (g x) = 0 := by
       have : volume a = 0 := a_count.measure_zero volume
       exact setLIntegral_measure_zero a _ this
     rw [← h_union, lintegral_union (hb.union hc) h_disj, this, zero_add]
-    have : ∫⁻ x in b, ENNReal.ofReal (g' x) = 0 :=
+    have : ∫⁻ x in b, ENNReal.ofReal (g' x) * u (g x) = 0 :=
       setLIntegral_eq_zero hb (fun x hx ↦ by simp [deriv_b x hx])
     rw [lintegral_union hc h_disj', this, zero_add]
-  have J : volume (g '' t) = volume (g '' c) := by
+  have J : ∫⁻ x in g '' t, u x = ∫⁻ x in g '' c, u x := by
+    apply setLIntegral_congr
     rw [← h_union, image_union, image_union]
     have A : (g '' a ∪ (g '' b ∪ g '' c) : Set ℝ) =ᵐ[volume] (g '' b ∪ g '' c : Set ℝ) := by
       refine union_ae_eq_right_of_ae_eq_empty (ae_eq_empty.mpr ?_)
@@ -1401,7 +1394,7 @@ theorem lintegral_deriv_eq_volume_image_of_monotoneOn (ht : MeasurableSet t)
     have B : (g '' b ∪ g '' c : Set ℝ) =ᵐ[volume] g '' c := by
       refine union_ae_eq_right_of_ae_eq_empty (ae_eq_empty.mpr ?_)
       exact gb_count.measure_zero _
-    exact measure_congr (A.trans B)
+    exact A.trans B
   rw [I, J]
   have ct : c ⊆ t := by
     rw [← h_union]
@@ -1409,293 +1402,56 @@ theorem lintegral_deriv_eq_volume_image_of_monotoneOn (ht : MeasurableSet t)
   let G' : ℝ → (ℝ →L[ℝ] ℝ) := fun x ↦ (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (g' x))
   have hG' (x : ℝ) (hx : x ∈ c) : HasFDerivWithinAt g (G' x) c x :=
     (hg' x (ct hx)).hasFDerivWithinAt.mono ct
-  have : ∫⁻ (x : ℝ) in c, ENNReal.ofReal (g' x)
-      = ∫⁻ (x : ℝ) in c, ENNReal.ofReal (|(G' x).det|) := by
+  have : ∫⁻ (x : ℝ) in c, ENNReal.ofReal (g' x) * u (g x)
+      = ∫⁻ (x : ℝ) in c, ENNReal.ofReal (|(G' x).det|) * u (g x) := by
     apply setLIntegral_congr_fun hc (fun x hx ↦ ?_)
     simp only [LinearMap.det_ring, ContinuousLinearMap.coe_coe, ContinuousLinearMap.smulRight_apply,
       ContinuousLinearMap.one_apply, smul_eq_mul, one_mul, G']
     rw [abs_of_nonneg (deriv_c x hx)]
   rw [this]
-  exact lintegral_abs_det_fderiv_eq_addHaar_image _ hc hG' inj_c
-
-
-
-
-
-
-
-
-
-
-
-#exit
-
-
-  have t₂t : t₂ ⊆ t := diff_subset.trans diff_subset
-  have A' : (∫⁻ x in t₁, ENNReal.ofReal (g' x)) = (∫⁻ x in t₂, ENNReal.ofReal (g' x)) := by
-    have I : ∫⁻ (x : ℝ) in t', ENNReal.ofReal (g' x) = 0 := by
-      apply setLIntegral_eq_zero ht'
-      intro x hx
-      simp only [Pi.zero_apply, ENNReal.ofReal_eq_zero, t']
-      obtain ⟨p, pt₁, px, gpx⟩ : ∃ p ∈ t₁, p ≠ x ∧ g p = g x := by
-        rcases hx.2 with ⟨p, q, pt₁, qt₁, pq, hp, hq⟩
-        rcases eq_or_ne p x with h'p | h'p
-        · exact ⟨q, qt₁, (h'p.symm.le.trans_lt pq).ne', hq⟩
-        · exact ⟨p, pt₁, h'p, hp⟩
-      rcases lt_or_gt_of_ne px with px | px
-      · have K : HasDerivWithinAt g 0 (t ∩ Ioo p x) x := by
-          have E (y) (hy : y ∈ t ∩ Ioo p x) : g y = g x := by
-            apply le_antisymm (hg hy.1 hx.1.1 hy.2.2.le)
-            rw [← gpx]
-            exact hg pt₁.1 hy.1 hy.2.1.le
-          have : HasDerivWithinAt (fun y ↦ g x) 0 (t ∩ Ioo p x) x :=
-            hasDerivWithinAt_const x (t ∩ Ioo p x) (g x)
-          exact this.congr E rfl
-        have K' : HasDerivWithinAt g (g' x) (t ∩ Ioo p x) x :=
-          (hg' x hx.1.1).mono inter_subset_left
-        have : g' x = 0 := by
-          apply UniqueDiffWithinAt.eq_deriv _ _ K' K
-          have J1 : (t ∩ Ioo p x) \ {x} = (t ∩ Ioo p x) := by simp
-          have J2 : 𝓝[t ∩ Ioo p x] x = 𝓝[t ∩ Iio x] x := by
-            simp [nhdsWithin_inter, nhdsWithin_Ioo_eq_nhdsLT px]
-          rw [uniqueDiffWithinAt_iff_accPt, accPt_principal_iff_nhdsWithin, J1, J2]
-          have xt : x ∈ t := hx.1.1
-          simp only [mem_inter_iff, mem_diff, xt, mem_union, mem_setOf_eq, true_and, not_or,
-            mem_preimage, t', t₁, a] at hx
-          exact neBot_iff.2 hx.1.2
-        simp [this]
-      · have K : HasDerivWithinAt g 0 (t ∩ Ioo x p) x := by
-          have E (y) (hy : y ∈ t ∩ Ioo x p) : g y = g x := by
-            apply le_antisymm  _ (hg hx.1.1 hy.1 hy.2.1.le)
-            rw [← gpx]
-            exact hg hy.1 pt₁.1 hy.2.2.le
-          have : HasDerivWithinAt (fun y ↦ g x) 0 (t ∩ Ioo x p) x :=
-            hasDerivWithinAt_const x (t ∩ Ioo x p) (g x)
-          exact this.congr E rfl
-        have K' : HasDerivWithinAt g (g' x) (t ∩ Ioo x p) x :=
-          (hg' x hx.1.1).mono inter_subset_left
-        have : g' x = 0 := by
-          apply UniqueDiffWithinAt.eq_deriv _ _ K' K
-          have J1 : (t ∩ Ioo x p) \ {x} = (t ∩ Ioo x p) := by simp
-          have J2 : 𝓝[t ∩ Ioo x p] x = 𝓝[t ∩ Ioi x] x := by
-            simp [nhdsWithin_inter, nhdsWithin_Ioo_eq_nhdsGT px]
-          rw [uniqueDiffWithinAt_iff_accPt, accPt_principal_iff_nhdsWithin, J1, J2]
-          have xt : x ∈ t := hx.1.1
-          simp only [mem_inter_iff, mem_diff, xt, mem_union, mem_setOf_eq, true_and, not_or,
-            mem_preimage, t', t₁, a] at hx
-          exact neBot_iff.2 hx.1.1
-        simp [this]
-    have : t₁ = t₂ ∪ t' := by simp [t₂, t']
-    rw [this, lintegral_union ht', I, add_zero]
-    exact disjoint_sdiff_left
-  have B' : volume (g '' t₁) = volume (g '' t₂) := by
-    apply le_antisymm ?_ (measure_mono (image_mono diff_subset))
-    have : g '' t₁ = g '' (t₁ \ t') ∪ g '' t' := by simp [← image_union, t']
-    rw [this]
-    apply (measure_union_le _ _).trans_eq
-    have : volume (g '' t') = 0 := by
-      apply Countable.measure_zero
-      apply hu.mono
-      simp [t']
-    rw [this, add_zero]
-  rw [A', B']
-  /- Finally, we are left with a set on which `g` is injective. We can then apply the general
-  change of variables formula for injective functions. -/
-  have injOn_g : InjOn g t₂ := by
-    intro x hx y hy hxy
-    contrapose! hxy
-    wlog H : x < y generalizing x y with h
-    · have : y < x := lt_of_le_of_ne (not_lt.1 H) hxy.symm
-      exact (h hy hx hxy.symm this).symm
-    intro h
-    apply hx.2
-    refine ⟨hx.1, ?_⟩
-    exact ⟨x, y, hx.1, hy.1, H, rfl, h.symm⟩
-  let G' : ℝ → (ℝ →L[ℝ] ℝ) := fun x ↦ (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (g' x))
-  have hG' (x : ℝ) (hx : x ∈ t₂) : HasFDerivWithinAt g (G' x) t₂ x :=
-    (hg' x (t₂t hx)).hasFDerivWithinAt.mono t₂t
-  have : ∫⁻ (x : ℝ) in t₂, ENNReal.ofReal (g' x)
-      = ∫⁻ (x : ℝ) in t₂, ENNReal.ofReal (|(G' x).det|) := by
-    apply lintegral_congr_ae
-
-  rw [this]
-  exact lintegral_abs_det_fderiv_eq_addHaar_image _ ht₂ hG' injOn_g
-
-
+  apply lintegral_image_eq_lintegral_abs_det_fderiv_mul _ hc hG' inj_c
 
 /-- Change of variable formula for differentiable functions, set version: if a real function `g` is
 monotone and differentiable on a measurable set `t`, then the measure of `g '' t` is given by the
 integral of `g' x` on `t`.
 Note that the measurability of `g '' t` is given by `MeasurableSet.image_of_monotoneOn`. -/
-theorem lintegral_abs_det_fderiv_eq_addHaar_image_glou (ht : MeasurableSet t)
+theorem lintegral_deriv_eq_volume_image_of_monotoneOn (ht : MeasurableSet t)
     (hg' : ∀ x ∈ t, HasDerivWithinAt g (g' x) t x) (hg : MonotoneOn g t) :
     (∫⁻ x in t, ENNReal.ofReal (g' x)) = volume (g '' t) := by
-  /- First, get rid of the points which are isolated on the right: here, `g'` might not be
-  uniquely defined (and in particular it could be negative). -/
-  let a := {x ∈ t | 𝓝[t ∩ Ioi x] x = ⊥} ∪ {x ∈ t | 𝓝[t ∩ Iio x] x = ⊥}
-  have a_count : a.Countable :=
-    countable_setOf_isolated_right_within.union countable_setOf_isolated_left_within
-  let t₁ := t \ a
-  have ht₁ : MeasurableSet t₁ := ht.diff a_count.measurableSet
-  have A : ∫⁻ x in t, ENNReal.ofReal (g' x) = ∫⁻ x in t₁, ENNReal.ofReal (g' x) :=
-    setLIntegral_congr (diff_null_ae_eq_self (a_count.measure_zero volume)).symm
-  have B : volume (g '' t) = volume (g '' t₁) := by
-    apply le_antisymm ?_ (measure_mono (image_mono diff_subset))
-    have : volume (g '' t) = volume (g '' t \ g '' a) :=
-      (measure_diff_null ((a_count.image _).measure_zero _)).symm
-    rw [this]
-    apply measure_mono
-    exact subset_image_diff g t a
-  rw [A, B]
-  /- Then, get rid of the points where `g` is not injective. There are countably many such
-  points in the image, so they don't contribute to `volume (g '' t)`, and moreover the derivative
-  is zero there, so they don't contribute to the left integral either. -/
-  let u : Set ℝ := {c | ∃ x, ∃ y, x ∈ t₁ ∧ y ∈ t₁ ∧ x < y ∧ g x = c ∧ g y = c}
-  have hu : Set.Countable u := MonotoneOn.countable_setOf_two_preimages (hg.mono diff_subset)
-  let t' := t₁ ∩ g ⁻¹' u
-  have ht' : MeasurableSet t' := by
-    have : t' = ⋃ c ∈ u, t₁ ∩ g⁻¹' {c} := by ext; simp [t']
-    rw [this]
-    apply MeasurableSet.biUnion hu (fun c hc ↦ ?_)
-    obtain ⟨v, hv, tv⟩ : ∃ v, OrdConnected v ∧ (t \ a) ∩ g ⁻¹' {c} = (t \ a) ∩ v :=
-      OrdConnected.preimage_monotoneOn ordConnected_singleton (hg.mono diff_subset)
-    rw [tv]
-    exact (ht.diff a_count.measurableSet).inter hv.measurableSet
-  let t₂ := t₁ \ t'
-  have ht₂ : MeasurableSet t₂ := ht₁.diff ht'
-  have t₂t : t₂ ⊆ t := diff_subset.trans diff_subset
-  have A' : (∫⁻ x in t₁, ENNReal.ofReal (g' x)) = (∫⁻ x in t₂, ENNReal.ofReal (g' x)) := by
-    have I : ∫⁻ (x : ℝ) in t', ENNReal.ofReal (g' x) = 0 := by
-      apply setLIntegral_eq_zero ht'
-      intro x hx
-      simp only [Pi.zero_apply, ENNReal.ofReal_eq_zero, t']
-      obtain ⟨p, pt₁, px, gpx⟩ : ∃ p ∈ t₁, p ≠ x ∧ g p = g x := by
-        rcases hx.2 with ⟨p, q, pt₁, qt₁, pq, hp, hq⟩
-        rcases eq_or_ne p x with h'p | h'p
-        · exact ⟨q, qt₁, (h'p.symm.le.trans_lt pq).ne', hq⟩
-        · exact ⟨p, pt₁, h'p, hp⟩
-      rcases lt_or_gt_of_ne px with px | px
-      · have K : HasDerivWithinAt g 0 (t ∩ Ioo p x) x := by
-          have E (y) (hy : y ∈ t ∩ Ioo p x) : g y = g x := by
-            apply le_antisymm (hg hy.1 hx.1.1 hy.2.2.le)
-            rw [← gpx]
-            exact hg pt₁.1 hy.1 hy.2.1.le
-          have : HasDerivWithinAt (fun y ↦ g x) 0 (t ∩ Ioo p x) x :=
-            hasDerivWithinAt_const x (t ∩ Ioo p x) (g x)
-          exact this.congr E rfl
-        have K' : HasDerivWithinAt g (g' x) (t ∩ Ioo p x) x :=
-          (hg' x hx.1.1).mono inter_subset_left
-        have : g' x = 0 := by
-          apply UniqueDiffWithinAt.eq_deriv _ _ K' K
-          have J1 : (t ∩ Ioo p x) \ {x} = (t ∩ Ioo p x) := by simp
-          have J2 : 𝓝[t ∩ Ioo p x] x = 𝓝[t ∩ Iio x] x := by
-            simp [nhdsWithin_inter, nhdsWithin_Ioo_eq_nhdsLT px]
-          rw [uniqueDiffWithinAt_iff_accPt, accPt_principal_iff_nhdsWithin, J1, J2]
-          have xt : x ∈ t := hx.1.1
-          simp only [mem_inter_iff, mem_diff, xt, mem_union, mem_setOf_eq, true_and, not_or,
-            mem_preimage, t', t₁, a] at hx
-          exact neBot_iff.2 hx.1.2
-        simp [this]
-      · have K : HasDerivWithinAt g 0 (t ∩ Ioo x p) x := by
-          have E (y) (hy : y ∈ t ∩ Ioo x p) : g y = g x := by
-            apply le_antisymm  _ (hg hx.1.1 hy.1 hy.2.1.le)
-            rw [← gpx]
-            exact hg hy.1 pt₁.1 hy.2.2.le
-          have : HasDerivWithinAt (fun y ↦ g x) 0 (t ∩ Ioo x p) x :=
-            hasDerivWithinAt_const x (t ∩ Ioo x p) (g x)
-          exact this.congr E rfl
-        have K' : HasDerivWithinAt g (g' x) (t ∩ Ioo x p) x :=
-          (hg' x hx.1.1).mono inter_subset_left
-        have : g' x = 0 := by
-          apply UniqueDiffWithinAt.eq_deriv _ _ K' K
-          have J1 : (t ∩ Ioo x p) \ {x} = (t ∩ Ioo x p) := by simp
-          have J2 : 𝓝[t ∩ Ioo x p] x = 𝓝[t ∩ Ioi x] x := by
-            simp [nhdsWithin_inter, nhdsWithin_Ioo_eq_nhdsGT px]
-          rw [uniqueDiffWithinAt_iff_accPt, accPt_principal_iff_nhdsWithin, J1, J2]
-          have xt : x ∈ t := hx.1.1
-          simp only [mem_inter_iff, mem_diff, xt, mem_union, mem_setOf_eq, true_and, not_or,
-            mem_preimage, t', t₁, a] at hx
-          exact neBot_iff.2 hx.1.1
-        simp [this]
-    have : t₁ = t₂ ∪ t' := by simp [t₂, t']
-    rw [this, lintegral_union ht', I, add_zero]
-    exact disjoint_sdiff_left
-  have B' : volume (g '' t₁) = volume (g '' t₂) := by
-    apply le_antisymm ?_ (measure_mono (image_mono diff_subset))
-    have : g '' t₁ = g '' (t₁ \ t') ∪ g '' t' := by simp [← image_union, t']
-    rw [this]
-    apply (measure_union_le _ _).trans_eq
-    have : volume (g '' t') = 0 := by
-      apply Countable.measure_zero
-      apply hu.mono
-      simp [t']
-    rw [this, add_zero]
-  rw [A', B']
-  /- Finally, we are left with a set on which `g` is injective. We can then apply the general
-  change of variables formula for injective functions. -/
-  have injOn_g : InjOn g t₂ := by
-    intro x hx y hy hxy
-    contrapose! hxy
-    wlog H : x < y generalizing x y with h
-    · have : y < x := lt_of_le_of_ne (not_lt.1 H) hxy.symm
-      exact (h hy hx hxy.symm this).symm
-    intro h
-    apply hx.2
-    refine ⟨hx.1, ?_⟩
-    exact ⟨x, y, hx.1, hy.1, H, rfl, h.symm⟩
-  let G' : ℝ → (ℝ →L[ℝ] ℝ) := fun x ↦ (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (g' x))
-  have hG' (x : ℝ) (hx : x ∈ t₂) : HasFDerivWithinAt g (G' x) t₂ x :=
-    (hg' x (t₂t hx)).hasFDerivWithinAt.mono t₂t
-  have : ∫⁻ (x : ℝ) in t₂, ENNReal.ofReal (g' x)
-      = ∫⁻ (x : ℝ) in t₂, ENNReal.ofReal (|(G' x).det|) := by
-    apply lintegral_congr_ae
+  simpa using (lintegral_image_eq_lintegral_deriv_mul_of_monotoneOn ht hg' hg 1).symm
 
-  rw [this]
-  exact lintegral_abs_det_fderiv_eq_addHaar_image _ ht₂ hG' injOn_g
+/-- Integrability in the change of variable formula for differentiable functions: if a
+function `f` is injective and differentiable on a measurable set `s`, then a function
+`g : E → F` is integrable on `f '' s` if and only if `|(f' x).det| • g ∘ f` is
+integrable on `s`. -/
+theorem integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn (ht : MeasurableSet t)
+    (hg' : ∀ x ∈ t, HasDerivWithinAt g (g' x) t x) (hg : MonotoneOn g t) (u : ℝ → E) :
+    IntegrableOn u (g '' t) ↔ IntegrableOn (fun x => (g' x) • u (g x)) t := by
+  rcases exists_decomposition_of_monotoneOn_hasDerivWithinAt ht hg hg' with
+    ⟨a, b, c, h_union, ha, hb, hc, h_disj, h_disj', a_count, gb_count, deriv_b, deriv_c, inj_c⟩
+  have : IntegrableOn u (g '' t) ↔ IntegrableOn u (g '' c) := by
+    apply integrableOn_congr_set_ae
 
 
 
 #exit
 
-
-#exit
-
-  let u : Set β := {c | ∃ x, ∃ y, x ∈ t ∧ y ∈ t ∧ x < y ∧ g x = c ∧ g y = c}
-  have hu : Set.Countable u := MonotoneOn.countable_setOf_two_preimages hg
-  let t' := t ∩ g ⁻¹' u
-  have ht' : MeasurableSet t' := by
-    have : t' = ⋃ c ∈ u, t ∩ g⁻¹' {c} := by ext; simp [t']
-    rw [this]
-    apply MeasurableSet.biUnion hu (fun c hc ↦ ?_)
-    obtain ⟨v, hv, tv⟩ : ∃ v, OrdConnected v ∧ t ∩ g ⁻¹' {c} = t ∩ v :=
-      OrdConnected.preimage_monotoneOn ordConnected_singleton hg
-    rw [tv]
-    exact ht.inter hv.measurableSet
-  have : g '' t = g '' (t \ t') ∪ g '' t' := by simp [← image_union, t']
-  rw [this]
-  apply MeasurableSet.union
-  · apply (ht.diff ht').image_of_continuousOn_injOn (h'g.mono diff_subset)
-    intro x hx y hy hxy
-    contrapose! hxy
-    wlog H : x < y generalizing x y with h
-    · have : y < x := lt_of_le_of_ne (not_lt.1 H) hxy.symm
-      exact (h hy hx hxy.symm this).symm
-    intro h
-    apply hx.2
-    refine ⟨hx.1, ?_⟩
-    exact ⟨x, y, hx.1, hy.1, H, rfl, h.symm⟩
-  · apply Countable.measurableSet
-    apply hu.mono
-    simp [t']
+/-- Change of variable formula for differentiable functions: if a function `f` is
+injective and differentiable on a measurable set `s`, then the Bochner integral of a function
+`g : E → F` on `f '' s` coincides with the integral of `|(f' x).det| • g ∘ f` on `s`. -/
+theorem integral_image_eq_integral_abs_det_fderiv_smul (hs : MeasurableSet s)
+    (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf : InjOn f s) (g : E → F) :
+    ∫ x in f '' s, g x ∂μ = ∫ x in s, |(f' x).det| • g (f x) ∂μ := by
+  rw [← restrict_map_withDensity_abs_det_fderiv_eq_addHaar μ hs hf' hf,
+    (measurableEmbedding_of_fderivWithin hs hf' hf).integral_map]
+  simp only [Set.restrict_apply, ← Function.comp_apply (f := g), ENNReal.ofReal]
+  rw [← (MeasurableEmbedding.subtype_coe hs).integral_map, map_comap_subtype_coe hs,
+    setIntegral_withDensity_eq_setIntegral_smul₀
+      (aemeasurable_toNNReal_abs_det_fderivWithin μ hs hf') _ hs]
+  congr with x
+  rw [NNReal.smul_def, Real.coe_toNNReal _ (abs_nonneg (f' x).det)]
 
 
-
-
-
-
-
-
-#exit
 
 
 
