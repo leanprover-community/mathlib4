@@ -101,7 +101,6 @@ import Mathlib.Tactic.FunProp.Differentiable
 import Mathlib.Tactic.FunProp.Elab
 import Mathlib.Tactic.FunProp.FunctionData
 import Mathlib.Tactic.FunProp.Mor
-import Mathlib.Tactic.FunProp.StateList
 import Mathlib.Tactic.FunProp.Theorems
 import Mathlib.Tactic.FunProp.ToBatteries
 import Mathlib.Tactic.FunProp.Types
@@ -248,6 +247,7 @@ import Mathlib.Tactic.SetLike
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simproc.ExistsAndEq
+import Mathlib.Tactic.Simproc.Factors
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Tactic.SplitIfs
