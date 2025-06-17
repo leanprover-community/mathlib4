@@ -150,10 +150,8 @@ theorem withDensity_apply₀ (f : α → ℝ≥0∞) {s : Set α} (hs : NullMeas
   let t := toMeasurable μ s
   have A : ∫⁻ a in t, f a ∂μ = ∫⁻ a in s, f a ∂μ :=
     setLIntegral_congr hs.toMeasurable_ae_eq
-  have B : μ.withDensity f t = μ.withDensity f s := by
-    apply measure_congr
-    have : AbsolutelyContinuous (μ.withDensity f) μ := withDensity_absolutelyContinuous μ f
-    apply withDensity_absolutelyContinuous μ f hs.toMeasurable_ae_eq
+  have B : μ.withDensity f t = μ.withDensity f s :=
+    measure_congr (withDensity_absolutelyContinuous μ f hs.toMeasurable_ae_eq)
   rw [← A, ← B]
   exact withDensity_apply _ (measurableSet_toMeasurable μ s)
 
