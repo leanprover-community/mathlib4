@@ -82,7 +82,7 @@ structure FormatError where
   /-- The distance to the end of the formatted string, as number of characters -/
   fmtPos : Nat
   /-- The kind of formatting error. For example: `extra space`, `remove line break` or `missing space`.
-  
+
   Strings starting with `Oh no` indicate an internal error.
   -/
   msg : String
