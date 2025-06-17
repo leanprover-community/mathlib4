@@ -46,6 +46,12 @@ theorem LTS.traces_in (s : State) (μs : List Label) (s' : State) (h : lts.mtr s
 /-- Two states are trace equivalent if they have the same set of traces. -/
 def TraceEq (s1 s2 : State) := lts.traces s1 = lts.traces s2
 
+/--
+Notation for trace equivalence.
+
+Differently from standard pen-and-paper presentations, we require the lts to be mentioned
+explicitly.
+-/
 notation s " ~tr[" lts "] " s' => TraceEq lts s s'
 
 /-- Trace equivalence is reflexive. -/

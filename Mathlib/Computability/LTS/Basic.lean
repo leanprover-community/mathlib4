@@ -53,6 +53,7 @@ A Labelled Transition System (LTS) consists of a type of states (`State`), a typ
 labels (`Label`), and a labelled transition relation (`tr`).
 -/
 structure LTS (State : Type u) (Label : Type v) where
+  /-- The transition relation. -/
   tr : State → Label → State → Prop
 
 section MultiStep
@@ -75,7 +76,7 @@ inductive LTS.mtr (lts : LTS State Label) : State -> List Label -> State -> Prop
     lts.mtr s1 (μ :: μs) s3
 
 /-- Any transition is also a multi-step transition. -/
-def LTS.mtr.single {s1 : State} {μ : Label} {s2 : State} :
+theorem LTS.mtr.single {s1 : State} {μ : Label} {s2 : State} :
   lts.tr s1 μ s2 → lts.mtr s1 [μ] s2 := by
   intro h
   apply LTS.mtr.stepL
@@ -83,7 +84,7 @@ def LTS.mtr.single {s1 : State} {μ : Label} {s2 : State} :
   · apply LTS.mtr.refl
 
 /-- Any multi-step transition can be extended by adding a transition. -/
-def LTS.mtr.stepR {s1 : State} {μs : List Label} {s2 : State} {μ : Label} {s3 : State} :
+theorem LTS.mtr.stepR {s1 : State} {μs : List Label} {s2 : State} {μ : Label} {s3 : State} :
   lts.mtr s1 μs s2 → lts.tr s2 μ s3 → lts.mtr s1 (μs ++ [μ]) s3 := by
   intro h1 h2
   induction h1
@@ -96,7 +97,7 @@ def LTS.mtr.stepR {s1 : State} {μs : List Label} {s2 : State} {μ : Label} {s3 
     · apply ih h2
 
 /-- Multi-step transitions can be composed. -/
-def LTS.mtr.comp {s1 : State} {μs1 : List Label} {s2 : State} {μs2 : List Label} {s3 : State} :
+theorem LTS.mtr.comp {s1 : State} {μs1 : List Label} {s2 : State} {μs2 : List Label} {s3 : State} :
   lts.mtr s1 μs1 s2 → lts.mtr s2 μs2 s3 →
   lts.mtr s1 (μs1 ++ μs2) s3 := by
   intro h1 h2

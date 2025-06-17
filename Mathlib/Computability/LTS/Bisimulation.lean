@@ -68,6 +68,12 @@ inductive Bisimilarity (lts : LTS State Label) : Rel State State where
 | bisim (s1 s2 : State) (h : ∃ r : Rel State State, r s1 s2 ∧ Bisimulation lts r) :
   Bisimilarity lts s1 s2
 
+/--
+Notation for bisimilarity.
+
+Differently from standard pen-and-paper presentations, we require the lts to be mentioned
+explicitly.
+-/
 notation s " ~[" lts "] " s' => Bisimilarity lts s s'
 
 /-- Bisimilarity is reflexive. -/
