@@ -1,17 +1,27 @@
 #!/usr/bin/env python3
 
 import argparse
+import json
 import shlex
 import subprocess
 import sys
 from typing import NoReturn
 
+
+def http_url(repo: str) -> str:
+    return f"https://github.com/{repo}.git"
+
+
+def ssh_url(repo: str) -> str:
+    return f"git@github.com:{repo}.git"
+
+
 UPSTREAM: str = "upstream"
 ORIGIN: str = "origin"
 
 MATHLIB_REPO: str = "leanprover-community/mathlib4"
-MATHLIB_HTTP_URL: str = f"https://github.com/{MATHLIB_REPO}.git"
-MATHLIB_SSH_URL: str = f"git@github.com:{MATHLIB_REPO}.git"
+MATHLIB_HTTP_URL: str = http_url(MATHLIB_REPO)
+MATHLIB_SSH_URL: str = ssh_url(MATHLIB_REPO)
 MATHLIB_URLS: set[str] = {MATHLIB_HTTP_URL, MATHLIB_SSH_URL}
 
 GREEN = "\033[92m"
@@ -42,7 +52,7 @@ def run_cmd(*cmd: str) -> None:
         abort(f"Command failed with status {e.returncode}: {shlex.join(cmd)}")
 
 
-def run_stdout(*cmd: str) -> str:
+def run_stdout(*cmd: str, fatal: bool = True) -> str:
     try:
         return subprocess.check_output(
             cmd,
@@ -51,7 +61,9 @@ def run_stdout(*cmd: str) -> str:
             stderr=subprocess.DEVNULL,
         )
     except subprocess.CalledProcessError as e:
-        abort(f"Command failed with status {e.returncode}: {shlex.join(cmd)}")
+        if fatal:
+            abort(f"Command failed with status {e.returncode}: {shlex.join(cmd)}")
+        raise e
 
 
 def run_check(*cmd: str) -> None:
@@ -161,6 +173,74 @@ def gh_set_default_repo(repo: str) -> None:
     run_cmd("gh", "repo", "set-default", "--", repo)
 
 
+def gh_get_username() -> str:
+    [username] = run_stdout("gh", "api", "user", "-q", ".login").splitlines()
+    return username
+
+
+def gh_get_repo_parent(repo: str) -> str | None:
+    try:
+        [parent] = run_stdout(
+            "gh", "api", f"repos/{repo}", "-q", ".parent.full_name"
+        ).splitlines()
+        return parent
+    except subprocess.CalledProcessError:
+        return None
+
+
+def gh_get_all_forks() -> dict[str, str]:
+    graphql_query = """
+    query($endCursor: String) {
+      repositoryOwner(login: "Garmelon") {
+        repositories(first: 10, after: $endCursor, isFork: true) {
+          nodes {
+            nameWithOwner
+            parent { nameWithOwner }
+          }
+          pageInfo { hasNextPage, endCursor }
+        }
+      }
+    }
+    """
+
+    jq_query = """
+    .data.repositoryOwner.repositories.nodes[] |
+    { parent: .parent.nameWithOwner, fork: .nameWithOwner }
+    """
+
+    out_str = run_stdout(
+        "gh",
+        "api",
+        "graphql",
+        "--paginate",
+        "-f",
+        f"query={graphql_query}",
+        "-q",
+        jq_query,
+    )
+
+    result: dict[str, str] = {}
+    for line in out_str.splitlines():
+        repo = json.loads(line)
+        result[repo["fork"]] = repo["parent"]
+
+    return result
+
+
+def gh_find_mathlib_fork(username: str) -> str | None:
+    # TODO Use origin as a guess, if it exists
+
+    guess = f"{username}/mathlib4"
+    parent = gh_get_repo_parent(guess)
+    if parent == MATHLIB_REPO:
+        return guess
+
+    forks = gh_get_all_forks()
+    for fork, parent in forks.items():
+        if parent == MATHLIB_REPO:
+            return fork
+
+
 ##################
 ## Command: fix ##
 ##################
@@ -198,7 +278,7 @@ def cmd_fix_replace_wrong_upstream() -> None:
     git_add_remote(UPSTREAM, MATHLIB_HTTP_URL)
 
 
-def cmd_fix_replace_wrong_default_gh_repo() -> None:
+def cmd_fix_update_default_gh_repo() -> None:
     repo = gh_get_default_repo()
     if repo == MATHLIB_REPO:
         return
@@ -219,7 +299,20 @@ def cmd_fix() -> None:
 
     gh_ensure_installed()
     gh_ensure_logged_in()
-    cmd_fix_replace_wrong_default_gh_repo()
+    cmd_fix_update_default_gh_repo()
+
+    username = gh_get_username()
+    fork = gh_find_mathlib_fork(username)
+    if fork is None:
+        # TODO gh repo fork
+        # TODO Check if it works fine with upstream set
+        pass
+    else:
+        # TODO Set origin to fork, create origin if necessary
+        pass
+
+    # TODO git fetch --all --prune
+    # TODO Set master remote and pushRemote
 
 
 ##########
@@ -229,6 +322,8 @@ def cmd_fix() -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    # TODO --origin-https option?
+    # TODO --upstream-ssh option?
 
     subparsers = parser.add_subparsers(required=True)
 
