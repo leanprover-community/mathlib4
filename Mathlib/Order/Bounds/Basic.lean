@@ -909,6 +909,17 @@ lemma upperBounds_prod_of_nonempty_eq {β : Type*} [Preorder β] {t : Set β} [h
       exact fun b hb => (hu a b ha hb).2)
   (fun (a, b) hab (c, d) hcd => ⟨hab.1 hcd.1,hab.2 hcd.2⟩)
 
+lemma lowerBounds_prod_of_nonempty_eq {β : Type*} [Preorder β] {t : Set β} [hes : Nonempty s]
+    [het : Nonempty t] : lowerBounds (s ×ˢ t) = lowerBounds s ×ˢ lowerBounds t := le_antisymm
+  (fun ⟨u₁, u₂⟩ hu => by
+    simp [lowerBounds] at hu
+    constructor
+    · obtain ⟨b, hb⟩ : Nonempty t := het
+      exact fun a ha => (hu a b ha hb).1
+    · obtain ⟨a, ha⟩ : Nonempty s := hes
+      exact fun b hb => (hu a b ha hb).2)
+  (fun (a, b) hab (c, d) hcd => ⟨hab.1 hcd.1,hab.2 hcd.2⟩)
+
 end Preorder
 
 section PartialOrder
