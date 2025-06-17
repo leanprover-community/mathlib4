@@ -10,6 +10,7 @@ import Mathlib.Algebra.Order.Group.Opposite
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.StarRingHom
 import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Algebra.Star.StarProjection
 
 /-! # Star ordered rings
 
@@ -391,3 +392,11 @@ instance Nat.instStarOrderedRing : StarOrderedRing ℕ where
         (AddSubmonoid.closure_mono <| singleton_subset_iff.2 <| mem_range.2 ⟨1, one_mul _⟩)
         Nat.addSubmonoid_closure_one
     simp [this, le_iff_exists_add]
+
+/-- a star projection is non-negative in a star-ordered ring -/
+theorem IsStarProjection.nonneg {M : Type*} [NonUnitalSemiring M] [PartialOrder M]
+    [StarRing M] [StarOrderedRing M] {p : M}
+    (hp : IsStarProjection p) : 0 ≤ p := by
+  rw [← hp.mul_self]
+  nth_rw 1 [← hp.star_eq]
+  exact star_mul_self_nonneg p
