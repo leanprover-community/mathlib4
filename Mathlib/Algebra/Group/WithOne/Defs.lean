@@ -89,6 +89,12 @@ def coe : α → WithOne α :=
 instance instCoeTC : CoeTC α (WithOne α) :=
   ⟨coe⟩
 
+@[to_additive]
+lemma «forall» {p : WithZero α → Prop} : (∀ x, p x) ↔ p 0 ∧ ∀ a : α, p a := Option.forall
+
+@[to_additive]
+lemma «exists» {p : WithZero α → Prop} : (∃ x, p x) ↔ p 0 ∨ ∃ a : α, p a := Option.exists
+
 /-- Recursor for `WithZero` using the preferred forms `0` and `↑a`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
 def _root_.WithZero.recZeroCoe {motive : WithZero α → Sort*} (zero : motive 0)
