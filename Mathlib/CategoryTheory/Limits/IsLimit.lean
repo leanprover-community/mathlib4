@@ -806,7 +806,6 @@ def coconePointsIsoOfEquivalence {F : J ⥤ C} {s : Cocone F} {G : K ⥤ C} {t :
       simp only [Limits.Cocone.whisker_ι, fac, invFunIdAssoc_inv_app, whiskerLeft_app, assoc,
         comp_id, Limits.Cocones.precompose_obj_ι, fac_assoc, NatTrans.comp_app]
       rw [counitInv_app_functor, ← Functor.comp_map, ← w.inv.naturality_assoc]
-      dsimp
       simp
     inv_hom_id := by
       apply hom_ext Q
