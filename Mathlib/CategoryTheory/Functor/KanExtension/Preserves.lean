@@ -37,7 +37,7 @@ class PreservesLeftKanExtension where
     IsLeftKanExtension (F' ⋙ G) <| whiskerRight α G ≫ (Functor.associator _ _ _).hom
 
 /-- Alternative constructor for `PreservesLeftKanExtension`, phrased in terms of
-`LeftExtension.IsUniversal` instead. See `PreservesLeftKanExtension.mk_of_preserves_universal`
+`LeftExtension.IsUniversal` instead. See `PreservesLeftKanExtension.mk_of_preserves_isUniversal`
 for a similar constructor taking as input a single `LeftExtension`. -/
 lemma PreservesLeftKanExtension.mk'
     (preserves : ∀ {E : LeftExtension L F}, E.IsUniversal →
@@ -62,7 +62,7 @@ lemma PreservesLeftKanExtension.mk_of_preserves_isLeftKanExtension
 
 /-- Show that `G` preserves left Kan extensions if it maps some left Kan extension to a left
 Kan extension, phrased in terms of `IsUniversal`. -/
-lemma PreservesLeftKanExtension.mk_of_preserves_universal (E : LeftExtension L F)
+lemma PreservesLeftKanExtension.mk_of_preserves_isUniversal (E : LeftExtension L F)
     (hE : E.IsUniversal) (h : Nonempty (LeftExtension.postcompose₂ L F G|>.obj E).IsUniversal) :
     G.PreservesLeftKanExtension F L :=
   .mk' G F L fun hE' ↦
@@ -289,7 +289,7 @@ class PreservesRightKanExtension where
     IsRightKanExtension (F' ⋙ G) <| (Functor.associator _ _ _).inv ≫ whiskerRight α G
 
 /-- Alternative constructor for `PreservesRightKanExtension`, phrased in terms of
-`RightExtension.IsUniversal` instead. See `PreservesRightKanExtension.mk_of_preserves_universal`
+`RightExtension.IsUniversal` instead. See `PreservesRightKanExtension.mk_of_preserves_isUniversal`
 for a similar constructor taking as input a single `RightExtension`. -/
 lemma PreservesRightKanExtension.mk'
     (preserves : ∀ {E : RightExtension L F}, E.IsUniversal →
@@ -314,7 +314,7 @@ lemma PreservesRightKanExtension.mk_of_preserves_isRightKanExtension
 
 /-- Show that `G` preserves right Kan extensions if it maps some right Kan extension to a left
 Kan extension, phrased in terms of `IsUniversal`. -/
-lemma PreservesRightKanExtension.mk_of_preserves_universal (E : RightExtension L F)
+lemma PreservesRightKanExtension.mk_of_preserves_isUniversal (E : RightExtension L F)
     (hE : E.IsUniversal) (h : Nonempty (RightExtension.postcompose₂ L F G|>.obj E).IsUniversal) :
     G.PreservesRightKanExtension F L :=
   .mk' G F L fun hE' ↦
