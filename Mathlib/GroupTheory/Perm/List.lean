@@ -105,9 +105,10 @@ theorem formPerm_apply_of_notMem (h : x ∉ l) : formPerm l x = x :=
 theorem formPerm_apply_mem_of_mem (h : x ∈ l) : formPerm l x ∈ l := by
   rcases l with - | ⟨y, l⟩
   · simp at h
-  induction' l with z l IH generalizing x y
-  · simpa using h
-  · by_cases hx : x ∈ z :: l
+  induction l generalizing x y with
+  | nil => simpa using h
+  | cons z l IH =>
+    by_cases hx : x ∈ z :: l
     · rw [formPerm_cons_cons, mul_apply, swap_apply_def]
       split_ifs
       · simp [IH _ hx]
@@ -127,14 +128,14 @@ theorem formPerm_mem_iff_mem : l.formPerm x ∈ l ↔ x ∈ l :=
 @[simp]
 theorem formPerm_cons_concat_apply_last (x y : α) (xs : List α) :
     formPerm (x :: (xs ++ [y])) y = x := by
-  induction' xs with z xs IH generalizing x y
-  · simp
-  · simp [IH]
+  induction xs generalizing x y with
+  | nil => simp
+  | cons z xs IH => simp [IH]
 
 @[simp]
 theorem formPerm_apply_getLast (x : α) (xs : List α) :
     formPerm (x :: xs) ((x :: xs).getLast (cons_ne_nil x xs)) = x := by
-  induction' xs using List.reverseRecOn with xs y _ generalizing x <;> simp
+  induction xs using List.reverseRecOn generalizing x <;> simp
 
 @[simp]
 theorem formPerm_apply_getElem_length (x : α) (xs : List α) :
@@ -159,9 +160,10 @@ theorem formPerm_eq_head_iff_eq_getLast (x y : α) :
 
 theorem formPerm_apply_lt_getElem (xs : List α) (h : Nodup xs) (n : ℕ) (hn : n + 1 < xs.length) :
     formPerm xs xs[n] = xs[n + 1] := by
-  induction' n with n IH generalizing xs
-  · simpa using formPerm_apply_getElem_zero _ h _
-  · rcases xs with (_ | ⟨x, _ | ⟨y, l⟩⟩)
+  induction n generalizing xs with
+  | zero => simpa using formPerm_apply_getElem_zero _ h _
+  | succ n IH =>
+    rcases xs with (_ | ⟨x, _ | ⟨y, l⟩⟩)
     · simp at hn
     · rw [formPerm_singleton, getElem_singleton, getElem_singleton, one_apply]
     · specialize IH (y :: l) h.of_cons _
@@ -286,11 +288,13 @@ theorem formPerm_ext_iff {x y x' y' : α} {l l' : List α} (hd : Nodup (x :: y :
   · rw [length_rotate, hl]
   · intro k hk hk'
     rw [getElem_rotate]
-    induction' k with k IH
-    · refine Eq.trans ?_ hx'
+    induction k with
+    | zero =>
+      refine Eq.trans ?_ hx'
       congr
       simpa using hn
-    · conv => congr <;> · arg 2; (rw [← Nat.mod_eq_of_lt hk'])
+    | succ k IH =>
+      conv => congr <;> · arg 2; (rw [← Nat.mod_eq_of_lt hk'])
       rw [← formPerm_apply_getElem _ hd' k (k.lt_succ_self.trans hk'),
         ← IH (k.lt_succ_self.trans hk), ← h, formPerm_apply_getElem _ hd]
       congr 1
@@ -302,7 +306,7 @@ theorem formPerm_apply_mem_eq_self_iff (hl : Nodup l) (x : α) (hx : x ∈ l) :
   obtain ⟨k, hk, rfl⟩ := getElem_of_mem hx
   rw [formPerm_apply_getElem _ hl k hk, hl.getElem_inj_iff]
   cases hn : l.length
-  · exact absurd k.zero_le (hk.trans_le hn.le).not_le
+  · exact absurd k.zero_le (hk.trans_le hn.le).not_ge
   · rw [hn] at hk
     rcases (Nat.le_of_lt_succ hk).eq_or_lt with hk' | hk'
     · simp [← hk', Nat.succ_le_succ_iff, eq_comm]
