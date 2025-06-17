@@ -125,7 +125,9 @@ for message in messages:
                 remove_reaction('maintainer-merge', 'hammer')
             continue
 
-        # Othewise, remove all previous mutually exclusive emoji reactions.
+        # We should never remove any "this PR was migrated from a fork" reaction.
+
+        # Otherwise, remove all previous mutually exclusive emoji reactions.
         # If the emoji is a custom emoji, add the fields `emoji_code` and `reaction_type` as well.
         print("Removing previous reactions, if present.")
         if has_peace_sign:
@@ -150,6 +152,8 @@ for message in messages:
             case 'labeled':
                 if LABEL_NAME == 'awaiting-author':
                     add_reaction('awaiting-author', 'writing')
+                elif LABEL_NAME == 'migrated-from-branch':
+                    add_reaction('migrated-from-branch', 'skip_forward')
             case 'unlabeled':
                 if LABEL_NAME == 'awaiting-author':
                     print('awaiting-author removed')

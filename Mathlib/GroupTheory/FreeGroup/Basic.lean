@@ -721,7 +721,7 @@ theorem map_eq_lift : map f x = lift (of ∘ f) x :=
 
 /-- Equivalent types give rise to multiplicatively equivalent free groups.
 
-The converse can be found in `Mathlib.GroupTheory.FreeGroup.GeneratorEquiv`, as
+The converse can be found in `Mathlib/GroupTheory/FreeGroup/GeneratorEquiv.lean`, as
 `Equiv.ofFreeGroupEquiv`. -/
 @[to_additive (attr := simps apply)
   "Equivalent types give rise to additively equivalent additive free groups."]
@@ -820,7 +820,6 @@ def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
   toFun _ := ()
   invFun _ := 1
   left_inv := by rintro ⟨_ | ⟨⟨⟨⟩, _⟩, _⟩⟩; rfl
-  right_inv := fun ⟨⟩ => rfl
 
 /-- The bijection between the free group on a singleton, and the integers. -/
 def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where

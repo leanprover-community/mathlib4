@@ -133,9 +133,9 @@ instance : OrderTop (Prepartition I) where
 
 instance : OrderBot (Prepartition I) where
   bot := ⟨∅,
-    fun _ hJ => (Finset.not_mem_empty _ hJ).elim,
-    fun _ hJ => (Set.not_mem_empty _ <| Finset.coe_empty ▸ hJ).elim⟩
-  bot_le _ _ hJ := (Finset.not_mem_empty _ hJ).elim
+    fun _ hJ => (Finset.notMem_empty _ hJ).elim,
+    fun _ hJ => (Set.notMem_empty _ <| Finset.coe_empty ▸ hJ).elim⟩
+  bot_le _ _ hJ := (Finset.notMem_empty _ hJ).elim
 
 instance : Inhabited (Prepartition I) := ⟨⊤⟩
 
@@ -149,8 +149,10 @@ theorem mem_top : J ∈ (⊤ : Prepartition I) ↔ J = I :=
 theorem top_boxes : (⊤ : Prepartition I).boxes = {I} := rfl
 
 @[simp]
-theorem not_mem_bot : J ∉ (⊥ : Prepartition I) :=
-  Finset.not_mem_empty _
+theorem notMem_bot : J ∉ (⊥ : Prepartition I) :=
+  Finset.notMem_empty _
+
+@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 @[simp]
 theorem bot_boxes : (⊥ : Prepartition I).boxes = ∅ := rfl
