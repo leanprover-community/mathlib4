@@ -3,7 +3,7 @@ Copyright (c) 2025 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen
 -/
-import Mathlib.Topology.Compactification.OnePointEquiv
+import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
 import Mathlib.Topology.Compactification.OnePointRealLemmas
 import Mathlib.Topology.Instances.Real.Lemmas
 import Mathlib.Topology.MetricSpace.Pseudo.Pi
@@ -254,7 +254,7 @@ lemma slope_uniform_of_compact_pos {n : ℕ} {i j : Fin n}
         have hδ' := hδ.2 x.1 (by rw [dist_comm];linarith)
         tauto
       · left
-        have h₁: x.1 j < 0 := lt_of_le_of_ne (le_of_not_lt hpos) hz
+        have h₁: x.1 j < 0 := lt_of_le_of_ne (le_of_not_gt hpos) hz
         rw [dist_comm] at hx
         have : dist x.1 a.1 < δ := hx
         have h₀: dist x.1 a.1 ≤ δ := by linarith
@@ -294,7 +294,7 @@ lemma slope_uniform_of_compact_neg {n : ℕ} {i j : Fin n} {t : Set (OnePoint �
         have hδ' := hδ.2 x.1 (by rw [dist_comm];linarith)
         tauto
       · right
-        have hneg: x.1 j < 0 := lt_of_le_of_ne (le_of_not_lt hpos) X
+        have hneg: x.1 j < 0 := lt_of_le_of_ne (le_of_not_gt hpos) X
         rw [dist_comm] at hx
         have : dist x.1 a.1 < δ := hx
         have h₀: dist x.1 a.1 ≤ δ := by linarith
@@ -552,9 +552,7 @@ theorem horizontal_hasRange :
       ext i
       fin_cases i
       · simp
-      · simp only [Nat.succ_eq_add_one, Nat.reduceAdd, ne_eq, Fin.isValue, one_div,
-        Fin.mk_one, Pi.smul_apply, Matrix.cons_val_one, Matrix.head_cons, smul_zero]
-        tauto
+      · simp [H₁]
     · use p.1 0 / p.1 1
       apply Quotient.sound
       use ⟨1 / p.1 1, p.1 1,by simp_all, by simp_all⟩
