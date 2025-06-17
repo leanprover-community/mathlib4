@@ -107,7 +107,7 @@ theorem pure_eq_pure : (pure : α → FreeM F α) = FreeM.pure := rfl
 protected def bind (x : FreeM F α) (f : α → FreeM F β) : FreeM F β :=
   match x with
   | .pure a => f a
-  | .liftBind op cont => .liftBind op (fun z => FreeM.bind (cont z) f)
+  | .liftBind op cont => .liftBind op fun z => FreeM.bind (cont z) f
 
 protected theorem bind_assoc (x : FreeM F α) (f : α → FreeM F β) (g : β → FreeM F γ) :
     (x.bind f).bind g = x.bind (fun x => (f x).bind g) := by
@@ -126,7 +126,7 @@ theorem bind_eq_bind {α β : Type w} :
 /-- Map a function over a `FreeM` monad. -/
 def map (f : α → β) : FreeM F α → FreeM F β
   | .pure a => .pure (f a)
-  | .liftBind op cont => .liftBind op (fun z => FreeM.map f (cont z))
+  | .liftBind op cont => .liftBind op fun z => FreeM.map f (cont z)
 
 instance: Functor (FreeM F) where
   map := .map
@@ -146,8 +146,8 @@ lemma lift_def (op : F ι) :
 
 @[simp]
 lemma map_lift {ι : Type u} {β : Type u} (f : ι → β) (op : F ι) :
-    (f <$> (lift op : FreeM F ι)) =
-      liftBind op (fun z : ι => (pure (f z) : FreeM F β)) := rfl
+    (f <$> (lift op : FreeM F ι)) = liftBind op (fun z => (pure (f z) : FreeM F β))
+  := rfl
 
 /-- `.pure a` followed by `bind` collapses immediately. -/
 @[simp]
@@ -158,7 +158,7 @@ lemma bind_pure_left (a : α) (f : α → FreeM F β) :
 lemma bind_pure_right {α : Type u} (x : FreeM F α) :
     x.bind (.pure) = x := by
   induction x with
-  | pure a       => rfl
+  | pure a => rfl
   | liftBind op k ih =>
       simp [FreeM.bind, ih]
 
@@ -166,7 +166,7 @@ lemma bind_pure_right {α : Type u} (x : FreeM F α) :
 @[simp]
 lemma bind_liftBind_dot {α β γ : Type u} (op : F α) (cont : α → FreeM F β)
     (f : β → FreeM F γ) :
-    (liftBind op cont).bind f = liftBind op (fun x => (cont x).bind f) := rfl
+    (liftBind op cont).bind f = liftBind op fun x => (cont x).bind f := rfl
 
 instance : LawfulFunctor (FreeM F) where
   map_const := rfl
@@ -231,9 +231,9 @@ lemma liftM_bind {M : Type u → Type w} [Monad M] [LawfulMonad M] {α β : Type
     simp_rw [ih]
 
 @[simp]
-lemma liftM_lift {M : Type u → Type w} [Monad M] [LawfulMonad M] {α : Type u}
+lemma liftM_liftBind_pure {M : Type u → Type w} [Monad M] [LawfulMonad M] {α : Type u}
     (interp : {β : Type u} → F β → M β) (op : F α) :
-    (FreeM.liftBind op FreeM.pure).liftM interp = interp op := by
+    (FreeM.liftBind op .pure).liftM interp = interp op := by
   simp [← pure_eq_pure, ← liftM_liftBind, ← liftM_pure]
 
 /--
@@ -301,25 +301,26 @@ instance {σ : Type u} : MonadStateOf σ (FreeState σ) where
 lemma get_def {σ : Type u} : (get : FreeState σ σ) = .lift .get := rfl
 
 @[simp]
-lemma set_def {σ : Type u} (s : σ) : (set s : FreeState σ PUnit) =
-    .liftBind (.set s) (fun _ => .pure PUnit.unit) := rfl
+lemma set_def {σ : Type u} (s : σ) :
+  (set s : FreeState σ PUnit) = .liftBind (.set s) (fun _ => .pure PUnit.unit) := rfl
 
 instance {σ : Type u} : MonadState σ (FreeState σ) := inferInstance
 
-@[simp] lemma bind_pure {α β : Type u} (a : α) (f : α → FreeM F β) :
-    (.pure a >>= f) = f a := rfl
+@[simp]
+lemma bind_pure {α β : Type u} (a : α) (f : α → FreeM F β) :
+    .pure a >>= f = f a := rfl
 
 @[simp] lemma map_pure {α β : Type u} (f : α → β) (a : α) :
-    (f <$> (.pure a : FreeM F α)) = .pure (f a) := rfl
+    f <$> (.pure a : FreeM F α) = .pure (f a) := rfl
 
 @[simp]
 lemma bind_liftBind {α β γ : Type u} (op : F α) (cont : α → FreeM F β)
-(f : β → FreeM F γ) :
+  (f : β → FreeM F γ) :
     liftBind op cont >>= f = liftBind op (fun x => cont x >>= f) := rfl
 
 @[simp]
 lemma map_liftBind {α β γ : Type u} (f : β → γ) (op : F α) (cont : α → FreeM F β) :
-    f <$> liftBind op cont = liftBind op (fun x => f <$> cont x) := rfl
+    f <$> liftBind op cont = liftBind op fun x => f <$> cont x := rfl
 
 /-- Interpret `StateF` operations into `StateM`. -/
 def stateInterp {σ : Type u} : {α : Type u} → StateF σ α → StateM σ α
@@ -466,9 +467,9 @@ theorem toWriterT_eq_run {ω : Type u} [Monoid ω] {α} (comp : FreeWriter ω α
   · simp only [toWriterT, FreeM.liftM, pure, run, WriterT.run]
   · simp only [toWriterT, FreeM.liftM] at *
     rcases op
-    · simp only [run] at *
-      rw [←ih PUnit.unit]
-      congr
+    simp only [run] at *
+    rw [←ih PUnit.unit]
+    congr
 
 @[simp]
 lemma run_pure {ω : Type u} [Monoid ω] {α} (a : α) :
@@ -555,7 +556,7 @@ instance {r : Type u} : LawfulMonad (FreeCont r) := inferInstance
 
 /-- Interpret `ContF r` operations into `ContT r Id`. -/
 def contInterp {r : Type u} {α : Type v} : ContF r α → ContT r Id α
-  | ContF.callCC g => fun k => pure (g (fun a => (k a).run))
+  | .callCC g => fun k => pure (g (fun a => (k a).run))
 
 /-- Convert a `FreeCont` computation into a `ContT` computation. This is the canonical
 interpreter derived from `liftM`. -/
@@ -569,7 +570,7 @@ theorem toContT_unique {r α : Type u} (g : FreeCont r α → ContT r Id α)
 /-- Run a continuation computation with the given continuation. -/
 def run {r : Type u} {α : Type v} : FreeCont r α → (α → r) → r
   | .pure a, k => k a
-  | .liftBind (ContF.callCC g) cont, k => g (fun a => run (cont a) k)
+  | .liftBind (.callCC g) cont, k => g (fun a => run (cont a) k)
 
 /--
 The canonical interpreter `toContT` derived from `liftM` agrees with the hand-written
@@ -577,7 +578,7 @@ recursive interpreter `run` for `FreeCont`.
 -/
 @[simp]
 theorem toContT_eq_run {r α : Type u} (comp : FreeCont r α) (k : α → r) :
-  toContT comp k = run comp k := by
+    toContT comp k = run comp k := by
   induction comp with
   | pure a => rfl
   | liftBind op cont ih =>
@@ -593,31 +594,28 @@ lemma run_pure {r : Type u} {α : Type v} (a : α) (k : α → r) :
 
 @[simp]
 lemma run_liftBind_callCC {r : Type u} {α β : Type v} (g : (α → r) → r)
-  (cont : α → FreeCont r β) (k : β → r) :
+    (cont : α → FreeCont r β) (k : β → r) :
     run (liftBind (.callCC g) cont) k = g (fun a => run (cont a) k) := rfl
 
 /-- Call with current continuation for the Free continuation monad. -/
 def callCC {r : Type u} {α β : Type v} (f : MonadCont.Label α (FreeCont r) β → FreeCont r α) :
-  FreeCont r α := liftBind (ContF.callCC (fun k =>
-  run (f ⟨fun x => liftBind (ContF.callCC (fun _ => k x)) pure⟩) k
-  )) pure
+    FreeCont r α :=
+  liftBind (.callCC fun k => run (f ⟨fun x => liftBind (.callCC fun _ => k x) pure⟩) k) pure
 
 @[simp]
 lemma callCC_def {r : Type u} {α β : Type v} (f : MonadCont.Label α (FreeCont r) β → FreeCont r α) :
     callCC f =
-    liftBind (ContF.callCC (fun k =>
-      run (f ⟨fun x => liftBind (ContF.callCC (fun _ => k x)) pure⟩) k
-    )) pure := rfl
+    liftBind (.callCC fun k => run (f ⟨fun x => liftBind (.callCC fun _ => k x) pure⟩) k) pure :=
+  rfl
 
 instance {r : Type u} : MonadCont (FreeCont r) where
-  callCC := FreeCont.callCC
+  callCC := .callCC
 
 /-- `run` of a `callCC` node simplifies to running the handler with the current continuation. -/
 @[simp]
 lemma run_callCC {r : Type u} {α β : Type v}
     (f : MonadCont.Label α (FreeCont r) β → FreeCont r α) (k : α → r) :
-    run (callCC f) k =
-      run (f ⟨fun x => liftBind (ContF.callCC (fun _ => k x)) pure⟩) k := by
+  run (callCC f) k = run (f ⟨fun x => liftBind (.callCC fun _ => k x) pure⟩) k := by
   simp [callCC, run_liftBind_callCC]
 
 end FreeCont
