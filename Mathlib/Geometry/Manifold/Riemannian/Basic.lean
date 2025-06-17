@@ -258,8 +258,7 @@ lemma lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc {x y : ℝ}
   congr
   rw [mfderivWithin_of_mem_nhds (Icc_mem_nhds hx.1 hx.2)]
 
-#check intervalIntegral.integral_comp_mul_deriv'''
-
+/-
 lemma pathELength_comp (γ : ℝ → M) {f : ℝ → ℝ} {x y : ℝ} (h : x ≤ y) (hf : MonotoneOn f (Icc x y))
     (h'f : ContDiffOn ℝ 1 f (Icc x y)) :
     pathELength I γ (f x) (f y) = pathELength I (γ ∘ f) x y := by
@@ -267,11 +266,7 @@ lemma pathELength_comp (γ : ℝ → M) {f : ℝ → ℝ} {x y : ℝ} (h : x ≤
   have A (t)  : ‖(mfderiv 𝓘(ℝ, ℝ) I (γ ∘ f) t) 1‖ₑ
     = ‖(mfderiv 𝓘(ℝ, ℝ) I γ (f t)) 1‖ₑ * ‖deriv f t‖ₑ := sorry
   simp_rw [A]
-
-
-#exit
-
-
+-/
 
 end Manifold
 
