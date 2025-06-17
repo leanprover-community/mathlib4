@@ -21,11 +21,9 @@ class IsGaloisGroup where
   commutes : SMulCommClass G K L
   isInvariant : Algebra.IsInvariant K L G
 
+attribute [instance low] IsGaloisGroup.commutes IsGaloisGroup.isInvariant
+
 namespace IsGaloisGroup
-
-instance [h : IsGaloisGroup G K L] : SMulCommClass G K L := h.commutes
-
-instance [h : IsGaloisGroup G K L] : Algebra.IsInvariant K L G := h.isInvariant
 
 theorem fixedPoints_eq_bot [IsGaloisGroup G K L] :
     FixedPoints.intermediateField G = (⊥ : IntermediateField K L) := by
