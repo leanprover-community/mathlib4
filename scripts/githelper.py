@@ -43,6 +43,10 @@ def print_step(i: int, msg: str) -> None:
     print(f"{BOLD}{BLUE}Step {i}:{END} {msg}")
 
 
+def print_info(msg: str) -> None:
+    print(f"{BOLD}{GREEN}INFO:{END} {msg}")
+
+
 def print_warn(msg: str) -> None:
     print(f"{BOLD}{YELLOW}WARNING:{END} {msg}")
 
@@ -150,6 +154,10 @@ def git_remove_remote(remote: str) -> None:
 
 def git_add_remote(remote: str, url: str) -> None:
     run_cmd("git", "remote", "add", "--", remote, url)
+
+
+def git_rename_remote(remote: str, to: str) -> None:
+    run_cmd("git", "remote", "rename", "--", remote, to)
 
 
 def git_fetch_all() -> None:
@@ -307,32 +315,36 @@ def gh_fork() -> None:
 def cmd_fix_update_remote(
     remote: str,
     target: str,
-    url: str,
-    allowed: set[str],
+    target_url: str,
+    allowed_urls: set[str],
 ) -> None:
-    curr_url = git_get_remotes().get(remote)
+    allowed_urls = allowed_urls | {target_url}
+    remotes = git_get_remotes()
 
-    if curr_url is None:
+    # Delete remote if it points to the wrong place.
+    url = remotes.get(remote)
+    if url is not None and url not in allowed_urls:
+        print_warn(f"Remote {remote!r} does not point to {target}.")
+        if not ask_yes_no(f"Delete and replace remote {remote!r}?"):
+            abort(f"Remote {remote!r} must point to {target}.")
+        git_remove_remote(remote)
+        remotes = git_get_remotes()
+
+    # Try to find and rename a remote that already points to the correct place.
+    for name, url in remotes.items():
+        if url in allowed_urls:
+            print_info(f"Remote {name!r} points to {target}.")
+            if ask_yes_no(f"Rename remote {name!r} to {remote!r}?"):
+                git_rename_remote(name, remote)
+                remotes = git_get_remotes()
+                break
+
+    # Create remote if it doesn't exist by now.
+    if remote not in remotes:
         print_warn(f"Remote {remote!r} does not exist.")
         if not ask_yes_no(f"Create remote {remote!r}?"):
             abort(f"Remote {remote!r} must point to {target}.")
         git_add_remote(remote, url)
-        return
-
-    if curr_url in allowed:
-        return
-
-    print_warn(f"Remote {remote!r} does not point to {target}.")
-    print("Expected it to point to")
-    for url in sorted(allowed):
-        print(f"- {url}")
-    print("Instead, it pointed to:")
-    print(f"- {curr_url}")
-    if not ask_yes_no(f"Delete and replace remote {remote!r}?"):
-        abort(f"Remote {remote!r} must point to {target}.")
-
-    git_remove_remote(remote)
-    git_add_remote(remote, url)
 
 
 def cmd_fix_update_default_gh_repo() -> None:
