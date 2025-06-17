@@ -23,7 +23,7 @@ variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
 /-- Construct a morphism `G ⟶ H` of `Grp_ C` C from a map `f : G ⟶ H` and a `IsMon_Hom f`
 instance. -/
 @[simps]
-def Grp_.homMk (f : G ⟶ H) [IsMon_Hom f] : .mk' G ⟶ Grp_.mk' H := Mon_.Hom.mk' f
+def Grp_.homMk (f : G ⟶ H) [IsMon_Hom f] : .mk G ⟶ Grp_.mk H := ⟨f⟩
 
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
@@ -132,12 +132,12 @@ lemma Grp_Class.inv_comp (f : X ⟶ G) (g : G ⟶ H) [IsMon_Hom g] : f⁻¹ ≫ 
 @[reassoc]
 lemma Grp_Class.div_comp (f g : X ⟶ G) (h : G ⟶ H) [IsMon_Hom h] :
     (f / g) ≫ h = (f ≫ h) / (g ≫ h) :=
-  ((yonedaGrp.map (Grp_.homMk h)).app (.op X)).hom.map_div f g
+  ((yonedaGrp.map <| Grp_.homMk h).app <| op X).hom.map_div f g
 
 @[reassoc]
 lemma Grp_Class.zpow_comp (f : X ⟶ G) (n : ℤ) (g : G ⟶ H) [IsMon_Hom g] :
     (f ^ n) ≫ g = (f ≫ g) ^ n :=
-  ((yonedaGrp.map (Grp_.homMk g)).app (.op X)).hom.map_zpow f n
+  ((yonedaGrp.map <| Grp_.homMk g).app <| op X).hom.map_zpow f n
 
 @[reassoc]
 lemma Grp_Class.comp_inv (f : X ⟶ Y) (g : Y ⟶ G) : f ≫ g⁻¹ = (f ≫ g)⁻¹ :=
@@ -145,7 +145,7 @@ lemma Grp_Class.comp_inv (f : X ⟶ Y) (g : Y ⟶ G) : f ≫ g⁻¹ = (f ≫ g)�
 
 @[reassoc]
 lemma Grp_Class.comp_div (f : X ⟶ Y) (g h : Y ⟶ G) : f ≫ (g / h) = f ≫ g / f ≫ h :=
-  ((yonedaGrp.obj (.mk' G)).map f.op).hom.map_div g h
+  ((yonedaGrp.obj ⟨G⟩).map f.op).hom.map_div g h
 
 @[reassoc]
 lemma Grp_Class.comp_zpow (f : X ⟶ Y) (g : Y ⟶ G) : ∀ n : ℤ, f ≫ g ^ n = (f ≫ g) ^ n
@@ -158,9 +158,8 @@ instance [BraidedCategory C] [IsCommMon G] : IsMon_Hom ι[G] where
   one_hom := by simp [one_eq_one, ← Hom.inv_def]
   mul_hom := by simp [Grp_Class.mul_inv_rev]
 
+attribute [local simp] Hom.inv_def in
 instance [BraidedCategory C] [IsCommMon G] {f : M ⟶ G} [IsMon_Hom f] : IsMon_Hom f⁻¹ where
-  one_hom := by simp [Hom.inv_def]
-  mul_hom := by simp [Hom.inv_def]
 
 /-- If `G` is a commutative group object, then `Hom(X, G)` has a commutative group structure. -/
 abbrev Hom.commGroup [BraidedCategory C] [IsCommMon G] : CommGroup (X ⟶ G) where
