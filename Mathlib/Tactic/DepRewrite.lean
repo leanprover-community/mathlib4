@@ -247,9 +247,28 @@ partial def visit (e : Expr) (et? : Option Expr) : M Expr :=
   | .letE n t v b bi =>
     let tup ← visit t none
     let vup ← visitAndCast v tup
-    withLetDecl n tup vup fun r => withSubst? r tup do
-      let bup ← visitAndCast (b.instantiate1 r) et?
-      return .letE n tup vup (bup.abstract #[r]) bi
+    if !vup.hasAnyFVar (fun f => f == ctx.x.fvarId! || f == ctx.h.fvarId!) then
+      let ret ← withLetDecl n tup vup fun r => withSubst? r tup do
+        let bup ← visitAndCast (b.instantiate1 r) et?
+        return .letE n tup vup (bup.abstract #[r]) bi
+      return ret
+
+    /-
+    The body may rely on the definitional equality `n ≡ vup`.
+    In case the value `vup` depends on `x` (meaning it was rewritten),
+    we need to explicitly encode this dependency
+    so that our casting mechanism can fix occurrences of `n` in the body.
+    We generalize to `n := fun x h => vup(x,h)`
+    and instantiate the body with `n x h`.
+
+    TODO: this results in a different let-binding. Can we restore a monomorphic let-binding?
+    -/
+    let lupTy ← mkForallFVars #[ctx.x, ctx.h] tup
+    let lup ← mkLambdaFVars #[ctx.x, ctx.h] vup
+    withLetDecl n lupTy lup fun r => withSubst? r lupTy do
+      let rxh := mkAppN r #[ctx.x, ctx.h]
+      let bup ← visitAndCast (b.instantiate1 rxh) et?
+      return .letE n lupTy lup (bup.abstract #[r]) bi
   | .lam n t b bi =>
     let tup ← visit t none
     withLocalDecl n bi tup fun r => withSubst? r tup do
