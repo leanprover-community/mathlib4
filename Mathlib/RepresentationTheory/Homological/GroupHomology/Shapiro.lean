@@ -66,7 +66,6 @@ noncomputable def coinvariantsTensorIndHom :
         simp
 
 variable {A B} in
-@[simp]
 lemma coinvariantsTensorIndHom_mk_tmul_indVMk (h : H) (x : A) (y : B) :
     coinvariantsTensorIndHom φ A B (coinvariantsTensorMk _ _ (IndV.mk φ _ h x) y) =
       coinvariantsTensorMk _ _ x (B.ρ h y) := by
@@ -90,9 +89,9 @@ noncomputable def coinvariantsTensorIndInv :
         (by simp [← Coinvariants.mk_inv_tmul])
 
 variable {A B} in
-@[simp]
 lemma coinvariantsTensorIndInv_mk_tmul_indMk (x : A) (y : B) :
-    coinvariantsTensorIndInv φ A B (coinvariantsTensorMk _ _ x y) =
+    coinvariantsTensorIndInv φ A B (Coinvariants.mk
+      (A.ρ.tprod (Rep.ρ ((Action.res _ φ).obj B))) <| x ⊗ₜ y) =
       coinvariantsTensorMk _ _ (IndV.mk φ _ 1 x) y := by
   simp [tensorObj_def, tensorObj, coinvariantsTensorIndInv, coinvariantsTensorMk]
 
@@ -117,7 +116,7 @@ noncomputable def coinvariantsTensorIndIso :
 
 /-- Given a group hom `φ : G →* H` and `A : Rep k G`, the functor `Rep k H ⥤ ModuleCat k` sending
 `B ↦ (Ind(φ)(A) ⊗ B))_H` is naturally isomorphic to the one sending `B ↦ (A ⊗ Res(φ)(B))_G`. -/
-@[simps!]
+@[simps! hom_app inv_app]
 noncomputable def coinvariantsTensorIndNatIso :
     (coinvariantsTensor k H).obj (ind φ A) ≅ Action.res _ φ ⋙ (coinvariantsTensor k G).obj A :=
   NatIso.ofComponents (fun B => coinvariantsTensorIndIso φ A B) fun {X Y} f => by
@@ -133,7 +132,6 @@ variable (A : Rep k S)
 /-- Given a projective resolution `P` of `k` as a `k`-linear `G`-representation, a finite index
 subgroup `S ≤ G`, and a `k`-linear `S`-representation `A`, this is an isomorphism
 `(A ⊗ Res(S)(P))_S ≅ (Ind_S^G(A) ⊗ P)_G`. -/
-@[simps!]
 noncomputable abbrev coinvariantsTensorResProjectiveResolutionIso
     (P : ProjectiveResolution (Rep.trivial k G k)) :
     ((Action.res _ S.subtype).mapProjectiveResolution P).complex.coinvariantsTensorObj A ≅
