@@ -5,7 +5,7 @@ Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Homology.ConcreteCategory
 import Mathlib.Algebra.Homology.HomologicalComplexAbelian
-import Mathlib.RepresentationTheory.GroupCohomology.Functoriality
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoriality
 
 /-!
 # Long exact sequence in group cohomology

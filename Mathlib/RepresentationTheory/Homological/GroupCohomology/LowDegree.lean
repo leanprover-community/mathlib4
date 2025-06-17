@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Joël Riou
 -/
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.RepresentationTheory.GroupCohomology.Basic
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
 import Mathlib.RepresentationTheory.Invariants
 
 /-!
@@ -13,10 +13,11 @@ import Mathlib.RepresentationTheory.Invariants
 Let `k` be a commutative ring and `G` a group. This file contains specialised API for
 the cocycles and group cohomology of a `k`-linear `G`-representation `A` in degrees 0, 1 and 2.
 
-In `RepresentationTheory.GroupCohomology.Basic`, we define the `n`th group cohomology of `A` to be
-the cohomology of a complex `inhomogeneousCochains A`, whose objects are `(Fin n → G) → A`; this is
-unnecessarily unwieldy in low degree. Here, meanwhile, we define the one and two cocycles and
-coboundaries as submodules of `Fun(G, A)` and `Fun(G × G, A)`, and provide maps to `H1` and `H2`.
+In `RepresentationTheory/Homological/GroupCohomology/Basic.lean`, we define the `n`th group
+cohomology of `A` to be the cohomology of a complex `inhomogeneousCochains A`, whose objects are
+`(Fin n → G) → A`; this is unnecessarily unwieldy in low degree. Here, meanwhile, we define the one
+and two cocycles and coboundaries as submodules of `Fun(G, A)` and `Fun(G × G, A)`, and provide
+maps to `H1` and `H2`.
 
 We also show that when the representation on `A` is trivial, `H¹(G, A) ≃ Hom(G, A)`.
 
@@ -28,8 +29,8 @@ multiplicative case, starting with the section `IsMulCocycle`, just mirrors the 
 unfortunately `@[to_additive]` can't deal with scalar actions.
 
 The file also contains an identification between the definitions in
-`RepresentationTheory.GroupCohomology.Basic`, `groupCohomology.cocycles A n`, and the `nCocycles`
-in this file, for `n = 0, 1, 2`.
+`RepresentationTheory/Homological/GroupCohomology/Basic.lean`, `groupCohomology.cocycles A n`, and
+the `nCocycles` in this file, for `n = 0, 1, 2`.
 
 ## Main definitions
 
@@ -619,7 +620,7 @@ theorem isTwoCoboundary_of_mem_twoCoboundaries
 
 end ofDistribMulAction
 
-/-! The next few sections, until the section `Cohomology`, are a multiplicative copy of the
+/-! The next few sections, until the section `CocyclesIso`, are a multiplicative copy of the
 previous few sections beginning with `IsCocycle`. Unfortunately `@[to_additive]` doesn't work with
 scalar actions. -/
 
@@ -752,6 +753,8 @@ theorem isMulTwoCoboundary_of_mem_twoCoboundaries
 end ofMulDistribMulAction
 
 open ShortComplex
+
+section CocyclesIso
 
 section zeroCocyclesIso
 
@@ -914,6 +917,7 @@ lemma cocyclesMk_2_eq (x : twoCocycles A) :
     (isoTwoCocycles_inv_comp_iCocycles_apply _ x).symm
 
 end isoTwoCocycles
+end CocyclesIso
 
 section Cohomology
 
@@ -1016,7 +1020,7 @@ lemma H1π_eq_iff (x y : oneCocycles A) :
 @[elab_as_elim]
 theorem H1_induction_on {C : H1 A → Prop} (x : H1 A) (h : ∀ x : oneCocycles A, C (H1π A x)) :
     C x :=
-  groupCohomology_induction_on x (fun y => by have := h ((isoOneCocycles A).hom y); simpa [H1π])
+  groupCohomology_induction_on x fun y => by simpa [H1π] using h ((isoOneCocycles A).hom y)
 
 variable (A)
 
@@ -1084,7 +1088,7 @@ section H2
 defined as the 2nd cohomology of the complex of inhomogeneous cochains of `A`. -/
 abbrev H2 := groupCohomology A 2
 
-/-- The quotient map from the 1-cocycles of `A`, as a submodule of `G → A`, to `H¹(G, A)`. -/
+/-- The quotient map from the 2-cocycles of `A`, as a submodule of `G × G → A`, to `H²(G, A)`. -/
 def H2π : ModuleCat.of k (twoCocycles A) ⟶ H2 A :=
   (isoTwoCocycles A).inv ≫ π A 2
 
@@ -1110,7 +1114,7 @@ lemma H2π_eq_iff (x y : twoCocycles A) :
 @[elab_as_elim]
 theorem H2_induction_on {C : H2 A → Prop} (x : H2 A) (h : ∀ x : twoCocycles A, C (H2π A x)) :
     C x :=
-  groupCohomology_induction_on x (fun y => by have := h ((isoTwoCocycles A).hom y); simpa [H2π])
+  groupCohomology_induction_on x fun y => by simpa [H2π] using h ((isoTwoCocycles A).hom y)
 
 variable (A)
 
