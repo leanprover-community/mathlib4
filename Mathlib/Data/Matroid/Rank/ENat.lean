@@ -43,8 +43,8 @@ which is why mathlib defines matroids using bases/independence. )
 
 It is natural to ask if equicardinality of bases holds if 'cardinality' refers to
 a term in `Cardinal` instead of `ℕ∞`, but the answer is that it doesn't.
-The cardinal-valued rank functions `Matroid.cRank` and `Matroid.cRk`
-are defined in `Mathlib.Data.Matroid.Rank.Cardinal`, but have less desirable properties in general.
+The cardinal-valued rank functions `Matroid.cRank` and `Matroid.cRk` are defined in
+`Mathlib/Data/Matroid/Rank/Cardinal.lean`, but have less desirable properties in general.
 See the module docstring of that file for a discussion.
 
 # Implementation Details
@@ -133,8 +133,11 @@ lemma eRk_union_ground (M : Matroid α) (X : Set α) : M.eRk (X ∪ M.E) = M.eRa
 lemma eRk_ground_union (M : Matroid α) (X : Set α) : M.eRk (M.E ∪ X) = M.eRank := by
   rw [union_comm, eRk_union_ground]
 
-lemma eRk_insert_of_not_mem_ground (X : Set α) (he : e ∉ M.E) : M.eRk (insert e X) = M.eRk X := by
-  rw [← eRk_inter_ground, insert_inter_of_not_mem he, eRk_inter_ground]
+lemma eRk_insert_of_notMem_ground (X : Set α) (he : e ∉ M.E) : M.eRk (insert e X) = M.eRk X := by
+  rw [← eRk_inter_ground, insert_inter_of_notMem he, eRk_inter_ground]
+
+@[deprecated (since := "2025-05-23")]
+alias eRk_insert_of_not_mem_ground := eRk_insert_of_notMem_ground
 
 lemma eRk_eq_eRank (hX : M.E ⊆ X) : M.eRk X = M.eRank := by
   rw [← eRk_inter_ground, inter_eq_self_of_subset_right hX, eRank_def]
@@ -248,15 +251,25 @@ lemma Indep.encard_le_eRank (hI : M.Indep I) : I.encard ≤ M.eRank := by
   exact M.eRk_mono hI.subset_ground
 
 /-- A version of `erk_eq_zero_iff'` with no supportedness hypothesis. -/
-lemma erk_eq_zero_iff' : M.eRk X = 0 ↔ X ∩ M.E ⊆ M.loops := by
+lemma eRk_eq_zero_iff' : M.eRk X = 0 ↔ X ∩ M.E ⊆ M.loops := by
   obtain ⟨I, hI⟩ := M.exists_isBasis (X ∩ M.E)
   rw [← eRk_inter_ground, ← hI.encard_eq_eRk, encard_eq_zero]
-  refine ⟨fun h ↦ by simpa [h] using hI , fun h ↦ eq_empty_iff_forall_not_mem.2 fun e heI ↦ ?_⟩
+  refine ⟨fun h ↦ by simpa [h] using hI, fun h ↦ eq_empty_iff_forall_notMem.2 fun e heI ↦ ?_⟩
   exact (hI.indep.isNonloop_of_mem heI).not_isLoop (h (hI.subset heI))
 
+@[deprecated (since := "2025-05-14")]
+alias erk_eq_zero_iff' := eRk_eq_zero_iff'
+
 @[simp]
-lemma erk_eq_zero_iff (hX : X ⊆ M.E := by aesop_mat) : M.eRk X = 0 ↔ X ⊆ M.loops := by
-  rw [erk_eq_zero_iff', inter_eq_self_of_subset_left hX]
+lemma eRk_eq_zero_iff (hX : X ⊆ M.E := by aesop_mat) : M.eRk X = 0 ↔ X ⊆ M.loops := by
+  rw [eRk_eq_zero_iff', inter_eq_self_of_subset_left hX]
+
+@[deprecated (since := "2025-05-14")]
+alias erk_eq_zero_iff := eRk_eq_zero_iff
+
+@[simp]
+lemma eRk_loops : M.eRk M.loops = 0 := by
+  simp [eRk_eq_zero_iff']
 
 /-! ### Submodularity -/
 
@@ -343,6 +356,10 @@ lemma eRank_eq_top_iff (M : Matroid α) : M.eRank = ⊤ ↔ M.RankInfinite := by
 @[deprecated (since := "2025-04-13")] alias rankInfinite_iff_eRk_eq_top := eRank_eq_top_iff
 
 @[simp]
+lemma eRank_lt_top_iff : M.eRank < ⊤ ↔ M.RankFinite := by
+  simp [lt_top_iff_ne_top]
+
+@[simp]
 lemma eRank_eq_top [RankInfinite M] : M.eRank = ⊤ :=
   (eRank_eq_top_iff _).2 <| by assumption
 
@@ -398,12 +415,13 @@ lemma eRk_insert_eq_add_one (he : e ∈ M.E \ M.closure X) : M.eRk (insert e X) 
   obtain ⟨I, hI⟩ := M.exists_isBasis' X
   rw [← hI.closure_eq_closure, mem_diff, hI.indep.mem_closure_iff', not_and] at he
   rw [← eRk_closure_eq, ← closure_insert_congr_right hI.closure_eq_closure, hI.eRk_eq_encard,
-    eRk_closure_eq, Indep.eRk_eq_encard (by tauto), encard_insert_of_not_mem (by tauto)]
+    eRk_closure_eq, Indep.eRk_eq_encard (by tauto), encard_insert_of_notMem (by tauto)]
 
 lemma exists_eRk_insert_eq_add_one_of_lt (h : M.eRk X < M.eRk Y) :
     ∃ y ∈ Y \ X, M.eRk (insert y X) = M.eRk X + 1 := by
-  by_cases hz : Y ∩ M.E ⊆ M.closure X
-  · exact False.elim <| h.not_le <| by simpa using M.eRk_mono hz
+  have hz : ¬ Y ∩ M.E ⊆ M.closure X := by
+    contrapose! h
+    simpa using M.eRk_mono h
   obtain ⟨e, ⟨heZ, heE⟩, heX⟩ := not_subset.1 hz
   refine ⟨e, ⟨heZ, fun heX' ↦ heX (mem_closure_of_mem' _ heX')⟩, eRk_insert_eq_add_one ⟨heE, heX⟩⟩
 
@@ -468,7 +486,7 @@ lemma Indep.exists_insert_of_encard_lt {I J : Set α} (hI : M.Indep I) (hJ : M.I
   rw [← hI.eRk_eq_encard, ← hJ.eRk_eq_encard] at hcard
   obtain ⟨e, he, hIe⟩ := exists_eRk_insert_eq_add_one_of_lt hcard
   refine ⟨e, he, ?_⟩
-  rw [indep_iff_eRk_eq_encard_of_finite (hIfin.insert e), hIe, encard_insert_of_not_mem he.2,
+  rw [indep_iff_eRk_eq_encard_of_finite (hIfin.insert e), hIe, encard_insert_of_notMem he.2,
     hI.eRk_eq_encard]
 
 lemma isBasis'_iff_indep_encard_eq_of_finite (hIfin : I.Finite) :
@@ -499,7 +517,7 @@ lemma Indep.isBase_of_eRk_ge (hI : M.Indep I) (hIfin : I.Finite) (h : M.eRank �
 lemma IsCircuit.eRk_add_one_eq {C : Set α} (hC : M.IsCircuit C) : M.eRk C + 1 = C.encard := by
   obtain ⟨I, hI⟩ := M.exists_isBasis C
   obtain ⟨e, ⟨heC, heI⟩, rfl⟩ := hC.isBasis_iff_insert_eq.1 hI
-  rw [hI.eRk_eq_encard, encard_insert_of_not_mem heI]
+  rw [hI.eRk_eq_encard, encard_insert_of_notMem heI]
 
 /-! ### Singletons -/
 
@@ -546,6 +564,26 @@ lemma eRk_le_one_iff [M.Nonempty] (hX : X ⊆ M.E := by aesop_mat) :
   rw [eRk_closure_eq, ← encard_singleton e]
   exact M.eRk_le_encard {e}
 
+/-! ### Spanning Sets -/
+
+lemma Spanning.eRk_eq (hX : M.Spanning X) : M.eRk X = M.eRank := by
+  obtain ⟨B, hB⟩ := M.exists_isBasis X
+  exact (M.eRk_le_eRank X).antisymm <| by
+    rw [← hB.encard_eq_eRk, ← (hB.isBase_of_spanning hX).encard_eq_eRank]
+
+lemma spanning_iff_eRk_le' [RankFinite M] : M.Spanning X ↔ M.eRank ≤ M.eRk X ∧ X ⊆ M.E := by
+  refine ⟨fun h ↦ ⟨h.eRk_eq.symm.le, h.subset_ground⟩, fun ⟨h, hX⟩ ↦ ?_⟩
+  obtain ⟨I, hI⟩ := M.exists_isBasis X
+  exact (hI.indep.isBase_of_eRk_ge
+    hI.indep.finite (h.trans hI.eRk_eq_eRk.symm.le)).spanning_of_superset hI.subset
+
+lemma spanning_iff_eRk_le [RankFinite M] (hX : X ⊆ M.E := by aesop_mat) :
+    M.Spanning X ↔ M.eRank ≤ M.eRk X := by
+  rw [spanning_iff_eRk_le', and_iff_left hX]
+
+lemma Spanning.eRank_restrict (hX : M.Spanning X) : (M ↾ X).eRank = M.eRank := by
+  rw [eRank_def, restrict_ground_eq, restrict_eRk_eq _ rfl.subset, hX.eRk_eq]
+
 /-! ### Constructions -/
 
 @[simp]
@@ -585,13 +623,15 @@ lemma eRank_eq_zero_iff : M.eRank = 0 ↔ M = loopyOn M.E := by
 lemma exists_of_eRank_eq_zero (h : M.eRank = 0) : ∃ X, M = loopyOn X :=
   ⟨M.E, by simpa [eRank_eq_zero_iff] using h⟩
 
-@[simp] lemma eRank_emptyOn (α : Type*) : (emptyOn α).eRank = 0 := by
+@[simp]
+lemma eRank_emptyOn (α : Type*) : (emptyOn α).eRank = 0 := by
   rw [eRank_eq_zero_iff, emptyOn_ground, loopyOn_empty]
 
 lemma eq_loopyOn_iff_eRank : M = loopyOn X ↔ M.eRank = 0 ∧ M.E = X :=
   ⟨fun h ↦ by rw [h]; simp, fun ⟨h,h'⟩ ↦ by rw [← h', ← eRank_eq_zero_iff, h]⟩
 
-@[simp] lemma eRank_freeOn (X : Set α) : (freeOn X).eRank = X.encard := by
+@[simp]
+lemma eRank_freeOn (X : Set α) : (freeOn X).eRank = X.encard := by
   rw [eRank_def, freeOn_ground, (freeOn_indep_iff.2 rfl.subset).eRk_eq_encard]
 
 lemma eRk_freeOn (hXY : X ⊆ Y) : (freeOn Y).eRk X = X.encard := by

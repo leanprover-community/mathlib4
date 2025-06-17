@@ -12,7 +12,8 @@ Main statements:
 
 * `MeromorphicAt`: definition of meromorphy at a point
 * `MeromorphicAt.iff_eventuallyEq_zpow_smul_analyticAt`: `f` is meromorphic at `z₀` iff we have
-  `f z = (z - z₀) ^ n • g z` on a punctured nhd of `z₀`, for some `n : ℤ` and `g` analytic at z₀.
+  `f z = (z - z₀) ^ n • g z` on a punctured neighborhood of `z₀`, for some `n : ℤ`
+  and `g` analytic at `z₀`.
 -/
 
 open Filter
@@ -123,7 +124,7 @@ theorem prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜} {x : 𝕜}
 
 /-- Finite products of meromorphic functions are analytic. -/
 @[fun_prop]
-theorem fun_prod  {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜} {x : 𝕜}
+theorem fun_prod {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → 𝕜} {x : 𝕜}
     (h : ∀ σ, MeromorphicAt (f σ) x) :
     MeromorphicAt (fun z ↦ ∏ n ∈ s, f n z) x := by
   convert prod h (s := s)
