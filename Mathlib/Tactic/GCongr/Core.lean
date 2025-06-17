@@ -575,7 +575,16 @@ using the generalized congruence lemmas `add_le_add` and `mul_le_mul_of_nonneg_l
 The tactic attempts to discharge side goals to these "generalized congruence" lemmas (such as the
 side goal `0 ≤ x ^ 2` in the above application of `mul_le_mul_of_nonneg_left`) using the tactic
 `gcongr_discharger`, which wraps `positivity` but can also be extended. Side goals not discharged
-in this way are left for the user. -/
+in this way are left for the user.
+
+`gcongr` will descend into binders (for example sums or suprema). To name the bound variables,
+use `with`:
+```
+example {f g : ℕ → ℝ≥0∞} (h : ∀ n, f n ≤ g n) : ⨆ n, f n ≤ ⨆ n, g n := by
+  gcongr with i
+  exact h i
+```
+-/
 elab "gcongr" template:(colGt term)?
     withArg:((" with" (ppSpace colGt binderIdent)+)?) : tactic => do
   let g ← getMainGoal
