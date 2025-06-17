@@ -414,8 +414,10 @@ lemma IsLocallyConstructible.union (hs : IsLocallyConstructible s) (ht : IsLocal
   obtain ⟨U, hxU, hU, hsU⟩ := hs x
   obtain ⟨V, hxV, hV, htV⟩ := ht x
   refine ⟨U ∩ V, Filter.inter_mem hxU hxV, hU.inter hV, ?_⟩
-  change IsConstructible
-    (inclusion inter_subset_left ⁻¹' (U ↓∩ s) ∪ inclusion inter_subset_right ⁻¹' (V ↓∩ t))
+  have : (U ∩ V) ↓∩ (s ∪ t) =
+      inclusion inter_subset_left ⁻¹' (U ↓∩ s) ∪ inclusion inter_subset_right ⁻¹' (V ↓∩ t) := by
+    ext; simp
+  rw [this]
   exact .union (hsU.preimage_of_isOpenEmbedding <| .inclusion _ <|
       .preimage continuous_subtype_val <| hU.inter hV)
     (htV.preimage_of_isOpenEmbedding <| .inclusion _ <|

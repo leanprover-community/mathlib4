@@ -55,7 +55,7 @@ namespace UniformSpace
 namespace Completion
 
 instance (priority := 100) [T0Space K] : Nontrivial (hat K) :=
-  ⟨⟨0, 1, fun h => zero_ne_one <| (isUniformEmbedding_coe K).injective h⟩⟩
+  (isUniformEmbedding_coe K).injective.nontrivial
 
 variable {K}
 
@@ -90,7 +90,7 @@ theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
     exact comap_bot
 
 open Classical in
-/-
+/--
 The value of `hat_inv` at zero is not really specified, although it's probably zero.
 Here we explicitly enforce the `inv_zero` axiom.
 -/
@@ -145,7 +145,6 @@ theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
   rwa [closure_singleton, mem_singleton_iff] at fxclo
 
 instance instField : Field (hat K) where
-  exists_pair_ne := ⟨0, 1, fun h => zero_ne_one ((isUniformEmbedding_coe K).injective h)⟩
   mul_inv_cancel := fun x x_ne => by simp only [Inv.inv, if_neg x_ne, mul_hatInv_cancel x_ne]
   inv_zero := by simp only [Inv.inv, ite_true]
   -- TODO: use a better defeq

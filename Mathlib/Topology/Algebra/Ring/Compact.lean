@@ -8,7 +8,7 @@ import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.HopkinsLevitzki
 import Mathlib.RingTheory.IntegralDomain
 import Mathlib.RingTheory.LocalRing.Quotient
-import Mathlib.Topology.Algebra.ClosedSubgroup
+import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.Module.Compact
@@ -111,7 +111,7 @@ end IsLocalRing
 section IsDedekindDomain
 
 lemma IsDedekindDomain.isOpen_of_ne_bot
-      [IsDedekindDomain R] {I : Ideal R} (hI : I ≠ ⊥) :
+    [IsDedekindDomain R] {I : Ideal R} (hI : I ≠ ⊥) :
     IsOpen (X := R) I := by
   rw [← Ideal.finprod_heightOneSpectrum_factorization hI,
     finprod_eq_finset_prod_of_mulSupport_subset _
@@ -123,7 +123,7 @@ lemma IsDedekindDomain.isOpen_of_ne_bot
   exact Ideal.finite_quotient_pow (IsNoetherian.noetherian _) _
 
 lemma IsDedekindDomain.isOpen_iff
-      [IsDedekindDomain R] (hR : ¬ IsField R) {I : Ideal R} :
+    [IsDedekindDomain R] (hR : ¬ IsField R) {I : Ideal R} :
     IsOpen (X := R) I ↔ I ≠ ⊥ := by
   refine ⟨?_, IsDedekindDomain.isOpen_of_ne_bot⟩
   rintro H rfl
@@ -131,7 +131,7 @@ lemma IsDedekindDomain.isOpen_iff
   exact hR (Finite.isField_of_domain R)
 
 lemma IsDiscreteValuationRing.isOpen_iff
-      [IsDomain R] [IsDiscreteValuationRing R] {I : Ideal R} :
+    [IsDomain R] [IsDiscreteValuationRing R] {I : Ideal R} :
     IsOpen (X := R) I ↔ I ≠ ⊥ :=
   IsDedekindDomain.isOpen_iff (not_isField R)
 
