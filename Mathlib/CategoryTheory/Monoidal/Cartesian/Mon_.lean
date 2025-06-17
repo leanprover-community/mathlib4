@@ -105,10 +105,21 @@ abbrev Hom.monoid : Monoid (X ⟶ M) where
       Category.comp_id, rightUnitor_hom]
     exact lift_fst _ _
 
-attribute [local instance] Hom.monoid
+scoped[Mon_Class] attribute [instance] Hom.monoid
 
 lemma Hom.one_def : (1 : X ⟶ M) = toUnit X ≫ η := rfl
 lemma Hom.mul_def (f₁ f₂ : X ⟶ M) : f₁ * f₂ = lift f₁ f₂ ≫ μ := rfl
+
+section BraidedCategory
+variable [BraidedCategory C]
+
+/-- If `M` is a commutative monoid object, then `Hom(X, M)` has a commutative monoid structure. -/
+abbrev Hom.commMonoid [IsCommMon M] : CommMonoid (X ⟶ M) where
+  mul_comm f g := by simpa [-IsCommMon.mul_comm] using lift g f ≫= IsCommMon.mul_comm M
+
+scoped[Mon_Class] attribute [instance] Hom.commMonoid
+
+end BraidedCategory
 
 variable (M) in
 /-- If `M` is a monoid object, then `Hom(-, M)` is a presheaf of monoids. -/
@@ -217,7 +228,7 @@ lemma essImage_yonedaMon :
     letI := Mon_Class.ofRepresentableBy X F e
     exact ⟨Mon_.mk X, ⟨yonedaMonObjIsoOfRepresentableBy X F e⟩⟩
 
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma Mon_Class.one_comp (f : M ⟶ N) [IsMon_Hom f] : (1 : X ⟶ M) ≫ f = 1 := by simp [Hom.one_def]
 
 @[reassoc]
@@ -225,12 +236,21 @@ lemma Mon_Class.mul_comp (f₁ f₂ : X ⟶ M) (g : M ⟶ N) [IsMon_Hom g] :
     (f₁ * f₂) ≫ g = f₁ ≫ g * f₂ ≫ g := by simp [Hom.mul_def]
 
 @[reassoc]
+lemma Mon_Class.pow_comp (f : X ⟶ M) (n : ℕ) (g : M ⟶ N) [IsMon_Hom g] :
+    (f ^ n) ≫ g = (f ≫ g) ^ n := by
+  induction' n with n hn <;> simp [pow_succ, Mon_Class.mul_comp, *]
+
+@[reassoc (attr := simp)]
 lemma Mon_Class.comp_one (f : X ⟶ Y) : f ≫ (1 : Y ⟶ M) = 1 :=
   ((yonedaMon.obj <| .mk M).map f.op).hom.map_one
 
 @[reassoc]
 lemma Mon_Class.comp_mul (f : X ⟶ Y) (g₁ g₂ : Y ⟶ M) : f ≫ (g₁ * g₂) = f ≫ g₁ * f ≫ g₂ :=
   ((yonedaMon.obj <| .mk M).map f.op).hom.map_mul _ _
+
+@[reassoc]
+lemma Mon_Class.comp_pow (f : X ⟶ M) (n : ℕ) (h : Y ⟶ X) : h ≫ f ^ n = (h ≫ f) ^ n := by
+  induction' n with n hn <;> simp [pow_succ, Mon_Class.comp_mul, *]
 
 variable (M) in
 lemma Mon_Class.one_eq_one : η = (1 : _ ⟶ M) :=
