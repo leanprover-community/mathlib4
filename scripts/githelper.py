@@ -18,7 +18,7 @@ def ssh_url(repo: str) -> str:
 
 
 def from_url(url: str) -> str | None:
-    regex = r"(?:https://github\.com/|git@github\.com/)(.*)(?:\.git)?"
+    regex = r"(?:https://github\.com/|git@github\.com/)(.*)\.git"
     if match := re.fullmatch(regex, url):
         return match.group(1)
 
@@ -31,9 +31,10 @@ MATHLIB_HTTP_URL: str = http_url(MATHLIB_REPO)
 MATHLIB_SSH_URL: str = ssh_url(MATHLIB_REPO)
 MATHLIB_URLS: set[str] = {MATHLIB_HTTP_URL, MATHLIB_SSH_URL}
 
+GRAY = "\033[37m"
+RED = "\033[91m"
 GREEN = "\033[92m"
 YELLOW = "\033[93m"
-RED = "\033[91m"
 BLUE = "\033[94m"
 BOLD = "\033[1m"
 END = "\033[0m"
@@ -62,9 +63,10 @@ def abort(msg: str, code: int = 1) -> NoReturn:
 
 def run_cmd(*cmd: str) -> None:
     try:
+        print(f"{GRAY}$ {shlex.join(cmd)}{END}")
         subprocess.check_call(cmd)
     except subprocess.CalledProcessError as e:
-        abort(f"Command failed with status {e.returncode}: {shlex.join(cmd)}")
+        abort(f"Command failed with status {e.returncode}")
 
 
 def run_stdout(*cmd: str, fatal: bool = True) -> str:
@@ -290,7 +292,7 @@ def gh_find_mathlib_fork(username: str, origin_url: str | None) -> str | None:
         if origin is not None:
             parent = gh_get_repo_parent(origin)
             if parent == MATHLIB_REPO:
-                return origin_url
+                return origin
 
     guess = f"{username}/mathlib4"
     parent = gh_get_repo_parent(guess)
@@ -321,9 +323,12 @@ def cmd_fix_update_remote(
     allowed_urls = allowed_urls | {target_url}
     remotes = git_get_remotes()
 
-    # Delete remote if it points to the wrong place.
     url = remotes.get(remote)
-    if url is not None and url not in allowed_urls:
+    if url in allowed_urls:
+        return
+
+    # Delete remote if it points to the wrong place.
+    if url is not None:
         print_warn(f"Remote {remote!r} does not point to {target}.")
         if not ask_yes_no(f"Delete and replace remote {remote!r}?"):
             abort(f"Remote {remote!r} must point to {target}.")
@@ -344,7 +349,7 @@ def cmd_fix_update_remote(
         print_warn(f"Remote {remote!r} does not exist.")
         if not ask_yes_no(f"Create remote {remote!r}?"):
             abort(f"Remote {remote!r} must point to {target}.")
-        git_add_remote(remote, url)
+        git_add_remote(remote, target_url)
 
 
 def cmd_fix_update_default_gh_repo() -> None:
@@ -370,8 +375,10 @@ def cmd_fix_create_new_fork() -> None:
         print_warn(f"Remote {ORIGIN!r} is in the way of the fork.")
         if not ask_yes_no(f"Remove remote {ORIGIN!r}?"):
             abort(f"Remote {ORIGIN!r} must be removed before the fork is created.")
+        git_remove_remote(ORIGIN)
 
-    git_remove_remote(ORIGIN)
+    if not ask_yes_no("Create new mathlib fork?"):
+        abort("Please fork mathlib yourself and re-run this script.")
     gh_fork()
 
 
@@ -417,8 +424,10 @@ def cmd_fix() -> None:
     remotes = git_get_remotes()
     fork = gh_find_mathlib_fork(username, remotes.get(ORIGIN))
     if fork is None:
+        print_info("Found no mathlib fork.")
         cmd_fix_create_new_fork()
     else:
+        print_info(f"Found a mathlib fork at {fork}.")
         cmd_fix_update_origin_to_fork(fork)
 
     print_step(4, "Updating remotes...")
