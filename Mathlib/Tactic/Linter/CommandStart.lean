@@ -81,7 +81,10 @@ structure FormatError where
   srcEndPos : String.Pos
   /-- The distance to the end of the formatted string, as number of characters -/
   fmtPos : Nat
-  /-- The kind of formatting error: `extra space`, `remove line break` or `missing space` -/
+  /-- The kind of formatting error. For example: `extra space`, `remove line break` or `missing space`.
+  
+  Strings starting with `Oh no` indicate an internal error.
+  -/
   msg : String
   /-- The length of the mismatch, as number of characters. -/
   length : Nat
@@ -120,7 +123,7 @@ def pushFormatError (fs : Array FormatError) (f : FormatError) : Array FormatErr
   -- If there are no errors already, we simply add the new one.
   if fs.isEmpty then fs.push f else
   let back := fs.back!
-  -- If the latest error is of a different kind that then new one, we simply add the new one.
+  -- If the latest error is of a different kind than the new one, we simply add the new one.
   if back.msg != f.msg || back.srcNat - back.length != f.srcNat then fs.push f else
   -- Otherwise, we are adding a further error of the same kind and we therefore merge the two.
   fs.pop.push {back with length := back.length + f.length, srcStartPos := f.srcEndPos}
@@ -252,7 +255,7 @@ def getUnlintedRanges (a : Array SyntaxNodeKind) :
       curr
   | curr, _ => curr
 
-/-- Given a `HashSet` of `String.Ranges` `rgs` and a further `String.Range` `rg`,
+/-- Given a `HashSet` of `String.Range`s `rgs` and a further `String.Range` `rg`,
 `isOutside rgs rg` returns `false` if and only if `rgs` contains a range that completely contains
 `rg`.
 
