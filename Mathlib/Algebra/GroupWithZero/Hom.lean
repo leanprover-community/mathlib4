@@ -214,6 +214,26 @@ instance {β} [CommMonoidWithZero β] : Mul (α →*₀ β) where
     { (f * g : α →* β) with
       map_zero' := by dsimp; rw [map_zero, zero_mul] }
 
+/-- The trivial homomorphism between monoids with zero, sending everything to 1 other than 0. -/
+protected instance one (M₀ N₀ : Type*) [MulZeroOneClass M₀] [MulZeroOneClass N₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] [Nontrivial M₀] [NoZeroDivisors M₀] :
+    One (M₀ →*₀ N₀) where
+  one.toFun x := if x = 0 then 0 else 1
+  one.map_zero' := by simp
+  one.map_one' := by simp
+  one.map_mul' x y := by split_ifs <;> simp_all
+
+@[simp]
+lemma one_apply_zero {M₀ N₀ : Type*} [MulZeroOneClass M₀] [MulZeroOneClass N₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] [Nontrivial M₀] [NoZeroDivisors M₀] :
+    (1 : M₀ →*₀ N₀) 0 = 0 :=
+  if_pos rfl
+
+lemma one_apply_of_ne_zero {M₀ N₀ : Type*} [MulZeroOneClass M₀] [MulZeroOneClass N₀]
+    [DecidablePred fun x : M₀ ↦ x = 0] [Nontrivial M₀] [NoZeroDivisors M₀] {x : M₀} (hx : x ≠ 0) :
+    (1 : M₀ →*₀ N₀) x = 1 :=
+  if_neg hx
+
 end MonoidWithZeroHom
 
 section CommMonoidWithZero

@@ -259,19 +259,19 @@ theorem Ioo_eq_empty (h : ¬a < b) : Ioo a b = ∅ :=
 
 @[simp]
 theorem Icc_eq_empty_of_lt (h : b < a) : Icc a b = ∅ :=
-  Icc_eq_empty h.not_le
+  Icc_eq_empty h.not_ge
 
 @[simp]
 theorem Ico_eq_empty_of_le (h : b ≤ a) : Ico a b = ∅ :=
-  Ico_eq_empty h.not_lt
+  Ico_eq_empty h.not_gt
 
 @[simp]
 theorem Ioc_eq_empty_of_le (h : b ≤ a) : Ioc a b = ∅ :=
-  Ioc_eq_empty h.not_lt
+  Ioc_eq_empty h.not_gt
 
 @[simp]
 theorem Ioo_eq_empty_of_le (h : b ≤ a) : Ioo a b = ∅ :=
-  Ioo_eq_empty h.not_lt
+  Ioo_eq_empty h.not_gt
 
 theorem Ico_self (a : α) : Ico a a = ∅ :=
   Ico_eq_empty <| lt_irrefl _
@@ -292,9 +292,9 @@ theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a :=
 theorem Ici_ssubset_Ici : Ici a ⊂ Ici b ↔ b < a where
   mp h := by
     obtain ⟨ab, c, cb, ac⟩ := ssubset_iff_exists.mp h
-    exact lt_of_le_not_le (Ici_subset_Ici.mp ab) (fun h' ↦ ac (h'.trans cb))
+    exact lt_of_le_not_ge (Ici_subset_Ici.mp ab) (fun h' ↦ ac (h'.trans cb))
   mpr h := (ssubset_iff_of_subset (Ici_subset_Ici.mpr h.le)).mpr
-    ⟨b, right_mem_Iic, fun h' => h.not_le h'⟩
+    ⟨b, right_mem_Iic, fun h' => h.not_ge h'⟩
 
 @[gcongr] alias ⟨_, _root_.GCongr.Ici_ssubset_Ici_of_le⟩ := Ici_ssubset_Ici
 
@@ -561,19 +561,19 @@ theorem _root_.IsBot.Ici_eq (h : IsBot a) : Ici a = univ :=
 theorem Iic_inter_Ioc_of_le (h : a ≤ c) : Iic a ∩ Ioc b c = Ioc b a :=
   ext fun _ => ⟨fun H => ⟨H.2.1, H.1⟩, fun H => ⟨H.2, H.1, H.2.trans h⟩⟩
 
-theorem notMem_Icc_of_lt (ha : c < a) : c ∉ Icc a b := fun h => ha.not_le h.1
+theorem notMem_Icc_of_lt (ha : c < a) : c ∉ Icc a b := fun h => ha.not_ge h.1
 
 @[deprecated (since := "2025-05-23")] alias not_mem_Icc_of_lt := notMem_Icc_of_lt
 
-theorem notMem_Icc_of_gt (hb : b < c) : c ∉ Icc a b := fun h => hb.not_le h.2
+theorem notMem_Icc_of_gt (hb : b < c) : c ∉ Icc a b := fun h => hb.not_ge h.2
 
 @[deprecated (since := "2025-05-23")] alias not_mem_Icc_of_gt := notMem_Icc_of_gt
 
-theorem notMem_Ico_of_lt (ha : c < a) : c ∉ Ico a b := fun h => ha.not_le h.1
+theorem notMem_Ico_of_lt (ha : c < a) : c ∉ Ico a b := fun h => ha.not_ge h.1
 
 @[deprecated (since := "2025-05-23")] alias not_mem_Ico_of_lt := notMem_Ico_of_lt
 
-theorem notMem_Ioc_of_gt (hb : b < c) : c ∉ Ioc a b := fun h => hb.not_le h.2
+theorem notMem_Ioc_of_gt (hb : b < c) : c ∉ Ioc a b := fun h => hb.not_ge h.2
 
 @[deprecated (since := "2025-05-23")] alias not_mem_Ioc_of_gt := notMem_Ioc_of_gt
 
@@ -1038,8 +1038,8 @@ namespace Set
 @[simp] lemma Ici_False : Ici False = univ := by aesop
 @[simp] lemma Ici_True : Ici True = {True} := by aesop
 lemma Iio_False : Iio False = ∅ := by aesop
-@[simp] lemma Iio_True : Iio True = {False} := by aesop (add simp [Ioi, lt_iff_le_not_le])
-@[simp] lemma Ioi_False : Ioi False = {True} := by aesop (add simp [Ioi, lt_iff_le_not_le])
+@[simp] lemma Iio_True : Iio True = {False} := by aesop (add simp [Ioi, lt_iff_le_not_ge])
+@[simp] lemma Ioi_False : Ioi False = {True} := by aesop (add simp [Ioi, lt_iff_le_not_ge])
 lemma Ioi_True : Ioi True = ∅ := by aesop
 
 end Set
