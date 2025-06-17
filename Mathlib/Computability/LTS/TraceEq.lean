@@ -23,7 +23,7 @@ Definitions and results on trace equivalence for `LTS`s.
 
 ## Main statements
 
-- `TraceEq.eqRel`: trace equivalence is an equivalence relation (see `Equivalence`).
+- `TraceEq.eqv`: trace equivalence is an equivalence relation (see `Equivalence`).
 - `TraceEq.deterministic_sim`: for a deterministic `LTS`, trace equivalence is a simulation.
 
 -/
@@ -74,11 +74,11 @@ theorem TraceEq.trans {s1 s2 s3 : State} (h1 : s1 ~tr[lts] s2) (h2 : s2 ~tr[lts]
   rw [h1, h2]
 
 /-- Bisimilarity is an equivalence relation. -/
-instance TraceEq.eqRel (lts : LTS State Label) :
-  Equivalence (TraceEq lts) where
-  refl := TraceEq.refl lts
-  symm := TraceEq.symm lts
-  trans := TraceEq.trans lts
+theorem TraceEq.eqv (lts : LTS State Label) : Equivalence (TraceEq lts) := {
+    refl := TraceEq.refl lts
+    symm := TraceEq.symm lts
+    trans := TraceEq.trans lts
+  }
 
 /-- In a deterministic LTS, trace equivalence is a simulation. -/
 theorem TraceEq.deterministic_sim

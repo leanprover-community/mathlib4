@@ -35,7 +35,7 @@ one of the 'up to' techniques for bisimulation).
 ## Main statements
 
 - `Bisimulation.inv`: the inverse of a bisimulation is a bisimulation.
-- `Bisimilarity.eqRel`: bisimilarity is an equivalence relation (see `Equivalence`).
+- `Bisimilarity.eqv`: bisimilarity is an equivalence relation (see `Equivalence`).
 - `Bisimilarity.is_bisimulation`: bisimilarity is itself a bisimulation.
 - `Bisimilarity.largest_bisimulation`: bisimilarity is the largest bisimulation.
 - `Bisimilarity.gfp`: the union of bisimilarity and any bisimulation is equal to bisimilarity.
@@ -190,11 +190,12 @@ theorem Bisimilarity.trans
     apply Bisimulation.comp lts r1 r2 hr1b hr2b
 
 /-- Bisimilarity is an equivalence relation. -/
-instance Bisimilarity.eqRel [DecidableEq State] (lts : LTS State Label) :
-  Equivalence (Bisimilarity lts) where
-  refl := Bisimilarity.refl lts
-  symm := Bisimilarity.symm lts
-  trans := Bisimilarity.trans lts
+theorem Bisimilarity.eqv [DecidableEq State] (lts : LTS State Label) :
+  Equivalence (Bisimilarity lts) := {
+    refl := Bisimilarity.refl lts
+    symm := Bisimilarity.symm lts
+    trans := Bisimilarity.trans lts
+  }
 
 /-- Bisimilarity is a bisimulation. -/
 theorem Bisimilarity.is_bisimulation : Bisimulation lts (Bisimilarity lts) := by
@@ -231,9 +232,6 @@ theorem Bisimilarity.is_bisimulation : Bisimulation lts (Bisimilarity lts) := by
     case right =>
       constructor
       exists r
-
-instance bisimilarityIsBisimulation : Bisimulation lts (Bisimilarity lts) :=
-  Bisimilarity.is_bisimulation lts
 
 /-- Bisimilarity is the largest bisimulation. -/
 theorem Bisimilarity.largest_bisimulation

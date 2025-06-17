@@ -178,7 +178,8 @@ def Sum.isLeftP {α} {β} (x : α ⊕ β) : Prop := Sum.isLeft x = true
 def Sum.isRightP {α} {β} (x : α ⊕ β) : Prop := Sum.isRight x = true
 
 /-- TODO: move this to `True`? -/
-def True.trueFun {α} (_ : α) := True
+@[nolint unusedArguments]
+def True.trueFun {α} := fun _ : α => True
 
 /-- Lifting of an `LTS State Label` to `LTS (State ⊕ State') Label`. -/
 def LTS.inl {State'} (lts : LTS State Label) :
@@ -336,7 +337,8 @@ def LTS.FinitelyBranching : Prop :=
   lts.ImageFinite ∧ ∀ s, Finite (lts.OutgoingLabels s)
 
 /-- An LTS is finite-state if it has a finite `State` type. -/
-def LTS.FiniteState (_ : LTS State Label): Prop := Finite State
+@[nolint unusedArguments]
+def LTS.FiniteState (_ : LTS State Label) : Prop := Finite State
 
 /-- Every finite-state LTS is also image-finite. -/
 theorem LTS.finiteState_imageFinite (hFinite : lts.FiniteState) :
