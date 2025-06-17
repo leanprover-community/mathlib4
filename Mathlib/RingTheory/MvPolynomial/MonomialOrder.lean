@@ -21,6 +21,8 @@ and a monomial order `m : MonomialOrder σ`.
 
 * `m.Monic f` asserts that the leading coefficient of `f` is `1`.
 
+* `m.leadingTerm f` is the leading term of `f` for the monomial ordering `m`.
+
 * `m.leadingCoeff_ne_zero_iff f` asserts that this coefficient is nonzero iff `f ≠ 0`.
 
 * in a field, `m.isUnit_leadingCoeff f` asserts that this coefficient is a unit iff `f ≠ 0`.
@@ -109,6 +111,10 @@ variable (m) in
 if its leading coefficient (for that monomial order) is 1. -/
 def Monic (f : MvPolynomial σ R) : Prop :=
   m.leadingCoeff f = 1
+
+variable (m) in
+noncomputable def leadingTerm (f : MvPolynomial σ R) : MvPolynomial σ R :=
+  monomial (m.degree f) (m.leadingCoeff f)
 
 @[nontriviality] theorem Monic.of_subsingleton [Subsingleton R] {f : MvPolynomial σ R} :
     m.Monic f :=
@@ -256,6 +262,7 @@ theorem coeff_degree_ne_zero_iff {f : MvPolynomial σ R} :
     f.coeff (m.degree f) ≠ 0 ↔ f ≠ 0 :=
   m.leadingCoeff_ne_zero_iff
 
+variable (m) in
 theorem degree_mem_support_iff (f : MvPolynomial σ R) : m.degree f ∈ f.support ↔ f ≠ 0 :=
   mem_support_iff.trans coeff_degree_ne_zero_iff
 
@@ -622,6 +629,67 @@ protected theorem Monic.prod {ι : Type*} {P : ι → MvPolynomial σ R} {s : Fi
     rw [(H i hi).leadingCoeff_eq_one]
     exact isRegular_one
 
+/--
+The leading term in a multivariate polynomial is zero if and only if this polynomial is zero.
+-/
+lemma leadingTerm_eq_zero_iff (p : MvPolynomial σ R): m.leadingTerm p = 0 ↔ p = 0 := by
+  simp only [leadingTerm, monomial_eq_zero, leadingCoeff_eq_zero_iff]
+
+/--
+The leading terms of non-zero polynomials within a set `B` is equal to the leading terms
+of all polynomials in B, excluding zero.
+-/
+lemma leadingTerm_image_sdiff_singleton_zero (B : Set (MvPolynomial σ R)) :
+  m.leadingTerm '' (B \ {0}) = (m.leadingTerm '' B) \ {0} := by
+  apply subset_antisymm
+  · intro p
+    simp
+    intro q hq hq' hpq
+    exact ⟨⟨q, hq, hpq⟩, hpq ▸ (m.leadingTerm_eq_zero_iff _).not.mpr hq'⟩
+  · intro p
+    simp
+    intro q hq hpq hp
+    rw [←hpq, MonomialOrder.leadingTerm_eq_zero_iff] at hp
+    exact ⟨q, ⟨hq, hp⟩, hpq⟩
+
+/--
+The leading terms of a Set `B` inserted zero polynomial equal to leading terms of `B`
+inserted zero polynomial
+-/
+lemma leadingTerm_image_insert_zero (B : Set (MvPolynomial σ R)) :
+  m.leadingTerm '' (insert (0 : MvPolynomial σ R) B) = insert 0 (m.leadingTerm '' B) := by
+  unfold leadingTerm
+  apply subset_antisymm
+  · simp_intro p hp
+    rwa [Eq.comm (a := p) (b := 0)]
+  · simp_intro p hp
+    rwa [Eq.comm (a := 0) (b := p)]
+
+/-- The leading term of the zero polynomial is zero -/
+@[simp]
+lemma leadingTerm_zero : m.leadingTerm (0 : MvPolynomial σ R) = 0 := by
+  rw [leadingTerm_eq_zero_iff]
+
+variable (m) in
+lemma leadingTerm_degree_eq (f : MvPolynomial σ R) :
+  m.degree (m.leadingTerm f) = m.degree f := by
+    classical
+    by_cases h : f = 0 <;> simp [leadingTerm,h]
+    have : m.leadingCoeff f != 0 := by
+      simp [leadingCoeff, h]
+    simp [MonomialOrder.degree_monomial]
+    exact fun a ↦ False.elim (h a)
+
+variable (m) in
+lemma leadingTerm_degree_eq' (f : MvPolynomial σ R) :
+  m.toSyn (m.degree (m.leadingTerm f)) = m.toSyn (m.degree f) := by
+    classical
+    by_cases h : f = 0 <;> simp [leadingTerm,h]
+    have : m.leadingCoeff f != 0 := by
+      simp [leadingCoeff, h]
+    simp [MonomialOrder.degree_monomial]
+    exact fun a ↦ False.elim (h a)
+
 end Semiring
 
 section Ring
@@ -656,6 +724,65 @@ theorem leadingCoeff_sub_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] 
   rw [sub_eq_add_neg]
   apply leadingCoeff_add_of_lt
   simp only [degree_neg, h]
+
+lemma degree_sub_leadingTerm (f : MvPolynomial σ R) :
+    m.degree (f - m.leadingTerm f) ≺[m] m.degree f ∨ f - m.leadingTerm f = 0 := by
+  by_cases h : f - m.leadingTerm f = 0
+  classical
+  · right
+    exact h
+  · left
+    push_neg at h
+    have hc : (f - m.leadingTerm f).coeff (m.degree f) = 0 := by
+      rw [coeff_sub]
+      simp [coeff_monomial, leadingTerm]
+      simp [leadingCoeff]
+
+    have h1: m.toSyn ( m.degree (f - m.leadingTerm f)) ≠  m.toSyn (m.degree f) := by
+      simp [degree_eq_zero_iff]
+      by_contra h
+      have hin: m.degree (f - m.leadingTerm f) ∈ (f - m.leadingTerm f).support := by
+        (expose_names; exact (degree_mem_support_iff m (f - m.leadingTerm f)).mpr h_1)
+      rw [h] at hin
+      have : (f - m.leadingTerm f).coeff (m.degree f) ≠  0 := by
+        refine mem_support_iff.mp ?_
+        exact hin
+      exact this hc
+    have h₃: m.toSyn (m.degree (f - m.leadingTerm f)) ≤  m.toSyn (m.degree f) := by
+      have h₃': m.toSyn (m.degree (f - m.leadingTerm f)) ≤
+          m.toSyn (m.degree f) ⊔ m.toSyn (m.degree (m.leadingTerm f)) := by
+        apply degree_sub_le
+      have h₃'':  m.toSyn (m.degree f) = m.toSyn (m.degree (m.leadingTerm f)) := by
+        exact Eq.symm (leadingTerm_degree_eq' m f)
+      have h3:  m.toSyn (m.degree f) ⊔ m.toSyn (m.degree (m.leadingTerm f)) =
+          m.toSyn (m.degree f) := by
+        simp [max_le_iff, h₃'']
+      exact le_of_le_of_eq h₃' h3
+    exact lt_of_le_of_ne h₃ h1
+
+lemma degree_sub_leadingTerm_lt_degree {f : MvPolynomial σ R} (h : f - m.leadingTerm f ≠ 0) :
+    m.degree (f - m.leadingTerm f) ≺[m] m.degree f :=
+  (or_iff_left h).mp <| m.degree_sub_leadingTerm f
+
+lemma degree_sub_leadingTerm_lt_iff {f : MvPolynomial σ R} :
+    m.degree (f - m.leadingTerm f) ≺[m] m.degree f ↔ m.degree f ≠ 0 := by
+  classical
+  constructor
+  · intro h
+    by_contra h'
+    simp [h'] at h
+    have : m.toSyn (m.degree (f - m.leadingTerm f)) ≥ 0 := by
+      exact zero_le m (m.toSyn (m.degree (f - m.leadingTerm f)))
+    apply not_le_of_gt h this
+  · intro h
+    by_cases hl: f - m.leadingTerm f = 0
+    · simp [hl]
+      have h1: m.toSyn (m.degree f) ≥ 0 := by
+        exact zero_le m (m.toSyn (m.degree f))
+      have h2: m.toSyn (m.degree f) ≠ 0 := by
+        exact (AddEquiv.map_ne_zero_iff m.toSyn).mpr h
+      exact lt_of_le_of_ne h1 (id (Ne.symm h2))
+    · exact m.degree_sub_leadingTerm_lt_degree hl
 
 @[deprecated (since := "2025-01-31")] alias lCoeff_sub_of_lt := leadingCoeff_sub_of_lt
 
