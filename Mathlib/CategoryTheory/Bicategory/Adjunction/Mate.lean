@@ -445,9 +445,8 @@ end
 lemma mateEquiv_leftUnitor_hom_rightUnitor_inv
     {a b : B} {l : a ⟶ b} {r : b ⟶ a} (adj : l ⊣ r) :
     mateEquiv adj adj ((λ_ _).hom ≫ (ρ_ _).inv) = (ρ_ _).hom ≫ (λ_ _).inv := by
-  simp only [← cancel_mono (λ_ r).hom, ← cancel_epi (ρ_ r).inv,
-    Category.assoc, Iso.inv_hom_id_assoc, Iso.inv_hom_id,
-    ← conjugateEquiv_id adj, conjugateEquiv_apply, Category.id_comp]
+  simp [← cancel_mono (λ_ r).hom, ← cancel_epi (ρ_ r).inv,
+    ← conjugateEquiv_id adj, conjugateEquiv_apply]
 
 section
 
@@ -474,7 +473,7 @@ end
 lemma conjugateEquiv_whiskerLeft
     {a b c : B} {l₁ : a ⟶ b} {r₁ : b ⟶ a} (adj₁ : l₁ ⊣ r₁)
     {l₂ : b ⟶ c} {r₂ : c ⟶ b} (adj₂ : l₂ ⊣ r₂)
-    {l₂' : b ⟶ c} {r₂' : c ⟶ b} (adj₂' : l₂' ⊣ r₂')(φ : l₂' ⟶ l₂) :
+    {l₂' : b ⟶ c} {r₂' : c ⟶ b} (adj₂' : l₂' ⊣ r₂') (φ : l₂' ⟶ l₂) :
     conjugateEquiv (adj₁.comp adj₂) (adj₁.comp adj₂') (l₁ ◁ φ) =
       conjugateEquiv adj₂ adj₂' φ ▷ r₁ := by
   have := mateEquiv_hcomp adj₁ adj₁ adj₂ adj₂' ((λ_ _).hom ≫ (ρ_ _).inv)
@@ -489,7 +488,7 @@ lemma conjugateEquiv_whiskerLeft
 lemma conjugateEquiv_whiskerRight
     {a b c : B} {l₁ : a ⟶ b} {r₁ : b ⟶ a} (adj₁ : l₁ ⊣ r₁)
     {l₁' : a ⟶ b} {r₁' : b ⟶ a} (adj₁' : l₁' ⊣ r₁')
-    {l₂ : b ⟶ c} {r₂ : c ⟶ b} (adj₂ : l₂ ⊣ r₂)(φ : l₁' ⟶ l₁) :
+    {l₂ : b ⟶ c} {r₂ : c ⟶ b} (adj₂ : l₂ ⊣ r₂) (φ : l₁' ⟶ l₁) :
     conjugateEquiv (adj₁.comp adj₂) (adj₁'.comp adj₂) (φ ▷ l₂) =
       r₂ ◁ conjugateEquiv adj₁ adj₁' φ := by
   have := mateEquiv_hcomp adj₁ adj₁' adj₂ adj₂
