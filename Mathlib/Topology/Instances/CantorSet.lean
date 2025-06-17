@@ -99,7 +99,7 @@ lemma cantorSet_subset_unitInterval : cantorSet ⊆ Set.Icc 0 1 :=
   Set.iInter_subset _ 0
 
 /-- The ternary Cantor set satisfies the equation `C = C / 3 ∪ (2 / 3 + C / 3)`. -/
-theorem cantorSet_eq_union_halfs :
+theorem cantorSet_eq_union_halves :
     cantorSet = (· / 3) '' cantorSet ∪ (fun x ↦ (2 + x) / 3) '' cantorSet := by
   simp only [cantorSet]
   rw [Set.image_iInter, Set.image_iInter]
