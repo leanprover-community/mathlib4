@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import platform
 import re
 import shlex
 import subprocess
@@ -38,6 +39,16 @@ YELLOW = "\033[93m"
 BLUE = "\033[94m"
 BOLD = "\033[1m"
 END = "\033[0m"
+
+if platform.system() == "Windows":
+    # Windows doesn't support ANSI colors by default, so we'll use empty strings
+    GRAY = ""
+    RED = ""
+    GREEN = ""
+    YELLOW = ""
+    BLUE = ""
+    BOLD = ""
+    END = ""
 
 
 def print_step(i: int, msg: str) -> None:
