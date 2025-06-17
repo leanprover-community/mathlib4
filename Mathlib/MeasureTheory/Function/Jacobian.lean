@@ -1421,9 +1421,9 @@ theorem lintegral_deriv_eq_volume_image_of_monotoneOn (ht : MeasurableSet t)
   simpa using (lintegral_image_eq_lintegral_deriv_mul_of_monotoneOn ht hg' hg 1).symm
 
 /-- Integrability in the change of variable formula for differentiable functions: if a
-function `f` is injective and differentiable on a measurable set `s`, then a function
-`g : E → F` is integrable on `f '' s` if and only if `|(f' x).det| • g ∘ f` is
-integrable on `s`. -/
+function `g` is injective and differentiable on a measurable set `t`, then a function
+`u : E → F` is integrable on `g '' t` if and only if `g' x • u ∘ g` is
+integrable on `t`. -/
 theorem integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn (ht : MeasurableSet t)
     (hg' : ∀ x ∈ t, HasDerivWithinAt g (g' x) t x) (hg : MonotoneOn g t) (u : ℝ → F) :
     IntegrableOn u (g '' t) ↔ IntegrableOn (fun x ↦ (g' x) • u (g x)) t := by
@@ -1461,21 +1461,50 @@ theorem integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn (ht : Measu
     ContinuousLinearMap.one_apply, smul_eq_mul, one_mul, G']
   rw [abs_of_nonneg (deriv_c x hx)]
 
-
-
-
-
-
-
-
-#exit
-
 /-- Change of variable formula for differentiable functions: if a function `f` is
 injective and differentiable on a measurable set `s`, then the Bochner integral of a function
 `g : E → F` on `f '' s` coincides with the integral of `|(f' x).det| • g ∘ f` on `s`. -/
-theorem integral_image_eq_integral_abs_det_fderiv_smul (hs : MeasurableSet s)
-    (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf : InjOn f s) (g : E → F) :
-    ∫ x in f '' s, g x ∂μ = ∫ x in s, |(f' x).det| • g (f x) ∂μ := by
+theorem integral_image_eq_integral_deriv_smul_of_monotone (ht : MeasurableSet t)
+    (hg' : ∀ x ∈ t, HasDerivWithinAt g (g' x) t x) (hg : MonotoneOn g t) (u : ℝ → F) :
+    ∫ x in g '' t, u x = ∫ x in t, g' x • u (g x) := by
+  rcases exists_decomposition_of_monotoneOn_hasDerivWithinAt ht hg hg' with
+    ⟨a, b, c, h_union, ha, hb, hc, h_disj, h_disj', a_count, gb_count, deriv_b, deriv_c, inj_c⟩
+  have I : ∫ x in t, g' x • u (g x) = ∫ x in c, g' x • u (g x) := by
+    have : ∫ x in a, g' x • u (g x) = 0 := by
+      have : volume a = 0 := a_count.measure_zero volume
+      exact setIntegral_measure_zero _ this
+    rw [← h_union, lintegral_union (hb.union hc) h_disj, this, zero_add]
+    have : ∫⁻ x in b, ENNReal.ofReal (g' x) * u (g x) = 0 :=
+      setLIntegral_eq_zero hb (fun x hx ↦ by simp [deriv_b x hx])
+    rw [lintegral_union hc h_disj', this, zero_add]
+  have J : ∫⁻ x in g '' t, u x = ∫⁻ x in g '' c, u x := by
+    apply setLIntegral_congr
+    rw [← h_union, image_union, image_union]
+    have A : (g '' a ∪ (g '' b ∪ g '' c) : Set ℝ) =ᵐ[volume] (g '' b ∪ g '' c : Set ℝ) := by
+      refine union_ae_eq_right_of_ae_eq_empty (ae_eq_empty.mpr ?_)
+      exact (a_count.image _).measure_zero _
+    have B : (g '' b ∪ g '' c : Set ℝ) =ᵐ[volume] g '' c := by
+      refine union_ae_eq_right_of_ae_eq_empty (ae_eq_empty.mpr ?_)
+      exact gb_count.measure_zero _
+    exact A.trans B
+  rw [I, J]
+  have ct : c ⊆ t := by
+    rw [← h_union]
+    exact subset_union_right.trans subset_union_right
+  let G' : ℝ → (ℝ →L[ℝ] ℝ) := fun x ↦ (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (g' x))
+  have hG' (x : ℝ) (hx : x ∈ c) : HasFDerivWithinAt g (G' x) c x :=
+    (hg' x (ct hx)).hasFDerivWithinAt.mono ct
+  have : ∫⁻ (x : ℝ) in c, ENNReal.ofReal (g' x) * u (g x)
+      = ∫⁻ (x : ℝ) in c, ENNReal.ofReal (|(G' x).det|) * u (g x) := by
+    apply setLIntegral_congr_fun hc (fun x hx ↦ ?_)
+    simp only [LinearMap.det_ring, ContinuousLinearMap.coe_coe, ContinuousLinearMap.smulRight_apply,
+      ContinuousLinearMap.one_apply, smul_eq_mul, one_mul, G']
+    rw [abs_of_nonneg (deriv_c x hx)]
+  rw [this]
+  apply lintegral_image_eq_lintegral_abs_det_fderiv_mul _ hc hG' inj_c
+
+
+
   rw [← restrict_map_withDensity_abs_det_fderiv_eq_addHaar μ hs hf' hf,
     (measurableEmbedding_of_fderivWithin hs hf' hf).integral_map]
   simp only [Set.restrict_apply, ← Function.comp_apply (f := g), ENNReal.ofReal]
