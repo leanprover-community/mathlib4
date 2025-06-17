@@ -178,10 +178,14 @@ theorem mul_inv [BraidedCategory C] (A : C) [Grp_Class A] :
   rw [← lift_fst_snd, ← lift_lift_assoc (fst A A ≫ _), lift_comp_inv_left, lift_comp_one_left,
     lift_comp_inv_left, comp_toUnit_assoc]
 
-@[reassoc (attr := simp)]
+@[reassoc]
 theorem tensorHom_inv_inv_mul [BraidedCategory C] (A : C) [Grp_Class A] :
     (ι[A] ⊗ₘ ι[A]) ≫ μ = (β_ A A).hom ≫ μ ≫ ι := by
   rw [mul_inv A, SymmetricCategory.symmetry_assoc]
+
+@[reassoc]
+lemma mul_inv_rev [BraidedCategory C] (G : C) [Grp_Class G] :
+    μ ≫ ι = (ι[G] ⊗ₘ ι) ≫ (β_ _ _).hom ≫ μ := by simp [tensorHom_inv_inv_mul]
 
 /-- The map `(· * f)`. -/
 @[simps]
