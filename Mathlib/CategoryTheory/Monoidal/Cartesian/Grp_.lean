@@ -163,6 +163,5 @@ instance [BraidedCategory C] [IsCommMon G] {f : M ⟶ G} [IsMon_Hom f] : IsMon_H
 
 /-- If `G` is a commutative group object, then `Hom(X, G)` has a commutative group structure. -/
 abbrev Hom.commGroup [BraidedCategory C] [IsCommMon G] : CommGroup (X ⟶ G) where
-  inv_mul_cancel f := by simp
 
 scoped[Mon_Class] attribute [instance] Hom.commGroup
