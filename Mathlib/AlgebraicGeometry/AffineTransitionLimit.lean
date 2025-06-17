@@ -186,8 +186,9 @@ Then we may restrict to the sub-diagram over `i₀` (which is cofinal because `D
 and check locally on `X`, reducing to the affine case.
 
 For the actual implementation, we wrap `i`, `a`, `b`, the limit cone `lim Dᵢ`, and open covers
-of `X` and `S` into a structure `existsGEGECompEqCompAux` for convenience.
+of `X` and `S` into a structure `ExistsHomHomCompEqCompAux` for convenience.
 
+See the injective part of (1) => (3) of https://stacks.math.columbia.edu/tag/01ZC.
 -/
 
 section
@@ -195,8 +196,8 @@ section
 variable [∀ i, CompactSpace (D.obj i)] [LocallyOfFiniteType f] [IsCofiltered I]
 
 include hc in
-/-- Subsumed by `Scheme.exists_ge_ge_comp_eq_comp_of_locallyOfFiniteType`. -/
-private nonrec lemma Scheme.exists_ge_ge_comp_eq_comp_of_isAffine_of_locallyOfFiniteType
+/-- Subsumed by `Scheme.exists_hom_hom_comp_eq_comp_of_locallyOfFiniteType`. -/
+private nonrec lemma Scheme.exists_hom_hom_comp_eq_comp_of_isAffine_of_locallyOfFiniteType
     [IsAffine S] [IsAffine X] [∀ i, IsAffine (D.obj i)] [IsAffine c.pt]
     {i : I} (a : D.obj i ⟶ X) (ha : t.app i = a ≫ f)
     {j : I} (b : D.obj j ⟶ X) (hb : t.app j = b ≫ f)
@@ -249,9 +250,9 @@ private nonrec lemma Scheme.exists_ge_ge_comp_eq_comp_of_isAffine_of_locallyOfFi
   exact ⟨k.unop, hik.unop, hjk.unop, by simpa [← Spec.map_comp, Spec.map_inj] using H⟩
 
 /-- (Implementation)
-An auxiliary structure used to prove `Scheme.exists_ge_ge_comp_eq_comp_of_locallyOfFiniteType`.
+An auxiliary structure used to prove `Scheme.exists_hom_hom_comp_eq_comp_of_locallyOfFiniteType`.
 See the section docstring. -/
-structure existsGEGECompEqCompAux where
+structure ExistsHomHomCompEqCompAux where
   /-- (Implementation) The limit cone. See the section docstring. -/
   c : Cone D
   /-- (Implementation) The limit cone is a limit. See the section docstring. -/
@@ -272,14 +273,14 @@ structure existsGEGECompEqCompAux where
   𝒰X (i : (Scheme.Cover.pullbackCover 𝒰S f).J) : Scheme.OpenCover.{u} ((𝒰S.pullbackCover f).obj i)
   [h𝒰X : ∀ i j, IsAffine ((𝒰X i).obj j)]
 
-attribute [instance] existsGEGECompEqCompAux.h𝒰S existsGEGECompEqCompAux.h𝒰X
+attribute [instance] ExistsHomHomCompEqCompAux.h𝒰S ExistsHomHomCompEqCompAux.h𝒰X
 
-namespace existsGEGECompEqCompAux
+namespace ExistsHomHomCompEqCompAux
 
 noncomputable section
 
 variable {D t f c} [∀ {i j : I} (f : i ⟶ j), IsAffineHom (D.map f)]
-variable (A : existsGEGECompEqCompAux D t f)
+variable (A : ExistsHomHomCompEqCompAux D t f)
 
 omit [LocallyOfFiniteType f] in
 lemma exists_index : ∃ (i' : I) (hii' : i' ⟶ A.i),
@@ -323,10 +324,7 @@ def g : D.obj A.i' ⟶ pullback f f :=
 omit [LocallyOfFiniteType f] in
 lemma range_g_subset :
     Set.range A.g.base ⊆ Scheme.Pullback.diagonalCoverDiagonalRange f A.𝒰S A.𝒰X := by
-  have heq := A.exists_index.choose_spec.choose_spec
-  simp at heq
-  simp [existsGEGECompEqCompAux.hii', g]
-  exact heq
+  simpa [ExistsHomHomCompEqCompAux.hii', g] using A.exists_index.choose_spec.choose_spec
 
 /-- (Implementation)
 The covering of `D(i')` by the pullback of the diagonal components of `X ×ₛ X`.
@@ -334,15 +332,8 @@ See the section docstring. -/
 noncomputable def 𝒰D₀ : Scheme.OpenCover.{u} (D.obj A.i') :=
   Scheme.Cover.mkOfCovers (Σ i : A.𝒰S.J, (A.𝒰X i).J) _
     (fun i ↦ ((Scheme.Pullback.diagonalCover f A.𝒰S A.𝒰X).pullbackCover A.g).map ⟨i.1, i.2, i.2⟩)
-    (by
-      intro x
-      have := A.range_g_subset ⟨x, rfl⟩
-      simp only [Scheme.Cover.pullbackCover_obj, Scheme.Pullback.openCoverOfBase_J,
-        Scheme.Pullback.openCoverOfBase_obj, Scheme.Pullback.openCoverOfLeftRight_J,
-        Scheme.Cover.pullbackCover_map, Sigma.exists]
-      simp_rw [← Set.mem_range]
-      simp_rw [Scheme.Pullback.range_fst]
-      simpa [Scheme.Pullback.diagonalCoverDiagonalRange] using this)
+    (fun x ↦ by simpa [← Set.mem_range, Scheme.Pullback.range_fst,
+        Scheme.Pullback.diagonalCoverDiagonalRange] using A.range_g_subset ⟨x, rfl⟩)
 
 /-- (Implementation) An affine open cover refining `𝒰D₀`. See the section docstring. -/
 noncomputable def 𝒰D : Scheme.OpenCover.{u} (D.obj A.i') :=
@@ -387,7 +378,7 @@ lemma exists_eq (j : A.𝒰D.J) : ∃ (k : I) (hki' : k ⟶ A.i'),
     Scheme.Cover.pullbackCover_obj, Scheme.Pullback.openCoverOfLeftRight_J, g, Category.assoc,
     limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Scheme.Pullback.diagonalCover_map,
     Scheme.Cover.pullbackCover_map, Scheme.Cover.pullbackHom] at H₁ H₂
-  obtain ⟨k, hik, hjk, H⟩ := Scheme.exists_ge_ge_comp_eq_comp_of_isAffine_of_locallyOfFiniteType
+  obtain ⟨k, hik, hjk, H⟩ := Scheme.exists_hom_hom_comp_eq_comp_of_isAffine_of_locallyOfFiniteType
     (Over.post D ⋙ Over.pullback (A.𝒰D.map j) ⋙ Over.forget _)
     (whiskerLeft (Over.post D ⋙ Over.pullback (A.𝒰D.map j)) (Comma.natTrans _ _) ≫
       (Functor.const _).map ((A.𝒰D₀.obj j.1).affineCover.map j.2 ≫
@@ -421,7 +412,7 @@ lemma exists_eq (j : A.𝒰D.J) : ∃ (k : I) (hki' : k ⟶ A.i'),
 
 end
 
-end existsGEGECompEqCompAux
+end ExistsHomHomCompEqCompAux
 
 variable [∀ i, IsAffineHom (c.π.app i)] [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
 
@@ -435,7 +426,8 @@ In other words, for each pair of `a : Homₛ(Dᵢ, X)` and `b : Homₛ(Dⱼ, X)`
 same map `Homₛ(lim Dᵢ, X)`, there exists a `k` with `fᵢ : k ⟶ i` and `fⱼ : k ⟶ j` such that
 `D(fᵢ) ≫ a = D(fⱼ) ≫ b`.
 -/
-lemma Scheme.exists_ge_ge_comp_eq_comp_of_locallyOfFiniteType
+@[stacks 01ZC "Injective part of (1) => (3)"]
+lemma Scheme.exists_hom_hom_comp_eq_comp_of_locallyOfFiniteType
     {i : I} (a : D.obj i ⟶ X) (ha : t.app i = a ≫ f)
     {j : I} (b : D.obj j ⟶ X) (hb : t.app j = b ≫ f)
     (hab : c.π.app i ≫ a = c.π.app j ≫ b) :
@@ -451,7 +443,7 @@ lemma Scheme.exists_ge_ge_comp_eq_comp_of_locallyOfFiniteType
     use k, hik ≫ IsCofiltered.minToLeft i j, hjk ≫ IsCofiltered.minToRight i j
     simpa using heq
   subst h
-  let A : existsGEGECompEqCompAux D t f :=
+  let A : ExistsHomHomCompEqCompAux D t f :=
     { c := c, hc := hc, i := i, a := a, ha := ha, b := b, hb := hb, hab := hab
       𝒰S := S.affineCover, 𝒰X i := Scheme.affineCover _ }
   let 𝒰 := Scheme.Pullback.diagonalCover f A.𝒰S A.𝒰X
@@ -472,7 +464,6 @@ lemma Scheme.exists_ge_ge_comp_eq_comp_of_locallyOfFiniteType
     trans hl1 (show A.i' ∈ O by simp [O])
     · exact hl2 _ _ (Finset.mem_image_of_mem _ (Finset.mem_univ _))
     · exact .symm <| hl2 _ _ (Finset.mem_image_of_mem _ (by simp))
-  simp [-Finset.mem_union, Finset.forall_mem_union, O] at hl2
   refine ⟨l, hl1 ho ≫ hki' _ ≫ A.hii', hl1 ho ≫ hki' _ ≫ A.hii', ?_⟩
   apply (𝒰Df.pullbackCover (D.map <| hl1 ho ≫ hki' _)).hom_ext
   intro u
