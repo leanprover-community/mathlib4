@@ -486,7 +486,7 @@ theorem weightedHomogeneousComponent_directSum [DecidableEq M]
   · rw [weightedHomogeneousComponent_of_isWeightedHomogeneous_same (x m).prop]
   · intro n _ hmn
     rw [weightedHomogeneousComponent_of_isWeightedHomogeneous_ne (x n).prop hmn.symm]
-  · rw [DFinsupp.not_mem_support_iff]
+  · rw [DFinsupp.notMem_support_iff]
     intro hm; rw [hm, Submodule.coe_zero, map_zero]
 
 end WeightedHomogeneousComponent
@@ -579,12 +579,16 @@ section GradedAlgebra
   ring of multivariate polynomials `MvPolynomial σ R` with the structure of a graded algebra -/
 variable (w : σ → M) [AddCommMonoid M]
 
-theorem weightedHomogeneousComponent_eq_zero_of_not_mem [DecidableEq M]
+theorem weightedHomogeneousComponent_eq_zero_of_notMem [DecidableEq M]
     (φ : MvPolynomial σ R) (i : M) (hi : i ∉ Finset.image (weight w) φ.support) :
     weightedHomogeneousComponent w i φ = 0 := by
   apply weightedHomogeneousComponent_eq_zero'
   simp only [Finset.mem_image, mem_support_iff, ne_eq, exists_prop, not_exists, not_and] at hi
   exact fun m hm ↦ hi m (mem_support_iff.mp hm)
+
+@[deprecated (since := "2025-05-23")]
+alias weightedHomogeneousComponent_eq_zero_of_not_mem :=
+  weightedHomogeneousComponent_eq_zero_of_notMem
 
 variable (R)
 
@@ -599,8 +603,8 @@ theorem decompose'_apply [DecidableEq M] (φ : MvPolynomial σ R) (m : M) :
   rw [decompose']
   by_cases hm : m ∈ Finset.image (weight w) φ.support
   · simp only [DirectSum.mk_apply_of_mem hm, Subtype.coe_mk]
-  · rw [DirectSum.mk_apply_of_not_mem hm, Submodule.coe_zero,
-      weightedHomogeneousComponent_eq_zero_of_not_mem w φ m hm]
+  · rw [DirectSum.mk_apply_of_notMem hm, Submodule.coe_zero,
+      weightedHomogeneousComponent_eq_zero_of_notMem w φ m hm]
 
 /-- Given a weight `w`, the decomposition of `MvPolynomial σ R` into weighted homogeneous
 submodules -/
