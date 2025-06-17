@@ -17,6 +17,7 @@ import Mathlib.Tactic.NormNum.LegendreSymbol
 import Mathlib.Tactic.NormNum.Pow
 import Mathlib.Tactic.NormNum.RealSqrt
 import Mathlib.Tactic.NormNum.Irrational
+import Mathlib.Tactic.Simproc.Factors
 
 /-!
 # Tests for `norm_num` extensions
@@ -122,15 +123,6 @@ example : Nat.minFac 121 = 11 := by norm_num1
 example : Nat.minFac 221 = 13 := by norm_num1
 example : Nat.minFac (2 ^ 19 - 1) = 2 ^ 19 - 1 := by norm_num1
 
-/-
-example : Nat.factors 0 = [] := by norm_num1
-example : Nat.factors 1 = [] := by norm_num1
-example : Nat.factors 2 = [2] := by norm_num1
-example : Nat.factors 3 = [3] := by norm_num1
-example : Nat.factors 4 = [2, 2] := by norm_num1
-example : Nat.factors 12 = [2, 2, 3] := by norm_num1
-example : Nat.factors 221 = [13, 17] := by norm_num1
--/
 
 -- randomized tests
 example : Nat.gcd 35 29 = 1 := by norm_num1
@@ -195,83 +187,81 @@ example : Nat.Coprime 93 34 := by norm_num1
 
 example : ¬ Nat.Prime 912 := by norm_num1
 example : Nat.minFac 912 = 2 := by norm_num1
--- example : Nat.factors 912 = [2, 2, 2, 2, 3, 19] := by norm_num1
 
 example : ¬ Nat.Prime 681 := by norm_num1
 example : Nat.minFac 681 = 3 := by norm_num1
--- example : Nat.factors 681 = [3, 227] := by norm_num1
 
 example : ¬ Nat.Prime 728 := by norm_num1
 example : Nat.minFac 728 = 2 := by norm_num1
--- example : Nat.factors 728 = [2, 2, 2, 7, 13] := by norm_num1
+example : Nat.primeFactorsList 728 = [2, 2, 2, 7, 13] := by simp
 
 example : ¬ Nat.Prime 248 := by norm_num1
 example : Nat.minFac 248 = 2 := by norm_num1
--- example : Nat.factors 248 = [2, 2, 2, 31] := by norm_num1
+example : Nat.primeFactorsList 248 = [2, 2, 2, 31] := by simp
 
 example : ¬ Nat.Prime 682 := by norm_num1
 example : Nat.minFac 682 = 2 := by norm_num1
--- example : Nat.factors 682 = [2, 11, 31] := by norm_num1
+example : Nat.primeFactorsList 682 = [2, 11, 31] := by simp
 
 example : ¬ Nat.Prime 115 := by norm_num1
 example : Nat.minFac 115 = 5 := by norm_num1
--- example : Nat.factors 115 = [5, 23] := by norm_num1
+example : Nat.primeFactorsList 115 = [5, 23] := by simp
 
 example : ¬ Nat.Prime 824 := by norm_num1
 example : Nat.minFac 824 = 2 := by norm_num1
--- example : Nat.factors 824 = [2, 2, 2, 103] := by norm_num1
+example : Nat.primeFactorsList 824 = [2, 2, 2, 103] := by simp
 
 example : ¬ Nat.Prime 942 := by norm_num1
 example : Nat.minFac 942 = 2 := by norm_num1
--- example : Nat.factors 942 = [2, 3, 157] := by norm_num1
+example : Nat.primeFactorsList 942 = [2, 3, 157] := by simp
 
 example : ¬ Nat.Prime 34 := by norm_num1
 example : Nat.minFac 34 = 2 := by norm_num1
--- example : Nat.factors 34 = [2, 17] := by norm_num1
+example : Nat.primeFactorsList 34 = [2, 17] := by simp
 
 example : ¬ Nat.Prime 754 := by norm_num1
 example : Nat.minFac 754 = 2 := by norm_num1
--- example : Nat.factors 754 = [2, 13, 29] := by norm_num1
+example : Nat.primeFactorsList 754 = [2, 13, 29] := by simp
 
 example : ¬ Nat.Prime 663 := by norm_num1
 example : Nat.minFac 663 = 3 := by norm_num1
--- example : Nat.factors 663 = [3, 13, 17] := by norm_num1
+example : Nat.primeFactorsList 663 = [3, 13, 17] := by simp
 
 example : ¬ Nat.Prime 923 := by norm_num1
 example : Nat.minFac 923 = 13 := by norm_num1
--- example : Nat.factors 923 = [13, 71] := by norm_num1
+example : Nat.primeFactorsList 923 = [13, 71] := by simp
 
 example : ¬ Nat.Prime 77 := by norm_num1
 example : Nat.minFac 77 = 7 := by norm_num1
--- example : Nat.factors 77 = [7, 11] := by norm_num1
+example : Nat.primeFactorsList 77 = [7, 11] := by simp
 
 example : ¬ Nat.Prime 162 := by norm_num1
 example : Nat.minFac 162 = 2 := by norm_num1
--- example : Nat.factors 162 = [2, 3, 3, 3, 3] := by norm_num1
+example : Nat.primeFactorsList 162 = [2, 3, 3, 3, 3] := by simp
 
 example : ¬ Nat.Prime 669 := by norm_num1
 example : Nat.minFac 669 = 3 := by norm_num1
--- example : Nat.factors 669 = [3, 223] := by norm_num1
+example : Nat.primeFactorsList 669 = [3, 223] := by simp
 
 example : ¬ Nat.Prime 476 := by norm_num1
 example : Nat.minFac 476 = 2 := by norm_num1
--- example : Nat.factors 476 = [2, 2, 7, 17] := by norm_num1
+example : Nat.primeFactorsList 476 = [2, 2, 7, 17] := by simp
 
 example : Nat.Prime 251 := by norm_num1
 example : Nat.minFac 251 = 251 := by norm_num1
--- example : Nat.factors 251 = [251] := by norm_num1
+example : Nat.primeFactorsList 251 = [251] := by simp
 
 example : ¬ Nat.Prime 129 := by norm_num1
 example : Nat.minFac 129 = 3 := by norm_num1
--- example : Nat.factors 129 = [3, 43] := by norm_num1
+example : Nat.primeFactorsList 129 = [3, 43] := by simp
 
 example : ¬ Nat.Prime 471 := by norm_num1
 example : Nat.minFac 471 = 3 := by norm_num1
--- example : Nat.factors 471 = [3, 157] := by norm_num1
+example : Nat.primeFactorsList 471 = [3, 157] := by simp
 
 example : ¬ Nat.Prime 851 := by norm_num1
 example : Nat.minFac 851 = 23 := by norm_num1
--- example : Nat.factors 851 = [23, 37] := by norm_num1
+example : Nat.primeFactorsList 851 = [23, 37] := by simp
 
 /-
 example : ¬ Squarefree 0 := by norm_num1
