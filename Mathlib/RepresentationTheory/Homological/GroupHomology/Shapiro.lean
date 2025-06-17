@@ -21,10 +21,10 @@ preserves projective objects. In particular, given a projective resolution `P` o
 `k`-linear `S`-representation.
 
 Given a `G`-representation `X`, we define a natural isomorphism between the functors
-`Rep k S ⥤ ModuleCat k` sending `A` to `(X ⊗ Ind_S^G A)_G` and to `(Res(S)(X) ⊗ A)_S`. Hence
+`Rep k S ⥤ ModuleCat k` sending `A` to `(Ind_S^G A ⊗ X)_G` and to `(A ⊗ Res(S)(X))_S`. Hence
 a projective resolution `P` of `k` as a trivial `G`-representation induces an isomorphism of
-complexes `(P ⊗ Ind_S^G A)_G ≅ (Res(S)(P) ⊗ A)_S`, and since the homology of these complexes
-are group homology, we conclude Shapiro's lemma: `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A)` for all `n`.
+complexes `(Ind_S^G A ⊗ P)_G ≅ (A ⊗ Res(S)(P))_S`, and since the homology of these complexes
+calculate group homology, we conclude Shapiro's lemma: `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A)` for all `n`.
 
 ## Main definitions
 
@@ -32,7 +32,7 @@ are group homology, we conclude Shapiro's lemma: `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S
   `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A)`, given a finite index subgroup `S ≤ G` and an
   `S`-representation `A`.
 
-!-/
+-/
 
 universe u
 
@@ -40,123 +40,114 @@ namespace groupHomology
 
 open CategoryTheory Finsupp TensorProduct Rep Representation
 
-variable {k G : Type u} [CommRing k] [Group G] {S : Subgroup G}
-  [DecidableRel (QuotientGroup.rightRel S)] [Fintype (G ⧸ S)] (A : Rep k S)
+variable {k G H : Type u} [CommRing k] [Group G] [Group H] (φ : G →* H)
 
-variable (P : Rep k G) (A : Rep k S) (g : G)
+section
 
-#check (coinvariantsTensorMk A ((Action.res _ S.subtype).obj P)).compl₂ (P.ρ g)
-
-#exit
+variable (A : Rep k G) (B : Rep k H)
 
 open ModuleCat.MonoidalCategory
-noncomputable def coinvariantsTensorIndHom (P : Rep k G) (A : Rep k S) :
-    ((coinvariantsTensor k G).obj (ind S.subtype A)).obj P ⟶
-      ((coinvariantsTensor k S).obj A).obj ((Action.res _ S.subtype).obj P) :=
+
+/-- Given a group hom `φ : G →* H`, `A : Rep k G` and `B : Rep k H`, this is the `k`-linear map
+`(Ind(φ)(A) ⊗ B))_H ⟶ (A ⊗ Res(φ)(B))_G` sending `⟦h ⊗ₜ a⟧ ⊗ₜ b` to `⟦a ⊗ ρ(h)(b)⟧` for all
+`h : H`, `a : A`, and `b : B`. -/
+noncomputable def coinvariantsTensorIndHom :
+    ((coinvariantsTensor k H).obj (ind φ A)).obj B ⟶
+      ((coinvariantsTensor k G).obj A).obj ((Action.res _ φ).obj B) :=
   ModuleCat.ofHom <| Coinvariants.lift _ (TensorProduct.lift <|
     Coinvariants.lift _ (TensorProduct.lift <| Finsupp.lift _ _ _
-      fun g => ((coinvariantsTensorMk A ((Action.res _ S.subtype).obj P)).compl₂ (P.ρ g)))
-        fun s => by
-          ext g x y
-          simpa using (Coinvariants.mk_eq_iff _)).2
-            (sub_mem_ker s (x ⊗ₜ[k] P.ρ g y)) fun g => by
-          simp only [MonoidalCategory.tensorLeft_obj,
-            ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorObj,
-            ModuleCat.MonoidalCategory.tensorObj, Action.instMonoidalCategory_tensorObj_V]
-          ext
-          simp
+      fun g => ((coinvariantsTensorMk A ((Action.res _ φ).obj B)).compl₂ (B.ρ g)))
+      fun s => by ext; simpa [coinvariantsTensorMk, Coinvariants.mk_eq_iff]
+        using Coinvariants.sub_mem_ker s _)
+      fun _ => by
+        simp only [MonoidalCategory.curriedTensor_obj_obj, Action.tensorObj_V,
+          tensorObj_def, tensorObj]
+        ext
+        simp
 
-omit [DecidableRel (QuotientGroup.rightRel S)] [Fintype (G ⧸ S)] in
-lemma coinvariantsTensorIndHom_mk_tmul_indMk {P : Rep k G} {A : Rep k S}
-    (g : G) (x : A) (y : P) :
-    coinvariantsTensorIndHom P A (coinvariantsTensorMk _ _ (indMk S.subtype _ g x) y) =
-      coinvariantsTensorMk _ _ x (P.ρ g y) := by
-  simp [ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorObj,
-    ModuleCat.MonoidalCategory.tensorObj, coinvariantsTensorIndHom, coinvariantsTensorMk]
+variable {A B} in
+@[simp]
+lemma coinvariantsTensorIndHom_mk_tmul_indVMk (h : H) (x : A) (y : B) :
+    coinvariantsTensorIndHom φ A B (coinvariantsTensorMk _ _ (IndV.mk φ _ h x) y) =
+      coinvariantsTensorMk _ _ x (B.ρ h y) := by
+  simp [tensorObj_def, ModuleCat.MonoidalCategory.tensorObj, coinvariantsTensorIndHom,
+    coinvariantsTensorMk]
 
-noncomputable def coinvariantsTensorIndInv (P : Rep k G) (A : Rep k S) :
-    ((coinvariantsTensor k S).obj A).obj ((Action.res _ S.subtype).obj P) ⟶
-      ((coinvariantsTensor k G).obj (ind S.subtype A)).obj P :=
-  ModuleCat.ofHom <| Representation.coinvariantsLift _ (TensorProduct.lift <|
-      (coinvariantsTensorMk (ind S.subtype A) P) ∘ₗ indMk _ _ 1)
+/-- Given a group hom `φ : G →* H`, `A : Rep k G` and `B : Rep k H`, this is the `k`-linear map
+`(A ⊗ Res(φ)(B))_G ⟶ (Ind(φ)(A) ⊗ B))_H` sending `⟦a ⊗ₜ b⟧` to `⟦1 ⊗ₜ a⟧ ⊗ₜ b` for all
+`a : A`, and `b : B`. -/
+noncomputable def coinvariantsTensorIndInv :
+    ((coinvariantsTensor k G).obj A).obj ((Action.res _ φ).obj B) ⟶
+      ((coinvariantsTensor k H).obj (ind φ A)).obj B :=
+  ModuleCat.ofHom <| Coinvariants.lift _ (TensorProduct.lift <|
+      (coinvariantsTensorMk (ind φ A) B) ∘ₗ IndV.mk _ _ 1)
     fun s => by
-      simp only [MonoidalCategory.tensorLeft_obj,
-        ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorObj,
-        ModuleCat.MonoidalCategory.tensorObj, Action.instMonoidalCategory_tensorObj_V]
+      simp only [MonoidalCategory.curriedTensor_obj_obj, tensorObj_def,
+        tensorObj, Action.tensorObj_V]
       ext x y
-      simpa using (Submodule.Quotient.eq _).2 <| mem_augmentationSubmodule_of_eq
-        (ρ := ((A.ρ.ind S.subtype).tprod P.ρ)) s (indMk S.subtype A.ρ (1 : G) x ⊗ₜ[k] y) _
-        (by simp [← coinvariantsMk_inv_tmul])
+      simpa [Coinvariants.mk_eq_iff, coinvariantsTensorMk] using
+        Coinvariants.mem_ker_of_eq (φ s) (IndV.mk φ A.ρ (1 : H) x ⊗ₜ[k] y) _
+        (by simp [← Coinvariants.mk_inv_tmul])
 
-omit [DecidableRel (QuotientGroup.rightRel S)] [Fintype (G ⧸ S)] in
-lemma coinvariantsTensorIndInv_mk_tmul_indMk {P : Rep k G} {A : Rep k S}
-    (x : A) (y : P) :
-    coinvariantsTensorIndInv P A (coinvariantsTensorMk _ _ x y) =
-      coinvariantsTensorMk _ _ (indMk S.subtype _ 1 x) y := by
-  simp [ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorObj,
-    ModuleCat.MonoidalCategory.tensorObj, coinvariantsTensorIndInv, coinvariantsTensorMk]
+variable {A B} in
+@[simp]
+lemma coinvariantsTensorIndInv_mk_tmul_indMk (x : A) (y : B) :
+    coinvariantsTensorIndInv φ A B (coinvariantsTensorMk _ _ x y) =
+      coinvariantsTensorMk _ _ (IndV.mk φ _ 1 x) y := by
+  simp [tensorObj_def, tensorObj, coinvariantsTensorIndInv, coinvariantsTensorMk]
 
-set_option maxHeartbeats 0 in
+/-- Given a group hom `φ : G →* H`, `A : Rep k G` and `B : Rep k H`, this is the `k`-linear
+isomorphism `(Ind(φ)(A) ⊗ B))_H ⟶ (A ⊗ Res(φ)(B))_G` sending `⟦h ⊗ₜ a⟧ ⊗ₜ b` to `⟦a ⊗ ρ(h)(b)⟧`
+for all `h : H`, `a : A`, and `b : B`. -/
 @[simps]
-noncomputable def coinvariantsTensorIndIso (P : Rep k G) (A : Rep k S) :
-    ((coinvariantsTensor k G).obj (ind S.subtype A)).obj P ≅
-      ((coinvariantsTensor k S).obj A).obj ((Action.res _ S.subtype).obj P) where
-  hom := coinvariantsTensorIndHom P A
-  inv := coinvariantsTensorIndInv P A
+noncomputable def coinvariantsTensorIndIso :
+    ((coinvariantsTensor k H).obj (ind φ A)).obj B ≅
+      ((coinvariantsTensor k G).obj A).obj ((Action.res _ φ).obj B) where
+  hom := coinvariantsTensorIndHom φ A B
+  inv := coinvariantsTensorIndInv φ A B
   hom_inv_id := by
-    ext g a p
-    simpa [ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorObj,
-      ModuleCat.MonoidalCategory.tensorObj, coinvariantsTensorIndInv, coinvariantsTensorMk,
-      coinvariantsTensorIndHom] using (coinvariantsMk_eq_iff ((A.ρ.ind S.subtype).tprod P.ρ)).2 <|
-        mem_augmentationSubmodule_of_eq g (indMk S.subtype _ g a ⊗ₜ[k] p) _ <| by simp
+    ext h a b
+    simpa [tensorObj_def, tensorObj, coinvariantsTensorIndInv, coinvariantsTensorMk,
+      coinvariantsTensorIndHom, Coinvariants.mk_eq_iff] using
+        Coinvariants.mem_ker_of_eq h (IndV.mk φ _ h a ⊗ₜ[k] b) _ <| by simp
   inv_hom_id := by
     ext
-    simp [ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorObj,
-      ModuleCat.MonoidalCategory.tensorObj, coinvariantsTensorIndInv, coinvariantsTensorMk,
-      coinvariantsTensorIndHom, coinvariantsTensorIndInv]
+    simp [tensorObj_def, tensorObj, coinvariantsTensorIndInv, coinvariantsTensorMk,
+      coinvariantsTensorIndHom]
 
-set_option maxHeartbeats 0 in
+/-- Given a group hom `φ : G →* H` and `A : Rep k G`, the functor `Rep k H ⥤ ModuleCat k` sending
+`B ↦ (Ind(φ)(A) ⊗ B))_H` is naturally isomorphic to the one sending `B ↦ (A ⊗ Res(φ)(B))_G`. -/
 @[simps!]
-noncomputable def indCompCoinvariantsTensorNatIso (P : Rep k G) :
-    indFunctor k S.subtype ⋙ (coinvariantsTensor k G).flip.obj P ≅
-      (coinvariantsTensor k S).flip.obj ((Action.res _ S.subtype).obj P) :=
-  NatIso.ofComponents (fun A => coinvariantsTensorIndIso P A) fun {X Y} f => by
-    simp only [Functor.comp_obj, Functor.flip_obj_obj]
-    ext g x p
-    simp [ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorObj, coinvariantsTensorMk,
-      ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_whiskerRight, coinvariantsTensorIndHom,
-      ModuleCat.MonoidalCategory.tensorObj, ModuleCat.MonoidalCategory.whiskerRight,
-      coinvariantsMap]
+noncomputable def coinvariantsTensorIndNatIso :
+    (coinvariantsTensor k H).obj (ind φ A) ≅ Action.res _ φ ⋙ (coinvariantsTensor k G).obj A :=
+  NatIso.ofComponents (fun B => coinvariantsTensorIndIso φ A B) fun {X Y} f => by
+    ext
+    simp [tensorObj_def, tensorObj, coinvariantsTensorIndHom, coinvariantsTensorMk,
+      whiskerLeft_def, ModuleCat.MonoidalCategory.whiskerLeft, hom_comm_apply]
 
+end
+
+variable (S : Subgroup G) [DecidableRel (QuotientGroup.rightRel S)] [Fintype (G ⧸ S)]
+variable (A : Rep k S)
+
+/-- Given a projective resolution `P` of `k` as a `k`-linear `G`-representation, a finite index
+subgroup `S ≤ G`, and a `k`-linear `S`-representation `A`, this is an isomorphism
+`(A ⊗ Res(S)(P))_S ≅ (Ind_S^G(A) ⊗ P)_G`. -/
 @[simps!]
-noncomputable def coinvariantsTensorResMapProjectiveResolutionIso
-    (P : ProjectiveResolution (trivial k G k)) (A : Rep k S) :
-    (((coinvariantsTensor k S).obj A).mapHomologicalComplex _).obj
-        (resMapProjectiveResolution S P).complex ≅
-      (((coinvariantsTensor k G).obj (ind S.subtype A)).mapHomologicalComplex _).obj P.complex :=
-  HomologicalComplex.Hom.isoOfComponents
-    (fun n => (coinvariantsTensorIndIso (P.complex.X n) A).symm) fun _ _ h =>
-    coinvariantsTensor_hom_ext <| by
-      ext a p
-      simp [ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_tensorObj, coinvariantsTensorMk,
-        ModuleCat.MonoidalCategory.instMonoidalCategoryStruct_whiskerLeft, coinvariantsMap,
-        ModuleCat.MonoidalCategory.tensorObj, ModuleCat.MonoidalCategory.whiskerLeft,
-        coinvariantsTensorIndInv, h]
+noncomputable abbrev coinvariantsTensorResProjectiveResolutionIso
+    (P : ProjectiveResolution (Rep.trivial k G k)) :
+    ((Action.res _ S.subtype).mapProjectiveResolution P).complex.coinvariantsTensorObj A ≅
+      P.complex.coinvariantsTensorObj (ind S.subtype A) :=
+  (NatIso.mapHomologicalComplex (coinvariantsTensorIndNatIso S.subtype A).symm _).app _
 
 variable [DecidableEq G]
 
-noncomputable def _root_.groupHomologyIso
-    (P : ProjectiveResolution (trivial k G k)) (A : Rep k G) (n : ℕ) :
-    groupHomology A n ≅ ((((coinvariantsTensor k G).obj A).mapHomologicalComplex _).obj
-      P.complex).homology n :=
-  groupHomologyIsoTor A n ≪≫ P.isoLeftDerivedObj ((coinvariantsTensor k G).obj A) n
-
-noncomputable def shapiro2
-    (P : ProjectiveResolution (trivial k G k) := barResolution k G) (A : Rep k S) (n : ℕ) :
-    groupHomology A n ≅ groupHomology (ind S.subtype A) n :=
-  groupHomologyIso (resMapProjectiveResolution S P) A n ≪≫
-    (HomologicalComplex.homologyFunctor _ _ _).mapIso
-      (coinvariantsTensorResMapProjectiveResolutionIso P A) ≪≫
-    (groupHomologyIso P (ind S.subtype A) n).symm
+/-- Shapiro's lemma: given a finite index subgroup `S ≤ G` and an `S`-representation `A`, we have
+`Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A).` -/
+noncomputable def indIso [DecidableEq G] (A : Rep k S) (n : ℕ) :
+    groupHomology (ind S.subtype A) n ≅ groupHomology A n :=
+  (HomologicalComplex.homologyFunctor _ _ _).mapIso (inhomogeneousChainsIso (ind S.subtype A) ≪≫
+    (coinvariantsTensorResProjectiveResolutionIso S A (barResolution k G)).symm) ≪≫
+  (groupHomologyIso A n ((Action.res _ _).mapProjectiveResolution <| barResolution k G)).symm
 
 end groupHomology
