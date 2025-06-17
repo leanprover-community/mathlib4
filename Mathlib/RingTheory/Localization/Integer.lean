@@ -90,7 +90,7 @@ theorem exist_integer_multiples {ι : Type*} (s : Finset ι) (f : ι → S) :
   refine _root_.trans ?_ (map_prod (Submonoid.subtype M) _ _).symm
   rw [mul_comm,Submonoid.coe_finset_prod,
     -- Porting note: explicitly supplied `f`
-    ← Finset.prod_insert (f := fun i => ((sec M (f i)).snd : R)) (s.not_mem_erase i),
+    ← Finset.prod_insert (f := fun i => ((sec M (f i)).snd : R)) (s.notMem_erase i),
     Finset.insert_erase hi]
   rfl
 

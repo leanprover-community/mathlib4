@@ -681,8 +681,6 @@ variable [SupSet α] [SupSet β] [SupSet γ]
 protected def dual : sSupHom α β ≃ sInfHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨toDual ∘ f ∘ ofDual, f.map_sSup'⟩
   invFun f := ⟨ofDual ∘ f ∘ toDual, f.map_sInf'⟩
-  left_inv _ := sSupHom.ext fun _ => rfl
-  right_inv _ := sInfHom.ext fun _ => rfl
 
 @[simp]
 theorem dual_id : sSupHom.dual (sSupHom.id α) = sInfHom.id _ :=
@@ -717,8 +715,6 @@ protected def dual : sInfHom α β ≃ sSupHom αᵒᵈ βᵒᵈ where
   invFun f :=
     { toFun := ofDual ∘ f ∘ toDual
       map_sInf' := fun _ => congr_arg ofDual (map_sSup f _) }
-  left_inv _ := sInfHom.ext fun _ => rfl
-  right_inv _ := sSupHom.ext fun _ => rfl
 
 @[simp]
 theorem dual_id : sInfHom.dual (sInfHom.id α) = sSupHom.id _ :=
@@ -750,8 +746,6 @@ lattices. -/
 protected def dual : CompleteLatticeHom α β ≃ CompleteLatticeHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨sSupHom.dual f.tosSupHom, fun s ↦ f.map_sInf' s⟩
   invFun f := ⟨sSupHom.dual f.tosSupHom, fun s ↦ f.map_sInf' s⟩
-  left_inv _ := ext fun _ => rfl
-  right_inv _ := ext fun _ => rfl
 
 @[simp]
 theorem dual_id : CompleteLatticeHom.dual (CompleteLatticeHom.id α) = CompleteLatticeHom.id _ :=
