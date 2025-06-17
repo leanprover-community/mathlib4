@@ -5,14 +5,12 @@ Authors: Antoine Chambert-Loir
 -/
 
 import Mathlib.Analysis.Normed.Ring.Lemmas
-import Mathlib.Data.Int.Star
 import Mathlib.Data.Nat.Choose.Dvd
-import Mathlib.Data.ZMod.Coprime
 import Mathlib.Data.ZMod.Units
 import Mathlib.Data.ZMod.Zero
 import Mathlib.GroupTheory.SpecificGroups.ZGroup
 import Mathlib.RingTheory.Prime
-import Mathlib.RingTheory.Int.Basic
+import Mathlib.Algebra.Order.Star.Basic
 
 /-! # Cyclicity of the units of `ZMod n`
 
@@ -597,3 +595,130 @@ theorem isCyclic_units_iff (n : ℕ) :
         · exact he
 
 end ZMod
+
+section Refactor
+variable {R : Type*} [CommSemiring R] {p : ℕ}
+  {n : ℕ} {a b : R}
+  (hp : p.Prime) (hn : 1 ≤ n)
+
+lemma lemma_1 (hp : p.Prime) (hn : 1 ≤ n)
+    (h : ∃ x, b = a + p ^ n * x) :
+    ∃ y, b ^ p = a ^ p + p ^ (n + 1) * y := by
+  obtain ⟨x, hx⟩ := h
+  rw [hx, add_comm a, add_pow]
+  rw [← Finset.sum_erase_add (a := 0) _ _ (by simp)]
+  rw [← Finset.sum_erase_add (a := p) _ _ (by simp [hp.ne_zero])]
+  simp only [add_comm (a ^ p)]
+  use ∑ i ∈ ((Finset.range (p + 1)).erase 0).erase p,
+    (p ^ n * x) ^ (i - 1) * x * a ^ (p - i) * (p.choose i / p : ℕ) + p ^ (n * p - n - 1) * x ^ p
+  simp only [tsub_self, pow_zero, mul_one, Nat.choose_self, Nat.cast_one, tsub_zero, one_mul,
+    Nat.choose_zero_right]
+  apply congr_arg₂ _ _ rfl
+  rw [mul_add, Finset.mul_sum]
+  apply congr_arg₂
+  · apply Finset.sum_congr rfl
+    intro i hi
+    simp only [Finset.mem_erase, ne_eq, Finset.mem_range] at hi
+    have hi' : i < p :=
+      Nat.lt_of_le_of_ne (Nat.le_of_lt_succ hi.2.2) hi.1
+    have hi'' : i - 1 + 1 = i :=
+      Nat.sub_add_cancel (Nat.one_le_iff_ne_zero.mpr hi.2.1)
+    have : p ∣ p.choose i :=
+      Nat.Prime.dvd_choose_self hp hi.2.1 hi'
+    obtain ⟨q, hq⟩ := this
+    rw [hq, mul_comm p q, Nat.mul_div_cancel _ hp.pos, Nat.cast_mul, mul_pow, pow_succ]
+    ring_nf
+    congr 1
+    apply congr_arg₂ _ _ rfl
+    rw [mul_assoc _ x]
+    simp only [← pow_succ', ← pow_add]
+    rw [add_assoc, add_comm 1, ← add_assoc, add_comm n, ← Nat.mul_add_one, hi'']
+  · rw [mul_pow, ← mul_assoc]
+    apply congr_arg₂ _ _ rfl
+    simp only [← pow_add, ← pow_mul]
+    congr
+    rw [add_comm, Nat.sub_sub, eq_comm]
+    refine Nat.sub_add_cancel ?_
+    trans n * 2
+    · simp [mul_two, Nat.add_le_add_iff_left.mpr hn]
+    · refine Nat.mul_le_mul_left n hp.two_le
+
+-- Ireland & Rosen, 4.1, Corollary 1 of Lemma 3 (a sublemma)
+theorem pow_add_mul_pow_modeq
+    (hp : p.Prime) (hp2 : p ≠ 2) (c : R)
+    (hn : 1 ≤ n)
+    (h : ∃ x, b = a + p ^ n * (c + p * x)) :
+    ∃ y : R, b ^ p = a ^ p + p ^ (n + 1) * (a ^ (p - 1) * c + p * y) := by
+  obtain ⟨x, hx⟩ := h
+  set c' := c + p * x with hc'
+  rw [hx, add_comm a  (p ^n * c'), add_pow, ← Finset.add_sum_erase (a := 0) _ _ (by simp)]
+  rw [← Finset.add_sum_erase (a := 1) _ _ (by simp [hp.pos])]
+  simp
+  nth_rewrite 1 [hc']
+  rw [mul_add _ c, add_mul, mul_comm _ (p : R), mul_add,
+    ← add_assoc, ← add_assoc, ← mul_assoc, ← mul_assoc,
+    ← pow_succ']
+  rw [← mul_add, ← hc', ← Nat.cast_pow p n]
+  use  x * a ^ (p - 1) +
+    ∑ i ∈ (((Finset.range (p + 1)).erase 0).erase 1).erase p,
+      (p ^ (n * i - n - 1) * p.choose i / p : ℕ) * c' ^ i * a ^ (p - i)
+    + p ^ (n * p - n - 2) * c' ^ p
+  simp only [add_assoc, mul_add]
+  congr 2
+  · ring
+  apply congr_arg₂ _
+  · simp only [Nat.cast_pow]; ring
+  · simp only [Finset.mul_sum]
+    rw [← Finset.sum_erase_add (a := p)]
+    · congr 1
+      · apply Finset.sum_congr rfl
+        intro i hi
+        simp only [Finset.mem_erase, ne_eq, Finset.mem_range] at hi
+        rw [mul_pow _ c', mul_assoc, mul_comm (a ^ _), ← mul_assoc]
+        rw [mul_assoc _ (c' ^ _), mul_comm (c' ^ _), ← mul_assoc]
+        simp only [← Nat.cast_mul, ← Nat.cast_pow, ← mul_assoc]
+        congr 2
+        apply congr_arg
+        rw [← pow_succ, ← pow_mul, add_assoc]
+        have : p ∣ p.choose i := by
+          apply Nat.Prime.dvd_choose_self hp hi.2.2.1
+          apply Nat.lt_of_le_of_ne _ hi.1
+          exact Nat.le_of_lt_succ hi.2.2.2
+        obtain ⟨q, hq⟩ := this
+        rw [hq]
+        simp only [← mul_assoc, ← pow_succ]
+        conv_rhs => rw [mul_comm _ q, pow_succ, ← mul_assoc,
+          Nat.mul_div_cancel _ hp.pos, mul_comm q, ← mul_assoc]
+        congr
+        rw [← pow_add]
+        apply congr_arg₂ _ rfl
+        rw [add_comm (n + _), ← add_assoc, Nat.sub_sub,
+          ← add_assoc]
+        congr
+        rw [add_assoc]
+        rw [Nat.sub_add_cancel]
+        trans n * 2
+        · linarith
+        · refine Nat.mul_le_mul_left n ?_
+          rw [Nat.two_le_iff]
+          exact ⟨hi.2.2.1, hi.2.1⟩
+      · simp [mul_pow, ← mul_assoc]
+        congr
+        simp only [← Nat.cast_pow, ← Nat.cast_mul, ← pow_mul,
+        ← pow_succ, ← pow_add]
+        congr
+        rw [add_assoc n 1, add_comm]
+        refine Nat.eq_add_of_sub_eq ?_ rfl
+        trans n * 3
+        · linarith
+        · refine Nat.mul_le_mul_left n ?_
+          rw [Nat.succ_le_iff]
+          exact Nat.lt_of_le_of_ne hp.two_le (Ne.symm hp2)
+    · simp [hp.ne_zero, hp.ne_one]
+
+
+
+
+
+
+end Refactor

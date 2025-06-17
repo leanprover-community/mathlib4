@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Ashvni Narayanan, Michael Stoll
 -/
 import Mathlib.Algebra.BigOperators.Associated
-import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.Coprime.Lemmas
 
