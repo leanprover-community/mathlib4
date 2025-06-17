@@ -215,21 +215,23 @@ lemma nucleusIsoSublocale.eq_toSublocale : Nucleus.toSublocale = @nucleusIsoSubl
 lemma nucleusIsoSublocale.symm_eq_toNucleus :
   Sublocale.toNucleus = (@nucleusIsoSublocale X _).symm := rfl
 
-instance Sublocale.instCompleteLattice : CompleteLattice (Sublocale X) :=
+namespace Sublocale
+
+instance instCompleteLattice : CompleteLattice (Sublocale X) :=
   nucleusIsoSublocale.toGaloisInsertion.liftCompleteLattice
 
-instance Sublocale.instCoframeMinimalAxioms : Order.Coframe.MinimalAxioms (Sublocale X) where
+instance instCoframeMinimalAxioms : Order.Coframe.MinimalAxioms (Sublocale X) where
   iInf_sup_le_sup_sInf a s := by simp [← toNucleus_le_toNucleus,
     nucleusIsoSublocale.symm_eq_toNucleus, nucleusIsoSublocale.symm.map_sup,
     nucleusIsoSublocale.symm.map_sInf, sup_iInf_eq, nucleusIsoSublocale.symm.map_iInf]
 
-instance Sublocale.instCoframe : Order.Coframe (Sublocale X) :=
+instance instCoframe : Order.Coframe (Sublocale X) :=
   .ofMinimalAxioms instCoframeMinimalAxioms
 
-lemma Sublocale.univ_eq_top : (⟨univ, fun _ _ ↦ trivial, fun _ _ a ↦ a⟩ : Sublocale X) = ⊤ :=
+lemma univ_eq_top : (⟨univ, fun _ _ ↦ trivial, fun _ _ a ↦ a⟩ : Sublocale X) = ⊤ :=
   le_antisymm le_top (fun _ _ ↦ trivial)
 
-lemma Sublocale.singleton_top_eq_bot : (⟨{⊤}, by simp, by simp⟩ : Sublocale X) = ⊥ :=
+lemma singleton_top_eq_bot : (⟨{⊤}, by simp, by simp⟩ : Sublocale X) = ⊥ :=
   le_antisymm (fun i h ↦ by simp_all [top_mem]) bot_le
 
 /--
@@ -237,6 +239,7 @@ An open sublocale is defined by an element of the locale.
 -/
 @[ext]
 structure Open (X : Type*) [Order.Frame X] where
+  /-- The element of an open sublocale. Do not use this directly, use `Open.get_element` instead. -/
   element : X
 
 namespace Open
@@ -333,3 +336,4 @@ def toSublocale : FrameHom (Open X) (Sublocale X) where
   map_top' := by simp [Nucleus.toSublocale, Open.toNucleus, ← Sublocale.univ_eq_top]
 
 end Open
+end Sublocale
