@@ -1,15 +1,14 @@
 import Lake
 
-/- Adaptation note for nightly-2025-06-09: we now need to `open Lean` to access `LeanOption`. -/
-open Lake DSL Lean
+open Lake DSL
 
 /-!
 ## Mathlib dependencies on upstream projects
 -/
 
-require "leanprover-community" / "batteries" @ git "lean-pr-testing-8688"
+require "leanprover-community" / "batteries" @ git "lean-pr-testing-8815"
 require "leanprover-community" / "Qq" @ git "master"
-require "leanprover-community" / "aesop" @ git "nightly-testing"
+require aesop from git "https://github.com/nomeata/aesop" @ "lean-pr-testing-8815"
 require "leanprover-community" / "proofwidgets" @ git "v0.0.63-pre" -- ProofWidgets should always be pinned to a specific version
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets not up-to-date. \
