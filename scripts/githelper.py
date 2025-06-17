@@ -178,11 +178,11 @@ def git_fetch_all() -> None:
 
 
 def git_get_branch_remote(branch: str) -> str | None:
+    # `git config get` was only added in git 2.46.0
     try:
         out = run_stdout(
             "git",
             "config",
-            "get",
             f"branch.{branch}.remote",
             fatal=False,
         )
@@ -192,11 +192,11 @@ def git_get_branch_remote(branch: str) -> str | None:
 
 
 def git_get_branch_push_remote(branch: str) -> str | None:
+    # `git config get` was only added in git 2.46.0
     try:
         out = run_stdout(
             "git",
             "config",
-            "get",
             f"branch.{branch}.pushRemote",
             fatal=False,
         )
@@ -210,7 +210,8 @@ def git_set_branch_remote(branch: str, remote: str) -> str | None:
 
 
 def git_set_branch_push_remote(branch: str, remote: str) -> str | None:
-    run_cmd("git", "config", "set", "--", f"branch.{branch}.pushRemote", remote)
+    # `git config set` was only added in git 2.46.0
+    run_cmd("git", "config", "--", f"branch.{branch}.pushRemote", remote)
 
 
 #################
