@@ -208,8 +208,6 @@ def gh_ensure_installed() -> None:
 
 
 def gh_ensure_logged_in() -> None:
-    # Versions of gh before v2.31.0 print this info on stderr, not stdout.
-    # See https://github.com/cli/cli/issues/7447
     try:
         run_check("gh", "auth", "status")
     except subprocess.CalledProcessError:
