@@ -5,7 +5,6 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Lie.TensorProduct
-import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Extension and restriction of scalars for Lie algebras and Lie modules
