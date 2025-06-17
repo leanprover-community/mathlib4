@@ -66,7 +66,7 @@ is the canonical morphism (which is an homotopy equivalence) from `mappingCone g
 the mapping cone of the morphism `mappingCone f ⟶ mappingCone (f ≫ g)`. -/
 noncomputable def hom :
     mappingCone g ⟶ mappingCone (mappingConeCompTriangle f g).mor₁ :=
-  lift _ (descCocycle g (Cochain.ofHom (inr f)) 0 (zero_add 1) (by dsimp; simp))
+  lift _ (descCocycle g (Cochain.ofHom (inr f)) 0 (zero_add 1) (by simp))
     (descCochain _ 0 (Cochain.ofHom (inr (f ≫ g))) (neg_add_cancel 1)) (by
       ext p _ rfl
       dsimp [mappingConeCompTriangle, map]

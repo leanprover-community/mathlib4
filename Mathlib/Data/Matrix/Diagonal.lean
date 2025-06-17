@@ -148,6 +148,15 @@ protected theorem map_ofNat [AddMonoidWithOne α] [Zero β]
     (ofNat(d) : Matrix n n α).map f = diagonal (fun _ => f (OfNat.ofNat d)) :=
   diagonal_map h
 
+theorem natCast_apply [AddMonoidWithOne α] {i j} {d : ℕ} :
+    (d : Matrix n n α) i j = if i = j then d else 0 := by
+  rw [Nat.cast_ite, Nat.cast_zero]
+  rfl
+
+theorem ofNat_apply [AddMonoidWithOne α] {i j} {d : ℕ} [d.AtLeastTwo] :
+    (ofNat(d) : Matrix n n α) i j = if i = j then d else 0 :=
+  natCast_apply
+
 protected theorem map_intCast [AddGroupWithOne α] [Zero β]
     {f : α → β} (h : f 0 = 0) (d : ℤ) :
     (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
@@ -285,8 +294,6 @@ open Matrix
 namespace Matrix
 
 section Transpose
-
-open Matrix
 
 @[simp]
 theorem transpose_eq_diagonal [DecidableEq n] [Zero α] {M : Matrix n n α} {v : n → α} :
