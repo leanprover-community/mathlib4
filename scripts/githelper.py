@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import re
 import shlex
 import subprocess
 import sys
@@ -14,6 +15,12 @@ def http_url(repo: str) -> str:
 
 def ssh_url(repo: str) -> str:
     return f"git@github.com:{repo}.git"
+
+
+def from_url(url: str) -> str | None:
+    regex = r"(?:https://github\.com/|git@github\.com/)(.*)(?:\.git)?"
+    if match := re.fullmatch(regex, url):
+        return match.group(1)
 
 
 UPSTREAM: str = "upstream"
@@ -30,6 +37,10 @@ RED = "\033[91m"
 BLUE = "\033[94m"
 BOLD = "\033[1m"
 END = "\033[0m"
+
+
+def print_step(i: int, msg: str) -> None:
+    print(f"{BOLD}{BLUE}Step {i}:{END} {msg}")
 
 
 def print_warn(msg: str) -> None:
@@ -141,6 +152,46 @@ def git_add_remote(remote: str, url: str) -> None:
     run_cmd("git", "remote", "add", "--", remote, url)
 
 
+def git_fetch_all() -> None:
+    run_cmd("git", "fetch", "--all", "--prune")
+
+
+def git_get_branch_remote(branch: str) -> str | None:
+    try:
+        out = run_stdout(
+            "git",
+            "config",
+            "get",
+            f"branch.{branch}.remote",
+            fatal=False,
+        )
+        return out.removesuffix("\n")
+    except subprocess.CalledProcessError:
+        pass
+
+
+def git_get_branch_push_remote(branch: str) -> str | None:
+    try:
+        out = run_stdout(
+            "git",
+            "config",
+            "get",
+            f"branch.{branch}.pushRemote",
+            fatal=False,
+        )
+        return out.removesuffix("\n")
+    except subprocess.CalledProcessError:
+        pass
+
+
+def git_set_branch_remote(branch: str, remote: str) -> str | None:
+    run_cmd("git", "branch", f"--set-upstream-to={remote}/master", "--", branch)
+
+
+def git_set_branch_push_remote(branch: str, remote: str) -> str | None:
+    run_cmd("git", "config", "set", "--", f"branch.{branch}.pushRemote", remote)
+
+
 #################
 ## Gh commands ##
 #################
@@ -227,8 +278,13 @@ def gh_get_all_forks() -> dict[str, str]:
     return result
 
 
-def gh_find_mathlib_fork(username: str) -> str | None:
-    # TODO Use origin as a guess, if it exists
+def gh_find_mathlib_fork(username: str, origin_url: str | None) -> str | None:
+    if origin_url is not None:
+        origin = from_url(origin_url)
+        if origin is not None:
+            parent = gh_get_repo_parent(origin)
+            if parent == MATHLIB_REPO:
+                return origin_url
 
     guess = f"{username}/mathlib4"
     parent = gh_get_repo_parent(guess)
@@ -241,41 +297,44 @@ def gh_find_mathlib_fork(username: str) -> str | None:
             return fork
 
 
+def gh_fork() -> None:
+    run_cmd("gh", "repo", "fork", "--default-branch-only", "--remote")
+
+
 ##################
 ## Command: fix ##
 ##################
 
 
-def cmd_fix_add_missing_upstream() -> None:
-    remotes = git_get_remotes()
-    if UPSTREAM in remotes:
+def cmd_fix_update_remote(
+    remote: str,
+    target: str,
+    url: str,
+    allowed: set[str],
+) -> None:
+    curr_url = git_get_remotes().get(remote)
+
+    if curr_url is None:
+        print_warn(f"Remote {remote!r} does not exist.")
+        if not ask_yes_no(f"Create remote {remote!r}?"):
+            abort(f"Remote {remote!r} must point to {target}.")
+        git_add_remote(remote, url)
         return
 
-    print_warn(f"Remote {UPSTREAM!r} does not exist.")
-    if not ask_yes_no(f"Create remote {UPSTREAM!r}?"):
-        abort(f"Remote {UPSTREAM!r} must point to mathlib.")
-
-    git_add_remote(UPSTREAM, MATHLIB_HTTP_URL)
-
-
-def cmd_fix_replace_wrong_upstream() -> None:
-    url = git_get_remotes().get(UPSTREAM)
-    if url is None:
-        return  # No upstream means no wrong upstream
-    if url in MATHLIB_URLS:
+    if curr_url in allowed:
         return
 
-    print_warn(f"Remote {UPSTREAM!r} does not point to mathlib.")
+    print_warn(f"Remote {remote!r} does not point to {target}.")
     print("Expected it to point to")
-    print(f"- {MATHLIB_HTTP_URL}")
-    print(f"- {MATHLIB_SSH_URL}")
+    for url in sorted(allowed):
+        print(f"- {url}")
     print("Instead, it pointed to:")
-    print(f"- {url}")
-    if not ask_yes_no(f"Delete and replace remote {UPSTREAM!r}?"):
-        abort(f"Remote {UPSTREAM!r} must point to mathlib.")
+    print(f"- {curr_url}")
+    if not ask_yes_no(f"Delete and replace remote {remote!r}?"):
+        abort(f"Remote {remote!r} must point to {target}.")
 
-    git_remove_remote(UPSTREAM)
-    git_add_remote(UPSTREAM, MATHLIB_HTTP_URL)
+    git_remove_remote(remote)
+    git_add_remote(remote, url)
 
 
 def cmd_fix_update_default_gh_repo() -> None:
@@ -291,28 +350,72 @@ def cmd_fix_update_default_gh_repo() -> None:
     gh_set_default_repo(MATHLIB_REPO)
 
 
+def cmd_fix_set_origin_to_fork(fork: str) -> None:
+    pass
+
+
+def cmd_fix_create_new_fork() -> None:
+    remotes = git_get_remotes()
+    if ORIGIN in remotes:
+        print_warn(f"Remote {ORIGIN!r} is in the way of the fork.")
+        if not ask_yes_no(f"Remove remote {ORIGIN!r}?"):
+            abort(f"Remote {ORIGIN!r} must be removed before the fork is created.")
+
+    git_remove_remote(ORIGIN)
+    gh_fork()
+
+
+def cmd_fix_update_origin_to_fork(fork: str) -> None:
+    fork_ssh = ssh_url(fork)
+    fork_http = http_url(fork)
+    fork_urls = {fork_ssh, fork_http}
+    cmd_fix_update_remote(ORIGIN, "your fork of mathlib", fork_ssh, fork_urls)
+
+
+def cmd_fix_update_master_remotes() -> None:
+    branch = "master"
+
+    remote = git_get_branch_remote(branch)
+    if remote != UPSTREAM:
+        print_warn(f"Branch {branch!r} should have remote {UPSTREAM!r}.")
+        if not ask_yes_no(f"Update remote of {branch!r}?"):
+            return
+        git_set_branch_remote(branch, UPSTREAM)
+
+    push_remote = git_get_branch_push_remote("master")
+    if push_remote != ORIGIN:
+        print_warn(f"Branch {branch!r} should have pushRemote {ORIGIN!r}.")
+        if not ask_yes_no(f"Update pushRemote of {branch!r}?"):
+            return
+        git_set_branch_push_remote(branch, ORIGIN)
+
+
 def cmd_fix() -> None:
     git_ensure_installed()
     git_ensure_in_repo()
-    cmd_fix_add_missing_upstream()
-    cmd_fix_replace_wrong_upstream()
-
     gh_ensure_installed()
     gh_ensure_logged_in()
+    username = gh_get_username()
+
+    print_step(1, f"Remote {UPSTREAM!r} should point to mathlib.")
+    cmd_fix_update_remote(UPSTREAM, "mathlib", MATHLIB_HTTP_URL, MATHLIB_URLS)
+
+    print_step(2, "Default gh repo should point to mathlib.")
     cmd_fix_update_default_gh_repo()
 
-    username = gh_get_username()
-    fork = gh_find_mathlib_fork(username)
+    print_step(3, f"Remote {ORIGIN!r} should point to your fork of mathlib.")
+    remotes = git_get_remotes()
+    fork = gh_find_mathlib_fork(username, remotes.get(ORIGIN))
     if fork is None:
-        # TODO gh repo fork
-        # TODO Check if it works fine with upstream set
-        pass
+        cmd_fix_create_new_fork()
     else:
-        # TODO Set origin to fork, create origin if necessary
-        pass
+        cmd_fix_update_origin_to_fork(fork)
 
-    # TODO git fetch --all --prune
-    # TODO Set master remote and pushRemote
+    print_step(4, "Updating remotes...")
+    git_fetch_all()
+
+    print_step(5, "Check remotes of branch 'master'.")
+    cmd_fix_update_master_remotes()
 
 
 ##########
