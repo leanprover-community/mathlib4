@@ -124,7 +124,7 @@ theorem addOrderOf_coe (a : ℕ) {n : ℕ} (n0 : n ≠ 0) : addOrderOf (a : ZMod
   rw [← Nat.smul_one_eq_cast, addOrderOf_nsmul' _ a.succ_ne_zero, ZMod.addOrderOf_one]
 
 /-- This lemma works in the case in which `a ≠ 0`.  The version where
- `ZMod n` is not infinite, i.e. `n ≠ 0`, is `addOrderOf_coe`. -/
+`ZMod n` is not infinite, i.e. `n ≠ 0`, is `addOrderOf_coe`. -/
 @[simp]
 theorem addOrderOf_coe' {a : ℕ} (n : ℕ) (a0 : a ≠ 0) : addOrderOf (a : ZMod n) = n / n.gcd a := by
   rw [← Nat.smul_one_eq_cast, addOrderOf_nsmul' _ a0, ZMod.addOrderOf_one]
@@ -285,6 +285,7 @@ theorem cast_one (h : m ∣ n) : (cast (1 : ZMod n) : R) = 1 := by
   · exact Nat.cast_one
   exact Nat.lt_of_sub_eq_succ rfl
 
+@[simp]
 theorem cast_add (h : m ∣ n) (a b : ZMod n) : (cast (a + b : ZMod n) : R) = cast a + cast b := by
   cases n
   · apply Int.cast_add
@@ -294,6 +295,7 @@ theorem cast_add (h : m ∣ n) (a b : ZMod n) : (cast (a + b : ZMod n) : R) = ca
     @CharP.cast_eq_zero_iff R _ m]
   exact h.trans (Nat.dvd_sub_mod _)
 
+@[simp]
 theorem cast_mul (h : m ∣ n) (a b : ZMod n) : (cast (a * b : ZMod n) : R) = cast a * cast b := by
   cases n
   · apply Int.cast_mul
@@ -347,33 +349,21 @@ section CharEq
 
 variable [CharP R n]
 
-@[simp]
-theorem cast_one' : (cast (1 : ZMod n) : R) = 1 :=
-  cast_one dvd_rfl
+theorem cast_one' : (cast (1 : ZMod n) : R) = 1 := by simp
 
-@[simp]
-theorem cast_add' (a b : ZMod n) : (cast (a + b : ZMod n) : R) = cast a + cast b :=
-  cast_add dvd_rfl a b
+theorem cast_add' (a b : ZMod n) : (cast (a + b : ZMod n) : R) = cast a + cast b := by simp
 
-@[simp]
-theorem cast_mul' (a b : ZMod n) : (cast (a * b : ZMod n) : R) = cast a * cast b :=
-  cast_mul dvd_rfl a b
+theorem cast_mul' (a b : ZMod n) : (cast (a * b : ZMod n) : R) = cast a * cast b := by simp
 
-@[simp]
-theorem cast_sub' (a b : ZMod n) : (cast (a - b : ZMod n) : R) = cast a - cast b :=
-  cast_sub dvd_rfl a b
+theorem cast_sub' (a b : ZMod n) : (cast (a - b : ZMod n) : R) = cast a - cast b := by simp
 
-@[simp]
-theorem cast_pow' (a : ZMod n) (k : ℕ) : (cast (a ^ k : ZMod n) : R) = (cast a : R) ^ k :=
-  cast_pow dvd_rfl a k
+theorem cast_pow' (a : ZMod n) (k : ℕ) : (cast (a ^ k : ZMod n) : R) = (cast a : R) ^ k := by simp
 
-@[simp, norm_cast]
-theorem cast_natCast' (k : ℕ) : (cast (k : ZMod n) : R) = k :=
-  cast_natCast dvd_rfl k
+@[norm_cast]
+theorem cast_natCast' (k : ℕ) : (cast (k : ZMod n) : R) = k := by simp
 
-@[simp, norm_cast]
-theorem cast_intCast' (k : ℤ) : (cast (k : ZMod n) : R) = k :=
-  cast_intCast dvd_rfl k
+@[norm_cast]
+theorem cast_intCast' (k : ℤ) : (cast (k : ZMod n) : R) = k := by simp
 
 variable (R)
 
@@ -406,7 +396,8 @@ below (after `have : CharP R p := ...`) and deduce it by the results about `ZMod
 noncomputable def ringEquivOfPrime [Fintype R] {p : ℕ} (hp : p.Prime) (hR : Fintype.card R = p) :
     ZMod p ≃+* R :=
   have : Nontrivial R := Fintype.one_lt_card_iff_nontrivial.1 (hR ▸ hp.one_lt)
-  -- The following line exists as `charP_of_card_eq_prime` in `Mathlib.Algebra.CharP.CharAndCard`.
+  -- The following line exists as `charP_of_card_eq_prime` in
+  -- `Mathlib/Algebra/CharP/CharAndCard.lean`.
   have : CharP R p := (CharP.charP_iff_prime_eq_zero hp).2 (hR ▸ Nat.cast_card_eq_zero R)
   ZMod.ringEquiv R hR
 
@@ -954,7 +945,7 @@ theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val 
     cases m
     · right
       rwa [show 0 + 1 = 1 from rfl, mul_one] at he
-    refine (a.val_lt.not_le <| Nat.le_of_mul_le_mul_left ?_ zero_lt_two).elim
+    refine (a.val_lt.not_ge <| Nat.le_of_mul_le_mul_left ?_ zero_lt_two).elim
     rw [he, mul_comm]
     apply Nat.mul_le_mul_left
     simp
@@ -1230,13 +1221,14 @@ section AddGroup
 variable {α : Type*} [AddGroup α] {n : ℕ}
 
 @[simp]
-lemma nsmul_zmod_val_inv_nsmul (hn : (Nat.card α).Coprime n) (a : α) :
+lemma nsmul_zmod_val_inv_nsmul (hn : (Nat.card α).gcd n = 1) (a : α) :
     n • (n⁻¹ : ZMod (Nat.card α)).val • a = a := by
+  replace hn : (Nat.card α).Coprime n := hn
   rw [← mul_nsmul', ← mod_natCard_nsmul, ← ZMod.val_natCast, Nat.cast_mul,
     ZMod.mul_val_inv hn.symm, ZMod.val_one_eq_one_mod, mod_natCard_nsmul, one_nsmul]
 
 @[simp]
-lemma zmod_val_inv_nsmul_nsmul (hn : (Nat.card α).Coprime n) (a : α) :
+lemma zmod_val_inv_nsmul_nsmul (hn : (Nat.card α).gcd n = 1) (a : α) :
     (n⁻¹ : ZMod (Nat.card α)).val • n • a = a := by
   rw [nsmul_left_comm, nsmul_zmod_val_inv_nsmul hn]
 
@@ -1245,15 +1237,16 @@ end AddGroup
 section Group
 variable {α : Type*} [Group α] {n : ℕ}
 
--- TODO: Without the `existing`, `to_additive` chokes on `Inv (ZMod n)`.
-@[to_additive existing (attr := simp) nsmul_zmod_val_inv_nsmul]
-lemma pow_zmod_val_inv_pow (hn : (Nat.card α).Coprime n) (a : α) :
+-- TODO: we can't use `to_additive`, because it tries to translate `n⁻¹` into `-n`
+@[simp]
+lemma pow_zmod_val_inv_pow (hn : (Nat.card α).gcd n = 1) (a : α) :
     (a ^ (n⁻¹ : ZMod (Nat.card α)).val) ^ n = a := by
+  replace hn : (Nat.card α).Coprime n := hn
   rw [← pow_mul', ← pow_mod_natCard, ← ZMod.val_natCast, Nat.cast_mul, ZMod.mul_val_inv hn.symm,
     ZMod.val_one_eq_one_mod, pow_mod_natCard, pow_one]
 
-@[to_additive existing (attr := simp) zmod_val_inv_nsmul_nsmul]
-lemma pow_pow_zmod_val_inv (hn : (Nat.card α).Coprime n) (a : α) :
+@[simp]
+lemma pow_pow_zmod_val_inv (hn : (Nat.card α).gcd n = 1) (a : α) :
     (a ^ n) ^ (n⁻¹ : ZMod (Nat.card α)).val = a := by rw [pow_right_comm, pow_zmod_val_inv_pow hn]
 
 end Group

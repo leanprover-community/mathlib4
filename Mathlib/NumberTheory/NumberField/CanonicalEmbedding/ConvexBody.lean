@@ -290,7 +290,7 @@ theorem convexBodySumFun_eq_zero_iff (x : mixedSpace K) :
   conv =>
     enter [1, w, hw]
     rw [mul_left_mem_nonZeroDivisors_eq_zero_iff
-      (mem_nonZeroDivisors_iff_ne_zero.mpr <| Nat.cast_ne_zero.mpr mult_ne_zero)]
+      (mem_nonZeroDivisors_iff_ne_zero.mpr mult_coe_ne_zero)]
   simp_rw [Finset.mem_univ, true_implies]
 
 open scoped Classical in
@@ -375,7 +375,7 @@ open MeasureTheory MeasureTheory.Measure Real in
 open scoped Classical in
 theorem convexBodySum_volume :
     volume (convexBodySum K B) = (convexBodySumFactor K) * (.ofReal B) ^ (finrank ℚ K) := by
-  obtain hB | hB := le_or_lt B 0
+  obtain hB | hB := le_or_gt B 0
   · rw [convexBodySum_volume_eq_zero_of_le_zero K hB, ofReal_eq_zero.mpr hB, zero_pow, mul_zero]
     exact finrank_pos.ne'
   · suffices volume (convexBodySum K 1) = (convexBodySumFactor K) by
@@ -411,8 +411,8 @@ theorem convexBodySum_volume :
           ← Finset.sum_neg_distrib, exp_add, exp_sum, ← integral_prod_mul, volume_eq_prod]
       _ = (∫ x : ℝ, exp (-|x|)) ^ nrRealPlaces K *
               (∫ x : ℂ, Real.exp (-2 * ‖x‖)) ^ nrComplexPlaces K := by
-        rw [integral_fintype_prod_eq_pow _ (fun x => exp (- ‖x‖)), integral_fintype_prod_eq_pow _
-          (fun x => exp (- 2 * ‖x‖))]
+        rw [integral_fintype_prod_volume_eq_pow _ (fun x => exp (- ‖x‖)),
+          integral_fintype_prod_volume_eq_pow _ (fun x => exp (- 2 * ‖x‖))]
         simp_rw [norm_eq_abs]
       _ =  (2 * Gamma (1 / 1 + 1)) ^ nrRealPlaces K *
               (π * (2 : ℝ) ^ (-(2 : ℝ) / 1) * Gamma (2 / 1 + 1)) ^ nrComplexPlaces K := by
@@ -535,7 +535,7 @@ theorem exists_primitive_element_lt_of_isReal {w₀ : InfinitePlace K} (hw₀ : 
     rw [convexBodyLT_volume, ← Finset.prod_erase_mul _ _ (Finset.mem_univ w₀)]
     simp_rw [ite_pow, one_pow]
     rw [Finset.prod_ite_eq']
-    simp_rw [Finset.not_mem_erase, ite_false, mult, hw₀, ite_true, one_mul, pow_one]
+    simp_rw [Finset.notMem_erase, ite_false, mult, hw₀, ite_true, one_mul, pow_one]
     exact hB
   obtain ⟨a, h_nz, h_le⟩ := exists_ne_zero_mem_ringOfIntegers_lt K this
   refine ⟨a, ?_, fun w ↦ lt_of_lt_of_le (h_le w) ?_⟩
@@ -553,7 +553,7 @@ theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀
     rw [convexBodyLT'_volume, ← Finset.prod_erase_mul _ _ (Finset.mem_univ w₀)]
     simp_rw [ite_pow, one_pow]
     rw [Finset.prod_ite_eq']
-    simp_rw [Finset.not_mem_erase, ite_false, mult, not_isReal_iff_isComplex.mpr hw₀,
+    simp_rw [Finset.notMem_erase, ite_false, mult, not_isReal_iff_isComplex.mpr hw₀,
       ite_true, ite_false, one_mul, NNReal.sq_sqrt]
     exact hB
   obtain ⟨a, h_nz, h_le, h_le₀⟩ := exists_ne_zero_mem_ringOfIntegers_lt' K ⟨w₀, hw₀⟩ this

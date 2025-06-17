@@ -14,12 +14,12 @@ import Mathlib.Data.Matrix.Diagonal
 This file defines vector and matrix multiplication
 
 ## Main definitions
- * `dotProduct`: the dot product between two vectors
- * `Matrix.mul`: multiplication of two matrices
- * `Matrix.mulVec`: multiplication of a matrix with a vector
- * `Matrix.vecMul`: multiplication of a vector with a matrix
- * `Matrix.vecMulVec`: multiplication of a vector with a vector to get a matrix
- * `Matrix.instRing`: square matrices form a ring
+* `dotProduct`: the dot product between two vectors
+* `Matrix.mul`: multiplication of two matrices
+* `Matrix.mulVec`: multiplication of a matrix with a vector
+* `Matrix.vecMul`: multiplication of a vector with a matrix
+* `Matrix.vecMulVec`: multiplication of a vector with a vector to get a matrix
+* `Matrix.instRing`: square matrices form a ring
 
 ## Notation
 
@@ -59,7 +59,9 @@ section DotProduct
 
 variable [Fintype m] [Fintype n]
 
-/-- `dotProduct v w` is the sum of the entrywise products `v i * w i` -/
+/-- `dotProduct v w` is the sum of the entrywise products `v i * w i`.
+
+See also `dotProductEquiv`. -/
 def dotProduct [Mul α] [AddCommMonoid α] (v w : m → α) : α :=
   ∑ i, v i * w i
 
@@ -208,8 +210,8 @@ protected alias Matrix.dotProduct_diagonal' := dotProduct_diagonal'
 
 @[simp]
 theorem single_dotProduct (x : α) (i : m) : Pi.single i x ⬝ᵥ v = x * v i := by
-  -- Porting note: (implicit arg) added `(f := fun _ => α)`
-  have : ∀ j ≠ i, Pi.single (f := fun _ => α) i x j * v j = 0 := fun j hij => by
+-- Porting note: added `(_ : m → α)`
+  have : ∀ j ≠ i, (Pi.single i x : m → α) j * v j = 0 := fun j hij => by
     simp [Pi.single_eq_of_ne hij]
   convert Finset.sum_eq_single i (fun j _ => this j) _ using 1 <;> simp
 
@@ -217,8 +219,8 @@ theorem single_dotProduct (x : α) (i : m) : Pi.single i x ⬝ᵥ v = x * v i :=
 
 @[simp]
 theorem dotProduct_single (x : α) (i : m) : v ⬝ᵥ Pi.single i x = v i * x := by
-  -- Porting note: (implicit arg) added `(f := fun _ => α)`
-  have : ∀ j ≠ i, v j * Pi.single (f := fun _ => α) i x j = 0 := fun j hij => by
+-- Porting note: added `(_ : m → α)`
+  have : ∀ j ≠ i, v j * (Pi.single i x : m → α) j = 0 := fun j hij => by
     simp [Pi.single_eq_of_ne hij]
   convert Finset.sum_eq_single i (fun j _ => this j) _ using 1 <;> simp
 
@@ -587,7 +589,8 @@ open Matrix
 namespace Matrix
 
 /-- For two vectors `w` and `v`, `vecMulVec w v i j` is defined to be `w i * v j`.
-    Put another way, `vecMulVec w v` is exactly `col w * row v`. -/
+Put another way, `vecMulVec w v` is exactly `replicateCol ι w * replicateRow ι v` for
+`Unique ι`; see `vecMulVec_eq`. -/
 def vecMulVec [Mul α] (w : m → α) (v : n → α) : Matrix m n α :=
   of fun x y => w x * v y
 
