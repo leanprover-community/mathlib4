@@ -40,7 +40,7 @@ objects, and structure morphisms of them satisfy appropriate consistency conditi
 class Bimon_Class (M : C) extends Mon_Class M, Comon_Class M where
   /- For the names of the conditions below, the unprimed names are reserved for the version where
   the argument `M` is explicit. -/
-  mul_comul' : μ[M] ≫ Δ[M] = (Δ[M] ⊗ Δ[M]) ≫ tensorμ M M M M ≫ (μ[M] ⊗ μ[M]) := by aesop_cat
+  mul_comul' : μ[M] ≫ Δ[M] = (Δ[M] ⊗ₘ Δ[M]) ≫ tensorμ M M M M ≫ (μ[M] ⊗ₘ μ[M]) := by aesop_cat
   one_comul' : η[M] ≫ Δ[M] = η[M ⊗ M] := by aesop_cat
   mul_counit' : μ[M] ≫ ε[M] = ε[M ⊗ M] := by aesop_cat
   one_counit' : η[M] ≫ ε[M] = 𝟙 (𝟙_ C) := by aesop_cat
@@ -54,7 +54,7 @@ variable (M : C) [Bimon_Class M]
 
 @[reassoc (attr := simp)]
 theorem mul_comul (M : C) [Bimon_Class M] :
-    μ[M] ≫ Δ[M] = (Δ[M] ⊗ Δ[M]) ≫ tensorμ M M M M ≫ (μ[M] ⊗ μ[M]) :=
+    μ[M] ≫ Δ[M] = (Δ[M] ⊗ₘ Δ[M]) ≫ tensorμ M M M M ≫ (μ[M] ⊗ₘ μ[M]) :=
   mul_comul'
 
 @[reassoc (attr := simp)]
@@ -276,21 +276,21 @@ instance (M : Bimon_ C) : Bimon_Class M.X.X where
 attribute [local simp] Mon_Class.tensorObj.one_def in
 @[reassoc]
 theorem one_comul (M : C) [Bimon_Class M] :
-    η[M] ≫ Δ[M] = (λ_ _).inv ≫ (η[M] ⊗ η[M]) := by
+    η[M] ≫ Δ[M] = (λ_ _).inv ≫ (η[M] ⊗ₘ η[M]) := by
   simp
 
 @[reassoc]
 theorem mul_counit (M : C) [Bimon_Class M] :
-    μ[M] ≫ ε[M] = (ε[M] ⊗ ε[M]) ≫ (λ_ _).hom := by
+    μ[M] ≫ ε[M] = (ε[M] ⊗ₘ ε[M]) ≫ (λ_ _).hom := by
   simp
 
 /-- Compatibility of the monoid and comonoid structures, in terms of morphisms in `C`. -/
 @[reassoc (attr := simp)] theorem compatibility (M : C) [Bimon_Class M] :
-    (Δ[M] ⊗ Δ[M]) ≫
+    (Δ[M] ⊗ₘ Δ[M]) ≫
       (α_ _ _ (M ⊗ M)).hom ≫ M ◁ (α_ _ _ _).inv ≫
       M ◁ (β_ M M).hom ▷ M ≫
       M ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv ≫
-      (μ[M] ⊗ μ[M]) =
+      (μ[M] ⊗ₘ μ[M]) =
     μ[M] ≫ Δ[M] := by
   simp only [Bimon_Class.mul_comul, tensorμ, Category.assoc]
 
