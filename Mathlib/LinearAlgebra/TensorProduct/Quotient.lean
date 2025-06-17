@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Jujian Zhang
 -/
 
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+import Mathlib.LinearAlgebra.TensorProduct.Associator
 import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.RingTheory.Ideal.Operations
@@ -158,8 +158,9 @@ noncomputable def quotTensorEquivQuotSMul (I : Ideal R) :
     ((R ⧸ I) ⊗[R] M) ≃ₗ[R] M ⧸ (I • (⊤ : Submodule R M)) :=
   quotientTensorEquiv M I ≪≫ₗ
   (Submodule.Quotient.equiv _ _ (TensorProduct.lid R M) <| by
-    erw [← LinearMap.range_comp, ← (Submodule.topEquiv.lTensor I).range_comp,
-      Submodule.smul_eq_map₂, map₂_eq_range_lift_comp_mapIncl]
+    rw [← Submodule.map_coe_toLinearMap, ← LinearMap.range_comp,
+      ← (Submodule.topEquiv.lTensor I).range_comp, Submodule.smul_eq_map₂,
+      map₂_eq_range_lift_comp_mapIncl]
     exact congr_arg _ (TensorProduct.ext' fun _ _ ↦  rfl))
 
 variable (M) in
@@ -176,7 +177,7 @@ lemma quotTensorEquivQuotSMul_mk_tmul (I : Ideal R) (r : R) (x : M) :
   (quotTensorEquivQuotSMul M I).eq_symm_apply.mp <|
     Eq.trans (congrArg (· ⊗ₜ[R] x) <|
         Eq.trans (congrArg (Ideal.Quotient.mk I)
-                    (Eq.trans (smul_eq_mul R) (mul_one r))).symm <|
+                    (Eq.trans (smul_eq_mul ..) (mul_one r))).symm <|
           Submodule.Quotient.mk_smul I r 1) <|
       smul_tmul r _ x
 

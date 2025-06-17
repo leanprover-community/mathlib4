@@ -126,7 +126,7 @@ lemma of_small_tripling [DecidableEq G] {A : Finset G} (hA₁ : 1 ∈ A) (hAsymm
   sq_covBySMul := by
     replace hA := calc (#(A ^ 4 * A) : ℝ)
       _ = #(A ^ 5) := by rw [← pow_succ]
-      _ ≤ K ^ 3 * #A := small_pow_of_small_tripling' (by omega) hA hAsymm
+      _ ≤ K ^ 3 * #A := small_pow_of_small_tripling (by omega) hA hAsymm
     have hA₀ : A.Nonempty := ⟨1, hA₁⟩
     obtain ⟨F, -, hF, hAF⟩ := ruzsa_covering_mul hA₀ hA
     exact ⟨F, hF, by norm_cast; simpa [div_eq_mul_inv, pow_succ, mul_assoc, hAsymm] using hAF⟩
@@ -186,7 +186,7 @@ lemma isApproximateSubgroup_one {A : Set G} :
       let H : Subgroup G :=
         { carrier := A
           one_mem' := hA.one_mem
-          inv_mem' hx := by dsimp; rwa [← hA.inv_eq_self, inv_mem_inv]
+          inv_mem' hx := by rwa [← hA.inv_eq_self, inv_mem_inv]
           mul_mem' hx hy := this (mul_mem_mul hx hy) }
       ⟨H, rfl⟩
     obtain ⟨x, hx⟩ : ∃ x : G, A * A ⊆ x • A := by

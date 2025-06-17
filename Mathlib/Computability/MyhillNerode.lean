@@ -85,9 +85,9 @@ theorem accepts_toDFA : L.toDFA.accepts = L := by
   ext x
   rw [DFA.mem_accepts]
   suffices L.toDFA.eval x = L.leftQuotient x by simp [this]
-  induction x using List.list_reverse_induction with
-  | base => simp
-  | ind x a ih => simp [ih, leftQuotient_append]
+  induction x using List.reverseRecOn with
+  | nil => simp
+  | append_singleton x a ih => simp [ih, leftQuotient_append]
 
 theorem IsRegular.of_finite_range_leftQuotient (h : Set.Finite (Set.range L.leftQuotient)) :
     L.IsRegular :=

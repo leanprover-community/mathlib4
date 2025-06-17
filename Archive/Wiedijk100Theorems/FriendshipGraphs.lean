@@ -5,9 +5,6 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 import Mathlib.LinearAlgebra.Matrix.Charpoly.FiniteField
-import Mathlib.Data.Int.ModEq
-import Mathlib.Data.ZMod.Basic
-import Mathlib.Tactic.IntervalCases
 
 /-!
 # The Friendship Theorem
@@ -201,7 +198,7 @@ theorem card_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1) (hd : G.IsRegu
     (Fintype.card V : ZMod p) = 1 := by
   have hpos : 0 < Fintype.card V := Fintype.card_pos_iff.mpr inferInstance
   rw [← Nat.succ_pred_eq_of_pos hpos, Nat.succ_eq_add_one, Nat.pred_eq_sub_one]
-  simp only [add_left_eq_self, Nat.cast_add, Nat.cast_one]
+  simp only [add_eq_right, Nat.cast_add, Nat.cast_one]
   have h := congr_arg (fun n : ℕ => (n : ZMod p)) (card_of_regular hG hd)
   revert h; simp [dmod]
 
@@ -230,10 +227,11 @@ theorem adjMatrix_pow_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1)
   match k with
   | 0 | 1 => exfalso; linarith
   | k + 2 =>
-    induction' k with k hind
-    · exact adjMatrix_sq_mod_p_of_regular hG dmod hd
-    rw [pow_succ', hind (Nat.le_add_left 2 k)]
-    exact adjMatrix_mul_const_one_mod_p_of_regular dmod hd
+    induction k with
+    | zero => exact adjMatrix_sq_mod_p_of_regular hG dmod hd
+    | succ k hind =>
+      rw [pow_succ', hind (Nat.le_add_left 2 k)]
+      exact adjMatrix_mul_const_one_mod_p_of_regular dmod hd
 
 variable [Nonempty V]
 
@@ -254,7 +252,7 @@ theorem false_of_three_le_degree (hd : G.IsRegularOfDegree d) (h : 3 ≤ d) : Fa
   have hp2 : 2 ≤ p := (Fact.out (p := p.Prime)).two_le
   have dmod : (d : ZMod p) = 1 := by
     rw [← Nat.succ_pred_eq_of_pos dpos, Nat.succ_eq_add_one, Nat.pred_eq_sub_one]
-    simp only [add_left_eq_self, Nat.cast_add, Nat.cast_one]
+    simp only [add_eq_right, Nat.cast_add, Nat.cast_one]
     exact p_dvd_d_pred
   have Vmod := card_mod_p_of_regular hG dmod hd
   -- now we reduce to a trace calculation
@@ -337,7 +335,7 @@ include hG in
 theorem friendship_theorem [Nonempty V] : ExistsPolitician G := by
   by_contra npG
   rcases hG.isRegularOf_not_existsPolitician npG with ⟨d, dreg⟩
-  cases' lt_or_le d 3 with dle2 dge3
+  rcases lt_or_ge d 3 with dle2 | dge3
   · exact npG (hG.existsPolitician_of_degree_le_two dreg (Nat.lt_succ_iff.mp dle2))
   · exact hG.false_of_three_le_degree dreg dge3
 

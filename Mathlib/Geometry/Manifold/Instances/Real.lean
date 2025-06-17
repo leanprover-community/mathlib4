@@ -3,7 +3,8 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Geometry.Manifold.IsManifold
+import Mathlib.Geometry.Manifold.IsManifold.Basic
+import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
@@ -11,7 +12,9 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 
 We introduce the necessary bits to be able to define manifolds modelled over `ℝ^n`, boundaryless
 or with boundary or with corners. As a concrete example, we construct explicitly the manifold with
-boundary structure on the real interval `[x, y]`.
+boundary structure on the real interval `[x, y]`, and prove that its boundary is indeed `{x,y}`
+whenever `x < y`. As a corollary, a product `M × [x, y]` with a manifold `M` without boundary
+has boundary `M × {x, y}`.
 
 More specifically, we introduce
 * `modelWithCornersEuclideanHalfSpace n :
@@ -77,11 +80,9 @@ instance [NeZero n] : Inhabited (EuclideanHalfSpace n) :=
 instance : Inhabited (EuclideanQuadrant n) :=
   ⟨⟨0, fun _ => le_rfl⟩⟩
 
-instance {n : ℕ} [NeZero n] : Zero (EuclideanHalfSpace n) where
-  zero :=  ⟨fun _ ↦ 0, by norm_num⟩
+instance {n : ℕ} [NeZero n] : Zero (EuclideanHalfSpace n) := ⟨⟨fun _ ↦ 0, by norm_num⟩⟩
 
-instance {n : ℕ} : Zero (EuclideanQuadrant n) where
-  zero :=  ⟨fun _ ↦ 0, by norm_num⟩
+instance {n : ℕ} : Zero (EuclideanQuadrant n) := ⟨⟨fun _ ↦ 0, by norm_num⟩⟩
 
 @[ext]
 theorem EuclideanQuadrant.ext (x y : EuclideanQuadrant n) (h : x.1 = y.1) : x = y :=
@@ -116,7 +117,6 @@ instance : LocPathConnectedSpace (EuclideanQuadrant n) :=
 theorem range_euclideanHalfSpace (n : ℕ) [NeZero n] :
     (range fun x : EuclideanHalfSpace n => x.val) = { y | 0 ≤ y 0 } :=
   Subtype.range_val
-@[deprecated (since := "2024-04-05")] alias range_half_space := range_euclideanHalfSpace
 
 open ENNReal in
 @[simp]
@@ -163,7 +163,6 @@ theorem frontier_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
 theorem range_euclideanQuadrant (n : ℕ) :
     (range fun x : EuclideanQuadrant n => x.val) = { y | ∀ i : Fin n, 0 ≤ y i } :=
   Subtype.range_val
-@[deprecated (since := "2024-04-05")] alias range_quadrant := range_euclideanQuadrant
 
 end
 
@@ -382,15 +381,18 @@ lemma IccRightChart_extend_top :
   norm_num [IccRightChart, modelWithCornersEuclideanHalfSpace_zero]
   congr
 
-lemma IccRightChart_extend_right_mem_frontier :
+lemma IccRightChart_extend_top_mem_frontier :
     (IccRightChart x y).extend (𝓡∂ 1) ⊤ ∈ frontier (range (𝓡∂ 1)) := by
   rw [IccRightChart_extend_top, frontier_range_modelWithCornersEuclideanHalfSpace,
     mem_setOf, PiLp.zero_apply]
 
+@[deprecated (since := "2025-01-25")]
+alias IccRightChart_extend_right_mem_frontier := IccRightChart_extend_top_mem_frontier
+
 /-- Charted space structure on `[x, y]`, using only two charts taking values in
 `EuclideanHalfSpace 1`.
 -/
-instance IccChartedSpace (x y : ℝ) [h : Fact (x < y)] :
+instance instIccChartedSpace (x y : ℝ) [h : Fact (x < y)] :
     ChartedSpace (EuclideanHalfSpace 1) (Icc x y) where
   atlas := {IccLeftChart x y, IccRightChart x y}
   chartAt z := if z.val < y then IccLeftChart x y else IccRightChart x y
@@ -403,8 +405,61 @@ instance IccChartedSpace (x y : ℝ) [h : Fact (x < y)] :
       simpa only [not_lt] using h'
   chart_mem_atlas z := by by_cases h' : (z : ℝ) < y <;> simp [h']
 
-/-- The manifold structure on `[x, y]` is smooth.
--/
+@[simp]
+lemma Icc_chartedSpaceChartAt {z : Set.Icc x y} :
+    chartAt _ z = if z.val < y then IccLeftChart x y else IccRightChart x y := rfl
+
+lemma Icc_chartedSpaceChartAt_of_le_top {z : Set.Icc x y} (h : z.val < y) :
+    chartAt _ z = IccLeftChart x y := by
+  simp [Icc_chartedSpaceChartAt, h]
+
+lemma Icc_chartedSpaceChartAt_of_top_le {z : Set.Icc x y} (h : y ≤ z.val) :
+    chartAt _ z = IccRightChart x y := by
+  simp [Icc_chartedSpaceChartAt, reduceIte, not_lt.mpr h]
+
+lemma Icc_isBoundaryPoint_bot : (𝓡∂ 1).IsBoundaryPoint (⊥ : Set.Icc x y) := by
+  rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt,
+    Icc_chartedSpaceChartAt_of_le_top (by norm_num [hxy.out])]
+  exact IccLeftChart_extend_bot_mem_frontier
+
+lemma Icc_isBoundaryPoint_top : (𝓡∂ 1).IsBoundaryPoint (⊤ : Set.Icc x y) := by
+  rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt,
+    Icc_chartedSpaceChartAt_of_top_le (by norm_num)]
+  exact IccRightChart_extend_top_mem_frontier
+
+lemma Icc_isInteriorPoint_interior {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
+    (𝓡∂ 1).IsInteriorPoint p := by
+  rw [ModelWithCorners.IsInteriorPoint, extChartAt, Icc_chartedSpaceChartAt_of_le_top hp.2,
+    interior_range_modelWithCornersEuclideanHalfSpace]
+  exact IccLeftChart_extend_interior_pos hp
+
+lemma boundary_Icc : (𝓡∂ 1).boundary (Icc x y) = {⊥, ⊤} := by
+  ext p
+  rcases Set.eq_endpoints_or_mem_Ioo_of_mem_Icc p.2 with (hp | hp | hp)
+  · have : p = ⊥ := SetCoe.ext hp
+    rw [this]
+    apply iff_of_true Icc_isBoundaryPoint_bot (mem_insert ⊥ {⊤})
+  · have : p = ⊤ := SetCoe.ext hp
+    rw [this]
+    apply iff_of_true Icc_isBoundaryPoint_top (mem_insert_of_mem ⊥ rfl)
+  · apply iff_of_false
+    · simpa [← mem_compl_iff, ModelWithCorners.compl_boundary] using
+        Icc_isInteriorPoint_interior hp
+    · rw [mem_insert_iff, mem_singleton_iff]
+      push_neg
+      constructor <;> by_contra h <;> rw [congrArg Subtype.val h] at hp
+      exacts [left_mem_Ioo.mp hp, right_mem_Ioo.mp hp]
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+
+/-- A product `M × [x,y]` for `M` boundaryless has boundary `M × {x, y}`. -/
+lemma boundary_product [I.Boundaryless] :
+    (I.prod (𝓡∂ 1)).boundary (M × Icc x y) = Set.prod univ {⊥, ⊤} := by
+  rw [I.boundary_of_boundaryless_left, boundary_Icc]
+
+/-- The manifold structure on `[x, y]` is smooth. -/
 instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
     IsManifold (𝓡∂ 1) n (Icc x y) := by
   have M : ContDiff ℝ n (show EuclideanSpace ℝ (Fin 1) → EuclideanSpace ℝ (Fin 1)
@@ -444,7 +499,7 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
 
 /-! Register the manifold structure on `Icc 0 1`. These are merely special cases of
-`IccChartedSpace` and `instIsManifoldIcc`. -/
+`instIccChartedSpace` and `instIsManifoldIcc`. -/
 
 section
 
