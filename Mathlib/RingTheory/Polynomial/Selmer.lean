@@ -38,6 +38,7 @@ variable (A K L B : Type*) [CommRing A] [CommRing B] [Field K] [Field L]
   [IsScalarTower A K L] [IsScalarTower A B L]
   [IsIntegrallyClosed A] [IsIntegralClosure B A L]
 
+-- todo: generalize this to arbitrary group acting
 instance IsIntegralClosure.SMulCommClass [FiniteDimensional K L] :
     let _ := IsIntegralClosure.MulSemiringAction A K L B
     SMulCommClass (L ≃ₐ[K] L) A B := by
@@ -65,14 +66,6 @@ variable {A B : Type*} [CommSemiring A] [Semiring B] [Algebra A B] {P : Ideal B}
 -- PRed
 instance LiesOver.smul [h : P.LiesOver p] : (g • P).LiesOver p :=
   ⟨h.over.trans (under_smul A P g).symm⟩
-
-end Ideal
-
-namespace Ideal
-
-variable {A : Type*} [CommSemiring A] (p : Ideal A) (B : Type*) [Semiring B] [Algebra A B]
-
-theorem mem_primesOver {P : Ideal B} : P ∈ p.primesOver B ↔ P.IsPrime ∧ P.LiesOver p := Iff.rfl
 
 end Ideal
 
@@ -199,19 +192,14 @@ attribute [local instance] Gal.splits_ℚ_ℂ
 
 open NumberField
 
-variable {K : Type*} [Field K] [NumberField K] [IsGalois ℚ K]
+variable (K : Type*) [Field K] [NumberField K] [IsGalois ℚ K]
+  (G : Type*) [Group G] [MulSemiringAction G (𝓞 K)]
 
--- ideally, do this for any G, in particular for Aut(𝓞 K)
-noncomputable def inertiaSubgroup  (q : Ideal (𝓞 K)) : Subgroup (K ≃ₐ[ℚ] K) :=
-  Ideal.inertiaSubgroup (q.under ℤ) q (K ≃ₐ[ℚ] K)
-
-variable (K) [IsGalois ℚ K]
-
-theorem keythm : ⨆ (q : Ideal (𝓞 K)) (hq : q.IsMaximal), inertiaSubgroup q = ⊤ := by
+theorem keythm :
+    ⨆ (q : Ideal (𝓞 K)) (hq : q.IsMaximal), Ideal.inertiaSubgroup (q.under ℤ) q G = ⊤ := by
   -- key idea: fixed field of this subgroup has no ramified primes
-  let G := K ≃ₐ[ℚ] K
-  let H := ⨆ (q : Ideal (𝓞 K)) (hq : q.IsMaximal), inertiaSubgroup q
-  let F := fixedField H
+  let H := ⨆ (q : Ideal (𝓞 K)) (hq : q.IsMaximal), Ideal.inertiaSubgroup (q.under ℤ) q G
+  let F := fixedField H -- or FixedPoints.intermediateField H ?
   change H = ⊤
   suffices h : F = ⊥ by
     rw [← fixingSubgroup_fixedField H]
