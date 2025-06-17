@@ -36,8 +36,6 @@ namespace Equiv
 def pprodEquivProd {α β} : PProd α β ≃ α × β where
   toFun x := (x.1, x.2)
   invFun x := ⟨x.1, x.2⟩
-  left_inv := fun _ => rfl
-  right_inv := fun _ => rfl
 
 /-- Product of two equivalences, in terms of `PProd`. If `α ≃ β` and `γ ≃ δ`, then
 `PProd α γ ≃ PProd β δ`. -/
@@ -104,8 +102,6 @@ def prodAssoc (α β γ) : (α × β) × γ ≃ α × β × γ :=
 def prodProdProdComm (α β γ δ) : (α × β) × γ × δ ≃ (α × γ) × β × δ where
   toFun abcd := ((abcd.1.1, abcd.2.1), (abcd.1.2, abcd.2.2))
   invFun acbd := ((acbd.1.1, acbd.2.1), (acbd.1.2, acbd.2.2))
-  left_inv := fun ⟨⟨_a, _b⟩, ⟨_c, _d⟩⟩ => rfl
-  right_inv := fun ⟨⟨_a, _c⟩, ⟨_b, _d⟩⟩ => rfl
 
 @[simp]
 theorem prodProdProdComm_symm (α β γ δ) :
@@ -367,8 +363,6 @@ def arrowProdEquivProdArrow (α : Type*) (β γ : α → Type*) :
     ((i : α) → β i × γ i) ≃ ((i : α) → β i) × ((i : α) → γ i) where
   toFun := fun f => (fun c => (f c).1, fun c => (f c).2)
   invFun := fun p c => (p.1 c, p.2 c)
-  left_inv := fun _ => rfl
-  right_inv := fun p => by cases p; rfl
 
 open Sum
 
@@ -380,7 +374,6 @@ def sumPiEquivProdPi {ι ι'} (π : ι ⊕ ι' → Type*) :
   toFun f := ⟨fun i => f (inl i), fun i' => f (inr i')⟩
   invFun g := Sum.rec g.1 g.2
   left_inv f := by ext (i | i) <;> rfl
-  right_inv _ := Prod.ext rfl rfl
 
 /-- The equivalence between a product of two dependent functions types and a single dependent
 function type. Basically a symmetric version of `Equiv.sumPiEquivProdPi`. -/
@@ -466,7 +459,6 @@ def boolArrowEquivProd (α) : (Bool → α) ≃ α × α where
   toFun f := (f false, f true)
   invFun p b := b.casesOn p.1 p.2
   left_inv _ := funext <| Bool.forall_bool.2 ⟨rfl, rfl⟩
-  right_inv := fun _ => rfl
 
 end
 
@@ -480,8 +472,6 @@ def subtypeProdEquivProd {α β} {p : α → Prop} {q : β → Prop} :
     { c : α × β // p c.1 ∧ q c.2 } ≃ { a // p a } × { b // q b } where
   toFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
   invFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
-  left_inv := fun ⟨⟨_, _⟩, ⟨_, _⟩⟩ => rfl
-  right_inv := fun ⟨⟨_, _⟩, ⟨_, _⟩⟩ => rfl
 
 /-- A subtype of a `Prod` that depends only on the first component is equivalent to the
 corresponding subtype of the first type times the second type. -/
@@ -489,16 +479,12 @@ def prodSubtypeFstEquivSubtypeProd {α β} {p : α → Prop} :
     {s : α × β // p s.1} ≃ {a // p a} × β where
   toFun x := ⟨⟨x.1.1, x.2⟩, x.1.2⟩
   invFun x := ⟨⟨x.1.1, x.2⟩, x.1.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- A subtype of a `Prod` is equivalent to a sigma type whose fibers are subtypes. -/
 def subtypeProdEquivSigmaSubtype {α β} (p : α → β → Prop) :
     { x : α × β // p x.1 x.2 } ≃ Σa, { b : β // p a b } where
   toFun x := ⟨x.1.1, x.1.2, x.property⟩
   invFun x := ⟨⟨x.1, x.2⟩, x.2.property⟩
-  left_inv x := by ext <;> rfl
-  right_inv := fun ⟨_, _, _⟩ => rfl
 
 /-- The type `∀ (i : α), β i` can be split as a product by separating the indices in `α`
 depending on whether they satisfy a predicate `p` or not. -/
