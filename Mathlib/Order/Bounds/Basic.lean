@@ -922,34 +922,18 @@ lemma lowerBounds_prod_of_nonempty_eq {β : Type*} [Preorder β] {t : Set β} (h
 
 lemma isLUB_of_element_prod_set {β : Type*} [Preorder β] {t : Set β} [het : Nonempty t] {u : β}
     (hu : IsLUB t u) : IsLUB ({a} ×ˢ t) (a,u) := by
-  rw [IsLUB]
-  rw [upperBounds_prod_of_nonempty_eq (by aesop)]
-  simp
-  rw [IsLeast]
+  rw [IsLUB,
+    upperBounds_prod_of_nonempty_eq (by aesop) (nonempty_subtype.mpr (nonempty_subtype.mp het)),
+    upperBounds_singleton]
   constructor
-  · rw [prodMk_mem_set_prod_eq]
-    constructor
-    · exact left_mem_Ici
-    · exact hu.1
-  · rw [lowerBounds_prod_of_nonempty_eq (by
-      simp_all only [nonempty_subtype, mem_Ici]
-      obtain ⟨w, h⟩ := het
-      apply Exists.intro
-      · rfl)]
+  · exact ⟨left_mem_Ici, hu.1⟩
+  · rw [lowerBounds_prod_of_nonempty_eq (nonempty_subtype.mpr Set.nonempty_Ici)
+      (nonempty_subtype.mpr ⟨u, mem_of_mem_inter_left hu⟩)]
     simp
     constructor
-    · exact fun ⦃a_1⦄ a ↦ a
+    · rw [lowerBounds_Ici]
+      exact right_mem_Iic
     · exact mem_of_mem_inter_right hu
-    have e1 : u ∈ upperBounds t := by
-      exact mem_of_mem_inter_left hu
-    aesop
-  have e1 : u ∈ upperBounds t := by
-    exact mem_of_mem_inter_left hu
-  aesop
-
-
-
-
 
 end Preorder
 
