@@ -148,7 +148,7 @@ lemma tendsto_mul_right_of_forall_nonneg_tendsto {l : Filter A}
     (h : ∀ m, 0 ≤ m → ‖m‖ < 1 → Tendsto (· * m) l (𝓝 m)) (m : A) :
     Tendsto (· * m) l (𝓝 m) := by
   obtain ⟨n, c, x, rfl⟩ := mem_span_set'.mp <| by
-    show m ∈ span ℂ ({x | 0 ≤ x} ∩ ball 0 1)
+    change m ∈ span ℂ ({x | 0 ≤ x} ∩ ball 0 1)
     simp [span_nonneg_inter_unitBall]
   simp_rw [Finset.mul_sum]
   refine tendsto_finset_sum _ fun i _ ↦ ?_

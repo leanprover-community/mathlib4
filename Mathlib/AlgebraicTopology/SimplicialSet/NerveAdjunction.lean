@@ -173,7 +173,7 @@ lemma toNerve₂.mk_naturality_δ1i (i : Fin 3) : toNerve₂.mk.naturalityProper
   simp only [ObjectProperty.ι_map]
   fin_cases i
   · simp only [Fin.zero_eta]
-    show _ = (nerve C).δ 0 _
+    change _ = (nerve C).δ 0 _
     rw [nerve.δ₀_mk₂_eq]
     fapply ReflPrefunctor.congr_mk₁_map
     · unfold ev1₂ ι1₂ δ₂
@@ -188,7 +188,7 @@ lemma toNerve₂.mk_naturality_δ1i (i : Fin 3) : toNerve₂.mk.naturalityProper
       exact congrFun (congrArg X.map (congrArg Quiver.Hom.op this.symm)) x
     · aesop
   · simp only [Fin.mk_one]
-    show _ = (nerve C).δ 1 _
+    change _ = (nerve C).δ 1 _
     rw [nerve.δ₁_mk₂_eq]
     rw [← hyp]
     fapply ReflPrefunctor.congr_mk₁_map
@@ -198,7 +198,7 @@ lemma toNerve₂.mk_naturality_δ1i (i : Fin 3) : toNerve₂.mk.naturalityProper
       simp [← FunctorToTypes.map_comp_apply, ← op_comp]
     · aesop
   · simp only [Fin.reduceFinMk]
-    show _ = (nerve C).δ 2 _
+    change _ = (nerve C).δ 2 _
     rw [nerve.δ₂_mk₂_eq]
     fapply ReflPrefunctor.congr_mk₁_map
     · unfold ev0₂ ι0₂ δ₂
@@ -363,7 +363,7 @@ nonrec def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ :=
       rw [← hoFunctor₂_naturality (nerve₂Adj.unit.app X)]
       dsimp
       rw [nerve₂Adj.unit.map_app_eq X, Functor.assoc, id_comp]
-      show _ ⋙ (HomotopyCategory.quotientFunctor _ ⋙ nerve₂Adj.counit.app (hoFunctor₂.obj X)) = _
+      change _ ⋙ (HomotopyCategory.quotientFunctor _ ⋙ nerve₂Adj.counit.app (hoFunctor₂.obj X)) = _
       rw [nerve₂Adj.counit.app_eq]
       dsimp
       rw [← Cat.comp_eq_comp, ← assoc, ← Cat.freeRefl.map_comp, ReflQuiv.comp_eq_comp,
@@ -389,7 +389,7 @@ nonrec def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ :=
         ← ReflQuiv.comp_eq_comp (X := ReflQuiv.of _) (Y := ReflQuiv.of _),
         assoc, assoc, ← Functor.comp_map, ← OneTruncation₂.ofNerve₂.natIso.inv.naturality]
       conv => lhs; rhs; rw [← assoc]
-      show _ ≫ (ReflQuiv.forget.map _ ≫ ReflQuiv.forget.map _) ≫ _ = _
+      change _ ≫ (ReflQuiv.forget.map _ ≫ ReflQuiv.forget.map _) ≫ _ = _
       rw [← ReflQuiv.forget.map_comp]
       dsimp
       conv => lhs; rhs; lhs; rw [Cat.comp_eq_comp]

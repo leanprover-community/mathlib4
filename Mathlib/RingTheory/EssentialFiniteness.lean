@@ -253,7 +253,7 @@ def EssFiniteType.finset (hf : f.EssFiniteType) : Finset S :=
 
 lemma FiniteType.essFiniteType (hf : f.FiniteType) : f.EssFiniteType := by
   algebraize [f]
-  show Algebra.EssFiniteType R S
+  change Algebra.EssFiniteType R S
   infer_instance
 
 lemma EssFiniteType.ext (hf : f.EssFiniteType) {g₁ g₂ : S →+* T}

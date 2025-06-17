@@ -138,7 +138,7 @@ lemma hom_ext {f g : X ⟶ 𝔸(n; S)}
     (h₁ : f ≫ 𝔸(n; S) ↘ S = g ≫ 𝔸(n; S) ↘ S)
     (h₂ : ∀ i, f.appTop (coord S i) = g.appTop (coord S i)) : f = g := by
   apply pullback.hom_ext h₁
-  show f ≫ toSpecMvPoly _ _ = g ≫ toSpecMvPoly _ _
+  change f ≫ toSpecMvPoly _ _ = g ≫ toSpecMvPoly _ _
   apply (toSpecMvPolyIntEquiv n).injective
   ext i
   rw [toSpecMvPolyIntEquiv_comp, toSpecMvPolyIntEquiv_comp]
@@ -202,7 +202,7 @@ def isoOfIsAffine [IsAffine S] :
           Category.comp_id]
         ext : 1
         apply ringHom_ext'
-        · show _ = (CommRingCat.ofHom C ≫ _).hom
+        · change _ = (CommRingCat.ofHom C ≫ _).hom
           rw [CommRingCat.hom_comp, RingHom.comp_assoc, CommRingCat.hom_ofHom, eval₂Hom_comp_C,
             ← CommRingCat.hom_comp, ← CommRingCat.hom_ext_iff,
             ← cancel_mono (Scheme.ΓSpecIso _).hom]
@@ -406,7 +406,7 @@ instance [Finite n] : LocallyOfFinitePresentation (𝔸(n; S) ↘ S) :=
   exact Algebra.algebra_ext _ _ fun _ ↦ rfl
 
 lemma isOpenMap_over : IsOpenMap (𝔸(n; S) ↘ S).base := by
-  show topologically @IsOpenMap _
+  change topologically @IsOpenMap _
   wlog hS : ∃ R, S = Spec R
   · refine (IsLocalAtTarget.iff_of_openCover (P := topologically @IsOpenMap) S.affineCover).mpr ?_
     intro i

@@ -98,7 +98,7 @@ def ofSym {n : ℕ} {σ : Type*} (s : Sym σ n) [DecidableEq σ] : n.Partition w
   parts := s.1.dedup.map s.1.count
   parts_pos := by simp [Multiset.count_pos]
   parts_sum := by
-    show ∑ a ∈ s.1.toFinset, count a s.1 = n
+    change ∑ a ∈ s.1.toFinset, count a s.1 = n
     rw [toFinset_sum_count_eq]
     exact s.2
 

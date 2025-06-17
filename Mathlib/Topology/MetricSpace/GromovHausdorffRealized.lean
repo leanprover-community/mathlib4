@@ -285,7 +285,7 @@ private theorem HD_lipschitz_aux1 (f g : Cb X Y) :
     refine Monotone.map_ciInf_of_continuousAt (continuousAt_id.add continuousAt_const) ?_ ?_
     · intro x y hx
       simpa
-    · show BddBelow (range fun y : Y => g (inl x, inr y))
+    · change BddBelow (range fun y : Y => g (inl x, inr y))
       exact ⟨cg, forall_mem_range.2 fun i => Hcg _⟩
   have E2 : (⨆ x, ⨅ y, g (inl x, inr y)) + dist f g = ⨆ x, (⨅ y, g (inl x, inr y)) + dist f g := by
     refine Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const) ?_ ?_
@@ -313,7 +313,7 @@ private theorem HD_lipschitz_aux2 (f g : Cb X Y) :
     refine Monotone.map_ciInf_of_continuousAt (continuousAt_id.add continuousAt_const) ?_ ?_
     · intro x y hx
       simpa
-    · show BddBelow (range fun x : X => g (inl x, inr y))
+    · change BddBelow (range fun x : X => g (inl x, inr y))
       exact ⟨cg, forall_mem_range.2 fun i => Hcg _⟩
   have E2 : (⨆ y, ⨅ x, g (inl x, inr y)) + dist f g = ⨆ y, (⨅ x, g (inl x, inr y)) + dist f g := by
     refine Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const) ?_ ?_
