@@ -203,16 +203,16 @@ theorem sum_map_singleton (s : Multiset α) : (s.map fun a => ({a} : Multiset α
   Multiset.induction_on s (by simp) (by simp)
 
 theorem sum_nat_mod (s : Multiset ℕ) (n : ℕ) : s.sum % n = (s.map (· % n)).sum % n := by
-  induction s using Multiset.induction <;> simp -loopProtection [Nat.add_mod, *]
+  induction s using Multiset.induction <;> simp [Nat.add_mod, *]
 
 theorem prod_nat_mod (s : Multiset ℕ) (n : ℕ) : s.prod % n = (s.map (· % n)).prod % n := by
-  induction s using Multiset.induction <;> simp -loopProtection [Nat.mul_mod, *]
+  induction s using Multiset.induction <;> simp [Nat.mul_mod, *]
 
 theorem sum_int_mod (s : Multiset ℤ) (n : ℤ) : s.sum % n = (s.map (· % n)).sum % n := by
-  induction s using Multiset.induction <;> simp -loopProtection [Int.add_emod, *]
+  induction s using Multiset.induction <;> simp [Int.add_emod, *]
 
 theorem prod_int_mod (s : Multiset ℤ) (n : ℤ) : s.prod % n = (s.map (· % n)).prod % n := by
-  induction s using Multiset.induction <;> simp -loopProtection [Int.mul_emod, *]
+  induction s using Multiset.induction <;> simp [Int.mul_emod, *]
 
 section OrderedSub
 

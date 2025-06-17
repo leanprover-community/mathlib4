@@ -285,7 +285,7 @@ theorem interior_compl : interior sᶜ = (closure s)ᶜ := by
 
 @[simp]
 theorem closure_compl : closure sᶜ = (interior s)ᶜ := by
-  simp [closure_eq_compl_interior_compl, -interior_compl]
+  simp [closure_eq_compl_interior_compl]
 
 theorem mem_closure_iff :
     x ∈ closure s ↔ ∀ o, IsOpen o → x ∈ o → (o ∩ s).Nonempty :=

@@ -981,7 +981,7 @@ lemma graphOn_comp (s : Set α) (f : α → β) (g : β → γ) :
 lemma graphOn_univ_eq_range : univ.graphOn f = range fun x ↦ (x, f x) := image_univ
 
 @[simp] lemma graphOn_inj {g : α → β} : s.graphOn f = s.graphOn g ↔ s.EqOn f g := by
-  simp -loopProtection [Set.ext_iff, funext_iff, forall_swap, EqOn]
+  simp [Set.ext_iff, funext_iff, forall_swap, EqOn]
 
 lemma graphOn_prod_graphOn (s : Set α) (t : Set β) (f : α → γ) (g : β → δ) :
     s.graphOn f ×ˢ t.graphOn g = Equiv.prodProdProdComm .. ⁻¹' (s ×ˢ t).graphOn (Prod.map f g) := by

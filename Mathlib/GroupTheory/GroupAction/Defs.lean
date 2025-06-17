@@ -369,7 +369,7 @@ lemma orbitRel.Quotient.orbit_injective :
   intro x y h
   simp_rw [orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq', orbit_eq_iff,
     ← orbitRel_apply] at h
-  simpa [← Quotient.eq'', -Quotient.eq] using h
+  simpa [← Quotient.eq''] using h
 
 @[to_additive (attr := simp)]
 lemma orbitRel.Quotient.orbit_inj {x y : orbitRel.Quotient G α} : x.orbit = y.orbit ↔ x = y :=

@@ -461,7 +461,7 @@ theorem lt_iff_exists_rat_btwn (a b : ℝ≥0) :
       let ⟨q, haq, hqb⟩ := exists_rat_btwn h
       have : 0 ≤ (q : ℝ) := le_trans a.2 <| le_of_lt haq
       ⟨q, Rat.cast_nonneg.1 this, by
-        simp [Real.coe_toNNReal _ this, ← NNReal.coe_lt_coe, haq, hqb]⟩)
+        simp [Real.coe_toNNReal _ this, NNReal.coe_lt_coe.symm, haq, hqb]⟩)
     fun ⟨_, _, haq, hqb⟩ => lt_trans haq hqb
 
 theorem bot_eq_zero : (⊥ : ℝ≥0) = 0 := rfl

@@ -76,13 +76,11 @@ theorem monoidalPreadditive_of_faithful {D} [Category D] [Preadditive D] [Monoid
   { whiskerLeft_zero := by
       intros
       apply F.map_injective
-      simp [Functor.Monoidal.map_whiskerLeft, -Functor.LaxMonoidal.μ_natural_right,
-        -Functor.OplaxMonoidal.δ_natural_right_assoc]
+      simp [Functor.Monoidal.map_whiskerLeft]
     zero_whiskerRight := by
       intros
       apply F.map_injective
-      simp [Functor.Monoidal.map_whiskerRight, -Functor.LaxMonoidal.μ_natural_left,
-        -Functor.OplaxMonoidal.δ_natural_left_assoc]
+      simp [Functor.Monoidal.map_whiskerRight]
     whiskerLeft_add := by
       intros
       apply F.map_injective
@@ -170,8 +168,8 @@ theorem biproduct_ι_comp_leftDistributor_hom {J : Type} [Finite J] (X : C) (f :
     (X ◁ biproduct.ι _ j) ≫ (leftDistributor X f).hom = biproduct.ι (fun j => X ⊗ f j) j := by
   classical
   cases nonempty_fintype J
-  simp -loopProtection [leftDistributor_hom, Preadditive.comp_sum,
-    ← MonoidalCategory.whiskerLeft_comp_assoc, biproduct.ι_π, whiskerLeft_dite, dite_comp]
+  simp [leftDistributor_hom, Preadditive.comp_sum, ← MonoidalCategory.whiskerLeft_comp_assoc,
+    biproduct.ι_π, whiskerLeft_dite, dite_comp]
 
 @[reassoc (attr := simp)]
 theorem leftDistributor_inv_comp_biproduct_π {J : Type} [Finite J] (X : C) (f : J → C) (j : J) :
@@ -237,8 +235,8 @@ theorem biproduct_ι_comp_rightDistributor_hom {J : Type} [Finite J] (f : J → 
     (biproduct.ι _ j ▷ X) ≫ (rightDistributor f X).hom = biproduct.ι (fun j => f j ⊗ X) j := by
   classical
   cases nonempty_fintype J
-  simp -loopProtection [rightDistributor_hom, Preadditive.comp_sum, ← comp_whiskerRight_assoc,
-    biproduct.ι_π, dite_whiskerRight, dite_comp]
+  simp [rightDistributor_hom, Preadditive.comp_sum, ← comp_whiskerRight_assoc, biproduct.ι_π,
+    dite_whiskerRight, dite_comp]
 
 @[reassoc (attr := simp)]
 theorem rightDistributor_inv_comp_biproduct_π {J : Type} [Finite J] (f : J → C) (X : C) (j : J) :

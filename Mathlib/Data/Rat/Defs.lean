@@ -245,7 +245,7 @@ protected lemma neg_add_cancel : -a + a = 0 := by
   simp [add_def, normalize_eq_mkRat, Int.neg_mul, Int.add_comm, ← Int.sub_eq_add_neg]
 
 @[simp] lemma divInt_one (n : ℤ) : n /. 1 = n := by simp [divInt, mkRat, normalize]
-@[simp] lemma mkRat_one (n : ℤ) : mkRat n 1 = n := by simp [mkRat_eq_divInt, -divInt_ofNat]
+@[simp] lemma mkRat_one (n : ℤ) : mkRat n 1 = n := by simp [mkRat_eq_divInt]
 
 lemma divInt_one_one : 1 /. 1 = 1 := by rw [divInt_one, intCast_one]
 

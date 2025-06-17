@@ -125,7 +125,7 @@ theorem eval₂_algebraMap_X {R A : Type*} [CommSemiring R] [Semiring A] [Algebr
   conv_rhs => rw [← Polynomial.sum_C_mul_X_pow_eq p]
   simp only [eval₂_eq_sum, sum_def]
   simp only [map_sum, map_mul, map_pow, eq_intCast, map_intCast]
-  simp [Polynomial.C_eq_algebraMap, -algebraMap_eq, -algebraMap_apply]
+  simp [Polynomial.C_eq_algebraMap]
 
 -- these used to be about `algebraMap ℤ R`, but now the simp-normal form is `Int.castRingHom R`.
 @[simp]
@@ -294,8 +294,7 @@ theorem algEquivOfCompEqX_symm (p q : R[X]) (hpq : p.comp q = X) (hqp : q.comp p
 @[simps!]
 def algEquivCMulXAddC {R : Type*} [CommRing R] (a b : R) [Invertible a] : R[X] ≃ₐ[R] R[X] :=
   algEquivOfCompEqX (C a * X + C b) (C ⅟ a * (X - C b))
-    (by simp [← C_mul, ← mul_assoc, -map_mul])
-    (by simp [← C_mul, ← mul_assoc, -map_mul])
+    (by simp [← C_mul, ← mul_assoc]) (by simp [← C_mul, ← mul_assoc])
 
 theorem algEquivCMulXAddC_symm_eq {R : Type*} [CommRing R] (a b : R) [Invertible a] :
     (algEquivCMulXAddC a b).symm =  algEquivCMulXAddC (⅟ a) (- ⅟ a * b) := by
@@ -578,7 +577,7 @@ theorem aeval_endomorphism {M : Type*} [AddCommGroup M] [Module R M] (f : M →�
 
 lemma X_sub_C_pow_dvd_iff {n : ℕ} : (X - C t) ^ n ∣ p ↔ X ^ n ∣ p.comp (X + C t) := by
   convert (map_dvd_iff <| algEquivAevalXAddC t).symm using 2
-  simp
+  simp [C_eq_algebraMap]
 
 lemma comp_X_add_C_eq_zero_iff : p.comp (X + C t) = 0 ↔ p = 0 :=
   EmbeddingLike.map_eq_zero_iff (f := algEquivAevalXAddC t)
@@ -588,7 +587,7 @@ lemma comp_X_add_C_ne_zero_iff : p.comp (X + C t) ≠ 0 ↔ p ≠ 0 := comp_X_ad
 lemma dvd_comp_C_mul_X_add_C_iff (p q : R[X]) (a b : R) [Invertible a] :
     p ∣ q.comp (C a * X + C b) ↔ p.comp (C ⅟ a * (X - C b)) ∣ q := by
   convert map_dvd_iff <| algEquivCMulXAddC a b using 2
-  simp [← comp_eq_aeval, comp_assoc, ← mul_assoc, ← C_mul, -map_mul]
+  simp [← comp_eq_aeval, comp_assoc, ← mul_assoc, ← C_mul]
 
 lemma dvd_comp_X_sub_C_iff (p q : R[X]) (a : R) :
     p ∣ q.comp (X - C a) ↔ p.comp (X + C a) ∣ q := by

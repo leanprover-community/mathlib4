@@ -392,7 +392,7 @@ variable {𝕜} {a b : α}
 lemma mu_apply (a b : α) : mu 𝕜 a b = if a = b then 1 else -∑ x ∈ Ico a b, mu 𝕜 a x := by
   rw [mu, coe_mk, muFun_apply, sum_attach]
 
-@[simp] lemma mu_self (a : α) : mu 𝕜 a a = 1 := by rw [mu_apply]; simp
+@[simp] lemma mu_self (a : α) : mu 𝕜 a a = 1 := by simp [mu_apply]
 
 lemma mu_eq_neg_sum_Ico_of_ne (hab : a ≠ b) :
     mu 𝕜 a b = -∑ x ∈ Ico a b, mu 𝕜 a x := by rw [mu_apply, if_neg hab]
@@ -453,7 +453,7 @@ variable {𝕜} {a b : α}
 private lemma mu'_apply (a b : α) : mu' 𝕜 a b = if a = b then 1 else -∑ x ∈ Ioc a b, mu' 𝕜 x b := by
   rw [mu', coe_mk, muFun'_apply, sum_attach]
 
-@[simp] private lemma mu'_apply_self (a : α) : mu' 𝕜 a a = 1 := by rw [mu'_apply]; simp
+@[simp] private lemma mu'_apply_self (a : α) : mu' 𝕜 a a = 1 := by simp [mu'_apply]
 
 private lemma mu'_eq_sum_Ioc_of_ne (h : a ≠ b) : mu' 𝕜 a b = -∑ x ∈ Ioc a b, mu' 𝕜 x b := by
   rw [mu'_apply, if_neg h]

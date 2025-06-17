@@ -405,15 +405,18 @@ Adapted from https://downloads.haskell.org/~ghc/9.0.1/docs/html/libraries/ghc-bi
 
 private lemma logC_step {m pw q e : ℕ} (hpw : 1 < pw) (hqe : logC.step m pw hpw = (q, e)) :
     pw ^ e * q ≤ m ∧ q < pw ∧ (m < pw ^ e * (q + 1)) ∧ (0 < m → 0 < q) := by
-  fun_induction logC.step generalizing q e with
+  induction pw, hpw using logC.step.induct m generalizing q e with
   | case1 pw hpw hmpw =>
+      rw [logC.step, dif_pos hmpw] at hqe
       cases hqe
       simpa
   | case2 pw hpw hmpw q' e' hqe' hqpw ih =>
+      simp only [logC.step, dif_neg hmpw, hqe', if_pos hqpw] at hqe
       cases hqe
       rw [Nat.pow_mul, Nat.pow_two]
       exact ⟨(ih hqe').1, hqpw, (ih hqe').2.2⟩
   | case3 pw hpw hmpw q' e' hqe' hqpw ih =>
+      simp only [Nat.logC.step, dif_neg hmpw, hqe', if_neg hqpw] at hqe
       cases hqe
       rw [Nat.pow_succ, Nat.mul_assoc, Nat.pow_mul, Nat.pow_two, Nat.mul_assoc]
       refine ⟨(ih hqe').1.trans' (Nat.mul_le_mul_left _ (Nat.mul_div_le _ _)),

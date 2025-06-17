@@ -305,7 +305,7 @@ lemma setOf_isNonloop_eq (M : Matroid α) : {e | M.IsNonloop e} = M.E \ M.loops 
 lemma not_isNonloop_iff_closure : ¬ M.IsNonloop e ↔ M.closure {e} = M.loops := by
   by_cases he : e ∈ M.E
   · simp [IsNonloop, isLoop_iff_closure_eq_loops_and_mem_ground, he]
-  simp [← closure_inter_ground _ {e}, singleton_inter_eq_empty.2 he, loops,
+  simp [← closure_inter_ground, singleton_inter_eq_empty.2 he, loops,
     (show ¬ M.IsNonloop e from fun h ↦ he h.mem_ground)]
 
 lemma isLoop_or_isNonloop (M : Matroid α) (e : α) (he : e ∈ M.E := by aesop_mat) :

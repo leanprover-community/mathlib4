@@ -142,10 +142,10 @@ theorem inv_le_self_iff : a⁻¹ ≤ a ↔ 1 ≤ a := by simp [inv_le_iff_one_le
 theorem inv_lt_self_iff : a⁻¹ < a ↔ 1 < a := by simp [inv_lt_iff_one_lt_mul]
 
 @[to_additive (attr := simp)]
-theorem le_inv_self_iff : a ≤ a⁻¹ ↔ a ≤ 1 := by rw [← not_iff_not]; simp
+theorem le_inv_self_iff : a ≤ a⁻¹ ↔ a ≤ 1 := by simp [← not_iff_not]
 
 @[to_additive (attr := simp)]
-theorem lt_inv_self_iff : a < a⁻¹ ↔ a < 1 := by rw [← not_iff_not]; simp
+theorem lt_inv_self_iff : a < a⁻¹ ↔ a < 1 := by simp [← not_iff_not]
 
 end LinearOrderedCommGroup
 

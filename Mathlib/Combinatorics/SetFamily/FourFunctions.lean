@@ -366,7 +366,7 @@ lemma Finset.le_card_diffs_mul_card_diffs (s t : Finset α) :
     rintro s t
     simp_rw [map_eq_image]
     exact image_image₂_distrib fun a b ↦ rfl
-  simpa -loopProtection [← card_compls (_ ⊻ _), ← map_sup, ← map_inf, ← this] using
+  simpa [← card_compls (_ ⊻ _), ← map_sup, ← map_inf, ← this] using
     (s.map ⟨_, liftLatticeHom_injective⟩).le_card_infs_mul_card_sups
       (t.map ⟨_, liftLatticeHom_injective⟩)ᶜˢ
 

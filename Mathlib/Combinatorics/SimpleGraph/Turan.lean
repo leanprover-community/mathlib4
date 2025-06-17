@@ -198,7 +198,7 @@ lemma degree_eq_card_sub_part_card [DecidableEq V] :
     G.degree s = Fintype.card V - #(h.finpartition.part s) :=
   calc
     _ = #{t | G.Adj s t} := by
-      simp [← card_neighborFinset_eq_degree, neighborFinset, -card_neighborSet_eq_degree]
+      simp [← card_neighborFinset_eq_degree, neighborFinset]
     _ = Fintype.card V - #{t | ¬G.Adj s t} :=
       eq_tsub_of_add_eq (filter_card_add_filter_neg_card_eq_card _)
     _ = _ := by

@@ -399,8 +399,7 @@ lemma natCast_le_natCast (han : a ≤ n) (hbn : b ≤ n) : (a : Fin (n + 1)) ≤
   simp [le_iff_val_le_val, -val_fin_le, Nat.mod_eq_of_lt, han, hbn]
 
 lemma natCast_lt_natCast (han : a ≤ n) (hbn : b ≤ n) : (a : Fin (n + 1)) < b ↔ a < b := by
-  rw [← Nat.lt_succ_iff] at han hbn;
-  simp [lt_iff_val_lt_val, -val_fin_lt, Nat.mod_eq_of_lt, han, hbn,]
+  rw [← Nat.lt_succ_iff] at han hbn; simp [lt_iff_val_lt_val, Nat.mod_eq_of_lt, han, hbn]
 
 lemma natCast_mono (hbn : b ≤ n) (hab : a ≤ b) : (a : Fin (n + 1)) ≤ b :=
   (natCast_le_natCast (hab.trans hbn) hbn).2 hab

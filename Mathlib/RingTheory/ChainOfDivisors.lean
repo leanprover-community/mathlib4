@@ -101,7 +101,7 @@ theorem second_of_chain_is_irreducible {q : Associates M} {n : ℕ} (hn : n ≠ 
   obtain ⟨⟨i, hi⟩, rfl⟩ := h₂.1 (hb.le.trans (h₂.2 ⟨1, rfl⟩))
   cases i
   · exact (Associates.isUnit_iff_eq_one _).mp (first_of_chain_isUnit h₁ @h₂)
-  · simpa [Fin.lt_iff_val_lt_val, -Fin.val_fin_lt] using h₁.lt_iff_lt.mp hb
+  · simpa [Fin.lt_iff_val_lt_val] using h₁.lt_iff_lt.mp hb
 
 theorem eq_second_of_chain_of_prime_dvd {p q r : Associates M} {n : ℕ} (hn : n ≠ 0)
     {c : Fin (n + 1) → Associates M} (h₁ : StrictMono c)

@@ -131,7 +131,7 @@ lemma sub_le_iff {n : ℕ} {a b : Fin n} : a - b ≤ a ↔ b ≤ a := by
 
 @[simp]
 lemma lt_one_iff {n : ℕ} (x : Fin (n + 2)) : x < 1 ↔ x = 0 := by
-  simp [lt_iff_val_lt_val, -val_fin_lt]
+  simp [lt_iff_val_lt_val]
 
 lemma lt_sub_one_iff {k : Fin (n + 2)} : k < k - 1 ↔ k = 0 := by
   simp

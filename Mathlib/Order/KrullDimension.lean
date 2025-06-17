@@ -1023,9 +1023,7 @@ lemma krullDim_enat : krullDim ℕ∞ = ⊤ := by
 @[simp]
 lemma height_enat (n : ℕ∞) : height n = n := by
   cases n with
-  | top =>
-    rw [← WithBot.coe_eq_coe]
-    simp only [height_top_eq_krullDim, krullDim_enat, WithBot.coe_top]
+  | top => simp only [← WithBot.coe_eq_coe, height_top_eq_krullDim, krullDim_enat, WithBot.coe_top]
   | coe n => exact (height_coe_withTop _).trans (height_nat _)
 
 @[simp]

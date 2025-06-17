@@ -559,10 +559,10 @@ variable [AddGroup α] (a b : α)
 @[simp] lemma inv_addRight : (Equiv.addRight a)⁻¹ = Equiv.addRight (-a) := Equiv.coe_inj.1 rfl
 
 @[simp] lemma pow_addLeft (n : ℕ) : Equiv.addLeft a ^ n = Equiv.addLeft (n • a) := by
-  ext; simp [Perm.coe_pow, -Perm.iterate_eq_pow]
+  ext; simp [Perm.coe_pow]
 
 @[simp] lemma pow_addRight (n : ℕ) : Equiv.addRight a ^ n = Equiv.addRight (n • a) := by
-  ext; simp [Perm.coe_pow, -Perm.iterate_eq_pow]
+  ext; simp [Perm.coe_pow]
 
 @[simp] lemma zpow_addLeft (n : ℤ) : Equiv.addLeft a ^ n = Equiv.addLeft (n • a) :=
   (map_zsmul ({ toFun := Equiv.addLeft, map_zero' := addLeft_zero, map_add' := addLeft_add } :
@@ -592,10 +592,10 @@ variable [Group α] (a b : α)
 @[simp] lemma inv_mulRight : (Equiv.mulRight a)⁻¹ = Equiv.mulRight a⁻¹ := Equiv.coe_inj.1 rfl
 
 @[simp] lemma pow_mulLeft (n : ℕ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) := by
-  ext; simp [Perm.coe_pow, -Perm.iterate_eq_pow]
+  ext; simp [Perm.coe_pow]
 
 @[simp] lemma pow_mulRight (n : ℕ) : Equiv.mulRight a ^ n = Equiv.mulRight (a ^ n) := by
-  ext; simp [Perm.coe_pow, -Perm.iterate_eq_pow]
+  ext; simp [Perm.coe_pow]
 
 @[simp] lemma zpow_mulLeft (n : ℤ) : Equiv.mulLeft a ^ n = Equiv.mulLeft (a ^ n) :=
   (map_zpow ({ toFun := Equiv.mulLeft, map_one' := mulLeft_one, map_mul' := mulLeft_mul } :

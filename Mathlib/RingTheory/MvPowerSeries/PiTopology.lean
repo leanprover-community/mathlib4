@@ -192,7 +192,7 @@ instance {S : Type*} [Semiring S] [TopologicalSpace S]
 theorem variables_tendsto_zero [Semiring R] :
     Tendsto (X · : σ → MvPowerSeries σ R) cofinite (nhds 0) := by
   classical
-  simp -loopProtection only [tendsto_iff_coeff_tendsto, ← coeff_apply, coeff_X, coeff_zero]
+  simp only [tendsto_iff_coeff_tendsto, ← coeff_apply, coeff_X, coeff_zero]
   refine fun d ↦ tendsto_nhds_of_eventually_eq ?_
   by_cases h : ∃ i, d = Finsupp.single i 1
   · obtain ⟨i, hi⟩ := h

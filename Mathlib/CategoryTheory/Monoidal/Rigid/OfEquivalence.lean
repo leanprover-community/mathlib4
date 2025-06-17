@@ -31,13 +31,11 @@ def exactPairingOfFaithful [F.Faithful] {X Y : C} (eval : Y ⊗ X ⟶ 𝟙_ C)
   evaluation_coevaluation' :=
     F.map_injective <| by
       simp [map_eval, map_coeval, Functor.Monoidal.map_whiskerLeft,
-        Functor.Monoidal.map_whiskerRight, -μ_natural_left, -μ_natural_right, -δ_natural_left_assoc,
-        -δ_natural_right_assoc]
+        Functor.Monoidal.map_whiskerRight]
   coevaluation_evaluation' :=
     F.map_injective <| by
       simp [map_eval, map_coeval, Functor.Monoidal.map_whiskerLeft,
-        Functor.Monoidal.map_whiskerRight, -μ_natural_left, -μ_natural_right, -δ_natural_left_assoc,
-        -δ_natural_right_assoc]
+        Functor.Monoidal.map_whiskerRight]
 
 /-- Given a pair of objects which are sent by a fully faithful functor to a pair of objects
 with an exact pairing, we get an exact pairing.

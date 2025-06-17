@@ -22,7 +22,7 @@ namespace Int
 variable {m n : ℤ}
 
 lemma odd_iff : Odd n ↔ n % 2 = 1 where
-  mp := fun ⟨m, hm⟩ ↦ by simp [hm]
+  mp := fun ⟨m, hm⟩ ↦ by simp [hm, add_emod]
   mpr h := ⟨n / 2, by rw [← h, add_comm, emod_add_ediv n 2]⟩
 
 lemma not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by rw [odd_iff, emod_two_ne_one]
@@ -113,18 +113,18 @@ lemma two_mul_ediv_two_add_one_of_odd : Odd n → 2 * (n / 2) + 1 = n := by
   rintro ⟨c, rfl⟩
   rw [mul_comm]
   convert Int.ediv_add_emod' (2 * c + 1) 2
-  simp
+  simp [Int.add_emod]
 
 lemma ediv_two_mul_two_add_one_of_odd : Odd n → n / 2 * 2 + 1 = n := by
   rintro ⟨c, rfl⟩
   convert Int.ediv_add_emod' (2 * c + 1) 2
-  simp
+  simp [Int.add_emod]
 
 lemma add_one_ediv_two_mul_two_of_odd : Odd n → 1 + n / 2 * 2 = n := by
   rintro ⟨c, rfl⟩
   rw [add_comm]
   convert Int.ediv_add_emod' (2 * c + 1) 2
-  simp
+  simp [Int.add_emod]
 
 lemma two_mul_ediv_two_of_odd (h : Odd n) : 2 * (n / 2) = n - 1 :=
   eq_sub_of_add_eq (two_mul_ediv_two_add_one_of_odd h)

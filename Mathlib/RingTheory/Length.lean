@@ -268,9 +268,9 @@ lemma Module.length_eq_one [IsSimpleModule R M] :
 lemma Module.length_eq_rank
     (K M : Type*) [DivisionRing K] [AddCommGroup M] [Module K M] :
     Module.length K M = (Module.rank K M).toENat := by
-  simp [Module.length_of_free K M]
+  simp [Module.length_of_free]
 
 lemma Module.length_eq_finrank
     (K M : Type*) [DivisionRing K] [AddCommGroup M] [Module K M] [Module.Finite K M] :
     Module.length K M = Module.finrank K M := by
-  simp [Module.length_of_free K M]
+  simp [Module.length_of_free]

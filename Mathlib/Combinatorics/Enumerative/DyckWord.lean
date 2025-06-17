@@ -504,8 +504,7 @@ private def equivTreeInvFun : Tree Unit → DyckWord
 @[nolint unusedHavesSuffices]
 private lemma equivTree_left_inv (p) : equivTreeInvFun (equivTreeToFun p) = p := by
   by_cases h : p = 0
-  · rw [equivTreeToFun]
-    simp [h, equivTreeInvFun]
+  · simp [h, equivTreeToFun, equivTreeInvFun]
   · rw [equivTreeToFun]
     simp_rw [h, dite_false, equivTreeInvFun]
     have := semilength_insidePart_lt h
@@ -516,8 +515,8 @@ termination_by p.semilength
 
 @[nolint unusedHavesSuffices]
 private lemma equivTree_right_inv : ∀ t, equivTreeToFun (equivTreeInvFun t) = t
-  | Tree.nil => by rw [equivTreeInvFun, equivTreeToFun]; simp
-  | Tree.node _ _ _ => by rw [equivTreeInvFun, equivTreeToFun]; simp [equivTree_right_inv]
+  | Tree.nil => by simp [equivTreeInvFun, equivTreeToFun]
+  | Tree.node _ _ _ => by simp [equivTreeInvFun, equivTreeToFun, equivTree_right_inv]
 
 /-- Equivalence between Dyck words and rooted binary trees. -/
 def equivTree : DyckWord ≃ Tree Unit where
@@ -529,8 +528,7 @@ def equivTree : DyckWord ≃ Tree Unit where
 @[nolint unusedHavesSuffices]
 lemma semilength_eq_numNodes_equivTree (p) : p.semilength = (equivTree p).numNodes := by
   by_cases h : p = 0
-  · rw [equivTree, Equiv.coe_fn_mk, equivTreeToFun]
-    simp [h]
+  · simp [h, equivTree, equivTreeToFun]
   · rw [equivTree, Equiv.coe_fn_mk, equivTreeToFun]
     simp_rw [h, dite_false, numNodes]
     have := semilength_insidePart_lt h

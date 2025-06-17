@@ -316,7 +316,7 @@ def fintypeOfFintypeImage (s : Set α) {f : α → β} {g} (I : IsPartialInv f g
   Fintype.ofFinset ⟨_, (f '' s).toFinset.2.filterMap g <| injective_of_isPartialInv_right I⟩
     fun a => by
     suffices (∃ b x, f x = b ∧ g b = some a ∧ x ∈ s) ↔ a ∈ s by
-      simpa [← exists_and_left, and_comm, and_left_comm, and_assoc]
+      simpa [exists_and_left.symm, and_comm, and_left_comm, and_assoc]
     rw [exists_swap]
     suffices (∃ x, x ∈ s ∧ g (f x) = some a) ↔ a ∈ s by simpa [and_comm, and_left_comm, and_assoc]
     simp [I _, (injective_of_isPartialInv I).eq_iff]
