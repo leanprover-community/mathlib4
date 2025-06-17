@@ -33,6 +33,11 @@ section MOVE_THIS!!
 
 open TensorProduct
 
+@[simp] lemma LinearEquiv.baseChange_apply {R A M N : Type*} [CommRing R] [Ring A] [Algebra R A]
+    [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] (e : M ≃ₗ[R] N) (a : A) (m : M) :
+    e.baseChange R A M N (a ⊗ₜ m) = a ⊗ₜ (e m) :=
+  rfl
+
 noncomputable def Submodule.quotient_baseChange {R : Type u} {M : Type v} (A : Type w) [CommRing R]
     [Ring A] [Algebra R A] [AddCommGroup M] [Module R M] (S : Submodule R M) :
     (A ⊗[R] M ⧸ S.baseChange A) ≃ₗ[A] A ⊗[R] (M ⧸ S) :=
@@ -40,6 +45,18 @@ noncomputable def Submodule.quotient_baseChange {R : Type u} {M : Type v} (A : T
     (g := S.mkQ.baseChange A)
     (by convert lTensor_exact A (LinearMap.exact_subtype_mkQ S) S.mkQ_surjective)
     (S.mkQ.lTensor_surjective A S.mkQ_surjective)
+
+@[simp]
+lemma Submodule.quotient_baseChange_apply {R : Type u} {M : Type v} (A : Type w) [CommRing R]
+    [Ring A] [Algebra R A] [AddCommGroup M] [Module R M] (S : Submodule R M) (a : A) (m : M) :
+    S.quotient_baseChange A (Quotient.mk (a ⊗ₜ m)) = a ⊗ₜ (Quotient.mk m) :=
+  rfl
+
+@[simp]
+lemma Submodule.quotient_baseChange_symm_apply {R : Type u} {M : Type v} (A : Type w) [CommRing R]
+    [Ring A] [Algebra R A] [AddCommGroup M] [Module R M] (S : Submodule R M) (a : A) (m : M) :
+    (S.quotient_baseChange A).symm (a ⊗ₜ (Quotient.mk m)) = Quotient.mk (a ⊗ₜ m) :=
+  (LinearEquiv.symm_apply_eq _).2 <| Submodule.quotient_baseChange_apply ..
 
 /-- The triangle of `R`-modules `A ⊗[R] M ⟶ B ⊗[A] (A ⊗[R] M) ⟶ B ⊗[R] M` commutes. -/
 lemma AlgebraTensorModule.cancelBaseChange_comp_mk_one {R A B M : Type*}
@@ -202,6 +219,16 @@ noncomputable def equivOfChart {f : Fin k → M} {N : G(M; R, k)} (hn : N ∈ ch
     (M ⧸ N.val) ≃ₗ[R] (Fin k → R) :=
   (LinearEquiv.ofBijective (N.val.mkQ ∘ₗ _) hn).symm
 
+@[simp] lemma equivOfChart_apply {f : Fin k → M} {N : G(M; R, k)} (hn : N ∈ chart R f) (i : Fin k) :
+    equivOfChart hn (Submodule.Quotient.mk (f i)) = Pi.single i 1 := by
+  rw [equivOfChart, LinearEquiv.symm_apply_eq]
+  simp [-LinearEquiv.piRing_symm_apply, LinearEquiv.piRing_symm_apply_single_one]
+
+@[simp] lemma equivOfChart_apply_apply {f : Fin k → M} {N : G(M; R, k)} (hn : N ∈ chart R f)
+    (i j : Fin k) :
+    equivOfChart hn (Submodule.Quotient.mk (f i)) j = if j = i then 1 else 0 := by
+  rw [equivOfChart_apply hn, Pi.single_apply]
+
 lemma ofEquiv_mem_chart {N : Submodule R M} (e : (M ⧸ N) ≃ₗ[R] (Fin k → R))
     (f : Fin k → M) (hf : ∀ i, e (Submodule.Quotient.mk (f i)) = Pi.single i 1) :
     ofEquiv N e ∈ chart R f := by
@@ -234,6 +261,11 @@ noncomputable def baseChange (N : G(M; R, k)) : G(A ⊗[R] M; A, k) :=
       rw [← rankAtStalk_eq_of_equiv e, rankAtStalk_baseChange, rankAtStalk_eq]⟩⟩
 
 lemma baseChange_val (N : G(M; R, k)) : (baseChange A N).val = N.val.baseChange A := rfl
+
+/-- The quotient of `baseChange` is isomorphic to the base change of the quotient. -/
+@[simp] noncomputable def quotientBaseChangeValEquiv (N : G(M; R, k)) :
+    (A ⊗[R] M ⧸ (baseChange A N).val) ≃ₗ[A] A ⊗[R] (M ⧸ N.val) :=
+  N.val.quotient_baseChange A
 
 variable {A} {B : Type*} [CommRing B] [Algebra R B]
 
@@ -292,11 +324,58 @@ Given an `R`-algebra `A`, we return the set `G(A ⊗[R] M; A, k)`. -/
   map_comp f g := funext (map_comp (CommRingCat.toAlgHom f) (CommRingCat.toAlgHom g))
 
 /-- Functoriality of `chart`. -/
+lemma baseChange_mem_chart (f : Fin k → M) {N : G(M; R, k)} (hn : N ∈ chart R f) :
+    N.baseChange A ∈ chart A (TensorProduct.mk R A M 1 ∘ f) := by
+  convert ofEquiv_mem_chart (N.val.quotient_baseChange A ≪≫ₗ (equivOfChart hn).baseChange R A _ _
+    ≪≫ₗ TensorProduct.piScalarRight R A A (Fin k)) ?_ (fun i ↦ ?_) using 1
+  simp [Pi.single_apply_smul]
+
+/-- Functoriality of `chart`. -/
 lemma baseChange_chart_subset (f : Fin k → M) :
-    baseChange A '' (chart R f) ⊆ chart A (TensorProduct.mk R A M 1 ∘ f) := by
-  rintro - ⟨N, hn, rfl⟩
-  convert ofSurjective_mem_chart (R:=A) (M := A ⊗[R] M) (q:=?_) ?_ ?_ ?_
-  -- refine ofSurjective_mem_chart (q:=?_) ?_ ?_ ?_
+    baseChange A '' (chart R f) ⊆ chart A (TensorProduct.mk R A M 1 ∘ f) :=
+  Set.image_subset_iff.2 fun _ ↦ baseChange_mem_chart f
+
+/-- Functoriality of `chart`. -/
+lemma map_mem_chart (f : A →ₐ[R] B) (x : Fin k → M) {N : G(A ⊗[R] M; A, k)}
+    (hn : N ∈ chart A (TensorProduct.mk R A M 1 ∘ x)) :
+    (N.map f) ∈ chart B (TensorProduct.mk R B M 1 ∘ x) := by
+  letI := f.toAlgebra
+  have hf : IsScalarTower.toAlgHom R A B = f := rfl
+  convert ofEquiv_mem_chart ((Submodule.Quotient.equiv _ _ (AlgebraTensorModule.cancelBaseChange
+    R A B B M) rfl).symm ≪≫ₗ N.quotientBaseChangeValEquiv B ≪≫ₗ (equivOfChart hn).baseChange
+    A B _ _ ≪≫ₗ TensorProduct.piScalarRight A B B (Fin k)) _ (fun i ↦ ?_) using 1
+  simp only [Submodule.Quotient.equiv_symm, quotientBaseChangeValEquiv, Function.comp_apply,
+    mk_apply, LinearEquiv.trans_apply, Submodule.Quotient.equiv_apply, Submodule.mapQ_apply,
+    LinearEquiv.coe_coe, AlgebraTensorModule.cancelBaseChange_symm_tmul, piScalarRight_apply]
+  conv => enter [1,2,2]; exact Submodule.quotient_baseChange_apply ..
+  simp only [LinearEquiv.baseChange_apply, piScalarRightHom_tmul]
+  refine funext fun j ↦ ?_
+  conv => enter [1,1]; exact equivOfChart_apply_apply hn i j
+  rw [ite_smul, one_smul, zero_smul, Pi.single_apply]
+
+/-- Functoriality of `chart`. -/
+lemma map_chart_subset (f : A →ₐ[R] B) (x : Fin k → M) :
+    map f '' (chart A (TensorProduct.mk R A M 1 ∘ x)) ⊆ chart B (TensorProduct.mk R B M 1 ∘ x) :=
+  Set.image_subset_iff.2 fun _ ↦ map_mem_chart f _
+
+/-- A subfunctor of the Grassmannian, given an indexing `x : Fin k → M`, `chart x` selects the
+elements `N ∈ G(A ⊗[R] M; A, k)` such that the composition `A^k → A ⊗[R] M → (A ⊗[R] M)/N.val` is
+an isomorphism. This is called `chart` because it corresponds to an affine open chart in the
+Grassmannian. -/
+@[simps!] noncomputable def chartFunctor (R : CommRingCat.{u}) (M : ModuleCat.{v} R) (k : ℕ)
+    (x : Fin k → M) :
+    Under R ⥤ Type (max u v) where
+  obj A := chart A (TensorProduct.mk R A M 1 ∘ x)
+  map f N := ⟨N.1.map (CommRingCat.toAlgHom f), map_mem_chart _ x N.2⟩
+  map_id _ := funext fun _ ↦ Subtype.ext <| map_id ..
+  map_comp _ _ := funext fun _ ↦ Subtype.ext <|
+    map_comp (CommRingCat.toAlgHom _) (CommRingCat.toAlgHom _) _
+
+/-- `chartFunctor R M k x` is a subfunctor of `Grassmannian.functor R M k`. -/
+noncomputable def chartToFunctor (R : CommRingCat.{u}) (M : ModuleCat.{v} R) (k : ℕ)
+    (x : Fin k → M) :
+    chartFunctor R M k x ⟶ functor R M k where
+  app A := Subtype.val
 
 end Grassmannian
 
