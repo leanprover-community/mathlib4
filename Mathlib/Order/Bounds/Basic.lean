@@ -898,6 +898,17 @@ theorem le_of_isLUB_le_isGLB {x y} (ha : IsGLB s a) (hb : IsLUB s b) (hab : b �
     _ ≤ a := hab
     _ ≤ y := ha.1 hy
 
+lemma upperBounds_prod_of_nonempty_eq {β : Type*} [Preorder β] {t : Set β} [hes : Nonempty s]
+    [het : Nonempty t] : upperBounds (s ×ˢ t) = upperBounds s ×ˢ upperBounds t := le_antisymm
+  (fun ⟨u₁, u₂⟩ hu => by
+    simp [upperBounds] at hu
+    constructor
+    · obtain ⟨b, hb⟩ : Nonempty t := het
+      exact fun a ha => (hu a b ha hb).1
+    · obtain ⟨a, ha⟩ : Nonempty s := hes
+      exact fun b hb => (hu a b ha hb).2)
+  (fun (a, b) hab (c, d) hcd => ⟨hab.1 hcd.1,hab.2 hcd.2⟩)
+
 end Preorder
 
 section PartialOrder
