@@ -234,8 +234,11 @@ noncomputable abbrev resCoindAdjunction : Action.res _ φ ⊣ coindFunctor k φ 
     homEquiv_naturality_left_symm := by intros; rfl
     homEquiv_naturality_right := by intros; ext; rfl }
 
-noncomputable instance : Limits.PreservesLimits (coindFunctor k φ) :=
-  (resCoindAdjunction k φ).rightAdjoint_preservesLimits
+noncomputable instance : (coindFunctor k φ).IsRightAdjoint :=
+  (resCoindAdjunction k φ).isRightAdjoint
+
+noncomputable instance : (Action.res (ModuleCat.{u} k) φ).IsLeftAdjoint :=
+  (resCoindAdjunction k φ).isLeftAdjoint
 
 end Adjunction
 end Rep
