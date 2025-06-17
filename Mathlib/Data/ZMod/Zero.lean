@@ -7,7 +7,8 @@ Authors: Antoine Chambert-Loir
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Algebra.Equiv.TransferInstance
 
-/-- `ZMod 0` is a domain -/
+/-! `ZMod 0` is a domain /
 
+/-- `ZMod 0` is a domain -/
 instance : IsDomain (ZMod 0) :=
   Equiv.isDomain (RingEquiv.refl ℤ).symm
