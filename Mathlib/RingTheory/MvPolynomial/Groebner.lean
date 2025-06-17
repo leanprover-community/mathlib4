@@ -120,7 +120,7 @@ theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff 
     exact hf K.symm
 
 /-- Division by a family of multivariate polynomials
-which are monic with respect to a monomial order -/
+whose leading coefficients are invertible with respect to a monomial order -/
 theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
     (hb : ∀ i, IsUnit (m.leadingCoeff (b i))) (f : MvPolynomial σ R) :
     ∃ (g : ι →₀ (MvPolynomial σ R)) (r : MvPolynomial σ R),
@@ -224,7 +224,7 @@ decreasing_by
   simp
 
 /-- Division by a *set* of multivariate polynomials
-which are monic with respect to a monomial order -/
+whose leading coefficients are invertible with respect to a monomial order -/
 theorem div_set {B : Set (MvPolynomial σ R)}
     (hB : ∀ b ∈ B, IsUnit (m.leadingCoeff b)) (f : MvPolynomial σ R) :
     ∃ (g : B →₀ (MvPolynomial σ R)) (r : MvPolynomial σ R),
@@ -235,7 +235,7 @@ theorem div_set {B : Set (MvPolynomial σ R)}
   exact ⟨g, r, H.1, H.2.1, fun c hc b hb ↦ H.2.2 c hc ⟨b, hb⟩⟩
 
 /-- Division by a multivariate polynomial
-which is monic with respect to a monomial order -/
+whose leading coefficient is invertible with respect to a monomial order -/
 theorem div_single {b : MvPolynomial σ R}
     (hb : IsUnit (m.leadingCoeff b)) (f : MvPolynomial σ R) :
     ∃ (g : MvPolynomial σ R) (r : MvPolynomial σ R),
