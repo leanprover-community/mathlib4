@@ -107,7 +107,7 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
     by_cases hv : x ∈ v
     · rw [← Set.diff_union_of_subset hsv] at hv
       rcases hv with hsv | hs
-      · simpa only [hsv.2, Set.indicator_of_not_mem, not_false_iff, sub_zero, hsv,
+      · simpa only [hsv.2, Set.indicator_of_notMem, not_false_iff, sub_zero, hsv,
           Set.indicator_of_mem] using gc_bd0 x
       · simp [hgs hs, hs]
     · simp [hgv hv, show x ∉ s from fun h => hv (hsv h)]
@@ -179,7 +179,7 @@ theorem MemLp.exists_hasCompactSupport_eLpNorm_sub_le
           I2 I1).le using 2
     simp only [sub_add_sub_cancel]
   refine ⟨f, I3, f_cont, f_mem, HasCompactSupport.intro k_compact fun x hx => ?_⟩
-  rw [← Function.nmem_support]
+  rw [← Function.notMem_support]
   contrapose! hx
   exact interior_subset (f_support hx)
 
