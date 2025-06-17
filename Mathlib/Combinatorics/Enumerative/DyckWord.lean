@@ -348,7 +348,7 @@ lemma insidePart_add : (p + q).insidePart = p.insidePart := by
   simp_rw [insidePart, firstReturn_add, add_eq_zero', h, false_and, dite_false, ite_false,
     DyckWord.ext_iff, take]
   congr 3
-  exact take_length_add_append_of_le_length (firstReturn_lt_length h)
+  exact take_append_of_le_length (firstReturn_lt_length h)
 
 include h in
 @[simp]
