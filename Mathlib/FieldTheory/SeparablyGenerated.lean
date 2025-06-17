@@ -31,6 +31,45 @@ Let `K/k` be a finitely generated field extension with characteristic `p > 0`, t
 
 noncomputable section
 
+section minMvPoly
+
+variable (R : Type*) {A ι : Type*} [CommRing R] [CommRing A] [Algebra R A] (a : ι → A)
+
+open MvPolynomial
+
+open scoped Classical in
+/-- An arbitrary nonzero multivariate polynomial that evaluates to 0 at a given vector `a`
+of minimal total degree if such exists, otherwise 0. -/
+def minMvPoly : MvPolynomial ι R :=
+  if h : AlgebraicIndependent R a then 0 else
+    totalDegree.argminOn {F | F.aeval a = 0 ∧ F ≠ 0} <| by
+      rw [algebraicIndependent_iff] at h; push_neg at h; exact h
+
+theorem aeval_minMvPoly : (minMvPoly R a).aeval a = 0 := by
+  rw [minMvPoly]; split_ifs; · simp
+  exact (totalDegree.argminOn_mem {F | F.aeval a = 0 ∧ _} _).1
+
+variable {R a}
+
+theorem minMvPoly_eq_zero_iff : minMvPoly R a = 0 ↔ AlgebraicIndependent R a := by
+  rw [minMvPoly]; split_ifs with h; · simpa
+  exact iff_of_false ((totalDegree.argminOn_mem {F | _ ∧ F ≠ 0} _).2) h
+
+theorem minMvPoly_ne_zero (h : ¬ AlgebraicIndependent R a) : (minMvPoly R a) ≠ 0 := by
+  rwa [Ne, minMvPoly_eq_zero_iff]
+
+theorem totalDegree_minMvPoly_le (p : MvPolynomial ι R) (hp : p ≠ 0) (hap : aeval a p = 0) :
+    (minMvPoly R a).totalDegree ≤ p.totalDegree := by
+  rw [minMvPoly, dif_neg fun h ↦ hp (h.eq_zero_of_aeval_eq_zero p hap)]
+  exact totalDegree.argminOn_le _ (.intro hap hp)
+
+theorem irreducible_minMvPoly [NoZeroDivisors R] : Irreducible (minMvPoly R a) := by
+  _
+
+end minMvPoly
+
+
+
 section
 
 attribute [local instance 2000] Polynomial.isScalarTower Algebra.toSMul IsScalarTower.right
