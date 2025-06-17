@@ -1123,27 +1123,6 @@ theorem lintegral_abs_det_fderiv_eq_addHaar_image₀ (hs : NullMeasurableSet s �
   intro x hx
   exact (hf' x (ts hx)).mono ts
 
-variable {μ} in
-lemma absolutelyContinuous_restrict : μ.restrict s ≪ μ := by
-  intro t ht
-  apply le_antisymm ?_ (zero_le _)
-  exact (restrict_le_self t).trans_eq ht
-
-lemma foo (hs : NullMeasurableSet s μ) {t : Set E} :
-    NullMeasurableSet (t ∩ s) μ ↔ NullMeasurableSet t (μ.restrict s) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · have A : NullMeasurableSet (t \ s) (μ.restrict s) := by
-      apply NullMeasurableSet.of_null
-      rw [Measure.restrict_apply₀' hs]
-      simp
-    have B : NullMeasurableSet (t ∩ s) (μ.restrict s) :=
-      h.mono_ac absolutelyContinuous_restrict
-    simpa using A.union B
-  · obtain ⟨t', -, ht', t't⟩ : ∃ t' ⊇ t, MeasurableSet t' ∧ t' =ᵐ[μ.restrict s] t :=
-      h.exists_measurable_superset_ae_eq
-    have W := ae_restrict_eq
-#exit
-
 /-- Change of variable formula for differentiable functions, set version: if a function `f` is
 injective and differentiable on a measurable set `s`, then the pushforward of the measure with
 density `|(f' x).det|` on `s` is the Lebesgue measure on the image set. This version requires

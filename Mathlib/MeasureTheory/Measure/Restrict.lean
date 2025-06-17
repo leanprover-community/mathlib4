@@ -703,6 +703,36 @@ lemma NullMeasurable.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_e
     simp only [obs, add_zero, le_refl]
   · exact NullMeasurableSet.of_null hs
 
+lemma nullMeasurableSet_restrict (hs : NullMeasurableSet s μ) {t : Set α} :
+    NullMeasurableSet t (μ.restrict s) ↔ NullMeasurableSet (t ∩ s) μ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · obtain ⟨t', -, ht', t't⟩ : ∃ t' ⊇ t, MeasurableSet t' ∧ t' =ᵐ[μ.restrict s] t :=
+      h.exists_measurable_superset_ae_eq
+    have A : (t' ∩ s : Set α) =ᵐ[μ] (t ∩ s : Set α) := by
+      have : ∀ᵐ x ∂μ, x ∈ s → (x ∈ t') = (x ∈ t) :=
+        (ae_restrict_iff'₀ hs).1 t't
+      filter_upwards [this] with y hy
+      change (y ∈ t' ∩ s) = (y ∈ t ∩ s)
+      simpa only [eq_iff_iff, mem_inter_iff, and_congr_left_iff] using hy
+    obtain ⟨s', -, hs', s's⟩ : ∃ s' ⊇ s, MeasurableSet s' ∧ s' =ᵐ[μ] s :=
+      hs.exists_measurable_superset_ae_eq
+    have B : (t' ∩ s' : Set α) =ᵐ[μ] (t' ∩ s : Set α) :=
+      ae_eq_set_inter (EventuallyEq.refl _ _) s's
+    exact (ht'.inter hs').nullMeasurableSet.congr (B.trans A)
+  · have A : NullMeasurableSet (t \ s) (μ.restrict s) := by
+      apply NullMeasurableSet.of_null
+      rw [Measure.restrict_apply₀' hs]
+      simp
+    have B : NullMeasurableSet (t ∩ s) (μ.restrict s) :=
+      h.mono_ac absolutelyContinuous_restrict
+    simpa using A.union B
+
+lemma nullMeasurableSet_restrict_of_subset (hs : NullMeasurableSet s μ) {t : Set α} (ht : t ⊆ s) :
+    NullMeasurableSet t (μ.restrict s) ↔ NullMeasurableSet t μ := by
+  rw [nullMeasurableSet_restrict hs]
+  congr!
+  simp [ht]
+
 namespace Measure
 
 section Subtype
