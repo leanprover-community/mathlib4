@@ -229,9 +229,9 @@ def getFiles
   else
     let repo ← getRemoteRepo (← read).mathlibDepPath
     IO.println s!"Mathlib repository: {repo}"
-    downloadFiles repo hashMap forceDownload parallel (warnOnMissing := false)
     unless repo == MATHLIBREPO do
-      downloadFiles MATHLIBREPO hashMap forceDownload parallel (warnOnMissing := true)
+      downloadFiles MATHLIBREPO hashMap forceDownload parallel (warnOnMissing := false)
+    downloadFiles repo hashMap forceDownload parallel (warnOnMissing := true)
   if decompress then
     IO.unpackCache hashMap forceUnpack
   else
