@@ -48,60 +48,91 @@ end Galois
 
 section inertiadef
 
-variable {A : Type*} [CommRing A] [IsDedekindDomain A] {p : Ideal A} (hpb : p ≠ ⊥) [p.IsMaximal]
-  (B : Type*) [CommRing B] [IsDedekindDomain B] [Algebra A B] [Module.Finite A B]
-  (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L]
-  [IsFractionRing B L] [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
-  [FiniteDimensional K L]
+variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+  (P : Ideal A) (Q : Ideal B) [Q.LiesOver P]
+  (G : Type*) [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 
-noncomputable def inertiaSubgroup : Subgroup (L ≃ₐ[K] L) :=
-  (Ideal.Quotient.stabilizerHom  P G).ker.map (MulAction.stabilizer G Q).subtype
+noncomputable def Ideal.inertiaSubgroup : Subgroup G :=
+  (Ideal.Quotient.stabilizerHom Q P G).ker.map (MulAction.stabilizer G Q).subtype
 
 end inertiadef
 
-section inertia
+namespace Ideal
 
-#check Algebra.IsInvariant
+variable {A B : Type*} [CommSemiring A] [Semiring B] [Algebra A B] {P : Ideal B} {p : Ideal A}
+  {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B] (g : G)
 
-variable {A : Type*} [CommRing A] [IsDedekindDomain A] {p : Ideal A} (hpb : p ≠ ⊥) [p.IsMaximal]
-  (B : Type*) [CommRing B] [IsDedekindDomain B] [Algebra A B] [Module.Finite A B]
+-- PRed
+instance LiesOver.smul [h : P.LiesOver p] : (g • P).LiesOver p :=
+  ⟨h.over.trans (under_smul A P g).symm⟩
+
+end Ideal
+
+namespace Ideal
+
+variable {A : Type*} [CommSemiring A] (p : Ideal A) (B : Type*) [Semiring B] [Algebra A B]
+
+theorem mem_primesOver {P : Ideal B} : P ∈ p.primesOver B ↔ P.IsPrime ∧ P.LiesOver p := Iff.rfl
+
+end Ideal
+
+section orbit
+
+open Ideal
+
+namespace Algebra.IsInvariant
+
+variable (A B G : Type*) [CommRing A]
+  [CommRing B] [Algebra A B] [Group G] [MulSemiringAction G B] [IsInvariant A B G]
+
+theorem orbit_eq_primesOver [Finite G] [SMulCommClass G A B] (P : Ideal A) (Q : Ideal B)
+    [hP : Q.LiesOver P] [hQ : Q.IsPrime] : MulAction.orbit G Q = P.primesOver B := by
+  refine Set.ext fun R ↦ ⟨fun ⟨g, hg⟩ ↦ hg ▸ ⟨hQ.smul g, hP.smul g⟩, fun h ↦ ?_⟩
+  have : R.IsPrime := h.1
+  obtain ⟨g, hg⟩ := exists_smul_of_under_eq A B G Q R (hP.over.symm.trans h.2.over)
+  exact ⟨g, hg.symm⟩
+
+end Algebra.IsInvariant
+
+end orbit
+
+section inertiadef
+
+variable {A : Type*} [CommRing A] [IsDedekindDomain A] {P : Ideal A} (hP : P ≠ ⊥) [P.IsMaximal]
+  {B : Type*} [CommRing B] [IsDedekindDomain B] [Algebra A B] [Module.Finite A B]
+  (Q : Ideal B) [Q.IsPrime] (hQ : Q.LiesOver P)
   (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L]
   [IsFractionRing B L] [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
-  [FiniteDimensional K L]
+  [FiniteDimensional K L] [hKL : IsGalois K L]
+  (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]
+  [Algebra.IsInvariant A B G]
 
-noncomputable def inertiaSubgroup : Subgroup (L ≃ₐ[K] L) :=
-  (Ideal.Quotient.stabilizerHom  P G).ker.map (MulAction.stabilizer G Q).subtype
-
-theorem card_inertiaSubgroup :
+include hP K L in
+theorem Ideal.card_inertiaSubgroup :
     Nat.card (inertiaSubgroup P Q G) = Ideal.ramificationIdx (algebraMap A B) P Q := by
-  have h1 : (MulAction.stabilizer G Q).index = (Ideal.primesOver P B).ncard := by
-    have key := MulAction.index_stabilizer_of_transitive G (⟨Q, _⟩ : Ideal.primesOver P B)
+  have hf := Ideal.Quotient.stabilizerHom_surjective G P Q
+  have : Finite ((B ⧸ Q) ≃ₐ[A ⧸ P] B ⧸ Q) := Finite.of_surjective _ hf
+  have key := ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hP B K L
+  rw [← Algebra.IsInvariant.orbit_eq_primesOver A B G P Q, ← MulAction.index_stabilizer] at key
+  have h1 : Nat.card G = Module.finrank K L := by
+    rw [← IsGalois.card_aut_eq_finrank]
     sorry
-  have h2 : Nat.card ((B ⧸ Q) ≃ₐ[A ⧸ P] B ⧸ Q) = Ideal.inertiaDeg P Q := by
-    rw [Ideal.inertiaDeg_algebraMap]
+  have h2 : Nat.card ((B ⧸ Q) ≃ₐ[A ⧸ P] (B ⧸ Q)) = Module.finrank (A ⧸ P) (B ⧸ Q) := by
+    have : IsMaximal Q := Ideal.IsMaximal.of_liesOver_isMaximal Q P
+    let _ : Field (A ⧸ P) := Quotient.field P
+    let _ : Field (B ⧸ Q) := Quotient.field Q
+    have : IsGalois (A ⧸ P) (B ⧸ Q) := sorry
+    rw [Nat.card_eq_fintype_card, IsGalois.card_aut_eq_finrank]
+  rw [inertiaDegIn_eq_inertiaDeg P Q K L, inertiaDeg_algebraMap] at key
+  rw [← h1, ← h2, ← (MulAction.stabilizer G Q).index_mul_card] at key
+  rw [mul_right_inj' Subgroup.index_ne_zero_of_finite] at key
+  rw [← (Quotient.stabilizerHom Q P G).ker.card_mul_index, Subgroup.index_ker,
+    MonoidHom.range_eq_top_of_surjective _ hf, Subgroup.card_top] at key
+  rw [mul_left_inj' Nat.card_pos.ne'] at key
+  rw [ramificationIdxIn_eq_ramificationIdx P Q K L] at key
+  rw [inertiaSubgroup, Subgroup.card_subtype, key]
 
-  sorry
-
-end inertia
-
-section inertia
-
-variable (A K L B : Type*) [CommRing A] [CommRing B] [Field K] [Field L]
-  [Algebra A K] [Algebra B L] [IsFractionRing A K] [IsFractionRing B L]
-  [Algebra A B] [Algebra K L] [Algebra A L]
-  [IsScalarTower A K L] [IsScalarTower A B L]
-  [IsIntegrallyClosed A] [IsIntegralClosure B A L]
-  [FiniteDimensional K L] [IsGalois K L]
-  (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
-
-noncomputable def inertiaSubgroup : Subgroup (L ≃ₐ[K] L) :=
-  let _ := IsIntegralClosure.MulSemiringAction A K L B
-  (Ideal.Quotient.stabilizerHom Q P (L ≃ₐ[K] L)).ker.map
-    (MulAction.stabilizer (L ≃ₐ[K] L) Q).subtype
-
-theorem card_intertiaSubgroup : Nat.card (inertiaSubgroup A K L B P Q) =
-
-end inertia
+end inertiadef
 
 end Inertia
 
@@ -170,8 +201,9 @@ open NumberField
 
 variable {K : Type*} [Field K] [NumberField K] [IsGalois ℚ K]
 
+-- ideally, do this for any G, in particular for Aut(𝓞 K)
 noncomputable def inertiaSubgroup  (q : Ideal (𝓞 K)) : Subgroup (K ≃ₐ[ℚ] K) :=
-  _root_.inertiaSubgroup ℤ ℚ K (𝓞 K) (q.under ℤ) q
+  Ideal.inertiaSubgroup (q.under ℤ) q (K ≃ₐ[ℚ] K)
 
 variable (K) [IsGalois ℚ K]
 
