@@ -5255,8 +5255,8 @@ import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 import Mathlib.RingTheory.IntegralDomain
 import Mathlib.RingTheory.Invariant
-import Mathlib.RingTheory.Invariant.Defs
 import Mathlib.RingTheory.Invariant.Basic
+import Mathlib.RingTheory.Invariant.Defs
 import Mathlib.RingTheory.Invariant.Profinite
 import Mathlib.RingTheory.IsAdjoinRoot
 import Mathlib.RingTheory.IsPrimary
