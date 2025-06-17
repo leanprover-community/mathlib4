@@ -5,7 +5,6 @@ Authors: Fabrizio Barroero
 -/
 
 import Mathlib.Order.CompletePartialOrder
-import Mathlib.RingTheory.Ideal.BigOperators
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Polynomial.Content
 
