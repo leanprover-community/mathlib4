@@ -44,6 +44,63 @@ variable (ha' : IsTranscendenceBasis k fun i : {i // i ≠ n} ↦ a i)
 variable (H : ∀ s : Finset K,
   LinearIndepOn k _root_.id (s : Set K) → LinearIndepOn k (· ^ p) (s : Set K))
 
+section
+
+variable (F : MvPolynomial ι k) (hF0 : F ≠ 0) (hFa : F.aeval a = 0)
+variable (HF : ∀ (F' : MvPolynomial ι k), F' ≠ 0 → F'.aeval a = 0 → F.totalDegree ≤ F'.totalDegree)
+
+include hF0 hFa HF in
+theorem irreducible_of_forall_aeval_eq_zero_totalDegree_le :
+    Irreducible F := by
+  refine ⟨fun h' ↦ (h'.map (aeval a)).ne_zero hFa, fun q₁ q₂ e ↦ ?_⟩
+  by_contra! hq₁q₂
+  wlog hq₁ : aeval a q₁ = 0 generalizing q₁ q₂
+  · refine this q₂ q₁ (e.trans (mul_comm _ _)) hq₁q₂.symm ?_
+    simpa only [map_mul, @eq_comm K 0, hFa, mul_eq_zero, or_iff_right hq₁] using congr(aeval a $e)
+  subst e
+  simp only [ne_eq, mul_eq_zero, not_or] at hF0
+  have := HF q₁ hF0.1 hq₁
+  rw [MvPolynomial.totalDegree_mul_of_isDomain hF0.1 hF0.2,
+    add_le_iff_nonpos_right, nonpos_iff_eq_zero] at this
+  apply hF0.2
+  rw [totalDegree_eq_zero_iff_eq_C.mp this]
+  convert C.map_zero
+  simpa [this] using isUnit_iff_totalDegree_of_isReduced.not.mp hq₁q₂.2
+
+include HF in
+theorem coeff_eval_ite_ne_zero_of_forall_aeval_eq_zero_totalDegree_le [DecidableEq ι] (i : ι)
+    (n : ℕ) (hn0 : n ≠ 0) (hn : ∃ σ ∈ F.support, σ i = n) :
+    (F.aeval fun j ↦ if j = i then Polynomial.X else .C (a j)).coeff n ≠ 0 := by
+  intro H
+  let Fi := optionEquivLeft k _ (renameEquiv k (Equiv.optionSubtypeNe i).symm F)
+  obtain ⟨σ, hσ, hσi⟩ := hn
+  have H := HF (rename (↑) (Fi.coeff n)) ?_ ?_
+  · have : (Fi.coeff _).totalDegree + n ≤ _ :=
+      totalDegree_coeff_optionEquivLeft_add_le _ _ (renameEquiv k _ F) n (by
+        rw [totalDegree_renameEquiv, ← hσi]
+        exact le_trans (Finset.single_le_sum (by simp) (by simpa [hσi])) (le_totalDegree hσ))
+    rw [totalDegree_renameEquiv] at this
+    simpa [hn0] using (this.trans H).trans (totalDegree_rename_le _ _)
+  · refine (map_eq_zero_iff _ (rename_injective _ Subtype.val_injective)).not.mpr fun H ↦ ?_
+    have : coeff _ (Fi.coeff _) = _ :=
+      optionEquivLeft_coeff_coeff _ _ (σ.equivMapDomain (Equiv.optionSubtypeNe i).symm)
+        (renameEquiv k (Equiv.optionSubtypeNe i).symm F)
+    rw [renameEquiv_apply, Finsupp.equivMapDomain_eq_mapDomain,
+      coeff_rename_mapDomain _ (Equiv.optionSubtypeNe i).symm.injective,
+      Finsupp.mapDomain_equiv_apply, Equiv.symm_symm, Equiv.optionSubtypeNe_none, hσi,
+      H, coeff_zero, eq_comm, ← notMem_support_iff] at this
+    exact this hσ
+  · refine .trans ?_ H
+    trans (Polynomial.mapAlgHom (MvPolynomial.aeval (a ·.1)) Fi).coeff n
+    · simp [aeval_rename, Function.comp_def]
+    · congr 1
+      show ((Polynomial.mapAlgHom _).comp ((optionEquivLeft k _).toAlgHom.comp (rename _))) F = _
+      congr 1
+      ext : 1
+      aesop (add simp optionEquivLeft_X_some) (add simp optionEquivLeft_X_none)
+
+end
+
 include hp ha' H in
 omit [ExpChar k p] in
 lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_adjoin_eq_top_aux :
@@ -66,21 +123,8 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_adjoin
     simpa only [Finset.coe_image, Finset.coe_univ, Set.image_univ, linearIndepOn_range_iff
       hv.injective] using H (Finset.univ.image v) (by simpa using hv.linearIndepOn_id)
   -- By the minimality of total degree, `F` is irreducible.
-  have hFirr : Irreducible F := by
-    refine ⟨fun h' ↦ (h'.map (aeval a)).ne_zero h, fun q₁ q₂ e ↦ ?_⟩
-    by_contra! hq₁q₂
-    wlog hq₁ : aeval a q₁ = 0 generalizing q₁ q₂
-    · refine this q₂ q₁ (e.trans (mul_comm _ _)) hq₁q₂.symm ?_
-      simpa only [map_mul, @eq_comm K 0, h, mul_eq_zero, or_iff_right hq₁] using congr(aeval a $e)
-    subst e
-    simp only [ne_eq, mul_eq_zero, not_or] at hF
-    have : m ≤ _ := Nat.find_min' HF ⟨q₁, rfl, hF.1, hq₁⟩
-    rw [← hm, MvPolynomial.totalDegree_mul_of_isDomain hF.1 hF.2,
-      add_le_iff_nonpos_right, nonpos_iff_eq_zero] at this
-    apply hF.2
-    rw [totalDegree_eq_zero_iff_eq_C.mp this]
-    convert C.map_zero
-    simpa [this] using isUnit_iff_totalDegree_of_isReduced.not.mp hq₁q₂.2
+  have hFirr : Irreducible F := irreducible_of_forall_aeval_eq_zero_totalDegree_le a F hF h
+    fun F' h₁ h₂ ↦ hm.trans_le (Nat.find_min' HF ⟨F', rfl, h₁, h₂⟩)
   -- By the minimality of total degree and the linearly independent condition,
   -- there exists some `Xᵢᵈ` with `p ∤ d` appearing in `F`.
   obtain ⟨i, hi⟩ : ∃ i, ∃ σ ∈ F.support, ¬ p ∣ σ i := by
@@ -134,31 +178,14 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_adjoin
   have hF'' : ∃ d, ¬ p ∣ d ∧ F'.coeff d ≠ 0 := by
     obtain ⟨σ, hσ, hi⟩ := hi
     refine ⟨σ i, hi, fun hF'i ↦ ?_⟩
-    have H : m ≤ _ := Nat.find_min' HF ⟨rename (Equiv.optionSubtypeNe i ∘ some)
-      (Fi.coeff (σ i)), rfl, ?_, ?_⟩
-    · have hi' : σ i ≠ 0 := fun H ↦ hi (H ▸ dvd_zero p)
-      have : (Fi.coeff _).totalDegree + _ ≤ _ :=
-        totalDegree_coeff_optionEquivLeft_add_le _ _ (renameEquiv k _ F) (σ i) (by
-          rw [totalDegree_renameEquiv]
-          refine le_trans (Finset.single_le_sum (by simp) ?_) (le_totalDegree hσ)
-          simpa only [Finsupp.mem_support_iff])
-      rw [totalDegree_renameEquiv, hm] at this
-      simpa [hi'] using (this.trans H).trans (totalDegree_rename_le _ _)
-    · rw [← map_zero (rename (Equiv.optionSubtypeNe i ∘ some)), (rename_injective _
-        ((Equiv.optionSubtypeNe i).injective.comp (Option.some_injective _))).ne_iff]
-      intro H
-      have : coeff _ (Fi.coeff _) = _ :=
-        optionEquivLeft_coeff_coeff _ _ (σ.equivMapDomain (Equiv.optionSubtypeNe i).symm)
-          (renameEquiv k (Equiv.optionSubtypeNe i).symm F)
-      rw [renameEquiv_apply, Finsupp.equivMapDomain_eq_mapDomain,
-        coeff_rename_mapDomain _ (Equiv.optionSubtypeNe i).symm.injective,
-        Finsupp.mapDomain_equiv_apply, Equiv.symm_symm, Equiv.optionSubtypeNe_none,
-        H, coeff_zero, eq_comm, ← notMem_support_iff] at this
-      exact this hσ
-    · rw [← show algebraMap _ K (F'.coeff (σ i)) = 0 by simp only [hF'i, map_zero]]
-      simp only [aeval_rename, Polynomial.coe_mapAlgHom, Polynomial.coeff_map,
-        RingHom.coe_coe, ← aeval_algebraMap_apply, F', Function.comp_def]
-      rfl
+    refine coeff_eval_ite_ne_zero_of_forall_aeval_eq_zero_totalDegree_le a F
+      (fun F' h₁ h₂ ↦ hm.trans_le (Nat.find_min' HF ⟨F', rfl, h₁, h₂⟩)) i (σ i)
+      (fun H ↦ hi (H ▸ dvd_zero p)) ⟨σ, hσ, rfl⟩ (.trans ?_ hF'i)
+    show _ = (((Polynomial.mapAlgHom _).comp
+      ((optionEquivLeft k _).toAlgHom.comp (rename _))) _).coeff (σ i)
+    congr 2
+    ext : 1
+    aesop (add simp optionEquivLeft_X_some) (add simp optionEquivLeft_X_none)
   have hFi : Fi.natDegree ≠ 0 := by
     intro e
     obtain ⟨d, hpd, hF'd⟩ := hF''
