@@ -442,7 +442,7 @@ lemma NonUnitalStarAlgHomClass.map_cfcₙ (φ : F) (f : R → R) (a : A)
   refine ContinuousMapZero.UniqueHom.eq_of_continuous_of_map_id _ rfl _ _
     ?_ ?_ ?apply_id
   case apply_id =>
-    trans cfcₙHom hψa ⟨.restrict (quasispectrum R (ψ a)) (.id R), rfl⟩
+    trans cfcₙHom (R := R) hψa ⟨.restrict (quasispectrum R (ψ a)) (.id R), rfl⟩
     · simp [cfcₙHom_id]
     · congr
   all_goals

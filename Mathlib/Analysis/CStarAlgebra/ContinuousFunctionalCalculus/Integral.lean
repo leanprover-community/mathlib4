@@ -101,7 +101,7 @@ lemma cfcₙL_integral (a : A) (f : X → C(quasispectrum 𝕜 a, 𝕜)₀) (hf�
 
 lemma cfcₙHom_integral (a : A) (f : X → C(quasispectrum 𝕜 a, 𝕜)₀) (hf₁ : Integrable f μ)
     (ha : p a := by cfc_tac) :
-    ∫ x, cfcₙHom (a := a) ha (f x) ∂μ = cfcₙHom (a := a) ha (∫ x, f x ∂μ) :=
+    ∫ x, cfcₙHom (R := 𝕜) (a := a) ha (f x) ∂μ = cfcₙHom (R := 𝕜) (a := a) ha (∫ x, f x ∂μ) :=
   cfcₙL_integral a f hf₁ ha
 
 open ContinuousMapZero in
