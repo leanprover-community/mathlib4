@@ -41,7 +41,7 @@ There are a few advantages of equipping this space with this metric structure.
 
 variable {α β γ : Type*} [PseudoEMetricSpace γ]
 open scoped UniformConvergence NNReal ENNReal
-open Filter Topology
+open Filter Topology Uniformity
 
 namespace UniformFun
 
@@ -105,8 +105,8 @@ lemma lipschitzOnWith_ofFun_iff {f : γ → α → β} {K : ℝ≥0} {s : Set γ
     LipschitzOnWith K (fun x ↦ ofFun (f x)) s ↔ ∀ c, LipschitzOnWith K (f · c) s :=
   lipschitzOnWith_iff
 
-/-- If `f : α → γ → β` is a family of a functions, all of which are Lipschitz with the
-same constant, then the family is uniformly equicontinuous. -/
+/-- If `f : α → γ → β` is a family of a functions, all of which are Lipschitz on `s` with the
+same constant, then the family is uniformly equicontinuous on `s`. -/
 lemma _root_.LipschitzOnWith.uniformEquicontinuousOn (f : α → γ → β) (K : ℝ≥0) {s : Set γ}
     (h : ∀ c, LipschitzOnWith K (f c) s) : UniformEquicontinuousOn f s := by
   rw [uniformEquicontinuousOn_iff_uniformContinuousOn]
@@ -115,10 +115,10 @@ lemma _root_.LipschitzOnWith.uniformEquicontinuousOn (f : α → γ → β) (K :
 
 lemma edist_eval_le {f g : α →ᵤ β} {x : α} :
     edist (toFun f x) (toFun g x) ≤ edist f g :=
-  le_iSup (fun x ↦ edist (toFun f x) (toFun g x)) x
+  edist_le.mp le_rfl x
 
 lemma lipschitzWith_eval (x : α) :
-    LipschitzWith 1 (fun f : α →ᵤ β ↦ f x) := by
+    LipschitzWith 1 (fun f : α →ᵤ β ↦ toFun f x) := by
   intro f g
   simpa using edist_eval_le
 
@@ -182,7 +182,7 @@ section EMetric
 
 variable [PseudoEMetricSpace β]
 
-/-- Let `f : γ → α →ᵤ[𝔖] β`. If for every `s ∈ 𝔖` and for every `c ∈ s`, the fucntion
+/-- Let `f : γ → α →ᵤ[𝔖] β`. If for every `s ∈ 𝔖` and for every `c ∈ s`, the function
 `fun x ↦ f x c` is Lipschitz (with Lipschitz constant depending on `s`), then `f` is continuous. -/
 lemma continuous_of_forall_lipschitzWith {f : γ → α →ᵤ[𝔖] β} (K : Set α → ℝ≥0)
     (h : ∀ s ∈ 𝔖, ∀ c ∈ s, LipschitzWith (K s) (fun x ↦ toFun 𝔖 (f x) c)) :
@@ -192,14 +192,6 @@ lemma continuous_of_forall_lipschitzWith {f : γ → α →ᵤ[𝔖] β} (K : Se
   rw [UniformFun.lipschitzWith_iff]
   rintro ⟨y, hy⟩
   exact h s hs y hy
-
---TODO: move
-lemma isUniformInducing_pi_restrict :
-    IsUniformInducing
-      (fun f : α →ᵤ[𝔖] β ↦ fun s : 𝔖 ↦ UniformFun.ofFun ((s : Set α).restrict (toFun 𝔖 f))) := by
-  simp_rw [isUniformInducing_iff_uniformSpace, Pi.uniformSpace_eq, UniformSpace.comap_iInf,
-    ← UniformSpace.comap_comap, iInf_subtype]
-  rfl
 
 @[nolint unusedArguments]
 noncomputable instance [Finite 𝔖] : EDist (α →ᵤ[𝔖] β) where
@@ -228,6 +220,8 @@ lemma edist_eq_pi_restrict [Fintype 𝔖] {f g : α →ᵤ[𝔖] β} :
 
 variable [Finite 𝔖]
 
+/-- The natural `EMetric` structure on `α →ᵤ[𝔖] β` when `𝔖` is finite given by
+`edist f g = ⨆ x ∈ ⋃₀ 𝔖, edist (f x) (g x)`. -/
 noncomputable instance : PseudoEMetricSpace (α →ᵤ[𝔖] β) where
   edist_self f := by simp [edist_eq_restrict_sUnion]
   edist_comm := by simp [edist_eq_restrict_sUnion, edist_comm]
@@ -253,11 +247,14 @@ lemma lipschitzOnWith_iff {f : γ → α →ᵤ[𝔖] β} {K : ℝ≥0} {s : Set
   simp [lipschitzOnWith_iff_restrict, lipschitzWith_iff]
   rfl
 
-lemma lipschitzWith_eval (x : α) (hx : x ∈ ⋃₀ 𝔖) :
+lemma edist_eval_le {f g : α →ᵤ[𝔖] β} {x : α} (hx : x ∈ ⋃₀ 𝔖):
+    edist (toFun 𝔖 f x) (toFun 𝔖 g x) ≤ edist f g :=
+  edist_le.mp le_rfl x hx
+
+lemma lipschitzWith_eval {x : α} (hx : x ∈ ⋃₀ 𝔖) :
     LipschitzWith 1 (fun f : α →ᵤ[𝔖] β ↦ toFun 𝔖 f x) := by
   intro f g
-  simpa only [ENNReal.coe_one, one_mul] using
-    le_iSup₂ (f := fun y _ ↦ edist (toFun 𝔖 f y) (toFun 𝔖 g y)) x hx
+  simpa only [ENNReal.coe_one, one_mul] using edist_eval_le hx
 
 lemma lipschitzWith_one_ofFun_toFun :
     LipschitzWith 1 (ofFun 𝔖 ∘ UniformFun.toFun : (α →ᵤ β) → (α →ᵤ[𝔖] β)) :=
@@ -265,11 +262,11 @@ lemma lipschitzWith_one_ofFun_toFun :
 
 lemma lipschitzWith_one_ofFun_toFun' [Finite 𝔗] (h : ⋃₀ 𝔖 ⊆ ⋃₀ 𝔗) :
     LipschitzWith 1 (ofFun 𝔖 ∘ toFun 𝔗 : (α →ᵤ[𝔗] β) → (α →ᵤ[𝔖] β)) :=
-  lipschitzWith_iff.mpr fun x hx ↦ lipschitzWith_eval x (h hx)
+  lipschitzWith_iff.mpr fun _x hx ↦ lipschitzWith_eval (h hx)
 
 lemma lipschitzWith_restrict (s : Set α) (hs : s ∈ 𝔖)  :
     LipschitzWith 1 (UniformFun.ofFun ∘ s.restrict ∘ toFun 𝔖 : (α →ᵤ[𝔖] β) → (s →ᵤ β)) :=
-  UniformFun.lipschitzWith_iff.mpr fun x ↦ lipschitzWith_eval _ ⟨s, hs, x.2⟩
+  UniformFun.lipschitzWith_iff.mpr fun x ↦ lipschitzWith_eval ⟨s, hs, x.2⟩
 
 lemma isometry_restrict (s : Set α) :
     Isometry (UniformFun.ofFun ∘ s.restrict ∘ toFun {s} : (α →ᵤ[{s}] β) → (s →ᵤ β)) := by
