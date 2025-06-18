@@ -123,6 +123,53 @@ theorem countable_setOf_isolated_left [SecondCountableTopology α] :
     { x : α | 𝓝[<] x = ⊥ }.Countable :=
   countable_setOf_isolated_right (α := αᵒᵈ)
 
+/-- The set of points in a set which are isolated on the right in this set is countable when the
+space is second-countable. -/
+theorem countable_setOf_isolated_right_within [SecondCountableTopology α] {s : Set α} :
+    { x ∈ s | 𝓝[s ∩ Ioi x] x = ⊥ }.Countable := by
+  /- This does not follow from `countable_setOf_isolated_right`, which gives the result when `s`
+  is the whole space, as one can not use it inside the subspace since it doesn't have the order
+  topology. Instead, we follow the main steps of its proof. -/
+  let t := { x ∈ s | 𝓝[s ∩ Ioi x] x = ⊥ ∧ ¬ IsTop x}
+  suffices H : t.Countable by
+    have : { x ∈ s | 𝓝[s ∩ Ioi x] x = ⊥ } ⊆ t ∪ {x | IsTop x} := by
+      intro x hx
+      by_cases h'x : IsTop x
+      · simp [h'x]
+      · simpa [-sep_and, t, h'x]
+    apply Countable.mono this
+    simp [H, (subsingleton_isTop α).countable]
+  have : ∀ x ∈ t, ∃ y > x, s ∩ Ioo x y = ∅ := by
+    intro x hx
+    simp only [← empty_mem_iff_bot, mem_nhdsWithin_iff_exists_mem_nhds_inter,
+      subset_empty_iff, IsTop, not_forall, not_le, mem_inter_iff, mem_setOf_eq, t] at hx
+    rcases hx.2.1 with ⟨u, hu, h'u⟩
+    obtain ⟨y, hxy, hy⟩ : ∃ y, x < y ∧ Ico x y ⊆ u := exists_Ico_subset_of_mem_nhds hu hx.2.2
+    refine ⟨y, hxy, ?_⟩
+    contrapose! h'u
+    apply h'u.mono
+    intro z hz
+    exact ⟨hy ⟨hz.2.1.le, hz.2.2⟩, hz.1, hz.2.1⟩
+  choose! y hy h'y using this
+  apply Set.PairwiseDisjoint.countable_of_Ioo (y := y) _ hy
+  simp only [PairwiseDisjoint, Set.Pairwise, Function.onFun]
+  intro a ha b hb hab
+  wlog H : a < b generalizing a b with h
+  · have : b < a := lt_of_le_of_ne (not_lt.1 H) hab.symm
+    exact (h hb ha hab.symm this).symm
+  have : y a ≤ b := by
+    by_contra!
+    have : b ∈ s ∩ Ioo a (y a) := by simp [hb.1, H, this]
+    simp [h'y a ha] at this
+  rw [disjoint_iff_forall_ne]
+  exact fun u hu v hv ↦ ((hu.2.trans_le this).trans hv.1).ne
+
+/-- The set of points in a set which are isolated on the right in this set is countable when the
+space is second-countable. -/
+theorem countable_setOf_isolated_left_within [SecondCountableTopology α] {s : Set α} :
+    { x ∈ s | 𝓝[s ∩ Iio x] x = ⊥ }.Countable :=
+  countable_setOf_isolated_right_within (α := αᵒᵈ)
+
 /-- A set is a neighborhood of `a` within `(a, +∞)` if and only if it contains an interval `(a, u]`
 with `a < u`. -/
 theorem mem_nhdsGT_iff_exists_Ioc_subset [NoMaxOrder α] [DenselyOrdered α] {a : α} {s : Set α} :
