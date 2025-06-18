@@ -213,3 +213,8 @@ elab_rules : tactic
   _ ← simpLocation r.ctx {} dis loc
 
 end Mathlib.Tactic.FieldSimp
+
+/-!
+ We register `field_simp` with the `hint` tactic.
+ -/
+register_hint field_simp
