@@ -548,6 +548,8 @@ jobs:
           filterOutClosed: true
 
       # Combine the output from the previous action with the metadata supplied by GitHub itself.
+      # Note that if we fall back to github.event.pull_request data, the list of labels is generated when this workflow is triggered
+      # and not updated afterwards!
       - id: PR
         shell: bash
         run: |
