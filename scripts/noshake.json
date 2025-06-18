@@ -102,7 +102,7 @@
   "Mathlib.Tactic.Find",
   "Mathlib.Tactic.Finiteness",
   "Mathlib.Tactic.GCongr",
-  "Mathlib.Tactic.GCongr.CoreAttrs",
+  "Mathlib.Tactic.GRewrite",
   "Mathlib.Tactic.Generalize",
   "Mathlib.Tactic.GeneralizeProofs",
   "Mathlib.Tactic.Group",
@@ -241,6 +241,7 @@
   "Mathlib.Tactic.Positivity.Basic":
   ["Mathlib.Algebra.GroupPower.Order",
    "Mathlib.Algebra.Order.Group.PosPart",
+   "Mathlib.Algebra.Order.Hom.Basic",
    "Mathlib.Algebra.Order.Ring.Basic",
    "Mathlib.Data.Int.CharZero",
    "Mathlib.Data.Nat.Factorial.Basic",
@@ -269,8 +270,7 @@
   "Mathlib.Tactic.ITauto": ["Batteries.Tactic.Init", "Mathlib.Logic.Basic"],
   "Mathlib.Tactic.Group": ["Mathlib.Algebra.Group.Commutator"],
   "Mathlib.Tactic.GCongr.CoreAttrs": ["Mathlib.Tactic.GCongr.Core"],
-  "Mathlib.Tactic.GCongr.Core":
-  ["Mathlib.Order.Defs", "Mathlib.Order.Defs.PartialOrder"],
+  "Mathlib.Tactic.GCongr.Core": ["Mathlib.Order.Defs"],
   "Mathlib.Tactic.GCongr": ["Mathlib.Tactic.Positivity.Core"],
   "Mathlib.Tactic.FunProp.Mor": ["Mathlib.Data.FunLike.Basic"],
   "Mathlib.Tactic.FunProp.Differentiable":
@@ -398,7 +398,6 @@
   ["Mathlib.LinearAlgebra.AffineSpace.Defs"],
   "Mathlib.LinearAlgebra.AffineSpace.AffineMap":
   ["Mathlib.LinearAlgebra.AffineSpace.Defs"],
-  "Mathlib.Lean.Meta.RefinedDiscrTree.Pi": ["Mathlib.Algebra.Notation.Pi"],
   "Mathlib.Lean.Meta": ["Batteries.Logic"],
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Operations"],
   "Mathlib.Lean.Expr.Basic": ["Batteries.Logic"],
@@ -425,6 +424,7 @@
   ["Batteries.Tactic.Init", "Mathlib.Logic.Function.Defs"],
   "Mathlib.Data.Nat.Init": ["Batteries.Tactic.Init"],
   "Mathlib.Data.Nat.Find": ["Batteries.WF"],
+  "Mathlib.Data.Nat.Basic": ["Mathlib.Tactic.GCongr.Core"],
   "Mathlib.Data.Multiset.Bind": ["Mathlib.Algebra.GroupWithZero.Action.Defs"],
   "Mathlib.Data.Matroid.Rank.ENat": ["Mathlib.Tactic.TautoSet"],
   "Mathlib.Data.Matroid.Minor.Contract": ["Mathlib.Tactic.TautoSet"],
@@ -528,6 +528,7 @@
   ["Mathlib.Algebra.Group.Pointwise.Finset.Basic"],
   "Mathlib.Algebra.Group.Pi.Basic": ["Batteries.Tactic.Classical"],
   "Mathlib.Algebra.Group.Idempotent": ["Mathlib.Data.Subtype"],
+  "Mathlib.Algebra.Group.Even": ["Mathlib.Data.Set.Operations"],
   "Mathlib.Algebra.Group.Defs":
   ["Mathlib.Algebra.Notation.Defs", "Mathlib.Tactic.OfNat"],
   "Mathlib.Algebra.GeomSum": ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
