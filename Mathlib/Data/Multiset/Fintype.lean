@@ -99,7 +99,7 @@ theorem mem_of_mem_toEnumFinset {p : α × ℕ} (h : p ∈ m.toEnumFinset) : p.1
   have := (m.mem_toEnumFinset p).mp h; Multiset.count_pos.mp (by omega)
 
 @[simp] lemma toEnumFinset_filter_eq (m : Multiset α) (a : α) :
-    m.toEnumFinset.filter (·.1 = a) = {a} ×ˢ Finset.range (m.count a) := by aesop
+    {x ∈ m.toEnumFinset | x.1 = a} = {a} ×ˢ Finset.range (m.count a) := by aesop
 
 @[simp] lemma map_toEnumFinset_fst (m : Multiset α) : m.toEnumFinset.val.map Prod.fst = m := by
   ext a; simp [count_map, ← Finset.filter_val, eq_comm (a := a)]
@@ -117,8 +117,8 @@ theorem mem_of_mem_toEnumFinset {p : α × ℕ} (h : p ∈ m.toEnumFinset) : p.1
     exact Nat.zero_le _
   obtain ⟨n, han, hn⟩ : ∃ n ≥ card (s.1.filter fun x ↦ a = x.1) - 1, (a, n) ∈ s := by
     by_contra! h
-    replace h : s.filter (·.1 = a) ⊆ {a} ×ˢ .range (card (s.1.filter fun x ↦ a = x.1) - 1) := by
-      simpa (config := { contextual := true }) [forall_swap (β := _ = a), Finset.subset_iff,
+    replace h : {x ∈ s | x.1 = a} ⊆ {a} ×ˢ .range (card (s.1.filter fun x ↦ a = x.1) - 1) := by
+      simpa +contextual [forall_swap (β := _ = a), Finset.subset_iff,
         imp_not_comm, not_le, Nat.lt_sub_iff_add_lt] using h
     have : card (s.1.filter fun x ↦ a = x.1) ≤ card (s.1.filter fun x ↦ a = x.1) - 1 := by
       simpa [Finset.card, eq_comm] using Finset.card_mono h
@@ -130,7 +130,7 @@ theorem toEnumFinset_mono {m₁ m₂ : Multiset α} (h : m₁ ≤ m₂) :
     m₁.toEnumFinset ⊆ m₂.toEnumFinset := by
   intro p
   simp only [Multiset.mem_toEnumFinset]
-  exact gt_of_ge_of_gt (Multiset.le_iff_count.mp h p.1)
+  exact lt_of_le_of_lt' (Multiset.le_iff_count.mp h p.1)
 
 @[simp]
 theorem toEnumFinset_subset_iff {m₁ m₂ : Multiset α} :
@@ -159,12 +159,6 @@ def coeEquiv (m : Multiset α) : m ≃ m.toEnumFinset where
     ⟨x.1.1, x.1.2, by
       rw [← Multiset.mem_toEnumFinset]
       exact x.2⟩
-  left_inv := by
-    rintro ⟨x, i, h⟩
-    rfl
-  right_inv := by
-    rintro ⟨⟨x, i⟩, h⟩
-    rfl
 
 @[simp]
 theorem toEmbedding_coeEquiv_trans (m : Multiset α) :
@@ -189,10 +183,15 @@ theorem map_univ_coe (m : Multiset α) :
   simpa only [Finset.map_val, Multiset.coeEmbedding_apply, Multiset.map_map,
     Function.comp_apply] using this
 
+theorem map_univ_comp_coe {β : Type*} (m : Multiset α) (f : α → β) :
+    ((Finset.univ : Finset m).val.map (f ∘ (fun x : m ↦ (x : α)))) = m.map f := by
+  rw [← Multiset.map_map, Multiset.map_univ_coe]
+
 @[simp]
 theorem map_univ {β : Type*} (m : Multiset α) (f : α → β) :
     ((Finset.univ : Finset m).val.map fun (x : m) ↦ f (x : α)) = m.map f := by
-  erw [← Multiset.map_map, Multiset.map_univ_coe]
+  simp_rw [← Function.comp_apply (f := f)]
+  exact map_univ_comp_coe m f
 
 @[simp]
 theorem card_toEnumFinset (m : Multiset α) : m.toEnumFinset.card = Multiset.card m := by
@@ -231,8 +230,6 @@ If `s = t` then there's an equivalence between the appropriate types.
 def cast {s t : Multiset α} (h : s = t) : s ≃ t where
   toFun x := ⟨x.1, x.2.cast (by simp [h])⟩
   invFun x := ⟨x.1, x.2.cast (by simp [h])⟩
-  left_inv x := rfl
-  right_inv x := rfl
 
 instance : IsEmpty (0 : Multiset α) := Fintype.card_eq_zero_iff.mp (by simp)
 

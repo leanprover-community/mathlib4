@@ -57,7 +57,7 @@ lemma cast_mul {α : Type*} [NonAssocRing α] : ∀ m n, ((m * n : ℤ) : α) = 
     | succ m ih => simp_all [add_mul]
 
 /-- Note this holds in marginally more generality than `Int.cast_mul` -/
-lemma cast_mul_eq_zsmul_cast {α : Type*} [AddCommGroupWithOne α] :
+lemma cast_mul_eq_zsmul_cast {α : Type*} [AddGroupWithOne α] :
     ∀ m n : ℤ, ↑(m * n) = m • (n : α) :=
   fun m ↦ Int.induction_on m (by simp) (fun _ ih ↦ by simp [add_mul, add_zsmul, ih]) fun _ ih ↦ by
     simp only [sub_mul, one_mul, cast_sub, ih, sub_zsmul, one_zsmul, ← sub_eq_add_neg, forall_const]
@@ -73,9 +73,13 @@ These also prevent non-computable instances like `Int.normedCommRing` being used
 these instances non-computably.
 -/
 
+set_option linter.style.commandStart false
+
 instance instCommSemiring : CommSemiring ℤ := inferInstance
 instance instSemiring     : Semiring ℤ     := inferInstance
 instance instRing         : Ring ℤ         := inferInstance
 instance instDistrib      : Distrib ℤ      := inferInstance
+
+set_option linter.style.commandStart true
 
 end Int

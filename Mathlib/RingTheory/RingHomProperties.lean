@@ -30,18 +30,17 @@ open CategoryTheory Opposite CategoryTheory.Limits
 
 namespace RingHom
 
-variable (P : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop)
+variable {P Q : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop}
 
 section RespectsIso
 
+variable (P) in
 /-- A property `RespectsIso` if it still holds when composed with an isomorphism -/
 def RespectsIso : Prop :=
   (∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T],
       ∀ (f : R →+* S) (e : S ≃+* T) (_ : P f), P (e.toRingHom.comp f)) ∧
     ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T],
       ∀ (f : S →+* T) (e : R ≃+* S) (_ : P f), P (f.comp e.toRingHom)
-
-variable {P}
 
 theorem RespectsIso.cancel_left_isIso (hP : RespectsIso @P) {R S T : CommRingCat} (f : R ⟶ S)
     (g : S ⟶ T) [IsIso f] : P (g.hom.comp f.hom) ↔ P g.hom :=
@@ -87,17 +86,24 @@ theorem RespectsIso.isLocalization_away_iff (hP : RingHom.RespectsIso @P) {R S :
 @[deprecated (since := "2025-03-01")]
 alias RespectsIso.is_localization_away_iff := RespectsIso.isLocalization_away_iff
 
+lemma RespectsIso.and (hP : RespectsIso P) (hQ : RespectsIso Q) :
+    RespectsIso (fun f ↦ P f ∧ Q f) := by
+  refine ⟨?_, ?_⟩
+  · introv hf
+    exact ⟨hP.1 f e hf.1, hQ.1 f e hf.2⟩
+  · introv hf
+    exact ⟨hP.2 f e hf.1, hQ.2 f e hf.2⟩
+
 end RespectsIso
 
 section StableUnderComposition
 
+variable (P) in
 /-- A property is `StableUnderComposition` if the composition of two such morphisms
 still falls in the class. -/
 def StableUnderComposition : Prop :=
   ∀ ⦃R S T⦄ [CommRing R] [CommRing S] [CommRing T],
     ∀ (f : R →+* S) (g : S →+* T) (_ : P f) (_ : P g), P (g.comp f)
-
-variable {P}
 
 theorem StableUnderComposition.respectsIso (hP : RingHom.StableUnderComposition @P)
     (hP' : ∀ {R S : Type u} [CommRing R] [CommRing S] (e : R ≃+* S), P e.toRingHom) :
@@ -110,10 +116,16 @@ theorem StableUnderComposition.respectsIso (hP : RingHom.StableUnderComposition 
     apply hP
     exacts [hP' e, H]
 
+lemma StableUnderComposition.and (hP : StableUnderComposition P) (hQ : StableUnderComposition Q) :
+    StableUnderComposition (fun f ↦ P f ∧ Q f) := by
+  introv R hf hg
+  exact ⟨hP f g hf.1 hg.1, hQ f g hf.2 hg.2⟩
+
 end StableUnderComposition
 
 section IsStableUnderBaseChange
 
+variable (P) in
 /-- A morphism property `P` is `IsStableUnderBaseChange` if `P(S →+* A)` implies
 `P(B →+* A ⊗[S] B)`. -/
 def IsStableUnderBaseChange : Prop :=
@@ -169,15 +181,20 @@ theorem IsStableUnderBaseChange.pushout_inl (hP : RingHom.IsStableUnderBaseChang
   apply hP R T S (TensorProduct R S T)
   exact H
 
+lemma IsStableUnderBaseChange.and (hP : IsStableUnderBaseChange P)
+    (hQ : IsStableUnderBaseChange Q) :
+    IsStableUnderBaseChange (fun f ↦ P f ∧ Q f) := by
+  introv R _ h
+  exact ⟨hP R S R' S' h.1, hQ R S R' S' h.2⟩
+
 end IsStableUnderBaseChange
 
 section ToMorphismProperty
 
+variable (P) in
 /-- The categorical `MorphismProperty` associated to a property of ring homs expressed
 non-categorical terms. -/
 def toMorphismProperty : MorphismProperty CommRingCat := fun _ _ f ↦ P f.hom
-
-variable {P}
 
 lemma toMorphismProperty_respectsIso_iff :
     RespectsIso P ↔ (toMorphismProperty P).RespectsIso := by

@@ -6,7 +6,7 @@ Authors: Kim Morrison, Floris van Doorn
 import Mathlib.CategoryTheory.Limits.Filtered
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Discrete.Basic
 
 /-!
 # Limits in `C` give colimits in `Cᵒᵖ`.
@@ -558,7 +558,7 @@ variable [HasCoproduct Z]
 instance : HasLimit (Discrete.functor Z).op := hasLimit_op_of_hasColimit (Discrete.functor Z)
 
 instance : HasLimit ((Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op) :=
-  hasLimitEquivalenceComp (Discrete.opposite α).symm
+  hasLimit_equivalence_comp (Discrete.opposite α).symm
 
 instance : HasProduct (op <| Z ·) := hasLimit_of_iso
   ((Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl)) :
@@ -577,9 +577,7 @@ noncomputable def Cofan.IsColimit.op {c : Cofan Z} (hc : IsColimit c) : IsLimit 
   refine IsLimit.ofIsoLimit ((IsLimit.postcomposeInvEquiv e _).2
     (IsLimit.whiskerEquivalence hc.op (Discrete.opposite α).symm))
     (Cones.ext (Iso.refl _) (fun ⟨a⟩ ↦ ?_))
-  dsimp
-  erw [Category.id_comp, Category.comp_id]
-  rfl
+  simp [e, Cofan.inj]
 
 /--
 The canonical isomorphism from the opposite of an abstract coproduct to the corresponding product

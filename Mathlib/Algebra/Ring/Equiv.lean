@@ -289,6 +289,14 @@ theorem coe_toEquiv_symm (e : R ≃+* S) : (e.symm : S ≃ R) = (e : R ≃ S).sy
   rfl
 
 @[simp]
+theorem coe_toMulEquiv_symm (e : R ≃+* S) : (e.symm : S ≃* R) = (e : R ≃* S).symm :=
+  rfl
+
+@[simp]
+theorem coe_toAddEquiv_symm (e : R ≃+* S) : (e.symm : S ≃+ R) = (e : R ≃+ S).symm :=
+  rfl
+
+@[simp]
 theorem apply_symm_apply (e : R ≃+* S) : ∀ x, e (e.symm x) = x :=
   e.toEquiv.apply_symm_apply
 
@@ -372,12 +380,6 @@ protected def op {α β} [Add α] [Mul α] [Add β] [Mul β] :
     α ≃+* β ≃ (αᵐᵒᵖ ≃+* βᵐᵒᵖ) where
   toFun f := { AddEquiv.mulOp f.toAddEquiv, MulEquiv.op f.toMulEquiv with }
   invFun f := { AddEquiv.mulOp.symm f.toAddEquiv, MulEquiv.op.symm f.toMulEquiv with }
-  left_inv f := by
-    ext
-    rfl
-  right_inv f := by
-    ext
-    rfl
 
 /-- The 'unopposite' of a ring iso `αᵐᵒᵖ ≃+* βᵐᵒᵖ`. Inverse to `RingEquiv.op`. -/
 @[simp]
@@ -590,7 +592,7 @@ theorem coe_monoidHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S �
   rfl
 
 @[simp]
-theorem coe_addMonoidHom_trans [NonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
+theorem coe_addMonoidHom_trans [NonUnitalNonAssocSemiring S'] (e₁ : R ≃+* S) (e₂ : S ≃+* S') :
     (e₁.trans e₂ : R →+ S') = (e₂ : S →+ S').comp ↑e₁ :=
   rfl
 
