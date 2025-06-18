@@ -579,9 +579,6 @@ theorem ae_restrict_iff' {p : α → Prop} (hs : MeasurableSet s) :
     (∀ᵐ x ∂μ.restrict s, p x) ↔ ∀ᵐ x ∂μ, x ∈ s → p x :=
   ae_restrict_iff'₀ hs.nullMeasurableSet
 
-theorem absolutelyContinuous_restrict : μ.restrict s ≪ μ :=
-  Measure.absolutelyContinuous_of_le Measure.restrict_le_self
-
 theorem _root_.Filter.EventuallyEq.restrict {f g : α → δ} {s : Set α} (hfg : f =ᵐ[μ] g) :
     f =ᵐ[μ.restrict s] g := by
   -- note that we cannot use `ae_restrict_iff` since we do not require measurability
