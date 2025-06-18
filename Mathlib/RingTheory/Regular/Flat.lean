@@ -124,21 +124,29 @@ theorem RingTheory.Sequence.IsWeaklyRegular.of_flat_isBaseChange {rs : List R}
       exact ⟨reg.1.of_flat_isBaseChange hf, ih hg reg.2 len⟩
 
 end Flat
-/-
+
 section FaithfullyFlat
 
 variable {R S M N: Type*} [CommRing R] [CommRing S] [Algebra R S] [FaithfullyFlat R S]
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] [Module S N]
   [IsScalarTower R S N] {f : M →ₗ[R] N} (hf : IsBaseChange S f) (x : R)
 
+include hf
+#check tensorQuotEquivQuotSMul
+theorem Module.FaithfullyFlat.smul_top_ne_top_of_isBaseChange {I : Ideal R}
+    (h : I • (⊤ : Submodule R M) ≠ ⊤) : I.map (algebraMap R S) • (⊤ : Submodule S N) ≠ ⊤ := sorry
+
 /-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be a faithfully flat `R`-algebra.
   If `[r₁, …, rₙ]` is a regular `M`-sequence, then its image in `S ⊗[R] M` is a regular
   `S ⊗[R] M`-sequence. -/
 theorem RingTheory.Sequence.IsRegular.of_faithfullyFlat_isBaseChange {rs : List R}
-    (reg : IsRegular M rs) : IsRegular N (rs.map (algebraMap R S)) := sorry
+    (reg : IsRegular M rs) : IsRegular N (rs.map (algebraMap R S)) := by
+  refine ⟨reg.1.of_flat_isBaseChange hf, ?_⟩
+  rw [← Ideal.map_ofList]
+  exact (FaithfullyFlat.smul_top_ne_top_of_isBaseChange hf reg.2.symm).symm
 
 end FaithfullyFlat
- -/
+
 section IsLocalizedModule
 
 variable {R : Type*} [CommRing R] (S : Submonoid R)
@@ -169,15 +177,12 @@ theorem RingTheory.Sequence.IsWeaklyRegular.isRegular_of_isLocalizedModule_of_me
     {M Mₚ : Type*} [AddCommGroup M] [Module R M] [Nontrivial Mₚ] [AddCommGroup Mₚ] [Module Rₚ Mₚ]
     [Module.Finite Rₚ Mₚ] [Module R Mₚ] [IsScalarTower R Rₚ Mₚ]
     (f : M →ₗ[R] Mₚ) [IsLocalizedModule.AtPrime p f] {rs : List R} (reg : IsWeaklyRegular M rs)
-    (mem : ∀ r ∈ rs, r ∈ p) : IsRegular Mₚ (rs.map (algebraMap R Rₚ)) :=
+    (mem : ∀ r ∈ rs, r ∈ p) : IsRegular Mₚ (rs.map (algebraMap R Rₚ)) := by
   have : IsLocalRing Rₚ := IsLocalization.AtPrime.isLocalRing Rₚ p
-  have h : ∀ r ∈ rs.map (algebraMap R Rₚ), r ∈ IsLocalRing.maximalIdeal Rₚ := by
-    intro _ hr
-    rcases List.mem_map.mp hr with ⟨r, hr, eq⟩
-    simpa only [← eq, IsLocalization.AtPrime.to_map_mem_maximal_iff Rₚ p] using mem r hr
-  ⟨reg.of_isLocalizedModule p.primeCompl Rₚ f, Ne.symm <| ne_top_of_lt <| lt_of_le_of_lt
-    (Submodule.smul_mono (by simpa only [Ideal.ofList, Ideal.span_le] using h) fun _ a ↦ a)
-      (Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
-        (IsLocalRing.maximalIdeal_le_jacobson (annihilator Rₚ Mₚ))).symm.lt_top⟩
+  refine (IsLocalRing.isRegular_iff_isWeaklyRegular_of_subset_maximalIdeal ?_).mpr <|
+    reg.of_isLocalizedModule p.primeCompl Rₚ f
+  intro _ hr
+  rcases List.mem_map.mp hr with ⟨r, hr, eq⟩
+  simpa only [← eq, IsLocalization.AtPrime.to_map_mem_maximal_iff Rₚ p] using mem r hr
 
 end AtPrime
