@@ -495,8 +495,6 @@ def TopologicalSpace.NonemptyCompacts.toGHSpace {X : Type u} [MetricSpace X]
     (p : NonemptyCompacts X) : GromovHausdorff.GHSpace :=
   GromovHausdorff.toGHSpace p
 
-open TopologicalSpace
-
 namespace GromovHausdorff
 
 section NonemptyCompacts

@@ -270,9 +270,14 @@ initialize_simps_projections LinearEquiv (toFun → apply, invFun → symm_apply
 theorem invFun_eq_symm : e.invFun = e.symm :=
   rfl
 
+theorem coe_toEquiv_symm : e.toEquiv.symm = e.symm := rfl
+
 @[simp]
-theorem coe_toEquiv_symm : e.toEquiv.symm = e.symm :=
+theorem toEquiv_symm : e.symm.toEquiv = e.toEquiv.symm :=
   rfl
+
+@[simp]
+theorem coe_symm_toEquiv : ⇑e.toEquiv.symm = e.symm := rfl
 
 variable {module_M₁ : Module R₁ M₁} {module_M₂ : Module R₂ M₂} {module_M₃ : Module R₃ M₃}
 variable {module_M₄ : Module R₄ M₄} {module_N₁ : Module R₁ N₁} {module_N₂ : Module R₁ N₂}
@@ -312,7 +317,6 @@ notation3:80 (name := transNotation) e₁:80 " ≪≫ₗ " e₂:81 =>
 
 variable {e₁₂} {e₂₃}
 
-@[simp]
 theorem coe_toAddEquiv : e.toAddEquiv = e :=
   rfl
 
@@ -342,6 +346,14 @@ theorem apply_symm_apply (c : M₂) : e (e.symm c) = c :=
 @[simp]
 theorem symm_apply_apply (b : M) : e.symm (e b) = b :=
   e.left_inv b
+
+@[simp]
+theorem comp_symm : e.toLinearMap ∘ₛₗ e.symm.toLinearMap = LinearMap.id :=
+  LinearMap.ext e.apply_symm_apply
+
+@[simp]
+theorem symm_comp : e.symm.toLinearMap ∘ₛₗ e.toLinearMap= LinearMap.id :=
+  LinearMap.ext e.symm_apply_apply
 
 @[simp]
 theorem trans_symm : (e₁₂.trans e₂₃ : M₁ ≃ₛₗ[σ₁₃] M₃).symm = e₂₃.symm.trans e₁₂.symm :=

@@ -453,7 +453,7 @@ theorem partialProd_succ' (f : Fin (n + 1) → α) (j : Fin (n + 1)) :
 
 @[to_additive]
 theorem partialProd_left_inv {G : Type*} [Group G] (f : Fin (n + 1) → G) :
-    (f 0 • partialProd fun i : Fin n => (f i)⁻¹ * f i.succ) = f :=
+    (f 0 • partialProd fun i : Fin n => (f i.castSucc)⁻¹ * f i.succ) = f :=
   funext fun x => Fin.inductionOn x (by simp) fun x hx => by
     simp only [coe_eq_castSucc, Pi.smul_apply, smul_eq_mul] at hx ⊢
     rw [partialProd_succ, ← mul_assoc, hx, mul_inv_cancel_left]
@@ -462,6 +462,30 @@ theorem partialProd_left_inv {G : Type*} [Group G] (f : Fin (n + 1) → G) :
 theorem partialProd_right_inv {G : Type*} [Group G] (f : Fin n → G) (i : Fin n) :
     (partialProd f (Fin.castSucc i))⁻¹ * partialProd f i.succ = f i := by
   rw [partialProd_succ, inv_mul_cancel_left]
+
+@[to_additive]
+lemma partialProd_contractNth {G : Type*} [Monoid G] {n : ℕ}
+    (g : Fin (n + 1) → G) (a : Fin (n + 1)) :
+    partialProd (contractNth a (· * ·) g) = partialProd g ∘ a.succ.succAbove := by
+  ext i
+  refine inductionOn i ?_ ?_
+  · simp only [partialProd_zero, Function.comp_apply, succ_succAbove_zero]
+  · intro i hi
+    simp only [Function.comp_apply, succ_succAbove_succ] at *
+    rw [partialProd_succ, partialProd_succ, hi]
+    rcases lt_trichotomy (i : ℕ) a with (h | h | h)
+    · rw [succAbove_of_castSucc_lt, contractNth_apply_of_lt _ _ _ _ h,
+        succAbove_of_castSucc_lt] <;>
+      simp only [lt_def, coe_castSucc, val_succ] <;>
+      omega
+    · rw [succAbove_of_castSucc_lt, contractNth_apply_of_eq _ _ _ _ h,
+        succAbove_of_le_castSucc, castSucc_fin_succ, partialProd_succ, mul_assoc] <;>
+      simp only [castSucc_lt_succ_iff, le_def, coe_castSucc] <;>
+      omega
+    · rw [succAbove_of_le_castSucc, succAbove_of_le_castSucc, contractNth_apply_of_gt _ _ _ _ h,
+        castSucc_fin_succ] <;>
+      simp only [le_def, Nat.succ_eq_add_one, val_succ, coe_castSucc] <;>
+      omega
 
 /-- Let `(g₀, g₁, ..., gₙ)` be a tuple of elements in `Gⁿ⁺¹`.
 Then if `k < j`, this says `(g₀g₁...gₖ₋₁)⁻¹ * g₀g₁...gₖ = gₖ`.
