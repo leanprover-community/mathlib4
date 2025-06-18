@@ -1147,7 +1147,6 @@ import Mathlib.AlgebraicGeometry.FunctionField
 import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
 import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.AlgebraicGeometry.GluingOneHypercover
-import Mathlib.AlgebraicGeometry.Grassmannian
 import Mathlib.AlgebraicGeometry.IdealSheaf
 import Mathlib.AlgebraicGeometry.IdealSheaf.Basic
 import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
@@ -5190,6 +5189,7 @@ import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Submodule
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
 import Mathlib.RingTheory.GradedAlgebra.Noetherian
 import Mathlib.RingTheory.GradedAlgebra.Radical
+import Mathlib.RingTheory.Grassmannian
 import Mathlib.RingTheory.HahnSeries.Addition
 import Mathlib.RingTheory.HahnSeries.Basic
 import Mathlib.RingTheory.HahnSeries.HEval
