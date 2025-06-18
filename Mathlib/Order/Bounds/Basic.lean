@@ -920,10 +920,10 @@ lemma lowerBounds_prod_of_nonempty_eq {β : Type*} [Preorder β] {t : Set β} (h
       exact fun b hb => (hu a b ha hb).2)
   (fun (a, b) hab (c, d) hcd => ⟨hab.1 hcd.1,hab.2 hcd.2⟩)
 
-lemma isLUB_of_element_prod_set {β : Type*} [Preorder β] {t : Set β} [het : Nonempty t] {u : β}
+lemma isLUB_of_element_prod_set {β : Type*} [Preorder β] {t : Set β} (het : t.Nonempty) {u : β}
     (hu : IsLUB t u) : IsLUB ({a} ×ˢ t) (a,u) := by
   rw [IsLUB,
-    upperBounds_prod_of_nonempty_eq (by aesop) (nonempty_subtype.mpr (nonempty_subtype.mp het)),
+    upperBounds_prod_of_nonempty_eq (by aesop) (nonempty_subtype.mpr het),
     upperBounds_singleton]
   constructor
   · exact ⟨left_mem_Ici, hu.1⟩
@@ -935,10 +935,10 @@ lemma isLUB_of_element_prod_set {β : Type*} [Preorder β] {t : Set β} [het : N
       exact right_mem_Iic
     · exact mem_of_mem_inter_right hu
 
-lemma isLUB_of_set_prod_element {β : Type*} [Preorder β] {b : β} [hes : Nonempty s] {u : α}
+lemma isLUB_of_set_prod_element {β : Type*} [Preorder β] {b : β} (hes : s.Nonempty) {u : α}
     (hu : IsLUB s u) : IsLUB (s ×ˢ {b}) (u,b) := by
   rw [IsLUB,
-    upperBounds_prod_of_nonempty_eq (nonempty_subtype.mpr (nonempty_subtype.mp hes)) (by aesop),
+    upperBounds_prod_of_nonempty_eq (nonempty_subtype.mpr hes) (by aesop),
     upperBounds_singleton]
   constructor
   · exact ⟨hu.1, left_mem_Ici⟩

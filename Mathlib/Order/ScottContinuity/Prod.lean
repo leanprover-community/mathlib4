@@ -53,3 +53,27 @@ lemma ScottContinuous.fromProd {γ : Type*} [Preorder α] [Preorder β] [Preorde
     (fun a ⦃d⦄ a_1 ↦ h₁ a trivial) (fun b ⦃d⦄ a ↦ h₂ b trivial)
     (fun a ↦ ScottContinuous.monotone fun ⦃d⦄ ↦ h₁ a trivial)
     (fun b ↦ ScottContinuous.monotone fun ⦃d⦄ ↦ h₂ b trivial)
+
+
+lemma ScottContinuous.prod {α' β' : Type*} [Preorder α] [Preorder β] [Preorder α'] [Preorder β']
+    {f : α → α'} {g : α → α'} (hf : ScottContinuous f) (hg : ScottContinuous g) :
+    ScottContinuous (Prod.map f g) :=
+  ScottContinuous.fromProd (by
+    intro a
+    simp_all only [Prod.map_apply]
+    intro d hd₁ hd₂ c hdc
+    have e1 : (fun b ↦ (f a, g b)) '' d = {f a} ×ˢ (g '' d) := by
+      aesop
+    rw [e1]
+    apply isLUB_of_element_prod_set (by aesop)
+    aesop)
+  (by
+    intro b
+    simp_all only [Prod.map_apply]
+    rw [ScottContinuous]
+    intro d hd₁ hd₂ c hdc
+    have e2 : ((fun a ↦ (f a, g b)) '' d) = (f '' d) ×ˢ {g b} := by
+      aesop
+    rw [e2]
+    apply isLUB_of_set_prod_element (by aesop)
+    aesop)
