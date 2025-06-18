@@ -23,6 +23,8 @@ then `Cᵒᵖ ⥤ Type w` (with Day convolution monoidal structure) act on the
 left on `D`.
 * A coproduct-preserving functor is left linear for these structures
 * A product-preserving functor is right linear for these structures
+* The chosenTypeCopowers structure on Type _
+* The chosenTypeCopowers structure on functor categories 
 
 -/
 
@@ -32,6 +34,8 @@ namespace CategoryTheory.MonoidalCategory
 
 variable (C : Type u) [Category.{v} C]
 open Limits
+
+section
 
 section
 
@@ -86,7 +90,7 @@ lemma ι_comp_ι_comp_sigmaConstAssocIso_inv (c : C) (j : J ⊗ J') :
 end
 
 @[simps -isSimp]
-noncomputable instance typeAction : MonoidalLeftAction (Type w) C where
+noncomputable def typeAction : MonoidalLeftAction (Type w) C where
   actionObj J c := (sigmaConst.obj c).obj J
   actionHomLeft f c := (sigmaConst.obj c).map f
   actionHomRight J _ _ f := (sigmaConst.map f).app J
@@ -101,54 +105,57 @@ noncomputable instance typeAction : MonoidalLeftAction (Type w) C where
     intro b
     simp [ι_comp_ι_comp_sigmaConstAssocIso_inv (j := (f b.1, b.2))]
 
-namespace typeAction
+end
+
 open scoped MonoidalLeftAction
+
+class ChosenTypeCopowers [MonoidalLeftAction (Type w) C] where
+  ι {J : Type w} (c : C) (j : J): c ⟶ (J ⊙ₗ c)
+  ι_def {J : Type w} (c : C) (j : J) : c ⟶ J ⊙ₗ c := (λₗ c).inv ≫ (fun _ ↦ j) ⊵ₗ c
+  ι_naturality_left {J J' : Type w} (f : J ⟶ J') (c : C) (j : J) : ι c j ≫ f ⊵ₗ c = ι c (f j)
+  ι_naturality_right {J : Type w} {c c' : C} (f : c ⟶ c') (j : J) : ι c j ≫ J ⊴ₗ f = f ≫ ι c' j
+  ι_unit (c : C) : ι c (.unit : 𝟙_ (Type w)) = (λₗ c).inv
+  ιIsColimit (J : Type w) (c : C) : IsColimit <| Cofan.mk (J ⊙ₗ c) (ι c)
+
+namespace ChosenTypeCopowers
+
+attribute [reassoc (attr := simp)] ι_naturality_left ι_naturality_right ι_unit
+
+variable {C} [MonoidalLeftAction (Type w) C] [ChosenTypeCopowers C]
 
 /-- The canonical map `c ⟶ J ⊙ₗ c` corresponding to `j : J`.
 If we are to think of `J ⊙ₗ c` as a `J`-indexed coproduct of copies of `c`, this is the
 inclusion at the component corresponding to `j`. This is proved in `ι_eq_ι`, but this
 definition should be the one that is used when working with the left action
 of types on `C`. -/
-noncomputable def ι {J : Type w} (c : C) (j : J) : c ⟶ J ⊙ₗ c := (λₗ c).inv ≫ (fun _ ↦ j) ⊵ₗ c
-
--- not simp to keep API leakage minimal.
-lemma ι_eq_ι {J : Type w} (j : J) (c : C) :
-    ι c j = Sigma.ι (fun _ ↦ c) j := by
-  simp [ι, MonoidalLeftAction.actionObj, MonoidalLeftAction.actionHomLeft,
-    MonoidalLeftAction.actionUnitIso]
-
-@[ext]
+@[ext 1050]
 lemma hom_ext {J : Type w} {c c' : C} {f g : J ⊙ₗ c ⟶ c'} (h : ∀ j, ι c j ≫ f = ι c j ≫ g) :
     f = g :=
-  Sigma.hom_ext _ _ (fun j ↦ by simpa [ι_eq_ι] using h j)
-
-@[reassoc (attr := simp)]
-lemma ι_nat {J J' : Type w} (f : J ⟶ J') (c : C) (j : J) : ι c j ≫ f ⊵ₗ c = ι c (f j) := by
-  simp [ι, MonoidalLeftAction.actionObj, MonoidalLeftAction.actionHomLeft,
-  MonoidalLeftAction.actionUnitIso]
-
-@[simp]
-lemma ι_unit (c : C) : ι c (.unit : 𝟙_ (Type w)) = (λₗ c).inv := by
-  dsimp [ι]
-  rw [Iso.inv_comp_eq]
-  change 𝟙 _ ⊵ₗ c = _
-  simp
+  (ιIsColimit J c).hom_ext (fun ⟨j⟩ ↦ by simpa using h j)
 
 /-- Construct a morphism `J ⊙ₗ c ⟶ c'` from a familiy of maps `c ⟶ c' -/
-noncomputable def desc {J : Type w} {c c' : C} (φ : J → (c ⟶ c')) : J ⊙ₗ c ⟶ c' := 
-    Sigma.desc φ
+noncomputable def desc {J : Type w} {c c' : C} (φ : J → (c ⟶ c')) : J ⊙ₗ c ⟶ c' :=
+   Cofan.IsColimit.desc (ιIsColimit J c) φ
 
 @[reassoc (attr := simp)]
 lemma ι_desc {J : Type w} {c c' : C} (φ : J → (c ⟶ c')) (j : J) :
-   ι c j ≫ desc φ = φ j := by 
-  simp[desc, ι_eq_ι]
+   ι c j ≫ desc φ = φ j :=
+  Cofan.IsColimit.fac (ιIsColimit J c) _ _
 
-@[reassoc (attr := simp)]
+@[simp, reassoc]
 lemma desc_map {J J' : Type w} {c c' : C} (φ : J → (c ⟶ c')) (f : J' ⟶ J) :
-    desc (φ ∘ f) = f ⊵ₗ c ≫ desc φ := by 
+    desc (φ ∘ f) = f ⊵ₗ c ≫ desc φ := by
   aesop_cat
 
-end typeAction
+@[simp, reassoc]
+lemma desc_postcompose {J : Type w} {c c' c'' : C} (φ : J → (c ⟶ c')) (f : c' ⟶ c'') :
+    desc ((· ≫ f) ∘ φ) = desc φ ≫ f := by
+  aesop_cat
+
+/-- An abstract isomorphism with the abstract J-indexed coproduct of copies of `c`. -/
+noncomputable def isoSigmaConst
+
+end ChosenTypeCopowers
 
 end
 
