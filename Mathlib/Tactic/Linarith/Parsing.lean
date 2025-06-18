@@ -180,7 +180,8 @@ and forces some functions that call it into `MetaM` as well.
 -/
 
 partial def linearFormOfExpr (red : TransparencyMode) (m : ExprMap) (e : Expr) :
-    MetaM (ExprMap × Sum) :=
+    MetaM (ExprMap × Sum) := do
+  let e ← whnfR e
   match e.numeral? with
   | some 0 => return ⟨m, TreeMap.empty⟩
   | some (n+1) => return ⟨m, scalar (n+1)⟩
