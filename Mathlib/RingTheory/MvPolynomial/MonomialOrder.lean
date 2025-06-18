@@ -10,7 +10,7 @@ import Mathlib.Data.List.TFAE
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.RingTheory.Nilpotent.Defs
 
-/-! # Degree and leading coefficient of polynomials with respect to a monomial order
+/-! # Degree, leading coefficient and leading term of polynomials with respect to a monomial order
 
 We consider a type `σ` of indeterminates and a commutative semiring `R`
 and a monomial order `m : MonomialOrder σ`.
@@ -76,6 +76,15 @@ and a monomial order `m : MonomialOrder σ`.
 
 * `m.Monic.prod` : a product of monic polynomials is monic.
 
+* `m.degree_sub_leadingTerm` : the degree of `f - m.leadingTerm f` is smaller than
+  the degree of `f` unless `f - m.leadingTerm f = 0`.
+
+* `m.degree_sub_leadingTerm_lt_degree` : if `f - m.leadingTerm f ≠ 0`, the degree of
+`f - m.leadingTerm f` is smaller than the degree of `f`.
+
+* `m.degree_sub_leadingTerm_lt_iff` : the degree of
+`f - m.leadingTerm f` smaller than the degree of `f` equals to `m.degree f ≠ 0`.
+
 ## Reference
 
 [Becker-Weispfenning1993]
@@ -112,7 +121,6 @@ if its leading coefficient (for that monomial order) is 1. -/
 def Monic (f : MvPolynomial σ R) : Prop :=
   m.leadingCoeff f = 1
 
-variable (m) in
 noncomputable def leadingTerm (f : MvPolynomial σ R) : MvPolynomial σ R :=
   monomial (m.degree f) (m.leadingCoeff f)
 
@@ -670,7 +678,7 @@ lemma leadingTerm_image_insert_zero (B : Set (MvPolynomial σ R)) :
 lemma leadingTerm_zero : m.leadingTerm (0 : MvPolynomial σ R) = 0 := by
   rw [leadingTerm_eq_zero_iff]
 
-variable (m) in
+/-- The degree of `f` equals to the degree of `leadingTerm f` -/
 lemma leadingTerm_degree_eq (f : MvPolynomial σ R) :
   m.degree (m.leadingTerm f) = m.degree f := by
     classical
@@ -725,7 +733,7 @@ theorem leadingCoeff_sub_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] 
   apply leadingCoeff_add_of_lt
   simp only [degree_neg, h]
 
-lemma degree_sub_leadingTerm (f : MvPolynomial σ R) :
+theorem degree_sub_leadingTerm (f : MvPolynomial σ R) :
     m.degree (f - m.leadingTerm f) ≺[m] m.degree f ∨ f - m.leadingTerm f = 0 := by
   by_cases h : f - m.leadingTerm f = 0
   classical
@@ -760,11 +768,11 @@ lemma degree_sub_leadingTerm (f : MvPolynomial σ R) :
       exact le_of_le_of_eq h₃' h3
     exact lt_of_le_of_ne h₃ h1
 
-lemma degree_sub_leadingTerm_lt_degree {f : MvPolynomial σ R} (h : f - m.leadingTerm f ≠ 0) :
+theorem degree_sub_leadingTerm_lt_degree {f : MvPolynomial σ R} (h : f - m.leadingTerm f ≠ 0) :
     m.degree (f - m.leadingTerm f) ≺[m] m.degree f :=
   (or_iff_left h).mp <| m.degree_sub_leadingTerm f
 
-lemma degree_sub_leadingTerm_lt_iff {f : MvPolynomial σ R} :
+theorem degree_sub_leadingTerm_lt_iff {f : MvPolynomial σ R} :
     m.degree (f - m.leadingTerm f) ≺[m] m.degree f ↔ m.degree f ≠ 0 := by
   classical
   constructor
