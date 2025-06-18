@@ -48,7 +48,8 @@ variable {E E' H H' M N : Type*} {𝕂 : Type*} [NontriviallyNormedField 𝕂]
   using (pre-)groupoids and local structomorphisms.
   This unifies e.g. the smooth and analytic categories. -/
 section IFTBasic
-variable {n : ℕ∞} {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕂 E]
+
+variable {n : WithTop ℕ∞} {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕂 E]
 
 variable (𝕂) in
 /-- A pregroupoid which satisfies the necessary conditions for the inverse function theorem.
