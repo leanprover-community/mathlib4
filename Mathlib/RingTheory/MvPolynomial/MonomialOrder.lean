@@ -121,6 +121,7 @@ if its leading coefficient (for that monomial order) is 1. -/
 def Monic (f : MvPolynomial σ R) : Prop :=
   m.leadingCoeff f = 1
 
+/-- the leading term of of a multivariate polynomial with respect to a monomial ordering -/
 noncomputable def leadingTerm (f : MvPolynomial σ R) : MvPolynomial σ R :=
   monomial (m.degree f) (m.leadingCoeff f)
 
@@ -688,7 +689,6 @@ lemma leadingTerm_degree_eq (f : MvPolynomial σ R) :
     simp [MonomialOrder.degree_monomial]
     exact fun a ↦ False.elim (h a)
 
-variable (m) in
 lemma leadingTerm_degree_eq' (f : MvPolynomial σ R) :
   m.toSyn (m.degree (m.leadingTerm f)) = m.toSyn (m.degree f) := by
     classical
@@ -761,7 +761,7 @@ theorem degree_sub_leadingTerm (f : MvPolynomial σ R) :
           m.toSyn (m.degree f) ⊔ m.toSyn (m.degree (m.leadingTerm f)) := by
         apply degree_sub_le
       have h₃'':  m.toSyn (m.degree f) = m.toSyn (m.degree (m.leadingTerm f)) := by
-        exact Eq.symm (leadingTerm_degree_eq' m f)
+        exact Eq.symm (leadingTerm_degree_eq' f)
       have h3:  m.toSyn (m.degree f) ⊔ m.toSyn (m.degree (m.leadingTerm f)) =
           m.toSyn (m.degree f) := by
         simp [max_le_iff, h₃'']
