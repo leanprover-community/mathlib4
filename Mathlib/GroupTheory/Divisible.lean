@@ -47,7 +47,7 @@ For additive monoids and groups:
 * `QuotientAddGroup.divisibleBy` : quotient group of divisible group is divisible.
 * `Function.Surjective.divisibleBy` : if `A` is divisible and `A →+ B` is surjective, then `B`
   is divisible.
-* `DivisibleBy.instModule` : a torsion-free ℕ-divisible commutative group is a ℚ-module.
+* `DivisibleBy.toModule` : a torsion-free ℕ-divisible commutative group is a ℚ-module.
 
 and their multiplicative counterparts:
 
@@ -264,63 +264,56 @@ end Quotient
 
 section Nat
 
+namespace RootableBy
+variable {A : Type*} [Monoid A] [RootableBy A ℕ]
+
 @[to_additive div_one]
-theorem RootableBy.root_one {M : Type*} [Monoid M] [RootableBy M ℕ] (a : M) :
-    root a 1 = a := by
+theorem root_one (a : A) : root a 1 = a := by
   rw [← pow_one (root a 1)]
   rw [root_cancel _ (by simp)]
 
 @[to_additive zero_div]
-theorem RootableBy.one_root {M : Type*} [Monoid M] [RootableBy M ℕ] [IsMulTorsionFree M] (n : ℕ) :
-    root (1 : M) n = 1 := by
+theorem one_root [IsMulTorsionFree A] (n : ℕ) : root (1 : A) n = 1 := by
   obtain rfl | h := eq_or_ne n 0
   · rw [root_zero]
-  · apply (pow_left_inj h).mp
-    rw [root_cancel _ h]
+  · rw [← pow_left_inj h, root_cancel _ h]
     simp
 
+variable {A : Type*} [Group A] [RootableBy A ℕ]
+
 @[to_additive div_neg]
-theorem RootableBy.root_inv {M : Type*} [Group M] [RootableBy M ℕ] [IsMulTorsionFree M]
-    (a : M) (n : ℕ) : root a⁻¹ n = (root a n)⁻¹ := by
+theorem root_inv [IsMulTorsionFree A] (a : A) (n : ℕ) : root a⁻¹ n = (root a n)⁻¹ := by
   obtain rfl | h := eq_or_ne n 0
   · rw [root_zero, root_zero]
     simp
-  · apply pow_left_injective h
-    simp only
-    rw [root_cancel _ h, inv_pow, root_cancel _ h]
+  · rw [← pow_left_inj h, root_cancel _ h, inv_pow, root_cancel _ h]
 
-instance (priority := 100) DivisibleBy.instSMul (M : Type*) [AddGroup M] [DivisibleBy M ℕ] :
-    SMul ℚ M where
-  smul (s : ℚ) (a : M) := div (s.num • a) s.den
+/-- For element `a` in a group rootable by ℕ,
+we define `qpow a (p / q) = root (a ^ p) q.
+This is not made a `Pow` instance to avoid collision with existing instances. -/
+@[to_additive (reorder := 4 5) qsmul "For element `a` in a group divisible by ℕ,
+we define `qsmul (p / q) a  = div (a ^ p) q.
+This is not made a `SMul` instance to avoid collision with existing instances."]
+def qpow (a : A) (s : ℚ) := root (a ^ s.num) s.den
 
-@[to_additive existing DivisibleBy.instSMul]
-instance (priority := 100) RootableBy.instPow (M : Type*) [Group M] [RootableBy M ℕ] :
-    Pow M ℚ where
-  pow (a : M) (s : ℚ) := root (a ^ s.num) s.den
+@[to_additive (reorder := 4 5) qsmul_eq]
+theorem qpow_eq (a : A) (s : ℚ) : qpow a s = root (a ^ s.num) s.den := rfl
 
-@[to_additive (reorder := 4 5) DivisibleBy.qsmul_eq]
-theorem RootableBy.qpow_eq {M : Type*} [Group M] [RootableBy M ℕ] (a : M) (s : ℚ) :
-  a ^ s = root (a ^ s.num) s.den := rfl
-
-@[to_additive DivisibleBy.one_qsmul]
-theorem RootableBy.qpow_one {M : Type*} [Group M] [RootableBy M ℕ] (a : M) :
-    a ^ (1 : ℚ) = a := by
+@[to_additive one_qsmul]
+theorem qpow_one (a : A) : qpow a 1 = a := by
   rw [qpow_eq, Rat.num_ofNat, zpow_one, Rat.den_ofNat, root_one]
 
-@[to_additive DivisibleBy.zero_qsmul]
-theorem RootableBy.qpow_zero {M : Type*} [Group M] [RootableBy M ℕ] (a : M) :
-    a ^ (0 : ℚ) = 1 := by
+@[to_additive zero_qsmul]
+theorem qpow_zero (a : A) : qpow a 0 = 1 := by
   rw [qpow_eq, Rat.num_ofNat, zpow_zero, Rat.den_ofNat, root_one]
 
-@[to_additive DivisibleBy.qsmul_zero]
-theorem RootableBy.one_qpow {M : Type*} [Group M] [RootableBy M ℕ] [IsMulTorsionFree M] (s : ℚ) :
-    (1 : M) ^ s = 1 := by
+@[to_additive qsmul_zero]
+theorem one_qpow [IsMulTorsionFree A] (s : ℚ) : qpow (1 : A) s = 1 := by
   rw [qpow_eq, one_zpow, one_root]
 
-@[to_additive (reorder := 5 6 7, 5 6 7) DivisibleBy.mul_qsmul]
-theorem RootableBy.qpow_mul {M : Type*} [Group M] [RootableBy M ℕ] [IsMulTorsionFree M]
-    (a : M) (x : ℚ) (y : ℚ) : a ^ (x * y) = (a ^ y) ^ x := by
-
+@[to_additive (reorder := 5 6 7, 5 6 7) mul_qsmul]
+theorem qpow_mul [IsMulTorsionFree A] (a : A) (x : ℚ) (y : ℚ) :
+    qpow a (x * y) = qpow (qpow a y) x := by
   rw [qpow_eq, qpow_eq, qpow_eq]
   apply (pow_left_inj (show (x.den * y.den) ≠ 0 by simp)).mp
   nth_rw 1 [Rat.den_mul_den_eq_den_mul_gcd]
@@ -332,9 +325,10 @@ theorem RootableBy.qpow_mul {M : Type*} [Group M] [RootableBy M ℕ] [IsMulTorsi
   rw [← zpow_mul, ← zpow_mul, mul_comm y.den, mul_comm y.num]
   rw [← Rat.num_mul_num_eq_num_mul_gcd]
 
-@[to_additive (reorder := 5 6 7, 5 6 7) DivisibleBy.add_qsmul]
-theorem RootableBy.qpow_add {M : Type*} [CommGroup M] [RootableBy M ℕ] [IsMulTorsionFree M]
-    (a : M) (x : ℚ) (y : ℚ) : a ^ (x + y) = a ^ x * a ^ y := by
+variable {A : Type*} [CommGroup A] [RootableBy A ℕ] [IsMulTorsionFree A]
+
+@[to_additive (reorder := 5 6 7, 5 6 7) add_qsmul]
+theorem qpow_add (a : A) (x : ℚ) (y : ℚ) : qpow a (x + y) = qpow a x * qpow a y := by
   rw [qpow_eq, qpow_eq, qpow_eq]
   apply (pow_left_inj (show (x.den * y.den * (x + y).den) ≠ 0 by simp)).mp
   rw [pow_mul', root_cancel _ (by simp)]
@@ -353,25 +347,33 @@ theorem RootableBy.qpow_add {M : Type*} [CommGroup M] [RootableBy M ℕ] [IsMulT
   rw [← mul_assoc, ← mul_assoc, ← mul_assoc, ← add_mul]
   rw [Rat.add_num_den']
 
-@[to_additive (reorder := 5 6 7) DivisibleBy.qsmul_add]
-theorem RootableBy.mul_qpow {M : Type*} [CommGroup M] [RootableBy M ℕ] [IsMulTorsionFree M]
-    (x : M) (y : M) (a : ℚ) : (x * y) ^ a = x ^ a * y ^ a := by
+@[to_additive (reorder := 5 6 7) qsmul_add]
+theorem mul_qpow (x : A) (y : A) (a : ℚ) : qpow (x * y) a = qpow x a * qpow y a := by
   rw [qpow_eq, qpow_eq, qpow_eq]
   apply (pow_left_inj (show a.den ≠ 0 by simp)).mp
   rw [mul_pow _ _ a.den]
   rw [root_cancel _ (by simp), root_cancel _ (by simp), root_cancel _ (by simp)]
   rw [mul_zpow]
 
-instance (priority := 100) DivisibleBy.instMulAction (M : Type*) [AddGroup M] [DivisibleBy M ℕ]
-    [IsAddTorsionFree M] : MulAction ℚ M where
+end RootableBy
+
+namespace DivisibleBy
+variable (A : Type*)
+
+/-- Create `ℚ`-`MulAction` from `Divisible.qsmul`. -/
+def toMulAction [AddGroup A] [DivisibleBy A ℕ] [IsAddTorsionFree A] : MulAction ℚ A where
+  smul := qsmul
   one_smul := one_qsmul
   mul_smul := mul_qsmul
 
-instance (priority := 100) DivisibleBy.instModule (M : Type*) [AddCommGroup M] [DivisibleBy M ℕ]
-    [IsAddTorsionFree M] : Module ℚ M where
+/-- Create `ℚ`-`Module` from `Divisible.qsmul`. -/
+def toModule [AddCommGroup A] [DivisibleBy A ℕ] [IsAddTorsionFree A] : Module ℚ A where
+  __ := toMulAction A
   smul_zero := qsmul_zero
   zero_smul := zero_qsmul
   smul_add := qsmul_add
   add_smul := add_qsmul
+
+end DivisibleBy
 
 end Nat
