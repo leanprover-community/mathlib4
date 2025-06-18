@@ -54,7 +54,7 @@ namespace IsUltrametricDist
 lemma dist_eq_max_of_dist_ne_dist (h : dist x y ≠ dist y z) :
     dist x z = max (dist x y) (dist y z) := by
   apply le_antisymm (dist_triangle_max x y z)
-  rcases h.lt_or_lt with h | h
+  rcases h.lt_or_gt with h | h
   · rw [max_eq_right h.le]
     apply (le_max_iff.mp <| dist_triangle_max y x z).resolve_left
     simpa only [not_le, dist_comm x y] using h
@@ -135,7 +135,7 @@ lemma isClosed_ball (x : X) (r : ℝ) : IsClosed (ball x r) := by
     cases ball_eq_or_disjoint x y r with
     | inl hd =>
       rw [hd] at hy
-      simp [h.not_le] at hy
+      simp [h.not_ge] at hy
     | inr hd =>
       use r
       simp [h, hy, ← Set.le_iff_subset, le_compl_iff_disjoint_left, hd]
@@ -166,7 +166,7 @@ lemma isOpen_closedBall {r : ℝ} (hr : r ≠ 0) : IsOpen (closedBall x r) := by
       use r
       simp [h, hd, ball_subset_closedBall]
     | inr hd =>
-      simp [closedBall_eq_of_mem hy, h.not_lt] at hd
+      simp [closedBall_eq_of_mem hy, h.not_gt] at hd
 
 lemma isClopen_closedBall {r : ℝ} (hr : r ≠ 0) : IsClopen (closedBall x r) :=
   ⟨Metric.isClosed_closedBall, isOpen_closedBall x hr⟩

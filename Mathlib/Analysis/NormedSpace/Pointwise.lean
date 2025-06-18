@@ -140,7 +140,7 @@ theorem smul_unitBall_of_pos {r : ℝ} (hr : 0 < r) : r • ball (0 : E) 1 = bal
 lemma Ioo_smul_sphere_zero {a b r : ℝ} (ha : 0 ≤ a) (hr : 0 < r) :
     Ioo a b • sphere (0 : E) r = ball 0 (b * r) \ closedBall 0 (a * r) := by
   have : EqOn (‖·‖) id (Ioo a b) := fun x hx ↦ abs_of_pos (ha.trans_lt hx.1)
-  rw [set_smul_sphere_zero (by simp [ha.not_lt]), ← image_image (· * r), this.image_eq, image_id,
+  rw [set_smul_sphere_zero (by simp [ha.not_gt]), ← image_image (· * r), this.image_eq, image_id,
     image_mul_right_Ioo _ _ hr]
   ext x; simp [and_comm]
 
@@ -235,7 +235,7 @@ theorem infEdist_thickening (hδ : 0 < δ) (s : Set E) (x : E) :
     exact hs
   refine (tsub_le_iff_right.2 infEdist_le_infEdist_thickening_add).antisymm' ?_
   refine le_sub_of_add_le_right ofReal_ne_top ?_
-  refine le_infEdist.2 fun z hz => le_of_forall_lt' fun r h => ?_
+  refine le_infEdist.2 fun z hz => le_of_forall_gt fun r h => ?_
   cases r with
   | top =>
     exact add_lt_top.2 ⟨lt_top_iff_ne_top.2 <| infEdist_ne_top ⟨z, self_subset_thickening hδ _ hz⟩,
