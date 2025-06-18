@@ -80,8 +80,9 @@ theorem preCantorSet_antitone : Antitone preCantorSet := by
   induction m with
   | zero =>
     simp only [preCantorSet_zero]
-    constructor <;> intro x <;> simp only [Set.mem_image, Set.mem_Icc, forall_exists_index,
-      and_imp] <;> intro y _ _ _ <;> constructor <;> linarith
+    constructor <;> intro x <;>
+      simp only [Set.mem_image, Set.mem_Icc, forall_exists_index, and_imp] <;>
+      intro y _ _ _ <;> constructor <;> linarith
   | succ m ih =>
     simp only [preCantorSet_succ, Set.union_subset_iff, Set.image_union]
     constructor
