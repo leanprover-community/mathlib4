@@ -20,9 +20,7 @@ open Function Set
 
 open OrderDual (toDual ofDual)
 
-universe u v
-
-variable {α : Type u} {γ : Type v}
+variable {α β γ : Type*}
 
 section
 
@@ -876,7 +874,7 @@ end
 
 section Preorder
 
-variable [Preorder α] {s : Set α} {a b : α}
+variable [Preorder α] [Preorder β] {s : Set α} {t : Set β} {a b : α}
 
 theorem lowerBounds_le_upperBounds (ha : a ∈ lowerBounds s) (hb : b ∈ upperBounds s) :
     s.Nonempty → a ≤ b
@@ -898,57 +896,19 @@ theorem le_of_isLUB_le_isGLB {x y} (ha : IsGLB s a) (hb : IsLUB s b) (hab : b �
     _ ≤ a := hab
     _ ≤ y := ha.1 hy
 
-lemma upperBounds_prod_of_nonempty_eq {β : Type*} [Preorder β] {t : Set β} (hes : Nonempty s)
-    (het : Nonempty t) : upperBounds (s ×ˢ t) = upperBounds s ×ˢ upperBounds t := le_antisymm
-  (fun ⟨u₁, u₂⟩ hu => by
-    simp [upperBounds] at hu
-    constructor
-    · obtain ⟨b, hb⟩ : Nonempty t := het
-      exact fun a ha => (hu a b ha hb).1
-    · obtain ⟨a, ha⟩ : Nonempty s := hes
-      exact fun b hb => (hu a b ha hb).2)
-  (fun (a, b) hab (c, d) hcd => ⟨hab.1 hcd.1,hab.2 hcd.2⟩)
+@[simp] lemma upperBounds_prod (hs : s.Nonempty) (ht : t.Nonempty) :
+    upperBounds (s ×ˢ t) = upperBounds s ×ˢ upperBounds t := by
+  ext; rw [← nonempty_coe_sort] at hs ht; aesop (add simp [upperBounds, Prod.le_def, forall_and])
 
-lemma lowerBounds_prod_of_nonempty_eq {β : Type*} [Preorder β] {t : Set β} (hes : Nonempty s)
-    (het : Nonempty t) : lowerBounds (s ×ˢ t) = lowerBounds s ×ˢ lowerBounds t := le_antisymm
-  (fun ⟨u₁, u₂⟩ hu => by
-    simp [lowerBounds] at hu
-    constructor
-    · obtain ⟨b, hb⟩ : Nonempty t := het
-      exact fun a ha => (hu a b ha hb).1
-    · obtain ⟨a, ha⟩ : Nonempty s := hes
-      exact fun b hb => (hu a b ha hb).2)
-  (fun (a, b) hab (c, d) hcd => ⟨hab.1 hcd.1,hab.2 hcd.2⟩)
+@[simp] lemma lowerBounds_prod (hs : s.Nonempty) (ht : t.Nonempty) :
+    lowerBounds (s ×ˢ t) = lowerBounds s ×ˢ lowerBounds t := by
+  ext; rw [← nonempty_coe_sort] at hs ht; aesop (add simp [lowerBounds, Prod.le_def, forall_and])
 
-lemma isLUB_of_element_prod_set {β : Type*} [Preorder β] {t : Set β} (het : t.Nonempty) {u : β}
-    (hu : IsLUB t u) : IsLUB ({a} ×ˢ t) (a,u) := by
-  rw [IsLUB,
-    upperBounds_prod_of_nonempty_eq (by aesop) (nonempty_subtype.mpr het),
-    upperBounds_singleton]
-  constructor
-  · exact ⟨left_mem_Ici, hu.1⟩
-  · rw [lowerBounds_prod_of_nonempty_eq (nonempty_subtype.mpr Set.nonempty_Ici)
-      (nonempty_subtype.mpr ⟨u, mem_of_mem_inter_left hu⟩)]
-    simp
-    constructor
-    · rw [lowerBounds_Ici]
-      exact right_mem_Iic
-    · exact mem_of_mem_inter_right hu
+lemma IsLUB.prod {b : β} (hs : s.Nonempty) (ht : t.Nonempty) (ha : IsLUB s a) (hb : IsLUB t b) :
+    IsLUB (s ×ˢ t) (a, b) := by simp_all +contextual [IsLUB, IsLeast, lowerBounds, hs, ht]
 
-lemma isLUB_of_set_prod_element {β : Type*} [Preorder β] {b : β} (hes : s.Nonempty) {u : α}
-    (hu : IsLUB s u) : IsLUB (s ×ˢ {b}) (u,b) := by
-  rw [IsLUB,
-    upperBounds_prod_of_nonempty_eq (nonempty_subtype.mpr hes) (by aesop),
-    upperBounds_singleton]
-  constructor
-  · exact ⟨hu.1, left_mem_Ici⟩
-  · rw [lowerBounds_prod_of_nonempty_eq
-      (nonempty_subtype.mpr ⟨u, mem_of_mem_inter_left hu⟩) (nonempty_subtype.mpr Set.nonempty_Ici)]
-    simp
-    constructor
-    · exact mem_of_mem_inter_right hu
-    · rw [lowerBounds_Ici]
-      exact right_mem_Iic
+lemma IsGLB.prod {b : β} (hs : s.Nonempty) (ht : t.Nonempty) (ha : IsGLB s a) (hb : IsGLB t b) :
+    IsGLB (s ×ˢ t) (a, b) := by simp_all +contextual [IsGLB, IsGreatest, upperBounds, hs, ht]
 
 end Preorder
 
