@@ -41,7 +41,7 @@ variable {x : 𝕜}
 variable {s : Set 𝕜}
 
 /-- If the domain has dimension one, then Fréchet derivative is equivalent to the classical
-definition with a limit. In this version we have to take the limit along the subset `-{x}`,
+definition with a limit. In this version we have to take the limit along the subset `{x}ᶜ`,
 because for `y=x` the slope equals zero due to the convention `0⁻¹=0`. -/
 theorem hasDerivAtFilter_iff_tendsto_slope {x : 𝕜} {L : Filter 𝕜} :
     HasDerivAtFilter f f' x L ↔ Tendsto (slope f x) (L ⊓ 𝓟 {x}ᶜ) (𝓝 f') :=
@@ -154,7 +154,7 @@ variable [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [OrderTopology 𝕜] {g :
 derivative is nonnegative. -/
 lemma HasDerivWithinAt.nonneg_of_monotoneOn (hx : AccPt x (𝓟 s))
     (hd : HasDerivWithinAt g g' s x) (hg : MonotoneOn g s) : 0 ≤ g' := by
-  have :  (𝓝[s \ {x}] x).NeBot := accPt_principal_iff_nhdsWithin.mp hx
+  have : (𝓝[s \ {x}] x).NeBot := accPt_principal_iff_nhdsWithin.mp hx
   have h'g : MonotoneOn g (insert x s) :=
     hg.insert_of_continuousWithinAt hx.clusterPt hd.continuousWithinAt
   have : Tendsto (slope g x) (𝓝[s \ {x}] x) (𝓝 g') :=
@@ -204,7 +204,7 @@ lemma HasDerivWithinAt.nonpos_of_antitoneOn (hx : AccPt x (𝓟 s))
 /-- The derivative within a set of an antitone function is nonpositive. -/
 lemma AntitoneOn.derivWithin_nonpos (hg : AntitoneOn g s) :
     derivWithin g s x ≤ 0 := by
-  have : MonotoneOn (-g) s := fun x hx y hy hxy ↦ by simpa using hg hx hy hxy
+  have : MonotoneOn (fun x ↦ -g x) s := hg.neg
   simpa [derivWithin.neg] using this.derivWithin_nonneg
 
 /-- If an antitone function has a derivative, then this derivative is nonpositive. -/
