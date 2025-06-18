@@ -143,7 +143,7 @@ lemma cfcₙHom_continuous : Continuous (cfcₙHom ha : C(σₙ R a, R)₀ →�
   cfcₙHom_isClosedEmbedding ha |>.continuous
 
 lemma cfcₙHom_id :
-    cfcₙHom ha (⟨(ContinuousMap.id R).restrict <| σₙ R a, rfl⟩ : C(σₙ R a, R)₀) = a :=
+    cfcₙHom ha ⟨(ContinuousMap.id R).restrict <| σₙ R a, rfl⟩ = a :=
   (NonUnitalContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.1
 
 /-- The **spectral mapping theorem** for the non-unital continuous functional calculus. -/
@@ -226,8 +226,7 @@ lemma cfcₙ_apply : cfcₙ f a = cfcₙHom (a := a) ha ⟨⟨_, hf.restrict⟩,
 lemma cfcₙ_apply_pi {ι : Type*} (f : ι → R → R) (a : A) (ha := by cfc_tac)
     (hf : ∀ i, ContinuousOn (f i) (σₙ R a) := by cfc_cont_tac)
     (hf0 : ∀ i, f i 0 = 0 := by cfc_zero_tac) :
-    (fun i => cfcₙ (f i) a) = (fun i =>
-      cfcₙHom (a := a) ha ⟨⟨_, (hf i).restrict⟩, hf0 i⟩) := by
+    (fun i => cfcₙ (f i) a) = (fun i => cfcₙHom (a := a) ha ⟨⟨_, (hf i).restrict⟩, hf0 i⟩) := by
   ext i
   simp only [cfcₙ_apply (f i) a (hf i) (hf0 i)]
 
@@ -255,7 +254,7 @@ lemma cfcₙHom_eq_cfcₙ_extend {a : A} (g : R → R) (ha : p a) (f : C(σₙ R
   have hg : ContinuousOn (Function.extend Subtype.val f g) (σₙ R a) :=
     continuousOn_iff_continuous_restrict.mpr <| h ▸ map_continuous f
   have hg0 : (Function.extend Subtype.val f g) 0 = 0 := by
-    rw [← quasispectrum.coe_zero a, Subtype.val_injective.extend_apply]
+    rw [← quasispectrum.coe_zero (R := R) a, Subtype.val_injective.extend_apply]
     exact map_zero f
   rw [cfcₙ_apply ..]
   congr!
@@ -319,7 +318,7 @@ lemma eqOn_of_cfcₙ_eq_cfcₙ {f g : R → R} {a : A} (h : cfcₙ f a = cfcₙ 
     (hg : ContinuousOn g (σₙ R a) := by cfc_cont_tac) (hg0 : g 0 = 0 := by cfc_zero_tac) :
     (σₙ R a).EqOn f g := by
   rw [cfcₙ_apply f a, cfcₙ_apply g a] at h
-  have := (cfcₙHom_isClosedEmbedding (show p a from ha)).injective h
+  have := (cfcₙHom_isClosedEmbedding (show p a from ha) (R := R)).injective h
   intro x hx
   congrm($(this) ⟨x, hx⟩)
 
@@ -434,8 +433,7 @@ lemma cfcₙ_comp (g f : R → R) (a : A)
     cfcₙ (g ∘ f) a = cfcₙ g (cfcₙ f a) := by
   have := hg.comp hf <| (σₙ R a).mapsTo_image f
   have sp_eq :
-      σₙ R (cfcₙHom (show p a from ha) ⟨ContinuousMap.mk _ hf.restrict, hf0⟩) =
-        f '' (σₙ R a) := by
+      σₙ R (cfcₙHom (show p a from ha) ⟨ContinuousMap.mk _ hf.restrict, hf0⟩) = f '' (σₙ R a) := by
     rw [cfcₙHom_map_quasispectrum (by exact ha) _]
     ext
     simp
@@ -580,8 +578,7 @@ lemma cfcₙHom_nonneg_iff [NonnegSpectrumClass R A] {a : A} (ha : p a) {f : C(�
     0 ≤ cfcₙHom ha f ↔ 0 ≤ f := by
   constructor
   · exact fun hf x ↦
-      (cfcₙHom_map_quasispectrum (R := R) ha _ ▸
-        quasispectrum_nonneg_of_nonneg (cfcₙHom ha f) hf)
+      (cfcₙHom_map_quasispectrum ha (R := R) _ ▸ quasispectrum_nonneg_of_nonneg (cfcₙHom ha f) hf)
       _ ⟨x, rfl⟩
   · simpa using (cfcₙHom_mono ha (f := 0) (g := f) ·)
 
@@ -683,7 +680,7 @@ noncomputable def cfcₙHomSuperset {a : A} (ha : p a) {s : Set R} (hs : σₙ R
     letI : Zero s := ⟨0, hs (quasispectrum.zero_mem R a)⟩
     C(s, R)₀ →⋆ₙₐ[R] A :=
   letI : Zero s := ⟨0, hs (quasispectrum.zero_mem R a)⟩
-  cfcₙHom ha |>.comp <| ContinuousMapZero.nonUnitalStarAlgHom_precomp R <|
+  cfcₙHom ha (R := R) |>.comp <| ContinuousMapZero.nonUnitalStarAlgHom_precomp R <|
     ⟨⟨_, continuous_id.subtype_map hs⟩, rfl⟩
 
 lemma cfcₙHomSuperset_continuous {a : A} (ha : p a) {s : Set R} (hs : σₙ R a ⊆ s) :
@@ -720,11 +717,11 @@ to functions that map zero to zero. This is an auxiliary definition and is not
 intended for use outside this file. The equality between the non-unital and unital
 calculi in this case is encoded in the lemma `cfcₙ_eq_cfc`. -/
 noncomputable def cfcₙHom_of_cfcHom {a : A} (ha : p a) : C(σₙ R a, R)₀ →⋆ₙₐ[R] A :=
-  let e := ContinuousMapZero.toContinuousMapHom (X := σₙ R a)
+  let e := ContinuousMapZero.toContinuousMapHom (X := σₙ R a) (R := R)
   let f : C(spectrum R a, quasispectrum R a) :=
     ⟨_, continuous_inclusion <| spectrum_subset_quasispectrum R a⟩
   let ψ := ContinuousMap.compStarAlgHom' R R f
-  (cfcHom (R := R) ha : C(spectrum R a, R) →⋆ₙₐ[R] A).comp <|
+  (cfcHom ha (R := R) : C(spectrum R a, R) →⋆ₙₐ[R] A).comp <|
     (ψ : C(σₙ R a, R) →⋆ₙₐ[R] C(spectrum R a, R)).comp e
 
 lemma cfcₙHom_of_cfcHom_map_quasispectrum {a : A} (ha : p a) :
@@ -790,13 +787,13 @@ instance ContinuousFunctionalCalculus.toNonUnital :
 
 open scoped NonUnitalContinuousFunctionalCalculus in
 lemma cfcₙHom_eq_cfcₙHom_of_cfcHom [ContinuousMapZero.UniqueHom R A] {a : A}
-    (ha : p a) : cfcₙHom ha = cfcₙHom_of_cfcHom R ha := by
+    (ha : p a) : cfcₙHom (R := R) ha = cfcₙHom_of_cfcHom R ha := by
   refine ContinuousMapZero.UniqueHom.eq_of_continuous_of_map_id
       (σₙ R a) ?_ _ _ ?_ ?_ ?_
   · simp
-  · exact (cfcₙHom_isClosedEmbedding ha).continuous
+  · exact (cfcₙHom_isClosedEmbedding (R := R) ha).continuous
   · exact (isClosedEmbedding_cfcₙHom_of_cfcHom ha).continuous
-  · simpa only [cfcₙHom_id ha] using (cfcHom_id ha).symm
+  · simpa only [cfcₙHom_id (R := R) ha] using (cfcHom_id ha).symm
 
 /-- When `cfc` is applied to a function that maps zero to zero, it is equivalent to using
 `cfcₙ`. -/
@@ -809,6 +806,6 @@ lemma cfcₙ_eq_cfc [ContinuousMapZero.UniqueHom R A] {f : R → R} {a : A}
     dsimp only [NonUnitalStarAlgHom.comp_apply, toContinuousMapHom_apply,
       NonUnitalStarAlgHom.coe_coe, compStarAlgHom'_apply]
     congr
-  · simp [cfc_apply_of_not_predicate a ha, cfcₙ_apply_of_not_predicate a ha]
+  · simp [cfc_apply_of_not_predicate a ha, cfcₙ_apply_of_not_predicate (R := R) a ha]
 
 end UnitalToNonUnital
