@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Category.Grp.Limits
-import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Monoidal.Grp_
 
 /-!
@@ -15,11 +14,16 @@ by constructing the yoneda embedding `Grp_ C ⥤ Cᵒᵖ ⥤ Grp.{v}` and
 showing that it is fully faithful and its (essential) image is the representable functors.
 -/
 
-open CategoryTheory MonoidalCategory Limits Opposite ChosenFiniteProducts Mon_Class
+open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory Mon_Class
 
 universe w v u
-variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
-  {G H X Y : C} [Grp_Class G] [Grp_Class H]
+variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
+  {M G H X Y : C} [Mon_Class M] [Grp_Class G] [Grp_Class H]
+
+/-- Construct a morphism `G ⟶ H` of `Grp_ C` C from a map `f : G ⟶ H` and a `IsMon_Hom f`
+instance. -/
+@[simps]
+def Grp_.homMk (f : G ⟶ H) [IsMon_Hom f] : .mk G ⟶ Grp_.mk H := ⟨f⟩
 
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
@@ -48,14 +52,13 @@ def Grp_Class.ofRepresentableBy (F : Cᵒᵖ ⥤ Grp.{w}) (α : (F ⋙ forget _)
 
 /-- If `G` is a group object, then `Hom(X, G)` has a group structure. -/
 abbrev Hom.group : Group (X ⟶ G) where
-  __ := monoid
   inv f := f ≫ ι
   inv_mul_cancel f := calc
     lift (f ≫ ι) f ≫ μ
     _ = (f ≫ lift ι (𝟙 G)) ≫ μ := by simp
     _ = toUnit X ≫ η := by rw [Category.assoc]; simp
 
-attribute [local instance] Hom.group
+scoped[Mon_Class] attribute [instance] Hom.group
 
 lemma Hom.inv_def (f : X ⟶ G) : f⁻¹ = f ≫ ι := rfl
 
@@ -105,7 +108,7 @@ def yonedaGrpFullyFaithful : yonedaGrp (C := C).FullyFaithful where
   preimage {G H} α := yonedaMonFullyFaithful.preimage (whiskerRight α (forget₂ Grp MonCat))
   map_preimage {G H} α := by
     ext X : 3
-    exact congr(($(yonedaMonFullyFaithful.map_preimage
+    exact congr(($(yonedaMonFullyFaithful.map_preimage (X := G.toMon_) (Y := H.toMon_)
       (whiskerRight α (forget₂ Grp MonCat))).app X).hom)
   preimage_map := yonedaMonFullyFaithful.preimage_map
 
@@ -120,14 +123,45 @@ lemma essImage_yonedaGrp :
     exact ⟨G.X, ⟨Functor.representableByEquiv.symm (isoWhiskerRight α (forget _))⟩⟩
   · rintro ⟨X, ⟨e⟩⟩
     letI := Grp_Class.ofRepresentableBy X F e
-    exact ⟨.mk' X, ⟨yonedaGrpObjIsoOfRepresentableBy X F e⟩⟩
-
-@[reassoc]
-lemma Grp_Class.comp_inv (f : X ⟶ Y) (g : Y ⟶ G) : f ≫ g⁻¹ = (f ≫ g)⁻¹ :=
-  ((yonedaGrp.obj <| .mk' G).map f.op).hom.map_inv g
+    exact ⟨⟨X⟩, ⟨yonedaGrpObjIsoOfRepresentableBy X F e⟩⟩
 
 @[reassoc]
 lemma Grp_Class.inv_comp (f : X ⟶ G) (g : G ⟶ H) [IsMon_Hom g] : f⁻¹ ≫ g = (f ≫ g)⁻¹ := by
-  simp [Hom.inv_def,IsMon_Hom.inv_hom]
+  simp [Hom.inv_def]
+
+@[reassoc]
+lemma Grp_Class.div_comp (f g : X ⟶ G) (h : G ⟶ H) [IsMon_Hom h] :
+    (f / g) ≫ h = (f ≫ h) / (g ≫ h) :=
+  ((yonedaGrp.map <| Grp_.homMk h).app <| op X).hom.map_div f g
+
+@[reassoc]
+lemma Grp_Class.zpow_comp (f : X ⟶ G) (n : ℤ) (g : G ⟶ H) [IsMon_Hom g] :
+    (f ^ n) ≫ g = (f ≫ g) ^ n :=
+  ((yonedaGrp.map <| Grp_.homMk g).app <| op X).hom.map_zpow f n
+
+@[reassoc]
+lemma Grp_Class.comp_inv (f : X ⟶ Y) (g : Y ⟶ G) : f ≫ g⁻¹ = (f ≫ g)⁻¹ :=
+  ((yonedaGrp.obj ⟨G⟩).map f.op).hom.map_inv g
+
+@[reassoc]
+lemma Grp_Class.comp_div (f : X ⟶ Y) (g h : Y ⟶ G) : f ≫ (g / h) = f ≫ g / f ≫ h :=
+  ((yonedaGrp.obj ⟨G⟩).map f.op).hom.map_div g h
+
+@[reassoc]
+lemma Grp_Class.comp_zpow (f : X ⟶ Y) (g : Y ⟶ G) : ∀ n : ℤ, f ≫ g ^ n = (f ≫ g) ^ n
+  | (n : ℕ) => by simp [comp_pow]
+  | .negSucc n => by simp [comp_pow, comp_inv]
 
 lemma Grp_Class.inv_eq_inv : ι = (𝟙 G)⁻¹ := by simp [Hom.inv_def]
+
+instance [BraidedCategory C] [IsCommMon G] : IsMon_Hom ι[G] where
+  one_hom := by simp [one_eq_one, ← Hom.inv_def]
+  mul_hom := by simp [Grp_Class.mul_inv_rev]
+
+attribute [local simp] Hom.inv_def in
+instance [BraidedCategory C] [IsCommMon G] {f : M ⟶ G} [IsMon_Hom f] : IsMon_Hom f⁻¹ where
+
+/-- If `G` is a commutative group object, then `Hom(X, G)` has a commutative group structure. -/
+abbrev Hom.commGroup [BraidedCategory C] [IsCommMon G] : CommGroup (X ⟶ G) where
+
+scoped[Mon_Class] attribute [instance] Hom.commGroup

@@ -16,9 +16,9 @@ with `Matrix m n α`. For the typical approach of counting rows and columns,
 
 ## Main definitions
 
- * `Matrix.transpose`: transpose of a matrix, turning rows into columns and vice versa
- * `Matrix.submatrix`: take a submatrix by reindexing rows and columns
- * `Matrix.module`: matrices are a module over the ring of entries
+* `Matrix.transpose`: transpose of a matrix, turning rows into columns and vice versa
+* `Matrix.submatrix`: take a submatrix by reindexing rows and columns
+* `Matrix.module`: matrices are a module over the ring of entries
 
 ## Notation
 
@@ -333,8 +333,6 @@ open Matrix
 namespace Matrix
 
 section Transpose
-
-open Matrix
 
 @[simp]
 theorem transpose_transpose (M : Matrix m n α) : Mᵀᵀ = M := by

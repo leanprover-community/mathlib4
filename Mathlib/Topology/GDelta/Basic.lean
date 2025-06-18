@@ -32,7 +32,7 @@ its complement is open and dense
 union of nowhere dense sets
 - subsets of meagre sets are meagre; countable unions of meagre sets are meagre
 
-See `Mathlib.Topology.GDelta.MetrizableSpace` for the proof that
+See `Mathlib/Topology/GDelta/MetrizableSpace.lean` for the proof that
 continuity set of a function from a topological space to a metrizable space is a Gδ set.
 
 ## Tags

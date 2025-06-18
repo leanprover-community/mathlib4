@@ -341,9 +341,9 @@ private lemma gluedTo_injective :
     Function.Injective I.gluedTo.base := by
   intro a b e
   obtain ⟨ia, a : I.glueDataObj ia, rfl⟩ :=
-    I.glueData.toGlueData.ι_jointly_surjective (Scheme.forgetToTop ⋙ forget _) a
+    I.glueData.toGlueData.ι_jointly_surjective forget a
   obtain ⟨ib, b : I.glueDataObj ib, rfl⟩ :=
-    I.glueData.toGlueData.ι_jointly_surjective (Scheme.forgetToTop ⋙ forget _) b
+    I.glueData.toGlueData.ι_jointly_surjective forget b
   show (I.glueData.ι ia).base a = (I.glueData.ι ib).base b
   have : ((I.glueDataObjι ia).base a).1 = ((I.glueDataObjι ib).base b).1 := by
     have : (I.glueData.ι ia ≫ I.gluedTo).base a =
@@ -374,7 +374,7 @@ private lemma range_gluedTo :
     Set.range I.gluedTo.base = I.support := by
   refine subset_antisymm (Set.range_subset_iff.mpr fun x ↦ ?_) ?_
   · obtain ⟨ix, x : I.glueDataObj ix, rfl⟩ :=
-      I.glueData.toGlueData.ι_jointly_surjective (Scheme.forgetToTop ⋙ forget _) x
+      I.glueData.toGlueData.ι_jointly_surjective forget x
     show (I.glueData.ι _ ≫ I.gluedTo).base x ∈ I.support
     rw [ι_gluedTo]
     exact ((I.range_glueDataObjι_ι_eq_support_inter ix).le ⟨_, rfl⟩).1
@@ -545,6 +545,9 @@ lemma ker_subschemeι_app (U : X.affineOpens) :
 lemma ker_subschemeι : I.subschemeι.ker = I := by
   ext; simp [ker_subschemeι_app]
 
+instance : IsEmpty (⊤ : X.IdealSheafData).subscheme := by
+  rw [← (subschemeι _).ker_eq_top_iff_isEmpty, ker_subschemeι]
+
 /-- Given `I ≤ J`, this is the map `Spec(Γ(X, U)/J(U)) ⟶ Spec(Γ(X, U)/I(U))`. -/
 noncomputable
 def glueDataObjHom {I J : IdealSheafData X} (h : I ≤ J) (U) :
@@ -674,6 +677,10 @@ instance [QuasiCompact f] : IsDominant f.toImage where
       ← Set.univ_subset_iff, ← Set.image_subset_iff, Set.image_univ,
       IdealSheafData.range_subschemeι, Hom.support_ker, ← Set.range_comp,
       ← TopCat.coe_comp, ← Scheme.comp_base, f.toImage_imageι]
+
+instance : IsIso (IdealSheafData.subschemeι ⊥ : _ ⟶ X) :=
+  ⟨Scheme.Hom.toImage (𝟙 X) ≫ IdealSheafData.inclusion bot_le,
+    by simp [← cancel_mono (IdealSheafData.subschemeι _)], by simp⟩
 
 lemma Hom.toImage_app :
     f.toImage.app (f.imageι ⁻¹ᵁ U) =

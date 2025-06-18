@@ -207,14 +207,14 @@ theorem support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} 
 
 theorem card_support_binomial {k m : ℕ} (h : k ≠ m) {x y : R} (hx : x ≠ 0) (hy : y ≠ 0) :
     #(support (C x * X ^ k + C y * X ^ m)) = 2 := by
-  rw [support_binomial h hx hy, card_insert_of_not_mem (mt mem_singleton.mp h), card_singleton]
+  rw [support_binomial h hx hy, card_insert_of_notMem (mt mem_singleton.mp h), card_singleton]
 
 theorem card_support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} (hx : x ≠ 0)
     (hy : y ≠ 0) (hz : z ≠ 0) : #(support (C x * X ^ k + C y * X ^ m + C z * X ^ n)) = 3 := by
   rw [support_trinomial hkm hmn hx hy hz,
-    card_insert_of_not_mem
+    card_insert_of_notMem
       (mt mem_insert.mp (not_or_intro hkm.ne (mt mem_singleton.mp (hkm.trans hmn).ne))),
-    card_insert_of_not_mem (mt mem_singleton.mp hmn.ne), card_singleton]
+    card_insert_of_notMem (mt mem_singleton.mp hmn.ne), card_singleton]
 
 end Fewnomials
 

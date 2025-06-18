@@ -79,8 +79,10 @@ theorem apply_eq_of_mem_graph {a : α} {m : M} {f : α →₀ M} (h : (a, m) ∈
   (mem_graph_iff.1 h).1
 
 @[simp 1100] -- Higher priority shortcut instance for `mem_graph_iff`.
-theorem not_mem_graph_snd_zero (a : α) (f : α →₀ M) : (a, (0 : M)) ∉ f.graph := fun h =>
+theorem notMem_graph_snd_zero (a : α) (f : α →₀ M) : (a, (0 : M)) ∉ f.graph := fun h =>
   (mem_graph_iff.1 h).2.irrefl
+
+@[deprecated (since := "2025-05-23")] alias not_mem_graph_snd_zero := notMem_graph_snd_zero
 
 @[simp]
 theorem image_fst_graph [DecidableEq α] (f : α →₀ M) : f.graph.image Prod.fst = f.support := by
@@ -491,7 +493,7 @@ theorem mapDomain_apply' (S : Set α) {f : α → β} (x : α →₀ M) (hS : (x
       convert add_zero (x a)
       refine Finset.sum_eq_zero fun i hi => if_neg ?_
       exact (hf.mono hS).ne (Finset.mem_of_mem_erase hi) hax (Finset.ne_of_mem_erase hi)
-    · rw [not_mem_support_iff.1 hax]
+    · rw [notMem_support_iff.1 hax]
       refine Finset.sum_eq_zero fun i hi => if_neg ?_
       exact hf.ne (hS hi) ha (ne_of_mem_of_not_mem hi hax)
 
@@ -635,7 +637,7 @@ theorem sum_comapDomain [Zero M] [AddCommMonoid N] (f : α → β) (l : β →�
 theorem eq_zero_of_comapDomain_eq_zero [Zero M] (f : α → β) (l : β →₀ M)
     (hf : Set.BijOn f (f ⁻¹' ↑l.support) ↑l.support) : comapDomain f l hf.injOn = 0 → l = 0 := by
   rw [← support_eq_empty, ← support_eq_empty, comapDomain]
-  simp only [Finset.ext_iff, Finset.not_mem_empty, iff_false, mem_preimage]
+  simp only [Finset.ext_iff, Finset.notMem_empty, iff_false, mem_preimage]
   intro h a ha
   obtain ⟨b, hb⟩ := hf.2.2 ha
   exact h b (hb.2.symm ▸ ha)
@@ -652,7 +654,7 @@ lemma embDomain_comapDomain {f : α ↪ β} {g : β →₀ M} (hg : ↑g.support
   by_cases hb : b ∈ Set.range f
   · obtain ⟨a, rfl⟩ := hb
     rw [embDomain_apply, comapDomain_apply]
-  · replace hg : g b = 0 := not_mem_support_iff.mp <| mt (hg ·) hb
+  · replace hg : g b = 0 := notMem_support_iff.mp <| mt (hg ·) hb
     rw [embDomain_notin_range _ _ _ hb, hg]
 
 /-- Note the `hif` argument is needed for this to work in `rw`. -/
@@ -751,6 +753,26 @@ theorem some_single_some [Zero M] (a : α) (m : M) :
   classical
     ext b
     simp [single_apply]
+
+@[simp]
+theorem embDomain_some_some [Zero M] (f : α →₀ M) (x) : f.embDomain .some (.some x) = f x := by
+  simp [← Function.Embedding.some_apply]
+
+@[simp]
+theorem some_update_none [Zero M] (f : Option α →₀ M) (a : M) :
+    (f.update .none a).some = f.some := by
+  ext
+  simp [Finsupp.update]
+
+/-- `Finsupp`s from `Option` are equivalent to
+pairs of an element and a `Finsupp` on the original type. -/
+@[simps]
+noncomputable
+def optionEquiv [Zero M] : (Option α →₀ M) ≃ M × (α →₀ M) where
+  toFun P := (P .none, P.some)
+  invFun P := (P.2.embDomain .some).update .none P.1
+  left_inv P := by ext (_|a) <;> simp [Finsupp.update]
+  right_inv P := by ext <;> simp [Finsupp.update]
 
 @[to_additive]
 theorem prod_option_index [AddZeroClass M] [CommMonoid N] (f : Option α →₀ M)
@@ -893,7 +915,9 @@ theorem mem_frange {f : α →₀ M} {y : M} : y ∈ f.frange ↔ y ≠ 0 ∧ �
   exact ⟨fun ⟨x, hx1, hx2⟩ => ⟨hx2 ▸ mem_support_iff.1 hx1, x, hx2⟩, fun ⟨hy, x, hx⟩ =>
     ⟨x, mem_support_iff.2 (hx.symm ▸ hy), hx⟩⟩
 
-theorem zero_not_mem_frange {f : α →₀ M} : (0 : M) ∉ f.frange := fun H => (mem_frange.1 H).1 rfl
+theorem zero_notMem_frange {f : α →₀ M} : (0 : M) ∉ f.frange := fun H => (mem_frange.1 H).1 rfl
+
+@[deprecated (since := "2025-05-23")] alias zero_not_mem_frange := zero_notMem_frange
 
 theorem frange_single {x : α} {y : M} : frange (single x y) ⊆ {y} := fun r hr =>
   let ⟨t, ht1, ht2⟩ := mem_frange.1 hr
@@ -945,7 +969,7 @@ theorem subtypeDomain_eq_iff {f g : α →₀ M}
     f.subtypeDomain p = g.subtypeDomain p ↔ f = g :=
   subtypeDomain_eq_iff_forall.trans
     ⟨fun H ↦ Finsupp.ext fun _a ↦ (em _).elim (H _ <| hf _ ·) fun haf ↦ (em _).elim (H _ <| hg _ ·)
-        fun hag ↦ (not_mem_support_iff.mp haf).trans (not_mem_support_iff.mp hag).symm,
+        fun hag ↦ (notMem_support_iff.mp haf).trans (notMem_support_iff.mp hag).symm,
       fun H _ _ ↦ congr($H _)⟩
 
 theorem subtypeDomain_eq_zero_iff' {f : α →₀ M} : f.subtypeDomain p = 0 ↔ ∀ x, p x → f x = 0 :=
@@ -1048,7 +1072,7 @@ theorem mem_support_multiset_sum [AddCommMonoid M] {s : Multiset (α →₀ M)} 
       intro f s ih ha
       by_cases h : a ∈ f.support
       · exact ⟨f, Multiset.mem_cons_self _ _, h⟩
-      · simp only [Multiset.sum_cons, mem_support_iff, add_apply, not_mem_support_iff.1 h,
+      · simp only [Multiset.sum_cons, mem_support_iff, add_apply, notMem_support_iff.1 h,
           zero_add] at ha
         rcases ih (mem_support_iff.2 ha) with ⟨f', h₀, h₁⟩
         exact ⟨f', Multiset.mem_cons_of_mem h₀, h₁⟩)
@@ -1139,7 +1163,7 @@ lemma curry_single (a : α × β) (m : M) :
 
 theorem sum_curry_index [AddCommMonoid N] (f : α × β →₀ M) (g : α → β → M → N) :
     (f.curry.sum fun a f => f.sum (g a)) = f.sum fun p c => g p.1 p.2 c := by
-   rw [← sum_uncurry_index', uncurry_curry]
+  rw [← sum_uncurry_index', uncurry_curry]
 
 /-- `finsuppProdEquiv` defines the `Equiv` between `((α × β) →₀ M)` and `(α →₀ (β →₀ M))` given by
 currying and uncurrying. -/
@@ -1190,7 +1214,7 @@ theorem sumElim_inr {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →�
 lemma prod_sumElim {ι₁ ι₂ α M : Type*} [Zero α] [CommMonoid M]
     (f₁ : ι₁ →₀ α) (f₂ : ι₂ →₀ α) (g : ι₁ ⊕ ι₂ → α → M) :
     (f₁.sumElim f₂).prod g = f₁.prod (g ∘ Sum.inl) * f₂.prod (g ∘ Sum.inr) := by
-  simp [Finsupp.prod, Finset.prod_disj_sum]
+  simp [Finsupp.prod, Finset.prod_disjSum]
 
 /-- The equivalence between `(α ⊕ β) →₀ γ` and `(α →₀ γ) × (β →₀ γ)`.
 
@@ -1324,11 +1348,8 @@ theorem extendDomain_subtypeDomain (f : α →₀ M) (hf : ∀ a ∈ f.support, 
   ext a
   by_cases h : P a
   · exact dif_pos h
-  · #adaptation_note /-- nightly-2024-06-18
-    this `rw` was done by `dsimp`. -/
-    rw [extendDomain_toFun]
-    dsimp
-    rw [if_neg h, eq_comm, ← not_mem_support_iff]
+  · dsimp [extendDomain_toFun]
+    rw [if_neg h, eq_comm, ← notMem_support_iff]
     refine mt ?_ h
     exact @hf _
 
@@ -1336,9 +1357,7 @@ theorem extendDomain_subtypeDomain (f : α →₀ M) (hf : ∀ a ∈ f.support, 
 theorem extendDomain_single (a : Subtype P) (m : M) :
     (single a m).extendDomain = single a.val m := by
   ext a'
-  #adaptation_note /-- nightly-2024-06-18
-  this `rw` was instead `dsimp only`. -/
-  rw [extendDomain_toFun]
+  dsimp only [extendDomain_toFun]
   obtain rfl | ha := eq_or_ne a.val a'
   · simp_rw [single_eq_same, dif_pos a.prop]
   · simp_rw [single_eq_of_ne ha, dite_eq_right_iff]
@@ -1492,3 +1511,5 @@ theorem sigmaFinsuppAddEquivPiFinsupp_apply {α : Type*} {ιs : η → Type*} [A
 end Sigma
 
 end Finsupp
+
+set_option linter.style.longFile 1700
