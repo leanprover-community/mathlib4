@@ -172,10 +172,10 @@ lemma differentiableAt_binEntropy_iff_ne_zero_one :
     DifferentiableAt ℝ binEntropy p ↔ p ≠ 0 ∧ p ≠ 1 := by
   refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ differentiableAt_binEntropy h.1 h.2⟩
     <;> rintro rfl <;> unfold binEntropy at h
-  · rw [DifferentiableAt.add_iff_left] at h
+  · rw [DifferentiableAt.fun_add_iff_left] at h
     · simp [log_inv, mul_neg, ← neg_mul, ← negMulLog_def, differentiableAt_negMulLog_iff] at h
     · fun_prop (disch := simp)
-  · rw [DifferentiableAt.add_iff_right, differentiableAt_iff_comp_const_sub (b := 1)] at h
+  · rw [DifferentiableAt.fun_add_iff_right, differentiableAt_iff_comp_const_sub (b := 1)] at h
     · simp [log_inv, mul_neg, ← neg_mul, ← negMulLog_def, differentiableAt_negMulLog_iff] at h
     · fun_prop (disch := simp)
 

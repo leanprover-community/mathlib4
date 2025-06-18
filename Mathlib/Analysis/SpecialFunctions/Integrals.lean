@@ -313,7 +313,7 @@ theorem integral_sin : ∫ x in a..b, sin x = cos a - cos b := by
   rw [integral_deriv_eq_sub' fun x => -cos x]
   · ring
   · norm_num
-  · simp only [differentiableAt_neg_iff, differentiableAt_cos, implies_true]
+  · simp only [differentiableAt_fun_neg_iff, differentiableAt_cos, implies_true]
   · exact continuousOn_sin
 
 @[simp]
