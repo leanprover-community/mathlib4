@@ -51,7 +51,7 @@ theorem logMahlerMeasure_C (z : ℂ) : (C z).logMahlerMeasure = log ‖z‖ := b
   field_simp [logMahlerMeasure_def]
 
 @[simp]
-theorem logMahlerMeasure_X : (X : ℂ[X]).logMahlerMeasure = 0 := by simp [logMahlerMeasure_def]
+theorem logMahlerMeasure_X : X.logMahlerMeasure = 0 := by simp [logMahlerMeasure_def]
 
 @[simp]
 theorem logMahlerMeasure_monomial (n : ℕ) (z : ℂ) : (monomial n z).logMahlerMeasure = log ‖z‖ := by
@@ -65,7 +65,7 @@ theorem mahlerMeasure_def_of_ne_zero {p : ℂ[X]} (hp : p ≠ 0): p.MahlerMeasur
     exp ((2 * π)⁻¹ * ∫ (x : ℝ) in (0)..(2 * π), log ‖p.eval (circleMap 0 1 x)‖) :=
   by simp [MahlerMeasure, hp, logMahlerMeasure_def]
 
-theorem logMahlerMeasure_eq_log_MahlerMeasure {p : ℂ[X]} :
+theorem logMahlerMeasure_eq_log_MahlerMeasure (p : ℂ[X]) :
     p.logMahlerMeasure = log p.MahlerMeasure := by
   rw [MahlerMeasure]
   split_ifs <;> simp_all [logMahlerMeasure_def]
@@ -93,8 +93,8 @@ theorem mahlerMeasure_eq_zero_iff (p : ℂ[X]) : p.MahlerMeasure = 0 ↔ p = 0 :
 private lemma mahlerMeasure_integrable (p : ℂ[X]) :
     IntervalIntegrable (fun x ↦ log ‖p.eval (circleMap 0 1 x)‖) MeasureTheory.volume 0 (2 * π) := by
   rw [← circleIntegrable_def fun z ↦ log ‖p.eval z‖]
-  exact circleIntegrable_log_norm_meromorphicOn <| AnalyticOnNhd.meromorphicOn
-    <| AnalyticOnNhd.aeval_polynomial analyticOnNhd_id p
+  exact circleIntegrable_log_norm_meromorphicOn
+    <| (analyticOnNhd_id.aeval_polynomial p).meromorphicOn
 
 /-! The Mahler measure of the product of two polynomials is the product of their Mahler measures -/
 open intervalIntegral in
