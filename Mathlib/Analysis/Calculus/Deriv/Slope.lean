@@ -3,8 +3,9 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.LinearAlgebra.AffineSpace.Slope
+import Mathlib.Topology.Algebra.Module.PerfectSpace
 
 /-!
 # Derivative as the limit of the slope
@@ -24,7 +25,6 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 derivative, slope
 -/
 
-
 universe u v
 
 open scoped Topology
@@ -41,7 +41,7 @@ variable {x : 𝕜}
 variable {s : Set 𝕜}
 
 /-- If the domain has dimension one, then Fréchet derivative is equivalent to the classical
-definition with a limit. In this version we have to take the limit along the subset `-{x}`,
+definition with a limit. In this version we have to take the limit along the subset `{x}ᶜ`,
 because for `y=x` the slope equals zero due to the convention `0⁻¹=0`. -/
 theorem hasDerivAtFilter_iff_tendsto_slope {x : 𝕜} {L : Filter 𝕜} :
     HasDerivAtFilter f f' x L ↔ Tendsto (slope f x) (L ⊓ 𝓟 {x}ᶜ) (𝓝 f') :=
@@ -145,6 +145,77 @@ lemma HasDerivAt.continuousAt_div [DecidableEq 𝕜] {f : 𝕜 → 𝕜} {c a : 
     ContinuousAt (Function.update (fun x ↦ (f x - f c) / (x - c)) c a) c := by
   rw [← slope_fun_def_field]
   exact continuousAt_update_same.mpr <| hasDerivAt_iff_tendsto_slope.mp hf
+
+section Order
+
+variable [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [OrderTopology 𝕜] {g : 𝕜 → 𝕜} {g' : 𝕜}
+
+/-- If a monotone function has a derivative within a set at a non-isolated point, then this
+derivative is nonnegative. -/
+lemma HasDerivWithinAt.nonneg_of_monotoneOn (hx : AccPt x (𝓟 s))
+    (hd : HasDerivWithinAt g g' s x) (hg : MonotoneOn g s) : 0 ≤ g' := by
+  have : (𝓝[s \ {x}] x).NeBot := accPt_principal_iff_nhdsWithin.mp hx
+  have h'g : MonotoneOn g (insert x s) :=
+    hg.insert_of_continuousWithinAt hx.clusterPt hd.continuousWithinAt
+  have : Tendsto (slope g x) (𝓝[s \ {x}] x) (𝓝 g') := hasDerivWithinAt_iff_tendsto_slope.mp hd
+  apply ge_of_tendsto this
+  filter_upwards [self_mem_nhdsWithin] with y hy
+  simp only [mem_diff, mem_singleton_iff] at hy
+  rcases lt_or_gt_of_ne hy.2 with h'y | h'y
+  · simp only [slope, vsub_eq_sub, smul_eq_mul]
+    apply mul_nonneg_of_nonpos_of_nonpos
+    · simpa using h'y.le
+    · simpa using h'g (by simp [hy]) (by simp) h'y.le
+  · simp only [slope, vsub_eq_sub, smul_eq_mul]
+    apply mul_nonneg
+    · simpa using h'y.le
+    · simpa [sub_nonneg] using h'g (by simp) (by simp [hy]) h'y.le
+
+/-- The derivative within a set of a monotone function is nonnegative. -/
+lemma MonotoneOn.derivWithin_nonneg (hg : MonotoneOn g s) :
+    0 ≤ derivWithin g s x := by
+  by_cases hd : DifferentiableWithinAt 𝕜 g s x; swap
+  · simp [derivWithin_zero_of_not_differentiableWithinAt hd]
+  by_cases hx : AccPt x (𝓟 s); swap
+  · simp [derivWithin_zero_of_not_accPt hx]
+  exact hd.hasDerivWithinAt.nonneg_of_monotoneOn hx hg
+
+/-- If a monotone function has a derivative, then this derivative is nonnegative. -/
+lemma HasDerivAt.nonneg_of_monotone (hd : HasDerivAt g g' x) (hg : Monotone g) : 0 ≤ g' := by
+  rw [← hasDerivWithinAt_univ] at hd
+  apply hd.nonneg_of_monotoneOn _ (hg.monotoneOn _)
+  exact PerfectSpace.univ_preperfect _ (mem_univ _)
+
+/-- The derivative of a monotone function is nonnegative. -/
+lemma Monotone.deriv_nonneg (hg : Monotone g) : 0 ≤ deriv g x := by
+  rw [← derivWithin_univ]
+  exact (hg.monotoneOn univ).derivWithin_nonneg
+
+/-- If an antitone function has a derivative within a set at a non-isolated point, then this
+derivative is nonpositive. -/
+lemma HasDerivWithinAt.nonpos_of_antitoneOn (hx : AccPt x (𝓟 s))
+    (hd : HasDerivWithinAt g g' s x) (hg : AntitoneOn g s) : g' ≤ 0 := by
+  have : MonotoneOn (-g) s := fun x hx y hy hxy ↦ by simpa using hg hx hy hxy
+  simpa using hd.neg.nonneg_of_monotoneOn hx this
+
+/-- The derivative within a set of an antitone function is nonpositive. -/
+lemma AntitoneOn.derivWithin_nonpos (hg : AntitoneOn g s) :
+    derivWithin g s x ≤ 0 := by
+  have : MonotoneOn (fun x ↦ -g x) s := hg.neg
+  simpa [derivWithin.neg] using this.derivWithin_nonneg
+
+/-- If an antitone function has a derivative, then this derivative is nonpositive. -/
+lemma HasDerivAt.nonpos_of_antitone (hd : HasDerivAt g g' x) (hg : Antitone g) : g' ≤ 0 := by
+  rw [← hasDerivWithinAt_univ] at hd
+  apply hd.nonpos_of_antitoneOn _ (hg.antitoneOn _)
+  exact PerfectSpace.univ_preperfect _ (mem_univ _)
+
+/-- The derivative of an antitone function is nonpositive. -/
+lemma Antitone.deriv_nonpos (hg : Antitone g) : deriv g x ≤ 0 := by
+  rw [← derivWithin_univ]
+  exact (hg.antitoneOn univ).derivWithin_nonpos
+
+end Order
 
 end NormedField
 
