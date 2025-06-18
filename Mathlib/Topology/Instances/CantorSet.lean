@@ -141,6 +141,10 @@ lemma isClosed_cantorSet : IsClosed cantorSet :=
 lemma isCompact_cantorSet : IsCompact cantorSet :=
   isCompact_Icc.of_isClosed_subset isClosed_cantorSet cantorSet_subset_unitInterval
 
+instance : CompactSpace cantorSet := by
+  rw [← isCompact_iff_compactSpace]
+  exact isCompact_cantorSet
+
 /-!
 ## The Cantor set as the set of 0–2 numbers in the ternary system.
 -/
@@ -370,25 +374,26 @@ theorem cantorSet_eq_zero_two_ofDigits :
 ## The Cantor set is homeomorphic to `ℕ → Bool`
 -/
 
+/-- Canonical bijection between the Cantor set and infinite binary tree. -/
 noncomputable def cantorSet_equiv_nat_to_bool : cantorSet ≃ (ℕ → Bool) where
   toFun := fun ⟨x, h⟩ ↦ (cantorToBinary x).get
   invFun (y : ℕ → Bool) :=
     let x : ℝ := ofDigits (Pi.map (fun _ b ↦ cond b 2 0) y)
     have hx : x ∈ cantorSet := by
-      simp [x]
+      simp only [x]
       apply zero_two_sequence_ofDigits_mem_cantorSet
       intro n
-      simp
+      simp only [Fin.isValue, Pi.map_apply, ne_eq, x]
       cases y n <;> simp
     ⟨x, hx⟩
   left_inv := by
     intro ⟨x, hx⟩
-    simp
+    simp only [Fin.isValue, Subtype.mk.injEq]
     exact ofDigits_cantorToTernary hx
   right_inv := by
     intro y
     simp
-    set x := ofDigits (b := 3) (Pi.map (fun _ b ↦ cond b 2 0) y)
+    set x := @ofDigits 3 (Pi.map (fun _ b ↦ cond b 2 0) y)
     have hx : x ∈ cantorSet := by
       apply zero_two_sequence_ofDigits_mem_cantorSet
       intro n
@@ -410,10 +415,7 @@ noncomputable def cantorSet_equiv_nat_to_bool : cantorSet ≃ (ℕ → Bool) whe
     generalize y n = b at this
     cases a <;> cases b <;> first | rfl | simp at this
 
-instance : CompactSpace cantorSet := by
-  rw [← isCompact_iff_compactSpace]
-  exact isCompact_cantorSet
-
+-- TODO: where to place it?
 theorem ofDigits_continuous {b : ℕ} [inst : NeZero b] : Continuous (@ofDigits b) := by
   by_cases hb : b = 1
   · subst hb
@@ -477,8 +479,9 @@ theorem cantorSet_equiv_invFun_continuous : Continuous cantorSet_equiv_nat_to_bo
     rfl
   rw [this]
   apply Continuous.piMap
-  intro _
+  intro
   exact continuous_of_discreteTopology
 
+/-- Canonical homeomorphism between the Cantor set and `ℕ → Bool`. -/
 noncomputable def cantorSet_homeo : cantorSet ≃ₜ (ℕ → Bool) :=
   (Continuous.homeoOfEquivCompactToT2 cantorSet_equiv_invFun_continuous).symm
