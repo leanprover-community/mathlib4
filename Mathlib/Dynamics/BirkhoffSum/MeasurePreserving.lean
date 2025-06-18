@@ -10,8 +10,8 @@ import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 /-!
 # Birkhoff sum for measure preserving maps
 
-This file contains some lemmas about the Birkhoff sum (`birkhoffSum`) and Birkhoff average
-(`birkhoffAverage`) of a function which preserves a measure.
+This file contains some lemmas about the `birkhoffSum` and `birkhoffAverage` of a map which is
+`MeasurePreserving`.
 -/
 
 section MeasurePreserving
