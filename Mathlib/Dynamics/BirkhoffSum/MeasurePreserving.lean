@@ -23,8 +23,8 @@ variable {R : Type*} [DivisionSemiring R] [Module R M]
 variable {f : α → α} {μ : Measure α} {φ φ' : α → M}
 
 /-- If `φ` and `φ'` are `ae μ` equal then the corresponding `birkhoffSum` are `ae μ` equal. -/
-theorem birkhoffSum_ae_eq_of_ae_eq (hf : MeasurePreserving f μ μ) (hφ : φ =ᶠ[ae μ] φ') (n : ℕ) :
-    birkhoffSum f φ n =ᶠ[ae μ] birkhoffSum f φ' n := by
+theorem birkhoffSum_ae_eq_of_ae_eq (hf : MeasurePreserving f μ μ) (hφ : φ =ᵐ[μ] φ') (n : ℕ) :
+    birkhoffSum f φ n =ᵐ[μ] birkhoffSum f φ' n := by
   obtain ⟨s, hs, hs'⟩ := eventuallyEq_iff_exists_mem.mp hφ
   let t := {x | ∀ n, f^[n] x ∈ s}
   have ht : t ∈ ae μ := by
@@ -36,23 +36,8 @@ theorem birkhoffSum_ae_eq_of_ae_eq (hf : MeasurePreserving f μ μ) (hφ : φ =�
   exact Finset.sum_congr rfl fun x _ => hs' (hx x)
 
 /-- If `φ` and `φ'` are `ae μ` equal then the corresponding `birkhoffAverage` are `ae μ` equal. -/
-theorem birkhoffAverage_ae_eq_of_ae_eq (hf : MeasurePreserving f μ μ) (hφ : φ =ᶠ[ae μ] φ') (n : ℕ) :
-    birkhoffAverage R f φ n =ᶠ[ae μ] birkhoffAverage R f φ' n :=
+theorem birkhoffAverage_ae_eq_of_ae_eq (hf : MeasurePreserving f μ μ) (hφ : φ =ᵐ[μ] φ') (n : ℕ) :
+    birkhoffAverage R f φ n =ᵐ[μ] birkhoffAverage R f φ' n :=
   EventuallyEq.const_smul (birkhoffSum_ae_eq_of_ae_eq hf hφ n) (n : R)⁻¹
-
-variable [TopologicalSpace M]
-
-/-- If `φ` is `AEStronglyMeasurable` then the `birkhoffSum` is `ae μ` equal to the `birkhoffSum` of
-its measurable version. -/
-theorem birkhoffSum_eq_of_AEStronglyMeasurable (hf : MeasurePreserving f μ μ)
-    (hφ : AEStronglyMeasurable φ μ) n : birkhoffSum f φ n =ᶠ[ae μ] birkhoffSum f hφ.mk n :=
-  birkhoffSum_ae_eq_of_ae_eq hf hφ.ae_eq_mk n
-
-/-- If `φ` is `AEStronglyMeasurable` then the `birkhoffAverage` is equal to the `birkhoffAverage` of
-its measurable version. -/
-theorem birkhoffAverage_eq_of_AEStronglyMeasurable (hf : MeasurePreserving f μ μ)
-    (hφ : AEStronglyMeasurable φ μ) n :
-    birkhoffAverage R f φ n =ᶠ[ae μ] birkhoffAverage R f hφ.mk n :=
-  birkhoffAverage_ae_eq_of_ae_eq hf hφ.ae_eq_mk n
 
 end MeasurePreserving
