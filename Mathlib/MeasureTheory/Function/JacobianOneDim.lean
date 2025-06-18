@@ -11,14 +11,11 @@ import Mathlib.MeasureTheory.Function.Jacobian
 We record in this file versions of the general change of variables formula in integrals for
 functions from `R` to `ℝ`. This makes it possible to replace the determinant of the Fréchet
 derivative with the one-dimensional derivative.
-We also give more specific versions of these theorems for monotone and antitone functions: this
-makes it possible to drop the injectivity assumption of the general theorems, as the derivative
-is zero on the set of non-injectivity, which means that it can be discarded.
+
 See also `Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts` for versions of the
 change of variables formula in dimension 1 for non-monotone functions, formulated with
-the interval integral and with the stronger requirements on the integrand.
+the interval integral and with stronger requirements on the integrand.
 -/
-
 
 open MeasureTheory MeasureTheory.Measure Metric Filter Set Module Asymptotics
   TopologicalSpace ContinuousLinearMap
