@@ -11,16 +11,16 @@ import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 ## Main definitions
 
-- `Grassmannian`: `G(M; R, k)` is the `k`ᵗʰ Grassmannian of the `R`-module `M`. It is defined to be
+- `Grassmannian`: `G(k, M; R)` is the `k`ᵗʰ Grassmannian of the `R`-module `M`. It is defined to be
   the set of submodules of `M` whose quotient is locally free of rank `k`. Note that this indexing
   is the opposite of some indexing in literature, where this rank would be `n - k` instead, where
   `M = R ^ n`.
 
 ## TODO
 - Define the functor `Grassmannian.functor R M k` that sends an `R`-algebra `A` to the set
-  `G(A ⊗[R] M; A, k)`.
+  `G(k, A ⊗[R] M; A)`.
 - Define `chart x` indexed by `x : Fin k → M` as a subtype consisting of those
-  `N ∈ G(A ⊗[R] M; A, k)` such that the composition `R^k → M → M⧸N` is an isomorphism.
+  `N ∈ G(k, A ⊗[R] M; A)` such that the composition `R^k → M → M⧸N` is an isomorphism.
 - Define `chartFunctor x` to turn `chart x` into a subfunctor of `Grassmannian.functor`. This will
   correspond to an affine open chart in the Grassmannian.
 - Grassmannians for schemes and quasi-coherent sheaf of modules.
@@ -33,29 +33,30 @@ open Module
 
 variable (R : Type u) [CommRing R] (M : Type v) [AddCommGroup M] [Module R M] (k : ℕ)
 
-/-- `G(M; R, k)` is the `k`ᵗʰ Grassmannian of the `R`-module `M`. It is defined to be the set of
+/-- `G(k, M; R)` is the `k`ᵗʰ Grassmannian of the `R`-module `M`. It is defined to be the set of
 submodules of `M` whose quotient is locally free of rank `k`. Note that this indexing is the
-opposite of some indexing in literature, where this rank would be `n-k` instead, where `M=R^n`. -/
+opposite of some indexing in literature, where this rank would be `n - k` instead, where
+`M = R ^ n`. -/
 def Grassmannian : Type v :=
   { N : Submodule R M // Module.Finite R (M ⧸ N) ∧ Projective R (M ⧸ N) ∧
     ∀ p, rankAtStalk (R := R) (M ⧸ N) p = k }
 
 namespace Grassmannian
 
-@[inherit_doc] scoped notation "G("M"; "R", "k")" => Grassmannian R M k
+@[inherit_doc] scoped notation "G("k", "M"; "R")" => Grassmannian R M k
 
 variable {R M k}
 
 /-- The underlying submodule of an element of `G(M; R, k)`. This cannot be a coercion because `k`
 cannot be inferred. -/
-def val (N : G(M; R, k)) : Submodule R M :=
+def val (N : G(k, M; R)) : Submodule R M :=
   Subtype.val N
 
 @[simp] lemma val_mk (N : Submodule R M) {h} : val (k := k) ⟨N, h⟩ = N := rfl
 
-@[ext] lemma ext {N₁ N₂ : G(M; R, k)} (h : N₁.val = N₂.val) : N₁ = N₂ := Subtype.ext h
+@[ext] lemma ext {N₁ N₂ : G(k, M; R)} (h : N₁.val = N₂.val) : N₁ = N₂ := Subtype.ext h
 
-variable (N : G(M; R, k))
+variable (N : G(k, M; R))
 
 instance : Module.Finite R (M ⧸ N.val) := (Subtype.prop N).1
 
