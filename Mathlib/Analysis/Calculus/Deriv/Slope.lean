@@ -157,8 +157,7 @@ lemma HasDerivWithinAt.nonneg_of_monotoneOn (hx : AccPt x (𝓟 s))
   have : (𝓝[s \ {x}] x).NeBot := accPt_principal_iff_nhdsWithin.mp hx
   have h'g : MonotoneOn g (insert x s) :=
     hg.insert_of_continuousWithinAt hx.clusterPt hd.continuousWithinAt
-  have : Tendsto (slope g x) (𝓝[s \ {x}] x) (𝓝 g') :=
-    hasDerivWithinAt_iff_tendsto_slope.mp hd
+  have : Tendsto (slope g x) (𝓝[s \ {x}] x) (𝓝 g') := hasDerivWithinAt_iff_tendsto_slope.mp hd
   apply ge_of_tendsto this
   filter_upwards [self_mem_nhdsWithin] with y hy
   simp only [mem_diff, mem_singleton_iff] at hy
@@ -166,13 +165,11 @@ lemma HasDerivWithinAt.nonneg_of_monotoneOn (hx : AccPt x (𝓟 s))
   · simp only [slope, vsub_eq_sub, smul_eq_mul]
     apply mul_nonneg_of_nonpos_of_nonpos
     · simpa using h'y.le
-    · simp only [tsub_le_iff_right, zero_add]
-      exact h'g (by simp [hy]) (by simp) h'y.le
+    · simpa using h'g (by simp [hy]) (by simp) h'y.le
   · simp only [slope, vsub_eq_sub, smul_eq_mul]
     apply mul_nonneg
     · simpa using h'y.le
-    · simp only [sub_nonneg]
-      exact h'g (by simp) (by simp [hy]) h'y.le
+    · simpa [sub_nonneg] using h'g (by simp) (by simp [hy]) h'y.le
 
 /-- The derivative within a set of a monotone function is nonnegative. -/
 lemma MonotoneOn.derivWithin_nonneg (hg : MonotoneOn g s) :
