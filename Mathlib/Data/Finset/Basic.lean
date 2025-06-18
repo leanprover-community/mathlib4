@@ -373,9 +373,12 @@ theorem disjoint_filter_filter_neg (s t : Finset α) (p : α → Prop)
     Disjoint (s.filter p) (t.filter fun a => ¬p a) :=
   disjoint_filter_filter' s t disjoint_compl_right
 
-theorem filter_disj_union (s : Finset α) (t : Finset α) (h : Disjoint s t) :
+theorem filter_disjUnion (s : Finset α) (t : Finset α) (h : Disjoint s t) :
     filter p (disjUnion s t h) = (filter p s).disjUnion (filter p t) (disjoint_filter_filter h) :=
   eq_of_veq <| Multiset.filter_add _ _ _
+
+@[deprecated (since := "2025-06-11")]
+alias filter_disj_union := filter_disjUnion
 
 theorem filter_cons {a : α} (s : Finset α) (ha : a ∉ s) :
     filter p (cons a s ha) =
@@ -659,8 +662,6 @@ def piFinsetUnion {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι} (h
 def _root_.Finset.equivToSet (s : Finset α) : s ≃ s.toSet where
   toFun a := ⟨a.1, mem_coe.2 a.2⟩
   invFun a := ⟨a.1, mem_coe.1 a.2⟩
-  left_inv := fun _ ↦ rfl
-  right_inv := fun _ ↦ rfl
 
 end Equiv
 

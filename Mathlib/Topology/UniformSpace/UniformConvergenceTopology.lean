@@ -784,8 +784,6 @@ Here we formulate it as a `UniformEquiv`. -/
 def uniformEquivUniformFun (h : univ ∈ 𝔖) : (α →ᵤ[𝔖] β) ≃ᵤ (α →ᵤ β) where
   toFun f := UniformFun.ofFun <| toFun _ f
   invFun f := ofFun _ <| UniformFun.toFun f
-  left_inv _ := rfl
-  right_inv _ := rfl
   uniformContinuous_toFun := by
     simp only [UniformContinuous, (UniformFun.hasBasis_uniformity _ _).tendsto_right_iff]
     intro U hU
@@ -1073,12 +1071,8 @@ theorem uniformSpace_eq_inf_precomp_of_cover {δ₁ δ₂ : Type*} (φ₁ : δ�
     exact UniformOnFun.precomp_uniformContinuous h_image₁
   · rw [← uniformContinuous_iff]
     exact UniformOnFun.precomp_uniformContinuous h_image₂
-  · #adaptation_note
-    /-- 2025-03-29 lean4#7717 a single `simp_rw` needed to be broken up to fully apply -/
-    simp_rw [this S hS]
-    conv => enter [1]; rw [UniformSpace.comap_iInf]; enter [1,1,i]; rw [UniformSpace.comap_iInf]
-    conv => enter [1]; rw [UniformSpace.comap_iInf]; enter [2,1,i]; rw [UniformSpace.comap_iInf]
-    simp_rw [UniformSpace.comap_inf, ← UniformSpace.comap_comap]
+  · simp_rw [this S hS, uniformSpace, UniformSpace.comap_iInf, UniformSpace.comap_inf,
+      ← UniformSpace.comap_comap]
     exact inf_le_inf
       (iInf₂_le_of_le _ (h_preimage₁ hS) le_rfl)
       (iInf₂_le_of_le _ (h_preimage₂ hS) le_rfl)
@@ -1100,10 +1094,7 @@ theorem uniformSpace_eq_iInf_precomp_of_cover {δ : ι → Type*} (φ : Π i, δ
   refine le_antisymm (le_iInf fun i ↦ ?_) (le_iInf₂ fun S hS ↦ ?_)
   · rw [← uniformContinuous_iff]
     exact UniformOnFun.precomp_uniformContinuous (h_image i)
-  · simp_rw [this S hS]
-    #adaptation_note /-- 2025-03-29 lean4#7717 needed this additional rw for the `simp_rw` -/
-    conv => enter [1,1,i]; rw [UniformSpace.comap_iInf]
-    simp_rw [UniformSpace.comap_iInf, ← UniformSpace.comap_comap]
+  · simp_rw [this S hS, uniformSpace, UniformSpace.comap_iInf, ← UniformSpace.comap_comap]
     exact iInf_mono fun i ↦ iInf₂_le_of_le _ (h_preimage i hS) le_rfl
 
 end UniformOnFun

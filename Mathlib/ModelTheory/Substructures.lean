@@ -649,7 +649,6 @@ def topEquiv : (⊤ : L.Substructure M) ≃[L] M where
   toFun := subtype ⊤
   invFun m := ⟨m, mem_top m⟩
   left_inv m := by simp
-  right_inv _ := rfl
 
 @[simp]
 theorem coe_topEquiv :

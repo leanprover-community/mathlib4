@@ -175,7 +175,7 @@ namespace MonoidalCategory
 
 @[simp]
 theorem tensorHom_tmul {K L M N : ModuleCat.{u} R} (f : K ⟶ L) (g : M ⟶ N) (k : K) (m : M) :
-    (f ⊗ g) (k ⊗ₜ m) = f k ⊗ₜ g m :=
+    (f ⊗ₘ g) (k ⊗ₜ m) = f k ⊗ₜ g m :=
   rfl
 
 @[simp]
