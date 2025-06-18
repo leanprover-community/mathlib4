@@ -40,7 +40,7 @@ attribute [local instance] gradedAlgebra
 /-- `ℙ(n; S)` is the projective `n`-space over `S`.
 Note that `n` is an arbitrary index type (e.g. `Fin m`). -/
 def ProjectiveSpace (n : Type u) (S : Scheme.{u}) : Scheme.{max u v} :=
-  pullback (terminal.from S) (terminal.from (Proj (homogeneousSubmodule n (ULift.{max u v} ℤ))))
+  pullback (terminal.from S) (terminal.from (Proj (homogeneousSubmodule n (ULift.{u} ℤ))))
 
 @[inherit_doc] scoped notation "ℙ("n"; "S")" => ProjectiveSpace n S
 
