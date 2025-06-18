@@ -73,8 +73,7 @@ partial def whnfPred (e : Expr) (pred : Expr → MetaM Bool) :
       if (← getConfig).zeta then
         return (coe.app f).app x
       else
-        return ← letTelescope f fun xs f' =>
-          mkLambdaFVars xs ((coe.app f').app x)
+        return ← mapLetTelescope f fun _ f' => pure ((coe.app f').app x)
 
     if (← pred e) then
         match (← unfoldDefinition? e) with
