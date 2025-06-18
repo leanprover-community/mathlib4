@@ -26,7 +26,7 @@ variable (M : C) [Mon_Class M]
 open scoped MonoidalLeftAction
 /-- Given an action of a monoidal category `C` on a category `D`,
 an action of a monoid object `M` in `C` on an object `X` in `D` is the data of a
-map `smul : M ⊙ X ⟶ X` that satisfies unitality and associativity with
+map `smul : M ⊙ₗ X ⟶ X` that satisfies unitality and associativity with
 multiplication.
 
 See `MulAction` for the non-categorical version. -/
@@ -209,7 +209,7 @@ variable {A B : C} [Mon_Class A] [Mon_Class B] (f : A ⟶ B) [IsMon_Hom f]
 open MonoidalLeftAction in
 /-- When `M` is a `B`-module in `D` and `f : A ⟶ B` is a morphism of internal
 monoid objects, `M` inherits an `A`-module structure via
-"restriction of scalars", i.e `γ[A, M] = f.hom ⊵ M ≫ γ[B, M]`. -/
+"restriction of scalars", i.e `γ[A, M] = f.hom ⊵ₗ M ≫ γ[B, M]`. -/
 @[simps!]
 def scalarRestriction (M : D) [Mod_Class B M] : Mod_Class A M where
   smul := f ⊵ₗ M ≫ γ[B, M]
