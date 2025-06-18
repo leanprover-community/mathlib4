@@ -11,12 +11,12 @@ import Mathlib.Data.Nat.ModEq
 /-!
 # IMO 1985 Q2
 
-Each of the numbers in the set $N=\{1, 2, 3, \dots, n-1\}$, where $n ≥ 3$, is colored with one of
-two colors, say red or black, so that:
+Fix a natural number $n ≥ 3$ and define $N=\{1, 2, 3, \dots, n-1\}$. Fix another natural number
+$j ∈ N$ coprime to $n$. Each number in $N$ is now colored with one of two colors, say red or black,
+so that:
 
 1. $i$ and $n-i$ always receive the same color, and
-2. for some $j ∈ N$ relatively prime to $n$, $i$ and $|j-i|$ receive the same color
-for all $i ∈ N, i ≠ j$.
+2. $i$ and $|j-i|$ receive the same color for all $i ∈ N, i ≠ j$.
 
 Prove that all numbers in $N$ must receive the same color.
 
