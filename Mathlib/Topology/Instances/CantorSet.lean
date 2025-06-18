@@ -10,6 +10,7 @@ import Mathlib.Data.Stream.Init
 import Mathlib.Tactic.FinCases
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Algebra.Ring.Real
+import Mathlib.Topology.MetricSpace.PiNat
 
 /-!
 # Ternary Cantor Set
@@ -364,3 +365,120 @@ theorem cantorSet_eq_zero_two_ofDigits :
     · apply ofDigits_cantorToTernary h
   · rw [← ha.2]
     exact zero_two_sequence_ofDigits_mem_cantorSet ha.1
+
+/-!
+## The Cantor set is homeomorphic to `ℕ → Bool`
+-/
+
+noncomputable def cantorSet_equiv_nat_to_bool : cantorSet ≃ (ℕ → Bool) where
+  toFun := fun ⟨x, h⟩ ↦ (cantorToBinary x).get
+  invFun (y : ℕ → Bool) :=
+    let x : ℝ := ofDigits (Pi.map (fun _ b ↦ cond b 2 0) y)
+    have hx : x ∈ cantorSet := by
+      simp [x]
+      apply zero_two_sequence_ofDigits_mem_cantorSet
+      intro n
+      simp
+      cases y n <;> simp
+    ⟨x, hx⟩
+  left_inv := by
+    intro ⟨x, hx⟩
+    simp
+    exact ofDigits_cantorToTernary hx
+  right_inv := by
+    intro y
+    simp
+    set x := ofDigits (b := 3) (Pi.map (fun _ b ↦ cond b 2 0) y)
+    have hx : x ∈ cantorSet := by
+      apply zero_two_sequence_ofDigits_mem_cantorSet
+      intro n
+      simp
+      cases y n <;> simp
+    have := ofDigits_cantorToTernary hx
+    conv at this => rhs; unfold x
+    apply zero_two_sequence_ofDigits_unique at this
+    rotate_left
+    · exact fun n ↦ cantorToTernary_ne_one
+    · intro n
+      simp
+      cases y n <;> simp
+    ext n
+    apply congrFun at this
+    specialize this n
+    simp [cantorToTernary] at this
+    generalize (cantorToBinary x).get n = a at this
+    generalize y n = b at this
+    cases a <;> cases b <;> first | rfl | simp at this
+
+instance : CompactSpace cantorSet := by
+  rw [← isCompact_iff_compactSpace]
+  exact isCompact_cantorSet
+
+theorem ofDigits_continuous {b : ℕ} [inst : NeZero b] : Continuous (@ofDigits b) := by
+  by_cases hb : b = 1
+  · subst hb
+    exact continuous_of_discreteTopology
+  replace hb : 1 < b := by
+    cases inst
+    omega
+  have h_fin_emb : Topology.IsEmbedding (@Fin.val b) := by
+    constructor
+    · -- TODO : generalize this
+      constructor
+      ext S
+      simp
+      rw [isOpen_induced_iff]
+      use Fin.val '' S
+      simp
+      ext i
+      simp
+      constructor
+      · intro ⟨x, h1, h2⟩
+        apply Fin.eq_of_val_eq at h2
+        simpa [← h2]
+      · intro hi
+        use i
+    · exact Fin.val_injective
+  let instMetricSpaceFin : MetricSpace (Fin b) := Topology.IsEmbedding.comapMetricSpace _ h_fin_emb
+  have h_fin_iso : Isometry (@Fin.val b) := Topology.IsEmbedding.to_isometry _
+  let instMetricSpace : MetricSpace (ℕ → Fin b) := PiNat.metricSpace
+  rw [Metric.continuous_iff]
+  intro a ε hε
+  obtain ⟨n, hn⟩ : ∃ n, ((b : ℝ)^n)⁻¹ < ε := by
+    simp_rw [← inv_pow]
+    have := tendsto_pow_atTop_nhds_zero_of_abs_lt_one (r := (b : ℝ)⁻¹)
+      (by rify at hb; rw [abs_of_nonneg (by positivity)]; exact inv_lt_one_of_one_lt₀ hb)
+    obtain ⟨n, hn⟩ := (this.eventually_le_const hε).frequently.exists
+    use n + 1
+    rw [pow_succ]
+    rw [show ε = ε * 1 by simp]
+    exact mul_lt_mul_of_pos_of_nonneg hn (by rify at hb; exact inv_lt_one_of_one_lt₀ hb)
+      (by positivity) (by norm_num)
+  use (1 / 2)^n
+  constructor
+  · simp
+  intro a' ha'
+  have h : ∀ i < n, a' i = a i := by
+    intro i hi
+    apply PiNat.apply_eq_of_dist_lt ha' hi.le
+  apply ofDigits_close_of_common_prefix at h
+  simp [dist]
+  linarith
+
+theorem cantorSet_equiv_invFun_continuous : Continuous cantorSet_equiv_nat_to_bool.symm := by
+  simp [cantorSet_equiv_nat_to_bool]
+  apply Continuous.subtype_mk
+  change Continuous (ofDigits ∘ (fun x ↦ Pi.map (fun x b ↦ bif b then 2 else 0) x))
+  apply Continuous.comp
+  · apply ofDigits_continuous
+  have : (fun x ↦ Pi.map (fun (_ : ℕ) b ↦ bif b then (2 : Fin 3) else 0) x) =
+      (Pi.map (fun x b ↦ bif b then (2 : Fin 3) else 0)) := by
+    eta_expand
+    rfl
+  rw [this]
+  apply Continuous.piMap
+  intro _
+  exact continuous_of_discreteTopology
+
+noncomputable def cantorSet_homeo : cantorSet ≃ₜ (ℕ → Bool) :=
+  (Continuous.homeoOfEquivCompactToT2 cantorSet_equiv_invFun_continuous).symm
