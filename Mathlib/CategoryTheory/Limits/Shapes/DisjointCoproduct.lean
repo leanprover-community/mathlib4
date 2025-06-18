@@ -75,7 +75,8 @@ lemma _root_.CategoryTheory.Mono.of_coproductDisjoint {c : Cofan X} (hc : IsColi
     Mono (c.inj i) :=
   CoproductDisjoint.mono_inj hc i
 
-instance [HasCoproduct X] (i : ι) : Mono (Sigma.ι X i) :=
+instance _root_.CategoryTheory.Mono.ι_of_coproductDisjoint [HasCoproduct X] (i : ι) :
+    Mono (Sigma.ι X i) :=
   CoproductDisjoint.mono_inj (colimit.isColimit _) i
 
 /-- If `i ≠ j` and `Xᵢ ← Y → Xⱼ` is a pullback diagram over `Z`, where `Z` is the
@@ -153,11 +154,13 @@ lemma _root_.CategoryTheory.Mono.of_binaryCoproductDisjoint_right {Z : C}
     (f : X ⟶ Z) {g : Y ⟶ Z} (hc : IsColimit <| BinaryCofan.mk f g) : Mono g :=
   .of_coproductDisjoint hc .right
 
-instance [HasBinaryCoproduct X Y] : Mono (coprod.inl : X ⟶ X ⨿ Y) :=
+instance _root_.CategoryTheory.Mono.inl_of_binaryCoproductDisjoint [HasBinaryCoproduct X Y] :
+    Mono (coprod.inl : X ⟶ X ⨿ Y) :=
   have : HasCoproduct (fun j : WalkingPair ↦ (j.casesOn X Y : C)) := ‹_›
   inferInstanceAs <| Mono (Sigma.ι _ _)
 
-instance [HasBinaryCoproduct X Y] : Mono (coprod.inr : Y ⟶ X ⨿ Y) :=
+instance _root_.CategoryTheory.Mono.inr_of_binaryCoproductDisjoint [HasBinaryCoproduct X Y] :
+    Mono (coprod.inr : Y ⟶ X ⨿ Y) :=
   have : HasCoproduct (fun j : WalkingPair ↦ (j.casesOn X Y : C)) := ‹_›
   inferInstanceAs <| Mono (Sigma.ι _ _)
 
