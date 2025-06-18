@@ -265,6 +265,16 @@ theorem sum (s : Finset ι) {f : ι → ℝ → E} (h : ∀ i ∈ s, IntervalInt
     IntervalIntegrable (∑ i ∈ s, f i) μ a b :=
   ⟨integrable_finset_sum' s fun i hi => (h i hi).1, integrable_finset_sum' s fun i hi => (h i hi).2⟩
 
+/-- Finsums of interval integrable functions are interval integrable. -/
+@[simp]
+protected theorem finsum {f : ι → ℝ → E} (h : ∀ i, IntervalIntegrable (f i) μ a b) :
+    IntervalIntegrable (∑ᶠ i, f i) μ a b := by
+  by_cases h₁ : f.support.Finite
+  · simp [finsum_eq_sum _ h₁, IntervalIntegrable.sum h₁.toFinset (fun i _ ↦ h i)]
+  · rw [finsum_of_infinite_support h₁]
+    apply intervalIntegrable_const_iff.2
+    tauto
+
 theorem mul_continuousOn {f g : ℝ → A} (hf : IntervalIntegrable f μ a b)
     (hg : ContinuousOn g [[a, b]]) : IntervalIntegrable (fun x => f x * g x) μ a b := by
   rw [intervalIntegrable_iff] at hf ⊢
