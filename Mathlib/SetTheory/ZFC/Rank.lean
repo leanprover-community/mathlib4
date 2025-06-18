@@ -115,7 +115,7 @@ theorem le_succ_rank_sUnion (x : PSet) : rank x ≤ succ (rank (⋃₀ x)) := by
 
 /-- `PSet.rank` is equal to the `IsWellFounded.rank` over `∈`. -/
 theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = IsWellFounded.rank (α := PSet) (· ∈ ·) x := by
-  induction' x using mem_wf.induction with x ih
+  induction x using mem_wf.induction with | _ x ih
   rw [IsWellFounded.rank_eq]
   simp_rw [← fun y : { y // y ∈ x } => ih y y.2]
   apply (le_of_forall_lt _).antisymm (Ordinal.iSup_le _) <;> intro h
@@ -203,7 +203,7 @@ theorem rank_range {α : Type*} [Small.{u} α] (f : α → ZFSet.{u}) :
 
 /-- `ZFSet.rank` is equal to the `IsWellFounded.rank` over `∈`. -/
 theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = IsWellFounded.rank (α := ZFSet) (· ∈ ·) x := by
-  induction' x using inductionOn with x ih
+  induction x using inductionOn with | _ x ih
   rw [IsWellFounded.rank_eq]
   simp_rw [← fun y : { y // y ∈ x } => ih y y.2]
   apply (le_of_forall_lt _).antisymm (Ordinal.iSup_le _) <;> intro h
