@@ -132,6 +132,9 @@ theorem _root_.Function.Surjective.bijective_of_nat_card_le [Finite α] {f : α 
 theorem card_eq_of_equiv_fin {α : Type*} {n : ℕ} (f : α ≃ Fin n) : Nat.card α = n := by
   simpa only [card_eq_fintype_card, Fintype.card_fin] using card_congr f
 
+lemma card_fin (n : ℕ) : Nat.card (Fin n) = n := by
+  rw [Nat.card_eq_fintype_card, Fintype.card_fin]
+
 section Set
 open Set
 variable {s t : Set α}
