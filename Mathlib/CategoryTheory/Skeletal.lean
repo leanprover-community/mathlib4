@@ -138,8 +138,6 @@ lemma skeleton_isSkeleton : IsSkeletonOf C (Skeleton C) (fromSkeleton C) where
 
 variable {C D}
 
-section API
-
 lemma toSkeleton_fromSkeleton_obj (X : Skeleton C) : toSkeleton ((fromSkeleton C).obj X) = X :=
   Quotient.out_eq _
 
@@ -157,8 +155,6 @@ noncomputable def Skeleton.isoOfEq {X Y : C} (h : toSkeleton X = toSkeleton Y) :
 lemma toSkeleton_eq_iff {X : C} {Y : Skeleton C} :
     toSkeleton X = Y ↔ Nonempty (X ≅ (fromSkeleton C).obj Y) :=
   Quotient.mk_eq_iff_out
-
-end API
 
 namespace Functor
 
