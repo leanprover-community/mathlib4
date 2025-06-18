@@ -99,9 +99,6 @@ f⁻¹ ⊤` is the circle average of `log ‖f ·‖`.
 theorem proximity_sub_proximity_inv_eq_circleAverage {f : ℂ → ℂ} (h₁f : MeromorphicOn f ⊤) :
     proximity f ⊤ - proximity f⁻¹ ⊤ = circleAverage (log ‖f ·‖) 0 := by
   ext R
-  have : CircleIntegrable (log⁺ ‖f ·‖⁻¹) 0 R := by
-    simp_rw [← norm_inv]
-    apply circleIntegrable_posLog_norm_meromorphicOn (h₁f.inv.mono_set (by tauto))
   simp only [proximity, ↓reduceDIte, Pi.inv_apply, norm_inv, Pi.sub_apply]
   rw [← circleAverage_sub]
   · simp_rw [← posLog_sub_posLog_inv]
