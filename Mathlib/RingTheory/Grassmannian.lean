@@ -36,13 +36,13 @@ variable (R : Type u) [CommRing R] (M : Type v) [AddCommGroup M] [Module R M] (k
 /-- `G(M; R, k)` is the `k`ᵗʰ Grassmannian of the `R`-module `M`. It is defined to be the set of
 submodules of `M` whose quotient is locally free of rank `k`. Note that this indexing is the
 opposite of some indexing in literature, where this rank would be `n-k` instead, where `M=R^n`. -/
-def Grassmannian.AsType : Type v :=
+def Grassmannian : Type v :=
   { N : Submodule R M // Module.Finite R (M ⧸ N) ∧ Projective R (M ⧸ N) ∧
     ∀ p, rankAtStalk (R := R) (M ⧸ N) p = k }
 
 namespace Grassmannian
 
-@[inherit_doc] scoped notation "G("M"; "R", "k")" => Grassmannian.AsType R M k
+@[inherit_doc] scoped notation "G("M"; "R", "k")" => Grassmannian R M k
 
 variable {R M k}
 
@@ -57,13 +57,10 @@ def val (N : G(M; R, k)) : Submodule R M :=
 
 variable (N : G(M; R, k))
 
-instance : Module.Finite R (M ⧸ N.val) :=
-  (Subtype.prop N).1
+instance : Module.Finite R (M ⧸ N.val) := (Subtype.prop N).1
 
-instance : Module.Projective R (M ⧸ N.val) :=
-  (Subtype.prop N).2.1
+instance : Module.Projective R (M ⧸ N.val) := (Subtype.prop N).2.1
 
-lemma rankAtStalk_eq (p : PrimeSpectrum R) : rankAtStalk (M ⧸ N.val) p = k :=
-  (Subtype.prop N).2.2 p
+lemma rankAtStalk_eq (p : PrimeSpectrum R) : rankAtStalk (M ⧸ N.val) p = k := (Subtype.prop N).2.2 p
 
 end Grassmannian
