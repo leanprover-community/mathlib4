@@ -28,14 +28,14 @@ instance (X : C) : Grp_Class X where
   one := 0
   mul := fst _ _ + snd _ _
   inv := -𝟙 X
-  one_mul' := by simp [← leftUnitor_hom]
-  mul_one' := by simp [← rightUnitor_hom]
-  mul_assoc' := by simp [add_assoc]
+  one_mul := by simp [← leftUnitor_hom]
+  mul_one := by simp [← rightUnitor_hom]
+  mul_assoc := by simp [add_assoc]
 
 variable [BraidedCategory C]
 
 instance (X : C) : IsCommMon X where
-  mul_comm' := by simp [add_comm]
+  mul_comm := by simp [add_comm]
 
 variable (C) in
 /-- The canonical functor from an additive category into its commutative group objects. This is

@@ -33,15 +33,13 @@ class Mon_Class (X : C) where
   one : 𝟙_ C ⟶ X
   /-- The multiplication morphism of a monoid object. -/
   mul : X ⊗ X ⟶ X
-  /- For the names of the conditions below, the unprimed names are reserved for the version where
-  the argument `X` is explicit. -/
-  one_mul' : one ▷ X ≫ mul = (λ_ X).hom := by aesop_cat
-  mul_one' : X ◁ one ≫ mul = (ρ_ X).hom := by aesop_cat
+  one_mul (X) : one ▷ X ≫ mul = (λ_ X).hom := by aesop_cat
+  mul_one (X) : X ◁ one ≫ mul = (ρ_ X).hom := by aesop_cat
   -- Obviously there is some flexibility stating this axiom.
   -- This one has left- and right-hand sides matching the statement of `Monoid.mul_assoc`,
   -- and chooses to place the associator on the right-hand side.
   -- The heuristic is that unitors and associators "don't have much weight".
-  mul_assoc' : (mul ▷ X) ≫ mul = (α_ X X X).hom ≫ (X ◁ mul) ≫ mul := by aesop_cat
+  mul_assoc (X) : (mul ▷ X) ≫ mul = (α_ X X X).hom ≫ (X ◁ mul) ≫ mul := by aesop_cat
 
 namespace Mon_Class
 
@@ -50,24 +48,14 @@ namespace Mon_Class
 @[inherit_doc] scoped notation "η" => Mon_Class.one
 @[inherit_doc] scoped notation "η["M"]" => Mon_Class.one (X := M)
 
-/- The simp attribute is reserved for the unprimed versions. -/
-attribute [reassoc] one_mul' mul_one' mul_assoc'
-
-@[reassoc (attr := simp)]
-theorem one_mul (X : C) [Mon_Class X] : η ▷ X ≫ μ = (λ_ X).hom := one_mul'
-
-@[reassoc (attr := simp)]
-theorem mul_one (X : C) [Mon_Class X] : X ◁ η ≫ μ = (ρ_ X).hom := mul_one'
-
-@[reassoc (attr := simp)]
-theorem mul_assoc (X : C) [Mon_Class X] : μ ▷ X ≫ μ = (α_ X X X).hom ≫ X ◁ μ ≫ μ := mul_assoc'
+attribute [reassoc (attr := simp)] one_mul mul_one mul_assoc
 
 @[simps]
 instance : Mon_Class (𝟙_ C) where
   one := 𝟙 _
   mul := (λ_ _).hom
-  mul_assoc' := by monoidal_coherence
-  mul_one' := by monoidal_coherence
+  mul_assoc := by monoidal_coherence
+  mul_one := by monoidal_coherence
 
 @[ext]
 theorem ext {X : C} (h₁ h₂ : Mon_Class X) (H : h₁.mul = h₂.mul) : h₁ = h₂ := by
@@ -268,9 +256,9 @@ variable [F.LaxMonoidal] [F'.LaxMonoidal] [G.LaxMonoidal] (X Y : C) [Mon_Class X
 abbrev obj.instMon_Class : Mon_Class (F.obj X) where
   one := ε F ≫ F.map η
   mul := LaxMonoidal.μ F X X ≫ F.map μ
-  one_mul' := by simp [← F.map_comp]
-  mul_one' := by simp [← F.map_comp]
-  mul_assoc' := by
+  one_mul := by simp [← F.map_comp]
+  mul_one := by simp [← F.map_comp]
+  mul_assoc := by
     simp_rw [comp_whiskerRight, Category.assoc, μ_natural_left_assoc,
       MonoidalCategory.whiskerLeft_comp, Category.assoc, μ_natural_right_assoc]
     slice_lhs 3 4 => rw [← F.map_comp, Mon_Class.mul_assoc]
@@ -638,9 +626,9 @@ namespace tensorObj
 instance {M N : C} [Mon_Class M] [Mon_Class N] : Mon_Class (M ⊗ N) where
   one := (λ_ (𝟙_ C)).inv ≫ (η ⊗ₘ η)
   mul := tensorμ M N M N ≫ (μ ⊗ₘ μ)
-  one_mul' := Mon_tensor_one_mul M N
-  mul_one' := Mon_tensor_mul_one M N
-  mul_assoc' := Mon_tensor_mul_assoc M N
+  one_mul := Mon_tensor_one_mul M N
+  mul_one := Mon_tensor_mul_one M N
+  mul_assoc := Mon_tensor_mul_assoc M N
 
 end tensorObj
 
@@ -842,17 +830,16 @@ variable [BraidedCategory.{v₁} C]
 
 /-- Predicate for a monoid object to be commutative. -/
 class IsCommMon (X : C) [Mon_Class X] where
-  mul_comm' : (β_ X X).hom ≫ μ = μ := by aesop_cat
+  mul_comm (X) : (β_ X X).hom ≫ μ = μ := by aesop_cat
 
 open scoped Mon_Class
 
 namespace IsCommMon
 
-@[reassoc (attr := simp)]
-theorem mul_comm (X : C) [Mon_Class X] [IsCommMon X] : (β_ X X).hom ≫ μ = μ := mul_comm'
+attribute [reassoc (attr := simp)] mul_comm
 
 instance : IsCommMon (𝟙_ C) where
-  mul_comm' := by dsimp; rw [braiding_leftUnitor, unitors_equal]
+  mul_comm := by dsimp; rw [braiding_leftUnitor, unitors_equal]
 
 end IsCommMon
 
