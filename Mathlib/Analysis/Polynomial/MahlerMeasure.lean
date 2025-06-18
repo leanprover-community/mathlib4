@@ -20,7 +20,7 @@ properties.
 - `Polynomial.logMahlerMeasure p`: the logarithmic Mahler measure of a polynomial `p` defined as
 `(2 * π)⁻¹ * ∫ x ∈ (0, 2 * π), log ‖p (e ^ (i * x))‖`.
 - `Polynomial.MahlerMeasure p`: the (exponential) Mahler measure of a polynomial `p`, which is equal
-to `e ^ (logMahlerMeasure p)` if `p` is nonzero, and `0` otherwise.
+to `e ^ p.logMahlerMeasure` if `p` is nonzero, and `0` otherwise.
 
 ## Main results
 
@@ -57,7 +57,7 @@ theorem logMahlerMeasure_X : X.logMahlerMeasure = 0 := by simp [logMahlerMeasure
 theorem logMahlerMeasure_monomial (n : ℕ) (z : ℂ) : (monomial n z).logMahlerMeasure = log ‖z‖ := by
   field_simp [logMahlerMeasure_def]
 
-/-- The Mahler measure of a polynomial `p` defined as `e ^ (logMahlerMeasure p)` if `p` is nonzero
+/-- The Mahler measure of a polynomial `p` defined as `e ^ p.logMahlerMeasure` if `p` is nonzero
 and `0` otherwise -/
 noncomputable def MahlerMeasure (p : ℂ[X]) := if p ≠ 0 then exp (p.logMahlerMeasure) else 0
 
