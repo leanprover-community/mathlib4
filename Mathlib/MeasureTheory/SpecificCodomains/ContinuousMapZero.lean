@@ -24,8 +24,7 @@ open MeasureTheory
 namespace ContinuousMapZero
 
 variable {X Y : Type*} [MeasurableSpace X] {μ : Measure X} [TopologicalSpace Y]
-variable {E : Type*} [NormedCommRing E]
--- `[NormedAddCommGroup E]` doesn't work because of lack of instances for `C(Y, E)₀`
+variable {E : Type*} [NormedAddCommGroup E]
 
 /-- A natural criterion for `HasFiniteIntegral` of a `C(Y, E)₀`-valued function is the existence
 of some positive function with finite integral such that `∀ᵐ x ∂μ, ∀ y : Y, ‖f x y‖ ≤ bound x`.
