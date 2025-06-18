@@ -105,7 +105,7 @@ abbrev toSkeleton (X : C) : Skeleton C := ⟦X⟧
 noncomputable def preCounitIso (X : C) : (fromSkeleton C).obj (toSkeleton X) ≅ X :=
   Nonempty.some (Quotient.mk_out X)
 
-alias fromSkeleton_toSkeleton_iso := preCounitIso
+alias fromSkeletonToSkeletonIso := preCounitIso
 
 variable (C)
 
@@ -140,33 +140,23 @@ variable {C D}
 
 section API
 
-lemma toSkeleton_fromSkeleton_eq_self (X : Skeleton C) : toSkeleton ((fromSkeleton C).obj X) = X :=
+lemma toSkeleton_fromSkeleton_obj (X : Skeleton C) : toSkeleton ((fromSkeleton C).obj X) = X :=
   Quotient.out_eq _
 
 lemma toSkeleton_eq_toSkeleton_iff {X Y : C} : toSkeleton X = toSkeleton Y ↔ Nonempty (X ≅ Y) :=
   Quotient.eq
 
-lemma toSkeleton_eq_toSkeleton_of {X Y : C} (e : X ≅ Y) : toSkeleton X = toSkeleton Y :=
+lemma congr_toSkeleton_of_iso {X Y : C} (e : X ≅ Y) : toSkeleton X = toSkeleton Y :=
   Quotient.sound ⟨e⟩
 
 /-- Provides a (noncomputable) isomorphism `X ≅ Y` given that `toSkeleton X = toSkeleton Y`. -/
-noncomputable def Iso.of_toSkeleton_eq_toSkeleton {X Y : C} (h : toSkeleton X = toSkeleton Y) :
+noncomputable def Skeleton.isoOfEq {X Y : C} (h : toSkeleton X = toSkeleton Y) :
     X ≅ Y :=
   Quotient.exact h |>.some
 
 lemma toSkeleton_eq_iff {X : C} {Y : Skeleton C} :
     toSkeleton X = Y ↔ Nonempty (X ≅ (fromSkeleton C).obj Y) :=
   Quotient.mk_eq_iff_out
-
-lemma toSkeleton_eq_of {X : C} {Y : Skeleton C} (e : (fromSkeleton C).obj Y ≅ X) :
-    toSkeleton X = Y :=
-  toSkeleton_eq_iff.2 ⟨e.symm⟩
-
-/-- Provides a (noncomputable) isomorphism `(fromSkeleton C).obj X ≅ Y` given that
-`toSkeleton Y = X`. -/
-noncomputable def Iso.of_toSkeleton_eq {X : Skeleton C} {Y : C} (h : toSkeleton Y = X) :
-    (fromSkeleton C).obj X ≅ Y :=
-  toSkeleton_eq_iff.1 h |>.some.symm
 
 end API
 
@@ -178,6 +168,10 @@ noncomputable def mapSkeleton (F : C ⥤ D) : Skeleton C ⥤ Skeleton D :=
 
 variable (F : C ⥤ D)
 
+lemma mapSkeleton_obj_toSkeleton (X : C) :
+    F.mapSkeleton.obj (toSkeleton X) = toSkeleton (F.obj X) :=
+  congr_toSkeleton_of_iso <| F.mapIso <| preCounitIso X
+
 instance [F.Full] : F.mapSkeleton.Full := by unfold mapSkeleton; infer_instance
 
 instance [F.Faithful] : F.mapSkeleton.Faithful := by unfold mapSkeleton; infer_instance
@@ -187,13 +181,10 @@ instance [F.EssSurj] : F.mapSkeleton.EssSurj := by unfold mapSkeleton; infer_ins
 /-- A natural isomorphism between `X ↦ ⟦X⟧ ↦ ⟦FX⟧` and `X ↦ FX ↦ ⟦FX⟧`. On the level of
 categories, these are `C ⥤ Skeleton C ⥤ Skeleton D` and `C ⥤ D ⥤ Skeleton D`. So this says that
 the square formed by these 4 objects and 4 functors commutes. -/
-noncomputable def toSkeletonFunctor_comp_mapSkeleton_natIso :
+noncomputable def toSkeletonFunctorCompMapSkeletonIso :
     toSkeletonFunctor C ⋙ F.mapSkeleton ≅ F ⋙ toSkeletonFunctor D :=
   NatIso.ofComponents (fun X ↦ (toSkeletonFunctor D).mapIso <| F.mapIso <| preCounitIso X)
     (fun {X Y} f ↦ show (_ ≫ _) ≫ _ = _ ≫ _ by simp [assoc])
-
-lemma mapSkeleton_toSkeleton (X : C) : F.mapSkeleton.obj (toSkeleton X) = toSkeleton (F.obj X) :=
-  toSkeleton_eq_toSkeleton_of <| F.mapIso <| preCounitIso X
 
 lemma mapSkeleton_injective [F.Full] [F.Faithful] : Function.Injective F.mapSkeleton.obj :=
   fun _ _ h ↦ skeleton_skeletal C ⟨F.mapSkeleton.preimageIso <| eqToIso h⟩
