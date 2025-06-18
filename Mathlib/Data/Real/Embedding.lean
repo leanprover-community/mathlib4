@@ -33,7 +33,7 @@ variable [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]
  Formally, these are numbers `p / q` such that `p • one < q • x`. -/
 abbrev ratLt (one x : M) : Set ℚ := {r | r.num • one < r.den • x}
 
-theorem mkRat_mem_ratLt {num : ℤ} {den : ℕ} (hden: den ≠ 0) {one x : M} :
+theorem mkRat_mem_ratLt {num : ℤ} {den : ℕ} (hden : den ≠ 0) {one x : M} :
     mkRat num den ∈ ratLt one x ↔ num • one < den • x := by
   rw [Set.mem_setOf]
   obtain ⟨m, hm0, hnum, hden⟩ := Rat.mkRat_num_den hden (show mkRat num den = _ by rfl)
@@ -147,7 +147,7 @@ theorem ratLt'_add {one : M} (hpos : 0 < one) (x y : M) :
   unfold ratLt'
   rw [ratLt_add hpos, Set.image_add]
 
-theorem embed_real_zero {one : M} (hpos: 0 < one) : embed_real one 0 = 0 := by
+theorem embed_real_zero {one : M} (hpos : 0 < one) : embed_real one 0 = 0 := by
   apply le_antisymm
   · apply csSup_le (ratLt'_nonempty hpos 0)
     intro x
@@ -170,14 +170,14 @@ theorem embed_real_zero {one : M} (hpos: 0 < one) : embed_real one 0 = 0 := by
     obtain ⟨y, hxy, hy⟩ := exists_rat_btwn h'
     exact ⟨y, by simpa using hy, hxy⟩
 
-theorem embed_real_add {one : M} (hpos: 0 < one) (x y : M) :
+theorem embed_real_add {one : M} (hpos : 0 < one) (x y : M) :
     embed_real one (x + y) = embed_real one x + embed_real one y := by
   unfold embed_real
   rw [ratLt'_add hpos]
   rw [csSup_add (ratLt'_nonempty hpos x) (ratLt'_bddAbove hpos x)
     (ratLt'_nonempty hpos y) (ratLt'_bddAbove hpos y)]
 
-theorem embed_real_strictMono {one : M} (hpos: 0 < one) : StrictMono (embed_real one) := by
+theorem embed_real_strictMono {one : M} (hpos : 0 < one) : StrictMono (embed_real one) := by
   intro x y h
   have hyz : 0 < y - x := sub_pos.mpr h
   have hy : y = y - x + x := (sub_add_cancel y x).symm
@@ -193,20 +193,20 @@ theorem embed_real_strictMono {one : M} (hpos: 0 < one) : StrictMono (embed_real
 /-- The bundled `M →+o ℝ` for archimedean `M`.
 The given element `one` is mapped to the real number 1. -/
 noncomputable
-def orderAddMonoidHom_real {one : M} (hpos: 0 < one) : M →+o ℝ where
+def orderAddMonoidHom_real {one : M} (hpos : 0 < one) : M →+o ℝ where
   toFun := embed_real one
   map_zero' := embed_real_zero hpos
   map_add' := embed_real_add hpos
   monotone' := (embed_real_strictMono hpos).monotone
 
-theorem orderAddMonoidHom_real_apply {one : M} (hpos: 0 < one) (a : M):
+theorem orderAddMonoidHom_real_apply {one : M} (hpos : 0 < one) (a : M):
     (orderAddMonoidHom_real hpos) a = embed_real one a := by rfl
 
-theorem orderAddMonoidHom_real_injective {one : M} (hpos: 0 < one) :
+theorem orderAddMonoidHom_real_injective {one : M} (hpos : 0 < one) :
     Function.Injective (orderAddMonoidHom_real hpos) :=
   (embed_real_strictMono hpos).injective
 
-theorem orderAddMonoidHom_real_one {one : M} (hpos: 0 < one) :
+theorem orderAddMonoidHom_real_one {one : M} (hpos : 0 < one) :
     (orderAddMonoidHom_real hpos) one = 1 := by
   rw [orderAddMonoidHom_real_apply]
   apply le_antisymm
