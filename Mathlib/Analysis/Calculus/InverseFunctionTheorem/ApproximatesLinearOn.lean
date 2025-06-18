@@ -212,30 +212,32 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
   have D : ∀ n : ℕ, dist (f (u n)) y ≤ ((c : ℝ) * f'symm.nnnorm) ^ n * dist (f b) y ∧
       dist (u n) b ≤ f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) /
         (1 - (c : ℝ) * f'symm.nnnorm) * dist (f b) y := fun n ↦ by
-    induction' n with n IH; · simp [hu, le_refl]
-    rw [usucc]
-    have Ign : dist (g (u n)) b ≤ f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n.succ) /
-        (1 - c * f'symm.nnnorm) * dist (f b) y :=
+    induction n with
+    | zero => simp [hu, le_refl]
+    | succ n IH =>
+      rw [usucc]
+      have Ign : dist (g (u n)) b ≤ f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n.succ) /
+          (1 - c * f'symm.nnnorm) * dist (f b) y :=
+        calc
+          dist (g (u n)) b ≤ dist (g (u n)) (u n) + dist (u n) b := dist_triangle _ _ _
+          _ ≤ f'symm.nnnorm * dist (f (u n)) y + dist (u n) b := add_le_add (A _) le_rfl
+          _ ≤ f'symm.nnnorm * (((c : ℝ) * f'symm.nnnorm) ^ n * dist (f b) y) +
+                f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) / (1 - c * f'symm.nnnorm) *
+                  dist (f b) y := by
+                    gcongr
+                    · exact IH.1
+                    · exact IH.2
+          _ = f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n.succ) /
+                (1 - (c : ℝ) * f'symm.nnnorm) * dist (f b) y := by
+            field_simp [Jcf', pow_succ]; ring
+      refine ⟨?_, Ign⟩
       calc
-        dist (g (u n)) b ≤ dist (g (u n)) (u n) + dist (u n) b := dist_triangle _ _ _
-        _ ≤ f'symm.nnnorm * dist (f (u n)) y + dist (u n) b := add_le_add (A _) le_rfl
-        _ ≤ f'symm.nnnorm * (((c : ℝ) * f'symm.nnnorm) ^ n * dist (f b) y) +
-              f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) / (1 - c * f'symm.nnnorm) *
-                dist (f b) y := by
-                  gcongr
-                  · exact IH.1
-                  · exact IH.2
-        _ = f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n.succ) /
-              (1 - (c : ℝ) * f'symm.nnnorm) * dist (f b) y := by
-          field_simp [Jcf', pow_succ]; ring
-    refine ⟨?_, Ign⟩
-    calc
-      dist (f (g (u n))) y ≤ c * f'symm.nnnorm * dist (f (u n)) y :=
-        B _ (C n _ IH.2) (C n.succ _ Ign)
-      _ ≤ (c : ℝ) * f'symm.nnnorm * (((c : ℝ) * f'symm.nnnorm) ^ n * dist (f b) y) := by
-        gcongr
-        apply IH.1
-      _ = ((c : ℝ) * f'symm.nnnorm) ^ n.succ * dist (f b) y := by simp only [pow_succ']; ring
+        dist (f (g (u n))) y ≤ c * f'symm.nnnorm * dist (f (u n)) y :=
+          B _ (C n _ IH.2) (C n.succ _ Ign)
+        _ ≤ (c : ℝ) * f'symm.nnnorm * (((c : ℝ) * f'symm.nnnorm) ^ n * dist (f b) y) := by
+          gcongr
+          apply IH.1
+        _ = ((c : ℝ) * f'symm.nnnorm) ^ n.succ * dist (f b) y := by simp only [pow_succ']; ring
   -- Deduce from the inductive bound that `uₙ` is a Cauchy sequence, therefore converging.
   have : CauchySeq u := by
     refine cauchySeq_of_le_geometric _ (↑f'symm.nnnorm * dist (f b) y) Icf' fun n ↦ ?_
