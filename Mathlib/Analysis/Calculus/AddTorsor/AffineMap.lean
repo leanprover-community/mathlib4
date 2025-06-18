@@ -43,7 +43,7 @@ theorem differentiableWithinAt (f : V →ᴬ[𝕜] W) {s : Set V} {x : V} :
 
 @[simp] theorem fderiv (f : V →ᴬ[𝕜] W) {x : V} : fderiv 𝕜 f x = f.contLinear := by
   conv_lhs => rw [f.decomp]
-  rw [fderiv_add' f.contLinear.differentiableAt]; swap
+  rw [fderiv_add f.contLinear.differentiableAt]; swap
   · exact differentiableAt_const _
   simp only [fderiv_const, Pi.zero_apply, add_zero, ContinuousLinearMap.fderiv]
 
