@@ -721,9 +721,9 @@ with the result. -/
 def modify (s : Seq α) (n : ℕ) (f : α → α) : Seq α where
   val := Function.update s.val n ((s.val n).map f)
   property := by
-    have (i : ℕ) : (Function.update s.val n ((s.get? n).map f)) i = none ↔ s.get? i = none := by
+    have (i : ℕ) : Function.update s.val n ((s.get? n).map f) i = none ↔ s.get? i = none := by
       by_cases hi : i = n <;> simp [Function.update, hi]
-    simp [IsSeq, this]
+    simp only [IsSeq, val_eq_get, this]
     exact @s.prop
 
 /-- Sets the value of sequence `s` at index `n` to `a`. If the `n`th element does not exist
