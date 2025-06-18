@@ -405,8 +405,6 @@ The equivalence between `IrreducibleCloseds α` and `{x : Set α // IsIrreducibl
 def equivSubtype : IrreducibleCloseds α ≃ { x : Set α // IsIrreducible x ∧ IsClosed x } where
   toFun a   := ⟨a.1, a.2, a.3⟩
   invFun a  := ⟨a.1, a.2.1, a.2.2⟩
-  left_inv  := fun ⟨_, _, _⟩ => rfl
-  right_inv := fun ⟨_, _, _⟩ => rfl
 
 /--
 The equivalence between `IrreducibleCloseds α` and `{x : Set α // IsClosed x ∧ IsIrreducible x }`.
@@ -415,8 +413,6 @@ The equivalence between `IrreducibleCloseds α` and `{x : Set α // IsClosed x �
 def equivSubtype' : IrreducibleCloseds α ≃ { x : Set α // IsClosed x ∧ IsIrreducible x } where
   toFun a   := ⟨a.1, a.3, a.2⟩
   invFun a  := ⟨a.1, a.2.2, a.2.1⟩
-  left_inv  := fun ⟨_, _, _⟩ => rfl
-  right_inv := fun ⟨_, _, _⟩ => rfl
 
 variable (α) in
 /-- The equivalence `IrreducibleCloseds α ≃ { x : Set α // IsIrreducible x ∧ IsClosed x }` is an

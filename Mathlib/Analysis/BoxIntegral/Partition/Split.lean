@@ -70,7 +70,7 @@ theorem splitLower_le : I.splitLower i x ≤ I :=
 theorem splitLower_eq_bot {i x} : I.splitLower i x = ⊥ ↔ x ≤ I.lower i := by
   classical
   rw [splitLower, mk'_eq_bot, exists_update_iff I.upper fun j y => y ≤ I.lower j]
-  simp [(I.lower_lt_upper _).not_le]
+  simp [(I.lower_lt_upper _).not_ge]
 
 @[simp]
 theorem splitLower_eq_self : I.splitLower i x = I ↔ I.upper i ≤ x := by
@@ -109,7 +109,7 @@ theorem splitUpper_le : I.splitUpper i x ≤ I :=
 theorem splitUpper_eq_bot {i x} : I.splitUpper i x = ⊥ ↔ I.upper i ≤ x := by
   classical
   rw [splitUpper, mk'_eq_bot, exists_update_iff I.lower fun j y => I.upper j ≤ y]
-  simp [(I.lower_lt_upper _).not_le]
+  simp [(I.lower_lt_upper _).not_ge]
 
 @[simp]
 theorem splitUpper_eq_self : I.splitUpper i x = I ↔ x ≤ I.lower i := by
@@ -128,11 +128,11 @@ theorem disjoint_splitLower_splitUpper (I : Box ι) (i : ι) (x : ℝ) :
   rw [← disjoint_withBotCoe, coe_splitLower, coe_splitUpper]
   refine (Disjoint.inf_left' _ ?_).inf_right' _
   rw [Set.disjoint_left]
-  exact fun y (hle : y i ≤ x) hlt => not_lt_of_le hle hlt
+  exact fun y (hle : y i ≤ x) hlt => not_lt_of_ge hle hlt
 
 theorem splitLower_ne_splitUpper (I : Box ι) (i : ι) (x : ℝ) :
     I.splitLower i x ≠ I.splitUpper i x := by
-  rcases le_or_lt x (I.lower i) with h | _
+  rcases le_or_gt x (I.lower i) with h | _
   · rw [splitUpper_eq_self.2 h, splitLower_eq_bot.2 h]
     exact WithBot.bot_ne_coe
   · refine (disjoint_splitLower_splitUpper I i x).ne ?_
@@ -169,7 +169,7 @@ theorem mem_split_iff' : J ∈ split I i x ↔
 
 @[simp]
 theorem iUnion_split (I : Box ι) (i : ι) (x : ℝ) : (split I i x).iUnion = I := by
-  simp [split, ← inter_union_distrib_left, ← setOf_or, le_or_lt]
+  simp [split, ← inter_union_distrib_left, ← setOf_or, le_or_gt]
 
 theorem isPartitionSplit (I : Box ι) (i : ι) (x : ℝ) : IsPartition (split I i x) :=
   isPartition_iff_iUnion_eq.2 <| iUnion_split I i x
@@ -196,13 +196,13 @@ theorem coe_eq_of_mem_split_of_mem_le {y : ι → ℝ} (h₁ : J ∈ split I i x
     (h₃ : y i ≤ x) : (J : Set (ι → ℝ)) = ↑I ∩ { y | y i ≤ x } := by
   refine (mem_split_iff'.1 h₁).resolve_right fun H => ?_
   rw [← Box.mem_coe, H] at h₂
-  exact h₃.not_lt h₂.2
+  exact h₃.not_gt h₂.2
 
 theorem coe_eq_of_mem_split_of_lt_mem {y : ι → ℝ} (h₁ : J ∈ split I i x) (h₂ : y ∈ J)
     (h₃ : x < y i) : (J : Set (ι → ℝ)) = ↑I ∩ { y | x < y i } := by
   refine (mem_split_iff'.1 h₁).resolve_left fun H => ?_
   rw [← Box.mem_coe, H] at h₂
-  exact h₃.not_le h₂.2
+  exact h₃.not_ge h₂.2
 
 @[simp]
 theorem restrict_split (h : I ≤ J) (i : ι) (x : ℝ) : (split J i x).restrict I = split I i x := by
