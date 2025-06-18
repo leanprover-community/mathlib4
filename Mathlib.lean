@@ -1799,6 +1799,8 @@ import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
 import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 import Mathlib.Analysis.SpecialFunctions.Gaussian.PoissonSummation
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
+import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
 import Mathlib.Analysis.SpecialFunctions.Integrals
 import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 import Mathlib.Analysis.SpecialFunctions.Log.Base
@@ -4249,6 +4251,7 @@ import Mathlib.MeasureTheory.Function.Floor
 import Mathlib.MeasureTheory.Function.Holder
 import Mathlib.MeasureTheory.Function.Intersectivity
 import Mathlib.MeasureTheory.Function.Jacobian
+import Mathlib.MeasureTheory.Function.JacobianOneDim
 import Mathlib.MeasureTheory.Function.L1Space.AEEqFun
 import Mathlib.MeasureTheory.Function.L1Space.HasFiniteIntegral
 import Mathlib.MeasureTheory.Function.L1Space.Integrable
@@ -4454,6 +4457,8 @@ import Mathlib.MeasureTheory.OuterMeasure.Operations
 import Mathlib.MeasureTheory.PiSystem
 import Mathlib.MeasureTheory.SetAlgebra
 import Mathlib.MeasureTheory.SetSemiring
+import Mathlib.MeasureTheory.SpecificCodomains.ContinuousMap
+import Mathlib.MeasureTheory.SpecificCodomains.ContinuousMapZero
 import Mathlib.MeasureTheory.Topology
 import Mathlib.MeasureTheory.VectorMeasure.Basic
 import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Hahn

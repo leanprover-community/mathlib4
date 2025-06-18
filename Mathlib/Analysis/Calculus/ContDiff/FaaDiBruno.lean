@@ -986,7 +986,7 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
     have B : HasFDerivWithinAt (fun x ↦ (q (f x)).taylorComp (p x) m)
         (∑ c : OrderedFinpartition m, ∑ i : Option (Fin c.length),
           ((q (f x)).compAlongOrderedFinpartition (p x) (c.extend i)).curryLeft) s x :=
-      HasFDerivWithinAt.sum (fun c _ ↦ A c)
+      HasFDerivWithinAt.fun_sum (fun c _ ↦ A c)
     suffices ∑ c : OrderedFinpartition m, ∑ i : Option (Fin c.length),
           ((q (f x)).compAlongOrderedFinpartition (p x) (c.extend i)) =
         (q (f x)).taylorComp (p x) (m + 1) by
