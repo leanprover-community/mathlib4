@@ -194,14 +194,14 @@ theorem linear_proj_add_linearProjOfIsCompl_eq_self (hpq : IsCompl p q) (x : E) 
 
 /-- `pᵥ x = x - pᵤ x`, where `pᵤ` denotes the linear projection to `U` along `V` -/
 lemma linearProjOfIsCompl_eq_self_sub_linear_proj (hpq : IsCompl p q) (x : E) :
-  (q.linearProjOfIsCompl p hpq.symm x : E) = x - (p.linearProjOfIsCompl q hpq x : E) :=
-by rw [eq_sub_iff_add_eq, linear_proj_add_linearProjOfIsCompl_eq_self]
+    (q.linearProjOfIsCompl p hpq.symm x : E) = x - (p.linearProjOfIsCompl q hpq x : E) := by
+  rw [eq_sub_iff_add_eq, linear_proj_add_linearProjOfIsCompl_eq_self]
 
 /-- projection to `p` along `q` of `x` equals `x` if and only if `x ∈ p` -/
 @[simp] lemma linearProjOfIsCompl_eq_self_iff (hpq : IsCompl p q) (x : E) :
-  (p.linearProjOfIsCompl q hpq x : E) = x ↔ x ∈ p :=
-by rw [eq_comm, ← sub_eq_zero, ← linearProjOfIsCompl_eq_self_sub_linear_proj,
-  coe_eq_zero, linearProjOfIsCompl_apply_eq_zero_iff]
+    (p.linearProjOfIsCompl q hpq x : E) = x ↔ x ∈ p := by
+  rw [eq_comm, ← sub_eq_zero, ← linearProjOfIsCompl_eq_self_sub_linear_proj,
+    coe_eq_zero, linearProjOfIsCompl_apply_eq_zero_iff]
 
 end Submodule
 

@@ -41,11 +41,11 @@ def InvariantUnder (U : Submodule R E) (T : E →ₗ[R] E) : Prop := U ≤ U.com
 
 /-- `U` is `T` invariant if and only if `U.map T ≤ U` -/
 lemma invariantUnder_iff_map (U : Submodule R E) (T : E →ₗ[R] E) :
-  U.InvariantUnder T ↔ U.map T ≤ U := map_le_iff_le_comap.symm
+    U.InvariantUnder T ↔ U.map T ≤ U := map_le_iff_le_comap.symm
 
 /-- `U` is `T` invariant if and only if `Set.MapsTo T U U` -/
 lemma invariantUnder_iff_mapsTo (U : Submodule R E) (T : E →ₗ[R] E) :
-  U.InvariantUnder T ↔ Set.MapsTo T U U := by rfl
+    U.InvariantUnder T ↔ Set.MapsTo T U U := by rfl
 
 variable (U V : Submodule R E) (hUV : IsCompl U V) (T : E →ₗ[R] E)
 
@@ -53,35 +53,33 @@ local notation "pᵤ" => linearProjOfIsCompl U V hUV
 local notation "pᵥ" => linearProjOfIsCompl V U hUV.symm
 
 lemma InvariantUnder.linear_proj_comp_self_eq (h : U.InvariantUnder T) (x : U) :
-  (pᵤ (T x) : E) = T x :=
-(linearProjOfIsCompl_eq_self_iff _ _).mpr <| h (coe_mem _)
+    (pᵤ (T x) : E) = T x := (linearProjOfIsCompl_eq_self_iff _ _).mpr <| h (coe_mem _)
 
 lemma invariantUnder_of_linear_proj_comp_self_eq (h : ∀ x : U, (pᵤ (T x) : E) = T x) :
-  U.InvariantUnder T := fun u hu =>
-by rw [mem_comap, ← linearProjOfIsCompl_eq_self_iff hUV _,
-  ← (linearProjOfIsCompl_eq_self_iff hUV u).mpr hu, h]
+    U.InvariantUnder T := fun u hu => by
+  rw [mem_comap, ← linearProjOfIsCompl_eq_self_iff hUV _,
+    ← (linearProjOfIsCompl_eq_self_iff hUV u).mpr hu, h]
 
 /-- `U` is invariant under `T` if and only if `pᵤ ∘ₗ T = T`,
 where `pᵤ` denotes the linear projection to `U` along `V` -/
 lemma invariantUnder_iff_linear_proj_comp_self_eq :
-  U.InvariantUnder T ↔ (∀ x : U, (pᵤ (T x) : E) = T x) :=
-⟨InvariantUnder.linear_proj_comp_self_eq U V hUV T,
-  invariantUnder_of_linear_proj_comp_self_eq U V hUV T⟩
+    U.InvariantUnder T ↔ (∀ x : U, (pᵤ (T x) : E) = T x) :=
+  ⟨InvariantUnder.linear_proj_comp_self_eq U V hUV T,
+    invariantUnder_of_linear_proj_comp_self_eq U V hUV T⟩
 
 /-- `V` is invariant under `T` if and only if `pᵤ ∘ₗ (T ∘ₗ pᵤ) = pᵤ ∘ₗ T`,
 where `pᵤ` denotes the linear projection to `U` along `V` -/
 lemma invariantUnder'_iff_linear_proj_comp_self_comp_linear_proj_eq :
-  V.InvariantUnder T ↔ (∀ x : E, (pᵤ (T (pᵤ x)) : E) = pᵤ (T x)) :=
-by simp_rw [invariantUnder_iff_linear_proj_comp_self_eq _ _ hUV.symm,
-  (LinearMap.range_eq_top.1 (linearProjOfIsCompl_range hUV.symm)).forall,
-  linearProjOfIsCompl_eq_self_sub_linear_proj hUV, map_sub,
-  sub_eq_self, Submodule.coe_sub, sub_eq_zero, eq_comm]
+    V.InvariantUnder T ↔ (∀ x : E, (pᵤ (T (pᵤ x)) : E) = pᵤ (T x)) := by
+  simp_rw [invariantUnder_iff_linear_proj_comp_self_eq _ _ hUV.symm,
+    (LinearMap.range_eq_top.1 (linearProjOfIsCompl_range hUV.symm)).forall,
+    linearProjOfIsCompl_eq_self_sub_linear_proj hUV, map_sub,
+    sub_eq_self, Submodule.coe_sub, sub_eq_zero, eq_comm]
 
 /-- both `U` and `V` are invariant under `T` if and only if `T` commutes with `pᵤ`,
 where `pᵤ` denotes the linear projection to `U` along `V` -/
 lemma isCompl_invariantUnder_iff_linear_proj_and_self_commute :
-  (U.InvariantUnder T ∧ V.InvariantUnder T) ↔ Commute (U.subtype ∘ₗ pᵤ) T :=
-by
+    (U.InvariantUnder T ∧ V.InvariantUnder T) ↔ Commute (U.subtype ∘ₗ pᵤ) T := by
   simp_rw [Commute, SemiconjBy, LinearMap.ext_iff, Module.End.mul_apply,
     LinearMap.comp_apply, U.subtype_apply]
   constructor
@@ -97,19 +95,18 @@ by
 
 /-- `U` is invariant under `T.symm` if and only if `U ⊆ T(U)` -/
 lemma invariantUnder_symm_iff_le_map (T : E ≃ₗ[R] E) :
-  U.InvariantUnder T.symm ↔ U ≤ U.map T :=
-(U.invariantUnder_iff_map T.symm).trans (T.toEquiv.symm.subset_symm_image _ _).symm
+    U.InvariantUnder T.symm ↔ U ≤ U.map T :=
+  (U.invariantUnder_iff_map T.symm).trans (T.toEquiv.symm.subset_symm_image _ _).symm
 
 /-- `U` is invariant under `⅟T` if and only if `U ⊆ T(U)` -/
 lemma invariantUnder_invOf_iff_le_map [Invertible T] :
-  U.InvariantUnder (⅟T) ↔ U ≤ U.map T :=
-invariantUnder_symm_iff_le_map _ (LinearEquiv.ofInvertible T)
+    U.InvariantUnder (⅟T) ↔ U ≤ U.map T :=
+  invariantUnder_symm_iff_le_map _ (LinearEquiv.ofInvertible T)
 
 /-- `⅟T ∘ₗ pᵤ ∘ₗ T = pᵤ` if and only if `T(U) = U` and `T(V) = V`,
 where `pᵤ` denotes the linear projection to `U` along `V` -/
 theorem invOf_comp_linear_proj_comp_self_eq_linear_proj_iff_map_eq [Invertible T] :
-  ⅟T ∘ₗ (U.subtype ∘ₗ pᵤ) ∘ₗ T = U.subtype ∘ₗ pᵤ ↔ U.map T = U ∧ V.map T = V :=
-by
+    ⅟T ∘ₗ (U.subtype ∘ₗ pᵤ) ∘ₗ T = U.subtype ∘ₗ pᵤ ↔ U.map T = U ∧ V.map T = V := by
   have : ∀ f, Commute f T ↔ ⅟T ∘ₗ f ∘ₗ T = f :=
     fun f => Commute.symm_iff.trans ((unitOfInvertible T).commute_iff_inv_mul_cancel f)
   simp_rw [← this, ← isCompl_invariantUnder_iff_linear_proj_and_self_commute, le_antisymm_iff,
