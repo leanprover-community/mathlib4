@@ -81,9 +81,6 @@ lemma sub_of [NonAssocRing R] {p q : R} (hp : IsIdempotentElem p)
     (hq : IsIdempotentElem q) (hpq : p * q = p) (hqp : q * p = p) : IsIdempotentElem (q - p) := by
   simp_rw [IsIdempotentElem, sub_mul, mul_sub, hpq, hqp, hp.eq, hq.eq, sub_self, sub_zero]
 
-end IsIdempotentElem
-
-
 lemma commutes_of_isIdempotentElem_sub [Ring R] [IsAddTorsionFree R] {p q : R}
     (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) (hqp : IsIdempotentElem (q - p)) :
     p * q = p ∧ q * p = p := by
@@ -110,3 +107,5 @@ theorem isIdempotentElem_sub_iff [Ring R] [IsAddTorsionFree R] {p q : R}
     (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
     IsIdempotentElem (q - p) ↔ p * q = p ∧ q * p = p :=
   ⟨commutes_of_isIdempotentElem_sub hp hq, fun ⟨h1, h2⟩ => hp.sub_of hq h1 h2⟩
+
+end IsIdempotentElem

@@ -515,7 +515,7 @@ theorem LinearMap.commutes_of_isIdempotentElem_sub [NoZeroSMulDivisors ℕ E] {p
     p.comp q = p ∧ q.comp p = p :=
   letI : IsAddTorsionFree (E →ₗ[R] E) :=
     noZeroSMulDivisors_nat_iff_isAddTorsionFree.mp instNoZeroSMulDivisors
-  _root_.commutes_of_isIdempotentElem_sub hp hq hqp
+  hp.commutes_of_isIdempotentElem_sub hq hqp
 
 /-- Given any idempotent operator `T`, then `IsCompl T.range T.ker`,
  in other words, there exists unique `v ∈ range(T)` and `w ∈ ker(T)` such that `x = v + w`. -/
