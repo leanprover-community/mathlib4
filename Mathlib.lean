@@ -4250,6 +4250,7 @@ import Mathlib.MeasureTheory.Function.Floor
 import Mathlib.MeasureTheory.Function.Holder
 import Mathlib.MeasureTheory.Function.Intersectivity
 import Mathlib.MeasureTheory.Function.Jacobian
+import Mathlib.MeasureTheory.Function.JacobianOneDim
 import Mathlib.MeasureTheory.Function.L1Space.AEEqFun
 import Mathlib.MeasureTheory.Function.L1Space.HasFiniteIntegral
 import Mathlib.MeasureTheory.Function.L1Space.Integrable

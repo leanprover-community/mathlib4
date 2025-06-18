@@ -3,7 +3,7 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.Analysis.Calculus.FDeriv.Congr
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
@@ -23,6 +23,9 @@ is almost everywhere measurable, but not Borel-measurable in general). This form
 `lintegral_abs_det_fderiv_eq_addHaar_image`. We deduce the change of variables
 formula for the Lebesgue and Bochner integrals, in `lintegral_image_eq_lintegral_abs_det_fderiv_mul`
 and `integral_image_eq_integral_abs_det_fderiv_smul` respectively.
+
+Specialized versions in one dimension (using the derivative instead of the determinant of the
+Fréchet derivative) can be found in the file `MeasureTheory.Function.JacobianOneDim.lean`.
 
 ## Main results
 
@@ -1180,29 +1183,6 @@ theorem integral_image_eq_integral_abs_det_fderiv_smul (hs : MeasurableSet s)
   congr with x
   rw [NNReal.smul_def, Real.coe_toNNReal _ (abs_nonneg (f' x).det)]
 
-open ContinuousLinearMap (det_one_smulRight)
-
-/-- Integrability in the change of variable formula for differentiable functions (one-variable
-version): if a function `f` is injective and differentiable on a measurable set `s ⊆ ℝ`, then a
-function `g : ℝ → F` is integrable on `f '' s` if and only if `|(f' x)| • g ∘ f` is integrable on
-`s`. -/
-theorem integrableOn_image_iff_integrableOn_abs_deriv_smul {s : Set ℝ} {f : ℝ → ℝ} {f' : ℝ → ℝ}
-    (hs : MeasurableSet s) (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) (hf : InjOn f s)
-    (g : ℝ → F) : IntegrableOn g (f '' s) ↔ IntegrableOn (fun x => |f' x| • g (f x)) s := by
-  simpa only [det_one_smulRight] using
-    integrableOn_image_iff_integrableOn_abs_det_fderiv_smul volume hs
-      (fun x hx => (hf' x hx).hasFDerivWithinAt) hf g
-
-/-- Change of variable formula for differentiable functions (one-variable version): if a function
-`f` is injective and differentiable on a measurable set `s ⊆ ℝ`, then the Bochner integral of a
-function `g : ℝ → F` on `f '' s` coincides with the integral of `|(f' x)| • g ∘ f` on `s`. -/
-theorem integral_image_eq_integral_abs_deriv_smul {s : Set ℝ} {f : ℝ → ℝ} {f' : ℝ → ℝ}
-    (hs : MeasurableSet s) (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x)
-    (hf : InjOn f s) (g : ℝ → F) : ∫ x in f '' s, g x = ∫ x in s, |f' x| • g (f x) := by
-  simpa only [det_one_smulRight] using
-    integral_image_eq_integral_abs_det_fderiv_smul volume hs
-      (fun x hx => (hf' x hx).hasFDerivWithinAt) hf g
-
 theorem integral_target_eq_integral_abs_det_fderiv_smul {f : PartialHomeomorph E E}
     (hf' : ∀ x ∈ f.source, HasFDerivAt f (f' x) x) (g : E → F) :
     ∫ x in f.target, g x ∂μ = ∫ x in f.source, |(f' x).det| • g (f x) ∂μ := by
@@ -1236,47 +1216,6 @@ lemma _root_.MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_d
   rw [MeasurableEquiv.map_symm,
     MeasurableEmbedding.withDensity_ofReal_comap_apply_eq_integral_abs_det_fderiv_mul μ hs
       f.measurableEmbedding hg hg_int hf']
-
-lemma _root_.MeasurableEmbedding.withDensity_ofReal_comap_apply_eq_integral_abs_deriv_mul
-    {f : ℝ → ℝ} (hf : MeasurableEmbedding f) {s : Set ℝ} (hs : MeasurableSet s)
-    {g : ℝ → ℝ} (hg : ∀ᵐ x, x ∈ f '' s → 0 ≤ g x) (hg_int : IntegrableOn g (f '' s))
-    {f' : ℝ → ℝ} (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) :
-    (volume.withDensity (fun x ↦ ENNReal.ofReal (g x))).comap f s
-      = ENNReal.ofReal (∫ x in s, |f' x| * g (f x)) := by
-  rw [hf.withDensity_ofReal_comap_apply_eq_integral_abs_det_fderiv_mul volume hs
-    hg hg_int hf']
-  simp only [det_one_smulRight]
-
-lemma _root_.MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_deriv_mul
-    (f : ℝ ≃ᵐ ℝ) {s : Set ℝ} (hs : MeasurableSet s)
-    {g : ℝ → ℝ} (hg : ∀ᵐ x, x ∈ f '' s → 0 ≤ g x) (hg_int : IntegrableOn g (f '' s))
-    {f' : ℝ → ℝ} (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) :
-    (volume.withDensity (fun x ↦ ENNReal.ofReal (g x))).map f.symm s
-      = ENNReal.ofReal (∫ x in s, |f' x| * g (f x)) := by
-  rw [MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_det_fderiv_mul volume hs
-      f hg hg_int hf']
-  simp only [det_one_smulRight]
-
-lemma _root_.MeasurableEmbedding.withDensity_ofReal_comap_apply_eq_integral_abs_deriv_mul'
-    {f : ℝ → ℝ} (hf : MeasurableEmbedding f) {s : Set ℝ} (hs : MeasurableSet s)
-    {f' : ℝ → ℝ} (hf' : ∀ x, HasDerivAt f (f' x) x)
-    {g : ℝ → ℝ} (hg : 0 ≤ᵐ[volume] g) (hg_int : Integrable g) :
-    (volume.withDensity (fun x ↦ ENNReal.ofReal (g x))).comap f s
-      = ENNReal.ofReal (∫ x in s, |f' x| * g (f x)) :=
-  hf.withDensity_ofReal_comap_apply_eq_integral_abs_deriv_mul hs
-    (by filter_upwards [hg] with x hx using fun _ ↦ hx) hg_int.integrableOn
-    (fun x _ => (hf' x).hasDerivWithinAt)
-
-lemma _root_.MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_deriv_mul'
-    (f : ℝ ≃ᵐ ℝ) {s : Set ℝ} (hs : MeasurableSet s)
-    {f' : ℝ → ℝ} (hf' : ∀ x, HasDerivAt f (f' x) x)
-    {g : ℝ → ℝ} (hg : 0 ≤ᵐ[volume] g) (hg_int : Integrable g) :
-    (volume.withDensity (fun x ↦ ENNReal.ofReal (g x))).map f.symm s
-      = ENNReal.ofReal (∫ x in s, |f' x| * g (f x)) := by
-  rw [MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_det_fderiv_mul volume hs
-      f (by filter_upwards [hg] with x hx using fun _ ↦ hx) hg_int.integrableOn
-      (fun x _ => (hf' x).hasDerivWithinAt)]
-  simp only [det_one_smulRight]
 
 end withDensity
 
