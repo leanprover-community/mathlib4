@@ -9,14 +9,16 @@ import Mathlib.RingTheory.Invariant.Defs
 /-!
 # Predicate for Galois Groups
 
-Give an action of a group `G` on an extension of fields `L/K`, we introduce a predicate
-`IsGaloisGroup G K L`.
+Given an action of a group `G` on an extension of fields `L/K`, we introduce a predicate
+`IsGaloisGroup G K L` saying that `G` acts faithfull on `L` with fixed field `K`. In particular,
+we do not assume that `L` is an algebraic extension of `K`.
 -/
 
 variable (G H K L : Type*) [Group G] [Group H] [Field K] [Field L] [Algebra K L]
   [MulSemiringAction G L] [MulSemiringAction H L]
 
-/-- `G` is a Galois group for `L/K` if the action on `L` is faithful with fixed field `K`. -/
+/-- `G` is a Galois group for `L/K` if the action on `L` is faithful with fixed field `K`.
+In particular, we do not assume that `L` is an algebraic extension of `K`. -/
 class IsGaloisGroup where
   faithful : FaithfulSMul G L
   commutes : SMulCommClass G K L

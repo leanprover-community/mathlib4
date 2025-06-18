@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Thomas Browning. All rights reserved.
+Copyright (c) 2025 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
@@ -12,7 +12,7 @@ Given an extension of rings `B/A` and an action of `G` on `B`, we introduce a pr
 `Algebra.IsInvariant A B G` which states that every fixed point of `B` lies in the image of `A`.
 
 The main application is in algebraic number theory, where `G := Gal(L/K)` is the galois group
-of some finite galois extension of number fields, and `A := 𝓞K` and `B := 𝓞L` are their ring of
+of some finite galois extension of number fields, and `A := 𝓞K` and `B := 𝓞L` are their rings of
 integers.
 -/
 
