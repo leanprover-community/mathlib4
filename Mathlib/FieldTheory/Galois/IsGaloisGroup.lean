@@ -13,7 +13,8 @@ Give an action of a group `G` on an extension of fields `L/K`, we introduce a pr
 `IsGaloisGroup G K L`.
 -/
 
-variable (G K L : Type*) [Group G] [Field K] [Field L] [Algebra K L] [MulSemiringAction G L]
+variable (G H K L : Type*) [Group G] [Group H] [Field K] [Field L] [Algebra K L]
+  [MulSemiringAction G L] [MulSemiringAction H L]
 
 /-- `G` is a Galois group for `L/K` if the action on `L` is faithful with fixed field `K`. -/
 class IsGaloisGroup where
@@ -36,7 +37,7 @@ theorem isGalois [Finite G] [IsGaloisGroup G K L] : IsGalois K L := by
   exact IsGalois.of_fixed_field L G
 
 /-- If `L/K` is a finite Galois extension, then `L ≃ₐ[K] L` is a Galois group for `L/K`. -/
-theorem of_isGalois [FiniteDimensional K L] [IsGalois K L] : IsGaloisGroup (L ≃ₐ[K] L) K L where
+instance of_isGalois [FiniteDimensional K L] [IsGalois K L] : IsGaloisGroup (L ≃ₐ[K] L) K L where
   faithful := inferInstance
   commutes := inferInstance
   isInvariant := ⟨fun x ↦ (IsGalois.mem_bot_iff_fixed x).mpr⟩
@@ -58,5 +59,18 @@ theorem finiteDimensional [Finite G] [IsGaloisGroup G K L] : FiniteDimensional K
     rw [Nat.bijective_iff_injective_and_card, card_eq_finrank G K L,
       Nat.card_eq_fintype_card, IsGalois.card_aut_eq_finrank K L]
     exact ⟨fun _ _ ↦ (faithful K).eq_of_smul_eq_smul ∘ DFunLike.ext_iff.mp, rfl⟩)
+
+/-- If `G` and `H` are finite Galois groups for `L/K`, then `G` is isomorphic to `H`. -/
+@[simps!]
+noncomputable def mulEquivCongr [IsGaloisGroup G K L] [Finite G]
+    [IsGaloisGroup H K L] [Finite H] : G ≃* H :=
+  (mulEquivAlgEquiv G K L).trans (mulEquivAlgEquiv H K L).symm
+
+@[simp]
+theorem mulEquivCongr_apply_smul [IsGaloisGroup G K L] [Finite G]
+    [IsGaloisGroup H K L] [Finite H] (g : G) (x : L) : mulEquivCongr G H K L g • x = g • x := by
+  rw [← mulEquivAlgEquiv_apply_apply G K L g x,
+    ← MulEquiv.apply_symm_apply (mulEquivAlgEquiv H K L) (mulEquivAlgEquiv G K L g),
+    mulEquivAlgEquiv_apply_apply, mulEquivAlgEquiv_symm_apply, mulEquivCongr_apply]
 
 end IsGaloisGroup
