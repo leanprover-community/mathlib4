@@ -487,6 +487,43 @@ lemma zero_def : 0 = (.zero : W'.Point) :=
 lemma some_ne_zero {x y : R} (h : W'.Nonsingular x y) : Point.some h ≠ 0 := by
   rintro (_ | _)
 
+/-- The `X` coordinate of a given point. For the point at infinity, this returns `0`
+(junk value). -/
+def x : W'.Point → R
+  | 0 => 0
+  | @some _ _ _ x _ _ => x
+
+/-- The `Y` coordinate of a given point. For the point at infinity, this returns `0`
+(junk value). -/
+def y : W'.Point → R
+  | 0 => 0
+  | @some _ _ _ _ y _ => y
+
+/-- Custom recursor for `[NeZero P]`. -/
+@[elab_as_elim]
+def neZeroRec {C : W'.Point → Sort*} (h₁ : {x y : R} → (h : W'.Nonsingular x y) → C (some h)) :
+    (P : W'.Point) → [NeZero P] → C P
+  | 0, h₀ => (h₀.ne _ rfl).elim
+  | some h, _ => h₁ h
+
+lemma equation_x_y (P : W'.Point) [NeZero P] : W'.Equation P.x P.y :=
+  P.neZeroRec fun h ↦ h.1
+
+lemma equation_x_y' (P : W'.Point) [NeZero P] : P.y ^ 2 + W'.a₁ * P.x * P.y + W'.a₃ * P.y
+    = P.x ^ 3 + W'.a₂ * P.x ^ 2 + W'.a₄ * P.x + W'.a₆ :=
+  (equation_iff ..).1 P.equation_x_y
+
+/-- The partial derivative `∂W/∂X` of the Weierstrass cubic at a given point `P`. -/
+def px (P : W'.Point) : R :=
+  W'.a₁ * P.y - (3 * P.x ^ 2 + 2 * W'.a₂ * P.x + W'.a₄)
+
+/-- The partial derivative `∂W/∂Y` of the Weierstrass cubic at a given point `P`. -/
+def py (P : W'.Point) : R :=
+  2 * P.y + W'.a₁ * P.x + W'.a₃
+
+lemma px_ne_zero_or_py_ne_zero (P : W'.Point) [NeZero P] : P.px ≠ 0 ∨ P.py ≠ 0 :=
+  P.neZeroRec fun h ↦ ((nonsingular_iff' _ _).1 h).2
+
 /-- The negation of a nonsingular point on a Weierstrass curve in affine coordinates.
 
 Given a nonsingular point `P` in affine coordinates, use `-P` instead of `neg P`. -/
@@ -507,6 +544,13 @@ lemma neg_zero : (-0 : W'.Point) = 0 :=
 @[simp]
 lemma neg_some {x y : R} (h : W'.Nonsingular x y) : -some h = some ((nonsingular_neg ..).mpr h) :=
   rfl
+
+@[simp]
+lemma x_neg (P : W'.Point) : (-P).x = P.x := P.casesOn rfl fun _ => rfl
+
+@[simp]
+lemma y_neg (P : W'.Point) [NeZero P] : (-P).y = -P.y - W'.a₁ * P.x - W'.a₃ :=
+  P.neZeroRec fun _ ↦ rfl
 
 instance : InvolutiveNeg W'.Point where
   neg_neg := by
