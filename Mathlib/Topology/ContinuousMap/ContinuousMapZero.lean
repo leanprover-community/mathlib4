@@ -243,11 +243,11 @@ section AddCommMonoid
 variable [AddCommMonoid R] [ContinuousAdd R]
 
 instance instAddCommMonoid : AddCommMonoid C(X, R)₀ :=
-  toContinuousMap_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  fast_instance% toContinuousMap_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance instModule {M : Type*} [Semiring M] [Module M R] [ContinuousConstSMul M R] :
     Module M C(X, R)₀ :=
-  toContinuousMap_injective.module M
+  fast_instance% toContinuousMap_injective.module M
     { toFun := _, map_add' := fun _ _ ↦ rfl, map_zero' := rfl } (fun _ _ ↦ rfl)
 
 instance instSMulCommClass {M N : Type*} [SMulZeroClass M R] [ContinuousConstSMul M R]
@@ -267,8 +267,8 @@ section AddCommGroup
 variable [AddCommGroup R] [IsTopologicalAddGroup R]
 
 instance instAddCommGroup : AddCommGroup C(X, R)₀ :=
-  toContinuousMap_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  fast_instance% toContinuousMap_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 end AddCommGroup
 
@@ -277,7 +277,7 @@ section Semiring
 variable [CommSemiring R] [IsTopologicalSemiring R]
 
 instance instNonUnitalCommSemiring : NonUnitalCommSemiring C(X, R)₀ :=
-  toContinuousMap_injective.nonUnitalCommSemiring
+  fast_instance% toContinuousMap_injective.nonUnitalCommSemiring
     _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance instSMulCommClass' {M : Type*} [SMulZeroClass M R] [SMulCommClass M R R]
@@ -358,8 +358,8 @@ variable {X R : Type*} [Zero X] [TopologicalSpace X]
 variable [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
 
 instance instNonUnitalCommRing : NonUnitalCommRing C(X, R)₀ :=
-  toContinuousMap_injective.nonUnitalCommRing _ rfl
-  (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  fast_instance% toContinuousMap_injective.nonUnitalCommRing _ rfl
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance : ContinuousNeg C(X, R)₀ where
   continuous_neg := by
