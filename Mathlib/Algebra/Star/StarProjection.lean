@@ -31,12 +31,12 @@ theorem IsStarProjection.isIdempotentElem [Mul M] [Star M] {p : M}
 @[simp]
 theorem IsStarProjection.zero
     [NonUnitalNonAssocSemiring M] [StarAddMonoid M] : IsStarProjection (0 : M) :=
-⟨mul_zero _, star_zero _⟩
+  ⟨mul_zero _, star_zero _⟩
 
 @[simp]
 theorem IsStarProjection.one
     [MulOneClass M] [StarMul M] : IsStarProjection (1 : M) :=
-⟨one_mul _, star_one _⟩
+  ⟨one_mul _, star_one _⟩
 
 theorem isStarProjection_one_sub_iff
     [NonAssocRing M] [StarRing M] (p : M) :
