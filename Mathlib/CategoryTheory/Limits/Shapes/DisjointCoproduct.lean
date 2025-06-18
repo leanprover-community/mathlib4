@@ -23,69 +23,11 @@ Shows that a category with disjoint coproducts is `InitialMonoClass`.
 * Define coherent categories and use this to define positive coherent categories.
 -/
 
-
-universe v u u₂
-
-namespace CategoryTheory
-
-section
-
-open Opposite Limits
-
-variable {C : Type*} [Category C]
-
-instance {X Y : C} [HasBinaryCoproduct X Y] :
-    HasCoproduct (fun j : WalkingPair ↦ (j.casesOn X Y : C)) := ‹_›
-
-@[reassoc (attr := simp)]
-lemma Limits.ConeMorphism.hom_inv_id {J : Type*} [Category J] {F : J ⥤ C} {c d : Cone F}
-    (f : c ≅ d) : f.hom.hom ≫ f.inv.hom = 𝟙 _ := by
-  simp [← Cone.category_comp_hom]
-
-@[reassoc (attr := simp)]
-lemma Limits.ConeMorphism.inv_hom_id {J : Type*} [Category J] {F : J ⥤ C} {c d : Cone F}
-    (f : c ≅ d) : f.inv.hom ≫ f.hom.hom = 𝟙 _ := by
-  simp [← Cone.category_comp_hom]
-
-instance {J : Type*} [Category J] {F : J ⥤ C} {c d : Cone F} (f : c ≅ d) :
-    IsIso f.hom.hom := ⟨f.inv.hom, by simp⟩
-
-instance {J : Type*} [Category J] {F : J ⥤ C} {c d : Cone F} (f : c ≅ d) :
-    IsIso f.inv.hom := ⟨f.hom.hom, by simp⟩
-
-@[reassoc (attr := simp)]
-lemma Limits.CoconeMorphism.hom_inv_id {J : Type*} [Category J] {F : J ⥤ C} {c d : Cocone F}
-    (f : c ≅ d) : f.hom.hom ≫ f.inv.hom = 𝟙 _ := by
-  simp [← Cocone.category_comp_hom]
-
-@[reassoc (attr := simp)]
-lemma Limits.CoconeMorphism.inv_hom_id {J : Type*} [Category J] {F : J ⥤ C} {c d : Cocone F}
-    (f : c ≅ d) : f.inv.hom ≫ f.hom.hom = 𝟙 _ := by
-  simp [← Cocone.category_comp_hom]
-
-instance {J : Type*} [Category J] {F : J ⥤ C} {c d : Cocone F} (f : c ≅ d) :
-    IsIso f.hom.hom := ⟨f.inv.hom, by simp⟩
-
-instance {J : Type*} [Category J] {F : J ⥤ C} {c d : Cocone F} (f : c ≅ d) :
-    IsIso f.inv.hom := ⟨f.hom.hom, by simp⟩
-
-@[reassoc (attr := simp)]
-lemma Limits.Cofan.IsColimit.inj_desc {ι : Type*} {X : ι → C} (c d : Cofan X) (hc : IsColimit c)
-    (i : ι) : c.inj i ≫ hc.desc d = d.inj i :=
-  hc.fac _ _
-
-@[reassoc (attr := simp)]
-lemma Limits.Fan.IsLimit.lift_proj {ι : Type*} {X : ι → C} (c d : Fan X) (hc : IsLimit c)
-    (i : ι) : hc.lift d ≫ c.proj i = d.proj i :=
-  hc.fac _ _
-
-end
-
-namespace Limits
+namespace CategoryTheory.Limits
 
 open Category
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type*} [Category C]
 
 /--
 We say the coproduct of the family `Xᵢ` is disjoint, if whenever we have a pullback diagram of the
@@ -212,9 +154,11 @@ lemma _root_.CategoryTheory.Mono.of_binaryCoproductDisjoint_right {Z : C}
   .of_coproductDisjoint hc .right
 
 instance [HasBinaryCoproduct X Y] : Mono (coprod.inl : X ⟶ X ⨿ Y) :=
+  have : HasCoproduct (fun j : WalkingPair ↦ (j.casesOn X Y : C)) := ‹_›
   inferInstanceAs <| Mono (Sigma.ι _ _)
 
 instance [HasBinaryCoproduct X Y] : Mono (coprod.inr : Y ⟶ X ⨿ Y) :=
+  have : HasCoproduct (fun j : WalkingPair ↦ (j.casesOn X Y : C)) := ‹_›
   inferInstanceAs <| Mono (Sigma.ι _ _)
 
 /-- If `X ← Z → Y` is a pullback diagram over `W`, where `W` is the
@@ -266,11 +210,11 @@ alias CoproductDisjoint.mono_inr := CategoryTheory.Mono.of_binaryCoproductDisjoi
 end
 
 /-- `C` has disjoint coproducts if every coproduct is disjoint. -/
-class CoproductsOfShapeDisjoint (C : Type u) [Category.{v} C] (ι : Type*) : Prop where
+class CoproductsOfShapeDisjoint (C : Type*) [Category C] (ι : Type*) : Prop where
   coproductDisjoint (X : ι → C) : CoproductDisjoint X
 
-/-- `C` has disjoint binary coproducts if every coproduct is disjoint. -/
-abbrev BinaryCoproductsDisjoint (C : Type u) [Category.{v} C] : Prop :=
+/-- `C` has disjoint binary coproducts if every binary coproduct is disjoint. -/
+abbrev BinaryCoproductsDisjoint (C : Type*) [Category C] : Prop :=
   CoproductsOfShapeDisjoint C WalkingPair
 
 attribute [instance 999] CoproductsOfShapeDisjoint.coproductDisjoint
@@ -298,6 +242,4 @@ theorem initialMonoClass_of_coproductsDisjoint [BinaryCoproductsDisjoint C] :
 @[deprecated (since := "2025-06-18")]
 alias initialMonoClass_of_disjoint_coproducts := initialMonoClass_of_coproductsDisjoint
 
-end Limits
-
-end CategoryTheory
+end CategoryTheory.Limits
