@@ -516,7 +516,7 @@ theorem addHaar_real_closedBall_eq_addHaar_real_ball [Nontrivial E] (x : E) (r :
   simp [measureReal_def, addHaar_closedBall_eq_addHaar_ball μ x r]
 
 theorem addHaar_sphere_of_ne_zero (x : E) {r : ℝ} (hr : r ≠ 0) : μ (sphere x r) = 0 := by
-  rcases hr.lt_or_lt with (h | h)
+  rcases hr.lt_or_gt with (h | h)
   · simp only [empty_diff, measure_empty, ← closedBall_diff_ball, closedBall_eq_empty.2 h]
   · rw [← closedBall_diff_ball,
       measure_diff ball_subset_closedBall measurableSet_ball.nullMeasurableSet

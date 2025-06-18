@@ -95,7 +95,7 @@ theorem eq_mk_of_is_sol_of_eq_init {u : ℕ → R} {init : Fin E.order → R} (h
   split_ifs with h'
   · exact mod_cast heq ⟨n, h'⟩
   · dsimp only
-    rw [← tsub_add_cancel_of_le (le_of_not_lt h'), h (n - E.order)]
+    rw [← tsub_add_cancel_of_le (le_of_not_gt h'), h (n - E.order)]
     congr with k
     have : n - E.order + k < n := by omega
     rw [eq_mk_of_is_sol_of_eq_init h heq (n - E.order + k)]

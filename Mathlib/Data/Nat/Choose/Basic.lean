@@ -215,7 +215,7 @@ theorem choose_mul_succ_eq (n k : ℕ) : n.choose k * (n + 1) = (n + 1).choose k
   cases k with
   | zero => simp
   | succ k =>
-    obtain hk | hk := le_or_lt (k + 1) (n + 1)
+    obtain hk | hk := le_or_gt (k + 1) (n + 1)
     · rw [choose_succ_succ, Nat.add_mul, succ_sub_succ, ← choose_succ_right_eq, ← succ_sub_succ,
         Nat.mul_sub_left_distrib, Nat.add_sub_cancel' (Nat.mul_le_mul_left _ hk)]
     · rw [choose_eq_zero_of_lt hk, choose_eq_zero_of_lt (n.lt_succ_self.trans hk), Nat.zero_mul,
@@ -294,7 +294,7 @@ private theorem choose_le_middle_of_le_half_left {n r : ℕ} (hr : r ≤ n / 2) 
 /-- `choose n r` is maximised when `r` is `n/2`. -/
 theorem choose_le_middle (r n : ℕ) : choose n r ≤ choose n (n / 2) := by
   rcases le_or_gt r n with b | b
-  · rcases le_or_lt r (n / 2) with a | h
+  · rcases le_or_gt r (n / 2) with a | h
     · apply choose_le_middle_of_le_half_left a
     · rw [← choose_symm b]
       apply choose_le_middle_of_le_half_left
