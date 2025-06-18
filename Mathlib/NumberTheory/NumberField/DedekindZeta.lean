@@ -3,9 +3,9 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.NumberTheory.LSeries.SumCoeff
-import Mathlib.NumberTheory.NumberField.Ideal
 import Mathlib.Algebra.BigOperators.Ring.Nat
+import Mathlib.NumberTheory.LSeries.SumCoeff
+import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
 
 /-!
 # The Dedekind zeta function of a number field
@@ -65,7 +65,7 @@ theorem dedekindZeta_residue_pos : 0 < dedekindZeta_residue K := by
 theorem dedekindZeta_residue_ne_zero : dedekindZeta_residue K ≠ 0 :=
   (dedekindZeta_residue_pos K).ne'
 
-/-
+/--
 **Dirichlet class number formula**
 -/
 theorem tendsto_sub_one_mul_dedekindZeta_nhdsGT :
