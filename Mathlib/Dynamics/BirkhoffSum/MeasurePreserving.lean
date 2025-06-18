@@ -20,7 +20,7 @@ open MeasureTheory Filter
 
 variable {α M : Type*} [AddCommMonoid M] [MeasurableSpace α]
 variable {R : Type*} [DivisionSemiring R] [Module R M]
-variable {f : α → α} {μ : Measure α} {φ : α → M} {φ' : α → M}
+variable {f : α → α} {μ : Measure α} {φ φ' : α → M}
 
 /-- If `φ` and `φ'` are `ae μ` equal then the corresponding `birkhoffSum` are `ae μ` equal. -/
 theorem birkhoffSum_ae_eq_of_ae_eq (hf : MeasurePreserving f μ μ) (hφ : φ =ᶠ[ae μ] φ') (n : ℕ) :
@@ -32,7 +32,7 @@ theorem birkhoffSum_ae_eq_of_ae_eq (hf : MeasurePreserving f μ μ) (hφ : φ =�
     rw [show tᶜ = ⋃ n, (f^[n])⁻¹' sᶜ by ext x; simp [t]]
     refine measure_iUnion_null_iff.mpr fun m ↦ nonpos_iff_eq_zero.mp ?_
     exact le_of_le_of_eq ((hf.iterate m).measure_preimage_le sᶜ) hs
-  refine EventuallyEq.eventually <| eventuallyEq_iff_exists_mem.mpr ⟨t, ht, fun x hx  ↦ ?_⟩
+  filter_upwards [ht] with x hx
   exact Finset.sum_congr rfl fun x _ => hs' (hx x)
 
 /-- If `φ` and `φ'` are `ae μ` equal then the corresponding `birkhoffAverage` are `ae μ` equal. -/
