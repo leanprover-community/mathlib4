@@ -22,27 +22,26 @@ b.map (MulOpposite.opLinearEquiv R)
 
 @[simp]
 theorem mulOpposite_apply (b : Basis ι R H) (i : ι) :
-  b.mulOpposite i = MulOpposite.op (b i) := rfl
+    b.mulOpposite i = MulOpposite.op (b i) := rfl
 
 theorem mulOpposite_repr_eq (b : Basis ι R H) :
-  b.mulOpposite.repr = (MulOpposite.opLinearEquiv R).symm.trans b.repr := rfl
+    b.mulOpposite.repr = (MulOpposite.opLinearEquiv R).symm.trans b.repr := rfl
 
 @[simp]
 theorem mulOpposite_repr_apply (b : Basis ι R H) (x : Hᵐᵒᵖ) :
-  b.mulOpposite.repr x = b.repr (MulOpposite.unop x) := rfl
+    b.mulOpposite.repr x = b.repr (MulOpposite.unop x) := rfl
 
 theorem mulOpposite_repr_apply' (b : Basis ι R H) (x : H) :
-  b.mulOpposite.repr (MulOpposite.op x) = b.repr x := rfl
+    b.mulOpposite.repr (MulOpposite.op x) = b.repr x := rfl
 
 end Basis
 
 instance FiniteDimensional.mulOpposite {R H : Type*} [DivisionRing R] [AddCommGroup H] [Module R H]
-  [FiniteDimensional R H] : FiniteDimensional R Hᵐᵒᵖ :=
-FiniteDimensional.of_finite_basis
+    [FiniteDimensional R H] : FiniteDimensional R Hᵐᵒᵖ := FiniteDimensional.of_finite_basis
   (Basis.ofVectorSpace R H).mulOpposite
   (Basis.ofVectorSpaceIndex R H).toFinite
 
 instance Module.Free.mulOpposite {R H : Type*} [Semiring R] [AddCommMonoid H] [Module R H]
-  [Module.Free R H] : Module.Free R Hᵐᵒᵖ :=
+    [Module.Free R H] : Module.Free R Hᵐᵒᵖ :=
   let ⟨b⟩ := exists_basis (R := R) (M := H)
   of_basis b.2.mulOpposite
