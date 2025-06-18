@@ -1095,13 +1095,6 @@ theorem hausdorffMeasure_segment {E : Type*} [NormedAddCommGroup E] [NormedSpace
     [MeasurableSpace E] [BorelSpace E] (x y : E) : μH[1] (segment ℝ x y) = edist x y := by
   rw [← affineSegment_eq_segment, hausdorffMeasure_affineSegment]
 
--- This duplicates an instance from Mathlib.MeasureTheory.Measure.Haar.Disintegration
--- Instance with keys using `Submodule`
-instance {𝕜 : Type u_1} {E : Type u_2} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
-    [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E]
-    (T : Submodule 𝕜 E) : BorelSpace T :=
-  Subtype.borelSpace _
-
 /--
 Let `s` be a subset of `𝕜`-inner product space, and `K` a subspace. Then the `d`-dimensional
 Hausdorff measure of the orthogonal projection of `s` onto `K` is less than or equal to the
