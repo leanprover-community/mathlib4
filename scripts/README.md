@@ -119,6 +119,10 @@ to learn about it as well!
   Prints the list of the 10 longest Lean files in `Mathlib`.
   This output is automatically posted to zulip once a week.
 
+**Blog and website maintenance**
+- `scripts/formatGhPrList.sh` formats the output of `gh pr list` into an `md` table that is
+  the posted weekly to Zulip.
+
 **Mathlib tactics**
 - `polyrith_sage.py`, `polyrith_sage_helper.py` are required for `polyrith`
   to communication with the Sage server.
