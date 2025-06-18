@@ -63,16 +63,13 @@ theorem finiteDimensional [Finite G] [IsGaloisGroup G K L] : FiniteDimensional K
     exact ⟨fun _ _ ↦ (faithful K).eq_of_smul_eq_smul ∘ DFunLike.ext_iff.mp, rfl⟩)
 
 /-- If `G` and `H` are finite Galois groups for `L/K`, then `G` is isomorphic to `H`. -/
-@[simps!]
 noncomputable def mulEquivCongr [IsGaloisGroup G K L] [Finite G]
     [IsGaloisGroup H K L] [Finite H] : G ≃* H :=
   (mulEquivAlgEquiv G K L).trans (mulEquivAlgEquiv H K L).symm
 
 @[simp]
 theorem mulEquivCongr_apply_smul [IsGaloisGroup G K L] [Finite G]
-    [IsGaloisGroup H K L] [Finite H] (g : G) (x : L) : mulEquivCongr G H K L g • x = g • x := by
-  rw [← mulEquivAlgEquiv_apply_apply G K L g x,
-    ← MulEquiv.apply_symm_apply (mulEquivAlgEquiv H K L) (mulEquivAlgEquiv G K L g),
-    mulEquivAlgEquiv_apply_apply, mulEquivAlgEquiv_symm_apply, mulEquivCongr_apply]
+    [IsGaloisGroup H K L] [Finite H] (g : G) (x : L) : mulEquivCongr G H K L g • x = g • x :=
+  AlgEquiv.ext_iff.mp ((mulEquivAlgEquiv H K L).apply_symm_apply (mulEquivAlgEquiv G K L g)) x
 
 end IsGaloisGroup
