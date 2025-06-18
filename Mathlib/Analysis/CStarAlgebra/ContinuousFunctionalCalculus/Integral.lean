@@ -41,21 +41,7 @@ variable {X : Type*} {𝕜 : Type*} {A : Type*} {p : A → Prop} [RCLike 𝕜]
   [MeasurableSpace X] {μ : Measure X}
   [NormedRing A] [StarRing A] [NormedAlgebra 𝕜 A]
   [ContinuousFunctionalCalculus 𝕜 A p]
-
-/-- A version of `cfc_apply` in terms of `ContinuousMapZero.mkD` -/
-lemma cfc_apply_mkD {f : 𝕜 → 𝕜} {a : A} (ha : p a := by cfc_tac) :
-    cfc f a = cfcHom (a := a) ha (mkD ((spectrum 𝕜 a).restrict f) 0) := by
-  by_cases hf : ContinuousOn f (spectrum 𝕜 a)
-  · rw [cfc_apply f a, mkD_of_continuousOn hf]
-  · rw [cfc_apply_of_not_continuousOn a hf, mkD_of_not_continuousOn hf,
-      map_zero]
-
-/-- A version of `cfc_eq_cfcL` in terms of `ContinuousMapZero.mkD` -/
-lemma cfc_eq_cfcL_mkD {f : 𝕜 → 𝕜} {a : A} (ha : p a := by cfc_tac) :
-    cfc f a = cfcL (a := a) ha (mkD ((spectrum 𝕜 a).restrict f) 0) :=
-  cfc_apply_mkD
-
-variable [CompleteSpace A]
+  [CompleteSpace A]
 
 lemma cfcL_integral [NormedSpace ℝ A] (a : A) (f : X → C(spectrum 𝕜 a, 𝕜)) (hf₁ : Integrable f μ)
     (ha : p a := by cfc_tac) :
@@ -77,7 +63,7 @@ lemma integrable_cfc₀ (f : X → 𝕜 → 𝕜) (a : A)
       (fun x : X => mkD ((spectrum 𝕜 a).restrict (f x)) 0) μ)
     (ha : p a := by cfc_tac) :
     Integrable (fun x => cfc (f x) a) μ := by
-  conv in cfc _ _ => rw [cfc_eq_cfcL_mkD (a := a) ha]
+  conv in cfc _ _ => rw [cfc_eq_cfcL_mkD _ a]
   exact cfcL_integrable _ _ hf ha
 
 lemma integrableOn_cfc₀ {s : Set X} (f : X → 𝕜 → 𝕜) (a : A)
@@ -153,7 +139,7 @@ lemma cfc_integral₀ [NormedSpace ℝ A] (f : X → 𝕜 → 𝕜) (a : A)
     rw [continuousOn_iff_continuous_restrict]
     refine continuous_congr key₁ |>.mpr ?_
     exact map_continuous (∫ x, mkD ((spectrum 𝕜 a).restrict (f x)) 0 ∂μ)
-  simp_rw [cfc_eq_cfcL_mkD (a := a) ha, cfcL_integral a _ hf₂ ha]
+  simp_rw [cfc_eq_cfcL_mkD _ a, cfcL_integral a _ hf₂ ha]
   congr
   ext z
   rw [← key₁, key₂]
@@ -232,22 +218,7 @@ variable {X : Type*} {𝕜 : Type*} {A : Type*} {p : A → Prop} [RCLike 𝕜]
   [MeasurableSpace X] {μ : Measure X} [NonUnitalNormedRing A] [StarRing A]
   [NormedSpace 𝕜 A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
   [NonUnitalContinuousFunctionalCalculus 𝕜 A p]
-
-/-- A version of `cfcₙ_apply` in terms of `ContinuousMapZero.mkD` -/
-lemma cfcₙ_apply_mkD {f : 𝕜 → 𝕜} {a : A} (ha : p a := by cfc_tac) :
-    cfcₙ f a = cfcₙHom (a := a) ha (mkD ((quasispectrum 𝕜 a).restrict f) 0) := by
-  by_cases f_cont : ContinuousOn f (quasispectrum 𝕜 a)
-  · by_cases f_zero : f 0 = 0
-    · rw [cfcₙ_apply f a, mkD_of_continuousOn f_cont f_zero]
-    · rw [cfcₙ_apply_of_not_map_zero a f_zero, mkD_of_not_zero, map_zero]
-      exact f_zero
-  · rw [cfcₙ_apply_of_not_continuousOn a f_cont, mkD_of_not_continuousOn f_cont, map_zero]
-
-lemma cfcₙ_eq_cfcₙL_mkD {f : 𝕜 → 𝕜} {a : A} (ha : p a := by cfc_tac) :
-    cfcₙ f a = cfcₙL (a := a) ha (mkD ((quasispectrum 𝕜 a).restrict f) 0) :=
-  cfcₙ_apply_mkD
-
-variable [CompleteSpace A]
+  [CompleteSpace A]
 
 lemma cfcₙL_integral [NormedSpace ℝ A] (a : A) (f : X → C(quasispectrum 𝕜 a, 𝕜)₀)
     (hf₁ : Integrable f μ) (ha : p a := by cfc_tac) :
@@ -269,7 +240,7 @@ lemma integrable_cfcₙ₀ (f : X → 𝕜 → 𝕜) (a : A)
       (fun x : X => mkD ((quasispectrum 𝕜 a).restrict (f x)) 0) μ)
     (ha : p a := by cfc_tac) :
     Integrable (fun x => cfcₙ (f x) a) μ := by
-  conv in cfcₙ _ _ => rw [cfcₙ_eq_cfcₙL_mkD (a := a) ha]
+  conv in cfcₙ _ _ => rw [cfcₙ_eq_cfcₙL_mkD _ a]
   exact cfcₙL_integrable _ _ hf ha
 
 lemma integrableOn_cfcₙ₀ {s : Set X} (f : X → 𝕜 → 𝕜) (a : A)
@@ -352,7 +323,7 @@ lemma cfcₙ_integral₀ [NormedSpace ℝ A] (f : X → 𝕜 → 𝕜) (a : A)
       refine continuous_congr key₁ |>.mpr ?_
       exact map_continuous (∫ x, mkD ((quasispectrum 𝕜 a).restrict (f x)) 0 ∂μ)
     · exact integral_eq_zero_of_ae hf₂
-  simp_rw [cfcₙ_eq_cfcₙL_mkD (a := a) ha, cfcₙL_integral a _ hf₃ ha]
+  simp_rw [cfcₙ_eq_cfcₙL_mkD _ a, cfcₙL_integral a _ hf₃ ha]
   congr
   ext z
   rw [← key₁, key₂]
