@@ -376,10 +376,10 @@ def starClosure (S : Subalgebra R A) : StarSubalgebra R A where
     rw [← mem_star_iff _ a, star_adjoin_comm, sup_comm]
     simpa using ha
 
-theorem starClosure_coe (S : Subalgebra R A) :
+theorem coe_starClosure (S : Subalgebra R A) :
     (S.starClosure : Set A) = (S ⊔ star S : Subalgebra R A) := rfl
 
-theorem starClosure_mem (S : Subalgebra R A) {x : A} :
+theorem mem_starClosure (S : Subalgebra R A) {x : A} :
     x ∈ S.starClosure ↔ x ∈ S ⊔ star S := Iff.rfl
 
 theorem starClosure_toSubalgebra (S : Subalgebra R A) :

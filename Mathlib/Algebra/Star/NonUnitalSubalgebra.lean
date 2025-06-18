@@ -611,10 +611,10 @@ def starClosure (S : NonUnitalSubalgebra R A) : NonUnitalStarSubalgebra R A wher
     simp only [Set.sup_eq_union, star_adjoin_comm, Set.union_star, coe_star, star_star,
       Set.union_comm]
 
-theorem starClosure_coe (S : NonUnitalSubalgebra R A) :
+theorem coe_starClosure (S : NonUnitalSubalgebra R A) :
     (S.starClosure : Set A) = (S ⊔ star S : NonUnitalSubalgebra R A) := rfl
 
-theorem starClosure_mem (S : NonUnitalSubalgebra R A) {x : A} :
+theorem mem_starClosure (S : NonUnitalSubalgebra R A) {x : A} :
     x ∈ S.starClosure ↔ x ∈ S ⊔ star S := Iff.rfl
 
 @[simp]
