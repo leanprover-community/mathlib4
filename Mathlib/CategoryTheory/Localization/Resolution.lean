@@ -24,11 +24,11 @@ Similar definitions are done from left resolutions.
 ## Future works
 
 * formalize right derivability structures as localizer morphisms admitting right resolutions
-and forming a Guitart exact square, as it is defined in
-[the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008] (TODO @joelriou)
+  and forming a Guitart exact square, as it is defined in
+  [the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008] (TODO @joelriou)
 * show that if `C` is an abelian category with enough injectives, there is a derivability
-structure associated to the inclusion of the full subcategory of complexes of injective
-objects into the bounded below homotopy category of `C` (TODO @joelriou)
+  structure associated to the inclusion of the full subcategory of complexes of injective
+  objects into the bounded below homotopy category of `C` (TODO @joelriou)
 * formalize dual results
 
 ## References
@@ -221,17 +221,13 @@ lemma nonempty_leftResolution_iff_op (X₂ : C₂) :
     Nonempty (Φ.LeftResolution X₂) ↔ Nonempty (Φ.op.RightResolution (Opposite.op X₂)) :=
   Equiv.nonempty_congr
     { toFun := fun L => L.op
-      invFun := fun R => R.unop
-      left_inv := fun _ => rfl
-      right_inv := fun _ => rfl }
+      invFun := fun R => R.unop }
 
 lemma nonempty_rightResolution_iff_op (X₂ : C₂) :
     Nonempty (Φ.RightResolution X₂) ↔ Nonempty (Φ.op.LeftResolution (Opposite.op X₂)) :=
   Equiv.nonempty_congr
     { toFun := fun R => R.op
-      invFun := fun L => L.unop
-      left_inv := fun _ => rfl
-      right_inv := fun _ => rfl }
+      invFun := fun L => L.unop }
 
 lemma hasLeftResolutions_iff_op : Φ.HasLeftResolutions ↔ Φ.op.HasRightResolutions :=
   ⟨fun _ X₂ => ⟨(Classical.arbitrary (Φ.LeftResolution X₂.unop)).op⟩,
@@ -240,6 +236,12 @@ lemma hasLeftResolutions_iff_op : Φ.HasLeftResolutions ↔ Φ.op.HasRightResolu
 lemma hasRightResolutions_iff_op : Φ.HasRightResolutions ↔ Φ.op.HasLeftResolutions :=
   ⟨fun _ X₂ => ⟨(Classical.arbitrary (Φ.RightResolution X₂.unop)).op⟩,
     fun _ X₂ => ⟨(Classical.arbitrary (Φ.op.LeftResolution (Opposite.op X₂))).unop⟩⟩
+
+instance [Φ.HasRightResolutions] : Φ.op.HasLeftResolutions := by
+  rwa [← hasRightResolutions_iff_op]
+
+instance [Φ.HasLeftResolutions] : Φ.op.HasRightResolutions := by
+  rwa [← hasLeftResolutions_iff_op]
 
 /-- The functor `(Φ.LeftResolution X₂)ᵒᵖ ⥤ Φ.op.RightResolution (Opposite.op X₂)`. -/
 @[simps]
