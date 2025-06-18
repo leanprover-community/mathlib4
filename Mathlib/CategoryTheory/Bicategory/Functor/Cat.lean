@@ -31,8 +31,8 @@ variable (f : b₀ ⟶ b₀) (hf : f = 𝟙 b₀) (a : X ⟶ Y)
 
 @[reassoc]
 lemma mapId'_hom_naturality :
-    (F.map f).map a ≫ (F.mapId' f hf).hom.app Y = (F.mapId' f hf).hom.app X ≫ a := by
-  exact (F.mapId' f hf).hom.naturality a
+    (F.map f).map a ≫ (F.mapId' f hf).hom.app Y = (F.mapId' f hf).hom.app X ≫ a :=
+  (F.mapId' f hf).hom.naturality a
 
 @[reassoc]
 lemma mapId'_inv_naturality :
