@@ -110,22 +110,23 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
 theorem IsClosed.isGδ [PerfectlyNormalSpace X] {s : Set X} (hs : IsClosed s) : IsGδ s :=
   PerfectlyNormalSpace.closed_gdelta hs
 
+instance (priority := 100) [PerfectlyNormalSpace X] : R0Space X where
+  specializes_symmetric x y hxy := by
+    rw [specializes_iff_forall_closed]
+    intro K hK hyK
+    apply IsClosed.isGδ at hK
+    obtain ⟨Ts, hoTs, -, rfl⟩ := hK
+    rw [mem_sInter] at hyK ⊢
+    intros
+    solve_by_elim [hxy.mem_open]
+
 /-- A T₆ space is a perfectly normal T₀ space. -/
 class T6Space (X : Type u) [TopologicalSpace X] : Prop extends T0Space X, PerfectlyNormalSpace X
 
 -- see Note [lower instance priority]
 /-- A `T₆` space is a `T₅` space. -/
 instance (priority := 100) T6Space.toT5Space [T6Space X] : T5Space X where
-  t1 := by
-    simp_rw [(t1Space_TFAE X).out 1 9, Specializes, ← nhds_eq_nhds_iff]
-    refine fun x y hxy => hxy.antisymm ?_
-    simp_rw +singlePass [le_nhds_iff, compl_surjective.forall, mem_compl_iff, isOpen_compl_iff]
-    refine fun K hxK hK => hK.isOpen_compl.mem_nhds (mem_compl ?_)
-    replace hK := hK.isGδ.eq_iInter_nat
-    obtain ⟨Ks, hKs, rfl⟩ := hK
-    rw [mem_iInter] at hxK ⊢
-    contrapose! hxK
-    exact fun i => mem_of_mem_nhds (hxy ((hKs i).mem_nhds (hxK i)))
+  toT1Space := t1Space_of_t0Space_of_r0Space
 
 end PerfectlyNormal
 
