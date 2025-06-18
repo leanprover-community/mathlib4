@@ -9,8 +9,9 @@ import Mathlib.Topology.VectorBundle.Hom
 
 /-! # Riemannian vector bundles
 
-Given a vector bundle over a manifold whose fibers are all endowed with a scalar product, we
-say that this bundle is Riemannian if the scalar product depends continuously on the base point.
+Given a vector bundle `E` over a topological space whose fibers are all endowed with a scalar
+product, we say that this bundle is Riemannian if the scalar product depends continuously on
+the base point.
 
 We introduce a typeclass `[IsContinuousRiemannianBundle F E]` registering this property.
 Under this assumption, we show that the scalar product of two continuous maps into the same fibers
