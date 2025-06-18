@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Monoidal.Mon_
 
 universe v₁ v₂ u₁ u₂
 
-open CategoryTheory MonoidalCategory
+open CategoryTheory MonoidalCategory Mon_Class
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 
@@ -22,8 +22,8 @@ structure Mod_ (A : Mon_ C) where
   X : C
   /-- The action morphism of the module object -/
   smul : A.X ⊗ X ⟶ X
-  one_smul : A.one ▷ X ≫ smul = (λ_ X).hom := by aesop_cat
-  assoc : A.mul ▷ X ≫ smul = (α_ A.X A.X X).hom ≫ A.X ◁ smul ≫ smul := by aesop_cat
+  one_smul : η ▷ X ≫ smul = (λ_ X).hom := by aesop_cat
+  assoc : μ ▷ X ≫ smul = (α_ A.X A.X X).hom ≫ A.X ◁ smul ≫ smul := by aesop_cat
 
 attribute [reassoc (attr := simp)] Mod_.one_smul Mod_.assoc
 
@@ -32,7 +32,7 @@ namespace Mod_
 variable {A : Mon_ C} (M : Mod_ A)
 
 theorem assoc_flip :
-    A.X ◁ M.smul ≫ M.smul = (α_ A.X A.X M.X).inv ≫ A.mul ▷ M.X ≫ M.smul := by simp
+    A.X ◁ M.smul ≫ M.smul = (α_ A.X A.X M.X).inv ≫ μ ▷ M.X ≫ M.smul := by simp
 
 /-- A morphism of module objects. -/
 @[ext]
@@ -78,7 +78,7 @@ variable (A)
 @[simps]
 def regular : Mod_ A where
   X := A.X
-  smul := A.mul
+  smul := μ
 
 instance : Inhabited (Mod_ A) :=
   ⟨regular A⟩
@@ -103,7 +103,7 @@ def comap {A B : Mon_ C} (f : A ⟶ B) : Mod_ B ⥤ Mod_ A where
       smul := f.hom ▷ M.X ≫ M.smul
       one_smul := by
         slice_lhs 1 2 => rw [← comp_whiskerRight]
-        rw [f.one_hom, one_smul]
+        rw [IsMon_Hom.one_hom, one_smul]
       assoc := by
         -- oh, for homotopy.io in a widget!
         slice_rhs 2 3 => rw [whisker_exchange]
@@ -113,7 +113,8 @@ def comap {A B : Mon_ C} (f : A ⟶ B) : Mod_ B ⥤ Mod_ A where
         slice_rhs 3 4 => rw [associator_inv_naturality_middle]
         slice_rhs 2 4 => rw [Iso.hom_inv_id_assoc]
         slice_rhs 1 2 => rw [← MonoidalCategory.comp_whiskerRight, ← whisker_exchange]
-        slice_rhs 1 2 => rw [← MonoidalCategory.comp_whiskerRight, ← tensorHom_def', ← f.mul_hom]
+        slice_rhs 1 2 => rw [← MonoidalCategory.comp_whiskerRight, ← tensorHom_def',
+          ← IsMon_Hom.mul_hom]
         rw [comp_whiskerRight, Category.assoc] }
   map g :=
     { hom := g.hom
@@ -169,7 +170,7 @@ end Mod_Class
 /-- Construct an object of `Mod_ (Mon_.mk' M)` from an object `X : C` and a
 `Mod_Class M X` instance. -/
 @[simps]
-def Mod_.mk' (X : C) [Mod_Class M X] : Mod_ (.mk' M) where
+def Mod_.mk' (X : C) [Mod_Class M X] : Mod_ (.mk M) where
   X := X
   smul := γ[M]
 

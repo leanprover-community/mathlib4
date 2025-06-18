@@ -158,7 +158,6 @@ theorem commutator_subset_ker : commutator G ≤ f.ker := by
 def lift : (G →* A) ≃ (Abelianization G →* A) where
   toFun f := QuotientGroup.lift _ f fun _ h => MonoidHom.mem_ker.2 <| commutator_subset_ker _ h
   invFun F := F.comp of
-  left_inv _ := MonoidHom.ext fun _ => rfl
   right_inv _ := MonoidHom.ext fun x => QuotientGroup.induction_on x fun _ => rfl
 
 @[simp]
@@ -219,7 +218,6 @@ end Abelianization
 
 section AbelianizationCongr
 
--- Porting note: `[Group G]` should not be necessary here
 variable {G} {H : Type v} [Group H]
 
 /-- Equivalent groups have equivalent abelianizations -/
@@ -262,7 +260,6 @@ def Abelianization.equivOfComm {H : Type*} [CommGroup H] : H ≃* Abelianization
   { Abelianization.of with
     toFun := Abelianization.of
     invFun := Abelianization.lift (MonoidHom.id H)
-    left_inv := fun _ => rfl
     right_inv := by
       rintro ⟨a⟩
       rfl }

@@ -2,6 +2,7 @@ import Batteries.Tactic.PermuteGoals
 import Mathlib.Tactic.Linter.FlexibleLinter
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.LinearCombination
 
 set_option linter.flexible true
 set_option linter.unusedVariables false
@@ -297,6 +298,11 @@ example {h : False} : 0 = 1 ∧ 0 = 1 := by
   . simp
     rw [← Classical.not_not (a := False)] at h
     rwa [← Classical.not_not (a := False)]
+
+-- Test that `linear_combination` is accepted as a follower of `simp`.
+example {a b : ℤ} (h : a + 1 = b) : a + 1 + 0 = b := by
+  simp
+  linear_combination h
 
 section test_internals
 open Lean Mathlib.Linter Flexible
