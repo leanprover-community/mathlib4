@@ -300,7 +300,7 @@ end mul_inv
 
 section NormedLinearOrderedField
 
-variable {α β : Type*} [NormedField β] [LinearOrder β] [IsStrictOrderedRing β]
+variable {α β : Type*} [NormedField β] [LinearOrder β] [IsOrderedRing β]
   {u v : α → β} {l : Filter α}
 
 theorem IsEquivalent.tendsto_atTop [OrderTopology β] (huv : u ~[l] v) (hu : Tendsto u l atTop) :

@@ -510,7 +510,7 @@ theorem Convex.midpoint_mem [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 
 
 section LinearOrderedField
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜]
 
 section AddCommGroup
 
@@ -569,7 +569,7 @@ theorem Set.OrdConnected.convex [Semiring 𝕜] [PartialOrder 𝕜]
     [OrderedSMul 𝕜 E] {s : Set E} (hs : s.OrdConnected) : Convex 𝕜 s :=
   hs.convex_of_chain <| isChain_of_trichotomous s
 
-theorem convex_iff_ordConnected [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] {s : Set 𝕜} :
+theorem convex_iff_ordConnected [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜] {s : Set 𝕜} :
     Convex 𝕜 s ↔ s.OrdConnected := by
   simp_rw [convex_iff_segment_subset, segment_eq_uIcc, ordConnected_iff_uIcc_subset]
 

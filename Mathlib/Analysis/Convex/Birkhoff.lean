@@ -72,7 +72,7 @@ end LinearOrderedSemifield
 
 section LinearOrderedField
 
-variable [Field R] [LinearOrder R] [IsStrictOrderedRing R] {M : Matrix n n R}
+variable [Field R] [LinearOrder R] [IsOrderedRing R] {M : Matrix n n R}
 
 /--
 If M is a scalar multiple of a doubly stochastic matrix, then it is a conical combination of

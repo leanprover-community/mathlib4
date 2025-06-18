@@ -27,7 +27,7 @@ nonnegative norm `norm : R → 𝕜`, where `𝕜` is a linear ordered field, an
 `{ x | norm x < ε }`, `ε > 0`, form a basis of neighborhoods of zero, then `R` is a topological
 ring. -/
 theorem IsTopologicalRing.of_norm {R 𝕜 : Type*} [NonUnitalNonAssocRing R]
-    [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+    [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜]
     [TopologicalSpace R] [IsTopologicalAddGroup R] (norm : R → 𝕜)
     (norm_nonneg : ∀ x, 0 ≤ norm x) (norm_mul_le : ∀ x y, norm (x * y) ≤ norm x * norm y)
     (nhds_basis : (𝓝 (0 : R)).HasBasis ((0 : 𝕜) < ·) (fun ε ↦ { x | norm x < ε })) :
@@ -50,7 +50,7 @@ theorem IsTopologicalRing.of_norm {R 𝕜 : Type*} [NonUnitalNonAssocRing R]
     exact fun y => h0 (· * y) (norm y) (norm_nonneg y) fun x =>
       (norm_mul_le x y).trans_eq (mul_comm _ _)
 
-variable {𝕜 α : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+variable {𝕜 α : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜]
   [TopologicalSpace 𝕜] [OrderTopology 𝕜]
   {l : Filter α} {f g : α → 𝕜}
 

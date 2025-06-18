@@ -64,7 +64,7 @@ theorem pow_subst {α} [CommRing α] {n e1 t1 k l : α} {e2 : ℕ}
 theorem inv_subst {α} [Field α] {n k e : α} (h2 : e ≠ 0) (h3 : n * e = k) :
     k * (e ⁻¹) = n := by rw [← div_eq_mul_inv, ← h3, mul_div_cancel_right₀ _ h2]
 
-theorem cancel_factors_lt {α} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+theorem cancel_factors_lt {α} [Field α] [LinearOrder α] [IsOrderedRing α]
     {a b ad bd a' b' gcd : α}
     (ha : ad * a = a') (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
     (a < b) = (1 / gcd * (bd * a') < 1 / gcd * (ad * b')) := by
@@ -72,7 +72,7 @@ theorem cancel_factors_lt {α} [Field α] [LinearOrder α] [IsStrictOrderedRing 
   · exact mul_pos had hbd
   · exact one_div_pos.2 hgcd
 
-theorem cancel_factors_le {α} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+theorem cancel_factors_le {α} [Field α] [LinearOrder α] [IsOrderedRing α]
     {a b ad bd a' b' gcd : α}
     (ha : ad * a = a') (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
     (a ≤ b) = (1 / gcd * (bd * a') ≤ 1 / gcd * (ad * b')) := by

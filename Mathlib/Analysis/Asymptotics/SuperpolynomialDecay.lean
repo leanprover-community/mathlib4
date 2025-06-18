@@ -189,7 +189,7 @@ end Field
 
 section LinearOrderedField
 
-variable [TopologicalSpace β] [Field β] [LinearOrder β] [IsStrictOrderedRing β] [OrderTopology β]
+variable [TopologicalSpace β] [Field β] [LinearOrder β] [IsOrderedRing β] [OrderTopology β]
 variable (f)
 
 theorem superpolynomialDecay_iff_abs_isBoundedUnder (hk : Tendsto k l atTop) :
@@ -287,7 +287,7 @@ theorem superpolynomialDecay_iff_superpolynomialDecay_norm :
   (superpolynomialDecay_iff_norm_tendsto_zero l k f).trans (by simp [SuperpolynomialDecay])
 
 variable {l k}
-variable [LinearOrder β] [IsStrictOrderedRing β] [OrderTopology β]
+variable [LinearOrder β] [IsOrderedRing β] [OrderTopology β]
 
 theorem superpolynomialDecay_iff_isBigO (hk : Tendsto k l atTop) :
     SuperpolynomialDecay l k f ↔ ∀ z : ℤ, f =O[l] fun a : α => k a ^ z := by

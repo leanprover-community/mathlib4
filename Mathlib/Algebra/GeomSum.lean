@@ -382,7 +382,7 @@ theorem geom_sum_Ico' [DivisionRing K] {x : K} (hx : x ≠ 1) {m n : ℕ} (hmn :
   simp only [geom_sum_Ico hx hmn]
   convert neg_div_neg_eq (x ^ m - x ^ n) (1 - x) using 2 <;> abel
 
-theorem geom_sum_Ico_le_of_lt_one [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+theorem geom_sum_Ico_le_of_lt_one [Field K] [LinearOrder K] [IsOrderedRing K]
     {x : K} (hx : 0 ≤ x) (h'x : x < 1)
     {m n : ℕ} : ∑ i ∈ Ico m n, x ^ i ≤ x ^ m / (1 - x) := by
   rcases le_or_gt m n with (hmn | hmn)

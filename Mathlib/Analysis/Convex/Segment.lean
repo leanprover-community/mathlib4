@@ -361,7 +361,7 @@ end LinearOrderedSemifield
 
 section LinearOrderedField
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {x y z : E}
+variable [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {x y z : E}
 
 theorem mem_segment_iff_sameRay : x ∈ [y -[𝕜] z] ↔ SameRay 𝕜 (x - y) (z - x) := by
   refine ⟨sameRay_of_mem_segment, fun h => ?_⟩
@@ -472,7 +472,7 @@ end OrderedSemiring
 
 section LinearOrderedField
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] {x y z : 𝕜}
+variable [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜] {x y z : 𝕜}
 
 theorem Icc_subset_segment : Icc x y ⊆ [x -[𝕜] y] := by
   rintro z ⟨hxz, hyz⟩

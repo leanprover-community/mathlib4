@@ -747,7 +747,7 @@ end OrderedSemifield
 
 section LinearOrderedField
 
-variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] {a : α}
+variable [Field α] [LinearOrder α] [IsOrderedRing α] {a : α}
 
 @[simp]
 theorem preimage_mul_const_Iio_of_neg (a : α) {c : α} (h : c < 0) :

@@ -383,7 +383,7 @@ end OrderedRing
 
 section LinearOrderedField
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜]
 
 section AddCommGroup
 
@@ -443,7 +443,7 @@ theorem Set.OrdConnected.starConvex [Semiring 𝕜] [PartialOrder 𝕜]
       a • x + b • y ≤ a • x + b • x := by gcongr
       _ = x := Convex.combo_self hab _
 
-theorem starConvex_iff_ordConnected [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+theorem starConvex_iff_ordConnected [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜]
     {x : 𝕜} {s : Set 𝕜} (hx : x ∈ s) :
     StarConvex 𝕜 x s ↔ s.OrdConnected := by
   simp_rw [ordConnected_iff_uIcc_subset_left hx, starConvex_iff_segment_subset, segment_eq_uIcc]

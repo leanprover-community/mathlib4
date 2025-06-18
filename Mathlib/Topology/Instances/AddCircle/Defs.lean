@@ -328,7 +328,7 @@ theorem equivAddCircle_symm_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : 𝕜) :
   rfl
 
 section
-variable [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+variable [LinearOrder 𝕜] [IsOrderedRing 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
 
 /-- The rescaling homeomorphism between additive circles with different periods. -/
 def homeomorphAddCircle (hp : p ≠ 0) (hq : q ≠ 0) : AddCircle p ≃ₜ AddCircle q :=
@@ -355,7 +355,7 @@ lemma intCast_div_mul_eq_zsmul (r : 𝕜) (m : ℤ) :
     (↑(↑m / q * r) : AddCircle p) = m • (r / q : AddCircle p) := by
   rw [mul_comm_div, ← zsmul_eq_mul, coe_zsmul]
 
-variable [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [hp : Fact (0 < p)]
+variable [LinearOrder 𝕜] [IsOrderedRing 𝕜] [hp : Fact (0 < p)]
 
 section FloorRing
 
@@ -375,7 +375,7 @@ instance : DivisibleBy (AddCircle p) ℤ where
     rw [← map_zsmul, ← smul_mul_assoc, zsmul_eq_mul, mul_inv_cancel₀ hn, one_mul]
     exact (equivIco p 0).symm_apply_apply x
 
-omit [IsStrictOrderedRing 𝕜] in
+omit [IsOrderedRing 𝕜] in
 @[simp] lemma coe_fract (x : 𝕜) : (↑(Int.fract x) : AddCircle (1 : 𝕜)) = x := by
   simp [← Int.self_sub_floor]
 

@@ -383,7 +383,7 @@ protected theorem Multipliable.abs_tprod (hf : Multipliable f) : |∏' i, f i| =
 
 end LinearOrderedCommRing
 
-theorem Summable.tendsto_atTop_of_pos [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+theorem Summable.tendsto_atTop_of_pos [Field α] [LinearOrder α] [IsOrderedRing α]
     [TopologicalSpace α] [OrderTopology α]
     {f : ℕ → α} (hf : Summable f⁻¹) (hf' : ∀ n, 0 < f n) : Tendsto f atTop atTop :=
   inv_inv f ▸ Filter.Tendsto.inv_tendsto_nhdsGT_zero <|

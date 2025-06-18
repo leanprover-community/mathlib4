@@ -103,7 +103,7 @@ theorem fundamentalDomain_reindex {ι' : Type*} (e : ι ≃ ι') :
   rw [Equiv.forall_congr' e]
   simp_rw [implies_true]
 
-variable [IsStrictOrderedRing K]
+variable [IsOrderedRing K]
 
 lemma fundamentalDomain_pi_basisFun [Fintype ι] :
     fundamentalDomain (Pi.basisFun ℝ ι) = Set.pi Set.univ fun _ : ι ↦ Set.Ico (0 : ℝ) 1 := by
@@ -442,7 +442,7 @@ instance instIsZLatticeRealSpan {E ι : Type*} [NormedAddCommGroup E] [NormedSpa
 
 section NormedLinearOrderedField
 
-variable (K : Type*) [NormedField K] [LinearOrder K] [IsStrictOrderedRing K]
+variable (K : Type*) [NormedField K] [LinearOrder K] [IsOrderedRing K]
   [HasSolidNorm K] [FloorRing K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
 variable [ProperSpace E] (L : Submodule ℤ E) [DiscreteTopology L]
@@ -748,7 +748,7 @@ end comap
 
 section NormedLinearOrderedField_comap
 
-variable (K : Type*) [NormedField K] [LinearOrder K] [IsStrictOrderedRing K] [HasSolidNorm K]
+variable (K : Type*) [NormedField K] [LinearOrder K] [IsOrderedRing K] [HasSolidNorm K]
   [FloorRing K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
   [ProperSpace E]

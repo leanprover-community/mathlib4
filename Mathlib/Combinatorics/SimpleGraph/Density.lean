@@ -37,7 +37,7 @@ namespace Rel
 
 section Asymmetric
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsOrderedRing 𝕜]
   (r : α → β → Prop) [∀ a, DecidablePred (r a)] {s s₁ s₂ : Finset α}
   {t t₁ t₂ : Finset β} {a : α} {b : β} {δ : 𝕜}
 

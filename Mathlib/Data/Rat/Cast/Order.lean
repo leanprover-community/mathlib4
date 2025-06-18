@@ -22,7 +22,7 @@ theorem castHom_rat : castHom ℚ = RingHom.id ℚ :=
 
 section LinearOrderedField
 
-variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+variable {K : Type*} [Field K] [LinearOrder K] [IsOrderedRing K]
 
 theorem cast_pos_of_pos (hq : 0 < q) : (0 : K) < q := by
   rw [Rat.cast_def]
