@@ -11,8 +11,8 @@ import Mathlib.Topology.IsLocalHomeomorph
 /-! # The inverse function theorem for manifolds
 
 In this file, we prove the inverse function theorem for functions between differentiable manifolds.
-This theorem holds in different versions, for instance for `C^r` (for `r≥1`) and analytic maps.
-Hence, we prove a general version first --- and will deduce the C^r and analytic cases from this.
+This theorem holds in different versions, for instance for `C^r` maps (for `r≥1`).
+We prove an abstract version first, and deduce the `C^r` case from this.
 
 The conclusion of the abstract inverse function theorem is that `f` is a local structomorphism.
 The hypotheses are stated as a condition on the pregroupoid of the given atlas.
@@ -23,7 +23,8 @@ The hypotheses are stated as a condition on the pregroupoid of the given atlas.
 
 ## Main results
 * The groupoid induced by an `IFTPregroupoid` is closed under restriction.
-* `xxx`: the conceptual version of the inverse function theorem.
+* `HasStrictFDerivAt.isLocalStructomorphWithinAt_of_IFTPregroupoid`:
+  the conceptual version of the inverse function theorem. XXX elaborate more!
 
 ## TODO
 - show that `contDiffPregroupoid` and `analyticPregroupoid` are `IFTPregroupoid`s
@@ -183,6 +184,8 @@ def contDiffPregroupoidBasic : Pregroupoid E := {
   locality := fun _ h ↦ contDiffOn_of_locally_contDiffOn h
   congr := by intro f g u _ congr hf; exact (contDiffOn_congr congr).mpr hf
 }
+
+-- TODO: prove that contDiffPregroupoid is an IFT groupoid
 
 -- xxx: generalise this argument to ℂ also
 variable [NormedSpace ℝ E] [NormedSpace ℝ E']
