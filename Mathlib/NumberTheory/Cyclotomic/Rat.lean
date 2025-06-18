@@ -362,7 +362,7 @@ theorem subOneIntegralPowerBasis'_gen_prime [IsCyclotomicExtension {p} ℚ K]
 The norm, relative to `ℤ`, of `ζ` in a `n`-th cyclotomic extension of `ℚ` where `n` is not a
 power of a primer number is `1`.
 -/
-theorem norm_toInteger_sub_one_eq_one {n : ℕ}  [IsCyclotomicExtension {n} ℚ K]
+theorem norm_toInteger_sub_one_eq_one {n : ℕ} [IsCyclotomicExtension {n} ℚ K]
     (hζ : IsPrimitiveRoot ζ n) (h₁ : 2 < n) (h₂ : ∀ {p : ℕ}, Nat.Prime p → ∀ (k : ℕ), p ^ k ≠ n) :
     have : NeZero n := NeZero.of_gt h₁
     norm ℤ (hζ.toInteger - 1) = 1 := by
