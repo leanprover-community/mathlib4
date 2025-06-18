@@ -120,8 +120,8 @@ lemma differentiableAt_LFunction (Φ : ZMod N → ℂ) (s : ℂ) (hs : s ≠ 1 �
     DifferentiableAt ℂ (LFunction Φ) s := by
   refine .mul (by fun_prop) ?_
   rcases ne_or_eq s 1 with hs' | rfl
-  · exact .sum fun j _ ↦ (differentiableAt_hurwitzZeta _ hs').const_mul _
-  · have := DifferentiableAt.sum (u := univ) fun j _ ↦
+  · exact .fun_sum fun j _ ↦ (differentiableAt_hurwitzZeta _ hs').const_mul _
+  · have := DifferentiableAt.fun_sum (u := univ) fun j _ ↦
       (differentiableAt_hurwitzZeta_sub_one_div (toAddCircle j)).const_mul (Φ j)
     simpa only [mul_sub, sum_sub_distrib, ← sum_mul, hs.neg_resolve_left rfl, zero_mul, sub_zero]
 
@@ -335,7 +335,7 @@ noncomputable def completedLFunction₀ (Φ : ZMod N → ℂ) (s : ℂ) : ℂ :=
 lemma differentiable_completedLFunction₀ (Φ : ZMod N → ℂ) :
     Differentiable ℂ (completedLFunction₀ Φ) := by
   refine .add ?_ ?_ <;>
-  refine .mul (by fun_prop) (.sum fun i _ ↦ .const_mul ?_ _)
+  refine .mul (by fun_prop) (.fun_sum fun i _ ↦ .const_mul ?_ _)
   exacts [differentiable_completedHurwitzZetaEven₀ _, differentiable_completedHurwitzZetaOdd _]
 
 lemma completedLFunction_eq (Φ : ZMod N → ℂ) (s : ℂ) :
