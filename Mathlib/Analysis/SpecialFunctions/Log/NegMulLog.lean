@@ -47,11 +47,8 @@ lemma Continuous.mul_log {α : Type*} [TopologicalSpace α] {f : α → ℝ} (hf
 lemma differentiableOn_mul_log : DifferentiableOn ℝ (fun x ↦ x * log x) {0}ᶜ :=
   differentiable_id'.differentiableOn.mul differentiableOn_log
 
-@[simp]
 lemma deriv_mul_log {x : ℝ} (hx : x ≠ 0) : deriv (fun x ↦ x * log x) x = log x + 1 := by
-  rw [deriv_mul differentiableAt_id' (differentiableAt_log hx)]
-  simp only [deriv_id'', one_mul, deriv_log', ne_eq, add_right_inj]
-  exact mul_inv_cancel₀ hx
+  simp [hx]
 
 lemma hasDerivAt_mul_log {x : ℝ} (hx : x ≠ 0) : HasDerivAt (fun x ↦ x * log x) (log x + 1) x := by
   rw [← deriv_mul_log hx, hasDerivAt_deriv_iff]
@@ -170,7 +167,7 @@ lemma differentiableAt_negMulLog_iff {x : ℝ} : DifferentiableAt ℝ negMulLog 
   constructor
   · unfold negMulLog
     intro h eq0
-    simp only [neg_mul, differentiableAt_neg_iff, eq0] at h
+    simp only [neg_mul, differentiableAt_fun_neg_iff, eq0] at h
     exact not_DifferentiableAt_log_mul_zero h
   · intro hx
     have : x ∈ ({0} : Set ℝ)ᶜ := by

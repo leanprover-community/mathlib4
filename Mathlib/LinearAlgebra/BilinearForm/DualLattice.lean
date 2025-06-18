@@ -100,7 +100,7 @@ lemma dualSubmodule_span_of_basis {ι} [Finite ι] [DecidableEq ι]
     exact Submodule.subset_span ⟨_, rfl⟩
   · rw [Submodule.span_le]
     rintro _ ⟨i, rfl⟩ y hy
-    obtain ⟨f, rfl⟩ := (mem_span_range_iff_exists_fun _).mp hy
+    obtain ⟨f, rfl⟩ := (Submodule.mem_span_range_iff_exists_fun _).mp hy
     simp only [map_sum, map_smul]
     apply sum_mem
     rintro j -

@@ -50,4 +50,7 @@ theorem attach_val (s : Finset α) : s.attach.1 = s.1.attach :=
 theorem mem_attach (s : Finset α) : ∀ x, x ∈ s.attach :=
   Multiset.mem_attach _
 
+@[simp, norm_cast]
+theorem coe_attach (s : Finset α) : s.attach.toSet = Set.univ := by ext; simp
+
 end Finset

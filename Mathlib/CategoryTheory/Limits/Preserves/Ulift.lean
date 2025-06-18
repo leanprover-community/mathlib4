@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Junyan Xu, Sophie Morel
 -/
 import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Types.Limits
+import Mathlib.CategoryTheory.Limits.Types.Colimits
 import Mathlib.Data.Set.Subsingleton
 
 /-!
@@ -32,8 +33,6 @@ def sectionsEquiv {J : Type*} [Category J] (K : J ⥤ Type u) :
     K.sections ≃ (K ⋙ uliftFunctor.{v, u}).sections where
   toFun := fun ⟨u, hu⟩ => ⟨fun j => ⟨u j⟩, fun f => by simp [hu f]⟩
   invFun := fun ⟨u, hu⟩ => ⟨fun j => (u j).down, @fun j j' f => by simp [← hu f]⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /--
 The functor `uliftFunctor : Type u ⥤ Type (max u v)` preserves limits of arbitrary size.
