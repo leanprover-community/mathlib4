@@ -90,13 +90,13 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
         (Int.natCast_inj.1 ?_)
       push_cast
       simp only [hn.pow_abs, habc]
-    obtain ha | ha := ha.lt_or_lt <;> obtain hb | hb := hb.lt_or_lt <;>
-      obtain hc | hc := hc.lt_or_lt
+    obtain ha | ha := ha.lt_or_gt <;> obtain hb | hb := hb.lt_or_gt <;>
+      obtain hc | hc := hc.lt_or_gt
     · refine h a.natAbs b.natAbs c.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
       push_cast
       simp only [abs_of_neg, neg_pow a, neg_pow b, neg_pow c, ← mul_add, habc, *]
-    · exact (by positivity : 0 < c ^ n).not_lt <| habc.symm.trans_lt <| add_neg (hn.pow_neg ha) <|
+    · exact (by positivity : 0 < c ^ n).not_gt <| habc.symm.trans_lt <| add_neg (hn.pow_neg ha) <|
         hn.pow_neg hb
     · refine h b.natAbs c.natAbs a.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
@@ -118,7 +118,7 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
       push_cast
       simp only [abs_of_pos, abs_of_neg, hn.neg_pow, habc, add_neg_eq_iff_eq_add,
         eq_add_neg_iff_add_eq, *]
-    · exact (by positivity : 0 < a ^ n + b ^ n).not_lt <| habc.trans_lt <| hn.pow_neg hc
+    · exact (by positivity : 0 < a ^ n + b ^ n).not_gt <| habc.trans_lt <| hn.pow_neg hc
     · refine h a.natAbs b.natAbs c.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
       push_cast

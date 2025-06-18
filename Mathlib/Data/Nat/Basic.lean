@@ -6,7 +6,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Data.Nat.Init
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.GCongr.CoreAttrs
+import Mathlib.Tactic.GCongr.Core
 import Mathlib.Util.AssertExists
 
 /-!
@@ -34,7 +34,7 @@ instance instLinearOrder : LinearOrder ℕ where
   le_antisymm := @Nat.le_antisymm
   le_total := @Nat.le_total
   lt := Nat.lt
-  lt_iff_le_not_le := @Nat.lt_iff_le_not_le
+  lt_iff_le_not_ge := @Nat.lt_iff_le_not_le
   toDecidableLT := inferInstance
   toDecidableLE := inferInstance
   toDecidableEq := inferInstance
