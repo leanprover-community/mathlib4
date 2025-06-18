@@ -140,7 +140,6 @@ def differenceFunctor (f : C → G) : C ⥤ SingleObj G where
     simp only [SingleObj.id_as_one, mul_inv_cancel]
   map_comp := by
     intros
-    dsimp
     rw [SingleObj.comp_as_mul, ← mul_assoc, mul_left_inj, mul_assoc, inv_mul_cancel, mul_one]
 
 /-- A monoid homomorphism `f: M → End X` into the endomorphisms of an object `X` of a category `C`

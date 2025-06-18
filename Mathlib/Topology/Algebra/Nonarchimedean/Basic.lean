@@ -96,7 +96,7 @@ theorem prod_self_subset {U} (hU : U ∈ 𝓝 (1 : G × G)) :
 
 /-- The cartesian product of two nonarchimedean groups is nonarchimedean. -/
 @[to_additive "The cartesian product of two nonarchimedean groups is nonarchimedean."]
-instance : NonarchimedeanGroup (G × K) where
+instance Prod.instNonarchimedeanGroup : NonarchimedeanGroup (G × K) where
   is_nonarchimedean _ hU :=
     let ⟨V, W, h⟩ := prod_subset hU
     ⟨V.prod W, ‹_›⟩

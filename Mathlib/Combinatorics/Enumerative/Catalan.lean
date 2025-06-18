@@ -186,7 +186,7 @@ theorem treesOfNumNodesEq_card_eq_catalan (n : ℕ) : #(treesOfNumNodesEq n) = c
     · apply sum_congr rfl
       rintro ⟨i, j⟩ H
       rw [card_map, card_product, ih _ (fst_le H), ih _ (snd_le H)]
-    · simp_rw [disjoint_left]
+    · simp_rw [Set.PairwiseDisjoint, Set.Pairwise, disjoint_left]
       aesop
 
 end Tree

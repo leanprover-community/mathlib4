@@ -289,7 +289,7 @@ theorem toEmbedding_toPartialEquiv (f : M ↪[L] N) :
   rfl
 
 @[simp]
-theorem toPartialEquiv_toEmbedding {f :  M ≃ₚ[L] N} (h : f.dom = ⊤) :
+theorem toPartialEquiv_toEmbedding {f : M ≃ₚ[L] N} (h : f.dom = ⊤) :
     (PartialEquiv.toEmbeddingOfEqTop h).toPartialEquiv = f := by
   rcases f with ⟨_, _, _⟩
   cases h

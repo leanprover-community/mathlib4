@@ -15,7 +15,7 @@ import Mathlib.Algebra.Order.Group.Unbundled.Basic
 # Implementation of floating-point numbers (experimental).
 -/
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO add docs and remove `@[nolint docBlame]`
+-- TODO add docs and remove `@[nolint docBlame]`
 
 @[nolint docBlame]
 def Int.shift2 (a b : ℕ) : ℤ → ℕ × ℕ

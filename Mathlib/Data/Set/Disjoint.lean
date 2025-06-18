@@ -36,11 +36,17 @@ theorem _root_.Disjoint.inter_eq : Disjoint s t → s ∩ t = ∅ :=
 theorem disjoint_left : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → a ∉ t :=
   disjoint_iff_inf_le.trans <| forall_congr' fun _ => not_and
 
-alias ⟨_root_.Disjoint.not_mem_of_mem_left, _⟩ := disjoint_left
+alias ⟨_root_.Disjoint.notMem_of_mem_left, _⟩ := disjoint_left
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.Disjoint.not_mem_of_mem_left := Disjoint.notMem_of_mem_left
 
 theorem disjoint_right : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ t → a ∉ s := by rw [disjoint_comm, disjoint_left]
 
-alias ⟨_root_.Disjoint.not_mem_of_mem_right, _⟩ := disjoint_right
+alias ⟨_root_.Disjoint.notMem_of_mem_right, _⟩ := disjoint_right
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.Disjoint.not_mem_of_mem_right := Disjoint.notMem_of_mem_right
 
 lemma not_disjoint_iff : ¬Disjoint s t ↔ ∃ x, x ∈ s ∧ x ∈ t :=
   Set.disjoint_iff.not.trans <| not_forall.trans <| exists_congr fun _ ↦ not_not
@@ -86,8 +92,8 @@ theorem disjoint_sdiff_inter : Disjoint (s \ t) (s ∩ t) :=
 lemma subset_diff : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u := le_iff_subset.symm.trans le_sdiff
 
 theorem disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) :
-    Disjoint s t ↔ s = ∅ := by
-  simp only [disjoint_iff, inf_eq_left.mpr h, bot_eq_empty]
+    Disjoint s t ↔ s = ∅ :=
+  disjoint_of_le_iff_left_eq_bot h
 
 /-! ### Lemmas about complement -/
 
@@ -110,6 +116,18 @@ alias ⟨_, _root_.Disjoint.subset_compl_left⟩ := subset_compl_iff_disjoint_le
 alias ⟨_, _root_.HasSubset.Subset.disjoint_compl_left⟩ := disjoint_compl_left_iff_subset
 
 alias ⟨_, _root_.HasSubset.Subset.disjoint_compl_right⟩ := disjoint_compl_right_iff_subset
+
+@[simp]
+theorem diff_ssubset_left_iff : s \ t ⊂ s ↔ (s ∩ t).Nonempty :=
+  sdiff_lt_left.trans <| by rw [not_disjoint_iff_nonempty_inter, inter_comm]
+
+theorem _root_.HasSubset.Subset.diff_ssubset_of_nonempty (hst : s ⊆ t) (hs : s.Nonempty) :
+    t \ s ⊂ t := by
+  simpa [inter_eq_self_of_subset_right hst]
+
+theorem disjoint_range_iff {β γ : Sort*} {x : β → α} {y : γ → α} :
+    Disjoint (range x) (range y) ↔ ∀ i j, x i ≠ y j := by
+  simp [Set.disjoint_iff_forall_ne]
 
 end Set
 

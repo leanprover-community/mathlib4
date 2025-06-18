@@ -3,7 +3,7 @@ Copyright (c) 2024 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.BigOperators.Finsupp
+import Mathlib.Algebra.BigOperators.Finsupp.Basic
 import Mathlib.Algebra.Group.Subgroup.Lattice
 
 /-! # Connection between `Subgroup.closure` and `Finsupp.prod` -/
