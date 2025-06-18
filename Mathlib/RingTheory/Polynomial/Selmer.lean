@@ -130,26 +130,6 @@ theorem Ideal.inertiaSubgroup_eq_ker : AddSubgroup.inertia Q.toAddSubgroup G =
 
 end inertiadef
 
-section orbit
-
-open Ideal
-
-namespace Algebra.IsInvariant
-
-variable (A B G : Type*) [CommRing A]
-  [CommRing B] [Algebra A B] [Group G] [MulSemiringAction G B] [IsInvariant A B G]
-
-theorem orbit_eq_primesOver [Finite G] [SMulCommClass G A B] (P : Ideal A) (Q : Ideal B)
-    [hP : Q.LiesOver P] [hQ : Q.IsPrime] : MulAction.orbit G Q = P.primesOver B := by
-  refine Set.ext fun R ↦ ⟨fun ⟨g, hg⟩ ↦ hg ▸ ⟨hQ.smul g, hP.smul g⟩, fun h ↦ ?_⟩
-  have : R.IsPrime := h.1
-  obtain ⟨g, hg⟩ := exists_smul_of_under_eq A B G Q R (hP.over.symm.trans h.2.over)
-  exact ⟨g, hg.symm⟩
-
-end Algebra.IsInvariant
-
-end orbit
-
 section inertiadef
 
 variable {A : Type*} [CommRing A] [IsDedekindDomain A] {P : Ideal A} (hP : P ≠ ⊥) [P.IsMaximal]
@@ -158,21 +138,20 @@ variable {A : Type*} [CommRing A] [IsDedekindDomain A] {P : Ideal A} (hP : P ≠
   (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L]
   [IsFractionRing B L] [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
   [FiniteDimensional K L] [hKL : IsGalois K L]
-  (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]
-  [Algebra.IsInvariant A B G]
+  (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [MulSemiringAction G L]
+  [SMulCommClass G A B] [Algebra.IsInvariant A B G] [IsGaloisGroup G K L]
 
 -- need general galois group to have same cardinality as field extension
 
-include hP K L in
-theorem Ideal.card_inertiaSubgroup :
-    Nat.card (inertiaSubgroup P Q G) = Ideal.ramificationIdx (algebraMap A B) P Q := by
+include hP hQ K L in
+theorem Ideal.card_inertiaSubgroup : Nat.card (AddSubgroup.inertia Q.toAddSubgroup G) =
+    Ideal.ramificationIdx (algebraMap A B) P Q := by
+  rw [Ideal.inertiaSubgroup_eq_ker P Q G]
   have hf := Ideal.Quotient.stabilizerHom_surjective G P Q
   have : Finite ((B ⧸ Q) ≃ₐ[A ⧸ P] B ⧸ Q) := Finite.of_surjective _ hf
   have key := ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hP B K L
   rw [← Algebra.IsInvariant.orbit_eq_primesOver A B G P Q, ← MulAction.index_stabilizer] at key
-  have h1 : Nat.card G = Module.finrank K L := by
-    rw [← IsGalois.card_aut_eq_finrank]
-    sorry
+  have h1 : Nat.card G = Module.finrank K L := IsGaloisGroup.card_eq_finrank G K L
   have h2 : Nat.card ((B ⧸ Q) ≃ₐ[A ⧸ P] (B ⧸ Q)) = Module.finrank (A ⧸ P) (B ⧸ Q) := by
     have : IsMaximal Q := Ideal.IsMaximal.of_liesOver_isMaximal Q P
     let _ : Field (A ⧸ P) := Quotient.field P
@@ -186,7 +165,7 @@ theorem Ideal.card_inertiaSubgroup :
     MonoidHom.range_eq_top_of_surjective _ hf, Subgroup.card_top] at key
   rw [mul_left_inj' Nat.card_pos.ne'] at key
   rw [ramificationIdxIn_eq_ramificationIdx P Q K L] at key
-  rw [inertiaSubgroup, Subgroup.card_subtype, key]
+  rw [Subgroup.card_subtype, key]
 
 end inertiadef
 
@@ -259,9 +238,9 @@ variable (K : Type*) [Field K] [NumberField K] [IsGalois ℚ K]
   (G : Type*) [Group G] [MulSemiringAction G K] [MulSemiringAction G (𝓞 K)] [SMulCommClass G ℚ K]
 
 theorem keythm :
-    ⨆ (q : Ideal (𝓞 K)) (hq : q.IsMaximal), Ideal.inertiaSubgroup (q.under ℤ) q G = ⊤ := by
+    ⨆ (q : Ideal (𝓞 K)) (hq : q.IsMaximal), AddSubgroup.inertia q.toAddSubgroup G = ⊤ := by
   -- key idea: fixed field of this subgroup has no ramified primes
-  let H := ⨆ (q : Ideal (𝓞 K)) (hq : q.IsMaximal), Ideal.inertiaSubgroup (q.under ℤ) q G
+  let H := ⨆ (q : Ideal (𝓞 K)) (hq : q.IsMaximal), AddSubgroup.inertia q.toAddSubgroup G
   let F : IntermediateField ℚ K := FixedPoints.intermediateField H
   change H = ⊤
   suffices h : F = ⊥ by
@@ -272,7 +251,7 @@ theorem keythm :
   have : H.Normal := sorry
   have : IsGalois ℚ F := sorry
   have key0 : ∀ (q : Ideal (𝓞 K)) (hq : q.IsMaximal),
-      Ideal.inertiaSubgroup (q.under ℤ) q G ≤ H := by
+      AddSubgroup.inertia q.toAddSubgroup G ≤ H := by
     intro q hq
     exact le_iSup_of_le q (le_iSup_of_le hq le_rfl)
   -- have key : ∀ (q : Ideal (𝓞 F)) (hq : q.IsMaximal), inertiaSubgroup q = ⊥ := by
@@ -348,12 +327,6 @@ theorem switchinglemma {F : Type*} [Field F] (p : F[X])
 
 attribute [-instance] Polynomial.Gal.galActionAux -- should be local to PolynomialGaloisGroup.lean
 
-theorem _root_.Subgroup.closure_diff_one {G : Type*} [Group G] (s : Set G) :
-    Subgroup.closure (s \ {1}) = Subgroup.closure s := by
-  rw [← s.diff_union_inter {1}, Subgroup.closure_union, s.diff_union_inter, eq_comm, sup_eq_left,
-    Subgroup.closure_le]
-  exact fun x hx ↦ hx.2.symm ▸ Subgroup.one_mem _
-
 theorem X_pow_sub_X_sub_one_gal :
     Function.Bijective (Gal.galActionHom (X ^ n - X - 1 : ℚ[X]) ℂ) := by
   classical
@@ -373,7 +346,9 @@ theorem X_pow_sub_X_sub_one_gal :
     · have : IsEmpty (rootSet f K) := by simp [f]
       infer_instance
     exact Gal.galAction_isPretransitive _ _ (X_pow_sub_X_sub_one_irreducible_rat hn)
-  let S : Set G := ⋃ (q : Ideal R) (hq : q.IsMaximal), ((inertiaSubgroup q : Set (K ≃ₐ[ℚ] K)) \ {1})
+  let _ : MulSemiringAction G R := IsIntegralClosure.MulSemiringAction ℤ ℚ K R
+  let S : Set G := ⋃ (q : Ideal R) (hq : q.IsMaximal),
+    ((↑(AddSubgroup.inertia q.toAddSubgroup G) : Set (K ≃ₐ[ℚ] K)) \ {1})
   have hS1 : Subgroup.closure S = ⊤ := by
     simp only [S, Subgroup.closure_iUnion, Subgroup.closure_eq, Subgroup.closure_diff_one]
     exact keythm K
