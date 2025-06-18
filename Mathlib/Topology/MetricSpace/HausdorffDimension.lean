@@ -528,9 +528,8 @@ theorem ContDiff.dense_compl_range_of_finrank_lt_finrank [FiniteDimensional ℝ 
 The Hausdorff dimension of the orthogonal projection of a set `s` onto a subspace `K`
 is less than or equal to the Hausdorff dimension of `s`.
 -/
-theorem dimH_orthogonalProjection_le {𝕜 : Type u_1} {E : Type u_2} [RCLike 𝕜]
-  [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-  (K : Submodule 𝕜 E) [K.HasOrthogonalProjection] (s : Set E) :
-    dimH (K.orthogonalProjection '' s) ≤ dimH s := by
-  apply LipschitzWith.dimH_image_le
-  apply Submodule.norm_orthogonalProjection_apply
+theorem dimH_orthogonalProjection_le {𝕜 E : Type*} [RCLike 𝕜]
+    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+    (K : Submodule 𝕜 E) [K.HasOrthogonalProjection] (s : Set E) :
+    dimH (K.orthogonalProjection '' s) ≤ dimH s :=
+  LipschitzWith.dimH_image_le (Submodule.norm_orthogonalProjection_apply K) s
