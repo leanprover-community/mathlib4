@@ -673,7 +673,6 @@ theorem IsQuotientMap.of_surjective_continuous [CompactSpace X] [T2Space Y] {f :
 @[deprecated (since := "2024-10-22")]
 alias QuotientMap.of_surjective_continuous := IsQuotientMap.of_surjective_continuous
 
--- should this go in the other file?
 theorem isPreirreducible_iff_forall_subset_closure_singleton [R1Space X] {S : Set X} :
     IsPreirreducible S ↔ ∀ x ∈ S, S ⊆ closure {x} := by
   constructor
