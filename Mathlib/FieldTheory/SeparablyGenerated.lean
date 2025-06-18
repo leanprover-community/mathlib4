@@ -224,7 +224,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_adjoin
   replace H : ∃ d, ¬p ∣ d ∧ F'.coeff d ≠ 0 :=
     have ⟨d, hpd, H⟩ := H; ⟨d, hpd, fun e ↦ H (.trans (by
       simp [F', ← aeval_algebraMap_apply, -map_aeval]; rfl) congr(algebraMap _ _ ($e)))⟩
-  have Hi := IsTranscendenceBasis.ne_of_isTranscendenceBasis_ne n i a ha'
+  have Hi := IsTranscendenceBasis.of_isAlgebraic_adjoin_image_compl n i a ha'
     ⟨F', fun e ↦ by simp [e] at H, hF'⟩
   refine ⟨i, Hi, ?_⟩
   have hai : a '' {i}ᶜ = Set.range (a ∘ (Subtype.val : { b | b ≠ i } → ι)) := by ext; aesop
