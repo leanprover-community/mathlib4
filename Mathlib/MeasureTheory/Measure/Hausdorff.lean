@@ -1105,7 +1105,7 @@ theorem hausdorffMeasure_orthogonalProjection_le [RCLike 𝕜]
     (K : Submodule 𝕜 E) [K.HasOrthogonalProjection]
     (d : ℝ) (s : Set E) (hs : 0 ≤ d) :
     μH[d] (K.orthogonalProjection '' s) ≤ μH[d] s := by
-  simpa using K.norm_orthogonalProjection_apply.hausdorffMeasure_image_le hs s
+  simpa using K.lipschitzWith_orthogonalProjection.hausdorffMeasure_image_le hs s
 
 end Geometric
 

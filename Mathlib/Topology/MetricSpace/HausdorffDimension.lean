@@ -532,4 +532,4 @@ theorem dimH_orthogonalProjection_le {𝕜 E : Type*} [RCLike 𝕜]
     [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
     (K : Submodule 𝕜 E) [K.HasOrthogonalProjection] (s : Set E) :
     dimH (K.orthogonalProjection '' s) ≤ dimH s :=
-  LipschitzWith.dimH_image_le (Submodule.norm_orthogonalProjection_apply K) s
+  K.lipschitzWith_orthogonalProjection.dimH_image_le s
