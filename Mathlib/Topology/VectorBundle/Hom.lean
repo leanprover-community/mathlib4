@@ -25,12 +25,6 @@ necessary.
 Similar constructions should be possible (but are yet to be formalized) for tensor products of
 topological vector bundles, exterior algebras, and so on, where again the topology can be defined
 using a norm on the fiber model if this helps.
-
-## Main Definitions
-
-* `Bundle.ContinuousLinearMap.vectorBundle`: continuous semilinear maps between
-  vector bundles form a vector bundle.
-
 -/
 
 
@@ -49,6 +43,12 @@ variable {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜₁ F₁] (E�
 variable {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜₂ F₂] (E₂ : B → Type*)
   [∀ x, AddCommGroup (E₂ x)] [∀ x, Module 𝕜₂ (E₂ x)] [TopologicalSpace (TotalSpace F₂ E₂)]
 
+/-- A reducible type synonym for the bundle of continuous (semi)linear maps. -/
+@[deprecated "Use the plain bundle syntax `fun (b : B) ↦ E₁ b →SL[σ] E₂ b` or
+`fun (b : B) ↦ E₁ b →L[𝕜] E₂ b` instead" (since := "2025-06-12")]
+protected abbrev Bundle.ContinuousLinearMap [∀ x, TopologicalSpace (E₁ x)]
+    [∀ x, TopologicalSpace (E₂ x)] : B → Type _ := fun x ↦ E₁ x →SL[σ] E₂ x
+
 variable {E₁ E₂}
 variable [TopologicalSpace B] (e₁ e₁' : Trivialization F₁ (π F₁ E₁))
   (e₂ e₂' : Trivialization F₂ (π F₂ E₂))
@@ -59,7 +59,7 @@ namespace Pretrivialization
 (`i ∈ {1,2}`), then `Pretrivialization.continuousLinearMapCoordChange σ e₁ e₁' e₂ e₂'` is the
 coordinate change function between the two induced (pre)trivializations
 `Pretrivialization.continuousLinearMap σ e₁ e₂` and
-`Pretrivialization.continuousLinearMap σ e₁' e₂'` of `Bundle.ContinuousLinearMap`. -/
+`Pretrivialization.continuousLinearMap σ e₁' e₂'` of the bundle of continuous linear maps. -/
 def continuousLinearMapCoordChange [e₁.IsLinear 𝕜₁] [e₁'.IsLinear 𝕜₁] [e₂.IsLinear 𝕜₂]
     [e₂'.IsLinear 𝕜₂] (b : B) : (F₁ →SL[σ] F₂) →L[𝕜₂] F₁ →SL[σ] F₂ :=
   ((e₁'.coordChangeL 𝕜₁ e₁ b).symm.arrowCongrSL (e₂.coordChangeL 𝕜₂ e₂' b) :
@@ -100,15 +100,15 @@ def continuousLinearMap :
   invFun p := ⟨p.1, .comp (e₂.symmL 𝕜₂ p.1) (p.2.comp (e₁.continuousLinearMapAt 𝕜₁ p.1))⟩
   source := Bundle.TotalSpace.proj ⁻¹' (e₁.baseSet ∩ e₂.baseSet)
   target := (e₁.baseSet ∩ e₂.baseSet) ×ˢ Set.univ
-  map_source' := fun ⟨_, _⟩ h => ⟨h, Set.mem_univ _⟩
-  map_target' := fun ⟨_, _⟩ h => h.1
-  left_inv' := fun ⟨x, L⟩ ⟨h₁, h₂⟩ => by
+  map_source' := fun ⟨_, _⟩ h ↦ ⟨h, Set.mem_univ _⟩
+  map_target' := fun ⟨_, _⟩ h ↦ h.1
+  left_inv' := fun ⟨x, L⟩ ⟨h₁, h₂⟩ ↦ by
     simp only [TotalSpace.mk_inj]
     ext (v : E₁ x)
     dsimp only [comp_apply]
     rw [Trivialization.symmL_continuousLinearMapAt, Trivialization.symmL_continuousLinearMapAt]
     exacts [h₁, h₂]
-  right_inv' := fun ⟨x, f⟩ ⟨⟨h₁, h₂⟩, _⟩ => by
+  right_inv' := fun ⟨x, f⟩ ⟨⟨h₁, h₂⟩, _⟩ ↦ by
     simp only [Prod.mk_right_inj]
     ext v
     dsimp only [comp_apply]
@@ -121,20 +121,21 @@ def continuousLinearMap :
   target_eq := rfl
   proj_toFun _ _ := rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: see if Lean 4 can generate this instance without a hint
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215):
+-- TODO: see if Lean 4 can generate this instance without a hint
 instance continuousLinearMap.isLinear [∀ x, ContinuousAdd (E₂ x)] [∀ x, ContinuousSMul 𝕜₂ (E₂ x)] :
     (Pretrivialization.continuousLinearMap σ e₁ e₂).IsLinear 𝕜₂ where
   linear x _ :=
-    { map_add := fun L L' =>
+    { map_add := fun L L' ↦
         show (e₂.continuousLinearMapAt 𝕜₂ x).comp ((L + L').comp (e₁.symmL 𝕜₁ x)) = _ by
           simp_rw [add_comp, comp_add]
           rfl
-      map_smul := fun c L =>
+      map_smul := fun c L ↦
         show (e₂.continuousLinearMapAt 𝕜₂ x).comp ((c • L).comp (e₁.symmL 𝕜₁ x)) = _ by
           simp_rw [smul_comp, comp_smulₛₗ, RingHom.id_apply]
           rfl }
 
-theorem continuousLinearMap_apply (p : TotalSpace (F₁ →SL[σ] F₂) fun x => E₁ x →SL[σ] E₂ x) :
+theorem continuousLinearMap_apply (p : TotalSpace (F₁ →SL[σ] F₂) fun x ↦ E₁ x →SL[σ] E₂ x) :
     (continuousLinearMap σ e₁ e₂) p =
       ⟨p.1, .comp (e₂.continuousLinearMapAt 𝕜₂ p.1) (p.2.comp (e₁.symmL 𝕜₁ p.1))⟩ :=
   rfl
@@ -181,7 +182,7 @@ variable [RingHomIsometric σ]
 `VectorBundle` instance, in which the pretrivializations are collated but no topology
 on the total space is yet provided). -/
 def Bundle.ContinuousLinearMap.vectorPrebundle :
-    VectorPrebundle 𝕜₂ (F₁ →SL[σ] F₂) ( (fun x ↦ E₁ x →SL[σ] E₂ x)) where
+    VectorPrebundle 𝕜₂ (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x) where
   pretrivializationAtlas :=
     {e | ∃ (e₁ : Trivialization F₁ (π F₁ E₁)) (e₂ : Trivialization F₂ (π F₂ E₂))
       (_ : MemTrivializationAtlas e₁) (_ : MemTrivializationAtlas e₂),
@@ -209,7 +210,7 @@ def Bundle.ContinuousLinearMap.vectorPrebundle :
       (trivializationAt F₂ E₂ b).continuousLinearEquivAt 𝕜₂ b
         (mem_baseSet_trivializationAt _ _ _)
     let φ : (E₁ b →SL[σ] E₂ b) ≃L[𝕜₂] F₁ →SL[σ] F₂ := L₁.arrowCongrSL L₂
-    have : IsInducing fun x => (b, φ x) := isInducing_const_prod.mpr φ.toHomeomorph.isInducing
+    have : IsInducing fun x ↦ (b, φ x) := isInducing_const_prod.mpr φ.toHomeomorph.isInducing
     convert this
     ext f
     dsimp [Pretrivialization.continuousLinearMap_apply]
@@ -224,7 +225,7 @@ instance Bundle.ContinuousLinearMap.topologicalSpaceTotalSpace :
 
 /-- The continuous `σ`-semilinear maps between two vector bundles form a fiber bundle. -/
 instance Bundle.ContinuousLinearMap.fiberBundle :
-    FiberBundle (F₁ →SL[σ] F₂) fun x => E₁ x →SL[σ] E₂ x :=
+    FiberBundle (F₁ →SL[σ] F₂) fun x ↦ E₁ x →SL[σ] E₂ x :=
   (Bundle.ContinuousLinearMap.vectorPrebundle σ F₁ E₁ F₂ E₂).toFiberBundle
 
 /-- The continuous `σ`-semilinear maps between two vector bundles form a vector bundle. -/
@@ -263,7 +264,7 @@ theorem Trivialization.continuousLinearMap_apply
 
 theorem hom_trivializationAt_apply (x₀ : B)
     (x : TotalSpace (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x)) :
-    trivializationAt (F₁ →SL[σ] F₂) (fun x => E₁ x →SL[σ] E₂ x) x₀ x =
+    trivializationAt (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x) x₀ x =
       ⟨x.1, inCoordinates F₁ E₁ F₂ E₂ x₀ x.1 x₀ x.1 x.2⟩ :=
   rfl
 
@@ -276,7 +277,7 @@ theorem hom_trivializationAt_source (x₀ : B) :
 
 @[simp, mfld_simps]
 theorem hom_trivializationAt_target (x₀ : B) :
-    (trivializationAt (F₁ →SL[σ] F₂) (fun x => E₁ x →SL[σ] E₂ x) x₀).target =
+    (trivializationAt (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x) x₀).target =
       ((trivializationAt F₁ E₁ x₀).baseSet ∩ (trivializationAt F₂ E₂ x₀).baseSet) ×ˢ Set.univ :=
   rfl
 
@@ -289,17 +290,17 @@ theorem hom_trivializationAt_baseSet (x₀ : B) :
 theorem continuousWithinAt_hom_bundle {M : Type*} [TopologicalSpace M]
     (f : M → TotalSpace (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x)) {s : Set M} {x₀ : M} :
     ContinuousWithinAt f s x₀ ↔
-      ContinuousWithinAt (fun x => (f x).1) s x₀ ∧
+      ContinuousWithinAt (fun x ↦ (f x).1) s x₀ ∧
         ContinuousWithinAt
-          (fun x => inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) s x₀ :=
+          (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) s x₀ :=
   FiberBundle.continuousWithinAt_totalSpace ..
 
 theorem continuousAt_hom_bundle {M : Type*} [TopologicalSpace M]
     (f : M → TotalSpace (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x)) {x₀ : M} :
     ContinuousAt f x₀ ↔
-      ContinuousAt (fun x => (f x).1) x₀ ∧
+      ContinuousAt (fun x ↦ (f x).1) x₀ ∧
         ContinuousAt
-          (fun x => inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
+          (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
   FiberBundle.continuousAt_totalSpace ..
 
 section
@@ -325,9 +326,9 @@ another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) →
 continuously on `m`, one can apply `ϕ m` to `g m`, and the resulting map is continuous.
 
 Note that the continuity of `ϕ` can not be always be stated as continuity of a map into a bundle,
-as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` only make sense when `b₁` and `b₂` are globally
-continuous, but we want to apply this lemma with only local information. Therefore, we formulate it
-using continuity of `ϕ` read in coordinates.
+as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` only have a nice topology when `b₁` and `b₂` are
+globally continuous, but we want to apply this lemma with only local information. Therefore, we
+formulate it using continuity of `ϕ` read in coordinates.
 
 Version for `ContinuousWithinAt`. We also give a version for `ContinuousAt`, but no version for
 `ContinuousOn` or `Continuous` as our assumption, written in coordinates, only makes sense around
@@ -355,11 +356,9 @@ lemma ContinuousWithinAt.clm_apply_of_inCoordinates
     apply (trivializationAt F₂ E₂ (b₂ m₀)).open_baseSet.mem_nhds
     exact FiberBundle.mem_baseSet_trivializationAt' (b₂ m₀)
   filter_upwards [A, A'] with m hm h'm
-  rw [inCoordinates_eq hm h'm]
-  simp only [coe_comp', ContinuousLinearEquiv.coe_coe, Trivialization.continuousLinearEquivAt_apply,
-    Trivialization.continuousLinearEquivAt_symm_apply, Function.comp_apply]
-  congr
-  rw [Trivialization.symm_apply_apply_mk (trivializationAt F₁ E₁ (b₁ m₀)) hm (v m)]
+  simp [inCoordinates_eq hm h'm,
+        Trivialization.symm_apply_apply_mk (trivializationAt F₁ E₁ (b₁ m₀)) hm (v m)]
+
 
 /-- Consider a continuous map `v : M → E₁` to a vector bundle, over a base map `b₁ : M → B₁`, and
 another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending
@@ -384,7 +383,7 @@ lemma ContinuousAt.clm_apply_of_inCoordinates
     (hb₂ : ContinuousAt b₂ m₀) :
     ContinuousAt (fun m ↦ (ϕ m (v m) : TotalSpace F₂ E₂)) m₀ := by
   rw [← continuousWithinAt_univ] at hϕ hv hb₂ ⊢
-  exact ContinuousWithinAt.clm_apply_of_inCoordinates hϕ hv hb₂
+  exact hϕ.clm_apply_of_inCoordinates hv hb₂
 
 end
 
@@ -425,9 +424,9 @@ lemma ContinuousWithinAt.clm_bundle_apply
       s x)
     (hv : ContinuousWithinAt (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) s x) :
     ContinuousWithinAt
-      (fun m ↦ TotalSpace.mk' F₂ (b m) ((ϕ m) (v m))) s x := by
+      (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) s x := by
   simp only [continuousWithinAt_hom_bundle] at hϕ
-  exact ContinuousWithinAt.clm_apply_of_inCoordinates hϕ.2 hv hϕ.1
+  exact hϕ.2.clm_apply_of_inCoordinates hv hϕ.1
 
 /-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a basemap `b : M → B`, and
 linear maps `ϕ m : E₁ (b m) → E₂ (b m)` depending smoothly on `m`.
@@ -436,9 +435,9 @@ lemma ContinuousAt.clm_bundle_apply
     (hϕ : ContinuousAt
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)) x)
     (hv : ContinuousAt (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x) :
-    ContinuousAt (fun m ↦ TotalSpace.mk' F₂ (b m) ((ϕ m) (v m))) x := by
+    ContinuousAt (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) x := by
   simp only [← continuousWithinAt_univ] at hϕ hv ⊢
-  exact ContinuousWithinAt.clm_bundle_apply hϕ hv
+  exact hϕ.clm_bundle_apply hv
 
 /-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a basemap `b : M → B`, and
 linear maps `ϕ m : E₁ (b m) → E₂ (b m)` depending smoothly on `m`.
@@ -447,8 +446,8 @@ lemma ContinuousOn.clm_bundle_apply
     (hϕ : ContinuousOn
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)) s)
     (hv : ContinuousOn (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) s) :
-    ContinuousOn (fun m ↦ TotalSpace.mk' F₂ (b m) ((ϕ m) (v m))) s :=
-  fun x hx ↦ ContinuousWithinAt.clm_bundle_apply (hϕ x hx) (hv x hx)
+    ContinuousOn (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) s :=
+  fun x hx ↦ (hϕ x hx).clm_bundle_apply (hv x hx)
 
 /-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a basemap `b : M → B`, and
 linear maps `ϕ m : E₁ (b m) → E₂ (b m)` depending smoothly on `m`.
@@ -457,9 +456,9 @@ lemma Continuous.clm_bundle_apply
     (hϕ : Continuous
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)))
     (hv : Continuous (fun m ↦ TotalSpace.mk' F₁ (b m) (v m))) :
-    Continuous (fun m ↦ TotalSpace.mk' F₂ (b m) ((ϕ m) (v m))) := by
+    Continuous (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) := by
   simp only [continuous_iff_continuousOn_univ] at hϕ hv ⊢
-  exact ContinuousOn.clm_bundle_apply hϕ hv
+  exact hϕ.clm_bundle_apply hv
 
 end OneVariable
 
@@ -476,10 +475,8 @@ lemma ContinuousWithinAt.clm_bundle_apply₂
       (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)) s x)
     (hv : ContinuousWithinAt (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) s x)
     (hw : ContinuousWithinAt (fun m ↦ TotalSpace.mk' F₂ (b m) (w m)) s x) :
-    ContinuousWithinAt
-      (fun m ↦ TotalSpace.mk' F₃ (b m) ((ψ m) (v m) (w m))) s x := by
-  have := ContinuousWithinAt.clm_bundle_apply (E₂ := fun x ↦ (E₂ x →L[𝕜] E₃ x)) hψ hv
-  exact ContinuousWithinAt.clm_bundle_apply this hw
+    ContinuousWithinAt (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) s x :=
+  (hψ.clm_bundle_apply hv).clm_bundle_apply hw
 
 /-- Consider `C^n` maps `v : M → E₁` and `v : M → E₂` to vector bundles, over a basemap
 `b : M → B`, and bilinear maps `ψ m : E₁ (b m) → E₂ (b m) → E₃ (b m)` depending smoothly on `m`.
@@ -489,9 +486,8 @@ lemma ContinuousAt.clm_bundle_apply₂
       (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)) x)
     (hv : ContinuousAt (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x)
     (hw : ContinuousAt (fun m ↦ TotalSpace.mk' F₂ (b m) (w m)) x) :
-    ContinuousAt (fun m ↦ TotalSpace.mk' F₃ (b m) ((ψ m) (v m) (w m))) x := by
-  have := ContinuousAt.clm_bundle_apply (E₂ := fun x ↦ (E₂ x →L[𝕜] E₃ x)) hψ hv
-  exact ContinuousAt.clm_bundle_apply this hw
+    ContinuousAt (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) x :=
+  (hψ.clm_bundle_apply hv).clm_bundle_apply hw
 
 /-- Consider `C^n` maps `v : M → E₁` and `v : M → E₂` to vector bundles, over a basemap
 `b : M → B`, and bilinear maps `ψ m : E₁ (b m) → E₂ (b m) → E₃ (b m)` depending smoothly on `m`.
@@ -502,8 +498,8 @@ lemma ContinuousOn.clm_bundle_apply₂
       (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)) s)
     (hv : ContinuousOn (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) s)
     (hw : ContinuousOn (fun m ↦ TotalSpace.mk' F₂ (b m) (w m)) s) :
-    ContinuousOn (fun m ↦ TotalSpace.mk' F₃ (b m) ((ψ m) (v m) (w m))) s :=
-  fun x hx ↦ ContinuousWithinAt.clm_bundle_apply₂ (hψ x hx) (hv x hx) (hw x hx)
+    ContinuousOn (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) s :=
+  fun x hx ↦ (hψ x hx).clm_bundle_apply₂ (hv x hx) (hw x hx)
 
 /-- Consider `C^n` maps `v : M → E₁` and `v : M → E₂` to vector bundles, over a basemap
 `b : M → B`, and bilinear maps `ψ m : E₁ (b m) → E₂ (b m) → E₃ (b m)` depending smoothly on `m`.
@@ -513,9 +509,9 @@ lemma Continuous.clm_bundle_apply₂
       (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)))
     (hv : Continuous (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)))
     (hw : Continuous (fun m ↦ TotalSpace.mk' F₂ (b m) (w m))) :
-    Continuous (fun m ↦ TotalSpace.mk' F₃ (b m) ((ψ m) (v m) (w m))) := by
+    Continuous (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) := by
   simp only [continuous_iff_continuousOn_univ] at hψ hv hw ⊢
-  exact ContinuousOn.clm_bundle_apply₂ hψ hv hw
+  exact hψ.clm_bundle_apply₂ hv hw
 
 end TwoVariables
 

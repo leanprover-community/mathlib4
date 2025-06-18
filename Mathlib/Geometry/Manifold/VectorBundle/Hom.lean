@@ -40,7 +40,7 @@ variable {𝕜 B F₁ F₂ M : Type*} {n : WithTop ℕ∞}
   [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₂ E₂] {e₁ e₁' : Trivialization F₁ (π F₁ E₁)}
   {e₂ e₂' : Trivialization F₂ (π F₂ E₂)}
 
-local notation "LE₁E₂" => TotalSpace (F₁ →L[𝕜] F₂) ( (fun x ↦ E₁ x →L[𝕜] E₂ x))
+local notation "LE₁E₂" => TotalSpace (F₁ →L[𝕜] F₂) (fun (b : B) ↦ E₁ b →L[𝕜] E₂ b)
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11083): moved slow parts to separate lemmas
 theorem contMDiffOn_continuousLinearMapCoordChange
@@ -98,7 +98,7 @@ alias Bundle.ContinuousLinearMap.vectorPrebundle.isSmooth :=
   Bundle.ContinuousLinearMap.vectorPrebundle.isContMDiff
 
 instance ContMDiffVectorBundle.continuousLinearMap :
-    ContMDiffVectorBundle n (F₁ →L[𝕜] F₂) (fun x ↦ E₁ x →L[𝕜] E₂ x) IB :=
+    ContMDiffVectorBundle n (F₁ →L[𝕜] F₂) ((fun (b : B) ↦ E₁ b →L[𝕜] E₂ b)) IB :=
   (Bundle.ContinuousLinearMap.vectorPrebundle (RingHom.id 𝕜) F₁ E₁ F₂ E₂).contMDiffVectorBundle IB
 
 end

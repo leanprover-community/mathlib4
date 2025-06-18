@@ -22,8 +22,7 @@ variable {α β : Type*}
 
 section LinearOrder
 
-variable [LinearOrder α] [TopologicalSpace α] [OrderTopology α]
-  [LinearOrder β]
+variable [LinearOrder α] [TopologicalSpace α] [OrderTopology α] [LinearOrder β]
   {s : Set α} {x : α} {f : α → β}
 
 lemma MonotoneOn.insert_of_continuousWithinAt [TopologicalSpace β] [OrderClosedTopology β]
@@ -31,14 +30,13 @@ lemma MonotoneOn.insert_of_continuousWithinAt [TopologicalSpace β] [OrderClosed
     MonotoneOn f (insert x s) := by
   have : (𝓝[s] x).NeBot := hx
   apply monotoneOn_insert_iff.2 ⟨fun b hb hbx ↦ ?_, fun b hb hxb ↦ ?_, hf⟩
-  · rcases hbx.eq_or_lt with rfl| hbx
+  · rcases hbx.eq_or_lt with rfl | hbx
     · exact le_rfl
     simp [ContinuousWithinAt] at h'x
     apply ge_of_tendsto h'x
     have : s ∩ Ioi b ∈ 𝓝[s] x := inter_mem_nhdsWithin _ (Ioi_mem_nhds hbx)
-    filter_upwards [this] with y hy
-    exact hf hb hy.1 (le_of_lt hy.2)
-  · rcases hxb.eq_or_lt with rfl| hxb
+    filter_upwards [this] with y hy using hf hb hy.1 (le_of_lt hy.2)
+  · rcases hxb.eq_or_lt with rfl | hxb
     · exact le_rfl
     simp [ContinuousWithinAt] at h'x
     apply le_of_tendsto h'x
