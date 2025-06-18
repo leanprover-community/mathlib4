@@ -313,10 +313,9 @@ theorem coe_centralizer_centralizer (s : Set A) :
   rw [coe_centralizer, StarMemClass.star_coe_eq, Set.union_self, coe_centralizer]
 
 /-- The centralizer of the product of star subalgebras
-  is equal to the product of the centralizers of the star subalgebras. -/
+is equal to the product of the centralizers of the star subalgebras. -/
 theorem centralizer_prod (B C : StarSubalgebra R A) :
-  (B.carrier ×ˢ C.carrier).centralizer = B.carrier.centralizer ×ˢ C.carrier.centralizer :=
-by
+    (B.carrier ×ˢ C.carrier).centralizer = B.carrier.centralizer ×ˢ C.carrier.centralizer := by
   ext
   simp_rw [Set.mem_prod, Set.mem_centralizer_iff, ← forall_and, Set.mem_prod, and_imp, Prod.forall,
     Prod.mul_def, Prod.eq_iff_fst_eq_snd_eq, StarSubalgebra.mem_carrier]
