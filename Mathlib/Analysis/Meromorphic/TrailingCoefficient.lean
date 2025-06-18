@@ -164,7 +164,7 @@ theorem meromorphicTrailingCoeffAt_id_sub_const {x y : 𝕜} :
   · simp_all only [sub_self, ite_true]
     apply AnalyticAt.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE (n := 1) (by fun_prop)
       (by apply one_ne_zero)
-    simp_all
+    simp
   · simp_all only [ite_false]
     apply AnalyticAt.meromorphicTrailingCoeffAt_of_ne_zero (by fun_prop)
     simp_all [sub_ne_zero]
