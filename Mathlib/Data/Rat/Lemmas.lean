@@ -129,7 +129,7 @@ theorem isSquare_ofNat_iff {n : ℕ} :
     IsSquare (ofNat(n) : ℚ) ↔ IsSquare (OfNat.ofNat n : ℕ) :=
   isSquare_natCast_iff
 
-theorem mkRat_add_mkRat_of_den (n₁ n₂ : Int) {d : Nat} (h : d ≠ 0)  :
+theorem mkRat_add_mkRat_of_den (n₁ n₂ : Int) {d : Nat} (h : d ≠ 0) :
     mkRat n₁ d + mkRat n₂ d = mkRat (n₁ + n₂) d := by
   rw [mkRat_add_mkRat _ _ h h, ← add_mul, mkRat_mul_right h]
 
