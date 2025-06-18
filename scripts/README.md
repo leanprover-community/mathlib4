@@ -121,7 +121,7 @@ to learn about it as well!
 
 **Blog and website maintenance**
 - `scripts/formatGhPrList.sh` formats the output of `gh pr list` into an `md` table that is
-  the posted weekly to Zulip.
+  then posted weekly to Zulip.
 
 **Mathlib tactics**
 - `polyrith_sage.py`, `polyrith_sage_helper.py` are required for `polyrith`
