@@ -13,7 +13,7 @@ import Mathlib.LinearAlgebra.Quotient.Pi
 
 ## Main results
 
- * `Submodule.quotientEquivPiSpan`: `M ⧸ N`, if `M` is free finite module over a PID `R` and `N`
+* `Submodule.quotientEquivPiSpan`: `M ⧸ N`, if `M` is free finite module over a PID `R` and `N`
   is a submodule of full rank, can be written as a product of quotients of `R` by principal ideals.
 
 -/

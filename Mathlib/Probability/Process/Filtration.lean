@@ -41,6 +41,7 @@ namespace MeasureTheory
 /-- A `Filtration` on a measurable space `Ω` with σ-algebra `m` is a monotone
 sequence of sub-σ-algebras of `m`. -/
 structure Filtration {Ω : Type*} (ι : Type*) [Preorder ι] (m : MeasurableSpace Ω) where
+  /-- The sequence of sub-σ-algebras of `m` -/
   seq : ι → MeasurableSpace Ω
   mono' : Monotone seq
   le' : ∀ i : ι, seq i ≤ m

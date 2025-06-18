@@ -47,7 +47,7 @@ instance [PartialOrder α] : PartialOrder (Shrink.{u} α) where
 
 noncomputable instance [LinearOrder α] : LinearOrder (Shrink.{u} α) where
   le_total _ _ := le_total _ _
-  decidableLE _ _ := LinearOrder.decidableLE _ _
+  toDecidableLE _ _ := LinearOrder.toDecidableLE _ _
 
 noncomputable instance [Bot α] : Bot (Shrink.{u} α) where
   bot := equivShrink _ ⊥

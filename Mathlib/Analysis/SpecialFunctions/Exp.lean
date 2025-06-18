@@ -365,9 +365,6 @@ theorem tendsto_exp_comp_nhds_zero {f : α → ℝ} :
 theorem isOpenEmbedding_exp : IsOpenEmbedding exp :=
   isOpen_Ioi.isOpenEmbedding_subtypeVal.comp expOrderIso.toHomeomorph.isOpenEmbedding
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_exp := isOpenEmbedding_exp
-
 @[simp]
 theorem map_exp_nhds (x : ℝ) : map exp (𝓝 x) = 𝓝 (exp x) :=
   isOpenEmbedding_exp.map_nhds_eq x

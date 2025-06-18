@@ -197,7 +197,7 @@ private theorem eLpNorm'_sum_norm_sub_le_tsum_of_cauchy_eLpNorm' {f : ℕ → α
   rw [hgf_norm_diff]
   refine (eLpNorm'_sum_le (fun i _ => ((hf (i + 1)).sub (hf i)).norm) hp1).trans ?_
   simp_rw [eLpNorm'_norm]
-  refine (Finset.sum_le_sum ?_).trans (sum_le_tsum _ (fun m _ => zero_le _) ENNReal.summable)
+  refine (Finset.sum_le_sum ?_).trans <| ENNReal.sum_le_tsum _
   exact fun m _ => (h_cau m (m + 1) m (Nat.le_succ m) (le_refl m)).le
 
 private theorem lintegral_rpow_sum_enorm_sub_le_rpow_tsum

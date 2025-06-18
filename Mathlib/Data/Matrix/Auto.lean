@@ -20,6 +20,6 @@ example {α} [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁�
 ```
 
 TODO: These magic lemmas have been skipped for now, though the plumbing lemmas in
-`Mathlib.Data.Matrix.Reflection` are still available.
+`Mathlib/Data/Matrix/Reflection.lean` are still available.
 They should probably be implemented as simprocs.
 -/
