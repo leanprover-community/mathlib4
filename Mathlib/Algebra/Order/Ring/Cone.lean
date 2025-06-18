@@ -66,7 +66,7 @@ end RingCone
 variable {S R : Type*} [Ring R] [SetLike S R] (C : S)
 
 /-- Construct a partially ordered ring by designating a cone in a ring. -/
-lemma IsOrderedRing.mkOfCone [RingConeClass S R] :
+instance IsOrderedRing.mkOfCone [RingConeClass S R] :
     letI _ : PartialOrder R := .mkOfAddGroupCone C
     IsOrderedRing R :=
   letI _ : PartialOrder R := .mkOfAddGroupCone C
