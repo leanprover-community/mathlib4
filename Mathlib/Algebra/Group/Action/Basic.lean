@@ -89,10 +89,10 @@ variable {G A B : Type*} [DivisionMonoid G] [MulAction G A]
 def arrowAction : MulAction G (A → B) where
   smul g F a := F (g⁻¹ • a)
   one_smul f := by
-    show (fun x => f ((1 : G)⁻¹ • x)) = f
+    change (fun x => f ((1 : G)⁻¹ • x)) = f
     simp only [inv_one, one_smul]
   mul_smul x y f := by
-    show (fun a => f ((x*y)⁻¹ • a)) = (fun a => f (y⁻¹ • x⁻¹ • a))
+    change (fun a => f ((x*y)⁻¹ • a)) = (fun a => f (y⁻¹ • x⁻¹ • a))
     simp only [mul_smul, mul_inv_rev]
 
 attribute [local instance] arrowAction

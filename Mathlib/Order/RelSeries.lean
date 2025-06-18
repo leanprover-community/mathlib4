@@ -399,12 +399,12 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
     set x := _; set y := _; change r x y
     obtain hm | hm | hm := lt_trichotomy m.1 i.1
     · convert p.step ⟨m, hm.trans i.2⟩
-      · show Fin.insertNth _ _ _ _ = _
+      · change Fin.insertNth _ _ _ _ = _
         rw [Fin.insertNth_apply_below]
         pick_goal 2
         · exact hm.trans (lt_add_one _)
         simp
-      · show Fin.insertNth _ _ _ _ = _
+      · change Fin.insertNth _ _ _ _ = _
         rw [Fin.insertNth_apply_below]
         pick_goal 2
         · change m.1 + 1 < i.1 + 1; rwa [add_lt_add_iff_right]
@@ -412,7 +412,7 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
     · rw [show x = p m from show Fin.insertNth _ _ _ _ = _ by
         rw [Fin.insertNth_apply_below]
         pick_goal 2
-        · show m.1 < i.1 + 1; exact hm ▸ lt_add_one _
+        · change m.1 < i.1 + 1; exact hm ▸ lt_add_one _
         simp]
       convert prev_connect
       · ext; exact hm
@@ -492,7 +492,7 @@ lemma cons_cast_succ (s : RelSeries r) (a : α) (h : r a s.head) (i : Fin (s.len
   dsimp [cons]
   convert append_apply_right (singleton r a) s h i
   ext
-  show i.1 + 1 = _ % _
+  change i.1 + 1 = _ % _
   simpa using (Nat.mod_eq_of_lt (by simp)).symm
 
 @[simp]
@@ -571,16 +571,16 @@ def tail (p : RelSeries r) (len_pos : p.length ≠ 0) : RelSeries r where
 
 @[simp] lemma head_tail (p : RelSeries r) (len_pos : p.length ≠ 0) :
     (p.tail len_pos).head = p 1 := by
-  show p (Fin.succ _) = p 1
+  change p (Fin.succ _) = p 1
   congr
   ext
-  show (1 : ℕ) = (1 : ℕ) % _
+  change (1 : ℕ) = (1 : ℕ) % _
   rw [Nat.mod_eq_of_lt]
   simpa only [lt_add_iff_pos_left, Nat.pos_iff_ne_zero]
 
 @[simp] lemma last_tail (p : RelSeries r) (len_pos : p.length ≠ 0) :
     (p.tail len_pos).last = p.last := by
-  show p _ = p _
+  change p _ = p _
   congr
   ext
   simp only [tail_length, Fin.val_succ, Fin.coe_cast, Fin.val_last]
@@ -719,7 +719,7 @@ def smash (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
 lemma smash_castLE {p q : RelSeries r} (h : p.last = q.head) (i : Fin (p.length + 1)) :
     p.smash q h (i.castLE (by simp)) = p i := by
   refine i.lastCases ?_ fun _ ↦ by dsimp only [smash]; apply Fin.addCases_left
-  show p.smash q h (Fin.natAdd p.length (0 : Fin (q.length + 1))) = _
+  change p.smash q h (Fin.natAdd p.length (0 : Fin (q.length + 1))) = _
   simpa only [smash, Fin.addCases_right] using h.symm
 
 lemma smash_castAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin p.length) :

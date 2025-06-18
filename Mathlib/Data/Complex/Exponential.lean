@@ -372,7 +372,7 @@ theorem exp_bound {x : ℂ} (hx : ‖x‖ ≤ 1) {n : ℕ} (hn : 0 < n) :
     ← lim_neg, lim_add, ← lim_norm]
   refine lim_le (CauSeq.le_of_exists ⟨n, fun j hj => ?_⟩)
   simp_rw [← sub_eq_add_neg]
-  show
+  change
     ‖(∑ m ∈ range j, x ^ m / m.factorial) - ∑ m ∈ range n, x ^ m / m.factorial‖ ≤
       ‖x‖ ^ n * ((n.succ : ℝ) * (n.factorial * n : ℝ)⁻¹)
   rw [sum_range_sub_sum_range hj]
@@ -401,7 +401,7 @@ theorem exp_bound' {x : ℂ} {n : ℕ} (hx : ‖x‖ / n.succ ≤ 1 / 2) :
     exp, sub_eq_add_neg, ← lim_neg, lim_add, ← lim_norm]
   refine lim_le (CauSeq.le_of_exists ⟨n, fun j hj => ?_⟩)
   simp_rw [← sub_eq_add_neg]
-  show ‖(∑ m ∈ range j, x ^ m / m.factorial) - ∑ m ∈ range n, x ^ m / m.factorial‖ ≤
+  change ‖(∑ m ∈ range j, x ^ m / m.factorial) - ∑ m ∈ range n, x ^ m / m.factorial‖ ≤
     ‖x‖ ^ n / n.factorial * 2
   let k := j - n
   have hj : j = n + k := (add_tsub_cancel_of_le hj).symm
@@ -472,7 +472,7 @@ lemma norm_exp_sub_sum_le_norm_mul_exp (x : ℂ) (n : ℕ) :
     ← CauSeq.lim_neg, CauSeq.lim_add, ← lim_norm]
   refine CauSeq.lim_le (CauSeq.le_of_exists ⟨n, fun j hj => ?_⟩)
   simp_rw [← sub_eq_add_neg]
-  show ‖(∑ m ∈ range j, x ^ m / m.factorial) - ∑ m ∈ range n, x ^ m / m.factorial‖ ≤ _
+  change ‖(∑ m ∈ range j, x ^ m / m.factorial) - ∑ m ∈ range n, x ^ m / m.factorial‖ ≤ _
   rw [sum_range_sub_sum_range hj]
   calc
     ‖∑ m ∈ range j with n ≤ m, (x ^ m / m.factorial : ℂ)‖

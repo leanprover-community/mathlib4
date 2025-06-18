@@ -61,7 +61,7 @@ instance : SetLike (IntermediateField K L) L :=
     simp ⟩
 
 protected theorem neg_mem {x : L} (hx : x ∈ S) : -x ∈ S := by
-  show -x ∈S.toSubalgebra; simpa
+  change -x ∈S.toSubalgebra; simpa
 
 /-- Reinterpret an `IntermediateField` as a `Subfield`. -/
 def toSubfield : Subfield L :=
