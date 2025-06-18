@@ -251,13 +251,14 @@ theorem orderOf_one_add_mul_prime {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (a : 
       rw [Int.cast_natCast]
       exact natCast_self (p ^ (n + 2))
 
-/-- If p is an odd prime, then `(ZMod (p ^ n))ˣ` is cyclic for all n -/
+/-- If `p` is an odd prime, then `(ZMod (p ^ n))ˣ` is cyclic for all n -/
 theorem isCyclic_units_of_prime_pow (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2) (n : ℕ) :
     IsCyclic (ZMod (p ^ n))ˣ := by
   have _ : NeZero (p ^ n) := ⟨pow_ne_zero n hp.ne_zero⟩
   have _ : Fact (p.Prime) := ⟨hp⟩
   rcases n with _ | n
   · rw [pow_zero]; infer_instance
+  -- We first consider the element `1 + p` of order `p ^ n`
   let a := (((1 + p) : ℕ) : ZMod (p ^ (n + 1)))
   have ha : IsUnit a := by
     rw [ZMod.isUnit_iff_coprime]
@@ -271,6 +272,7 @@ theorem isCyclic_units_of_prime_pow (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2) (n 
     convert orderOf_one_add_mul_prime hp hp2 1 _ _ using 1
     · simp
     · exact Prime.not_dvd_one (Nat.prime_iff_prime_int.mp hp)
+  -- We lift a primitive root of unity mod `p`, an adequate power of which has order `p - 1`.
   obtain ⟨c, hc⟩ := isCyclic_iff_exists_orderOf_eq_natCard.mp (isCyclic_units_prime hp)
   rw [Nat.card_eq_fintype_card, ZMod.card_units] at hc
   obtain ⟨(b : (ZMod (p ^ (n + 1)))ˣ), rfl⟩ :=
@@ -281,6 +283,7 @@ theorem isCyclic_units_of_prime_pow (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2) (n 
   let k := orderOf b / (p - 1)
   have : orderOf (b ^ k) = p - 1 := orderOf_pow_orderOf_div (orderOf_pos b).ne' this
   rw [isCyclic_iff_exists_orderOf_eq_natCard]
+  -- The product of `ha.unit` and `b ^ k` has the required order
   use ha.unit * b ^ k
   rw [Commute.orderOf_mul_eq_mul_orderOf_of_coprime (Commute.all _ _),
     this, Nat.card_eq_fintype_card, ZMod.card_units_eq_totient,
@@ -334,9 +337,9 @@ lemma Int.modEq_pow_five' (n : ℕ) :
     simp
 
 theorem units_orderOf_five (n : ℕ) :
-    orderOf (5 : ZMod (2 ^ (n + 3))) = 2 ^ (n + 1) := by
+    orderOf (5 : ZMod (2 ^ (n + 2))) = 2 ^ n := by
   rcases n with _ | n
-  · rw [pow_zero, orderOf_eq_one_iff]; decide
+  · norm_num; decide
   suffices h : (5 : ZMod (2 ^ (n + 3))) ^ (2 ^ n) = 1 + 2 ^ (n + 2) by
     apply Nat.eq_prime_pow_of_dvd_least_prime_pow Nat.prime_two
     · rw [orderOf_dvd_iff_pow_eq_one, h, add_eq_left]
