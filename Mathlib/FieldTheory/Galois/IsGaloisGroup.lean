@@ -10,7 +10,7 @@ import Mathlib.RingTheory.Invariant.Defs
 # Predicate for Galois Groups
 
 Given an action of a group `G` on an extension of fields `L/K`, we introduce a predicate
-`IsGaloisGroup G K L` saying that `G` acts faithfull on `L` with fixed field `K`. In particular,
+`IsGaloisGroup G K L` saying that `G` acts faithfully on `L` with fixed field `K`. In particular,
 we do not assume that `L` is an algebraic extension of `K`.
 -/
 
