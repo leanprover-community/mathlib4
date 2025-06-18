@@ -100,7 +100,7 @@ lemma IFTPregroupoid.isClosedUnderRestriction_groupoid (P : IFTPregroupoid 𝕂 
   apply mem_groupoid_of_pregroupoid.mpr
   constructor
   · rw [e.restr_source' s hs]
-    exact P.monotonicity (e.open_source.inter hs) (inter_subset_left _ _) l
+    exact P.monotonicity (e.open_source.inter hs) inter_subset_left l
   · show P.property (e.restr s).symm (e.restr s).symm.source
     rw [(e.restr s).symm_source]
     exact P.monotonicity (e.restr s).open_target (by simp) r
@@ -123,27 +123,27 @@ lemma HasStrictFDerivAt.isLocalStructomorphWithinAt_of_IFTPregroupoid [CompleteS
   -- Our IFT groupoid property applies on the intersection, hence we need monotonity of `P`.
   let s' := f_loc.source ∩ s
   have hs' : IsOpen s' := f_loc.open_source.inter hs
-  have hfP' : P.property f s' := P.monotonicity hs' (inter_subset_right _ _) hfP
+  have hfP' : P.property f s' := P.monotonicity hs' inter_subset_right hfP
   -- Since `P` is an IFTPregroupoid, `P.property g t'` for some open set
   -- `t' ⊆ t := f_loc.target` containing `x`.
   have hinv' : InvOn f_loc.symm f_loc s' (f_loc '' s') :=
-    f_loc.invOn.mono (inter_subset_left _ _) (image_subset _ (inter_subset_left _ _))
+    f_loc.invOn.mono inter_subset_left (image_subset _ inter_subset_left)
   let p := P.inverse hs' (mem_inter hx' hx) hfP' hf' hinv'
 
   rcases p with ⟨t', htt', hxt', ht', hP⟩
   let s'' := s' ∩ f ⁻¹' t'
   have hs'' : IsOpen s'' :=
-    (hf.continuousOn.mono (inter_subset_right _ _)).isOpen_inter_preimage hs' ht'
+    (hf.continuousOn.mono inter_subset_right).isOpen_inter_preimage hs' ht'
   have hG : P.groupoid.IsLocalStructomorphWithinAt f s'' x := by
     intro hx
     refine ⟨f_loc.restrOpen s'' hs'', ?_, eqOn_refl f _, ?_⟩
     · apply mem_groupoid_of_pregroupoid.mpr
-      have aux : f_loc.source ∩ s' = s' := by simp
+      have aux : f_loc.source ∩ s' = s' := by simp [f_loc, s']
       rw [f_loc.restrOpen_source]--, aux]
       constructor
       · apply P.monotonicity (t := s') (f_loc.open_source.inter hs'') ?_ hfP'
         rw [← aux]
-        exact inter_subset_inter_right _ (inter_subset_left _ _)
+        exact inter_subset_inter_right _ inter_subset_left
       · have : (f_loc.restrOpen s' hs').target = f_loc '' s' := by
           rw [f_loc.restrOpen_target s' hs', aux]
         -- TODO: complete proof, using things with t and t'!
@@ -174,12 +174,12 @@ lemma HasStrictFDerivAt.isLocalStructomorphWithinAt_of_IFTPregroupoid [CompleteS
   --     sorry -- TODO: fix proof!
   --     --exact ⟨hfP', this ▸ p⟩
 
-#exit
+--#exit
 
 /-- The pregroupoid of `C^n` functions on `E`. -/
 def contDiffPregroupoidBasic : Pregroupoid E := {
   property := fun f s ↦ ContDiffOn 𝕂 n f s
-  comp := fun {f g} {u v} hf hg _ _ _ ↦ hg.comp' hf
+  comp := fun {f g} {u v} hf hg _ _ _ ↦ hg.comp_inter hf
   id_mem := contDiffOn_id
   locality := fun _ h ↦ contDiffOn_of_locally_contDiffOn h
   congr := by intro f g u _ congr hf; exact (contDiffOn_congr congr).mpr hf
@@ -252,7 +252,7 @@ def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroup
       rw [← this.mapsTo_iff (t := fhom.source)]
       exact fhom.symm_mapsTo
     have hu₁ : f '' U ⊆ t :=
-      Subset.trans (image_subset _ (inter_subset_left _ _)) (mapsTo'.mp this)
+      Subset.trans (image_subset _ inter_subset_left) (mapsTo'.mp this)
     refine ⟨f '' U , hu₁, mem_image_of_mem f hxU, scifi, ?_⟩
     suffices ∀ y : f '' U, ContDiffAt ℝ n g y from fun y hy ↦ (this ⟨y, hy⟩).contDiffWithinAt
     -- Show g is continuously differentiable at each y ∈ f(U).
@@ -282,4 +282,5 @@ section IFTFull
 
 -- finally: (try to) prove that LiftProp (G.isLocalStructomorphWithinAt) iff f and f.symm ∈ P
 -- this would generalise isLocalStructomorphOn_contDiffGroupoid_iff
-section IFTFull
+
+end IFTFull
