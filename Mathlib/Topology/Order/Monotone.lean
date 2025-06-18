@@ -35,8 +35,7 @@ lemma MonotoneOn.insert_of_continuousWithinAt [TopologicalSpace β] [OrderClosed
     simp [ContinuousWithinAt] at h'x
     apply ge_of_tendsto h'x
     have : s ∩ Ioi b ∈ 𝓝[s] x := inter_mem_nhdsWithin _ (Ioi_mem_nhds hbx)
-    filter_upwards [this] with y hy
-    exact hf hb hy.1 (le_of_lt hy.2)
+    filter_upwards [this] with y hy using hf hb hy.1 (le_of_lt hy.2)
   · rcases hxb.eq_or_lt with rfl | hxb
     · exact le_rfl
     simp [ContinuousWithinAt] at h'x
