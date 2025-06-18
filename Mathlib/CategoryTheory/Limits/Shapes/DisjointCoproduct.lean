@@ -156,13 +156,11 @@ lemma _root_.CategoryTheory.Mono.of_binaryCoproductDisjoint_right {Z : C}
 
 instance _root_.CategoryTheory.Mono.inl_of_binaryCoproductDisjoint [HasBinaryCoproduct X Y] :
     Mono (coprod.inl : X ⟶ X ⨿ Y) :=
-  have : HasCoproduct (fun j : WalkingPair ↦ (j.casesOn X Y : C)) := ‹_›
-  inferInstanceAs <| Mono (Sigma.ι _ _)
+  @Mono.ι_of_coproductDisjoint _ _ _ _ _ ‹_› WalkingPair.left
 
 instance _root_.CategoryTheory.Mono.inr_of_binaryCoproductDisjoint [HasBinaryCoproduct X Y] :
     Mono (coprod.inr : Y ⟶ X ⨿ Y) :=
-  have : HasCoproduct (fun j : WalkingPair ↦ (j.casesOn X Y : C)) := ‹_›
-  inferInstanceAs <| Mono (Sigma.ι _ _)
+  @Mono.ι_of_coproductDisjoint _ _ _ _ _ ‹_› WalkingPair.right
 
 /-- If `X ← Z → Y` is a pullback diagram over `W`, where `W` is the
 coproduct of `X` and `Y`, then `Z` is initial. -/
