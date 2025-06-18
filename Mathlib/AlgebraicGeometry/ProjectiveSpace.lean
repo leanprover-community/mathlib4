@@ -33,13 +33,13 @@ noncomputable section
 
 namespace AlgebraicGeometry
 
-variable (n : Type v) (S : Scheme.{max u v})
+variable (n : Type u) (S : Scheme.{u})
 
 attribute [local instance] gradedAlgebra
 
 /-- `ℙ(n; S)` is the projective `n`-space over `S`.
 Note that `n` is an arbitrary index type (e.g. `Fin m`). -/
-def ProjectiveSpace (n : Type v) (S : Scheme.{max u v}) : Scheme.{max u v} :=
+def ProjectiveSpace (n : Type u) (S : Scheme.{u}) : Scheme.{max u v} :=
   pullback (terminal.from S) (terminal.from (Proj (homogeneousSubmodule n (ULift.{max u v} ℤ))))
 
 @[inherit_doc] scoped notation "ℙ("n"; "S")" => ProjectiveSpace n S
