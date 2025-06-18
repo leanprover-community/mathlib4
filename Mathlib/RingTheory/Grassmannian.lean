@@ -11,10 +11,10 @@ import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 ## Main definitions
 
-- `AlgebraicGeometry.Grassmannian.AsType`: `G(M; R, k)` is the `k`ᵗʰ Grassmannian of the `R`-module
-  `M`. It is defined to be the set of submodules of `M` whose quotient is locally free of rank `k`.
-  Note that this indexing is the opposite of some indexing in literature, where this rank would be
-  `n - k` instead, where `M = R ^ n`.
+- `Grassmannian`: `G(M; R, k)` is the `k`ᵗʰ Grassmannian of the `R`-module `M`. It is defined to be
+  the set of submodules of `M` whose quotient is locally free of rank `k`. Note that this indexing
+  is the opposite of some indexing in literature, where this rank would be `n - k` instead, where
+  `M = R ^ n`.
 
 ## TODO
 - Define the functor `Grassmannian.functor R M k` that sends an `R`-algebra `A` to the set
@@ -28,8 +28,6 @@ import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 -/
 
 universe u v w
-
-namespace AlgebraicGeometry
 
 open Module
 
@@ -69,5 +67,3 @@ lemma rankAtStalk_eq (p : PrimeSpectrum R) : rankAtStalk (M ⧸ N.val) p = k :=
   (Subtype.prop N).2.2 p
 
 end Grassmannian
-
-end AlgebraicGeometry
