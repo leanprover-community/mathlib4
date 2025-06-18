@@ -136,9 +136,9 @@ def functorObjObj (A : C ⥤ D) [Comon_Class A] (X : C) : Comon_ D where
   comon :=
   { counit := ε[A].app X
     comul := Δ[A].app X
-    counit_comul' := congr_app (counit_comul A) X
-    comul_counit' := congr_app (comul_counit A) X
-    comul_assoc' := congr_app (comul_assoc A) X }
+    counit_comul := congr_app (counit_comul A) X
+    comul_counit := congr_app (comul_counit A) X
+    comul_assoc := congr_app (comul_assoc A) X }
 
 /--
 A comonoid object in a functor category induces a functor to the category of comonoid objects.

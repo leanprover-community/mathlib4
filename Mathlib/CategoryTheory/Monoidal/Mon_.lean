@@ -48,7 +48,6 @@ namespace Mon_Class
 @[inherit_doc] scoped notation "η" => Mon_Class.one
 @[inherit_doc] scoped notation "η["M"]" => Mon_Class.one (X := M)
 
-/- The simp attribute is reserved for the unprimed versions. -/
 attribute [reassoc (attr := simp)] one_mul mul_one mul_assoc
 
 @[simps]
