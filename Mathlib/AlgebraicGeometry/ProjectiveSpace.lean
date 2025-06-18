@@ -14,18 +14,17 @@ import Mathlib.RingTheory.MvPolynomial.Homogeneous
 ## Main definitions
 
 - `AlgebraicGeometry.ProjectiveSpace`: `ℙ(n; S)` is the projective `n`-space over `S`.
--/
 
-/-
-TODO:
+## TODO
+
 - `AlgebraicGeometry.ProjectiveSpace.SpecIso`: `ℙ(n; Spec R) ≅ Proj R[n]`
 - `AlgebraicGeometry.ProjectiveSpace.openCover`: the canonical cover of `ℙ(n; S)` by `n` affine
   charts. The `i`ᵗʰ chart is `𝔸({k // k ≠ i}; S) ⟶ ℙ(n; S)`, and represents the open set where
   the function `Xᵢ` does not vanish.
-- Functoriality.
+- Functoriality of `ProjectiveSpace` on the `S` component.
 -/
 
-universe v w u
+universe u
 
 open CategoryTheory Limits MvPolynomial HomogeneousLocalization
 
@@ -39,7 +38,7 @@ attribute [local instance] gradedAlgebra
 
 /-- `ℙ(n; S)` is the projective `n`-space over `S`.
 Note that `n` is an arbitrary index type (e.g. `Fin m`). -/
-def ProjectiveSpace (n : Type u) (S : Scheme.{u}) : Scheme.{max u v} :=
+def ProjectiveSpace (n : Type u) (S : Scheme.{u}) : Scheme.{u} :=
   pullback (terminal.from S) (terminal.from (Proj (homogeneousSubmodule n (ULift.{u} ℤ))))
 
 @[inherit_doc] scoped notation "ℙ("n"; "S")" => ProjectiveSpace n S
@@ -51,7 +50,7 @@ instance over : ℙ(n; S).CanonicallyOver S where
   hom := pullback.fst _ _
 
 /-- The map from the projective `n`-space over `S` to the integral model `Proj ℤ[n]`. -/
-def toProjMvPoly : ℙ(n; S) ⟶ Proj (homogeneousSubmodule n (ULift.{max u v} ℤ)) := pullback.snd ..
+def toProjMvPoly : ℙ(n; S) ⟶ Proj (homogeneousSubmodule n (ULift.{u} ℤ)) := pullback.snd ..
 
 end ProjectiveSpace
 
