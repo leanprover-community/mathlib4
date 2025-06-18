@@ -30,12 +30,12 @@ theorem fixedPoints_eq_bot [IsGaloisGroup G K L] :
   rw [eq_bot_iff]
   exact Algebra.IsInvariant.isInvariant
 
-/-- If `G` is a Galois group for `L/K`, then `L/K` is a Galois extension. -/
+/-- If `G` is a finite Galois group for `L/K`, then `L/K` is a Galois extension. -/
 theorem isGalois [Finite G] [IsGaloisGroup G K L] : IsGalois K L := by
   rw [← isGalois_iff_isGalois_bot, ← fixedPoints_eq_bot G]
   exact IsGalois.of_fixed_field L G
 
-/-- If `L/K` is a Galois extension, then `L ≃ₐ[K] L` is a Galois group for `L/K`. -/
+/-- If `L/K` is a finite Galois extension, then `L ≃ₐ[K] L` is a Galois group for `L/K`. -/
 theorem of_isGalois [FiniteDimensional K L] [IsGalois K L] : IsGaloisGroup (L ≃ₐ[K] L) K L where
   faithful := inferInstance
   commutes := inferInstance
