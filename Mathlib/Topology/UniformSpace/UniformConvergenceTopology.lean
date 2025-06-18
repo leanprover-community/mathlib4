@@ -948,6 +948,16 @@ theorem uniformContinuous_restrict_toFun :
   obtain ⟨s : Set α, hs : s ∈ 𝔖, hxs : x ∈ s⟩ := mem_sUnion.mpr hx
   exact uniformContinuous_eval_of_mem β 𝔖 hxs hs
 
+/-- The map sending a function `f : α →ᵤ[𝔖] β` to the family of restrictions of `f` to each `s ∈ 𝔖`
+(each coordinate equipped with its respective uniform structure `s →ᵤ β`) induces the uniformity on
+`α →ᵤ[𝔖] β`. -/
+lemma isUniformInducing_pi_restrict :
+    IsUniformInducing
+      (fun f : α →ᵤ[𝔖] β ↦ fun s : 𝔖 ↦ UniformFun.ofFun ((s : Set α).restrict (toFun 𝔖 f))) := by
+  simp_rw [isUniformInducing_iff_uniformSpace, Pi.uniformSpace_eq, UniformSpace.comap_iInf,
+    ← UniformSpace.comap_comap, iInf_subtype]
+  rfl
+
 /-- If `𝔖` covers `α`, the natural map `UniformOnFun.toFun` from `α →ᵤ[𝔖] β` to `α → β` is
 uniformly continuous.
 
