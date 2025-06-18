@@ -614,6 +614,7 @@ jobs:
         id: get-label-actor
         run: |
           # Parse the GraphQL response and filter for the specific label
+          echo '${{ steps.get-timeline.outputs.data }}'
           USERNAME=$(echo '${{ steps.get-timeline.outputs.data }}' | jq -r '
             .repository.pullRequest.timelineItems.nodes
             | map(select(.label.name == "auto-merge-after-CI"))
@@ -623,6 +624,7 @@ jobs:
           ')
 
           # Validate username format (GitHub usernames are alphanumeric + hyphens, max 39 chars)
+          printf 'USERNAME: %s\n' "$USERNAME"
           if [[ -z "$USERNAME" ]]; then
             echo "Error: No actor found for the specified label"
             exit 1
