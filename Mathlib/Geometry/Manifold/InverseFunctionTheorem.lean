@@ -205,14 +205,30 @@ lemma contDiffPregroupoindIsIFT_aux [CompleteSpace E] {f g : E → E} {s t : Set
   let r := h.contDiffAt_symm (hf.image_mem_toPartialHomeomorph_target hf' hn)
     (hinv.symm ▸ hf') (hinv.symm ▸ hf)
   -- shrinking s and t (and restricting h), we may assume s = h.source and t = h.target
-  -- then both of these are immediate
+  -- then both of these are immediate,
+  -- as well as x ∈ s and f x ∈ t
   have h1' : InvOn h.symm h s t := sorry -- is then h.invOn
   have h2' : InvOn g f s t := sorry -- rewrite h=f in hinv
-  have : EqOn h.symm g t := eqOn_of_leftInvOn_of_rightInvOn h1'.1 h2'.2 hm
-  have : ContDiffAt ℝ n h.symm (f x) := h2
-  -- last step: apply ContDiffAt.congr, seems to be missing; have e.g. fderiv_congr
-  -- slightly different route: add ContDiffOn assumption, then it exists?
+  -- TODO: shrinking t suitably, can assume it is a neighbourhood of f x
+  have hfx : f x ∈ t := sorry
+  have ht : IsOpen t := sorry
+  have aux : EqOn h.symm g t := eqOn_of_leftInvOn_of_rightInvOn h1'.1 h2'.2 hm
+  apply h2.congr_of_eventuallyEq
+  exact Filter.eventuallyEq_of_mem (ht.mem_nhds hfx) aux.symm
+
+section
+
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {e : PartialHomeomorph X Y}
+  {s U : Set X}
+
+lemma IsLocalHomeomorphOn.missing (he : IsLocalHomeomorphOn e U)
+    (hs : s ⊆ U) (hs' : IsOpen s) : IsOpen (e '' s) := by
+  rw [isLocalHomeomorphOn_iff_isOpenEmbedding_restrict] at he
+  -- apply induction on e '' s: for y = e x, find an open subset in the codomain contained in e '' s
+  -- namely, choose an open supset of x contained in U
   sorry
+
+end
 
 /-- If `E` is complete and `n ≥ 1`, the pregroupoid of `C^n` functions
   is an IFT pregroupoid.
@@ -226,7 +242,7 @@ def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroup
     -- `df_x'` is an isomorphism for all `x' ∈ U`.
     rcases mem_nhds_iff.mp f'.nhds with ⟨t', ht', ht'open, hft⟩
     let U := s ∩ (fun x ↦ fderiv ℝ f x) ⁻¹' t'
-    have : IsOpen U := (hf.continuousOn_fderiv_of_isOpen hs hn).isOpen_inter_preimage hs ht'open
+    have hU : IsOpen U := (hf.continuousOn_fderiv_of_isOpen hs hn).isOpen_inter_preimage hs ht'open
     have hxU : x ∈ U := by
       refine ⟨hx, ?_⟩
       show fderiv ℝ f x ∈ t'
@@ -236,9 +252,14 @@ def contDiffBasicIsIFTPregroupoid [CompleteSpace E] (hn : 1 ≤ n) : IFTPregroup
     have : f = fhom := by rw [ContDiffAt.toPartialHomeomorph_coe]
     have h3 : IsLocalHomeomorphOn f fhom.source :=
       IsLocalHomeomorphOn.mk f fhom.source (fun x hx ↦ ⟨fhom, hx, fun y hy ↦ by rw [this]⟩)
-    -- now: U ⊆ fhom.source and h3 imply f(U) is open
-    -- this is a missing lemma about local homeomorphisms
-    have scifi : IsOpen (f '' U) := sorry
+    -- XXX: this can surely be streamlined a bit
+    have h3' : IsLocalHomeomorphOn fhom fhom.source := by convert h3
+    have scifi : IsOpen (fhom '' U) := by
+      apply h3'.missing ?_ hU
+      -- U ⊆ fhom.source... is this true?
+      simp only [U, fhom]
+
+      sorry -- U ⊆ fhom.source
     -- shrinking s and t, we may assume s = fhom.source, t = fhom.target
     -- use filters to formalise this?
     have shrink1 : s = fhom.source := sorry
