@@ -106,7 +106,9 @@ open scoped MonoidalLeftAction
 
 /-- The canonical map `c ⟶ J ⊙ₗ c` corresponding to `j : J`.
 If we are to think of `J ⊙ₗ c` as a `J`-indexed coproduct of copies of `c`, this is the
-inclusion at the component corresponding to `j`. This is proved in `ι_eq_ι`. -/
+inclusion at the component corresponding to `j`. This is proved in `ι_eq_ι`, but this
+definition should be the one that is used when working with the left action
+of types on `C`. -/
 noncomputable def ι {J : Type w} (c : C) (j : J) : c ⟶ J ⊙ₗ c := (λₗ c).inv ≫ (fun _ ↦ j) ⊵ₗ c
 
 -- not simp to keep API leakage minimal.
@@ -131,6 +133,20 @@ lemma ι_unit (c : C) : ι c (.unit : 𝟙_ (Type w)) = (λₗ c).inv := by
   rw [Iso.inv_comp_eq]
   change 𝟙 _ ⊵ₗ c = _
   simp
+
+/-- Construct a morphism `J ⊙ₗ c ⟶ c'` from a familiy of maps `c ⟶ c' -/
+noncomputable def desc {J : Type w} {c c' : C} (φ : J → (c ⟶ c')) : J ⊙ₗ c ⟶ c' := 
+    Sigma.desc φ
+
+@[reassoc (attr := simp)]
+lemma ι_desc {J : Type w} {c c' : C} (φ : J → (c ⟶ c')) (j : J) :
+   ι c j ≫ desc φ = φ j := by 
+  simp[desc, ι_eq_ι]
+
+@[reassoc (attr := simp)]
+lemma desc_map {J J' : Type w} {c c' : C} (φ : J → (c ⟶ c')) (f : J' ⟶ J) :
+    desc (φ ∘ f) = f ⊵ₗ c ≫ desc φ := by 
+  aesop_cat
 
 end typeAction
 
