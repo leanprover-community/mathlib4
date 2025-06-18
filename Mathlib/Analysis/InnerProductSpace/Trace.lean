@@ -40,4 +40,9 @@ lemma IsSymmetric.trace_eq_sum_eigenvalues {T : E →ₗ[𝕜] E} (hT : T.IsSymm
   rw [hT.apply_eigenvectorBasis, inner_smul_real_right, inner_self_eq_norm_sq_to_K, b.norm_eq_one]
   simp [RCLike.ofReal_alg]
 
+lemma IsSymmetric.re_trace_eq_sum_eigenvalues {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
+    RCLike.re (T.trace 𝕜 E) = ∑i, hT.eigenvalues rfl i := by
+  rw [hT.trace_eq_sum_eigenvalues]
+  exact RCLike.ofReal_re_ax _
+
 end LinearMap
