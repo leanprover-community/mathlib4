@@ -221,12 +221,32 @@ section
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {e : PartialHomeomorph X Y}
   {s U : Set X}
 
+-- exercise in Munkres (modulo formalisation errors)
+lemma IsOpen.induction {s : Set X} (hs : ∀ x ∈ s, ∃ t, IsOpen t ∧ x ∈ t ∧ t ⊆ s) : IsOpen s := by
+  let t : s → Set X := fun ⟨x, hx⟩ ↦ Classical.choose (hs x hx)
+  have ht (x) (hx : x ∈ s) : IsOpen (t ⟨x, hx⟩) := Classical.choose_spec (hs x hx) |>.1
+  have hxt (x) (hx : x ∈ s) : x ∈ (t ⟨x, hx⟩) := Classical.choose_spec (hs x hx) |>.2.1
+  have hts (x) (hx : x ∈ s) : (t ⟨x, hx⟩) ⊆ s := Classical.choose_spec (hs x hx) |>.2.2
+  -- prove: s is the union of all the t x
+  -- then the claim follows from the union over the `ht`
+  sorry
+
 lemma IsLocalHomeomorphOn.missing (he : IsLocalHomeomorphOn e U)
     (hs : s ⊆ U) (hs' : IsOpen s) : IsOpen (e '' s) := by
   rw [isLocalHomeomorphOn_iff_isOpenEmbedding_restrict] at he
-  -- apply induction on e '' s: for y = e x, find an open subset in the codomain contained in e '' s
-  -- namely, choose an open supset of x contained in U
-  sorry
+  apply IsOpen.induction
+  intro y hy
+  obtain ⟨x, hxy, hf⟩ := hy
+  choose t ht he using he x (hs hxy)
+  rw [mem_nhds_iff] at ht
+  choose t' htt' ht' hxt' using ht
+  refine ⟨e '' (s ∩ t'), ?_, ?_, ?_⟩
+  · have := he.isOpenMap
+    -- apply this (U := s ∩ t')
+    sorry -- TODO: almost works, except for subtype trouble...
+  · exact hf ▸ mem_image_of_mem e (mem_inter hxy hxt')
+  · gcongr
+    exact inter_subset_left
 
 end
 
