@@ -469,7 +469,7 @@ theorem differentIdeal_ne_bot [Module.Finite A B]
   let L := FractionRing B
   have : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) L :=
     IsIntegralClosure.isLocalization _ K _ _
-  have : FiniteDimensional K L := Module.Finite_of_isLocalization A B _ _ A⁰
+  have : FiniteDimensional K L := .of_isLocalization A B A⁰
   rw [ne_eq, ← FractionalIdeal.coeIdeal_inj (K := L), coeIdeal_differentIdeal (K := K)]
   simp
 
@@ -671,7 +671,7 @@ theorem not_dvd_differentIdeal_of_intTrace_not_mem
   let L := FractionRing B
   have : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) L :=
     IsIntegralClosure.isLocalization _ K _ _
-  have : FiniteDimensional K L := Module.Finite_of_isLocalization A B _ _ A⁰
+  have : FiniteDimensional K L := .of_isLocalization A B A⁰
   rw [Ideal.dvd_iff_le]
   intro H
   replace H := (mul_le_mul_right' H Q).trans_eq hP
