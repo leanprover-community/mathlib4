@@ -23,7 +23,7 @@ variable {α β γ : Type*}
 
 /- `f` is Scott continuous on a product space if it is Scott continuous and monotone in each
 variable -/
-lemma ScottContinuousOn_prod_of_ScottContinuousOn [Preorder α] [Preorder β] [Preorder γ]
+lemma ScottContinuousOn.fromProd [Preorder α] [Preorder β] [Preorder γ]
     {f : α × β → γ} {D : Set (Set (α × β))}
     (h₁ : ∀ a, ScottContinuousOn ((fun d => Prod.snd '' d) '' D) (fun b => f (a,b)))
     (h₂ : ∀ b, ScottContinuousOn ((fun d => Prod.fst '' d) '' D) (fun a => f (a,b)))
