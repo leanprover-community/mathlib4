@@ -627,7 +627,7 @@ jobs:
           username: ${{ steps.get-label-actor.outputs.username }}
           GITHUB_TOKEN: ${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }} # (Requires scope: `read:org`)
 
-      - if: ${{ contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI') && (contains(steps.actorTeams.outputs.teams, 'mathlib-maintainers') || contains(steps.actorTeams.outputs.teams.teams, 'bot-users')) }}
+      - if: ${{ contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI') && (contains(steps.actorTeams.outputs.teams, 'mathlib-maintainers') || contains(steps.actorTeams.outputs.teams, 'bot-users')) }}
         name: If `auto-merge-after-CI` is present, add a `bors merge` comment.
         uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
         with:
