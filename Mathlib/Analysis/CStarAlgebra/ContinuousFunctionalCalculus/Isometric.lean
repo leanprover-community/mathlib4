@@ -243,11 +243,11 @@ open NonUnitalIsometricContinuousFunctionalCalculus
 open scoped ContinuousMapZero NonUnitalContinuousFunctionalCalculus
 
 lemma norm_cfcₙHom (a : A) (f : C(σₙ 𝕜 a, 𝕜)₀) (ha : p a := by cfc_tac) :
-    ‖cfcₙHom (R := 𝕜) (show p a from ha) f‖ = ‖f‖ := by
+    ‖cfcₙHom (show p a from ha) f‖ = ‖f‖ := by
   refine isometry_cfcₙHom a |>.norm_map_of_map_zero (map_zero _) f
 
 lemma nnnorm_cfcₙHom (a : A) (f : C(σₙ 𝕜 a, 𝕜)₀) (ha : p a := by cfc_tac) :
-    ‖cfcₙHom (R := 𝕜) (show p a from ha) f‖₊ = ‖f‖₊ :=
+    ‖cfcₙHom (show p a from ha) f‖₊ = ‖f‖₊ :=
   Subtype.ext <| norm_cfcₙHom a f ha
 
 lemma IsGreatest.norm_cfcₙ (f : 𝕜 → 𝕜) (a : A)
