@@ -120,7 +120,7 @@ abbrev LinearOrder.mkOfGroupCone
 /-- Construct a partially ordered abelian group by designating a cone in an abelian group. -/
 @[to_additive
   "Construct a partially ordered abelian group by designating a cone in an abelian group."]
-instance IsOrderedMonoid.mkOfCone [GroupConeClass S G] :
+lemma IsOrderedMonoid.mkOfCone [GroupConeClass S G] :
     let _ : PartialOrder G := PartialOrder.mkOfGroupCone C
     IsOrderedMonoid G :=
   let _ : PartialOrder G := PartialOrder.mkOfGroupCone C
