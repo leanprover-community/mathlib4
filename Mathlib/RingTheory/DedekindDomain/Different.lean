@@ -822,9 +822,8 @@ theorem not_dvd_differentIdeal_iff
     [Algebra.IsSeparable (FractionRing A) (FractionRing B)] {P : Ideal B} [P.IsPrime] :
     ¬ P ∣ differentIdeal A B ↔ Algebra.IsUnramifiedAt A P := by
   classical
-  by_cases hPbot : P = ⊥
-  · subst hPbot
-    simp_rw [← Ideal.zero_eq_bot, zero_dvd_iff]
+  rcases eq_or_ne P ⊥ with rfl | hPbot
+  · simp_rw [← Ideal.zero_eq_bot, zero_dvd_iff]
     simp only [Submodule.zero_eq_bot, differentIdeal_ne_bot, not_false_eq_true, true_iff]
     let K := FractionRing A
     let L := FractionRing B
