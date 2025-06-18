@@ -112,7 +112,7 @@ abbrev PartialOrder.mkOfGroupCone [GroupConeClass S G] : PartialOrder G where
 /-- Construct a linear order by designating a maximal cone in an abelian group. -/
 @[to_additive "Construct a linear order by designating a maximal cone in an abelian group."]
 abbrev LinearOrder.mkOfGroupCone
-    [GroupConeClass S G] [IsMaxMulCone C] [DecidablePred (· ∈ C)] : LinearOrder G where
+    [GroupConeClass S G] [IsMaxMulCone C] [dec : DecidablePred (· ∈ C)] : LinearOrder G where
   __ := PartialOrder.mkOfGroupCone C
   le_total a b := by simpa using mem_or_inv_mem C (b / a)
   toDecidableLE _ := _
@@ -120,7 +120,7 @@ abbrev LinearOrder.mkOfGroupCone
 /-- Construct a partially ordered abelian group by designating a cone in an abelian group. -/
 @[to_additive
   "Construct a partially ordered abelian group by designating a cone in an abelian group."]
-lemma IsOrderedMonoid.mkOfCone [GroupConeClass S G] :
+instance IsOrderedMonoid.mkOfCone [GroupConeClass S G] :
     let _ : PartialOrder G := PartialOrder.mkOfGroupCone C
     IsOrderedMonoid G :=
   let _ : PartialOrder G := PartialOrder.mkOfGroupCone C
