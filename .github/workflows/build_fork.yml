@@ -607,7 +607,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract label actor username
+      - if: contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI')
+        name: Extract label actor username
         id: get-label-actor
         run: |
           # Parse the GraphQL response and filter for the specific label
