@@ -48,7 +48,7 @@ lemma MonotoneOn.insert_of_continuousWithinAt [TopologicalSpace β] [OrderClosed
 are only countably many points that have several preimages. -/
 lemma MonotoneOn.countable_setOf_two_preimages [SecondCountableTopology α]
     (hf : MonotoneOn f s) :
-    Set.Countable {c | ∃ x, ∃ y, x ∈ s ∧ y ∈ s ∧ x < y ∧ f x = c ∧ f y = c} := by
+    Set.Countable {c | ∃ x y, x ∈ s ∧ y ∈ s ∧ x < y ∧ f x = c ∧ f y = c} := by
   nontriviality α
   let t := {c | ∃ x, ∃ y, x ∈ s ∧ y ∈ s ∧ x < y ∧ f x = c ∧ f y = c}
   have : ∀ c ∈ t, ∃ x, ∃ y, x ∈ s ∧ y ∈ s ∧ x < y ∧ f x = c ∧ f y = c := fun c hc ↦ hc
@@ -83,7 +83,7 @@ lemma MonotoneOn.countable_setOf_two_preimages [SecondCountableTopology α]
 are only countably many points that have several preimages. -/
 lemma Monotone.countable_setOf_two_preimages [SecondCountableTopology α]
     (hf : Monotone f) :
-    Set.Countable {c | ∃ x, ∃ y, x < y ∧ f x = c ∧ f y = c} := by
+    Set.Countable {c | ∃ x y, x < y ∧ f x = c ∧ f y = c} := by
   rw [← monotoneOn_univ] at hf
   simpa using hf.countable_setOf_two_preimages
 
@@ -91,14 +91,14 @@ lemma Monotone.countable_setOf_two_preimages [SecondCountableTopology α]
 are only countably many points that have several preimages. -/
 lemma AntitoneOn.countable_setOf_two_preimages [SecondCountableTopology α]
     (hf : AntitoneOn f s) :
-    Set.Countable {c | ∃ x, ∃ y, x ∈ s ∧ y ∈ s ∧ x < y ∧ f x = c ∧ f y = c} :=
+    Set.Countable {c | ∃ x y, x ∈ s ∧ y ∈ s ∧ x < y ∧ f x = c ∧ f y = c} :=
   (MonotoneOn.countable_setOf_two_preimages hf.dual_right :)
 
 /-- If a function is antitone in a second countable topological space, then there
 are only countably many points that have several preimages. -/
 lemma Antitone.countable_setOf_two_preimages [SecondCountableTopology α]
     (hf : Antitone f) :
-    Set.Countable {c | ∃ x, ∃ y, x < y ∧ f x = c ∧ f y = c} :=
+    Set.Countable {c | ∃ x y, x < y ∧ f x = c ∧ f y = c} :=
   (Monotone.countable_setOf_two_preimages hf.dual_right :)
 
 section Continuity
@@ -106,13 +106,13 @@ section Continuity
 variable [TopologicalSpace β] [OrderTopology β] [SecondCountableTopology β]
 
 /-- In a second countable space, the set of points where a monotone function is not right-continuous
-within a set is at most countable. Superseded by `MonotoneOn.countable_not_continuousWithinAt_Iio`
+within a set is at most countable. Superseded by `MonotoneOn.countable_not_continuousWithinAt`
 which gives the two-sided version. -/
 theorem MonotoneOn.countable_not_continuousWithinAt_Ioi (hf : MonotoneOn f s) :
-    Set.Countable { x ∈ s | ¬ContinuousWithinAt f (s ∩ Ioi x) x } := by
-  apply (countable_image_lt_image_Ioi_inter s f).mono
+    Set.Countable {x ∈ s | ¬ContinuousWithinAt f (s ∩ Ioi x) x} := by
+  apply (countable_image_lt_image_Ioi_within s f).mono
   rintro x ⟨xs, hx : ¬ContinuousWithinAt f (s ∩ Ioi x) x⟩
-  dsimp
+  dsimp only [mem_setOf_eq]
   contrapose! hx
   refine tendsto_order.2 ⟨fun m hm => ?_, fun u hu => ?_⟩
   · filter_upwards [@self_mem_nhdsWithin _ _ x (s ∩ Ioi x)] with y hy
@@ -124,16 +124,16 @@ theorem MonotoneOn.countable_not_continuousWithinAt_Ioi (hf : MonotoneOn f s) :
   exact (hf hy.1 vs hy.2.2.le).trans_lt fvu
 
 /-- In a second countable space, the set of points where a monotone function is not left-continuous
-within a set is at most countable. Superseded by `MonotoneOn.countable_not_continuousWithinAt_Iio`
+within a set is at most countable. Superseded by `MonotoneOn.countable_not_continuousWithinAt`
 which gives the two-sided version. -/
 theorem MonotoneOn.countable_not_continuousWithinAt_Iio (hf : MonotoneOn f s) :
-    Set.Countable { x ∈ s | ¬ContinuousWithinAt f (s ∩ Iio x) x } :=
+    Set.Countable {x ∈ s | ¬ContinuousWithinAt f (s ∩ Iio x) x} :=
   hf.dual.countable_not_continuousWithinAt_Ioi
 
 /-- In a second countable space, the set of points where a monotone function is not continuous
 within a set is at most countable. -/
 theorem MonotoneOn.countable_not_continuousWithinAt (hf : MonotoneOn f s) :
-    Set.Countable { x ∈ s | ¬ContinuousWithinAt f s x } := by
+    Set.Countable {x ∈ s | ¬ContinuousWithinAt f s x} := by
   apply (hf.countable_not_continuousWithinAt_Ioi.union hf.countable_not_continuousWithinAt_Iio).mono
   refine compl_subset_compl.1 ?_
   simp only [compl_union]
@@ -145,21 +145,21 @@ theorem MonotoneOn.countable_not_continuousWithinAt (hf : MonotoneOn f s) :
 /-- In a second countable space, the set of points where a monotone function is not continuous
 is at most countable. -/
 theorem Monotone.countable_not_continuousAt (hf : Monotone f) :
-    Set.Countable { x | ¬ContinuousAt f x } := by
+    Set.Countable {x | ¬ContinuousAt f x} := by
   simpa [continuousWithinAt_univ] using (hf.monotoneOn univ).countable_not_continuousWithinAt
-
-/-- In a second countable space, the set of points where an antitone function is not continuous
-is at most countable. -/
-theorem Antitone.countable_not_continuousAt (hf : Antitone f) :
-    Set.Countable { x | ¬ContinuousAt f x } :=
-  hf.dual_right.countable_not_continuousAt
 
 /-- In a second countable space, the set of points where an antitone function is not continuous
 within a set is at most countable. -/
 theorem _root_.AntitoneOn.countable_not_continuousWithinAt
     {s : Set α} (hf : AntitoneOn f s) :
-    Set.Countable { x ∈ s | ¬ContinuousWithinAt f s x } :=
+    Set.Countable {x ∈ s | ¬ContinuousWithinAt f s x} :=
   hf.dual_right.countable_not_continuousWithinAt
+
+/-- In a second countable space, the set of points where an antitone function is not continuous
+is at most countable. -/
+theorem Antitone.countable_not_continuousAt (hf : Antitone f) :
+    Set.Countable {x | ¬ContinuousAt f x} :=
+  hf.dual_right.countable_not_continuousAt
 
 end Continuity
 
