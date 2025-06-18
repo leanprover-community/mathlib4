@@ -17,7 +17,7 @@ import Mathlib.Topology.GDelta.Basic
 
 * `PerfectlyNormalSpace`: A perfectly normal space is a normal space such that
   closed sets are Gδ.
-* `T6Space`: A T₆ space is a Perfectly normal T₁ space. T₆ implies T₅.
+* `T6Space`: A T₆ space is a Perfectly normal T₀ space. T₆ implies T₅.
 
 Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `T_m → T_n`, but
 occasionally the literature swaps definitions for e.g. T₃ and regular.
@@ -110,13 +110,23 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
 theorem IsClosed.isGδ [PerfectlyNormalSpace X] {s : Set X} (hs : IsClosed s) : IsGδ s :=
   PerfectlyNormalSpace.closed_gdelta hs
 
-/-- A T₆ space is a perfectly normal T₁ space. -/
-class T6Space (X : Type u) [TopologicalSpace X] : Prop extends T1Space X, PerfectlyNormalSpace X
+/-- A T₆ space is a perfectly normal T₀ space. -/
+class T6Space (X : Type u) [TopologicalSpace X] : Prop extends T0Space X, PerfectlyNormalSpace X
 
 -- see Note [lower instance priority]
 /-- A `T₆` space is a `T₅` space. -/
 instance (priority := 100) T6Space.toT5Space [T6Space X] : T5Space X where
-  -- follows from type-class inference
+  t1 := by
+    simp_rw [(t1Space_TFAE X).out 1 9, Specializes, ← nhds_eq_nhds_iff]
+    refine fun x y hxy => hxy.antisymm ?_
+    simp_rw +singlePass [le_nhds_iff, compl_surjective.forall, mem_compl_iff, isOpen_compl_iff]
+    refine fun K hxK hK => hK.isOpen_compl.mem_nhds (mem_compl ?_)
+    replace hK := hK.isGδ.eq_iInter_nat
+    obtain ⟨Ks, hKs, rfl⟩ := hK
+    rw [mem_iInter] at hxK ⊢
+    contrapose! hxK
+    exact fun i => mem_of_mem_nhds (hxy ((hKs i).mem_nhds (hxK i)))
+
 end PerfectlyNormal
 
 end Separation
