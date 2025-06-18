@@ -60,11 +60,11 @@ lemma tilted_const' (μ : Measure α) (c : ℝ) :
   | inr h0 =>
     simp only [Measure.tilted, withDensity_const, integral_const, smul_eq_mul]
     by_cases h_univ : μ Set.univ = ∞
-    · simp only [h_univ, ENNReal.toReal_top, zero_mul, log_zero, div_zero, ENNReal.ofReal_zero,
-        zero_smul, ENNReal.inv_top]
+    · simp only [measureReal_def, h_univ, ENNReal.toReal_top, zero_mul, div_zero,
+      ENNReal.ofReal_zero, zero_smul, ENNReal.inv_top]
     congr
     rw [div_eq_mul_inv, mul_inv, mul_comm, mul_assoc, inv_mul_cancel₀ (exp_pos _).ne', mul_one,
-      ← ENNReal.toReal_inv, ENNReal.ofReal_toReal]
+      measureReal_def, ← ENNReal.toReal_inv, ENNReal.ofReal_toReal]
     simp [h0.out]
 
 lemma tilted_const (μ : Measure α) [IsProbabilityMeasure μ] (c : ℝ) :
@@ -242,7 +242,7 @@ lemma integral_exp_tilted (f g : α → ℝ) :
       rw [Pi.add_apply, exp_add]
       ring
     simp_rw [this, div_eq_mul_inv]
-    rw [integral_mul_right]
+    rw [integral_mul_const]
 
 lemma tilted_tilted (hf : Integrable (fun x ↦ exp (f x)) μ) (g : α → ℝ) :
     (μ.tilted f).tilted g = μ.tilted (f + g) := by
@@ -272,7 +272,6 @@ lemma tilted_neg_same' (hf : Integrable (fun x ↦ exp (f x)) μ) :
     (μ.tilted f).tilted (-f) = (μ Set.univ)⁻¹ • μ := by
   rw [tilted_tilted hf]; simp
 
-@[simp]
 lemma tilted_neg_same [IsProbabilityMeasure μ] (hf : Integrable (fun x ↦ exp (f x)) μ) :
     (μ.tilted f).tilted (-f) = μ := by
   simp [hf]

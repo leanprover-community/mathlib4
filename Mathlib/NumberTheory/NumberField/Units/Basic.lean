@@ -3,8 +3,7 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.GroupTheory.Torsion
-import Mathlib.NumberTheory.NumberField.Embeddings
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
 import Mathlib.RingTheory.RootsOfUnity.Complex
 
@@ -24,7 +23,7 @@ field `K` and its torsion subgroup.
 `|norm ℚ x| = 1`.
 
 * `NumberField.Units.mem_torsion`: a unit `x : (𝓞 K)ˣ` is torsion iff `w x = 1` for all infinite
-places `w` of `K`.
+  places `w` of `K`.
 
 ## Tags
 number field, units
@@ -115,6 +114,7 @@ protected theorem norm [NumberField K] (x : (𝓞 K)ˣ) :
     |Algebra.norm ℚ (x : K)| = 1 := by
   rw [← RingOfIntegers.coe_norm, isUnit_iff_norm.mp x.isUnit]
 
+variable {K} in
 theorem pos_at_place (x : (𝓞 K)ˣ) (w : InfinitePlace K) :
     0 < w x := pos_iff.mpr (coe_ne_zero x)
 
@@ -154,13 +154,17 @@ instance : Nonempty (torsion K) := One.instNonempty
 /-- The torsion subgroup is cyclic. -/
 instance [NumberField K] : IsCyclic (torsion K) := subgroup_units_cyclic _
 
-variable [NumberField K]
-
 /-- The order of the torsion subgroup. -/
-abbrev torsionOrder : ℕ := Fintype.card (torsion K)
+def torsionOrder [NumberField K] : ℕ := Fintype.card (torsion K)
 
-theorem torsionOrder_pos :
-     0 < torsionOrder K := Nat.pos_of_neZero (torsionOrder K)
+instance [NumberField K] : NeZero (torsionOrder K) :=
+  inferInstanceAs (NeZero (Fintype.card (torsion K)))
+
+theorem torsionOrder_ne_zero [NumberField K] :
+    torsionOrder K ≠ 0 := NeZero.ne (torsionOrder K)
+
+theorem torsionOrder_pos [NumberField K] :
+    0 < torsionOrder K := Nat.pos_of_neZero (torsionOrder K)
 
 /-- If `k` does not divide `torsionOrder` then there are no nontrivial roots of unity of
   order dividing `k`. -/
@@ -201,13 +205,13 @@ theorem map_complexEmbedding_torsion (φ : K →+* ℂ) :
     rw [Nat.card_eq_fintype_card, Complex.card_rootsOfUnity, Nat.card_congr e, torsionOrder,
       Nat.card_eq_fintype_card]
 
-theorem even_torsionOrder :
-     Even (torsionOrder K) := by
-   suffices orderOf (⟨-1, neg_one_mem_torsion⟩ : torsion K) = 2 by
-     rw [even_iff_two_dvd, ← this]
-     exact orderOf_dvd_card
-   rw [← Subgroup.orderOf_coe, ← orderOf_units, Units.val_neg, val_one, orderOf_neg_one,
-     ringChar.eq_zero, if_neg (by decide)]
+theorem even_torsionOrder [NumberField K] :
+    Even (torsionOrder K) := by
+  suffices orderOf (⟨-1, neg_one_mem_torsion⟩ : torsion K) = 2 by
+    rw [even_iff_two_dvd, ← this]
+    exact orderOf_dvd_card
+  rw [← Subgroup.orderOf_coe, ← orderOf_units, Units.val_neg, val_one, orderOf_neg_one,
+    ringChar.eq_zero, if_neg (by decide)]
 
 section odd
 

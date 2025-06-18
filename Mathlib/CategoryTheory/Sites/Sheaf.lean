@@ -106,8 +106,6 @@ def conesEquivSieveCompatibleFamily :
         rw [id_comp]
         convert rfl
         rw [Over.w] }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 variable {P S E}
 variable {x : FamilyOfElements (P ⋙ coyoneda.obj E) S.arrows} (hx : SieveCompatible x)
@@ -126,8 +124,6 @@ def homEquivAmalgamation :
     (hx.cone ⟶ P.mapCone S.arrows.cocone.op) ≃ { t // x.IsAmalgamation t } where
   toFun l := ⟨l.hom, fun _ f hf => l.w (op ⟨Over.mk f, hf⟩)⟩
   invFun t := ⟨t.1, fun f => t.2 f.unop.1.hom f.unop.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 variable (P S)
 
@@ -344,6 +340,12 @@ def sheafToPresheaf : Sheaf J A ⥤ Cᵒᵖ ⥤ A where
 
 /-- The sections of a sheaf (i.e. evaluation as a presheaf on `C`). -/
 abbrev sheafSections : Cᵒᵖ ⥤ Sheaf J A ⥤ A := (sheafToPresheaf J A).flip
+
+/-- The sheaf sections functor on `X` is given by evaluation of presheaves on `X`. -/
+@[simps!]
+def sheafSectionsNatIsoEvaluation {X : C} :
+    (sheafSections J A).obj (op X) ≅ sheafToPresheaf J A ⋙ (evaluation _ _).obj (op X) :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 /-- The functor `Sheaf J A ⥤ Cᵒᵖ ⥤ A` is fully faithful. -/
 @[simps]

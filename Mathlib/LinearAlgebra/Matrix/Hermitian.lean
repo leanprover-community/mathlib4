@@ -15,7 +15,7 @@ See also `IsSelfAdjoint`, which generalizes this definition to other star rings.
 
 ## Main definition
 
- * `Matrix.IsHermitian` : a matrix `A : Matrix n n α` is hermitian if `Aᴴ = A`.
+* `Matrix.IsHermitian` : a matrix `A : Matrix n n α` is hermitian if `Aᴴ = A`.
 
 ## Tags
 
@@ -30,7 +30,7 @@ variable {α β : Type*} {m n : Type*} {A : Matrix n n α}
 
 open scoped Matrix
 
-local notation "⟪" x ", " y "⟫" => @inner α _ _ x y
+local notation "⟪" x ", " y "⟫" => inner α x y
 
 section Star
 

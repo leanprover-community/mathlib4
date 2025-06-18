@@ -29,7 +29,7 @@ mixed space with enough symmetries, see `volume_eq_two_pi_pow_mul_integral` and
 
 * `mixedEmbedding.polarSpaceCoord`: the polar coordinate change of variables between the mixed
   space `ℝ^r₁ × ℂ^r₂` and the polar space `ℝ^(r₁ + r₂) × ℝ^r₂` defined by sending `x` to
-  `x w` or `‖x w‖` depending on wether `w` is real or complex for the first component, and
+  `x w` or `‖x w‖` depending on whether `w` is real or complex for the first component, and
   to `Arg (x w)`, `w` complex, for the second component.
 
 * `mixedEmbedding.integral_comp_polarSpaceCoord_symm`: the change of variables formula for
@@ -155,8 +155,7 @@ theorem lintegral_comp_polarCoordReal_symm (f : realMixedSpace K → ℝ≥0∞)
       (polarCoordReal K).open_target.measurableSet
       (fun x _ ↦ (hasFDerivAt_polarCoordReal_symm K x).hasFDerivWithinAt)
       (polarCoordReal K).symm.injOn f]
-  refine setLIntegral_congr_fun (polarCoordReal K).open_target.measurableSet ?_
-  filter_upwards with x hx
+  refine setLIntegral_congr_fun (polarCoordReal K).open_target.measurableSet (fun x hx ↦ ?_)
   simp_rw [det_fderivPolarCoordRealSymm, Finset.abs_prod,
     ENNReal.ofReal_prod_of_nonneg (fun _ _ ↦ abs_nonneg _), abs_of_mem_polarCoordReal_target K hx]
 
@@ -295,7 +294,7 @@ theorem volume_preserving_homeoRealMixedSpacePolarSpace [NumberField K] :
 
 /--
 The polar coordinate partial homeomorphism between the mixed space `ℝ^r₁ × ℂ^r₂` and the polar
-space `ℝ^(r₁ + r₂) × ℝ^r₂` defined by sending `x` to `x w` or `‖x w‖` depending on wether `w` is
+space `ℝ^(r₁ + r₂) × ℝ^r₂` defined by sending `x` to `x w` or `‖x w‖` depending on whether `w` is
 real or complex for the first component, and to `Arg (x w)`, `w` complex, for the second component.
 -/
 @[simps!]
@@ -347,7 +346,7 @@ variable {K}
 
 variable {A : Set (mixedSpace K)}
 
-theorem normAtComplexPlaces_polarSpaceCoord_symm  [NumberField K] (x : polarSpace K) :
+theorem normAtComplexPlaces_polarSpaceCoord_symm [NumberField K] (x : polarSpace K) :
     normAtComplexPlaces ((polarSpaceCoord K).symm x) =
       normAtComplexPlaces (mixedSpaceOfRealSpace x.1) := by
   ext w
