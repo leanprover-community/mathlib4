@@ -208,7 +208,7 @@ lemma StrictMono.not_bddAbove_range_of_isSuccArchimedean [NoMaxOrder α] [SuccOr
   obtain ⟨a₀⟩ := ‹Nonempty α›
   suffices ∀ b, f a₀ ≤ b → ∃ a, b < f a by
     obtain ⟨a, ha⟩ : ∃ a, m < f a := this m (hm' a₀)
-    exact ha.not_le (hm' a)
+    exact ha.not_ge (hm' a)
   have h : ∀ a, ∃ a', f a < f a' := fun a ↦ (exists_gt a).imp (fun a' h ↦ hf h)
   apply Succ.rec
   · exact h a₀
