@@ -695,9 +695,10 @@ theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i 
     ext
     rw [h]
   obtain ⟨l, hnot1, hchain⟩ := w
-  induction' l with x l hi
-  · contradiction
-  · rw [List.forall_mem_cons] at hnot1
+  induction l with
+  | nil => contradiction
+  | cons x l hi =>
+    rw [List.forall_mem_cons] at hnot1
     rcases l with - | ⟨y, l⟩
     · refine ⟨x.1, x.1, singleton x.2 hnot1.1, ?_⟩
       simp [toWord]
@@ -1031,12 +1032,9 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
           smul_set_mono ((hXYdisj j i).union_left <| hYdisj hij.symm).subset_compl_right
         _ ⊆ X i := by
           clear hnne0 hlt
-          refine Int.le_induction (P := fun n => a i ^ n • (Y i)ᶜ ⊆ X i) ?_ ?_ n h1n
-          · dsimp
-            rw [zpow_one]
-            exact hX i
-          · dsimp
-            intro n _hle hi
+          induction n, h1n using Int.le_induction with
+          | base => rw [zpow_one]; exact hX i
+          | succ n _hle hi =>
             calc
               a i ^ (n + 1) • (Y i)ᶜ = (a i ^ n * a i) • (Y i)ᶜ := by rw [zpow_add, zpow_one]
               _ = a i ^ n • a i • (Y i)ᶜ := MulAction.mul_smul _ _ _
@@ -1051,12 +1049,10 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
         a i ^ n • X' j ⊆ a i ^ n • (X i)ᶜ :=
           smul_set_mono ((hXdisj hij.symm).union_left (hXYdisj i j).symm).subset_compl_right
         _ ⊆ Y i := by
-          refine Int.le_induction_down (P := fun n => a i ^ n • (X i)ᶜ ⊆ Y i) ?_ ?_ _ h1n
-          · dsimp
-            rw [zpow_neg, zpow_one]
-            exact hY i
-          · dsimp
-            intro n _ hi
+          clear hnne0 hgt
+          induction n, h1n using Int.le_induction_down with
+          | base => rw [zpow_neg, zpow_one]; exact hY i
+          | pred n hle hi =>
             calc
               a i ^ (n - 1) • (X i)ᶜ = (a i ^ n * (a i)⁻¹) • (X i)ᶜ := by rw [zpow_sub, zpow_one]
               _ = a i ^ n • (a i)⁻¹ • (X i)ᶜ := MulAction.mul_smul _ _ _

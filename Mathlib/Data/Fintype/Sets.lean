@@ -79,6 +79,9 @@ theorem toFinset_inj {s t : Set α} [Fintype s] [Fintype t] : s.toFinset = t.toF
 theorem toFinset_subset_toFinset [Fintype s] [Fintype t] : s.toFinset ⊆ t.toFinset ↔ s ⊆ t := by
   simp [Finset.subset_iff, Set.subset_def]
 
+@[gcongr]
+alias ⟨_, toFinset_subset_toFinset_of_subset⟩ := toFinset_subset_toFinset
+
 @[simp]
 theorem toFinset_ssubset [Fintype s] {t : Finset α} : s.toFinset ⊂ t ↔ s ⊂ t := by
   rw [← Finset.coe_ssubset, coe_toFinset]
