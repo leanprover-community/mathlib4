@@ -201,7 +201,7 @@ theorem ramificationIdx_eq_normalizedFactors_count [DecidableEq (Ideal S)]
       Multiset.nsmul_singleton, ← Multiset.le_count_iff_replicate_le]
   exact (Nat.lt_succ_self _).not_ge
 
-theorem ramificationIdx_eq_multiplicity (hf : Function.Injective f) (hp : p ≠ ⊥) (hP₁: P.IsPrime)
+theorem ramificationIdx_eq_multiplicity (hf : Function.Injective f) (hp : p ≠ ⊥) (hP₁ : P.IsPrime)
     (hP₂ : P ≠ ⊥) : ramificationIdx f p P = multiplicity P (Ideal.map f p) := by
   classical
   have hp' : map f p ≠ ⊥ := (map_eq_bot_iff_of_injective hf).not.mpr hp
