@@ -727,11 +727,20 @@ lemma nullMeasurableSet_restrict (hs : NullMeasurableSet s μ) {t : Set α} :
       h.mono_ac absolutelyContinuous_restrict
     simpa using A.union B
 
-lemma nullMeasurableSet_restrict_of_subset (hs : NullMeasurableSet s μ) {t : Set α} (ht : t ⊆ s) :
+lemma nullMeasurableSet_restrict_of_subset {t : Set α} (ht : t ⊆ s) :
     NullMeasurableSet t (μ.restrict s) ↔ NullMeasurableSet t μ := by
-  rw [nullMeasurableSet_restrict hs]
-  congr!
-  simp [ht]
+  refine ⟨fun h ↦ ?_, fun h ↦ h.mono_ac absolutelyContinuous_restrict⟩
+  obtain ⟨t', t'_subs, ht', t't⟩ : ∃ t' ⊆ t, MeasurableSet t' ∧ t' =ᵐ[μ.restrict s] t :=
+    h.exists_measurable_subset_ae_eq
+  have : ∀ᵐ x ∂μ, x ∈ s → (x ∈ t' ↔ x ∈ t) := by
+    apply ae_imp_of_ae_restrict
+    filter_upwards [t't] with x hx using by simpa using hx
+  have : t' =ᵐ[μ] t := by
+    filter_upwards [this] with x hx
+    change (x ∈ t') = (x ∈ t)
+    simp only [eq_iff_iff]
+    tauto
+  exact ht'.nullMeasurableSet.congr this
 
 namespace Measure
 
