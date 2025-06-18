@@ -218,7 +218,7 @@ instance instCompleteLattice : CompleteLattice (BooleanSubalgebra α) where
   bot_le _S _a := by aesop
   top := ⊤
   le_top _S a _ha := mem_top
-  inf := (· ⊓ ·)
+  min := (· ⊓ ·)
   le_inf _L _M _N hM hN _a ha := ⟨hM ha, hN ha⟩
   inf_le_left _L _M _a := And.left
   inf_le_right _L _M _a := And.right
