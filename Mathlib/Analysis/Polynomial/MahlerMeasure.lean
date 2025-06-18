@@ -4,14 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
 
-import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
-import Mathlib.Algebra.Polynomial.OfFn
+import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Analysis.Analytic.Polynomial
 import Mathlib.Analysis.CStarAlgebra.Classes
-import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
-import Mathlib.Data.Real.StarOrdered
-import Mathlib.MeasureTheory.Integral.CircleIntegral
 
 /-!
 # Mahler measure of complex polynomials
