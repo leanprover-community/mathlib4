@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Etienne Marion
 -/
 import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.Topology.Compactification.OnePoint
+import Mathlib.Topology.Compactification.OnePoint.Basic
 
 /-!
 # Compactly generated topological spaces

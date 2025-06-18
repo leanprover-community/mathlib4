@@ -88,7 +88,6 @@ theorem coev_expComparison (A B : C) :
       (exp.coev _).app (F.obj B) ≫ (exp (F.obj A)).map (inv (prodComparison F A B)) := by
   convert unit_mateEquiv _ _ (prodComparisonNatIso F A).inv B using 3
   apply IsIso.inv_eq_of_hom_inv_id -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): was `ext`
-  dsimp
   simp
 
 theorem uncurry_expComparison (A B : C) :
@@ -154,7 +153,7 @@ theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
   unfold prodComparison
   have ηlemma : (h.unit.app (F.obj A ⊗ F.obj B) ≫
     lift ((L ⋙ F).map (fst _ _)) ((L ⋙ F).map (snd _ _))) =
-      (h.unit.app (F.obj A)) ⊗ (h.unit.app (F.obj B)) := by
+      (h.unit.app (F.obj A)) ⊗ₘ (h.unit.app (F.obj B)) := by
     ext <;> simp
   slice_lhs 1 2 => rw [ηlemma]
   simp only [Functor.id_obj, Functor.comp_obj, assoc, ← whisker_exchange, ← tensorHom_def']

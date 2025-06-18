@@ -90,7 +90,6 @@ theorem leftInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
     refine Finset.sum_congr rfl fun c cuniv => ?_
     rcases c with ⟨c, hc⟩
     ext v
-    dsimp
     simp [IH _ hc]
 
 /-- The left inverse to a formal multilinear series is indeed a left inverse, provided its linear
@@ -266,8 +265,8 @@ theorem rightInv_coeff (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] 
           (∑ c ∈ ({c | 1 < Composition.length c}.toFinset : Finset (Composition n)),
             p.compAlongComposition (p.rightInv i x) c) := by
   match n with
-  | 0 => exact False.elim (zero_lt_two.not_le hn)
-  | 1 => exact False.elim (one_lt_two.not_le hn)
+  | 0 => exact False.elim (zero_lt_two.not_ge hn)
+  | 1 => exact False.elim (one_lt_two.not_ge hn)
   | n + 2 =>
     simp only [rightInv, neg_inj]
     congr (config := { closePost := false }) 1

@@ -18,14 +18,14 @@ on the class number.
 
 ## Main definitions
 - `NumberField.classNumber`: the class number of a number field is the (finite)
-cardinality of the class group of its ring of integers
+  cardinality of the class group of its ring of integers
 - `isPrincipalIdealRing_of_isPrincipal_of_pow_inertiaDeg_le_of_mem_primesOver_of_mem_Icc`: let `K`
-be a number field and let `M K` be the Minkowski bound of `K` (by definition it is
-`(4 / π) ^ nrComplexPlaces K * ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|)`).
-To show that `𝓞 K` is a PID it is enough to show that, for all (natural) primes
-`p ∈ Finset.Icc 1 ⌊(M K)⌋₊`, all ideals `P` above `p` such that
-`p ^ (span ({p}).inertiaDeg P) ≤ ⌊(M K)⌋₊` are principal. This is the standard technique to prove
-that `𝓞 K` is principal, see [marcus1977number], discussion after Theorem 37.
+  be a number field and let `M K` be the Minkowski bound of `K` (by definition it is
+  `(4 / π) ^ nrComplexPlaces K * ((finrank ℚ K)! / (finrank ℚ K) ^ (finrank ℚ K) * √|discr K|)`).
+  To show that `𝓞 K` is a PID it is enough to show that, for all (natural) primes
+  `p ∈ Finset.Icc 1 ⌊(M K)⌋₊`, all ideals `P` above `p` such that
+  `p ^ (span ({p}).inertiaDeg P) ≤ ⌊(M K)⌋₊` are principal. This is the standard technique to prove
+  that `𝓞 K` is principal, see [marcus1977number], discussion after Theorem 37.
 
 The way this theorem should be used is to first compute `⌊(M K)⌋₊` and then to use `fin_cases`
 to deal with the finite number of primes `p` in the interval.

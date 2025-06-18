@@ -99,8 +99,6 @@ def isBilimitOfTotal {f : J → C} (b : Bicone f) (total : ∑ j : J, b.π j ≫
         classical
         cases j
         simp only [sum_comp, Category.assoc, Bicone.toCone_π_app, b.ι_π, comp_dite]
-        -- See note [dsimp, simp].
-        dsimp
         simp }
   isColimit :=
     { desc := fun s => ∑ j : J, b.π j ≫ s.ι.app ⟨j⟩
@@ -115,7 +113,7 @@ def isBilimitOfTotal {f : J → C} (b : Bicone f) (total : ∑ j : J, b.π j ≫
         classical
         cases j
         simp only [comp_sum, ← Category.assoc, Bicone.toCocone_ι_app, b.ι_π, dite_comp]
-        dsimp; simp }
+        simp }
 
 theorem IsBilimit.total {f : J → C} {b : Bicone f} (i : b.IsBilimit) :
     ∑ j : J, b.π j ≫ b.ι j = 𝟙 b.pt :=
@@ -347,11 +345,11 @@ def BinaryBicone.ofLimitCone {X Y : C} {t : Cone (pair X Y)} (ht : IsLimit t) :
 
 theorem inl_of_isLimit {X Y : C} {t : BinaryBicone X Y} (ht : IsLimit t.toCone) :
     t.inl = ht.lift (BinaryFan.mk (𝟙 X) 0) := by
-  apply ht.uniq (BinaryFan.mk (𝟙 X) 0); rintro ⟨⟨⟩⟩ <;> dsimp <;> simp
+  apply ht.uniq (BinaryFan.mk (𝟙 X) 0); rintro ⟨⟨⟩⟩ <;> simp
 
 theorem inr_of_isLimit {X Y : C} {t : BinaryBicone X Y} (ht : IsLimit t.toCone) :
     t.inr = ht.lift (BinaryFan.mk 0 (𝟙 Y)) := by
-  apply ht.uniq (BinaryFan.mk 0 (𝟙 Y)); rintro ⟨⟨⟩⟩ <;> dsimp <;> simp
+  apply ht.uniq (BinaryFan.mk 0 (𝟙 Y)); rintro ⟨⟨⟩⟩ <;> simp
 
 /-- In a preadditive category, any binary bicone which is a limit cone is in fact a bilimit
     bicone. -/
@@ -389,12 +387,12 @@ def BinaryBicone.ofColimitCocone {X Y : C} {t : Cocone (pair X Y)} (ht : IsColim
 theorem fst_of_isColimit {X Y : C} {t : BinaryBicone X Y} (ht : IsColimit t.toCocone) :
     t.fst = ht.desc (BinaryCofan.mk (𝟙 X) 0) := by
   apply ht.uniq (BinaryCofan.mk (𝟙 X) 0)
-  rintro ⟨⟨⟩⟩ <;> dsimp <;> simp
+  rintro ⟨⟨⟩⟩ <;> simp
 
 theorem snd_of_isColimit {X Y : C} {t : BinaryBicone X Y} (ht : IsColimit t.toCocone) :
     t.snd = ht.desc (BinaryCofan.mk 0 (𝟙 Y)) := by
   apply ht.uniq (BinaryCofan.mk 0 (𝟙 Y))
-  rintro ⟨⟨⟩⟩ <;> dsimp <;> simp
+  rintro ⟨⟨⟩⟩ <;> simp
 
 /-- In a preadditive category, any binary bicone which is a colimit cocone is in fact a
     bilimit bicone. -/

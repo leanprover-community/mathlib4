@@ -63,7 +63,7 @@ file `Mathlib/MeasureTheory/Integral/SetToL1.lean`).
 4. (In the file `Mathlib/MeasureTheory/Integral/DominatedConvergence.lean`)
   `tendsto_integral_of_dominated_convergence` : the Lebesgue dominated convergence theorem
 
-5. (In `Mathlib/MeasureTheory/Integral/SetIntegral.lean`) integration commutes with continuous
+5. (In `Mathlib/MeasureTheory/Integral/Bochner/Set.lean`) integration commutes with continuous
   linear maps.
 
   * `ContinuousLinearMap.integral_comp_comm`
@@ -120,7 +120,7 @@ Use `isClosed_property` or `DenseRange.induction_on` for this argument.
 * `∫ a, f a` : integral of `f` with respect to `volume`, the default measure on the ambient type
 
 We also define notations for integral on a set, which are described in the file
-`Mathlib/MeasureTheory/Integral/SetIntegral.lean`.
+`Mathlib/MeasureTheory/Integral/Bochner/Set.lean`.
 
 Note : `ₛ` is typed using `\_s`. Sometimes it shows as a box if the font is missing.
 
@@ -993,8 +993,10 @@ theorem integral_zero_measure {m : MeasurableSpace α} (f : α → G) :
   · simp [integral, hG]
 
 @[simp]
-theorem setIntegral_zero_measure (f : α → G) {μ : Measure α} {s : Set α} (hs : μ s = 0) :
+theorem setIntegral_measure_zero (f : α → G) {μ : Measure α} {s : Set α} (hs : μ s = 0) :
     ∫ x in s, f x ∂μ = 0 := Measure.restrict_eq_zero.mpr hs ▸ integral_zero_measure f
+
+@[deprecated (since := "2025-06-17")] alias setIntegral_zero_measure := setIntegral_measure_zero
 
 lemma integral_of_isEmpty [IsEmpty α] {f : α → G} : ∫ x, f x ∂μ = 0 :=
   μ.eq_zero_of_isEmpty ▸ integral_zero_measure _
