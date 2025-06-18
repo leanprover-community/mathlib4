@@ -49,7 +49,7 @@ lemma ScottContinuous.fromProd {γ : Type*} [Preorder α] [Preorder β] [Preorde
   rw [← scottContinuousOn_univ]
   simp_rw [← scottContinuousOn_univ] at h₁
   simp_rw [← scottContinuousOn_univ] at h₂
-  exact ScottContinuousOn_prod_of_ScottContinuousOn
+  exact ScottContinuousOn.fromProd
     (fun a ⦃d⦄ a_1 ↦ h₁ a trivial) (fun b ⦃d⦄ a ↦ h₂ b trivial)
     (fun a ↦ ScottContinuous.monotone fun ⦃d⦄ ↦ h₁ a trivial)
     (fun b ↦ ScottContinuous.monotone fun ⦃d⦄ ↦ h₂ b trivial)
