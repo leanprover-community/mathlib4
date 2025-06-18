@@ -552,6 +552,8 @@ jobs:
           filterOutClosed: true
 
       # Combine the output from the previous action with the metadata supplied by GitHub itself.
+      # Note that if we fall back to github.event.pull_request data, the list of labels is generated when this workflow is triggered
+      # and not updated afterwards!
       - id: PR
         shell: bash
         run: |
@@ -607,7 +609,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract label actor username
+      - if: contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI')
+        name: Extract label actor username
         id: get-label-actor
         run: |
           # Parse the GraphQL response and filter for the specific label
