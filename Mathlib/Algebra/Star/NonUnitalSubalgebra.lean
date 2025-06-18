@@ -725,6 +725,7 @@ theorem adjoin_le {S : NonUnitalStarSubalgebra R A} {s : Set A} (hs : s ⊆ S) :
 theorem adjoin_le_iff {S : NonUnitalStarSubalgebra R A} {s : Set A} : adjoin R s ≤ S ↔ s ⊆ S :=
   NonUnitalStarAlgebra.gc _ _
 
+@[gcongr]
 theorem adjoin_mono {s t : Set A} (H : s ⊆ t) : adjoin R s ≤ adjoin R t :=
   NonUnitalStarAlgebra.gc.monotone_l H
 
