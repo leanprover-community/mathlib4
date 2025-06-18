@@ -167,7 +167,7 @@ lemma differentiableAt_negMulLog_iff {x : ℝ} : DifferentiableAt ℝ negMulLog 
   constructor
   · unfold negMulLog
     intro h eq0
-    simp only [neg_mul, differentiableAt_neg_iff, eq0] at h
+    simp only [neg_mul, differentiableAt_fun_neg_iff, eq0] at h
     exact not_DifferentiableAt_log_mul_zero h
   · intro hx
     have : x ∈ ({0} : Set ℝ)ᶜ := by
