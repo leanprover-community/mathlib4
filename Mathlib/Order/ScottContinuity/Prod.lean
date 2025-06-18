@@ -56,7 +56,7 @@ lemma ScottContinuous.fromProd {γ : Type*} [Preorder α] [Preorder β] [Preorde
 
 
 lemma ScottContinuous.prod {α' β' : Type*} [Preorder α] [Preorder β] [Preorder α'] [Preorder β']
-    {f : α → α'} {g : α → α'} (hf : ScottContinuous f) (hg : ScottContinuous g) :
+    {f : α → α'} {g : β → β'} (hf : ScottContinuous f) (hg : ScottContinuous g) :
     ScottContinuous (Prod.map f g) :=
   ScottContinuous.fromProd (fun a d hd₁ hd₂ c hdc => by
     have e1 : (fun b ↦ (f a, g b)) '' d = {f a} ×ˢ (g '' d) := by
