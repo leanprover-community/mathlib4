@@ -256,13 +256,10 @@ theorem isCyclic_units_of_prime_pow (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2) (n 
     IsCyclic (ZMod (p ^ n))ˣ := by
   have _ : NeZero (p ^ n) := ⟨pow_ne_zero n hp.ne_zero⟩
   have _ : Fact (p.Prime) := ⟨hp⟩
-  rcases Nat.eq_zero_or_pos n with hn0 | hnpos
-  · rw [hn0, pow_zero]; infer_instance
-  change 1 ≤ n at hnpos
-  obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le' hnpos
+  rcases n with _ | n
+  · rw [pow_zero]; infer_instance
   let a := (((1 + p) : ℕ) : ZMod (p ^ (n + 1)))
   have ha : IsUnit a := by
-    unfold a
     rw [ZMod.isUnit_iff_coprime]
     apply Nat.Coprime.pow_right
     simp only [Nat.coprime_add_self_left, Nat.coprime_one_left_eq_true]
@@ -281,15 +278,10 @@ theorem isCyclic_units_of_prime_pow (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2) (n 
   have : p - 1 ∣ orderOf b := by
     rw [← hc]
     exact orderOf_map_dvd _ b
-  obtain ⟨k, hk⟩ := this
+  let k := orderOf b / (p - 1)
+  have : orderOf (b ^ k) = p - 1 := orderOf_pow_orderOf_div (orderOf_pos b).ne' this
   rw [isCyclic_iff_exists_orderOf_eq_natCard]
   use ha.unit * b ^ k
-  have : orderOf (b ^ k) = p - 1 := by
-    rw [orderOf_pow, hk, Nat.gcd_mul_left_left]
-    apply Nat.mul_div_cancel
-    apply Nat.pos_of_mul_pos_left
-    rw [← hk]
-    exact orderOf_pos b
   rw [Commute.orderOf_mul_eq_mul_orderOf_of_coprime (Commute.all _ _),
     this, Nat.card_eq_fintype_card, ZMod.card_units_eq_totient,
     Nat.totient_prime_pow_succ hp, ← ha']
@@ -343,35 +335,22 @@ lemma Int.modEq_pow_five' (n : ℕ) :
 
 theorem units_orderOf_five (n : ℕ) :
     orderOf (5 : ZMod (2 ^ (n + 3))) = 2 ^ (n + 1) := by
-  have H : orderOf (5 :ZMod (2 ^ (n + 3))) ∣ 2 ^ (n + 1) := by
-    rw [orderOf_dvd_iff_pow_eq_one]
-    suffices ((5 ^ (2 ^ (n + 1)) : ℤ) : ZMod (2 ^ (n +3))) = (1 : ℤ) by
-      simpa
-    rw [intCast_eq_intCast_iff]
-    simpa using Int.modEq_pow_five (n + 1)
-  have H' : ¬ (orderOf (5 : ZMod (2 ^ (n + 3)))) ∣ 2 ^ n:= by
-    rw [orderOf_dvd_iff_pow_eq_one]
-    suffices ¬ ((5 ^ (2 ^ n) : ℤ) : ZMod (2 ^ (n + 3))) = (1 : ℤ) by
-      simpa
-    rw [intCast_eq_intCast_iff, Nat.cast_pow, Nat.cast_two]
-    intro H'
-    have := (Int.modEq_pow_five' n).symm.trans H'
-    nth_rewrite 2 [← add_zero 1] at this
-    replace this := Int.ModEq.add_left_cancel' _ this
-    rw [Int.modEq_zero_iff_dvd] at this
-    rw [pow_dvd_pow_iff] at this
-    · simp only [add_le_add_iff_left, Nat.reduceLeDiff] at this
-    · decide
-    · decide
-  rw [Nat.dvd_prime_pow Nat.prime_two] at H
-  obtain ⟨k, hk, ho⟩ := H
-  suffices k = n + 1 by rw [ho, this]
-  apply le_antisymm hk
-  rw [← not_lt]
-  intro hk'
-  apply H'
-  rw [ho]
-  exact Nat.pow_dvd_pow _ (Nat.le_of_lt_succ hk')
+  rcases n with _ | n
+  · rw [pow_zero, orderOf_eq_one_iff]; decide
+  suffices h : (5 : ZMod (2 ^ (n + 3))) ^ (2 ^ n) = 1 + 2 ^ (n + 2) by
+    apply Nat.eq_prime_pow_of_dvd_least_prime_pow Nat.prime_two
+    · rw [orderOf_dvd_iff_pow_eq_one, h, add_eq_left]
+      norm_cast
+      rw [ZMod.natCast_zmod_eq_zero_iff_dvd, Nat.pow_dvd_pow_iff_le_right']
+      simp
+    · rw [orderOf_dvd_iff_pow_eq_one, pow_succ 2 n, pow_mul, h]
+      calc ((1 + 2 ^ (n + 2)) ^ 2 : ZMod (2 ^ (n + 3))) =
+          (1 + (2 ^ (n + 3) : ℕ) * (1 + 2 ^ (n + 1)) : ZMod (2 ^ (n + 3))) := by push_cast; ring
+        _ = 1 := by rw [natCast_self]; ring
+  norm_cast
+  rw [natCast_eq_natCast_iff, ← Int.natCast_modEq_iff]
+  push_cast
+  exact Int.modEq_pow_five' n
 
 theorem isCyclic_units_four_mul_iff (n : ℕ) :
     IsCyclic ((ZMod (4 * n))ˣ) ↔ n = 0 ∨ n = 1 := by
