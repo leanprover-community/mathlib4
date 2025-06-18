@@ -13,7 +13,6 @@ import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.MeasureTheory.Constructions.UnitInterval
 import Mathlib.MeasureTheory.Integral.Bochner.Set
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
 /-! # Riemannian manifolds
 
