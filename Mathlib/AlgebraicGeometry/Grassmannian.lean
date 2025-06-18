@@ -4,10 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 
-import Mathlib.Algebra.Category.Ring.Under.Basic
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.LinearAlgebra.TensorProduct.Quotient
-import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 /-!
@@ -15,7 +11,7 @@ import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 ## Main definitions
 
-- `AlgebraicGeometry.Grassmannian.Module`: `G(M; R, k)` is the `k`ᵗʰ Grassmannian of the `R`-module
+- `AlgebraicGeometry.Grassmannian.AsType`: `G(M; R, k)` is the `k`ᵗʰ Grassmannian of the `R`-module
   `M`. It is defined to be the set of submodules of `M` whose quotient is locally free of rank `k`.
   Note that this indexing is the opposite of some indexing in literature, where this rank would be
   `n-k` instead, where `M=R^n`.
@@ -23,95 +19,17 @@ import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 /-
 TODO:
+- Define the functor `Grassmannian.functor R M k` that sends an `R`-algebra `A` to the set
+  `G(A ⊗[R] M; A, k)`.
+- Define `chart x` indexed by `x : Fin k → M` as a subtype consisting of those
+  `N ∈ G(A ⊗[R] M; A, k)` such that the composition `R^k → M → M⧸N` is an isomorphism.
+- Define `chartFunctor x` to turn `chart x` into a subfunctor of `Grassmannian.functor`. This will
+  correspond to an affine open chart in the Grassmannian.
 - Grassmannians for schemes and quasi-coherent sheaf of modules.
 - Representability.
 -/
 
 universe u v w
-
-section MOVE_THIS!!
-
-open TensorProduct
-
-@[simp] lemma LinearEquiv.baseChange_apply {R A M N : Type*} [CommRing R] [Ring A] [Algebra R A]
-    [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] (e : M ≃ₗ[R] N) (a : A) (m : M) :
-    e.baseChange R A M N (a ⊗ₜ m) = a ⊗ₜ (e m) :=
-  rfl
-
-noncomputable def Submodule.quotient_baseChange {R : Type u} {M : Type v} (A : Type w) [CommRing R]
-    [Ring A] [Algebra R A] [AddCommGroup M] [Module R M] (S : Submodule R M) :
-    (A ⊗[R] M ⧸ S.baseChange A) ≃ₗ[A] A ⊗[R] (M ⧸ S) :=
-  Function.Exact.linearEquivOfSurjective
-    (g := S.mkQ.baseChange A)
-    (by convert lTensor_exact A (LinearMap.exact_subtype_mkQ S) S.mkQ_surjective)
-    (S.mkQ.lTensor_surjective A S.mkQ_surjective)
-
-@[simp]
-lemma Submodule.quotient_baseChange_apply {R : Type u} {M : Type v} (A : Type w) [CommRing R]
-    [Ring A] [Algebra R A] [AddCommGroup M] [Module R M] (S : Submodule R M) (a : A) (m : M) :
-    S.quotient_baseChange A (Quotient.mk (a ⊗ₜ m)) = a ⊗ₜ (Quotient.mk m) :=
-  rfl
-
-@[simp]
-lemma Submodule.quotient_baseChange_symm_apply {R : Type u} {M : Type v} (A : Type w) [CommRing R]
-    [Ring A] [Algebra R A] [AddCommGroup M] [Module R M] (S : Submodule R M) (a : A) (m : M) :
-    (S.quotient_baseChange A).symm (a ⊗ₜ (Quotient.mk m)) = Quotient.mk (a ⊗ₜ m) :=
-  (LinearEquiv.symm_apply_eq _).2 <| Submodule.quotient_baseChange_apply ..
-
-/-- The triangle of `R`-modules `A ⊗[R] M ⟶ B ⊗[A] (A ⊗[R] M) ⟶ B ⊗[R] M` commutes. -/
-lemma AlgebraTensorModule.cancelBaseChange_comp_mk_one {R A B M : Type*}
-    [CommSemiring R] [CommSemiring A] [Semiring B] [AddCommMonoid M] [Module R M]
-    [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B] :
-    (AlgebraTensorModule.cancelBaseChange R A B B M).toLinearMap.restrictScalars R ∘ₗ
-        (TensorProduct.mk A B (A ⊗[R] M) 1).restrictScalars R =
-      LinearMap.rTensor M (IsScalarTower.toAlgHom R A B).toLinearMap :=
-  ext <| LinearMap.ext₂ fun a m ↦ by simp [Algebra.algebraMap_eq_smul_one]
-
-/-- The triangle of `R`-modules `A ⊗[R] M ⟶ B ⊗[A] (A ⊗[R] M) ⟶ B ⊗[R] M` commutes. -/
-lemma AlgebraTensorModule.cancelBaseChange_comp_mk_one' {R A B M : Type*}
-    [CommSemiring R] [CommSemiring A] [Semiring B] [AddCommMonoid M] [Module R M]
-    [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B] :
-    ((AlgebraTensorModule.cancelBaseChange R A B B M).toLinearMap.restrictScalars A ∘ₗ
-        TensorProduct.mk A B (A ⊗[R] M) 1).restrictScalars R =
-      LinearMap.rTensor M (IsScalarTower.toAlgHom R A B).toLinearMap :=
-  cancelBaseChange_comp_mk_one
-
-/-- The triangle of `R`-modules `A ⊗[R] M ⟶ B ⊗[A] (A ⊗[R] M) ⟶ B ⊗[R] M` commutes. -/
-lemma AlgebraTensorModule.coe_cancelBaseChange_comp_mk_one {R A B M : Type*}
-    [CommSemiring R] [CommSemiring A] [Semiring B] [AddCommMonoid M] [Module R M]
-    [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B] :
-    (AlgebraTensorModule.cancelBaseChange R A B B M) ∘ (TensorProduct.mk A B (A ⊗[R] M) 1) =
-      LinearMap.rTensor M (IsScalarTower.toAlgHom R A B).toLinearMap :=
-  funext <| LinearMap.congr_fun cancelBaseChange_comp_mk_one
-
-lemma LinearMap.restrictScalars_baseChange {R A M N : Type*}
-    [CommSemiring R] [Semiring A] [Algebra R A] [AddCommMonoid M] [Module R M]
-    [AddCommMonoid N] [Module R N] (f : M →ₗ[R] N) :
-    (f.baseChange A).restrictScalars R = f.lTensor A :=
-  rfl
-
-@[simp] lemma LinearMap.quotKerEquivOfSurjective_apply {R M M₂ : Type*}
-    [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup M₂] [Module R M₂]
-    (f : M →ₗ[R] M₂) (hf : Function.Surjective f) (x : M) :
-    f.quotKerEquivOfSurjective hf (Submodule.Quotient.mk x) = f x :=
-  rfl
-
-lemma LinearEquiv.piRing_symm_apply_single {R M ι S : Type*} [Semiring R] [Fintype ι]
-    [DecidableEq ι] [Semiring S] [AddCommMonoid M] [Module R M] [Module S M] [SMulCommClass R S M]
-    (f : ι → M) (i : ι) (r : R) :
-    (LinearEquiv.piRing R M ι S).symm f (Pi.single i r) = r • f i := by
-  rw [piRing_symm_apply, Finset.sum_eq_single_of_mem i (Finset.mem_univ i) (by intros; simp [*]),
-    Pi.single_apply, if_pos rfl]
-
-lemma LinearEquiv.piRing_symm_apply_single_one {R M ι S : Type*} [Semiring R] [Fintype ι]
-    [DecidableEq ι] [Semiring S] [AddCommMonoid M] [Module R M] [Module S M] [SMulCommClass R S M]
-    (f : ι → M) (i : ι) :
-    (LinearEquiv.piRing R M ι S).symm f (Pi.single i 1) = f i := by
-  rw [piRing_symm_apply_single, one_smul]
-
-end MOVE_THIS!!
-
-open CategoryTheory Limits TensorProduct
 
 namespace AlgebraicGeometry
 
@@ -122,13 +40,13 @@ variable (R : Type u) [CommRing R] (M : Type v) [AddCommGroup M] [Module R M] (k
 /-- `G(M; R, k)` is the `k`ᵗʰ Grassmannian of the `R`-module `M`. It is defined to be the set of
 submodules of `M` whose quotient is locally free of rank `k`. Note that this indexing is the
 opposite of some indexing in literature, where this rank would be `n-k` instead, where `M=R^n`. -/
-def Grassmannian : Type v :=
+def Grassmannian.AsType : Type v :=
 { N : Submodule R M // Module.Finite R (_ ⧸ N) ∧ Projective R (_ ⧸ N) ∧
   ∀ p, rankAtStalk (R:=R) (_ ⧸ N) p = k }
 
 namespace Grassmannian
 
-@[inherit_doc] scoped notation "G("M"; "R", "k")" => Grassmannian R M k
+@[inherit_doc] scoped notation "G("M"; "R", "k")" => Grassmannian.AsType R M k
 
 variable {R M k}
 
@@ -139,8 +57,7 @@ def val (N : G(M; R, k)) : Submodule R M :=
 
 @[simp] lemma val_mk (N : Submodule R M) {h} : val (k:=k) ⟨N, h⟩ = N := rfl
 
-@[ext] lemma ext {N₁ N₂ : G(M; R, k)} (h : N₁.val = N₂.val) : N₁ = N₂ :=
-  Subtype.ext h
+@[ext] lemma ext {N₁ N₂ : G(M; R, k)} (h : N₁.val = N₂.val) : N₁ = N₂ := Subtype.ext h
 
 variable (N : G(M; R, k))
 
@@ -153,313 +70,6 @@ instance : Module.Projective R (_ ⧸ N.val) :=
 lemma rankAtStalk_eq (p : PrimeSpectrum R) : rankAtStalk (_ ⧸ N.val) p = k :=
   (Subtype.prop N).2.2 p
 
-/-- Copy of an element of the Grassmannian, with a new carrier equal to the old one. Useful to fix
-definitional equalities. -/
-def copy (N : G(M; R, k)) (N' : Set M) (h : N' = N.val) : G(M; R, k) :=
-  ⟨N.val.copy N' h, let e := (N.val.quotEquivOfEq _ (SetLike.coe_set_eq.1 h.symm));
-    ⟨Module.Finite.equiv e, Projective.of_equiv e, fun p ↦ by
-      rw [← rankAtStalk_eq_of_equiv e, rankAtStalk_eq]⟩⟩
-
-/-- Given an isomorphism `M⧸N ↠ R^k`, return an element of `G(M; R, k)`. -/
-def ofEquiv (N : Submodule R M) (e : (M ⧸ N) ≃ₗ[R] (Fin k → R)) : G(M; R, k) :=
-  ⟨N, Module.Finite.equiv e.symm, Projective.of_equiv e.symm, fun p ↦ by
-    haveI := PrimeSpectrum.nontrivial p
-    rw [rankAtStalk_eq_of_equiv e, rankAtStalk_eq_finrank_of_free, finrank_fin_fun]; rfl⟩
-
-lemma ofEquiv_val (N : Submodule R M) (e : (M ⧸ N) ≃ₗ[R] (Fin k → R)) : (ofEquiv N e).val = N :=
-  rfl
-
-/-- Given a surjection `M ↠ R^k`, return an element of `G(M; R, k)`. -/
-def ofSurjective (f : M →ₗ[R] (Fin k → R)) (hf : Function.Surjective f) : G(M; R, k) :=
-  ofEquiv _ (f.quotKerEquivOfSurjective hf)
-
-lemma ofSurjective_val (f : M →ₗ[R] (Fin k → R)) (hf : Function.Surjective f) :
-    (ofSurjective f hf).val = LinearMap.ker f :=
-  rfl
-
-variable {M₁ M₂ M₃ : Type*} [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂]
-  [AddCommGroup M₃] [Module R M₃]
-
-/-- If `M₁` surjects to `M₂`, then there is an induced map `G(M₂; R, k) → G(M₁; R, k)` by
-"pulling back" a submodule. -/
-def ofLinearMap (f : M₁ →ₗ[R] M₂) (he : Function.Surjective f) (N : G(M₂; R, k)) : G(M₁; R, k) :=
-  ⟨N.val.comap f, _, _, _⟩
--- TODO
-
-/-- If `M₁` and `M₂` are isomorphic, then `G(M₁; R, k) ≃ G(M₂; R, k)`. -/
-def ofLinearEquiv (e : M₁ ≃ₗ[R] M₂) : G(M₁; R, k) ≃ G(M₂; R, k) where
-  toFun N := ⟨N.val.map e, let e' := Submodule.Quotient.equiv N.val _ _ rfl;
-    ⟨Module.Finite.equiv e', Projective.of_equiv e', fun p ↦ by
-      rw [← rankAtStalk_eq_of_equiv e', rankAtStalk_eq]⟩⟩
-  invFun N := ⟨N.val.map e.symm, let e' := Submodule.Quotient.equiv N.val _ _ rfl;
-    ⟨Module.Finite.equiv e', Projective.of_equiv e', fun p ↦ by
-      rw [← rankAtStalk_eq_of_equiv e', rankAtStalk_eq]⟩⟩
-  left_inv N := ext <| (Submodule.map_symm_eq_iff e).2 rfl
-  right_inv N := ext <| (Submodule.map_symm_eq_iff e).1 rfl
-
-lemma ofLinearEquiv_val (e : M₁ ≃ₗ[R] M₂) (N : G(M₁; R, k)) :
-    (ofLinearEquiv e N).val = N.val.map e :=
-  rfl
-
-/-- The quotients of `ofLinearEquiv` are isomorphic. -/
-def ofLinearEquivEquiv (e : M₁ ≃ₗ[R] M₂) (N : G(M₁; R, k)) :
-    (M₂ ⧸ (N.ofLinearEquiv e).val) ≃ₗ[R] M₁ ⧸ N.val :=
-  (Submodule.Quotient.equiv _ _ _ rfl).symm
-
-variable (R) in
-/-- The affine chart corresponding to a chosen `f : R^k → M`, or equivalently, `k` elements in `M`.
-It is the quotients `q : M ↠ V` such that the composition `f ∘ q : R^k → V` is an isomorphism. -/
-def chart (f : Fin k → M) : Set G(M; R, k) :=
-  { N | Function.Bijective (N.val.mkQ ∘ (LinearEquiv.piRing R M (Fin k) R).symm f) }
--- TODO: `chart f` is affine
--- Proof sketch: we have equalizer diagram `chart f → Hom[R-Mod](M,R^k) ⇒ Hom[R-Mod](R^k,R^k)`
-
-/-- An element `N ∈ chart R f` produces an isomorphism `M ⧸ N.val ≃ₗ[R] R^k`. -/
-noncomputable def equivOfChart {f : Fin k → M} {N : G(M; R, k)} (hn : N ∈ chart R f) :
-    (M ⧸ N.val) ≃ₗ[R] (Fin k → R) :=
-  (LinearEquiv.ofBijective (N.val.mkQ ∘ₗ _) hn).symm
-
-@[simp] lemma equivOfChart_apply {f : Fin k → M} {N : G(M; R, k)} (hn : N ∈ chart R f) (i : Fin k) :
-    equivOfChart hn (Submodule.Quotient.mk (f i)) = Pi.single i 1 := by
-  rw [equivOfChart, LinearEquiv.symm_apply_eq]
-  simp [-LinearEquiv.piRing_symm_apply, LinearEquiv.piRing_symm_apply_single_one]
-
-@[simp] lemma equivOfChart_apply_apply {f : Fin k → M} {N : G(M; R, k)} (hn : N ∈ chart R f)
-    (i j : Fin k) :
-    equivOfChart hn (Submodule.Quotient.mk (f i)) j = if j = i then 1 else 0 := by
-  rw [equivOfChart_apply hn, Pi.single_apply]
-
-lemma ofEquiv_mem_chart {N : Submodule R M} (e : (M ⧸ N) ≃ₗ[R] (Fin k → R))
-    (f : Fin k → M) (hf : ∀ i, e (Submodule.Quotient.mk (f i)) = Pi.single i 1) :
-    ofEquiv N e ∈ chart R f := by
-  rw [chart, Set.mem_setOf, ← LinearMap.coe_comp]
-  convert e.symm.bijective using 1
-  refine DFunLike.coe_fn_eq.2 (LinearMap.pi_ext' fun i ↦ LinearMap.ext_ring <| Eq.symm <|
-    e.symm_apply_eq.2 ?_)
-  simp [-LinearEquiv.piRing_symm_apply, LinearEquiv.piRing_symm_apply_single_one, hf]
-
-lemma ofSurjective_mem_chart {q : M →ₗ[R] Fin k → R} (hq : Function.Surjective q)
-    (f : Fin k → M) (hf : ∀ i, q (f i) = Pi.single i 1) :
-    ofSurjective q hq ∈ chart R f :=
-  ofEquiv_mem_chart _ _ hf
-
-lemma exists_ofEquiv_mem_chart {N : Submodule R M} (e : (M ⧸ N) ≃ₗ[R] (Fin k → R)) :
-    ∃ f, ofEquiv N e ∈ chart R f :=
-  ⟨_, ofEquiv_mem_chart _ (fun i ↦ (e.symm (Pi.single i 1)).out) fun i ↦
-    by simp [Submodule.Quotient.mk]⟩
-
-lemma exists_ofSurjective_mem_chart {q : M →ₗ[R] Fin k → R} (hq : Function.Surjective q) :
-    ∃ f, ofSurjective q hq ∈ chart R f :=
-  exists_ofEquiv_mem_chart _
-
-variable (A : Type*) [CommRing A] [Algebra R A]
-
-/-- Base change to an `R`-algebra `A`, where `M` is replaced with `A ⊗[R] M`. -/
-noncomputable def baseChange (N : G(M; R, k)) : G(A ⊗[R] M; A, k) :=
-  ⟨N.val.baseChange A, let e := (N.val.quotient_baseChange A).symm;
-    ⟨Module.Finite.equiv e, Projective.of_equiv e, fun p ↦ by
-      rw [← rankAtStalk_eq_of_equiv e, rankAtStalk_baseChange, rankAtStalk_eq]⟩⟩
-
-lemma baseChange_val (N : G(M; R, k)) : (baseChange A N).val = N.val.baseChange A := rfl
-
-/-- The quotient of `baseChange` is isomorphic to the base change of the quotient. -/
-@[simp] noncomputable def quotientBaseChangeValEquiv (N : G(M; R, k)) :
-    (A ⊗[R] M ⧸ (baseChange A N).val) ≃ₗ[A] A ⊗[R] (M ⧸ N.val) :=
-  N.val.quotient_baseChange A
-
-variable {A} {B : Type*} [CommRing B] [Algebra R B]
-
-/-- Functoriality of Grassmannian in the category of `R`-algebras. Note that given an `R`-algebra
-`A`, we replace `M` with `A ⊗[R] M`. The map `f : A →ₐ[R] B` should technically provide an instance
-`[Algebra A B]`, but this might cause problems later down the line, so we do not require this
-instance in the type signature of the function. Instead, given any instance `[Algebra A B]`, we
-later prove that the map is equal to the one induced by `IsScalarTower.toAlgHom R A B : A →ₐ[R] B`.
-See `map_val` and `map_eq`.
--/
-noncomputable def map (f : A →ₐ[R] B) (N : G(A ⊗[R] M; A, k)) : G(B ⊗[R] M; B, k) :=
-  letI := f.toAlgebra;
-  ofLinearEquiv (AlgebraTensorModule.cancelBaseChange R A B B M) (baseChange B N)
-
-lemma map_val (f : A →ₐ[R] B) (N : G(A ⊗[R] M; A, k)) :
-    (N.map f).val = Submodule.span B (f.toLinearMap.rTensor M '' N.val) := by
-  letI := f.toAlgebra;
-  rw [map, ofLinearEquiv_val, baseChange_val, Submodule.baseChange_eq_span, Submodule.map_span,
-    Submodule.map_coe, ← Set.image_comp, AlgebraTensorModule.coe_cancelBaseChange_comp_mk_one]
-  rfl
-
-lemma map_val' (f : A →ₐ[R] B) (N : G(A ⊗[R] M; A, k)) :
-    (N.map f).val = Submodule.span B ((N.val.restrictScalars R).map (f.toLinearMap.rTensor M)) :=
-  map_val f N
-
-lemma map_eq [Algebra A B] [IsScalarTower R A B] (N : G(A ⊗[R] M; A, k)) :
-    N.map (IsScalarTower.toAlgHom R A B) = ofLinearEquiv
-      (AlgebraTensorModule.cancelBaseChange R A B B M) (baseChange B N) := by
-  ext; rw [map_val, ofLinearEquiv_val, baseChange_val, Submodule.baseChange_eq_span,
-    Submodule.map_span, Submodule.map_coe, ← Set.image_comp,
-    AlgebraTensorModule.coe_cancelBaseChange_comp_mk_one]
-
-lemma map_id (N : G(A ⊗[R] M; A, k)) : N.map (AlgHom.id R A) = N :=
-  ext (by rw [map_val, AlgHom.toLinearMap_id, LinearMap.rTensor_id, LinearMap.id_coe, Set.image_id,
-    Submodule.span_coe_eq_restrictScalars, Submodule.restrictScalars_self])
-
-variable {C : Type*} [CommRing C] [Algebra R C]
-
-lemma map_comp (f : A →ₐ[R] B) (g : B →ₐ[R] C) (N : G(A ⊗[R] M; A, k)) :
-    N.map (g.comp f) = (N.map f).map g := by
-  refine letI := f.toAlgebra; letI := g.toAlgebra; ext ?_
-  have hg : g = IsScalarTower.toAlgHom R B C := rfl
-  rw [map_val, map_val', map_val, hg, ← AlgebraTensorModule.cancelBaseChange_comp_mk_one',
-    ← Submodule.restrictScalars_map, Submodule.map_span, Submodule.coe_restrictScalars,
-    Submodule.span_span_of_tower, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
-    LinearEquiv.coe_toLinearMap, AlgebraTensorModule.coe_cancelBaseChange_comp_mk_one,
-    AlgHom.comp_toLinearMap, LinearMap.rTensor_comp, LinearMap.coe_comp, Set.image_comp]
-
-/-- The Grassmannian functor given a ring `R`, an `R`-module `M`, and a natural number `k`.
-Given an `R`-algebra `A`, we return the set `G(A ⊗[R] M; A, k)`. -/
-@[simps!] noncomputable def functor (R : CommRingCat.{u}) (M : ModuleCat.{v} R) (k : ℕ) :
-    Under R ⥤ Type (max u v) where
-  obj A := G(A ⊗[R] M; A, k)
-  map f := map (CommRingCat.toAlgHom f)
-  map_id _ := funext map_id
-  map_comp f g := funext (map_comp (CommRingCat.toAlgHom f) (CommRingCat.toAlgHom g))
-
-/-- Functoriality of `chart`. -/
-lemma baseChange_mem_chart (f : Fin k → M) {N : G(M; R, k)} (hn : N ∈ chart R f) :
-    N.baseChange A ∈ chart A (TensorProduct.mk R A M 1 ∘ f) := by
-  convert ofEquiv_mem_chart (N.val.quotient_baseChange A ≪≫ₗ (equivOfChart hn).baseChange R A _ _
-    ≪≫ₗ TensorProduct.piScalarRight R A A (Fin k)) ?_ (fun i ↦ ?_) using 1
-  simp [Pi.single_apply_smul]
-
-/-- Functoriality of `chart`. -/
-lemma baseChange_chart_subset (f : Fin k → M) :
-    baseChange A '' (chart R f) ⊆ chart A (TensorProduct.mk R A M 1 ∘ f) :=
-  Set.image_subset_iff.2 fun _ ↦ baseChange_mem_chart f
-
-/-- Functoriality of `chart`. -/
-lemma map_mem_chart (f : A →ₐ[R] B) (x : Fin k → M) {N : G(A ⊗[R] M; A, k)}
-    (hn : N ∈ chart A (TensorProduct.mk R A M 1 ∘ x)) :
-    (N.map f) ∈ chart B (TensorProduct.mk R B M 1 ∘ x) := by
-  letI := f.toAlgebra
-  have hf : IsScalarTower.toAlgHom R A B = f := rfl
-  convert ofEquiv_mem_chart ((Submodule.Quotient.equiv _ _ (AlgebraTensorModule.cancelBaseChange
-    R A B B M) rfl).symm ≪≫ₗ N.quotientBaseChangeValEquiv B ≪≫ₗ (equivOfChart hn).baseChange
-    A B _ _ ≪≫ₗ TensorProduct.piScalarRight A B B (Fin k)) _ (fun i ↦ ?_) using 1
-  simp only [Submodule.Quotient.equiv_symm, quotientBaseChangeValEquiv, Function.comp_apply,
-    mk_apply, LinearEquiv.trans_apply, Submodule.Quotient.equiv_apply, Submodule.mapQ_apply,
-    LinearEquiv.coe_coe, AlgebraTensorModule.cancelBaseChange_symm_tmul, piScalarRight_apply]
-  conv => enter [1,2,2]; exact Submodule.quotient_baseChange_apply ..
-  simp only [LinearEquiv.baseChange_apply, piScalarRightHom_tmul]
-  refine funext fun j ↦ ?_
-  conv => enter [1,1]; exact equivOfChart_apply_apply hn i j
-  rw [ite_smul, one_smul, zero_smul, Pi.single_apply]
-
-/-- Functoriality of `chart`. -/
-lemma map_chart_subset (f : A →ₐ[R] B) (x : Fin k → M) :
-    map f '' (chart A (TensorProduct.mk R A M 1 ∘ x)) ⊆ chart B (TensorProduct.mk R B M 1 ∘ x) :=
-  Set.image_subset_iff.2 fun _ ↦ map_mem_chart f _
-
-/-- A subfunctor of the Grassmannian, given an indexing `x : Fin k → M`, `chart x` selects the
-elements `N ∈ G(A ⊗[R] M; A, k)` such that the composition `A^k → A ⊗[R] M → (A ⊗[R] M)/N.val` is
-an isomorphism. This is called `chart` because it corresponds to an affine open chart in the
-Grassmannian. -/
-@[simps!] noncomputable def chartFunctor (R : CommRingCat.{u}) (M : ModuleCat.{v} R) (k : ℕ)
-    (x : Fin k → M) :
-    Under R ⥤ Type (max u v) where
-  obj A := chart A (TensorProduct.mk R A M 1 ∘ x)
-  map f N := ⟨N.1.map (CommRingCat.toAlgHom f), map_mem_chart _ x N.2⟩
-  map_id _ := funext fun _ ↦ Subtype.ext <| map_id ..
-  map_comp _ _ := funext fun _ ↦ Subtype.ext <|
-    map_comp (CommRingCat.toAlgHom _) (CommRingCat.toAlgHom _) _
-
-/-- `chartFunctor R M k x` is a subfunctor of `Grassmannian.functor R M k`. -/
-noncomputable def chartToFunctor (R : CommRingCat.{u}) (M : ModuleCat.{v} R) (k : ℕ)
-    (x : Fin k → M) :
-    chartFunctor R M k x ⟶ functor R M k where
-  app A := Subtype.val
-
 end Grassmannian
-
-namespace ProjectiveSpace
-
-open Grassmannian
-
-variable (R : Type u) [CommRing R] (M : Type v) [AddCommGroup M] [Module R M]
-
-/-- The projective space corresponding to the module `M` is the space of submodules `N` such that
-`M⧸N` is locally free of rank 1, i.e. invertible. -/
-abbrev AsType := G(M; R, 1)
-
-@[inherit_doc] scoped notation "ℙ("M"; "R")" => AsType R M
-
-/-- The functor `R-Alg ⥤ Set` that sends `A` to `ℙ(A ⊗[R] M; A)`. -/
-noncomputable abbrev functor (R : CommRingCat.{u}) (M : ModuleCat.{v} R) :
-    Under R ⥤ Type (max u v) :=
-  Grassmannian.functor R M 1
-
-/-- The affine chart indexed by `x : M`, consisting of those `N` such that there is an isomorphism
-`M⧸N ≃ₗ[R] R`, sending `⟦x⟧` to `1`. Morally, this says "`x` is invertible". -/
-abbrev chart (x : M) : Set ℙ(M; R) :=
-  Grassmannian.chart R (fun _ ↦ x)
-
-variable {R M} in
-/-- Given `N ∈ chart R M x`, we have an isomorphism `M ⧸ N ≃ₗ[R] R` sending `x` to `1`. -/
-noncomputable def equivOfChart (x : M) {N : ℙ(M; R)} (hn : N ∈ chart R M x) :
-    (M ⧸ N.val) ≃ₗ[R] R :=
-  Grassmannian.equivOfChart hn ≪≫ₗ LinearEquiv.funUnique (Fin 1) R R
-
-lemma equivOfChart_apply (x : M) {N : ℙ(M; R)} (hn : N ∈ chart R M x) :
-    equivOfChart x hn (Submodule.Quotient.mk x) = 1 := by
-  rw [equivOfChart, LinearEquiv.trans_apply, Grassmannian.equivOfChart_apply (i:=0)]; rfl
-
-variable {R M}
-/-- "Division by `x`" is well-defined on the `chart` where "`x` is invertible". -/
-noncomputable def div (y x : M) (p : chart R M x) : R :=
-  equivOfChart x p.2 (Submodule.Quotient.mk y)
-
-lemma add_div (y z x : M) : div (R:=R) (y + z) x = div y x + div z x :=
-  funext fun _ ↦ by rw [Pi.add_apply, div, div, div, Submodule.Quotient.mk_add, map_add]
-
-lemma add_div_apply (y z x : M) (p) : div (R:=R) (y + z) x p = div y x p + div z x p :=
-  congrFun (add_div ..) p
-
-lemma smul_div (r : R) (y x : M) : div (R:=R) (r • y) x = r • div y x :=
-  funext fun _ ↦ by rw [Pi.smul_apply, div, div, Submodule.Quotient.mk_smul, map_smul]
-
-lemma smul_div_apply (r : R) (y x : M) (p) : div (R:=R) (r • y) x p = r * div y x p :=
-  congrFun (smul_div ..) p
-
-lemma div_smul_self (y x : M) (p) :
-    div (R:=R) y x p • Submodule.Quotient.mk (p:=p.1.val) x = Submodule.Quotient.mk y :=
-  (equivOfChart x p.2).injective <| by rw [map_smul, equivOfChart_apply, smul_eq_mul, mul_one, div]
-
-lemma div_self (x : M) : div (R:=R) x x = 1 :=
-  funext fun _ ↦ equivOfChart_apply ..
-
-lemma div_self_apply (x : M) (p) : div (R:=R) x x p = 1 :=
-  congrFun (div_self x) p
-
-lemma div_mul_div_cancel (x y z : M) (p : Set.Elem (chart R M y ∩ chart R M z)) :
-    div x y ⟨p.1, p.2.1⟩ * div y z ⟨p.1, p.2.2⟩ = div x z ⟨p.1, p.2.2⟩ := by
-  nth_rw 2 [div]; rw [← smul_eq_mul, ← map_smul, div_smul_self, ← div]
-
-lemma div_mul_div_symm (x y : M) (p : Set.Elem (chart R M x ∩ chart R M y)) :
-    div x y ⟨p.1, p.2.2⟩ * div y x ⟨p.1, p.2.1⟩ = 1 := by
-  rw [div_mul_div_cancel x y x ⟨p.1, p.2.2, p.2.1⟩, div_self_apply]
-
-/-- `chart x` as a functor. `A` is sent to `chart A (A ⊗[R] M) (1 ⊗ₜ x)`. -/
-noncomputable abbrev chartFunctor (R : CommRingCat.{u}) (M : ModuleCat.{v} R) (x : M) :
-    Under R ⥤ Type (max u v) :=
-  Grassmannian.chartFunctor R M 1 (fun _ ↦ x)
-
-lemma chartFunctor_obj (R : CommRingCat.{u}) (M : ModuleCat.{v} R) (x : M) (A : Under R) :
-    (chartFunctor R M x).obj A = chart A (A ⊗[R] M) (1 ⊗ₜ x) :=
-  rfl
-
-/-- `chartFunctor` as a subfunctor of `ProjectiveSpace.functor`. -/
-noncomputable abbrev chartToFunctor (R : CommRingCat.{u}) (M : ModuleCat.{v} R) (x : M) :
-    chartFunctor R M x ⟶ functor R M :=
-  Grassmannian.chartToFunctor R M 1 (fun _ ↦ x)
-
-end ProjectiveSpace
 
 end AlgebraicGeometry
