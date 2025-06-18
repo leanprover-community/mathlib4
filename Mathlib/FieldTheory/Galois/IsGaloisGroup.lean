@@ -21,9 +21,9 @@ class IsGaloisGroup where
   commutes : SMulCommClass G K L
   isInvariant : Algebra.IsInvariant K L G
 
-attribute [instance low] IsGaloisGroup.commutes IsGaloisGroup.isInvariant
-
 namespace IsGaloisGroup
+
+attribute [instance low] commutes isInvariant
 
 theorem fixedPoints_eq_bot [IsGaloisGroup G K L] :
     FixedPoints.intermediateField G = (⊥ : IntermediateField K L) := by
@@ -43,8 +43,20 @@ theorem of_isGalois [FiniteDimensional K L] [IsGalois K L] : IsGaloisGroup (L �
 
 theorem card_eq_finrank [Finite G] [IsGaloisGroup G K L] : Nat.card G = Module.finrank K L := by
   have : Fintype G := Fintype.ofFinite G
-  have : FaithfulSMul G L := IsGaloisGroup.faithful K
+  have : FaithfulSMul G L := faithful K
   rw [← IntermediateField.finrank_bot', ← fixedPoints_eq_bot G, Nat.card_eq_fintype_card]
   exact (FixedPoints.finrank_eq_card G L).symm
+
+theorem finiteDimensional [Finite G] [IsGaloisGroup G K L] : FiniteDimensional K L :=
+  FiniteDimensional.of_finrank_pos (card_eq_finrank G K L ▸ Nat.card_pos)
+
+/-- If `G` is a finite Galois group for `L/K`, then `G` is isomorphic to `L ≃ₐ[K] L`. -/
+@[simps!] noncomputable def mulEquivAlgEquiv [IsGaloisGroup G K L] [Finite G] : G ≃* (L ≃ₐ[K] L) :=
+  MulEquiv.ofBijective (MulSemiringAction.toAlgAut G K L) (by
+    have := isGalois G K L
+    have := finiteDimensional G K L
+    rw [Nat.bijective_iff_injective_and_card, card_eq_finrank G K L,
+      Nat.card_eq_fintype_card, IsGalois.card_aut_eq_finrank K L]
+    exact ⟨fun _ _ h ↦ (faithful K).eq_of_smul_eq_smul (DFunLike.ext_iff.mp h), rfl⟩)
 
 end IsGaloisGroup
