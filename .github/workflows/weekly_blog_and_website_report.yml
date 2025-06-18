@@ -30,7 +30,7 @@ jobs:
         do
           printf 'PRs in %s\n' "${site}"
           cd "${site}"
-          printf $'%s<<EOF\n%s\nEOF' "${site}" "$(./scripts/formatGhPrList.sh "${site}")" | tee "$GITHUB_OUTPUT"
+          printf $'%s<<EOF\n%s\nEOF' "${site}" "$(./scripts/formatGhPrList.sh "${site}")" | tee -a "$GITHUB_OUTPUT"
           cd ..
         done
 
