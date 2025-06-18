@@ -68,8 +68,8 @@ noncomputable def mulEquivCongr [IsGaloisGroup G K L] [Finite G]
   (mulEquivAlgEquiv G K L).trans (mulEquivAlgEquiv H K L).symm
 
 @[simp]
-theorem mulEquivCongr_apply_smul [IsGaloisGroup G K L] [Finite G]
-    [IsGaloisGroup H K L] [Finite H] (g : G) (x : L) : mulEquivCongr G H K L g • x = g • x :=
+theorem mulEquivCongr_apply_smul [IsGaloisGroup G K L] [Finite G] [IsGaloisGroup H K L] [Finite H]
+    (g : G) (x : L) : mulEquivCongr G H K L g • x = g • x :=
   AlgEquiv.ext_iff.mp ((mulEquivAlgEquiv H K L).apply_symm_apply (mulEquivAlgEquiv G K L g)) x
 
 end IsGaloisGroup
