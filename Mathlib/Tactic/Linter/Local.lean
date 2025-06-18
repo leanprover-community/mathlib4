@@ -11,7 +11,7 @@ import Mathlib.Util.ParseGit
 The "localLinter" linter emits a warning somewhere.
 -/
 
-open Lean Elab
+open Lean Elab Linter
 
 namespace Mathlib.Linter
 
@@ -45,7 +45,7 @@ namespace LocalLinter
 
 @[inherit_doc Mathlib.Linter.linter.localLinter]
 def localLinterLinter : Linter where run stx := do
-  unless Linter.getLinterValue linter.localLinter (← getOptions) do
+  unless Linter.getLinterValue linter.localLinter (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return
