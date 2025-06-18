@@ -588,7 +588,7 @@ theorem Set.PairwiseDisjoint.countable_of_Ioo [OrderTopology α] [SecondCountabl
 /-- For a function taking values in a second countable space, the set of points `x` for
 which the image under `f` of `(x, ∞)` is separated above from `f x` is countable. We give
 here a version relative to a set `t`. -/
-theorem countable_image_lt_image_Ioi_inter
+theorem countable_image_lt_image_Ioi_within
     [OrderTopology α] [LinearOrder β] [SecondCountableTopology α] (t : Set β) (f : β → α) :
     Set.Countable {x ∈ t | ∃ z, f x < z ∧ ∀ y ∈ t, x < y → z ≤ f y} := by
   /- If the values of `f` are separated above on the right of `x`, there is an interval `(f x, z x)`
@@ -627,15 +627,15 @@ theorem countable_image_lt_image_Ioi_inter
 which the image under `f` of `(x, ∞)` is separated above from `f x` is countable. -/
 theorem countable_image_lt_image_Ioi [OrderTopology α] [LinearOrder β] (f : β → α)
     [SecondCountableTopology α] : Set.Countable {x | ∃ z, f x < z ∧ ∀ y, x < y → z ≤ f y} := by
-  simpa using countable_image_lt_image_Ioi_inter univ f
+  simpa using countable_image_lt_image_Ioi_within univ f
 
 /-- For a function taking values in a second countable space, the set of points `x` for
 which the image under `f` of `(x, ∞)` is separated below from `f x` is countable. We give
 here a version relative to a set `t`. -/
-theorem countable_image_gt_image_Ioi_inter
+theorem countable_image_gt_image_Ioi_within
     [OrderTopology α] [LinearOrder β] [SecondCountableTopology α] (t : Set β) (f : β → α) :
     Set.Countable {x ∈ t | ∃ z, z < f x ∧ ∀ y ∈ t, x < y → f y ≤ z} :=
-  countable_image_lt_image_Ioi_inter (α := αᵒᵈ) t f
+  countable_image_lt_image_Ioi_within (α := αᵒᵈ) t f
 
 /-- For a function taking values in a second countable space, the set of points `x` for
 which the image under `f` of `(x, ∞)` is separated below from `f x` is countable. -/
@@ -646,10 +646,10 @@ theorem countable_image_gt_image_Ioi [OrderTopology α] [LinearOrder β] (f : β
 /-- For a function taking values in a second countable space, the set of points `x` for
 which the image under `f` of `(-∞, x)` is separated above from `f x` is countable. We give
 here a version relative to a set `t`. -/
-theorem countable_image_lt_image_Iio_inter
+theorem countable_image_lt_image_Iio_within
     [OrderTopology α] [LinearOrder β] [SecondCountableTopology α] (t : Set β) (f : β → α) :
     Set.Countable {x ∈ t | ∃ z, f x < z ∧ ∀ y ∈ t, y < x → z ≤ f y} :=
-  countable_image_lt_image_Ioi_inter (β := βᵒᵈ) t f
+  countable_image_lt_image_Ioi_within (β := βᵒᵈ) t f
 
 /-- For a function taking values in a second countable space, the set of points `x` for
 which the image under `f` of `(-∞, x)` is separated above from `f x` is countable. -/
@@ -660,10 +660,10 @@ theorem countable_image_lt_image_Iio [OrderTopology α] [LinearOrder β] (f : β
 /-- For a function taking values in a second countable space, the set of points `x` for
 which the image under `f` of `(-∞, x)` is separated below from `f x` is countable. We give
 here a version relative to a set `t`. -/
-theorem countable_image_gt_image_Iio_inter
+theorem countable_image_gt_image_Iio_within
     [OrderTopology α] [LinearOrder β] [SecondCountableTopology α] (t : Set β) (f : β → α) :
     Set.Countable {x ∈ t | ∃ z, z < f x ∧ ∀ y ∈ t, y < x → f y ≤ z} :=
-  countable_image_lt_image_Ioi_inter (α := αᵒᵈ) (β := βᵒᵈ) t f
+  countable_image_lt_image_Ioi_within (α := αᵒᵈ) (β := βᵒᵈ) t f
 
 /-- For a function taking values in a second countable space, the set of points `x` for
 which the image under `f` of `(-∞, x)` is separated below from `f x` is countable. -/
