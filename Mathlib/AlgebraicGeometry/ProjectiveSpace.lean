@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 
-import Mathlib.AlgebraicGeometry.AffineSpace
-import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Proper
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
 /-!
-# Projective space
+# Primport Mathlib.AlgebraicGeometry.Limits
+import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Scheme
+ojective space
 
 ## Main definitions
 
