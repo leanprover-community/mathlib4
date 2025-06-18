@@ -86,9 +86,6 @@ namespace WellOrder
 instance inhabited : Inhabited WellOrder :=
   ⟨⟨PEmpty, _, inferInstanceAs (IsWellOrder PEmpty EmptyRelation)⟩⟩
 
-@[deprecated "No deprecation message was provided." (since := "2024-10-24")]
-theorem eta (o : WellOrder) : mk o.α o.r o.wo = o := rfl
-
 end WellOrder
 
 /-- Equivalence relation on well orders on arbitrary types in universe `u`, given by order
@@ -142,20 +139,8 @@ instance inhabited : Inhabited Ordinal :=
 instance one : One Ordinal :=
   ⟨type <| @EmptyRelation PUnit⟩
 
-@[deprecated "Avoid using `Quotient.mk` to construct an `Ordinal` directly."
-  (since := "2024-10-24")]
-theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.r := rfl
-
-@[deprecated "Avoid using `Quotient.mk` to construct an `Ordinal` directly."
-  (since := "2024-10-24")]
-theorem type_def (r) [wo : IsWellOrder α r] : (⟦⟨α, r, wo⟩⟧ : Ordinal) = type r := rfl
-
 @[simp]
 theorem type_toType (o : Ordinal) : typeLT o.toType = o :=
-  o.out_eq
-
-@[deprecated type_toType (since := "2024-10-22")]
-theorem type_lt (o : Ordinal) : typeLT o.toType = o :=
   o.out_eq
 
 theorem type_eq {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s] :
@@ -303,7 +288,7 @@ instance partialOrder : PartialOrder Ordinal where
   le_refl := Quot.ind fun ⟨_, _, _⟩ => ⟨InitialSeg.refl _⟩
   le_trans a b c :=
     Quotient.inductionOn₃ a b c fun _ _ _ ⟨f⟩ ⟨g⟩ => ⟨f.trans g⟩
-  lt_iff_le_not_le a b :=
+  lt_iff_le_not_ge a b :=
     Quotient.inductionOn₂ a b fun _ _ =>
       ⟨fun ⟨f⟩ => ⟨⟨f⟩, fun ⟨g⟩ => (f.transInitial g).irrefl⟩, fun ⟨⟨f⟩, h⟩ =>
         f.principalSumRelIso.recOn (fun g => ⟨g⟩) fun g => (h ⟨g.symm.toInitialSeg⟩).elim⟩
@@ -315,7 +300,7 @@ instance : LinearOrder Ordinal :=
   {inferInstanceAs (PartialOrder Ordinal) with
     le_total := fun a b => Quotient.inductionOn₂ a b fun ⟨_, r, _⟩ ⟨_, s, _⟩ =>
       (InitialSeg.total r s).recOn (fun f => Or.inl ⟨f⟩) fun f => Or.inr ⟨f⟩
-    decidableLE := Classical.decRel _ }
+    toDecidableLE := Classical.decRel _ }
 
 theorem _root_.InitialSeg.ordinal_type_le {α β} {r : α → α → Prop} {s : β → β → Prop}
     [IsWellOrder α r] [IsWellOrder β s] (h : r ≼i s) : type r ≤ type s :=
@@ -634,12 +619,6 @@ theorem type_lift_preimage (r : α → α → Prop) [IsWellOrder α r]
     (f : β ≃ α) : lift.{u} (type (f ⁻¹'o r)) = lift.{v} (type r) :=
   (RelIso.preimage f r).ordinal_lift_type_eq
 
-@[deprecated type_lift_preimage_aux (since := "2024-10-22")]
-theorem type_lift_preimage_aux (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
-    lift.{u} (@type _ (fun x y => r (f x) (f y))
-      (inferInstanceAs (IsWellOrder β (f ⁻¹'o r)))) = lift.{v} (type r) :=
-  type_lift_preimage r f
-
 /-- `lift.{max u v, u}` equals `lift.{v, u}`.
 
 Unfortunately, the simp lemma doesn't seem to work. -/
@@ -647,13 +626,6 @@ theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
   funext fun a =>
     inductionOn a fun _ r _ =>
       Quotient.sound ⟨(RelIso.preimage Equiv.ulift r).trans (RelIso.preimage Equiv.ulift r).symm⟩
-
-/-- `lift.{max v u, u}` equals `lift.{v, u}`.
-
-Unfortunately, the simp lemma doesn't seem to work. -/
-@[deprecated lift_umax (since := "2024-10-24")]
-theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
-  lift_umax
 
 /-- An ordinal lifted to a lower or equal universe equals itself.
 
@@ -705,7 +677,7 @@ theorem lift_inj {a b : Ordinal} : lift.{u, v} a = lift.{u, v} b ↔ a = b := by
 
 @[simp]
 theorem lift_lt {a b : Ordinal} : lift.{u, v} a < lift.{u, v} b ↔ a < b := by
-  simp_rw [lt_iff_le_not_le, lift_le]
+  simp_rw [lt_iff_le_not_ge, lift_le]
 
 @[simp]
 theorem lift_typein_top {r : α → α → Prop} {s : β → β → Prop}
@@ -1131,9 +1103,10 @@ theorem ord_zero : ord 0 = 0 :=
 theorem ord_nat (n : ℕ) : ord n = n :=
   (ord_le.2 (card_nat n).ge).antisymm
     (by
-      induction' n with n IH
-      · apply Ordinal.zero_le
-      · exact succ_le_of_lt (IH.trans_lt <| ord_lt_ord.2 <| Nat.cast_lt.2 (Nat.lt_succ_self n)))
+      induction n with
+      | zero => apply Ordinal.zero_le
+      | succ n IH =>
+        exact succ_le_of_lt (IH.trans_lt <| ord_lt_ord.2 <| Nat.cast_lt.2 (Nat.lt_succ_self n)))
 
 @[simp]
 theorem ord_one : ord 1 = 1 := by simpa using ord_nat 1

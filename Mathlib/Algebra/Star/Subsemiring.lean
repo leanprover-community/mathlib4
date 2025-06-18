@@ -127,7 +127,7 @@ variable (R)
 
 /-- The center of a semiring `R` is the set of elements that commute and associate with everything
 in `R` -/
-def center (R) [NonAssocSemiring R][StarRing R] : StarSubsemiring R where
+def center (R) [NonAssocSemiring R] [StarRing R] : StarSubsemiring R where
   toSubsemiring := Subsemiring.center R
   star_mem' := Set.star_mem_center
 

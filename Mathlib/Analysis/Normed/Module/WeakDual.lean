@@ -210,23 +210,23 @@ variable (𝕜)
 
 /-- The image under `↑ : WeakDual 𝕜 E → (E → 𝕜)` of a polar `WeakDual.polar 𝕜 s` of a
 neighborhood `s` of the origin is a closed set. -/
-theorem isClosed_image_polar_of_mem_nhds {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)) :
+theorem isClosed_image_polar_of_mem_nhds {s : Set E} (s_nhds : s ∈ 𝓝 (0 : E)) :
     IsClosed (((↑) : WeakDual 𝕜 E → E → 𝕜) '' polar 𝕜 s) :=
-  isClosed_image_coe_of_bounded_of_closed (isBounded_polar_of_mem_nhds_zero 𝕜 s_nhd)
+  isClosed_image_coe_of_bounded_of_closed (isBounded_polar_of_mem_nhds_zero 𝕜 s_nhds)
     (isClosed_polar _ _)
 
 /-- The image under `↑ : NormedSpace.Dual 𝕜 E → (E → 𝕜)` of a polar `polar 𝕜 s` of a
 neighborhood `s` of the origin is a closed set. -/
 theorem _root_.NormedSpace.Dual.isClosed_image_polar_of_mem_nhds {s : Set E}
-    (s_nhd : s ∈ 𝓝 (0 : E)) :
+    (s_nhds : s ∈ 𝓝 (0 : E)) :
     IsClosed (((↑) : Dual 𝕜 E → E → 𝕜) '' NormedSpace.polar 𝕜 s) :=
-  WeakDual.isClosed_image_polar_of_mem_nhds 𝕜 s_nhd
+  WeakDual.isClosed_image_polar_of_mem_nhds 𝕜 s_nhds
 
 /-- The **Banach-Alaoglu theorem**: the polar set of a neighborhood `s` of the origin in a
 normed space `E` is a compact subset of `WeakDual 𝕜 E`. -/
-theorem isCompact_polar [ProperSpace 𝕜] {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)) :
+theorem isCompact_polar [ProperSpace 𝕜] {s : Set E} (s_nhds : s ∈ 𝓝 (0 : E)) :
     IsCompact (polar 𝕜 s) :=
-  isCompact_of_bounded_of_closed (isBounded_polar_of_mem_nhds_zero 𝕜 s_nhd) (isClosed_polar _ _)
+  isCompact_of_bounded_of_closed (isBounded_polar_of_mem_nhds_zero 𝕜 s_nhds) (isClosed_polar _ _)
 
 /-- The **Banach-Alaoglu theorem**: closed balls of the dual of a normed space `E` are compact in
 the weak-star topology. -/

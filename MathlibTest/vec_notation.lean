@@ -11,18 +11,22 @@ open Qq
 set_option linter.style.setOption false in
 set_option pp.unicode.fun false
 
+/-- info: ![1, 1 + 1, 1 + 1 + 1] : Fin (Nat.succ 2) → ℤ -/
+#guard_msgs in
+#check by_elab return PiFin.mkLiteralQ ![q(1 : ℤ), q(1 + 1), q(1 + 1 + 1)]
+
 /-! These tests are testing `PiFin.toExpr` and fail with
 `local attribute [-instance] PiFin.toExpr` -/
 
-run_cmd Elab.Command.liftTermElabM do
+run_elab do
   let x : Fin 0 → ℕ := ![]
   guard (← isDefEq (toExpr x) q((![] : Fin 0 → ℕ)))
 
-run_cmd Elab.Command.liftTermElabM do
+run_elab do
   let x := ![1, 2, 3]
   guard (← isDefEq (toExpr x) q(![1, 2, 3]))
 
-run_cmd Elab.Command.liftTermElabM do
+run_elab do
   let x := ![![1, 2], ![3, 4]]
   guard (← isDefEq (toExpr x) q(![![1, 2], ![3, 4]]))
 

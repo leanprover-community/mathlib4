@@ -3,7 +3,7 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Maps
+import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
 
 /-!
 
@@ -361,6 +361,16 @@ theorem exists_length_eq_zero_iff {u v : V} : (∃ p : G.Walk u v, p.length = 0)
     exact ⟨nil, rfl⟩
 
 @[simp]
+lemma exists_length_eq_one_iff {u v : V} : (∃ (p : G.Walk u v), p.length = 1) ↔ G.Adj u v := by
+  refine ⟨?_, fun h ↦ ⟨h.toWalk, by simp⟩⟩
+  rintro ⟨p , hp⟩
+  induction p with
+  | nil => simp only [Walk.length_nil, zero_ne_one] at hp
+  | cons h p' =>
+    simp only [Walk.length_cons, add_eq_right] at hp
+    exact (p'.eq_of_length_eq_zero hp) ▸ h
+
+@[simp]
 theorem length_eq_zero_iff {u : V} {p : G.Walk u u} : p.length = 0 ↔ p = nil := by cases p <;> simp
 
 theorem getVert_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) (i : ℕ) :
@@ -380,7 +390,7 @@ theorem getVert_reverse {u v : V} (p : G.Walk u v) (i : ℕ) :
       rw [Nat.succ_sub hi.le]
       simp [getVert]
     next hi =>
-      obtain rfl | hi' := Nat.eq_or_lt_of_not_lt hi
+      obtain rfl | hi' := eq_or_lt_of_not_gt hi
       · simp [getVert]
       · rw [Nat.eq_add_of_sub_eq (Nat.sub_pos_of_lt hi') rfl, Nat.sub_eq_zero_of_le hi']
         simp [getVert]
@@ -1253,7 +1263,7 @@ variable {G}
 /-- Given a walk that avoids a set of edges, produce a walk in the graph
 with those edges deleted. -/
 abbrev toDeleteEdges (s : Set (Sym2 V)) {v w : V} (p : G.Walk v w)
-    (hp : ∀ e, e ∈ p.edges → ¬e ∈ s) : (G.deleteEdges s).Walk v w :=
+    (hp : ∀ e, e ∈ p.edges → e ∉ s) : (G.deleteEdges s).Walk v w :=
   p.transfer _ <| by
     simp only [edgeSet_deleteEdges, Set.mem_diff]
     exact fun e ep => ⟨edges_subset_edgeSet p ep, hp e ep⟩
