@@ -361,14 +361,14 @@ namespace DivisibleBy
 variable (A : Type*)
 
 /-- Create `ℚ`-`MulAction` from `Divisible.qsmul`. -/
-def toMulAction [AddGroup A] [DivisibleBy A ℕ] [IsAddTorsionFree A] : MulAction ℚ A where
+def mulAction [AddGroup A] [DivisibleBy A ℕ] [IsAddTorsionFree A] : MulAction ℚ A where
   smul := qsmul
   one_smul := one_qsmul
   mul_smul := mul_qsmul
 
 /-- Create `ℚ`-`Module` from `Divisible.qsmul`. -/
-def toModule [AddCommGroup A] [DivisibleBy A ℕ] [IsAddTorsionFree A] : Module ℚ A where
-  __ := toMulAction A
+def module [AddCommGroup A] [DivisibleBy A ℕ] [IsAddTorsionFree A] : Module ℚ A where
+  __ := mulAction A
   smul_zero := qsmul_zero
   zero_smul := zero_qsmul
   smul_add := qsmul_add
