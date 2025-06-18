@@ -22,11 +22,12 @@ This file defines the Cantor ternary set and proves a few properties.
   under the functions `(· / 3)` and `((2 + ·) / 3)`, with `preCantorSet 0 := Set.Icc 0 1`, i.e.
   `preCantorSet 0` is the unit interval [0,1].
 * `cantorSet`: The ternary Cantor set, defined as the intersection of all pre-Cantor sets.
-* `cantorToTernary`: takes a number `x` from the Cantor set and returns its representation
-  `(d₀, d₁, ...)` in ternary system consisting only from `0`s and `2`s such that `x = 0.d₀d₁...`
+* `cantorToTernary`: given a number `x` in the Cantor set, returns its ternary representation
+  `(d₀, d₁, ...)` consisting only of digits `0` and `2`, such that `x = 0.d₀d₁...`
   (see `ofDigits_cantorToTernary`).
-* `zero_two_sequence_ofDigits_mem_cantorSet`: any such number lies in the Cantor Set.
-* `zero_two_sequence_ofDigits_unique`: such representation is unique.
+* `zero_two_sequence_ofDigits_mem_cantorSet`: any such sequence corresponds to a number
+  in the Cantor set.
+* `zero_two_sequence_ofDigits_unique`: such a representation is unique.
 -/
 
 /-- The order `n` pre-Cantor set, defined starting from `[0, 1]` and successively removing the
@@ -140,10 +141,11 @@ lemma isCompact_cantorSet : IsCompact cantorSet :=
   isCompact_Icc.of_isClosed_subset isClosed_cantorSet cantorSet_subset_unitInterval
 
 /-!
-## The Cantor set as the set of 0-2 numbers in the ternary system.
+## The Cantor set as the set of 0–2 numbers in the ternary system.
 -/
 
-/-- For `x = 0.d₀d₁...` in ternary system, if none of `dᵢ` is `1`, then `x` is in Cantor set. -/
+/-- If `x = 0.d₀d₁...` in base-3 (ternary), and none of the digits `dᵢ` is `1`,
+then `x` belongs to the Cantor set. -/
 theorem zero_two_sequence_ofDigits_mem_cantorSet {a : ℕ → Fin 3}
     (h : ∀ n, a n ≠ 1) : ofDigits a ∈ cantorSet := by
   simp only [cantorSet, Set.mem_iInter]
@@ -164,8 +166,9 @@ theorem zero_two_sequence_ofDigits_mem_cantorSet {a : ℕ → Fin 3}
     generalize a 0 = x at h
     fin_cases x <;> simp at ⊢ h
 
-/-- If two 0-2-sequences represent the same number, they are equal. Note that this is not true for
-regular representations as `0.09999...` = `0.1000...`. -/
+/-- If two base-3 representations using only digits `0` and `2` define the same number,
+then the sequences must be equal.
+This uniqueness fails for general base-3 representations (e.g. `0.1000... = 0.0222...`). -/
 theorem zero_two_sequence_ofDigits_unique {a b : ℕ → Fin 3}
     (ha : ∀ n, a n ≠ 1)
     (hb : ∀ n, b n ≠ 1)
@@ -213,9 +216,9 @@ theorem zero_two_sequence_ofDigits_unique {a b : ℕ → Fin 3}
   linarith [ofDigits_nonneg (digits := fun i ↦ b (1 + n1 + i)),
     ofDigits_le_one (digits := fun i ↦ a (1 + n1 + i))]
 
-/-- Given `x` from the Cantor set, it is either `x ∈ [0, 1/3]` or `x ∈ [2/3, 1]`. This function
-scales the interval `x` lies back to `[0, 1]`. It is used when we are obtaining the ternary
-representation of `x`. -/
+/-- Given `x ∈ [0, 1/3] ∪ [2/3, 1]` (i.e. a level of the Cantor set),
+this function rescales the interval containing `x` back to `[0, 1]`.
+Used to iteratively extract the ternary representation of `x`. -/
 noncomputable def cantorStep (x : ℝ) : ℝ :=
   if x ∈ Set.Icc 0 (1/3) then
     3 * x
@@ -245,7 +248,7 @@ theorem cantorStep_mem_cantorSet {x : ℝ} (hx : x ∈ cantorSet) : cantorStep x
       ring_nf
       exact hy
 
-/-- Iterates the `cantorStep` function on `x`. -/
+/-- The infinite sequence obtained by repeatedly applying `cantorStep` to `x`. -/
 noncomputable def cantorSequence (x : ℝ) : Stream' ℝ :=
   Stream'.iterate cantorStep x
 
@@ -257,11 +260,12 @@ theorem cantorSequence_mem_cantorSet {x : ℝ} (hx : x ∈ cantorSet) {n : ℕ} 
     simp [cantorSequence, Stream'.get_succ_iterate'] at ih ⊢
     exact cantorStep_mem_cantorSet ih
 
-/-- Points of the Cantor set can be seen as infinite paths in the infinite binary tree: walking down
-the tree at each step one choose one of two directions to go. Similarly, if `x` is in the Cantor
-set, it lies in some of the intervals of `preCantorSet n`, which is being splitted into two ones
-in `preCantorSet (n + 1)`. Keeping track of which interval one choose at each step we obtain the
-path in the infinite tree. This function represents this path as `Stream' Bool`. -/
+/-- Points of the Cantor set correspond to infinite paths in the full binary tree.
+at each level `n`, the set `preCantorSet (n + 1)` splits each interval in
+`preCantorSet n` into two parts.
+Given `x ∈ cantorSet`, the point `x` lies in one of the intervals of `preCantorSet n`.
+This function tracks which of the two intervals in `preCantorSet (n + 1)`
+contains `x` at each step, producing the corresponding path as a stream of booleans. -/
 noncomputable def cantorToBinary (x : ℝ) : Stream' Bool :=
   (cantorSequence x).map fun x ↦
     if x ∈ Set.Icc 0 (1/3) then
@@ -269,8 +273,8 @@ noncomputable def cantorToBinary (x : ℝ) : Stream' Bool :=
     else
       true
 
-/-- Takes a number `x` from the Cantor set and returns its representation in ternary system
-`(d₀, d₁, ...)` consisting only from `0`s and `2`s such that `x = 0.d₀d₁...`. -/
+/-- Given `x` in the Cantor set, return its ternary representation `(d₀, d₁, …)`
+using only digits `0` and `2`, such that `x = 0.d₀d₁...` in base-3. -/
 noncomputable def cantorToTernary (x : ℝ) : Stream' (Fin 3) :=
   (cantorToBinary x).map (fun b ↦ cond b 2 0)
 
