@@ -256,13 +256,13 @@ open Opposite
 abbrev Comon_ToMon_OpOpObjMon (A : Comon_ C) : Mon_Class (op A.X) where
   one := ε[A.X].op
   mul := Δ[A.X].op
-  one_mul' := by
+  one_mul := by
     rw [← op_whiskerRight, ← op_comp, counit_comul]
     rfl
-  mul_one' := by
+  mul_one := by
     rw [← op_whiskerLeft, ← op_comp, comul_counit]
     rfl
-  mul_assoc' := by
+  mul_assoc := by
     rw [← op_inv_associator, ← op_whiskerRight, ← op_comp, ← op_whiskerLeft, ← op_comp,
       comul_assoc_flip, op_comp, op_comp_assoc]
     rfl
