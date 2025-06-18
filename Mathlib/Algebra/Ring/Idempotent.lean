@@ -76,22 +76,20 @@ lemma add_sub_mul (hp : IsIdempotentElem a) (hq : IsIdempotentElem b) :
     IsIdempotentElem (a + b - a * b) := add_sub_mul_of_commute (.all ..) hp hq
 
 end CommRing
+
+lemma sub_of [NonAssocRing R] {p q : R} (hp : IsIdempotentElem p)
+    (hq : IsIdempotentElem q) (hpq : p * q = p) (hqp : q * p = p) : IsIdempotentElem (q - p) := by
+  simp_rw [IsIdempotentElem, sub_mul, mul_sub, hpq, hqp, hp.eq, hq.eq, sub_self, sub_zero]
+
 end IsIdempotentElem
 
-lemma isIdempotentElem_sub_of {H : Type*} [NonAssocRing H] {p q : H}
-  (hp : IsIdempotentElem p) (hq : IsIdempotentElem q)
-  (hpq : p * q = p) (hqp : q * p = p) :
-    IsIdempotentElem (q - p) :=
-by simp_rw [IsIdempotentElem, sub_mul, mul_sub, hpq, hqp, hp.eq, hq.eq, sub_self, sub_zero]
 
-lemma commutes_of_isIdempotentElem_sub
-  {H : Type*} [Ring H] [IsAddTorsionFree H] {p q : H}
-  (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) (hqp : IsIdempotentElem (q - p)) :
-    p * q = p ∧ q * p = p :=
-by
+lemma commutes_of_isIdempotentElem_sub [Ring R] [IsAddTorsionFree R] {p q : R}
+    (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) (hqp : IsIdempotentElem (q - p)) :
+    p * q = p ∧ q * p = p := by
   simp_rw [IsIdempotentElem, mul_sub, sub_mul,
     hp.eq, hq.eq, ← sub_add_eq_sub_sub, sub_right_inj, add_sub] at hqp
-  have h' : ((2 : ℕ) • p : H) = q * p + p * q := by
+  have h' : (2 : ℕ) • p = q * p + p * q := by
     simp_rw [two_nsmul]
     calc p + p = p + (p * q + q * p - p) := by rw [hqp]
       _ = q * p + p * q := by simp_rw [add_sub_cancel, add_comm]
@@ -108,8 +106,7 @@ by
   rw [← H'', ← two_nsmul, nsmul_right_inj (Nat.zero_ne_add_one 1).symm] at h'
   exact h'.symm
 
-theorem isIdempotentElem_sub_iff {H : Type*} [Ring H] [IsAddTorsionFree H] {p q : H}
-  (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
+theorem isIdempotentElem_sub_iff [Ring R] [IsAddTorsionFree R] {p q : R}
+    (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
     IsIdempotentElem (q - p) ↔ p * q = p ∧ q * p = p :=
-⟨commutes_of_isIdempotentElem_sub hp hq,
- fun ⟨h1, h2⟩ => isIdempotentElem_sub_of hp hq h1 h2⟩
+  ⟨commutes_of_isIdempotentElem_sub hp hq, fun ⟨h1, h2⟩ => hp.sub_of hq h1 h2⟩
