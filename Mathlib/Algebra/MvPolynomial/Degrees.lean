@@ -475,8 +475,8 @@ lemma totalDegree_finsetSum_le {ι : Type*} {s : Finset ι} {f : ι → MvPolyno
   (totalDegree_finset_sum ..).trans <| Finset.sup_le hf
 
 lemma degreeOf_le_totalDegree (f : MvPolynomial σ R) (i : σ) : f.degreeOf i ≤ f.totalDegree :=
-  degreeOf_le_iff.mpr fun d hd ↦ (eq_or_ne (d i) 0).elim (·.trans_le zero_le') fun h ↦
-    (Finset.single_le_sum (fun _ _ ↦ zero_le') <| Finsupp.mem_support_iff.mpr h).trans
+  degreeOf_le_iff.mpr fun d hd ↦ (eq_or_ne (d i) 0).elim (by omega) fun h ↦
+    (Finset.single_le_sum (by omega) <| Finsupp.mem_support_iff.mpr h).trans
     (le_totalDegree hd)
 
 theorem exists_degree_lt [Fintype σ] (f : MvPolynomial σ R) (n : ℕ)
