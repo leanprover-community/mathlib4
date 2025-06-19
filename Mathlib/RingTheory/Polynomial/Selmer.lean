@@ -348,7 +348,7 @@ theorem X_pow_sub_X_sub_one_gal :
     exact Gal.galAction_isPretransitive _ _ (X_pow_sub_X_sub_one_irreducible_rat hn)
   let _ : MulSemiringAction G R := IsIntegralClosure.MulSemiringAction ℤ ℚ K R
   let S : Set G := ⋃ (q : Ideal R) (hq : q.IsMaximal),
-    ((↑(AddSubgroup.inertia q.toAddSubgroup G) : Set (K ≃ₐ[ℚ] K)) \ {1})
+    ((↑(AddSubgroup.inertia q.toAddSubgroup G : Subgroup G) : Set G) \ {1})
   have hS1 : Subgroup.closure S = ⊤ := by
     simp only [S, Subgroup.closure_iUnion, Subgroup.closure_eq, Subgroup.closure_diff_one]
     exact keythm K
