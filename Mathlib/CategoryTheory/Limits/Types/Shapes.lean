@@ -668,7 +668,6 @@ noncomputable def isLimitEquivBijective :
   invFun h := IsLimit.ofIsoLimit (Types.pullbackLimitCone f g).isLimit
     (Iso.symm (PullbackCone.ext (Equiv.ofBijective _ h).toIso))
   left_inv _ := Subsingleton.elim _ _
-  right_inv _ := rfl
 
 end PullbackCone
 
@@ -949,7 +948,6 @@ def MulticospanIndex.sectionsEquiv :
   invFun s :=
     { val := fun i ↦ s.val (.left i)
       property := fun r ↦ (s.property (.fst r)).trans (s.property (.snd r)).symm }
-  left_inv _ := rfl
   right_inv s := by
     ext (_|r)
     · rfl
