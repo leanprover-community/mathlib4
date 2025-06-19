@@ -77,9 +77,7 @@ namespace BuffonsNeedle
 variable
   /- Probability theory variables. -/
   {Ω : Type*} [MeasureSpace Ω]
-
   /- Buffon's needle variables. -/
-
   /-
     - `d > 0` is the distance between parallel lines.
     - `l > 0` is the length of the needle.
@@ -87,11 +85,9 @@ variable
   (d l : ℝ)
   (hd : 0 < d)
   (hl : 0 < l)
-
   /- `B = (X, Θ)` is the joint random variable for the x-position and angle of the needle. -/
   (B : Ω → ℝ × ℝ)
   (hBₘ : Measurable B)
-
   /- `B` is uniformly distributed on `[-d/2, d/2] × [0, π]`. -/
   (hB : pdf.IsUniform B ((Set.Icc (-d / 2) (d / 2)) ×ˢ (Set.Icc 0 π)) ℙ)
 
