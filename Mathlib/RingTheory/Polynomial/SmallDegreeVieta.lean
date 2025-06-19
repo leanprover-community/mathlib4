@@ -113,9 +113,13 @@ Polynomial versions of results in `Algebra.QuadraticDiscriminant`
 -/
 section QuadraticDiscriminant
 
-variable [Field R]
-
 variable {a b c : R}
+
+lemma quadratic_ne_zero [Semiring R] (ha : a ≠ 0) : C a * X ^ 2 + C b * X + C c ≠ 0 :=
+  fun hx ↦ ha (by rw [show a = (C a * X ^ 2 + C b * X + C c).coeff 2 by
+    simp [coeff_X], hx, coeff_zero])
+
+variable [Field R]
 
 /-- Roots of a quadratic equation. -/
 theorem isRoot_quadratic_iff [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
@@ -133,10 +137,6 @@ theorem isRoot_quadratic_iff_of_discrim_eq_zero [NeZero (2 : R)] (ha : a ≠ 0)
 theorem not_isRoot_of_discrim_ne_sq (h : ∀ s : R, discrim a b c ≠ s^2) (x : R) :
     ¬ IsRoot (C a * X ^ 2 + C b * X + C c) x := by
   convert quadratic_ne_zero_of_discrim_ne_sq h x using 1; simp [pow_two]
-
-lemma quadratic_ne_zero (ha : a ≠ 0) : C a * X ^ 2 + C b * X + C c ≠ 0 :=
-  fun hx ↦ ha (by rw [show a = (C a * X ^ 2 + C b * X + C c).coeff 2 by
-    simp [coeff_X], hx, coeff_zero])
 
 theorem mem_roots_quadratic_iff_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0)
     {z s : R} (h : discrim a b c = s * s) :
