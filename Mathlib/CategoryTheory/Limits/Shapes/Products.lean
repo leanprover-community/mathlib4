@@ -844,6 +844,7 @@ section
 variable {ι : Type*} {ι' : ι → Type*} {X : (i : ι) → (ι' i) → C}
   {c : ∀ (i : ι), Fan (X i)} {c' : Fan fun i : ι => (c i).pt} 
 
+/-- The product of products is a product over the sigma type. -/
 def Fan.IsLimit.mkSigma (hc : ∀ i, IsLimit (c i)) (hc' : IsLimit c') :
     IsLimit (Fan.mk c'.pt fun p : (i : ι) × ι' i => c'.proj p.1 ≫ (c p.1).proj p.2) := by
   refine mkFanLimit _ (fun s => ?_) (fun s p => ?_) (fun s m hm => ?_)
