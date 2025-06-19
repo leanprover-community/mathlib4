@@ -159,7 +159,6 @@ theorem convolution_hom_ext_at (c : C) {v : V} {f g : (F ⊛ G).obj c ⟶ v}
     f = g :=
   ((isPointwiseLeftKanExtensionUnit F G) c).hom_ext (fun j ↦ by simpa using h j.hom)
 
-
 section associator
 
 variable (H : C ⥤ V)
@@ -175,59 +174,37 @@ open MonoidalCategory.ExternalProduct
 
 instance : (F ⊠ G ⊛ H).IsLeftKanExtension <|
     extensionUnitRight (G ⊛ H) (unit G H) F :=
-  (pointwiseLeftKanExtensionRight _ _ _ <| unitPointwiseKan G H).isLeftKanExtension
+  (pointwiseLeftKanExtensionRight _ _ _ <|
+    isPointwiseLeftKanExtensionUnit G H).isLeftKanExtension
 
 instance : ((F ⊛ G) ⊠ H).IsLeftKanExtension <|
     extensionUnitLeft (F ⊛ G) (unit F G) H :=
-  (pointwiseLeftKanExtensionLeft _ _ _ <| unitPointwiseKan F G).isLeftKanExtension
-
-/-- An auxiliary equivalence used to build the associators,
-characterizing morphism out of `F ⊛ G ⊛ H` via the universal property of Kan extensions.
--/
-@[simps!]
-noncomputable def corepresentableIso₂ :
-    coyoneda.obj (.op <| F ⊛ G ⊛ H) ≅
-    (whiskeringLeft _ _ _).obj (tensor C) ⋙
-      (whiskeringLeft _ _ _).obj ((𝟭 C).prod (tensor C)) ⋙
-      coyoneda.obj (.op <| F ⊠ G ⊠ H) :=
-  calc
-    _ ≅ (whiskeringLeft _ _ _).obj (tensor C) ⋙ coyoneda.obj (.op <| F ⊠ (G ⊛ H)) :=
-      corepresentableIso F (G ⊛ H)
-    _ ≅ _ := NatIso.ofComponents
-      (fun _ ↦ Equiv.toIso <| Functor.homEquivOfIsLeftKanExtension _
-        (extensionUnitRight (G ⊛ H) (unit G H) F) _)
-
-/-- An auxiliary equivalence used to build the associators,
-characterizing morphism out of `F ⊛ G ⊛ H` via the universal property of Kan extensions.
--/
-@[simps!]
-noncomputable def corepresentableIso₂' :
-    coyoneda.obj (.op <| (F ⊛ G) ⊛ H) ≅
-    (whiskeringLeft _ _ _).obj (tensor C) ⋙
-      (whiskeringLeft _ _ _).obj ((tensor C).prod (𝟭 C)) ⋙
-      coyoneda.obj (.op <| (F ⊠ G) ⊠ H) :=
-  calc
-    _ ≅ (whiskeringLeft _ _ _).obj (tensor C) ⋙ coyoneda.obj (.op <| (F ⊛ G) ⊠ H) :=
-      corepresentableIso (F ⊛ G) H
-    _ ≅ _ := NatIso.ofComponents
-      (fun _ ↦ Equiv.toIso <| Functor.homEquivOfIsLeftKanExtension _
-        (extensionUnitLeft (F ⊛ G) (unit F G) H) _)
+  (pointwiseLeftKanExtensionLeft _ _ _ <|
+    isPointwiseLeftKanExtensionUnit F G).isLeftKanExtension
 
 /-- The `CorepresentableBy` structure on `F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ -`
 derived from `tensorCorepresentableIso₂`. -/
-def corepresentable₂ :
+@[simps!]
+def corepresentableBy₂ :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((𝟭 C).prod (tensor C)) ⋙
-      coyoneda.obj (.op <| F ⊠ G ⊠ H)|>.CorepresentableBy (F ⊛ G ⊛ H) :=
-  Functor.corepresentableByEquiv.symm (corepresentableIso₂ F G H)
+      coyoneda.obj (.op <| F ⊠ G ⊠ H)|>.CorepresentableBy (F ⊛ G ⊛ H) where
+  homEquiv :=
+    (corepresentableBy F (G ⊛ H)).homEquiv.trans <|
+      Functor.homEquivOfIsLeftKanExtension _ (extensionUnitRight (G ⊛ H) (unit G H) F) _
+  homEquiv_comp := by aesop
 
 /-- The `CorepresentableBy` structure on `(F ⊠ G) ⊠ H ⟶ (tensor C).prod (𝟭 C) ⋙ tensor C ⋙ -`
 derived from `tensorCorepresentableIso₂`. -/
-def corepresentable₂' :
+@[simps!]
+def corepresentableBy₂' :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((tensor C).prod (𝟭 C)) ⋙
-      coyoneda.obj (.op <| (F ⊠ G) ⊠ H)|>.CorepresentableBy ((F ⊛ G) ⊛ H) :=
-  Functor.corepresentableByEquiv.symm (corepresentableIso₂' F G H)
+      coyoneda.obj (.op <| (F ⊠ G) ⊠ H)|>.CorepresentableBy ((F ⊛ G) ⊛ H) where
+  homEquiv :=
+    (corepresentableBy (F ⊛ G) H).homEquiv.trans <|
+      Functor.homEquivOfIsLeftKanExtension _ (extensionUnitLeft (F ⊛ G) (unit F G) H) _
+  homEquiv_comp := by aesop
 
 /-- The isomorphism of functors between
 `((F ⊠ G) ⊠ H ⟶ (tensor C).prod (𝟭 C) ⋙ tensor C ⋙ -)` and
@@ -263,8 +240,8 @@ def associatorCorepresentingIso :
 
 /-- The asociator morphism for Day convolution -/
 def associator : (F ⊛ G) ⊛ H ≅ F ⊛ G ⊛ H :=
-  corepresentable₂' F G H|>.ofIso (associatorCorepresentingIso F G H)|>.uniqueUpToIso <|
-    corepresentable₂ F G H
+  corepresentableBy₂' F G H|>.ofIso (associatorCorepresentingIso F G H)|>.uniqueUpToIso <|
+    corepresentableBy₂ F G H
 
 /-- Characterizing the forward direction of the associator isomorphism
 with respect to the unit transformations. -/
@@ -278,13 +255,13 @@ lemma associator_hom_unit_unit (x y z : C) :
       (unit F (G ⊛ H)).app (x, y ⊗ z) ≫
       (F ⊛ G ⊛ H).map (α_ _ _ _).inv := by
   letI := congrArg (fun t ↦ t.app ((x, y), z)) <|
-      (corepresentableIso₂' F G H).app (F ⊛ (G ⊛ H))|>.toEquiv.rightInverse_symm <|
-        (corepresentable₂ F G H|>.ofIso
+      (corepresentableBy₂' F G H).homEquiv.rightInverse_symm <|
+        (corepresentableBy₂ F G H|>.ofIso
           (associatorCorepresentingIso F G H).symm|>.homEquiv (𝟙 _))
-  dsimp [associator, Coyoneda.fullyFaithful, corepresentable₂,
-    corepresentable₂', Functor.CorepresentableBy.ofIso, corepresentable₂,
+  dsimp [associator, Coyoneda.fullyFaithful, corepresentableBy₂,
+    corepresentableBy₂', Functor.CorepresentableBy.ofIso, corepresentableBy₂,
     Functor.corepresentableByEquiv, associatorCorepresentingIso] at this ⊢
-  simp only [Category.assoc, corepresentableIso₂'_hom_app_app] at this
+  simp only [whiskerLeft_id, Category.comp_id, Category.assoc] at this
   simp only [Category.assoc, this]
   simp [Functor.FullyFaithful.homEquiv, Equivalence.fullyFaithfulFunctor, prod.associativity]
 
@@ -298,13 +275,13 @@ lemma associator_inv_unit_unit (x y z : C) :
       (unit (F ⊛ G) H).app (x ⊗ y, z) ≫
       ((F ⊛ G) ⊛ H).map (α_ x y z).hom := by
   letI := congrArg (fun t ↦ t.app (x, y, z)) <|
-      (corepresentableIso₂ F G H).app ((F ⊛ G) ⊛ H)|>.toEquiv.rightInverse_symm <|
-        (corepresentable₂' F G H|>.ofIso
+      (corepresentableBy₂ F G H).homEquiv.rightInverse_symm <|
+        (corepresentableBy₂' F G H|>.ofIso
           (associatorCorepresentingIso F G H)|>.homEquiv (𝟙 _))
-  dsimp [associator, Coyoneda.fullyFaithful, corepresentable₂,
-    corepresentable₂', Functor.CorepresentableBy.ofIso, corepresentable₂,
+  dsimp [associator, Coyoneda.fullyFaithful, corepresentableBy₂,
+    corepresentableBy₂', Functor.CorepresentableBy.ofIso, corepresentableBy₂,
     Functor.corepresentableByEquiv, associatorCorepresentingIso] at this ⊢
-  simp only [Category.assoc, corepresentableIso₂_hom_app_app] at this
+  simp only [whiskerRight_tensor, id_whiskerRight, Category.id_comp, Iso.inv_hom_id] at this
   simp only [Category.assoc, this]
   simp [Functor.FullyFaithful.homEquiv, Equivalence.fullyFaithfulFunctor, prod.associativity]
 
@@ -316,19 +293,21 @@ theorem associator_naturality {F' G' H' : C ⥤ V}
     map (map f g) h ≫
       (associator F' G' H').hom =
     (associator F G H).hom ≫ map f (map g h) := by
-  apply (corepresentableIso₂' F G H).app (F' ⊛ G' ⊛ H')|>.toEquiv.injective
+  apply (corepresentableBy₂' F G H)|>.homEquiv.injective
   dsimp
   ext
-  simp only [externalProductBifunctor_obj_obj, whiskeringLeft_obj_obj, Functor.comp_obj,
-    Functor.prod_obj, tensor_obj, Functor.id_obj, corepresentableIso₂'_hom_app_app,
-    NatTrans.comp_app, map_unit_app_assoc]
+  simp only [externalProductBifunctor_obj_obj, Functor.comp_obj, Functor.prod_obj, tensor_obj,
+    Functor.id_obj, corepresentableBy₂', whiskeringLeft_obj_obj, coyoneda_obj_obj,
+    Equiv.trans_apply, Functor.homEquivOfIsLeftKanExtension_apply_app,
+    externalProductBifunctor_map_app, Functor.leftUnitor_inv_app, whiskerLeft_id, Category.comp_id,
+    corepresentableBy_homEquiv_apply_app, NatTrans.comp_app, unit_app_map_app_assoc]
   rw [associator_hom_unit_unit_assoc]
   simp only [tensorHom_def, Category.assoc, externalProductBifunctor_obj_obj, tensor_obj,
-    NatTrans.naturality, map_unit_app_assoc]
-  rw  [← comp_whiskerRight_assoc, map_unit_app]
+    NatTrans.naturality, unit_app_map_app_assoc]
+  rw [← comp_whiskerRight_assoc, unit_app_map_app]
   simp only [Functor.comp_obj, tensor_obj, comp_whiskerRight, Category.assoc]
   rw [← whisker_exchange_assoc, associator_hom_unit_unit, whisker_exchange_assoc,
-    ← MonoidalCategory.whiskerLeft_comp_assoc, map_unit_app]
+    ← MonoidalCategory.whiskerLeft_comp_assoc, unit_app_map_app]
   simp [tensorHom_def]
 
 section pentagon
@@ -353,7 +332,8 @@ lemma pentagon (H K : C ⥤ V)
     (α := extensionUnitLeft ((F ⊛ G) ⊠ H)
       (extensionUnitLeft _ (unit F G) H) K) :=
     pointwiseLeftKanExtensionLeft _ _ _
-      (pointwiseLeftKanExtensionLeft _ _ _ (unitPointwiseKan F G))|>.isLeftKanExtension
+      (pointwiseLeftKanExtensionLeft _ _ _
+        (isPointwiseLeftKanExtensionUnit F G))|>.isLeftKanExtension
   apply Functor.hom_ext_of_isLeftKanExtension (α := extensionUnitLeft ((F ⊛ G) ⊠ H)
       (extensionUnitLeft _ (unit F G) H) K)
   -- And then we compute...
@@ -371,7 +351,7 @@ lemma pentagon (H K : C ⥤ V)
     simp only [tensor_whiskerLeft_symm, Category.assoc, Iso.hom_inv_id_assoc,
     ← tensorHom_def'_assoc]
   dsimp
-  simp only [MonoidalCategory.whiskerLeft_id, Category.comp_id, map_unit_app_assoc,
+  simp only [MonoidalCategory.whiskerLeft_id, Category.comp_id, unit_app_map_app_assoc,
     externalProductBifunctor_obj_obj, NatTrans.id_app, tensorHom_id, associator_hom_unit_unit_assoc,
     tensor_obj, NatTrans.naturality]
   conv_rhs =>
@@ -379,13 +359,11 @@ lemma pentagon (H K : C ⥤ V)
     rw [reassoc_of% aux]
   simp only [Iso.inv_hom_id_app_assoc, ← comp_whiskerRight_assoc, associator_hom_unit_unit F G H]
   simp only [Functor.comp_obj, tensor_obj, comp_whiskerRight, whisker_assoc, Category.assoc,
-    reassoc_of% unit_naturality_id_right (F ⊛ G ⊛ H) K l (α_ i j k).inv, NatTrans.naturality_assoc,
-    NatTrans.naturality, associator_hom_unit_unit_assoc, externalProductBifunctor_obj_obj,
-    tensor_obj, NatTrans.naturality_assoc, map_unit_app_assoc, NatTrans.id_app,
-    id_tensorHom, Iso.inv_hom_id_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc,
-    associator_hom_unit_unit]
-  simp [← Functor.map_comp, reassoc_of% unit_naturality_id_left F (G ⊛ H ⊛ K) i (α_ j k l).inv,
-    pentagon_inv, pentagon_assoc]
+    whiskerRight_comp_unit_app_assoc (F ⊛ G ⊛ H) K l (α_ i j k).inv,
+    NatTrans.naturality_assoc, NatTrans.naturality, associator_hom_unit_unit_assoc,
+    externalProductBifunctor_obj_obj, unit_app_map_app_assoc, NatTrans.id_app, id_tensorHom,
+    Iso.inv_hom_id_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc, associator_hom_unit_unit]
+  simp [← Functor.map_comp, pentagon_inv, pentagon_assoc]
 
 end pentagon
 
