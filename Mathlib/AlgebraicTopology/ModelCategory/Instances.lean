@@ -9,6 +9,9 @@ import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
 /-!
 # Consequences of model category axioms
 
+In this file, we deduce basic properties of fibrations, cofibrations,
+and weak equivalences from the axioms of model categories.
+
 -/
 
 
