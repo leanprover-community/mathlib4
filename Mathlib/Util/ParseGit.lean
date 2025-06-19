@@ -16,7 +16,7 @@ def List.isolate {α} [Inhabited α] (l : List α) (f : α → Bool) : List (Lis
   let grp := l.splitBy (f · && f ·)
   grp.filterMap fun s => if s.isEmpty || f (s.getD 0 default) then some s else none
 
-/-- Similar to `List.isolate`, except that it acts on the characters making up the list input. -/
+/-- Similar to `List.isolate`, except that it acts on the characters making up the string input. -/
 def String.isolate (str : String) (f : Char → Bool) : List String :=
   str.toList.isolate f |>.map (⟨·⟩)
 
