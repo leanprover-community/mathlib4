@@ -771,7 +771,7 @@ abbrev H1π : ModuleCat.of k (oneCocycles A) ⟶ H1 A :=
 
 variable {A} in
 lemma H1π_eq_zero_iff (x : oneCocycles A) : H1π A x = 0 ↔ ⇑x ∈ oneCoboundaries A := by
-  show (LinearMap.range ((dZero A).hom.codRestrict (oneCocycles A) _)).mkQ _ = 0 ↔ _
+  change (LinearMap.range ((dZero A).hom.codRestrict (oneCocycles A) _)).mkQ _ = 0 ↔ _
   simp [LinearMap.range_codRestrict, oneCoboundaries]
 
 @[elab_as_elim]
@@ -790,7 +790,7 @@ abbrev H2π : ModuleCat.of k (twoCocycles A) ⟶ H2 A :=
 
 variable {A} in
 lemma H2π_eq_zero_iff (x : twoCocycles A) : H2π A x = 0 ↔ ⇑x ∈ twoCoboundaries A := by
-  show (LinearMap.range ((dOne A).hom.codRestrict (twoCocycles A) _)).mkQ _ = 0 ↔ _
+  change (LinearMap.range ((dOne A).hom.codRestrict (twoCocycles A) _)).mkQ _ = 0 ↔ _
   simp [LinearMap.range_codRestrict, twoCoboundaries]
 
 @[elab_as_elim]
