@@ -42,7 +42,7 @@ instance (n : ℤ) [K.IsStrictlyGE n] : (I K).IsStrictlyGE n := by
   intro i hi
   exact Injective.isZero_under _ (K.isZero_of_isStrictlyGE n i hi)
 
-instance (n : ℤ) [K.IsStrictlyGE (n+1)] [L.IsStrictlyGE n] :
+instance (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] :
     (mappingCone (𝟙 (I K)) ⊞ L).IsStrictlyGE n := by
   rw [isStrictlyGE_iff]
   intro i hi

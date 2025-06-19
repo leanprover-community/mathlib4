@@ -15,7 +15,7 @@ import Batteries.Data.Fin.Basic
 
 namespace ComplexShape
 
-variable {ι : Type*} [DecidableEq ι]  [AddRightCancelSemigroup ι]
+variable {ι : Type*} [DecidableEq ι] [AddRightCancelSemigroup ι]
 
 instance (u : ι) : DecidableRel (ComplexShape.up' u).Rel := fun _ _ => by
   dsimp [up']

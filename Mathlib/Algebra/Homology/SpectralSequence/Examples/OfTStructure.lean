@@ -137,7 +137,7 @@ section
 variable (t : TStructure C) (X : C) (H : C ⥤ A) [H.PreservesZeroMorphisms] [H.IsHomological]
   [H.ShiftSequence ℤ] [H.VanishesOnLESubOne t] [t.IsLE X 0]
 
-instance  :
+instance :
     ((t.spectralObject X).mapHomologicalFunctor H).IsThirdQuadrant where
   isZero₁ i j hij hi n := by
     refine IsZero.of_iso ?_ ((H.shift n).mapIso (t.isZero_truncGEt_obj_obj

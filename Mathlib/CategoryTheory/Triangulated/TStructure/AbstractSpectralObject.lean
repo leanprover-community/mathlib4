@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Triangulated.SpectralObject
 
 open CategoryTheory Category Limits Pretriangulated
 
-variable (C : Type _) [Category C]  [HasShift C ℤ]
+variable (C : Type _) [Category C] [HasShift C ℤ]
 
 namespace CategoryTheory
 

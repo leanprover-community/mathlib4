@@ -174,7 +174,7 @@ namespace Triangulated
 
 namespace TStructure
 
-variable (t : TStructure C)  [IsTriangulated C]
+variable (t : TStructure C) [IsTriangulated C]
 
 lemma truncLE₀GE₀_mem_heart (X : C) :
     t.heart ((t.truncLEGE 0 0).obj X) := by
@@ -422,7 +422,7 @@ section
 variable (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) [t.IsLE T.obj₁ n]
 
 @[simps! obj₁ obj₂ obj₃ mor₁ mor₂]
-noncomputable def truncLETriangle  :
+noncomputable def truncLETriangle :
     Triangle C :=
   Triangle.mk ((t.truncLE n).map T.mor₁)
     ((t.truncLE n).map T.mor₂)
@@ -482,7 +482,7 @@ section
 variable (T : Triangle C) (hT : T ∈ distTriang C) (n : ℤ) [t.IsGE T.obj₃ n]
 
 @[simps! obj₁ obj₂ obj₃ mor₁ mor₂]
-noncomputable def truncGETriangle  :
+noncomputable def truncGETriangle :
     Triangle C :=
   Triangle.mk ((t.truncGE n).map T.mor₁) ((t.truncGE n).map T.mor₂)
     ((asIso ((t.truncGEπ n).app T.obj₃)).inv ≫ T.mor₃ ≫ ((t.truncGEπ n).app T.obj₁)⟦(1 : ℤ)⟧')
@@ -1116,7 +1116,7 @@ end
 
 section
 
-variable [t.HasHeart] [t.HasHomology₀] [(homology₀ t).ShiftSequence  ℤ]
+variable [t.HasHeart] [t.HasHomology₀] [(homology₀ t).ShiftSequence ℤ]
 
 /-noncomputable def homology'ιHeart'IsoHomoloyιHeart (q : ℤ) :
     t.homology' q ⋙ t.ιHeart' ≅ t.homology q ⋙ t.ιHeart :=
@@ -1147,7 +1147,7 @@ end
 
 section
 
-variable [t.HasHeart] [t.HasHomology₀] [(homology₀ t).ShiftSequence  ℤ]
+variable [t.HasHeart] [t.HasHomology₀] [(homology₀ t).ShiftSequence ℤ]
   (T : Triangle C) (hT : T ∈ distTriang C)
 
 include hT

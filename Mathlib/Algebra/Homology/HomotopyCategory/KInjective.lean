@@ -114,7 +114,7 @@ def EqUpTo {n : ℤ} (α β : Cochain K L n) (p₀ : ℤ) : Prop :=
 
 namespace Induction
 
-variable {d : ℤ} {X : ℕ → Set (Cochain K L d)} (φ : ∀ (n : ℕ), X n → X (n+1))
+variable {d : ℤ} {X : ℕ → Set (Cochain K L d)} (φ : ∀ (n : ℕ), X n → X (n + 1))
    {p₀ : ℤ} (hφ : ∀ (n : ℕ) (x : X n), (φ n x).1.EqUpTo x.1 (p₀ + n)) (x₀ : X 0)
 
 def sequence : ∀ n, X n

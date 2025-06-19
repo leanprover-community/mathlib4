@@ -456,7 +456,7 @@ noncomputable def pageInfinity (n₀ n₁ n₂ : ℤ)
 section
 
 variable (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
-  (i₀ i₁ i₂ i₃ : ι)(hi₀₁ : i₀ ≤ i₁) (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃)
+  (i₀ i₁ i₂ i₃ : ι) (hi₀₁ : i₀ ≤ i₁) (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃)
   (isZero₀ : IsZero ((X.H n₂).obj (mk₁ (homOfLE' ⊥ i₀ bot_le))))
   (isZero₃ : IsZero ((X.H n₀).obj (mk₁ (homOfLE' i₃ ⊤ le_top))))
 

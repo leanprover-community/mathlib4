@@ -23,7 +23,7 @@ namespace Triangulated
 
 namespace TStructure
 
-variable  (t : TStructure C)
+variable (t : TStructure C)
 
 /-- triangle_map_ext' -/
 lemma triangle_map_ext' (a b : ℤ) (hab : a ≤ b) {T T' : Triangle C} (f₁ f₂ : T ⟶ T')

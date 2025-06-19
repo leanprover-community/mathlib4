@@ -321,7 +321,7 @@ variable {R : Type*} [Semiring R] [Linear R C]
   [∀ (n : ℤ), Functor.Linear R (shiftFunctor C n)]
 
 @[simps!]
-instance  :
+instance :
     SMul R (T₁ ⟶ T₂) where
   smul n f :=
     { hom₁ := n • f.hom₁
