@@ -35,11 +35,11 @@ variable {α β : Type}
 /-- Monad for working with a `RefinedDiscrTree`. -/
 private abbrev TreeM α := StateRefT (Array (Trie α)) MetaM
 
-/-- Run a `TreeM` computation using a `RefinedDiscrTree`. -/
-private def runTreeM (d : RefinedDiscrTree α) (m : TreeM α β) :
-    MetaM (β × RefinedDiscrTree α) := do
+/-- Run a `TreeM` computation using `d : RefinedDiscrTree`, without losing the reference to `d`. -/
+@[inline] private def runTreeM (d : RefinedDiscrTree α) (m : TreeM α β) :
+    MetaM (Except Exception β × RefinedDiscrTree α) := do
   let { tries, root } := d
-  let (result, tries) ← withReducible <| m.run tries
+  let (result, tries) ← (try Except.ok <$> m catch ex => pure (.error ex)).run tries
   pure (result, { tries, root })
 
 private def setTrie (i : TrieIndex) (v : Trie α) : TreeM α Unit :=
@@ -158,8 +158,8 @@ private partial def matchQueryStar (trie : TrieIndex) (pMatch : PartialMatch)
     return todo.push { pMatch with trie }
 
 /-- Return every value that is indexed in the tree. -/
-private def matchEverything (tree : RefinedDiscrTree α) : TreeM α (MatchResult α) := do
-  let pMatches ← tree.root.foldM (init := #[]) fun todo key trie =>
+private def matchEverything (root : Std.HashMap Key TrieIndex) : TreeM α (MatchResult α) := do
+  let pMatches ← root.foldM (init := #[]) fun todo key trie =>
     matchQueryStar trie { keys := [], score := 0, trie := 0 } todo key.arity
   pMatches.foldlM (init := {}) fun result pMatch => do
     let { values, .. } ← evalNode pMatch.trie
@@ -263,17 +263,20 @@ private def matchTreeRootStar (root : Std.HashMap Key TrieIndex) : TreeM α (Mat
 Find values that match `e` in `d`.
 * If `unify == true` then metavarables in `e` can be assigned.
 * If `matchRootStar == true` then we allow metavariables at the root to unify.
-  Set this to `false` in order to avoid too many results.
+  Set this to `false` to avoid getting excessively many results.
+
+Note: to preserve the reference to `d`, `getMatch` will never throw an error,
+and instead it returns an `Except Exception (MatchResult α)`.
 -/
 def getMatch (d : RefinedDiscrTree α) (e : Expr) (unify matchRootStar : Bool) :
-    MetaM (MatchResult α × RefinedDiscrTree α) := do
+    MetaM (Except Exception (MatchResult α) × RefinedDiscrTree α) := do
   withReducible do runTreeM d do
     let (key, keys) ← encodeExpr e (labelledStars := false)
     let pMatch : PartialMatch := { keys, score := 0, trie := default }
     if key == .star then
       if matchRootStar then
         if unify then
-          matchEverything d
+          matchEverything d.root
         else
           matchTreeRootStar d.root
       else

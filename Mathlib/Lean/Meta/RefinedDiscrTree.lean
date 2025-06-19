@@ -121,11 +121,9 @@ def findImportMatches
     profileitM Exception  "RefinedDiscrTree import initialization" (← getOptions) <|
       withTheReader Core.Context withTreeCtx <|
         createImportedDiscrTree cNGen (← getEnv) addEntry constantsPerTask capacityPerTask
-  -- we trust that `getMatch` doesn't throw an error, because
-  -- otherwise we would lose our (only) reference to `importTree`
   let (importCandidates, importTree) ← getMatch importTree ty false false
   ref.set (some importTree)
-  return importCandidates
+  MonadExcept.ofExcept importCandidates
 
 /-- Returns candidates from this module that match the expression. -/
 def findModuleMatches (moduleRef : ModuleDiscrTreeRef α) (ty : Expr) : MetaM (MatchResult α) := do
@@ -133,7 +131,7 @@ def findModuleMatches (moduleRef : ModuleDiscrTreeRef α) (ty : Expr) : MetaM (M
     let discrTree ← moduleRef.ref.get
     let (localCandidates, localTree) ← getMatch discrTree ty false false
     moduleRef.ref.set localTree
-    return localCandidates
+    MonadExcept.ofExcept localCandidates
 
 /--
 `findMatches` combines `findImportMatches` and `findModuleMatches`.

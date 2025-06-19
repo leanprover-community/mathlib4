@@ -277,7 +277,7 @@ def getHypotheses (except : Option FVarId) : MetaM (RefinedDiscrTree (FVarId × 
 def getHypothesisRewrites (e : Expr) (except : Option FVarId) :
     MetaM (Array (Array (Rewrite × FVarId))) := do
   let (results, _) ← (← getHypotheses except).getMatch e (unify := false) (matchRootStar := true)
-  let results := results.flatten
+  let results := (← MonadExcept.ofExcept results).flatten
   results.mapM <| Array.filterMapM fun (fvarId, symm) =>
     tryCatchRuntimeEx do
       Option.map (·, fvarId) <$> checkRewrite (.fvar fvarId) e symm
