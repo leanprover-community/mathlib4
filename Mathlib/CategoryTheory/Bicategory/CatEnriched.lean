@@ -14,10 +14,21 @@ If `C` is a type with a `EnrichedCategory Cat C` structure, then it has hom-cate
 objects define 1-dimensional arrows on `C` and whose morphisms define 2-dimensional arrows between
 these. The enriched category axioms equip this data with the structure of a strict bicategory.
 
-We define a type alias `CatEnriched C` for a type `C` with a `EnrichedCategory Cat C` structure.
-
-We provide this with an instance of a strict bicategory structure constructing
+We define a type alias `CatEnriched C` for a type `C` with a `EnrichedCategory Cat C` structure. We
+provide this with an instance of a strict bicategory structure constructing
 `Bicategory.Strict (CatEnriched C)`.
+
+If `C` is a type with a `EnrichedOrdinaryCategory Cat C` structure, then it has an `Enrichred Cat C`
+structure, so the previous construction would again produce a strict bicategory. However, in this
+setting `C` is also given a `Category C` structure, together with an equivalence between this
+category and the underlying category of the `Enriched Cat C`, and in examples the given category
+structure is the preferred one.
+
+Thus, we define a type alias `CatEnrichedOrdinary C` for a type `C` with an
+`EnrichedOrdinaryCategory Cat C` structure. We provide this with an instance of a strict bicategory
+structure extending the category structure provided by the given instance `Category C` constructing
+`Bicategory.Strict (CatEnrichedOrdinary C)`.
+
 -/
 
 universe u v u' v'
@@ -136,24 +147,7 @@ end CatEnriched
 end
 
 section
-variable {C : Type u} [Category.{v} C]
-
-/-- TODO: move and fix the name. -/
-def equivObj : Cat.chosenTerminal ⥤ C ≃ C where
-  toFun F := F.obj ⟨⟨()⟩⟩
-  invFun := (Functor.const _).obj
-  left_inv _ := by
-    apply Functor.ext
-    · rintro ⟨⟨⟨⟩⟩⟩ ⟨⟨⟨⟩⟩⟩ ⟨⟨⟨⟨⟩⟩⟩⟩
-      simp; exact (Functor.map_id _ _).symm
-    · intro; rfl
-  right_inv _ := rfl
-
-/-- TODO: move and fix the name. -/
-@[simp]
-theorem equivObj_toFun (F : Cat.chosenTerminal ⥤ C) : equivObj F = F.obj ⟨⟨⟨⟩⟩⟩ := rfl
-
-variable [EnrichedOrdinaryCategory Cat.{v',u'} C]
+variable {C : Type u} [Category.{v} C] [EnrichedOrdinaryCategory Cat.{v',u'} C]
 
 /-- A type synonym for `C`, which should come equipped with a `Cat`-enriched category structure.
 This converts it to a strict bicategory where `Category (X ⟶ Y)` is `(X ⟶[Cat] Y)`. -/
@@ -168,15 +162,16 @@ instance : EnrichedCategory Cat (CatEnrichedOrdinary C) := inferInstanceAs (Enri
 instance : EnrichedOrdinaryCategory Cat (CatEnrichedOrdinary C) :=
   inferInstanceAs (EnrichedOrdinaryCategory Cat C)
 
+/-- The forgetful map from the type alias associated to `EnrichedOrdinaryCategory Cat C` and the
+type alias associated to `EnrichedCategory Cat C` is the identity on underlying types. -/
 def toBase (a : CatEnrichedOrdinary C) : CatEnriched C := a
 
-/-- The hom-types in a `Cat`-enriched ordinary category are equivalent to the types
-underlying the hom-categories. -/
+/-- The hom-types in a `Cat`-enriched ordinary category are equivalent to the types underlying the
+hom-categories. -/
 def homEquiv {a b : CatEnrichedOrdinary C} : (a ⟶ b) ≃ (a.toBase ⟶ b.toBase) :=
-  (eHomEquiv (V := Cat)).trans equivObj
+  (eHomEquiv (V := Cat)).trans Cat.fromChosenTerminalEquiv
 
-theorem homEquiv_id {a : CatEnrichedOrdinary C} :
-    homEquiv (𝟙 a) = 𝟙 a.toBase := by
+theorem homEquiv_id {a : CatEnrichedOrdinary C} : homEquiv (𝟙 a) = 𝟙 a.toBase := by
   unfold homEquiv
   simp only [Equiv.trans_apply]
   rw [eHomEquiv_id]; rfl
@@ -187,14 +182,20 @@ theorem homEquiv_comp {a b c : CatEnrichedOrdinary C} (f : a ⟶ b) (g : b ⟶ c
   simp only [Equiv.trans_apply]
   rw [eHomEquiv_comp]; rfl
 
+/-- The 2-cells between a parallel pair of 1-cells `f g` in `CatEnrichedOrdinary C` are defined to
+be the morphisms in the hom-categories provided by the `EnrichedCategory Cat C` structure between
+the corresponding objects. -/
 structure Hom {X Y : CatEnrichedOrdinary C} (f g : X ⟶ Y) where mk' ::
   base' : homEquiv f ⟶ homEquiv g
+
 instance {X Y : CatEnrichedOrdinary C} : Quiver (X ⟶ Y) where
   Hom f g := Hom f g
 
+/-- A 2-cell in `CatEnrichedOrdinary C` has a corresponding "base" 2-cell in `CatEnriched C`. -/
 def Hom.base {X Y : CatEnrichedOrdinary C} {f g : X ⟶ Y} (α : f ⟶ g) :
     homEquiv f ⟶ homEquiv g := α.base'
 
+/-- A 2-cell in `CatEnriched C` can be "made" into a 2-cell in `CatEnrichedOrdinary C`. -/
 def Hom.mk {X Y : CatEnrichedOrdinary C} {f g : X ⟶ Y} (α : homEquiv f ⟶ homEquiv g) :
     f ⟶ g := .mk' α
 
@@ -227,8 +228,8 @@ theorem Hom.mk_comp {X Y : CatEnrichedOrdinary C} {f g h : X ⟶ Y}
 @[ext] theorem Hom.ext {X Y : CatEnrichedOrdinary C} {f g : X ⟶ Y} (α β : f ⟶ g)
     (H : Hom.base α = Hom.base β) : α = β := by cases α; cases β; cases H; rfl
 
-/-- A `Cat`-enriched ordinary category comes with hom-categories `X ⟶[Cat] Y` and the type of
-objects is equivalent to the type `X ⟶ Y` defined by the category structure on `C`. The following
+/-- A `Cat`-enriched ordinary category comes with hom-categories `X ⟶[Cat] Y` whose underlying type
+of objects is equivalent to the type `X ⟶ Y` defined by the category structure on `C`. The following
 definition transfers the category structure to the latter type of objects. -/
 instance {X Y : CatEnrichedOrdinary C} : Category (X ⟶ Y) where
 
@@ -243,11 +244,6 @@ def hComp {a b c : CatEnrichedOrdinary C} {f f' : a ⟶ b} {g g' : b ⟶ c}
     eqToHom (homEquiv_comp f g) ≫ CatEnriched.hComp (Hom.base η) (Hom.base θ) ≫
     eqToHom (homEquiv_comp f' g').symm
 
--- theorem hComp_nat {a b c : CatEnrichedOrdinary C} {f f' : a ⟶ b} {g g' : b ⟶ c}
---     (η : f ⟶ f') (θ : g ⟶ g') :
---     eqToHom (homEquiv_comp f g) ≫ (eComp Cat a b c).map (η, θ) =
---       hComp η θ ≫ eqToHom (homEquiv_comp f' g') := sorry
-
 @[simp]
 theorem id_hComp_id {a b c : CatEnrichedOrdinary C} (f : a ⟶ b) (g : b ⟶ c) :
     hComp (𝟙 f) (𝟙 g) = 𝟙 (f ≫ g) := by simp [hComp, Hom.id_eq]
@@ -258,7 +254,6 @@ theorem eqToHom_hComp_eqToHom {a b c : CatEnrichedOrdinary C}
     hComp (eqToHom α) (eqToHom β) = eqToHom (α ▸ β ▸ rfl) := by cases α; cases β; simp
 
 /-- The interchange law for horizontal and vertical composition of 2-cells in a bicategory. -/
--- set_option pp.proofs true in
 @[simp]
 theorem hComp_comp {a b c : CatEnrichedOrdinary C} {f₁ f₂ f₃ : a ⟶ b} {g₁ g₂ g₃ : b ⟶ c}
     (η : f₁ ⟶ f₂) (η' : f₂ ⟶ f₃) (θ : g₁ ⟶ g₂) (θ' : g₂ ⟶ g₃) :
@@ -318,7 +313,6 @@ instance : Bicategory (CatEnrichedOrdinary C) where
 /-- As the associator and left and right unitors are defined as eqToIso of category axioms, the
 bicategory structure on `CatEnrichedOrdinary C` is strict. -/
 instance : Bicategory.Strict (CatEnrichedOrdinary C) where
-
 
 end CatEnrichedOrdinary
 
