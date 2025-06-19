@@ -420,7 +420,6 @@ scoped notation "ρᵣ["J"]" => MonoidalRightActionStruct.actionUnitIso (C := J)
 end MonoidalRightAction
 
 open scoped MonoidalRightAction in
-
 /-- A `MonoidalRightAction C D` is is the data of:
 - For every object `c : C` and `d : D`, an object `c ⊙ᵣ d` of `D`.
 - For every morphism `f : (c : C) ⟶ c'` and every `d : D`, a morphism
