@@ -356,4 +356,3 @@ noncomputable def variation (μ : VectorMeasure X V) : VectorMeasure X ℝ≥0�
 end variation
 
 end MeasureTheory.VectorMeasure
-#min_imports
