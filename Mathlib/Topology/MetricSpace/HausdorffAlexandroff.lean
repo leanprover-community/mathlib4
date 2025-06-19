@@ -113,7 +113,7 @@ theorem exists_retractionCantorSet {X : Set (ℕ → Bool)} (h_closed : IsClosed
 
 theorem exists_nat_bool_continuous_surjective_of_compact (X : Type*) [Nonempty X] [MetricSpace X]
     [CompactSpace X] : ∃ f : (ℕ → Bool) → X, Continuous f ∧ Function.Surjective f := by
-  obtain ⟨emb, h_emb⟩ := exists_closed_embedding_to_hilbert X
+  obtain ⟨emb, h_emb⟩ := exists_closed_embedding_to_hilbert_cube X
   let KH : Set (ℕ → unitInterval) := Set.range emb
   let KC : Set (ℕ → Bool) := cantorToHilbert ⁻¹' KH
   have hKC_closed : IsClosed KC := by
