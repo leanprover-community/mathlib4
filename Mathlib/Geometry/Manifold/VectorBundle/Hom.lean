@@ -69,9 +69,9 @@ theorem hom_chart (y₀ y : LE₁E₂) :
 
 theorem contMDiffWithinAt_hom_bundle (f : M → LE₁E₂) {s : Set M} {x₀ : M} :
     ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n f s x₀ ↔
-      ContMDiffWithinAt IM IB n (fun x => (f x).1) s x₀ ∧
+      ContMDiffWithinAt IM IB n (fun x ↦ (f x).1) s x₀ ∧
         ContMDiffWithinAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n
-          (fun x => inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) s x₀ :=
+          (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) s x₀ :=
   contMDiffWithinAt_totalSpace ..
 
 theorem contMDiffAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} :
@@ -242,7 +242,7 @@ lemma ContMDiffWithinAt.clm_bundle_apply
     ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₂)) n
       (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) s x := by
   simp only [contMDiffWithinAt_hom_bundle] at hϕ
-  exact ContMDiffWithinAt.clm_apply_of_inCoordinates hϕ.2 hv hϕ.1
+  exact hϕ.2.clm_apply_of_inCoordinates hv hϕ.1
 
 /-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a base map `b : M → B`, and
 linear maps `ϕ m : E₁ (b m) → E₂ (b m)` depending smoothly on `m`.
@@ -262,7 +262,7 @@ lemma ContMDiffOn.clm_bundle_apply
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)) s)
     (hv : ContMDiffOn IM (IB.prod 𝓘(𝕜, F₁)) n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) s) :
     ContMDiffOn IM (IB.prod 𝓘(𝕜, F₂)) n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) s :=
-  fun x hx ↦ ContMDiffWithinAt.clm_bundle_apply (hϕ x hx) (hv x hx)
+  fun x hx ↦ (hϕ x hx).clm_bundle_apply (hv x hx)
 
 /-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a base map `b : M → B`, and
 linear maps `ϕ m : E₁ (b m) → E₂ (b m)` depending smoothly on `m`.
@@ -272,7 +272,7 @@ lemma ContMDiff.clm_bundle_apply
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)))
     (hv : ContMDiff IM (IB.prod 𝓘(𝕜, F₁)) n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m))) :
     ContMDiff IM (IB.prod 𝓘(𝕜, F₂)) n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) :=
-  fun x ↦ ContMDiffAt.clm_bundle_apply (hϕ x) (hv x)
+  fun x ↦ (hϕ x).clm_bundle_apply (hv x)
 
 end OneVariable
 
@@ -291,9 +291,8 @@ lemma ContMDiffWithinAt.clm_bundle_apply₂
     (hv : ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₁)) n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) s x)
     (hw : ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₂)) n (fun m ↦ TotalSpace.mk' F₂ (b m) (w m)) s x) :
     ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₃)) n
-      (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) s x := by
-  have := ContMDiffWithinAt.clm_bundle_apply (E₂ := fun x ↦ (E₂ x →L[𝕜] E₃ x)) hψ hv
-  exact ContMDiffWithinAt.clm_bundle_apply this hw
+      (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) s x :=
+  hψ.clm_bundle_apply hv |>.clm_bundle_apply hw
 
 /-- Consider `C^n` maps `v : M → E₁` and `v : M → E₂` to vector bundles, over a base map
 `b : M → B`, and bilinear maps `ψ m : E₁ (b m) → E₂ (b m) → E₃ (b m)` depending smoothly on `m`.
@@ -319,7 +318,7 @@ lemma ContMDiffOn.clm_bundle_apply₂
     (hw : ContMDiffOn IM (IB.prod 𝓘(𝕜, F₂)) n (fun m ↦ TotalSpace.mk' F₂ (b m) (w m)) s) :
     ContMDiffOn IM (IB.prod 𝓘(𝕜, F₃)) n
       (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) s :=
-  fun x hx ↦ ContMDiffWithinAt.clm_bundle_apply₂ (hψ x hx) (hv x hx) (hw x hx)
+  fun x hx ↦ (hψ x hx).clm_bundle_apply₂ (hv x hx) (hw x hx)
 
 /-- Consider `C^n` maps `v : M → E₁` and `v : M → E₂` to vector bundles, over a base map
 `b : M → B`, and bilinear maps `ψ m : E₁ (b m) → E₂ (b m) → E₃ (b m)` depending smoothly on `m`.
