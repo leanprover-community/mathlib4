@@ -6,6 +6,7 @@ Authors: Jujian Zhang
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Algebra.GroupWithZero.Subgroup
 import Mathlib.Algebra.Module.NatInt
+import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.GroupTheory.QuotientGroup.Defs
 import Mathlib.Tactic.NormNum.Eq
 
@@ -354,6 +355,20 @@ theorem mul_qpow (x : A) (y : A) (a : ℚ) : qpow (x * y) a = qpow x a * qpow y 
   rw [mul_pow _ _ a.den]
   rw [root_cancel _ (by simp), root_cancel _ (by simp), root_cancel _ (by simp)]
   rw [mul_zpow]
+
+section Order
+variable {A : Type*} [CommGroup A] [RootableBy A ℕ] [LinearOrder A] [IsOrderedMonoid A]
+
+variable (A) in
+@[to_additive qsmul_right_strictMono]
+theorem qpow_left_strictMono {a : ℚ} (ha : 0 < a) : StrictMono (qpow (A := A) · a) := by
+  intro x y hxy
+  simp_rw [qpow_eq]
+  apply (pow_left_strictMono a.den_ne_zero).lt_iff_lt.mp
+  simp_rw [RootableBy.root_cancel _ a.den_ne_zero]
+  exact (zpow_left_strictMono _ (show 0 < a.num by exact Rat.num_pos.mpr ha)).lt_iff_lt.mpr hxy
+
+end Order
 
 end RootableBy
 
