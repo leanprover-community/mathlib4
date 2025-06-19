@@ -11,7 +11,7 @@ import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 In this file we define `Algebra.adjoin` and the complete lattice structure on subalgebras.
 
-More lemmas about `adjoin` can be found in `Mathlib.RingTheory.Adjoin.Basic`.
+More lemmas about `adjoin` can be found in `Mathlib/RingTheory/Adjoin/Basic.lean`.
 -/
 
 assert_not_exists Polynomial
@@ -435,6 +435,7 @@ theorem adjoin_eq_sInf : adjoin R s = sInf { p : Subalgebra R A | s ⊆ p } :=
 theorem adjoin_le_iff {S : Subalgebra R A} : adjoin R s ≤ S ↔ s ⊆ S :=
   Algebra.gc _ _
 
+@[gcongr]
 theorem adjoin_mono (H : s ⊆ t) : adjoin R s ≤ adjoin R t :=
   Algebra.gc.monotone_l H
 

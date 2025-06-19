@@ -646,10 +646,10 @@ protected theorem traverse_def (f : α → F β) (x : α) :
     ∀ xs : Vector α n, (x ::ᵥ xs).traverse f = cons <$> f x <*> xs.traverse f := by
   rintro ⟨xs, rfl⟩; rfl
 
-protected theorem id_traverse : ∀ x : Vector α n, x.traverse (pure : _ → Id _) = x := by
+protected theorem id_traverse : ∀ x : Vector α n, x.traverse (pure : _ → Id _) = pure x := by
   rintro ⟨x, rfl⟩; dsimp [Vector.traverse, cast]
   induction' x with x xs IH; · rfl
-  simp! [IH]; rfl
+  simp! [IH]
 
 end
 
@@ -671,8 +671,8 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
     simp [functor_norm, Function.comp_def]
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) :
-    ∀ x : Vector α n, x.traverse ((pure : _ → Id _) ∘ f) = (pure : _ → Id _) (map f x) := by
-  rintro ⟨x, rfl⟩; simp!; induction x <;> simp! [*, functor_norm] <;> rfl
+    ∀ x : Vector α n, x.traverse ((pure : _ → Id _) ∘ f) = pure (map f x) := by
+  rintro ⟨x, rfl⟩; simp!; induction x <;> simp! [*, functor_norm]; rfl
 
 variable [LawfulApplicative F] (η : ApplicativeTransformation F G)
 
@@ -728,16 +728,16 @@ theorem replicate_succ (val : α) :
 section Append
 variable (ys : Vector α m)
 
-@[simp] lemma get_append_cons_zero : get (append (x ::ᵥ xs) ys) 0 = x := rfl
+@[simp] lemma get_append_cons_zero : get (x ::ᵥ xs ++ ys) 0 = x := rfl
 
 @[simp]
 theorem get_append_cons_succ {i : Fin (n + m)} {h} :
-    get (append (x ::ᵥ xs) ys) ⟨i+1, h⟩ = get (append xs ys) i :=
+    get (x ::ᵥ xs ++ ys) ⟨i+1, h⟩ = get (xs ++ ys) i :=
   rfl
 
 @[simp]
-theorem append_nil : append xs nil = xs := by
-  cases xs; simp [append]
+theorem append_nil : xs ++ (nil : Vector α 0) = xs := by
+  cases xs; simp only [append_def, append_nil]
 
 end Append
 
