@@ -15,18 +15,18 @@ example {a b : ℤ}
   obtain rfl|hn₀ := eq_or_ne n 0
   · obtain rfl : a = 0 := by simpa [h₀] using hn
     obtain rfl : b = 0 := by simp at h₀; exact h₀
-    decide +kernel
-  have han : a.natAbs ≤ n.natAbs := Nat.le_of_dvd (by omega) (by subst n; simp)
+    grind [Set.mem_insert_iff]
+  have han : a.natAbs ≤ n.natAbs := Nat.le_of_dvd (by grind) (by subst n; simp)
   obtain rfl : b = n / a := by
     obtain rfl|ha := eq_or_ne a 0
     · subst n; simp_all
     · exact (Int.ediv_eq_of_eq_mul_right ha hn.symm).symm
-  lift n to ℕ using (by sorry)
+  lift n to ℕ using (by simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h₁; grind)
   simp only [Int.natAbs_natCast] at han
   generalize ha' : a.natAbs = a'
   rw [ha'] at han
   rw [a.natAbs_eq_iff] at ha'
-  have hn4 : n ≤ 4 := by simp at h₁; omega
+  have hn4 : n ≤ 4 := by simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h₁; grind
   interval_cases n
   all_goals
     interval_cases a' <;> rcases ha' with rfl|rfl <;> decide
@@ -41,9 +41,9 @@ example (a b z : ℤ) (hz : z ≠ 0) :
     refine ⟨a, ⟨?_, by rw [mul_div_cancel_left₀ _ ha], rfl, by rw [mul_div_cancel_left₀ _ ha]⟩⟩
     rcases a.eq_nat_or_neg with ⟨n, hn | hn⟩ <;> simp_all only [hn]
     · rw [abs_mul, Nat.abs_cast]
-      exact Or.inr ⟨by omega, by nlinarith⟩
+      exact Or.inr ⟨by grind, by nlinarith⟩
     · rw [neg_mul, abs_neg, neg_le_neg_iff, abs_mul, Nat.abs_cast]
-      exact Or.inl ⟨by nlinarith, by omega⟩
+      exact Or.inl ⟨by nlinarith, by grind⟩
   · rintro ⟨a, ⟨h₀, h₁⟩ | ⟨h₀, h₁⟩, h₂, rfl, h₃⟩ <;> rw [← h₃] <;> grind
 
 example (R : Type*) [CommRing R] [CharZero R] [NoZeroDivisors R] (x y z : R)
@@ -52,5 +52,3 @@ example (R : Type*) [CommRing R] [CharZero R] [NoZeroDivisors R] (x y z : R)
     (hjk : y = 2 * z ∨ y = 3 * z ∨ z = 2 * y ∨ z = 3 * y) :
     z = y := by
   sorry
-
-#min_imports
