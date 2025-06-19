@@ -128,6 +128,11 @@ lemma Fan.IsLimit.fac {F : β → C} {c : Fan F} (hc : IsLimit c) {A : C}
     Fan.IsLimit.desc hc f ≫ c.proj i = f i :=
   hc.fac (Fan.mk A f) ⟨i⟩
 
+@[reassoc (attr := simp)]
+lemma Fan.IsLimit.lift_proj {X : β → C} {c : Fan X} (d : Fan X) (hc : IsLimit c)
+    (i : β) : hc.lift d ≫ c.proj i = d.proj i :=
+  hc.fac _ _
+
 lemma Fan.IsLimit.hom_ext {I : Type*} {F : I → C} {c : Fan F} (hc : IsLimit c) {A : C}
     (f g : A ⟶ c.pt) (h : ∀ i, f ≫ c.proj i = g ≫ c.proj i) : f = g :=
   hc.hom_ext (fun ⟨i⟩ => h i)
@@ -152,6 +157,11 @@ lemma Cofan.IsColimit.fac {F : β → C} {c : Cofan F} (hc : IsColimit c) {A : C
     (f : ∀ i, F i ⟶ A) (i : β) :
     c.inj i ≫ Cofan.IsColimit.desc hc f = f i :=
   hc.fac (Cofan.mk A f) ⟨i⟩
+
+@[reassoc (attr := simp)]
+lemma Cofan.IsColimit.inj_desc {X : β → C} {c : Cofan X} (d : Cofan X) (hc : IsColimit c)
+    (i : β) : c.inj i ≫ hc.desc d = d.inj i :=
+  hc.fac _ _
 
 lemma Cofan.IsColimit.hom_ext {I : Type*} {F : I → C} {c : Cofan F} (hc : IsColimit c) {A : C}
     (f g : c.pt ⟶ A) (h : ∀ i, c.inj i ≫ f = c.inj i ≫ g) : f = g :=

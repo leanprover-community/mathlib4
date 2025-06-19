@@ -3,12 +3,9 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.GeomSum
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.Nat.Log
-import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Nat.Digits
+import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.RingTheory.Multiplicity
 
 /-!
@@ -159,6 +156,17 @@ theorem emultiplicity_factorial_mul {n p : ℕ} (hp : p.Prime) :
     cast_add, cast_one, ← add_assoc]
     congr 1
     rw [add_comm, add_assoc]
+
+/- The multiplicity of a prime `p` in `p ^ n` is the sum of `p ^ i`, where `i` ranges between `0`
+  and `n - 1`. -/
+theorem multiplicity_factorial_pow {n p : ℕ} (hp : p.Prime) :
+    multiplicity p (p ^ n).factorial = ∑ i ∈ Finset.range n, p ^ i := by
+  rw [← ENat.coe_inj, ← (Nat.finiteMultiplicity_iff.2
+      ⟨hp.ne_one, (p ^ n).factorial_pos⟩).emultiplicity_eq_multiplicity]
+  induction n with
+  | zero => simp [hp.emultiplicity_one]
+  | succ n h =>
+    rw [pow_succ', hp.emultiplicity_factorial_mul, h, Finset.sum_range_succ, ENat.coe_add]
 
 /-- A prime power divides `n!` iff it is at most the sum of the quotients `n / p ^ i`.
   This sum is expressed over the set `Ico 1 b` where `b` is any bound greater than `log p n` -/
