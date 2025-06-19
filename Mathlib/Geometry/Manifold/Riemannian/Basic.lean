@@ -212,7 +212,7 @@ end ToMove
 
 namespace Manifold
 
-variable [∀ (x : M), ENorm (TangentSpace I x)]
+variable [∀ (x : M), ENorm (TangentSpace I x)] {x y : ℝ} {γ : ℝ → M}
 
 variable (I) in
 /-- The length on `Icc x y` of a path into a manifold, where the path is defined on the whole real
@@ -222,10 +222,25 @@ We use the whole real line to avoid subtype hell in API, but this is equivalent 
 considering functions on the manifold with boundary `Icc x y`, see
 `lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc`.
 
-We use `mfderiv` instead of `mfderivWithin` as these coincide (apart from the two endpoints which
-have zero measure) and `mfderiv` is easier to manipulate. -/
+We use `mfderiv` instead of `mfderivWithin` in the definition as these coincide (apart from the two
+endpoints which have zero measure) and `mfderiv` is easier to manipulate. However, we give
+a lemma `pathELength_eq_integral_mfderivWithin_Icc` to rewrite with the `mfderivWithin` form. -/
 def pathELength (γ : ℝ → M) (x y : ℝ) : ℝ≥0∞ :=
   ∫⁻ t in Icc x y, ‖mfderiv 𝓘(ℝ) I γ t 1‖ₑ
+
+lemma pathELength_eq_lintegral_mfderiv_Icc :
+    pathELength I γ x y = ∫⁻ t in Icc x y, ‖mfderiv 𝓘(ℝ) I γ t 1‖ₑ := rfl
+
+lemma pathELength_eq_lintegral_mfderiv_Ioo :
+    pathELength I γ x y = ∫⁻ t in Ioo x y, ‖mfderiv 𝓘(ℝ) I γ t 1‖ₑ := by
+  rw [pathELength_eq_lintegral_mfderiv_Icc, restrict_Ioo_eq_restrict_Icc]
+
+lemma pathELength_eq_lintegral_mfderivWithin_Icc :
+    pathELength I γ x y = ∫⁻ t in Icc x y, ‖mfderivWithin 𝓘(ℝ) I γ (Icc x y) t 1‖ₑ := by
+  rw [pathELength_eq_lintegral_mfderiv_Icc, ← restrict_Ioo_eq_restrict_Icc]
+  apply setLIntegral_congr_fun measurableSet_Ioo (fun t ht ↦ ?_)
+  rw [mfderivWithin_of_mem_nhds]
+  exact Icc_mem_nhds ht.1 ht.2
 
 lemma pathELength_eq_add {γ : ℝ → M} {x y z : ℝ} (h : x ≤ y) (h' : y ≤ z) :
     pathELength I γ x z = pathELength I γ x y + pathELength I γ y z := by
@@ -240,26 +255,18 @@ attribute [local instance] Measure.Subtype.measureSpace
 lemma lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc {x y : ℝ}
     [h : Fact (x < y)] {γ : Icc x y → M} :
     ∫⁻ t, ‖mfderiv (𝓡∂ 1) I γ t 1‖ₑ = pathELength I (γ ∘ (projIcc x y h.out.le)) x y := by
-  have A : ∫⁻ t, ‖mfderiv (𝓡∂ 1) I γ t 1‖ₑ =
-      ∫⁻ t in Icc x y, ‖mfderivWithin 𝓘(ℝ) I (γ ∘ (projIcc x y h.out.le)) (Icc x y) t 1‖ₑ := by
-    simp_rw [← mfderivWithin_comp_projIcc_one]
-    have : MeasurePreserving (Subtype.val : Icc x y → ℝ) volume
-      (volume.restrict (Icc x y)) := measurePreserving_subtype_coe measurableSet_Icc
-    rw [← MeasureTheory.MeasurePreserving.lintegral_comp_emb this
-      (MeasurableEmbedding.subtype_coe measurableSet_Icc)]
-    congr
-    ext t
-    have : t = projIcc x y h.out.le (t : ℝ) := by simp
-    congr
-  rw [A, pathELength, ← restrict_Ioo_eq_restrict_Icc]
-  apply lintegral_congr_ae
-  filter_upwards [self_mem_ae_restrict measurableSet_Ioo] with x hx
+  rw [pathELength_eq_lintegral_mfderivWithin_Icc]
+  simp_rw [← mfderivWithin_comp_projIcc_one]
+  have : MeasurePreserving (Subtype.val : Icc x y → ℝ) volume
+    (volume.restrict (Icc x y)) := measurePreserving_subtype_coe measurableSet_Icc
+  rw [← MeasureTheory.MeasurePreserving.lintegral_comp_emb this
+    (MeasurableEmbedding.subtype_coe measurableSet_Icc)]
   congr
-  rw [mfderivWithin_of_mem_nhds (Icc_mem_nhds hx.1 hx.2)]
+  ext t
+  have : t = projIcc x y h.out.le (t : ℝ) := by simp
+  congr
 
 open MeasureTheory
-
-#check setLIntegral_congr_fun_ae
 
 lemma pathELength_comp (γ : ℝ → M) {f : ℝ → ℝ} {x y : ℝ} (h : x ≤ y) (hf : MonotoneOn f (Icc x y))
     (h'f : DifferentiableOn ℝ f (Icc x y)) (hγ : MDifferentiableOn 𝓘(ℝ) I γ (Icc (f x) (f y))) :
