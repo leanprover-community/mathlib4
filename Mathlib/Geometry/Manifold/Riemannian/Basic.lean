@@ -271,6 +271,8 @@ lemma lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc {x y : ℝ}
 
 open MeasureTheory
 
+variable [∀ (x : M), NormSMulClass ℝ (TangentSpace I x)]
+
 lemma pathELength_comp (γ : ℝ → M) {f : ℝ → ℝ} {x y : ℝ} (h : x ≤ y) (hf : MonotoneOn f (Icc x y))
     (h'f : DifferentiableOn ℝ f (Icc x y)) (hγ : MDifferentiableOn 𝓘(ℝ) I γ (Icc (f x) (f y))) :
     pathELength I γ (f x) (f y) = pathELength I (γ ∘ f) x y := by
@@ -295,6 +297,13 @@ lemma pathELength_comp (γ : ℝ → M) {f : ℝ → ℝ} {x y : ℝ} (h : x ≤
     · rw [uniqueMDiffWithinAt_iff_uniqueDiffWithinAt]
       exact uniqueDiffOn_Icc h _ ht
   rw [this]
+  simp only [Function.comp_apply, ContinuousLinearMap.coe_comp']
+  have : mfderivWithin 𝓘(ℝ) 𝓘(ℝ) f (Icc x y) t 1
+    = derivWithin f (Icc x y) t • (1 : TangentSpace 𝓘(ℝ) (f t)) := sorry
+  rw [this]
+  simp only [map_smul, enorm_smul]
+
+
 
 
 
