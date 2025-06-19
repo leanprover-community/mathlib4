@@ -602,7 +602,6 @@ variable {R}
 
 /-- The `NonUnitalStarSubalgebra` obtained from `S : NonUnitalSubalgebra R A` by taking the
 smallest non-unital subalgebra containing both `S` and `star S`. -/
-@[simps!]
 def starClosure (S : NonUnitalSubalgebra R A) : NonUnitalStarSubalgebra R A where
   toNonUnitalSubalgebra := S ⊔ star S
   star_mem' := @fun a (ha : a ∈ S ⊔ star S) => show star a ∈ S ⊔ star S by
@@ -611,9 +610,11 @@ def starClosure (S : NonUnitalSubalgebra R A) : NonUnitalStarSubalgebra R A wher
     simp only [Set.sup_eq_union, star_adjoin_comm, Set.union_star, coe_star, star_star,
       Set.union_comm]
 
+@[simp]
 theorem coe_starClosure (S : NonUnitalSubalgebra R A) :
     (S.starClosure : Set A) = (S ⊔ star S : NonUnitalSubalgebra R A) := rfl
 
+@[simp]
 theorem mem_starClosure (S : NonUnitalSubalgebra R A) {x : A} :
     x ∈ S.starClosure ↔ x ∈ S ⊔ star S := Iff.rfl
 
