@@ -410,7 +410,6 @@ variable (F : C ⥤ V)
       (CostructuredArrow (Functor.fromPUnit (𝟙_ C)) d) (tensorLeft v)]
     [∀ (v : V) (d : C), Limits.PreservesColimitsOfShape
       (CostructuredArrow (Functor.fromPUnit (𝟙_ C)) d) (tensorRight v)]
-    -- [∀ v : V, Limits.PreservesColimitsOfSize.{0, v₁} (tensorRight v)]
 
 instance : (F ⊠ U).IsLeftKanExtension <| extensionUnitRight U (φ U) F :=
   pointwiseLeftKanExtensionRight U (φ U) F isPointwiseLeftKanExtensionCan|>.isLeftKanExtension
@@ -519,7 +518,7 @@ variable [DayConvolution U F]
 lemma leftUnitor_hom_unit_app (y : C) :
     can ▷ F.obj y ≫ (DayConvolution.unit U F).app (𝟙_ C, y) ≫
       (leftUnitor U F).hom.app (𝟙_ C ⊗ y) =
-    (λ_ (F.obj y)).hom ≫ F.map ((λ_ y).inv) := by
+    (λ_ (F.obj y)).hom ≫ F.map (λ_ y).inv := by
   letI := congrArg (fun t ↦ t.app (.mk PUnit.unit, y)) <|
       (corepresentableByLeft U F).homEquiv.rightInverse_symm <|
         ((leftUnitorCorepresentingIso F).symm.hom.app F) (𝟙 _)
@@ -549,7 +548,7 @@ lemma leftUnitor_naturality {G : C ⥤ V} [DayConvolution U G] (f : F ⟶ G) :
     (leftUnitor U F).hom ≫ f := by
   apply Functor.hom_ext_of_isLeftKanExtension _ (DayConvolution.unit _ _) _
   apply Functor.hom_ext_of_isLeftKanExtension _ (extensionUnitLeft U (φ U) F) _
-  ext ⟨x₁, x₂⟩
+  ext
   simp [← whisker_exchange_assoc]
 
 end
@@ -565,7 +564,7 @@ variable [DayConvolution F U]
 lemma rightUnitor_hom_unit_app (x : C) :
     F.obj x ◁ can ≫ (DayConvolution.unit F U).app (x, 𝟙_ C) ≫
       (rightUnitor U F).hom.app (x ⊗ 𝟙_ C) =
-    (ρ_ _).hom ≫ F.map ((ρ_ x).inv) := by
+    (ρ_ _).hom ≫ F.map (ρ_ x).inv := by
   letI := congrArg (fun t ↦ t.app (x, .mk PUnit.unit)) <|
       (corepresentableByRight U F).homEquiv.rightInverse_symm <|
         ((rightUnitorCorepresentingIso F).symm.hom.app F) (𝟙 _)
@@ -596,7 +595,7 @@ lemma rightUnitor_naturality {G : C ⥤ V} [DayConvolution G U] (f : F ⟶ G) :
     (rightUnitor U F).hom ≫ f := by
   apply Functor.hom_ext_of_isLeftKanExtension _ (DayConvolution.unit _ _) _
   apply Functor.hom_ext_of_isLeftKanExtension _ (extensionUnitRight U (φ U) F) _
-  ext ⟨x₁, x₂⟩
+  ext
   simp [whisker_exchange_assoc]
 
 end
@@ -636,7 +635,7 @@ lemma DayConvolution.triangle (F G U : C ⥤ V) [DayConvolutionUnit U]
         DayConvolutionUnit.isPointwiseLeftKanExtensionCan (F := U))|>.isLeftKanExtension
   apply Functor.hom_ext_of_isLeftKanExtension
     (α := extensionUnitLeft (F ⊠ U) (extensionUnitRight U (DayConvolutionUnit.φ U) F) G)
-  ext ⟨⟨x, _⟩, y⟩
+  ext
   dsimp
   simp only [MonoidalCategory.whiskerRight_id, Category.id_comp, Iso.hom_inv_id, whisker_assoc,
     MonoidalCategory.whiskerLeft_id, Category.comp_id,
