@@ -27,7 +27,6 @@ This is ultimately converted into a `Linexp` in the obvious way.
 `linearFormsAndMaxVar` is the main entry point into this file. Everything else is contained.
 -/
 
-open Mathlib.Ineq Batteries
 open Std (TreeMap)
 
 namespace Std.TreeMap
@@ -78,7 +77,7 @@ local instance {α β : Type*} {c : α → α → Ordering} [Add β] [Zero β] [
     Add (TreeMap α β c) where
   add := fun f g => (f.mergeWith (fun _ b b' => b + b') g).filter (fun _ b => b ≠ 0)
 
-namespace Linarith
+namespace Mathlib.Tactic.Linarith
 
 /-- A local abbreviation for `TreeMap` so we don't need to write `Ord.compare` each time. -/
 abbrev Map (α β) [Ord α] := TreeMap α β Ord.compare
@@ -268,4 +267,4 @@ def linearFormsAndMaxVar (red : TransparencyMode) (pfs : List Expr) :
   trace[linarith.detail] "monomial map: {map.toList.map fun ⟨k,v⟩ => (k.toList, v)}"
   return (l, map.size - 1)
 
-end Linarith
+end Mathlib.Tactic.Linarith
