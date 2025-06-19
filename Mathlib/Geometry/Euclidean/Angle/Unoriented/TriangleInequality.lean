@@ -19,7 +19,7 @@ variable {V : Type*}
 variable [NormedAddCommGroup V]
 variable [InnerProductSpace ℝ V]
 
-lemma inner_product_of_units_as_cos {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
+lemma inner_eq_cos_angle_of_norm_eq_one {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     ⟪x, y⟫ = Real.cos (angle x y) := by
   simp [cos_angle, hx, hy]
 
@@ -43,85 +43,82 @@ lemma inner_eq_neg_sq_norm_iff {x y : V} {a : ℝ} (hx : ‖x‖ = a) (hy : ‖y
     rw [inner_neg_left, real_inner_self_eq_norm_sq, hy]
 
 /-- The unit length vector from a given vector. Note that `unit 0 = 0`. -/
-noncomputable def unit (x : V) : V := ‖x‖⁻¹ • x
+noncomputable def normalized (x : V) : V := ‖x‖⁻¹ • x
 
 @[simp]
-theorem unit_zero : unit (0 : V) = 0 := by
-  simp [unit]
+theorem normalized_zero_eq_zero : normalized (0 : V) = 0 := by
+  simp [normalized]
 
 @[simp]
-lemma norm_of_unit {x : V} : ‖unit x‖ = 1 ↔ x ≠ 0 := by
+lemma norm_of_normalized_eq_one_iff {x : V} : ‖normalized x‖ = 1 ↔ x ≠ 0 := by
   constructor
   · contrapose!
     rintro rfl
     simp
   · intro h
-    simp [unit, norm_smul, show ‖x‖ ≠ 0 by simp [h]]
+    simp [normalized, norm_smul, show ‖x‖ ≠ 0 by simp [h]]
 
 @[simp]
-lemma unit_eq_id_of_norm_one {x : V} (h : ‖x‖ = 1) : unit x = x := by
-  simp [unit, h]
+lemma normalized_eq_self_of_norm_one {x : V} (h : ‖x‖ = 1) : normalized x = x := by
+  simp [normalized, h]
 
 @[simp]
-theorem unit_unit (x : V) : unit (unit x) = unit x := by
+theorem normalized_normalized (x : V) : normalized (normalized x) = normalized x := by
   by_cases hx : x = 0
   · simp [hx]
-  rw [← ne_eq, ← norm_of_unit] at hx
+  rw [← ne_eq, ← norm_of_normalized_eq_one_iff] at hx
   simp [hx]
 
-theorem unit_smul_of_pos {r : ℝ} (hr : 0 < r) (x : V) : unit (r • x) = unit x := by
+theorem normalized_smul_of_pos {r : ℝ} (hr : 0 < r) (x : V) :
+    normalized (r • x) = normalized x := by
   by_cases hx : x = 0
   · simp [hx]
-  rw [unit, unit, smul_smul, norm_smul]
+  rw [normalized, normalized, smul_smul, norm_smul]
   congr
   field_simp [abs_of_pos hr]
 
-lemma neg_one_le_inner_unit_unit (x y : V) : -1 ≤ ⟪unit x, unit y⟫ := by
+lemma neg_one_le_inner_normalized_normalized (x y : V) : -1 ≤ ⟪normalized x, normalized y⟫ := by
   by_cases hx : x = 0
-  · simp [hx, unit]
+  · simp [hx, normalized]
   by_cases hy : y = 0
-  · simp [hy, unit]
-  convert Real.neg_one_le_cos <| angle (unit x) (unit y)
-  simp [inner_product_of_units_as_cos, hx, hy]
+  · simp [hy, normalized]
+  convert Real.neg_one_le_cos <| angle (normalized x) (normalized y)
+  simp [inner_eq_cos_angle_of_norm_eq_one, hx, hy]
 
 /-- Gets the orthogonal direction of one vector relative to another. -/
-noncomputable def orthoDir (x y : V) : V := unit (x - ⟪x, unit y⟫ • unit y)
+noncomputable def orthoDir (x y : V) : V := normalized (x - ⟪x, normalized y⟫ • normalized y)
 
 @[simp]
 theorem zero_orthoDir (x : V) : orthoDir 0 x = 0 := by
   simp [orthoDir]
 
 @[simp]
-theorem orthoDir_zero (x : V) : orthoDir x 0 = unit x := by
+theorem orthoDir_zero (x : V) : orthoDir x 0 = normalized x := by
   simp [orthoDir]
 
 @[simp]
-lemma inner_sub_smul_eq_zero (x : V) {y : V} :
-    ⟪y, x - ⟪x, unit y⟫ • unit y⟫ = 0 := by
+lemma inner_orthoDir (x : V) {y : V} :
+    ⟪y, orthoDir x y⟫ = 0 := by
+  rw [orthoDir, normalized]
   by_cases hy : ‖y‖ = 0
   · simp [show y = 0 by simpa using hy]
-  field_simp [unit, real_inner_smul_right, inner_sub_right, real_inner_comm x y,
-    real_inner_self_eq_norm_mul_norm]
+  · field_simp [normalized, real_inner_smul_right, inner_sub_right, real_inner_comm x y,
+      real_inner_self_eq_norm_mul_norm]
 
 @[simp]
-lemma inner_orthoDir_zero (x : V) {y : V} :
-    ⟪y, orthoDir x y⟫ = 0 := by
-  rw [orthoDir, unit]
-  simp [real_inner_smul_right]
-
-@[simp]
-theorem orthoDir_unit_left (x y : V) : orthoDir (unit x) y = orthoDir x y := by
+theorem orthoDir_normalized_left (x y : V) : orthoDir (normalized x) y = orthoDir x y := by
   by_cases hx : ‖x‖ = 0
   · simp [show x = 0 by simpa using hx]
   by_cases hy : ‖y‖ = 0
   · simp [show y = 0 by simpa using hy]
-  simp only [orthoDir, unit.eq_def x, inner_smul_left, map_inv₀, conj_trivial, mul_smul, ← smul_sub]
-  refine unit_smul_of_pos ?_ _
+  simp only [orthoDir, normalized.eq_def x, inner_smul_left, map_inv₀, conj_trivial, mul_smul,
+    ← smul_sub]
+  refine normalized_smul_of_pos ?_ _
   rw [Right.inv_pos]
   exact lt_of_le_of_ne (norm_nonneg x) fun a ↦ hx a.symm
 
 @[simp]
-theorem orthoDir_unit_right (x y : V) : orthoDir x (unit y) = orthoDir x y := by
+theorem orthoDir_normalized_right (x y : V) : orthoDir x (normalized y) = orthoDir x y := by
   simp [orthoDir]
 
 lemma inner_orthoDir_nonneg (x y : V) :
@@ -129,26 +126,26 @@ lemma inner_orthoDir_nonneg (x y : V) :
   wlog Hx : ‖x‖ = 1
   · by_cases Hx : x = 0
     · simp [Hx]
-    · convert this (unit x) y (by simpa) using 0
-      rw [orthoDir_unit_left, unit, real_inner_smul_left, mul_nonneg_iff_of_pos_left ?_]
+    · convert this (normalized x) y (by simpa) using 0
+      rw [orthoDir_normalized_left, normalized, real_inner_smul_left, mul_nonneg_iff_of_pos_left ?_]
       rwa [Right.inv_pos, norm_pos_iff]
   wlog Hy : ‖y‖ = 1
   · by_cases Hy : y = 0
-    · simp [Hy, unit, inner_smul_right, real_inner_self_eq_norm_sq, Hx]
-    · simpa using this (V := V) x (unit y) Hx (by simpa)
-  rw [orthoDir, unit_eq_id_of_norm_one Hy, unit]
+    · simp [Hy, normalized, inner_smul_right, real_inner_self_eq_norm_sq, Hx]
+    · simpa using this (V := V) x (normalized y) Hx (by simpa)
+  rw [orthoDir, normalized_eq_self_of_norm_one Hy, normalized]
   rw [real_inner_smul_right]
   have H := norm_nonneg (x - ⟪x, y⟫ • y)
   apply mul_nonneg (inv_nonneg_of_nonneg H)
   rw [inner_sub_right, real_inner_smul_right, ← sq, real_inner_self_eq_norm_sq, Hx]
   simp only [one_pow, sub_nonneg, sq_le_one_iff_abs_le_one]
-  rw [inner_product_of_units_as_cos Hx Hy]
+  rw [inner_eq_cos_angle_of_norm_eq_one Hx Hy]
   exact Real.abs_cos_le_one (angle x y)
 
-lemma orthoDir_aux_1 {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
+lemma orthoDir_aux {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     ⟪x, orthoDir x y⟫ ^ 2 + ⟪x, y⟫ ^ 2 = 1 := by
-  rw [orthoDir, unit]
-  simp only [unit_eq_id_of_norm_one hy]
+  rw [orthoDir, normalized]
+  simp only [normalized_eq_self_of_norm_one hy]
   rw [real_inner_smul_right, inner_sub_right, real_inner_smul_right]
   by_cases h₁ : x = y
   · simp [h₁, real_inner_self_eq_norm_sq, hy]
@@ -172,43 +169,43 @@ lemma orthoDir_aux_1 {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
   rw [real_inner_self_eq_norm_sq, hx, real_inner_self_eq_norm_sq, hy]
   ring
 
---Angle-specific stuff
+-- Angle-specific stuff
 
 @[simp]
-lemma angle_unit_left (x y : V) :
-    angle (unit x) y = angle x y := by
+lemma angle_normalized_left (x y : V) :
+    angle (normalized x) y = angle x y := by
   by_cases hx : x = 0
   · simp [hx]
   by_cases hy : y = 0
   · simp [hy]
   replace hx : 0 < ‖x‖⁻¹ := by simp [hx]
   replace hy : 0 < ‖y‖⁻¹ := by simp [hy]
-  simp only [unit, angle_smul_left_of_pos, hx, angle_smul_right_of_pos, hy]
+  simp only [normalized, angle_smul_left_of_pos, hx, angle_smul_right_of_pos, hy]
 
 @[simp]
-lemma angle_unit_right (x y : V) :
-    angle x (unit y) = angle x y := by
-  rw [angle_comm, angle_unit_left, angle_comm]
+lemma angle_normalized_right (x y : V) :
+    angle x (normalized y) = angle x y := by
+  rw [angle_comm, angle_normalized_left, angle_comm]
 
 
-lemma sin_as_inner_product {x y : V} (Hx : ‖x‖ = 1) :
+lemma inner_orthoDir_right_eq_sin_angle_of_norm_eq_one {x y : V} (Hx : ‖x‖ = 1) :
     ⟪x, orthoDir x y⟫ = Real.sin (angle x y) := by
   wlog Hy : ‖y‖ = 1
   · by_cases Hy : y = 0
-    · simp [Hy, unit, inner_smul_right, real_inner_self_eq_norm_sq, Hx]
-    · simpa using this (V := V) (y := unit y) Hx (by simpa)
+    · simp [Hy, normalized, inner_smul_right, real_inner_self_eq_norm_sq, Hx]
+    · simpa using this (V := V) (y := normalized y) Hx (by simpa)
   have h : ⟪x, orthoDir x y⟫ ^ 2 = Real.sin (angle x y) ^ 2 := by
-    simp [Real.sin_sq, ← inner_product_of_units_as_cos Hx Hy, ← orthoDir_aux_1 Hx Hy]
+    simp [Real.sin_sq, ← inner_eq_cos_angle_of_norm_eq_one Hx Hy, ← orthoDir_aux Hx Hy]
   simpa [sq_eq_sq_iff_abs_eq_abs, abs_of_nonneg, inner_orthoDir_nonneg, sin_angle_nonneg] using h
 
-lemma angle_triangle_aux2 {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) :
+lemma angle_triangle_aux {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) :
     x = Real.cos (angle x y) • y + Real.sin (angle x y) • orthoDir x y := by
-  rw [← sin_as_inner_product Hx]
-  rw [← inner_product_of_units_as_cos Hx Hy]
+  rw [← inner_orthoDir_right_eq_sin_angle_of_norm_eq_one Hx]
+  rw [← inner_eq_cos_angle_of_norm_eq_one Hx Hy]
   by_cases hxy : x - ⟪x, y⟫ • y = 0
-  · simp [orthoDir, Hy, hxy, Hx, ← sub_eq_zero, ← inner_product_of_units_as_cos Hx Hy]
-  simp only [orthoDir, unit_eq_id_of_norm_one Hy]
-  rw [unit, real_inner_smul_right, inner_sub_right, real_inner_smul_right]
+  · simp [orthoDir, Hy, hxy, Hx, ← sub_eq_zero, ← inner_eq_cos_angle_of_norm_eq_one Hx Hy]
+  simp only [orthoDir, normalized_eq_self_of_norm_one Hy]
+  rw [normalized, real_inner_smul_right, inner_sub_right, real_inner_smul_right]
   rw [real_inner_self_eq_norm_sq, Hx, ← sq, ← smul_assoc]
   have H3 : 1 - ⟪x, y⟫ ^ 2 ≠ 0 := by
     rw [sub_ne_zero, ne_comm, sq_ne_one_iff]
@@ -228,17 +225,18 @@ private lemma angle_triangle_for_units {x y z : V} (Hx : ‖x‖ = 1) (Hy : ‖y
   have H0 : 0 ≤ angle x y + angle y z :=
     add_nonneg (angle_nonneg x y) (angle_nonneg y z)
   have H1 : ⟪x, z⟫ = ⟪x, z⟫ := rfl
-  nth_rw 2 [angle_triangle_aux2 Hx Hy] at H1
-  nth_rw 2 [angle_triangle_aux2 Hz Hy] at H1
+  nth_rw 2 [angle_triangle_aux Hx Hy] at H1
+  nth_rw 2 [angle_triangle_aux Hz Hy] at H1
   simp only [inner_add_left, inner_add_right, real_inner_smul_left, real_inner_smul_right,
-    inner_orthoDir_zero, real_inner_comm y (orthoDir x y)] at H1
-  simp only [real_inner_comm y (unit _), real_inner_self_eq_norm_sq, Hy, angle_comm z y] at H1
+    inner_orthoDir, real_inner_comm y (orthoDir x y)] at H1
+  simp only [real_inner_comm y (normalized _), real_inner_self_eq_norm_sq, Hy, angle_comm z y] at H1
   have H2 : (-1 : ℝ) ≤ inner (orthoDir x y) (orthoDir z y) := by
-    simpa [orthoDir, Hy] using neg_one_le_inner_unit_unit (x - ⟪x, y⟫ • y) (z - ⟪z, y⟫ • y)
+    simpa [orthoDir, Hy] using
+    neg_one_le_inner_normalized_normalized (x - ⟪x, y⟫ • y) (z - ⟪z, y⟫ • y)
   have H3 : 0 ≤ Real.sin (angle x y) * Real.sin (angle y z) :=
     mul_nonneg (sin_angle_nonneg x y) (sin_angle_nonneg y z)
   have H4: Real.cos (angle x y + angle y z) ≤ Real.cos (angle x z) := by
-    rw [Real.cos_add, ← inner_product_of_units_as_cos Hx Hz]
+    rw [Real.cos_add, ← inner_eq_cos_angle_of_norm_eq_one Hx Hz]
     rw [neg_le_iff_add_nonneg] at H2
     linarith [mul_nonneg H3 H2]
   rwa [Real.strictAntiOn_cos.le_iff_le ⟨H0, H⟩ ⟨angle_nonneg x z, angle_le_pi x z⟩] at H4
@@ -251,8 +249,8 @@ theorem InnerProductGeometry.angle_triangle (x y z : V) : angle x z ≤ angle x 
   · simpa [hy] using angle_le_pi x z
   by_cases hz : z = 0
   · simpa [hz] using angle_nonneg x y
-  simpa using angle_triangle_for_units (norm_of_unit.mpr hx)
-    (norm_of_unit.mpr hy) (norm_of_unit.mpr hz)
+  simpa using angle_triangle_for_units (norm_of_normalized_eq_one_iff.mpr hx)
+    (norm_of_normalized_eq_one_iff.mpr hy) (norm_of_normalized_eq_one_iff.mpr hz)
 
 namespace EuclideanGeometry
 
