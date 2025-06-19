@@ -186,6 +186,7 @@ theorem homEquiv_comp {a b c : CatEnrichedOrdinary C} (f : a ⟶ b) (g : b ⟶ c
 be the morphisms in the hom-categories provided by the `EnrichedCategory Cat C` structure between
 the corresponding objects. -/
 structure Hom {X Y : CatEnrichedOrdinary C} (f g : X ⟶ Y) where mk' ::
+  /-- A 2-cell from `f` to `g` is a 2-cell from `homEquiv f` to `homEquiv g`. -/
   base' : homEquiv f ⟶ homEquiv g
 
 instance {X Y : CatEnrichedOrdinary C} : Quiver (X ⟶ Y) where
