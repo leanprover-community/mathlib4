@@ -219,10 +219,13 @@ noncomputable instance {n : ℕ} [NeZero n] :
     SliceModel (⊥ : Subspace ℝ ((Fin n → ℝ))) (modelWithCornersEuclideanQuadrant n) (𝓡∂ n) where
   equiv := ContinuousLinearEquiv.prodUnique ℝ (EuclideanSpace ℝ (Fin n)) _
   map := fun ⟨x, hx⟩ ↦ ⟨x, hx 0⟩
-  hmap :=
-    -- general result: two subtypes, one contained in the other: is Subtype.val always an
-    -- embedding? can one prove this?
-    sorry
+  hmap := by
+    have h : IsEmbedding (Subtype.val : (EuclideanHalfSpace n) → (EuclideanSpace ℝ (Fin n))) :=
+      IsEmbedding.subtypeVal
+    have : IsEmbedding (Subtype.val : (EuclideanQuadrant n) → (EuclideanSpace ℝ (Fin n))) :=
+      IsEmbedding.subtypeVal
+    rw [← IsEmbedding.of_comp_iff h]
+    convert this
   compatible := by
     ext x
     simp only [comp_apply, ContinuousLinearEquiv.prodUnique_apply]
@@ -240,6 +243,7 @@ def instTrans (h : SliceModel F I I') (h' : SliceModel F' I' I'') : SliceModel (
     simp only [comp_apply, ContinuousLinearEquiv.trans_apply, ContinuousLinearEquiv.prodCongr_apply,
       ContinuousLinearEquiv.refl_apply, this]
     -- can this be condensed? feels unnecessarily painful
+    -- (grind errors with `unknown constant h.compatible`)
     calc
       _ = (I'' ∘ SliceModel.map F' I' I'') (SliceModel.map F I I' x) := by
         simp [Function.comp_apply]
