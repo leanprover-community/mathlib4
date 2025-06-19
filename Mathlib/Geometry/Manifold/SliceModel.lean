@@ -15,7 +15,7 @@ TODO: expand this doc-string!
 
 -/
 
-section -- PRed in #25524
+section -- PRed in #26086
 
 /-- The canonical linear homeomorphism between `EuclideanSpace 𝕜 (ι ⊕ κ)` and
 `EuclideanSpace 𝕜 ι × EuclideanSpace 𝕜 κ`. Note that this is not an isometry because
@@ -89,30 +89,7 @@ variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] [Unique G]
 
 namespace ContinuousLinearEquiv
 
--- PRed in #23971
-
-variable (𝕜 E) in
-/-- The natural equivalence `E × G ≃L[𝕜] E` for any `Unique` type `G`.
-This is `Equiv.prodUnique` as a continuous linear equivalence. -/
-def prodUnique : (E × G) ≃L[𝕜] E where
-  toLinearEquiv := LinearEquiv.prodUnique
-  continuous_toFun := by
-    show Continuous (Equiv.prodUnique E G)
-    dsimp; fun_prop
-  continuous_invFun := by
-    show Continuous fun x ↦ (x, default)
-    fun_prop
-
-@[simp]
-lemma prodUnique_toEquiv : (prodUnique 𝕜 E).toEquiv = Equiv.prodUnique E G := rfl
-
-@[simp]
-lemma prodUnique_apply (x : E × G) : prodUnique 𝕜 E x = x.1 := rfl
-
-@[simp]
-lemma prodUnique_symm_apply (x : E) : (prodUnique 𝕜 E (G := G)).symm x = (x, default) := rfl
-
-section prodAssoc -- PRed in #25522
+section prodAssoc -- PRed in #26082
 
 variable (R M₁ M₂ M₃ : Type*) [Semiring R]
   [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [Module R M₁] [Module R M₂] [Module R M₃]
@@ -154,7 +131,7 @@ section instances
 
 /-- Every model with corners is a slice model over itself. -/
 instance : SliceModel (⊥ : Subspace 𝕜 E) I I where
-  equiv := ContinuousLinearEquiv.prodUnique 𝕜 E
+  equiv := ContinuousLinearEquiv.prodUnique 𝕜 E _
   map := id
   hmap := Topology.IsEmbedding.id
   compatible := by ext x; dsimp
@@ -206,7 +183,7 @@ on `E`. (The embedding condition excludes strange cases of submanifolds with bou
 For boundaryless models, that is always true. -/
 def SliceModel.ofEmbedding {I : ModelWithCorners 𝕜 E H} (hI : IsEmbedding I) :
     SliceModel (⊥ : Subspace 𝕜 E) I 𝓘(𝕜, E) where
-  equiv := ContinuousLinearEquiv.prodUnique 𝕜 E
+  equiv := ContinuousLinearEquiv.prodUnique 𝕜 E _
   map := I
   hmap := hI
   compatible := by ext; simp
@@ -221,7 +198,7 @@ open scoped Manifold
 -- NB. Golfing this using the previous instance is not as obvious because of instance mismatches.
 noncomputable instance {n : ℕ} [NeZero n] :
     SliceModel (⊥ : Subspace ℝ ((Fin n → ℝ))) (𝓡∂ n) (𝓡 n) where
-  equiv := ContinuousLinearEquiv.prodUnique ℝ (EuclideanSpace ℝ (Fin n))
+  equiv := ContinuousLinearEquiv.prodUnique ℝ (EuclideanSpace ℝ (Fin n)) _
   map := Subtype.val
   hmap := Topology.IsEmbedding.subtypeVal
   compatible := by
@@ -240,7 +217,7 @@ noncomputable instance {n m : ℕ} [NeZero n] :
 
 noncomputable instance {n : ℕ} [NeZero n] :
     SliceModel (⊥ : Subspace ℝ ((Fin n → ℝ))) (modelWithCornersEuclideanQuadrant n) (𝓡∂ n) where
-  equiv := ContinuousLinearEquiv.prodUnique ℝ (EuclideanSpace ℝ (Fin n))
+  equiv := ContinuousLinearEquiv.prodUnique ℝ (EuclideanSpace ℝ (Fin n)) _
   map := fun ⟨x, hx⟩ ↦ ⟨x, hx 0⟩
   hmap :=
     -- general result: two subtypes, one contained in the other: is Subtype.val always an
