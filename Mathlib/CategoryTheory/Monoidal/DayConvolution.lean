@@ -45,7 +45,7 @@ variable {C : Type u₁} [Category.{v₁} C] {V : Type u₂} [Category.{v₂} V]
   [MonoidalCategory C] [MonoidalCategory V]
 
 /-- A `DayConvolution` structure on functors `F G : C ⥤ V` is the data of
-a functor `F ⊛ G : C ⥤ V`, along with a unit `F ⊠ G to tensor C ⋙ F ⊛ G`
+a functor `F ⊛ G : C ⥤ V`, along with a unit `F ⊠ G ⟶ tensor C ⋙ F ⊛ G`
 that exhibits this functor as a pointwise left Kan extension of `F ⊠ G` along
 `tensor C`. This is a `class` used to prove various property of such extensions,
 but registering global instances of this class is probably a bad idea. -/
@@ -79,13 +79,13 @@ def uniqueUpToIso (h : DayConvolution F G) (h' : DayConvolution F G) :
     h.convolution ≅ h'.convolution :=
   Functor.leftKanExtensionUnique h.convolution h.unit h'.convolution h'.unit
 
-@[simp]
-lemma uniqueUpToIso_hom_unit (h : DayConvolution F G) (h' : DayConvolution F G) :
+@[reassoc (attr := simp)]
+lemma unit_uniqueUpToIso_hom (h : DayConvolution F G) (h' : DayConvolution F G) :
     h.unit ≫ CategoryTheory.whiskerLeft (tensor C) (h.uniqueUpToIso h').hom = h'.unit := by
   simp [uniqueUpToIso]
 
-@[simp]
-lemma uniqueUpToIso_inv_unit (h : DayConvolution F G) (h' : DayConvolution F G) :
+@[reassoc (attr := simp)]
+lemma unit_uniqueUpToIso_inv (h : DayConvolution F G) (h' : DayConvolution F G) :
     h'.unit ≫ CategoryTheory.whiskerLeft (tensor C) (h.uniqueUpToIso h').inv = h.unit := by
   simp [uniqueUpToIso]
 
@@ -131,7 +131,7 @@ def map (f : F ⟶ F') (g : G ⟶ G') : F ⊛ G ⟶ F' ⊛ G' :=
 variable (f : F ⟶ F') (g : G ⟶ G') (x y : C)
 
 @[reassoc (attr := simp)]
-lemma map_unit_app :
+lemma unit_app_map_app :
   (unit F G).app (x, y) ≫ (map f g).app (x ⊗ y : C) =
     (f.app x ⊗ₘ g.app y) ≫ (unit F' G').app (x, y) := by
   simpa [tensorHom_def] using
@@ -168,7 +168,7 @@ end
 
 end DayConvolution
 
-/-- A dayConvolutionUnit structure on a functor `C ⥤ V` is the data of a pointwise
+/-- A `DayConvolutionUnit` structure on a functor `C ⥤ V` is the data of a pointwise
 left Kan extension of `fromPUnit (𝟙_ V)` along `fromPUnit (𝟙_ C)`. Again, this is
 made a class to ease proofs when constructing `DayConvolutionMonoidalCategory` structures, but one
 should avoid registering it globally. -/
@@ -178,7 +178,7 @@ class DayConvolutionUnit (F : C ⥤ V) where
   can : 𝟙_ V ⟶ F.obj (𝟙_ C)
   /-- The canonical map `𝟙_ V ⟶ F.obj (𝟙_ C)` exhibits `F` as a pointwise left kan extension
   of `fromPUnit.{0} 𝟙_ V` along `fromPUnit.{0} 𝟙_ C`. -/
-  canPointwiseLeftKanExtension : Functor.LeftExtension.mk F
+  isPointwiseLeftKanExtensionCan : Functor.LeftExtension.mk F
     ({app _ := can} : Functor.fromPUnit.{0} (𝟙_ V) ⟶
       Functor.fromPUnit.{0} (𝟙_ C) ⋙ F)|>.IsPointwiseLeftKanExtension
 
