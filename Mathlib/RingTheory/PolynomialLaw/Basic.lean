@@ -37,7 +37,7 @@ only assumes `R` is a commutative semiring.
 
 ## References
 
- * [Roby, Norbert. 1963. « Lois polynomes et lois formelles en théorie des modules ».
+* [Roby, Norbert. 1963. « Lois polynomes et lois formelles en théorie des modules ».
 Annales scientifiques de l’École Normale Supérieure 80 (3): 213‑348](Roby-1963)
 
 -/
@@ -51,7 +51,7 @@ open scoped TensorProduct
 open LinearMap TensorProduct AlgHom
 
 /-- A polynomial law `M →ₚₗ[R] N` between `R`-modules is a functorial family of maps
-   `S ⊗[R] M → S ⊗[R] N`, for all `R`-algebras `S`.
+`S ⊗[R] M → S ⊗[R] N`, for all `R`-algebras `S`.
 
 For universe reasons, `S` has to be restricted to the same universe as `R`. -/
 @[ext]

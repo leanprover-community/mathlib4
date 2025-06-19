@@ -70,8 +70,8 @@ theorem pow_le_pow_left {a b : R} (ha : 0 ≤ a) (hab : a ≤ b) : ∀ n, a ^ n 
 
 lemma pow_add_pow_le' (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ n + b ^ n ≤ 2 * (a + b) ^ n := by
   rw [two_mul]
-  exact add_le_add (pow_le_pow_left₀ ha (le_add_of_nonneg_right hb) _)
-    (pow_le_pow_left₀ hb (le_add_of_nonneg_left ha) _)
+  gcongr <;> try assumption
+  exacts [le_add_of_nonneg_right hb, le_add_of_nonneg_left ha]
 
 end OrderedSemiring
 
@@ -267,7 +267,7 @@ lemma Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
   intro a b hab
   obtain ha | ha := le_total 0 a
   · exact pow_lt_pow_left₀ hab ha hn₀
-  obtain hb | hb := lt_or_le 0 b
+  obtain hb | hb := lt_or_ge 0 b
   · exact (hn.pow_nonpos ha).trans_lt (pow_pos hb _)
   obtain ⟨c, hac⟩ := exists_add_of_le ha
   obtain ⟨d, hbd⟩ := exists_add_of_le hb

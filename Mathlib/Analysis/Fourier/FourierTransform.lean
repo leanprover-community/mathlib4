@@ -190,10 +190,10 @@ theorem integral_bilin_fourierIntegral_eq_flip
       -- speeds up compilation.
       change AEStronglyMeasurable (fun p : W × V ↦ (M (e (-(L p.2) p.1) • f p.2) (g p.1))) _
       have A : AEStronglyMeasurable (fun (p : W × V) ↦ e (-L p.2 p.1) • f p.2) (ν.prod μ) := by
-        refine (Continuous.aestronglyMeasurable ?_).smul hf.1.snd
+        refine (Continuous.aestronglyMeasurable ?_).smul hf.1.comp_snd
         exact he.comp (hL.comp continuous_swap).neg
       have A' : AEStronglyMeasurable (fun p ↦ (g p.1, e (-(L p.2) p.1) • f p.2) : W × V → F × E)
-        (Measure.prod ν μ) := hg.1.fst.prodMk A
+        (Measure.prod ν μ) := hg.1.comp_fst.prodMk A
       have B : Continuous (fun q ↦ M q.2 q.1 : F × E → G) := M.flip.continuous₂
       apply B.comp_aestronglyMeasurable A' -- `exact` works, but `apply` is 10x faster!
     · filter_upwards with ⟨ξ, x⟩

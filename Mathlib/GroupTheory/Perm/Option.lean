@@ -23,7 +23,7 @@ theorem Equiv.optionCongr_swap {α : Type*} [DecidableEq α] (x y : α) :
   ext (_ | i)
   · simp [swap_apply_of_ne_of_ne]
   · by_cases hx : i = x
-    · simp only [hx, optionCongr_apply, Option.map_some', swap_apply_left, Option.mem_def,
+    · simp only [hx, optionCongr_apply, Option.map_some, swap_apply_left, Option.mem_def,
              Option.some.injEq]
     by_cases hy : i = y <;> simp [hx, hy, swap_apply_of_ne_of_ne]
 
@@ -33,7 +33,7 @@ theorem Equiv.optionCongr_sign {α : Type*} [DecidableEq α] [Fintype α] (e : P
   induction e using Perm.swap_induction_on with
   | one => simp [Perm.one_def]
   | swap_mul f x y hne h =>
-    simp [h, hne, Perm.mul_def, ← Equiv.optionCongr_trans]
+    simp [h, hne, Perm.mul_def]
 
 @[simp]
 theorem map_equiv_removeNone {α : Type*} [DecidableEq α] (σ : Perm (Option α)) :

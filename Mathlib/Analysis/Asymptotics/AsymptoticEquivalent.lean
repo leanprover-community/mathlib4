@@ -122,7 +122,7 @@ theorem isEquivalent_zero_iff_isBigO_zero : u ~[l] 0 ↔ u =O[l] (0 : α → β)
 
 theorem isEquivalent_const_iff_tendsto {c : β} (h : c ≠ 0) :
     u ~[l] const _ c ↔ Tendsto u l (𝓝 c) := by
-  simp (config := { unfoldPartialApp := true }) only [IsEquivalent, const, isLittleO_const_iff h]
+  simp +unfoldPartialApp only [IsEquivalent, const, isLittleO_const_iff h]
   constructor <;> intro h
   · have := h.sub (tendsto_const_nhds (x := -c))
     simp only [Pi.sub_apply, sub_neg_eq_add, sub_add_cancel, zero_add] at this
@@ -412,5 +412,18 @@ theorem IsTheta.trans_isEquivalent {f : α → β₂} {g₁ g₂ : α → β} (h
 instance transIsThetaIsEquivalent :
     @Trans (α → β₂) (α → β) (α → β) (IsTheta l) (IsEquivalent l) (IsTheta l) where
   trans := IsTheta.trans_isEquivalent
+
+theorem IsEquivalent.comp_tendsto {α₂ : Type*} {f g : α₂ → β} {l' : Filter α₂}
+    (hfg : f ~[l'] g) {k : α → α₂} (hk : Filter.Tendsto k l l') : (f ∘ k) ~[l] (g ∘ k) :=
+  IsLittleO.comp_tendsto hfg hk
+
+@[simp]
+theorem isEquivalent_map {α₂ : Type*} {f g : α₂ → β} {k : α → α₂} :
+    f ~[Filter.map k l] g ↔ (f ∘ k) ~[l] (g ∘ k) :=
+  isLittleO_map
+
+theorem IsEquivalent.mono {f g : α → β} {l' : Filter α} (h : f ~[l'] g) (hl : l ≤ l') :
+    f ~[l] g :=
+  IsLittleO.mono h hl
 
 end Asymptotics

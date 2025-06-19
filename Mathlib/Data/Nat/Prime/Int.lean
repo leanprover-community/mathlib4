@@ -26,7 +26,7 @@ theorem prime_iff_prime_int {p : ℕ} : p.Prime ↔ _root_.Prime (p : ℤ) :=
     Nat.prime_iff.2
       ⟨Int.natCast_ne_zero.1 hp.1,
         (mt Nat.isUnit_iff.1) fun h => by simp [h, not_prime_one] at hp, fun a b => by
-        simpa only [Int.natCast_dvd_natCast, (Int.ofNat_mul _ _).symm] using hp.2.2 a b⟩⟩
+        simpa only [Int.natCast_dvd_natCast, (Int.natCast_mul _ _).symm] using hp.2.2 a b⟩⟩
 
 /-- Two prime powers with positive exponents are equal only when the primes and the
 exponents are equal. -/
