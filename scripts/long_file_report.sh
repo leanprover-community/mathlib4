@@ -18,6 +18,7 @@ mkMDtable () {
       longTotal=0
       foundShort=0
       n=split(heads, headers, ",")
+      printf("### The 10 longest files in `mathlib`\n\n")
       # mkRow, with the header entries
       printf("|")
       for(i=1; i<=n; i++) {printf(" %s |", headers[i])}
@@ -32,7 +33,7 @@ mkMDtable () {
         if(longTotal == "0")
         { printf("\nAll files are within the length limit!\n") }
         else
-        { printf("\n%s file%s exceed the length limit (%s).\n", longTotal, (longTotal == 1) ? "" : "s", limit) }
+        { printf("\n%s file%s exceed%s the length limit (%s).\n", longTotal, (longTotal == 1) ? "" : "s", (longTotal == 1) ? "s" : "", limit) }
     }' "${2}"
 }
 
