@@ -122,15 +122,21 @@ theorem coeff_pow_of_natDegree_le_of_eq_ite' {m n o : ℕ} {a : R} {p : R[X]}
     · exact natDegree_pow_le_of_le m ‹_›
     · exact Iff.mp ne_comm h
 
-theorem natDegree_smul_le_of_le {n : ℕ} {a : R} {f : R[X]} (hf : natDegree f ≤ n) :
+section SMul
+
+variable {S : Type*} [SMulZeroClass S R] {n : ℕ} {a : S} {f : R[X]}
+
+theorem natDegree_smul_le_of_le (hf : natDegree f ≤ n) :
     natDegree (a • f) ≤ n :=
   (natDegree_smul_le a f).trans hf
 
-theorem degree_smul_le_of_le {n : ℕ} {a : R} {f : R[X]} (hf : degree f ≤ n) :
+theorem degree_smul_le_of_le (hf : degree f ≤ n) :
     degree (a • f) ≤ n :=
   (degree_smul_le a f).trans hf
 
-theorem coeff_smul {n : ℕ} {a : R} {f : R[X]} : (a • f).coeff n = a * f.coeff n := rfl
+theorem coeff_smul : (a • f).coeff n = a • f.coeff n := rfl
+
+end SMul
 
 section congr_lemmas
 
@@ -392,18 +398,18 @@ def splitApply (mvs static : List MVarId) : MetaM ((List MVarId) × (List MVarId
 
 /-- `miscomputedDegree? deg false_goals` takes as input
 *  an `Expr`ession `deg`, representing the degree of a polynomial
-   (i.e. an `Expr`ession of inferred type either `ℕ` or `WithBot ℕ`);
+  (i.e. an `Expr`ession of inferred type either `ℕ` or `WithBot ℕ`);
 *  a list of `MVarId`s `false_goals`.
 
 Although inconsequential for this function, the list of goals `false_goals` reduces to `False`
 if `norm_num`med.
 `miscomputedDegree?` extracts error information from goals of the form
 *  `a ≠ b`, assuming it comes from `⊢ coeff_of_given_degree ≠ 0`
-   -- reducing to `False` means that the coefficient that was supposed to vanish, does not;
+  --- reducing to `False` means that the coefficient that was supposed to vanish, does not;
 *  `a ≤ b`, assuming it comes from `⊢ degree_of_subterm ≤ degree_of_polynomial`
-   -- reducing to `False` means that there is a term of degree that is apparently too large;
+  --- reducing to `False` means that there is a term of degree that is apparently too large;
 *  `a = b`, assuming it comes from `⊢ computed_degree ≤ given_degree`
-   -- reducing to `False` means that there is a term of degree that is apparently too large.
+  --- reducing to `False` means that there is a term of degree that is apparently too large.
 
 The cases `a ≠ b` and `a = b` are not a perfect match with the top coefficient:
 reducing to `False` is not exactly correlated with a coefficient being non-zero.
@@ -504,3 +510,8 @@ macro "monicity!" : tactic =>
 end Tactic
 
 end Mathlib.Tactic.ComputeDegree
+
+/-!
+ We register `compute_degree` with the `hint` tactic.
+ -/
+register_hint compute_degree

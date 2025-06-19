@@ -338,7 +338,7 @@ theorem condExp_finset_sum {ι : Type*} {s : Finset ι} {f : ι → α → E}
   classical
   induction s using Finset.induction_on with
   | empty => rw [Finset.sum_empty, Finset.sum_empty, condExp_zero]
-  | @insert i s his heq =>
+  | insert i s his heq =>
     rw [Finset.sum_insert his, Finset.sum_insert his]
     exact (condExp_add (hf i <| Finset.mem_insert_self i s)
       (integrable_finset_sum' _ <| Finset.forall_of_forall_insert hf) _).trans

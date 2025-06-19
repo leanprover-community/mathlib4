@@ -10,7 +10,7 @@ import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
 # Normalization of 2-morphisms in bicategories
 
 This file provides the implementation of the normalization given in
-`Mathlib.Tactic.CategoryTheory.Coherence.Normalize`. See this file for more details.
+`Mathlib/Tactic/CategoryTheory/Coherence/Normalize.lean`. See this file for more details.
 
 -/
 

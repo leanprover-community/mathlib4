@@ -71,6 +71,11 @@ theorem pi_comp (f : (i : ι) → M₂ →ₗ[R] φ i) (g : M₃ →ₗ[R] M₂)
     (pi f).comp g = pi fun i => (f i).comp g :=
   rfl
 
+/-- The constant linear map, taking `x` to `Function.const ι x`. -/
+def const : M₂ →ₗ[R] (ι → M₂) := pi fun _ ↦ .id
+
+@[simp] lemma const_apply (x : M₂) : LinearMap.const (R := R) x = Function.const ι x := rfl
+
 /-- The projections from a family of modules are linear maps.
 
 Note:  known here as `LinearMap.proj`, this construction is in other categories called `eval`, for
@@ -315,7 +320,7 @@ theorem single_eq_pi_diag (i : ι) : single R φ i = pi (diag i) := by
   rfl
 
 theorem ker_single (i : ι) : ker (single R φ i) = ⊥ :=
-  ker_eq_bot_of_injective <| Pi.single_injective _ _
+  ker_eq_bot_of_injective <| Pi.single_injective _
 
 theorem proj_comp_single (i j : ι) : (proj i).comp (single R φ j) = diag j i := by
   rw [single_eq_pi_diag, proj_pi]
@@ -441,7 +446,7 @@ variable (R φ)
 /-- Transport dependent functions through an equivalence of the base space.
 
 This is `Equiv.piCongrLeft'` as a `LinearEquiv`. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def piCongrLeft' (e : ι ≃ ι') : ((i' : ι) → φ i') ≃ₗ[R] (i : ι') → φ <| e.symm i :=
   { Equiv.piCongrLeft' φ e with
     map_add' := fun _ _ => rfl
@@ -541,7 +546,7 @@ theorem sumArrowLequivProdArrow_symm_apply_inr {α β} (f : α → M) (g : β �
   rfl
 
 /-- If `ι` has a unique element, then `ι → M` is linearly equivalent to `M`. -/
-@[simps (config := { simpRhs := true, fullyApplied := false }) symm_apply]
+@[simps +simpRhs -fullyApplied symm_apply]
 def funUnique (ι R M : Type*) [Unique ι] [Semiring R] [AddCommMonoid M] [Module R M] :
     (ι → M) ≃ₗ[R] M :=
   { Equiv.funUnique ι M with
@@ -555,7 +560,7 @@ theorem funUnique_apply (ι R M : Type*) [Unique ι] [Semiring R] [AddCommMonoid
 variable (R M)
 
 /-- Linear equivalence between dependent functions `(i : Fin 2) → M i` and `M 0 × M 1`. -/
-@[simps (config := { simpRhs := true, fullyApplied := false }) symm_apply]
+@[simps +simpRhs -fullyApplied symm_apply]
 def piFinTwo (M : Fin 2 → Type v)
     [(i : Fin 2) → AddCommMonoid (M i)] [(i : Fin 2) → Module R (M i)] :
     ((i : Fin 2) → M i) ≃ₗ[R] M 0 × M 1 :=

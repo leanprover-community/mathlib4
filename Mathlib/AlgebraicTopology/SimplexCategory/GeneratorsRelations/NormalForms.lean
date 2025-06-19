@@ -34,8 +34,8 @@ stones towards proving that the canonical functor
 * [Kerodon Tag 04FT](https://kerodon.net/tag/04FT)
 
 ## TODOs:
- - Show that every `P_σ` admits a unique normal form.
- - Show that every `P_δ` admits a unique normal form.
+- Show that every `P_σ` admits a unique normal form.
+- Show that every `P_δ` admits a unique normal form.
 -/
 
 namespace SimplexCategoryGenRel
