@@ -97,8 +97,8 @@ variable {x x' y y' : C}
 
 @[reassoc (attr := simp)]
 lemma unit_naturality (f : x ⟶ x') (g : y ⟶ y') :
-    (F.map f ⊗ G.map g) ≫ (unit F G).app (x', y') =
-    (unit F G).app (x, y) ≫ (F ⊛ G).map (f ⊗ g) := by
+    (F.map f ⊗ₘ G.map g) ≫ (unit F G).app (x', y') =
+    (unit F G).app (x, y) ≫ (F ⊛ G).map (f ⊗ₘ g) := by
   simpa [tensorHom_def] using (unit F G).naturality ((f, g) : (x, y) ⟶ (x', y'))
 
 variable (y) in
@@ -133,7 +133,7 @@ variable (f : F ⟶ F') (g : G ⟶ G') (x y : C)
 @[reassoc (attr := simp)]
 lemma map_unit_app :
   (unit F G).app (x, y) ≫ (map f g).app (x ⊗ y : C) =
-    (f.app x ⊗ g.app y) ≫ (unit F' G').app (x, y) := by
+    (f.app x ⊗ₘ g.app y) ≫ (unit F' G').app (x, y) := by
   simpa [tensorHom_def] using
     (Functor.descOfIsLeftKanExtension_fac_app (F ⊛ G) (unit F G) (F' ⊛ G') <|
       (externalProductBifunctor C C V).map ((f, g) : (F, G) ⟶ (F', G')) ≫ unit F' G') (x, y)
