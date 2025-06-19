@@ -78,7 +78,7 @@ theorem extended_ne_zero [IsDomain K] [IsDomain L] [NoZeroSMulDivisors A K] [NoZ
     not_forall]
   obtain ⟨x, hx₁, hx₂⟩ : ∃ x ∈ I, x ≠ 0 := by simpa [ne_eq, eq_zero_iff] using hI
   refine ⟨x, hx₁, ?_⟩
-  exact (map_ne_zero_iff _ (IsLocalization.map_injective_of_injective' _ _ hf hf')).mpr hx₂
+  exact (map_ne_zero_iff _ (IsLocalization.map_injective_of_injective' _ _ _ hf hf')).mpr hx₂
 
 @[simp]
 theorem extended_one : extended L hf (1 : FractionalIdeal M K) = 1 := by
