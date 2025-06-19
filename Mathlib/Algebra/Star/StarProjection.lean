@@ -34,8 +34,9 @@ protected theorem IsStarProjection.zero
     [NonUnitalNonAssocSemiring M] [StarAddMonoid M] : IsStarProjection (0 : M) :=
   ⟨mul_zero _, star_zero _⟩
 
+variable (M) in
 @[simp]
-theorem IsStarProjection.one
+protected theorem IsStarProjection.one
     [MulOneClass M] [StarMul M] : IsStarProjection (1 : M) :=
   ⟨one_mul _, star_one _⟩
 
