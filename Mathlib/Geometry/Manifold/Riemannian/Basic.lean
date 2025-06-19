@@ -12,7 +12,7 @@ import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.MeasureTheory.Constructions.UnitInterval
 import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
+import Mathlib.MeasureTheory.Function.JacobianOneDim
 
 /-! # Riemannian manifolds
 
@@ -257,15 +257,55 @@ lemma lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc {x y : ℝ}
   congr
   rw [mfderivWithin_of_mem_nhds (Icc_mem_nhds hx.1 hx.2)]
 
-/-
+open MeasureTheory
+
+#check setLIntegral_congr_fun_ae
+
 lemma pathELength_comp (γ : ℝ → M) {f : ℝ → ℝ} {x y : ℝ} (h : x ≤ y) (hf : MonotoneOn f (Icc x y))
-    (h'f : ContDiffOn ℝ 1 f (Icc x y)) :
+    (h'f : DifferentiableOn ℝ f (Icc x y)) (hγ : MDifferentiableOn 𝓘(ℝ) I γ (Icc (f x) (f y))) :
     pathELength I γ (f x) (f y) = pathELength I (γ ∘ f) x y := by
   simp only [pathELength]
-  have A (t)  : ‖(mfderiv 𝓘(ℝ, ℝ) I (γ ∘ f) t) 1‖ₑ
-    = ‖(mfderiv 𝓘(ℝ, ℝ) I γ (f t)) 1‖ₑ * ‖deriv f t‖ₑ := sorry
-  simp_rw [A]
--/
+  have : Icc (f x) (f y) = f '' (Icc x y) := by
+
+  rw [this]
+  have B (t) (ht : t ∈ Icc x y) : HasDerivWithinAt f (derivWithin f (Icc x y) t) (Icc x y) t :=
+    (h'f t ht).hasDerivWithinAt
+  rw [lintegral_image_eq_lintegral_deriv_mul_of_monotoneOn measurableSet_Icc B hf]
+  rw [← restrict_Ioo_eq_restrict_Icc]
+  apply setLIntegral_congr_fun measurableSet_Ioo (fun t ht ↦ ?_)
+  rw [derivWithin_of_mem_nhds (Icc_mem_nhds ht.1 ht.2)]
+  have : (mfderiv 𝓘(ℝ) I (γ ∘ f) t) =
+      (mfderivWithin 𝓘(ℝ) I γ (Icc (f x) (f y)) (f t)) ∘L (mfderiv 𝓘(ℝ) 𝓘(ℝ) f t) := by
+    rw [← mfderivWithin_of_mem_nhds (Ioo_mem_nhds ht.1 ht.2),
+      ← mfderivWithin_of_mem_nhds (Ioo_mem_nhds ht.1 ht.2)]
+    have hI : Ioo x y ⊆ f ⁻¹' Icc (f x) (f y) :=
+      fun t ht ↦ ⟨hf ⟨le_rfl, h⟩ ⟨ht.1.le, ht.2.le⟩ ht.1.le, hf ⟨ht.1.le, ht.2.le⟩ ⟨h, le_rfl⟩ ht.2.le⟩
+    apply mfderivWithin_comp
+    · apply hγ _ (hI ht)
+    · apply mdifferentiableWithinAt_iff_differentiableWithinAt.2
+      exact h'f.mono Ioo_subset_Icc_self _ ht
+    · exact hI
+    · exact isOpen_Ioo.uniqueMDiffWithinAt ht
+
+
+
+
+
+
+  rw [mfderiv_comp (I' := 𝓘(ℝ))]; rotate_left
+  · have hft : f t ∈ Ioo (f x) (f y) := sorry
+    apply (hγ (f t) ⟨hft.1.le, hft.2.le⟩ ).mdifferentiableAt
+    apply Icc_mem_nhds hft.1 hft.2
+
+
+
+
+
+
+
+
+
+#exit
 
 end Manifold
 
