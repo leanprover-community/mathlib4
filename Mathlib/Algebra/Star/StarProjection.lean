@@ -40,18 +40,17 @@ protected theorem IsStarProjection.one
     [MulOneClass M] [StarMul M] : IsStarProjection (1 : M) :=
   ⟨one_mul _, star_one _⟩
 
-theorem isStarProjection_one_sub_iff
-    [NonAssocRing M] [StarRing M] (p : M) :
-    IsStarProjection (1 - p) ↔ IsStarProjection p := by
-  constructor
-  · rintro ⟨h1, h2⟩
-    simp only [mul_sub, mul_one, sub_mul, one_mul, sub_eq_self, sub_eq_zero] at h1
-    simp only [star_sub, star_one, sub_right_inj] at h2
-    exact ⟨h1.symm, h2⟩
-  · rintro ⟨h1, h2⟩
-    constructor
-    · simp only [mul_sub, mul_one, sub_mul, one_mul, h1, sub_self, sub_zero]
-    · simp only [star_sub, star_one, sub_right_inj, h2]
+theorem IsStarProjection.one_sub [NonAssocRing M] [StarRing M]
+    {p : M} (hp : IsStarProjection p) :
+    IsStarProjection (1 - p) where
+  mul_self := by simp [mul_sub, sub_mul, hp.mul_self]
+  star_eq := by simp [hp.star_eq]
+
+theorem isStarProjection_one_sub_iff [NonAssocRing M] [StarRing M] {p : M} :
+    IsStarProjection (1 - p) ↔ IsStarProjection p :=
+  ⟨fun h ↦ sub_sub_cancel 1 p ▸ h.one_sub, .one_sub⟩
+
+alias ⟨IsStarProjection.of_one_sub, _⟩ := isStarProjection_one_sub_iff
 
 /-- the sum of star projections is a star projection if their product is `0` -/
 theorem IsStarProjection.add
