@@ -14,9 +14,8 @@ This file defines continuous perfect pairings.
 For a topological ring `R` and two topological modules `M` and `N`, a continuous perfect pairing is
 a continuous bilinear map `M × N → R` that is bijective in both arguments.
 
-Note that this does **not** imply that the (strong) continuous dual of `M` is `N` and vice-versa.
-(one would instead need "homeomorphic in both arguments"). This is useful to cover other kinds of
-duals, like the weak dual or weak-* dual.
+We require continuity in the forward direction only so that we can put several different topologies
+on the continuous dual: strong, weak, weak-* topology...
 
 ## TODO
 
@@ -33,9 +32,8 @@ variable {R M N : Type*}
 /-- For a topological ring `R` and two topological modules `M` and `N`, a continuous perfect pairing
 is a continuous bilinear map `M × N → R` that is bijective in both arguments.
 
-Note that this does **not** imply that the (strong) continuous dual of `M` is `N` and vice-versa.
-(one would instead need "homeomorphic in both arguments"). This is useful to cover other kinds of
-duals, like the weak dual or weak-* dual. -/
+We require continuity in the forward direction only so that we can put several different topologies
+on the continuous dual: strong, weak, weak-* topology... -/
 @[ext]
 class IsContPerfPair (p : M →ₗ[R] N →ₗ[R] R) where
   continuous_uncurry (p) : Continuous fun (x, y) ↦ p x y
