@@ -118,7 +118,7 @@ private lemma mk'.cm3a_aux [CategoryWithFibrations C]  [CategoryWithCofibrations
 
 /-- Constructor for `ModelCategory C` which assumes a formulation of axioms
 using weak factorizations systems. -/
-def mk' [CategoryWithFibrations C]  [CategoryWithCofibrations C]
+def mk' [CategoryWithFibrations C] [CategoryWithCofibrations C]
     [CategoryWithWeakEquivalences C] [HasFiniteLimits C] [HasFiniteColimits C]
     [(weakEquivalences C).HasTwoOutOfThreeProperty]
     [IsWeakFactorizationSystem (cofibrations C) (trivialFibrations C)]
