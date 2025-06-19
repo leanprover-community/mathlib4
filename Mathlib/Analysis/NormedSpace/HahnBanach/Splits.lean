@@ -33,17 +33,32 @@ namespace LinearMap
 lemma range_prodMap {f : E →L[𝕜] F} {g : E' →L[𝕜] F'} :
     range (f.prodMap g) = (range f).prod (range g) := by
   ext x
-  rw [Submodule.mem_prod]
-  simp_rw [LinearMap.mem_range]
-  constructor <;> intro h
-  · have : x ∈ Set.range (Prod.map f g) := h
-    rcases h with ⟨⟨y1, y₂⟩, hy⟩
-    all_goals simp_all
-  · choose y₁ hy₁ using h.1
-    choose y₂ hy₂ using h.2
-    use (y₁, y₂), by simp [hy₁, hy₂]
+  simp [Prod.ext_iff]
+
+lemma _root_.Submodule.map_add {f : E →L[𝕜] F} {p q : Submodule 𝕜 E} :
+    Submodule.map f p + Submodule.map f q = Submodule.map f (p + q) := by
+  ext x
+  simp
 
 end LinearMap
+
+section
+
+variable {R M N : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+
+lemma Submodule.sum_assoc {p q r : Submodule R M} : p + (q + r) = (p + q) + r := by
+  ext x
+  simp only [add_eq_sup, mem_sup, exists_exists_and_exists_and_eq_and]
+  exact ⟨fun ⟨y, hy, a, ha, b, hb, hyab⟩ ↦ ⟨y, hy, a, ha, b, hb, by rw [← hyab]; module⟩,
+    fun ⟨a, ha, b, hb, z, hz, h⟩ ↦ ⟨a, ha, b, hb, z, hz, by rw [← h]; module⟩⟩
+
+variable {R M M' : Type*} [Ring R] [TopologicalSpace M] [TopologicalSpace M']
+    [AddCommGroup M] [AddCommGroup M'] [Module R M] [Module R M']
+lemma Submodule.ClosedComplemented.prod {p : Submodule R M} {q : Submodule R M'}
+    (hp : p.ClosedComplemented) (hq : q.ClosedComplemented) : (p.prod q).ClosedComplemented := by
+  sorry
+
+end
 
 /-- A continuous linear map `f : E → F` **splits** iff it is injective, has closed range and
 its image has a closed complement. -/
@@ -72,6 +87,9 @@ lemma complement_isClosed (h : f.Splits) : IsClosed (X := F) h.complement :=
 lemma complement_isCompl (h : f.Splits) : IsCompl (LinearMap.range f) h.complement :=
   (Classical.choose_spec h.closedComplemented.exists_isClosed_isCompl).2
 
+lemma congr {g : E →L[𝕜] F} (hf : f.Splits) (hfg : g = f) : g.Splits :=
+  hfg ▸ hf
+
 /-- A continuous linear equivalence splits. -/
 lemma _root_.ContinuousLinearEquiv.splits (f : E ≃L[𝕜] F) : f.toContinuousLinearMap.Splits := by
   refine ⟨?_, ?_, ?_⟩
@@ -88,7 +106,7 @@ lemma prodMap (hf : f.Splits) (hg : g.Splits) : (f.prodMap g).Splits := by
   · rw [coe_prodMap', range_prod_map]
     exact (hf.isClosed_range).prod hg.isClosed_range
   · rw [LinearMap.range_prodMap]
-    sorry -- also missing: Submodule.ClosedComplemented.prod
+    exact hf.closedComplemented.prod hg.closedComplemented
 
 section RCLike
 
@@ -112,6 +130,7 @@ lemma antilipschitzWith (hf : f.Splits) : AntilipschitzWith hf.antilipschitzCons
 lemma isClosedMap (hf : f.Splits) : IsClosedMap f :=
   (hf.antilipschitzWith.isClosedEmbedding f.uniformContinuous).isClosedMap
 
+omit [CompleteSpace F] [CompleteSpace G] in
 lemma disjoint_aux  {g : F →L[𝕜] G} {F₁ F₂ : Submodule 𝕜 F} {G' : Submodule 𝕜 G}
     (hF : Disjoint F₁ F₂) (hG' : Disjoint (LinearMap.range g) G') (hg : Injective g) :
     Disjoint (Submodule.map g F₁) (Submodule.map g F₂ + G') := by
@@ -141,15 +160,8 @@ lemma disjoint_aux  {g : F →L[𝕜] G} {F₁ F₂ : Submodule 𝕜 F} {G' : Su
   have : y₀ = 0 := hF y₀ ((hg aux) ▸ hx₀) hy₀
   simp [hxy, ← hgy₀, this]
 
-lemma codisjoint_of_eq_top {F' F'' : Submodule 𝕜 F} (h : F' + F'' = ⊤) : Codisjoint F' F' := sorry
-
-lemma _root_.Submodule.codisjoint_add_eq_top {F' F'' : Submodule 𝕜 F} (h : Codisjoint F' F'') : F' + F'' = ⊤ := sorry
-
--- should be easy!
-lemma _root_.Submodule.add_assoc {p q r : Submodule 𝕜 G} : (p + q) + r = p + (q + r) := sorry
-
 /-- The composition of split continuous linear maps between real or complex Banach spaces splits. -/
-lemma comp {g : F →L[𝕜] G} (hf : f.Splits) (hg : g.Splits) : (g.comp f).Splits := by
+lemma comp {g : F →L[𝕜] G} (hg : g.Splits) (hf : f.Splits)  : (g.comp f).Splits := by
   have h : IsClosed (range (g ∘ f)) := by
     rw [range_comp]
     apply hg.isClosedMap _ hf.isClosed_range
@@ -162,41 +174,57 @@ lemma comp {g : F →L[𝕜] G} (hf : f.Splits) (hg : g.Splits) : (g.comp f).Spl
       -- In general, the sum of closed subspaces need not be closed.
       -- In this case, however, this is true as F'.map G is a closed subspace of range g,
       -- and range g + hg.complement = G' is closed.
-      -- TODO: think about the best proof for formalising.
+      -- TODO: what's the best proof to formalise?
+
+      -- Here is an outline of a proof using sequential closedness.
+      rw [← isSeqClosed_iff_isClosed]
+      -- Let (u_n) be a converging sequence in g(F') + G'.
+      intro u u₀ hu hconv
+      simp_rw [Submodule.add_eq_sup, SetLike.mem_coe, Submodule.mem_sup] at hu
+      -- Write u_n = x_n + y_n, for x_n in g(F') and y_n in G'.
+      let x : ℕ → Submodule.map g F' := by
+        intro n
+        choose y hy z hz hyz using hu n
+        exact ⟨y, hy⟩
+      let y : ℕ → hg.complement := by
+        intro n
+        choose y hy z hz hyz using hu n
+        exact ⟨z, hz⟩
+      -- By construction, u_n = x_n + y_n.
+      have (n) : u n = x n + y n := by
+        simp [x, y]
+        sorry -- need more API lemmas
+      -- x equals the projection into g(F'); y equals the projection onto hg.complement.
+      -- Since the coordinate projections are continuous, x and y are both convergent sequences.
+
+      -- Since g is anti-Lipschitz, the sequence of preimages of x_n is also converging.
+      -- These preimages belong to F', which is closed, hence the limit also lies in F'.
+
+      -- Thus, by continuity, x_n converges to some point in g(F').
+      -- By linearity, u_n converges to a point in g(F')+G', qed.
       sorry
     · have : LinearMap.range (g.comp f) = Submodule.map g (LinearMap.range f) := by aesop
-        -- some lemmas which could be useful for a manual proof:
-        -- rw [LinearMap.range_comp]; rw [LinearMap.range_eq_map]; rw [Submodule.map_comp f g ⊤]
-        -- rw [← LinearMap.range_eq_map f]
+      -- some lemmas which could be useful for a manual proof:
+      -- rw [LinearMap.range_comp]; rw [LinearMap.range_eq_map]; rw [Submodule.map_comp f g ⊤]
+      -- rw [← LinearMap.range_eq_map f]
       constructor
-      · rw [this]
-        exact disjoint_aux hf.complement_isCompl.1 hg.complement_isCompl.1 hg.injective
-      · have : LinearMap.range (g.comp f) + (Submodule.map g F' + hg.complement) = ⊤ := by
-          calc LinearMap.range (g.comp f) + (Submodule.map g F' + hg.complement)
-            _ = Submodule.map g (LinearMap.range f) + (Submodule.map g F' + hg.complement) := by
-              rw [this]
-            _ = (Submodule.map g (LinearMap.range f) + Submodule.map g F') + hg.complement := by
-              rw [Submodule.add_assoc]
-            _ = Submodule.map g (LinearMap.range f + F') + hg.complement := by
-              congr
-              -- TODO: this step is not true in general, only ≤ holds in general
-              -- (but that should suffice here; re-order proof steps!)
-              -- #check Submodule.map_add_le
-              sorry
-            _ = Submodule.map g ⊤ + hg.complement := by
-              congr
-              exact Submodule.codisjoint_add_eq_top hf.complement_isCompl.2
-            _ = LinearMap.range g + hg.complement := by rw [LinearMap.range_eq_map]
-            _ = ⊤ := Submodule.codisjoint_add_eq_top hg.complement_isCompl.2
-        sorry
+      · exact this ▸ disjoint_aux hf.complement_isCompl.1 hg.complement_isCompl.1 hg.injective
+      · rw [codisjoint_iff, this, ← Submodule.add_eq_sup, Submodule.sum_assoc, Submodule.map_add]
+        rw [LinearMap.range_eq_map]
+        trans Submodule.map g ⊤ + hg.complement
+        · congr
+          rw [Submodule.add_eq_sup, ← codisjoint_iff]
+          simpa using hf.complement_isCompl.2
+        · rw [Submodule.add_eq_sup, ← codisjoint_iff, ← LinearMap.range_eq_map]
+          exact hg.complement_isCompl.2
 
 lemma compCLE_left [CompleteSpace F'] {f₀ : F' ≃L[𝕜] E} (hf : f.Splits) :
     (f.comp f₀.toContinuousLinearMap).Splits :=
-  f₀.splits.comp hf
+  hf.comp f₀.splits
 
 lemma compCLE_right [CompleteSpace F'] {g : F ≃L[𝕜] F'} (hf : f.Splits) :
     (g.toContinuousLinearMap.comp f).Splits :=
-  hf.comp g.splits
+  g.splits.comp hf
 
 omit [CompleteSpace E] [CompleteSpace F] [CompleteSpace G]
 
