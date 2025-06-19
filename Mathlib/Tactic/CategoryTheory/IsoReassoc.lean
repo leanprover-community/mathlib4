@@ -47,16 +47,9 @@ def reassocExprIso (e : Expr) : MetaM (Expr × Array MVarId) := do
   let inst := args[1]!
   inst.mvarId!.setKind .synthetic
   let w := args[6]!
-  let eTy ← inferType e
-  let wTy ← inferType w
-  unless ← isDefEq eTy wTy do
-    throwError "Cannot create reassociation lemma, proof {← mkHasTypeButIsExpectedMsg eTy wTy}"
-  w.mvarId!.assign e
-  -- Ensure the `Category` instance is available to the simp lemmas.
-  withLetDecl `inst (← inst.mvarId!.getType) inst fun inst' => do
-    let pf ← simpType categoryIsoSimp (mkAppN lem₀ args)
-    let pf := (← pf.abstractM #[inst']).instantiate1 inst
-    return (← mkLetFVars #[inst'] pf, #[inst.mvarId!])
+  w.mvarId!.assignIfDefEq e
+  withEnsuringLocalInstance inst.mvarId! do
+    return (← simpType categoryIsoSimp (mkAppN lem₀ args), #[inst.mvarId!])
 
 initialize registerReassocExpr reassocExprIso
 

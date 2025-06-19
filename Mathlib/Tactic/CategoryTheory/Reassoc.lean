@@ -55,16 +55,9 @@ def reassocExprHom (e : Expr) : MetaM (Expr × Array MVarId) := do
   let inst := args[1]!
   inst.mvarId!.setKind .synthetic
   let w := args[6]!
-  let eTy ← inferType e
-  let wTy ← inferType w
-  unless ← isDefEq eTy wTy do
-    throwError "Cannot create reassociation lemma, proof {← mkHasTypeButIsExpectedMsg eTy wTy}"
-  w.mvarId!.assign e
-  -- Ensure the `Category` instance is available to the simp lemmas.
-  withLetDecl `inst (← inst.mvarId!.getType) inst fun inst' => do
-    let pf ← simpType categorySimp (mkAppN lem₀ args)
-    let pf := (← pf.abstractM #[inst']).instantiate1 inst
-    return (← mkLetFVars #[inst'] pf, #[inst.mvarId!])
+  w.mvarId!.assignIfDefEq e
+  withEnsuringLocalInstance inst.mvarId! do
+    return (← simpType categorySimp (mkAppN lem₀ args), #[inst.mvarId!])
 
 /--
 Adding `@[reassoc]` to a lemma named `F` of shape `∀ .., f = g`, where `f g : X ⟶ Y` are
@@ -112,6 +105,8 @@ def registerReassocExpr (f : Expr → MetaM (Expr × Array MVarId)) : IO Unit :=
 Reassociates the morphisms in `type?` using the registered handlers,
 using `reassocExprHom` as the default.
 If `type?` is not given, it is assumed to be the type of `pf`.
+
+Returns the proof of the lemma along with instance metavariables that need synthesis.
 -/
 def reassocExpr (pf : Expr) (type? : Option Expr) : MetaM (Expr × Array MVarId) := do
   let pf ← if let some type := type? then mkExpectedTypeHint pf type else pure pf
@@ -122,6 +117,17 @@ def reassocExpr (pf : Expr) (type? : Option Expr) : MetaM (Expr × Array MVarId)
       throwError "`reassoc` can only be used on terms about equality of (iso)morphisms"
     return (← mkLambdaFVars xs pf, insts)
 
+/--
+Version of `reassocExpr` for the `TermElabM` monad. Handles instance metavariables automatically.
+-/
+def reassocExpr' (pf : Expr) (type? : Option Expr) : TermElabM Expr := do
+  let (e, insts) ← reassocExpr pf type?
+  for inst in insts do
+    inst.withContext do
+      unless ← Term.synthesizeInstMVarCore inst do
+        Term.registerSyntheticMVarWithCurrRef inst (.typeClass none)
+  return e
+
 initialize registerBuiltinAttribute {
   name := `reassoc
   descr := ""
@@ -131,10 +137,9 @@ initialize registerBuiltinAttribute {
     if (kind != AttributeKind.global) then
       throwError "`reassoc` can only be used as a global attribute"
     addRelatedDecl src "_assoc" ref stx? fun type value levels => do
-      let (pf, insts) ← reassocExpr value type
-      for inst in insts do
-        inst.withContext do inst.assign (← synthInstance (← inst.getType))
-      pure (pf, levels)
+      Term.TermElabM.run' <| Term.withSynthesize do
+        let pf ← reassocExpr' value type
+        pure (pf, levels)
   | _ => throwUnsupportedSyntax }
 
 /--
@@ -147,9 +152,6 @@ This also works for equations between isomorphisms, provided that
 -/
 elab "reassoc_of% " t:term : term => do
   let e ← Term.withSynthesizeLight <| Term.elabTerm t none
-  let (pf, insts) ← reassocExpr e none
-  for inst in insts do
-    inst.withContext do inst.assign (← Term.mkInstMVar (← inst.getType))
-  return pf
+  reassocExpr' e none
 
 end CategoryTheory
