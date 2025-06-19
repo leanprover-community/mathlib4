@@ -129,8 +129,8 @@ theorem span_zero : span (0 : Set α) = ⊥ := by rw [← Set.singleton_zero, sp
 lemma span_singleton_zero : span {(0 : α)} = ⊥ := Submodule.span_zero_singleton _
 
 @[simp]
-lemma span_insert_zero {s : Set α} : span (insert 0 s) = span s :=
-   Submodule.span_insert_zero
+theorem span_insert_zero {s : Set α} : span (insert (0 : α) s) = span s :=
+  Submodule.span_insert_zero
 
 @[simp]
 lemma span_sdiff_singleton_zero {s : Set α} : span (s \ {0}) = span s :=
