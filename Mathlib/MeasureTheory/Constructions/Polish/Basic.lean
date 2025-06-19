@@ -918,9 +918,9 @@ variable {α β : Type*} {t : Set α} {g : α → β}
 theorem _root_.MeasurableSet.image_of_monotoneOn_of_continuousOn
     (ht : MeasurableSet t) (hg : MonotoneOn g t) (h'g : ContinuousOn g t) :
     MeasurableSet (g '' t) := by
-  /- We we will use that the image of a measurable set by a continuous injective map is measurable.
-  Therefore, we need to remove the injectivity default. There are only countably many points that
-  have several preimages, so this set is also measurable. -/
+  /- We use that the image of a measurable set by a continuous injective map is measurable.
+  Therefore, we need to remove the points where the map is not injective. There are only countably
+  many points that have several preimages, so this set is also measurable. -/
   let u : Set β := {c | ∃ x, ∃ y, x ∈ t ∧ y ∈ t ∧ x < y ∧ g x = c ∧ g y = c}
   have hu : Set.Countable u := MonotoneOn.countable_setOf_two_preimages hg
   let t' := t ∩ g ⁻¹' u

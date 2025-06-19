@@ -163,7 +163,7 @@ theorem countable_setOf_isolated_right_within [SecondCountableTopology α] {s : 
   rw [disjoint_iff_forall_ne]
   exact fun u hu v hv ↦ ((hu.2.trans_le this).trans hv.1).ne
 
-/-- The set of points in a set which are isolated on the right in this set is countable when the
+/-- The set of points in a set which are isolated on the left in this set is countable when the
 space is second-countable. -/
 theorem countable_setOf_isolated_left_within [SecondCountableTopology α] {s : Set α} :
     { x ∈ s | 𝓝[s ∩ Iio x] x = ⊥ }.Countable :=

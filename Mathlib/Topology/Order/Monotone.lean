@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
+import Mathlib.Tactic.Order
 import Mathlib.Topology.Order.IsLUB
 
 /-!
@@ -70,7 +71,7 @@ lemma MonotoneOn.countable_setOf_two_preimages [SecondCountableTopology α]
   wlog H : c < d generalizing c d with h
   · apply (h d hd c hc hcd.symm ?_).symm
     have : c ≠ d := fun h ↦ hcd (congrArg x h)
-    exact lt_of_le_of_ne (not_lt.1 H) this.symm
+    order
   simp only [disjoint_iff_forall_ne, mem_Ioo, ne_eq, and_imp]
   rintro a xca ayc b xda ayd rfl
   rw [hfx _ hc] at ayc
