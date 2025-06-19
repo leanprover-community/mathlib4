@@ -633,15 +633,13 @@ instance QuotientGroup.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace 
     [IsClosed (N : Set G)] : BorelSpace (G ⧸ N) :=
   ⟨continuous_mk.map_eq_borel mk_surjective⟩
 
-namespace MeasureTheory
-
 /-! ### Injective images of Borel sets -/
 
 variable {γ : Type*}
 
 /-- The **Lusin-Souslin theorem**: the range of a continuous injective function defined on a Polish
 space is Borel-measurable. -/
-theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpace γ]
+theorem MeasureTheory.measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpace γ]
     [PolishSpace γ] [TopologicalSpace β] [T2Space β] [MeasurableSpace β] [OpensMeasurableSpace β]
     {f : γ → β} (f_cont : Continuous f) (f_inj : Injective f) :
     MeasurableSet (range f) := by
@@ -791,7 +789,7 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
     -- the closure of `v`.
     exact disjoint_left.1 (hvw.closure_left w_open) this xw
 
-theorem _root_.IsClosed.measurableSet_image_of_continuousOn_injOn
+theorem IsClosed.measurableSet_image_of_continuousOn_injOn
     [TopologicalSpace γ] [PolishSpace γ] {β : Type*} [TopologicalSpace β] [T2Space β]
     [MeasurableSpace β] [OpensMeasurableSpace β] {s : Set γ} (hs : IsClosed s) {f : γ → β}
     (f_cont : ContinuousOn f s) (f_inj : InjOn f s) : MeasurableSet (f '' s) := by
@@ -807,7 +805,7 @@ variable [tβ : TopologicalSpace β] [T2Space β] [MeasurableSpace α] {s : Set 
 
 /-- The Lusin-Souslin theorem: if `s` is Borel-measurable in a Polish space, then its image under
 a continuous injective map is also Borel-measurable. -/
-theorem _root_.MeasurableSet.image_of_continuousOn_injOn [OpensMeasurableSpace β]
+theorem MeasurableSet.image_of_continuousOn_injOn [OpensMeasurableSpace β]
     [tγ : TopologicalSpace γ] [PolishSpace γ] [MeasurableSpace γ] [BorelSpace γ]
     (hs : MeasurableSet s)
     (f_cont : ContinuousOn f s) (f_inj : InjOn f s) : MeasurableSet (f '' s) := by
@@ -821,7 +819,7 @@ theorem _root_.MeasurableSet.image_of_continuousOn_injOn [OpensMeasurableSpace �
 /-- The Lusin-Souslin theorem: if `s` is Borel-measurable in a standard Borel space,
 then its image under a measurable injective map taking values in a
 countably separate measurable space is also Borel-measurable. -/
-theorem _root_.MeasurableSet.image_of_measurable_injOn {f : γ → α}
+theorem MeasurableSet.image_of_measurable_injOn {f : γ → α}
     [MeasurableSpace.CountablySeparated α]
     [MeasurableSpace γ] [StandardBorelSpace γ]
     (hs : MeasurableSet s) (f_meas : Measurable f) (f_inj : InjOn f s) :
@@ -844,7 +842,7 @@ theorem _root_.MeasurableSet.image_of_measurable_injOn {f : γ → α}
       M (@Continuous.continuousOn γ _ t' _ f s f_cont) f_inj
 
 /-- An injective continuous function on a Polish space is a measurable embedding. -/
-theorem _root_.Continuous.measurableEmbedding [BorelSpace β]
+theorem Continuous.measurableEmbedding [BorelSpace β]
     [TopologicalSpace γ] [PolishSpace γ] [MeasurableSpace γ] [BorelSpace γ]
     (f_cont : Continuous f) (f_inj : Injective f) :
     MeasurableEmbedding f :=
@@ -855,7 +853,7 @@ theorem _root_.Continuous.measurableEmbedding [BorelSpace β]
 
 /-- If `s` is Borel-measurable in a Polish space and `f` is continuous injective on `s`, then
 the restriction of `f` to `s` is a measurable embedding. -/
-theorem _root_.ContinuousOn.measurableEmbedding [BorelSpace β]
+theorem ContinuousOn.measurableEmbedding [BorelSpace β]
     [TopologicalSpace γ] [PolishSpace γ] [MeasurableSpace γ] [BorelSpace γ]
     (hs : MeasurableSet s) (f_cont : ContinuousOn f s)
     (f_inj : InjOn f s) : MeasurableEmbedding (s.restrict f) :=
@@ -872,7 +870,7 @@ theorem _root_.ContinuousOn.measurableEmbedding [BorelSpace β]
 
 /-- An injective measurable function from a standard Borel space to a
 countably separated measurable space is a measurable embedding. -/
-theorem _root_.Measurable.measurableEmbedding {f : γ → α}
+theorem Measurable.measurableEmbedding {f : γ → α}
     [MeasurableSpace.CountablySeparated α]
     [MeasurableSpace γ] [StandardBorelSpace γ]
     (f_meas : Measurable f) (f_inj : Injective f) : MeasurableEmbedding f :=
@@ -881,7 +879,7 @@ theorem _root_.Measurable.measurableEmbedding {f : γ → α}
     measurableSet_image' := fun _u hu => hu.image_of_measurable_injOn f_meas f_inj.injOn }
 
 /-- If one Polish topology on a type refines another, they have the same Borel sets. -/
-theorem borel_eq_borel_of_le {t t' : TopologicalSpace γ}
+theorem MeasureTheory.borel_eq_borel_of_le {t t' : TopologicalSpace γ}
     (ht : PolishSpace (h := t)) (ht' : PolishSpace (h := t')) (hle : t ≤ t') :
     @borel _ t = @borel _ t' := by
   refine le_antisymm ?_ (borel_anti hle)
@@ -893,7 +891,7 @@ theorem borel_eq_borel_of_le {t t' : TopologicalSpace γ}
   simp only [id_eq, image_id']
 
 /-- In a Polish space, a set is clopenable if and only if it is Borel-measurable. -/
-theorem isClopenable_iff_measurableSet
+theorem MeasureTheory.isClopenable_iff_measurableSet
     [tγ : TopologicalSpace γ] [PolishSpace γ] [MeasurableSpace γ] [BorelSpace γ] :
     IsClopenable s ↔ MeasurableSet s := by
   -- we already know that a measurable set is clopenable. Conversely, assume that `s` is clopenable.
@@ -915,7 +913,7 @@ variable {α β : Type*} {t : Set α} {g : α → β}
 [PolishSpace α]
 [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β] [LinearOrder β] [OrderTopology β]
 
-theorem _root_.MeasurableSet.image_of_monotoneOn_of_continuousOn
+theorem MeasurableSet.image_of_monotoneOn_of_continuousOn
     (ht : MeasurableSet t) (hg : MonotoneOn g t) (h'g : ContinuousOn g t) :
     MeasurableSet (g '' t) := by
   /- We use that the image of a measurable set by a continuous injective map is measurable.
@@ -945,7 +943,7 @@ theorem _root_.MeasurableSet.image_of_monotoneOn_of_continuousOn
   · exact hu.mono (by simp [t']) |>.measurableSet
 
 /-- The image of a measurable set under a monotone map is measurable. -/
-theorem _root_.MeasurableSet.image_of_monotoneOn [SecondCountableTopology β]
+theorem MeasurableSet.image_of_monotoneOn [SecondCountableTopology β]
     (ht : MeasurableSet t) (hg : MonotoneOn g t) : MeasurableSet (g '' t) := by
   /- Since there are only countably many discontinuity points, the result follows by reduction to
   the continuous case, which we have already proved. -/
@@ -966,7 +964,7 @@ theorem _root_.MeasurableSet.image_of_monotoneOn [SecondCountableTopology β]
   exact hx.2.mono diff_subset
 
 /-- The image of a measurable set under an antitone map is measurable. -/
-theorem _root_.MeasurableSet.image_of_antitoneOn [SecondCountableTopology β]
+theorem MeasurableSet.image_of_antitoneOn [SecondCountableTopology β]
     (ht : MeasurableSet t) (hg : AntitoneOn g t) : MeasurableSet (g '' t) :=
   (ht.image_of_monotoneOn hg.dual_right :)
 
@@ -975,7 +973,7 @@ end LinearOrder
 /-- The set of points for which a sequence of measurable functions converges to a given function
 is measurable. -/
 @[measurability]
-lemma measurableSet_tendsto_fun [MeasurableSpace γ] [Countable ι]
+lemma MeasureTheory.measurableSet_tendsto_fun [MeasurableSpace γ] [Countable ι]
     {l : Filter ι} [l.IsCountablyGenerated]
     [TopologicalSpace γ] [SecondCountableTopology γ] [PseudoMetrizableSpace γ]
     [OpensMeasurableSpace γ]
@@ -987,7 +985,8 @@ lemma measurableSet_tendsto_fun [MeasurableSpace γ] [Countable ι]
 
 /-- The set of points for which a measurable sequence of functions converges is measurable. -/
 @[measurability]
-theorem measurableSet_exists_tendsto [TopologicalSpace γ] [PolishSpace γ] [MeasurableSpace γ]
+theorem MeasureTheory.measurableSet_exists_tendsto
+    [TopologicalSpace γ] [PolishSpace γ] [MeasurableSpace γ]
     [hγ : OpensMeasurableSpace γ] [Countable ι] {l : Filter ι}
     [l.IsCountablyGenerated] {f : ι → β → γ} (hf : ∀ i, Measurable (f i)) :
     MeasurableSet { x | ∃ c, Tendsto (fun n => f n x) l (𝓝 c) } := by
@@ -1011,15 +1010,13 @@ theorem measurableSet_exists_tendsto [TopologicalSpace γ] [PolishSpace γ] [Mea
       MeasurableSet.biInter (to_countable (u N)) fun j _ =>
         measurableSet_lt (Measurable.dist (hf i) (hf j)) measurable_const
 
-end MeasureTheory
-
-namespace StandardBorelSpace
+section StandardBorelSpace
 
 variable [MeasurableSpace α] [StandardBorelSpace α]
 
 /-- If `s` is a measurable set in a standard Borel space, there is a compatible Polish topology
 making `s` clopen. -/
-theorem _root_.MeasurableSet.isClopenable' {s : Set α} (hs : MeasurableSet s) :
+theorem MeasurableSet.isClopenable' {s : Set α} (hs : MeasurableSet s) :
     ∃ _ : TopologicalSpace α, BorelSpace α ∧ PolishSpace α ∧ IsClosed s ∧ IsOpen s := by
   letI := upgradeStandardBorel α
   obtain ⟨t, hle, ht, s_clopen⟩ := hs.isClopenable
@@ -1029,7 +1026,7 @@ theorem _root_.MeasurableSet.isClopenable' {s : Set α} (hs : MeasurableSet s) :
   infer_instance
 
 /-- A measurable subspace of a standard Borel space is standard Borel. -/
-theorem _root_.MeasurableSet.standardBorel {s : Set α} (hs : MeasurableSet s) :
+theorem MeasurableSet.standardBorel {s : Set α} (hs : MeasurableSet s) :
     StandardBorelSpace s := by
   obtain ⟨_, _, _, s_closed, _⟩ := hs.isClopenable'
   haveI := s_closed.polishSpace
