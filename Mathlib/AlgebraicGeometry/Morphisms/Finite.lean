@@ -38,7 +38,7 @@ namespace IsFinite
 
 instance : HasAffineProperty @IsFinite
     (fun X _ f _ ↦ IsAffine X ∧ RingHom.Finite (f.appTop).hom) := by
-  show HasAffineProperty @IsFinite (affineAnd RingHom.Finite)
+  change HasAffineProperty @IsFinite (affineAnd RingHom.Finite)
   rw [HasAffineProperty.affineAnd_iff _ RingHom.finite_respectsIso
     RingHom.finite_localizationPreserves.away RingHom.finite_ofLocalizationSpan]
   simp [isFinite_iff]
@@ -95,7 +95,7 @@ instance (priority := 900) [hf : IsFinite f] : LocallyOfFiniteType f :=
 lemma _root_.AlgebraicGeometry.IsClosedImmersion.iff_isFinite_and_mono :
     IsClosedImmersion f ↔ IsFinite f ∧ Mono f := by
   wlog hY : IsAffine Y
-  · show _ ↔ _ ∧ monomorphisms _ f
+  · change _ ↔ _ ∧ monomorphisms _ f
     rw [IsLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
       IsLocalAtTarget.iff_of_openCover (P := @IsClosedImmersion) Y.affineCover,
       IsLocalAtTarget.iff_of_openCover (P := monomorphisms _) Y.affineCover]
@@ -148,7 +148,7 @@ lemma isFinite_iff_locallyOfFiniteType_of_jacobsonSpace
   letI := this.toField
   letI := φ.hom.toAlgebra
   have := PrimeSpectrum.isJacobsonRing_iff_jacobsonSpace.mpr ‹_›
-  show Module.Finite _ _ ↔ Algebra.FiniteType _ _
+  change Module.Finite _ _ ↔ Algebra.FiniteType _ _
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ finite_of_finite_type_of_isJacobsonRing _ _⟩
 
 @[stacks 01TB "(1) => (3)"]

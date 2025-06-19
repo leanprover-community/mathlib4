@@ -546,7 +546,7 @@ def toSemiring (f : ∀ i, A i →+ R) (hone : f _ GradedMonoid.GOne.one = 1)
       rw [(toAddMonoid f).map_mul_iff]
       refine DirectSum.addHom_ext' (fun xi ↦ AddMonoidHom.ext (fun xv ↦ ?_))
       refine DirectSum.addHom_ext' (fun yi ↦ AddMonoidHom.ext (fun yv ↦ ?_))
-      show
+      change
         toAddMonoid f (of A xi xv * of A yi yv) =
           toAddMonoid f (of A xi xv) * toAddMonoid f (of A yi yv)
       simp_rw [of_mul_of, toAddMonoid_of]

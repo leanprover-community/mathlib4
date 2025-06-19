@@ -46,13 +46,13 @@ theorem extendScalars [alg : Algebra.IsAlgebraic R S] : AlgebraicIndependent S x
     (algebraMap Rt St) (map_zero _) (map_mul _)
   have : Algebra.IsAlgebraic Rt St := ⟨fun ⟨y, hy⟩ ↦ by
     rw [← isAlgebraic_algHom_iff (IsScalarTower.toAlgHom Rt St A) Subtype.val_injective]
-    show IsAlgebraic Rt y
+    change IsAlgebraic Rt y
     have := Algebra.IsAlgebraic.nontrivial R S
     have := hx.algebraMap_injective.nontrivial
     exact adjoin_induction (fun _ h ↦ isAlgebraic_algebraMap (⟨_, subset_adjoin h⟩ : Rt))
       (fun z ↦ ((alg.1 z).algHom (IsScalarTower.toAlgHom R S A)).extendScalars fun _ _ eq ↦ by
         exact hx.algebraMap_injective congr($eq.1)) (fun _ _ _ _ ↦ .add) (fun _ _ _ _ ↦ .mul) hy⟩
-  show Transcendental St (x i)
+  change Transcendental St (x i)
   exact (hx.transcendental_adjoin hi).extendScalars _
 
 theorem extendScalars_of_isIntegral [Algebra.IsIntegral R S] : AlgebraicIndependent S x := by

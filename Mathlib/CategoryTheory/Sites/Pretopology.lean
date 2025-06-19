@@ -227,7 +227,7 @@ instance : InfSet (Pretopology C) where
 
 lemma mem_sInf (T : Set (Pretopology C)) {X : C} (S : Presieve X) :
     S ∈ sInf T X ↔ ∀ t ∈ T, S ∈ t X := by
-  show S ∈ sInf (Pretopology.coverings '' T) X ↔ _
+  change S ∈ sInf (Pretopology.coverings '' T) X ↔ _
   simp
 
 lemma sInf_ofGrothendieck (T : Set (GrothendieckTopology C)) :

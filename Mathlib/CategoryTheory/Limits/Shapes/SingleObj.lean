@@ -40,10 +40,10 @@ variable {M G : Type v} [Monoid M] [Group G]
 instance (J : SingleObj M ⥤ Type u) : MulAction M (J.obj (SingleObj.star M)) where
   smul g x := J.map g x
   one_smul x := by
-    show J.map (𝟙 _) x = x
+    change J.map (𝟙 _) x = x
     simp only [FunctorToTypes.map_id_apply]
   mul_smul g h x := by
-    show J.map (g * h) x = (J.map h ≫ J.map g) x
+    change J.map (g * h) x = (J.map h ≫ J.map g) x
     rw [← SingleObj.comp_as_mul]
     · simp only [FunctorToTypes.map_comp_apply, types_comp_apply]
       rfl
@@ -80,7 +80,7 @@ lemma Types.Quot.Rel.iff_orbitRel (x y : J.obj (SingleObj.star G)) :
     ↔ MulAction.orbitRel G (J.obj (SingleObj.star G)) x y := by
   have h (g : G) : y = g • x ↔ g • x = y := ⟨symm, symm⟩
   conv => rhs; rw [Setoid.comm']
-  show (∃ g : G, y = g • x) ↔ (∃ g : G, g • x = y)
+  change (∃ g : G, y = g • x) ↔ (∃ g : G, g • x = y)
   conv => lhs; simp only [h]
 
 /-- The explicit quotient construction of the colimit of `J : SingleObj G ⥤ Type u` is
