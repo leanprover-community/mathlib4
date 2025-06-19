@@ -128,7 +128,7 @@ theorem lt_card_le_iff_apply_le_of_monotone [Preorder α] [DecidableLE α]
   simp_rw [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_Iio]
   intro hij hia
   apply h
-  exact (h_sorted (le_of_not_lt hij)).trans hia
+  exact (h_sorted (le_of_not_gt hij)).trans hia
 
 theorem lt_card_ge_iff_apply_ge_of_antitone [Preorder α] [DecidableLE α]
     {m : ℕ} (f : Fin m → α) (a : α) (h_sorted : Antitone f) (j : Fin m) :
@@ -138,6 +138,13 @@ theorem lt_card_ge_iff_apply_ge_of_antitone [Preorder α] [DecidableLE α]
 /-- If two permutations of a tuple `f` are both monotone, then they are equal. -/
 theorem unique_monotone [PartialOrder α] {f : Fin n → α} {σ τ : Equiv.Perm (Fin n)}
     (hfσ : Monotone (f ∘ σ)) (hfτ : Monotone (f ∘ τ)) : f ∘ σ = f ∘ τ :=
+  ofFn_injective <|
+    eq_of_perm_of_sorted ((σ.ofFn_comp_perm f).trans (τ.ofFn_comp_perm f).symm)
+      hfσ.ofFn_sorted hfτ.ofFn_sorted
+
+/-- If two permutations of a tuple `f` are both antitone, then they are equal. -/
+theorem unique_antitone [PartialOrder α] {f : Fin n → α} {σ τ : Equiv.Perm (Fin n)}
+    (hfσ : Antitone (f ∘ σ)) (hfτ : Antitone (f ∘ τ)) : f ∘ σ = f ∘ τ :=
   ofFn_injective <|
     eq_of_perm_of_sorted ((σ.ofFn_comp_perm f).trans (τ.ofFn_comp_perm f).symm)
       hfσ.ofFn_sorted hfτ.ofFn_sorted

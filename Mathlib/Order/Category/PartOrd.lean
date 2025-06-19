@@ -187,19 +187,26 @@ def preordToPartOrdForgetAdjunction :
           invFun f := PartOrd.ofHom
             ⟨fun a => Quotient.liftOn' a f (fun _ _ h => (AntisymmRel.image h f.hom.mono).eq),
               fun a b => Quotient.inductionOn₂' a b fun _ _ h => f.hom.mono h⟩
-          left_inv _ := PartOrd.ext fun x => Quotient.inductionOn' x fun _ => rfl
-          right_inv _ := Preord.ext fun _ => rfl }
+          left_inv _ := PartOrd.ext fun x => Quotient.inductionOn' x fun _ => rfl }
       homEquiv_naturality_left_symm _ _ :=
         PartOrd.ext fun x => Quotient.inductionOn' x fun _ => rfl }
 
 -- The `simpNF` linter would complain as `Functor.comp_obj`, `Preord.dual_obj` both apply to LHS
 -- of `preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_hom_app_coe`
 /-- `PreordToPartOrd` and `OrderDual` commute. -/
-@[simps! inv_app_hom_coe, simps! -isSimp hom_app_hom_coe]
+@[simps! -isSimp hom_app_hom_coe inv_app_hom_coe]
 def preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd :
     preordToPartOrd.{u} ⋙ PartOrd.dual ≅ Preord.dual ⋙ preordToPartOrd :=
   NatIso.ofComponents (fun _ => PartOrd.Iso.mk <| OrderIso.dualAntisymmetrization _)
     (fun _ => PartOrd.ext fun x => Quotient.inductionOn' x fun _ => rfl)
 
--- This lemma was always bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644
-attribute [nolint simpNF] preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_inv_app_hom_coe
+-- `simp`-normal form for `preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_inv_app_hom_coe`
+@[simp]
+lemma preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_inv_app_hom_coe' (X)
+  (a : preordToPartOrd.obj (Preord.dual.obj X)) :
+  (PartOrd.Hom.hom
+      (X := preordToPartOrd.obj (Preord.dual.obj X))
+      (Y := PartOrd.dual.obj (preordToPartOrd.obj X))
+      (preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd.inv.app X)) a =
+    (OrderIso.dualAntisymmetrization ↑X).symm a :=
+  rfl

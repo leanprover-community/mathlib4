@@ -21,7 +21,7 @@ section NonUnital
 
 variable {A : Type*} [NonUnitalRing A] [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
 variable [StarRing A] [TopologicalSpace A]
-variable [NonUnitalContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+variable [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 namespace CStarAlgebra
 
@@ -315,7 +315,7 @@ section Unital
 namespace CFC
 
 variable {A : Type*} [Ring A] [Algebra ℝ A] [StarRing A] [TopologicalSpace A]
-variable [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+variable [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 variable [T2Space A]
 
 @[simp]
@@ -357,8 +357,7 @@ section SpanNonneg
 
 variable {A : Type*} [NonUnitalRing A] [Module ℂ A] [SMulCommClass ℂ A A] [IsScalarTower ℂ A A]
 variable [StarRing A] [TopologicalSpace A] [StarModule ℂ A]
-variable [NonUnitalContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
-variable [PartialOrder A] [StarOrderedRing A]
+variable [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 open Submodule Complex
 open scoped ComplexStarModule
@@ -367,6 +366,8 @@ lemma CStarAlgebra.linear_combination_nonneg (x : A) :
     ((ℜ x : A)⁺ - (ℜ x : A)⁻) + (I • (ℑ x : A)⁺ - I • (ℑ x : A)⁻) = x := by
   rw [CFC.posPart_sub_negPart _ (ℜ x).2, ← smul_sub, CFC.posPart_sub_negPart _ (ℑ x).2,
     realPart_add_I_smul_imaginaryPart x]
+
+variable [PartialOrder A] [StarOrderedRing A]
 
 /-- A C⋆-algebra is spanned by its nonnegative elements. -/
 lemma CStarAlgebra.span_nonneg : Submodule.span ℂ {a : A | 0 ≤ a} = ⊤ := by

@@ -19,7 +19,8 @@ We define the pullback of a vector field under a map, as
 (together with the same notion within a set). Note that the pullback uses the junk-value pattern:
 if the derivative of the map is not invertible, then pullback is given the junk value zero.
 
-See `Mathlib.Geometry.Manifold.VectorField.LieBracket` for the Lie bracket of two vector fields.
+See `Mathlib/Geometry/Manifold/VectorField/LieBracket.lean` for the Lie bracket of two vector
+fields.
 
 These definitions are given in the `VectorField` namespace because pullbacks, Lie brackets,
 and so on, are notions that make sense in a variety of contexts.
@@ -365,10 +366,7 @@ end MDifferentiability
 
 section ContMDiff
 
-variable [IsManifold I n M] [IsManifold I' n M'] [CompleteSpace E]
-  -- If `1 < n` then `IsManifold.of_le` shows the following assumptions are redundant.
-  -- We include them since they are necessary to make the statement.
-  [IsManifold I 1 M] [IsManifold I' 1 M']
+variable [CompleteSpace E] [IsManifold I 1 M] [IsManifold I' 1 M']
 
 /-- The pullback of a `C^m` vector field by a `C^n` function with invertible derivative and
 `m + 1 ≤ n` is `C^m`.
@@ -635,7 +633,7 @@ lemma contMDiffWithinAt_mpullbackWithin_extChartAt_symm
         TangentBundle 𝓘(𝕜, E) E))
       ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) (extChartAt I x x) :=
   ContMDiffWithinAt.mpullbackWithin_vectorField_of_eq' hV
-    (contMDiffWithinAt_extChartAt_symm_range (n := n) _ (mem_extChartAt_target x))
+    (contMDiffWithinAt_extChartAt_symm_range_self (n := n) x)
     (isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target x))
     (by simp [hx]) (UniqueMDiffOn.uniqueMDiffOn_target_inter hs x) hmn
     ((mapsTo_preimage _ _).mono_left inter_subset_right).preimage_mem_nhdsWithin

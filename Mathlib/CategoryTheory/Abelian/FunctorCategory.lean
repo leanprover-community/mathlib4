@@ -64,8 +64,8 @@ theorem coimageImageComparison_app :
   simp only [coimage_image_factorisation, PreservesKernel.iso_hom, Category.assoc,
     kernel.lift_ι, Category.comp_id, PreservesCokernel.iso_inv,
     cokernel.π_desc_assoc, Category.id_comp]
-  erw [kernelComparison_comp_ι _ ((evaluation C D).obj X),
-    π_comp_cokernelComparison_assoc _ ((evaluation C D).obj X)]
+  erw [kernelComparison_comp_ι _ ((evaluation C D).obj X)]
+  erw [π_comp_cokernelComparison_assoc _ ((evaluation C D).obj X)]
   conv_lhs => rw [← coimage_image_factorisation α]
   rfl
 

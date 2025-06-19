@@ -1,14 +1,16 @@
 /-
-Copyright (c) 2024 Joël Riou. All rights reserved.
+Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-
 import Mathlib.CategoryTheory.MorphismProperty.WeakFactorizationSystem
 import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
 
 /-!
 # Consequences of model category axioms
+
+In this file, we deduce basic properties of fibrations, cofibrations,
+and weak equivalences from the axioms of model categories.
 
 -/
 
@@ -102,12 +104,12 @@ instance : (fibrations C).IsMultiplicative := by
 
 variable (J : Type w)
 
-lemma trivialCofibrations_isStableUnderCoproductsOfShape :
+instance isStableUnderCoproductsOfShape_trivialCofibrations :
     (trivialCofibrations C).IsStableUnderCoproductsOfShape J := by
   rw [← fibrations_llp]
   apply MorphismProperty.llp_isStableUnderCoproductsOfShape
 
-lemma fibrations_isStableUnderProductsOfShape :
+instance isStableUnderProductsOfShape_fibrations :
     (fibrations C).IsStableUnderProductsOfShape J := by
   rw [← trivialCofibrations_rlp]
   apply MorphismProperty.rlp_isStableUnderProductsOfShape
@@ -145,12 +147,12 @@ instance : (trivialFibrations C).IsMultiplicative := by
 
 variable (J : Type w)
 
-lemma cofibrations_isStableUnderCoproductsOfShape :
+instance isStableUnderCoproductsOfShape_cofibrations :
     (cofibrations C).IsStableUnderCoproductsOfShape J := by
   rw [← trivialFibrations_llp]
   apply MorphismProperty.llp_isStableUnderCoproductsOfShape
 
-lemma trivialFibrations_isStableUnderProductsOfShape :
+instance isStableUnderProductsOfShape_trivialFibrations :
     (trivialFibrations C).IsStableUnderProductsOfShape J := by
   rw [← cofibrations_rlp]
   apply MorphismProperty.rlp_isStableUnderProductsOfShape
@@ -228,13 +230,13 @@ variable [HasCoproduct X] [HasCoproduct Y] [h : ∀ i, Cofibration (f i)]
 instance [IsWeakFactorizationSystem (cofibrations C) (trivialFibrations C)] :
     Cofibration (Limits.Sigma.map f) := by
   simp only [cofibration_iff] at h ⊢
-  exact (cofibrations_isStableUnderCoproductsOfShape C J).colimMap _ (fun ⟨i⟩ ↦ h i)
+  exact MorphismProperty.colimMap _ (fun ⟨i⟩ ↦ h i)
 
 instance [IsWeakFactorizationSystem (trivialCofibrations C) (fibrations C)]
     [∀ i, WeakEquivalence (f i)] :
     WeakEquivalence (Limits.Sigma.map f) := by
   rw [weakEquivalence_iff]
-  exact ((trivialCofibrations_isStableUnderCoproductsOfShape C J).colimMap _
+  exact (MorphismProperty.colimMap (W := (trivialCofibrations C)) _
     (fun ⟨i⟩ ↦ mem_trivialCofibrations (f i))).2
 
 end
@@ -246,13 +248,13 @@ variable [HasProduct X] [HasProduct Y] [h : ∀ i, Fibration (f i)]
 instance [IsWeakFactorizationSystem (trivialCofibrations C) (fibrations C)] :
     Fibration (Limits.Pi.map f) := by
   simp only [fibration_iff] at h ⊢
-  exact (fibrations_isStableUnderProductsOfShape C J).limMap _ (fun ⟨i⟩ ↦ h i)
+  exact MorphismProperty.limMap _ (fun ⟨i⟩ ↦ h i)
 
 instance [IsWeakFactorizationSystem (cofibrations C) (trivialFibrations C)]
     [∀ i, WeakEquivalence (f i)] :
     WeakEquivalence (Limits.Pi.map f) := by
   rw [weakEquivalence_iff]
-  exact ((trivialFibrations_isStableUnderProductsOfShape C J).limMap _
+  exact (MorphismProperty.limMap (W := (trivialFibrations C)) _
     (fun ⟨i⟩ ↦ mem_trivialFibrations (f i))).2
 
 end
@@ -267,14 +269,14 @@ instance [IsWeakFactorizationSystem (cofibrations C) (trivialFibrations C)]
     [h₁ : Cofibration f₁] [h₂ : Cofibration f₂] [HasBinaryCoproduct X₁ X₂]
     [HasBinaryCoproduct Y₁ Y₂] : Cofibration (coprod.map f₁ f₂) := by
   rw [cofibration_iff] at h₁ h₂ ⊢
-  apply (cofibrations_isStableUnderCoproductsOfShape C WalkingPair).colimMap
+  apply MorphismProperty.colimMap
   rintro (_ | _) <;> assumption
 
 instance [IsWeakFactorizationSystem (trivialCofibrations C) (fibrations C)]
     [h₁ : Fibration f₁] [h₂ : Fibration f₂] [HasBinaryProduct X₁ X₂]
     [HasBinaryProduct Y₁ Y₂] : Fibration (prod.map f₁ f₂) := by
   rw [fibration_iff] at h₁ h₂ ⊢
-  apply (fibrations_isStableUnderProductsOfShape C WalkingPair).limMap
+  apply MorphismProperty.limMap
   rintro (_ | _) <;> assumption
 
 end BinaryProducts

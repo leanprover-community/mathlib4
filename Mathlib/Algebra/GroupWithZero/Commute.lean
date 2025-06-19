@@ -12,7 +12,7 @@ import Mathlib.Tactic.Nontriviality
 
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 variable {M₀ G₀ : Type*}
 variable [MonoidWithZero M₀]
@@ -44,10 +44,13 @@ lemma inverse_pow_mul_eq_iff_eq_mul {a : M₀} (b c : M₀) (ha : IsUnit a) {k :
 
 end Ring
 
-theorem Commute.ring_inverse_ring_inverse {a b : M₀} (h : Commute a b) :
+theorem Commute.ringInverse_ringInverse {a b : M₀} (h : Commute a b) :
     Commute (Ring.inverse a) (Ring.inverse b) :=
   (Ring.mul_inverse_rev' h.symm).symm.trans <| (congr_arg _ h.symm.eq).trans <|
     Ring.mul_inverse_rev' h
+
+@[deprecated (since := "2025-04-22")]
+alias Commute.ring_inverse_ring_inverse := Commute.ringInverse_ringInverse
 
 namespace Commute
 

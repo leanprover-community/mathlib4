@@ -13,7 +13,7 @@ import Mathlib.LinearAlgebra.Quotient.Pi
 
 ## Main results
 
- * `Submodule.quotientEquivPiSpan`: `M ⧸ N`, if `M` is free finite module over a PID `R` and `N`
+* `Submodule.quotientEquivPiSpan`: `M ⧸ N`, if `M` is free finite module over a PID `R` and `N`
   is a submodule of full rank, can be written as a product of quotients of `R` by principal ideals.
 
 -/
@@ -23,7 +23,7 @@ namespace Submodule
 open scoped DirectSum
 
 variable {ι R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
-variable  [IsDomain R] [IsPrincipalIdealRing R] [Finite ι]
+variable [IsDomain R] [IsPrincipalIdealRing R] [Finite ι]
 
 /--
 We can write the quotient by a submodule of full rank over a PID as a product of quotients
@@ -69,9 +69,7 @@ noncomputable def quotientEquivPiSpan (N : Submodule R M) (b : Basis ι R M)
   refine (Submodule.Quotient.equiv N N' b'.equivFun this).trans (re₂₃ := inferInstance)
     (re₃₂ := inferInstance) ?_
   classical
-    let this :=
-      Submodule.quotientPi (show _ → Submodule R R from fun i => span R ({a i} : Set R))
-    exact this
+  exact Submodule.quotientPi (show _ → Submodule R R from fun i => span R ({a i} : Set R))
 
 /--
 Quotients by submodules of full rank of free finite `ℤ`-modules are isomorphic
@@ -88,7 +86,7 @@ noncomputable def quotientEquivPiZMod (N : Submodule ℤ M) (b : Basis ι ℤ M)
 
 /--
 A submodule of full rank of a free finite `ℤ`-module has a finite quotient.
-It can't be an instance because of the side condition ` Module.finrank ℤ N = Module.finrank ℤ M`.
+It can't be an instance because of the side condition `Module.finrank ℤ N = Module.finrank ℤ M`.
 -/
 theorem finiteQuotientOfFreeOfRankEq [Module.Free ℤ M] [Module.Finite ℤ M]
     (N : Submodule ℤ M) (h : Module.finrank ℤ N = Module.finrank ℤ M) : Finite (M ⧸ N) := by
@@ -101,6 +99,16 @@ theorem finiteQuotientOfFreeOfRankEq [Module.Free ℤ M] [Module.Finite ℤ M]
 
 @[deprecated (since := "2025-03-15")] alias fintypeQuotientOfFreeOfRankEq :=
   finiteQuotientOfFreeOfRankEq
+
+theorem finiteQuotient_iff [Module.Free ℤ M] [Module.Finite ℤ M] (N : Submodule ℤ M) :
+    Finite (M ⧸ N) ↔ Module.finrank ℤ N = Module.finrank ℤ M := by
+  refine ⟨fun h ↦ le_antisymm (finrank_le N) <|
+    ((LinearMap.lsmul ℤ M (Nat.card (M ⧸ N))).codRestrict N
+      fun x ↦ ?_).finrank_le_finrank_of_injective ?_, fun h ↦ finiteQuotientOfFreeOfRankEq N h⟩
+  · simpa using AddSubgroup.nsmul_index_mem N.toAddSubgroup x
+  · refine (LinearMap.lsmul_injective ?_).codRestrict _
+    exact Int.ofNat_ne_zero.mpr <| Nat.card_ne_zero.mpr
+      ⟨Set.nonempty_iff_univ_nonempty.mpr Set.univ_nonempty, h⟩
 
 variable (F : Type*) [CommRing F] [Algebra F R] [Module F M] [IsScalarTower F R M]
   (b : Basis ι R M) {N : Submodule R M}
