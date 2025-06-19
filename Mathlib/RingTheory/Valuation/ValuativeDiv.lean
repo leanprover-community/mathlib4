@@ -5,6 +5,7 @@ Authors: Adam Topaz
 -/
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.Topology.Basic
+import Mathlib.Data.NNReal.Basic
 
 noncomputable section
 
@@ -223,5 +224,15 @@ lemma isEquiv {Γ₁ Γ₂ : Type*}
     v₁.IsEquiv v₂ := by
   intro x y
   simp_rw [← Valuation.Compatible.dvd_iff_le]
+
+open NNReal in variable (R) in
+structure DiscreteRankOneStruct where
+  emb : ValueMonoid R →*₀ ℝ≥0
+  strictMono : StrictMono emb
+  nontrivial : ∃ γ : ValueMonoid R, emb γ ≠ 0 ∧ emb γ ≠ 1
+
+variable (R) in
+class IsDiscreteRankOne where
+  nonempty : Nonempty (DiscreteRankOneStruct R)
 
 end ValuativeDiv
