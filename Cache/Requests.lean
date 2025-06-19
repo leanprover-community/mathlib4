@@ -11,20 +11,68 @@ namespace Cache.Requests
 open System (FilePath)
 
 /--
+Finds the remote name that points to `leanprover-community/mathlib4` repository.
+Returns the remote name and prints warnings if the setup doesn't follow conventions.
+-/
+def findMathlibRemote (mathlibDepPath : FilePath) : IO String := do
+  let remotesInfo ← IO.Process.output
+    {cmd := "git", args := #["remote", "-v"], cwd := mathlibDepPath}
+
+  unless remotesInfo.exitCode == 0 do
+    throw <| IO.userError s!"\
+      Failed to run Git to list remotes (exit code: {remotesInfo.exitCode}).\n\
+      Ensure Git is installed.\n\
+      Stdout:\n{remotesInfo.stdout.trim}\nStderr:\n{remotesInfo.stderr.trim}\n"
+
+  let remoteLines := remotesInfo.stdout.split (· == '\n')
+  let mut mathlibRemote : Option String := none
+  let mut originPointsToMathlib : Bool := false
+
+  for line in remoteLines do
+    let parts := line.trim.split (· == '\t')
+    if parts.length >= 2 then
+      let remoteName := parts[0]!
+      let remoteUrl := parts[1]!.split (· == ' ')[0]! -- Remove (fetch) or (push) suffix
+
+      -- Check if this remote points to leanprover-community/mathlib4
+      let isMathlibRepo := remoteUrl.contains "leanprover-community/mathlib4" ||
+                          remoteUrl.contains "leanprover-community:mathlib4"
+
+      if isMathlibRepo then
+        if remoteName == "origin" then
+          originPointsToMathlib := true
+        mathlibRemote := some remoteName
+
+  match mathlibRemote with
+  | none =>
+    throw <| IO.userError "Could not find a remote pointing to leanprover-community/mathlib4"
+  | some remoteName =>
+    if remoteName != "upstream" then
+      let mut warning := s!"Some Mathlib ecosystem tools assume that the git remote for `leanprover-community/mathlib4` is named `upstream`. You have named it `{remoteName}` instead. We recommend changing the name to `upstream`."
+      if originPointsToMathlib then
+        warning := warning ++ " Moreover, `origin` should point to your own fork of the mathlib4 repository."
+      IO.println s!"Warning: {warning}"
+    return remoteName
+
+/--
 Attempts to determine the GitHub repository of a version of Mathlib from its Git remote.
 If the current branch is tracking a PR (upstream/pr/NNNN), it will determine the source fork
 of that PR rather than just using the origin remote.
 -/
 def getRemoteRepo (mathlibDepPath : FilePath) : IO String := do
-  -- Check if current branch is tracking upstream/pr/NNNN
+  -- Find the actual remote name for mathlib4
+  let mathlibRemoteName ← findMathlibRemote mathlibDepPath
+
+  -- Check if current branch is tracking {remoteName}/pr/NNNN
   let trackingInfo ← IO.Process.output
     {cmd := "git", args := #["rev-parse", "--symbolic-full-name", "@{upstream}"], cwd := mathlibDepPath}
 
   if trackingInfo.exitCode == 0 then
     let upstream := trackingInfo.stdout.trim
-    -- Check if tracking upstream/pr/NNNN pattern
-    if upstream.startsWith "refs/remotes/upstream/pr/" then
-      let prNumberStart := "refs/remotes/upstream/pr/".length
+    -- Check if tracking {remoteName}/pr/NNNN pattern
+    let prPattern := s!"refs/remotes/{mathlibRemoteName}/pr/"
+    if upstream.startsWith prPattern then
+      let prNumberStart := prPattern.length
       let prNumber := upstream.drop prNumberStart
 
       -- Use GitHub CLI to get the PR's source repository
@@ -60,7 +108,7 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO String := do
         IO.println s!"Warning: GitHub CLI failed (exit code: {prInfo.exitCode}), falling back to origin"
         IO.println s!"Make sure 'gh' is installed and authenticated. Stderr: {prInfo.stderr.trim}"
 
-  -- Alternative approach: check if current commit has upstream/pr/NNNN refs pointing to it
+  -- Alternative approach: check if current commit has {remoteName}/pr/NNNN refs pointing to it
   -- But only do this if we're likely on a PR branch (not on regular branches like master)
   let currentBranch ← IO.Process.output
     {cmd := "git", args := #["branch", "--show-current"], cwd := mathlibDepPath}
@@ -78,15 +126,17 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO String := do
       if currentCommit.exitCode == 0 then
         let commit := currentCommit.stdout.trim
         -- Get all PR refs that contain this commit
+        let prRefPattern := s!"refs/remotes/{mathlibRemoteName}/pr/*"
         let refsInfo ← IO.Process.output
-          {cmd := "git", args := #["for-each-ref", "--contains", commit, "refs/remotes/upstream/pr/*", "--format=%(refname)"], cwd := mathlibDepPath}
+          {cmd := "git", args := #["for-each-ref", "--contains", commit, prRefPattern, "--format=%(refname)"], cwd := mathlibDepPath}
 
         if refsInfo.exitCode == 0 then
           let refs := refsInfo.stdout.split (· == '\n')
           for ref in refs do
             let refName := ref.trim
-            if refName.startsWith "refs/remotes/upstream/pr/" && !refName.isEmpty then
-              let prNumberStart := "refs/remotes/upstream/pr/".length
+            let prRefPrefix := s!"refs/remotes/{mathlibRemoteName}/pr/"
+            if refName.startsWith prRefPrefix && !refName.isEmpty then
+              let prNumberStart := prRefPrefix.length
               let prNumber := refName.drop prNumberStart
 
               -- Use GitHub CLI to get the PR's source repository
