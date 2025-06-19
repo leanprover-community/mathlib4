@@ -105,7 +105,7 @@ end LeftExtension.IsUniversal
 
 end
 
-variable  {F' : D ⥤ H} {L : C ⥤ D} {F : C ⥤ H}
+variable {F' : D ⥤ H} {L : C ⥤ D} {F : C ⥤ H}
 
 lemma isRightKanExtension_iff_op (α : L ⋙ F' ⟶ F) :
     F'.IsRightKanExtension α ↔

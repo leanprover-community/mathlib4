@@ -108,7 +108,7 @@ section
 variable [(Φ.functor ⋙ F).HasPointwiseRightDerivedFunctor W₁]
   [F₂.IsRightDerivedFunctor α₂ W₂]
 
-instance  :
+instance :
     IsIso (Φ.rightDerivedFunctorComparison L₁ L₂ F F₁ α₁ F₂ α₂) := by
   suffices ∀ Y, IsIso ((rightDerivedFunctorComparison Φ L₁ L₂ F F₁ α₁ F₂ α₂).app Y) from
     NatIso.isIso_of_isIso_app _

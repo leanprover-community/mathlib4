@@ -356,7 +356,7 @@ variable {A : C} (x : (X.H n₁).obj (mk₁ f₁₂) ⟶ A)
   (h : (X.H n₁).map (twoδ₂Toδ₁ f₁ f₂ f₁₂ h₁₂) ≫ x = 0)
   (h' : X.δ n₀ n₁ hn₁ f₁₂ f₃ ≫ x = 0)
 
-noncomputable def descE  :
+noncomputable def descE :
     X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ ⟶ A :=
   (X.cokernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₁₂ h₁₂).desc x (by
     dsimp
@@ -410,7 +410,7 @@ variable {A : C} (x : A ⟶ (X.H n₁).obj (mk₁ f₂₃))
   (h : x ≫ (X.H n₁).map (twoδ₁Toδ₀ f₂ f₃ f₂₃ h₂₃) = 0)
   (h' : x ≫ X.δ n₁ n₂ hn₂ f₁ f₂₃ = 0)
 
-noncomputable def liftE  :
+noncomputable def liftE :
     A ⟶ X.E n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ :=
   (X.kernelSequenceE_exact n₀ n₁ n₂ hn₁ hn₂ f₁ f₂ f₃ f₂₃ h₂₃).lift x (by
     dsimp

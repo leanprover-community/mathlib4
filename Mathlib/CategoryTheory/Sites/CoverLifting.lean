@@ -93,7 +93,7 @@ lemma Functor.isCocontinuous_of_iso {G : C ⥤ D}  {G' : C ⥤ D} (e : G ≅ G')
       using hG.cover_lift (K.pullback_stable (e.hom.app U) hS)
 
 /-- The composition of two cocontinuous functors is cocontinuous. -/
-theorem Functor.isCocontinuous_comp' {F : C ⥤ D}  {G : D ⥤ E} {H : C ⥤ E} (e : F ⋙ G ≅ H)
+theorem Functor.isCocontinuous_comp' {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} (e : F ⋙ G ≅ H)
     (J : GrothendieckTopology C) (K : GrothendieckTopology D)
     (L : GrothendieckTopology E) [hF : F.IsCocontinuous J K] [hG : G.IsCocontinuous K L] :
     H.IsCocontinuous J L := by
