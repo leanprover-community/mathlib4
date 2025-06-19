@@ -20,15 +20,6 @@ turns out that this function actually is a measure.
 
 * `VectorMeasure.variation` is the definition of the total variation measure.
 
-Various properties of `variation` are in the file `MeasureTheory/VectorMeasure/Variation/Lemmas`:
-
-* `norm_measure_le_variation`: `‖μ E‖ₑ ≤ variation μ E`.
-* `variation_of_ENNReal`: if `μ` is a `ℝ≥0∞`-valued measure, then `variation μ = μ`.
-* `signedMeasure_totalVariation_eq`: variation defined as a supremum here coincides with variation
-  defined by the Hahn-Jordan decomposition for signed measures.
-* `variation_neg`: `(-μ).variation = μ.variation`.
-* `absolutelyContinuous`: `μ ≪ᵥ μ.variation`.
-
 ## Implementation notes
 
 Variation is defined as an `ℝ≥0∞`-valued `VectorMeasure` rather than as a `Measure`, this is
@@ -37,7 +28,7 @@ somewhat natural since we start with `VectorMeasure`.
 Variation is defined for signed measures in `MeasureTheory.SignedMeasure.totalVariation`. This
 definition uses the Hahn–Jordan decomposition of a signed measure. However this construction doesn't
 generalize to other vector-valued measures, in particular doesn't apply to the case of complex
-measures. The equivalence is proven in `signedMeasure_totalVariation_eq`.
+measures.
 
 The notion of defining a set function as the supremum over all choices of partition of the sum gives
 a measure for any subadditive set function which assigns zero measure to the emptyset. Consequently
@@ -48,19 +39,11 @@ of `s ↦ ‖μ s‖ₑ`.
 
 * [Walter Rudin, Real and Complex Analysis.][Rud87]
 
-## To do
-
-* Total variation is an enorm on the space of vector-valued measures.
-* If `μ` is a complex measure then `variation μ univ < ∞`.
-* Suppose that `μ` is a measure, that `g ∈ L¹(μ)` and `λ(E) = ∫_E g dμ` for each measureable `E`,
-  then `variation λ E = ∫_E |g| dμ` (Rudin Theorem 6.13).
 -/
 
 open MeasureTheory BigOperators NNReal ENNReal Function Filter
 
 namespace MeasureTheory.VectorMeasure
-
-set_option linter.flexible true
 
 /-!
 ## Inner partitions
@@ -86,9 +69,6 @@ lemma isInnerPart_of_empty {P : Finset (Set X)} (hP : IsInnerPart ∅ P) : P = �
   by_contra! hc
   obtain ⟨p, hp⟩ := hc
   exact h' p hp <| Set.subset_eq_empty (h p hp) rfl
-
-lemma isInnerPart_self (s : Set X) (hs : MeasurableSet s) (hs' : s ≠ ∅) : IsInnerPart s {s} := by
-  simpa [IsInnerPart] using ⟨hs, hs'⟩
 
 lemma isInnerPart_monotone  {s₁ s₂ : Set X} (h : s₁ ⊆ s₂) (P : Finset (Set X))
     (hP :  IsInnerPart s₁ P) : IsInnerPart s₂ P := by
@@ -125,8 +105,7 @@ lemma isInnerPart_of_disjoint {s t : Set X} (hst : Disjoint s t) {P Q : Finset (
   by_contra! hc
   obtain ⟨r, hr⟩ := Finset.Nonempty.exists_mem <| Finset.nonempty_iff_ne_empty.mpr hc
   have := hst (hP.1 r <| hRP hr) (hQ.1 r <| hRQ hr)
-  have := hP.2.2.2 r (hRP hr)
-  simp_all
+  exact hP.2.2.2 r (hRP hr) <| Set.subset_eq_empty this rfl
 
 open Classical in
 /-- The restriction of a partition `P` to the set `t`. -/
@@ -168,24 +147,18 @@ open Classical in
 /-- If `s` is measurable then `var_aux s f` is the supremum over partitions `P` of `s` of the
 quantity `∑ p ∈ P, f p`. If `s` is not measurable then it is set to `0`. -/
 noncomputable def var_aux (s : Set X) :=
-    if (MeasurableSet s) then ⨆ (P : Finset (Set X)) (_ : IsInnerPart s P), ∑ p ∈ P, f p else 0
-
-lemma var_aux_zero (s : Set X) : var_aux (fun _ ↦ 0) s = 0 := by
-  simp [var_aux]
+  if (MeasurableSet s) then ⨆ (P : Finset (Set X)) (_ : IsInnerPart s P), ∑ p ∈ P, f p else 0
 
 /-- `var_aux` of the empty set is equal to zero. -/
 lemma var_aux_empty' : var_aux f ∅ = 0 := by
-  simp only [var_aux, MeasurableSet.empty, reduceIte, ENNReal.iSup_eq_zero]
+  suffices ∀ s, IsInnerPart ∅ s → ∑ p ∈ s, f p = 0 by
+    simpa [var_aux]
   intro _ hP
   simp_all [isInnerPart_of_empty hP]
 
-/-- `var_aux` of a non-measurable set is equal to zero. -/
-lemma var_aux_of_not_measurable (s : Set X) (hs : ¬MeasurableSet s) : var_aux f s = 0 := by
-  simp [var_aux, hs]
-
 /-- `var_aux` is monotone in terms of the set. -/
-lemma var_aux_monotone {s₁ s₂ : Set X} (h : s₁ ⊆ s₂)
-    (hs₂ : MeasurableSet s₂) : var_aux f s₁ ≤ var_aux f s₂ := by
+lemma var_aux_monotone {s₁ s₂ : Set X} (hs₂ : MeasurableSet s₂) (h : s₁ ⊆ s₂) :
+    var_aux f s₁ ≤ var_aux f s₂ := by
   by_cases hs₁ : MeasurableSet s₁
   · simp only [var_aux, hs₁, reduceIte, hs₂]
     exact iSup_le_iSup_of_subset (isInnerPart_monotone h)
@@ -290,7 +263,7 @@ lemma le_var_aux_iUnion' {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
       simpa using le_var_aux f (MeasurableSet.iUnion hs) hQ
 
 open Classical in
-lemma le_var_aux_iUnion (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
+lemma le_var_aux_iUnion {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
     (hs' : Pairwise (Disjoint on s)) :
     ∑' i, var_aux f (s i) ≤ var_aux f (⋃ i, s i) := by
   refine ENNReal.tsum_le_of_sum_range_le fun n ↦ ?_
@@ -301,7 +274,7 @@ lemma le_var_aux_iUnion (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
   have hε : 0 < ε := by positivity
   have hs'' i : var_aux f (s i) ≠ ⊤ := by
     refine lt_top_iff_ne_top.mp <| lt_of_le_of_lt ?_ hsnetop
-    exact var_aux_monotone f (Set.subset_iUnion_of_subset i fun ⦃a⦄ a ↦ a) (MeasurableSet.iUnion hs)
+    exact var_aux_monotone f (MeasurableSet.iUnion hs) (Set.subset_iUnion_of_subset i fun ⦃a⦄ a ↦ a)
   -- For each set `s i` we choose a partition `P i` such that, for each `i`,
   -- `var_aux f (s i) ≤ ∑ p ∈ (P i), f p + ε`.
   choose P hP using fun i ↦ var_aux_le f (hs i) (hε) (hs'' i)
@@ -324,7 +297,7 @@ lemma sum_le_tsum' {f : ℕ → ℝ≥0∞} {a : ℝ≥0∞}
   exact lt_of_lt_of_le hn (ENNReal.sum_le_tsum <| Finset.range n)
 
 open Classical in
-lemma var_aux_iUnion_le (s : ℕ → Set X) (hs : ∀ i, MeasurableSet (s i))
+lemma var_aux_iUnion_le {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
     (hs' : Pairwise (Disjoint on s)) (hf : IsSubadditive f) (hf' : f ∅ = 0) :
     var_aux f (⋃ i, s i) ≤ ∑' i, var_aux f (s i) := by
   refine sum_le_tsum' fun b hb ↦ ?_
@@ -350,8 +323,8 @@ lemma var_aux_iUnion (hf : IsSubadditive f) (hf' : f ∅ = 0) (s : ℕ → Set X
     (hs : ∀ i, MeasurableSet (s i)) (hs' : Pairwise (Disjoint on s)) :
     HasSum (fun i ↦ var_aux f (s i)) (var_aux f (⋃ i, s i)) := by
   refine ENNReal.summable.hasSum_iff.mpr (eq_of_le_of_le ?_ ?_)
-  · exact le_var_aux_iUnion f s hs hs'
-  · exact var_aux_iUnion_le f s hs hs' hf hf'
+  · exact le_var_aux_iUnion f hs hs'
+  · exact var_aux_iUnion_le f hs hs' hf hf'
 
 end var_aux
 
@@ -364,22 +337,7 @@ section variation
 variable {X : Type*} [MeasurableSpace X]
 variable {V : Type*} [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
 
-/-! At this stage it is possible to define, as follows, the variation of a subadditive function as
-an `ℝ≥0∞`-valued `VectorMeasure`:
-```
-noncomputable def variation' {f : Set X → ℝ≥0∞} (hf : IsSubadditive f) (hf' : f ∅ = 0) :
-    VectorMeasure X ℝ≥0∞ where
-  measureOf'          := var_aux f
-  empty'              := var_aux_empty' f
-  not_measurable' _ h := if_neg h
-  m_iUnion'           := var_aux_iUnion f hf hf'
-```
-This could then be used to define variation by applying it to the funtion `fun s ↦ ‖μ s‖ₑ`. However
-there are no apparent applications of the intermediate step.
--/
-
-lemma isSubadditive_enorm_vectorMeasure (μ : VectorMeasure X V) :
-    IsSubadditive (‖μ ·‖ₑ) := by
+lemma isSubadditive_enorm_vectorMeasure (μ : VectorMeasure X V) : IsSubadditive (‖μ ·‖ₑ) := by
   intro _ hs hs'
   simpa [VectorMeasure.of_disjoint_iUnion hs hs'] using enorm_tsum_le_tsum_enorm
 
@@ -389,15 +347,6 @@ noncomputable def variation (μ : VectorMeasure X V) : VectorMeasure X ℝ≥0�
   empty'              := var_aux_empty' (‖μ ·‖ₑ)
   not_measurable' _ h := if_neg h
   m_iUnion'           := var_aux_iUnion (‖μ ·‖ₑ) (isSubadditive_enorm_vectorMeasure μ) (by simp)
-
-/-- The total variation measure part in the polar decomposition of a complex measure. -/
-noncomputable def var (μ : ComplexMeasure X) := μ.variation.ennrealToMeasure
-
-/-- The angular part (density function) in the polar decomposition of a complex measure. -/
-noncomputable def ang (μ : ComplexMeasure X) := μ.rnDeriv μ.var
-
-/-! Like this we can consider integration of `(f : X → ℂ)` with respect to `(μ : ComplexMeasure X)`
-as the value `∫ x, f x * μ.ang x ∂(μ.var)`. -/
 
 end variation
 
