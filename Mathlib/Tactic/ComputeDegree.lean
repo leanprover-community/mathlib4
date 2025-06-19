@@ -122,15 +122,21 @@ theorem coeff_pow_of_natDegree_le_of_eq_ite' {m n o : ℕ} {a : R} {p : R[X]}
     · exact natDegree_pow_le_of_le m ‹_›
     · exact Iff.mp ne_comm h
 
-theorem natDegree_smul_le_of_le {n : ℕ} {a : R} {f : R[X]} (hf : natDegree f ≤ n) :
+section SMul
+
+variable {S : Type*} [SMulZeroClass S R] {n : ℕ} {a : S} {f : R[X]}
+
+theorem natDegree_smul_le_of_le (hf : natDegree f ≤ n) :
     natDegree (a • f) ≤ n :=
   (natDegree_smul_le a f).trans hf
 
-theorem degree_smul_le_of_le {n : ℕ} {a : R} {f : R[X]} (hf : degree f ≤ n) :
+theorem degree_smul_le_of_le (hf : degree f ≤ n) :
     degree (a • f) ≤ n :=
   (degree_smul_le a f).trans hf
 
-theorem coeff_smul {n : ℕ} {a : R} {f : R[X]} : (a • f).coeff n = a * f.coeff n := rfl
+theorem coeff_smul : (a • f).coeff n = a • f.coeff n := rfl
+
+end SMul
 
 section congr_lemmas
 
@@ -504,3 +510,8 @@ macro "monicity!" : tactic =>
 end Tactic
 
 end Mathlib.Tactic.ComputeDegree
+
+/-!
+ We register `compute_degree` with the `hint` tactic.
+ -/
+register_hint compute_degree
