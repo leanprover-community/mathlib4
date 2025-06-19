@@ -242,6 +242,9 @@ lemma pathELength_eq_lintegral_mfderivWithin_Icc :
   rw [mfderivWithin_of_mem_nhds]
   exact Icc_mem_nhds ht.1 ht.2
 
+@[simp] lemma pathELength_self : pathELength I γ x x = 0 := by
+  simp [pathELength]
+
 lemma pathELength_eq_add {γ : ℝ → M} {x y z : ℝ} (h : x ≤ y) (h' : y ≤ z) :
     pathELength I γ x z = pathELength I γ x y + pathELength I γ y z := by
   have : Icc x z = Icc x y ∪ Ioc y z := (Icc_union_Ioc_eq_Icc h h').symm
@@ -271,15 +274,35 @@ open MeasureTheory
 lemma pathELength_comp (γ : ℝ → M) {f : ℝ → ℝ} {x y : ℝ} (h : x ≤ y) (hf : MonotoneOn f (Icc x y))
     (h'f : DifferentiableOn ℝ f (Icc x y)) (hγ : MDifferentiableOn 𝓘(ℝ) I γ (Icc (f x) (f y))) :
     pathELength I γ (f x) (f y) = pathELength I (γ ∘ f) x y := by
-  simp only [pathELength]
-  have : Icc (f x) (f y) = f '' (Icc x y) := by
-
-  rw [this]
+  rcases h.eq_or_lt with rfl | h
+  · simp
+  have f_im : f '' (Icc x y) = Icc (f x) (f y) :=
+    ContinuousOn.image_Icc_of_monotoneOn h.le h'f.continuousOn hf
+  simp only [pathELength_eq_lintegral_mfderivWithin_Icc, ← f_im]
   have B (t) (ht : t ∈ Icc x y) : HasDerivWithinAt f (derivWithin f (Icc x y) t) (Icc x y) t :=
     (h'f t ht).hasDerivWithinAt
   rw [lintegral_image_eq_lintegral_deriv_mul_of_monotoneOn measurableSet_Icc B hf]
-  rw [← restrict_Ioo_eq_restrict_Icc]
-  apply setLIntegral_congr_fun measurableSet_Ioo (fun t ht ↦ ?_)
+  apply setLIntegral_congr_fun measurableSet_Icc (fun t ht ↦ ?_)
+  have : (mfderivWithin 𝓘(ℝ, ℝ) I (γ ∘ f) (Icc x y) t)
+      = (mfderivWithin 𝓘(ℝ, ℝ) I γ (Icc (f x) (f y)) (f t))
+          ∘L mfderivWithin 𝓘(ℝ) 𝓘(ℝ) f (Icc x y) t := by
+    rw [← f_im] at hγ ⊢
+    apply mfderivWithin_comp
+    · apply hγ _ (mem_image_of_mem _ ht)
+    · rw [mdifferentiableWithinAt_iff_differentiableWithinAt]
+      exact h'f _ ht
+    · exact subset_preimage_image _ _
+    · rw [uniqueMDiffWithinAt_iff_uniqueDiffWithinAt]
+      exact uniqueDiffOn_Icc h _ ht
+  rw [this]
+
+
+
+
+
+#exit
+
+
   rw [derivWithin_of_mem_nhds (Icc_mem_nhds ht.1 ht.2)]
   have : (mfderiv 𝓘(ℝ) I (γ ∘ f) t) =
       (mfderivWithin 𝓘(ℝ) I γ (Icc (f x) (f y)) (f t)) ∘L (mfderiv 𝓘(ℝ) 𝓘(ℝ) f t) := by
