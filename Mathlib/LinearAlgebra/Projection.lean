@@ -436,12 +436,10 @@ protected theorem range {T : M →ₗ[S] M} {U : Submodule S M}
 protected theorem top (S M : Type*) [Semiring S] [AddCommMonoid M] [Module S M] :
     IsProj (⊤ : Submodule S M) (id (R := S)) := ⟨fun _ ↦ trivial, fun _ ↦ congrFun rfl⟩
 
-theorem subtype_comp_codRestrict {S M : Type*} [Semiring S] [AddCommMonoid M]
-    [Module S M] {U : Submodule S M} {f : M →ₗ[S] M} (hf : IsProj U f) :
+theorem subtype_comp_codRestrict {U : Submodule S M} {f : M →ₗ[S] M} (hf : IsProj U f) :
     (Submodule.subtype U).comp hf.codRestrict = f := rfl
 
-theorem submodule_eq_top_iff {S M : Type*} [Semiring S] [AddCommMonoid M] [Module S M]
-    {f : M →ₗ[S] M} {U : Submodule S M} (hf : IsProj U f) :
+theorem submodule_eq_top_iff {f : M →ₗ[S] M} {U : Submodule S M} (hf : IsProj U f) :
     U = (⊤ : Submodule S M) ↔ f = LinearMap.id := by
   constructor <;> rintro rfl
   · ext
