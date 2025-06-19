@@ -37,7 +37,7 @@ lemma trans (h₁₂ : e₁.Subset e₂) (h₂₃ : e₂.Subset e₃) : e₁.Sub
 
 section
 
-variable  (h : e₁.Subset e₂)
+variable (h : e₁.Subset e₂)
 include h
 lemma exists_index (i₁ : ι₁) : ∃ (i₂ : ι₂), e₂.f i₂ = e₁.f i₁ := h.subset ⟨i₁, rfl⟩
 

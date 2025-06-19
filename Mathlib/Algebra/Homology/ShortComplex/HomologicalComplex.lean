@@ -598,7 +598,7 @@ lemma isZero_homology_of_isZero (i : ι) (hi : IsZero (K.X i)) [K.HasHomology i]
 
 section
 
-variable (hi : c.prev j = i) (h : K.d i j = 0) [K.HasHomology j]
+variable (K) (hi : c.prev j = i) (h : K.d i j = 0) [K.HasHomology j]
 include hi h
 
 lemma isIso_pOpcycles : IsIso (K.pOpcycles j) := by
@@ -643,6 +643,7 @@ lemma isoHomologyπ_inv_hom_id :
 
 end
 
+variable (K) in
 lemma isIso_descOpcycles (i j : ι) (hi : c.prev j = i) (h : K.d i j = 0) [K.HasHomology j] :
     IsIso (K.descOpcycles (𝟙 (K.X j)) i hi (by rw [h, zero_comp])) := by
   have := K.isIso_pOpcycles i j hi h

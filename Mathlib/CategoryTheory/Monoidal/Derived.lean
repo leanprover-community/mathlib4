@@ -273,10 +273,10 @@ attribute [local simp] tensorObj_eq whiskerLeft_eq whiskerRight_eq associator_eq
   leftUnitor_eq rightUnitor_eq leftUnitor_hom_app rightUnitor_hom_app
 
 noncomputable instance : (toDerivedMonoidal L W).LaxMonoidal where
-  ε' := 𝟙 _
-  μ' X₁ X₂ := ((counit L W).app X₁).app X₂
-  μ'_natural_right X₁ f₂ := ((counit L W).app X₁).naturality f₂
-  μ'_natural_left f₁ X₂ := congr_app ((counit L W).naturality f₁) X₂
+  ε := 𝟙 _
+  μ X₁ X₂ := ((counit L W).app X₁).app X₂
+  μ_natural_right X₁ f₂ := ((counit L W).app X₁).naturality f₂
+  μ_natural_left f₁ X₂ := congr_app ((counit L W).naturality f₁) X₂
 
 instance : IsIso (Functor.LaxMonoidal.ε (toDerivedMonoidal L W)) :=
   inferInstanceAs (IsIso (𝟙 _))

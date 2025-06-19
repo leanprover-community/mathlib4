@@ -536,7 +536,7 @@ variable (C : Type*) [Category C] [Preadditive C] [HasZeroObject C]
   {ι₁ ι₂ ι : Type*} [DecidableEq ι₁] [DecidableEq ι] (c₁ : ComplexShape ι₁) (c₂ : ComplexShape ι₂)
   (K : HomologicalComplex C c₂) (i₁ : ι₁) (c : ComplexShape ι)
   [TotalComplexShape c₁ c₂ c]
-  [((singleColumn C c₁ c₂ i₁).obj K).HasTotal  c]
+  [((singleColumn C c₁ c₂ i₁).obj K).HasTotal c]
 
 @[simp]
 lemma singleColumn_d₁ (x : ι₁) (y : ι₂) (n : ι) :
