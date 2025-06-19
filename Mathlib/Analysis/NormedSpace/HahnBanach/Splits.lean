@@ -103,7 +103,7 @@ lemma _root_.ContinuousLinearEquiv.splits (f : E ≃L[𝕜] F) : f.toContinuousL
 /-- If `f` and `g` split, then so does `f × g`. -/
 lemma prodMap (hf : f.Splits) (hg : g.Splits) : (f.prodMap g).Splits := by
   refine ⟨hf.injective.prodMap hg.injective, ?_, ?_⟩
-  · rw [coe_prodMap', range_prod_map]
+  · rw [coe_prodMap', range_prodMap]
     exact (hf.isClosed_range).prod hg.isClosed_range
   · rw [LinearMap.range_prodMap]
     exact hf.closedComplemented.prod hg.closedComplemented

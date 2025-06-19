@@ -6,6 +6,7 @@ Authors: Michael Rothgang
 import Mathlib.Geometry.Manifold.ContMDiff.Defs
 import Mathlib.Geometry.Manifold.MFDeriv.Defs
 import Mathlib.Geometry.Manifold.MSplits
+import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 
 /-! # Smooth immersions and embeddings
 
@@ -169,11 +170,13 @@ theorem contMDiffAt (h : IsImmersionAt F I I' n f x) : ContMDiffAt I I' n f x :=
 -- These are required to argue that `Splits` composes.
 variable [CompleteSpace E'] [CompleteSpace E] [CompleteSpace F]
 
+-- TODO: does a C⁰ immersion make any sense? If not, assuming `1 ≤ k` everywhere should be fine.
+
 variable [IsManifold I 1 M] [IsManifold I' 1 M']
 
-/-- If `f` is a `C^k` immersion at `x`, then `mfderiv I I' f x` splits. -/
-theorem msplitsAt {x : M} (h : IsImmersionAt F I I' n f x) : MSplitsAt I I' f x := by
-  -- The local representative of f in the nice charts at x, as a continuous linear map.
+/-- If `f` is a `C^k` immersion at `x` (and `k ≤ 1`), then `mfderiv I I' f x` splits. -/
+theorem msplitsAt {x : M} (h : IsImmersionAt F I I' n f x) (hn : 1 ≤ n) : MSplitsAt I I' f x := by
+  -- The local representative of `f` in the nice charts at `x`, as a continuous linear map.
   let rhs : E →L[𝕜] E' := h.equiv.toContinuousLinearMap.comp ((ContinuousLinearMap.id _ _).prod 0)
   have : rhs.Splits := by
     apply h.equiv.splits.comp
@@ -221,24 +224,28 @@ theorem msplitsAt {x : M} (h : IsImmersionAt F I I' n f x) : MSplitsAt I I' f x 
   apply this.congr
   sorry -- extended chart and its inverse cancel
 
-/-- `f` is an immersion at `x` iff `mfderiv I I' f x` splits. -/
-theorem _root_.isImmersionAt_iff_msplitsAt {x : M} :
+/-- `f` is an immersion at an interior point `x` iff `mfderiv I I' f x` splits. -/
+theorem _root_.isImmersionAt_iff_msplitsAt {x : M} (hx : I.IsInteriorPoint x) (hn : 1 ≤ n) :
     IsImmersionAt F I I' n f x ↔ MSplitsAt I I' f x := by
-  refine ⟨fun h ↦ h.msplitsAt, fun h ↦ ?_⟩
+  refine ⟨fun h ↦ h.msplitsAt hn, fun h ↦ ?_⟩
   -- This direction uses the inverse function theorem: this is the hard part!
+  -- Note that we require `x` to be an interior point.
   sorry
 
-/-- If `f` is an immersion at `x` and `g` is an immersion at `g x`,
+/-- If `f` is an immersion at an interior point `x` and `g` is an immersion at `g x`,
 then `g ∘ f` is an immersion at `x`. -/
 lemma comp [CompleteSpace F'] [IsManifold J 1 N] {g : M' → N}
-    (hg : IsImmersionAt F' I' J n g (f x)) (hf : IsImmersionAt F I I' n f x) :
+    (hg : IsImmersionAt F' I' J n g (f x)) (hf : IsImmersionAt F I I' n f x) (hn : 1 ≤ n)
+    (hx : I.IsInteriorPoint x) (hfx : I'.IsInteriorPoint (f x)) :
     IsImmersionAt (F × F') I J n (g ∘ f) x := by
-  rw [isImmersionAt_iff_msplitsAt] at hf hg ⊢
+  rw [isImmersionAt_iff_msplitsAt hx hn] at hf ⊢
+  rw [isImmersionAt_iff_msplitsAt hfx hn] at hg
   exact hg.comp hf
 
 /-- If `f` is a `C^k` immersion at `x`, then `mfderiv x` is injective. -/
-theorem mfderiv_injective {x : M} (h : IsImmersionAt F I I' n f x) : Injective (mfderiv I I' f x) :=
-  h.msplitsAt.mfderiv_injective
+theorem mfderiv_injective {x : M} (h : IsImmersionAt F I I' n f x) (hn : 1 ≤ n) :
+    Injective (mfderiv I I' f x) :=
+  (h.msplitsAt hn).mfderiv_injective
 --   /- Outline of proof:
 --   (1) `mfderiv` is injective iff `fderiv (writtenInExtChart) is injective`
 --   I have proven this for Sard's theorem; this depends on some sorries not in mathlib yet
@@ -248,11 +255,14 @@ theorem mfderiv_injective {x : M} (h : IsImmersionAt F I I' n f x) : Injective (
 --   (3) (·, 0) has injective `fderiv` --- since it's linear, thus its own derivative. -/
 --   sorry
 
-/- If `M` is finite-dimensional, and `mfderiv I I' f x` is injective, then `f` is immersed at `x`.
+/- If `M` is finite-dimensional, `x` an interior point and `mfderiv I I' f x` is injective,
+then `f` is immersed at `x`.
 Some sources call this condition `f is infinitesimally injective at x`. -/
-lemma of_finiteDimensional_of_mfderiv_injective [FiniteDimensional 𝕜 E] {x : M}
-    (hf' : Injective (mfderiv I I' f x)) : IsImmersionAt F I I' n f x := by
-  rw [isImmersionAt_iff_msplitsAt]
+-- TODO: do I need to assume n is at least 1? in practice, that is probably fine
+lemma of_finiteDimensional_of_mfderiv_injective [FiniteDimensional 𝕜 E]
+    {x : M} (hx : I.IsInteriorPoint x) (hf' : Injective (mfderiv I I' f x)) (hn : 1 ≤ n) :
+    IsImmersionAt F I I' n f x := by
+  rw [isImmersionAt_iff_msplitsAt hx hn]
   convert ContinuousLinearMap.Splits.of_injective_of_finiteDimensional_of_completeSpace hf'
   show FiniteDimensional 𝕜 E; assumption
 
@@ -311,21 +321,25 @@ variable [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F] [CompleteSpace F
 variable [IsManifold I 1 M] [IsManifold I' 1 M']
 
 /-- If `f` is a `C^k` immersion, each differential `mfderiv x` is injective. -/
-theorem mfderiv_injective (h : IsImmersion F I I' n f) (x : M) : Injective (mfderiv I I' f x) :=
-  (h x).mfderiv_injective
+theorem mfderiv_injective (h : IsImmersion F I I' n f) (x : M) (hn : 1 ≤ n) : Injective (mfderiv I I' f x) :=
+  (h x).mfderiv_injective hn
 
-/- If `M` is finite-dimensional and each `mfderiv I I' f x` is injective,
+/- If `M` is finite-dimensional, `M` is boundaryless and each `mfderiv I I' f x` is injective,
 then `f: M → M'` is a `C^k` immersion. -/
-theorem of_mfderiv_injective [FiniteDimensional 𝕜 E]
-    (hf : ∀ x, Injective (mfderiv I I' f x)) : IsImmersion F I I' n f :=
-  fun x ↦ IsImmersionAt.of_finiteDimensional_of_mfderiv_injective (hf x)
+theorem of_mfderiv_injective [FiniteDimensional 𝕜 E] [BoundarylessManifold I M]
+    (hf : ∀ x, Injective (mfderiv I I' f x)) (hn : 1 ≤ n) : IsImmersion F I I' n f := by
+  refine fun x ↦ IsImmersionAt.of_finiteDimensional_of_mfderiv_injective ?_ (hf x) hn
+  exact BoundarylessManifold.isInteriorPoint' x
 
 variable [IsManifold J n N]  in
 /-- The composition of two immersions is an immersion. -/
-lemma comp {g : M' → N} (hg : IsImmersion F' I' J n g) (hf : IsImmersion F I I' n f) :
+lemma comp [BoundarylessManifold I M] [BoundarylessManifold I' M']
+    {g : M' → N} (hg : IsImmersion F' I' J n g) (hf : IsImmersion F I I' n f) (hn : 1 ≤ n) :
     IsImmersion (F × F') I J n (g ∘ f) := by
-  have : IsManifold J 1 N := sorry -- copy from current mathlib, somewhere
-  exact fun x ↦ (hg (f x)).comp (hf x)
+  have : IsManifold J 1 N := IsManifold.of_le hn
+  refine fun x ↦ (hg (f x)).comp (hf x) hn ?_ ?_
+  · exact BoundarylessManifold.isInteriorPoint' x
+  · exact BoundarylessManifold.isInteriorPoint' (f x)
 
 end IsImmersion
 
@@ -349,19 +363,20 @@ omit [IsManifold I n M] [IsManifold I' n M'] in
 theorem isEmbedding (h : IsSmoothEmbedding F I I' n f) : IsEmbedding f := h.2
 
 variable [IsManifold I 1 M] [IsManifold I' 1 M'] in
-lemma of_mfderiv_injective_of_compactSpace_of_T2Space
+lemma of_mfderiv_injective_of_compactSpace_of_T2Space [BoundarylessManifold I M]
     [FiniteDimensional 𝕜 E] [CompleteSpace E'] [CompleteSpace F] [CompactSpace M] [T2Space M']
-    (hf : ∀ x, Injective (mfderiv I I' f x)) (hf' : Injective f) :
+    (hf : ∀ x, Injective (mfderiv I I' f x)) (hf' : Injective f) (hn : 1 ≤ n) :
     IsSmoothEmbedding F I I' n f := by
   have := FiniteDimensional.complete (𝕜 := 𝕜) E
-  have : IsImmersion F I I' n f := IsImmersion.of_mfderiv_injective hf
+  have : IsImmersion F I I' n f := IsImmersion.of_mfderiv_injective hf hn
   exact ⟨this, (this.contMDiff.continuous.isClosedEmbedding hf').isEmbedding⟩
 
 variable [IsManifold I 1 M] [IsManifold I' 1 M'] [IsManifold J n N] in
 /-- The composition of two smooth embeddings is a smooth embedding. -/
 lemma comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F] [CompleteSpace F']
-    {g : M' → N} (hg : IsSmoothEmbedding F' I' J n g) (hf : IsSmoothEmbedding F I I' n f) :
+    [BoundarylessManifold I M] [BoundarylessManifold I' M'] {g : M' → N}
+    (hg : IsSmoothEmbedding F' I' J n g) (hf : IsSmoothEmbedding F I I' n f) (hn : 1 ≤ n) :
     IsSmoothEmbedding (F × F') I J n (g ∘ f) :=
-  ⟨hg.1.comp hf.1, hg.2.comp hf.2⟩
+  ⟨hg.1.comp hf.1 hn, hg.2.comp hf.2⟩
 
 end IsSmoothEmbedding
