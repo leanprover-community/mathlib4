@@ -126,7 +126,6 @@
   "Mathlib.Tactic.MinImports",
   "Mathlib.Tactic.MkIffOfInductiveProp",
   "Mathlib.Tactic.ModCases",
-  "Mathlib.Tactic.ModuleBlacklist",
   "Mathlib.Tactic.Monotonicity",
   "Mathlib.Tactic.Monotonicity.Attr",
   "Mathlib.Tactic.NoncommRing",
