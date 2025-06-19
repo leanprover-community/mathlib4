@@ -337,7 +337,7 @@ theorem degree_add_le {f g : MvPolynomial σ R} :
     simp only [notMem_support_iff] at hf
     simpa only [mem_support_iff, coeff_add, hf, zero_add] using hb
 
-lemma degree_sum_le {α : Type*} {s : Finset α} {f : α → MvPolynomial σ R} :
+theorem degree_sum_le {α : Type*} {s : Finset α} {f : α → MvPolynomial σ R} :
     (m.toSyn <| m.degree <| ∑ x ∈ s, f x) ≤ s.sup fun x => (m.toSyn <| m.degree <| f x) := by
   classical
   induction' s using Finset.induction_on with a A haA h
