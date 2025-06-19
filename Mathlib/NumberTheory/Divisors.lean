@@ -669,9 +669,9 @@ theorem neg_mem_divisors : -x ∈ z.divisors ↔ x ∈ z.divisors := by
 theorem abs_le_abs_of_mem_divisors (h : x ∈ z.divisors) : |x| ≤ |z| := by
   simp at h
   wlog hx : 0 ≤ x generalizing x
-  · simpa using this (by simpa) (neg_nonneg.mpr (le_of_not_le hx))
+  · simpa using this (by simpa) (neg_nonneg.mpr (le_of_not_ge hx))
   wlog hz : 0 ≤ z generalizing z
-  · simpa using this (by simpa) (neg_nonneg.mpr (le_of_not_le hz))
+  · simpa using this (by simpa) (neg_nonneg.mpr (le_of_not_ge hz))
   rw [abs_eq_self.mpr hx, abs_eq_self.mpr hz]
   exact le_of_dvd (lt_of_le_of_ne hz (Ne.symm h.right)) h.left
 
