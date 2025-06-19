@@ -262,3 +262,12 @@ open Topology ValuativeDiv in
 are determined by the relation `· ∣ᵥ ·`. -/
 class ValuativeTopology (R : Type*) [CommRing R] [ValuativeDiv R] [TopologicalSpace R] where
   mem_nhds_iff : ∀ s : Set R, s ∈ 𝓝 (0 : R) ↔ ∃ γ : ValueMonoid R, { x | valuation _ x < γ } ⊆ s
+
+class ValuativeExtension
+    (A B : Type*)
+    [CommRing A] [CommRing B]
+    [ValuativeDiv A] [ValuativeDiv B]
+    [Algebra A B] where
+  dvd_iff_dvd (a b : A) : a ∣ᵥ b ↔ algebraMap A B a ∣ᵥ algebraMap A B b
+
+#check GroupWithZero
