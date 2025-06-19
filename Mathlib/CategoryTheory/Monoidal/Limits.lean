@@ -34,23 +34,23 @@ open Functor.LaxMonoidal
 
 instance : (lim (J := J) (C := C)).LaxMonoidal :=
   Functor.LaxMonoidal.ofTensorHom
-    (ε' :=
+    (ε :=
       limit.lift _
         { pt := _
           π := { app := fun _ => 𝟙 _ } })
-    (μ' := fun F G ↦
+    (μ := fun F G ↦
       limit.lift (F ⊗ G)
         { pt := limit F ⊗ limit G
           π :=
-            { app := fun j => limit.π F j ⊗ limit.π G j
+            { app := fun j => limit.π F j ⊗ₘ limit.π G j
               naturality := fun j j' f => by
                 dsimp
                 simp only [Category.id_comp, ← tensor_comp, limit.w] } })
-    (μ'_natural := fun f g ↦ limit.hom_ext (fun j ↦ by
+    (μ_natural := fun f g ↦ limit.hom_ext (fun j ↦ by
       dsimp
       simp only [limit.lift_π, Cones.postcompose_obj_π, Monoidal.tensorHom_app, limit.lift_map,
         NatTrans.comp_app, Category.assoc, ← tensor_comp, limMap_π]))
-    (associativity' := fun F G H ↦ limit.hom_ext (fun j ↦ by
+    (associativity := fun F G H ↦ limit.hom_ext (fun j ↦ by
       dsimp
       simp only [tensorHom_id, limit.lift_map, Category.assoc, limit.lift_π,
         id_tensorHom]
@@ -68,7 +68,7 @@ instance : (lim (J := J) (C := C)).LaxMonoidal :=
         ← associator_naturality_middle_assoc,
         ← associator_naturality_right, ← comp_whiskerRight_assoc,
         ← tensorHom_def, ← tensorHom_def_assoc]))
-    (left_unitality' := fun F ↦ limit.hom_ext (fun j ↦ by
+    (left_unitality := fun F ↦ limit.hom_ext (fun j ↦ by
       dsimp
       simp only [tensorHom_id, limit.lift_map, Category.assoc, limit.lift_π]
       dsimp
@@ -76,7 +76,7 @@ instance : (lim (J := J) (C := C)).LaxMonoidal :=
         Iso.inv_hom_id, Category.comp_id, ← comp_whiskerRight_assoc]
       erw [limit.lift_π]
       rw [id_whiskerRight, Category.id_comp]))
-    (right_unitality' := fun F ↦ limit.hom_ext (fun j ↦ by
+    (right_unitality := fun F ↦ limit.hom_ext (fun j ↦ by
       dsimp
       simp only [id_tensorHom, limit.lift_map, Category.assoc, limit.lift_π]
       dsimp
@@ -91,7 +91,7 @@ lemma lim_ε_π (j : J) : ε (lim (J := J) (C := C)) ≫ limit.π _ j = 𝟙 _ :
   limit.lift_π _ _
 
 @[reassoc (attr := simp)]
-lemma lim_μ_π (F G : J ⥤ C) (j : J) : μ lim F G ≫ limit.π _ j = limit.π F j ⊗ limit.π G j :=
+lemma lim_μ_π (F G : J ⥤ C) (j : J) : μ lim F G ≫ limit.π _ j = limit.π F j ⊗ₘ limit.π G j :=
   limit.lift_π _ _
 
 end
