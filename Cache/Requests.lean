@@ -35,8 +35,7 @@ def findMathlibRemote (mathlibDepPath : FilePath) : IO String := do
       let remoteUrl := parts[1]!.split (· == ' ')[0]! -- Remove (fetch) or (push) suffix
 
       -- Check if this remote points to leanprover-community/mathlib4
-      let isMathlibRepo := remoteUrl.contains "leanprover-community/mathlib4" ||
-                          remoteUrl.contains "leanprover-community:mathlib4"
+      let isMathlibRepo := remoteUrl.contains "leanprover-community/mathlib4"
 
       if isMathlibRepo then
         if remoteName == "origin" then
