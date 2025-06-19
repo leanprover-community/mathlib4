@@ -139,8 +139,7 @@ theorem countable_setOf_isolated_right_within [SecondCountableTopology α] {s : 
       · simpa [-sep_and, t, h'x]
     apply Countable.mono this
     simp [H, (subsingleton_isTop α).countable]
-  have : ∀ x ∈ t, ∃ y > x, s ∩ Ioo x y = ∅ := by
-    intro x hx
+  have (x) (hx : x ∈ t) : ∃ y > x, s ∩ Ioo x y = ∅ := by
     simp only [← empty_mem_iff_bot, mem_nhdsWithin_iff_exists_mem_nhds_inter,
       subset_empty_iff, IsTop, not_forall, not_le, mem_inter_iff, mem_setOf_eq, t] at hx
     rcases hx.2.1 with ⟨u, hu, h'u⟩

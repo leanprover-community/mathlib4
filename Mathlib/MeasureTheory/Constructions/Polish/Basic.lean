@@ -929,9 +929,8 @@ theorem _root_.MeasurableSet.image_of_monotoneOn_of_continuousOn
     rw [this]
     apply MeasurableSet.biUnion hu (fun c hc ↦ ?_)
     obtain ⟨v, hv, tv⟩ : ∃ v, OrdConnected v ∧ t ∩ g ⁻¹' {c} = t ∩ v :=
-      OrdConnected.preimage_monotoneOn ordConnected_singleton hg
-    rw [tv]
-    exact ht.inter hv.measurableSet
+      ordConnected_singleton.preimage_monotoneOn hg
+    exact tv ▸ ht.inter hv.measurableSet
   have : g '' t = g '' (t \ t') ∪ g '' t' := by simp [← image_union, t']
   rw [this]
   apply MeasurableSet.union
@@ -942,12 +941,8 @@ theorem _root_.MeasurableSet.image_of_monotoneOn_of_continuousOn
     · have : y < x := lt_of_le_of_ne (not_lt.1 H) hxy.symm
       exact (h hy hx hxy.symm this).symm
     intro h
-    apply hx.2
-    refine ⟨hx.1, ?_⟩
-    exact ⟨x, y, hx.1, hy.1, H, rfl, h.symm⟩
-  · apply Countable.measurableSet
-    apply hu.mono
-    simp [t']
+    exact hx.2 ⟨hx.1, x, y, hx.1, hy.1, H, rfl, h.symm⟩
+  · exact hu.mono (by simp [t']) |>.measurableSet
 
 /-- The image of a measurable set under a monotone map is measurable. -/
 theorem _root_.MeasurableSet.image_of_monotoneOn [SecondCountableTopology β]
