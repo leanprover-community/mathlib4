@@ -2383,6 +2383,7 @@ import Mathlib.CategoryTheory.Monoidal.Conv
 import Mathlib.CategoryTheory.Monoidal.DayConvolution
 import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Monoidal.End
+import Mathlib.CategoryTheory.Monoidal.ExternalProduct
 import Mathlib.CategoryTheory.Monoidal.ExternalProduct.Basic
 import Mathlib.CategoryTheory.Monoidal.ExternalProduct.KanExtension
 import Mathlib.CategoryTheory.Monoidal.Free.Basic
@@ -6355,6 +6356,7 @@ import Mathlib.Topology.MetricSpace.Ultra.Basic
 import Mathlib.Topology.MetricSpace.Ultra.ContinuousMaps
 import Mathlib.Topology.MetricSpace.Ultra.Pi
 import Mathlib.Topology.MetricSpace.Ultra.TotallySeparated
+import Mathlib.Topology.MetricSpace.UniformConvergence
 import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Metrizable.CompletelyMetrizable
 import Mathlib.Topology.Metrizable.ContinuousMap
