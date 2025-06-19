@@ -51,15 +51,19 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable (I I' F) in
 /-- Two models with corners `I` and `I'` form a **slice model** if "I includes into I'".
 More precisely, there are an embedding `H → H'` and a continuous linear map `E → E'` so the diagram
+```
   H  -I  → E'
   |        |
   |        |
   H' -I' → E'
+```
 commutes. More precisely, we prescribe a linear equivalence `E × F → E`, for some normed space `F`,
 which induces the map `E → E'` in the obvious way.
 -/
 class SliceModel where
+  /-- The continuous linear equivalence `E × F → E'` underlying this slice model -/
   equiv: (E × F) ≃L[𝕜] E'
+  /-- The embedding `H → H'` underlying this slice model -/
   map: H → H'
   hmap : Topology.IsEmbedding map
   compatible : I' ∘ map = equiv ∘ ((·, 0) : E → E × F) ∘ I
@@ -169,7 +173,7 @@ instance [h : SliceModel F I I'] : SliceModel F (I.prod J) (I'.prod J) where
     rw [h.compatible]
 
 /-- If `E' ≃ E × F`, then the trivial models with corners of `E` and `E'` form a slice model. -/
-instance (h : (E × F) ≃L[𝕜] E') : SliceModel F (𝓘(𝕜, E)) (𝓘(𝕜, E')) where
+def SliceModel.modelWithCornersSelf (h : (E × F) ≃L[𝕜] E') : SliceModel F (𝓘(𝕜, E)) (𝓘(𝕜, E')) where
   equiv := h
   map := h ∘ (·, (0 : F))
   hmap := by
@@ -207,7 +211,7 @@ noncomputable instance {n : ℕ} [NeZero n] :
     rfl
 
 /-- The standard model on `ℝ^n` is a slice model for the standard model for `ℝ^m`, for `n ≤ m`. -/
-noncomputable instance {n m : ℕ} [NeZero n] :
+noncomputable instance {n m : ℕ} :
     SliceModel ((EuclideanSpace ℝ (Fin m))) (𝓡 n) (𝓡 (n + m)) where
   equiv := EuclideanSpace.finAddEquivProd.symm
   map x := EuclideanSpace.finAddEquivProd.symm (x, 0)
@@ -232,6 +236,8 @@ noncomputable instance {n : ℕ} [NeZero n] :
     rfl
 
 -- TODO: make an instance/ figure out why Lean complains about synthesisation order!
+/-- If `I` is a slice model w.r.t. `I'` and `I'` is a slice model w.r.t. `I''`,
+then `I` is a slice model w.r.t. `I''`. -/
 def instTrans (h : SliceModel F I I') (h' : SliceModel F' I' I'') : SliceModel (F × F') I I'' where
   equiv := (ContinuousLinearEquiv.prodAssoc 𝕜 E F F').symm.trans
     ((h.equiv.prodCongr (ContinuousLinearEquiv.refl 𝕜 F')).trans h'.equiv)
