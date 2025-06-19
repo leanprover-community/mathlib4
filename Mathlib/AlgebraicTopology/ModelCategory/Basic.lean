@@ -93,7 +93,7 @@ section mk'
 open MorphismProperty
 
 variable {C} in
-lemma mk'.cm3a_aux [CategoryWithFibrations C]  [CategoryWithCofibrations C]
+private lemma mk'.cm3a_aux [CategoryWithFibrations C]  [CategoryWithCofibrations C]
     [CategoryWithWeakEquivalences C]
     [(weakEquivalences C).HasTwoOutOfThreeProperty]
     [IsWeakFactorizationSystem (trivialCofibrations C) (fibrations C)]
@@ -119,10 +119,10 @@ lemma mk'.cm3a_aux [CategoryWithFibrations C]  [CategoryWithCofibrations C]
 /-- Constructor for `ModelCategory C` which assumes a formulation of axioms
 using weak factorizations systems. -/
 def mk' [CategoryWithFibrations C]  [CategoryWithCofibrations C]
-  [CategoryWithWeakEquivalences C] [HasFiniteLimits C] [HasFiniteColimits C]
-  [(weakEquivalences C).HasTwoOutOfThreeProperty]
-  [IsWeakFactorizationSystem (cofibrations C) (trivialFibrations C)]
-  [IsWeakFactorizationSystem (trivialCofibrations C) (fibrations C)] :
+    [CategoryWithWeakEquivalences C] [HasFiniteLimits C] [HasFiniteColimits C]
+    [(weakEquivalences C).HasTwoOutOfThreeProperty]
+    [IsWeakFactorizationSystem (cofibrations C) (trivialFibrations C)]
+    [IsWeakFactorizationSystem (trivialCofibrations C) (fibrations C)] :
     ModelCategory C where
   cm3a := ⟨fun {A B X Y f w h hw} ↦ by
     rw [← weakEquivalence_iff] at hw
