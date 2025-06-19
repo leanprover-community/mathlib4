@@ -154,9 +154,11 @@ end Ring
 
 section Unit
 
+open scoped Pointwise
+
 variable {M X}
 
-open scoped Pointwise in
+@[to_additive]
 theorem IsUnit.smul_uniformity [Monoid M] [MulAction M X] [UniformContinuousConstSMul M X] {c : M}
     (hc : IsUnit c) : c • 𝓤 X = 𝓤 X :=
   let ⟨d, hcd⟩ := hc.exists_right_inv
@@ -164,12 +166,11 @@ theorem IsUnit.smul_uniformity [Monoid M] [MulAction M X] [UniformContinuousCons
   have dU : d • 𝓤 X ≤ 𝓤 X := uniformContinuous_const_smul d
   le_antisymm cU <| by simpa [smul_smul, hcd] using Filter.smul_filter_le_smul_filter (a := c) dU
 
-open scoped Pointwise in
+@[to_additive (attr := simp)]
 theorem smul_uniformity [Group M] [MulAction M X] [UniformContinuousConstSMul M X] (c : M) :
     c • 𝓤 X = 𝓤 X :=
   Group.isUnit _ |>.smul_uniformity
 
-open scoped Pointwise in
 theorem smul_uniformity₀ [GroupWithZero M] [MulAction M X] [UniformContinuousConstSMul M X] {c : M}
     (hc : c ≠ 0) : c • 𝓤 X = 𝓤 X :=
   hc.isUnit.smul_uniformity
