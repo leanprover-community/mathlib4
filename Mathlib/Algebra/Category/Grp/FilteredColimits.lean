@@ -108,16 +108,17 @@ noncomputable def colimit : Grp.{max v u} :=
 @[to_additive "The cocone over the proposed colimit additive group."]
 noncomputable def colimitCocone : Cocone F where
   pt := colimit.{v, u} F
-  ι.app J := Grp.ofHom ((MonCat.FilteredColimits.colimitCocone (F ⋙ forget₂ Grp MonCat)).ι.app J)
+  ι.app J := Grp.ofHom ((MonCat.FilteredColimits.colimitCocone
+    (F ⋙ forget₂ Grp MonCat)).ι.app J).hom
   ι.naturality _ _ f := (forget₂ _ MonCat).map_injective
     ((MonCat.FilteredColimits.colimitCocone _).ι.naturality f)
 
 /-- The proposed colimit cocone is a colimit in `Grp`. -/
 @[to_additive "The proposed colimit cocone is a colimit in `AddGroup`."]
-def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
-  desc t := Grp.ofHom <|
-    MonCat.FilteredColimits.colimitDesc.{v, u} (F ⋙ forget₂ Grp MonCat.{max v u})
-      ((forget₂ Grp MonCat).mapCocone t)
+noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
+  desc t := Grp.ofHom
+    (MonCat.FilteredColimits.colimitDesc.{v, u} (F ⋙ forget₂ Grp MonCat.{max v u})
+      ((forget₂ Grp MonCat).mapCocone t)).hom
   fac t j :=
     ConcreteCategory.coe_ext <|
       (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget Grp)).fac
@@ -184,7 +185,7 @@ noncomputable def colimitCocone : Cocone F where
 
 /-- The proposed colimit cocone is a colimit in `CommGrp`. -/
 @[to_additive "The proposed colimit cocone is a colimit in `AddCommGroup`."]
-def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
+noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
   desc t := CommGrp.ofHom
     ((Grp.FilteredColimits.colimitCoconeIsColimit.{v, u}
           (F ⋙ forget₂ CommGrp Grp.{max v u})).desc

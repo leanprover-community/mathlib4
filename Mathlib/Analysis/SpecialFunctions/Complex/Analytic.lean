@@ -78,10 +78,12 @@ section ReOfReal
 
 variable {f : ℂ → ℂ} {s : Set ℝ} {x : ℝ}
 
+@[fun_prop]
 lemma AnalyticAt.re_ofReal (hf : AnalyticAt ℂ f x) :
     AnalyticAt ℝ (fun x : ℝ ↦ (f x).re) x :=
   (Complex.reCLM.analyticAt _).comp (hf.restrictScalars.comp (Complex.ofRealCLM.analyticAt _))
 
+@[fun_prop]
 lemma AnalyticAt.im_ofReal (hf : AnalyticAt ℂ f x) :
     AnalyticAt ℝ (fun x : ℝ ↦ (f x).im) x :=
   (Complex.imCLM.analyticAt _).comp (hf.restrictScalars.comp (Complex.ofRealCLM.analyticAt _))
@@ -117,3 +119,37 @@ lemma AnalyticOnNhd.im_ofReal (hf : AnalyticOnNhd ℂ f (ofReal '' s)) :
     (Complex.ofRealCLM.analyticOnNhd _) (mapsTo_image ofReal s)
 
 end ReOfReal
+
+section Real
+
+variable {f : ℝ → ℝ} {s : Set ℝ} {x : ℝ}
+
+@[fun_prop]
+lemma analyticAt_log (hx : 0 < x) : AnalyticAt ℝ Real.log x := by
+  have : Real.log = fun x : ℝ ↦ (Complex.log x).re := by ext x; exact (Complex.log_ofReal_re x).symm
+  rw [this]
+  refine AnalyticAt.re_ofReal <| analyticAt_clog ?_
+  simp [hx]
+
+lemma analyticOnNhd_log : AnalyticOnNhd ℝ Real.log (Set.Ioi 0) := fun _ hx ↦ analyticAt_log hx
+
+lemma analyticOn_log : AnalyticOn ℝ Real.log (Set.Ioi 0) := analyticOnNhd_log.analyticOn
+
+@[fun_prop]
+lemma AnalyticAt.log (fa : AnalyticAt ℝ f x) (m : 0 < f x) :
+    AnalyticAt ℝ (fun z ↦ Real.log (f z)) x :=
+  (analyticAt_log m).comp fa
+
+lemma AnalyticWithinAt.log (fa : AnalyticWithinAt ℝ f s x) (m : 0 < f x) :
+    AnalyticWithinAt ℝ (fun z ↦ Real.log (f z)) s x :=
+  (analyticAt_log m).comp_analyticWithinAt fa
+
+lemma AnalyticOnNhd.log (fs : AnalyticOnNhd ℝ f s) (m : ∀ x ∈ s, 0 < f x) :
+    AnalyticOnNhd ℝ (fun z ↦ Real.log (f z)) s :=
+  fun z n ↦ (analyticAt_log (m z n)).comp (fs z n)
+
+lemma AnalyticOn.log (fs : AnalyticOn ℝ f s) (m : ∀ x ∈ s, 0 < f x) :
+    AnalyticOn ℝ (fun z ↦ Real.log (f z)) s :=
+  fun z n ↦ (analyticAt_log (m z n)).analyticWithinAt.comp (fs z n) m
+
+end Real

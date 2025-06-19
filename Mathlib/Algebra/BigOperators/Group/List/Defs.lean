@@ -20,7 +20,7 @@ section Defs
 
 /-- Product of a list.
 
-`List.prod [a, b, c] = ((1 * a) * b) * c` -/
+`List.prod [a, b, c] = a * (b * (c * 1))` -/
 @[to_additive existing]
 def prod {α} [Mul α] [One α] : List α → α :=
   foldr (· * ·) 1

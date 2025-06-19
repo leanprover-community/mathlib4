@@ -169,7 +169,7 @@ theorem contMDiffWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x�
     ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F)) n f s x₀ ↔
       ContMDiffWithinAt IM IB n (fun x => (f x).proj) s x₀ ∧
       ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) s x₀ := by
-  simp (config := { singlePass := true }) only [contMDiffWithinAt_iff_target]
+  simp +singlePass only [contMDiffWithinAt_iff_target]
   rw [and_and_and_comm, ← FiberBundle.continuousWithinAt_totalSpace, and_congr_right_iff]
   intro hf
   simp_rw [modelWithCornersSelf_prod, FiberBundle.extChartAt, Function.comp_def,
@@ -412,7 +412,7 @@ theorem Trivialization.contMDiffOn_symm_trans :
     ⟨e.mem_target.1 hx.1, e'.mem_target.1 hx.2⟩
   rw [mapsTo_inter] at Hmaps
   -- TODO: drop `congr` https://github.com/leanprover-community/mathlib4/issues/5473
-  refine (contMDiffOn_fst.prod_mk
+  refine (contMDiffOn_fst.prodMk
     (contMDiffOn_fst.coordChange contMDiffOn_snd Hmaps.1 Hmaps.2)).congr ?_
   rintro ⟨b, x⟩ hb
   refine Prod.ext ?_ rfl
@@ -463,7 +463,7 @@ instance ContMDiffFiberwiseLinear.hasGroupoid :
 
 variable [IsManifold IB n B] in
 /-- A `C^n` vector bundle `E` is naturally a `C^n` manifold. -/
-instance Bundle.TotalSpace.isManifold  :
+instance Bundle.TotalSpace.isManifold :
     IsManifold (IB.prod 𝓘(𝕜, F)) n (TotalSpace F E) := by
   refine { StructureGroupoid.HasGroupoid.comp (contMDiffFiberwiseLinear B F IB n) ?_ with }
   intro e he
@@ -473,10 +473,10 @@ instance Bundle.TotalSpace.isManifold  :
   refine ⟨ContMDiffOn.congr ?_ (EqOnSource.eqOn heφ),
       ContMDiffOn.congr ?_ (EqOnSource.eqOn (EqOnSource.symm' heφ))⟩
   · rw [EqOnSource.source_eq heφ]
-    apply contMDiffOn_fst.prod_mk
+    apply contMDiffOn_fst.prodMk
     exact (hφ.comp contMDiffOn_fst <| prod_subset_preimage_fst _ _).clm_apply contMDiffOn_snd
   · rw [EqOnSource.target_eq heφ]
-    apply contMDiffOn_fst.prod_mk
+    apply contMDiffOn_fst.prodMk
     exact (h2φ.comp contMDiffOn_fst <| prod_subset_preimage_fst _ _).clm_apply contMDiffOn_snd
 
 section
@@ -528,7 +528,7 @@ theorem Trivialization.contMDiffOn (e : Trivialization F (π F E)) [MemTrivializ
     ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n e e.source := by
   have : ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n id e.source := contMDiffOn_id
   rw [e.contMDiffOn_iff (mapsTo_id _)] at this
-  exact (this.1.prod_mk this.2).congr fun x hx ↦ (e.mk_proj_snd hx).symm
+  exact (this.1.prodMk this.2).congr fun x hx ↦ (e.mk_proj_snd hx).symm
 
 theorem Trivialization.contMDiffOn_symm (e : Trivialization F (π F E)) [MemTrivializationAtlas e] :
     ContMDiffOn (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) n e.toPartialHomeomorph.symm e.target := by

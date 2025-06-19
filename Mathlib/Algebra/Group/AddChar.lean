@@ -6,7 +6,7 @@ Authors: Michael Stoll
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 
 /-!
 # Characters from additive to multiplicative monoids
@@ -24,7 +24,7 @@ We also include some constructions specific to the case when `A = R` is a ring; 
 `x ↦ ψ (r * x)`.
 
 For more refined results of a number-theoretic nature (primitive characters, Gauss sums, etc)
-see `Mathlib.NumberTheory.LegendreSymbol.AddCharacter`.
+see `Mathlib/NumberTheory/LegendreSymbol/AddCharacter.lean`.
 
 # Implementation notes
 
@@ -61,7 +61,7 @@ monoid, which intertwine addition in `A` with multiplication in `M`.
 
 We only put the typeclasses needed for the definition, although in practice we are usually
 interested in much more specific cases (e.g. when `A` is a group and `M` a commutative ring).
- -/
+-/
 structure AddChar where
   /-- The underlying function.
 
@@ -105,9 +105,6 @@ instance instFunLike : FunLike (AddChar A M) A M where
 /-- An additive character maps sums to products. -/
 lemma map_add_eq_mul (ψ : AddChar A M) (x y : A) : ψ (x + y) = ψ x * ψ y := ψ.map_add_eq_mul' x y
 
-@[deprecated (since := "2024-06-06")] alias map_zero_one := map_zero_eq_one
-@[deprecated (since := "2024-06-06")] alias map_add_mul := map_add_eq_mul
-
 /-- Interpret an additive character as a monoid homomorphism. -/
 def toMonoidHom (φ : AddChar A M) : Multiplicative A →* M where
   toFun := φ.toFun
@@ -124,8 +121,6 @@ def toMonoidHom (φ : AddChar A M) : Multiplicative A →* M where
 lemma map_nsmul_eq_pow (ψ : AddChar A M) (n : ℕ) (x : A) : ψ (n • x) = ψ x ^ n :=
   ψ.toMonoidHom.map_pow x n
 
-@[deprecated (since := "2024-06-06")] alias map_nsmul_pow := map_nsmul_eq_pow
-
 /-- Additive characters `A → M` are the same thing as monoid homomorphisms from `Multiplicative A`
 to `M`. -/
 def toMonoidHomEquiv : AddChar A M ≃ (Multiplicative A →* M) where
@@ -134,8 +129,6 @@ def toMonoidHomEquiv : AddChar A M ≃ (Multiplicative A →* M) where
   { toFun := f.toFun
     map_zero_eq_one' := f.map_one'
     map_add_eq_mul' := f.map_mul' }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp, norm_cast] lemma coe_toMonoidHomEquiv (ψ : AddChar A M) :
     ⇑(toMonoidHomEquiv ψ) = ψ ∘ Multiplicative.toAdd := rfl
@@ -168,8 +161,6 @@ def toAddMonoidHomEquiv : AddChar A M ≃ (A →+ Additive M) where
   { toFun := f.toFun
     map_zero_eq_one' := f.map_zero'
     map_add_eq_mul' := f.map_add' }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp, norm_cast]
 lemma coe_toAddMonoidHomEquiv (ψ : AddChar A M) :
@@ -254,16 +245,6 @@ lemma eq_zero_iff : ψ = 0 ↔ ∀ x, ψ x = 1 := DFunLike.ext_iff
 lemma ne_one_iff : ψ ≠ 1 ↔ ∃ x, ψ x ≠ 1 := DFunLike.ne_iff
 lemma ne_zero_iff : ψ ≠ 0 ↔ ∃ x, ψ x ≠ 1 := DFunLike.ne_iff
 
-/-- An additive character is *nontrivial* if it takes a value `≠ 1`. -/
-@[deprecated "No deprecation message was provided." (since := "2024-06-06")]
-def IsNontrivial (ψ : AddChar A M) : Prop := ∃ a : A, ψ a ≠ 1
-
-set_option linter.deprecated false in
-/-- An additive character is nontrivial iff it is not the trivial character. -/
-@[deprecated ne_one_iff (since := "2024-06-06")]
-lemma isNontrivial_iff_ne_trivial (ψ : AddChar A M) : IsNontrivial ψ ↔ ψ ≠ 1 :=
-  not_forall.symm.trans (DFunLike.ext_iff (f := ψ) (g := 1)).symm.not
-
 noncomputable instance : DecidableEq (AddChar A M) := Classical.decEq _
 
 end Basic
@@ -283,11 +264,11 @@ instance instAddCommMonoid : AddCommMonoid (AddChar A M) := Additive.addCommMono
 @[simp, norm_cast] lemma coe_nsmul (n : ℕ) (ψ : AddChar A M) : ⇑(n • ψ) = ψ ^ n := rfl
 
 @[simp, norm_cast]
-lemma coe_prod (s : Finset ι) (ψ : ι → AddChar A M) : ∏ i in s, ψ i = ∏ i in s, ⇑(ψ i) := by
+lemma coe_prod (s : Finset ι) (ψ : ι → AddChar A M) : ∏ i ∈ s, ψ i = ∏ i ∈ s, ⇑(ψ i) := by
   induction s using Finset.cons_induction <;> simp [*]
 
 @[simp, norm_cast]
-lemma coe_sum (s : Finset ι) (ψ : ι → AddChar A M) : ∑ i in s, ψ i = ∏ i in s, ⇑(ψ i) := by
+lemma coe_sum (s : Finset ι) (ψ : ι → AddChar A M) : ∑ i ∈ s, ψ i = ∏ i ∈ s, ⇑(ψ i) := by
   induction s using Finset.cons_induction <;> simp [*]
 
 @[simp] lemma mul_apply (ψ φ : AddChar A M) (a : A) : (ψ * φ) a = ψ a * φ a := rfl
@@ -296,14 +277,14 @@ lemma coe_sum (s : Finset ι) (ψ : ι → AddChar A M) : ∑ i in s, ψ i = ∏
 @[simp] lemma nsmul_apply (ψ : AddChar A M) (n : ℕ) (a : A) : (n • ψ) a = (ψ a) ^ n := rfl
 
 lemma prod_apply (s : Finset ι) (ψ : ι → AddChar A M) (a : A) :
-    (∏ i in s, ψ i) a = ∏ i in s, ψ i a := by rw [coe_prod, Finset.prod_apply]
+    (∏ i ∈ s, ψ i) a = ∏ i ∈ s, ψ i a := by rw [coe_prod, Finset.prod_apply]
 
 lemma sum_apply (s : Finset ι) (ψ : ι → AddChar A M) (a : A) :
-    (∑ i in s, ψ i) a = ∏ i in s, ψ i a := by rw [coe_sum, Finset.prod_apply]
+    (∑ i ∈ s, ψ i) a = ∏ i ∈ s, ψ i a := by rw [coe_sum, Finset.prod_apply]
 
 lemma mul_eq_add (ψ χ : AddChar A M) : ψ * χ = ψ + χ := rfl
 lemma pow_eq_nsmul (ψ : AddChar A M) (n : ℕ) : ψ ^ n = n • ψ := rfl
-lemma prod_eq_sum (s : Finset ι) (ψ : ι → AddChar A M) : ∏ i in s, ψ i = ∑ i in s, ψ i := rfl
+lemma prod_eq_sum (s : Finset ι) (ψ : ι → AddChar A M) : ∏ i ∈ s, ψ i = ∑ i ∈ s, ψ i := rfl
 
 @[simp] lemma toMonoidHomEquiv_add (ψ φ : AddChar A M) :
     toMonoidHomEquiv (ψ + φ) = toMonoidHomEquiv ψ * toMonoidHomEquiv φ := rfl
@@ -338,7 +319,7 @@ variable {A R : Type*} [AddGroup A] [Fintype A] [CommSemiring R] [IsDomain R]
 lemma sum_eq_ite (ψ : AddChar A R) [Decidable (ψ = 0)] :
     ∑ a, ψ a = if ψ = 0 then ↑(card A) else 0 := by
   split_ifs with h
-  · simp [h, card_univ]
+  · simp [h]
   obtain ⟨x, hx⟩ := ne_one_iff.1 h
   refine eq_zero_of_mul_eq_self_left hx ?_
   rw [Finset.mul_sum]
@@ -400,9 +381,6 @@ lemma map_neg_eq_inv (ψ : AddChar A M) (a : A) : ψ (-a) = (ψ a)⁻¹ := by
 /-- An additive character maps integer scalar multiples to integer powers. -/
 lemma map_zsmul_eq_zpow (ψ : AddChar A M) (n : ℤ) (a : A) : ψ (n • a) = (ψ a) ^ n :=
   ψ.toMonoidHom.map_zpow a n
-
-@[deprecated (since := "2024-06-06")] alias map_neg_inv := map_neg_eq_inv
-@[deprecated (since := "2024-06-06")] alias map_zsmul_zpow := map_zsmul_eq_zpow
 
 end fromAddGrouptoDivisionMonoid
 

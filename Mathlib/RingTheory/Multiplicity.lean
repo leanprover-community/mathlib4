@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Chris Hughes, Daniel Weber
 -/
 import Batteries.Data.Nat.Gcd
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.GroupWithZero.Associated
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.ENat.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Multiplicity of a divisor
@@ -32,7 +32,7 @@ variable {α β : Type*}
 
 open Nat
 
-/-- `multiplicity.Finite a b` indicates that the multiplicity of `a` in `b` is finite. -/
+/-- `FiniteMultiplicity a b` indicates that the multiplicity of `a` in `b` is finite. -/
 abbrev FiniteMultiplicity [Monoid α] (a b : α) : Prop :=
   ∃ n : ℕ, ¬a ^ (n + 1) ∣ b
 
@@ -46,7 +46,7 @@ noncomputable def emultiplicity [Monoid α] (a b : α) : ℕ∞ :=
 
 /-- A `ℕ`-valued version of `emultiplicity`, returning `1` instead of `⊤`. -/
 noncomputable def multiplicity [Monoid α] (a b : α) : ℕ :=
-  (emultiplicity a b).untop' 1
+  (emultiplicity a b).untopD 1
 
 section Monoid
 
@@ -115,7 +115,7 @@ theorem emultiplicity_eq_iff_multiplicity_eq_of_ne_one {n : ℕ} (h : n ≠ 1) :
   constructor
   · exact multiplicity_eq_of_emultiplicity_eq_some
   · intro h₂
-    simpa [multiplicity, WithTop.untop'_eq_iff, h] using h₂
+    simpa [multiplicity, WithTop.untopD_eq_iff, h] using h₂
 
 theorem emultiplicity_eq_zero_iff_multiplicity_eq_zero :
     emultiplicity a b = 0 ↔ multiplicity a b = 0 :=
@@ -137,7 +137,7 @@ theorem multiplicity_le_emultiplicity :
   · simp [hf.emultiplicity_eq_multiplicity]
   · simp [hf, emultiplicity_eq_top.2]
 
-@[simp]
+-- Cannot be @[simp] because `β`, `c`, and `d` can not be inferred by `simp`.
 theorem multiplicity_eq_of_emultiplicity_eq {c d : β}
     (h : emultiplicity a b = emultiplicity c d) : multiplicity a b = multiplicity c d := by
   unfold multiplicity
@@ -219,8 +219,6 @@ theorem Int.natCast_emultiplicity (a b : ℕ) :
 @[norm_cast]
 theorem Int.natCast_multiplicity (a b : ℕ) : multiplicity (a : ℤ) (b : ℤ) = multiplicity a b :=
   multiplicity_eq_of_emultiplicity_eq (natCast_emultiplicity a b)
-
-@[deprecated (since := "2024-04-05")] alias Int.coe_nat_multiplicity := Int.natCast_multiplicity
 
 theorem FiniteMultiplicity.not_iff_forall : ¬FiniteMultiplicity a b ↔ ∀ n : ℕ, a ^ n ∣ b :=
   ⟨fun h n =>
@@ -651,7 +649,7 @@ theorem multiplicity_neg (a b : α) : multiplicity a (-b) = multiplicity a b :=
 
 theorem Int.emultiplicity_natAbs (a : ℕ) (b : ℤ) :
     emultiplicity a b.natAbs = emultiplicity (a : ℤ) b := by
-  cases' Int.natAbs_eq b with h h <;> conv_rhs => rw [h]
+  rcases Int.natAbs_eq b with h | h <;> conv_rhs => rw [h]
   · rw [Int.natCast_emultiplicity]
   · rw [emultiplicity_neg, Int.natCast_emultiplicity]
 
@@ -826,10 +824,11 @@ theorem emultiplicity_mul {p a b : α} (hp : Prime p) :
 
 theorem Finset.emultiplicity_prod {β : Type*} {p : α} (hp : Prime p) (s : Finset β) (f : β → α) :
     emultiplicity p (∏ x ∈ s, f x) = ∑ x ∈ s, emultiplicity p (f x) := by classical
-    induction' s using Finset.induction with a s has ih h
-    · simp only [Finset.sum_empty, Finset.prod_empty]
-      exact emultiplicity_of_one_right hp.not_unit
-    · simpa [has, ← ih] using emultiplicity_mul hp
+  induction s using Finset.induction with
+  | empty =>
+    simp only [Finset.sum_empty, Finset.prod_empty]
+    exact emultiplicity_of_one_right hp.not_unit
+  | insert a s has ih => simpa [has, ← ih] using emultiplicity_mul hp
 
 theorem emultiplicity_pow {p a : α} (hp : Prime p) {k : ℕ} :
     emultiplicity p (a ^ k) = k * emultiplicity p a := by

@@ -27,7 +27,7 @@ to add a `(h : ¬IsField A)` assumption whenever this is explicitly needed.
 ## References
 
 * [D. Marcus, *Number Fields*][marcus1977number]
-* [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
+* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
 * [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
 
 ## Tags
@@ -63,12 +63,12 @@ theorem IsIntegralClosure.isLocalization [IsDomain A] [Algebra.IsAlgebraic K L] 
     IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L := by
   haveI : IsDomain C :=
     (IsIntegralClosure.equiv A C L (integralClosure A L)).toMulEquiv.isDomain (integralClosure A L)
-  haveI : NoZeroSMulDivisors A L := NoZeroSMulDivisors.trans A K L
+  haveI : NoZeroSMulDivisors A L := NoZeroSMulDivisors.trans_faithfulSMul A K L
   haveI : NoZeroSMulDivisors A C := IsIntegralClosure.noZeroSMulDivisors A L
   refine ⟨?_, fun z => ?_, fun {x y} h => ⟨1, ?_⟩⟩
   · rintro ⟨_, x, hx, rfl⟩
     rw [isUnit_iff_ne_zero, map_ne_zero_iff _ (IsIntegralClosure.algebraMap_injective C A L),
-      Subtype.coe_mk, map_ne_zero_iff _ (NoZeroSMulDivisors.algebraMap_injective A C)]
+      Subtype.coe_mk, map_ne_zero_iff _ (FaithfulSMul.algebraMap_injective A C)]
     exact mem_nonZeroDivisors_iff_ne_zero.mp hx
   · obtain ⟨m, hm⟩ :=
       IsIntegral.exists_multiple_integral_of_isLocalization A⁰ z
@@ -114,9 +114,8 @@ to `(y : R) • x ∈ integralClosure R L`. -/
 theorem exists_integral_multiples (s : Finset L) :
     ∃ y ≠ (0 : A), ∀ x ∈ s, IsIntegral A (y • x) :=
   have := IsLocalization.isAlgebraic K (nonZeroDivisors A)
-  have := Algebra.IsAlgebraic.trans' A (algebraMap K L).injective
-  Algebra.IsAlgebraic.exists_integral_multiples (IsScalarTower.algebraMap_eq A K L ▸
-    (algebraMap K L).injective.comp (IsFractionRing.injective _ _)) _
+  have := Algebra.IsAlgebraic.trans A K L
+  Algebra.IsAlgebraic.exists_integral_multiples ..
 
 variable (L)
 
@@ -246,5 +245,10 @@ the field of fractions yourself. -/
 instance integralClosure.isDedekindDomain_fractionRing [IsDedekindDomain A] :
     IsDedekindDomain (integralClosure A L) :=
   integralClosure.isDedekindDomain A (FractionRing A) L
+
+attribute [local instance] FractionRing.liftAlgebra in
+instance [NoZeroSMulDivisors A C] [Module.Finite A C] [IsIntegrallyClosed C] :
+    IsLocalization (Algebra.algebraMapSubmonoid C A⁰) (FractionRing C) :=
+  IsIntegralClosure.isLocalization _ (FractionRing A) _ _
 
 end IsIntegralClosure

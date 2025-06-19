@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.CharP.ExpChar
+import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.FieldTheory.Perfect
 
 /-!
@@ -230,28 +230,25 @@ See `mk_zero_right` for the lemma used to be called `mk_zero`. -/
 theorem mk_zero : mk K p 0 = 0 :=
   rfl
 
-@[deprecated (since := "2024-08-16")] alias mk_zero_zero := mk_zero
-
--- Porting note: improved proof structure
 @[simp]
 theorem mk_zero_right (n : ℕ) : mk K p (n, 0) = 0 := by
-  induction' n with n ih
-  · rfl
-  rw [← ih]
-  symm
-  apply Quot.sound
-  have := R.intro (p := p) n (0 : K)
-  rwa [frobenius_zero K p] at this
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+    rw [← ih]
+    apply (Quot.sound _).symm
+    have := R.intro (p := p) n (0 : K)
+    rwa [frobenius_zero K p] at this
 
--- Porting note: improved proof structure
 theorem R.sound (m n : ℕ) (x y : K) (H : (frobenius K p)^[m] x = y) :
     mk K p (n, x) = mk K p (m + n, y) := by
   subst H
-  induction' m with m ih
-  · simp only [zero_add, iterate_zero_apply]
-  rw [ih, Nat.succ_add, iterate_succ']
-  apply Quot.sound
-  apply R.intro
+  induction m with
+  | zero => simp only [zero_add, iterate_zero_apply]
+  | succ m ih =>
+    rw [ih, Nat.succ_add, iterate_succ']
+    apply Quot.sound
+    apply R.intro
 
 instance instAddCommGroup : AddCommGroup (PerfectClosure K p) :=
   { (inferInstance : Add (PerfectClosure K p)),
@@ -319,21 +316,21 @@ theorem mk_eq_iff (x y : ℕ × K) :
   · intro H
     replace H := Quot.eqvGen_exact H
     induction H with
-    | rel x y H => cases' H with n x; exact ⟨0, rfl⟩
+    | rel x y H => obtain ⟨n, x⟩ := H; exact ⟨0, rfl⟩
     | refl H => exact ⟨0, rfl⟩
-    | symm x y H ih => cases' ih with w ih; exact ⟨w, ih.symm⟩
+    | symm x y H ih => obtain ⟨w, ih⟩ := ih; exact ⟨w, ih.symm⟩
     | trans x y z H1 H2 ih1 ih2 =>
-      cases' ih1 with z1 ih1
-      cases' ih2 with z2 ih2
+      obtain ⟨z1, ih1⟩ := ih1
+      obtain ⟨z2, ih2⟩ := ih2
       exists z2 + (y.1 + z1)
       rw [← add_assoc, iterate_add_apply, ih1]
       rw [← iterate_add_apply, add_comm, iterate_add_apply, ih2]
       rw [← iterate_add_apply]
       simp only [add_comm, add_left_comm]
   intro H
-  cases' x with m x
-  cases' y with n y
-  cases' H with z H; dsimp only at H
+  obtain ⟨m, x⟩ := x
+  obtain ⟨n, y⟩ := y
+  obtain ⟨z, H⟩ := H; dsimp only at H
   rw [R.sound K p (n + z) m x _ rfl, R.sound K p (m + z) n y _ rfl, H]
   rw [add_assoc, add_comm, add_comm z]
 
@@ -349,36 +346,28 @@ theorem mk_pow (x : ℕ × K) (n : ℕ) : mk K p x ^ n = mk K p (x.1, x.2 ^ n) :
       ← pow_add, mul_assoc, ← pow_add]⟩
 
 theorem natCast (n x : ℕ) : (x : PerfectClosure K p) = mk K p (n, x) := by
-  induction' n with n ih
-  · induction' x with x ih
-    · simp
-    rw [Nat.cast_succ, Nat.cast_succ, ih]
-    rfl
-  rw [ih]; apply Quot.sound
-  -- Porting note: was `conv`
-  suffices R K p (n, (x : K)) (Nat.succ n, frobenius K p (x : K)) by
-    rwa [frobenius_natCast K p x] at this
-  apply R.intro
-
-@[deprecated (since := "2024-04-17")]
-alias nat_cast := natCast
+  induction n with
+  | zero =>
+    induction x with
+    | zero => simp
+    | succ x ih =>
+      rw [Nat.cast_succ, Nat.cast_succ, ih]
+      rfl
+  | succ n ih =>
+    rw [ih]; apply Quot.sound
+    suffices R K p (n, (x : K)) (Nat.succ n, frobenius K p (x : K)) by
+      rwa [frobenius_natCast K p x] at this
+    apply R.intro
 
 theorem intCast (x : ℤ) : (x : PerfectClosure K p) = mk K p (0, x) := by
-  induction x <;> simp only [Int.ofNat_eq_coe, Int.cast_natCast, Int.cast_negSucc, natCast K p 0]
-  rfl
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast := intCast
+  cases x <;> simp [natCast K p 0]
 
 theorem natCast_eq_iff (x y : ℕ) : (x : PerfectClosure K p) = y ↔ (x : K) = y := by
   constructor <;> intro H
   · rw [natCast K p 0, natCast K p 0, mk_eq_iff] at H
-    cases' H with z H
+    obtain ⟨z, H⟩ := H
     simpa only [zero_add, iterate_fixed (frobenius_natCast K p _)] using H
   rw [natCast K p 0, natCast K p 0, H]
-
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_eq_iff := natCast_eq_iff
 
 instance instCharP : CharP (PerfectClosure K p) p := by
   constructor; intro x; rw [← CharP.cast_eq_zero_iff K]
@@ -423,9 +412,9 @@ instance instPerfectRing : PerfectRing (PerfectClosure K p) p where
 @[simp]
 theorem iterate_frobenius_mk (n : ℕ) (x : K) :
     (frobenius (PerfectClosure K p) p)^[n] (mk K p ⟨n, x⟩) = of K p x := by
-  induction' n with n ih
-  · rfl
-  rw [iterate_succ_apply, ← ih, frobenius_mk, mk_succ_pow]
+  induction n with
+  | zero => rfl
+  | succ n ih => rw [iterate_succ_apply, ← ih, frobenius_mk, mk_succ_pow]
 
 /-- Given a ring `K` of characteristic `p` and a perfect ring `L` of the same characteristic,
 any homomorphism `K →+* L` can be lifted to `PerfectClosure K p`. -/
@@ -451,7 +440,6 @@ noncomputable def lift (L : Type v) [CommSemiring L] [CharP L p] [PerfectRing L 
         have := LeftInverse.iterate (frobeniusEquiv_symm_apply_frobenius L p)
         rw [iterate_add_apply, this _ _, add_comm n, iterate_add_apply, this _ _] }
   invFun f := f.comp (of K p)
-  left_inv f := by ext x; rfl
   right_inv f := by
     ext ⟨n, x⟩
     simp only [quot_mk_eq_mk, RingHom.comp_apply, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
@@ -467,6 +455,10 @@ theorem eq_iff [CommRing K] [IsReduced K] (p : ℕ) [Fact p.Prime] [CharP K p] (
   (mk_eq_iff K p x y).trans
     ⟨fun ⟨z, H⟩ => (frobenius_inj K p).iterate z <| by simpa only [add_comm, iterate_add] using H,
       fun H => ⟨0, H⟩⟩
+
+instance [CommRing K] [IsReduced K] (p : ℕ) [Fact p.Prime] [CharP K p] [Nontrivial K] :
+    Nontrivial (PerfectClosure K p) where
+  exists_pair_ne := ⟨0, 1, fun H => zero_ne_one ((eq_iff _ _ _ _).1 H)⟩
 
 section Field
 
@@ -485,9 +477,7 @@ instance instInv : Inv (PerfectClosure K p) :=
 theorem mk_inv (x : ℕ × K) : (mk K p x)⁻¹ = mk K p (x.1, x.2⁻¹) :=
   rfl
 
--- Porting note: added to avoid "unknown free variable" error
 instance instDivisionRing : DivisionRing (PerfectClosure K p) where
-  exists_pair_ne := ⟨0, 1, fun H => zero_ne_one ((eq_iff _ _ _ _).1 H)⟩
   mul_inv_cancel e := induction_on e fun ⟨m, x⟩ H ↦ by
     have := mt (eq_iff _ _ _ _).2 H
     rw [mk_inv, mk_mul_mk]

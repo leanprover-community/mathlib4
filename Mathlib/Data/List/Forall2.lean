@@ -87,7 +87,7 @@ theorem forall₂_cons_right_iff {b l u} :
 theorem forall₂_and_left {p : α → Prop} :
     ∀ l u, Forall₂ (fun a b => p a ∧ R a b) l u ↔ (∀ a ∈ l, p a) ∧ Forall₂ R l u
   | [], u => by
-    simp only [forall₂_nil_left_iff, forall_prop_of_false (not_mem_nil _), imp_true_iff, true_and]
+    simp only [forall₂_nil_left_iff, forall_prop_of_false not_mem_nil, imp_true_iff, true_and]
   | a :: l, u => by
     simp only [forall₂_and_left l, forall₂_cons_left_iff, forall_mem_cons, and_assoc,
       @and_comm _ (p a), @and_left_comm _ (p a), exists_and_left]
@@ -158,11 +158,13 @@ theorem forall₂_zip : ∀ {l₁ l₂}, Forall₂ R l₁ l₂ → ∀ {a b}, (a
 theorem forall₂_iff_zip {l₁ l₂} :
     Forall₂ R l₁ l₂ ↔ length l₁ = length l₂ ∧ ∀ {a b}, (a, b) ∈ zip l₁ l₂ → R a b :=
   ⟨fun h => ⟨Forall₂.length_eq h, @forall₂_zip _ _ _ _ _ h⟩, fun h => by
-    cases' h with h₁ h₂
-    induction' l₁ with a l₁ IH generalizing l₂
-    · cases length_eq_zero.1 h₁.symm
+    obtain ⟨h₁, h₂⟩ := h
+    induction l₁ generalizing l₂ with
+    | nil =>
+      cases length_eq_zero_iff.1 h₁.symm
       constructor
-    · cases' l₂ with b l₂
+    | cons a l₁ IH =>
+      rcases l₂ with - | ⟨b, l₂⟩
       · simp at h₁
       · simp only [length_cons, succ.injEq] at h₁
         exact Forall₂.cons (h₂ <| by simp [zip])
@@ -226,7 +228,8 @@ theorem rel_flatten : (Forall₂ (Forall₂ R) ⇒ Forall₂ R) flatten flatten
 
 @[deprecated (since := "2025-10-15")] alias rel_join := rel_flatten
 
-theorem rel_flatMap : (Forall₂ R ⇒ (R ⇒ Forall₂ P) ⇒ Forall₂ P) List.flatMap List.flatMap :=
+theorem rel_flatMap : (Forall₂ R ⇒ (R ⇒ Forall₂ P) ⇒ Forall₂ P)
+    (Function.swap List.flatMap) (Function.swap List.flatMap) :=
   fun _ _ h₁ _ _ h₂ => rel_flatten (rel_map (@h₂) h₁)
 
 @[deprecated (since := "2025-10-16")] alias rel_bind := rel_flatMap
@@ -289,7 +292,7 @@ theorem sublistForall₂_iff {l₁ : List α} {l₂ : List β} :
     | cons _ _ ih => intro l₁ hl1; exact SublistForall₂.cons_right (ih hl1)
     | cons₂ _ _ ih =>
       intro l₁ hl1
-      cases' hl1 with _ _ _ _ hr hl _
+      obtain - | ⟨hr, hl⟩ := hl1
       exact SublistForall₂.cons hr (ih hl)
 
 instance SublistForall₂.is_refl [IsRefl α Rₐ] : IsRefl (List α) (SublistForall₂ Rₐ) :=
@@ -305,10 +308,10 @@ instance SublistForall₂.is_trans [IsTrans α Rₐ] : IsTrans (List α) (Sublis
       exact h1
     | cons _ _ ih =>
       rintro a b h1 h2
-      cases' h2 with _ _ _ _ _ hbc tbc _ _ y1 btc
+      obtain - | ⟨hbc, tbc⟩ | btc := h2
       · cases h1
         exact SublistForall₂.nil
-      · cases' h1 with _ _ _ _ _ hab tab _ _ _ atb
+      · obtain - | ⟨hab, tab⟩ | atb := h1
         · exact SublistForall₂.nil
         · exact SublistForall₂.cons (_root_.trans hab hbc) (ih _ _ tab tbc)
         · exact SublistForall₂.cons_right (ih _ _ atb tbc)

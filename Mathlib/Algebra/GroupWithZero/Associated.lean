@@ -262,7 +262,7 @@ theorem Irreducible.dvd_iff [Monoid M] {x y : M} (hx : Irreducible x) :
 
 theorem Irreducible.associated_of_dvd [Monoid M] {p q : M} (p_irr : Irreducible p)
     (q_irr : Irreducible q) (dvd : p ∣ q) : Associated p q :=
-  ((q_irr.dvd_iff.mp dvd).resolve_left p_irr.not_unit).symm
+  ((q_irr.dvd_iff.mp dvd).resolve_left p_irr.not_isUnit).symm
 
 theorem Irreducible.dvd_irreducible_iff_associated [Monoid M] {p q : M}
     (pp : Irreducible p) (qp : Irreducible q) : p ∣ q ↔ Associated p q :=
@@ -299,7 +299,6 @@ protected theorem Associated.irreducible [Monoid M] {p q : M} (h : p ~ᵤ q) (hp
       calc
         p = p * u * (u⁻¹ : Mˣ) := by simp
         _ = _ := by rw [hu]; simp [hab, mul_assoc]
-
     (hp.isUnit_or_isUnit hpab).elim Or.inl fun ⟨v, hv⟩ => Or.inr ⟨v * u, by simp [hv]⟩⟩
 
 protected theorem Associated.irreducible_iff [Monoid M] {p q : M} (h : p ~ᵤ q) :
@@ -335,7 +334,7 @@ theorem Associated.of_pow_associated_of_prime' [CancelCommMonoidWithZero M] {p�
 /-- See also `Irreducible.coprime_iff_not_dvd`. -/
 lemma Irreducible.isRelPrime_iff_not_dvd [Monoid M] {p n : M} (hp : Irreducible p) :
     IsRelPrime p n ↔ ¬ p ∣ n := by
-  refine ⟨fun h contra ↦ hp.not_unit (h dvd_rfl contra), fun hpn d hdp hdn ↦ ?_⟩
+  refine ⟨fun h contra ↦ hp.not_isUnit (h dvd_rfl contra), fun hpn d hdp hdn ↦ ?_⟩
   contrapose! hpn
   suffices Associated p d from this.dvd.trans hdn
   exact (hp.dvd_iff.mp hdp).resolve_left hpn
@@ -504,9 +503,6 @@ instance uniqueUnits : Unique (Associates M)ˣ where
     exact Quotient.inductionOn₂ a b <| fun a b hab hba ↦ Units.ext <| Quotient.sound <|
       associated_one_of_associated_mul_one <| Quotient.exact hab
 
-@[deprecated (since := "2024-07-22")] alias mul_eq_one_iff := mul_eq_one
-@[deprecated (since := "2024-07-22")] protected alias units_eq_one := Subsingleton.elim
-
 @[simp]
 theorem coe_unit_eq_one (u : (Associates M)ˣ) : (u : Associates M) = 1 := by
   simp [eq_iff_true_of_subsingleton]
@@ -654,7 +650,7 @@ theorem irreducible_mk {a : M} : Irreducible (Associates.mk a) ↔ Irreducible a
   · rintro h x y rfl
     exact h _ _ <| .refl _
   · rintro h x y ⟨u, rfl⟩
-    simpa using h x (y * u) (mul_assoc _ _ _)
+    simpa using h (mul_assoc _ _ _)
 
 @[simp]
 theorem mk_dvdNotUnit_mk_iff {a b : M} :
@@ -672,7 +668,7 @@ theorem mk_dvdNotUnit_mk_iff {a b : M} :
 theorem dvdNotUnit_of_lt {a b : Associates M} (hlt : a < b) : DvdNotUnit a b := by
   constructor
   · rintro rfl
-    apply not_lt_of_le _ hlt
+    apply not_lt_of_ge _ hlt
     apply dvd_zero
   rcases hlt with ⟨⟨x, rfl⟩, ndvd⟩
   refine ⟨x, ?_, rfl⟩

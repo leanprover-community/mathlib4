@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
 
+import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
 import Mathlib.CategoryTheory.Category.ReflQuiv
 import Mathlib.Combinatorics.Quiver.ReflQuiver
@@ -27,49 +28,57 @@ the data that is not used for the construction of the homotopy category) and the
 analogously defined `SSet.hoFunctor₂ : SSet.Truncated.{u} 2 ⥤ Cat.{u,u}` implemented relative to
 the syntax of the 2-truncated simplex category.
 
-TODO: Future work will show the functor `SSet.hoFunctor` to be left adjoint to the nerve by
-providing an analogous decomposition of the nerve functor, made by possible by the fact that nerves
-of categories are 2-coskeletal, and then composing a pair of adjunctions, which factor through the
-category of 2-truncated simplicial sets.
+In the file `Mathlib/AlgebraicTopology/SimplicialSet/NerveAdjunction.lean` we show the functor
+`SSet.hoFunctor` to be left adjoint to the nerve by providing an analogous decomposition of the
+nerve functor, made by possible by the fact that nerves of categories are 2-coskeletal, and then
+composing a pair of adjunctions, which factor through the category of 2-truncated simplicial sets.
 -/
 
 namespace SSet
 open CategoryTheory Category Limits Functor Opposite Simplicial Nerve
+open SimplexCategory.Truncated SimplicialObject.Truncated
+
 universe v u
 
 section
 
-local macro:1000 (priority := high) X:term " _[" n:term "]₂" : term =>
-    `(($X : SSet.Truncated 2).obj (Opposite.op ⟨SimplexCategory.mk $n, by decide⟩))
-
-set_option quotPrecheck false
-local macro:max (priority := high) "[" n:term "]₂" : term =>
-  `((⟨SimplexCategory.mk $n, by decide⟩ : SimplexCategory.Truncated 2))
-
-/-- A 2-truncated simplicial set `S` has an underlying refl quiver with `S _[0]₂` as its underlying
+/-- A 2-truncated simplicial set `S` has an underlying refl quiver with `S _⦋0⦌₂` as its underlying
 type. -/
-def OneTruncation₂ (S : SSet.Truncated 2) := S _[0]₂
+def OneTruncation₂ (S : SSet.Truncated 2) := S _⦋0⦌₂
 
 /-- Abbreviations for face maps in the 2-truncated simplex category. -/
 abbrev δ₂ {n} (i : Fin (n + 2)) (hn := by decide) (hn' := by decide) :
-    (⟨[n], hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[n + 1], hn'⟩ := SimplexCategory.δ i
+    (⟨⦋n⦌, hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨⦋n + 1⦌, hn'⟩ := SimplexCategory.δ i
 
 /-- Abbreviations for degeneracy maps in the 2-truncated simplex category. -/
 abbrev σ₂ {n} (i : Fin (n + 1)) (hn := by decide) (hn' := by decide) :
-    (⟨[n+1], hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[n], hn'⟩ := SimplexCategory.σ i
+    (⟨⦋n+1⦌, hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨⦋n⦌, hn'⟩ := SimplexCategory.σ i
 
 @[reassoc (attr := simp)]
-lemma δ₂_zero_comp_σ₂_zero : δ₂ (0 : Fin 2) ≫ σ₂ 0 = 𝟙 _ := SimplexCategory.δ_comp_σ_self
+lemma δ₂_zero_comp_σ₂_zero {n} (hn := by decide) (hn' := by decide) :
+    δ₂ (n := n) 0 hn hn' ≫ σ₂ 0 hn' hn = 𝟙 _ := SimplexCategory.δ_comp_σ_self
+
+@[reassoc]
+lemma δ₂_zero_comp_σ₂_one : δ₂ (0 : Fin 3) ≫ σ₂ 1 = σ₂ 0 ≫ δ₂ 0 :=
+  SimplexCategory.δ_comp_σ_of_le (i := 0) (j := 0) (Fin.zero_le _)
 
 @[reassoc (attr := simp)]
-lemma δ₂_one_comp_σ₂_zero : δ₂ (1 : Fin 2) ≫ σ₂ 0 = 𝟙 _ := SimplexCategory.δ_comp_σ_succ
+lemma δ₂_one_comp_σ₂_zero {n} (hn := by decide) (hn' := by decide) :
+    δ₂ (n := n) 1 hn hn' ≫ σ₂ 0 hn' hn = 𝟙 _ := SimplexCategory.δ_comp_σ_succ
 
-/-- The hom-types of the refl quiver underlying a simplicial set `S` are types of edges in `S _[1]₂`
+@[reassoc (attr := simp)]
+lemma δ₂_two_comp_σ₂_one : δ₂ (2 : Fin 3) ≫ σ₂ 1 = 𝟙 _ := SimplexCategory.δ_comp_σ_succ' (by decide)
+
+@[reassoc]
+lemma δ₂_two_comp_σ₂_zero : δ₂ (2 : Fin 3) ≫ σ₂ 0 = σ₂ 0 ≫ δ₂ 1 :=
+  SimplexCategory.δ_comp_σ_of_gt' (by decide)
+
+/-- The hom-types of the refl quiver underlying a simplicial set `S` are types of edges in `S _⦋1⦌₂`
 together with source and target equalities. -/
 @[ext]
 structure OneTruncation₂.Hom {S : SSet.Truncated 2} (X Y : OneTruncation₂ S) where
   /-- An arrow in `OneTruncation₂.Hom X Y` includes the data of a 1-simplex. -/
-  edge : S _[1]₂
+  edge : S _⦋1⦌₂
   /-- An arrow in `OneTruncation₂.Hom X Y` includes a source equality. -/
   src_eq : S.map (δ₂ 1).op edge = X
   /-- An arrow in `OneTruncation₂.Hom X Y` includes a target equality. -/
@@ -96,7 +105,7 @@ lemma OneTruncation₂.id_edge {S : SSet.Truncated 2} (X : OneTruncation₂ S) :
 def oneTruncation₂ : SSet.Truncated.{u} 2 ⥤ ReflQuiv.{u, u} where
   obj S := ReflQuiv.of (OneTruncation₂ S)
   map {S T} F := {
-    obj := F.app (op [0]₂)
+    obj := F.app (op ⦋0⦌₂)
     map := fun f ↦
       { edge := F.app _ f.edge
         src_eq := by rw [← FunctorToTypes.naturality, f.src_eq]
@@ -109,6 +118,14 @@ def oneTruncation₂ : SSet.Truncated.{u} 2 ⥤ ReflQuiv.{u, u} where
 lemma OneTruncation₂.hom_ext {S : SSet.Truncated 2} {x y : OneTruncation₂ S} {f g : x ⟶ y} :
     f.edge = g.edge → f = g := OneTruncation₂.Hom.ext
 
+@[simp]
+lemma OneTruncation₂.homOfEq_edge
+    {X : SSet.Truncated.{u} 2} {x₁ y₁ x₂ y₂ : OneTruncation₂ X}
+    (f : x₁ ⟶ y₁) (hx : x₁ = x₂) (hy : y₁ = y₂) :
+    (Quiver.homOfEq f hx hy).edge = f.edge := by
+  subst hx hy
+  rfl
+
 section
 variable {C : Type u} [Category.{v} C]
 
@@ -120,7 +137,6 @@ def OneTruncation₂.nerveEquiv :
   toFun X := X.obj' 0
   invFun X := .mk₀ X
   left_inv _ := ComposableArrows.ext₀ rfl
-  right_inv _ := rfl
 
 /-- A hom equivalence over the function `OneTruncation₂.nerveEquiv`. -/
 def OneTruncation₂.nerveHomEquiv (X Y : OneTruncation₂ ((SSet.truncation 2).obj (nerve C))) :
@@ -147,10 +163,11 @@ def OneTruncation₂.ofNerve₂ (C : Type u) [Category.{u} C] :
     nerveEquiv_apply, Nat.reduceAdd, id_edge, SimplexCategory.len_mk, id_eq, eqToHom_refl, comp_id,
     id_comp, ReflQuiver.id_eq_id]
   unfold nerve truncation SimplicialObject.truncation SimplexCategory.Truncated.inclusion
-  simp only [fullSubcategoryInclusion.obj, SimplexCategory.len_mk, Nat.reduceAdd, Fin.isValue,
+  -- the following was obtained by `simp?`
+  simp only [ObjectProperty.ι_obj, SimplexCategory.len_mk, Nat.reduceAdd, Fin.isValue,
     SimplexCategory.toCat_map, whiskeringLeft_obj_obj, Functor.comp_map, op_obj, op_map,
-    Quiver.Hom.unop_op, fullSubcategoryInclusion.map, ComposableArrows.whiskerLeft_map,
-    Fin.zero_eta, Monotone.functor_obj, Fin.mk_one, homOfLE_leOfHom]
+    Quiver.Hom.unop_op, ObjectProperty.ι_map, ComposableArrows.whiskerLeft_map, Fin.zero_eta,
+    Monotone.functor_obj, Fin.mk_one, homOfLE_leOfHom]
   show X.map (𝟙 _) = _
   rw [X.map_id]
   rfl
@@ -184,60 +201,57 @@ private lemma map_map_of_eq.{w}  {C : Type u} [Category.{v} C] (V : Cᵒᵖ ⥤ 
     {α : X ⟶ Y} {β : Y ⟶ Z} {γ : X ⟶ Z} {φ} :
     α ≫ β = γ → V.map α.op (V.map β.op φ) = V.map γ.op φ := by
   rintro rfl
-  change (V.map _ ≫ V.map _) _ = _
-  rw [← map_comp]; rfl
+  simp
 
 variable {V : SSet}
 
 namespace Truncated
 
-local notation (priority := high) "[" n "]" => SimplexCategory.mk n
-
 /-- The map that picks up the initial vertex of a 2-simplex, as a morphism in the 2-truncated
 simplex category. -/
-def ι0₂ : [0]₂ ⟶ [2]₂ := δ₂ (n := 0) 1 ≫ δ₂ (n := 1) 1
+def ι0₂ : ⦋0⦌₂ ⟶ ⦋2⦌₂ := δ₂ (n := 0) 1 ≫ δ₂ (n := 1) 1
 
 /-- The map that picks up the middle vertex of a 2-simplex, as a morphism in the 2-truncated
 simplex category. -/
-def ι1₂ : [0]₂ ⟶ [2]₂ := δ₂ (n := 0) 0 ≫ δ₂ (n := 1) 2
+def ι1₂ : ⦋0⦌₂ ⟶ ⦋2⦌₂ := δ₂ (n := 0) 0 ≫ δ₂ (n := 1) 2
 
 /-- The map that picks up the final vertex of a 2-simplex, as a morphism in the 2-truncated
 simplex category. -/
-def ι2₂ : [0]₂ ⟶ [2]₂ := δ₂ (n := 0) 0 ≫ δ₂ (n := 1) 1
+def ι2₂ : ⦋0⦌₂ ⟶ ⦋2⦌₂ := δ₂ (n := 0) 0 ≫ δ₂ (n := 1) 1
 
 /-- The initial vertex of a 2-simplex in a 2-truncated simplicial set. -/
-def ev0₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : OneTruncation₂ V := V.map ι0₂.op φ
+def ev0₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : OneTruncation₂ V := V.map ι0₂.op φ
 
 /-- The middle vertex of a 2-simplex in a 2-truncated simplicial set. -/
-def ev1₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : OneTruncation₂ V := V.map ι1₂.op φ
+def ev1₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : OneTruncation₂ V := V.map ι1₂.op φ
 
 /-- The final vertex of a 2-simplex in a 2-truncated simplicial set. -/
-def ev2₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : OneTruncation₂ V := V.map ι2₂.op φ
+def ev2₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : OneTruncation₂ V := V.map ι2₂.op φ
 
 /-- The 0th face of a 2-simplex, as a morphism in the 2-truncated simplex category. -/
-def δ0₂ : [1]₂ ⟶ [2]₂ := δ₂ (n := 1) 0
+def δ0₂ : ⦋1⦌₂ ⟶ ⦋2⦌₂ := δ₂ (n := 1) 0
 
 /-- The 1st face of a 2-simplex, as a morphism in the 2-truncated simplex category. -/
-def δ1₂ : [1]₂ ⟶ [2]₂ := δ₂ (n := 1) 1
+def δ1₂ : ⦋1⦌₂ ⟶ ⦋2⦌₂ := δ₂ (n := 1) 1
 
 /-- The 2nd face of a 2-simplex, as a morphism in the 2-truncated simplex category. -/
-def δ2₂ : [1]₂ ⟶ [2]₂ := δ₂ (n := 1) 2
+def δ2₂ : ⦋1⦌₂ ⟶ ⦋2⦌₂ := δ₂ (n := 1) 2
 
 /-- The arrow in the ReflQuiver `OneTruncation₂ V` of a 2-truncated simplicial set arising from the
 0th face of a 2-simplex. -/
-def ev12₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev1₂ φ ⟶ ev2₂ φ :=
+def ev12₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev1₂ φ ⟶ ev2₂ φ :=
   ⟨V.map δ0₂.op φ,
     map_map_of_eq V (SimplexCategory.δ_comp_δ (i := 0) (j := 1) (by decide)).symm,
     map_map_of_eq V rfl⟩
 
 /-- The arrow in the ReflQuiver `OneTruncation₂ V` of a 2-truncated simplicial set arising from the
 1st face of a 2-simplex. -/
-def ev02₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev0₂ φ ⟶ ev2₂ φ :=
+def ev02₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev0₂ φ ⟶ ev2₂ φ :=
   ⟨V.map δ1₂.op φ, map_map_of_eq V rfl, map_map_of_eq V rfl⟩
 
 /-- The arrow in the ReflQuiver `OneTruncation₂ V` of a 2-truncated simplicial set arising from the
 2nd face of a 2-simplex. -/
-def ev01₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev0₂ φ ⟶ ev1₂ φ :=
+def ev01₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev0₂ φ ⟶ ev1₂ φ :=
   ⟨V.map δ2₂.op φ, map_map_of_eq V (SimplexCategory.δ_comp_δ (j := 1) le_rfl), map_map_of_eq V rfl⟩
 
 
@@ -245,7 +259,7 @@ def ev01₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev0₂ φ ⟶ ev1₂ φ :=
 category on the underlying refl quiver of `V`. -/
 inductive HoRel₂ {V : SSet.Truncated 2} :
     (X Y : Cat.FreeRefl (OneTruncation₂ V)) → (f g : X ⟶ Y) → Prop
-  | mk (φ : V _[2]₂) :
+  | mk (φ : V _⦋2⦌₂) :
     HoRel₂ _ _
       (Quot.mk _ (Quiver.Hom.toPath (ev02₂ φ)))
       (Quot.mk _ ((Quiver.Hom.toPath (ev01₂ φ)).comp
@@ -253,7 +267,7 @@ inductive HoRel₂ {V : SSet.Truncated 2} :
 
 /-- A 2-simplex whose faces are identified with certain arrows in `OneTruncation₂ V` defines
 a term of type `HoRel₂` between those arrows. -/
-theorem HoRel₂.mk' {V : SSet.Truncated 2} (φ : V _[2]₂) {X₀ X₁ X₂ : OneTruncation₂ V}
+theorem HoRel₂.mk' {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) {X₀ X₁ X₂ : OneTruncation₂ V}
     (f₀₁ : X₀ ⟶ X₁) (f₁₂ : X₁ ⟶ X₂) (f₀₂ : X₀ ⟶ X₂)
     (h₀₁ : f₀₁.edge = V.map (δ₂ 2).op φ) (h₁₂ : f₁₂.edge = V.map (δ₂ 0).op φ)
     (h₀₂ : f₀₂.edge = V.map (δ₂ 1).op φ) :

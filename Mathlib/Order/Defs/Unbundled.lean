@@ -64,27 +64,27 @@ class IsTotal (α : Sort*) (r : α → α → Prop) : Prop where
 
 /-- `IsPreorder X r` means that the binary relation `r` on `X` is a pre-order, that is, reflexive
 and transitive. -/
-class IsPreorder (α : Sort*) (r : α → α → Prop) extends IsRefl α r, IsTrans α r : Prop
+class IsPreorder (α : Sort*) (r : α → α → Prop) : Prop extends IsRefl α r, IsTrans α r
 
 /-- `IsPartialOrder X r` means that the binary relation `r` on `X` is a partial order, that is,
 `IsPreorder X r` and `IsAntisymm X r`. -/
-class IsPartialOrder (α : Sort*) (r : α → α → Prop) extends IsPreorder α r, IsAntisymm α r : Prop
+class IsPartialOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsPreorder α r, IsAntisymm α r
 
 /-- `IsLinearOrder X r` means that the binary relation `r` on `X` is a linear order, that is,
 `IsPartialOrder X r` and `IsTotal X r`. -/
-class IsLinearOrder (α : Sort*) (r : α → α → Prop) extends IsPartialOrder α r, IsTotal α r : Prop
+class IsLinearOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsPartialOrder α r, IsTotal α r
 
 /-- `IsEquiv X r` means that the binary relation `r` on `X` is an equivalence relation, that
 is, `IsPreorder X r` and `IsSymm X r`. -/
-class IsEquiv (α : Sort*) (r : α → α → Prop) extends IsPreorder α r, IsSymm α r : Prop
+class IsEquiv (α : Sort*) (r : α → α → Prop) : Prop extends IsPreorder α r, IsSymm α r
 
 /-- `IsStrictOrder X r` means that the binary relation `r` on `X` is a strict order, that is,
 `IsIrrefl X r` and `IsTrans X r`. -/
-class IsStrictOrder (α : Sort*) (r : α → α → Prop) extends IsIrrefl α r, IsTrans α r : Prop
+class IsStrictOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsIrrefl α r, IsTrans α r
 
 /-- `IsStrictWeakOrder X lt` means that the binary relation `lt` on `X` is a strict weak order,
 that is, `IsStrictOrder X lt` and `¬lt a b ∧ ¬lt b a → ¬lt b c ∧ ¬lt c b → ¬lt a c ∧ ¬lt c a`. -/
-class IsStrictWeakOrder (α : Sort*) (lt : α → α → Prop) extends IsStrictOrder α lt : Prop where
+class IsStrictWeakOrder (α : Sort*) (lt : α → α → Prop) : Prop extends IsStrictOrder α lt where
   incomp_trans : ∀ a b c, ¬lt a b ∧ ¬lt b a → ¬lt b c ∧ ¬lt c b → ¬lt a c ∧ ¬lt c a
 
 /-- `IsTrichotomous X lt` means that the binary relation `lt` on `X` is trichotomous, that is,
@@ -94,8 +94,8 @@ class IsTrichotomous (α : Sort*) (lt : α → α → Prop) : Prop where
 
 /-- `IsStrictTotalOrder X lt` means that the binary relation `lt` on `X` is a strict total order,
 that is, `IsTrichotomous X lt` and `IsStrictOrder X lt`. -/
-class IsStrictTotalOrder (α : Sort*) (lt : α → α → Prop) extends IsTrichotomous α lt,
-    IsStrictOrder α lt : Prop
+class IsStrictTotalOrder (α : Sort*) (lt : α → α → Prop) : Prop
+    extends IsTrichotomous α lt, IsStrictOrder α lt
 
 /-- Equality is an equivalence relation. -/
 instance eq_isEquiv (α : Sort*) : IsEquiv α (· = ·) where
@@ -196,24 +196,19 @@ def AntiSymmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
 /-- `IsTotal` as a definition, suitable for use in proofs. -/
 def Total := ∀ x y, x ≺ y ∨ y ≺ x
 
-@[deprecated Equivalence.refl (since := "2024-09-13")]
 theorem Equivalence.reflexive (h : Equivalence r) : Reflexive r := h.refl
 
-@[deprecated Equivalence.symm (since := "2024-09-13")]
 theorem Equivalence.symmetric (h : Equivalence r) : Symmetric r :=
   fun _ _ ↦ h.symm
 
-@[deprecated Equivalence.trans (since := "2024-09-13")]
 theorem Equivalence.transitive (h : Equivalence r) : Transitive r :=
   fun _ _ _ ↦ h.trans
 
 variable {β : Sort*} (r : β → β → Prop) (f : α → β)
 
-@[deprecated "No deprecation message was provided." (since := "2024-09-13")]
 theorem InvImage.trans (h : Transitive r) : Transitive (InvImage r f) :=
   fun (a₁ a₂ a₃ : α) (h₁ : InvImage r f a₁ a₂) (h₂ : InvImage r f a₂ a₃) ↦ h h₁ h₂
 
-@[deprecated "No deprecation message was provided." (since := "2024-09-13")]
 theorem InvImage.irreflexive (h : Irreflexive r) : Irreflexive (InvImage r f) :=
   fun (a : α) (h₁ : InvImage r f a a) ↦ h (f a) h₁
 
@@ -247,6 +242,26 @@ lemma Maximal.le_of_ge (h : Maximal P x) (hy : P y) (hge : x ≤ y) : y ≤ x :=
 
 end LE
 
+section LE
+variable {ι : Sort*} {α : Type*} [LE α] {P : ι → Prop} {f : ι → α} {i j : ι}
+
+/-- `MinimalFor P f i` means that `f i` is minimal over all `i` satisfying `P`. -/
+def MinimalFor (P : ι → Prop) (f : ι → α) (i : ι) : Prop := P i ∧ ∀ ⦃j⦄, P j → f j ≤ f i → f i ≤ f j
+
+/-- `MaximalFor P f i` means that `f i` is maximal over all `i` satisfying `P`. -/
+def MaximalFor (P : ι → Prop) (f : ι → α) (i : ι) : Prop := P i ∧ ∀ ⦃j⦄, P j → f i ≤ f j → f j ≤ f i
+
+lemma MinimalFor.prop (h : MinimalFor P f i) : P i := h.1
+lemma MaximalFor.prop (h : MaximalFor P f i) : P i := h.1
+
+lemma MinimalFor.le_of_le (h : MinimalFor P f i) (hj : P j) (hji : f j ≤ f i) : f i ≤ f j :=
+  h.2 hj hji
+
+lemma MaximalFor.le_of_le (h : MaximalFor P f i) (hj : P j) (hij : f i ≤ f j) : f j ≤ f i :=
+  h.2 hj hij
+
+end LE
+
 /-! ### Upper and lower sets -/
 
 /-- An upper set in an order `α` is a set such that any element greater than one of its members is
@@ -276,3 +291,134 @@ structure LowerSet (α : Type*) [LE α] where
   lower' : IsLowerSet carrier
 
 extend_docs LowerSet before "The type of lower sets of an order."
+
+/-- An upper set relative to a predicate `P` is a set such that all elements satisfy `P` and
+any element greater than one of its members and satisfying `P` is also a member. -/
+def IsRelUpperSet {α : Type*} [LE α] (s : Set α) (P : α → Prop) : Prop :=
+  ∀ ⦃a : α⦄, a ∈ s → P a ∧ ∀ ⦃b : α⦄, a ≤ b → P b → b ∈ s
+
+/-- A lower set relative to a predicate `P` is a set such that all elements satisfy `P` and
+any element less than one of its members and satisfying `P` is also a member. -/
+def IsRelLowerSet {α : Type*} [LE α] (s : Set α) (P : α → Prop) : Prop :=
+  ∀ ⦃a : α⦄, a ∈ s → P a ∧ ∀ ⦃b : α⦄, b ≤ a → P b → b ∈ s
+
+@[inherit_doc IsRelUpperSet]
+structure RelUpperSet {α : Type*} [LE α] (P : α → Prop) where
+  /-- The carrier of a `RelUpperSet`. -/
+  carrier : Set α
+  /-- The carrier of a `RelUpperSet` is an upper set relative to `P`.
+
+  Do NOT use directly. Please use `RelUpperSet.isRelUpperSet` instead. -/
+  isRelUpperSet' : IsRelUpperSet carrier P
+
+extend_docs RelUpperSet before "The type of upper sets of an order relative to `P`."
+
+@[inherit_doc IsRelLowerSet]
+structure RelLowerSet {α : Type*} [LE α] (P : α → Prop) where
+  /-- The carrier of a `RelLowerSet`. -/
+  carrier : Set α
+  /-- The carrier of a `RelLowerSet` is a lower set relative to `P`.
+
+  Do NOT use directly. Please use `RelLowerSet.isRelLowerSet` instead. -/
+  isRelLowerSet' : IsRelLowerSet carrier P
+
+extend_docs RelLowerSet before "The type of lower sets of an order relative to `P`."
+
+variable {α β : Type*} {r : α → α → Prop} {s : β → β → Prop}
+
+theorem of_eq [IsRefl α r] : ∀ {a b}, a = b → r a b
+  | _, _, .refl _ => refl _
+
+theorem comm [IsSymm α r] {a b : α} : r a b ↔ r b a :=
+  ⟨symm, symm⟩
+
+theorem antisymm' [IsAntisymm α r] {a b : α} : r a b → r b a → b = a := fun h h' => antisymm h' h
+
+theorem antisymm_iff [IsRefl α r] [IsAntisymm α r] {a b : α} : r a b ∧ r b a ↔ a = b :=
+  ⟨fun h => antisymm h.1 h.2, by
+    rintro rfl
+    exact ⟨refl _, refl _⟩⟩
+
+/-- A version of `antisymm` with `r` explicit.
+
+This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. -/
+@[elab_without_expected_type]
+theorem antisymm_of (r : α → α → Prop) [IsAntisymm α r] {a b : α} : r a b → r b a → a = b :=
+  antisymm
+
+/-- A version of `antisymm'` with `r` explicit.
+
+This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. -/
+@[elab_without_expected_type]
+theorem antisymm_of' (r : α → α → Prop) [IsAntisymm α r] {a b : α} : r a b → r b a → b = a :=
+  antisymm'
+
+/-- A version of `comm` with `r` explicit.
+
+This lemma matches the lemmas from lean core in `Init.Algebra.Classes`, but is missing there. -/
+theorem comm_of (r : α → α → Prop) [IsSymm α r] {a b : α} : r a b ↔ r b a :=
+  comm
+
+protected theorem IsAsymm.isAntisymm (r) [IsAsymm α r] : IsAntisymm α r :=
+  ⟨fun _ _ h₁ h₂ => (_root_.asymm h₁ h₂).elim⟩
+
+protected theorem IsAsymm.isIrrefl [IsAsymm α r] : IsIrrefl α r :=
+  ⟨fun _ h => _root_.asymm h h⟩
+
+protected theorem IsTotal.isTrichotomous (r) [IsTotal α r] : IsTrichotomous α r :=
+  ⟨fun a b => or_left_comm.1 (Or.inr <| total_of r a b)⟩
+
+-- see Note [lower instance priority]
+instance (priority := 100) IsTotal.to_isRefl (r) [IsTotal α r] : IsRefl α r :=
+  ⟨fun a => or_self_iff.1 <| total_of r a a⟩
+
+theorem ne_of_irrefl {r} [IsIrrefl α r] : ∀ {x y : α}, r x y → x ≠ y
+  | _, _, h, rfl => irrefl _ h
+
+theorem ne_of_irrefl' {r} [IsIrrefl α r] : ∀ {x y : α}, r x y → y ≠ x
+  | _, _, h, rfl => irrefl _ h
+
+theorem not_rel_of_subsingleton (r) [IsIrrefl α r] [Subsingleton α] (x y) : ¬r x y :=
+  Subsingleton.elim x y ▸ irrefl x
+
+theorem rel_of_subsingleton (r) [IsRefl α r] [Subsingleton α] (x y) : r x y :=
+  Subsingleton.elim x y ▸ refl x
+
+@[simp]
+theorem empty_relation_apply (a b : α) : EmptyRelation a b ↔ False :=
+  Iff.rfl
+
+instance : IsIrrefl α EmptyRelation :=
+  ⟨fun _ => id⟩
+
+theorem rel_congr_left [IsSymm α r] [IsTrans α r] {a b c : α} (h : r a b) : r a c ↔ r b c :=
+  ⟨trans_of r (symm_of r h), trans_of r h⟩
+
+theorem rel_congr_right [IsSymm α r] [IsTrans α r] {a b c : α} (h : r b c) : r a b ↔ r a c :=
+  ⟨(trans_of r · h), (trans_of r · (symm_of r h))⟩
+
+theorem rel_congr [IsSymm α r] [IsTrans α r] {a b c d : α} (h₁ : r a b) (h₂ : r c d) :
+    r a c ↔ r b d := by
+  rw [rel_congr_left h₁, rel_congr_right h₂]
+
+theorem trans_trichotomous_left [IsTrans α r] [IsTrichotomous α r] {a b c : α}
+    (h₁ : ¬r b a) (h₂ : r b c) : r a c := by
+  rcases trichotomous_of r a b with (h₃ | rfl | h₃)
+  · exact _root_.trans h₃ h₂
+  · exact h₂
+  · exact absurd h₃ h₁
+
+theorem trans_trichotomous_right [IsTrans α r] [IsTrichotomous α r] {a b c : α}
+    (h₁ : r a b) (h₂ : ¬r c b) : r a c := by
+  rcases trichotomous_of r b c with (h₃ | rfl | h₃)
+  · exact _root_.trans h₁ h₃
+  · exact h₁
+  · exact absurd h₃ h₂
+
+theorem transitive_of_trans (r : α → α → Prop) [IsTrans α r] : Transitive r := IsTrans.trans
+
+/-- In a trichotomous irreflexive order, every element is determined by the set of predecessors. -/
+theorem extensional_of_trichotomous_of_irrefl (r : α → α → Prop) [IsTrichotomous α r] [IsIrrefl α r]
+    {a b : α} (H : ∀ x, r x a ↔ r x b) : a = b :=
+  ((@trichotomous _ r _ a b).resolve_left <| mt (H _).2 <| irrefl a).resolve_right <| mt (H _).1
+    <| irrefl b

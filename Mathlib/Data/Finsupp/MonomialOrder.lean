@@ -15,6 +15,7 @@ A *monomial order* is well ordering relation on a type of the form `σ →₀ �
 is compatible with addition and for which `0` is the smallest element.
 Since several monomial orders may have to be used simultaneously, one cannot
 get them as instances.
+
 In this formalization, they are presented as a structure `MonomialOrder` which encapsulates
 `MonomialOrder.toSyn`, an additive and monotone isomorphism to a linearly ordered cancellative
 additive commutative monoid.
@@ -56,8 +57,12 @@ it is customary to order them using the opposite order : `MvPolynomial.X 0 > MvP
 structure MonomialOrder (σ : Type*) where
   /-- The synonym type -/
   syn : Type*
+  /-- `syn` is a additive commutative monoid -/
+  acm : AddCommMonoid syn := by infer_instance
+  /-- `syn` is linearly ordered -/
+  lo : LinearOrder syn := by infer_instance
   /-- `syn` is a linearly ordered cancellative additive commutative monoid -/
-  locacm : LinearOrderedCancelAddCommMonoid syn := by infer_instance
+  iocam : IsOrderedCancelAddMonoid syn := by infer_instance
   /-- the additive equivalence from `σ →₀ ℕ` to `syn` -/
   toSyn : (σ →₀ ℕ) ≃+ syn
   /-- `toSyn` is monotone -/
@@ -65,7 +70,7 @@ structure MonomialOrder (σ : Type*) where
   /-- `syn` is a well ordering -/
   wf : WellFoundedLT syn := by infer_instance
 
-attribute [instance] MonomialOrder.locacm MonomialOrder.wf
+attribute [instance] MonomialOrder.acm MonomialOrder.lo MonomialOrder.iocam MonomialOrder.wf
 
 namespace MonomialOrder
 
@@ -80,8 +85,7 @@ instance orderBot : OrderBot (m.syn) where
   bot := 0
   bot_le a := by
     have := m.le_add_right 0 (m.toSyn.symm a)
-    simp [map_add, zero_add] at this
-    exact this
+    simpa [map_add, zero_add]
 
 @[simp]
 theorem bot_eq_zero : (⊥ : m.syn) = 0 := rfl
@@ -93,11 +97,11 @@ lemma toSyn_strictMono : StrictMono (m.toSyn) := by
 
 /-- Given a monomial order, notation for the corresponding strict order relation on `σ →₀ ℕ` -/
 scoped
-notation:25 c "≺[" m:25 "]" d:25 => (MonomialOrder.toSyn m c < MonomialOrder.toSyn m d)
+notation:50 c " ≺[" m:25 "] " d:50 => (MonomialOrder.toSyn m c < MonomialOrder.toSyn m d)
 
 /-- Given a monomial order, notation for the corresponding order relation on `σ →₀ ℕ` -/
 scoped
-notation:25 c "≼[" m:25 "]" d:25 => (MonomialOrder.toSyn m c ≤ MonomialOrder.toSyn m d)
+notation:50 c " ≼[" m:25 "] " d:50 => (MonomialOrder.toSyn m c ≤ MonomialOrder.toSyn m d)
 
 end MonomialOrder
 
@@ -108,12 +112,13 @@ open Finsupp
 open scoped MonomialOrder
 
 -- The linear order on `Finsupp`s obtained by the lexicographic ordering. -/
-noncomputable instance {α N : Type*} [LinearOrder α] [OrderedCancelAddCommMonoid N] :
-    OrderedCancelAddCommMonoid (Lex (α →₀ N)) where
+noncomputable instance {α N : Type*} [LinearOrder α]
+    [AddCommMonoid N] [PartialOrder N] [IsOrderedCancelAddMonoid N] :
+    IsOrderedCancelAddMonoid (Lex (α →₀ N)) where
   le_of_add_le_add_left a b c h := by simpa only [add_le_add_iff_left] using h
   add_le_add_left a b h c := by simpa only [add_le_add_iff_left] using h
 
-/-- for the lexicographic ordering, X 0 * X 1 < X 0  ^ 2 -/
+/-- for the lexicographic ordering, X 0 * X 1 < X 0 ^ 2 -/
 example : toLex (Finsupp.single 0 2) > toLex (Finsupp.single 0 1 + Finsupp.single 1 1) := by
   use 0; simp
 

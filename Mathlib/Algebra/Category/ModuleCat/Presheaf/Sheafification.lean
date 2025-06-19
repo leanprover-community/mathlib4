@@ -9,6 +9,7 @@ import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.Limits
 import Mathlib.CategoryTheory.Sites.LocallyBijective
 import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
 /-!
 # The sheafification functor for presheaves of modules
@@ -40,7 +41,7 @@ variable [HasWeakSheafify J AddCommGrp.{v}]
 /-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings (i.e. `R` identifies to the sheafification of `R₀`), this is
 the associated sheaf of modules functor `PresheafOfModules.{v} R₀ ⥤ SheafOfModules.{v} R`. -/
-@[simps! (config := .lemmasOnly) map]
+@[simps! -isSimp map]
 noncomputable def sheafification : PresheafOfModules.{v} R₀ ⥤ SheafOfModules.{v} R where
   obj M₀ := sheafify α (CategoryTheory.toSheafify J M₀.presheaf)
   map f := sheafifyMap _ _ _ f

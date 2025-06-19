@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Order.Interval.Set.ProjIcc
+import Mathlib.Tactic.Finiteness
 import Mathlib.Topology.Semicontinuous
 import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
@@ -44,7 +45,6 @@ that the sets one uses are nonempty and bounded above as these are only conditio
 open scoped NNReal ENNReal Topology UniformConvergence
 open Set Filter
 
--- Porting note: sectioned variables because a `wlog` was broken due to extra variables in context
 variable {α : Type*} [LinearOrder α] {E : Type*} [PseudoEMetricSpace E]
 
 /-- The (extended real valued) variation of a function `f` on a set `s` inside a linear order is
@@ -128,7 +128,7 @@ theorem edist_le (f : α → E) {s : Set α} {x y : α} (hx : x ∈ s) (hy : y �
     edist (f x) (f y) ≤ eVariationOn f s := by
   wlog hxy : y ≤ x generalizing x y
   · rw [edist_comm]
-    exact this hy hx (le_of_not_le hxy)
+    exact this hy hx (le_of_not_ge hxy)
   let u : ℕ → α := fun n => if n = 0 then y else x
   have hu : Monotone u := monotone_nat_of_le_succ fun
   | 0 => hxy
@@ -213,7 +213,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
     ∃ (v : ℕ → α) (m : ℕ), Monotone v ∧ (∀ i, v i ∈ s) ∧ x ∈ v '' Iio m ∧
       (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) ≤
         ∑ j ∈ Finset.range m, edist (f (v (j + 1))) (f (v j)) := by
-  rcases le_or_lt (u n) x with (h | h)
+  rcases le_or_gt (u n) x with (h | h)
   · let v i := if i ≤ n then u i else x
     have vs : ∀ i, v i ∈ s := fun i ↦ by
       simp only [v]
@@ -229,7 +229,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
         exact hu (Nat.le_succ i)
       · simp only [le_refl, if_true, add_le_iff_nonpos_right, Nat.le_zero, Nat.one_ne_zero,
           if_false, h]
-      · have A : ¬i ≤ n := hi.not_le
+      · have A : ¬i ≤ n := hi.not_ge
         have B : ¬i + 1 ≤ n := fun h => A (i.le_succ.trans h)
         simp only [A, B, if_false, le_rfl]
     refine ⟨v, n + 2, hv, vs, (mem_image _ _ _).2 ⟨n + 1, ?_, ?_⟩, ?_⟩
@@ -243,8 +243,9 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
           simp only [Finset.mem_range] at hi
           have : i + 1 ≤ n := Nat.succ_le_of_lt hi
           simp only [v, hi.le, this, if_true]
-        _ ≤ ∑ j ∈ Finset.range (n + 2), edist (f (v (j + 1))) (f (v j)) :=
-          Finset.sum_le_sum_of_subset (Finset.range_mono (Nat.le_add_right n 2))
+        _ ≤ ∑ j ∈ Finset.range (n + 2), edist (f (v (j + 1))) (f (v j)) := by
+          gcongr
+          apply Nat.le_add_right
   have exists_N : ∃ N, N ≤ n ∧ x < u N := ⟨n, le_rfl, h⟩
   let N := Nat.find exists_N
   have hN : N ≤ n ∧ x < u N := Nat.find_spec exists_N
@@ -267,13 +268,13 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       have T := Nat.find_min exists_N A
       push_neg at T
       exact T (A.le.trans hN.1)
-    · have A : ¬i < N := (Nat.lt_succ_iff.mp hi).not_lt
-      have B : ¬i + 1 < N := hi.not_lt
+    · have A : ¬i < N := (Nat.lt_succ_iff.mp hi).not_gt
+      have B : ¬i + 1 < N := hi.not_gt
       have C : ¬i + 1 = N := hi.ne.symm
       have D : i + 1 - 1 = i := Nat.pred_succ i
       rw [if_neg A, if_neg B, if_neg C, D]
       split_ifs
-      · exact hN.2.le.trans (hu (le_of_not_lt A))
+      · exact hN.2.le.trans (hu (le_of_not_gt A))
       · exact hu (Nat.pred_le _)
   refine ⟨w, n + 1, hw, ws, (mem_image _ _ _).2 ⟨N, hN.1.trans_lt (Nat.lt_succ_self n), ?_⟩, ?_⟩
   · dsimp only [w]; rw [if_neg (lt_irrefl N), if_pos rfl]
@@ -290,9 +291,9 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
         rw [Finset.range_eq_Ico]
         exact Finset.sum_Ico_add (fun i => edist (f (w (i + 1))) (f (w i))) 0 n 1
       _ ≤ ∑ j ∈ Finset.range (n + 1), edist (f (w (j + 1))) (f (w j)) := by
-        apply Finset.sum_le_sum_of_subset _
         rw [Finset.range_eq_Ico]
-        exact Finset.Ico_subset_Ico zero_le_one le_rfl
+        gcongr
+        exact zero_le_one
   · calc
       (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) =
           ((∑ i ∈ Finset.Ico 0 (N - 1), edist (f (u (i + 1))) (f (u i))) +
@@ -413,15 +414,15 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
         using 3 <;> abel
     _ ≤ ∑ i ∈ Finset.range (n + 1 + m), edist (f (w (i + 1))) (f (w i)) := by
       rw [← Finset.sum_union]
-      · apply Finset.sum_le_sum_of_subset _
+      · gcongr
         rintro i hi
         simp only [Finset.mem_union, Finset.mem_range, Finset.mem_Ico] at hi ⊢
-        cases' hi with hi hi
+        rcases hi with hi | hi
         · exact lt_of_lt_of_le hi (n.le_succ.trans (n.succ.le_add_right m))
         · exact hi.2
       · refine Finset.disjoint_left.2 fun i hi h'i => ?_
         simp only [Finset.mem_Ico, Finset.mem_range] at hi h'i
-        exact hi.not_lt (Nat.lt_of_succ_le h'i.left)
+        exact hi.not_gt (Nat.lt_of_succ_le h'i.left)
     _ ≤ eVariationOn f (s ∪ t) := sum_le f _ hw wst
 
 /-- If a set `s` is to the left of a set `t`, and both contain the boundary point `x`, then
@@ -594,7 +595,7 @@ variable (f : α → E) (s : Set α)
 
 protected theorem self (a : α) : variationOnFromTo f s a a = 0 := by
   dsimp only [variationOnFromTo]
-  rw [if_pos le_rfl, Icc_self, eVariationOn.subsingleton, ENNReal.zero_toReal]
+  rw [if_pos le_rfl, Icc_self, eVariationOn.subsingleton, ENNReal.toReal_zero]
   exact fun x hx y hy => hx.2.trans hy.2.symm
 
 protected theorem nonneg_of_le {a b : α} (h : a ≤ b) : 0 ≤ variationOnFromTo f s a b := by
@@ -603,9 +604,9 @@ protected theorem nonneg_of_le {a b : α} (h : a ≤ b) : 0 ≤ variationOnFromT
 protected theorem eq_neg_swap (a b : α) :
     variationOnFromTo f s a b = -variationOnFromTo f s b a := by
   rcases lt_trichotomy a b with (ab | rfl | ba)
-  · simp only [variationOnFromTo, if_pos ab.le, if_neg ab.not_le, neg_neg]
+  · simp only [variationOnFromTo, if_pos ab.le, if_neg ab.not_ge, neg_neg]
   · simp only [variationOnFromTo.self, neg_zero]
-  · simp only [variationOnFromTo, if_pos ba.le, if_neg ba.not_le, neg_neg]
+  · simp only [variationOnFromTo, if_pos ba.le, if_neg ba.not_ge, neg_neg]
 
 protected theorem nonpos_of_ge {a b : α} (h : b ≤ a) : variationOnFromTo f s a b ≤ 0 := by
   rw [variationOnFromTo.eq_neg_swap]
@@ -638,7 +639,7 @@ protected theorem edist_zero_of_eq_zero (hf : LocallyBoundedVariationOn f s)
     edist (f a) (f b) = 0 := by
   wlog h' : a ≤ b
   · rw [edist_comm]
-    apply this hf hb ha _ (le_of_not_le h')
+    apply this hf hb ha _ (le_of_not_ge h')
     rw [variationOnFromTo.eq_neg_swap, h, neg_zero]
   · apply le_antisymm _ (zero_le _)
     rw [← ENNReal.ofReal_zero, ← h, variationOnFromTo.eq_of_le f s h',
@@ -649,7 +650,7 @@ protected theorem edist_zero_of_eq_zero (hf : LocallyBoundedVariationOn f s)
 protected theorem eq_left_iff {f : α → E} {s : Set α} (hf : LocallyBoundedVariationOn f s)
     {a b c : α} (ha : a ∈ s) (hb : b ∈ s) (hc : c ∈ s) :
     variationOnFromTo f s a b = variationOnFromTo f s a c ↔ variationOnFromTo f s b c = 0 := by
-  simp only [← variationOnFromTo.add hf ha hb hc, self_eq_add_right]
+  simp only [← variationOnFromTo.add hf ha hb hc, left_eq_add]
 
 protected theorem eq_zero_iff_of_le {f : α → E} {s : Set α} (hf : LocallyBoundedVariationOn f s)
     {a b : α} (ha : a ∈ s) (hb : b ∈ s) (ab : a ≤ b) :
@@ -748,7 +749,7 @@ theorem LipschitzOnWith.comp_eVariationOn_le {f : E → F} {C : ℝ≥0} {t : Se
 theorem LipschitzOnWith.comp_boundedVariationOn {f : E → F} {C : ℝ≥0} {t : Set E}
     (hf : LipschitzOnWith C f t) {g : α → E} {s : Set α} (hg : MapsTo g s t)
     (h : BoundedVariationOn g s) : BoundedVariationOn (f ∘ g) s :=
-  ne_top_of_le_ne_top (ENNReal.mul_ne_top ENNReal.coe_ne_top h) (hf.comp_eVariationOn_le hg)
+  ne_top_of_le_ne_top (by finiteness) (hf.comp_eVariationOn_le hg)
 
 theorem LipschitzOnWith.comp_locallyBoundedVariationOn {f : E → F} {C : ℝ≥0} {t : Set E}
     (hf : LipschitzOnWith C f t) {g : α → E} {s : Set α} (hg : MapsTo g s t)

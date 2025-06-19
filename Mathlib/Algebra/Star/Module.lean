@@ -40,40 +40,25 @@ theorem star_natCast_smul [Semiring R] [AddCommMonoid M] [Module R M] [StarAddMo
     (x : M) : star ((n : R) • x) = (n : R) • star x :=
   map_natCast_smul (starAddEquiv : M ≃+ M) R R n x
 
-@[deprecated (since := "2024-04-17")]
-alias star_nat_cast_smul := star_natCast_smul
-
 @[simp]
 theorem star_intCast_smul [Ring R] [AddCommGroup M] [Module R M] [StarAddMonoid M] (n : ℤ)
     (x : M) : star ((n : R) • x) = (n : R) • star x :=
   map_intCast_smul (starAddEquiv : M ≃+ M) R R n x
-
-@[deprecated (since := "2024-04-17")]
-alias star_int_cast_smul := star_intCast_smul
 
 @[simp]
 theorem star_inv_natCast_smul [DivisionSemiring R] [AddCommMonoid M] [Module R M] [StarAddMonoid M]
     (n : ℕ) (x : M) : star ((n⁻¹ : R) • x) = (n⁻¹ : R) • star x :=
   map_inv_natCast_smul (starAddEquiv : M ≃+ M) R R n x
 
-@[deprecated (since := "2024-04-17")]
-alias star_inv_nat_cast_smul := star_inv_natCast_smul
-
 @[simp]
 theorem star_inv_intCast_smul [DivisionRing R] [AddCommGroup M] [Module R M] [StarAddMonoid M]
     (n : ℤ) (x : M) : star ((n⁻¹ : R) • x) = (n⁻¹ : R) • star x :=
   map_inv_intCast_smul (starAddEquiv : M ≃+ M) R R n x
 
-@[deprecated (since := "2024-04-17")]
-alias star_inv_int_cast_smul := star_inv_intCast_smul
-
 @[simp]
 theorem star_ratCast_smul [DivisionRing R] [AddCommGroup M] [Module R M] [StarAddMonoid M] (n : ℚ)
     (x : M) : star ((n : R) • x) = (n : R) • star x :=
   map_ratCast_smul (starAddEquiv : M ≃+ M) _ _ _ x
-
-@[deprecated (since := "2024-04-17")]
-alias star_rat_cast_smul := star_ratCast_smul
 
 /-!
 Per the naming convention, these two lemmas call `(q • ·)` `nnrat_smul` and `rat_smul` respectively,
@@ -210,7 +195,6 @@ variable (A)
 
 /-- The decomposition of elements of a star module into their self- and skew-adjoint parts,
 as a linear equivalence. -/
--- Porting note: This attribute causes a `timeout at 'whnf'`.
 @[simps!]
 def StarModule.decomposeProdAdjoint : A ≃ₗ[R] selfAdjoint A × skewAdjoint A := by
   refine LinearEquiv.ofLinear ((selfAdjointPart R).prod (skewAdjointPart R))

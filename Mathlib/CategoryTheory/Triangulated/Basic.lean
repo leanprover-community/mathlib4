@@ -5,7 +5,7 @@ Authors: Luke Kershaw
 -/
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 import Mathlib.CategoryTheory.Shift.Basic
 
 /-!
@@ -165,6 +165,7 @@ lemma comp_hom₂ {X Y Z : Triangle C} (f : X ⟶ Y) (g : Y ⟶ Z) :
 lemma comp_hom₃ {X Y Z : Triangle C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom₃ = f.hom₃ ≫ g.hom₃ := rfl
 
+/-- Make a morphism between triangles from the required data. -/
 @[simps]
 def Triangle.homMk (A B : Triangle C)
     (hom₁ : A.obj₁ ⟶ B.obj₁) (hom₂ : A.obj₂ ⟶ B.obj₂) (hom₃ : A.obj₃ ⟶ B.obj₃)
@@ -179,6 +180,7 @@ def Triangle.homMk (A B : Triangle C)
   comm₂ := comm₂
   comm₃ := comm₃
 
+/-- Make an isomorphism between triangles from the required data. -/
 @[simps]
 def Triangle.isoMk (A B : Triangle C)
     (iso₁ : A.obj₁ ≅ B.obj₁) (iso₂ : A.obj₂ ≅ B.obj₂) (iso₃ : A.obj₃ ≅ B.obj₃)

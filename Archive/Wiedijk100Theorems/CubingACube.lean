@@ -38,7 +38,7 @@ theorem Ico_lemma {α} [LinearOrder α] {x₁ x₂ y₁ y₂ z₁ z₂ w : α} (
   simp only [not_and, not_lt, mem_Ico] at hw
   refine ⟨max x₁ (min w y₂), ?_, ?_, ?_⟩
   · simp [le_refl, lt_trans h₁ (lt_trans hy h₂), h₂]
-  · simp +contextual [hw, lt_irrefl, not_le_of_lt h₁]
+  · simp +contextual [hw, lt_irrefl, not_le_of_gt h₁]
   · simp [hw.2.1, hw.2.2, hz₁, lt_of_lt_of_le h₁ hz₂]
 
 /-- A (hyper)-cube (in standard orientation) is a vector `b` consisting of the bottom-left point
@@ -161,7 +161,7 @@ theorem nontrivial_fin : Nontrivial (Fin n) :=
 /-- The width of any cube in the partition cannot be 1. -/
 theorem w_ne_one [Nontrivial ι] (i : ι) : (cs i).w ≠ 1 := by
   intro hi
-  cases' exists_ne i with i' hi'
+  obtain ⟨i', hi'⟩ := exists_ne i
   let p := (cs i').b
   have hp : p ∈ (cs i').toSet := (cs i').b_mem_toSet
   have h2p : p ∈ (cs i).toSet := by
@@ -179,7 +179,7 @@ theorem w_ne_one [Nontrivial ι] (i : ι) : (cs i).w ≠ 1 := by
   bottoms of (other) cubes in the family. -/
 theorem shiftUp_bottom_subset_bottoms (hc : (cs i).xm ≠ 1) :
     (cs i).shiftUp.bottom ⊆ ⋃ i : ι, (cs i).bottom := by
-  intro p hp; cases' hp with hp0 hps; rw [tail_shiftUp] at hps
+  intro p hp; obtain ⟨hp0, hps⟩ := hp; rw [tail_shiftUp] at hps
   have : p ∈ (unitCube : Cube (n + 1)).toSet := by
     simp only [toSet, forall_iff_succ, hp0, side_unitCube, mem_setOf_eq, mem_Ico, head_shiftUp]
     refine ⟨⟨?_, ?_⟩, ?_⟩
@@ -190,7 +190,7 @@ theorem shiftUp_bottom_subset_bottoms (hc : (cs i).xm ≠ 1) :
     intro j; exact side_subset h (hps j)
   rw [← h.2, mem_iUnion] at this; rcases this with ⟨i', hi'⟩
   rw [mem_iUnion]; use i'; refine ⟨?_, fun j => hi' j.succ⟩
-  have : i ≠ i' := by rintro rfl; apply not_le_of_lt (hi' 0).2; rw [hp0]; rfl
+  have : i ≠ i' := by rintro rfl; apply not_le_of_gt (hi' 0).2; rw [hp0]; rfl
   have := h.1 this
   rw [onFun, comp_apply, comp_apply, toSet_disjoint, exists_fin_succ] at this
   rcases this with (h0 | ⟨j, hj⟩)
@@ -269,7 +269,7 @@ theorem w_lt_w (hi : i ∈ bcubes cs c) : (cs i).w < c.w := by
   apply lt_of_le_of_ne _ (v.2.2 i hi.1)
   have j : Fin n := ⟨1, Nat.le_of_succ_le_succ h.three_le⟩
   rw [← add_le_add_iff_left ((cs i).b j.succ)]
-  apply le_trans (t_le_t hi j); rw [add_le_add_iff_right]; apply b_le_b hi
+  apply le_trans (t_le_t hi j); gcongr; apply b_le_b hi
 
 /-- There are at least two cubes in a valley -/
 theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
@@ -290,10 +290,11 @@ theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
   have h2i' : i' ∈ bcubes cs c := ⟨hi'.1.symm, v.2.1 i' hi'.1.symm ⟨tail p, hi'.2, hp.2⟩⟩
   refine ⟨i, h2i, i', h2i', ?_⟩
   rintro rfl
-  apply not_le_of_lt (hi'.2 ⟨1, Nat.le_of_succ_le_succ h.three_le⟩).2
+  apply not_le_of_gt (hi'.2 ⟨1, Nat.le_of_succ_le_succ h.three_le⟩).2
   simp only [tail, Cube.tail, p]
-  rw [if_pos, add_le_add_iff_right]
-  · exact (hi.2 _).1
+  rw [if_pos]
+  · gcongr
+    exact (hi.2 _).1
   rfl
 
 /-- There is a cube in the valley -/
@@ -341,7 +342,7 @@ theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) 
       ∀ ⦃i'⦄ (_ : i' ∈ bcubes cs c),
         i' ≠ mi h v → (cs <| mi h v).b j.succ ∈ (cs i').side j.succ → x ∈ (cs i').side j.succ := by
   let i := mi h v; have hi : i ∈ bcubes cs c := mi_mem_bcubes
-  cases' bi with bi bi
+  obtain bi | bi := bi
   · refine ⟨(cs i).b j.succ + (cs i).w, ⟨?_, ?_⟩, ?_⟩
     · simp [i, side, bi, hw', w_lt_w h v hi]
     · intro h'; simpa [i, lt_irrefl] using h'.2
@@ -367,7 +368,7 @@ theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) 
   · simp only [side, not_and_or, not_lt, not_le, mem_Ico]; left; exact hx
   intro i'' hi'' h2i'' h3i''; constructor; swap; · apply lt_trans hx h3i''.2
   rw [le_sub_iff_add_le]
-  refine le_trans ?_ (t_le_t hi'' j); rw [add_le_add_iff_left]; apply h3i' i'' ⟨hi'', _⟩
+  refine le_trans ?_ (t_le_t hi'' j); gcongr; apply h3i' i'' ⟨hi'', _⟩
   simp [i, mem_singleton, h2i'']
 
 variable (h v)
@@ -435,7 +436,7 @@ theorem mi_not_onBoundary' (j : Fin n) :
     c.tail.b j < (cs (mi h v)).tail.b j ∧
       (cs (mi h v)).tail.b j + (cs (mi h v)).w < c.tail.b j + c.w := by
   have := mi_not_onBoundary h v j
-  simp only [OnBoundary, not_or] at this; cases' this with h1 h2
+  simp only [OnBoundary, not_or] at this; obtain ⟨h1, h2⟩ := this
   constructor
   · apply lt_of_le_of_ne (b_le_b mi_mem_bcubes _) h1
   apply lt_of_le_of_ne _ h2
@@ -455,7 +456,7 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
     simp only [not_subset, tail_shiftUp] at h2i'
     rcases h2i' with ⟨p1, hp1, h2p1⟩
     have : ∃ p3, p3 ∈ (cs i').tail.toSet ∧ p3 ∉ (cs i).tail.toSet ∧ p3 ∈ c.tail.toSet := by
-      simp only [toSet, not_forall, mem_setOf_eq] at h2p1; cases' h2p1 with j hj
+      simp only [toSet, not_forall, mem_setOf_eq] at h2p1; obtain ⟨j, hj⟩ := h2p1
       rcases Ico_lemma (mi_not_onBoundary' j).1 (by simp [hw]) (mi_not_onBoundary' j).2
           (le_trans (hp2 j).1 <| le_of_lt (h2p2 j).2) (le_trans (h2p2 j).1 <| le_of_lt (hp2 j).2)
           ⟨hj, hp1 j⟩ with
@@ -540,7 +541,7 @@ theorem cannot_cube_a_cube :
     InjOn Cube.w s →                           -- such that the widths of all cubes are different
     False := by                                -- then we can derive a contradiction
   intro n hn s hfin h2 hd hU hinj
-  cases' n with n
+  rcases n with - | n
   · cases hn
   exact @not_correct n s (↑) hfin.to_subtype h2.coe_sort
     ⟨hd.subtype _ _, (iUnion_subtype _ _).trans hU, hinj.injective, hn⟩

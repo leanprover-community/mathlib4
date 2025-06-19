@@ -5,14 +5,15 @@ Authors: Andrew Yang, Antoine Chambert-Loir
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.Algebra.Ring.Action.Submonoid
 
 /-!
 # More operations on subalgebras
 
-In this file we relate the definitions in `Mathlib.RingTheory.Ideal.Operations` to subalgebras.
-The contents of this file are somewhat random since both `Mathlib.Algebra.Algebra.Subalgebra.Basic`
-and `Mathlib.RingTheory.Ideal.Operations` are somewhat of a grab-bag of definitions, and this is
-whatever ends up in the intersection.
+In this file we relate the definitions in `Mathlib/RingTheory/Ideal/Operations.lean` to subalgebras.
+The contents of this file are somewhat random since both
+`Mathlib/Algebra/Algebra/Subalgebra/Basic.lean` and `Mathlib/RingTheory/Ideal/Operations.lean` are
+somewhat of a grab-bag of definitions, and this is whatever ends up in the intersection.
 -/
 
 assert_not_exists Cardinal
@@ -40,8 +41,6 @@ theorem mem_of_finset_sum_eq_one_of_pow_smul_mem
     {ι : Type*} (ι' : Finset ι) (s : ι → S) (l : ι → S)
     (e : ∑ i ∈ ι', l i * s i = 1) (hs : ∀ i, s i ∈ S') (hl : ∀ i, l i ∈ S') (x : S)
     (H : ∀ i, ∃ n : ℕ, (s i ^ n : S) • x ∈ S') : x ∈ S' := by
-  -- Porting note: needed to add this instance
-  let _i : Algebra { x // x ∈ S' } { x // x ∈ S' } := Algebra.id _
   suffices x ∈ Subalgebra.toSubmodule (Algebra.ofId S' S).range by
     obtain ⟨x, rfl⟩ := this
     exact x.2
@@ -73,3 +72,21 @@ theorem mem_of_span_eq_top_of_smul_pow_mem
   mem_of_finset_sum_eq_one_of_pow_smul_mem S' l.support (↑) l hs (fun x => hs' x.2) hl x H
 
 end Subalgebra
+
+section MulSemiringAction
+
+variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
+variable (G : Type*) [Monoid G] [MulSemiringAction G B] [SMulCommClass G A B]
+
+/-- The set of fixed points under a group action, as a subring. -/
+def FixedPoints.subring : Subring B where
+  __ := FixedPoints.addSubgroup G B
+  __ := FixedPoints.submonoid G B
+
+/-- The set of fixed points under a group action, as a subalgebra. -/
+def FixedPoints.subalgebra : Subalgebra A B where
+  __ := FixedPoints.addSubgroup G B
+  __ := FixedPoints.submonoid G B
+  algebraMap_mem' r := by simp
+
+end MulSemiringAction
