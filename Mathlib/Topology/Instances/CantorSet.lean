@@ -392,12 +392,12 @@ noncomputable def cantorSet_equiv_nat_to_bool : cantorSet ≃ (ℕ → Bool) whe
     exact ofDigits_cantorToTernary hx
   right_inv := by
     intro y
-    simp
+    simp only [Fin.isValue]
     set x := @ofDigits 3 (Pi.map (fun _ b ↦ cond b 2 0) y)
     have hx : x ∈ cantorSet := by
       apply zero_two_sequence_ofDigits_mem_cantorSet
       intro n
-      simp
+      simp only [Fin.isValue, Pi.map_apply, ne_eq]
       cases y n <;> simp
     have := ofDigits_cantorToTernary hx
     conv at this => rhs; unfold x
@@ -405,44 +405,29 @@ noncomputable def cantorSet_equiv_nat_to_bool : cantorSet ≃ (ℕ → Bool) whe
     rotate_left
     · exact fun n ↦ cantorToTernary_ne_one
     · intro n
-      simp
+      simp only [Fin.isValue, Pi.map_apply, ne_eq]
       cases y n <;> simp
     ext n
-    apply congrFun at this
-    specialize this n
-    simp [cantorToTernary] at this
+    apply congrFun (a := n) at this
+    simp only [cantorToTernary, Fin.isValue, Stream'.get_map, Pi.map_apply] at this
     generalize (cantorToBinary x).get n = a at this
     generalize y n = b at this
     cases a <;> cases b <;> first | rfl | simp at this
 
 -- TODO: where to place it?
-theorem ofDigits_continuous {b : ℕ} [inst : NeZero b] : Continuous (@ofDigits b) := by
+theorem ofDigits_continuous {b : ℕ} : Continuous (@ofDigits b) := by
+  by_cases hb : b = 0
+  · subst hb
+    fun_prop
   by_cases hb : b = 1
   · subst hb
-    exact continuous_of_discreteTopology
+    fun_prop
   replace hb : 1 < b := by
-    cases inst
     omega
-  have h_fin_emb : Topology.IsEmbedding (@Fin.val b) := by
-    constructor
-    · -- TODO : generalize this
-      constructor
-      ext S
-      simp
-      rw [isOpen_induced_iff]
-      use Fin.val '' S
-      simp
-      ext i
-      simp
-      constructor
-      · intro ⟨x, h1, h2⟩
-        apply Fin.eq_of_val_eq at h2
-        simpa [← h2]
-      · intro hi
-        use i
-    · exact Fin.val_injective
+  have h_fin_emb : Topology.IsEmbedding (@Fin.val b) :=
+    Topology.IsEmbedding.of_injective_DiscreteTopology Fin.val_injective
   let instMetricSpaceFin : MetricSpace (Fin b) := Topology.IsEmbedding.comapMetricSpace _ h_fin_emb
-  have h_fin_iso : Isometry (@Fin.val b) := Topology.IsEmbedding.to_isometry _
+  have h_fin_iso : Isometry (@Fin.val b) := h_fin_emb.to_isometry
   let instMetricSpace : MetricSpace (ℕ → Fin b) := PiNat.metricSpace
   rw [Metric.continuous_iff]
   intro a ε hε
@@ -452,8 +437,7 @@ theorem ofDigits_continuous {b : ℕ} [inst : NeZero b] : Continuous (@ofDigits 
       (by rify at hb; rw [abs_of_nonneg (by positivity)]; exact inv_lt_one_of_one_lt₀ hb)
     obtain ⟨n, hn⟩ := (this.eventually_le_const hε).frequently.exists
     use n + 1
-    rw [pow_succ]
-    rw [show ε = ε * 1 by simp]
+    rw [pow_succ, show ε = ε * 1 by simp]
     exact mul_lt_mul_of_pos_of_nonneg hn (by rify at hb; exact inv_lt_one_of_one_lt₀ hb)
       (by positivity) (by norm_num)
   use (1 / 2)^n
@@ -464,11 +448,14 @@ theorem ofDigits_continuous {b : ℕ} [inst : NeZero b] : Continuous (@ofDigits 
     intro i hi
     apply PiNat.apply_eq_of_dist_lt ha' hi.le
   apply ofDigits_close_of_common_prefix at h
-  simp [dist]
+  simp only [dist, gt_iff_lt]
   linarith
 
-theorem cantorSet_equiv_invFun_continuous : Continuous cantorSet_equiv_nat_to_bool.symm := by
-  simp [cantorSet_equiv_nat_to_bool]
+/-- Canonical homeomorphism between the Cantor set and `ℕ → Bool`. -/
+noncomputable def cantorSet_homeomorph_nat_to_bool : cantorSet ≃ₜ (ℕ → Bool) := by
+  suffices Continuous cantorSet_equiv_nat_to_bool.symm from
+    (Continuous.homeoOfEquivCompactToT2 this).symm
+  simp only [cantorSet_equiv_nat_to_bool, Fin.isValue, Equiv.coe_fn_symm_mk]
   apply Continuous.subtype_mk
   change Continuous (ofDigits ∘ (fun x ↦ Pi.map (fun x b ↦ bif b then 2 else 0) x))
   apply Continuous.comp
@@ -481,7 +468,3 @@ theorem cantorSet_equiv_invFun_continuous : Continuous cantorSet_equiv_nat_to_bo
   apply Continuous.piMap
   intro
   exact continuous_of_discreteTopology
-
-/-- Canonical homeomorphism between the Cantor set and `ℕ → Bool`. -/
-noncomputable def cantorSet_homeo : cantorSet ≃ₜ (ℕ → Bool) :=
-  (Continuous.homeoOfEquivCompactToT2 cantorSet_equiv_invFun_continuous).symm
