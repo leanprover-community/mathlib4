@@ -144,6 +144,7 @@ lemma MeromorphicAt.meromorphicTrailingCoeffAt_ne_zero (h₁ : MeromorphicAt f x
 /--
 The trailing coefficient of a constant function is the constant.
 -/
+@[simp]
 theorem meromorphicTrailingCoeffAt_const {x : 𝕜} {e : 𝕜} :
     meromorphicTrailingCoeffAt (fun _ ↦ e) x = e := by
   by_cases he : e = 0
@@ -153,12 +154,11 @@ theorem meromorphicTrailingCoeffAt_const {x : 𝕜} {e : 𝕜} :
     simp
   · exact analyticAt_const.meromorphicTrailingCoeffAt_of_ne_zero he
 
-open Classical in
 /--
 The trailing coefficient of `fun z ↦ z - constant` at `z₀` equals one if `z₀ = constant`, or else
 `z₀ - constant`.
 -/
-theorem meromorphicTrailingCoeffAt_id_sub_const {x y : 𝕜} :
+theorem meromorphicTrailingCoeffAt_id_sub_const [DecidableEq 𝕜] {x y : 𝕜} :
     meromorphicTrailingCoeffAt (· - y) x = if x = y then 1 else x - y := by
   by_cases h : x = y
   · simp_all only [sub_self, ite_true]
@@ -231,12 +231,11 @@ theorem meromorphicTrailingCoeffAt_prod {ι : Type*} {s : Finset ι} {f : ι →
     (h : ∀ σ, MeromorphicAt (f σ) x) :
     meromorphicTrailingCoeffAt (∏ n ∈ s, f n) x = ∏ n ∈ s, meromorphicTrailingCoeffAt (f n) x := by
   classical
-  apply Finset.induction
-    (motive := fun b' ↦ (meromorphicTrailingCoeffAt (∏ n ∈ b' , f n) x =
-      ∏ n ∈ b', meromorphicTrailingCoeffAt (f n) x))
-  · simp only [Finset.univ_eq_empty, Finset.prod_empty, forall_const]
+  induction s using Finset.induction with
+  | empty =>
+    simp only [Finset.univ_eq_empty, Finset.prod_empty, forall_const]
     apply meromorphicTrailingCoeffAt_const
-  · intro σ s₁ hσ hind
+  | insert σ s₁ hσ hind =>
     rw [Finset.prod_insert hσ, Finset.prod_insert hσ, (h σ).meromorphicTrailingCoeffAt_mul
       (MeromorphicAt.prod h), hind]
 
