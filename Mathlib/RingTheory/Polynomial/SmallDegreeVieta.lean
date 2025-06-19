@@ -57,7 +57,7 @@ lemma eq_mul_mul_of_aroots_quadratic_eq_pair [CommRing T] [CommRing S] [IsDomain
     X ^ 2 + C ((algebraMap T S) b) * X + C ((algebraMap T S) c) by simp] at haroots
   exact eq_mul_mul_of_roots_quadratic_eq_pair haroots
 
-lemma factorize_of_vieta [CommRing R] [IsDomain R] {a b c x1 x2 : R}
+lemma quadratic_eq_of_vieta [CommRing R] [IsDomain R] {a b c x1 x2 : R}
     (hvieta : b = -a * (x1 + x2) ∧ c = a * x1 * x2) :
     C a * X ^ 2 + C b * X + C c = C a * (X - C x1) * (X - C x2) := by
   simpa [hvieta.1, hvieta.2] using by ring
@@ -146,13 +146,10 @@ theorem mem_roots_quadratic_iff_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0)
 theorem quadratic_eq_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
     (h : discrim a b c = s * s) : C a * X ^ 2 + C b * X + C c =
       C a * (X - C ((-b + s) / (2 * a))) * (X - C ((-b - s) / (2 * a))) := by
-  rw [mul_assoc, sub_mul, mul_sub X, mul_sub _ X, sub_sub_eq_add_sub, ← pow_two, mul_comm X,
-    ← C_mul, ← sub_add_eq_add_sub, sub_sub, ← add_mul, ← C_add, mul_add, mul_sub, ← mul_assoc,
-    ← C_mul, ← C_mul, sub_eq_add_neg, ← neg_mul, ← C_neg]
+  rw [quadratic_eq_of_vieta]
   ring_nf
-  congr
-  · field_simp
-  · field_simp; simp [pow_two, ← h, discrim]; ring
+  field_simp
+  simp [pow_two, ← h, discrim]; ring
 
 theorem roots_quadratic_of_discrim_ne_sq (ha : a ≠ 0) (h : ∀ s : R, discrim a b c ≠ s^2) :
     (C a * X ^ 2 + C b * X + C c).roots = ∅ :=
