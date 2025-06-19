@@ -430,3 +430,19 @@ noncomputable def cantorSet_homeomorph_nat_to_bool : cantorSet ≃ₜ (ℕ → B
   apply Continuous.piMap
   intro
   exact continuous_of_discreteTopology
+
+-- TODO: move it
+universe u v w in
+/-- TODO -/
+def uncurry_homeomorph (X : Type u) (Y : Type v) (Z : Type w)
+    [TopologicalSpace Z] :
+    (X → Y → Z) ≃ₜ (X × Y → Z) where
+  toFun := Function.uncurry
+  invFun := Function.curry
+  left_inv := by exact congrFun rfl
+  right_inv := by exact congrFun rfl
+
+/-- The Cantor space is homeomorphic to ist countable product. -/
+def cantorSpace_homeomorph_nat_cantorSpace : (ℕ → Bool) ≃ₜ (ℕ → ℕ → Bool) :=
+    (Homeomorph.piCongrLeft (Y := fun _ ↦ Bool) Nat.pairEquiv.symm).trans
+    (uncurry_homeomorph _ _ _).symm
