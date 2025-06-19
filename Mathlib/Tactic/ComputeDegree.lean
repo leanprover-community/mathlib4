@@ -12,7 +12,7 @@ import Mathlib.Algebra.Polynomial.Degree.Lemmas
 
 This file defines two related tactics: `compute_degree` and `monicity`.
 
-Using `compute_degree` when the goal is of one of the five forms
+Using `compute_degree` when the goal is of one of the seven forms
 *  `natDegree f ≤ d` (or `<`),
 *  `degree f ≤ d` (or `<`),
 *  `natDegree f = d`,
@@ -255,7 +255,7 @@ def twoHeadsArgs (e : Expr) : Name × Name × (Name ⊕ Name) × List Bool := Id
 
 /--
 `getCongrLemma (lhs_name, rel_name, Mvars?)` returns the name of a lemma that preprocesses
-one of the five target
+one of the seven target
 *  `natDegree f ≤ d`;
 *  `natDegree f < d`;
 *  `natDegree f = d`.
