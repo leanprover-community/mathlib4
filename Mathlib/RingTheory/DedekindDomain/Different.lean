@@ -84,7 +84,7 @@ lemma restrictScalars_traceDual {I : Submodule B L} :
 
 @[simp]
 lemma traceDual_bot :
-    (⊥ : Submodule B L)ᵛ = ⊤ := by ext; simp [mem_traceDual, -RingHom.mem_range]
+(⊥ : Submodule B L)ᵛ = ⊤ := by ext; simpa [mem_traceDual, -RingHom.mem_range] using zero_mem _
 
 open scoped Classical in
 lemma traceDual_top' :

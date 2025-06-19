@@ -115,7 +115,7 @@ equalities. -/
 @[simps]
 protected def copy (p : Submodule R M) (s : Set M) (hs : s = ↑p) : Submodule R M where
   carrier := s
-  zero_mem' := by simp [hs]
+  zero_mem' := by simpa [hs] using p.zero_mem'
   add_mem' := hs.symm ▸ p.add_mem'
   smul_mem' := by simpa [hs] using p.smul_mem'
 
@@ -186,6 +186,7 @@ variable (p)
 theorem mem_carrier : x ∈ p.carrier ↔ x ∈ (p : Set M) :=
   Iff.rfl
 
+@[simp]
 protected theorem zero_mem : (0 : M) ∈ p :=
   zero_mem _
 

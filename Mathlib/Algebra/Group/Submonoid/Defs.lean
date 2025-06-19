@@ -70,7 +70,7 @@ export ZeroMemClass (zero_mem)
 
 attribute [to_additive] OneMemClass
 
-attribute [simp, aesop safe (rule_sets := [SetLike])] one_mem zero_mem
+attribute [aesop safe (rule_sets := [SetLike])] one_mem zero_mem
 
 section
 

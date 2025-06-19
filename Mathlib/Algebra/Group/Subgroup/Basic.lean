@@ -505,7 +505,7 @@ instance normalClosure_normal : (normalClosure s).Normal :=
     refine Subgroup.closure_induction (fun x hx => ?_) ?_ (fun x y _ _ ihx ihy => ?_)
       (fun x _ ihx => ?_) h
     · exact conjugatesOfSet_subset_normalClosure (conj_mem_conjugatesOfSet hx)
-    · simp
+    · simpa using (normalClosure s).one_mem
     · rw [← conj_mul]
       exact mul_mem ihx ihy
     · rw [← conj_inv]
