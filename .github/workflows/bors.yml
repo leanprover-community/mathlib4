@@ -563,7 +563,7 @@ jobs:
           token: ${{ secrets.AUTO_MERGE_TOKEN }}
           issue-number: ${{ steps.PR.outputs.number }}
           body: |
-            !bench
+            Sorry `!bench` is unavailable currently!
 
       - id: remove_labels
         name: Remove "awaiting-CI"
