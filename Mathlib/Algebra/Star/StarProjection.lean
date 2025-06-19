@@ -28,8 +28,9 @@ theorem IsStarProjection.isSelfAdjoint [Mul M] [Star M] {p : M}
 theorem IsStarProjection.isIdempotentElem [Mul M] [Star M] {p : M}
     (hp : IsStarProjection p) : IsIdempotentElem p := hp.mul_self
 
+variable (M) in
 @[simp]
-theorem IsStarProjection.zero
+protected theorem IsStarProjection.zero
     [NonUnitalNonAssocSemiring M] [StarAddMonoid M] : IsStarProjection (0 : M) :=
   ⟨mul_zero _, star_zero _⟩
 
