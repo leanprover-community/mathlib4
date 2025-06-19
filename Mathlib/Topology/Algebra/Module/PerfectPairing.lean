@@ -15,7 +15,10 @@ For a topological ring `R` and two topological modules `M` and `N`, a continuous
 a continuous bilinear map `M × N → R` that is bijective in both arguments.
 
 We require continuity in the forward direction only so that we can put several different topologies
-on the continuous dual: strong, weak, weak-* topology...
+on the continuous dual (e.g., strong, weak, weak-*). For example, if `M` is weakly reflexive then
+there is a continuous perfect pairing between `M` and `WeakDual R M`, even though the map
+`WeakDual R M ≃ₗ[R] (M →L[R] R)` (where `M →L[R] R` is equipped with its strong topology) is not in
+general a homeomorphism.
 
 ## TODO
 
