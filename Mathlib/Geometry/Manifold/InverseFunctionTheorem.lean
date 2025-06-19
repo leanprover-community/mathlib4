@@ -221,15 +221,24 @@ section
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {e : PartialHomeomorph X Y}
   {s U : Set X}
 
--- exercise in Munkres (modulo formalisation errors)
+-- Doesn't mathlib have this already?
 lemma IsOpen.induction {s : Set X} (hs : ∀ x ∈ s, ∃ t, IsOpen t ∧ x ∈ t ∧ t ⊆ s) : IsOpen s := by
   let t : s → Set X := fun ⟨x, hx⟩ ↦ Classical.choose (hs x hx)
   have ht (x) (hx : x ∈ s) : IsOpen (t ⟨x, hx⟩) := Classical.choose_spec (hs x hx) |>.1
   have hxt (x) (hx : x ∈ s) : x ∈ (t ⟨x, hx⟩) := Classical.choose_spec (hs x hx) |>.2.1
   have hts (x) (hx : x ∈ s) : (t ⟨x, hx⟩) ⊆ s := Classical.choose_spec (hs x hx) |>.2.2
-  -- prove: s is the union of all the t x
-  -- then the claim follows from the union over the `ht`
-  sorry
+  let s' := ⋃ x : s, t x
+  -- s is the union of all t x
+  have : s = s' := by
+    ext x
+    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+    · exact subset_iUnion t ⟨x, h⟩ (hxt x (hts x h (hxt x (hts x h (hxt x h)))))
+    · rw [mem_iUnion] at h
+      choose i hi' using h
+      obtain ⟨i, hi⟩ := i
+      exact (hts _ hi) hi'
+  rw [this]
+  exact isOpen_iUnion fun ⟨i, hi⟩ ↦ ht _ hi
 
 lemma IsLocalHomeomorphOn.missing (he : IsLocalHomeomorphOn e U)
     (hs : s ⊆ U) (hs' : IsOpen s) : IsOpen (e '' s) := by
@@ -242,8 +251,9 @@ lemma IsLocalHomeomorphOn.missing (he : IsLocalHomeomorphOn e U)
   choose t' htt' ht' hxt' using ht
   refine ⟨e '' (s ∩ t'), ?_, ?_, ?_⟩
   · have := he.isOpenMap
-    -- apply this (U := s ∩ t')
-    sorry -- TODO: almost works, except for subtype trouble...
+    -- TODO: take s ∩ t', and consider as a subset of t (which this is one of)
+    -- then apply this, and done
+    sorry
   · exact hf ▸ mem_image_of_mem e (mem_inter hxy hxt')
   · gcongr
     exact inter_subset_left
