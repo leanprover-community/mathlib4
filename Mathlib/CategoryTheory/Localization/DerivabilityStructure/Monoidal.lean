@@ -85,7 +85,7 @@ lemma hasDerivedMonoidalCategory : L.HasDerivedMonoidalCategory W := by
       have := isIso (Φ.functor.obj X₂₀) _ (Iso.refl _)
         (μIso Φ.functor X₃₀ X₄₀)
       have := isIso (Φ.functor.obj X₁₀) _ (Iso.refl _) (X₂₀ := X₂₀ ⊗ X₃₀ ⊗ X₄₀)
-        ((Iso.refl _ ⊗ μIso _ _ _) ≪≫ μIso Φ.functor X₂₀ (X₃₀ ⊗ X₄₀))
+        ((Iso.refl _ ⊗ᵢ μIso _ _ _) ≪≫ μIso Φ.functor X₂₀ (X₃₀ ⊗ X₄₀))
       dsimp
       infer_instance }
 

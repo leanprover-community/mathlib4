@@ -67,7 +67,7 @@ instance (K : CochainComplex A ℤ) (i : ℤ) [K.IsStrictlyLE i]:
   dsimp
   infer_instance
 
-instance (K : CochainComplex A ℤ) (i : ℤ)  :
+instance (K : CochainComplex A ℤ) (i : ℤ) :
     CochainComplex.IsStrictlyLE (((ι.mapHomologicalComplex₂ _ _).obj
       (Λ.bicomplexFunctor.obj K)).X i) 0 := by
   dsimp [bicomplexFunctor, Functor.mapHomologicalComplex₂]
@@ -141,7 +141,7 @@ section
 variable (K L : CochainComplex.Minus A) (φ : K ⟶ L)
 
 /-- totalπ' -/
-noncomputable def totalπ'  :
+noncomputable def totalπ' :
     ((ι.mapHomologicalComplex₂ _ _).obj (Λ.bicomplexFunctor.obj K.obj)).total (ComplexShape.up ℤ) ⟶
       ((HomologicalComplex₂.singleRow A
         (ComplexShape.up ℤ) (ComplexShape.up ℤ) 0).obj K.obj).total (ComplexShape.up ℤ) :=
