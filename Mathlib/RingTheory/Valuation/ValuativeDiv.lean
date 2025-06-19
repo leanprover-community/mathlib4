@@ -241,14 +241,14 @@ instance : ValuativePreorder (WithPreorder R) where
   dvd_iff_le _ _ := Iff.rfl
 
 open NNReal in variable (R) in
-structure DiscreteRankOneStruct where
+structure RankOneStruct where
   emb : ValueMonoid R →*₀ ℝ≥0
   strictMono : StrictMono emb
   nontrivial : ∃ γ : ValueMonoid R, emb γ ≠ 0 ∧ emb γ ≠ 1
 
 variable (R) in
-class IsDiscreteRankOne where
-  nonempty : Nonempty (DiscreteRankOneStruct R)
+class IsRankOne where
+  nonempty : Nonempty (RankOneStruct R)
 
 end ValuativeDiv
 
