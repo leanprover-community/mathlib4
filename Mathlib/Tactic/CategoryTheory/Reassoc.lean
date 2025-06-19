@@ -32,10 +32,9 @@ open Mathlib.Tactic
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C]
-
 /-- A variant of `eq_whisker` with a more convenient argument order for use in tactics. -/
-theorem eq_whisker' {X Y : C} {f g : X ⟶ Y} (w : f = g) {Z : C} (h : Y ⟶ Z) :
+theorem eq_whisker' {C : Type*} [Category C]
+    {X Y : C} {f g : X ⟶ Y} (w : f = g) {Z : C} (h : Y ⟶ Z) :
     f ≫ h = g ≫ h := by rw [w]
 
 /-- Simplify an expression using only the axioms of a category. -/
@@ -48,9 +47,24 @@ def categorySimp (e : Expr) : MetaM Simp.Result :=
 Given an equation `f = g` between morphisms `X ⟶ Y` in a category,
 produce the equation `∀ {Z} (h : Y ⟶ Z), f ≫ h = g ≫ h`,
 but with compositions fully right associated and identities removed.
+Also returns the category `C` and any instance metavariables that need to be solved for.
 -/
-def reassocExprHom (e : Expr) : MetaM Expr := do
-  simpType categorySimp (← mkAppM ``eq_whisker' #[e])
+def reassocExprHom (e : Expr) : MetaM (Expr × Array MVarId) := do
+  let lem₀ ← mkConstWithFreshMVarLevels ``eq_whisker'
+  let (args, _, _) ← forallMetaBoundedTelescope (← inferType lem₀) 7
+  let inst := args[1]!
+  inst.mvarId!.setKind .synthetic
+  let w := args[6]!
+  let eTy ← inferType e
+  let wTy ← inferType w
+  unless ← isDefEq eTy wTy do
+    throwError "Cannot create reassociation lemma, proof {← mkHasTypeButIsExpectedMsg eTy wTy}"
+  w.mvarId!.assign e
+  -- Ensure the `Category` instance is available to the simp lemmas.
+  withLetDecl `inst (← inst.mvarId!.getType) inst fun inst' => do
+    let pf ← simpType categorySimp (mkAppN lem₀ args)
+    let pf := (← pf.abstractM #[inst']).instantiate1 inst
+    return (← mkLetFVars #[inst'] pf, #[inst.mvarId!])
 
 /--
 Adding `@[reassoc]` to a lemma named `F` of shape `∀ .., f = g`, where `f g : X ⟶ Y` are
@@ -82,7 +96,8 @@ with additional handlers. Handlers take a proof of the equation.
 The default handler is `reassocExprHom` for morphism reassociation.
 This will be extended in `Tactic.CategoryTheory.IsoReassoc` for isomorphism reassociation.
 -/
-private initialize reassocImplRef : IO.Ref (Array (Expr → MetaM Expr)) ← IO.mkRef #[]
+private initialize reassocImplRef : IO.Ref (Array (Expr → MetaM (Expr × Array MVarId))) ←
+  IO.mkRef #[reassocExprHom]
 
 /--
 Registers a handler for `reassocExpr`. The handler takes a proof of an equation
@@ -90,22 +105,22 @@ and returns a proof of the reassociation lemma.
 Handlers are considered in order of registration.
 They are applied directly to the equation in the body of the forall.
 -/
-def registerReassocExpr (f : Expr → MetaM Expr) : IO Unit := do
+def registerReassocExpr (f : Expr → MetaM (Expr × Array MVarId)) : IO Unit := do
   reassocImplRef.modify (·.push f)
-
-initialize registerReassocExpr reassocExprHom
 
 /--
 Reassociates the morphisms in `type?` using the registered handlers,
 using `reassocExprHom` as the default.
 If `type?` is not given, it is assumed to be the type of `pf`.
 -/
-def reassocExpr (pf : Expr) (type? : Option Expr) : MetaM Expr := do
+def reassocExpr (pf : Expr) (type? : Option Expr) : MetaM (Expr × Array MVarId) := do
   let pf ← if let some type := type? then mkExpectedTypeHint pf type else pure pf
-  mapForallTelescope (forallTerm := pf) fun pf => do
+  forallTelescopeReducing (← inferType pf) fun xs _ => do
+    let pf := mkAppN pf xs
     let handlers ← reassocImplRef.get
-    handlers.firstM (fun h => h pf) <|> do
+    let (pf, insts) ← handlers.firstM (fun h => h pf) <|> do
       throwError "`reassoc` can only be used on terms about equality of (iso)morphisms"
+    return (← mkLambdaFVars xs pf, insts)
 
 initialize registerBuiltinAttribute {
   name := `reassoc
@@ -116,7 +131,10 @@ initialize registerBuiltinAttribute {
     if (kind != AttributeKind.global) then
       throwError "`reassoc` can only be used as a global attribute"
     addRelatedDecl src "_assoc" ref stx? fun type value levels => do
-      pure (← reassocExpr value type, levels)
+      let (pf, insts) ← reassocExpr value type
+      for inst in insts do
+        inst.withContext do inst.assign (← synthInstance (← inst.getType))
+      pure (pf, levels)
   | _ => throwUnsupportedSyntax }
 
 /--
@@ -128,7 +146,10 @@ This also works for equations between isomorphisms, provided that
 `Tactic.CategoryTheory.IsoReassoc` has been imported.
 -/
 elab "reassoc_of% " t:term : term => do
-  let e ← Term.elabTerm t none
-  reassocExpr e none
+  let e ← Term.withSynthesizeLight <| Term.elabTerm t none
+  let (pf, insts) ← reassocExpr e none
+  for inst in insts do
+    inst.withContext do inst.assign (← Term.mkInstMVar (← inst.getType))
+  return pf
 
 end CategoryTheory
