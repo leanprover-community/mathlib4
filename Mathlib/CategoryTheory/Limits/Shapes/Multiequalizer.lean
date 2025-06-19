@@ -601,13 +601,26 @@ def IsColimit.mk (desc : ∀ E : Multicofork I, K.pt ⟶ E.pt)
       intro i
       apply hm }
 
-variable {K} in
+variable {K}
+
 lemma IsColimit.hom_ext (hK : IsColimit K) {T : C} {f g : K.pt ⟶ T}
     (h : ∀ a, K.π a ≫ f = K.π a ≫ g) : f = g := by
   apply hK.hom_ext
   rintro (_ | _) <;> simp [h]
 
-variable [HasCoproduct I.left] [HasCoproduct I.right]
+/-- Constructor for morphisms from the point of a colimit multicofork. -/
+def IsColimit.desc (hK : IsColimit K) {T : C} (k : ∀ a, I.right a ⟶ T)
+    (hk : ∀ b, I.fst b ≫ k (J.fst b) = I.snd b ≫ k (J.snd b)) :
+    K.pt ⟶ T :=
+  hK.desc (Multicofork.ofπ _ _ k hk)
+
+@[reassoc (attr := simp)]
+lemma IsColimit.fac (hK : IsColimit K) {T : C} (k : ∀ a, I.right a ⟶ T)
+    (hk : ∀ b, I.fst b ≫ k (J.fst b) = I.snd b ≫ k (J.snd b)) (a : J.R) :
+    K.π a ≫ IsColimit.desc hK k hk = k a :=
+  hK.fac _ _
+
+variable (K) [HasCoproduct I.left] [HasCoproduct I.right]
 
 @[reassoc (attr := simp)]
 theorem sigma_condition : I.fstSigmaMap ≫ Sigma.desc K.π = I.sndSigmaMap ≫ Sigma.desc K.π := by
