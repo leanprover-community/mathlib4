@@ -3,7 +3,8 @@ Copyright (c) 2025 Oliver Butterley. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Butterley, Yoh Tanimoto
 -/
-import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Lebesgue
+import Mathlib.Analysis.Normed.Group.InfiniteSum
+import Mathlib.MeasureTheory.VectorMeasure.Basic
 
 /-!
 # Total variation for vector-valued measures
@@ -401,3 +402,4 @@ as the value `∫ x, f x * μ.ang x ∂(μ.var)`. -/
 end variation
 
 end MeasureTheory.VectorMeasure
+#min_imports
