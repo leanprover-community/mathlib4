@@ -97,8 +97,8 @@ variable {x x' y y' : C}
 
 @[reassoc (attr := simp)]
 lemma unit_naturality (f : x ⟶ x') (g : y ⟶ y') :
-    (F.map f ⊗ G.map g) ≫ (unit F G).app (x', y') =
-    (unit F G).app (x, y) ≫ (F ⊛ G).map (f ⊗ g) := by
+    (F.map f ⊗ₘ G.map g) ≫ (unit F G).app (x', y') =
+    (unit F G).app (x, y) ≫ (F ⊛ G).map (f ⊗ₘ g) := by
   simpa [tensorHom_def] using (unit F G).naturality ((f, g) : (x, y) ⟶ (x', y'))
 
 variable (y) in
@@ -133,7 +133,7 @@ variable (f : F ⟶ F') (g : G ⟶ G') (x y : C)
 @[reassoc (attr := simp)]
 lemma map_unit_app :
   (unit F G).app (x, y) ≫ (map f g).app (x ⊗ y : C) =
-    (f.app x ⊗ g.app y) ≫ (unit F' G').app (x, y) := by
+    (f.app x ⊗ₘ g.app y) ≫ (unit F' G').app (x, y) := by
   simpa [tensorHom_def] using
     (Functor.descOfIsLeftKanExtension_fac_app (F ⊛ G) (unit F G) (F' ⊛ G') <|
       (externalProductBifunctor C C V).map ((f, g) : (F, G) ⟶ (F', G')) ≫ unit F' G') (x, y)
@@ -364,10 +364,10 @@ lemma pentagon (H K : C ⥤ V)
   -- And then we compute...
   ext ⟨⟨⟨i, j⟩, k⟩, l⟩
   have aux :
-      ((unit F G).app (i, j) ⊗ (unit H K).app (k, l)) ≫
+      ((unit F G).app (i, j) ⊗ₘ (unit H K).app (k, l)) ≫
         (unit (F ⊛ G) (H ⊛ K)).app ((i ⊗ j), (k ⊗ l)) =
       (α_ (F.obj i) (G.obj j) (H.obj k ⊗ K.obj l)).hom ≫
-        F.obj i ◁ (G.obj j ◁ (unit H K).app (k, l)) ≫ F.obj i ◁ (unit G (H ⊛ K)).app (j, (k ⊗ l)) ≫
+        F.obj i ◁ G.obj j ◁ (unit H K).app (k, l) ≫ F.obj i ◁ (unit G (H ⊛ K)).app (j, (k ⊗ l)) ≫
         (unit F (G ⊛ H ⊛ K)).app (i, (j ⊗ k ⊗ l)) ≫ (F ⊛ G ⊛ H ⊛ K).map (α_ i j (k ⊗ l)).inv ≫
         (associator F G (H ⊛ K)).inv.app ((i ⊗ j) ⊗ k ⊗ l) := by
     conv_rhs => simp only [Functor.comp_obj, tensor_obj, NatTrans.naturality,
