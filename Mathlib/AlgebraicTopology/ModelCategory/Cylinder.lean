@@ -176,6 +176,8 @@ lemma exists_very_good_cylinder :
   ⟨ofFactorizationData (MorphismProperty.factorizationData _ _ _),
     inferInstance⟩
 
+instance : Nonempty (Cylinder A) := ⟨(exists_very_good_cylinder A).choose⟩
+
 /-- The gluing of two good cylinders. -/
 @[simps]
 noncomputable def trans [IsCofibrant A] (P P' : Cylinder A) [P'.IsGood] :
