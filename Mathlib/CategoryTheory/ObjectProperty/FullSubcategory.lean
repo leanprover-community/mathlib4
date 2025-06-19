@@ -62,6 +62,8 @@ theorem ι_obj {X} : P.ι.obj X = X.obj :=
 theorem ι_map {X Y} {f : X ⟶ Y} : P.ι.map f = f :=
   rfl
 
+lemma prop_ι_obj (X) : P (P.ι.obj X) := X.2
+
 /-- The inclusion of a full subcategory is fully faithful. -/
 abbrev fullyFaithfulι :
     P.ι.FullyFaithful :=

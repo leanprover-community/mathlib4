@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Localization.Predicate
+import Mathlib.CategoryTheory.Localization.Equivalence
 
 /-!
 
@@ -47,17 +48,35 @@ instance isLocalization_op : W.Q.op.IsLocalization W.op :=
 end Localization
 
 variable (L W)
-variable [L.IsLocalization W]
 
 namespace Functor
 
-instance IsLocalization.op : L.op.IsLocalization W.op :=
+instance IsLocalization.op [L.IsLocalization W] : L.op.IsLocalization W.op :=
   IsLocalization.of_equivalence_target W.Q.op W.op L.op (Localization.equivalenceFromModel L W).op
     (NatIso.op (Localization.qCompEquivalenceFromModelFunctorIso L W).symm)
+
+lemma isLocalization_iff_op :
+    L.IsLocalization W ↔ L.op.IsLocalization W.op := by
+  constructor
+  · intro
+    infer_instance
+  · intro
+    letI : CatCommSq (opOpEquivalence C).functor L.op.op L (opOpEquivalence D).functor :=
+      ⟨Iso.refl _⟩
+    refine Functor.IsLocalization.of_equivalences (L.op.op) W.op.op L W
+      (opOpEquivalence C) (opOpEquivalence D) ?_ ?_
+    · intro X Y f hf
+      exact MorphismProperty.le_isoClosure _ _ hf
+    · intro X Y f hf
+      have := Localization.inverts L.op W.op f.op hf
+      change IsIso (asIso (L.op.map f.op)).unop.hom
+      infer_instance
 
 end Functor
 
 namespace Localization
+
+variable [L.IsLocalization W]
 
 lemma isoOfHom_unop  {X Y : Cᵒᵖ} (w : X ⟶ Y) (hw : W.op w) :
     (isoOfHom L.op W.op w hw).unop = (isoOfHom L W w.unop hw) := by ext; rfl

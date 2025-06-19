@@ -63,11 +63,35 @@ instance (n : ℤ) : ((singleFunctors C).functor n).Additive := by
   dsimp only [singleFunctors]
   infer_instance
 
+instance (R : Type*) [Ring R] (n : ℤ) [Linear R C] :
+    Functor.Linear R ((singleFunctors C).functor n) where
+  map_smul f r := by
+    dsimp [CochainComplex.singleFunctors, HomologicalComplex.single]
+    aesop
+
 /-- The single functor `C ⥤ CochainComplex C ℤ` which sends `X` to the complex
 consisting of `X` in degree `n : ℤ` and zero otherwise.
 (This is definitionally equal to `HomologicalComplex.single C (up ℤ) n`,
 but `singleFunctor C n` is the preferred term when interactions with shifts are relevant.) -/
 noncomputable abbrev singleFunctor (n : ℤ) := (singleFunctors C).functor n
+
+variable {C}
+
+lemma singleFunctors_shiftIso_hom_app_f
+    (n a a' : ℤ) (ha' : n + a = a') (X : C) (i : ℤ) (hi : i = a) :
+    (((singleFunctors C).shiftIso n a a' ha').hom.app X).f i =
+      (singleObjXIsoOfEq (ComplexShape.up ℤ) a' X (i + n) (by rw [hi, add_comm a, ha'])).hom ≫
+        (singleObjXIsoOfEq (ComplexShape.up ℤ) a X i hi).inv := by
+  dsimp [singleObjXIsoOfEq, singleFunctors]
+  rw [eqToHom_trans]
+
+lemma singleFunctors_shiftIso_inv_app_f
+    (n a a' : ℤ) (ha' : n + a = a') (X : C) (i : ℤ) (hi : i = a) :
+    (((singleFunctors C).shiftIso n a a' ha').inv.app X).f i =
+        (singleObjXIsoOfEq (ComplexShape.up ℤ) a X i hi).hom ≫
+      (singleObjXIsoOfEq (ComplexShape.up ℤ) a' X (i + n) (by rw [hi, add_comm a, ha'])).inv := by
+  dsimp [singleObjXIsoOfEq, singleFunctors]
+  rw [eqToHom_trans]
 
 instance (n : ℤ) : (singleFunctor C n).Full :=
   inferInstanceAs (single _ _ _).Full
@@ -93,6 +117,11 @@ noncomputable abbrev singleFunctor (n : ℤ) :
 instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp only [singleFunctor, singleFunctors, SingleFunctors.postcomp]
   infer_instance
+
+instance (R : Type*) [Ring R] [Linear R C] (n : ℤ) :
+    Functor.Linear R (HomotopyCategory.singleFunctor C n) :=
+  inferInstanceAs (Functor.Linear R (CochainComplex.singleFunctor C n ⋙
+    HomotopyCategory.quotient _ _))
 
 /-- The isomorphism given by the very definition of `singleFunctors C`. -/
 noncomputable def singleFunctorsPostcompQuotientIso :

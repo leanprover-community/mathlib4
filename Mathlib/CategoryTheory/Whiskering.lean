@@ -6,6 +6,7 @@ Authors: Kim Morrison
 import Mathlib.Tactic.CategoryTheory.IsoReassoc
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.FullyFaithful
+import Mathlib.CategoryTheory.EssentialImage
 
 /-!
 # Whiskering

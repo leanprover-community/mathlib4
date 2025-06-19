@@ -118,6 +118,10 @@ theorem IsInvertedBy.iff_of_iso (W : MorphismProperty C) {F₁ F₂ : C ⥤ D} (
   dsimp [IsInvertedBy]
   simp only [NatIso.isIso_map_iff e]
 
+theorem IsInvertedBy.of_iso (W : MorphismProperty C) {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂)
+    (h₁ : W.IsInvertedBy F₁) : W.IsInvertedBy F₂ := by
+  rwa [← iff_of_iso W e]
+
 @[simp]
 lemma IsInvertedBy.isoClosure_iff (W : MorphismProperty C) (F : C ⥤ D) :
     W.isoClosure.IsInvertedBy F ↔ W.IsInvertedBy F := by
@@ -151,6 +155,11 @@ lemma IsInvertedBy.map_iff {C₁ C₂ C₃ : Type*} [Category C₁] [Category C�
     (W : MorphismProperty C₁) (F : C₁ ⥤ C₂) (G : C₂ ⥤ C₃) :
     (W.map F).IsInvertedBy G ↔ W.IsInvertedBy (F ⋙ G) := by
   simp only [IsInvertedBy.iff_map_le_isomorphisms, map_map]
+
+lemma isomorphisms_isInvertedBy (F : C ⥤ D) : (isomorphisms C).IsInvertedBy F := by
+  intro X Y f hf
+  simp only [isomorphisms.iff] at hf
+  infer_instance
 
 end MorphismProperty
 

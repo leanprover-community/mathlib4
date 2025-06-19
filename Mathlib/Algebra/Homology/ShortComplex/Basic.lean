@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+import Mathlib.CategoryTheory.ArrowTwo
 
 /-!
 # Short complexes
@@ -216,6 +217,15 @@ def isoMk (e₁ : S₁.X₁ ≅ S₂.X₁) (e₂ : S₁.X₂ ≅ S₂.X₂) (e�
 lemma isIso_of_isIso (f : S₁ ⟶ S₂) [IsIso f.τ₁] [IsIso f.τ₂] [IsIso f.τ₃] : IsIso f :=
   (isoMk (asIso f.τ₁) (asIso f.τ₂) (asIso f.τ₃)).isIso_hom
 
+lemma isIso_iff (f : S₁ ⟶ S₂) :
+    IsIso f ↔ IsIso f.τ₁ ∧ IsIso f.τ₂ ∧ IsIso f.τ₃ := by
+  constructor
+  · intro
+    refine ⟨?_, ?_, ?_⟩
+    all_goals infer_instance
+  · rintro ⟨_, _, _⟩
+    apply isIso_of_isIso
+
 /-- The opposite `ShortComplex` in `Cᵒᵖ` associated to a short complex in `C`. -/
 @[simps]
 def op : ShortComplex Cᵒᵖ :=
@@ -288,6 +298,27 @@ abbrev unopOp (S : ShortComplex Cᵒᵖ) : S.unop.op ≅ S := (opEquiv C).counit
 /-- The canonical isomorphism `S.op.unop ≅ S` for a short complex `S` -/
 abbrev opUnop (S : ShortComplex C) : S.op.unop ≅ S :=
   Iso.unop ((opEquiv C).unitIso.app (Opposite.op S))
+
+@[simps]
+def arrow₂ : Arrow₂ C := Arrow₂.mk S.f S.g
+
+lemma _root_.CategoryTheory.Arrow₂.zero_of_arrow₂Iso
+    {D : Arrow₂ C} {S : ShortComplex C} (e : D ≅ S.arrow₂) :
+    D.f ≫ D.g = 0 := by
+  have : IsIso e.hom.τ₂ := (inferInstance : IsIso (Arrow₂.obj₂.mapIso e).hom)
+  rw [← cancel_mono e.hom.τ₂, assoc, zero_comp, ← e.hom.commg, ← e.hom.commf_assoc]
+  dsimp
+  rw [S.zero, comp_zero]
+
+@[simps!]
+def mkOfArrow₂Iso {D : Arrow₂ C} {S : ShortComplex C} (e : D ≅ S.arrow₂) : ShortComplex C :=
+    ShortComplex.mk D.f D.g (Arrow₂.zero_of_arrow₂Iso e)
+
+@[simps!]
+def isoOfArrow₂Iso {D : Arrow₂ C} {S : ShortComplex C} (e : D ≅ S.arrow₂) :
+    mkOfArrow₂Iso e ≅ S :=
+  isoMk (Arrow₂.obj₀.mapIso e) (Arrow₂.obj₁.mapIso e) (Arrow₂.obj₂.mapIso e)
+    e.hom.commf e.hom.commg
 
 end ShortComplex
 
