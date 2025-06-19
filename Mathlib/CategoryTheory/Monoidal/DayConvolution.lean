@@ -56,7 +56,7 @@ class DayConvolution (F G : C ⥤ V) where
   unit (F) (G) : F ⊠ G ⟶ tensor C ⋙ convolution
   /-- The transformation `unit` exhibits `F ⊛ G` as a pointwise left Kan extension
   of `F ⊠ G` along `tensor C`. -/
-  unitPointwiseKan (F G) :
+  isPointwiseLeftKanExtensionUnit (F G) :
     (Functor.LeftExtension.mk (convolution) unit).IsPointwiseLeftKanExtension
 
 namespace DayConvolution
@@ -70,7 +70,7 @@ variable (F G : C ⥤ V)
 
 instance leftKanExtension [DayConvolution F G] :
     (F ⊛ G).IsLeftKanExtension (unit F G) :=
-  unitPointwiseKan F G|>.isLeftKanExtension
+  isPointwiseLeftKanExtensionUnit F G|>.isLeftKanExtension
 
 variable {F G}
 
@@ -141,20 +141,15 @@ lemma unit_app_map_app :
 end map
 
 variable (F G)
-/-- The universal property of left Kan extensions characterizes the functor
-corepresented by `F ⊛ G`. -/
-@[simps!]
-def corepresentableIso : coyoneda.obj (.op <| F ⊛ G) ≅
-    (whiskeringLeft _ _ _).obj (tensor C) ⋙ coyoneda.obj (.op <| F ⊠ G) :=
-  NatIso.ofComponents
-    (fun H ↦ Equiv.toIso <| Functor.homEquivOfIsLeftKanExtension _ (unit F G) _)
 
 /-- The universal property of left Kan extensions characterizes the functor
 corepresented by `F ⊛ G`. -/
-def corepresentable :
+@[simps!]
+def corepresentableBy :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙ coyoneda.obj (.op <| F ⊠ G)|>.CorepresentableBy
-      (F ⊛ G) :=
-  Functor.corepresentableByEquiv.symm <| corepresentableIso F G
+      (F ⊛ G) where
+  homEquiv := Functor.homEquivOfIsLeftKanExtension _ (unit F G) _
+  homEquiv_comp := by aesop
 
 /-- Use the fact that `(F ⊛ G).obj c` is a colimit to characterize morphisms out of it at a
 point. -/
@@ -162,7 +157,7 @@ theorem convolution_hom_ext_at (c : C) {v : V} {f g : (F ⊛ G).obj c ⟶ v}
     (h : ∀ {x y : C} (u : x ⊗ y ⟶ c),
       (unit F G).app (x, y) ≫ (F ⊛ G).map u ≫ f = (unit F G).app (x, y) ≫ (F ⊛ G).map u ≫ g) :
     f = g :=
-  ((unitPointwiseKan F G) c).hom_ext (fun j ↦ by simpa using h j.hom)
+  ((isPointwiseLeftKanExtensionUnit F G) c).hom_ext (fun j ↦ by simpa using h j.hom)
 
 end
 
@@ -197,7 +192,7 @@ any object are uniquely characterized. -/
 lemma hom_ext {c : C} {v : V} {g h : U.obj c ⟶ v}
     (e : ∀ f : 𝟙_ C ⟶ c, can ≫ U.map f ≫ g = can ≫ U.map f ≫ h) :
     g = h := by
-  apply (canPointwiseLeftKanExtension c).hom_ext
+  apply (isPointwiseLeftKanExtensionCan c).hom_ext
   intro j
   simpa using e j.hom
 
