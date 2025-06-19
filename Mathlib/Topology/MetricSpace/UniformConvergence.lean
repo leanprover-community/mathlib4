@@ -76,9 +76,8 @@ noncomputable instance : PseudoEMetricSpace (α →ᵤ β) where
     rw [UniformFun.hasBasis_uniformity_of_basis α β uniformity_basis_edist_le |>.eq_biInf]
     simp [UniformFun.gen, edist_le, Set.Iic]
 
-noncomputable instance {β : Type*} [EMetricSpace β] : EMetricSpace (α →ᵤ β) where
-  eq_of_edist_eq_zero {f g} h := funext fun x ↦ eq_of_edist_eq_zero <| le_antisymm
-    ((edist_def f g ▸ h) ▸ le_iSup (fun y ↦ edist (f y) (g y)) x) (zero_le _)
+noncomputable instance {β : Type*} [EMetricSpace β] : EMetricSpace (α →ᵤ β) :=
+  .ofT0PseudoEMetricSpace _
 
 lemma lipschitzWith_iff {f : γ → α →ᵤ β} {K : ℝ≥0} :
     LipschitzWith K f ↔ ∀ c, LipschitzWith K (fun x ↦ toFun (f x) c) := by

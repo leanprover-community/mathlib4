@@ -12,7 +12,7 @@ The first step of `Linarith.SimplexAlgorithm.findPositiveVector` is finding init
 solution which is done by standard Gaussian Elimination algorithm implemented in this file.
 -/
 
-namespace Linarith.SimplexAlgorithm.Gauss
+namespace Mathlib.Tactic.Linarith.SimplexAlgorithm.Gauss
 
 /-- The monad for the Gaussian Elimination algorithm. -/
 abbrev GaussM (n m : Nat) (matType : Nat → Nat → Type) := StateT (matType n m) Lean.CoreM
@@ -78,4 +78,4 @@ ones.
 def getTableau (A : matType n m) : Lean.CoreM (Tableau matType) := do
   return (← getTableauImp.run A).fst
 
-end Linarith.SimplexAlgorithm.Gauss
+end Mathlib.Tactic.Linarith.SimplexAlgorithm.Gauss
