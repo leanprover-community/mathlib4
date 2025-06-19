@@ -255,10 +255,10 @@ def twoHeadsArgs (e : Expr) : Name × Name × (Name ⊕ Name) × List Bool := Id
 
 /--
 `getCongrLemma (lhs_name, rel_name, Mvars?)` returns the name of a lemma that preprocesses
-one of the seven target
+one of the seven targets
 *  `natDegree f ≤ d`;
 *  `natDegree f < d`;
-*  `natDegree f = d`.
+*  `natDegree f = d`;
 *  `degree f ≤ d`;
 *  `degree f < d`;
 *  `degree f = d`.
