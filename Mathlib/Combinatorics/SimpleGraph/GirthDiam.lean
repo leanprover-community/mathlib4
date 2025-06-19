@@ -16,7 +16,6 @@ In this file we prove that for any connected finite graph `G`, we have `G.girth 
 Although the proof formalization is completed, this file is still in progress as I polish the
 styling, ideally I want to put the main result in `girth.lean` instead of creating this file.
 
-
 -/
 
 namespace SimpleGraph
@@ -218,12 +217,6 @@ lemma Walk.cons_dropLast {u v w} (p : G.Walk u v) (hp : ¬ p.Nil) (h : G.Adj w u
 lemma IsCycle.dropLast_isPath {u} {p : G.Walk u u} (h : p.IsCycle) :
     p.dropLast.IsPath := by
   let L := p.tail.dropLast.support
-  have hn : L.Nodup := by
-    suffices L.Sublist p.tail.support by
-      apply this.nodup
-      rw [Walk.support_tail_of_not_nil _ h.not_nil]
-      exact h.support_nodup
-    exact take_support_sublist p.tail
   have hu : L.concat u = p.tail.support := by
     simp only [L]
     rw [Walk.dropLast_support_concat_eq_support]
@@ -386,13 +379,10 @@ lemma isAcyclic_of_subsingleton [Subsingleton V] :
     G.IsAcyclic := by
   intro v w
   by_contra h
-  have h' := h
-  rw [w.isCycle_def] at h'
   have heq := subsingleton_iff.mp ‹_›
   have h₁ := w.tail.getVert_eq_support_get? <| Nat.zero_le _
   have h₂ := Walk.tail_length _ ▸ w.tail.getVert_eq_support_get? rfl.le
   suffices w.tail.support[0]? = w.tail.support[w.length - 1]? by
-    have heq : w.getVert 1 = w.getVert w.length := heq _ _
     rw [Walk.support_tail_of_not_nil _ h.not_nil] at this
     apply List.getElem?_inj (by
       simp only [List.length_tail, Walk.length_support, add_tsub_cancel_right]
@@ -478,7 +468,6 @@ lemma List.mem_tail {α k} (L : List α) (h : 0 < k) (hk : k < L.length) :
 lemma Walk.IsPath.exists_of_edges {u v a b : V} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath)
     (hep : s(a, b) ∈ p.edges) (heq : s(a, b) ∈ q.edges) (hl : 1 < p.length) :
     ∃ z, z ∈ p.support.tail ∧ z ∈ q.support.tail := by
-  have hab : a ≠ b := (adj_of_mem_edges p hep).ne
   apply Walk.edge_getVert at hep
   apply Walk.edge_getVert at heq
   obtain ⟨k₁, hl₁, h₁⟩ := hep
@@ -631,9 +620,9 @@ lemma List.mem_dropLast_nodup {α a} {L : List α} (h : a ∈ L.dropLast) (hL : 
   rw [List.disjoint_singleton] at hL
   exact hL h
 
--- maybe should go to `connectivity/WalkDecomp.lean`
 section takeAt
 
+/-- The walk obtained by taking the `j` darts of a walk after `i` darts. -/
 def Walk.takeAt {u v} (p : G.Walk u v) {i j : ℕ} (h : i ≤ j) :
     G.Walk (p.getVert i) (p.getVert j) :=
   ((p.drop i).take (j - i)).copy rfl <| by rw [p.drop_getVert i (j - i), Nat.sub_add_cancel h]
@@ -676,10 +665,9 @@ lemma Walk.mem_support_of_mem_takeAt_support {u v x} {p : G.Walk u v} {i j : ℕ
 
 end takeAt
 
--- i can probably remove some of these assumptions later
 variable [Nonempty V] [Finite V]
 
-theorem egirth_le_two_mul_ediam_add_one (h : ¬ G.IsAcyclic) (hc : G.Connected) :
+theorem egirth_le_two_mul_girth_add_one (h : ¬ G.IsAcyclic) (hc : G.Connected) :
     G.egirth ≤ 2 * G.ediam + 1 := by
   by_cases h₀ : G.ediam = 0
   · rw [ediam_eq_zero_iff_subsingleton] at h₀
@@ -751,11 +739,6 @@ theorem egirth_le_two_mul_ediam_add_one (h : ¬ G.IsAcyclic) (hc : G.Connected) 
         rw [← pw.drop_zero] at this
         exact this.drop_isPath_le (t - 1).zero_le
       have hl : 1 < (pw.drop (t - 1)).length := by
-        have : 0 < (pw.drop t).length := by
-          rw [pw.drop_length]
-          apply Nat.lt_sub_of_add_lt
-          rw [zero_add, w.take_le_length _ (Nat.le_of_succ_le diam_lt_w_length)]
-          exact Order.lt_add_one_iff.mpr t_le_diam
         have ha : G.Adj (pw.getVert (t - 1)) (pw.getVert t) := by
           nth_rw 2 [← t.sub_add_cancel (ht ▸ j_pos)]
           apply Walk.adj_getVert_succ
@@ -848,12 +831,6 @@ theorem egirth_le_two_mul_ediam_add_one (h : ¬ G.IsAcyclic) (hc : G.Connected) 
   have Cpw_length : Cpw.length ≤ pw.length := by
     rw [Walk.length_copy, Walk.length_reverse]
     exact pw.takeAt_length_le ((j.sub_le 1).trans j_le_m)
-  have Cp_not_nil : ¬ Cp.Nil := by
-    apply Walk.not_nil_of_ne
-    by_contra! hc
-    apply hp₁.getVert_injOn (hp₂ ▸ ((j.sub_le 1).trans j_lt_k.le).trans k_le_t) (hp₂ ▸ k_le_t) at hc
-    rw [← hc, ← not_le] at j_lt_k
-    exact j_lt_k (j.sub_le 1)
   by_cases hj_mem : p.getVert j ∈ pw.support
   -- create a cycle strictly smaller than the girth like this:
   /-
