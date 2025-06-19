@@ -139,8 +139,7 @@ theorem countable_setOf_isolated_right_within [SecondCountableTopology α] {s : 
       · simpa [-sep_and, t, h'x]
     apply Countable.mono this
     simp [H, (subsingleton_isTop α).countable]
-  have : ∀ x ∈ t, ∃ y > x, s ∩ Ioo x y = ∅ := by
-    intro x hx
+  have (x) (hx : x ∈ t) : ∃ y > x, s ∩ Ioo x y = ∅ := by
     simp only [← empty_mem_iff_bot, mem_nhdsWithin_iff_exists_mem_nhds_inter,
       subset_empty_iff, IsTop, not_forall, not_le, mem_inter_iff, mem_setOf_eq, t] at hx
     rcases hx.2.1 with ⟨u, hu, h'u⟩
@@ -164,7 +163,7 @@ theorem countable_setOf_isolated_right_within [SecondCountableTopology α] {s : 
   rw [disjoint_iff_forall_ne]
   exact fun u hu v hv ↦ ((hu.2.trans_le this).trans hv.1).ne
 
-/-- The set of points in a set which are isolated on the right in this set is countable when the
+/-- The set of points in a set which are isolated on the left in this set is countable when the
 space is second-countable. -/
 theorem countable_setOf_isolated_left_within [SecondCountableTopology α] {s : Set α} :
     { x ∈ s | 𝓝[s ∩ Iio x] x = ⊥ }.Countable :=

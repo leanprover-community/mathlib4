@@ -42,7 +42,8 @@ variable {𝕜 B F₁ F₂ M : Type*} {n : WithTop ℕ∞}
 
 local notation "LE₁E₂" => TotalSpace (F₁ →L[𝕜] F₂) (fun (b : B) ↦ E₁ b →L[𝕜] E₂ b)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11083): moved slow parts to separate lemmas
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11083):
+-- moved slow parts to separate lemmas
 theorem contMDiffOn_continuousLinearMapCoordChange
     [ContMDiffVectorBundle n F₁ E₁ IB] [ContMDiffVectorBundle n F₂ E₂ IB]
     [MemTrivializationAtlas e₁] [MemTrivializationAtlas e₁']
@@ -68,16 +69,16 @@ theorem hom_chart (y₀ y : LE₁E₂) :
 
 theorem contMDiffWithinAt_hom_bundle (f : M → LE₁E₂) {s : Set M} {x₀ : M} :
     ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n f s x₀ ↔
-      ContMDiffWithinAt IM IB n (fun x => (f x).1) s x₀ ∧
+      ContMDiffWithinAt IM IB n (fun x ↦ (f x).1) s x₀ ∧
         ContMDiffWithinAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n
-          (fun x => inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) s x₀ :=
+          (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) s x₀ :=
   contMDiffWithinAt_totalSpace ..
 
 theorem contMDiffAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} :
     ContMDiffAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n f x₀ ↔
-      ContMDiffAt IM IB n (fun x => (f x).1) x₀ ∧
+      ContMDiffAt IM IB n (fun x ↦ (f x).1) x₀ ∧
         ContMDiffAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n
-          (fun x => inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
+          (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
   contMDiffAt_totalSpace ..
 
 @[deprecated (since := "2024-11-21")] alias smoothAt_hom_bundle := contMDiffAt_hom_bundle
@@ -135,9 +136,9 @@ another base map `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) �
 on `m`, one can apply `ϕ m` to `g m`, and the resulting map is `C^n`.
 
 Note that the smoothness of `ϕ` can not be always be stated as smoothness of a map into a manifold,
-as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` only make sense when `b₁` and `b₂` are globally
-smooth, but we want to apply this lemma with only local information. Therefore, we formulate it
-using smoothness of `ϕ` read in coordinates.
+as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` are smooth manifolds only when `b₁` and `b₂` are
+globally smooth, but we want to apply this lemma with only local information. Therefore, we
+formulate it using smoothness of `ϕ` read in coordinates.
 
 Version for `ContMDiffWithinAt`. We also give a version for `ContMDiffAt`, but no version for
 `ContMDiffOn` or `ContMDiff` as our assumption, written in coordinates, only makes sense around
@@ -176,9 +177,9 @@ another base map `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) �
 on `m`, one can apply `ϕ m` to `g m`, and the resulting map is `C^n`.
 
 Note that the smoothness of `ϕ` can not be always be stated as smoothness of a map into a manifold,
-as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` only make sense when `b₁` and `b₂` are globally
-smooth, but we want to apply this lemma with only local information. Therefore, we formulate it
-using smoothness of `ϕ` read in coordinates.
+as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` are smooth manifolds only when `b₁` and `b₂` are
+globally smooth, but we want to apply this lemma with only local information. Therefore, we
+formulate it using smoothness of `ϕ` read in coordinates.
 
 Version for `ContMDiffAt`. We also give a version for `ContMDiffWithinAt`, but no version for
 `ContMDiffOn` or `ContMDiff` as our assumption, written in coordinates, only makes sense around
@@ -232,36 +233,42 @@ variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E�
 
 /-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a base map `b : M → B`, and
 linear maps `ϕ m : E₁ (b m) → E₂ (b m)` depending smoothly on `m`.
-One can apply `ϕ m` to `v m`, and the resulting map is `C^n`. -/
+One can apply `ϕ m` to `v m`, and the resulting map is `C^n`.
+
+We give here a version of this statement within a set at a point. -/
 lemma ContMDiffWithinAt.clm_bundle_apply
     (hϕ : ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m))
       s x)
     (hv : ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₁)) n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) s x) :
     ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₂)) n
-      (fun m ↦ TotalSpace.mk' F₂ (b m) ((ϕ m) (v m))) s x := by
+      (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) s x := by
   simp only [contMDiffWithinAt_hom_bundle] at hϕ
-  exact ContMDiffWithinAt.clm_apply_of_inCoordinates hϕ.2 hv hϕ.1
+  exact hϕ.2.clm_apply_of_inCoordinates hv hϕ.1
 
 /-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a base map `b : M → B`, and
 linear maps `ϕ m : E₁ (b m) → E₂ (b m)` depending smoothly on `m`.
-One can apply `ϕ m` to `v m`, and the resulting map is `C^n`. -/
+One can apply `ϕ m` to `v m`, and the resulting map is `C^n`.
+
+We give here a version of this statement at a point. -/
 lemma ContMDiffAt.clm_bundle_apply
     (hϕ : ContMDiffAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)) x)
     (hv : ContMDiffAt IM (IB.prod 𝓘(𝕜, F₁)) n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x) :
-    ContMDiffAt IM (IB.prod 𝓘(𝕜, F₂)) n (fun m ↦ TotalSpace.mk' F₂ (b m) ((ϕ m) (v m))) x :=
+    ContMDiffAt IM (IB.prod 𝓘(𝕜, F₂)) n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) x :=
   ContMDiffWithinAt.clm_bundle_apply hϕ hv
 
 /-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a base map `b : M → B`, and
 linear maps `ϕ m : E₁ (b m) → E₂ (b m)` depending smoothly on `m`.
-One can apply `ϕ m` to `v m`, and the resulting map is `C^n`. -/
+One can apply `ϕ m` to `v m`, and the resulting map is `C^n`.
+
+We give here a version of this statement on a set. -/
 lemma ContMDiffOn.clm_bundle_apply
     (hϕ : ContMDiffOn IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)) s)
     (hv : ContMDiffOn IM (IB.prod 𝓘(𝕜, F₁)) n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) s) :
-    ContMDiffOn IM (IB.prod 𝓘(𝕜, F₂)) n (fun m ↦ TotalSpace.mk' F₂ (b m) ((ϕ m) (v m))) s :=
-  fun x hx ↦ ContMDiffWithinAt.clm_bundle_apply (hϕ x hx) (hv x hx)
+    ContMDiffOn IM (IB.prod 𝓘(𝕜, F₂)) n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) s :=
+  fun x hx ↦ (hϕ x hx).clm_bundle_apply (hv x hx)
 
 /-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a base map `b : M → B`, and
 linear maps `ϕ m : E₁ (b m) → E₂ (b m)` depending smoothly on `m`.
@@ -270,8 +277,8 @@ lemma ContMDiff.clm_bundle_apply
     (hϕ : ContMDiff IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)))
     (hv : ContMDiff IM (IB.prod 𝓘(𝕜, F₁)) n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m))) :
-    ContMDiff IM (IB.prod 𝓘(𝕜, F₂)) n (fun m ↦ TotalSpace.mk' F₂ (b m) ((ϕ m) (v m))) :=
-  fun x ↦ ContMDiffAt.clm_bundle_apply (hϕ x) (hv x)
+    ContMDiff IM (IB.prod 𝓘(𝕜, F₂)) n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) :=
+  fun x ↦ (hϕ x).clm_bundle_apply (hv x)
 
 end OneVariable
 
@@ -282,7 +289,9 @@ variable [∀ x, IsTopologicalAddGroup (E₃ x)] [∀ x, ContinuousSMul 𝕜 (E�
 
 /-- Consider `C^n` maps `v : M → E₁` and `v : M → E₂` to vector bundles, over a base map
 `b : M → B`, and bilinear maps `ψ m : E₁ (b m) → E₂ (b m) → E₃ (b m)` depending smoothly on `m`.
-One can apply `ψ  m` to `v m` and `w m`, and the resulting map is `C^n`. -/
+One can apply `ψ  m` to `v m` and `w m`, and the resulting map is `C^n`.
+
+We give here a version of this statement within a set at a point. -/
 lemma ContMDiffWithinAt.clm_bundle_apply₂
     (hψ : ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂ →L[𝕜] F₃)) n
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
@@ -290,13 +299,14 @@ lemma ContMDiffWithinAt.clm_bundle_apply₂
     (hv : ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₁)) n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) s x)
     (hw : ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₂)) n (fun m ↦ TotalSpace.mk' F₂ (b m) (w m)) s x) :
     ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F₃)) n
-      (fun m ↦ TotalSpace.mk' F₃ (b m) ((ψ m) (v m) (w m))) s x := by
-  have := ContMDiffWithinAt.clm_bundle_apply (E₂ := fun x ↦ (E₂ x →L[𝕜] E₃ x)) hψ hv
-  exact ContMDiffWithinAt.clm_bundle_apply this hw
+      (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) s x :=
+  hψ.clm_bundle_apply hv |>.clm_bundle_apply hw
 
 /-- Consider `C^n` maps `v : M → E₁` and `v : M → E₂` to vector bundles, over a base map
 `b : M → B`, and bilinear maps `ψ m : E₁ (b m) → E₂ (b m) → E₃ (b m)` depending smoothly on `m`.
-One can apply `ψ  m` to `v m` and `w m`, and the resulting map is `C^n`. -/
+One can apply `ψ  m` to `v m` and `w m`, and the resulting map is `C^n`.
+
+We give here a version of this statement at a point. -/
 lemma ContMDiffAt.clm_bundle_apply₂
     (hψ : ContMDiffAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂ →L[𝕜] F₃)) n
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
@@ -304,12 +314,14 @@ lemma ContMDiffAt.clm_bundle_apply₂
     (hv : ContMDiffAt IM (IB.prod 𝓘(𝕜, F₁)) n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x)
     (hw : ContMDiffAt IM (IB.prod 𝓘(𝕜, F₂)) n (fun m ↦ TotalSpace.mk' F₂ (b m) (w m)) x) :
     ContMDiffAt IM (IB.prod 𝓘(𝕜, F₃)) n
-      (fun m ↦ TotalSpace.mk' F₃ (b m) ((ψ m) (v m) (w m))) x :=
+      (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) x :=
   ContMDiffWithinAt.clm_bundle_apply₂ hψ hv hw
 
 /-- Consider `C^n` maps `v : M → E₁` and `v : M → E₂` to vector bundles, over a base map
 `b : M → B`, and bilinear maps `ψ m : E₁ (b m) → E₂ (b m) → E₃ (b m)` depending smoothly on `m`.
-One can apply `ψ  m` to `v m` and `w m`, and the resulting map is `C^n`. -/
+One can apply `ψ  m` to `v m` and `w m`, and the resulting map is `C^n`.
+
+We give here a version of this statement on a set. -/
 lemma ContMDiffOn.clm_bundle_apply₂
     (hψ : ContMDiffOn IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂ →L[𝕜] F₃)) n
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
@@ -317,8 +329,8 @@ lemma ContMDiffOn.clm_bundle_apply₂
     (hv : ContMDiffOn IM (IB.prod 𝓘(𝕜, F₁)) n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) s)
     (hw : ContMDiffOn IM (IB.prod 𝓘(𝕜, F₂)) n (fun m ↦ TotalSpace.mk' F₂ (b m) (w m)) s) :
     ContMDiffOn IM (IB.prod 𝓘(𝕜, F₃)) n
-      (fun m ↦ TotalSpace.mk' F₃ (b m) ((ψ m) (v m) (w m))) s :=
-  fun x hx ↦ ContMDiffWithinAt.clm_bundle_apply₂ (hψ x hx) (hv x hx) (hw x hx)
+      (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) s :=
+  fun x hx ↦ (hψ x hx).clm_bundle_apply₂ (hv x hx) (hw x hx)
 
 /-- Consider `C^n` maps `v : M → E₁` and `v : M → E₂` to vector bundles, over a base map
 `b : M → B`, and bilinear maps `ψ m : E₁ (b m) → E₂ (b m) → E₃ (b m)` depending smoothly on `m`.
@@ -330,8 +342,8 @@ lemma ContMDiff.clm_bundle_apply₂
     (hv : ContMDiff IM (IB.prod 𝓘(𝕜, F₁)) n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)))
     (hw : ContMDiff IM (IB.prod 𝓘(𝕜, F₂)) n (fun m ↦ TotalSpace.mk' F₂ (b m) (w m))) :
     ContMDiff IM (IB.prod 𝓘(𝕜, F₃)) n
-      (fun m ↦ TotalSpace.mk' F₃ (b m) ((ψ m) (v m) (w m))) :=
-  fun x ↦ ContMDiffAt.clm_bundle_apply₂ (hψ x) (hv x) (hw x)
+      (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) :=
+  fun x ↦ (hψ x).clm_bundle_apply₂ (hv x) (hw x)
 
 end TwoVariables
 
