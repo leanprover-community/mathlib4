@@ -90,7 +90,6 @@ theorem sub_neg_of_lt [IsOrderedRing α] {a b : α} : a < b → a - b < 0 :=
 
 end Ring
 
-open Mathlib in
 /-- Finds the name of a multiplicative lemma corresponding to an inequality strength. -/
 def _root_.Mathlib.Ineq.toConstMulName : Ineq → Lean.Name
   | .lt => ``mul_neg
@@ -113,3 +112,13 @@ lemma zero_mul_eq {α} {R : α → α → Prop} [Semiring α] {a b : α} (h : a 
   simp [h]
 
 end Mathlib.Tactic.Linarith
+
+section
+
+@[deprecated GT.gt.lt (since := "2025-06-16")]
+theorem lt_zero_of_zero_gt {α : Type*} [Zero α] [LT α] {a : α} (h : 0 > a) : a < 0 := h
+
+@[deprecated GE.ge.le (since := "2025-06-16")]
+theorem le_zero_of_zero_ge {α : Type*} [Zero α] [LE α] {a : α} (h : 0 ≥ a) : a ≤ 0 := h
+
+end
