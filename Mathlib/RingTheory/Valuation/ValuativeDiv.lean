@@ -250,6 +250,11 @@ variable (R) in
 class IsRankOne where
   nonempty : Nonempty (RankOneStruct R)
 
+variable (R) in
+class IsDiscrete where
+  has_maximal_element :
+    ∃ γ : ValueMonoid R, γ < 1 ∧ (∀ δ : ValueMonoid R, δ < 1 → δ ≤ γ)
+
 end ValuativeDiv
 
 open Topology ValuativeDiv in
