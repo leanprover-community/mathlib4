@@ -32,11 +32,15 @@ The proofs consists of three steps. Let `X` be a compact metric space.
 
 universe u v w
 
+-- TODO: move
+/-- TODO -/
 def DiscreteTopology.equiv_to_homeomorph {X : Type u} {Y : Type v}
     [TopologicalSpace X] [DiscreteTopology X]
     [TopologicalSpace Y] [DiscreteTopology Y] (eq : X ≃ Y) : X ≃ₜ Y :=
   eq.toHomeomorph (by simp)
 
+-- TODO: move
+/-- TODO -/
 def finTwoHomeoBool : Fin 2 ≃ₜ Bool :=
   DiscreteTopology.equiv_to_homeomorph finTwoEquiv
 
