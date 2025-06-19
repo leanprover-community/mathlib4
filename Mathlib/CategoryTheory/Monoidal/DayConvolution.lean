@@ -182,8 +182,7 @@ instance : ((F ⊛ G) ⊠ H).IsLeftKanExtension <|
   (pointwiseLeftKanExtensionLeft _ _ _ <|
     isPointwiseLeftKanExtensionUnit F G).isLeftKanExtension
 
-/-- The `CorepresentableBy` structure on `F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ -`
-derived from `tensorCorepresentableIso₂`. -/
+/-- The `CorepresentableBy` structure on `F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ -`. -/
 @[simps!]
 def corepresentableBy₂ :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
@@ -194,8 +193,7 @@ def corepresentableBy₂ :
       Functor.homEquivOfIsLeftKanExtension _ (extensionUnitRight (G ⊛ H) (unit G H) F) _
   homEquiv_comp := by aesop
 
-/-- The `CorepresentableBy` structure on `(F ⊠ G) ⊠ H ⟶ (tensor C).prod (𝟭 C) ⋙ tensor C ⋙ -`
-derived from `tensorCorepresentableIso₂`. -/
+/-- The `CorepresentableBy` structure on `(F ⊠ G) ⊠ H ⟶ (tensor C).prod (𝟭 C) ⋙ tensor C ⋙ -`. -/
 @[simps!]
 def corepresentableBy₂' :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
@@ -401,10 +399,8 @@ abbrev φ : Functor.fromPUnit.{0} (𝟙_ V) ⟶ Functor.fromPUnit.{0} (𝟙_ C) 
 any object are uniquely characterized. -/
 lemma hom_ext {c : C} {v : V} {g h : U.obj c ⟶ v}
     (e : ∀ f : 𝟙_ C ⟶ c, can ≫ U.map f ≫ g = can ≫ U.map f ≫ h) :
-    g = h := by
-  apply (isPointwiseLeftKanExtensionCan c).hom_ext
-  intro j
-  simpa using e j.hom
+    g = h :=
+  (isPointwiseLeftKanExtensionCan c).hom_ext fun j ↦ by simpa using e j.hom
 
 end DayConvolutionUnit
 
