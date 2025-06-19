@@ -400,3 +400,16 @@ theorem IsStarProjection.nonneg {M : Type*} [NonUnitalSemiring M] [PartialOrder 
   rw [← hp.mul_self]
   nth_rw 1 [← hp.star_eq]
   exact star_mul_self_nonneg p
+
+theorem IsStarProjection.one_sub_nonneg {M : Type*}
+    [Ring M] [PartialOrder M] [StarRing M] [StarOrderedRing M]
+    {p : M} (hp : IsStarProjection p) : 0 ≤ 1 - p := hp.one_sub.nonneg
+
+theorem IsStarProjection.le_one {M : Type*}
+    [Ring M] [PartialOrder M] [StarRing M] [StarOrderedRing M]
+    {p : M} (hp : IsStarProjection p) : p ≤ 1 := sub_nonneg.mp hp.one_sub_nonneg
+
+theorem IsStarProjection.mem_Icc_zero_one {M : Type*}
+    [Ring M] [PartialOrder M] [StarRing M] [StarOrderedRing M]
+    {p : M} (hp : IsStarProjection p) : p ∈ Set.Icc (0 : M) 1 := by
+  simp only [mem_Icc, hp.nonneg, hp.le_one, and_self]

@@ -5,6 +5,7 @@ Authors: Monica Omar
 -/
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Group.Idempotent
+import Mathlib.Algebra.Ring.Idempotent
 
 /-!
 # Star projections
@@ -27,6 +28,10 @@ theorem IsStarProjection.isSelfAdjoint [Mul M] [Star M] {p : M}
 
 theorem IsStarProjection.isIdempotentElem [Mul M] [Star M] {p : M}
     (hp : IsStarProjection p) : IsIdempotentElem p := hp.mul_self
+
+theorem IsStarProjection.isStarNormal [Mul M] [Star M] {p : M}
+    (hp : IsStarProjection p) : IsStarNormal p :=
+  ⟨by simp only [Commute, SemiconjBy, hp.star_eq]⟩
 
 variable (M) in
 @[simp]
@@ -74,3 +79,14 @@ theorem IsStarProjection.mul [Semiring M] [StarRing M]
     nth_rw 2 [mul_assoc]
     rw [← hpq, ← mul_assoc, hp.mul_self, mul_assoc, hq.mul_self]
   · rw [star_mul, hp.star_eq, hq.star_eq, hpq]
+
+theorem IsStarProjection.add_sub_mul_of_commute [Ring M] [StarRing M]
+    {p q : M} (hp : IsStarProjection p) (hq : IsStarProjection q)
+    (hpq : Commute p q) : IsStarProjection (p + q - p * q) where
+  mul_self := hp.isIdempotentElem.add_sub_mul_of_commute hpq hq.isIdempotentElem
+  star_eq := by simp only [hpq.eq, star_sub, star_add, hp.star_eq, hq.star_eq, star_mul]
+
+theorem IsStarProjection.pow [Monoid M] [Star M] {p : M} (hp : IsStarProjection p)
+    {n : ℕ} (hn : n ≠ 0) : p ^ n = p := by
+  obtain ⟨i, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hn
+  exact hp.isIdempotentElem.pow_succ_eq _
