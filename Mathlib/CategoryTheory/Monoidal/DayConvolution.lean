@@ -103,14 +103,14 @@ lemma unit_naturality (f : x ⟶ x') (g : y ⟶ y') :
 
 variable (y) in
 @[reassoc (attr := simp)]
-lemma unit_naturality_id_right (f : x ⟶ x') :
+lemma whiskerRight_comp_unit_app (f : x ⟶ x') :
     F.map f ▷ G.obj y ≫ (unit F G).app (x', y) =
     (unit F G).app (x, y) ≫ (F ⊛ G).map (f ▷ y) := by
   simpa [tensorHom_def] using (unit F G).naturality ((f, 𝟙 _) : (x, y) ⟶ (x', y))
 
 variable (x) in
 @[reassoc (attr := simp)]
-lemma unit_naturality_id_left (g : y ⟶ y') :
+lemma whiskerLeft_comp_unit_app (g : y ⟶ y') :
     F.obj x ◁ G.map g ≫ (unit F G).app (x, y') =
     (unit F G).app (x, y) ≫ (F ⊛ G).map (x ◁ g) := by
   simpa [tensorHom_def] using (unit F G).naturality ((𝟙 _, g) : (x, y) ⟶ (x, y'))
