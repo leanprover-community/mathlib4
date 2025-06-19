@@ -15,7 +15,7 @@ import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 * `variation_neg`: `(-μ).variation = μ.variation`.
 * `variation_zero`: `(0 : VectorMeasure X V).variation = 0`.
 * `absolutelyContinuous`: `μ ≪ᵥ μ.variation`.
-
+* `variation_of_ENNReal`: if `μ` is `VectorMeasure X ℝ≥0∞` then `variation μ = μ`.
 -/
 
 open MeasureTheory BigOperators NNReal ENNReal Function Filter
@@ -68,5 +68,40 @@ lemma absolutelyContinuous (μ : VectorMeasure X V) : μ ≪ᵥ μ.variation := 
     0 < ‖μ s‖ₑ := enorm_pos.mpr hc
     _ ≤ μ.variation s := norm_measure_le_variation μ s
     _ = 0 := hs
+
+-- TO DO: move this to a good home or incorporate in proof.
+lemma monotone_of_ENNReal  {s₁ s₂ : Set X} (hs₁ : MeasurableSet s₁) (hs₂ : MeasurableSet s₂)
+    (h : s₁ ⊆ s₂) (μ : VectorMeasure X ℝ≥0∞) : μ s₁ ≤ μ s₂ := by
+  simp [← VectorMeasure.of_add_of_diff (v := μ) hs₁ hs₂ h]
+
+-- TO DO: move this to a good home or could more mathlib style choices earlier make this redundant?
+open Classical in
+lemma biUnion_Finset (μ : VectorMeasure X ℝ≥0∞) {S : Finset (Set X)}
+    (hS : ∀ s ∈ S, MeasurableSet s) (hS' : S.toSet.PairwiseDisjoint id) :
+    ∑ s ∈ S, μ s = μ (⋃ s ∈ S, s) := by
+  have : ⋃ s ∈ S, s = ⋃ i : S, i.val := by apply Set.biUnion_eq_iUnion
+  rw [this, μ.of_disjoint_iUnion]
+  · simp
+  · simpa
+  · intro p q h
+    exact hS' p.property q.property (Subtype.coe_ne_coe.mpr h)
+
+/-- The variation of an `ℝ≥0∞`-valued measure is the measure itself. -/
+lemma variation_of_ENNReal (μ : VectorMeasure X ℝ≥0∞) : variation μ = μ := by
+  ext s hs
+  simp only [variation, var_aux, hs, reduceIte]
+  apply eq_of_le_of_le
+  · simp only [enorm_eq_self, iSup_le_iff]
+    intro P hP
+    have : ∑ x ∈ P, μ x  =  μ (⋃ p ∈ P, p) := by
+      exact biUnion_Finset μ hP.2.1 hP.2.2.1
+    rw [this]
+    apply monotone_of_ENNReal (Finset.measurableSet_biUnion P hP.2.1) (hs) (Set.iUnion₂_subset hP.1)
+  · by_cases hc : s ≠ ∅
+    · have h : {s} ∈ {P | IsInnerPart s P} := by simpa using isInnerPart_self hs hc
+      have := le_biSup (fun P ↦ ∑ x ∈ P, μ x) h
+      simp_all
+    · push_neg at hc
+      simp [hc]
 
 end MeasureTheory.VectorMeasure
