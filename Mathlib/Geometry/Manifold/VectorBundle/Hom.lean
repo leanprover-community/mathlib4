@@ -136,7 +136,7 @@ another base map `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) �
 on `m`, one can apply `ϕ m` to `g m`, and the resulting map is `C^n`.
 
 Note that the smoothness of `ϕ` can not be always be stated as smoothness of a map into a manifold,
-as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` is a smooth manifold only when `b₁` and `b₂` are
+as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` are smooth manifolds only when `b₁` and `b₂` are
 globally smooth, but we want to apply this lemma with only local information. Therefore, we
 formulate it using smoothness of `ϕ` read in coordinates.
 
@@ -177,7 +177,7 @@ another base map `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) �
 on `m`, one can apply `ϕ m` to `g m`, and the resulting map is `C^n`.
 
 Note that the smoothness of `ϕ` can not be always be stated as smoothness of a map into a manifold,
-as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` is a smooth manifold only when `b₁` and `b₂` are
+as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` are smooth manifolds only when `b₁` and `b₂` are
 globally smooth, but we want to apply this lemma with only local information. Therefore, we
 formulate it using smoothness of `ϕ` read in coordinates.
 
@@ -343,7 +343,7 @@ lemma ContMDiff.clm_bundle_apply₂
     (hw : ContMDiff IM (IB.prod 𝓘(𝕜, F₂)) n (fun m ↦ TotalSpace.mk' F₂ (b m) (w m))) :
     ContMDiff IM (IB.prod 𝓘(𝕜, F₃)) n
       (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) :=
-  fun x ↦ ContMDiffAt.clm_bundle_apply₂ (hψ x) (hv x) (hw x)
+  fun x ↦ (hψ x).clm_bundle_apply₂ (hv x) (hw x)
 
 end TwoVariables
 
