@@ -1802,7 +1802,7 @@ import Mathlib.Analysis.SpecialFunctions.Gaussian.PoissonSummation
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
 import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
-import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
@@ -3249,7 +3249,9 @@ import Mathlib.Data.Nat.Choose.Multinomial
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Choose.Vandermonde
 import Mathlib.Data.Nat.Count
-import Mathlib.Data.Nat.Digits
+import Mathlib.Data.Nat.Digits.Defs
+import Mathlib.Data.Nat.Digits.Div
+import Mathlib.Data.Nat.Digits.Lemmas
 import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Nat.EvenOddRec
 import Mathlib.Data.Nat.Factorial.Basic
@@ -3551,6 +3553,7 @@ import Mathlib.FieldTheory.Fixed
 import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.FieldTheory.Galois.GaloisClosure
 import Mathlib.FieldTheory.Galois.Infinite
+import Mathlib.FieldTheory.Galois.IsGaloisGroup
 import Mathlib.FieldTheory.Galois.Profinite
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
@@ -5260,6 +5263,7 @@ import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 import Mathlib.RingTheory.IntegralDomain
 import Mathlib.RingTheory.Invariant
 import Mathlib.RingTheory.Invariant.Basic
+import Mathlib.RingTheory.Invariant.Defs
 import Mathlib.RingTheory.Invariant.Profinite
 import Mathlib.RingTheory.IsAdjoinRoot
 import Mathlib.RingTheory.IsPrimary
@@ -5306,6 +5310,7 @@ import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
 import Mathlib.RingTheory.LocalRing.Subring
 import Mathlib.RingTheory.Localization.Algebra
@@ -6013,6 +6018,7 @@ import Mathlib.Topology.Algebra.Module.ModuleTopology
 import Mathlib.Topology.Algebra.Module.Multilinear.Basic
 import Mathlib.Topology.Algebra.Module.Multilinear.Bounded
 import Mathlib.Topology.Algebra.Module.Multilinear.Topology
+import Mathlib.Topology.Algebra.Module.PerfectPairing
 import Mathlib.Topology.Algebra.Module.PerfectSpace
 import Mathlib.Topology.Algebra.Module.Simple
 import Mathlib.Topology.Algebra.Module.Star
@@ -6352,6 +6358,7 @@ import Mathlib.Topology.MetricSpace.Ultra.Basic
 import Mathlib.Topology.MetricSpace.Ultra.ContinuousMaps
 import Mathlib.Topology.MetricSpace.Ultra.Pi
 import Mathlib.Topology.MetricSpace.Ultra.TotallySeparated
+import Mathlib.Topology.MetricSpace.UniformConvergence
 import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Metrizable.CompletelyMetrizable
 import Mathlib.Topology.Metrizable.ContinuousMap

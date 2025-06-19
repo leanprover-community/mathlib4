@@ -228,21 +228,14 @@ def productIsProduct (f : β → C) [HasProduct f] : IsLimit (Fan.mk _ (Pi.π f)
 def coproductIsCoproduct (f : β → C) [HasCoproduct f] : IsColimit (Cofan.mk _ (Sigma.ι f)) :=
   IsColimit.ofIsoColimit (colimit.isColimit (Discrete.functor f)) (Cocones.ext (Iso.refl _))
 
--- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
--- It seems the side condition `w` is not applied by `simpNF`.
--- https://github.com/leanprover-community/mathlib4/issues/5049
--- They are used by `simp` in `Pi.whiskerEquiv` below.
-@[reassoc (attr := simp, nolint simpNF)]
+-- TODO?: simp can prove this using `eqToHom_naturality`
+-- but `eqToHom_naturality` applies less easily than this lemma
+@[reassoc]
 theorem Pi.π_comp_eqToHom {J : Type*} (f : J → C) [HasProduct f] {j j' : J} (w : j = j') :
     Pi.π f j ≫ eqToHom (by simp [w]) = Pi.π f j' := by
-  cases w
-  simp
+  simp [*]
 
--- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
--- It seems the side condition `w` is not applied by `simpNF`.
--- https://github.com/leanprover-community/mathlib4/issues/5049
--- They are used by `simp` in `Sigma.whiskerEquiv` below.
-@[reassoc (attr := simp, nolint simpNF)]
+@[reassoc (attr := simp)]
 theorem Sigma.eqToHom_comp_ι {J : Type*} (f : J → C) [HasCoproduct f] {j j' : J} (w : j = j') :
     eqToHom (by simp [w]) ≫ Sigma.ι f j' = Sigma.ι f j := by
   cases w
@@ -683,6 +676,14 @@ theorem hasProducts_of_limit_fans (lf : ∀ {J : Type w} (f : J → C), Fan f)
       HasLimit.mk
         ⟨(Cones.postcompose Discrete.natIsoFunctor.inv).obj (lf fun j => F.obj ⟨j⟩),
           (IsLimit.postcomposeInvEquiv _ _).symm (lf_isLimit _)⟩ }
+
+theorem hasCoproducts_of_colimit_cofans (cf : ∀ {J : Type w} (f : J → C), Cofan f)
+    (cf_isColimit : ∀ {J : Type w} (f : J → C), IsColimit (cf f)) : HasCoproducts.{w} C :=
+  fun _ : Type w =>
+  { has_colimit := fun F =>
+      HasColimit.mk
+        ⟨(Cocones.precompose Discrete.natIsoFunctor.hom).obj (cf fun j => F.obj ⟨j⟩),
+          (IsColimit.precomposeHomEquiv _ _).symm (cf_isColimit _)⟩ }
 
 instance (priority := 100) hasProductsOfShape_of_hasProducts [HasProducts.{w} C] (J : Type w) :
     HasProductsOfShape J C := inferInstance

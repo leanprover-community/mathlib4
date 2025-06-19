@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Enrico Z. Borba
 -/
 
-import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.Probability.Density
 import Mathlib.Probability.Distributions.Uniform
