@@ -14,6 +14,7 @@ import Mathlib.CategoryTheory.Discrete.SumsProducts
 If `C` is a category with all coproducts, then `C` admits
 a left action from the monoidal category of types. The
 action is given by `J ⊙ₗ c := ∐ (fun _ : J ↦ c)`.
+We bundle this action through a `ChosenCopowers
 
 ## TODOs
 
