@@ -525,7 +525,10 @@ jobs:
     needs: [style_lint, build, post_steps]
     runs-on: ubuntu-latest
     steps:
-      - id: PR
+      # This action is used to determine the PR metadata in the event of a push.
+      # If it is called from a PR from a fork, it will find nothing/irrelevant data.
+      - if: github.event_name != 'pull_request_target'
+        id: PR_from_push
         uses: 8BitJonny/gh-get-current-pr@08e737c57a3a4eb24cec6487664b243b77eb5e36 # 3.0.0
         # TODO: this may not work properly if the same commit is pushed to multiple branches:
         # https://github.com/8BitJonny/gh-get-current-pr/issues/8
@@ -533,6 +536,15 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           # Only return if PR is still open
           filterOutClosed: true
+
+      # Combine the output from the previous action with the metadata supplied by GitHub itself.
+      # Note that if we fall back to github.event.pull_request data, the list of labels is generated when this workflow is triggered
+      # and not updated afterwards!
+      - id: PR
+        shell: bash
+        run: |
+          echo "number=${{ steps.PR_from_push.outputs.number || github.event.pull_request.number }}" | tee -a "$GITHUB_OUTPUT"
+          echo "pr_labels=${{ steps.PR_from_push.outputs.pr_labels || join(github.event.pull_request.labels.*.name, ',') }}" | tee -a "$GITHUB_OUTPUT"
 
       - if: contains(steps.PR.outputs.pr_labels, 'bench-after-CI')
         name: If `bench-after-CI` is present, add a `!bench` comment.
@@ -553,6 +565,74 @@ jobs:
             --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
 
       - if: contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI')
+        name: Get PR label timeline data
+        # 'auto-merge-after-CI' must be within the last 100 labels added (could be increased to 250 if needed)
+        # query from https://stackoverflow.com/a/67939355
+        # unfortunately we cannot query only for 'auto-merge-after-CI' events
+        # so we have to process this with jq in the next step
+        id: get-timeline
+        uses: octokit/graphql-action@8ad880e4d437783ea2ab17010324de1075228110 # v2.3.2
+        with:
+          query: |
+            query($owner: String!, $name: String!, $number: Int!) {
+              repository(owner: $owner, name: $name) {
+                pullRequest(number: $number) {
+                  timelineItems(itemTypes: LABELED_EVENT, last: 100) {
+                    nodes {
+                      ... on LabeledEvent {
+                        createdAt
+                        actor { login }
+                        label { name }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          owner: leanprover-community
+          name: mathlib4
+          number: ${{ steps.PR.outputs.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - if: contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI')
+        name: Extract label actor username
+        id: get-label-actor
+        run: |
+          # Parse the GraphQL response and filter for the specific label
+          echo '${{ steps.get-timeline.outputs.data }}'
+          USERNAME=$(echo '${{ steps.get-timeline.outputs.data }}' | jq -r '
+            .repository.pullRequest.timelineItems.nodes
+            | map(select(.label.name == "auto-merge-after-CI"))
+            | sort_by(.createdAt)
+            | last
+            | .actor.login // empty
+          ')
+
+          # Validate username format (GitHub usernames are alphanumeric + hyphens, max 39 chars)
+          printf 'USERNAME: %s\n' "$USERNAME"
+          if [[ -z "$USERNAME" ]]; then
+            echo "Error: No actor found for the specified label"
+            exit 1
+          elif ! [[ "$USERNAME" =~ ^[a-zA-Z0-9-]{1,39}$ ]]; then
+            echo "Error: Invalid username format: $USERNAME"
+            exit 1
+          fi
+
+          echo "username=$USERNAME" >> "$GITHUB_OUTPUT"
+          echo "Found label actor: $USERNAME"
+
+      - if: contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI')
+        name: check team membership
+        uses: tspascoal/get-user-teams-membership@57e9f42acd78f4d0f496b3be4368fc5f62696662 # v3.0.0
+        id: actorTeams
+        with:
+          organization: leanprover-community # optional. Default value ${{ github.repository_owner }}
+                  # Organization to get membership from.
+          username: ${{ steps.get-label-actor.outputs.username }}
+          GITHUB_TOKEN: ${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }} # (Requires scope: `read:org`)
+
+      - if: ${{ contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI') && (contains(steps.actorTeams.outputs.teams, 'mathlib-maintainers') || contains(steps.actorTeams.outputs.teams, 'bot-users')) }}
         name: If `auto-merge-after-CI` is present, add a `bors merge` comment.
         uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
         with:
