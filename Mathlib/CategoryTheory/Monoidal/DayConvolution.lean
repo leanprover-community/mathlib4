@@ -364,10 +364,10 @@ lemma pentagon (H K : C ⥤ V)
   -- And then we compute...
   ext ⟨⟨⟨i, j⟩, k⟩, l⟩
   have aux :
-      ((unit F G).app (i, j) ⊗ (unit H K).app (k, l)) ≫
+      ((unit F G).app (i, j) ⊗ₘ (unit H K).app (k, l)) ≫
         (unit (F ⊛ G) (H ⊛ K)).app ((i ⊗ j), (k ⊗ l)) =
       (α_ (F.obj i) (G.obj j) (H.obj k ⊗ K.obj l)).hom ≫
-        F.obj i ◁ (G.obj j ◁ (unit H K).app (k, l)) ≫ F.obj i ◁ (unit G (H ⊛ K)).app (j, (k ⊗ l)) ≫
+        F.obj i ◁ G.obj j ◁ (unit H K).app (k, l) ≫ F.obj i ◁ (unit G (H ⊛ K)).app (j, (k ⊗ l)) ≫
         (unit F (G ⊛ H ⊛ K)).app (i, (j ⊗ k ⊗ l)) ≫ (F ⊛ G ⊛ H ⊛ K).map (α_ i j (k ⊗ l)).inv ≫
         (associator F G (H ⊛ K)).inv.app ((i ⊗ j) ⊗ k ⊗ l) := by
     conv_rhs => simp only [Functor.comp_obj, tensor_obj, NatTrans.naturality,
