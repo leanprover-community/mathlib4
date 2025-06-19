@@ -10,7 +10,6 @@ import Mathlib.Data.Stream.Init
 import Mathlib.Tactic.FinCases
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Topology.MetricSpace.PiNat
 
 /-!
 # Ternary Cantor Set
@@ -413,39 +412,6 @@ noncomputable def cantorSet_equiv_nat_to_bool : cantorSet ≃ (ℕ → Bool) whe
     generalize (cantorToBinary x).get n = a at this
     generalize y n = b at this
     cases a <;> cases b <;> first | rfl | simp at this
-
--- TODO: where to place it?
-theorem ofDigits_continuous {b : ℕ} : Continuous (@ofDigits b) := by
-  by_cases hb : b = 0
-  · subst hb
-    fun_prop
-  by_cases hb : b = 1
-  · subst hb
-    fun_prop
-  replace hb : 1 < b := by
-    omega
-  let instMetricSpace : MetricSpace (ℕ → Fin b) := PiNat.metricSpace
-  rw [Metric.continuous_iff]
-  intro a ε hε
-  obtain ⟨n, hn⟩ : ∃ n, ((b : ℝ)^n)⁻¹ < ε := by
-    simp_rw [← inv_pow]
-    have := tendsto_pow_atTop_nhds_zero_of_abs_lt_one (r := (b : ℝ)⁻¹)
-      (by rify at hb; rw [abs_of_nonneg (by positivity)]; exact inv_lt_one_of_one_lt₀ hb)
-    obtain ⟨n, hn⟩ := (this.eventually_le_const hε).frequently.exists
-    use n + 1
-    rw [pow_succ, show ε = ε * 1 by simp]
-    exact mul_lt_mul_of_pos_of_nonneg hn (by rify at hb; exact inv_lt_one_of_one_lt₀ hb)
-      (by positivity) (by norm_num)
-  use (1 / 2)^n
-  constructor
-  · simp
-  intro a' ha'
-  have h : ∀ i < n, a' i = a i := by
-    intro i hi
-    apply PiNat.apply_eq_of_dist_lt ha' hi.le
-  apply ofDigits_close_of_common_prefix at h
-  simp only [dist, gt_iff_lt]
-  linarith
 
 /-- Canonical homeomorphism between the Cantor set and `ℕ → Bool`. -/
 noncomputable def cantorSet_homeomorph_nat_to_bool : cantorSet ≃ₜ (ℕ → Bool) := by
