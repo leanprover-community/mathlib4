@@ -38,21 +38,24 @@ The case of prime numbers is also an instance:
 * `ZMod.orderOf_one_add_mul_prime`: the order of `1 + a * p`
 modulo `p ^ (n + 1)` is `p ^ n` when `p` does not divide `a`.
 
+* `ZMod.orderOf_five` : the order of `5` modulo `2 ^ (n + 3)` is `2 ^ (n + 1)`.
+
 * `ZMod.isCyclic_units_of_prime_pow` : the case of odd prime powers
 
 * `ZMod.isCyclic_units_two_pow_iff` : `(ZMod (2 ^ n))ˣ` is cyclic iff `n ≤ 2`.
 
-* `ZMod.units_orderOf_five` : the order of `5` modulo `2 ^ (n + 3)` is `2 ^ (n + 1)`.
-
 The proofs follow [Ireland and Rosen,
   *A classical introduction to modern number theory*, chapter 4]
-  [IrelandRosen1990].
+  [IrelandRosen1990]
+but build on a general induction divisibility lemma suggested by Junyan Xu.
 
 -/
 
 open scoped Nat
 
 namespace ZMod
+
+section EasyCases
 
 theorem isCyclic_units_zero :
     IsCyclic (ZMod 0)ˣ := inferInstance
@@ -82,174 +85,121 @@ theorem not_isCyclic_units_eight :
   intro (h' : Monoid.exponent (ZMod 8)ˣ = 4)
   simp [h'] at h
 
--- Ireland & Rosen, 4.1, Lemma 3
-theorem pow_modEq_pow_succ_of_modEq_pow (p : ℕ) (hp : p.Prime) (n : ℕ) (hn : 1 ≤ n)
-    (a b : ℤ) (h : Int.ModEq (p ^ n) a b) :
-    Int.ModEq (p ^ (n + 1)) (a ^ p) (b ^ p) := by
-  rw [← Nat.cast_pow, ← intCast_eq_intCast_iff] at h ⊢
-  set c := b - a with hc
-  replace hc : b = a + c := Int.sub_eq_iff_eq_add'.mp hc
-  have hc' : (p ^ n : ℤ) ∣ c := by
-    rw [← Nat.cast_pow, ← intCast_zmod_eq_zero_iff_dvd]
-    simp [c, sub_eq_zero, h]
-  obtain ⟨k, hk⟩ := hc'
-  simp only [Int.cast_pow, hc, add_pow, Int.cast_sum, Int.cast_mul, Int.cast_natCast]
-  rw [← Finset.sum_erase_add (a := p)]
-  · rw [← Finset.sum_erase_add (a := 0)]
-    · simp only [pow_zero, tsub_zero, one_mul, Nat.choose_zero_right, Nat.cast_one, mul_one,
-      tsub_self, Nat.choose_self, right_eq_add]
-      convert add_zero _
-      · simp [hk, mul_pow, ← pow_mul]
-        convert zero_mul _
-        rw [← Nat.cast_pow, natCast_zmod_eq_zero_iff_dvd]
-        apply Nat.pow_dvd_pow p
-        trans n * 2
-        · rw [mul_two]
-          exact Nat.add_le_add_iff_left.mpr hn
-        · exact Nat.mul_le_mul_left n (Nat.Prime.two_le hp)
-      · rw [eq_comm]
-        apply Finset.sum_eq_zero
-        intro i hi
-        simp at hi
-        have hi' : i < p := by
-          refine Nat.lt_of_le_of_ne ?_ hi.2.1
-          exact Nat.le_of_lt_succ hi.2.2
-        rw [mul_assoc, hk]
-        convert mul_zero _
-        simp [mul_pow, mul_comm, mul_assoc]
-        convert mul_zero _
-        rw [← pow_mul, ← Nat.cast_pow, mul_comm, ← Nat.cast_mul]
-        rw [natCast_zmod_eq_zero_iff_dvd]
-        rw [pow_succ']
-        apply Nat.mul_dvd_mul
-        · apply Nat.Prime.dvd_choose_self hp hi.1 hi'
-        · apply Nat.pow_dvd_pow p
-          apply Nat.le_mul_of_pos_right
-          simpa
-    · simp only [Finset.mem_erase, ne_eq, eq_comm, Finset.mem_range, lt_add_iff_pos_left,
-      add_pos_iff, zero_lt_one, or_true, and_true]
-      exact Nat.Prime.ne_zero hp
-  · simp
+end EasyCases
 
--- Ireland & Rosen, 4.1, Corollary 1 of Lemma 3 (a sublemma)
-theorem pow_add_mul_pow_modeq
-    (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2) (a c : ℤ) (m : ℕ) (hm : 1 ≤ m) :
-    Int.ModEq (p ^ (m + 2)) ((a + c * p ^ m) ^ p) (a ^ p + a ^ (p - 1) * c * p ^ (m + 1)) := by
-  rw [← Nat.cast_pow, ← intCast_eq_intCast_iff]
-  simp
-  rw [add_comm (a : ZMod (p ^ (m + 2)))]
-  rw [add_pow]
-  rw [← Finset.add_sum_erase (a := 0)]
-  · rw [pow_zero, Nat.choose_zero_right, Nat.cast_one, one_mul, mul_one,
-      Nat.sub_zero]
-    apply congr_arg₂ _ rfl
-    rw [← Finset.add_sum_erase (a := 1)]
-    · rw [pow_one, Nat.choose_one_right]
-      rw [show (c : ZMod (p ^ (m + 2))) * p ^m * a ^ (p - 1) * p =
-        a ^(p - 1) * c * p ^(m + 1) by ring,
-        add_eq_left]
-      apply Finset.sum_eq_zero
-      · intro i hi
-        simp only [Finset.mem_erase, ne_eq, Finset.mem_range] at hi
-        by_cases hip : i = p
-        · rw [hip, Nat.choose_self, Nat.cast_one, mul_one, Nat.sub_self,
-          pow_zero, mul_one]
-          rw [mul_pow]
-          convert mul_zero _
-          rw [← pow_mul]
-          apply natCast_pow_eq_zero_of_le
-          trans m * 3
-          · rw [mul_add m 1 2, mul_one, Nat.add_le_add_iff_left]
-            exact Nat.le_mul_of_pos_left 2 hm
-          · rw [Nat.mul_le_mul_left_iff hm, Nat.succ_le_iff]
-            exact Nat.lt_of_le_of_ne (Nat.Prime.two_le hp) (Ne.symm hp2)
-        rw [mul_assoc, mul_comm, mul_assoc]
-        convert mul_zero _
-        have : p ∣ p.choose i := by
-          apply Nat.Prime.dvd_choose_self hp hi.2.1
-          apply Nat.lt_of_le_of_ne _ hip
-          exact Nat.le_of_lt_succ hi.2.2
-        obtain ⟨k, hk⟩ := this
-        rw [hk, Nat.cast_mul, mul_right_comm] --  mul_assoc, mul_pow]
-        convert zero_mul _
-        rw [mul_pow, mul_comm, mul_assoc]
-        convert mul_zero _
-        rw [← pow_mul, ← pow_succ]
-        apply natCast_pow_eq_zero_of_le
-        simp only [Nat.reduceLeDiff]
-        trans m * 2
-        · simp [mul_two, add_le_add_iff_left, hm]
-        · rw [Nat.mul_le_mul_left_iff hm]
-          apply Nat.succ_le_of_lt
-          apply Nat.lt_of_le_of_ne
-          · refine Nat.one_le_iff_ne_zero.mpr hi.2.1
-          · exact Ne.symm hi.1
-    · simp [Nat.Prime.pos hp]
-  · simp
+section Divisibility
 
--- Ireland & Rosen, 4.1, Corollary 1 of Lemma 3 (a sublemma)
-theorem pow_one_add_mul_pow_prime_modeq
-    (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2) (c : ℤ) (m : ℕ) (hm : 1 ≤ m) :
-    Int.ModEq (p ^ (m + 2)) ((1 + c * p ^ m) ^ p) (1 + c * p ^ (m + 1)) := by
-  convert pow_add_mul_pow_modeq p hp hp2 1 c m hm
-  · simp
-  · simp
+variable {R : Type*} [CommSemiring R] {u v : R}
+  {p : ℕ}
 
--- Ireland & Rosen, 4.1, Corollary 1 of Lemma 3
-theorem one_add_mul_prime_pow_modeq
-    {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (a : ℤ) (n : ℕ) :
-    Int.ModEq (p ^ (n + 2)) ((1 + a * p) ^ (p ^ n)) (1 + a * p ^ (n + 1)) := by
-  induction n with
-  | zero => simp
-  | succ n hrec =>
-    nth_rewrite 2 [pow_succ]
-    rw [pow_mul]
-    have := pow_modEq_pow_succ_of_modEq_pow  p hp (n + 2) (Nat.le_add_left 1 (n + 1))
-      _ _ hrec
-    simp only [add_assoc, Nat.reduceAdd] at this ⊢
-    apply Int.ModEq.trans this
-    apply pow_one_add_mul_pow_prime_modeq p hp hp2
-    exact Nat.le_add_left 1 n
+/- This lemma is due to Junyan Xu -/
 
-/-- Ireland & Rosen, §4.1, Corollary 2 of Lemma 3 -/
+lemma exists_of_one_add_mul_pow_prime_eq
+    (hp : p.Prime) (hvu : v ∣ u) (hpuv : p * u * v ∣ u ^ p) (x : R) :
+    ∃ y, (1 + u * x) ^ p = 1 + p * u * (x + v * y) := by
+  rw [add_comm, add_pow]
+  simp [← Finset.add_sum_erase (a := 0) (Finset.range (p + 1)) _ (by simp)]
+  rw [← Finset.add_sum_erase (a := 1) _ _ (by simp [hp.pos])]
+  rw [← Finset.sum_erase_add (a := p) _ _ (by
+      simp only [Finset.mem_erase]
+      rw [← and_assoc, and_comm (a := ¬ _), ← Nat.two_le_iff]
+      simp [hp.two_le])]
+  obtain ⟨a, ha⟩ := hvu
+  obtain ⟨b, hb⟩ := hpuv
+  use a * x ^ 2 * ∑ i ∈ (((Finset.range (p + 1)).erase 0).erase 1).erase p,
+    (u * x) ^ (i - 2) * (p.choose i / p : ℕ) + b * x ^ p
+  rw [mul_add]
+  apply congr_arg₂ _ rfl
+  apply congr_arg₂ _ (by simp [Nat.choose_one_right]; ring)
+  simp only [mul_add, Finset.mul_sum]
+  apply congr_arg₂ _
+  · apply Finset.sum_congr rfl
+    intro i hi
+    simp only [Finset.mem_erase, ne_eq, Finset.mem_range] at hi
+    have hi' : 2 ≤ i := by simp [Nat.two_le_iff, hi]
+    calc
+      (u * x) ^ i * p.choose i =
+        (u * x) ^ (2 + (i - 2)) * p.choose i := by rw [Nat.add_sub_of_le hi']
+      _ = u ^ 2 * x ^ 2 * (u * x) ^ (i - 2) * p.choose i := by ring_nf
+      _ = u ^ 2 * x ^ 2 * (u * x) ^ (i - 2) * (p * (p.choose i / p) : ℕ) := by
+        congr; symm
+        apply Nat.mul_div_cancel'
+        apply Nat.Prime.dvd_choose_self hp hi.2.2.1
+        refine Nat.lt_of_le_of_ne (Nat.le_of_lt_succ hi.2.2.2) hi.1
+      _ = u ^ 2 * x ^ 2 * (u * x) ^ (i - 2) * p * (p.choose i / p : ℕ) := by
+        simp only [Nat.cast_mul]; ring_nf
+      _ = p * u * (v * (a * x ^ 2 * ((u * x) ^ (i - 2) * (p.choose i / p : ℕ)))) := by
+          rw [ha]; ring
+  · calc
+     (u * x) ^ p * ↑(p.choose p) = u ^ p * x ^ p := by rw [Nat.choose_self, mul_pow]; simp
+    _ = p * u * v * b * x ^ p := by rw [hb]
+    _ = p * u * (v * (b * x ^ p)) := by ring_nf
+
+lemma exists_of_one_add_mul_pow_prime_pow_eq {u v : R}
+    (hp : p.Prime) (hvu : v ∣ u) (hpuv : p * u * v ∣ u ^ p) (x : R) (m : ℕ) :
+    ∃ y, (1 + u * x) ^ (p ^ m) = 1 + p ^ m * u * (x + v * y) :=
+  match m with
+  | 0 => ⟨0, by simp⟩
+  | m + 1 => by
+    rw [pow_succ', pow_mul]
+    obtain ⟨y, hy⟩ := exists_of_one_add_mul_pow_prime_eq hp hvu hpuv x
+    rw [hy]
+    obtain ⟨z, hz⟩ :=
+      exists_of_one_add_mul_pow_prime_pow_eq (u := p * u) (v := p * v) hp
+      (mul_dvd_mul_left _ hvu)
+      (by
+        rw [mul_pow]
+        simp only [← mul_assoc, mul_comm _ ↑p]
+        rw [mul_assoc, mul_assoc, ← mul_assoc u,
+          mul_comm u]
+        apply mul_dvd_mul _ hpuv
+        rw [← pow_two]
+        exact pow_dvd_pow _ hp.two_le)
+      ((x + v * y)) m
+    use y + p * z
+    rw [hz]
+    ring
+
+end Divisibility
+
+section PrimePow
+
 theorem orderOf_one_add_mul_prime {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (a : ℤ)
     (ha : ¬ (p : ℤ) ∣ a) (n : ℕ) :
     orderOf (1 + a * p : ZMod (p ^ (n + 1))) = p ^ n := by
-  letI : Fact (p.Prime) := ⟨hp⟩
-  by_cases hn : n = 0
-  · simp [hn]
-    convert mul_zero _
-    simp [natCast_zmod_eq_zero_iff_dvd, hn]
-  · obtain ⟨n, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hn
-    apply orderOf_eq_prime_pow
-    · rw [← Int.cast_natCast, ← Int.cast_mul, ← Int.cast_one, ← Int.cast_add,
-        ← Int.cast_pow, intCast_eq_intCast_iff]
-      rw [Nat.cast_pow, add_assoc]
-      intro H
-      apply ha
-      suffices Int.ModEq p a 0 by
-        exact Int.dvd_of_emod_eq_zero this
-      apply Int.ModEq.mul_left_cancel' (c := p ^ (n + 1))
-        (by simp [hp.ne_zero])
-      apply Int.ModEq.add_left_cancel' 1
-      simp only [mul_zero, add_zero, ← pow_succ, add_assoc]
-      rw [mul_comm]
-      apply Int.ModEq.trans _ H
-      exact (one_add_mul_prime_pow_modeq hp hp2 a n).symm
-    · rw [← Int.cast_natCast, ← Int.cast_mul, ← Int.cast_one, ← Int.cast_add,
-        ← Int.cast_pow, intCast_eq_intCast_iff]
-      have := one_add_mul_prime_pow_modeq hp hp2 a (n + 1)
-      rw [add_assoc _ 1 2, add_comm 1 2, ← add_assoc, pow_succ] at this
-      replace this := Int.ModEq.of_mul_right _ this
-      rw [← Nat.cast_pow, ← intCast_eq_intCast_iff] at this
-      rw [add_assoc _ 1 1]
-      simp only [Nat.reduceAdd]
-      rw [←intCast_eq_intCast_iff]
-      rw [this]
-      simp only [Int.cast_add, add_eq_left, Int.cast_mul]
-      convert mul_zero _
-      rw [Int.cast_natCast]
-      exact natCast_self (p ^ (n + 2))
+  match n with
+  | 0 => simp [(ZMod.natCast_zmod_eq_zero_iff_dvd p (p ^ 1)).mpr ?_, mul_zero]
+  | n + 1 =>
+    have _ : Fact (p.Prime) := ⟨hp⟩
+    have := exists_of_one_add_mul_pow_prime_pow_eq
+      (R := ZMod (p ^ (n + 1 + 1))) (u := p) (v := p) hp (by simp) ?_ a
+    · apply orderOf_eq_prime_pow
+      · obtain ⟨y, hy⟩ := this n
+        rw [mul_comm, hy, ← pow_succ]
+        simp only [add_eq_left, ne_eq, mul_add, ← mul_assoc, ← pow_succ]
+        simp only [← Nat.cast_pow, ZMod.natCast_self, zero_mul, add_zero]
+        rw [← Int.cast_natCast, ← Int.cast_mul]
+        rw [ZMod.intCast_zmod_eq_zero_iff_dvd, pow_succ]
+        rintro ⟨b, hb⟩
+        apply ha
+        use b
+        apply Or.resolve_right _ hp.ne_zero
+        simpa [mul_assoc] using hb
+      · obtain ⟨y, hy⟩ := this (n + 1)
+        rw [mul_comm, hy, ← pow_succ, ← Nat.cast_pow]
+        simp [ZMod.natCast_self]
+    · rw [← pow_two,← pow_succ]
+      apply pow_dvd_pow
+      rw [Nat.add_one_le_iff, Nat.lt_iff_le_and_ne]
+      exact ⟨hp.two_le, Ne.symm hp2⟩
+
+theorem orderOf_one_add_prime {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (n : ℕ) :
+    orderOf (1 + p : ZMod (p ^ (n + 1))) = p ^ n := by
+  convert orderOf_one_add_mul_prime hp hp2 1 _ n
+  · simp
+  · intro H
+    apply hp.ne_one
+    simpa using Int.eq_one_of_dvd_one (Int.natCast_nonneg p) H
 
 /-- If `p` is an odd prime, then `(ZMod (p ^ n))ˣ` is cyclic for all n -/
 theorem isCyclic_units_of_prime_pow (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2) (n : ℕ) :
@@ -259,19 +209,17 @@ theorem isCyclic_units_of_prime_pow (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2) (n 
   rcases n with _ | n
   · rw [pow_zero]; infer_instance
   -- We first consider the element `1 + p` of order `p ^ n`
-  let a := (((1 + p) : ℕ) : ZMod (p ^ (n + 1)))
+  set a := (1 + p : ZMod (p ^ (n + 1))) with ha_def
   have ha : IsUnit a := by
-    rw [ZMod.isUnit_iff_coprime]
+    rw [ha_def, ← Nat.cast_one (R := ZMod _), ← Nat.cast_add, ZMod.isUnit_iff_coprime]
     apply Nat.Coprime.pow_right
     simp only [Nat.coprime_add_self_left, Nat.coprime_one_left_eq_true]
   have ha' : orderOf ha.unit = p ^ n := by
     simp only [←
       orderOf_injective _ Units.coeHom_injective ha.unit,
       Units.coeHom_apply, IsUnit.unit_spec]
-    simp only [a, Nat.cast_add, Nat.cast_one]
-    convert orderOf_one_add_mul_prime hp hp2 1 _ _ using 1
-    · simp
-    · exact Prime.not_dvd_one (Nat.prime_iff_prime_int.mp hp)
+    simp only [ha_def]
+    exact orderOf_one_add_prime hp hp2 n
   -- We lift a primitive root of unity mod `p`, an adequate power of which has order `p - 1`.
   obtain ⟨c, hc⟩ := isCyclic_iff_exists_orderOf_eq_natCard.mp (isCyclic_units_prime hp)
   rw [Nat.card_eq_fintype_card, ZMod.card_units] at hc
@@ -308,52 +256,43 @@ theorem isCyclic_units_two_pow_iff (n : ℕ) :
       exact Nat.dvd_mul_left (2 ^ 3) (2 ^ n)
     exact isCyclic_of_surjective _ (unitsMap_surjective h)
 
-lemma Int.modEq_pow_five (n : ℕ) :
-    Int.ModEq (2 ^ (n + 2)) (5 ^ (2 ^ n)) 1 := by
-  induction n with
-  | zero => simp; rfl
-  | succ n hrec =>
-    convert pow_modEq_pow_succ_of_modEq_pow 2 Nat.prime_two _ ?_ _ _ hrec using 1
-    · rw [pow_succ, pow_mul]
-    · exact Nat.le_add_left 1 (n + 1)
-
-lemma Int.modEq_pow_five' (n : ℕ) :
-    Int.ModEq (2 ^ (n + 3)) (5 ^ (2 ^ n)) (1 + 2 ^ (n + 2)) := by
-  induction n with
-  | zero => simp
-  | succ n hrec =>
-    have := pow_modEq_pow_succ_of_modEq_pow 2 Nat.prime_two _ (Nat.le_add_left 1 _) _ _ hrec
-    rw [← pow_mul, ← pow_succ] at this
-    apply this.trans
-    rw [add_sq, mul_one, one_pow, ← pow_succ',
-      ← pow_mul, add_assoc n 2 1]
-    conv_rhs => rw [← add_zero (1 + _)]
-    apply Int.ModEq.add rfl
-    rw [Int.modEq_zero_iff_dvd]
-    simp only [Nat.cast_ofNat, Nat.reduceAdd]
-    apply pow_dvd_pow
-    simp only [mul_two, add_assoc, Nat.reduceAdd, add_le_add_iff_left]
-    rw [add_comm, add_assoc]
+lemma orderOf_one_add_four_mul (a : ℤ) (ha : Odd a) (n : ℕ) :
+    orderOf (1 + 4 * a : ZMod (2 ^ (n + 2))) = 2 ^ n := by
+  match n with
+  | 0 =>
+    rw [pow_zero, orderOf_eq_one_iff]
+    rw [show (4 : ZMod 4) = (4 : ℕ) by rfl, ZMod.natCast_self]
     simp
+  | n + 1 =>
+    have h24 : (2 : ZMod (2 ^ (n + 2 + 1))) ^ 2 = 4 := by norm_num
+    have huv : (2 : ZMod (2 ^ (n + 2 + 1))) ∣ 4 := ⟨2, by norm_num⟩
+    have huv' : (2 : ZMod (2 ^ (n + 2 + 1))) * 4 * 2 ∣ 4 ^ 2 := by norm_num
+    have := exists_of_one_add_mul_pow_prime_pow_eq Nat.prime_two huv huv' a
+    apply orderOf_eq_prime_pow
+    · obtain ⟨y, hy⟩ := this n
+      rw [hy, add_eq_left]
+      simp only [Nat.cast_ofNat]
+      rw [← h24, ← pow_add, ← Nat.cast_two (R := ZMod _), ← Nat.cast_pow, mul_add, ← mul_assoc]
+      rw [Nat.cast_pow, ← pow_succ, ← Nat.cast_pow,
+        ← Nat.cast_pow, ZMod.natCast_self, zero_mul, add_zero]
+      rw [← Int.cast_natCast, ← Int.cast_mul, ZMod.intCast_zmod_eq_zero_iff_dvd]
+      rintro ⟨b, hb⟩
+      apply Int.not_even_iff_odd.mpr ha
+      use b
+      simpa [← two_mul, pow_succ _ (n + 2), mul_assoc] using hb
+    · obtain ⟨y, hy⟩ := this (n + 1)
+      simp only [hy, Nat.cast_ofNat, add_eq_left]
+      rw [← h24, ← pow_add, ← Nat.cast_two (R := ZMod _),
+        ← Nat.cast_pow, ZMod.natCast_self, zero_mul]
 
-theorem units_orderOf_five (n : ℕ) :
+theorem orderOf_five (n : ℕ) :
     orderOf (5 : ZMod (2 ^ (n + 2))) = 2 ^ n := by
-  rcases n with _ | n
-  · norm_num; decide
-  suffices h : (5 : ZMod (2 ^ (n + 3))) ^ (2 ^ n) = 1 + 2 ^ (n + 2) by
-    apply Nat.eq_prime_pow_of_dvd_least_prime_pow Nat.prime_two
-    · rw [orderOf_dvd_iff_pow_eq_one, h, add_eq_left]
-      norm_cast
-      rw [ZMod.natCast_zmod_eq_zero_iff_dvd, Nat.pow_dvd_pow_iff_le_right']
-      simp
-    · rw [orderOf_dvd_iff_pow_eq_one, pow_succ 2 n, pow_mul, h]
-      calc ((1 + 2 ^ (n + 2)) ^ 2 : ZMod (2 ^ (n + 3))) =
-          (1 + (2 ^ (n + 3) : ℕ) * (1 + 2 ^ (n + 1)) : ZMod (2 ^ (n + 3))) := by push_cast; ring
-        _ = 1 := by rw [natCast_self]; ring
-  norm_cast
-  rw [natCast_eq_natCast_iff, ← Int.natCast_modEq_iff]
-  push_cast
-  exact Int.modEq_pow_five' n
+  convert orderOf_one_add_four_mul 1 (by norm_num) n
+  norm_num
+
+end PrimePow
+
+section Products
 
 theorem isCyclic_units_four_mul_iff (n : ℕ) :
     IsCyclic ((ZMod (4 * n))ˣ) ↔ n = 0 ∨ n = 1 := by
@@ -478,6 +417,8 @@ theorem isCyclic_units_of_odd_iff {n : ℕ} (hn : Odd n) :
     · exact Nat.zero_lt_of_ne_zero hm2_eq_one
     · exact Nat.zero_lt_of_ne_zero hm1_ne_one
 
+end Products
+
 /-- `(ZMod n)ˣ` is cyclic iff `n` is of the form
 `0`, `1`, `2`, `4`, `p ^ m`, or `2 * p ^ m`,
 where `p` is an odd prime and `1 ≤ m`. -/
@@ -577,130 +518,3 @@ theorem isCyclic_units_iff (n : ℕ) :
         · exact he
 
 end ZMod
-
-section Refactor
-variable {R : Type*} [CommSemiring R] {p : ℕ}
-  {n : ℕ} {a b : R}
-  (hp : p.Prime) (hn : 1 ≤ n)
-
-lemma lemma_1 (hp : p.Prime) (hn : 1 ≤ n)
-    (h : ∃ x, b = a + p ^ n * x) :
-    ∃ y, b ^ p = a ^ p + p ^ (n + 1) * y := by
-  obtain ⟨x, hx⟩ := h
-  rw [hx, add_comm a, add_pow]
-  rw [← Finset.sum_erase_add (a := 0) _ _ (by simp)]
-  rw [← Finset.sum_erase_add (a := p) _ _ (by simp [hp.ne_zero])]
-  simp only [add_comm (a ^ p)]
-  use ∑ i ∈ ((Finset.range (p + 1)).erase 0).erase p,
-    (p ^ n * x) ^ (i - 1) * x * a ^ (p - i) * (p.choose i / p : ℕ) + p ^ (n * p - n - 1) * x ^ p
-  simp only [tsub_self, pow_zero, mul_one, Nat.choose_self, Nat.cast_one, tsub_zero, one_mul,
-    Nat.choose_zero_right]
-  apply congr_arg₂ _ _ rfl
-  rw [mul_add, Finset.mul_sum]
-  apply congr_arg₂
-  · apply Finset.sum_congr rfl
-    intro i hi
-    simp only [Finset.mem_erase, ne_eq, Finset.mem_range] at hi
-    have hi' : i < p :=
-      Nat.lt_of_le_of_ne (Nat.le_of_lt_succ hi.2.2) hi.1
-    have hi'' : i - 1 + 1 = i :=
-      Nat.sub_add_cancel (Nat.one_le_iff_ne_zero.mpr hi.2.1)
-    have : p ∣ p.choose i :=
-      Nat.Prime.dvd_choose_self hp hi.2.1 hi'
-    obtain ⟨q, hq⟩ := this
-    rw [hq, mul_comm p q, Nat.mul_div_cancel _ hp.pos, Nat.cast_mul, mul_pow, pow_succ]
-    ring_nf
-    congr 1
-    apply congr_arg₂ _ _ rfl
-    rw [mul_assoc _ x]
-    simp only [← pow_succ', ← pow_add]
-    rw [add_assoc, add_comm 1, ← add_assoc, add_comm n, ← Nat.mul_add_one, hi'']
-  · rw [mul_pow, ← mul_assoc]
-    apply congr_arg₂ _ _ rfl
-    simp only [← pow_add, ← pow_mul]
-    congr
-    rw [add_comm, Nat.sub_sub, eq_comm]
-    refine Nat.sub_add_cancel ?_
-    trans n * 2
-    · simp [mul_two, Nat.add_le_add_iff_left.mpr hn]
-    · refine Nat.mul_le_mul_left n hp.two_le
-
--- Ireland & Rosen, 4.1, Corollary 1 of Lemma 3 (a sublemma)
-theorem pow_add_mul_pow_modeq
-    (hp : p.Prime) (hp2 : p ≠ 2) (c : R)
-    (hn : 1 ≤ n)
-    (h : ∃ x, b = a + p ^ n * (c + p * x)) :
-    ∃ y : R, b ^ p = a ^ p + p ^ (n + 1) * (a ^ (p - 1) * c + p * y) := by
-  obtain ⟨x, hx⟩ := h
-  set c' := c + p * x with hc'
-  rw [hx, add_comm a  (p ^n * c'), add_pow, ← Finset.add_sum_erase (a := 0) _ _ (by simp)]
-  rw [← Finset.add_sum_erase (a := 1) _ _ (by simp [hp.pos])]
-  simp
-  nth_rewrite 1 [hc']
-  rw [mul_add _ c, add_mul, mul_comm _ (p : R), mul_add,
-    ← add_assoc, ← add_assoc, ← mul_assoc, ← mul_assoc,
-    ← pow_succ']
-  rw [← mul_add, ← hc', ← Nat.cast_pow p n]
-  use  x * a ^ (p - 1) +
-    ∑ i ∈ (((Finset.range (p + 1)).erase 0).erase 1).erase p,
-      (p ^ (n * i - n - 1) * p.choose i / p : ℕ) * c' ^ i * a ^ (p - i)
-    + p ^ (n * p - n - 2) * c' ^ p
-  simp only [add_assoc, mul_add]
-  congr 2
-  · ring
-  apply congr_arg₂ _
-  · simp only [Nat.cast_pow]; ring
-  · simp only [Finset.mul_sum]
-    rw [← Finset.sum_erase_add (a := p)]
-    · congr 1
-      · apply Finset.sum_congr rfl
-        intro i hi
-        simp only [Finset.mem_erase, ne_eq, Finset.mem_range] at hi
-        rw [mul_pow _ c', mul_assoc, mul_comm (a ^ _), ← mul_assoc]
-        rw [mul_assoc _ (c' ^ _), mul_comm (c' ^ _), ← mul_assoc]
-        simp only [← Nat.cast_mul, ← Nat.cast_pow, ← mul_assoc]
-        congr 2
-        apply congr_arg
-        rw [← pow_succ, ← pow_mul, add_assoc]
-        have : p ∣ p.choose i := by
-          apply Nat.Prime.dvd_choose_self hp hi.2.2.1
-          apply Nat.lt_of_le_of_ne _ hi.1
-          exact Nat.le_of_lt_succ hi.2.2.2
-        obtain ⟨q, hq⟩ := this
-        rw [hq]
-        simp only [← mul_assoc, ← pow_succ]
-        conv_rhs => rw [mul_comm _ q, pow_succ, ← mul_assoc,
-          Nat.mul_div_cancel _ hp.pos, mul_comm q, ← mul_assoc]
-        congr
-        rw [← pow_add]
-        apply congr_arg₂ _ rfl
-        rw [add_comm (n + _), ← add_assoc, Nat.sub_sub,
-          ← add_assoc]
-        congr
-        rw [add_assoc]
-        rw [Nat.sub_add_cancel]
-        trans n * 2
-        · linarith
-        · refine Nat.mul_le_mul_left n ?_
-          rw [Nat.two_le_iff]
-          exact ⟨hi.2.2.1, hi.2.1⟩
-      · simp [mul_pow, ← mul_assoc]
-        congr
-        simp only [← Nat.cast_pow, ← Nat.cast_mul, ← pow_mul,
-        ← pow_succ, ← pow_add]
-        congr
-        rw [add_assoc n 1, add_comm]
-        refine Nat.eq_add_of_sub_eq ?_ rfl
-        trans n * 3
-        · linarith
-        · refine Nat.mul_le_mul_left n ?_
-          rw [Nat.succ_le_iff]
-          exact Nat.lt_of_le_of_ne hp.two_le (Ne.symm hp2)
-    · simp [hp.ne_zero, hp.ne_one]
-
-
-
-
-
-
-end Refactor
