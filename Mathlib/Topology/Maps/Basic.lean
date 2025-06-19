@@ -268,23 +268,6 @@ lemma discreteTopology [DiscreteTopology Y] (hf : IsEmbedding f) : DiscreteTopol
 @[deprecated (since := "2024-10-26")]
 alias Embedding.discreteTopology := discreteTopology
 
-lemma of_injective_DiscreteTopology [DiscreteTopology X] [DiscreteTopology Y]
-    (hf : Function.Injective f) : IsEmbedding f := by
-  refine ⟨?_, hf⟩
-  constructor
-  ext S
-  simp only [isOpen_discrete, true_iff, isOpen_induced_iff]
-  use f '' S
-  simp only [true_and]
-  ext x
-  simp only [mem_preimage, mem_image]
-  constructor
-  · intro ⟨x', h1, h2⟩
-    apply hf at h2
-    simpa [← h2]
-  · intro hi
-    use x
-
 lemma of_subsingleton [Subsingleton X] (f : X → Y) : IsEmbedding f :=
   ⟨.of_subsingleton f, f.injective_of_subsingleton⟩
 

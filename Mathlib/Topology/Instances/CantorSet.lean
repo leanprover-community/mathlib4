@@ -424,10 +424,6 @@ theorem ofDigits_continuous {b : ℕ} : Continuous (@ofDigits b) := by
     fun_prop
   replace hb : 1 < b := by
     omega
-  have h_fin_emb : Topology.IsEmbedding (@Fin.val b) :=
-    Topology.IsEmbedding.of_injective_DiscreteTopology Fin.val_injective
-  let instMetricSpaceFin : MetricSpace (Fin b) := Topology.IsEmbedding.comapMetricSpace _ h_fin_emb
-  have h_fin_iso : Isometry (@Fin.val b) := h_fin_emb.to_isometry
   let instMetricSpace : MetricSpace (ℕ → Fin b) := PiNat.metricSpace
   rw [Metric.continuous_iff]
   intro a ε hε
