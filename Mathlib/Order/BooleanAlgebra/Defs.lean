@@ -65,14 +65,14 @@ variable {α : Type u} {β : Type*} {x y z : α}
 
 /-!
 ### Generalized Boolean algebras
+-/
 
-A generalized Boolean algebra is a distributive lattice with `⊥` and a relative complement operation
-`\` (called `sdiff`, after "set difference") satisfying `(a ⊓ b) ⊔ (a \ b) = a` and
+/-- A generalized Boolean algebra is a distributive lattice with `⊥` and a relative complement
+operation `\` (called `sdiff`, after "set difference") satisfying `(a ⊓ b) ⊔ (a \ b) = a` and
 `(a ⊓ b) ⊓ (a \ b) = ⊥`, i.e. `a \ b` is the complement of `b` in `a`.
 
 This is a generalization of Boolean algebras which applies to `Finset α` for arbitrary
-(not-necessarily-`Fintype`) `α`.
--/
+(not-necessarily-`Fintype`) `α`. -/
 class GeneralizedBooleanAlgebra (α : Type u) extends DistribLattice α, SDiff α, Bot α where
   /-- For any `a`, `b`, `(a ⊓ b) ⊔ (a / b) = a` -/
   sup_inf_sdiff : ∀ a b : α, a ⊓ b ⊔ a \ b = a
@@ -81,8 +81,10 @@ class GeneralizedBooleanAlgebra (α : Type u) extends DistribLattice α, SDiff �
 
 /-!
 ### Boolean algebras
+-/
 
-A Boolean algebra is a bounded distributive lattice with a complement operator `ᶜ` such that
+
+/-- A Boolean algebra is a bounded distributive lattice with a complement operator `ᶜ` such that
 `x ⊓ xᶜ = ⊥` and `x ⊔ xᶜ = ⊤`. For convenience, it must also provide a set difference operation `\`
 and a Heyting implication `⇨` satisfying `x \ y = x ⊓ yᶜ` and `x ⇨ y = y ⊔ xᶜ`.
 
