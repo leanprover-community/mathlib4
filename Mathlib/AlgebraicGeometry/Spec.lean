@@ -244,11 +244,9 @@ def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
       -- Here, we are showing that the map on prime spectra induced by `f` is really a morphism of
       -- *locally* ringed spaces, i.e. that the induced map on the stalks is a local ring
       -- homomorphism.
-
       #adaptation_note /-- nightly-2024-04-01
       It's this `erw` that is blowing up. The implicit arguments differ significantly. -/
       erw [← localRingHom_comp_stalkIso_apply' f p a] at ha
-
       have : IsLocalHom (stalkIso (↑S) p).inv.hom := isLocalHom_of_isIso _
       replace ha := (isUnit_map_iff (stalkIso S p).inv.hom _).mp ha
       replace ha := IsLocalHom.map_nonunit

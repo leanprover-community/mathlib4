@@ -40,6 +40,25 @@ theorem le_dirac_apply {a} : s.indicator 1 a ≤ dirac a s :=
 theorem dirac_apply' (a : α) (hs : MeasurableSet s) : dirac a s = s.indicator 1 a :=
   toMeasure_apply _ _ hs
 
+theorem dirac_apply_eq_zero_or_one :
+    dirac a s = 0 ∨ dirac a s = 1 := by
+  rw [← measure_toMeasurable s, dirac_apply' a (measurableSet_toMeasurable ..), indicator]
+  simp only [Pi.one_apply, ite_eq_right_iff, one_ne_zero, imp_false, ite_eq_left_iff, zero_ne_one,
+    not_not]
+  tauto
+
+@[simp]
+theorem dirac_apply_ne_zero_iff_eq_one :
+    dirac a s ≠ 0 ↔ dirac a s = 1 where
+  mp := dirac_apply_eq_zero_or_one.resolve_left
+  mpr := ne_zero_of_eq_one
+
+@[simp]
+theorem dirac_apply_ne_one_iff_eq_zero :
+    dirac a s ≠ 1 ↔ dirac a s = 0 where
+  mp := dirac_apply_eq_zero_or_one.resolve_right
+  mpr h := h ▸ zero_ne_one
+
 @[simp]
 theorem dirac_apply_of_mem {a : α} (h : a ∈ s) : dirac a s = 1 := by
   have : ∀ t : Set α, a ∈ t → t.indicator (1 : α → ℝ≥0∞) a = 1 := fun t ht => indicator_of_mem ht 1
@@ -159,6 +178,14 @@ instance Measure.dirac.isProbabilityMeasure {x : α} : IsProbabilityMeasure (dir
 
 instance Measure.dirac.instIsFiniteMeasure {a : α} : IsFiniteMeasure (dirac a) := inferInstance
 instance Measure.dirac.instSigmaFinite {a : α} : SigmaFinite (dirac a) := inferInstance
+
+theorem dirac_eq_one_iff_mem (hs : MeasurableSet s) : dirac a s = 1 ↔ a ∈ s := by
+  rw [← prob_compl_eq_zero_iff hs, ← mem_ae_iff]
+  apply mem_ae_dirac_iff hs
+
+theorem dirac_eq_zero_iff_not_mem (hs : MeasurableSet s) : dirac a s = 0 ↔ a ∉ s := by
+  rw [← compl_compl s, ← mem_ae_iff, notMem_compl_iff]
+  apply mem_ae_dirac_iff (MeasurableSet.compl_iff.mpr hs)
 
 theorem restrict_dirac' (hs : MeasurableSet s) [Decidable (a ∈ s)] :
     (Measure.dirac a).restrict s = if a ∈ s then Measure.dirac a else 0 := by

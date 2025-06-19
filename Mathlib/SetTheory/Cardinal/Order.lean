@@ -341,7 +341,7 @@ theorem self_le_power (a : Cardinal) {b : Cardinal} (hb : 1 ≤ b) : a ≤ a ^ b
 
 /-- **Cantor's theorem** -/
 theorem cantor (a : Cardinal.{u}) : a < 2 ^ a := by
-  induction' a using Cardinal.inductionOn with α
+  induction a using Cardinal.inductionOn with | _ α
   rw [← mk_set]
   refine ⟨⟨⟨singleton, fun a b => singleton_eq_singleton_iff.1⟩⟩, ?_⟩
   rintro ⟨⟨f, hf⟩⟩
@@ -408,7 +408,7 @@ theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
   intro b hlt
   rcases b, c with ⟨⟨β⟩, ⟨γ⟩⟩
   obtain ⟨f⟩ := le_of_lt hlt
-  have : ¬Surjective f := fun hn => (not_le_of_lt hlt) (mk_le_of_surjective hn)
+  have : ¬Surjective f := fun hn => (not_le_of_gt hlt) (mk_le_of_surjective hn)
   simp only [Surjective, not_forall] at this
   rcases this with ⟨b, hb⟩
   calc
@@ -421,7 +421,7 @@ theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) :=
     (le_of_not_gt fun h => by
       rcases lt_lift_iff.1 h with ⟨b, h, e⟩
       rw [lt_succ_iff, ← lift_le, e] at h
-      exact h.not_lt (lt_succ _))
+      exact h.not_gt (lt_succ _))
     (succ_le_of_lt <| lift_lt.2 <| lt_succ a)
 
 /-! ### Limit cardinals -/
@@ -569,7 +569,7 @@ theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f 
       show ∀ i, ∃ b, ∀ a, G ⟨i, a⟩ i ≠ b by
         intro i
         simp only [not_exists.symm, not_forall.symm]
-        refine fun h => (H i).not_le ?_
+        refine fun h => (H i).not_ge ?_
         rw [← mk_out (f i), ← mk_out (g i)]
         exact ⟨Embedding.ofSurjective _ h⟩
     let ⟨⟨i, a⟩, h⟩ := sG C

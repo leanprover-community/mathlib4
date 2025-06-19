@@ -140,7 +140,11 @@ theorem setLAverage_congr (h : s =ᵐ[μ] t) : ⨍⁻ x in s, f x ∂μ = ⨍⁻
 
 @[deprecated (since := "2025-04-22")] alias setLaverage_congr := setLAverage_congr
 
-theorem setLAverage_congr_fun (hs : MeasurableSet s) (h : ∀ᵐ x ∂μ, x ∈ s → f x = g x) :
+theorem setLAverage_congr_fun_ae (hs : MeasurableSet s) (h : ∀ᵐ x ∂μ, x ∈ s → f x = g x) :
+    ⨍⁻ x in s, f x ∂μ = ⨍⁻ x in s, g x ∂μ := by
+  simp only [laverage_eq, setLIntegral_congr_fun_ae hs h]
+
+theorem setLAverage_congr_fun (hs : MeasurableSet s) (h : EqOn f g s) :
     ⨍⁻ x in s, f x ∂μ = ⨍⁻ x in s, g x ∂μ := by
   simp only [laverage_eq, setLIntegral_congr_fun hs h]
 
@@ -150,7 +154,8 @@ theorem laverage_lt_top (hf : ∫⁻ x, f x ∂μ ≠ ∞) : ⨍⁻ x, f x ∂μ
   obtain rfl | hμ := eq_or_ne μ 0
   · simp
   · rw [laverage_eq]
-    exact div_lt_top hf (measure_univ_ne_zero.2 hμ)
+    have := measure_univ_ne_zero.2 hμ
+    finiteness
 
 theorem setLAverage_lt_top : ∫⁻ x in s, f x ∂μ ≠ ∞ → ⨍⁻ x in s, f x ∂μ < ∞ :=
   laverage_lt_top

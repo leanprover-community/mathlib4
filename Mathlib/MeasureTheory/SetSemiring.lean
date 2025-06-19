@@ -161,7 +161,6 @@ lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
     simp only [coe_singleton, pairwiseDisjoint_singleton, sUnion_singleton, eq_self_iff_true,
       and_self_iff]
   | insert t I' _ h => ?_
-
   rw [coe_insert] at hI
   have ht : t ∈ C := hI (Set.mem_insert _ _)
   obtain ⟨J, h_ss, h_dis, h_eq⟩ := h ((Set.subset_insert _ _).trans hI)
@@ -318,7 +317,7 @@ section disjointOfUnion
 
 variable {j : Set α} {J : Finset (Set α)}
 
-open Set MeasureTheory Order
+open MeasureTheory Order
 
 theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
     ∃ K : Set α → Finset (Set α),

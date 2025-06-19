@@ -103,6 +103,7 @@ linear isomorphism in `multilinearCurryLeftEquiv R M M₂`.
 
 The direct and inverse maps are given by `f.curryLeft` and `f.uncurryLeft`. Use these
 unless you need the full framework of linear equivs. -/
+@[simps]
 def multilinearCurryLeftEquiv :
     MultilinearMap R M M₂ ≃ₗ[R] (M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => M i.succ) M₂) where
   toFun := MultilinearMap.curryLeft
@@ -115,7 +116,6 @@ def multilinearCurryLeftEquiv :
 variable {R M M₂}
 
 /-! #### Right currying -/
-
 
 /-- Given a multilinear map `f` in `n` variables to the space of linear maps from `M (last n)` to
 `M₂`, construct the corresponding multilinear map on `n+1` variables obtained by concatenating
@@ -328,7 +328,6 @@ def currySumEquiv : MultilinearMap R N M₂ ≃ₗ[R]
   toFun := currySum
   invFun := uncurrySum
   left_inv _ := by simp
-  right_inv _ := rfl
   map_add' := by aesop
   map_smul' := by aesop
 

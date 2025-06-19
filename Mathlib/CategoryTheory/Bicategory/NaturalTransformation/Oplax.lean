@@ -275,7 +275,7 @@ def vcomp : StrongTrans F H :=
 /-- `CategoryStruct` on `OplaxFunctor B C` where the (1-)morphisms are given by strong
 transformations. -/
 @[simps! id_app id_naturality comp_app comp_naturality]
-scoped instance : CategoryStruct (OplaxFunctor B C) where
+scoped instance OplaxFunctor.instCategoryStruct : CategoryStruct (OplaxFunctor B C) where
   Hom := StrongTrans
   id := StrongTrans.id
   comp := StrongTrans.vcomp
