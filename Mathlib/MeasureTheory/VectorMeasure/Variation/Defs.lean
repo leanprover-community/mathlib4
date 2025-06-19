@@ -159,6 +159,8 @@ lemma var_aux_empty' : var_aux f ∅ = 0 := by
   intro _ hP
   simp_all [isInnerPart_of_empty hP]
 
+lemma var_aux_zero (s : Set X) : var_aux (fun _ ↦ 0) s = 0 := by simp [var_aux]
+
 /-- `var_aux` is monotone in terms of the set. -/
 lemma var_aux_monotone {s₁ s₂ : Set X} (hs₂ : MeasurableSet s₂) (h : s₁ ⊆ s₂) :
     var_aux f s₁ ≤ var_aux f s₂ := by

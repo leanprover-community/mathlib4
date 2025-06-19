@@ -3,6 +3,7 @@ Copyright (c) 2025 Oliver Butterley. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Butterley, Yoh Tanimoto
 -/
+import Mathlib.MeasureTheory.Measure.Complex
 import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 
 /-!
@@ -39,7 +40,7 @@ theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) : ‖μ E
   · simp [not_ne_iff.mp hE']
   wlog hE : MeasurableSet E
   · simp [hE, μ.not_measurable' hE]
-  have h : {E} ∈ {P | IsInnerPart E P} := by simpa using isInnerPart_self E hE hE'
+  have h : {E} ∈ {P | IsInnerPart E P} := by simpa using isInnerPart_self hE hE'
   have := le_biSup (fun P ↦ ∑ p ∈ P, ‖μ p‖ₑ) h
   simp_all [variation, var_aux]
 
@@ -47,8 +48,6 @@ lemma variation_zero : (0 : VectorMeasure X V).variation = 0 := by
   ext _ _
   simp [variation, var_aux_zero]
 
--- TO DO: generalize this to the largest possible class of `VectorMeasure X V`. What are the best
--- assumptions for `V`?
 lemma variation_neg
     (μ : MeasureTheory.ComplexMeasure X) : (-μ).variation = μ.variation := by
   simp [variation]
@@ -63,4 +62,3 @@ lemma absolutelyContinuous (μ : VectorMeasure X V) : μ ≪ᵥ μ.variation := 
     _ = 0 := hs
 
 end MeasureTheory.VectorMeasure
-#min_imports
