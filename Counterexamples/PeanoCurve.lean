@@ -1,5 +1,17 @@
+/-
+Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasilii Nesterov
+-/
 import Mathlib.Topology.MetricSpace.HausdorffAlexandroff
 import Mathlib.Analysis.Complex.Tietze
+
+/-!
+# Peano curve
+
+This file proves the existsence of a Peano curve -- continuous sujrective map from the interval
+`[0, 1]` to the square `[0, 1] × [0, 1]`.
+-/
 
 lemma unitInterval_eq_closedBall : unitInterval = Metric.closedBall 2⁻¹ 2⁻¹ := by
   ext x
