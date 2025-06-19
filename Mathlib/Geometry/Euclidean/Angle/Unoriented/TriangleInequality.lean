@@ -19,7 +19,7 @@ variable {V : Type*}
 variable [NormedAddCommGroup V]
 variable [InnerProductSpace ℝ V]
 
-lemma inner_eq_cos_angle_of_norm_eq_one {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
+private lemma inner_eq_cos_angle_of_norm_eq_one {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     ⟪x, y⟫ = Real.cos (angle x y) := by
   simp [cos_angle, hx, hy]
 
@@ -176,11 +176,8 @@ lemma angle_normalized_left (x y : V) :
     angle (normalized x) y = angle x y := by
   by_cases hx : x = 0
   · simp [hx]
-  by_cases hy : y = 0
-  · simp [hy]
   replace hx : 0 < ‖x‖⁻¹ := by simp [hx]
-  replace hy : 0 < ‖y‖⁻¹ := by simp [hy]
-  simp only [normalized, angle_smul_left_of_pos, hx, angle_smul_right_of_pos, hy]
+  simp only [normalized, hx, angle_smul_left_of_pos]
 
 @[simp]
 lemma angle_normalized_right (x y : V) :
