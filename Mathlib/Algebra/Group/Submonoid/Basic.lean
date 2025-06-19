@@ -121,7 +121,7 @@ theorem mem_closure {x : M} : x ∈ closure s ↔ ∀ S : Submonoid M, s ⊆ S �
 theorem subset_closure : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 
 @[to_additive (attr := aesop 80% (rule_sets := [SetLike]))]
-theorem mem_adjoin_of_mem {s : Set M} {x : M} (hx : x ∈ s) : x ∈ closure s := subset_closure hx
+theorem mem_closure_of_mem {s : Set M} {x : M} (hx : x ∈ s) : x ∈ closure s := subset_closure hx
 
 @[to_additive]
 theorem notMem_of_notMem_closure {P : M} (hP : P ∉ closure s) : P ∉ s := fun h =>
