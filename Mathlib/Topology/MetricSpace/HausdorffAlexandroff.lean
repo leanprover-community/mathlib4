@@ -30,23 +30,10 @@ The proofs consists of three steps. Let `X` be a compact metric space.
   subset of the Cantor space admits a continuous surjection from the Cantor space.
 -/
 
-universe u v w
-
--- TODO: move
-/-- TODO -/
-def DiscreteTopology.equiv_to_homeomorph {X : Type u} {Y : Type v}
-    [TopologicalSpace X] [DiscreteTopology X]
-    [TopologicalSpace Y] [DiscreteTopology Y] (eq : X ≃ Y) : X ≃ₜ Y :=
-  eq.toHomeomorph (by simp)
-
--- TODO: move
-/-- TODO -/
-def finTwoHomeoBool : Fin 2 ≃ₜ Bool :=
-  DiscreteTopology.equiv_to_homeomorph finTwoEquiv
-
 /-- Convert a sequence of binary digits to a real number from `unitInterval`. -/
 noncomputable def fromBinary (b : ℕ → Bool) : unitInterval :=
-  let φ : (ℕ → Bool) ≃ₜ (ℕ → Fin 2) := Homeomorph.piCongrRight (fun _ ↦ finTwoHomeoBool.symm)
+  let φ : (ℕ → Bool) ≃ₜ (ℕ → Fin 2) := Homeomorph.piCongrRight
+    (fun _ ↦ finTwoEquiv.toHomeomorphOfDiscrete.symm)
   let x : ℝ := ofDigits (φ b)
   have hx : x ∈ Set.Icc 0 1 := by
     simp [x]
@@ -58,8 +45,9 @@ noncomputable def fromBinary (b : ℕ → Bool) : unitInterval :=
 theorem fromBinary_continuous : Continuous fromBinary := by
   unfold fromBinary
   apply Continuous.subtype_mk
-  have : (fun x ↦ ofDigits ((Homeomorph.piCongrRight fun _ ↦ finTwoHomeoBool.symm) x)) =
-      ofDigits ∘ (Homeomorph.piCongrRight fun _ ↦ finTwoHomeoBool.symm) := by
+  have : (fun x ↦ ofDigits
+      ((Homeomorph.piCongrRight fun _ ↦ finTwoEquiv.toHomeomorphOfDiscrete.symm) x)) =
+      ofDigits ∘ (Homeomorph.piCongrRight fun _ ↦ finTwoEquiv.toHomeomorphOfDiscrete.symm) := by
     ext
     simp
   rw [this, Homeomorph.comp_continuous_iff']
@@ -71,7 +59,8 @@ theorem fromBinary_surjective : Function.Surjective fromBinary := by
   by_cases hx_one : x = 1
   · use fun _ ↦ true
     have : fromBinary (fun _ ↦ true) = ofDigits (b := 2) (fun _ ↦ 1) := by
-      simp [fromBinary, finTwoHomeoBool, DiscreteTopology.equiv_to_homeomorph]
+      simp only [fromBinary, Equiv.toHomeomorphOfDiscrete,
+        Equiv.toHomeomorph_symm, Fin.isValue]
       congr
     simp only [hx_one, Set.Icc.mk_one, Subtype.eq_iff, this, ofDigits, ofDigitsTerm, Fin.isValue,
       Fin.val_one, Nat.cast_one, Nat.cast_ofNat, pow_succ, mul_inv_rev, ← inv_pow, one_mul,
@@ -92,7 +81,7 @@ theorem fromBinary_surjective : Function.Surjective fromBinary := by
   ext n
   simp only [Homeomorph.piCongrRight_apply, Function.comp_apply]
   congr
-  simp [finTwoHomeoBool, DiscreteTopology.equiv_to_homeomorph]
+  simp [Equiv.toHomeomorphOfDiscrete]
 
 /-- A continuous surjection from the Cantor space to the Hilbert cube. -/
 noncomputable def cantorToHilbert (x : ℕ → Bool) : ℕ → unitInterval :=
