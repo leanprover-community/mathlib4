@@ -275,7 +275,7 @@ def prod {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.prod 
 
 /-- The cartesian product of two natural transformations. -/
 @[simps]
-def prod' {F G : A ⥤ B × C} (τ₁ : F ⋙ Prod.fst _ _ ⟶ G ⋙ Prod.fst _ _ )
+def prod' {F G : A ⥤ B × C} (τ₁ : F ⋙ Prod.fst _ _ ⟶ G ⋙ Prod.fst _ _)
     (τ₂ : F ⋙ Prod.snd _ _ ⟶ G ⋙ Prod.snd _ _ ) :
   F ⟶ G :=
 { app := fun X => ⟨τ₁.app X, τ₂.app X⟩
@@ -310,7 +310,7 @@ def prod {F F' : C₁ ⥤ D₁} {G G' : C₂ ⥤ D₂} (e₁ : F ≅ F') (e₂ :
 
 /-- The cartesian product of two natural isomorphisms. -/
 @[simps]
-def prod' {F G : A ⥤ B × C} (e₁ : F ⋙ Prod.fst _ _ ≅ G ⋙ Prod.fst _ _ )
+def prod' {F G : A ⥤ B × C} (e₁ : F ⋙ Prod.fst _ _ ≅ G ⋙ Prod.fst _ _)
     (e₂ : F ⋙ Prod.snd _ _ ≅ G ⋙ Prod.snd _ _ ) :
   F ≅ G :=
 { hom := NatTrans.prod' e₁.hom e₂.hom
