@@ -470,7 +470,7 @@ end LinearMap
 
 end CommRing
 
-section
+namespace LinearMap
 variable {R E M : Type*} [Semiring R] [AddCommGroup E] [Module R E]
   [AddCommMonoid M] [Module R M]
 
@@ -478,14 +478,14 @@ open Submodule LinearMap
 
 /-- Given an idempotent linear operator `p`, we have
   `x ∈ range p` if and only if `p(x) = x` for all `x`. -/
-theorem LinearMap.IsIdempotentElem.mem_range_iff {p : M →ₗ[R] M} (hp : IsIdempotentElem p) {x : M} :
+theorem IsIdempotentElem.mem_range_iff {p : M →ₗ[R] M} (hp : IsIdempotentElem p) {x : M} :
     x ∈ range p ↔ p x = x := by
   refine ⟨fun ⟨y, hy⟩ => ?_, fun h => ⟨x, h⟩⟩
   rw [← hy, ← Module.End.mul_apply, hp.eq]
 
 /-- Given an idempotent linear operator `q`,
   we have `q ∘ p = p` iff `range p ⊆ range q` for all `p`. -/
-theorem LinearMap.IsIdempotentElem.comp_idempotent_iff {q : M →ₗ[R] M} (hq : IsIdempotentElem q)
+theorem IsIdempotentElem.comp_idempotent_iff {q : M →ₗ[R] M} (hq : IsIdempotentElem q)
     {E₂ : Type*} [AddCommMonoid E₂] [Module R E₂] (p : E₂ →ₗ[R] M) :
     q.comp p = p ↔ range p ≤ range q := by
   simp_rw [LinearMap.ext_iff, comp_apply, ← hq.mem_range_iff,
@@ -493,13 +493,13 @@ theorem LinearMap.IsIdempotentElem.comp_idempotent_iff {q : M →ₗ[R] M} (hq :
 
 /-- If `p,q` are idempotent operators and `p ∘ q = p = q ∘ p`,
   then `q - p` is an idempotent operator. -/
-theorem LinearMap.isIdempotentElem_sub_of {p q : E →ₗ[R] E} (hp : IsIdempotentElem p)
+theorem isIdempotentElem_sub_of {p q : E →ₗ[R] E} (hp : IsIdempotentElem p)
     (hq : IsIdempotentElem q) (hpq : p.comp q = p) (hqp : q.comp p = p) :
     IsIdempotentElem (q - p) := hp.sub_of hq hpq hqp
 
 /-- If `p,q` are idempotent operators and `q - p` is also an idempotent
   operator, then `p ∘ q = p = q ∘ p`. -/
-theorem LinearMap.commutes_of_isIdempotentElem_sub [NoZeroSMulDivisors ℕ E] {p q : E →ₗ[R] E}
+theorem commutes_of_isIdempotentElem_sub [NoZeroSMulDivisors ℕ E] {p q : E →ₗ[R] E}
     (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) (hqp : IsIdempotentElem (q - p)) :
     p.comp q = p ∧ q.comp p = p :=
   letI : IsAddTorsionFree (E →ₗ[R] E) :=
@@ -508,7 +508,7 @@ theorem LinearMap.commutes_of_isIdempotentElem_sub [NoZeroSMulDivisors ℕ E] {p
 
 /-- Given any idempotent operator `T`, then `IsCompl T.range T.ker`,
  in other words, there exists unique `v ∈ range(T)` and `w ∈ ker(T)` such that `x = v + w`. -/
-theorem LinearMap.IsIdempotentElem.isCompl_range_ker {T : E →ₗ[R] E} (h : IsIdempotentElem T) :
+theorem IsIdempotentElem.isCompl_range_ker {T : E →ₗ[R] E} (h : IsIdempotentElem T) :
     IsCompl (range T) (ker T) := by
   symm
   constructor
@@ -533,4 +533,4 @@ theorem LinearMap.IsIdempotentElem.isCompl_range_ker {T : E →ₗ[R] E} (h : Is
     · simp only [mem_range, exists_apply_eq_apply]
     · simp only [Submodule.coe_mk, sub_add_cancel]
 
-end
+end LinearMap
