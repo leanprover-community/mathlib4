@@ -86,22 +86,14 @@ lemma commutes_of_isIdempotentElem_sub [Ring R] [IsAddTorsionFree R] {p q : R}
     p * q = p ∧ q * p = p := by
   simp_rw [IsIdempotentElem, mul_sub, sub_mul,
     hp.eq, hq.eq, ← sub_add_eq_sub_sub, sub_right_inj, add_sub] at hqp
-  have h' : (2 : ℕ) • p = q * p + p * q := by
-    simp_rw [two_nsmul]
-    calc p + p = p + (p * q + q * p - p) := by rw [hqp]
-      _ = q * p + p * q := by simp_rw [add_sub_cancel, add_comm]
-  have H : ((2 : ℕ) • p) * q = q * (p * q) + p * q := by
-    simp_rw [h', add_mul, mul_assoc, hq.eq]
-  simp_rw [add_comm, two_nsmul, add_mul, add_right_inj] at H
-  have H' : q * ((2 : ℕ) • p) = q * p + q * (p * q) := by
-    simp_rw [h', mul_add, ← mul_assoc, hq.eq]
-  simp_rw [two_nsmul, mul_add, add_right_inj] at H'
-  have H'' : q * p = p * q := by
-    simp_rw [H']
-    exact H.symm
-  rw [← H'', and_self_iff]
-  rw [← H'', ← two_nsmul, nsmul_right_inj (Nat.zero_ne_add_one 1).symm] at h'
-  exact h'.symm
+  have hpq : p * q = q * p := by
+    have h1 := congr_arg (q * ·) hqp
+    have h2 := congr_arg (· * q) hqp
+    simp_rw [mul_sub, mul_add, ← mul_assoc, hq.eq, add_sub_cancel_right] at h1
+    simp_rw [sub_mul, add_mul, mul_assoc, hq.eq, add_sub_cancel_left, ← mul_assoc] at h2
+    exact h2.symm.trans h1
+  rw [hpq, sub_eq_iff_eq_add, ← two_nsmul, ← two_nsmul, nsmul_right_inj (by simp)] at hqp
+  rw [hpq, hqp, and_self]
 
 theorem isIdempotentElem_sub_iff [Ring R] [IsAddTorsionFree R] {p q : R}
     (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
