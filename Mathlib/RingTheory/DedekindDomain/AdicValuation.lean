@@ -3,6 +3,8 @@ Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
+import Mathlib.Algebra.Order.Ring.IsNonarchimedean
+import Mathlib.Data.Int.WithZero
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.Topology.Algebra.Valued.ValuedField
@@ -24,6 +26,8 @@ We define the completion of `K` with respect to the `v`-adic valuation, denoted
   to its `v`-adic valuation.
 - `IsDedekindDomain.HeightOneSpectrum.adicCompletionIntegers v` is the ring of integers of
   `v.adicCompletion`.
+- `IsDedekindDomain.HeightOneSpectrum.adicAbv v`is the `v`-adic absolute value on `K` defined as `b`
+  raised to negative `v`-adic valuation, for some `b` in `ℝ≥0`.
 
 ## Main results
 - `IsDedekindDomain.HeightOneSpectrum.intValuation_le_one` : The `v`-adic valuation on `R` is
@@ -573,5 +577,57 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
       ← Int.eq_natAbs_of_nonneg ha.le, smul_eq_mul]
     -- and now it's easy
     omega
+
+section AbsoluteValue
+
+open WithZeroMulInt
+
+variable {R K} in
+/-- The `v`-adic absolute value function on `K` defined as `b` raised to negative `v`-adic
+valuation, for some `b` in `ℝ≥0` -/
+def adicAbvDef (v : HeightOneSpectrum R) {b : NNReal} (hb : 1 < b) :=
+  fun x ↦ toNNReal (ne_zero_of_lt hb) (v.valuation K x)
+
+variable {R K} in
+lemma isNonarchimedean_adicAbvDef {b : NNReal} (hb : 1 < b) :
+    IsNonarchimedean (α := K) (fun x ↦ v.adicAbvDef hb x) := by
+  intro x y
+  simp only [adicAbvDef]
+  have h_mono := (toNNReal_strictMono hb).monotone
+  rw [← h_mono.map_max]
+  exact h_mono ((v.valuation _).map_add x y)
+
+variable {R K} in
+/-- The `v`-adic absolute value on `K` defined as `b` raised to negative `v`-adic
+valuation, for some `b` in `ℝ≥0` -/
+def adicAbv (v : HeightOneSpectrum R) {b : NNReal} (hb : 1 < b) : AbsoluteValue K ℝ where
+  toFun x := v.adicAbvDef hb x
+  map_mul' _ _ := by simp [adicAbvDef]
+  nonneg' _ := NNReal.zero_le_coe
+  eq_zero' _ := by simp [adicAbvDef]
+  add_le' _ _ := (isNonarchimedean_adicAbvDef v hb).add_le fun _ ↦ zero_le _
+
+variable {R K} in
+/-- The `v`-adic absolute value is nonarchimedean -/
+theorem isNonarchimedean_adicAbv (v : HeightOneSpectrum R) {b : NNReal} (hb : 1 < b) :
+    IsNonarchimedean (α := K) (v.adicAbv hb) := isNonarchimedean_adicAbvDef v hb
+
+variable {R K} in
+theorem adicAbv_coe_le_one {b : NNReal} (hb : 1 < b) (r : R) :
+    v.adicAbv hb (algebraMap R K r) ≤ 1 := by
+  simpa [adicAbv, adicAbvDef, toNNReal_le_one_iff hb] using valuation_le_one v r
+
+variable {R K} in
+theorem adicAbv_coe_lt_one_iff {b : NNReal} (hb : 1 < b) (r : R) :
+    v.adicAbv hb (algebraMap R K r) < 1 ↔ r ∈ v.asIdeal := by
+  simpa [adicAbv, adicAbvDef, toNNReal_lt_one_iff hb] using valuation_lt_one_iff_mem v r
+
+variable {R K} in
+theorem adicAbv_coe_eq_one_iff {b : NNReal} (hb : 1 < b) (r : R) :
+    v.adicAbv hb (algebraMap R K r) = 1 ↔ r ∉ v.asIdeal := by
+  rw [← not_iff_not, not_not, ← v.adicAbv_coe_lt_one_iff (K := K), ne_iff_lt_iff_le]
+  exact adicAbv_coe_le_one v hb r
+
+end AbsoluteValue
 
 end IsDedekindDomain.HeightOneSpectrum

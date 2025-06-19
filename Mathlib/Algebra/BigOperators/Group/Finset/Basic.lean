@@ -72,7 +72,7 @@ theorem prod_pair [DecidableEq ι] {a b : ι} (h : a ≠ b) :
 
 @[to_additive (attr := simp)]
 theorem prod_image [DecidableEq ι] {s : Finset κ} {g : κ → ι} :
-    (∀ x ∈ s, ∀ y ∈ s, g x = g y → x = y) → ∏ x ∈ s.image g, f x = ∏ x ∈ s, f (g x) :=
+    Set.InjOn g s → ∏ x ∈ s.image g, f x = ∏ x ∈ s, f (g x) :=
   fold_image
 
 @[to_additive]
@@ -178,15 +178,21 @@ theorem prod_subset (h : s₁ ⊆ s₂) (hf : ∀ x ∈ s₂, x ∉ s₁ → f x
   prod_subset_one_on_sdiff h (by simpa) fun _ _ => rfl
 
 @[to_additive (attr := simp)]
-theorem prod_disj_sum (s : Finset ι) (t : Finset κ) (f : ι ⊕ κ → M) :
+theorem prod_disjSum (s : Finset ι) (t : Finset κ) (f : ι ⊕ κ → M) :
     ∏ x ∈ s.disjSum t, f x = (∏ x ∈ s, f (Sum.inl x)) * ∏ x ∈ t, f (Sum.inr x) := by
   rw [← map_inl_disjUnion_map_inr, prod_disjUnion, prod_map, prod_map]
   rfl
 
+@[deprecated (since := "2025-06-11")]
+alias sum_disj_sum := sum_disjSum
+
+@[to_additive existing, deprecated (since := "2025-06-11")]
+alias prod_disj_sum := prod_disjSum
+
 @[to_additive]
 lemma prod_sum_eq_prod_toLeft_mul_prod_toRight (s : Finset (ι ⊕ κ)) (f : ι ⊕ κ → M) :
     ∏ x ∈ s, f x = (∏ x ∈ s.toLeft, f (Sum.inl x)) * ∏ x ∈ s.toRight, f (Sum.inr x) := by
-  rw [← Finset.toLeft_disjSum_toRight (u := s), Finset.prod_disj_sum, Finset.toLeft_disjSum,
+  rw [← Finset.toLeft_disjSum_toRight (u := s), Finset.prod_disjSum, Finset.toLeft_disjSum,
     Finset.toRight_disjSum]
 
 @[to_additive]
@@ -324,6 +330,15 @@ theorem prod_eq_single {s : Finset ι} {f : ι → M} (a : ι) (h₀ : ∀ b ∈
   by_cases (prod_eq_single_of_mem a · h₀) fun this =>
     (prod_congr rfl fun b hb => h₀ b hb <| by rintro rfl; exact this hb).trans <|
       prod_const_one.trans (h₁ this).symm
+
+@[to_additive]
+lemma prod_eq_ite [DecidableEq ι] {s : Finset ι} {f : ι → M} (a : ι)
+    (h₀ : ∀ b ∈ s, b ≠ a → f b = 1) :
+    ∏ x ∈ s, f x = if a ∈ s then f a else 1 := by
+  by_cases h : a ∈ s
+  · simp [Finset.prod_eq_single_of_mem a h h₀, h]
+  · replace h₀ : ∀ b ∈ s, f b = 1 := by aesop
+    simp +contextual [h₀]
 
 @[to_additive]
 lemma prod_union_eq_left [DecidableEq ι] (hs : ∀ a ∈ s₂, a ∉ s₁ → f a = 1) :
