@@ -8,26 +8,26 @@ import Mathlib.Topology.Instances.CantorSet
 import Mathlib.Topology.UnitInterval
 
 /-!
-# Hausdorff-Alexandroff theorem
+# Hausdorff–Alexandroff Theorem
 
-In this file we prove the Hausdorff-Alexandroff theorem stating that every compact metric space is a
-continuous image of the Cantor set.
+In this file, we prove the Hausdorff–Alexandroff theorem, which states that every compact
+metric space is a continuous image of the Cantor set.
 
-## Proof outline
+## Proof Outline
 
-First note that the Cantor set is homeomorphic to `ℕ → Bool` which is proved in
-`Mathlib.Topology.Instances.CantorSet`, so in this file we will be only dealing with the space
-`ℕ → Bool` and refer to it as a "Cantor space".
+First, note that the Cantor set is homeomorphic to `ℕ → Bool`, as shown in
+`Mathlib.Topology.Instances.CantorSet`. Therefore, in this file, we work only with the space
+`ℕ → Bool` and refer to it as the "Cantor space".
 
-The proofs consists of three steps. Let `X` be a compact metric space.
+The proof consists of three steps. Let `X` be a compact metric space.
 
-1. Any compact metric space is homeomorphic to a closed subset of the Hilbert cube.
-  This is already proved in `Mathlib.Topology.Compactness.HilberCubeEmbedding`. Using this we can
-  assume that `X` is a closed subset of the Hilbert cube.
-2. We construct the continuous surjection `cantorToHilbert` from the Cantor space to the Hilbert
-  cube.
-3. Taking the preimage of the `X` under this surjection it's now enough to prove that any closed
-  subset of the Cantor space admits a continuous surjection from the Cantor space.
+1. Every compact metric space is homeomorphic to a closed subset of the Hilbert cube.
+   This is already proved in `Mathlib.Topology.Compactness.HilbertCubeEmbedding`. Using this result,
+   we may assume that `X` is a closed subset of the Hilbert cube.
+2. We construct a continuous surjection `cantorToHilbert` from the Cantor space to the Hilbert
+   cube.
+3. Taking the preimage of `X` under this surjection, it remains to prove that any closed
+   subset of the Cantor space is the continuous image of the Cantor space.
 -/
 
 /-- Convert a sequence of binary digits to a real number from `unitInterval`. -/
