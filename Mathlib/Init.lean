@@ -1,4 +1,5 @@
 import Lean.Linter.Sets -- for the definition of linter sets
+import Mathlib.Tactic.Linter.CommandStart
 import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 import Mathlib.Tactic.Linter.DirectoryDependency
 import Mathlib.Tactic.Linter.DocPrime
@@ -60,10 +61,11 @@ register_linter_set linter.mathlibStandardSet :=
   linter.allScriptsDocumented
   linter.checkInitImports
 
+  linter.hashCommand
   linter.oldObtain
   linter.style.cases
   linter.style.refine
-  linter.hashCommand
+  linter.style.commandStart
   linter.style.cdot
   linter.style.docString
   linter.style.dollarSyntax
@@ -76,6 +78,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.openClassical
   linter.style.missingEnd
   linter.style.setOption
+  linter.style.show
   linter.style.maxHeartbeats
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
 

@@ -298,6 +298,15 @@ instance : CoeFun (Trivialization F proj) fun _ => Z → B × F := ⟨toFun'⟩
 instance : Coe (Trivialization F proj) (Pretrivialization F proj) :=
   ⟨toPretrivialization⟩
 
+/-- See Note [custom simps projection] -/
+def Simps.apply (proj : Z → B) (e : Trivialization F proj) : Z → B × F := e
+
+/-- See Note [custom simps projection] -/
+noncomputable def Simps.symm_apply (proj : Z → B) (e : Trivialization F proj) : B × F → Z :=
+  e.toPartialHomeomorph.symm
+
+initialize_simps_projections Trivialization (toFun → apply, invFun → symm_apply)
+
 theorem toPretrivialization_injective :
     Function.Injective fun e : Trivialization F proj => e.toPretrivialization := fun e e' h => by
   ext1
@@ -739,9 +748,9 @@ noncomputable def disjointUnion (e e' : Trivialization F proj) (H : Disjoint e.b
   target_eq := (congr_arg₂ (· ∪ ·) e.target_eq e'.target_eq).trans union_prod.symm
   proj_toFun := by
     rintro p (hp | hp')
-    · show (e.source.piecewise e e' p).1 = proj p
+    · change (e.source.piecewise e e' p).1 = proj p
       rw [piecewise_eq_of_mem, e.coe_fst] <;> exact hp
-    · show (e.source.piecewise e e' p).1 = proj p
+    · change (e.source.piecewise e e' p).1 = proj p
       rw [piecewise_eq_of_notMem, e'.coe_fst hp']
       simp only [source_eq] at hp' ⊢
       exact fun h => H.le_bot ⟨h, hp'⟩

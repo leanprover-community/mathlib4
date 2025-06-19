@@ -40,7 +40,7 @@ variable {k : Type*} [Field k] {K : Type*} [Field K] {F : Type*} [Field F]
 /-- The restriction of an infinite place along an embedding. -/
 def comap (w : InfinitePlace K) (f : k →+* K) : InfinitePlace k :=
   ⟨w.1.comp f.injective, w.embedding.comp f,
-    by { ext x; show _ = w.1 (f x); rw [← w.2.choose_spec]; rfl }⟩
+    by { ext x; change _ = w.1 (f x); rw [← w.2.choose_spec]; rfl }⟩
 
 @[simp]
 lemma comap_mk (φ : K →+* ℂ) (f : k →+* K) : (mk φ).comap f = mk (φ.comp f) := rfl

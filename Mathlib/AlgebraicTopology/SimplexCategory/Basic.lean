@@ -580,9 +580,9 @@ instance : skeletalFunctor.EssSurj where
             hom_inv_id := by ext; apply f.symm_apply_apply
             inv_hom_id := by ext; apply f.apply_symm_apply }
         intro i j h
-        show f.symm i ≤ f.symm j
+        change f.symm i ≤ f.symm j
         rw [← hf.le_iff_le]
-        show f (f.symm i) ≤ f (f.symm j)
+        change f (f.symm i) ≤ f (f.symm j)
         simpa only [OrderIso.apply_symm_apply]⟩⟩
 
 noncomputable instance isEquivalence : skeletalFunctor.IsEquivalence where

@@ -705,7 +705,7 @@ def conj [Group G] : G →* MulAut G where
       map_mul' := by simp only [mul_assoc, inv_mul_cancel_left, forall_const] }
   map_mul' g₁ g₂ := by
     ext h
-    show g₁ * g₂ * h * (g₁ * g₂)⁻¹ = g₁ * (g₂ * h * g₂⁻¹) * g₁⁻¹
+    change g₁ * g₂ * h * (g₁ * g₂)⁻¹ = g₁ * (g₂ * h * g₂⁻¹) * g₁⁻¹
     simp only [mul_assoc, mul_inv_rev]
   map_one' := by ext; simp only [one_mul, inv_one, mul_one, one_apply]; rfl
 
@@ -818,7 +818,7 @@ def conj [AddGroup G] : G →+ Additive (AddAut G) where
         map_add' := by simp only [add_assoc, neg_add_cancel_left, forall_const] }
   map_add' g₁ g₂ := by
     apply Additive.toMul.injective; ext h
-    show g₁ + g₂ + h + -(g₁ + g₂) = g₁ + (g₂ + h + -g₂) + -g₁
+    change g₁ + g₂ + h + -(g₁ + g₂) = g₁ + (g₂ + h + -g₂) + -g₁
     simp only [add_assoc, neg_add_rev]
   map_zero' := by
     apply Additive.toMul.injective; ext

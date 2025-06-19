@@ -115,6 +115,7 @@ def comapOfKerIsPGroup (hϕ : IsPGroup p ϕ.ker) (h : P ≤ ϕ.range) : Sylow p 
   { P.1.comap ϕ with
     isPGroup' := P.2.comap_of_ker_isPGroup ϕ hϕ
     is_maximal' := fun {Q} hQ hle => by
+      show Q = P.1.comap ϕ
       rw [← P.3 (hQ.map ϕ) (le_trans (ge_of_eq (map_comap_eq_self h)) (map_mono hle))]
       exact (comap_map_eq_self ((P.1.ker_le_comap ϕ).trans hle)).symm }
 
@@ -607,6 +608,8 @@ theorem exists_subgroup_card_pow_succ [Finite G] {p : ℕ} {n : ℕ} [hp : Fact 
   have hequiv : H ≃ H.subgroupOf H.normalizer := (subgroupOfEquivOfLe le_normalizer).symm.toEquiv
   ⟨Subgroup.map (normalizer H).subtype
       (Subgroup.comap (mk' (H.subgroupOf H.normalizer)) (zpowers x)), by
+    show Nat.card (Subgroup.map H.normalizer.subtype
+              (comap (mk' (H.subgroupOf H.normalizer)) (Subgroup.zpowers x))) = p ^ (n + 1)
     suffices Nat.card (Subtype.val ''
               (Subgroup.comap (mk' (H.subgroupOf H.normalizer)) (zpowers x) : Set H.normalizer)) =
         p ^ (n + 1)
@@ -733,7 +736,7 @@ theorem characteristic_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (
   haveI := unique_of_normal P h
   rw [characteristic_iff_map_eq]
   intro Φ
-  show (Φ • P).toSubgroup = P.toSubgroup
+  change (Φ • P).toSubgroup = P.toSubgroup
   congr
   simp [eq_iff_true_of_subsingleton]
 
