@@ -14,13 +14,14 @@ proven all the axioms with the exception of the left lifting property
 of cofibrations with respect to trivial fibrations. A trick by Joyal
 allows to obtain this lifting property under suitable assumptions,
 namely that cofibrations are stable under composition and cobase change.
+(The dual result is also formalized.)
 
 ## References
 * [John F. Jardine, Simplicial presheaves][jardine-1987]
 
 -/
 
-open CategoryTheory Category Limits
+open CategoryTheory Category Limits MorphismProperty
 
 namespace HomotopicalAlgebra
 
@@ -28,32 +29,54 @@ namespace ModelCategory
 
 variable {C : Type*} [Category C]
   [CategoryWithCofibrations C] [CategoryWithFibrations C] [CategoryWithWeakEquivalences C]
-  [MorphismProperty.HasFactorization (cofibrations C) (trivialFibrations C)]
-  [(weakEquivalences C).HasTwoOutOfThreeProperty] [HasPushouts C]
-  [(cofibrations C).IsStableUnderComposition] [(cofibrations C).IsStableUnderCobaseChange]
-  [∀ {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y) [Cofibration i] [WeakEquivalence i] [Fibration p],
-      HasLiftingProperty i p]
+  [(weakEquivalences C).HasTwoOutOfThreeProperty]
 
-lemma joyal_trick {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y)
+lemma joyal_trick
+    [HasFactorization (cofibrations C) (trivialFibrations C)] [HasPushouts C]
+    [(cofibrations C).IsStableUnderComposition] [(cofibrations C).IsStableUnderCobaseChange]
+    (h : ∀ {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y)
+      [Cofibration i] [WeakEquivalence i] [Fibration p], HasLiftingProperty i p)
+    {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y)
     [Cofibration i] [Fibration p] [WeakEquivalence p] :
     HasLiftingProperty i p where
   sq_hasLift {f g} sq := by
-    have h := MorphismProperty.factorizationData (cofibrations C) (trivialFibrations C)
+    have h := factorizationData (cofibrations C) (trivialFibrations C)
       (pushout.desc p g sq.w)
     have sq' : CommSq (𝟙 X) (pushout.inl _ _ ≫ h.i) p h.p := ⟨by simp⟩
     have h₁ : WeakEquivalence ((pushout.inl f i ≫ h.i) ≫ h.p) := by simpa
-    have h₂ := MorphismProperty.comp_mem _ _ _
-      ((cofibrations C).of_isPushout (IsPushout.of_hasPushout f i) (mem_cofibrations i)) h.hi
+    have h₂ := comp_mem _ _ _ ((cofibrations C).of_isPushout
+      (IsPushout.of_hasPushout f i) (mem_cofibrations i)) h.hi
     rw [← cofibration_iff] at h₂
     have : WeakEquivalence (pushout.inl f i ≫ h.i) := by
       rw [weakEquivalence_iff] at h₁ ⊢
-      exact MorphismProperty.of_postcomp _ _ _ h.hp.2 h₁
-    exact
-      ⟨⟨{ l := pushout.inr f i ≫ h.i ≫ sq'.lift
-          fac_left := by
-            have := sq'.fac_left
-            simp only [assoc] at this
-            rw [← pushout.condition_assoc, this, comp_id] }⟩⟩
+      exact of_postcomp _ _ _ h.hp.2 h₁
+    exact ⟨⟨{ l := pushout.inr f i ≫ h.i ≫ sq'.lift
+              fac_left := by
+                simpa only [assoc, comp_id, pushout.condition_assoc]
+                  using f ≫= sq'.fac_left }⟩⟩
+
+lemma joyal_trick_dual
+    [HasFactorization (trivialCofibrations C) (fibrations C)] [HasPullbacks C]
+    [(fibrations C).IsStableUnderComposition] [(fibrations C).IsStableUnderBaseChange]
+    (h : ∀ {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y)
+      [Cofibration i] [WeakEquivalence p] [Fibration p], HasLiftingProperty i p)
+    {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y)
+    [Cofibration i] [Fibration p] [WeakEquivalence i] :
+    HasLiftingProperty i p where
+  sq_hasLift {f g} sq := by
+    have h := factorizationData (trivialCofibrations C) (fibrations C)
+      (pullback.lift f i sq.w)
+    have sq' : CommSq h.i i (h.p ≫ pullback.snd _ _) (𝟙 B) := ⟨by simp⟩
+    have h₁ : WeakEquivalence (h.i ≫ h.p ≫ pullback.snd p g) := by simpa
+    have h₂ := comp_mem _ _ _ h.hp ((fibrations C).of_isPullback
+      (IsPullback.of_hasPullback p g) (mem_fibrations p))
+    rw [← fibration_iff] at h₂
+    have : WeakEquivalence (h.p ≫ pullback.snd p g) := by
+      rw [weakEquivalence_iff] at h₁ ⊢
+      exact of_precomp _ _ _  h.hi.2 h₁
+    exact ⟨⟨{ l := sq'.lift ≫ h.p ≫ pullback.fst p g
+              fac_right := by
+                rw [assoc, assoc, pullback.condition, reassoc_of% sq'.fac_right] }⟩⟩
 
 end ModelCategory
 
