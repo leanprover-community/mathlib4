@@ -8,6 +8,14 @@ import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 
 /-!
 ## Properties of variation
+
+## Main results
+
+* `norm_measure_le_variation`: `‖μ E‖ₑ ≤ variation μ E`.
+* `variation_neg`: `(-μ).variation = μ.variation`.
+* `variation_zero`: `(0 : VectorMeasure X V).variation = 0`.
+* `absolutelyContinuous`: `μ ≪ᵥ μ.variation`.
+
 -/
 
 open MeasureTheory BigOperators NNReal ENNReal Function Filter
