@@ -13,7 +13,7 @@ Two Lp functions `f, g` which are almost everywhere strongly measurable with res
 `m` and verify `∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ` for all `m`-measurable sets `s` are equal
 almost everywhere. This proves the uniqueness of the conditional expectation, which is not yet
 defined in this file but is introduced in
-`Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic`.
+`Mathlib/MeasureTheory/Function/ConditionalExpectation/Basic.lean`.
 
 ## Main statements
 
@@ -110,7 +110,7 @@ theorem ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFin
     (hg_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn g s μ)
     (hfg_eq : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ)
     (hfm : AEStronglyMeasurable[m] f μ) (hgm : AEStronglyMeasurable[m] g μ) : f =ᵐ[μ] g := by
-  rw [← ae_eq_trim_iff_of_aeStronglyMeasurable' hm hfm hgm]
+  rw [← ae_eq_trim_iff_of_aestronglyMeasurable hm hfm hgm]
   have hf_mk_int_finite (s) :
       MeasurableSet[m] s → μ.trim hm s < ∞ → @IntegrableOn _ _ m _ _ (hfm.mk f) s (μ.trim hm) := by
     intro hs hμs

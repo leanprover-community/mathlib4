@@ -38,7 +38,42 @@ theorem integral_inv_eq_self (f : G → E) (μ : Measure G) [IsInvInvariant μ] 
   have h : MeasurableEmbedding fun x : G => x⁻¹ := (MeasurableEquiv.inv G).measurableEmbedding
   rw [← h.integral_map, map_inv_eq_self]
 
+@[to_additive]
+theorem IntegrableOn.comp_inv [IsInvInvariant μ] {f : G → F} {s : Set G} (hf : IntegrableOn f s μ) :
+    IntegrableOn (fun x => f x⁻¹) s⁻¹ μ := by
+  apply (integrable_map_equiv (MeasurableEquiv.inv G) f).mp
+  have : s⁻¹ = MeasurableEquiv.inv G ⁻¹' s := by simp
+  rw [this, ← MeasurableEquiv.restrict_map]
+  simpa using hf
+
 end MeasurableInv
+
+section MeasurableInvOrder
+
+variable [PartialOrder G] [CommGroup G] [IsOrderedMonoid G] [MeasurableInv G]
+variable [IsInvInvariant μ]
+
+@[to_additive]
+theorem IntegrableOn.comp_inv_Iic {c : G} {f : G → F} (hf : IntegrableOn f (Set.Ici c⁻¹) μ) :
+    IntegrableOn (fun x => f x⁻¹) (Set.Iic c) μ := by
+  simpa using hf.comp_inv
+
+@[to_additive]
+theorem IntegrableOn.comp_inv_Ici {c : G} {f : G → F} (hf : IntegrableOn f (Set.Iic c⁻¹) μ) :
+    IntegrableOn (fun x => f x⁻¹) (Set.Ici c) μ := by
+  simpa using hf.comp_inv
+
+@[to_additive]
+theorem IntegrableOn.comp_inv_Iio {c : G} {f : G → F} (hf : IntegrableOn f (Set.Ioi c⁻¹) μ) :
+    IntegrableOn (fun x => f x⁻¹) (Set.Iio c) μ := by
+  simpa using hf.comp_inv
+
+@[to_additive]
+theorem IntegrableOn.comp_inv_Ioi {c : G} {f : G → F} (hf : IntegrableOn f (Set.Iio c⁻¹) μ) :
+    IntegrableOn (fun x => f x⁻¹) (Set.Ioi c) μ := by
+  simpa using hf.comp_inv
+
+end MeasurableInvOrder
 
 section MeasurableMul
 

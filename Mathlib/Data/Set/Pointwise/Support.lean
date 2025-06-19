@@ -33,8 +33,6 @@ theorem support_comp_inv_smul [Zero γ] (c : α) (f : β → γ) :
   ext x
   simp only [mem_smul_set_iff_inv_smul_mem, mem_support]
 
-attribute [to_additive existing support_comp_inv_smul] mulSupport_comp_inv_smul
-
 end Group
 
 section GroupWithZero
@@ -52,7 +50,5 @@ theorem support_comp_inv_smul₀ [Zero γ] {c : α} (hc : c ≠ 0) (f : β → �
     (support fun x ↦ f (c⁻¹ • x)) = c • support f := by
   ext x
   simp only [mem_smul_set_iff_inv_smul_mem₀ hc, mem_support]
-
-attribute [to_additive existing support_comp_inv_smul₀] mulSupport_comp_inv_smul₀
 
 end GroupWithZero

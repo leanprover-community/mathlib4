@@ -35,7 +35,7 @@ inductive ChainClosure (r : α → α → Prop) : Set α → Prop
 def maxChain (r : α → α → Prop) : Set α := ⋃₀ setOf (ChainClosure r)
 
 lemma chainClosure_empty : ChainClosure r ∅ := by
-  have : ChainClosure r (⋃₀∅) := ChainClosure.union fun a h => (not_mem_empty _ h).elim
+  have : ChainClosure r (⋃₀∅) := ChainClosure.union fun a h => (notMem_empty _ h).elim
   simpa using this
 
 lemma chainClosure_maxChain : ChainClosure r (maxChain r) :=

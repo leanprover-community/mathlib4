@@ -151,7 +151,7 @@ theorem innerContent_mono ⦃U V : Set G⦄ (hU : IsOpen U) (hV : IsOpen V) (h2 
 theorem innerContent_exists_compact {U : Opens G} (hU : μ.innerContent U ≠ ∞) {ε : ℝ≥0}
     (hε : ε ≠ 0) : ∃ K : Compacts G, (K : Set G) ⊆ U ∧ μ.innerContent U ≤ μ K + ε := by
   have h'ε := ENNReal.coe_ne_zero.2 hε
-  rcases le_or_lt (μ.innerContent U) ε with h | h
+  rcases le_or_gt (μ.innerContent U) ε with h | h
   · exact ⟨⊥, empty_subset _, le_add_left h⟩
   have h₂ := ENNReal.sub_lt_self hU h.ne_bot h'ε
   conv at h₂ => rhs; rw [innerContent]
@@ -202,7 +202,7 @@ theorem innerContent_comap (f : G ≃ₜ G) (h : ∀ ⦃K : Compacts G⦄, μ (K
   apply h
 
 @[to_additive]
-theorem is_mul_left_invariant_innerContent [Group G] [IsTopologicalGroup G]
+theorem is_mul_left_invariant_innerContent [Group G] [ContinuousMul G]
     (h : ∀ (g : G) {K : Compacts G}, μ (K.map _ <| continuous_mul_left g) = μ K) (g : G)
     (U : Opens G) :
     μ.innerContent (Opens.comap (Homeomorph.mulLeft g) U) = μ.innerContent U := by
@@ -291,7 +291,7 @@ theorem outerMeasure_lt_top_of_isCompact [WeaklyLocallyCompactSpace G]
     _ < ⊤ := μ.lt_top _
 
 @[to_additive]
-theorem is_mul_left_invariant_outerMeasure [Group G] [IsTopologicalGroup G]
+theorem is_mul_left_invariant_outerMeasure [Group G] [ContinuousMul G]
     (h : ∀ (g : G) {K : Compacts G}, μ (K.map _ <| continuous_mul_left g) = μ K) (g : G)
     (A : Set G) : μ.outerMeasure ((g * ·) ⁻¹' A) = μ.outerMeasure A := by
   convert μ.outerMeasure_preimage (Homeomorph.mulLeft g) (fun K => h g) A

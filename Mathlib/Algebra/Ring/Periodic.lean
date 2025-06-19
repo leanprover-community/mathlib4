@@ -76,7 +76,7 @@ theorem _root_.Multiset.periodic_prod [Add α] [CommMonoid β] (s : Multiset (α
 @[to_additive]
 theorem _root_.Finset.periodic_prod [Add α] [CommMonoid β] {ι : Type*} {f : ι → α → β}
     (s : Finset ι) (hs : ∀ i ∈ s, Periodic (f i) c) : Periodic (∏ i ∈ s, f i) c :=
-  s.prod_to_list f ▸ (s.toList.map f).periodic_prod (by simpa [-Periodic] )
+  s.prod_map_toList f ▸ (s.toList.map f).periodic_prod (by simpa [-Periodic] )
 
 @[to_additive]
 protected theorem Periodic.smul [Add α] [SMul γ β] (h : Periodic f c) (a : γ) :

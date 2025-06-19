@@ -22,7 +22,7 @@ As with `NonUnitalRingHom`, the multiplications are not assumed to be associativ
 
 ## Implementation
 
-This file is heavily inspired by `Mathlib.Algebra.Star.StarAlgHom`.
+This file is heavily inspired by `Mathlib/Algebra/Star/StarAlgHom.lean`.
 
 ## Tags
 
@@ -88,7 +88,7 @@ variable [NonUnitalNonAssocSemiring D] [Star D]
 
 instance : FunLike (A →⋆ₙ+* B) A B where
   coe f := f.toFun
-  coe_injective' := by rintro ⟨⟨⟨f, _⟩,  _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
+  coe_injective' := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 
 instance : NonUnitalRingHomClass (A →⋆ₙ+* B) A B where
   map_mul f := f.map_mul'
@@ -383,7 +383,7 @@ theorem refl_symm : (StarRingEquiv.refl : A ≃⋆+* A).symm = StarRingEquiv.ref
 
 /-- Transitivity of `StarRingEquiv`. -/
 @[trans]
-def trans (e₁ : A≃⋆+* B) (e₂ : B ≃⋆+* C) : A ≃⋆+* C :=
+def trans (e₁ : A ≃⋆+* B) (e₂ : B ≃⋆+* C) : A ≃⋆+* C :=
   { e₁.toRingEquiv.trans e₂.toRingEquiv with
     map_star' := fun a =>
       show e₂.toFun (e₁.toFun (star a)) = star (e₂.toFun (e₁.toFun a)) by

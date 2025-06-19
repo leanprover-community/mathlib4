@@ -85,11 +85,11 @@ Now say `φ : A →ₗ[R] B` is an `R`-linear map between `R`-modules equipped w
 the module topology.
 
 * `IsModuleTopology.continuous_of_linearMap φ` is the proof that `φ` is automatically
-continuous.
+  continuous.
 * `IsModuleTopology.isQuotientMap_of_surjective (hφ : Function.Surjective φ)`
-is the proof that if furthermore `φ` is surjective then it is a quotient map,
-that is, the module topology on `B` is the pushforward of the module topology
-on `A`.
+  is the proof that if furthermore `φ` is surjective then it is a quotient map,
+  that is, the module topology on `B` is the pushforward of the module topology
+  on `A`.
 
 Now say `ψ : A →ₗ[R] B →ₗ[R] C` is an `R`-bilinear map between `R`-modules equipped with
 the module topology.
@@ -133,6 +133,14 @@ class IsModuleTopology [τA : TopologicalSpace A] : Prop where
 theorem eq_moduleTopology [τA : TopologicalSpace A] [IsModuleTopology R A] :
     τA = moduleTopology R A :=
   IsModuleTopology.eq_moduleTopology' (R := R) (A := A)
+
+/--
+Note that the topology isn't part of the discrimination key so this gets tried on every
+`IsModuleTopology` goal and hence the low priority.
+-/
+instance (priority := low) {R : Type*} [TopologicalSpace R] {A : Type*} [Add A] [SMul R A] :
+    letI := moduleTopology R A; IsModuleTopology R A :=
+  letI := moduleTopology R A; ⟨rfl⟩
 
 /-- Scalar multiplication `• : R × A → A` is continuous if `R` is a topological
 ring, and `A` is an `R` module with the module topology. -/
