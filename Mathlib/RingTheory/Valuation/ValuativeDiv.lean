@@ -50,12 +50,6 @@ class Compatible [ValuativeDiv R] where
 
 end Valuation
 
-open Topology in
-/-- We say that a topology on `R` is valuative if the neighborhoods of `0` in `R`
-are determined by the relation `· ∣ᵥ ·`. -/
-class ValuativeTopology (R : Type*) [CommRing R] [ValuativeDiv R] [TopologicalSpace R] where
-  mem_nhds_iff : ∀ s : Set R, s ∈ 𝓝 (0 : R) ↔ ∃ r : R, { s | (s ∣ᵥ r) ∧ ¬ (r ∣ᵥ s) } ⊆ s
-
 class ValuativePreorder (R : Type*) [CommRing R] [ValuativeDiv R] [Preorder R] where
   dvd_iff_le (x y : R) : x ∣ᵥ y ↔ x ≤ y
 
@@ -225,6 +219,27 @@ lemma isEquiv {Γ₁ Γ₂ : Type*}
   intro x y
   simp_rw [← Valuation.Compatible.dvd_iff_le]
 
+variable (R) in
+def WithPreorder := R
+
+instance : CommRing (WithPreorder R) := inferInstanceAs (CommRing R)
+
+instance : Preorder (WithPreorder R) where
+  le (x y : R) := x ∣ᵥ y
+  le_refl _ := isPreorder.refl _
+  le_trans _ _ _ := isPreorder.trans _ _ _
+
+instance : ValuativeDiv (WithPreorder R) where
+  dvd := (· ≤ ·)
+  isPreorder := isPreorder (R := R)
+  mul_dvd_mul := mul_dvd_mul (R := R)
+  dvd_total := dvd_total (R := R)
+  zero_dvd := zero_dvd (R := R)
+  add_dvd := add_dvd (R := R)
+
+instance : ValuativePreorder (WithPreorder R) where
+  dvd_iff_le _ _ := Iff.rfl
+
 open NNReal in variable (R) in
 structure DiscreteRankOneStruct where
   emb : ValueMonoid R →*₀ ℝ≥0
@@ -236,3 +251,9 @@ class IsDiscreteRankOne where
   nonempty : Nonempty (DiscreteRankOneStruct R)
 
 end ValuativeDiv
+
+open Topology ValuativeDiv in
+/-- We say that a topology on `R` is valuative if the neighborhoods of `0` in `R`
+are determined by the relation `· ∣ᵥ ·`. -/
+class ValuativeTopology (R : Type*) [CommRing R] [ValuativeDiv R] [TopologicalSpace R] where
+  mem_nhds_iff : ∀ s : Set R, s ∈ 𝓝 (0 : R) ↔ ∃ γ : ValueMonoid R, { x | valuation _ x < γ } ⊆ s
