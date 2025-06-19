@@ -70,6 +70,9 @@ lemma isInnerPart_of_empty {P : Finset (Set X)} (hP : IsInnerPart ∅ P) : P = �
   obtain ⟨p, hp⟩ := hc
   exact h' p hp <| Set.subset_eq_empty (h p hp) rfl
 
+lemma isInnerPart_self {s : Set X} (hs : MeasurableSet s) (hs' : s ≠ ∅) : IsInnerPart s {s} := by
+  simpa [IsInnerPart] using ⟨hs, hs'⟩
+
 lemma isInnerPart_monotone  {s₁ s₂ : Set X} (h : s₁ ⊆ s₂) (P : Finset (Set X))
     (hP :  IsInnerPart s₁ P) : IsInnerPart s₂ P := by
   obtain ⟨h1, h2, h3, _⟩ := hP
