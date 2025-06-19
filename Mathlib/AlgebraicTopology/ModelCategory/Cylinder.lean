@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.ModelCategory.Basic
-import Mathlib.AlgebraicTopology.ModelCategory.IsFibrant
+import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 
 /-!
 # Cylinders
