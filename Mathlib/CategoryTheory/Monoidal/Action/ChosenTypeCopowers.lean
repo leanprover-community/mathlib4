@@ -14,7 +14,10 @@ import Mathlib.CategoryTheory.Discrete.SumsProducts
 If `C` is a category with all coproducts, then `C` admits
 a left action from the monoidal category of types. The
 action is given by `J ⊙ₗ c := ∐ (fun _ : J ↦ c)`.
-We bundle this action through a `ChosenCopowers
+We bundle this action through a `ChosenTypeCopowers` typeclass
+that lets users "bring their own colimit cocone" if wanted.
+See `sigmaConstAction` for a constructor.
+
 
 ## TODOs
 
@@ -122,7 +125,13 @@ namespace ChosenTypeCopowers
 
 attribute [reassoc (attr := simp)] ι_naturality_left ι_naturality_right ι_unit
 
-variable {C} [MonoidalLeftAction (Type w) C] [ChosenTypeCopowers C]
+variable {C} [MonoidalLeftAction (Type w) C] [ChosenTypeCopowers.{w} C]
+
+/-- The presence of a `ChosenTypeCopowers` proves existence of enough coproducts -/
+instance (priority := 100) : HasCoproducts.{w} C :=
+  HasCoproducts
+
+-- #help note "lower priority instance"
 
 /-- The canonical map `c ⟶ J ⊙ₗ c` corresponding to `j : J`.
 If we are to think of `J ⊙ₗ c` as a `J`-indexed coproduct of copies of `c`, this is the
@@ -153,8 +162,11 @@ lemma desc_postcompose {J : Type w} {c c' c'' : C} (φ : J → (c ⟶ c')) (f : 
     desc ((· ≫ f) ∘ φ) = desc φ ≫ f := by
   aesop_cat
 
-/-- An abstract isomorphism with the abstract J-indexed coproduct of copies of `c`. -/
-noncomputable def isoSigmaConst
+-- /-- An abstract isomorphism with the abstract J-indexed coproduct of copies of `c`. -/
+-- noncomputable def isoSigmaConst (J : Type w) (c : C) : 
+--     (J ⊙ₗ c) ≅ (sigmaConst.obj c).obj J := 
+--   (ιIsColimit J c).uniqueUpToIso _
+  
 
 end ChosenTypeCopowers
 
