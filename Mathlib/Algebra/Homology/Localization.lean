@@ -180,7 +180,7 @@ instance : (HomotopyCategory.quotient C c ⋙ Qh).IsLocalization
 
 /-- The homology functor on `HomologicalComplexUpToQuasiIso C c` is induced by
 the homology functor on `HomotopyCategory C c`. -/
-noncomputable def homologyFunctorFactorsh (i : ι ) :
+noncomputable def homologyFunctorFactorsh (i : ι) :
     Qh ⋙ homologyFunctor C c i ≅ HomotopyCategory.homologyFunctor C c i :=
   Quotient.natIsoLift _ ((Functor.associator _ _ _).symm ≪≫
     isoWhiskerRight (quotientCompQhIso C c) _ ≪≫

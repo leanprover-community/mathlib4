@@ -88,11 +88,11 @@ unsafe instance instRepr {α β} [Repr α] [Repr β] [Zero β] : Repr (α →₀
           .line ++ .group (f!"| {repr a} =>" ++ .line ++ repr (f a))))
       if p ≥ leadPrec then Format.paren ret else ret
 
--- This cannot be put in `Mathlib.Data.DFinsupp.Notation` where it belongs, since doc-strings
+-- This cannot be put in `Mathlib/Data/DFinsupp/Notation.lean` where it belongs, since doc-strings
 -- can only be added/modified in the file where the corresponding declaration is defined.
 extend_docs Finsupp.fun₀ after
   "If the expected type is `Π₀ i, α i` (`DFinsupp`)
-  and `Mathlib.Data.DFinsupp.Notation` is imported,
+  and `Mathlib/Data/DFinsupp/Notation.lean` is imported,
   then this is notation for `DFinsupp.single` and  `Dfinsupp.update` instead."
 
 end Finsupp

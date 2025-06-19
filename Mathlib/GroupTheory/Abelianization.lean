@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Michael Howes, Antoine Chambert-Loir
 -/
 import Mathlib.Data.Finite.Card
-import Mathlib.Data.Finite.Prod
 import Mathlib.GroupTheory.Commutator.Basic
 import Mathlib.GroupTheory.Coset.Basic
-import Mathlib.GroupTheory.Finiteness
+import Mathlib.GroupTheory.Rank
 
 /-!
 # The abelianization of a group
@@ -56,6 +55,10 @@ variable {G} in
 theorem Subgroup.map_subtype_commutator (H : Subgroup G) :
     (_root_.commutator H).map H.subtype = ⁅H, H⁆ := by
   rw [_root_.commutator_def, map_commutator, ← MonoidHom.range_eq_map, H.range_subtype]
+
+variable {G} in
+theorem Subgroup.commutator_le_self (H : Subgroup G) : ⁅H, H⁆ ≤ H :=
+  H.map_subtype_commutator.symm.trans_le (map_subtype_le _)
 
 instance commutator_characteristic : (commutator G).Characteristic :=
   Subgroup.commutator_characteristic ⊤ ⊤
@@ -155,7 +158,6 @@ theorem commutator_subset_ker : commutator G ≤ f.ker := by
 def lift : (G →* A) ≃ (Abelianization G →* A) where
   toFun f := QuotientGroup.lift _ f fun _ h => MonoidHom.mem_ker.2 <| commutator_subset_ker _ h
   invFun F := F.comp of
-  left_inv _ := MonoidHom.ext fun _ => rfl
   right_inv _ := MonoidHom.ext fun x => QuotientGroup.induction_on x fun _ => rfl
 
 @[simp]
@@ -216,7 +218,6 @@ end Abelianization
 
 section AbelianizationCongr
 
--- Porting note: `[Group G]` should not be necessary here
 variable {G} {H : Type v} [Group H]
 
 /-- Equivalent groups have equivalent abelianizations -/
@@ -259,7 +260,6 @@ def Abelianization.equivOfComm {H : Type*} [CommGroup H] : H ≃* Abelianization
   { Abelianization.of with
     toFun := Abelianization.of
     invFun := Abelianization.lift (MonoidHom.id H)
-    left_inv := fun _ => rfl
     right_inv := by
       rintro ⟨a⟩
       rfl }

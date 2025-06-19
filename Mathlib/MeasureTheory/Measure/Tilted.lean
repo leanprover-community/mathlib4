@@ -242,7 +242,7 @@ lemma integral_exp_tilted (f g : α → ℝ) :
       rw [Pi.add_apply, exp_add]
       ring
     simp_rw [this, div_eq_mul_inv]
-    rw [integral_mul_right]
+    rw [integral_mul_const]
 
 lemma tilted_tilted (hf : Integrable (fun x ↦ exp (f x)) μ) (g : α → ℝ) :
     (μ.tilted f).tilted g = μ.tilted (f + g) := by
@@ -272,7 +272,6 @@ lemma tilted_neg_same' (hf : Integrable (fun x ↦ exp (f x)) μ) :
     (μ.tilted f).tilted (-f) = (μ Set.univ)⁻¹ • μ := by
   rw [tilted_tilted hf]; simp
 
-@[simp]
 lemma tilted_neg_same [IsProbabilityMeasure μ] (hf : Integrable (fun x ↦ exp (f x)) μ) :
     (μ.tilted f).tilted (-f) = μ := by
   simp [hf]

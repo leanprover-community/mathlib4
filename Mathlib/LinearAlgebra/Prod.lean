@@ -29,6 +29,9 @@ It contains theorems relating these to each other, as well as to `Submodule.prod
   - `LinearMap.prodMap`
   - `LinearEquiv.prodMap`
   - `LinearEquiv.skewProd`
+- product with the trivial module:
+  - `LinearEquiv.prodUnique`
+  - `LinearEquiv.uniqueProd`
 -/
 
 
@@ -115,8 +118,6 @@ def prodEquiv [Module S M₂] [Module S M₃] [SMulCommClass R S M₂] [SMulComm
     ((M →ₗ[R] M₂) × (M →ₗ[R] M₃)) ≃ₗ[S] M →ₗ[R] M₂ × M₃ where
   toFun f := f.1.prod f.2
   invFun f := ((fst _ _ _).comp f, (snd _ _ _).comp f)
-  left_inv f := by ext <;> rfl
-  right_inv f := by ext <;> rfl
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
@@ -238,6 +239,11 @@ theorem coprod_map_prod (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) (S : Su
     simp only [LinearMap.coprod_apply, Submodule.coe_sup, Submodule.map_coe]
     rw [← Set.image2_add, Set.image2_image_left, Set.image2_image_right]
     exact Set.image_prod fun m m₂ => f m + g m₂
+
+@[simp]
+theorem coprod_comp_inl_inr (f : M × M₂ →ₗ[R] M₃) :
+    (f.comp (inl R M M₂)).coprod (f.comp (inr R M M₂)) = f := by
+  rw [← comp_coprod, coprod_inl_inr, comp_id]
 
 /-- Taking the product of two maps with the same codomain is equivalent to taking the product of
 their domains.
@@ -560,7 +566,6 @@ def sndEquiv : Submodule.snd R M M₂ ≃ₗ[R] M₂ where
     rintro ⟨⟨x, y⟩, hx⟩
     simp only [snd, comap_bot, mem_ker, fst_apply] at hx
     simpa only [Subtype.mk.injEq, Prod.mk.injEq, and_true] using hx.symm
-  right_inv := by rintro x; rfl
 
 theorem snd_map_fst : (Submodule.snd R M M₂).map (LinearMap.fst R M M₂) = ⊥ := by
   aesop (add simp snd)
@@ -761,6 +766,32 @@ theorem skewProd_symm_apply (f : M →ₗ[R] M₄) (x) :
   rfl
 
 end
+
+section Unique
+
+variable [Semiring R]
+variable [AddCommMonoid M] [AddCommMonoid M₂]
+variable [Module R M] [Module R M₂] [Unique M₂]
+
+/-- Multiplying by the trivial module from the left does not change the structure.
+This is the `LinearEquiv` version of `AddEquiv.uniqueProd`. -/
+@[simps!]
+def uniqueProd : (M₂ × M) ≃ₗ[R] M :=
+  AddEquiv.uniqueProd.toLinearEquiv (by simp [AddEquiv.uniqueProd])
+
+lemma coe_uniqueProd :
+  (uniqueProd (R := R) (M := M) (M₂ := M₂) : (M₂ × M) ≃ M) = Equiv.uniqueProd M M₂ := rfl
+
+/-- Multiplying by the trivial module from the right does not change the structure.
+This is the `LinearEquiv` version of `AddEquiv.prodUnique`. -/
+@[simps!]
+def prodUnique : (M × M₂) ≃ₗ[R] M :=
+  AddEquiv.prodUnique.toLinearEquiv (by simp [AddEquiv.prodUnique])
+
+lemma coe_prodUnique :
+  (prodUnique (R := R) (M := M) (M₂ := M₂) : (M × M₂) ≃ M) = Equiv.prodUnique M M₂ := rfl
+
+end Unique
 
 end LinearEquiv
 
