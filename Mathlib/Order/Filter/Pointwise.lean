@@ -5,6 +5,7 @@ Authors: Zhouhang Zhou, Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Ring.Defs
