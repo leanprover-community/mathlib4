@@ -28,7 +28,10 @@ def natAbsHom : ℤ →*₀ ℕ where
   map_one' := Int.natAbs_one
   map_zero' := Int.natAbs_zero
 
-lemma natAbs_sub_nat_of_le {a b : ℕ} (h : b ≤ a) : Int.natAbs (↑a - ↑b) = a - b := by omega
-lemma natAbs_sub_nat_of_ge {a b : ℕ} (h : a ≤ b) : Int.natAbs (↑a - ↑b) = b - a := by omega
+lemma natAbs_natCast_sub_natCast_of_ge {a b : ℕ} (h : b ≤ a) : Int.natAbs (↑a - ↑b) = a - b := by
+  omega
+
+lemma natAbs_natCast_sub_natCast_of_le {a b : ℕ} (h : a ≤ b) : Int.natAbs (↑a - ↑b) = b - a := by
+  omega
 
 end Int
