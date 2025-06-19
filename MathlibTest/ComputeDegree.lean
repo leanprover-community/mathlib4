@@ -209,6 +209,8 @@ example :
 
 example {F} [Ring F] : natDegree (X ^ 4 + 3 : F[X]) ≤ 4 := by compute_degree
 
+example {F} [Ring F] : natDegree ((-1) • X ^ 4 + 3 : F[X]) ≤ 4 := by compute_degree
+
 example : natDegree ((5 * X * C 3 : _root_.Rat[X]) ^ 4) ≤ 4 := by compute_degree
 
 example : natDegree ((C a * X) ^ 4) ≤ 4 := by compute_degree
@@ -226,6 +228,9 @@ example : natDegree (7 * X : R[X]) ≤ 1 := by compute_degree
 example {a : R} : natDegree (a • X ^ 5 : R[X]) ≤ 5 := by
   compute_degree
 
+example : natDegree (2 • X ^ 5 : R[X]) ≤ 5 := by
+  compute_degree
+
 example {a : R} (a0 : a ≠ 0) : natDegree (a • X ^ 5 + X : R[X]) = 5 := by
   compute_degree!
 
@@ -233,3 +238,8 @@ example {a : R} (a0 : a ≠ 0) : degree (a • X ^ 5 + X ^ 2 : R[X]) = 5 := by
   compute_degree!; rfl
 
 end tests_from_mathlib3
+
+variable [CommRing R] [Nontrivial R] in
+example : (X ^ 2 + 2 • X + C 1 : R[X]).natDegree = 2 := by
+  compute_degree!
+  simp [coeff_X]
