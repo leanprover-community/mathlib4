@@ -401,15 +401,13 @@ def prodUnique : (M × N) ≃L[R] M where
     fun_prop
 
 @[simp]
-lemma prodUnique_toEquiv : (prodUnique R M N).toEquiv = Equiv.prodUnique M N := rfl
+lemma coe_prodUnique : (prodUnique R M N).toEquiv = Equiv.prodUnique M N := rfl
 
 @[simp]
 lemma prodUnique_apply (x : M × N) : prodUnique R M N x = x.1 := rfl
 
 @[simp]
 lemma prodUnique_symm_apply (x : M) : (prodUnique R M N).symm x = (x, default) := rfl
-
-lemma coe_prodUnique : (prodUnique R M N : (M × N) ≃ M) = Equiv.prodUnique M N := rfl
 
 /-- The natural equivalence `N × M ≃L[R] M` for any `Unique` type `N`.
 This is `Equiv.uniqueProd` as a continuous linear equivalence. -/
@@ -423,15 +421,13 @@ def uniqueProd : (N × M) ≃L[R] M where
     fun_prop
 
 @[simp]
-lemma uniqueProd_toEquiv : (uniqueProd R M N).toEquiv = Equiv.uniqueProd M N := rfl
+lemma coe_uniqueProd : (uniqueProd R M N).toEquiv = Equiv.uniqueProd M N := rfl
 
 @[simp]
 lemma uniqueProd_apply (x : N × M) : uniqueProd R M N x = x.2 := rfl
 
 @[simp]
 lemma uniqueProd_symm_apply (x : M) : (uniqueProd R M N).symm x = (default, x) := rfl
-
-lemma coe_uniqueProd : (uniqueProd R M N : (N × M) ≃ M) = Equiv.uniqueProd M N := rfl
 
 end prodUnique
 
