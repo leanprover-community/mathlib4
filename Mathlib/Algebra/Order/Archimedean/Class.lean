@@ -4,10 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Group.Subgroup.Lattice
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Data.Finset.Max
 import Mathlib.Order.Antisymmetrization
+import Mathlib.Order.UpperLower.CompleteLattice
+import Mathlib.Order.UpperLower.Principal
 
 /-!
 # Archimedean classes of a linearly ordered group
@@ -576,3 +579,109 @@ theorem withTopOrderIso_symm_apply {a : M} (h : a ≠ 1) :
   rfl
 
 end MulArchimedeanClass₁
+
+/-- Given a non-empty `UpperSet` of archimedean classes,
+all group elements belonging to these classes form a subgroup. -/
+@[to_additive ArchimedeanSubgroup.of_ne_top "Given a non-empty `UpperSet` of archimedean classes,
+all group elements belonging to these classes form a subgroup."]
+noncomputable
+def MulArchimedeanSubgroup.of_ne_top {s : UpperSet (MulArchimedeanClass M)} (hs : s ≠ ⊤) :
+    Subgroup M where
+  carrier := MulArchimedeanClass.mk ⁻¹' s
+  mul_mem' {a b} ha hb := by
+    rw [Set.mem_preimage] at ha hb ⊢
+    obtain h | h := min_le_iff.mp (MulArchimedeanClass.min_le_mk_mul a b)
+    · exact s.upper h ha
+    · exact s.upper h hb
+  one_mem' := by
+    rw [Set.mem_preimage]
+    obtain ⟨u, hu⟩ := UpperSet.coe_nonempty.mpr hs
+    simpa using s.upper (by simp) hu
+  inv_mem' {a} h := by simpa using h
+
+open Classical in
+/-- Generalize `MulArchimedeanSubgroup.of_ne_top` to any `UpperSet`
+with a junk value `⊥` given for the empty set. -/
+@[to_additive ArchimedeanSubgroup "Generalize `ArchimedeanSubgroup.of_ne_top` to any `UpperSet`
+with a junk value `⊥` given for the empty set."]
+noncomputable
+def MulArchimedeanSubgroup (s : UpperSet (MulArchimedeanClass M)) : Subgroup M :=
+  if hs : s = ⊤ then
+    ⊥
+  else
+    MulArchimedeanSubgroup.of_ne_top hs
+
+namespace MulArchimedeanSubgroup
+variable {s t : UpperSet (MulArchimedeanClass M)}
+
+@[to_additive]
+theorem eq_of_ne_top (hs : s ≠ ⊤) :
+    MulArchimedeanSubgroup s = MulArchimedeanSubgroup.of_ne_top hs := by
+  unfold MulArchimedeanSubgroup
+  simp [hs]
+
+variable (M) in
+@[to_additive (attr := simp)]
+theorem eq_bot : MulArchimedeanSubgroup (M := M) ⊤ = ⊥ := by
+  unfold MulArchimedeanSubgroup
+  simp
+
+@[to_additive]
+theorem mem_iff_of_ne_top (hs : s ≠ ⊤) :
+    a ∈ MulArchimedeanSubgroup s ↔ MulArchimedeanClass.mk a ∈ s := by
+  rw [eq_of_ne_top hs]
+  exact Set.mem_preimage
+
+omit s in
+@[to_additive]
+theorem mem_Ioi_iff_of_ne_top {A : MulArchimedeanClass M} (hA : A ≠ ⊤) :
+    a ∈ MulArchimedeanSubgroup (UpperSet.Ioi A) ↔ A < MulArchimedeanClass.mk a := by
+  have : UpperSet.Ioi A ≠ ⊤ := by
+    by_contra!
+    rw [UpperSet.ext_iff] at this
+    have : A = ⊤ := by simpa using this
+    exact hA this
+  simp [mem_iff_of_ne_top this]
+
+omit s in
+@[to_additive (attr := simp)]
+theorem mem_Ici_iff {A : MulArchimedeanClass M} :
+    a ∈ MulArchimedeanSubgroup (UpperSet.Ici A) ↔ A ≤ MulArchimedeanClass.mk a := by
+  have : UpperSet.Ici A ≠ ⊤ := by simp
+  simp [mem_iff_of_ne_top this]
+
+variable (M) in
+@[to_additive (attr := simp)]
+theorem eq_bot_of_Ici_top : MulArchimedeanSubgroup (M := M) (UpperSet.Ici ⊤) = ⊥ := by
+  rw [Subgroup.eq_bot_iff_forall]
+  intro x hx
+  rw [mem_iff_of_ne_top (by simp)] at hx
+  simpa using hx
+
+variable (M) in
+@[to_additive]
+theorem strictAntiOn : StrictAntiOn (MulArchimedeanSubgroup (M := M)) (Set.Iio ⊤) := by
+  intro s hs t ht hst
+  rw [eq_of_ne_top (Set.mem_Iio.mp hs).ne_top, eq_of_ne_top (Set.mem_Iio.mp ht).ne_top]
+  apply lt_of_le_of_ne
+  · rw [Subgroup.mk_le_mk]
+    refine (Set.preimage_subset_preimage_iff (by simp)).mpr ?_
+    simpa using hst.le
+  · contrapose! hst with heq
+    apply le_of_eq
+    unfold MulArchimedeanSubgroup.of_ne_top at heq
+    simpa [MulArchimedeanClass.mk_surjective] using heq
+
+variable (M) in
+@[to_additive]
+theorem antitone : Antitone (MulArchimedeanSubgroup (M := M)) := by
+  intro s t hst
+  obtain hs | rfl := ne_or_eq s ⊤
+  · obtain ht | rfl := ne_or_eq t ⊤
+    · exact
+      ((strictAntiOn M).le_iff_le (Set.mem_Iio.mpr ht.lt_top) (Set.mem_Iio.mpr hs.lt_top)).mpr hst
+    · simp
+  · have : t = ⊤ := eq_top_iff.mpr hst
+    rw [this]
+
+end MulArchimedeanSubgroup
