@@ -3,12 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
+import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Data.Fintype.Prod
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 import Mathlib.RingTheory.OreLocalization.Ring
-import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.Ring
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Localizations of commutative rings
@@ -718,6 +717,28 @@ variable (M S) (Q : Type*) [CommSemiring Q] [Algebra P Q]
 theorem map_injective_of_injective (h : Function.Injective g) [IsLocalization (M.map g) Q] :
     Function.Injective (map Q g M.le_comap_map : S → Q) :=
   (toLocalizationMap M S).map_injective_of_injective h (toLocalizationMap (M.map g) Q)
+
+/--
+Another version of `IsLocalization.map_injective_of_injective` that requires that there is no zero
+divisors but is more general for the choice of the localization submodule.
+-/
+theorem map_injective_of_injective' {A : Type*} [CommRing A] {B : Type*} [CommRing B] {f : A →+* B}
+    (K : Type*) {M₀ : Submonoid A} [CommRing K] [IsDomain K] [Algebra A K] [NoZeroSMulDivisors A K]
+    [IsLocalization M₀ K] (L : Type*) {N : Submonoid B} [CommRing L] [IsDomain L] [Algebra B L]
+    [NoZeroSMulDivisors B L] [IsLocalization N L] (hf : M₀ ≤ Submonoid.comap f N)
+    (hf' : Function.Injective f) :
+    Function.Injective (map L f hf : K →+* L) := by
+  by_cases hM : 0 ∈ M₀
+  · have hK : Unique K := uniqueOfZeroMem hM
+    obtain ⟨x, y, h⟩ : ∃ x y : K, x ≠ y := nontrivial_iff.mp inferInstance
+    simp [hK.uniq x, hK.uniq y] at h
+  refine (injective_iff_map_eq_zero (map L f hf)).mpr fun x h ↦ ?_
+  have h₁ : (sec M₀ x).1 = 0 := by
+    simpa [map, lift, Submonoid.LocalizationWithZeroMap.lift_apply,
+      _root_.map_eq_zero_iff f hf'] using h
+  have h₂ : ((sec M₀ x).2 : A) ≠ 0 := ne_of_mem_of_not_mem (SetLike.coe_mem (sec M₀ x).2) hM
+  simpa [h₁, map_zero, mul_eq_zero, FaithfulSMul.algebraMap_eq_zero_iff, h₂, or_false] using
+    sec_spec M₀ x
 
 /-- Surjectivity of a map descends to the map induced on localizations. -/
 theorem map_surjective_of_surjective (h : Function.Surjective g) [IsLocalization (M.map g) Q] :
