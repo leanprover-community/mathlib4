@@ -196,8 +196,7 @@ end WalkDecomp
 
 end Walk
 
-
-theorem Path.cons_isCycle {u v : V} (p : G.Path v u) (h : G.Adj u v)
+theorem cons_isCycle {u v : V} (p : G.Path v u) (h : G.Adj u v)
     (he : s(u, v) ∉ (p : G.Walk v u).edges) : (Walk.cons h ↑p).IsCycle := by
   simp [Walk.isCycle_def, Walk.cons_isTrail_iff, he]
 
