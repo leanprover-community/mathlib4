@@ -21,21 +21,36 @@ open CategoryTheory Limits
 -- to be moved
 namespace CategoryTheory.Limits
 
-variable {C : Type*} [Category C] {X Y : C} (c : BinaryCofan X Y)
+variable {C : Type*} [Category C] {X Y : C}
 
-lemma isPushout_of_isColimit_binaryCofan_of_isInitial (hc : IsColimit c)
+lemma isPushout_of_isColimit_binaryCofan_of_isInitial {c : BinaryCofan X Y} (hc : IsColimit c)
     {I : C} (hI : IsInitial I) :
-    IsPushout (hI.to _) (hI.to _) c.inr c.inl where
+    IsPushout (hI.to _) (hI.to _) c.inl c.inr where
   w := hI.hom_ext _ _
   isColimit' := ⟨PushoutCocone.IsColimit.mk _
-    (fun s ↦ hc.desc (BinaryCofan.mk s.inr s.inl))
-    (fun s ↦ hc.fac (BinaryCofan.mk s.inr s.inl) ⟨.right⟩)
-    (fun s ↦ hc.fac (BinaryCofan.mk s.inr s.inl) ⟨.left⟩)
+    (fun s ↦ hc.desc (BinaryCofan.mk s.inl s.inr))
+    (fun s ↦ hc.fac (BinaryCofan.mk s.inl s.inr) ⟨.left⟩)
+    (fun s ↦ hc.fac (BinaryCofan.mk s.inl s.inr) ⟨.right⟩)
     (fun s m h₁ h₂ ↦ by
       apply BinaryCofan.IsColimit.hom_ext hc
-      · rw [h₂, hc.fac (BinaryCofan.mk s.inr s.inl) ⟨.left⟩]
+      · rw [h₁, hc.fac (BinaryCofan.mk s.inl s.inr) ⟨.left⟩]
         rfl
-      · rw [h₁, hc.fac (BinaryCofan.mk s.inr s.inl) ⟨.right⟩]
+      · rw [h₂, hc.fac (BinaryCofan.mk s.inl s.inr) ⟨.right⟩]
+        rfl)⟩
+
+lemma isPullback_of_isLimit_binaryFan_of_isTerminal {c : BinaryFan X Y} (hc : IsLimit c)
+    {P : C} (hP : IsTerminal P) :
+    IsPullback c.fst c.snd (hP.from _) (hP.from _) where
+  w := hP.hom_ext _ _
+  isLimit' := ⟨PullbackCone.IsLimit.mk _
+    (fun s ↦ hc.lift (BinaryFan.mk s.fst s.snd))
+    (fun s ↦ hc.fac (BinaryFan.mk s.fst s.snd) ⟨.left⟩)
+    (fun s ↦ hc.fac (BinaryFan.mk s.fst s.snd) ⟨.right⟩)
+    (fun s m h₁ h₂ ↦ by
+      apply BinaryFan.IsLimit.hom_ext hc
+      · rw [h₁, hc.fac (BinaryFan.mk s.fst s.snd) ⟨.left⟩]
+        rfl
+      · rw [h₂, hc.fac (BinaryFan.mk s.fst s.snd) ⟨.right⟩]
         rfl)⟩
 
 end CategoryTheory.Limits
@@ -78,16 +93,16 @@ instance [hY : IsCofibrant Y] :
   rw [isCofibrant_iff] at hY
   rw [cofibration_iff] at hY ⊢
   exact MorphismProperty.of_isPushout
-    ((isPushout_of_isColimit_binaryCofan_of_isInitial _
-    (colimit.isColimit (pair X Y)) initialIsInitial).flip) hY
+    ((isPushout_of_isColimit_binaryCofan_of_isInitial
+    (colimit.isColimit (pair X Y)) initialIsInitial)) hY
 
 instance [HasInitial C] [HasBinaryCoproduct X Y] [hX : IsCofibrant X] :
     Cofibration (coprod.inr : Y ⟶ X ⨿ Y) := by
   rw [isCofibrant_iff] at hX
   rw [cofibration_iff] at hX ⊢
   exact MorphismProperty.of_isPushout
-    (isPushout_of_isColimit_binaryCofan_of_isInitial _
-    (colimit.isColimit (pair X Y)) initialIsInitial) hX
+    (isPushout_of_isColimit_binaryCofan_of_isInitial
+    (colimit.isColimit (pair X Y)) initialIsInitial).flip hX
 
 end
 
@@ -117,6 +132,29 @@ lemma isFibrant_of_fibration [(fibrations C).IsStableUnderComposition]
   rw [isFibrant_iff] at hY ⊢
   rw [Subsingleton.elim (terminal.from X) (p ≫ terminal.from Y)]
   infer_instance
+
+section
+
+variable (X Y : C) [(fibrations C).IsStableUnderBaseChange] [HasTerminal C]
+  [HasBinaryProduct X Y]
+
+instance [hY : IsFibrant Y] :
+    Fibration (prod.fst : X ⨯ Y ⟶ X) := by
+  rw [isFibrant_iff] at hY
+  rw [fibration_iff] at hY ⊢
+  exact MorphismProperty.of_isPullback
+    ((isPullback_of_isLimit_binaryFan_of_isTerminal
+    (limit.isLimit (pair X Y)) terminalIsTerminal)).flip hY
+
+instance [hX : IsFibrant X] :
+    Fibration (prod.snd : X ⨯ Y ⟶ Y) := by
+  rw [isFibrant_iff] at hX
+  rw [fibration_iff] at hX ⊢
+  exact MorphismProperty.of_isPullback
+    ((isPullback_of_isLimit_binaryFan_of_isTerminal
+    (limit.isLimit (pair X Y)) terminalIsTerminal)) hX
+
+end
 
 end
 

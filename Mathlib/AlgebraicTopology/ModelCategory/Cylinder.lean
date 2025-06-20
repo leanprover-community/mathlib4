@@ -82,10 +82,10 @@ attribute [reassoc (attr := simp)] i₀_σ i₁_σ
 variable {A : C} (P : Cylinder A)
 
 instance : WeakEquivalence P.i₀ :=
-  weakEquivalence_of_postcomp_of_fac (P.i₀_σ)
+  weakEquivalence_of_postcomp_of_fac P.i₀_σ
 
 instance : WeakEquivalence P.i₁ :=
-  weakEquivalence_of_postcomp_of_fac (P.i₁_σ)
+  weakEquivalence_of_postcomp_of_fac P.i₁_σ
 
 /-- the map from the coproduct of two copies of `A` to `P.I`, when `P` is
 a cylinder object for `A`. `P` shall be a *good* cylinder object
@@ -107,7 +107,7 @@ def symm : Cylinder A where
   σ := P.σ
 
 @[simp, reassoc]
-lemma symm_i [HasBinaryCoproducts C] : P.symm.i =
+lemma symm_i : P.symm.i =
   (coprod.braiding A A).hom ≫ P.i := by aesop_cat
 
 /-- A cylinder object `P` is good if the morphism

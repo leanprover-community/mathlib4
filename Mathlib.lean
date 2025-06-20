@@ -1244,6 +1244,7 @@ import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
 import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
 import Mathlib.AlgebraicTopology.ModelCategory.Instances
 import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
+import Mathlib.AlgebraicTopology.ModelCategory.PathObject
 import Mathlib.AlgebraicTopology.MooreComplex
 import Mathlib.AlgebraicTopology.Quasicategory.Basic
 import Mathlib.AlgebraicTopology.Quasicategory.Nerve
