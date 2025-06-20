@@ -133,15 +133,4 @@ theorem mem_commutant_iff {S : VonNeumannAlgebra H} {z : H →L[ℂ] H} :
 theorem commutant_commutant (S : VonNeumannAlgebra H) : S.commutant.commutant = S :=
   SetLike.coe_injective <| by simp
 
-/-- the star of a continuous linear map is in the commutant
-  if and only if the map is in the commutant -/
-lemma star_mem_commutant_iff {M : VonNeumannAlgebra H} {e : H →L[ℂ] H} :
-    star e ∈ M.commutant ↔ e ∈ M.commutant := by
-  simp only [mem_commutant_iff]
-  refine ⟨fun h g hg => ?_, fun h g hg => ?_⟩
-  all_goals specialize h (star g) (star_mem hg)
-  · simpa [← star_mul, star_inj, eq_comm] using h
-  · rw [← star_star g]
-    simp_rw [← star_mul, h]
-
 end VonNeumannAlgebra
