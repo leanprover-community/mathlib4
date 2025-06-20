@@ -40,11 +40,11 @@ abbrev extensionUnitLeft : H ⊠ K ⟶ L.prod (𝟭 E) ⋙ H' ⊠ K :=
 abbrev extensionUnitRight : K ⊠ H ⟶ (𝟭 E).prod L ⋙ K ⊠ H' :=
     (externalProductBifunctor E D V).map ((K.leftUnitor.inv, α) : (K, H) ⟶ (𝟭 E ⋙ K, L ⋙ H'))
 
-/-- If `H' : D' ⥤ V` is pointwise left Kan extended along `L : D ⥤ D'` at `(d : D')`,
-and if tensoring right with an object preserves colimis in `V`
+/-- If `H' : D' ⥤ V` is pointwise left Kan extended along `L : D ⥤ D'` at `(d : D')`
+and if tensoring right with an object preserves colimits in `V`,
 then `H' ⊠ K : D' × E ⥤ V` is pointwise left Kan extended along `L × (𝟭 E)` at `(d, e)`
 for every `e : E`. -/
-def pointwiseLeftKanExtensionAtLeft
+def isPointwiseLeftKanExtensionAtExtensionUnitLeft
     (d : D') (P : (Functor.LeftExtension.mk H' α).IsPointwiseLeftKanExtensionAt d) (e : E)
     [Limits.PreservesColimitsOfShape (CostructuredArrow L d) (tensorRight <| K.obj e)] :
     Functor.LeftExtension.mk (H' ⊠ K) (extensionUnitLeft H' α K)|>.IsPointwiseLeftKanExtensionAt
@@ -80,20 +80,20 @@ def pointwiseLeftKanExtensionAtLeft
   exact Limits.PreservesColimit.preserves (F := tensorRight <| K.obj e) P|>.some
 
 /-- If `H' : D' ⥤ V` is pointwise left Kan extended along `L : D ⥤ D'`,
-and if tensoring right with an object preserves colimis in `V`
+and if tensoring right with an object preserves colimits in `V`
 then `H' ⊠ K : D' × E ⥤ V` is pointwise left Kan extended along `L × (𝟭 E)`. -/
-def pointwiseLeftKanExtensionLeft
+def isPointwiseLeftKanExtensionExtensionUnitLeft
     [∀ d : D', ∀ e : E,
       Limits.PreservesColimitsOfShape (CostructuredArrow L d) (tensorRight <| K.obj e)]
     (P : (Functor.LeftExtension.mk H' α).IsPointwiseLeftKanExtension) :
     Functor.LeftExtension.mk (H' ⊠ K) (extensionUnitLeft H' α K)|>.IsPointwiseLeftKanExtension :=
-  fun ⟨d, e⟩ ↦ pointwiseLeftKanExtensionAtLeft H' α K d (P d) e
+  fun ⟨d, e⟩ ↦ isPointwiseLeftKanExtensionAtExtensionUnitLeft H' α K d (P d) e
 
 /-- If `H' : D' ⥤ V` is pointwise left Kan extended along `L : D ⥤ D'` at `d : D'` and
-if tensoring left with an object preserves colimis in `V`,
+if tensoring left with an object preserves colimits in `V`,
 then `K ⊠ H' : D' × E ⥤ V` is pointwise left Kan extended along `(𝟭 E) × L` at `(e, d)` for
 every `e`. -/
-def pointwiseLeftKanExtensionAtRight
+def isPointwiseLeftKanExtensionAtExtensionUnitRight
     (d : D') (P : (Functor.LeftExtension.mk H' α).IsPointwiseLeftKanExtensionAt d) (e : E)
     [Limits.PreservesColimitsOfShape (CostructuredArrow L d) (tensorLeft <| K.obj e)] :
     (Functor.LeftExtension.mk (K ⊠ H')
@@ -130,14 +130,14 @@ def pointwiseLeftKanExtensionAtRight
   exact Limits.PreservesColimit.preserves (F := tensorLeft <| K.obj e) P|>.some
 
 /-- If `H' : D' ⥤ V` is pointwise left Kan extended along `L : D ⥤ D'` and
-if tensoring left with an object preserves colimis in `V`,
+if tensoring left with an object preserves colimits in `V`,
 then `K ⊠ H' : D' × E ⥤ V` is pointwise left Kan extended along `(𝟭 E) × L`. -/
-def pointwiseLeftKanExtensionRight
+def isPointwiseLeftKanExtensionExtensionUnitRight
     [∀ d : D', ∀ e : E,
       Limits.PreservesColimitsOfShape (CostructuredArrow L d) (tensorLeft <| K.obj e)]
     (P : Functor.LeftExtension.mk H' α|>.IsPointwiseLeftKanExtension) :
     Functor.LeftExtension.mk (K ⊠ H') (extensionUnitRight H' α K)|>.IsPointwiseLeftKanExtension :=
-  fun ⟨e, d⟩ ↦ pointwiseLeftKanExtensionAtRight H' α K d (P d) e
+  fun ⟨e, d⟩ ↦ isPointwiseLeftKanExtensionAtExtensionUnitRight H' α K d (P d) e
 
 end
 
