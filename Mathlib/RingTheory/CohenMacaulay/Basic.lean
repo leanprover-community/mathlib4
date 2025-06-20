@@ -425,12 +425,6 @@ lemma isLocalize_at_prime_isCohenMacaulay_of_isCohenMacaulay [Module.Finite R M]
   · simp [ntr]
   · simp only [ntr, false_or]
     have ntr2 : Nontrivial Mₚ := not_subsingleton_iff_nontrivial.mp ntr
-    have ntr1 : Nontrivial M := by
-      by_contra h
-      absurd ntr
-      rw [IsLocalizedModule.subsingleton_iff_ker_eq_top p.primeCompl f]
-      have := (Submodule.subsingleton_iff R).mpr (not_nontrivial_iff_subsingleton.mp h)
-      apply Subsingleton.elim
     apply le_antisymm _ (depth_le_supportDim Mₚ)
     rw [isLocalize_at_prime_dim_eq_prime_depth_of_isCohenMacaulay p M Mₚ f]
     exact WithBot.coe_le_coe.mpr (isLocalization_at_prime_prime_depth_le_depth p M Mₚ f)
