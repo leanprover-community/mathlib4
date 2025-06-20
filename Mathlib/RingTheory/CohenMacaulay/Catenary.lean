@@ -356,6 +356,7 @@ lemma ringKrullDim_quotient_eq_iSup_quotient_minimalPrimes (I : Ideal R) :
     intro p hp
     exact ringKrullDim_le_of_surjective _ (Ideal.Quotient.factor_surjective hp.1.2)
 
+/-
 noncomputable def nonnegRingKrullDim (R : Type u) [CommSemiring R] : ℕ∞ :=
   ⨆ (p : LTSeries (PrimeSpectrum R)), (p.length : ℕ∞)
 
@@ -388,7 +389,7 @@ lemma nonnegRingKrullDim_quotient_eq_iSup_quotient_minimalPrimes (I : Ideal R) (
     nonnegRingKrullDim (R ⧸ I) = ⨆ p : I.minimalPrimes, nonnegRingKrullDim (R ⧸ p.1) := by
   have : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial hI
   apply WithBot.coe_inj.mp
-  have : Nonempty ↑I.minimalPrimes := sorry
+  have : Nonempty I.minimalPrimes := nonempty_minimalPrimes hI
   simp only [WithBot.coe_iSup (OrderTop.bddAbove _), coe_nonnegRingKrullDim]
   apply le_antisymm
   · simp only [ringKrullDim_quotient, Order.krullDim, iSup_le_iff]
@@ -410,13 +411,16 @@ lemma nonnegRingKrullDim_quotient_eq_iSup_quotient_minimalPrimes (I : Ideal R) (
     have := p.2.1.1
     exact coe_nonnegRingKrullDim.trans_le <|
       ringKrullDim_le_of_surjective _ (Ideal.Quotient.factor_surjective p.2.1.2)
+-/
 
 lemma Ideal.height_add_ringKrullDim_quotient_eq_ringKrullDim [IsCohenMacaulayLocalRing R]
     (I : Ideal R) (netop : I ≠ ⊤) : I.height + ringKrullDim (R ⧸ I) = ringKrullDim R := by
   have : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial netop
-  simp only [height, ← coe_nonnegRingKrullDim]
+  rw [height, ringKrullDim_quotient_eq_iSup_quotient_minimalPrimes]
+  sorry
+  /-simp only [height, ← coe_nonnegRingKrullDim]
   rw [nonnegRingKrullDim_quotient_eq_iSup_quotient_minimalPrimes I netop]
   norm_cast
   apply le_antisymm
   · sorry
-  · sorry
+  · sorry-/
