@@ -87,27 +87,28 @@ section
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 
-instance : ChartedSpace E Unit := sorry
-
-instance : IsManifold 𝓘(𝕜, E) 2 Unit := sorry
-
-noncomputable def trivial_covariant_derivative : CovariantDerivative 𝓘(𝕜, E) E
-  (fun (_ : Unit) ↦ E) /-(Bundle.Trivial Unit E')-/ where
-  toFun v σ := fun _x ↦ fderiv 𝕜 v  _x _x
+noncomputable def trivial_covariant_derivative : CovariantDerivative 𝓘(𝕜, E) E'
+  (Bundle.Trivial E E') where
+  toFun v s := by
+    intro x
+    let D := fderiv 𝕜 s
+    let v' := v x
+    sorry -- apply D v' or so
   addX X X' σ := by
+    sorry /-
     funext x'
     -- seems actually missing: sum of two non-diff functions could be non-differentiable
     have hX : DifferentiableAt 𝕜 X x' := sorry
     have hX' : DifferentiableAt 𝕜 X' x' := sorry
-    simp [fderiv_add hX hX']
-  smulX X σ c' := by
-    let c := c' Unit.unit
+    simp [fderiv_add hX hX'] -/
+  smulX X σ c' := by sorry
+    /- let c := c' Unit.unit
     funext x'
     by_cases hX : DifferentiableAt 𝕜 X x'; swap
     · have : ¬DifferentiableAt 𝕜 (c' • X) x' := sorry -- lemma: scalar mult. preserves diff.
       simp [fderiv_zero_of_not_differentiableAt this, fderiv_zero_of_not_differentiableAt hX]
     have : fderiv 𝕜 (c • X) x' = c • fderiv 𝕜 X x' := fderiv_const_smul hX c
-    sorry -- mismatch c vs c'
+    sorry -- mismatch c vs c' -/
   addσ X σ σ' hX hσ hσ' := sorry
   leibniz := sorry
 
