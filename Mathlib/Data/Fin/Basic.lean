@@ -351,7 +351,7 @@ lemma intCast_val_sub_eq_sub_add_ite {n : ℕ} (a b : Fin n) :
 lemma sub_val_lt_sub {n : ℕ} {i j : Fin n} (hij : i ≤ j) : (j - i).1 < n - i.1 := by
   simp [sub_val_of_le hij, Nat.sub_lt_sub_right hij j.isLt]
 
-local instance {n : ℕ} {i: Fin n} : NeZero (n - i.1) := NeZero.of_pos (by omega)
+local instance {n : ℕ} {i : Fin n} : NeZero (n - i.1) := neZero_iff.mpr (by omega)
 
 lemma castLT_sub_nezero {n : ℕ} {i j : Fin n}(hij : i < j) :
     (j - i).castLT (sub_val_lt_sub (Fin.le_of_lt hij)) ≠ 0 := by
