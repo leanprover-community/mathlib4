@@ -1,5 +1,6 @@
 import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 
 open Bundle Filter Function
 
@@ -50,6 +51,8 @@ structure CovariantDerivative where
     → MDifferentiableAt I 𝓘(𝕜, 𝕜) f x
     → toFun X (f • σ) x = (f • toFun X σ) x + (bar _ <| mfderiv I 𝓘(𝕜, 𝕜) f x (X x)) • σ x
 
+
+
 lemma CovariantDerivative.smul_const_σ (cov : CovariantDerivative I F V)
     (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (a : 𝕜) :
     cov.toFun X (a • σ) = a • cov.toFun X σ := by
@@ -87,9 +90,14 @@ section
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 
+theorem Bundle.Trivial.mdifferentiableAt_iff (σ : (x : E) → Trivial E E' x) (e : E) :
+    MDifferentiableAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ TotalSpace.mk' E' x (σ x)) e ↔
+    DifferentiableAt 𝕜 σ e := by
+  sorry
+
 noncomputable def trivial_covariant_derivative : CovariantDerivative 𝓘(𝕜, E) E'
   (Bundle.Trivial E E') where
-  toFun X s := fun x ↦ fderiv 𝕜 s (X x) x
+  toFun X s := fun x ↦ fderiv 𝕜 s x (X x)
   addX X X' σ := by
     sorry /-
     funext x'
@@ -97,15 +105,11 @@ noncomputable def trivial_covariant_derivative : CovariantDerivative 𝓘(𝕜, 
     have hX : DifferentiableAt 𝕜 X x' := sorry
     have hX' : DifferentiableAt 𝕜 X' x' := sorry
     simp [fderiv_add hX hX'] -/
-  smulX X σ c' := by sorry
-    /- let c := c' Unit.unit
-    funext x'
-    by_cases hX : DifferentiableAt 𝕜 X x'; swap
-    · have : ¬DifferentiableAt 𝕜 (c' • X) x' := sorry -- lemma: scalar mult. preserves diff.
-      simp [fderiv_zero_of_not_differentiableAt this, fderiv_zero_of_not_differentiableAt hX]
-    have : fderiv 𝕜 (c • X) x' = c • fderiv 𝕜 X x' := fderiv_const_smul hX c
-    sorry -- mismatch c vs c' -/
-  addσ X σ σ' hX hσ hσ' := sorry
+  smulX X σ c' := by ext ; simp
+  addσ X σ σ' e hσ hσ' := by
+    rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ hσ'
+    rw [fderiv_add hσ hσ']
+    rfl
   leibniz := sorry
 
 end
