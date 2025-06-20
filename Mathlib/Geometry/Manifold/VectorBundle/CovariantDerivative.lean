@@ -8,7 +8,6 @@ open scoped Bundle Manifold ContDiff
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-
 section
 
 variable {E : Type*} [NormedAddCommGroup E]
@@ -24,7 +23,6 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [∀ x, ContinuousSMul 𝕜 (V x)]
   [FiberBundle F V] [VectorBundle 𝕜 F V]
   -- `V` vector bundle
-
 
 def bar (a : 𝕜) : TangentSpace 𝓘(𝕜, 𝕜) a ≃L[𝕜] 𝕜 where
   toFun v := v
@@ -57,8 +55,6 @@ structure CovariantDerivative where
     → MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x
     → MDifferentiableAt I 𝓘(𝕜, 𝕜) f x
     → toFun X (f • σ) x = (f • toFun X σ) x + (bar _ <| mfderiv I 𝓘(𝕜, 𝕜) f x (X x)) • σ x
-
-
 
 lemma CovariantDerivative.smul_const_σ (cov : CovariantDerivative I F V)
     (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (a : 𝕜) :
@@ -111,6 +107,14 @@ noncomputable def trivial_covariant_derivative : CovariantDerivative 𝓘(𝕜, 
     rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ hσ'
     rw [fderiv_add hσ hσ']
     rfl
-  leibniz := sorry
+  leibniz := by
+    intro X σ f x hX hσ hf
+    have : fderiv 𝕜 (f • σ) x = f x • fderiv 𝕜 σ x + (fderiv 𝕜 f x).smulRight (σ x) := by
+      apply fderiv_smul
+        (by rwa [← mdifferentiableAt_iff_differentiableAt])
+        (by rwa [Bundle.Trivial.mdifferentiableAt_iff] at hσ)
+    simp [this]
+    rw [← missing]
+    congr
 
 end
