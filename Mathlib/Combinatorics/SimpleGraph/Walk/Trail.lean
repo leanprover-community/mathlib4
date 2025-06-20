@@ -5,7 +5,6 @@ Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkDecomp
 import Mathlib.Combinatorics.SimpleGraph.Walk.Basic
-import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!
 
