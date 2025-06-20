@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Elementwise
 /-!
 # The category of schemes
 
-A scheme is a locally ringed space such that every point is contained in some open set
+A scheme is a locally ringed space such that every ptat is contained in some open set
 where there is an isomorphism of presheaves between the restriction to that open set,
 and the structure sheaf of `Spec R`, for some commutative ring `R`.
 
@@ -116,6 +116,8 @@ lemma Hom.continuous {X Y : Scheme} (f : X.Hom Y) : Continuous f.base := f.base.
 /-- The structure sheaf of a scheme. -/
 protected abbrev sheaf (X : Scheme) :=
   X.toSheafedSpace.sheaf
+
+instance instanceSchemePreord {X : Scheme} : Preorder X := specializationPreorder X
 
 namespace Hom
 
