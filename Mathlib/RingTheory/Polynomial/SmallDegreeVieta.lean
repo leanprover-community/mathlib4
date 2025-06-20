@@ -153,10 +153,25 @@ theorem quadratic_eq_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
       C a * (X - C ((-b + s) / (2 * a))) * (X - C ((-b - s) / (2 * a))) :=
   quadratic_eq_of_vieta (vieta_of_discrim_eq_sq ha h)
 
-theorem roots_quadratic_of_discrim_ne_sq (ha : a ≠ 0) (h : ∀ s : R, discrim a b c ≠ s^2) :
-    (C a * X ^ 2 + C b * X + C c).roots = ∅ :=
-  Multiset.eq_zero_of_forall_notMem fun r hc => not_isRoot_of_discrim_ne_sq h r
-    ((mem_roots (quadratic_ne_zero ha)).mp hc)
+theorem roots_quadratic_of_discrim_ne_sq (h : ∀ s : R, discrim a b c ≠ s^2) :
+    (C a * X ^ 2 + C b * X + C c).roots = ∅ := by
+  have c1 : C a * X ^ 2 + C b * X + C c ≠ 0 := by
+    by_contra hc
+    have az : a = 0 := by
+      rw [show a = (C a * X ^ 2 + C b * X + C c).coeff 2 by
+        simp [coeff_X], hc, coeff_zero]
+    have bz : b = 0 := by
+      rw [show b = (C a * X ^ 2 + C b * X + C c).coeff 1 by
+        simp [coeff_X], hc, coeff_zero]
+    have cz : c = 0 := by
+      rw [show c = (C a * X ^ 2 + C b * X + C c).coeff 0 by
+        simp [coeff_X], hc, coeff_zero]
+    have es : discrim a b c = 0 ^ 2 := by
+      rw [discrim, az, bz, cz]
+      norm_num
+    exact h 0 es
+  exact Multiset.eq_zero_of_forall_notMem fun r hc => not_isRoot_of_discrim_ne_sq h r
+    ((mem_roots c1).mp hc)
 
 theorem roots_quadratic_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
     (h : discrim a b c = s * s) :
