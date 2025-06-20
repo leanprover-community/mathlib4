@@ -83,8 +83,6 @@ theorem ContMDiffWithinAt.comp_of_eq {t : Set M'} {g : M' → M''} {x : M} {y : 
     (st : MapsTo f s t) (hx : f x = y) : ContMDiffWithinAt I I'' n (g ∘ f) s x := by
   subst hx; exact hg.comp x hf st
 
-@[deprecated (since := "2024-11-20")] alias SmoothWithinAt.comp := ContMDiffWithinAt.comp
-
 /-- The composition of `C^n` functions on domains is `C^n`. -/
 theorem ContMDiffOn.comp {t : Set M'} {g : M' → M''} (hg : ContMDiffOn I' I'' n g t)
     (hf : ContMDiffOn I I' n f s) (st : s ⊆ f ⁻¹' t) : ContMDiffOn I I'' n (g ∘ f) s := fun x hx =>
@@ -101,15 +99,11 @@ theorem ContMDiff.comp {g : M' → M''} (hg : ContMDiff I' I'' n g) (hf : ContMD
   rw [← contMDiffOn_univ] at hf hg ⊢
   exact hg.comp hf subset_preimage_univ
 
-@[deprecated (since := "2024-11-20")] alias Smooth.comp := ContMDiff.comp
-
 /-- The composition of `C^n` functions within domains at points is `C^n`. -/
 theorem ContMDiffWithinAt.comp' {t : Set M'} {g : M' → M''} (x : M)
     (hg : ContMDiffWithinAt I' I'' n g t (f x)) (hf : ContMDiffWithinAt I I' n f s x) :
     ContMDiffWithinAt I I'' n (g ∘ f) (s ∩ f ⁻¹' t) x :=
   hg.comp x (hf.mono inter_subset_left) inter_subset_right
-
-@[deprecated (since := "2024-11-20")] alias SmoothWithinAt.comp' := ContMDiffWithinAt.comp'
 
 /-- `g ∘ f` is `C^n` within `s` at `x` if `g` is `C^n` at `f x` and
 `f` is `C^n` within `s` at `x`. -/
@@ -117,9 +111,6 @@ theorem ContMDiffAt.comp_contMDiffWithinAt {g : M' → M''} (x : M)
     (hg : ContMDiffAt I' I'' n g (f x)) (hf : ContMDiffWithinAt I I' n f s x) :
     ContMDiffWithinAt I I'' n (g ∘ f) s x :=
   hg.comp x hf (mapsTo_univ _ _)
-
-@[deprecated (since := "2024-11-20")]
-alias SmoothAt.comp_smoothWithinAt := ContMDiffAt.comp_contMDiffWithinAt
 
 /-- `g ∘ f` is `C^n` within `s` at `x` if `g` is `C^n` at `f x` and
 `f` is `C^n` within `s` at `x`. -/
