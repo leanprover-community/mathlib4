@@ -4716,6 +4716,7 @@ import Mathlib.Order.Category.Preord
 import Mathlib.Order.Category.Semilat
 import Mathlib.Order.Chain
 import Mathlib.Order.Circular
+import Mathlib.Order.Circular.ZMod
 import Mathlib.Order.Closure
 import Mathlib.Order.Cofinal
 import Mathlib.Order.CompactlyGenerated.Basic
@@ -4808,7 +4809,6 @@ import Mathlib.Order.Filter.Ultrafilter.Basic
 import Mathlib.Order.Filter.Ultrafilter.Defs
 import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 import Mathlib.Order.Fin.Basic
-import Mathlib.Order.Fin.CircularOrder
 import Mathlib.Order.Fin.Finset
 import Mathlib.Order.Fin.SuccAboveOrderIso
 import Mathlib.Order.Fin.Tuple
@@ -4948,7 +4948,6 @@ import Mathlib.Order.WellFounded
 import Mathlib.Order.WellFoundedSet
 import Mathlib.Order.WellQuasiOrder
 import Mathlib.Order.WithBot
-import Mathlib.Order.ZMod.CircularOrder
 import Mathlib.Order.Zorn
 import Mathlib.Order.ZornAtoms
 import Mathlib.Probability.BorelCantelli
