@@ -149,4 +149,22 @@ lemma mem_trivialCofibrations_iff :
 
 end TrivCof
 
+section ObjectProperty
+
+variable [CategoryWithWeakEquivalences C] {P : ObjectProperty C}
+
+instance : CategoryWithWeakEquivalences P.FullSubcategory where
+  weakEquivalences := (weakEquivalences C).inverseImage P.ι
+
+lemma weakEquivalence_iff_ι_map {X Y : P.FullSubcategory} (f : X ⟶ Y) :
+    WeakEquivalence f ↔ WeakEquivalence (P.ι.map f) := by
+  simp only [weakEquivalence_iff]
+  rfl
+
+instance {X Y : P.FullSubcategory} (f : X ⟶ Y) [WeakEquivalence f] :
+    WeakEquivalence (P.ι.map f) := by
+  rwa [← weakEquivalence_iff_ι_map]
+
+end ObjectProperty
+
 end HomotopicalAlgebra

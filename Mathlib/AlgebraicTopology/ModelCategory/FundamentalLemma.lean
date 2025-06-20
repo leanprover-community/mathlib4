@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.ModelCategory.Bifibrant
 import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
+import Mathlib.CategoryTheory.Localization.Predicate
 
 /-!
 # The fundamental lemma of homotopical algebra
@@ -65,5 +66,14 @@ lemma homRel_iff_leftHomotopyRel :
   rw [homRel_iff_rightHomotopyRel, leftHomotopyRel_iff_rightHomotopyRel]
 
 end BifibrantObject
+
+abbrev πBifibrantObject := Quotient (BifibrantObject.homRel C)
+
+variable {C} in
+def toπBifibrantObject : BifibrantObject C ⥤ πBifibrantObject C :=
+  Quotient.functor _
+
+/-instance : toπBifibrantObject.IsLocalization
+  (weakEquivalences (BifibrantObject C)) := sorry-/
 
 end HomotopicalAlgebra
