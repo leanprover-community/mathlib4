@@ -165,6 +165,10 @@ theorem mul_star_self_nonneg (r : R) : 0 ≤ r * star r := by
 protected theorem IsSelfAdjoint.mul_self_nonneg {a : R} (ha : IsSelfAdjoint a) : 0 ≤ a * a := by
   simpa [ha.star_eq] using star_mul_self_nonneg a
 
+/-- A star projection is non-negative in a star-ordered ring. -/
+theorem IsStarProjection.nonneg {p : R} (hp : IsStarProjection p) : 0 ≤ p :=
+  hp.mul_self ▸ hp.isSelfAdjoint.mul_self_nonneg
+
 @[aesop safe apply]
 theorem conjugate_nonneg {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ star c * a * c := by
   rw [StarOrderedRing.nonneg_iff] at ha
@@ -393,23 +397,16 @@ instance Nat.instStarOrderedRing : StarOrderedRing ℕ where
         Nat.addSubmonoid_closure_one
     simp [this, le_iff_exists_add]
 
-/-- a star projection is non-negative in a star-ordered ring -/
-theorem IsStarProjection.nonneg {M : Type*} [NonUnitalSemiring M] [PartialOrder M]
-    [StarRing M] [StarOrderedRing M] {p : M}
-    (hp : IsStarProjection p) : 0 ≤ p := by
-  rw [← hp.mul_self]
-  nth_rw 1 [← hp.star_eq]
-  exact star_mul_self_nonneg p
 
-theorem IsStarProjection.one_sub_nonneg {M : Type*}
-    [Ring M] [PartialOrder M] [StarRing M] [StarOrderedRing M]
-    {p : M} (hp : IsStarProjection p) : 0 ≤ 1 - p := hp.one_sub.nonneg
+namespace IsStarProjection
 
-theorem IsStarProjection.le_one {M : Type*}
-    [Ring M] [PartialOrder M] [StarRing M] [StarOrderedRing M]
-    {p : M} (hp : IsStarProjection p) : p ≤ 1 := sub_nonneg.mp hp.one_sub_nonneg
+variable [Ring R] [PartialOrder R] [StarRing R] [StarOrderedRing R] {p : R}
 
-theorem IsStarProjection.mem_Icc_zero_one {M : Type*}
-    [Ring M] [PartialOrder M] [StarRing M] [StarOrderedRing M]
-    {p : M} (hp : IsStarProjection p) : p ∈ Set.Icc (0 : M) 1 := by
-  simp only [mem_Icc, hp.nonneg, hp.le_one, and_self]
+theorem one_sub_nonneg (hp : IsStarProjection p) : 0 ≤ 1 - p := hp.one_sub.nonneg
+
+theorem le_one (hp : IsStarProjection p) : p ≤ 1 := sub_nonneg.mp hp.one_sub_nonneg
+
+theorem mem_Icc (hp : IsStarProjection p) : p ∈ Set.Icc (0 : R) 1 := by
+  simp only [Set.mem_Icc, hp.nonneg, hp.le_one, and_self]
+
+end IsStarProjection

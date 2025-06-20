@@ -160,7 +160,8 @@ theorem conjugate_self {x : R} (hx : IsSelfAdjoint x) {z : R} (hz : IsSelfAdjoin
     IsSelfAdjoint (z * x * z) := by nth_rewrite 2 [← hz]; exact conjugate hx z
 
 @[aesop 10% apply]
-theorem isStarNormal {x : R} (hx : IsSelfAdjoint x) : IsStarNormal x :=
+theorem isStarNormal {R : Type*} [Mul R] [Star R] {x : R} (hx : IsSelfAdjoint x) :
+    IsStarNormal x :=
   ⟨by simp only [Commute, SemiconjBy, hx.star_eq]⟩
 
 end Semigroup
