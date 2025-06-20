@@ -26,7 +26,7 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [FiberBundle F V] [VectorBundle 𝕜 F V]
   -- `V` vector bundle
 
-def bar (a : 𝕜) : TangentSpace 𝓘(𝕜, 𝕜) a ≃L[𝕜] 𝕜 where
+def bar (a : 𝕜) : TangentSpace 𝓘(𝕜) a ≃L[𝕜] 𝕜 where
   toFun v := v
   invFun v := v
   map_add' := by simp
@@ -46,8 +46,8 @@ structure CovariantDerivative where
     → toFun X (σ + σ') x = toFun X σ x + toFun X σ' x
   leibniz : ∀ (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (f : M → 𝕜) (x : M),
     MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x
-    → MDifferentiableAt I 𝓘(𝕜, 𝕜) f x
-    → toFun X (f • σ) x = (f • toFun X σ) x + (bar _ <| mfderiv I 𝓘(𝕜, 𝕜) f x (X x)) • σ x
+    → MDifferentiableAt I 𝓘(𝕜) f x
+    → toFun X (f • σ) x = (f • toFun X σ) x + (bar _ <| mfderiv I 𝓘(𝕜) f x (X x)) • σ x
   do_not_read : ∀ (X : Π x : M, TangentSpace I x) {σ : Π x : M, V x} {x : M},
     ¬ MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x → toFun X σ x = 0
 
