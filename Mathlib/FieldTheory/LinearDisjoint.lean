@@ -680,7 +680,7 @@ theorem _root_.Basis.ofLinearDisjoint_leftMulMatrix_eq {F : Type*} {E : Type*} [
 /--
 If `A` and `B` are linearly disjoint, then `trace` and `algebraMap` commutes.
 -/
-theorem IntermediateField.LinearDisjoint.trace_algebraMap_eq [FiniteDimensional F E]
+theorem trace_algebraMap_eq [FiniteDimensional F E]
     (h₁ : A.LinearDisjoint B) (h₂ : A ⊔ B = ⊤) (x : B) :
     Algebra.trace A E (algebraMap B E x) = algebraMap F A (Algebra.trace F B x) := by
   let b := Module.Free.chooseBasis F B
@@ -692,7 +692,7 @@ theorem IntermediateField.LinearDisjoint.trace_algebraMap_eq [FiniteDimensional 
 /--
 If `A` and `B` are linearly disjoint, then `norm` and `algebraMap` commutes.
 -/
-theorem IntermediateField.LinearDisjoint.norm_algebraMap_eq {F : Type*} {E : Type*} [Field F]
+theorem norm_algebraMap_eq {F : Type*} {E : Type*} [Field F]
     [Field E] [Algebra F E] {A B : IntermediateField F E} [FiniteDimensional F E]
     (h₁ : A.LinearDisjoint B) (h₂ : A ⊔ B = ⊤) (x : B) :
     Algebra.norm A (algebraMap B E x) = algebraMap F A (Algebra.norm F x) := by
