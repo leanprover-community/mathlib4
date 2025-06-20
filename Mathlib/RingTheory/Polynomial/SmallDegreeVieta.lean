@@ -154,12 +154,9 @@ theorem quadratic_eq_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
   quadratic_eq_of_vieta (vieta_of_discrim_eq_sq ha h)
 
 theorem roots_quadratic_of_discrim_ne_sq (h : ∀ s : R, discrim a b c ≠ s^2) :
-    (C a * X ^ 2 + C b * X + C c).roots = ∅ := by
-  rcases (eq_or_ne a 0) with _ | hanz
-  · exact Multiset.eq_zero_of_forall_notMem (fun r hc => not_isRoot_of_discrim_ne_sq h r
+    (C a * X ^ 2 + C b * X + C c).roots = ∅ :=
+  Multiset.eq_zero_of_forall_notMem (fun r hc => not_isRoot_of_discrim_ne_sq h r
       ((mem_roots (by aesop)).mp hc))
-  · exact Multiset.eq_zero_of_forall_notMem (fun r hc => not_isRoot_of_discrim_ne_sq h r
-      ((mem_roots (quadratic_ne_zero hanz)).mp hc))
 
 theorem roots_quadratic_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
     (h : discrim a b c = s * s) :
