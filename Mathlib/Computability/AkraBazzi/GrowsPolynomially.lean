@@ -224,7 +224,7 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
             exact_mod_cast hz.2
         rw [← z_to_half_z, half_z_to_base]
     obtain ⟨c, hc⟩ := hmain
-    cases le_or_lt 0 c with
+    cases le_or_gt 0 c with
     | inl hpos =>
       exact Or.inl <| by filter_upwards [hc] with _ hc; simpa only [hc]
     | inr hneg =>
@@ -275,7 +275,6 @@ protected lemma abs (hf : GrowsPolynomially f) : GrowsPolynomially (fun x => |f 
     have hmain : -f =ᶠ[atTop] fun x => |f x| := by
       filter_upwards [hf'] with x hx
       simp only [Pi.neg_apply, abs_of_nonpos hx]
-
     rw [← iff_eventuallyEq hmain]
     exact hf.neg
 
@@ -336,8 +335,8 @@ protected lemma GrowsPolynomially.mul {f g : ℝ → ℝ} (hf : GrowsPolynomiall
   have hg := hg.abs b hb
   obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hf⟩ := hf
   obtain ⟨c₃, hc₃_mem, c₄, hc₄_mem, hg⟩ := hg
-  refine ⟨c₁ * c₃, by show 0 < c₁ * c₃; positivity, ?_⟩
-  refine ⟨c₂ * c₄, by show 0 < c₂ * c₄; positivity, ?_⟩
+  refine ⟨c₁ * c₃, by change 0 < c₁ * c₃; positivity, ?_⟩
+  refine ⟨c₂ * c₄, by change 0 < c₂ * c₄; positivity, ?_⟩
   filter_upwards [hf, hg] with x hf hg
   intro u hu
   refine ⟨?lb, ?ub⟩
@@ -366,8 +365,8 @@ protected lemma GrowsPolynomially.add {f g : ℝ → ℝ} (hf : GrowsPolynomiall
   have hg := hg b hb
   obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hf⟩ := hf
   obtain ⟨c₃, hc₃_mem, c₄, _, hg⟩ := hg
-  refine ⟨min c₁ c₃, by show 0 < min c₁ c₃; positivity, ?_⟩
-  refine ⟨max c₂ c₄, by show 0 < max c₂ c₄; positivity, ?_⟩
+  refine ⟨min c₁ c₃, by change 0 < min c₁ c₃; positivity, ?_⟩
+  refine ⟨max c₂ c₄, by change 0 < max c₂ c₄; positivity, ?_⟩
   filter_upwards [hf, hg,
                   (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hf',
                   (tendsto_id.const_mul_atTop hb.1).eventually_forall_ge_atTop hg',
@@ -537,8 +536,8 @@ protected lemma GrowsPolynomially.inv {f : ℝ → ℝ} (hf : GrowsPolynomially 
     intro b hb
     have hb_pos := hb.1
     obtain ⟨c₁, hc₁_mem, c₂, hc₂_mem, hf⟩ := hf b hb
-    refine ⟨c₂⁻¹, by show 0 < c₂⁻¹; positivity, ?_⟩
-    refine ⟨c₁⁻¹, by show 0 < c₁⁻¹; positivity, ?_⟩
+    refine ⟨c₂⁻¹, by change 0 < c₂⁻¹; positivity, ?_⟩
+    refine ⟨c₁⁻¹, by change 0 < c₁⁻¹; positivity, ?_⟩
     filter_upwards [hf, hf', (tendsto_id.const_mul_atTop hb_pos).eventually_forall_ge_atTop hf']
       with x hx hx' hx''
     intro u hu
@@ -565,7 +564,7 @@ protected lemma GrowsPolynomially.rpow (p : ℝ) (hf : GrowsPolynomially f)
   obtain ⟨c₁, (hc₁_mem : 0 < c₁), c₂, hc₂_mem, hfnew⟩ := hf b hb
   have hc₁p : 0 < c₁ ^ p := Real.rpow_pos_of_pos hc₁_mem _
   have hc₂p : 0 < c₂ ^ p := Real.rpow_pos_of_pos hc₂_mem _
-  cases le_or_lt 0 p with
+  cases le_or_gt 0 p with
   | inl => -- 0 ≤ p
     refine ⟨c₁^p, hc₁p, ?_⟩
     refine ⟨c₂^p, hc₂p, ?_⟩

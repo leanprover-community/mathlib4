@@ -119,6 +119,43 @@ lemma foo' : True := trivial
 
 -- TODO: add terms for the term form
 
+/--
+warning: Unscoped option maxHeartbeats is not allowed:
+Please scope this to individual declarations, as in
+```
+set_option maxHeartbeats in
+-- comment explaining why this is necessary
+example : ... := ...
+```
+note: this linter can be disabled with `set_option linter.style.setOption false`
+-/
+#guard_msgs in
+set_option maxHeartbeats 20
+
+#guard_msgs in
+set_option maxHeartbeats 20 in
+section
+end
+
+/--
+warning: Unscoped option synthInstance.maxHeartbeats is not allowed:
+Please scope this to individual declarations, as in
+```
+set_option synthInstance.maxHeartbeats in
+-- comment explaining why this is necessary
+example : ... := ...
+```
+note: this linter can be disabled with `set_option linter.style.setOption false`
+-/
+#guard_msgs in
+set_option synthInstance.maxHeartbeats 20
+
+#guard_msgs in
+set_option synthInstance.maxHeartbeats 20 in
+section
+end
+
+
 end setOption
 
 section cdotLinter
@@ -162,8 +199,10 @@ warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
 note: this linter can be disabled with `set_option linter.style.cdot false`
 ---
 warning: This central dot `·` is isolated; please merge it with the next line.
+note: this linter can be disabled with `set_option linter.style.cdot false`
 ---
 warning: This central dot `·` is isolated; please merge it with the next line.
+note: this linter can be disabled with `set_option linter.style.cdot false`
 -/
 #guard_msgs in
 example : Nat := by
@@ -456,3 +495,49 @@ def aux : Nat := 1
 def aux' : Nat := 1
 
 end openClassical
+
+/- Tests for the `show` linter -/
+section showLinter
+
+set_option linter.style.show true
+
+-- The linter doesn't complain if the goal stays the same
+
+#guard_msgs in
+example : 1 + 2 = 3 := by
+  show 1 + 2 = 3
+  rfl
+
+-- Binder names are ignored
+
+#guard_msgs in
+example : ∀ a : Nat, a = a := by
+  show ∀ b : Nat, b = b
+  intro
+  rfl
+
+-- Goal changes are linted
+
+/--
+warning: The `show` tactic should only be used to indicate intermediate goal states for readability.
+However, this tactic invocation changed the goal. Please use `change` instead for these purposes.
+note: this linter can be disabled with `set_option linter.style.show false`
+-/
+#guard_msgs in
+example : (fun a => a) 1 = 1 := by
+  show 1 = 1
+  rfl
+
+-- Assigning meta-variables in the goal is also linted
+
+/--
+warning: The `show` tactic should only be used to indicate intermediate goal states for readability.
+However, this tactic invocation changed the goal. Please use `change` instead for these purposes.
+note: this linter can be disabled with `set_option linter.style.show false`
+-/
+#guard_msgs in
+example := by
+  show 1 = 1
+  rfl
+
+end showLinter

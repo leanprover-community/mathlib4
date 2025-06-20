@@ -25,7 +25,7 @@ exists because nerves of categories are 2-coskeletal.
 
 We also prove that `nerveFunctor` is fully faithful, demonstrating that `nerveAdjunction` is
 reflective. Since the category of simplicial sets is cocomplete, we conclude in
-`Mathlib.CategoryTheory.Category.Cat.Colimit` that the category of categories has colimits.
+`Mathlib/CategoryTheory/Category/Cat/Colimit.lean` that the category of categories has colimits.
 
 -/
 
@@ -43,11 +43,11 @@ def nerve₂Adj.counit.app (C : Type u) [SmallCategory C] :
     (nerveFunctor₂.obj (Cat.of C)).HomotopyCategory ⥤ C := by
   fapply Quotient.lift
   · exact
-      (whiskerRight (OneTruncation₂.ofNerve₂.natIso).hom _ ≫ ReflQuiv.adj.{u}.counit).app (Cat.of C)
+    (whiskerRight (OneTruncation₂.ofNerve₂.natIso).hom _ ≫ ReflQuiv.adj.{u}.counit).app (Cat.of C)
   · intro x y f g rel
     obtain ⟨φ⟩ := rel
     simpa [ReflQuiv.adj, Quot.liftOn, Cat.FreeRefl.quotientFunctor, Quotient.functor,
-        Quiv.adj, OneTruncation₂.nerveHomEquiv] using
+        pathComposition, Quiv.adj, OneTruncation₂.nerveHomEquiv] using
       φ.map_comp (X := 0) (Y := 1) (Z := 2) (homOfLE (by decide)) (homOfLE (by decide))
 
 @[simp]
@@ -170,10 +170,10 @@ lemma toNerve₂.mk_naturality_δ1i (i : Fin 3) : toNerve₂.mk.naturalityProper
     nerve_obj, oneTruncation₂_obj, ReflQuiv.of_val, Nat.reduceAdd, mk.app_two,
     Functor.comp_map, op_map, Quiver.Hom.unop_op]
   unfold δ₂ inclusion
-  simp only [fullSubcategoryInclusion.map]
+  simp only [ObjectProperty.ι_map]
   fin_cases i
   · simp only [Fin.zero_eta]
-    show _ = (nerve C).δ 0 _
+    change _ = (nerve C).δ 0 _
     rw [nerve.δ₀_mk₂_eq]
     fapply ReflPrefunctor.congr_mk₁_map
     · unfold ev1₂ ι1₂ δ₂
@@ -188,7 +188,7 @@ lemma toNerve₂.mk_naturality_δ1i (i : Fin 3) : toNerve₂.mk.naturalityProper
       exact congrFun (congrArg X.map (congrArg Quiver.Hom.op this.symm)) x
     · aesop
   · simp only [Fin.mk_one]
-    show _ = (nerve C).δ 1 _
+    change _ = (nerve C).δ 1 _
     rw [nerve.δ₁_mk₂_eq]
     rw [← hyp]
     fapply ReflPrefunctor.congr_mk₁_map
@@ -198,7 +198,7 @@ lemma toNerve₂.mk_naturality_δ1i (i : Fin 3) : toNerve₂.mk.naturalityProper
       simp [← FunctorToTypes.map_comp_apply, ← op_comp]
     · aesop
   · simp only [Fin.reduceFinMk]
-    show _ = (nerve C).δ 2 _
+    change _ = (nerve C).δ 2 _
     rw [nerve.δ₂_mk₂_eq]
     fapply ReflPrefunctor.congr_mk₁_map
     · unfold ev0₂ ι0₂ δ₂
@@ -363,7 +363,7 @@ nonrec def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ :=
       rw [← hoFunctor₂_naturality (nerve₂Adj.unit.app X)]
       dsimp
       rw [nerve₂Adj.unit.map_app_eq X, Functor.assoc, id_comp]
-      show _ ⋙ (HomotopyCategory.quotientFunctor _ ⋙ nerve₂Adj.counit.app (hoFunctor₂.obj X)) = _
+      change _ ⋙ (HomotopyCategory.quotientFunctor _ ⋙ nerve₂Adj.counit.app (hoFunctor₂.obj X)) = _
       rw [nerve₂Adj.counit.app_eq]
       dsimp
       rw [← Cat.comp_eq_comp, ← assoc, ← Cat.freeRefl.map_comp, ReflQuiv.comp_eq_comp,
@@ -389,7 +389,7 @@ nonrec def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ :=
         ← ReflQuiv.comp_eq_comp (X := ReflQuiv.of _) (Y := ReflQuiv.of _),
         assoc, assoc, ← Functor.comp_map, ← OneTruncation₂.ofNerve₂.natIso.inv.naturality]
       conv => lhs; rhs; rw [← assoc]
-      show _ ≫ (ReflQuiv.forget.map _ ≫ ReflQuiv.forget.map _) ≫ _ = _
+      change _ ≫ (ReflQuiv.forget.map _ ≫ ReflQuiv.forget.map _) ≫ _ = _
       rw [← ReflQuiv.forget.map_comp]
       dsimp
       conv => lhs; rhs; lhs; rw [Cat.comp_eq_comp]
@@ -453,7 +453,6 @@ instance nerveFunctor₂.full : nerveFunctor₂.{u, u}.Full where
         simp only [Nat.reduceAdd, id_eq, Int.reduceNeg, Int.cast_ofNat_Int, Int.reduceSub,
           Int.reduceAdd, Nat.cast_ofNat, Fin.zero_eta, Fin.isValue, Fin.mk_one,
           ComposableArrows.map', homOfLE_leOfHom, Fk, uF, Fh, uF']
-        dsimp
         simp [uF', nerveFunctor₂, SSet.truncation, forget₂, HasForget₂.forget₂,
           ReflQuiv.comp_eq_comp, OneTruncation₂.nerveHomEquiv, Fk, uF, ComposableArrows.hom, Fhk']
       rw [Fhk.map'_comp 0 1 2] at lem1

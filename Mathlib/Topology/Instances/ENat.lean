@@ -39,9 +39,6 @@ alias embedding_natCast := isEmbedding_natCast
 theorem isOpenEmbedding_natCast : IsOpenEmbedding ((↑) : ℕ → ℕ∞) :=
   ⟨isEmbedding_natCast, range_natCast ▸ isOpen_Iio⟩
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_natCast := isOpenEmbedding_natCast
-
 theorem nhds_natCast (n : ℕ) : 𝓝 (n : ℕ∞) = pure (n : ℕ∞) := by
   simp [← isOpenEmbedding_natCast.map_nhds_eq]
 
@@ -62,7 +59,7 @@ theorem mem_nhds_natCast_iff (n : ℕ) {s : Set ℕ∞} : s ∈ 𝓝 (n : ℕ∞
 theorem tendsto_nhds_top_iff_natCast_lt {α : Type*} {l : Filter α} {f : α → ℕ∞} :
     Tendsto f l (𝓝 ⊤) ↔ ∀ n : ℕ, ∀ᶠ a in l, n < f a := by
   simp_rw [nhds_top_order, lt_top_iff_ne_top, tendsto_iInf, tendsto_principal]
-  exact Option.ball_ne_none
+  exact Option.forall_ne_none
 
 instance : ContinuousAdd ℕ∞ := by
   refine ⟨continuous_iff_continuousAt.2 fun (a, b) ↦ ?_⟩

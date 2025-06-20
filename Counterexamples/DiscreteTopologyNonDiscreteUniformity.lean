@@ -201,7 +201,7 @@ lemma mem_fundamentalEntourage (n : ℕ) (P : ℕ × ℕ) : P ∈ fundamentalEnt
       | inr h_le => exact Or.inl ⟨P.1, ⟨h_le, congrArg _ h⟩⟩
 
 /-- The collection `fundamentalEntourage` satisfies the axioms to be a basis for a filter on
- `ℕ × ℕ` and gives rise to a term in the relevant type. -/
+`ℕ × ℕ` and gives rise to a term in the relevant type. -/
 def counterBasis : FilterBasis (ℕ × ℕ) where
   sets := range fundamentalEntourage
   nonempty := range_nonempty _
@@ -269,7 +269,7 @@ instance counterUniformity : UniformSpace ℕ := UniformSpace.ofCore counterCore
 
 lemma HasBasis_counterUniformity :
     (uniformity ℕ).HasBasis (fun _ ↦ True) fundamentalEntourage := by
-  show counterCoreUniformity.uniformity.HasBasis (fun _ ↦ True) fundamentalEntourage
+  change counterCoreUniformity.uniformity.HasBasis (fun _ ↦ True) fundamentalEntourage
   simp only [Filter.hasBasis_iff, exists_and_left, true_and]
   intro T
   refine ⟨fun ⟨s, ⟨⟨r, hr⟩, hs⟩⟩ ↦ ⟨r, subset_of_eq_of_subset hr hs⟩ , fun ⟨n, hn⟩ ↦ ?_⟩
@@ -292,7 +292,7 @@ theorem TopIsDiscrete' : DiscreteTopology ℕ := by
     rw [mem_fundamentalEntourage]
     aesop
   · refine ⟨fundamentalEntourage (n + 1), ?_, ?_⟩
-    · show fundamentalEntourage (n + 1) ∈ counterCoreUniformity.uniformity
+    · change fundamentalEntourage (n + 1) ∈ counterCoreUniformity.uniformity
       exact @Filter.HasBasis.mem_of_mem (ℕ × ℕ) ℕ counterCoreUniformity.uniformity (fun _ ↦ True)
         fundamentalEntourage (n + 1) HasBasis_counterUniformity trivial
     · simp only [preimage_subset_iff, mem_fundamentalEntourage, add_le_iff_nonpos_right,

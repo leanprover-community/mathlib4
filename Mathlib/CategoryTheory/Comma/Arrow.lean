@@ -173,9 +173,8 @@ abbrev isoMk' {W X Y Z : T} (f : W ⟶ X) (g : Y ⟶ Z) (e₁ : W ≅ Y) (e₂ :
 theorem hom.congr_left {f g : Arrow T} {φ₁ φ₂ : f ⟶ g} (h : φ₁ = φ₂) : φ₁.left = φ₂.left := by
   rw [h]
 
-@[simp]
 theorem hom.congr_right {f g : Arrow T} {φ₁ φ₂ : f ⟶ g} (h : φ₁ = φ₂) : φ₁.right = φ₂.right := by
-  rw [h]
+  simp [h]
 
 theorem iso_w {f g : Arrow T} (e : f ≅ g) : g.hom = e.inv.left ≫ f.hom ≫ e.hom.right := by
   have eq := Arrow.hom.congr_right e.inv_hom_id
@@ -241,7 +240,7 @@ instance mono_left [Mono sq] : Mono sq.left where
       { left := φ
         right := φ ≫ f.hom }
     have : ∀ g, (aux g).right = g ≫ f.hom := fun g => by dsimp
-    show (aux φ).left = (aux ψ).left
+    change (aux φ).left = (aux ψ).left
     congr 1
     rw [← cancel_mono sq]
     apply CommaMorphism.ext
@@ -255,7 +254,7 @@ instance epi_right [Epi sq] : Epi sq.right where
     let aux : (g.right ⟶ Z) → (g ⟶ Arrow.mk (𝟙 Z)) := fun φ =>
       { right := φ
         left := g.hom ≫ φ }
-    show (aux φ).right = (aux ψ).right
+    change (aux φ).right = (aux ψ).right
     congr 1
     rw [← cancel_epi sq]
     apply CommaMorphism.ext
@@ -386,8 +385,6 @@ def Arrow.equivSigma :
     Arrow T ≃ Σ (X Y : T), X ⟶ Y where
   toFun f := ⟨_, _, f.hom⟩
   invFun x := Arrow.mk x.2.2
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The equivalence `Arrow (Discrete S) ≃ S`. -/
 def Arrow.discreteEquiv (S : Type u) : Arrow (Discrete S) ≃ S where
@@ -397,7 +394,6 @@ def Arrow.discreteEquiv (S : Type u) : Arrow (Discrete S) ≃ S where
     rintro ⟨⟨_⟩, ⟨_⟩, f⟩
     obtain rfl := Discrete.eq_of_hom f
     rfl
-  right_inv _ := rfl
 
 /-- Extensionality lemma for functors `C ⥤ D` which uses as an assumption
 that the induced maps `Arrow C → Arrow D` coincide. -/

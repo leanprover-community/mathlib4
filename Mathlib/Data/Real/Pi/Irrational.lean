@@ -3,7 +3,7 @@ Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Data.Real.Irrational
 import Mathlib.Topology.Algebra.Order.Floor
 
@@ -274,7 +274,7 @@ private lemma not_irrational_exists_rep {x : ℝ} :
   exact ⟨q.num, q.den, q.pos, by exact_mod_cast (Rat.num_div_den _).symm⟩
 
 @[simp] theorem irrational_pi : Irrational π := by
-  apply Irrational.of_div_nat 2
+  apply Irrational.of_div_natCast 2
   rw [Nat.cast_two]
   by_contra h'
   obtain ⟨a, b, hb, h⟩ := not_irrational_exists_rep h'

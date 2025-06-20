@@ -116,7 +116,7 @@ theorem T_two : T R 2 = 2 * X ^ 2 - 1 := by
 theorem T_neg (n : ℤ) : T R (-n) = T R n := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => rfl
-  | one => show 2 * X * 1 - X = X; ring
+  | one => change 2 * X * 1 - X = X; ring
   | add_two n ih1 ih2 =>
     have h₁ := T_add_two R n
     have h₂ := T_sub_two R (-n)
@@ -326,7 +326,7 @@ theorem C_two : C R 2 = X ^ 2 - 2 := by
 theorem C_neg (n : ℤ) : C R (-n) = C R n := by
   induction n using Polynomial.Chebyshev.induct with
   | zero => rfl
-  | one => show X * 2 - X = X; ring
+  | one => change X * 2 - X = X; ring
   | add_two n ih1 ih2 =>
     have h₁ := C_add_two R n
     have h₂ := C_sub_two R (-n)
@@ -498,11 +498,11 @@ theorem S_comp_two_mul_X (n : ℤ) : (S R n).comp (2 * X) = U R n := by
 
 theorem S_sq_add_S_sq (n : ℤ) : S R n ^ 2 + S R (n + 1) ^ 2 - X * S R n * S R (n + 1) = 1 := by
   induction n with
-  | hz => simp; ring
-  | hp n ih =>
+  | zero => simp; ring
+  | succ n ih =>
     have h₁ := S_add_two R n
     linear_combination (norm := ring_nf) (S R (2 + n) - S R n) * h₁ + ih
-  | hn n ih =>
+  | pred n ih =>
     have h₁ := S_sub_one R (-n)
     linear_combination (norm := ring_nf) (S R (-1 - n) - S R (1 - n)) * h₁ + ih
 

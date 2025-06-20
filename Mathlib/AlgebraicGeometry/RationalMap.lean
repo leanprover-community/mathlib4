@@ -174,6 +174,7 @@ noncomputable
 def ofFromSpecStalk [IrreducibleSpace X] [LocallyOfFiniteType sY] {x : X} [X.IsGermInjectiveAt x]
     (φ : Spec (X.presheaf.stalk x) ⟶ Y) (h : φ ≫ sY = X.fromSpecStalk x ≫ sX) : X.PartialMap Y where
   hom := (spread_out_of_isGermInjective' sX sY φ h).choose_spec.choose_spec.choose
+  domain := (spread_out_of_isGermInjective' sX sY φ h).choose
   dense_domain := (spread_out_of_isGermInjective' sX sY φ h).choose.2.dense
     ⟨_, (spread_out_of_isGermInjective' sX sY φ h).choose_spec.choose⟩
 
@@ -508,7 +509,7 @@ def RationalMap.toPartialMap [IsReduced X] [Y.IsSeparated] (f : X ⤏ Y) : X.Par
   refine (cancel_epi (isPullback_opens_inf_le (le_sSup x.2) (le_sSup y.2)).isoPullback.hom).mp ?_
   simp only [openCoverDomain, IsPullback.isoPullback_hom_fst_assoc,
     IsPullback.isoPullback_hom_snd_assoc]
-  show _ ≫ _ ≫ (g x).hom = _ ≫ _ ≫ (g y).hom
+  change _ ≫ _ ≫ (g x).hom = _ ≫ _ ≫ (g y).hom
   simp_rw [← cancel_epi (X.isoOfEq congr($(hg₂ x) ⊓ $(hg₂ y))).hom, ← Category.assoc]
   convert (PartialMap.equiv_iff_of_isSeparated (S := ⊤_ _) (f := g x) (g := g y)).mp ?_ using 1
   · dsimp; congr 1; simp [g, ← cancel_mono (Opens.ι _)]

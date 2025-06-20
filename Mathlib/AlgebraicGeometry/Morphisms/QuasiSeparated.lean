@@ -86,7 +86,7 @@ theorem quasiCompact_affineProperty_iff_quasiSeparatedSpace {X Y : Scheme} [IsAf
     haveI : IsAffine _ := V.2
     let g : pullback U.1.ι V.1.ι ⟶ X := pullback.fst _ _ ≫ U.1.ι
     have : IsOpenImmersion g := inferInstance
-    have e := Homeomorph.ofIsEmbedding _ this.base_open.isEmbedding
+    have e := this.base_open.isEmbedding.toHomeomorph
     rw [IsOpenImmersion.range_pullback_to_base_of_left] at e
     erw [Subtype.range_coe, Subtype.range_coe] at e
     rw [isCompact_iff_compactSpace]
@@ -94,7 +94,7 @@ theorem quasiCompact_affineProperty_iff_quasiSeparatedSpace {X Y : Scheme} [IsAf
   · introv H h₁ h₂
     let g : pullback f₁ f₂ ⟶ X := pullback.fst _ _ ≫ f₁
     have : IsOpenImmersion g := inferInstance
-    have e := Homeomorph.ofIsEmbedding _ this.base_open.isEmbedding
+    have e := this.base_open.isEmbedding.toHomeomorph
     rw [IsOpenImmersion.range_pullback_to_base_of_left] at e
     simp_rw [isCompact_iff_compactSpace] at H
     exact
@@ -228,10 +228,10 @@ theorem exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux (X : Scheme
         (((f |_ U₁) ^ n₂ * y₁) |_ S.1)
         (((f |_ U₂) ^ n₁ * y₂) |_ S.1)).mp <| by
     apply exists_eq_pow_mul_of_is_compact_of_quasi_separated_space_aux_aux (e₁ := e₁) (e₂ := e₂)
-    · show X.basicOpen _ ≤ _
+    · change X.basicOpen _ ≤ _
       simp only [TopCat.Presheaf.restrictOpenCommRingCat_apply, Scheme.basicOpen_res]
       exact inf_le_inf h₁ le_rfl
-    · show X.basicOpen _ ≤ _
+    · change X.basicOpen _ ≤ _
       simp only [TopCat.Presheaf.restrictOpenCommRingCat_apply, Scheme.basicOpen_res]
       exact inf_le_inf h₂ le_rfl
   use n
@@ -305,7 +305,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
       · exact le_of_eq hs
       · intro i
         -- This unfolds `X.sheaf`
-        show (X.presheaf.map _) _ = (X.presheaf.map _) _
+        change (X.presheaf.map _) _ = (X.presheaf.map _) _
         simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp]
         apply hn
         exact Finset.le_sup (Finset.mem_univ _)
@@ -316,12 +316,12 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     refine (X.sheaf.objSupIsoProdEqLocus_inv_eq_iff _ _ _ (X.basicOpen_res _
       (homOfLE le_sup_left).op) (X.basicOpen_res _ (homOfLE le_sup_right).op)).mpr ⟨?_, ?_⟩
     · -- This unfolds `X.sheaf`
-      show (X.presheaf.map _) _ = (X.presheaf.map _) _
+      change (X.presheaf.map _) _ = (X.presheaf.map _) _
       rw [add_assoc, add_comm n₁]
       simp only [pow_add, map_pow, map_mul, hy₁, ← CommRingCat.comp_apply, ← mul_assoc,
         ← Functor.map_comp, ← op_comp, homOfLE_comp]
     · -- This unfolds `X.sheaf`
-      show (X.presheaf.map _) _ = (X.presheaf.map _) _
+      change (X.presheaf.map _) _ = (X.presheaf.map _) _
       simp only [pow_add, map_pow, map_mul, hy₂, ← CommRingCat.comp_apply, ← mul_assoc,
         ← Functor.map_comp, ← op_comp, homOfLE_comp]
 

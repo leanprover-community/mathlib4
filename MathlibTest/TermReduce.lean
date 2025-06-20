@@ -73,7 +73,7 @@ instance c : C :=
   {}
 
 set_option pp.all true in
-/-- info: @C.mk (@B.toA (@B.mk A.mk)) : C -/
+/-- info: @C.mk A.mk : C -/
 #guard_msgs in #check delta% c
 
 set_option pp.all true in

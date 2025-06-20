@@ -52,8 +52,8 @@ above version with a sum, as it is simpler and more relevant for algorithms.
 ## TODO
 
 * Specialize this theorem to the very common case where the recurrence is of the form
-`T(n) = ℓT(r_i(n)) + g(n)`
-where `g(n) ∈ Θ(n^t)` for some `t`. (This is often called the "master theorem" in the literature.)
+  `T(n) = ℓT(r_i(n)) + g(n)`
+  where `g(n) ∈ Θ(n^t)` for some `t`. (This is often called the "master theorem" in the literature.)
 * Add the original version of the theorem with an integral instead of a sum.
 
 ## References
@@ -268,7 +268,7 @@ lemma eventually_log_b_mul_pos : ∀ᶠ (n : ℕ) in atTop, ∀ i, 0 < log (b i 
 @[aesop safe apply] lemma T_pos (n : ℕ) : 0 < T n := by
   induction n using Nat.strongRecOn with
   | ind n h_ind =>
-    cases lt_or_le n R.n₀ with
+    cases lt_or_ge n R.n₀ with
     | inl hn => exact R.T_gt_zero' n hn -- n < R.n₀
     | inr hn => -- R.n₀ ≤ n
       rw [R.h_rec n hn]
@@ -361,7 +361,7 @@ lemma eventually_one_sub_smoothingFn_r_pos : ∀ᶠ (n : ℕ) in atTop, ∀ i, 0
 @[aesop safe apply]
 lemma differentiableAt_smoothingFn {x : ℝ} (hx : 1 < x) : DifferentiableAt ℝ ε x := by
   have : log x ≠ 0 := Real.log_ne_zero_of_pos_of_ne_one (by positivity) (ne_of_gt hx)
-  show DifferentiableAt ℝ (fun z => 1 / log z) x
+  change DifferentiableAt ℝ (fun z => 1 / log z) x
   simp_rw [one_div]
   exact DifferentiableAt.inv (differentiableAt_log (by positivity)) this
 
@@ -383,7 +383,7 @@ lemma differentiableOn_one_add_smoothingFn : DifferentiableOn ℝ (fun z => 1 + 
 
 lemma deriv_smoothingFn {x : ℝ} (hx : 1 < x) : deriv ε x = -x⁻¹ / (log x ^ 2) := by
   have : log x ≠ 0 := Real.log_ne_zero_of_pos_of_ne_one (by positivity) (ne_of_gt hx)
-  show deriv (fun z => 1 / log z) x = -x⁻¹ / (log x ^ 2)
+  change deriv (fun z => 1 / log z) x = -x⁻¹ / (log x ^ 2)
   rw [deriv_div] <;> aesop
 
 lemma isLittleO_deriv_smoothingFn : deriv ε =o[atTop] fun x => x⁻¹ := calc
@@ -436,7 +436,7 @@ lemma eventually_one_add_smoothingFn_pos : ∀ᶠ (n : ℕ) in atTop, 0 < 1 + ε
   refine Eventually.natCast_atTop (p := fun n => 0 < 1 + ε n) ?_
   filter_upwards [h₁ (by norm_num : (0 : ℝ) < 1/2), eventually_gt_atTop 1] with x _ hx'
   have : 0 < log x := Real.log_pos hx'
-  show 0 < 1 + 1 / log x
+  change 0 < 1 + 1 / log x
   positivity
 
 include R in
@@ -448,7 +448,7 @@ lemma eventually_one_add_smoothingFn_nonneg : ∀ᶠ (n : ℕ) in atTop, 0 ≤ 1
   filter_upwards [eventually_one_add_smoothingFn_pos] with n hn; exact le_of_lt hn
 
 lemma strictAntiOn_smoothingFn : StrictAntiOn ε (Set.Ioi 1) := by
-  show StrictAntiOn (fun x => 1 / log x) (Set.Ioi 1)
+  change StrictAntiOn (fun x => 1 / log x) (Set.Ioi 1)
   simp_rw [one_div]
   refine StrictAntiOn.comp_strictMonoOn inv_strictAntiOn ?log fun _ hx => log_pos hx
   refine StrictMonoOn.mono strictMonoOn_log (fun x hx => ?_)
@@ -500,7 +500,6 @@ lemma isTheta_smoothingFn_sub_self (i : α) :
                     exact Real.log_ne_zero_of_pos_of_ne_one
                             (R.b_pos i) (ne_of_lt <| R.b_lt_one i)
                   rw [← isTheta_const_mul_right this]
-
 
 /-!
 #### Akra-Bazzi exponent `p`
@@ -558,7 +557,7 @@ variable (a b) in
 noncomputable irreducible_def p : ℝ := Function.invFun (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) 1
 
 include R in
-@[simp]
+-- Cannot be @[simp] because `T`, `g`, `r`, and `R` can not be inferred by `simp`.
 lemma sumCoeffsExp_p_eq_one : ∑ i, a i * (b i) ^ p a b = 1 := by
   simp only [p]
   exact Function.invFun_eq (by rw [← Set.mem_range]; exact R.one_mem_range_sumCoeffsExp)
@@ -628,7 +627,7 @@ lemma eventually_atTop_sumTransform_le :
   intro i
   have hrpos_i := hrpos i
   have g_nonneg : 0 ≤ g n := R.g_nonneg n (by positivity)
-  cases le_or_lt 0 (p a b + 1) with
+  cases le_or_gt 0 (p a b + 1) with
   | inl hp => -- 0 ≤ p a b + 1
     calc sumTransform (p a b) g (r i n) n
            = n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1)) := by rfl
@@ -1062,7 +1061,7 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
     have := R.b_pos i
     simp only [q, mul_rpow (by positivity : (0 : ℝ) ≤ b i) (by positivity : (0 : ℝ) ≤ n)]
     ring
-  show q (r i n) ≤ (b i) ^ (p a b) * n ^ (p a b) * (1 - ε n)
+  change q (r i n) ≤ (b i) ^ (p a b) * n ^ (p a b) * (1 - ε n)
   rw [← h₁, ← sub_le_iff_le_add']
   exact hn
 
@@ -1142,7 +1141,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
                 refine sub_nonneg_of_le <|
                   (strictAntiOn_smoothingFn.le_iff_le ?n_gt_one ?bn_gt_one).mpr ?le
                 case n_gt_one =>
-                  show 1 < (n : ℝ)
+                  change 1 < (n : ℝ)
                   rw [Nat.one_lt_cast]
                   exact hn'
                 case bn_gt_one =>
@@ -1158,7 +1157,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
     have := R.b_pos i
     simp only [q, mul_rpow (by positivity : (0 : ℝ) ≤ b i) (by positivity : (0 : ℝ) ≤ n)]
     ring
-  show (b i) ^ (p a b) * n ^ (p a b) * (1 + ε n) ≤ q (r i n)
+  change (b i) ^ (p a b) * n ^ (p a b) * (1 + ε n) ≤ q (r i n)
   rw [← h₁, sub_le_iff_le_add', ← sub_le_iff_le_add]
   exact hn
 
@@ -1392,7 +1391,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
             -- Apply the induction hypothesis, or use the base case depending on how large `n` is
               gcongr (∑ i, a i * ?_) + g n with i _
               · exact le_of_lt <| R.a_pos _
-              · cases lt_or_le (r i n) n₀ with
+              · cases lt_or_ge (r i n) n₀ with
                 | inl ri_lt_n₀ => exact h_base _ <| Finset.mem_Ico.mpr ⟨b_mul_n₀_le_ri i, ri_lt_n₀⟩
                 | inr n₀_le_ri =>
                   exact h_ind (r i n) (R.r_lt_n _ _ (n₀_ge_Rn₀.trans hn)) n₀_le_ri

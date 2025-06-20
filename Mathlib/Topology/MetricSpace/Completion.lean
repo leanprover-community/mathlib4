@@ -130,7 +130,7 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
         simp only [Real.dist_eq, mem_setOf_eq, preimage_setOf_eq, Completion.dist_self,
           Completion.dist_comm, zero_sub, abs_neg, r] at I
       exact lt_of_le_of_lt (le_abs_self _) I
-    show t1 ⊆ s
+    change t1 ⊆ s
     rintro ⟨a, b⟩ hp
     have : dist a b < ε := A a b hp
     exact hε this
@@ -175,7 +175,7 @@ instance {M} [Zero M] [Zero α] [SMul M α] [PseudoMetricSpace M] [IsBoundedSMul
         ((continuous_fst.const_smul _).dist (continuous_snd.const_smul _))
         (continuous_const.mul (continuous_fst.dist continuous_snd))
     | ih x₁ x₂ =>
-      rw [← coe_smul, ← coe_smul, Completion.dist_eq,  Completion.dist_eq]
+      rw [← coe_smul, ← coe_smul, Completion.dist_eq, Completion.dist_eq]
       exact dist_smul_pair c x₁ x₂
   dist_pair_smul' c₁ c₂ x := by
     induction x using induction_on with

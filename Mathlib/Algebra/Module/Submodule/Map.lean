@@ -202,11 +202,11 @@ theorem comap_comp (f : M →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₃
 theorem comap_mono {f : F} {q q' : Submodule R₂ M₂} : q ≤ q' → comap f q ≤ comap f q' :=
   preimage_mono
 
-theorem le_comap_pow_of_le_comap (p : Submodule R M) {f : M →ₗ[R] M} (h : p ≤ p.comap f) (k : ℕ) :
-    p ≤ p.comap (f ^ k) := by
+theorem le_comap_pow_of_le_comap (p : Submodule R M) {f : M →ₗ[R] M}
+    (h : p ≤ p.comap f) (k : ℕ) : p ≤ p.comap (f ^ k) := by
   induction k with
-  | zero => simp [LinearMap.one_eq_id]
-  | succ k ih => simp [LinearMap.iterate_succ, comap_comp, h.trans (comap_mono ih)]
+  | zero => simp [Module.End.one_eq_id]
+  | succ k ih => simp [Module.End.iterate_succ, comap_comp, h.trans (comap_mono ih)]
 
 section
 
@@ -257,6 +257,21 @@ theorem map_comap_le [RingHomSurjective σ₁₂] (f : F) (q : Submodule R₂ M�
 
 theorem le_comap_map [RingHomSurjective σ₁₂] (f : F) (p : Submodule R M) : p ≤ comap f (map f p) :=
   (gc_map_comap f).le_u_l _
+
+section submoduleOf
+
+/-- For any `R` submodules `p` and `q`, `p ⊓ q` as a submodule of `q`. -/
+def submoduleOf (p q : Submodule R M) : Submodule R q :=
+  Submodule.comap q.subtype p
+
+/-- If `p ≤ q`, then `p` as a subgroup of `q` is isomorphic to `p`. -/
+def submoduleOfEquivOfLe {p q : Submodule R M} (h : p ≤ q) : p.submoduleOf q ≃ₗ[R] p where
+  toFun m := ⟨m.1, m.2⟩
+  invFun m := ⟨⟨m.1, h m.2⟩, m.2⟩
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+end submoduleOf
 
 section GaloisInsertion
 
@@ -312,7 +327,7 @@ theorem le_map_of_comap_le_of_surjective (h : q.comap f ≤ p) : q ≤ p.map f :
   map_comap_eq_of_surjective hf q ▸ map_mono h
 
 theorem lt_map_of_comap_lt_of_surjective (h : q.comap f < p) : q < p.map f := by
-  rw [lt_iff_le_not_le] at h ⊢; rw [map_le_iff_le_comap]
+  rw [lt_iff_le_not_ge] at h ⊢; rw [map_le_iff_le_comap]
   exact h.imp_left (le_map_of_comap_le_of_surjective hf)
 
 end GaloisInsertion
@@ -360,6 +375,25 @@ theorem map_le_map_iff_of_injective (p q : Submodule R M) : p.map f ≤ q.map f 
 
 theorem map_strictMono_of_injective : StrictMono (map f) :=
   (gciMapComap hf).strictMono_l
+
+lemma map_lt_map_iff_of_injective {p q : Submodule R M} :
+    p.map f < q.map f ↔ p < q := by
+  rw [lt_iff_le_and_ne, lt_iff_le_and_ne, map_le_map_iff_of_injective hf,
+    (map_injective_of_injective hf).ne_iff]
+
+lemma comap_lt_of_lt_map_of_injective {p : Submodule R M} {q : Submodule R₂ M₂}
+    (h : q < p.map f) : q.comap f < p := by
+  rw [← map_lt_map_iff_of_injective hf]
+  exact (map_comap_le _ _).trans_lt h
+
+lemma map_covBy_of_injective {p q : Submodule R M} (h : p ⋖ q) :
+    p.map f ⋖ q.map f := by
+  refine ⟨lt_of_le_of_ne (map_mono h.1.le) ((map_injective_of_injective hf).ne h.1.ne), ?_⟩
+  intro P h₁ h₂
+  refine h.2 ?_ (Submodule.comap_lt_of_lt_map_of_injective hf h₂)
+  rw [← Submodule.map_lt_map_iff_of_injective hf]
+  refine h₁.trans_le ?_
+  exact (Set.image_preimage_eq_of_subset (.trans h₂.le (Set.image_subset_range _ _))).superset
 
 end GaloisCoinsertion
 
@@ -598,6 +632,21 @@ namespace LinearMap
 
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₁] [Module R M] [Module R M₁]
 
+/-- The `LinearMap` from the preimage of a submodule to itself.
+
+This is the linear version of `AddMonoidHom.addSubmonoidComap`
+and `AddMonoidHom.addSubgroupComap`. -/
+@[simps!]
+def submoduleComap (f : M →ₗ[R] M₁) (q : Submodule R M₁) : q.comap f →ₗ[R] q :=
+  f.restrict fun _ ↦ Submodule.mem_comap.1
+
+theorem submoduleComap_surjective_of_surjective (f : M →ₗ[R] M₁) (q : Submodule R M₁)
+    (hf : Surjective f) : Surjective (f.submoduleComap q) := fun y ↦ by
+  obtain ⟨x, hx⟩ := hf y
+  use ⟨x, Submodule.mem_comap.mpr (hx ▸ y.2)⟩
+  apply Subtype.val_injective
+  simp [hx]
+
 /-- A linear map between two modules restricts to a linear map from any submodule p of the
 domain onto the image of that submodule.
 
@@ -641,9 +690,7 @@ variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
 variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
 variable (e : M ≃ₛₗ[σ₁₂] M₂)
 
-theorem map_eq_comap {p : Submodule R M} :
-    (p.map (e : M →ₛₗ[σ₁₂] M₂) : Submodule R₂ M₂) = p.comap (e.symm : M₂ →ₛₗ[σ₂₁] M) :=
-  SetLike.coe_injective <| by simp [e.image_eq_preimage]
+@[deprecated (since := "2025-06-18")] alias map_eq_comap := Submodule.map_equiv_eq_comap_symm
 
 /-- A linear equivalence of two modules restricts to a linear equivalence from any submodule
 `p` of the domain onto the image of that submodule.

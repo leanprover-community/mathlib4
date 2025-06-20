@@ -10,7 +10,7 @@ import Mathlib.SetTheory.Cardinal.Finite
 # Lagrange's theorem: the order of a subgroup divides the order of the group.
 
 * `Subgroup.card_subgroup_dvd_card`: Lagrange's theorem (for multiplicative groups);
-there is an analogous version for additive groups
+  there is an analogous version for additive groups
 
 -/
 
@@ -38,7 +38,7 @@ lemma card_mul_eq_card_subgroup_mul_card_quotient (s : Subgroup α) (t : Set α)
 
 /-- **Lagrange's Theorem**: The order of a subgroup divides the order of its ambient group. -/
 @[to_additive "**Lagrange's Theorem**: The order of an additive subgroup divides the order of its
- ambient additive group."]
+ambient additive group."]
 theorem card_subgroup_dvd_card (s : Subgroup α) : Nat.card s ∣ Nat.card α := by
   classical simp [card_eq_card_quotient_mul_card_subgroup s, @dvd_mul_left ℕ]
 

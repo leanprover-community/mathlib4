@@ -5,8 +5,6 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Algebra.Group.Int.Defs
 import Mathlib.Algebra.Group.Nat.Even
-import Mathlib.Algebra.Group.Nat.Units
-import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Data.Int.Sqrt
 
 /-!

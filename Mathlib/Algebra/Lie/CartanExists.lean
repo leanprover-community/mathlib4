@@ -214,7 +214,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     -- If `z ≠ 0`, then `⁅α • u + x, z⁆` vanishes per axiom of Lie algebras
     refine ⟨⟨z, hUle z.2⟩, ?_, ?_⟩
     · simpa only [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero, Subtype.ext_iff] using hz₀
-    · show ⁅z, _⁆ = (0 : E)
+    · change ⁅z, _⁆ = (0 : E)
       ext
       exact lie_self z.1
   -- We are left with the case `i ≠ 0`, and want to show `coeff χ i = 0`.
@@ -305,7 +305,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   -- Fix an element `z` in the Engel subalgebra of `y`.
   intro z hz
   -- We need to show that `z` is in `E`, or alternatively that `z = 0` in `Q`.
-  show z ∈ E
+  change z ∈ E
   rw [← LieSubmodule.Quotient.mk_eq_zero]
   -- We denote the image of `z` in `Q` by `z'`.
   set z' : Q := LieSubmodule.Quotient.mk' E z
@@ -319,15 +319,15 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     rw [← hn]
     clear hn
     induction n with
-    | zero => simp only [z', pow_zero, LinearMap.one_apply]
-    | succ n ih => rw [pow_succ', pow_succ', LinearMap.mul_apply, ih]; rfl
+    | zero => simp only [z', pow_zero, Module.End.one_apply]
+    | succ n ih => rw [pow_succ', pow_succ', Module.End.mul_apply, ih]; rfl
   classical
   -- Now let `n` be the smallest power such that `⁅v, _⁆ ^ n` kills `z'`.
   set n := Nat.find hz' with _hn
   have hn : (toEnd K U Q v ^ n) z' = 0 := Nat.find_spec hz'
   -- If `n = 0`, then we are done.
   obtain hn₀|⟨k, hk⟩ : n = 0 ∨ ∃ k, n = k + 1 := by cases n <;> simp
-  · simpa only [hn₀, pow_zero, LinearMap.one_apply] using hn
+  · simpa only [hn₀, pow_zero, Module.End.one_apply] using hn
   -- If `n = k + 1`, then we can write `⁅v, _⁆ ^ n = ⁅v, _⁆ ∘ ⁅v, _⁆ ^ k`.
   -- Recall that `constantCoeff ψ` is non-zero on `α`, and `v = α • u + x`.
   specialize hsψ α hα
@@ -341,7 +341,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   refine ⟨?_, ?_⟩
   · -- And `⁅v, _⁆ ^ k` applied to `z'` is non-zero by definition of `n`.
     apply Nat.find_min hz'; omega
-  · rw [← hn, hk, pow_succ', LinearMap.mul_apply]
+  · rw [← hn, hk, pow_succ', Module.End.mul_apply]
 
 variable (K L)
 

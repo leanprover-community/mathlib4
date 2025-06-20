@@ -5,7 +5,6 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Analysis.NormedSpace.Multilinear.Basic
 import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
 
 /-!
@@ -282,6 +281,16 @@ structure IsBoundedBilinearMap (f : E × F → G) : Prop where
 
 variable {f : E × F → G}
 
+lemma IsBoundedBilinearMap.symm (h : IsBoundedBilinearMap 𝕜 f) :
+    IsBoundedBilinearMap 𝕜 (fun p ↦ f (p.2, p.1)) where
+  add_left x₁ x₂ y := h.add_right _ _ _
+  smul_left c x y := h.smul_right _ _ _
+  add_right x y₁ y₂ := h.add_left _ _ _
+  smul_right c x y := h.smul_left _ _ _
+  bound := by
+    obtain ⟨C, hC_pos, hC⟩ := h.bound
+    exact ⟨C, hC_pos, fun x y ↦ (hC y x).trans_eq (by ring)⟩
+
 theorem ContinuousLinearMap.isBoundedBilinearMap (f : E →L[𝕜] F →L[𝕜] G) :
     IsBoundedBilinearMap 𝕜 fun x : E × F => f x.1 x.2 :=
   { add_left := f.map_add₂
@@ -437,25 +446,38 @@ theorem IsBoundedBilinearMap.isBoundedLinearMap_deriv (h : IsBoundedBilinearMap 
 
 end BilinearMap
 
+variable {X : Type*} [TopologicalSpace X]
+
 @[continuity, fun_prop]
-theorem Continuous.clm_comp {X} [TopologicalSpace X] {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F}
+theorem Continuous.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F}
     (hg : Continuous g) (hf : Continuous f) : Continuous fun x => (g x).comp (f x) :=
   (compL 𝕜 E F G).continuous₂.comp₂ hg hf
 
-theorem ContinuousOn.clm_comp {X} [TopologicalSpace X] {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F}
+theorem ContinuousOn.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F}
     {s : Set X} (hg : ContinuousOn g s) (hf : ContinuousOn f s) :
     ContinuousOn (fun x => (g x).comp (f x)) s :=
   (compL 𝕜 E F G).continuous₂.comp_continuousOn (hg.prodMk hf)
 
 @[continuity, fun_prop]
-theorem Continuous.clm_apply {X} [TopologicalSpace X] {f : X → (E →L[𝕜] F)} {g : X → E}
-    (hf : Continuous f) (hg : Continuous g) : Continuous (fun x ↦ (f x) (g x)) :=
+theorem Continuous.clm_apply {f : X → E →L[𝕜] F} {g : X → E}
+    (hf : Continuous f) (hg : Continuous g) : Continuous (fun x ↦ f x (g x)) :=
   isBoundedBilinearMap_apply.continuous.comp₂ hf hg
 
-theorem ContinuousOn.clm_apply {X} [TopologicalSpace X] {f : X → (E →L[𝕜] F)} {g : X → E}
+theorem ContinuousOn.clm_apply {f : X → E →L[𝕜] F} {g : X → E}
     {s : Set X} (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun x ↦ f x (g x)) s :=
   isBoundedBilinearMap_apply.continuous.comp_continuousOn (hf.prodMk hg)
+
+@[continuity, fun_prop]
+theorem ContinuousAt.clm_apply {X} [TopologicalSpace X] {f : X → E →L[𝕜] F} {g : X → E} {x : X}
+    (hf : ContinuousAt f x) (hg : ContinuousAt g x) : ContinuousAt (fun x ↦ f x (g x)) x :=
+  isBoundedBilinearMap_apply.continuous.continuousAt.comp₂ hf hg
+
+@[continuity, fun_prop]
+theorem ContinuousWithinAt.clm_apply {X} [TopologicalSpace X] {f : X → E →L[𝕜] F} {g : X → E}
+    {s : Set X} {x : X} (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
+    ContinuousWithinAt (fun x ↦ f x (g x)) s x :=
+  isBoundedBilinearMap_apply.continuous.continuousAt.comp_continuousWithinAt (hf.prodMk hg)
 
 end
 

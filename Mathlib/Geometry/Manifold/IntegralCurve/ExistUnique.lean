@@ -31,7 +31,7 @@ We state simpler versions of the theorem for boundaryless manifolds as corollari
 ## TODO
 
 * The case where the integral curve may venture to the boundary of the manifold. See Theorem 9.34,
-Lee. May require submanifolds.
+  Lee. May require submanifolds.
 
 ## Reference
 
@@ -93,7 +93,7 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt [CompleteSpace E]
   refine ⟨(continuousAt_extChartAt_symm'' hf3').comp h.continuousAt,
     HasDerivWithinAt.hasFDerivWithinAt ?_⟩
   simp only [mfld_simps, hasDerivWithinAt_univ]
-  show HasDerivAt ((extChartAt I xₜ ∘ (extChartAt I x₀).symm) ∘ f) (v xₜ) t
+  change HasDerivAt ((extChartAt I xₜ ∘ (extChartAt I x₀).symm) ∘ f) (v xₜ) t
   -- express `v (γ t)` as `D⁻¹ D (v (γ t))`, where `D` is a change of coordinates, so we can use
   -- `HasFDerivAt.comp_hasDerivAt` on `h`
   rw [← tangentCoordChange_self (I := I) (x := xₜ) (z := xₜ) (v := v xₜ) hft2,

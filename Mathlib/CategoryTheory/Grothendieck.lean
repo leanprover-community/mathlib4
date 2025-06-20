@@ -114,14 +114,14 @@ instance : Category (Grothendieck F) where
   id X := Grothendieck.id X
   comp f g := Grothendieck.comp f g
   comp_id {X Y} f := by
-    dsimp; ext
+    ext
     · simp [comp, id]
     · dsimp [comp, id]
       rw [← NatIso.naturality_2 (eqToIso (F.map_id Y.base)) f.fiber]
       simp
-  id_comp f := by dsimp; ext <;> simp [comp, id]
+  id_comp f := by ext <;> simp [comp, id]
   assoc f g h := by
-    dsimp; ext
+    ext
     · simp [comp, id]
     · dsimp [comp, id]
       rw [← NatIso.naturality_2 (eqToIso (F.map_comp _ _)) f.fiber]
@@ -129,7 +129,7 @@ instance : Category (Grothendieck F) where
 
 @[simp]
 theorem id_base (X : Grothendieck F) :
-    Hom.base (𝟙 X) = 𝟙 X.base := by
+    Hom.base (𝟙 X) = 𝟙 X.base :=
   rfl
 
 @[simp]
@@ -151,7 +151,6 @@ theorem comp_fiber {X Y Z : Grothendieck F} (f : X ⟶ Y) (g : Y ⟶ Z) :
 theorem congr {X Y : Grothendieck F} {f g : X ⟶ Y} (h : f = g) :
     f.fiber = eqToHom (by subst h; rfl) ≫ g.fiber := by
   subst h
-  dsimp
   simp
 
 @[simp]
@@ -354,7 +353,7 @@ end
 
 /-- The Grothendieck construction as a functor from the functor category `E ⥤ Cat` to the
 over category `Over E`. -/
-def functor {E : Cat.{v,u}} : (E ⥤ Cat.{v,u}) ⥤ Over (T := Cat.{v,u}) E where
+def functor {E : Cat.{v, u}} : (E ⥤ Cat.{v,u}) ⥤ Over (T := Cat.{v,u}) E where
   obj F := Over.mk (X := E) (Y := Cat.of (Grothendieck F)) (Grothendieck.forget F)
   map {_ _} α := Over.homMk (X:= E) (Grothendieck.map α) Grothendieck.functor_comp_forget
   map_id F := by
@@ -408,7 +407,6 @@ def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements where
         rfl)
   functor_unitIso_comp := by
     rintro ⟨_, ⟨⟩⟩
-    dsimp
     simp
     rfl
 

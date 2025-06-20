@@ -48,7 +48,7 @@ theorem fold_cons (h : a ∉ s) : (cons a s h).fold op b f = f a * s.fold op b f
 theorem fold_insert [DecidableEq α] (h : a ∉ s) :
     (insert a s).fold op b f = f a * s.fold op b f := by
   unfold fold
-  rw [insert_val, ndinsert_of_not_mem h, Multiset.map_cons, fold_cons_left]
+  rw [insert_val, ndinsert_of_notMem h, Multiset.map_cons, fold_cons_left]
 
 @[simp]
 theorem fold_singleton : ({a} : Finset α).fold op b f = f a * b :=
@@ -60,7 +60,7 @@ theorem fold_map {g : γ ↪ α} {s : Finset γ} : (s.map g).fold op b f = s.fol
 
 @[simp]
 theorem fold_image [DecidableEq α] {g : γ → α} {s : Finset γ}
-    (H : ∀ x ∈ s, ∀ y ∈ s, g x = g y → x = y) : (s.image g).fold op b f = s.fold op b (f ∘ g) := by
+    (H : Set.InjOn g s) : (s.image g).fold op b f = s.fold op b (f ∘ g) := by
   simp only [fold, image_val_of_injOn H, Multiset.map_map]
 
 @[congr]
@@ -189,37 +189,37 @@ theorem le_fold_min : c ≤ s.fold min b f ↔ c ≤ b ∧ ∀ x ∈ s, c ≤ f 
   fold_op_rel_iff_and le_min_iff
 
 theorem fold_min_le : s.fold min b f ≤ c ↔ b ≤ c ∨ ∃ x ∈ s, f x ≤ c := by
-  show _ ≥ _ ↔ _
+  change _ ≥ _ ↔ _
   apply fold_op_rel_iff_or
   intro x y z
-  show _ ≤ _ ↔ _
+  change _ ≤ _ ↔ _
   exact min_le_iff
 
 theorem lt_fold_min : c < s.fold min b f ↔ c < b ∧ ∀ x ∈ s, c < f x :=
   fold_op_rel_iff_and lt_min_iff
 
 theorem fold_min_lt : s.fold min b f < c ↔ b < c ∨ ∃ x ∈ s, f x < c := by
-  show _ > _ ↔ _
+  change _ > _ ↔ _
   apply fold_op_rel_iff_or
   intro x y z
-  show _ < _ ↔ _
+  change _ < _ ↔ _
   exact min_lt_iff
 
 theorem fold_max_le : s.fold max b f ≤ c ↔ b ≤ c ∧ ∀ x ∈ s, f x ≤ c := by
-  show _ ≥ _ ↔ _
+  change _ ≥ _ ↔ _
   apply fold_op_rel_iff_and
   intro x y z
-  show _ ≤ _ ↔ _
+  change _ ≤ _ ↔ _
   exact max_le_iff
 
 theorem le_fold_max : c ≤ s.fold max b f ↔ c ≤ b ∨ ∃ x ∈ s, c ≤ f x :=
   fold_op_rel_iff_or le_max_iff
 
 theorem fold_max_lt : s.fold max b f < c ↔ b < c ∧ ∀ x ∈ s, f x < c := by
-  show _ > _ ↔ _
+  change _ > _ ↔ _
   apply fold_op_rel_iff_and
   intro x y z
-  show _ < _ ↔ _
+  change _ < _ ↔ _
   exact max_lt_iff
 
 theorem lt_fold_max : c < s.fold max b f ↔ c < b ∨ ∃ x ∈ s, c < f x :=

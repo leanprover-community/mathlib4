@@ -78,7 +78,7 @@ theorem naturality_tensorHom {p f₁ g₁ f₂ g₂ pf₁ pf₁f₂ : C} {η : f
     (η_f₁ : p ⊗ f₁ ≅ pf₁) (η_g₁ : p ⊗ g₁ ≅ pf₁) (η_f₂ : pf₁ ⊗ f₂ ≅ pf₁f₂) (η_g₂ : pf₁ ⊗ g₂ ≅ pf₁f₂)
     (ih_η : p ◁ η ≪≫ η_g₁ = η_f₁)
     (ih_θ : pf₁ ◁ θ ≪≫ η_g₂ = η_f₂) :
-    p ◁ (η ⊗ θ) ≪≫ normalizeIsoComp η_g₁ η_g₂ = normalizeIsoComp η_f₁ η_f₂ := by
+    p ◁ (η ⊗ᵢ θ) ≪≫ normalizeIsoComp η_g₁ η_g₂ = normalizeIsoComp η_f₁ η_f₂ := by
   rw [tensorIso_def]
   apply naturality_comp
   · apply naturality_whiskerRight _ _ _ ih_η
@@ -249,12 +249,12 @@ instance : MkEqOfNaturality MonoidalM where
     have θ : Q($f ⟶ $g) := θ
     have η'_e : Q($f ≅ $g) := η'.e
     have θ'_e : Q($f ≅ $g) := θ'.e
-    have η_f : Q(tensorUnit ⊗ $f ≅ $f') := η_f.e
-    have η_g : Q(tensorUnit ⊗ $g ≅ $f') := η_g.e
+    have η_f : Q(𝟙_ _ ⊗ $f ≅ $f') := η_f.e
+    have η_g : Q(𝟙_ _ ⊗ $g ≅ $f') := η_g.e
     have η_hom : Q(Iso.hom $η'_e = $η) := ηIso.eq
     have Θ_hom : Q(Iso.hom $θ'_e = $θ) := θIso.eq
-    have Hη : Q(whiskerLeftIso tensorUnit $η'_e ≪≫ $η_g = $η_f) := Hη
-    have Hθ : Q(whiskerLeftIso tensorUnit $θ'_e ≪≫ $η_g = $η_f) := Hθ
+    have Hη : Q(whiskerLeftIso (𝟙_ _) $η'_e ≪≫ $η_g = $η_f) := Hη
+    have Hθ : Q(whiskerLeftIso (𝟙_ _) $θ'_e ≪≫ $η_g = $η_f) := Hθ
     return q(mk_eq_of_naturality $η_f $η_g $η_hom $Θ_hom $Hη $Hθ)
 
 open Elab.Tactic

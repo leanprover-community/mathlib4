@@ -396,7 +396,7 @@ end NonUnital
 /-! ### Instances of isometric continuous functional calculi
 
 The instances for `ℝ` and `ℂ` can be found in
-`Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic`, as those require an actual
+`Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Basic.lean`, as those require an actual
 `CStarAlgebra` instance on `A`, whereas the one for `ℝ≥0` is simply inherited from an existing
 instance for `ℝ`.
 -/
@@ -614,7 +614,7 @@ instance toNonUnital : NonUnitalIsometricContinuousFunctionalCalculus 𝕜 A p w
       NonUnitalStarAlgHom.coe_coe]
     refine AddMonoidHomClass.isometry_of_norm _ fun f ↦ ?_
     let ι : C(σ 𝕜 a, σₙ 𝕜 a) := ⟨_, continuous_inclusion <| spectrum_subset_quasispectrum 𝕜 a⟩
-    show ‖(f : C(σₙ 𝕜 a, 𝕜)).comp ι‖ = ‖(f : C(σₙ 𝕜 a, 𝕜))‖
+    change ‖(f : C(σₙ 𝕜 a, 𝕜)).comp ι‖ = ‖(f : C(σₙ 𝕜 a, 𝕜))‖
     apply le_antisymm (ContinuousMap.norm_le _ (by positivity) |>.mpr ?_)
       (ContinuousMap.norm_le _ (by positivity) |>.mpr ?_)
     · rintro ⟨x, hx⟩
@@ -622,7 +622,7 @@ instance toNonUnital : NonUnitalIsometricContinuousFunctionalCalculus 𝕜 A p w
     · rintro ⟨x, hx⟩
       obtain (rfl | hx') : x = 0 ∨ x ∈ σ 𝕜 a := by
         simpa [quasispectrum_eq_spectrum_union_zero] using hx
-      · show ‖f 0‖ ≤ _
+      · change ‖f 0‖ ≤ _
         simp
       · exact (f : C(σₙ 𝕜 a, 𝕜)).comp ι |>.norm_coe_le_norm ⟨x, hx'⟩
 

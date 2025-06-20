@@ -55,9 +55,6 @@ theorem prod_flatten {l : List (List M)} : l.flatten.prod = (l.map List.prod).pr
   | nil => simp
   | cons head tail ih => simp only [*, List.flatten, map, prod_append, prod_cons]
 
-@[deprecated (since := "2024-10-15")] alias prod_join := prod_flatten
-@[deprecated (since := "2024-10-15")] alias sum_join := sum_flatten
-
 open scoped Relator in
 @[to_additive]
 theorem rel_prod {R : M → N → Prop} (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * ·) (· * ·)) :
@@ -134,7 +131,7 @@ theorem prod_set :
   | x :: xs, 0, a => by simp [set]
   | x :: xs, i + 1, a => by
     simp [set, prod_set xs i a, mul_assoc, Nat.add_lt_add_iff_right]
-  | [], _, _ => by simp [set, (Nat.zero_le _).not_lt, Nat.zero_le]
+  | [], _, _ => by simp [set, (Nat.zero_le _).not_gt, Nat.zero_le]
 
 /-- We'd like to state this as `L.headI * L.tail.prod = L.prod`, but because `L.headI` relies on an
 inhabited instance to return a garbage value on the empty list, this is not possible.
@@ -360,8 +357,8 @@ theorem prod_set' (L : List G) (n : ℕ) (a : G) :
   split_ifs with hn
   · rw [mul_comm _ a, mul_assoc a, prod_drop_succ L n hn, mul_comm _ (drop n L).prod, ←
       mul_assoc (take n L).prod, prod_take_mul_prod_drop, mul_comm a, mul_assoc]
-  · simp only [take_of_length_le (le_of_not_lt hn), prod_nil, mul_one,
-      drop_eq_nil_of_le ((le_of_not_lt hn).trans n.le_succ)]
+  · simp only [take_of_length_le (le_of_not_gt hn), prod_nil, mul_one,
+      drop_eq_nil_of_le ((le_of_not_gt hn).trans n.le_succ)]
 
 @[to_additive]
 lemma prod_map_ite_eq {A : Type*} [DecidableEq A] (l : List A) (f g : A → G) (a : A) :
@@ -484,21 +481,13 @@ end MonoidHom
 
 namespace List
 
-@[deprecated (since := "2024-10-16")] alias length_bind := length_flatMap
-
-@[deprecated (since := "2024-10-16")] alias countP_bind := countP_flatMap
-
-@[deprecated (since := "2024-10-16")] alias count_bind := count_flatMap
-
 /-- In a flatten, taking the first elements up to an index which is the sum of the lengths of the
 first `i` sublists, is the same as taking the flatten of the first `i` sublists. -/
 lemma take_sum_flatten (L : List (List α)) (i : ℕ) :
     L.flatten.take ((L.map length).take i).sum = (L.take i).flatten := by
   induction L generalizing i
   · simp
-  · cases i <;> simp [take_append, *]
-
-@[deprecated (since := "2024-10-15")] alias take_sum_join := take_sum_flatten
+  · cases i <;> simp [take_length_add_append, *]
 
 /-- In a flatten, dropping all the elements up to an index which is the sum of the lengths of the
 first `i` sublists, is the same as taking the join after dropping the first `i` sublists. -/
@@ -506,9 +495,10 @@ lemma drop_sum_flatten (L : List (List α)) (i : ℕ) :
     L.flatten.drop ((L.map length).take i).sum = (L.drop i).flatten := by
   induction L generalizing i
   · simp
-  · cases i <;> simp [take_append, *]
+  · cases i <;> simp [take_length_add_append, *]
 
-@[deprecated (since := "2024-10-15")] alias drop_sum_join := drop_sum_flatten
+@[deprecated (since := "2024-10-25")] alias take_sum_join' := take_sum_flatten
+@[deprecated (since := "2024-10-25")] alias drop_sum_join' := drop_sum_flatten
 
 end List
 

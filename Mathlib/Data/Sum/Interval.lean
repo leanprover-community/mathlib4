@@ -46,8 +46,8 @@ theorem mem_sumLift₂ :
     · rw [sumLift₂, mem_map]
       rintro ⟨c, hc, rfl⟩
       exact Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩
-    · refine fun h ↦ (not_mem_empty _ h).elim
-    · refine fun h ↦ (not_mem_empty _ h).elim
+    · refine fun h ↦ (notMem_empty _ h).elim
+    · refine fun h ↦ (notMem_empty _ h).elim
     · rw [sumLift₂, mem_map]
       rintro ⟨c, hc, rfl⟩
       exact Or.inr ⟨a, b, c, rfl, rfl, rfl, hc⟩
@@ -142,7 +142,7 @@ lemma mem_sumLexLift :
         exact Or.inr (Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩)
       · rintro ⟨c, hc, rfl⟩
         exact Or.inr (Or.inr <| Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩)
-    · exact fun h ↦ (not_mem_empty _ h).elim
+    · exact fun h ↦ (notMem_empty _ h).elim
     · rw [sumLexLift, mem_map]
       rintro ⟨c, hc, rfl⟩
       exact Or.inr (Or.inr <| Or.inr <| ⟨a, b, c, rfl, rfl, rfl, hc⟩)
@@ -196,7 +196,7 @@ lemma sumLexLift_nonempty :
 end SumLexLift
 end Finset
 
-open Finset Function
+open Finset
 
 namespace Sum
 
@@ -246,7 +246,7 @@ theorem Ioc_inl_inr : Ioc (inl a₁) (inr b₂) = ∅ :=
   rfl
 
 @[simp]
-theorem Ioo_inl_inr : Ioo (inl a₁) (inr b₂) = ∅ := by
+theorem Ioo_inl_inr : Ioo (inl a₁) (inr b₂) = ∅ :=
   rfl
 
 @[simp]
@@ -262,7 +262,7 @@ theorem Ioc_inr_inl : Ioc (inr b₁) (inl a₂) = ∅ :=
   rfl
 
 @[simp]
-theorem Ioo_inr_inl : Ioo (inr b₁) (inl a₂) = ∅ := by
+theorem Ioo_inr_inl : Ioo (inr b₁) (inl a₂) = ∅ :=
   rfl
 
 theorem Icc_inr_inr : Icc (inr b₁ : α ⊕ β) (inr b₂) = (Icc b₁ b₂).map Embedding.inr :=

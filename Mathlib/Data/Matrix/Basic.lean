@@ -485,7 +485,7 @@ theorem mapMatrix_trans (f : α ≃ₗ[R] β) (g : β ≃ₗ[R] γ) :
     (f.mapMatrix : _ ≃ₗ[R] Matrix m n β).toLinearMap = f.toLinearMap.mapMatrix := by
   rfl
 
-@[simp] lemma entryLinearMap_comp_mapMatrix (f : α ≃ₗ[R] β) (i : m) (j : n) :
+lemma entryLinearMap_comp_mapMatrix (f : α ≃ₗ[R] β) (i : m) (j : n) :
     entryLinearMap R _ i j ∘ₗ f.mapMatrix.toLinearMap =
       f.toLinearMap ∘ₗ entryLinearMap R _ i j := by
   simp only [mapMatrix_toLinearMap, LinearMap.entryLinearMap_comp_mapMatrix]
@@ -612,6 +612,14 @@ theorem mapMatrix_symm (f : α ≃ₐ[R] β) :
 theorem mapMatrix_trans (f : α ≃ₐ[R] β) (g : β ≃ₐ[R] γ) :
     f.mapMatrix.trans g.mapMatrix = ((f.trans g).mapMatrix : Matrix m m α ≃ₐ[R] _) :=
   rfl
+
+/-- For any algebra `α` over a ring `R`, we have an `R`-algebra isomorphism
+`Matₙₓₙ(αᵒᵖ) ≅ (Matₙₓₙ(R))ᵒᵖ` given by transpose. If `α` is commutative,
+we can get rid of the `ᵒᵖ` in the left-hand side, see `Matrix.transposeAlgEquiv`. -/
+@[simps!] def mopMatrix : Matrix m m αᵐᵒᵖ ≃ₐ[R] (Matrix m m α)ᵐᵒᵖ where
+  __ := RingEquiv.mopMatrix
+  commutes' _ := MulOpposite.unop_injective <| by
+    ext; simp [algebraMap_matrix_apply, eq_comm, apply_ite MulOpposite.unop]
 
 end AlgEquiv
 

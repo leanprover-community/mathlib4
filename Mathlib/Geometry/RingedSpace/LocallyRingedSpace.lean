@@ -70,7 +70,7 @@ def 𝒪 : Sheaf CommRingCat X.toTopCat :=
   X.sheaf
 
 /-- A morphism of locally ringed spaces is a morphism of ringed spaces
- such that the morphisms induced on stalks are local ring homomorphisms. -/
+such that the morphisms induced on stalks are local ring homomorphisms. -/
 @[ext]
 structure Hom (X Y : LocallyRingedSpace.{u}) : Type _
     extends X.toPresheafedSpace.Hom Y.toPresheafedSpace where
@@ -115,9 +115,6 @@ theorem isLocalHomStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) 
 theorem isLocalHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
     IsLocalHom (f.toShHom.stalkMap x).hom :=
   f.2 x
-
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHomValStalkMap := isLocalHomValStalkMap
 
 /-- The identity morphism on a locally ringed space. -/
 @[simps! toShHom]
@@ -324,7 +321,7 @@ lemma iso_hom_base_inv_base {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) :
 @[simp]
 lemma iso_hom_base_inv_base_apply {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) (x : X) :
     (e.inv.base (e.hom.base x)) = x := by
-  show (e.hom.base ≫ e.inv.base) x = 𝟙 X.toPresheafedSpace x
+  change (e.hom.base ≫ e.inv.base) x = 𝟙 X.toPresheafedSpace x
   simp
 
 @[simp]
@@ -336,7 +333,7 @@ lemma iso_inv_base_hom_base {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) :
 @[simp]
 lemma iso_inv_base_hom_base_apply {X Y : LocallyRingedSpace.{u}} (e : X ≅ Y) (y : Y) :
     (e.hom.base (e.inv.base y)) = y := by
-  show (e.inv.base ≫ e.hom.base) y = 𝟙 Y.toPresheafedSpace y
+  change (e.inv.base ≫ e.hom.base) y = 𝟙 Y.toPresheafedSpace y
   simp
 
 section Stalks

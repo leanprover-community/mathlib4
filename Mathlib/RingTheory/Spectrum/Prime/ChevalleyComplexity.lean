@@ -12,6 +12,8 @@ import Mathlib.RingTheory.Spectrum.Prime.Polynomial
 /-!
 # Chevalley's theorem with complexity bound
 
+⚠ For general usage, see `Mathlib/RingTheory/Spectrum/Prime/Chevalley.lean`.
+
 Chevalley's theorem states that if `f : R → S` is a finitely presented ring hom between commutative
 rings, then the image of a constructible set in `Spec S` is a constructible set in `Spec R`.
 
@@ -54,9 +56,6 @@ two maps `C : R[Y₁, ..., Yₙ] → R[X₁, ..., Xₘ, Y₁, ..., Yₙ]` and
 The structure of the proof follows https://stacks.math.columbia.edu/tag/00FE, although they do
 not give an explicit bound on the complexity.
 
-## TODO
-
-More general complexity-less version of Chevalley's theorem. This will be PRed soon.
 -/
 
 variable {R₀ R S M A : Type*} [CommRing R₀] [CommRing R] [Algebra R₀ R] [CommRing S] [Algebra R₀ S]
@@ -239,7 +238,7 @@ private lemma induction_structure (n : ℕ)
           comp_apply, smul_eq_mul]
         refine ((degree_mul_le _ _).trans (add_le_add degree_C_le degree_map_le)).trans ?_
         simp
-      rw [lt_iff_le_not_le]
+      rw [lt_iff_le_not_ge]
       simp only [coe_mapRingHom, funext_iff, InductionObj.ofLex_degree_fst, Pi.smul_apply,
         comp_apply, smul_eq_mul, show (ofLex e.degree).2 from H,
         le_Prop_eq, implies_true, true_implies, true_and]
@@ -262,9 +261,8 @@ private lemma induction_structure (n : ℕ)
         Ideal.Quotient.mk_singleton_self, ne_eq, not_true_eq_false, false_or] at h_eq
       exact hi h_eq
 
-#adaptation_note /-- nightly-2025-03-25
-Requires more heartbeats after nightly-2025-03-25. -/
 set_option maxHeartbeats 400000 in
+-- Requires more heartbeats after nightly-2025-03-25.
 open IsLocalization in
 open Submodule hiding comap in
 /-- Part 4 of the induction structure applied to `Statement R₀ R n`. See the docstring of
@@ -442,7 +440,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
           by_cases hi : i ≤ f.natDegree
           · exact ⟨i, hi.trans_lt (by simp), rfl⟩
           · exact ⟨f.natDegree + 1, by simp,
-              by simp [f.coeff_eq_zero_of_natDegree_lt (lt_of_not_le hi)]⟩
+              by simp [f.coeff_eq_zero_of_natDegree_lt (lt_of_not_ge hi)]⟩
         · ext; simp [eq_comm]
     · simp
   · intros R _ g i hi hi_min _ R₀ _ f
@@ -480,7 +478,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
           · subst hkj; exact (degree_modByMonic_le _ hi).trans hle
           · rfl
       refine ⟨(hS' C hC).1.trans deg_bound₁, fun k ↦ SetLike.le_def.mp ?_ ((hS' C hC).2 k)⟩
-      show c'.coeffSubmodule R₀ ^ c'.powBound ≤ _
+      change c'.coeffSubmodule R₀ ^ c'.powBound ≤ _
       delta powBound
       suffices hij : c'.coeffSubmodule R₀ ≤ c.coeffSubmodule R₀ ^ (c.val j).degree.succ by
         by_cases hi' : c.val i = 1
@@ -674,8 +672,8 @@ lemma chevalley_mvPolynomialC
   induction' n with n IH generalizing k M
   · refine ⟨(S.map (isEmptyRingEquiv _ _).toRingHom), ?_, ?_⟩
     · rw [ConstructibleSetData.toSet_map]
-      show _ = (comapEquiv (isEmptyRingEquiv _ _)).symm ⁻¹' _
-      rw [← Equiv.image_eq_preimage]
+      change _ = (comapEquiv (isEmptyRingEquiv _ _)).symm ⁻¹' _
+      rw [← OrderIso.image_eq_preimage]
       rfl
     · simp only [ConstructibleSetData.map, RingEquiv.toRingHom_eq_coe, Finset.mem_image, comp_apply,
         BasicConstructibleSetData.map, RingHom.coe_coe, isEmptyRingEquiv_eq_coeff_zero, pow_one,
@@ -745,12 +743,12 @@ lemma chevalley_mvPolynomialC
   have : ∀ i < n + 1, i.casesOn (1 + d.count 0) (1 + (B.map Fin.val).count ·) ≤
       1 + (d.map Fin.val).count i := by
     intro t ht
-    show _ ≤ 1 + (d.map Fin.val).count (Fin.mk t ht).val
+    change _ ≤ 1 + (d.map Fin.val).count (Fin.mk t ht).val
     rw [Multiset.count_map_eq_count' _ _ Fin.val_injective]
     obtain - | t := t
     · exact le_rfl
     · simp only [add_lt_add_iff_right] at ht
-      show 1 + (B.map Fin.val).count (Fin.mk t ht).val ≤ _
+      change 1 + (B.map Fin.val).count (Fin.mk t ht).val ≤ _
       rw [Multiset.count_map_eq_count' _ _ Fin.val_injective]
       simp [B]
   refine ⟨U, ?_, fun C hCU ↦ ⟨(hU₂ C hCU).1.trans ?_,
@@ -758,8 +756,8 @@ lemma chevalley_mvPolynomialC
   · unfold S' at hT₁
     rw [← hU₁, ← hT₁, ← Set.image_comp, ← ContinuousMap.coe_comp, ← comap_comp,
       ConstructibleSetData.toSet_map]
-    show _ = _ '' ((comapEquiv e.toRingEquiv).symm ⁻¹' _)
-    rw [← Equiv.image_eq_preimage, Set.image_image]
+    change _ = _ '' ((comapEquiv e.toRingEquiv).symm ⁻¹' _)
+    rw [← OrderIso.image_eq_preimage, Set.image_image]
     simp only [comapEquiv_apply, ← comap_apply, ← comap_comp_apply]
     congr!
     exact e.symm.toAlgHom.comp_algebraMap.symm
@@ -792,8 +790,8 @@ A constructible set of complexity at most `M` in `Spec R[X₁, ..., Xₘ]` gets 
 `f : R[Y₁, ..., Yₙ] → R[X₁, ..., Xₘ]` to a constructible set of complexity `O_{M, m, n}(1)` in
 `Spec R[Y₁, ..., Yₙ]`.
 
-See the module doc of `Mathlib.RingTheory.Spectrum.Prime.ChevalleyComplexity` for an explanation of
-this notion of complexity. -/
+See the module doc of `Mathlib/RingTheory/Spectrum/Prime/ChevalleyComplexity.lean` for an
+explanation of this notion of complexity. -/
 lemma chevalley_mvPolynomial_mvPolynomial
     {m n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] MvPolynomial (Fin m) R)
     (k : ℕ) (d : Multiset (Fin m))

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
 import Mathlib.Data.List.Forall2
-import Mathlib.Data.Set.Pairwise.Basic
 
 /-!
 # Lists with no duplicates
@@ -43,11 +42,13 @@ theorem nodup_singleton (a : α) : Nodup [a] :=
 theorem Nodup.of_cons (h : Nodup (a :: l)) : Nodup l :=
   (nodup_cons.1 h).2
 
-theorem Nodup.not_mem (h : (a :: l).Nodup) : a ∉ l :=
+theorem Nodup.notMem (h : (a :: l).Nodup) : a ∉ l :=
   (nodup_cons.1 h).1
 
+@[deprecated (since := "2025-05-23")] alias Nodup.not_mem := Nodup.notMem
+
 theorem not_nodup_cons_of_mem : a ∈ l → ¬Nodup (a :: l) :=
-  imp_not_comm.1 Nodup.not_mem
+  imp_not_comm.1 Nodup.notMem
 
 
 theorem not_nodup_pair (a : α) : ¬Nodup [a, a] :=
@@ -149,7 +150,7 @@ theorem get_idxOf [DecidableEq α] {l : List α} (H : Nodup l) (i : Fin l.length
 theorem nodup_iff_count_le_one [DecidableEq α] {l : List α} : Nodup l ↔ ∀ a, count a l ≤ 1 :=
   nodup_iff_sublist.trans <|
     forall_congr' fun a =>
-      have : replicate 2 a <+ l ↔ 1 < count a l := (le_count_iff_replicate_sublist ..).symm
+      have : replicate 2 a <+ l ↔ 1 < count a l := replicate_sublist_iff ..
       (not_congr this).trans not_lt
 
 theorem nodup_iff_count_eq_one [DecidableEq α] : Nodup l ↔ ∀ a ∈ l, count a l = 1 :=
@@ -175,22 +176,24 @@ theorem Nodup.of_append_left : Nodup (l₁ ++ l₂) → Nodup l₁ :=
 theorem Nodup.of_append_right : Nodup (l₁ ++ l₂) → Nodup l₂ :=
   Nodup.sublist (sublist_append_right l₁ l₂)
 
-theorem nodup_append {l₁ l₂ : List α} :
+/-- This is a variant of the `nodup_append` from the standard library,
+which does not use `Disjoint`. -/
+theorem nodup_append' {l₁ l₂ : List α} :
     Nodup (l₁ ++ l₂) ↔ Nodup l₁ ∧ Nodup l₂ ∧ Disjoint l₁ l₂ := by
   simp only [Nodup, pairwise_append, disjoint_iff_ne]
 
 theorem disjoint_of_nodup_append {l₁ l₂ : List α} (d : Nodup (l₁ ++ l₂)) : Disjoint l₁ l₂ :=
-  (nodup_append.1 d).2.2
+  (nodup_append'.1 d).2.2
 
 theorem Nodup.append (d₁ : Nodup l₁) (d₂ : Nodup l₂) (dj : Disjoint l₁ l₂) : Nodup (l₁ ++ l₂) :=
-  nodup_append.2 ⟨d₁, d₂, dj⟩
+  nodup_append'.2 ⟨d₁, d₂, dj⟩
 
 theorem nodup_append_comm {l₁ l₂ : List α} : Nodup (l₁ ++ l₂) ↔ Nodup (l₂ ++ l₁) := by
-  simp only [nodup_append, and_left_comm, disjoint_comm]
+  simp only [nodup_append', and_left_comm, disjoint_comm]
 
 theorem nodup_middle {a : α} {l₁ l₂ : List α} :
     Nodup (l₁ ++ a :: l₂) ↔ Nodup (a :: (l₁ ++ l₂)) := by
-  simp only [nodup_append, not_or, and_left_comm, and_assoc, nodup_cons, mem_append,
+  simp only [nodup_append', not_or, and_left_comm, and_assoc, nodup_cons, mem_append,
     disjoint_cons_right]
 
 theorem Nodup.of_map (f : α → β) {l : List α} : Nodup (map f l) → Nodup l :=
@@ -341,7 +344,7 @@ theorem Nodup.diff_eq_filter [BEq α] [LawfulBEq α] :
   | l₁, [], _ => by simp
   | l₁, a :: l₂, hl₁ => by
     rw [diff_cons, (hl₁.erase _).diff_eq_filter, hl₁.erase_eq_filter, filter_filter]
-    simp only [decide_not, bne, Bool.and_comm, mem_cons, not_or, decide_mem_cons, Bool.not_or]
+    simp only [decide_not, bne, Bool.and_comm, decide_mem_cons, Bool.not_or]
 
 theorem Nodup.mem_diff_iff [DecidableEq α] (hl₁ : l₁.Nodup) : a ∈ l₁.diff l₂ ↔ a ∈ l₁ ∧ a ∉ l₂ := by
   rw [hl₁.diff_eq_filter, mem_filter, decide_eq_true_iff]
@@ -377,20 +380,6 @@ theorem Nodup.pairwise_of_forall_ne {l : List α} {r : α → α → Prop} (hl :
     apply h <;> try (apply hab.subset; simp)
     exact heq
 
-theorem Nodup.pairwise_of_set_pairwise {l : List α} {r : α → α → Prop} (hl : l.Nodup)
-    (h : {x | x ∈ l}.Pairwise r) : l.Pairwise r :=
-  hl.pairwise_of_forall_ne h
-
-@[simp]
-theorem Nodup.pairwise_coe [IsSymm α r] (hl : l.Nodup) :
-    { a | a ∈ l }.Pairwise r ↔ l.Pairwise r := by
-  induction l with | nil => simp | cons a l ih => ?_
-  rw [List.nodup_cons] at hl
-  have : ∀ b ∈ l, ¬a = b → r a b ↔ r a b := fun b hb =>
-    imp_iff_right (ne_of_mem_of_not_mem hb hl.1).symm
-  simp [Set.setOf_or, Set.pairwise_insert_of_symmetric fun _ _ ↦ symm_of r, ih hl.2, and_comm,
-    forall₂_congr this]
-
 theorem Nodup.take_eq_filter_mem [DecidableEq α] :
     ∀ {l : List α} {n : ℕ} (_ : l.Nodup), l.take n = l.filter (l.take n).elem
   | [], n, _ => by simp
@@ -401,7 +390,7 @@ theorem Nodup.take_eq_filter_mem [DecidableEq α] :
     refine List.filter_congr ?_
     intro x hx
     have : x ≠ b := fun h => (nodup_cons.1 hl).1 (h ▸ hx)
-    simp (config := {contextual := true}) [List.mem_filter, this, hx]
+    simp +contextual [List.mem_filter, this, hx]
 end List
 
 theorem Option.toList_nodup : ∀ o : Option α, o.toList.Nodup

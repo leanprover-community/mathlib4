@@ -29,7 +29,7 @@ theorem isIntegral_respectsIso : RespectsIso fun f => f.IsIntegral := by
   apply RingHom.isIntegralElem_map
 
 theorem isIntegral_isStableUnderBaseChange : IsStableUnderBaseChange fun f => f.IsIntegral := by
-  refine IsStableUnderBaseChange.mk _ isIntegral_respectsIso ?_
+  refine IsStableUnderBaseChange.mk isIntegral_respectsIso ?_
   introv h x
   refine TensorProduct.induction_on x ?_ ?_ ?_
   · apply isIntegral_zero
@@ -43,7 +43,7 @@ theorem isIntegral_ofLocalizationSpan :
     OfLocalizationSpan (RingHom.IsIntegral ·) := by
   introv R hs H r
   letI := f.toAlgebra
-  show r ∈ (integralClosure R S).toSubmodule
+  change r ∈ (integralClosure R S).toSubmodule
   apply Submodule.mem_of_span_eq_top_of_smul_pow_mem _ s hs
   rintro ⟨t, ht⟩
   letI := (Localization.awayMap f t).toAlgebra

@@ -45,7 +45,6 @@ variable {R : Type*} [CommSemiring R] {X : Type*}
 instance : StarRing (FreeAlgebra R X) where
   star := MulOpposite.unop ∘ lift R (MulOpposite.op ∘ ι R)
   star_involutive x := by
-    unfold Star.star
     simp only [Function.comp_apply]
     let y := lift R (X := X) (MulOpposite.op ∘ ι R)
     refine induction (motive := fun x ↦ (y (y x).unop).unop = x) _ _ ?_ ?_ ?_ ?_ x

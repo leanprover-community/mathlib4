@@ -72,6 +72,7 @@ theorem isBasis_basicOpen :
   convert ProjectiveSpectrum.isTopologicalBasis_basic_opens 𝒜
   exact (Set.range_comp _ _).symm
 
+/-- If `{ xᵢ }` spans the irrelevant ideal of `A`, then `D₊(xᵢ)` covers `Proj A`. -/
 lemma iSup_basicOpen_eq_top {ι : Type*} (f : ι → A)
     (hf : (HomogeneousIdeal.irrelevant 𝒜).toIdeal ≤ Ideal.span (Set.range f)) :
     ⨆ i, Proj.basicOpen 𝒜 (f i) = ⊤ := by
@@ -81,6 +82,42 @@ lemma iSup_basicOpen_eq_top {ι : Type*} (f : ι → A)
   simp only [mem_basicOpen, Decidable.not_not] at H
   refine x.not_irrelevant_le (hf.trans ?_)
   rwa [Ideal.span_le, Set.range_subset_iff]
+
+/-- If `{ xᵢ }` are homogeneous and span `A` as an `A₀` algebra, then `D₊(xᵢ)` covers `Proj A`. -/
+lemma iSup_basicOpen_eq_top' {ι : Type*} (f : ι → A)
+    (hfn : ∀ i, ∃ n, f i ∈ 𝒜 n)
+    (hf : Algebra.adjoin (𝒜 0) (Set.range f) = ⊤) :
+    ⨆ i, Proj.basicOpen 𝒜 (f i) = ⊤ := by
+  classical
+  apply Proj.iSup_basicOpen_eq_top
+  intro x hx
+  convert_to x - GradedRing.projZeroRingHom 𝒜 x ∈ _
+  · rw [GradedRing.projZeroRingHom_apply, ← GradedRing.proj_apply,
+      (HomogeneousIdeal.mem_irrelevant_iff _ _).mp hx, sub_zero]
+  clear hx
+  have := (eq_iff_iff.mp congr(x ∈ $hf)).mpr trivial
+  induction this using Algebra.adjoin_induction with
+  | mem x hx =>
+    obtain ⟨i, rfl⟩ := hx
+    obtain ⟨n, hn⟩ := hfn i
+    rw [GradedRing.projZeroRingHom_apply]
+    by_cases hn' : n = 0
+    · rw [DirectSum.decompose_of_mem_same 𝒜 (hn' ▸ hn), sub_self]
+      exact zero_mem _
+    · rw [DirectSum.decompose_of_mem_ne 𝒜 hn hn', sub_zero]
+      exact Ideal.subset_span ⟨_, rfl⟩
+  | algebraMap r =>
+    convert zero_mem (Ideal.span _)
+    rw [sub_eq_zero]
+    exact (DirectSum.decompose_of_mem_same 𝒜 r.2).symm
+  | add x y hx hy _ _ =>
+    rw [map_add, add_sub_add_comm]
+    exact add_mem ‹_› ‹_›
+  | mul x y hx hy hx' hy' =>
+    convert add_mem (Ideal.mul_mem_left _ x hy')
+      (Ideal.mul_mem_right (GradedRing.projZeroRingHom 𝒜 y) _ hx') using 1
+    rw [map_mul]
+    ring
 
 /-- The canonical map `(A_f)₀ ⟶ Γ(Proj A, D₊(f))`.
 This is an isomorphism when `f` is homogeneous of positive degree. See `basicOpenIsoAway` below. -/
@@ -210,7 +247,7 @@ def pullbackAwayιIso :
     IsOpenImmersion.isoOfRangeEq (Limits.pullback.fst _ _ ≫ awayι 𝒜 f f_deg hm)
       (awayι 𝒜 x (hx ▸ SetLike.mul_mem_graded f_deg g_deg) (hm.trans_le (m.le_add_right m'))) <| by
   rw [IsOpenImmersion.range_pullback_to_base_of_left]
-  show ((awayι 𝒜 f _ _).opensRange ⊓ (awayι 𝒜 g _ _).opensRange).1 = (awayι 𝒜 _ _ _).opensRange.1
+  change ((awayι 𝒜 f _ _).opensRange ⊓ (awayι 𝒜 g _ _).opensRange).1 = (awayι 𝒜 _ _ _).opensRange.1
   rw [opensRange_awayι, opensRange_awayι, opensRange_awayι, ← basicOpen_mul, hx]
 
 @[reassoc (attr := simp)]
@@ -262,7 +299,7 @@ def openCoverOfISupEqTop {ι : Type*} (f : ι → A) {m : ι → ℕ}
   map i := awayι 𝒜 (f i) (f_deg i) (hm i)
   f x := (mem_iSup.mp ((iSup_basicOpen_eq_top 𝒜 f hf).ge (Set.mem_univ x))).choose
   covers x := by
-    show x ∈ (awayι 𝒜 _ _ _).opensRange
+    change x ∈ (awayι 𝒜 _ _ _).opensRange
     rw [opensRange_awayι]
     exact (mem_iSup.mp ((iSup_basicOpen_eq_top 𝒜 f hf).ge (Set.mem_univ x))).choose_spec
 

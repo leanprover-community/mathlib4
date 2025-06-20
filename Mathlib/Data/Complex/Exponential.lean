@@ -21,8 +21,6 @@ This file contains the definitions of the real and complex exponential function.
 
 * `Real.exp`: The real exponential function, defined as the real part of the complex exponential
 
-* `circleMap c R`: the exponential map $θ ↦ c + R e^{θi}$;
-
 -/
 
 open CauSeq Finset IsAbsoluteValue
@@ -341,7 +339,8 @@ end Real
 
 namespace Complex
 
-theorem sum_div_factorial_le {α : Type*} [LinearOrderedField α] (n j : ℕ) (hn : 0 < n) :
+theorem sum_div_factorial_le {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+    (n j : ℕ) (hn : 0 < n) :
     (∑ m ∈ range j with n ≤ m, (1 / m.factorial : α)) ≤ n.succ / (n.factorial * n) :=
   calc
     (∑ m ∈ range j with n ≤ m, (1 / m.factorial : α)) =
@@ -373,7 +372,7 @@ theorem exp_bound {x : ℂ} (hx : ‖x‖ ≤ 1) {n : ℕ} (hn : 0 < n) :
     ← lim_neg, lim_add, ← lim_norm]
   refine lim_le (CauSeq.le_of_exists ⟨n, fun j hj => ?_⟩)
   simp_rw [← sub_eq_add_neg]
-  show
+  change
     ‖(∑ m ∈ range j, x ^ m / m.factorial) - ∑ m ∈ range n, x ^ m / m.factorial‖ ≤
       ‖x‖ ^ n * ((n.succ : ℝ) * (n.factorial * n : ℝ)⁻¹)
   rw [sum_range_sub_sum_range hj]
@@ -402,7 +401,7 @@ theorem exp_bound' {x : ℂ} {n : ℕ} (hx : ‖x‖ / n.succ ≤ 1 / 2) :
     exp, sub_eq_add_neg, ← lim_neg, lim_add, ← lim_norm]
   refine lim_le (CauSeq.le_of_exists ⟨n, fun j hj => ?_⟩)
   simp_rw [← sub_eq_add_neg]
-  show ‖(∑ m ∈ range j, x ^ m / m.factorial) - ∑ m ∈ range n, x ^ m / m.factorial‖ ≤
+  change ‖(∑ m ∈ range j, x ^ m / m.factorial) - ∑ m ∈ range n, x ^ m / m.factorial‖ ≤
     ‖x‖ ^ n / n.factorial * 2
   let k := j - n
   have hj : j = n + k := (add_tsub_cancel_of_le hj).symm
@@ -473,7 +472,7 @@ lemma norm_exp_sub_sum_le_norm_mul_exp (x : ℂ) (n : ℕ) :
     ← CauSeq.lim_neg, CauSeq.lim_add, ← lim_norm]
   refine CauSeq.lim_le (CauSeq.le_of_exists ⟨n, fun j hj => ?_⟩)
   simp_rw [← sub_eq_add_neg]
-  show ‖(∑ m ∈ range j, x ^ m / m.factorial) - ∑ m ∈ range n, x ^ m / m.factorial‖ ≤ _
+  change ‖(∑ m ∈ range j, x ^ m / m.factorial) - ∑ m ∈ range n, x ^ m / m.factorial‖ ≤ _
   rw [sum_range_sub_sum_range hj]
   calc
     ‖∑ m ∈ range j with n ≤ m, (x ^ m / m.factorial : ℂ)‖
@@ -631,9 +630,9 @@ theorem exp_bound_div_one_sub_of_interval {x : ℝ} (h1 : 0 ≤ x) (h2 : x < 1) 
   · exact (exp_bound_div_one_sub_of_interval' h1 h2).le
 
 theorem add_one_lt_exp {x : ℝ} (hx : x ≠ 0) : x + 1 < Real.exp x := by
-  obtain hx | hx := hx.symm.lt_or_lt
+  obtain hx | hx := hx.symm.lt_or_gt
   · exact add_one_lt_exp_of_pos hx
-  obtain h' | h' := le_or_lt 1 (-x)
+  obtain h' | h' := le_or_gt 1 (-x)
   · linarith [x.exp_pos]
   have hx' : 0 < x + 1 := by linarith
   simpa [add_comm, exp_neg, inv_lt_inv₀ (exp_pos _) hx']
@@ -693,12 +692,3 @@ theorem norm_exp_ofReal (x : ℝ) : ‖exp x‖ = Real.exp x := by
 @[deprecated (since := "2025-02-16")] alias abs_exp_ofReal := norm_exp_ofReal
 
 end Complex
-
-noncomputable section circleMap
-
-open Complex
-/-- The exponential map $θ ↦ c + R e^{θi}$. The range of this map is the circle in `ℂ` with center
-`c` and radius `|R|`. -/
-def circleMap (c : ℂ) (R : ℝ) : ℝ → ℂ := fun θ => c + R * exp (θ * I)
-
-end circleMap

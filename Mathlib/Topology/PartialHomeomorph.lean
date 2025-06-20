@@ -27,7 +27,7 @@ instead of `e.toFun x` and `e.invFun x`.
 * `PartialHomeomorph.trans`: the composition of two partial homeomorphisms
 * `PartialHomeomorph.refl`: the identity partial homeomorphism
 * `PartialHomeomorph.const`: a partial homeomorphism which is a constant map,
-whose source and target are necessarily singleton sets
+  whose source and target are necessarily singleton sets
 * `PartialHomeomorph.ofSet`: the identity on a set `s`
 * `PartialHomeomorph.restr s`: restrict a partial homeomorphism `e` to `e.source ∩ interior s`
 * `PartialHomeomorph.EqOnSource`: equivalence relation describing the "right" notion of equality
@@ -1138,17 +1138,11 @@ theorem isOpenEmbedding_restrict : IsOpenEmbedding (e.source.restrict e) := by
   exact e.isOpen_image_of_subset_source (e.open_source.isOpenMap_subtype_val V hV)
     fun _ ⟨x, _, h⟩ ↦ h ▸ x.2
 
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_restrict := isOpenEmbedding_restrict
-
 /-- A partial homeomorphism whose source is all of `X` defines an open embedding of `X` into `Y`.
 The converse is also true; see `IsOpenEmbedding.toPartialHomeomorph`. -/
 theorem to_isOpenEmbedding (h : e.source = Set.univ) : IsOpenEmbedding e :=
   e.isOpenEmbedding_restrict.comp
     ((Homeomorph.setCongr h).trans <| Homeomorph.Set.univ X).symm.isOpenEmbedding
-
-@[deprecated (since := "2024-10-18")]
-alias to_openEmbedding := to_isOpenEmbedding
 
 end PartialHomeomorph
 
@@ -1359,7 +1353,7 @@ theorem subtypeRestr_symm_eqOn_of_le {U V : Opens X} (hU : Nonempty U) (hV : Non
     rw [PartialHomeomorph.symm_source]
     exact hyV
   · rw [(V.partialHomeomorphSubtypeCoe hV).right_inv hyV]
-    show _ = U.partialHomeomorphSubtypeCoe hU _
+    change _ = U.partialHomeomorphSubtypeCoe hU _
     rw [(U.partialHomeomorphSubtypeCoe hU).right_inv hy.2]
 
 end subtypeRestr

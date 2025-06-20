@@ -152,14 +152,15 @@ theorem applyComposition_update (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
     let r : Fin (c.blocksFun k) → Fin n := c.embedding k
     change p (c.blocksFun k) (Function.update v j z ∘ r) = p (c.blocksFun k) (v ∘ r)
     suffices B : Function.update v j z ∘ r = v ∘ r by rw [B]
-    apply Function.update_comp_eq_of_not_mem_range
+    apply Function.update_comp_eq_of_notMem_range
     rwa [c.mem_range_embedding_iff']
 
 @[simp]
 theorem compContinuousLinearMap_applyComposition {n : ℕ} (p : FormalMultilinearSeries 𝕜 F G)
     (f : E →L[𝕜] F) (c : Composition n) (v : Fin n → E) :
     (p.compContinuousLinearMap f).applyComposition c v = p.applyComposition c (f ∘ v) := by
-  simp (config := {unfoldPartialApp := true}) [applyComposition]; rfl
+  ext
+  simp [applyComposition, Function.comp_def]
 
 end FormalMultilinearSeries
 
@@ -176,13 +177,10 @@ applying the right coefficient of `p` to each block of the composition, and then
 the resulting vector. It is called `f.compAlongComposition p c`. -/
 def compAlongComposition {n : ℕ} (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n)
     (f : F [×c.length]→L[𝕜] G) : E [×n]→L[𝕜] G where
-  toFun v := f (p.applyComposition c v)
-  map_update_add' v i x y := by
-    cases Subsingleton.elim ‹_› (instDecidableEqFin _)
-    simp only [applyComposition_update, ContinuousMultilinearMap.map_update_add]
-  map_update_smul' v i c x := by
-    cases Subsingleton.elim ‹_› (instDecidableEqFin _)
-    simp only [applyComposition_update, ContinuousMultilinearMap.map_update_smul]
+  toMultilinearMap :=
+    MultilinearMap.mk' (fun v ↦ f (p.applyComposition c v))
+      (fun v i x y ↦ by simp only [applyComposition_update, map_update_add])
+      (fun v i c x ↦ by simp only [applyComposition_update, map_update_smul])
   cont :=
     f.cont.comp <|
       continuous_pi fun _ => (coe_continuous _).comp <| continuous_pi fun _ => continuous_apply _
@@ -294,8 +292,7 @@ theorem compAlongComposition_bound {n : ℕ} (p : FormalMultilinearSeries 𝕜 E
     ‖f.compAlongComposition p c v‖ = ‖f (p.applyComposition c v)‖ := rfl
     _ ≤ ‖f‖ * ∏ i, ‖p.applyComposition c v i‖ := ContinuousMultilinearMap.le_opNorm _ _
     _ ≤ ‖f‖ * ∏ i, ‖p (c.blocksFun i)‖ * ∏ j : Fin (c.blocksFun i), ‖(v ∘ c.embedding i) j‖ := by
-      apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
-      refine Finset.prod_le_prod (fun i _hi => norm_nonneg _) fun i _hi => ?_
+      gcongr with i
       apply ContinuousMultilinearMap.le_opNorm
     _ = (‖f‖ * ∏ i, ‖p (c.blocksFun i)‖) *
         ∏ i, ∏ j : Fin (c.blocksFun i), ‖(v ∘ c.embedding i) j‖ := by
@@ -375,7 +372,7 @@ theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) (x : E) : p.comp (id 𝕜
     rw [applyComposition_ones]
     refine congr_arg v ?_
     rw [Fin.ext_iff, Fin.coe_castLE, Fin.val_mk]
-  · show
+  · change
     ∀ b : Composition n,
       b ∈ Finset.univ → b ≠ Composition.ones n → compAlongComposition p (id 𝕜 E x) b = 0
     intro b _ hb
@@ -409,7 +406,7 @@ theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (v0 : Fin 0 → E) :
       dsimp [applyComposition]
       refine p.congr rfl fun i him hin => congr_arg v <| ?_
       ext; simp
-    · show
+    · change
       ∀ b : Composition n, b ∈ Finset.univ → b ≠ Composition.single n n_pos →
         compAlongComposition (id 𝕜 F (p 0 v0)) p b = 0
       intro b _ hb
@@ -787,7 +784,7 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
     haveI cau :
       CauchySeq fun s : Finset (Σ n, Composition n) =>
         ∑ i ∈ s, q.compAlongComposition p i.2 fun _j => y := by
-      apply cauchySeq_finset_of_norm_bounded _ (NNReal.summable_coe.2 hr) _
+      apply cauchySeq_finset_of_norm_bounded (NNReal.summable_coe.2 hr) _
       simp only [coe_nnnorm, NNReal.coe_mul, NNReal.coe_pow]
       rintro ⟨n, c⟩
       calc
@@ -845,9 +842,6 @@ lemma AnalyticOn.comp {f : F → G} {g : E → F} {s : Set F}
     AnalyticOn 𝕜 (f ∘ g) t :=
   fun x m ↦ (hf _ (h m)).comp (hg x m) h
 
-@[deprecated (since := "2024-09-26")]
-alias AnalyticWithinOn.comp := AnalyticOn.comp
-
 /-- If two functions `g` and `f` are analytic respectively at `f x` and `x`, then `g ∘ f` is
 analytic at `x`. -/
 @[fun_prop]
@@ -892,9 +886,6 @@ theorem AnalyticOnNhd.comp' {s : Set E} {g : F → G} {f : E → F} (hg : Analyt
     (hf : AnalyticOnNhd 𝕜 f s) : AnalyticOnNhd 𝕜 (g ∘ f) s :=
   fun z hz => (hg (f z) (Set.mem_image_of_mem f hz)).comp (hf z hz)
 
-@[deprecated (since := "2024-09-26")]
-alias AnalyticOn.comp' := AnalyticOnNhd.comp'
-
 theorem AnalyticOnNhd.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F}
     (hg : AnalyticOnNhd 𝕜 g t) (hf : AnalyticOnNhd 𝕜 f s) (st : Set.MapsTo f s t) :
     AnalyticOnNhd 𝕜 (g ∘ f) s :=
@@ -904,9 +895,6 @@ lemma AnalyticOnNhd.comp_analyticOn {f : F → G} {g : E → F} {s : Set F}
     {t : Set E} (hf : AnalyticOnNhd 𝕜 f s) (hg : AnalyticOn 𝕜 g t) (h : Set.MapsTo g t s) :
     AnalyticOn 𝕜 (f ∘ g) t :=
   fun x m ↦ (hf _ (h m)).comp_analyticWithinAt (hg x m)
-
-@[deprecated (since := "2024-09-26")]
-alias AnalyticOn.comp_analyticWithinOn := AnalyticOnNhd.comp_analyticOn
 
 /-!
 ### Associativity of the composition of formal multilinear series
@@ -1079,7 +1067,7 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
         sizeUpTo (sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ hi⟩) j := by
   induction j with
   | zero =>
-    show
+    change
       sum (take (b.blocks.take i).sum a.blocks) =
         sum (take i (map sum (splitWrtComposition a.blocks b)))
     induction' i with i IH
@@ -1200,7 +1188,7 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
     r c.1.length fun i : Fin c.1.length =>
       q (c.2 i).length (applyComposition p (c.2 i) (v ∘ c.1.embedding i))
   suffices ∑ c, f c = ∑ c, g c by
-    simpa (config := { unfoldPartialApp := true }) only [FormalMultilinearSeries.comp,
+    simpa +unfoldPartialApp only [FormalMultilinearSeries.comp,
       ContinuousMultilinearMap.sum_apply, compAlongComposition_apply, Finset.sum_sigma',
       applyComposition, ContinuousMultilinearMap.map_sum]
   /- Now, we use `Composition.sigmaEquivSigmaPi n` to change
