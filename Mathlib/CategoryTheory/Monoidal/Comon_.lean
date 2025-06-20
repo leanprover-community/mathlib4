@@ -84,7 +84,7 @@ variable {M N O : C} [Comon_Class M] [Comon_Class N] [Comon_Class O]
 /-- The property that a morphism between comonoid objects is a comonoid morphism. -/
 class IsComon_Hom (f : M ⟶ N) : Prop where
   hom_counit (f) : f ≫ ε = ε := by aesop_cat
-  hom_comul (f) : f ≫ Δ = Δ ≫ (f ⊗ f) := by aesop_cat
+  hom_comul (f) : f ≫ Δ = Δ ≫ (f ⊗ₘ f) := by aesop_cat
 
 attribute [reassoc (attr := simp)] IsComon_Hom.hom_counit IsComon_Hom.hom_comul
 
@@ -129,11 +129,11 @@ namespace Comon_Class
 variable {M : C} [Comon_Class M]
 
 @[reassoc (attr := simp)]
-theorem counit_comul_hom {Z : C} (f : M ⟶ Z) : Δ[M] ≫ (ε[M] ⊗ f) = f ≫ (λ_ Z).inv := by
+theorem counit_comul_hom {Z : C} (f : M ⟶ Z) : Δ[M] ≫ (ε[M] ⊗ₘ f) = f ≫ (λ_ Z).inv := by
   rw [leftUnitor_inv_naturality, tensorHom_def, counit_comul_assoc]
 
 @[reassoc (attr := simp)]
-theorem comul_counit_hom {Z : C} (f : M ⟶ Z) : Δ[M] ≫ (f ⊗ ε[M]) = f ≫ (ρ_ Z).inv := by
+theorem comul_counit_hom {Z : C} (f : M ⟶ Z) : Δ[M] ≫ (f ⊗ₘ ε[M]) = f ≫ (ρ_ Z).inv := by
   rw [rightUnitor_inv_naturality, tensorHom_def', comul_counit_assoc]
 
 @[reassoc]
@@ -160,7 +160,7 @@ attribute [instance] Hom.is_comon_hom
 instance. -/
 abbrev Hom.mk' {M N : Comon_ C} (f : M.X ⟶ N.X)
     (f_counit : f ≫ ε[N.X] = ε[M.X] := by aesop_cat)
-    (f_comul : f ≫ Δ[N.X] = Δ[M.X] ≫ (f ⊗ f) := by aesop_cat) :
+    (f_comul : f ≫ Δ[N.X] = Δ[M.X] ≫ (f ⊗ₘ f) := by aesop_cat) :
     Hom M N :=
   have : IsComon_Hom f := ⟨f_counit, f_comul⟩
   .mk f
@@ -227,10 +227,9 @@ and checking compatibility with counit and comultiplication only in the forward 
 -/
 @[simps]
 def mkIso {M N : Comon_ C} (f : M.X ≅ N.X) (f_counit : f.hom ≫ ε[N.X] = ε[M.X] := by aesop_cat)
-    (f_comul : f.hom ≫ Δ[N.X] = Δ[M.X] ≫ (f.hom ⊗ f.hom) := by aesop_cat) : M ≅ N :=
+    (f_comul : f.hom ≫ Δ[N.X] = Δ[M.X] ≫ (f.hom ⊗ₘ f.hom) := by aesop_cat) : M ≅ N :=
   have : IsComon_Hom f.hom := ⟨f_counit, f_comul⟩
   ⟨⟨f.hom⟩, ⟨f.inv⟩, by aesop_cat, by aesop_cat⟩
-
 
 @[simps]
 instance uniqueHomToTrivial (A : Comon_ C) : Unique (A ⟶ trivial C) where
@@ -348,7 +347,7 @@ instance (A B : C) [Comon_Class A] [Comon_Class B] : Comon_Class (A ⊗ B) :=
 
 @[simp]
 theorem tensorObj_counit (A B : C) [Comon_Class A] [Comon_Class B] :
-    ε[A ⊗ B] = (ε[A] ⊗ ε[B]) ≫ (λ_ _).hom :=
+    ε[A ⊗ B] = (ε[A] ⊗ₘ ε[B]) ≫ (λ_ _).hom :=
   rfl
 
 /--
@@ -358,7 +357,7 @@ the version provided in `tensorObj_comul` below.
 -/
 theorem tensorObj_comul' (A B : C) [Comon_Class A] [Comon_Class B] :
     Δ[A ⊗ B] =
-      (Δ[A] ⊗ Δ[B]) ≫ (tensorμ (op A) (op B) (op A) (op B)).unop := by
+      (Δ[A] ⊗ₘ Δ[B]) ≫ (tensorμ (op A) (op B) (op A) (op B)).unop := by
   rfl
 
 /--
@@ -368,7 +367,7 @@ the tensor product of the comultiplications followed by the tensor strength
 -/
 @[simp]
 theorem tensorObj_comul (A B : C) [Comon_Class A] [Comon_Class B] :
-    Δ[A ⊗ B] = (Δ[A] ⊗ Δ[B]) ≫ tensorμ A A B B := by
+    Δ[A ⊗ B] = (Δ[A] ⊗ₘ Δ[B]) ≫ tensorμ A A B B := by
   rw [tensorObj_comul']
   congr
   simp only [tensorμ, unop_tensorObj, unop_op]

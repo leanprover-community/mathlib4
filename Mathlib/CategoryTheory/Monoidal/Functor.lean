@@ -98,7 +98,7 @@ variable (F : C ⥤ D) [F.LaxMonoidal]
 
 @[reassoc (attr := simp)]
 theorem μ_natural {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
-    (F.map f ⊗ F.map g) ≫ μ F Y Y' = μ F X X' ≫ F.map (f ⊗ g) := by
+    (F.map f ⊗ₘ F.map g) ≫ μ F Y Y' = μ F X X' ≫ F.map (f ⊗ₘ g) := by
   simp [tensorHom_def]
 
 @[reassoc (attr := simp)]
@@ -131,20 +131,20 @@ variable {F : C ⥤ D}
     (μ : ∀ X Y : C, F.obj X ⊗ F.obj Y ⟶ F.obj (X ⊗ Y))
     (μ_natural :
       ∀ {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y'),
-        (F.map f ⊗ F.map g) ≫ μ Y Y' = μ X X' ≫ F.map (f ⊗ g) := by
+        (F.map f ⊗ₘ F.map g) ≫ μ Y Y' = μ X X' ≫ F.map (f ⊗ₘ g) := by
       aesop_cat)
     /- associativity of the tensorator -/
     (associativity :
       ∀ X Y Z : C,
-        (μ X Y ⊗ 𝟙 (F.obj Z)) ≫ μ (X ⊗ Y) Z ≫ F.map (α_ X Y Z).hom =
-          (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom ≫ (𝟙 (F.obj X) ⊗ μ Y Z) ≫ μ X (Y ⊗ Z) := by
+        (μ X Y ⊗ₘ 𝟙 (F.obj Z)) ≫ μ (X ⊗ Y) Z ≫ F.map (α_ X Y Z).hom =
+          (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom ≫ (𝟙 (F.obj X) ⊗ₘ μ Y Z) ≫ μ X (Y ⊗ Z) := by
       aesop_cat)
     /- unitality -/
     (left_unitality :
-      ∀ X : C, (λ_ (F.obj X)).hom = (ε ⊗ 𝟙 (F.obj X)) ≫ μ (𝟙_ C) X ≫ F.map (λ_ X).hom := by
+      ∀ X : C, (λ_ (F.obj X)).hom = (ε ⊗ₘ 𝟙 (F.obj X)) ≫ μ (𝟙_ C) X ≫ F.map (λ_ X).hom := by
         aesop_cat)
     (right_unitality :
-      ∀ X : C, (ρ_ (F.obj X)).hom = (𝟙 (F.obj X) ⊗ ε) ≫ μ X (𝟙_ C) ≫ F.map (ρ_ X).hom := by
+      ∀ X : C, (ρ_ (F.obj X)).hom = (𝟙 (F.obj X) ⊗ₘ ε) ≫ μ X (𝟙_ C) ≫ F.map (ρ_ X).hom := by
         aesop_cat)
 
 /--
@@ -245,7 +245,7 @@ variable (F : C ⥤ D) [F.OplaxMonoidal]
 
 @[reassoc (attr := simp)]
 theorem δ_natural {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
-    δ F X X' ≫ (F.map f ⊗ F.map g) = F.map (f ⊗ g) ≫ δ F Y Y' := by
+    δ F X X' ≫ (F.map f ⊗ₘ F.map g) = F.map (f ⊗ₘ g) ≫ δ F Y Y' := by
   simp [tensorHom_def]
 
 @[reassoc (attr := simp)]
@@ -384,7 +384,7 @@ lemma whiskerLeft_δ_μ (X Y : C) (T : D) : T ◁ δ F X Y ≫ T ◁ μ F X Y = 
 
 @[reassoc]
 theorem map_tensor {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
-    F.map (f ⊗ g) = δ F X X' ≫ (F.map f ⊗ F.map g) ≫ μ F Y Y' := by simp
+    F.map (f ⊗ₘ g) = δ F X X' ≫ (F.map f ⊗ₘ F.map g) ≫ μ F Y Y' := by simp
 
 @[reassoc]
 theorem map_whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) :
@@ -794,18 +794,18 @@ variable [F.OplaxMonoidal]
 @[simps]
 def rightAdjointLaxMonoidal : G.LaxMonoidal where
   ε := adj.homEquiv _ _ (η F)
-  μ X Y := adj.homEquiv _ _ (δ F _ _ ≫ (adj.counit.app X ⊗ adj.counit.app Y))
+  μ X Y := adj.homEquiv _ _ (δ F _ _ ≫ (adj.counit.app X ⊗ₘ adj.counit.app Y))
   μ_natural_left {X Y} f X' := by
     simp only [Adjunction.homEquiv_apply, ← adj.unit_naturality_assoc, ← G.map_comp, assoc,
       ← δ_natural_left_assoc F]
     suffices F.map (G.map f) ▷ F.obj (G.obj X') ≫ _ =
-      (adj.counit.app X ⊗ adj.counit.app X') ≫ _ by rw [this]
+      (adj.counit.app X ⊗ₘ adj.counit.app X') ≫ _ by rw [this]
     simpa using NatTrans.whiskerRight_app_tensor_app adj.counit adj.counit (f := f) X'
   μ_natural_right {X' Y'} X g := by
     simp only [Adjunction.homEquiv_apply, ← adj.unit_naturality_assoc, ← G.map_comp,
       assoc, ← δ_natural_right_assoc F]
     suffices F.obj (G.obj X) ◁ F.map (G.map g) ≫ _ =
-      (adj.counit.app X ⊗ adj.counit.app X') ≫ _ by rw [this]
+      (adj.counit.app X ⊗ₘ adj.counit.app X') ≫ _ by rw [this]
     simpa using NatTrans.whiskerLeft_app_tensor_app adj.counit adj.counit (f := g) _
   associativity X Y Z := (adj.homEquiv _ _).symm.injective (by
     simp only [homEquiv_unit, comp_obj, map_comp, comp_whiskerRight, assoc, homEquiv_counit,
@@ -850,7 +850,7 @@ monoidal structures. -/
 class IsMonoidal [G.LaxMonoidal] : Prop where
   leftAdjoint_ε : ε G = adj.homEquiv _ _ (η F) := by aesop_cat
   leftAdjoint_μ (X Y : D) :
-    μ G X Y = adj.homEquiv _ _ (δ F _ _ ≫ (adj.counit.app X ⊗ adj.counit.app Y)) := by aesop_cat
+    μ G X Y = adj.homEquiv _ _ (δ F _ _ ≫ (adj.counit.app X ⊗ₘ adj.counit.app Y)) := by aesop_cat
 
 instance :
     letI := adj.rightAdjointLaxMonoidal
@@ -869,7 +869,7 @@ lemma unit_app_unit_comp_map_η : adj.unit.app (𝟙_ C) ≫ G.map (η F) = ε G
 
 @[reassoc]
 lemma unit_app_tensor_comp_map_δ (X Y : C) :
-    adj.unit.app (X ⊗ Y) ≫ G.map (δ F X Y) = (adj.unit.app X ⊗ adj.unit.app Y) ≫ μ G _ _ := by
+    adj.unit.app (X ⊗ Y) ≫ G.map (δ F X Y) = (adj.unit.app X ⊗ₘ adj.unit.app Y) ≫ μ G _ _ := by
   rw [IsMonoidal.leftAdjoint_μ (adj := adj), homEquiv_unit]
   dsimp
   simp only [← adj.unit_naturality_assoc, ← Functor.map_comp, ← δ_natural_assoc,
@@ -883,7 +883,7 @@ lemma map_ε_comp_counit_app_unit : F.map (ε G) ≫ adj.counit.app (𝟙_ D) = 
 @[reassoc]
 lemma map_μ_comp_counit_app_tensor (X Y : D) :
     F.map (μ G X Y) ≫ adj.counit.app (X ⊗ Y) =
-      δ F _ _ ≫ (adj.counit.app X ⊗ adj.counit.app Y) := by
+      δ F _ _ ≫ (adj.counit.app X ⊗ₘ adj.counit.app Y) := by
   rw [IsMonoidal.leftAdjoint_μ (adj := adj), homEquiv_unit]
   simp
 
@@ -961,7 +961,7 @@ lemma unitIso_hom_app_comp_inverse_map_η_functor :
 @[reassoc]
 lemma unitIso_hom_app_tensor_comp_inverse_map_δ_functor (X Y : C) :
     e.unitIso.hom.app (X ⊗ Y) ≫ e.inverse.map (δ e.functor X Y) =
-      (e.unitIso.hom.app X ⊗ e.unitIso.hom.app Y) ≫ μ e.inverse _ _ :=
+      (e.unitIso.hom.app X ⊗ₘ e.unitIso.hom.app Y) ≫ μ e.inverse _ _ :=
   e.toAdjunction.unit_app_tensor_comp_map_δ X Y
 
 @[reassoc]
@@ -972,7 +972,7 @@ lemma functor_map_ε_inverse_comp_counitIso_hom_app :
 @[reassoc]
 lemma functor_map_μ_inverse_comp_counitIso_hom_app_tensor (X Y : D) :
     e.functor.map (μ e.inverse X Y) ≫ e.counitIso.hom.app (X ⊗ Y) =
-      δ e.functor _ _ ≫ (e.counitIso.hom.app X ⊗ e.counitIso.hom.app Y) :=
+      δ e.functor _ _ ≫ (e.counitIso.hom.app X ⊗ₘ e.counitIso.hom.app Y) :=
   e.toAdjunction.map_μ_comp_counit_app_tensor X Y
 
 @[reassoc]
@@ -985,7 +985,7 @@ lemma counitIso_inv_app_comp_functor_map_η_inverse :
 lemma counitIso_inv_app_tensor_comp_functor_map_δ_inverse (X Y : C) :
     e.counitIso.inv.app (e.functor.obj X ⊗ e.functor.obj Y) ≫
       e.functor.map (δ e.inverse (e.functor.obj X) (e.functor.obj Y)) =
-      μ e.functor X Y ≫ e.functor.map (e.unitIso.hom.app X ⊗ e.unitIso.hom.app Y) := by
+      μ e.functor X Y ≫ e.functor.map (e.unitIso.hom.app X ⊗ₘ e.unitIso.hom.app Y) := by
   rw [← cancel_epi (δ e.functor _ _), Monoidal.δ_μ_assoc]
   apply e.inverse.map_injective
   simp [← cancel_epi (e.unitIso.hom.app (X ⊗ Y)), Functor.map_comp,
@@ -999,7 +999,7 @@ lemma unit_app_comp_inverse_map_η_functor :
 @[reassoc]
 lemma unit_app_tensor_comp_inverse_map_δ_functor (X Y : C) :
     e.unit.app (X ⊗ Y) ≫ e.inverse.map (δ e.functor X Y) =
-      (e.unit.app X ⊗ e.unitIso.hom.app Y) ≫ μ e.inverse _ _ :=
+      (e.unit.app X ⊗ₘ e.unitIso.hom.app Y) ≫ μ e.inverse _ _ :=
   e.toAdjunction.unit_app_tensor_comp_map_δ X Y
 
 @[reassoc (attr := simp)]
@@ -1010,7 +1010,7 @@ lemma functor_map_ε_inverse_comp_counit_app :
 @[reassoc]
 lemma functor_map_μ_inverse_comp_counit_app_tensor (X Y : D) :
     e.functor.map (μ e.inverse X Y) ≫ e.counit.app (X ⊗ Y) =
-      δ e.functor _ _ ≫ (e.counit.app X ⊗ e.counit.app Y) :=
+      δ e.functor _ _ ≫ (e.counit.app X ⊗ₘ e.counit.app Y) :=
   e.toAdjunction.map_μ_comp_counit_app_tensor X Y
 
 @[reassoc]
@@ -1023,7 +1023,7 @@ lemma counitInv_app_comp_functor_map_η_inverse :
 lemma counitInv_app_tensor_comp_functor_map_δ_inverse (X Y : C) :
     e.counitInv.app (e.functor.obj X ⊗ e.functor.obj Y) ≫
       e.functor.map (δ e.inverse (e.functor.obj X) (e.functor.obj Y)) =
-      μ e.functor X Y ≫ e.functor.map (e.unitIso.hom.app X ⊗ e.unitIso.hom.app Y) := by
+      μ e.functor X Y ≫ e.functor.map (e.unitIso.hom.app X ⊗ₘ e.unitIso.hom.app Y) := by
   rw [← cancel_epi (δ e.functor _ _), Monoidal.δ_μ_assoc]
   apply e.inverse.map_injective
   simp [← cancel_epi (e.unitIso.hom.app (X ⊗ Y)), Functor.map_comp,
