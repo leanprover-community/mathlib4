@@ -129,7 +129,7 @@ section real
 variable {E : Type*} [NormedAddCommGroup E]
   [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 0 M] {x : M}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
 
 variable (F : Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
   -- `F` model fiber
@@ -141,6 +141,8 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
   [FiberBundle F V] [VectorBundle ℝ F V]
   -- `V` vector bundle
 
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
+  [VectorBundle ℝ F V] in
 lemma congr_smoothBumpFunction (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
     (X : Π x : M, TangentSpace I x) {σ : Π x : M, V x}
     (hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x)
@@ -174,7 +176,48 @@ lemma congr_σ_of_eventuallyEq (cov : CovariantDerivative I F V) [T2Space M] [Is
   calc cov X σ x
     _ = cov X ((ψ : M → ℝ) • σ) x := by rw [cov.congr_smoothBumpFunction _ _ _ _ hσ]
     _ = cov X ((ψ : M → ℝ) • σ') x := cov.congr_σ _ _ (by simp [this])
-    _ = cov X σ' x := by simp [cov.congr_smoothBumpFunction, _root_.mdifferentiableAt_dependent_congr hs hσ hσσ']
+    _ = cov X σ' x := by
+      simp [cov.congr_smoothBumpFunction, _root_.mdifferentiableAt_dependent_congr hs hσ hσσ']
+
+variable {I F V} in
+/-- The difference of two covariant derivatives, as a function `Γ(TM) × Γ(E) → Γ(E)`.
+Future lemmas will upgrade this to a map `TM ⊕ E → E`. -/
+def difference_aux (cov cov' : CovariantDerivative I F V) :
+    (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x) :=
+  fun X σ ↦ cov X σ - cov' X σ
+
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
+  [VectorBundle ℝ F V] [FiniteDimensional ℝ E] in
+lemma difference_aux_smul_eq (cov cov' : CovariantDerivative I F V)
+    (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (f : M → ℝ)
+    (hσ : MDifferentiable I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)))
+    (hf : MDifferentiable I 𝓘(ℝ) f) :
+    difference_aux cov cov' X ((f : M → ℝ) • σ) = (f : M → ℝ) • (difference_aux cov cov' X σ) :=
+  calc _
+    _ = cov X ((f : M → ℝ) • σ) - cov' X ((f : M → ℝ) • σ) := rfl
+    _ = (f • cov X σ +  (fun x ↦ bar _ <| mfderiv I 𝓘(ℝ) f x (X x)) • σ)
+        - (f • cov' X σ +  (fun x ↦ bar _ <| mfderiv I 𝓘(ℝ) f x (X x)) • σ) := by
+      ext x
+      simp [cov.leibniz X _ _ _ (hσ x) (hf x), cov'.leibniz X _ _ _ (hσ x) (hf x)]
+    _ = f • cov X σ - f • cov' X σ := by simp
+    _ = f • (cov X σ - cov' X σ) := by simp [smul_sub]
+    _ = _ := rfl
+
+lemma difference_aux_smul_eq' (cov cov' : CovariantDerivative I F V)
+    (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (f : M → ℝ)
+    (hσ : MDifferentiable I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)))
+    (hf : MDifferentiable I 𝓘(ℝ) f) :
+    difference_aux cov cov' (f • X) σ = (f : M → ℝ) • difference_aux cov cov' X σ := by
+  simp [difference_aux]
+  sorry -- Chris says "it's obvious"
+
+-- The value of `differenceAux cov cov' X σ` at `x₀` depends only on `X x₀` and `σ x₀`.
+lemma foo (cov cov' : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
+    (X X' : Π x : M, TangentSpace I x) (σ σ' : Π x : M, V x) (x₀ : M)
+    (hσ : MDifferentiable I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)))
+    (hσ' : MDifferentiable I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ' x))) :
+    difference_aux cov cov' X σ x₀ = difference_aux cov cov' X' σ' x₀ := by
+  sorry -- use the previous two lemmas
 
 -- TODO: prove that `cov X σ x` depends on σ only via σ(X) and the 1-jet of σ at x
 
