@@ -257,7 +257,7 @@ theorem archimedeanClass_le_iff_of_orderTop_eq {x y : Lex (HahnSeries Γ R)}
         rw [abs_pos, leadingCoeff_ne_iff]
         exact hx'
 
-theorem achimedeanClass_le_iff {x y : Lex (HahnSeries Γ R)}:
+theorem archimedeanClass_le_iff {x y : Lex (HahnSeries Γ R)}:
     ArchimedeanClass.mk x ≤ ArchimedeanClass.mk y ↔
     (ofLex x).orderTop < (ofLex y).orderTop ∨ ((ofLex x).orderTop = (ofLex y).orderTop ∧
     ArchimedeanClass.mk (ofLex x).leadingCoeff ≤ ArchimedeanClass.mk (ofLex y).leadingCoeff) := by
@@ -288,7 +288,7 @@ theorem achimedeanClass_eq_iff {x y : Lex (HahnSeries Γ R)}:
     ArchimedeanClass.mk x = ArchimedeanClass.mk y ↔
     (ofLex x).orderTop = (ofLex y).orderTop ∧
     ArchimedeanClass.mk (ofLex x).leadingCoeff = ArchimedeanClass.mk (ofLex y).leadingCoeff := by
-  rw [le_antisymm_iff, achimedeanClass_le_iff, achimedeanClass_le_iff]
+  rw [le_antisymm_iff, archimedeanClass_le_iff, archimedeanClass_le_iff]
   constructor
   · intro h
     obtain ⟨hx1 | ⟨hx1, hx2⟩, hy1 | ⟨hy1, hy2⟩⟩ := h
@@ -314,7 +314,7 @@ def archimedeanClass₀_orderHom :
       simp only [ofLex_toLex]
       rw [ArchimedeanClass₀.mk_le_mk] at ⊢ h
       rw [WithTop.untop_eq_iff, WithTop.untop_lt_iff]
-      simpa using achimedeanClass_le_iff.mp h
+      simpa using archimedeanClass_le_iff.mp h
 
 variable (Γ R) in
 /-- The inverse of `archimedeanClass₀_orderHom`. -/
@@ -327,7 +327,7 @@ def archimedeanClass₀_orderHom_inv :
       simpa using a.prop))
     fun ⟨a, ha⟩ ⟨b, hb⟩ h ↦ by
       rw [ArchimedeanClass₀.mk_le_mk] at ⊢ h
-      rw [achimedeanClass_le_iff]
+      rw [archimedeanClass_le_iff]
       simpa [orderTop_single ha, orderTop_single hb] using h
   monotone' a b := a.rec fun (ao, ac) ↦ b.rec fun (bo, bc) ↦ by
     intro h
@@ -335,7 +335,7 @@ def archimedeanClass₀_orderHom_inv :
     · induction ac using ArchimedeanClass₀.ind with | mk a ha
       induction bc using ArchimedeanClass₀.ind with | mk b hb
       simp only [ofLex_toLex, ArchimedeanClass₀.lift_orderHom_mk]
-      rw [ArchimedeanClass₀.mk_le_mk, achimedeanClass_le_iff]
+      rw [ArchimedeanClass₀.mk_le_mk, archimedeanClass_le_iff]
       exact .inl (by simpa [orderTop_single ha, orderTop_single hb] using h)
     · exact OrderHom.monotone _ hle
 
