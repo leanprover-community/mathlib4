@@ -795,6 +795,21 @@ lemma IsUniversalColimit.nonempty_isColimit_of_pullbackCone_left
     simpa [hu] using (IsPullback.of_isLimit (hs j.1))
 
 include hau in
+/-- Pullbacks distribute over universal coproducts on the left: This is the isomorphism
+`∐ (B ×[S] Xᵢ) ≅ B ×[S] (∐ Xᵢ)`. -/
+lemma IsUniversalColimit.nonempty_isColimit_of_isPullback_left
+    {P : ι → C} (q₁ : ∀ i, P i ⟶ B) (q₂ : ∀ i, P i ⟶ X i)
+    (hP : ∀ i, IsPullback (q₁ i) (q₂ i) v (f i))
+    {Z : C} {p₁ : Z ⟶ B} {p₂ : Z ⟶ a.pt} (h : IsPullback p₁ p₂ v u)
+    (d : Cofan P) (e : d.pt ≅ Z)
+    (hu : ∀ i, a.inj i ≫ u = f i := by aesop_cat)
+    (he₁ : ∀ i, d.inj i ≫ e.hom ≫ p₁ = q₁ i := by aesop_cat)
+    (he₂ : ∀ i, d.inj i ≫ e.hom ≫ p₂ = q₂ i ≫ a.inj i := by aesop_cat) :
+    Nonempty (IsColimit d) :=
+  hau.nonempty_isColimit_of_pullbackCone_left f u v (fun i ↦ (hP i).cone)
+    (fun i ↦ (hP i).isLimit) h.cone h.isLimit d e
+
+include hau in
 /-- Pullbacks distribute over universal coproducts on the right: This is the isomorphism
 `∐ (Xᵢ ×[S] B) ≅ (∐ Xᵢ) ×[S] B`. -/
 lemma IsUniversalColimit.nonempty_isColimit_of_pullbackCone_right
@@ -817,6 +832,21 @@ lemma IsUniversalColimit.nonempty_isColimit_of_pullbackCone_right
     refine IsPullback.of_right ?_ (by simp) (IsPullback.of_isLimit ht).flip
     simpa [hu] using (IsPullback.of_isLimit (hs j.1)).flip
 
+include hau in
+/-- Pullbacks distribute over universal coproducts on the right: This is the isomorphism
+`∐ (Xᵢ ×[S] B) ≅ (∐ Xᵢ) ×[S] B`. -/
+lemma IsUniversalColimit.nonempty_isColimit_of_isPullback_right
+    {P : ι → C} (q₁ : ∀ i, P i ⟶ X i) (q₂ : ∀ i, P i ⟶ B)
+    (hP : ∀ i, IsPullback (q₁ i) (q₂ i) (f i) v)
+    {Z : C} {p₁ : Z ⟶ a.pt} {p₂ : Z ⟶ B} (h : IsPullback p₁ p₂ u v)
+    (d : Cofan P) (e : d.pt ≅ Z)
+    (hu : ∀ i, a.inj i ≫ u = f i := by aesop_cat)
+    (he₁ : ∀ i, d.inj i ≫ e.hom ≫ p₁ = q₁ i ≫ a.inj i := by aesop_cat)
+    (he₂ : ∀ i, d.inj i ≫ e.hom ≫ p₂ = q₂ i := by aesop_cat) :
+    Nonempty (IsColimit d) :=
+  hau.nonempty_isColimit_of_pullbackCone_right f u v (fun i ↦ (hP i).cone)
+    (fun i ↦ (hP i).isLimit) h.cone h.isLimit d e
+
 /-- Pullbacks distribute over universal coproducts in both arguments: This is the isomorphism
 `∐ (Xᵢ ×[S] Xⱼ) ≅ (∐ Xᵢ) ×[S] (∐ Xⱼ)`. -/
 lemma IsUniversalColimit.nonempty_isColimit_prod_of_pullbackCone {X : ι → C}
@@ -828,8 +858,8 @@ lemma IsUniversalColimit.nonempty_isColimit_prod_of_pullbackCone {X : ι → C}
     {d : Cofan (fun p : ι × ι' ↦ (s p.1 p.2).pt)} (e : d.pt ≅ t.pt)
     (hu : ∀ i, a.inj i ≫ u = f i := by aesop_cat)
     (hv : ∀ i, b.inj i ≫ v = g i := by aesop_cat)
-    (he₁ : ∀ p, d.inj p ≫ e.hom ≫ t.fst = (s _ _).fst ≫ a.inj _ := by aesop_cat)
-    (he₂ : ∀ p, d.inj p ≫ e.hom ≫ t.snd = (s _ _).snd ≫ b.inj _ := by aesop_cat) :
+    (he₁ : ∀ i j, d.inj (i, j) ≫ e.hom ≫ t.fst = (s _ _).fst ≫ a.inj _ := by aesop_cat)
+    (he₂ : ∀ i j, d.inj (i, j) ≫ e.hom ≫ t.snd = (s _ _).snd ≫ b.inj _ := by aesop_cat) :
     Nonempty (IsColimit d) := by
   let c (i : ι) : Cofan (fun j : ι' ↦ (s i j).pt) :=
     Cofan.mk (pullback (f i) v) fun j ↦ pullback.lift (s i j).fst ((s i j).snd ≫ b.inj j)
@@ -848,6 +878,24 @@ lemma IsUniversalColimit.nonempty_isColimit_prod_of_pullbackCone {X : ι → C}
       (pullback.isLimit _ _) _ (Iso.refl _)
   · exact hau.nonempty_isColimit_of_pullbackCone_right _ u _ _ (fun _ ↦ pullback.isLimit _ _)
       t ht _ (Iso.refl _)
+
+/-- Pullbacks distribute over universal coproducts in both arguments: This is the isomorphism
+`∐ (Xᵢ ×[S] Xⱼ) ≅ (∐ Xᵢ) ×[S] (∐ Xⱼ)`. -/
+lemma IsUniversalColimit.nonempty_isColimit_prod_of_isPullback {X : ι → C}
+    {Y : ι' → C} {a : Cofan X} (hau : IsUniversalColimit a)
+    {b : Cofan Y} (hbu : IsUniversalColimit b)
+    (f : ∀ i, X i ⟶ S) (g : ∀ i, Y i ⟶ S) (u : a.pt ⟶ S) (v : b.pt ⟶ S) [∀ i, HasPullback (f i) v]
+    {P : ι × ι' → C} {q₁ : ∀ i j, P (i, j) ⟶ X i} {q₂ : ∀ i j, P (i, j) ⟶ Y j}
+    (hP : ∀ i j, IsPullback (q₁ i j) (q₂ i j) (f i) (g j))
+    {Z : C} {p₁ : Z ⟶ a.pt} {p₂ : Z ⟶ b.pt} (h : IsPullback p₁ p₂ u v)
+    {d : Cofan P} (e : d.pt ≅ Z)
+    (hu : ∀ i, a.inj i ≫ u = f i := by aesop_cat)
+    (hv : ∀ i, b.inj i ≫ v = g i := by aesop_cat)
+    (he₁ : ∀ i j, d.inj (i, j) ≫ e.hom ≫ p₁ = q₁ _ _ ≫ a.inj _ := by aesop_cat)
+    (he₂ : ∀ i j, d.inj (i, j) ≫ e.hom ≫ p₂ = q₂ _ _ ≫ b.inj _ := by aesop_cat) :
+    Nonempty (IsColimit d) :=
+  IsUniversalColimit.nonempty_isColimit_prod_of_pullbackCone hau hbu f g u v
+    (fun i j ↦ (hP i j).cone) (fun i j ↦ (hP i j).isLimit) h.cone h.isLimit e
 
 end CoproductsPullback
 
