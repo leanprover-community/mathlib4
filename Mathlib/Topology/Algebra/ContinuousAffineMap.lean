@@ -148,6 +148,10 @@ def lineMap (p₀ p₁ : P) [TopologicalSpace R] [TopologicalSpace V]
     [ContinuousSMul R V] [ContinuousVAdd V P] :
     (lineMap p₀ p₁).toAffineMap = AffineMap.lineMap (k := R) p₀ p₁ := rfl
 
+lemma coe_lineMap_eq (p₀ p₁ : P) [TopologicalSpace R] [TopologicalSpace V]
+    [ContinuousSMul R V] [ContinuousVAdd V P] :
+    ⇑(ContinuousAffineMap.lineMap p₀ p₁) = ⇑(AffineMap.lineMap (k := R) p₀ p₁) := rfl
+
 section ModuleValuedMaps
 
 variable {S : Type*}

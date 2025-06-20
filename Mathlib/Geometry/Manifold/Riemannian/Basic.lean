@@ -339,54 +339,9 @@ lemma pathELength_comp_of_antitoneOn (γ : ℝ → M) {f : ℝ → ℝ} {x y : �
   have : 0 ≤ -derivWithin f (Icc x y) t := by simp [hf.derivWithin_nonpos]
   simp only [map_smul, enorm_smul, f_im, ← Real.enorm_of_nonneg this, enorm_neg]
 
-
-
-
-
-
-
-#exit
-
-
-  rw [derivWithin_of_mem_nhds (Icc_mem_nhds ht.1 ht.2)]
-  have : (mfderiv 𝓘(ℝ) I (γ ∘ f) t) =
-      (mfderivWithin 𝓘(ℝ) I γ (Icc (f x) (f y)) (f t)) ∘L (mfderiv 𝓘(ℝ) 𝓘(ℝ) f t) := by
-    rw [← mfderivWithin_of_mem_nhds (Ioo_mem_nhds ht.1 ht.2),
-      ← mfderivWithin_of_mem_nhds (Ioo_mem_nhds ht.1 ht.2)]
-    have hI : Ioo x y ⊆ f ⁻¹' Icc (f x) (f y) :=
-      fun t ht ↦ ⟨hf ⟨le_rfl, h⟩ ⟨ht.1.le, ht.2.le⟩ ht.1.le, hf ⟨ht.1.le, ht.2.le⟩ ⟨h, le_rfl⟩ ht.2.le⟩
-    apply mfderivWithin_comp
-    · apply hγ _ (hI ht)
-    · apply mdifferentiableWithinAt_iff_differentiableWithinAt.2
-      exact h'f.mono Ioo_subset_Icc_self _ ht
-    · exact hI
-    · exact isOpen_Ioo.uniqueMDiffWithinAt ht
-
-
-
-
-
-
-  rw [mfderiv_comp (I' := 𝓘(ℝ))]; rotate_left
-  · have hft : f t ∈ Ioo (f x) (f y) := sorry
-    apply (hγ (f t) ⟨hft.1.le, hft.2.le⟩ ).mdifferentiableAt
-    apply Icc_mem_nhds hft.1 hft.2
-
-
-
-
-
-
-
-
-
-#exit
-
-end Manifold
-
 section
 
-variable [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
+variable [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)] {x y : M} {r : ℝ≥0∞} {a b : ℝ}
 
 variable (I) in
 /-- The Riemannian extended distance between two points, in a manifold where the tangent spaces
@@ -394,7 +349,36 @@ have an inner product, defined as the infimum of the lengths of `C^1` paths betw
 noncomputable def riemannianEDist (x y : M) : ℝ≥0∞ :=
   ⨅ (γ : Path x y) (_ : ContMDiff (𝓡∂ 1) I 1 γ), ∫⁻ x, ‖mfderiv (𝓡∂ 1) I γ x 1‖ₑ
 
+#check AffineMap.lineMap
+
+lemma riemannianEDist_le_pathELength {γ : ℝ → M} (hγ : ContMDiffOn 𝓘(ℝ) I 1 γ (Icc a b))
+    (ha : γ a = x) (hb : γ b = y) (hab : a ≤ b) :
+    riemannianEDist I x y ≤ pathELength I γ a b :=
+  let η : ℝ →ᴬ[ℝ] ℝ := ContinuousAffineMap.lineMap a b
+  have : ContMDiffOn 𝓘(ℝ) I 1 (γ ∘ η) (Icc 0 1) := by
+    apply hγ.comp
+    · rw [contMDiffOn_iff_contDiffOn]
+      exact η.contDiff.contDiffOn
+    · rw [← image_subset_iff, ContinuousAffineMap.coe_lineMap_eq, ← segment_eq_image_lineMap]
+
+
+
+#exit
+
+lemma exists_lt_of_riemannianEDist_lt (hr : riemannianEDist I x y < r) :
+    ∃ γ : ℝ → M, γ a = x ∧ γ b = y ∧ ContMDiff 𝓘(ℝ) I 1 γ ∧
+    γ =ᶠ[𝓝 a] (fun _ ↦ x) ∧ γ =ᶠ[𝓝 b] (fun _ ↦ y) ∧ pathELength I γ a b < r := by
+  sorry
+
+#exit
+
 /- TODO: show that this is a distance (symmetry, triange inequality, nondegeneracy) -/
+
+lemma riemannianEDist_self : riemannianEDist I x x = 0 := by
+
+
+#exit
+
 
 end
 
