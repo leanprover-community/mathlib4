@@ -160,7 +160,7 @@ structure RiemannianMetric where
 /-- `Core structure associated to a family of inner products on the fibers of a fiber bundle. This
 is an auxiliary construction to endow the fibers with an inner product space structure without
 creating diamonds. -/
-noncomputable def RiemannianMetric.toCore (g : RiemannianMetric E) (b : B) :
+@[reducible] noncomputable def RiemannianMetric.toCore (g : RiemannianMetric E) (b : B) :
     InnerProductSpace.Core ℝ (E b) where
   inner v w := g.inner b v w
   conj_inner_symm v w := g.symm b w v
