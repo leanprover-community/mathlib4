@@ -121,6 +121,11 @@ end PathObject
 def LeftHomotopyRel : HomRel C :=
   fun X _ f g ↦ ∃ (P : Cylinder X), Nonempty (P.LeftHomotopy f g)
 
+lemma Cylinder.LeftHomotopy.leftHomotopyRel {X Y : C} {f g : X ⟶ Y}
+    {P : Cylinder X} (h : P.LeftHomotopy f g) :
+    LeftHomotopyRel f g :=
+  ⟨_, ⟨h⟩⟩
+
 namespace LeftHomotopyRel
 
 variable {X Y : C}
@@ -131,22 +136,38 @@ lemma refl (f : X ⟶ Y) : LeftHomotopyRel f f :=
 lemma postcomp {f g : X ⟶ Y} (h : LeftHomotopyRel f g) {Z : C} (p : Y ⟶ Z) :
     LeftHomotopyRel (f ≫ p) (g ≫ p) := by
   obtain ⟨P, ⟨h⟩⟩ := h
-  exact ⟨P, ⟨h.postcomp p⟩⟩
+  exact (h.postcomp p).leftHomotopyRel
 
 lemma exists_good {f g : X ⟶ Y} (h : LeftHomotopyRel f g) :
     ∃ (P : Cylinder X), P.IsGood ∧ Nonempty (P.LeftHomotopy f g) := by
   obtain ⟨P, ⟨h⟩⟩ := h
   exact h.exists_good
 
+lemma exists_very_good {f g : X ⟶ Y} [IsFibrant Y] (h : LeftHomotopyRel f g) :
+    ∃ (P : Cylinder X), P.IsVeryGood ∧ Nonempty (P.LeftHomotopy f g) := by
+  obtain ⟨P, _, ⟨h⟩⟩ := h.exists_good
+  have fac := MorphismProperty.factorizationData (trivialCofibrations C) (fibrations C) P.π
+  let P' : Cylinder X :=
+    { I := fac.Z
+      i₀ := P.i₀ ≫ fac.i
+      i₁ := P.i₁ ≫ fac.i
+      π := fac.p
+      weakEquivalence_π := weakEquivalence_of_precomp_of_fac fac.fac }
+  have : Cofibration P'.i := by
+    rw [show P'.i = P.i ≫ fac.i by aesop_cat]
+    infer_instance
+  have sq : CommSq h.h fac.i (terminal.from _) (terminal.from _) := ⟨by simp⟩
+  exact ⟨P', { }, ⟨{ h := sq.lift }⟩ ⟩
+
 lemma symm {f g : X ⟶ Y} (h : LeftHomotopyRel f g) : LeftHomotopyRel g f := by
   obtain ⟨P, ⟨h⟩⟩ := h
-  exact ⟨_, ⟨h.symm⟩⟩
+  exact h.symm.leftHomotopyRel
 
 lemma trans {f₀ f₁ f₂ : X ⟶ Y} [IsCofibrant X] (h : LeftHomotopyRel f₀ f₁)
     (h' : LeftHomotopyRel f₁ f₂) : LeftHomotopyRel f₀ f₂ := by
   obtain ⟨P, ⟨h⟩⟩ := h
   obtain ⟨P', _, ⟨h'⟩⟩ := h'.exists_good
-  exact ⟨_, ⟨h.trans h'⟩⟩
+  exact (h.trans h').leftHomotopyRel
 
 instance (X Y : C) [IsCofibrant X] :
     _root_.Equivalence (LeftHomotopyRel (X := X) (Y := Y)) where
@@ -154,10 +175,32 @@ instance (X Y : C) [IsCofibrant X] :
   symm h := h.symm
   trans h h' := h.trans h'
 
+lemma precomp {f g : X ⟶ Y} [IsFibrant Y] (h : LeftHomotopyRel f g)
+    {Z : C} (i : Z ⟶ X) : LeftHomotopyRel (i ≫ f) (i ≫ g) := by
+  obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good
+  obtain ⟨Q, _⟩ := Cylinder.exists_very_good Z
+  have sq : CommSq (coprod.desc (i ≫ P.i₀) (i ≫ P.i₁)) Q.i P.π (Q.π ≫ i) := ⟨by aesop_cat⟩
+  exact ⟨Q, ⟨{
+    h := sq.lift ≫ h.h
+    h₀ := by
+      have := coprod.inl ≫= sq.fac_left
+      simp only [Q.inl_i_assoc, coprod.inl_desc] at this
+      simp [reassoc_of% this]
+    h₁ := by
+      have := coprod.inr ≫= sq.fac_left
+      simp only [Q.inr_i_assoc, coprod.inr_desc] at this
+      simp [reassoc_of% this]
+  }⟩⟩
+
 end LeftHomotopyRel
 
 def RightHomotopyRel : HomRel C :=
   fun _ Y f g ↦ ∃ (P : PathObject Y), Nonempty (P.RightHomotopy f g)
+
+lemma PathObject.RightHomotopy.rightHomotopyRel {X Y : C} {f g : X ⟶ Y}
+    {P : PathObject Y} (h : P.RightHomotopy f g) :
+    RightHomotopyRel f g :=
+  ⟨_, ⟨h⟩⟩
 
 namespace RightHomotopyRel
 
@@ -169,28 +212,61 @@ lemma refl (f : X ⟶ Y) : RightHomotopyRel f f :=
 lemma precomp {f g : X ⟶ Y} (h : RightHomotopyRel f g) {Z : C} (i : Z ⟶ X) :
     RightHomotopyRel (i ≫ f) (i ≫ g) := by
   obtain ⟨P, ⟨h⟩⟩ := h
-  exact ⟨P, ⟨h.precomp i⟩⟩
+  exact (h.precomp i).rightHomotopyRel
 
 lemma exists_good {f g : X ⟶ Y} (h : RightHomotopyRel f g) :
     ∃ (P : PathObject Y), P.IsGood ∧ Nonempty (P.RightHomotopy f g) := by
   obtain ⟨P, ⟨h⟩⟩ := h
   exact h.exists_good
 
+lemma exists_very_good {f g : X ⟶ Y} [IsCofibrant X] (h : RightHomotopyRel f g) :
+    ∃ (P : PathObject Y), P.IsVeryGood ∧ Nonempty (P.RightHomotopy f g) := by
+  obtain ⟨P, _, ⟨h⟩⟩ := h.exists_good
+  have fac := MorphismProperty.factorizationData (cofibrations C) (trivialFibrations C) P.ι
+  let P' : PathObject Y :=
+    { P := fac.Z
+      p₀ := fac.p ≫ P.p₀
+      p₁ := fac.p ≫ P.p₁
+      ι := fac.i
+      weakEquivalence_ι := weakEquivalence_of_postcomp_of_fac fac.fac }
+  have : Fibration P'.p := by
+    rw [show P'.p = fac.p ≫ P.p by aesop_cat]
+    infer_instance
+  have sq : CommSq (initial.to _) (initial.to _) fac.p h.h := ⟨by simp⟩
+  exact ⟨P', { }, ⟨{ h := sq.lift }⟩ ⟩
+
 lemma symm {f g : X ⟶ Y} (h : RightHomotopyRel f g) : RightHomotopyRel g f := by
   obtain ⟨P, ⟨h⟩⟩ := h
-  exact ⟨_, ⟨h.symm⟩⟩
+  exact h.symm.rightHomotopyRel
 
 lemma trans {f₀ f₁ f₂ : X ⟶ Y} [IsFibrant Y] (h : RightHomotopyRel f₀ f₁)
     (h' : RightHomotopyRel f₁ f₂) : RightHomotopyRel f₀ f₂ := by
   obtain ⟨P, ⟨h⟩⟩ := h
   obtain ⟨P', _, ⟨h'⟩⟩ := h'.exists_good
-  exact ⟨_, ⟨h.trans h'⟩⟩
+  exact (h.trans h').rightHomotopyRel
 
 instance (X Y : C) [IsFibrant Y] :
     _root_.Equivalence (RightHomotopyRel (X := X) (Y := Y)) where
   refl := .refl
   symm h := h.symm
   trans h h' := h.trans h'
+
+lemma postcomp {f g : X ⟶ Y} [IsCofibrant X] (h : RightHomotopyRel f g)
+    {Z : C} (p : Y ⟶ Z) : RightHomotopyRel (f ≫ p) (g ≫ p) := by
+  obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good
+  obtain ⟨Q, _⟩ := PathObject.exists_very_good Z
+  have sq : CommSq (p ≫ Q.ι) P.ι Q.p (prod.lift (P.p₀ ≫ p) (P.p₁ ≫ p)) := ⟨by aesop_cat⟩
+  exact ⟨Q, ⟨{
+    h := h.h ≫ sq.lift
+    h₀ := by
+      have := sq.fac_right =≫ prod.fst
+      simp only [Category.assoc, Q.p_fst, prod.lift_fst] at this
+      simp [this]
+    h₁ := by
+      have := sq.fac_right =≫ prod.snd
+      simp only [Category.assoc, Q.p_snd, prod.lift_snd] at this
+      simp [this]
+  }⟩⟩
 
 end RightHomotopyRel
 
