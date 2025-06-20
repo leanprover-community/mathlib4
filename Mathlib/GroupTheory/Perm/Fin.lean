@@ -316,7 +316,7 @@ step to the right.
 
 namespace Fin
 
-local instance {n : ℕ} {i : Fin n} : NeZero (n - i.1) := NeZero.of_pos (by omega)
+local instance {n : ℕ} {i : Fin n} : NeZero (n - i.1) := neZero_iff.mpr (by omega)
 
 variable {n : ℕ} {i j k : Fin n}
 
