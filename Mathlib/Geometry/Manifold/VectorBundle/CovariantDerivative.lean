@@ -108,7 +108,7 @@ lemma congr_σ (cov : CovariantDerivative I F V)
 variable {I F V x} in
 /-- If two sections `σ` and `σ'` are equal on a neighbourhood `s` of `x`,
 if one is differentiable at `x` then so is the other. -/
-lemma _root_.mfderiv_dependent_congr {σ σ' : Π x : M, V x} {s : Set M} (hs : s ∈ nhds x)
+lemma _root_.mdifferentiableAt_dependent_congr {σ σ' : Π x : M, V x} {s : Set M} (hs : s ∈ nhds x)
     (hσ₁ : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x)
     (hσ₂ : ∀ x ∈ s, σ x = σ' x) :
     MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ' x)) x := by
@@ -121,8 +121,8 @@ lemma _root_.mfderiv_dependent_congr_iff {σ σ' : Π x : M, V x} {s : Set M} (h
     (hσ : ∀ x ∈ s, σ x = σ' x) :
     MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x  ↔
     MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ' x)) x :=
-  ⟨fun h ↦ mfderiv_dependent_congr hs h hσ,
-   fun h ↦ mfderiv_dependent_congr hs h (fun x hx ↦ (hσ x hx).symm)⟩
+  ⟨fun h ↦ _root_.mdifferentiableAt_dependent_congr hs h hσ,
+   fun h ↦ _root_.mdifferentiableAt_dependent_congr hs h (fun x hx ↦ (hσ x hx).symm)⟩
 
 section real
 
@@ -174,7 +174,7 @@ lemma congr_σ_of_eventuallyEq (cov : CovariantDerivative I F V) [T2Space M] [Is
   calc cov X σ x
     _ = cov X ((ψ : M → ℝ) • σ) x := by rw [cov.congr_smoothBumpFunction _ _ _ _ hσ]
     _ = cov X ((ψ : M → ℝ) • σ') x := cov.congr_σ _ _ (by simp [this])
-    _ = cov X σ' x := by simp [cov.congr_smoothBumpFunction, mfderiv_dependent_congr hs hσ hσσ']
+    _ = cov X σ' x := by simp [cov.congr_smoothBumpFunction, _root_.mdifferentiableAt_dependent_congr hs hσ hσσ']
 
 -- TODO: prove that `cov X σ x` depends on σ only via σ(X) and the 1-jet of σ at x
 
