@@ -604,15 +604,8 @@ theorem norm_orthogonalProjection (hK : K ≠ ⊥) :
     ‖K.orthogonalProjection‖ = 1 := by
   refine le_antisymm K.orthogonalProjection_norm_le ?_
   obtain ⟨x, hxK, hx_ne_zero⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hK
-  set x' : E := (‖x‖⁻¹ : 𝕜) • x
-  have hx'_mem : x' ∈ K := K.smul_mem _ hxK
-  have hx'_norm : ‖x'‖ = 1 := norm_smul_inv_norm hx_ne_zero
-  have h_proj : K.orthogonalProjection x' = x' := orthogonalProjection_eq_self_iff.mpr hx'_mem
-  calc
-    1 = ‖x'‖ := symm hx'_norm
-    _ = ‖K.orthogonalProjection x'‖ := by simp only [AddSubgroupClass.coe_norm, h_proj]
-    _ ≤ ‖orthogonalProjection K‖ * ‖x'‖ := ContinuousLinearMap.le_opNorm _ _
-    _ = ‖orthogonalProjection K‖ := by rw [hx'_norm]; simp
+  simpa [K.norm_orthogonalProjection_apply hxK, norm_eq_zero, hx_ne_zero]
+    using K.orthogonalProjection.ratio_le_opNorm x
 
 variable (𝕜)
 

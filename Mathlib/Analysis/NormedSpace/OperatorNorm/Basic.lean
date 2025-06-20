@@ -276,17 +276,9 @@ theorem opNorm_smul_le {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F]
     apply le_opNorm
 
 theorem opNorm_le_iff_lipschitz {f : E →SL[σ₁₂] F} {K : ℝ≥0} :
-    ‖f‖ ≤ K ↔ LipschitzWith K f := by
-  constructor
-  · intro h
-    refine LipschitzWith.of_dist_le_mul fun x y ↦ ?_
-    rw [dist_eq_norm, dist_eq_norm, ← f.map_sub]
-    calc
-      ‖f (x - y)‖ ≤ ‖f‖ * ‖x - y‖ := by apply le_opNorm
-      _ ≤ K * ‖x - y‖ := by gcongr
-  · intro hf
-    exact f.opNorm_le_bound K.2 fun x => by
-      simpa only [dist_zero_right, f.map_zero] using hf.dist_le_mul x 0
+    ‖f‖ ≤ K ↔ LipschitzWith K f :=
+  ⟨fun h ↦ by simpa using AddMonoidHomClass.lipschitz_of_bound f K <| le_of_opNorm_le f h,
+    fun hf ↦ f.opNorm_le_bound K.2 <| hf.norm_le_mul (map_zero f)⟩
 
 alias ⟨lipschitzWith_of_opNorm_le, opNorm_le_of_lipschitz⟩ := opNorm_le_iff_lipschitz
 
