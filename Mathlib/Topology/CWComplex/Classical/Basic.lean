@@ -527,7 +527,7 @@ section Subcomplex
 
 namespace RelCWComplex
 
-/-- A subcomplex is a closed subspace of a CW-complex that is the union of open cells of the
+/-- A subcomplex is a closed subspace of a CW complex that is the union of open cells of the
   CW complex. -/
 structure Subcomplex (C : Set X) {D : Set X} [RelCWComplex C D] where
   /-- The underlying set of the subcomplex. -/
