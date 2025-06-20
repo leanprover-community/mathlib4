@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 
-import Mathlib.Computability.AkraBazzi.GrowsPolynomially
+import Mathlib.Computability.AkraBazzi.SumTransform
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
@@ -31,13 +31,6 @@ where `p` is the unique real number such that `∑ a_i b_i^p = 1`.
 
 ## Main definitions and results
 
-* `AkraBazziRecurrence T g a b r`: the predicate stating that `T : ℕ → ℝ` satisfies an Akra-Bazzi
-  recurrence with parameters `g`, `a`, `b` and `r` as above.
-* `GrowsPolynomially`: The growth condition that `g` must satisfy for the theorem to apply.
-  It roughly states that
-  `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for u between b*n and n for any constant `b ∈ (0,1)`.
-* `sumTransform`: The transformation which turns a function `g` into
-  `n^p * ∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)`.
 * `asympBound`: The asymptotic bound satisfied by an Akra-Bazzi recurrence, namely
   `n^p (1 + ∑ g(u) / u^(p+1))`
 * `isTheta_asympBound`: The main result stating that
@@ -76,32 +69,6 @@ satisfies the recurrence
 with appropriate conditions on the various parameters.
 -/
 
-/-- An Akra-Bazzi recurrence is a function that satisfies the recurrence
-`T n = (∑ i, a i * T (r i n)) + g n`. -/
-structure AkraBazziRecurrence {α : Type*} [Fintype α] [Nonempty α]
-    (T : ℕ → ℝ) (g : ℝ → ℝ) (a : α → ℝ) (b : α → ℝ) (r : α → ℕ → ℕ) where
-  /-- Point below which the recurrence is in the base case -/
-  n₀ : ℕ
-  /-- `n₀` is always `> 0` -/
-  n₀_gt_zero : 0 < n₀
-  /-- The `a`'s are nonzero -/
-  a_pos : ∀ i, 0 < a i
-  /-- The `b`'s are nonzero -/
-  b_pos : ∀ i, 0 < b i
-  /-- The b's are less than 1 -/
-  b_lt_one : ∀ i, b i < 1
-  /-- `g` is nonnegative -/
-  g_nonneg : ∀ x ≥ 0, 0 ≤ g x
-  /-- `g` grows polynomially -/
-  g_grows_poly : AkraBazziRecurrence.GrowsPolynomially g
-  /-- The actual recurrence -/
-  h_rec (n : ℕ) (hn₀ : n₀ ≤ n) : T n = (∑ i, a i * T (r i n)) + g n
-  /-- Base case: `T(n) > 0` whenever `n < n₀` -/
-  T_gt_zero' (n : ℕ) (hn : n < n₀) : 0 < T n
-  /-- The `r`'s always reduce `n` -/
-  r_lt_n : ∀ i n, n₀ ≤ n → r i n < n
-  /-- The `r`'s approximate the `b`'s -/
-  dist_r_b : ∀ i, (fun n => (r i n : ℝ) - b i * n) =o[atTop] fun n => n / (log n) ^ 2
 
 namespace AkraBazziRecurrence
 
@@ -109,196 +76,13 @@ section min_max
 
 variable {α : Type*} [Finite α] [Nonempty α]
 
-/-- Smallest `b i` -/
-noncomputable def min_bi (b : α → ℝ) : α :=
-  Classical.choose <| Finite.exists_min b
-
-/-- Largest `b i` -/
-noncomputable def max_bi (b : α → ℝ) : α :=
-  Classical.choose <| Finite.exists_max b
-
-@[aesop safe apply]
-lemma min_bi_le {b : α → ℝ} (i : α) : b (min_bi b) ≤ b i :=
-  Classical.choose_spec (Finite.exists_min b) i
-
-@[aesop safe apply]
-lemma max_bi_le {b : α → ℝ} (i : α) : b i ≤ b (max_bi b) :=
-  Classical.choose_spec (Finite.exists_max b) i
 
 end min_max
 
-lemma isLittleO_self_div_log_id :
-    (fun (n : ℕ) => n / log n ^ 2) =o[atTop] (fun (n : ℕ) => (n : ℝ)) := by
-  calc (fun (n : ℕ) => (n : ℝ) / log n ^ 2) = fun (n : ℕ) => (n : ℝ) * ((log n) ^ 2)⁻¹ := by
-                  simp_rw [div_eq_mul_inv]
-         _ =o[atTop] fun (n : ℕ) => (n : ℝ) * 1⁻¹ := by
-                  refine IsBigO.mul_isLittleO (isBigO_refl _ _) ?_
-                  refine IsLittleO.inv_rev ?main ?zero
-                  case zero => simp
-                  case main => calc
-                    _ = (fun (_ : ℕ) => ((1 : ℝ) ^ 2))     := by simp
-                    _ =o[atTop] (fun (n : ℕ) => (log n)^2) :=
-                          IsLittleO.pow (IsLittleO.natCast_atTop
-                            <| isLittleO_const_log_atTop) (by norm_num)
-         _ = (fun (n : ℕ) => (n : ℝ)) := by ext; simp
 
 variable {α : Type*} [Fintype α] {T : ℕ → ℝ} {g : ℝ → ℝ} {a b : α → ℝ} {r : α → ℕ → ℕ}
 variable [Nonempty α] (R : AkraBazziRecurrence T g a b r)
-section
-include R
 
-lemma dist_r_b' : ∀ᶠ n in atTop, ∀ i, ‖(r i n : ℝ) - b i * n‖ ≤ n / log n ^ 2 := by
-  rw [Filter.eventually_all]
-  intro i
-  simpa using IsLittleO.eventuallyLE (R.dist_r_b i)
-
-lemma eventually_b_le_r : ∀ᶠ (n : ℕ) in atTop, ∀ i, (b i : ℝ) * n - (n / log n ^ 2) ≤ r i n := by
-  filter_upwards [R.dist_r_b'] with n hn
-  intro i
-  have h₁ : 0 ≤ b i := le_of_lt <| R.b_pos _
-  rw [sub_le_iff_le_add, add_comm, ← sub_le_iff_le_add]
-  calc (b i : ℝ) * n - r i n = ‖b i * n‖ - ‖(r i n : ℝ)‖ := by
-                            simp only [norm_mul, RCLike.norm_natCast, sub_left_inj,
-                                       Nat.cast_eq_zero, Real.norm_of_nonneg h₁]
-                         _ ≤ ‖(b i * n : ℝ) - r i n‖ := norm_sub_norm_le _ _
-                         _ = ‖(r i n : ℝ) - b i * n‖ := norm_sub_rev _ _
-                         _ ≤ n / log n ^ 2 := hn i
-
-lemma eventually_r_le_b : ∀ᶠ (n : ℕ) in atTop, ∀ i, r i n ≤ (b i : ℝ) * n + (n / log n ^ 2) := by
-  filter_upwards [R.dist_r_b'] with n hn
-  intro i
-  calc r i n = b i * n + (r i n - b i * n) := by ring
-             _ ≤ b i * n + ‖r i n - b i * n‖ := by gcongr; exact Real.le_norm_self _
-             _ ≤ b i * n + n / log n ^ 2 := by gcongr; exact hn i
-
-lemma eventually_r_lt_n : ∀ᶠ (n : ℕ) in atTop, ∀ i, r i n < n := by
-  filter_upwards [eventually_ge_atTop R.n₀] with n hn
-  exact fun i => R.r_lt_n i n hn
-
-lemma eventually_bi_mul_le_r : ∀ᶠ (n : ℕ) in atTop, ∀ i, (b (min_bi b) / 2) * n ≤ r i n := by
-  have gt_zero : 0 < b (min_bi b) := R.b_pos (min_bi b)
-  have hlo := isLittleO_self_div_log_id
-  rw [Asymptotics.isLittleO_iff] at hlo
-  have hlo' := hlo (by positivity : 0 < b (min_bi b) / 2)
-  filter_upwards [hlo', R.eventually_b_le_r] with n hn hn'
-  intro i
-  simp only [Real.norm_of_nonneg (by positivity : 0 ≤ (n : ℝ))] at hn
-  calc b (min_bi b) / 2 * n = b (min_bi b) * n - b (min_bi b) / 2 * n := by ring
-                          _ ≤ b (min_bi b) * n - ‖n / log n ^ 2‖ := by gcongr
-                          _ ≤ b i * n - ‖n / log n ^ 2‖ := by gcongr; aesop
-                          _ = b i * n - n / log n ^ 2 := by
-                                congr
-                                exact Real.norm_of_nonneg <| by positivity
-                          _ ≤ r i n := hn' i
-
-lemma bi_min_div_two_lt_one : b (min_bi b) / 2 < 1 := by
-  have gt_zero : 0 < b (min_bi b) := R.b_pos (min_bi b)
-  calc b (min_bi b) / 2 < b (min_bi b) := by aesop (add safe apply div_two_lt_of_pos)
-                      _ < 1 := R.b_lt_one _
-
-lemma bi_min_div_two_pos : 0 < b (min_bi b) / 2 := div_pos (R.b_pos _) (by norm_num)
-
-lemma exists_eventually_const_mul_le_r :
-    ∃ c ∈ Set.Ioo (0 : ℝ) 1, ∀ᶠ (n : ℕ) in atTop, ∀ i, c * n ≤ r i n := by
-  have gt_zero : 0 < b (min_bi b) := R.b_pos (min_bi b)
-  exact ⟨b (min_bi b) / 2, ⟨⟨by positivity, R.bi_min_div_two_lt_one⟩, R.eventually_bi_mul_le_r⟩⟩
-
-lemma eventually_r_ge (C : ℝ) : ∀ᶠ (n : ℕ) in atTop, ∀ i, C ≤ r i n := by
-  obtain ⟨c, hc_mem, hc⟩ := R.exists_eventually_const_mul_le_r
-  filter_upwards [eventually_ge_atTop ⌈C / c⌉₊, hc] with n hn₁ hn₂
-  have h₁ := hc_mem.1
-  intro i
-  calc C = c * (C / c) := by
-            rw [← mul_div_assoc]
-            exact (mul_div_cancel_left₀ _ (by positivity)).symm
-       _ ≤ c * ⌈C / c⌉₊ := by gcongr; simp [Nat.le_ceil]
-       _ ≤ c * n := by gcongr
-       _ ≤ r i n := hn₂ i
-
-lemma tendsto_atTop_r (i : α) : Tendsto (r i) atTop atTop := by
-  rw [tendsto_atTop]
-  intro b
-  have := R.eventually_r_ge b
-  rw [Filter.eventually_all] at this
-  exact_mod_cast this i
-
-lemma tendsto_atTop_r_real (i : α) : Tendsto (fun n => (r i n : ℝ)) atTop atTop :=
-  Tendsto.comp tendsto_natCast_atTop_atTop (R.tendsto_atTop_r i)
-
-lemma exists_eventually_r_le_const_mul :
-    ∃ c ∈ Set.Ioo (0 : ℝ) 1, ∀ᶠ (n : ℕ) in atTop, ∀ i, r i n ≤ c * n := by
-  let c := b (max_bi b) + (1 - b (max_bi b)) / 2
-  have h_max_bi_pos : 0 < b (max_bi b) := R.b_pos _
-  have h_max_bi_lt_one : 0 < 1 - b (max_bi b) := by
-    have : b (max_bi b) < 1 := R.b_lt_one _
-    linarith
-  have hc_pos : 0 < c := by positivity
-  have h₁ : 0 < (1 - b (max_bi b)) / 2 := by positivity
-  have hc_lt_one : c < 1 :=
-    calc b (max_bi b) + (1 - b (max_bi b)) / 2 = b (max_bi b) * (1 / 2) + 1 / 2 := by ring
-                                             _ < 1 * (1 / 2) + 1 / 2 := by
-                                                  gcongr
-                                                  exact R.b_lt_one _
-                                             _ = 1 := by norm_num
-  refine ⟨c, ⟨hc_pos, hc_lt_one⟩, ?_⟩
-  have hlo := isLittleO_self_div_log_id
-  rw [Asymptotics.isLittleO_iff] at hlo
-  have hlo' := hlo h₁
-  filter_upwards [hlo', R.eventually_r_le_b] with n hn hn'
-  intro i
-  rw [Real.norm_of_nonneg (by positivity)] at hn
-  simp only [Real.norm_of_nonneg (by positivity : 0 ≤ (n : ℝ))] at hn
-  calc r i n ≤ b i * n + n / log n ^ 2 := by exact hn' i
-             _ ≤ b i * n + (1 - b (max_bi b)) / 2 * n := by gcongr
-             _ = (b i + (1 - b (max_bi b)) / 2) * n := by ring
-             _ ≤ (b (max_bi b) + (1 - b (max_bi b)) / 2) * n := by gcongr; exact max_bi_le _
-
-lemma eventually_r_pos : ∀ᶠ (n : ℕ) in atTop, ∀ i, 0 < r i n := by
-  rw [Filter.eventually_all]
-  exact fun i => (R.tendsto_atTop_r i).eventually_gt_atTop 0
-
-lemma eventually_log_b_mul_pos : ∀ᶠ (n : ℕ) in atTop, ∀ i, 0 < log (b i * n) := by
-  rw [Filter.eventually_all]
-  intro i
-  have h : Tendsto (fun (n : ℕ) => log (b i * n)) atTop atTop :=
-    Tendsto.comp tendsto_log_atTop
-      <| Tendsto.const_mul_atTop (b_pos R i) tendsto_natCast_atTop_atTop
-  exact h.eventually_gt_atTop 0
-
-@[aesop safe apply] lemma T_pos (n : ℕ) : 0 < T n := by
-  induction n using Nat.strongRecOn with
-  | ind n h_ind =>
-    cases lt_or_ge n R.n₀ with
-    | inl hn => exact R.T_gt_zero' n hn -- n < R.n₀
-    | inr hn => -- R.n₀ ≤ n
-      rw [R.h_rec n hn]
-      have := R.g_nonneg
-      refine add_pos_of_pos_of_nonneg (Finset.sum_pos ?sum_elems univ_nonempty) (by aesop)
-      exact fun i _ => mul_pos (R.a_pos i) <| h_ind _ (R.r_lt_n i _ hn)
-
-@[aesop safe apply]
-lemma T_nonneg (n : ℕ) : 0 ≤ T n := le_of_lt <| R.T_pos n
-
-end
-
-/-!
-#### Smoothing function
-
-We define `ε` as the "smoothing function" `fun n => 1 / log n`, which will be used in the form of a
-factor of `1 ± ε n` needed to make the induction step go through.
-
-This is its own definition to make it easier to switch to a different smoothing function.
-For example, choosing `1 / log n ^ δ` for a suitable choice of `δ` leads to a slightly tighter
-theorem at the price of a more complicated proof.
-
-This part of the file then proves several properties of this function that will be needed later in
-the proof.
--/
-
-/-- The "smoothing function" is defined as `1 / log n`. This is defined as an `ℝ → ℝ` function
-as opposed to `ℕ → ℝ` since this is more convenient for the proof, where we need to e.g. take
-derivatives. -/
-noncomputable def smoothingFn (n : ℝ) : ℝ := 1 / log n
 
 local notation "ε" => smoothingFn
 
