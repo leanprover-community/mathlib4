@@ -44,7 +44,7 @@ local notation "⟪" x ", " y "⟫" => inner ℝ x y
 
 variable (F E) in
 /-- Consider a real vector bundle in which each fiber is endowed with a scalar product.
-We that the bundle is Riemannian if the scalar product depends continuously on the base point.
+We say that the bundle is Riemannian if the scalar product depends continuously on the base point.
 This assumption is spelled `IsContinuousRiemannianBundle F E` where `F` is the model fiber,
 and `E : B → Type*` is the bundle. -/
 class IsContinuousRiemannianBundle : Prop where
@@ -78,7 +78,7 @@ variable
   {b : M → B} {v w : ∀ x, E (b x)} {s : Set M} {x : M}
 
 /-- Given two continuous maps into the same fibers of a continuous Riemannian bundle,
-their scalar product is continuous. -/
+their scalar product is continuous. Version with `ContinuousWithinAt`. -/
 lemma ContinuousWithinAt.inner_bundle
     (hv : ContinuousWithinAt (fun m ↦ (v m : TotalSpace F E)) s x)
     (hw : ContinuousWithinAt (fun m ↦ (w m : TotalSpace F E)) s x) :
@@ -98,7 +98,7 @@ lemma ContinuousWithinAt.inner_bundle
   exact this.2
 
 /-- Given two continuous maps into the same fibers of a continuous Riemannian bundle,
-their scalar product is continuous. -/
+their scalar product is continuous. Version with `ContinuousAt`. -/
 lemma ContinuousAt.inner_bundle
     (hv : ContinuousAt (fun m ↦ (v m : TotalSpace F E)) x)
     (hw : ContinuousAt (fun m ↦ (w m : TotalSpace F E)) x) :
@@ -107,7 +107,7 @@ lemma ContinuousAt.inner_bundle
   exact ContinuousWithinAt.inner_bundle hv hw
 
 /-- Given two continuous maps into the same fibers of a continuous Riemannian bundle,
-their scalar product is continuous. -/
+their scalar product is continuous. Version with `ContinuousOn`. -/
 lemma ContinuousOn.inner_bundle
     (hv : ContinuousOn (fun m ↦ (v m : TotalSpace F E)) s)
     (hw : ContinuousOn (fun m ↦ (w m : TotalSpace F E)) s) :
