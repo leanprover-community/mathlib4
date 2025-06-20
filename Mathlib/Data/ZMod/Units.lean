@@ -119,7 +119,7 @@ theorem coe_int_mul_inv_eq_one {n : ℕ} (x : ℤ) (h : IsCoprime x n) :
   haveI : NeZero n := ⟨hn⟩
   rw [← coe_int_val_coe]
   apply coe_mul_inv_eq_one
-  rwa [Int.isCoprime_iff_gcd_eq_one, Int.gcd_comm, Int.gcd_rec, ← val_intCast] at h
+  rwa [Int.isCoprime_iff_gcd_eq_one, ← Int.gcd_emod, ← val_intCast] at h
 
 theorem coe_int_inv_mul_eq_one {n : ℕ} (x : ℤ) (h : IsCoprime x n) :
     (x : ZMod n)⁻¹ * (x : ZMod n) = 1 := by
