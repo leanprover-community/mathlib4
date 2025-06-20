@@ -364,12 +364,3 @@ initialize addLinter commandStartLinter
 end Style.CommandStart
 
 end Mathlib.Linter
-
-run_cmd
-  let stx ← `(@[grind =] example := 0)
-  dbg_trace stx
-  let fmt : Option Format := ←
-        liftCoreM <| PrettyPrinter.ppCategory `command stx
-  if let some fmt := fmt then
-  let st := fmt.pretty
-  dbg_trace st
