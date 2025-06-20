@@ -271,15 +271,15 @@ lemma lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc {x y : ℝ}
 
 open MeasureTheory
 
-variable [∀ (x : M), NormSMulClass ℝ (TangentSpace I x)]
+variable [∀ (x : M), ENormSMulClass ℝ (TangentSpace I x)]
 
-lemma pathELength_comp (γ : ℝ → M) {f : ℝ → ℝ} {x y : ℝ} (h : x ≤ y) (hf : MonotoneOn f (Icc x y))
+lemma pathELength_comp_of_monotoneOn (γ : ℝ → M) {f : ℝ → ℝ} {x y : ℝ} (h : x ≤ y)
+    (hf : MonotoneOn f (Icc x y))
     (h'f : DifferentiableOn ℝ f (Icc x y)) (hγ : MDifferentiableOn 𝓘(ℝ) I γ (Icc (f x) (f y))) :
-    pathELength I γ (f x) (f y) = pathELength I (γ ∘ f) x y := by
+    pathELength I (γ ∘ f) x y = pathELength I γ (f x) (f y) := by
   rcases h.eq_or_lt with rfl | h
   · simp
-  have f_im : f '' (Icc x y) = Icc (f x) (f y) :=
-    ContinuousOn.image_Icc_of_monotoneOn h.le h'f.continuousOn hf
+  have f_im : f '' (Icc x y) = Icc (f x) (f y) := h'f.continuousOn.image_Icc_of_monotoneOn h.le hf
   simp only [pathELength_eq_lintegral_mfderivWithin_Icc, ← f_im]
   have B (t) (ht : t ∈ Icc x y) : HasDerivWithinAt f (derivWithin f (Icc x y) t) (Icc x y) t :=
     (h'f t ht).hasDerivWithinAt
@@ -299,9 +299,45 @@ lemma pathELength_comp (γ : ℝ → M) {f : ℝ → ℝ} {x y : ℝ} (h : x ≤
   rw [this]
   simp only [Function.comp_apply, ContinuousLinearMap.coe_comp']
   have : mfderivWithin 𝓘(ℝ) 𝓘(ℝ) f (Icc x y) t 1
-    = derivWithin f (Icc x y) t • (1 : TangentSpace 𝓘(ℝ) (f t)) := sorry
+      = derivWithin f (Icc x y) t • (1 : TangentSpace 𝓘(ℝ) (f t)) := by
+    simp only [mfderivWithin_eq_fderivWithin, ← fderivWithin_derivWithin, smul_eq_mul, mul_one]
+    rfl
   rw [this]
-  simp only [map_smul, enorm_smul]
+  have : 0 ≤ derivWithin f (Icc x y) t := hf.derivWithin_nonneg
+  simp only [map_smul, enorm_smul, ← Real.enorm_of_nonneg this, f_im]
+
+lemma pathELength_comp_of_antitoneOn (γ : ℝ → M) {f : ℝ → ℝ} {x y : ℝ} (h : x ≤ y)
+    (hf : AntitoneOn f (Icc x y))
+    (h'f : DifferentiableOn ℝ f (Icc x y)) (hγ : MDifferentiableOn 𝓘(ℝ) I γ (Icc (f y) (f x))) :
+    pathELength I (γ ∘ f) x y = pathELength I γ (f y) (f x) := by
+  rcases h.eq_or_lt with rfl | h
+  · simp
+  have f_im : f '' (Icc x y) = Icc (f y) (f x) := h'f.continuousOn.image_Icc_of_antitoneOn h.le hf
+  simp only [pathELength_eq_lintegral_mfderivWithin_Icc, ← f_im]
+  have B (t) (ht : t ∈ Icc x y) : HasDerivWithinAt f (derivWithin f (Icc x y) t) (Icc x y) t :=
+    (h'f t ht).hasDerivWithinAt
+  rw [lintegral_image_eq_lintegral_deriv_mul_of_antitoneOn measurableSet_Icc B hf]
+  apply setLIntegral_congr_fun measurableSet_Icc (fun t ht ↦ ?_)
+  have : (mfderivWithin 𝓘(ℝ, ℝ) I (γ ∘ f) (Icc x y) t)
+      = (mfderivWithin 𝓘(ℝ, ℝ) I γ (Icc (f y) (f x)) (f t))
+          ∘L mfderivWithin 𝓘(ℝ) 𝓘(ℝ) f (Icc x y) t := by
+    rw [← f_im] at hγ ⊢
+    apply mfderivWithin_comp
+    · apply hγ _ (mem_image_of_mem _ ht)
+    · rw [mdifferentiableWithinAt_iff_differentiableWithinAt]
+      exact h'f _ ht
+    · exact subset_preimage_image _ _
+    · rw [uniqueMDiffWithinAt_iff_uniqueDiffWithinAt]
+      exact uniqueDiffOn_Icc h _ ht
+  rw [this]
+  simp only [Function.comp_apply, ContinuousLinearMap.coe_comp']
+  have : mfderivWithin 𝓘(ℝ) 𝓘(ℝ) f (Icc x y) t 1
+      = derivWithin f (Icc x y) t • (1 : TangentSpace 𝓘(ℝ) (f t)) := by
+    simp only [mfderivWithin_eq_fderivWithin, ← fderivWithin_derivWithin, smul_eq_mul, mul_one]
+    rfl
+  rw [this]
+  have : 0 ≤ -derivWithin f (Icc x y) t := by simp [hf.derivWithin_nonpos]
+  simp only [map_smul, enorm_smul, f_im, ← Real.enorm_of_nonneg this, enorm_neg]
 
 
 
