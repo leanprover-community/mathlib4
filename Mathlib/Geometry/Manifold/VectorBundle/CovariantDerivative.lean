@@ -13,7 +13,7 @@ section
 
 variable {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 2 M]
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 0 M]
 
 variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   -- `F` model fiber
@@ -50,19 +50,45 @@ structure CovariantDerivative where
   do_not_read : ∀ (X : Π x : M, TangentSpace I x) {σ : Π x : M, V x} {x : M},
     ¬ MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x → toFun X σ x = 0
 
+namespace CovariantDerivative
 
-lemma CovariantDerivative.smul_const_σ (cov : CovariantDerivative I F V)
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
+  [VectorBundle 𝕜 F V] in
+@[simp]
+lemma zeroX (cov : CovariantDerivative I F V) (σ : Π x : M, V x) : cov.toFun 0 σ = 0 := by
+  have := cov.addX (0 : (x : M) → TangentSpace I x) (0 : (x : M) → TangentSpace I x) σ
+  simpa using this
+
+@[simp]
+lemma zeroσ (cov : CovariantDerivative I F V) (X : Π x : M, TangentSpace I x) : cov.toFun X 0 = 0 := by
+  ext x
+  have : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (0 : V x)) x := by
+    sorry
+    -- apply mdifferentiableAt_const (I := I) (I' := I.prod 𝓘(𝕜, F)) (c := (0 : V x)) (x := x) fails
+  have := cov.addσ X (0 : (x : M) → V x) (0 : (x : M) → V x) x this this
+  simpa using this
+
+lemma smul_const_σ (cov : CovariantDerivative I F V)
     (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (a : 𝕜) :
     cov.toFun X (a • σ) = a • cov.toFun X σ := by
   ext x
   by_cases hσ : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x
   · simpa using cov.leibniz X σ (fun _ ↦ a) x hσ mdifferentiable_const.mdifferentiableAt
   have hσ₂ : cov.toFun X (a • σ) x = 0 := by
+    by_cases ha: a = 0
+    · simp [ha]
     refine cov.do_not_read X ?_
     contrapose! hσ
     simp at hσ
-    sorry
+    have : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (a⁻¹ • a • σ x)) x := by
+      sorry -- have := hσ.const_smul a⁻¹ --(E' := H × F) fails to unify
+    apply this.congr_of_eventuallyEq
+    filter_upwards with x
+    congr
+    exact (eq_inv_smul_iff₀ ha).mpr rfl
   simp [cov.do_not_read X hσ, hσ₂]
+
+end CovariantDerivative
 
 end
 
