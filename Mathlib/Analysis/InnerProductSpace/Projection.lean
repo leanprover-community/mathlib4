@@ -587,6 +587,10 @@ variable (K)
 theorem orthogonalProjection_norm_le : ‖K.orthogonalProjection‖ ≤ 1 :=
   LinearMap.mkContinuous_norm_le _ (by norm_num) _
 
+theorem norm_orthogonalProjection_apply {v : E} (hv : v ∈ K) :
+    ‖orthogonalProjection K v‖ = ‖v‖ :=
+  congr(‖$(K.orthogonalProjection_eq_self_iff.mpr hv)‖)
+
 /-- The orthogonal projection onto a closed subspace is norm non-increasing. -/
 theorem norm_orthogonalProjection_apply_le (v : E) :
     ‖orthogonalProjection K v‖ ≤ ‖v‖ := by calc
