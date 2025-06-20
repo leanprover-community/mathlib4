@@ -163,12 +163,8 @@ theorem roots_quadratic_of_discrim_ne_sq (ha : a ≠ 0) (h : ∀ s : R, discrim 
 
 theorem roots_quadratic_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
     (h : discrim a b c = s * s) :
-    (C a * X ^ 2 + C b * X + C c).roots = {(-b + s) / (2 * a), (-b - s) / (2 * a)} := by
-  rw [roots_quadratic_eq_pair_iff_of_ne_zero ha]
-  ring_nf
-  rw [sq s, ← h, discrim]
-  field_simp
-  ring_nf
+    (C a * X ^ 2 + C b * X + C c).roots = {(-b + s) / (2 * a), (-b - s) / (2 * a)} :=
+  (roots_quadratic_eq_pair_iff_of_ne_zero ha).mpr (vieta_of_discrim_eq_sq ha h)
 
 end QuadraticDiscriminant
 
