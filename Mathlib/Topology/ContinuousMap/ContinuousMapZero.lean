@@ -215,6 +215,17 @@ instance instAdd [AddZeroClass R] [ContinuousAdd R] : Add C(X, R)₀ where
 
 @[simp] lemma coe_add [AddZeroClass R] [ContinuousAdd R] (f g : C(X, R)₀) : ⇑(f + g) = f + g := rfl
 
+instance instNeg [NegZeroClass R] [ContinuousNeg R] : Neg C(X, R)₀ where
+  neg f := ⟨- f, by simp⟩
+
+@[simp] lemma coe_neg [NegZeroClass R] [ContinuousNeg R] (f : C(X, R)₀) : ⇑(-f) = -f := rfl
+
+instance instSub [SubNegZeroMonoid R] [ContinuousSub R] : Sub C(X, R)₀ where
+  sub f g := ⟨f - g, by simp⟩
+
+@[simp] lemma coe_sub [SubNegZeroMonoid R] [ContinuousSub R] (f g : C(X, R)₀) :
+    ⇑(f - g) = f - g := rfl
+
 instance instMul [MulZeroClass R] [ContinuousMul R] : Mul C(X, R)₀ where
   mul f g := ⟨f * g, by simp⟩
 
@@ -227,17 +238,16 @@ instance instSMul {M : Type*} [Zero R] [SMulZeroClass M R] [ContinuousConstSMul 
 @[simp] lemma coe_smul {M : Type*} [Zero R] [SMulZeroClass M R] [ContinuousConstSMul M R]
     (m : M) (f : C(X, R)₀) : ⇑(m • f) = m • f := rfl
 
-section Semiring
+section AddCommMonoid
 
-variable [CommSemiring R] [IsTopologicalSemiring R]
+variable [AddCommMonoid R] [ContinuousAdd R]
 
-instance instNonUnitalCommSemiring : NonUnitalCommSemiring C(X, R)₀ :=
-  toContinuousMap_injective.nonUnitalCommSemiring
-    _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+instance instAddCommMonoid : AddCommMonoid C(X, R)₀ :=
+  fast_instance% toContinuousMap_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance instModule {M : Type*} [Semiring M] [Module M R] [ContinuousConstSMul M R] :
     Module M C(X, R)₀ :=
-  toContinuousMap_injective.module M
+  fast_instance% toContinuousMap_injective.module M
     { toFun := _, map_add' := fun _ _ ↦ rfl, map_zero' := rfl } (fun _ _ ↦ rfl)
 
 instance instSMulCommClass {M N : Type*} [SMulZeroClass M R] [ContinuousConstSMul M R]
@@ -245,14 +255,34 @@ instance instSMulCommClass {M N : Type*} [SMulZeroClass M R] [ContinuousConstSMu
     SMulCommClass M N C(X, R)₀ where
   smul_comm _ _ _ := ext fun _ ↦ smul_comm ..
 
-instance instSMulCommClass' {M : Type*} [SMulZeroClass M R] [SMulCommClass M R R]
-    [ContinuousConstSMul M R] : SMulCommClass M C(X, R)₀ C(X, R)₀ where
-  smul_comm m f g := ext fun x ↦ smul_comm m (f x) (g x)
-
 instance instIsScalarTower {M N : Type*} [SMulZeroClass M R] [ContinuousConstSMul M R]
     [SMulZeroClass N R] [ContinuousConstSMul N R] [SMul M N] [IsScalarTower M N R] :
     IsScalarTower M N C(X, R)₀ where
   smul_assoc _ _ _ := ext fun _ ↦ smul_assoc ..
+
+end AddCommMonoid
+
+section AddCommGroup
+
+variable [AddCommGroup R] [IsTopologicalAddGroup R]
+
+instance instAddCommGroup : AddCommGroup C(X, R)₀ :=
+  fast_instance% toContinuousMap_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+end AddCommGroup
+
+section Semiring
+
+variable [CommSemiring R] [IsTopologicalSemiring R]
+
+instance instNonUnitalCommSemiring : NonUnitalCommSemiring C(X, R)₀ :=
+  fast_instance% toContinuousMap_injective.nonUnitalCommSemiring
+    _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+instance instSMulCommClass' {M : Type*} [SMulZeroClass M R] [SMulCommClass M R R]
+    [ContinuousConstSMul M R] : SMulCommClass M C(X, R)₀ C(X, R)₀ where
+  smul_comm m f g := ext fun x ↦ smul_comm m (f x) (g x)
 
 instance instIsScalarTower' {M : Type*} [SMulZeroClass M R] [IsScalarTower M R R]
     [ContinuousConstSMul M R] : IsScalarTower M C(X, R)₀ C(X, R)₀ where
@@ -327,18 +357,9 @@ section Ring
 variable {X R : Type*} [Zero X] [TopologicalSpace X]
 variable [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
 
-instance instSub : Sub C(X, R)₀ where
-  sub f g := ⟨f - g, by simp⟩
-
-instance instNeg : Neg C(X, R)₀ where
-  neg f := ⟨-f, by simp⟩
-
 instance instNonUnitalCommRing : NonUnitalCommRing C(X, R)₀ :=
-  toContinuousMap_injective.nonUnitalCommRing _ rfl
-  (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
-
-@[simp]
-lemma coe_neg (f : C(X, R)₀) : ⇑(-f) = -⇑f := rfl
+  fast_instance% toContinuousMap_injective.nonUnitalCommRing _ rfl
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance : ContinuousNeg C(X, R)₀ where
   continuous_neg := by
@@ -439,6 +460,9 @@ noncomputable instance [NormedAddCommGroup R] : Norm C(α, R)₀ where
 
 lemma norm_def [NormedAddCommGroup R] (f : C(α, R)₀) : ‖f‖ = ‖(f : C(α, R))‖ :=
   rfl
+
+noncomputable instance [NormedAddCommGroup R] : NormedAddCommGroup C(α, R)₀ where
+  dist_eq f g := NormedAddGroup.dist_eq (f : C(α, R)) g
 
 noncomputable instance [NormedCommRing R] : NonUnitalNormedCommRing C(α, R)₀ where
   dist_eq f g := NormedAddGroup.dist_eq (f : C(α, R)) g
