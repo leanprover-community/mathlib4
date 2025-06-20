@@ -6,6 +6,7 @@ Authors: Adam Topaz
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.Topology.Basic
 import Mathlib.Data.NNReal.Basic
+import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 
 /-!
 
@@ -36,6 +37,8 @@ class ValuativeRel (R : Type*) [CommRing R] where
   rel_total (x y) : rel x y ∨ rel y x
   rel_zero (x) : rel 0 x
   rel_add_of_rel_of_rel (x y z) : rel x z → rel y z → rel (x + y) z
+  not_rel_mul_of_not_rel_of_not_rel (x y : R) : ¬ rel x 0 → ¬ rel y 0 → ¬ rel (x * y) 0
+  not_rel_one_zero : ¬ rel 1 0
 
 @[inherit_doc] infix:50  " ∣ᵥ " => ValuativeRel.rel
 
@@ -61,34 +64,33 @@ namespace ValuativeRel
 variable {R : Type*} [CommRing R] [ValuativeRel R]
 
 variable (R) in
+def unitSubmonoid : Submonoid R where
+  carrier := { x | ¬ x ∣ᵥ 0}
+  mul_mem' := by
+    intro x y hx hy
+    apply not_rel_mul_of_not_rel_of_not_rel
+    assumption'
+  one_mem' := not_rel_one_zero
+
+variable (R) in
 /-- The setoid used to construct `ValueMonoid R`. -/
-def valueSetoid : Setoid R where
-  r x y := x ∣ᵥ y ∧ y ∣ᵥ x
+def valueSetoid : Setoid (R × unitSubmonoid R) where
+  r := fun (x,s) (y,t) => x * t ∣ᵥ y * s ∧ y * s ∣ᵥ x * t
   iseqv := by
     constructor
-    · intro x
-      let h := refl x
-      exact ⟨h, h⟩
-    · rintro _ _ ⟨h1,h2⟩
-      exact ⟨h2,h1⟩
-    · rintro _ _ _ ⟨h1,h2⟩ ⟨h3,h4⟩
-      exact ⟨trans h1 h3, ValuativeRel.trans h4 h2⟩
+    · sorry
+    · sorry
+    · sorry
 
 variable (R) in
 /-- The "canonical" value monoid of a ring with a valuative relation. -/
-def ValueMonoid := Quotient (valueSetoid R)
+def ValueGroup := Quotient (valueSetoid R)
 
 open Classical in
 /-- The value monoid is a linearly ordered commutative monoid with zero. -/
-instance : LinearOrderedCommMonoidWithZero (ValueMonoid R) where
-  mul := Quotient.lift₂ (fun x y => .mk _ <| x * y) <| by
-    intro a₁ b₁ a₂ b₂ ⟨ha1,ha2⟩ ⟨hb1,hb2⟩
-    apply Quotient.sound
-    constructor <;> apply rel_mul_mul_of_rel_of_rel <;> assumption
-  mul_assoc := by
-    rintro ⟨a⟩ ⟨b⟩ ⟨c⟩
-    apply Quotient.sound
-    simp only [mul_assoc, Setoid.refl]
+instance : LinearOrderedCommGroupWithZero (ValueGroup R) where
+  mul := Quotient.lift₂ (fun x y => .mk _ <| x * y) <| sorry
+  mul_assoc := by sorry
   one := .mk _ 1
   one_mul := by
     rintro ⟨a⟩
@@ -104,9 +106,7 @@ instance : LinearOrderedCommMonoidWithZero (ValueMonoid R) where
     induction n with
     | zero => simp
     | succ n hh =>
-      simp_rw [pow_succ]
-      cases h ; cases hh
-      constructor <;> apply rel_mul_mul_of_rel_of_rel <;> assumption
+      sorry
   npow_zero := by
     rintro ⟨x⟩
     apply Quotient.sound
@@ -119,85 +119,42 @@ instance : LinearOrderedCommMonoidWithZero (ValueMonoid R) where
     rintro ⟨a⟩ ⟨b⟩
     apply Quotient.sound
     simp only [mul_comm, Setoid.refl]
-  zero := Quotient.mk _ 0
+  zero := Quotient.mk _ (0, 1)
   zero_mul := by
     rintro ⟨a⟩
     apply Quotient.sound
-    simp only [zero_mul, Setoid.refl]
+    sorry
   mul_zero := by
     rintro ⟨a⟩
     apply Quotient.sound
-    simp only [mul_zero, Setoid.refl]
-  le := Quotient.lift₂ (fun a b => a ∣ᵥ b) <| by
-    rintro a₁ b₁ a₂ b₂ ⟨ha1,ha2⟩ ⟨hb1,hb2⟩
-    ext ; constructor
-    · dsimp ; intro h
-      refine trans ha2 ?_
-      exact trans h hb1
-    · dsimp ; intro h
-      refine trans ha1 ?_
-      refine trans h hb2
-  le_refl := by
-    rintro ⟨a⟩
-    show a ∣ᵥ a
-    apply refl
-  le_trans := by
-    rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ (h1 : a ∣ᵥ b) (h2 : b ∣ᵥ c)
-    show a ∣ᵥ c
-    exact trans h1 h2
-  le_antisymm := by
-    rintro ⟨a⟩ ⟨b⟩ (h1 : a ∣ᵥ b) (h2 : b ∣ᵥ a)
-    apply Quotient.sound
-    exact ⟨h1,h2⟩
-  le_total := by
-    rintro ⟨a⟩ ⟨b⟩
-    show (a ∣ᵥ b) ∨ (b ∣ᵥ a)
-    apply rel_total
+    sorry
+  le := Quotient.lift₂ (fun (x,s) (t,y) => x * y ∣ᵥ t * s) <| sorry
+  le_refl := by sorry
+  le_trans := by sorry
+  le_antisymm := by sorry
+  le_total := by sorry
   toDecidableLE := inferInstance
-  mul_le_mul_left := by
-    rintro ⟨a⟩ ⟨b⟩ (h : a ∣ᵥ b) ⟨c⟩
-    show c * a ∣ᵥ c * b
-    apply rel_mul_mul_of_rel_of_rel
-    · apply refl
-    · assumption
-  mul_le_mul_right := by
-    rintro ⟨a⟩ ⟨b⟩ (h : a ∣ᵥ b) ⟨c⟩
-    show a * c ∣ᵥ b * c
-    apply rel_mul_mul_of_rel_of_rel
-    · assumption
-    · apply refl
-  bot := Quotient.mk _ 0
-  bot_le := by
-    rintro ⟨a⟩
-    apply rel_zero
-  zero_le_one := by apply rel_zero
+  mul_le_mul_left := by sorry
+  mul_le_mul_right := by sorry
+  bot := Quotient.mk _ (0, 1)
+  bot_le := by sorry
+  zero_le_one := by sorry
 
 variable (R) in
 /-- The "canonical" valuation associated to a valuative relation. -/
-def valuation : Valuation R (ValueMonoid R) where
-  toFun := Quotient.mk _
+def valuation : Valuation R (ValueGroup R) where
+  toFun r := Quotient.mk _ (r, 1)
   map_zero' := rfl
   map_one' := rfl
-  map_mul' _ _ := rfl
-  map_add_le_max' := by
-    intro x y
-    let x' : ValueMonoid R := .mk _ x
-    let y' : ValueMonoid R := .mk _ y
-    set t := max x' y'
-    obtain ⟨s,hs⟩ : ∃ s : R, .mk _ s = t := Quotient.exists_rep t
-    rw [← hs]
-    apply rel_add_of_rel_of_rel
-    · suffices x' ≤ t by rw [← hs] at this ; exact this
-      simp only [le_sup_left, t]
-    · suffices y' ≤ t by rw [← hs] at this ; exact this
-      simp only [le_sup_right, t]
+  map_mul' _ _ := sorry
+  map_add_le_max' := by sorry
 
 instance : (valuation R).Compatible where
-  dvd_iff_le _ _ := Iff.rfl
+  dvd_iff_le _ _ := sorry
 
 /-- Construct a valuative relation on a ring using a valuation. -/
 def ofValuation
-    {S Γ : Type*} [CommRing S] [LinearOrderedCommMonoidWithZero Γ]
+    {S Γ : Type*} [CommRing S] [LinearOrderedCommGroupWithZero Γ]
     (v : Valuation S Γ) : ValuativeRel S where
   rel x y := v x ≤ v y
   refl a := le_refl _
@@ -214,6 +171,8 @@ def ofValuation
   rel_add_of_rel_of_rel x y z h1 h2 := by
     refine le_trans (v.map_add x y) ?_
     simpa only [sup_le_iff] using ⟨h1, h2⟩
+  not_rel_mul_of_not_rel_of_not_rel := sorry
+  not_rel_one_zero := sorry
 
 lemma isEquiv {Γ₁ Γ₂ : Type*}
     [LinearOrderedCommMonoidWithZero Γ₁]
@@ -248,6 +207,8 @@ instance : ValuativeRel (WithPreorder R) where
   rel_total := rel_total (R := R)
   rel_zero := rel_zero (R := R)
   rel_add_of_rel_of_rel := rel_add_of_rel_of_rel (R := R)
+  not_rel_mul_of_not_rel_of_not_rel := not_rel_mul_of_not_rel_of_not_rel (R := R)
+  not_rel_one_zero := not_rel_one_zero (R := R)
 
 instance : ValuativePreorder (WithPreorder R) where
   dvd_iff_le _ _ := Iff.rfl
@@ -256,9 +217,9 @@ open NNReal in variable (R) in
 /-- An auxiliary structure used to define `IsRankOne`. -/
 structure RankOneStruct where
   /-- The embedding of the value monoid into the nonnegative reals. -/
-  emb : ValueMonoid R →*₀ ℝ≥0
+  emb : ValueGroup R →*₀ ℝ≥0
   strictMono : StrictMono emb
-  nontrivial : ∃ γ : ValueMonoid R, emb γ ≠ 0 ∧ emb γ ≠ 1
+  nontrivial : ∃ γ : ValueGroup R, emb γ ≠ 0 ∧ emb γ ≠ 1
 
 variable (R) in
 /-- We say that a ring with a valuative relation is of rank one if
@@ -273,7 +234,9 @@ variable (R) in
 has a maximal element `< 1`. -/
 class IsDiscrete where
   has_maximal_element :
-    ∃ γ : ValueMonoid R, γ < 1 ∧ (∀ δ : ValueMonoid R, δ < 1 → δ ≤ γ)
+    ∃ γ : ValueGroup R, γ < 1 ∧ (∀ δ : ValueGroup R, δ < 1 → δ ≤ γ)
+
+lemma valuation_surjective (γ : ValueGroup R) : ∃ x, valuation _ x = γ := sorry
 
 end ValuativeRel
 
@@ -281,7 +244,16 @@ open Topology ValuativeRel in
 /-- We say that a topology on `R` is valuative if the neighborhoods of `0` in `R`
 are determined by the relation `· ∣ᵥ ·`. -/
 class ValuativeTopology (R : Type*) [CommRing R] [ValuativeRel R] [TopologicalSpace R] where
-  mem_nhds_iff : ∀ s : Set R, s ∈ 𝓝 (0 : R) ↔ ∃ γ : ValueMonoid R, { x | valuation _ x < γ } ⊆ s
+  mem_nhds_iff : ∀ s : Set R, s ∈ 𝓝 (0 : R) ↔ ∃ γ : (ValueGroup R)ˣ, { x | valuation _ x < γ } ⊆ s
+
+namespace ValuativeRel
+
+variable
+  {R Γ : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R]
+  [LinearOrderedCommGroupWithZero Γ]
+  (v : Valuation R Γ) [v.Compatible]
+
+end ValuativeRel
 
 /-- If `B` is an `A` algebra and both `A` and `B` have valuative relations,
 we say that `B|A` is a valuative extension if the valuative relation on `A` is
