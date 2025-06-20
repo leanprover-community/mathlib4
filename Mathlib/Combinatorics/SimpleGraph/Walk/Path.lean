@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkDecomp
-import Mathlib.Combinatorics.SimpleGraph.Walk
+import Mathlib.Combinatorics.SimpleGraph.Walk.Trail
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!
@@ -13,12 +13,7 @@ import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 In a simple graph,
 
-* A *trail* is a walk whose edges each appear no more than once.
-
 * A *path* is a trail whose vertices appear no more than once.
-
-* A *cycle* is a nonempty trail whose first and last vertices are the
-  same and whose vertices except for the first appear no more than once.
 
 **Warning:** graph theorists mean something different by "path" than
 do homotopy theorists.  A "walk" in graph theory is a "path" in
@@ -30,7 +25,7 @@ counterparts in [Chou1994].
 
 ## Main definitions
 
-* `SimpleGraph.Walk.IsTrail`, `SimpleGraph.Walk.IsPath`, and `SimpleGraph.Walk.IsCycle`.
+* `SimpleGraph.Walk.IsPath`
 
 * `SimpleGraph.Path`
 
@@ -49,13 +44,8 @@ counterparts in [Chou1994].
 
 * `SimpleGraph.IsBridge` for whether an edge is a bridge edge
 
-## Main statements
-
-* `SimpleGraph.isBridge_iff_mem_and_forall_cycle_notMem` characterizes bridge edges in terms of
-  there being no cycle containing them.
-
 ## Tags
-trails, paths, circuits, cycles, bridge edges
+paths, bridge edges
 -/
 
 open Function
@@ -71,13 +61,6 @@ namespace Walk
 
 variable {G} {u v w : V}
 
-/-! ### Trails, paths, circuits, cycles -/
-
-/-- A *trail* is a walk with no repeating edges. -/
-@[mk_iff isTrail_def]
-structure IsTrail {u v : V} (p : G.Walk u v) : Prop where
-  edges_nodup : p.edges.Nodup
-
 /-- A *path* is a walk with no repeating vertices.
 Use `SimpleGraph.Walk.IsPath.mk'` for a simpler constructor. -/
 structure IsPath {u v : V} (p : G.Walk u v) : Prop extends IsTrail p where
@@ -85,28 +68,6 @@ structure IsPath {u v : V} (p : G.Walk u v) : Prop extends IsTrail p where
 
 -- Porting note: used to use `extends to_trail : is_trail p` in structure
 protected lemma IsPath.isTrail {p : Walk G u v} (h : IsPath p) : IsTrail p := h.toIsTrail
-
-/-- A *circuit* at `u : V` is a nonempty trail beginning and ending at `u`. -/
-@[mk_iff isCircuit_def]
-structure IsCircuit {u : V} (p : G.Walk u u) : Prop extends IsTrail p where
-  ne_nil : p ≠ nil
-
--- Porting note: used to use `extends to_trail : is_trail p` in structure
-protected lemma IsCircuit.isTrail {p : Walk G u u} (h : IsCircuit p) : IsTrail p := h.toIsTrail
-
-/-- A *cycle* at `u : V` is a circuit at `u` whose only repeating vertex
-is `u` (which appears exactly twice). -/
-structure IsCycle {u : V} (p : G.Walk u u) : Prop extends IsCircuit p where
-  support_nodup : p.support.tail.Nodup
-
--- Porting note: used to use `extends to_circuit : is_circuit p` in structure
-protected lemma IsCycle.isCircuit {p : Walk G u u} (h : IsCycle p) : IsCircuit p := h.toIsCircuit
-
-@[simp]
-theorem isTrail_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
-    (p.copy hu hv).IsTrail ↔ p.IsTrail := by
-  subst_vars
-  rfl
 
 theorem IsPath.mk' {u v : V} {p : G.Walk u v} (h : p.support.Nodup) : p.IsPath :=
   ⟨⟨edges_nodup_of_support_nodup h⟩, h⟩
@@ -119,78 +80,6 @@ theorem isPath_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
     (p.copy hu hv).IsPath ↔ p.IsPath := by
   subst_vars
   rfl
-
-@[simp]
-theorem isCircuit_copy {u u'} (p : G.Walk u u) (hu : u = u') :
-    (p.copy hu hu).IsCircuit ↔ p.IsCircuit := by
-  subst_vars
-  rfl
-
-lemma IsCircuit.not_nil {p : G.Walk v v} (hp : IsCircuit p) : ¬ p.Nil := (hp.ne_nil ·.eq_nil)
-
-theorem isCycle_def {u : V} (p : G.Walk u u) :
-    p.IsCycle ↔ p.IsTrail ∧ p ≠ nil ∧ p.support.tail.Nodup :=
-  Iff.intro (fun h => ⟨h.1.1, h.1.2, h.2⟩) fun h => ⟨⟨h.1, h.2.1⟩, h.2.2⟩
-
-@[simp]
-theorem isCycle_copy {u u'} (p : G.Walk u u) (hu : u = u') :
-    (p.copy hu hu).IsCycle ↔ p.IsCycle := by
-  subst_vars
-  rfl
-
-lemma IsCycle.not_nil {p : G.Walk v v} (hp : IsCycle p) : ¬ p.Nil := (hp.ne_nil ·.eq_nil)
-
-@[simp]
-theorem IsTrail.nil {u : V} : (nil : G.Walk u u).IsTrail :=
-  ⟨by simp [edges]⟩
-
-theorem IsTrail.of_cons {u v w : V} {h : G.Adj u v} {p : G.Walk v w} :
-    (cons h p).IsTrail → p.IsTrail := by simp [isTrail_def]
-
-@[simp]
-theorem cons_isTrail_iff {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
-    (cons h p).IsTrail ↔ p.IsTrail ∧ s(u, v) ∉ p.edges := by simp [isTrail_def, and_comm]
-
-theorem IsTrail.reverse {u v : V} (p : G.Walk u v) (h : p.IsTrail) : p.reverse.IsTrail := by
-  simpa [isTrail_def] using h
-
-@[simp]
-theorem reverse_isTrail_iff {u v : V} (p : G.Walk u v) : p.reverse.IsTrail ↔ p.IsTrail := by
-  constructor <;>
-    · intro h
-      convert h.reverse _
-      try rw [reverse_reverse]
-
-theorem IsTrail.of_append_left {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
-    (h : (p.append q).IsTrail) : p.IsTrail := by
-  rw [isTrail_def, edges_append, List.nodup_append] at h
-  exact ⟨h.1⟩
-
-theorem IsTrail.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
-    (h : (p.append q).IsTrail) : q.IsTrail := by
-  rw [isTrail_def, edges_append, List.nodup_append] at h
-  exact ⟨h.2.1⟩
-
-theorem IsTrail.count_edges_le_one [DecidableEq V] {u v : V} {p : G.Walk u v} (h : p.IsTrail)
-    (e : Sym2 V) : p.edges.count e ≤ 1 :=
-  List.nodup_iff_count_le_one.mp h.edges_nodup e
-
-theorem IsTrail.count_edges_eq_one [DecidableEq V] {u v : V} {p : G.Walk u v} (h : p.IsTrail)
-    {e : Sym2 V} (he : e ∈ p.edges) : p.edges.count e = 1 :=
-  List.count_eq_one_of_mem h.edges_nodup he
-
-theorem IsTrail.length_le_card_edgeFinset [Fintype G.edgeSet] {u v : V}
-    {w : G.Walk u v} (h : w.IsTrail) : w.length ≤ G.edgeFinset.card := by
-  classical
-  let edges := w.edges.toFinset
-  have : edges.card = w.length := length_edges _ ▸ List.toFinset_card_of_nodup h.edges_nodup
-  rw [← this]
-  have : edges ⊆ G.edgeFinset := by
-    intro e h
-    refine mem_edgeFinset.mpr ?_
-    apply w.edges_subset_edgeSet
-    simpa [edges] using h
-  exact Finset.card_le_card this
 
 theorem IsPath.nil {u : V} : (nil : G.Walk u u).IsPath := by constructor <;> simp
 
@@ -231,61 +120,11 @@ theorem IsPath.of_append_right {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
 lemma IsPath.of_adj {G : SimpleGraph V} {u v : V} (h : G.Adj u v) : h.toWalk.IsPath := by
   aesop
 
-@[simp]
-theorem IsCycle.not_of_nil {u : V} : ¬(nil : G.Walk u u).IsCycle := fun h => h.ne_nil rfl
-
-lemma IsCycle.ne_bot : ∀ {p : G.Walk u u}, p.IsCycle → G ≠ ⊥
-  | nil, hp => by cases hp.ne_nil rfl
-  | cons h _, hp => by rintro rfl; exact h
-
-lemma IsCycle.three_le_length {v : V} {p : G.Walk v v} (hp : p.IsCycle) : 3 ≤ p.length := by
-  have ⟨⟨hp, hp'⟩, _⟩ := hp
-  match p with
-  | .nil => simp at hp'
-  | .cons h .nil => simp at h
-  | .cons _ (.cons _ .nil) => simp at hp
-  | .cons _ (.cons _ (.cons _ _)) => simp_rw [SimpleGraph.Walk.length_cons]; omega
-
-lemma not_nil_of_isCycle_cons {p : G.Walk u v} {h : G.Adj v u} (hc : (Walk.cons h p).IsCycle) :
-    ¬ p.Nil := by
-  have := Walk.length_cons _ _ ▸ Walk.IsCycle.three_le_length hc
-  rw [Walk.not_nil_iff_lt_length]
-  omega
-
-theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
-    (Walk.cons h p).IsCycle ↔ p.IsPath ∧ s(u, v) ∉ p.edges := by
-  simp only [Walk.isCycle_def, Walk.isPath_def, Walk.isTrail_def, edges_cons, List.nodup_cons,
-    support_cons, List.tail_cons]
-  have : p.support.Nodup → p.edges.Nodup := edges_nodup_of_support_nodup
-  tauto
-
-protected lemma IsCycle.reverse {p : G.Walk u u} (h : p.IsCycle) : p.reverse.IsCycle := by
-  simp only [Walk.isCycle_def, nodup_tail_support_reverse] at h ⊢
-  exact ⟨h.1.reverse, fun h' ↦ h.2.1 (by simp_all [← Walk.length_eq_zero_iff]), h.2.2⟩
-
-@[simp]
-lemma isCycle_reverse {p : G.Walk u u} : p.reverse.IsCycle ↔ p.IsCycle where
-  mp h := by simpa using h.reverse
-  mpr := .reverse
-
-lemma IsCycle.isPath_of_append_right {p : G.Walk u v} {q : G.Walk v u} (h : ¬ p.Nil)
-    (hcyc : (p.append q).IsCycle) : q.IsPath := by
-  have := hcyc.2
-  rw [tail_support_append, List.nodup_append] at this
-  rw [isPath_def, support_eq_cons, List.nodup_cons]
-  exact ⟨this.2.2 (p.end_mem_tail_support h), this.2.1⟩
-
-lemma IsCycle.isPath_of_append_left {p : G.Walk u v} {q : G.Walk v u} (h : ¬ q.Nil)
-    (hcyc : (p.append q).IsCycle) : p.IsPath :=
-  p.isPath_reverse_iff.mp ((reverse_append _ _ ▸ hcyc.reverse).isPath_of_append_right (by simpa))
-
 lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) : p.tail.IsPath := by
   cases p with
   | nil => simp
   | cons hadj p =>
     simp_all [Walk.isPath_def]
-
-/-! ### About paths -/
 
 instance [DecidableEq V] {u v : V} (p : G.Walk u v) : Decidable p.IsPath := by
   rw [isPath_def]
@@ -353,77 +192,9 @@ lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤
         from by rwa [getVert_cons _ _ (by omega : n + 1 ≠ 0), getVert_zero])
     omega
 
-/-! ### About cycles -/
-
--- TODO: These results could possibly be less laborious with a periodic function getCycleVert
-lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
-    Set.InjOn p.getVert {i | 1 ≤ i ∧ i ≤ p.length} := by
-  rw [← p.cons_tail_eq hpc.not_nil] at hpc
-  intro n hn m hm hnm
-  rw [← SimpleGraph.Walk.length_tail_add_one
-    (p.not_nil_of_tail_not_nil (not_nil_of_isCycle_cons hpc)), Set.mem_setOf] at hn hm
-  have := ((Walk.cons_isCycle_iff _ _).mp hpc).1.getVert_injOn
-      (by omega : n - 1 ≤ p.tail.length) (by omega : m - 1 ≤ p.tail.length)
-      (by simp_all [SimpleGraph.Walk.getVert_tail, show n - 1 + 1 = n by omega,
-          show m - 1 + 1 = m by omega])
-  omega
-
-lemma IsCycle.getVert_injOn' {p : G.Walk u u} (hpc : p.IsCycle) :
-    Set.InjOn p.getVert {i |  i ≤ p.length - 1} := by
-  intro n hn m hm hnm
-  simp only [Walk.length_reverse, Set.mem_setOf_eq, Nat.sub_le, and_true] at *
-  have := hpc.three_le_length
-  have : p.length - n = p.length - m := Walk.length_reverse _ ▸ hpc.reverse.getVert_injOn
-    (by simp only [Walk.length_reverse, Set.mem_setOf_eq]; omega)
-    (by simp only [Walk.length_reverse, Set.mem_setOf_eq]; omega)
-    (by simp [Walk.getVert_reverse, show p.length - (p.length - n) = n by omega, hnm,
-      show p.length - (p.length - m) = m by omega])
-  omega
-
-lemma IsCycle.snd_ne_penultimate {p : G.Walk u u} (hp : p.IsCycle) : p.snd ≠ p.penultimate := by
-  intro h
-  have := hp.three_le_length
-  apply hp.getVert_injOn (by simp; omega) (by simp; omega) at h
-  omega
-
-lemma IsCycle.getVert_endpoint_iff {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle) (hl : i ≤ p.length) :
-    p.getVert i = u ↔ i = 0 ∨ i = p.length := by
-  refine ⟨?_, by aesop⟩
-  rw [or_iff_not_imp_left]
-  intro h hi
-  exact hpc.getVert_injOn (by simp only [Set.mem_setOf_eq]; omega)
-    (by simp only [Set.mem_setOf_eq]; omega) (h.symm ▸ (Walk.getVert_length p).symm)
-
-lemma IsCycle.getVert_sub_one_ne_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
-    (h : i ≤ p.length) : p.getVert (i - 1) ≠ p.getVert (i + 1) := by
-  have hl := hpc.three_le_length
-  by_cases hi' : i ≥ p.length - 1
-  · intro h'
-    rw [p.getVert_of_length_le (by omega : p.length ≤ i + 1),
-      hpc.getVert_endpoint_iff (by omega)] at h'
-    omega
-  intro h'
-  have := hpc.getVert_injOn' (by simp only [Set.mem_setOf_eq, Nat.sub_le_iff_le_add]; omega)
-    (by simp only [Set.mem_setOf_eq]; omega) h'
-  omega
-
-@[deprecated (since := "2025-04-27")]
-alias IsCycle.getVert_sub_one_neq_getVert_add_one := IsCycle.getVert_sub_one_ne_getVert_add_one
-
-/-! ### Walk decompositions -/
-
 section WalkDecomp
 
 variable [DecidableEq V]
-
-protected theorem IsTrail.takeUntil {u v w : V} {p : G.Walk v w} (hc : p.IsTrail)
-    (h : u ∈ p.support) : (p.takeUntil u h).IsTrail :=
-  IsTrail.of_append_left (q := p.dropUntil u h) (by rwa [← take_spec _ h] at hc)
-
-protected theorem IsTrail.dropUntil {u v w : V} {p : G.Walk v w} (hc : p.IsTrail)
-    (h : u ∈ p.support) : (p.dropUntil u h).IsTrail :=
-  IsTrail.of_append_right (p := p.takeUntil u h) (q := p.dropUntil u h)
-    (by rwa [← take_spec _ h] at hc)
 
 protected theorem IsPath.takeUntil {u v w : V} {p : G.Walk v w} (hc : p.IsPath)
     (h : u ∈ p.support) : (p.takeUntil u h).IsPath :=
@@ -433,35 +204,6 @@ protected theorem IsPath.dropUntil {u v w : V} {p : G.Walk v w} (hc : p.IsPath)
     (h : u ∈ p.support) : (p.dropUntil u h).IsPath :=
   IsPath.of_append_right (p := p.takeUntil u h) (q := p.dropUntil u h)
     (by rwa [← take_spec _ h] at hc)
-
-protected theorem IsTrail.rotate {u v : V} {c : G.Walk v v} (hc : c.IsTrail) (h : u ∈ c.support) :
-    (c.rotate h).IsTrail := by
-  rw [isTrail_def, (c.rotate_edges h).perm.nodup_iff]
-  exact hc.edges_nodup
-
-protected theorem IsCircuit.rotate {u v : V} {c : G.Walk v v} (hc : c.IsCircuit)
-    (h : u ∈ c.support) : (c.rotate h).IsCircuit := by
-  refine ⟨hc.isTrail.rotate _, ?_⟩
-  cases c
-  · exact (hc.ne_nil rfl).elim
-  · intro hn
-    have hn' := congr_arg length hn
-    rw [rotate, length_append, add_comm, ← length_append, take_spec] at hn'
-    simp at hn'
-
-protected theorem IsCycle.rotate {u v : V} {c : G.Walk v v} (hc : c.IsCycle) (h : u ∈ c.support) :
-    (c.rotate h).IsCycle := by
-  refine ⟨hc.isCircuit.rotate _, ?_⟩
-  rw [List.IsRotated.nodup_iff (support_rotate _ _)]
-  exact hc.support_nodup
-
-lemma IsCycle.isPath_takeUntil {c : G.Walk v v} (hc : c.IsCycle) (h : w ∈ c.support) :
-    (c.takeUntil w h).IsPath := by
-  by_cases hvw : v = w
-  · subst hvw
-    simp
-  rw [← isCycle_reverse, ← take_spec c h, reverse_append] at hc
-  exact (c.takeUntil w h).isPath_reverse_iff.mp (hc.isPath_of_append_right (not_nil_of_ne hvw))
 
 /-- Taking a strict initial segment of a path removes the end vertex from the support. -/
 lemma endpoint_notMem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w ∈ p.support)
@@ -537,10 +279,6 @@ theorem notMem_edges_of_loop {v : V} {e : Sym2 V} {p : G.Path v v} :
     e ∉ (p : G.Walk v v).edges := by simp [p.loop_eq]
 
 @[deprecated (since := "2025-05-23")] alias not_mem_edges_of_loop := notMem_edges_of_loop
-
-theorem cons_isCycle {u v : V} (p : G.Path v u) (h : G.Adj u v)
-    (he : s(u, v) ∉ (p : G.Walk v u).edges) : (Walk.cons h ↑p).IsCycle := by
-  simp [Walk.isCycle_def, Walk.cons_isTrail_iff, he]
 
 end Path
 
@@ -686,30 +424,6 @@ protected theorem IsPath.of_map {f : G →g G'} (hp : (p.map f).IsPath) : p.IsPa
 theorem map_isPath_iff_of_injective (hinj : Function.Injective f) : (p.map f).IsPath ↔ p.IsPath :=
   ⟨IsPath.of_map, map_isPath_of_injective hinj⟩
 
-theorem map_isTrail_iff_of_injective (hinj : Function.Injective f) :
-    (p.map f).IsTrail ↔ p.IsTrail := by
-  induction p with
-  | nil => simp
-  | cons _ _ ih =>
-    rw [map_cons, cons_isTrail_iff, ih, cons_isTrail_iff]
-    apply and_congr_right'
-    rw [← Sym2.map_pair_eq, edges_map, ← List.mem_map_of_injective (Sym2.map.injective hinj)]
-
-alias ⟨_, map_isTrail_of_injective⟩ := map_isTrail_iff_of_injective
-
-theorem map_isCycle_iff_of_injective {p : G.Walk u u} (hinj : Function.Injective f) :
-    (p.map f).IsCycle ↔ p.IsCycle := by
-  rw [isCycle_def, isCycle_def, map_isTrail_iff_of_injective hinj, Ne, map_eq_nil_iff,
-    support_map, ← List.map_tail, List.nodup_map_iff hinj]
-
-alias ⟨_, IsCycle.map⟩ := map_isCycle_iff_of_injective
-
-@[simp]
-theorem mapLe_isTrail {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} {p : G.Walk u v} :
-    (p.mapLe h).IsTrail ↔ p.IsTrail :=
-  map_isTrail_iff_of_injective Function.injective_id
-
-alias ⟨IsTrail.of_mapLe, IsTrail.mapLe⟩ := mapLe_isTrail
 
 @[simp]
 theorem mapLe_isPath {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} {p : G.Walk u v} :
@@ -717,13 +431,6 @@ theorem mapLe_isPath {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} {p : G.Walk
   map_isPath_iff_of_injective Function.injective_id
 
 alias ⟨IsPath.of_mapLe, IsPath.mapLe⟩ := mapLe_isPath
-
-@[simp]
-theorem mapLe_isCycle {G G' : SimpleGraph V} (h : G ≤ G') {u : V} {p : G.Walk u u} :
-    (p.mapLe h).IsCycle ↔ p.IsCycle :=
-  map_isCycle_iff_of_injective Function.injective_id
-
-alias ⟨IsCycle.of_mapLe, IsCycle.mapLe⟩ := mapLe_isCycle
 
 end Walk
 
@@ -769,15 +476,6 @@ protected theorem IsPath.transfer (hp) (pp : p.IsPath) :
     simp only [Walk.transfer, cons_isPath_iff, support_transfer _ ] at pp ⊢
     exact ⟨ih _ pp.1, pp.2⟩
 
-protected theorem IsCycle.transfer {q : G.Walk u u} (qc : q.IsCycle) (hq) :
-    (q.transfer H hq).IsCycle := by
-  cases q with
-  | nil => simp at qc
-  | cons _ q =>
-    simp only [edges_cons, List.find?, List.mem_cons, forall_eq_or_imp, mem_edgeSet] at hq
-    simp only [Walk.transfer, cons_isCycle_iff, edges_transfer q hq.2] at qc ⊢
-    exact ⟨qc.1.transfer hq.2, qc.2⟩
-
 end Walk
 
 /-! ## Deleting edges -/
@@ -788,10 +486,6 @@ variable {v w : V}
 
 protected theorem IsPath.toDeleteEdges (s : Set (Sym2 V))
     {p : G.Walk v w} (h : p.IsPath) (hp) : (p.toDeleteEdges s hp).IsPath :=
-  h.transfer _
-
-protected theorem IsCycle.toDeleteEdges (s : Set (Sym2 V))
-    {p : G.Walk v v} (h : p.IsCycle) (hp) : (p.toDeleteEdges s hp).IsCycle :=
   h.transfer _
 
 @[simp]
@@ -1432,49 +1126,6 @@ theorem reachable_deleteEdges_iff_exists_cycle.aux [DecidableEq V] {u v w : V}
   rw [Walk.isTrail_def, this, Walk.edges_append, Walk.edges_append, List.nodup_append_comm,
     ← List.append_assoc, ← Walk.edges_append] at hc
   exact List.disjoint_of_nodup_append hc hbq hpq'
-
-theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
-    G.Adj v w ∧ (G \ fromEdgeSet {s(v, w)}).Reachable v w ↔
-      ∃ (u : V) (p : G.Walk u u), p.IsCycle ∧ s(v, w) ∈ p.edges := by
-  classical
-  rw [reachable_delete_edges_iff_exists_walk]
-  constructor
-  · rintro ⟨h, p, hp⟩
-    refine ⟨w, Walk.cons h.symm p.toPath, ?_, ?_⟩
-    · apply Path.cons_isCycle
-      rw [Sym2.eq_swap]
-      intro h
-      cases hp (Walk.edges_toPath_subset p h)
-    · simp only [Sym2.eq_swap, Walk.edges_cons, List.mem_cons, eq_self_iff_true, true_or]
-  · rintro ⟨u, c, hc, he⟩
-    refine ⟨c.adj_of_mem_edges he, ?_⟩
-    by_contra! hb
-    have hb' : ∀ p : G.Walk w v, s(w, v) ∈ p.edges := by
-      intro p
-      simpa [Sym2.eq_swap] using hb p.reverse
-    have hvc : v ∈ c.support := Walk.fst_mem_support_of_mem_edges c he
-    refine reachable_deleteEdges_iff_exists_cycle.aux hb' (c.rotate hvc) (hc.isTrail.rotate hvc)
-      ?_ (Walk.start_mem_support _)
-    rwa [(Walk.rotate_edges c hvc).mem_iff, Sym2.eq_swap]
-
-theorem isBridge_iff_adj_and_forall_cycle_notMem {v w : V} : G.IsBridge s(v, w) ↔
-    G.Adj v w ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → s(v, w) ∉ p.edges := by
-  rw [isBridge_iff, and_congr_right_iff]
-  intro h
-  rw [← not_iff_not]
-  push_neg
-  rw [← adj_and_reachable_delete_edges_iff_exists_cycle]
-  simp only [h, true_and]
-
-@[deprecated (since := "2025-05-23")]
-alias isBridge_iff_adj_and_forall_cycle_not_mem := isBridge_iff_adj_and_forall_cycle_notMem
-
-theorem isBridge_iff_mem_and_forall_cycle_notMem {e : Sym2 V} :
-    G.IsBridge e ↔ e ∈ G.edgeSet ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=
-  Sym2.ind (fun _ _ => isBridge_iff_adj_and_forall_cycle_notMem) e
-
-@[deprecated (since := "2025-05-23")]
-alias isBridge_iff_mem_and_forall_cycle_not_mem := isBridge_iff_mem_and_forall_cycle_notMem
 
 /-- Deleting a non-bridge edge from a connected graph preserves connectedness. -/
 lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : V}
