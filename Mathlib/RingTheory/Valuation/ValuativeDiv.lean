@@ -217,7 +217,11 @@ class IsDiscrete where
   has_maximal_element :
     ∃ γ : ValueGroup R, γ < 1 ∧ (∀ δ : ValueGroup R, δ < 1 → δ ≤ γ)
 
-lemma valuation_surjective (γ : ValueGroup R) : ∃ x, valuation _ x = γ := sorry
+lemma valuation_surjective (γ : ValueGroup R) :
+    ∃ (a : R) (b : unitSubmonoid R), valuation _ a / valuation _ (b : R) = γ := by
+  obtain ⟨a,b⟩ := γ
+  use a, b
+  sorry
 
 end ValuativeRel
 
