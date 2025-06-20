@@ -16,6 +16,10 @@ namespace Polynomial
 
 variable {R T S : Type*}
 
+lemma quadratic_ne_zero [Semiring R] {a b c : R} (ha : a ≠ 0) : C a * X ^ 2 + C b * X + C c ≠ 0 :=
+  fun hx ↦ ha (by rw [show a = (C a * X ^ 2 + C b * X + C c).coeff 2 by
+    simp [coeff_X], hx, coeff_zero])
+
 /-- **Vieta's formula** for quadratics. -/
 lemma eq_neg_mul_add_of_roots_quadratic_eq_pair [CommRing R] [IsDomain R] {a b c x1 x2 : R}
     (hroots : (C a * X ^ 2 + C b * X + C c).roots = {x1, x2}) :
@@ -65,11 +69,11 @@ lemma quadratic_eq_of_vieta [CommRing R] {a b c x1 x2 : R}
 lemma roots_of_ne_zero_of_vieta [CommRing R] [IsDomain R] {a b c x1 x2 : R} (ha : a ≠ 0)
     (hvieta : b = -a * (x1 + x2) ∧ c = a * x1 * x2) :
     (C a * X ^ 2 + C b * X + C c).roots = {x1, x2} := by
-    suffices C a * X ^ 2 + C b * X + C c = C a * (X - C x1) * (X - C x2) by
-      have h1 : C a * (X - C x1) ≠ 0 := mul_ne_zero (by simpa) (Polynomial.X_sub_C_ne_zero _)
-      have h2 : C a * (X - C x1) * (X - C x2) ≠ 0 := mul_ne_zero h1 (Polynomial.X_sub_C_ne_zero _)
-      simp [this, Polynomial.roots_mul h2, Polynomial.roots_mul h1]
-    exact quadratic_eq_of_vieta hvieta
+  have h1 : C a * (X - C x1) ≠ 0 := mul_ne_zero (by simpa) (Polynomial.X_sub_C_ne_zero _)
+  have h2 : C a * (X - C x1) * (X - C x2) ≠ 0 := by
+    rw [← quadratic_eq_of_vieta hvieta]
+    exact quadratic_ne_zero ha
+  simp [quadratic_eq_of_vieta hvieta, Polynomial.roots_mul h2, Polynomial.roots_mul h1]
 
 /-- **Vieta's formula** for quadratics as an iff. -/
 lemma roots_quadratic_eq_pair_iff_of_ne_zero [CommRing R] [IsDomain R] {a b c x1 x2 : R}
@@ -113,13 +117,7 @@ Polynomial versions of results in `Algebra.QuadraticDiscriminant`
 -/
 section QuadraticDiscriminant
 
-variable {a b c : R}
-
-lemma quadratic_ne_zero [Semiring R] (ha : a ≠ 0) : C a * X ^ 2 + C b * X + C c ≠ 0 :=
-  fun hx ↦ ha (by rw [show a = (C a * X ^ 2 + C b * X + C c).coeff 2 by
-    simp [coeff_X], hx, coeff_zero])
-
-variable [Field R]
+variable [Field R] {a b c : R}
 
 /-- Roots of a quadratic equation. -/
 theorem isRoot_quadratic_iff [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
