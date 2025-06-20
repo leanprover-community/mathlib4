@@ -77,7 +77,7 @@ lemma add_sub_mul (hp : IsIdempotentElem a) (hq : IsIdempotentElem b) :
 
 end CommRing
 
-lemma sub_of [NonAssocRing R] {p q : R} (hp : IsIdempotentElem p)
+lemma sub_of_mul_eq [NonAssocRing R] {p q : R} (hp : IsIdempotentElem p)
     (hq : IsIdempotentElem q) (hpq : p * q = p) (hqp : q * p = p) : IsIdempotentElem (q - p) := by
   simp_rw [IsIdempotentElem, sub_mul, mul_sub, hpq, hqp, hp.eq, hq.eq, sub_self, sub_zero]
 
@@ -95,9 +95,9 @@ lemma commutes_of_isIdempotentElem_sub [Ring R] [IsAddTorsionFree R] {p q : R}
   rw [hpq, sub_eq_iff_eq_add, ← two_nsmul, ← two_nsmul, nsmul_right_inj (by simp)] at hqp
   rw [hpq, hqp, and_self]
 
-theorem isIdempotentElem_sub_iff [Ring R] [IsAddTorsionFree R] {p q : R}
+theorem sub_iff [Ring R] [IsAddTorsionFree R] {p q : R}
     (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
     IsIdempotentElem (q - p) ↔ p * q = p ∧ q * p = p :=
-  ⟨commutes_of_isIdempotentElem_sub hp hq, fun ⟨h1, h2⟩ => hp.sub_of hq h1 h2⟩
+  ⟨commutes_of_isIdempotentElem_sub hp hq, fun ⟨h1, h2⟩ => hp.sub_of_mul_eq hq h1 h2⟩
 
 end IsIdempotentElem

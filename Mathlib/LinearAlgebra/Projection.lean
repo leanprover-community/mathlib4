@@ -444,10 +444,7 @@ theorem submodule_eq_top_iff {f : M →ₗ[S] M} {U : Submodule S M} (hf : IsPro
   constructor <;> rintro rfl
   · ext
     simp only [id_coe, id_eq, hf.2 _ mem_top]
-  · refine eq_top_iff'.mpr ?mpr.a
-    intro x
-    rw [← id_apply (R := S) x]
-    exact hf.map_mem x
+  · rw [← hf.range, range_id]
 
 end IsProj
 
@@ -485,7 +482,7 @@ theorem IsIdempotentElem.mem_range_iff {p : M →ₗ[R] M} (hp : IsIdempotentEle
 
 /-- Given an idempotent linear operator `q`,
   we have `q ∘ p = p` iff `range p ⊆ range q` for all `p`. -/
-theorem IsIdempotentElem.comp_idempotent_iff {q : M →ₗ[R] M} (hq : IsIdempotentElem q)
+theorem IsIdempotentElem.comp_eq_right_iff {q : M →ₗ[R] M} (hq : IsIdempotentElem q)
     {E₂ : Type*} [AddCommMonoid E₂] [Module R E₂] (p : E₂ →ₗ[R] M) :
     q.comp p = p ↔ range p ≤ range q := by
   simp_rw [LinearMap.ext_iff, comp_apply, ← hq.mem_range_iff,
@@ -495,7 +492,7 @@ theorem IsIdempotentElem.comp_idempotent_iff {q : M →ₗ[R] M} (hq : IsIdempot
   then `q - p` is an idempotent operator. -/
 theorem isIdempotentElem_sub_of {p q : E →ₗ[R] E} (hp : IsIdempotentElem p)
     (hq : IsIdempotentElem q) (hpq : p.comp q = p) (hqp : q.comp p = p) :
-    IsIdempotentElem (q - p) := hp.sub_of hq hpq hqp
+    IsIdempotentElem (q - p) := hp.sub_of_mul_eq hq hpq hqp
 
 /-- If `p,q` are idempotent operators and `q - p` is also an idempotent
   operator, then `p ∘ q = p = q ∘ p`. -/
