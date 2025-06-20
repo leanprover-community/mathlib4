@@ -14,11 +14,11 @@ involves the dilogarithm, this can be seen as computing special values of `Li₂
 
 open Filter Interval Real
 
-/--
+/-
 Helper lemma for `integral_log_sin_zero_pi_div_two`: The integral of `log ∘ sin` on `0 … π` is
 double the integral on `0 … π/2`.
 -/
-lemma integral_log_sin_zero_pi_eq_two_mul_integral_log_sin_zero_pi_div_two :
+private lemma integral_log_sin_zero_pi_eq_two_mul_integral_log_sin_zero_pi_div_two :
     ∫ x in (0)..π, log (sin x) = 2 * ∫ x in (0)..(π / 2), log (sin x) := by
   rw [← intervalIntegral.integral_add_adjacent_intervals (a := 0) (b := π / 2) (c := π)
     (by apply intervalIntegrable_log_sin) (by apply intervalIntegrable_log_sin)]
