@@ -91,9 +91,8 @@ theorem exists_decomposition_of_monotoneOn_hasDerivWithinAt (hs : MeasurableSet 
     rw [this]
     apply MeasurableSet.biUnion hu (fun z hz ↦ ?_)
     obtain ⟨v, hv, tv⟩ : ∃ v, OrdConnected v ∧ (s \ a) ∩ f ⁻¹' {z} = (s \ a) ∩ v :=
-      OrdConnected.preimage_monotoneOn ordConnected_singleton (hf.mono diff_subset)
-    rw [tv]
-    exact (hs.diff a_count.measurableSet).inter hv.measurableSet
+      ordConnected_singleton.preimage_monotoneOn (hf.mono diff_subset)
+    exact tv ▸ (hs.diff a_count.measurableSet).inter hv.measurableSet
   let c := s₁ \ b
   have hc : MeasurableSet c := hs₁.diff hb
   refine ⟨a, b, c, ?_, a_count.measurableSet, hb, hc, ?_, ?_, a_count, ?_, ?_, ?_, ?_⟩
@@ -166,11 +165,9 @@ theorem exists_decomposition_of_monotoneOn_hasDerivWithinAt (hs : MeasurableSet 
   · intro x hx y hy hxy
     contrapose! hxy
     wlog H : x < y generalizing x y with h
-    · have : y < x := lt_of_le_of_ne (not_lt.1 H) hxy.symm
+    · have : y < x := by order
       exact (h hy hx hxy.symm this).symm
-    intro h
-    apply hx.2
-    refine ⟨hx.1, ?_⟩
+    refine fun h ↦ hx.2 ⟨hx.1, ?_⟩
     exact ⟨x, y, hx.1, hy.1, H, rfl, h.symm⟩
 
 /- Change of variable formula for differentiable functions: if a real function `f` is
