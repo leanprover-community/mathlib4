@@ -13,7 +13,7 @@ import Mathlib.Analysis.NormedSpace.Normalized
 This file contains proof that spherical angles in unit sphere obey the triangle inequality.
 -/
 
-namespace UnitSphere
+namespace UnitSphereAngles
 
 open InnerProductGeometry
 
@@ -163,4 +163,4 @@ lemma angle_triangle {x y z : V}
     linarith [mul_nonneg H3 H2]
   rwa [Real.strictAntiOn_cos.le_iff_le ⟨H0, H⟩ ⟨angle_nonneg x z, angle_le_pi x z⟩] at H4
 
-end UnitSphere
+end UnitSphereAngles

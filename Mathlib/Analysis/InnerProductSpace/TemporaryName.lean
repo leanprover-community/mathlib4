@@ -5,6 +5,10 @@ Authors: Ilmārs Cīrulis, Alex Meiburg
 -/
 import Mathlib.Analysis.InnerProductSpace.Basic
 
+/-!
+Placeholder for the module doc-string
+-/
+
 open scoped RealInnerProductSpace
 
 variable {V : Type*}

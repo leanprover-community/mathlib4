@@ -5,6 +5,10 @@ Authors: Ilmārs Cīrulis, Alex Meiburg
 -/
 import Mathlib.Analysis.RCLike.Basic
 
+/-!
+Placeholder for the module doc-string
+-/
+
 variable {V: Type*}
 variable [NormedAddCommGroup V]
 variable [NormedSpace ℝ V]
