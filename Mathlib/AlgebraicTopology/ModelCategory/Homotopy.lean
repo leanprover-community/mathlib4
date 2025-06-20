@@ -65,6 +65,17 @@ lemma exists_good {f g : X ⟶ Y} (h : P.LeftHomotopy f g) :
       convert d.hi
       aesop⟩, ⟨{ h := d.p ≫ h.h }⟩⟩
 
+lemma weakEquivalence_iff {f₀ f₁ : X ⟶ Y} (h : P.LeftHomotopy f₀ f₁) :
+    WeakEquivalence f₀ ↔ WeakEquivalence f₁ := by
+  revert P f₀ f₁
+  suffices ∀ (P : Cylinder X) {f₀ f₁ : X ⟶ Y} (h : P.LeftHomotopy f₀ f₁),
+      WeakEquivalence f₀ → WeakEquivalence f₁
+    from fun _ _ _ h ↦ ⟨this _ h, this _ h.symm⟩
+  intro P f₀ f₁ h h₀
+  have := weakEquivalence_of_precomp_of_fac h.h₀
+  rw [← h.h₁]
+  infer_instance
+
 lemma covering_homotopy {A E B : C} {P : Cylinder A} {f₀ f₁ : A ⟶ B}
     [IsCofibrant A] [P.IsGood]
     (h : P.LeftHomotopy f₀ f₁) (p : E ⟶ B) [Fibration p]
@@ -122,6 +133,18 @@ lemma exists_good {f g : X ⟶ Y} (h : P.RightHomotopy f g) :
       rw [fibration_iff]
       convert d.hp
       aesop⟩, ⟨{ h := h.h ≫ d.i }⟩⟩
+
+lemma weakEquivalence_iff {f₀ f₁ : X ⟶ Y} (h : P.RightHomotopy f₀ f₁) :
+    WeakEquivalence f₀ ↔ WeakEquivalence f₁ := by
+  revert P f₀ f₁
+  suffices ∀ (P : PathObject Y) {f₀ f₁ : X ⟶ Y} (h : P.RightHomotopy f₀ f₁),
+      WeakEquivalence f₀ → WeakEquivalence f₁
+    from fun _ _ _ h ↦ ⟨this _ h, this _ h.symm⟩
+  intro P f₀ f₁ h h₀
+  have := weakEquivalence_of_postcomp_of_fac h.h₀
+  rw [← h.h₁]
+  infer_instance
+
 
 lemma homotopy_extension {A B : C} {f₀ f₁ : A ⟶ Y}
     [IsFibrant Y] [P.IsGood]
