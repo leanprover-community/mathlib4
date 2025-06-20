@@ -81,9 +81,7 @@ theorem piContent_eq_measure_pi [Fintype ι] {s : Set (Π i, X i)} (hs : Measura
     piContent μ s = Measure.pi μ s := by
   let e : @Finset.univ ι _ ≃ ι :=
     { toFun i := i
-      invFun i := ⟨i, mem_univ i⟩
-      left_inv := fun _ ↦ rfl
-      right_inv := fun _ ↦ rfl }
+      invFun i := ⟨i, mem_univ i⟩ }
   have : s = cylinder univ (MeasurableEquiv.piCongrLeft X e ⁻¹' s) := rfl
   nth_rw 1 [this]
   rw [piContent_cylinder _ (hs.preimage (by fun_prop)), ← Measure.pi_map_piCongrLeft e,
