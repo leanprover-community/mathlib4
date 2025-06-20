@@ -142,6 +142,7 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
 theorem continuousWithinAt (h : IsImmersionAt F I I' n f x) :
     ContinuousWithinAt f h.domChart.source x := by
   -- TODO: follows from the local description...
+  -- use the subset hypothesis on the ranges!
   sorry
 
 /-- A `C^k` immersion at `x` is continuous at `x`. -/
@@ -182,7 +183,7 @@ variable [CompleteSpace E'] [CompleteSpace E] [CompleteSpace F]
 
 variable [IsManifold I 1 M] [IsManifold I' 1 M']
 
-/-- If `f` is a `C^k` immersion at `x` (and `k ≤ 1`), then `mfderiv I I' f x` splits. -/
+/-- If `f` is a `C^k` immersion at `x` (and `k ≥ 1`), then `mfderiv I I' f x` splits. -/
 theorem msplitsAt {x : M} (h : IsImmersionAt F I I' n f x) (hn : 1 ≤ n) : MSplitsAt I I' f x := by
   -- The local representative of `f` in the nice charts at `x`, as a continuous linear map.
   let rhs : E →L[𝕜] E' := h.equiv.toContinuousLinearMap.comp ((ContinuousLinearMap.id _ _).prod 0)
@@ -232,7 +233,7 @@ theorem msplitsAt {x : M} (h : IsImmersionAt F I I' n f x) (hn : 1 ≤ n) : MSpl
   apply this.congr
   sorry -- extended chart and its inverse cancel
 
-/-- `f` is an immersion at an interior point `x` iff `mfderiv I I' f x` splits. -/
+/-- `f` is a `C^k` immersion (`k ≥ 1`) at an interior point `x` iff `mfderiv I I' f x` splits. -/
 theorem _root_.isImmersionAt_iff_msplitsAt {x : M} (hx : I.IsInteriorPoint x) (hn : 1 ≤ n) :
     IsImmersionAt F I I' n f x ↔ MSplitsAt I I' f x := by
   refine ⟨fun h ↦ h.msplitsAt hn, fun h ↦ ?_⟩
@@ -242,6 +243,7 @@ theorem _root_.isImmersionAt_iff_msplitsAt {x : M} (hx : I.IsInteriorPoint x) (h
 
 /-- If `f` is an immersion at an interior point `x` and `g` is an immersion at `g x`,
 then `g ∘ f` is an immersion at `x`. -/
+-- XXX: is this true for boundary points also?
 lemma comp [CompleteSpace F'] [IsManifold J 1 N] {g : M' → N}
     (hg : IsImmersionAt F' I' J n g (f x)) (hf : IsImmersionAt F I I' n f x) (hn : 1 ≤ n)
     (hx : I.IsInteriorPoint x) (hfx : I'.IsInteriorPoint (f x)) :
