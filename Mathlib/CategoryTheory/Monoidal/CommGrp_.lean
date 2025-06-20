@@ -143,7 +143,7 @@ end
 section
 
 variable {M N : CommGrp_ C} (f : M.X ≅ N.X) (one_f : η ≫ f.hom = η := by aesop_cat)
-  (mul_f : μ ≫ f.hom = (f.hom ⊗ f.hom) ≫ μ := by aesop_cat)
+  (mul_f : μ ≫ f.hom = (f.hom ⊗ₘ f.hom) ≫ μ := by aesop_cat)
 
 /-- Constructor for isomorphisms in the category `Grp_ C`. -/
 def mkIso : M ≅ N :=
@@ -180,7 +180,7 @@ noncomputable def mapCommGrp : CommGrp_ C ⥤ CommGrp_ D where
   obj A :=
     { F.mapGrp.obj A.toGrp_ with
       comm :=
-        { mul_comm' := by
+        { mul_comm := by
             dsimp
             rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMon.mul_comm] } }
   map f := F.mapMon.map f

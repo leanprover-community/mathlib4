@@ -33,7 +33,7 @@ The function `findPositiveVector` solves this problem.
 
 -/
 
-namespace Linarith.SimplexAlgorithm
+namespace Mathlib.Tactic.Linarith.SimplexAlgorithm
 
 variable {matType : Nat → Nat → Type} [UsableInSimplexAlgorithm matType]
 
@@ -99,6 +99,4 @@ def findPositiveVector {n m : Nat} {matType : Nat → Nat → Type} [UsableInSim
   else
     throwError "Simplex Algorithm failed"
 
-end SimplexAlgorithm
-
-end Linarith
+end Mathlib.Tactic.Linarith.SimplexAlgorithm
