@@ -1,7 +1,17 @@
+/-
+Copyright (c) 2025 Ilmārs Cīrulis. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Ilmārs Cīrulis, Alex Meiburg
+-/
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 import Mathlib.Analysis.InnerProductSpace.TemporaryName
 import Mathlib.Analysis.NormedSpace.Normalized
 
+/-!
+# The Triangle Inequality for Spherical Angles in Unit Sphere
+
+This file contains proof that spherical angles in unit sphere obey the triangle inequality.
+-/
 
 namespace UnitSphere
 
