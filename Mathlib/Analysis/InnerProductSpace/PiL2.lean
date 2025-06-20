@@ -401,6 +401,9 @@ lemma enorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
 lemma inner_eq_zero (b : OrthonormalBasis ι 𝕜 E) {i j : ι} (hij : i ≠ j) :
     ⟪b i, b j⟫ = 0 := b.orthonormal.inner_eq_zero hij
 
+lemma neZero (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
+    NeZero (b i) := b.orthonormal.neZero i
+
 /-- The `Basis ι 𝕜 E` underlying the `OrthonormalBasis` -/
 protected def toBasis (b : OrthonormalBasis ι 𝕜 E) : Basis ι 𝕜 E :=
   Basis.ofEquivFun b.repr.toLinearEquiv

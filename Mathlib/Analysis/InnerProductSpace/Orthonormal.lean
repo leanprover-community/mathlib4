@@ -74,6 +74,12 @@ lemma Orthonormal.enorm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) 
 lemma Orthonormal.inner_eq_zero {v : ι → E} {i j : ι} (h : Orthonormal 𝕜 v) (hij : i ≠ j) :
     ⟪v i, v j⟫ = 0 := h.2 hij
 
+lemma Orthonormal.neZero {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) : NeZero (v i) := by
+  rw [neZero_iff]
+  intro h0
+  have := h.norm_eq_one i
+  simp_all
+
 /-- `if ... then ... else` characterization of an indexed set of vectors being orthonormal.  (Inner
 product equals Kronecker delta.) -/
 theorem orthonormal_iff_ite [DecidableEq ι] {v : ι → E} :
