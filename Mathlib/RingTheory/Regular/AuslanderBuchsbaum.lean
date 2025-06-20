@@ -406,12 +406,6 @@ theorem AuslanderBuchsbaum [IsNoetherianRing R] [IsLocalRing R]
           ((LinearEquiv.restrictScalars R B.repr).symm.toLinearMap.comp
           (Finsupp.mapRange.linearMap ((Submodule.mkQ (maximalIdeal R)).comp
           (Shrink.linearEquiv R R).toLinearMap))) (Submodule.mkQ_surjective _))
-        have hf : (maximalIdeal R • (⊤ : Submodule R M)).mkQ.comp f = _ :=
-          Classical.choose_spec (Module.projective_lifting_property
-          (Submodule.mkQ (maximalIdeal R • (⊤ : Submodule R M)))
-          ((LinearEquiv.restrictScalars R B.repr).symm.toLinearMap.comp
-          (Finsupp.mapRange.linearMap ((Submodule.mkQ (maximalIdeal R)).comp
-          (Shrink.linearEquiv R R).toLinearMap))) (Submodule.mkQ_surjective _))
         have surjf : Function.Surjective f := basis_lift M ι B
         have : Module.Finite R (ι →₀ Shrink.{v, u} R) := by
           simp [Module.finite_finsupp_iff, Module.Finite.equiv (Shrink.linearEquiv R R).symm,
