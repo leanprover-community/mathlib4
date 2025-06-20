@@ -185,7 +185,7 @@ lemma trans {f₀ f₁ f₂ : X ⟶ Y} [IsCofibrant X] (h : LeftHomotopyRel f₀
   obtain ⟨P', _, ⟨h'⟩⟩ := h'.exists_good
   exact (h.trans h').leftHomotopyRel
 
-instance (X Y : C) [IsCofibrant X] :
+instance equivalence (X Y : C) [IsCofibrant X] :
     _root_.Equivalence (LeftHomotopyRel (X := X) (Y := Y)) where
   refl := .refl
   symm h := h.symm
@@ -261,7 +261,7 @@ lemma trans {f₀ f₁ f₂ : X ⟶ Y} [IsFibrant Y] (h : RightHomotopyRel f₀ 
   obtain ⟨P', _, ⟨h'⟩⟩ := h'.exists_good
   exact (h.trans h').rightHomotopyRel
 
-instance (X Y : C) [IsFibrant Y] :
+instance equivalence (X Y : C) [IsFibrant Y] :
     _root_.Equivalence (RightHomotopyRel (X := X) (Y := Y)) where
   refl := .refl
   symm h := h.symm
@@ -339,5 +339,10 @@ lemma leftHomotopyRel (h : RightHomotopyRel f g) : LeftHomotopyRel f g := by
   exact ⟨P, ⟨h.leftHomotopy P⟩⟩
 
 end RightHomotopyRel
+
+lemma leftHomotopyRel_iff_rightHomotopyRel {X Y : C} (f g : X ⟶ Y)
+    [IsCofibrant X] [IsFibrant Y] :
+    LeftHomotopyRel f g ↔ RightHomotopyRel f g :=
+  ⟨fun h ↦ h.rightHomotopyRel, fun h ↦ h.leftHomotopyRel⟩
 
 end HomotopicalAlgebra
