@@ -90,14 +90,10 @@ theorem ContMDiffOn.comp {t : Set M'} {g : M' → M''} (hg : ContMDiffOn I' I'' 
     (hf : ContMDiffOn I I' n f s) (st : s ⊆ f ⁻¹' t) : ContMDiffOn I I'' n (g ∘ f) s := fun x hx =>
   (hg _ (st hx)).comp x (hf x hx) st
 
-@[deprecated (since := "2024-11-20")] alias SmoothOn.comp := ContMDiffOn.comp
-
 /-- The composition of `C^n` functions on domains is `C^n`. -/
 theorem ContMDiffOn.comp' {t : Set M'} {g : M' → M''} (hg : ContMDiffOn I' I'' n g t)
     (hf : ContMDiffOn I I' n f s) : ContMDiffOn I I'' n (g ∘ f) (s ∩ f ⁻¹' t) :=
   hg.comp (hf.mono inter_subset_left) inter_subset_right
-
-@[deprecated (since := "2024-11-20")] alias SmoothOn.comp' := ContMDiffOn.comp'
 
 /-- The composition of `C^n` functions is `C^n`. -/
 theorem ContMDiff.comp {g : M' → M''} (hg : ContMDiff I' I'' n g) (hf : ContMDiff I I' n f) :
@@ -153,8 +149,6 @@ theorem ContMDiff.comp_contMDiffOn {f : M → M'} {g : M' → M''} {s : Set M}
 theorem ContMDiffOn.comp_contMDiff {t : Set M'} {g : M' → M''} (hg : ContMDiffOn I' I'' n g t)
     (hf : ContMDiff I I' n f) (ht : ∀ x, f x ∈ t) : ContMDiff I I'' n (g ∘ f) :=
   contMDiffOn_univ.mp <| hg.comp hf.contMDiffOn fun x _ => ht x
-
-@[deprecated (since := "2024-11-20")] alias SmoothOn.comp_smooth := ContMDiffOn.comp_contMDiff
 
 end Composition
 

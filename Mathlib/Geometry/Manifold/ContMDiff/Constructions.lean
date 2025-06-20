@@ -108,23 +108,6 @@ theorem ContMDiff.prodMk_space {f : M → E'} {g : M → F'} (hf : ContMDiff I �
 @[deprecated (since := "2025-03-08")]
 alias ContMDiff.prod_mk_space := ContMDiff.prodMk_space
 
-@[deprecated (since := "2024-11-20")] alias SmoothWithinAt.prod_mk := ContMDiffWithinAt.prod_mk
-
-@[deprecated (since := "2024-11-20")]
-alias SmoothWithinAt.prod_mk_space := ContMDiffWithinAt.prod_mk_space
-
-@[deprecated (since := "2024-11-20")] alias SmoothAt.prod_mk := ContMDiffAt.prod_mk
-
-@[deprecated (since := "2024-11-20")] alias SmoothAt.prod_mk_space := ContMDiffAt.prod_mk_space
-
-@[deprecated (since := "2024-11-20")] alias SmoothOn.prod_mk := ContMDiffOn.prod_mk
-
-@[deprecated (since := "2024-11-20")] alias SmoothOn.prod_mk_space := ContMDiffOn.prod_mk_space
-
-@[deprecated (since := "2024-11-20")] alias Smooth.prod_mk := ContMDiff.prod_mk
-
-@[deprecated (since := "2024-11-20")] alias Smooth.prod_mk_space := ContMDiff.prod_mk_space
-
 end ProdMk
 
 section Projections
@@ -337,14 +320,6 @@ theorem ContMDiff.prodMap (hf : ContMDiff I I' n f) (hg : ContMDiff J J' n g) :
 
 @[deprecated (since := "2025-03-08")]
 alias ContMDiff.prod_map := ContMDiff.prodMap
-
-@[deprecated (since := "2024-11-20")] alias SmoothWithinAt.prod_map := ContMDiffWithinAt.prod_map
-
-@[deprecated (since := "2024-11-20")] alias SmoothAt.prod_map := ContMDiffAt.prod_map
-
-@[deprecated (since := "2024-11-20")] alias SmoothOn.prod_map := ContMDiffOn.prod_map
-
-@[deprecated (since := "2024-11-20")] alias Smooth.prod_map := ContMDiff.prod_map
 
 end prodMap
 

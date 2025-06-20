@@ -283,11 +283,3 @@ theorem ContMDiffOn.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiffOn I 𝓘
 theorem ContMDiff.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiff I 𝓘(𝕜) n f)
     (hg : ContMDiff I 𝓘(𝕜, V) n g) : ContMDiff I 𝓘(𝕜, V) n fun p => f p • g p := fun x =>
   (hf x).smul (hg x)
-
-@[deprecated (since := "2024-11-20")] alias SmoothWithinAt.smul := ContMDiffWithinAt.smul
-
-@[deprecated (since := "2024-11-20")] alias SmoothAt.smul := ContMDiffAt.smul
-
-@[deprecated (since := "2024-11-20")] alias SmoothOn.smul := ContMDiffOn.smul
-
-@[deprecated (since := "2024-11-20")] alias Smooth.smul := ContMDiff.smul

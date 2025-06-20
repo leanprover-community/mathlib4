@@ -492,18 +492,6 @@ alias SmoothWithinAt.mdifferentiableWithinAt := ContMDiffWithinAt.mdifferentiabl
 theorem ContMDiff.mdifferentiable (hf : ContMDiff I I' n f) (hn : 1 ≤ n) : MDifferentiable I I' f :=
   fun x => (hf x).mdifferentiableAt hn
 
-@[deprecated (since := "2024-11-20")]
-alias SmoothAt.mdifferentiableAt := ContMDiffAt.mdifferentiableAt
-
-@[deprecated (since := "2024-11-20")]
-alias SmoothOn.mdifferentiableOn := ContMDiffOn.mdifferentiableOn
-
-@[deprecated (since := "2024-11-20")]
-alias Smooth.mdifferentiable := ContMDiff.mdifferentiable
-
-@[deprecated (since := "2024-11-20")]
-alias Smooth.mdifferentiableAt := ContMDiff.mdifferentiableAt
-
 theorem MDifferentiableOn.continuousOn (h : MDifferentiableOn I I' f s) : ContinuousOn f s :=
   fun x hx => (h x hx).continuousWithinAt
 
