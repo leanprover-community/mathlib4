@@ -28,6 +28,9 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 def bar (a : 𝕜) : TangentSpace 𝓘(𝕜, 𝕜) a ≃L[𝕜] 𝕜 := sorry
 
+lemma missing {f : E → 𝕜} {x : E} (Y : TangentSpace 𝓘(𝕜, E) x) :
+  bar (f x) ((fderiv 𝕜 f x) Y) = (fderiv 𝕜 f x) Y := sorry
+
 variable (x : M)
 -- set_option diagnostics true
 -- set_option trace.Meta.synthInstance.instances true in
@@ -98,14 +101,8 @@ theorem Bundle.Trivial.mdifferentiableAt_iff (σ : (x : E) → Trivial E E' x) (
 noncomputable def trivial_covariant_derivative : CovariantDerivative 𝓘(𝕜, E) E'
   (Bundle.Trivial E E') where
   toFun X s := fun x ↦ fderiv 𝕜 s x (X x)
-  addX X X' σ := by
-    sorry /-
-    funext x'
-    -- seems actually missing: sum of two non-diff functions could be non-differentiable
-    have hX : DifferentiableAt 𝕜 X x' := sorry
-    have hX' : DifferentiableAt 𝕜 X' x' := sorry
-    simp [fderiv_add hX hX'] -/
-  smulX X σ c' := by ext ; simp
+  addX X X' σ := by ext; simp
+  smulX X σ c' := by ext; simp
   addσ X σ σ' e hσ hσ' := by
     rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ hσ'
     rw [fderiv_add hσ hσ']
