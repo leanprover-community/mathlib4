@@ -125,7 +125,7 @@ lemma induction_costructuredArrow
       P (CostructuredArrow.mk φ) → P (CostructuredArrow.mk ((isoOfHom L W w hw).inv ≫ φ)))
     (g : CostructuredArrow L (L.obj Y)) : P g := by
   let g' := StructuredArrow.mk (T := L.op) (Y := op g.left) g.hom.op
-  show P (CostructuredArrow.mk g'.hom.unop)
+  change P (CostructuredArrow.mk g'.hom.unop)
   induction g' using induction_structuredArrow L.op W.op with
   | hP₀ => exact hP₀
   | hP₁ f φ hφ => exact hP₁ f.unop φ.unop hφ

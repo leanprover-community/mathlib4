@@ -31,7 +31,7 @@ instance Semiring.toGrindSemiring [s : Semiring α] :
     ofNat_succ
     | 0 => by simp [zero_add]
     | 1 => by
-      show Nat.cast 2 = 1 + 1
+      change Nat.cast 2 = 1 + 1
       rw [one_add_one_eq_two]
       rfl
     | n + 2 => by

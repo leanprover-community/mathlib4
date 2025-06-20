@@ -158,12 +158,12 @@ instance (P : MorphismProperty Scheme)
   let g {X Y : Scheme} (f : X ⟶ Y) (U : X.Opens) :=
     pullback.map (U.ι ≫ f) (U.ι ≫ f) f f U.ι U.ι (𝟙 Y) (by simp) (by simp)
   refine IsLocalAtSource.mk' (fun {X Y} f U hf ↦ ?_) (fun {X Y} f {ι} U hU hf ↦ ?_)
-  · show P _
+  · change P _
     apply P.of_postcomp (W' := @IsOpenImmersion) (pullback.diagonal (U.ι ≫ f)) (g f U) inferInstance
     rw [← pullback.comp_diagonal]
     apply IsLocalAtSource.comp
     exact hf
-  · show P _
+  · change P _
     refine IsLocalAtSource.of_iSup_eq_top U hU fun i ↦ ?_
     rw [pullback.comp_diagonal]
     exact RespectsRight.postcomp (P := P) (Q := @IsOpenImmersion) (g _ _) inferInstance _ (hf i)

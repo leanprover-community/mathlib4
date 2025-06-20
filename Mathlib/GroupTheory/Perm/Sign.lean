@@ -338,7 +338,7 @@ theorem signAux3_mul_and_swap [Finite α] (f g : Perm α) (s : Multiset α) (hs 
       Pairwise fun x y => signAux3 (swap x y) hs = -1 := by
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin α
   induction s using Quotient.inductionOn with | _ l => ?_
-  show
+  change
     signAux2 l (f * g) = signAux2 l f * signAux2 l g ∧
     Pairwise fun x y => signAux2 l (swap x y) = -1
   have hfg : (e.symm.trans (f * g)).trans e = (e.symm.trans f).trans e * (e.symm.trans g).trans e :=
@@ -355,7 +355,7 @@ theorem signAux3_symm_trans_trans [Finite α] [DecidableEq β] [Finite β] (f : 
     {s : Multiset α} {t : Multiset β} (hs : ∀ x, x ∈ s) (ht : ∀ x, x ∈ t) :
     signAux3 ((e.symm.trans f).trans e) ht = signAux3 f hs := by
   induction t, s using Quotient.inductionOn₂
-  show signAux2 _ _ = signAux2 _ _
+  change signAux2 _ _ = signAux2 _ _
   rcases Finite.exists_equiv_fin β with ⟨n, ⟨e'⟩⟩
   rw [← signAux_eq_signAux2 _ _ e' fun _ _ => ht _,
     ← signAux_eq_signAux2 _ _ (e.trans e') fun _ _ => hs _]

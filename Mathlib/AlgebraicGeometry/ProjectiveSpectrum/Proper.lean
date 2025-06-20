@@ -335,7 +335,7 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
   refine ⟨⟨Spec.map (CommRingCat.ofHom φ'') ≫ Proj.awayι 𝒜 _ (hxd _ i₀.2) (hd _ _).bot_lt, ?_, ?_⟩⟩
   · rw [← Spec.map_comp_assoc]
     convert IsOpenImmersion.lift_fac _ _ this using 1
-    show _ = φ ≫ _
+    change _ = φ ≫ _
     rw [← Spec.map_preimage φ, ← CommRingCat.ofHom_hom (Spec.preimage φ), ← hφ,
       ← CommRingCat.ofHom_comp]
     simp [hφ'', SpecMap_awayMap_awayι, add_comm]

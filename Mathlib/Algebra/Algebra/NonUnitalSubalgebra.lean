@@ -154,7 +154,7 @@ protected def copy (S : NonUnitalSubalgebra R A) (s : Set A) (hs : s = ↑S) :
     NonUnitalSubalgebra R A :=
   { S.toNonUnitalSubsemiring.copy s hs with
     smul_mem' := fun r a (ha : a ∈ s) => by
-      show r • a ∈ s
+      change r • a ∈ s
       rw [hs] at ha ⊢
       exact S.smul_mem' r ha }
 
@@ -588,7 +588,7 @@ protected theorem gc : GaloisConnection (adjoin R : Set A → NonUnitalSubalgebr
       show NonUnitalSubsemiring.closure s ≤ S.toNonUnitalSubsemiring from
         NonUnitalSubsemiring.closure_le.2 H⟩
 
-/-- Galois insertion between `adjoin` and `Subtype.val`. -/
+/-- Galois insertion between `adjoin` and `SetLike.coe`. -/
 protected def gi : GaloisInsertion (adjoin R : Set A → NonUnitalSubalgebra R A) (↑) where
   choice s hs := (adjoin R s).copy s <| le_antisymm (NonUnitalAlgebra.gc.le_u_l s) hs
   gc := NonUnitalAlgebra.gc
@@ -673,7 +673,7 @@ lemma adjoin_eq_span (s : Set A) : (adjoin R s).toSubmodule = span R (Subsemigro
       case Hsmul_r => exact fun r x y _ _ hxy ↦ by simpa [mul_smul_comm] using smul_mem _ _ hxy
     | smul r x _ hpx => exact smul_mem _ _ hpx
   · apply span_le.2 _
-    show Subsemigroup.closure s ≤ (adjoin R s).toSubsemigroup
+    change Subsemigroup.closure s ≤ (adjoin R s).toSubsemigroup
     exact Subsemigroup.closure_le.2 (subset_adjoin R)
 
 variable (R A)

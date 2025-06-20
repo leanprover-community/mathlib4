@@ -5,6 +5,7 @@ Authors: Michael Rothgang
 -/
 
 import Lean.Elab.Command
+import Lean.Server.InfoUtils
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 import Mathlib.Tactic.Linter.Header
@@ -34,6 +35,7 @@ This file defines the following linters:
 - the `longLine` linter checks for lines which have more than 100 characters
 - the `openClassical` linter checks for `open (scoped) Classical` statements which are not
   scoped to a single declaration
+- the `show` linter checks for `show`s that change the goal and should be replaced by `change`
 
 All of these linters are enabled in mathlib by default, but disabled globally
 since they enforce conventions which are inherently subjective.
@@ -464,7 +466,7 @@ register_option linter.style.nameCheck : Bool := {
 namespace Style.nameCheck
 
 @[inherit_doc linter.style.nameCheck]
-def doubleUnderscore: Linter where run := withSetOptionIn fun stx => do
+def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
     unless getLinterValue linter.style.nameCheck (← getLinterOptions) do
       return
     if (← get).messages.hasErrors then
@@ -536,5 +538,48 @@ def openClassicalLinter : Linter where run stx := do
 initialize addLinter openClassicalLinter
 
 end Style.openClassical
+
+/-! # The "show" linter -/
+
+/--
+The "show" linter emits a warning if the `show` tactic changed the goal. `show` should only be used
+to indicate intermediate goal states for proof readability. When the goal is actually changed,
+`change` should be preferred.
+-/
+register_option linter.style.show : Bool := {
+  defValue := false
+  descr := "enable the show linter"
+}
+
+namespace Style.show
+
+@[inherit_doc Mathlib.Linter.linter.style.show]
+def showLinter : Linter where run := withSetOptionIn fun stx => do
+    unless getLinterValue linter.style.show (← getLinterOptions) do
+      return
+    if (← get).messages.hasErrors then
+      return
+    for tree in (← getInfoTrees) do
+      tree.foldInfoM (init := ()) fun ci i _ => do
+        let .ofTacticInfo tac := i | return
+        unless tac.stx.isOfKind ``Lean.Parser.Tactic.show do return
+        let some _ := tac.stx.getRange? true | return
+        let (goal :: goals) := tac.goalsBefore | return
+        let (goal' :: goals') := tac.goalsAfter | return
+        if goals != goals' then return -- `show` didn't act on first goal -> can't replace with `change`
+        if goal == goal' then return -- same goal, no need to check
+        let diff ← ci.runCoreM do
+          let before ← (do instantiateMVars (← goal.getType)).run' {} { mctx := tac.mctxBefore }
+          let after ← (do instantiateMVars (← goal'.getType)).run' {} { mctx := tac.mctxAfter }
+          return before != after
+        if diff then
+          logLint linter.style.show tac.stx m!"\
+          The `show` tactic should only be used to indicate intermediate goal states for \
+          readability.\nHowever, this tactic invocation changed the goal. Please use `change` \
+          instead for these purposes."
+
+initialize addLinter showLinter
+
+end Style.show
 
 end Mathlib.Linter

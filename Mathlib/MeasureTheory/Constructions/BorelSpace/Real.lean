@@ -277,7 +277,7 @@ theorem measurable_of_tendsto' {ι : Type*} {f : ι → α → ℝ≥0∞} {g : 
     ext1 y
     exact ((lim y).comp hx).liminf_eq
   rw [← this]
-  show Measurable fun y => liminf (fun n => (f (x n) y : ℝ≥0∞)) atTop
+  change Measurable fun y => liminf (fun n => (f (x n) y : ℝ≥0∞)) atTop
   exact .liminf fun n => hf (x n)
 
 /-- A sequential limit of measurable `ℝ≥0∞` valued functions is measurable. -/
@@ -576,7 +576,7 @@ lemma tendsto_measure_Icc_nhdsWithin_right' (b : ℝ) :
 
 lemma tendsto_measure_Icc_nhdsWithin_right (b : ℝ) :
     Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝[≥] (0 : ℝ)) (𝓝 (μ {b})) := by
-  simp only [← nhdsWithin_right_sup_nhds_singleton, nhdsWithin_singleton, tendsto_sup,
+  simp only [← nhdsGT_sup_nhdsWithin_singleton, nhdsWithin_singleton, tendsto_sup,
     tendsto_measure_Icc_nhdsWithin_right' μ b, true_and, tendsto_pure_left]
   intro s hs
   simpa using mem_of_mem_nhds hs
