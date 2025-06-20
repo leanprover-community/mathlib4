@@ -2,6 +2,7 @@ import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+import Mathlib.Geometry.Manifold.BumpFunction
 
 open Bundle Filter Function
 
@@ -94,6 +95,87 @@ lemma smul_const_σ (cov : CovariantDerivative I F V)
     congr
     exact (eq_inv_smul_iff₀ ha).mpr rfl
   simp [cov.do_not_read X hσ, hσ₂]
+
+-- "should be obvious"
+variable {I F V} in
+/-- If `σ` and `σ'` are equal sections of `E`, they have equal covariant derivatives. -/
+lemma congr_σ (cov : CovariantDerivative I F V)
+    (X : Π x : M, TangentSpace I x) {σ σ' : Π x : M, V x} (hσ : ∀ x, σ x = σ' x) :
+    cov X σ x = cov X σ' x := by
+  sorry
+
+-- "should be obvious"
+variable {I F V x} in
+/-- If two sections `σ` and `σ'` are equal on a neighbourhood `s` of `x`,
+if one is differentiable at `x` then so is the other. -/
+lemma _root_.mfderiv_dependent_congr {σ σ' : Π x : M, V x} {s : Set M} (hs : s ∈ nhds x)
+    (hσ₁ : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x)
+    (hσ₂ : ∀ x ∈ s, σ x = σ' x) :
+    MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ' x)) x := by
+  sorry
+
+variable {I F V x} in
+/-- If two sections `σ` and `σ'` are equal on a neighbourhood `s` of `x`,
+one is differentiable at `x` iff the other is. -/
+lemma _root_.mfderiv_dependent_congr_iff {σ σ' : Π x : M, V x} {s : Set M} (hs : s ∈ nhds x)
+    (hσ : ∀ x ∈ s, σ x = σ' x) :
+    MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x  ↔
+    MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ' x)) x :=
+  ⟨fun h ↦ mfderiv_dependent_congr hs h hσ,
+   fun h ↦ mfderiv_dependent_congr hs h (fun x hx ↦ (hσ x hx).symm)⟩
+
+section real
+
+variable {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 0 M] {x : M}
+
+variable (F : Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
+  -- `F` model fiber
+  (n : WithTop ℕ∞)
+  (V : M → Type*) [TopologicalSpace (TotalSpace F V)]
+  [∀ x, AddCommGroup (V x)] [∀ x, Module ℝ (V x)]
+  [∀ x : M, TopologicalSpace (V x)] [∀ x, IsTopologicalAddGroup (V x)]
+  [∀ x, ContinuousSMul ℝ (V x)]
+  [FiberBundle F V] [VectorBundle ℝ F V]
+  -- `V` vector bundle
+
+lemma congr_smoothBumpFunction (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
+    (X : Π x : M, TangentSpace I x) {σ : Π x : M, V x}
+    (hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x)
+    (f : SmoothBumpFunction I x) :
+    cov X ((f : M → ℝ) • σ) x = cov X σ x := by
+  rw [cov.leibniz _ _ _ _ hσ]
+  swap; · apply f.contMDiff.mdifferentiable (by norm_num)
+  calc _
+    _ = cov X σ x + 0 := ?_
+    _ = cov X σ x := by rw [add_zero]
+  simp [f.eq_one]; left
+  have aux : f =ᶠ[nhds x] (fun _ ↦ 1) := f.eventuallyEq_one
+  rw [aux.mfderiv_eq, mfderiv_const]
+  rfl
+
+lemma congr_σ_of_eventuallyEq (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
+    (X : Π x : M, TangentSpace I x) {σ σ' : Π x : M, V x} {x : M} {s : Set M} (hs : s ∈ nhds x)
+    (hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x)
+    (hσσ' : ∀ x ∈ s, σ x = σ' x) :
+    cov X σ x = cov X σ' x := by
+  -- Choose a smooth bump function ψ with support around `x` contained in `s`: TODO
+  let R : ℝ := sorry
+  let ψ : SmoothBumpFunction I x := sorry
+  have hψ : support ψ ⊆ s := sorry
+  -- Observe that `ψ • σ = ψ • σ'` as dependent functions.
+  have (x : M) : σ x = σ' x := sorry
+  -- Then, it's a chain of (dependent) equalities.
+  calc cov X σ x
+    _ = cov X ((ψ : M → ℝ) • σ) x := by rw [cov.congr_smoothBumpFunction _ _ _ _ hσ]
+    _ = cov X ((ψ : M → ℝ) • σ') x := cov.congr_σ _ _ (by simp [this])
+    _ = cov X σ' x := by simp [cov.congr_smoothBumpFunction, mfderiv_dependent_congr hs hσ hσσ']
+
+-- eventually, prove: cov X σ x depends on σ only via σ(X) and the 1-jet of σ at x
+
+end real
 
 /-- A convex combination of covariant derivatives is a covariant derivative. -/
 @[simps]
