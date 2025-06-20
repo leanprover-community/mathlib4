@@ -164,9 +164,8 @@ lemma lemma222_3_to_4 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
     have le_smul : x ^ k • (⊤ : Submodule R M) ≤ I • ⊤ := by
       rw [← Submodule.ideal_span_singleton_smul]
       exact (Submodule.smul_mono_left ((span_singleton_le_iff_mem I).mpr hk))
-    have ntr' : Nontrivial M' := by
-      apply Submodule.Quotient.nontrivial_of_lt_top
-      exact gt_of_gt_of_ge smul_lt le_smul
+    have ntr' : Nontrivial M' :=
+      Submodule.Quotient.nontrivial_of_lt_top _ (lt_of_lt_of_le' smul_lt le_smul)
     have smul_lt' : I • (⊤ : Submodule R M') < ⊤ := by
       rw [lt_top_iff_ne_top]
       by_contra eq
@@ -174,8 +173,8 @@ lemma lemma222_3_to_4 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
       have := Submodule.smul_top_eq_comap_smul_top_of_surjective I
         (Submodule.mkQ ((x ^ k) • (⊤ : Submodule R M))) (Submodule.mkQ_surjective _)
       simpa [eq, le_smul] using this
-    have exist_N' : (∃ N : ModuleCat R, Nontrivial ↑N ∧ Module.Finite R ↑N ∧
-        Module.support R ↑N = PrimeSpectrum.zeroLocus ↑I ∧
+    have exist_N' : (∃ N : ModuleCat R, Nontrivial N ∧ Module.Finite R N ∧
+        Module.support R N = PrimeSpectrum.zeroLocus I ∧
           ∀ i < n, Subsingleton (Abelian.Ext N (ModuleCat.of R M') i)) := by
       use N
       simp only [ntr, fin, h_supp, true_and]
@@ -245,7 +244,7 @@ lemma lemma222_4_to_1 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) (N : ModuleCa
         exact Submodule.smul_mono_left
           ((span_singleton_le_iff_mem I).mpr (mem a List.mem_cons_self))
       have Qntr : Nontrivial M' :=
-        Submodule.Quotient.nontrivial_of_lt_top _ (gt_of_gt_of_ge smul_lt le_smul)
+        Submodule.Quotient.nontrivial_of_lt_top _ (lt_of_lt_of_le' smul_lt le_smul)
       have smul_lt' : I • (⊤ : Submodule R M') < ⊤ := by
         rw [lt_top_iff_ne_top]
         by_contra eq
@@ -313,9 +312,8 @@ lemma lemma222 [IsNoetherianRing R] (I : Ideal R) [Small.{v} (R ⧸ I)] (n : ℕ
     refine ⟨?_, h2⟩
     rw [(Shrink.linearEquiv _ R).support_eq, suppQ]
   tfae_have 3 → 4 := lemma222_3_to_4 I n M Mntr Mfin smul_lt
-  tfae_have 4 → 1 := by
-    intro h4 N ⟨Nntr, Nfin, Nsupp⟩ i hi
-    exact lemma222_4_to_1 I n N Nntr Nfin Nsupp M Mntr Mfin smul_lt h4 i hi
+  tfae_have 4 → 1 := fun h4 N ⟨Nntr, Nfin, Nsupp⟩ i hi ↦
+    lemma222_4_to_1 I n N Nntr Nfin Nsupp M Mntr Mfin smul_lt h4 i hi
   tfae_finish
 
 
@@ -383,7 +381,7 @@ lemma moduleDepth_eq_iff (N M : ModuleCat.{v} R) (n : ℕ) : moduleDepth N M = n
 lemma ext_subsingleton_of_lt_moduleDepth {N M : ModuleCat.{v} R} {i : ℕ}
     (lt : i < moduleDepth N M) : Subsingleton (Ext.{max u v} N M i) := by
   by_cases lttop : moduleDepth N M < ⊤
-  · let _ : Nonempty {n : ℕ∞ | ∀ (i : ℕ), ↑i < n → Subsingleton (Ext.{max u v} N M i)} :=
+  · let _ : Nonempty {n : ℕ∞ | ∀ (i : ℕ), i < n → Subsingleton (Ext.{max u v} N M i)} :=
       Nonempty.intro ⟨(0 : ℕ∞), by simp⟩
     exact ENat.sSup_mem_of_nonempty_of_lt_top lttop i lt
   · simp only [not_lt, top_le_iff, moduleDepth_eq_top_iff] at lttop
@@ -392,7 +390,7 @@ lemma ext_subsingleton_of_lt_moduleDepth {N M : ModuleCat.{v} R} {i : ℕ}
 lemma moduleDepth_eq_sup_nat (N M : ModuleCat.{v} R) : moduleDepth N M =
     sSup {n : ℕ∞ | n < ⊤ ∧ ∀ i : ℕ, i < n → Subsingleton (Ext.{max u v} N M i)} := by
   simp only [moduleDepth]
-  by_cases h : ⊤ ∈ {n : ℕ∞ | ∀ (i : ℕ), ↑i < n → Subsingleton (Ext.{max u v} N M i)}
+  by_cases h : ⊤ ∈ {n : ℕ∞ | ∀ (i : ℕ), i < n → Subsingleton (Ext.{max u v} N M i)}
   · rw [csSup_eq_top_of_top_mem h, eq_comm, ENat.eq_top_iff_forall_ge]
     intro m
     apply le_sSup
@@ -411,7 +409,7 @@ lemma moduleDepth_eq_depth_of_supp_eq [IsNoetherianRing R] (I : Ideal R)
     (∀ i < n, Subsingleton (Ext.{max u v} (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M i)) := by
     refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
     · have : ∃ N : ModuleCat.{v} R, Nontrivial N ∧ Module.Finite R N ∧
-        Module.support R N = PrimeSpectrum.zeroLocus ↑I ∧
+        Module.support R N = PrimeSpectrum.zeroLocus I ∧
         ∀ i < n, Subsingleton (Ext.{max u v} N M i) := by
         use N
       exact ((lemma222 I n M (by assumption) (by assumption) smul_lt).out 1 2).mpr
@@ -457,7 +455,7 @@ lemma moduleDepth_eq_zero_of_hom_nontrivial (N M : ModuleCat.{v} R) :
     moduleDepth N M = 0 ↔ Nontrivial (N →ₗ[R] M) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · simp [moduleDepth] at h
-    have : 1 ∉ {n : ℕ∞ | ∀ (i : ℕ), ↑i < n → Subsingleton (Ext.{max u v} N M i)} := by
+    have : 1 ∉ {n : ℕ∞ | ∀ (i : ℕ), i < n → Subsingleton (Ext.{max u v} N M i)} := by
       by_contra mem
       absurd le_sSup mem
       simp [h]
@@ -466,10 +464,9 @@ lemma moduleDepth_eq_zero_of_hom_nontrivial (N M : ModuleCat.{v} R) :
     exact (ModuleCat.homLinearEquiv (S := R)).nontrivial_congr.mp this
   · apply nonpos_iff_eq_zero.mp (sSup_le (fun n mem ↦ ?_))
     by_contra pos
-    absurd mem 0 (lt_of_not_le pos)
+    absurd mem 0 (lt_of_not_ge pos)
     simpa [not_subsingleton_iff_nontrivial, Ext.addEquiv₀.nontrivial_congr]
       using (ModuleCat.homLinearEquiv (S := R)).nontrivial_congr.mpr h
-
 
 lemma moduleDepth_ge_min_of_shortExact_fst
     (S : ShortComplex (ModuleCat.{v} R)) (hS : S.ShortExact)
@@ -513,7 +510,7 @@ lemma moduleDepth_eq_sSup_length_regular [IsNoetherianRing R] (I : Ideal R)
   · rcases ENat.ne_top_iff_exists.mp (ne_top_of_lt lt_top) with ⟨n, hn⟩
     simp only [← hn, Nat.cast_lt, Nat.cast_inj] at h ⊢
     have : ∃ N : ModuleCat.{v} R, Nontrivial N ∧ Module.Finite R N ∧
-      Module.support R N = PrimeSpectrum.zeroLocus ↑I ∧
+      Module.support R N = PrimeSpectrum.zeroLocus I ∧
       ∀ i < n, Subsingleton (Ext.{max u v} N M i) := by
       use N
     rcases ((lemma222 I n M (by assumption) (by assumption) smul_lt).out 2 3).mp
@@ -560,7 +557,7 @@ lemma Submodule.comap_lt_top_of_lt_range {M N : Type* } [AddCommGroup M] [Module
     (lt : p < LinearMap.range f) : Submodule.comap f p < ⊤ := by
   obtain ⟨x, ⟨y, hy⟩, nmem⟩ : ∃ x ∈ LinearMap.range f, x ∉ p := Set.exists_of_ssubset lt
   have : y ∉ Submodule.comap f p := by simpa [hy] using nmem
-  exact lt_of_le_not_le (fun _ a ↦ trivial) fun a ↦ this (a trivial)
+  exact lt_of_le_not_ge (fun _ a ↦ trivial) fun a ↦ this (a trivial)
 
 --universe invariant
 lemma moduleDepth_eq_moduleDepth_shrink [IsNoetherianRing R] (I : Ideal R) [Small.{w, u} R]
