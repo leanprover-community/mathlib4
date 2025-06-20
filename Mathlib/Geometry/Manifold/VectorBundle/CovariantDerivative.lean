@@ -1,6 +1,7 @@
 import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 open Bundle Filter Function
 
@@ -30,13 +31,7 @@ def bar (a : 𝕜) : TangentSpace 𝓘(𝕜, 𝕜) a ≃L[𝕜] 𝕜 where
   map_add' := by simp
   map_smul' := by simp
 
-lemma missing {f : E → 𝕜} {x : E} (Y : TangentSpace 𝓘(𝕜, E) x) :
-  bar (f x) ((fderiv 𝕜 f x) Y) = (fderiv 𝕜 f x) Y := sorry
-
 variable (x : M)
--- set_option diagnostics true
--- set_option trace.Meta.synthInstance.instances true in
--- #synth AddCommMonoid (V x  →L[𝕜] V x)
 
 structure CovariantDerivative where
   toFun : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)
@@ -51,40 +46,25 @@ structure CovariantDerivative where
   -- smul_const_σ : ∀ (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (a : 𝕜),
   --   toFun X (a • σ) = a • toFun X σ
   leibniz : ∀ (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (f : M → 𝕜) (x : M),
-    MDifferentiableAt I I.tangent (fun x ↦ (X x : TangentBundle I M)) x
-    → MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x
+    MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x
     → MDifferentiableAt I 𝓘(𝕜, 𝕜) f x
     → toFun X (f • σ) x = (f • toFun X σ) x + (bar _ <| mfderiv I 𝓘(𝕜, 𝕜) f x (X x)) • σ x
+  do_not_read : ∀ (X : Π x : M, TangentSpace I x) {σ : Π x : M, V x} {x : M},
+    ¬ MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x → toFun X σ x = 0
+
 
 lemma CovariantDerivative.smul_const_σ (cov : CovariantDerivative I F V)
     (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (a : 𝕜) :
     cov.toFun X (a • σ) = a • cov.toFun X σ := by
   ext x
-  by_cases hX : MDifferentiableAt I I.tangent (fun x ↦ (X x : TangentBundle I M)) x; swap
-  · -- missing axiom: if X is not differentiable, the covariant derivative is zero
-    have hσ₁ : cov.toFun X σ = 0 := sorry
-    have hσ₂ : cov.toFun X (a • σ) = 0 := sorry
-    simp [hσ₁, hσ₂]
-  -- Thus, we know `X` is differentiable.
   by_cases hσ : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x
-  · have hσ' : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (a • σ x)) x :=
-      sorry
-    have : MDifferentiableAt I 𝓘(𝕜, 𝕜) (fun x ↦ a) x :=
-      (contMDiff_const.mdifferentiable (n := 1) (by norm_num)).mdifferentiableAt
-    have aux := cov.leibniz X σ (fun _ ↦ a) x hX hσ this
-    convert aux
-    trans (a • cov.toFun X σ) x + 0
-    · rw [add_zero]
-    congr
-    have : mfderiv I 𝓘(𝕜, 𝕜) (fun x ↦ a) x (X x) = 0 := sorry
-    rw [this]
-    simp
-  -- missing axiom: "if σ is not differentiable, the covariant derivative is zero"
-  have hσ₁ : cov.toFun X σ = 0 := sorry
-  have hσ' : ¬ MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (a • σ x)) x :=
+  · simpa using cov.leibniz X σ (fun _ ↦ a) x hσ mdifferentiable_const.mdifferentiableAt
+  have hσ₂ : cov.toFun X (a • σ) x = 0 := by
+    refine cov.do_not_read X ?_
+    contrapose! hσ
+    simp at hσ
     sorry
-  have hσ₂ : cov.toFun X (a • σ) = 0 := sorry
-  simp [hσ₁, hσ₂]
+  simp [cov.do_not_read X hσ, hσ₂]
 
 end
 
@@ -93,10 +73,13 @@ section
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 
+@[simp]
 theorem Bundle.Trivial.mdifferentiableAt_iff (σ : (x : E) → Trivial E E' x) (e : E) :
     MDifferentiableAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ TotalSpace.mk' E' x (σ x)) e ↔
     DifferentiableAt 𝕜 σ e := by
   sorry
+
+attribute [simp] mdifferentiableAt_iff_differentiableAt
 
 noncomputable def trivial_covariant_derivative : CovariantDerivative 𝓘(𝕜, E) E'
   (Bundle.Trivial E E') where
@@ -107,14 +90,12 @@ noncomputable def trivial_covariant_derivative : CovariantDerivative 𝓘(𝕜, 
     rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ hσ'
     rw [fderiv_add hσ hσ']
     rfl
-  leibniz := by
-    intro X σ f x hX hσ hf
-    have : fderiv 𝕜 (f • σ) x = f x • fderiv 𝕜 σ x + (fderiv 𝕜 f x).smulRight (σ x) := by
-      apply fderiv_smul
-        (by rwa [← mdifferentiableAt_iff_differentiableAt])
-        (by rwa [Bundle.Trivial.mdifferentiableAt_iff] at hσ)
-    simp [this]
-    rw [← missing]
-    congr
-
+  leibniz X σ f x hσ hf := by
+    have : fderiv 𝕜 (f • σ) x = f x • fderiv 𝕜 σ x + (fderiv 𝕜 f x).smulRight (σ x) :=
+      fderiv_smul (by simp_all) (by simp_all)
+    simp [this, bar]
+    rfl
+  do_not_read X σ x hσ := by
+    rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ
+    simp [fderiv_zero_of_not_differentiableAt hσ]
 end
