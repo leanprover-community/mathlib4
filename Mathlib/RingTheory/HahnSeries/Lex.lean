@@ -187,7 +187,7 @@ theorem abs_lt_of_orderTop_gt {x y : Lex (HahnSeries Γ R)}
     · rw [orderTop_abs]
       simpa using h
 
-theorem archimedeanClas_le_iff_of_orderTop_eq {x y : Lex (HahnSeries Γ R)}
+theorem archimedeanClass_le_iff_of_orderTop_eq {x y : Lex (HahnSeries Γ R)}
     (h : (ofLex x).orderTop = (ofLex y).orderTop) :
     ArchimedeanClass.mk x ≤ ArchimedeanClass.mk y ↔
     ArchimedeanClass.mk (ofLex x).leadingCoeff ≤ ArchimedeanClass.mk (ofLex y).leadingCoeff := by
@@ -266,8 +266,8 @@ theorem achimedeanClass_le_iff {x y : Lex (HahnSeries Γ R)}:
     simp_rw [ArchimedeanClass.mk_le_mk]
     simp only [hlt, true_or, iff_true]
     exact ⟨1, by simpa using (abs_lt_of_orderTop_gt hlt).le⟩
-  · -- When x and y have the same order, this reduces to archimedeanClas_le_iff_of_orderTop_eq
-    simpa [heq] using archimedeanClas_le_iff_of_orderTop_eq heq
+  · -- When x and y have the same order, this reduces to archimedeanClass_le_iff_of_orderTop_eq
+    simpa [heq] using archimedeanClass_le_iff_of_orderTop_eq heq
   · -- when x's order is greater than y's, neither side is true
     simp_rw [ArchimedeanClass.mk_le_mk]
     constructor
@@ -374,7 +374,6 @@ theorem archimedeanClass₀_orderIso_apply_snd {x : Lex (HahnSeries Γ R)} (h : 
   simp [archimedeanClass₀_orderIso, archimedeanClass₀_orderHom]
 
 section Archimedean
-
 variable [Archimedean R] [Nontrivial R]
 
 variable (Γ R) in
