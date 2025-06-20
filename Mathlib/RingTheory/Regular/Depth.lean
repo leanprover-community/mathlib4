@@ -164,9 +164,8 @@ lemma lemma222_3_to_4 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
     have le_smul : x ^ k • (⊤ : Submodule R M) ≤ I • ⊤ := by
       rw [← Submodule.ideal_span_singleton_smul]
       exact (Submodule.smul_mono_left ((span_singleton_le_iff_mem I).mpr hk))
-    have ntr' : Nontrivial M' := by
-      apply Submodule.Quotient.nontrivial_of_lt_top
-      exact gt_of_gt_of_ge smul_lt le_smul
+    have ntr' : Nontrivial M' :=
+      Submodule.Quotient.nontrivial_of_lt_top _ (lt_of_lt_of_le' smul_lt le_smul)
     have smul_lt' : I • (⊤ : Submodule R M') < ⊤ := by
       rw [lt_top_iff_ne_top]
       by_contra eq
@@ -174,8 +173,8 @@ lemma lemma222_3_to_4 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) :
       have := Submodule.smul_top_eq_comap_smul_top_of_surjective I
         (Submodule.mkQ ((x ^ k) • (⊤ : Submodule R M))) (Submodule.mkQ_surjective _)
       simpa [eq, le_smul] using this
-    have exist_N' : (∃ N : ModuleCat R, Nontrivial ↑N ∧ Module.Finite R ↑N ∧
-        Module.support R ↑N = PrimeSpectrum.zeroLocus ↑I ∧
+    have exist_N' : (∃ N : ModuleCat R, Nontrivial N ∧ Module.Finite R N ∧
+        Module.support R N = PrimeSpectrum.zeroLocus I ∧
           ∀ i < n, Subsingleton (Abelian.Ext N (ModuleCat.of R M') i)) := by
       use N
       simp only [ntr, fin, h_supp, true_and]
@@ -245,7 +244,7 @@ lemma lemma222_4_to_1 [IsNoetherianRing R] (I : Ideal R) (n : ℕ) (N : ModuleCa
         exact Submodule.smul_mono_left
           ((span_singleton_le_iff_mem I).mpr (mem a List.mem_cons_self))
       have Qntr : Nontrivial M' :=
-        Submodule.Quotient.nontrivial_of_lt_top _ (gt_of_gt_of_ge smul_lt le_smul)
+        Submodule.Quotient.nontrivial_of_lt_top _ (lt_of_lt_of_le' smul_lt le_smul)
       have smul_lt' : I • (⊤ : Submodule R M') < ⊤ := by
         rw [lt_top_iff_ne_top]
         by_contra eq
@@ -313,7 +312,6 @@ lemma lemma222 [IsNoetherianRing R] (I : Ideal R) [Small.{v} (R ⧸ I)] (n : ℕ
     refine ⟨?_, h2⟩
     rw [(Shrink.linearEquiv _ R).support_eq, suppQ]
   tfae_have 3 → 4 := lemma222_3_to_4 I n M Mntr Mfin smul_lt
-  tfae_have 4 → 1 := by
-    intro h4 N ⟨Nntr, Nfin, Nsupp⟩ i hi
-    exact lemma222_4_to_1 I n N Nntr Nfin Nsupp M Mntr Mfin smul_lt h4 i hi
+  tfae_have 4 → 1 := fun h4 N ⟨Nntr, Nfin, Nsupp⟩ i hi ↦
+    lemma222_4_to_1 I n N Nntr Nfin Nsupp M Mntr Mfin smul_lt h4 i hi
   tfae_finish
