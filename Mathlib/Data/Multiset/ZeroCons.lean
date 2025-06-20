@@ -262,8 +262,8 @@ theorem coe_singleton (a : α) : ([a] : Multiset α) = {a} :=
 theorem mem_singleton {a b : α} : b ∈ ({a} : Multiset α) ↔ b = a := by
   simp only [← cons_zero, mem_cons, iff_self, or_false, notMem_zero]
 
-theorem not_mem_singleton_iff {a b : α} : a ∉ ({b} : Multiset α) ↔ a ≠ b := by
-  rw [Multiset.mem_singleton, ne_eq]
+theorem notMem_singleton {a b : α} : a ∉ ({b} : Multiset α) ↔ a ≠ b :=
+  mem_singleton.not
 
 theorem mem_singleton_self (a : α) : a ∈ ({a} : Multiset α) := by
   rw [← cons_zero]
