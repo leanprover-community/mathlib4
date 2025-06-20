@@ -89,10 +89,7 @@ variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 
 noncomputable def trivial_covariant_derivative : CovariantDerivative 𝓘(𝕜, E) E'
   (Bundle.Trivial E E') where
-  toFun X s := by
-    intro x
-    let res := fderiv 𝕜 s (X x)
-    convert res
+  toFun X s := fun x ↦ fderiv 𝕜 s (X x) x
   addX X X' σ := by
     sorry /-
     funext x'
