@@ -242,6 +242,10 @@ abbrev unlintedNodes := #[
 
   -- The pretty-printer adds a space between the backticks and the actual name.
   ``Parser.Term.doubleQuotedName,
+  -- #adaptation_note /-- `nightly-testing-2025-06-19`
+  -- disable the linter on attributes, but should really only disable `grind`.
+  -- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/commandStart.20linter.20broken.20with.20.60grind.60/with/524980336 -/
+  ``Parser.Term.attributes,
   ]
 
 /--
@@ -360,3 +364,12 @@ initialize addLinter commandStartLinter
 end Style.CommandStart
 
 end Mathlib.Linter
+
+run_cmd
+  let stx ← `(@[grind =] example := 0)
+  dbg_trace stx
+  let fmt : Option Format := ←
+        liftCoreM <| PrettyPrinter.ppCategory `command stx
+  if let some fmt := fmt then
+  let st := fmt.pretty
+  dbg_trace st
