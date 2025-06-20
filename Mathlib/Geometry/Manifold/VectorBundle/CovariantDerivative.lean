@@ -39,7 +39,7 @@ structure CovariantDerivative where
     toFun (X + X') σ = toFun X σ + toFun X' σ
   smulX : ∀ (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (f : M → 𝕜),
     toFun (f • X) σ = f • toFun X σ
-  addσ : ∀ (X : Π x : M, TangentSpace I x) (σ σ' : Π x : M, V x)(x : M),
+  addσ : ∀ (X : Π x : M, TangentSpace I x) (σ σ' : Π x : M, V x) (x : M),
     MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x
     → MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ' x)) x
     → toFun X (σ + σ') x = toFun X σ x + toFun X σ' x
@@ -88,6 +88,21 @@ lemma smul_const_σ (cov : CovariantDerivative I F V)
     exact (eq_inv_smul_iff₀ ha).mpr rfl
   simp [cov.do_not_read X hσ, hσ₂]
 
+/-- A convex combination of covariant derivatives is a covariant derivative. -/
+@[simps]
+def convexCombination (cov cov' : CovariantDerivative I F V) (t : 𝕜) :
+    CovariantDerivative I F V where
+  toFun X s := (t • (cov.toFun X s)) + (1 - t) • (cov'.toFun X s)
+  addX X X' σ := by simp only [cov.addX, cov'.addX]; module
+  smulX X σ f := by simp only [cov.smulX, cov'.smulX]; module
+  addσ X σ σ' x hσ hσ' := by
+    simp [cov.addσ X σ σ' x hσ hσ', cov'.addσ X σ σ' x hσ hσ']
+    module
+  leibniz X σ f x hσ hf := by
+    simp [cov.leibniz X σ f x hσ hf, cov'.leibniz X σ f x hσ hf]
+    module
+  do_not_read X {σ} {x} hσ := by simp [cov.do_not_read X hσ, cov'.do_not_read X hσ]
+
 end CovariantDerivative
 
 end
@@ -105,7 +120,8 @@ theorem Bundle.Trivial.mdifferentiableAt_iff (σ : (x : E) → Trivial E E' x) (
 
 attribute [simp] mdifferentiableAt_iff_differentiableAt
 
-noncomputable def trivial_covariant_derivative : CovariantDerivative 𝓘(𝕜, E) E'
+@[simps]
+noncomputable def CovariantDerivative.trivial : CovariantDerivative 𝓘(𝕜, E) E'
   (Bundle.Trivial E E') where
   toFun X s := fun x ↦ fderiv 𝕜 s x (X x)
   addX X X' σ := by ext; simp
@@ -122,4 +138,5 @@ noncomputable def trivial_covariant_derivative : CovariantDerivative 𝓘(𝕜, 
   do_not_read X σ x hσ := by
     rw [Bundle.Trivial.mdifferentiableAt_iff] at hσ
     simp [fderiv_zero_of_not_differentiableAt hσ]
+
 end
