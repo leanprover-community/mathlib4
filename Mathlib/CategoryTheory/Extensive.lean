@@ -544,7 +544,8 @@ lemma FinitaryPreExtensive.isIso_sigmaDesc_fst [FinitaryPreExtensive C] {α : Ty
 alias FinitaryPreExtensive.sigma_desc_iso := FinitaryPreExtensive.isIso_sigmaDesc_fst
 
 /-- If `C` has pullbacks and is finitary (pre-)extensive, pullbacks distribute over finite
-coproducts, i.e., `∐ (Xᵢ ×[S] Xⱼ) ≅ (∐ Xᵢ) ×[S] (∐ Xⱼ)`. -/
+coproducts, i.e., `∐ (Xᵢ ×[S] Xⱼ) ≅ (∐ Xᵢ) ×[S] (∐ Xⱼ)`.
+For an `IsPullback` version, see `FinitaryPreExtensive.isPullback_sigmaDesc`. -/
 instance FinitaryPreExtensive.isIso_sigmaDesc_map [HasPullbacks C] [FinitaryPreExtensive C]
     {ι ι' : Type*} [Finite ι] [Finite ι'] {S : C} {X : ι → C} {Y : ι' → C}
     (f : ∀ i, X i ⟶ S) (g : ∀ i, Y i ⟶ S) :
@@ -562,6 +563,31 @@ instance FinitaryPreExtensive.isIso_sigmaDesc_map [HasPullbacks C] [FinitaryPreE
   · exact FinitaryPreExtensive.isUniversal_finiteCoproducts (coproductIsCoproduct X)
   · exact FinitaryPreExtensive.isUniversal_finiteCoproducts (coproductIsCoproduct Y)
   · exact pullback.isLimit (Sigma.desc f) (Sigma.desc g)
+
+/-- If `C` has pullbacks and is finitary (pre-)extensive, pullbacks distribute over finite
+coproducts, i.e., `∐ (Xᵢ ×[S] Xⱼ) ≅ (∐ Xᵢ) ×[S] (∐ Xⱼ)`.
+For a variant, see `FinitaryPreExtensive.isIso_sigmaDesc_map`. -/
+instance FinitaryPreExtensive.isPullback_sigmaι [HasPullbacks C] [FinitaryPreExtensive C]
+    {ι ι' : Type*} [Finite ι] [Finite ι'] {S : C} {X : ι → C} {Y : ι' → C}
+    (f : ∀ i, X i ⟶ S) (g : ∀ i, Y i ⟶ S) :
+    IsPullback
+      (Limits.Sigma.desc fun (p : ι × ι') ↦ pullback.fst (f p.1) (g p.2) ≫ Sigma.ι X p.1)
+      (Limits.Sigma.desc fun (p : ι × ι') ↦ pullback.snd (f p.1) (g p.2) ≫ Sigma.ι Y p.2)
+      (Limits.Sigma.desc f) (Limits.Sigma.desc g) := by
+  let c : Cofan _ := Cofan.mk _ <| fun (p : ι × ι') ↦
+      pullback.map (f p.1) (g p.2) (Sigma.desc f) (Sigma.desc g) (Sigma.ι _ p.1)
+        (Sigma.ι _ p.2) (𝟙 S) (by simp) (by simp)
+  convert IsUniversalColimit.isPullback_prod_of_isColimit
+      (d := Cofan.mk _ (Sigma.ι fun (p : ι × ι') ↦ pullback (f p.1) (g p.2)))
+      (hd := coproductIsCoproduct (fun (p : ι × ι') ↦ pullback (f p.1) (g p.2)))
+      (a := Cofan.mk _ <| fun i ↦ Sigma.ι _ i) (b := Cofan.mk _ <| fun i ↦ Sigma.ι _ i)
+      ?_ ?_ f g (Sigma.desc f) (Sigma.desc g) (fun i j ↦ IsPullback.of_hasPullback (f i) (g j))
+  · ext
+    simp [Cofan.IsColimit.desc, Sigma.ι, coproductIsCoproduct]
+  · ext
+    simp [Cofan.IsColimit.desc, Sigma.ι, coproductIsCoproduct]
+  · exact FinitaryPreExtensive.isUniversal_finiteCoproducts (coproductIsCoproduct X)
+  · exact FinitaryPreExtensive.isUniversal_finiteCoproducts (coproductIsCoproduct Y)
 
 end FiniteCoproducts
 
