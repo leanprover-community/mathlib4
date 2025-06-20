@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Pim Otte
 -/
 
-import Mathlib.Combinatorics.SimpleGraph.Walk
+import Mathlib.Combinatorics.SimpleGraph.Walk.Basic
 
 /-!
 # Decomposing walks

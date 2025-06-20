@@ -2765,6 +2765,11 @@ import Mathlib.Combinatorics.SimpleGraph.Turan
 import Mathlib.Combinatorics.SimpleGraph.Tutte
 import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
 import Mathlib.Combinatorics.SimpleGraph.Walk
+import Mathlib.Combinatorics.SimpleGraph.Walk.Basic
+import Mathlib.Combinatorics.SimpleGraph.Walk.Circuit
+import Mathlib.Combinatorics.SimpleGraph.Walk.Cycle
+import Mathlib.Combinatorics.SimpleGraph.Walk.Path
+import Mathlib.Combinatorics.SimpleGraph.Walk.Trail
 import Mathlib.Combinatorics.Young.SemistandardTableau
 import Mathlib.Combinatorics.Young.YoungDiagram
 import Mathlib.Computability.Ackermann
