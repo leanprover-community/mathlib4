@@ -69,11 +69,10 @@ lemma quadratic_eq_of_vieta [CommRing R] {a b c x1 x2 : R}
 lemma roots_of_ne_zero_of_vieta [CommRing R] [IsDomain R] {a b c x1 x2 : R} (ha : a ≠ 0)
     (hvieta : b = -a * (x1 + x2) ∧ c = a * x1 * x2) :
     (C a * X ^ 2 + C b * X + C c).roots = {x1, x2} := by
-  have h1 : C a * (X - C x1) ≠ 0 := mul_ne_zero (by simpa) (Polynomial.X_sub_C_ne_zero _)
-  have h2 : C a * (X - C x1) * (X - C x2) ≠ 0 := by
+  have e1 : C a * (X - C x1) * (X - C x2) ≠ 0 := by
     rw [← quadratic_eq_of_vieta hvieta]
     exact quadratic_ne_zero ha
-  simp [quadratic_eq_of_vieta hvieta, Polynomial.roots_mul h2, Polynomial.roots_mul h1]
+  simp [quadratic_eq_of_vieta hvieta, Polynomial.roots_mul e1, roots_C_mul _ ha]
 
 /-- **Vieta's formula** for quadratics as an iff. -/
 lemma roots_quadratic_eq_pair_iff_of_ne_zero [CommRing R] [IsDomain R] {a b c x1 x2 : R}
