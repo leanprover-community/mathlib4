@@ -132,6 +132,9 @@ instance [IsCofibrant A] [P.IsGood] : Cofibration P.i₁ := by
 instance [IsCofibrant A] [P.IsGood] : IsCofibrant P.I :=
   isCofibrant_of_cofibration P.i₀
 
+instance [IsFibrant A] [P.IsVeryGood] : IsFibrant P.I :=
+  isFibrant_of_fibration P.π
+
 instance [P.IsGood] : P.symm.IsGood where
   cofibration_i := by
     dsimp

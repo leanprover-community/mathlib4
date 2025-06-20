@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
 import Mathlib.AlgebraicTopology.ModelCategory.PathObject
+import Mathlib.AlgebraicTopology.ModelCategory.BrownLemma
 import Mathlib.CategoryTheory.Quotient
 
 /-!
@@ -344,5 +345,185 @@ lemma leftHomotopyRel_iff_rightHomotopyRel {X Y : C} (f g : X ⟶ Y)
     [IsCofibrant X] [IsFibrant Y] :
     LeftHomotopyRel f g ↔ RightHomotopyRel f g :=
   ⟨fun h ↦ h.rightHomotopyRel, fun h ↦ h.leftHomotopyRel⟩
+
+variable (X Y : C)
+
+def LeftHomotopyClass :=
+  _root_.Quot (LeftHomotopyRel (X := X) (Y := Y))
+
+def RightHomotopyClass (X Y : C) :=
+  _root_.Quot (RightHomotopyRel (X := X) (Y := Y))
+
+variable {X Y Z}
+
+def LeftHomotopyClass.mk : (X ⟶ Y) → LeftHomotopyClass X Y := Quot.mk _
+
+def RightHomotopyClass.mk : (X ⟶ Y) → RightHomotopyClass X Y := Quot.mk _
+
+lemma LeftHomotopyClass.mk_surjective : Function.Surjective (mk : (X ⟶ Y) → _) :=
+  Quot.mk_surjective
+
+lemma RightHomotopyClass.mk_surjective : Function.Surjective (mk : (X ⟶ Y) → _) :=
+  Quot.mk_surjective
+
+namespace LeftHomotopyClass
+
+lemma sound {f g : X ⟶ Y} (h : LeftHomotopyRel f g) : mk f = mk g := Quot.sound h
+
+def postcomp : LeftHomotopyClass X Y → (Y ⟶ Z) → LeftHomotopyClass X Z :=
+  fun f g ↦ Quot.lift (fun f ↦ mk (f ≫ g)) (fun _ _ h ↦ sound (h.postcomp g)) f
+
+@[simp]
+lemma postcomp_mk (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (mk f).postcomp g = mk (f ≫ g) := rfl
+
+def comp [IsFibrant Z] :
+    LeftHomotopyClass X Y → LeftHomotopyClass Y Z → LeftHomotopyClass X Z :=
+  Quot.lift₂ (fun f g ↦ mk (f ≫ g)) (fun f _ _ h ↦ sound (h.precomp f))
+    (fun _ _ g h ↦ sound (h.postcomp g))
+
+@[simp]
+lemma mk_comp_mk [IsFibrant Z] (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (mk f).comp (mk g) = mk (f ≫ g) := rfl
+
+lemma mk_eq_mk_iff [IsCofibrant X] (f g : X ⟶ Y) :
+    mk f = mk g ↔ LeftHomotopyRel f g := by
+  rw [← (LeftHomotopyRel.equivalence X Y).eqvGen_iff ]
+  exact Quot.eq
+
+variable (X) in
+lemma bijective_postcomp_of_fibration_of_weakEquivalence
+    [IsCofibrant X] (g : Y ⟶ Z) [Fibration g] [WeakEquivalence g] :
+    Function.Bijective (fun (f : LeftHomotopyClass X Y) ↦ f.postcomp g) := by
+  constructor
+  · intro f₀ f₁ h
+    obtain ⟨f₀, rfl⟩ := f₀.mk_surjective
+    obtain ⟨f₁, rfl⟩ := f₁.mk_surjective
+    simp only [postcomp_mk, mk_eq_mk_iff] at h
+    obtain ⟨P, _, ⟨h⟩⟩ := h.exists_good
+    have sq : CommSq (coprod.desc f₀ f₁) P.i g h.h := ⟨by aesop_cat⟩
+    rw [mk_eq_mk_iff]
+    exact ⟨P, ⟨{
+      h := sq.lift
+      h₀ := by
+        have := coprod.inl ≫= sq.fac_left
+        rwa [P.inl_i_assoc, coprod.inl_desc] at this
+      h₁ := by
+        have := coprod.inr ≫= sq.fac_left
+        rwa [P.inr_i_assoc, coprod.inr_desc] at this
+    }⟩⟩
+  · intro φ
+    obtain ⟨φ, rfl⟩ := φ.mk_surjective
+    have sq : CommSq (initial.to Y) (initial.to X) g φ := ⟨by simp⟩
+    exact ⟨mk sq.lift, by simp⟩
+
+variable (X) in
+lemma bijective_postcomp_of_weakEquivalence
+    [IsCofibrant X] (g : Y ⟶ Z) [IsFibrant Y] [IsFibrant Z] [WeakEquivalence g] :
+    Function.Bijective (fun (f : LeftHomotopyClass X Y) ↦ f.postcomp g) := by
+  have h : FibrantBrownFactorization g := Classical.arbitrary _
+  have hi : Function.Bijective (fun (f : LeftHomotopyClass X Y) ↦ f.postcomp h.i) := by
+    rw [← Function.Bijective.of_comp_iff'
+      (bijective_postcomp_of_fibration_of_weakEquivalence X h.r)]
+    convert Function.bijective_id
+    ext φ
+    obtain ⟨φ, rfl⟩ := φ.mk_surjective
+    simp
+  convert (bijective_postcomp_of_fibration_of_weakEquivalence X h.j).comp hi using 1
+  ext φ
+  obtain ⟨φ, rfl⟩ := φ.mk_surjective
+  simp
+
+end LeftHomotopyClass
+
+namespace RightHomotopyClass
+
+lemma sound {f g : X ⟶ Y} (h : RightHomotopyRel f g) : mk f = mk g := Quot.sound h
+
+def precomp : RightHomotopyClass Y Z → (X ⟶ Y) → RightHomotopyClass X Z :=
+  fun f g ↦ Quot.lift (fun f ↦ mk (g ≫ f)) (fun _ _ h ↦ sound (h.precomp g)) f
+
+@[simp]
+lemma precomp_mk (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (mk g).precomp f = mk (f ≫ g) := rfl
+
+def comp [IsCofibrant X] :
+    RightHomotopyClass X Y → RightHomotopyClass Y Z → RightHomotopyClass X Z :=
+  Quot.lift₂ (fun f g ↦ mk (f ≫ g)) (fun f _ _ h ↦ sound (h.precomp f))
+    (fun _ _ g h ↦ sound (h.postcomp g))
+
+@[simp]
+lemma mk_comp_mk [IsCofibrant X] (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (mk f).comp (mk g) = mk (f ≫ g) := rfl
+
+lemma mk_eq_mk_iff [IsFibrant Y] (f g : X ⟶ Y) :
+    mk f = mk g ↔ RightHomotopyRel f g := by
+  rw [← (RightHomotopyRel.equivalence X Y).eqvGen_iff ]
+  exact Quot.eq
+
+variable (Z) in
+lemma bijective_precomp_of_cofibration_of_weakEquivalence
+    [IsFibrant Z] (f : X ⟶ Y) [Cofibration f] [WeakEquivalence f] :
+    Function.Bijective (fun (g : RightHomotopyClass Y Z) ↦ g.precomp f) := by
+  constructor
+  · intro f₀ f₁ h
+    obtain ⟨f₀, rfl⟩ := f₀.mk_surjective
+    obtain ⟨f₁, rfl⟩ := f₁.mk_surjective
+    simp only [precomp_mk, mk_eq_mk_iff] at h
+    obtain ⟨P, _, ⟨h⟩⟩ := h.exists_good
+    have sq : CommSq h.h f P.p (prod.lift f₀ f₁) := ⟨by aesop_cat⟩
+    rw [mk_eq_mk_iff]
+    exact ⟨P, ⟨{
+      h := sq.lift
+      h₀ := by
+        have := sq.fac_right =≫ prod.fst
+        rwa [Category.assoc, P.p_fst, prod.lift_fst] at this
+      h₁ := by
+        have := sq.fac_right =≫ prod.snd
+        rwa [Category.assoc, P.p_snd, prod.lift_snd] at this
+    }⟩⟩
+  · intro φ
+    obtain ⟨φ, rfl⟩ := φ.mk_surjective
+    have sq : CommSq φ f (terminal.from _) (terminal.from _) := ⟨by simp⟩
+    exact ⟨mk sq.lift, by simp⟩
+
+variable (Z) in
+lemma bijective_precomp_of_weakEquivalence
+    [IsFibrant Z] (f : X ⟶ Y) [IsCofibrant X] [IsCofibrant Y] [WeakEquivalence f] :
+    Function.Bijective (fun (g : RightHomotopyClass Y Z) ↦ g.precomp f) := by
+  have h : CofibrantBrownFactorization f := Classical.arbitrary _
+  have hj : Function.Bijective (fun (g : RightHomotopyClass Y Z) ↦ g.precomp h.j) := by
+    rw [← Function.Bijective.of_comp_iff'
+      (bijective_precomp_of_cofibration_of_weakEquivalence Z h.s)]
+    convert Function.bijective_id
+    ext φ
+    obtain ⟨φ, rfl⟩ := φ.mk_surjective
+    simp
+  convert (bijective_precomp_of_cofibration_of_weakEquivalence Z h.i).comp hj using 1
+  ext φ
+  obtain ⟨φ, rfl⟩ := φ.mk_surjective
+  simp
+
+lemma exists_homotopy_inverse [IsCofibrant X] [IsCofibrant Y]
+    [IsFibrant X] [IsFibrant Y] (f : X ⟶ Y) [WeakEquivalence f] :
+    ∃ (g : Y ⟶ X), RightHomotopyRel (f ≫ g) (𝟙 X) ∧ RightHomotopyRel (g ≫ f) (𝟙 Y) := by
+  obtain ⟨g, hg⟩ := (bijective_precomp_of_weakEquivalence X f).2 (.mk (𝟙 X))
+  obtain ⟨g, rfl⟩ := g.mk_surjective
+  dsimp at hg
+  refine ⟨g, by rwa [← mk_eq_mk_iff], ?_⟩
+  rw [← mk_eq_mk_iff]
+  apply (bijective_precomp_of_weakEquivalence Y f).1
+  simp only [precomp_mk, Category.comp_id]
+  rw [mk_eq_mk_iff, ← leftHomotopyRel_iff_rightHomotopyRel] at hg ⊢
+  simpa using hg.postcomp f
+
+end RightHomotopyClass
+
+lemma LeftHomotopyClass.exists_homotopy_inverse
+    [IsCofibrant X] [IsCofibrant Y]
+    [IsFibrant X] [IsFibrant Y] (f : X ⟶ Y) [WeakEquivalence f] :
+    ∃ (g : Y ⟶ X), LeftHomotopyRel (f ≫ g) (𝟙 X) ∧ LeftHomotopyRel (g ≫ f) (𝟙 Y) := by
+  simp only [leftHomotopyRel_iff_rightHomotopyRel]
+  apply RightHomotopyClass.exists_homotopy_inverse
 
 end HomotopicalAlgebra

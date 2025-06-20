@@ -29,6 +29,17 @@ variable {C}
 abbrev CofibrantObject.mk (X : C) [IsCofibrant X] : CofibrantObject C :=
   ⟨X, by assumption⟩
 
+abbrev CofibrantObject.homMk {X Y : C} [IsCofibrant X] [IsCofibrant Y] (f : X ⟶ Y) :
+    mk X ⟶ mk Y := f
+
+@[simp]
+lemma CofibrantObject.homMk_id (X : C) [IsCofibrant X] : homMk (𝟙 X) = 𝟙 (mk X) := rfl
+
+@[reassoc (attr := simp)]
+lemma CofibrantObject.homMk_homMk {X Y Z : C} [IsCofibrant X] [IsCofibrant Y] [IsCofibrant Z]
+    (f : X ⟶ Y) (g : Y ⟶ Z) :
+    homMk f ≫ homMk g = homMk (f ≫ g) := rfl
+
 abbrev CofibrantObject.ι : CofibrantObject C ⥤ C := (cofibrantObjects C).ι
 
 instance (X : CofibrantObject C) : IsCofibrant X.1 := X.2
@@ -48,6 +59,17 @@ variable {C}
 
 abbrev FibrantObject.mk (X : C) [IsFibrant X] : FibrantObject C :=
   ⟨X, by assumption⟩
+
+abbrev FibrantObject.homMk {X Y : C} [IsFibrant X] [IsFibrant Y] (f : X ⟶ Y) :
+    mk X ⟶ mk Y := f
+
+@[simp]
+lemma FibrantObject.homMk_id (X : C) [IsFibrant X] : homMk (𝟙 X) = 𝟙 (mk X) := rfl
+
+@[reassoc (attr := simp)]
+lemma FibrantObject.homMk_homMk {X Y Z : C} [IsFibrant X] [IsFibrant Y] [IsFibrant Z]
+    (f : X ⟶ Y) (g : Y ⟶ Z) :
+    homMk f ≫ homMk g = homMk (f ≫ g) := rfl
 
 abbrev FibrantObject.ι : FibrantObject C ⥤ C := (fibrantObjects C).ι
 

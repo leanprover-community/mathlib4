@@ -76,8 +76,8 @@ variable (E : Type*) [Category E]
 
 lemma inverts_iff_factors (F : BifibrantObject C ⥤ E) :
     (weakEquivalences _).IsInvertedBy F ↔
-    ∀ ⦃K L : BifibrantObject C⦄ (f g : K ⟶ L)
-      (h : homRel C f g), F.map f = F.map g := by
+    ∀ ⦃K L : BifibrantObject C⦄ (f g : K ⟶ L),
+      homRel C f g → F.map f = F.map g := by
   constructor
   · intro H K L f g h
     obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good
@@ -96,7 +96,15 @@ lemma inverts_iff_factors (F : BifibrantObject C ⥤ E) :
     simp only [← cancel_epi (F.map s), ← Functor.map_comp]
     congr 1
     exact ι.map_injective (P.ι_p₀.trans P.ι_p₁.symm)
-  · sorry
+  · intro h X Y f hf
+    rw [← weakEquivalence_iff, weakEquivalence_iff_ι_map] at hf
+    let f' := (bifibrantObjects C).ι.map f
+    obtain ⟨g', h₁, h₂⟩ := RightHomotopyClass.exists_homotopy_inverse f'
+    refine ⟨F.map g', ?_, ?_⟩
+    all_goals
+    · rw [← F.map_comp, ← F.map_id]
+      apply h
+      assumption
 
 def strictUniversalPropertyFixedTargetToπ :
     Localization.StrictUniversalPropertyFixedTarget
