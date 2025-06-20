@@ -28,6 +28,7 @@ def databases : List String :=
 
 def processDb (decls : ConstMap) : String → IO Bool
 | file => do
+  IO.println s!"Checking {file}.json"
   let lines ← readJsonFile DBFile s!"{file}.json"
   let missing := lines.filter (fun l ↦ !(decls.contains l.2))
   if 0 < missing.size then

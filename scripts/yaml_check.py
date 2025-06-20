@@ -137,6 +137,9 @@ for index, entry in hundred.items():
             print(f"For key {index} ({title}): did you mean `decl` instead of `decls`?")
             errors += 1
         hundred_decls = hundred_decls + [(f"{index} {title}", d) for d in entry["decls"]]
+    elif "statement" in entry:
+        print(f"Writing statement {entry["statement"]} for {index} {title}")
+        hundred_decls.append((f"{index} {title}", entry["statement"]))
 
 thousand_decls: List[Tuple[str, str]] = []
 for index, entry in thousand.items():
@@ -171,6 +174,7 @@ for index, entry in thousand.items():
             errors += 1
         thousand_decls = thousand_decls + [(f"{index} {title}", d) for d in entry["decls"]]
     elif "statement" in entry:
+        print(f"Writing statement {entry["statement"]} for {index} {title}")
         thousand_decls.append((f"{index} {title}", entry["statement"]))
 
 overview_decls = tiered_extract(overview)
