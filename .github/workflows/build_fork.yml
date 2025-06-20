@@ -520,10 +520,11 @@ jobs:
     if: github.event.pull_request.head.repo.fork
     runs-on: ubuntu-latest
     steps:
-      - uses: leanprover-community/lint-style-action@f2e7272aad56233a642b08fe974cf09dd664b0c8 # 2025-05-22
+      - uses: leanprover-community/lint-style-action@5ec3928ae808a58f396761bdf9e9e65ece839b67 # 2025-06-20
         with:
           mode: check
           lint-bib-file: true
+          ref: ${{ github.event.pull_request.head.sha }}
 
   build_and_lint:
     name: CI Success
