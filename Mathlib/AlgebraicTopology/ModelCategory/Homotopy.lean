@@ -64,6 +64,14 @@ lemma exists_good {f g : X ⟶ Y} (h : P.LeftHomotopy f g) :
       convert d.hi
       aesop⟩, ⟨{ h := d.p ≫ h.h }⟩⟩
 
+lemma covering_homotopy {A E B : C} {P : Cylinder A} {f₀ f₁ : A ⟶ B}
+    [IsCofibrant A] [P.IsGood]
+    (h : P.LeftHomotopy f₀ f₁) (p : E ⟶ B) [Fibration p]
+    (l₀ : A ⟶ E) (hl₀ : l₀ ≫ p = f₀) :
+    ∃ (l₁ : A ⟶ E) (h' : P.LeftHomotopy l₀ l₁), h'.h ≫ p = h.h := by
+  have sq : CommSq l₀ P.i₀ p h.h := ⟨by aesop_cat⟩
+  exact ⟨P.i₁ ≫ sq.lift, { h := sq.lift }, by simp⟩
+
 end LeftHomotopy
 
 end Cylinder
@@ -113,6 +121,14 @@ lemma exists_good {f g : X ⟶ Y} (h : P.RightHomotopy f g) :
       rw [fibration_iff]
       convert d.hp
       aesop⟩, ⟨{ h := h.h ≫ d.i }⟩⟩
+
+lemma homotopy_extension {A B : C} {f₀ f₁ : A ⟶ Y}
+    [IsFibrant Y] [P.IsGood]
+    (h : P.RightHomotopy f₀ f₁) (i : A ⟶ B) [Cofibration i]
+    (l₀ : B ⟶ Y) (hl₀ : i ≫ l₀ = f₀) :
+    ∃ (l₁ : B ⟶ Y) (h' : P.RightHomotopy l₀ l₁), i ≫ h'.h = h.h := by
+  have sq : CommSq h.h i P.p₀ l₀ := ⟨by aesop_cat⟩
+  exact ⟨sq.lift ≫ P.p₁, { h := sq.lift }, by simp⟩
 
 end RightHomotopy
 
