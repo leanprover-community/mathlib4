@@ -49,7 +49,7 @@ def Mon_Class.ofRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget
     Mon_Class X where
   one := α.homEquiv.symm 1
   mul := α.homEquiv.symm (α.homEquiv (fst X X) * α.homEquiv (snd X X))
-  one_mul' := by
+  one_mul := by
     apply α.homEquiv.injective
     simp only [α.homEquiv_comp, Equiv.apply_symm_apply]
     simp only [Functor.comp_map, ConcreteCategory.forget_map_eq_coe, map_mul]
@@ -57,7 +57,7 @@ def Mon_Class.ofRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget
     simp only [whiskerRight_fst, whiskerRight_snd]
     simp only [α.homEquiv_comp, Equiv.apply_symm_apply]
     simp [leftUnitor_hom]
-  mul_one' := by
+  mul_one := by
     apply α.homEquiv.injective
     simp only [α.homEquiv_comp, Equiv.apply_symm_apply]
     simp only [Functor.comp_map, ConcreteCategory.forget_map_eq_coe, map_mul]
@@ -65,7 +65,7 @@ def Mon_Class.ofRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget
     simp only [whiskerLeft_fst, whiskerLeft_snd]
     simp only [α.homEquiv_comp, Equiv.apply_symm_apply]
     simp [rightUnitor_hom]
-  mul_assoc' := by
+  mul_assoc := by
     apply α.homEquiv.injective
     simp only [α.homEquiv_comp, Equiv.apply_symm_apply]
     simp only [Functor.comp_map, ConcreteCategory.forget_map_eq_coe, map_mul]

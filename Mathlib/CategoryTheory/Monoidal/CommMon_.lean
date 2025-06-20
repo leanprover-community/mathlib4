@@ -157,7 +157,7 @@ def mapCommMon : CommMon_ C ⥤ CommMon_ D where
   obj A :=
     { F.mapMon.obj A.toMon_ with
       comm :=
-        { mul_comm' := by
+        { mul_comm := by
             dsimp
             rw [← Functor.LaxBraided.braided_assoc, ← Functor.map_comp, IsCommMon.mul_comm] } }
   map f := F.mapMon.map f
