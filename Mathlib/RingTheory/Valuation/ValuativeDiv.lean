@@ -89,56 +89,35 @@ def ValueGroup := Quotient (valueSetoid R)
 open Classical in
 /-- The value monoid is a linearly ordered commutative monoid with zero. -/
 instance : LinearOrderedCommGroupWithZero (ValueGroup R) where
-  mul := Quotient.lift₂ (fun x y => .mk _ <| x * y) <| sorry
-  mul_assoc := by sorry
-  one := .mk _ 1
-  one_mul := by
-    rintro ⟨a⟩
-    apply Quotient.sound
-    simp
-  mul_one := by
-    rintro ⟨a⟩
-    apply Quotient.sound
-    simp
-  npow n := Quotient.lift (fun x => .mk _ <| x^n) <| by
-    intro a b h
-    apply Quotient.sound
-    induction n with
-    | zero => simp
-    | succ n hh =>
-      sorry
-  npow_zero := by
-    rintro ⟨x⟩
-    apply Quotient.sound
-    simp only [pow_zero, Setoid.refl]
-  npow_succ := by
-    rintro n ⟨x⟩
-    apply Quotient.sound
-    simp only [pow_succ, Setoid.refl]
-  mul_comm := by
-    rintro ⟨a⟩ ⟨b⟩
-    apply Quotient.sound
-    simp only [mul_comm, Setoid.refl]
+  mul := Quotient.lift₂ (fun x y => Quotient.mk _ <| x * y) sorry
+  mul_assoc := sorry
+  one := Quotient.mk _ (1,1)
+  one_mul := sorry
+  mul_one := sorry
+  npow := fun n => Quotient.lift (fun x => Quotient.mk _ <| x^n) sorry
+  npow_zero := sorry
+  npow_succ := sorry
+  mul_comm := sorry
   zero := Quotient.mk _ (0, 1)
-  zero_mul := by
-    rintro ⟨a⟩
-    apply Quotient.sound
-    sorry
-  mul_zero := by
-    rintro ⟨a⟩
-    apply Quotient.sound
-    sorry
-  le := Quotient.lift₂ (fun (x,s) (t,y) => x * y ∣ᵥ t * s) <| sorry
-  le_refl := by sorry
-  le_trans := by sorry
-  le_antisymm := by sorry
-  le_total := by sorry
+  zero_mul := sorry
+  mul_zero := sorry
+  le := Quotient.lift₂ (fun (a,s) (b,t) => a * t ∣ᵥ b * s) sorry
+  le_refl := sorry
+  le_trans := sorry
+  le_antisymm := sorry
+  le_total := sorry
   toDecidableLE := inferInstance
-  mul_le_mul_left := by sorry
-  mul_le_mul_right := by sorry
+  mul_le_mul_left := sorry
+  mul_le_mul_right := sorry
   bot := Quotient.mk _ (0, 1)
-  bot_le := by sorry
-  zero_le_one := by sorry
+  bot_le := sorry
+  zero_le_one := sorry
+  inv := Quotient.lift
+    (fun (x,s) => Quotient.mk _ <| if h : x ∈ unitSubmonoid R then (s, ⟨x, h⟩) else (0, 1))
+    sorry
+  exists_pair_ne := sorry
+  inv_zero := sorry
+  mul_inv_cancel := sorry
 
 variable (R) in
 /-- The "canonical" valuation associated to a valuative relation. -/
@@ -154,7 +133,9 @@ instance : (valuation R).Compatible where
 
 /-- Construct a valuative relation on a ring using a valuation. -/
 def ofValuation
-    {S Γ : Type*} [CommRing S] [LinearOrderedCommGroupWithZero Γ]
+    {S Γ : Type*} [CommRing S]
+    [LinearOrderedCommMonoidWithZero Γ]
+    [Nontrivial Γ] [NoZeroDivisors Γ]
     (v : Valuation S Γ) : ValuativeRel S where
   rel x y := v x ≤ v y
   refl a := le_refl _
