@@ -151,9 +151,9 @@ lemma congr_smoothBumpFunction (cov : CovariantDerivative I F V) [T2Space M] [Is
   calc _
     _ = cov X σ x + 0 := ?_
     _ = cov X σ x := by rw [add_zero]
-  simp [f.eq_one]; left
-  have aux : f =ᶠ[nhds x] (fun _ ↦ 1) := f.eventuallyEq_one
-  rw [aux.mfderiv_eq, mfderiv_const]
+  simp [f.eq_one, f.eventuallyEq_one.mfderiv_eq]
+  rw [show mfderiv I 𝓘(ℝ, ℝ) 1 x = 0 by apply mfderiv_const]
+  left
   rfl
 
 lemma congr_σ_of_eventuallyEq (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
@@ -166,14 +166,17 @@ lemma congr_σ_of_eventuallyEq (cov : CovariantDerivative I F V) [T2Space M] [Is
   let ψ : SmoothBumpFunction I x := sorry
   have hψ : support ψ ⊆ s := sorry
   -- Observe that `ψ • σ = ψ • σ'` as dependent functions.
-  have (x : M) : σ x = σ' x := sorry
+  have (x : M) : ((ψ : M → ℝ) • σ) x = ((ψ : M → ℝ) • σ') x := by
+    by_cases h : x ∈ s
+    · simp [hσσ' x h]
+    · simp [notMem_support.mp fun a ↦ h (hψ a)]
   -- Then, it's a chain of (dependent) equalities.
   calc cov X σ x
     _ = cov X ((ψ : M → ℝ) • σ) x := by rw [cov.congr_smoothBumpFunction _ _ _ _ hσ]
     _ = cov X ((ψ : M → ℝ) • σ') x := cov.congr_σ _ _ (by simp [this])
     _ = cov X σ' x := by simp [cov.congr_smoothBumpFunction, mfderiv_dependent_congr hs hσ hσσ']
 
--- eventually, prove: cov X σ x depends on σ only via σ(X) and the 1-jet of σ at x
+-- TODO: prove that `cov X σ x` depends on σ only via σ(X) and the 1-jet of σ at x
 
 end real
 
