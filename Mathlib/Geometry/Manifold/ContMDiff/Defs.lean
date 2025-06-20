@@ -212,17 +212,11 @@ theorem ContMDiff.of_le (hf : ContMDiff I I' n f) (le : m ≤ n) : ContMDiff I I
 theorem ContMDiff.contMDiffAt (h : ContMDiff I I' n f) : ContMDiffAt I I' n f x :=
   h x
 
-@[deprecated (since := "2024-11-20")] alias Smooth.smoothAt := ContMDiff.contMDiffAt
-
 theorem contMDiffWithinAt_univ : ContMDiffWithinAt I I' n f univ x ↔ ContMDiffAt I I' n f x :=
   Iff.rfl
 
-@[deprecated (since := "2024-11-20")] alias smoothWithinAt_univ := contMDiffWithinAt_univ
-
 theorem contMDiffOn_univ : ContMDiffOn I I' n f univ ↔ ContMDiff I I' n f := by
   simp only [ContMDiffOn, ContMDiff, contMDiffWithinAt_univ, forall_prop_of_true, mem_univ]
-
-@[deprecated (since := "2024-11-20")] alias smoothOn_univ := contMDiffOn_univ
 
 /-- One can reformulate being `C^n` within a set at a point as continuity within this set at this
 point, and being `C^n` in the corresponding extended chart. -/
@@ -267,17 +261,10 @@ theorem contMDiffWithinAt_iff_target :
     chartAt_self_eq, PartialHomeomorph.refl_apply, id_comp]
   rfl
 
-@[deprecated (since := "2024-11-20")] alias smoothWithinAt_iff := contMDiffWithinAt_iff
-
-@[deprecated (since := "2024-11-20")]
-alias smoothWithinAt_iff_target := contMDiffWithinAt_iff_target
-
 theorem contMDiffAt_iff_target {x : M} :
     ContMDiffAt I I' n f x ↔
       ContinuousAt f x ∧ ContMDiffAt I 𝓘(𝕜, E') n (extChartAt I' (f x) ∘ f) x := by
   rw [ContMDiffAt, ContMDiffAt, contMDiffWithinAt_iff_target, continuousWithinAt_univ]
-
-@[deprecated (since := "2024-11-20")] alias smoothAt_iff_target := contMDiffAt_iff_target
 
 /-- One can reformulate being `Cⁿ` within a set at a point as being `Cⁿ` in the source space when
 composing with the extended chart. -/
@@ -532,10 +519,6 @@ theorem contMDiffOn_iff_target :
     simp
   · exact fun h' x y => (h' y).2 x 0
 
-@[deprecated (since := "2024-11-20")] alias smoothOn_iff := contMDiffOn_iff
-
-@[deprecated (since := "2024-11-20")] alias smoothOn_iff_target := contMDiffOn_iff_target
-
 
 /-- One can reformulate being `C^n` as continuity and being `C^n` in any extended chart. -/
 theorem contMDiff_iff :
@@ -555,10 +538,6 @@ theorem contMDiff_iff_target :
         ContMDiffOn I 𝓘(𝕜, E') n (extChartAt I' y ∘ f) (f ⁻¹' (extChartAt I' y).source) := by
   rw [← contMDiffOn_univ, contMDiffOn_iff_target]
   simp [continuous_iff_continuousOn_univ]
-
-@[deprecated (since := "2024-11-20")] alias smooth_iff := contMDiff_iff
-
-@[deprecated (since := "2024-11-20")] alias smooth_iff_target := contMDiff_iff_target
 
 /-- zero-smoothness is equivalent to continuity. -/
 theorem contMDiff_zero_iff :

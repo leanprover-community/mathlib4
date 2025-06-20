@@ -51,8 +51,6 @@ instance instFunLike : FunLike C^n⟮I, M; I', M'⟯ M M' where
 protected theorem contMDiff (f : C^n⟮I, M; I', M'⟯) : ContMDiff I I' n f :=
   f.prop
 
-@[deprecated (since := "2024-11-20")] alias smooth := ContMDiffMap.contMDiff
-
 -- Porting note: use generic instance instead
 -- instance : Coe C^n⟮I, M; I', M'⟯ C(M, M') :=
 --   ⟨fun f => ⟨f, f.contMDiff.continuous⟩⟩

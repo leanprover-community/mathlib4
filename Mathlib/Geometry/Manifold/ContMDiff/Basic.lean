@@ -138,13 +138,9 @@ theorem ContMDiffAt.comp_of_eq {g : M' → M''} {x : M} {y : M'} (hg : ContMDiff
     (hf : ContMDiffAt I I' n f x) (hx : f x = y) : ContMDiffAt I I'' n (g ∘ f) x := by
   subst hx; exact hg.comp x hf
 
-@[deprecated (since := "2024-11-20")] alias SmoothAt.comp := ContMDiffAt.comp
-
 theorem ContMDiff.comp_contMDiffOn {f : M → M'} {g : M' → M''} {s : Set M}
     (hg : ContMDiff I' I'' n g) (hf : ContMDiffOn I I' n f s) : ContMDiffOn I I'' n (g ∘ f) s :=
   hg.contMDiffOn.comp hf Set.subset_preimage_univ
-
-@[deprecated (since := "2024-11-20")] alias Smooth.comp_smoothOn := ContMDiff.comp_contMDiffOn
 
 theorem ContMDiffOn.comp_contMDiff {t : Set M'} {g : M' → M''} (hg : ContMDiffOn I' I'' n g t)
     (hf : ContMDiff I I' n f) (ht : ∀ x, f x ∈ t) : ContMDiff I I'' n (g ∘ f) :=
@@ -160,22 +156,14 @@ theorem contMDiff_id : ContMDiff I I n (id : M → M) :=
   ContMDiff.of_le
     ((contDiffWithinAt_localInvariantProp ⊤).liftProp_id contDiffWithinAtProp_id) le_top
 
-@[deprecated (since := "2024-11-20")] alias smooth_id := contMDiff_id
-
 theorem contMDiffOn_id : ContMDiffOn I I n (id : M → M) s :=
   contMDiff_id.contMDiffOn
-
-@[deprecated (since := "2024-11-20")] alias smoothOn_id := contMDiffOn_id
 
 theorem contMDiffAt_id : ContMDiffAt I I n (id : M → M) x :=
   contMDiff_id.contMDiffAt
 
-@[deprecated (since := "2024-11-20")] alias smoothAt_id := contMDiffAt_id
-
 theorem contMDiffWithinAt_id : ContMDiffWithinAt I I n (id : M → M) s x :=
   contMDiffAt_id.contMDiffWithinAt
-
-@[deprecated (since := "2024-11-20")] alias smoothWithinAt_id := contMDiffWithinAt_id
 
 end id
 
@@ -194,23 +182,12 @@ theorem contMDiff_const : ContMDiff I I' n fun _ : M => c := by
 theorem contMDiff_one [One M'] : ContMDiff I I' n (1 : M → M') := by
   simp only [Pi.one_def, contMDiff_const]
 
-@[deprecated (since := "2024-11-20")] alias smooth_const := contMDiff_const
-
-@[deprecated (since := "2024-11-20")] alias smooth_one := contMDiff_one
-@[deprecated (since := "2024-11-20")] alias smooth_zero := contMDiff_zero
-
 theorem contMDiffOn_const : ContMDiffOn I I' n (fun _ : M => c) s :=
   contMDiff_const.contMDiffOn
 
 @[to_additive]
 theorem contMDiffOn_one [One M'] : ContMDiffOn I I' n (1 : M → M') s :=
   contMDiff_one.contMDiffOn
-
-@[deprecated (since := "2024-11-20")] alias smoothOn_const := contMDiffOn_const
-
-@[deprecated (since := "2024-11-20")] alias smoothOn_one := contMDiffOn_one
-@[deprecated (since := "2024-11-20")] alias smoothOn_zero := contMDiffOn_zero
-
 
 theorem contMDiffAt_const : ContMDiffAt I I' n (fun _ : M => c) x :=
   contMDiff_const.contMDiffAt
@@ -219,22 +196,12 @@ theorem contMDiffAt_const : ContMDiffAt I I' n (fun _ : M => c) x :=
 theorem contMDiffAt_one [One M'] : ContMDiffAt I I' n (1 : M → M') x :=
   contMDiff_one.contMDiffAt
 
-@[deprecated (since := "2024-11-20")] alias smoothAt_const := contMDiffAt_const
-
-@[deprecated (since := "2024-11-20")] alias smoothAt_one := contMDiffAt_one
-@[deprecated (since := "2024-11-20")] alias smoothAt_zero := contMDiffAt_zero
-
 theorem contMDiffWithinAt_const : ContMDiffWithinAt I I' n (fun _ : M => c) s x :=
   contMDiffAt_const.contMDiffWithinAt
 
 @[to_additive]
 theorem contMDiffWithinAt_one [One M'] : ContMDiffWithinAt I I' n (1 : M → M') s x :=
   contMDiffAt_const.contMDiffWithinAt
-
-@[deprecated (since := "2024-11-20")] alias smoothWithinAt_const := contMDiffWithinAt_const
-
-@[deprecated (since := "2024-11-20")] alias smoothWithinAt_one := contMDiffWithinAt_one
-@[deprecated (since := "2024-11-20")] alias smoothWithinAt_zero := contMDiffWithinAt_zero
 
 @[nontriviality]
 theorem contMDiff_of_subsingleton [Subsingleton M'] : ContMDiff I I' n f := by
@@ -337,15 +304,6 @@ theorem contMDiff_inclusion {n : WithTop ℕ∞} {U V : Opens M} (h : U ≤ V) :
   dsimp only [ContDiffWithinAtProp, id_comp, preimage_univ]
   rw [Set.univ_inter]
   exact contDiffWithinAt_id.congr I.rightInvOn (congr_arg I (I.left_inv y))
-
-@[deprecated (since := "2024-11-20")] alias smooth_subtype_iff := contMDiffAt_subtype_iff
-
-@[deprecated (since := "2024-11-20")] alias smooth_subtype_val := contMDiff_subtype_val
-
-@[deprecated (since := "2024-11-20")] alias Smooth.extend_one := ContMDiff.extend_one
-@[deprecated (since := "2024-11-20")] alias Smooth.extend_zero := ContMDiff.extend_zero
-
-@[deprecated (since := "2024-11-20")] alias smooth_inclusion := contMDiff_inclusion
 
 end Inclusion
 
