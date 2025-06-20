@@ -52,15 +52,22 @@ structure CovariantDerivative where
 
 namespace CovariantDerivative
 
+attribute [coe] toFun
+
+/-- Coercion of a `CovariantDerivative` to function -/
+instance : CoeFun (CovariantDerivative I F V)
+    fun _ ↦ (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x) :=
+  ⟨fun e ↦ e.toFun⟩
+
 omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
   [VectorBundle 𝕜 F V] in
 @[simp]
-lemma zeroX (cov : CovariantDerivative I F V) (σ : Π x : M, V x) : cov.toFun 0 σ = 0 := by
+lemma zeroX (cov : CovariantDerivative I F V) (σ : Π x : M, V x) : cov 0 σ = 0 := by
   have := cov.addX (0 : (x : M) → TangentSpace I x) (0 : (x : M) → TangentSpace I x) σ
   simpa using this
 
 @[simp]
-lemma zeroσ (cov : CovariantDerivative I F V) (X : Π x : M, TangentSpace I x) : cov.toFun X 0 = 0 := by
+lemma zeroσ (cov : CovariantDerivative I F V) (X : Π x : M, TangentSpace I x) : cov X 0 = 0 := by
   ext x
   have : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (0 : V x)) x := by
     sorry
@@ -70,11 +77,11 @@ lemma zeroσ (cov : CovariantDerivative I F V) (X : Π x : M, TangentSpace I x) 
 
 lemma smul_const_σ (cov : CovariantDerivative I F V)
     (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (a : 𝕜) :
-    cov.toFun X (a • σ) = a • cov.toFun X σ := by
+    cov X (a • σ) = a • cov X σ := by
   ext x
   by_cases hσ : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x
   · simpa using cov.leibniz X σ (fun _ ↦ a) x hσ mdifferentiable_const.mdifferentiableAt
-  have hσ₂ : cov.toFun X (a • σ) x = 0 := by
+  have hσ₂ : cov X (a • σ) x = 0 := by
     by_cases ha: a = 0
     · simp [ha]
     refine cov.do_not_read X ?_
@@ -92,7 +99,7 @@ lemma smul_const_σ (cov : CovariantDerivative I F V)
 @[simps]
 def convexCombination (cov cov' : CovariantDerivative I F V) (t : 𝕜) :
     CovariantDerivative I F V where
-  toFun X s := (t • (cov.toFun X s)) + (1 - t) • (cov'.toFun X s)
+  toFun X s := (t • (cov X s)) + (1 - t) • (cov' X s)
   addX X X' σ := by simp only [cov.addX, cov'.addX]; module
   smulX X σ f := by simp only [cov.smulX, cov'.smulX]; module
   addσ X σ σ' x hσ hσ' := by
