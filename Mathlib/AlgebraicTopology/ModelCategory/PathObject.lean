@@ -71,23 +71,23 @@ structure PathObject (A : C) where
   /-- the second "projection" from the path object -/
   p₁ : P ⟶ A
   /-- the weak equivalence of the path object -/
-  ρ : A ⟶ P
-  ρ_p₀ : ρ ≫ p₀ = 𝟙 A := by aesop_cat
-  ρ_p₁ : ρ ≫ p₁ = 𝟙 A := by aesop_cat
-  weakEquivalence_ρ : WeakEquivalence ρ := by infer_instance
+  ι : A ⟶ P
+  ι_p₀ : ι ≫ p₀ = 𝟙 A := by aesop_cat
+  ι_p₁ : ι ≫ p₁ = 𝟙 A := by aesop_cat
+  weakEquivalence_ι : WeakEquivalence ι := by infer_instance
 
 namespace PathObject
 
-attribute [instance] weakEquivalence_ρ
-attribute [reassoc (attr := simp)] ρ_p₀ ρ_p₁
+attribute [instance] weakEquivalence_ι
+attribute [reassoc (attr := simp)] ι_p₀ ι_p₁
 
 variable {A : C} (P : PathObject A)
 
 instance : WeakEquivalence P.p₀ :=
-  weakEquivalence_of_precomp_of_fac P.ρ_p₀
+  weakEquivalence_of_precomp_of_fac P.ι_p₀
 
 instance : WeakEquivalence P.p₁ :=
-  weakEquivalence_of_precomp_of_fac P.ρ_p₁
+  weakEquivalence_of_precomp_of_fac P.ι_p₁
 
 /-- the map from `P.P` to the product of two copies of `A`, when `P` is
 a path object object for `A`. `P` shall be a *good* path object
@@ -106,7 +106,7 @@ def symm : PathObject A where
   P := P.P
   p₀ := P.p₁
   p₁ := P.p₀
-  ρ := P.ρ
+  ι := P.ι
 
 @[simp, reassoc]
 lemma symm_p : P.symm.p =
@@ -117,11 +117,11 @@ lemma symm_p : P.symm.p =
 class IsGood : Prop where
   fibration_p : Fibration P.p := by infer_instance
 
-/-- A good path object `P` is very good if `P.ρ` is a (trivial) cofibration. -/
+/-- A good path object `P` is very good if `P.ι` is a (trivial) cofibration. -/
 class IsVeryGood : Prop extends P.IsGood where
-  cofibration_ρ : Cofibration P.ρ := by infer_instance
+  cofibration_ι : Cofibration P.ι := by infer_instance
 
-attribute [instance] IsGood.fibration_p IsVeryGood.cofibration_ρ
+attribute [instance] IsGood.fibration_p IsVeryGood.cofibration_ι
 
 instance [IsFibrant A] [P.IsGood] : Fibration P.p₀ := by
   rw [← P.p_fst]
@@ -141,7 +141,7 @@ instance [P.IsGood] : P.symm.IsGood where
     infer_instance
 
 instance [P.IsVeryGood] : P.symm.IsVeryGood where
-  cofibration_ρ := by
+  cofibration_ι := by
     dsimp
     infer_instance
 
@@ -157,28 +157,28 @@ noncomputable def ofFactorizationData : PathObject A where
   P := h.Z
   p₀ := h.p ≫ prod.fst
   p₁ := h.p ≫ prod.snd
-  ρ := h.i
+  ι := h.i
 
 @[simp]
 lemma ofFactorizationData_p : (ofFactorizationData h).p = h.p := by aesop_cat
 
 instance : (ofFactorizationData h).IsVeryGood where
   fibration_p := by simpa using inferInstanceAs (Fibration h.p)
-  cofibration_ρ := by dsimp; infer_instance
+  cofibration_ι := by dsimp; infer_instance
 
 instance [HasInitial C] [IsCofibrant A] [(cofibrations C).IsStableUnderComposition] :
     IsCofibrant (ofFactorizationData h).P :=
-  isCofibrant_of_cofibration (ofFactorizationData h).ρ
+  isCofibrant_of_cofibration (ofFactorizationData h).ι
 
 end
 
 variable (A) in
-lemma exists_very_good_pathObject :
+lemma exists_very_good :
     ∃ (P : PathObject A), P.IsVeryGood :=
   ⟨ofFactorizationData (MorphismProperty.factorizationData _ _ _),
     inferInstance⟩
 
-instance : Nonempty (PathObject A) := ⟨(exists_very_good_pathObject A).choose⟩
+instance : Nonempty (PathObject A) := ⟨(exists_very_good A).choose⟩
 
 /-- The gluing of two good path objects. -/
 @[simps]
@@ -187,10 +187,10 @@ noncomputable def trans [IsFibrant A] (P P' : PathObject A) [P'.IsGood] :
   P := pullback P.p₁ P'.p₀
   p₀ := pullback.fst _ _ ≫ P.p₀
   p₁ := pullback.snd _ _ ≫ P'.p₁
-  ρ := pullback.lift P.ρ P'.ρ (by simp)
-  weakEquivalence_ρ := by
-    have : WeakEquivalence (pullback.lift P.ρ P'.ρ (by simp) ≫ pullback.fst P.p₁ P'.p₀ ≫ P.p₀) := by
-      rw [pullback.lift_fst_assoc, ρ_p₀]
+  ι := pullback.lift P.ι P'.ι (by simp)
+  weakEquivalence_ι := by
+    have : WeakEquivalence (pullback.lift P.ι P'.ι (by simp) ≫ pullback.fst P.p₁ P'.p₀ ≫ P.p₀) := by
+      rw [pullback.lift_fst_assoc, ι_p₀]
       infer_instance
     apply weakEquivalence_of_postcomp _ (pullback.fst _ _ ≫ P.p₀)
 
