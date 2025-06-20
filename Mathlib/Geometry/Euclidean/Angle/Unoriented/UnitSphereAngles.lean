@@ -36,7 +36,7 @@ lemma neg_one_le_inner_normalized_normalized (x y : V) :
     simpa [norm_normalized_eq_one_iff]
   exact neg_one_le_inner H H0
 
-
+/-- Gets the orthogonal direction of one vector relative to another. -/
 noncomputable def ortho (x y : V) : V := x - ⟪x, y⟫ • y
 
 lemma inner_ortho_nonneg {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1): 0 ≤ ⟪x, ortho x y⟫ := by
@@ -113,7 +113,6 @@ lemma angle_triangle_aux {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) :
     constructor <;> contrapose! hxy
     · simp [sub_eq_zero, ← inner_eq_sq_norm_iff Hx Hy, hxy]
     · simp [hxy, add_eq_zero_iff_eq_neg, ← inner_eq_neg_sq_norm_iff Hx Hy]
-  have H4 : ‖x - ⟪x, y⟫ • y‖ ≠ 0 := by exact norm_ne_zero_iff.mpr hxy
   rw [← smul_assoc]
   field_simp
   rw [← sq, ← real_inner_self_eq_norm_sq]
