@@ -62,8 +62,10 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 variable (F I I' n) in
 /-- `f : M → N` is a `C^k` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
 around `x` and `f x`, respectively such that in these charts, `f` looks like `u ↦ (u, 0)`.
+Additionally, we demand that `φ.target` be mapped into `ψ.target` by this map.
 
-XXX: why in `maximalAtlas` and not merely atlas? to given ourselves extra freedom?
+NB. We don't know the particular atlas used for `M` and `M'`, so asking for `φ` and `ψ` to be in the
+`atlas` would be too optimistic: lying in the `maximalAtlas` is sufficient.
 -/
 def IsImmersionAt (f : M → M') (x : M) : Prop :=
   ∃ equiv : (E × F) ≃L[𝕜] E',
@@ -71,6 +73,7 @@ def IsImmersionAt (f : M → M') (x : M) : Prop :=
     x ∈ domChart.source ∧ f x ∈ codChart.source ∧
     domChart ∈ IsManifold.maximalAtlas I n M ∧
     codChart ∈ IsManifold.maximalAtlas I' n M' ∧
+    (equiv ∘ (·, 0)) '' (domChart.extend I).target ⊆ (codChart.extend I').target ∧
     EqOn ((codChart.extend I') ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
       (domChart.extend I).target
 
@@ -101,10 +104,14 @@ lemma codChart_mem_maximalAtlas (h : IsImmersionAt F I I' n f x) :
     h.codChart ∈ IsManifold.maximalAtlas I' n M' :=
   (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).2.2.2.1
 
+lemma map_target_subset_target (h : IsImmersionAt F I I' n f x) :
+    (h.equiv ∘ (·, 0)) '' (h.domChart.extend I).target ⊆ (h.codChart.extend I').target :=
+  (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).2.2.2.2.1
+
 lemma writtenInCharts (h : IsImmersionAt F I I' n f x) :
     EqOn ((h.codChart.extend I') ∘ f ∘ (h.domChart.extend I).symm) (h.equiv ∘ (·, 0))
       (h.domChart.extend I).target :=
-  (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).2.2.2.2
+  (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).2.2.2.2.2
 
 /-- If `f` is an immersion at `x` and `g = f` on some neighbourhood of `x`,
 then `g` is an immersion at `x`. -/
@@ -113,7 +120,8 @@ lemma congr_of_eventuallyEq {x : M} (h : IsImmersionAt F I I' n f x) (h' : f =�
   choose s hxs hfg using h'.exists_mem
   -- TODO: need to shrink h.domChart until its source is contained in s
   use h.equiv, h.domChart, h.codChart
-  refine ⟨mem_domChart_source h, ?_, h.domChart_mem_maximalAtlas, h.codChart_mem_maximalAtlas, ?_⟩
+  refine ⟨mem_domChart_source h, ?_, h.domChart_mem_maximalAtlas, h.codChart_mem_maximalAtlas,
+      h.map_target_subset_target, ?_⟩
   · exact hfg (mem_of_mem_nhds hxs) ▸ mem_codChart_source h
   · have missing : EqOn ((h.codChart.extend I') ∘ g ∘ (h.domChart.extend I).symm)
         ((h.codChart.extend I') ∘ f ∘ (h.domChart.extend I).symm) (h.domChart.extend I).target := by
