@@ -96,6 +96,8 @@ instance : EquivLike (α ≃ β) α β where
   right_inv := Equiv.right_inv
   coe_injective' e₁ e₂ h₁ h₂ := by cases e₁; cases e₂; congr
 
+/-- Deprecated helper instance for when inference gets stuck on following the normal chain
+`EquivLike → FunLike`. -/
 @[deprecated EquivLike.toFunLike (since := "20/06/2025")]
 def instFunLike : FunLike (α ≃ β) α β where
   coe := Equiv.toFun
