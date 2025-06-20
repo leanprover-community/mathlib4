@@ -329,13 +329,8 @@ lemma IsProper.eq_valuativeCriterion :
     UniversallyClosed.eq_valuativeCriterion]
   simp_rw [inf_assoc]
   ext X Y f
-<<<<<<< HEAD
-  show _ ∧ _ ∧ _ ∧ _ ∧ _ ↔ _ ∧ _ ∧ _ ∧ _ ∧ _
-  grind
-=======
   change _ ∧ _ ∧ _ ∧ _ ∧ _ ↔ _ ∧ _ ∧ _ ∧ _ ∧ _
   tauto
->>>>>>> upstream/nightly-testing
 
 /-- The **valuative criterion** for proper morphisms. -/
 @[stacks 0BX5]

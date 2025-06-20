@@ -170,14 +170,9 @@ is already occupied by some `f a'`, then swap the values at these two points. -/
 def setValue {α β : Sort*} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = a)]
     [∀ a', Decidable (f a' = b)] : α ↪ β :=
   ⟨fun a' => if a' = a then b else if f a' = b then f a else f a', by
-<<<<<<< HEAD
-    intro x y (h : ite _ _ _ = ite _ _ _)
-    split_ifs at h <;> (try subst b) <;> (try simp only [f.injective.eq_iff] at *) <;> grind⟩
-=======
     intro x y h
     simp only at h
     split_ifs at h <;> (try subst b) <;> (try simp only [f.injective.eq_iff] at *) <;> cc⟩
->>>>>>> upstream/nightly-testing
 
 @[simp]
 theorem setValue_eq {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = a)]

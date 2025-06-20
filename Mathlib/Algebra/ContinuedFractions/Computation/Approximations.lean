@@ -236,18 +236,10 @@ theorem fib_le_of_contsAux_b :
         suffices 1 * (fib (n + 1) : K) ≤ gp.b * pconts.b by rwa [one_mul] at this
         have one_le_gp_b : (1 : K) ≤ gp.b :=
           of_one_le_get?_partDen (partDen_eq_s_b s_ppred_nth_eq)
-<<<<<<< HEAD
-        have : (0 : K) ≤ fib (n + 1) := mod_cast (fib (n + 1)).zero_le
-        have : (0 : K) ≤ gp.b := le_trans zero_le_one one_le_gp_b
-        mono
-        · norm_num
-        · grind)
-=======
         gcongr
         apply IH
         · simp
         · tauto)
->>>>>>> upstream/nightly-testing
 
 /-- Shows that the `n`th denominator is greater than or equal to the `n + 1`th fibonacci number,
 that is `Nat.fib (n + 1) ≤ Bₙ`. -/

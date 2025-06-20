@@ -461,18 +461,12 @@ theorem IsProper.notMem_of_compl_mem (hI : IsProper I) (hxc : xᶜ ∈ I) : x �
   have ht : x ⊔ xᶜ ∈ I := sup_mem ‹_› ‹_›
   rwa [sup_compl_eq_top] at ht
 
-<<<<<<< HEAD
-theorem IsProper.not_mem_or_compl_not_mem (hI : IsProper I) : x ∉ I ∨ xᶜ ∉ I := by
-  have h : xᶜ ∈ I → x ∉ I := hI.not_mem_of_compl_mem
-  grind
-=======
 @[deprecated (since := "2025-05-23")]
 alias IsProper.not_mem_of_compl_mem := IsProper.notMem_of_compl_mem
 
 theorem IsProper.notMem_or_compl_notMem (hI : IsProper I) : x ∉ I ∨ xᶜ ∉ I := by
   have h : xᶜ ∈ I → x ∉ I := hI.notMem_of_compl_mem
   tauto
->>>>>>> upstream/nightly-testing
 
 @[deprecated (since := "2025-05-23")]
 alias IsProper.not_mem_or_compl_not_mem := IsProper.notMem_or_compl_notMem

@@ -147,13 +147,8 @@ section Preorder
 variable [Preorder α] [Preorder β]
 
 theorem le_iff_lt_or_antisymmRel : a ≤ b ↔ a < b ∨ AntisymmRel (· ≤ ·) a b := by
-<<<<<<< HEAD
-  rw [lt_iff_le_not_le, AntisymmRel]
-  grind
-=======
   rw [lt_iff_le_not_ge, AntisymmRel]
   tauto
->>>>>>> upstream/nightly-testing
 
 theorem le_of_le_of_antisymmRel (h₁ : a ≤ b) (h₂ : AntisymmRel (· ≤ ·) b c) : a ≤ c :=
   h₁.trans h₂.le
