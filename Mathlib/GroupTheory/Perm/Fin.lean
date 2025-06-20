@@ -316,7 +316,7 @@ step to the right.
 
 namespace Fin
 
-local instance {n : ℕ} {i: Fin n} : NeZero (n - i.1) := NeZero.of_pos (by omega)
+local instance {n : ℕ} {i : Fin n} : NeZero (n - i.1) := NeZero.of_pos (by omega)
 
 variable {n : ℕ} {i j k : Fin n}
 
@@ -452,4 +452,3 @@ theorem Equiv.Perm.prod_Ioi_comp_eq_sign_mul_prod {R : Type*} [CommRing R]
   apply Finset.prod_comm' (by simp)
 
 end Sign
-
