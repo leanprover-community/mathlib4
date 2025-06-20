@@ -349,21 +349,51 @@ have an inner product, defined as the infimum of the lengths of `C^1` paths betw
 noncomputable def riemannianEDist (x y : M) : ℝ≥0∞ :=
   ⨅ (γ : Path x y) (_ : ContMDiff (𝓡∂ 1) I 1 γ), ∫⁻ x, ‖mfderiv (𝓡∂ 1) I γ x 1‖ₑ
 
-#check AffineMap.lineMap
-
 lemma riemannianEDist_le_pathELength {γ : ℝ → M} (hγ : ContMDiffOn 𝓘(ℝ) I 1 γ (Icc a b))
     (ha : γ a = x) (hb : γ b = y) (hab : a ≤ b) :
     riemannianEDist I x y ≤ pathELength I γ a b :=
   let η : ℝ →ᴬ[ℝ] ℝ := ContinuousAffineMap.lineMap a b
-  have : ContMDiffOn 𝓘(ℝ) I 1 (γ ∘ η) (Icc 0 1) := by
+  have hη : ContMDiffOn 𝓘(ℝ) I 1 (γ ∘ η) (Icc 0 1) := by
     apply hγ.comp
     · rw [contMDiffOn_iff_contDiffOn]
       exact η.contDiff.contDiffOn
     · rw [← image_subset_iff, ContinuousAffineMap.coe_lineMap_eq, ← segment_eq_image_lineMap]
+      simp [hab]
+  let f : unitInterval → M := fun t ↦ (γ ∘ η) t
+  have hf : ContMDiff (𝓡∂ 1) I 1 f := by
+    rw [← contMDiffOn_comp_projIcc_iff]
+    apply hη.congr (fun y hy ↦ ?_)
+    simp only [Function.comp_apply, f, projIcc_of_mem, hy]
+  let g : C(unitInterval, M) := ⟨f, hf.continuous⟩
+  let g' : Path x y := by
+    refine ⟨g, ?_, ?_⟩ <;>
+    simp [g, f, η, ContinuousAffineMap.coe_lineMap_eq, ha, hb]
+  have B := this.trans_eq
+  have A : riemannianEDist I x y ≤ ∫⁻ x, ‖mfderiv (𝓡∂ 1) I g' x 1‖ₑ := by
+    apply biInf_le
+    exact hf
+  apply
+
+
+#exit
+
+  exact this
+
+
+
+  sorry
+
+
+
+
 
 
 
 #exit
+
+
+lemma contMDiffOn_comp_projIcc_iff (f : Icc x y → M) :
+    ContMDiffOn 𝓘(ℝ) I n (f ∘ (Set.projIcc x y h.out.le)) (Icc x y) ↔ ContMDiff (𝓡∂ 1) I n f := by
 
 lemma exists_lt_of_riemannianEDist_lt (hr : riemannianEDist I x y < r) :
     ∃ γ : ℝ → M, γ a = x ∧ γ b = y ∧ ContMDiff 𝓘(ℝ) I 1 γ ∧
