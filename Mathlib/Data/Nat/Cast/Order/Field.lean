@@ -38,8 +38,7 @@ theorem cast_div_ge {m n : ℕ} : (m : α) / (n : α) + (n : α)⁻¹ ≤ ((m / 
   · simp [hn]
   replace hn : 0 < (n : α) := by norm_cast; omega
   apply le_of_mul_le_mul_right _ hn
-  rw [add_mul, inv_mul_cancel₀ (_root_.ne_of_lt hn).symm,
-    div_mul_cancel₀ _ (_root_.ne_of_lt hn).symm, add_mul, one_mul,
+  rw [add_mul, inv_mul_cancel₀ hn.ne', div_mul_cancel₀ _ hn.ne', add_mul, one_mul,
     ← Nat.cast_mul, Nat.div_mul_self_eq_mod_sub_self, ← Nat.cast_add, ← Nat.cast_one,
     ← Nat.cast_add, Nat.cast_le]
   rw [cast_pos] at hn

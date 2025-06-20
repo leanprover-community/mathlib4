@@ -410,13 +410,12 @@ theorem floor_div_natCast (a : K) (n : ℕ) : ⌊a / n⌋₊ = ⌊a⌋₊ / n :=
   · exact lt_div_mul_add hn
   · exact cast_pos.2 hn
 
-theorem mul_floor_div_eq_floor {y : K} {b : ℕ} (hb : 0 < b) :
+theorem mul_floor_div_eq_floor {y : K} {b : ℕ} (hb : b ≠ 0) :
     ⌊b * y⌋₊ / b = ⌊y⌋₊ := by
   convert (floor_div_natCast (y * b) b).symm using 3
   · rw [mul_comm]
   · rw [mul_div_cancel_right₀]
     norm_cast
-    exact Nat.ne_zero_of_lt hb
 
 @[deprecated (since := "2025-04-01")] alias floor_div_nat := floor_div_natCast
 
