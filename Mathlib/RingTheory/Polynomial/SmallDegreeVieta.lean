@@ -143,13 +143,18 @@ theorem mem_roots_quadratic_iff_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0)
     z ∈ (C a * X ^ 2 + C b * X + C c).roots ↔ z = (-b + s) / (2 * a) ∨ z = (-b - s) / (2 * a) := by
   rw [mem_roots (quadratic_ne_zero ha), isRoot_quadratic_iff ha h]
 
+theorem vieta_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R} (h : discrim a b c = s * s) :
+    b = -a * ((-b + s) / (2 * a) + (-b - s) / (2 * a)) ∧
+      c = a * ((-b + s) / (2 * a)) * ((-b - s) / (2 * a)) := by
+  ring_nf
+  rw [sq s, ← h, discrim]
+  field_simp
+  ring_nf
+
 theorem quadratic_eq_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
     (h : discrim a b c = s * s) : C a * X ^ 2 + C b * X + C c =
-      C a * (X - C ((-b + s) / (2 * a))) * (X - C ((-b - s) / (2 * a))) := by
-  rw [quadratic_eq_of_vieta]
-  ring_nf
-  field_simp
-  simp [pow_two, ← h, discrim]; ring
+      C a * (X - C ((-b + s) / (2 * a))) * (X - C ((-b - s) / (2 * a))) :=
+  quadratic_eq_of_vieta (vieta_of_discrim_eq_sq ha h)
 
 theorem roots_quadratic_of_discrim_ne_sq (ha : a ≠ 0) (h : ∀ s : R, discrim a b c ≠ s^2) :
     (C a * X ^ 2 + C b * X + C c).roots = ∅ :=
