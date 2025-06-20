@@ -26,7 +26,11 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   -- `V` vector bundle
 
 
-def bar (a : 𝕜) : TangentSpace 𝓘(𝕜, 𝕜) a ≃L[𝕜] 𝕜 := sorry
+def bar (a : 𝕜) : TangentSpace 𝓘(𝕜, 𝕜) a ≃L[𝕜] 𝕜 where
+  toFun v := v
+  invFun v := v
+  map_add' := by simp
+  map_smul' := by simp
 
 lemma missing {f : E → 𝕜} {x : E} (Y : TangentSpace 𝓘(𝕜, E) x) :
   bar (f x) ((fderiv 𝕜 f x) Y) = (fderiv 𝕜 f x) Y := sorry
