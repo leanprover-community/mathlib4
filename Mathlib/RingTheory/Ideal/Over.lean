@@ -213,6 +213,11 @@ variable (R : Type*) [CommSemiring R] {A B C : Type*} [CommRing A] [CommRing B] 
 instance algebraOfLiesOver : Algebra (A ⧸ p) (B ⧸ P) :=
   algebraQuotientOfLEComap (le_of_eq (P.over_def p))
 
+@[simp]
+lemma algebraMap_mk_of_liesOver (x : A) :
+    algebraMap (A ⧸ p) (B ⧸ P) (Ideal.Quotient.mk p x) = Ideal.Quotient.mk P (algebraMap _ _ x) :=
+  rfl
+
 instance isScalarTower_of_liesOver : IsScalarTower R (A ⧸ p) (B ⧸ P) :=
   IsScalarTower.of_algebraMap_eq' <|
     congrArg (algebraMap B (B ⧸ P)).comp (IsScalarTower.algebraMap_eq R A B)

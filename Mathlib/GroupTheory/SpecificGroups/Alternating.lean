@@ -6,7 +6,7 @@ Authors: Aaron Anderson, Antoine Chambert-Loir, Miyahara Kō
 import Mathlib.GroupTheory.IndexNormal
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.GroupTheory.Perm.Cycle.Concrete
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
+import Mathlib.GroupTheory.SpecificGroups.KleinFour
 
 /-!
 # Alternating Groups
@@ -207,6 +207,13 @@ lemma _root_.Nat.card_kleinFour : Nat.card ↥kleinFour = 4 := by
 lemma mem_kleinFour {p : Perm (Fin 4)} :
     p ∈ kleinFour ↔ p.cycleType ∈ ({0, {2, 2}} : Set (Multiset ℕ)) := by
   revert p; simp_rw [kleinFour, mem_mk, iff_def, forall_and, SetCoe.forall']; decide
+
+instance : IsKleinFour ↥kleinFour where
+  card_four := Nat.card_kleinFour
+  exponent_two := by
+    rw [← Monoid.lcm_orderOf_eq_exponent]
+    conv => enter [1, 2, g]; rw [← Subgroup.orderOf_coe, ← Equiv.Perm.lcm_cycleType]
+    rfl
 
 instance : kleinFour.Normal where
   conj_mem := by simp [mem_kleinFour]

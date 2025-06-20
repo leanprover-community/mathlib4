@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.NumberTheory.KummerDedekind
+import Mathlib.NumberTheory.RamificationInertia.Unramified
 import Mathlib.RingTheory.Finiteness.Quotient
+import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 import Mathlib.RingTheory.Trace.Quotient
 
 /-!
@@ -22,6 +24,8 @@ import Mathlib.RingTheory.Trace.Quotient
 - `aeval_derivative_mem_differentIdeal`:
   If `L = K[x]`, with `x` integral over `A`, then `f'(x) ∈ 𝔇`
     with `f` being the minimal polynomial of `x`.
+- `not_dvd_differentIdeal_iff`: A prime does not divide the different ideal iff it is unramified
+  (in the sense of `Algebra.IsUnramifiedAt`).
 
 ## TODO
 - Show properties of the different ideal
@@ -810,5 +814,59 @@ lemma dvd_differentIdeal_of_not_isSeparable
     simpa [e, Ideal.Quotient.eq_zero_iff_mem]
   rw [← Algebra.trace_eq_of_algEquiv e, Algebra.trace_prod_apply,
     Algebra.trace_eq_zero_of_not_isSeparable H, LinearMap.zero_apply, zero_add, hx', map_zero]
+
+variable {A}
+
+/-- A prime does not divide the different ideal iff it is unramified. -/
+theorem not_dvd_differentIdeal_iff
+    [Algebra.IsSeparable (FractionRing A) (FractionRing B)] {P : Ideal B} [P.IsPrime] :
+    ¬ P ∣ differentIdeal A B ↔ Algebra.IsUnramifiedAt A P := by
+  classical
+  rcases eq_or_ne P ⊥ with rfl | hPbot
+  · simp_rw [← Ideal.zero_eq_bot, zero_dvd_iff]
+    simp only [Submodule.zero_eq_bot, differentIdeal_ne_bot, not_false_eq_true, true_iff]
+    let K := FractionRing A
+    let L := FractionRing B
+    have : FiniteDimensional K L := Module.Finite_of_isLocalization A B _ _ A⁰
+    have : IsLocalization B⁰ (Localization.AtPrime (⊥ : Ideal B)) := by
+      convert (inferInstanceAs
+        (IsLocalization (⊥ : Ideal B).primeCompl (Localization.AtPrime (⊥ : Ideal B))))
+      ext; simp [Ideal.primeCompl]
+    refine (Algebra.FormallyUnramified.iff_of_equiv (A := L)
+      ((IsLocalization.algEquiv B⁰ _ _).restrictScalars A)).mp ?_
+    have : Algebra.FormallyUnramified K L := by
+      rwa [Algebra.FormallyUnramified.iff_isSeparable]
+    refine .comp A K L
+  have hp : P.under A ≠ ⊥ := mt Ideal.eq_bot_of_comap_eq_bot hPbot
+  have hp' := (Ideal.map_eq_bot_iff_of_injective
+    (FaithfulSMul.algebraMap_injective A B)).not.mpr hp
+  have := Ideal.IsPrime.isMaximal inferInstance hPbot
+  constructor
+  · intro H
+    · rw [Algebra.isUnramifiedAt_iff_map_eq (p := P.under A)]
+      constructor
+      · suffices Algebra.IsSeparable (A ⧸ P.under A) (B ⧸ P) by infer_instance
+        contrapose! H
+        exact dvd_differentIdeal_of_not_isSeparable A hp P H
+      · rw [← Ideal.IsDedekindDomain.ramificationIdx_eq_one_iff hPbot Ideal.map_comap_le]
+        apply Ideal.ramificationIdx_spec
+        · simp [Ideal.map_le_iff_le_comap]
+        · contrapose! H
+          rw [← pow_one P, show 1 = 2 - 1 by norm_num]
+          apply pow_sub_one_dvd_differentIdeal _ _ _ hp
+          simpa [Ideal.dvd_iff_le] using H
+  · intro H
+    obtain ⟨Q, h₁, h₂⟩ := Ideal.eq_prime_pow_mul_coprime hp' P
+    rw [← Ideal.IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count hp' ‹_› hPbot,
+      Ideal.ramificationIdx_eq_one_of_isUnramifiedAt hPbot, pow_one] at h₂
+    obtain ⟨h₃, h₄⟩ := (Algebra.isUnramifiedAt_iff_map_eq (p := P.under A) _ _).mp H
+    exact not_dvd_differentIdeal_of_isCoprime_of_isSeparable
+      A P Q (Ideal.isCoprime_iff_sup_eq.mpr h₁) h₂.symm
+
+/-- A prime divides the different ideal iff it is ramified. -/
+theorem dvd_differentIdeal_iff
+    [Algebra.IsSeparable (FractionRing A) (FractionRing B)] {P : Ideal B} [P.IsPrime] :
+    P ∣ differentIdeal A B ↔ ¬ Algebra.IsUnramifiedAt A P :=
+  iff_not_comm.mp not_dvd_differentIdeal_iff.symm
 
 end

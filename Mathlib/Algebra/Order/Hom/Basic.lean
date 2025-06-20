@@ -3,8 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Algebra.GroupWithZero.Hom
+import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Algebraic order homomorphism classes
@@ -44,6 +45,7 @@ multiplicative ring norms but outside of this use we only consider real-valued s
 Finitary versions of the current lemmas.
 -/
 
+assert_not_exists Field
 
 library_note "out-param inheritance"/--
 Diamond inheritance cannot depend on `outParam`s in the following circumstances:
@@ -136,20 +138,6 @@ theorem le_map_div_mul_map_div [Group α] [Mul β] [LE β] [SubmultiplicativeHom
 theorem le_map_div_add_map_div [Group α] [Add β] [LE β] [MulLEAddHomClass F α β]
     (f : F) (a b c : α) : f (a / c) ≤ f (a / b) + f (b / c) := by
     simpa only [div_mul_div_cancel] using map_mul_le_add f (a / b) (b / c)
-
-namespace Mathlib.Meta.Positivity
-
-open Lean Meta Qq
-
-/-- Extension for the `positivity` tactic: nonnegative maps take nonnegative values. -/
-@[positivity DFunLike.coe _ _]
-def evalMap : PositivityExt where eval {_ β} _ _ e := do
-  let .app (.app _ f) a ← whnfR e
-    | throwError "not ↑f · where f is of NonnegHomClass"
-  let pa ← mkAppOptM ``apply_nonneg #[none, none, β, none, none, none, none, f, a]
-  pure (.nonnegative pa)
-
-end Mathlib.Meta.Positivity
 
 /-! ### Group (semi)norms -/
 
