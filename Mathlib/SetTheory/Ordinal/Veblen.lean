@@ -194,6 +194,13 @@ theorem cmp_veblenWith :
     conv_lhs => rw [← veblenWith_veblenWith_of_lt hf h]
     simp [h.cmp_eq_lt, h.cmp_eq_gt, h.ne, h.ne', (veblenWith_right_strictMono hf _).cmp_map_eq]
 
+/-
+TODO: figure out why this is needed (some bad environment revert in aesop?)
+-/
+
+#guard_msgs (drop info) in
+#print Ordinal.cmp_veblenWith.match_1.splitter
+
 /-- `veblenWith f o₁ a < veblenWith f o₂ b` iff one of the following holds:
 * `o₁ = o₂` and `a < b`
 * `o₁ < o₂` and `a < veblenWith f o₂ b`
