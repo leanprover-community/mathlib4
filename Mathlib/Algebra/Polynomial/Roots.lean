@@ -9,7 +9,6 @@ import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.SetTheory.Cardinal.Order
-import Mathlib.Algebra.CharP.Basic
 
 /-!
 # Theory of univariate polynomials
@@ -369,12 +368,10 @@ theorem ne_zero_of_mem_nthRootsFinset {η : R} {a : R} (ha : a ≠ 0) (hη : η 
 theorem one_mem_nthRootsFinset (hn : 0 < n) : 1 ∈ nthRootsFinset n (1 : R) := by
   rw [mem_nthRootsFinset hn, one_pow]
 
-open Multiset in
-lemma nthRoots_two_unit_of_char_ne_two (hF : ringChar R ≠ 2) :
-    Polynomial.nthRoots 2 (1 : R) = {-1,1} := (eq_of_le_of_card_le (by simp only [insert_eq_cons,
-    cons_le_of_notMem (not_mem_singleton_iff.mpr (Ring.neg_one_ne_one_of_char_ne_two hF)),
-    Nat.ofNat_pos, mem_nthRoots, even_two, Even.neg_pow, one_pow, singleton_le, and_self])
-    (Polynomial.card_nthRoots 2 1)).symm
+lemma nthRoots_two_one : Polynomial.nthRoots 2 (1 : R) = {-1,1} := by
+  have h₁ : (X ^ 2 - C 1 : R[X]) = (X + C 1) * (X - C 1) := by ring_nf; rw [← C_pow, one_pow]
+  have h₂ : (X ^ 2 - C 1 : R[X]) ≠ 0 := fun h ↦ by simpa using congrArg (coeff · 0) h
+  rw [nthRoots, h₁, roots_mul (h₁ ▸ h₂), roots_X_add_C, roots_X_sub_C]; rfl
 
 end NthRoots
 
