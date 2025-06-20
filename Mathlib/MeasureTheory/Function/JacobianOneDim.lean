@@ -19,7 +19,7 @@ is zero on the set of non-injectivity, which means that it can be discarded.
 
 See also `Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts` for versions of the
 change of variables formula in dimension 1 for non-monotone functions, formulated with
-the interval integral and with the stronger requirements on the integrand.
+the interval integral and with stronger requirements on the integrand.
 -/
 
 
@@ -69,10 +69,10 @@ theorem integral_image_eq_integral_abs_deriv_smul
 /-- Technical structure theorem for monotone differentiable functions.
 
 If a function `f` is monotone on a measurable set and has a derivative `f'`, one can decompose
-the set as a disjoint union `a ∪ b ∪ c` of measurable sets where `a` is countable (the isolated
-points, where `f'` could be arbitrary), `f` is locally constant on `b` and `f' = 0` there (the
-preimages of the countably many points with several preimages), and `f` is injective on `c` with
-nonnegative derivative (the other points). -/
+the set as a disjoint union `a ∪ b ∪ c` of measurable sets where `a` is countable (the points which
+are isolated on the left or on the right, where `f'` is not well controlled),
+`f` is locally constant on `b` and `f' = 0` there (the preimages of the countably many points with
+several preimages), and `f` is injective on `c` with nonnegative derivative (the other points). -/
 theorem exists_decomposition_of_monotoneOn_hasDerivWithinAt (hs : MeasurableSet s)
     (hf : MonotoneOn f s) (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) :
     ∃ (a b c : Set ℝ), a ∪ (b ∪ c) = s ∧ MeasurableSet a ∧ MeasurableSet b ∧ MeasurableSet c ∧
@@ -114,6 +114,7 @@ theorem exists_decomposition_of_monotoneOn_hasDerivWithinAt (hs : MeasurableSet 
       rcases eq_or_ne p x with h'p | h'p
       · exact ⟨q, qs₁, (h'p.symm.le.trans_lt pq).ne', hq⟩
       · exact ⟨p, ps₁, h'p, hp⟩
+    -- we treat separately the cases `p < x` and `x < p` as we couldn't unify their proofs nicely
     rcases lt_or_gt_of_ne px with px | px
     · have K : HasDerivWithinAt f 0 (s ∩ Ioo p x) x := by
         have E (y) (hy : y ∈ s ∩ Ioo p x) : f y = f x := by
