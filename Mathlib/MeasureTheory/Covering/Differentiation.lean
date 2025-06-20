@@ -815,8 +815,8 @@ theorem ae_tendsto_lintegral_enorm_sub_div'_of_integrable {f : α → E} (hf : I
     filter_upwards [v.eventually_filterAt_subset_of_nhds (IsOpen.mem_nhds (A.set_mem n) xn),
       v.eventually_filterAt_measurableSet x] with a ha h'a
     congr 1
-    apply setLIntegral_congr_fun h'a
-    filter_upwards with y hy using (by simp only [ha hy, indicator_of_mem])
+    apply setLIntegral_congr_fun h'a (fun y hy ↦ ?_)
+    simp only [ha hy, indicator_of_mem]
   apply ENNReal.tendsto_nhds_zero.2 fun ε εpos => ?_
   obtain ⟨c, ct, xc⟩ : ∃ c ∈ t, ‖f x - c‖ₑ < ε / 2 := by
     simp_rw [← edist_eq_enorm_sub]
@@ -875,7 +875,7 @@ theorem ae_tendsto_lintegral_enorm_sub_div {f : α → E} (hf : LocallyIntegrabl
   filter_upwards [v.eventually_filterAt_subset_of_nhds ((u_open n).mem_nhds hn),
     v.eventually_filterAt_measurableSet x] with a ha h'a
   congr 1
-  refine setLIntegral_congr_fun h'a (Eventually.of_forall (fun y hy ↦ ?_))
+  refine setLIntegral_congr_fun h'a (fun y hy ↦ ?_)
   rw [indicator_of_mem (ha hy) f, indicator_of_mem hn f]
 
 @[deprecated (since := "2025-01-22")]
