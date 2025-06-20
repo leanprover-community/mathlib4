@@ -269,7 +269,7 @@ theorem adj_and_reachable_delete_edges_iff_exists_cycle {v w : V} :
   constructor
   · rintro ⟨h, p, hp⟩
     refine ⟨w, Walk.cons h.symm p.toPath, ?_, ?_⟩
-    · apply Path.cons_isCycle
+    · apply cons_isCycle
       rw [Sym2.eq_swap]
       intro h
       cases hp (Walk.edges_toPath_subset p h)
