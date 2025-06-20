@@ -50,10 +50,37 @@ structure CovariantDerivative where
     → MDifferentiableAt I 𝓘(𝕜, 𝕜) f x
     → toFun X (f • σ) x = (f • toFun X σ) x + (bar _ <| mfderiv I 𝓘(𝕜, 𝕜) f x (X x)) • σ x
 
+lemma CovariantDerivative.smul_const_σ (cov : CovariantDerivative I F V)
+    (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (a : 𝕜) :
+    cov.toFun X (a • σ) = a • cov.toFun X σ := by
+  ext x
+  by_cases hX : MDifferentiableAt I I.tangent (fun x ↦ (X x : TangentBundle I M)) x; swap
+  · -- missing axiom: if X is not differentiable, the covariant derivative is zero
+    have hσ₁ : cov.toFun X σ = 0 := sorry
+    have hσ₂ : cov.toFun X (a • σ) = 0 := sorry
+    simp [hσ₁, hσ₂]
+  -- Thus, we know `X` is differentiable.
+  by_cases hσ : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x
+  · have hσ' : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (a • σ x)) x :=
+      sorry
+    have : MDifferentiableAt I 𝓘(𝕜, 𝕜) (fun x ↦ a) x :=
+      (contMDiff_const.mdifferentiable (n := 1) (by norm_num)).mdifferentiableAt
+    have aux := cov.leibniz X σ (fun _ ↦ a) x hX hσ this
+    convert aux
+    trans (a • cov.toFun X σ) x + 0
+    · rw [add_zero]
+    congr
+    have : mfderiv I 𝓘(𝕜, 𝕜) (fun x ↦ a) x (X x) = 0 := sorry
+    rw [this]
+    simp
+  -- missing axiom: "if σ is not differentiable, the covariant derivative is zero"
+  have hσ₁ : cov.toFun X σ = 0 := sorry
+  have hσ' : ¬ MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (a • σ x)) x :=
+    sorry
+  have hσ₂ : cov.toFun X (a • σ) = 0 := sorry
+  simp [hσ₁, hσ₂]
+
 end
-
-
-
 
 section
 
