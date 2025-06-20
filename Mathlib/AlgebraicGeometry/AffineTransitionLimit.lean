@@ -237,7 +237,7 @@ private nonrec lemma Scheme.exists_hom_hom_comp_eq_comp_of_isAffine_of_locallyOf
     ⟨⟨fun i ↦ Spec.preimage (t.app i.unop), fun _ _ f ↦ Spec.map_injective
       (by simpa using (t.naturality f.unop).symm)⟩, by ext : 2; simp [e]⟩
   have := monadicCreatesLimits Scheme.Spec
-  obtain ⟨k, hik, hjk, H⟩ := (LocallyOfFiniteType.SpecMap_iff.mp ‹LocallyOfFiniteType (Spec.map φ)›)
+  obtain ⟨k, hik, hjk, H⟩ := (HasRingHomProperty.Spec_iff.mp ‹LocallyOfFiniteType (Spec.map φ)›)
     |>.essFiniteType.exists_comp_map_eq_of_isColimit _ D.leftOp t _
     (coconeLeftOpOfCone (liftLimit hc))
     (isColimitCoconeLeftOpOfCone _ (liftedLimitIsLimit _))
