@@ -157,3 +157,5 @@ theorem mapLe_isTrail {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} {p : G.Wal
 alias ⟨IsTrail.of_mapLe, IsTrail.mapLe⟩ := mapLe_isTrail
 
 end Walk
+
+end SimpleGraph
