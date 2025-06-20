@@ -33,7 +33,7 @@ variable [FiniteDimensional 𝕜 E]
 variable {n : ℕ} (hn : Module.finrank 𝕜 E = n)
 
 lemma IsSymmetric.trace_eq_sum_eigenvalues {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
-    T.trace 𝕜 E = ∑i, hT.eigenvalues hn i := by
+    T.trace 𝕜 E = ∑ i, hT.eigenvalues hn i := by
   let b := hT.eigenvectorBasis hn
   rw [T.trace_eq_sum_inner b, RCLike.ofReal_sum]
   apply Fintype.sum_congr
@@ -42,7 +42,7 @@ lemma IsSymmetric.trace_eq_sum_eigenvalues {T : E →ₗ[𝕜] E} (hT : T.IsSymm
   simp [RCLike.ofReal_alg]
 
 lemma IsSymmetric.re_trace_eq_sum_eigenvalues {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
-    RCLike.re (T.trace 𝕜 E) = ∑i, hT.eigenvalues hn i := by
+    RCLike.re (T.trace 𝕜 E) = ∑ i, hT.eigenvalues hn i := by
   rw [hT.trace_eq_sum_eigenvalues]
   exact RCLike.ofReal_re_ax _
 
