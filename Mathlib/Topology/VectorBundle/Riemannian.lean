@@ -189,11 +189,11 @@ class RiemannianBundle where
   /-- The family of inner products on the fibers -/
   g : RiemannianMetric E
 
-noncomputable instance (priority := 50) [h : RiemannianBundle E] (b : B) :
+noncomputable instance (priority := 80) [h : RiemannianBundle E] (b : B) :
     NormedAddCommGroup (E b) :=
   (h.g.toCore b).toNormedAddCommGroupOfTopology (h.g.continuousAt b) (h.g.isVonNBounded b)
 
-noncomputable instance (priority := 50) [h : RiemannianBundle E] (b : B) :
+noncomputable instance (priority := 80) [h : RiemannianBundle E] (b : B) :
     InnerProductSpace ℝ (E b) :=
   .ofCoreOfTopology (h.g.toCore b) (h.g.continuousAt b) (h.g.isVonNBounded b)
 
