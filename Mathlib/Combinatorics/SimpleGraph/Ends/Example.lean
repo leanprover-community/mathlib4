@@ -20,4 +20,12 @@ To `.git/hooks/pre-push`
 
 I will now push this as a PR to see if it works.
 
+---
+
+Ok that didn't work, I'm running
+
+`chmod +x .git/hooks/pre-push`
+
+To see if that helps.
+
 -/
