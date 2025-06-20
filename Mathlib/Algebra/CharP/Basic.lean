@@ -207,9 +207,10 @@ end AddMonoidWithOne
 
 section CommRing
 
-instance (α : Type*) [Ring α] (n : ℕ) [CharP α n] : Lean.Grind.IsCharP α n where
-  ofNat_eq_zero_iff m := by
-    rw [Semiring.toGrindSemiring_ofNat]
-    simpa [← Nat.dvd_iff_mod_eq_zero] using CharP.cast_eq_zero_iff α n m
+instance (α : Type*) [Semiring α] [IsLeftCancelAdd α] (n : ℕ) [CharP α n] :
+    Lean.Grind.IsCharP α n where
+  ofNat_ext_iff {a b} := by
+    rw [Lean.Grind.Semiring.ofNat_eq_natCast, Lean.Grind.Semiring.ofNat_eq_natCast]
+    exact CharP.cast_eq_iff_mod_eq α n
 
 end CommRing
