@@ -466,7 +466,7 @@ alias IsProper.not_mem_of_compl_mem := IsProper.notMem_of_compl_mem
 
 theorem IsProper.notMem_or_compl_notMem (hI : IsProper I) : x ∉ I ∨ xᶜ ∉ I := by
   have h : xᶜ ∈ I → x ∉ I := hI.notMem_of_compl_mem
-  tauto
+  grind
 
 @[deprecated (since := "2025-05-23")]
 alias IsProper.not_mem_or_compl_not_mem := IsProper.notMem_or_compl_notMem

@@ -481,7 +481,7 @@ theorem filter_ne [DecidableEq β] (s : Finset β) (b : β) :
     (s.filter fun a => b ≠ a) = s.erase b := by
   ext
   simp only [mem_filter, mem_erase, Ne, decide_not, Bool.not_eq_true', decide_eq_false_iff_not]
-  tauto
+  grind
 
 theorem filter_ne' [DecidableEq β] (s : Finset β) (b : β) : (s.filter fun a => a ≠ b) = s.erase b :=
   _root_.trans (filter_congr fun _ _ => by simp_rw [@ne_comm _ b]) (filter_ne s b)

@@ -172,7 +172,7 @@ def setValue {α β : Sort*} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidabl
   ⟨fun a' => if a' = a then b else if f a' = b then f a else f a', by
     intro x y h
     simp only at h
-    split_ifs at h <;> (try subst b) <;> (try simp only [f.injective.eq_iff] at *) <;> cc⟩
+    split_ifs at h <;> (try subst b) <;> (try simp only [f.injective.eq_iff] at *) <;> grind⟩
 
 @[simp]
 theorem setValue_eq {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = a)]

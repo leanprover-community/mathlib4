@@ -239,7 +239,7 @@ theorem fib_le_of_contsAux_b :
         gcongr
         apply IH
         · simp
-        · tauto)
+        · grind)
 
 /-- Shows that the `n`th denominator is greater than or equal to the `n + 1`th fibonacci number,
 that is `Nat.fib (n + 1) ≤ Bₙ`. -/

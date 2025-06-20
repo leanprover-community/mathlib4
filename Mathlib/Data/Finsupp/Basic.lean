@@ -832,7 +832,7 @@ def filter (p : α → Prop) [DecidablePred p] (f : α →₀ M) : α →₀ M w
   mem_support_toFun a := by
     split_ifs with h <;>
       · simp only [h, mem_filter, mem_support_iff]
-        tauto
+        grind
 
 theorem filter_apply (a : α) : f.filter p a = if p a then f a else 0 := rfl
 
@@ -1462,7 +1462,7 @@ def splitComp [Zero N] (g : ∀ i, (αs i →₀ M) → N) (hg : ∀ i x, x = 0 
 theorem sigma_support : l.support = l.splitSupport.sigma fun i => (l.split i).support := by
   simp only [Finset.ext_iff, splitSupport, split, comapDomain, mem_image, mem_preimage,
     Sigma.forall, mem_sigma]
-  tauto
+  grind
 
 theorem sigma_sum [AddCommMonoid N] (f : (Σ i : ι, αs i) → M → N) :
     l.sum f = ∑ i ∈ splitSupport l, (split l i).sum fun (a : αs i) b => f ⟨i, a⟩ b := by
