@@ -117,6 +117,52 @@ theorem polarBilin_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂
   rw [smul_comm (_ : A) (_ : ℕ), ← smul_assoc, two_smul _ (_ : A), invOf_two_add_invOf_two,
     one_smul]
 
+/-
+-- Worry about this later
+instance [DecidableEq M₁] [DecidableEq M₂] : DecidableEq {t : M₁ ⊗[R] M₂ | ∃ m n, m ⊗ₜ n = t } := by
+  rw [DecidableEq]
+  intro a b
+  obtain ⟨a', ha⟩ := a
+  simp at ha
+  obtain ⟨b', hb⟩ := b
+  simp at hb
+  simp
+  obtain ⟨m₁, n₁⟩  := ha
+-/
+
+open Finsupp in
+theorem tensor_map_finsupp_linearCombination {ι : Type*} [DecidableEq ι] --[Invertible (2 : A)]
+    (Q₁ : QuadraticMap A M₁ N₁) (Q₂ : QuadraticMap R M₂ N₂)
+    {g₁ : ι → M₁} {g₂ : ι → M₂} (l : ι →₀ A) :
+    let g := fun i => g₁ i ⊗ₜ g₂ i
+    (Q₁.tmul Q₂) (linearCombination A g l) = (l.sum fun i r => (r * r) • (Q₁.tmul Q₂) (g i)) +
+    ∑ p ∈ l.support.sym2 with ¬ p.IsDiag, QuadraticMap.polar_lift_lc (Q₁.tmul Q₂) g l p :=
+    map_finsupp_linearCombination (Q₁.tmul Q₂) l
+
+open Finsupp in
+theorem tensor_map_finsupp_linearCombination1 {ι : Type*} [DecidableEq ι] --[Invertible (2 : A)]
+    (Q₁ : QuadraticMap A M₁ N₁) (Q₂ : QuadraticMap R M₂ N₂)
+    {g₁ : ι → M₁} {g₂ : ι → M₂} (l : ι →₀ A) :
+    let g := fun i => g₁ i ⊗ₜ g₂ i
+    (Q₁.tmul Q₂) (linearCombination A g l) = (l.sum fun i r => (r * r) • (Q₁ (g₁ i) ⊗ₜ Q₂ (g₂ i))) +
+    ∑ p ∈ l.support.sym2 with ¬ p.IsDiag, QuadraticMap.polar_lift_lc (Q₁.tmul Q₂) g l p := by
+  let g := fun i => g₁ i ⊗ₜ[R] g₂ i
+  have e1 (i : ι) : (Q₁.tmul Q₂) (g i) = Q₁ (g₁ i) ⊗ₜ Q₂ (g₂ i) := by
+    exact QuadraticMap.tensorDistrib_tmul Q₁ Q₂ (g₁ i) (g₂ i)
+  simp_rw [← e1]
+  simp_rw [tensor_map_finsupp_linearCombination]
+  simp_all only [QuadraticMap.tensorDistrib_tmul, implies_true, g]
+
+/-
+This statement requires ⅟(2 : R)
+-/
+lemma polar_lift_lc_lemma {ι : Type*} [DecidableEq ι]
+    (Q₁ : QuadraticMap A M₁ N₁) (Q₂ : QuadraticMap R M₂ N₂)
+    {g₁ : ι → M₁} {g₂ : ι → M₂} (l : ι →₀ A) (p : Sym2 ι) :
+    let g := fun i => g₁ i ⊗ₜ g₂ i
+    QuadraticMap.polar_lift_lc (Q₁.tmul Q₂) g l p =
+       ⅟(2 : R) • (Q₁.polar_lift_lc g₁ l p) ⊗ₜ[R] (Q₂.polar_lift1 g₂ p) := sorry
+
 variable (A) in
 /-- The base change of a quadratic form. -/
 -- `noncomputable` is a performance workaround for https://github.com/leanprover-community/mathlib4/issues/7103
