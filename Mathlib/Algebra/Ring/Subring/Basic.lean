@@ -992,6 +992,7 @@ variable {α β : Type*}
 instance [SMul R α] (S : Subring R) : SMul S α :=
   inferInstanceAs (SMul S.toSubsemiring α)
 
+@[simp]
 theorem smul_def [SMul R α] {S : Subring R} (g : S) (m : α) : g • m = (g : R) • m :=
   rfl
 
