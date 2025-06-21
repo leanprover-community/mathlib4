@@ -161,7 +161,7 @@ theorem roots_quadratic_of_discrim_ne_sq (h : ∀ s : R, discrim a b c ≠ s^2) 
 theorem roots_quadratic_of_discrim_eq_sq [NeZero (2 : R)] (ha : a ≠ 0) {s : R}
     (h : discrim a b c = s * s) :
     (C a * X ^ 2 + C b * X + C c).roots = {(-b + s) / (2 * a), (-b - s) / (2 * a)} :=
-  (roots_of_ne_zero_of_vieta ha) (vieta_of_discrim_eq_sq ha h)
+  roots_of_ne_zero_of_vieta ha (vieta_of_discrim_eq_sq ha h)
 
 end QuadraticDiscriminant
 
