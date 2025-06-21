@@ -12,6 +12,9 @@ set_option linter.unusedVariables false
 
 theorem foo (L M : List α) (w : L.Disjoint M) (m : a ∈ L) : a ∉ M := fun h => w m h
 
+#adaptation_note /-- 2025-06-21 lean4#8914 need stage0 update -/
+/-
+
 /--
 info: Try this: have : M.Disjoint L := List.disjoint_symm w
 ---
@@ -104,3 +107,5 @@ theorem dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p �
   obtain dvd_a | dvd_pow := dvd_or_dvd hp h
   · assumption
   exact ih dvd_pow
+
+-/
