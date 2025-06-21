@@ -57,12 +57,9 @@ theorem prod_comp {P Q R : C} {S T U : D} (f : (P, S) ⟶ (Q, T)) (g : (Q, T) �
     f ≫ g = (f.1 ≫ g.1, f.2 ≫ g.2) :=
   rfl
 
-section
-
-variable {C D}
-
 namespace Prod
 
+variable {C D} in
 /-- Construct a morphism in a product category by giving its constituent components.
 This constructor should be preferred over `Prod.mk`, because lean infers better the
 source and target of the resulting morphism. -/
@@ -73,9 +70,6 @@ abbrev mkHom {X₁ X₂ : C} {Y₁ Y₂ : D} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y
 scoped infixr:70 " ×ₘ " => Prod.mkHom
 
 end Prod
-
-end
-
 theorem isIso_prod_iff {P Q : C} {S T : D} {f : (P, S) ⟶ (Q, T)} :
     IsIso f ↔ IsIso f.1 ∧ IsIso f.2 := by
   constructor
