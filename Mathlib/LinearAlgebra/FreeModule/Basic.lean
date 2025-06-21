@@ -36,7 +36,10 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- `Module.Free R M` is the statement that the `R`-module `M` is free. -/
 class Free (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
-  exists_basis (R M) : Nonempty <| (I : Type v) × Basis I R M
+  exists_basis' (R M) : Nonempty <| (I : Type v) × Basis I R M
+
+lemma Free.exists_basis [Free R M] : Nonempty <| (I : Type v) × Basis I R M :=
+  Free.exists_basis' R M
 
 lemma Free.exists_set [Free R M] : ∃ S : Set M, Nonempty (Basis S R M) :=
   let ⟨_I, b⟩ := exists_basis R M; ⟨Set.range b, ⟨b.reindexRange⟩⟩
