@@ -63,7 +63,7 @@ theorem supportDiscreteWithin_iff_locallyFiniteWithin [T1Space X] [Zero Y] {f : 
     exact (h ·)
   rw [EventuallyEq, Filter.Eventually, codiscreteWithin_iff_locallyFiniteComplementWithin, this]
 
-lemma supportDiscreteWithin_top_iff [Zero Y] (f : X → Y) :
+lemma supportLocallyFiniteWithin_top_iff [Zero Y] (f : X → Y) :
     (∀ z ∈ (⊤ : Set X), ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)) ↔
     LocallyFinite (fun s : f.support ↦ ({s.val} : Set X)) := by
   have lem {α : Type u_1} (s t : Set α) : (s ∩ t) = {i : s | ↑i ∈ t} := by aesop
@@ -91,10 +91,11 @@ lemma supportDiscreteWithin_top_iff [Zero Y] (f : X → Y) :
     rw[← this]
     exact Finite.image Subtype.val ans
 
-lemma supportDiscreteWithin_top_inter_compact_finite {W : Set X}
+lemma supportLocallyFiniteWithin_top_inter_compact_finite {W : Set X}
    [Zero Y] {f : X → Y} (hf : ∀ z ∈ (⊤ : Set X), ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support))
    (hW : IsCompact W) : (W ∩ f.support).Finite := by
-  have := LocallyFinite.finite_nonempty_inter_compact ((supportDiscreteWithin_top_iff f).mp hf) hW
+  have := LocallyFinite.finite_nonempty_inter_compact
+    ((supportLocallyFiniteWithin_top_iff f).mp hf) hW
   have lem {α : Type u_1} (s t : Set α) : {i : s | ({↑i} ∩ t).Nonempty} = (t ∩ s) := by aesop
   rw[← lem f.support W]
   exact Finite.image Subtype.val this
