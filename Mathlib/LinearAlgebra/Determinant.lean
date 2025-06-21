@@ -401,7 +401,7 @@ theorem det_symm (f : M ≃ₗ[R] M) : LinearEquiv.det f.symm = LinearEquiv.det 
 @[simp]
 theorem det_conj (f : M ≃ₗ[R] M) (e : M ≃ₗ[R] M') :
     LinearEquiv.det ((e.symm.trans f).trans e) = LinearEquiv.det f := by
-  rw [← Units.eq_iff, coe_det, coe_det, ← comp_coe, ← comp_coe, LinearMap.det_conj]
+  rw [← Units.val_inj, coe_det, coe_det, ← comp_coe, ← comp_coe, LinearMap.det_conj]
 
 attribute [irreducible] LinearEquiv.det
 
