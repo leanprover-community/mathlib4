@@ -154,7 +154,7 @@ theorem coe_toUnitHom (χ : MulChar R R') (a : Rˣ) : ↑(χ.toUnitHom a) = χ a
 noncomputable def ofUnitHom (f : Rˣ →* R'ˣ) : MulChar R R' where
   toFun := by classical exact fun x => if hx : IsUnit x then f hx.unit else 0
   map_one' := by
-    have h1 : (isUnit_one.unit : Rˣ) = 1 := Units.eq_iff.mp rfl
+    have h1 : (isUnit_one.unit : Rˣ) = 1 := Units.val_inj.mp rfl
     simp only [h1, dif_pos, Units.val_eq_one, map_one, isUnit_one]
   map_mul' := by
     classical
@@ -163,7 +163,7 @@ noncomputable def ofUnitHom (f : Rˣ →* R'ˣ) : MulChar R R' where
       · simp only [hx, IsUnit.mul_iff, true_and, dif_pos]
         by_cases hy : IsUnit y
         · simp only [hy, dif_pos]
-          have hm : (IsUnit.mul_iff.mpr ⟨hx, hy⟩).unit = hx.unit * hy.unit := Units.eq_iff.mp rfl
+          have hm : (IsUnit.mul_iff.mpr ⟨hx, hy⟩).unit = hx.unit * hy.unit := Units.val_inj.mp rfl
           rw [hm, map_mul]
           norm_cast
         · simp only [hy, not_false_iff, dif_neg, mul_zero]
