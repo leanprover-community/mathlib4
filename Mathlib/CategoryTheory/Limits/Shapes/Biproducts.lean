@@ -508,6 +508,14 @@ theorem biproduct.isoProduct_inv {f : J → C} [HasBiproduct f] :
     (biproduct.isoProduct f).inv = biproduct.lift (Pi.π f) :=
   biproduct.hom_ext _ _ fun j => by simp [Iso.inv_comp_eq]
 
+@[reassoc (attr := simp)]
+theorem biproduct.ι_comp_PiLift_π [DecidableEq J] {f : J → C} [HasBiproduct f] (j : J) :
+    biproduct.ι f j ≫ Pi.lift (biproduct.π f) = Pi.ι f j := by
+  ext j'
+  by_cases h : j' = j
+  · aesop
+  · simp_all [Pi.ι, biproduct.ι_π_ne _ (Ne.symm h)]
+
 /-- The canonical isomorphism between the chosen biproduct and the chosen coproduct. -/
 def biproduct.isoCoproduct (f : J → C) [HasBiproduct f] : ⨁ f ≅ ∐ f :=
   IsColimit.coconePointUniqueUpToIso (biproduct.isColimit f) (colimit.isColimit _)
@@ -522,6 +530,14 @@ theorem biproduct.isoCoproduct_hom {f : J → C} [HasBiproduct f] :
     (biproduct.isoCoproduct f).hom = biproduct.desc (Sigma.ι f) :=
   biproduct.hom_ext' _ _ fun j => by simp [← Iso.eq_comp_inv]
 
+@[reassoc (attr := simp)]
+theorem biproduct.SigmaDesc_ι_comp_π [DecidableEq J] {f : J → C} [HasBiproduct f] (j : J) :
+    Sigma.desc (biproduct.ι f) ≫ biproduct.π f j = Sigma.π f j := by
+  ext j'
+  by_cases h : j' = j
+  · aesop
+  · simp_all [Sigma.π, biproduct.ι_π_ne _ (Ne.symm h)]
+
 /-- If a category has biproducts of a shape `J`, its `colim` and `lim` functor on diagrams over `J`
 are isomorphic. -/
 @[simps!]
@@ -531,8 +547,10 @@ def HasBiproductsOfShape.colimIsoLim [HasBiproductsOfShape J C] :
       (biproduct.isoCoproduct _).symm ≪≫ biproduct.isoProduct _ ≪≫ Pi.isoLimit F)
     fun η => colimit.hom_ext fun ⟨i⟩ => limit.hom_ext fun ⟨j⟩ => by
       classical
-      by_cases h : i = j <;>
-       simp_all [h, Sigma.isoColimit, Pi.isoLimit, biproduct.ι_π, biproduct.ι_π_assoc]
+      by_cases h : i = j
+      · subst h; simp
+      · simp_all [h, Sigma.isoColimit, Pi.isoLimit, biproduct.ι_π, biproduct.ι_π_assoc,
+         Pi.ι_π_of_ne, Pi.ι_π_of_ne_assoc]
 
 theorem biproduct.map_eq_map' {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p : ∀ b, f b ⟶ g b) :
     biproduct.map p = biproduct.map' p := by
