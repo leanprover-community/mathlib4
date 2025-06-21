@@ -4,13 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ilmārs Cīrulis, Alex Meiburg
 -/
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
-import Mathlib.Analysis.InnerProductSpace.TemporaryName
+import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.NormedSpace.Normalized
 
 /-!
-# The Triangle Inequality for Spherical Angles in Unit Sphere
+# The Triangle Inequality (for angles between unit length vectors)
 
-This file contains proof that spherical angles in unit sphere obey the triangle inequality.
+This file contains proof that angles between unit length vectors obey the triangle inequality.
 -/
 
 namespace UnitSphereAngles
@@ -29,7 +29,7 @@ lemma inner_self_eq_one {x : V} (hx : ‖x‖ = 1) : ⟪x, x⟫ = 1 :=
   (inner_eq_one_iff_of_norm_one hx hx).mpr rfl
 
 lemma neg_one_le_inner {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) : -1 ≤ ⟪x, y⟫ := by
-  have H := neg_norm_le_real_inner x y
+  have H := neg_le_of_abs_le (abs_real_inner_le_norm x y)
   rw [hx, hy] at H
   norm_num at H
   exact H
@@ -121,8 +121,10 @@ lemma angle_triangle_aux {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) :
   have H : 1 - ⟪x, y⟫ ^ 2 ≠ 0 := by
     rw [sub_ne_zero, ne_comm, sq_ne_one_iff]
     constructor <;> contrapose! hxy
-    · simp [sub_eq_zero, ← inner_eq_sq_norm_iff Hx Hy, hxy]
-    · simp [hxy, add_eq_zero_iff_eq_neg, ← inner_eq_neg_sq_norm_iff Hx Hy]
+    · rw [inner_eq_one_iff_of_norm_one Hx Hy] at hxy
+      simp [inner_self_eq_one, hxy, Hy]
+    · rw [inner_eq_neg_one_iff_of_norm_one Hx Hy] at hxy
+      simp [inner_self_eq_one, hxy, Hy]
   rw [← smul_assoc]
   field_simp
   rw [← sq, ← real_inner_self_eq_norm_sq]

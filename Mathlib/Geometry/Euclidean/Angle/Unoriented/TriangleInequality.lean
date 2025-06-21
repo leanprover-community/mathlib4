@@ -21,9 +21,8 @@ variable {V : Type*}
 variable [NormedAddCommGroup V]
 variable [InnerProductSpace ℝ V]
 
--- where to put these two?
 @[simp]
-lemma angle_normalized_left (x y : V) :
+private lemma angle_normalized_left (x y : V) :
     angle (normalized x) y = angle x y := by
   by_cases hx : x = 0
   · simp [hx]
@@ -31,9 +30,10 @@ lemma angle_normalized_left (x y : V) :
   simp only [normalized, angle_smul_left_of_pos, hx, angle_smul_right_of_pos]
 
 @[simp]
-lemma angle_normalized_right (x y : V) :
+private lemma angle_normalized_right (x y : V) :
     angle x (normalized y) = angle x y := by
   rw [angle_comm, angle_normalized_left, angle_comm]
+
 
 /-- **Triangle inequality** for angles between vectors. -/
 theorem InnerProductGeometry.angle_triangle (x y z : V) : angle x z ≤ angle x y + angle y z := by
@@ -54,7 +54,7 @@ namespace EuclideanGeometry
 variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
-/-- **Triangle inequality** for spherical angles in Euclidean geometry. -/
+/-- **Triangle inequality** for angles in Euclidean geometry. -/
 theorem angle_triangle (p p₁ p₂ p₃ : P) : ∠ p₁ p p₃ ≤ ∠ p₁ p p₂ + ∠ p₂ p p₃ :=
   InnerProductGeometry.angle_triangle _ _ _
 
