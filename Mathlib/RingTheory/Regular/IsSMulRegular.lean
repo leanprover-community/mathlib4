@@ -163,7 +163,7 @@ lemma isSMulRegular_on_quot_iff_lsmul_comap_le :
 lemma isSMulRegular_on_quot_iff_lsmul_comap_eq :
     IsSMulRegular (M ⧸ N) r ↔ N.comap (LinearMap.lsmul R M r) = N :=
   Iff.trans (isSMulRegular_on_quot_iff_lsmul_comap_le N r) <|
-    LE.le.le_iff_eq (fun _ => N.smul_mem r)
+    LE.le.ge_iff_eq' (fun _ => N.smul_mem r)
 
 variable {r}
 
