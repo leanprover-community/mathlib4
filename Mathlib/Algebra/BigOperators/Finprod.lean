@@ -956,6 +956,19 @@ lemma finprod_option {f : Option α → M} (hf : (mulSupport (f ∘ some)).Finit
     exact Option.some_injective _
 
 @[to_additive]
+lemma finprod_mem_powerset_insert {f : Set α → M} {s : Set α} {a : α} (hs : s.Finite)
+    (has : a ∉ s) : ∏ᶠ t ∈ 𝒫 insert a s, f t = (∏ᶠ t ∈ 𝒫 s, f t) * ∏ᶠ t ∈ 𝒫 s, f (insert a t) := by
+  rw [Set.powerset_insert, finprod_mem_union (powerset_insert_disjoint has) hs.powerset
+  (hs.powerset.image (insert a)), finprod_mem_image (powerset_insert_injOn has)]
+
+@[to_additive]
+lemma finprod_mem_powerset_diff_elem {f : Set α → M} {s : Set α} {a : α} (hs : s.Finite)
+    (has : a ∈ s) : ∏ᶠ t ∈ 𝒫 s, f t = (∏ᶠ t ∈ 𝒫 (s \ {a}), f t)
+    * ∏ᶠ t ∈ 𝒫 (s \ {a}), f (insert a t) := by
+  nth_rw 1 2 [← Set.insert_diff_self_of_mem has] -- second appearence hidden by notation
+  exact finprod_mem_powerset_insert (hs.subset Set.diff_subset) (notMem_diff_of_mem rfl)
+
+@[to_additive]
 theorem mul_finprod_cond_ne (a : α) (hf : (mulSupport f).Finite) :
     (f a * ∏ᶠ (i) (_ : i ≠ a), f i) = ∏ᶠ i, f i := by
   classical
