@@ -348,7 +348,8 @@ lemma pathELength_comp_of_antitoneOn (γ : ℝ → M) {f : ℝ → ℝ} {x y : �
 
 section
 
-variable [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)] {x y : M} {r : ℝ≥0∞} {a b : ℝ}
+-- variable [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)] {x y : M} {r : ℝ≥0∞} {a b : ℝ}
+variable {x y : M} {r : ℝ≥0∞} {a b : ℝ}
 
 variable (I) in
 /-- The Riemannian extended distance between two points, in a manifold where the tangent spaces
@@ -388,32 +389,7 @@ lemma riemannianEDist_le_pathELength {γ : ℝ → M} (hγ : ContMDiffOn 𝓘(�
   rw [E, ha, hb]
   apply pathELength_comp_of_monotoneOn zero_le_one _ η.differentiableOn
   · simpa [← ha, ← hb] using hγ.mdifferentiableOn le_rfl
-  ·
-
-
-
-
-
-
-#exit
-
-  exact this
-
-
-
-  sorry
-
-
-
-
-
-
-
-#exit
-
-
-lemma contMDiffOn_comp_projIcc_iff (f : Icc x y → M) :
-    ContMDiffOn 𝓘(ℝ) I n (f ∘ (Set.projIcc x y h.out.le)) (Icc x y) ↔ ContMDiff (𝓡∂ 1) I n f := by
+  · apply (AffineMap.lineMap_monotone hab).monotoneOn
 
 lemma exists_lt_of_riemannianEDist_lt (hr : riemannianEDist I x y < r) :
     ∃ γ : ℝ → M, γ a = x ∧ γ b = y ∧ ContMDiff 𝓘(ℝ) I 1 γ ∧
