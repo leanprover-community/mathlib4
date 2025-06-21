@@ -47,6 +47,8 @@ lemma exists_radius_le (t : T) (V : Finset T) (ha : 1 < a) (c : ℝ≥0∞) :
   exact ⟨r, hr1, le_trans (mod_cast Finset.card_filter_le V _) hr⟩
 
 open Classical in
+/-- The log-size radius of t in V is the smallest natural number n greater than zero such that
+ {x ∈ V | d(t,x) ≤ nc} ≤ aⁿ -/
 noncomputable
 def logSizeRadius (t : T) (V : Finset T) (a c : ℝ≥0∞) : ℕ :=
   if h : 1 < a then Nat.find (exists_radius_le t V h c) else 0
@@ -76,22 +78,31 @@ lemma card_le_logSizeRadius_ge (ha : 1 < a) (ht : t ∈ V) :
   refine (h ?_).le
   omega
 
+/- A structure for carrying the data of `logSizeBallSeq` -/
 structure logSizeBallStruct (T : Type*) where
   finset : Finset T
   point : T
   radius : ℕ
 
+/-- If (V,t,r) is a `logSizeBallStruct` then `logSizeBallStruct.smallBall`
+  is {x ∈ V | d(t,x) ≤ (r-1)c} -/
 noncomputable
 def logSizeBallStruct.smallBall (struct : logSizeBallStruct T) (c : ℝ≥0∞) :
     Finset T :=
   struct.finset.filter fun x ↦ edist struct.point x ≤ (struct.radius - 1) * c
 
+/-- If (V,t,r) is a `logSizeBallStruct` then `logSizeBallStruct.ball`
+  is {x ∈ V | d(t,x) ≤ rc} -/
 noncomputable
 def logSizeBallStruct.ball (struct : logSizeBallStruct T) (c : ℝ≥0∞) :
     Finset T :=
   struct.finset.filter fun x ↦ edist struct.point x ≤ struct.radius * c
 
 open Classical in
+/-- We recursively define a log-size ball sequence (Vᵢ, tᵢ, rᵢ) by
+  * V₀ = J, tₒ is chosen arbitarily in J, r₀ is the log-size radius of t₀ in V₀
+  * Vᵢ₊ᵢ = Vᵢ \ {x ∈ V | d(t,x) ≤ (rᵢ - 1)c}, tᵢ₊₁ is chosen arbitarily in Vᵢ₊₁, rᵢ₊₁ is
+    the log-size radius of tᵢ₊₁ in Vᵢ₊ᵢ. -/
 noncomputable
 def logSizeBallSeq (J : Finset T) (hJ : J.Nonempty) (a c : ℝ≥0∞) : ℕ → logSizeBallStruct T :=
   Nat.rec ({finset := J, point := hJ.choose, radius := logSizeRadius hJ.choose J a c})
@@ -225,6 +236,8 @@ lemma disjoint_smallBall_logSizeBallSeq (hJ : J.Nonempty) {i j : ℕ} (hij : i �
   simp [finset_logSizeBallSeq_add_one, Finset.disjoint_sdiff]
 
 open Classical in
+/-- Given a log-size ball sequence (Vᵢ, tᵢ, rᵢ), we define the pair set sequence by
+  Kᵢ = {tᵢ} × {x ∈ Vᵢ | dist(tᵢ,x) ≤ rᵢc} -/
 noncomputable
 def pairSetSeq (J : Finset T) (a c : ℝ≥0∞) (n : ℕ) : Finset (T × T) :=
   if hJ : J.Nonempty then
@@ -232,6 +245,7 @@ def pairSetSeq (J : Finset T) (a c : ℝ≥0∞) (n : ℕ) : Finset (T × T) :=
   else ∅
 
 open Classical in
+/-- Given the pair set sequence Kᵢ we define the pair set K by K = ⋃ i, Kᵢ -/
 noncomputable
 def pairSet (J : Finset T) (a c : ℝ≥0∞) : Finset (T × T) :=
   Finset.biUnion (Finset.range #J) (pairSetSeq J a c)
