@@ -216,6 +216,12 @@ variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
 def FiniteType (f : A →+* B) : Prop :=
   @Algebra.FiniteType A B _ _ f.toAlgebra
 
+lemma finiteType_algebraMap [Algebra A B] :
+    (algebraMap A B).FiniteType ↔ Algebra.FiniteType A B := by
+  delta FiniteType
+  congr!
+  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
+
 namespace Finite
 
 theorem finiteType {f : A →+* B} (hf : f.Finite) : FiniteType f :=
