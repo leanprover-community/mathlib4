@@ -135,6 +135,7 @@ def coneOfConeCurry {D : DiagramOfCones (curry.obj G)} (Q : ∀ j, IsLimit (D.ob
           π := { app k := c.π.app (j, k) } }
       naturality {_ j'} _ := (Q j').hom_ext (by simp) }
 
+open scoped Prod in
 /-- Given a diagram `D` of colimit cocones over the `F.obj j`, and a cocone over `uncurry.obj F`,
 we can construct a cocone over the diagram consisting of the cocone points from `D`.
 -/
@@ -153,7 +154,7 @@ def coconeOfCoconeUncurry {D : DiagramOfCocones F} (Q : ∀ j, IsColimit (D.obj 
                   conv_lhs =>
                     arg 1; equals (F.map (𝟙 _)).app _ ≫  (F.obj j).map f =>
                       simp
-                  conv_lhs => arg 1; rw [← uncurry_obj_map F (Prod.mkHom (𝟙 j) f)]
+                  conv_lhs => arg 1; rw [← uncurry_obj_map F (𝟙 j ×ₘ f)]
                   rw [c.w] } }
       naturality := fun j j' f =>
         (Q j).hom_ext

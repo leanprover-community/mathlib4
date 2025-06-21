@@ -61,21 +61,28 @@ section
 
 variable {C D}
 
+namespace Prod
+
 /-- Construct a morphism in a product category by giving its constituent components.
 This constructor should be preferred over `Prod.mk`, because lean infers better the
 source and target of the resulting morphism. -/
 @[simps]
-abbrev Prod.mkHom {X₁ X₂ : C} {Y₁ Y₂ : D} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) : (X₁, Y₁) ⟶ (X₂, Y₂) :=
+abbrev mkHom {X₁ X₂ : C} {Y₁ Y₂ : D} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) : (X₁, Y₁) ⟶ (X₂, Y₂) :=
   ⟨f,g⟩
 
+@[inherit_doc Prod.mkHom]
+scoped infixr:70 " ×ₘ " => Prod.mkHom
+
 @[reassoc (attr := simp)]
-lemma Prod.mkHom_comp {X₁ X₂ X₃ : C} {Y₁ Y₂ Y₃ : D}
+lemma mkHom_comp {X₁ X₂ X₃ : C} {Y₁ Y₂ Y₃ : D}
     (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) (f' : X₂ ⟶ X₃) (g' : Y₂ ⟶ Y₃) :
-    Prod.mkHom f g ≫ Prod.mkHom f' g' = Prod.mkHom (f ≫ f') (g ≫ g') :=
+    (f ×ₘ g) ≫ (f' ×ₘ g') = (f ≫ f') ×ₘ (g ≫ g') :=
   rfl
 
 @[simp]
-lemma Prod.mkHom_id {X : C} {Y : D} : Prod.mkHom (𝟙 X) (𝟙 Y) = 𝟙 (X, Y) := rfl
+lemma mkHom_id {X : C} {Y : D} : (𝟙 X) ×ₘ (𝟙 Y) = 𝟙 (X, Y) := rfl
+
+end Prod
 
 end
 
@@ -192,14 +199,12 @@ variable {C D}
 /-- Any morphism in a product factors as a morphsim whose left component is an identity
 followed by a morphism whose right component is an identity. -/
 @[reassoc]
-lemma fac {x y : C × D} (f : x ⟶ y) :
-    f = Prod.mkHom (𝟙 x.1) f.2 ≫ Prod.mkHom f.1 (𝟙 y.2) := by aesop
+lemma fac {x y : C × D} (f : x ⟶ y) : f = (𝟙 x.1 ×ₘ f.2) ≫ (f.1 ×ₘ (𝟙 y.2)) := by aesop
 
 /-- Any morphism in a product factors as a morphsim whose right component is an identity
 followed by a morphism whose left component is an identity. -/
 @[reassoc]
-lemma fac' {x y : C × D} (f : x ⟶ y) :
-    f = Prod.mkHom f.1 (𝟙 x.2) ≫ Prod.mkHom (𝟙 y.1) f.2 := by aesop
+lemma fac' {x y : C × D} (f : x ⟶ y) : f = (f.1 ×ₘ 𝟙 x.2) ≫ ((𝟙 y.1) ×ₘ f.2) := by aesop
 
 end Prod
 

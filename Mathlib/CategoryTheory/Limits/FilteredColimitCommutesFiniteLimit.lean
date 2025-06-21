@@ -88,8 +88,8 @@ theorem colimitLimitToLimitColimit_injective :
     let g : ∀ j, ky ⟶ k j := fun j => (h j).choose_spec.choose_spec.choose
     -- where the images of the components of the representatives become equal:
     have w :
-      ∀ j, F.map (Prod.mkHom (𝟙 j) (f j)) (limit.π ((curry.obj (swap K J ⋙ F)).obj kx) j x) =
-          F.map (Prod.mkHom (𝟙 j) (g j)) (limit.π ((curry.obj (swap K J ⋙ F)).obj ky) j y) :=
+      ∀ j, F.map (𝟙 j ×ₘ f j) (limit.π ((curry.obj (swap K J ⋙ F)).obj kx) j x) =
+          F.map (𝟙 j ×ₘ g j) (limit.π ((curry.obj (swap K J ⋙ F)).obj ky) j y) :=
       fun j => (h j).choose_spec.choose_spec.choose_spec
     -- We now use that `K` is filtered, picking some point to the right of all these
     -- morphisms `f j` and `g j`.
@@ -186,8 +186,8 @@ theorem colimitLimitToLimitColimit_surjective :
     -- `(f, g j)` and `(𝟙 j', g j')`, both represent the same element in the colimit.
     have w :
       ∀ {j j' : J} (f : j ⟶ j'),
-        colimit.ι ((curry.obj F).obj j') k' (F.map (Prod.mkHom (𝟙 j') (g j')) (y j')) =
-          colimit.ι ((curry.obj F).obj j') k' (F.map (Prod.mkHom f (g j)) (y j)) := by
+        colimit.ι ((curry.obj F).obj j') k' (F.map (𝟙 j' ×ₘ g j') (y j')) =
+          colimit.ι ((curry.obj F).obj j') k' (F.map (f ×ₘ g j) (y j)) := by
       intro j j' f
       simp only [Colimit.w_apply, ← Bifunctor.diagonal', ← curry_obj_obj_map, ← curry_obj_map_app]
       rw [types_comp_apply, Colimit.w_apply, e, ← Limit.w_apply.{u₁, v, u₁} f, ← e]
@@ -203,11 +203,11 @@ theorem colimitLimitToLimitColimit_surjective :
       (w f).choose_spec.choose_spec.choose
     have wf :
       ∀ {j j'} (f : j ⟶ j'),
-        F.map (Prod.mkHom (𝟙 j') (g j' ≫ gf f)) (y j') = F.map (Prod.mkHom f (g j ≫ hf f)) (y j) :=
+        F.map (𝟙 j' ×ₘ (g j' ≫ gf f)) (y j') = F.map (f ×ₘ (g j ≫ hf f)) (y j) :=
       fun {j j'} f => by
       have q :
-        ((curry.obj F).obj j').map (gf f) (F.map (Prod.mkHom (𝟙 j') (g j')) (y j')) =
-          ((curry.obj F).obj j').map (hf f) (F.map (Prod.mkHom f (g j)) (y j)) :=
+        ((curry.obj F).obj j').map (gf f) (F.map (𝟙 j' ×ₘ g j') (y j')) =
+          ((curry.obj F).obj j').map (hf f) (F.map (f ×ₘ g j) (y j)) :=
         (w f).choose_spec.choose_spec.choose_spec
       dsimp only [curry_obj_obj_map, curry_obj_obj_map] at q
       simp_rw [← FunctorToTypes.map_comp_apply, CategoryStruct.comp] at q
@@ -275,24 +275,24 @@ theorem colimitLimitToLimitColimit_surjective :
       apply Limit.mk
       swap
       ·-- We construct the elements as the images of the `y j`.
-        exact fun j => F.map (Prod.mkHom (𝟙 j) (g j ≫ gf (𝟙 j) ≫ i (𝟙 j))) (y j)
+        exact fun j => F.map (𝟙 j ×ₘ (g j ≫ gf (𝟙 j) ≫ i (𝟙 j))) (y j)
       · -- After which it's just a calculation, using `s` and `wf`, to see they are coherent.
         dsimp
         intro j j' f
         simp only [← FunctorToTypes.map_comp_apply, prod_comp, id_comp, comp_id]
         calc
-          F.map (Prod.mkHom f (g j ≫ gf (𝟙 j) ≫ i (𝟙 j))) (y j) =
-              F.map (Prod.mkHom f (g j ≫ hf f ≫ i f)) (y j) := by
+          F.map (f ×ₘ (g j ≫ gf (𝟙 j) ≫ i (𝟙 j))) (y j) =
+              F.map (f ×ₘ (g j ≫ hf f ≫ i f)) (y j) := by
             rw [s (𝟙 j) f]
           _ =
-              F.map (Prod.mkHom (𝟙 j') (i f)) (F.map (Prod.mkHom f (g j ≫ hf f)) (y j)) := by
+              F.map (𝟙 j' ×ₘ i f) (F.map (f ×ₘ (g j ≫ hf f)) (y j)) := by
             rw [← FunctorToTypes.map_comp_apply, prod_comp, comp_id, assoc]
           _ =
-              F.map (Prod.mkHom (𝟙 j') (i f)) (F.map (Prod.mkHom (𝟙 j') (g j' ≫ gf f)) (y j')) := by
+              F.map (𝟙 j' ×ₘ i f) (F.map (𝟙 j' ×ₘ (g j' ≫ gf f)) (y j')) := by
             rw [← wf f]
-          _ = F.map (Prod.mkHom (𝟙 j') (g j' ≫ gf f ≫ i f)) (y j') := by
+          _ = F.map (𝟙 j' ×ₘ (g j' ≫ gf f ≫ i f)) (y j') := by
             rw [← FunctorToTypes.map_comp_apply, prod_comp, id_comp, assoc]
-          _ = F.map (Prod.mkHom (𝟙 j') (g j' ≫ gf (𝟙 j') ≫ i (𝟙 j'))) (y j') := by
+          _ = F.map (𝟙 j' ×ₘ (g j' ≫ gf (𝟙 j') ≫ i (𝟙 j'))) (y j') := by
             rw [s f (𝟙 j'), ← s (𝟙 j') (𝟙 j')]
     -- Finally we check that this maps to `x`.
     · -- We can do this componentwise:
