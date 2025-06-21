@@ -80,8 +80,13 @@ lemma card_le_logSizeRadius_ge (ha : 1 < a) (ht : t ∈ V) :
 
 /-- A structure for carrying the data of `logSizeBallSeq` -/
 structure logSizeBallStruct (T : Type*) where
+  /- The underlying finite set of a `logSizeBallStruct`-/
   finset : Finset T
+  /- The underlying point of a `logSizeBallStruct` (typically a point in the underlying finite
+  set) -/
   point : T
+  /- The underlying radius of a `logSizeBallStruct` (typically the log-size radius of the underlying
+  point in the underlying finite set) -/
   radius : ℕ
 
 /-- If (V,t,r) is a `logSizeBallStruct` then `logSizeBallStruct.smallBall`
