@@ -343,7 +343,7 @@ theorem orderOf_submonoid {H : Submonoid G} (y : H) : orderOf (y : G) = orderOf 
 
 @[to_additive]
 theorem orderOf_units {y : Gˣ} : orderOf (y : G) = orderOf y :=
-  orderOf_injective (Units.coeHom G) Units.ext y
+  orderOf_injective (Units.coeHom G) Units.val_injective y
 
 /-- If the order of `x` is finite, then `x` is a unit with inverse `x ^ (orderOf x - 1)`. -/
 @[to_additive (attr := simps) "If the additive order of `x` is finite, then `x` is an additive
