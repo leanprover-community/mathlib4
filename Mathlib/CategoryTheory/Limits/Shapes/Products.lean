@@ -839,4 +839,21 @@ end
 
 end Reindex
 
+section 
+
+variable {ι : Type*} {ι' : ι → Type*} {X : (i : ι) → (ι' i) → C}
+  {c : ∀ (i : ι), Fan (X i)} {c' : Fan fun i : ι => (c i).pt} 
+
+/-- The product of products is a product over the sigma type. -/
+def Fan.IsLimit.mkSigma (hc : ∀ i, IsLimit (c i)) (hc' : IsLimit c') :
+    IsLimit (Fan.mk c'.pt fun p : (i : ι) × ι' i => c'.proj p.1 ≫ (c p.1).proj p.2) := by
+  refine mkFanLimit _ (fun s => ?_) (fun s p => ?_) (fun s m hm => ?_)
+  · refine Fan.IsLimit.desc hc' fun i => ?_
+    exact Fan.IsLimit.desc (hc i) fun j => s.proj ⟨i, j⟩ 
+  · simp 
+  · refine Fan.IsLimit.hom_ext hc' _ _ fun i => ?_
+    refine Fan.IsLimit.hom_ext (hc i) _ _ fun j => by simpa using hm ⟨i, j⟩
+
+end
+
 end CategoryTheory.Limits
