@@ -10,7 +10,7 @@ Linear algebra:
     quotient space: 'Submodule.hasQuotient'
     sum of subspaces: 'Submodule.completeLattice'
     direct sum: 'DirectSum.IsInternal'
-    complementary subspaces: 'Submodule.exists_isCompl'
+    complementary subspaces: 'Submodule.exists_sCompl'
     linear independence: 'LinearIndependent'
     generating sets: 'Submodule.span'
     bases: 'Basis'
