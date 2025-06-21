@@ -211,6 +211,6 @@ theorem tsirelson_inequality [Ring R] [PartialOrder R] [StarRing R] [StarOrdered
         T.B₁_sa]
     have P2_nonneg : 0 ≤ P ^ 2 := by simpa only [P_sa, sq] using star_mul_self_nonneg P
     have Q2_nonneg : 0 ≤ Q ^ 2 := by simpa only [Q_sa, sq] using star_mul_self_nonneg Q
-    exact smul_nonneg (by positivity) (add_nonneg P2_nonneg Q2_nonneg)
+    positivity
   apply le_of_sub_nonneg
   simpa only [sub_add_eq_sub_sub, ← sub_add, w, Nat.cast_zero] using pos

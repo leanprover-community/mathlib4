@@ -163,6 +163,8 @@ theorem isTranscendenceBasis_equiv (e : ι ≃ ι') {f : ι' → A} :
     IsTranscendenceBasis R (f ∘ e) ↔ IsTranscendenceBasis R f := by
   simp_rw [IsTranscendenceBasis, algebraicIndependent_equiv, EquivLike.range_comp]
 
+alias ⟨_, IsTranscendenceBasis.comp_equiv⟩ := isTranscendenceBasis_equiv
+
 theorem isTranscendenceBasis_equiv' (e : ι ≃ ι') {f : ι' → A} {g : ι → A} (h : f ∘ e = g) :
     IsTranscendenceBasis R g ↔ IsTranscendenceBasis R f :=
   h ▸ isTranscendenceBasis_equiv e

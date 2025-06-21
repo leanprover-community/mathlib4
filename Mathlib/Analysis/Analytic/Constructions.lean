@@ -149,6 +149,10 @@ theorem AnalyticAt.fun_neg (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (fun z �
 theorem AnalyticAt.neg (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (-f) x :=
   hf.fun_neg
 
+@[simp] lemma analyticAt_neg : AnalyticAt 𝕜 (-f) x ↔ AnalyticAt 𝕜 f x where
+  mp hf := by simpa using hf.neg
+  mpr := .neg
+
 @[deprecated (since := "2025-03-11")] alias AnalyticAt.neg' := AnalyticAt.fun_neg
 
 theorem HasFPowerSeriesWithinOnBall.sub (hf : HasFPowerSeriesWithinOnBall f pf s x r)
@@ -466,7 +470,7 @@ lemma FormalMultilinearSeries.le_radius_pi (h : ∀ i, r ≤ (p i).radius) :
     ⟨∑ i, C i, Finset.sum_nonneg (fun i _ ↦ (C_pos i).le),
       fun i ↦ Finset.single_le_sum (fun j _ ↦ (C_pos j).le) (Finset.mem_univ _)⟩
   apply le_radius_of_bound _ D (fun n ↦ ?_)
-  rcases le_or_lt ((r' : ℝ)^n) 0 with hr' | hr'
+  rcases le_or_gt ((r' : ℝ)^n) 0 with hr' | hr'
   · exact le_trans (mul_nonpos_of_nonneg_of_nonpos (by positivity) hr') D_nonneg
   · simp only [pi]
     rw [← le_div_iff₀ hr', ContinuousMultilinearMap.opNorm_pi,

@@ -80,13 +80,18 @@ theorem eigenvectorUnitary_transpose_apply (j : n) :
   rfl
 
 @[simp]
+theorem eigenvectorUnitary_col_eq (j : n) :
+    Matrix.col (eigenvectorUnitary hA) j = ⇑(hA.eigenvectorBasis j) :=
+  rfl
+
+@[simp]
 theorem eigenvectorUnitary_apply (i j : n) :
     eigenvectorUnitary hA i j = ⇑(hA.eigenvectorBasis j) i :=
   rfl
 
 theorem eigenvectorUnitary_mulVec (j : n) :
     eigenvectorUnitary hA *ᵥ Pi.single j 1 = ⇑(hA.eigenvectorBasis j) := by
-  simp_rw [mulVec_single_one, eigenvectorUnitary_transpose_apply]
+  simp_rw [mulVec_single_one, eigenvectorUnitary_col_eq]
 
 theorem star_eigenvectorUnitary_mulVec (j : n) :
     (star (eigenvectorUnitary hA : Matrix n n 𝕜)) *ᵥ ⇑(hA.eigenvectorBasis j) = Pi.single j 1 := by

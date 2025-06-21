@@ -167,8 +167,7 @@ theorem ofReal_setIntegral_one_of_measure_ne_top {X : Type*} {m : MeasurableSpac
   calc
     ENNReal.ofReal (∫ _ in s, (1 : ℝ) ∂μ) = ENNReal.ofReal (∫ _ in s, ‖(1 : ℝ)‖ ∂μ) := by
       simp only [norm_one]
-    _ = ∫⁻ _ in s, 1 ∂μ := by simpa [measureReal_def,
-        ofReal_integral_norm_eq_lintegral_enorm (integrableOn_const.2 (.inr hs.lt_top))]
+    _ = ∫⁻ _ in s, 1 ∂μ := by simp [measureReal_def, ofReal_integral_norm_eq_lintegral_enorm, hs]
     _ = μ s := setLIntegral_one _
 
 theorem ofReal_setIntegral_one {X : Type*} {_ : MeasurableSpace X} (μ : Measure X)
@@ -284,7 +283,7 @@ theorem integral_union_eq_left_of_ae_aux (ht_eq : ∀ᵐ x ∂μ.restrict t, f x
   apply setIntegral_congr_set
   rw [union_ae_eq_right]
   apply measure_mono_null diff_subset
-  rw [measure_zero_iff_ae_nmem]
+  rw [measure_zero_iff_ae_notMem]
   filter_upwards [ae_imp_of_ae_restrict ht_eq] with x hx h'x using h'x.2 (hx h'x.1)
 
 theorem integral_union_eq_left_of_ae (ht_eq : ∀ᵐ x ∂μ.restrict t, f x = 0) :
@@ -413,7 +412,7 @@ theorem integral_norm_eq_pos_sub_neg {f : X → ℝ} (hfi : Integrable f μ) :
       refine setIntegral_congr_fun₀ h_meas.compl fun x hx => ?_
       dsimp only
       rw [Real.norm_eq_abs, abs_eq_neg_self.mpr _]
-      rw [Set.mem_compl_iff, Set.nmem_setOf_iff] at hx
+      rw [Set.mem_compl_iff, Set.notMem_setOf_iff] at hx
       linarith
     _ = ∫ x in {x | 0 ≤ f x}, f x ∂μ - ∫ x in {x | f x ≤ 0}, f x ∂μ := by
       rw [← setIntegral_neg_eq_setIntegral_nonpos hfi.1, compl_setOf]; simp only [not_le]
@@ -669,7 +668,7 @@ theorem setIntegral_ge_of_const_le {c : ℝ} (hs : MeasurableSet s) (hμs : μ s
     (hf : ∀ x ∈ s, c ≤ f x) (hfint : IntegrableOn (fun x : X => f x) s μ) :
     c * μ.real s ≤ ∫ x in s, f x ∂μ := by
   rw [mul_comm, ← smul_eq_mul, ← setIntegral_const c]
-  exact setIntegral_mono_on (integrableOn_const.2 (Or.inr hμs.lt_top)) hfint hs hf
+  exact setIntegral_mono_on (integrableOn_const hμs) hfint hs hf
 
 end Mono
 
@@ -808,7 +807,8 @@ We prove that for any set `s`, the function
 section ContinuousSetIntegral
 
 variable [NormedAddCommGroup E]
-  {𝕜 : Type*} [NormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {p : ℝ≥0∞} {μ : Measure X}
+  {𝕜 : Type*} [NormedRing 𝕜] [NormedAddCommGroup F] [Module 𝕜 F] [IsBoundedSMul 𝕜 F]
+  {p : ℝ≥0∞} {μ : Measure X}
 
 /-- For `f : Lp E p μ`, we can define an element of `Lp E p (μ.restrict s)` by
 `(Lp.memLp f).restrict s).toLp f`. This map is additive. -/
@@ -899,13 +899,13 @@ variable {M : Type*} [NormedAddCommGroup M] [NormedSpace ℝ M] {mX : Measurable
 theorem MeasureTheory.setIntegral_support : ∫ x in support F, F x ∂ν = ∫ x, F x ∂ν := by
   nth_rw 2 [← setIntegral_univ]
   rw [setIntegral_eq_of_subset_of_forall_diff_eq_zero MeasurableSet.univ (subset_univ (support F))]
-  exact fun _ hx => nmem_support.mp <| not_mem_of_mem_diff hx
+  exact fun _ hx => notMem_support.mp <| notMem_of_mem_diff hx
 
 theorem MeasureTheory.setIntegral_tsupport [TopologicalSpace X] :
     ∫ x in tsupport F, F x ∂ν = ∫ x, F x ∂ν := by
   nth_rw 2 [← setIntegral_univ]
   rw [setIntegral_eq_of_subset_of_forall_diff_eq_zero MeasurableSet.univ (subset_univ (tsupport F))]
-  exact fun _ hx => image_eq_zero_of_nmem_tsupport <| not_mem_of_mem_diff hx
+  exact fun _ hx => image_eq_zero_of_notMem_tsupport <| notMem_of_mem_diff hx
 
 end Support
 
@@ -954,7 +954,7 @@ theorem Integrable.simpleFunc_mul (g : SimpleFunc X ℝ) (hf : Integrable f μ) 
     by_cases hx : x ∈ s
     · simp only [hx, Pi.mul_apply, Set.indicator_of_mem, Pi.smul_apply, Algebra.id.smul_eq_mul,
         ← Function.const_def]
-    · simp only [hx, Pi.mul_apply, Set.indicator_of_not_mem, not_false_iff, zero_mul]
+    · simp only [hx, Pi.mul_apply, Set.indicator_of_notMem, not_false_iff, zero_mul]
   rw [this, integrable_indicator_iff hs]
   exact (hf.smul c).integrableOn
 
@@ -992,7 +992,7 @@ theorem continuous_parametric_integral_of_continuous
     rw [ae_restrict_iff]
     · filter_upwards with t t_in using hM (mem_image_of_mem _ <| mk_mem_prod x_in t_in)
     · exact (isClosed_le (by fun_prop) (by fun_prop)).measurableSet
-  · exact integrableOn_const.mpr (Or.inr hs.measure_lt_top)
+  · exact integrableOn_const hs.measure_ne_top
   · filter_upwards using (by fun_prop)
 
 /-- Consider a parameterized integral `x ↦ ∫ y, L (g y) (f x y)` where `L` is bilinear,
@@ -1072,6 +1072,6 @@ lemma continuousOn_integral_of_compact_support
     (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0) :
     ContinuousOn (fun x ↦ ∫ y, f x y ∂μ) s := by
   simpa using continuousOn_integral_bilinear_of_locally_integrable_of_compact_support (lsmul ℝ ℝ)
-    hk hf hfs (integrableOn_const.2 (Or.inr hk.measure_lt_top)) (μ := μ) (g := fun _ ↦ 1)
+    hk hf hfs (integrableOn_const hk.measure_ne_top) (g := fun _ ↦ 1)
 
 end ParametricIntegral
