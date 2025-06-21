@@ -63,6 +63,43 @@ theorem supportDiscreteWithin_iff_locallyFiniteWithin [T1Space X] [Zero Y] {f : 
     exact (h ·)
   rw [EventuallyEq, Filter.Eventually, codiscreteWithin_iff_locallyFiniteComplementWithin, this]
 
+lemma supportLocallyFiniteWithin_top_iff [Zero Y] (f : X → Y) :
+    (∀ z ∈ (⊤ : Set X), ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)) ↔
+    LocallyFinite (fun s : f.support ↦ ({s.val} : Set X)) := by
+  have lem {α : Type u_1} (s t : Set α) : (s ∩ t) = {i : s | ↑i ∈ t} := by aesop
+  constructor
+  · intro h z
+    obtain ⟨t, ht⟩ := h z (by aesop)
+    use t
+    refine ⟨ht.1, ?_⟩
+    have ans := ht.2
+    simp only [top_eq_univ, lem t f.support, mem_support, ne_eq, Subtype.coe_image,
+      mem_setOf_eq, exists_prop, singleton_inter_nonempty] at ans ⊢
+    have : {x | x ∈ t ∧ ¬f x = 0} =
+            Subtype.val '' {i : { x // ¬f x = 0 } | ↑i ∈ t} := by aesop
+    rw[this] at ans
+    convert ans
+    apply Equiv.set_finite_iff
+    exact BijOn.equiv (Subtype.val) (InjOn.bijOn_image injOn_subtype_val)
+  · intro h z _
+    obtain ⟨t, ht⟩ := h z
+    use t
+    refine ⟨ht.1, ?_⟩
+    have ans := ht.2
+    simp only [singleton_inter_nonempty] at ans ⊢
+    have : {i : f.support | ↑i ∈ t} = t ∩ f.support := by aesop
+    rw[← this]
+    exact Finite.image Subtype.val ans
+
+lemma supportLocallyFiniteWithin_top_inter_compact_finite {W : Set X}
+   [Zero Y] {f : X → Y} (hf : ∀ z ∈ (⊤ : Set X), ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support))
+   (hW : IsCompact W) : (W ∩ f.support).Finite := by
+  have := LocallyFinite.finite_nonempty_inter_compact
+    ((supportLocallyFiniteWithin_top_iff f).mp hf) hW
+  have lem {α : Type u_1} (s t : Set α) : {i : s | ({↑i} ∩ t).Nonempty} = (t ∩ s) := by aesop
+  rw[← lem f.support W]
+  exact Finite.image Subtype.val this
+
 namespace Function.locallyFinsuppWithin
 
 /--
