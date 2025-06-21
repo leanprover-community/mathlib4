@@ -57,6 +57,28 @@ theorem prod_comp {P Q R : C} {S T U : D} (f : (P, S) ⟶ (Q, T)) (g : (Q, T) �
     f ≫ g = (f.1 ≫ g.1, f.2 ≫ g.2) :=
   rfl
 
+section
+
+variable {C D}
+
+/-- Construct a morphism in a product category by giving its constituent components.
+This constructor should be preferred over `Prod.mk`, because lean infers better the
+source and target of the resulting morphism. -/
+@[simps]
+abbrev Prod.mkHom {X₁ X₂ : C} {Y₁ Y₂ : D} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) : (X₁, Y₁) ⟶ (X₂, Y₂) :=
+  ⟨f,g⟩
+
+@[reassoc (attr := simp)]
+lemma Prod.mkHom_comp {X₁ X₂ X₃ : C} {Y₁ Y₂ Y₃ : D}
+    (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) (f' : X₂ ⟶ X₃) (g' : Y₂ ⟶ Y₃) :
+    Prod.mkHom f g ≫ Prod.mkHom f' g' = Prod.mkHom (f ≫ f') (g ≫ g') :=
+  rfl
+
+@[simp]
+lemma Prod.mkHom_id {X : C} {Y : D} : Prod.mkHom (𝟙 X) (𝟙 Y) = 𝟙 (X, Y) := rfl
+
+end
+
 theorem isIso_prod_iff {P Q : C} {S T : D} {f : (P, S) ⟶ (Q, T)} :
     IsIso f ↔ IsIso f.1 ∧ IsIso f.2 := by
   constructor
@@ -171,13 +193,13 @@ variable {C D}
 followed by a morphism whose right component is an identity. -/
 @[reassoc]
 lemma fac {x y : C × D} (f : x ⟶ y) :
-    f = ((𝟙 x.1, f.2) : _ ⟶ ⟨x.1, y.2⟩) ≫ (f.1, 𝟙 y.2) := by aesop
+    f = Prod.mkHom (𝟙 x.1) f.2 ≫ Prod.mkHom f.1 (𝟙 y.2) := by aesop
 
 /-- Any morphism in a product factors as a morphsim whose right component is an identity
 followed by a morphism whose left component is an identity. -/
 @[reassoc]
 lemma fac' {x y : C × D} (f : x ⟶ y) :
-    f = ((f.1, 𝟙 x.2) : _ ⟶ ⟨y.1, x.2⟩) ≫ (𝟙 y.1, f.2) := by aesop
+    f = Prod.mkHom f.1 (𝟙 x.2) ≫ Prod.mkHom (𝟙 y.1) f.2 := by aesop
 
 end Prod
 
