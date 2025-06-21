@@ -456,9 +456,11 @@ noncomputable def coconeOfHasColimitCurryCompColim : Cocone G :=
       naturality {x y} := fun ⟨f₁, f₂⟩ ↦ by
         have := (Q.obj y.1).w f₂
         dsimp [Q] at this ⊢
-        rw [← colimit.w (F := curry.obj G ⋙ colim) (f := f₁)]
-        simp [Category.assoc, Category.comp_id, Prod.fac' (f₁, f₂),
-          G.map_comp, ι_colimMap_assoc, curry_obj_map_app, reassoc_of% this] } }
+        rw [← colimit.w (F := curry.obj G ⋙ colim) (f := f₁),
+          Category.assoc, Category.comp_id, Prod.fac' (f₁, f₂),
+          G.map_comp_assoc, ← curry_obj_map_app, ← curry_obj_obj_map]
+        dsimp
+        simp [ι_colimMap_assoc, curry_obj_map_app, reassoc_of% this]} }
 
 
 /-- The cocone `coconeOfHasColimitCurryCompColim` is in fact a limit cocone.
