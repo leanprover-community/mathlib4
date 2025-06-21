@@ -180,7 +180,7 @@ lemma differentiableAt_negMulLog_iff {x : ℝ} : DifferentiableAt ℝ negMulLog 
 @[fun_prop] alias ⟨_, differentiableAt_negMulLog⟩ := differentiableAt_negMulLog_iff
 
 lemma deriv_negMulLog {x : ℝ} (hx : x ≠ 0) : deriv negMulLog x = - log x - 1 := by
-  rw [negMulLog_eq_neg, deriv.neg, deriv_mul_log hx]
+  rw [negMulLog_eq_neg, deriv.fun_neg, deriv_mul_log hx]
   ring
 
 lemma hasDerivAt_negMulLog {x : ℝ} (hx : x ≠ 0) : HasDerivAt negMulLog (- log x - 1) x := by
@@ -192,7 +192,8 @@ lemma deriv2_negMulLog (x : ℝ) : deriv^[2] negMulLog x = - x⁻¹ := by
   rw [negMulLog_eq_neg]
   have h := deriv2_mul_log
   simp only [Function.iterate_succ, Function.iterate_zero, Function.id_comp,
-    Function.comp_apply, deriv.neg', differentiableAt_id', differentiableAt_log_iff, ne_eq] at h ⊢
+    Function.comp_apply, deriv.fun_neg', differentiableAt_id', differentiableAt_log_iff, ne_eq]
+    at h ⊢
   rw [h]
 
 lemma strictConcaveOn_negMulLog : StrictConcaveOn ℝ (Set.Ici (0 : ℝ)) negMulLog := by
