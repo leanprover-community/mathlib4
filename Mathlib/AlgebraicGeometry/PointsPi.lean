@@ -121,7 +121,7 @@ lemma pointsPi_surjective [CompactSpace X] [∀ i, IsLocalRing (R i)] :
     exact ((IsLocalRing.specializes_closedPoint x).map (f i).base.hom.2).mem_open
       (𝒰.map _).opensRange.2 (𝒰.covers _)
   choose j hj using this
-  have (j₀) := pointsPi_surjective_of_isAffine (ι := { i // j i = j₀ }) (R ·) (𝒰.obj j₀)
+  have (j₀ : _) := pointsPi_surjective_of_isAffine (ι := { i // j i = j₀ }) (R ·) (𝒰.obj j₀)
     (fun i ↦ IsOpenImmersion.lift (𝒰.map j₀) (f i.1) (by rcases i with ⟨i, rfl⟩; exact hj i))
   choose g hg using this
   simp_rw [funext_iff, pointsPi] at hg
