@@ -39,7 +39,7 @@ instance [Monoid α] [LinearOrder α] : LinearOrder αˣ :=
 @[to_additive (attr := simps -fullyApplied)
   "`val : add_units α → α` as an order embedding."]
 def orderEmbeddingVal [Monoid α] [LinearOrder α] : αˣ ↪o α :=
-  ⟨⟨val, val_injective⟩, fix.rfl⟩
+  ⟨⟨val, val_injective⟩, .rfl⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem max_val [Monoid α] [LinearOrder α] {a b : αˣ} : (max a b).val = max a.val b.val :=
