@@ -252,6 +252,10 @@ omit  [h : Add Nat]  [Add Nat]
 -- Include statements are not linted.
 include     h
 
+-- #adaptation_note /-- `nightly-testing-2025-06-19`
+-- disable the linter on attributes, but should really only disable `grind`.
+-- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/commandStart.20linter.20broken.20with.20.60grind.60/with/524980336 -/
+/-
 /--
 warning: extra space in the source
 
@@ -264,6 +268,7 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 -/
 #guard_msgs in
 @[aesop  (rule_sets := [builtin]) safe apply] example : True := trivial
+-/
 
 end misc
 
