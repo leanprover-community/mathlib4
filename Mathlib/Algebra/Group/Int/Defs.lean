@@ -66,7 +66,11 @@ instance instAddGroup         : AddGroup ℤ         := by infer_instance
 instance instAddCommSemigroup : AddCommSemigroup ℤ := by infer_instance
 instance instAddSemigroup     : AddSemigroup ℤ     := by infer_instance
 
-set_option linter.style.commandStart true
+-- We want to use this lemma earlier than `_root_.nsmul_eq_mul`
+@[simp high] protected lemma nsmul_eq_mul (n : ℕ) (a : ℤ) : n • a = n * a := rfl
+
+-- We want to use this lemma earlier than `_root_.zsmul_eq_mul`
+@[simp high] protected lemma zsmul_eq_mul (n a : ℤ) : n • a = n * a := rfl
 
 end Int
 
