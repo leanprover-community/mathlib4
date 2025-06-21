@@ -4,20 +4,26 @@ import Mathlib.Tactic.Linter.TextBased
 Unit tests for the module name case check in the text-based linters.
 -/
 
-open Mathlib.Linter.TextBased
+open Lean.Linter Mathlib.Linter.TextBased
 
 /-- Some unit tests for `modulesNotUpperCamelCase` -/
 def testModulesNotUpperCamelCase : IO Unit := do
-  assert!((← modulesNotUpperCamelCase #[]) == 0)
-  assert!((← modulesNotUpperCamelCase #[`Mathlib.Fine]) == 0)
-  assert!((← modulesNotUpperCamelCase #[`Mathlib.AlsoFine_]) == 0)
-  assert!((← modulesNotUpperCamelCase #[`Mathlib.NotFine_.Foo]) == 1)
+  -- Explicitly enable the linter, although it is enabled by default.
+  let opts : LinterOptions := {
+    toOptions := linter.modulesUpperCamelCase.set {} true
+    linterSets := {}
+  }
 
-  assert!((← modulesNotUpperCamelCase #[`bad_module]) == 1)
-  assert!((← modulesNotUpperCamelCase #[`GoodName, `bad_module, `bad_module]) == 2)
-  assert!((← modulesNotUpperCamelCase #[`Mathlib.BadModule__]) == 1)
-  assert!((← modulesNotUpperCamelCase #[`Mathlib.lowerCase]) == 1)
-  assert!((← modulesNotUpperCamelCase #[`Mathlib.snake_case]) == 1)
+  assert!((← modulesNotUpperCamelCase opts #[]) == 0)
+  assert!((← modulesNotUpperCamelCase opts #[`Mathlib.Fine]) == 0)
+  assert!((← modulesNotUpperCamelCase opts #[`Mathlib.AlsoFine_]) == 0)
+  assert!((← modulesNotUpperCamelCase opts #[`Mathlib.NotFine_.Foo]) == 1)
+
+  assert!((← modulesNotUpperCamelCase opts #[`bad_module]) == 1)
+  assert!((← modulesNotUpperCamelCase opts #[`GoodName, `bad_module, `bad_module]) == 2)
+  assert!((← modulesNotUpperCamelCase opts #[`Mathlib.BadModule__]) == 1)
+  assert!((← modulesNotUpperCamelCase opts #[`Mathlib.lowerCase]) == 1)
+  assert!((← modulesNotUpperCamelCase opts #[`Mathlib.snake_case]) == 1)
 
 /--
 info: error: module name 'Mathlib.NotFine_.Foo' is not in 'UpperCamelCase': it should be 'Mathlib.NotFine.Foo' instead

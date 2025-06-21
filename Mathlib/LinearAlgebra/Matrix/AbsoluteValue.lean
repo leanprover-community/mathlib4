@@ -25,6 +25,7 @@ This file proves some bounds on matrices involving absolute values.
 
 
 open Matrix
+open scoped Nat
 
 namespace Matrix
 
@@ -35,28 +36,23 @@ variable {R S : Type*} [CommRing R] [Nontrivial R]
 variable {n : Type*} [Fintype n] [DecidableEq n]
 
 theorem det_le {A : Matrix n n R} {abv : AbsoluteValue R S} {x : S} (hx : ∀ i j, abv (A i j) ≤ x) :
-    abv A.det ≤ Nat.factorial (Fintype.card n) • x ^ Fintype.card n :=
+    abv A.det ≤ (Fintype.card n)! • x ^ Fintype.card n :=
   calc
     abv A.det = abv (∑ σ : Perm n, Perm.sign σ • ∏ i, A (σ i) i) := congr_arg abv (det_apply _)
     _ ≤ ∑ σ : Perm n, abv (Perm.sign σ • ∏ i, A (σ i) i) := abv.sum_le _ _
     _ = ∑ σ : Perm n, ∏ i, abv (A (σ i) i) :=
-      (sum_congr rfl fun σ _ => by rw [abv.map_units_int_smul, abv.map_prod])
-    _ ≤ ∑ _σ : Perm n, ∏ _i : n, x :=
-      (sum_le_sum fun _ _ => prod_le_prod (fun _ _ => abv.nonneg _) fun _ _ => hx _ _)
-    _ = ∑ _σ : Perm n, x ^ Fintype.card n :=
-      (sum_congr rfl fun _ _ => by rw [prod_const, Finset.card_univ])
-    _ = Nat.factorial (Fintype.card n) • x ^ Fintype.card n := by
-      rw [sum_const, Finset.card_univ, Fintype.card_perm]
+      sum_congr rfl fun σ _ => by rw [abv.map_units_int_smul, abv.map_prod]
+    _ ≤ ∑ _σ : Perm n, ∏ _i : n, x := by gcongr; simp [hx]
+    _ = (Fintype.card n)! • x ^ Fintype.card n := by simp [Fintype.card_perm]
 
 theorem det_sum_le {ι : Type*} (s : Finset ι) {A : ι → Matrix n n R} {abv : AbsoluteValue R S}
     {x : S} (hx : ∀ k i j, abv (A k i j) ≤ x) :
-    abv (det (∑ k ∈ s, A k)) ≤
-      Nat.factorial (Fintype.card n) • (#s• x) ^ Fintype.card n :=
+    abv (det (∑ k ∈ s, A k)) ≤ (Fintype.card n)! • (#s • x) ^ Fintype.card n :=
   det_le fun i j =>
     calc
       abv ((∑ k ∈ s, A k) i j) = abv (∑ k ∈ s, A k i j) := by simp only [sum_apply]
       _ ≤ ∑ k ∈ s, abv (A k i j) := abv.sum_le _ _
-      _ ≤ ∑ _k ∈ s, x := sum_le_sum fun k _ => hx k i j
+      _ ≤ ∑ _k ∈ s, x := by gcongr; apply hx
       _ = #s • x := sum_const _
 
 theorem det_sum_smul_le {ι : Type*} (s : Finset ι) {c : ι → R} {A : ι → Matrix n n R}

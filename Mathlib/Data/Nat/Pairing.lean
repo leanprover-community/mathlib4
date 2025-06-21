@@ -48,10 +48,13 @@ theorem pair_unpair (n : ℕ) : pair (unpair n).1 (unpair n).2 = n := by
   · simp [s, pair, h, sm]
   · have hl : n - s * s - s ≤ s := Nat.sub_le_iff_le_add.2
       (Nat.sub_le_iff_le_add'.2 <| by rw [← Nat.add_assoc]; apply sqrt_le_add)
-    simp [s, pair, hl.not_lt, Nat.add_assoc, Nat.add_sub_cancel' (le_of_not_gt h), sm]
+    simp [s, pair, hl.not_gt, Nat.add_assoc, Nat.add_sub_cancel' (le_of_not_gt h), sm]
 
-theorem pair_unpair' {n a b} (H : unpair n = (a, b)) : pair a b = n := by
+theorem pair_eq_of_unpair_eq {n a b} (H : unpair n = (a, b)) : pair a b = n := by
   simpa [H] using pair_unpair n
+
+@[deprecated (since := "2025-05-24")]
+alias pair_unpair' := pair_eq_of_unpair_eq
 
 @[simp]
 theorem unpair_pair (a b : ℕ) : unpair (pair a b) = (a, b) := by
@@ -134,9 +137,9 @@ theorem pair_lt_max_add_one_sq (m n : ℕ) : pair m n < (max m n + 1) ^ 2 := by
 
 theorem max_sq_add_min_le_pair (m n : ℕ) : max m n ^ 2 + min m n ≤ pair m n := by
   rw [pair]
-  rcases lt_or_le m n with h | h
+  rcases lt_or_ge m n with h | h
   · rw [if_pos h, max_eq_right h.le, min_eq_left h.le, Nat.pow_two]
-  rw [if_neg h.not_lt, max_eq_left h, min_eq_right h, Nat.pow_two, Nat.add_assoc,
+  rw [if_neg h.not_gt, max_eq_left h, min_eq_right h, Nat.pow_two, Nat.add_assoc,
     Nat.add_le_add_iff_left]
   exact Nat.le_add_left _ _
 
