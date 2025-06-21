@@ -252,6 +252,21 @@ instance IntermediateField.isSeparable_iSup {ι : Type*} {t : ι → Intermediat
   simp_rw [← le_separableClosure_iff] at h ⊢
   exact iSup_le h
 
+lemma separableClosure_le_separableClosure_iff
+    [Algebra K E] [IsScalarTower F K E] {L : IntermediateField F E} :
+    (separableClosure L E).restrictScalars F ≤ (separableClosure K E).restrictScalars F ↔
+      L ≤ (separableClosure K E).restrictScalars F := by
+  refine ⟨fun H ↦ .trans ?_ H, fun H ↦ ?_⟩
+  · conv_lhs => rw [← L.restrictScalars_bot_eq_self]
+    exact (IntermediateField.restrictScalars_le_iff F).mpr bot_le
+  · let K' := (separableClosure K E).restrictScalars F
+    have hK' : (separableClosure K' E).restrictScalars F ≤ K' :=
+      (separableClosure.eq_restrictScalars_of_isSeparable K (separableClosure K E) E).ge
+    letI inst := (IntermediateField.inclusion H).toRingHom.toAlgebra
+    have inst : IsScalarTower L K' E := .of_algebraMap_eq' rfl
+    exact ((IntermediateField.restrictScalars_le_iff F).mpr
+      (separableClosure.le_restrictScalars L K' E)).trans hK'
+
 end separableClosure
 
 namespace Field
