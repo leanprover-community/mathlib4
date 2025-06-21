@@ -416,11 +416,18 @@ lemma nonnegRingKrullDim_quotient_eq_iSup_quotient_minimalPrimes (I : Ideal R) (
 lemma Ideal.height_add_ringKrullDim_quotient_eq_ringKrullDim [IsCohenMacaulayLocalRing R]
     (I : Ideal R) (netop : I ≠ ⊤) : I.height + ringKrullDim (R ⧸ I) = ringKrullDim R := by
   have : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial netop
-  rw [height, ringKrullDim_quotient_eq_iSup_quotient_minimalPrimes]
-  sorry
-  /-simp only [height, ← coe_nonnegRingKrullDim]
-  rw [nonnegRingKrullDim_quotient_eq_iSup_quotient_minimalPrimes I netop]
-  norm_cast
+  rw [height, ringKrullDim_quotient_eq_iSup_quotient_minimalPrimes, iSup_subtype', iInf_subtype']
+  let min := (Subtype (Membership.mem I.minimalPrimes))
+  have fin : Finite min := finite_minimalPrimes_of_isNoetherianRing R I
+  have non : Nonempty min :=  Ideal.nonempty_minimalPrimes netop
   apply le_antisymm
-  · sorry
-  · sorry-/
+  · let f : min → WithBot ℕ∞ := fun x ↦ ringKrullDim (R ⧸ x.1)
+    rcases exists_eq_ciSup_of_finite (f := f) with ⟨p, hp⟩
+    let _ := p.2.1.1
+    rw [← hp, ← Ideal.primeHeight_add_ringKrullDim_quotient_eq_ringKrullDim p.1]
+    apply add_le_add_right (WithBot.coe_le_coe.mpr (iInf_le_iff.mpr fun b a ↦ a p))
+  · let g : min → ℕ∞ := fun x ↦ @Ideal.primeHeight _ _ x.1 (minimalPrimes_isPrime x.2)
+    rcases exists_eq_ciInf_of_finite (f := g) with ⟨p, hp⟩
+    let _ := p.2.1.1
+    rw [← hp, ← Ideal.primeHeight_add_ringKrullDim_quotient_eq_ringKrullDim p.1]
+    apply add_le_add_left (le_iSup_iff.mpr fun b a ↦ a p)
