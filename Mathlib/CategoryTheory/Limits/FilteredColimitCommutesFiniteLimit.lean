@@ -88,10 +88,8 @@ theorem colimitLimitToLimitColimit_injective :
     let g : ∀ j, ky ⟶ k j := fun j => (h j).choose_spec.choose_spec.choose
     -- where the images of the components of the representatives become equal:
     have w :
-      ∀ j, F.map ((𝟙 j, f j) :
-        (j, kx) ⟶ (j, k j)) (limit.π ((curry.obj (swap K J ⋙ F)).obj kx) j x) =
-          F.map ((𝟙 j, g j) : (j, ky) ⟶ (j, k j))
-            (limit.π ((curry.obj (swap K J ⋙ F)).obj ky) j y) :=
+      ∀ j, F.map (Prod.mkHom (𝟙 j) (f j)) (limit.π ((curry.obj (swap K J ⋙ F)).obj kx) j x) =
+          F.map (Prod.mkHom (𝟙 j) (g j)) (limit.π ((curry.obj (swap K J ⋙ F)).obj ky) j y) :=
       fun j => (h j).choose_spec.choose_spec.choose_spec
     -- We now use that `K` is filtered, picking some point to the right of all these
     -- morphisms `f j` and `g j`.
@@ -205,8 +203,7 @@ theorem colimitLimitToLimitColimit_surjective :
       (w f).choose_spec.choose_spec.choose
     have wf :
       ∀ {j j'} (f : j ⟶ j'),
-        F.map ((𝟙 j', g j' ≫ gf f) : (j', k j') ⟶ (j', kf f)) (y j') =
-          F.map ((f, g j ≫ hf f) : (j, k j) ⟶ (j', kf f)) (y j) :=
+        F.map (Prod.mkHom (𝟙 j') (g j' ≫ gf f)) (y j') = F.map (Prod.mkHom f (g j ≫ hf f)) (y j) :=
       fun {j j'} f => by
       have q :
         ((curry.obj F).obj j').map (gf f) (F.map (Prod.mkHom (𝟙 j') (g j')) (y j')) =
@@ -278,7 +275,7 @@ theorem colimitLimitToLimitColimit_surjective :
       apply Limit.mk
       swap
       ·-- We construct the elements as the images of the `y j`.
-        exact fun j => F.map (⟨𝟙 j, g j ≫ gf (𝟙 j) ≫ i (𝟙 j)⟩ : (j, k j) ⟶ (j, k'')) (y j)
+        exact fun j => F.map (Prod.mkHom (𝟙 j) (g j ≫ gf (𝟙 j) ≫ i (𝟙 j))) (y j)
       · -- After which it's just a calculation, using `s` and `wf`, to see they are coherent.
         dsimp
         intro j j' f
