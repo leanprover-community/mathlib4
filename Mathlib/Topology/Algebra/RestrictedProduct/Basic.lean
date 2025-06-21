@@ -7,6 +7,7 @@ import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Ring.Subring.Defs
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.Order.Filter.Cofinite -- for `Πʳ i, [R i, A i]` notation, confuses shake
+import Mathlib.Algebra.Module.Pi
 
 /-!
 # Restricted products of sets, groups and rings
@@ -94,6 +95,15 @@ variable {𝓕 𝓖 : Filter ι}
 instance : DFunLike (Πʳ i, [R i, A i]_[𝓕]) ι R where
   coe x i := x.1 i
   coe_injective' _ _ := Subtype.ext
+
+variable {R A} in
+/-- Constructor for `RestrictedProduct`. -/
+abbrev mk (x : Π i, R i) (hx : ∀ᶠ i in 𝓕, x i ∈ A i) : Πʳ i, [R i, A i]_[𝓕] :=
+  ⟨x, hx⟩
+
+@[simp]
+lemma mk_apply (x : Π i, R i) (hx : ∀ᶠ i in 𝓕, x i ∈ A i) (i : ι) :
+    (mk x hx) i = x i := rfl
 
 @[ext]
 lemma ext {x y :  Πʳ i, [R i, A i]_[𝓕]} (h : ∀ i, x i = y i) : x = y :=
@@ -203,10 +213,16 @@ lemma div_apply [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)]
     (x y : Πʳ i, [R i, B i]_[𝓕]) (i : ι) : (x / y) i = x i / y i :=
   rfl
 
+instance instNSMul [Π i, AddMonoid (R i)] [∀ i, AddSubmonoidClass (S i) (R i)] :
+    SMul ℕ (Πʳ i, [R i, B i]_[𝓕]) where
+  smul n x := ⟨fun i ↦ n • (x i), x.2.mono fun _ hi ↦ nsmul_mem hi n⟩
+
+@[to_additive existing instNSMul]
 instance [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
     Pow (Πʳ i, [R i, B i]_[𝓕]) ℕ where
   pow x n := ⟨fun i ↦ x i ^ n, x.2.mono fun _ hi ↦ pow_mem hi n⟩
 
+@[to_additive]
 lemma pow_apply [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)]
     (x : Πʳ i, [R i, B i]_[𝓕]) (n : ℕ) (i : ι) : (x ^ n) i = x i ^ n :=
   rfl
@@ -221,22 +237,31 @@ instance [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
     Monoid (Πʳ i, [R i, B i]_[𝓕]) :=
   DFunLike.coe_injective.monoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
+@[to_additive]
+instance [Π i, CommMonoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
+    CommMonoid (Πʳ i, [R i, B i]_[𝓕]) :=
+  DFunLike.coe_injective.commMonoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+instance instZSMul [Π i, SubNegMonoid (R i)] [∀ i, AddSubgroupClass (S i) (R i)] :
+    SMul ℤ (Πʳ i, [R i, B i]_[𝓕]) where
+  smul n x := ⟨fun i ↦ n • x i, x.2.mono fun _ hi ↦ zsmul_mem hi n⟩
+
+@[to_additive existing instZSMul]
 instance [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)] :
     Pow (Πʳ i, [R i, B i]_[𝓕]) ℤ where
   pow x n := ⟨fun i ↦ x i ^ n, x.2.mono fun _ hi ↦ zpow_mem hi n⟩
 
+@[to_additive]
 lemma zpow_apply [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)]
     (x : Πʳ i, [R i, B i]_[𝓕]) (n : ℤ) (i : ι) : (x ^ n) i = x i ^ n :=
   rfl
 
+@[to_additive]
 instance [Π i, AddMonoidWithOne (R i)] [∀ i, AddSubmonoidWithOneClass (S i) (R i)] :
     NatCast (Πʳ i, [R i, B i]_[𝓕]) where
   natCast n := ⟨fun _ ↦ n, .of_forall fun _ ↦ natCast_mem _ n⟩
 
-instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
-    IntCast (Πʳ i, [R i, B i]_[𝓕]) where
-  intCast n := ⟨fun _ ↦ n, .of_forall fun _ ↦ intCast_mem _ n⟩
-
+@[to_additive]
 instance [Π i, AddGroup (R i)] [∀ i, AddSubgroupClass (S i) (R i)] :
     AddGroup (Πʳ i, [R i, B i]_[𝓕]) :=
   haveI : ∀ i, SMulMemClass (S i) ℤ (R i) := fun _ ↦ AddSubgroupClass.zsmulMemClass
@@ -250,6 +275,16 @@ instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] :
   DFunLike.coe_injective.group _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
+@[to_additive]
+instance [Π i, CommGroup (R i)] [∀ i, SubgroupClass (S i) (R i)] :
+    CommGroup (Πʳ i, [R i, B i]_[𝓕]) :=
+  DFunLike.coe_injective.commGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
+    IntCast (Πʳ i, [R i, B i]_[𝓕]) where
+  intCast n := ⟨fun _ ↦ n, .of_forall fun _ ↦ intCast_mem _ n⟩
+
 instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
     Ring (Πʳ i, [R i, B i]_[𝓕]) :=
   DFunLike.coe_injective.ring _ rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
@@ -258,6 +293,22 @@ instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
 instance [Π i, CommRing (R i)] [∀ i, SubringClass (S i) (R i)] :
     CommRing (Πʳ i, [R i, B i]_[𝓕]) where
   mul_comm _ _ := DFunLike.coe_injective <| funext (fun _ ↦ mul_comm _ _)
+
+variable {R} in
+/-- The coercion from the restricted product of monoids `A i` to the (normal) product
+is a monoid homomorphism. -/
+@[to_additive "The coercion from the restricted product of additive monoids `A i` to the
+(normal) product is an additive monoid homomorphism."]
+def coeMonoidHom [∀ i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
+    Πʳ i, [R i, B i]_[𝓕] →* Π i, R i where
+  toFun := (↑)
+  map_one' := rfl
+  map_mul' _ _ := rfl
+
+instance {R₀ : Type*} [Semiring R₀] [Π i, AddCommMonoid (R i)] [Π i, Module R₀ (R i)]
+    [∀ i, AddSubmonoidClass (S i) (R i)] [∀ i, SMulMemClass (S i) R₀ (R i)] :
+  Module R₀ (Πʳ i, [R i, B i]_[𝓕]) :=
+  DFunLike.coe_injective.module R₀ (M := Π i, R i) coeAddMonoidHom (fun _ _ ↦ rfl)
 
 end Algebra
 
@@ -328,6 +379,17 @@ def map (x : Πʳ i, [R₁ i, A₁ i]_[𝓕₁]) : Πʳ j, [R₂ j, A₂ j]_[�
 lemma map_apply (x : Πʳ i, [R₁ i, A₁ i]_[𝓕₁]) (j : ι₂) :
     x.map R₁ R₂ f hf φ hφ j = φ j (x (f j)) :=
   rfl
+
+-- variant of `map` where the index set is constant
+
+/-- The maps between restricted products over a fixed index type,
+given maps on the factors. -/
+def congrRight {G H : ι → Type*}
+    {C : (i : ι) → Set (G i)}
+    {D : (i : ι) → Set (H i)} (φ : (i : ι) → G i → H i)
+    (hφ : ∀ᶠ i in 𝓕, Set.MapsTo (φ i) (C i) (D i))
+    (x : Πʳ i, [G i, C i]_[𝓕]) : (Πʳ i, [H i, D i]_[𝓕]) :=
+  map G H id Filter.tendsto_id φ hφ x
 
 end set
 
