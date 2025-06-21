@@ -76,7 +76,7 @@ variable {E : Type*} [Category E]
 
 variable (A) in
 @[reassoc]
-lemma mapWhiskerLeft_associator (F : B ⥤ C) (G : C ⥤ D) (H : D ⥤ E) :
+lemma mapWhiskerLeft_associator_hom (F : B ⥤ C) (G : C ⥤ D) (H : D ⥤ E) :
     mapWhiskerLeft _ (F.associator G H).hom =
     (mapCompRight A (F ⋙ G) H).hom ≫ whiskerRight (mapCompRight A F G).hom (mapPair (𝟭 A) H) ≫
       ((mapPair (𝟭 A) F).associator (mapPair (𝟭 A) G) (mapPair (𝟭 A) H)).hom ≫
@@ -84,7 +84,7 @@ lemma mapWhiskerLeft_associator (F : B ⥤ C) (G : C ⥤ D) (H : D ⥤ E) :
   apply natTrans_ext <;> ext <;> simp [mapCompRight]
 
 variable (E) in
-lemma mapWhiskerRight_associator (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) :
+lemma mapWhiskerRight_associator_hom (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) :
     mapWhiskerRight (F.associator G H).hom _ =
     (mapCompLeft E (F ⋙ G) H).hom ≫ whiskerRight (mapCompLeft E F G).hom (mapPair H (𝟭 E)) ≫
       ((mapPair F (𝟭 E)).associator (mapPair G (𝟭 E)) (mapPair H (𝟭 E))).hom ≫
@@ -92,28 +92,28 @@ lemma mapWhiskerRight_associator (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) :
   apply natTrans_ext <;> ext <;> simp [mapCompLeft]
 
 variable (A) in
-lemma mapWhiskerLeft_left_unitor (F : B ⥤ C) :
+lemma mapWhiskerLeft_leftUnitor_hom (F : B ⥤ C) :
     mapWhiskerLeft _ F.leftUnitor.hom =
     (mapCompRight A (𝟭 _) F).hom ≫ whiskerRight mapPairId.hom (mapPair _ F) ≫
       (mapPair _ F).leftUnitor.hom := by
   apply natTrans_ext <;> ext <;> simp [mapCompRight]
 
 variable (C) in
-lemma mapWhiskerRight_left_unitor (F : A ⥤ B) :
+lemma mapWhiskerRight_leftUnitor_hom (F : A ⥤ B) :
     mapWhiskerRight F.leftUnitor.hom (𝟭 C) =
     (mapCompLeft C (𝟭 A) F).hom ≫ whiskerRight mapPairId.hom (mapPair F (𝟭 C)) ≫
       (mapPair F (𝟭 C)).leftUnitor.hom := by
   apply natTrans_ext <;> ext <;> simp [mapCompLeft]
 
 variable (A) in
-lemma mapWhiskerLeft_right_unitor (F : B ⥤ C) :
+lemma mapWhiskerLeft_rightUnitor_hom (F : B ⥤ C) :
     mapWhiskerLeft _ F.rightUnitor.hom =
     (mapCompRight A F (𝟭 C)).hom ≫ whiskerLeft (mapPair _ F) mapPairId.hom ≫
       (mapPair (𝟭 A) _).rightUnitor.hom := by
   apply natTrans_ext <;> ext <;> simp [mapCompRight]
 
 variable (C) in
-lemma mapWhiskerRight_right_unitor (F : A ⥤ B) :
+lemma mapWhiskerRight_rightUnitor_hom (F : A ⥤ B) :
     mapWhiskerRight F.rightUnitor.hom _ =
     (mapCompLeft C F (𝟭 B)).hom ≫ whiskerLeft (mapPair F _) mapPairId.hom ≫
       (mapPair _ (𝟭 C)).rightUnitor.hom := by
@@ -134,9 +134,9 @@ def pseudofunctorRight (C : Type u₁) [Category.{v₁} C] :
   mapComp := mapCompRight C
   map₂_whisker_left := mapWhiskerLeft_whiskerLeft C
   map₂_whisker_right := mapWhiskerLeft_whiskerRight C
-  map₂_associator := mapWhiskerLeft_associator C
-  map₂_left_unitor := mapWhiskerLeft_left_unitor C
-  map₂_right_unitor := mapWhiskerLeft_right_unitor C
+  map₂_associator := mapWhiskerLeft_associator_hom C
+  map₂_left_unitor := mapWhiskerLeft_leftUnitor_hom C
+  map₂_right_unitor := mapWhiskerLeft_rightUnitor_hom C
 
 /-- The pseudofunctor sending `C` to `C ⋆ D`. -/
 @[simps!]
@@ -151,8 +151,8 @@ def pseudofunctorLeft (D : Type u₂) [Category.{v₂} D] :
   mapComp := mapCompLeft D
   map₂_whisker_left := mapWhiskerRight_whiskerLeft D
   map₂_whisker_right := mapWhiskerRight_whiskerRight D
-  map₂_associator := mapWhiskerRight_associator D
-  map₂_left_unitor := mapWhiskerRight_left_unitor D
-  map₂_right_unitor := mapWhiskerRight_right_unitor D
+  map₂_associator := mapWhiskerRight_associator_hom D
+  map₂_left_unitor := mapWhiskerRight_leftUnitor_hom D
+  map₂_right_unitor := mapWhiskerRight_rightUnitor_hom D
 
 end CategoryTheory.Join
