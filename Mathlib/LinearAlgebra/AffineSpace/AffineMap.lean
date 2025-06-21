@@ -563,6 +563,17 @@ theorem lineMap_vsub_lineMap (p₁ p₂ p₃ p₄ : P1) (c : k) :
     lineMap (lineMap p₀ p₁ c) p₁ d = lineMap p₀ p₁ (1 - (1 - d) * (1 - c)) := by
   simp_rw [lineMap_apply_one_sub, ← lineMap_apply_one_sub p₁, lineMap_lineMap_right]
 
+lemma lineMap_monotone [LinearOrder k] [IsOrderedRing k] {p₀ p₁ : k} (h : p₀ ≤ p₁) :
+    Monotone (lineMap (k := k) p₀ p₁) := by
+  intro x y hxy
+  have : 0 ≤ p₁ - p₀ := sub_nonneg_of_le h
+  simpa [lineMap] using by gcongr
+
+lemma lineMap_antitone [LinearOrder k] [IsOrderedRing k] {p₀ p₁ : k} (h : p₁ ≤ p₀) :
+    Antitone (lineMap (k := k) p₀ p₁) := by
+  intro x y hxy
+  simpa [lineMap] using mul_le_mul_of_nonpos_right hxy (tsub_nonpos.mpr h)
+
 /-- Decomposition of an affine map in the special case when the point space and vector space
 are the same. -/
 theorem decomp (f : V1 →ᵃ[k] V2) : (f : V1 → V2) = ⇑f.linear + fun _ => f 0 := by
