@@ -364,6 +364,41 @@ end
 
 end MeasureTheory
 
+section Support
+
+/- -/
+namespace MeasureTheory
+namespace Measure
+
+open scoped Topology
+
+variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
+
+def support (μ : Measure X) : Set X := {x : X | ∀ U ∈ 𝓝 x, 0 < μ U}
+
+variable {μ : Measure X}
+
+theorem _root_.Filter.HasBasis.mem_measureSupport {ι : Sort*} {p : ι → Prop}
+    {s : ι → Set X} {x : X} (hl : (𝓝 x).HasBasis p s) :
+    x ∈ μ.support ↔ ∀ (i : ι), p i → 0 < μ (s i) := by
+  simp [support, hl.forall_iff (fun s t hst hs ↦ (hs.trans_le (μ.mono hst) : 0 < μ t))]
+
+theorem support_eq_forall_isOpen : μ.support =
+    {x : X | ∀ u : Set X, x ∈ u → IsOpen u → 0 < μ u} := by
+  simp [Set.ext_iff, (nhds_basis_opens _).mem_measureSupport]
+
+lemma isClosed_support (μ : Measure X) : IsClosed μ.support := by
+  simp only [support_eq_forall_isOpen, isClosed_iff_frequently, Set.mem_setOf_eq,
+    (nhds_basis_opens _).frequently_iff, and_imp]
+  intro x h u hxu hu
+  obtain ⟨y, hyu, hy⟩ := h u hxu hu
+  exact hy u hyu hu
+
+end Measure
+
+end MeasureTheory
+
+end Support
 section
 
 open MeasureTheory
