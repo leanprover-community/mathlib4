@@ -340,7 +340,8 @@ theorem im_eq_conj_sub (z : K) : ↑(im z) = I * (conj z - z) / 2 := by
 
 open List in
 /-- There are several equivalent ways to say that a number `z` is in fact a real number. -/
-theorem is_real_TFAE (z : K) : TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(re z) = z, im z = 0] := by
+theorem is_real_TFAE (z : K) :
+    TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(re z) = z, im z = 0, IsSelfAdjoint z] := by
   tfae_have 1 → 4
   | h => by
     rw [← @ofReal_inj K, im_eq_conj_sub, h, sub_self, mul_zero, zero_div,
@@ -350,6 +351,8 @@ theorem is_real_TFAE (z : K) : TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(r
     conv_rhs => rw [← re_add_im z, h, ofReal_zero, zero_mul, add_zero]
   tfae_have 3 → 2 := fun h => ⟨_, h⟩
   tfae_have 2 → 1 := fun ⟨r, hr⟩ => hr ▸ conj_ofReal _
+  tfae_have 1 → 5 := fun _ => by rwa [isSelfAdjoint_iff]
+  tfae_have 5 → 1 := fun hz => by rwa [isSelfAdjoint_iff] at hz
   tfae_finish
 
 theorem conj_eq_iff_real {z : K} : conj z = z ↔ ∃ r : ℝ, z = (r : K) :=
@@ -366,6 +369,29 @@ theorem conj_eq_iff_im {z : K} : conj z = z ↔ im z = 0 :=
 @[simp]
 theorem star_def : (Star.star : K → K) = conj :=
   rfl
+
+lemma im_eq_zero_iff_isSelfAdjoint {x : K} : im x = 0 ↔ IsSelfAdjoint x := by
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · apply RCLike.ext <;> simp [h]
+  · rw [IsSelfAdjoint, RCLike.ext_iff] at h
+    obtain ⟨h₁, h₂⟩ := h
+    simp only [star_def, conj_im] at h₂
+    exact eq_zero_of_neg_eq h₂
+
+lemma re_eq_ofReal_of_isSelfAdjoint {x : K} {y : ℝ} (hx : IsSelfAdjoint x) :
+    re x = y ↔ x = y := by
+  constructor
+  · intro h
+    apply RCLike.ext <;> simp [h, hx, im_eq_zero_iff_isSelfAdjoint]
+  · intro h
+    rw [RCLike.ext_iff] at h
+    simp [h.1]
+
+lemma ofReal_eq_re_of_isSelfAdjoint {x : K} {y : ℝ} (hx : IsSelfAdjoint x) :
+    y = re x ↔ y = x := by
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · exact (re_eq_ofReal_of_isSelfAdjoint hx).mp h.symm |>.symm
+  · exact (re_eq_ofReal_of_isSelfAdjoint hx).mpr h.symm |>.symm
 
 variable (K)
 
@@ -819,6 +845,43 @@ lemma ofReal_pos {x : ℝ} : 0 < (x : K) ↔ 0 < x := by
 lemma ofReal_lt_zero {x : ℝ} : (x : K) < 0 ↔ x < 0 := by
   rw [← ofReal_zero, ofReal_lt_ofReal]
 
+lemma norm_le_re_iff_eq_norm {z : K} :
+    ‖z‖ ≤ re z ↔ z = ‖z‖ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · have h' : ‖z‖ = re z := (le_antisymm (re_le_norm z) h).symm
+    rw [h', re_eq_self_of_le h]
+  · rw [h]
+    simp
+
+lemma re_le_neg_norm_iff_eq_neg_norm {z : K} :
+    re z ≤ -‖z‖ ↔ z = -‖z‖ := by
+  simpa [neg_eq_iff_eq_neg, le_neg] using norm_le_re_iff_eq_norm (z := -z)
+
+lemma norm_of_nonneg' {x : K} (hx : 0 ≤ x) : ‖x‖ = x := by
+  have him : im x = 0 := by
+    rw [RCLike.le_iff_re_im] at hx
+    apply Eq.symm
+    simpa using hx.2
+  have hre : 0 ≤ re x := by rw [nonneg_iff] at hx; exact hx.1
+  rw [← sqrt_normSq_eq_norm, normSq]
+  simp only [MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, him, mul_zero, add_zero,
+    Real.sqrt_mul_self hre]
+  apply ext <;> simp [him]
+
+lemma re_nonneg_of_nonneg {x : K} (hx : IsSelfAdjoint x) : 0 ≤ re x ↔ 0 ≤ x := by
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · rw [RCLike.le_iff_re_im]
+    refine ⟨by simp [h], ?_⟩
+    simp [im_eq_zero_iff_isSelfAdjoint.mpr hx]
+  · rw [RCLike.le_iff_re_im] at h
+    simp only [map_zero] at h
+    exact h.1
+
+@[gcongr]
+lemma re_le_re {x y : K} (h : x ≤ y) : re x ≤ re y := by
+  rw [RCLike.le_iff_re_im] at h
+  exact h.1
+
 protected lemma inv_pos_of_pos (hz : 0 < z) : 0 < z⁻¹ := by
   rw [pos_iff_exists_ofReal] at hz
   obtain ⟨x, hx, hx'⟩ := hz
@@ -1134,6 +1197,28 @@ noncomputable def realLinearIsometryEquiv (h : I = (0 : K)) : K ≃ₗᵢ[ℝ] �
   __ := realRingEquiv h
 
 end CaseSpecific
+
+lemma norm_le_im_iff_eq_I_mul_norm {z : K} :
+    ‖z‖ ≤ im z ↔ z = I * ‖z‖ := by
+  by_cases hI : (I : K) = 0
+  · simp [hI, im_eq_zero hI]
+  · push_neg at hI
+    have := norm_le_re_iff_eq_norm (z := -I * z)
+    simp [hI, norm_I_of_ne_zero hI] at this
+    rw [this]
+    refine ⟨fun h => ?_, fun h => ?_⟩
+    · have h₁ := congr_arg (I * ·) h
+      simp only at h₁
+      rw [mul_neg, ← mul_assoc, (or_iff_right hI).mp I_mul_I] at h₁
+      simpa using h₁
+    · have h₁ := congr_arg (-I * ·) h
+      simp only at h₁
+      rw [← mul_assoc, neg_mul I I, (or_iff_right hI).mp I_mul_I] at h₁
+      simpa using h₁
+
+lemma im_le_neg_norm_iff_eq_neg_I_mul_norm {z : K} :
+    im z ≤ -‖z‖ ↔ z = -(I * ‖z‖) := by
+  simpa [neg_eq_iff_eq_neg, le_neg] using norm_le_im_iff_eq_I_mul_norm (z := -z)
 
 end RCLike
 
