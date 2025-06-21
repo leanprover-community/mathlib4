@@ -3,6 +3,8 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.GroupTheory.Perm.Cycle.Concrete
+import Mathlib.LinearAlgebra.PerfectPairing.Matrix
 import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
 /-!
@@ -225,6 +227,37 @@ lemma linearIndependent_short_long :
 abbrev allCoeffs : List (Fin 2 → ℤ) :=
   [![0, 1], ![0, -1], ![1, 0], ![-1, 0], ![1, 1], ![-1, -1],
     ![2, 1], ![-2, -1], ![3, 1], ![-3, -1], ![3, 2], ![-3, -2]]
+
+/-- The coefficients of each coroot in the `𝔤₂` root pairing, relative to the base. -/
+def allCocoeffs : List (Fin 2 → ℤ) :=
+  [![0, 1], ![0, -1], ![1, 0], ![-1, 0], ![1, 3], ![-1, -3],
+    ![2, 3], ![-2, -3], ![1, 1], ![-1, -1], ![1, 2], ![-1, -2]]
+
+/-- The Weyl group permutation associated to each root / coroot of an embedded `𝔤₂` root pairing. -/
+def allPerms : Fin 12 → Fin 12 ≃ Fin 12 :=
+  ![c[0,  1] * c[2,  4] * c[3, 5] * c[8, 10] * c[9, 11],
+    c[0,  1] * c[2,  4] * c[3, 5] * c[8, 10] * c[9, 11],
+    c[0,  8] * c[1,  9] * c[2, 3] * c[4,  6] * c[5,  7],
+    c[0,  8] * c[1,  9] * c[2, 3] * c[4,  6] * c[5,  7],
+    c[0, 11] * c[1, 10] * c[2, 6] * c[3,  7] * c[4,  5],
+    c[0, 11] * c[1, 10] * c[2, 6] * c[3,  7] * c[4,  5],
+    c[2,  5] * c[3,  4] * c[6, 7] * c[8, 11] * c[9, 10],
+    c[2,  5] * c[3,  4] * c[6, 7] * c[8, 11] * c[9, 10],
+    c[0, 10] * c[1, 11] * c[2, 7] * c[3,  6] * c[8,  9],
+    c[0, 10] * c[1, 11] * c[2, 7] * c[3,  6] * c[8,  9],
+    c[0,  9] * c[1,  8] * c[4, 7] * c[5,  6] * c[10, 11],
+    c[0,  9] * c[1,  8] * c[4, 7] * c[5,  6] * c[10, 11]]
+
+variable (R) in
+/-- The perfect pairing on the span of the roots of an embedded `𝔤₂` root pairing. -/
+def perfectPairing :=
+  !![(2 : R), -3; -1, 2].toPerfectPairing ⟨!![2, 3; 1, 2],
+    by norm_num [← Matrix.one_fin_two], by norm_num [← Matrix.one_fin_two]⟩
+
+omit [CharZero R] [IsDomain R] in
+@[simp] lemma perfectPairing_apply_intCast (v w : Fin 2 → ℤ) :
+    perfectPairing R (Int.cast ∘ v) (Int.cast ∘ w) = perfectPairing ℤ v w := by
+  simp [perfectPairing, Matrix.vecHead, Matrix.vecTail]
 
 lemma allRoots_eq_map_allCoeffs :
     allRoots P = allCoeffs.map (Fintype.linearCombination ℤ ![shortRoot P, longRoot P]) := by
@@ -524,5 +557,61 @@ lemma setOf_index_eq_univ :
 end IsIrreducible
 
 end EmbeddedG2
+
+section Concrete
+
+variable (R)
+variable [CharZero R]
+
+-- Probably not really the right lemma
+@[simp]
+lemma bar {ι R : Type*} [CommRing R] (f : ι → ℤ) (z : ℤ) :
+    (z : R) • (Int.cast (R := R) ∘ f) = Int.cast ∘ (z • f) := by
+  ext; simp
+
+-- Do we really want this? Seems awfully specific.
+lemma baz {ι R : Type*} [AddGroupWithOne R] (f g : ι → ℤ) :
+    Int.cast (R := R) ∘ (f - g) = Int.cast ∘ f - Int.cast ∘ g :=
+  map_comp_sub (Int.castAddHom R) f g
+
+open EmbeddedG2 in
+/-- A concrete model of the `𝔤₂` root system. -/
+def g₂ : RootSystem (Fin 12) R (Fin 2 → R) (Fin 2 → R) where
+  __ := perfectPairing R
+  root := .trans ⟨allCoeffs.get, by decide⟩ ⟨_, Int.cast_injective.comp_left⟩
+  coroot := .trans ⟨allCocoeffs.get, by decide⟩ ⟨_, Int.cast_injective.comp_left⟩
+  root_coroot_two i := by
+    suffices perfectPairing ℤ allCoeffs[i] allCocoeffs[i] = 2 by
+      simpa [-Int.cast_ofNat, ← Int.cast_two (R := R)]
+    fin_cases i <;> decide
+  reflectionPerm := allPerms
+  reflectionPerm_root i j := by
+    suffices allCoeffs[j] - perfectPairing ℤ allCoeffs[j] allCocoeffs[i] * allCoeffs[i] =
+        allCoeffs[allPerms i j] by simp [← Fin.getElem_fin, ← baz, ← this]; rfl -- TODO Fix
+    fin_cases i <;> fin_cases j <;> decide
+  reflectionPerm_coroot i j := by
+    suffices allCocoeffs[j] - perfectPairing ℤ allCoeffs[i] allCocoeffs[j] * allCocoeffs[i] =
+        allCocoeffs[allPerms i j] by
+      simp [← Fin.getElem_fin, ← baz]
+      erw [← this] -- TODO Fix
+      rfl
+    fin_cases i <;> fin_cases j <;> decide
+  span_root_eq_top := by
+    sorry
+  span_coroot_eq_top := by
+    sorry
+
+instance : EmbeddedG2 (g₂ R).toRootPairing where
+  long := 0
+  short := 2
+  pairingIn_long_short := by
+    rw [← (algebraMap_injective ℤ R).eq_iff, algebraMap_pairingIn]
+    simp [g₂, EmbeddedG2.perfectPairing, EmbeddedG2.allCocoeffs, EmbeddedG2.allCoeffs, pairing,
+      root', Matrix.vecHead, Matrix.vecTail]
+  exists_value i j := ⟨(g₂ ℤ).pairing i j, by simp [g₂, pairing, root']⟩
+  eq_or_eq_neg i j hij := by
+    sorry
+
+end Concrete
 
 end RootPairing
