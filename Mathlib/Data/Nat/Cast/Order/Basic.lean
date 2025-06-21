@@ -97,7 +97,6 @@ theorem cast_le_one : (n : α) ≤ 1 ↔ n ≤ 1 := by rw [← cast_one, cast_le
 @[simp] lemma cast_nonpos : (n : α) ≤ 0 ↔ n = 0 := by norm_cast; omega
 
 section
-variable [m.AtLeastTwo]
 
 @[simp]
 theorem ofNat_le_cast : (ofNat(m) : α) ≤ n ↔ (OfNat.ofNat m : ℕ) ≤ n :=
@@ -109,8 +108,6 @@ theorem ofNat_lt_cast : (ofNat(m) : α) < n ↔ (OfNat.ofNat m : ℕ) < n :=
 
 end
 
-variable [n.AtLeastTwo]
-
 @[simp]
 theorem cast_le_ofNat : (m : α) ≤ (ofNat(n) : α) ↔ m ≤ OfNat.ofNat n :=
   cast_le
@@ -118,6 +115,22 @@ theorem cast_le_ofNat : (m : α) ≤ (ofNat(n) : α) ↔ m ≤ OfNat.ofNat n :=
 @[simp]
 theorem cast_lt_ofNat : (m : α) < (ofNat(n) : α) ↔ m < OfNat.ofNat n :=
   cast_lt
+
+-- TODO: These lemmas need to be `@[simp]` for confluence in the presence of `cast_lt`, `cast_le`,
+-- and `Nat.cast_ofNat`, but their LHSs match literally every inequality, so they're too expensive.
+-- If https://github.com/leanprover/lean4/issues/2867 is fixed in a performant way, these can be made `@[simp]`.
+
+-- @[simp]
+theorem ofNat_le :
+    (ofNat(m) : α) ≤ (ofNat(n) : α) ↔ (OfNat.ofNat m : ℕ) ≤ OfNat.ofNat n :=
+  cast_le
+
+-- @[simp]
+theorem ofNat_lt :
+    (ofNat(m) : α) < (ofNat(n) : α) ↔ (OfNat.ofNat m : ℕ) < OfNat.ofNat n :=
+  cast_lt
+
+variable [n.AtLeastTwo]
 
 @[simp]
 theorem one_lt_ofNat : 1 < (ofNat(n) : α) :=
@@ -134,22 +147,6 @@ theorem not_ofNat_le_one : ¬(ofNat(n) : α) ≤ 1 :=
 @[simp]
 theorem not_ofNat_lt_one : ¬(ofNat(n) : α) < 1 :=
   mt le_of_lt not_ofNat_le_one
-
-variable [m.AtLeastTwo]
-
--- TODO: These lemmas need to be `@[simp]` for confluence in the presence of `cast_lt`, `cast_le`,
--- and `Nat.cast_ofNat`, but their LHSs match literally every inequality, so they're too expensive.
--- If https://github.com/leanprover/lean4/issues/2867 is fixed in a performant way, these can be made `@[simp]`.
-
--- @[simp]
-theorem ofNat_le :
-    (ofNat(m) : α) ≤ (ofNat(n) : α) ↔ (OfNat.ofNat m : ℕ) ≤ OfNat.ofNat n :=
-  cast_le
-
--- @[simp]
-theorem ofNat_lt :
-    (ofNat(m) : α) < (ofNat(n) : α) ↔ (OfNat.ofNat m : ℕ) < OfNat.ofNat n :=
-  cast_lt
 
 end OrderedSemiring
 
