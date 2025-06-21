@@ -58,8 +58,8 @@ theorem Discrete.mk_as {α : Type u₁} (X : Discrete α) : Discrete.mk X.as = X
 def discreteEquiv {α : Type u₁} : Discrete α ≃ α where
   toFun := Discrete.as
   invFun := Discrete.mk
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv _ := by aesop_cat
+  right_inv _ := by aesop_cat
 
 instance {α : Type u₁} [DecidableEq α] : DecidableEq (Discrete α) :=
   discreteEquiv.decidableEq
