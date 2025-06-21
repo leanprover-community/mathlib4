@@ -8,8 +8,8 @@ import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.Order.CompletePartialOrder
 
 /-!
-# TODO
-
+# Pair Reduction
+The goal of this file is to prove the theorem `pair_reduction`
 -/
 
 open scoped ENNReal NNReal Finset
