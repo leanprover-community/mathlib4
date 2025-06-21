@@ -126,7 +126,11 @@ end
 /-- An adjunction between functors induces an adjunction between the
 corresponding left/right derived functors, when these derived
 functors are *absolute*, i.e. they remain derived functors
-after the post-composition with any functor. -/
+after the post-composition with any functor.
+
+(One actually only needs that `G' ⋙ F'` is the left derived functor of
+`G ⋙ L₂ ⋙ F'` and that `F' ⋙ G'` is the right derived functor of
+`F ⋙ L₁ ⋙ G'`). -/
 @[simps!]
 noncomputable def derived [G'.IsLeftDerivedFunctor α W₁] [F'.IsRightDerivedFunctor β W₂]
   [(G' ⋙ F').IsLeftDerivedFunctor
