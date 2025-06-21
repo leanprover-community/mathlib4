@@ -3,7 +3,6 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 import Mathlib.RingTheory.AlgebraicIndependent.RankAndCardinality
 import Mathlib.RingTheory.LinearDisjoint
 
@@ -633,6 +632,26 @@ theorem algEquiv_of_isAlgebraic (H : A.LinearDisjoint L)
     B.LinearDisjoint L' :=
   .of_isField ((Algebra.TensorProduct.congr f1 f2).symm.toMulEquiv.isField _
     (H.isField_of_isAlgebraic halg))
+
+/--
+If `A` and `B` are linearly disjoint, then `trace` and `algebraMap` commutes.
+-/
+theorem trace_algebraMap_eq [FiniteDimensional F E] (h₁ : A.LinearDisjoint B) (h₂ : A ⊔ B = ⊤)
+    (x : B) :
+    Algebra.trace A E (algebraMap B E x) = algebraMap F A (Algebra.trace F B x) := by
+  rw [linearDisjoint_iff'] at h₁
+  refine h₁.trace_algebraMap_eq ?_ x
+  simpa [sup_toSubalgebra_of_isAlgebraic_right] using congr_arg IntermediateField.toSubalgebra h₂
+
+/--
+If `A` and `B` are linearly disjoint, then `norm` and `algebraMap` commutes.
+-/
+theorem norm_algebraMap_eq [FiniteDimensional F E] (h₁ : A.LinearDisjoint B) (h₂ : A ⊔ B = ⊤)
+    (x : B) :
+    Algebra.norm A (algebraMap B E x) = algebraMap F A (Algebra.norm F x) := by
+  rw [linearDisjoint_iff'] at h₁
+  refine h₁.norm_algebraMap_eq ?_  x
+  simpa [sup_toSubalgebra_of_isAlgebraic_right] using congr_arg IntermediateField.toSubalgebra h₂
 
 end LinearDisjoint
 
