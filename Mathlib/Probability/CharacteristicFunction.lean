@@ -25,7 +25,7 @@ lemma test (mX : AEMeasurable X μ) (mY : AEMeasurable Y μ) (h : IndepFun X Y �
   change charFun (μ.map (_ ∘ _)) t = _
   rw [← map_map, (indepFun_iff_map_prod_eq_prod_map_map mX mY).1 h]
   -- simp_rw [WithLp.equiv, Equiv.refl_apply, (indepFun_iff_map_prod_eq_prod_map_map mX mY).1 h]
-  simp_rw [charFun, WithLp.prod_inner_apply', ofReal_add, add_mul, exp_add]
+  simp_rw [charFun, WithLp.prod_inner_apply, ofReal_add, add_mul, exp_add]
   rw [integral_map]
   simp
   rw [← integral_prod_mul (fun x ↦ exp (⟪x, t.1⟫ * I))
