@@ -251,8 +251,7 @@ def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option 
 
     -- check if is non-triviality
     let f' ← fData.toExpr
-    if (← withReducibleAndInstances <| isDefEq f' f) ||
-       (← withReducibleAndInstances <| isDefEq f' g) then
+    if ← withReducibleAndInstances <| isDefEq f' f <||> isDefEq f' g) then
       return none
 
     return (f, g)
