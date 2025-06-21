@@ -252,4 +252,15 @@ lemma sub_iSup [Nonempty ι] (ha : a ≠ ⊤) : a - ⨆ i, f i = ⨅ i, a - f i 
   rw [← ENat.sub_sub_cancel ha (h _)]
   exact tsub_le_tsub_left (iInf_le (a - f ·) i) _
 
+lemma withBot_coe_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty) (f : ι → ℕ∞) :
+    ⨆ i ∈ s, f i = ⨆ i ∈ s, (f i : WithBot ℕ∞) := by
+  rcases hs with ⟨j, hj⟩
+  have : Nonempty ι := Nonempty.intro j
+  refine le_antisymm ((WithBot.coe_iSup (OrderTop.bddAbove _)).trans_le <|
+    iSup_le_iff.mpr (fun i ↦ ?_)) <| iSup_le_iff.mpr <| fun _ ↦ iSup_le_iff.mpr <|
+      fun hi ↦ WithBot.coe_le_coe.mpr (le_biSup _ hi)
+  by_cases h : i ∈ s
+  · simpa only [iSup_pos h] using by apply le_biSup _ h
+  · simpa only [iSup_neg h] using le_trans (by simp) (le_biSup _ hj)
+
 end ENat
