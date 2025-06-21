@@ -576,9 +576,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
     calc
       ∑ _i : Fin N, μ s / N = μ s := by
         simp only [Finset.card_fin, Finset.sum_const, nsmul_eq_mul]
-        rw [ENNReal.mul_div_cancel]
-        · simp only [Npos, Ne, Nat.cast_eq_zero, not_false_iff]
-        · finiteness
+        rw [ENNReal.mul_div_cancel (by positivity)]
       _ ≤ ∑ i, μ (s ∩ v i) := by
         conv_lhs => rw [A]
         apply measure_iUnion_fintype_le
@@ -627,7 +625,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
         omeas.nullMeasurableSet
     calc
       μ o = 1 / (N + 1) * μ s + N / (N + 1) * μ s := by
-        rw [μo, ← add_mul, ENNReal.div_add_div_same, add_comm, ENNReal.div_self, one_mul] <;> simp
+        rw [μo, ← add_mul, ENNReal.div_add_div_same, add_comm, ENNReal.div_self (by simp), one_mul]
       _ ≤ μ ((⋃ x ∈ w, closedBall (↑x) (r ↑x)) ∩ o) + N / (N + 1) * μ s := by
         gcongr
         rw [one_div, mul_comm, ← div_eq_mul_inv]
@@ -783,7 +781,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
       apply ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one
       rw [ENNReal.div_lt_iff, one_mul]
       · conv_lhs => rw [← add_zero (N : ℝ≥0∞)]
-        exact ENNReal.add_lt_add_left (ENNReal.natCast_ne_top N) zero_lt_one
+        exact ENNReal.add_lt_add_left (by finiteness) zero_lt_one
       · simp only [true_or, add_eq_zero, Ne, not_false_iff, one_ne_zero, and_false]
       · left; finiteness
     rw [zero_mul] at C

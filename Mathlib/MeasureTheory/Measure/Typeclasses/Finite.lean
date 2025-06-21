@@ -311,6 +311,7 @@ class IsFiniteMeasureOnCompacts [TopologicalSpace α] (μ : Measure α) : Prop w
   protected lt_top_of_isCompact : ∀ ⦃K : Set α⦄, IsCompact K → μ K < ∞
 
 /-- A compact subset has finite measure for a measure which is finite on compacts. -/
+@[simp, aesop (rule_sets := [finiteness]) unsafe apply]
 theorem _root_.IsCompact.measure_lt_top [TopologicalSpace α] {μ : Measure α}
     [IsFiniteMeasureOnCompacts μ] ⦃K : Set α⦄ (hK : IsCompact K) : μ K < ∞ :=
   IsFiniteMeasureOnCompacts.lt_top_of_isCompact hK
@@ -322,6 +323,7 @@ theorem _root_.IsCompact.measure_ne_top [TopologicalSpace α] {μ : Measure α}
 
 /-- A bounded subset has finite measure for a measure which is finite on compact sets, in a
 proper space. -/
+@[simp, aesop (rule_sets := [finiteness]) unsafe apply]
 theorem _root_.Bornology.IsBounded.measure_lt_top [PseudoMetricSpace α] [ProperSpace α]
     {μ : Measure α} [IsFiniteMeasureOnCompacts μ] ⦃s : Set α⦄ (hs : Bornology.IsBounded s) :
     μ s < ∞ :=
