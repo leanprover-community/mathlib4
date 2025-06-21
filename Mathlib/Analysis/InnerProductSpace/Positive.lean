@@ -206,6 +206,98 @@ end PartialOrder
 
 end ContinuousLinearMap
 
+/-- a star projection is an idempotent and self-adjoint element -/
+structure IsStarProjection {M : Type*} [Mul M] [Star M] (p : M) : Prop where
+  isIdempotentElem : IsIdempotentElem p
+  isSelfAdjoint : IsSelfAdjoint p
+
+/-- a star projection is non-negative in a star-ordered ring -/
+theorem IsStarProjection.nonneg {M : Type*} [NonUnitalSemiring M] [PartialOrder M]
+  [StarRing M] [StarOrderedRing M] {p : M}
+  (hp : IsStarProjection p) : 0 ≤ p :=
+by
+  rw [← hp.isIdempotentElem]
+  nth_rw 1 [← hp.isSelfAdjoint]
+  exact star_mul_self_nonneg p
+
+-- this will be removed in the future when we have `StarOrderedRing (E →L[𝕜] E)`
+-- as this is just `IsStarProjection.nonneg`
+/-- a star projection operator is positive -/
+theorem isStarProjection_isPositive [CompleteSpace E] {p : E →L[𝕜] E}
+  (hp : IsStarProjection p) : 0 ≤ p :=
+by
+  rw [ContinuousLinearMap.nonneg_iff_isPositive]
+  refine ⟨hp.isSelfAdjoint, ?_⟩
+  rw [← hp.isIdempotentElem.eq]
+  simp_rw [reApplyInnerSelf_apply, ContinuousLinearMap.mul_apply]
+  intro x
+  simp_rw [← ContinuousLinearMap.adjoint_inner_right _ _ x, isSelfAdjoint_iff'.mp hp.isSelfAdjoint]
+  exact inner_self_nonneg
+
+theorem ContinuousLinearMap.ker_eq_ortho_adjoint_range {V W : Type*}
+  [NormedAddCommGroup V] [NormedAddCommGroup W]
+  [InnerProductSpace 𝕜 V] [InnerProductSpace 𝕜 W]
+  [CompleteSpace V] [CompleteSpace W] (T : V →L[𝕜] W) :
+    ker T = (range (adjoint T))ᗮ := by
+  ext
+  simp_rw [Submodule.mem_orthogonal, mem_range, mem_ker,
+    forall_exists_index, forall_apply_eq_imp_iff,
+    ContinuousLinearMap.adjoint_inner_left]
+  exact ⟨fun h => by simp_rw [h, inner_zero_right, forall_const],
+    fun h => inner_self_eq_zero.mp (h _)⟩
+
+theorem IsStarProjection.ker_eq_ortho_adjoint_range
+  [CompleteSpace E] {p : E →L[𝕜] E} (hp : IsStarProjection p) :
+    LinearMap.ker p = (LinearMap.range p)ᗮ :=
+by rw [ContinuousLinearMap.ker_eq_ortho_adjoint_range, hp.isSelfAdjoint.adjoint_eq]
+
+theorem IsStarProjection.range_hasOrthogonalProjection
+  [CompleteSpace E] {p : E →L[𝕜] E} (hp : IsStarProjection p) :
+    (LinearMap.range p).HasOrthogonalProjection :=
+by
+  constructor
+  intro v
+  use p v
+  simp only [mem_range, exists_apply_eq_apply, true_and]
+  rw [← hp.ker_eq_ortho_adjoint_range]
+  simp_rw [mem_ker, map_sub, ← ContinuousLinearMap.mul_apply, hp.isIdempotentElem.eq, sub_self]
+
+lemma IsStarProjection.eq_orthogonalProjection
+  [CompleteSpace E] {p : E →L[𝕜] E} (hp : IsStarProjection p) :
+  letI := hp.range_hasOrthogonalProjection
+  p = (LinearMap.range p).subtypeL ∘L (LinearMap.range p).orthogonalProjection :=
+by
+  letI := hp.range_hasOrthogonalProjection
+  ext x
+  have : (LinearMap.range p).orthogonalProjection (p x) = p x := by
+    simp [Submodule.orthogonalProjection_eq_self_iff]
+  rw [← this]
+  symm
+  simp only [coe_comp', Submodule.coe_subtypeL', Submodule.coe_subtype, Function.comp_apply,
+    SetLike.coe_eq_coe]
+  rw [← sub_eq_zero, ← ContinuousLinearMap.map_sub,
+    Submodule.orthogonalProjection_eq_zero_iff, ← hp.ker_eq_ortho_adjoint_range,
+    mem_ker, map_sub, ← mul_apply, hp.isIdempotentElem.eq, sub_self]
+
+/-- an idempotent operator is positive if and only if it is self-adjoint -/
+theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint [CompleteSpace E] {p : E →L[𝕜] E}
+  (hp : IsIdempotentElem p) : 0 ≤ p  ↔ IsSelfAdjoint p :=
+⟨fun h => (p.nonneg_iff_isPositive.mp h).1, fun h => isStarProjection_isPositive ⟨hp, h⟩⟩
+
+theorem orthogonalProjection_isIdempotentElem (U : Submodule 𝕜 E)
+  [U.HasOrthogonalProjection] :
+    IsIdempotentElem (U.subtypeL ∘L U.orthogonalProjection) :=
+by
+  ext
+  simp_rw [ContinuousLinearMap.mul_apply, ContinuousLinearMap.comp_apply, Submodule.subtypeL_apply,
+    Submodule.orthogonalProjection_mem_subspace_eq_self]
+
+/-- an orthogonal projection is a star projection -/
+theorem orthogonalProjection_isStarProjection [CompleteSpace E] {U : Submodule 𝕜 E}
+  [CompleteSpace U] :
+  IsStarProjection (U.subtypeL ∘L U.orthogonalProjection) :=
+⟨(orthogonalProjection_isIdempotentElem U), (orthogonalProjection_isSelfAdjoint U)⟩
+
 namespace LinearMap
 
 variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F]
