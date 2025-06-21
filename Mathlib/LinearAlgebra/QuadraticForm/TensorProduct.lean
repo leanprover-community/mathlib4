@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
+import Mathlib.Data.Finsupp.Pointwise
 
 /-!
 # The quadratic form on a tensor product
@@ -144,24 +145,85 @@ end QuadraticForm
 
 end InvertibleTwo
 
+#check Basis.linearCombination_repr
+
+variable {ι : Type*} (bm : Basis ι A M₁) (i : ι) (m₁₁ : M₁) (m₁₂ : M₂)
+
+-- linearCombination : (α →₀ R) →ₗ[R] M
+
+/-
+Finsupp.linearCombination.{u_1, u_2, u_5} {α : Type u_1} {M : Type u_2} (R : Type u_5) [Semiring R]
+  [AddCommMonoid M] [Module R M] (v : α → M) : (α →₀ R) →ₗ[R] M
+-/
+
+#check bm i
+
+#check Basis.ofRepr
+
+#check Basis.repr
+
+#check Finsupp.linearCombination A
+
+#check (Basis.repr.symm bm : (ι →₀ R) →ₗ[R] M₁)
+
+#check bm i ⊗ₜ[R] m₁₂
+
+#check Finsupp.lsum ℕ fun i => LinearMap.id.smulRight (bm i ⊗ₜ[R] m₁₂)
+
+#check Finsupp.linearCombination A (fun i => bm i ⊗ₜ[R] m₁₂)
+
+#check Finsupp.lsum ℕ (fun i => (bm i ⊗ₜ[R] m₁₂))
+
+#check LinearMap.sum_repr_mul_repr_mul bm
+
+
+--def linearCombination : (α →₀ R) →ₗ[R] M
+
 /-- If two quadratic maps from `A ⊗[R] M₂` agree on elements of the form `1 ⊗ m`, they are equal.
 
 In other words, if a base change exists for a quadratic map, it is unique.
 
 Note that unlike `QuadraticForm.baseChange`, this does not need `Invertible (2 : R)`. -/
 @[ext]
-theorem baseChange_ext ⦃Q₁ Q₂ : QuadraticMap A (A ⊗[R] M₂) N₁⦄
-    (h : ∀ m, Q₁ (1 ⊗ₜ m) = Q₂ (1 ⊗ₜ m)) :
+theorem baseChange_ext {ι₁ : Type*} [LinearOrder ι₁] (bm₁ : Basis ι₁ A M₁)
+    ⦃Q₁ Q₂ : QuadraticMap A (M₁ ⊗[R] M₂) N₁⦄
+    (h : ∀ m₁ m, Q₁ (m₁ ⊗ₜ m) = Q₂ (m₁ ⊗ₜ m)) :
     Q₁ = Q₂ := by
-  replace h (a m) : Q₁ (a ⊗ₜ m) = Q₂ (a ⊗ₜ m) := by
-    rw [← mul_one a, ← smul_eq_mul, ← smul_tmul', QuadraticMap.map_smul, QuadraticMap.map_smul, h]
+--  replace h (a m) : Q₁ (a ⊗ₜ m) = Q₂ (a ⊗ₜ m) := by
+--    rw [← mul_one a, ← smul_eq_mul, ← smul_tmul', QuadraticMap.map_smul, QuadraticMap.map_smul, h]
   ext x
   induction x with
   | tmul => simp [h]
   | zero => simp
   | add x y hx hy =>
     have : Q₁.polarBilin = Q₂.polarBilin := by
-      ext
+      ext m₁₁ m₂₁ m₁₂  m₂₂
+      --simp only [AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars]
+      --rw [← LinearMap.sum_repr_mul_repr_mul bm₁]
+
+      simp only [AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars,
+        polarBilin_apply_apply]
+      --rw [← LinearMap.sum_repr_mul_repr_mul]
+      rw [← Basis.linearCombination_repr bm₁ m₁₁]
+      rw [← Basis.linearCombination_repr bm₁ m₁₂]
+      --rw [LinearMap.sum_repr_mul_repr_mul]
+      have e1 : (Finsupp.linearCombination A bm₁) (bm₁.repr m₁₁) ⊗ₜ[R] m₂₁ =
+        (Finsupp.linearCombination A (fun i => bm₁ i ⊗ₜ[R] m₂₁)) (bm₁.repr m₁₁)  := by
+        --simp_all only [Basis.linearCombination_repr]
+        --simp_rw [Finsupp.linearCombination_apply_of_mem_supported]
+        rw [Finsupp.linearCombination_apply, Finsupp.sum, TensorProduct.sum_tmul]
+        rfl
+      have e2 : (Finsupp.linearCombination A bm₁) (bm₁.repr m₁₂) ⊗ₜ[R] m₂₂ =
+          (Finsupp.linearCombination A (fun i => bm₁ i ⊗ₜ[R] m₂₂)) (bm₁.repr m₁₂)  := by
+        --simp_all only [Basis.linearCombination_repr]
+        --simp_rw [Finsupp.linearCombination_apply_of_mem_supported]
+        rw [Finsupp.linearCombination_apply, Finsupp.sum, TensorProduct.sum_tmul]
+        rfl
+      rw [e1, e2]
+      --rw [LinearMap.sum_repr_mul_repr_mul]
+      simp_rw [Finsupp.linearCombination_apply, Finsupp.sum, LinearMap.map_sum₂, map_sum, LinearMap.map_smul₂,
+        LinearMap.map_smul]
+      sorry
       dsimp [polar]
       rw [← TensorProduct.tmul_add, h, h, h]
     replace := congr($this x y)
