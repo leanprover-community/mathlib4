@@ -640,7 +640,7 @@ theorem trace_algebraMap_eq [FiniteDimensional F E] (h₁ : A.LinearDisjoint B) 
     (x : B) :
     Algebra.trace A E (algebraMap B E x) = algebraMap F A (Algebra.trace F B x) := by
   rw [linearDisjoint_iff'] at h₁
-  refine h₁.trace_algebraMap_eq_of_basis ?_ (Module.Free.chooseBasis F B) x
+  refine h₁.trace_algebraMap_eq ?_ x
   simpa [sup_toSubalgebra_of_isAlgebraic_right] using congr_arg IntermediateField.toSubalgebra h₂
 
 /--
@@ -650,7 +650,7 @@ theorem norm_algebraMap_eq [FiniteDimensional F E] (h₁ : A.LinearDisjoint B) (
     (x : B) :
     Algebra.norm A (algebraMap B E x) = algebraMap F A (Algebra.norm F x) := by
   rw [linearDisjoint_iff'] at h₁
-  refine h₁.norm_algebraMap_eq_of_basis ?_ (Module.Free.chooseBasis F B) x
+  refine h₁.norm_algebraMap_eq ?_  x
   simpa [sup_toSubalgebra_of_isAlgebraic_right] using congr_arg IntermediateField.toSubalgebra h₂
 
 end LinearDisjoint

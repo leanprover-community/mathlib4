@@ -542,23 +542,24 @@ variable {A B : Subalgebra R S}
 If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, and if they are
 linearly disjoint and such that `A ⊔ B = S`, then `trace` and `algebraMap` commutes.
 -/
-theorem trace_algebraMap_eq_of_basis (H : A.LinearDisjoint B) (H' : A ⊔ B = ⊤) {ι : Type*}
-    [Fintype ι] [DecidableEq ι] (b : Basis ι R B) (x : B) :
+theorem trace_algebraMap_eq (H : A.LinearDisjoint B) (H' : A ⊔ B = ⊤) [Module.Free R B]
+    [Module.Finite R B] (x : B) :
     Algebra.trace A S (algebraMap B S x) = algebraMap R A (Algebra.trace R B x) := by
-  simp_rw [Algebra.trace_eq_matrix_trace b,
-    Algebra.trace_eq_matrix_trace (b.ofLinearDisjointLeft H H'),
-    Matrix.trace, map_sum, b.ofLinearDisjointLeft_leftMulMatrix_eq, RingHom.mapMatrix_apply,
+  simp_rw [Algebra.trace_eq_matrix_trace (Module.Free.chooseBasis R B),
+    Algebra.trace_eq_matrix_trace ((Module.Free.chooseBasis R B).ofLinearDisjointLeft H H'),
+    Matrix.trace, map_sum, Basis.ofLinearDisjointLeft_leftMulMatrix_eq, RingHom.mapMatrix_apply,
     Matrix.diag_apply, Matrix.map_apply]
 
 /--
 If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, and if they are
 linearly disjoint and such that `A ⊔ B = S`, then `norm` and `algebraMap` commutes.
 -/
-theorem norm_algebraMap_eq_of_basis (H : A.LinearDisjoint B) (H' : A ⊔ B = ⊤) {ι : Type*}
-    [Fintype ι] [DecidableEq ι] (b : Basis ι R B) (x : B) :
+theorem norm_algebraMap_eq (H : A.LinearDisjoint B) (H' : A ⊔ B = ⊤) [Module.Free R B]
+    [Module.Finite R B] (x : B) :
     Algebra.norm A (algebraMap B S x) = algebraMap R A (Algebra.norm R x) := by
-  simp_rw [Algebra.norm_eq_matrix_det b, Algebra.norm_eq_matrix_det (b.ofLinearDisjointLeft H H'),
-    b.ofLinearDisjointLeft_leftMulMatrix_eq, RingHom.map_det]
+  simp_rw [Algebra.norm_eq_matrix_det (Module.Free.chooseBasis R B),
+    Algebra.norm_eq_matrix_det (((Module.Free.chooseBasis R B)).ofLinearDisjointLeft H H'),
+    Basis.ofLinearDisjointLeft_leftMulMatrix_eq, RingHom.map_det]
 
 /-- In a commutative ring, if `A` and `B` are linearly disjoint, if `B` is a flat `R`-module,
 then for any family of `R`-linearly independent elements of `A`,
