@@ -86,6 +86,16 @@ theorem relindex_comap (f : G' →* G) (K : Subgroup G') :
     relindex (comap f H) K = relindex H (map f K) := by
   rw [relindex, subgroupOf, comap_comap, index_comap, ← f.map_range, K.range_subtype]
 
+@[to_additive]
+theorem relindex_map_map_of_injective {f : G →* G'} (H K : Subgroup G) (hf : Function.Injective f) :
+    relindex (map f H) (map f K) = relindex H K := by
+  rw [← Subgroup.relindex_comap, Subgroup.comap_map_eq_self_of_injective hf]
+
+@[to_additive]
+theorem relindex_map_map (f : G →* G') (H K : Subgroup G) :
+    (map f H).relindex (map f K) = (H ⊔ f.ker).relindex (K ⊔ f.ker) := by
+  rw [← comap_map_eq, ← comap_map_eq, relindex_comap, (gc_map_comap f).l_u_l_eq_l]
+
 variable {H K L}
 
 @[to_additive relindex_mul_index]
@@ -266,6 +276,13 @@ theorem index_map_equiv (e : G ≃* G') : (map (e : G →* G') H).index = H.inde
 theorem index_map_of_injective {f : G →* G'} (hf : Function.Injective f) :
     (H.map f).index = H.index * f.range.index := by
   rw [H.index_map, f.ker_eq_bot_iff.mpr hf, sup_bot_eq]
+
+@[to_additive (attr := simp)]
+theorem index_map_equiv (e : G ≃* G') :
+    (map (e : G →* G') H).index = H.index := by
+  refine index_map_eq H e.surjective ?_
+  rw [(MonoidHom.ker_eq_bot_iff _).mpr e.injective]
+  exact bot_le
 
 @[to_additive]
 theorem index_map_subtype {H : Subgroup G} (K : Subgroup H) :
@@ -574,6 +591,15 @@ instance IsFiniteRelIndex.to_finiteIndex_subgroupOf [H.IsFiniteRelIndex K] :
 @[to_additive]
 theorem finiteIndex_iff : H.FiniteIndex ↔ H.index ≠ 0 :=
   ⟨fun h ↦ h.index_ne_zero, fun h ↦ ⟨h⟩⟩
+
+@[to_additive]
+theorem finiteIndex_iff {G : Type*} [Group G] {H : Subgroup G} :
+    H.FiniteIndex ↔ H.index ≠ 0 :=
+  ⟨fun h ↦ h.finiteIndex, fun h ↦ ⟨h⟩⟩
+
+@[to_additive]
+theorem not_finiteIndex_iff {G : Type*} [Group G] {H : Subgroup G} :
+    ¬ H.FiniteIndex ↔ H.index = 0 := by simp [finiteIndex_iff]
 
 /-- A finite index subgroup has finite quotient. -/
 @[to_additive "A finite index subgroup has finite quotient"]
