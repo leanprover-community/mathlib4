@@ -6,14 +6,14 @@ Authors: Vasilii Nesterov
 import Mathlib.Topology.UnitInterval
 
 /-!
-# Any compact metric space can be embedded into the Hilbert cube.
+# Every compact metric space can be embedded into the Hilbert cube.
 
-In this file we prove `exists_closed_embedding_to_hilbert`: any compact metric space can be embedded
-into the Hilbert cube (`ℕ → unitInterval`).
+In this file we prove `exists_closed_embedding_to_hilbert`: every compact metric space can be
+embedded into the Hilbert cube (`ℕ → unitInterval`).
 -/
 
 open Classical in
-/-- Any compact metric space can be embedded into the Hilbert cube. -/
+/-- Every compact metric space can be embedded into the Hilbert cube. -/
 theorem exists_closed_embedding_to_hilbert_cube (X : Type*) [MetricSpace X] [CompactSpace X] :
     ∃ f : X → (ℕ → unitInterval), Topology.IsClosedEmbedding f := by
   let f : X → (ℕ → unitInterval) :=
@@ -24,16 +24,11 @@ theorem exists_closed_embedding_to_hilbert_cube (X : Type*) [MetricSpace X] [Com
         let diam := Metric.diam (Set.univ : Set X)
         have hd1 : d ≤ diam := by
           simp [diam]
-          apply Metric.dist_le_diam_of_mem
-          · rwa [← Metric.compactSpace_iff_isBounded_univ]
-          · simp
-          · simp
+          apply Metric.dist_le_diam_of_mem _ (by simp) (by simp)
+          rwa [← Metric.compactSpace_iff_isBounded_univ]
         have hd2 : (d / diam) ∈ unitInterval := by
           simp only [Set.mem_Icc, diam]
-          constructor
-          · positivity
-          · apply div_le_one_of_le₀ hd1
-            positivity
+          exact ⟨by positivity, div_le_one_of_le₀ hd1 (by positivity)⟩
         ⟨_, hd2⟩
     else
       fun x i ↦ 0
@@ -66,5 +61,4 @@ theorem exists_closed_embedding_to_hilbert_cube (X : Type*) [MetricSpace X] [Com
     simpa using h_dense.exists_dist_lt x (ε := dist x y / 3) (by positivity)
   have hy : dist (s i) y < dist x y / 3 := by
     rwa [dist_comm, ← hxy]
-  have := dist_triangle x (s i) y
-  linarith [dist_nonneg (x := x) (y := y)]
+  linarith [dist_triangle x (s i) y, dist_nonneg (x := x) (y := y)]
