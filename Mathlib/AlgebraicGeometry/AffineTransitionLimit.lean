@@ -114,8 +114,8 @@ lemma exists_mem_of_isClosed_of_nonempty
     simp only [TopologicalSpace.Closeds.coe_mk, id_eq, TopologicalSpace.Closeds.coe_closure,
       coe_support_vanishingIdeal, eq_mpr_eq_cast, subschemeMap_subschemeι, D', ι]
     infer_instance
-  haveI (i) : Nonempty (D'.obj i) := Set.nonempty_coe_sort.mpr (hZne i)
-  haveI (i) : CompactSpace (D'.obj i) := isCompact_iff_compactSpace.mp (hZcpt i)
+  haveI _ (i) : Nonempty (D'.obj i) := Set.nonempty_coe_sort.mpr (hZne i)
+  haveI _ (i) : CompactSpace (D'.obj i) := isCompact_iff_compactSpace.mp (hZcpt i)
   let c' : Cone D' :=
   { pt := (⨆ i, (vanishingIdeal ⟨Z i, hZc i⟩).comap (c.π.app i)).subscheme
     π :=
