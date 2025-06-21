@@ -27,9 +27,7 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 -/
 
 -- Various pieces of algebra that have previously been spuriously imported here:
-assert_not_exists map_ne_zero Field
--- TODO: We should morally be able to strengthen this to `assert_not_exists GroupWithZero`, but
--- finiteness currently relies on more algebra than it needs.
+assert_not_exists map_ne_zero Field GroupWithZero
 
 universe w v₁ v₂ v u₁ u₂ u
 
@@ -190,15 +188,12 @@ theorem colimitLimitToLimitColimit_surjective :
     -- `(f, g j)` and `(𝟙 j', g j')`, both represent the same element in the colimit.
     have w :
       ∀ {j j' : J} (f : j ⟶ j'),
-        colimit.ι ((curry.obj F).obj j') k' (F.map ((𝟙 j', g j') : (j', k j') ⟶ (j', k')) (y j')) =
-          colimit.ι ((curry.obj F).obj j') k' (F.map ((f, g j) : (j, k j) ⟶ (j', k')) (y j)) := by
+        colimit.ι ((curry.obj F).obj j') k' (F.map (Prod.mkHom (𝟙 j') (g j')) (y j')) =
+          colimit.ι ((curry.obj F).obj j') k' (F.map (Prod.mkHom f (g j)) (y j)) := by
       intro j j' f
-      have t : (f, g j) =
-          (((f, 𝟙 (k j)) : (j, k j) ⟶ (j', k j)) ≫ (𝟙 j', g j) : (j, k j) ⟶ (j', k')) := by
-        simp only [id_comp, comp_id, prod_comp]
-      erw [Colimit.w_apply, t, FunctorToTypes.map_comp_apply, Colimit.w_apply, e,
-        ← Limit.w_apply.{u₁, v, u₁} f, ← e]
-      simp only [Functor.comp_map, Types.Colimit.ι_map_apply, curry_obj_map_app]
+      simp only [Colimit.w_apply, ← Bifunctor.diagonal', ← curry_obj_obj_map, ← curry_obj_map_app]
+      rw [types_comp_apply, Colimit.w_apply, e, ← Limit.w_apply.{u₁, v, u₁} f, ← e]
+      simp [Types.Colimit.ι_map_apply]
     -- Because `K` is filtered, we can restate this as saying that
     -- for each such `f`, there is some place to the right of `k'`
     -- where these images of `y j` and `y j'` become equal.
@@ -214,8 +209,8 @@ theorem colimitLimitToLimitColimit_surjective :
           F.map ((f, g j ≫ hf f) : (j, k j) ⟶ (j', kf f)) (y j) :=
       fun {j j'} f => by
       have q :
-        ((curry.obj F).obj j').map (gf f) (F.map ((𝟙 j', g j') : (j', k j') ⟶ (j', k')) (y j')) =
-          ((curry.obj F).obj j').map (hf f) (F.map ((f, g j) : (j, k j) ⟶ (j', k')) (y j)) :=
+        ((curry.obj F).obj j').map (gf f) (F.map (Prod.mkHom (𝟙 j') (g j')) (y j')) =
+          ((curry.obj F).obj j').map (hf f) (F.map (Prod.mkHom f (g j)) (y j)) :=
         (w f).choose_spec.choose_spec.choose_spec
       dsimp only [curry_obj_obj_map, curry_obj_obj_map] at q
       simp_rw [← FunctorToTypes.map_comp_apply, CategoryStruct.comp] at q
@@ -289,20 +284,18 @@ theorem colimitLimitToLimitColimit_surjective :
         intro j j' f
         simp only [← FunctorToTypes.map_comp_apply, prod_comp, id_comp, comp_id]
         calc
-          F.map ((f, g j ≫ gf (𝟙 j) ≫ i (𝟙 j)) : (j, k j) ⟶ (j', k'')) (y j) =
-              F.map ((f, g j ≫ hf f ≫ i f) : (j, k j) ⟶ (j', k'')) (y j) := by
+          F.map (Prod.mkHom f (g j ≫ gf (𝟙 j) ≫ i (𝟙 j))) (y j) =
+              F.map (Prod.mkHom f (g j ≫ hf f ≫ i f)) (y j) := by
             rw [s (𝟙 j) f]
           _ =
-              F.map ((𝟙 j', i f) : (j', kf f) ⟶ (j', k''))
-                (F.map ((f, g j ≫ hf f) : (j, k j) ⟶ (j', kf f)) (y j)) := by
+              F.map (Prod.mkHom (𝟙 j') (i f)) (F.map (Prod.mkHom f (g j ≫ hf f)) (y j)) := by
             rw [← FunctorToTypes.map_comp_apply, prod_comp, comp_id, assoc]
           _ =
-              F.map ((𝟙 j', i f) : (j', kf f) ⟶ (j', k''))
-                (F.map ((𝟙 j', g j' ≫ gf f) : (j', k j') ⟶ (j', kf f)) (y j')) := by
+              F.map (Prod.mkHom (𝟙 j') (i f)) (F.map (Prod.mkHom (𝟙 j') (g j' ≫ gf f)) (y j')) := by
             rw [← wf f]
-          _ = F.map ((𝟙 j', g j' ≫ gf f ≫ i f) : (j', k j') ⟶ (j', k'')) (y j') := by
+          _ = F.map (Prod.mkHom (𝟙 j') (g j' ≫ gf f ≫ i f)) (y j') := by
             rw [← FunctorToTypes.map_comp_apply, prod_comp, id_comp, assoc]
-          _ = F.map ((𝟙 j', g j' ≫ gf (𝟙 j') ≫ i (𝟙 j')) : (j', k j') ⟶ (j', k'')) (y j') := by
+          _ = F.map (Prod.mkHom (𝟙 j') (g j' ≫ gf (𝟙 j') ≫ i (𝟙 j'))) (y j') := by
             rw [s f (𝟙 j'), ← s (𝟙 j') (𝟙 j')]
     -- Finally we check that this maps to `x`.
     · -- We can do this componentwise:
