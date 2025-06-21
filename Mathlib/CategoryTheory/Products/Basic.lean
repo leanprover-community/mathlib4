@@ -66,21 +66,11 @@ namespace Prod
 /-- Construct a morphism in a product category by giving its constituent components.
 This constructor should be preferred over `Prod.mk`, because lean infers better the
 source and target of the resulting morphism. -/
-@[simps]
 abbrev mkHom {X₁ X₂ : C} {Y₁ Y₂ : D} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) : (X₁, Y₁) ⟶ (X₂, Y₂) :=
   ⟨f,g⟩
 
 @[inherit_doc Prod.mkHom]
 scoped infixr:70 " ×ₘ " => Prod.mkHom
-
-@[reassoc (attr := simp)]
-lemma mkHom_comp {X₁ X₂ X₃ : C} {Y₁ Y₂ Y₃ : D}
-    (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) (f' : X₂ ⟶ X₃) (g' : Y₂ ⟶ Y₃) :
-    (f ×ₘ g) ≫ (f' ×ₘ g') = (f ≫ f') ×ₘ (g ≫ g') :=
-  rfl
-
-@[simp]
-lemma mkHom_id {X : C} {Y : D} : (𝟙 X) ×ₘ (𝟙 Y) = 𝟙 (X, Y) := rfl
 
 end Prod
 
