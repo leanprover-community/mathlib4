@@ -22,7 +22,7 @@ import Mathlib.RingTheory.MvPolynomial.Homogeneous
   charts. The `i`ᵗʰ chart is `𝔸({k // k ≠ i}; S) ⟶ ℙ(n; S)`, and represents the open set where
   the function `Xᵢ` does not vanish.
 - Functoriality of `ProjectiveSpace` on the `S` component.
-- Show that a map `Spec A ⟶ ℙ(n; S)` corresponds to a map `p: Spec A ⟶ S` and a unique
+- Show that a map `Spec A ⟶ ℙ(n; S)` corresponds to a map `p : Spec A ⟶ S` and a unique
   `A`-submodule `N` of `n →₀ A` such that `(n →₀ A) ⧸ N` is locally free of rank 1.
 -/
 
