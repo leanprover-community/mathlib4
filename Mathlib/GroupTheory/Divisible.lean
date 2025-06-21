@@ -48,7 +48,7 @@ For additive monoids and groups:
 * `QuotientAddGroup.divisibleBy` : quotient group of divisible group is divisible.
 * `Function.Surjective.divisibleBy` : if `A` is divisible and `A →+ B` is surjective, then `B`
   is divisible.
-* `DivisibleBy.toModule` : a torsion-free ℕ-divisible commutative group is a ℚ-module.
+* `DivisibleBy.module` : a torsion-free ℕ-divisible commutative group is a ℚ-module.
 
 and their multiplicative counterparts:
 
