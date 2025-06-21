@@ -58,6 +58,17 @@ end Quiver
 
 namespace CategoryTheory
 
+section
+
+variable [CategoryStruct.{v₁} C]
+
+/-- The opposite `CategoryStruct`. -/
+instance CategoryStruct.opposite : CategoryStruct.{v₁} Cᵒᵖ where
+  comp f g := (g.unop ≫ f.unop).op
+  id X := (𝟙 (unop X)).op
+
+end
+
 variable [Category.{v₁} C]
 
 /-- The opposite category. -/
