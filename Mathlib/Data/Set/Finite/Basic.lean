@@ -629,6 +629,16 @@ theorem exists_subset_image_finite_and {f : α → β} {s : Set α} {p : Set β 
     Finset.subset_set_image_iff]
   aesop
 
+theorem finset_subset_preimage_of_finite_image
+    {s : Set α} {f : α → β} (h : (f '' s).Finite) :
+    ∃ (s' : Finset α), ↑s' ⊆ s ∧ f '' s' = f '' s ∧ s'.card = h.toFinset.card := by
+  have ⟨s', hs', hs'₁⟩ := Set.exists_subset_bijOn s f
+  have h' := Set.Finite.of_finite_image (hs'₁.image_eq.symm ▸ h) hs'₁.injOn
+  use h'.toFinset
+  rw [Set.Finite.coe_toFinset]
+  exact ⟨hs', hs'₁.image_eq, Finset.card_bijOn _ <|
+    h.coe_toFinset.symm ▸ h'.coe_toFinset.symm ▸ hs'₁⟩
+
 theorem finite_range_ite {p : α → Prop} [DecidablePred p] {f g : α → β} (hf : (range f).Finite)
     (hg : (range g).Finite) : (range fun x => if p x then f x else g x).Finite :=
   (hf.union hg).subset range_ite_subset
