@@ -3,8 +3,8 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Analysis.Normed.Lp.WithLp
-import Mathlib.MeasureTheory.MeasurableSpace.Embedding
+import Mathlib.Analysis.Normed.Lp.PiLp
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Measurable space structure on `WithLp`
@@ -28,7 +28,23 @@ lemma measurable_equiv : Measurable (WithLp.equiv p X) := fun _ h ↦ h
 @[fun_prop, measurability]
 lemma measurable_equiv_symm : Measurable (WithLp.equiv p X).symm := fun _ h ↦ h
 
+variable (Y : Type*) [MeasurableSpace Y] [TopologicalSpace X] [TopologicalSpace Y]
+  [BorelSpace X] [BorelSpace Y] [SecondCountableTopologyEither X Y]
+
+instance borelSpace : BorelSpace (WithLp p (X × Y)) :=
+    inferInstanceAs <| BorelSpace (X × Y)
+
 end WithLp
+
+namespace PiLp
+
+variable {ι : Type*} {X : ι → Type*} [Countable ι] [∀ i, MeasurableSpace (X i)]
+    [∀ i, TopologicalSpace (X i)] [∀ i, BorelSpace (X i)] [∀ i, SecondCountableTopology (X i)]
+
+instance borelSpace : BorelSpace (PiLp p X) :=
+    inferInstanceAs <| BorelSpace (Π i, X i)
+
+end PiLp
 
 namespace MeasurableEquiv
 
