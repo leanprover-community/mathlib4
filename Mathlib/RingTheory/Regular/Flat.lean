@@ -25,7 +25,7 @@ theorem Submodule.Quotient.mk_out {R M : Type*} [Ring R] [AddCommGroup M] [Modul
 
 section Flat
 
-variable {R S M N: Type*} [CommRing R] [CommRing S] [Algebra R S] [Flat R S]
+variable {R S M N : Type*} [CommRing R] [CommRing S] [Algebra R S] [Flat R S]
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] [Module S N]
   [IsScalarTower R S N] {f : M →ₗ[R] N} (hf : IsBaseChange S f) (x : R)
 
@@ -127,14 +127,41 @@ end Flat
 
 section FaithfullyFlat
 
-variable {R S M N: Type*} [CommRing R] [CommRing S] [Algebra R S] [FaithfullyFlat R S]
+variable {R S M N : Type*} [CommRing R] [CommRing S] [Algebra R S] [FaithfullyFlat R S]
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] [Module S N]
   [IsScalarTower R S N] {f : M →ₗ[R] N} (hf : IsBaseChange S f) (x : R)
+
+/- noncomputable def edqecwqd (I : Ideal R) : S ⊗[R] (M ⧸ (I • (⊤ : Submodule R M))) ≃ₗ[R]
+    (S ⊗[R] M) ⧸ I.map (algebraMap R S) • (⊤ : Submodule S (S ⊗[R] M)) := by
+  refine tensorQuotientEquiv S (I • (⊤ : Submodule R M)) ≪≫ₗ ?_
+  --refine Submodule.Quotient.equiv _ _ (LinearEquiv.refl R (S ⊗[R] M)) ?_ -/
+
+noncomputable def baseChange_tensor_equiv : (S ⊗[R] M) ⊗[S] N ≃ₗ[R] M ⊗[R] N :=
+  (TensorProduct.comm S _ N).restrictScalars R ≪≫ₗ
+    ((TensorProduct.AlgebraTensorModule.assoc R S S N S M).restrictScalars R).symm ≪≫ₗ
+      LinearEquiv.rTensor M ((TensorProduct.rid S N).restrictScalars R) ≪≫ₗ TensorProduct.comm R N M
+
+noncomputable def edqecwqd (I : Ideal R) : S ⊗[R] (M ⧸ (I • (⊤ : Submodule R M))) ≃ₗ[R]
+    (S ⊗[R] M) ⧸ I.map (algebraMap R S) • (⊤ : Submodule S (S ⊗[R] M)) := by
+  refine LinearEquiv.lTensor S (tensorQuotEquivQuotSMul M I).symm ≪≫ₗ ?_ ≪≫ₗ
+    (tensorQuotEquivQuotSMul (S ⊗[R] M) (I.map (algebraMap R S))).restrictScalars R
+  sorry
+
+def edqecwq (I : Ideal R) : S ⊗[R] (M ⧸ (I • (⊤ : Submodule R M))) ≃ₗ[R]
+    N ⧸ I.map (algebraMap R S) • (⊤ : Submodule S N) := sorry
 
 include hf
 #check tensorQuotEquivQuotSMul
 theorem Module.FaithfullyFlat.smul_top_ne_top_of_isBaseChange {I : Ideal R}
-    (h : I • (⊤ : Submodule R M) ≠ ⊤) : I.map (algebraMap R S) • (⊤ : Submodule S N) ≠ ⊤ := sorry
+    (h : I • (⊤ : Submodule R M) ≠ ⊤) : I.map (algebraMap R S) • (⊤ : Submodule S N) ≠ ⊤ := by
+  intro eq
+  have : Nontrivial (M ⧸ (I • (⊤ : Submodule R M))) :=
+    Submodule.Quotient.nontrivial_of_lt_top (I • ⊤) h.lt_top
+  have := Submodule.subsingleton_quotient_iff_eq_top.mpr eq
+  have := tensorQuotEquivQuotSMul N (I.map (algebraMap R S))
+  have := hf.equiv
+  have := LinearEquiv.rTensor (S ⧸ Ideal.map (algebraMap R S) I) hf.equiv
+  sorry
 
 /-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be a faithfully flat `R`-algebra.
   If `[r₁, …, rₙ]` is a regular `M`-sequence, then its image in `S ⊗[R] M` is a regular
