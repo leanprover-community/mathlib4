@@ -82,8 +82,33 @@ example (a : Fin 2 → α) : a = ![a 0, a 1] :=
 theorem etaExpand_eq {m} (v : Fin m → α) : etaExpand v = v :=
   map_eq id v
 
-example (a : Fin 2 → α) : a = ![a 0, a 1] :=
-  (etaExpand_eq _).symm
+
+section
+open Qq
+local elab "eta_tac" : tactic => do
+  Lean.Elab.Tactic.liftMetaFinishingTactic fun m => do
+    have h := .mvar m
+    let ⟨0, ~q(($lhs : Fin $en → ($α : Type _)) = $rhs), h⟩ := ← inferTypeQ h
+      | throwError "Could not infer type for eta"
+    let .some n := en.nat?
+      | throwError "Vector is not of a known length"
+    have new_rhs : Q(Fin $en → $α) := PiFin.mkLiteralQ fun i : Fin n =>
+      let ei : Q(Fin $en) := Lean.toExpr i
+      q($lhs $ei)
+    have : $new_rhs =Q etaExpand $lhs := ⟨⟩
+    Lean.commitIfNoEx do
+      let .defEq _ := ← isDefEqQ q($rhs) q($new_rhs)
+        | throwError "Could not assign RHS"
+      h.mvarId!.assignIfDefEq q(etaExpand_eq $lhs |>.symm)
+
+/-- This "rw_proc" expands `v` into `![v 0, v 1, ⋯]`. -/
+theorem eta {m} (v : Fin m → α) {«![v 0, v 1, ⋯]»} (h : v = «![v 0, v 1, ⋯]» := by eta_tac) :
+    v = «![v 0, v 1, ⋯]» := h
+end
+
+example (a : Fin 2 → α) : a = ![a 0, a 1] := by
+  conv_lhs => rw [eta a]
+
 
 /-- `∀` with better defeq for `∀ x : Fin m → α, P x`. -/
 def Forall : ∀ {m} (_ : (Fin m → α) → Prop), Prop
