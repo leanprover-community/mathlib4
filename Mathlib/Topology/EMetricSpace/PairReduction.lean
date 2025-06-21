@@ -78,7 +78,7 @@ lemma card_le_logSizeRadius_ge (ha : 1 < a) (ht : t ∈ V) :
   refine (h ?_).le
   omega
 
-/- A structure for carrying the data of `logSizeBallSeq` -/
+/-- A structure for carrying the data of `logSizeBallSeq` -/
 structure logSizeBallStruct (T : Type*) where
   finset : Finset T
   point : T
