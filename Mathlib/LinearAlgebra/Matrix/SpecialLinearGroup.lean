@@ -272,7 +272,7 @@ def center_equiv_rootsOfUnity' (i : n) :
     simpa [← hr, Submonoid.smul_def, Units.smul_def] using smul_one_eq_diagonal r
   right_inv a := by
     obtain ⟨⟨a, _⟩, ha⟩ := a
-    exact SetCoe.ext <| Units.eq_iff.mp <| by simp
+    exact SetCoe.ext <| Units.ext <| by simp
   map_mul' A B := by
     dsimp
     ext

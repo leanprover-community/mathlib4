@@ -61,7 +61,7 @@ variable (M₀ : Type*) [MonoidWithZero M₀] [Nontrivial M₀]
 
 open scoped Classical in
 theorem card_units_lt [Fintype M₀] : Fintype.card M₀ˣ < Fintype.card M₀ :=
-  Fintype.card_lt_of_injective_of_notMem Units.val Units.ext not_isUnit_zero
+  Fintype.card_lt_of_injective_of_notMem Units.val Units.val_injective not_isUnit_zero
 
 lemma natCard_units_lt [Finite M₀] : Nat.card M₀ˣ < Nat.card M₀ := by
   have : Fintype M₀ := Fintype.ofFinite M₀

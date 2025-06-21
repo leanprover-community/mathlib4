@@ -26,7 +26,7 @@ theorem det_conjAe : LinearMap.det conjAe.toLinearMap = -1 := by
 /-- The determinant of `conjAe`, as a linear equiv. -/
 @[simp]
 theorem linearEquiv_det_conjAe : LinearEquiv.det conjAe.toLinearEquiv = -1 := by
-  rw [← Units.eq_iff, LinearEquiv.coe_det, AlgEquiv.toLinearEquiv_toLinearMap, det_conjAe,
+  rw [← Units.val_inj, LinearEquiv.coe_det, AlgEquiv.toLinearEquiv_toLinearMap, det_conjAe,
     Units.coe_neg_one]
 
 end Complex

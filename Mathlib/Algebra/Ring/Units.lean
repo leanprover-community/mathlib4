@@ -39,8 +39,7 @@ protected theorem val_neg (u : αˣ) : (↑(-u) : α) = -u :=
 protected theorem coe_neg_one : ((-1 : αˣ) : α) = -1 :=
   rfl
 
-instance : HasDistribNeg αˣ :=
-  Units.ext.hasDistribNeg _ Units.val_neg Units.val_mul
+instance : HasDistribNeg αˣ := val_injective.hasDistribNeg _ Units.val_neg val_mul
 
 @[field_simps]
 theorem neg_divp (a : α) (u : αˣ) : -(a /ₚ u) = -a /ₚ u := by simp only [divp, neg_mul]
