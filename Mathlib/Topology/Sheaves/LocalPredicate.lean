@@ -186,13 +186,15 @@ theorem sheafify_inductionOn' {X : TopCat} {T : X → Type*} (P : PrelocalPredic
 closed under the operation on each open set (possibly by refinement), then the sheafified predicate
 is also closed under the operation. See `sheafify_inductionOn₂'` for the version without
 refinement. -/
-theorem sheafify_inductionOn₂ {X : TopCat} {T : X → Type*} (P : PrelocalPredicate T)
-    (op : {x : X} → T x → T x → T x)
-    (hop : ∀ {U V : Opens X} {a : (x : U) → T x} {b : (x : V) → T x}, P.pred a → P.pred b →
+theorem sheafify_inductionOn₂ {X : TopCat} {T₁ T₂ T₃ : X → Type*}
+    (P₁ : PrelocalPredicate T₁) (P₂ : PrelocalPredicate T₂) (P₃ : PrelocalPredicate T₃)
+    (op : {x : X} → T₁ x → T₂ x → T₃ x)
+    (hop : ∀ {U V : Opens X} {a : (x : U) → T₁ x} {b : (x : V) → T₂ x}, P₁.pred a → P₂.pred b →
       ∀ (p : (U ⊓ V : Opens X)), ∃ (W : Opens X) (ia : W ⟶ U) (ib : W ⟶ V),
-      p.1 ∈ W ∧ P.pred fun x : W ↦ op (a (ia x)) (b (ib x)))
-    {U : Opens X} {a b : (x : U) → T x} (ha : P.sheafify.pred a) (hb : P.sheafify.pred b) :
-    P.sheafify.pred (fun x : U ↦ op (a x) (b x)) := by
+      p.1 ∈ W ∧ P₃.pred fun x : W ↦ op (a (ia x)) (b (ib x)))
+    {U : Opens X} {a : (x : U) → T₁ x} {b : (x : U) → T₂ x}
+    (ha : P₁.sheafify.pred a) (hb : P₂.sheafify.pred b) :
+    P₃.sheafify.pred (fun x : U ↦ op (a x) (b x)) := by
   intro x
   rcases ha x with ⟨Va, ma, ia, ha⟩
   rcases hb x with ⟨Vb, mb, ib, hb⟩
@@ -202,13 +204,15 @@ theorem sheafify_inductionOn₂ {X : TopCat} {T : X → Type*} (P : PrelocalPred
 /-- For a binary operation (e.g. `x ↦ y ↦ x + y`) defined at each stalk, if a prelocal predicate is
 closed under the operation on each open set, then the sheafified predicate is also closed under the
 operation. See `sheafify_inductionOn₂` for the version with refinement. -/
-theorem sheafify_inductionOn₂' {X : TopCat} {T : X → Type*} (P : PrelocalPredicate T)
-    (op : {x : X} → T x → T x → T x)
-    (hop : ∀ {U V : Opens X} {a : (x : U) → T x} {b : (x : V) → T x}, P.pred a → P.pred b →
-      P.pred fun x : ((U ⊓ V : Opens X)) ↦ op (a ⟨x, x.2.1⟩) (b ⟨x, x.2.2⟩))
-    {U : Opens X} {a b : (x : U) → T x} (ha : P.sheafify.pred a) (hb : P.sheafify.pred b) :
-    P.sheafify.pred (fun x : U ↦ op (a x) (b x)) :=
-  P.sheafify_inductionOn₂ op
+theorem sheafify_inductionOn₂' {X : TopCat} {T₁ T₂ T₃ : X → Type*}
+    (P₁ : PrelocalPredicate T₁) (P₂ : PrelocalPredicate T₂) (P₃ : PrelocalPredicate T₃)
+    (op : {x : X} → T₁ x → T₂ x → T₃ x)
+    (hop : ∀ {U V : Opens X} {a : (x : U) → T₁ x} {b : (x : V) → T₂ x}, P₁.pred a → P₂.pred b →
+      P₃.pred fun x : (U ⊓ V : Opens X) ↦ op (a ⟨x, x.2.1⟩) (b ⟨x, x.2.2⟩))
+    {U : Opens X} {a : (x : U) → T₁ x} {b : (x : U) → T₂ x}
+    (ha : P₁.sheafify.pred a) (hb : P₂.sheafify.pred b) :
+    P₃.sheafify.pred (fun x : U ↦ op (a x) (b x)) :=
+  P₁.sheafify_inductionOn₂ P₂ P₃ op
     (fun ha hb p ↦ ⟨_, Opens.infLELeft _ _, Opens.infLERight _ _, p.2, hop ha hb⟩) ha hb
 
 end PrelocalPredicate
