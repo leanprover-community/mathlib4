@@ -71,9 +71,9 @@ theorem units_val {a x y : Mˣ} (h : SemiconjBy a x y) : SemiconjBy (a : M) x y 
 theorem units_of_val {a x y : Mˣ} (h : SemiconjBy (a : M) x y) : SemiconjBy a x y :=
   Units.ext h
 
-@[to_additive (attr := simp)]
-theorem units_val_iff {a x y : Mˣ} : SemiconjBy (a : M) x y ↔ SemiconjBy a x y :=
-  ⟨units_of_val, units_val⟩
+@[to_additive]
+theorem units_val_iff {a x y : Mˣ} : SemiconjBy a x y ↔ SemiconjBy (a : M) x y :=
+  ⟨units_val, units_of_val⟩
 
 @[to_additive (attr := simp)]
 lemma units_zpow_right {a : M} {x y : Mˣ} (h : SemiconjBy a x y) :

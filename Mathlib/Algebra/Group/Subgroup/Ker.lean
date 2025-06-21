@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.Algebra.Group.Subgroup.Map
+import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Tactic.ApplyFun
 
 /-!
