@@ -262,34 +262,60 @@ theorem val_mulMapLeft_tmul (H' : A ⊔ B = ⊤) (a : A) (b : B) :
 If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, and if they are
 linearly disjoint and such that `A ⊔ B = S`, then any `R`-basis of `B` is also a `A`-basis of `S`.
 -/
-noncomputable def _root_.Basis.ofLinearDisjoint (H' : A ⊔ B = ⊤)
+noncomputable def _root_.Basis.ofLinearDisjointLeft (H' : A ⊔ B = ⊤)
     {ι : Type*} (b : Basis ι R B) : Basis ι A S :=
   (b.baseChange A).map (H.mulMapLeft H').toLinearEquiv
 
 @[simp]
-theorem _root_.Basis.ofLinearDisjoint_apply (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R B) (i : ι) :
-    b.ofLinearDisjoint H H' i = algebraMap B S (b i) := by
-  simp only [Basis.ofLinearDisjoint, Basis.map_apply, Basis.baseChange_apply,
+theorem _root_.Basis.ofLinearDisjointLeft_apply (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R B)
+    (i : ι) :
+    b.ofLinearDisjointLeft H H' i = algebraMap B S (b i) := by
+  simp only [Basis.ofLinearDisjointLeft, Basis.map_apply, Basis.baseChange_apply,
     AlgEquiv.toLinearEquiv_apply, val_mulMapLeft_tmul, OneMemClass.coe_one, one_mul]
   rfl
 
-theorem _root_.Basis.ofLinearDisjoint_repr_apply (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R B)
+theorem _root_.Basis.ofLinearDisjointLeft_repr_apply (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R B)
     (x : B) (i : ι) :
-    algebraMap A S ((b.ofLinearDisjoint H H').repr x i) = algebraMap R S (b.repr x i) := by
-  simp only [Basis.ofLinearDisjoint, Basis.map_repr, LinearEquiv.trans_apply,
+    algebraMap A S ((b.ofLinearDisjointLeft H H').repr x i) = algebraMap R S (b.repr x i) := by
+  simp only [Basis.ofLinearDisjointLeft, Basis.map_repr, LinearEquiv.trans_apply,
     AlgEquiv.coe_symm_toLinearEquiv]
-  have : (H.mulMapLeft H').symm x = (1 ⊗ₜ[R] x) := (H.mulMapLeft H').symm_apply_eq.mpr (by simp)
+  have : (H.mulMapLeft H').symm x = 1 ⊗ₜ[R] x := (H.mulMapLeft H').symm_apply_eq.mpr (by simp)
   simp [this, Algebra.algebraMap_eq_smul_one]
 
-theorem _root_.Basis.ofLinearDisjoint_leftMulMatrix_eq (H' : A ⊔ B = ⊤) {ι : Type*} [Fintype ι]
+theorem _root_.Basis.ofLinearDisjointLeft_leftMulMatrix_eq (H' : A ⊔ B = ⊤) {ι : Type*} [Fintype ι]
     [DecidableEq ι] (b : Basis ι R B) (x : B) :
-    Algebra.leftMulMatrix (b.ofLinearDisjoint H H') (algebraMap B S x) =
+    Algebra.leftMulMatrix (b.ofLinearDisjointLeft H H') (algebraMap B S x) =
       RingHom.mapMatrix (algebraMap R A) (Algebra.leftMulMatrix b x) := by
   ext
-  simp only [Algebra.leftMulMatrix_eq_repr_mul, Basis.ofLinearDisjoint_apply,
+  simp only [Algebra.leftMulMatrix_eq_repr_mul, Basis.ofLinearDisjointLeft_apply,
     RingHom.mapMatrix_apply, Matrix.map_apply, SubalgebraClass.coe_algebraMap, ←
-    b.ofLinearDisjoint_repr_apply H H', MulMemClass.coe_mul]
+    b.ofLinearDisjointLeft_repr_apply H H', MulMemClass.coe_mul]
   rfl
+
+/--
+If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, and if they are
+linearly disjoint and such that `A ⊔ B = S`, then any `R`-basis of `A` is also a `B`-basis of `S`.
+-/
+noncomputable def _root_.Basis.ofLinearDisjointRight (H' : A ⊔ B = ⊤)
+    {ι : Type*} (b : Basis ι R A) : Basis ι B S :=
+  (b.baseChange B).map (H.symm.mulMapLeft (by rwa [sup_comm])).toLinearEquiv
+
+@[simp]
+theorem _root_.Basis.ofLinearDisjointRight_apply (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R A)
+    (i : ι) :
+    b.ofLinearDisjointRight H H' i = algebraMap A S (b i) :=
+  b.ofLinearDisjointLeft_apply H.symm (by rwa [sup_comm]) i
+
+theorem _root_.Basis.ofLinearDisjointRight_repr_apply (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R A)
+    (x : A) (i : ι) :
+    algebraMap B S ((b.ofLinearDisjointRight H H').repr x i) = algebraMap R S (b.repr x i) :=
+  b.ofLinearDisjointLeft_repr_apply H.symm (by rwa [sup_comm]) x i
+
+theorem _root_.Basis.ofLinearDisjointRight_leftMulMatrix_eq (H' : A ⊔ B = ⊤) {ι : Type*} [Fintype ι]
+    [DecidableEq ι] (b : Basis ι R A) (x : A) :
+    Algebra.leftMulMatrix (b.ofLinearDisjointRight H H') (algebraMap A S x) =
+      RingHom.mapMatrix (algebraMap R B) (Algebra.leftMulMatrix b x) :=
+  b.ofLinearDisjointLeft_leftMulMatrix_eq H.symm (by rwa [sup_comm]) x
 
 include H in
 /-- If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, and if they are
@@ -520,8 +546,8 @@ theorem trace_algebraMap_eq_of_basis (H : A.LinearDisjoint B) (H' : A ⊔ B = �
     [Fintype ι] [DecidableEq ι] (b : Basis ι R B) (x : B) :
     Algebra.trace A S (algebraMap B S x) = algebraMap R A (Algebra.trace R B x) := by
   simp_rw [Algebra.trace_eq_matrix_trace b,
-    Algebra.trace_eq_matrix_trace (b.ofLinearDisjoint H H'),
-    Matrix.trace, map_sum, b.ofLinearDisjoint_leftMulMatrix_eq, RingHom.mapMatrix_apply,
+    Algebra.trace_eq_matrix_trace (b.ofLinearDisjointLeft H H'),
+    Matrix.trace, map_sum, b.ofLinearDisjointLeft_leftMulMatrix_eq, RingHom.mapMatrix_apply,
     Matrix.diag_apply, Matrix.map_apply]
 
 /--
@@ -531,8 +557,8 @@ linearly disjoint and such that `A ⊔ B = S`, then `norm` and `algebraMap` comm
 theorem norm_algebraMap_eq_of_basis (H : A.LinearDisjoint B) (H' : A ⊔ B = ⊤) {ι : Type*}
     [Fintype ι] [DecidableEq ι] (b : Basis ι R B) (x : B) :
     Algebra.norm A (algebraMap B S x) = algebraMap R A (Algebra.norm R x) := by
-  simp_rw [Algebra.norm_eq_matrix_det b, Algebra.norm_eq_matrix_det (b.ofLinearDisjoint H H'),
-    b.ofLinearDisjoint_leftMulMatrix_eq, RingHom.map_det]
+  simp_rw [Algebra.norm_eq_matrix_det b, Algebra.norm_eq_matrix_det (b.ofLinearDisjointLeft H H'),
+    b.ofLinearDisjointLeft_leftMulMatrix_eq, RingHom.map_det]
 
 /-- In a commutative ring, if `A` and `B` are linearly disjoint, if `B` is a flat `R`-module,
 then for any family of `R`-linearly independent elements of `A`,
