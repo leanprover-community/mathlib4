@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Jack McKoen
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Basic
+import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
@@ -21,7 +21,7 @@ category structure on `SSet`.
 
 universe u
 
-open Simplicial CategoryTheory MonoidalCategory
+open Simplicial CategoryTheory MonoidalCategory Limits
 
 namespace SSet
 
@@ -85,5 +85,10 @@ def unitHomEquiv (K : SSet.{u}) : (𝟙_ _ ⟶ K) ≃ K _⦋0⦌ where
     rw [← FunctorToTypes.naturality]
     rfl
   right_inv x := by simp
+
+/-- The object `Δ[0]` is terminal in `SSet`. -/
+def isTerminalDeltaZero : IsTerminal (Δ[0] : SSet.{u}) where
+  lift S := { app := fun X _ => ULift.up <| SimplexCategory.isTerminalZero.from _ }
+  uniq := by intros ; ext ; apply ULift.ext ; apply SimplexCategory.isTerminalZero.hom_ext
 
 end SSet
