@@ -18,7 +18,7 @@ import Mathlib.Tactic.Qify
 This file provides embedding of any archimedean groups into reals.
 
 ## Main declarations
-* `orderAddMonoidHom_real` defines a `M →+o ℝ` for archimedean group `M`
+* `embedReal` defines an injective `M →+o ℝ` for archimedean group `M`
   that maps a given positive element to the real number 1.
 * `exists_orderAddMonoidHom_real_injective` states there exists an injective `M →+o ℝ`
   for any archimedean group `M`.
@@ -48,7 +48,7 @@ abbrev ratLt' (one x : M) : Set ℝ := (Rat.castHom ℝ) '' (ratLt one x)
 
 /-- Mapping `M` to `ℝ`, defined as the supremum of `ratLt' one x`. -/
 noncomputable
-abbrev embed_real (one : M) (x : M) := sSup (ratLt' one x)
+abbrev embedRealFun (one : M) (x : M) := sSup (ratLt' one x)
 
 variable [Archimedean M]
 
@@ -147,7 +147,7 @@ theorem ratLt'_add {one : M} (hpos : 0 < one) (x y : M) :
   unfold ratLt'
   rw [ratLt_add hpos, Set.image_add]
 
-theorem embed_real_zero {one : M} (hpos : 0 < one) : embed_real one 0 = 0 := by
+theorem embedRealFun_zero {one : M} (hpos : 0 < one) : embedRealFun one 0 = 0 := by
   apply le_antisymm
   · apply csSup_le (ratLt'_nonempty hpos 0)
     intro x
@@ -170,19 +170,19 @@ theorem embed_real_zero {one : M} (hpos : 0 < one) : embed_real one 0 = 0 := by
     obtain ⟨y, hxy, hy⟩ := exists_rat_btwn h'
     exact ⟨y, by simpa using hy, hxy⟩
 
-theorem embed_real_add {one : M} (hpos : 0 < one) (x y : M) :
-    embed_real one (x + y) = embed_real one x + embed_real one y := by
-  unfold embed_real
+theorem embedRealFun_add {one : M} (hpos : 0 < one) (x y : M) :
+    embedRealFun one (x + y) = embedRealFun one x + embedRealFun one y := by
+  unfold embedRealFun
   rw [ratLt'_add hpos]
   rw [csSup_add (ratLt'_nonempty hpos x) (ratLt'_bddAbove hpos x)
     (ratLt'_nonempty hpos y) (ratLt'_bddAbove hpos y)]
 
-theorem embed_real_strictMono {one : M} (hpos : 0 < one) : StrictMono (embed_real one) := by
+theorem embedRealFun_strictMono {one : M} (hpos : 0 < one) : StrictMono (embedRealFun one) := by
   intro x y h
   have hyz : 0 < y - x := sub_pos.mpr h
   have hy : y = y - x + x := (sub_add_cancel y x).symm
   apply lt_of_sub_pos
-  rw [hy, embed_real_add hpos, add_sub_cancel_right]
+  rw [hy, embedRealFun_add hpos, add_sub_cancel_right]
   obtain ⟨n, hn⟩ := Archimedean.arch one hyz
   have : (Rat.mk' 1 (n + 1) (by simp) (by simp) : ℝ) ∈ ratLt' one (y - x) := by
     simpa using hn.trans_lt <| nsmul_lt_nsmul_left hyz (show n < n + 1 by simp)
@@ -193,22 +193,22 @@ theorem embed_real_strictMono {one : M} (hpos : 0 < one) : StrictMono (embed_rea
 /-- The bundled `M →+o ℝ` for archimedean `M`.
 The given element `one` is mapped to the real number 1. -/
 noncomputable
-def orderAddMonoidHom_real {one : M} (hpos : 0 < one) : M →+o ℝ where
-  toFun := embed_real one
-  map_zero' := embed_real_zero hpos
-  map_add' := embed_real_add hpos
-  monotone' := (embed_real_strictMono hpos).monotone
+def embedReal {one : M} (hpos : 0 < one) : M →+o ℝ where
+  toFun := embedRealFun one
+  map_zero' := embedRealFun_zero hpos
+  map_add' := embedRealFun_add hpos
+  monotone' := (embedRealFun_strictMono hpos).monotone
 
-theorem orderAddMonoidHom_real_apply {one : M} (hpos : 0 < one) (a : M):
-    (orderAddMonoidHom_real hpos) a = embed_real one a := by rfl
+theorem embedReal_apply {one : M} (hpos : 0 < one) (a : M):
+    (embedReal hpos) a = embedRealFun one a := by rfl
 
-theorem orderAddMonoidHom_real_injective {one : M} (hpos : 0 < one) :
-    Function.Injective (orderAddMonoidHom_real hpos) :=
-  (embed_real_strictMono hpos).injective
+theorem embedReal_injective {one : M} (hpos : 0 < one) :
+    Function.Injective (embedReal hpos) :=
+  (embedRealFun_strictMono hpos).injective
 
-theorem orderAddMonoidHom_real_one {one : M} (hpos : 0 < one) :
-    (orderAddMonoidHom_real hpos) one = 1 := by
-  rw [orderAddMonoidHom_real_apply]
+theorem embedReal_one {one : M} (hpos : 0 < one) :
+    (embedReal hpos) one = 1 := by
+  rw [embedReal_apply]
   apply le_antisymm
   · apply csSup_le (ratLt'_nonempty hpos one)
     suffices ∀ (x : ℚ), x.num • one < (x.den : ℤ) • one → (x : ℝ) ≤ 1 by simpa using this
@@ -237,6 +237,6 @@ theorem exists_orderAddMonoidHom_real_injective :
   · have : Nontrivial M := not_subsingleton_iff_nontrivial.mp h
     obtain ⟨a, ha⟩ := exists_ne (0 : M)
     have ha : 0 < |a| := by simpa using ha
-    exact ⟨orderAddMonoidHom_real ha, orderAddMonoidHom_real_injective ha⟩
+    exact ⟨embedReal ha, embedReal_injective ha⟩
 
 end Archimedean
