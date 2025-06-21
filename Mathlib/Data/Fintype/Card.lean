@@ -422,7 +422,7 @@ theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [
   cases nonempty_fintype α
   have (x y) (hxy : r x y) : #{z | r z x} < #{z | r z y} :=
     Finset.card_lt_card <| by
-      simp only [Finset.lt_iff_ssubset.symm, lt_iff_le_not_le, Finset.le_iff_subset,
+      simp only [Finset.lt_iff_ssubset.symm, lt_iff_le_not_ge, Finset.le_iff_subset,
           Finset.subset_iff, mem_filter, true_and, mem_univ, hxy]
       exact
         ⟨fun z hzx => _root_.trans hzx hxy,
@@ -489,9 +489,7 @@ theorem Fintype.card_fin_lt_of_le {m n : ℕ} (h : m ≤ n) :
   conv_rhs => rw [← Fintype.card_fin m]
   apply Fintype.card_congr
   exact { toFun := fun ⟨⟨i, _⟩, hi⟩ ↦ ⟨i, hi⟩
-          invFun := fun ⟨i, hi⟩ ↦ ⟨⟨i, lt_of_lt_of_le hi h⟩, hi⟩
-          left_inv := fun i ↦ rfl
-          right_inv := fun i ↦ rfl }
+          invFun := fun ⟨i, hi⟩ ↦ ⟨⟨i, lt_of_lt_of_le hi h⟩, hi⟩ }
 
 theorem Finset.card_fin (n : ℕ) : #(univ : Finset (Fin n)) = n := by simp
 

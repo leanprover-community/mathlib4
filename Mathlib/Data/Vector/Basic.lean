@@ -728,16 +728,16 @@ theorem replicate_succ (val : α) :
 section Append
 variable (ys : Vector α m)
 
-@[simp] lemma get_append_cons_zero : get (append (x ::ᵥ xs) ys) 0 = x := rfl
+@[simp] lemma get_append_cons_zero : get (x ::ᵥ xs ++ ys) 0 = x := rfl
 
 @[simp]
 theorem get_append_cons_succ {i : Fin (n + m)} {h} :
-    get (append (x ::ᵥ xs) ys) ⟨i+1, h⟩ = get (append xs ys) i :=
+    get (x ::ᵥ xs ++ ys) ⟨i+1, h⟩ = get (xs ++ ys) i :=
   rfl
 
 @[simp]
-theorem append_nil : append xs nil = xs := by
-  cases xs; simp [append]
+theorem append_nil : xs ++ (nil : Vector α 0) = xs := by
+  cases xs; simp only [append_def, append_nil]
 
 end Append
 
