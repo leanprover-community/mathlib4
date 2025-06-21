@@ -1,0 +1,41 @@
+name: automatically assign reviewers
+
+on:
+  schedule:
+    - cron: "37 0 * * *" # At 00:37 UTC every day
+  push:
+
+jobs:
+  autoassign-reviewers:
+    name: assign automatically proposed reviewers
+    runs-on: ubuntu-latest
+    steps:
+      - name: download auto-assignments
+        run: |
+          curl --output assignments.json https://leanprover-community.github.io/queueboard/automatic_assignments.json
+      # The Hoskinson runners may not have jq installed, so do that now.
+      - name: 'Setup jq'
+        uses: dcarbone/install-jq-action@f0e10f46ff84f4d32178b4b76e1ef180b16f82c3 # v3.1.1
+
+      # Parse the json file
+      - name: parse assignments file and assign reviewers
+        run: |
+          # The assignments file has entries of the form "2234": "user_handle".
+          # Use grep to select only the PR numbers, and sed to the trailing comma, as well as
+          # any whitespace (both at the line start and after the colon).
+          lines=$(jq "." assignments.json | grep '"' | sed 's/,*$//' | sed 's/ *//' | sed 's/ //')
+          for line in $lines; do
+            # |line| has the form _"234":"user_handle"_ (without the underscores).
+            # Use cut to extract the parts around the colon, and sed to remove the quotes.
+            pr_number=$(echo $line | cut -d ":" -f1 | sed 's/"//' | sed 's/"//')
+            handle=$(echo $line | cut -d ":" -f2 | sed 's/"//' | sed 's/"//')
+            printf 'about to assign PR "%s" to "%s"\n' "${pr_number}" "${handle}"
+            # This keeps any existing assignee on the PR.
+            curl --location \
+              --request POST \
+              --header "Accept: application/vnd.github+json" \
+              --header 'authorization: Bearer ${{ secrets.ASSIGN_REVIEWERS }}' \
+              --header "X-GitHub-Api-Version: 2022-11-28" \
+              https://api.github.com/repos/leanprover-community/mathlib4/issues/$pr_number/assignees \
+              --data '{"assignees":["$handle"]}'
+          done
