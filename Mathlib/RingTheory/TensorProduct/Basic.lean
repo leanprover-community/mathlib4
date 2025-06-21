@@ -1059,6 +1059,22 @@ lemma tmul_one_eq_one_tmul (r : R) : algebraMap R A r ⊗ₜ[R] 1 = 1 ⊗ₜ alg
 
 end
 
+variable (R A B) in
+lemma closure_range_union_range_eq_top [CommRing R] [Ring A] [Ring B]
+    [Algebra R A] [Algebra R B] :
+    Subring.closure (Set.range (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] B) ∪
+      Set.range Algebra.TensorProduct.includeRight) = ⊤ := by
+  rw [← top_le_iff]
+  rintro x -
+  induction x with
+  | zero => exact zero_mem _
+  | tmul x y =>
+    convert_to (Algebra.TensorProduct.includeLeftRingHom (R := R) x) *
+      (Algebra.TensorProduct.includeRight y) ∈ _
+    · simp
+    · exact mul_mem (Subring.subset_closure (.inl ⟨x, rfl⟩))
+        (Subring.subset_closure (.inr ⟨_, rfl⟩))
+  | add x y _ _ => exact add_mem ‹_› ‹_›
 section
 
 variable [CommSemiring R] [Semiring A] [Semiring B] [CommSemiring S]
