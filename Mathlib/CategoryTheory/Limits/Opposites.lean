@@ -769,15 +769,9 @@ def opProdIsoCoprod : op (A ⨯ B) ≅ (op A ⨿ op B) where
   hom := (prod.lift coprod.inl.unop coprod.inr.unop).op
   inv := coprod.desc prod.fst.op prod.snd.op
   hom_inv_id := by
-    apply Quiver.Hom.unop_inj
     ext <;>
     · simp only [limit.lift_π]
       apply Quiver.Hom.op_inj
-      simp
-  inv_hom_id := by
-    ext <;>
-    · simp only [colimit.ι_desc_assoc]
-      apply Quiver.Hom.unop_inj
       simp
 
 @[reassoc (attr := simp)]

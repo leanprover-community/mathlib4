@@ -702,10 +702,7 @@ def piConst [Limits.HasProducts.{w} C] : C ⥤ Type wᵒᵖ ⥤ C where
 def piConstAdj [Limits.HasProducts.{v} C] (X : C) :
     (piConst.obj X).rightOp ⊣ yoneda.obj X where
   unit := { app n i := Limits.Pi.π (fun _ : n ↦ X) i }
-  counit :=
-  { app Y := (Limits.Pi.lift id).op,
-    naturality _ _ _ := by apply Quiver.Hom.unop_inj; aesop_cat }
-  left_triangle_components _ := by apply Quiver.Hom.unop_inj; aesop_cat
+  counit := { app Y := (Limits.Pi.lift id).op }
 
 /-- The functor sending `(X, n)` to the coproduct of copies of `X` indexed by `n`. -/
 @[simps]

@@ -921,13 +921,8 @@ def simplicialToCosimplicialAugmented :
   obj X := X.unop.rightOp
   map f :=
     { left := f.unop.right.op
-      right := NatTrans.rightOp f.unop.left
-      w := by
-        ext x
-        dsimp
-        simp_rw [← op_comp]
-        congr 1
-        exact (congr_app f.unop.w (op x)).symm }
+      right := f.unop.left.rightOp
+      w := by ext x; exact (congr_app f.unop.w (op x)).symm }
 
 /-- A functorial version of `Cosimplicial_object.Augmented.leftOp`. -/
 @[simps]
