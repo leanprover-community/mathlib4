@@ -419,7 +419,7 @@ lemma differentiable_completedHurwitzZetaEven₀ (a : UnitAddCircle) :
 lemma differentiableAt_one_completedHurwitzZetaEven_sub_completedHurwitzZetaEven
     (a b : UnitAddCircle) :
     DifferentiableAt ℂ (fun s ↦ completedHurwitzZetaEven a s - completedHurwitzZetaEven b s) 1 := by
-  have (s) : completedHurwitzZetaEven a s - completedHurwitzZetaEven b s =
+  have (s : _) : completedHurwitzZetaEven a s - completedHurwitzZetaEven b s =
       completedHurwitzZetaEven₀ a s - completedHurwitzZetaEven₀ b s -
       ((if a = 0 then 1 else 0) - (if b = 0 then 1 else 0)) / s := by
     simp_rw [completedHurwitzZetaEven_eq, sub_div]
