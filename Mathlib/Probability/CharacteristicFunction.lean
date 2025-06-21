@@ -30,7 +30,7 @@ lemma test (mX : AEMeasurable X μ) (mY : AEMeasurable Y μ) (h : IndepFun X Y �
   simp
   rw [← integral_prod_mul (fun x ↦ exp (⟪x, t.1⟫ * I))
       (fun x ↦ exp (⟪x, t.2⟫ * I))]
-  apply?
+
   congr 1
 
   conv_lhs => enter [1, 1]; change id
