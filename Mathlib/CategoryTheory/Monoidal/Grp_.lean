@@ -30,8 +30,8 @@ section
 class Grp_Class (X : C) extends Mon_Class X where
   /-- The inverse in a group object -/
   inv : X ⟶ X
-  left_inv' : lift inv (𝟙 X) ≫ mul = toUnit _ ≫ one := by aesop_cat
-  right_inv' : lift (𝟙 X) inv ≫ mul = toUnit _ ≫ one := by aesop_cat
+  left_inv (X) : lift inv (𝟙 X) ≫ mul = toUnit _ ≫ one := by aesop_cat
+  right_inv (X) : lift (𝟙 X) inv ≫ mul = toUnit _ ≫ one := by aesop_cat
 
 namespace Mon_Class
 
@@ -42,11 +42,7 @@ end Mon_Class
 
 namespace Grp_Class
 
-@[reassoc (attr := simp)]
-theorem left_inv (X : C) [Grp_Class X] : lift ι (𝟙 X) ≫ μ = toUnit _ ≫ η := left_inv'
-
-@[reassoc (attr := simp)]
-theorem right_inv (X : C) [Grp_Class X] : lift (𝟙 X) ι ≫ μ = toUnit _ ≫ η := right_inv'
+attribute [reassoc (attr := simp)] left_inv right_inv
 
 @[simps inv]
 instance : Grp_Class (𝟙_ C) where
@@ -347,10 +343,10 @@ noncomputable def mapGrp : Grp_ C ⥤ Grp_ D where
     { F.mapMon.obj A.toMon_ with
       grp :=
       { inv := F.map ι[A.X]
-        left_inv' := by
+        left_inv := by
           simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc,
             Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp]
-        right_inv' := by
+        right_inv := by
           simp [← Functor.map_id, Functor.Monoidal.lift_μ_assoc,
             Functor.Monoidal.toUnit_ε_assoc, ← Functor.map_comp] } }
   map f := F.mapMon.map f

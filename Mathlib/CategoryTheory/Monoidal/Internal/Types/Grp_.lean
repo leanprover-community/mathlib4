@@ -38,10 +38,10 @@ noncomputable def inverse : Grp.{u} ⥤ Grp_ (Type u) where
     { MonTypeEquivalenceMon.inverse.obj ((forget₂ Grp MonCat).obj A) with
       grp :=
         { inv := ((·⁻¹) : A → A)
-          left_inv' := by
+          left_inv := by
             ext x
             exact inv_mul_cancel (G := A) x
-          right_inv' := by
+          right_inv := by
             ext x
             exact mul_inv_cancel (G := A) x } }
   map f := MonTypeEquivalenceMon.inverse.map ((forget₂ Grp MonCat).map f)
