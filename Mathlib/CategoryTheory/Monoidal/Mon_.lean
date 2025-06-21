@@ -788,7 +788,7 @@ theorem mul_braiding (X Y : C) [Mon_Class X] [Mon_Class Y] :
     μ ≫ (β_ X Y).hom = ((β_ X Y).hom ⊗ₘ (β_ X Y).hom) ≫ μ := by
   dsimp [tensorObj.mul_def]
   simp only [tensorμ, Category.assoc, BraidedCategory.braiding_naturality,
-    BraidedCategory.braiding_tensor_right, BraidedCategory.braiding_tensor_left,
+    BraidedCategory.braiding_tensor_right_hom, BraidedCategory.braiding_tensor_left_hom,
     comp_whiskerRight, whisker_assoc, MonoidalCategory.whiskerLeft_comp, pentagon_assoc,
     pentagon_inv_hom_hom_hom_inv_assoc, Iso.inv_hom_id_assoc, whiskerLeft_hom_inv_assoc]
   slice_lhs 3 4 =>

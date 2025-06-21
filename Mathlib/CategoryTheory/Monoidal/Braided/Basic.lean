@@ -83,7 +83,7 @@ namespace BraidedCategory
 variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C] [BraidedCategory.{v} C]
 
 @[simp, reassoc]
-theorem braiding_tensor_left (X Y Z : C) :
+theorem braiding_tensor_left_hom (X Y Z : C) :
     (β_ (X ⊗ Y) Z).hom  =
       (α_ X Y Z).hom ≫ X ◁ (β_ Y Z).hom ≫ (α_ X Z Y).inv ≫
         (β_ X Z).hom ▷ Y ≫ (α_ Z X Y).hom := by
@@ -92,7 +92,7 @@ theorem braiding_tensor_left (X Y Z : C) :
   simp [hexagon_reverse]
 
 @[simp, reassoc]
-theorem braiding_tensor_right (X Y Z : C) :
+theorem braiding_tensor_right_hom (X Y Z : C) :
     (β_ X (Y ⊗ Z)).hom  =
       (α_ X Y Z).inv ≫ (β_ X Y).hom ▷ Z ≫ (α_ Y X Z).hom ≫
         Y ◁ (β_ X Z).hom ≫ (α_ Y Z X).inv := by
@@ -101,14 +101,14 @@ theorem braiding_tensor_right (X Y Z : C) :
   simp [hexagon_forward]
 
 @[simp, reassoc]
-theorem braiding_inv_tensor_left (X Y Z : C) :
+theorem braiding_tensor_left_inv (X Y Z : C) :
     (β_ (X ⊗ Y) Z).inv  =
       (α_ Z X Y).inv ≫ (β_ X Z).inv ▷ Y ≫ (α_ X Z Y).hom ≫
         X ◁ (β_ Y Z).inv ≫ (α_ X Y Z).inv :=
   eq_of_inv_eq_inv (by simp)
 
 @[simp, reassoc]
-theorem braiding_inv_tensor_right (X Y Z : C) :
+theorem braiding_tensor_right_inv (X Y Z : C) :
     (β_ X (Y ⊗ Z)).inv  =
       (α_ Y Z X).hom ≫ Y ◁ (β_ X Z).inv ≫ (α_ Y X Z).inv ≫
         (β_ X Y).inv ▷ Z ≫ (α_ X Y Z).hom :=
@@ -149,9 +149,9 @@ theorem yang_baxter (X Y Z : C) :
     Y ◁ (β_ X Z).hom ≫ (α_ Y Z X).inv ≫ (β_ Y Z).hom ▷ X ≫ (α_ Z Y X).hom =
       X ◁ (β_ Y Z).hom ≫ (α_ X Z Y).inv ≫ (β_ X Z).hom ▷ Y ≫
       (α_ Z X Y).hom ≫ Z ◁ (β_ X Y).hom := by
-  rw [← braiding_tensor_right_assoc X Y Z, ← cancel_mono (α_ Z Y X).inv]
+  rw [← braiding_tensor_right_hom_assoc X Y Z, ← cancel_mono (α_ Z Y X).inv]
   repeat rw [assoc]
-  rw [Iso.hom_inv_id, comp_id, ← braiding_naturality_right, braiding_tensor_right]
+  rw [Iso.hom_inv_id, comp_id, ← braiding_naturality_right, braiding_tensor_right_hom]
 
 theorem yang_baxter' (X Y Z : C) :
     (β_ X Y).hom ▷ Z ⊗≫ Y ◁ (β_ X Z).hom ⊗≫ (β_ Y Z).hom ▷ X =
@@ -635,7 +635,7 @@ theorem tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :
       (α_ (X₁ ⊗ X₂) (Y₁ ⊗ Y₂) (Z₁ ⊗ Z₂)).hom ≫
         ((X₁ ⊗ X₂) ◁ tensorμ Y₁ Y₂ Z₁ Z₂) ≫ tensorμ X₁ X₂ (Y₁ ⊗ Z₁) (Y₂ ⊗ Z₂) := by
   dsimp only [tensor_obj, prodMonoidal_tensorObj, tensorμ]
-  simp only [braiding_tensor_left, braiding_tensor_right]
+  simp only [braiding_tensor_left_hom, braiding_tensor_right_hom]
   calc
     _ = 𝟙 _ ⊗≫
       X₁ ◁ ((β_ X₂ Y₁).hom ▷ (Y₂ ⊗ Z₁) ≫ (Y₁ ⊗ X₂) ◁ (β_ Y₂ Z₁).hom) ▷ Z₂ ⊗≫
@@ -698,8 +698,8 @@ theorem associator_monoidal (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
     _ = 𝟙 _ ⊗≫ X₁ ◁ X₂ ◁ (β_ X₃ Y₁).hom ▷ Y₂ ▷ Y₃ ⊗≫
       X₁ ◁ ((X₂ ⊗ Y₁) ◁ (β_ X₃ Y₂).hom ≫
         (β_ X₂ Y₁).hom ▷ (Y₂ ⊗ X₃)) ▷ Y₃ ⊗≫ 𝟙 _ := by
-          rw [braiding_tensor_right]; monoidal
-    _ = _ := by rw [whisker_exchange, braiding_tensor_left]; monoidal
+          rw [braiding_tensor_right_hom]; monoidal
+    _ = _ := by rw [whisker_exchange, braiding_tensor_left_hom]; monoidal
 
 end Tensor
 
