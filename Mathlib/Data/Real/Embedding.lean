@@ -18,9 +18,9 @@ import Mathlib.Tactic.Qify
 This file provides embedding of any archimedean groups into reals.
 
 ## Main declarations
-* `embedReal` defines an injective `M →+o ℝ` for archimedean group `M`
+* `Archimedean.embedReal` defines an injective `M →+o ℝ` for archimedean group `M`
   that maps a given positive element to the real number 1.
-* `exists_orderAddMonoidHom_real_injective` states there exists an injective `M →+o ℝ`
+* `Archimedean.exists_orderAddMonoidHom_real_injective` states there exists an injective `M →+o ℝ`
   for any archimedean group `M`.
 -/
 
