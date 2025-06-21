@@ -5102,6 +5102,7 @@ import Mathlib.RingTheory.Artinian.Ring
 import Mathlib.RingTheory.Bezout
 import Mathlib.RingTheory.Bialgebra.Basic
 import Mathlib.RingTheory.Bialgebra.Equiv
+import Mathlib.RingTheory.Bialgebra.GroupLike
 import Mathlib.RingTheory.Bialgebra.Hom
 import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
 import Mathlib.RingTheory.Bialgebra.TensorProduct
@@ -5110,6 +5111,7 @@ import Mathlib.RingTheory.ChainOfDivisors
 import Mathlib.RingTheory.ClassGroup
 import Mathlib.RingTheory.Coalgebra.Basic
 import Mathlib.RingTheory.Coalgebra.Equiv
+import Mathlib.RingTheory.Coalgebra.GroupLike
 import Mathlib.RingTheory.Coalgebra.Hom
 import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 import Mathlib.RingTheory.Coalgebra.TensorProduct
@@ -5212,6 +5214,7 @@ import Mathlib.RingTheory.HahnSeries.Summable
 import Mathlib.RingTheory.HahnSeries.Valuation
 import Mathlib.RingTheory.Henselian
 import Mathlib.RingTheory.HopfAlgebra.Basic
+import Mathlib.RingTheory.HopfAlgebra.GroupLike
 import Mathlib.RingTheory.HopfAlgebra.MonoidAlgebra
 import Mathlib.RingTheory.HopfAlgebra.TensorProduct
 import Mathlib.RingTheory.HopkinsLevitzki
