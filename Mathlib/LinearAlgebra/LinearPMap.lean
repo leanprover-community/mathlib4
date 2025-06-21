@@ -3,13 +3,13 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Moritz Doll
 -/
-import Mathlib.LinearAlgebra.Prod
+import Mathlib.LinearAlgebra.DFinsupp
 
 /-!
 # Partially defined linear maps
 
 A `LinearPMap R E F` or `E →ₗ.[R] F` is a linear map from a submodule of `E` to `F`.
-We define a `SemilatticeInf` with `OrderBot` instance on this, and define three operations:
+We define a `SemilatticeInf` with `OrderBot` instance on this, and define four operations:
 
 * `mkSpanSingleton` defines a partial linear map defined on the span of a singleton.
 * `sup` takes two partial linear maps `f`, `g` that agree on the intersection of their
@@ -17,6 +17,8 @@ We define a `SemilatticeInf` with `OrderBot` instance on this, and define three 
   extends both `f` and `g`.
 * `sSup` takes a `DirectedOn (· ≤ ·)` set of partial linear maps, and returns the unique
   partial linear map on the `sSup` of their domains that extends all these maps.
+* `indepiSup` takes a family of partial linear maps whose domains are `iSupIndep`,
+  and returns the unique partial linear map on the span of them.
 
 Moreover, we define
 * `LinearPMap.graph` is the graph of the partial linear map viewed as a submodule of `E × F`.
@@ -607,6 +609,49 @@ protected theorem sSup_apply {c : Set (E →ₗ.[R] F)} (hc : DirectedOn (· ≤
   symm
   apply (Classical.choose_spec (sSup_aux c hc) hl).2
   rfl
+
+section indepiSup
+
+variable {ι : Type*} [DecidableEq ι]
+
+/-- Create a partial linear map by combining a family of partial linear maps
+  defined on independent domains. -/
+noncomputable def indepiSup {p : ι → (E →ₗ.[R] F)} (h : iSupIndep (fun i ↦ (p i).domain)) :
+    E →ₗ.[R] F where
+  domain := ⨆ i : ι, (p i).domain
+  toFun := LinearMap.comp (DFinsupp.lsum ℕ (fun i ↦ (p i).toFun))
+    (DFinsupp.lsumEquiv h).symm.toLinearMap
+
+@[simp]
+theorem domain_indepiSup {p : ι → (E →ₗ.[R] F)} (h : iSupIndep (fun i ↦ (p i).domain)) :
+    (indepiSup h).domain = ⨆ i : ι, (p i).domain := by rfl
+
+theorem indepiSup_apply {p : ι → (E →ₗ.[R] F)} (h : iSupIndep (fun i ↦ (p i).domain))
+    {x : (indepiSup h).domain} {f : Π₀ (i : ι), (p i).domain}
+    (hx : x.val = ((DFinsupp.lsum ℕ) fun (i : ι) ↦ (p i).domain.subtype) f) :
+    (indepiSup h) x = ((DFinsupp.lsum ℕ) fun (i : ι) ↦ (p i).toFun) f := by
+
+  unfold indepiSup
+  simp only [mk_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply]
+  congr
+  rw [LinearEquiv.symm_apply_eq, Subtype.eq_iff]
+  exact hx
+
+theorem indepiSup_apply_single {p : ι → (E →ₗ.[R] F)} (h : iSupIndep (fun i ↦ (p i).domain))
+    {x : (indepiSup h).domain} {i : ι} (hx : x.val ∈ (p i).domain) :
+    (indepiSup h) x = (p i) ⟨x.val, hx⟩ := by
+  obtain hsingle := DFinsupp.lsum_single ℕ (fun (i : ι) ↦ (p i).domain.subtype) i ⟨x.val, hx⟩
+  rw [subtype_apply] at hsingle
+  simpa using indepiSup_apply h hsingle.symm
+
+theorem le_indepiSup {p : ι → (E →ₗ.[R] F)} (h : iSupIndep (fun i ↦ (p i).domain)) (i : ι) :
+    p i ≤ indepiSup h := by
+  constructor
+  · simpa using le_iSup (fun i ↦ (p i).domain) i
+  · intro x y hxy
+    convert (indepiSup_apply_single h (hxy.symm ▸ x.prop)).symm
+
+end indepiSup
 
 end LinearPMap
 
