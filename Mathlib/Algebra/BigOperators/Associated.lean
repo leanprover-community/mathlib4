@@ -136,7 +136,7 @@ theorem Multiset.prod_primes_dvd [CancelCommMonoidWithZero α]
       Multiset.countP_pos] at this
     exact this ⟨b, b_in_s, assoc.symm⟩
 
-theorem Finset.prod_primes_dvd [CancelCommMonoidWithZero α] [Subsingleton αˣ] {s : Finset α} (n : α)
+theorem Finset.prod_primes_dvd [CancelCommMonoidWithZero α] [IsSharpMonoid α] {s : Finset α} (n : α)
     (h : ∀ a ∈ s, Prime a) (div : ∀ a ∈ s, a ∣ n) : (∏ p ∈ s, p) ∣ n := by
   classical
     exact
