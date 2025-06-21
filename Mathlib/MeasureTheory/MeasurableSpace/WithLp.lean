@@ -1,4 +1,5 @@
-import Mathlib
+import Mathlib.Analysis.Normed.Lp.WithLp
+import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 
 open scoped ENNReal
 
