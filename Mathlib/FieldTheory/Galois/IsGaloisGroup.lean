@@ -72,4 +72,15 @@ theorem mulEquivCongr_apply_smul [IsGaloisGroup G K L] [Finite G] [IsGaloisGroup
     (g : G) (x : L) : mulEquivCongr G H K L g • x = g • x :=
   AlgEquiv.ext_iff.mp ((mulEquivAlgEquiv H K L).apply_symm_apply (mulEquivAlgEquiv G K L g)) x
 
+instance to_subgroup [hGKL : IsGaloisGroup G K L] (H : Subgroup G) :
+    IsGaloisGroup H (FixedPoints.intermediateField H : IntermediateField K L) L where
+  faithful := have := hGKL.faithful; inferInstance
+  commutes := ⟨fun g x y ↦ by
+    simp_rw [Algebra.smul_def, IntermediateField.algebraMap_apply, smul_mul', x.2 g]⟩
+  isInvariant := ⟨fun x h ↦ ⟨⟨x, h⟩, rfl⟩⟩
+
+theorem card_subgroup_eq_finrank_fixedpoints [IsGaloisGroup G K L] (H : Subgroup G) [Finite H] :
+    Nat.card H = Module.finrank (FixedPoints.intermediateField H : IntermediateField K L) L :=
+  card_eq_finrank H (FixedPoints.intermediateField H) L
+
 end IsGaloisGroup
