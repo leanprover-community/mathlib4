@@ -144,9 +144,6 @@ lemma smoothSheaf.contMDiff_section {U : (Opens (TopCat.of M))ᵒᵖ}
     ContMDiff IM I ∞ f :=
   (contDiffWithinAt_localInvariantProp ∞).section_spec _ _ _ _
 
-@[deprecated (since := "2024-11-21")]
-alias smoothSheaf.smooth_section := smoothSheaf.contMDiff_section
-
 end TypeCat
 
 section LieGroup

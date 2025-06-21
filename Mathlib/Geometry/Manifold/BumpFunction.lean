@@ -293,12 +293,8 @@ protected theorem contMDiff : ContMDiff I 𝓘(ℝ) ∞ f := by
     (chartAt H c).open_source.mem_nhds this
   exact f.contDiffAt.contMDiffAt.comp _ (contMDiffAt_extChartAt' this)
 
-@[deprecated (since := "2024-11-20")] alias smooth := SmoothBumpFunction.contMDiff
-
 protected theorem contMDiffAt {x} : ContMDiffAt I 𝓘(ℝ) ∞ f x :=
   f.contMDiff.contMDiffAt
-
-@[deprecated (since := "2024-11-20")] alias smoothAt := SmoothBumpFunction.contMDiffAt
 
 protected theorem continuous : Continuous f :=
   f.contMDiff.continuous
@@ -317,7 +313,5 @@ theorem contMDiff_smul {G} [NormedAddCommGroup G] [NormedSpace ℝ G] {g : M →
   --   _ ⊆ (chart_at _ c).source := f.tsupport_subset_chartAt_source
     f.tsupport_subset_chartAt_source <| tsupport_smul_subset_left _ _ hx
   exact f.contMDiffAt.smul ((hg _ this).contMDiffAt <| (chartAt _ _).open_source.mem_nhds this)
-
-@[deprecated (since := "2024-11-20")] alias smooth_smul := contMDiff_smul
 
 end SmoothBumpFunction
