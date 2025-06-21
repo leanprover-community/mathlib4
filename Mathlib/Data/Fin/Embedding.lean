@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Data.Fin.Basic
+import Mathlib.Logic.Embedding.Basic
 
 /-!
 # Embeddings of `Fin n`
