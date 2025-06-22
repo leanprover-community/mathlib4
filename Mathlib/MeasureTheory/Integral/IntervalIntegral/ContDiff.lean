@@ -76,6 +76,16 @@ theorem integral_derivWithin_uIcc_of_contDiffOn_uIcc (h : ContDiffOn ℝ 1 f (uI
     rw [integral_symm, integral_derivWithin_Icc_of_contDiffOn_Icc h hab.le]
     abel
 
+/-- The integral of a continuous function is differentiable on a real set `s`. -/
+theorem contDiffOn_integral_of_continuous (h : ContinuousOn f (Icc a b)) :
+    ContDiffOn ℝ 1 (fun u => ∫ x in a..u, f x) (Icc a b) := by
+  rw [show (1 : WithTop ℕ∞) = 0 + 1 by simp, contDiffOn_succ_iff_hasFDerivWithinAt (by simp)]
+  simp only [nhdsWithin_insert, mem_sup, mem_pure, WithTop.zero_ne_top, IsEmpty.forall_iff,
+    contDiffOn_zero, true_and]
+  intro x hx
+  refine ⟨Icc a b, ⟨hx, self_mem_nhdsWithin⟩, ?_⟩
+
+
 end intervalIntegral
 
 open intervalIntegral

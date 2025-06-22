@@ -925,11 +925,15 @@ theorem derivWithin_integral_left (hf : IntervalIntegrable f volume a b) {s t : 
   (integral_hasDerivWithinAt_left hf hmeas ha).derivWithin hs
 
 /-- The integral of a continuous function is differentiable on a real set `s`. -/
-theorem differentiableOn_integral_of_continuous {s : Set ℝ}
-    (hintg : ∀ x ∈ s, IntervalIntegrable f volume a x) (hcont : Continuous f) :
-    DifferentiableOn ℝ (fun u => ∫ x in a..u, f x) s := fun y hy =>
-  (integral_hasDerivAt_right (hintg y hy) hcont.aestronglyMeasurable.stronglyMeasurableAtFilter
-        hcont.continuousAt).differentiableAt.differentiableWithinAt
+theorem differentiable_integral_of_continuous (hcont : Continuous f) :
+    Differentiable ℝ (fun u => ∫ x in a..u, f x) := fun _ ↦
+  (integral_hasDerivAt_right (hcont.intervalIntegrable _ _)
+    hcont.aestronglyMeasurable.stronglyMeasurableAtFilter hcont.continuousAt).differentiableAt
+
+/-- The integral of a continuous function is differentiable on a real set `s`. -/
+theorem differentiableOn_integral_of_continuous {s : Set ℝ} (hcont : Continuous f) :
+    DifferentiableOn ℝ (fun u => ∫ x in a..u, f x) s :=
+  (differentiable_integral_of_continuous hcont).differentiableOn
 
 end FTC1
 
