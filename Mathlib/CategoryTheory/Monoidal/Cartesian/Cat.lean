@@ -77,7 +77,7 @@ lemma whiskerRight_snd {A : Cat} {B : Cat} (f : A ⟶ B) (X : Cat) :
     (f ▷ X) ⋙ Prod.snd _ _  = Prod.snd _ _ := rfl
 
 lemma tensorHom {A : Cat} {B : Cat} (f : A ⟶ B) {X : Cat} {Y : Cat} (g : X ⟶ Y) :
-    f ⊗ g = f.prod g := rfl
+    f ⊗ₘ g = f.prod g := rfl
 
 lemma tensorUnit : 𝟙_ Cat = Cat.chosenTerminal := rfl
 
