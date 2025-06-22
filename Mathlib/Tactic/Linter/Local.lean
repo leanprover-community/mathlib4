@@ -15,6 +15,12 @@ open Lean Elab Linter
 
 namespace Mathlib.Linter
 
+run_cmd
+  let diffFiles ← (do
+    let gd ← IO.Process.run {cmd := "git", args := #["diff", "--name-only", "master..."]}
+    pure (some gd)) <|> pure none
+  dbg_trace diffFiles
+
 /-- The "localLinter" linter emits a warning when there are multiple active goals. -/
 register_option linter.localLinter : Bool := {
   defValue := true
