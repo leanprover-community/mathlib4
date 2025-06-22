@@ -86,6 +86,12 @@ variable [CategoryWithCofibrations C] [HasInitial C]
 def bifibrantObjects : ObjectProperty C :=
     cofibrantObjects C ⊓ fibrantObjects C
 
+lemma bifibrantObjects_le_cofibrantObject :
+    bifibrantObjects C ≤ cofibrantObjects C := fun _ h ↦ h.1
+
+lemma bifibrantObjects_le_fibrantObject :
+    bifibrantObjects C ≤ fibrantObjects C := fun _ h ↦ h.2
+
 abbrev BifibrantObject : Type _ := (bifibrantObjects C).FullSubcategory
 
 variable {C}
