@@ -183,8 +183,7 @@ def whiskerRight {α α' : a ⟶ b} (x : α ⟶ α') (β : b ⟶ c) : α ≫ β 
   τl := x.τl ▷ _
   τr := _ ◁ x.τr
   conjugateEquiv_τl := by
-    dsimp
-    simp only [conjugateEquiv_whiskerRight, Hom₂.conjugateEquiv_τl]
+    simp [conjugateEquiv_whiskerRight, Hom₂.conjugateEquiv_τl]
 
 attribute [local simp] whisker_exchange
 
