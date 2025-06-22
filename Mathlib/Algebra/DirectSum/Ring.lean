@@ -642,7 +642,7 @@ instance CommSemiring.directSumGCommSemiring {R : Type*} [AddCommMonoid ι] [Com
   __ := CommMonoid.gCommMonoid ι
 
 /-- A direct sum of copies of a `CommRing` inherits the commutative multiplication structure. -/
-instance CommmRing.directSumGCommRing {R : Type*} [AddCommMonoid ι] [CommRing R] :
+instance CommRing.directSumGCommRing {R : Type*} [AddCommMonoid ι] [CommRing R] :
     DirectSum.GCommRing fun _ : ι => R where
   __ := Ring.directSumGRing ι
   __ := CommMonoid.gCommMonoid ι
