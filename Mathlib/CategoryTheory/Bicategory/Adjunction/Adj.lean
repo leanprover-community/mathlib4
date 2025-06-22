@@ -58,6 +58,10 @@ Given two objects `a` and `b` in a bicategory,
 this is the type of adjunctions between `a` and `b`.
 -/
 structure Hom where
+  /-- Default constructor for `1`-morphisms in the bicategory `Adj B`, see
+  `CategoryTheory.Bicategory.Adj.Hom.mk` for a constructor where the morphisms
+  are implicit. -/
+  mk'::
   /-- the left adjoint -/
   l : a ⟶ b
   /-- the right adjoint -/
@@ -68,7 +72,7 @@ structure Hom where
 variable {a b} in
 /-- Constructor for `1`-morphisms in the bicategory `Adj B`. -/
 @[simps]
-def Hom.mk' {l : a ⟶ b} {r : b ⟶ a} (adj : l ⊣ r) : Hom a b where
+def Hom.mk {l : a ⟶ b} {r : b ⟶ a} (adj : l ⊣ r) : Hom a b where
   l := l
   r := r
   adj := adj
