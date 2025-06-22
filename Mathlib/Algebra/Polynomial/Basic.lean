@@ -233,7 +233,7 @@ theorem toFinsupp_pow (a : R[X]) (n : ℕ) : (a ^ n).toFinsupp = a.toFinsupp ^ n
   cases a
   rw [← ofFinsupp_pow]
 
-theorem _root_.IsSMulRegular.polynomial {S : Type*} [Monoid S] [DistribMulAction S R] {a : S}
+theorem _root_.IsSMulRegular.polynomial {S : Type*} [SMulZeroClass S R] {a : S}
     (ha : IsSMulRegular R a) : IsSMulRegular R[X] a
   | ⟨_x⟩, ⟨_y⟩, h => congr_arg _ <| ha.finsupp (Polynomial.ofFinsupp.inj h)
 
@@ -340,8 +340,6 @@ implementation detail, but it can be useful to transfer results from `Finsupp` t
 def toFinsuppIso : R[X] ≃+* R[ℕ] where
   toFun := toFinsupp
   invFun := ofFinsupp
-  left_inv := fun ⟨_p⟩ => rfl
-  right_inv _p := rfl
   map_mul' := toFinsupp_mul
   map_add' := toFinsupp_add
 
@@ -635,7 +633,9 @@ theorem mem_support_iff : n ∈ p.support ↔ p.coeff n ≠ 0 := by
   rcases p with ⟨⟩
   simp
 
-theorem not_mem_support_iff : n ∉ p.support ↔ p.coeff n = 0 := by simp
+theorem notMem_support_iff : n ∉ p.support ↔ p.coeff n = 0 := by simp
+
+@[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
 
 theorem coeff_C : coeff (C a) n = ite (n = 0) a 0 := by
   convert coeff_monomial (a := a) (m := n) (n := 0) using 2
@@ -725,14 +725,14 @@ theorem addSubmonoid_closure_setOf_eq_monomial :
   rintro _ ⟨n, a, rfl⟩
   exact ⟨n, a, Polynomial.ofFinsupp_single _ _⟩
 
-theorem addHom_ext {M : Type*} [AddMonoid M] {f g : R[X] →+ M}
+theorem addHom_ext {M : Type*} [AddZeroClass M] {f g : R[X] →+ M}
     (h : ∀ n a, f (monomial n a) = g (monomial n a)) : f = g :=
   AddMonoidHom.eq_of_eqOn_denseM addSubmonoid_closure_setOf_eq_monomial <| by
     rintro p ⟨n, a, rfl⟩
     exact h n a
 
 @[ext high]
-theorem addHom_ext' {M : Type*} [AddMonoid M] {f g : R[X] →+ M}
+theorem addHom_ext' {M : Type*} [AddZeroClass M] {f g : R[X] →+ M}
     (h : ∀ n, f.comp (monomial n).toAddMonoidHom = g.comp (monomial n).toAddMonoidHom) : f = g :=
   addHom_ext fun n => DFunLike.congr_fun (h n)
 
@@ -1049,6 +1049,17 @@ theorem coeff_mem_coeffs (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n 
   classical
   simp only [coeffs, exists_prop, mem_support_iff, Finset.mem_image, Ne]
   exact ⟨n, h, rfl⟩
+
+@[simp]
+theorem coeffs_empty_iff (p : R[X]) : coeffs p = ∅ ↔ p = 0 := by
+  refine ⟨?_, fun h ↦ by simp [h]⟩
+  contrapose!
+  intro h
+  rw [← support_nonempty] at h
+  obtain ⟨n, hn⟩ := h
+  rw [mem_support_iff] at hn
+  rw [← nonempty_iff_ne_empty]
+  exact ⟨p.coeff n, coeff_mem_coeffs p n hn⟩
 
 theorem coeffs_monomial (n : ℕ) {c : R} (hc : c ≠ 0) : (monomial n c).coeffs = {c} := by
   rw [coeffs, support_monomial n hc]

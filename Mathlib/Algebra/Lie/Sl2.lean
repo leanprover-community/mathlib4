@@ -16,12 +16,12 @@ distinguished position in the general theory. This file provides some basic defi
 about `sl₂`.
 
 ## Main definitions:
- * `IsSl2Triple`: a structure representing a triple of elements in a Lie algebra which satisfy the
-   standard relations for `sl₂`.
- * `IsSl2Triple.HasPrimitiveVectorWith`: a structure representing a primitive vector in a
-   representation of a Lie algebra relative to a distinguished `sl₂` triple.
- * `IsSl2Triple.HasPrimitiveVectorWith.exists_nat`: the eigenvalue of a primitive vector must be a
-   natural number if the representation is finite-dimensional.
+* `IsSl2Triple`: a structure representing a triple of elements in a Lie algebra which satisfy the
+  standard relations for `sl₂`.
+* `IsSl2Triple.HasPrimitiveVectorWith`: a structure representing a primitive vector in a
+  representation of a Lie algebra relative to a distinguished `sl₂` triple.
+* `IsSl2Triple.HasPrimitiveVectorWith.exists_nat`: the eigenvalue of a primitive vector must be a
+  natural number if the representation is finite-dimensional.
 
 -/
 
@@ -91,6 +91,51 @@ lemma HasPrimitiveVectorWith.mk' [NoZeroSMulDivisors ℤ M] (t : IsSl2Triple h e
     rw [← nsmul_lie, ← t.lie_h_e_nsmul, lie_lie, hm', lie_smul, he, lie_smul, hm',
       smul_smul, smul_smul, mul_comm ρ μ, sub_self]
 
+variable (R) in
+open Submodule in
+/-- The subalgebra associated to an `sl₂` triple. -/
+def toLieSubalgebra (t : IsSl2Triple h e f) :
+    LieSubalgebra R L where
+  __ := span R {e, f, h}
+  lie_mem' {x y} hx hy := by
+    simp only [carrier_eq_coe, SetLike.mem_coe] at hx hy ⊢
+    induction hx using span_induction with
+    | zero => simp
+    | add u v hu hv hu' hv' => simpa only [add_lie] using add_mem hu' hv'
+    | smul t u hu hu' => simpa only [smul_lie] using smul_mem _ t hu'
+    | mem u hu =>
+      induction hy using span_induction with
+      | zero => simp
+      | add u v hu hv hu' hv' => simpa only [lie_add] using add_mem hu' hv'
+      | smul t u hv hv' => simpa only [lie_smul] using smul_mem _ t hv'
+      | mem v hv =>
+        simp only [mem_insert_iff, mem_singleton_iff] at hu hv
+        rcases hu with rfl | rfl | rfl <;>
+        rcases hv with rfl | rfl | rfl <;> (try simp only [lie_self, zero_mem])
+        · rw [t.lie_e_f]
+          apply subset_span
+          simp
+        · rw [← lie_skew, t.lie_h_e_nsmul, neg_mem_iff]
+          apply nsmul_mem <| subset_span _
+          simp
+        · rw [← lie_skew, t.lie_e_f, neg_mem_iff]
+          apply subset_span
+          simp
+        · rw [← lie_skew, t.lie_h_f_nsmul, neg_neg]
+          apply nsmul_mem <| subset_span _
+          simp
+        · rw [t.lie_h_e_nsmul]
+          apply nsmul_mem <| subset_span _
+          simp
+        · rw [t.lie_h_f_nsmul, neg_mem_iff]
+          apply nsmul_mem <| subset_span _
+          simp
+
+lemma mem_toLieSubalgebra_iff {x : L} {t : IsSl2Triple h e f} :
+    x ∈ t.toLieSubalgebra R ↔ ∃ c₁ c₂ c₃ : R, x = c₁ • e + c₂ • f + c₃ • ⁅e, f⁆ := by
+  simp_rw [t.lie_e_f, toLieSubalgebra, ← LieSubalgebra.mem_toSubmodule, Submodule.mem_span_triple,
+    eq_comm]
+
 namespace HasPrimitiveVectorWith
 
 variable {m : M} {μ : R} {t : IsSl2Triple h e f}
@@ -112,7 +157,7 @@ lemma lie_h_pow_toEnd_f (n : ℕ) :
   induction n with
   | zero => simpa using P.lie_h
   | succ n ih =>
-    rw [pow_succ', LinearMap.mul_apply, toEnd_apply_apply, Nat.cast_add, Nat.cast_one,
+    rw [pow_succ', Module.End.mul_apply, toEnd_apply_apply, Nat.cast_add, Nat.cast_one,
       leibniz_lie h, t.lie_lie_smul_f R, ← neg_smul, ih, lie_smul, smul_lie, ← add_smul]
     congr
     ring
@@ -122,10 +167,10 @@ lemma lie_e_pow_succ_toEnd_f (n : ℕ) :
   induction n with
   | zero =>
       simp only [zero_add, pow_one, toEnd_apply_apply, Nat.cast_zero, sub_zero, one_mul,
-        pow_zero, LinearMap.one_apply, leibniz_lie e, t.lie_e_f, P.lie_e, P.lie_h, lie_zero,
+        pow_zero, Module.End.one_apply, leibniz_lie e, t.lie_e_f, P.lie_e, P.lie_h, lie_zero,
         add_zero]
   | succ n ih =>
-    rw [pow_succ', LinearMap.mul_apply, toEnd_apply_apply, leibniz_lie e, t.lie_e_f,
+    rw [pow_succ', Module.End.mul_apply, toEnd_apply_apply, leibniz_lie e, t.lie_e_f,
       lie_h_pow_toEnd_f P, ih, lie_smul, lie_f_pow_toEnd_f P, ← add_smul,
       Nat.cast_add, Nat.cast_one]
     congr
@@ -163,7 +208,7 @@ lemma pow_toEnd_f_ne_zero_of_eq_nat
     rw [← Int.cast_smul_eq_zsmul R, smul_eq_zero, Int.cast_eq_zero, mul_eq_zero, sub_eq_zero,
       Nat.cast_inj, ← @Nat.cast_one ℤ, ← Nat.cast_add, Nat.cast_eq_zero] at this
     simp only [add_eq_zero, one_ne_zero, and_false, false_or] at this
-    exact (hi.trans_eq (this.resolve_right (IH (i.le_succ.trans hi)))).not_lt i.lt_succ_self
+    exact (hi.trans_eq (this.resolve_right (IH (i.le_succ.trans hi)))).not_gt i.lt_succ_self
 
 lemma pow_toEnd_f_eq_zero_of_eq_nat
     [IsNoetherian R M] [NoZeroSMulDivisors R M] [IsDomain R] [CharZero R]

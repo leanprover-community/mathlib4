@@ -56,7 +56,7 @@ lemma isUnit_iff_norm_eq_one {u : 𝒪[K]} : IsUnit u ↔ ‖u‖ = 1 := by
     (Valuation.integer.integers (NormedField.valuation (K := K))).isUnit_iff_valuation_eq_one
 
 lemma norm_irreducible_lt_one {ϖ : 𝒪[K]} (h : Irreducible ϖ) : ‖ϖ‖ < 1 :=
-  lt_of_le_of_ne (norm_le_one ϖ) (mt isUnit_iff_norm_eq_one.mpr h.not_unit)
+  lt_of_le_of_ne (norm_le_one ϖ) (mt isUnit_iff_norm_eq_one.mpr h.not_isUnit)
 
 lemma norm_irreducible_pos {ϖ : 𝒪[K]} (h : Irreducible ϖ) : 0 < ‖ϖ‖ :=
   lt_of_le_of_ne (_root_.norm_nonneg ϖ) (by simp [eq_comm, h.ne_zero])
@@ -226,7 +226,7 @@ lemma isPrincipalIdealRing_of_compactSpace {F Γ₀} [Field F]
     -- and this `z` is either less than or greater than (or equal to) the threshold element
     split_ifs at hz' with h
     -- the `z` is inside closed ball case, which is a contradiction since we know `y` is outside
-    · simp [hy.not_le] at hz'
+    · simp [hy.not_ge] at hz'
     -- the `z` is gives a sphere, so we plug it in
     · simp only [Set.mem_setOf_eq, U] at hz'
       exact ⟨z, hz, hz'.symm⟩
@@ -267,7 +267,7 @@ lemma isPrincipalIdealRing_of_compactSpace {F Γ₀} [Field F]
     exact ⟨w, ⟨hwt, hw1⟩, rfl⟩
   rw [← hn'] at hm -- clean up what valuations we refer to
   -- to supply the contradiction, we have `v l < v n`, now prove that also `v n ≤ v l`
-  refine hm.left.not_le ?_
+  refine hm.left.not_ge ?_
   -- which is the case since `‖l‖ = u.max' ..` and the property of `Finset.max'`
   rw [hvl]
   refine Finset.le_max' _ _ ?_

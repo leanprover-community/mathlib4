@@ -48,7 +48,7 @@ instance FiniteField.isSplittingField_sub (K F : Type*) [Field K] [Fintype K]
     · simp only [rootSet, aroots, Polynomial.map_pow, map_X, Polynomial.map_sub]
     · rw [FiniteField.roots_X_pow_card_sub_X, val_toFinset, coe_univ, Algebra.adjoin_univ]
 
-theorem galois_poly_separable {K : Type*} [Field K] (p q : ℕ) [CharP K p] (h : p ∣ q) :
+theorem galois_poly_separable {K : Type*} [CommRing K] (p q : ℕ) [CharP K p] (h : p ∣ q) :
     Separable (X ^ q - X : K[X]) := by
   use 1, X ^ q - X - 1
   rw [← CharP.cast_eq_zero_iff K[X] p] at h

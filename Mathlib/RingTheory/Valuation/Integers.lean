@@ -155,7 +155,7 @@ lemma valuation_pos_iff_ne_zero (hv : Integers v O) {x : O} :
 
 theorem dvdNotUnit_iff_lt (hv : Integers v O) {x y : O} :
     DvdNotUnit x y ↔ v (algebraMap O F y) < v (algebraMap O F x) := by
-  rw [lt_iff_le_not_le, hv.le_iff_dvd, hv.le_iff_dvd]
+  rw [lt_iff_le_not_ge, hv.le_iff_dvd, hv.le_iff_dvd]
   refine ⟨?_, And.elim dvdNotUnit_of_dvd_of_not_dvd⟩
   rintro ⟨hx0, d, hdu, rfl⟩
   refine ⟨⟨d, rfl⟩, ?_⟩
@@ -237,9 +237,16 @@ lemma not_denselyOrdered_of_isPrincipalIdealRing [IsPrincipalIdealRing O] (hv : 
     simpa only [Subtype.exists, Subtype.mk_lt_mk, exists_range_iff, exists_prop]
       using H.dense ⟨v (algebraMap O F x), mem_range_self _⟩ ⟨1, 1, v.map_one⟩ hx₁
   obtain ⟨z, rfl⟩ := hv.exists_of_le_one hy₁.le
-  exact hy.not_le <| hx ⟨hy₁, mem_range_self _⟩
+  exact hy.not_ge <| hx ⟨hy₁, mem_range_self _⟩
 
 end Integers
+
+open Integers in
+theorem Integer.not_isUnit_iff_valuation_lt_one {x : v.integer} : ¬IsUnit x ↔ v x < 1 := by
+  rw [← not_le, not_iff_not, isUnit_iff_valuation_eq_one (F := F) (Γ₀ := Γ₀),
+    le_antisymm_iff]
+  exacts [and_iff_right x.2, integer.integers v]
+
 
 end Field
 
