@@ -6,7 +6,6 @@ Authors: Vasilii Nesterov
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Tactic.MoveAdd
 import Mathlib.Tactic.Rify
-import Mathlib.Topology.MetricSpace.PiNat
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 
 /-!
