@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.ModelCategory.Bifibrant
 import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
-import Mathlib.CategoryTheory.Localization.Predicate
+import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 
 /-!
 # The fundamental lemma of homotopical algebra
@@ -487,5 +487,33 @@ namespace FibrantObject
 -- dualize
 
 end FibrantObject
+
+namespace CofibrantObject
+#check CofibrantObject.π
+def toπLocalizerMorphism :
+    LocalizerMorphism (weakEquivalences (CofibrantObject C))
+      (weakEquivalences (CofibrantObject.π C)) where
+  functor := toπ
+  map := sorry
+
+end CofibrantObject
+
+namespace BifibrantObject
+
+@[simps]
+def ιCofibrantObjectLocalizerMorphism :
+    LocalizerMorphism (weakEquivalences (BifibrantObject C))
+      (weakEquivalences (CofibrantObject C)) where
+  functor := ιCofibrantObject
+  map _ _ _ h := h
+
+@[simps]
+def ιFibrantObjectLocalizerMorphism :
+    LocalizerMorphism (weakEquivalences (BifibrantObject C))
+      (weakEquivalences (FibrantObject C)) where
+  functor := ιFibrantObject
+  map _ _ _ h := h
+
+end BifibrantObject
 
 end HomotopicalAlgebra
