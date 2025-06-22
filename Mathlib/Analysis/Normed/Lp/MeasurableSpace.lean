@@ -48,6 +48,7 @@ end PiLp
 
 namespace MeasurableEquiv
 
+/-- The map from `X` to `WithLp p X` as a measurable equivalence. -/
 protected def toLp : X ≃ᵐ (WithLp p X) where
   toEquiv := (WithLp.equiv p X).symm
   measurable_toFun := measurable_id
