@@ -1,8 +1,12 @@
 /-
 Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Kim Morrison, Ainsley Pahljina
+Authors: Mario Carneiro, Alastair Irving, Kim Morrison, Ainsley Pahljina
 -/
+import Mathlib.Algebra.CharP.Lemmas
+import Mathlib.Algebra.GeomSum
+import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 import Mathlib.RingTheory.Fintype
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Ring
@@ -12,7 +16,7 @@ import Mathlib.Tactic.Zify
 # The Lucas-Lehmer test for Mersenne primes.
 
 We define `lucasLehmerResidue : Π p : ℕ, ZMod (2^p - 1)`, and
-prove `lucasLehmerResidue p = 0 → Prime (mersenne p)`.
+prove `lucasLehmerResidue p = 0 ↔ Prime (mersenne p)`.
 
 We construct a `norm_num` extension to calculate this residue to certify primality of Mersenne
 primes using `lucas_lehmer_sufficiency`.
@@ -20,7 +24,6 @@ primes using `lucas_lehmer_sufficiency`.
 
 ## TODO
 
-- Show reverse implication.
 - Speed up the calculations using `n ≡ (n % 2^p) + (n / 2^p) [MOD 2^p - 1]`.
 - Find some bigger primes!
 
@@ -32,8 +35,6 @@ The tactic for certified computation of Lucas-Lehmer residues was provided by Ma
 This tactic was ported by Thomas Murrills to Lean 4, and then it was converted to a `norm_num`
 extension and made to use kernel reductions by Kyle Miller.
 -/
-
-assert_not_exists TwoSidedIdeal
 
 /-- The Mersenne numbers, 2^p - 1. -/
 def mersenne (p : ℕ) : ℕ :=
@@ -63,6 +64,31 @@ theorem mersenne_le_mersenne {p q : ℕ} : mersenne p ≤ mersenne q ↔ p ≤ q
       (even_two.pow_of_ne_zero p.succ_ne_zero) odd_one
 
 @[simp] theorem mersenne_pos {p : ℕ} : 0 < mersenne p ↔ 0 < p := mersenne_lt_mersenne (p := 0)
+
+lemma mersenne_succ (n : ℕ) : mersenne (n + 1) = 2 * (mersenne n) + 1 := by
+  dsimp [mersenne]
+  rw [pow_succ]
+  have := Nat.one_le_pow n 2 two_pos
+  omega
+
+lemma mersenne_dvd_of_dvd {m n : ℕ} (h : m ∣ n) : (mersenne m) ∣ (mersenne n) := by
+  dsimp[mersenne]
+  rcases h with ⟨k, hk⟩
+  rw [hk]
+  apply nat_pow_one_sub_dvd_pow_mul_sub_one
+
+/-- If `2^p-1` is prime then `p` is prime. -/
+lemma prime_of_mersenne_prime {p : ℕ} (h: Nat.Prime (mersenne p)) : Nat.Prime p := by
+  have two_le : 2 ≤ p := by
+    apply (Nat.two_le_iff p).mpr
+    constructor <;> intro hp <;> rw [hp, mersenne] at h <;> norm_num at h <;> contradiction
+  contrapose h
+  rcases Nat.exists_dvd_of_not_prime2 two_le h with ⟨d, hd1, hd2, hd3⟩
+  apply Nat.not_prime_of_dvd_of_lt (mersenne_dvd_of_dvd hd1)
+  · apply le_trans _ <| mersenne_le_mersenne.mpr hd2
+    rw [mersenne]
+    norm_num
+  · exact mersenne_lt_mersenne.mpr hd3
 
 namespace Mathlib.Meta.Positivity
 
@@ -356,6 +382,127 @@ theorem closed_form (i : ℕ) : (s i : X q) = (ω : X q) ^ 2 ^ i + (ωb : X q) ^
         rw [← mul_pow ωb ω, ωb_mul_ω, one_pow, mul_one, add_sub_cancel_right]
       _ = ω ^ 2 ^ (i + 1) + ωb ^ 2 ^ (i + 1) := by rw [← pow_mul, ← pow_mul, _root_.pow_succ]
 
+/-- The element $\alpha = \sqrt 3$ -/
+def α : X q := (0, 1)
+
+lemma αsq : (α : X q) ^ 2 = 3 := by
+  rw[α, sq]
+  ext <;> simp
+
+lemma one_add_α_sq : (1 + α : X q) ^ 2 = (2 * ω : X q) := by
+  have : ω = 2 + (α : X q) := by dsimp [α, ω]; ext <;> simp
+  rw[add_sq, αsq, this]
+  ring
+
+lemma αpow (i : ℕ) : (α : X q) ^ (2 * i + 1) = 3 ^ i * α := by
+  induction i with
+  | zero =>
+    simp
+  | succ i ih =>
+    rw [(by ring : 2 * (i + 1) + 1 = (2 * i + 1) + 2), pow_add, ih, αsq]
+    ring_nf
+
+--Characteristic p so we can apply the binomial theorem
+instance : CharP (X q) (q: ℕ) where
+  cast_eq_zero_iff := by
+    intro x
+    convert ZMod.natCast_zmod_eq_zero_iff_dvd _ _
+    constructor
+    · intro hx
+      exact congr_arg Prod.fst hx
+    · intro hx
+      ext
+      · exact hx
+      · simp
+
+instance : Coe (ZMod ↑q) (X q) where
+  coe := ZMod.castHom (dvd_refl _) (X q)
+
+lemma coe_mod (n : ℕ) : (n : X q) = (n : ZMod q) := by
+  rw[map_natCast]
+
+/-- If 3 is not a square mod `q` then $(1+\alpha)^q=1-\alpha$. -/
+lemma pow_q [Fact (Prime q)] (odd : Odd (q : ℕ)) (leg3 : legendreSym q 3 = -1) :
+    (1 + (α : X q)) ^ (q : ℕ) = 1 - (α : X q) := by
+  rcases odd with ⟨k, hk⟩
+  have : q / 2 = k := by rw [hk, mul_add_div (by norm_num)]; simp
+  rw [add_pow_expChar, one_pow, hk, αpow, ← this]
+  have : (3 : X q) = (3 : ZMod q) := by exact coe_mod 3
+  rw [this, ← RingHom.map_pow]
+  have leg := legendreSym.eq_pow q 3
+  rw_mod_cast [← leg, leg3]
+  simp
+  ring
+
+/-- If 3 is not a square then $(1+\alpha)^{q+1}=-2$. -/
+lemma pow_q_succ [Fact (Prime q)] (odd : Odd (q : ℕ))
+    (leg3 : legendreSym q 3 = -1) : (1 + (α : X q)) ^ (q + 1 : ℕ) = -2 := by
+  rw [pow_succ, pow_q odd leg3, mul_add, mul_one, sub_mul,
+    ← sq, αsq]
+  ring
+
+/-- If 3 is not a square then $(2\omega)^{(q+1)/2}=-2$. -/
+lemma pow_2ω [Fact (Prime q)] (odd : Odd (q : ℕ))
+    (leg3 : legendreSym q 3 = -1) : ( 2 * ω : X q) ^ (((q : ℕ) + 1)/ 2) = -2 := by
+  rw [← one_add_α_sq, ← pow_mul]
+  have : 2 * (((q : ℕ) + 1) / 2) = q + 1 := by
+    apply Nat.mul_div_cancel'
+    rw [← even_iff_two_dvd]
+    exact Odd.add_one odd
+  rw [this, pow_q_succ odd leg3]
+
+/-- If 3 is not a square and 2 is square then $\omega^{(q+1)/2}=-1$. -/
+lemma pow_ω [Fact (Prime q)] (odd : Odd (q : ℕ))
+    (leg3 : legendreSym q 3 = -1)
+    (leg2: legendreSym q 2 = 1) :
+    (ω : X q) ^ (((q : ℕ) + 1)/ 2) = -1 := by
+  have pow2 : (2 : ZMod q) ^ (((q : ℕ) + 1) / 2) = 2 := by
+    obtain ⟨_, _⟩ := odd
+    rw [(by omega : ((q : ℕ) + 1) / 2 = q / 2 +1), pow_succ]
+    have leg := legendreSym.eq_pow q 2
+    have : (2 : ZMod (q : ℕ)) = ((2 : ℤ) : ZMod (q : ℕ)) := by norm_cast
+    rw [this, ← leg, leg2]
+    ring
+  have := pow_2ω odd leg3
+  rw [mul_pow] at this
+  have coe : (2 : X q) = (2 : ZMod q) := by exact coe_mod 2
+  rw [coe, ← RingHom.map_pow, pow2, ← coe,
+    (by ring : (-2 : X q) = 2 * -1)] at this
+  have unit : IsUnit (2 : X q) := by
+    refine ⟨⟨(2 : X q), ((((q : ℕ) + 1) / 2) : ℕ), ?_, ?_⟩, ?_⟩
+    · norm_cast
+      rw [Nat.mul_div_cancel']
+      · simp
+      · rw [← even_iff_two_dvd]
+        exact Odd.add_one odd
+    · norm_cast
+      rw [Nat.div_mul_cancel]
+      · simp
+      · rw [← even_iff_two_dvd]
+        exact Odd.add_one odd
+    · rfl
+  exact unit.mul_right_inj.mp this
+
+/-- The final evaluation needed to establish the Lucas-Lehmer necessity. -/
+lemma ω_pow_trace [Fact (Prime q)] (odd : Odd (q : ℕ))
+    (leg3 : legendreSym q 3 = -1)
+    (leg2: legendreSym q 2 = 1)
+    (hq4 : 4 ∣ (q : ℕ) + 1) :
+    (ω : X q) ^ (((q : ℕ) + 1)/ 4) + (ωb : X q) ^ (((q : ℕ) + 1)/ 4) = 0 := by
+  have := pow_ω odd leg3 leg2
+  have : (ω : X q) ^ (((q : ℕ) + 1) / 2) * ωb ^ (((q : ℕ) + 1) / 4)
+    = -ωb ^ (((q : ℕ) + 1) / 4) := by
+    rw [this]
+    ring
+
+  have div4 : ((q : ℕ) + 1) / 2 = ((q : ℕ) + 1) / 4 + ((q : ℕ) + 1) / 4 := by
+    rcases hq4 with ⟨k, hk⟩
+    rw [hk]
+    omega
+  rw [div4, pow_add, mul_assoc, ← mul_pow, ω_mul_ωb, one_pow, mul_one] at this
+  rw [this]
+  ring
+
 end X
 
 open X
@@ -472,6 +619,100 @@ theorem lucas_lehmer_sufficiency (p : ℕ) (w : 1 < p) : LucasLehmerTest p → (
   have h₂ := Nat.minFac_sq_le_self (mersenne_pos.2 (Nat.lt_of_succ_lt w)) a
   have h := lt_of_lt_of_le h₁ h₂
   exact not_lt_of_ge (Nat.sub_le _ _) h
+
+lemma mersenne_mod_four {n : ℕ} (h : 2 ≤ n) : (mersenne n) % 4 = 3 := by
+  induction n, h using Nat.le_induction with
+  | base =>  rw [mersenne]; norm_num
+  | succ _ _ _ =>
+    rw [mersenne_succ]
+    omega
+
+lemma mersenne_mod_three {n : ℕ} (odd : Odd n) (h : 3 ≤ n) : (mersenne n) % 3 = 1 := by
+  rcases odd with ⟨i, hi⟩
+  rw [hi]
+  replace h : i >= 1 := by omega
+  clear hi
+  induction i, h using Nat.le_induction with
+  | base =>
+    dsimp[mersenne]
+  | succ j _ _ =>
+    rw [mersenne_succ, (by ring : 2 * (j + 1) = 2 * j + 1 + 1), mersenne_succ]
+    omega
+
+lemma mersenne_mod_eight {n : ℕ} (h : 3 ≤ n) : (mersenne n) % 8 = 7 := by
+induction n, h using Nat.le_induction with
+  | base =>
+    dsimp[mersenne]
+  | succ _ _ _ =>
+    rw [mersenne_succ]
+    omega
+
+/-- If `2^p - 1` is prime then 2 is a square mod `2^p - 1`. -/
+lemma mersenne_legendre_two {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤ p) :
+    legendreSym (mersenne p) 2 = 1 := by
+  have : Fact ((2 : ℕ).Prime) := ⟨Nat.prime_two⟩
+  rw_mod_cast [legendreSym.at_two]
+  · rw [ZMod.χ₈_nat_eq_if_mod_eight]
+    have := mersenne_mod_eight hp
+    omega
+  · have := mersenne_le_mersenne.mpr hp
+    rw [(by dsimp[mersenne] : mersenne 3 = 7)] at this
+    omega
+
+/-- If `2^p - 1` is prime then 3 is not a square mod `2^p - 1`. -/
+lemma mersenne_legendre_three (p : ℕ) [Fact (mersenne p).Prime] (hp : 3 ≤ p) (odd : Odd p) :
+    legendreSym (mersenne p) 3 = -1 := by
+  have : Fact ((3 : ℕ).Prime) := ⟨Nat.prime_three⟩
+  rw [(by rfl : (3 : ℤ) = (3 : ℕ))]
+  rw [legendreSym.quadratic_reciprocity_three_mod_four (by norm_num)]
+  · rw [legendreSym.mod]
+    rw_mod_cast [mersenne_mod_three odd hp]
+    simp
+  · exact mersenne_mod_four (by omega)
+
+/-- If `2^p-1` is prime then the Lucas-Lehmer test holds, `s(p-2) % (2^p-1) = 0. -/
+theorem lucas_lehmer_necessity (p : ℕ) (w : 3 ≤ p) : (mersenne p).Prime → LucasLehmerTest p := by
+  let p' := p - 2
+  have z : p = p' + 2 := by omega
+  intro hp
+  have pprime := prime_of_mersenne_prime hp
+  have odd : Odd p := by
+    rcases pprime.eq_two_or_odd' with h|h
+    · absurd w
+      omega
+    · assumption
+  dsimp[LucasLehmerTest, lucasLehmerResidue]
+  have pos : 0 < 2^(p' + 2) - 1 := by
+    rw [← z]
+    exact hp.pos
+  have := X.fst_intCast (s (p' + 2 - 2)) (q := ⟨_,pos⟩)
+  rw [z, sZMod_eq_s p', ← this, X.closed_form, add_tsub_cancel_right]
+  have : Fact ((Nat.Prime (↑⟨2 ^ (p' + 2) - 1, pos⟩ : ℕ+))) := by
+    refine ⟨?_⟩
+    rwa [PNat.mk_coe, ← z, ← mersenne]
+  have : Fact (mersenne (p' + 2)).Prime := by
+    refine ⟨?_⟩
+    rwa [← z]
+
+  have := X.ω_pow_trace (q := ⟨_, pos⟩) ?_ ?_ ?_ ?_
+  · simp only [PNat.mk_coe] at this
+    have other : (2 ^ (p' + 2) - 1 + 1) / 4 = 2 ^ p' := by
+      rw[Nat.sub_add_cancel, pow_add,
+        (by norm_num : 2 ^ 2 = 4), mul_div_cancel_right₀ _ (by norm_num)]
+      exact Nat.one_le_two_pow
+    rw [other] at this
+    rw [this]
+    simp
+  · simp only [PNat.mk_coe]
+    apply mersenne_odd.mpr
+    omega
+  · apply mersenne_legendre_three <;> rwa [← z]
+  · apply mersenne_legendre_two
+    rwa [← z]
+  · simp only [PNat.mk_coe]
+    use 2 ^ p'
+    rw [mul_comm, (by norm_num : 4 = 2^2), ← pow_add]
+    apply  succ_mersenne
 
 namespace LucasLehmer
 
