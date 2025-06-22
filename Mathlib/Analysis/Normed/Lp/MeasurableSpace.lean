@@ -32,7 +32,7 @@ variable (Y : Type*) [MeasurableSpace Y] [TopologicalSpace X] [TopologicalSpace 
   [BorelSpace X] [BorelSpace Y] [SecondCountableTopologyEither X Y]
 
 instance borelSpace : BorelSpace (WithLp p (X × Y)) :=
-    inferInstanceAs <| BorelSpace (X × Y)
+  inferInstanceAs <| BorelSpace (X × Y)
 
 end WithLp
 
@@ -42,7 +42,7 @@ variable {ι : Type*} {X : ι → Type*} [Countable ι] [∀ i, MeasurableSpace 
     [∀ i, TopologicalSpace (X i)] [∀ i, BorelSpace (X i)] [∀ i, SecondCountableTopology (X i)]
 
 instance borelSpace : BorelSpace (PiLp p X) :=
-    inferInstanceAs <| BorelSpace (Π i, X i)
+  inferInstanceAs <| BorelSpace (Π i, X i)
 
 end PiLp
 
