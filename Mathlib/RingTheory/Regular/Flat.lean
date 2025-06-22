@@ -131,27 +131,36 @@ variable {R S M N : Type*} [CommRing R] [CommRing S] [Algebra R S] [FaithfullyFl
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] [Module S N]
   [IsScalarTower R S N] {f : M →ₗ[R] N} (hf : IsBaseChange S f) (x : R)
 
-/- noncomputable def edqecwqd (I : Ideal R) : S ⊗[R] (M ⧸ (I • (⊤ : Submodule R M))) ≃ₗ[R]
-    (S ⊗[R] M) ⧸ I.map (algebraMap R S) • (⊤ : Submodule S (S ⊗[R] M)) := by
-  refine tensorQuotientEquiv S (I • (⊤ : Submodule R M)) ≪≫ₗ ?_
-  --refine Submodule.Quotient.equiv _ _ (LinearEquiv.refl R (S ⊗[R] M)) ?_ -/
-
-noncomputable def baseChange_tensor_equiv : (S ⊗[R] M) ⊗[S] N ≃ₗ[R] M ⊗[R] N :=
+variable (R S M N) in
+noncomputable def baseChangeTensorEquiv : (S ⊗[R] M) ⊗[S] N ≃ₗ[R] M ⊗[R] N :=
   (TensorProduct.comm S _ N).restrictScalars R ≪≫ₗ
     ((TensorProduct.AlgebraTensorModule.assoc R S S N S M).restrictScalars R).symm ≪≫ₗ
       LinearEquiv.rTensor M ((TensorProduct.rid S N).restrictScalars R) ≪≫ₗ TensorProduct.comm R N M
 
-noncomputable def edqecwqd (I : Ideal R) : S ⊗[R] (M ⧸ (I • (⊤ : Submodule R M))) ≃ₗ[R]
-    (S ⊗[R] M) ⧸ I.map (algebraMap R S) • (⊤ : Submodule S (S ⊗[R] M)) := by
-  refine LinearEquiv.lTensor S (tensorQuotEquivQuotSMul M I).symm ≪≫ₗ ?_ ≪≫ₗ
-    (tensorQuotEquivQuotSMul (S ⊗[R] M) (I.map (algebraMap R S))).restrictScalars R
+variable (S) in
+noncomputable def Ideal.tensorQoutEquivQoutMap {I : Ideal R} :
+    S ⊗[R] (R ⧸ I) ≃ₗ[R] S ⧸ Ideal.map (algebraMap R S) I :=
+  tensorQuotEquivQuotSMul S I ≪≫ₗ Submodule.quotEquivOfEq _ _ (by simp) ≪≫ₗ
+    Submodule.Quotient.restrictScalarsEquiv R _
+
+noncomputable def TensorProduct.tensorQuotSMulEquivQuotMapSMul (I : Ideal R) :
+    S ⊗[R] (M ⧸ (I • (⊤ : Submodule R M))) ≃ₗ[R]
+    (S ⊗[R] M) ⧸ I.map (algebraMap R S) • (⊤ : Submodule S (S ⊗[R] M)) :=
+  LinearEquiv.lTensor S (tensorQuotEquivQuotSMul M I).symm ≪≫ₗ leftComm R S M _ ≪≫ₗ
+    LinearEquiv.lTensor M (I.tensorQoutEquivQoutMap S) ≪≫ₗ (baseChangeTensorEquiv R S M _).symm ≪≫ₗ
+      (tensorQuotEquivQuotSMul (S ⊗[R] M) (I.map (algebraMap R S))).restrictScalars R
+
+noncomputable def edqecwq (I : Ideal R) : S ⊗[R] (M ⧸ (I • (⊤ : Submodule R M))) ≃ₗ[R]
+    N ⧸ I.map (algebraMap R S) • (⊤ : Submodule S N) := by
+  refine LinearEquiv.lTensor S (tensorQuotEquivQuotSMul M I).symm ≪≫ₗ leftComm R S M _ ≪≫ₗ ?_ ≪≫ₗ
+    (tensorQuotEquivQuotSMul N (I.map (algebraMap R S))).restrictScalars R
+  --refine ?_ ≪≫ₗ LinearEquiv.lTensor N (I.tensorQoutEquivQoutMap S)
+  have := I.tensorQoutEquivQoutMap S
+  have := LinearEquiv.lTensor N this
   sorry
 
-def edqecwq (I : Ideal R) : S ⊗[R] (M ⧸ (I • (⊤ : Submodule R M))) ≃ₗ[R]
-    N ⧸ I.map (algebraMap R S) • (⊤ : Submodule S N) := sorry
-
 include hf
-#check tensorQuotEquivQuotSMul
+
 theorem Module.FaithfullyFlat.smul_top_ne_top_of_isBaseChange {I : Ideal R}
     (h : I • (⊤ : Submodule R M) ≠ ⊤) : I.map (algebraMap R S) • (⊤ : Submodule S N) ≠ ⊤ := by
   intro eq
