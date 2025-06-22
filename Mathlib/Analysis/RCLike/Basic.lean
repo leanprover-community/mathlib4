@@ -370,13 +370,8 @@ theorem conj_eq_iff_im {z : K} : conj z = z ↔ im z = 0 :=
 theorem star_def : (Star.star : K → K) = conj :=
   rfl
 
-lemma im_eq_zero_iff_isSelfAdjoint {x : K} : im x = 0 ↔ IsSelfAdjoint x := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
-  · apply RCLike.ext <;> simp [h]
-  · rw [IsSelfAdjoint, RCLike.ext_iff] at h
-    obtain ⟨h₁, h₂⟩ := h
-    simp only [star_def, conj_im] at h₂
-    exact eq_zero_of_neg_eq h₂
+lemma im_eq_zero_iff_isSelfAdjoint {x : K} : im x = 0 ↔ IsSelfAdjoint x :=
+  is_real_TFAE x |>.out 3 4
 
 lemma re_eq_ofReal_of_isSelfAdjoint {x : K} {y : ℝ} (hx : IsSelfAdjoint x) :
     re x = y ↔ x = y := by
@@ -858,24 +853,11 @@ lemma re_le_neg_norm_iff_eq_neg_norm {z : K} :
   simpa [neg_eq_iff_eq_neg, le_neg] using norm_le_re_iff_eq_norm (z := -z)
 
 lemma norm_of_nonneg' {x : K} (hx : 0 ≤ x) : ‖x‖ = x := by
-  have him : im x = 0 := by
-    rw [RCLike.le_iff_re_im] at hx
-    apply Eq.symm
-    simpa using hx.2
-  have hre : 0 ≤ re x := by rw [nonneg_iff] at hx; exact hx.1
-  rw [← sqrt_normSq_eq_norm, normSq]
-  simp only [MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, him, mul_zero, add_zero,
-    Real.sqrt_mul_self hre]
-  apply ext <;> simp [him]
+  rw [eq_comm, ← norm_le_re_iff_eq_norm, ← sqrt_normSq_eq_norm, normSq_apply]
+  simp [nonneg_iff.mp hx]
 
 lemma re_nonneg_of_nonneg {x : K} (hx : IsSelfAdjoint x) : 0 ≤ re x ↔ 0 ≤ x := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
-  · rw [RCLike.le_iff_re_im]
-    refine ⟨by simp [h], ?_⟩
-    simp [im_eq_zero_iff_isSelfAdjoint.mpr hx]
-  · rw [RCLike.le_iff_re_im] at h
-    simp only [map_zero] at h
-    exact h.1
+  simp [nonneg_iff (K := K), conj_eq_iff_im.mp hx]
 
 @[gcongr]
 lemma re_le_re {x y : K} (h : x ≤ y) : re x ≤ re y := by
@@ -1200,21 +1182,12 @@ end CaseSpecific
 
 lemma norm_le_im_iff_eq_I_mul_norm {z : K} :
     ‖z‖ ≤ im z ↔ z = I * ‖z‖ := by
-  by_cases hI : (I : K) = 0
-  · simp [hI, im_eq_zero hI]
-  · push_neg at hI
-    have := norm_le_re_iff_eq_norm (z := -I * z)
-    simp [hI, norm_I_of_ne_zero hI] at this
-    rw [this]
-    refine ⟨fun h => ?_, fun h => ?_⟩
-    · have h₁ := congr_arg (I * ·) h
-      simp only at h₁
-      rw [mul_neg, ← mul_assoc, (or_iff_right hI).mp I_mul_I] at h₁
-      simpa using h₁
-    · have h₁ := congr_arg (-I * ·) h
-      simp only at h₁
-      rw [← mul_assoc, neg_mul I I, (or_iff_right hI).mp I_mul_I] at h₁
-      simpa using h₁
+  obtain (h | h) := I_eq_zero_or_im_I_eq_one (K := K)
+  · simp [h, im_eq_zero]
+  · have : (I : K) ≠ 0 := fun _ ↦ by simp_all 
+    rw [← mul_right_inj' (neg_ne_zero.mpr this)]
+    convert norm_le_re_iff_eq_norm (z := -I * z) using 2
+    all_goals simp [neg_mul, ← mul_assoc, I_mul_I_of_nonzero this, norm_I_of_ne_zero this]
 
 lemma im_le_neg_norm_iff_eq_neg_I_mul_norm {z : K} :
     im z ≤ -‖z‖ ↔ z = -(I * ‖z‖) := by
