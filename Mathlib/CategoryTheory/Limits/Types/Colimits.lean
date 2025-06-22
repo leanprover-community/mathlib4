@@ -147,7 +147,7 @@ end TypeMax
 
 variable (F : J ⥤ Type u) [HasColimit F]
 
-attribute [local instance] small_quot_of_hasColimit
+attribute [local instance] small_colimitType_of_hasColimit
 
 /-- The equivalence between the abstract colimit of `F` in `Type u`
 and the "concrete" definition as a quotient.
