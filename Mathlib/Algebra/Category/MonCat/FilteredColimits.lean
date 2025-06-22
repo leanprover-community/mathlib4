@@ -325,7 +325,7 @@ noncomputable def colimitCocone : Cocone F where
 @[to_additive "The proposed colimit cocone is a colimit in `AddCommMonCat`."]
 noncomputable def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) :=
   isColimitOfReflects (forget₂ CommMonCat MonCat)
-    (by exact MonCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ _ _))
+    (MonCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ _ _))
 
 @[to_additive forget₂AddMonPreservesFilteredColimits]
 noncomputable instance forget₂Mon_preservesFilteredColimits :
