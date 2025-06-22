@@ -185,7 +185,7 @@ instance : ((F ⊛ G) ⊠ H).IsLeftKanExtension <|
     isPointwiseLeftKanExtensionUnit F G).isLeftKanExtension
 
 /-- The `CorepresentableBy` structure on `F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ -`. -/
-@[simps!]
+@[simps]
 def corepresentableBy₂ :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((𝟭 C).prod (tensor C)) ⋙
@@ -196,7 +196,7 @@ def corepresentableBy₂ :
   homEquiv_comp := by aesop
 
 /-- The `CorepresentableBy` structure on `(F ⊠ G) ⊠ H ⟶ (tensor C).prod (𝟭 C) ⋙ tensor C ⋙ -`. -/
-@[simps!]
+@[simps]
 def corepresentableBy₂' :
     (whiskeringLeft _ _ _).obj (tensor C) ⋙
       (whiskeringLeft _ _ _).obj ((tensor C).prod (𝟭 C)) ⋙
