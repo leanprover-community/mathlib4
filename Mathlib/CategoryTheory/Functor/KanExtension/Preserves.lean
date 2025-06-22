@@ -265,7 +265,7 @@ abbrev PreservesPointwiseLeftKanExtensions :=
 
 /-- Commuting a functor that preserves left Kan extensions with the `lan` functor. -/
 @[simps!]
-def lanFunctorCompOfPreserves [G.PreservesLeftKanExtensions L]
+def lanCompIsoOfPreserves [G.PreservesLeftKanExtensions L]
     [∀ F : A ⥤ B, HasLeftKanExtension L F]
     [∀ F : A ⥤ D, HasLeftKanExtension L F] :
     L.lan ⋙ (whiskeringRight _ _ _).obj G ≅ (whiskeringRight _ _ _).obj G ⋙ L.lan :=
@@ -510,7 +510,7 @@ abbrev PreservesPointwiseRightKanExtensions :=
 
 /-- Commuting a functor that preserves right Kan extensions with the `ran` functor. -/
 @[simps!]
-def ranFunctorCompOfPreserves [G.PreservesRightKanExtensions L]
+def ranCompIsoOfPreserves [G.PreservesRightKanExtensions L]
     [∀ F : A ⥤ B, HasRightKanExtension L F] [∀ F : A ⥤ D, HasRightKanExtension L F] :
     L.ran ⋙ (whiskeringRight _ _ _).obj G ≅ (whiskeringRight _ _ _).obj G ⋙ L.ran :=
   NatIso.ofComponents (fun F ↦ rightKanExtensionCompIsoOfPreserves _ _ _)

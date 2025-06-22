@@ -414,7 +414,7 @@ variable {L F} {F' : D ⥤ H}
 /-- An isomorphism to describe the action of `LeftExtension.postcompose₂` on terms of the form
 `LeftExtension.mk _ α`. -/
 @[simps!]
-def LeftExtension.postcompose₂IsoMk (α : F ⟶ L ⋙ F') :
+def LeftExtension.postcompose₂ObjMkIso (α : F ⟶ L ⋙ F') :
     (LeftExtension.postcompose₂ L F G).obj (.mk F' α) ≅
     .mk (F' ⋙ G) <| CategoryTheory.whiskerRight α G ≫ (Functor.associator _ _ _).hom :=
   StructuredArrow.isoMk (.refl _)
@@ -422,7 +422,7 @@ def LeftExtension.postcompose₂IsoMk (α : F ⟶ L ⋙ F') :
 /-- An isomorphism to describe the action of `RightExtension.postcompose₂` on terms of the form
 `RightExtension.mk _ α`. -/
 @[simps!]
-def RightExtension.postcompose₂IsoMk (α : L ⋙ F' ⟶ F) :
+def RightExtension.postcompose₂ObjMkIso (α : L ⋙ F' ⟶ F) :
     (RightExtension.postcompose₂ L F G).obj (.mk F' α) ≅
     .mk (F' ⋙ G) <| (Functor.associator _ _ _).inv ≫
       CategoryTheory.whiskerRight α G :=
