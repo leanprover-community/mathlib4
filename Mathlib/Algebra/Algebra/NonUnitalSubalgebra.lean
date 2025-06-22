@@ -588,7 +588,7 @@ protected theorem gc : GaloisConnection (adjoin R : Set A → NonUnitalSubalgebr
       show NonUnitalSubsemiring.closure s ≤ S.toNonUnitalSubsemiring from
         NonUnitalSubsemiring.closure_le.2 H⟩
 
-/-- Galois insertion between `adjoin` and `Subtype.val`. -/
+/-- Galois insertion between `adjoin` and `SetLike.coe`. -/
 protected def gi : GaloisInsertion (adjoin R : Set A → NonUnitalSubalgebra R A) (↑) where
   choice s hs := (adjoin R s).copy s <| le_antisymm (NonUnitalAlgebra.gc.le_u_l s) hs
   gc := NonUnitalAlgebra.gc

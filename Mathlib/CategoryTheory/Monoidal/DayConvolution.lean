@@ -61,6 +61,8 @@ class DayConvolution (F G : C ⥤ V) where
 
 namespace DayConvolution
 
+open scoped Prod
+
 section
 
 /-- A notation for the Day convolution of two functors. -/
@@ -99,21 +101,21 @@ variable {x x' y y' : C}
 lemma unit_naturality (f : x ⟶ x') (g : y ⟶ y') :
     (F.map f ⊗ₘ G.map g) ≫ (unit F G).app (x', y') =
     (unit F G).app (x, y) ≫ (F ⊛ G).map (f ⊗ₘ g) := by
-  simpa [tensorHom_def] using (unit F G).naturality ((f, g) : (x, y) ⟶ (x', y'))
+  simpa [tensorHom_def] using (unit F G).naturality (f ×ₘ g)
 
 variable (y) in
 @[reassoc (attr := simp)]
 lemma whiskerRight_comp_unit_app (f : x ⟶ x') :
     F.map f ▷ G.obj y ≫ (unit F G).app (x', y) =
     (unit F G).app (x, y) ≫ (F ⊛ G).map (f ▷ y) := by
-  simpa [tensorHom_def] using (unit F G).naturality ((f, 𝟙 _) : (x, y) ⟶ (x', y))
+  simpa [tensorHom_def] using (unit F G).naturality (f ×ₘ 𝟙 _)
 
 variable (x) in
 @[reassoc (attr := simp)]
 lemma whiskerLeft_comp_unit_app (g : y ⟶ y') :
     F.obj x ◁ G.map g ≫ (unit F G).app (x, y') =
     (unit F G).app (x, y) ≫ (F ⊛ G).map (x ◁ g) := by
-  simpa [tensorHom_def] using (unit F G).naturality ((𝟙 _, g) : (x, y) ⟶ (x, y'))
+  simpa [tensorHom_def] using (unit F G).naturality (𝟙 _ ×ₘ g)
 
 end unit
 
@@ -136,7 +138,7 @@ lemma unit_app_map_app :
     (f.app x ⊗ₘ g.app y) ≫ (unit F' G').app (x, y) := by
   simpa [tensorHom_def] using
     (Functor.descOfIsLeftKanExtension_fac_app (F ⊛ G) (unit F G) (F' ⊛ G') <|
-      (externalProductBifunctor C C V).map ((f, g) : (F, G) ⟶ (F', G')) ≫ unit F' G') (x, y)
+      (externalProductBifunctor C C V).map (f ×ₘ g) ≫ unit F' G') (x, y)
 
 end map
 
