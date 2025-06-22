@@ -535,6 +535,7 @@ example : - (-4 / 3) = 1 / (3 / (4 : α)) := by norm_num1
 end
 
 -- user command
+set_option linter.style.commandStart false
 
 /-- info: True -/
 #guard_msgs in #norm_num 1 = 1
