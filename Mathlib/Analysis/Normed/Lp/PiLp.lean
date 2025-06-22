@@ -446,6 +446,10 @@ theorem continuous_equiv_symm [∀ i, TopologicalSpace (β i)] :
     Continuous (WithLp.equiv p (Π i, β i)).symm :=
   continuous_id
 
+instance secondCountableTopology [Countable ι] [∀ i, TopologicalSpace (β i)]
+    [∀ i, SecondCountableTopology (β i)] : SecondCountableTopology (PiLp p β) :=
+  inferInstanceAs <| SecondCountableTopology (Π i, β i)
+
 instance uniformSpace [∀ i, UniformSpace (β i)] : UniformSpace (PiLp p β) :=
   Pi.uniformSpace _
 
