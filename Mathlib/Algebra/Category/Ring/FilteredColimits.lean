@@ -334,7 +334,7 @@ def colimitCocone : Cocone F where
 def colimitCoconeIsColimit : IsColimit <| colimitCocone.{v, u} F :=
   isColimitOfReflects (forget₂ _ _)
     (RingCat.FilteredColimits.colimitCoconeIsColimit
-          (F ⋙ forget₂ CommRingCat RingCat))
+      (F ⋙ forget₂ CommRingCat RingCat))
 
 instance forget₂Ring_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ CommRingCat RingCat.{u}) where
