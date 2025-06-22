@@ -358,6 +358,9 @@ have an inner product, defined as the infimum of the lengths of `C^1` paths betw
 noncomputable def riemannianEDist (x y : M) : ℝ≥0∞ :=
   ⨅ (γ : Path x y) (_ : ContMDiff (𝓡∂ 1) I 1 γ), ∫⁻ x, ‖mfderiv (𝓡∂ 1) I γ x 1‖ₑ
 
+/-- The Riemannian edistance is bounded above by the length of any `C^1` path from `x` to `y`.
+Here, we express this using a path defined on the whole real line, considered on
+some interval `[a, b]`. -/
 lemma riemannianEDist_le_pathELength {γ : ℝ → M} (hγ : ContMDiffOn 𝓘(ℝ) I 1 γ (Icc a b))
     (ha : γ a = x) (hb : γ b = y) (hab : a ≤ b) :
     riemannianEDist I x y ≤ pathELength I γ a b := by
@@ -393,6 +396,8 @@ lemma riemannianEDist_le_pathELength {γ : ℝ → M} (hγ : ContMDiffOn 𝓘(�
   · apply (AffineMap.lineMap_monotone hab).monotoneOn
 
 omit [∀ (x : M), ENormSMulClass ℝ (TangentSpace I x)] in
+/-- If some `r` is strictly larger than the Riemannian edistance between two points, there exists
+a path between these two points of length `< r`. Here, we get such a path on `[0, 1]`. -/
 lemma exists_lt_of_riemannianEDist_lt (hr : riemannianEDist I x y < r) :
     ∃ γ : ℝ → M, γ 0 = x ∧ γ 1 = y ∧ ContMDiffOn 𝓘(ℝ) I 1 γ (Icc 0 1) ∧
     pathELength I γ 0 1 < r := by
@@ -402,23 +407,65 @@ lemma exists_lt_of_riemannianEDist_lt (hr : riemannianEDist I x y < r) :
     contMDiffOn_comp_projIcc_iff.2 γ_smooth, ?_⟩
   rwa [← lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc]
 
+/-- If some `r` is strictly larger than the Riemannian edistance between two points, there exists
+a path between these two points of length `< r`. Here, we get such a path on an arbitrary interval
+`[a, b]` with `a < b`, and moreover we ensure that the path is locally constant around `a` and `b`,
+which is convenient for gluing purposes. -/
 lemma exists_lt_of_riemannianEDist_lt' (hr : riemannianEDist I x y < r) (hab : a < b) :
     ∃ γ : ℝ → M, γ a = x ∧ γ b = y ∧ ContMDiff 𝓘(ℝ) I 1 γ ∧
     γ =ᶠ[𝓝 a] (fun _ ↦ x) ∧ γ =ᶠ[𝓝 b] (fun _ ↦ y) ∧ pathELength I γ a b < r := by
+  /- We start from a path from `x` to `y` defined on `[0, 1]` with short length. Then, we
+  reparameterize it using a smooth monotone map `η` from `[a, b]` to `[0, 1]` which is moreover
+  locally constant around `a` and `b`.
+  Such a map is easy to build with `Real.smoothTransition`. -/
   rcases exists_lt_of_riemannianEDist_lt hr with ⟨γ, hγx, hγy, γ_smooth, hγ⟩
   rcases exists_between hab with ⟨a', haa', ha'b⟩
   rcases exists_between ha'b with ⟨b', ha'b', hb'b⟩
   let η (t : ℝ) : ℝ := Real.smoothTransition ((b' - a') ⁻¹ * (t - a'))
-  refine ⟨γ ∘ η, ?_, ?_, ?_, ?_⟩
-  · simp only [Function.comp_apply, η]
-    convert hγx
-    simp only [Real.smoothTransition.zero_iff_nonpos]
+  have A (t) (ht : t < a') : η t = 0 := by
+    simp only [η, Real.smoothTransition.zero_iff_nonpos]
     apply mul_nonpos_of_nonneg_of_nonpos
     · simpa using ha'b'.le
     · linarith
-  · simp only [Function.comp_apply, η]
-    convert hγy
-    simp
+  have A' (t) (ht : t < a') : (γ ∘ η) t = x := by simp [A t ht, hγx]
+  have B (t) (ht : b' < t) : η t = 1 := by
+    simp only [η, Real.smoothTransition.eq_one_iff_one_le, inv_mul_eq_div]
+    rw [one_le_div₀] <;> linarith
+  have B' (t) (ht : b' < t) : (γ ∘ η) t = y := by simp [B t ht, hγy]
+  refine ⟨γ ∘ η, A' _ haa', B' _ hb'b, ?_, ?_, ?_, ?_⟩
+  · rw [← contMDiffOn_univ]
+    apply γ_smooth.comp
+    · rw [contMDiffOn_univ, contMDiff_iff_contDiff]
+      fun_prop
+    · intro t ht
+      exact ⟨Real.smoothTransition.nonneg _, Real.smoothTransition.le_one _⟩
+  · filter_upwards [Iio_mem_nhds haa'] with t ht using A' t ht
+  · filter_upwards [Ioi_mem_nhds hb'b] with t ht using B' t ht
+  · convert hγ using 1
+    rw [← A a haa', ← B b hb'b]
+    apply pathELength_comp_of_monotoneOn hab.le
+    · apply Monotone.monotoneOn
+      apply Real.smoothTransition.monotone.comp
+      intro t u htu
+      dsimp only
+      gcongr
+      simpa only [inv_nonneg, sub_nonneg] using ha'b'.le
+    · simp only [η]
+      apply (ContDiff.contDiffOn _).differentiableOn le_rfl
+      fun_prop
+    · rw [A a haa', B b hb'b]
+      apply γ_smooth.mdifferentiableOn le_rfl
+
+
+
+
+
+
+
+
+
+
+
 
 
 #exit
