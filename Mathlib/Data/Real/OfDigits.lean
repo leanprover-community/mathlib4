@@ -17,7 +17,7 @@ of reals as sequences of digits in positional system.
 
 * `ofDigits`: takes a sequence of digits `(d₀, d₁, ...)` (as an `ℕ → Fin b`),
   and returns the real number `0.d₀d₁d₂...`.
-* `toDigits`: takes a real number and returns the sequence of its digits.
+* `toDigits`: takes a real number in [0,1) and returns the sequence of its digits.
 
 * `toDigits_ofDigits` states that `ofDigits (toDigits x b) = x`.
 -/
