@@ -366,7 +366,7 @@ end MeasureTheory
 
 section Support
 
-/- Ok. Next prove all of the *obvious* results (invisible mathematics) you can think of
+/- Ok. Prove all of the *obvious* results (invisible mathematics) you can think of
 surrounding this topic, as well as the basic things one would want to know about it. -/
 namespace MeasureTheory
 namespace Measure
