@@ -6,6 +6,16 @@ Authors: Etienne Marion
 import Mathlib.MeasureTheory.Measure.CharacteristicFunction
 import Mathlib.Probability.Independence.Basic
 
+/-!
+# Links between independence and characteristic function
+
+We prove several results of the form: random variables are independent if and only if their
+joint characteristic function is equal to the product of the characteristic functions.
+More specifically, we prove this in Hilbert spaces for two variables
+and a finite family of variables. Then we do the same in Banach spaces, with an arbitrary
+Lp norm.
+-/
+
 open Complex MeasureTheory Measure
 
 open scoped ENNReal RealInnerProductSpace
@@ -21,6 +31,9 @@ variable {E F Ω : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] [InnerPr
   {mΩ : MeasurableSpace Ω} {μ : Measure Ω} [IsProbabilityMeasure μ] {X : Ω → E} {Y : Ω → F}
   (t : WithLp 2 (E × F))
 
+/-- If two random variables are independent then their joint characteristic function
+is the product of the charactersitic functions. This is the version for Hilbert spaces,
+see `IndepFun.charFunDual_eq_mul` for the Banach space version. -/
 lemma IndepFun.charFun_eq_mul (mX : AEMeasurable X μ) (mY : AEMeasurable Y μ) (h : IndepFun X Y μ) :
     charFun (μ.map fun ω ↦ (WithLp.equiv 2 _).symm (X ω, Y ω)) t =
       charFun (μ.map X) (WithLp.equiv 2 (E × F) t).1 *
@@ -30,6 +43,9 @@ lemma IndepFun.charFun_eq_mul (mX : AEMeasurable X μ) (mY : AEMeasurable Y μ) 
     (indepFun_iff_map_prod_eq_prod_map_map mX mY).1 h, charFun_prod]
   all_goals fun_prop
 
+/-- Two random variables are independent if and only if their joint characteristic function
+is the product of the charactersitic functions. This is the version for Hilbert spaces,
+see `indepFun_iff_charFunDual_eq_mul` for the Banach space version. -/
 lemma indepFun_iff_charFun_eq_mul [CompleteSpace E] [CompleteSpace F] [BorelSpace E] [BorelSpace F]
     [SecondCountableTopology E] [SecondCountableTopology F]
     (mX : AEMeasurable X μ) (mY : AEMeasurable Y μ) :
@@ -51,6 +67,9 @@ variable {ι Ω : Type*} [Fintype ι] {E : ι → Type*} [∀ i, NormedAddCommGr
   {mΩ : MeasurableSpace Ω} {μ : Measure Ω} [IsProbabilityMeasure μ] {X : Π i, Ω → (E i)}
   (t : PiLp 2 E)
 
+/-- If a finite number of random variables are independent then their joint characteristic function
+is the product of the charactersitic functions. This is the version for Hilbert spaces,
+see `iIndepFun.charFunDual_eq_mul` for the Banach space version. -/
 lemma iIndepFun.charFun_eq_pi (mX : ∀ i, AEMeasurable (X i) μ) (h : iIndepFun X μ) :
     charFun (μ.map fun ω ↦ (WithLp.equiv 2 _).symm fun i ↦ X i ω) t =
     ∏ i, charFun (μ.map (X i)) (t i) := by
@@ -58,6 +77,9 @@ lemma iIndepFun.charFun_eq_pi (mX : ∀ i, AEMeasurable (X i) μ) (h : iIndepFun
   rw [← AEMeasurable.map_map_of_aemeasurable, (iIndepFun_iff_map_fun_eq_pi_map mX).1 h, charFun_pi]
   all_goals fun_prop
 
+/-- A finite number of random variables are independent if and only if their joint characteristic
+function is the product of the charactersitic functions. This is the version for Hilbert spaces,
+see `iIndepFun_iff_charFunDual_eq_mul` for the Banach space version. -/
 lemma iIndepFun_iff_charFun_eq_pi [∀ i, CompleteSpace (E i)] [∀ i, BorelSpace (E i)]
     [∀ i, SecondCountableTopology (E i)] (mX : ∀ i, AEMeasurable (X i) μ) :
     iIndepFun X μ ↔ ∀ t,
@@ -80,6 +102,9 @@ variable (p : ℝ≥0∞) [Fact (1 ≤ p)] {E F Ω : Type*} [NormedAddCommGroup 
   [NormedSpace ℝ E] [NormedSpace ℝ F] [MeasurableSpace E] [MeasurableSpace F]
   {mΩ : MeasurableSpace Ω} {μ : Measure Ω} [IsProbabilityMeasure μ] {X : Ω → E} {Y : Ω → F}
 
+/-- If two random variables are independent then their joint characteristic function
+is the product of the charactersitic functions. This is the version for Banach spaces,
+see `IndepFun.charFun_eq_mul` for the Hilbert space version. -/
 lemma IndepFun.charFunDual_eq_mul (mX : AEMeasurable X μ) (mY : AEMeasurable Y μ)
     (h : IndepFun X Y μ) (L : NormedSpace.Dual ℝ (E × F)) :
     charFunDual (μ.map fun ω ↦ (X ω, Y ω)) L =
@@ -87,6 +112,9 @@ lemma IndepFun.charFunDual_eq_mul (mX : AEMeasurable X μ) (mY : AEMeasurable Y 
       charFunDual (μ.map Y) (L.comp (.inr ℝ E F)) := by
   rw [(indepFun_iff_map_prod_eq_prod_map_map mX mY).1 h, charFunDual_prod]
 
+/-- If two random variables are independent then their joint characteristic function
+is the product of the charactersitic functions. This is `IndepFun.charFunDual_eq_mul` for `WithLp`.
+See `IndepFun.charFun_eq_mul` for the Hilbert space version. -/
 lemma IndepFun.charFunDual_eq_mul' (mX : AEMeasurable X μ) (mY : AEMeasurable Y μ)
     (h : IndepFun X Y μ) (L : NormedSpace.Dual ℝ (WithLp p (E × F))) :
     charFunDual (μ.map fun ω ↦ (WithLp.equiv p (E × F)).symm (X ω, Y ω)) L =
@@ -101,6 +129,9 @@ lemma IndepFun.charFunDual_eq_mul' (mX : AEMeasurable X μ) (mY : AEMeasurable Y
     (indepFun_iff_map_prod_eq_prod_map_map mX mY).1 h, charFunDual_prod']
   all_goals fun_prop
 
+/-- Two random variables are independent if and only if their joint characteristic function
+is the product of the charactersitic functions. This is the version for Banach spaces,
+see `indepFun_iff_charFun_eq_mul` for the Hilbert space version. -/
 lemma indepFun_iff_charFunDual_eq_mul [CompleteSpace E] [CompleteSpace F] [BorelSpace E]
     [BorelSpace F] [SecondCountableTopology E] [SecondCountableTopology F]
     (mX : AEMeasurable X μ) (mY : AEMeasurable Y μ) :
@@ -110,6 +141,10 @@ lemma indepFun_iff_charFunDual_eq_mul [CompleteSpace E] [CompleteSpace F] [Borel
       charFunDual (μ.map Y) (L.comp (.inr ℝ E F)) := by
   rw [charFunDual_eq_prod_iff, indepFun_iff_map_prod_eq_prod_map_map mX mY]
 
+/-- Two random variables are independent if and only if their joint characteristic function
+is the product of the charactersitic functions. This is `indepFun_iffcharFunDual_eq_mul`
+for `WithLp`.
+See `indepFun_iff_charFun_eq_mul` for the Hilbert space version. -/
 lemma indepFun_iff_charFunDual_eq_mul' [CompleteSpace E] [CompleteSpace F] [BorelSpace E]
     [BorelSpace F] [SecondCountableTopology E] [SecondCountableTopology F]
     (mX : AEMeasurable X μ) (mY : AEMeasurable Y μ) :
@@ -134,12 +169,18 @@ variable (p : ℝ≥0∞) [Fact (1 ≤ p)] {ι Ω : Type*} [Fintype ι] [Decidab
   [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace ℝ (E i)] [∀ i, MeasurableSpace (E i)]
   {mΩ : MeasurableSpace Ω} {μ : Measure Ω} [IsProbabilityMeasure μ] {X : Π i, Ω → (E i)}
 
+/-- If a finite number of random variables are independent then their joint characteristic function
+is the product of the charactersitic functions. This is the version for Banach spaces,
+see `iIndepFun.charFun_eq_mul` for the Hilbert space version. -/
 lemma iIndepFun.charFunDual_eq_pi (mX : ∀ i, AEMeasurable (X i) μ) (h : iIndepFun X μ)
     (L : NormedSpace.Dual ℝ (Π i, E i)) :
     charFunDual (μ.map fun ω i ↦ X i ω) L =
       ∏ i, charFunDual (μ.map (X i)) (L.comp (.single ℝ E i)) := by
   rw [(iIndepFun_iff_map_fun_eq_pi_map mX).1 h, charFunDual_pi]
 
+/-- If a finite number of random variables are independent then their joint characteristic function
+is the product of the charactersitic functions. This is `iIndepFun.charFunDual_eq_mul` for `WithLp`.
+See `iIndepFun.charFun_eq_mul` for the Hilbert space version. -/
 lemma iIndepFun.charFunDual_eq_pi' (mX : ∀ i, AEMeasurable (X i) μ) (h : iIndepFun X μ)
     (L : NormedSpace.Dual ℝ (PiLp p E)) :
     charFunDual (μ.map fun ω ↦ (WithLp.equiv p (Π i, E i)).symm fun i ↦ X i ω) L =
@@ -150,6 +191,9 @@ lemma iIndepFun.charFunDual_eq_pi' (mX : ∀ i, AEMeasurable (X i) μ) (h : iInd
     charFunDual_pi']
   all_goals fun_prop
 
+/-- A finite number of random variables are independent if and only if their joint characteristic
+function is the product of the charactersitic functions. This is the version for Banach spaces,
+see `iIndepFun_iff_charFun_eq_mul` for the Hilbert space version. -/
 lemma iIndepFun_iff_charFunDual_eq_pi [∀ i, CompleteSpace (E i)] [∀ i, BorelSpace (E i)]
     [∀ i, SecondCountableTopology (E i)] (mX : ∀ i, AEMeasurable (X i) μ) :
     iIndepFun X μ ↔ ∀ L,
@@ -157,6 +201,10 @@ lemma iIndepFun_iff_charFunDual_eq_pi [∀ i, CompleteSpace (E i)] [∀ i, Borel
         ∏ i, charFunDual (μ.map (X i)) (L.comp (.single ℝ E i)) := by
   rw [charFunDual_eq_pi_iff, iIndepFun_iff_map_fun_eq_pi_map mX]
 
+/-- A finite number of random variables are independent if and only if their joint characteristic
+function is the product of the charactersitic functions. This is `iIndepFun_iffcharFunDual_eq_mul`
+for `WithLp`.
+See `iIndepFun_iff_charFun_eq_mul` for the Hilbert space version. -/
 lemma iIndepFun_iff_charFunDual_eq_pi' [∀ i, CompleteSpace (E i)] [∀ i, BorelSpace (E i)]
     [∀ i, SecondCountableTopology (E i)] (mX : ∀ i, AEMeasurable (X i) μ) :
     iIndepFun X μ ↔ ∀ L,
