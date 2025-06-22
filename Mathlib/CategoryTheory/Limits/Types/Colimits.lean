@@ -61,7 +61,7 @@ lemma CoconeTypes.isColimit_iff (c : CoconeTypes.{u} F) :
     · let f (z : F.ColimitType) : ULift.{u} Bool := ULift.up (x = z)
       suffices f x = f y by simpa [f] using this
       have : (hc.desc (F.coconeTypesEquiv (F.coconeTypes.postcomp f))).comp
-        (F.descColimitType c) = f := by
+          (F.descColimitType c) = f := by
         ext z
         obtain ⟨j, z, rfl⟩ := F.ιColimitType_jointly_surjective z
         exact congr_fun (hc.fac _ j) z
