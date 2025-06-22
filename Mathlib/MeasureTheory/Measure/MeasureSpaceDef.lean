@@ -395,8 +395,6 @@ lemma isClosed_support (μ : Measure X) : IsClosed μ.support := by
   obtain ⟨y, hyu, hy⟩ := h u hxu hu
   exact hy u hyu hu
 
-lemma support_mono {μ ν : Measure X} (hμν : AbsolutelyContinuous μ ν) : μ.support ≤ ν.support := by sorry
-
 end Measure
 
 end MeasureTheory
