@@ -163,7 +163,7 @@ def leftUnitor (α : a ⟶ b) : 𝟙 a ≫ α ≅ α :=
 @[simps!]
 def rightUnitor (α : a ⟶ b) : α ≫ 𝟙 b ≅ α :=
   iso₂Mk (ρ_ _) (λ_ _).symm
-    (by simpa using conjugateEquiv_comp_id_right_apply α.adj α.adj (𝟙 _) )
+    (by simpa using conjugateEquiv_comp_id_right_apply α.adj α.adj (𝟙 _))
 
 /-- The left whiskering in the bicategory `Adj B`. -/
 @[simps]
