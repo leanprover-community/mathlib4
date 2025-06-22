@@ -43,7 +43,7 @@ theorem rel_of_colimitTypeRel (x y : Σ j, F.obj j) :
     F.ColimitTypeRel x y → FilteredColimit.Rel.{v, u} F x y :=
   fun ⟨f, h⟩ => ⟨y.1, f, 𝟙 y.1, by rw [← h, FunctorToTypes.map_id_apply]⟩
 
-@[deprecated (since := "2025-04-01")] alias rel_of_quot_rel := rel_of_colimitTypeRel
+@[deprecated (since := "2025-06-22")] alias rel_of_quot_rel := rel_of_colimitTypeRel
 
 theorem eqvGen_colimitTypeRel_of_rel (x y : Σ j, F.obj j) :
     FilteredColimit.Rel.{v, u} F x y → Relation.EqvGen F.ColimitTypeRel x y :=
@@ -52,7 +52,7 @@ theorem eqvGen_colimitTypeRel_of_rel (x y : Σ j, F.obj j) :
     · exact (Relation.EqvGen.rel _ _ ⟨f, rfl⟩)
     · exact (Relation.EqvGen.symm _ _ (Relation.EqvGen.rel _ _ ⟨g, h⟩))
 
-@[deprecated (since := "2025-04-01")] alias eqvGen_quot_rel_of_rel := eqvGen_colimitTypeRel_of_rel
+@[deprecated (since := "2025-06-22")] alias eqvGen_quot_rel_of_rel := eqvGen_colimitTypeRel_of_rel
 
 /-- Recognizing filtered colimits of types. -/
 noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x = t.ι.app i xi)
@@ -114,7 +114,7 @@ protected theorem rel_eq_eqvGen_colimitTypeRel :
   · rw [← (FilteredColimit.rel_equiv F).eqvGen_iff]
     exact Relation.EqvGen.mono (rel_of_colimitTypeRel F)
 
-@[deprecated (since := "2025-04-01")] alias rel_eq_eqvGen_quot_rel :=
+@[deprecated (since := "2025-06-22")] alias rel_eq_eqvGen_quot_rel :=
   FilteredColimit.rel_eq_eqvGen_colimitTypeRel
 
 theorem colimit_eq_iff_aux [HasColimit F] {i j : J} {xi : F.obj i} {xj : F.obj j} :

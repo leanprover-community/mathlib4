@@ -83,7 +83,7 @@ lemma colimitTypeRel_iff_orbitRel (x y : J.obj (SingleObj.star G)) :
   show (∃ g : G, y = g • x) ↔ (∃ g : G, g • x = y)
   conv => lhs; simp only [h]
 
-@[deprecated (since := "2025-04-01")] alias Types.Quot.Rel.iff_orbitRel :=
+@[deprecated (since := "2025-06-22")] alias Types.Quot.Rel.iff_orbitRel :=
   colimitTypeRel_iff_orbitRel
 
 /-- The explicit quotient construction of the colimit of `J : SingleObj G ⥤ Type u` is
@@ -98,7 +98,7 @@ def colimitTypeRelEquivOrbitRelQuotient :
   left_inv := fun x => Quot.inductionOn x (fun _ ↦ rfl)
   right_inv := fun x => Quot.inductionOn x (fun _ ↦ rfl)
 
-@[deprecated (since := "2025-04-01")] alias Types.Quot.equivOrbitRelQuotient :=
+@[deprecated (since := "2025-06-22")] alias Types.Quot.equivOrbitRelQuotient :=
   colimitTypeRelEquivOrbitRelQuotient
 
 /-- The colimit of `J : SingleObj G ⥤ Type u` is equivalent to the quotient of

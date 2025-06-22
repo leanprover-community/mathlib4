@@ -455,7 +455,7 @@ theorem zigzag_of_eqvGen_colimitTypeRel {F : C ⥤ D} {d : D} {f₁ f₂ : Σ X,
     · exact ih₁
     · exact ih₂
 
-@[deprecated (since := "2025-04-01")] alias zigzag_of_eqvGen_quot_rel :=
+@[deprecated (since := "2025-06-22")] alias zigzag_of_eqvGen_quot_rel :=
   zigzag_of_eqvGen_colimitTypeRel
 
 end Final
