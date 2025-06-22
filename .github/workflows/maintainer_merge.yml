@@ -74,6 +74,11 @@ jobs:
       - name: Checkout
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: master
+          sparse-checkout: |
+            scripts/get_tlabel.py
+            scripts/maintainer_merge_message.py
 
       - name: Determine Zulip topic
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
