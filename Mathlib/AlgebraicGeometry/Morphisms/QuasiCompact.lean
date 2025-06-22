@@ -275,7 +275,8 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
     ext1; simpa using e
   have h₁ : ∀ i : s, i.1.1 ≤ U := by
     intro i
-    change (i : X.Opens) ≤ U
+    #adaptation_note /-- 2025-06-21 lean4#8914 This `change` does nothing. -/
+    -- change (i : X.Opens) ≤ U
     rw [e]
     -- Porting note: `exact le_iSup _ _` no longer works
     exact le_iSup (fun (i : s) => (i : Opens (X.toPresheafedSpace))) _

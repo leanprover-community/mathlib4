@@ -47,7 +47,7 @@ lemma eq_top_of_sigmaSpec_subset_of_isCompact
     exact ⟨t.map (Function.Embedding.subtype _), by simp, Finset.finite_toSet _, by simpa using ht⟩
   replace ht' : V ⊆ (zeroLocus t)ᶜ := by
     simpa [← Set.compl_iInter, ← zeroLocus_iUnion₂ (κ := (· ∈ t))] using ht'
-  have (i) : Ideal.span (Pi.evalRingHom (R ·) i '' t) = ⊤ := by
+  have (i : _) : Ideal.span (Pi.evalRingHom (R ·) i '' t) = ⊤ := by
     rw [← zeroLocus_empty_iff_eq_top, zeroLocus_span, ← preimage_comap_zeroLocus,
       ← Set.compl_univ_iff, ← Set.preimage_compl, Set.preimage_eq_univ_iff]
     trans (Sigma.ι _ i ≫ sigmaSpec R).opensRange.1
@@ -114,14 +114,14 @@ lemma pointsPi_surjective [CompactSpace X] [∀ i, IsLocalRing (R i)] :
     Function.Surjective (pointsPi R X) := by
   intro f
   let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
-  have (i) : IsAffine (𝒰.obj i) := isAffine_Spec _
-  have (i) : ∃ j, Set.range (f i).base ⊆ (𝒰.map j).opensRange := by
+  have (i : _) : IsAffine (𝒰.obj i) := isAffine_Spec _
+  have (i : _) : ∃ j, Set.range (f i).base ⊆ (𝒰.map j).opensRange := by
     refine ⟨𝒰.f ((f i).base (IsLocalRing.closedPoint (R i))), ?_⟩
     rintro _ ⟨x, rfl⟩
     exact ((IsLocalRing.specializes_closedPoint x).map (f i).base.hom.2).mem_open
       (𝒰.map _).opensRange.2 (𝒰.covers _)
   choose j hj using this
-  have (j₀) := pointsPi_surjective_of_isAffine (ι := { i // j i = j₀ }) (R ·) (𝒰.obj j₀)
+  have (j₀ : _) := pointsPi_surjective_of_isAffine (ι := { i // j i = j₀ }) (R ·) (𝒰.obj j₀)
     (fun i ↦ IsOpenImmersion.lift (𝒰.map j₀) (f i.1) (by rcases i with ⟨i, rfl⟩; exact hj i))
   choose g hg using this
   simp_rw [funext_iff, pointsPi] at hg

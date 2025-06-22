@@ -1081,7 +1081,7 @@ theorem finprod_mem_finset_product' [DecidableEq α] [DecidableEq β] (s : Finse
     (f : α × β → M) :
     (∏ᶠ (ab) (_ : ab ∈ s), f ab) =
       ∏ᶠ (a) (b) (_ : b ∈ (s.filter fun ab => Prod.fst ab = a).image Prod.snd), f (a, b) := by
-  have (a) :
+  have (a : _) :
       ∏ i ∈ (s.filter fun ab => Prod.fst ab = a).image Prod.snd, f (a, i) =
         (s.filter (Prod.fst · = a)).prod f := by
     refine Finset.prod_nbij' (fun b ↦ (a, b)) Prod.snd ?_ ?_ ?_ ?_ ?_ <;> aesop

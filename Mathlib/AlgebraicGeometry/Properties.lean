@@ -49,7 +49,7 @@ instance {X : Scheme.{u}} : PrespectralSpace X :=
   have (Y : Scheme.{u}) (_ : IsAffine Y) : PrespectralSpace Y :=
     .of_isClosedEmbedding (Y := PrimeSpectrum _) _
       Y.isoSpec.hom.homeomorph.isClosedEmbedding
-  have (i) : PrespectralSpace (X.affineCover.map i).opensRange.1 :=
+  have (i : _) : PrespectralSpace (X.affineCover.map i).opensRange.1 :=
     this (X.affineCover.map i).opensRange (isAffineOpen_opensRange (X.affineCover.map i))
   .of_isOpenCover X.affineCover.isOpenCover_opensRange
 

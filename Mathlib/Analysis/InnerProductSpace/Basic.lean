@@ -256,7 +256,7 @@ theorem parallelogram_law {x y : E} : ⟪x + y, x + y⟫ + ⟪x - y, x - y⟫ = 
 
 /-- **Cauchy–Schwarz inequality**. -/
 theorem inner_mul_inner_self_le (x y : E) : ‖⟪x, y⟫‖ * ‖⟪y, x⟫‖ ≤ re ⟪x, x⟫ * re ⟪y, y⟫ :=
-  letI cd : PreInnerProductSpace.Core 𝕜 E := PreInnerProductSpace.toCore
+  letI : PreInnerProductSpace.Core 𝕜 E := PreInnerProductSpace.toCore
   InnerProductSpace.Core.inner_mul_inner_self_le x y
 
 /-- Cauchy–Schwarz inequality for real inner products. -/

@@ -880,7 +880,7 @@ end Monoidal
 namespace Monoidal
 
 instance [F.Monoidal] : PreservesFiniteProducts F :=
-  have (A B) : IsIso (CartesianMonoidalCategory.prodComparison F A B) :=
+  have (A B : _) : IsIso (CartesianMonoidalCategory.prodComparison F A B) :=
     δ_of_cartesianMonoidalCategory F A B ▸ inferInstance
   have : IsIso (CartesianMonoidalCategory.terminalComparison F) :=
     η_of_cartesianMonoidalCategory F ▸ inferInstance

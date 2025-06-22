@@ -156,8 +156,8 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
         let _a ← synthInstanceQ q(Semifield $α)
         let _a ← synthInstanceQ q(LinearOrder $α)
         let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
-        haveI' : $e =Q $a ^ $b := ⟨⟩
         assumeInstancesCommute
+        haveI' : $e =Q $a ^ $b := ⟨⟩
         pure (.positive q(zpow_pos $pa $b))
       catch e : Exception =>
         trace[Tactic.positivity.failure] "{e.toMessageData}"
