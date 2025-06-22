@@ -99,7 +99,7 @@ structure Hom₂ (α β : a ⟶ b) where
   τr : β.r ⟶ α.r
   conjugateEquiv_τl : conjugateEquiv β.adj α.adj τl = τr := by aesop_cat
 
-lemma Hom₂.conjugateEquiv_symm_τg {α β : a ⟶ b} (p : Hom₂ α β) :
+lemma Hom₂.conjugateEquiv_symm_τr {α β : a ⟶ b} (p : Hom₂ α β) :
     (conjugateEquiv β.adj α.adj).symm p.τr = p.τl := by
   rw [← Hom₂.conjugateEquiv_τl, Equiv.symm_apply_apply]
 
