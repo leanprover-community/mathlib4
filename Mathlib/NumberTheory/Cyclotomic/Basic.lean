@@ -297,6 +297,23 @@ theorem integral [IsCyclotomicExtension S A B] : Algebra.IsIntegral A B := by
   exact Algebra.IsIntegral.adjoin fun x ⟨n, hn, h1, h2⟩ ↦
     ⟨X ^ n - 1, monic_X_pow_sub_C 1 h1, by simp [h2]⟩
 
+theorem _root_.Algebra.isCyclotomicExtension_adjoin_of_exists_isPrimitiveRoot
+    (h : ∀ n ∈ S, n ≠ 0 → ∃ r : B, IsPrimitiveRoot r n) :
+    IsCyclotomicExtension S A (adjoin A {b : B | ∃ n ∈ S, n ≠ 0 ∧ b ^ n = 1}) where
+  exists_isPrimitiveRoot {n} hn1 hn2 := by
+    obtain ⟨r, hr1, hr2⟩ := h n hn1 hn2
+    exact ⟨⟨r, subset_adjoin ⟨n, hn1, hn2, hr1⟩⟩, Subtype.val_injective hr1,
+      fun l hl ↦ hr2 l congr($hl.1)⟩
+  adjoin_roots := by
+    rintro ⟨x, hx⟩
+    induction hx using adjoin_induction with
+    | mem x hx =>
+      obtain ⟨n, hn1, hn2, hx⟩ := hx
+      exact subset_adjoin ⟨n, hn1, hn2, Subtype.val_injective hx⟩
+    | algebraMap x => exact Subalgebra.algebraMap_mem _ x
+    | add x y hx hy ihx ihy => exact Subalgebra.add_mem _ ihx ihy
+    | mul x y hx hy ihx ihy => exact Subalgebra.mul_mem _ ihx ihy
+
 end Basic
 
 section Fintype
@@ -444,6 +461,17 @@ theorem splits_cyclotomic [IsCyclotomicExtension S K L] (hS : n ∈ S) :
 
 variable (n S)
 
+theorem _root_.IntermediateField.isCyclotomicExtension_adjoin_of_exists_isPrimitiveRoot
+    (h : ∀ n ∈ S, n ≠ 0 → ∃ r : L, IsPrimitiveRoot r n) :
+    IsCyclotomicExtension S K
+      (IntermediateField.adjoin K {b : L | ∃ n ∈ S, n ≠ 0 ∧ b ^ n = 1}) := by
+  have key : ∀ b ∈ {b : L | ∃ n ∈ S, n ≠ 0 ∧ b ^ n = 1}, IsAlgebraic K b := by
+    rintro b ⟨n, hn, h1, h2⟩
+    exact ⟨X ^ n - 1, (monic_X_pow_sub_C (1 : K) h1).ne_zero, by simp [h2]⟩
+  change IsCyclotomicExtension S K (IntermediateField.toSubalgebra _)
+  rw [congr(IsCyclotomicExtension S K $(IntermediateField.adjoin_algebraic_toSubalgebra key))]
+  exact Algebra.isCyclotomicExtension_adjoin_of_exists_isPrimitiveRoot S K L h
+
 theorem isSeparable [IsCyclotomicExtension S K L] : Algebra.IsSeparable K L := by
   have := integral S K L
   have h := (IsCyclotomicExtension.iff_adjoin_eq_top S K L).1 ‹_› |>.2
@@ -457,7 +485,7 @@ theorem isSeparable [IsCyclotomicExtension S K L] : Algebra.IsSeparable K L := b
   have := Polynomial.X_pow_sub_one_separable_iff.2 (neZero_of_mem' n S K L hn).out
   exact this.of_dvd <| minpoly.dvd K b <| by simp [h2]
 
-theorem nonempty_algEquiv_adjoin [IsCyclotomicExtension S K L]
+theorem nonempty_algEquiv_adjoin_of_isSepClosed [IsCyclotomicExtension S K L]
     (M : Type*) [Field M] [Algebra K M] [IsSepClosed M] :
     Nonempty (L ≃ₐ[K] IntermediateField.adjoin K {x : M | ∃ n ∈ S, n ≠ 0 ∧ x ^ n = 1}) := by
   have := isSeparable S K L
@@ -503,7 +531,7 @@ theorem nonempty_algEquiv_adjoin [IsCyclotomicExtension S K L]
 theorem isGalois [IsCyclotomicExtension S K L] : IsGalois K L := by
   rw [isGalois_iff]
   use isSeparable S K L
-  obtain ⟨i⟩ := nonempty_algEquiv_adjoin S K L (AlgebraicClosure K)
+  obtain ⟨i⟩ := nonempty_algEquiv_adjoin_of_isSepClosed S K L (AlgebraicClosure K)
   rw [i.transfer_normal, IntermediateField.normal_iff_forall_map_le]
   intro f x hx
   change x ∈ IntermediateField.toSubalgebra _ at hx
@@ -529,11 +557,20 @@ theorem isGalois [IsCyclotomicExtension S K L] : IsGalois K L := by
     rw [map_inv₀]
     exact inv_mem ihx
 
-/-- Any two cyclotomic extensions with respect to `S` are isomorphic. -/
+/-- Any two `S`-cyclotomic extensions are isomorphic. -/
 noncomputable def algEquiv [IsCyclotomicExtension S K L]
     (L' : Type*) [Field L'] [Algebra K L'] [IsCyclotomicExtension S K L'] : L ≃ₐ[K] L' :=
-  (nonempty_algEquiv_adjoin S K L (AlgebraicClosure K)).some.trans
-    (nonempty_algEquiv_adjoin S K L' (AlgebraicClosure K)).some.symm
+  (nonempty_algEquiv_adjoin_of_isSepClosed S K L (AlgebraicClosure K)).some.trans
+    (nonempty_algEquiv_adjoin_of_isSepClosed S K L' (AlgebraicClosure K)).some.symm
+
+theorem nonempty_algEquiv_adjoin_of_exists_isPrimitiveRoot [IsCyclotomicExtension S K L]
+    (M : Type*) [Field M] [Algebra K M] [IsSepClosed M]
+    (h : ∀ n ∈ S, n ≠ 0 → ∃ r : M, IsPrimitiveRoot r n) :
+    Nonempty (L ≃ₐ[K] IntermediateField.adjoin K {x : M | ∃ n ∈ S, n ≠ 0 ∧ x ^ n = 1}) := by
+  let L' := IntermediateField.adjoin K {x : M | ∃ n ∈ S, n ≠ 0 ∧ x ^ n = 1}
+  have : IsCyclotomicExtension S K L' :=
+    IntermediateField.isCyclotomicExtension_adjoin_of_exists_isPrimitiveRoot S K M h
+  exact ⟨algEquiv S K L L'⟩
 
 section Singleton
 
@@ -775,7 +812,7 @@ section IsSepClosed
 variable [IsSepClosed K]
 
 /-- Separably closed fields are `S`-cyclotomic extensions over themselves if
-`NeZero ((a : ℕ) : K))` for all nonzero `a ∈ S`. -/
+`NeZero ((a : ℕ) : K)` for all nonzero `a ∈ S`. -/
 theorem IsSepClosed.isCyclotomicExtension (h : ∀ a ∈ S, a ≠ 0 → NeZero (a : K)) :
     IsCyclotomicExtension S K K := by
   refine ⟨@fun a ha ha' ↦ ?_, Algebra.eq_top_iff.mp <| Subsingleton.elim _ _⟩
