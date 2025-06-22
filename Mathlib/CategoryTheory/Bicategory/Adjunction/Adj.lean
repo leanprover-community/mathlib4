@@ -100,6 +100,8 @@ instance : CategoryStruct (a ⟶ b) where
       conjugateEquiv_τl := by simp [← conjugateEquiv_comp c.adj b.adj a.adj y.τl x.τl,
         Hom₂.conjugateEquiv_τl] }
 
+attribute [reassoc] comp_τl comp_τr
+
 @[ext]
 lemma hom₂_ext {α β : a ⟶ b} {x y : α ⟶ β} (hl : x.τl = y.τl) : x = y :=
   Hom₂.ext hl (by simp only [← Hom₂.conjugateEquiv_τl, hl])
