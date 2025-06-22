@@ -86,7 +86,6 @@ lemma supportLocallyFiniteWithin_top_iff [Zero Y] (f : X → Y) :
     rw [← this]
     exact Finite.image Subtype.val ans
 
-
 lemma supportLocallyFiniteWithin_top_inter_compact_finite {W : Set X}
    [Zero Y] {f : X → Y} (hf : ∀ z : X, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support))
    (hW : IsCompact W) : (W ∩ f.support).Finite := by
