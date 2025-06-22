@@ -6,7 +6,7 @@ Authors: Etienne Marion
 import Mathlib.Analysis.InnerProductSpace.ProdL2
 import Mathlib.MeasureTheory.Integral.Pi
 import Mathlib.MeasureTheory.Measure.CharacteristicFunction
-import Mathlib.Analysis.Norm.Lp.MeasurableSpace
+import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 import Mathlib.Probability.Independence.Basic
 import Mathlib.Probability.ProductMeasure
 
@@ -61,25 +61,6 @@ lemma oops {μ : Measure E} {ν : Measure F} [IsFiniteMeasure μ] [IsFiniteMeasu
   · fun_prop
   · exact Measurable.aestronglyMeasurable <| by fun_prop
 
-lemma merde {X Y : Type*} {mX : MeasurableSpace X} {mY : MeasurableSpace Y}
-    {μ : Measure X} {ν : Measure X} (f : X ≃ᵐ Y) :
-    μ = ν ↔ μ.map f = ν.map f where
-  mp h := by rw [h]
-  mpr h := by
-    rw [← map_id (μ := μ), ← map_id (μ := ν), ← f.symm_comp_self, ← map_map, ← map_map, h]
-    all_goals fun_prop
-
-instance {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    [SecondCountableTopology X] [SecondCountableTopology Y] (p : ℝ≥0∞) :
-    SecondCountableTopology (WithLp p (X × Y)) :=
-  inferInstanceAs <| SecondCountableTopology (X × Y)
-
-instance {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    [MeasurableSpace X] [MeasurableSpace Y]
-    [SecondCountableTopologyEither X Y] [BorelSpace X] [BorelSpace Y] (p : ℝ≥0∞) :
-    BorelSpace (WithLp p (X × Y)) :=
-  inferInstanceAs <| BorelSpace (X × Y)
-
 lemma omg [CompleteSpace E] [CompleteSpace F] [BorelSpace E] [BorelSpace F]
     [SecondCountableTopology E] [SecondCountableTopology F]
     (mX : AEMeasurable X μ) (mY : AEMeasurable Y μ) :
@@ -89,10 +70,11 @@ lemma omg [CompleteSpace E] [CompleteSpace F] [BorelSpace E] [BorelSpace F]
       charFun (μ.map Y) (WithLp.equiv 2 (E × F) t).2 where
   mp := fun h t ↦ test t mX mY h
   mpr h := by
-    rw [indepFun_iff_map_prod_eq_prod_map_map mX mY, merde (WithLp.measurableEquiv 2 (E × F))]
+    rw [indepFun_iff_map_prod_eq_prod_map_map mX mY]
+    apply (MeasurableEquiv.toLp 2 (E × F)).map_measurableEquiv_injective
     apply Measure.ext_of_charFun
     ext t
-    rw [WithLp.coe_measurableEquiv, AEMeasurable.map_map_of_aemeasurable]
+    rw [MeasurableEquiv.coe_toLp, AEMeasurable.map_map_of_aemeasurable]
     · change charFun (μ.map (fun ω ↦ (WithLp.equiv 2 (E × F)).symm (X ω, Y ω))) t = _
       rw [h, oops]
     all_goals fun_prop
@@ -154,10 +136,11 @@ lemma omgbis [∀ i, CompleteSpace (E i)] [∀ i, BorelSpace (E i)]
       ∏ i, charFun (μ.map (X i)) (t i) where
   mp := fun h t ↦ testbis t mX h
   mpr h := by
-    rw [iIndepFun_iff_map_fun_eq_pi_map mX, merde (WithLp.measurableEquiv 2 (Π i, E i))]
+    rw [iIndepFun_iff_map_fun_eq_pi_map mX]
+    apply (MeasurableEquiv.toLp 2 (Π i, E i)).map_measurableEquiv_injective
     apply Measure.ext_of_charFun
     ext t
-    rw [WithLp.coe_measurableEquiv, AEMeasurable.map_map_of_aemeasurable]
+    rw [MeasurableEquiv.coe_toLp, AEMeasurable.map_map_of_aemeasurable]
     · change charFun (μ.map (fun ω ↦ (WithLp.equiv 2 _).symm _)) t = _
       rw [h, oopsbis]
     all_goals fun_prop
