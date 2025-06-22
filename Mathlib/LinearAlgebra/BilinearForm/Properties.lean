@@ -87,6 +87,9 @@ theorem isSymm_def : IsSymm B ↔ ∀ x y, B x y = B y x where
   mp := fun ⟨h⟩ ↦ h
   mpr h := ⟨h⟩
 
+theorem isSymm_iff : IsSymm B ↔ LinearMap.IsSymm B := by
+  simp [isSymm_def, LinearMap.IsSymm]
+
 namespace IsSymm
 
 theorem isRefl (H : B.IsSymm) : B.IsRefl := fun x y H1 => H.eq x y ▸ H1
