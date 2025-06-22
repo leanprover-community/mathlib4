@@ -647,7 +647,6 @@ instance : (forget₂ CommRingCat RingCat).Full :=
 instance : (forget₂ CommRingCat RingCat).Faithful :=
   fullyFaithfulForget₂ToRingCat.faithful
 
-
 @[simp] lemma forgetToRingCat_map_hom {R S : CommRingCat} (f : R ⟶ S) :
     ((forget₂ CommRingCat RingCat).map f).hom = f.hom :=
   rfl
