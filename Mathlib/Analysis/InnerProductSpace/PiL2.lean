@@ -422,6 +422,15 @@ lemma enorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
 lemma inner_eq_zero (b : OrthonormalBasis ι 𝕜 E) {i j : ι} (hij : i ≠ j) :
     ⟪b i, b j⟫ = 0 := b.orthonormal.inner_eq_zero hij
 
+lemma inner_eq [DecidableEq ι] (b : OrthonormalBasis ι 𝕜 E) {i j : ι} :
+    ⟪b i, b j⟫ = if i = j then 1 else 0 := by
+  by_cases h : i = j
+  · simp only [h, ↓reduceIte]
+    apply RCLike.ext
+    · simp [inner_self_eq_norm_sq]
+    · simp
+  · simp [h]
+
 /-- The `Basis ι 𝕜 E` underlying the `OrthonormalBasis` -/
 protected def toBasis (b : OrthonormalBasis ι 𝕜 E) : Basis ι 𝕜 E :=
   Basis.ofEquivFun b.repr.toLinearEquiv
@@ -468,6 +477,19 @@ lemma sum_sq_norm_inner (b : OrthonormalBasis ι 𝕜 E) (x : E) :
     norm_star, ← pow_two]
   rw [Real.sq_sqrt]
   exact Fintype.sum_nonneg fun _ ↦ by positivity
+
+open scoped RealInnerProductSpace in
+theorem sum_sq_inner_right {E : Type*} [NormedAddCommGroup E]
+    [InnerProductSpace ℝ E] (b : OrthonormalBasis ι ℝ E) (x : E) :
+    ∑ i : ι, ⟪b i, x⟫ ^ 2 = ‖x‖ ^ 2 := by
+  rw [← b.sum_sq_norm_inner]
+  simp
+
+open scoped RealInnerProductSpace in
+theorem sum_sq_inner_left {ι E : Type*} [NormedAddCommGroup E]
+    [InnerProductSpace ℝ E] [Fintype ι] (b : OrthonormalBasis ι ℝ E) (x : E) :
+    ∑ i : ι, ⟪x, b i⟫ ^ 2 = ‖x‖ ^ 2 := by
+  simp_rw [← b.sum_sq_inner_right, real_inner_comm]
 
 lemma norm_le_card_mul_iSup_norm_inner (b : OrthonormalBasis ι 𝕜 E) (x : E) :
     ‖x‖ ≤ √(Fintype.card ι) * ⨆ i, ‖⟪b i, x⟫‖ := by
