@@ -3,6 +3,7 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Analysis.Calculus.BumpFunction.Basic
 import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Geometry.Manifold.ContMDiff.Defs
@@ -209,6 +210,18 @@ lemma mfderiv_subtype_coe_Icc_one (z : Icc x y) :
   rfl
 
 end ToMove
+
+open scoped ContDiff
+
+#check ContDiffBump
+
+lemma foo (a b : ℝ) (hab : a < b) :
+    ∃ (f : ℝ → ℝ), ContDiff ℝ ∞ f ∧ f 0 = 0 ∧ f 1 = 1 ∧ f =ᶠ[𝓝 0] (fun x ↦ 0) := by
+
+
+
+
+#exit
 
 namespace Manifold
 

@@ -55,6 +55,13 @@ theorem nonneg (x : ℝ) : 0 ≤ expNegInvGlue x := by
 @[simp] theorem zero_iff_nonpos {x : ℝ} : expNegInvGlue x = 0 ↔ x ≤ 0 :=
   ⟨fun h ↦ not_lt.mp fun h' ↦ (pos_of_pos h').ne' h, zero_of_nonpos⟩
 
+protected theorem monotone : Monotone expNegInvGlue := by
+  intro x y hxy
+  rcases le_or_gt x 0 with hx | hx
+  · simp [zero_of_nonpos hx, nonneg]
+  simp [expNegInvGlue, not_le.2 hx, not_le.2 (hx.trans_le hxy),
+    inv_le_inv₀ (hx.trans_le hxy) hx, hxy]
+
 /-!
 ### Smoothness of `expNegInvGlue`
 
@@ -193,6 +200,17 @@ protected theorem continuous : Continuous smoothTransition :=
 @[fun_prop]
 protected theorem continuousAt : ContinuousAt smoothTransition x :=
   smoothTransition.continuous.continuousAt
+
+protected theorem monotone : Monotone smoothTransition := by
+  intro x y hxy
+  simp only [smoothTransition]
+  rw [div_le_div_iff₀ (pos_denom x) (pos_denom y)]
+  simp only [mul_add, mul_comm (expNegInvGlue x) (expNegInvGlue y), add_le_add_iff_left]
+  gcongr
+  · exact expNegInvGlue.nonneg _
+  · exact expNegInvGlue.nonneg _
+  · apply expNegInvGlue.monotone hxy
+  · apply expNegInvGlue.monotone (by linarith)
 
 end smoothTransition
 
