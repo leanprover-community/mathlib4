@@ -6,7 +6,7 @@ Authors: Etienne Marion
 import Mathlib.Analysis.InnerProductSpace.ProdL2
 import Mathlib.MeasureTheory.Integral.Pi
 import Mathlib.MeasureTheory.Measure.CharacteristicFunction
-import Mathlib.MeasureTheory.MeasurableSpace.WithLp
+import Mathlib.Analysis.Norm.Lp.MeasurableSpace
 import Mathlib.Probability.Independence.Basic
 import Mathlib.Probability.ProductMeasure
 
