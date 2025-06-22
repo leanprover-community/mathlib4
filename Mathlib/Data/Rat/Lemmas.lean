@@ -93,13 +93,13 @@ theorem mul_den (q₁ q₂ : ℚ) :
 
 theorem den_mul_den_eq_den_mul_gcd (q₁ q₂ : ℚ) :
     q₁.den * q₂.den = (q₁ * q₂).den * ((q₁.num * q₂.num).natAbs.gcd (q₁.den * q₂.den)) := by
-  rw [Rat.mul_den]
+  rw [mul_den]
   exact ((Nat.dvd_iff_div_mul_eq _ _).mp (Nat.gcd_dvd_right _ _)).symm
 
 theorem num_mul_num_eq_num_mul_gcd (q₁ q₂ : ℚ) :
     q₁.num * q₂.num = (q₁ * q₂).num * ((q₁.num * q₂.num).natAbs.gcd (q₁.den * q₂.den)) := by
-  rw [Rat.mul_num]
-  refine Eq.symm (Int.ediv_mul_cancel ?_)
+  rw [mul_num]
+  refine (Int.ediv_mul_cancel ?_).symm
   rw [← Int.dvd_natAbs]
   exact Int.ofNat_dvd.mpr (Nat.gcd_dvd_left _ _)
 
