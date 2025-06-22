@@ -3,9 +3,9 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.BumpFunction.Basic
 import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
 import Mathlib.Analysis.InnerProductSpace.Calculus
+import Mathlib.Analysis.SpecialFunctions.SmoothTransition
 import Mathlib.Geometry.Manifold.ContMDiff.Defs
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
@@ -141,14 +141,14 @@ lemma contMDiffOn_projIcc :
     rw [max_eq_right, min_eq_right hw.2]
     simp [hw.1, h.out.le]
 
-lemma contMDiffOn_comp_projIcc_iff (f : Icc x y → M) :
+lemma contMDiffOn_comp_projIcc_iff {f : Icc x y → M} :
     ContMDiffOn 𝓘(ℝ) I n (f ∘ (Set.projIcc x y h.out.le)) (Icc x y) ↔ ContMDiff (𝓡∂ 1) I n f := by
   refine ⟨fun hf ↦ ?_, fun hf ↦ hf.comp_contMDiffOn contMDiffOn_projIcc⟩
   convert hf.comp_contMDiff (contMDiff_subtypeVal_Icc (x := x) (y := y)) (fun z ↦ z.2)
   ext z
   simp
 
-lemma contMDiffWithinAt_comp_projIcc_iff (f : Icc x y → M) (w : Icc x y) :
+lemma contMDiffWithinAt_comp_projIcc_iff {f : Icc x y → M} {w : Icc x y} :
     ContMDiffWithinAt 𝓘(ℝ) I n (f ∘ (Set.projIcc x y h.out.le)) (Icc x y) w ↔
       ContMDiffAt (𝓡∂ 1) I n f w := by
   refine ⟨fun hf ↦ ?_,
@@ -159,7 +159,7 @@ lemma contMDiffWithinAt_comp_projIcc_iff (f : Icc x y → M) (w : Icc x y) :
   ext z
   simp
 
-lemma mdifferentiableWithinAt_comp_projIcc_iff (f : Icc x y → M) (w : Icc x y) :
+lemma mdifferentiableWithinAt_comp_projIcc_iff {f : Icc x y → M} {w : Icc x y} :
     MDifferentiableWithinAt 𝓘(ℝ) I (f ∘ (Set.projIcc x y h.out.le)) (Icc x y) w ↔
       MDifferentiableAt (𝓡∂ 1) I f w := by
   refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
@@ -171,14 +171,14 @@ lemma mdifferentiableWithinAt_comp_projIcc_iff (f : Icc x y → M) (w : Icc x y)
   · have := (contMDiffOn_projIcc (x := x) (y := y) (n := 1) w w.2).mdifferentiableWithinAt le_rfl
     exact MDifferentiableAt.comp_mdifferentiableWithinAt_of_eq (w : ℝ) hf this (by simp)
 
-lemma mfderivWithin_projIcc_one (z : ℝ) (hz : z ∈ Icc x y) :
+lemma mfderivWithin_projIcc_one {z : ℝ} (hz : z ∈ Icc x y) :
     mfderivWithin 𝓘(ℝ) (𝓡∂ 1) (Set.projIcc x y h.out.le) (Icc x y) z 1 = 1 := by
   change _ = one_tangentSpace_Icc (Set.projIcc x y h.out.le z)
   simp [one_tangentSpace_Icc]
   congr
   simp only [projIcc_of_mem h.out.le hz]
 
-lemma mfderivWithin_comp_projIcc_one (f : Icc x y → M) (w : Icc x y) :
+lemma mfderivWithin_comp_projIcc_one {f : Icc x y → M} {w : Icc x y} :
     mfderivWithin 𝓘(ℝ) I (f ∘ (projIcc x y h.out.le)) (Icc x y) w 1 = mfderiv (𝓡∂ 1) I f w 1 := by
   by_cases hw : MDifferentiableAt (𝓡∂ 1) I f w; swap
   · rw [mfderiv_zero_of_not_mdifferentiableAt hw, mfderivWithin_zero_of_not_mdifferentiableWithinAt]
@@ -194,7 +194,7 @@ lemma mfderivWithin_comp_projIcc_one (f : Icc x y → M) (w : Icc x y) :
   have J : w = projIcc x y h.out.le (w : ℝ) := by rw [I]
   rw [I]
   congr 1
-  convert mfderivWithin_projIcc_one w w.2
+  convert mfderivWithin_projIcc_one w.2
 
 lemma mfderiv_subtype_coe_Icc_one (z : Icc x y) :
     mfderiv (𝓡∂ 1) 𝓘(ℝ) (Subtype.val : Icc x y → ℝ) z 1 = 1 := by
@@ -210,18 +210,6 @@ lemma mfderiv_subtype_coe_Icc_one (z : Icc x y) :
   rfl
 
 end ToMove
-
-open scoped ContDiff
-
-#check ContDiffBump
-
-lemma foo (a b : ℝ) (hab : a < b) :
-    ∃ (f : ℝ → ℝ), ContDiff ℝ ∞ f ∧ f 0 = 0 ∧ f 1 = 1 ∧ f =ᶠ[𝓝 0] (fun x ↦ 0) := by
-
-
-
-
-#exit
 
 namespace Manifold
 
@@ -404,10 +392,34 @@ lemma riemannianEDist_le_pathELength {γ : ℝ → M} (hγ : ContMDiffOn 𝓘(�
   · simpa [← ha, ← hb] using hγ.mdifferentiableOn le_rfl
   · apply (AffineMap.lineMap_monotone hab).monotoneOn
 
+omit [∀ (x : M), ENormSMulClass ℝ (TangentSpace I x)] in
 lemma exists_lt_of_riemannianEDist_lt (hr : riemannianEDist I x y < r) :
+    ∃ γ : ℝ → M, γ 0 = x ∧ γ 1 = y ∧ ContMDiffOn 𝓘(ℝ) I 1 γ (Icc 0 1) ∧
+    pathELength I γ 0 1 < r := by
+  simp only [riemannianEDist, iInf_lt_iff, exists_prop] at hr
+  rcases hr with ⟨γ, γ_smooth, hγ⟩
+  refine ⟨γ ∘ (projIcc 0 1 zero_le_one), by simp, by simp,
+    contMDiffOn_comp_projIcc_iff.2 γ_smooth, ?_⟩
+  rwa [← lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc]
+
+lemma exists_lt_of_riemannianEDist_lt' (hr : riemannianEDist I x y < r) (hab : a < b) :
     ∃ γ : ℝ → M, γ a = x ∧ γ b = y ∧ ContMDiff 𝓘(ℝ) I 1 γ ∧
     γ =ᶠ[𝓝 a] (fun _ ↦ x) ∧ γ =ᶠ[𝓝 b] (fun _ ↦ y) ∧ pathELength I γ a b < r := by
-  sorry
+  rcases exists_lt_of_riemannianEDist_lt hr with ⟨γ, hγx, hγy, γ_smooth, hγ⟩
+  rcases exists_between hab with ⟨a', haa', ha'b⟩
+  rcases exists_between ha'b with ⟨b', ha'b', hb'b⟩
+  let η (t : ℝ) : ℝ := Real.smoothTransition ((b' - a') ⁻¹ * (t - a'))
+  refine ⟨γ ∘ η, ?_, ?_, ?_, ?_⟩
+  · simp only [Function.comp_apply, η]
+    convert hγx
+    simp only [Real.smoothTransition.zero_iff_nonpos]
+    apply mul_nonpos_of_nonneg_of_nonpos
+    · simpa using ha'b'.le
+    · linarith
+  · simp only [Function.comp_apply, η]
+    convert hγy
+    simp
+
 
 #exit
 
