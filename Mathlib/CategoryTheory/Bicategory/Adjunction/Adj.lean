@@ -61,7 +61,7 @@ structure Hom where
   /-- Default constructor for `1`-morphisms in the bicategory `Adj B`, see
   `CategoryTheory.Bicategory.Adj.Hom.mk` for a constructor where the morphisms
   are implicit. -/
-  mk'::
+  mk' ::
   /-- the left adjoint -/
   l : a ⟶ b
   /-- the right adjoint -/
@@ -79,20 +79,13 @@ def Hom.mk {l : a ⟶ b} {r : b ⟶ a} (adj : l ⊣ r) : Hom a b where
 
 end
 
+@[simps! id_l id_r id_adj comp_l comp_r comp_adj]
 instance : CategoryStruct (Adj B) where
   Hom (a : B) b := Hom a b
-  id (a : B) := .mk' (Adjunction.id a)
-  comp f g := .mk' (f.adj.comp g.adj)
-
-@[simp] lemma id_l (a : Adj B) : Hom.l (𝟙 a) = 𝟙 a.obj := rfl
-@[simp] lemma id_r (a : Adj B) : Hom.r (𝟙 a) = 𝟙 a.obj := rfl
-@[simp] lemma id_adj (a : Adj B) : Hom.adj (𝟙 a) = Adjunction.id a.obj := rfl
+  id (a : B) := .mk (Adjunction.id a)
+  comp f g := .mk (f.adj.comp g.adj)
 
 variable {a b c d : Adj B}
-
-@[simp] lemma comp_l (α : a ⟶ b) (β : b ⟶ c) : (α ≫ β).l = α.l ≫ β.l := rfl
-@[simp] lemma comp_r (α : a ⟶ b) (β : b ⟶ c) : (α ≫ β).r = β.r ≫ α.r := rfl
-@[simp] lemma comp_adj (α : a ⟶ b) (β : b ⟶ c) : (α ≫ β).adj = α.adj.comp β.adj := rfl
 
 /-- A morphism between two adjunctions consists of a tuple of mate maps. -/
 @[ext]
@@ -107,6 +100,7 @@ lemma Hom₂.conjugateEquiv_symm_τr {α β : a ⟶ b} (p : Hom₂ α β) :
     (conjugateEquiv β.adj α.adj).symm p.τr = p.τl := by
   rw [← Hom₂.conjugateEquiv_τl, Equiv.symm_apply_apply]
 
+@[simps!]
 instance : CategoryStruct (a ⟶ b) where
   Hom α β := Hom₂ α β
   id α :=
@@ -121,18 +115,6 @@ instance : CategoryStruct (a ⟶ b) where
 @[ext]
 lemma hom₂_ext {α β : a ⟶ b} {x y : α ⟶ β} (hl : x.τl = y.τl) : x = y :=
   Hom₂.ext hl (by simp only [← Hom₂.conjugateEquiv_τl, hl])
-
-@[simp] lemma id_τl (α : a ⟶ b) : Hom₂.τl (𝟙 α) = 𝟙 α.l := rfl
-@[simp] lemma id_τr (α : a ⟶ b) : Hom₂.τr (𝟙 α) = 𝟙 α.r := rfl
-
-section
-
-variable {α β γ : a ⟶ b}
-
-@[simp, reassoc] lemma comp_τl (x : α ⟶ β) (y : β ⟶ γ) : (x ≫ y).τl = x.τl ≫ y.τl := rfl
-@[simp, reassoc] lemma comp_τr (x : α ⟶ β) (y : β ⟶ γ) : (x ≫ y).τr = y.τr ≫ x.τr := rfl
-
-end
 
 instance : Category (a ⟶ b) where
 
@@ -151,6 +133,8 @@ def iso₂Mk {α β : a ⟶ b} (el : α.l ≅ β.l) (er : β.r ≅ α.r)
       conjugateEquiv_τl := by
         rw [← cancel_mono er.hom, Iso.inv_hom_id, ← h,
           conjugateEquiv_comp, Iso.hom_inv_id, conjugateEquiv_id] }
+
+namespace Bicategory
 
 /-- The associator in the bicategory `Adj B`. -/
 @[simps!]
@@ -185,20 +169,20 @@ def whiskerRight {α α' : a ⟶ b} (x : α ⟶ α') (β : b ⟶ c) : α ≫ β 
   conjugateEquiv_τl := by
     simp [conjugateEquiv_whiskerRight, Hom₂.conjugateEquiv_τl]
 
+end Bicategory
+
 attribute [local simp] whisker_exchange
 
+@[simps! whiskerRight_τr whiskerRight_τl whiskerLeft_τr whiskerLeft_τl
+  associator_hom_τr associator_inv_τr associator_hom_τl associator_inv_τl
+  leftUnitor_hom_τr leftUnitor_inv_τr leftUnitor_hom_τl leftUnitor_inv_τl
+  rightUnitor_hom_τr rightUnitor_inv_τr rightUnitor_hom_τl rightUnitor_inv_τl]
 instance : Bicategory (Adj B) where
-  whiskerLeft := whiskerLeft
-  whiskerRight := whiskerRight
-  associator := associator
-  leftUnitor := leftUnitor
-  rightUnitor := rightUnitor
-
-@[simp] lemma whiskerRight_τr' {α α' : a ⟶ b} (x : α ⟶ α') (β : b ⟶ c) :
-    (x ▷ β).τr = β.r ◁ x.τr := rfl
-
-@[simp] lemma whiskerRight_τl' {α α' : a ⟶ b} (x : α ⟶ α') (β : b ⟶ c) :
-    (x ▷ β).τl = x.τl ▷ β.l := rfl
+  whiskerLeft := Bicategory.whiskerLeft
+  whiskerRight := Bicategory.whiskerRight
+  associator := Bicategory.associator
+  leftUnitor := Bicategory.leftUnitor
+  rightUnitor := Bicategory.rightUnitor
 
 /-- The forget pseudofunctor from `Adj B` to `B`. -/
 @[simps]
@@ -208,6 +192,8 @@ def forget₁ : Pseudofunctor (Adj B) B where
   map₂ α := α.τl
   mapId _ := Iso.refl _
   mapComp _ _ := Iso.refl _
+
+-- TODO: define `forget₂` which sends an adjunction to its right adjoint functor
 
 /-- Given an isomorphism between two 1-morphisms in `Adj B`, this is the
 underlying isomorphisms between the left adjoints. -/
