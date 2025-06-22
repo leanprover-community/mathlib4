@@ -446,7 +446,7 @@ class MonoidalRightAction [MonoidalCategory C] extends
       (f₁ ≫ f₂) ⊙ᵣₘ (g₁ ≫ g₂) = (f₁ ⊙ᵣₘ g₁) ≫ (f₂ ⊙ᵣₘ g₂) := by
     aesop_cat
   actionAssocIso_hom_naturality
-      {d₁ d₂ : D} {c₁ c₂ c₃ c₄: C} (f : d₁ ⟶ d₂) (g : c₁ ⟶ c₂) (h : c₃ ⟶ c₄) :
+      {d₁ d₂ : D} {c₁ c₂ c₃ c₄ : C} (f : d₁ ⟶ d₂) (g : c₁ ⟶ c₂) (h : c₃ ⟶ c₄) :
       (f ⊙ᵣₘ g ⊗ₘ h) ≫ (αᵣ d₂ c₂ c₄).hom =
         (αᵣ d₁ c₁ c₃).hom ≫ ((f ⊙ᵣₘ g) ⊙ᵣₘ h) := by
     aesop_cat
@@ -523,7 +523,7 @@ theorem unit_actionHomRight {x y : D} (f : x ⟶ y) :
   simp
 
 @[reassoc, simp]
-theorem actionHomLeft_tensor  {z z' : D} (f : z ⟶ z') (x y : C):
+theorem actionHomLeft_tensor {z z' : D} (f : z ⟶ z') (x y : C):
     (f ⊵ᵣ (x ⊗ y)) = (αᵣ z x y).hom ≫ (f ⊵ᵣ x) ⊵ᵣ y ≫ (αᵣ z' x y).inv := by
   simp only [← id_actionHom, ← actionHom_id]
   rw [← Category.assoc, ← actionAssocIso_hom_naturality]
