@@ -11,8 +11,8 @@ open AlgebraicGeometry Set Order LocallyRingedSpace Topology TopologicalSpace
 /-!
 # Algebraic Cycles
 
-We define the category of `AffineScheme`s as the essential image of `Spec`.
-We also define predicates about affine schemes and affine open sets.
+We define algebraic cycles on a scheme `X` to be functions `c : X → ℤ` whose support is
+locally finite.
 
 ## Main definitions
 
@@ -96,7 +96,7 @@ lemma map_locally_finite {Y : Scheme}
       apply Finite.subset this
       apply inter_subset_inter Set.Subset.rfl
       intro x
-      simp
+      simp only [top_eq_univ, Function.mem_support, ne_eq, mem_setOf_eq]
       contrapose!
       intro aux
       rw [Finset.sum_eq_zero]
@@ -107,49 +107,37 @@ lemma map_locally_finite {Y : Scheme}
   have : W.carrier ∩ {z | (preimageSupport f c z).Nonempty} ⊆
     f.base '' (f.base ⁻¹' ((W.carrier ∩ {z | (preimageSupport f c z).Nonempty})) ∩ c.support) := by
     intro a ha
-    rw [@image_preimage_inter]
-    suffices a ∈ f.base '' c.support by
-      exact mem_inter ha this
+    rw [image_preimage_inter]
+    suffices a ∈ f.base '' c.support from mem_inter ha this
     have := ha.2.some_mem
-    simp[preimageSupport] at this
-    simp
-    use ha.2.some
-    constructor
-    · exact this.2
-    · exact this.1
+    simp[preimageSupport] at this ⊢
+    exact ⟨ha.2.some, this.symm⟩
 
-  apply Finite.subset _ this
-  apply Finite.image
+  refine Finite.subset (Finite.image _ ?_) this
   rw[preimage_inter]
   have : f.base ⁻¹' W.carrier ∩ f.base ⁻¹' {z | (preimageSupport f c z).Nonempty} ∩ c.support ⊆
       f.base ⁻¹' W.carrier ∩ (⋃ z : Y, preimageSupport f c z) := by
     intro p hp
     simp[preimageSupport] at hp ⊢
-    constructor
-    · exact hp.1.1
-    · exact hp.2
+    exact ⟨hp.1.1, hp.2⟩
 
   apply Finite.subset _ this
   rw[inter_iUnion]
   simp[preimageSupport]
   suffices (⋃ i : Y, f.base ⁻¹' W.carrier ∩ c.support).Finite by
     apply Finite.subset this
-    simp
+    simp only [Opens.carrier_eq_coe, top_eq_univ, iUnion_subset_iff]
     intro y x hx
     simp at hx ⊢
-    constructor
-    · exact hx.1
-    · constructor
-      · exact Nonempty.intro y
-      · exact hx.2.2
+    exact ⟨hx.1, ⟨Nonempty.intro y, hx.2.2⟩⟩
 
   suffices (f.base ⁻¹' W.carrier ∩ c.support).Finite by
     apply Finite.subset this
     intro a ha
-    simp at ha ⊢
-    constructor
-    · exact ha.1
-    · exact ha.2.2
+    simp only [Opens.carrier_eq_coe, top_eq_univ, mem_iUnion, mem_inter_iff, mem_preimage,
+      SetLike.mem_coe, Function.mem_support, ne_eq, exists_and_left, exists_const_iff] at ha ⊢
+    exact ⟨ha.1, ha.2.2⟩
+
   exact pbfinite
 
 open Classical in
@@ -181,8 +169,10 @@ lemma map_id (c : AlgebraicCycle X) :
    obtain h | h := this
    all_goals simp[map, mapAux]
              rw[h.2]
-             simp [Hom.degree]
-             try rfl
-             try exact h.1.symm
+             simp only [Hom.degree, Scheme.id.base, TopCat.hom_id, ContinuousMap.id_apply,
+               Scheme.stalkMap_id, CommRingCat.hom_id, IsLocalRing.ResidueField.map_id,
+               Module.finrank_self, Nat.cast_one, mul_one, Finset.sum_singleton]
+   · rfl
+   · exact h.1.symm
 
 end AlgebraicCycle
