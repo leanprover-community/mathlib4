@@ -45,7 +45,7 @@ lemma PreservesLeftKanExtension.mk'
     G.PreservesLeftKanExtension F L where
   preserves _ _ h :=
     ⟨⟨Limits.IsInitial.equivOfIso
-        (LeftExtension.postcompose₂IsoMk _ _) <| (preserves h.nonempty_isUniversal.some).some⟩⟩
+        (LeftExtension.postcompose₂ObjMkIso _ _) <| (preserves h.nonempty_isUniversal.some).some⟩⟩
 
 /-- Show that `G` preserves left Kan extensions if it maps some left Kan extension to a left
 Kan extension. -/
@@ -199,7 +199,7 @@ instance preservesPointwiseLKEOfHasPointwiseAndPreservesPointwise
     [HasPointwiseLeftKanExtension L F] [G.PreservesPointwiseLeftKanExtension F L] :
     G.PreservesLeftKanExtension F L where
   preserves F' α _ :=
-    (LeftExtension.isPointwiseLeftKanExtensionEquivOfIso (LeftExtension.postcompose₂IsoMk G α) <|
+    (LeftExtension.isPointwiseLeftKanExtensionEquivOfIso (LeftExtension.postcompose₂ObjMkIso G α) <|
       (isPointwiseLeftKanExtensionOfIsLeftKanExtension F' α).postcompose G).isLeftKanExtension
 
 /-- Extract an isomorphism
@@ -297,7 +297,7 @@ lemma PreservesRightKanExtension.mk'
     G.PreservesRightKanExtension F L where
   preserves _ _ h :=
     ⟨⟨Limits.IsTerminal.equivOfIso
-        (RightExtension.postcompose₂IsoMk _ _) <| (preserves h.nonempty_isUniversal.some).some⟩⟩
+        (RightExtension.postcompose₂ObjMkIso _ _) <| (preserves h.nonempty_isUniversal.some).some⟩⟩
 
 /-- Show that `G` preserves right Kan extensions if it maps some right Kan extension to a right
 Kan extension. -/
@@ -446,8 +446,9 @@ instance preservesPointwiseRKEOfHasPointwiseAndPreservesPointwise
     [HasPointwiseRightKanExtension L F] [G.PreservesPointwiseRightKanExtension F L] :
     G.PreservesRightKanExtension F L where
   preserves F' α _ :=
-    (RightExtension.isPointwiseRightKanExtensionEquivOfIso (RightExtension.postcompose₂IsoMk G α) <|
-      (isPointwiseRightKanExtensionOfIsRightKanExtension F' α).postcompose G).isRightKanExtension
+    (RightExtension.isPointwiseRightKanExtensionEquivOfIso
+      (RightExtension.postcompose₂ObjMkIso G α) <|
+        (isPointwiseRightKanExtensionOfIsRightKanExtension F' α).postcompose G).isRightKanExtension
 
 /-- Extract an isomorphism
 `L.pointwiseRightKanExtension F ⋙ G ≅ L.pointwiseRightKanExtension (F ⋙ G)` when `G` preserves
