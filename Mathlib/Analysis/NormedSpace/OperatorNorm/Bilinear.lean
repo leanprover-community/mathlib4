@@ -128,29 +128,6 @@ theorem mkContinuous₂_norm_le (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃]
     (hC : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) : ‖f.mkContinuous₂ C hC‖ ≤ C :=
   (f.mkContinuous₂_norm_le' hC).trans_eq <| max_eq_left h0
 
-section FiniteDimensional
-
-variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-    [NormedAddCommGroup E] [NormedAddCommGroup F] [SeminormedAddCommGroup G]
-    [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedSpace 𝕜 G] [FiniteDimensional 𝕜 E]
-    [FiniteDimensional 𝕜 F] (f : E →ₗ[𝕜] F →ₗ[𝕜] G)
-
-/-- Given a biliniear map whose codomains are finite dimensional, outputs the continuous
-version. -/
-def mkContinuous₂OfFiniteDimensional : E →L[𝕜] F →L[𝕜] G :=
-  letI g x : F →L[𝕜] G := (f x).toContinuousLinearMap
-  letI h : E →ₗ[𝕜] F →L[𝕜] G :=
-    { toFun := g
-      map_add' x y := by ext z; simp [g]
-      map_smul' m x := by ext y; simp [g] }
-  h.toContinuousLinearMap
-
-@[simp]
-lemma mkContinuous₂OfFiniteDimensional_apply (x : E) (y : F) :
-    f.mkContinuous₂OfFiniteDimensional x y = f x y := rfl
-
-end FiniteDimensional
-
 end LinearMap
 
 namespace ContinuousLinearMap
