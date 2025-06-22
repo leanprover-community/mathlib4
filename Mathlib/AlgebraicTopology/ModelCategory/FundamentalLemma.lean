@@ -185,6 +185,10 @@ instance : toπ.IsLocalization (weakEquivalences (BifibrantObject C)) :=
   .mk' _ _ (strictUniversalPropertyFixedTargetToπ _)
     (strictUniversalPropertyFixedTargetToπ _)
 
+instance {X Y : BifibrantObject C} (f : X ⟶ Y) [hf : WeakEquivalence f] :
+    IsIso (toπ.map f) :=
+  Localization.inverts toπ (weakEquivalences _) f (by rwa [weakEquivalence_iff] at hf)
+
 abbrev ιCofibrantObject : BifibrantObject C ⥤ CofibrantObject C :=
   ObjectProperty.ιOfLE (bifibrantObjects_le_cofibrantObject C)
 
@@ -197,12 +201,12 @@ instance (X : BifibrantObject C) :
 instance (X : BifibrantObject C) :
     IsCofibrant (BifibrantObject.ιFibrantObject.obj X).obj := X.2.1
 
-def ιCofibrantObjectπ : π C ⥤ CofibrantObject.π C :=
+protected def π.ιCofibrantObject : π C ⥤ CofibrantObject.π C :=
   CategoryTheory.Quotient.lift _
     (ιCofibrantObject ⋙ CofibrantObject.toπ)
     (fun _ _ _ _ h ↦ CategoryTheory.Quotient.sound _ h)
 
-def ιFibrantObjectπ : π C ⥤ FibrantObject.π C :=
+protected def π.ιFibrantObject : π C ⥤ FibrantObject.π C :=
   CategoryTheory.Quotient.lift _
     (ιFibrantObject ⋙ FibrantObject.toπ)
     (fun _ _ _ _ h ↦ CategoryTheory.Quotient.sound _ (by
@@ -267,7 +271,7 @@ noncomputable def bifibrantResolutionMap_fac {X₁ X₂ : CofibrantObject C} (f 
 @[reassoc (attr := simp)]
 noncomputable def bifibrantResolutionMap_fac' {X₁ X₂ : CofibrantObject C} (f : X₁ ⟶ X₂) :
     toπ.map X₁.iBifibrantResolutionObj ≫
-      BifibrantObject.ιCofibrantObjectπ.map
+      BifibrantObject.π.ιCofibrantObject.map
         (BifibrantObject.toπ.map (bifibrantResolutionMap f)) =
     toπ.map f ≫ toπ.map X₂.iBifibrantResolutionObj :=
   toπ.congr_map (bifibrantResolutionMap_fac f)
@@ -276,9 +280,9 @@ lemma bifibrantResolutionObj_hom_ext
     {X : CofibrantObject C} {Y : BifibrantObject.π C} {f g :
       BifibrantObject.toπ.obj (bifibrantResolutionObj X) ⟶ Y}
     (h : CofibrantObject.toπ.map (iBifibrantResolutionObj X) ≫
-      BifibrantObject.ιCofibrantObjectπ.map f =
+      BifibrantObject.π.ιCofibrantObject.map f =
       CofibrantObject.toπ.map (iBifibrantResolutionObj X) ≫
-        BifibrantObject.ιCofibrantObjectπ.map g) :
+        BifibrantObject.π.ιCofibrantObject.map g) :
     f = g := by
   obtain ⟨Y, rfl⟩ := BifibrantObject.toπ_obj_surjective Y
   obtain ⟨f, rfl⟩ := BifibrantObject.toπ.map_surjective f
@@ -317,6 +321,49 @@ noncomputable def π.bifibrantResolution :
     apply bifibrantResolutionObj_hom_ext
     simp only [bifibrantResolutionMap_fac', toπ_map_eq h])
 
+noncomputable def π.adj.unit :
+    𝟭 (π C) ⟶ bifibrantResolution ⋙ BifibrantObject.π.ιCofibrantObject :=
+  Quotient.natTransLift _
+    { app X := toπ.map (iBifibrantResolutionObj X)
+      naturality _ _ f := toπ.congr_map (bifibrantResolutionMap_fac f).symm }
+
+lemma π.adj.unit_app (X : CofibrantObject C) :
+    π.adj.unit.app (toπ.obj X) =
+      toπ.map (iBifibrantResolutionObj X) := rfl
+
+noncomputable def π.adj.counit' :
+    𝟭 (BifibrantObject.π C) ⟶ BifibrantObject.π.ιCofibrantObject ⋙ bifibrantResolution :=
+  Quotient.natTransLift _
+    { app X := BifibrantObject.toπ.map (iBifibrantResolutionObj (.mk X.obj))
+      naturality X₁ X₂ f := BifibrantObject.toπ.congr_map
+        (bifibrantResolutionMap_fac (f : .mk X₁.obj ⟶ .mk X₂.obj )).symm }
+
+lemma π.adj.counit'_app (X : BifibrantObject C) :
+    π.adj.counit'.app (BifibrantObject.toπ.obj X) =
+      BifibrantObject.toπ.map (iBifibrantResolutionObj (.mk X.obj)) := rfl
+
+instance (X : BifibrantObject.π C) : IsIso (π.adj.counit'.app X) := by
+  obtain ⟨X, rfl⟩ := BifibrantObject.toπ_obj_surjective X
+  rw [π.adj.counit'_app]
+  have : WeakEquivalence (C := BifibrantObject C) ((mk X.obj).iBifibrantResolutionObj) := by
+    rw [weakEquivalence_iff_ι_map]
+    change WeakEquivalence (ι.map (CofibrantObject.mk X.obj).iBifibrantResolutionObj)
+    infer_instance
+  infer_instance
+
+instance : IsIso (π.adj.counit' (C := C)) := NatIso.isIso_of_isIso_app _
+
+noncomputable def π.adj.counitIso :
+    BifibrantObject.π.ιCofibrantObject ⋙ bifibrantResolution ≅ 𝟭 (BifibrantObject.π C) :=
+  (asIso π.adj.counit').symm
+
+noncomputable def π.adj :
+    π.bifibrantResolution (C := C) ⊣ BifibrantObject.π.ιCofibrantObject where
+  unit := π.adj.unit
+  counit := π.adj.counitIso.hom
+  left_triangle_components := sorry
+  right_triangle_components := sorry
+
 end CofibrantObject
 
 namespace FibrantObject
@@ -334,6 +381,8 @@ lemma exists_bifibrant (X : FibrantObject C) :
     infer_instance
   exact ⟨BifibrantObject.mk h.Z, h.p, inferInstanceAs (Fibration h.p),
     inferInstanceAs (WeakEquivalence h.p)⟩
+
+-- TODO: dualize
 
 end FibrantObject
 
