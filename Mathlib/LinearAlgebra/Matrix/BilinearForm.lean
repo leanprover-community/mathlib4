@@ -192,14 +192,6 @@ theorem BilinForm.toMatrix_apply (B : BilinForm R₁ M₁) (i j : n) :
     BilinForm.toMatrix b B i j = B (b i) (b j) :=
   LinearMap.toMatrix₂_apply _ _ B _ _
 
-theorem BilinForm.dotProduct_toMatrix_mulVec (B : BilinForm R₁ M₁) (x y : n → R₁) :
-    x ⬝ᵥ (toMatrix b B) *ᵥ y = B (b.equivFun.symm x) (b.equivFun.symm y) := by
-  simp only [dotProduct, mulVec, toMatrix_apply, mul_sum, Basis.equivFun_symm_apply, map_sum,
-    map_smul, coeFn_sum, Finset.sum_apply, LinearMap.smul_apply, smul_eq_mul]
-  rw [Finset.sum_comm]
-  refine Finset.sum_congr rfl (fun i _ ↦ Finset.sum_congr rfl fun j _ ↦ ?_)
-  ring
-
 @[simp]
 theorem Matrix.toBilin_apply (M : Matrix n n R₁) (x y : M₁) :
     Matrix.toBilin b M x y = ∑ i, ∑ j, b.repr x i * M i j * b.repr y j :=
