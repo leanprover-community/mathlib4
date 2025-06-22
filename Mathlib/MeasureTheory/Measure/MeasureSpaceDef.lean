@@ -366,7 +366,8 @@ end MeasureTheory
 
 section Support
 
-/- -/
+/- Ok. Next prove all of the *obvious* results (invisible mathematics) you can think of
+surrounding this topic, as well as the basic things one would want to know about it. -/
 namespace MeasureTheory
 namespace Measure
 
@@ -393,6 +394,8 @@ lemma isClosed_support (μ : Measure X) : IsClosed μ.support := by
   intro x h u hxu hu
   obtain ⟨y, hyu, hy⟩ := h u hxu hu
   exact hy u hyu hu
+
+lemma support_mono {μ ν : Measure X} (hμν : AbsolutelyContinuous μ ν) : μ.support ≤ ν.support := by sorry
 
 end Measure
 

@@ -191,3 +191,25 @@ lemma absolutelyContinuous_map (hf : MeasurableEmbedding f) (hμν : μ ≪ ν) 
   exact hμν ht
 
 end MeasurableEmbedding
+
+section Support
+
+variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
+
+open MeasureTheory
+
+open Measure
+
+lemma support_mono {μ ν : Measure X} (hμν : μ ≪ ν) : μ.support ≤ ν.support := by
+  dsimp only [Set.le_eq_subset, support] at *
+  intro x
+  dsimp only [AbsolutelyContinuous, Set.mem_setOf_eq] at *
+  contrapose
+  push_neg
+  simp only [nonpos_iff_eq_zero] at *
+  intro hU
+  obtain ⟨_, h1, h2⟩ := hU
+  exact Filter.frequently_principal.mp fun a ↦ a h1 (hμν h2)
+
+
+end Support
