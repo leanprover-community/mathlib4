@@ -1345,34 +1345,9 @@ theorem HasFPowerSeriesWithinOnBall.compContinuousLinearMap
           simpa using hu_zero
 
 theorem HasFPowerSeriesOnBall.compContinuousLinearMap (hf : HasFPowerSeriesOnBall f pf (u x) r) :
-    HasFPowerSeriesOnBall (f ∘ u) (pf.compContinuousLinearMap u) x (r / ‖u‖₊) where
-  r_le := by
-    calc
-      _ ≤ pf.radius / ↑‖u‖₊ := by
-        gcongr
-        exact hf.r_le
-      _ ≤ _ := pf.radius_compContinuousLinearMap_ge u
-  r_pos := by
-    simp only [ENNReal.div_pos_iff, ne_eq, coe_ne_top, not_false_eq_true, and_true]
-    exact pos_iff_ne_zero.mp hf.r_pos
-  hasSum := by
-    intro y hy
-    convert hf.hasSum (y := u y) _
-    · simp
-    by_cases hu_zero : ‖u‖₊ = 0
-    · simp only [nnnorm_eq_zero] at hu_zero
-      simp [hu_zero, hf.r_pos]
-    cases r with
-    | top => simp
-    | coe r =>
-      rw [← ENNReal.coe_div hu_zero] at hy
-      simp only [Metric.emetric_ball_nnreal, NNReal.coe_div, coe_nnnorm, Metric.mem_ball,
-        dist_zero_right] at hy ⊢
-      calc
-        _ ≤ _ := u.le_opNorm y
-        _ < _ := by
-          rwa [lt_div_iff₀'] at hy
-          simpa using hu_zero
+    HasFPowerSeriesOnBall (f ∘ u) (pf.compContinuousLinearMap u) x (r / ‖u‖₊) := by
+  rw [← hasFPowerSeriesWithinOnBall_univ] at hf ⊢
+  exact hf.compContinuousLinearMap
 
 theorem HasFPowerSeriesAt.compContinuousLinearMap (hf : HasFPowerSeriesAt f pf (u x)) :
     HasFPowerSeriesAt (f ∘ u) (pf.compContinuousLinearMap u) x :=
