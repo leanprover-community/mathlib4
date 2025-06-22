@@ -175,8 +175,7 @@ def whiskerLeft (α : a ⟶ b) {β β' : b ⟶ c} (y : β ⟶ β') : α ≫ β �
   τl := _ ◁ y.τl
   τr := y.τr ▷ _
   conjugateEquiv_τl := by
-    dsimp
-    simp only [conjugateEquiv_whiskerLeft, Hom₂.conjugateEquiv_τl]
+    simp [conjugateEquiv_whiskerLeft, Hom₂.conjugateEquiv_τl]
 
 /-- The right whiskering in the bicategory `Adj B`. -/
 @[simps]
