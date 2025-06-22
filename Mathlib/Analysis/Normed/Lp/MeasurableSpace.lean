@@ -58,4 +58,11 @@ lemma coe_toLp : ⇑(MeasurableEquiv.toLp p X) = ⇑(WithLp.equiv p X).symm := r
 
 lemma coe_toLp_symm : ⇑(MeasurableEquiv.toLp p X).symm = ⇑(WithLp.equiv p X) := rfl
 
+@[simp]
+lemma toLp_apply (x : X) : MeasurableEquiv.toLp p X x = (WithLp.equiv p X).symm x := rfl
+
+@[simp]
+lemma toLp_symm_apply (x : WithLp p X) :
+    (MeasurableEquiv.toLp p X).symm x = WithLp.equiv p X x := rfl
+
 end MeasurableEquiv
