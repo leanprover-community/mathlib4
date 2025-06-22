@@ -197,7 +197,7 @@ theorem le_dist_iff_le_dist_coe_center :
 
 /-- For two points on the same vertical line, the distance is equal to the distance between the
 logarithms of their imaginary parts. -/
-nonrec theorem dist_of_re_eq (h : z.re = w.re) : dist z w = dist (log z.im) (log w.im) := by
+nonrec theorem dist_of_re_eq (h : z.re = w.re) : dist z w = dist z.im.log w.im.log := by
   have h₀ : 0 < z.im / w.im := by positivity
   rw [dist_eq_iff_dist_coe_center_eq, Real.dist_eq, ← abs_sinh, ← log_div z.im_ne_zero w.im_ne_zero,
     sinh_log h₀, dist_of_re_eq, coe_im, coe_im, center_im, cosh_abs, cosh_log h₀, inv_div] <;>
@@ -209,9 +209,9 @@ nonrec theorem dist_of_re_eq (h : z.re = w.re) : dist z w = dist (log z.im) (log
   ring
 /-- Hyperbolic distance between two points is greater than or equal to the distance between the
 logarithms of their imaginary parts. -/
-theorem dist_log_im_le (z w : ℍ) : dist (log z.im) (log w.im) ≤ dist z w :=
+theorem dist_log_im_le (z w : ℍ) : dist z.im.log w.im.log ≤ dist z w :=
   calc
-    dist (log z.im) (log w.im) = dist (mk ⟨0, z.im⟩ z.im_pos) (mk ⟨0, w.im⟩ w.im_pos) :=
+    dist z.im.log w.im.log = dist (mk ⟨0, z.im⟩ z.im_pos) (mk ⟨0, w.im⟩ w.im_pos) :=
       Eq.symm <| dist_of_re_eq rfl
     _ ≤ dist z w := by
       simp_rw [dist_eq]

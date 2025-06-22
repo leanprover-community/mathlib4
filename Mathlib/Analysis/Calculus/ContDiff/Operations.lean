@@ -48,13 +48,13 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 section Pi
 
 variable {ι ι' : Type*} [Fintype ι] [Fintype ι'] {F' : ι → Type*} [∀ i, NormedAddCommGroup (F' i)]
-  [∀ i, NormedSpace 𝕜 (F' i)] {φ : ∀ i, E → F' i} {p' : ∀ i, E → FormalMultilinearSeries 𝕜 E (F' i)}
-  {Φ : E → ∀ i, F' i} {P' : E → FormalMultilinearSeries 𝕜 E (∀ i, F' i)}
+  [∀ i, NormedSpace 𝕜 (F' i)] {q : ∀ i, E → F' i} {p' : ∀ i, E → FormalMultilinearSeries 𝕜 E (F' i)}
+  {Q : E → ∀ i, F' i} {P' : E → FormalMultilinearSeries 𝕜 E (∀ i, F' i)}
 
 theorem hasFTaylorSeriesUpToOn_pi {n : WithTop ℕ∞} :
-    HasFTaylorSeriesUpToOn n (fun x i => φ i x)
+    HasFTaylorSeriesUpToOn n (fun x i => q i x)
         (fun x m => ContinuousMultilinearMap.pi fun i => p' i x m) s ↔
-      ∀ i, HasFTaylorSeriesUpToOn n (φ i) (p' i) s := by
+      ∀ i, HasFTaylorSeriesUpToOn n (q i) (p' i) s := by
   set pr := @ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _
   set L : ∀ m : ℕ, (∀ i, E[×m]→L[𝕜] F' i) ≃ₗᵢ[𝕜] E[×m]→L[𝕜] ∀ i, F' i := fun m =>
     ContinuousMultilinearMap.piₗᵢ _ _
@@ -70,14 +70,14 @@ theorem hasFTaylorSeriesUpToOn_pi {n : WithTop ℕ∞} :
 
 @[simp]
 theorem hasFTaylorSeriesUpToOn_pi' {n : WithTop ℕ∞} :
-    HasFTaylorSeriesUpToOn n Φ P' s ↔
-      ∀ i, HasFTaylorSeriesUpToOn n (fun x => Φ x i)
+    HasFTaylorSeriesUpToOn n Q P' s ↔
+      ∀ i, HasFTaylorSeriesUpToOn n (fun x => Q x i)
         (fun x m => (@ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _ i).compContinuousMultilinearMap
           (P' x m)) s := by
-  convert hasFTaylorSeriesUpToOn_pi (𝕜 := 𝕜) (φ := fun i x ↦ Φ x i); ext; rfl
+  convert hasFTaylorSeriesUpToOn_pi (𝕜 := 𝕜) (q := fun i x ↦ Q x i); ext; rfl
 
 theorem contDiffWithinAt_pi :
-    ContDiffWithinAt 𝕜 n Φ s x ↔ ∀ i, ContDiffWithinAt 𝕜 n (fun x => Φ x i) s x := by
+    ContDiffWithinAt 𝕜 n Q s x ↔ ∀ i, ContDiffWithinAt 𝕜 n (fun x => Q x i) s x := by
   set pr := @ContinuousLinearMap.proj 𝕜 _ ι F' _ _ _
   refine ⟨fun h i => h.continuousLinearMap_comp (pr i), fun h ↦ ?_⟩
   match n with
@@ -96,26 +96,26 @@ theorem contDiffWithinAt_pi :
     exact ⟨⋂ i, u i, Filter.iInter_mem.2 hux, _,
       hasFTaylorSeriesUpToOn_pi.2 fun i => (hp i).mono <| iInter_subset _ _⟩
 
-theorem contDiffOn_pi : ContDiffOn 𝕜 n Φ s ↔ ∀ i, ContDiffOn 𝕜 n (fun x => Φ x i) s :=
+theorem contDiffOn_pi : ContDiffOn 𝕜 n Q s ↔ ∀ i, ContDiffOn 𝕜 n (fun x => Q x i) s :=
   ⟨fun h _ x hx => contDiffWithinAt_pi.1 (h x hx) _, fun h x hx =>
     contDiffWithinAt_pi.2 fun i => h i x hx⟩
 
-theorem contDiffAt_pi : ContDiffAt 𝕜 n Φ x ↔ ∀ i, ContDiffAt 𝕜 n (fun x => Φ x i) x :=
+theorem contDiffAt_pi : ContDiffAt 𝕜 n Q x ↔ ∀ i, ContDiffAt 𝕜 n (fun x => Q x i) x :=
   contDiffWithinAt_pi
 
-theorem contDiff_pi : ContDiff 𝕜 n Φ ↔ ∀ i, ContDiff 𝕜 n fun x => Φ x i := by
+theorem contDiff_pi : ContDiff 𝕜 n Q ↔ ∀ i, ContDiff 𝕜 n fun x => Q x i := by
   simp only [← contDiffOn_univ, contDiffOn_pi]
 
 @[fun_prop]
-theorem contDiff_pi' (hΦ : ∀ i, ContDiff 𝕜 n fun x => Φ x i) : ContDiff 𝕜 n Φ :=
+theorem contDiff_pi' (hΦ : ∀ i, ContDiff 𝕜 n fun x => Q x i) : ContDiff 𝕜 n Q :=
   contDiff_pi.2 hΦ
 
 @[fun_prop]
-theorem contDiffOn_pi' (hΦ : ∀ i, ContDiffOn 𝕜 n (fun x => Φ x i) s) : ContDiffOn 𝕜 n Φ s :=
+theorem contDiffOn_pi' (hΦ : ∀ i, ContDiffOn 𝕜 n (fun x => Q x i) s) : ContDiffOn 𝕜 n Q s :=
   contDiffOn_pi.2 hΦ
 
 @[fun_prop]
-theorem contDiffAt_pi' (hΦ : ∀ i, ContDiffAt 𝕜 n (fun x => Φ x i) x) : ContDiffAt 𝕜 n Φ x :=
+theorem contDiffAt_pi' (hΦ : ∀ i, ContDiffAt 𝕜 n (fun x => Q x i) x) : ContDiffAt 𝕜 n Q x :=
   contDiffAt_pi.2 hΦ
 
 theorem contDiff_update [DecidableEq ι] (k : WithTop ℕ∞) (x : ∀ i, F' i) (i : ι) :
