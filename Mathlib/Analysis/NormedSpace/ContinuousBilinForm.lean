@@ -1,4 +1,3 @@
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Bilinear
 import Mathlib.LinearAlgebra.Matrix.BilinearForm
 import Mathlib.LinearAlgebra.Matrix.SchurComplement
 
