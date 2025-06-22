@@ -88,8 +88,8 @@ section ofMatrix
 
 variable (b : Basis n 𝕜 E) (M : Matrix n n 𝕜)
 
-noncomputable
-def ofMatrix : ContinuousBilinForm 𝕜 E :=
+/-- The continuous bilinear form represented by a matrix. -/
+noncomputable def ofMatrix : ContinuousBilinForm 𝕜 E :=
   haveI : FiniteDimensional 𝕜 E := FiniteDimensional.of_fintype_basis b
   letI f : E →ₗ[𝕜] E →L[𝕜] 𝕜 :=
     { toFun x := (M.toBilin b x).toContinuousLinearMap
