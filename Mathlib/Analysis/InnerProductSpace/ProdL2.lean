@@ -47,12 +47,6 @@ theorem prod_inner_apply (x y : WithLp 2 (E × F)) :
       ⟪(WithLp.equiv 2 (E × F) x).fst, (WithLp.equiv 2 (E × F) y).fst⟫_𝕜 +
       ⟪(WithLp.equiv 2 (E × F) x).snd, (WithLp.equiv 2 (E × F) y).snd⟫_𝕜 := rfl
 
-@[simp]
-theorem prod_inner_apply' (x y : WithLp 2 (E × F)) :
-    ⟪x, y⟫_𝕜 =
-      ⟪(WithLp.equiv 2 (E × F) x).fst, (WithLp.equiv 2 (E × F) y).fst⟫_𝕜 +
-      ⟪(WithLp.equiv 2 (E × F) x).snd, (WithLp.equiv 2 (E × F) y).snd⟫_𝕜 := rfl
-
 end WithLp
 
 noncomputable section
