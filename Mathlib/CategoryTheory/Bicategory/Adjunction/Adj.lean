@@ -9,10 +9,10 @@ import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 /-!
 # The bicategory of adjunctions in a bicategory
 
-Given a bicategory `B`, we construct a bicategory `Adj B` that has the same
-objects but whose `1`-morphisms are adjunctions (in the same direction
-as the left adjoints), and `2`-morphisms are tuples of mate maps between
-the left and right adjoints (where the map between right
+Given a bicategory `B`, we construct a bicategory `Adj B` that has essentially
+the same objects as `B` but whose `1`-morphisms are adjunctions (in the same
+direction as the left adjoints), and `2`-morphisms are tuples of mate maps
+between the left and right adjoints (where the map between right
 adjoints is in the opposite direction).
 
 Certain pseudofunctors to the bicategory `Adj Cat` are analogous to bifibered categories:
@@ -33,21 +33,21 @@ namespace CategoryTheory
 
 namespace Bicategory
 
-variable {B : Type u} [Bicategory.{w, v} B]
-
-variable (B) in
 /--
 The bicategory that has the same objects as a bicategory `B`, in which `1`-morphisms
 are adjunctions (in the same direction as the left adjoints),
 and `2`-morphisms are tuples of mate maps between the left and right
 adjoints (where the map between right adjoints is in the opposite direction).
 -/
-def Adj : Type u := B
+structure Adj (B : Type u) [Bicategory.{w, v} B] where
+  /-- If `a : Adj B`, `a.obj : B` is the underlying object of the bicategory `B`. -/
+  obj : B
+
+variable {B : Type u} [Bicategory.{w, v} B]
 
 namespace Adj
 
-/-- If `a : Adj B`, `a.obj : B` is the underlying object of `B`. -/
-abbrev obj (a : Adj B) : B := a
+@[simp] lemma mk_obj (b : Adj B) : mk b.obj = b := rfl
 
 section
 
@@ -58,31 +58,19 @@ Given two objects `a` and `b` in a bicategory,
 this is the type of adjunctions between `a` and `b`.
 -/
 structure Hom where
-  /-- Default constructor for `1`-morphisms in the bicategory `Adj B`, see
-  `CategoryTheory.Bicategory.Adj.Hom.mk` for a constructor where the morphisms
-  are implicit. -/
-  mk' ::
   /-- the left adjoint -/
-  l : a ⟶ b
+  {l : a ⟶ b}
   /-- the right adjoint -/
-  r : b ⟶ a
+  {r : b ⟶ a}
   /-- the adjunction -/
   adj : l ⊣ r
-
-variable {a b} in
-/-- Constructor for `1`-morphisms in the bicategory `Adj B`. -/
-@[simps]
-def Hom.mk {l : a ⟶ b} {r : b ⟶ a} (adj : l ⊣ r) : Hom a b where
-  l := l
-  r := r
-  adj := adj
 
 end
 
 @[simps! id_l id_r id_adj comp_l comp_r comp_adj]
 instance : CategoryStruct (Adj B) where
-  Hom (a : B) b := Hom a b
-  id (a : B) := .mk (Adjunction.id a)
+  Hom a b := Hom a.obj b.obj
+  id a := .mk (Adjunction.id a.obj)
   comp f g := .mk (f.adj.comp g.adj)
 
 variable {a b c d : Adj B}
