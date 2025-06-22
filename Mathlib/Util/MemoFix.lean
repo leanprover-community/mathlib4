@@ -16,13 +16,16 @@ open ShareCommon Std
 
 private unsafe abbrev ObjectMap := @Std.HashMap Object Object ⟨Object.ptrEq⟩ ⟨Object.hash⟩
 
+@[noinline]
+private def injectIntoBaseIO {α : Type} (a : α) : BaseIO α := pure a
+
 private unsafe def memoFixImplObj (f : (Object → Object) → (Object → Object)) (a : Object) :
     Object := unsafeBaseIO do
   let cache : IO.Ref ObjectMap ← ST.mkRef ∅
   let rec fix (a) := unsafeBaseIO do
     if let some b := (← cache.get)[a]? then
       return b
-    let b := f fix a
+    let b ← injectIntoBaseIO (f fix a)
     cache.modify (·.insert a b)
     pure b
   pure <| fix a

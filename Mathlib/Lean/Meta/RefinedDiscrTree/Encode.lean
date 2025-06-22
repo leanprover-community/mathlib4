@@ -63,8 +63,7 @@ private def withLams (lambdas : List FVarId) (key : Key) : StateT LazyEntry Meta
     modify ({ · with computedKeys := tail.foldl (init := [key]) (fun _ => .lam :: ·) })
     return .lam
 
-open private Lean.Meta.DiscrTree.pushArgs in Lean.Meta.DiscrTree.mkPathAux in
-open private toNatLit? in Lean.Meta.DiscrTree.pushArgs in
+open private toNatLit? from Lean.Meta.DiscrTree in
 
 @[inline]
 private def encodingStepAux (e : Expr) (lambdas : List FVarId) (root : Bool) : LazyM Key := do
