@@ -17,7 +17,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [h𝕜 : IsRCLikeNormedFi
 {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace ℝ E]
 {s : Set E} {x : E}
 
-theorem tangentConeAt_real_subset_isRCLikeNormedField  :
+theorem tangentConeAt_real_subset_isRCLikeNormedField :
     tangentConeAt ℝ s x ⊆ tangentConeAt 𝕜 s x := by
   letI := h𝕜.rclike
   rintro y ⟨c, d, d_mem, c_lim, hcd⟩
