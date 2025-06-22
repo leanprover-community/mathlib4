@@ -650,7 +650,6 @@ induction n, h using Nat.le_induction with
 /-- If `2^p - 1` is prime then 2 is a square mod `2^p - 1`. -/
 lemma mersenne_legendre_two {p : ℕ} [Fact (mersenne p).Prime] (hp : 3 ≤ p) :
     legendreSym (mersenne p) 2 = 1 := by
-  have : Fact ((2 : ℕ).Prime) := ⟨Nat.prime_two⟩
   rw_mod_cast [legendreSym.at_two]
   · rw [ZMod.χ₈_nat_eq_if_mod_eight]
     have := mersenne_mod_eight hp
