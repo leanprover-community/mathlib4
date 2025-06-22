@@ -46,7 +46,7 @@ section RCLike
 variable [RCLike 𝕜] [NormedSpace 𝕜 E]
 
 variable (𝕜 E) in
-/- The type of continuous bilinear forms. -/
+/-- The type of continuous bilinear forms. -/
 abbrev _root_.ContinuousBilinForm := E →L[𝕜] E →L[𝕜] 𝕜
 
 variable (f : ContinuousBilinForm 𝕜 E) (b : Basis n 𝕜 E)
