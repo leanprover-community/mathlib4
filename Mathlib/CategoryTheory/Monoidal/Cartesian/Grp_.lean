@@ -31,7 +31,7 @@ def Grp_Class.ofRepresentableBy (F : Cᵒᵖ ⥤ Grp.{w}) (α : (F ⋙ forget _)
     Grp_Class X where
   __ := Mon_Class.ofRepresentableBy X (F ⋙ forget₂ Grp MonCat) α
   inv := α.homEquiv.symm (α.homEquiv (𝟙 _))⁻¹
-  left_inv' := by
+  left_inv := by
     change lift (α.homEquiv.symm (α.homEquiv (𝟙 X))⁻¹) (𝟙 X) ≫
       α.homEquiv.symm (α.homEquiv (fst X X) * α.homEquiv (snd X X)) =
         toUnit X ≫ α.homEquiv.symm 1
@@ -40,7 +40,7 @@ def Grp_Class.ofRepresentableBy (F : Cᵒᵖ ⥤ Grp.{w}) (α : (F ⋙ forget _)
     simp only [Functor.comp_map, ConcreteCategory.forget_map_eq_coe, map_one, map_mul]
     simp only [← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp]
     simp [← Functor.comp_obj]
-  right_inv' := by
+  right_inv := by
     change lift (𝟙 X) (α.homEquiv.symm (α.homEquiv (𝟙 X))⁻¹) ≫
       α.homEquiv.symm (α.homEquiv (fst X X) * α.homEquiv (snd X X)) =
         toUnit X ≫ α.homEquiv.symm 1
