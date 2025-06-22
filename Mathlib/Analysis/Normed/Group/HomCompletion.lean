@@ -69,7 +69,6 @@ theorem NormedAddGroupHom.completion_def (f : NormedAddGroupHom G H) (x : Comple
 theorem NormedAddGroupHom.completion_coe_to_fun (f : NormedAddGroupHom G H) :
     (f.completion : Completion G → Completion H) = Completion.map f := rfl
 
--- Porting note: `@[simp]` moved to the next lemma
 theorem NormedAddGroupHom.completion_coe (f : NormedAddGroupHom G H) (g : G) :
     f.completion g = f g :=
   Completion.map_coe f.uniformContinuous _

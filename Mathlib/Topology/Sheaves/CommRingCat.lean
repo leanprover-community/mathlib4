@@ -90,13 +90,12 @@ section SubmonoidPresheaf
 
 open scoped nonZeroDivisors
 
-variable {X : TopCat.{w}} {C : Type u} [Category.{v} C] [HasForget C]
-
-attribute [local instance 1000] HasForget.hasCoeToSort HasForget.instFunLike
+variable {X : TopCat.{w}} {C : Type u} [Category.{v} C]
 
 -- note: this was specialized to `CommRingCat` in #19757
 /-- A subpresheaf with a submonoid structure on each of the components. -/
 structure SubmonoidPresheaf (F : X.Presheaf CommRingCat) where
+  /-- The submonoid structure for each component -/
   obj : ∀ U, Submonoid (F.obj U)
   map : ∀ {U V : (Opens X)ᵒᵖ} (i : U ⟶ V), obj U ≤ (obj V).comap (F.map i).hom
 
@@ -109,8 +108,7 @@ protected noncomputable def SubmonoidPresheaf.localizationPresheaf : X.Presheaf 
   map_id U := by
     simp_rw [F.map_id]
     ext x
-    -- Porting note: `M` and `S` needs to be specified manually
-    exact IsLocalization.map_id (M := G.obj U) (S := Localization (G.obj U)) x
+    exact IsLocalization.map_id x
   map_comp {U V W} i j := by
     delta CommRingCat.ofHom CommRingCat.of Bundled.of
     simp_rw [F.map_comp]
@@ -118,11 +116,9 @@ protected noncomputable def SubmonoidPresheaf.localizationPresheaf : X.Presheaf 
     dsimp
     rw [IsLocalization.map_comp_map]
 
--- Porting note: this instance can't be synthesized
 instance (U) : Algebra (F.obj U) (G.localizationPresheaf.obj U) :=
   show Algebra _ (Localization (G.obj U)) from inferInstance
 
--- Porting note: this instance can't be synthesized
 instance (U) : IsLocalization (G.obj U) (G.localizationPresheaf.obj U) :=
   show IsLocalization (G.obj U) (Localization (G.obj U)) from inferInstance
 
@@ -162,7 +158,8 @@ noncomputable def totalQuotientPresheaf : X.Presheaf CommRingCat.{w} :=
 noncomputable def toTotalQuotientPresheaf : F ⟶ F.totalQuotientPresheaf :=
   SubmonoidPresheaf.toLocalizationPresheaf _
 
--- Porting note: deriving `Epi` failed
+-- The following instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance : Epi (toTotalQuotientPresheaf F) := epi_toLocalizationPresheaf _
 
 instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf := by
@@ -172,18 +169,14 @@ instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf
     NatTrans.mono_of_mono_app _
   intro U
   apply ConcreteCategory.mono_of_injective
-  dsimp [toTotalQuotientPresheaf, CommRingCat.ofHom]
-  -- Porting note: this is a hack to make the `refine` below works
+  dsimp [toTotalQuotientPresheaf]
+  -- Porting note: `M` and `S` need to be specified manually, so used a hack to save some typing
   set m := _
   change Function.Injective (algebraMap _ (Localization m))
-  change Function.Injective (algebraMap (F.presheaf.obj U) _)
-  haveI : IsLocalization _ (Localization m) := Localization.isLocalization
-  -- Porting note: `M` and `S` need to be specified manually, so used a hack to save some typing
   refine IsLocalization.injective (M := m) (S := Localization m) ?_
   intro s hs t e
   apply section_ext F (unop U)
   intro x hx
-  show (F.presheaf.germ (unop U) x hx) t = (F.presheaf.germ (unop U) x hx) 0
   rw [RingHom.map_zero]
   apply Submonoid.mem_iInf.mp hs ⟨x, hx⟩
   rw [← map_mul, e, map_zero]
@@ -389,14 +382,10 @@ theorem objSupIsoProdEqLocus_inv_eq_iff {X : TopCat.{u}} (F : X.Sheaf CommRingCa
       (homOfLE (inf_le_right : U ⊓ W ≤ W)) (homOfLE (inf_le_right : V ⊓ W ≤ W)) ?_ _ _ ?_ ?_
     · rw [← inf_sup_right]
       exact le_inf e le_rfl
-    · change (F.val.map _)
-        ((F.val.map (homOfLE e).op).hom ((F.objSupIsoProdEqLocus U V).inv.hom x)) = (F.val.map _) y
-      rw [← e₁, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_fst]
+    · rw [← e₁, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_fst]
       simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp, Category.assoc,
         homOfLE_comp]
-    · show (F.val.map _)
-        ((F.val.map (homOfLE e).op).hom ((F.objSupIsoProdEqLocus U V).inv.hom x)) = (F.val.map _) y
-      rw [← e₂, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_snd]
+    · rw [← e₂, ← TopCat.Sheaf.objSupIsoProdEqLocus_inv_snd]
       simp only [← CommRingCat.comp_apply, ← Functor.map_comp, ← op_comp, Category.assoc,
         homOfLE_comp]
 

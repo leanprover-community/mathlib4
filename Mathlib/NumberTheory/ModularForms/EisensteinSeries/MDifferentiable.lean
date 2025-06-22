@@ -31,13 +31,13 @@ lemma div_linear_zpow_differentiableOn (k : ℤ) (a : Fin 2 → ℤ) :
   · apply DifferentiableOn.zpow
     · fun_prop
     · left
-      exact fun z hz ↦ linear_ne_zero _ ⟨z, hz⟩
+      exact fun z hz ↦ linear_ne_zero ⟨z, hz⟩
         ((comp_ne_zero_iff _ Int.cast_injective Int.cast_zero).mpr ha)
   · simp only [Fin.isValue, Pi.zero_apply, Int.cast_zero, zero_mul, add_zero, one_div]
     apply differentiableOn_const
 
 /-- Auxiliary lemma showing that for any `k : ℤ` and `(a : Fin 2 → ℤ)`
-the extension of `eisSummand` is differentiable on `{z : ℂ | 0 < z.im}`.-/
+the extension of `eisSummand` is differentiable on `{z : ℂ | 0 < z.im}`. -/
 lemma eisSummand_extension_differentiableOn (k : ℤ) (a : Fin 2 → ℤ) :
     DifferentiableOn ℂ (↑ₕeisSummand k a) {z : ℂ | 0 < z.im} := by
   apply DifferentiableOn.congr (div_linear_zpow_differentiableOn k a)
@@ -55,7 +55,7 @@ theorem eisensteinSeries_SIF_MDifferentiable {k : ℤ} {N : ℕ} (hk : 3 ≤ k) 
   refine DifferentiableOn.differentiableAt ?_
     ((isOpen_lt continuous_const Complex.continuous_im).mem_nhds τ.2)
   exact (eisensteinSeries_tendstoLocallyUniformlyOn hk a).differentiableOn
-    (Eventually.of_forall fun s ↦ DifferentiableOn.sum
+    (Eventually.of_forall fun s ↦ DifferentiableOn.fun_sum
       fun _ _ ↦ eisSummand_extension_differentiableOn _ _)
         (isOpen_lt continuous_const continuous_im)
 

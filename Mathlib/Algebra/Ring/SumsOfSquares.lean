@@ -36,8 +36,6 @@ inductive IsSumSq [Mul R] [Add R] [Zero R] : R → Prop
   | zero                                    : IsSumSq 0
   | sq_add (a : R) {s : R} (hs : IsSumSq s) : IsSumSq (a * a + s)
 
-@[deprecated (since := "2024-08-09")] alias isSumSq := IsSumSq
-
 /-- Alternative induction scheme for `IsSumSq` which uses `IsSquare`. -/
 theorem IsSumSq.rec' [Mul R] [Add R] [Zero R]
     {motive : (s : R) → (h : IsSumSq s) → Prop}
@@ -56,8 +54,6 @@ if `s₁` and `s₂` are sums of squares, then `s₁ + s₂` is a sum of squares
 theorem IsSumSq.add [AddMonoid R] [Mul R] {s₁ s₂ : R}
     (h₁ : IsSumSq s₁) (h₂ : IsSumSq s₂) : IsSumSq (s₁ + s₂) := by
   induction h₁ <;> simp_all [add_assoc, sq_add]
-
-@[deprecated (since := "2024-08-09")] alias isSumSq.add := IsSumSq.add
 
 namespace AddSubmonoid
 variable {T : Type*} [AddMonoid T] [Mul T] {s : T}
@@ -78,10 +74,6 @@ attribute [norm_cast] coe_sumSq
 @[simp] theorem mem_sumSq : s ∈ sumSq T ↔ IsSumSq s := Iff.rfl
 
 end AddSubmonoid
-
-@[deprecated (since := "2024-08-09")] alias SumSqIn := AddSubmonoid.sumSq
-@[deprecated (since := "2025-01-03")] alias sumSqIn := AddSubmonoid.sumSq
-@[deprecated (since := "2025-01-06")] alias sumSq := AddSubmonoid.sumSq
 
 /-- In an additive unital magma with multiplication, `x * x` is a sum of squares for all `x`. -/
 @[simp] theorem IsSumSq.mul_self [AddZeroClass R] [Mul R] (a : R) : IsSumSq (a * a) := by
@@ -105,8 +97,6 @@ theorem AddSubmonoid.closure_isSquare [AddMonoid R] [Mul R] :
   induction hx with
   | zero => apply zero_mem
   | sq_add a hs ih => exact add_mem (subset_closure (IsSquare.mul_self a)) ih
-
-@[deprecated (since := "2024-08-09")] alias SquaresAddClosure := AddSubmonoid.closure_isSquare
 
 /--
 In an additive commutative monoid with multiplication, a finite sum of sums of squares
@@ -206,10 +196,9 @@ theorem IsSumSq.prod [CommSemiring R] {ι : Type*} {I : Finset ι} {x : ι → R
 In a linearly ordered semiring with the property `a ≤ b → ∃ c, a + c = b` (e.g. `ℕ`),
 sums of squares are non-negative.
 -/
-theorem IsSumSq.nonneg {R : Type*} [LinearOrderedSemiring R] [ExistsAddOfLE R] {s : R}
+theorem IsSumSq.nonneg {R : Type*} [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
+    [ExistsAddOfLE R] {s : R}
     (hs : IsSumSq s) : 0 ≤ s := by
   induction hs using IsSumSq.rec' with
   | zero          => simp
   | sq_add hx _ h => exact add_nonneg (IsSquare.nonneg hx) h
-
-@[deprecated (since := "2024-08-09")] alias isSumSq.nonneg := IsSumSq.nonneg

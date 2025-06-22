@@ -3,7 +3,7 @@ Copyright (c) 2024 Andrew Yang, Yaël Dillies, Javier López-Contreras. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Yaël Dillies, Javier López-Contreras
 -/
-import Mathlib.RingTheory.Ideal.Over
+import Mathlib.RingTheory.Ideal.GoingUp
 import Mathlib.RingTheory.LocalRing.LocalSubring
 import Mathlib.RingTheory.Polynomial.Ideal
 import Mathlib.RingTheory.Valuation.ValuationSubring
@@ -110,7 +110,7 @@ lemma LocalSubring.exists_valuationRing_of_isMax {R : LocalSubring K} (hR : IsMa
   · have : (p - 1).natTrailingDegree = 0 := by
       simp only [Polynomial.natTrailingDegree_eq_zero,
         Polynomial.coeff_sub, Polynomial.coeff_one_zero, ne_eq, sub_eq_zero]
-      exact .inr fun h ↦ (IsLocalRing.not_mem_maximalIdeal.mpr isUnit_one (h ▸ hp 0))
+      exact .inr fun h ↦ (IsLocalRing.notMem_maximalIdeal.mpr isUnit_one (h ▸ hp 0))
     rw [Polynomial.Monic.def, Polynomial.leadingCoeff_mul', Polynomial.reverse_leadingCoeff,
       Polynomial.trailingCoeff, this]
     · simp
@@ -176,7 +176,7 @@ lemma bijective_rangeRestrict_comp_of_valuationRing [IsDomain R] [ValuationRing 
 
 lemma IsLocalRing.exists_factor_valuationRing [IsLocalRing R] (f : R →+* K) :
     ∃ (A : ValuationSubring K) (h : _), IsLocalHom (f.codRestrict A.toSubring h) := by
-  obtain ⟨B, hB⟩  := (LocalSubring.range f).exists_le_valuationSubring
+  obtain ⟨B, hB⟩ := (LocalSubring.range f).exists_le_valuationSubring
   refine ⟨B, fun x ↦ hB.1 ⟨x, rfl⟩, ?_⟩
   exact @RingHom.isLocalHom_comp _ _ _ _ _ _ _ _
     hB.2 (.of_surjective _ f.rangeRestrict_surjective)

@@ -20,8 +20,6 @@ compact Hausdorff spaces `S` mapping continuously to `X`.
 * Every first-countable space is `u`-compactly generated for every universe `u`.
 -/
 
-attribute [local instance] CategoryTheory.HasForget.instFunLike
-
 universe u w
 
 open CategoryTheory Topology TopologicalSpace
@@ -107,11 +105,5 @@ of topological spaces. -/
 def isoEquivHomeo {X Y : CompactlyGenerated.{u, w}} : (X ≅ Y) ≃ (X ≃ₜ Y) where
   toFun := homeoOfIso
   invFun := isoOfHomeo
-  left_inv f := by
-    ext
-    rfl
-  right_inv f := by
-    ext
-    rfl
 
 end CompactlyGenerated

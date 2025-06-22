@@ -7,6 +7,7 @@ import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Algebra.MvPolynomial.Variables
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Expand
+import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.ZMod.Basic
 
@@ -97,8 +98,6 @@ set_option quotPrecheck false in
 scoped[Witt] notation "W" => wittPolynomial p _
 
 open Witt
-
-open MvPolynomial
 
 /-! The first observation is that the Witt polynomial doesn't really depend on the coefficient ring.
 If we map the coefficients through a ring homomorphism, we obtain the corresponding Witt polynomial
@@ -203,13 +202,7 @@ theorem constantCoeff_xInTermsOfW [hp : Fact p.Prime] [Invertible (p : R)] (n : 
     constantCoeff (xInTermsOfW p R n) = 0 := by
   induction n using Nat.strongRecOn with | ind n IH => ?_
   rw [xInTermsOfW_eq, mul_comm, RingHom.map_mul, RingHom.map_sub, map_sum, constantCoeff_C,
-    constantCoeff_X, zero_sub, mul_neg, neg_eq_zero]
-  -- Porting note: here, we should be able to do `rw [sum_eq_zero]`, but the goal that
-  -- is created is not what we expect, and the sum is not replaced by zero...
-  -- is it a bug in `rw` tactic?
-  refine Eq.trans (?_ : _ = ((⅟↑p : R) ^ n)* 0) (mul_zero _)
-  congr 1
-  rw [sum_eq_zero]
+    constantCoeff_X, zero_sub, mul_neg, neg_eq_zero, sum_eq_zero, mul_zero]
   intro m H
   rw [mem_range] at H
   simp only [RingHom.map_mul, RingHom.map_pow, map_natCast, IH m H]
@@ -280,7 +273,7 @@ theorem bind₁_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :
       rw [mul_assoc, ← C_mul, ← mul_pow, mul_invOf_self, one_pow, map_one, mul_one]]
   congr 1
   rw [wittPolynomial_eq_sum_C_mul_X_pow, sum_range_succ_comm,
-    tsub_self, pow_zero, pow_one, mul_comm (X n), add_sub_assoc, add_right_eq_self, sub_eq_zero]
+    tsub_self, pow_zero, pow_one, mul_comm (X n), add_sub_assoc, add_eq_left, sub_eq_zero]
   apply sum_congr rfl
   intro i h
   rw [mem_range] at h

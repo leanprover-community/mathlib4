@@ -3,8 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Finset.Lattice.Prod
 import Mathlib.Data.Finite.Prod
+import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # N-ary images of finsets
@@ -216,17 +217,13 @@ theorem image₂_inter_singleton [DecidableEq α] (s₁ s₂ : Finset α) (hf : 
     image₂ f (s₁ ∩ s₂) {b} = image₂ f s₁ {b} ∩ image₂ f s₂ {b} := by
   simp_rw [image₂_singleton_right, image_inter _ _ hf]
 
-theorem card_le_card_image₂_left {s : Finset α} (hs : s.Nonempty) (hf : ∀ a, Injective (f a)) :
-    #t ≤ #(image₂ f s t) := by
-  obtain ⟨a, ha⟩ := hs
-  rw [← card_image₂_singleton_left _ (hf a)]
-  exact card_le_card (image₂_subset_right <| singleton_subset_iff.2 ha)
+theorem card_le_card_image₂_left {s : Finset α} (ha : a ∈ s) (hf : Injective (f a)) :
+    #t ≤ #(image₂ f s t) :=
+  card_le_card_of_injOn (f a) (fun _ hb ↦ mem_image₂_of_mem ha hb) hf.injOn
 
-theorem card_le_card_image₂_right {t : Finset β} (ht : t.Nonempty)
-    (hf : ∀ b, Injective fun a => f a b) : #s ≤ #(image₂ f s t) := by
-  obtain ⟨b, hb⟩ := ht
-  rw [← card_image₂_singleton_right _ (hf b)]
-  exact card_le_card (image₂_subset_left <| singleton_subset_iff.2 hb)
+theorem card_le_card_image₂_right {t : Finset β} (hb : b ∈ t) (hf : Injective (f · b)) :
+    #s ≤ #(image₂ f s t) :=
+  card_le_card_of_injOn (f · b) (fun _ ha ↦ mem_image₂_of_mem ha hb) hf.injOn
 
 variable {s t}
 
@@ -472,8 +469,6 @@ theorem subset_set_image₂ {s : Set α} {t : Set β} (hu : ↑u ⊆ image2 f s 
   simp only [coe_image, Set.image_subset_iff, image₂_image_left, image₂_image_right,
     image_subset_iff]
   exact ⟨fun _ h ↦ (hu h).1, fun _ h ↦ (hu h).2, fun x hx ↦ mem_image₂_of_mem hx hx⟩
-
-@[deprecated (since := "2024-09-22")] alias subset_image₂ := subset_set_image₂
 
 end
 section UnionInter

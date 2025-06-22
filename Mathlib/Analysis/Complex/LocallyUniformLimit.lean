@@ -50,13 +50,13 @@ theorem norm_cderiv_le (hr : 0 < r) (hf : ∀ w ∈ sphere z r, ‖f w‖ ≤ M)
     exact (norm_nonneg _).trans (hf w hw)
   have h1 : ∀ w ∈ sphere z r, ‖((w - z) ^ 2)⁻¹ • f w‖ ≤ M / r ^ 2 := by
     intro w hw
-    simp only [mem_sphere_iff_norm, norm_eq_abs] at hw
-    simp only [norm_smul, inv_mul_eq_div, hw, norm_eq_abs, map_inv₀, Complex.abs_pow]
+    simp only [mem_sphere_iff_norm] at hw
+    simp only [norm_smul, inv_mul_eq_div, hw, norm_inv, norm_pow]
     exact div_le_div₀ hM (hf w hw) (sq_pos_of_pos hr) le_rfl
   have h2 := circleIntegral.norm_integral_le_of_norm_le_const hr.le h1
   simp only [cderiv, norm_smul]
   refine (mul_le_mul le_rfl h2 (norm_nonneg _) (norm_nonneg _)).trans (le_of_eq ?_)
-  field_simp [_root_.abs_of_nonneg Real.pi_pos.le]
+  field_simp [abs_of_nonneg Real.pi_pos.le]
   ring
 
 theorem cderiv_sub (hr : 0 < r) (hf : ContinuousOn f (sphere z r))
@@ -171,7 +171,7 @@ theorem differentiableOn_tsum_of_summable_norm {u : ι → ℝ} (hu : Summable u
   classical
   have hc := (tendstoUniformlyOn_tsum hu hF_le).tendstoLocallyUniformlyOn
   refine hc.differentiableOn (Eventually.of_forall fun s => ?_) hU
-  exact DifferentiableOn.sum fun i _ => hf i
+  exact DifferentiableOn.fun_sum fun i _ => hf i
 
 /-- If the terms in the sum `∑' (i : ι), F i` are uniformly bounded on `U` by a
 summable function, then the sum of `deriv F i` at a point in `U` is the derivative of the
@@ -183,7 +183,7 @@ theorem hasSum_deriv_of_summable_norm {u : ι → ℝ} (hu : Summable u)
   rw [HasSum]
   have hc := (tendstoUniformlyOn_tsum hu hF_le).tendstoLocallyUniformlyOn
   convert (hc.deriv (Eventually.of_forall fun s =>
-    DifferentiableOn.sum fun i _ => hf i) hU).tendsto_at hz using 1
+    DifferentiableOn.fun_sum fun i _ => hf i) hU).tendsto_at hz using 1
   ext1 s
   exact (deriv_sum fun i _ => (hf i).differentiableAt (hU.mem_nhds hz)).symm
 

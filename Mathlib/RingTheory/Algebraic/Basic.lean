@@ -152,7 +152,7 @@ theorem isAlgebraic_rat (R : Type u) {A : Type v} [DivisionRing A] [Field R] [Al
   rw [← map_ratCast (algebraMap R A)]
   exact isAlgebraic_algebraMap (Rat.cast n)
 
-theorem isAlgebraic_of_mem_rootSet {R : Type u} {A : Type v} [Field R] [Field A] [Algebra R A]
+theorem isAlgebraic_of_mem_rootSet {R : Type u} {A : Type v} [CommRing R] [Field A] [Algebra R A]
     {p : R[X]} {x : A} (hx : x ∈ p.rootSet A) : IsAlgebraic R x :=
   ⟨p, ne_zero_of_mem_rootSet hx, aeval_eq_zero_of_mem_rootSet hx⟩
 
@@ -496,13 +496,13 @@ theorem algHom_bijective [NoZeroSMulDivisors K L] [Algebra.IsAlgebraic K L] (f :
   obtain ⟨a, ha⟩ := this ⟨b, mem_rootSet.2 ⟨hp, he⟩⟩
   exact ⟨a, Subtype.ext_iff.1 ha⟩
 
-theorem algHom_bijective₂ [NoZeroSMulDivisors K L] [Field R] [Algebra K R]
+theorem algHom_bijective₂ [NoZeroSMulDivisors K L] [DivisionRing R] [Algebra K R]
     [Algebra.IsAlgebraic K L] (f : L →ₐ[K] R) (g : R →ₐ[K] L) :
     Function.Bijective f ∧ Function.Bijective g :=
   (g.injective.bijective₂_of_surjective f.injective (algHom_bijective <| g.comp f).2).symm
 
 theorem bijective_of_isScalarTower [NoZeroSMulDivisors K L] [Algebra.IsAlgebraic K L]
-    [Field R] [Algebra K R] [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
+    [DivisionRing R] [Algebra K R] [Algebra L R] [IsScalarTower K L R] (f : R →ₐ[K] L) :
     Function.Bijective f :=
   (algHom_bijective₂ (IsScalarTower.toAlgHom K L R) f).2
 
@@ -520,8 +520,6 @@ noncomputable def algEquivEquivAlgHom [NoZeroSMulDivisors K L] [Algebra.IsAlgebr
     (L ≃ₐ[K] L) ≃* (L →ₐ[K] L) where
   toFun ϕ := ϕ.toAlgHom
   invFun ϕ := AlgEquiv.ofBijective ϕ (algHom_bijective ϕ)
-  left_inv _ := by ext; rfl
-  right_inv _ := by ext; rfl
   map_mul' _ _ := rfl
 
 end Algebra.IsAlgebraic
@@ -559,6 +557,26 @@ theorem IsAlgebraic.exists_nonzero_dvd
   have key := map_dvd (aeval s) (X_dvd_sub_C (p := q))
   rw [map_sub, hq, zero_sub, dvd_neg, aeval_X, aeval_C] at key
   exact ⟨q.coeff 0, hq0, key⟩
+
+namespace Algebra.IsAlgebraic
+
+variable (S : Type*) {A : Type*} [CommRing S] [NoZeroDivisors S] [Algebra R S]
+  [alg : Algebra.IsAlgebraic R S] [Ring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
+
+open Function (Injective) in
+theorem injective_tower_top (inj : Injective (algebraMap R A)) : Injective (algebraMap S A) := by
+  refine (injective_iff_map_eq_zero _).mpr fun s eq ↦ of_not_not fun ne ↦ ?_
+  have ⟨r, ne, dvd⟩ := (alg.1 s).exists_nonzero_dvd (mem_nonZeroDivisors_of_ne_zero ne)
+  refine ne (inj <| map_zero (algebraMap R A) ▸ zero_dvd_iff.mp ?_)
+  simp_rw [← eq, IsScalarTower.algebraMap_apply R S A, map_dvd (algebraMap S A) dvd]
+
+variable (R A)
+
+theorem faithfulSMul_tower_top [FaithfulSMul R A] : FaithfulSMul S A := by
+  rw [faithfulSMul_iff_algebraMap_injective] at *
+  exact injective_tower_top S ‹_›
+
+end Algebra.IsAlgebraic
 
 /-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
 if `b` is algebraic over `R`. -/
@@ -625,7 +643,7 @@ theorem Subalgebra.inv_mem_of_algebraic {x : A} (hx : _root_.IsAlgebraic K (x : 
     rwa [coeff_add, hp, zero_add, coeff_C, if_pos rfl]
   · intro p hp ih _ne_zero aeval_eq
     rw [map_mul, aeval_X, mul_eq_zero] at aeval_eq
-    cases' aeval_eq with aeval_eq x_eq
+    rcases aeval_eq with aeval_eq | x_eq
     · exact ih hp aeval_eq
     · rw [x_eq, Subalgebra.coe_zero, inv_zero]
       exact A.zero_mem

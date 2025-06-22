@@ -80,9 +80,6 @@ open Category
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
--- Porting Note: `elab_without_expected_type` cannot be a local attribute
--- attribute [local elab_without_expected_type] whiskerLeft whiskerRight
-
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 /-- `F ⊣ G` represents the data of an adjunction between two functors
@@ -149,7 +146,7 @@ namespace Adjunction
 attribute [reassoc (attr := simp)] left_triangle_components right_triangle_components
 
 /-- The hom set equivalence associated to an adjunction. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def homEquiv {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) (X : C) (Y : D) :
     (F.obj X ⟶ Y) ≃ (X ⟶ G.obj Y) where
   toFun := fun f => adj.unit.app X ≫ G.map f
@@ -286,14 +283,14 @@ theorem eq_homEquiv_apply {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B
     g = adj.homEquiv A B f ↔ (adj.homEquiv A B).symm g = f :=
   eq_unit_comp_map_iff adj f g
 
-/--  If `adj : F ⊣ G`, and `X : C`, then `F.obj X` corepresents `Y ↦ (X ⟶ G.obj Y)`-/
+/-- If `adj : F ⊣ G`, and `X : C`, then `F.obj X` corepresents `Y ↦ (X ⟶ G.obj Y)`. -/
 @[simps]
 def corepresentableBy (X : C) :
     (G ⋙ coyoneda.obj (Opposite.op X)).CorepresentableBy (F.obj X) where
   homEquiv := adj.homEquiv _ _
   homEquiv_comp := by simp
 
-/--  If `adj : F ⊣ G`, and `Y : D`, then `G.obj Y` represents `X ↦ (F.obj X ⟶ Y)`-/
+/-- If `adj : F ⊣ G`, and `Y : D`, then `G.obj Y` represents `X ↦ (F.obj X ⟶ Y)`. -/
 @[simps]
 def representableBy (Y : D) :
     (F.op ⋙ yoneda.obj Y).RepresentableBy (G.obj Y) where
@@ -507,7 +504,7 @@ variable {E : Type u₃} [ℰ : Category.{v₃} E] {H : D ⥤ E} {I : E ⥤ D}
   (adj₁ : F ⊣ G) (adj₂ : H ⊣ I)
 
 /-- Composition of adjunctions. -/
-@[simps! (config := .lemmasOnly) unit counit, stacks 0DV0]
+@[simps! -isSimp unit counit, stacks 0DV0]
 def comp : F ⋙ H ⊣ I ⋙ G :=
   mk' {
     homEquiv := fun _ _ ↦ Equiv.trans (adj₂.homEquiv _ _) (adj₁.homEquiv _ _)

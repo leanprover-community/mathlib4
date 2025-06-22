@@ -6,7 +6,6 @@ Authors: Dagur Asgeirsson
 import Mathlib.CategoryTheory.Closed.Types
 import Mathlib.CategoryTheory.Sites.CartesianClosed
 import Mathlib.Condensed.Basic
-import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 import Mathlib.CategoryTheory.Sites.LeftExact
 /-!
 
@@ -19,7 +18,8 @@ noncomputable section
 
 open CategoryTheory
 
-instance : ChosenFiniteProducts (CondensedSet.{u}) :=
-  inferInstanceAs (ChosenFiniteProducts (Sheaf _ _))
+instance : CartesianMonoidalCategory (CondensedSet.{u}) :=
+  inferInstanceAs (CartesianMonoidalCategory (Sheaf _ _))
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : CartesianClosed (CondensedSet.{u}) := inferInstanceAs (CartesianClosed (Sheaf _ _))

@@ -5,10 +5,15 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
+import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.Data.Nat.SuccPred
+import Mathlib.Data.Fin.SuccPred
 import Mathlib.Order.Interval.Set.InitialSeg
+import Mathlib.Order.Interval.Set.Limit
 import Mathlib.Order.SuccPred.InitialSeg
 import Mathlib.Order.SuccPred.Limit
+import Mathlib.Order.SuccPred.LinearLocallyFinite
 
 /-!
 # Continuity of functors from well ordered types
@@ -17,16 +22,6 @@ Let `F : J ⥤ C` be functor from a well ordered type `J`.
 We introduce the typeclass `F.IsWellOrderContinuous`
 to say that if `m` is a limit element, then `F.obj m`
 is the colimit of the `F.obj j` for `j < m`.
-
-## TODO
-* use the API for initial segments in order to generalize some
-definitions in this file
-* given a morphism `f` in `C`, introduce a structure
-`TransfiniteCompositionOfShape J f` which contains the data
-of a continuous functor `F : J ⥤ C` and an identification
-of `f` to the map from `F.obj ⊥` to the colimit of `F`
-* redefine `MorphismProperty.transfiniteCompositionsOfShape`
-in terms of this structure `TransfiniteCompositionOfShape`
 
 -/
 
@@ -63,6 +58,9 @@ noncomputable def isColimitOfIsWellOrderContinuous' (F : J ⥤ C) [F.IsWellOrder
 instance (F : ℕ ⥤ C) : F.IsWellOrderContinuous where
   nonempty_isColimit m hm := by simp at hm
 
+instance {n : ℕ} (F : Fin n ⥤ C) : F.IsWellOrderContinuous where
+  nonempty_isColimit _ hj := (Order.not_isSuccLimit hj).elim
+
 lemma isWellOrderContinuous_of_iso {F G : J ⥤ C} (e : F ≅ G) [F.IsWellOrderContinuous] :
     G.IsWellOrderContinuous where
   nonempty_isColimit (m : J) (hm : Order.IsSuccLimit m) :=
@@ -80,5 +78,29 @@ instance (F : J ⥤ C) {J' : Type w'} [PartialOrder J'] (e : J' ≃o J)
     [F.IsWellOrderContinuous] :
     (e.equivalence.functor ⋙ F).IsWellOrderContinuous :=
   inferInstanceAs (e.toInitialSeg.monotone.functor ⋙ F).IsWellOrderContinuous
+
+instance IsWellOrderContinuous.restriction_setIci
+    {J : Type w} [LinearOrder J]
+    {F : J ⥤ C} [F.IsWellOrderContinuous] (j : J) :
+    ((Subtype.mono_coe (Set.Ici j)).functor ⋙ F).IsWellOrderContinuous where
+  nonempty_isColimit m hm := ⟨by
+    let f : Set.Iio m → Set.Iio m.1 := fun ⟨⟨a, ha⟩, ha'⟩ ↦ ⟨a, ha'⟩
+    have hf : Monotone f := fun _ _ h ↦ h
+    have : hf.functor.Final := by
+      rw [Monotone.final_functor_iff]
+      rintro ⟨j', hj'⟩
+      simp only [Set.mem_Iio] at hj'
+      dsimp only [f]
+      by_cases h : j' ≤ j
+      · refine ⟨⟨⟨j, le_refl j⟩, ?_⟩, h⟩
+        by_contra!
+        simp only [Set.mem_Iio, not_lt] at this
+        apply hm.1
+        rintro ⟨k, hk⟩ hkm
+        exact this.trans hk
+      · simp only [not_le] at h
+        exact ⟨⟨⟨j', h.le⟩, hj'⟩, by rfl⟩
+    exact (Functor.Final.isColimitWhiskerEquiv (F := hf.functor) _).2
+      (F.isColimitOfIsWellOrderContinuous m.1 (Set.Ici.isSuccLimit_coe m hm))⟩
 
 end CategoryTheory.Functor

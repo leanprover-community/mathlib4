@@ -6,7 +6,6 @@ Authors: Robert Y. Lewis
 import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Zify
 import Mathlib.Tactic.CancelDenoms.Core
-import Batteries.Data.RBMap.Basic
 import Mathlib.Control.Basic
 import Mathlib.Util.AtomM
 
@@ -26,16 +25,14 @@ preprocessing steps by adding them to the `LinarithConfig` object. `Linarith.def
 is the main list, and generally none of these should be skipped unless you know what you're doing.
 -/
 
-namespace Linarith
+namespace Mathlib.Tactic.Linarith
 
 /-! ### Preprocessing -/
 
 open Lean
 open Elab Tactic Meta
 open Qq
-open Mathlib
-open Mathlib.Tactic (AtomM)
-open Batteries (RBSet)
+open Std (TreeSet)
 
 /-- Processor that recursively replaces `P ∧ Q` hypotheses with the pair `P` and `Q`. -/
 partial def splitConjunctions : Preprocessor where
@@ -96,7 +93,7 @@ end removeNegations
 
 section natToInt
 
-open Mathlib.Tactic.Zify
+open Zify
 
 /--
 `isNatProp tp` is true iff `tp` is an inequality or equality between natural numbers
@@ -145,7 +142,7 @@ If `h` is an equality or inequality between natural numbers,
 `natToInt` lifts this inequality to the integers.
 It also adds the facts that the integers involved are nonnegative.
 To avoid adding the same nonnegativity facts many times, it is a global preprocessor.
- -/
+-/
 def natToInt : GlobalBranchingPreprocessor where
   description := "move nats to ints"
   transform g l := do
@@ -164,7 +161,7 @@ def natToInt : GlobalBranchingPreprocessor where
           pure h
       else
         pure h
-    let nonnegs ← l.foldlM (init := ∅) fun (es : RBSet (Expr × Expr) lexOrd.compare) h => do
+    let nonnegs ← l.foldlM (init := ∅) fun (es : TreeSet (Expr × Expr) lexOrd.compare) h => do
       try
         let (_, _, a, b) ← (← inferType h).ineq?
         pure <| (es.insertMany (getNatComparisons a)).insertMany (getNatComparisons b)
@@ -202,7 +199,7 @@ section compWithZero
 /--
 `rearrangeComparison e` takes a proof `e` of an equality, inequality, or negation thereof,
 and turns it into a proof of a comparison `_ R 0`, where `R ∈ {=, ≤, <}`.
- -/
+-/
 partial def rearrangeComparison (e : Expr) : MetaM (Option Expr) := do
   match ← (← inferType e).ineq? with
   | (Ineq.le, _) => try? <| mkAppM ``Linarith.sub_nonpos_of_le #[e]
@@ -212,7 +209,7 @@ partial def rearrangeComparison (e : Expr) : MetaM (Option Expr) := do
 /--
 `compWithZero h` takes a proof `h` of an equality, inequality, or negation thereof,
 and turns it into a proof of a comparison `_ R 0`, where `R ∈ {=, ≤, <}`.
- -/
+-/
 def compWithZero : Preprocessor where
   description := "make comparisons with zero"
   transform e := return (← rearrangeComparison e).toList
@@ -262,8 +259,8 @@ section nlinarith
 and adds them to the set `s`.
 A pair `(i, true)` is added to `s` when `atoms[i]^2` appears in `e`,
 and `(i, false)` is added to `s` when `atoms[i]*atoms[i]` appears in `e`. -/
-partial def findSquares (s : RBSet (Nat × Bool) lexOrd.compare) (e : Expr) :
-    AtomM (RBSet (Nat × Bool) lexOrd.compare) :=
+partial def findSquares (s : TreeSet (Nat × Bool) lexOrd.compare) (e : Expr) :
+    AtomM (TreeSet (Nat × Bool) lexOrd.compare) :=
   -- Completely traversing the expression is non-ideal,
   -- as we can descend into expressions that could not possibly be seen by `linarith`.
   -- As a result we visit expressions with bvars, which then cause panics.
@@ -292,8 +289,7 @@ private def nlinarithGetSquareProofs (ls : List Expr) : MetaM (List Expr) :=
   withTraceNode `linarith (return m!"{exceptEmoji ·} finding squares") do
   -- find the squares in `AtomM` to ensure deterministic behavior
   let s ← AtomM.run .reducible do
-    let si ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h)))
-      RBSet.empty
+    let si ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h))) ∅
     si.toList.mapM fun (i, is_sq) => return ((← get).atoms[i]!, is_sq)
   let new_es ← s.filterMapM fun (e, is_sq) =>
     observing? <| mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
@@ -401,4 +397,4 @@ def preprocess (pps : List GlobalBranchingPreprocessor) (g : MVarId) (l : List E
       pps.foldlM (init := [(g, l)]) fun ls pp => do
         return (← ls.mapM fun (g, l) => do pp.process g l).flatten
 
-end Linarith
+end Mathlib.Tactic.Linarith

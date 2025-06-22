@@ -26,7 +26,7 @@ This file defines `CompletelyRegularSpace` and `T35Space`.
 ### Completely regular spaces
 
 * `CompletelyRegularSpace.regularSpace`: A completely regular space is a regular space.
-* `NormalSpace.completelyRegularSpace`: A normal space is a completely regular space.
+* `NormalSpace.completelyRegularSpace`: A normal R0 space is a completely regular space.
 
 ### T₃.₅ spaces
 
@@ -48,13 +48,13 @@ space.
 * [Russell C. Walker, *The Stone-Čech Compactification*][russell1974]
 -/
 
-universe u
+universe u v
 
 noncomputable section
 
 open Set Topology Filter unitInterval
 
-variable {X : Type u} [TopologicalSpace X] [T1Space X]
+variable {X : Type u} [TopologicalSpace X]
 
 /-- A space is completely regular if points can be separated from closed sets via
   continuous functions to the unit interval. -/
@@ -63,7 +63,8 @@ class CompletelyRegularSpace (X : Type u) [TopologicalSpace X] : Prop where
   completely_regular : ∀ (x : X), ∀ K : Set X, IsClosed K → x ∉ K →
     ∃ f : X → I, Continuous f ∧ f x = 0 ∧ EqOn f 1 K
 
-instance CompletelyRegularSpace.instRegularSpace [CompletelyRegularSpace X] : RegularSpace X := by
+instance CompletelyRegularSpace.instRegularSpace [CompletelyRegularSpace X] :
+    RegularSpace X := by
   rw [regularSpace_iff]
   intro s a hs ha
   obtain ⟨f, cf, hf, hhf⟩ := CompletelyRegularSpace.completely_regular a s hs ha
@@ -71,39 +72,99 @@ instance CompletelyRegularSpace.instRegularSpace [CompletelyRegularSpace X] : Re
   apply Disjoint.mono (cf.tendsto_nhdsSet_nhds hhf) cf.continuousAt
   exact disjoint_nhds_nhds.mpr (hf.symm ▸ zero_ne_one).symm
 
-instance NormalSpace.instCompletelyRegularSpace [NormalSpace X] : CompletelyRegularSpace X := by
+instance NormalSpace.instCompletelyRegularSpace [NormalSpace X] [R0Space X] :
+    CompletelyRegularSpace X := by
   rw [completelyRegularSpace_iff]
   intro x K hK hx
-  have cx : IsClosed {x} := T1Space.t1 x
-  have d : Disjoint {x} K := by rwa [Set.disjoint_iff, subset_empty_iff, singleton_inter_eq_empty]
+  have cx : IsClosed (closure {x}) := isClosed_closure
+  have d : Disjoint (closure {x}) K := by
+    rw [Set.disjoint_iff]
+    intro a ⟨hax, haK⟩
+    exact hx ((specializes_iff_mem_closure.mpr hax).symm.mem_closed hK haK)
   let ⟨⟨f, cf⟩, hfx, hfK, hficc⟩ := exists_continuous_zero_one_of_isClosed cx hK d
   let g : X → I := fun x => ⟨f x, hficc x⟩
   have cg : Continuous g := cf.subtype_mk hficc
-  have hgx : g x = 0 := Subtype.ext (hfx (mem_singleton_iff.mpr (Eq.refl x)))
+  have hgx : g x = 0 := Subtype.ext (hfx (subset_closure (mem_singleton x)))
   have hgK : EqOn g 1 K := fun k hk => Subtype.ext (hfK hk)
   exact ⟨g, cg, hgx, hgK⟩
 
+lemma Topology.IsInducing.completelyRegularSpace
+    {Y : Type v} [TopologicalSpace Y] [CompletelyRegularSpace Y]
+    {f : X → Y} (hf : IsInducing f) : CompletelyRegularSpace X where
+  completely_regular x K hK hxK := by
+    rw [hf.isClosed_iff] at hK
+    obtain ⟨K, hK, rfl⟩ := hK
+    rw [mem_preimage] at hxK
+    obtain ⟨g, hcf, egfx, hgK⟩ := CompletelyRegularSpace.completely_regular _ _ hK hxK
+    refine ⟨g ∘ f, hcf.comp hf.continuous, egfx, ?_⟩
+    conv => arg 2; equals (1 : Y → ↥I) ∘ f => rfl
+    exact hgK.comp_right <| mapsTo_preimage _ _
+
+instance {p : X → Prop} [CompletelyRegularSpace X] : CompletelyRegularSpace (Subtype p) :=
+  Topology.IsInducing.subtypeVal.completelyRegularSpace
+
+lemma isInducing_stoneCechUnit [CompletelyRegularSpace X] :
+    IsInducing (stoneCechUnit : X → StoneCech X) := by
+  rw [isInducing_iff_nhds]
+  intro x
+  apply le_antisymm
+  · rw [← map_le_iff_le_comap]; exact continuous_stoneCechUnit.continuousAt
+  · simp_rw [le_nhds_iff, ((nhds_basis_opens _).comap _).mem_iff, and_assoc]
+    intro U hxU hU
+    obtain ⟨f, hf, efx, hfU⟩ :=
+      CompletelyRegularSpace.completely_regular x Uᶜ hU.isClosed_compl (notMem_compl_iff.mpr hxU)
+    conv at hfU => equals Uᶜ ⊆ f ⁻¹' {1} => ext; simp [EqOn, subset_def]
+    rw [← compl_subset_comm, ← preimage_compl, ← stoneCechExtend_extends hf, preimage_comp] at hfU
+    refine ⟨stoneCechExtend hf ⁻¹' {1}ᶜ, ?_,
+      isOpen_compl_singleton.preimage (continuous_stoneCechExtend hf), hfU⟩
+    rw [mem_preimage, stoneCechExtend_stoneCechUnit, efx, mem_compl_iff, mem_singleton_iff]
+    norm_num
+
+lemma isDenseInducing_stoneCechUnit [CompletelyRegularSpace X] :
+    IsDenseInducing (stoneCechUnit : X → StoneCech X) where
+  toIsInducing := isInducing_stoneCechUnit
+  dense := denseRange_stoneCechUnit
+
+lemma completelyRegularSpace_iff_isInducing_stoneCechUnit :
+    CompletelyRegularSpace X ↔ IsInducing (stoneCechUnit : X → StoneCech X) where
+  mp _ := isInducing_stoneCechUnit
+  mpr hs := hs.completelyRegularSpace
+
 /-- A T₃.₅ space is a completely regular space that is also T1. -/
 @[mk_iff]
-class T35Space (X : Type u) [TopologicalSpace X] extends T1Space X, CompletelyRegularSpace X : Prop
+class T35Space (X : Type u) [TopologicalSpace X] : Prop extends T1Space X, CompletelyRegularSpace X
 
-instance T35Space.instT3space [T35Space X] : T3Space X := {}
+instance T35Space.instT3space [T35Space X] : T3Space X where
 
-instance T4Space.instT35Space [T4Space X] : T35Space X := {}
+instance T4Space.instT35Space [T4Space X] : T35Space X where
+
+lemma Topology.IsEmbedding.t35Space
+    {Y : Type v} [TopologicalSpace Y] [T35Space Y]
+    {f : X → Y} (hf : IsEmbedding f) : T35Space X :=
+  @T35Space.mk _ _ hf.t1Space hf.isInducing.completelyRegularSpace
+
+instance {p : X → Prop} [T35Space X] : T35Space (Subtype p) where
 
 lemma separatesPoints_continuous_of_t35Space [T35Space X] :
-    SeparatesPoints (Continuous : Set (X → ℝ)) := by
+    SeparatesPoints {f : X → ℝ | Continuous f} := by
   intro x y x_ne_y
   obtain ⟨f, f_cont, f_zero, f_one⟩ :=
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
   exact ⟨fun x ↦ f x, continuous_subtype_val.comp f_cont, by aesop⟩
 
+@[deprecated (since := "2025-04-13")]
+alias separatesPoints_continuous_of_completelyRegularSpace := separatesPoints_continuous_of_t35Space
+
 lemma separatesPoints_continuous_of_t35Space_Icc [T35Space X] :
-    SeparatesPoints (Continuous : Set (X → I)) := by
+    SeparatesPoints {f : X → I | Continuous f} := by
   intro x y x_ne_y
   obtain ⟨f, f_cont, f_zero, f_one⟩ :=
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
   exact ⟨f, f_cont, by aesop⟩
+
+@[deprecated (since := "2025-04-13")]
+alias separatesPoints_continuous_of_completelyRegularSpace_Icc :=
+  separatesPoints_continuous_of_t35Space_Icc
 
 lemma injective_stoneCechUnit_of_t35Space [T35Space X] :
     Function.Injective (stoneCechUnit : X → StoneCech X) := by
@@ -111,3 +172,21 @@ lemma injective_stoneCechUnit_of_t35Space [T35Space X] :
   contrapose hab
   obtain ⟨f, fc, fab⟩ := separatesPoints_continuous_of_t35Space_Icc hab
   exact fun q ↦ fab (eq_if_stoneCechUnit_eq fc q)
+
+@[deprecated (since := "2025-04-13")]
+alias injective_stoneCechUnit_of_completelyRegularSpace := injective_stoneCechUnit_of_t35Space
+
+lemma isEmbedding_stoneCechUnit [T35Space X] :
+    IsEmbedding (stoneCechUnit : X → StoneCech X) where
+  toIsInducing := isInducing_stoneCechUnit
+  injective := injective_stoneCechUnit_of_t35Space
+
+lemma isDenseEmbedding_stoneCechUnit [T35Space X] :
+    IsDenseEmbedding (stoneCechUnit : X → StoneCech X) where
+  toIsDenseInducing := isDenseInducing_stoneCechUnit
+  injective := injective_stoneCechUnit_of_t35Space
+
+lemma t35Space_iff_isEmbedding_stoneCechUnit :
+    T35Space X ↔ IsEmbedding (stoneCechUnit : X → StoneCech X) where
+  mp _ := isEmbedding_stoneCechUnit
+  mpr hs := hs.t35Space
