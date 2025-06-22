@@ -61,6 +61,7 @@ theorem pow_eq [Monoid R] [Star R] (hp : IsStarProjection p)
 
 theorem pow_succ_eq [Monoid R] [Star R] (hp : IsStarProjection p)
     (n : ℕ) : p ^ (n + 1) = p := hp.isIdempotentElem.pow_succ_eq n
+
 section NonAssocRing
 
 variable [NonAssocRing R]
