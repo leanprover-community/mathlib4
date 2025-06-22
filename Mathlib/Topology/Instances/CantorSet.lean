@@ -414,19 +414,16 @@ noncomputable def cantorSet_equiv_nat_to_bool : cantorSet ≃ (ℕ → Bool) whe
     cases a <;> cases b <;> first | rfl | simp at this
 
 /-- Canonical homeomorphism between the Cantor set and `ℕ → Bool`. -/
-noncomputable def cantorSet_homeomorph_nat_to_bool : cantorSet ≃ₜ (ℕ → Bool) := by
-  suffices Continuous cantorSet_equiv_nat_to_bool.symm from
-    (Continuous.homeoOfEquivCompactToT2 this).symm
-  simp only [cantorSet_equiv_nat_to_bool, Fin.isValue, Equiv.coe_fn_symm_mk]
-  apply Continuous.subtype_mk
-  change Continuous (ofDigits ∘ (fun x ↦ Pi.map (fun x b ↦ bif b then 2 else 0) x))
-  apply Continuous.comp
-  · apply ofDigits_continuous
-  have : (fun x ↦ Pi.map (fun (_ : ℕ) b ↦ bif b then (2 : Fin 3) else 0) x) =
-      (Pi.map (fun x b ↦ bif b then (2 : Fin 3) else 0)) := by
-    eta_expand
-    rfl
-  rw [this]
-  apply Continuous.piMap
-  intro
-  exact continuous_of_discreteTopology
+noncomputable def cantorSet_homeomorph_nat_to_bool : cantorSet ≃ₜ (ℕ → Bool) :=
+  Homeomorph.symm <| Continuous.homeoOfEquivCompactToT2 (f := cantorSet_equiv_nat_to_bool.symm) (by
+    simp only [cantorSet_equiv_nat_to_bool, Fin.isValue, Equiv.coe_fn_symm_mk]
+    apply Continuous.subtype_mk
+    change Continuous (ofDigits ∘ (fun x ↦ Pi.map (fun x b ↦ bif b then 2 else 0) x))
+    apply Continuous.comp ofDigits_continuous
+    have : (fun x ↦ Pi.map (fun (_ : ℕ) b ↦ bif b then (2 : Fin 3) else 0) x) =
+        (Pi.map (fun x b ↦ bif b then (2 : Fin 3) else 0)) := by
+      eta_expand
+      rfl
+    rw [this]
+    exact Continuous.piMap (fun _ ↦ continuous_of_discreteTopology)
+  )
