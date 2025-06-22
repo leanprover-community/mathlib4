@@ -564,13 +564,10 @@ noncomputable def algEquiv [IsCyclotomicExtension S K L]
     (nonempty_algEquiv_adjoin_of_isSepClosed S K L' (AlgebraicClosure K)).some.symm
 
 theorem nonempty_algEquiv_adjoin_of_exists_isPrimitiveRoot [IsCyclotomicExtension S K L]
-    (M : Type*) [Field M] [Algebra K M] [IsSepClosed M]
-    (h : ∀ n ∈ S, n ≠ 0 → ∃ r : M, IsPrimitiveRoot r n) :
-    Nonempty (L ≃ₐ[K] IntermediateField.adjoin K {x : M | ∃ n ∈ S, n ≠ 0 ∧ x ^ n = 1}) := by
-  let L' := IntermediateField.adjoin K {x : M | ∃ n ∈ S, n ≠ 0 ∧ x ^ n = 1}
-  have : IsCyclotomicExtension S K L' :=
-    IntermediateField.isCyclotomicExtension_adjoin_of_exists_isPrimitiveRoot S K M h
-  exact ⟨algEquiv S K L L'⟩
+    (M : Type*) [Field M] [Algebra K M] (h : ∀ n ∈ S, n ≠ 0 → ∃ r : M, IsPrimitiveRoot r n) :
+    Nonempty (L ≃ₐ[K] IntermediateField.adjoin K {x : M | ∃ n ∈ S, n ≠ 0 ∧ x ^ n = 1}) :=
+  have := IntermediateField.isCyclotomicExtension_adjoin_of_exists_isPrimitiveRoot S K M h
+  ⟨algEquiv S K L _⟩
 
 section Singleton
 
