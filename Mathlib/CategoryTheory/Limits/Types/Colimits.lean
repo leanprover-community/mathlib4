@@ -49,12 +49,12 @@ lemma CoconeTypes.isColimit_iff (c : CoconeTypes.{u} F) :
     c.IsColimit ↔ Nonempty (Limits.IsColimit (F.coconeTypesEquiv c)) := by
   constructor
   · intro hc
-    refine ⟨{
-      desc s := hc.desc (F.coconeTypesEquiv.symm s)
-      fac s j := hc.fac (F.coconeTypesEquiv.symm s) j
-      uniq s m hm := hc.funext (fun j ↦ by
-        rw [hc.fac]
-        exact hm j )}⟩
+    exact 
+     ⟨{ desc s := hc.desc (F.coconeTypesEquiv.symm s)
+        fac s j := hc.fac (F.coconeTypesEquiv.symm s) j
+        uniq s m hm := hc.funext (fun j ↦ by
+          rw [hc.fac]
+          exact hm j )}⟩
   · rintro ⟨hc⟩
     classical
     refine ⟨⟨fun x y h ↦ ?_, fun x ↦ ?_⟩⟩
