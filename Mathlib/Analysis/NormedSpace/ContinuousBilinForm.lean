@@ -3,6 +3,31 @@ import Mathlib.LinearAlgebra.Matrix.SchurComplement
 
 /-!
 # Continuous bilinear forms
+
+Define an abbreviation for continuous bilinear forms.
+
+## Main definitions
+
+* `ContinuousBilinForm.toMatrix`: The matrix representing a continuous bilinear form on a
+  finite dimensional space.
+* `ContinuousBilinForm.ofMatrix`: The continuous bilinear form represented by a matrix.
+* `ContinuousBilinForm.IsPosSemidef`: A positive semidefinite bilinear form is a symmetric
+  continuous bilinear form `f` satisfying `∀ x, 0 ≤ RCLike.re (f x x)`.
+* `ContinuousBilinForm.inner`: The inner product as a continuous bilinear form.
+
+## Main statement
+
+* `isSymm_toBilinForm_iff_isHermitian_toMatrix`: A continuous bilinear form on a real finite
+  dimensional space is symmetric if and only if it is represented by a Hermitian matrix.
+
+## Implementation notes
+
+We choose to redefine `ContinuousBilinForm.toMatrix` on top of `LinearMap.BilinForm.toMatrix`
+to allow for dot notation.
+
+## Tags
+
+continuous bilinear form
 -/
 
 open scoped Matrix
