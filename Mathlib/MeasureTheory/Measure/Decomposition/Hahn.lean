@@ -13,15 +13,15 @@ This file proves the unsigned version of the Hahn decomposition theorem.
 ## Main definitions
 
 * `MeasureTheory.IsHahnDecomposition`: characterizes a set where `μ ≤ ν` (and the
-reverse inequality on the complement),
+  reverse inequality on the complement),
 
 ## Main statements
 
 * `hahn_decomposition` : Given two finite measures `μ` and `ν`, there exists a measurable set `s`
-    such that any measurable set `t` included in `s` satisfies `ν t ≤ μ t`, and any
-    measurable set `u` included in the complement of `s` satisfies `μ u ≤ ν u`.
+  such that any measurable set `t` included in `s` satisfies `ν t ≤ μ t`, and any
+  measurable set `u` included in the complement of `s` satisfies `μ u ≤ ν u`.
 * `exists_isHahnDecomposition` : reformulation of `hahn_decomposition` using the
-    `IsHahnDecomposition` structure which relies on the measure restriction.
+  `IsHahnDecomposition` structure which relies on the measure restriction.
 
 ## Tags
 
