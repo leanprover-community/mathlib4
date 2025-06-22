@@ -6,6 +6,7 @@ Authors: Bhavik Mehta, Rishi Mehta, Linus Sommer
 import Mathlib.Algebra.GroupWithZero.Nat
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Combinatorics.SimpleGraph.Walk.Cycle
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 
 /-!
 # Hamiltonian Graphs

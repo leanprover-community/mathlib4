@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 import Mathlib.Algebra.BigOperators.Ring.Nat
 import Mathlib.Combinatorics.SimpleGraph.Walk.Path
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Set.Card
 import Mathlib.Data.Set.Finite.Lattice
