@@ -3,9 +3,9 @@ Copyright (c) 2024 Brendan Murphy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brendan Murphy
 -/
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.LinearAlgebra.TensorProduct.Quotient
 import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.LinearAlgebra.TensorProduct.Quotient
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 /-!
 # Reducing a module modulo an element of the ring
@@ -132,22 +132,9 @@ noncomputable def quotSMulTopTensorEquivQuotSMulTop :
     TensorProduct.assoc R (R ⧸ Ideal.span {r}) M' M ≪≫ₗ
       (equivQuotTensor r (M' ⊗[R] M)).symm
 
-variable (S : Type*) [CommRing S] [Algebra R S]
-
-variable {M S} in
-theorem _root_.TensorProduct.tsmul_eq_smul_one_tuml (s : S) (m : M) :
-    s ⊗ₜ[R] m = s • (1 ⊗ₜ[R] m) := by
-  nth_rw 1 [show s = s • 1 from by simp]
-  rfl
-
-@[simp]
-theorem Submodule.Quotient.mk_out {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
-    {p : Submodule R M} (m : M ⧸ p) : Submodule.Quotient.mk (Quotient.out m) = m :=
-  Quotient.out_eq m
-
 /-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be an `R`-algebra, then
   `S ⊗[R] (M/rM)` is isomorphic to `(S ⊗[R] M)⧸r(S ⊗[R] M)` as `S`-modules. -/
-noncomputable def algebraMapTensorEquivTensorQuotSMulTop :
+noncomputable def algebraMapTensorEquivTensorQuotSMulTop (S : Type*) [CommRing S] [Algebra R S] :
     QuotSMulTop ((algebraMap R S) r) (S ⊗[R] M) ≃ₗ[S] S ⊗[R] QuotSMulTop r M :=
   Submodule.quotEquivOfEq _ _ (by simp [Ideal.map_span, ideal_span_singleton_smul]) ≪≫ₗ
     tensorQuotMapSMulEquivTensorQuot M S (Ideal.span {r}) ≪≫ₗ LinearEquiv.baseChange R S _ _

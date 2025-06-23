@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Jujian Zhang
 -/
 import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.LinearAlgebra.TensorProduct.Associator
+import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
 
