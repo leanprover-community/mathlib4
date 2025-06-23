@@ -29,7 +29,7 @@ variable {α : Type u} {β : Type v} {ι : Sort w} {κ : ι → Sort w'}
 
 section BooleanσAlgebra
 
-variable [BooleanσAlgebra α] [Countable ι] {s : Set α}
+variable [BooleanσAlgebra α] [Countable ι] {s : Set α} {a : α}
 
 lemma isLUB_σsSup (hs : s.Countable) : IsLUB s (sSup s) := by
   exact BooleanσAlgebra.isLUB_σsSup s hs
@@ -37,16 +37,16 @@ lemma isLUB_σsSup (hs : s.Countable) : IsLUB s (sSup s) := by
 lemma isGLB_σsInf (hs : s.Countable) : IsGLB s (sInf s) := by
   exact BooleanσAlgebra.isGLB_σsInf s hs
 
-lemma le_σsSup (a : α) (hs : s.Countable) (ha : a ∈ s) : a ≤ sSup s :=
+lemma le_σsSup (hs : s.Countable) (ha : a ∈ s) : a ≤ sSup s :=
   (isLUB_σsSup hs).left ha
 
-lemma σsSup_le (a : α) (hs : s.Countable) (ha : a ∈ upperBounds s) : sSup s ≤ a :=
+lemma σsSup_le (hs : s.Countable) (ha : a ∈ upperBounds s) : sSup s ≤ a :=
   (isLUB_σsSup hs).right ha
 
-lemma σsInf_le (a : α) (hs : s.Countable) (ha : a ∈ s) : sInf s ≤ a :=
+lemma σsInf_le (hs : s.Countable) (ha : a ∈ s) : sInf s ≤ a :=
   (isGLB_σsInf hs).left ha
 
-lemma le_σsInf (a : α) (hs : s.Countable) (ha : a ∈ lowerBounds s) : a ≤ sInf s :=
+lemma le_σsInf (hs : s.Countable) (ha : a ∈ lowerBounds s) : a ≤ sInf s :=
   (isGLB_σsInf hs).right ha
 
 end BooleanσAlgebra
