@@ -12,8 +12,8 @@ import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 
 -/
 
-open Bundle Bornology Set MeasureTheory
-open scoped Manifold ENNReal ContDiff Topology
+open Set
+open scoped Manifold Topology
 
 noncomputable section
 

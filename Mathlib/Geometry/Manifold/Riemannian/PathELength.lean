@@ -12,7 +12,7 @@ import Mathlib.MeasureTheory.Function.JacobianOneDim
 
 /-! # Lengths of paths in manifolds -/
 
-open Bundle Bornology Set MeasureTheory
+open Set MeasureTheory
 open scoped Manifold ENNReal ContDiff Topology
 
 noncomputable section
