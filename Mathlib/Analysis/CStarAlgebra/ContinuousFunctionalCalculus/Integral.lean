@@ -20,9 +20,16 @@ that the integral commutes with the continuous functional calculus under appropr
 + `cfc_setIntegral` (resp. `cfc_integral`): given a function `f : X → 𝕜 → 𝕜`, we have that
   `cfc (fun r => ∫ x in s, f x r ∂μ) a = ∫ x in s, cfc (f x) a ∂μ`
   under appropriate conditions (resp. with `s = univ`)
-+ `cfcₙ_integral`: the same for the non-unital continuous functional calculus
-+ `integrable_cfc_set`, `integrable_cfcₙ_set`, `integrable_cfc`, `integrable_cfcₙ`:
++ `cfcₙ_setIntegral`, `cfcₙ_integral`: the same for the non-unital continuous functional calculus
++ `integrableOn_cfc`, `integrableOn_cfcₙ`, `integrable_cfc`, `integrable_cfcₙ`:
   functions of the form `fun x => cfc (f x) a` are integrable.
+
+## Implementation Notes
+
+The lemmas mentionned above are stated under much stricter hypotheses than necessary
+(typically, simultaneous continuity of `f` in the parameter and the spectrum element).
+They all come with primed version which only assume what's needed, and may be used together
+with the API developed in `Mathlib.MeasureTheory.SpecificCodomains.ContinuousMap`.
 
 ## TODO
 
