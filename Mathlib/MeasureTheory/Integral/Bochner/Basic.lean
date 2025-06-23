@@ -317,14 +317,17 @@ lemma integral_congr_ae₂ {β : Type*} {_ : MeasurableSpace β} {ν : Measure �
   apply integral_congr_ae
   filter_upwards [ha] with _ hb using hb
 
--- Porting note: `nolint simpNF` added because simplify fails on left-hand side
-@[simp, nolint simpNF]
-theorem L1.integral_of_fun_eq_integral {f : α → G} (hf : Integrable f μ) :
-    ∫ a, (hf.toL1 f) a ∂μ = ∫ a, f a ∂μ := by
+@[simp]
+theorem L1.integral_of_fun_eq_integral' {f : α → G} (hf : Integrable f μ) :
+    ∫ a, (AEEqFun.mk f hf.aestronglyMeasurable) a ∂μ = ∫ a, f a ∂μ := by
   by_cases hG : CompleteSpace G
   · simp only [MeasureTheory.integral, hG, L1.integral]
     exact setToFun_toL1 (dominatedFinMeasAdditive_weightedSMul μ) hf
   · simp [MeasureTheory.integral, hG]
+
+theorem L1.integral_of_fun_eq_integral {f : α → G} (hf : Integrable f μ) :
+    ∫ a, (hf.toL1 f) a ∂μ = ∫ a, f a ∂μ := by
+  simp [hf]
 
 @[continuity]
 theorem continuous_integral : Continuous fun f : α →₁[μ] G => ∫ a, f a ∂μ := by
