@@ -9,17 +9,18 @@ import Mathlib.Topology.VectorBundle.Hom
 
 /-! # Riemannian vector bundles
 
-Given a vector bundle over a vector space whose fibers are all endowed with a scalar product, we
-say that this bundle is Riemannian if the scalar product depends continuously on the base point.
+Given a real vector bundle over a topological space whose fibers are all endowed with an inner
+product, we say that this bundle is Riemannian if the inner product depends continuously on the
+base point.
 
 We introduce a typeclass `[IsContinuousRiemannianBundle F E]` registering this property.
-Under this assumption, we show that the scalar product of two continuous maps into the same fibers
+Under this assumption, we show that the inner product of two continuous maps into the same fibers
 of the bundle is a continuous function.
 
 If one wants to endow an existing vector bundle with a Riemannian metric, there is a subtlety:
 the inner product space structure on the fibers should give rise to a topology on the fibers
 which is defeq to the original one, to avoid diamonds. To do this, we introduce a
-class `[RiemannianBundle E]` containing the data of a scalar
+class `[RiemannianBundle E]` containing the data of an inner
 product on the fibers defining the same topology as the original one. Given this class, we can
 construct `NormedAddCommGroup` and `InnerProductSpace` instances on the fibers, compatible in a
 defeq way with the initial topology. If the data used to register the instance `RiemannianBundle E`
@@ -28,6 +29,9 @@ depends continuously on the base point, we register automatically an instance of
 
 The general theory should be built assuming `[IsContinuousRiemannianBundle F E]`, while the
 `[RiemannianBundle E]` mechanism is only to build data in specific situations.
+
+## Keywords
+Vector bundle, Riemannian metric
 -/
 
 open Bundle ContinuousLinearMap
@@ -43,8 +47,8 @@ variable
 local notation "⟪" x ", " y "⟫" => inner ℝ x y
 
 variable (F E) in
-/-- Consider a real vector bundle in which each fiber is endowed with a scalar product.
-We say that the bundle is *Riemannian* if the scalar product depends continuously on the base point.
+/-- Consider a real vector bundle in which each fiber is endowed with an inner product.
+We say that the bundle is *Riemannian* if the inner product depends continuously on the base point.
 This assumption is spelled `IsContinuousRiemannianBundle F E` where `F` is the model fiber,
 and `E : B → Type*` is the bundle. -/
 class IsContinuousRiemannianBundle : Prop where
@@ -56,7 +60,7 @@ section Trivial
 
 variable {F₁ : Type*} [NormedAddCommGroup F₁] [InnerProductSpace ℝ F₁]
 
-/-- A trivial vector bundle, in which the model fiber has a scalar product,
+/-- A trivial vector bundle, in which the model fiber has a inner product,
 is a Riemannian bundle. -/
 instance : IsContinuousRiemannianBundle F₁ (Bundle.Trivial B F₁) := by
   refine ⟨fun x ↦ innerSL ℝ, ?_, fun x v w ↦ rfl⟩
@@ -78,7 +82,7 @@ variable
   {b : M → B} {v w : ∀ x, E (b x)} {s : Set M} {x : M}
 
 /-- Given two continuous maps into the same fibers of a continuous Riemannian bundle,
-their scalar product is continuous. Version with `ContinuousWithinAt`. -/
+their inner product is continuous. Version with `ContinuousWithinAt`. -/
 lemma ContinuousWithinAt.inner_bundle
     (hv : ContinuousWithinAt (fun m ↦ (v m : TotalSpace F E)) s x)
     (hw : ContinuousWithinAt (fun m ↦ (w m : TotalSpace F E)) s x) :
@@ -95,7 +99,7 @@ lemma ContinuousWithinAt.inner_bundle
   exact this.2
 
 /-- Given two continuous maps into the same fibers of a continuous Riemannian bundle,
-their scalar product is continuous. Version with `ContinuousAt`. -/
+their inner product is continuous. Version with `ContinuousAt`. -/
 lemma ContinuousAt.inner_bundle
     (hv : ContinuousAt (fun m ↦ (v m : TotalSpace F E)) x)
     (hw : ContinuousAt (fun m ↦ (w m : TotalSpace F E)) x) :
@@ -104,7 +108,7 @@ lemma ContinuousAt.inner_bundle
   exact ContinuousWithinAt.inner_bundle hv hw
 
 /-- Given two continuous maps into the same fibers of a continuous Riemannian bundle,
-their scalar product is continuous. Version with `ContinuousOn`. -/
+their inner product is continuous. Version with `ContinuousOn`. -/
 lemma ContinuousOn.inner_bundle
     (hv : ContinuousOn (fun m ↦ (v m : TotalSpace F E)) s)
     (hw : ContinuousOn (fun m ↦ (w m : TotalSpace F E)) s) :
@@ -112,7 +116,7 @@ lemma ContinuousOn.inner_bundle
   fun x hx ↦ (hv x hx).inner_bundle (hw x hx)
 
 /-- Given two continuous maps into the same fibers of a continuous Riemannian bundle,
-their scalar product is continuous. -/
+their inner product is continuous. -/
 lemma Continuous.inner_bundle
     (hv : Continuous (fun m ↦ (v m : TotalSpace F E)))
     (hw : Continuous (fun m ↦ (w m : TotalSpace F E))) :
@@ -138,14 +142,14 @@ open Bornology
 
 variable (E) in
 /-- A family of inner product space structures on the fibers of a fiber bundle, defining the same
-topology as the already existing one. One should more often use `ContinuousRiemannianMetric`
-or `ContMDiffRiemannianMetric` to guarantee continuity or smoothness of the scalar product as a
-function of the base point.
+topology as the already existing one. This family is not assumed to be continuous or smooth: to
+guarantee continuity, resp. smoothness, of the inner product as a function of the base point,
+use `ContinuousRiemannianMetric` or `ContMDiffRiemannianMetric`.
 
 This structure is used through `RiemannianBundle` for typeclass inference, to register the inner
 product space structure on the fibers without creating diamonds. -/
 structure RiemannianMetric where
-  /-- The scalar product along the fibers of the bundle. -/
+  /-- The inner product along the fibers of the bundle. -/
   inner (b : B) : E b →L[ℝ] E b →L[ℝ] ℝ
   symm (b : B) (v w : E b) : inner b v w = inner b w v
   pos (b : B) (v : E b) (hv : v ≠ 0) : 0 < inner b v v
@@ -156,7 +160,10 @@ structure RiemannianMetric where
 
 /-- `Core structure associated to a family of inner products on the fibers of a fiber bundle. This
 is an auxiliary construction to endow the fibers with an inner product space structure without
-creating diamonds. -/
+creating diamonds.
+
+Warning: Do not use this `Core` structure if the space you are interested in already has a norm
+instance defined on it, otherwise this will create a second non-defeq norm instance! -/
 @[reducible] noncomputable def RiemannianMetric.toCore (g : RiemannianMetric E) (b : B) :
     InnerProductSpace.Core ℝ (E b) where
   inner v w := g.inner b v w
@@ -202,7 +209,7 @@ topology as the already existing one, and varying continuously with the base poi
 This structure is used through `RiemannianBundle` for typeclass inference, to register the inner
 product space structure on the fibers without creating diamonds. -/
 structure ContinuousRiemannianMetric where
-  /-- The scalar product along the fibers of the bundle. -/
+  /-- The inner product along the fibers of the bundle. -/
   inner (b : B) : E b →L[ℝ] E b →L[ℝ] ℝ
   symm (b : B) (v w : E b) : inner b v w = inner b w v
   pos (b : B) (v : E b) (hv : v ≠ 0) : 0 < inner b v v
