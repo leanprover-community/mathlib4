@@ -29,7 +29,7 @@ variable {α : Type u} {β : Type v} {ι : Sort w} {κ : ι → Sort w'}
 
 section BooleanσAlgebra
 
-variable [BooleanσAlgebra α] [Countable ι] {s : Set α} {a : α}
+variable [BooleanσAlgebra α] [Countable ι] {s t : Set α} {a b : α}
 
 lemma isLUB_σsSup (hs : s.Countable) : IsLUB s (sSup s) := by
   exact BooleanσAlgebra.isLUB_σsSup s hs
@@ -48,5 +48,11 @@ lemma σsInf_le (hs : s.Countable) (ha : a ∈ s) : sInf s ≤ a :=
 
 lemma le_σsInf (hs : s.Countable) (ha : a ∈ lowerBounds s) : a ≤ sInf s :=
   (isGLB_σsInf hs).right ha
+
+theorem le_σsSup_of_le (hs : s.Countable) (hb : b ∈ s) (h : a ≤ b) : a ≤ sSup s :=
+  le_trans h (le_σsSup hs hb)
+
+theorem σsInf_le_of_le (hs : s.Countable) (hb : b ∈ s) (h : b ≤ a) : sInf s ≤ a :=
+  le_trans (σsInf_le hs hb) h
 
 end BooleanσAlgebra
