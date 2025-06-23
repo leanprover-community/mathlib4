@@ -1488,6 +1488,7 @@ import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
 import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 import Mathlib.Analysis.Complex.ValueDistribution.CharacteristicFunction
 import Mathlib.Analysis.Complex.ValueDistribution.CountingFunction
+import Mathlib.Analysis.Complex.ValueDistribution.FirstMainTheorem
 import Mathlib.Analysis.Complex.ValueDistribution.ProximityFunction
 import Mathlib.Analysis.ConstantSpeed
 import Mathlib.Analysis.Convex.AmpleSet
@@ -3072,6 +3073,7 @@ import Mathlib.Data.Int.LeastGreatest
 import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Int.Log
 import Mathlib.Data.Int.ModEq
+import Mathlib.Data.Int.NatAbs
 import Mathlib.Data.Int.NatPrime
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Int.Order.Basic

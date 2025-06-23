@@ -9,7 +9,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 /-!
 # Measurable space structure on `WithLp`
 
-If `X` is a measurable space space, we set the measurable space structure on `WithLp p X` to be the
+If `X` is a measurable space, we set the measurable space structure on `WithLp p X` to be the
 same as the one on `X`.
 -/
 
