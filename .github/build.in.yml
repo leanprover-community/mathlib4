@@ -156,12 +156,15 @@ jobs:
               - 'scripts/mk_all.lean'
             lint_style:
               - 'scripts/lint-style.lean'
+              - 'Mathlib/Tactic/Linter/TextBased.lean'
             shake:
               - 'Shake/**'
             longest_pole:
               - 'LongestPole/**'
             mathlib_test:
               - 'MathlibTest/**'
+            docs:
+              - 'docs/**'
 
       - name: build pr-branch tools (test)
         if: steps.tool_changes.outputs.changes != '[]'
