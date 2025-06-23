@@ -427,6 +427,8 @@ jobs:
           COUNTEREXAMPLES_OUTCOME: ${{ steps.counterexamples.outcome }}
           LINT_OUTCOME: ${{ steps.lint.outcome }}
           TEST_OUTCOME: ${{ steps.test.outcome }}
+          MATHLIB_REPO: leanprover-community/mathlib4
+          NIGHTLY_TESTING_REPO: leanprover-community/mathlib4-nightly-testing
         run: |
           master-branch/scripts/lean-pr-testing-comments.sh lean
           master-branch/scripts/lean-pr-testing-comments.sh batteries
