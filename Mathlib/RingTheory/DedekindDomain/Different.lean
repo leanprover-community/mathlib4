@@ -402,8 +402,7 @@ theorem dual_eq_dual_mul_dual (C M : Type*) [CommRing C] [IsDedekindDomain C] [F
     [Algebra C M] [IsFractionRing C M] [Algebra A C] [Algebra B C] [Algebra A M] [Algebra B M]
     [Algebra K M] [Algebra L M] [IsScalarTower A C M] [IsScalarTower A K M] [IsScalarTower B C M]
     [IsScalarTower B L M] [IsScalarTower K L M] [IsIntegralClosure C A M] [IsIntegralClosure C B M]
-    [NoZeroSMulDivisors B C] [FiniteDimensional K M] [Algebra.IsSeparable K M]
-    [IsLocalization (Algebra.algebraMapSubmonoid C B⁰) M] :
+    [NoZeroSMulDivisors B C] [FiniteDimensional K M] [Algebra.IsSeparable K M] :
     haveI h : B⁰ ≤ Submonoid.comap (algebraMap B C) C⁰ :=
       nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ <|
         FaithfulSMul.algebraMap_injective _ _
@@ -415,6 +414,7 @@ theorem dual_eq_dual_mul_dual (C M : Type*) [CommRing C] [IsDedekindDomain C] [F
   have : Module.Finite L M := Module.Finite.right K L M
   have : Module.Finite K L := Module.Finite.left K L M
   have : Algebra.IsSeparable L M := isSeparable_tower_top_of_isSeparable K L M
+  have := IsIntegralClosure.isLocalization B L M C
   have h : B⁰ ≤ Submonoid.comap (algebraMap B C) C⁰ :=
     nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ <| FaithfulSMul.algebraMap_injective _ _
   have h_alg {x : L} : algebraMap L M x = IsLocalization.map M (algebraMap B C) h x :=
@@ -576,8 +576,7 @@ theorem differentIdeal_eq_differentIdeal_mul_differentIdeal (C M : Type*) [CommR
     [Algebra B M] [Algebra A M] [IsScalarTower K L M] [IsScalarTower A K M] [IsScalarTower A C M]
     [IsScalarTower B C M] [IsScalarTower B L M] [IsDedekindDomain C] [NoZeroSMulDivisors A C]
     [Algebra.IsSeparable K M] [FiniteDimensional K M] [IsIntegralClosure C B M]
-    [IsIntegralClosure C A M] [NoZeroSMulDivisors B C]
-    [IsLocalization (algebraMapSubmonoid C B⁰) M] :
+    [IsIntegralClosure C A M] [NoZeroSMulDivisors B C] :
     differentIdeal A C =
        differentIdeal B C *
         (differentIdeal A B).map (algebraMap B C) := by
