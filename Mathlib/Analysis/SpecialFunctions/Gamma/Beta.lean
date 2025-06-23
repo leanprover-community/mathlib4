@@ -523,9 +523,28 @@ theorem differentiable_one_div_Gamma : Differentiable ℂ fun s : ℂ => (Gamma 
     exact differentiableAt_id.mul (ihn.comp s (f := fun s => s + 1) <|
       differentiableAt_id.add_const (1 : ℂ))
 
+lemma betaIntegral_eq (u v : ℂ) (hu : 0 < u.re) (hv : 0 < v.re) :
+    betaIntegral u v = Gamma u * Gamma v / Gamma (u + v) := by
+  rw [Gamma_mul_Gamma_eq_betaIntegral hu hv, mul_div_cancel_left₀]
+  refine Gamma_ne_zero fun m ↦ ?_
+  have h_sum_re :  0 < (u + v).re := by rw [add_re]; positivity
+  rw [ne_eq, Complex.ext_iff]
+  rintro ⟨hre, -⟩
+  rw [hre] at h_sum_re
+  simp only [neg_re, natCast_re, gt_iff_lt, Left.neg_pos_iff] at h_sum_re
+  norm_cast at h_sum_re
+
 end Complex
 
 end InvGamma
+
+namespace Real
+
+/-- The beta function over the reals -/
+noncomputable def betaIntegralReal (α β : ℝ) : ℝ :=
+  (Complex.betaIntegral α β).re
+
+end Real
 
 section Doubling
 
