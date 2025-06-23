@@ -37,6 +37,27 @@ instance [CategoryWithWeakEquivalences C] [CategoryWithFibrations C]
   dsimp [trivialFibrations]
   infer_instance
 
+section IsStableUnderComposition
+
+variable {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+
+instance [CategoryWithCofibrations C] [(cofibrations C).IsStableUnderComposition]
+    [hf : Cofibration f] [hg : Cofibration g] : Cofibration (f ≫ g) := by
+  rw [cofibration_iff] at hf hg ⊢
+  apply MorphismProperty.comp_mem <;> assumption
+
+instance [CategoryWithFibrations C] [(fibrations C).IsStableUnderComposition]
+    [hf : Fibration f] [hg : Fibration g] : Fibration (f ≫ g) := by
+  rw [fibration_iff] at hf hg ⊢
+  apply MorphismProperty.comp_mem <;> assumption
+
+instance [CategoryWithWeakEquivalences C] [(weakEquivalences C).IsStableUnderComposition]
+    [hf : WeakEquivalence f] [hg : WeakEquivalence g] : WeakEquivalence (f ≫ g) := by
+  rw [weakEquivalence_iff] at hf hg ⊢
+  apply MorphismProperty.comp_mem <;> assumption
+
+end IsStableUnderComposition
+
 variable [CategoryWithWeakEquivalences C]
 
 section HasTwoOutOfThreeProperty
@@ -55,6 +76,14 @@ lemma weakEquivalence_of_precomp
     WeakEquivalence g := by
   rw [weakEquivalence_iff] at hf hfg ⊢
   exact of_precomp _ _ _ hf hfg
+
+lemma weakEquivalence_postcomp_iff [WeakEquivalence g] :
+    WeakEquivalence (f ≫ g) ↔ WeakEquivalence f := by
+  exact ⟨fun _ ↦ weakEquivalence_of_postcomp f g, fun _ ↦ inferInstance⟩
+
+lemma weakEquivalence_precomp_iff [WeakEquivalence f] :
+    WeakEquivalence (f ≫ g) ↔ WeakEquivalence g := by
+  exact ⟨fun _ ↦ weakEquivalence_of_precomp f g, fun _ ↦ inferInstance⟩
 
 variable {f g} {fg : X ⟶ Z}
 
@@ -281,27 +310,6 @@ instance [IsWeakFactorizationSystem (trivialCofibrations C) (fibrations C)]
 
 end BinaryProducts
 
-section IsMultiplicative
-
-variable {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
-
-instance [(cofibrations C).IsStableUnderComposition]
-    [hf : Cofibration f] [hg : Cofibration g] : Cofibration (f ≫ g) := by
-  rw [cofibration_iff] at hf hg ⊢
-  apply MorphismProperty.comp_mem <;> assumption
-
-instance [(fibrations C).IsStableUnderComposition]
-    [hf : Fibration f] [hg : Fibration g] : Fibration (f ≫ g) := by
-  rw [fibration_iff] at hf hg ⊢
-  apply MorphismProperty.comp_mem <;> assumption
-
-instance [(weakEquivalences C).IsStableUnderComposition]
-    [hf : WeakEquivalence f] [hg : WeakEquivalence g] : WeakEquivalence (f ≫ g) := by
-  rw [weakEquivalence_iff] at hf hg ⊢
-  apply MorphismProperty.comp_mem <;> assumption
-
-end IsMultiplicative
-
 section IsIso
 
 variable {X Y : C} (f : X ⟶ Y)
@@ -342,5 +350,10 @@ instance [IsWeakFactorizationSystem (trivialCofibrations C) (fibrations C)]
   MorphismProperty.respectsIso_of_isStableUnderComposition (fun _ _ _ (_ : IsIso _) ↦ by
     rw [← weakEquivalence_iff]
     infer_instance)
+
+instance [(weakEquivalences C).ContainsIdentities] (X : C) :
+    WeakEquivalence (𝟙 X) := by
+  rw [weakEquivalence_iff]
+  apply id_mem
 
 end HomotopicalAlgebra
