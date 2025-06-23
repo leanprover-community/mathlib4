@@ -137,7 +137,7 @@ noncomputable def quotSMulTopTensorEquivQuotSMulTop :
 noncomputable def algebraMapTensorEquivTensorQuotSMulTop (S : Type*) [CommRing S] [Algebra R S] :
     QuotSMulTop ((algebraMap R S) r) (S ⊗[R] M) ≃ₗ[S] S ⊗[R] QuotSMulTop r M :=
   Submodule.quotEquivOfEq _ _ (by simp [Ideal.map_span, ideal_span_singleton_smul]) ≪≫ₗ
-    tensorQuotMapSMulEquivTensorQuot M S (Ideal.span {r}) ≪≫ₗ LinearEquiv.baseChange R S _ _
-      (Submodule.quotEquivOfEq _ _ (ideal_span_singleton_smul r _))
+    tensorQuotMapSMulEquivTensorQuot M S (Ideal.span {r}) ≪≫ₗ
+      (Submodule.quotEquivOfEq _ _ (ideal_span_singleton_smul r _)).baseChange R S _ _
 
 end QuotSMulTop
