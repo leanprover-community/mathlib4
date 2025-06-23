@@ -74,16 +74,6 @@ lemma mul_one_sub_self [Star R]
 lemma one_sub_mul_self [Star R]
     (hp : IsStarProjection p) : (1 - p) * p = 0 := hp.isIdempotentElem.one_sub_mul_self
 
-lemma _root_.isStarProjection_iff_isSelfAdjoint_and_mul_one_sub_self [Star R] :
-    IsStarProjection p ↔ IsSelfAdjoint p ∧ p * (1 - p) = 0 := by
-  rw [mul_sub, mul_one, sub_eq_zero]
-  exact ⟨fun hp => ⟨hp.isSelfAdjoint, hp.isIdempotentElem.symm⟩, fun ⟨hp1, hp2⟩ => ⟨hp2.symm, hp1⟩⟩
-
-lemma _root_.isStarProjection_iff_isSelfAdjoint_and_one_sub_mul_self [StarRing R] :
-    IsStarProjection p ↔ IsSelfAdjoint p ∧ (1 - p) * p = 0 := by
-  rw [sub_mul, one_mul, sub_eq_zero]
-  exact ⟨fun hp => ⟨hp.isSelfAdjoint, hp.isIdempotentElem.symm⟩, fun ⟨hp1, hp2⟩ => ⟨hp2.symm, hp1⟩⟩
-
 end NonAssocRing
 
 /-- The sum of star projections is a star projection if their product is `0`. -/
