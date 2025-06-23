@@ -100,7 +100,7 @@ def proveNatClog (eb en : Q(ℕ)) : (ek : Q(ℕ)) × Q(Nat.clog $eb $en = $ek) :
     let k := Nat.clog b n
     have ek : Q(ℕ) := mkRawNatLit k
     have ek1 : Q(ℕ) := mkRawNatLit (k - 1)
-    have : $ek =Q $ek1 + 1 := ⟨⟩
+    have _ : $ek =Q $ek1 + 1 := ⟨⟩
     have hb : Q(Nat.blt 1 $eb = true) := reflBoolTrue
     have hl : Q(Nat.blt ($eb ^ $ek1) $en = true) := reflBoolTrue
     have hh : Q(Nat.ble $en ($eb ^ ($ek1 + 1)) = true) := reflBoolTrue
