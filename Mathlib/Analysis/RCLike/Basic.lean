@@ -864,6 +864,9 @@ lemma re_le_re {x y : K} (h : x ≤ y) : re x ≤ re y := by
   rw [RCLike.le_iff_re_im] at h
   exact h.1
 
+lemma re_monotone : Monotone (re (K := K)) :=
+  fun _ _ => re_le_re
+
 protected lemma inv_pos_of_pos (hz : 0 < z) : 0 < z⁻¹ := by
   rw [pos_iff_exists_ofReal] at hz
   obtain ⟨x, hx, hx'⟩ := hz
@@ -1184,7 +1187,7 @@ lemma norm_le_im_iff_eq_I_mul_norm {z : K} :
     ‖z‖ ≤ im z ↔ z = I * ‖z‖ := by
   obtain (h | h) := I_eq_zero_or_im_I_eq_one (K := K)
   · simp [h, im_eq_zero]
-  · have : (I : K) ≠ 0 := fun _ ↦ by simp_all 
+  · have : (I : K) ≠ 0 := fun _ ↦ by simp_all
     rw [← mul_right_inj' (neg_ne_zero.mpr this)]
     convert norm_le_re_iff_eq_norm (z := -I * z) using 2
     all_goals simp [neg_mul, ← mul_assoc, I_mul_I_of_nonzero this, norm_I_of_ne_zero this]
