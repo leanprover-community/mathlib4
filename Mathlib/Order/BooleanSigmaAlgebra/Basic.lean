@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre Quinton
 -/
 import Mathlib.Order.BooleanSigmaAlgebra.Defs
+import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Theory of Boolean σ-algebras
@@ -73,18 +74,7 @@ theorem IsLUB.σsSup_eq (h : IsLUB s a) (hs : s.Countable) : sSup s = a :=
 theorem IsGLB.σsInf_eq (h : IsGLB s a) (hs : s.Countable) : sInf s = a :=
   (isGLB_σsInf hs).unique h
 
-/-- A greatest element of a set is the supremum of this set. -/
-theorem IsGreatest.σsSup_eq (H : IsGreatest s a) : sSup s = a :=
-  H.isLUB.σsSup_eq H.nonempty
-
-theorem IsGreatest.σsSup_mem (H : IsGreatest s a) : sSup s ∈ s :=
-  H.csSup_eq.symm ▸ H.1
-
-/-- A least element of a set is the infimum of this set. -/
-theorem IsLeast.σsInf_eq (H : IsLeast s a) : sInf s = a :=
-  H.isGLB.csInf_eq H.nonempty
-
-theorem IsLeast.σsInf_mem (H : IsLeast s a) : sInf s ∈ s :=
-  H.csInf_eq.symm ▸ H.1
+theorem subset_Icc_σsInf_σsSup (hs : s.Countable) : s ⊆ Set.Icc (sInf s) (sSup s) :=
+  fun _ hx => ⟨σsInf_le hs hx, le_σsSup hs hx⟩
 
 end BooleanσAlgebra
