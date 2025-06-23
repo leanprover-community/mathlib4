@@ -52,23 +52,70 @@ jobs:
 
           printf $'mOrD=%s\n' "${m_or_d}" > "${GITHUB_OUTPUT}"
 
-      - name: Check whether user is part of mathlib-reviewers team
-        if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
-        uses: TheModdingInquisition/actions-team-membership@a69636a92bc927f32c3910baac06bacc949c984c # v1.0
+          # write an artifact with all data needed below if we don't have access to necessary secrets
+          if [[ -z '${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }}' ]]
+          then
+            printf 'No access to secrets, writing to file.\n'
+            jq -n \
+              --arg author "${AUTHOR}" \
+              --arg pr_author "${PR_AUTHOR}" \
+              --arg pr_number "${PR_NUMBER}" \
+              --arg comment "${COMMENT}" \
+              --arg pr_title "${PR_TITLE_ISSUE}${PR_TITLE_PR}" \
+              --arg pr_url "${PR_URL}" \
+              --arg event_name "${EVENT_NAME}" \
+              --arg m_or_d "${m_or_d}" \
+              '{
+                author: $author,
+                pr_author: $pr_author,
+                pr_number: $pr_number,
+                comment: $comment,
+                pr_title: $pr_title,
+                pr_url: $pr_url,
+                event_name: $event_name,
+                m_or_d: $m_or_d,
+              }' > artifact-data.json
+            echo "Generated JSON artifact:"
+            cat artifact-data.json
+
+            printf 'secrets=' >> "${GITHUB_OUTPUT}"
+            exit 0
+          else
+            printf 'secrets=true\n' >> "${GITHUB_OUTPUT}"
+          fi
+
+      # upload artifact if we have no access to secrets
+      - if: ${{ steps.merge_or_delegate.outputs.secrets == '' && ! steps.merge_or_delegate.outputs.mOrD == '' }}
+        name: Upload artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          organization: 'leanprover-community'
-          team: 'mathlib-reviewers' # required. The team to check for
-          token: ${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }} # required. Personal Access Token with the `read:org` permission
-          comment: 'You seem to not be authorized' # optional. A comment to post if the user is not part of the team.
-                                                   # This feature is only applicable in an issue (or PR) context
-          exit: true # optional. If the action should exit if the user is not part of the team. Defaults to true.
+          name: workflow-data
+          path: artifact-data.json
+          retention-days: 5
+
+      # Run the following steps only if we have access to secrets / write perms on GITHUB_TOKEN
+      - if: ${{ ! steps.merge_or_delegate.outputs.secrets == '' && ! steps.merge_or_delegate.outputs.mOrD == '' }}
+        name: Check whether user is part of mathlib-reviewers team
+        uses: tspascoal/get-user-teams-membership@57e9f42acd78f4d0f496b3be4368fc5f62696662 # v3.0.0
+        id: actorTeams
+        with:
+          organization: leanprover-community # optional. Default value ${{ github.repository_owner }}
+                  # Organization to get membership from.
+          team: 'mathlib-reviewers'
+          username: ${{ env.AUTHOR }}
+          GITHUB_TOKEN: ${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }} # (Requires scope: `read:org`)
 
       - name: Checkout
-        if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
+        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: master
+          sparse-checkout: |
+            scripts/get_tlabel.py
+            scripts/maintainer_merge_message.py
 
       - name: Determine Zulip topic
-        if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
+        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
         id: determine_topic
         run: |
           ./scripts/get_tlabel.sh "/repos/leanprover-community/mathlib4/issues/${PR_NUMBER}" >> "$GITHUB_OUTPUT"
@@ -76,7 +123,7 @@ jobs:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
       - name: Form the message
-        if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
+        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
         id: form_the_message
         run: |
           # for debugging, we print the available variables
@@ -89,7 +136,7 @@ jobs:
           printf 'title<<EOF\n%s\nEOF' "${message}" | tee "$GITHUB_OUTPUT"
 
       - name: Send message on Zulip
-        if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
+        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
         uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
@@ -101,7 +148,7 @@ jobs:
           content: ${{ steps.form_the_message.outputs.title }}
 
       - name: Add comment to PR
-        if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
+        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
         uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
         with:
           # if a comment triggers the action, then `issue.number` is set
@@ -111,7 +158,7 @@ jobs:
             🚀 Pull request has been placed on the maintainer queue by ${{ github.event.comment.user.login }}${{ github.event.review.user.login }}.
 
       - name: Add label to PR
-        if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
+        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         with:
           # labels added by GITHUB_TOKEN won't trigger the Zulip emoji workflow
