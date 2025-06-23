@@ -59,7 +59,7 @@ variable [NonAssocRing R]
 
 theorem one_sub [StarRing R] (hp : IsStarProjection p) :
     IsStarProjection (1 - p) where
-  isIdempotentElem := by simp [IsIdempotentElem, mul_sub, sub_mul, hp.isIdempotentElem.eq]
+  isIdempotentElem := hp.isIdempotentElem.one_sub
   isSelfAdjoint := by simp [IsSelfAdjoint, hp.isSelfAdjoint.star_eq]
 
 theorem _root_.isStarProjection_one_sub_iff [StarRing R] :
