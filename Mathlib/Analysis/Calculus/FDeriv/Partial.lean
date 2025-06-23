@@ -276,8 +276,8 @@ theorem hasFDerivWithinAt_continuousOn_of_partial_continuousOn_open
   {f : E × F → G} {u : Set (E × F)} (hu : IsOpen u)
   {f'x : E × F → E →L[𝕜] G} {f'y : E × F → F →L[𝕜] G}
   (hf'x_cont : ContinuousOn f'x u) (hf'y_cont : ContinuousOn f'y u)
-  (hf'x : ∀ z ∈ u, HasFDerivWithinAt (f ∘ (·, z.2)) (f'x z) ((·,z.2) ⁻¹' u) z.1)
-  (hf'y : ∀ z ∈ u, HasFDerivWithinAt (f ∘ (z.1, ·)) (f'y z) ((z.1,·) ⁻¹' u) z.2) :
+  (hf'x : ∀ z ∈ u, HasFDerivWithinAt (f ∘ (·, z.2)) (f'x z) ((·, z.2) ⁻¹' u) z.1)
+  (hf'y : ∀ z ∈ u, HasFDerivWithinAt (f ∘ (z.1, ·)) (f'y z) ((z.1, ·) ⁻¹' u) z.2) :
     ContinuousOn (fun z => (f'x z).coprod (f'y z)) u
     ∧ ∀ z ∈ u, HasFDerivWithinAt f ((f'x z).coprod (f'y z)) u z := by
   refine ⟨?cont, ?diff⟩
