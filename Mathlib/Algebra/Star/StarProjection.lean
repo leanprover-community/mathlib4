@@ -23,6 +23,7 @@ variable {R : Type*}
 structure IsStarProjection [Mul R] [Star R] (p : R) : Prop where
   protected isIdempotentElem : IsIdempotentElem p
   protected isSelfAdjoint : IsSelfAdjoint p
+
 namespace IsStarProjection
 
 variable {p q : R}
