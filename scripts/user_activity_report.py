@@ -35,10 +35,24 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
+# Get cache directory following XDG Base Directory Specification
+cache_home = os.environ.get('XDG_CACHE_HOME')
+if cache_home:
+    CACHE_DIR = Path(cache_home) / "user_activity_report"
+else:
+    CACHE_DIR = Path.home() / ".cache" / "user_activity_report"
 
-CACHE_DIR = Path(__file__).parent
-USERS_CACHE_FILE = CACHE_DIR / "users_cache.json"
-COMMITS_CACHE_FILE = CACHE_DIR / "commits_cache.json"
+
+def get_cache_files(owner: str, repo: str) -> Tuple[Path, Path]:
+    """Get repository-specific cache file paths."""
+    # Ensure cache directory exists
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+
+    # Replace slash with underscore to make it filesystem-safe
+    repo_slug = f"{owner}_{repo}"
+    users_cache_file = CACHE_DIR / f"users_cache_{repo_slug}.json"
+    commits_cache_file = CACHE_DIR / f"commits_cache_{repo_slug}.json"
+    return users_cache_file, commits_cache_file
 
 
 def check_gh_auth() -> bool:
@@ -51,8 +65,21 @@ def check_gh_auth() -> bool:
         return False
 
 
-def get_repo_info() -> Tuple[str, str]:
-    """Get repository owner and name from git remote."""
+def get_repo_info(repo_arg: Optional[str] = None) -> Tuple[str, str]:
+    """Get repository owner and name from command line argument or git remote."""
+    if repo_arg:
+        try:
+            if '/' not in repo_arg:
+                raise ValueError("Repository must be in format 'owner/repo'")
+            owner, repo = repo_arg.split('/', 1)
+            if not owner or not repo:
+                raise ValueError("Repository must be in format 'owner/repo'")
+            return owner, repo
+        except ValueError as e:
+            print(f"Error: Invalid repository format '{repo_arg}'. {e}", file=sys.stderr)
+            sys.exit(1)
+
+    # Fall back to git remote detection
     try:
         result = subprocess.run(
             ['git', 'remote', 'get-url', 'origin'],
@@ -70,9 +97,16 @@ def get_repo_info() -> Tuple[str, str]:
             raise ValueError(f"Unknown git remote format: {url}")
 
         owner, repo = repo_path.split('/')
+
+        # If this is a fork of mathlib, use the upstream repository instead
+        if repo.lower() == 'mathlib4' and owner != 'leanprover-community':
+            print(f"Detected fork of mathlib ({owner}/{repo}), using upstream leanprover-community/mathlib4 instead")
+            return 'leanprover-community', 'mathlib4'
+
         return owner, repo
     except (subprocess.CalledProcessError, ValueError, IndexError) as e:
         print(f"Error getting repository info: {e}", file=sys.stderr)
+        print("Tip: Use --repo owner/repo to specify a repository manually", file=sys.stderr)
         sys.exit(1)
 
 
@@ -150,11 +184,12 @@ def get_contributors_fallback(owner: str, repo: str, limit: Optional[int] = None
     return contributors
 
 
-def load_users_cache() -> Optional[List[Dict]]:
+def load_users_cache(owner: str, repo: str) -> Optional[List[Dict]]:
     """Load cached users data."""
-    if USERS_CACHE_FILE.exists():
+    users_cache_file, commits_cache_file = get_cache_files(owner, repo)
+    if users_cache_file.exists():
         try:
-            with open(USERS_CACHE_FILE, 'r') as f:
+            with open(users_cache_file, 'r') as f:
                 data = json.load(f)
                 # Check if cache is less than 24 hours old
                 cache_time = datetime.fromisoformat(data['timestamp'])
@@ -166,21 +201,23 @@ def load_users_cache() -> Optional[List[Dict]]:
     return None
 
 
-def save_users_cache(users: List[Dict]) -> None:
+def save_users_cache(owner: str, repo: str, users: List[Dict]) -> None:
     """Save users data to cache."""
+    users_cache_file, commits_cache_file = get_cache_files(owner, repo)
     cache_data = {
         'timestamp': datetime.now(timezone.utc).isoformat(),
         'users': users
     }
-    with open(USERS_CACHE_FILE, 'w') as f:
+    with open(users_cache_file, 'w') as f:
         json.dump(cache_data, f, indent=2)
 
 
-def load_commits_cache() -> Dict[str, str]:
+def load_commits_cache(owner: str, repo: str) -> Dict[str, str]:
     """Load cached commit data."""
-    if COMMITS_CACHE_FILE.exists():
+    users_cache_file, commits_cache_file = get_cache_files(owner, repo)
+    if commits_cache_file.exists():
         try:
-            with open(COMMITS_CACHE_FILE, 'r') as f:
+            with open(commits_cache_file, 'r') as f:
                 data = json.load(f)
                 # Check if cache is less than 6 hours old
                 cache_time = datetime.fromisoformat(data['timestamp'])
@@ -192,13 +229,14 @@ def load_commits_cache() -> Dict[str, str]:
     return {}
 
 
-def save_commits_cache(commits: Dict[str, str]) -> None:
+def save_commits_cache(owner: str, repo: str, commits: Dict[str, str]) -> None:
     """Save commit data to cache."""
+    users_cache_file, commits_cache_file = get_cache_files(owner, repo)
     cache_data = {
         'timestamp': datetime.now(timezone.utc).isoformat(),
         'commits': commits
     }
-    with open(COMMITS_CACHE_FILE, 'w') as f:
+    with open(commits_cache_file, 'w') as f:
         json.dump(cache_data, f, indent=2)
 
 
@@ -280,6 +318,7 @@ def main():
     parser.add_argument('--write', action='store_true', help='Only show users with write access or higher')
     parser.add_argument('--admin', action='store_true', help='Only show users with admin access')
     parser.add_argument('--remove', type=int, metavar='N', help='Print gh commands to remove write access from non-admin users inactive for more than N days (does not execute)')
+    parser.add_argument('--repo', type=str, help='Specify a repository in the format "owner/repo" (defaults to current git repository)')
 
     args = parser.parse_args()
 
@@ -289,11 +328,11 @@ def main():
         sys.exit(1)
 
     # Get repository info
-    owner, repo = get_repo_info()
+    owner, repo = get_repo_info(args.repo)
     print(f"Analyzing repository: {owner}/{repo}")
 
     # Get users with access
-    users = None if args.no_cache else load_users_cache()
+    users = None if args.no_cache else load_users_cache(owner, repo)
     if users is None:
         if args.contributors_only:
             users = get_contributors_fallback(owner, repo, args.limit)
@@ -303,7 +342,7 @@ def main():
             if not users:
                 print("No collaborators found, falling back to contributors...")
                 users = get_contributors_fallback(owner, repo, args.limit)
-        save_users_cache(users)
+        save_users_cache(owner, repo, users)
 
     # Apply limit to cached data as well
     if args.limit and len(users) > args.limit:
@@ -342,7 +381,7 @@ def main():
     print(f"Processing {len(users)} users...")
 
     # Get cached commit data
-    cached_commits = {} if args.no_cache else load_commits_cache()
+    cached_commits = {} if args.no_cache else load_commits_cache(owner, repo)
 
     # Get last commit for each user
     user_commits = []
@@ -359,7 +398,7 @@ def main():
             last_commit_date = get_last_commit_for_user(owner, repo, username)
             cached_commits[username] = last_commit_date
             # Save cache after each new lookup
-            save_commits_cache(cached_commits)
+            save_commits_cache(owner, repo, cached_commits)
 
         permission_level = get_permission_level(user)
 

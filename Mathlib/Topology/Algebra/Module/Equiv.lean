@@ -161,6 +161,9 @@ instance continuousSemilinearEquivClass :
   map_continuous := continuous_toFun
   inv_continuous := continuous_invFun
 
+@[simp]
+theorem coe_mk (e : M₁ ≃ₛₗ[σ₁₂] M₂) (a b) : ⇑(ContinuousLinearEquiv.mk e a b) = e := rfl
+
 theorem coe_apply (e : M₁ ≃SL[σ₁₂] M₂) (b : M₁) : (e : M₁ →SL[σ₁₂] M₂) b = e b :=
   rfl
 
@@ -291,12 +294,25 @@ protected def symm (e : M₁ ≃SL[σ₁₂] M₂) : M₂ ≃SL[σ₂₁] M₁ :
     continuous_invFun := e.continuous_toFun }
 
 @[simp]
-theorem symm_toLinearEquiv (e : M₁ ≃SL[σ₁₂] M₂) : e.symm.toLinearEquiv = e.toLinearEquiv.symm := by
-  ext
+theorem toLinearEquiv_symm (e : M₁ ≃SL[σ₁₂] M₂) : e.symm.toLinearEquiv = e.toLinearEquiv.symm :=
+  rfl
+
+@[deprecated (since := "2025-06-08")] alias symm_toLinearEquiv := toLinearEquiv_symm
+
+@[simp]
+theorem coe_symm_toLinearEquiv (e : M₁ ≃SL[σ₁₂] M₂) : ⇑e.toLinearEquiv.symm = e.symm :=
   rfl
 
 @[simp]
+theorem toHomeomorph_symm (e : M₁ ≃SL[σ₁₂] M₂) : e.symm.toHomeomorph = e.toHomeomorph.symm :=
+  rfl
+
+@[deprecated "use instead `toHomeomorph_symm`, in the reverse direction" (since := "2025-06-08")]
 theorem symm_toHomeomorph (e : M₁ ≃SL[σ₁₂] M₂) : e.toHomeomorph.symm = e.symm.toHomeomorph :=
+  rfl
+
+@[simp]
+theorem coe_symm_toHomeomorph (e : M₁ ≃SL[σ₁₂] M₂) : ⇑e.toHomeomorph.symm = e.symm :=
   rfl
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
@@ -366,6 +382,54 @@ def prodComm [Module R₁ M₂] : (M₁ × M₂) ≃L[R₁] M₂ × M₁ :=
     continuous_invFun := continuous_swap }
 
 @[simp] lemma prodComm_symm [Module R₁ M₂] : (prodComm R₁ M₁ M₂).symm = prodComm R₁ M₂ M₁ := rfl
+
+section prodUnique
+
+variable (R M N : Type*) [Semiring R]
+  [TopologicalSpace M] [AddCommMonoid M] [TopologicalSpace N] [AddCommMonoid N]
+  [Unique N] [Module R M] [Module R N]
+
+/-- The natural equivalence `M × N ≃L[R] M` for any `Unique` type `N`.
+This is `Equiv.prodUnique` as a continuous linear equivalence. -/
+def prodUnique : (M × N) ≃L[R] M where
+  toLinearEquiv := LinearEquiv.prodUnique
+  continuous_toFun := by
+    show Continuous (Equiv.prodUnique M N)
+    dsimp; fun_prop
+  continuous_invFun := by
+    show Continuous fun x ↦ (x, default)
+    fun_prop
+
+@[simp]
+lemma coe_prodUnique : (prodUnique R M N).toEquiv = Equiv.prodUnique M N := rfl
+
+@[simp]
+lemma prodUnique_apply (x : M × N) : prodUnique R M N x = x.1 := rfl
+
+@[simp]
+lemma prodUnique_symm_apply (x : M) : (prodUnique R M N).symm x = (x, default) := rfl
+
+/-- The natural equivalence `N × M ≃L[R] M` for any `Unique` type `N`.
+This is `Equiv.uniqueProd` as a continuous linear equivalence. -/
+def uniqueProd : (N × M) ≃L[R] M where
+  toLinearEquiv := LinearEquiv.uniqueProd
+  continuous_toFun := by
+    show Continuous (Equiv.uniqueProd M N)
+    dsimp; fun_prop
+  continuous_invFun := by
+    show Continuous fun x ↦ (default, x)
+    fun_prop
+
+@[simp]
+lemma coe_uniqueProd : (uniqueProd R M N).toEquiv = Equiv.uniqueProd M N := rfl
+
+@[simp]
+lemma uniqueProd_apply (x : N × M) : uniqueProd R M N x = x.2 := rfl
+
+@[simp]
+lemma uniqueProd_symm_apply (x : M) : (uniqueProd R M N).symm x = (default, x) := rfl
+
+end prodUnique
 
 variable {R₁ M₁ M₂}
 
@@ -695,12 +759,6 @@ equivalent to the type of continuous linear equivalences between `M` and itself.
 def unitsEquiv : (M →L[R] M)ˣ ≃* M ≃L[R] M where
   toFun := ofUnit
   invFun := toUnit
-  left_inv f := by
-    ext
-    rfl
-  right_inv f := by
-    ext
-    rfl
   map_mul' x y := by
     ext
     rfl
