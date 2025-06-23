@@ -68,11 +68,11 @@ theorem _root_.isStarProjection_one_sub_iff [StarRing R] :
 
 alias ⟨of_one_sub, _⟩ := isStarProjection_one_sub_iff
 
-lemma mul_one_sub_self [Star R]
-    (hp : IsStarProjection p) : p * (1 - p) = 0 := hp.isIdempotentElem.mul_one_sub_self
+lemma mul_one_sub_self [Star R] (hp : IsStarProjection p) : p * (1 - p) = 0 :=
+  hp.isIdempotentElem.mul_one_sub_self
 
-lemma one_sub_mul_self [Star R]
-    (hp : IsStarProjection p) : (1 - p) * p = 0 := hp.isIdempotentElem.one_sub_mul_self
+lemma one_sub_mul_self [Star R] (hp : IsStarProjection p) : (1 - p) * p = 0 :=
+  hp.isIdempotentElem.one_sub_mul_self
 
 end NonAssocRing
 
