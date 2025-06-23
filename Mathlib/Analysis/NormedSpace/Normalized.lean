@@ -13,7 +13,7 @@ Function that calculates unit length vector from a vector
 (if the given vector is zero vector).
 -/
 
-variable {V: Type*}
+variable {V : Type*}
 variable [NormedAddCommGroup V]
 variable [NormedSpace ℝ V]
 

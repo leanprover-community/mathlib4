@@ -131,7 +131,7 @@ lemma angle_triangle_aux {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) :
   rw [← smul_assoc]
   field_simp
   rw [← sq, ← real_inner_self_eq_norm_sq]
-  have H0 : ⟪x - ⟪x, y⟫ • y, x - ⟪x, y⟫ • y⟫ = 1 - inner x y ^ 2 := by
+  have H0 : ⟪x - ⟪x, y⟫ • y, x - ⟪x, y⟫ • y⟫ = 1 - ⟪x, y⟫ ^ 2 := by
     rw [inner_sub_left, inner_sub_right, inner_sub_right, inner_self_eq_one Hx]
     rw [real_inner_smul_right, ← sq]
     field_simp
