@@ -91,16 +91,15 @@ theorem add [NonUnitalNonAssocSemiring R] [StarRing R]
 theorem mul [NonUnitalSemiring R] [StarRing R]
     (hp : IsStarProjection p) (hq : IsStarProjection q)
     (hpq : Commute p q) : IsStarProjection (p * q) where
-  isSelfAdjoint := by
-    simpa [IsSelfAdjoint, hp.isSelfAdjoint.star_eq, hq.isSelfAdjoint.star_eq] using hpq.eq.symm
+  isSelfAdjoint := (IsSelfAdjoint.commute_iff hp.isSelfAdjoint hq.isSelfAdjoint).mp hpq
   isIdempotentElem := by rw [IsIdempotentElem,
     hpq.symm.mul_mul_mul_comm, hp.isIdempotentElem, hq.isIdempotentElem]
 
 theorem add_sub_mul_of_commute [Ring R] [StarRing R]
-    (hp : IsStarProjection p) (hq : IsStarProjection q)
-    (hpq : Commute p q) : IsStarProjection (p + q - p * q) where
+    (hpq : Commute p q) (hp : IsStarProjection p) (hq : IsStarProjection q) :
+    IsStarProjection (p + q - p * q) where
   isIdempotentElem := hp.isIdempotentElem.add_sub_mul_of_commute hpq hq.isIdempotentElem
-  isSelfAdjoint := by simp only [IsSelfAdjoint, hpq.eq, star_sub, star_add,
-    hp.isSelfAdjoint.star_eq, hq.isSelfAdjoint.star_eq, star_mul]
+  isSelfAdjoint := .sub (hp.isSelfAdjoint.add hq.isSelfAdjoint)
+    ((IsSelfAdjoint.commute_iff hp.isSelfAdjoint hq.isSelfAdjoint).mp hpq)
 
 end IsStarProjection
