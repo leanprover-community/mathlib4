@@ -255,6 +255,46 @@ theorem linearIndependent_right (H : A.LinearDisjoint B)
     {ι : Type*} {b : ι → B} (hb : LinearIndependent F b) : LinearIndependent A (B.val ∘ b) :=
   (linearDisjoint_iff'.1 H).linearIndependent_right_of_flat hb
 
+/--
+If `A` and `B` are linearly disjoint and such that `A.toSubalgebra ⊔ B.toSubalgebra = ⊤`,
+then any `F`-basis of `B` is also a `A`-basis of `E`.
+-/
+noncomputable def basisOfBasisLeft (H : A.LinearDisjoint B)
+    (H' : A.toSubalgebra ⊔ B.toSubalgebra = ⊤) {ι : Type*} (b : Basis ι F B) :
+    Basis ι A E :=
+  (linearDisjoint_iff'.mp H).basisOfBasisLeft H' b
+
+@[simp]
+theorem basisOfBasisLeft_apply (H : A.LinearDisjoint B) (H' : A.toSubalgebra ⊔ B.toSubalgebra = ⊤)
+    {ι : Type*} (b : Basis ι F B) (i : ι) :
+    H.basisOfBasisLeft H' b i = algebraMap B E (b i) :=
+  (linearDisjoint_iff'.mp H).basisOfBasisLeft_apply H' b i
+
+theorem basisOfBasisLeft_repr_apply (H : A.LinearDisjoint B)
+    (H' : A.toSubalgebra ⊔ B.toSubalgebra = ⊤)  {ι : Type*} (b : Basis ι F B) (x : B) (i : ι) :
+    algebraMap A E ((H.basisOfBasisLeft H' b).repr x i) = algebraMap F E (b.repr x i) :=
+  (linearDisjoint_iff'.mp H).basisOfBasisLeft_repr_apply H' b x i
+
+/--
+If `A` and `B` are linearly disjoint and such that `A.toSubalgebra ⊔ B.toSubalgebra = ⊤`,
+then any `F`-basis of `A` is also a `B`-basis of `E`.
+-/
+noncomputable def basisOfBasisRight (H : A.LinearDisjoint B)
+    (H' : A.toSubalgebra ⊔ B.toSubalgebra = ⊤) {ι : Type*} (b : Basis ι F A) :
+    Basis ι B E :=
+  (linearDisjoint_iff'.mp H).basisOfBasisRight H' b
+
+@[simp]
+theorem basisOfBasisRight_apply (H : A.LinearDisjoint B) (H' : A.toSubalgebra ⊔ B.toSubalgebra = ⊤)
+    {ι : Type*} (b : Basis ι F A) (i : ι) :
+    H.basisOfBasisRight H' b i = algebraMap A E (b i) :=
+  (linearDisjoint_iff'.mp H).basisOfBasisRight_apply H' b i
+
+theorem basisOfBasisRight_repr_apply (H : A.LinearDisjoint B)
+    (H' : A.toSubalgebra ⊔ B.toSubalgebra = ⊤)  {ι : Type*} (b : Basis ι F A) (x : A) (i : ι) :
+    algebraMap B E ((H.basisOfBasisRight H' b).repr x i) = algebraMap F E (b.repr x i) :=
+  (linearDisjoint_iff'.mp H).basisOfBasisRight_repr_apply H' b x i
+
 /-- If there exists an `F`-basis of `B` which remains linearly independent over `A`, then
 `A` and `B` are linearly disjoint. -/
 theorem of_basis_right {ι : Type*} (b : Basis ι F B)
