@@ -50,7 +50,7 @@ jobs:
               echo "bot=$bot"
               echo "removeLabels=$remove_labels"
               echo "mOrD=$m_or_d"
-            } >> "$GITHUB_OUTPUT"
+            } | tee -a "$GITHUB_OUTPUT"
           else
             echo "JSON artifact file not found!"
             exit 1

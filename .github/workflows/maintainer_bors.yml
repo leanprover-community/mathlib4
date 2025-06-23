@@ -64,7 +64,7 @@ jobs:
           # write an artifact with all data needed below if we don't have access to necessary secrets
           if [[ -z '${{ secrets.TRIAGE_TOKEN }}' ]]
           then
-            printf 'No access to secrets, writing to file.'
+            printf 'No access to secrets, writing to file.\n'
             jq -n \
               --arg author "${AUTHOR}" \
               --arg pr_number "${PR_NUMBER}" \

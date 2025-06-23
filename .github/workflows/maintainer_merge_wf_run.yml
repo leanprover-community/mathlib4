@@ -54,7 +54,7 @@ jobs:
               echo "pr_url=$pr_url"
               echo "event_name=$event_name"
               echo "mOrD=$m_or_d"
-            } >> "$GITHUB_OUTPUT"
+            } | tee -a "$GITHUB_OUTPUT"
           else
             echo "JSON artifact file not found!"
             exit 1
