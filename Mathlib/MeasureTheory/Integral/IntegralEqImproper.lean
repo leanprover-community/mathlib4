@@ -5,7 +5,7 @@ Authors: Anatole Dedecker, Bhavik Mehta
 -/
 import Mathlib.Analysis.Calculus.Deriv.Support
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
-import Mathlib.MeasureTheory.Function.Jacobian
+import Mathlib.MeasureTheory.Function.JacobianOneDim
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 import Mathlib.MeasureTheory.Measure.Haar.Unique
