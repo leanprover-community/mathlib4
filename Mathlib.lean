@@ -3655,6 +3655,7 @@ import Mathlib.Geometry.Manifold.ContMDiffMap
 import Mathlib.Geometry.Manifold.DerivationBundle
 import Mathlib.Geometry.Manifold.Diffeomorph
 import Mathlib.Geometry.Manifold.GroupLieAlgebra
+import Mathlib.Geometry.Manifold.Instances.Icc
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.Instances.Sphere
 import Mathlib.Geometry.Manifold.Instances.UnitsOfNormedAlgebra
@@ -3679,6 +3680,7 @@ import Mathlib.Geometry.Manifold.Metrizable
 import Mathlib.Geometry.Manifold.PartitionOfUnity
 import Mathlib.Geometry.Manifold.PoincareConjecture
 import Mathlib.Geometry.Manifold.Riemannian.Basic
+import Mathlib.Geometry.Manifold.Riemannian.PathELength
 import Mathlib.Geometry.Manifold.Sheaf.Basic
 import Mathlib.Geometry.Manifold.Sheaf.LocallyRingedSpace
 import Mathlib.Geometry.Manifold.Sheaf.Smooth
