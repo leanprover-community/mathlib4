@@ -6,7 +6,6 @@ Authors: Pierre Quinton
 import Mathlib.Order.BooleanAlgebra.Defs
 import Mathlib.Order.SetNotation
 import Mathlib.Data.Set.Countable
-import Mathlib.Order.CompleteLattice.Defs
 
 /-!
 # Definitions of Boolean σ-algebras
