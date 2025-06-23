@@ -319,15 +319,18 @@ If `git diff --name-only master...` fails for some reason, then we assume that t
 Otherwise, we check whether or not `modName` appears in the output.
 -/
 def isGitModified (modName : Name) : IO Bool := do
+  -- On the `commandStart` test file we always return `true`, since we want the linter to inspect
+  -- the file.
+  if modName == `MathlibTest.CommandStart then
+    return true
   let diffFiles ← (do
     let gd ← IO.Process.run {cmd := "git", args := #["diff", "--name-only", "master..."]}
     pure (some gd)) <|> pure none
   if let some diffFiles := diffFiles then
-    dbg_trace "'{diffFiles.trim}'"
     if diffFiles.isEmpty then return false
     let diffModules ← (diffFiles.trim.splitOn "\n").mapM
       fun s : String => (moduleNameOfFileName s none <|> return Name.anonymous : IO Name)
-    return modName ∈ diffModules
+    return diffModules.contains modName
   else
     return true
 
