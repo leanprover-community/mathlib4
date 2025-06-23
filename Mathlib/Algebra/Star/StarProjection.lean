@@ -13,7 +13,7 @@ import Mathlib.Algebra.Ring.Idempotent
 This file defines star projections, which are self-adjoint idempotents.
 
 In star-ordered rings, star projections are non-negative.
-(See `IsStarProjection.nonneg` in `Mathlib.Algebra.Order.Star.Basic`.)
+(See `IsStarProjection.nonneg` in `Mathlib/Algebra/Order/Star/Basic.lean`.)
 -/
 
 variable {R : Type*}
