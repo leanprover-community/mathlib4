@@ -21,22 +21,14 @@ variable {R : Type*}
 /-- A star projection is a self-adjoint idempotent. -/
 @[mk_iff]
 structure IsStarProjection [Mul R] [Star R] (p : R) : Prop where
-  protected mul_self : p * p = p
-  protected star_eq : star p = p
-
+  protected isIdempotentElem : IsIdempotentElem p
+  protected isSelfAdjoint : IsSelfAdjoint p
 namespace IsStarProjection
 
 variable {p q : R}
 
-@[aesop 20% apply]
-theorem isSelfAdjoint [Mul R] [Star R]
-    (hp : IsStarProjection p) : IsSelfAdjoint p := hp.star_eq
-
-theorem isIdempotentElem [Mul R] [Star R]
-    (hp : IsStarProjection p) : IsIdempotentElem p := hp.mul_self
-
 lemma _root_.isStarProjection_iff' [Mul R] [Star R] :
-    IsStarProjection p ↔ IsIdempotentElem p ∧ IsSelfAdjoint p :=
+    IsStarProjection p ↔ p * p = p ∧ star p = p :=
   ⟨fun ⟨h1, h2⟩ => ⟨h1, h2⟩, fun ⟨h1, h2⟩ => ⟨h1, h2⟩⟩
 
 theorem isStarNormal [Mul R] [Star R]
@@ -55,9 +47,7 @@ protected theorem one [MulOneClass R] [StarMul R] : IsStarProjection (1 : R) :=
   ⟨one_mul _, star_one _⟩
 
 theorem pow_eq [Monoid R] [Star R] (hp : IsStarProjection p)
-    {n : ℕ} (hn : n ≠ 0) : p ^ n = p := by
-  obtain ⟨i, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hn
-  exact hp.isIdempotentElem.pow_succ_eq _
+    {n : ℕ} (hn : n ≠ 0) : p ^ n = p := hp.isIdempotentElem.pow_eq hn
 
 theorem pow_succ_eq [Monoid R] [Star R] (hp : IsStarProjection p)
     (n : ℕ) : p ^ (n + 1) = p := hp.isIdempotentElem.pow_succ_eq n
@@ -68,8 +58,8 @@ variable [NonAssocRing R]
 
 theorem one_sub [StarRing R] (hp : IsStarProjection p) :
     IsStarProjection (1 - p) where
-  mul_self := by simp [mul_sub, sub_mul, hp.mul_self]
-  star_eq := by simp [hp.star_eq]
+  isIdempotentElem := by simp [IsIdempotentElem, mul_sub, sub_mul, hp.isIdempotentElem.eq]
+  isSelfAdjoint := by simp [IsSelfAdjoint, hp.isSelfAdjoint.star_eq]
 
 theorem _root_.isStarProjection_one_sub_iff [StarRing R] :
     IsStarProjection (1 - p) ↔ IsStarProjection p :=
@@ -90,12 +80,12 @@ lemma commute_one_sub [Star R]
 lemma _root_.isStarProjection_iff_isSelfAdjoint_and_mul_one_sub_self [Star R] :
     IsStarProjection p ↔ IsSelfAdjoint p ∧ p * (1 - p) = 0 := by
   rw [mul_sub, mul_one, sub_eq_zero]
-  exact ⟨fun hp => ⟨hp.star_eq, hp.mul_self.symm⟩, fun ⟨hp1, hp2⟩ => ⟨hp2.symm, hp1⟩⟩
+  exact ⟨fun hp => ⟨hp.isSelfAdjoint, hp.isIdempotentElem.symm⟩, fun ⟨hp1, hp2⟩ => ⟨hp2.symm, hp1⟩⟩
 
 lemma _root_.isStarProjection_iff_isSelfAdjoint_and_one_sub_mul_self [StarRing R] :
     IsStarProjection p ↔ IsSelfAdjoint p ∧ (1 - p) * p = 0 := by
   rw [sub_mul, one_mul, sub_eq_zero]
-  exact ⟨fun hp => ⟨hp.star_eq, hp.mul_self.symm⟩, fun ⟨hp1, hp2⟩ => ⟨hp2.symm, hp1⟩⟩
+  exact ⟨fun hp => ⟨hp.isSelfAdjoint, hp.isIdempotentElem.symm⟩, fun ⟨hp1, hp2⟩ => ⟨hp2.symm, hp1⟩⟩
 
 end NonAssocRing
 
@@ -103,22 +93,27 @@ end NonAssocRing
 theorem add [NonUnitalNonAssocSemiring R] [StarRing R]
     (hp : IsStarProjection p) (hq : IsStarProjection q) (hpq : p * q = 0) :
     IsStarProjection (p + q) where
-  star_eq := by simp [hp.star_eq, hq.star_eq]
-  mul_self := by
-    have : q * p = 0 := by simpa [hp.star_eq, hq.star_eq] using congr(star $(hpq))
-    simp [mul_add, add_mul, hp.mul_self, hq.mul_self, hpq, this]
+  isSelfAdjoint := by simp [IsSelfAdjoint, hp.isSelfAdjoint.star_eq, hq.isSelfAdjoint.star_eq]
+  isIdempotentElem := by
+    simp [IsIdempotentElem]
+    have : q * p = 0 := by
+      simpa [hp.isSelfAdjoint.star_eq, hq.isSelfAdjoint.star_eq] using congr(star $(hpq))
+    simp [mul_add, add_mul, hp.isIdempotentElem.eq, hq.isIdempotentElem.eq, hpq, this]
 
 /-- The product of star projections is a star projection if they commute. -/
 theorem mul [NonUnitalSemiring R] [StarRing R]
     (hp : IsStarProjection p) (hq : IsStarProjection q)
     (hpq : Commute p q) : IsStarProjection (p * q) where
-  star_eq := by simpa [hp.star_eq, hq.star_eq] using hpq.eq.symm
-  mul_self := by rw [hpq.symm.mul_mul_mul_comm, hp.mul_self, hq.mul_self]
+  isSelfAdjoint := by
+    simpa [IsSelfAdjoint, hp.isSelfAdjoint.star_eq, hq.isSelfAdjoint.star_eq] using hpq.eq.symm
+  isIdempotentElem := by rw [IsIdempotentElem,
+    hpq.symm.mul_mul_mul_comm, hp.isIdempotentElem, hq.isIdempotentElem]
 
 theorem add_sub_mul_of_commute [Ring R] [StarRing R]
     (hp : IsStarProjection p) (hq : IsStarProjection q)
     (hpq : Commute p q) : IsStarProjection (p + q - p * q) where
-  mul_self := hp.isIdempotentElem.add_sub_mul_of_commute hpq hq.isIdempotentElem
-  star_eq := by simp only [hpq.eq, star_sub, star_add, hp.star_eq, hq.star_eq, star_mul]
+  isIdempotentElem := hp.isIdempotentElem.add_sub_mul_of_commute hpq hq.isIdempotentElem
+  isSelfAdjoint := by simp only [IsSelfAdjoint, hpq.eq, star_sub, star_add,
+    hp.isSelfAdjoint.star_eq, hq.isSelfAdjoint.star_eq, star_mul]
 
 end IsStarProjection
