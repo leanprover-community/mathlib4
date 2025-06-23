@@ -864,7 +864,7 @@ lemma re_le_re {x y : K} (h : x ≤ y) : re x ≤ re y := by
   rw [RCLike.le_iff_re_im] at h
   exact h.1
 
-lemma re_monotone : Monotone (re (K := K)) :=
+lemma re_monotone : Monotone (re : K → ℝ) :=
   fun _ _ => re_le_re
 
 protected lemma inv_pos_of_pos (hz : 0 < z) : 0 < z⁻¹ := by
