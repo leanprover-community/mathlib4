@@ -45,14 +45,16 @@ jobs:
             m_or_d=$(jq -r '.m_or_d' ./artifacts/artifact-data.json)
 
             # Set as step outputs for use in later steps
-            echo "author=$author" > "$GITHUB_OUTPUT"
-            echo "pr_author=$pr_author" >> "$GITHUB_OUTPUT"
-            echo "pr_number=$pr_number" >> "$GITHUB_OUTPUT"
-            echo "comment=$comment" >> "$GITHUB_OUTPUT"
-            echo "pr_title=$pr_title" >> "$GITHUB_OUTPUT"
-            echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
-            echo "event_name=$event_name" >> "$GITHUB_OUTPUT"
-            echo "mOrD=$m_or_d" >> "$GITHUB_OUTPUT"
+            {
+              echo "author=$author"
+              echo "pr_author=$pr_author"
+              echo "pr_number=$pr_number"
+              echo "comment=$comment"
+              echo "pr_title=$pr_title"
+              echo "pr_url=$pr_url"
+              echo "event_name=$event_name"
+              echo "mOrD=$m_or_d"
+            } >> "$GITHUB_OUTPUT"
           else
             echo "JSON artifact file not found!"
             exit 1
