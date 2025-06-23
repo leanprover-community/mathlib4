@@ -47,17 +47,6 @@ setup_remotes() {
     echo "Adding remote 'nightly-testing' for leanprover-community/mathlib4-nightly-testing"
     git remote add nightly-testing https://github.com/leanprover-community/mathlib4-nightly-testing.git
     NIGHTLY_REMOTE="nightly-testing"
-  else
-    # Verify the nightly-testing remote points to the correct repository
-    NIGHTLY_URL=$(git remote get-url "$NIGHTLY_REMOTE")
-    if [[ "$NIGHTLY_URL" != *"leanprover-community/mathlib4-nightly-testing"* ]]; then
-      echo "Error: Remote '$NIGHTLY_REMOTE' points to '$NIGHTLY_URL'"
-      echo "Expected: https://github.com/leanprover-community/mathlib4-nightly-testing.git"
-      echo ""
-      echo "Please fix the remote configuration:"
-      echo "  git remote set-url $NIGHTLY_REMOTE https://github.com/leanprover-community/mathlib4-nightly-testing.git"
-      exit 1
-    fi
   fi
 
   echo "Remote configuration:"
