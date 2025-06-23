@@ -39,7 +39,7 @@ def IsHomogeneous (d : ℕ∞) (c : AlgebraicCycle X) : Prop := ∀ x ∈ c.supp
 /--
 Subgroup of cycles of pure dimension `d`.
 -/
-def homogeneousAddSubgroup (X : Scheme) (d : ℕ∞) : AddSubgroup (AlgebraicCycle X) where
+def HomogeneousAddSubgroup (X : Scheme) (d : ℕ∞) : AddSubgroup (AlgebraicCycle X) where
   carrier := {c : AlgebraicCycle X | IsHomogeneous d c}
   add_mem' c₁ c₂ := by
     rename_i a b
@@ -59,7 +59,7 @@ def homogeneousAddSubgroup (X : Scheme) (d : ℕ∞) : AddSubgroup (AlgebraicCyc
 Homogeneous part of dimension `d` of an algebraic cycle `c`.
 -/
 noncomputable
-def homogeneousProjection (c : AlgebraicCycle X) (d : ℕ∞) : homogeneousAddSubgroup X d where
+def homogeneousProjection (c : AlgebraicCycle X) (d : ℕ∞) : HomogeneousAddSubgroup X d where
   val := {
     toFun x := if height x = d then c x else 0
     supportWithinDomain' := by simp
@@ -77,7 +77,7 @@ def homogeneousProjection (c : AlgebraicCycle X) (d : ℕ∞) : homogeneousAddSu
       exact fun _ ↦ hx
   }
   property := by
-    simp only [top_eq_univ, homogeneousAddSubgroup, IsHomogeneous, Function.mem_support, ne_eq,
+    simp only [top_eq_univ, HomogeneousAddSubgroup, IsHomogeneous, Function.mem_support, ne_eq,
       AddSubgroup.mem_mk, mem_setOf_eq]
     intro x hx
     have : ¬ (if height x = d then c x else 0) = 0 := hx
@@ -216,7 +216,6 @@ lemma map_locally_finite {Y : Scheme}
 
   exact pbfinite
 
-open Classical in
 /--
 The pushforward of an algebraic cycle by a quasicompact morphism.
 
@@ -224,11 +223,30 @@ Note that usually the pushforward is only defined for proper morphisms, and inde
 properness to prove that the pushforward preserves rational equivalence.
 -/
 noncomputable
-def map {Y : Scheme} (f : X ⟶ Y) [qc : QuasiCompact f] (c : AlgebraicCycle X) : AlgebraicCycle Y
+def map {Y : Scheme.{u}} (f : X ⟶ Y) [qc : QuasiCompact f] (c : AlgebraicCycle X) : AlgebraicCycle Y
     where
   toFun z := (∑ x ∈ (preimageSupportFinite f c z).toFinset, (c x) * mapAux f x)
   supportWithinDomain' := by simp
   supportLocallyFiniteWithinDomain' := fun z a ↦ map_locally_finite f c z a
+
+/--
+Pushforward preserves cycles of pure dimension `d`.
+-/
+noncomputable
+def map_homogeneneous {Y : Scheme.{u}} {d : ℕ∞} (f : X ⟶ Y) [qc : QuasiCompact f]
+  (c : HomogeneousAddSubgroup X d) : HomogeneousAddSubgroup Y d where
+    val := map f c
+    property := by
+      simp[HomogeneousAddSubgroup, IsHomogeneous]
+      intro y hy
+      have : ¬ (map f c).toFun y = 0 := hy
+      simp only [top_eq_univ, map, preimageSupport, mapAux, mul_ite, mul_zero] at this
+      obtain ⟨x, hx⟩ := Finset.exists_ne_zero_of_sum_ne_zero this
+      simp only [Finite.mem_toFinset, mem_inter_iff, mem_preimage, mem_singleton_iff,
+        Function.mem_support, ne_eq, ite_eq_right_iff, mul_eq_zero, Int.natCast_eq_zero,
+        Classical.not_imp, not_or] at hx
+      have : height x = d := c.2 x hx.1.2
+      aesop
 
 /--
 The pushforward of `c` along the identity morphism is `c`.
@@ -257,5 +275,4 @@ lemma map_id (c : AlgebraicCycle X) :
    · exact h.1.symm
 
 
-#min_imports
 end AlgebraicCycle
