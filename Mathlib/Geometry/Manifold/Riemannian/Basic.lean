@@ -226,11 +226,11 @@ considering functions on the manifold with boundary `Icc x y`, see
 We use `mfderiv` instead of `mfderivWithin` in the definition as these coincide (apart from the two
 endpoints which have zero measure) and `mfderiv` is easier to manipulate. However, we give
 a lemma `pathELength_eq_integral_mfderivWithin_Icc` to rewrite with the `mfderivWithin` form. -/
-def pathELength (γ : ℝ → M) (x y : ℝ) : ℝ≥0∞ :=
+irreducible_def pathELength (γ : ℝ → M) (x y : ℝ) : ℝ≥0∞ :=
   ∫⁻ t in Icc x y, ‖mfderiv 𝓘(ℝ) I γ t 1‖ₑ
 
 lemma pathELength_eq_lintegral_mfderiv_Icc :
-    pathELength I γ x y = ∫⁻ t in Icc x y, ‖mfderiv 𝓘(ℝ) I γ t 1‖ₑ := rfl
+    pathELength I γ x y = ∫⁻ t in Icc x y, ‖mfderiv 𝓘(ℝ) I γ t 1‖ₑ := by simp [pathELength]
 
 lemma pathELength_eq_lintegral_mfderiv_Ioo :
     pathELength I γ x y = ∫⁻ t in Ioo x y, ‖mfderiv 𝓘(ℝ) I γ t 1‖ₑ := by
@@ -258,8 +258,7 @@ lemma pathELength_eq_add {γ : ℝ → M} {x y z : ℝ} (h : x ≤ y) (h' : y �
   have : Icc x z = Icc x y ∪ Ioc y z := (Icc_union_Ioc_eq_Icc h h').symm
   rw [pathELength, this, lintegral_union measurableSet_Ioc]; swap
   · exact disjoint_iff_forall_ne.mpr (fun a ha b hb ↦ (ha.2.trans_lt hb.1).ne)
-  rw [restrict_Ioc_eq_restrict_Icc]
-  rfl
+  simp [restrict_Ioc_eq_restrict_Icc, pathELength]
 
 attribute [local instance] Measure.Subtype.measureSpace
 
@@ -314,7 +313,7 @@ lemma pathELength_comp_of_monotoneOn {γ : ℝ → M} {f : ℝ → ℝ} {x y : �
   have : 0 ≤ derivWithin f (Icc x y) t := hf.derivWithin_nonneg
   simp only [map_smul, enorm_smul, ← Real.enorm_of_nonneg this, f_im]
 
-lemma pathELength_comp_of_antitoneOn (γ : ℝ → M) {f : ℝ → ℝ} {x y : ℝ} (h : x ≤ y)
+lemma pathELength_comp_of_antitoneOn {γ : ℝ → M} {f : ℝ → ℝ} {x y : ℝ} (h : x ≤ y)
     (hf : AntitoneOn f (Icc x y))
     (h'f : DifferentiableOn ℝ f (Icc x y)) (hγ : MDifferentiableOn 𝓘(ℝ) I γ (Icc (f y) (f x))) :
     pathELength I (γ ∘ f) x y = pathELength I γ (f y) (f x) := by
@@ -350,12 +349,12 @@ lemma pathELength_comp_of_antitoneOn (γ : ℝ → M) {f : ℝ → ℝ} {x y : �
 section
 
 -- variable [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)] {x y : M} {r : ℝ≥0∞} {a b : ℝ}
-variable {x y : M} {r : ℝ≥0∞} {a b : ℝ}
+variable {x y z : M} {r : ℝ≥0∞} {a b : ℝ}
 
 variable (I) in
 /-- The Riemannian extended distance between two points, in a manifold where the tangent spaces
 have an inner product, defined as the infimum of the lengths of `C^1` paths between the points. -/
-noncomputable def riemannianEDist (x y : M) : ℝ≥0∞ :=
+noncomputable irreducible_def riemannianEDist (x y : M) : ℝ≥0∞ :=
   ⨅ (γ : Path x y) (_ : ContMDiff (𝓡∂ 1) I 1 γ), ∫⁻ x, ‖mfderiv (𝓡∂ 1) I γ x 1‖ₑ
 
 /-- The Riemannian edistance is bounded above by the length of any `C^1` path from `x` to `y`.
@@ -380,8 +379,8 @@ lemma riemannianEDist_le_pathELength {γ : ℝ → M} (hγ : ContMDiffOn 𝓘(�
   let g' : Path x y := by
     refine ⟨g, ?_, ?_⟩ <;>
     simp [g, f, η, ContinuousAffineMap.coe_lineMap_eq, ha, hb]
-  have A : riemannianEDist I x y ≤ ∫⁻ x, ‖mfderiv (𝓡∂ 1) I g' x 1‖ₑ :=
-    biInf_le _ hf
+  have A : riemannianEDist I x y ≤ ∫⁻ x, ‖mfderiv (𝓡∂ 1) I g' x 1‖ₑ := by
+    rw [riemannianEDist]; exact biInf_le _ hf
   apply A.trans_eq
   rw [lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc]
   have E : pathELength I (g' ∘ projIcc 0 1 zero_le_one) 0 1 = pathELength I (γ ∘ η) 0 1 := by
@@ -397,7 +396,9 @@ lemma riemannianEDist_le_pathELength {γ : ℝ → M} (hγ : ContMDiffOn 𝓘(�
 
 omit [∀ (x : M), ENormSMulClass ℝ (TangentSpace I x)] in
 /-- If some `r` is strictly larger than the Riemannian edistance between two points, there exists
-a path between these two points of length `< r`. Here, we get such a path on `[0, 1]`. -/
+a path between these two points of length `< r`. Here, we get such a path on `[0, 1]`.
+For a more precise version giving locally constant paths around the endpoints, see
+`exists_lt_locally_constant_of_riemannianEDist_lt` -/
 lemma exists_lt_of_riemannianEDist_lt (hr : riemannianEDist I x y < r) :
     ∃ γ : ℝ → M, γ 0 = x ∧ γ 1 = y ∧ ContMDiffOn 𝓘(ℝ) I 1 γ (Icc 0 1) ∧
     pathELength I γ 0 1 < r := by
@@ -411,7 +412,8 @@ lemma exists_lt_of_riemannianEDist_lt (hr : riemannianEDist I x y < r) :
 a path between these two points of length `< r`. Here, we get such a path on an arbitrary interval
 `[a, b]` with `a < b`, and moreover we ensure that the path is locally constant around `a` and `b`,
 which is convenient for gluing purposes. -/
-lemma exists_lt_of_riemannianEDist_lt' (hr : riemannianEDist I x y < r) (hab : a < b) :
+lemma exists_lt_locally_constant_of_riemannianEDist_lt
+    (hr : riemannianEDist I x y < r) (hab : a < b) :
     ∃ γ : ℝ → M, γ a = x ∧ γ b = y ∧ ContMDiff 𝓘(ℝ) I 1 γ ∧
     γ =ᶠ[𝓝 a] (fun _ ↦ x) ∧ γ =ᶠ[𝓝 b] (fun _ ↦ y) ∧ pathELength I γ a b < r := by
   /- We start from a path from `x` to `y` defined on `[0, 1]` with short length. Then, we
@@ -456,23 +458,43 @@ lemma exists_lt_of_riemannianEDist_lt' (hr : riemannianEDist I x y < r) (hab : a
     · rw [A a haa', B b hb'b]
       apply γ_smooth.mdifferentiableOn le_rfl
 
-
-
-
-
-
-
-
-
-
-
-
-
-#exit
-
-/- TODO: show that this is a distance (symmetry, triange inequality, nondegeneracy) -/
-
 lemma riemannianEDist_self : riemannianEDist I x x = 0 := by
+  apply le_antisymm _ bot_le
+  exact (riemannianEDist_le_pathELength (γ := fun (t : ℝ) ↦ x) (a := 0) (b := 0)
+    contMDiffOn_const rfl rfl le_rfl).trans_eq (by simp)
+
+lemma riemannianEDist_comm : riemannianEDist I x y = riemannianEDist I y x := by
+  suffices H : ∀ x y, riemannianEDist I y x ≤ riemannianEDist I x y from le_antisymm (H y x) (H x y)
+  intro x y
+  apply le_of_forall_gt (fun r hr ↦ ?_)
+  rcases exists_lt_locally_constant_of_riemannianEDist_lt hr zero_lt_one
+    with ⟨γ, γ0, γ1, γ_smooth, -, -, hγ⟩
+  let η : ℝ → ℝ := fun t ↦ - t
+  have h_smooth : ContMDiff 𝓘(ℝ) I 1 (γ ∘ η) := by
+    apply γ_smooth.comp ?_
+    simp only [contMDiff_iff_contDiff]
+    fun_prop
+  have : riemannianEDist I y x ≤ pathELength I (γ ∘ η) (η 1) (η 0) := by
+    apply riemannianEDist_le_pathELength h_smooth.contMDiffOn <;> simp [η, γ0, γ1]
+  rw [← pathELength_comp_of_antitoneOn zero_le_one] at this; rotate_left
+  · exact monotone_id.neg.antitoneOn _
+  · exact differentiableOn_neg _
+  · exact h_smooth.contMDiffOn.mdifferentiableOn le_rfl
+  apply this.trans_lt
+  convert hγ
+  ext t
+  simp [η]
+
+lemma riemannianEDist_triangle :
+    riemannianEDist I x z ≤ riemannianEDist I x y + riemannianEDist I y z := by
+  apply le_of_forall_gt (fun r hr ↦ ?_)
+
+
+
+
+
+
+
 
 
 #exit
