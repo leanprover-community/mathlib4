@@ -309,4 +309,89 @@ theorem four_dvd_or_exists_odd_prime_and_dvd_of_two_lt {n : ℕ} (n2 : 2 < n) :
   · simp [Nat.pow_succ, mul_assoc]
   · exact Or.inr ⟨p, hp, hdvd, hodd⟩
 
+section computation
+
+def primeFactorsListFast (n : Nat) : List Nat :=
+  if n < 2 then []
+  else if 2 ∣ n then 2 :: primeFactorsListFast (n / 2)
+  else go n ⟨3, by decide⟩
+where
+  go (n : Nat) (d : { k : Nat // 1 < k }) : List Nat :=
+    if _ : n < 2 then [] else
+    have hd : 1 < minFacAux n d.1 := by
+      have : 1 < d.1 := d.2
+      generalize d.1 = k at this ⊢
+      fun_induction minFacAux n k
+      · omega
+      · assumption
+      · omega
+    have : n / minFacAux n d < n := div_lt_self (by omega) hd
+    minFacAux n d :: go (n / minFacAux n d) ⟨minFacAux n d, hd⟩
+
+@[csimp]
+theorem primeFactorsListFast_eq_primeFactorsList :
+    primeFactorsList = primeFactorsListFast := by
+  funext n
+  fun_induction primeFactorsListFast n with
+  | case1 n h => exact
+    match n with
+    | 0 => primeFactorsList_zero
+    | 1 => primeFactorsList_one
+  | case2 n hn h2 ih =>
+    match n with
+    | _ + 2 => rw [← ih, primeFactorsList_add_two, (minFac_eq_two_iff _).mpr h2]
+  | case3 n hn h2 =>
+    have hd : n = 1 ∨ (⟨3, by decide⟩ : { k : Nat // 1 < k }).1 ≤ n.minFac :=
+      le_minFac'.mpr fun p _ hpn => Nat.le_of_not_lt fun hp3 => match p with | 2 => h2 hpn
+    have ho : ∃ u, 2 * u + 1 = (⟨3, by decide⟩ : { k : Nat // 1 < k }).1 := ⟨1, rfl⟩
+    generalize (⟨3, by decide⟩ : { k : Nat // 1 < k }) = d at hd ho ⊢
+    clear hn
+    fun_induction primeFactorsListFast.go n d with
+    | case1 n d h => exact
+      match n with
+      | 0 => primeFactorsList_zero
+      | 1 => primeFactorsList_one
+    | case2 n d h hc1 hc2 ih =>
+      have he : minFacAux n d = minFac n := by
+        obtain ⟨u, hu⟩ := ho
+        clear hc1 hc2 ih
+        rw [← hu] at hd
+        cases u with | zero => omega | succ u =>
+        induction u generalizing d with
+        | zero => rw [← hu, minFac_eq, if_neg h2]
+        | succ u ih =>
+          specialize ih ⟨2 * u + 3, by omega⟩ (by omega) rfl
+          rw [minFacAux] at ih
+          rw [← ih] at hd ⊢
+          by_cases ha : n < (2 * u + 3) * (2 * u + 3)
+          · have hb : n < (2 * (u + 1 + 1) + 1) * (2 * (u + 1 + 1) + 1) :=
+              Nat.lt_trans ha (Nat.mul_lt_mul'' (by omega) (by omega))
+            rw [← hu, minFacAux, if_pos hb, if_pos ha]
+          rw [if_neg ha] at ih hd ⊢
+          have hnu : ¬2 * u + 3 ∣ n := by
+            intro hpu
+            rw [if_pos hpu] at hd
+            dsimp at hd
+            omega
+          rw [← hu, if_neg hnu, show 2 * (u + 1 + 1) + 1 = 2 * u + 3 + 2 from rfl]
+      have h2' : ¬2 ∣ n / minFacAux n d := by
+        rw [he, dvd_div_iff_mul_dvd (minFac_dvd n)]
+        intro h2'
+        apply h2
+        exact Nat.dvd_of_mul_dvd_mul_left (minFac_pos n) (Nat.dvd_mul_left_of_dvd h2' (minFac n))
+      have hc : n / n.minFacAux d = 1 ∨ n.minFacAux d ≤ (n / n.minFacAux d).minFac := by
+        rw [he, le_minFac']
+        intro p hp hpn
+        rw [dvd_div_iff_mul_dvd (minFac_dvd n)] at hpn
+        apply minFac_le_of_dvd hp
+        exact Nat.dvd_of_mul_dvd_mul_left (minFac_pos n) (Nat.dvd_mul_left_of_dvd hpn (minFac n))
+      have hlo : ∃ u, 2 * u + 1 = n.minFacAux d := by
+        refine ⟨_ / 2, Nat.two_mul_div_two_add_one_of_odd ?_⟩
+        rw [← Nat.not_even_iff_odd, even_iff_two_dvd, he]
+        exact mt (Nat.dvd_trans · (minFac_dvd n)) h2
+      match n with
+      | n + 2 => rw [Nat.primeFactorsList_add_two, ← he, ih h2' hc hlo]
+
+end computation
+
 end Nat
