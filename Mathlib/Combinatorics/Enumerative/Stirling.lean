@@ -58,7 +58,7 @@ def numStirling_fst : ℕ → ℕ → ℕ
   | n + 1, k + 1 => n * numStirling_fst n (k + 1) + numStirling_fst n k
 
 @[simp]
-theorem numStirling_fst_zero_right : numStirling_fst 0 0 = 1 := by simp [numStirling_fst]
+theorem numStirling_fst_zero: numStirling_fst 0 0 = 1 := by simp [numStirling_fst]
 
 @[simp]
 theorem numStirling_fst_zero_succ (k : ℕ) : numStirling_fst 0 (succ k) = 0 := by
@@ -68,7 +68,6 @@ theorem numStirling_fst_zero_succ (k : ℕ) : numStirling_fst 0 (succ k) = 0 := 
 theorem numStirling_fst_succ_zero (n : ℕ) : numStirling_fst (succ n) 0 = 0 := by
   simp [numStirling_fst]
 
-@[simp]
 theorem numStirling_fst_succ_left (n k : ℕ) (hk : 0 < k) :
     numStirling_fst (n + 1) k = n * numStirling_fst n k + numStirling_fst n (k - 1) := by
   obtain ⟨l, rfl⟩ : ∃ l, k = l + 1 := Nat.exists_eq_add_of_le' hk
@@ -94,7 +93,6 @@ theorem numStirling_fst_eq_zero_of_lt : ∀ {n k : ℕ}, n < k → numStirling_f
          numStirling_fst_eq_zero_of_lt hnk1]
     rfl
 
-@[simp]
 theorem numStirling_fst_self (n : ℕ) : numStirling_fst n n = 1 := by
   induction n <;> simp [*, numStirling_fst, numStirling_fst_eq_zero_of_lt (Nat.lt_succ_self _)]
 
@@ -114,7 +112,7 @@ theorem numStirling_fst_succ_self_left (n : ℕ) : numStirling_fst (n + 1) n = (
         exact h₁
       exact Nat.even_mul_succ_self n
 
-theorem numStirling_fst_one_right (n : ℕ) : numStirling_fst (succ n) 1 = n.factorial := by
+theorem numStirling_fst_one_right (n : ℕ) : numStirling_fst (n + 1) 1 = n.factorial := by
   induction' n with n hn
   · simp [numStirling_fst]
   · rw [numStirling_fst_succ_succ, zero_add, hn, numStirling_fst_succ_zero]
@@ -131,12 +129,16 @@ def numStirling_snd : ℕ → ℕ → ℕ
     (k + 1) * numStirling_snd n (k + 1) + numStirling_snd n k
 
 @[simp]
-theorem numStirling_snd_zero (n : ℕ) : numStirling_snd 0 0 = 1 := by
-  cases n <;> simp [numStirling_snd]
+theorem numStirling_snd_zero : numStirling_snd 0 0 = 1 :=
+  rfl
 
 @[simp]
-theorem numStirling_snd_zero_succ (k : ℕ) : numStirling_snd 0 (k + 1) = 0 := by
-  simp [numStirling_snd]
+theorem numStirling_snd_zero_succ (k : ℕ) : numStirling_snd 0 (succ k) = 0 :=
+  rfl
+
+@[simp]
+theorem numStirling_snd_zero_right' (n : ℕ) : numStirling_snd (succ n) 0 = 0 :=
+  rfl
 
 theorem numStirling_snd_succ_left (n k : ℕ) (hk : 0 < k) :
     numStirling_snd (n + 1) k = k * numStirling_snd n k + numStirling_snd n (k - 1) := by
@@ -166,15 +168,6 @@ theorem numStirling_snd_eq_zero_of_lt : ∀ {n k : ℕ}, n < k → numStirling_s
 
 theorem numStirling_snd_self (n : ℕ) : numStirling_snd n n = 1 := by
   induction n <;> simp [*, numStirling_snd, numStirling_snd_eq_zero_of_lt (lt_succ_self _)]
-
-theorem numStirling_snd_zero_right_n (n : ℕ) (hn : 0 < n): numStirling_snd n 0 = 0 := by
-  have h : 1 ≤ n := Nat.succ_le_of_lt hn
-  rw [show n = n - 1 + 1 by rw [Nat.sub_add_cancel h]]
-  simp [numStirling_snd]
-
-@[simp]
-theorem numStirling_snd_zero_right' (n : ℕ) : numStirling_snd (n+1) 0 = 0 := by rfl
-
 
 theorem numStirling_snd_one_right (n : ℕ) : numStirling_snd (n+1) 1 = 1 := by
   simp [numStirling_snd]
