@@ -375,18 +375,11 @@ lemma im_eq_zero_iff_isSelfAdjoint {x : K} : im x = 0 ↔ IsSelfAdjoint x :=
 
 lemma re_eq_ofReal_of_isSelfAdjoint {x : K} {y : ℝ} (hx : IsSelfAdjoint x) :
     re x = y ↔ x = y := by
-  constructor
-  · intro h
-    apply RCLike.ext <;> simp [h, hx, im_eq_zero_iff_isSelfAdjoint]
-  · intro h
-    rw [RCLike.ext_iff] at h
-    simp [h.1]
+  simp [RCLike.ext_iff (K := K), hx, im_eq_zero_iff_isSelfAdjoint]
 
 lemma ofReal_eq_re_of_isSelfAdjoint {x : K} {y : ℝ} (hx : IsSelfAdjoint x) :
     y = re x ↔ y = x := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
-  · exact (re_eq_ofReal_of_isSelfAdjoint hx).mp h.symm |>.symm
-  · exact (re_eq_ofReal_of_isSelfAdjoint hx).mpr h.symm |>.symm
+  simpa [eq_comm] using re_eq_ofReal_of_isSelfAdjoint hx
 
 variable (K)
 
