@@ -263,3 +263,74 @@ noncomputable instance {n : ℕ} [NeZero n] :
 end RealInstances
 
 end instances
+
+open IsManifold
+
+-- XXX: should h and f be part of the underlying data? well, I may want a SliceModel class to be
+-- inferred first, right? at least, otherwise they should be explicit...
+variable (M M' n) in
+/--
+`IsImmersedSubmanifold M N h f` means `M` is an immersed `C^n` submanifold of `N`, w.r.t. the map
+`f : M → N` and a `SliceModel` `h` from `I` to `I'`.
+We will endow `M` with a topology and manifold structure so `f` is a `C^k` immersion.
+TODO: may need to revise this to ensure no diamonds occur; revisit once a basic version of this
+compiles
+-/
+class IsImmersedSubmanifold [TopologicalSpace M] {f : M → M'} [h : SliceModel F I I'] where
+    hf : Continuous f
+    sliceChartAt : M' → PartialHomeomorph M' H'
+    sliceChartAt_mem_maximalAtlas : ∀ y, y ∈ range f → (sliceChartAt y) ∈ maximalAtlas I' n M'
+    hf' : ∀ y, y ∈ range f → InjOn f (f ⁻¹' (sliceChartAt y).source)
+    -- Is this too strong? At least it's not obviously nonsense (and it should be satisfied)
+    -- if this is coming from an immersion, right?
+    hfoo : ∀ y, y ∈ range f → (sliceChartAt y).target ⊆ range h.map
+    -- TODO: formalise enough so I can state this!
+    -- hcharts : ∀ x, pullback (sliceChartAt f x) ∈ maximalAtlas I n M
+
+variable {f : M → M'} [h : SliceModel F I I']
+
+-- If `f` is injective, we can simplify the construction slightly.
+def IsImmersedSubmanifold.mk_of_injective [TopologicalSpace M]
+  (sliceChartAt : M' → PartialHomeomorph M' H')
+  (sliceChartAt_mem_maximalAtlas : ∀ y, y ∈ range f → (sliceChartAt y) ∈ maximalAtlas I' n M')
+  (hfoo : ∀ y, y ∈ range f → (sliceChartAt y).target ⊆ range h.map)
+  (hf : Continuous f) (hf' : Injective f) : IsImmersedSubmanifold M M' (h := h) (f := f) n where
+  sliceChartAt := sliceChartAt
+  sliceChartAt_mem_maximalAtlas := sliceChartAt_mem_maximalAtlas
+  hf := hf
+  hf' _y _hy := hf'.injOn
+  hfoo := hfoo
+
+#exit
+
+-- TODO: prove that:
+-- IsImmersedSubmanifold M N n h f implies IsImmersion f n I I'
+-- IsImmersion f n I I' implies IsImmersedSubmanifold (f '' M) N n h f
+
+namespace PartialHomeomorph
+
+variable [TopologicalSpace M] [IsManifold I' n M']
+
+variable [Nonempty H] {φ : PartialHomeomorph M' H'} {f : M → M'}
+
+def _root_.PartialEquiv.pullback_sliceModel (φ : PartialEquiv M' H') (f : M → M')
+    (h : SliceModel F I I') : PartialEquiv M H where
+  toFun := sorry
+  invFun := sorry
+  source := sorry
+  target := sorry
+  map_source' := sorry
+  map_target' := sorry
+  left_inv' := sorry
+  right_inv' := sorry
+
+variable (φ f) in
+def pullback_sliceModel (h : SliceModel F I I') : PartialHomeomorph M H where
+  toPartialEquiv := φ.toPartialEquiv.pullback_sliceModel f h
+  open_source := sorry
+  open_target := sorry
+  continuousOn_toFun := sorry
+  continuousOn_invFun := sorry
+
+
+end PartialHomeomorph
