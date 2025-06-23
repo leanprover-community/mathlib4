@@ -11,6 +11,7 @@ import Mathlib.Analysis.NormedSpace.Normalized
 # The Triangle Inequality (for angles between unit length vectors)
 
 This file contains proof that angles between unit length vectors obey the triangle inequality.
+(Adapted from: S. W. Drury (2001), Class Notes for 189-354A (pages 12-13). https://www.math.mcgill.ca/drury/notes354.pdf, accessed 23/06/2025)
 -/
 
 namespace UnitVectorAngles

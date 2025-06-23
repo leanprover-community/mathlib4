@@ -6,15 +6,19 @@ Authors: Ilmārs Cīrulis, Alex Meiburg
 import Mathlib.Analysis.RCLike.Basic
 
 /-!
-Placeholder for the module doc-string
+# Normalized vector
+
+Function that calculates unit length vector from a vector
+(if the given vector is nonzero vector) or returns zero vector
+(if the given vector is zero vector).
 -/
 
 variable {V: Type*}
 variable [NormedAddCommGroup V]
 variable [NormedSpace ℝ V]
 
--- ?? how to describe this?
-/-- The unit length vector from a given vector. Note that `normalized 0 = 0`. -/
+/-- The normalized vector from a given vector. `normalized 0 = 0`, otherwise it is
+the corresponding unit length vector. -/
 noncomputable def normalized (x : V) : V := ‖x‖⁻¹ • x
 
 @[simp]
@@ -48,3 +52,13 @@ theorem normalized_smul_of_pos {r : ℝ} (hr : 0 < r) (x : V) :
   rw [normalized, normalized, smul_smul, norm_smul]
   congr
   field_simp [abs_of_pos hr]
+
+theorem normalized_neg (x : V) : normalized (- x) = - normalized x := by
+  by_cases hx : x = 0
+  · simp [hx]
+  simp [normalized]
+
+theorem normalized_smul_of_neg {r : ℝ} (hr : r < 0) (x : V) :
+    normalized (r • x) = - normalized x := by
+  rw [← normalized_neg, ← normalized_smul_of_pos (r := - r) (by linarith) (- x)]
+  field_simp
