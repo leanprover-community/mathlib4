@@ -97,8 +97,9 @@ instance : CategoryStruct (a ⟶ b) where
   comp {a b c} x y :=
     { τl := x.τl ≫ y.τl
       τr := y.τr ≫ x.τr
-      conjugateEquiv_τl := by simp [← conjugateEquiv_comp c.adj b.adj a.adj y.τl x.τl,
-        Hom₂.conjugateEquiv_τl] }
+      conjugateEquiv_τl := by
+        simp [← conjugateEquiv_comp c.adj b.adj a.adj y.τl x.τl,
+          Hom₂.conjugateEquiv_τl] }
 
 attribute [reassoc] comp_τl comp_τr
 
