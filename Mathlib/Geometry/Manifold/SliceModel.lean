@@ -3,7 +3,6 @@ Copyright (c) 2025 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
--- FIXME: should the instances for Euclidean spaces move into this file instead?
 import Mathlib.Geometry.Manifold.Instances.Real
 /-!
 # Embedded submanifolds
@@ -186,6 +185,31 @@ def SliceModel.modelWithCornersSelf (h : (E × F) ≃L[𝕜] E') : SliceModel F 
     exact isEmbedding_prodMkRight (0 : F)
   compatible := by simp
 
+-- TODO: make an instance/ figure out why Lean complains about synthesisation order!
+/-- If `I` is a slice model w.r.t. `I'` and `I'` is a slice model w.r.t. `I''`,
+then `I` is a slice model w.r.t. `I''`. -/
+def instTrans (h : SliceModel F I I') (h' : SliceModel F' I' I'') : SliceModel (F × F') I I'' where
+  equiv := (ContinuousLinearEquiv.prodAssoc 𝕜 E F F').symm.trans
+    ((h.equiv.prodCongr (ContinuousLinearEquiv.refl 𝕜 F')).trans h'.equiv)
+  map := h'.map ∘ h.map
+  hmap := h'.hmap.comp h.hmap
+  compatible := by -- paste the commutative diagrams for `h` and `h'` together
+    ext x
+    simp only [comp_apply, ContinuousLinearEquiv.trans_apply, ContinuousLinearEquiv.prodCongr_apply,
+      ContinuousLinearEquiv.refl_apply, ContinuousLinearEquiv.prodAssoc_symm_apply]
+    -- can this be condensed? feels unnecessarily painful
+    -- (grind errors with `unknown constant h.compatible`)
+    calc
+      _ = (I'' ∘ SliceModel.map F' I' I'') (SliceModel.map F I I' x) := by
+        simp [Function.comp_apply]
+      _ = (SliceModel.equiv I' I'' ∘ (fun x ↦ (x, (0 : F'))) ∘ ↑I') (SliceModel.map F I I' x) := by
+        rw [h'.compatible]
+      _ = (SliceModel.equiv I' I'' ∘ (fun x ↦ (x, (0 : F')))) ((I' ∘ SliceModel.map F I I') x) := by
+        simp [Function.comp_apply]
+      _ = _ := by
+        rw [h.compatible]
+        congr
+
 /-- *Any* model with corners on `E` which is an embedding is a slice model with the trivial model
 on `E`. (The embedding condition excludes strange cases of submanifolds with boundary.)
 For boundaryless models, that is always true. -/
@@ -200,6 +224,9 @@ def SliceModel.ofEmbedding {I : ModelWithCorners 𝕜 E H} (hI : IsEmbedding I) 
 
 -- TODO: think about the boundary case, and which particular version of submanifolds
 -- this definition enforces...
+
+-- FIXME: should these instances move to `Manifold/Instances/Real.lean` instead?
+section RealInstances
 
 open scoped Manifold
 
@@ -240,29 +267,6 @@ noncomputable instance {n : ℕ} [NeZero n] :
     simp only [comp_apply, ContinuousLinearEquiv.prodUnique_apply]
     rfl
 
--- TODO: make an instance/ figure out why Lean complains about synthesisation order!
-/-- If `I` is a slice model w.r.t. `I'` and `I'` is a slice model w.r.t. `I''`,
-then `I` is a slice model w.r.t. `I''`. -/
-def instTrans (h : SliceModel F I I') (h' : SliceModel F' I' I'') : SliceModel (F × F') I I'' where
-  equiv := (ContinuousLinearEquiv.prodAssoc 𝕜 E F F').symm.trans
-    ((h.equiv.prodCongr (ContinuousLinearEquiv.refl 𝕜 F')).trans h'.equiv)
-  map := h'.map ∘ h.map
-  hmap := h'.hmap.comp h.hmap
-  compatible := by -- paste the commutative diagrams for `h` and `h'` together
-    ext x
-    simp only [comp_apply, ContinuousLinearEquiv.trans_apply, ContinuousLinearEquiv.prodCongr_apply,
-      ContinuousLinearEquiv.refl_apply, ContinuousLinearEquiv.prodAssoc_symm_apply]
-    -- can this be condensed? feels unnecessarily painful
-    -- (grind errors with `unknown constant h.compatible`)
-    calc
-      _ = (I'' ∘ SliceModel.map F' I' I'') (SliceModel.map F I I' x) := by
-        simp [Function.comp_apply]
-      _ = (SliceModel.equiv I' I'' ∘ (fun x ↦ (x, (0 : F'))) ∘ ↑I') (SliceModel.map F I I' x) := by
-        rw [h'.compatible]
-      _ = (SliceModel.equiv I' I'' ∘ (fun x ↦ (x, (0 : F')))) ((I' ∘ SliceModel.map F I I') x) := by
-        simp [Function.comp_apply]
-      _ = _ := by
-        rw [h.compatible]
-        congr
+end RealInstances
 
 end instances
