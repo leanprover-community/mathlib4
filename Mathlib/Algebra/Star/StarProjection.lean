@@ -74,10 +74,6 @@ lemma mul_one_sub_self [Star R]
 lemma one_sub_mul_self [Star R]
     (hp : IsStarProjection p) : (1 - p) * p = 0 := hp.isIdempotentElem.one_sub_mul_self
 
-lemma commute_one_sub [Star R]
-    (hp : IsStarProjection p) : Commute p (1 - p) := by
-  rw [Commute, SemiconjBy, hp.one_sub_mul_self, hp.mul_one_sub_self]
-
 lemma _root_.isStarProjection_iff_isSelfAdjoint_and_mul_one_sub_self [Star R] :
     IsStarProjection p ↔ IsSelfAdjoint p ∧ p * (1 - p) = 0 := by
   rw [mul_sub, mul_one, sub_eq_zero]
