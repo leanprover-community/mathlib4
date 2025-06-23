@@ -94,7 +94,7 @@ end NonAssocRing
 theorem add [NonUnitalNonAssocSemiring R] [StarRing R]
     (hp : IsStarProjection p) (hq : IsStarProjection q) (hpq : p * q = 0) :
     IsStarProjection (p + q) where
-  isSelfAdjoint := by simp [IsSelfAdjoint, hp.isSelfAdjoint.star_eq, hq.isSelfAdjoint.star_eq]
+  isSelfAdjoint := hp.isSelfAdjoint.add hq.isSelfAdjoint
   isIdempotentElem := by
     simp [IsIdempotentElem]
     have : q * p = 0 := by
