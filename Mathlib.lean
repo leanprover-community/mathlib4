@@ -4693,6 +4693,8 @@ import Mathlib.Order.BooleanAlgebra
 import Mathlib.Order.BooleanAlgebra.Basic
 import Mathlib.Order.BooleanAlgebra.Defs
 import Mathlib.Order.BooleanGenerators
+import Mathlib.Order.BooleanSigmaAlgebra.Basic
+import Mathlib.Order.BooleanSigmaAlgebra.Defs
 import Mathlib.Order.BooleanSubalgebra
 import Mathlib.Order.Booleanisation
 import Mathlib.Order.Bounded
