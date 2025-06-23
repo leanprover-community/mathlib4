@@ -540,3 +540,34 @@ variable (R S A)
     trdeg R S + trdeg S A = trdeg R A := by
   rw [← (trdeg R S).lift_id, ← (trdeg S A).lift_id, ← (trdeg R A).lift_id]
   exact lift_trdeg_add_eq R S A
+
+variable {R S} in
+/-- If `t ∪ {j}` is a transcendence basis and `j` is algebraic over `t ∪ {i}`, then `t ∪ {i}` is
+also a transcendence basis. -/
+lemma IsTranscendenceBasis.of_isAlgebraic_adjoin_image_compl
+    [FaithfulSMul R S] [NoZeroDivisors S] (i j : ι) (v : ι → S)
+    (H₁ : IsTranscendenceBasis R fun x : {x // x ≠ i} ↦ v x)
+    (H₂ : IsAlgebraic (Algebra.adjoin R (v '' {j}ᶜ)) (v j)) :
+    IsTranscendenceBasis R fun x : {x // x ≠ j} ↦ v x := by
+  obtain rfl | ne := eq_or_ne i j
+  · exact H₁
+  cases subsingleton_or_nontrivial S
+  · have := (FaithfulSMul.algebraMap_injective R S).subsingleton
+    exact (isTranscendenceBasis_iff_of_subsingleton _).mpr ⟨i, ne⟩
+  have := Module.nontrivial R S
+  have := (isDomain_iff_noZeroDivisors_and_nontrivial S).mpr ⟨‹_›, ‹_›⟩
+  classical
+  refine (AlgebraicIndependent.isTranscendenceBasis_iff_isAlgebraic ?_).mpr ?_
+  · have : AlgebraicIndepOn R v (insert j {i, j}ᶜ) := .mono H₁.1 fun _ _ _ ↦ by aesop
+    refine ((this.mono <| subset_insert ..).insert (i := i) fun h ↦ ((AlgebraicIndepOn.insert_iff
+      (by simp)).mp this).2 ?_).mono fun k ↦ by by_cases k = i <;> aesop
+    rw [← mem_algebraicClosure, ← SetLike.mem_coe, ← matroid_closure_eq] at H₂ h ⊢
+    refine Matroid.closure_subset_closure_of_subset_closure ?_ H₂
+    rintro _ ⟨k, hj, rfl⟩
+    obtain rfl | hi := eq_or_ne k i
+    exacts [h, Matroid.mem_closure_of_mem _ ⟨k, (·.elim hi hj), rfl⟩]
+  · refine H₁.isAlgebraic_iff.mpr fun j' ↦ ?_
+    obtain rfl | H := eq_or_ne j'.1 j
+    · rwa [Set.image_eq_range] at H₂
+    refine isAlgebraic_algebraMap (R := adjoin R _) ⟨_, subset_adjoin ?_⟩
+    exact ⟨⟨_, H⟩, rfl⟩
