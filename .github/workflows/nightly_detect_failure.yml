@@ -259,7 +259,6 @@ jobs:
         SHA: ${{ env.SHA }}
         GH_TOKEN: ${{ secrets.NIGHTLY_TESTING }}
         ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
-        MATHLIB_REPO: leanprover-community/mathlib4
       run: |
         echo "Current version: ${NIGHTLY}"
         echo "Target bump branch: ${BUMP_BRANCH}"
