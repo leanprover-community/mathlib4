@@ -224,7 +224,7 @@ variable [Fintype n] [DecidableEq n] (b : OrthonormalBasis n ℝ E)
 
 lemma inner_toMatrix_eq_one : (ContinuousBilinForm.inner E).toMatrix b.toBasis = 1 := by
   ext i j
-  simp [Matrix.one_apply, b.inner_eq]
+  simp [Matrix.one_apply, b.inner_eq_ite]
 
 end InnerProductSpace
 
