@@ -13,11 +13,6 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
-# Set MATHLIB_REPO to current repository if not provided
-if [ -z "${MATHLIB_REPO:-}" ]; then
-  MATHLIB_REPO="leanprover-community/mathlib4"
-fi
-
 # Set NIGHTLY_TESTING_REPO for comparison URLs (where the branches and tags actually live)
 if [ -z "${NIGHTLY_TESTING_REPO:-}" ]; then
   NIGHTLY_TESTING_REPO="leanprover-community/mathlib4-nightly-testing"
