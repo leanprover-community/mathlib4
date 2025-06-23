@@ -27,6 +27,12 @@ variable (R : Type*)
          (i : ℕ)
          {X Y : Scheme.{u}}
 
+/--
+Algebraic cycle on a scheme X.
+
+Note I am not certain that this should be an abbrev. I'm also not sure if these definitions
+should instead directly be about Function.locallyFinsuppWithin
+-/
 abbrev AlgebraicCycle (X : Scheme.{u}) := Function.locallyFinsuppWithin (⊤ : Set X) ℤ
 
 namespace AlgebraicCycle
@@ -109,7 +115,7 @@ def preimageSupport : Set X :=
 Implementation detail for the pushforward; the support of a cycle on X intersected with the preimage
 of a point z : Y along a quasicompact morphism f : X ⟶ Y is finite.
 -/
-def preimageSupportFinite [qf : QuasiCompact f] :
+lemma preimageSupport_finite [qf : QuasiCompact f] :
  (preimageSupport f c z).Finite :=
  supportLocallyFiniteWithin_top_inter_compact_finite c.supportLocallyFiniteWithinDomain' <|
   QuasiCompact.isCompact_preimage_singleton f z
@@ -153,9 +159,9 @@ I feel the proof here is a bit too long, but I'm a little unsure of how I should
 -/
 lemma map_locally_finite {Y : Scheme}
   (f : X ⟶ Y) [qc : QuasiCompact f] (c : AlgebraicCycle X) :
-  ∀ z ∈ (⊤ : Set Y), ∃ t ∈ 𝓝 z, (t ∩ Function.support fun z ↦
-  ∑ x ∈ (preimageSupportFinite f c z).toFinset, (c x) * mapAux f x).Finite := by
-  intro y hy
+  ∀ z : Y, ∃ t ∈ 𝓝 z, (t ∩ Function.support fun z ↦
+  ∑ x ∈ (preimageSupport_finite f c z).toFinset, (c x) * mapAux f x).Finite := by
+  intro y
   obtain ⟨W, hW⟩ := exists_isAffineOpen_mem_and_subset (x := y) (U := ⊤) (by aesop)
   have cpct : IsCompact (f.base ⁻¹' W) := qc.1 W.carrier W.is_open' <|
      AlgebraicGeometry.IsAffineOpen.isCompact hW.1
@@ -225,9 +231,9 @@ properness to prove that the pushforward preserves rational equivalence.
 noncomputable
 def map {Y : Scheme.{u}} (f : X ⟶ Y) [qc : QuasiCompact f] (c : AlgebraicCycle X) : AlgebraicCycle Y
     where
-  toFun z := (∑ x ∈ (preimageSupportFinite f c z).toFinset, (c x) * mapAux f x)
+  toFun z := (∑ x ∈ (preimageSupport_finite f c z).toFinset, (c x) * mapAux f x)
   supportWithinDomain' := by simp
-  supportLocallyFiniteWithinDomain' := fun z a ↦ map_locally_finite f c z a
+  supportLocallyFiniteWithinDomain' := fun z a ↦ map_locally_finite f c z
 
 /--
 Pushforward preserves cycles of pure dimension `d`.
@@ -255,9 +261,9 @@ The pushforward of `c` along the identity morphism is `c`.
 lemma map_id (c : AlgebraicCycle X) :
     map (𝟙 X) c = c := by
    ext z
-   have : (c z ≠ 0 ∧ (preimageSupportFinite (𝟙 X) c z).toFinset = {z}) ∨
-          (c z = 0 ∧ (preimageSupportFinite (𝟙 X) c z).toFinset = ∅) := by
-    simp[preimageSupportFinite, preimageSupport, Finite.toFinset]
+   have : (c z ≠ 0 ∧ (preimageSupport_finite (𝟙 X) c z).toFinset = {z}) ∨
+          (c z = 0 ∧ (preimageSupport_finite (𝟙 X) c z).toFinset = ∅) := by
+    simp[preimageSupport_finite, preimageSupport, Finite.toFinset]
     refine Or.elim (em (c z = 0)) (fun o ↦ Or.inr o) (fun o ↦ Or.inl ⟨o, Finset.ext (fun a ↦ ?_)⟩)
     simp only [mem_toFinset, mem_inter_iff, mem_singleton_iff, Function.mem_support, ne_eq,
       Finset.mem_singleton, and_iff_left_iff_imp]
