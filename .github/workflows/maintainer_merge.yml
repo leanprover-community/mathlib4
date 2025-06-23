@@ -34,14 +34,6 @@ jobs:
       - name: Find maintainer merge/delegate
         id: merge_or_delegate
         run: |
-          # don't try to run if we don't have access to necessary secrets
-          if [[ -z '${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }}' ]]
-          then
-            printf 'No access to secrets, aborting.'
-            printf 'mOrD=' > "${GITHUB_OUTPUT}"
-            exit 0
-          fi
-
           echo "PR author: ${PR_AUTHOR}"
           COMMENT="${COMMENT_EVENT}${COMMENT_REVIEW}"
 
@@ -60,7 +52,49 @@ jobs:
 
           printf $'mOrD=%s\n' "${m_or_d}" > "${GITHUB_OUTPUT}"
 
-      - if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
+          # write an artifact with all data needed below if we don't have access to necessary secrets
+          if [[ -z '${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }}' ]]
+          then
+            printf 'No access to secrets, writing to file.'
+            jq -n \
+              --arg author "${AUTHOR}" \
+              --arg pr_author "${PR_AUTHOR}" \
+              --arg pr_number "${PR_NUMBER}" \
+              --arg comment "${COMMENT}" \
+              --arg pr_title "${PR_TITLE_ISSUE}${PR_TITLE_PR}" \
+              --arg pr_url "${PR_URL}" \
+              --arg event_name "${EVENT_NAME}" \
+              --arg m_or_d "${m_or_d}" \
+              '{
+                author: $author,
+                pr_author: $pr_author,
+                pr_number: $pr_number,
+                comment: $comment,
+                pr_title: $pr_title,
+                pr_url: $pr_url,
+                event_name: $event_name,
+                m_or_d: $m_or_d,
+              }' > artifact-data.json
+            echo "Generated JSON artifact:"
+            cat artifact-data.json
+
+            printf 'secrets=' >> "${GITHUB_OUTPUT}"
+            exit 0
+          else
+            printf 'secrets=true\n' >> "${GITHUB_OUTPUT}"
+          fi
+
+      # upload artifact if we have no access to secrets
+      - if: ${{ steps.merge_or_delegate.outputs.secrets == '' && ! steps.merge_or_delegate.outputs.mOrD == '' }}
+        name: Upload artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: workflow-data
+          path: artifact-data.json
+          retention-days: 5
+
+      # Run the following steps only if we have access to secrets / write perms on GITHUB_TOKEN
+      - if: ${{ ! steps.merge_or_delegate.outputs.secrets == '' && ! steps.merge_or_delegate.outputs.mOrD == '' }}
         name: Check whether user is part of mathlib-reviewers team
         uses: tspascoal/get-user-teams-membership@57e9f42acd78f4d0f496b3be4368fc5f62696662 # v3.0.0
         id: actorTeams
