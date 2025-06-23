@@ -9,7 +9,7 @@ import Mathlib.Topology.VectorBundle.Hom
 
 /-! # Riemannian vector bundles
 
-Given a vector bundle over a manifold whose fibers are all endowed with a scalar product, we
+Given a vector bundle over a vector space whose fibers are all endowed with a scalar product, we
 say that this bundle is Riemannian if the scalar product depends continuously on the base point.
 
 We introduce a typeclass `[IsContinuousRiemannianBundle F E]` registering this property.
@@ -30,7 +30,7 @@ The general theory should be built assuming `[IsContinuousRiemannianBundle F E]`
 `[RiemannianBundle E]` mechanism is only to build data in specific situations.
 -/
 
-open Bundle ContinuousLinearMap ENat
+open Bundle ContinuousLinearMap
 open scoped Topology
 
 variable
@@ -44,7 +44,7 @@ local notation "⟪" x ", " y "⟫" => inner ℝ x y
 
 variable (F E) in
 /-- Consider a real vector bundle in which each fiber is endowed with a scalar product.
-We say that the bundle is Riemannian if the scalar product depends continuously on the base point.
+We say that the bundle is *Riemannian* if the scalar product depends continuously on the base point.
 This assumption is spelled `IsContinuousRiemannianBundle F E` where `F` is the model fiber,
 and `E : B → Type*` is the bundle. -/
 class IsContinuousRiemannianBundle : Prop where
@@ -89,11 +89,8 @@ lemma ContinuousWithinAt.inner_bundle
     exact hv.1
   simp only [hg]
   have : ContinuousWithinAt
-      (fun m ↦ TotalSpace.mk' ℝ (E := Bundle.Trivial B ℝ) (b m) (g (b m) (v m) (w m))) s x := by
-    apply ContinuousWithinAt.clm_bundle_apply₂ (F₁ := F) (F₂ := F)
-    · exact ContinuousAt.comp_continuousWithinAt g_cont.continuousAt hf
-    · exact hv
-    · exact hw
+      (fun m ↦ TotalSpace.mk' ℝ (E := Bundle.Trivial B ℝ) (b m) (g (b m) (v m) (w m))) s x :=
+    (g_cont.continuousAt.comp_continuousWithinAt hf).clm_bundle_apply₂ (F₁ := F) (F₂ := F) hv hw
   simp only [FiberBundle.continuousWithinAt_totalSpace] at this
   exact this.2
 
