@@ -485,9 +485,10 @@ lemma lintegral_exp_mul_sq_norm_le [IsProbabilityMeasure μ]
     rw [← setLIntegral_univ]
     refine setLIntegral_congr ?_
     rw [← ae_iff_prob_eq_one ?_] at ha
-    · filter_upwards [ha] with x hx
-      suffices x ∈ Set.univ ↔ x ∈ closedBall 0 a by simpa [Set.mem_def] using this
-      simp [hx]
+    · rw [eventuallyEq_comm, ae_eq_univ]
+      change μ {x | ¬ x ∈ closedBall 0 a} = 0
+      rw [← ae_iff]
+      filter_upwards [ha] with x hx using by simp [hx]
     · refine measurable_to_prop ?_
       rw [show (fun x : E ↦ ‖x‖ ≤ a) ⁻¹' {True} = {x : E | ‖x‖ ≤ a} by ext; simp]
       exact measurableSet_le (by fun_prop) (by fun_prop)
