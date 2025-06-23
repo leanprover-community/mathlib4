@@ -90,21 +90,24 @@ Panics if `ex` or `en` aren't natural number literals.
 def proveNatClog (eb en : Q(ℕ)) : (ek : Q(ℕ)) × Q(Nat.clog $eb $en = $ek) :=
   let b := eb.natLit!
   let n := en.natLit!
-  if b ≤ 1 then
+  if hb : b ≤ 1 then
     have h : Q(Nat.ble $eb 1 = true) := reflBoolTrue
     ⟨mkRawNatLit 0, q(nat_clog_zero_left $eb $en $h)⟩
-  else if n ≤ 1 then
+  else if hn : n ≤ 1 then
     have h : Q(Nat.ble $en 1 = true) := reflBoolTrue
     ⟨mkRawNatLit 0, q(nat_clog_zero_right $eb $en $h)⟩
   else
-    let k := Nat.clog b n
-    have ek : Q(ℕ) := mkRawNatLit k
-    have ek1 : Q(ℕ) := mkRawNatLit (k - 1)
-    have _ : $ek =Q $ek1 + 1 := ⟨⟩
-    have hb : Q(Nat.blt 1 $eb = true) := reflBoolTrue
-    have hl : Q(Nat.blt ($eb ^ $ek1) $en = true) := reflBoolTrue
-    have hh : Q(Nat.ble $en ($eb ^ ($ek1 + 1)) = true) := reflBoolTrue
-    ⟨ek, q(nat_clog_helper $hb $hl $hh)⟩
+    match h : Nat.clog b n with
+    | 0 => False.elim <|
+      Nat.ne_of_gt (Nat.clog_pos (by omega) (by omega)) h
+    | k + 1 =>
+      have ek : Q(ℕ) := mkRawNatLit k
+      have ek1 : Q(ℕ) := mkRawNatLit (k + 1)
+      have _ : $ek1 =Q $ek + 1 := ⟨⟩
+      have hb : Q(Nat.blt 1 $eb = true) := reflBoolTrue
+      have hl : Q(Nat.blt ($eb ^ $ek) $en = true) := reflBoolTrue
+      have hh : Q(Nat.ble $en ($eb ^ ($ek + 1)) = true) := reflBoolTrue
+      ⟨ek1, q(nat_clog_helper $hb $hl $hh)⟩
 
 /--
 Evaluates the `Nat.clog` function.
