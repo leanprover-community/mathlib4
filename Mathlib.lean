@@ -1243,7 +1243,8 @@ import Mathlib.AlgebraicTopology.ModelCategory.Bifibrant
 import Mathlib.AlgebraicTopology.ModelCategory.BrownLemma
 import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
 import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
-import Mathlib.AlgebraicTopology.ModelCategory.FundamentalLemma
+import Mathlib.AlgebraicTopology.ModelCategory.FundamentalLemma1
+import Mathlib.AlgebraicTopology.ModelCategory.FundamentalLemma2
 import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
 import Mathlib.AlgebraicTopology.ModelCategory.Instances
 import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
