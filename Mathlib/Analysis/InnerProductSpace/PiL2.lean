@@ -109,7 +109,7 @@ open Lean Meta Elab Term Macro TSyntax PrettyPrinter.Delaborator SubExpr
 open Mathlib.Tactic (subscriptTerm)
 
 /-- Notation for vectors in Lp space. `!₂[x, y, ...]` is a shorthand for
-`(WithLp.equiv 2 _ _).symm ![x, y, ...]`, of type `EuclideanSpace _ (Fin _)`.
+`(WithLp.equiv 2 _).symm ![x, y, ...]`, of type `EuclideanSpace _ (Fin _)`.
 
 This also works for other subscripts. -/
 syntax (name := PiLp.vecNotation) "!" noWs subscriptTerm noWs "[" term,* "]" : term
@@ -264,6 +264,10 @@ theorem EuclideanSpace.single_apply (i : ι) (a : 𝕜) (j : ι) :
     (EuclideanSpace.single i a) j = ite (j = i) a 0 := by
   rw [EuclideanSpace.single, WithLp.equiv_symm_pi_apply, ← Pi.single_apply i a j]
 
+@[simp]
+theorem EuclideanSpace.single_eq_zero_iff {i : ι} {a : 𝕜} :
+    EuclideanSpace.single i a = 0 ↔ a = 0 := Pi.single_eq_zero_iff
+
 variable [Fintype ι]
 
 theorem EuclideanSpace.inner_single_left (i : ι) (a : 𝕜) (v : EuclideanSpace 𝕜 ι) :
@@ -313,6 +317,27 @@ theorem EuclideanSpace.piLpCongrLeft_single
 
 end DecEq
 
+section finAddEquivProd
+
+/-- The canonical linear homeomorphism between `EuclideanSpace 𝕜 (ι ⊕ κ)` and
+`EuclideanSpace 𝕜 ι × EuclideanSpace 𝕜 κ`.
+
+See `PiLp.sumPiLpEquivProdLpPiLp` for the isometry version,
+where the RHS is equipped with the euclidean norm rather than the supremum norm. -/
+abbrev EuclideanSpace.sumEquivProd {𝕜 : Type*} [RCLike 𝕜] {ι κ : Type*} [Fintype ι] [Fintype κ] :
+    EuclideanSpace 𝕜 (ι ⊕ κ) ≃L[𝕜] EuclideanSpace 𝕜 ι × EuclideanSpace 𝕜 κ :=
+  (PiLp.sumPiLpEquivProdLpPiLp 2 _).toContinuousLinearEquiv.trans <|
+    WithLp.prodContinuousLinearEquiv _ _ _ _
+
+/-- The canonical linear homeomorphism between `EuclideanSpace 𝕜 (Fin (n + m))` and
+`EuclideanSpace 𝕜 (Fin n) × EuclideanSpace 𝕜 (Fin m)`. -/
+abbrev EuclideanSpace.finAddEquivProd {𝕜 : Type*} [RCLike 𝕜] {n m : ℕ} :
+    EuclideanSpace 𝕜 (Fin (n + m)) ≃L[𝕜] EuclideanSpace 𝕜 (Fin n) × EuclideanSpace 𝕜 (Fin m) :=
+  (LinearIsometryEquiv.piLpCongrLeft 2 𝕜 𝕜 finSumFinEquiv.symm).toContinuousLinearEquiv.trans
+    sumEquivProd
+
+end finAddEquivProd
+
 variable (ι 𝕜 E)
 variable [Fintype ι]
 
@@ -346,7 +371,7 @@ instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
         replace h := congr_fun h i
         simp only [LinearEquiv.comp_coe, map_smul, LinearEquiv.coe_coe,
           LinearEquiv.trans_apply, WithLp.linearEquiv_symm_apply, WithLp.equiv_symm_single,
-          LinearIsometryEquiv.coe_toLinearEquiv] at h ⊢
+          LinearIsometryEquiv.coe_symm_toLinearEquiv] at h ⊢
         rw [h]
 
 @[simp]
@@ -746,8 +771,7 @@ theorem OrthonormalBasis.toMatrix_orthonormalBasis_conjTranspose_mul_self [Finty
   · simp only [Matrix.mul_apply, Matrix.conjTranspose_apply, star_def, PiLp.inner_apply,
       inner_apply']
     congr
-  · rw [orthonormal_iff_ite.mp b.orthonormal i j]
-    rfl
+  · rw [orthonormal_iff_ite.mp b.orthonormal i j, Matrix.one_apply]
 
 /-- A version of `OrthonormalBasis.toMatrix_orthonormalBasis_mem_unitary` that works for bases with
 different index types. -/
@@ -960,7 +984,6 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
         _ = finrank 𝕜 V - finrank 𝕜 S := by
           simp only [LS, LinearMap.finrank_range_of_inj L.injective]
         _ = finrank 𝕜 Sᗮ := by simp only [← S.finrank_add_finrank_orthogonal, add_tsub_cancel_left]
-
     exact
       (stdOrthonormalBasis 𝕜 Sᗮ).repr.trans
         ((stdOrthonormalBasis 𝕜 LSᗮ).reindex <| finCongr dim_LS_perp).repr.symm
@@ -1031,12 +1054,12 @@ def toEuclideanLin : Matrix m n 𝕜 ≃ₗ[𝕜] EuclideanSpace 𝕜 n →ₗ[�
 @[simp]
 theorem toEuclideanLin_piLp_equiv_symm (A : Matrix m n 𝕜) (x : n → 𝕜) :
     Matrix.toEuclideanLin A ((WithLp.equiv _ _).symm x) =
-      (WithLp.equiv _ _).symm (Matrix.toLin' A x) :=
+      (WithLp.equiv _ _).symm (A *ᵥ x) :=
   rfl
 
 @[simp]
 theorem piLp_equiv_toEuclideanLin (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
-    WithLp.equiv _ _ (Matrix.toEuclideanLin A x) = Matrix.toLin' A (WithLp.equiv _ _ x) :=
+    WithLp.equiv _ _ (Matrix.toEuclideanLin A x) = A *ᵥ (WithLp.equiv _ _ x) :=
   rfl
 
 theorem toEuclideanLin_apply (M : Matrix m n 𝕜) (v : EuclideanSpace 𝕜 n) :

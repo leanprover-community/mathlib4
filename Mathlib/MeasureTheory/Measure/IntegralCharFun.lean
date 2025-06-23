@@ -3,7 +3,7 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.MeasureTheory.Function.SpecialFunctions.Sinc
 import Mathlib.MeasureTheory.Measure.CharacteristicFunction
 
@@ -42,7 +42,7 @@ lemma integral_charFun_Icc [IsFiniteMeasure μ] (hr : 0 < r) :
   have h_int : Integrable (Function.uncurry fun (x y : ℝ) ↦ cexp (x * y * I))
       ((volume.restrict (Set.uIoc (-r) r)).prod μ) := by
     simp only [neg_le_self_iff, hr.le, Set.uIoc_of_le]
-    -- integrable since the functin has norm 1 everywhere and the measure is finite
+    -- integrable since the function has norm 1 everywhere and the measure is finite
     rw [← integrable_norm_iff (by fun_prop)]
     suffices (fun a => ‖Function.uncurry (fun (x y : ℝ) ↦ cexp (x * y * I)) a‖) = fun _ ↦ 1 by
       rw [this]

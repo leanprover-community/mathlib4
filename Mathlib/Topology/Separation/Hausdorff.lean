@@ -21,8 +21,9 @@ separation axioms, and the related T₂.₅ condition.
   there is two open sets, one containing `x`, and the other `y`, whose closures are disjoint.
   T₂.₅ implies T₂.
 
-See `Mathlib.Topology.Separation.Regular` for regular, T₃, etc spaces; and
-`Mathlib.Topology.Separation.GDelta` for the definitions of `PerfectlyNormalSpace` and `T6Space`.
+See `Mathlib/Topology/Separation/Regular.lean` for regular, T₃, etc spaces; and
+`Mathlib/Topology/Separation/GDelta.lean` for the definitions of `PerfectlyNormalSpace` and
+`T6Space`.
 
 Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `T_m → T_n`, but
 occasionally the literature swaps definitions for e.g. T₃ and regular.
@@ -194,11 +195,14 @@ theorem IsCompact.nhdsSet_inter_eq [T2Space X] {s t : Set X} (hs : IsCompact s) 
 
 /-- In a `T2Space X`, for a compact set `t` and a point `x` outside `t`, there are open sets `U`,
 `V` that separate `t` and `x`. -/
-lemma IsCompact.separation_of_not_mem {X : Type u_1} [TopologicalSpace X] [T2Space X] {x : X}
+lemma IsCompact.separation_of_notMem {X : Type u_1} [TopologicalSpace X] [T2Space X] {x : X}
     {t : Set X} (H1 : IsCompact t) (H2 : x ∉ t) :
     ∃ (U : Set X), ∃ (V : Set X), IsOpen U ∧ IsOpen V ∧ t ⊆ U ∧ x ∈ V ∧ Disjoint U V := by
   simpa [SeparatedNhds] using SeparatedNhds.of_isCompact_isCompact_isClosed H1 isCompact_singleton
     isClosed_singleton <| disjoint_singleton_right.mpr H2
+
+@[deprecated (since := "2025-05-23")]
+alias IsCompact.separation_of_not_mem := IsCompact.separation_of_notMem
 
 /-- In a `T2Space X`, for a compact set `t` and a point `x` outside `t`, `𝓝ˢ t` and `𝓝 x` are
 disjoint. -/
@@ -635,7 +639,7 @@ theorem ContinuousAt.ne_iff_eventually_ne [T2Space Y] {x : X} {f g : X → Y}
 
 /-- **Local identity principle** for continuous maps: Two continuous maps into a Hausdorff space
 agree in a punctured neighborhood of a non-isolated point iff they agree in a neighborhood. -/
-theorem ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE [T2Space Y] {x : X} {f g : X → Y}
+theorem ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE [T2Space Y] {x : X} {f g : X → Y}
     (hf : ContinuousAt f x) (hg : ContinuousAt g x) [(𝓝[≠] x).NeBot] :
     f =ᶠ[𝓝[≠] x] g ↔ f =ᶠ[𝓝 x] g := by
   constructor <;> intro hfg
@@ -644,10 +648,14 @@ theorem ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE [T2Space Y] {x : X}
     obtain ⟨a, ha⟩ : {x | f x ≠ g x ∧ f x = g x}.Nonempty := by
       have h₁ := (eventually_nhdsWithin_of_eventually_nhds
         ((hf.ne_iff_eventually_ne hg).1 hCon)).and hfg
-      have h₂ : ∅ ∉ 𝓝[≠] x := by exact empty_not_mem (𝓝[≠] x)
+      have h₂ : ∅ ∉ 𝓝[≠] x := by exact empty_notMem (𝓝[≠] x)
       simp_all
     simp at ha
   · exact hfg.filter_mono nhdsWithin_le_nhds
+
+@[deprecated (since := "2025-05-22")]
+alias ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE :=
+  ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE
 
 /-- A continuous map from a compact space to a Hausdorff space is a closed map. -/
 protected theorem Continuous.isClosedMap [CompactSpace X] [T2Space Y] {f : X → Y}

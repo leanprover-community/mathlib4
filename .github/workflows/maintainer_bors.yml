@@ -23,10 +23,19 @@ jobs:
       COMMENT_REVIEW: ${{ github.event.review.body }}
     name: Add ready-to-merge or delegated label
     runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
     steps:
       - name: Find bors merge/delegate
         id: merge_or_delegate
         run: |
+          # don't try to run if we don't have access to necessary secrets
+          if [[ -z '${{ secrets.TRIAGE_TOKEN }}' ]]
+          then
+            printf 'No access to secrets, aborting.'
+            printf 'mOrD=' > "${GITHUB_OUTPUT}"
+            exit 0
+          fi
+
           COMMENT="${COMMENT_EVENT}${COMMENT_REVIEW}"
           # we strip `\r` since line endings from GitHub contain this character
           COMMENT="${COMMENT//$'\r'/}"

@@ -182,7 +182,7 @@ instance (priority := 100) BorelSpace.opensMeasurable {α : Type*} [TopologicalS
   ⟨ge_of_eq <| BorelSpace.measurable_eq⟩
 
 instance Subtype.borelSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
-    [hα : BorelSpace α] (s : Set α) : BorelSpace s :=
+    [hα : BorelSpace α] (p : α → Prop) : BorelSpace (Subtype p) :=
   ⟨by borelize α; symm; apply borel_comap⟩
 
 instance Countable.instBorelSpace [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α]
@@ -192,7 +192,7 @@ instance Countable.instBorelSpace [Countable α] [MeasurableSpace α] [Measurabl
   exact ⟨by aesop⟩
 
 instance Subtype.opensMeasurableSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
-    [h : OpensMeasurableSpace α] (s : Set α) : OpensMeasurableSpace s :=
+    [h : OpensMeasurableSpace α] (p : α → Prop) : OpensMeasurableSpace (Subtype p) :=
   ⟨by
     rw [borel_comap]
     exact comap_mono h.1⟩
@@ -591,7 +591,7 @@ end
 
 section BorelSpace
 
-variable [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] [TopologicalSpace β]
+variable [TopologicalSpace α] [mα : MeasurableSpace α] [BorelSpace α] [mβ : TopologicalSpace β]
   [MeasurableSpace β] [BorelSpace β] [TopologicalSpace γ] [MeasurableSpace γ] [BorelSpace γ]
   [MeasurableSpace δ]
 
@@ -695,5 +695,21 @@ instance EReal.measurableSpace : MeasurableSpace EReal :=
 
 instance EReal.borelSpace : BorelSpace EReal :=
   ⟨rfl⟩
+
+namespace MeasureTheory.Measure.IsFiniteMeasureOnCompacts
+
+variable {mα} in
+protected theorem map (μ : Measure α) [IsFiniteMeasureOnCompacts μ] (f : α ≃ₜ β) :
+    IsFiniteMeasureOnCompacts (μ.map f) := by
+  refine ⟨fun K hK ↦ ?_⟩
+  rw [← f.toMeasurableEquiv_coe, MeasurableEquiv.map_apply]
+  exact IsCompact.measure_lt_top (f.isCompact_preimage.2 hK)
+
+variable {mβ} in
+protected theorem comap (μ : Measure β) [IsFiniteMeasureOnCompacts μ] (f : α ≃ₜ β) :
+    IsFiniteMeasureOnCompacts (μ.comap f) :=
+  IsFiniteMeasureOnCompacts.comap' μ f.continuous f.measurableEmbedding
+
+end MeasureTheory.Measure.IsFiniteMeasureOnCompacts
 
 end BorelSpace
