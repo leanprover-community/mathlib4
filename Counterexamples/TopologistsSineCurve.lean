@@ -39,14 +39,14 @@ def T : Set (ℝ × ℝ) := S ∪ Z
 /-- A sequence of `x`-values tending to 0 at which the sine curve has a given `y`-coordinate. -/
 noncomputable def xSeq (y : ℝ) (k : ℕ) := 1 / (arcsin y + (k + 1) * (2 * π))
 
-lemma x_seq_pos (y : ℝ) (k : ℕ) : 0 < x_seq y k := by
-  rw [x_seq, one_div_pos]
+lemma xSeq_pos (y : ℝ) (k : ℕ) : 0 < xSeq y k := by
+  rw [xSeq, one_div_pos]
   nlinarith [pi_pos, neg_pi_div_two_le_arcsin y]
 
-lemma sin_inv_xSeq {y : ℝ} (hy : y ∈ Icc (-1) 1) (k : ℕ) : sin (x_seq y k)⁻¹ = y := by
-  simpa [x_seq, -Nat.cast_add, ← Nat.cast_succ] using sin_arcsin' hy
+lemma sin_inv_xSeq {y : ℝ} (hy : y ∈ Icc (-1) 1) (k : ℕ) : sin (xSeq y k)⁻¹ = y := by
+  simpa [xSeq, -Nat.cast_add, ← Nat.cast_succ] using sin_arcsin' hy
 
-lemma x_seq_tendsto (y : ℝ) : Tendsto (x_seq y) atTop (𝓝 0) := by
+lemma xSeq_tendsto (y : ℝ) : Tendsto (xSeq y) atTop (𝓝 0) := by
   refine .comp (g := fun k : ℝ ↦ 1 / (arcsin y + (k + 1) * (2 * π))) ?_ tendsto_natCast_atTop_atTop
   simp only [div_eq_mul_inv, show 𝓝 0 = 𝓝 (1 * (0 : ℝ)) by simp]
   refine (tendsto_inv_atTop_zero.comp <| tendsto_atTop_add_const_left _ _ ?_).const_mul _
@@ -88,12 +88,12 @@ lemma closure_S : closure S = T := by
     rintro (hz | ⟨z, hz⟩)
     · -- Point is in `S`: use constant sequence
       exact ⟨_, fun _ ↦ hz, tendsto_const_nhds, tendsto_const_nhds⟩
-    · -- Point is in `Z`: use sequence from `x_seq`
+    · -- Point is in `Z`: use sequence from `xSeq`
       simp only [Prod.mk.injEq] at hz
       rcases hz with ⟨hz, ⟨rfl, rfl⟩⟩
-      refine ⟨fun n ↦ (x_seq z n, z), fun n ↦ ⟨_, x_seq_pos z n, ?_⟩, x_seq_tendsto z,
+      refine ⟨fun n ↦ (xSeq z n, z), fun n ↦ ⟨_, xSeq_pos z n, ?_⟩, xSeq_tendsto z,
         tendsto_const_nhds⟩
-      simpa using x_seq_invsin hz n
+      simpa using sin_inv_xSeq hz n
 
 lemma isClosed_T : IsClosed T := by simpa only [← closure_S] using isClosed_closure
 
@@ -145,9 +145,9 @@ private lemma mem_S_of_x_pos {p : ℝ × ℝ} (hx : 0 < p.1) (hT : p ∈ T) : p.
 /-- For any `0 < a` and any `y ∈ Icc (-1) 1`, we can find `x ∈ Ioc a 0` with `sin x⁻¹ = y`. -/
 lemma exists_mem_Ioc_of_y {y : ℝ} (hy : y ∈ Icc (-1) 1) {a : ℝ} (ha : 0 < a) :
     ∃ x ∈ Ioc 0 a, sin x⁻¹ = y := by
-  obtain ⟨N, h_dist⟩ := (Metric.tendsto_nhds.mp (x_seq_tendsto y) (a/2) (by positivity)).exists
-  refine ⟨x_seq y N, ⟨x_seq_pos y N, ?_⟩, x_seq_invsin hy _⟩
-  rw [dist_eq, sub_zero, abs_of_pos (x_seq_pos _ N)] at h_dist
+  obtain ⟨N, h_dist⟩ := (Metric.tendsto_nhds.mp (xSeq_tendsto y) (a/2) (by positivity)).exists
+  refine ⟨xSeq y N, ⟨xSeq_pos y N, ?_⟩, sin_inv_xSeq hy _⟩
+  rw [dist_eq, sub_zero, abs_of_pos (xSeq_pos _ N)] at h_dist
   linarith
 
 /-- The set `T` is not path-connected. -/
