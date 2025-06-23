@@ -311,11 +311,21 @@ theorem four_dvd_or_exists_odd_prime_and_dvd_of_two_lt {n : ℕ} (n2 : 2 < n) :
 
 section computation
 
+/--
+A version of `Nat.primeFactorsList` that evaluates faster in the virtual machine.
+For mathematical purposes, use `Nat.primeFactorsList` instead,
+and see `Nat.primeFactorsListFast_eq_primeFactorsList`.
+-/
 def primeFactorsListFast (n : Nat) : List Nat :=
   if n < 2 then []
   else if 2 ∣ n then 2 :: primeFactorsListFast (n / 2)
   else go n ⟨3, by decide⟩
 where
+  /--
+  An auxiliary definition for `Nat.primeFactorsListFast`,
+  that remembers the progress on `Nat.minFac`, in order to avoid starting again from zero
+  for each new factor.
+  -/
   go (n : Nat) (d : { k : Nat // 1 < k }) : List Nat :=
     if _ : n < 2 then [] else
     have hd : 1 < minFacAux n d.1 := by
