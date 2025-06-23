@@ -5,8 +5,7 @@ Authors: Beibei Xiong, Shao Yu, Weijie Jiang
 -/
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Tactic.Ring
-import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Data.Nat.Factorial.Basic
 
 
 /-!
@@ -49,8 +48,10 @@ subsets, Defined by the recursive relationship it satisfies.
 namespace Nat
 
 
-/- The unsigned Stirling numbers of the first kind, represent the number of ways to partition
-n distinct elements into k non-empty cycles.-/
+/--
+`Nat.numStirling_fst n k` is the (unsigned) Stirling number of the first kind,
+counting the number of permutations of `n` elements with exactly `k` disjoint cycles.
+-/
 def numStirling_fst : ℕ → ℕ → ℕ
   | 0, 0 => 1
   | 0, _ + 1 => 0
@@ -119,8 +120,10 @@ theorem numStirling_fst_one_right (n : ℕ) : numStirling_fst (n + 1) 1 = n.fact
     simp [Nat.sub_self, Nat.factorial_succ]
 
 
-/-The Stirling numbers of the second kind, represent the number of ways to partition n distinct
-elements into k non-empty subsets.-/
+/--
+`Nat.numStirling_snd n k` is the Stirling number of the second kind,
+counting the number of ways to partition a set of `n` elements into `k` nonempty subsets.
+-/
 def numStirling_snd : ℕ → ℕ → ℕ
   | 0, 0 => 1
   | 0, _ + 1 => 0
