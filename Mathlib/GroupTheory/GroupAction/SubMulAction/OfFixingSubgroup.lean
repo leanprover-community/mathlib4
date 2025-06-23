@@ -96,6 +96,12 @@ variable {M}
 theorem not_mem_of_mem_ofFixingSubgroup (x : ofFixingSubgroup M s) :
     ↑x ∉ s := x.prop
 
+@[to_additive]
+theorem disjoint_val_image {t : Set (ofFixingSubgroup M s)} :
+    Disjoint s (Subtype.val '' t) := by
+  rw [Set.disjoint_iff]
+  rintro a ⟨hbs, ⟨b, _, rfl⟩⟩; exact (b.prop hbs).elim
+
 variable (M s) in
 /-- The identity map of the `SubMulAction` of the `fixingSubgroup`
 into the ambient set, as an equivariant map. -/
@@ -340,7 +346,7 @@ def map_ofFixingSubgroupUnion :
           simpa only [Set.mem_preimage, Subtype.coe_mk] using hx)⟩
   map_smul' := fun ⟨m, hm⟩ ⟨x, hx⟩ => by
     rw [← SetLike.coe_eq_coe, ← SetLike.coe_eq_coe]
-    rfl
+    exact subgroup_smul_def ⟨m, hm⟩ x
 
 @[to_additive]
 theorem map_ofFixingSubgroupUnion_def (x : SubMulAction.ofFixingSubgroup M (s ∪ t)) :

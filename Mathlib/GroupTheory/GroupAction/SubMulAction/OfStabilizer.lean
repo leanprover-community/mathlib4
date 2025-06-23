@@ -78,6 +78,12 @@ theorem mem_ofStabilizer_iff (a : α) {x : α} : x ∈ ofStabilizer G a ↔ x �
   Iff.rfl
 
 @[to_additive]
+theorem notMem_val_image {a : α} (t : Set (ofStabilizer G a)) :
+    a ∉ Subtype.val '' t := by
+  rintro ⟨b, hb⟩
+  exact b.prop (by simp [hb])
+
+@[to_additive]
 theorem neq_of_mem_ofStabilizer (a : α) {x : ofStabilizer G a} : ↑x ≠ a :=
   x.prop
 
