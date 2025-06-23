@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Anne Baanen
 -/
 
+import Mathlib.Algebra.MvPolynomial.Degrees
+import Mathlib.Algebra.MvPolynomial.Eval
 import Mathlib.Algebra.Polynomial.Degree.Definitions
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
@@ -83,3 +85,14 @@ theorem resultant_C (a : R) : resultant f (C a) m = a ^ m := by simp
 end resultant
 
 end Polynomial
+
+
+namespace BinaryForm
+
+/-- Resultant of two binary forms, i.e. homogeneous polynomials in two variables. There is no
+support for binary forms in the library at the moment. -/
+noncomputable def resultant {R : Type u} [CommRing R] (f g : MvPolynomial (Fin 2) R)
+    (m : ℕ := f.totalDegree) (n : ℕ := g.totalDegree) : R :=
+  Polynomial.resultant (f.eval₂ Polynomial.C ![.X, 1]) (g.eval₂ Polynomial.C ![.X, 1]) m n
+
+end BinaryForm
