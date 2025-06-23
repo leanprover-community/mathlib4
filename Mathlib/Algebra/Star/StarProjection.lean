@@ -30,7 +30,7 @@ variable {p q : R}
 
 lemma _root_.isStarProjection_iff' [Mul R] [Star R] :
     IsStarProjection p ↔ p * p = p ∧ star p = p :=
-  isStarProjection_iff
+  isStarProjection_iff _
 
 theorem isStarNormal [Mul R] [Star R]
     (hp : IsStarProjection p) : IsStarNormal p :=
@@ -92,8 +92,7 @@ theorem mul [NonUnitalSemiring R] [StarRing R]
     (hp : IsStarProjection p) (hq : IsStarProjection q)
     (hpq : Commute p q) : IsStarProjection (p * q) where
   isSelfAdjoint := (IsSelfAdjoint.commute_iff hp.isSelfAdjoint hq.isSelfAdjoint).mp hpq
-  isIdempotentElem := by rw [IsIdempotentElem,
-    hpq.symm.mul_mul_mul_comm, hp.isIdempotentElem, hq.isIdempotentElem]
+  isIdempotentElem := hp.isIdempotentElem.mul_of_commute hpq hq.isIdempotentElem
 
 theorem add_sub_mul_of_commute [Ring R] [StarRing R]
     (hpq : Commute p q) (hp : IsStarProjection p) (hq : IsStarProjection q) :
