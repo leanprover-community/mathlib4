@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
 
+import Batteries.Data.String.Matcher
 import Cache.Hashing
 
 namespace Cache.Requests
@@ -11,9 +12,158 @@ namespace Cache.Requests
 open System (FilePath)
 
 /--
-Attempts to determine the GitHub repository of a version of Mathlib from its `origin` Git remote.
+Finds the remote name that points to `leanprover-community/mathlib4` repository.
+Returns the remote name and prints warnings if the setup doesn't follow conventions.
+-/
+def findMathlibRemote (mathlibDepPath : FilePath) : IO String := do
+  let remotesInfo ← IO.Process.output
+    {cmd := "git", args := #["remote", "-v"], cwd := mathlibDepPath}
+
+  unless remotesInfo.exitCode == 0 do
+    throw <| IO.userError s!"\
+      Failed to run Git to list remotes (exit code: {remotesInfo.exitCode}).\n\
+      Ensure Git is installed.\n\
+      Stdout:\n{remotesInfo.stdout.trim}\nStderr:\n{remotesInfo.stderr.trim}\n"
+
+  let remoteLines := remotesInfo.stdout.split (· == '\n')
+  let mut mathlibRemote : Option String := none
+  let mut originPointsToMathlib : Bool := false
+
+  for line in remoteLines do
+    let parts := line.trim.split (· == '\t')
+    if parts.length >= 2 then
+      let remoteName := parts[0]!
+      let remoteUrl := parts[1]!.takeWhile (· != ' ') -- Remove (fetch) or (push) suffix
+
+      -- Check if this remote points to leanprover-community/mathlib4
+      let isMathlibRepo := remoteUrl.containsSubstr "leanprover-community/mathlib4"
+
+      if isMathlibRepo then
+        if remoteName == "origin" then
+          originPointsToMathlib := true
+        mathlibRemote := some remoteName
+
+  match mathlibRemote with
+  | none =>
+    throw <| IO.userError "Could not find a remote pointing to leanprover-community/mathlib4"
+  | some remoteName =>
+    if remoteName != "upstream" then
+      let mut warning := s!"Some Mathlib ecosystem tools assume that the git remote for `leanprover-community/mathlib4` is named `upstream`. You have named it `{remoteName}` instead. We recommend changing the name to `upstream`."
+      if originPointsToMathlib then
+        warning := warning ++ " Moreover, `origin` should point to your own fork of the mathlib4 repository."
+      warning := warning ++ " You can set this up with `git remote add upstream https://github.com/leanprover-community/mathlib4.git`."
+      IO.println s!"Warning: {warning}"
+    return remoteName
+
+/--
+Attempts to determine the GitHub repository of a version of Mathlib from its Git remote.
+If the current branch is tracking a PR (upstream/pr/NNNN), it will determine the source fork
+of that PR rather than just using the origin remote.
 -/
 def getRemoteRepo (mathlibDepPath : FilePath) : IO String := do
+  -- Find the actual remote name for mathlib4
+  let mathlibRemoteName ← findMathlibRemote mathlibDepPath
+
+  -- Check if current branch is tracking {remoteName}/pr/NNNN
+  let trackingInfo ← IO.Process.output
+    {cmd := "git", args := #["rev-parse", "--symbolic-full-name", "@{upstream}"], cwd := mathlibDepPath}
+
+  if trackingInfo.exitCode == 0 then
+    let upstream := trackingInfo.stdout.trim
+    -- Check if tracking {remoteName}/pr/NNNN pattern
+    let prPattern := s!"refs/remotes/{mathlibRemoteName}/pr/"
+    if upstream.startsWith prPattern then
+      let prNumberStart := prPattern.length
+      let prNumber := upstream.drop prNumberStart
+
+      -- Use GitHub CLI to get the PR's source repository
+      let prInfo ← IO.Process.output
+        {cmd := "gh", args := #["pr", "view", prNumber, "--json", "headRepositoryOwner"], cwd := mathlibDepPath}
+
+      if prInfo.exitCode == 0 then
+        -- Parse JSON to extract the repository owner
+        match Lean.Json.parse prInfo.stdout.trim with
+        | .ok json =>
+          -- Try to get owner directly as string first
+          match json.getObjValAs? String "headRepositoryOwner" with
+          | .ok owner =>
+            let repo := s!"{owner}/mathlib4"
+            IO.println s!"Using cache from PR #{prNumber} source: {repo}"
+            return repo
+          | .error _ =>
+            -- If that fails, try to get as object and extract login field
+            match json.getObjVal? "headRepositoryOwner" with
+            | .ok ownerObj =>
+              match ownerObj.getObjValAs? String "login" with
+              | .ok owner =>
+                let repo := s!"{owner}/mathlib4"
+                IO.println s!"Using cache from PR #{prNumber} source: {repo}"
+                return repo
+              | .error _ =>
+                IO.println "Warning: Could not parse PR owner from GitHub CLI response, falling back to origin"
+            | .error _ =>
+              IO.println "Warning: Could not parse GitHub CLI response, falling back to origin"
+        | .error _ =>
+          IO.println "Warning: Could not parse GitHub CLI JSON response, falling back to origin"
+      else
+        -- This is unlikely to happen, because we're tracking a PR ref
+        IO.println s!"Warning: GitHub CLI failed (exit code: {prInfo.exitCode}), falling back to origin"
+        IO.println s!"Make sure 'gh' is installed and authenticated. Stderr: {prInfo.stderr.trim}"
+
+  -- Alternative approach: check if current commit has {remoteName}/pr/NNNN refs pointing to it
+  -- But only do this if we're likely on a PR branch (not on regular branches like master)
+  let currentBranch ← IO.Process.output
+    {cmd := "git", args := #["branch", "--show-current"], cwd := mathlibDepPath}
+
+  if currentBranch.exitCode == 0 then
+    let branchName := currentBranch.stdout.trim
+    -- Only search for PR refs if we're not on a regular branch like master, bump/*, or nightly-testing*
+    let isRegularBranch := branchName == "master" || branchName.startsWith "bump/" ||
+                          branchName.startsWith "nightly-testing"
+
+    if !isRegularBranch then
+      let currentCommit ← IO.Process.output
+        {cmd := "git", args := #["rev-parse", "HEAD"], cwd := mathlibDepPath}
+
+      if currentCommit.exitCode == 0 then
+        let commit := currentCommit.stdout.trim
+        -- Get all PR refs that contain this commit
+        let prRefPattern := s!"refs/remotes/{mathlibRemoteName}/pr/*"
+        let refsInfo ← IO.Process.output
+          {cmd := "git", args := #["for-each-ref", "--contains", commit, prRefPattern, "--format=%(refname)"], cwd := mathlibDepPath}
+
+        if refsInfo.exitCode == 0 then
+          let refs := refsInfo.stdout.split (· == '\n')
+          for ref in refs do
+            let refName := ref.trim
+            let prRefPrefix := s!"refs/remotes/{mathlibRemoteName}/pr/"
+            if refName.startsWith prRefPrefix && !refName.isEmpty then
+              let prNumberStart := prRefPrefix.length
+              let prNumber := refName.drop prNumberStart
+
+              -- Use GitHub CLI to get the PR's source repository
+              let prInfo ← IO.Process.output
+                {cmd := "gh", args := #["pr", "view", prNumber, "--json", "headRepositoryOwner"], cwd := mathlibDepPath}
+
+              if prInfo.exitCode == 0 then
+                -- Parse JSON to extract the repository owner
+                match Lean.Json.parse prInfo.stdout.trim with
+                | .ok json =>
+                  -- Try to get owner as object and extract login field
+                  match json.getObjVal? "headRepositoryOwner" with
+                  | .ok ownerObj =>
+                    match ownerObj.getObjValAs? String "login" with
+                    | .ok owner =>
+                      let repo := s!"{owner}/mathlib4"
+                      IO.println s!"Using cache from PR #{prNumber} source: {repo}"
+                      return repo
+                    | .error _ => continue -- try next ref
+                  | .error _ => continue -- try next ref
+                | .error _ => continue -- try next ref
+              else
+                continue -- try next ref
+
+  -- Fall back to the original logic using origin remote
   let out ← IO.Process.output
     {cmd := "git", args := #["remote", "get-url", "origin"], cwd := mathlibDepPath}
   unless out.exitCode == 0 do
@@ -29,6 +179,7 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO String := do
     let pos ← url.revFindAux (fun c => c == '/'  || c == ':') pos
     return url.extract (url.next pos) url.endPos
   if let some repo := repo? then
+    IO.println s!"Using cache from origin: {repo}"
     return repo
   else
     throw <| IO.userError s!"\
@@ -228,7 +379,6 @@ def getFiles
     downloadFiles repo hashMap forceDownload parallel (warnOnMissing := true)
   else
     let repo ← getRemoteRepo (← read).mathlibDepPath
-    IO.println s!"Mathlib repository: {repo}"
     unless repo == MATHLIBREPO do
       downloadFiles MATHLIBREPO hashMap forceDownload parallel (warnOnMissing := false)
     downloadFiles repo hashMap forceDownload parallel (warnOnMissing := true)
