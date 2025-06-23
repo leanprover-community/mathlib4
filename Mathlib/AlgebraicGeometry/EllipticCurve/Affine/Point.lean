@@ -509,8 +509,8 @@ def neZeroRec {C : W'.Point → Sort*} (h₁ : {x y : R} → (h : W'.Nonsingular
 lemma equation_x_y (P : W'.Point) [NeZero P] : W'.Equation P.x P.y :=
   P.neZeroRec fun h ↦ h.1
 
-lemma equation_x_y' (P : W'.Point) [NeZero P] : P.y ^ 2 + W'.a₁ * P.x * P.y + W'.a₃ * P.y
-    = P.x ^ 3 + W'.a₂ * P.x ^ 2 + W'.a₄ * P.x + W'.a₆ :=
+lemma equation_x_y' (P : W'.Point) [NeZero P] :
+    P.y ^ 2 + W'.a₁ * P.x * P.y + W'.a₃ * P.y = P.x ^ 3 + W'.a₂ * P.x ^ 2 + W'.a₄ * P.x + W'.a₆ :=
   (equation_iff ..).1 P.equation_x_y
 
 /-- The partial derivative `∂W/∂X` of the Weierstrass cubic at a given point `P`. -/
@@ -546,7 +546,7 @@ lemma neg_some {x y : R} (h : W'.Nonsingular x y) : -some h = some ((nonsingular
   rfl
 
 @[simp]
-lemma x_neg (P : W'.Point) : (-P).x = P.x := P.casesOn rfl fun _ => rfl
+lemma x_neg (P : W'.Point) : (-P).x = P.x := P.casesOn rfl fun _ ↦ rfl
 
 @[simp]
 lemma y_neg (P : W'.Point) [NeZero P] : (-P).y = -P.y - W'.a₁ * P.x - W'.a₃ :=
