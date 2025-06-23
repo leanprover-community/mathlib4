@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.ModelCategory.FundamentalLemma1
+import Mathlib.CategoryTheory.Localization.CalculusOfFractions.OfAdjunction
 
 /-!
 # The fundamental lemma of homotopical algebra
@@ -124,11 +125,19 @@ protected def π.ιCofibrantObject : π C ⥤ CofibrantObject.π C :=
     (ιCofibrantObject ⋙ CofibrantObject.toπ)
     (fun _ _ _ _ h ↦ CategoryTheory.Quotient.sound _ h)
 
+def π.toπCompιCofibrantObject :
+    toπ (C := C) ⋙ π.ιCofibrantObject ≅
+      ιCofibrantObject ⋙ CofibrantObject.toπ := Iso.refl _
+
 protected def π.ιFibrantObject : π C ⥤ FibrantObject.π C :=
   CategoryTheory.Quotient.lift _
     (ιFibrantObject ⋙ FibrantObject.toπ)
     (fun _ _ _ _ h ↦ CategoryTheory.Quotient.sound _ (by
       simpa [FibrantObject.homRel, leftHomotopyRel_iff_rightHomotopyRel]))
+
+def π.toπCompιFibrantObject :
+    toπ (C := C) ⋙ π.ιFibrantObject ≅
+      ιFibrantObject ⋙ FibrantObject.toπ := Iso.refl _
 
 end BifibrantObject
 
@@ -164,6 +173,11 @@ instance (X : CofibrantObject C) :
     WeakEquivalence (ι.map (iBifibrantResolutionObj X)) :=
   (exists_bifibrant X).choose_spec.choose_spec.2
 
+instance (X : CofibrantObject C) :
+    WeakEquivalence (iBifibrantResolutionObj X) := by
+  rw [weakEquivalence_iff_ι_map]
+  infer_instance
+
 instance (X : BifibrantObject C) :
     IsFibrant (ι.obj (BifibrantObject.ιCofibrantObject.obj X)) := X.2.2
 
@@ -182,9 +196,17 @@ noncomputable def bifibrantResolutionMap {X₁ X₂ : CofibrantObject C} (f : X�
 @[reassoc (attr := simp)]
 noncomputable def bifibrantResolutionMap_fac {X₁ X₂ : CofibrantObject C} (f : X₁ ⟶ X₂) :
     iBifibrantResolutionObj X₁ ≫
-      (BifibrantObject.ιCofibrantObject.map (bifibrantResolutionMap f)) =
+      BifibrantObject.ιCofibrantObject.map (bifibrantResolutionMap f) =
       f ≫ iBifibrantResolutionObj X₂ :=
   (exists_bifibrant_map f).choose_spec
+
+instance {X₁ X₂ : CofibrantObject C} (f : X₁ ⟶ X₂) [WeakEquivalence f] :
+    WeakEquivalence (bifibrantResolutionMap f) := by
+  rw [weakEquivalence_iff]
+  change weakEquivalences _ (BifibrantObject.ιCofibrantObject.map (bifibrantResolutionMap f))
+  rw [← weakEquivalence_iff, ← weakEquivalence_precomp_iff (iBifibrantResolutionObj X₁),
+    bifibrantResolutionMap_fac, weakEquivalence_precomp_iff]
+  infer_instance
 
 @[reassoc (attr := simp)]
 noncomputable def bifibrantResolutionMap_fac' {X₁ X₂ : CofibrantObject C} (f : X₁ ⟶ X₂) :
@@ -249,66 +271,101 @@ lemma π.bifibrantResolution_map {X Y : CofibrantObject C} (f : X ⟶ Y) :
     π.bifibrantResolution.map (CofibrantObject.toπ.map f) =
       BifibrantObject.toπ.map (bifibrantResolutionMap f) := rfl
 
-noncomputable def π.adj.unit :
+noncomputable def π.adjUnit :
     𝟭 (π C) ⟶ bifibrantResolution ⋙ BifibrantObject.π.ιCofibrantObject :=
   Quotient.natTransLift _
     { app X := toπ.map (iBifibrantResolutionObj X)
       naturality _ _ f := (bifibrantResolutionMap_fac' f).symm }
 
-lemma π.adj.unit_app (X : CofibrantObject C) :
-    π.adj.unit.app (toπ.obj X) =
+lemma π.adjUnit_app (X : CofibrantObject C) :
+    π.adjUnit.app (toπ.obj X) =
       toπ.map (iBifibrantResolutionObj X) := rfl
 
-noncomputable def π.adj.counit' :
+instance (X : CofibrantObject.π C) : WeakEquivalence (π.adjUnit.app X) := by
+  obtain ⟨X, rfl⟩ := toπ_obj_surjective X
+  rw [π.adjUnit_app, weakEquivalence_toπ_map_iff, weakEquivalence_iff_ι_map]
+  infer_instance
+
+noncomputable def π.adjCounit' :
     𝟭 (BifibrantObject.π C) ⟶ BifibrantObject.π.ιCofibrantObject ⋙ bifibrantResolution :=
   Quotient.natTransLift _
     { app X := BifibrantObject.toπ.map (iBifibrantResolutionObj (.mk X.obj))
       naturality X₁ X₂ f := BifibrantObject.toπ.congr_map
         (bifibrantResolutionMap_fac (f : .mk X₁.obj ⟶ .mk X₂.obj )).symm }
 
-lemma π.adj.counit'_app (X : BifibrantObject C) :
-    π.adj.counit'.app (BifibrantObject.toπ.obj X) =
+lemma π.adjCounit'_app (X : BifibrantObject C) :
+    π.adjCounit'.app (BifibrantObject.toπ.obj X) =
       BifibrantObject.toπ.map (iBifibrantResolutionObj (.mk X.obj)) := rfl
 
-instance (X : BifibrantObject.π C) : IsIso (π.adj.counit'.app X) := by
+instance (X : BifibrantObject.π C) : IsIso (π.adjCounit'.app X) := by
   obtain ⟨X, rfl⟩ := BifibrantObject.toπ_obj_surjective X
-  rw [π.adj.counit'_app]
+  rw [π.adjCounit'_app]
   have : WeakEquivalence (C := BifibrantObject C) ((mk X.obj).iBifibrantResolutionObj) := by
     rw [weakEquivalence_iff_ι_map]
     change WeakEquivalence (ι.map (CofibrantObject.mk X.obj).iBifibrantResolutionObj)
     infer_instance
   infer_instance
 
-instance : IsIso (π.adj.counit' (C := C)) := NatIso.isIso_of_isIso_app _
+instance : IsIso (π.adjCounit' (C := C)) := NatIso.isIso_of_isIso_app _
 
-noncomputable def π.adj.counitIso :
+noncomputable def π.adjCounitIso :
     BifibrantObject.π.ιCofibrantObject ⋙ bifibrantResolution ≅ 𝟭 (BifibrantObject.π C) :=
-  (asIso π.adj.counit').symm
+  (asIso π.adjCounit').symm
 
-lemma π.adj.counitIso_inv_app (X : BifibrantObject C) :
-    π.adj.counitIso.inv.app (BifibrantObject.toπ.obj X) =
+lemma π.adjCounitIso_inv_app (X : BifibrantObject C) :
+    π.adjCounitIso.inv.app (BifibrantObject.toπ.obj X) =
       BifibrantObject.toπ.map (iBifibrantResolutionObj (.mk X.obj)) := rfl
 
 noncomputable def π.adj :
     π.bifibrantResolution (C := C) ⊣ BifibrantObject.π.ιCofibrantObject where
-  unit := π.adj.unit
-  counit := π.adj.counitIso.hom
+  unit := π.adjUnit
+  counit := π.adjCounitIso.hom
   left_triangle_components X := by
     obtain ⟨X, rfl⟩ := toπ_obj_surjective X
-    rw [← cancel_mono (π.adj.counitIso.inv.app _), Category.assoc, Iso.hom_inv_id_app]
+    rw [← cancel_mono (π.adjCounitIso.inv.app _), Category.assoc, Iso.hom_inv_id_app]
     dsimp
     apply bifibrantResolutionObj_hom_ext
-    rw [Category.comp_id, Category.id_comp, π.adj.unit_app,
-      bifibrantResolution_map, π.adj.counitIso_inv_app,
+    rw [Category.comp_id, Category.id_comp, π.adjUnit_app,
+      bifibrantResolution_map, π.adjCounitIso_inv_app,
       bifibrantResolutionMap_fac']
     rfl
   right_triangle_components X := by
     obtain ⟨X, rfl⟩ := BifibrantObject.toπ_obj_surjective X
-    rw [← cancel_mono (BifibrantObject.π.ιCofibrantObject.map (π.adj.counitIso.inv.app _)),
+    rw [← cancel_mono (BifibrantObject.π.ιCofibrantObject.map (π.adjCounitIso.inv.app _)),
       Category.assoc, ← Functor.map_comp, Iso.hom_inv_id_app]
     simp only [Functor.id_obj, Functor.comp_obj, CategoryTheory.Functor.map_id, Category.comp_id,
       Category.id_comp]
     rfl
+
+instance : IsIso (π.adj (C := C)).counit := by
+  dsimp [π.adj]
+  infer_instance
+
+instance : (BifibrantObject.π.ιCofibrantObject (C := C)).Full :=
+  π.adj.fullyFaithfulROfIsIsoCounit.full
+
+instance : (BifibrantObject.π.ιCofibrantObject (C := C)).Faithful :=
+  π.adj.fullyFaithfulROfIsIsoCounit.faithful
+
+instance (X : CofibrantObject.π C) : WeakEquivalence (π.adj.unit.app X) := by
+  obtain ⟨X, rfl⟩ := toπ_obj_surjective X
+  dsimp [π.adj]
+  infer_instance
+
+instance : π.bifibrantResolution.IsLocalization (weakEquivalences (π C)) :=
+  π.adj.isLocalization_leftAdjoint _ (by
+    intro X Y f hf
+    obtain ⟨X, rfl⟩ := toπ_obj_surjective X
+    obtain ⟨Y, rfl⟩ := toπ_obj_surjective Y
+    obtain ⟨f, rfl⟩ := toπ.map_surjective f
+    rw [← weakEquivalence_iff, weakEquivalence_toπ_map_iff] at hf
+    rw [π.bifibrantResolution_map]
+    apply Localization.inverts _ (weakEquivalences _)
+    rw [← weakEquivalence_iff]
+    infer_instance) (fun X ↦ by
+    rw [← weakEquivalence_iff]
+    dsimp
+    infer_instance)
 
 end CofibrantObject
 
@@ -348,10 +405,28 @@ def ιFibrantObjectLocalizerMorphism :
   functor := ιFibrantObject
   map _ _ _ h := h
 
---instance : (ιCofibrantObjectLocalizerMorphism C).IsLocalizedEquivalence := sorry
+instance : (ιCofibrantObjectLocalizerMorphism C).IsLocalizedEquivalence := by
+  have : CatCommSq (ιCofibrantObjectLocalizerMorphism C).functor toπ
+      (CofibrantObject.toπ ⋙ CofibrantObject.π.bifibrantResolution) (𝟭 _) :=
+    ⟨(Functor.associator _ _ _).symm ≪≫
+      isoWhiskerRight π.toπCompιCofibrantObject.symm _ ≪≫
+      Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (asIso CofibrantObject.π.adj.counit)⟩
+  exact LocalizerMorphism.IsLocalizedEquivalence.mk'
+    (ιCofibrantObjectLocalizerMorphism C) BifibrantObject.toπ
+    (CofibrantObject.toπ ⋙ CofibrantObject.π.bifibrantResolution) (𝟭 _)
+
+instance {D : Type*} [Category D] (L : CofibrantObject C ⥤ D)
+    [L.IsLocalization (weakEquivalences _)] :
+    (ιCofibrantObject ⋙ L).IsLocalization (weakEquivalences _) := by
+  change ((ιCofibrantObjectLocalizerMorphism C).functor ⋙ L).IsLocalization _
+  infer_instance
+
+instance {D : Type*} [Category D] (L : C ⥤ D) [L.IsLocalization (weakEquivalences _)] :
+    (ι ⋙ L).IsLocalization (weakEquivalences _) := by
+  change ((ιCofibrantObjectLocalizerMorphism C).functor ⋙
+    CofibrantObject.ι ⋙ L).IsLocalization _
+  infer_instance
 
 end BifibrantObject
-
-
 
 end HomotopicalAlgebra

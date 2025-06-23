@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Categories with classes of fibrations, cofibrations, weak equivalences
@@ -155,6 +155,10 @@ variable [CategoryWithWeakEquivalences C] {P : ObjectProperty C}
 
 instance : CategoryWithWeakEquivalences P.FullSubcategory where
   weakEquivalences := (weakEquivalences C).inverseImage P.ι
+
+instance [(weakEquivalences C).HasTwoOutOfThreeProperty] :
+    (weakEquivalences P.FullSubcategory).HasTwoOutOfThreeProperty :=
+  inferInstanceAs ((weakEquivalences C).inverseImage P.ι).HasTwoOutOfThreeProperty
 
 lemma weakEquivalence_iff_ι_map {X Y : P.FullSubcategory} (f : X ⟶ Y) :
     WeakEquivalence f ↔ WeakEquivalence (P.ι.map f) := by

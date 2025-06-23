@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.ModelCategory.Bifibrant
 import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
-import Mathlib.CategoryTheory.Localization.Quotient
 import Mathlib.CategoryTheory.MorphismProperty.Quotient
 
 /-!
@@ -343,6 +342,12 @@ instance : (localizerMorphism C).IsLocalizedEquivalence := by
       (asIso (π.resolutionCompToLocalizationNatTrans L)))
   have : F.IsEquivalence := E.isEquivalence_functor
   exact LocalizerMorphism.IsLocalizedEquivalence.mk' (localizerMorphism C) Lcof L F
+
+instance {D : Type*} [Category D] (L : C ⥤ D)
+    [L.IsLocalization (weakEquivalences _)] :
+    (ι ⋙ L).IsLocalization (weakEquivalences _) := by
+  change ((localizerMorphism C).functor ⋙ L).IsLocalization _
+  infer_instance
 
 end CofibrantObject
 

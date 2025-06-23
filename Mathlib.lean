@@ -1245,6 +1245,7 @@ import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
 import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
 import Mathlib.AlgebraicTopology.ModelCategory.FundamentalLemma1
 import Mathlib.AlgebraicTopology.ModelCategory.FundamentalLemma2
+import Mathlib.AlgebraicTopology.ModelCategory.FundamentalLemma3
 import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
 import Mathlib.AlgebraicTopology.ModelCategory.Instances
 import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant

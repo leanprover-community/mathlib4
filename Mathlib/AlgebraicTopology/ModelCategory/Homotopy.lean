@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
 import Mathlib.AlgebraicTopology.ModelCategory.PathObject
 import Mathlib.AlgebraicTopology.ModelCategory.BrownLemma
+import Mathlib.CategoryTheory.Localization.Quotient
 import Mathlib.CategoryTheory.Quotient
 
 /-!
@@ -161,6 +162,18 @@ end PathObject
 def LeftHomotopyRel : HomRel C :=
   fun X _ f g ↦ ∃ (P : Cylinder X), Nonempty (P.LeftHomotopy f g)
 
+lemma factorsThroughLocalization_leftHomotopyRel :
+    LeftHomotopyRel.FactorsThroughLocalization (weakEquivalences C) := by
+  rintro X Y f g ⟨P, ⟨h⟩⟩
+  let L := (weakEquivalences C).Q
+  rw [areEqualizedByLocalization_iff L]
+  suffices L.map P.i₀ = L.map P.i₁ by
+    simp only [← h.h₀, ← h.h₁, L.map_comp, this]
+  have := Localization.inverts L (weakEquivalences C) P.π (by
+    rw [← weakEquivalence_iff]
+    infer_instance)
+  simp only [← cancel_mono (L.map P.π), ← L.map_comp, P.i₀_π, P.i₁_π]
+
 lemma Cylinder.LeftHomotopy.leftHomotopyRel {X Y : C} {f g : X ⟶ Y}
     {P : Cylinder X} (h : P.LeftHomotopy f g) :
     LeftHomotopyRel f g :=
@@ -236,6 +249,18 @@ end LeftHomotopyRel
 
 def RightHomotopyRel : HomRel C :=
   fun _ Y f g ↦ ∃ (P : PathObject Y), Nonempty (P.RightHomotopy f g)
+
+lemma factorsThroughLocalization_rightHomotopyRel :
+    RightHomotopyRel.FactorsThroughLocalization (weakEquivalences C) := by
+  rintro X Y f g ⟨P, ⟨h⟩⟩
+  let L := (weakEquivalences C).Q
+  rw [areEqualizedByLocalization_iff L]
+  suffices L.map P.p₀ = L.map P.p₁ by
+    simp only [← h.h₀, ← h.h₁, L.map_comp, this]
+  have := Localization.inverts L (weakEquivalences C) P.ι (by
+    rw [← weakEquivalence_iff]
+    infer_instance)
+  simp only [← cancel_epi (L.map P.ι), ← L.map_comp, P.ι_p₀, P.ι_p₁]
 
 lemma PathObject.RightHomotopy.rightHomotopyRel {X Y : C} {f g : X ⟶ Y}
     {P : PathObject Y} (h : P.RightHomotopy f g) :
