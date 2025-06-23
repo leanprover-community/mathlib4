@@ -85,4 +85,12 @@ lemma add_sub_mul (hp : IsIdempotentElem a) (hq : IsIdempotentElem b) :
     IsIdempotentElem (a + b - a * b) := add_sub_mul_of_commute (.all ..) hp hq
 
 end CommRing
+
+/-- `a + b` is idempotent when `a` and `b` anti-commute. -/
+theorem add [NonUnitalNonAssocSemiring R]
+    {a b : R} (ha : IsIdempotentElem a) (hb : IsIdempotentElem b)
+    (hab : a * b + b * a = 0) : IsIdempotentElem (a + b) := by
+  simp_rw [IsIdempotentElem, mul_add, add_mul, ha.eq, hb.eq, add_add_add_comm, ← add_assoc,
+    add_assoc a, hab, zero_add]
+
 end IsIdempotentElem

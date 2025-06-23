@@ -79,10 +79,9 @@ theorem add [NonUnitalNonAssocSemiring R] [StarRing R]
     IsStarProjection (p + q) where
   isSelfAdjoint := hp.isSelfAdjoint.add hq.isSelfAdjoint
   isIdempotentElem := by
-    rw [IsIdempotentElem]
-    have : q * p = 0 := by
-      simpa [hp.isSelfAdjoint.star_eq, hq.isSelfAdjoint.star_eq] using congr(star $(hpq))
-    simp [mul_add, add_mul, hp.isIdempotentElem.eq, hq.isIdempotentElem.eq, hpq, this]
+    apply IsIdempotentElem.add hp.isIdempotentElem hq.isIdempotentElem
+    rw [hpq, zero_add]
+    simpa [hp.isSelfAdjoint.star_eq, hq.isSelfAdjoint.star_eq] using congr(star $(hpq))
 
 /-- The product of star projections is a star projection if they commute. -/
 theorem mul [NonUnitalSemiring R] [StarRing R]
