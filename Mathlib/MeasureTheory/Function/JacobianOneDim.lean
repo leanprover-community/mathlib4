@@ -182,9 +182,8 @@ theorem lintegral_image_eq_lintegral_deriv_mul_of_monotoneOn (hs : MeasurableSet
     ⟨a, b, c, h_union, ha, hb, hc, h_disj, h_disj', a_count, fb_count, deriv_b, deriv_c, inj_c⟩
   have I : ∫⁻ x in s, ENNReal.ofReal (f' x) * u (f x)
       = ∫⁻ x in c, ENNReal.ofReal (f' x) * u (f x) := by
-    have : ∫⁻ x in a, ENNReal.ofReal (f' x) * u (f x) = 0 := by
-      have : volume a = 0 := a_count.measure_zero volume
-      exact setLIntegral_measure_zero a _ this
+    have : ∫⁻ x in a, ENNReal.ofReal (f' x) * u (f x) = 0 :=
+      setLIntegral_measure_zero a _ (a_count.measure_zero volume)
     rw [← h_union, lintegral_union (hb.union hc) h_disj, this, zero_add]
     have : ∫⁻ x in b, ENNReal.ofReal (f' x) * u (f x) = 0 :=
       setLIntegral_eq_zero hb (fun x hx ↦ by simp [deriv_b x hx])
@@ -221,7 +220,7 @@ theorem lintegral_deriv_eq_volume_image_of_monotoneOn (hs : MeasurableSet s)
     (∫⁻ x in s, ENNReal.ofReal (f' x)) = volume (f '' s) := by
   simpa using (lintegral_image_eq_lintegral_deriv_mul_of_monotoneOn hs hf' hf 1).symm
 
-/-- Integrability in the change of variable formula for differentiable functions: if a
+/-- Integrability in the change of variable formula for differentiable functions: if a real
 function `f` is monotone and differentiable on a measurable set `s`, then a function
 `g : ℝ → F` is integrable on `f '' s` if and only if `f' x • g ∘ f` is integrable on `s` . -/
 theorem integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn (hs : MeasurableSet s)
@@ -257,7 +256,7 @@ theorem integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn (hs : Measu
     ContinuousLinearMap.one_apply, smul_eq_mul, one_mul, F']
   rw [abs_of_nonneg (deriv_c x hx)]
 
-/-- Change of variable formula for differentiable functions: if a function `f` is
+/-- Change of variable formula for differentiable functions: if a real function `f` is
 monotone and differentiable on a measurable set `s`, then the Bochner integral of a function
 `g : ℝ → F` on `f '' s` coincides with the integral of `(f' x) • g ∘ f` on `s` . -/
 theorem integral_image_eq_integral_deriv_smul_of_monotoneOn (hs : MeasurableSet s)
@@ -275,8 +274,8 @@ theorem integral_image_eq_integral_deriv_smul_of_monotoneOn (hs : MeasurableSet 
   have b_s : b ⊆ s := by rw [← h_union]; exact subset_union_left.trans subset_union_right
   have c_s : c ⊆ s := by rw [← h_union]; exact subset_union_right.trans subset_union_right
   have I : ∫ x in s, f' x • g (f x) = ∫ x in c, f' x • g (f x) := by
-    have : ∫ x in a, f' x • g (f x) = 0 := by
-      have : ∫ x in a, f' x • g (f x) = 0 := setIntegral_measure_zero _ (a_count.measure_zero volume)
+    have : ∫ x in a, f' x • g (f x) = 0 :=
+      setIntegral_measure_zero _ (a_count.measure_zero volume)
     rw [← h_union, setIntegral_union h_disj (hb.union hc) (H'.mono_set a_s) (H'.mono_set bc_s),
       this, zero_add]
     have : ∫ x in b, f' x • g (f x) = 0 :=
@@ -331,7 +330,7 @@ theorem lintegral_deriv_eq_volume_image_of_antitoneOn (hs : MeasurableSet s)
     (∫⁻ x in s, ENNReal.ofReal (-f' x)) = volume (f '' s) := by
   simpa using (lintegral_image_eq_lintegral_deriv_mul_of_antitoneOn hs hf' hf 1).symm
 
-/-- Integrability in the change of variable formula for differentiable functions: if a
+/-- Integrability in the change of variable formula for differentiable functions: if a real
 function `f` is antitone and differentiable on a measurable set `s`, then a function
 `g : ℝ → F` is integrable on `f '' s` if and only if `-f' x • g ∘ f` is integrable on `s` . -/
 theorem integrableOn_image_iff_integrableOn_deriv_smul_of_antitoneOn (hs : MeasurableSet s)
@@ -350,7 +349,7 @@ theorem integrableOn_image_iff_integrableOn_deriv_smul_of_antitoneOn (hs : Measu
   rw [A, ← image_comp] at B
   convert B using 3 with x hx x <;> simp [n, e]
 
-/-- Change of variable formula for differentiable functions: if a function `f` is
+/-- Change of variable formula for differentiable functions: if a real function `f` is
 antitone and differentiable on a measurable set `s`, then the Bochner integral of a function
 `g : ℝ → F` on `f '' s` coincides with the integral of `(-f' x) • g ∘ f` on `s` . -/
 theorem integral_image_eq_integral_deriv_smul_of_antitone (hs : MeasurableSet s)
