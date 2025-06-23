@@ -110,7 +110,7 @@ instance (priority := 100) NormMulClass.toNormSMulClass_op [SeminormedRing α] [
   norm_smul a b := mul_comm ‖b‖ ‖a‖ ▸ norm_mul b a.unop
 
 /-- Mixin class for scalar-multiplication actions with a strictly multiplicative norm, i.e.
-`‖r • x‖ = ‖r‖ * ‖x‖`. -/
+`‖r • x‖ₑ = ‖r‖ₑ * ‖x‖ₑ`. -/
 class ENormSMulClass (α β : Type*) [ENorm α] [ENorm β] [SMul α β] : Prop where
   protected enorm_smul (r : α) (x : β) : ‖r • x‖ₑ = ‖r‖ₑ * ‖x‖ₑ
 

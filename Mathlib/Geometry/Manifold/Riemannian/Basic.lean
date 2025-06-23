@@ -10,8 +10,8 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
 
 /-! # Riemannian manifolds
 
-A Riemannian manifold `M` is a real manifold such that its tangent spaces are endowed with a
-scalar product, depending smoothly on the point, and such that `M` has an emetric space
+A Riemannian manifold `M` is a real manifold such that its tangent spaces are endowed with an
+inner product, depending smoothly on the point, and such that `M` has an emetric space
 structure for which the distance is the infimum of lengths of paths. -/
 
 open Bundle Bornology Set MeasureTheory Manifold
@@ -31,10 +31,10 @@ section
 variable [EMetricSpace M] [ChartedSpace H M] [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
 
 variable (I M) in
-/-- Consider a manifold in which the tangent spaces are already endowed with a scalar product, and
-already endowed with an extended distance. We say that this is a Riemannian manifold if the distance
-is given by the infimum of the lengths of `C^1` paths, measured using the norm in the tangent
-spaces.
+/-- Consider a manifold in which the tangent spaces are already endowed with an inner product, and
+the space is already endowed with an extended distance. We say that this is a Riemannian manifold
+if the distance is given by the infimum of the lengths of `C^1` paths, measured using the norm in
+the tangent spaces.
 
 This is a `Prop` valued typeclass, on top of existing data. -/
 class IsRiemannianManifold : Prop where
