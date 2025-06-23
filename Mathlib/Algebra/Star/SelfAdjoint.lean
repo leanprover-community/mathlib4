@@ -105,6 +105,7 @@ theorem _root_.isSelfAdjoint_map {F R S : Type*} [Star R] [Star S] [FunLike F R 
 @[aesop 10% apply]
 theorem isStarNormal {R : Type*} [Mul R] [Star R] {x : R} (hx : IsSelfAdjoint x) :
     IsStarNormal x := ⟨by simp only [Commute, SemiconjBy, hx.star_eq]⟩
+
 section AddMonoid
 
 variable [AddMonoid R] [StarAddMonoid R]
