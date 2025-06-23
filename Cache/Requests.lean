@@ -32,7 +32,7 @@ def findMathlibRemote (mathlibDepPath : FilePath) : IO String := do
     let parts := line.trim.split (· == '\t')
     if parts.length >= 2 then
       let remoteName := parts[0]!
-      let remoteUrl := parts[1]!.split (· == ' ')[0]! -- Remove (fetch) or (push) suffix
+      let remoteUrl := parts[1]!.split (· == ' ') -- Remove (fetch) or (push) suffix
 
       -- Check if this remote points to leanprover-community/mathlib4
       let isMathlibRepo := remoteUrl.contains "leanprover-community/mathlib4"
@@ -50,6 +50,7 @@ def findMathlibRemote (mathlibDepPath : FilePath) : IO String := do
       let mut warning := s!"Some Mathlib ecosystem tools assume that the git remote for `leanprover-community/mathlib4` is named `upstream`. You have named it `{remoteName}` instead. We recommend changing the name to `upstream`."
       if originPointsToMathlib then
         warning := warning ++ " Moreover, `origin` should point to your own fork of the mathlib4 repository."
+      warning := warning ++ " You can set this up with `git remote add upstream https://github.com/leanprover-community/mathlib4.git`."
       IO.println s!"Warning: {warning}"
     return remoteName
 
@@ -104,6 +105,7 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO String := do
         | .error _ =>
           IO.println "Warning: Could not parse GitHub CLI JSON response, falling back to origin"
       else
+        -- This is unlikely to happen, because we're tracking a PR ref
         IO.println s!"Warning: GitHub CLI failed (exit code: {prInfo.exitCode}), falling back to origin"
         IO.println s!"Make sure 'gh' is installed and authenticated. Stderr: {prInfo.stderr.trim}"
 
@@ -114,9 +116,9 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO String := do
 
   if currentBranch.exitCode == 0 then
     let branchName := currentBranch.stdout.trim
-    -- Only search for PR refs if we're not on a regular branch like master, main, or releases/*
-    let isRegularBranch := branchName == "master" || branchName == "main" ||
-                          branchName.startsWith "releases/" || branchName.startsWith "nightly-testing"
+    -- Only search for PR refs if we're not on a regular branch like master, bump/*, or nightly-testing*
+    let isRegularBranch := branchName == "master" || branchName.startsWith "bump/" ||
+                          branchName.startsWith "nightly-testing"
 
     if !isRegularBranch then
       let currentCommit ← IO.Process.output
