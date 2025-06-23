@@ -127,12 +127,6 @@ attribute [reassoc (attr := simp)] ι_naturality_left ι_naturality_right ι_uni
 
 variable {C} [MonoidalLeftAction (Type w) C] [ChosenTypeCopowers.{w} C]
 
-/-- The presence of a `ChosenTypeCopowers` proves existence of enough coproducts -/
-instance (priority := 100) : HasCoproducts.{w} C :=
-  HasCoproducts
-
--- #help note "lower priority instance"
-
 /-- The canonical map `c ⟶ J ⊙ₗ c` corresponding to `j : J`.
 If we are to think of `J ⊙ₗ c` as a `J`-indexed coproduct of copies of `c`, this is the
 inclusion at the component corresponding to `j`. This is proved in `ι_eq_ι`, but this
@@ -162,11 +156,13 @@ lemma desc_postcompose {J : Type w} {c c' c'' : C} (φ : J → (c ⟶ c')) (f : 
     desc ((· ≫ f) ∘ φ) = desc φ ≫ f := by
   aesop_cat
 
--- /-- An abstract isomorphism with the abstract J-indexed coproduct of copies of `c`. -/
--- noncomputable def isoSigmaConst (J : Type w) (c : C) : 
---     (J ⊙ₗ c) ≅ (sigmaConst.obj c).obj J := 
---   (ιIsColimit J c).uniqueUpToIso _
-  
+/-- An abstract isomorphism with the abstract J-indexed coproduct of copies of `c`. -/
+noncomputable def isoSigmaConst [HasCoproducts.{w} C] (J : Type w) (c : C) : 
+    (J ⊙ₗ c) ≅ (sigmaConst.obj c).obj J := 
+  (ιIsColimit J c).coconePointUniqueUpToIso (coproductIsCoproduct _)
+
+lemma ι_comp_isoSigmaConst
+lemma ι_comp_isoSigmaConst
 
 end ChosenTypeCopowers
 
