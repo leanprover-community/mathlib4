@@ -134,3 +134,23 @@ instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
     rfl
 
 end
+
+open Manifold Metric
+
+variable [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
+[IsManifold I 1 M]
+[IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace I x)]
+
+lemma foo (x : M) (c : ℝ≥0∞) (hc : 0 < c) :
+    {y : M | riemannianEDist I x y < c} ∈ 𝓝 x := by
+  let γ (y : M) (t : ℝ) : M :=
+    (extChartAt I x).symm
+    (ContinuousAffineMap.lineMap (extChartAt I x x) (extChartAt I x y) t)
+  obtain ⟨r, r_pos, hr⟩ : ∃ r > 0,
+      ball (extChartAt I x x) r ∩ range I ⊆ (extChartAt I x).target := by
+    have : (extChartAt I x).target ∈ 𝓝[range I] (extChartAt I x x) :=
+      extChartAt_target_mem_nhdsWithin x
+    sorry
+  let f : TangentSpace I x →L[ℝ] E := mfderiv I 𝓘(ℝ, E) (extChartAt I x) x
+  have A (v) : ‖f v‖ ≤ ‖f‖ * ‖v‖ := by
+    apply ContinuousLinearMap.le_opNorm
