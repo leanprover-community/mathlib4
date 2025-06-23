@@ -59,7 +59,7 @@ abbrev Iobj (rep : Action (TopModuleCat R) G) : Action (TopModuleCat R) G where
       { toFun f := .comp (rep.ρ g).hom (f.comp (Homeomorph.mulLeft g⁻¹))
         map_add' _ _ := by ext; simp
         map_smul' _ _ := by ext; simp
-        cont := ((continuous_postcomp _).comp (continuous_precomp _)) }
+        cont := (continuous_postcomp _).comp (continuous_precomp _) }
     map_one' := ConcreteCategory.ext (by ext; simp)
     map_mul' _ _ := ConcreteCategory.ext (by ext; simp [mul_assoc]) }
 
