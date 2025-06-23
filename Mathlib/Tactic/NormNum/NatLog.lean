@@ -6,9 +6,9 @@ Authors: Kyle Miller, Andreas Gittis
 import Mathlib.Data.Nat.Log
 import Mathlib.Tactic.NormNum
 
-/-! # `norm_num` extension for `Nat.log`
+/-! # `norm_num` extensions for `Nat.log` and `Nat.clog`
 
-This module defines a `norm_num` extension for `Nat.log`.
+This module defines `norm_num` extensions for `Nat.log` and `Nat.clog`.
 -/
 
 namespace Mathlib.Meta.NormNum
