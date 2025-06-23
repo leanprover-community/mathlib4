@@ -169,7 +169,7 @@ lemma ModelWithCorners.range_eq_target {𝕜 E H : Type*} [NontriviallyNormedFie
 
 /-- If a model with corners has full range, the `convex_range'` condition is satisfied. -/
 def ModelWithCorners.of_target_univ (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-    {E : Type*} [NormedAddCommGroup E] [inst: NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (φ : PartialEquiv H E) (hsource : φ.source = univ) (htarget : φ.target = univ)
     (hcont : Continuous φ) (hcont_inv : Continuous φ.symm) : ModelWithCorners 𝕜 E H where
   toPartialEquiv := φ
