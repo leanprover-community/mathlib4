@@ -45,7 +45,7 @@ protected theorem zero
 variable (R) in
 @[simp]
 protected theorem one [MulOneClass R] [StarMul R] : IsStarProjection (1 : R) :=
-  ⟨one_mul _, star_one _⟩
+  ⟨.one _, .one _⟩
 
 theorem pow_eq [Monoid R] [Star R] (hp : IsStarProjection p)
     {n : ℕ} (hn : n ≠ 0) : p ^ n = p := hp.isIdempotentElem.pow_eq hn
