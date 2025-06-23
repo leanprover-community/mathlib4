@@ -32,7 +32,7 @@ theorem cast_div_le {m n : ℕ} : ((m / n : ℕ) : α) ≤ m / n := by
   · exact Nat.div_mul_le_self m _
   · exact Nat.cast_pos.2 (Nat.succ_pos _)
 
-/-- Lower bound for `Nat.cast (m / n)`. -/
+/-- Lower bound for `Nat.cast (m / n)`. This is tight when `m = -1 mod n`. -/
 theorem cast_div_ge {m n : ℕ} : (m : α) / (n : α) + (n : α)⁻¹ ≤ ((m / n : ℕ) : α) + 1 := by
   by_cases hn : n = 0
   · simp [hn]
