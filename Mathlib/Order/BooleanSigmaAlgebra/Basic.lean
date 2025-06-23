@@ -77,4 +77,10 @@ theorem IsGLB.σsInf_eq (h : IsGLB s a) (hs : s.Countable) : sInf s = a :=
 theorem subset_Icc_σsInf_σsSup (hs : s.Countable) : s ⊆ Set.Icc (sInf s) (sSup s) :=
   fun _ hx => ⟨σsInf_le hs hx, le_σsSup hs hx⟩
 
+theorem σSup_le_iff (hs : s.Countable) : sSup s ≤ a ↔ ∀ b ∈ s, b ≤ a :=
+  isLUB_le_iff (isLUB_σsSup hs)
+
+theorem le_σsInf_iff (hs : s.Countable) : a ≤ sInf s ↔ ∀ b ∈ s, a ≤ b :=
+  le_isGLB_iff (isGLB_σsInf hs)
+
 end BooleanσAlgebra
