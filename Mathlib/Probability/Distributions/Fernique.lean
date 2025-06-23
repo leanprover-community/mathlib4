@@ -620,7 +620,7 @@ lemma exists_integrable_exp_sq_of_map_rotation_eq_self_of_isProbabilityMeasure
         by_contra h_lt
         refine h_ne a' ?_
         exact le_antisymm prob_le_one (h_meas_Ioo a' ha (not_le.mp h_lt))
-      rcases le_or_lt a 0 with ha | ha
+      rcases le_or_gt a 0 with ha | ha
       · calc μ {x | ‖x‖ ≤ a}
         _ ≤ μ {x | ‖x‖ ≤ 1} := measure_mono fun x hx ↦ hx.trans (ha.trans (by positivity))
         _ ≤ 2⁻¹ := h_of_pos _ (by positivity)
