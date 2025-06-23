@@ -35,6 +35,11 @@ namespace QuotSMulTop
 
 open Submodule Function TensorProduct
 
+/-- If `M'` is isomorphic to `M''` as `R`-modules, then `M'⧸rM'` is isomorphic to `M''⧸rM''`. -/
+protected def congr (e : M' ≃ₗ[R] M'') : QuotSMulTop r M' ≃ₗ[R] QuotSMulTop r M'' :=
+  Submodule.Quotient.equiv (r • ⊤) (r • ⊤) e <|
+    (Submodule.map_pointwise_smul r _ e.toLinearMap).trans (by simp)
+
 /-- Reducing a module modulo `r` is the same as left tensoring with `R/(r)`. -/
 noncomputable def equivQuotTensor :
     QuotSMulTop r M ≃ₗ[R] (R ⧸ Ideal.span {r}) ⊗[R] M :=
@@ -126,5 +131,70 @@ noncomputable def quotSMulTopTensorEquivQuotSMulTop :
   (equivQuotTensor r M').rTensor M ≪≫ₗ
     TensorProduct.assoc R (R ⧸ Ideal.span {r}) M' M ≪≫ₗ
       (equivQuotTensor r (M' ⊗[R] M)).symm
+
+variable (S : Type*) [CommRing S] [Algebra R S]
+
+variable {M S} in
+theorem _root_.TensorProduct.tsmul_eq_smul_one_tuml (s : S) (m : M) :
+    s ⊗ₜ[R] m = s • (1 ⊗ₜ[R] m) := by
+  nth_rw 1 [show s = s • 1 from by simp]
+  rfl
+
+@[simp]
+theorem Submodule.Quotient.mk_out {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    {p : Submodule R M} (m : M ⧸ p) : Submodule.Quotient.mk (Quotient.out m) = m :=
+  Quotient.out_eq m
+
+/-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be an `R`-algebra, then
+  `S ⊗[R] (M/rM)` is isomorphic to `(S ⊗[R] M)⧸r(S ⊗[R] M)` as `S`-modules. -/
+noncomputable def tensorQuotSMulTopEquivQuotSMulTopAlgebraMapTensor :
+    S ⊗[R] QuotSMulTop r M ≃ₗ[S] QuotSMulTop ((algebraMap R S) r) (S ⊗[R] M) :=
+  let f : S ⊗[R] QuotSMulTop r M →ₗ[S] QuotSMulTop ((algebraMap R S) r) (S ⊗[R] M) := by
+    apply LinearMap.liftBaseChange S ?_
+    apply Submodule.mapQ (r • ⊤) ((algebraMap R S) r • ⊤) (TensorProduct.mk R S M 1) (fun _ ↦ ?_)
+    simp only [Submodule.mem_smul_pointwise_iff_exists, Submodule.mem_top, true_and,
+      Submodule.mem_comap, forall_exists_index]
+    intro _ hm
+    simp [← hm]
+  let N : Submodule S (S ⊗[R] M) := (algebraMap R S) r • ⊤
+  have hsm (s : S) (m : M) : N.mkQ (s ⊗ₜ[R] m) = f (s ⊗ₜ[R] Submodule.Quotient.mk m) := by
+    simpa [tsmul_eq_smul_one_tuml s m] using by rfl
+{ __ := f
+  invFun m := LinearMap.lTensor S (Submodule.mkQ (r • ⊤)) (Quotient.out m)
+  left_inv := by
+    intro m
+    have h : (LinearMap.lsmul R (S ⊗[R] QuotSMulTop r M)) r = 0 := by
+      apply TensorProduct.ext
+      ext s m
+      simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.compr₂_apply, mk_apply,
+        LinearMap.lsmul_apply, LinearMap.zero_apply]
+      rw [← tmul_smul, show r • _ = (0 : QuotSMulTop r M) from
+          (Submodule.Quotient.mk_eq_zero _).mpr (Submodule.smul_mem_pointwise_smul m r ⊤ trivial)]
+      exact tmul_zero _ s
+    have hx (m : S ⊗[R] QuotSMulTop r M) : r • m = 0 := congrFun (congrArg DFunLike.coe h) m
+    induction' m with s m m₁ m₂
+    · obtain ⟨b, _, h⟩ := (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp <|
+        (Submodule.Quotient.mk_eq_zero N).mp (Quotient.out_eq (0 : _ ⧸ N))
+      simp [← h, hx]
+    · have hsm : _ = f (s ⊗ₜ[R] m) := (hsm s (Quotient.out m)).trans (by simp)
+      obtain ⟨b, _, h⟩ := (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp <|
+        (Submodule.Quotient.eq' N).mp (hsm.trans (Quotient.out_eq _).symm)
+      simp only [← add_eq_of_eq_sub <| h.trans (neg_add_eq_sub _ _), hx, LinearMap.coe_toAddHom,
+        AddHom.toFun_eq_coe, algebraMap_smul, map_add, map_smul, LinearMap.lTensor_tmul, zero_add]
+      congr 1
+      exact Quotient.out_eq m
+    · have hm : N.mkQ (Quotient.out (f m₁ + f m₂)) =
+        N.mkQ (Quotient.out (f m₁) + Quotient.out (f m₂)) := by simp
+      obtain ⟨b, _, h⟩ := (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp <|
+        (Submodule.Quotient.eq' N).mp hm.symm
+      simpa [← add_eq_of_eq_sub <| h.trans (neg_add_eq_sub _ _), hx] using by congr 1
+  right_inv := by
+    intro m
+    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]
+    nth_rw 2 [← Submodule.Quotient.mk_out m]
+    induction Quotient.out m
+    · simp
+    · simp [← hsm]
+    · simpa using by congr 1 }
 
 end QuotSMulTop

@@ -3,11 +3,9 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Jujian Zhang
 -/
-
-import Mathlib.LinearAlgebra.TensorProduct.Associator
 import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.LinearAlgebra.TensorProduct.Associator
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
@@ -230,3 +228,12 @@ lemma tensorQuotEquivQuotSMul_comp_mk (I : Ideal R) :
     tensorQuotEquivQuotSMul_symm_comp_mkQ I
 
 end TensorProduct
+
+open TensorProduct
+
+/-- Let `R` be a commutative ring, `S` be an `R`-algebra, `I` is be ideal of `R`, then `S ⧸ IS` is
+  isomorphic to `S ⊗[R] (R ⧸ I)`, i.e., `S ⧸ IS` is the base change of `R ⧸ I` to `S`. -/
+noncomputable def Ideal.qoutMapEquivTensorQout {R : Type*} (S : Type*) [CommRing R] [CommRing S]
+    [Algebra R S] {I : Ideal R} : (S ⧸ I.map (algebraMap R S)) ≃ₗ[R] S ⊗[R] (R ⧸ I) :=
+  LinearEquiv.symm <| tensorQuotEquivQuotSMul S I ≪≫ₗ Submodule.quotEquivOfEq _ _ (by simp) ≪≫ₗ
+    Submodule.Quotient.restrictScalarsEquiv R _

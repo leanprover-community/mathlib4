@@ -3,9 +3,8 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Module.ULift
+import Mathlib.LinearAlgebra.TensorProduct.Quotient
 import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.Tactic.Ring
 
 /-!
 # The characteristic predicate of tensor product
@@ -380,6 +379,35 @@ only if `O` is the base change of `N` to `T`. -/
 lemma IsBaseChange.comp_iff {f : M →ₗ[R] N} (hf : IsBaseChange S f) {h : N →ₗ[S] O} :
     IsBaseChange T ((h : N →ₗ[R] O) ∘ₗ f) ↔ IsBaseChange T h :=
   ⟨fun hc ↦ IsBaseChange.of_comp hf hc, fun hh ↦ IsBaseChange.comp hf hh⟩
+
+section commRing
+
+variable {R S M N P : Type*} [CommRing R] [CommRing S] [Algebra R S]
+  [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] [Module S N]
+  [IsScalarTower R S N] {f : M →ₗ[R] N} (hf : IsBaseChange S f)
+  (P : Type*) [AddCommGroup P] [Module R P] [Module S P] [IsScalarTower R S P]
+
+include hf
+
+variable (R S M) in
+/-- Let `R` be a commutative ring, `S` be an `R`-algebra, `M` be an `R`-module, `P` be an `S`
+  module, `N` be the base change of `M` to `S`, then `P ⊗[S] N` is isomorphic to `P ⊗[R] M`
+  as `S`-modules. -/
+noncomputable def IsBaseChange.tensorEquiv : P ⊗[S] N ≃ₗ[S] P ⊗[R] M :=
+  LinearEquiv.lTensor P hf.equiv.symm ≪≫ₗ AlgebraTensorModule.cancelBaseChange R S S P M
+
+/-- Let `R` be a commutative ring, `S` be an `R`-algebra, `I` is be ideal of `R`, `N` be the base
+  change of `M` to `S`, then `N ⧸ IN` ≃ₗ[R] `S ⊗[R] (M ⧸ IM)` i.e., `N ⧸ IN` is the base change of
+  `M ⧸ IM` to `S`. -/
+noncomputable def IsBaseChange.quotMapSMulEquivTensorQuot (I : Ideal R) :
+    (N ⧸ I.map (algebraMap R S) • (⊤ : Submodule S N)) ≃ₗ[R]
+    S ⊗[R] (M ⧸ (I • (⊤ : Submodule R M))) :=
+  ((tensorQuotEquivQuotSMul N (I.map (algebraMap R S))).restrictScalars R).symm ≪≫ₗ
+    (TensorProduct.comm S _ _ ≪≫ₗ hf.tensorEquiv R S M _).restrictScalars R ≪≫ₗ
+      TensorProduct.comm R _ M ≪≫ₗ LinearEquiv.lTensor M (I.qoutMapEquivTensorQout S) ≪≫ₗ
+        leftComm R M S _ ≪≫ₗ LinearEquiv.lTensor S (tensorQuotEquivQuotSMul M I)
+
+end commRing
 
 variable {R' S' : Type*} [CommSemiring R'] [CommSemiring S']
 variable [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
