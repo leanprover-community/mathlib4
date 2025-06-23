@@ -28,7 +28,7 @@ left on `D`.
 * A coproduct-preserving functor is left linear for these structures
 * A product-preserving functor is right linear for these structures
 * The chosenTypeCopowers structure on Type _
-* The chosenTypeCopowers structure on functor categories 
+* The chosenTypeCopowers structure on functor categories
 
 -/
 
@@ -93,8 +93,9 @@ lemma ι_comp_ι_comp_sigmaConstAssocIso_inv (c : C) (j : J ⊗ J') :
 
 end
 
+variable (C) in
 @[simps -isSimp]
-noncomputable def typeAction : MonoidalLeftAction (Type w) C where
+noncomputable def typeLeftActionOfHasCoproducts : MonoidalLeftAction (Type w) C where
   actionObj J c := (sigmaConst.obj c).obj J
   actionHomLeft f c := (sigmaConst.obj c).map f
   actionHomRight J _ _ f := (sigmaConst.map f).app J
@@ -114,16 +115,25 @@ end
 open scoped MonoidalLeftAction
 
 class ChosenTypeCopowers [MonoidalLeftAction (Type w) C] where
-  ι {J : Type w} (c : C) (j : J): c ⟶ (J ⊙ₗ c)
+  ι {J : Type w} (c : C) (j : J) : c ⟶ (J ⊙ₗ c)
   ι_def {J : Type w} (c : C) (j : J) : c ⟶ J ⊙ₗ c := (λₗ c).inv ≫ (fun _ ↦ j) ⊵ₗ c
-  ι_naturality_left {J J' : Type w} (f : J ⟶ J') (c : C) (j : J) : ι c j ≫ f ⊵ₗ c = ι c (f j)
-  ι_naturality_right {J : Type w} {c c' : C} (f : c ⟶ c') (j : J) : ι c j ≫ J ⊴ₗ f = f ≫ ι c' j
-  ι_unit (c : C) : ι c (.unit : 𝟙_ (Type w)) = (λₗ c).inv
+  ι_naturality_left {J J' : Type w} (f : J ⟶ J') (c : C) (j : J) :
+      ι c j ≫ f ⊵ₗ c = ι c (f j) := by
+    aesop_cat
+
+  ι_naturality_right {J : Type w} {c c' : C} (f : c ⟶ c') (j : J) :
+      ι c j ≫ J ⊴ₗ f = f ≫ ι c' j := by
+    aesop_cat
+  ι_unit (c : C) :
+      ι c (.unit : 𝟙_ (Type w)) = (λₗ c).inv := by
+    aesop_cat
   ιIsColimit (J : Type w) (c : C) : IsColimit <| Cofan.mk (J ⊙ₗ c) (ι c)
 
 namespace ChosenTypeCopowers
 
 attribute [reassoc (attr := simp)] ι_naturality_left ι_naturality_right ι_unit
+
+section
 
 variable {C} [MonoidalLeftAction (Type w) C] [ChosenTypeCopowers.{w} C]
 
@@ -157,12 +167,43 @@ lemma desc_postcompose {J : Type w} {c c' c'' : C} (φ : J → (c ⟶ c')) (f : 
   aesop_cat
 
 /-- An abstract isomorphism with the abstract J-indexed coproduct of copies of `c`. -/
-noncomputable def isoSigmaConst [HasCoproducts.{w} C] (J : Type w) (c : C) : 
-    (J ⊙ₗ c) ≅ (sigmaConst.obj c).obj J := 
+noncomputable def isoSigmaConst [HasCoproducts.{w} C] (J : Type w) (c : C) :
+    (J ⊙ₗ c) ≅ (sigmaConst.obj c).obj J :=
   (ιIsColimit J c).coconePointUniqueUpToIso (coproductIsCoproduct _)
 
-lemma ι_comp_isoSigmaConst
-lemma ι_comp_isoSigmaConst
+section
+variable [HasCoproducts.{w} C] {J : Type w} (c : C)
+
+@[reassoc (attr := simp)]
+lemma ι_comp_isoSigmaConst_hom (j : J) :
+    ι c j ≫ (isoSigmaConst J c).hom = Sigma.ι (fun _ ↦ c) j :=
+  (ιIsColimit J c).comp_coconePointUniqueUpToIso_hom _ _
+
+@[reassoc (attr := simp)]
+lemma ι_comp_isoSigmaConst_inv (j : J) :
+    Sigma.ι (fun _ ↦ c) j ≫ (isoSigmaConst J c).inv = ι c j :=
+  (ιIsColimit J c).comp_coconePointUniqueUpToIso_inv _ _
+
+end
+
+end
+
+section
+
+/-- Construct a `ChosenTypeCopowers` from the assumption that
+coproducts of relevant sizes exist. -/
+noncomputable def monoidalLeftActionOfHasCoproducts [HasCoproducts.{w} C] :
+    letI := typeLeftActionOfHasCoproducts C
+    ChosenTypeCopowers.{w} C :=
+  letI := typeLeftActionOfHasCoproducts C
+  { ι c j := Sigma.ι (fun _ ↦ c) j
+    ι_naturality_left := by
+      simp [typeLeftActionOfHasCoproducts]
+    ι_naturality_right := by
+      simp [typeLeftActionOfHasCoproducts]
+    ιIsColimit J c := coproductIsCoproduct _ }
+
+end
 
 end ChosenTypeCopowers
 
