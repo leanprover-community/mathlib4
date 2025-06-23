@@ -299,7 +299,8 @@ theorem cycleType_cycleRange {n : ℕ} [NeZero n] {i : Fin n} (h0 : i ≠ 0) :
   exact cycleType_finRotate
 
 theorem isThreeCycle_cycleRange_two {n : ℕ} : IsThreeCycle (cycleRange 2 : Perm (Fin (n + 3))) := by
-  rw [IsThreeCycle, cycleType_cycleRange] <;> simp [Fin.ext_iff]
+  rw [IsThreeCycle, cycleType_cycleRange two_ne_zero]
+  simp
 
 end Fin
 
