@@ -263,4 +263,12 @@ lemma withBot_coe_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty) (f : ι → 
   · simpa only [iSup_pos h] using by apply le_biSup _ h
   · simpa only [iSup_neg h] using le_trans (by simp) (le_biSup _ hj)
 
+lemma withBot_coe_biInf {ι : Type*} {s : Set ι} (f : ι → ℕ∞) :
+    ⨅ i ∈ s, f i = ⨅ i ∈ s, (f i : WithBot ℕ∞) := by
+  refine le_antisymm (by simpa using fun _ ↦ biInf_le _) <|
+    (le_iInf_iff.mpr (fun i ↦ ?_)).trans_eq (WithBot.coe_iInf _ (OrderBot.bddBelow _)).symm
+  by_cases h : i ∈ s
+  · simpa only [iInf_pos h] using by apply biInf_le _ h
+  · simp [iInf_neg h]
+
 end ENat
