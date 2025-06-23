@@ -44,7 +44,8 @@ def findMathlibRemote (mathlibDepPath : FilePath) : IO String := do
 
   match mathlibRemote with
   | none =>
-    IO.println s!"{remotesInfo.stdout}"
+    IO.println s!"Stdout: {remotesInfo.stdout}"
+    IO.println s!"Stderr: {remotesInfo.stderr}"
     throw <| IO.userError "Could not find a remote pointing to leanprover-community/mathlib4"
   | some remoteName =>
     if remoteName != "upstream" then
