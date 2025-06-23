@@ -39,13 +39,11 @@ lemma one_sub_mul_self (h : IsIdempotentElem a) : (1 - a) * a = 0 := by
 
 lemma _root_.isIdempotentElem_iff_mul_one_sub_self :
     IsIdempotentElem a ↔ a * (1 - a) = 0 := by
-  rw [mul_sub, mul_one, sub_eq_zero, eq_comm]
-  rfl
+  rw [mul_sub, mul_one, sub_eq_zero, eq_comm, IsIdempotentElem]
 
 lemma _root_.isIdempotentElem_iff_one_sub_mul_self :
     IsIdempotentElem a ↔ (1 - a) * a = 0 := by
-  rw [sub_mul, one_mul, sub_eq_zero, eq_comm]
-  rfl
+  rw [sub_mul, one_mul, sub_eq_zero, eq_comm, IsIdempotentElem]
 
 instance : HasCompl {a : R // IsIdempotentElem a} where compl a := ⟨1 - a, a.prop.one_sub⟩
 
