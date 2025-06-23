@@ -44,16 +44,16 @@ variable {R : Type u} [Semiring R]
 and `n` are free variables, not necessarily equal to the actual degrees of the polynomials `f` and
 `g`. -/
 def sylvester (f g : R[X]) (m n : ℕ) : Matrix (Fin (n + m)) (Fin (n + m)) R :=
-  fun i j ↦ j.addCases
+  .of fun i j ↦ j.addCases
     (fun j₁ ↦ if (i : ℕ) ∈ Set.Icc (j₁ : ℕ) (j₁ + m) then f.coeff (i - j₁) else 0)
     (fun j₁ ↦ if (i : ℕ) ∈ Set.Icc (j₁ : ℕ) (j₁ + n) then g.coeff (i - j₁) else 0)
 
 variable (f g : R[X]) (m n : ℕ)
 
-theorem sylvester_C (a : R) : sylvester f (C a) m 0 = Matrix.diagonal (fun _ ↦ a) := by
+@[simp] theorem sylvester_C (a : R) : sylvester f (C a) m 0 = Matrix.diagonal (fun _ ↦ a) := by
   ext i j
   refine j.addCases (Fin.elim0 ·) (fun j ↦ ?_)
-  rw [sylvester, Fin.addCases_right, Matrix.diagonal_apply]
+  rw [sylvester, Matrix.of_apply, Fin.addCases_right, Matrix.diagonal_apply]
   split_ifs <;> simp_all [Fin.ext_iff]
 
 end sylvester
@@ -63,30 +63,22 @@ section resultant
 
 variable {R : Type u} [CommRing R]
 
-/-- A version of `resultant` where the degrees of the polynomials `f` and `g` are free variables.
-This is useful for proving theorems, and comparing `resultant` across rings, where the ring
-homomorphism might map the leading coefficients to `0`. -/
-def resultantAux (f g : R[X]) (m n : ℕ) : R :=
-  (sylvester f g m n).det
-
 /-- The resultant of two polynomials `f` and `g` is the determinant of the Sylvester matrix of `f`
-and `g`. -/
-def resultant (f g : R[X]) : R :=
-  resultantAux f g f.natDegree g.natDegree
+and `g`. The size arguments `m` and `n` are implemented as `optParam`, meaning that the default
+values are `f.natDegree` and `g.natDegree` respectively, but they can also be specified to be
+other values. -/
+def resultant (f g : R[X]) (m : ℕ := f.natDegree) (n : ℕ := g.natDegree) : R :=
+  (sylvester f g m n).det
 
 variable (f g : R[X]) (m n : ℕ)
 
-lemma resultant_eq_resultantAux : resultant f g = resultantAux f g f.natDegree g.natDegree := rfl
-
-lemma resultant_def : resultant f g = (sylvester f g f.natDegree g.natDegree).det := rfl
+lemma resultant_def : resultant f g m n = (sylvester f g m n).det := rfl
 
 /-- For polynomial `f` and constant `a`, `Res(f, a) = a ^ m`. -/
-theorem resultantAux_C (a : R) : resultantAux f (C a) m 0 = a ^ m := by
-  rw [resultantAux, sylvester_C, Matrix.det_diagonal, Fin.prod_const, zero_add]
+@[simp] theorem resultant_C_zero (a : R) : resultant f (C a) m 0 = a ^ m := by simp [resultant_def]
 
-/-- For polynomial `f` and constant `a`, `Res(f, a) = a ^ m`, where `m = f.natDegree`. -/
-theorem resultant_C (a : R) : resultant f (C a) = a ^ f.natDegree := by
-  rw [resultant, natDegree_C, resultantAux_C]
+/-- For polynomial `f` and constant `a`, `Res(f, a) = a ^ m`. -/
+theorem resultant_C (a : R) : resultant f (C a) m = a ^ m := by simp
 
 end resultant
 
