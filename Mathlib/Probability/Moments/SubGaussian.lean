@@ -166,19 +166,18 @@ lemma ae_forall_integrable_exp_mul (h : HasSubgaussianMGF X c κ ν) :
 
 lemma ae_forall_memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (p : ℝ≥0) :
     ∀ᵐ ω' ∂ν, ∀ t, MemLp (fun ω ↦ exp (t * X ω)) p (κ ω') := by
-    filter_upwards [h.ae_forall_integrable_exp_mul] with ω' hi t
-    constructor
-    · exact (hi t).1
-    · by_cases hp : p = 0
-      · simp [hp]
-      · rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (mod_cast hp) (by simp),
-          ENNReal.coe_toReal]
-        have hf := (hi (p * t)).2
-        rw [hasFiniteIntegral_def] at hf
-        convert hf using 3 with ω
-        rw [enorm_eq_ofReal (by positivity), enorm_eq_ofReal (by positivity),
-          ENNReal.ofReal_rpow_of_nonneg (by positivity), ← exp_mul, mul_comm, ← mul_assoc]
-        positivity
+  filter_upwards [h.ae_forall_integrable_exp_mul] with ω' hi t
+  constructor
+  · exact (hi t).1
+  · by_cases hp : p = 0
+    · simp [hp]
+    rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (mod_cast hp) (by simp),
+      ENNReal.coe_toReal]
+    have hf := (hi (p * t)).lintegral_lt_top
+    convert hf using 3 with ω
+    rw [enorm_eq_ofReal (by positivity), ENNReal.ofReal_rpow_of_nonneg (by positivity),
+      ← exp_mul, mul_comm, ← mul_assoc]
+    positivity
 
 lemma memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (t : ℝ) (p : ℝ≥0) :
     MemLp (fun ω ↦ exp (t * X ω)) p (κ ∘ₘ ν) := by
@@ -257,9 +256,7 @@ lemma zero_measure : HasSubgaussianMGF X c κ (0 : Measure Ω') := ⟨by simp, b
 
 lemma neg {c : ℝ≥0} (h : HasSubgaussianMGF X c κ ν) : HasSubgaussianMGF (-X) c κ ν where
   integrable_exp_mul t := by simpa using h.integrable_exp_mul (-t)
-  mgf_le := by
-    filter_upwards [h.mgf_le] with ω' hm t
-    simpa [mgf] using hm (-t)
+  mgf_le := by filter_upwards [h.mgf_le] with ω' hm t using by simpa [mgf] using hm (-t)
 
 lemma congr {Y : Ω → ℝ} (h : HasSubgaussianMGF X c κ ν) (h' : X =ᵐ[κ ∘ₘ ν] Y) :
     HasSubgaussianMGF Y c κ ν where
@@ -322,7 +319,7 @@ end ChernoffBound
 
 section Zero
 
-lemma zero_subgaussian_ae_zero_lt_null (h : HasSubgaussianMGF X 0 κ ν) :
+lemma measure_pos_eq_zero_of_hasSubGaussianMGF_zero (h : HasSubgaussianMGF X 0 κ ν) :
     ∀ᵐ ω' ∂ν, (κ ω') {ω | 0 < X ω} = 0 := by
   have hs : {ω | 0 < X ω} = ⋃ ε : {ε : ℚ // 0 < ε}, {ω | ε ≤ X ω} := by
     ext ω
@@ -333,8 +330,7 @@ lemma zero_subgaussian_ae_zero_lt_null (h : HasSubgaussianMGF X 0 κ ν) :
       exact ⟨q, (q.cast_pos.1 h1), h2.le⟩
     · intro ⟨q, h1, h2⟩
       exact lt_of_lt_of_le (q.cast_pos.2 h1) h2
-  have hb : ∀ ε : ℚ, ∀ᵐ ω' ∂ν, 0 < ε → (κ ω') {ω | ε ≤ X ω} = 0 := by
-    intro ε
+  have hb (ε : ℚ) : ∀ᵐ ω' ∂ν, 0 < ε → (κ ω') {ω | ε ≤ X ω} = 0 := by
     filter_upwards [h.measure_ge_le_exp_add ε, h.isFiniteMeasure] with ω' hm _ hε
     simp only [neg_mul, NNReal.coe_zero, zero_mul, zero_div, add_zero] at hm
     suffices (κ ω').real {ω | ε ≤ X ω} = 0 by simpa [Measure.real, ENNReal.toReal_eq_zero_iff]
@@ -349,8 +345,10 @@ lemma zero_subgaussian_ae_zero_lt_null (h : HasSubgaussianMGF X 0 κ ν) :
   simp only [hs, measure_iUnion_null_iff, Subtype.forall]
   exact fun _ ↦ hn _
 
-lemma zero_subgaussian_ae_ae_zero (h : HasSubgaussianMGF X 0 κ ν) : ∀ᵐ ω' ∂ν, X =ᵐ[κ ω'] 0 := by
-  filter_upwards [(h.neg).zero_subgaussian_ae_zero_lt_null, h.zero_subgaussian_ae_zero_lt_null]
+lemma ae_eq_zero_of_hasSubgaussianMGF_zero (h : HasSubgaussianMGF X 0 κ ν) :
+    ∀ᵐ ω' ∂ν, X =ᵐ[κ ω'] 0 := by
+  filter_upwards [(h.neg).measure_pos_eq_zero_of_hasSubGaussianMGF_zero,
+    h.measure_pos_eq_zero_of_hasSubGaussianMGF_zero]
   intro ω' h1 h2
   simp_rw [Pi.neg_apply, Left.neg_pos_iff] at h1
   apply nonpos_iff_eq_zero.1
@@ -359,38 +357,41 @@ lemma zero_subgaussian_ae_ae_zero (h : HasSubgaussianMGF X 0 κ ν) : ∀ᵐ ω'
   _ ≤ (κ ω') {ω | X ω < 0} + (κ ω') {ω | 0 < X ω} := measure_union_le _ _
   _ = 0 := by simp [h1, h2]
 
+/-- Auxiliary lemma for `ae_eq_zero_of_hasSubgaussianMGF_zero'`. -/
+lemma ae_eq_zero_of_hasSubgaussianMGF_zero_of_measurable
+    (hX : Measurable X) (h : HasSubgaussianMGF X 0 κ ν) :
+    X =ᵐ[κ ∘ₘ ν] 0 := by
+  rw [Filter.EventuallyEq, Measure.ae_comp_iff (measurableSet_eq_fun hX (by fun_prop))]
+  exact h.ae_eq_zero_of_hasSubgaussianMGF_zero
+
+lemma ae_eq_zero_of_hasSubgaussianMGF_zero' (h : HasSubgaussianMGF X 0 κ ν) :
+    X =ᵐ[κ ∘ₘ ν] 0 := by
+  have hX := h.aestronglyMeasurable
+  have h' : HasSubgaussianMGF (hX.mk X) 0 κ ν := h.congr hX.ae_eq_mk
+  exact hX.ae_eq_mk.trans (ae_eq_zero_of_hasSubgaussianMGF_zero_of_measurable hX.measurable_mk h')
+
 end Zero
 
 section Add
 
-lemma add_integrable_exp_mul {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX κ ν)
-    (hY : HasSubgaussianMGF Y cY κ ν) (t : ℝ) :
-    Integrable (fun ω ↦ rexp (t * (X ω + Y ω))) (κ ∘ₘ ν) := by
-  simp_rw [mul_add, exp_add]
-  convert MemLp.integrable_mul (hX.memLp_exp_mul t 2) (hY.memLp_exp_mul t 2)
-  norm_cast
-  infer_instance
-
-lemma add_zero_subgaussian {Y : Ω → ℝ} {c : ℝ≥0} (hX : HasSubgaussianMGF X c κ ν)
-    (hY : HasSubgaussianMGF Y 0 κ ν) : HasSubgaussianMGF (fun ω ↦ X ω + Y ω) c κ ν where
-  integrable_exp_mul := hX.add_integrable_exp_mul hY
-  mgf_le := by
-    filter_upwards [hY.zero_subgaussian_ae_ae_zero, hX.mgf_le] with ω' hYz hXm t
-    calc
-    _ = mgf X (κ ω') t := by
-      apply integral_congr_ae
-      filter_upwards [hYz] with ω hY0
-      simp [hY0]
-    _ ≤ exp (c * t ^ 2 / 2) := by
-      exact hXm t
-
 lemma add {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX κ ν)
     (hY : HasSubgaussianMGF Y cY κ ν) :
-    HasSubgaussianMGF (fun ω ↦ X ω + Y ω) ((cX.sqrt + cY.sqrt) ^ 2) κ ν where
-  integrable_exp_mul := hX.add_integrable_exp_mul hY
-  mgf_le := by
-    by_cases hp : cX ≠ 0 ∧ cY ≠ 0
-    · let ⟨hXp, hYp⟩ := hp
+    HasSubgaussianMGF (fun ω ↦ X ω + Y ω) ((cX.sqrt + cY.sqrt) ^ 2) κ ν := by
+  by_cases hX0 : cX = 0
+  · simp only [hX0, NNReal.sqrt_zero, zero_add, NNReal.sq_sqrt] at hX ⊢
+    refine hY.congr ?_
+    filter_upwards [ae_eq_zero_of_hasSubgaussianMGF_zero' hX] with ω hX0 using by simp [hX0]
+  by_cases hY0 : cY = 0
+  · simp only [hY0, NNReal.sqrt_zero, add_zero, NNReal.sq_sqrt] at hY ⊢
+    refine hX.congr ?_
+    filter_upwards [ae_eq_zero_of_hasSubgaussianMGF_zero' hY] with ω hY0 using by simp [hY0]
+  exact
+  { integrable_exp_mul t := by
+      simp_rw [mul_add, exp_add]
+      convert MemLp.integrable_mul (hX.memLp_exp_mul t 2) (hY.memLp_exp_mul t 2)
+      norm_cast
+      infer_instance
+    mgf_le := by
       let p := (cX.sqrt + cY.sqrt) / cX.sqrt
       let q := (cX.sqrt + cY.sqrt) / cY.sqrt
       filter_upwards [hX.mgf_le, hY.mgf_le, hX.ae_forall_memLp_exp_mul p,
@@ -414,12 +415,7 @@ lemma add {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX κ ν)
       _ = exp ((cX.sqrt + cY.sqrt) ^ 2 * t ^ 2 / 2) := by
         simp_rw [← exp_mul, ← exp_add]
         field_simp [p, q]
-        ring
-    · rw [not_and_or, not_ne_iff, not_ne_iff] at hp
-      obtain hX0 | hY0 := hp
-      · have := (hY.add_zero_subgaussian (hX0 ▸ hX)).mgf_le
-        simpa [hX0, add_comm] using this
-      · simpa [hY0] using (hX.add_zero_subgaussian (hY0 ▸ hY)).mgf_le
+        ring }
 
 variable {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {Y : Ω'' → ℝ} {cY : ℝ≥0}
 
@@ -650,8 +646,8 @@ end ChernoffBound
 
 section Zero
 
-lemma zero_subgaussian_ae_zero (h : HasSubgaussianMGF X 0 μ) : X =ᵐ[μ] 0 := by
-  simpa using (HasSubgaussianMGF_iff_kernel.1 h).zero_subgaussian_ae_ae_zero
+lemma ae_eq_zero_of_hasSubgaussianMGF_zero (h : HasSubgaussianMGF X 0 μ) : X =ᵐ[μ] 0 := by
+  simpa using (HasSubgaussianMGF_iff_kernel.1 h).ae_eq_zero_of_hasSubgaussianMGF_zero
 
 end Zero
 
