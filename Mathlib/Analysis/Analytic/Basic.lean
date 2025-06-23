@@ -72,8 +72,6 @@ notion, describing the polydisk of convergence. This notion is more specific, an
 build the general theory. We do not define it here.
 -/
 
-set_option linter.style.longFile 1700
-
 noncomputable section
 
 variable {𝕜 E F G : Type*}
@@ -349,17 +347,24 @@ lemma norm_compContinuousLinearMap_le (p : FormalMultilinearSeries 𝕜 F G) (u 
   apply le_trans (ContinuousMultilinearMap.norm_compContinuousLinearMap_le _ _)
   simp
 
+lemma enorm_compContinuousLinearMap_le (p : FormalMultilinearSeries 𝕜 F G)
+    (u : E →L[𝕜] F) (n : ℕ) : ‖p.compContinuousLinearMap u n‖ₑ ≤ ‖p n‖ₑ * ‖u‖ₑ ^ n := by
+  rw [← ofReal_norm, ← ofReal_norm, ← ofReal_norm,
+    ← ENNReal.ofReal_pow (by simp), ← ENNReal.ofReal_mul (by simp)]
+  gcongr
+  apply norm_compContinuousLinearMap_le
+
 lemma nnnorm_compContinuousLinearMap_le (p : FormalMultilinearSeries 𝕜 F G)
     (u : E →L[𝕜] F) (n : ℕ) : ‖p.compContinuousLinearMap u n‖₊ ≤ ‖p n‖₊ * ‖u‖₊ ^ n :=
   norm_compContinuousLinearMap_le p u n
 
 theorem div_le_radius_compContinuousLinearMap (p : FormalMultilinearSeries 𝕜 F G) (u : E →L[𝕜] F) :
-    p.radius / ‖u‖₊ ≤ (p.compContinuousLinearMap u).radius := by
+    p.radius / ‖u‖ₑ ≤ (p.compContinuousLinearMap u).radius := by
   obtain (rfl | h_zero) := eq_zero_or_nnnorm_pos u
   · simp
   rw [ENNReal.div_le_iff (by simpa using h_zero) (by simp)]
   refine le_of_forall_nnreal_lt fun r hr ↦ ?_
-  rw [← ENNReal.div_le_iff (by simpa using h_zero) (by simp), ← coe_div h_zero.ne']
+  rw [← ENNReal.div_le_iff (by simpa using h_zero) (by simp), enorm_eq_nnnorm, ← coe_div h_zero.ne']
   obtain ⟨C, hC_pos, hC⟩ := p.norm_mul_pow_le_of_lt_radius hr
   refine le_radius_of_bound _ C fun n ↦ ?_
   calc
@@ -383,7 +388,7 @@ theorem le_radius_compContinuousLinearMap (p : FormalMultilinearSeries 𝕜 F G)
 theorem radius_compContinuousLinearMap_le [Nontrivial F]
     (p : FormalMultilinearSeries 𝕜 F G) (u : E ≃L[𝕜] F) :
     (p.compContinuousLinearMap u.toContinuousLinearMap).radius ≤
-    ‖u.symm.toContinuousLinearMap‖₊ * p.radius := by
+    ‖u.symm.toContinuousLinearMap‖ₑ * p.radius := by
   have := (p.compContinuousLinearMap u.toContinuousLinearMap).div_le_radius_compContinuousLinearMap
     u.symm.toContinuousLinearMap
   simp only [compContinuousLinearMap_comp, ContinuousLinearEquiv.coe_comp_coe_symm,
@@ -1532,3 +1537,5 @@ theorem hasFPowerSeriesAt_iff' :
   simp_rw [add_sub_cancel_left]
 
 end
+
+set_option linter.style.longFile 1700
