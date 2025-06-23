@@ -426,7 +426,7 @@ lemma inner_eq_zero (b : OrthonormalBasis ι 𝕜 E) {i j : ι} (hij : i ≠ j) 
 lemma inner_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) : ⟪b i, b i⟫ = 1 := by
   simp [inner_self_eq_norm_sq_to_K]
 
-lemma inner_eq [DecidableEq ι] (b : OrthonormalBasis ι 𝕜 E) {i j : ι} :
+lemma inner_eq_ite [DecidableEq ι] (b : OrthonormalBasis ι 𝕜 E) (i j : ι) :
     ⟪b i, b j⟫ = if i = j then 1 else 0 := by
   by_cases h : i = j <;> simp [h]
 
