@@ -6,6 +6,7 @@ Authors: Pierre Quinton
 import Mathlib.Order.BooleanAlgebra.Defs
 import Mathlib.Order.SetNotation
 import Mathlib.Data.Set.Countable
+import Mathlib.Order.CompleteLattice.Defs
 
 /-!
 # Definitions of Boolean σ-algebras
@@ -43,3 +44,11 @@ instance (priority := 100) CompleteBooleanAlgebra.toBooleanσAlgebra [CompleteBo
     BooleanσAlgebra α where
   isLUB_σsSup (s : Set α) _ := isLUB_sSup s
   isGLB_σsInf (s : Set α) _ := isGLB_sInf s
+
+instance OrderDual.instBooleanσAlgebra (α : Type*) [BooleanσAlgebra α] :
+    BooleanσAlgebra αᵒᵈ where
+  toBooleanAlgebra := inferInstance
+  toSupSet := inferInstance
+  toInfSet := inferInstance
+  isLUB_σsSup (s : Set α) (hs : s.Countable) := IsGLB.dual (BooleanσAlgebra.isGLB_σsInf s hs)
+  isGLB_σsInf (s : Set α) (hs : s.Countable) := IsLUB.dual (BooleanσAlgebra.isLUB_σsSup s hs)
