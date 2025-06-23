@@ -38,3 +38,8 @@ class BooleanσAlgebra (α) extends BooleanAlgebra α, SupSet α, InfSet α wher
   isLUB_σsSup (s : Set α) (hs : s.Countable) : IsLUB s (sSup s)
   isGLB_σsInf (s : Set α) (hs : s.Countable) : IsGLB s (sInf s)
 
+/-- A complete Boolean algebra is a Boolean σ-algebra. -/
+instance (priority := 100) CompleteBooleanAlgebra.toBooleanσAlgebra [CompleteBooleanAlgebra α] :
+    BooleanσAlgebra α where
+  isLUB_σsSup (s : Set α) _ := isLUB_sSup s
+  isGLB_σsInf (s : Set α) _ := isGLB_sInf s
