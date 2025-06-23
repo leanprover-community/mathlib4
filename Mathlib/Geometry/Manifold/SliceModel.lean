@@ -3,15 +3,39 @@ Copyright (c) 2025 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.Instances.Real -- XXX: disentangle these later
+-- FIXME: should the instances for Euclidean spaces move into this file instead?
+import Mathlib.Geometry.Manifold.Instances.Real
 /-!
 # Embedded submanifolds
 
-We define a new typeclass `SliceModel` for models with corners.
+We define a new typeclass `SliceModel` to denote a model with corners which "embeds" into another
+one: i.e., there is an embedding of the underlying topological spaces, a continuous linear
+equivalence inclusion between the normed spaces, which are compatible with the maps given by the
+models with corners.
 
-A future PR will use this to define immersed and embedded submanifolds.
+A future PR will use this condition to define smooth (immersed and embedded) submanifolds: for `M`
+to be a submanifold of `N`, to begin with their models with corners should be slice models.
 
-TODO: expand this doc-string!
+## Main definitions and results
+
+* `SliceModel F I I`: TODO!
+
+* each model with corners is a slice model w.r.t. itself
+* being slice models is transitive
+* each model with corners `I` embeds into the products `I.prod J` and `J.prod I`
+
+* Euclidean `n`-half-space with its standard model with corners embeds into Euclidean `n`-space
+* the standard model with corners on the Euclidean `n`-quadrant embeds into its cousin on
+  Euclidean `n`-half-space (hence into its cousin on Euclidean `n`-space)
+* if `n ≤ m`, the standard model with corners on Euclidean `n`-space embeds into its cousin on
+  Euclidean `m`-space
+
+## Implementation notes
+
+We model the continuous inclusion similarly to the definition of smooth immersions:
+instead of an injective continuous linear map `E → E'`, we ask for a linear isomorphism
+`E × F ≃L[𝕜] → E'`, where the closed complement `F` is part of the definition's data.
+(Closed-ness of `F` is automatic in finite dimensions, but is required in general.)
 
 -/
 
@@ -30,19 +54,21 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {M M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] {n : WithTop ℕ∞}
 
 variable (I I' F) in
-/-- Two models with corners `I` and `I'` form a **slice model** if "I includes into I'".
-More precisely, there are an embedding `H → H'` and a continuous linear map `E → E'` so the diagram
+/--
+Informally speaking, two models with corners `I` and `I'` form a **slice model** if "`I` embeds
+into `I'`". More precisely, there are an embedding `H → H'` and a continuous linear map `E →L[𝕜] E'`
+so the diagram
 ```
   H  -I  → E'
   |        |
   |        |
   H' -I' → E'
 ```
-commutes. More precisely, we prescribe a linear equivalence `E × F → E`, for some normed space `F`,
-which induces the map `E → E'` in the obvious way.
+commutes. Formally, we prescribe a continuous linear equivalence `E × F ≃L[𝕜] E`, for some normed
+space `F`, which induces the map `E → E'` in the obvious way.
 -/
 class SliceModel where
-  /-- The continuous linear equivalence `E × F → E'` underlying this slice model -/
+  /-- The continuous linear equivalence `E × F ≃L[𝕜] E'` underlying this slice model -/
   equiv: (E × F) ≃L[𝕜] E'
   /-- The embedding `H → H'` underlying this slice model -/
   map: H → H'
@@ -54,8 +80,6 @@ namespace SliceModel
 /-- A choice of inverse of `map`: its value outside of `range map` is unspecified. -/
 noncomputable def inverse [Nonempty H] (h : SliceModel F I I') : H' → H :=
   (Function.extend h.map id (fun _ ↦ (Classical.arbitrary H)))
-
--- warm-up: I' ∘ map ⊆ im equiv ∘ I: that's basically obvious, nothing to prove
 
 lemma inverse_left_inv [Nonempty H] (h : SliceModel F I I') (x : H) :
     h.inverse (h.map x) = x :=
@@ -136,7 +160,6 @@ instance [h : SliceModel F I I'] : SliceModel F (J.prod I) (J.prod I') where
     rw [h.compatible]
 
 /-- If `I` is a slice model of `I'`, then `I.prod J` is a slice model of `I'.prod J`. -/
--- a bit more cumbersome, as equiv needs some reordering
 instance [h : SliceModel F I I'] : SliceModel F (I.prod J) (I'.prod J) where
   equiv := by
     letI pre := (ContinuousLinearEquiv.prodComm 𝕜 E E''').prodCongr (.refl 𝕜 F)
@@ -164,7 +187,7 @@ def SliceModel.modelWithCornersSelf (h : (E × F) ≃L[𝕜] E') : SliceModel F 
   compatible := by simp
 
 /-- *Any* model with corners on `E` which is an embedding is a slice model with the trivial model
-on `E`. (The embedding condition excludes strange cases of submanifolds with boundary).
+on `E`. (The embedding condition excludes strange cases of submanifolds with boundary.)
 For boundaryless models, that is always true. -/
 def SliceModel.ofEmbedding {I : ModelWithCorners 𝕜 E H} (hI : IsEmbedding I) :
     SliceModel (⊥ : Subspace 𝕜 E) I 𝓘(𝕜, E) where
@@ -173,7 +196,8 @@ def SliceModel.ofEmbedding {I : ModelWithCorners 𝕜 E H} (hI : IsEmbedding I) 
   hmap := hI
   compatible := by ext; simp
 
--- TODO: prove that I is an embedding if I is boundaryless, then add the corresponding instance
+-- TODO: prove that I is an embedding if I is boundaryless, then add the corresponding definition
+
 -- TODO: think about the boundary case, and which particular version of submanifolds
 -- this definition enforces...
 
@@ -224,11 +248,10 @@ def instTrans (h : SliceModel F I I') (h' : SliceModel F' I' I'') : SliceModel (
     ((h.equiv.prodCongr (ContinuousLinearEquiv.refl 𝕜 F')).trans h'.equiv)
   map := h'.map ∘ h.map
   hmap := h'.hmap.comp h.hmap
-  compatible := by -- paste the two commutative diagrams together
+  compatible := by -- paste the commutative diagrams for `h` and `h'` together
     ext x
-    have : (ContinuousLinearEquiv.prodAssoc 𝕜 E F F').symm (I x, 0) = ((I x, 0), 0) := rfl
     simp only [comp_apply, ContinuousLinearEquiv.trans_apply, ContinuousLinearEquiv.prodCongr_apply,
-      ContinuousLinearEquiv.refl_apply, this]
+      ContinuousLinearEquiv.refl_apply, ContinuousLinearEquiv.prodAssoc_symm_apply]
     -- can this be condensed? feels unnecessarily painful
     -- (grind errors with `unknown constant h.compatible`)
     calc
