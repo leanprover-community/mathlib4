@@ -246,12 +246,17 @@ lemma pathELength_eq_lintegral_mfderivWithin_Icc :
 @[simp] lemma pathELength_self : pathELength I γ x x = 0 := by
   simp [pathELength]
 
-lemma pathELength_congr (h : EqOn γ γ' (Icc x y)) : pathELength I γ x y = pathELength I γ' x y := by
-  simp only [pathELength_eq_lintegral_mfderivWithin_Icc]
-  apply setLIntegral_congr_fun measurableSet_Icc (fun t ht ↦ ?_)
+lemma pathELength_congr_Ioo (h : EqOn γ γ' (Ioo x y)) :
+    pathELength I γ x y = pathELength I γ' x y := by
+  simp only [pathELength_eq_lintegral_mfderiv_Ioo]
+  apply setLIntegral_congr_fun measurableSet_Ioo (fun t ht ↦ ?_)
   have A : γ t = γ' t := h ht
   congr! 2
-  exact mfderivWithin_congr h A
+  apply Filter.EventuallyEq.mfderiv_eq
+  filter_upwards [Ioo_mem_nhds ht.1 ht.2] with a ha using h ha
+
+lemma pathELength_congr (h : EqOn γ γ' (Icc x y)) : pathELength I γ x y = pathELength I γ' x y :=
+  pathELength_congr_Ioo (fun _ hx ↦ h ⟨hx.1.le, hx.2.le⟩)
 
 lemma pathELength_eq_add {γ : ℝ → M} {x y z : ℝ} (h : x ≤ y) (h' : y ≤ z) :
     pathELength I γ x z = pathELength I γ x y + pathELength I γ y z := by
@@ -488,17 +493,42 @@ lemma riemannianEDist_comm : riemannianEDist I x y = riemannianEDist I y x := by
 lemma riemannianEDist_triangle :
     riemannianEDist I x z ≤ riemannianEDist I x y + riemannianEDist I y z := by
   apply le_of_forall_gt (fun r hr ↦ ?_)
-
-
-
-
-
-
-
-
-
-#exit
-
+  rcases ENNReal.exists_add_lt_of_add_lt hr with ⟨u, hu, v, hv, huv⟩
+  rcases exists_lt_locally_constant_of_riemannianEDist_lt hu zero_lt_one with
+    ⟨γ₁, hγ₁0, hγ₁1, hγ₁_smooth, -, hγ₁_const, hγ₁⟩
+  rcases exists_lt_locally_constant_of_riemannianEDist_lt hv one_lt_two with
+    ⟨γ₂, hγ₂1, hγ₂2, hγ₂_smooth, hγ₂_const, -, hγ₂⟩
+  let γ := piecewise (Iic 1) γ₁ γ₂
+  have : riemannianEDist I x z ≤ pathELength I γ 0 2 := by
+    apply riemannianEDist_le_pathELength
+    · apply ContMDiff.contMDiffOn
+      intro t
+      rcases lt_trichotomy t 1 with ht | rfl | ht
+      · apply (hγ₁_smooth t).congr_of_eventuallyEq
+        filter_upwards [Iio_mem_nhds ht] with t' (ht' : t' < 1)
+        simp [γ, ht'.le]
+      · have : ContMDiffAt 𝓘(ℝ) I 1 (fun (_ : ℝ) ↦ y) 1 := contMDiffAt_const
+        apply this.congr_of_eventuallyEq_of_mem _ (mem_univ _)
+        simp only [nhdsWithin_univ, γ]
+        filter_upwards [hγ₁_const, hγ₂_const] with t ht h't
+        by_cases ht_mem : t ∈ Iic 1 <;> simp [ht_mem, ht, h't]
+      · apply (hγ₂_smooth t).congr_of_eventuallyEq
+        filter_upwards [Ioi_mem_nhds ht] with t' (ht' : 1 < t')
+        simp [γ, ht']
+    · simp [γ, hγ₁0]
+    · simp [γ, hγ₂2]
+    · exact zero_le_two
+  apply this.trans_lt (lt_trans ?_ huv)
+  rw [pathELength_eq_add zero_le_one one_le_two]
+  gcongr
+  · convert hγ₁ using 1
+    apply pathELength_congr
+    intro t ht
+    simp [γ, ht.2]
+  · convert hγ₂ using 1
+    apply pathELength_congr_Ioo
+    intro t ht
+    simp [γ, ht.1]
 
 end
 
