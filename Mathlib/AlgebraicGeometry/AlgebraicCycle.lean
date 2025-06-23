@@ -5,14 +5,10 @@ Authors: Raphael Douglas Giles
 -/
 import Mathlib.AlgebraicGeometry.Fiber
 import Mathlib.AlgebraicGeometry.Morphisms.Proper
-import Mathlib.Analysis.Normed.Ring.Lemmas
 import Mathlib.Combinatorics.Quiver.ReflQuiver
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.RingTheory.Henselian
 import Mathlib.Topology.LocallyFinsupp
-
-open AlgebraicGeometry Set Order LocallyRingedSpace Topology TopologicalSpace
-  CategoryTheory
 
 /-!
 # Algebraic Cycles
@@ -20,6 +16,9 @@ open AlgebraicGeometry Set Order LocallyRingedSpace Topology TopologicalSpace
 We define algebraic cycles on a scheme `X` to be functions `c : X → ℤ` whose support is
 locally finite.
 -/
+
+open AlgebraicGeometry Set Order LocallyRingedSpace Topology TopologicalSpace
+  CategoryTheory
 
 universe u v
 variable (R : Type*)
