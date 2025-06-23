@@ -104,7 +104,6 @@ scoped notation "λₗ["J"]" => MonoidalLeftActionStruct.actionUnitIso (C := J)
 end MonoidalLeftAction
 
 open scoped MonoidalLeftAction in
-
 /-- A `MonoidalLeftAction C D` is is the data of:
 - For every object `c : C` and `d : D`, an object `c ⊙ₗ d` of `D`.
 - For every morphism `f : (c : C) ⟶ c'` and every `d : D`, a morphism
@@ -373,7 +372,7 @@ class MonoidalRightActionStruct [MonoidalCategoryStruct C] where
   /-- The action of an object `c : C` on a map `f : d ⟶ d'` in `D`.
   If we are to consider the action as a functor `Α : C ⥤ D ⥤ D`,
   this is (Α.obj c).map f`. This is denoted `f ⊵ᵣ c`. -/
-  actionHomLeft {d d' : D} (f : d ⟶ d') (c : C):
+  actionHomLeft {d d' : D} (f : d ⟶ d') (c : C) :
     actionObj d c ⟶ actionObj d' c
   /-- The action of a pair of maps `f : c ⟶ c'` and `d ⟶ d'`. By default,
   this is defined in terms of `actionHomLeft` and `actionHomRight`. -/
@@ -419,7 +418,6 @@ scoped notation "ρᵣ["J"]" => MonoidalRightActionStruct.actionUnitIso (C := J)
 end MonoidalRightAction
 
 open scoped MonoidalRightAction in
-
 /-- A `MonoidalRightAction C D` is is the data of:
 - For every object `c : C` and `d : D`, an object `c ⊙ᵣ d` of `D`.
 - For every morphism `f : (c : C) ⟶ c'` and every `d : D`, a morphism
@@ -446,7 +444,7 @@ class MonoidalRightAction [MonoidalCategory C] extends
       (f₁ ≫ f₂) ⊙ᵣₘ (g₁ ≫ g₂) = (f₁ ⊙ᵣₘ g₁) ≫ (f₂ ⊙ᵣₘ g₂) := by
     aesop_cat
   actionAssocIso_hom_naturality
-      {d₁ d₂ : D} {c₁ c₂ c₃ c₄: C} (f : d₁ ⟶ d₂) (g : c₁ ⟶ c₂) (h : c₃ ⟶ c₄) :
+      {d₁ d₂ : D} {c₁ c₂ c₃ c₄ : C} (f : d₁ ⟶ d₂) (g : c₁ ⟶ c₂) (h : c₃ ⟶ c₄) :
       (f ⊙ᵣₘ g ⊗ₘ h) ≫ (αᵣ d₂ c₂ c₄).hom =
         (αᵣ d₁ c₁ c₃).hom ≫ ((f ⊙ᵣₘ g) ⊙ᵣₘ h) := by
     aesop_cat
@@ -502,12 +500,12 @@ variable {C D} [MonoidalCategory C] [MonoidalRightAction C D]
 -- Simp normal forms are aligned with the ones in `MonoidalCateogry`.
 
 @[simp]
-lemma actionHom_id {d d' : D} (f : d ⟶ d') (c : C):
+lemma actionHom_id {d d' : D} (f : d ⟶ d') (c : C) :
     f ⊙ᵣₘ (𝟙 c) = f ⊵ᵣ c := by
   simp [actionHom_def]
 
 @[simp]
-lemma id_actionHom  (d : D) {c c' : C} (f : c ⟶ c'):
+lemma id_actionHom  (d : D) {c c' : C} (f : c ⟶ c') :
     (𝟙 d) ⊙ᵣₘ f = d ⊴ᵣ f := by
   simp [actionHom_def]
 
@@ -523,7 +521,7 @@ theorem unit_actionHomRight {x y : D} (f : x ⟶ y) :
   simp
 
 @[reassoc, simp]
-theorem actionHomLeft_tensor  {z z' : D} (f : z ⟶ z') (x y : C):
+theorem actionHomLeft_tensor {z z' : D} (f : z ⟶ z') (x y : C) :
     (f ⊵ᵣ (x ⊗ y)) = (αᵣ z x y).hom ≫ (f ⊵ᵣ x) ⊵ᵣ y ≫ (αᵣ z' x y).inv := by
   simp only [← id_actionHom, ← actionHom_id]
   rw [← Category.assoc, ← actionAssocIso_hom_naturality]
@@ -551,7 +549,7 @@ theorem actionHom_def' {x₁ y₁ : D} {x₂ y₂ : C} (f : x₁ ⟶ y₁) (g : 
 
 @[reassoc]
 theorem actionAssocIso_inv_naturality
-    {d₁ d₂ : D} {c₁ c₂ c₃ c₄: C} (f : d₁ ⟶ d₂) (g : c₁ ⟶ c₂) (h : c₃ ⟶ c₄) :
+    {d₁ d₂ : D} {c₁ c₂ c₃ c₄ : C} (f : d₁ ⟶ d₂) (g : c₁ ⟶ c₂) (h : c₃ ⟶ c₄) :
     ((f ⊙ᵣₘ g) ⊙ᵣₘ h) ≫ (αᵣ d₂ c₂ c₄).inv =
     (αᵣ d₁ c₁ c₃).inv ≫ (f ⊙ᵣₘ g ⊗ₘ h) := by
   rw [Iso.comp_inv_eq, Category.assoc, Eq.comm, Iso.inv_comp_eq, actionAssocIso_hom_naturality]
@@ -645,22 +643,20 @@ def curriedAction : C ⥤ D ⥤ D where
       naturality _ _ _ := by simp [action_exchange] }
 
 variable {C} in
-/-- Bundle `d ↦ c ⊙ᵣ d` as a functor. -/
+/-- Bundle `d ↦ d ⊙ᵣ c` as a functor. -/
 @[simps!]
 abbrev actionRight (c : C) : D ⥤ D := curriedAction C D|>.obj c
 
 variable {D} in
-/-- Bundle `c ↦ c ⊙ᵣ d` as a functor. -/
+/-- Bundle `c ↦ d ⊙ᵣ c` as a functor. -/
 @[simps!]
 abbrev actionLeft (d : D) : C ⥤ D := curriedAction C D|>.flip.obj d
 
 /-- Bundle `αᵣ _ _ _` as an isomorphism of trifunctors. -/
 @[simps!]
 def actionAssocNatIso :
-    (Functor.postcompose₂.obj (curriedAction C D)|>.obj
-      (curriedTensor C)) ≅
-    bifunctorComp₂₃Functor|>.obj (curriedAction C D)|>.obj
-      (curriedAction C D)|>.flip :=
+    bifunctorComp₁₂ (curriedTensor C) (curriedAction C D) ≅
+    (bifunctorComp₂₃ (curriedAction C D) (curriedAction C D)).flip :=
   NatIso.ofComponents fun _ ↦
     NatIso.ofComponents fun _ ↦
      NatIso.ofComponents fun _ ↦ αᵣ _ _ _
