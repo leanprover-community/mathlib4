@@ -3,7 +3,7 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.Tactic.Ring
 
 /-!
-`congr(...)` tests with heavier imports (`TermCongr` is in `Mathlib.Tactic.Common`)
+`congr(...)` tests with heavier imports (`TermCongr` is in `Mathlib/Tactic/Common.lean`)
 -/
 
 namespace Tests

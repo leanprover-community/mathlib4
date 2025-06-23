@@ -613,7 +613,6 @@ def of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ 
   { X := X
     d := fun i j => if h : i = j + 1 then eqToHom (by rw [h]) ≫ d j else 0
     shape := fun i j w => by
-      dsimp
       rw [dif_neg (Ne.symm w)]
     d_comp_d' := fun i j k hij hjk => by
       dsimp at hij hjk
@@ -831,7 +830,6 @@ def of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (n +
   { X := X
     d := fun i j => if h : i + 1 = j then d _ ≫ eqToHom (by rw [h]) else 0
     shape := fun i j w => by
-      dsimp
       rw [dif_neg]
       exact w
     d_comp_d' := fun i j k => by

@@ -797,12 +797,10 @@ def curriedTensor : C ⥤ C ⥤ C where
 variable {C}
 
 /-- Tensoring on the left with a fixed object, as a functor. -/
-@[simps!]
-def tensorLeft (X : C) : C ⥤ C := (curriedTensor C).obj X
+abbrev tensorLeft (X : C) : C ⥤ C := (curriedTensor C).obj X
 
 /-- Tensoring on the right with a fixed object, as a functor. -/
-@[simps!]
-def tensorRight (X : C) : C ⥤ C := (curriedTensor C).flip.obj X
+abbrev tensorRight (X : C) : C ⥤ C := (curriedTensor C).flip.obj X
 
 variable (C)
 
