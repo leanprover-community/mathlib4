@@ -158,9 +158,14 @@ noncomputable def TensorProduct.quotMapSMulEquivTensorQuot (I : Ideal R) :
 include hf
 
 variable (R S M) in
+/-- Let `R` be a commutative ring, `S` be an `R`-algebra, `M` be an `R`-module, `P` be an `S`
+  module, `N` be the base change of `M` to `S`, then `P ⊗[S] N` is isomorphic to `P ⊗[R] M`
+  as `S`-modules. -/
 noncomputable def isBaseChangeTensorEquiv : N ⊗[S] P ≃ₗ[R] M ⊗[R] P :=
   (LinearEquiv.rTensor P hf.equiv.symm).restrictScalars R ≪≫ₗ baseChangeTensorEquiv R S M P
 
+/-- Let `R` be a commutative ring, `S` be an `R`-algebra, `I` is be ideal of `R`, `N` be the base
+  change of `M` to `S`, then `N ⧸ IN` is isomorphic to `S ⊗[R] (M ⧸ IM)` as `S` modules. -/
 noncomputable def IsBaseChange.quotMapSMulEquivTensorQuot (I : Ideal R) :
     (N ⧸ I.map (algebraMap R S) • (⊤ : Submodule S N)) ≃ₗ[R]
     S ⊗[R] (M ⧸ (I • (⊤ : Submodule R M))) :=
