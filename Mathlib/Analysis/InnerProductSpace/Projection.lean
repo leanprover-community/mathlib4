@@ -3,12 +3,13 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Analysis.Convex.Basic
+
+import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.Analysis.InnerProductSpace.Orthogonal
 import Mathlib.Analysis.InnerProductSpace.Symmetric
 import Mathlib.Analysis.NormedSpace.RCLike
 import Mathlib.Analysis.RCLike.Lemmas
-import Mathlib.Algebra.DirectSum.Decomposition
+
 
 /-!
 # The orthogonal projection
@@ -586,6 +587,30 @@ variable (K)
 theorem orthogonalProjection_norm_le : ‖K.orthogonalProjection‖ ≤ 1 :=
   LinearMap.mkContinuous_norm_le _ (by norm_num) _
 
+theorem norm_orthogonalProjection_apply {v : E} (hv : v ∈ K) :
+    ‖orthogonalProjection K v‖ = ‖v‖ :=
+  congr(‖$(K.orthogonalProjection_eq_self_iff.mpr hv)‖)
+
+/-- The orthogonal projection onto a closed subspace is norm non-increasing. -/
+theorem norm_orthogonalProjection_apply_le (v : E) :
+    ‖orthogonalProjection K v‖ ≤ ‖v‖ := by calc
+  ‖orthogonalProjection K v‖ ≤ ‖orthogonalProjection K‖ * ‖v‖ := K.orthogonalProjection.le_opNorm _
+  _ ≤ 1 * ‖v‖ := by gcongr; exact orthogonalProjection_norm_le K
+  _ = _ := by simp
+
+/-- The orthogonal projection onto a closed subspace is a `1`-Lipschitz map. -/
+theorem lipschitzWith_orthogonalProjection :
+    LipschitzWith 1 (orthogonalProjection K) :=
+  ContinuousLinearMap.lipschitzWith_of_opNorm_le (orthogonalProjection_norm_le K)
+
+/-- The operator norm of the orthogonal projection onto a nontrivial subspace is `1`. -/
+theorem norm_orthogonalProjection (hK : K ≠ ⊥) :
+    ‖K.orthogonalProjection‖ = 1 := by
+  refine le_antisymm K.orthogonalProjection_norm_le ?_
+  obtain ⟨x, hxK, hx_ne_zero⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hK
+  simpa [K.norm_orthogonalProjection_apply hxK, norm_eq_zero, hx_ne_zero]
+    using K.orthogonalProjection.ratio_le_opNorm x
+
 variable (𝕜)
 
 theorem smul_orthogonalProjection_singleton {v : E} (w : E) :
@@ -771,6 +796,18 @@ theorem orthogonal_orthogonal [K.HasOrthogonalProjection] : Kᗮᗮ = K := by
   · intro hv w hw
     rw [inner_eq_zero_symm]
     exact hw v hv
+
+lemma orthogonal_le_orthogonal_iff {K₀ K₁ : Submodule 𝕜 E} [K₀.HasOrthogonalProjection]
+    [K₁.HasOrthogonalProjection] : K₀ᗮ ≤ K₁ᗮ ↔ K₁ ≤ K₀ :=
+  ⟨fun h ↦ by simpa using orthogonal_le h, orthogonal_le⟩
+
+lemma orthogonal_le_iff_orthogonal_le {K₀ K₁ : Submodule 𝕜 E} [K₀.HasOrthogonalProjection]
+    [K₁.HasOrthogonalProjection] : K₀ᗮ ≤ K₁ ↔ K₁ᗮ ≤ K₀ := by
+  rw [← orthogonal_le_orthogonal_iff, orthogonal_orthogonal]
+
+lemma le_orthogonal_iff_le_orthogonal {K₀ K₁ : Submodule 𝕜 E} [K₀.HasOrthogonalProjection]
+    [K₁.HasOrthogonalProjection] : K₀ ≤ K₁ᗮ ↔ K₁ ≤ K₀ᗮ := by
+  rw [← orthogonal_le_orthogonal_iff, orthogonal_orthogonal]
 
 /-- In a Hilbert space, the orthogonal complement of the orthogonal complement of a subspace `K`
 is the topological closure of `K`.
@@ -985,6 +1022,10 @@ section FiniteDimensional
 open Module
 
 variable [FiniteDimensional 𝕜 K]
+
+@[simp]
+theorem topologicalClosure_eq_self : K.topologicalClosure = K :=
+  K.closed_of_finiteDimensional.submodule_topologicalClosure_eq
 
 @[simp]
 theorem det_reflection : LinearMap.det K.reflection.toLinearMap = (-1) ^ finrank 𝕜 Kᗮ := by
