@@ -66,7 +66,7 @@ theorem continuousWithinAt_right_of_monotoneOn_of_exists_between {f : α → β}
   · filter_upwards [hs, @self_mem_nhdsWithin _ _ a (Ici a)] with _ hxs hxa using hb.trans_le
       (h_mono has hxs hxa)
   · rcases hfs b hb with ⟨c, hcs, hac, hcb⟩
-    have : a < c := not_le.1 fun h => hac.not_le <| h_mono hcs has h
+    have : a < c := not_le.1 fun h => hac.not_ge <| h_mono hcs has h
     filter_upwards [hs, Ico_mem_nhdsGE this]
     rintro x hx ⟨_, hxc⟩
     exact (h_mono hx hcs hxc.le).trans_lt hcb

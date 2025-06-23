@@ -624,7 +624,7 @@ variable (α : Type*) [Fintype α] [DecidableEq α]
 /-- The `alternatingGroup` on α is (Fintype.card α - 2)-pretransitive. -/
 theorem isMultiplyPretransitive :
     IsMultiplyPretransitive (alternatingGroup α) α (Nat.card α - 2) := by
-  rcases lt_or_le (Nat.card α) 2 with h2 | h2
+  rcases lt_or_ge (Nat.card α) 2 with h2 | h2
   · rw [Nat.sub_eq_zero_of_le (le_of_lt h2)]
     apply is_zero_pretransitive
   have h2le : Nat.card α - 2 ≤ Nat.card α:= sub_le (Nat.card α) 2
@@ -713,11 +713,11 @@ This holds for any `α`, even when `Nat.card α ≤ 2` and the action
 is not preprimitive, because it is not pretransitive. -/
 theorem isTrivialBlock_of_isBlock {B : Set α} (hB : IsBlock (alternatingGroup α) B) :
     IsTrivialBlock B := by
-  rcases le_or_lt (Nat.card α) 2 with h2 | h2
+  rcases le_or_gt (Nat.card α) 2 with h2 | h2
   · exact isTrivialBlock_of_card_le_two h2 B
-  rcases le_or_lt (Nat.card α) 3 with h3 | h4
+  rcases le_or_gt (Nat.card α) 3 with h3 | h4
   · have h3' : Nat.card α = 3 := le_antisymm h3 h2
-    rcases le_or_lt B.ncard 1 with h1 | h2
+    rcases le_or_gt B.ncard 1 with h1 | h2
     · apply Or.intro_left
       rwa [← Set.ncard_le_one_iff_subsingleton]
     · apply Or.intro_right
