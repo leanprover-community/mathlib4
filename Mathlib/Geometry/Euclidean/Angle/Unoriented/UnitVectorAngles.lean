@@ -13,7 +13,7 @@ import Mathlib.Analysis.NormedSpace.Normalized
 This file contains proof that angles between unit length vectors obey the triangle inequality.
 -/
 
-namespace UnitSphereAngles
+namespace UnitVectorAngles
 
 open InnerProductGeometry
 
@@ -60,9 +60,10 @@ lemma inner_ortho_nonneg {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1): 0 ≤ 
 @[simp]
 lemma inner_normalized_ortho (x : V) {y : V} (hy : ‖y‖ = 1): ⟪y, normalized (ortho x y)⟫ = 0 := by
   rw [ortho, normalized]
-  field_simp [real_inner_smul_right, inner_sub_right, inner_self_eq_one hy, real_inner_comm]
+  field_simp [real_inner_smul_right, inner_sub_right, inner_self_eq_one hy,
+    real_inner_comm]
 
-lemma ortho_aux {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
+lemma inner_normalized_ortho_sq_add_inner_sq_eq_one {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     ⟪x, normalized (ortho x y)⟫ ^ 2 + ⟪x, y⟫ ^ 2 = 1 := by
   rw [ortho, normalized, real_inner_smul_right, inner_sub_right, real_inner_smul_right]
   by_cases h₁ : x = y
@@ -96,7 +97,8 @@ lemma inner_eq_cos_angle {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
 lemma inner_ortho_right_eq_sin_angle {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1):
     ⟪x, normalized (ortho x y)⟫ = Real.sin (angle x y) := by
   have H : ⟪x, normalized (ortho x y)⟫ ^ 2 = Real.sin (angle x y) ^ 2 := by
-    simp [Real.sin_sq, ← inner_eq_cos_angle hx hy, ← ortho_aux hx hy]
+    simp [Real.sin_sq, ← inner_eq_cos_angle hx hy,
+      ← inner_normalized_ortho_sq_add_inner_sq_eq_one hx hy]
   rw [sq_eq_sq_iff_abs_eq_abs] at H
   rw [abs_of_nonneg (sin_angle_nonneg x y)] at H
   have H0 : 0 ≤ ⟪x, normalized (ortho x y)⟫ := by
@@ -165,4 +167,4 @@ lemma angle_triangle {x y z : V}
     linarith [mul_nonneg H3 H2]
   rwa [Real.strictAntiOn_cos.le_iff_le ⟨H0, H⟩ ⟨angle_nonneg x z, angle_le_pi x z⟩] at H4
 
-end UnitSphereAngles
+end UnitVectorAngles

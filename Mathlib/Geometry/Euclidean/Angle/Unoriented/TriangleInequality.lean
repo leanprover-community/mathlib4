@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ilmārs Cīrulis, Alex Meiburg
 -/
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.UnitSphereAngles
+import Mathlib.Geometry.Euclidean.Angle.Unoriented.UnitVectorAngles
 import Mathlib.Analysis.NormedSpace.Normalized
 
 /-!
@@ -43,7 +43,7 @@ theorem InnerProductGeometry.angle_triangle (x y z : V) : angle x z ≤ angle x 
   · simpa [hy] using angle_le_pi x z
   by_cases hz : z = 0
   · simpa [hz] using angle_nonneg x y
-  have H := UnitSphereAngles.angle_triangle (norm_normalized_eq_one_iff.mpr hx)
+  have H := UnitVectorAngles.angle_triangle (norm_normalized_eq_one_iff.mpr hx)
     (norm_normalized_eq_one_iff.mpr hy) (norm_normalized_eq_one_iff.mpr hz)
   simp at H
   exact H
