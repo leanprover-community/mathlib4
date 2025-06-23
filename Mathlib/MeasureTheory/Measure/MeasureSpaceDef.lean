@@ -94,7 +94,7 @@ instance Measure.instOuterMeasureClass [MeasurableSpace α] : OuterMeasureClass 
   measure_mono m := m.mono
 
 /-- The real-valued version of a measure. Maps infinite measure sets to zero. Use as `μ.real s`.
-The API is developed in `Mathlib.MeasureTheory.Measure.Real`. -/
+The API is developed in `Mathlib/MeasureTheory/Measure/Real.lean`. -/
 protected def Measure.real {α : Type*} {m : MeasurableSpace α} (μ : Measure α) (s : Set α) : ℝ :=
   (μ s).toReal
 

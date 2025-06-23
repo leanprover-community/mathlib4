@@ -114,7 +114,9 @@ instance : Inhabited (Part α) :=
   ⟨none⟩
 
 @[simp]
-theorem not_mem_none (a : α) : a ∉ @none α := fun h => h.fst
+theorem notMem_none (a : α) : a ∉ @none α := fun h => h.fst
+
+@[deprecated (since := "2025-05-23")] alias not_mem_none := notMem_none
 
 /-- The `some a` value in `Part` has a `True` domain and the
   function returns `a`. -/
@@ -158,7 +160,7 @@ theorem eq_some_iff {a : α} {o : Part α} : o = some a ↔ a ∈ o :=
   ⟨fun e => e.symm ▸ mem_some _, fun ⟨h, e⟩ => e ▸ ext' (iff_true_intro h) fun _ _ => rfl⟩
 
 theorem eq_none_iff {o : Part α} : o = none ↔ ∀ a, a ∉ o :=
-  ⟨fun e => e.symm ▸ not_mem_none, fun h => ext (by simpa)⟩
+  ⟨fun e => e.symm ▸ notMem_none, fun h => ext (by simpa)⟩
 
 theorem eq_none_iff' {o : Part α} : o = none ↔ ¬o.Dom :=
   ⟨fun e => e.symm ▸ id, fun h => eq_none_iff.2 fun _ h' => h h'.fst⟩
@@ -571,7 +573,8 @@ section Instances
 /-!
 We define several instances for constants and operations on `Part α` inherited from `α`.
 
-This section could be moved to a separate file to avoid the import of `Mathlib.Algebra.Group.Defs`.
+This section could be moved to a separate file to avoid the import of
+`Mathlib/Algebra/Notation/Defs.lean`.
 -/
 
 @[to_additive]
