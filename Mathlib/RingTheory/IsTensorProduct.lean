@@ -380,29 +380,26 @@ lemma IsBaseChange.comp_iff {f : M →ₗ[R] N} (hf : IsBaseChange S f) {h : N �
     IsBaseChange T ((h : N →ₗ[R] O) ∘ₗ f) ↔ IsBaseChange T h :=
   ⟨fun hc ↦ IsBaseChange.of_comp hf hc, fun hh ↦ IsBaseChange.comp hf hh⟩
 
-section commRing
-
-variable {R S M N P : Type*} [CommRing R] [CommRing S] [Algebra R S]
-  [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] [Module S N]
-  [IsScalarTower R S N] {f : M →ₗ[R] N} (hf : IsBaseChange S f)
-  (P : Type*) [AddCommGroup P] [Module R P] [Module S P] [IsScalarTower R S P]
-
-include hf
-
-variable (R S M) in
 /-- Let `R` be a commutative ring, `S` be an `R`-algebra, `M` be an `R`-module, `P` be an `S`
   module, `N` be the base change of `M` to `S`, then `P ⊗[S] N` is isomorphic to `P ⊗[R] M`
   as `S`-modules. -/
-noncomputable def IsBaseChange.tensorEquiv : P ⊗[S] N ≃ₗ[S] P ⊗[R] M :=
+noncomputable def IsBaseChange.tensorEquiv {f : M →ₗ[R] N} (hf : IsBaseChange S f) (P : Type*)
+    [AddCommGroup P] [Module R P] [Module S P] [IsScalarTower R S P] : P ⊗[S] N ≃ₗ[S] P ⊗[R] M :=
   LinearEquiv.lTensor P hf.equiv.symm ≪≫ₗ AlgebraTensorModule.cancelBaseChange R S S P M
+
+section commRing
+
+variable {R S M N : Type*} [CommRing R] [CommRing S] [Algebra R S]
+  [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] [Module S N]
+  [IsScalarTower R S N]
 
 /-- Let `R` be a commutative ring, `S` be an `R`-algebra, `I` is be ideal of `R`, `N` be the base
   change of `M` to `S`, then `N ⧸ IN` is isomorphic to `S ⊗[R] (M ⧸ IM)` as `S` modules. -/
-noncomputable def IsBaseChange.quotMapSMulEquivTensorQuot (I : Ideal R) :
-    (N ⧸ I.map (algebraMap R S) • (⊤ : Submodule S N)) ≃ₗ[S]
+noncomputable def IsBaseChange.quotMapSMulEquivTensorQuot {f : M →ₗ[R] N} (hf : IsBaseChange S f)
+    (I : Ideal R) : (N ⧸ I.map (algebraMap R S) • (⊤ : Submodule S N)) ≃ₗ[S]
     S ⊗[R] (M ⧸ (I • (⊤ : Submodule R M))) :=
   (tensorQuotEquivQuotSMul N (I.map (algebraMap R S))).symm ≪≫ₗ TensorProduct.comm S N _ ≪≫ₗ
-    hf.tensorEquiv R S M _ ≪≫ₗ
+    hf.tensorEquiv  _ ≪≫ₗ
       AlgebraTensorModule.congr (I.qoutMapEquivTensorQout S) (LinearEquiv.refl R M) ≪≫ₗ
         AlgebraTensorModule.assoc R R S S _ M ≪≫ₗ (TensorProduct.comm R _ M).baseChange R S _ _ ≪≫ₗ
           (tensorQuotEquivQuotSMul M I).baseChange R S _ _
