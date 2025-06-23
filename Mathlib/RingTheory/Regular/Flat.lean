@@ -105,8 +105,8 @@ theorem IsSMulRegular.of_flat_isBaseChange (reg : IsSMulRegular M x) :
   rfl
 
 /-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be a flat `R`-algebra, `N` be the base
-  change of `M` to `S`.  `[r₁, …, rₙ]` is a weakly regular `M`-sequence, then its image in `N` is a
-  weakly regular `N`-sequence. -/
+  change of `M` to `S`. If `[r₁, …, rₙ]` is a weakly regular `M`-sequence, then its image in `N` is
+  a weakly regular `N`-sequence. -/
 theorem RingTheory.Sequence.IsWeaklyRegular.of_flat_isBaseChange {rs : List R}
     (reg : IsWeaklyRegular M rs) : IsWeaklyRegular N (rs.map (algebraMap R S)) := by
   generalize len : rs.length = n
@@ -134,23 +134,26 @@ variable {R S M N P : Type*} [CommRing R] [CommRing S] [Algebra R S] [Faithfully
   (P : Type*) [AddCommGroup P] [Module R P] [Module S P] [IsScalarTower R S P]
 
 variable (R S M) in
+/-- `(S ⊗[R] M) ⊗[S] P ≃ₗ[R] M ⊗[R] P`. -/
 noncomputable def baseChangeTensorEquiv : (S ⊗[R] M) ⊗[S] P ≃ₗ[R] M ⊗[R] P :=
   (TensorProduct.comm S _ P).restrictScalars R ≪≫ₗ
     ((TensorProduct.AlgebraTensorModule.assoc R S S P S M).restrictScalars R).symm ≪≫ₗ
       LinearEquiv.rTensor M ((TensorProduct.rid S P).restrictScalars R) ≪≫ₗ TensorProduct.comm R P M
 
 variable (S) in
-noncomputable def Ideal.tensorQoutEquivQoutMap {I : Ideal R} :
-    S ⊗[R] (R ⧸ I) ≃ₗ[R] S ⧸ Ideal.map (algebraMap R S) I :=
-  tensorQuotEquivQuotSMul S I ≪≫ₗ Submodule.quotEquivOfEq _ _ (by simp) ≪≫ₗ
+/-- `S ⧸ IS ≃ₗ[R] S ⊗[R] (R ⧸ I)`. -/
+noncomputable def Ideal.qoutMapEquivTensorQout {I : Ideal R} :
+    (S ⧸ Ideal.map (algebraMap R S) I) ≃ₗ[R] S ⊗[R] (R ⧸ I) :=
+  LinearEquiv.symm <| tensorQuotEquivQuotSMul S I ≪≫ₗ Submodule.quotEquivOfEq _ _ (by simp) ≪≫ₗ
     Submodule.Quotient.restrictScalarsEquiv R _
 
-noncomputable def TensorProduct.tensorQuotSMulEquivQuotMapSMul (I : Ideal R) :
-    S ⊗[R] (M ⧸ (I • (⊤ : Submodule R M))) ≃ₗ[R]
-    (S ⊗[R] M) ⧸ I.map (algebraMap R S) • (⊤ : Submodule S (S ⊗[R] M)) :=
-  LinearEquiv.lTensor S (tensorQuotEquivQuotSMul M I).symm ≪≫ₗ leftComm R S M _ ≪≫ₗ
-    LinearEquiv.lTensor M (I.tensorQoutEquivQoutMap S) ≪≫ₗ (baseChangeTensorEquiv R S M _).symm ≪≫ₗ
-      (tensorQuotEquivQuotSMul (S ⊗[R] M) (I.map (algebraMap R S))).restrictScalars R
+/-- `(S ⊗[R] M) ⧸ I(S ⊗[R] M) ≃ₗ[R] S ⊗[R] (M ⧸ IM)`. -/
+noncomputable def TensorProduct.quotMapSMulEquivTensorQuot (I : Ideal R) :
+    ((S ⊗[R] M) ⧸ I.map (algebraMap R S) • (⊤ : Submodule S (S ⊗[R] M))) ≃ₗ[R]
+    S ⊗[R] (M ⧸ (I • (⊤ : Submodule R M))) :=
+  ((tensorQuotEquivQuotSMul (S ⊗[R] M) (I.map (algebraMap R S))).restrictScalars R).symm ≪≫ₗ
+    baseChangeTensorEquiv R S M _ ≪≫ₗ  LinearEquiv.lTensor M (I.qoutMapEquivTensorQout S) ≪≫ₗ
+      leftComm R M S _ ≪≫ₗ LinearEquiv.lTensor S (tensorQuotEquivQuotSMul M I)
 
 include hf
 
@@ -158,26 +161,24 @@ variable (R S M) in
 noncomputable def isBaseChangeTensorEquiv : N ⊗[S] P ≃ₗ[R] M ⊗[R] P :=
   (LinearEquiv.rTensor P hf.equiv.symm).restrictScalars R ≪≫ₗ baseChangeTensorEquiv R S M P
 
-noncomputable def IsBaseChange.tensorQuotSMulEquivQuotMapSMul (I : Ideal R) :
-    S ⊗[R] (M ⧸ (I • (⊤ : Submodule R M))) ≃ₗ[R] N ⧸ I.map (algebraMap R S) • (⊤ : Submodule S N) :=
-  LinearEquiv.lTensor S (tensorQuotEquivQuotSMul M I).symm ≪≫ₗ leftComm R S M _ ≪≫ₗ
-    LinearEquiv.lTensor M (I.tensorQoutEquivQoutMap S) ≪≫ₗ (isBaseChangeTensorEquiv R S M hf _).symm
-      ≪≫ₗ (tensorQuotEquivQuotSMul N (I.map (algebraMap R S))).restrictScalars R
+noncomputable def IsBaseChange.quotMapSMulEquivTensorQuot (I : Ideal R) :
+    (N ⧸ I.map (algebraMap R S) • (⊤ : Submodule S N)) ≃ₗ[R]
+    S ⊗[R] (M ⧸ (I • (⊤ : Submodule R M))) :=
+  ((tensorQuotEquivQuotSMul N (I.map (algebraMap R S))).restrictScalars R).symm ≪≫ₗ
+    isBaseChangeTensorEquiv R S M hf _ ≪≫ₗ  LinearEquiv.lTensor M (I.qoutMapEquivTensorQout S) ≪≫ₗ
+      leftComm R M S _ ≪≫ₗ LinearEquiv.lTensor S (tensorQuotEquivQuotSMul M I)
 
 theorem Module.FaithfullyFlat.smul_top_ne_top_of_isBaseChange {I : Ideal R}
     (h : I • (⊤ : Submodule R M) ≠ ⊤) : I.map (algebraMap R S) • (⊤ : Submodule S N) ≠ ⊤ := by
   intro eq
-  have : Nontrivial (M ⧸ (I • (⊤ : Submodule R M))) :=
-    Submodule.Quotient.nontrivial_of_lt_top (I • ⊤) h.lt_top
   have := Submodule.subsingleton_quotient_iff_eq_top.mpr eq
-  have := tensorQuotEquivQuotSMul N (I.map (algebraMap R S))
-  have := hf.equiv
-  have := LinearEquiv.rTensor (S ⧸ Ideal.map (algebraMap R S) I) hf.equiv
-  sorry
+  have := (hf.quotMapSMulEquivTensorQuot I).symm.subsingleton
+  have : Subsingleton (M ⧸ (I • (⊤ : Submodule R M))) := lTensor_reflects_triviality R S _
+  exact not_nontrivial _ (Submodule.Quotient.nontrivial_of_lt_top (I • ⊤) h.lt_top)
 
-/-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be a faithfully flat `R`-algebra.
-  If `[r₁, …, rₙ]` is a regular `M`-sequence, then its image in `S ⊗[R] M` is a regular
-  `S ⊗[R] M`-sequence. -/
+/-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be a faithfully flat `R`-algebra,
+  `N` be the base change of `M` to `S`. If `[r₁, …, rₙ]` is a regular `M`-sequence, then its image
+  in `N` is a regular `N`-sequence. -/
 theorem RingTheory.Sequence.IsRegular.of_faithfullyFlat_isBaseChange {rs : List R}
     (reg : IsRegular M rs) : IsRegular N (rs.map (algebraMap R S)) := by
   refine ⟨reg.1.of_flat_isBaseChange hf, ?_⟩
