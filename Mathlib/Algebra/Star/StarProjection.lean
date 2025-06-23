@@ -30,7 +30,7 @@ variable {p q : R}
 
 lemma _root_.isStarProjection_iff' [Mul R] [Star R] :
     IsStarProjection p ↔ p * p = p ∧ star p = p :=
-  ⟨fun ⟨h1, h2⟩ => ⟨h1, h2⟩, fun ⟨h1, h2⟩ => ⟨h1, h2⟩⟩
+  isStarProjection_iff
 
 theorem isStarNormal [Mul R] [Star R]
     (hp : IsStarProjection p) : IsStarNormal p :=
