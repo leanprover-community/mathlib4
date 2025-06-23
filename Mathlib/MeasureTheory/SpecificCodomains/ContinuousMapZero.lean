@@ -53,8 +53,8 @@ lemma hasFiniteIntegral_mkD_of_bound [CompactSpace Y] [Zero Y] (f : X → Y → 
   filter_upwards [bound_ge, f_ae_cont, f_ae_zero] with x bound_ge_x cont_x zero_x
   simpa only [mkD_apply_of_continuous cont_x zero_x] using bound_ge_x
 
-/-- A variant of `ContinuousMapZero.hasFiniteIntegral_of_bound` spelled in terms of
-`ContinuousMapZero.mkD`. -/
+/-- A variant of `ContinuousMapZero.hasFiniteIntegral_mkD_of_bound` for a family of
+functions which are continuous on a compact set. -/
 lemma hasFiniteIntegral_mkD_restrict_of_bound {s : Set Y} [CompactSpace s] [Zero s]
     (f : X → Y → E) (g : C(s, E)₀)
     (f_ae_contOn : ∀ᵐ x ∂μ, ContinuousOn (f x) s)
