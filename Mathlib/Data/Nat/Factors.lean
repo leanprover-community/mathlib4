@@ -314,7 +314,7 @@ section computation
 /--
 A version of `Nat.primeFactorsList` that evaluates faster in the virtual machine.
 For mathematical purposes, use `Nat.primeFactorsList` instead,
-and see `Nat.primeFactorsListFast_eq_primeFactorsList`.
+and see `Nat.primeFactorsList_eq_primeFactorsListFast`.
 -/
 def primeFactorsListFast (n : Nat) : List Nat :=
   if n < 2 then []
@@ -339,7 +339,7 @@ where
     minFacAux n d :: go (n / minFacAux n d) ⟨minFacAux n d, hd⟩
 
 @[csimp]
-theorem primeFactorsListFast_eq_primeFactorsList :
+theorem primeFactorsList_eq_primeFactorsListFast :
     primeFactorsList = primeFactorsListFast := by
   funext n
   fun_induction primeFactorsListFast n with
