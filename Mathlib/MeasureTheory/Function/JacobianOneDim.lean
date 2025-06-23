@@ -195,13 +195,12 @@ theorem lintegral_image_eq_lintegral_deriv_mul_of_monotoneOn (hs : MeasurableSet
     have A : (f '' a ∪ (f '' b ∪ f '' c) : Set ℝ) =ᵐ[volume] (f '' b ∪ f '' c : Set ℝ) := by
       refine union_ae_eq_right_of_ae_eq_empty (ae_eq_empty.mpr ?_)
       exact (a_count.image _).measure_zero _
-    have B : (f '' b ∪ f '' c : Set ℝ) =ᵐ[volume] f '' c := by
-      refine union_ae_eq_right_of_ae_eq_empty (ae_eq_empty.mpr ?_)
-      exact fb_count.measure_zero _
+    have B : (f '' b ∪ f '' c : Set ℝ) =ᵐ[volume] f '' c :=
+      union_ae_eq_right_of_ae_eq_empty (ae_eq_empty.mpr (fb_count.measure_zero _))
     exact A.trans B
   rw [I, J]
   have c_s : c ⊆ s := by rw [← h_union]; exact subset_union_right.trans subset_union_right
-  let F' : ℝ → (ℝ →L[ℝ] ℝ) := fun x ↦ (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (f' x))
+  let F' : ℝ → (ℝ →L[ℝ] ℝ) := fun x ↦ ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (f' x)
   have hf' (x : ℝ) (hx : x ∈ c) : HasFDerivWithinAt f (F' x) c x :=
     (hf' x (c_s hx)).hasFDerivWithinAt.mono c_s
   have : ∫⁻ x in c, ENNReal.ofReal (f' x) * u (f x)
@@ -236,8 +235,7 @@ theorem integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn (hs : Measu
       IntegrableOn.of_measure_zero (a_count.measure_zero volume)
     have B : IntegrableOn (fun x ↦ f' x • g (f x)) b := by
       have : IntegrableOn (fun x ↦ (0 : F)) b := by simp
-      apply this.congr_fun (fun x hx ↦ ?_) hb
-      simp [deriv_b x hx]
+      exact this.congr_fun (fun x hx ↦ by simp [deriv_b x hx]) hb
     simp only [← h_union, integrableOn_union, A, B, true_and]
   have J : IntegrableOn g (f '' s) ↔ IntegrableOn g (f '' c) := by
     apply integrableOn_congr_set_ae
@@ -245,13 +243,12 @@ theorem integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn (hs : Measu
     have A : (f '' a ∪ (f '' b ∪ f '' c) : Set ℝ) =ᵐ[volume] (f '' b ∪ f '' c : Set ℝ) := by
       refine union_ae_eq_right_of_ae_eq_empty (ae_eq_empty.mpr ?_)
       exact (a_count.image _).measure_zero _
-    have B : (f '' b ∪ f '' c : Set ℝ) =ᵐ[volume] f '' c := by
-      refine union_ae_eq_right_of_ae_eq_empty (ae_eq_empty.mpr ?_)
-      exact fb_count.measure_zero _
+    have B : (f '' b ∪ f '' c : Set ℝ) =ᵐ[volume] f '' c :=
+      union_ae_eq_right_of_ae_eq_empty (ae_eq_empty.mpr (fb_count.measure_zero _))
     exact A.trans B
   rw [I, J]
   have c_s : c ⊆ s := by rw [← h_union]; exact subset_union_right.trans subset_union_right
-  let F' : ℝ → (ℝ →L[ℝ] ℝ) := fun x ↦ (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (f' x))
+  let F' : ℝ → (ℝ →L[ℝ] ℝ) := fun x ↦ ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (f' x)
   have hF' (x : ℝ) (hx : x ∈ c) : HasFDerivWithinAt f (F' x) c x :=
     (hf' x (c_s hx)).hasFDerivWithinAt.mono c_s
   rw [integrableOn_image_iff_integrableOn_abs_det_fderiv_smul _ hc hF' inj_c]
@@ -279,8 +276,7 @@ theorem integral_image_eq_integral_deriv_smul_of_monotoneOn (hs : MeasurableSet 
   have c_s : c ⊆ s := by rw [← h_union]; exact subset_union_right.trans subset_union_right
   have I : ∫ x in s, f' x • g (f x) = ∫ x in c, f' x • g (f x) := by
     have : ∫ x in a, f' x • g (f x) = 0 := by
-      have : volume a = 0 := a_count.measure_zero volume
-      exact setIntegral_measure_zero _ this
+      have : ∫ x in a, f' x • g (f x) = 0 := setIntegral_measure_zero _ (a_count.measure_zero volume)
     rw [← h_union, setIntegral_union h_disj (hb.union hc) (H'.mono_set a_s) (H'.mono_set bc_s),
       this, zero_add]
     have : ∫ x in b, f' x • g (f x) = 0 :=
@@ -292,12 +288,11 @@ theorem integral_image_eq_integral_deriv_smul_of_monotoneOn (hs : MeasurableSet 
     have A : (f '' a ∪ (f '' b ∪ f '' c) : Set ℝ) =ᵐ[volume] (f '' b ∪ f '' c : Set ℝ) := by
       refine union_ae_eq_right_of_ae_eq_empty (ae_eq_empty.mpr ?_)
       exact (a_count.image _).measure_zero _
-    have B : (f '' b ∪ f '' c : Set ℝ) =ᵐ[volume] f '' c := by
-      refine union_ae_eq_right_of_ae_eq_empty (ae_eq_empty.mpr ?_)
-      exact fb_count.measure_zero _
+    have B : (f '' b ∪ f '' c : Set ℝ) =ᵐ[volume] f '' c :=
+      union_ae_eq_right_of_ae_eq_empty (ae_eq_empty.mpr (fb_count.measure_zero _))
     exact A.trans B
   rw [I, J]
-  let F' : ℝ → (ℝ →L[ℝ] ℝ) := fun x ↦ (ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (f' x))
+  let F' : ℝ → (ℝ →L[ℝ] ℝ) := fun x ↦ ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) (f' x)
   have hF' (x : ℝ) (hx : x ∈ c) : HasFDerivWithinAt f (F' x) c x :=
     (hf' x (c_s hx)).hasFDerivWithinAt.mono c_s
   have : ∫ x in c, f' x • g (f x) = ∫ x in c, |(F' x).det| • g (f x) := by
@@ -316,18 +311,16 @@ theorem lintegral_image_eq_lintegral_deriv_mul_of_antitoneOn (hs : MeasurableSet
     (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) (hf : AntitoneOn f s) (u : ℝ → ℝ≥0∞) :
     ∫⁻ x in f '' s, u x = ∫⁻ x in s, ENNReal.ofReal (-f' x) * u (f x) := by
   let n : ℝ → ℝ := (fun x ↦ - x)
-  let e := (fun x ↦ - x) ∘ f
-  have he : MonotoneOn e s := hf.neg
-  let v := u ∘ n
+  let e := n ∘ f
   have hg' (x) (hx : x ∈ s) : HasDerivWithinAt e (-f' x) s x := (hf' x hx).neg
-  have A : ∫⁻ x in e '' s, u (n x) = ∫⁻ x in s, ENNReal.ofReal (-f' x) * v (e x) := by
-    rw [← lintegral_image_eq_lintegral_deriv_mul_of_monotoneOn hs hg' he v]; rfl
+  have A : ∫⁻ x in e '' s, u (n x) = ∫⁻ x in s, ENNReal.ofReal (-f' x) * (u ∘ n) (e x) := by
+    rw [← lintegral_image_eq_lintegral_deriv_mul_of_monotoneOn hs hg' hf.neg (u ∘ n)]; rfl
   have B : ∫⁻ x in n '' (e '' s), u x = ∫⁻ x in e '' s, ENNReal.ofReal (|-1|) * u (n x) :=
-    lintegral_image_eq_lintegral_abs_deriv_mul (hs.image_of_monotoneOn he)
+    lintegral_image_eq_lintegral_abs_deriv_mul (hs.image_of_monotoneOn hf.neg)
       (fun x hx ↦ hasDerivWithinAt_neg _ _) neg_injective.injOn _
   simp only [abs_neg, abs_one, ENNReal.ofReal_one, one_mul] at B
   rw [A, ← image_comp] at B
-  convert B using 4 with x hx x <;> simp [v, n, e]
+  convert B using 4 with x hx x <;> simp [n, e]
 
 /-- Change of variable formula for differentiable functions, set version: if a real function `f` is
 antitone and differentiable on a measurable set `s`, then the measure of `f '' s` is given by the
@@ -340,24 +333,22 @@ theorem lintegral_deriv_eq_volume_image_of_antitoneOn (hs : MeasurableSet s)
 
 /-- Integrability in the change of variable formula for differentiable functions: if a
 function `f` is antitone and differentiable on a measurable set `s`, then a function
-`g : ℝ → F` is integrable on `f '' s` if and only if `f' x • g ∘ f` is integrable on `s` . -/
+`g : ℝ → F` is integrable on `f '' s` if and only if `-f' x • g ∘ f` is integrable on `s` . -/
 theorem integrableOn_image_iff_integrableOn_deriv_smul_of_antitoneOn (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) (hf : AntitoneOn f s) (g : ℝ → F) :
     IntegrableOn g (f '' s) ↔ IntegrableOn (fun x ↦ (-f' x) • g (f x)) s := by
   let n : ℝ → ℝ := (fun x ↦ - x)
-  let e := (fun x ↦ - x) ∘ f
-  have he : MonotoneOn e s := hf.neg
-  let v := g ∘ n
+  let e := n ∘ f
   have hg' (x) (hx : x ∈ s) : HasDerivWithinAt e (-f' x) s x := (hf' x hx).neg
   have A : IntegrableOn (fun x ↦ g (n x)) (e '' s)
-      ↔ IntegrableOn (fun x ↦ (-f' x) • v (e x)) s := by
-    rw [← integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn hs hg' he v]; rfl
+      ↔ IntegrableOn (fun x ↦ (-f' x) • (g ∘ n) (e x)) s := by
+    rw [← integrableOn_image_iff_integrableOn_deriv_smul_of_monotoneOn hs hg' hf.neg (g ∘ n)]; rfl
   have B : IntegrableOn g (n '' (e '' s)) ↔ IntegrableOn (fun x ↦ (|-1| : ℝ) • g (n x)) (e '' s) :=
-    integrableOn_image_iff_integrableOn_abs_deriv_smul (hs.image_of_monotoneOn he)
+    integrableOn_image_iff_integrableOn_abs_deriv_smul (hs.image_of_monotoneOn hf.neg)
       (fun x hx ↦ hasDerivWithinAt_neg _ _) neg_injective.injOn _
   simp only [abs_neg, abs_one, one_smul] at B
   rw [A, ← image_comp] at B
-  convert B using 3 with x hx x <;> simp [v, n, e]
+  convert B using 3 with x hx x <;> simp [n, e]
 
 /-- Change of variable formula for differentiable functions: if a function `f` is
 antitone and differentiable on a measurable set `s`, then the Bochner integral of a function
@@ -366,18 +357,16 @@ theorem integral_image_eq_integral_deriv_smul_of_antitone (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) (hf : AntitoneOn f s) (g : ℝ → F) :
     ∫ x in f '' s, g x = ∫ x in s, (-f' x) • g (f x) := by
   let n : ℝ → ℝ := (fun x ↦ - x)
-  let e := (fun x ↦ - x) ∘ f
-  have he : MonotoneOn e s := hf.neg
-  let v := g ∘ n
+  let e := n ∘ f
   have hg' (x) (hx : x ∈ s) : HasDerivWithinAt e (-f' x) s x := (hf' x hx).neg
-  have A : ∫ x in e '' s, g (n x) = ∫ x in s, (-f' x) • v (e x) := by
-    rw [← integral_image_eq_integral_deriv_smul_of_monotoneOn hs hg' he v]; rfl
+  have A : ∫ x in e '' s, g (n x) = ∫ x in s, (-f' x) • (g ∘ n) (e x) := by
+    rw [← integral_image_eq_integral_deriv_smul_of_monotoneOn hs hg' hf.neg (g ∘ n)]; rfl
   have B : ∫ x in n '' (e '' s), g x = ∫ x in e '' s, (|-1| : ℝ) • g (n x) :=
-    integral_image_eq_integral_abs_deriv_smul (hs.image_of_monotoneOn he)
+    integral_image_eq_integral_abs_deriv_smul (hs.image_of_monotoneOn hf.neg)
       (fun x hx ↦ hasDerivWithinAt_neg _ _) neg_injective.injOn _
   simp only [abs_neg, abs_one, one_smul] at B
   rw [A, ← image_comp] at B
-  convert B using 3 with x hx x <;> simp [v, n, e]
+  convert B using 3 with x hx x <;> simp [n, e]
 
 section WithDensity
 
