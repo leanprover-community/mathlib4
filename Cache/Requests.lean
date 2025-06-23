@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
 
+import Batteries.Data.String.Matcher
 import Cache.Hashing
 
 namespace Cache.Requests
@@ -32,10 +33,10 @@ def findMathlibRemote (mathlibDepPath : FilePath) : IO String := do
     let parts := line.trim.split (· == '\t')
     if parts.length >= 2 then
       let remoteName := parts[0]!
-      let remoteUrl := parts[1]!.split (· == ' ') -- Remove (fetch) or (push) suffix
+      let remoteUrl := parts[1]!.takeWhile (· != ' ') -- Remove (fetch) or (push) suffix
 
       -- Check if this remote points to leanprover-community/mathlib4
-      let isMathlibRepo := remoteUrl.contains "leanprover-community/mathlib4"
+      let isMathlibRepo := remoteUrl.containsSubstr "leanprover-community/mathlib4"
 
       if isMathlibRepo then
         if remoteName == "origin" then
