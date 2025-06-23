@@ -102,7 +102,7 @@ jobs:
           organization: leanprover-community # optional. Default value ${{ github.repository_owner }}
                   # Organization to get membership from.
           team: 'mathlib-reviewers'
-          username: ${{ github.actor }}
+          username: ${{ env.AUTHOR }}
           GITHUB_TOKEN: ${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }} # (Requires scope: `read:org`)
 
       - name: Checkout
