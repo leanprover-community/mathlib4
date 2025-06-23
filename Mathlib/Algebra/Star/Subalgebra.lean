@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Star.Module
 import Mathlib.Algebra.Star.NonUnitalSubalgebra
+import Mathlib.Algebra.Algebra.Subalgebra.Prod
 
 /-!
 # Star subalgebras
@@ -311,17 +312,6 @@ theorem centralizer_toSubalgebra (s : Set A) :
 theorem coe_centralizer_centralizer (s : Set A) :
     (centralizer R (centralizer R s : Set A)) = (s ∪ star s).centralizer.centralizer := by
   rw [coe_centralizer, StarMemClass.star_coe_eq, Set.union_self, coe_centralizer]
-
-/-- The centralizer of the product of star subalgebras
-is equal to the product of the centralizers of the star subalgebras. -/
-theorem centralizer_prod (B C : StarSubalgebra R A) :
-    (B.carrier ×ˢ C.carrier).centralizer = B.carrier.centralizer ×ˢ C.carrier.centralizer := by
-  ext
-  simp_rw [Set.mem_prod, Set.mem_centralizer_iff, ← forall_and, Set.mem_prod, and_imp, Prod.forall,
-    Prod.mul_def, Prod.eq_iff_fst_eq_snd_eq, StarSubalgebra.mem_carrier]
-  exact
-    ⟨fun h y => ⟨fun hy => (h y 0 hy C.zero_mem').1, fun hy => (h 0 y B.zero_mem' hy).2⟩,
-      fun h y z hy hz => ⟨(h y).1 hy, (h z).2 hz⟩⟩
 
 end Centralizer
 

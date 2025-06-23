@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Invertible.Basic
 import Mathlib.Logic.Basic
 import Mathlib.Data.Set.Basic
+import Mathlib.Algebra.Notation.Prod
 
 /-!
 # Centers of magmas and semigroups
@@ -284,4 +285,21 @@ lemma div_mem_centralizer (ha : a ∈ centralizer S) (hb : b ∈ centralizer S) 
   simpa only [div_eq_mul_inv] using mul_mem_centralizer ha (inv_mem_centralizer hb)
 
 end Group
+
+theorem centralizer_empty {S : Type*} [Mul S] : (∅ : Set S).centralizer = ⊤ := by
+  ext
+  simp only [Set.mem_centralizer_iff, Set.mem_empty_iff_false, IsEmpty.forall_iff, implies_true,
+    Set.top_eq_univ, Set.mem_univ]
+
+theorem centralizer_prod {M N : Type*} [Mul M] [Mul N]
+    (B : Set M) (C : Set N) [Nonempty B] [Nonempty C] :
+    (B ×ˢ C).centralizer = B.centralizer ×ˢ C.centralizer := by
+  ext
+  simp_rw [Set.mem_prod, Set.mem_centralizer_iff, Set.mem_prod, and_imp, Prod.forall,
+    Prod.mul_def, Prod.eq_iff_fst_eq_snd_eq]
+  obtain ⟨b, hb⟩ : ∃ b : M, b ∈ B := by (expose_names; exact nonempty_subtype.mp inst_2)
+  obtain ⟨c, hc⟩ : ∃ c : N, c ∈ C := by (expose_names; exact nonempty_subtype.mp inst_3)
+  exact ⟨fun h => ⟨fun y hy => (h y c hy hc).1, fun y hy => (h b y hb hy).2⟩,
+    fun h y z hy hz => ⟨h.1 _ hy, h.2 _ hz⟩⟩
+
 end Set
