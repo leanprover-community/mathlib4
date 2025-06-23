@@ -75,18 +75,15 @@ lemma generator_mem_range (K : Type*) [Field K] (w : Valuation K Γ) [IsDiscrete
 
 lemma generator_ne_zero [IsDiscrete v] : (generator v : Γ) ≠ 0 := by simp
 
-lemma valueGroup_IsCyclic [IsDiscrete v] :
-    IsCyclic <| valueGroup v := by
+lemma valueGroup_IsCyclic [IsDiscrete v] : IsCyclic <| valueGroup v := by
   rw [isCyclic_iff_exists_zpowers_eq_top, ← generator_zpowers_eq_valueGroup]
-  let η : Subgroup.zpowers (generator v) := ⟨generator v, by simp⟩
-  use η
+  use ⟨generator v, by simp⟩
   rw [eq_top_iff]
-  rintro ⟨g, ⟨k, hk⟩⟩
+  rintro ⟨g, k, hk⟩
   simp only [Subgroup.mem_top, forall_const]
   use k
   ext
-  simp only [SubgroupClass.coe_zpow, ← hk]
-  rw [Units.val_zpow_eq_zpow_val]
+  simp [← hk]
 
 instance [IsDiscrete v] : Nontrivial (valueGroup v) :=
   ⟨1, ⟨generator v, by simp [← generator_zpowers_eq_valueGroup]⟩, ne_of_gt <| generator_lt_one v⟩
