@@ -1,19 +1,15 @@
+import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Module.Field
+import Mathlib.Algebra.Order.Module.OrderedSMul
+import Mathlib.RingTheory.Binomial
+import Mathlib.Tactic.NormNum.Inv
 import Mathlib.Tactic.Positivity
-import Mathlib.Data.Complex.Trigonometric
-import Mathlib.Data.Real.Sqrt
-import Mathlib.Data.ENNReal.Basic
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
-import Mathlib.Topology.Algebra.InfiniteSum.Order
 
-/-! # Tests for the `positivity` tactic
+/-! # Basic tests for the `positivity` tactic
 
 This tactic proves goals of the form `0 ≤ a` and `0 < a`.
 -/
-
-open Finset Function Nat NNReal ENNReal
 
 variable {ι α β E : Type*}
 
@@ -24,9 +20,6 @@ example : 0 ≤ 0 := by positivity
 example : 0 ≤ 3 := by positivity
 
 example : 0 < 3 := by positivity
-
-example : (0 : ℝ≥0∞) < 1 := by positivity
-example : (0 : ℝ≥0∞) < 2 := by positivity
 
 /- ## Goals working directly from a hypothesis -/
 -- set_option trace.Meta.debug true
@@ -168,7 +161,7 @@ example {a : ℤ} {b : ℚ} (ha : 0 < a) (hb : 0 < b) : 0 < a • b := by positi
 example {a : ℤ} {b : ℚ} (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a • b := by positivity
 example {a : ℤ} {b : ℚ} (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a • b := by positivity
 example {a : ℤ} {b : ℚ} (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a • b := by positivity
-example {a : ℤ} {b : ℚ} (ha : 0 < a) (hb : b ≠ 0) : a • b ≠ 0 := by show_term positivity
+example {a : ℤ} {b : ℚ} (ha : 0 < a) (hb : b ≠ 0) : a • b ≠ 0 := by positivity
 example {a : ℤ} {b : ℚ} (ha : a ≠ 0) (hb : 0 < b) : a • b ≠ 0 := by positivity
 example {a : ℤ} {b : ℚ} (ha : a ≠ 0) (hb : b ≠ 0) : a • b ≠ 0 := by positivity
 
