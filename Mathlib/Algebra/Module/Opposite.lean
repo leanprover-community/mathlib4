@@ -11,7 +11,7 @@ import Mathlib.Algebra.Ring.Opposite
 # Module operations on `Mᵐᵒᵖ`
 
 This file contains definitions that build on top of the group action definitions in
-`Mathlib.Algebra.GroupWithZero.Action.Opposite`.
+`Mathlib/Algebra/GroupWithZero/Action/Opposite.lean`.
 -/
 
 assert_not_exists LinearMap

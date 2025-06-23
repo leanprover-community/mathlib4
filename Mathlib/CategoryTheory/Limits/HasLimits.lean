@@ -292,7 +292,7 @@ theorem hasLimit_iff_of_iso {F G : J ⥤ C} (α : F ≅ G) : HasLimit F ↔ HasL
 which has a limit, then `G` also has a limit. -/
 theorem HasLimit.ofConesIso {J K : Type u₁} [Category.{v₁} J] [Category.{v₂} K] (F : J ⥤ C)
     (G : K ⥤ C) (h : F.cones ≅ G.cones) [HasLimit F] : HasLimit G :=
-  HasLimit.mk ⟨_, IsLimit.ofNatIso (IsLimit.natIso (limit.isLimit F) ≪≫ h)⟩
+  HasLimit.mk ⟨_, IsLimit.ofRepresentableBy ((limit.isLimit F).representableBy.ofIso h)⟩
 
 /-- The limits of `F : J ⥤ C` and `G : J ⥤ C` are isomorphic,
 if the functors are naturally isomorphic.
@@ -337,7 +337,6 @@ theorem HasLimit.isoOfEquivalence_hom_π {F : J ⥤ C} [HasLimit F] {G : K ⥤ C
     (HasLimit.isoOfEquivalence e w).hom ≫ limit.π G k =
       limit.π F (e.inverse.obj k) ≫ w.inv.app (e.inverse.obj k) ≫ G.map (e.counit.app k) := by
   simp only [HasLimit.isoOfEquivalence, IsLimit.conePointsIsoOfEquivalence_hom]
-  dsimp
   simp
 
 @[simp]
@@ -346,7 +345,6 @@ theorem HasLimit.isoOfEquivalence_inv_π {F : J ⥤ C} [HasLimit F] {G : K ⥤ C
     (HasLimit.isoOfEquivalence e w).inv ≫ limit.π F j =
     limit.π G (e.functor.obj j) ≫ w.hom.app j := by
   simp only [HasLimit.isoOfEquivalence, IsLimit.conePointsIsoOfEquivalence_hom]
-  dsimp
   simp
 
 section Pre
@@ -433,7 +431,7 @@ theorem limit.pre_post {D : Type u'} [Category.{v'} D] (E : K ⥤ J) (F : J ⥤ 
 
 open CategoryTheory.Equivalence
 
-instance hasLimitEquivalenceComp (e : K ≌ J) [HasLimit F] : HasLimit (e.functor ⋙ F) :=
+instance hasLimit_equivalence_comp (e : K ≌ J) [HasLimit F] : HasLimit (e.functor ⋙ F) :=
   HasLimit.mk
     { cone := Cone.whisker e.functor (limit.cone F)
       isLimit := IsLimit.whiskerEquivalence (limit.isLimit F) e }
@@ -441,9 +439,14 @@ instance hasLimitEquivalenceComp (e : K ≌ J) [HasLimit F] : HasLimit (e.functo
 -- not entirely sure why this is needed
 /-- If a `E ⋙ F` has a limit, and `E` is an equivalence, we can construct a limit of `F`.
 -/
-theorem hasLimitOfEquivalenceComp (e : K ≌ J) [HasLimit (e.functor ⋙ F)] : HasLimit F := by
-  haveI : HasLimit (e.inverse ⋙ e.functor ⋙ F) := Limits.hasLimitEquivalenceComp e.symm
+theorem hasLimit_of_equivalence_comp (e : K ≌ J) [HasLimit (e.functor ⋙ F)] : HasLimit F := by
+  haveI : HasLimit (e.inverse ⋙ e.functor ⋙ F) := Limits.hasLimit_equivalence_comp e.symm
   apply hasLimit_of_iso (e.invFunIdAssoc F)
+
+@[deprecated (since := "2025-03-02")] alias hasLimitEquivalenceComp :=
+  hasLimit_equivalence_comp
+@[deprecated (since := "2025-03-02")] alias hasLimitOfEquivalenceComp :=
+  hasLimit_of_equivalence_comp
 
 -- `hasLimitCompEquivalence` and `hasLimitOfCompEquivalence`
 -- are proved in `CategoryTheory/Adjunction/Limits.lean`.
@@ -529,7 +532,7 @@ variable {L : (J ⥤ C) ⥤ C} (adj : Functor.const _ ⊣ L)
 
 /- The fact that the existence of limits of shape `J` is equivalent to the existence
 of a right adjoint to the constant functor `C ⥤ (J ⥤ C)` is obtained in
-the file `Mathlib.CategoryTheory.Limits.ConeCategory`: see the lemma
+the file `Mathlib/CategoryTheory/Limits/ConeCategory.lean`: see the lemma
 `hasLimitsOfShape_iff_isLeftAdjoint_const`. In the definitions below, given an
 adjunction `adj : Functor.const _ ⊣ (L : (J ⥤ C) ⥤ C)`, we directly construct
 a limit cone for any `F : J ⥤ C`. -/
@@ -560,7 +563,7 @@ theorem hasLimitsOfShape_of_equivalence {J' : Type u₂} [Category.{v₂} J'] (e
     [HasLimitsOfShape J C] : HasLimitsOfShape J' C := by
   constructor
   intro F
-  apply hasLimitOfEquivalenceComp e
+  apply hasLimit_of_equivalence_comp e
 
 variable (C)
 
@@ -814,7 +817,7 @@ theorem hasColimit_iff_of_iso {F G : J ⥤ C} (α : F ≅ G) : HasColimit F ↔ 
 which has a colimit, then `G` also has a colimit. -/
 theorem HasColimit.ofCoconesIso {K : Type u₁} [Category.{v₂} K] (F : J ⥤ C) (G : K ⥤ C)
     (h : F.cocones ≅ G.cocones) [HasColimit F] : HasColimit G :=
-  HasColimit.mk ⟨_, IsColimit.ofNatIso (IsColimit.natIso (colimit.isColimit F) ≪≫ h)⟩
+  HasColimit.mk ⟨_, IsColimit.ofCorepresentableBy ((colimit.isColimit F).corepresentableBy.ofIso h)⟩
 
 /-- The colimits of `F : J ⥤ C` and `G : J ⥤ C` are isomorphic,
 if the functors are naturally isomorphic.

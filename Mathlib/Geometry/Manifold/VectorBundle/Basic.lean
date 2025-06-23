@@ -169,7 +169,7 @@ theorem contMDiffWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x�
     ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F)) n f s x₀ ↔
       ContMDiffWithinAt IM IB n (fun x => (f x).proj) s x₀ ∧
       ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) s x₀ := by
-  simp (config := { singlePass := true }) only [contMDiffWithinAt_iff_target]
+  simp +singlePass only [contMDiffWithinAt_iff_target]
   rw [and_and_and_comm, ← FiberBundle.continuousWithinAt_totalSpace, and_congr_right_iff]
   intro hf
   simp_rw [modelWithCornersSelf_prod, FiberBundle.extChartAt, Function.comp_def,
@@ -463,7 +463,7 @@ instance ContMDiffFiberwiseLinear.hasGroupoid :
 
 variable [IsManifold IB n B] in
 /-- A `C^n` vector bundle `E` is naturally a `C^n` manifold. -/
-instance Bundle.TotalSpace.isManifold  :
+instance Bundle.TotalSpace.isManifold :
     IsManifold (IB.prod 𝓘(𝕜, F)) n (TotalSpace F E) := by
   refine { StructureGroupoid.HasGroupoid.comp (contMDiffFiberwiseLinear B F IB n) ?_ with }
   intro e he
@@ -614,10 +614,10 @@ instance Bundle.Prod.contMDiffVectorBundle : ContMDiffVectorBundle n (F₁ × F�
     refine ContMDiffOn.congr ?_ (e₁.coordChangeL_prod 𝕜 e₁' e₂ e₂')
     refine ContMDiffOn.clm_prodMap ?_ ?_
     · refine (contMDiffOn_coordChangeL e₁ e₁').mono ?_
-      simp only [Trivialization.baseSet_prod, mfld_simps]
+      simp only [Trivialization.prod_baseSet, mfld_simps]
       mfld_set_tac
     · refine (contMDiffOn_coordChangeL e₂ e₂').mono ?_
-      simp only [Trivialization.baseSet_prod, mfld_simps]
+      simp only [Trivialization.prod_baseSet, mfld_simps]
       mfld_set_tac
 
 end Prod

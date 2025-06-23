@@ -77,12 +77,6 @@ theorem ker_mk_eq (r : Setoid α) : ker (@Quotient.mk'' _ r) = r :=
 theorem ker_apply_mk_out {f : α → β} (a : α) : f (⟦a⟧ : Quotient (Setoid.ker f)).out = f a :=
   @Quotient.mk_out _ (Setoid.ker f) a
 
-set_option linter.deprecated false in
-@[deprecated ker_apply_mk_out (since := "2024-10-19")]
-theorem ker_apply_mk_out' {f : α → β} (a : α) :
-    f (Quotient.mk _ a : Quotient <| Setoid.ker f).out' = f a :=
-  @Quotient.mk_out' _ (Setoid.ker f) a
-
 theorem ker_def {f : α → β} {x y : α} : ker f x y ↔ f x = f y :=
   Iff.rfl
 
@@ -173,7 +167,7 @@ instance : PartialOrder (Setoid α) where
   lt r s := r ≤ s ∧ ¬s ≤ r
   le_refl _ _ _ := id
   le_trans _ _ _ hr hs _ _ h := hs <| hr h
-  lt_iff_le_not_le _ _ := Iff.rfl
+  lt_iff_le_not_ge _ _ := Iff.rfl
   le_antisymm _ _ h1 h2 := Setoid.ext fun _ _ => ⟨fun h => h1 h, fun h => h2 h⟩
 
 /-- The complete lattice of equivalence relations on a type, with bottom element `=`
@@ -312,7 +306,6 @@ theorem ker_iff_mem_preimage {f : α → β} {x y} : ker f x y ↔ x ∈ f ⁻¹
 def liftEquiv (r : Setoid α) : { f : α → β // r ≤ ker f } ≃ (Quotient r → β) where
   toFun f := Quotient.lift (f : α → β) f.2
   invFun f := ⟨f ∘ Quotient.mk'', fun x y h => by simp [ker_def, Quotient.sound' h]⟩
-  left_inv := fun ⟨_, _⟩ => Subtype.eq <| funext fun _ => rfl
   right_inv _ := funext fun x => Quotient.inductionOn' x fun _ => rfl
 
 /-- The uniqueness part of the universal property for quotients of an arbitrary type. -/
@@ -433,7 +426,6 @@ def correspondence (r : Setoid α) : { s // r ≤ s } ≃o Setoid (Quotient r) w
     ⟨Quotient.ind s.1.2.1, fun {x y} ↦ Quotient.inductionOn₂ x y fun _ _ ↦ s.1.2.2,
       fun {x y z} ↦ Quotient.inductionOn₃ x y z fun _ _ _ ↦ s.1.2.3⟩⟩
   invFun s := ⟨comap Quotient.mk' s, fun x y h => by rw [comap_rel, Quotient.eq'.2 h]⟩
-  left_inv _ := rfl
   right_inv _ := ext fun x y ↦ Quotient.inductionOn₂ x y fun _ _ ↦ Iff.rfl
   map_rel_iff' :=
     ⟨fun h x y hs ↦ @h ⟦x⟧ ⟦y⟧ hs, fun h x y ↦ Quotient.inductionOn₂ x y fun _ _ hs ↦ h hs⟩
