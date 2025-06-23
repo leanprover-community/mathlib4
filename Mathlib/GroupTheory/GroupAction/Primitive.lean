@@ -127,7 +127,7 @@ theorem IsPreprimitive.of_subsingleton [SMul G X] [Nonempty G] [Subsingleton X] 
 theorem isTrivialBlock_of_card_le_two
     [Finite X] (hX : Nat.card X ≤ 2) (B : Set X) :
     IsTrivialBlock B := by
-  rcases le_or_lt B.ncard 1 with h1 | h1
+  rcases le_or_gt B.ncard 1 with h1 | h1
   · apply Or.inl
     rwa [← Set.ncard_le_one_iff_subsingleton]
   · apply Or.inr
