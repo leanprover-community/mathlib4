@@ -48,9 +48,9 @@ noncomputable def inverse : MonCat.{u} ⥤ Mon_ (Type u) where
       mon :=
         { one := fun _ => 1
           mul := fun p => p.1 * p.2
-          one_mul' := by ext ⟨_, _⟩; simp
-          mul_one' := by ext ⟨_, _⟩; simp
-          mul_assoc' := by ext ⟨⟨x, y⟩, z⟩; simp [_root_.mul_assoc] } }
+          one_mul := by ext ⟨_, _⟩; simp
+          mul_one := by ext ⟨_, _⟩; simp
+          mul_assoc := by ext ⟨⟨x, y⟩, z⟩; simp [_root_.mul_assoc] } }
   map f := .mk' f
 
 end MonTypeEquivalenceMon
@@ -96,7 +96,7 @@ noncomputable def inverse : CommMonCat.{u} ⥤ CommMon_ (Type u) where
   obj A :=
     { MonTypeEquivalenceMon.inverse.obj ((forget₂ CommMonCat MonCat).obj A) with
       comm :=
-        { mul_comm' := by
+        { mul_comm := by
             ext ⟨x : A, y : A⟩
             exact CommMonoid.mul_comm y x } }
   map f := MonTypeEquivalenceMon.inverse.map ((forget₂ CommMonCat MonCat).map f)
