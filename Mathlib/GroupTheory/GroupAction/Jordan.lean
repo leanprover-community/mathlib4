@@ -604,7 +604,7 @@ theorem isMultiplyPreprimitive_jordan
         rw [Set.image_singleton, hg]
       rw [htb]
       refine IsPreprimitive.of_surjective
-        (conjMap_ofFixingSubgroup_bijective _ _ hst).surjective
+        (conjMap_ofFixingSubgroup_bijective G hst).surjective
 
   -- Induction step
   intro G α _ _ _ hG s hsn hα hGs
