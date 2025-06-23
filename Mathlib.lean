@@ -1803,6 +1803,7 @@ import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
 import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+import Mathlib.Analysis.SpecialFunctions.Integrals.LogTrigonometric
 import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
@@ -2769,6 +2770,7 @@ import Mathlib.Combinatorics.Young.YoungDiagram
 import Mathlib.Computability.Ackermann
 import Mathlib.Computability.AkraBazzi.AkraBazzi
 import Mathlib.Computability.AkraBazzi.GrowsPolynomially
+import Mathlib.Computability.AkraBazzi.SumTransform
 import Mathlib.Computability.ContextFreeGrammar
 import Mathlib.Computability.DFA
 import Mathlib.Computability.Encoding
@@ -4463,6 +4465,8 @@ import Mathlib.MeasureTheory.OuterMeasure.Operations
 import Mathlib.MeasureTheory.PiSystem
 import Mathlib.MeasureTheory.SetAlgebra
 import Mathlib.MeasureTheory.SetSemiring
+import Mathlib.MeasureTheory.SpecificCodomains.ContinuousMap
+import Mathlib.MeasureTheory.SpecificCodomains.ContinuousMapZero
 import Mathlib.MeasureTheory.Topology
 import Mathlib.MeasureTheory.VectorMeasure.Basic
 import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Hahn

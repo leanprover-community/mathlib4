@@ -182,7 +182,7 @@ instance (priority := 100) BorelSpace.opensMeasurable {α : Type*} [TopologicalS
   ⟨ge_of_eq <| BorelSpace.measurable_eq⟩
 
 instance Subtype.borelSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
-    [hα : BorelSpace α] (s : Set α) : BorelSpace s :=
+    [hα : BorelSpace α] (p : α → Prop) : BorelSpace (Subtype p) :=
   ⟨by borelize α; symm; apply borel_comap⟩
 
 instance Countable.instBorelSpace [Countable α] [MeasurableSpace α] [MeasurableSingletonClass α]
@@ -192,7 +192,7 @@ instance Countable.instBorelSpace [Countable α] [MeasurableSpace α] [Measurabl
   exact ⟨by aesop⟩
 
 instance Subtype.opensMeasurableSpace {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
-    [h : OpensMeasurableSpace α] (s : Set α) : OpensMeasurableSpace s :=
+    [h : OpensMeasurableSpace α] (p : α → Prop) : OpensMeasurableSpace (Subtype p) :=
   ⟨by
     rw [borel_comap]
     exact comap_mono h.1⟩
