@@ -67,4 +67,24 @@ theorem le_σsSup_iff (hs : s.Countable) : a ≤ sSup s ↔ ∀ b ∈ upperBound
 theorem σsInf_le_iff (hs : s.Countable) : sInf s ≤ a ↔ ∀ b ∈ lowerBounds s, b ≤ a :=
   ⟨fun h _ hb => le_trans (le_σsInf hs hb) h, fun hb => hb _ fun _ => σsInf_le hs⟩
 
+theorem IsLUB.σsSup_eq (h : IsLUB s a) (hs : s.Countable) : sSup s = a :=
+  (isLUB_σsSup hs).unique h
+
+theorem IsGLB.σsInf_eq (h : IsGLB s a) (hs : s.Countable) : sInf s = a :=
+  (isGLB_σsInf hs).unique h
+
+/-- A greatest element of a set is the supremum of this set. -/
+theorem IsGreatest.σsSup_eq (H : IsGreatest s a) : sSup s = a :=
+  H.isLUB.σsSup_eq H.nonempty
+
+theorem IsGreatest.σsSup_mem (H : IsGreatest s a) : sSup s ∈ s :=
+  H.csSup_eq.symm ▸ H.1
+
+/-- A least element of a set is the infimum of this set. -/
+theorem IsLeast.σsInf_eq (H : IsLeast s a) : sInf s = a :=
+  H.isGLB.csInf_eq H.nonempty
+
+theorem IsLeast.σsInf_mem (H : IsLeast s a) : sInf s ∈ s :=
+  H.csInf_eq.symm ▸ H.1
+
 end BooleanσAlgebra
