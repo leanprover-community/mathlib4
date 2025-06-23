@@ -5,7 +5,8 @@ Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.ModelCategory.Bifibrant
 import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
-import Mathlib.CategoryTheory.Localization.LocalizerMorphism
+import Mathlib.CategoryTheory.Localization.Quotient
+import Mathlib.CategoryTheory.MorphismProperty.Quotient
 
 /-!
 # The fundamental lemma of homotopical algebra
@@ -416,6 +417,70 @@ end FibrantObject
 
 namespace CofibrantObject
 
+instance : (weakEquivalences (CofibrantObject C)).HasQuotient (homRel C) where
+  iff X Y f g h := by
+    rw [← weakEquivalence_iff, ← weakEquivalence_iff, weakEquivalence_iff_ι_map,
+      weakEquivalence_iff_ι_map]
+    obtain ⟨P, ⟨h⟩⟩ := h
+    apply h.weakEquivalence_iff
+  compClosure_eq_self := compClosure_homRel C
+
+instance : CategoryWithWeakEquivalences (CofibrantObject.π C) where
+  weakEquivalences := (weakEquivalences _).quotient _
+
+variable {C} in
+lemma weakEquivalence_toπ_map_iff {X Y : CofibrantObject C} (f : X ⟶ Y) :
+    WeakEquivalence (toπ.map f) ↔ WeakEquivalence f := by
+  simp only [weakEquivalence_iff]
+  apply MorphismProperty.quotient_iff
+
+def toπLocalizerMorphism :
+    LocalizerMorphism (weakEquivalences (CofibrantObject C))
+      (weakEquivalences (CofibrantObject.π C)) where
+  functor := toπ
+  map _ _ _ h := by
+    simp only [← weakEquivalence_iff] at h
+    simpa only [MorphismProperty.inverseImage_iff, ← weakEquivalence_iff,
+      weakEquivalence_toπ_map_iff]
+
+lemma factorsThroughLocalization :
+    (homRel C).FactorsThroughLocalization (weakEquivalences (CofibrantObject C)) := by
+  rintro X Y f g h
+  obtain ⟨P, _, ⟨h⟩⟩ := h.exists_very_good
+  let L := (weakEquivalences (CofibrantObject C)).Q
+  rw [areEqualizedByLocalization_iff L]
+  suffices L.map (homMk P.p₀) = L.map (homMk P.p₁) by
+    simp only [← h.h₀, ← h.h₁]
+    change L.map (homMk h.h ≫ homMk P.p₀) = L.map (homMk h.h ≫ homMk P.p₁)
+    simp only [Functor.map_comp, this]
+  have := Localization.inverts L (weakEquivalences _) (homMk P.ι) (by
+    rw [← weakEquivalence_iff]
+    rw [weakEquivalence_iff_ι_map]
+    change WeakEquivalence P.ι
+    infer_instance)
+  simp only [← cancel_epi (L.map (homMk P.ι)), ← L.map_comp, homMk_homMk, P.ι_p₀, P.ι_p₁]
+
+instance : (toπLocalizerMorphism C).IsLocalizedEquivalence := by
+  apply (factorsThroughLocalization C).isLocalizedEquivalence
+  apply MorphismProperty.eq_inverseImage_quotientFunctor
+
+instance {D : Type*} [Category D] (L : CofibrantObject.π C ⥤ D)
+    [L.IsLocalization (weakEquivalences _)] :
+    (toπ ⋙ L).IsLocalization (weakEquivalences _) := by
+  change ((toπLocalizerMorphism C).functor ⋙ L).IsLocalization (weakEquivalences _)
+  infer_instance
+
+end CofibrantObject
+
+namespace FibrantObject
+
+-- dualize
+
+end FibrantObject
+
+
+namespace CofibrantObject
+
 variable {C}
 
 def π.exists_resolution (X : C) :
@@ -456,6 +521,13 @@ lemma π.resolutionMap_fac {X Y : C} (f : X ⟶ Y) :
       pResolutionObj X ≫ f :=
   (exists_resolution_map f).choose_spec
 
+@[simp]
+lemma π.weakEquivalence_resolutionMap_iff {X Y : C} (f : X ⟶ Y) :
+    WeakEquivalence (resolutionMap f) ↔ WeakEquivalence f := by
+  rw [weakEquivalence_iff_ι_map,
+    ← weakEquivalence_postcomp_iff _ (pResolutionObj Y),
+    π.resolutionMap_fac, weakEquivalence_precomp_iff]
+
 lemma π.resolutionObj_hom_ext {X : CofibrantObject C} {Y : C} {f g : X ⟶ resolutionObj Y}
     (h : LeftHomotopyRel (ι.map f ≫ pResolutionObj Y) (ι.map g ≫ pResolutionObj Y)) :
     toπ.map f = toπ.map g := by
@@ -480,6 +552,50 @@ noncomputable def π.resolution : C ⥤ CofibrantObject.π C where
     rw [resolutionMap_fac, ι.map_comp_assoc, resolutionMap_fac, resolutionMap_fac_assoc]
     exact .refl _
 
+variable (C) in
+@[simps]
+noncomputable def π.localizerMorphismResolution :
+    LocalizerMorphism (weakEquivalences C)
+      (weakEquivalences (CofibrantObject.π C)) where
+  functor := π.resolution
+  map _ _ _ h := by
+    simpa only [MorphismProperty.inverseImage_iff, ← weakEquivalence_iff, π.resolution,
+      weakEquivalence_toπ_map_iff, weakEquivalence_resolutionMap_iff] using h
+
+@[simps]
+noncomputable def π.ιCompResolutionNatTrans : ι ⋙ π.resolution (C := C) ⟶ toπ where
+  app X := toπ.map (pResolutionObj (ι.obj X))
+  naturality _ _ f := toπ.congr_map (π.resolutionMap_fac (ι.map f))
+
+instance π.weakEquivalence_ιCompResolutionNatTrans_app (X : CofibrantObject C) :
+    WeakEquivalence (ιCompResolutionNatTrans.app X) := by
+  dsimp
+  rw [weakEquivalence_toπ_map_iff, weakEquivalence_iff_ι_map]
+  dsimp
+  infer_instance
+
+instance {D : Type*} [Category D] (L : CofibrantObject.π C ⥤ D)
+    [L.IsLocalization (weakEquivalences _)] :
+    IsIso (whiskerRight π.ιCompResolutionNatTrans L) := by
+  rw [NatTrans.isIso_iff_isIso_app]
+  intro X
+  apply Localization.inverts L (weakEquivalences _)
+  rw [← weakEquivalence_iff]
+  infer_instance
+
+section
+
+variable {D : Type*} [Category D] (L : C ⥤ D) [L.IsLocalization (weakEquivalences C)]
+
+def π.toLocalization : π C ⥤ D :=
+  CategoryTheory.Quotient.lift _ (ι ⋙ L) (by
+    have : L.IsLocalization (weakEquivalences C) := inferInstance
+    sorry)
+
+def π.toπCompToLocalizationIso : toπ ⋙ toLocalization L ≅ ι ⋙ L := Iso.refl _
+
+end
+
 end CofibrantObject
 
 namespace FibrantObject
@@ -487,16 +603,6 @@ namespace FibrantObject
 -- dualize
 
 end FibrantObject
-
-namespace CofibrantObject
-#check CofibrantObject.π
-def toπLocalizerMorphism :
-    LocalizerMorphism (weakEquivalences (CofibrantObject C))
-      (weakEquivalences (CofibrantObject.π C)) where
-  functor := toπ
-  map := sorry
-
-end CofibrantObject
 
 namespace BifibrantObject
 
@@ -514,6 +620,55 @@ def ιFibrantObjectLocalizerMorphism :
   functor := ιFibrantObject
   map _ _ _ h := h
 
+--instance : (ιCofibrantObjectLocalizerMorphism C).IsLocalizedEquivalence := sorry
+
 end BifibrantObject
+
+namespace CofibrantObject
+
+@[simps]
+def localizerMorphism : LocalizerMorphism (weakEquivalences (CofibrantObject C))
+    (weakEquivalences C) where
+  functor := ι
+  map := by rfl
+
+instance : (localizerMorphism C).IsLocalizedEquivalence := by
+  let Hcof := (weakEquivalences (π C)).Localization
+  let Lcofπ : π C ⥤ Hcof := (weakEquivalences (CofibrantObject.π C)).Q
+  let Lcof : CofibrantObject C ⥤ Hcof := toπ ⋙ Lcofπ
+  let H := (weakEquivalences C).Localization
+  let L : C ⥤ H := (weakEquivalences C).Q
+  let F := (localizerMorphism C).localizedFunctor Lcof L
+  let eF : ι ⋙ L ≅ Lcof ⋙ F := CatCommSq.iso (localizerMorphism C).functor Lcof L F
+  let G : H ⥤ Hcof := (π.localizerMorphismResolution C).localizedFunctor L Lcofπ
+  let eG : π.resolution ⋙ Lcofπ ≅ L ⋙ G :=
+    CatCommSq.iso (π.localizerMorphismResolution C).functor L Lcofπ G
+  have : Localization.Lifting Lcof (weakEquivalences (CofibrantObject C)) Lcof (F ⋙ G) :=
+    ⟨(Functor.associator _ _ _).symm ≪≫ isoWhiskerRight eF.symm _ ≪≫
+      Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ eG.symm ≪≫
+      (Functor.associator _ _ _).symm ≪≫
+        asIso (whiskerRight π.ιCompResolutionNatTrans Lcofπ) ≪≫ Iso.refl _⟩
+  let I : π C ⥤ H := sorry
+  have iso₁ : toπ ⋙ I ≅ ι ⋙ L := sorry
+  have iso₂ : I ≅ Lcofπ ⋙ F := sorry
+  let iso : π.resolution ⋙ Lcofπ ⋙ F ≅ L := by
+    refine isoWhiskerLeft _ iso₂.symm ≪≫ ?_
+    sorry
+  have : Localization.Lifting L (weakEquivalences C) L (G ⋙ F) := ⟨
+    (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight eG.symm _ ≪≫
+      Functor.associator _ _ _ ≪≫ iso⟩
+  let E : Hcof ≌ H := CategoryTheory.Equivalence.mk F G
+    (Localization.liftNatIso Lcof (weakEquivalences _) Lcof Lcof _ _ (Iso.refl _))
+    (Localization.liftNatIso L (weakEquivalences _) L L _ _ (Iso.refl _))
+  have : F.IsEquivalence := E.isEquivalence_functor
+  exact LocalizerMorphism.IsLocalizedEquivalence.mk' (localizerMorphism C) Lcof L F
+
+end CofibrantObject
+
+namespace FibrantObject
+
+-- dualize
+
+end FibrantObject
 
 end HomotopicalAlgebra

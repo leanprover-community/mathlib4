@@ -6,6 +6,11 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.MorphismProperty.Basic
 import Mathlib.CategoryTheory.Quotient
 
+/-!
+# Classes of morphisms induced on quotient categories
+
+-/
+
 namespace CategoryTheory
 
 namespace MorphismProperty
@@ -41,6 +46,12 @@ lemma quotient_iff [W.HasQuotient homRel] {X Y : C} (f : X ⟶ Y) :
     rwa [HasQuotient.iff_of_eqvGen W h]
   · intro hf
     exact ⟨f, hf, rfl⟩
+
+lemma eq_inverseImage_quotientFunctor [W.HasQuotient homRel] :
+    W = (W.quotient homRel).inverseImage (Quotient.functor _) := by
+  ext
+  symm
+  apply quotient_iff
 
 end MorphismProperty
 
