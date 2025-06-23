@@ -5,7 +5,6 @@ Authors: Judith Ludwig, Florent Schaffhauser, Yunzhou Xie, Jujian Zhang
 -/
 import Mathlib.LinearAlgebra.TensorProduct.Quotient
 import Mathlib.RingTheory.Flat.Stability
-import Mathlib.RingTheory.Ideal.Quotient.Basic
 
 /-!
 # Faithfully flat modules
@@ -602,4 +601,3 @@ lemma Flat.iff_flat_tensorProduct (S : Type*) [CommRing S] [Algebra R S]
   ⟨fun _ ↦ .of_flat_tensorProduct R M S, fun _ ↦ inferInstance⟩
 
 end Module
-#min_imports
