@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Module.Submodule.Equiv
 import Mathlib.LinearAlgebra.Finsupp.Supported
+import Mathlib.Data.Finsupp.Option
 
 /-!
 # `Finsupp.linearCombination`
