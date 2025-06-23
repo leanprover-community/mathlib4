@@ -69,6 +69,7 @@ end Preprimitive
 /-- An additive action is n-multiply preprimitive  if is is n-multiply transitive
   and if, when n ≥ 1, for every set `s` of cardinality n - 1,
   the action of `fixingAddSubgroup M s` on the complement of `s` is preprimitive. -/
+@[mk_iff]
 class _root_.AddAction.IsMultiplyPreprimitive
     (M α : Type*) [AddGroup M] [AddAction M α] (n : ℕ) where
   /-- An `n`-preprimitive action is `n`-pretransitive -/
@@ -82,7 +83,7 @@ class _root_.AddAction.IsMultiplyPreprimitive
 transitive and if, when `n ≥ 1`, for every set `s` of cardinality
 n - 1, the action of `fixingSubgroup M s` on the complement of `s`
 is preprimitive. -/
-@[to_additive existing]
+@[mk_iff, to_additive existing]
 class IsMultiplyPreprimitive (M α : Type*) [Group M] [MulAction M α] (n : ℕ) where
   /-- An `n`-preprimitive action is `n`-pretransitive -/
   isMultiplyPretransitive (M α n) : IsMultiplyPretransitive M α n
@@ -116,6 +117,7 @@ theorem is_one_preprimitive_iff :
     rw [← H]
     apply H1.isPreprimitive_ofFixingSubgroup (by simp)
   · intro h
+    rw [isMultiplyPreprimitive_iff]
     constructor
     · exact is_one_pretransitive_iff.mpr h.toIsPretransitive
     · intro s hs
@@ -138,6 +140,7 @@ theorem isMultiplyPreprimitive_ofStabilizer
   · rw [Nat.lt_one_iff] at h0
     rw [h0]
     apply is_zero_preprimitive
+  rw [isMultiplyPreprimitive_iff]
   constructor
   · rw [← ofStabilizer.isMultiplyPretransitive]
     exact IsMultiplyPreprimitive.isMultiplyPretransitive M α n.succ
@@ -159,6 +162,7 @@ theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
   constructor
   · apply isMultiplyPreprimitive_ofStabilizer
   · intro H
+    rw [isMultiplyPreprimitive_iff]
     constructor
     · exact ofStabilizer.isMultiplyPretransitive.mpr H.isMultiplyPretransitive
     · intro s hs
@@ -227,6 +231,7 @@ theorem isMultiplyPreprimitive_of_isMultiplyPretransitive_succ {n : ℕ}
   rcases Nat.eq_zero_or_pos n with hn | hn
   · rw [hn]
     exact is_zero_preprimitive M α
+  rw [isMultiplyPreprimitive_iff]
   constructor
   · exact isMultiplyPretransitive_of_le' (Nat.le_succ n) hα
   · intro s hs
@@ -303,6 +308,7 @@ theorem isMultiplyPreprimitive_congr
     IsMultiplyPreprimitive M α n ↔ IsMultiplyPreprimitive N β n := by
   refine ⟨IsMultiplyPreprimitive.of_bijective_map hf, ?_⟩
   intro H
+  rw [isMultiplyPreprimitive_iff]
   constructor
   · exact (IsPretransitive.of_embedding_congr hφ hf).mpr H.isMultiplyPretransitive
   · intro s hs
