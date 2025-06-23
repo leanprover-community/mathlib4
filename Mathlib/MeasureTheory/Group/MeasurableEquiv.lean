@@ -217,7 +217,7 @@ lemma _root_.measurableEmbedding_divLeft [MeasurableMul G] [MeasurableInv G] (g 
 end MeasurableEquiv
 
 namespace MeasureTheory.Measure
-variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A] [MeasurableSpace A]
+variable {G A : Type*} [Group G] [MulAction G A] [MeasurableSpace A]
   [MeasurableConstSMul G A] {μ ν : Measure A} {g : G}
 
 noncomputable instance : DistribMulAction Gᵈᵐᵃ (Measure A) where

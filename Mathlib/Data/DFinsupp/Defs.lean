@@ -440,7 +440,6 @@ def equivFunOnFintype [Fintype ι] : (Π₀ i, β i) ≃ ∀ i, β i where
   toFun := (⇑)
   invFun f := ⟨f, Trunc.mk ⟨Finset.univ.1, fun _ => Or.inl <| Finset.mem_univ_val _⟩⟩
   left_inv _ := DFunLike.coe_injective rfl
-  right_inv _ := rfl
 
 @[simp]
 theorem equivFunOnFintype_symm_coe [Fintype ι] (f : Π₀ i, β i) : equivFunOnFintype.symm f = f :=
@@ -1018,7 +1017,7 @@ theorem support_filter (f : Π₀ i, β i) : (f.filter p).support = {x ∈ f.sup
 
 theorem subtypeDomain_def (f : Π₀ i, β i) :
     f.subtypeDomain p = mk (f.support.subtype p) fun i => f i := by
-  ext i; by_cases h2 : f i ≠ 0 <;> try simp at h2; dsimp; simp [h2]
+  ext i; by_cases h2 : f i ≠ 0 <;> try simp at h2; simp [h2]
 
 @[simp]
 theorem support_subtypeDomain {f : Π₀ i, β i} :

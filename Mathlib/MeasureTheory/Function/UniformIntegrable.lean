@@ -422,6 +422,7 @@ theorem unifIntegrable_subsingleton [Subsingleton ι] (hp_one : 1 ≤ p) (hp_top
     convert hδ s hs hμs
   · exact ⟨1, zero_lt_one, fun i => False.elim <| hι <| Nonempty.intro i⟩
 
+open Fin.NatCast -- TODO: refactor the proof to avoid needing this
 /-- This lemma is less general than `MeasureTheory.unifIntegrable_finite` which applies to
 all sequences indexed by a finite type. -/
 theorem unifIntegrable_fin (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α → β}
@@ -440,12 +441,12 @@ theorem unifIntegrable_fin (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {n : ℕ} {f 
     · rw [(_ : f i = g ⟨i.val, hi⟩)]
       · exact hδ₁ _ s hs (le_trans hμs <| ENNReal.ofReal_le_ofReal <| min_le_left _ _)
       · simp [g]
-    · rw [(_ : i = n)]
-      · exact hδ₂ _ hs (le_trans hμs <| ENNReal.ofReal_le_ofReal <| min_le_right _ _)
-      · have hi' := Fin.is_lt i
+    · obtain rfl : i = n := by
+        have hi' := Fin.is_lt i
         rw [Nat.lt_succ_iff] at hi'
         rw [not_lt] at hi
         simp [← le_antisymm hi' hi]
+      exact hδ₂ _ hs (le_trans hμs <| ENNReal.ofReal_le_ofReal <| min_le_right _ _)
 
 /-- A finite sequence of Lp functions is uniformly integrable. -/
 theorem unifIntegrable_finite [Finite ι] (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {f : ι → α → β}
@@ -456,9 +457,7 @@ theorem unifIntegrable_finite [Finite ι] (hp_one : 1 ≤ p) (hp_top : p ≠ ∞
   have hg : ∀ i, MemLp (g i) p μ := fun _ => hf _
   obtain ⟨δ, hδpos, hδ⟩ := unifIntegrable_fin hp_one hp_top hg hε
   refine ⟨δ, hδpos, fun i s hs hμs => ?_⟩
-  specialize hδ (hn.some i) s hs hμs
-  simp_rw [g, Function.comp_apply, Equiv.symm_apply_apply] at hδ
-  assumption
+  simpa [g] using hδ (hn.some i) s hs hμs
 
 end
 
@@ -541,7 +540,7 @@ theorem tendsto_Lp_finite_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤
     simp
   rw [this] at hnf hng hlt
   rw [eLpNorm_neg, ← ENNReal.add_thirds ε, ← sub_eq_add_neg]
-  exact add_le_add_three hnf hng hlt
+  gcongr
 
 /-- A sequence of uniformly integrable functions which converges μ-a.e. converges in Lp. -/
 theorem tendsto_Lp_finite_of_tendsto_ae [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
@@ -646,7 +645,7 @@ theorem unifIntegrable_of' (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → �
       change _ = fun x => (s ∩ { x : α | C ≤ ‖f i x‖₊ }).indicator (f i) x +
         (s ∩ { x : α | ‖f i x‖₊ < C }).indicator (f i) x
       rw [← Set.indicator_union_of_disjoint]
-      · rw [← Set.inter_union_distrib_left, (by ext; simp [le_or_lt] :
+      · rw [← Set.inter_union_distrib_left, (by ext; simp [le_or_gt] :
             { x : α | C ≤ ‖f i x‖₊ } ∪ { x : α | ‖f i x‖₊ < C } = Set.univ),
           Set.inter_univ]
       · refine (Disjoint.inf_right' _ ?_).inf_left' _

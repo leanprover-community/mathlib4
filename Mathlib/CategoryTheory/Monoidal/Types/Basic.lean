@@ -25,9 +25,13 @@ instance typesCartesianMonoidalCategory : CartesianMonoidalCategory (Type u) :=
 
 instance : BraidedCategory (Type u) := .ofCartesianMonoidalCategory
 
+theorem types_tensorObj_def {X Y : Type u} : X ⊗ Y = (X × Y) := rfl
+
+theorem types_tensorUnit_def : 𝟙_ (Type u) = PUnit := rfl
+
 @[simp]
 theorem tensor_apply {W X Y Z : Type u} (f : W ⟶ X) (g : Y ⟶ Z) (p : W ⊗ Y) :
-    (f ⊗ g) p = (f p.1, g p.2) :=
+    (f ⊗ₘ g) p = (f p.1, g p.2) :=
   rfl
 
 @[simp]
