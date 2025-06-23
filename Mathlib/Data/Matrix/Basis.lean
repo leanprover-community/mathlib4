@@ -198,7 +198,7 @@ variable [Module R α] [Module R β] [Module S β] [SMulCommClass R S β]
 
 /-- Families of linear maps acting on each element are equivalent to linear maps from a matrix.
 
-This can be thought of as the matrix versoin of `LinearMap.lsum`. -/
+This can be thought of as the matrix version of `LinearMap.lsum`. -/
 def liftLinear : (m → n → α →ₗ[R] β) ≃ₗ[S] (Matrix m n α →ₗ[R] β) :=
   LinearEquiv.piCongrRight (fun _ => LinearMap.lsum R _ S) ≪≫ₗ LinearMap.lsum R _ S ≪≫ₗ
     LinearEquiv.congrLeft _ _ (ofLinearEquiv _)
