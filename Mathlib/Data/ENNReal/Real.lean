@@ -489,7 +489,7 @@ lemma le_biInf_add_biInf {ι κ : Type*} {s : Set ι} {t : Set κ}
   obtain ⟨d, had, hdc⟩ := exists_between hac
   exact (iInf₂_le_of_le d had le_rfl).trans_lt hdc
 
-lemma exists_lt_add_of_lt_add {x y z : ℝ≥0∞} (h : y + z < x) :
+lemma exists_add_lt_of_add_lt {x y z : ℝ≥0∞} (h : y + z < x) :
     ∃ y' > y, ∃ z' > z, y' + z' < x := by
   contrapose! h
   simpa using le_biInf_add_biInf' h
