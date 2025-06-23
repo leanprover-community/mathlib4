@@ -469,7 +469,7 @@ lemma add_sInf {s : Set ℝ≥0∞}: a + sInf s = ⨅ b ∈ s, a + b := by
 
 variable {κ : Sort*}
 
-lemma le_iInf_add_iInf [Nonempty ι] [Nonempty κ] {g : κ → ℝ≥0∞} (h : ∀ i j, a ≤ f i + g j) :
+lemma le_iInf_add_iInf {g : κ → ℝ≥0∞} (h : ∀ i j, a ≤ f i + g j) :
     a ≤ iInf f + iInf g := by
   simp_rw [iInf_add, add_iInf]; exact le_iInf₂ h
 

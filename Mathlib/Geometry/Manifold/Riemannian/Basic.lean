@@ -4,6 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Geometry.Manifold.Riemannian.PathELength
+import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
+import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
+
 /-! # Riemannian manifolds
 
 A Riemannian manifold `M` is a real manifold such that its tangent spaces are endowed with a
@@ -36,13 +40,9 @@ This is a `Prop` valued typeclass, on top of existing data. -/
 class IsRiemannianManifold : Prop where
   out (x y : M) : edist x y = riemannianEDist I x y
 
-/- TODO: show that a vector space with an inner product is a Riemannian manifold. -/
-
 end
 
 section
-
-open Bundle
 
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 

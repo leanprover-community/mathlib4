@@ -3,18 +3,10 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
 import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Analysis.SpecialFunctions.SmoothTransition
-import Mathlib.Geometry.Manifold.ContMDiff.Defs
+import Mathlib.Geometry.Manifold.ContMDiff.Basic
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
-import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
-import Mathlib.Geometry.Manifold.VectorBundle.Tangent
-import Mathlib.MeasureTheory.Constructions.UnitInterval
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
-import Mathlib.MeasureTheory.Function.JacobianOneDim
 
 /-! # Manifold structure on real intervals
 
