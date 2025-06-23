@@ -54,7 +54,7 @@ variable [MonoidWithZero A] [MonoidWithZero B] [MonoidWithZeroHomClass F A B]
 elements in the codomain containing the range of `f`. -/
 def valueMonoid : Submonoid Bˣ where
   carrier := (↑)⁻¹' (range f)
-  mul_mem' {_ _} hb hb' := by
+  mul_mem' hb hb' := by
     obtain ⟨y, hy⟩ := hb
     obtain ⟨y', hy'⟩ := hb'
     use y * y'
