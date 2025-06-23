@@ -266,6 +266,57 @@ end instances
 
 open IsManifold
 
+namespace PartialHomeomorph
+
+variable [TopologicalSpace M] [IsManifold I' n M']
+
+variable [Nonempty H] {φ : PartialHomeomorph M' H'} {f : M → M'}
+
+-- TODO: use the Function.extend trick again
+-- actually, does that work at all? f might not be injective!!!!
+def finverse : M' → M := sorry
+
+lemma finverse_apply (x : M) : finverse (f x) = x := sorry
+
+@[simps]
+noncomputable def _root_.PartialEquiv.pullback_sliceModel (φ : PartialEquiv M' H') (f : M → M')
+    -- TODO: is hfoo the right form to ask for?
+    (h : SliceModel F I I') (hfoo : ∀ y, y ∈ range f → φ.target ⊆ range h.map) : PartialEquiv M H
+    where
+  toFun := h.inverse ∘ φ ∘ f
+  -- TODO: the inverse function may be an issue! perhaps assume f is globally injective...
+  invFun := finverse ∘ φ.symm ∘ h.map
+  source := f ⁻¹' φ.source
+  target := h.map ⁻¹' φ.target
+  map_source' x hx := by
+    specialize hfoo (f x) (mem_range_self x) (φ.map_source hx)
+    simp [h.inverse_right_inv (φ (f x)) hfoo, φ.map_source hx]
+  map_target' x hx := sorry -- need to think harder!
+  left_inv' := sorry
+  right_inv' := sorry
+
+variable (φ f) in
+noncomputable def pullback_sliceModel (h : SliceModel F I I') (hf : Continuous f)
+    (hfoo : ∀ y, y ∈ range f → φ.target ⊆ range h.map) : PartialHomeomorph M H where
+  toPartialEquiv := φ.toPartialEquiv.pullback_sliceModel f h hfoo
+  open_source := hf.isOpen_preimage _ φ.open_source
+  open_target := h.hmap.continuous.isOpen_preimage _ φ.open_target
+  continuousOn_toFun := by
+    simp
+    change ContinuousOn (h.inverse ∘ φ ∘ f) (f ⁻¹' φ.source) -- add simp lemma!
+    have : ContinuousOn (φ ∘ f) (f ⁻¹' φ.source) := by
+      have : ContinuousOn φ φ.source := φ.continuousOn_toFun
+      have : Continuous f := hf
+      sorry -- combine the last two refine ContinuousOn.comp ?_ this
+    -- need h.inverse to be continuous on some reasonable set, which includes the domain of continuity of the above
+    -- apply ContinuousOn.comp
+    -- have : ContinuousOn h.inverse (h.map '' (f ⁻¹' φ.source)) := sorry -- why
+    sorry
+  continuousOn_invFun := sorry
+
+
+end PartialHomeomorph
+
 -- XXX: should h and f be part of the underlying data? well, I may want a SliceModel class to be
 -- inferred first, right? at least, otherwise they should be explicit...
 variable (M M' n) in
@@ -306,31 +357,3 @@ def IsImmersedSubmanifold.mk_of_injective [TopologicalSpace M]
 -- TODO: prove that:
 -- IsImmersedSubmanifold M N n h f implies IsImmersion f n I I'
 -- IsImmersion f n I I' implies IsImmersedSubmanifold (f '' M) N n h f
-
-namespace PartialHomeomorph
-
-variable [TopologicalSpace M] [IsManifold I' n M']
-
-variable [Nonempty H] {φ : PartialHomeomorph M' H'} {f : M → M'}
-
-def _root_.PartialEquiv.pullback_sliceModel (φ : PartialEquiv M' H') (f : M → M')
-    (h : SliceModel F I I') : PartialEquiv M H where
-  toFun := sorry
-  invFun := sorry
-  source := sorry
-  target := sorry
-  map_source' := sorry
-  map_target' := sorry
-  left_inv' := sorry
-  right_inv' := sorry
-
-variable (φ f) in
-def pullback_sliceModel (h : SliceModel F I I') : PartialHomeomorph M H where
-  toPartialEquiv := φ.toPartialEquiv.pullback_sliceModel f h
-  open_source := sorry
-  open_target := sorry
-  continuousOn_toFun := sorry
-  continuousOn_invFun := sorry
-
-
-end PartialHomeomorph
