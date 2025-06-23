@@ -7,7 +7,6 @@ import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Star.Module
 import Mathlib.Algebra.Star.NonUnitalSubalgebra
-import Mathlib.Algebra.Algebra.Subalgebra.Prod
 
 /-!
 # Star subalgebras
