@@ -397,9 +397,7 @@ instance Nat.instStarOrderedRing : StarOrderedRing ℕ where
         Nat.addSubmonoid_closure_one
     simp [this, le_iff_exists_add]
 
-
 namespace IsStarProjection
-
 variable [Ring R] [PartialOrder R] [StarRing R] [StarOrderedRing R] {p : R}
 
 theorem one_sub_nonneg (hp : IsStarProjection p) : 0 ≤ 1 - p := hp.one_sub.nonneg
