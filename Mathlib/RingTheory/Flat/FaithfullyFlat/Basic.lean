@@ -561,25 +561,6 @@ instance (S : Type*) [CommRing S] [Algebra R S] [Module.FaithfullyFlat R M] :
   have := (AlgebraTensorModule.cancelBaseChange R S S N M).symm.subsingleton
   exact FaithfullyFlat.rTensor_reflects_triviality R M N
 
-section commRing
-
-variable {R S M N : Type*} [CommRing R] [CommRing S] [Algebra R S]
-  [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] [Module S N]
-  [IsScalarTower R S N]
-
-/-- Let `R` be a commutative ring, `S` be an `R`-algebra, `I` is be ideal of `R`, `N` be the base
-  change of `M` to `S`, then `N ⧸ IN` is isomorphic to `S ⊗[R] (M ⧸ IM)` as `S` modules. -/
-noncomputable def IsBaseChange.quotMapSMulEquivTensorQuot {f : M →ₗ[R] N} (hf : IsBaseChange S f)
-    (I : Ideal R) : (N ⧸ I.map (algebraMap R S) • (⊤ : Submodule S N)) ≃ₗ[S]
-    S ⊗[R] (M ⧸ (I • (⊤ : Submodule R M))) :=
-  (tensorQuotEquivQuotSMul N (I.map (algebraMap R S))).symm ≪≫ₗ TensorProduct.comm S N _ ≪≫ₗ
-    hf.tensorEquiv  _ ≪≫ₗ
-      AlgebraTensorModule.congr (I.qoutMapEquivTensorQout S) (LinearEquiv.refl R M) ≪≫ₗ
-        AlgebraTensorModule.assoc R R S S _ M ≪≫ₗ (TensorProduct.comm R _ M).baseChange R S _ _ ≪≫ₗ
-          (tensorQuotEquivQuotSMul M I).baseChange R S _ _
-
-end commRing
-
 section IsBaseChange
 
 variable {S N : Type*} [CommRing S] [Algebra R S] [FaithfullyFlat R S]
@@ -592,10 +573,9 @@ theorem smul_top_ne_top_of_isBaseChange (hf : IsBaseChange S f) {I : Ideal R}
     Submodule.subsingleton_quotient_iff_eq_top.mpr eq
   have : Subsingleton (S ⊗[R] (M ⧸ I • ⊤)) :=
     (tensorQuotEquivQuotSMul N (I.map (algebraMap R S))).symm ≪≫ₗ TensorProduct.comm S N _ ≪≫ₗ
-      hf.tensorEquiv  _ ≪≫ₗ
-        AlgebraTensorModule.congr (I.qoutMapEquivTensorQout S) (LinearEquiv.refl R M) ≪≫ₗ
-          AlgebraTensorModule.assoc R R S S _ M ≪≫ₗ (TensorProduct.comm R _ M).baseChange R S _ _
-            ≪≫ₗ (tensorQuotEquivQuotSMul M I).baseChange R S _ _ |>.symm.subsingleton
+      hf.tensorEquiv  _ ≪≫ₗ AlgebraTensorModule.congr (I.qoutMapEquivTensorQout S) (by rfl) ≪≫ₗ
+        AlgebraTensorModule.assoc R R S S _ M ≪≫ₗ (TensorProduct.comm R _ M).baseChange R S _ _ ≪≫ₗ
+          (tensorQuotEquivQuotSMul M I).baseChange R S _ _ |>.symm.subsingleton
   have : Subsingleton (M ⧸ (I • (⊤ : Submodule R M))) := lTensor_reflects_triviality R S _
   exact not_nontrivial _ (Submodule.Quotient.nontrivial_of_lt_top (I • ⊤) h.lt_top)
 
