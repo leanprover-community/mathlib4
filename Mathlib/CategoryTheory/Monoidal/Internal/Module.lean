@@ -105,7 +105,7 @@ def functor : Mon_ (ModuleCat.{u} R) ⥤ AlgCat R where
 def inverseObj (A : AlgCat.{u} R) : Mon_Class (ModuleCat.of R A) where
   one := ofHom <| Algebra.linearMap R A
   mul := ofHom <| LinearMap.mul' R A
-  one_mul' := by
+  one_mul := by
     ext : 1
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| LinearMap.ext_ring <| LinearMap.ext fun x => ?_
@@ -119,7 +119,7 @@ def inverseObj (A : AlgCat.{u} R) : Mon_Class (ModuleCat.of R A) where
     dsimp
     erw [LinearMap.mul'_apply, MonoidalCategory.leftUnitor_hom_apply, ← Algebra.smul_def]
     dsimp
-  mul_one' := by
+  mul_one := by
     ext : 1
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext_ring ?_
@@ -133,7 +133,7 @@ def inverseObj (A : AlgCat.{u} R) : Mon_Class (ModuleCat.of R A) where
     erw [LinearMap.mul'_apply, ModuleCat.MonoidalCategory.rightUnitor_hom_apply, ← Algebra.commutes,
       ← Algebra.smul_def]
     dsimp
-  mul_assoc' := by
+  mul_assoc := by
     ext : 1
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext fun y =>
