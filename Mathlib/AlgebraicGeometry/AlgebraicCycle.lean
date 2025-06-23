@@ -7,7 +7,6 @@ import Mathlib.AlgebraicGeometry.Fiber
 import Mathlib.AlgebraicGeometry.Morphisms.Proper
 import Mathlib.Combinatorics.Quiver.ReflQuiver
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.RingTheory.Henselian
 import Mathlib.Topology.LocallyFinsupp
 
 /-!
