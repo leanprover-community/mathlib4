@@ -38,27 +38,24 @@ theorem isStarNormal [Mul R] [Star R]
 
 variable (R) in
 @[simp]
-protected theorem zero
-    [NonUnitalNonAssocSemiring R] [StarAddMonoid R] : IsStarProjection (0 : R) :=
-  ⟨mul_zero _, star_zero _⟩
+protected theorem zero [NonUnitalNonAssocSemiring R] [StarAddMonoid R] : IsStarProjection (0 : R) :=
+  ⟨.zero, .zero _⟩
 
 variable (R) in
 @[simp]
 protected theorem one [MulOneClass R] [StarMul R] : IsStarProjection (1 : R) :=
   ⟨.one, .one _⟩
 
-theorem pow_eq [Monoid R] [Star R] (hp : IsStarProjection p)
-    {n : ℕ} (hn : n ≠ 0) : p ^ n = p := hp.isIdempotentElem.pow_eq hn
+theorem pow_eq [Monoid R] [Star R] (hp : IsStarProjection p) {n : ℕ} (hn : n ≠ 0) : p ^ n = p :=
+  hp.isIdempotentElem.pow_eq hn
 
-theorem pow_succ_eq [Monoid R] [Star R] (hp : IsStarProjection p)
-    (n : ℕ) : p ^ (n + 1) = p := hp.isIdempotentElem.pow_succ_eq n
+theorem pow_succ_eq [Monoid R] [Star R] (hp : IsStarProjection p) (n : ℕ) : p ^ (n + 1) = p :=
+  hp.isIdempotentElem.pow_succ_eq n
 
 section NonAssocRing
-
 variable [NonAssocRing R]
 
-theorem one_sub [StarRing R] (hp : IsStarProjection p) :
-    IsStarProjection (1 - p) where
+theorem one_sub [StarRing R] (hp : IsStarProjection p) : IsStarProjection (1 - p) where
   isIdempotentElem := hp.isIdempotentElem.one_sub
   isSelfAdjoint := .sub (.one _) hp.isSelfAdjoint
 
