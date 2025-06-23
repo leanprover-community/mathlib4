@@ -55,4 +55,10 @@ theorem le_σsSup_of_le (hs : s.Countable) (hb : b ∈ s) (h : a ≤ b) : a ≤ 
 theorem σsInf_le_of_le (hs : s.Countable) (hb : b ∈ s) (h : b ≤ a) : sInf s ≤ a :=
   le_trans (σsInf_le hs hb) h
 
+theorem σsSup_le_σsSup (ht : t.Countable) (hs : s.Countable) (h : s ⊆ t) : sSup s ≤ sSup t :=
+  σsSup_le hs fun _ ha => le_σsSup ht (h ha)
+
+theorem σsInf_le_σsInf (ht : t.Countable) (hs : s.Countable) (h : s ⊆ t) : sInf t ≤ sInf s :=
+  le_σsInf hs fun _ ha => σsInf_le ht (h ha)
+
 end BooleanσAlgebra
