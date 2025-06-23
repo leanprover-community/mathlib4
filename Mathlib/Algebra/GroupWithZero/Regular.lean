@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Tactic.Push
 
 /-!
 # Results about `IsRegular` and `0`
