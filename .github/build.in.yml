@@ -186,7 +186,7 @@ jobs:
           # Loop through each changed filter
           for filter in $(echo "$changes" | jq -r '.[]'); do
             echo "Processing filter: $filter"
-            # Use dictionary value if exists, otherwise use filter name as tool name
+            # Use dictionary value if it exists, otherwise use filter name as tool name
             if [[ -n "${TOOLS_TO_BUILD[$filter]}" ]]; then
               tools="${TOOLS_TO_BUILD[$filter]}"
             else
