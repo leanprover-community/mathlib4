@@ -14,8 +14,7 @@ The algorithm's entry point is the function `Linarith.SimplexAlgorithm.findPosit
 See the file `PositiveVector.lean` for details of how the procedure works.
 -/
 
-namespace Linarith.SimplexAlgorithm
-open Mathlib
+namespace Mathlib.Tactic.Linarith.SimplexAlgorithm
 
 /-- Preprocess the goal to pass it to `Linarith.SimplexAlgorithm.findPositiveVector`. -/
 def preprocess (matType : ℕ → ℕ → Type) [UsableInSimplexAlgorithm matType] (hyps : List Comp)
@@ -56,4 +55,4 @@ def CertificateOracle.simplexAlgorithmDense : CertificateOracle where
     let vec ← findPositiveVector A strictIndexes
     return postprocess vec
 
-end Linarith
+end Mathlib.Tactic.Linarith
