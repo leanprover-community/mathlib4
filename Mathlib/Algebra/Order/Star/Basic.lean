@@ -135,7 +135,7 @@ variable [NonUnitalSemiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
 lemma IsSelfAdjoint.mono {x y : R} (h : x ≤ y) (hx : IsSelfAdjoint x) : IsSelfAdjoint y := by
   rw [StarOrderedRing.le_iff] at h
   obtain ⟨d, hd, rfl⟩ := h
-  rw [IsSelfAdjoint, star_add, hx.star_eq]
+  rw [isSelfAdjoint_iff, star_add, hx.star_eq]
   congr
   refine AddMonoidHom.eqOn_closureM (f := starAddEquiv (R := R)) (g := .id R) ?_ hd
   rintro - ⟨s, rfl⟩
@@ -184,7 +184,7 @@ theorem conjugate_nonneg' {a : R} (ha : 0 ≤ a) (c : R) : 0 ≤ c * a * star c 
 @[aesop 90% apply (rule_sets := [CStarAlgebra])]
 protected theorem IsSelfAdjoint.conjugate_nonneg {a : R} (ha : 0 ≤ a) {c : R}
     (hc : IsSelfAdjoint c) : 0 ≤ c * a * c := by
-  nth_rewrite 2 [← hc]; exact conjugate_nonneg' ha c
+  nth_rewrite 2 [← hc.star_eq]; exact conjugate_nonneg' ha c
 
 theorem conjugate_nonneg_of_nonneg {a : R} (ha : 0 ≤ a) {c : R} (hc : 0 ≤ c) :
     0 ≤ c * a * c :=

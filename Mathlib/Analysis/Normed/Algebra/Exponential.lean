@@ -164,8 +164,8 @@ variable (𝕂)
 
 @[aesop safe apply]
 theorem _root_.IsSelfAdjoint.exp [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 𝔸] {x : 𝔸}
-    (h : IsSelfAdjoint x) : IsSelfAdjoint (exp 𝕂 x) :=
-  (star_exp x).trans <| h.symm ▸ rfl
+    (h : IsSelfAdjoint x) : IsSelfAdjoint (exp 𝕂 x) where
+  star_eq := (star_exp x).trans <| h.star_eq.symm ▸ rfl
 
 theorem _root_.Commute.exp_right [T2Space 𝔸] {x y : 𝔸} (h : Commute x y) :
     Commute x (exp 𝕂 y) := by
