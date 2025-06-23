@@ -52,10 +52,6 @@ setup_remotes() {
   echo "Remote configuration:"
   echo "  Main repository ($MAIN_REMOTE): leanprover-community/mathlib4"
   echo "  Nightly testing ($NIGHTLY_REMOTE): leanprover-community/mathlib4-nightly-testing"
-
-  # Set global variables for use in the script
-  MAIN_REMOTE_NAME="$MAIN_REMOTE"
-  NIGHTLY_REMOTE_NAME="$NIGHTLY_REMOTE"
 }
 
 # Function to display usage
@@ -133,14 +129,14 @@ echo
 echo "### [auto] checkout master and pull the latest changes"
 
 git checkout master
-git pull $MAIN_REMOTE_NAME master
+git pull $MAIN_REMOTE master
 
 echo
-echo "### [auto] checkout 'bump/$BUMPVERSION' and merge the latest changes from '$MAIN_REMOTE_NAME/master'"
+echo "### [auto] checkout 'bump/$BUMPVERSION' and merge the latest changes from '$MAIN_REMOTE/master'"
 
 git checkout "bump/$BUMPVERSION"
-git pull $MAIN_REMOTE_NAME "bump/$BUMPVERSION"
-git merge --no-edit $MAIN_REMOTE_NAME/master || true # ignore error if there are conflicts
+git pull $MAIN_REMOTE "bump/$BUMPVERSION"
+git merge --no-edit $MAIN_REMOTE/master || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -169,7 +165,7 @@ fi
 while git diff --name-only --diff-filter=U | grep -q . || ! git diff-index --quiet HEAD --; do
   echo
   echo "### [user] Conflict resolution"
-  echo "We are merging the latest changes from '$MAIN_REMOTE_NAME/master' into 'bump/$BUMPVERSION'"
+  echo "We are merging the latest changes from '$MAIN_REMOTE/master' into 'bump/$BUMPVERSION'"
   echo "There seem to be conflicts or uncommitted files"
   echo ""
   echo "  1) Open `pwd` in a new terminal and run 'git status'"
@@ -226,7 +222,7 @@ pr_title="chore: adaptations for nightly-$NIGHTLYDATE"
 # as the user might have inadvertently already committed changes
 # In general, we do not want this command to fail.
 git commit --allow-empty -m "$pr_title"
-git push --set-upstream $NIGHTLY_REMOTE_NAME "bump/nightly-$NIGHTLYDATE"
+git push --set-upstream $NIGHTLY_REMOTE "bump/nightly-$NIGHTLYDATE"
 
 # Check if there is a diff between bump/nightly-$NIGHTLYDATE and bump/$BUMPVERSION
 if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .; then
@@ -280,7 +276,7 @@ echo
 echo "### [auto] checkout the 'nightly-testing' branch and merge the new branch into it"
 
 git checkout nightly-testing
-git pull $NIGHTLY_REMOTE_NAME nightly-testing
+git pull $NIGHTLY_REMOTE nightly-testing
 git merge --no-edit "bump/nightly-$NIGHTLYDATE" || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
@@ -322,7 +318,7 @@ done
 
 echo "All conflicts resolved and committed."
 echo "Proceeding with git push..."
-git push $NIGHTLY_REMOTE_NAME nightly-testing
+git push $NIGHTLY_REMOTE nightly-testing
 
 echo
 echo "### [auto] finished: checkout the original branch"
