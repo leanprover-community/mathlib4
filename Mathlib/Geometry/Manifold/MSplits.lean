@@ -130,7 +130,7 @@ end
 
 lemma _root_.IsLocalDiffeomorphAt.msplitsAt {f : M → M'}
     (hf : IsLocalDiffeomorphAt I I' n f x) (hn : 1 ≤ n) : MSplitsAt I I' f x :=
-  (hf.mfderiv_toContinuousLinearEquiv hn).splits.congr (by symm; simp)
+  (hf.mfderivToContinuousLinearEquiv hn).splits.congr (by symm; simp)
 
 /-- If `f` is split at `x` and `g` is split at `f x`, then `g ∘ f` is split at `x`. -/
 lemma comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]

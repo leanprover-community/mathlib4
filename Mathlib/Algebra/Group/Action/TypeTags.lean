@@ -5,7 +5,6 @@ Authors: Chris Hughes, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Group.TypeTags.Basic
-import Mathlib.Tactic.MinImports
 
 /-!
 # Additive and Multiplicative for group actions

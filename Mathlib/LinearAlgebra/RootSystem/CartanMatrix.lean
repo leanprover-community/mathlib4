@@ -14,9 +14,9 @@ import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
 This file contains definitions and basic results about Cartan matrices of root pairings / systems.
 
 ## Main definitions:
- * `RootPairing.Base.cartanMatrix`: the Cartan matrix of a crystallographic root pairing, with
-   respect to a base `b`.
- * `RootPairing.Base.cartanMatrix_nondegenerate`: the Cartan matrix is non-degenerate.
+* `RootPairing.Base.cartanMatrix`: the Cartan matrix of a crystallographic root pairing, with
+  respect to a base `b`.
+* `RootPairing.Base.cartanMatrix_nondegenerate`: the Cartan matrix is non-degenerate.
 
 -/
 
@@ -113,6 +113,17 @@ lemma cartanMatrix_mem_of_ne [Finite ι] [IsDomain R] {i j : b.support} (hij : i
   refine (not_linearIndependent_iff.mpr ?_) b.linearIndepOn_root
   refine ⟨⟨{i, j}, by simpa⟩, Finsupp.single i (1 : R) + Finsupp.single j (2 : R), ?_⟩
   simp [contra, hij, hij.symm]
+
+lemma abs_cartanMatrix_apply [Finite ι] [DecidableEq ι] [IsDomain R] {i j : b.support} :
+    |b.cartanMatrix i j| = (if i = j then 4 else 0) - b.cartanMatrix i j := by
+  rcases eq_or_ne i j with rfl | h
+  · simp
+  · simpa [h] using b.cartanMatrix_le_zero_of_ne i j h
+
+@[simp]
+lemma cartanMatrix_map_abs [DecidableEq ι] [Finite ι] [IsDomain R] :
+    b.cartanMatrix.map abs = 4 • 1 - b.cartanMatrix := by
+  ext; simp [abs_cartanMatrix_apply, Matrix.ofNat_apply]
 
 lemma cartanMatrix_nondegenerate [Finite ι] [IsDomain R]
     {P : RootSystem ι R M N} [P.IsCrystallographic] (b : P.Base) :

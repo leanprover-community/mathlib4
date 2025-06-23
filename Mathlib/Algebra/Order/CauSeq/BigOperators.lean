@@ -5,6 +5,7 @@ Authors: Chris Hughes, Yaël Dillies
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.CauSeq.Basic
 
 /-!
@@ -105,7 +106,6 @@ theorem _root_.cauchy_product (ha : IsCauSeq abs fun m ↦ ∑ n ∈ range m, ab
       (∑ n ∈ range (max N M + 1), abv (f n)) = |∑ n ∈ range (max N M + 1), abv (f n)| :=
         Eq.symm (abs_of_nonneg (sum_nonneg fun x _ ↦ abv_nonneg abv (f x)))
       _ < P := hP (max N M + 1)
-
   rw [h₁, h₂, h₃, sum_mul, ← sub_sub, sub_right_comm, sub_self, zero_sub, abv_neg abv]
   refine lt_of_le_of_lt (IsAbsoluteValue.abv_sum _ _ _) ?_
   suffices

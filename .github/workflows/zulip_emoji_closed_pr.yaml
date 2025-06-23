@@ -3,9 +3,14 @@ name: Add "closed-pr" emoji in Zulip
 
 # triggers the action when
 on:
-  pull_request:
+  pull_request_target:
     # the pull request is closed or reopened, to add or remove the emoji
     types: [closed, reopened]
+
+# Limit permissions for GITHUB_TOKEN for the entire workflow
+permissions:
+  contents: read # minimum permissions for actions/checkout & actions/setup-python
+  # All other permissions are implicitly 'none'
 
 jobs:
   add_closed_pr_emoji:
@@ -15,6 +20,7 @@ jobs:
 
     name: Add closed-pr emoji in Zulip
     runs-on: ubuntu-latest
+    if: github.repository == 'leanprover-community/mathlib4'
     steps:
       - name: Debugging information
         run: |
@@ -42,6 +48,7 @@ jobs:
                 github.event_name == 'reopened' }}
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
+          ref: master
           sparse-checkout: |
             scripts/zulip_emoji_reactions.py
 
@@ -55,5 +62,5 @@ jobs:
         run: |
           # ${{ github.event.action }} is either "closed" or "reopened"
           # We add the "closed-pr" emoji to the message, if it is "closed"
-          # and to remove the emoji if the action is "reopen".
+          # and remove the emoji if the action is "reopen".
           python scripts/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ github.event.action }}" "none" "${{ github.event.pull_request.number }}"
