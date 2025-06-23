@@ -11,7 +11,8 @@ import Batteries.WF
 /-!
 # Unbundled relation classes
 
-In this file we prove some properties of `Is*` classes defined in `Mathlib/Order/Defs.lean`.
+In this file we prove some properties of `Is*` classes defined in
+`Mathlib/Order/Defs/Unbundled.lean`.
 The main difference between these classes and the usual order classes (`Preorder` etc) is that
 usual classes extend `LE` and/or `LT` while these classes take a relation as an explicit argument.
 -/
@@ -72,7 +73,7 @@ abbrev partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
     | _, Or.inl rfl, _ => rfl
     | _, _, Or.inl rfl => rfl
     | _, Or.inr h₁, Or.inr h₂ => (asymm h₁ h₂).elim
-  lt_iff_le_not_le x y :=
+  lt_iff_le_not_ge x y :=
     ⟨fun h => ⟨Or.inr h, not_or_intro (fun e => by rw [e] at h; exact irrefl _ h) (asymm h)⟩,
       fun ⟨h₁, h₂⟩ => h₁.resolve_left fun e => h₂ <| e ▸ Or.inl rfl⟩
 
@@ -461,7 +462,7 @@ end Order.Preimage
 
 
 /-- An unbundled relation class stating that `r` is the nonstrict relation corresponding to the
-strict relation `s`. Compare `Preorder.lt_iff_le_not_le`. This is mostly meant to provide dot
+strict relation `s`. Compare `Preorder.lt_iff_le_not_ge`. This is mostly meant to provide dot
 notation on `(⊆)` and `(⊂)`. -/
 class IsNonstrictStrictOrder (α : Type*) (r : semiOutParam (α → α → Prop)) (s : α → α → Prop) :
     Prop where
@@ -639,6 +640,38 @@ theorem subset_iff_ssubset_or_eq [IsRefl α (· ⊆ ·)] [IsAntisymm α (· ⊆ 
     a ⊆ b ↔ a ⊂ b ∨ a = b :=
   ⟨fun h => h.ssubset_or_eq, fun h => h.elim subset_of_ssubset subset_of_eq⟩
 
+namespace GCongr
+
+variable [IsTrans α (· ⊆ ·)] {a b c d : α}
+
+@[gcongr]
+theorem ssubset_imp_ssubset (h₁ : c ⊆ a) (h₂ : b ⊆ d) : a ⊂ b → c ⊂ d :=
+  fun h => (h₁.trans_ssubset h).trans_subset h₂
+
+attribute [gcongr] ssubset_of_subset_of_ssubset
+
+@[gcongr]
+theorem ssubset_imp_ssubset_right (h₁ : a ⊆ b) : c ⊂ a → c ⊂ b :=
+  fun h₂ => (h₂.subset.trans h₁).ssubset_of_not_subset fun h => h₂.not_subset (h₁.trans h)
+
+@[gcongr]
+theorem ssuperset_imp_ssuperset (h₁ : a ⊆ c) (h₂ : d ⊆ b) : a ⊃ b → c ⊃ d :=
+  ssubset_imp_ssubset h₂ h₁
+
+@[gcongr]
+theorem ssuperset_imp_ssuperset_left (h : a ⊆ b) : c ⊃ b → c ⊃ a :=
+  ssubset_of_subset_of_ssubset h
+
+@[gcongr]
+theorem ssuperset_imp_ssuperset_right (h : a ⊆ b) : a ⊃ c → b ⊃ c :=
+  ssubset_imp_ssubset_right h
+
+/-- See if the term is `a ⊂ b` and the goal is `a ⊆ b`. -/
+@[gcongr_forward] def exactSubsetOfSSubset : Mathlib.Tactic.GCongr.ForwardExt where
+  eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``subset_of_ssubset #[h])
+
+end GCongr
+
 end SubsetSsubset
 
 /-! ### Conversion of bundled order typeclasses to unbundled relation typeclasses -/
@@ -689,7 +722,7 @@ instance [Preorder α] : IsStrictOrder α (· < ·) where
 instance [Preorder α] : IsStrictOrder α (· > ·) where
 
 instance [Preorder α] : IsNonstrictStrictOrder α (· ≤ ·) (· < ·) :=
-  ⟨@lt_iff_le_not_le _ _⟩
+  ⟨@lt_iff_le_not_ge _ _⟩
 
 instance [PartialOrder α] : IsAntisymm α (· ≤ ·) :=
   ⟨@le_antisymm _ _⟩

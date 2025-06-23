@@ -9,6 +9,7 @@ import Mathlib.Data.Set.Card
 import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
 import Mathlib.Tactic.Group
+<<<<<<< HEAD
 
 /-!
 # SubMulActions on complements of invariant subsets
@@ -19,6 +20,57 @@ especially stabilizers and fixing subgroups : `SubMulAction_of_compl`,
 
 - We define equivariant maps that relate various of these SubMulActions
 and permit to manipulate them in a relatively smooth way.
+=======
+/-!
+# SubMulActions on complements of invariant subsets
+
+- We define `SubMulAction` of an invariant subset in various contexts,
+especially stabilizers and fixing subgroups : `SubMulAction_of_compl`,
+`SubMulAction_of_stabilizer`, `SubMulAction_of_fixingSubgroup`.
+
+- We define equivariant maps that relate various of these `SubMulAction`s
+and permit to manipulate them in a relatively smooth way:
+
+  * `SubMulAction.ofFixingSubgroupEmpty_equivariantMap`:
+  the identity map, when the set is the empty set.
+
+  * `SubMulAction.fixingSubgroupInsertEquiv M a s` : the
+  multiplicative equivalence between `fixingSubgroup M (insert a s)``
+  and `fixingSubgroup (stablizer M a) s`
+
+  * `SubMulAction.ofFixingSubgroup_insert_map` : the equivariant
+  map between `SubMulAction.ofFixingSubgroup M (insert a s)`
+  and `SubMulAction.ofFixingSubgroup (stablizer M a) s`.
+
+  * `SubMulAction.fixingSubgroupEquivFixingSubgroup`:
+  the multiplicative equivalence between `SubMulAction.fixingSubgroup M s`
+  and `SubMulAction.fixingSubgroup M t` induced by `g : M`
+  such that `g • t = s`.
+
+  * `SubMulAction.conjMap_ofFixingSubgroup`:
+  the equivariant map between `SubMulAction.ofFixingSubgroup M t`
+  and `SubMulAction.ofFIxingSubgroup M s`
+  induced by `g : M` such that `g • t = s`.
+
+  * `SubMulAction.ofFixingSubgroup_of_inclusion`:
+  the identity from `SubMulAction.ofFixingSubgroup M s`
+  to `SubMulAction.ofFixingSubgroup M t`, when `t ⊆ s`,
+  as an equivariant map.
+
+  * `SubMulAction.ofFixingSubgroup_of_singleton`:
+  the identity map from `SubMulAction.ofStablizer M a`
+  to `SubMulAction.ofFixingSubgroup M {a}`.
+
+  * `SubMulAction.ofFixingSubgroup_of_eq`:
+  the identity from `SubMulAction.ofFixingSubgroup M s`
+  to `SubMulAction.ofFixingSubgroup M t`, when `s = t`,
+  as an equivariant map.
+
+  * `SubMulAction.ofFixingSubgroup.append`: appends
+  an enumeration of `ofFixingSubgroup M s` at the end
+  of an enumeration of `s`, as an equivariant map.
+
+>>>>>>> master
 -/
 
 open scoped Pointwise
@@ -27,11 +79,19 @@ open MulAction Function
 
 namespace SubMulAction
 
+<<<<<<< HEAD
 variable (M : Type*) [Group M] {α : Type*} [MulAction M α]
 
 /-- The SubMulAction of `fixingSubgroup M s` on the complement of `s`. -/
 @[to_additive "The SubAddAction of `fixingAddSubgroup M s` on the complement of `s`."]
 def ofFixingSubgroup (s : Set α) : SubMulAction (fixingSubgroup M s) α where
+=======
+variable (M : Type*) {α : Type*} [Group M] [MulAction M α] (s : Set α)
+
+/-- The `SubMulAction` of `fixingSubgroup M s` on the complement of `s`. -/
+@[to_additive "The `SubAddAction` of `fixingAddSubgroup M s` on the complement of `s`."]
+def ofFixingSubgroup : SubMulAction (fixingSubgroup M s) α where
+>>>>>>> master
   carrier := sᶜ
   smul_mem' := fun ⟨c, hc⟩ x ↦ by
     rw [← Subgroup.inv_mem_iff] at hc
@@ -39,20 +99,53 @@ def ofFixingSubgroup (s : Set α) : SubMulAction (fixingSubgroup M s) α where
     intro hcx
     rwa [← one_smul M x, ← inv_mul_cancel c, mul_smul, (mem_fixingSubgroup_iff M).mp hc (c • x) hcx]
 
+<<<<<<< HEAD
 @[to_additive]
 theorem ofFixingSubgroup_carrier {s : Set α} :
     (ofFixingSubgroup M s).carrier = sᶜ := rfl
 
 @[to_additive]
 theorem mem_ofFixingSubgroup_iff {s : Set α} {x : α} :
+=======
+@[to_additive (attr := simp)]
+theorem ofFixingSubgroup_carrier :
+    (ofFixingSubgroup M s).carrier = sᶜ := rfl
+
+variable {s}
+
+@[to_additive]
+theorem mem_ofFixingSubgroup_iff {x : α} :
+>>>>>>> master
     x ∈ ofFixingSubgroup M s ↔ x ∉ s :=
   Iff.rfl
 
 variable {M}
 
 @[to_additive]
+<<<<<<< HEAD
 theorem not_mem_of_mem_ofFixingSubgroup {s : Set α}
   (x : ofFixingSubgroup M s) : ↑x ∉ s := x.prop
+=======
+theorem not_mem_of_mem_ofFixingSubgroup (x : ofFixingSubgroup M s) :
+    ↑x ∉ s := x.prop
+
+variable (M s) in
+/-- The identity map of the `SubMulAction` of the `fixingSubgroup`
+into the ambient set, as an equivariant map. -/
+@[to_additive
+"The identity map of the `SubAddAction` of the `fixingAddSubgroup`
+into the ambient set, as an equivariant map."]
+def ofFixingSubgroup_equivariantMap :
+    ofFixingSubgroup M s →ₑ[(fixingSubgroup M s).subtype] α where
+  toFun x := x
+  map_smul' _ _ := rfl
+
+@[to_additive]
+theorem ofFixingSubgroup_equivariantMap_injective :
+    Injective (ofFixingSubgroup_equivariantMap M s) := by
+  rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
+  simpa [Subtype.mk.injEq] using hxy
+>>>>>>> master
 
 section Comparisons
 
@@ -60,6 +153,7 @@ variable (M α)
 
 section Empty
 
+<<<<<<< HEAD
 /-- The identity map of the `SubMulAction` of the `fixingSubgroup`
 of the empty set into the ambient set, as an equivariant map. -/
 @[to_additive
@@ -77,6 +171,13 @@ theorem ofFixingSubgroupEmpty_equivariantMap_bijective :
   · rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
     simp [Subtype.mk_eq_mk]; exact hxy
   · exact fun x ↦ ⟨⟨x, (mem_ofFixingSubgroup_iff M).mp (Set.notMem_empty x)⟩, rfl⟩
+=======
+@[to_additive]
+theorem ofFixingSubgroupEmpty_equivariantMap_bijective :
+    Bijective (ofFixingSubgroup_equivariantMap M (∅ : Set α)) := by
+  refine ⟨ofFixingSubgroup_equivariantMap_injective, fun x ↦ ?_⟩
+  exact ⟨⟨x, (mem_ofFixingSubgroup_iff M).mp (Set.notMem_empty x)⟩, rfl⟩
+>>>>>>> master
 
 @[to_additive]
 theorem of_fixingSubgroupEmpty_mapScalars_surjective :
@@ -114,8 +215,13 @@ theorem mem_ofFixingSubgroup_insert_iff {a : α} {s : Set (ofStabilizer M a)} {x
   simp_rw [mem_ofFixingSubgroup_iff, mem_ofStabilizer_iff]
   aesop
 
+<<<<<<< HEAD
 /-- The natural group morphism between fixing subgroups. -/
 @[to_additive "The natural group morphism between fixing additive subgroups."]
+=======
+/-- The natural group isomorphism between fixing subgroups. -/
+@[to_additive "The natural additive group isomorphism between fixing additive subgroups."]
+>>>>>>> master
 def fixingSubgroupInsertEquiv (a : α) (s : Set (ofStabilizer M a)) :
     fixingSubgroup M (insert a (Subtype.val '' s)) ≃* fixingSubgroup (stabilizer M a) s where
   toFun m := ⟨⟨(m : M), (mem_fixingSubgroup_iff M).mp m.prop a (Set.mem_insert _ _)⟩,
@@ -144,7 +250,11 @@ variable {M} in
 @[to_additive (attr := simp)]
 theorem ofFixingSubgroup_insert_map_apply {a : α} {s : Set (ofStabilizer M a)}
     {x : α} (hx : x ∈ ofFixingSubgroup M (insert a (Subtype.val '' s))) :
+<<<<<<< HEAD
     ↑((ofFixingSubgroup_insert_map M a s) ⟨x, hx⟩) = x :=
+=======
+    (ofFixingSubgroup_insert_map M a s) ⟨x, hx⟩ = x :=
+>>>>>>> master
   rfl
 
 @[to_additive]
@@ -227,7 +337,11 @@ def conjMap_ofFixingSubgroup (hg : g • t = s) :
 
 @[to_additive (attr := simp)]
 theorem conjMap_ofFixingSubgroup_coe_apply {hg : g • t = s} (x : ofFixingSubgroup M t) :
+<<<<<<< HEAD
     ↑(conjMap_ofFixingSubgroup _ _ hg x) = g • (x : α) := rfl
+=======
+    conjMap_ofFixingSubgroup _ _ hg x = g • (x : α) := rfl
+>>>>>>> master
 
 @[to_additive]
 theorem conjMap_ofFixingSubgroup_bijective {s t : Set α} {g : M} (hst : g • s = t) :
@@ -242,6 +356,7 @@ theorem conjMap_ofFixingSubgroup_bijective {s t : Set α} {g : M} (hst : g • s
 
 end FixingSubgroupConj
 
+<<<<<<< HEAD
 variable {α} (s t : Set α)
 
 variable {M s t} in
@@ -273,6 +388,28 @@ def fixingSubgroup_union_to_fixingSubgroup_of_fixingSubgroup :
   of the union, as an equivariant map."]
 def map_ofFixingSubgroupUnion :
     ofFixingSubgroup M (s ∪ t) →ₑ[fixingSubgroup_union_to_fixingSubgroup_of_fixingSubgroup M s t]
+=======
+/-- The identity between the iterated `SubMulAction`
+  of the `fixingSubgroup` and the `SubMulAction` of the `fixingSubgroup`
+  of the union, as an equivariant map. -/
+@[to_additive "The identity between the iterated `SubAddAction`
+  of the `fixingAddSubgroup` and the `SubAddAction` of the `fixingAddSubgroup`
+  of the union, as an equivariant map."]
+def map_ofFixingSubgroupUnion (s t : Set α) :
+    let ψ : fixingSubgroup M (s ∪ t) →
+      fixingSubgroup (fixingSubgroup M s) (Subtype.val ⁻¹' t : Set (ofFixingSubgroup M s)) :=
+      fun m ↦ ⟨⟨m, by
+        let hm := m.prop
+        simp only [fixingSubgroup_union, Subgroup.mem_inf] at hm
+        exact hm.left⟩, by
+      let hm := m.prop
+      simp only [fixingSubgroup_union, Subgroup.mem_inf] at hm
+      rintro ⟨⟨x, hx⟩, hx'⟩
+      simp only [Set.mem_preimage] at hx'
+      simp only [← SetLike.coe_eq_coe, Subtype.coe_mk, SubMulAction.val_smul_of_tower]
+      exact hm.right ⟨x, hx'⟩⟩
+    ofFixingSubgroup M (s ∪ t) →ₑ[ψ]
+>>>>>>> master
       ofFixingSubgroup (fixingSubgroup M s) (Subtype.val ⁻¹' t : Set (ofFixingSubgroup M s)) where
   toFun x :=
     ⟨⟨x, fun hx => x.prop (Set.mem_union_left t hx)⟩,
@@ -284,15 +421,27 @@ def map_ofFixingSubgroupUnion :
     rfl
 
 @[to_additive]
+<<<<<<< HEAD
 theorem map_ofFixingSubgroupUnion_def (x : SubMulAction.ofFixingSubgroup M (s ∪ t)) :
     ((SubMulAction.map_ofFixingSubgroupUnion M s t) x : α) = x :=
+=======
+theorem map_ofFixingSubgroupUnion_def (s t : Set α)
+    (x : SubMulAction.ofFixingSubgroup M (s ∪ t)) :
+    ((SubMulAction.map_ofFixingSubgroupUnion M _ s t) x : α) = x :=
+>>>>>>> master
   rfl
 
 @[to_additive]
 theorem map_ofFixingSubgroupUnion_bijective (s t : Set α) :
+<<<<<<< HEAD
     Bijective (map_ofFixingSubgroupUnion M s t) := by
   constructor
   · intro _ _ h
+=======
+    Bijective (map_ofFixingSubgroupUnion M _ s t) := by
+  constructor
+  · intro a b h
+>>>>>>> master
     simpa only [← SetLike.coe_eq_coe] using h
   · rintro ⟨⟨a, ha⟩, ha'⟩
     suffices a ∈ ofFixingSubgroup M (s ∪ t) by
@@ -303,8 +452,11 @@ theorem map_ofFixingSubgroupUnion_bijective (s t : Set α) :
     · apply ha'
       simpa only [Set.mem_preimage]
 
+<<<<<<< HEAD
 variable {s t}
 
+=======
+>>>>>>> master
 /-- The equivariant map on `SubMulAction.ofFixingSubgroup` given a set inclusion. -/
 @[to_additive
 "The equivariant map on `SubAddAction.ofFixingAddSubgroup` given a set inclusion."]
@@ -317,7 +469,11 @@ def ofFixingSubgroup_of_inclusion {s t : Set α} (hst : t ⊆ s) :
 
 @[to_additive]
 lemma ofFixingSubgroup_of_inclusion_injective {s t : Set α} (hst : t ⊆ s) :
+<<<<<<< HEAD
     Injective (ofFixingSubgroup_of_inclusion M hst) := by
+=======
+    Injective (ofFixingSubgroup_of_inclusion M _ hst) := by
+>>>>>>> master
   rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
   rw [← SetLike.coe_eq_coe] at hxy ⊢
   exact hxy
@@ -335,7 +491,11 @@ def ofFixingSubgroup_of_singleton (a : α) :
 
 @[to_additive]
 theorem ofFixingSubgroup_of_singleton_bijective (a : α) :
+<<<<<<< HEAD
     Bijective (ofFixingSubgroup_of_singleton M a) :=
+=======
+    Bijective (ofFixingSubgroup_of_singleton M _ a) :=
+>>>>>>> master
   ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
 
 /-- The identity between the `SubMulAction`s of `fixingSubgroup`s
@@ -352,11 +512,19 @@ def ofFixingSubgroup_of_eq {s t : Set α} (hst : s = t) :
 @[to_additive (attr := simp)]
 theorem ofFixingSubgroup_of_eq_apply {s t : Set α} (hst : s = t)
     (x : ofFixingSubgroup M s) :
+<<<<<<< HEAD
     ((ofFixingSubgroup_of_eq M hst x) : α) = x := rfl
 
 @[to_additive]
 theorem ofFixingSubgroup_of_eq_bijective {s t : Set α} (hst : s = t) :
     Bijective (ofFixingSubgroup_of_eq M hst) :=
+=======
+    ((ofFixingSubgroup_of_eq M _ hst x) : α) = x := rfl
+
+@[to_additive]
+theorem ofFixingSubgroup_of_eq_bijective {s t : Set α} (hst : s = t) :
+    Bijective (ofFixingSubgroup_of_eq M _ hst) :=
+>>>>>>> master
   ⟨fun _ _ hxy ↦ by simpa [← SetLike.coe_eq_coe] using hxy,
     fun ⟨x, hxt⟩ ↦ ⟨⟨x, by rwa [hst]⟩, by simp [← SetLike.coe_eq_coe]⟩⟩
 
@@ -364,7 +532,11 @@ end Comparisons
 
 section Construction
 
+<<<<<<< HEAD
 open Function.Embedding
+=======
+open Function.Embedding Fin.Embedding
+>>>>>>> master
 
 /-- Append `Fin m ↪ ofFixingSubgroup M s` at the end of an enumeration of `s`. -/
 @[to_additive
@@ -372,7 +544,10 @@ open Function.Embedding
 noncomputable def ofFixingSubgroup.append
     {n : ℕ} {s : Set α} [Finite s] (x : Fin n ↪ ofFixingSubgroup M s) :
     Fin (s.ncard + n) ↪ α := by
+<<<<<<< HEAD
   classical
+=======
+>>>>>>> master
   have : Nonempty (Fin (s.ncard) ≃ s) :=
     Finite.card_eq.mp (by simp [Set.Nat.card_coe_set_eq])
   let y := (Classical.choice this).toEmbedding

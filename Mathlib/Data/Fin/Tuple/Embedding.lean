@@ -113,7 +113,6 @@ def twoEmbeddingEquiv : (Fin 2 ↪ α) ≃ { (a, b) : α × α | a ≠ b } where
     by_cases hi : i = 0
     · rw [if_pos hi, hi]
     · rw [if_neg hi, Fin.eq_one_of_ne_zero i hi]
-  right_inv := fun ⟨⟨a, b⟩, h⟩ ↦ by simp
 
 /-- Two distinct elements of `α` give an embedding `Fin 2 ↪ α`. -/
 def embFinTwo {a b : α} (h : a ≠ b) : Fin 2 ↪ α :=
