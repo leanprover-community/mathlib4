@@ -83,4 +83,10 @@ theorem σSup_le_iff (hs : s.Countable) : sSup s ≤ a ↔ ∀ b ∈ s, b ≤ a 
 theorem le_σsInf_iff (hs : s.Countable) : a ≤ sInf s ↔ ∀ b ∈ s, a ≤ b :=
   le_isGLB_iff (isGLB_σsInf hs)
 
+theorem notMem_of_lt_σsInf {x : α} {s : Set α} (h : x < sInf s) (hs : s.Countable) : x ∉ s :=
+  fun hx => lt_irrefl _ (h.trans_le (σsInf_le hs hx))
+
+theorem notMem_of_σsSup_lt {x : α} {s : Set α} (h : sSup s < x) (hs : s.Countable) : x ∉ s :=
+  notMem_of_lt_σsInf (α := αᵒᵈ) h hs
+
 end BooleanσAlgebra
