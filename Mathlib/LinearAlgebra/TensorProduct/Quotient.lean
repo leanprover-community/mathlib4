@@ -230,7 +230,7 @@ lemma tensorQuotEquivQuotSMul_comp_mk (I : Ideal R) :
 variable (S : Type*) [CommRing S] [Algebra R S]
 
 /-- Let `R` be a commutative ring, `S` be an `R`-algebra, `I` is be ideal of `R`, then `S ⧸ IS` is
-  isomorphic to `S ⊗[R] (R ⧸ I)`. -/
+  isomorphic to `S ⊗[R] (R ⧸ I)` as `S` modules. -/
 noncomputable def _root_.Ideal.qoutMapEquivTensorQout {I : Ideal R} :
     (S ⧸ I.map (algebraMap R S)) ≃ₗ[S] S ⊗[R] (R ⧸ I) where
   __ := LinearEquiv.symm <| tensorQuotEquivQuotSMul S I ≪≫ₗ Submodule.quotEquivOfEq _ _ (by simp)
