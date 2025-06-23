@@ -197,4 +197,13 @@ noncomputable def tensorQuotSMulTopEquivQuotSMulTopAlgebraMapTensor :
     · simp [← hsm]
     · simpa using by congr 1 }
 
+/-- Let `R` be a commutative ring, `M` be an `R`-module, `S` be an `R`-algebra, then
+  `S ⊗[R] (M/rM)` is isomorphic to `(S ⊗[R] M)⧸r(S ⊗[R] M)` as `S`-modules. -/
+noncomputable def algebraMapTensorEquivTensorQuotSMulTop :
+    QuotSMulTop ((algebraMap R S) r) (S ⊗[R] M) ≃ₗ[S] S ⊗[R] QuotSMulTop r M :=
+  Submodule.quotEquivOfEq _ _ (by simp [Ideal.map_span, ideal_span_singleton_smul]) ≪≫ₗ
+    tensorQuotMapSMulEquivTensorQuot M S (Ideal.span {r}) ≪≫ₗ LinearEquiv.baseChange R S _ _
+      (Submodule.quotEquivOfEq _ _ (ideal_span_singleton_smul r _))
+
+
 end QuotSMulTop

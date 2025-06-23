@@ -7,6 +7,7 @@ import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Associator
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Quotient.Defs
+import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
 
@@ -227,13 +228,28 @@ lemma tensorQuotEquivQuotSMul_comp_mk (I : Ideal R) :
   Eq.symm <| (LinearEquiv.toLinearMap_symm_comp_eq _ _).mp <|
     tensorQuotEquivQuotSMul_symm_comp_mkQ I
 
-end TensorProduct
-
-open TensorProduct
+variable (S : Type*) [CommRing S] [Algebra R S]
 
 /-- Let `R` be a commutative ring, `S` be an `R`-algebra, `I` is be ideal of `R`, then `S ⧸ IS` is
-  isomorphic to `S ⊗[R] (R ⧸ I)`, i.e., `S ⧸ IS` is the base change of `R ⧸ I` to `S`. -/
-noncomputable def Ideal.qoutMapEquivTensorQout {R : Type*} (S : Type*) [CommRing R] [CommRing S]
-    [Algebra R S] {I : Ideal R} : (S ⧸ I.map (algebraMap R S)) ≃ₗ[R] S ⊗[R] (R ⧸ I) :=
-  LinearEquiv.symm <| tensorQuotEquivQuotSMul S I ≪≫ₗ Submodule.quotEquivOfEq _ _ (by simp) ≪≫ₗ
-    Submodule.Quotient.restrictScalarsEquiv R _
+  isomorphic to `S ⊗[R] (R ⧸ I)`. -/
+noncomputable def _root_.Ideal.qoutMapEquivTensorQout {I : Ideal R} :
+    (S ⧸ I.map (algebraMap R S)) ≃ₗ[S] S ⊗[R] (R ⧸ I) where
+  __ := LinearEquiv.symm <| tensorQuotEquivQuotSMul S I ≪≫ₗ Submodule.quotEquivOfEq _ _ (by simp)
+    ≪≫ₗ Submodule.Quotient.restrictScalarsEquiv R _
+  map_smul' := by
+    rintro _ ⟨_⟩
+    rfl
+
+variable (M) in
+/-- Let `R` be a commutative ring, `S` be an `R`-algebra, `I` is be ideal of `R`,
+  then `S ⊗[R] M ⧸ I(S ⊗[R] M)` is isomorphic to `S ⊗[R] (M ⧸ IM)` as `S` modules. -/
+noncomputable def tensorQuotMapSMulEquivTensorQuot (I : Ideal R) :
+    ((S ⊗[R] M) ⧸ I.map (algebraMap R S) • (⊤ : Submodule S (S ⊗[R] M))) ≃ₗ[S]
+    S ⊗[R] (M ⧸ (I • (⊤ : Submodule R M))) :=
+  (tensorQuotEquivQuotSMul (S ⊗[R] M) (I.map (algebraMap R S))).symm ≪≫ₗ
+    TensorProduct.comm S (S ⊗[R] M) _ ≪≫ₗ AlgebraTensorModule.cancelBaseChange R S S _ M ≪≫ₗ
+      AlgebraTensorModule.congr (I.qoutMapEquivTensorQout S) (LinearEquiv.refl R M) ≪≫ₗ
+        AlgebraTensorModule.assoc R R S S _ M ≪≫ₗ (TensorProduct.comm R _ M).baseChange R S _ _ ≪≫ₗ
+          (tensorQuotEquivQuotSMul M I).baseChange R S _ _
+
+end TensorProduct
