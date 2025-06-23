@@ -37,13 +37,13 @@ def Z : Set (ℝ × ℝ) := (fun y ↦ (0, y)) '' Icc (-1) 1
 def T : Set (ℝ × ℝ) := S ∪ Z
 
 /-- A sequence of `x`-values tending to 0 at which the sine curve has a given `y`-coordinate. -/
-noncomputable def x_seq (y : ℝ) (k : ℕ) := 1 / (arcsin y + (k + 1) * (2 * π))
+noncomputable def xSeq (y : ℝ) (k : ℕ) := 1 / (arcsin y + (k + 1) * (2 * π))
 
 lemma x_seq_pos (y : ℝ) (k : ℕ) : 0 < x_seq y k := by
   rw [x_seq, one_div_pos]
   nlinarith [pi_pos, neg_pi_div_two_le_arcsin y]
 
-lemma x_seq_invsin {y : ℝ} (hy : y ∈ Icc (-1) 1) (k : ℕ) : sin (x_seq y k)⁻¹ = y := by
+lemma sin_inv_xSeq {y : ℝ} (hy : y ∈ Icc (-1) 1) (k : ℕ) : sin (x_seq y k)⁻¹ = y := by
   simpa [x_seq, -Nat.cast_add, ← Nat.cast_succ] using sin_arcsin' hy
 
 lemma x_seq_tendsto (y : ℝ) : Tendsto (x_seq y) atTop (𝓝 0) := by
@@ -102,7 +102,7 @@ lemma isClosed_T : IsClosed T := by simpa only [← closure_S] using isClosed_cl
 -/
 /-- `T` is connected, being the closure of the set `S` (which is obviously connected since it
 is a continuous image of the positive real line). -/
-theorem T_is_conn : IsConnected T := by
+theorem isConnected_T : IsConnected T := by
   rw [← closure_S]
   refine (isConnected_Ioi.image _ <| continuousOn_id.prodMk ?_).closure
   exact continuous_sin.comp_continuousOn <| continuousOn_inv₀.mono fun _ hx ↦ hx.ne'
