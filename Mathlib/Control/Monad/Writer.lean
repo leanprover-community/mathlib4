@@ -48,7 +48,7 @@ instance [Monad M] [MonadWriter ω M] : MonadWriter ω (StateT σ M) where
 namespace WriterT
 
 @[inline]
-protected def mk {ω : Type u} (cmd :  M (α × ω)) : WriterT ω M α := cmd
+protected def mk {ω : Type u} (cmd : M (α × ω)) : WriterT ω M α := cmd
 @[inline]
 protected def run {ω : Type u} (cmd : WriterT ω M α) : M (α × ω) := cmd
 @[inline]

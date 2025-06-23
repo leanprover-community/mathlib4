@@ -46,7 +46,7 @@ variable (R : Type u) [Ring R]
 
 /-- The category of R-modules and their morphisms.
 
- Note that in the case of `R = ℤ`, we can not
+Note that in the case of `R = ℤ`, we can not
 impose here that the `ℤ`-multiplication field from the module structure is defeq to the one coming
 from the `isAddCommGroup` structure (contrary to what we do for all module structures in
 mathlib), which creates some difficulties down the road. -/
@@ -183,8 +183,6 @@ lemma hom_inv_apply {M N : ModuleCat.{v} R} (e : M ≅ N) (x : N) : e.hom (e.inv
 def homEquiv {M N : ModuleCat.{v} R} : (M ⟶ N) ≃ (M →ₗ[R] N) where
   toFun := Hom.hom
   invFun := ofHom
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 end
 
@@ -228,7 +226,7 @@ variable {R}
 
 /-- Forgetting to the underlying type and then building the bundled object returns the original
 module. -/
-@[simps]
+@[deprecated Iso.refl (since := "2025-05-15")]
 def ofSelfIso (M : ModuleCat R) : ModuleCat.of R M ≅ M where
   hom := 𝟙 M
   inv := 𝟙 M
@@ -237,7 +235,6 @@ theorem isZero_of_subsingleton (M : ModuleCat R) [Subsingleton M] : IsZero M whe
   unique_to X := ⟨⟨⟨ofHom (0 : M →ₗ[R] X)⟩, fun f => by
     ext x
     rw [Subsingleton.elim x (0 : M)]
-    dsimp
     simp⟩⟩
   unique_from X := ⟨⟨⟨ofHom (0 : X →ₗ[R] M)⟩, fun f => by
     ext x
@@ -466,8 +463,6 @@ variable (M N : ModuleCat.{v} R)
   toFun := ModuleCat.Hom.hom
   invFun := ModuleCat.ofHom
   map_mul' _ _ := rfl
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_add' _ _ := rfl
 
 /-- `ModuleCat.Hom.hom` as an isomorphism of monoids. -/

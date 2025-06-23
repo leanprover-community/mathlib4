@@ -56,7 +56,6 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
   let V : ∀ s : S, Set (F.obj (j s)) := fun s => (hS s.2).choose_spec.choose
   have hV : ∀ s : S, IsClopen (V s) ∧ s.1 = C.π.app (j s) ⁻¹' V s := fun s =>
     (hS s.2).choose_spec.choose_spec
-
   -- Since `U` is also closed, hence compact, it is covered by finitely many of the
   -- clopens constructed in the previous step.
   have hUo : ∀ (i : ↑S), IsOpen ((fun s ↦ (C.π.app (j s)) ⁻¹' V s) i) := by

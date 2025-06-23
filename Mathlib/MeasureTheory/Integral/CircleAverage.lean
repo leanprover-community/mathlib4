@@ -17,11 +17,11 @@ radius `R`, equipped with the rotation-invariant measure of total volume one. Li
 compositions of `f` with `circleMap` and avoids the need to manually elemininate `2 * π` every time
 an average is computed.
 
-Note: Like the interval average defined in `Mathlib.MeasureTheory.Integral.IntervalAverage`, the
-`circleAverage` defined here is a purely measure-theoretic average. It should not be confused with
-`circleIntegral`, which is the path integral over the circle path. The relevant integrability
+Note: Like the interval average defined in `Mathlib/MeasureTheory/Integral/IntervalAverage.lean`,
+the `circleAverage` defined here is a purely measure-theoretic average. It should not be confused
+with `circleIntegral`, which is the path integral over the circle path. The relevant integrability
 property `circleAverage` is `CircleIntegrable`, as defined in
-`Mathlib.MeasureTheory.Integral.CircleIntegral`.
+`Mathlib/MeasureTheory/Integral/CircleIntegral.lean`.
 
 Implementation Note: Like `circleMap`, `circleAverage`s are defined for negative radii. The theorem
 `circleAverage_congr_negRadius` shows that the average is independent of the radius' sign.
@@ -31,7 +31,7 @@ open Filter Metric Real
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E]
+  {𝕜 : Type*} [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E] [SMulCommClass ℝ 𝕜 E]
   {f f₁ f₂ : ℂ → E} {c : ℂ} {R : ℝ} {a : 𝕜}
 
 namespace Real
@@ -83,8 +83,8 @@ lemma circleAverage_fun_add :
 -/
 
 /-- Circle averages do not change when shifting the angle. -/
-lemma circleAverage_eq_integral_add (η : ℝ) : circleAverage f c R =
-    (2 * π)⁻¹ • ∫ (θ : ℝ) in (0)..2 * π, f (circleMap c R (θ + η)) := by
+lemma circleAverage_eq_integral_add (η : ℝ) :
+    circleAverage f c R = (2 * π)⁻¹ • ∫ (θ : ℝ) in (0)..2 * π, f (circleMap c R (θ + η)) := by
   rw [intervalIntegral.integral_comp_add_right (fun θ ↦ f (circleMap c R θ))]
   have t₀ : (fun θ ↦ f (circleMap c R θ)).Periodic (2 * π) :=
     fun x ↦ by simp [periodic_circleMap c R x]
@@ -118,6 +118,59 @@ theorem circleAverage_congr_codiscreteWithin
   apply codiscreteWithin.mono (by tauto) (circleMap_preimage_codiscrete hR hf)
 
 /-!
+## Constant Functions
+-/
+
+/--
+The circle average of a constant function equals the constant.
+-/
+theorem circleAverage_const [CompleteSpace E] (a : E) (c : ℂ) (R : ℝ) :
+    circleAverage (fun _ ↦ a) c R = a := by
+  simp only [circleAverage, intervalIntegral.integral_const, ← smul_assoc, sub_zero, smul_eq_mul]
+  ring_nf
+  simp [mul_inv_cancel₀ pi_ne_zero]
+
+/--
+If `f x` equals `a` on for every point of the circle, then the circle average of `f` equals `a`.
+-/
+theorem circleAverage_const_on_circle [CompleteSpace E] {a : E}
+    (hf : ∀ x ∈ Metric.sphere c |R|, f x = a) :
+    circleAverage f c R = a := by
+  rw [circleAverage]
+  conv =>
+    left; arg 2; arg 1
+    intro θ
+    rw [hf (circleMap c R θ) (circleMap_mem_sphere' c R θ)]
+  apply circleAverage_const a c R
+
+/-!
+## Inequalities
+-/
+
+/--
+If `f x` is smaller than `a` on for every point of the circle, then the circle average of `f` is
+smaller than `a`.
+-/
+theorem circleAverage_mono_on_of_le_circle {f : ℂ → ℝ} {a : ℝ} (hf : CircleIntegrable f c R)
+    (h₂f : ∀ x ∈ Metric.sphere c |R|, f x ≤ a) :
+    circleAverage f c R ≤ a := by
+  rw [← circleAverage_const a c |R|, circleAverage, circleAverage, smul_eq_mul, smul_eq_mul,
+    mul_le_mul_iff_of_pos_left (inv_pos.2 two_pi_pos)]
+  apply intervalIntegral.integral_mono_on_of_le_Ioo (le_of_lt two_pi_pos) hf
+  · apply intervalIntegrable_const
+  · exact fun θ _ ↦ h₂f (circleMap c R θ) (circleMap_mem_sphere' c R θ)
+
+/--
+Analogue of `intervalIntegral.abs_integral_le_integral_abs`: The absolute value of a circle average
+is less than or equal to the circle average of the absolute value of the function.
+-/
+theorem abs_circleAverage_le_circleAverage_abs {f : ℂ → ℝ} :
+    |circleAverage f c R| ≤ circleAverage |f| c R := by
+  rw [circleAverage, circleAverage, smul_eq_mul, smul_eq_mul, abs_mul,
+    abs_of_pos (inv_pos.2 two_pi_pos), mul_le_mul_iff_of_pos_left (inv_pos.2 two_pi_pos)]
+  exact intervalIntegral.abs_integral_le_integral_abs (le_of_lt two_pi_pos)
+
+/-!
 ## Behaviour with Respect to Arithmetic Operations
 -/
 
@@ -147,5 +200,13 @@ theorem circleAverage_sum {ι : Type*} {s : Finset ι} {f : ι → ℂ → E}
     circleAverage (∑ i ∈ s, f i) c R = ∑ i ∈ s, circleAverage (f i) c R := by
   unfold circleAverage
   simp [← Finset.smul_sum, intervalIntegral.integral_finset_sum h]
+
+/-- Circle averages commute with subtraction. -/
+theorem circleAverage_sub (hf₁ : CircleIntegrable f₁ c R) (hf₂ : CircleIntegrable f₂ c R) :
+    circleAverage (f₁ - f₂) c R = circleAverage f₁ c R - circleAverage f₂ c R := by
+  rw [circleAverage, circleAverage, circleAverage, ← smul_sub]
+  congr
+  apply intervalIntegral.integral_sub hf₁ hf₂
+
 
 end Real
