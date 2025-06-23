@@ -3,7 +3,6 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Quotient
 import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
@@ -386,25 +385,6 @@ lemma IsBaseChange.comp_iff {f : M →ₗ[R] N} (hf : IsBaseChange S f) {h : N �
 noncomputable def IsBaseChange.tensorEquiv {f : M →ₗ[R] N} (hf : IsBaseChange S f) (P : Type*)
     [AddCommGroup P] [Module R P] [Module S P] [IsScalarTower R S P] : P ⊗[S] N ≃ₗ[S] P ⊗[R] M :=
   LinearEquiv.lTensor P hf.equiv.symm ≪≫ₗ AlgebraTensorModule.cancelBaseChange R S S P M
-
-section commRing
-
-variable {R S M N : Type*} [CommRing R] [CommRing S] [Algebra R S]
-  [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] [Module S N]
-  [IsScalarTower R S N]
-
-/-- Let `R` be a commutative ring, `S` be an `R`-algebra, `I` is be ideal of `R`, `N` be the base
-  change of `M` to `S`, then `N ⧸ IN` is isomorphic to `S ⊗[R] (M ⧸ IM)` as `S` modules. -/
-noncomputable def IsBaseChange.quotMapSMulEquivTensorQuot {f : M →ₗ[R] N} (hf : IsBaseChange S f)
-    (I : Ideal R) : (N ⧸ I.map (algebraMap R S) • (⊤ : Submodule S N)) ≃ₗ[S]
-    S ⊗[R] (M ⧸ (I • (⊤ : Submodule R M))) :=
-  (tensorQuotEquivQuotSMul N (I.map (algebraMap R S))).symm ≪≫ₗ TensorProduct.comm S N _ ≪≫ₗ
-    hf.tensorEquiv  _ ≪≫ₗ
-      AlgebraTensorModule.congr (I.qoutMapEquivTensorQout S) (LinearEquiv.refl R M) ≪≫ₗ
-        AlgebraTensorModule.assoc R R S S _ M ≪≫ₗ (TensorProduct.comm R _ M).baseChange R S _ _ ≪≫ₗ
-          (tensorQuotEquivQuotSMul M I).baseChange R S _ _
-
-end commRing
 
 variable {R' S' : Type*} [CommSemiring R'] [CommSemiring S']
 variable [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
