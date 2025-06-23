@@ -413,6 +413,9 @@ theorem exists_rat_btwn {x y : K} (h : x < y) : ∃ q : ℚ, x < q ∧ (q : K) <
     subst H
     cases n0
 
+theorem exists_rat_mem_uIoo {x y : K} (h : x ≠ y) : ∃ q : ℚ, ↑q ∈ Set.uIoo x y :=
+  exists_rat_btwn (min_lt_max.mpr h)
+
 theorem exists_pow_btwn {n : ℕ} (hn : n ≠ 0) {x y : K} (h : x < y) (hy : 0 < y) :
     ∃ q : K, 0 < q ∧ x < q ^ n ∧ q ^ n < y := by
   have ⟨δ, δ_pos, cont⟩ := uniform_continuous_npow_on_bounded (max 1 y)
