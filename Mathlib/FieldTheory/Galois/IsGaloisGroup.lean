@@ -85,7 +85,7 @@ instance to_subgroup [hGKL : IsGaloisGroup G K L] (H : Subgroup G) :
     simp_rw [Algebra.smul_def, IntermediateField.algebraMap_apply, smul_mul', x.2 g]⟩
   isInvariant := ⟨fun x h ↦ ⟨⟨x, h⟩, rfl⟩⟩
 
-theorem card_subgroup_eq_finrank_fixedpoints [IsGaloisGroup G K L] (H : Subgroup G) [Finite H] :
+theorem card_subgroup_eq_finrank_fixedpoints [IsGaloisGroup G K L] (H : Subgroup G) :
     Nat.card H = Module.finrank (FixedPoints.intermediateField H : IntermediateField K L) L :=
   card_eq_finrank H (FixedPoints.intermediateField H) L
 
