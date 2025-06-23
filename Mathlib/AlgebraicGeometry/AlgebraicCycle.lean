@@ -274,5 +274,4 @@ lemma map_id (c : AlgebraicCycle X) :
    · rfl
    · exact h.1.symm
 
-
 end AlgebraicCycle
