@@ -7,8 +7,6 @@ import Mathlib.Algebra.Polynomial.Expand
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.RingTheory.Adjoin.Polynomial
 import Mathlib.RingTheory.Algebraic.Defs
-import Mathlib.RingTheory.IsTensorProduct
-import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
@@ -582,37 +580,6 @@ theorem Algebra.IsAlgebraic.exists_smul_eq_mul [NoZeroDivisors S] [Algebra.IsAlg
 end
 
 namespace Algebra.IsAlgebraic
-
-section IsFractionRing
-
-variable (R S) (R' S' : Type*) [CommRing S] [CommRing S'] [Algebra R S]
-  [FaithfulSMul R S] [alg : Algebra.IsAlgebraic R S]
-  [NoZeroDivisors S] [Algebra S S'] [IsFractionRing S S']
-
-instance : IsLocalization (algebraMapSubmonoid S R⁰) S' :=
-  have := (FaithfulSMul.algebraMap_injective R S).noZeroDivisors _ (map_zero _) (map_mul _)
-  (IsLocalization.iff_of_le_of_exists_dvd _ S⁰
-    (map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective ..) le_rfl)
-    fun s hs ↦ have ⟨r, ne, eq⟩ := (alg.1 s).exists_nonzero_dvd hs
-    ⟨_, ⟨r, mem_nonZeroDivisors_of_ne_zero ne, rfl⟩, eq⟩).mpr inferInstance
-
-variable [Algebra R S'] [IsScalarTower R S S']
-
-instance : IsLocalizedModule R⁰ (IsScalarTower.toAlgHom R S S').toLinearMap :=
-  isLocalizedModule_iff_isLocalization.mpr inferInstance
-
-variable [CommRing R'] [Algebra R R'] [IsFractionRing R R']
-
-theorem isBaseChange_of_isFractionRing [Module R' S'] [IsScalarTower R R' S'] :
-    IsBaseChange R' (IsScalarTower.toAlgHom R S S').toLinearMap :=
-  (isLocalizedModule_iff_isBaseChange R⁰ ..).mp inferInstance
-
-variable [Algebra R' S'] [IsScalarTower R R' S']
-
-instance : IsPushout R R' S S' := (isPushout_iff ..).mpr <| isBaseChange_of_isFractionRing ..
-instance : IsPushout R S R' S' := .symm inferInstance
-
-end IsFractionRing
 
 variable (S) {A : Type*} [CommRing S] [NoZeroDivisors S] [Algebra R S]
   [alg : Algebra.IsAlgebraic R S] [Ring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
