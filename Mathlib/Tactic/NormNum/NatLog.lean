@@ -90,10 +90,10 @@ Panics if `ex` or `en` aren't natural number literals.
 def proveNatClog (eb en : Q(ℕ)) : (ek : Q(ℕ)) × Q(Nat.clog $eb $en = $ek) :=
   let b := eb.natLit!
   let n := en.natLit!
-  if hb : b ≤ 1 then
+  if _ : b ≤ 1 then
     have h : Q(Nat.ble $eb 1 = true) := reflBoolTrue
     ⟨mkRawNatLit 0, q(nat_clog_zero_left $eb $en $h)⟩
-  else if hn : n ≤ 1 then
+  else if _ : n ≤ 1 then
     have h : Q(Nat.ble $en 1 = true) := reflBoolTrue
     ⟨mkRawNatLit 0, q(nat_clog_zero_right $eb $en $h)⟩
   else
