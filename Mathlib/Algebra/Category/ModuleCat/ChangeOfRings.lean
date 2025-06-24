@@ -6,9 +6,10 @@ Authors: Jujian Zhang
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Limits
-import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.Linear.LinearFunctor
+import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
 # Change Of Rings
@@ -139,8 +140,6 @@ def semilinearMapAddEquiv {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f :
     { toFun := g
       map_add' := by simp
       map_smul' := g.hom.map_smul }
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_add' _ _ := rfl
 
 section
