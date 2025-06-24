@@ -57,6 +57,7 @@ lemma Basis.contMDiffAt_local_frame_repr {ι : Type*} {x : M}
     {s : Π x : M,  V x} {k : WithTop ℕ∞} (hk : k ≤ n)
     (hs : ContMDiffAt I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) x)
     (i : ι) : ContMDiffAt I 𝓘(𝕜) n (b.local_frame_repr e s i) x := sorry
+
 end local_frame
 
 section
@@ -219,27 +220,41 @@ lemma congr_σ_smoothBumpFunction (cov : CovariantDerivative I F V) [T2Space M] 
   left
   rfl
 
+variable {I F V} in
 /-- If `X` and `X'` agree in a neighbourhood of `p`, then `∇_X σ` and `∇_X' σ` agree at `p`. -/
 lemma congr_X_of_eventuallyEq (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
-    (X X' : Π x : M, TangentSpace I x) {σ : Π x : M, V x} {x : M} {s : Set M} (hs : s ∈ nhds x)
-    (hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x)
+    {X X' : Π x : M, TangentSpace I x} {σ : Π x : M, V x} {x : M} {s : Set M} (hs : s ∈ nhds x)
     (hσσ' : ∀ x ∈ s, X x = X' x) :
     cov X σ x = cov X' σ x := by
+  by_cases hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x; swap
+  · simp [cov.do_not_read X hσ, cov.do_not_read X' hσ]
   sorry
 
+variable {I F V} in
 lemma congr_X_at_aux (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
     (X : Π x : M, TangentSpace I x) {σ : Π x : M, V x} {x : M}
-    --(hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x)
     (hX : X x = 0) : cov X σ x = 0 := by
   -- on (chartAt H x).source, can decompose X = ∑ a_i Xi
-  -- (where Xi are coordinate vector fields, and ai smooth functions on U)
-  -- extend each Xi to some smooth vector field on M, using a suitable bump function
-  -- then we compute
-  -- cov X σ x = cov X (∑ i, ai Xi) σ x -- using the previous lemma once: X = ∑ ai Xi on U
-  -- = ∑ i, cov (ai Xi) σ x    -- use linearity, inductively ---> new helper lemma
-  -- = ∑ i, ai(x) cov Xi σ x    -- apply smulX
-  -- = 0 (as each ai(x) = 0)
-  sorry
+  let n : ℕ := sorry -- finrank of E
+  -- Choose a basis of TangentSpace I x = E.
+  let b : Basis (Fin n) ℝ E := sorry
+  -- Consider the local frame {Xⁱ} on TangentSpace I x induced by chartAt H x.
+  let e := trivializationAt E (TangentSpace I) x
+  let Xi (i : Fin n) := b.local_frame e i
+  -- Write X in coordinates: X = ∑ i, a i • Xi i near `x`.
+  let a := b.local_frame_repr e X
+  have : x ∈ e.baseSet := FiberBundle.mem_baseSet_trivializationAt' x
+  have aux : ∀ᶠ (x' : M) in 𝓝 x, X x' = ∑ i, a i x' • Xi i x' := b.local_frame_repr_spec this X
+  have realAux : ∃ s : Set M, (s ∈ nhds x ∧ ∀ x' ∈ s, X x' = ∑ i, a i x' • Xi i x') := by
+    refine ⟨_, aux, by simp⟩
+  have (i : Fin n) : a i x = 0 := sorry -- "obvious"
+  calc cov X σ x
+    _ = cov (∑ i, a i • Xi i) σ x := cov.congr_X_of_eventuallyEq aux (by simp)
+    _ = ∑ i, cov (a i • Xi i) σ x := by
+      sorry -- use linearity and induction --> make a new helper lemma
+    _ = ∑ i, a i x • cov (Xi i) σ x := by
+      congr; ext i; simp [cov.smulX (Xi i) σ (a i)]
+    _ = 0 := by simp [this]
 
 -- XXX: better name?
 /-- `cov X σ x` only depends on `X` via `X x` -/
@@ -248,7 +263,7 @@ lemma congr_X_at (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞
     cov X σ x = cov X' σ x := by
   have : cov X' σ x = cov X σ x + cov (X' - X) σ x := sorry
   have h : (X' - X) x = 0 := sorry
-  simp [this, cov.congr_X_at_aux I _ _ (X' - X) h]
+  simp [this, cov.congr_X_at_aux (X' - X) h]
 
 lemma congr_σ_of_eventuallyEq (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
     (X : Π x : M, TangentSpace I x) {σ σ' : Π x : M, V x} {x : M} {s : Set M} (hs : s ∈ nhds x)
