@@ -235,6 +235,9 @@ instance : LE (ValueGroup R) where
     intro x y z w t s u v h₁ h₂ h₃ h₄
     refine propext ⟨fun h => ?_, fun h => ?_⟩
     · apply rel_mul_right (t * w) at h
+      apply rel_mul_cancel s.prop
+      rw [mul_right_comm y]
+      apply rel_trans (rel_mul_right (u : R) h₂)
       sorry
     · sorry
 
@@ -244,9 +247,27 @@ theorem ValueGroup.mk_le_mk (x y : R) (t s : unitSubmonoid R) :
 
 instance : LinearOrder (ValueGroup R) where
   le_refl := ValueGroup.ind fun _ _ => .rfl
-  le_trans := sorry
-  le_antisymm := sorry
-  le_total := sorry
+  le_trans a b c hab hbc := by
+    induction a using ValueGroup.ind with | mk a₁ a₂
+    induction b using ValueGroup.ind with | mk b₁ b₂
+    induction c using ValueGroup.ind with | mk c₁ c₂
+    rw [ValueGroup.mk_le_mk] at hab hbc ⊢
+    apply rel_mul_cancel b₂.prop
+    calc a₁ * c₂ * b₂
+      _ = a₁ * b₂ * c₂ := by rw [mul_right_comm]
+      _ ≤ᵥ b₁ * a₂ * c₂ := rel_mul_right (c₂ : R) hab
+      _ = b₁ * c₂ * a₂ := by rw [mul_right_comm]
+      _ ≤ᵥ c₁ * b₂ * a₂ := rel_mul_right (a₂ : R) hbc
+      _ = c₁ * a₂ * b₂ := by rw [mul_right_comm]
+  le_antisymm a b hab hba := by
+    induction a using ValueGroup.ind
+    induction b using ValueGroup.ind
+    exact ValueGroup.sound hab hba
+  le_total a b := by
+    induction a using ValueGroup.ind
+    induction b using ValueGroup.ind
+    rw [ValueGroup.mk_le_mk, ValueGroup.mk_le_mk]
+    apply rel_total
   toDecidableLE := Classical.decRel LE.le
 
 instance : Bot (ValueGroup R) where
