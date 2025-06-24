@@ -168,6 +168,37 @@ lemma congr_σ_smoothBumpFunction (cov : CovariantDerivative I F V) [T2Space M] 
   left
   rfl
 
+/-- If `X` and `X'` agree in a neighbourhood of `p`, then `∇_X σ` and `∇_X' σ` agree at `p`. -/
+lemma congr_X_of_eventuallyEq (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
+    (X X' : Π x : M, TangentSpace I x) {σ : Π x : M, V x} {x : M} {s : Set M} (hs : s ∈ nhds x)
+    (hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x)
+    (hσσ' : ∀ x ∈ s, X x = X' x) :
+    cov X σ x = cov X' σ x := by
+  sorry
+
+lemma congr_X_at_aux (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
+    (X : Π x : M, TangentSpace I x) {σ : Π x : M, V x} {x : M}
+    --(hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x)
+    (hX : X x = 0) : cov X σ x = 0 := by
+  -- on (chartAt H x).source, can decompose X = ∑ a_i Xi
+  -- (where Xi are coordinate vector fields, and ai smooth functions on U)
+  -- extend each Xi to some smooth vector field on M, using a suitable bump function
+  -- then we compute
+  -- cov X σ x = cov X (∑ i, ai Xi) σ x -- using the previous lemma once: X = ∑ ai Xi on U
+  -- = ∑ i, cov (ai Xi) σ x    -- use linearity, inductively ---> new helper lemma
+  -- = ∑ i, ai(x) cov Xi σ x    -- apply smulX
+  -- = 0 (as each ai(x) = 0)
+  sorry
+
+-- XXX: better name?
+/-- `cov X σ x` only depends on `X` via `X x` -/
+lemma congr_X_at (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
+    (X X' : Π x : M, TangentSpace I x) {σ : Π x : M, V x} {x : M} (hXX' : X x = X' x) :
+    cov X σ x = cov X' σ x := by
+  have : cov X' σ x = cov X σ x + cov (X' - X) σ x := sorry
+  have h : (X' - X) x = 0 := sorry
+  simp [this, cov.congr_X_at_aux I _ _ (X' - X) h]
+
 lemma congr_σ_of_eventuallyEq (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
     (X : Π x : M, TangentSpace I x) {σ σ' : Π x : M, V x} {x : M} {s : Set M} (hs : s ∈ nhds x)
     (hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x)
