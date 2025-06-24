@@ -406,11 +406,9 @@ lemma prodAssoc_toLinearEquiv :
 lemma coe_prodAssoc :
   (prodAssoc R M₁ M₂ M₃ : (M₁ × M₂) × M₃ → M₁ × M₂ × M₃) = Equiv.prodAssoc M₁ M₂ M₃ := rfl
 
--- XXX: Equiv.prodAssoc_apply is written differently, which version is better?
--- make this a lemma Equiv.prodAssoc_apply' instead?
 @[simp]
 lemma prodAssoc_apply (p₁ : M₁) (p₂ : M₂) (p₃ : M₃) :
-  (prodAssoc R M₁ M₂ M₃) ((p₁, p₂), p₃) = (p₁, (p₂, p₃)) := rfl
+  prodAssoc R M₁ M₂ M₃ ((p₁, p₂), p₃) = (p₁, (p₂, p₃)) := rfl
 
 @[simp]
 lemma prodAssoc_symm_apply (p₁ : M₁) (p₂ : M₂) (p₃ : M₃) :
