@@ -92,7 +92,6 @@ def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
     dsimp at H ⊢
     rw [← H]
     apply presheafHom_map_app_op_mk_id
-  right_inv _ := rfl
 
 variable {F G}
 
@@ -165,7 +164,7 @@ open PresheafHom.IsSheafFor in
 lemma presheafHom_isSheafFor  :
     Presieve.IsSheafFor (presheafHom F G) S.arrows := by
   intro x hx
-  apply exists_unique_of_exists_of_unique
+  apply existsUnique_of_exists_of_unique
   · refine ⟨
       { app := fun Y => app hG x hx Y.unop.hom
         naturality := by

@@ -43,7 +43,7 @@ variable {ι α β : Type*}
 
 /-- A **bornology** on a type `α` is a filter of cobounded sets which contains the cofinite filter.
 Such spaces are equivalently specified by their bounded sets, see `Bornology.ofBounded`
-and `Bornology.ext_iff_isBounded`-/
+and `Bornology.ext_iff_isBounded` -/
 class Bornology (α : Type*) where
   /-- The filter of cobounded sets in a bornology. This is a field of the structure, but one
   should always prefer `Bornology.cobounded` because it makes the `α` argument explicit. -/
@@ -261,7 +261,7 @@ open Bornology
 
 theorem Filter.HasBasis.disjoint_cobounded_iff [Bornology α] {ι : Sort*} {p : ι → Prop}
     {s : ι → Set α} {l : Filter α} (h : l.HasBasis p s) :
-    Disjoint l (cobounded α) ↔ ∃ i, p i ∧ IsBounded (s i) :=
+    Disjoint l (cobounded α) ↔ ∃ i, p i ∧ Bornology.IsBounded (s i) :=
   h.disjoint_iff_left
 
 theorem Set.Finite.isBounded [Bornology α] {s : Set α} (hs : s.Finite) : IsBounded s :=

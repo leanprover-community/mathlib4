@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
 import Mathlib.Algebra.Group.Conj
-import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Fintype.Units
 
 /-!
 # Conjugacy of elements of finite groups
 -/
+
+assert_not_exists Field
 
 -- TODO: the following `assert_not_exists` should work, but does not
 -- assert_not_exists MonoidWithZero

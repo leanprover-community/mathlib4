@@ -5,7 +5,9 @@ Authors: Richard M. Hill
 -/
 import Mathlib.Algebra.Module.Submodule.Invariant
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.RingTheory.Finiteness
+import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # Action of the polynomial ring on module induced by an algebra element.
@@ -155,8 +157,6 @@ def equiv_mapSubmodule :
     p ≃ₗ[R] mapSubmodule R M a ⟨p, hp⟩ where
   toFun x := ⟨of R M a x, by simp⟩
   invFun x := ⟨((of R M _).symm (x : AEval R M a)), by obtain ⟨x, hx⟩ := x; simpa using hx⟩
-  left_inv x := rfl
-  right_inv x := rfl
   map_add' x y := rfl
   map_smul' t x := rfl
 

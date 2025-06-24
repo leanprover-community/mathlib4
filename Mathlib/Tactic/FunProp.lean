@@ -9,8 +9,6 @@ import Mathlib.Tactic.FunProp.Decl
 import Mathlib.Tactic.FunProp.Elab
 import Mathlib.Tactic.FunProp.FunctionData
 import Mathlib.Tactic.FunProp.Mor
-import Mathlib.Tactic.FunProp.RefinedDiscrTree
-import Mathlib.Tactic.FunProp.StateList
 import Mathlib.Tactic.FunProp.Theorems
 import Mathlib.Tactic.FunProp.ToBatteries
 import Mathlib.Tactic.FunProp.Types
@@ -37,7 +35,7 @@ example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x : ℝ => 1/x) y := by fun
 **Basic debugging:**
 The most common issue is that a function is missing the appropriate theorem. For example:
 ```lean
-import Mathlib.Data.Complex.Exponential
+import Mathlib.Data.Complex.Trigonometric
 example : Continuous (fun x : ℝ => x * Real.sin x) := by fun_prop
 ```
 Fails with the error:
@@ -47,8 +45,8 @@ Fails with the error:
 Issues:
   No theorems found for `Real.sin` in order to prove `Continuous fun x => x.sin`
 ```
-This can be easily fixed by importing `Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic`
- where the theorem `Real.continuous_sin` is marked with the `fun_prop` attribute.
+This can be easily fixed by importing `Mathlib/Analysis/SpecialFunctions/Trigonometric/Basic.lean`
+where the theorem `Real.continuous_sin` is marked with the `fun_prop` attribute.
 
 When the issue is not simply a few missing theorems, you can turn on the option:
 ```lean
@@ -84,7 +82,7 @@ theorem continuous_comp (f : Y → Z) (g : X → Y) (hf : Continuous f) (hg : Co
   Continuous (fun x => f (g x)) := ...
 ```
 The constant theorem is not absolutely necessary as, for example, `IsLinearMap ℝ (fun x => y)` does
- not hold, but we almost certainly want to mark it if it is available.
+not hold, but we almost certainly want to mark it if it is available.
 
 You should also provide theorems for `Prod.mk`, `Prod.fst`, and `Prod.snd`:
 ```lean
@@ -138,7 +136,7 @@ displays:
     form: compositional form
 ```
 This indicates that the theorem `continuous_add` states the continuity of `HAdd.hAdd` in the 4th and
- 5th arguments and the theorem is in compositional form.
+5th arguments and the theorem is in compositional form.
 
 ### Advanced
 

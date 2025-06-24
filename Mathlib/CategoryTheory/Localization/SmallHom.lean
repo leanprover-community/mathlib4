@@ -20,7 +20,7 @@ with the composition of morphisms.
 
 -/
 
-universe w w' v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
+universe w'' w w' v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
 namespace CategoryTheory
 
@@ -156,6 +156,8 @@ lemma equiv_comp (L : C ⥤ D) [L.IsLocalization W] {X Y Z : C} [HasSmallLocaliz
   erw [(equivShrink _).symm_apply_apply, (equivShrink _).symm_apply_apply]
   simp only [homEquiv_refl, homEquiv_comp]
 
+section
+
 variable {X Y Z T : C}
 
 lemma mk_comp_mk [HasSmallLocalizedHom.{w} W X Y] [HasSmallLocalizedHom.{w} W Y Z]
@@ -196,6 +198,27 @@ lemma mkInv_comp_mk [HasSmallLocalizedHom.{w} W X X] [HasSmallLocalizedHom.{w} W
     (mkInv f hf).comp (mk W f) = mk W (𝟙 X) :=
   (equiv W W.Q).injective (by simp [equiv_comp])
 
+end
+
+section ChangeOfUniverse
+
+/-- Up to an equivalence, the type `SmallHom.{w} W X Y n` does not depend on the universe `w`. -/
+noncomputable def chgUniv {X Y : C}
+    [HasSmallLocalizedHom.{w} W X Y] [HasSmallLocalizedHom.{w''} W X Y] :
+    SmallHom.{w} W X Y ≃ SmallHom.{w''} W X Y :=
+  (equiv.{w} W W.Q).trans (equiv.{w''} W W.Q).symm
+
+lemma equiv_chgUniv (L : C ⥤ D) [L.IsLocalization W] {X Y : C}
+    [HasSmallLocalizedHom.{w} W X Y] [HasSmallLocalizedHom.{w''} W X Y]
+    (e : SmallHom.{w} W X Y) :
+    equiv W L (chgUniv.{w''} e) = equiv W L e := by
+  obtain ⟨f, rfl⟩ := (equiv W W.Q).symm.surjective e
+  dsimp [chgUniv]
+  simp only [Equiv.apply_symm_apply,
+    equiv_equiv_symm W _ _ _ (Localization.compUniqFunctor W.Q L W)]
+
+end ChangeOfUniverse
+
 end SmallHom
 
 end Localization
@@ -210,11 +233,9 @@ variable {C₁ : Type u₁} [Category.{v₁} C₁] {W₁ : MorphismProperty C₁
   (Φ : LocalizerMorphism W₁ W₂) (L₁ : C₁ ⥤ D₁) [L₁.IsLocalization W₁]
   (L₂ : C₂ ⥤ D₂) [L₂.IsLocalization W₂]
 
-variable {W}
-
 section
 
-variable {X Y Z : C₁}
+variable {X Y : C₁}
 
 variable [HasSmallLocalizedHom.{w} W₁ X Y]
   [HasSmallLocalizedHom.{w'} W₂ (Φ.functor.obj X) (Φ.functor.obj Y)]

@@ -31,8 +31,7 @@ lemma deriv_Gamma_nat (n : ℕ) :
   /- This follows from two properties of the function `f n = log (Gamma n)`:
   firstly, the elementary computation that `deriv f (n + 1) = deriv f n + 1 / n`, so that
   `deriv f n = deriv f 1 + harmonic n`; secondly, the convexity of `f` (the Bohr-Mollerup theorem),
-  which shows that `deriv f n` is `log n + o(1)` as `n → ∞`.
-  `-/
+  which shows that `deriv f n` is `log n + o(1)` as `n → ∞`. -/
   let f := log ∘ Gamma
   -- First reduce to computing derivative of `log ∘ Gamma`.
   suffices deriv (log ∘ Gamma) (n + 1) = -γ + harmonic n by
@@ -52,9 +51,10 @@ lemma deriv_Gamma_nat (n : ℕ) :
     apply EventuallyEq.deriv_eq
     filter_upwards [eventually_gt_nhds hx] using h_rec
   have hder_nat (n : ℕ) : deriv f (n + 1) = deriv f 1 + harmonic n := by
-    induction' n with n hn
-    · simp
-    · rw [cast_succ, hder_rec (n + 1) (by positivity), hn, harmonic_succ]
+    induction n with
+    | zero => simp
+    | succ n hn =>
+      rw [cast_succ, hder_rec (n + 1) (by positivity), hn, harmonic_succ]
       push_cast
       ring
   suffices -deriv f 1 = γ by rw [hder_nat n, ← this, neg_neg]
@@ -158,17 +158,20 @@ private lemma HasDerivAt.complex_of_real {f : ℂ → ℂ} {g : ℝ → ℝ} {g'
   rw [← (funext hfg ▸ hf.hasDerivAt.comp_ofReal.deriv :)]
   exact hg.ofReal_comp.deriv
 
-lemma differentiable_at_Gamma_nat_add_one (n : ℕ) :
+lemma differentiableAt_Gamma_nat_add_one (n : ℕ) :
     DifferentiableAt ℂ Gamma (n + 1) := by
   refine differentiableAt_Gamma _ (fun m ↦ ?_)
   simp only [Ne, ← ofReal_natCast, ← ofReal_one, ← ofReal_add, ← ofReal_neg, ofReal_inj,
     eq_neg_iff_add_eq_zero]
   positivity
 
+@[deprecated (since := "2025-06-06")] alias differentiable_at_Gamma_nat_add_one :=
+  differentiableAt_Gamma_nat_add_one
+
 lemma hasDerivAt_Gamma_nat (n : ℕ) :
     HasDerivAt Gamma (n ! * (-γ + harmonic n)) (n + 1) := by
   exact_mod_cast HasDerivAt.complex_of_real
-    (by exact_mod_cast differentiable_at_Gamma_nat_add_one n)
+    (by exact_mod_cast differentiableAt_Gamma_nat_add_one n)
     (Real.hasDerivAt_Gamma_nat n) Gamma_ofReal
 
 /-- Explicit formula for the derivative of the complex Gamma function at positive integers, in

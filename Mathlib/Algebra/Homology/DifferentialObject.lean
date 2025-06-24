@@ -41,14 +41,18 @@ abbrev objEqToHom {i j : β} (h : i = j) :
 theorem objEqToHom_refl (i : β) : X.objEqToHom (refl i) = 𝟙 _ :=
   rfl
 
-@[reassoc (attr := simp)]
+-- Removing `@[simp]`, because it is in the opposite direction of `eqToHom_naturality`.
+-- Having both causes an infinite loop in the simpNF linter.
+@[reassoc]
 theorem objEqToHom_d {x y : β} (h : x = y) :
-    X.objEqToHom h ≫ X.d y = X.d x ≫ X.objEqToHom (by cases h; rfl) := by cases h; dsimp; simp
+    X.objEqToHom h ≫ X.d y = X.d x ≫ X.objEqToHom (by cases h; rfl) := by cases h; simp
 
 @[reassoc (attr := simp)]
 theorem d_squared_apply {x : β} : X.d x ≫ X.d _ = 0 := congr_fun X.d_squared _
 
-@[reassoc (attr := simp)]
+-- Removing `@[simp]`, because it is in the opposite direction of `eqToHom_naturality`.
+-- Having both causes an infinite loop in the simpNF linter.
+@[reassoc]
 theorem eqToHom_f' {X Y : DifferentialObject ℤ (GradedObjectWithShift b V)} (f : X ⟶ Y) {x y : β}
     (h : x = y) : X.objEqToHom h ≫ f.f y = f.f x ≫ Y.objEqToHom h := by cases h; simp
 
@@ -61,15 +65,11 @@ namespace HomologicalComplex
 variable {β : Type*} [AddCommGroup β] (b : β)
 variable (V : Type*) [Category V] [HasZeroMorphisms V]
 
--- Porting note: this should be moved to an earlier file.
--- Porting note: simpNF linter silenced, both `d_eqToHom` and its `_assoc` version
--- do not simplify under themselves
-@[reassoc (attr := simp, nolint simpNF)]
+@[reassoc]
 theorem d_eqToHom (X : HomologicalComplex V (ComplexShape.up' b)) {x y z : β} (h : y = z) :
     X.d x y ≫ eqToHom (congr_arg X.X h) = X.d x z := by cases h; simp
 
 open Classical in
-set_option maxHeartbeats 400000 in
 /-- The functor from differential graded objects to homological complexes.
 -/
 @[simps]
@@ -83,7 +83,7 @@ def dgoToHomologicalComplex :
       shape := fun i j w => by dsimp at w; convert dif_neg w
       d_comp_d' := fun i j k hij hjk => by
         dsimp at hij hjk; substs hij hjk
-        simp }
+        simp [objEqToHom_d_assoc] }
   map {X Y} f :=
     { f := f.f
       comm' := fun i j h => by

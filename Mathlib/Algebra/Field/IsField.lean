@@ -65,10 +65,11 @@ noncomputable def IsField.toSemifield {R : Type u} [Semiring R] (h : IsField R) 
   nnqsmul_def _ _ := rfl
 
 /-- Transferring from `IsField` to `Field`. -/
-noncomputable def IsField.toField {R : Type u} [Ring R] (h : IsField R) : Field R :=
-  { ‹Ring R›, IsField.toSemifield h with
-    qsmul := _
-    qsmul_def := fun _ _ => rfl }
+noncomputable def IsField.toField {R : Type u} [Ring R] (h : IsField R) : Field R where
+  __ := (‹Ring R›:) -- this also works without the `( :)`, but it's slow
+  __ := h.toSemifield
+  qsmul := _
+  qsmul_def := fun _ _ => rfl
 
 /-- For each field, and for each nonzero element of said field, there is a unique inverse.
 Since `IsField` doesn't remember the data of an `inv` function and as such,
@@ -77,7 +78,7 @@ a lemma that there is a unique inverse could be useful.
 theorem uniq_inv_of_isField (R : Type u) [Ring R] (hf : IsField R) :
     ∀ x : R, x ≠ 0 → ∃! y : R, x * y = 1 := by
   intro x hx
-  apply exists_unique_of_exists_of_unique
+  apply existsUnique_of_exists_of_unique
   · exact hf.mul_inv_cancel hx
   · intro y z hxy hxz
     calc

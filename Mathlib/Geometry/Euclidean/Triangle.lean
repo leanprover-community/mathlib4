@@ -129,7 +129,7 @@ theorem cos_angle_sub_add_angle_sub_rev_eq_neg_cos_angle {x y : V} (hx : x ≠ 0
       Real.mul_self_sqrt (sub_nonneg_of_le (real_inner_mul_inner_self_le x y)),
       real_inner_self_eq_norm_mul_norm, real_inner_self_eq_norm_mul_norm,
       real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two]
-    -- TODO(#15486): used to be `field_simp [hxn, hyn, hxyn]`, but was really slow
+    -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp [hxn, hyn, hxyn]`, but was really slow
     -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
     simp (disch := field_simp_discharge) only [sub_div', div_div, mul_div_assoc',
       div_mul_eq_mul_div, div_sub', neg_div', neg_sub, eq_div_iff, div_eq_iff]
@@ -172,7 +172,7 @@ theorem sin_angle_sub_add_angle_sub_rev_eq_sin_angle {x y : V} (hx : x ≠ 0) (h
       inner_sub_right, inner_sub_right, inner_sub_right, inner_sub_right, real_inner_comm x y, H3,
       H4, real_inner_self_eq_norm_mul_norm, real_inner_self_eq_norm_mul_norm,
       real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two]
-    -- TODO(#15486): used to be `field_simp [hxn, hyn, hxyn]`, but was really slow
+    -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp [hxn, hyn, hxyn]`, but was really slow
     -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
     simp (disch := field_simp_discharge) only [mul_div_assoc', div_mul_eq_mul_div, div_div,
       sub_div', Real.sqrt_div', Real.sqrt_mul_self, add_div', div_add', eq_div_iff, div_eq_iff]
@@ -194,14 +194,16 @@ theorem sin_angle_add_angle_sub_add_angle_sub_eq_zero {x y : V} (hx : x ≠ 0) (
     sin_angle_sub_add_angle_sub_rev_eq_sin_angle hx hy]
   ring
 
-/-- The sum of the angles of a possibly degenerate triangle (where the
-two given sides are nonzero), vector angle form. -/
-theorem angle_add_angle_sub_add_angle_sub_eq_pi {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
+/-- The sum of the angles of a possibly degenerate triangle (where one of the
+two given sides is nonzero), vector angle form. -/
+theorem angle_add_angle_sub_add_angle_sub_eq_pi (x : V) {y : V} (hy : y ≠ 0) :
     angle x y + angle x (x - y) + angle y (y - x) = π := by
+  by_cases hx : x = 0
+  · simp [hx, hy]
   have hcos := cos_angle_add_angle_sub_add_angle_sub_eq_neg_one hx hy
   have hsin := sin_angle_add_angle_sub_add_angle_sub_eq_zero hx hy
   rw [Real.sin_eq_zero_iff] at hsin
-  cases' hsin with n hn
+  obtain ⟨n, hn⟩ := hsin
   symm at hn
   have h0 : 0 ≤ angle x y + angle x (x - y) + angle y (y - x) :=
     add_nonneg (add_nonneg (angle_nonneg _ _) (angle_nonneg _ _)) (angle_nonneg _ _)
@@ -250,53 +252,52 @@ variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V
   [NormedAddTorsor V P]
 
 /-- **Law of cosines** (cosine rule), angle-at-point form. -/
-theorem dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle (p1 p2 p3 : P) :
-    dist p1 p3 * dist p1 p3 = dist p1 p2 * dist p1 p2 + dist p3 p2 * dist p3 p2 -
-      2 * dist p1 p2 * dist p3 p2 * Real.cos (∠ p1 p2 p3) := by
-  rw [dist_eq_norm_vsub V p1 p3, dist_eq_norm_vsub V p1 p2, dist_eq_norm_vsub V p3 p2]
+theorem dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle (p₁ p₂ p₃ : P) :
+    dist p₁ p₃ * dist p₁ p₃ = dist p₁ p₂ * dist p₁ p₂ + dist p₃ p₂ * dist p₃ p₂ -
+      2 * dist p₁ p₂ * dist p₃ p₂ * Real.cos (∠ p₁ p₂ p₃) := by
+  rw [dist_eq_norm_vsub V p₁ p₃, dist_eq_norm_vsub V p₁ p₂, dist_eq_norm_vsub V p₃ p₂]
   unfold angle
   convert norm_sub_sq_eq_norm_sq_add_norm_sq_sub_two_mul_norm_mul_norm_mul_cos_angle
-    (p1 -ᵥ p2 : V) (p3 -ᵥ p2 : V)
-  · exact (vsub_sub_vsub_cancel_right p1 p3 p2).symm
-  · exact (vsub_sub_vsub_cancel_right p1 p3 p2).symm
+    (p₁ -ᵥ p₂ : V) (p₃ -ᵥ p₂ : V)
+  · exact (vsub_sub_vsub_cancel_right p₁ p₃ p₂).symm
+  · exact (vsub_sub_vsub_cancel_right p₁ p₃ p₂).symm
 
 alias law_cos := dist_sq_eq_dist_sq_add_dist_sq_sub_two_mul_dist_mul_dist_mul_cos_angle
 
 /-- **Isosceles Triangle Theorem**: Pons asinorum, angle-at-point form. -/
-theorem angle_eq_angle_of_dist_eq {p1 p2 p3 : P} (h : dist p1 p2 = dist p1 p3) :
-    ∠ p1 p2 p3 = ∠ p1 p3 p2 := by
-  rw [dist_eq_norm_vsub V p1 p2, dist_eq_norm_vsub V p1 p3] at h
+theorem angle_eq_angle_of_dist_eq {p₁ p₂ p₃ : P} (h : dist p₁ p₂ = dist p₁ p₃) :
+    ∠ p₁ p₂ p₃ = ∠ p₁ p₃ p₂ := by
+  rw [dist_eq_norm_vsub V p₁ p₂, dist_eq_norm_vsub V p₁ p₃] at h
   unfold angle
   convert angle_sub_eq_angle_sub_rev_of_norm_eq h
-  · exact (vsub_sub_vsub_cancel_left p3 p2 p1).symm
-  · exact (vsub_sub_vsub_cancel_left p2 p3 p1).symm
+  · exact (vsub_sub_vsub_cancel_left p₃ p₂ p₁).symm
+  · exact (vsub_sub_vsub_cancel_left p₂ p₃ p₁).symm
 
 /-- Converse of pons asinorum, angle-at-point form. -/
-theorem dist_eq_of_angle_eq_angle_of_angle_ne_pi {p1 p2 p3 : P} (h : ∠ p1 p2 p3 = ∠ p1 p3 p2)
-    (hpi : ∠ p2 p1 p3 ≠ π) : dist p1 p2 = dist p1 p3 := by
+theorem dist_eq_of_angle_eq_angle_of_angle_ne_pi {p₁ p₂ p₃ : P} (h : ∠ p₁ p₂ p₃ = ∠ p₁ p₃ p₂)
+    (hpi : ∠ p₂ p₁ p₃ ≠ π) : dist p₁ p₂ = dist p₁ p₃ := by
   unfold angle at h hpi
-  rw [dist_eq_norm_vsub V p1 p2, dist_eq_norm_vsub V p1 p3]
+  rw [dist_eq_norm_vsub V p₁ p₂, dist_eq_norm_vsub V p₁ p₃]
   rw [← angle_neg_neg, neg_vsub_eq_vsub_rev, neg_vsub_eq_vsub_rev] at hpi
-  rw [← vsub_sub_vsub_cancel_left p3 p2 p1, ← vsub_sub_vsub_cancel_left p2 p3 p1] at h
+  rw [← vsub_sub_vsub_cancel_left p₃ p₂ p₁, ← vsub_sub_vsub_cancel_left p₂ p₃ p₁] at h
   exact norm_eq_of_angle_sub_eq_angle_sub_rev_of_angle_ne_pi h hpi
 
-/-- The **sum of the angles of a triangle** (possibly degenerate, where the
-given vertex is distinct from the others), angle-at-point. -/
-theorem angle_add_angle_add_angle_eq_pi {p1 p2 p3 : P} (h2 : p2 ≠ p1) (h3 : p3 ≠ p1) :
-    ∠ p1 p2 p3 + ∠ p2 p3 p1 + ∠ p3 p1 p2 = π := by
-  rw [add_assoc, add_comm, add_comm (∠ p2 p3 p1), angle_comm p2 p3 p1]
+/-- The **sum of the angles of a triangle** (possibly degenerate, where two
+given vertices are distinct), angle-at-point. -/
+theorem angle_add_angle_add_angle_eq_pi {p₁ p₂ : P} (p₃ : P) (h : p₂ ≠ p₁) :
+    ∠ p₁ p₂ p₃ + ∠ p₂ p₃ p₁ + ∠ p₃ p₁ p₂ = π := by
+  rw [add_assoc, add_comm, add_comm (∠ p₂ p₃ p₁), angle_comm p₂ p₃ p₁]
   unfold angle
-  rw [← angle_neg_neg (p1 -ᵥ p3), ← angle_neg_neg (p1 -ᵥ p2), neg_vsub_eq_vsub_rev,
+  rw [← angle_neg_neg (p₁ -ᵥ p₃), ← angle_neg_neg (p₁ -ᵥ p₂), neg_vsub_eq_vsub_rev,
     neg_vsub_eq_vsub_rev, neg_vsub_eq_vsub_rev, neg_vsub_eq_vsub_rev, ←
-    vsub_sub_vsub_cancel_right p3 p2 p1, ← vsub_sub_vsub_cancel_right p2 p3 p1]
-  exact angle_add_angle_sub_add_angle_sub_eq_pi (fun he => h3 (vsub_eq_zero_iff_eq.1 he)) fun he =>
-    h2 (vsub_eq_zero_iff_eq.1 he)
+    vsub_sub_vsub_cancel_right p₃ p₂ p₁, ← vsub_sub_vsub_cancel_right p₂ p₃ p₁]
+  exact angle_add_angle_sub_add_angle_sub_eq_pi _ fun he => h (vsub_eq_zero_iff_eq.1 he)
 
 /-- The **sum of the angles of a triangle** (possibly degenerate, where the triangle is a line),
 oriented angles at point. -/
 theorem oangle_add_oangle_add_oangle_eq_pi [Module.Oriented ℝ V (Fin 2)]
-    [Fact (Module.finrank ℝ V = 2)] {p1 p2 p3 : P} (h21 : p2 ≠ p1) (h32 : p3 ≠ p2)
-    (h13 : p1 ≠ p3) : ∡ p1 p2 p3 + ∡ p2 p3 p1 + ∡ p3 p1 p2 = π := by
+    [Fact (Module.finrank ℝ V = 2)] {p₁ p₂ p₃ : P} (h21 : p₂ ≠ p₁) (h32 : p₃ ≠ p₂)
+    (h13 : p₁ ≠ p₃) : ∡ p₁ p₂ p₃ + ∡ p₂ p₃ p₁ + ∡ p₃ p₁ p₂ = π := by
   simpa only [neg_vsub_eq_vsub_rev] using
     positiveOrientation.oangle_add_cyc3_neg_left (vsub_ne_zero.mpr h21) (vsub_ne_zero.mpr h32)
       (vsub_ne_zero.mpr h13)
@@ -322,14 +323,14 @@ theorem dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq (a b c 
     calc
       dist a b ^ 2 + dist a c ^ 2 = 2 / dist b c * (dist a b ^ 2 *
         ((2 : ℝ)⁻¹ * dist b c) + dist a c ^ 2 * (2⁻¹ * dist b c)) := by
-        -- TODO(#15486): used to be `field_simp`, but was really slow
+        -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp`, but was really slow
         -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
         simp (disch := field_simp_discharge) only [inv_eq_one_div, div_mul_eq_mul_div, one_mul,
           mul_div_assoc', add_div', div_mul_cancel₀, div_div, eq_div_iff]
         ring
       _ = 2 * (dist a (midpoint ℝ b c) ^ 2 + (dist b c / 2) ^ 2) := by
         rw [hm]
-        -- TODO(#15486): used to be `field_simp`, but was really slow
+        -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp`, but was really slow
         -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
         simp (disch := field_simp_discharge) only [inv_eq_one_div, div_mul_eq_mul_div, one_mul,
           mul_div_assoc', div_div, add_div', div_pow, eq_div_iff, div_eq_iff]
@@ -351,6 +352,6 @@ theorem dist_mul_of_eq_angle_of_dist_mul (a b c a' b' c' : P) (r : ℝ) (h : ∠
     rw [hab₁, hab'₁, dist_comm b' c', dist_comm b c, hcb]
   · have h1 : 0 ≤ r * dist a b := by rw [← hab]; exact dist_nonneg
     have h2 : 0 ≤ r := nonneg_of_mul_nonneg_left h1 (dist_pos.mpr hab₁)
-    exact (sq_eq_sq dist_nonneg (mul_nonneg h2 dist_nonneg)).mp h'
+    exact (sq_eq_sq₀ dist_nonneg (mul_nonneg h2 dist_nonneg)).mp h'
 
 end EuclideanGeometry

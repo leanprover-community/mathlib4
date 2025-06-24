@@ -3,11 +3,11 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Finsupp
-import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.DirectSum.Internal
-import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.MonoidAlgebra.Support
+import Mathlib.LinearAlgebra.Finsupp.SumProd
+import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
 # Internal grading of an `AddMonoidAlgebra`
@@ -110,8 +110,8 @@ variable [AddMonoid M] [DecidableEq ι] [AddMonoid ι] [CommSemiring R] (f : M �
 def decomposeAux : R[M] →ₐ[R] ⨁ i : ι, gradeBy R f i :=
   AddMonoidAlgebra.lift R M _
     { toFun := fun m =>
-        DirectSum.of (fun i : ι => gradeBy R f i) (f (Multiplicative.toAdd m))
-          ⟨Finsupp.single (Multiplicative.toAdd m) 1, single_mem_gradeBy _ _ _⟩
+        DirectSum.of (fun i : ι => gradeBy R f i) (f m.toAdd)
+          ⟨Finsupp.single m.toAdd 1, single_mem_gradeBy _ _ _⟩
       map_one' :=
         DirectSum.of_eq_of_gradedMonoid_eq
           (by congr 2 <;> simp)
@@ -150,7 +150,7 @@ theorem decomposeAux_coe {i : ι} (x : gradeBy R f i) :
       simpa only [Finsupp.support_single_ne_zero _ hb, Finset.disjoint_singleton_left]
     rw [mem_gradeBy_iff, Finsupp.support_add_eq this, Finset.coe_union, Set.union_subset_iff]
       at hmby
-    cases' hmby with h1 h2
+    obtain ⟨h1, h2⟩ := hmby
     have : f m = i := by
       rwa [Finsupp.support_single_ne_zero _ hb, Finset.coe_singleton, Set.singleton_subset_iff]
         at h1
@@ -165,9 +165,8 @@ theorem decomposeAux_coe {i : ι} (x : gradeBy R f i) :
 instance gradeBy.gradedAlgebra : GradedAlgebra (gradeBy R f) :=
   GradedAlgebra.ofAlgHom _ (decomposeAux f)
     (by
-      ext : 2
-      simp only [MonoidHom.coe_comp, MonoidHom.coe_coe, AlgHom.coe_comp, Function.comp_apply,
-        of_apply, AlgHom.coe_id, id_eq]
+      ext : 4
+      dsimp
       rw [decomposeAux_single, DirectSum.coeAlgHom_of, Subtype.coe_mk])
     fun i x => by rw [decomposeAux_coe f x]
 

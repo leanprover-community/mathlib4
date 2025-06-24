@@ -28,9 +28,9 @@ variable {R R' S S' T : Type*}
 namespace Prod
 
 /-- Product of two distributive types is distributive. -/
-instance instDistrib [Distrib R] [Distrib S] : Distrib (R × S) :=
-  { left_distrib := fun _ _ _ => mk.inj_iff.mpr ⟨left_distrib _ _ _, left_distrib _ _ _⟩
-    right_distrib := fun _ _ _ => mk.inj_iff.mpr ⟨right_distrib _ _ _, right_distrib _ _ _⟩ }
+instance instDistrib [Distrib R] [Distrib S] : Distrib (R × S) where
+  left_distrib _ _ _ := by ext <;> exact left_distrib ..
+  right_distrib _ _ _ := by ext <;> exact right_distrib ..
 
 /-- Product of two `NonUnitalNonAssocSemiring`s is a `NonUnitalNonAssocSemiring`. -/
 instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] :
@@ -314,7 +314,6 @@ def prodZeroRing : R ≃+* R × S where
   invFun := Prod.fst
   map_add' := by simp
   map_mul' := by simp
-  left_inv _ := rfl
   right_inv x := by cases x; simp [eq_iff_true_of_subsingleton]
 
 /-- A ring `R` is isomorphic to `S × R` when `S` is the zero ring -/
@@ -324,14 +323,13 @@ def zeroRingProd : R ≃+* S × R where
   invFun := Prod.snd
   map_add' := by simp
   map_mul' := by simp
-  left_inv _ := rfl
   right_inv x := by cases x; simp [eq_iff_true_of_subsingleton]
 
 end RingEquiv
 
 /-- The product of two nontrivial rings is not a domain -/
-theorem false_of_nontrivial_of_product_domain (R S : Type*) [Ring R] [Ring S] [IsDomain (R × S)]
-    [Nontrivial R] [Nontrivial S] : False := by
+theorem false_of_nontrivial_of_product_domain (R S : Type*) [Semiring R] [Semiring S]
+    [IsDomain (R × S)] [Nontrivial R] [Nontrivial S] : False := by
   have :=
     NoZeroDivisors.eq_zero_or_eq_zero_of_mul_eq_zero (show ((0 : R), (1 : S)) * (1, 0) = 0 by simp)
   rw [Prod.mk_eq_zero, Prod.mk_eq_zero] at this

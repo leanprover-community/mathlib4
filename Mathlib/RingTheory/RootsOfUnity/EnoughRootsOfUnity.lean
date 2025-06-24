@@ -64,8 +64,7 @@ lemma natCard_rootsOfUnity (M : Type*) [CommMonoid M] (n : ℕ) [NeZero n]
     [HasEnoughRootsOfUnity M n] :
     Nat.card (rootsOfUnity n M) = n := by
   obtain ⟨ζ, h⟩ := exists_primitiveRoot M n
-  have : Fintype <| rootsOfUnity n M := Fintype.ofFinite _
-  rw [Nat.card_eq_fintype_card, ← IsCyclic.exponent_eq_card]
+  rw [← IsCyclic.exponent_eq_card]
   refine dvd_antisymm ?_ ?_
   · exact Monoid.exponent_dvd_of_forall_pow_eq_one fun g ↦ OneMemClass.coe_eq_one.mp g.prop
   · nth_rewrite 1 [h.eq_orderOf]
@@ -77,6 +76,17 @@ lemma natCard_rootsOfUnity (M : Type*) [CommMonoid M] (n : ℕ) [NeZero n]
     rw [← Units.eq_iff, Units.val_pow_eq_pow_val, IsUnit.unit_spec, h.pow_eq_one, Units.val_one]
 
 end HasEnoughRootsOfUnity
+
+lemma MulEquiv.hasEnoughRootsOfUnity {n : ℕ} [NeZero n] {M N : Type*} [CommMonoid M]
+    [CommMonoid N] [hm : HasEnoughRootsOfUnity M n] (e : rootsOfUnity n M ≃* rootsOfUnity n N) :
+    HasEnoughRootsOfUnity N n where
+  prim := by
+    obtain ⟨m, hm⟩ := hm.prim
+    use (e hm.toRootsOfUnity).val.val
+    rw [IsPrimitiveRoot.coe_units_iff, IsPrimitiveRoot.coe_submonoidClass_iff]
+    refine .map_of_injective ?_ e.injective
+    rwa [← IsPrimitiveRoot.coe_submonoidClass_iff, ← IsPrimitiveRoot.coe_units_iff]
+  cyc := isCyclic_of_surjective e e.surjective
 
 section cyclic
 

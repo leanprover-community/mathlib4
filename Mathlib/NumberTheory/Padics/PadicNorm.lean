@@ -3,6 +3,7 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
 import Mathlib.NumberTheory.Padics.PadicVal.Basic
 
 /-!
@@ -173,7 +174,7 @@ protected theorem nonarchimedean {q r : ℚ} :
     padicNorm p (q + r) ≤ max (padicNorm p q) (padicNorm p r) := by
   wlog hle : padicValRat p q ≤ padicValRat p r generalizing q r
   · rw [add_comm, max_comm]
-    exact this (le_of_not_le hle)
+    exact this (le_of_not_ge hle)
   exact nonarchimedean_aux hle
 
 /-- The `p`-adic norm respects the triangle inequality: the norm of `p + q` is at most the norm of
@@ -196,7 +197,7 @@ theorem add_eq_max_of_ne {q r : ℚ} (hne : padicNorm p q ≠ padicNorm p r) :
     padicNorm p (q + r) = max (padicNorm p q) (padicNorm p r) := by
   wlog hlt : padicNorm p r < padicNorm p q
   · rw [add_comm, max_comm]
-    exact this hne.symm (hne.lt_or_lt.resolve_right hlt)
+    exact this hne.symm (hne.lt_or_gt.resolve_right hlt)
   have : padicNorm p q ≤ max (padicNorm p (q + r)) (padicNorm p r) :=
     calc
       padicNorm p q = padicNorm p (q + r + (-r)) := by ring_nf
@@ -227,9 +228,9 @@ theorem dvd_iff_norm_le {n : ℕ} {z : ℤ} : ↑(p ^ n) ∣ z ↔ padicNorm p z
   · rw [zpow_le_zpow_iff_right₀, neg_le_neg_iff, padicValRat.of_int,
       padicValInt.of_ne_one_ne_zero hp.1.ne_one _]
     · norm_cast
-      rw [← multiplicity.Finite.pow_dvd_iff_le_multiplicity]
+      rw [← FiniteMultiplicity.pow_dvd_iff_le_multiplicity]
       · norm_cast
-      · apply Int.multiplicity_finite_iff.2 ⟨by simp [hp.out.ne_one], mod_cast hz⟩
+      · apply Int.finiteMultiplicity_iff.2 ⟨by simp [hp.out.ne_one], mod_cast hz⟩
     · exact_mod_cast hz
     · exact_mod_cast hp.out.one_lt
 

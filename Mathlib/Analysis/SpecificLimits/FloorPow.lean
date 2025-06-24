@@ -220,7 +220,7 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
   have cpos : 0 < c := zero_lt_one.trans hc
   have A : (0 : ℝ) < c⁻¹ ^ 2 := sq_pos_of_pos (inv_pos.2 cpos)
   have B : c ^ 2 * ((1 : ℝ) - c⁻¹ ^ 2)⁻¹ ≤ c ^ 3 * (c - 1)⁻¹ := by
-    rw [← div_eq_mul_inv, ← div_eq_mul_inv, div_le_div_iff _ (sub_pos.2 hc)]
+    rw [← div_eq_mul_inv, ← div_eq_mul_inv, div_le_div_iff₀ _ (sub_pos.2 hc)]
     swap
     · exact sub_pos.2 (pow_lt_one₀ (inv_nonneg.2 cpos.le) (inv_lt_one_of_one_lt₀ hc) two_ne_zero)
     have : c ^ 3 = c ^ 2 * c := by ring
@@ -231,7 +231,8 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
   calc
     (∑ i ∈ range N with j < c ^ i, (1 : ℝ) / (c ^ i) ^ 2) ≤
         ∑ i ∈ Ico ⌊Real.log j / Real.log c⌋₊ N, (1 : ℝ) / (c ^ i) ^ 2 := by
-      refine sum_le_sum_of_subset_of_nonneg (fun i hi ↦ ?_) (by intros; positivity)
+      gcongr
+      intro i hi
       simp only [mem_filter, mem_range] at hi
       simp only [hi.1, mem_Ico, and_true]
       apply Nat.floor_le_of_le
@@ -286,8 +287,8 @@ theorem sum_div_nat_floor_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c :
       gcongr
       exact fun k hk ↦ hk.trans_le <| Nat.floor_le (by positivity)
     _ ≤ ∑ i ∈ range N with j < c ^ i, (1 - c⁻¹)⁻¹ ^ 2 * ((1 : ℝ) / (c ^ i) ^ 2) := by
-      refine sum_le_sum fun i _hi => ?_
-      rw [mul_div_assoc', mul_one, div_le_div_iff]; rotate_left
+      gcongr with i
+      rw [mul_div_assoc', mul_one, div_le_div_iff₀]; rotate_left
       · apply sq_pos_of_pos
         refine zero_lt_one.trans_le ?_
         simp only [Nat.le_floor, one_le_pow₀, hc.le, Nat.one_le_cast, Nat.cast_one]

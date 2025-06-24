@@ -11,7 +11,7 @@ import Mathlib.Algebra.GroupWithZero.NeZero
 
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 open Function
 
@@ -51,25 +51,30 @@ variable [Mul M₀] [Zero M₀] [Mul M₀'] [Zero M₀']
 include hf zero mul
 
 /-- Pull back a `NoZeroDivisors` instance along an injective function. -/
-protected theorem Function.Injective.noZeroDivisors [NoZeroDivisors M₀'] : NoZeroDivisors M₀ :=
-  { eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} H ↦
-      have : f a * f b = 0 := by rw [← mul, H, zero]
-      (eq_zero_or_eq_zero_of_mul_eq_zero this).imp
-        (fun H => hf <| by rwa [zero]) fun H => hf <| by rwa [zero] }
+protected theorem Function.Injective.noZeroDivisors [NoZeroDivisors M₀'] : NoZeroDivisors M₀ where
+  eq_zero_or_eq_zero_of_mul_eq_zero {a b} H :=
+    have : f a * f b = 0 := by rw [← mul, H, zero]
+    (eq_zero_or_eq_zero_of_mul_eq_zero this).imp
+      (fun H ↦ hf <| by rwa [zero]) fun H ↦ hf <| by rwa [zero]
 
 protected theorem Function.Injective.isLeftCancelMulZero
-    [IsLeftCancelMulZero M₀'] : IsLeftCancelMulZero M₀ :=
-  { mul_left_cancel_of_ne_zero := fun Hne He => by
-      have := congr_arg f He
-      rw [mul, mul] at this
-      exact hf (mul_left_cancel₀ (fun Hfa => Hne <| hf <| by rw [Hfa, zero]) this) }
+    [IsLeftCancelMulZero M₀'] : IsLeftCancelMulZero M₀ where
+  mul_left_cancel_of_ne_zero Hne He := by
+    have := congr_arg f He
+    rw [mul, mul] at this
+    exact hf (mul_left_cancel₀ (fun Hfa => Hne <| hf <| by rw [Hfa, zero]) this)
 
 protected theorem Function.Injective.isRightCancelMulZero
-    [IsRightCancelMulZero M₀'] : IsRightCancelMulZero M₀ :=
-  { mul_right_cancel_of_ne_zero := fun Hne He => by
-      have := congr_arg f He
-      rw [mul, mul] at this
-      exact hf (mul_right_cancel₀ (fun Hfa => Hne <| hf <| by rw [Hfa, zero]) this) }
+    [IsRightCancelMulZero M₀'] : IsRightCancelMulZero M₀ where
+  mul_right_cancel_of_ne_zero Hne He := by
+    have := congr_arg f He
+    rw [mul, mul] at this
+    exact hf (mul_right_cancel₀ (fun Hfa => Hne <| hf <| by rw [Hfa, zero]) this)
+
+protected theorem Function.Injective.isCancelMulZero
+    [IsCancelMulZero M₀'] : IsCancelMulZero M₀ where
+  __ := hf.isLeftCancelMulZero f zero mul
+  __ := hf.isRightCancelMulZero f zero mul
 
 end NoZeroDivisors
 
@@ -192,7 +197,7 @@ protected abbrev Function.Injective.groupWithZero [Zero G₀'] [Mul G₀'] [One 
     (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) : GroupWithZero G₀' :=
   { hf.monoidWithZero f zero one mul npow,
     hf.divInvMonoid f one mul inv div npow zpow,
-    pullback_nonzero f zero one with
+    domain_nontrivial f zero one with
     inv_zero := hf <| by rw [inv, zero, inv_zero],
     mul_inv_cancel := fun x hx => hf <| by
       rw [one, mul, inv, mul_inv_cancel₀ ((hf.ne_iff' zero).2 hx)] }

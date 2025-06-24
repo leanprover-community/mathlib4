@@ -13,7 +13,7 @@ import Mathlib.Algebra.Group.Units.Basic
 ## Main definition
 
 * `IsRelPrime x y`: that `x` and `y` are relatively prime, defined to mean that the only common
-divisors of `x` and `y` are the units.
+  divisors of `x` and `y` are the units.
 
 -/
 
@@ -33,12 +33,12 @@ theorem coe_dvd : ↑u ∣ a :=
 /-- In a monoid, an element `a` divides an element `b` iff `a` divides all
     associates of `b`. -/
 theorem dvd_mul_right : a ∣ b * u ↔ a ∣ b :=
-  Iff.intro (fun ⟨c, Eq⟩ ↦ ⟨c * ↑u⁻¹, by rw [← mul_assoc, ← Eq, Units.mul_inv_cancel_right]⟩)
-    fun ⟨_, Eq⟩ ↦ Eq.symm ▸ (_root_.dvd_mul_right _ _).mul_right _
+  Iff.intro (fun ⟨c, eq⟩ ↦ ⟨c * ↑u⁻¹, by rw [← mul_assoc, ← eq, Units.mul_inv_cancel_right]⟩)
+    fun ⟨_, eq⟩ ↦ eq.symm ▸ (_root_.dvd_mul_right _ _).mul_right _
 
 /-- In a monoid, an element `a` divides an element `b` iff all associates of `a` divide `b`. -/
 theorem mul_right_dvd : a * u ∣ b ↔ a ∣ b :=
-  Iff.intro (fun ⟨c, Eq⟩ => ⟨↑u * c, Eq.trans (mul_assoc _ _ _)⟩) fun h =>
+  Iff.intro (fun ⟨c, eq⟩ => ⟨↑u * c, eq.trans (mul_assoc _ _ _)⟩) fun h =>
     dvd_trans (Dvd.intro (↑u⁻¹) (by rw [mul_assoc, u.mul_inv, mul_one])) h
 
 end Monoid
@@ -142,6 +142,7 @@ def IsRelPrime [Monoid α] (x y : α) : Prop := ∀ ⦃d⦄, d ∣ x → d ∣ y
 variable [CommMonoid α] {x y z : α}
 
 @[symm] theorem IsRelPrime.symm (H : IsRelPrime x y) : IsRelPrime y x := fun _ hx hy ↦ H hy hx
+theorem symmetric_isRelPrime : Symmetric (IsRelPrime : α → α → Prop) := fun _ _ ↦ .symm
 
 theorem isRelPrime_comm : IsRelPrime x y ↔ IsRelPrime y x :=
   ⟨IsRelPrime.symm, IsRelPrime.symm⟩

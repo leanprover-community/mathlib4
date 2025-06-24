@@ -5,6 +5,7 @@ Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
 import Mathlib.Algebra.Group.Submonoid.DistribMulAction
 import Mathlib.GroupTheory.OreLocalization.Basic
+import Mathlib.Algebra.GroupWithZero.Defs
 
 /-!
 
@@ -23,6 +24,7 @@ localization, Ore, non-commutative
 
 -/
 
+assert_not_exists RelIso
 
 universe u
 
@@ -251,7 +253,7 @@ variable {X : Type*} [AddGroup X] [DistribMulAction R X]
 @[irreducible]
 protected def neg : X[S⁻¹] → X[S⁻¹] :=
   liftExpand (fun (r : X) (s : S) => -r /ₒ s) fun r t s ht => by
-    -- Porting note(#12129): additional beta reduction needed
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
     beta_reduce
     rw [← smul_neg, ← OreLocalization.expand]
 

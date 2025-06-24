@@ -114,7 +114,7 @@ lemma eventually_zero_of_frequently_zero (hf : GrowsPolynomially f) (hf' : ∃�
         rw [Set.left_mem_Icc]
         gcongr
         · norm_num
-        · linarith
+        · omega
       simp only [ih, mul_zero, Set.Icc_self, Set.mem_singleton_iff] at hx
       refine hx ⟨?lb₁, ?ub₁⟩
       case lb₁ =>
@@ -224,7 +224,7 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
             exact_mod_cast hz.2
         rw [← z_to_half_z, half_z_to_base]
     obtain ⟨c, hc⟩ := hmain
-    cases le_or_lt 0 c with
+    cases le_or_gt 0 c with
     | inl hpos =>
       exact Or.inl <| by filter_upwards [hc] with _ hc; simpa only [hc]
     | inr hneg =>
@@ -275,7 +275,6 @@ protected lemma abs (hf : GrowsPolynomially f) : GrowsPolynomially (fun x => |f 
     have hmain : -f =ᶠ[atTop] fun x => |f x| := by
       filter_upwards [hf'] with x hx
       simp only [Pi.neg_apply, abs_of_nonpos hx]
-
     rw [← iff_eventuallyEq hmain]
     exact hf.neg
 
@@ -565,7 +564,7 @@ protected lemma GrowsPolynomially.rpow (p : ℝ) (hf : GrowsPolynomially f)
   obtain ⟨c₁, (hc₁_mem : 0 < c₁), c₂, hc₂_mem, hfnew⟩ := hf b hb
   have hc₁p : 0 < c₁ ^ p := Real.rpow_pos_of_pos hc₁_mem _
   have hc₂p : 0 < c₂ ^ p := Real.rpow_pos_of_pos hc₂_mem _
-  cases le_or_lt 0 p with
+  cases le_or_gt 0 p with
   | inl => -- 0 ≤ p
     refine ⟨c₁^p, hc₁p, ?_⟩
     refine ⟨c₂^p, hc₂p, ?_⟩

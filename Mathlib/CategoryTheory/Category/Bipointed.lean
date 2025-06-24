@@ -32,10 +32,9 @@ namespace Bipointed
 instance : CoeSort Bipointed Type* := ⟨Bipointed.X⟩
 
 /-- Turns a bipointing into a bipointed type. -/
-def of {X : Type*} (to_prod : X × X) : Bipointed :=
+abbrev of {X : Type*} (to_prod : X × X) : Bipointed :=
   ⟨X, to_prod⟩
 
-@[simp]
 theorem coe_of {X : Type*} (to_prod : X × X) : ↥(of to_prod) = X :=
   rfl
 
@@ -76,11 +75,17 @@ instance largeCategory : LargeCategory Bipointed where
   id := Hom.id
   comp := @Hom.comp
 
-instance concreteCategory : ConcreteCategory Bipointed where
-  forget :=
-    { obj := Bipointed.X
-      map := @Hom.toFun }
-  forget_faithful := ⟨@Hom.ext⟩
+/-- The subtype of functions corresponding to the morphisms in `Bipointed`. -/
+abbrev HomSubtype (X Y : Bipointed) :=
+  { f : X → Y // f X.toProd.1 = Y.toProd.1 ∧ f X.toProd.2 = Y.toProd.2 }
+
+instance (X Y : Bipointed) : FunLike (HomSubtype X Y) X Y where
+  coe f := f
+  coe_injective' _ _ := Subtype.ext
+
+instance hasForget : ConcreteCategory Bipointed HomSubtype where
+  hom f := ⟨f.1, ⟨f.2, f.3⟩⟩
+  ofHom f := ⟨f.1, f.2.1, f.2.2⟩
 
 /-- Swaps the pointed elements of a bipointed type. `Prod.swap` as a functor. -/
 @[simps]
@@ -190,8 +195,7 @@ def pointedToBipointedFstBipointedToPointedFstAdjunction :
             funext x
             cases x
             · exact f.map_snd.symm
-            · rfl
-          right_inv := fun _ => Pointed.Hom.ext rfl }
+            · rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Bipointed.Hom.ext
         funext x
@@ -210,8 +214,7 @@ def pointedToBipointedSndBipointedToPointedSndAdjunction :
             funext x
             cases x
             · exact f.map_fst.symm
-            · rfl
-          right_inv := fun _ => Pointed.Hom.ext rfl }
+            · rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Bipointed.Hom.ext
         funext x

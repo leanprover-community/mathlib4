@@ -28,7 +28,7 @@ The following are in the `AlgebraicGeometry.Scheme` namespace:
 
 universe u
 
-open CategoryTheory TopologicalSpace Opposite LocalRing
+open CategoryTheory TopologicalSpace Opposite IsLocalRing
 
 noncomputable section
 
@@ -39,14 +39,17 @@ variable (X : Scheme.{u}) {U : X.Opens}
 /-- The residue field of `X` at a point `x` is the residue field of the stalk of `X`
 at `x`. -/
 def residueField (x : X) : CommRingCat :=
-  CommRingCat.of <| LocalRing.ResidueField (X.presheaf.stalk x)
+  CommRingCat.of <| IsLocalRing.ResidueField (X.presheaf.stalk x)
 
 instance (x : X) : Field (X.residueField x) :=
-  inferInstanceAs <| Field (LocalRing.ResidueField (X.presheaf.stalk x))
+  inferInstanceAs <| Field (IsLocalRing.ResidueField (X.presheaf.stalk x))
+
+instance (x : X) : Unique (Spec (X.residueField x)) :=
+  inferInstanceAs (Unique (Spec (CommRingCat.of _)))
 
 /-- The residue map from the stalk to the residue field. -/
 def residue (X : Scheme.{u}) (x) : X.presheaf.stalk x ⟶ X.residueField x :=
-  LocalRing.residue _
+  CommRingCat.ofHom (IsLocalRing.residue (X.presheaf.stalk x))
 
 /-- See `AlgebraicGeometry.IsClosedImmersion.Spec_map_residue` for the stronger result that
 `Spec.map (X.residue x)` is a closed immersion. -/
@@ -59,7 +62,7 @@ instance {X : Scheme.{u}} (x) : IsPreimmersion (Spec.map (X.residue x)) :=
 @[simp]
 lemma Spec_map_residue_apply {X : Scheme.{u}} (x : X) (s : Spec (X.residueField x)) :
     (Spec.map (X.residue x)).base s = closedPoint (X.presheaf.stalk x) :=
-  LocalRing.PrimeSpectrum.comap_residue _ s
+  IsLocalRing.PrimeSpectrum.comap_residue _ s
 
 lemma residue_surjective (X : Scheme.{u}) (x) : Function.Surjective (X.residue x) :=
   Ideal.Quotient.mk_surjective
@@ -70,15 +73,15 @@ instance (X : Scheme.{u}) (x) : Epi (X.residue x) :=
 /-- If `K` is a field and `f : 𝒪_{X, x} ⟶ K` is a ring map, then this is the induced
 map `κ(x) ⟶ K`. -/
 def descResidueField {K : Type u} [Field K] {X : Scheme.{u}} {x : X}
-    (f : X.presheaf.stalk x ⟶ .of K) [IsLocalHom f] :
+    (f : X.presheaf.stalk x ⟶ .of K) [IsLocalHom f.hom] :
     X.residueField x ⟶ .of K :=
-  LocalRing.ResidueField.lift (S := K) f
+  CommRingCat.ofHom (IsLocalRing.ResidueField.lift (S := K) f.hom)
 
 @[reassoc (attr := simp)]
 lemma residue_descResidueField {K : Type u} [Field K] {X : Scheme.{u}} {x}
-    (f : X.presheaf.stalk x ⟶ .of K) [IsLocalHom f] :
+    (f : X.presheaf.stalk x ⟶ .of K) [IsLocalHom f.hom] :
     X.residue x ≫ X.descResidueField f = f :=
-  RingHom.ext fun _ ↦ rfl
+  CommRingCat.hom_ext <| RingHom.ext fun _ ↦ rfl
 
 /--
 If `U` is an open of `X` containing `x`, we have a canonical ring map from the sections
@@ -98,9 +101,12 @@ abbrev Γevaluation (x : X) : Γ(X, ⊤) ⟶ X.residueField x :=
   X.evaluation ⊤ x trivial
 
 @[simp]
-lemma evaluation_eq_zero_iff_not_mem_basicOpen (x : X) (hx : x ∈ U) (f : Γ(X, U)) :
+lemma evaluation_eq_zero_iff_notMem_basicOpen (x : X) (hx : x ∈ U) (f : Γ(X, U)) :
     X.evaluation U x hx f = 0 ↔ x ∉ X.basicOpen f :=
-  X.toLocallyRingedSpace.evaluation_eq_zero_iff_not_mem_basicOpen ⟨x, hx⟩ f
+  X.toLocallyRingedSpace.evaluation_eq_zero_iff_notMem_basicOpen ⟨x, hx⟩ f
+
+@[deprecated (since := "2025-05-23")]
+alias evaluation_eq_zero_iff_not_mem_basicOpen := evaluation_eq_zero_iff_notMem_basicOpen
 
 lemma evaluation_ne_zero_iff_mem_basicOpen (x : X) (hx : x ∈ U) (f : Γ(X, U)) :
     X.evaluation U x hx f ≠ 0 ↔ x ∈ X.basicOpen f := by
@@ -116,7 +122,7 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 a morphism of residue fields in the other direction. -/
 def Hom.residueFieldMap (f : X.Hom Y) (x : X) :
     Y.residueField (f.base x) ⟶ X.residueField x :=
-  LocalRing.ResidueField.map (f.stalkMap x)
+  CommRingCat.ofHom <| IsLocalRing.ResidueField.map (f.stalkMap x).hom
 
 @[reassoc]
 lemma residue_residueFieldMap (x : X) :
@@ -157,7 +163,7 @@ lemma Γevaluation_naturality_apply (x : X) (a : Y.presheaf.obj (op ⊤)) :
   LocallyRingedSpace.Γevaluation_naturality_apply f.toLRSHom x a
 
 instance [IsOpenImmersion f] (x) : IsIso (f.residueFieldMap x) :=
-  (LocalRing.ResidueField.mapEquiv
+  (IsLocalRing.ResidueField.mapEquiv
     (asIso (f.stalkMap x)).commRingCatIsoToRingEquiv).toCommRingCatIso.isIso_hom
 
 section congr
@@ -221,7 +227,7 @@ instance {X : Scheme.{u}} (x : X) : IsPreimmersion (X.fromSpecResidueField x) :=
 @[simps] noncomputable
 instance (x : X) : (Spec (X.residueField x)).Over X := ⟨X.fromSpecResidueField x⟩
 
-@[simps! over] noncomputable
+noncomputable
 instance (x : X) : (Spec (X.residueField x)).CanonicallyOver X where
 
 @[reassoc (attr := simp)]
@@ -259,16 +265,17 @@ lemma range_fromSpecResidueField (x : X.carrier) :
     exact ⟨closedPoint (X.residueField x), rfl⟩
 
 lemma descResidueField_fromSpecResidueField {K : Type*} [Field K] (X : Scheme) {x}
-    (f : X.presheaf.stalk x ⟶ .of K) [IsLocalHom f] :
+    (f : X.presheaf.stalk x ⟶ .of K) [IsLocalHom f.hom] :
     Spec.map (X.descResidueField f) ≫
       X.fromSpecResidueField x = Spec.map f ≫ X.fromSpecStalk x := by
   simp [fromSpecResidueField, ← Spec.map_comp_assoc]
 
 lemma descResidueField_stalkClosedPointTo_fromSpecResidueField
     (K : Type u) [Field K] (X : Scheme.{u}) (f : Spec (.of K) ⟶ X) :
-    Spec.map (X.descResidueField (Scheme.stalkClosedPointTo f)) ≫
+    Spec.map (@descResidueField (CommRingCat.of K) _ X _ (Scheme.stalkClosedPointTo f)
+        _) ≫
       X.fromSpecResidueField (f.base (closedPoint K)) = f := by
-  erw [X.descResidueField_fromSpecResidueField]
+  rw [X.descResidueField_fromSpecResidueField]
   rw [Scheme.Spec_stalkClosedPointTo_fromSpecStalk]
 
 end fromResidueField

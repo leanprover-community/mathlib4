@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Order.AbsoluteValue
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Algebra.Ring.Pi
@@ -31,11 +31,7 @@ This is a concrete implementation that is useful for simplicity and computabilit
 sequence, cauchy, abs val, absolute value
 -/
 
-assert_not_exists Finset
-assert_not_exists Module
-assert_not_exists Submonoid
-assert_not_exists FloorRing
-assert_not_exists Module
+assert_not_exists Finset Module Submonoid FloorRing
 
 variable {α β : Type*}
 
@@ -43,7 +39,8 @@ open IsAbsoluteValue
 
 section
 
-variable [LinearOrderedField α] [Ring β] (abv : β → α) [IsAbsoluteValue abv]
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] [Ring β]
+  (abv : β → α) [IsAbsoluteValue abv]
 
 theorem rat_add_continuous_lemma {ε : α} (ε0 : 0 < ε) :
     ∃ δ > 0, ∀ {a₁ a₂ b₁ b₂ : β}, abv (a₁ - b₁) < δ → abv (a₂ - b₂) < δ →
@@ -79,17 +76,21 @@ theorem rat_inv_continuous_lemma {β : Type*} [DivisionRing β] (abv : β → α
   rw [mul_assoc, inv_mul_cancel_right₀ b0.ne', ← mul_assoc, mul_inv_cancel₀ a0.ne', one_mul]
   refine h.trans_le ?_
   gcongr
+  exact mul_nonneg a0.le ε0.le
 
 end
 
 /-- A sequence is Cauchy if the distance between its entries tends to zero. -/
-def IsCauSeq {α : Type*} [LinearOrderedField α] {β : Type*} [Ring β] (abv : β → α) (f : ℕ → β) :
+@[nolint unusedArguments]
+def IsCauSeq {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+    {β : Type*} [Ring β] (abv : β → α) (f : ℕ → β) :
     Prop :=
   ∀ ε > 0, ∃ i, ∀ j ≥ i, abv (f j - f i) < ε
 
 namespace IsCauSeq
 
-variable [LinearOrderedField α] [Ring β] {abv : β → α} [IsAbsoluteValue abv] {f g : ℕ → β}
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] [Ring β]
+  {abv : β → α} [IsAbsoluteValue abv] {f g : ℕ → β}
 
 -- see Note [nolint_ge]
 --@[nolint ge_or_gt] -- Porting note: restore attribute
@@ -151,12 +152,13 @@ end IsCauSeq
 
 /-- `CauSeq β abv` is the type of `β`-valued Cauchy sequences, with respect to the absolute value
 function `abv`. -/
-def CauSeq {α : Type*} [LinearOrderedField α] (β : Type*) [Ring β] (abv : β → α) : Type _ :=
+def CauSeq {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+    (β : Type*) [Ring β] (abv : β → α) : Type _ :=
   { f : ℕ → β // IsCauSeq abv f }
 
 namespace CauSeq
 
-variable [LinearOrderedField α]
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 
 section Ring
 
@@ -164,11 +166,6 @@ variable [Ring β] {abv : β → α}
 
 instance : CoeFun (CauSeq β abv) fun _ => ℕ → β :=
   ⟨Subtype.val⟩
-
--- Porting note: Remove coeFn theorem
-/-@[simp]
-theorem mk_to_fun (f) (hf : IsCauSeq abv f) : @coeFn (CauSeq β abv) _ _ ⟨f, hf⟩ = f :=
-  rfl -/
 
 @[ext]
 theorem ext {f g : CauSeq β abv} (h : ∀ i, f i = g i) : f = g := Subtype.eq (funext h)
@@ -209,12 +206,9 @@ theorem coe_add (f g : CauSeq β abv) : ⇑(f + g) = (f : ℕ → β) + g :=
 theorem add_apply (f g : CauSeq β abv) (i : ℕ) : (f + g) i = f i + g i :=
   rfl
 
-variable (abv)
-
+variable (abv) in
 /-- The constant Cauchy sequence. -/
 def const (x : β) : CauSeq β abv := ⟨fun _ ↦ x, IsCauSeq.const _⟩
-
-variable {abv}
 
 /-- The constant Cauchy sequence -/
 local notation "const" => const abv
@@ -408,7 +402,7 @@ theorem zero_limZero : LimZero (0 : CauSeq β abv)
 theorem const_limZero {x : β} : LimZero (const x) ↔ x = 0 :=
   ⟨fun H =>
     (abv_eq_zero abv).1 <|
-      (eq_of_le_of_forall_le_of_dense (abv_nonneg abv _)) fun _ ε0 =>
+      (eq_of_le_of_forall_lt_imp_le_of_dense (abv_nonneg abv _)) fun _ ε0 =>
         let ⟨_, hi⟩ := H _ ε0
         le_of_lt <| hi _ le_rfl,
     fun e => e.symm ▸ zero_limZero⟩
@@ -446,7 +440,7 @@ theorem abv_pos_of_not_limZero {f : CauSeq β abv} (hf : ¬LimZero f) :
   simp? [not_forall] at nk says
     simp only [gt_iff_lt, ge_iff_le, not_exists, not_and, not_forall, Classical.not_imp,
       not_le] at nk
-  cases' f.cauchy₃ (half_pos ε0) with i hi
+  obtain ⟨i, hi⟩ := f.cauchy₃ (half_pos ε0)
   rcases nk _ (half_pos ε0) i with ⟨j, ij, hj⟩
   refine ⟨j, fun k jk => ?_⟩
   have := lt_of_le_of_lt (abv_add abv _ _) (add_lt_add (hi j ij k jk) hj)
@@ -457,7 +451,7 @@ theorem of_near (f : ℕ → β) (g : CauSeq β abv) (h : ∀ ε > 0, ∃ i, ∀
   | ε, ε0 =>
     let ⟨i, hi⟩ := exists_forall_ge_and (h _ (half_pos <| half_pos ε0)) (g.cauchy₃ <| half_pos ε0)
     ⟨i, fun j ij => by
-      cases' hi _ le_rfl with h₁ h₂; rw [abv_sub abv] at h₁
+      obtain ⟨h₁, h₂⟩ := hi _ le_rfl; rw [abv_sub abv] at h₁
       have := lt_of_le_of_lt (abv_add abv _ _) (add_lt_add (hi _ ij).1 h₁)
       have := lt_of_le_of_lt (abv_add abv _ _) (add_lt_add this (h₂ _ ij))
       rwa [add_halves, add_halves, add_right_comm, sub_add_sub_cancel, sub_add_sub_cancel] at this⟩
@@ -485,12 +479,12 @@ theorem mul_not_equiv_zero {f g : CauSeq _ abv} (hf : ¬f ≈ 0) (hg : ¬g ≈ 0
   rcases abv_pos_of_not_limZero hf' with ⟨a1, ha1, N1, hN1⟩
   rcases abv_pos_of_not_limZero hg' with ⟨a2, ha2, N2, hN2⟩
   have : 0 < a1 * a2 := mul_pos ha1 ha2
-  cases' hlz _ this with N hN
+  obtain ⟨N, hN⟩ := hlz _ this
   let i := max N (max N1 N2)
   have hN' := hN i (le_max_left _ _)
   have hN1' := hN1 i (le_trans (le_max_left _ _) (le_max_right _ _))
   have hN1' := hN2 i (le_trans (le_max_right _ _) (le_max_right _ _))
-  apply not_le_of_lt hN'
+  apply not_le_of_gt hN'
   change _ ≤ abv (_ * _)
   rw [abv_mul abv]
   gcongr
@@ -500,16 +494,8 @@ theorem const_equiv {x y : β} : const x ≈ const y ↔ x = y :=
 
 theorem mul_equiv_mul {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 ≈ g2) :
     f1 * g1 ≈ f2 * g2 := by
-  change LimZero (f1 * g1 - f2 * g2)
-  convert add_limZero (mul_limZero_left g1 hf) (mul_limZero_right f2 hg) using 1
-  rw [mul_sub, sub_mul]
-  -- Porting note: doesn't work with `rw`, but did in Lean 3
-  exact (sub_add_sub_cancel (f1*g1) (f2*g1) (f2*g2)).symm
-  -- Porting note: was
-  /-
-  simpa only [mul_sub, sub_mul, sub_add_sub_cancel] using
-    add_lim_zero (mul_limZero_left g1 hf) (mul_limZero_right f2 hg)
-  -/
+  simpa only [mul_sub, sub_mul, sub_add_sub_cancel]
+    using add_limZero (mul_limZero_left g1 hf) (mul_limZero_right f2 hg)
 
 theorem smul_equiv_smul {G : Type*} [SMul G β] [IsScalarTower G β β] {f1 f2 : CauSeq β abv} (c : G)
     (hf : f1 ≈ f2) : c • f1 ≈ c • f2 := by
@@ -593,7 +579,7 @@ theorem not_limZero_of_pos {f : CauSeq α abs} : Pos f → ¬LimZero f
   | ⟨_, F0, hF⟩, H =>
     let ⟨_, h⟩ := exists_forall_ge_and hF (H _ F0)
     let ⟨h₁, h₂⟩ := h _ le_rfl
-    not_lt_of_le h₁ (abs_lt.1 h₂).2
+    not_lt_of_ge h₁ (abs_lt.1 h₂).2
 
 theorem const_pos {x : α} : Pos (const x) ↔ 0 < x :=
   ⟨fun ⟨_, K0, _, h⟩ => lt_of_lt_of_le K0 (h _ le_rfl), fun h => ⟨x, h, 0, fun _ _ => le_rfl⟩⟩
@@ -609,7 +595,7 @@ theorem pos_add_limZero {f g : CauSeq α abs} : Pos f → LimZero g → Pos (f +
   | ⟨F, F0, hF⟩, H =>
     let ⟨i, h⟩ := exists_forall_ge_and hF (H _ (half_pos F0))
     ⟨_, half_pos F0, i, fun j ij => by
-      cases' h j ij with h₁ h₂
+      obtain ⟨h₁, h₂⟩ := h j ij
       have := add_le_add h₁ (le_of_lt (abs_lt.1 h₂).1)
       rwa [← sub_eq_add_neg, sub_self_div_two] at this⟩
 
@@ -621,13 +607,13 @@ protected theorem mul_pos {f g : CauSeq α abs} : Pos f → Pos g → Pos (f * g
       mul_le_mul h₁ h₂ (le_of_lt G0) (le_trans (le_of_lt F0) h₁)⟩
 
 theorem trichotomy (f : CauSeq α abs) : Pos f ∨ LimZero f ∨ Pos (-f) := by
-  cases' Classical.em (LimZero f) with h h <;> simp [*]
+  rcases Classical.em (LimZero f) with h | h <;> simp [*]
   rcases abv_pos_of_not_limZero h with ⟨K, K0, hK⟩
   rcases exists_forall_ge_and hK (f.cauchy₃ K0) with ⟨i, hi⟩
   refine (le_total 0 (f i)).imp ?_ ?_ <;>
     refine fun h => ⟨K, K0, i, fun j ij => ?_⟩ <;>
     have := (hi _ ij).1 <;>
-    cases' hi _ le_rfl with h₁ h₂
+    obtain ⟨h₁, h₂⟩ := hi _ le_rfl
   · rwa [abs_of_nonneg] at this
     rw [abs_of_nonneg h] at h₁
     exact
@@ -677,12 +663,12 @@ instance : Preorder (CauSeq α abs) where
     | Or.inl fg, Or.inr gh => Or.inl <| lt_of_lt_of_eq fg gh
     | Or.inr fg, Or.inl gh => Or.inl <| lt_of_eq_of_lt fg gh
     | Or.inr fg, Or.inr gh => Or.inr <| Setoid.trans fg gh
-  lt_iff_le_not_le _ _ :=
+  lt_iff_le_not_ge _ _ :=
     ⟨fun h => ⟨Or.inl h, not_or_intro (mt (lt_trans h) lt_irrefl) (not_limZero_of_pos h)⟩,
       fun ⟨h₁, h₂⟩ => h₁.resolve_right (mt (fun h => Or.inr (Setoid.symm h)) h₂)⟩
 
 theorem le_antisymm {f g : CauSeq α abs} (fg : f ≤ g) (gf : g ≤ f) : f ≈ g :=
-  fg.resolve_left (not_lt_of_le gf)
+  fg.resolve_left (not_lt_of_ge gf)
 
 theorem lt_total (f g : CauSeq α abs) : f < g ∨ f ≈ g ∨ g < f :=
   (trichotomy (g - f)).imp_right fun h =>
@@ -845,8 +831,8 @@ protected theorem inf_le_right {a b : CauSeq α abs} : a ⊓ b ≤ b :=
   le_of_exists ⟨0, fun _ _ => inf_le_right⟩
 
 protected theorem sup_le {a b c : CauSeq α abs} (ha : a ≤ c) (hb : b ≤ c) : a ⊔ b ≤ c := by
-  cases' ha with ha ha
-  · cases' hb with hb hb
+  obtain ha | ha := ha
+  · obtain hb | hb := hb
     · exact Or.inl (CauSeq.sup_lt ha hb)
     · replace ha := le_of_le_of_eq ha.le (Setoid.symm hb)
       refine le_of_le_of_eq (Or.inr ?_) hb
@@ -856,8 +842,8 @@ protected theorem sup_le {a b c : CauSeq α abs} (ha : a ≤ c) (hb : b ≤ c) :
     exact CauSeq.sup_eq_left hb
 
 protected theorem le_inf {a b c : CauSeq α abs} (hb : a ≤ b) (hc : a ≤ c) : a ≤ b ⊓ c := by
-  cases' hb with hb hb
-  · cases' hc with hc hc
+  obtain hb | hb := hb
+  · obtain hc | hc := hc
     · exact Or.inl (CauSeq.lt_inf hb hc)
     · replace hb := le_of_eq_of_le (Setoid.symm hc) hb.le
       refine le_of_eq_of_le hc (Or.inr ?_)

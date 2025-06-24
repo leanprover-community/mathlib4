@@ -68,15 +68,12 @@ theorem embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSub
         apply_rules [add_le_add_left, le_abs_self]
       _ ≤ 2 * (e / 2) + |embeddingOfSubset x b n - embeddingOfSubset x a n| := by
         rw [C]
-        apply_rules [add_le_add, mul_le_mul_of_nonneg_left, hn.le, le_refl]
-        norm_num
+        gcongr
       _ ≤ 2 * (e / 2) + dist (embeddingOfSubset x b) (embeddingOfSubset x a) := by
-        have : |embeddingOfSubset x b n - embeddingOfSubset x a n| ≤
-            dist (embeddingOfSubset x b) (embeddingOfSubset x a) := by
-          simp only [dist_eq_norm]
-          exact lp.norm_apply_le_norm ENNReal.top_ne_zero
-            (embeddingOfSubset x b - embeddingOfSubset x a) n
-        nlinarith
+        gcongr
+        simp only [dist_eq_norm]
+        exact lp.norm_apply_le_norm ENNReal.top_ne_zero
+          (embeddingOfSubset x b - embeddingOfSubset x a) n
       _ = dist (embeddingOfSubset x b) (embeddingOfSubset x a) + e := by ring
   simpa [dist_comm] using this
 
@@ -96,7 +93,7 @@ theorem exists_isometric_embedding (α : Type u) [MetricSpace α] [SeparableSpac
 
 end KuratowskiEmbedding
 
-open TopologicalSpace KuratowskiEmbedding
+open KuratowskiEmbedding
 
 /-- The Kuratowski embedding is an isometric embedding of a separable metric space in `ℓ^∞(ℕ, ℝ)`.
 -/

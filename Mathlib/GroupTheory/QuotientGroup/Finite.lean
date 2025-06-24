@@ -6,6 +6,7 @@ Authors: Kevin Buzzard, Patrick Massot
 -- This file is to a certain extent based on `quotient_module.lean` by Johannes Hölzl.
 
 import Mathlib.Algebra.Group.Subgroup.Finite
+import Mathlib.Data.Finite.Prod
 import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
@@ -19,13 +20,12 @@ universe u v w x
 
 namespace Group
 
-open scoped Classical
-
 open QuotientGroup Subgroup
 
 variable {F G H : Type u} [Group F] [Group G] [Group H] [Fintype F] [Fintype H]
 variable (f : F →* G) (g : G →* H)
 
+open scoped Classical in
 /-- If `F` and `H` are finite such that `ker(G →* H) ≤ im(F →* G)`, then `G` is finite. -/
 @[to_additive "If `F` and `H` are finite such that `ker(G →+ H) ≤ im(F →+ G)`, then `G` is finite."]
 noncomputable def fintypeOfKerLeRange (h : g.ker ≤ f.range) : Fintype G :=

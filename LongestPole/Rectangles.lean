@@ -43,8 +43,8 @@ We say `r₁ ≤ r₂` if and only if every point in `r₁` is contained in `r�
 instance instLE : LE Rectangle where
   le r₁ r₂ := r₁.width = 0 ∨ r₁.height = 0 ∨ ((r₁.left, r₁.bottom) ∈ r₂ ∧ (r₁.right - 1, r₁.top - 1) ∈ r₂)
 
-instance : DecidableRel ((· : Rectangle) ≤ ·) := by
-  dsimp [LE.le, instLE]
+instance : DecidableLE Rectangle := by
+  dsimp [DecidableLE, LE.le, instLE]
   infer_instance
 
 instance : Membership Rectangle (List (Nat × Nat)) where
@@ -70,8 +70,9 @@ def area (r : Rectangle) : Nat := r.width * r.height
 The number of points in `r`, weighted by the function `w`.
 -/
 def weightedArea (r : Rectangle) (w : Nat × Nat → Nat) : Nat :=
-  Nat.sum <|
-    (List.range' r.left r.width).bind fun x => (List.range' r.bottom r.height).map fun y => w (x, y)
+  List.sum <|
+    (List.range' r.left r.width).flatMap
+      fun x => (List.range' r.bottom r.height).map fun y => w (x, y)
 
 end Rectangle
 

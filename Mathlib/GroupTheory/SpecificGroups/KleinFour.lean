@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen
 -/
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
-import Mathlib.GroupTheory.SpecificGroups.Dihedral
 
 /-!
 # Klein Four Group
@@ -60,24 +59,20 @@ instance : IsAddKleinFour (ZMod 2 × ZMod 2) where
   card_four := by simp
   exponent_two := by simp [AddMonoid.exponent_prod]
 
-instance : IsKleinFour (DihedralGroup 2) where
-  card_four := by simp only [Nat.card_eq_fintype_card]; rfl
-  exponent_two := by simp [DihedralGroup.exponent]
-
-instance {G : Type*} [Group G] [IsKleinFour G] :
-    IsAddKleinFour (Additive G) where
+instance {G : Type*} [Group G] [IsKleinFour G] : IsAddKleinFour (Additive G) where
   card_four := by rw [← IsKleinFour.card_four (G := G)]; congr!
   exponent_two := by simp
 
-instance {G : Type*} [AddGroup G] [IsAddKleinFour G] :
-    IsKleinFour (Multiplicative G) where
+instance {G : Type*} [AddGroup G] [IsAddKleinFour G] : IsKleinFour (Multiplicative G) where
   card_four := by rw [← IsAddKleinFour.card_four (G := G)]; congr!
   exponent_two := by simp
 
 namespace IsKleinFour
 
+/-- This instance is scoped, because it always applies (which makes linting and typeclass inference
+potentially *a lot* slower). -/
 @[to_additive]
-instance instFinite {G : Type*} [Group G] [IsKleinFour G] : Finite G :=
+scoped instance instFinite {G : Type*} [Group G] [IsKleinFour G] : Finite G :=
   Nat.finite_of_card_ne_zero <| by norm_num [IsKleinFour.card_four]
 
 @[to_additive (attr := simp)]
@@ -90,8 +85,8 @@ open Finset
 variable {G : Type*} [Group G] [IsKleinFour G]
 
 @[to_additive]
-lemma not_isCyclic : ¬ IsCyclic G :=
-  fun h ↦ by let _inst := Fintype.ofFinite G; simpa using h.exponent_eq_card
+lemma not_isCyclic : ¬IsCyclic G :=
+  fun h ↦ by simpa using h.exponent_eq_card
 
 @[to_additive]
 lemma inv_eq_self (x : G) : x⁻¹ = x := inv_eq_self_of_exponent_two (by simp) x
@@ -111,16 +106,16 @@ lemma eq_finset_univ [Fintype G] [DecidableEq G]
     {x y : G} (hx : x ≠ 1) (hy : y ≠ 1) (hxy : x ≠ y) : {x * y, x, y, (1 : G)} = Finset.univ := by
   apply Finset.eq_univ_of_card
   rw [card_four']
-  repeat rw [card_insert_of_not_mem]
-  on_goal 4 => simpa using mul_not_mem_of_exponent_two (by simp) hx hy hxy
-  all_goals aesop
+  repeat rw [card_insert_of_notMem]
+  on_goal 4 => simpa using mul_notMem_of_exponent_two (by simp) hx hy hxy
+  all_goals simp_all
 
 @[to_additive]
 lemma eq_mul_of_ne_all {x y z : G} (hx : x ≠ 1)
     (hy : y ≠ 1) (hxy : x ≠ y) (hz : z ≠ 1) (hzx : z ≠ x) (hzy : z ≠ y) : z = x * y := by
   classical
   let _ := Fintype.ofFinite G
-  apply eq_of_mem_insert_of_not_mem <| (eq_finset_univ hx hy hxy).symm ▸ mem_univ _
+  apply eq_of_mem_insert_of_notMem <| (eq_finset_univ hx hy hxy).symm ▸ mem_univ _
   simpa only [mem_singleton, mem_insert, not_or] using ⟨hzx, hzy, hz⟩
 
 variable {G₁ G₂ : Type*} [Group G₁] [Group G₂] [IsKleinFour G₁]
@@ -146,8 +141,8 @@ def mulEquiv' (e : G₁ ≃ G₂) (he : e 1 = 1) (h : Monoid.exponent G₂ = 2) 
       rw [← Ne, ← e.injective.ne_iff] at hx hy hxy
       rw [he] at hx hy
       symm
-      apply eq_of_mem_insert_of_not_mem <| univ₂.symm ▸ mem_univ _
-      simpa using mul_not_mem_of_exponent_two h hx hy hxy
+      apply eq_of_mem_insert_of_notMem <| univ₂.symm ▸ mem_univ _
+      simpa using mul_notMem_of_exponent_two h hx hy hxy
 
 /-- Any two `IsKleinFour` groups are isomorphic via any equivalence which sends the identity of one
 group to the identity of the other. -/

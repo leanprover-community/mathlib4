@@ -25,7 +25,7 @@ open Elab Meta
 Return the modifiers of declaration `nm` with (optional) docstring `newDoc`.
 Currently, recursive or partial definitions are not supported, and no attributes are provided.
 -/
-def toModifiers (nm : Name) (newDoc : Option String := none) :
+def toModifiers (nm : Name) (newDoc : Option (TSyntax `Lean.Parser.Command.docComment) := none) :
     CoreM Modifiers := do
   let env ← getEnv
   let d ← getConstInfo nm
@@ -50,7 +50,8 @@ You can provide a new type, value and (optional) docstring, but the remaining in
 from `nm`.
 Currently only implemented for definitions and theorems. Also see docstring of `toModifiers`
 -/
-def toPreDefinition (nm newNm : Name) (newType newValue : Expr) (newDoc : Option String := none) :
+def toPreDefinition (nm newNm : Name) (newType newValue : Expr)
+    (newDoc : Option (TSyntax `Lean.Parser.Command.docComment) := none) :
     CoreM PreDefinition := do
   let d ← getConstInfo nm
   let mods ← toModifiers nm newDoc
@@ -71,11 +72,12 @@ def setProtected {m : Type → Type} [MonadEnv m] (nm : Name) : m Unit :=
 
 /-- Introduce variables, giving them names from a specified list. -/
 def MVarId.introsWithBinderIdents
-    (g : MVarId) (ids : List (TSyntax ``binderIdent)) :
+    (g : MVarId) (ids : List (TSyntax ``binderIdent)) (maxIntros? : Option Nat := none) :
     MetaM (List (TSyntax ``binderIdent) × Array FVarId × MVarId) := do
   let type ← g.getType
   let type ← instantiateMVars type
   let n := getIntrosSize type
+  let n := match maxIntros? with | none => n | some maxIntros => min n maxIntros
   if n == 0 then
     return (ids, #[], g)
   let mut ids := ids
@@ -190,8 +192,8 @@ def allGoals (tac : TacticM Unit) : TacticM Unit := do
           throw ex
   setGoals mvarIdsNew.toList
 
-/-- Simulates the `<;>` tactic combinator. First runs `tac1` and then runs
-    `tac2` on all newly-generated subgoals.
+/-- Simulates the `<;>` tactic combinator.
+First runs `tac1` and then runs `tac2` on all newly-generated subgoals.
 -/
 def andThenOnSubgoals (tac1 : TacticM Unit) (tac2 : TacticM Unit) : TacticM Unit :=
   focus do tac1; allGoals tac2
@@ -248,7 +250,7 @@ open Lean
 
 /-- Returns the root directory which contains the package root file, e.g. `Mathlib.lean`. -/
 def getPackageDir (pkg : String) : IO System.FilePath := do
-  let sp ← initSrcSearchPath
+  let sp ← getSrcSearchPath
   let root? ← sp.findM? fun p =>
     (p / pkg).isDir <||> ((p / pkg).withExtension "lean").pathExists
   if let some root := root? then return root

@@ -59,9 +59,6 @@ theorem measure_limsup_atTop_eq_zero {s : ℕ → Set α} (hs : ∑' i, μ (s i)
     μ (limsup s atTop) = 0 := by
   rw [← Nat.cofinite_eq_atTop, measure_limsup_cofinite_eq_zero hs]
 
-@[deprecated (since := "2024-09-01")]
-alias measure_limsup_eq_zero := measure_limsup_atTop_eq_zero
-
 /-- One direction of the **Borel-Cantelli lemma**
 (sometimes called the "*first* Borel-Cantelli lemma"):
 if `(s i)` is a countable family of sets such that `∑' i, μ (s i)` is finite,
@@ -82,11 +79,13 @@ theorem measure_setOf_frequently_eq_zero {p : ℕ → α → Prop} (hp : ∑' i,
 
 /-- A version of the **Borel-Cantelli lemma**: if `sᵢ` is a sequence of sets such that
 `∑' i, μ sᵢ` is finite, then for almost all `x`, `x` does not belong to `sᵢ` for large `i`. -/
-theorem ae_eventually_not_mem {s : ℕ → Set α} (hs : (∑' i, μ (s i)) ≠ ∞) :
+theorem ae_eventually_notMem {s : ℕ → Set α} (hs : (∑' i, μ (s i)) ≠ ∞) :
     ∀ᵐ x ∂μ, ∀ᶠ n in atTop, x ∉ s n :=
   measure_setOf_frequently_eq_zero hs
 
-theorem measure_liminf_cofinite_eq_zero [Infinite ι]  {s : ι → Set α} (h : ∑' i, μ (s i) ≠ ∞) :
+@[deprecated (since := "2025-05-23")] alias ae_eventually_not_mem := ae_eventually_notMem
+
+theorem measure_liminf_cofinite_eq_zero [Infinite ι] {s : ι → Set α} (h : ∑' i, μ (s i) ≠ ∞) :
     μ (liminf s cofinite) = 0 := by
   rw [← le_zero_iff, ← measure_limsup_cofinite_eq_zero h]
   exact measure_mono liminf_le_limsup
@@ -96,14 +95,14 @@ theorem measure_liminf_atTop_eq_zero {s : ℕ → Set α} (h : (∑' i, μ (s i)
   rw [← Nat.cofinite_eq_atTop, measure_liminf_cofinite_eq_zero h]
 
 -- TODO: the next 2 lemmas are true for any filter with countable intersections, not only `ae`.
--- Need to specify `α := Set α` below because of diamond; see #19041
+-- Need to specify `α := Set α` below because of diamond; see https://github.com/leanprover-community/mathlib4/pull/19041
 theorem limsup_ae_eq_of_forall_ae_eq (s : ℕ → Set α) {t : Set α}
     (h : ∀ n, s n =ᵐ[μ] t) : limsup (α := Set α) s atTop =ᵐ[μ] t := by
   simp only [eventuallyEq_set, ← eventually_countable_forall] at h
   refine eventuallyEq_set.2 <| h.mono fun x hx ↦ ?_
   simp [mem_limsup_iff_frequently_mem, hx]
 
--- Need to specify `α := Set α` above because of diamond; see #19041
+-- Need to specify `α := Set α` above because of diamond; see https://github.com/leanprover-community/mathlib4/pull/19041
 theorem liminf_ae_eq_of_forall_ae_eq (s : ℕ → Set α) {t : Set α}
     (h : ∀ n, s n =ᵐ[μ] t) : liminf (α := Set α) s atTop =ᵐ[μ] t := by
   simp only [eventuallyEq_set, ← eventually_countable_forall] at h

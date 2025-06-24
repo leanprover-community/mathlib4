@@ -20,11 +20,11 @@ def isOrderedSubsetOf {α} [Inhabited α] [DecidableEq α] (a b : Array α) : Bo
   if a.size > b.size then
     return false
   let mut i := 0
-  for j in [0:b.size] do
+  for h' : j in [0:b.size] do
     if i = a.size then
       break
 
-    if a[i]! = b[j]! then
+    if a[i]! = b[j] then
       i := i+1
 
   if i = a.size then
@@ -35,7 +35,7 @@ def isOrderedSubsetOf {α} [Inhabited α] [DecidableEq α] (a b : Array α) : Bo
 private def letTelescopeImpl {α} (e : Expr) (k : Array Expr → Expr → MetaM α) :
     MetaM α :=
   lambdaLetTelescope e fun xs b ↦ do
-    if let .some i ← xs.findIdxM? (fun x ↦ do pure ¬(← x.fvarId!.isLetVar)) then
+    if let .some i ← xs.findIdxM? (fun x ↦ do pure !(← x.fvarId!.isLetVar)) then
       k xs[0:i] (← mkLambdaFVars xs[i:] b)
     else
       k xs b
@@ -46,13 +46,13 @@ def letTelescope {α n} [MonadControlT MetaM n] [Monad n] (e : Expr)
   map2MetaM (fun k => letTelescopeImpl e k) k
 
 /--
-  Swaps bvars indices `i` and `j`
+Swaps bvars indices `i` and `j`
 
-  NOTE: the indices `i` and `j` do not correspond to the `n` in `bvar n`. Rather
-  they behave like indices in `Expr.lowerLooseBVars`, `Expr.liftLooseBVars`, etc.
+NOTE: the indices `i` and `j` do not correspond to the `n` in `bvar n`. Rather
+they behave like indices in `Expr.lowerLooseBVars`, `Expr.liftLooseBVars`, etc.
 
-  TODO: This has to have a better implementation, but I'm still beyond confused with how bvar
-  indices work
+TODO: This has to have a better implementation, but I'm still beyond confused with how bvar
+indices work
 -/
 def _root_.Lean.Expr.swapBVars (e : Expr) (i j : Nat) : Expr :=
 
@@ -68,12 +68,11 @@ def _root_.Lean.Expr.swapBVars (e : Expr) (i j : Nat) : Expr :=
 For `#[x₁, .., xₙ]` create `(x₁, .., xₙ)`.
 -/
 def mkProdElem (xs : Array Expr) : MetaM Expr := do
-  match xs.size with
+  match h : xs.size with
   | 0 => return default
-  | 1 => return xs[0]!
-  | _ =>
-    let n := xs.size
-    xs[0:n-1].foldrM (init := xs[n-1]!) fun x p => mkAppM ``Prod.mk #[x,p]
+  | 1 => return xs[0]
+  | n + 1 =>
+    xs[0:n].foldrM (init := xs[n]) fun x p => mkAppM ``Prod.mk #[x,p]
 
 /--
 For `(x₀, .., xₙ₋₁)` return `xᵢ` but as a product projection.

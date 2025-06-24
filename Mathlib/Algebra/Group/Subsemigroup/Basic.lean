@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzza
 Amelia Livingston, Yury Kudryashov, Yakov Pechersky
 -/
 import Mathlib.Algebra.Group.Subsemigroup.Defs
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Subsemigroups: `CompleteLattice` structure
@@ -43,12 +43,11 @@ subsemigroup, subsemigroups
 assert_not_exists MonoidWithZero
 
 -- Only needed for notation
-variable {M : Type*} {N : Type*} {A : Type*}
+variable {M : Type*} {N : Type*}
 
 section NonAssoc
 
 variable [Mul M] {s : Set M}
-variable [Add A] {t : Set A}
 
 namespace Subsemigroup
 
@@ -86,7 +85,7 @@ instance : CompleteLattice (Subsemigroup M) :=
     le := (· ≤ ·)
     lt := (· < ·)
     bot := ⊥
-    bot_le := fun _ _ hx => (not_mem_bot hx).elim
+    bot_le := fun _ _ hx => (notMem_bot hx).elim
     top := ⊤
     le_top := fun _ x _ => mem_top x
     inf := (· ⊓ ·)
@@ -110,8 +109,14 @@ theorem mem_closure {x : M} : x ∈ closure s ↔ ∀ S : Subsemigroup M, s ⊆ 
 theorem subset_closure : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 
 @[to_additive]
-theorem not_mem_of_not_mem_closure {P : M} (hP : P ∉ closure s) : P ∉ s := fun h =>
+theorem notMem_of_notMem_closure {P : M} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
+
+@[deprecated (since := "2025-05-23")]
+alias _root_.AddSubsemigroup.not_mem_of_not_mem_closure := AddSubsemigroup.notMem_of_notMem_closure
+
+@[to_additive existing, deprecated (since := "2025-05-23")]
+alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 variable {S}
 
@@ -125,8 +130,8 @@ theorem closure_le : closure s ≤ S ↔ s ⊆ S :=
 
 /-- subsemigroup closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure s ≤ closure t`. -/
-@[to_additive "Additive subsemigroup closure of a set is monotone in its argument: if `s ⊆ t`,
-  then `closure s ≤ closure t`"]
+@[to_additive (attr := gcongr) "Additive subsemigroup closure of a set is monotone in its argument:
+if `s ⊆ t`, then `closure s ≤ closure t`"]
 theorem closure_mono ⦃s t : Set M⦄ (h : s ⊆ t) : closure s ≤ closure t :=
   closure_le.2 <| Subset.trans h subset_closure
 
@@ -149,9 +154,6 @@ theorem closure_induction {p : (x : M) → x ∈ closure s → Prop}
     { carrier := { x | ∃ hx, p x hx }
       mul_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, mul _ _ _ _ hpx hpy⟩ }
   closure_le (S := S) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
-
-@[deprecated closure_induction (since := "2024-10-09")]
-alias closure_induction' := closure_induction
 
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[to_additive (attr := elab_as_elim) "An induction principle for additive closure membership for

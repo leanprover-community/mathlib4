@@ -40,9 +40,9 @@ variable {C : Type*} [Category C] [HasZeroMorphisms C]
 `ι : H ⟶ Q` such that `p` identifies `Q` to the kernel of `f : S.X₁ ⟶ S.X₂`,
 and that `ι` identifies `H` to the kernel of the induced map `g' : Q ⟶ S.X₃` -/
 structure RightHomologyData where
-  /-- a choice of cokernel of `S.f : S.X₁ ⟶ S.X₂`-/
+  /-- a choice of cokernel of `S.f : S.X₁ ⟶ S.X₂` -/
   Q : C
-  /-- a choice of kernel of the induced morphism `S.g' : S.Q ⟶ X₃`-/
+  /-- a choice of kernel of the induced morphism `S.g' : S.Q ⟶ X₃` -/
   H : C
   /-- the projection from `S.X₂` -/
   p : S.X₂ ⟶ Q
@@ -150,7 +150,7 @@ def ofIsLimitKernelFork (hf : S.f = 0) (c : KernelFork S.g) (hc : IsLimit c) :
   wp := by rw [comp_id, hf]
   hp := CokernelCofork.IsColimit.ofId _ hf
   wι := KernelFork.condition _
-  hι := IsLimit.ofIsoLimit hc (Fork.ext (Iso.refl _) (by aesop_cat))
+  hι := IsLimit.ofIsoLimit hc (Fork.ext (Iso.refl _) (by simp))
 
 @[simp] lemma ofIsLimitKernelFork_g' (hf : S.f = 0) (c : KernelFork S.g)
     (hc : IsLimit c) : (ofIsLimitKernelFork S hf c hc).g' = S.g := by
@@ -173,7 +173,7 @@ def ofIsColimitCokernelCofork (hg : S.g = 0) (c : CokernelCofork S.f) (hc : IsCo
   p := c.π
   ι := 𝟙 _
   wp := CokernelCofork.condition _
-  hp := IsColimit.ofIsoColimit hc (Cofork.ext (Iso.refl _) (by aesop_cat))
+  hp := IsColimit.ofIsoColimit hc (Cofork.ext (Iso.refl _) (by simp))
   wι := Cofork.IsColimit.hom_ext hc (by simp [hg])
   hι := KernelFork.IsLimit.ofId _ (Cofork.IsColimit.hom_ext hc (by simp [hg]))
 
@@ -356,7 +356,6 @@ structure RightHomologyMapData where
 namespace RightHomologyMapData
 
 attribute [reassoc (attr := simp)] commp commg' commι
-attribute [nolint simpNF] mk.injEq
 
 /-- The right homology map data associated to the zero morphism between two short complexes. -/
 @[simps]
@@ -482,6 +481,9 @@ variable [S.HasRightHomology]
 /-- The right homology of a short complex,
 given by the `H` field of a chosen right homology data. -/
 noncomputable def rightHomology : C := S.rightHomologyData.H
+
+-- `S.rightHomology` is the simp normal form.
+@[simp] lemma rightHomologyData_H : S.rightHomologyData.H = S.rightHomology := rfl
 
 /-- The "opcycles" of a short complex, given by the `Q` field of a chosen right homology data.
 This is the dual notion to cycles. -/
@@ -965,6 +967,70 @@ noncomputable def cyclesOpIso [S.HasRightHomology] :
     S.op.cycles ≅ Opposite.op S.opcycles :=
   S.rightHomologyData.op.cyclesIso
 
+@[reassoc (attr := simp)]
+lemma opcyclesOpIso_hom_toCycles_op [S.HasLeftHomology] :
+    S.opcyclesOpIso.hom ≫ S.toCycles.op = S.op.fromOpcycles := by
+  dsimp [opcyclesOpIso, toCycles]
+  rw [← cancel_epi S.op.pOpcycles, p_fromOpcycles,
+    RightHomologyData.pOpcycles_comp_opcyclesIso_hom_assoc,
+    LeftHomologyData.op_p, ← op_comp, LeftHomologyData.f'_i, op_g]
+
+@[reassoc (attr := simp)]
+lemma fromOpcycles_op_cyclesOpIso_inv [S.HasRightHomology]:
+    S.fromOpcycles.op ≫ S.cyclesOpIso.inv = S.op.toCycles := by
+  dsimp [cyclesOpIso, fromOpcycles]
+  rw [← cancel_mono S.op.iCycles, assoc, toCycles_i,
+    LeftHomologyData.cyclesIso_inv_comp_iCycles, RightHomologyData.op_i,
+    ← op_comp, RightHomologyData.p_g', op_f]
+
+@[reassoc (attr := simp)]
+lemma op_pOpcycles_opcyclesOpIso_hom [S.HasLeftHomology] :
+    S.op.pOpcycles ≫ S.opcyclesOpIso.hom = S.iCycles.op := by
+  dsimp [opcyclesOpIso]
+  rw [← S.leftHomologyData.op.p_comp_opcyclesIso_inv, assoc,
+    Iso.inv_hom_id, comp_id]
+  rfl
+
+@[reassoc (attr := simp)]
+lemma cyclesOpIso_inv_op_iCycles [S.HasRightHomology] :
+    S.cyclesOpIso.inv ≫ S.op.iCycles = S.pOpcycles.op := by
+  dsimp [cyclesOpIso]
+  rw [← S.rightHomologyData.op.cyclesIso_hom_comp_i, Iso.inv_hom_id_assoc]
+  rfl
+
+@[reassoc]
+lemma opcyclesOpIso_hom_naturality (φ : S₁ ⟶ S₂)
+    [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
+    opcyclesMap (opMap φ) ≫ (S₁.opcyclesOpIso).hom =
+      S₂.opcyclesOpIso.hom ≫ (cyclesMap φ).op := by
+  rw [← cancel_epi S₂.op.pOpcycles, p_opcyclesMap_assoc, opMap_τ₂,
+    op_pOpcycles_opcyclesOpIso_hom, op_pOpcycles_opcyclesOpIso_hom_assoc, ← op_comp,
+    ← op_comp, cyclesMap_i]
+
+@[reassoc]
+lemma opcyclesOpIso_inv_naturality (φ : S₁ ⟶ S₂)
+    [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
+    (cyclesMap φ).op ≫ (S₁.opcyclesOpIso).inv =
+      S₂.opcyclesOpIso.inv ≫ opcyclesMap (opMap φ) := by
+  rw [← cancel_epi (S₂.opcyclesOpIso.hom), Iso.hom_inv_id_assoc,
+    ← opcyclesOpIso_hom_naturality_assoc, Iso.hom_inv_id, comp_id]
+
+@[reassoc]
+lemma cyclesOpIso_inv_naturality (φ : S₁ ⟶ S₂)
+    [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    (opcyclesMap φ).op ≫ (S₁.cyclesOpIso).inv =
+      S₂.cyclesOpIso.inv ≫ cyclesMap (opMap φ) := by
+  rw [← cancel_mono S₁.op.iCycles, assoc, assoc, cyclesOpIso_inv_op_iCycles, cyclesMap_i,
+    cyclesOpIso_inv_op_iCycles_assoc, ← op_comp, p_opcyclesMap, op_comp, opMap_τ₂]
+
+@[reassoc]
+lemma cyclesOpIso_hom_naturality (φ : S₁ ⟶ S₂)
+    [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    cyclesMap (opMap φ) ≫ (S₁.cyclesOpIso).hom =
+      S₂.cyclesOpIso.hom ≫ (opcyclesMap φ).op := by
+  rw [← cancel_mono (S₁.cyclesOpIso).inv, assoc, assoc, Iso.hom_inv_id, comp_id,
+    cyclesOpIso_inv_naturality, Iso.hom_inv_id_assoc]
+
 @[simp]
 lemma leftHomologyMap'_op
     (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
@@ -1078,7 +1144,7 @@ namespace RightHomologyMapData
 /-- This right homology map data expresses compatibilities of the right homology data
 constructed by `RightHomologyData.ofEpiOfIsIsoOfMono` -/
 @[simps]
-def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : RightHomologyData S₁)
+noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : RightHomologyData S₁)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     RightHomologyMapData φ h (RightHomologyData.ofEpiOfIsIsoOfMono φ h) where
   φQ := 𝟙 _
@@ -1224,8 +1290,8 @@ lemma hasKernel [S.HasRightHomology] [HasCokernel S.f] :
   haveI : HasLimit (parallelPair h.g' 0) := ⟨⟨⟨_, h.hι'⟩⟩⟩
   let e : parallelPair (cokernel.desc S.f S.g S.zero) 0 ≅ parallelPair h.g' 0 :=
     parallelPair.ext (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) h.hp)
-      (Iso.refl _) (coequalizer.hom_ext (by simp)) (by aesop_cat)
-  exact hasLimitOfIso e.symm
+      (Iso.refl _) (coequalizer.hom_ext (by simp)) (by simp)
+  exact hasLimit_of_iso e.symm
 
 end HasRightHomology
 

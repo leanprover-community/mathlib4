@@ -11,14 +11,14 @@ import Mathlib.Algebra.Ring.Opposite
 # Module operations on `Mᵐᵒᵖ`
 
 This file contains definitions that build on top of the group action definitions in
-`Mathlib.Algebra.GroupWithZero.Action.Opposite`.
+`Mathlib/Algebra/GroupWithZero/Action/Opposite.lean`.
 -/
 
 assert_not_exists LinearMap
 
 section
 
-variable {R S M : Type*} [Semiring R] [Semiring S] [AddCommMonoid M] [Module S M]
+variable {R M : Type*} [Semiring R] [AddCommMonoid M]
 
 -- see Note [lower instance priority]
 /-- Like `Semiring.toModule`, but multiplies on the right. -/

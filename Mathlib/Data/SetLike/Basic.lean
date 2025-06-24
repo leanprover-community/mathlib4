@@ -70,6 +70,7 @@ While this is equivalent, `SetLike` conveniently uses a carrier set projection d
 subobjects
 -/
 
+assert_not_exists RelIso
 
 /-- A class to indicate that there is a canonical injection between `A` and `Set B`.
 
@@ -91,7 +92,7 @@ Then you should *not* repeat the `outParam` declaration so `SetLike` will supply
 This ensures your subclass will not have issues with synthesis of the `[Mul M]` parameter starting
 before the value of `M` is known.
 -/
-@[notation_class * carrier Simps.findCoercionArgs]
+@[notation_class* carrier Simps.findCoercionArgs]
 class SetLike (A : Type*) (B : outParam Type*) where
   /-- The coercion from a term of a `SetLike` to its corresponding `Set`. -/
   protected coe : A → Set B
@@ -117,7 +118,7 @@ open Lean PrettyPrinter.Delaborator SubExpr
 /-- For terms that match the `CoeSort` instance's body, pretty print as `↥S`
 rather than as `{ x // x ∈ S }`. The discriminating feature is that membership
 uses the `SetLike.instMembership` instance. -/
-@[delab app.Subtype]
+@[app_delab Subtype]
 def delabSubtypeSetLike : Delab := whenPPOption getPPNotation do
   let #[_, .lam n _ body _] := (← getExpr).getAppArgs | failure
   guard <| body.isAppOf ``Membership.mem
@@ -172,8 +173,6 @@ theorem mem_coe {x : B} : x ∈ (p : Set B) ↔ x ∈ p :=
 theorem coe_eq_coe {x y : p} : (x : B) = y ↔ x = y :=
   Subtype.ext_iff_val.symm
 
--- Porting note: this is not necessary anymore due to the way coercions work
-
 @[simp]
 theorem coe_mem (x : p) : (x : B) ∈ p :=
   x.2
@@ -181,7 +180,7 @@ theorem coe_mem (x : p) : (x : B) ∈ p :=
 @[aesop 5% apply (rule_sets := [SetLike])]
 lemma mem_of_subset {s : Set B} (hp : s ⊆ p) {x : B} (hx : x ∈ s) : x ∈ p := hp hx
 
--- Porting note: removed `@[simp]` because `simpNF` linter complained
+@[simp]
 protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rfl
 
 @[simp] lemma setOf_mem_eq (a : A) : {b | b ∈ a} = a := rfl
@@ -212,6 +211,28 @@ theorem exists_of_lt : p < q → ∃ x ∈ q, x ∉ p :=
   Set.exists_of_ssubset
 
 theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
-  rw [lt_iff_le_not_le, not_le_iff_exists]
+  rw [lt_iff_le_not_ge, not_le_iff_exists]
+
+/-- membership is inherited from `Set X` -/
+abbrev instSubtypeSet {X} {p : Set X → Prop} : SetLike {s // p s} X where
+  coe := (↑)
+  coe_injective' := Subtype.val_injective
+
+/-- membership is inherited from `S` -/
+abbrev instSubtype {X S} [SetLike S X] {p : S → Prop} : SetLike {s // p s} X where
+  coe := (↑)
+  coe_injective' := SetLike.coe_injective.comp Subtype.val_injective
+
+section
+
+attribute [local instance] instSubtypeSet instSubtype
+
+@[simp] lemma mem_mk_set {X} {p : Set X → Prop} {U : Set X} {h : p U} {x : X} :
+    x ∈ Subtype.mk U h ↔ x ∈ U := Iff.rfl
+
+@[simp] lemma mem_mk {X S} [SetLike S X] {p : S → Prop} {U : S} {h : p U} {x : X} :
+    x ∈ Subtype.mk U h ↔ x ∈ U := Iff.rfl
+
+end
 
 end SetLike

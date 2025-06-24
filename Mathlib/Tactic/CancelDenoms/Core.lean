@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Tree.Basic
 import Mathlib.Logic.Basic
 import Mathlib.Tactic.NormNum.Core
@@ -64,14 +64,16 @@ theorem pow_subst {α} [CommRing α] {n e1 t1 k l : α} {e2 : ℕ}
 theorem inv_subst {α} [Field α] {n k e : α} (h2 : e ≠ 0) (h3 : n * e = k) :
     k * (e ⁻¹) = n := by rw [← div_eq_mul_inv, ← h3, mul_div_cancel_right₀ _ h2]
 
-theorem cancel_factors_lt {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α}
+theorem cancel_factors_lt {α} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+    {a b ad bd a' b' gcd : α}
     (ha : ad * a = a') (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
     (a < b) = (1 / gcd * (bd * a') < 1 / gcd * (ad * b')) := by
   rw [mul_lt_mul_left, ← ha, ← hb, ← mul_assoc, ← mul_assoc, mul_comm bd, mul_lt_mul_left]
   · exact mul_pos had hbd
   · exact one_div_pos.2 hgcd
 
-theorem cancel_factors_le {α} [LinearOrderedField α] {a b ad bd a' b' gcd : α}
+theorem cancel_factors_le {α} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+    {a b ad bd a' b' gcd : α}
     (ha : ad * a = a') (hb : bd * b = b') (had : 0 < ad) (hbd : 0 < bd) (hgcd : 0 < gcd) :
     (a ≤ b) = (1 / gcd * (bd * a') ≤ 1 / gcd * (ad * b')) := by
   rw [mul_le_mul_left, ← ha, ← hb, ← mul_assoc, ← mul_assoc, mul_comm bd, mul_le_mul_left]
@@ -219,6 +221,10 @@ def deriveThms : List Name :=
 /-- Helper lemma to chain together a `simp` proof and the result of `mkProdPrf`. -/
 theorem derive_trans {α} [Mul α] {a b c d : α} (h : a = b) (h' : c * b = d) : c * a = d := h ▸ h'
 
+/-- Helper lemma to chain together two `simp` proofs and the result of `mkProdPrf`. -/
+theorem derive_trans₂ {α} [Mul α] {a b c d e : α} (h : a = b) (h' : b = c) (h'' : d * c = e) :
+    d * a = e := h ▸ h' ▸ h''
+
 /--
 Given `e`, a term with rational division, produces a natural number `n` and a proof of `n*e = e'`,
 where `e'` has no division. Assumes "well-behaved" division.
@@ -227,18 +233,20 @@ def derive (e : Expr) : MetaM (ℕ × Expr) := do
   trace[CancelDenoms] "e = {e}"
   let eSimp ← simpOnlyNames (config := Simp.neutralConfig) deriveThms e
   trace[CancelDenoms] "e simplified = {eSimp.expr}"
-  let (n, t) := findCancelFactor eSimp.expr
-  let ⟨u, tp, e⟩ ← inferTypeQ' eSimp.expr
+  let eSimpNormNum ← Mathlib.Meta.NormNum.deriveSimp (← Simp.mkContext) false eSimp.expr
+  trace[CancelDenoms] "e norm_num'd = {eSimpNormNum.expr}"
+  let (n, t) := findCancelFactor eSimpNormNum.expr
+  let ⟨u, tp, e⟩ ← inferTypeQ' eSimpNormNum.expr
   let stp : Q(Field $tp) ← synthInstanceQ q(Field $tp)
   try
     have n' := (← mkOfNat tp q(inferInstance) <| mkRawNatLit <| n).1
     let r ← mkProdPrf tp stp n n' t e
     trace[CancelDenoms] "pf : {← inferType r.pf}"
     let pf' ←
-      if let some pfSimp := eSimp.proof? then
-        mkAppM ``derive_trans #[pfSimp, r.pf]
-      else
-        pure r.pf
+      match eSimp.proof?, eSimpNormNum.proof? with
+      | some pfSimp, some pfSimp' => mkAppM ``derive_trans₂ #[pfSimp, pfSimp', r.pf]
+      | some pfSimp, none | none, some pfSimp => mkAppM ``derive_trans #[pfSimp, r.pf]
+      | none, none => pure r.pf
     return (n, pf')
   catch E => do
     throwError "CancelDenoms.derive failed to normalize {e}.\n{E.toMessageData}"
@@ -280,7 +288,9 @@ def cancelDenominatorsInType (h : Expr) : MetaM (Expr × Expr) := do
   have ar := (← mkOfNat α amwo <| mkRawNatLit ar).1
   have gcd := (← mkOfNat α amwo <| mkRawNatLit gcd).1
   let (al_cond, ar_cond, gcd_cond) ← if ord then do
-      let _ ← synthInstanceQ q(LinearOrderedField $α)
+      let _ ← synthInstanceQ q(Field $α)
+      let _ ← synthInstanceQ q(LinearOrder $α)
+      let _ ← synthInstanceQ q(IsStrictOrderedRing $α)
       let al_pos : Q(Prop) := q(0 < $al)
       let ar_pos : Q(Prop) := q(0 < $ar)
       let gcd_pos : Q(Prop) := q(0 < $gcd)

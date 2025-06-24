@@ -31,7 +31,6 @@ notation:50 a " ≡ " b " [ZMOD " n "]" => ModEq n a b
 
 variable {m n a b c d : ℤ}
 
--- Porting note: This instance should be derivable automatically
 instance : Decidable (ModEq n a b) := decEq (a % n) (b % n)
 
 namespace ModEq
@@ -178,11 +177,10 @@ theorem cancel_right_div_gcd (hm : 0 < m) (h : a * c ≡ b * c [ZMOD m]) :
     a ≡ b [ZMOD m / gcd m c] := by
   letI d := gcd m c
   rw [modEq_iff_dvd] at h ⊢
-  -- Porting note: removed `show` due to leanprover-community/mathlib4#3305
   refine Int.dvd_of_dvd_mul_right_of_gcd_one (?_ : m / d ∣ c / d * (b - a)) ?_
-  · rw [mul_comm, ← Int.mul_ediv_assoc (b - a) gcd_dvd_right, Int.sub_mul]
-    exact Int.ediv_dvd_ediv gcd_dvd_left h
-  · rw [gcd_div gcd_dvd_left gcd_dvd_right, natAbs_ofNat,
+  · rw [mul_comm, ← Int.mul_ediv_assoc (b - a) (gcd_dvd_right ..), Int.sub_mul]
+    exact Int.ediv_dvd_ediv (gcd_dvd_left ..) h
+  · rw [gcd_div (gcd_dvd_left ..) (gcd_dvd_right ..), natAbs_natCast,
       Nat.div_self (gcd_pos_of_ne_zero_left c hm.ne')]
 
 /-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c`. -/
@@ -244,24 +242,26 @@ theorem mod_coprime {a b : ℕ} (hab : Nat.Coprime a b) : ∃ y : ℤ, a * y ≡
       _ ≡ 1 [ZMOD ↑b] := by rw [← Nat.gcd_eq_gcd_ab, hgcd]; rfl
       ⟩
 
-theorem exists_unique_equiv (a : ℤ) {b : ℤ} (hb : 0 < b) :
+theorem existsUnique_equiv (a : ℤ) {b : ℤ} (hb : 0 < b) :
     ∃ z : ℤ, 0 ≤ z ∧ z < b ∧ z ≡ a [ZMOD b] :=
   ⟨a % b, emod_nonneg _ (ne_of_gt hb),
     by
-      have : a % b < |b| := emod_lt _ (ne_of_gt hb)
+      have : a % b < |b| := emod_lt_abs _ (ne_of_gt hb)
       rwa [abs_of_pos hb] at this, by simp [ModEq]⟩
 
-theorem exists_unique_equiv_nat (a : ℤ) {b : ℤ} (hb : 0 < b) : ∃ z : ℕ, ↑z < b ∧ ↑z ≡ a [ZMOD b] :=
-  let ⟨z, hz1, hz2, hz3⟩ := exists_unique_equiv a hb
+@[deprecated (since := "2024-12-17")] alias exists_unique_equiv := existsUnique_equiv
+
+theorem existsUnique_equiv_nat (a : ℤ) {b : ℤ} (hb : 0 < b) : ∃ z : ℕ, ↑z < b ∧ ↑z ≡ a [ZMOD b] :=
+  let ⟨z, hz1, hz2, hz3⟩ := existsUnique_equiv a hb
   ⟨z.natAbs, by
     constructor <;> rw [natAbs_of_nonneg hz1] <;> assumption⟩
+
+@[deprecated (since := "2024-12-17")] alias exists_unique_equiv_nat := existsUnique_equiv_nat
 
 theorem mod_mul_right_mod (a b c : ℤ) : a % (b * c) % b = a % b :=
   (mod_modEq _ _).of_mul_right _
 
 theorem mod_mul_left_mod (a b c : ℤ) : a % (b * c) % c = a % c :=
   (mod_modEq _ _).of_mul_left _
-
-@[deprecated (since := "2024-04-02")] alias coe_nat_modEq_iff := natCast_modEq_iff
 
 end Int
