@@ -101,9 +101,9 @@ theorem niven_theta_eq (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos
     ring_nf at *
     linarith
   rcases h with (h|h|h|h|h) <;> [
-    have h₂ := Real.cos_pi ;
-    skip ;
-    have h₂ := Real.cos_pi_div_two ;
-    have h₂ := Real.cos_pi_div_three ;
+    have h₂ := Real.cos_pi;
+    skip;
+    have h₂ := Real.cos_pi_div_two;
+    have h₂ := Real.cos_pi_div_three;
     have h₂ := Real.cos_zero
   ] <;> simp [Real.injOn_cos h_bnd ⟨by positivity, by linarith [pi_nonneg]⟩ (h.trans h₂.symm)]
