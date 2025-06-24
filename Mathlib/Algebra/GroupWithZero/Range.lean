@@ -101,7 +101,7 @@ end MonoidWithZero
 
 noncomputable section GroupWithZero
 
-variable [GroupWithZero A]  [GroupWithZero B] [MonoidWithZeroHomClass F A B] {f}
+variable [GroupWithZero A] [GroupWithZero B] [MonoidWithZeroHomClass F A B] {f}
 
 /- When the *domain* is itself a group with zero, the `valueMonoid` and the `valueGroup` coincide.-/
 lemma valueMonoid_eq_valueGroup : (valueMonoid f) = (valueGroup f).toSubmonoid := by
