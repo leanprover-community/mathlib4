@@ -62,6 +62,7 @@ namespace ValuativeRel
 
 variable {R : Type*} [CommRing R] [ValuativeRel R]
 
+@[simp]
 lemma rel_refl (x : R) : x ≤ᵥ x := by
   cases rel_total x x <;> assumption
 
@@ -139,6 +140,17 @@ def ValueGroup.mk (x : R) (y : unitSubmonoid R) : ValueGroup R :=
   Quotient.mk _ (x, y)
 
 protected
+theorem ValueGroup.sound {x y : R} {t s : unitSubmonoid R}
+    (h₁ : x * s ≤ᵥ y * t) (h₂ : y * t ≤ᵥ x * s) :
+    ValueGroup.mk x t = ValueGroup.mk y s :=
+  Quotient.sound ⟨h₁, h₂⟩
+
+protected
+theorem ValueGroup.ind {motive : ValueGroup R → Prop} (mk : ∀ x y, motive (.mk x y))
+    (t : ValueGroup R) : motive t :=
+  Quotient.ind (fun (x, y) => mk x y) t
+
+protected
 def ValueGroup.lift {α : Sort*} (f : R → unitSubmonoid R → α)
     (hf : ∀ (x y : R) (t s : unitSubmonoid R), x * t ≤ᵥ y * s → y * s ≤ᵥ x * t → f x s = f y t)
     (t : ValueGroup R) : α :=
@@ -169,17 +181,61 @@ def ValueGroup.lift₂_mk {α : Sort*} (f : R → unitSubmonoid R → R → unit
 instance : Zero (ValueGroup R) where
   zero := .mk 0 1
 
+@[simp]
+theorem ValueGroup.mk_zero (x : unitSubmonoid R) : ValueGroup.mk 0 x = 0 :=
+  ValueGroup.sound (by simp) (by simp)
+
 instance : One (ValueGroup R) where
   one := .mk 1 1
 
+@[simp]
+theorem ValueGroup.mk_self (x : unitSubmonoid R) : ValueGroup.mk (x : R) x = 1 :=
+  ValueGroup.sound (by simp) (by simp)
+
 instance : Mul (ValueGroup R) where
-  mul := ValueGroup.lift₂ (fun a b c d => .mk (a * c) (b * d)) sorry
+  mul := ValueGroup.lift₂ (fun a b c d => .mk (a * c) (b * d)) <| by
+    intro x y z w t s u v h₁ h₂ h₃ h₄
+    apply ValueGroup.sound
+    · rw [Submonoid.coe_mul, Submonoid.coe_mul,
+        mul_mul_mul_comm x, mul_mul_mul_comm y]
+      exact rel_mul h₁ h₃
+    · rw [Submonoid.coe_mul, Submonoid.coe_mul,
+        mul_mul_mul_comm x, mul_mul_mul_comm y]
+      exact rel_mul h₂ h₄
+
+@[simp]
+theorem ValueGroup.mk_mul_mk (a b : R) (c d : unitSubmonoid R) :
+    ValueGroup.mk a c * ValueGroup.mk b d = ValueGroup.mk (a * b) (c * d) := rfl
+
+instance : CommMonoidWithZero (ValueGroup R) where
+  mul_assoc a b c := by
+    induction a using ValueGroup.ind
+    induction b using ValueGroup.ind
+    induction c using ValueGroup.ind
+    simp [mul_assoc]
+  one_mul := ValueGroup.ind <| by simp [← ValueGroup.mk_self 1]
+  mul_one := ValueGroup.ind <| by simp [← ValueGroup.mk_self 1]
+  zero_mul := ValueGroup.ind <| fun _ _ => by
+    rw [← ValueGroup.mk_zero 1, ValueGroup.mk_mul_mk]
+    simp
+  mul_zero := ValueGroup.ind <| fun _ _ => by
+    rw [← ValueGroup.mk_zero 1, ValueGroup.mk_mul_mk]
+    simp
+  mul_comm a b := by
+    induction a using ValueGroup.ind
+    induction b using ValueGroup.ind
+    simp [mul_comm]
 
 instance : LE (ValueGroup R) where
-  le := ValueGroup.lift₂ (fun a s b t => a * t ≤ᵥ b * s) sorry
+  le := ValueGroup.lift₂ (fun a s b t => a * t ≤ᵥ b * s) <| by
+    intro x y z w t s u v h₁ h₂ h₃ h₄
+    refine propext ⟨fun h => ?_, fun h => ?_⟩
+    · apply rel_mul_right (t * w) at h
+      sorry
+    · sorry
 
 instance : LinearOrder (ValueGroup R) where
-  le_refl := sorry
+  le_refl := ValueGroup.ind fun _ _ => .rfl
   le_trans := sorry
   le_antisymm := sorry
   le_total := sorry
@@ -194,15 +250,9 @@ theorem ValueGroup.bot_eq_zero : (⊥ : ValueGroup R) = 0 := rfl
 open Classical in
 /-- The value monoid is a linearly ordered commutative monoid with zero. -/
 instance : LinearOrderedCommGroupWithZero (ValueGroup R) where
-  mul_assoc := sorry
-  one_mul := sorry
-  mul_one := sorry
   npow := fun n => Quotient.lift (fun x => Quotient.mk _ <| x^n) sorry
   npow_zero := sorry
   npow_succ := sorry
-  mul_comm := sorry
-  zero_mul := sorry
-  mul_zero := sorry
   mul_le_mul_left := sorry
   mul_le_mul_right := sorry
   bot_le := sorry
