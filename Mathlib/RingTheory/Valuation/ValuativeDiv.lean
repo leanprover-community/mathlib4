@@ -73,6 +73,10 @@ protected alias rel.refl := rel_refl
 
 protected alias rel.rfl := rel_rfl
 
+@[simp]
+theorem zero_rel (x : R) : 0 ≤ᵥ x := by
+  simpa using rel_mul_right x ((rel_total 0 1).resolve_right not_rel_one_zero)
+
 lemma rel_mul_left {x y : R} (z) : x ≤ᵥ y → (z * x) ≤ᵥ (z * y) := by
   rw [mul_comm z x, mul_comm z y]
   apply rel_mul_right
@@ -234,6 +238,10 @@ instance : LE (ValueGroup R) where
       sorry
     · sorry
 
+@[simp]
+theorem ValueGroup.mk_le_mk (x y : R) (t s : unitSubmonoid R) :
+    ValueGroup.mk x t ≤ ValueGroup.mk y s ↔ x * s ≤ᵥ y * t := Iff.rfl
+
 instance : LinearOrder (ValueGroup R) where
   le_refl := ValueGroup.ind fun _ _ => .rfl
   le_trans := sorry
@@ -244,8 +252,12 @@ instance : LinearOrder (ValueGroup R) where
 instance : Bot (ValueGroup R) where
   bot := 0
 
-@[simp]
 theorem ValueGroup.bot_eq_zero : (⊥ : ValueGroup R) = 0 := rfl
+
+instance : OrderBot (ValueGroup R) where
+  bot_le := ValueGroup.ind fun x y => by
+    rw [ValueGroup.bot_eq_zero, ← ValueGroup.mk_zero 1, ValueGroup.mk_le_mk]
+    simp
 
 open Classical in
 /-- The value monoid is a linearly ordered commutative monoid with zero. -/
