@@ -266,9 +266,7 @@ theorem to_iso [h' : Epi f.base] : IsIso f := by
   let t : X ≃ₜ Y := H.base_open.isEmbedding.toHomeomorph.trans
     { toFun := Subtype.val
       invFun := fun x =>
-        ⟨x, by rw [Set.range_eq_univ.mpr ((TopCat.epi_iff_surjective _).mp h')]; trivial⟩
-      left_inv := fun ⟨_, _⟩ => rfl
-      right_inv := fun _ => rfl }
+        ⟨x, by rw [Set.range_eq_univ.mpr ((TopCat.epi_iff_surjective _).mp h')]; trivial⟩ }
   exact (TopCat.isoOfHomeo t).isIso_hom
 
 instance stalk_iso [HasColimits C] (x : X) : IsIso (f.stalkMap x) := by
