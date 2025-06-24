@@ -171,7 +171,7 @@ theorem differentiableOn_tsum_of_summable_norm {u : ι → ℝ} (hu : Summable u
   classical
   have hc := (tendstoUniformlyOn_tsum hu hF_le).tendstoLocallyUniformlyOn
   refine hc.differentiableOn (Eventually.of_forall fun s => ?_) hU
-  exact DifferentiableOn.sum fun i _ => hf i
+  exact DifferentiableOn.fun_sum fun i _ => hf i
 
 /-- If the terms in the sum `∑' (i : ι), F i` are uniformly bounded on `U` by a
 summable function, then the sum of `deriv F i` at a point in `U` is the derivative of the
@@ -183,7 +183,7 @@ theorem hasSum_deriv_of_summable_norm {u : ι → ℝ} (hu : Summable u)
   rw [HasSum]
   have hc := (tendstoUniformlyOn_tsum hu hF_le).tendstoLocallyUniformlyOn
   convert (hc.deriv (Eventually.of_forall fun s =>
-    DifferentiableOn.sum fun i _ => hf i) hU).tendsto_at hz using 1
+    DifferentiableOn.fun_sum fun i _ => hf i) hU).tendsto_at hz using 1
   ext1 s
   exact (deriv_sum fun i _ => (hf i).differentiableAt (hU.mem_nhds hz)).symm
 

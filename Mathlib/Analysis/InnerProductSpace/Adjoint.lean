@@ -572,8 +572,6 @@ noncomputable def linearIsometryEquiv : unitary (H →L[𝕜] H) ≃* (H ≃ₗ�
             inv_val := by ext; simp }
         exact IsUnit.mem_unitary_of_star_mul_self ⟨e', rfl⟩ <|
           (e : H →L[𝕜] H).norm_map_iff_adjoint_comp_self.mp e.norm_map }
-  left_inv _ := Subtype.ext rfl
-  right_inv _ := LinearIsometryEquiv.ext fun _ ↦ rfl
   map_mul' u v := by ext; rfl
 
 @[simp]

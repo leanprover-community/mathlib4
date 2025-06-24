@@ -351,6 +351,12 @@ instance IsStableUnderCobaseChange.inf {P Q : MorphismProperty C} [IsStableUnder
     IsStableUnderCobaseChange (P ⊓ Q) where
   of_isPushout hp hg := ⟨of_isPushout hp hg.left, of_isPushout hp hg.right⟩
 
+instance : (⊤ : MorphismProperty C).IsStableUnderBaseChange where
+  of_isPullback _ _ := trivial
+
+instance : (⊤ : MorphismProperty C).IsStableUnderCobaseChange where
+  of_isPushout _ _ := trivial
+
 end
 
 section LimitsOfShape
