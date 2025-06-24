@@ -686,8 +686,7 @@ theorem isPreirreducible_iff_forall_subset_closure_singleton [R1Space X] {S : Se
 
 theorem isPreirreducible_iff_subsingleton [T2Space X] {S : Set X} :
     IsPreirreducible S ↔ S.Subsingleton := by
-  simp_rw [isPreirreducible_iff_forall_subset_closure_singleton, closure_singleton,
-    subset_singleton_iff, Set.Subsingleton, eq_comm]
+  simp [isPreirreducible_iff_forall_subset_closure_singleton, Set.Subsingleton, eq_comm]
 
 -- todo: use `alias` + `attribute [protected]` once we get `attribute [protected]`
 protected lemma IsPreirreducible.subsingleton [T2Space X] {S : Set X} (h : IsPreirreducible S) :
