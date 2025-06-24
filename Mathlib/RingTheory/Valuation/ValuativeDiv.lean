@@ -249,8 +249,7 @@ instance : LE (ValueGroup R) where
     intro x y z w t s u v h₁ h₂ h₃ h₄
     by_cases hw : w ≤ᵥ 0 <;> by_cases hz : z ≤ᵥ 0
     · refine propext ⟨fun h => rel_trans ?_ (zero_rel _), fun h => rel_trans ?_ (zero_rel _)⟩
-      · dsimp at h
-        apply rel_mul_cancel (s * v).prop
+      · apply rel_mul_cancel (s * v).prop
         rw [mul_right_comm, Submonoid.coe_mul, ← mul_assoc]
         apply rel_trans (rel_mul_right (u : R) (rel_mul_right (v : R) h₂))
         rw [mul_right_comm x]
@@ -328,13 +327,21 @@ instance : OrderBot (ValueGroup R) where
     rw [ValueGroup.bot_eq_zero, ← ValueGroup.mk_zero 1, ValueGroup.mk_le_mk]
     simp
 
+instance : IsOrderedMonoid (ValueGroup R) where
+  mul_le_mul_left a b hab c := by
+    induction a using ValueGroup.ind
+    induction b using ValueGroup.ind
+    induction c using ValueGroup.ind
+    simp only [ValueGroup.mk_mul_mk, ValueGroup.mk_le_mk, Submonoid.coe_mul]
+    conv_lhs => apply mul_mul_mul_comm
+    conv_rhs => apply mul_mul_mul_comm
+    apply rel_mul_left
+    exact hab
+
 open Classical in
 /-- The value monoid is a linearly ordered commutative monoid with zero. -/
 instance : LinearOrderedCommGroupWithZero (ValueGroup R) where
-  mul_le_mul_left := sorry
-  mul_le_mul_right := sorry
-  bot_le := sorry
-  zero_le_one := sorry
+  zero_le_one := bot_le
   inv := Quotient.lift
     (fun (x,s) => Quotient.mk _ <| if h : x ∈ unitSubmonoid R then (s, ⟨x, h⟩) else (0, 1))
     sorry
