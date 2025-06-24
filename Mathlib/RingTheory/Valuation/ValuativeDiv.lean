@@ -32,16 +32,14 @@ of valuations. -/
 class ValuativeRel (R : Type*) [CommRing R] where
   /-- The relation operator arising from `ValuativeRel`. -/
   rel : R → R → Prop
-  refl (x : R) : rel x x
-  trans {x y z : R} : rel x y → rel y z → rel x z
-  rel_mul_mul_of_rel_of_rel (x y x' y' : R) : rel x y → rel x' y' → rel (x * x') (y * y')
   rel_total (x y) : rel x y ∨ rel y x
-  rel_zero (x) : rel 0 x
-  rel_add_of_rel_of_rel (x y z) : rel x z → rel y z → rel (x + y) z
-  not_rel_zero_cancel (x y z : R) : ¬ rel x 0 → rel (x * y) (x * z) → rel y z
+  rel_trans {z y x} : rel x y → rel y z → rel x z
+  rel_add {x y z} : rel x z → rel y z → rel (x + y) z
+  rel_mul_right {x y} (z) : rel x y → rel (x * z) (y * z)
+  rel_mul_cancel {x y z} : ¬ rel z 0 → rel (x * z) (y * z) → rel x y
   not_rel_one_zero : ¬ rel 1 0
 
-@[inherit_doc] infix:50  " ∣ᵥ " => ValuativeRel.rel
+@[inherit_doc] infix:50  " ≤ᵥ " => ValuativeRel.rel
 
 namespace Valuation
 
@@ -51,62 +49,77 @@ variable {R Γ : Type*} [CommRing R] [LinearOrderedCommMonoidWithZero Γ]
 /-- We say that a valuation `v` is `Compatible` if the relation `x ∣ᵥ y`
 is equivalent to `v x ≤ x y`. -/
 class Compatible [ValuativeRel R] where
-  dvd_iff_le (x y : R) : x ∣ᵥ y ↔ v x ≤ v y
+  dvd_iff_le (x y : R) : x ≤ᵥ y ↔ v x ≤ v y
 
 end Valuation
 
 /-- A preorder on a ring is said to be "valuative" if it agrees with the
 valuative relation. -/
 class ValuativePreorder (R : Type*) [CommRing R] [ValuativeRel R] [Preorder R] where
-  dvd_iff_le (x y : R) : x ∣ᵥ y ↔ x ≤ y
+  dvd_iff_le (x y : R) : x ≤ᵥ y ↔ x ≤ y
 
 namespace ValuativeRel
 
 variable {R : Type*} [CommRing R] [ValuativeRel R]
 
+lemma rel_refl (x : R) : x ≤ᵥ x := by
+  cases rel_total x x <;> assumption
+
+lemma rel_mul_left {x y : R} (z) : x ≤ᵥ y → (z * x) ≤ᵥ (z * y) := by
+  rw [mul_comm z x, mul_comm z y]
+  apply rel_mul_right
+
+instance : Trans (rel (R := R)) (rel (R := R)) (rel (R := R)) where
+  trans h1 h2 := rel_trans h1 h2
+
+lemma rel_mul {x x' y y' : R} : x ≤ᵥ y → x' ≤ᵥ y' → x * x' ≤ᵥ y * y' := by
+  intro h1 h2
+  calc x * x' ≤ᵥ x * y' := rel_mul_left _ h2
+    _ ≤ᵥ y * y' := rel_mul_right _ h1
+
 variable (R) in
 def unitSubmonoid : Submonoid R where
-  carrier := { x | ¬ x ∣ᵥ 0}
+  carrier := { x | ¬ x ≤ᵥ 0}
   mul_mem' := by
     intro x y hx hy
     by_contra c
     apply hy
     simp only [Set.mem_setOf_eq, not_not] at c
-    rw [show (0 : R) = x * 0 by simp] at c
-    exact not_rel_zero_cancel _ _ _ hx c
+    rw [show (0 : R) = x * 0 by simp, mul_comm x y, mul_comm x 0] at c
+    exact rel_mul_cancel hx c
   one_mem' := not_rel_one_zero
 
 @[simp]
-lemma left_cancel_unitSubmonoid (x y : R) (u : unitSubmonoid R) :
-    u * x ∣ᵥ u * y ↔ x ∣ᵥ y := by
-  refine ⟨fun h => not_rel_zero_cancel _ _ _ u.prop h, fun h => ?_⟩
-  exact rel_mul_mul_of_rel_of_rel _ _ _ _ (refl _) h
+lemma right_cancel_unitSubmonoid (x y : R) (u : unitSubmonoid R) :
+    x * u ≤ᵥ y * u ↔ x ≤ᵥ y := by
+  refine ⟨fun h => rel_mul_cancel u.prop h, fun h => ?_⟩
+  exact rel_mul_right _ h
 
 @[simp]
-lemma right_cancel_unitSubmonoid (x y : R) (u : unitSubmonoid R) :
-    x * u ∣ᵥ y * u ↔ x ∣ᵥ y := by
-  rw [← left_cancel_unitSubmonoid x y u]
-  simp only [mul_comm x, mul_comm y]
+lemma left_cancel_unitSubmonoid (x y : R) (u : unitSubmonoid R) :
+    u * x ≤ᵥ u * y ↔ x ≤ᵥ y := by
+  rw [← right_cancel_unitSubmonoid x y u]
+  simp only [mul_comm _ x, mul_comm _ y]
 
 variable (R) in
 /-- The setoid used to construct `ValueMonoid R`. -/
 def valueSetoid : Setoid (R × unitSubmonoid R) where
-  r := fun (x,s) (y,t) => x * t ∣ᵥ y * s ∧ y * s ∣ᵥ x * t
+  r := fun (x,s) (y,t) => x * t ≤ᵥ y * s ∧ y * s ≤ᵥ x * t
   iseqv := {
-    refl ru := ⟨refl _, refl _⟩
+    refl ru := ⟨rel_refl _, rel_refl _⟩
     symm h := ⟨h.2, h.1⟩
     trans := by
       rintro ⟨r, u⟩ ⟨s, v⟩ ⟨t, w⟩ ⟨h1, h2⟩ ⟨h3, h4⟩
       constructor
-      · have := rel_mul_mul_of_rel_of_rel _ _ _ _ h1 (refl ↑w)
+      · have := rel_mul  h1 (rel_refl ↑w)
         rw [show s * u * w = s * w * u by ring] at this
-        have := trans this (rel_mul_mul_of_rel_of_rel _ _ _ _ h3 (refl _))
+        have := rel_trans this (rel_mul h3 (rel_refl _))
         rw [show r * v * w = r * w * v by ring] at this
         rw [show t * v * u = t * u * v by ring] at this
         simpa using this
-      · have := rel_mul_mul_of_rel_of_rel _ _ _ _ h4 (refl ↑u)
+      · have := rel_mul h4 (rel_refl ↑u)
         rw [show s * w * u = s * u * w by ring] at this
-        have := trans this (rel_mul_mul_of_rel_of_rel _ _ _ _ h2 (refl _))
+        have := rel_trans this (rel_mul h2 (rel_refl _))
         rw [show t * v * u = t * u * v by ring] at this
         rw [show r * v * w = r * w * v by ring] at this
         simpa using this
@@ -131,7 +144,7 @@ instance : LinearOrderedCommGroupWithZero (ValueGroup R) where
   zero := Quotient.mk _ (0, 1)
   zero_mul := sorry
   mul_zero := sorry
-  le := Quotient.lift₂ (fun (a,s) (b,t) => a * t ∣ᵥ b * s) sorry
+  le := Quotient.lift₂ (fun (a,s) (b,t) => a * t ≤ᵥ b * s) sorry
   le_refl := sorry
   le_trans := sorry
   le_antisymm := sorry
@@ -168,21 +181,11 @@ def ofValuation
     [Nontrivial Γ] [NoZeroDivisors Γ]
     (v : Valuation S Γ) : ValuativeRel S where
   rel x y := v x ≤ v y
-  refl a := le_refl _
-  trans h1 h2 := h1.trans h2
-  rel_mul_mul_of_rel_of_rel x x' y y' h1 h2 := by
-    simp_rw [v.map_mul]
-    apply mul_le_mul
-    · assumption
-    · assumption
-    · exact zero_le'
-    · exact zero_le'
-  rel_total x y := by apply le_total
-  rel_zero x := by simp only [map_zero, zero_le']
-  rel_add_of_rel_of_rel x y z h1 h2 := by
-    refine le_trans (v.map_add x y) ?_
-    simpa only [sup_le_iff] using ⟨h1, h2⟩
-  not_rel_zero_cancel := sorry
+  rel_total := sorry
+  rel_trans := sorry
+  rel_add := sorry
+  rel_mul_right := sorry
+  rel_mul_cancel := sorry
   not_rel_one_zero := sorry
 
 lemma isEquiv {Γ₁ Γ₂ : Type*}
@@ -204,22 +207,21 @@ instance : CommRing (WithPreorder R) := inferInstanceAs (CommRing R)
 
 /-- The preorder on `WithPreorder R` arising from the valuative relation on `R`. -/
 instance : Preorder (WithPreorder R) where
-  le (x y : R) := x ∣ᵥ y
-  le_refl _ := refl _
-  le_trans _ _ _ := trans
+  le (x y : R) := x ≤ᵥ y
+  le_refl _ := rel_refl _
+  le_trans _ _ _ := rel_trans
 
 /-- The valutaive relation on `WithPreorder R` arising from the valuative relation on `R`.
 This is defined as the preorder itself. -/
 instance : ValuativeRel (WithPreorder R) where
   rel := (· ≤ ·)
-  refl := refl (R := R)
-  trans := trans (R := R)
-  rel_mul_mul_of_rel_of_rel := rel_mul_mul_of_rel_of_rel (R := R)
   rel_total := rel_total (R := R)
-  rel_zero := rel_zero (R := R)
-  rel_add_of_rel_of_rel := rel_add_of_rel_of_rel (R := R)
-  not_rel_zero_cancel := not_rel_zero_cancel (R := R)
+  rel_trans := rel_trans (R := R)
+  rel_add := rel_add (R := R)
+  rel_mul_right := rel_mul_right (R := R)
+  rel_mul_cancel := rel_mul_cancel (R := R)
   not_rel_one_zero := not_rel_one_zero (R := R)
+
 
 instance : ValuativePreorder (WithPreorder R) where
   dvd_iff_le _ _ := Iff.rfl
@@ -278,4 +280,4 @@ class ValuativeExtension
     [CommRing A] [CommRing B]
     [ValuativeRel A] [ValuativeRel B]
     [Algebra A B] where
-  dvd_iff_dvd (a b : A) : a ∣ᵥ b ↔ algebraMap A B a ∣ᵥ algebraMap A B b
+  dvd_iff_dvd (a b : A) : a ≤ᵥ b ↔ algebraMap A B a ≤ᵥ algebraMap A B b
