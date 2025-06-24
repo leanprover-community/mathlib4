@@ -282,11 +282,7 @@ lemma congr_X_of_eventuallyEq (cov : CovariantDerivative I F V) [T2Space M]
   -- Then, it's a chain of (dependent) equalities.
   calc cov X σ x
     _ = cov ((ψ : M → ℝ) • X) σ x := by simp [cov.smulX]
-    _ = cov ((ψ : M → ℝ) • X') σ x := by
-      -- XXX: should this be a lemma cov.congr_X?
-      congr 1
-      ext x
-      simp [this]
+    _ = cov ((ψ : M → ℝ) • X') σ x := by rw [funext this]
     _ = cov X' σ x := by simp [cov.smulX]
 
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
