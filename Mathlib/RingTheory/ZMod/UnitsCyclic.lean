@@ -278,7 +278,7 @@ theorem isCyclic_units_four_mul_iff (n : ℕ) :
   rw [Nat.odd_totient_iff] at this
   omega
 
-theorem isCyclic_units_of_two_mul_odd_iff (n : ℕ) (hn : Odd n) :
+theorem isCyclic_units_two_mul_iff_of_odd (n : ℕ) (hn : Odd n) :
     IsCyclic (ZMod (2 * n))ˣ ↔ IsCyclic (ZMod n)ˣ := by
   simp [((Units.mapEquiv (chineseRemainder <| Nat.coprime_two_left.mpr hn).toMulEquiv).trans
     .prodUnits).isCyclic, Group.isCyclic_prod_iff, isCyclic_units_two]
@@ -298,7 +298,7 @@ theorem not_isCyclic_units_of_mul_coprime (m n : ℕ)
   · simp [← Nat.not_even_iff_odd] at hm
   · simp [← Nat.not_even_iff_odd] at hn
 
-theorem isCyclic_units_of_odd_iff {n : ℕ} (hn : Odd n) :
+theorem isCyclic_units_iff_of_odd {n : ℕ} (hn : Odd n) :
     IsCyclic (ZMod n)ˣ ↔ ∃ (p m : ℕ), p.Prime ∧ Odd p ∧ n = p ^ m := by
   have hn0 : n ≠ 0 := by rintro rfl; revert hn; decide
   obtain rfl | h1 := eq_or_ne n 1
@@ -318,7 +318,7 @@ theorem isCyclic_units_of_odd_iff {n : ℕ} (hn : Odd n) :
     · contrapose! hnp
       conv_lhs => rw [← Nat.div_mul_cancel this, hnp, one_mul]
   rintro ⟨q, m, hq, -, rfl⟩
-  obtain rfl := (Nat.prime_dvd_prime_iff_eq hp hq).mp (hp.dvd_of_dvd_pow dvd)
+  cases (Nat.prime_dvd_prime_iff_eq hp hq).mp (hp.dvd_of_dvd_pow dvd)
   simp [hp.factorization_self] at hnp
 
 end Products
@@ -332,90 +332,41 @@ theorem isCyclic_units_iff (n : ℕ) :
   by_cases h0 : n = 0
   · rw [h0]; simp [isCyclic_units_zero]
   by_cases h1 : n = 1
-  · rw [h1]
-    simp [isCyclic_units_one]
+  · rw [h1]; simp [isCyclic_units_one]
   by_cases h2 : n = 2
   · rw [h2]; simp [isCyclic_units_two]
   by_cases h4 : n = 4
   · rw [h4]; simp [isCyclic_units_four]
-  simp_rw [h0, h1, h2, h4, exists_and_left, false_or]
+  simp only [h0, h1, h2, h4, exists_and_left, false_or, and_or_left, exists_or, ← exists_and_left]
   rcases (n.even_or_odd).symm with hn | hn
-  · simp only [isCyclic_units_of_odd_iff hn]
-    apply exists_congr
-    simp only [exists_and_left, and_congr_right_iff]
-    intro p hp ho
-    apply exists_congr
-    intro m
-    rw [← not_lt, Nat.lt_one_iff]
-    constructor
-    · intro hnpm
-      refine ⟨?_, Or.inl hnpm⟩
-      rintro ⟨rfl⟩
-      rw [pow_zero] at hnpm
-      exact h1 hnpm
-    · rintro ⟨_, (h | h)⟩
-      · exact h
-      · exfalso
-        apply Nat.not_even_iff_odd.mpr hn
-        simp [h]
-  · set a := n.factorization 2 with ha
-    set m := n / 2 ^ a with hm
-    have hm : n = 2 ^ a * m := by
-      simp only [m, Nat.ordCompl_of_not_prime]
-      exact (Nat.ordProj_mul_ordCompl_eq_self n 2).symm
-    by_cases ha0 : a = 0
-    · exfalso
-      rw [ha0, eq_comm, ← Finsupp.notMem_support_iff,
-        Nat.support_factorization] at ha
-      simp only [Nat.mem_primeFactors, ne_eq, not_and, Decidable.not_not] at ha
-      apply h0
-      exact ha Nat.prime_two (even_iff_two_dvd.mp hn)
-    by_cases hn4 : 4 ∣ n
-    · obtain ⟨q, rfl⟩ := hn4
-      rw [isCyclic_units_four_mul_iff]
-      simp only [mul_eq_zero, OfNat.ofNat_ne_zero, false_or, ne_eq, not_false_eq_true,
-        mul_eq_left₀] at h0 h4
-      simp only [h0, h4, or_self, false_iff, not_exists, not_and, not_or]
-      intro l hl hol e he
-      have : ¬ Even (l ^ e) := by
-        simp only [Nat.not_even_iff_odd, hol.pow]
-      refine ⟨fun H ↦ this ?_, fun H ↦ this ?_⟩
-      · rwa [← H]
-      · suffices 2 * q = l ^ e by
-          simp only [← this, even_two_mul]
-        apply Nat.mul_left_cancel Nat.two_pos
-        simp [← H, ← mul_assoc]
-    · have ha1 : a = 1 := by
-        apply le_antisymm _ (Nat.one_le_iff_ne_zero.mpr ha0)
-        by_contra! ha
-        apply hn4
-        rw [hm]
-        apply Dvd.dvd.mul_right (Nat.pow_dvd_pow_iff_le_right'.mpr ha)
-      rw [ha1, pow_one] at hm
-      have hoddm : Odd m := by
-        rw [← Nat.not_even_iff_odd, even_iff_two_dvd]
-        rintro ⟨q, hq⟩
-        apply hn4
-        rw [hm, hq, ← mul_assoc]
-        exact Nat.dvd_mul_right 4 q
-      rw [hm, isCyclic_units_of_two_mul_odd_iff _ hoddm, isCyclic_units_of_odd_iff hoddm]
-      apply exists_congr
-      intro l
-      simp only [exists_and_left, mul_eq_mul_left_iff, OfNat.ofNat_ne_zero, or_false,
-        and_congr_right_iff]
-      intro hl hol
-      apply exists_congr
-      intro e
-      constructor
-      · intro he
-        refine ⟨Nat.pos_of_ne_zero ?_, Or.inr he⟩
-        rintro ⟨rfl⟩
-        apply h2
-        simp [hm, he]
-      · rintro ⟨h1e, (he | he)⟩
-        · exfalso
-          apply Nat.not_odd_iff_even.mpr (even_two_mul m)
-          simp only [he, hol.pow]
-        · exact he
+  · rw [isCyclic_units_iff_of_odd hn, or_iff_left]
+    · congr! with p m
+      rw [and_iff_right_of_imp]
+      rintro rfl
+      contrapose! h1
+      cases Nat.lt_one_iff.mp h1
+      apply pow_zero
+    · rintro ⟨p, m, -, -, -, rfl⟩
+      simp [← Nat.not_even_iff_odd] at hn
+  obtain ⟨n, rfl⟩ := hn.two_dvd
+  rcases (n.even_or_odd).symm with hn | hn
+  · rw [isCyclic_units_two_mul_iff_of_odd _ hn, isCyclic_units_iff_of_odd hn, or_iff_right]
+    · congr! with p m
+      rw [Nat.mul_left_cancel_iff zero_lt_two, and_iff_right_of_imp]
+      rintro rfl
+      contrapose! h2
+      cases Nat.lt_one_iff.mp h2
+      rw [pow_zero, mul_one]
+    · rintro ⟨p, m, -, odd, -, eq⟩
+      have := eq ▸ odd.pow
+      simp [← Nat.not_even_iff_odd] at this
+  obtain ⟨n, rfl⟩ := hn.two_dvd
+  apply iff_of_false
+  · rw [← mul_assoc, show 2 * 2 = 4 from rfl, isCyclic_units_four_mul_iff]
+    omega
+  rintro (⟨p, m, -, odd, -, eq⟩ | ⟨p, m, -, odd, -, eq⟩)
+  on_goal 1 => have := eq ▸ odd.pow
+  on_goal 2 => have := (Nat.mul_left_cancel_iff zero_lt_two).mp eq ▸ odd.pow
+  all_goals simp [← Nat.not_even_iff_odd] at this
 
 end ZMod
