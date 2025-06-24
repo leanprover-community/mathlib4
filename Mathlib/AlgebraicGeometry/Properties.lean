@@ -301,4 +301,48 @@ instance [IsIntegral X] : OrderTop X where
   top := genericPoint X
   le_top := fun a ↦ genericPoint_specializes a
 
+lemma mem_of_closure_subset {Y : Type*} [TopologicalSpace Y] {a : Y} {U : Set Y}
+    (h : closure {a} ⊆ U) : a ∈ U := (Set.subset_def ▸ h) a (Specializes.mem_closure fun _ a ↦ a)
+
+
+@[stacks 02I4]
+lemma coheight_eq_restrict {X : Scheme} {Z : X} (U : X.affineOpens)
+  (hZ : closure {Z} ⊆ U.1) : Order.coheight (α := U) (⟨Z, mem_of_closure_subset hZ⟩ : {x // x ∈ U.1}) = Order.coheight Z := by
+
+  rw[← Order.coheight_orderIso (irreducibleSetEquivPoints (α := X)).symm Z]
+  rw[← Order.coheight_orderIso (irreducibleSetEquivPoints (α := U.1)).symm ⟨Z, mem_of_closure_subset hZ⟩]
+
+  let rest := Order.coheight_orderIso (IrreducibleCloseds.order_iso_restriction U.1.1 U.1.2).symm
+
+  specialize rest ((irreducibleSetEquivPoints (α := U)).symm (⟨Z, slo hZ⟩))
+  rw[← rest]
+  have : (irreducibleSetEquivPoints.symm Z).carrier ∩ U.1 ≠ ∅ := by
+    simp[irreducibleSetEquivPoints, OrderIso.symm]
+    rw[Set.inter_eq_self_of_subset_left hZ]
+    rw [@closure_empty_iff]
+    exact singleton_ne_empty Z
+
+  have := mak (irreducibleSetEquivPoints.symm Z) U this
+  rw[this]
+  congr
+  simp[IrreducibleCloseds.order_iso_restriction, irreducibleSetEquivPoints, OrderIso.symm]
+
+  have : (fun a ↦ ↑a) '' closure {(⟨Z, slo hZ⟩ : U.1)} = closure {Z} := by
+
+    rw [@Subtype.coe_image]
+    ext x
+    rw [@mem_setOf]
+    constructor
+    · rintro ⟨m, hm⟩
+      rw[closure_subtype] at hm
+      simp_all
+    · intro hx
+      rw [subset_def] at hZ
+      specialize hZ x hx
+      use hZ
+      rw[closure_subtype]
+      simp_all
+  rw[this]
+  exact closure_closure
+
 end AlgebraicGeometry
