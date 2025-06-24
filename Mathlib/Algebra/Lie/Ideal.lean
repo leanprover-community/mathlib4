@@ -483,20 +483,18 @@ theorem incl_isIdealMorphism : I.incl.IsIdealMorphism := by
 
 variable {I}
 
-theorem comap_incl_eq_bot' (h : I₂ ≤ I) : (comap I.incl I₂) = ⊥ ↔ I₂ = ⊥ := by
-  constructor
-  · intro hI₂
-    rw [eq_bot_iff]
-    intro x hx
-    rw [LieSubmodule.mem_bot]
-    unfold comap at hI₂
-    rw [LieSubmodule.mk_eq_bot_iff, toLieSubalgebra_toSubmodule, incl_coe,
-      Submodule.eq_bot_iff] at hI₂
-    exact (LieSubmodule.mk_eq_zero _ _).mp <| hI₂ ⟨x, h hx⟩ hx
-  · rintro ⟨_⟩
-    exact I.incl.ker_eq_bot.mpr I.incl_injective
+theorem comap_incl_eq_top : (comap I.incl I₂) = ⊤ ↔ I ≤ I₂ := by
+  rw [← LieSubmodule.toSubmodule_inj, LieIdeal.comap_toSubmodule, LieSubmodule.top_toSubmodule,
+    incl_coe]
+  simp_rw [toLieSubalgebra_toSubmodule]
+  rw [Submodule.comap_subtype_eq_top, LieSubmodule.toSubmodule_le_toSubmodule]
 
-theorem comap_incl_eq_bot : (comap I.incl I₂) = ⊥ ↔ Disjoint I I₂ := by sorry
+theorem comap_incl_eq_bot : (comap I.incl I₂) = ⊥ ↔ Disjoint I I₂ := by
+  rw [disjoint_iff, ←LieSubmodule.toSubmodule_inj, LieIdeal.comap_toSubmodule,
+    LieSubmodule.bot_toSubmodule, ← LieSubmodule.toSubmodule_inj, LieSubmodule.inf_toSubmodule,
+    LieSubmodule.bot_toSubmodule, incl_coe]
+  simp_rw [toLieSubalgebra_toSubmodule]
+  rw [← Submodule.disjoint_iff_comap_eq_bot, disjoint_iff]
 
 end LieIdeal
 
