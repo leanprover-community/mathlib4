@@ -492,17 +492,25 @@ theorem floor_div_natCast (a : k) (n : ℕ) : ⌊a / n⌋ = ⌊a⌋ / n := by
   rw [← Int.cast_natCast n]
   exact floor_div_nonneg_intCast _ (by simp)
 
-theorem mul_floor_div_nonneg_intCast_eq_floor {a : k} {n : ℤ} (hn : 0 < n) :
+theorem mul_floor_div_nonneg_intCast_cancel_left {a : k} {n : ℤ} (hn : 0 < n) :
     ⌊n * a⌋ / n = ⌊a⌋ := by
   convert (floor_div_nonneg_intCast (a * n) hn.le).symm using 3
   · rw [mul_comm]
   · rw [mul_div_cancel_right₀]
     simpa using Int.ne_of_gt hn
 
-theorem mul_floor_div_natCast_eq_floor {a : k} {n : ℕ} (hn : n ≠ 0) :
+theorem mul_floor_div_nonneg_intCast_cancel_right {a : k} {n : ℤ} (hn : 0 < n) :
+    ⌊a * n⌋ / n = ⌊a⌋ := by
+  rw [mul_comm, mul_floor_div_nonneg_intCast_cancel_left hn]
+
+theorem mul_floor_div_natCast_cancel_left {a : k} {n : ℕ} (hn : n ≠ 0) :
     ⌊n * a⌋ / n = ⌊a⌋ := by
   rw [← Int.cast_natCast n]
-  exact mul_floor_div_nonneg_intCast_eq_floor (by omega)
+  exact mul_floor_div_nonneg_intCast_cancel_left (by omega)
+
+theorem mul_floor_div_natCast_cancel_right {a : k} {n : ℕ} (hn : n ≠ 0) :
+    ⌊a * n⌋ / n = ⌊a⌋ := by
+  rw [mul_comm, mul_floor_div_natCast_cancel_left hn]
 
 end LinearOrderedField
 
