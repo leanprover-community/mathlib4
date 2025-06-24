@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Module.Submodule.Equiv
-import Mathlib.LinearAlgebra.Finsupp.Supported
 import Mathlib.Data.Finsupp.Option
+import Mathlib.LinearAlgebra.Finsupp.Supported
 
 /-!
 # `Finsupp.linearCombination`
