@@ -190,13 +190,13 @@ section real
 
 variable {E : Type*} [NormedAddCommGroup E]
   [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
 
-variable (F : Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   -- `F` model fiber
   (n : WithTop ℕ∞)
-  (V : M → Type*) [TopologicalSpace (TotalSpace F V)]
+  {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
   [∀ x, AddCommGroup (V x)] [∀ x, Module ℝ (V x)]
   [∀ x : M, TopologicalSpace (V x)] [∀ x, IsTopologicalAddGroup (V x)]
   [∀ x, ContinuousSMul ℝ (V x)]
@@ -220,7 +220,16 @@ lemma congr_σ_smoothBumpFunction (cov : CovariantDerivative I F V) [T2Space M] 
   left
   rfl
 
-variable {I F V} in
+omit [FiniteDimensional ℝ E] [∀ (x : M), IsTopologicalAddGroup (V x)]
+  [∀ (x : M), ContinuousSMul ℝ (V x)] [VectorBundle ℝ F V] in
+lemma sum_X (cov : CovariantDerivative I F V)
+    {ι : Type*} {s : Finset ι} {X : ι → Π x : M, TangentSpace I x} {σ : Π x : M, V x} :
+    cov (∑ i ∈ s, X i) σ = ∑ i ∈ s, cov (X i) σ := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert a s ha h => simp [Finset.sum_insert ha, Finset.sum_insert ha, ← h, cov.addX]
+
 /-- If `X` and `X'` agree in a neighbourhood of `p`, then `∇_X σ` and `∇_X' σ` agree at `p`. -/
 lemma congr_X_of_eventuallyEq (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
     {X X' : Π x : M, TangentSpace I x} {σ : Π x : M, V x} {x : M} {s : Set M} (hs : s ∈ nhds x)
@@ -230,15 +239,13 @@ lemma congr_X_of_eventuallyEq (cov : CovariantDerivative I F V) [T2Space M] [IsM
   · simp [cov.do_not_read X hσ, cov.do_not_read X' hσ]
   sorry
 
-variable {I F V} in
 lemma congr_X_at_aux (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
     (X : Π x : M, TangentSpace I x) {σ : Π x : M, V x} {x : M}
     (hX : X x = 0) : cov X σ x = 0 := by
-  -- on (chartAt H x).source, can decompose X = ∑ a_i Xi
-  let n : ℕ := sorry -- finrank of E
-  -- Choose a basis of TangentSpace I x = E.
-  let b : Basis (Fin n) ℝ E := sorry
   -- Consider the local frame {Xⁱ} on TangentSpace I x induced by chartAt H x.
+  -- To do so, choose a basis of TangentSpace I x = E.
+  let n : ℕ := Module.finrank ℝ E
+  let b : Basis (Fin n) ℝ E := sorry
   let e := trivializationAt E (TangentSpace I) x
   let Xi (i : Fin n) := b.local_frame e i
   -- Write X in coordinates: X = ∑ i, a i • Xi i near `x`.
@@ -247,11 +254,10 @@ lemma congr_X_at_aux (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I
   have aux : ∀ᶠ (x' : M) in 𝓝 x, X x' = ∑ i, a i x' • Xi i x' := b.local_frame_repr_spec this X
   have realAux : ∃ s : Set M, (s ∈ nhds x ∧ ∀ x' ∈ s, X x' = ∑ i, a i x' • Xi i x') := by
     refine ⟨_, aux, by simp⟩
-  have (i : Fin n) : a i x = 0 := sorry -- "obvious"
+  have (i : Fin n) : a i x = 0 := by sorry -- "obvious"
   calc cov X σ x
     _ = cov (∑ i, a i • Xi i) σ x := cov.congr_X_of_eventuallyEq aux (by simp)
-    _ = ∑ i, cov (a i • Xi i) σ x := by
-      sorry -- use linearity and induction --> make a new helper lemma
+    _ = ∑ i, cov (a i • Xi i) σ x := by rw [cov.sum_X]; simp
     _ = ∑ i, a i x • cov (Xi i) σ x := by
       congr; ext i; simp [cov.smulX (Xi i) σ (a i)]
     _ = 0 := by simp [this]
@@ -282,12 +288,11 @@ lemma congr_σ_of_eventuallyEq
     · simp [notMem_support.mp fun a ↦ h (hψ a)]
   -- Then, it's a chain of (dependent) equalities.
   calc cov X σ x
-    _ = cov X ((ψ : M → ℝ) • σ) x := by rw [cov.congr_σ_smoothBumpFunction _ _ _ _ hσ]
+    _ = cov X ((ψ : M → ℝ) • σ) x := by rw [cov.congr_σ_smoothBumpFunction _ hσ]
     _ = cov X ((ψ : M → ℝ) • σ') x := cov.congr_σ _ _ (by simp [this])
     _ = cov X σ' x := by
       simp [cov.congr_σ_smoothBumpFunction, _root_.mdifferentiableAt_dependent_congr hs hσ hσσ']
 
-variable {I F V} in
 /-- The difference of two covariant derivatives, as a function `Γ(TM) × Γ(E) → Γ(E)`.
 Future lemmas will upgrade this to a map `TM ⊕ E → E`. -/
 def difference_aux (cov cov' : CovariantDerivative I F V) :
