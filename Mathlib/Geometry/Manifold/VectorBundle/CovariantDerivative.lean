@@ -3,6 +3,7 @@ import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 import Mathlib.Geometry.Manifold.BumpFunction
+import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 
 open Bundle Filter Function Topology
 
@@ -161,6 +162,8 @@ lemma zeroσ (cov : CovariantDerivative I F V) (X : Π x : M, TangentSpace I x) 
   have := cov.addσ X (0 : (x : M) → V x) (0 : (x : M) → V x) x this this
   simpa using this
 
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
+     [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
 lemma smul_const_σ (cov : CovariantDerivative I F V)
     (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (a : 𝕜) :
     cov X (a • σ) = a • cov X σ := by
@@ -174,8 +177,21 @@ lemma smul_const_σ (cov : CovariantDerivative I F V)
     contrapose! hσ
     simp at hσ
     have : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (a⁻¹ • a • σ x)) x := by
-      -- Needs a version of Bundle.contMDiffAt_totalSpace  for MDifferentiableAt
-      sorry
+      rw [← mdifferentiableWithinAt_univ, mdifferentiableWithinAt_totalSpace]
+      refine ⟨mdifferentiableAt_id, ?_⟩
+      have : (fun x' : M ↦ ((trivializationAt F V x) { proj := x', snd := a⁻¹ • a • σ x'}).2)
+        =ᶠ[𝓝 x]
+        fun x' : M ↦ a⁻¹ • ((trivializationAt F V x) { proj := x', snd := a • σ x'}).2 := by
+        have : ∀ᶠ x' in 𝓝 x, x' ∈ (trivializationAt F V x).baseSet := by
+          exact (trivializationAt F V x).open_baseSet.eventually_mem
+            (FiberBundle.mem_baseSet_trivializationAt' x)
+        apply this.mono
+        intro x' hx'
+        apply (trivializationAt F V x).linear (R := 𝕜) (F := F) hx' |>.map_smul
+      apply MDifferentiableAt.congr_of_eventuallyEq _ this
+      apply MDifferentiableAt.const_smul
+      rw [← mdifferentiableWithinAt_univ, mdifferentiableWithinAt_totalSpace] at hσ
+      simpa [TotalSpace.mk'] using hσ.2
     apply this.congr_of_eventuallyEq
     filter_upwards with x
     congr
