@@ -182,12 +182,22 @@ def ValueGroup.lift₂_mk {α : Sort*} (f : R → unitSubmonoid R → R → unit
     (x y : R) (z w : unitSubmonoid R) :
     ValueGroup.lift₂ f hf (.mk x z) (.mk y w) = f x z y w := rfl
 
+theorem ValueGroup.mk_eq_mk {x y : R} {t s : unitSubmonoid R} :
+    ValueGroup.mk x t = ValueGroup.mk y s ↔ x * s ≤ᵥ y * t ∧ y * t ≤ᵥ x * s :=
+  Quotient.eq
+
 instance : Zero (ValueGroup R) where
   zero := .mk 0 1
 
 @[simp]
+theorem ValueGroup.mk_eq_zero (x : R) (y : unitSubmonoid R) :
+    ValueGroup.mk x y = 0 ↔ x ≤ᵥ 0 :=
+  ⟨fun h => by simpa using ValueGroup.mk_eq_mk.mp h,
+    fun h => ValueGroup.sound (by simpa using h) (by simp)⟩
+
+@[simp]
 theorem ValueGroup.mk_zero (x : unitSubmonoid R) : ValueGroup.mk 0 x = 0 :=
-  ValueGroup.sound (by simp) (by simp)
+  (ValueGroup.mk_eq_zero 0 x).mpr .rfl
 
 instance : One (ValueGroup R) where
   one := .mk 1 1
@@ -338,16 +348,41 @@ instance : IsOrderedMonoid (ValueGroup R) where
     apply rel_mul_left
     exact hab
 
-open Classical in
+instance : Inv (ValueGroup R) where
+  inv := ValueGroup.lift (fun x s => by
+    classical exact if h : x ≤ᵥ 0 then 0 else .mk s ⟨x, h⟩) <| by
+    intro x y t s h₁ h₂
+    by_cases hx : x ≤ᵥ 0 <;> by_cases hy : y ≤ᵥ 0
+    · simp [hx, hy]
+    · absurd hy
+      apply rel_mul_cancel s.prop
+      simpa using rel_trans h₂ (rel_mul_right (t : R) hx)
+    · absurd hx
+      apply rel_mul_cancel t.prop
+      simpa using rel_trans h₁ (rel_mul_right (s : R) hy)
+    · simp only [dif_neg hx, dif_neg hy]
+      apply ValueGroup.sound
+      · simpa [mul_comm] using h₂
+      · simpa [mul_comm] using h₁
+
+@[simp]
+theorem ValueGroup.inv_mk (x : R) (y : unitSubmonoid R) (hx : ¬x ≤ᵥ 0) :
+    (ValueGroup.mk x y)⁻¹ = ValueGroup.mk (y : R) ⟨x, hx⟩ := dif_neg hx
+
 /-- The value monoid is a linearly ordered commutative monoid with zero. -/
 instance : LinearOrderedCommGroupWithZero (ValueGroup R) where
   zero_le_one := bot_le
-  inv := Quotient.lift
-    (fun (x,s) => Quotient.mk _ <| if h : x ∈ unitSubmonoid R then (s, ⟨x, h⟩) else (0, 1))
-    sorry
-  exists_pair_ne := sorry
-  inv_zero := sorry
-  mul_inv_cancel := sorry
+  exists_pair_ne := by
+    refine ⟨0, 1, fun h => ?_⟩
+    apply ge_of_eq at h
+    rw [← ValueGroup.mk_zero 1, ← ValueGroup.mk_one_one, ValueGroup.mk_le_mk] at h
+    simp [not_rel_one_zero] at h
+  inv_zero := dif_pos .rfl
+  mul_inv_cancel := ValueGroup.ind fun x y h => by
+    rw [ne_eq, ← ValueGroup.mk_zero 1, ValueGroup.mk_eq_mk] at h
+    simp only [Submonoid.coe_one, mul_one, zero_mul, zero_rel, and_true] at h
+    rw [ValueGroup.inv_mk x y h, ← ValueGroup.mk_one_one, ValueGroup.mk_mul_mk, ValueGroup.mk_eq_mk]
+    simp [mul_comm]
 
 variable (R) in
 /-- The "canonical" valuation associated to a valuative relation. -/
