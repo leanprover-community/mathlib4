@@ -405,8 +405,8 @@ lemma one_add_α_pow_q [Fact (Prime q)] (odd : Odd (q : ℕ)) (leg3 : legendreSy
     (1 + (α : X q)) ^ (q : ℕ) = 1 - (α : X q) := by
   rcases odd with ⟨k, hk⟩
   have : q / 2 = k := by rw [hk, mul_add_div (by norm_num)]; simp
-  rw [add_pow_expChar, one_pow, hk, αpow, ← this]
-  have : (3 : X q) = (3 : ZMod q) := by exact coe_mod 3
+  rw [add_pow_expChar, one_pow, hk, α_pow, ← this]
+  have : (3 : X q) = (3 : ZMod q) := by exact coe_eq_coe 3
   rw [this, ← RingHom.map_pow]
   have leg := legendreSym.eq_pow q 3
   rw_mod_cast [← leg, leg3]
@@ -427,7 +427,7 @@ lemma two_mul_ω_pow [Fact (Prime q)] (odd : Odd (q : ℕ))
     apply Nat.mul_div_cancel'
     rw [← even_iff_two_dvd]
     exact Odd.add_one odd
-  rw [this, pow_q_succ odd leg3]
+  rw [this, one_add_α_pow_q_succ odd leg3]
 
 /-- If 3 is not a square and 2 is square then $\omega^{(q+1)/2}=-1$. -/
 lemma pow_ω [Fact (Prime q)] (odd : Odd (q : ℕ))
@@ -441,9 +441,9 @@ lemma pow_ω [Fact (Prime q)] (odd : Odd (q : ℕ))
     have : (2 : ZMod (q : ℕ)) = ((2 : ℤ) : ZMod (q : ℕ)) := by norm_cast
     rw [this, ← leg, leg2]
     ring
-  have := pow_2ω odd leg3
+  have := two_mul_ω_pow odd leg3
   rw [mul_pow] at this
-  have coe : (2 : X q) = (2 : ZMod q) := by exact coe_mod 2
+  have coe : (2 : X q) = (2 : ZMod q) := by exact coe_eq_coe 2
   rw [coe, ← RingHom.map_pow, pow2, ← coe,
     (by ring : (-2 : X q) = 2 * -1)] at this
   have unit : IsUnit (2 : X q) := by
