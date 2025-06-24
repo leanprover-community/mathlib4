@@ -242,7 +242,7 @@ private theorem lintegral_rpow_tsum_coe_enorm_sub_le_tsum {f : ℕ → α → E}
     all_goals isBoundedDefault
   rw [h_liminf_pow]
   refine (lintegral_liminf_le' fun n ↦ ?_).trans <| liminf_le_of_frequently_le' <| .of_forall h
-  exact ((Finset.range _).aemeasurable_sum fun i _ ↦ ((hf _).sub (hf i)).enorm).pow_const _
+  exact ((Finset.range _).aemeasurable_fun_sum fun i _ ↦ ((hf _).sub (hf i)).enorm).pow_const _
 
 private theorem tsum_enorm_sub_ae_lt_top {f : ℕ → α → E} (hf : ∀ n, AEStronglyMeasurable (f n) μ)
     {p : ℝ} (hp1 : 1 ≤ p) {B : ℕ → ℝ≥0∞} (hB : ∑' i, B i ≠ ∞)

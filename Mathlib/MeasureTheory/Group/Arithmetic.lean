@@ -833,7 +833,7 @@ theorem List.measurable_prod (l : List (α → M)) (hl : ∀ f ∈ l, Measurable
     exact hl.1.mul (ihl hl.2)
 
 @[deprecated (since := "2025-05-30")]
-alias List.measurable_sum' := List.measurable_fun_sum
+alias List.measurable_sum' := List.measurable_sum
 @[to_additive existing, deprecated (since := "2025-05-30")]
 alias List.measurable_prod' := List.measurable_prod
 
@@ -848,7 +848,7 @@ theorem List.aemeasurable_prod (l : List (α → M)) (hl : ∀ f ∈ l, AEMeasur
     exact hl.1.mul (ihl hl.2)
 
 @[deprecated (since := "2025-05-30")]
-alias List.aemeasurable_sum' := List.aemeasurable_fun_sum
+alias List.aemeasurable_sum' := List.aemeasurable_sum
 @[to_additive existing, deprecated (since := "2025-05-30")]
 alias List.aemeasurable_prod' := List.aemeasurable_prod
 
@@ -876,7 +876,7 @@ theorem Multiset.measurable_prod (l : Multiset (α → M)) (hl : ∀ f ∈ l, Me
   simpa using l.measurable_prod (by simpa using hl)
 
 @[deprecated (since := "2025-05-30")]
-alias Multiset.measurable_sum' := Multiset.measurable_fun_sum
+alias Multiset.measurable_sum' := Multiset.measurable_sum
 @[to_additive existing, deprecated (since := "2025-05-30")]
 alias Multiset.measurable_prod' := Multiset.measurable_prod
 
@@ -887,7 +887,7 @@ theorem Multiset.aemeasurable_prod (l : Multiset (α → M)) (hl : ∀ f ∈ l, 
   simpa using l.aemeasurable_prod (by simpa using hl)
 
 @[deprecated (since := "2025-05-30")]
-alias Multiset.aemeasurable_sum' := Multiset.aemeasurable_fun_sum
+alias Multiset.aemeasurable_sum' := Multiset.aemeasurable_sum
 @[to_additive existing, deprecated (since := "2025-05-30")]
 alias Multiset.aemeasurable_prod' := Multiset.aemeasurable_prod
 
@@ -934,7 +934,7 @@ theorem Finset.aemeasurable_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable
     hg ▸ hf _ hi
 
 @[deprecated (since := "2025-05-30")]
-alias Finset.aemeasurable_sum' := Finset.aemeasurable_fun_sum
+alias Finset.aemeasurable_sum' := Finset.aemeasurable_sum
 @[to_additive existing, deprecated (since := "2025-05-30")]
 alias Finset.aemeasurable_prod' := Finset.aemeasurable_prod
 

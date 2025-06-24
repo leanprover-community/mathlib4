@@ -378,7 +378,7 @@ theorem _root_.List.aestronglyMeasurable_prod (l : List (α → M))
     exact hl.1.mul (ihl hl.2)
 
 @[deprecated (since := "2025-05-30")]
-alias _root_.List.aestronglyMeasurable_sum' := List.aestronglyMeasurable_fun_sum
+alias _root_.List.aestronglyMeasurable_sum' := List.aestronglyMeasurable_sum
 @[to_additive existing, deprecated (since := "2025-05-30")]
 alias _root_.List.aestronglyMeasurable_prod' := List.aestronglyMeasurable_prod
 
@@ -401,7 +401,7 @@ theorem _root_.Multiset.aestronglyMeasurable_prod (l : Multiset (α → M))
   simpa using l.aestronglyMeasurable_prod (by simpa using hl)
 
 @[deprecated (since := "2025-05-30")]
-alias _root_.Multiset.aestronglyMeasurable_sum' := Multiset.aestronglyMeasurable_fun_sum
+alias _root_.Multiset.aestronglyMeasurable_sum' := Multiset.aestronglyMeasurable_sum
 @[to_additive existing, deprecated (since := "2025-05-30")]
 alias _root_.Multiset.aestronglyMeasurable_prod' := Multiset.aestronglyMeasurable_prod
 
@@ -419,7 +419,7 @@ theorem _root_.Finset.aestronglyMeasurable_prod {ι : Type*} {f : ι → α → 
     hg ▸ hf _ hi
 
 @[deprecated (since := "2025-05-30")]
-alias _root_.Finset.aestronglyMeasurable_sum' := Finset.aestronglyMeasurable_fun_sum
+alias _root_.Finset.aestronglyMeasurable_sum' := Finset.aestronglyMeasurable_sum
 @[to_additive existing, deprecated (since := "2025-05-30")]
 alias _root_.Finset.aestronglyMeasurable_prod' := Finset.aestronglyMeasurable_prod
 

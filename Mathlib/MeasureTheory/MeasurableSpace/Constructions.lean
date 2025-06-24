@@ -758,7 +758,7 @@ theorem measurableSet_sum_iff {s : Set (α ⊕ β)} :
     MeasurableSet s ↔ MeasurableSet (Sum.inl ⁻¹' s) ∧ MeasurableSet (Sum.inr ⁻¹' s) :=
   Iff.rfl
 
-theorem measurable_sum {_ : MeasurableSpace γ} {f : α ⊕ β → γ} (hl : Measurable (f ∘ Sum.inl))
+theorem measurable_fun_sum {_ : MeasurableSpace γ} {f : α ⊕ β → γ} (hl : Measurable (f ∘ Sum.inl))
     (hr : Measurable (f ∘ Sum.inr)) : Measurable f :=
   Measurable.of_comap_le <|
     le_inf (MeasurableSpace.comap_le_iff_le_map.2 <| hl)
@@ -767,7 +767,7 @@ theorem measurable_sum {_ : MeasurableSpace γ} {f : α ⊕ β → γ} (hl : Mea
 @[measurability]
 theorem Measurable.sumElim {_ : MeasurableSpace γ} {f : α → γ} {g : β → γ} (hf : Measurable f)
     (hg : Measurable g) : Measurable (Sum.elim f g) :=
-  measurable_sum hf hg
+  measurable_fun_sum hf hg
 
 theorem Measurable.sumMap {_ : MeasurableSpace γ} {_ : MeasurableSpace δ} {f : α → β} {g : γ → δ}
     (hf : Measurable f) (hg : Measurable g) : Measurable (Sum.map f g) :=
