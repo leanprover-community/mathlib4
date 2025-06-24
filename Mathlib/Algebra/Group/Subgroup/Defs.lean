@@ -588,9 +588,9 @@ theorem subtype_comp_inclusion {H K : Subgroup G} (hH : H ≤ K) :
 
 open Set
 
-/-- A subgroup is normal if whenever `n ∈ H`, then `g * n * g⁻¹ ∈ H` for every `g : G` -/
+/-- A subgroup `H` is normal if whenever `n ∈ H`, then `g * n * g⁻¹ ∈ H` for every `g : G` -/
 structure Normal : Prop where
-  /-- `N` is closed under conjugation -/
+  /-- `H` is closed under conjugation -/
   conj_mem : ∀ n, n ∈ H → ∀ g : G, g * n * g⁻¹ ∈ H
 
 attribute [class] Normal
