@@ -165,7 +165,7 @@ theorem mk'_ker : ker c.mk' = c :=
 variable (f : M →+* P)
 
 /-- The homomorphism on the quotient of a monoid by a congruence relation `c`
-induced by a homomorphism constant on `c`'s equivalence classes. -/
+induced by a homomorphism constant on the equivalence classes of `c`. -/
 def lift (H : c ≤ ker f) : c.Quotient →+* P where
   toFun x := (Con.liftOn x f) fun _ _ h => H h
   map_zero' := by rw [← f.map_zero]; rfl
@@ -211,8 +211,8 @@ theorem lift_unique (H : c ≤ ker f) (g : c.Quotient →+* P) (Hg : g.comp c.mk
     subst f
     rfl
 
-/-- Surjective ring homomorphisms constant on a congruence relation `c`'s equivalence classes
-    induce a surjective homomorphism on `c`'s quotient. -/
+/-- Surjective ring homomorphisms constant on a the equivalence classes
+of a ring congruence relation induce a surjective homomorphism on the quotient. -/
 theorem lift_surjective_of_surjective (h : c ≤ ker f) (hf : Surjective f) :
     Surjective (c.lift f h) := fun y =>
   (Exists.elim (hf y)) fun w hw => ⟨w, (lift_mk' h w).symm ▸ hw⟩
@@ -269,7 +269,7 @@ theorem rangeS_mk' : RingHom.rangeS c.mk' = ⊤ :=
 variable {f : M →+* P}
 
 /-- Given a congruence relation `c` on a semiring and a homomorphism
-`f` constant on `c`'s equivalence classes, `f` has the same image
+`f` constant on the equivalence classes of `c`, `f` has the same image
 as the homomorphism that `f` induces on the quotient. -/
 theorem lift_rangeS (H : c ≤ ker f) :
     RingHom.rangeS (c.lift f H) = f.rangeS :=
@@ -373,7 +373,7 @@ theorem range_mk' : RingHom.range c.mk' = ⊤ :=
 variable {f : M →+* P}
 
 /-- Given a congruence relation `c` on a ring and a homomorphism `f`
-constant on `c`'s equivalence classes, `f` has the same image
+constant on the equivalence classes of `c`, `f` has the same image
 as the homomorphism that `f` induces on the quotient. -/
 theorem lift_range (H : c ≤ ker f) :
     RingHom.range (c.lift f H) = f.range :=
@@ -422,13 +422,16 @@ theorem range_mk'ₐ :
     AlgHom.range (mk'ₐ R c) = ⊤ :=
   (AlgHom.range_eq_top _).mpr (mk'ₐ_surjective _)
 
+/-- The algebra homomorphism on the quotient of an algebra by a
+congruence relation `c` induced by an algebra homomorphism
+constant on the equivalence classes of `c`. -/
 def liftₐ (c : RingCon M) (f : M →ₐ[R] P) (H : c ≤ ker f) :
     c.Quotient →ₐ[R] P := {
   c.lift f H with
   commutes' r := AlgHomClass.commutes (↑f) r }
 
 /-- Given a congruence relation `c` on a ring and a homomorphism `f`
-constant on `c`'s equivalence classes, `f` has the same image
+constant on the equivalence classes of `c`, `f` has the same image
 as the homomorphism that `f` induces on the quotient. -/
 theorem liftₐ_range (H : c ≤ ker f) :
     AlgHom.range (liftₐ c f H) = f.range := by
