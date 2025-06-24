@@ -676,7 +676,7 @@ theorem lucas_lehmer_necessity (p : ℕ) (w : 3 ≤ p) : (mersenne p).Prime → 
   have := X.ω_pow_trace (q := ⟨_, pos⟩) ?_ ?_ ?_ ?_
   · simp only [PNat.mk_coe] at this
     have other : (2 ^ (p' + 2) - 1 + 1) / 4 = 2 ^ p' := by
-      rw[Nat.sub_add_cancel, pow_add,
+      rw [Nat.sub_add_cancel, pow_add,
         (by norm_num : 2 ^ 2 = 4), mul_div_cancel_right₀ _ (by norm_num)]
       exact Nat.one_le_two_pow
     rw [other] at this
