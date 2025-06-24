@@ -368,7 +368,6 @@ theorem star_adjoin_comm (s : Set A) : star (Algebra.adjoin R s) = Algebra.adjoi
 
 /-- The `StarSubalgebra` obtained from `S : Subalgebra R A` by taking the smallest subalgebra
 containing both `S` and `star S`. -/
-@[simps!]
 def starClosure (S : Subalgebra R A) : StarSubalgebra R A where
   toSubalgebra := S ⊔ star S
   star_mem' := fun {a} ha => by
@@ -376,9 +375,11 @@ def starClosure (S : Subalgebra R A) : StarSubalgebra R A where
     rw [← mem_star_iff _ a, star_adjoin_comm, sup_comm]
     simpa using ha
 
+@[simp]
 theorem coe_starClosure (S : Subalgebra R A) :
     (S.starClosure : Set A) = (S ⊔ star S : Subalgebra R A) := rfl
 
+@[simp]
 theorem mem_starClosure (S : Subalgebra R A) {x : A} :
     x ∈ S.starClosure ↔ x ∈ S ⊔ star S := Iff.rfl
 
