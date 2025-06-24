@@ -96,24 +96,34 @@ lemma smul_const_σ (cov : CovariantDerivative I F V)
     exact (eq_inv_smul_iff₀ ha).mpr rfl
   simp [cov.do_not_read X hσ, hσ₂]
 
--- "should be obvious"
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
+  [∀ (x : M), ContinuousSMul 𝕜 (V x)] [VectorBundle 𝕜 F V] in
 variable {I F V} in
 /-- If `σ` and `σ'` are equal sections of `E`, they have equal covariant derivatives. -/
 lemma congr_σ (cov : CovariantDerivative I F V)
     (X : Π x : M, TangentSpace I x) {σ σ' : Π x : M, V x} (hσ : ∀ x, σ x = σ' x) :
     cov X σ x = cov X σ' x := by
-  sorry
+  simp [funext hσ]
 
--- "should be obvious"
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [(x : M) → Module 𝕜 (V x)]
+     [(x : M) → AddCommGroup (V x)]
+     [∀ (x : M), ContinuousSMul 𝕜 (V x)] [VectorBundle 𝕜 F V] in
 variable {I F V x} in
 /-- If two sections `σ` and `σ'` are equal on a neighbourhood `s` of `x`,
-if one is differentiable at `x` then so is the other. -/
+if one is differentiable at `x` then so is the other.
+Issue: EventuallyEq does not work for dependent functions. -/
 lemma _root_.mdifferentiableAt_dependent_congr {σ σ' : Π x : M, V x} {s : Set M} (hs : s ∈ nhds x)
     (hσ₁ : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x)
     (hσ₂ : ∀ x ∈ s, σ x = σ' x) :
     MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ' x)) x := by
-  sorry
+  apply MDifferentiableAt.congr_of_eventuallyEq hσ₁
+  -- TODO: split off a lemma?
+  apply  Set.EqOn.eventuallyEq_of_mem _ hs
+  intro x hx
+  simp [hσ₂, hx]
 
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [(x : M) → Module 𝕜 (V x)]
+     [∀ (x : M), ContinuousSMul 𝕜 (V x)] [VectorBundle 𝕜 F V] [(x : M) → AddCommGroup (V x)] in
 variable {I F V x} in
 /-- If two sections `σ` and `σ'` are equal on a neighbourhood `s` of `x`,
 one is differentiable at `x` iff the other is. -/
@@ -203,13 +213,12 @@ lemma difference_aux_smul_eq (cov cov' : CovariantDerivative I F V)
     _ = f • (cov X σ - cov' X σ) := by simp [smul_sub]
     _ = _ := rfl
 
+omit [FiniteDimensional ℝ E] [∀ (x : M), IsTopologicalAddGroup (V x)]
+    [∀ (x : M), ContinuousSMul ℝ (V x)] [VectorBundle ℝ F V] in
 lemma difference_aux_smul_eq' (cov cov' : CovariantDerivative I F V)
-    (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (f : M → ℝ)
-    (hσ : MDifferentiable I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)))
-    (hf : MDifferentiable I 𝓘(ℝ) f) :
+    (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (f : M → ℝ) :
     difference_aux cov cov' (f • X) σ = (f : M → ℝ) • difference_aux cov cov' X σ := by
-  simp [difference_aux]
-  sorry -- Chris says "it's obvious"
+  simp [difference_aux, cov.smulX, cov'.smulX, smul_sub]
 
 -- The value of `differenceAux cov cov' X σ` at `x₀` depends only on `X x₀` and `σ x₀`.
 lemma foo (cov cov' : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
