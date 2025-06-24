@@ -182,7 +182,7 @@ private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
     let lctx := md.lctx |>.sanitizeNames.run' {options := (← getOptions)}
     Meta.withLCtx lctx md.localInstances do
       let rootExpr ← loc.rootExpr
-      let some (subExpr, occ) ← viewKAbstractSubExpr rootExpr loc.pos |
+      let some (subExpr, occ) ← withReducible <| viewKAbstractSubExpr rootExpr loc.pos |
         return .text "expressions with bound variables are not supported"
       unless ← kabstractIsTypeCorrect rootExpr subExpr loc.pos do
         return .text <| "The selected expression cannot be rewritten, because the motive is " ++

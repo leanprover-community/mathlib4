@@ -489,7 +489,7 @@ private def rpc (props : SelectInsertParams) : RequestM (RequestTask Html) :=
     Meta.withLCtx lctx md.localInstances do
 
       let rootExpr ← loc.rootExpr
-      let some (subExpr, occ) ← viewKAbstractSubExpr rootExpr loc.pos |
+      let some (subExpr, occ) ← withReducible <| viewKAbstractSubExpr rootExpr loc.pos |
         return .text "rw??: expressions with bound variables are not yet supported"
       unless ← kabstractIsTypeCorrect rootExpr subExpr loc.pos do
         return .text <| "rw??: the selected expression cannot be rewritten, \
@@ -581,3 +581,7 @@ def elabrw??Command : Command.CommandElab := fun stx =>
     logInfo (.joinSep sections.toList "\n\n")
 
 end Mathlib.Tactic.LibraryRewrite
+
+
+-- example (n m : Nat) : n + m + 0 = m + n := by
+--   rw??
