@@ -365,10 +365,10 @@ theorem isCyclic_units_iff (n : ℕ) :
     intro p hp ho
     apply exists_congr
     intro m
+    rw [← not_lt, Nat.lt_one_iff]
     constructor
     · intro hnpm
       refine ⟨?_, Or.inl hnpm⟩
-      simp only [← not_lt, Nat.lt_one_iff]
       rintro ⟨rfl⟩
       rw [pow_zero] at hnpm
       exact h1 hnpm
@@ -406,13 +406,10 @@ theorem isCyclic_units_iff (n : ℕ) :
         simp [← H, ← mul_assoc]
     · have ha1 : a = 1 := by
         apply le_antisymm _ (Nat.one_le_iff_ne_zero.mpr ha0)
-        rw [← not_lt]
-        intro (ha: 2 ≤ a)
+        by_contra! ha
         apply hn4
         rw [hm]
-        apply Dvd.dvd.mul_right
-        change 2 ^2 ∣ _
-        exact Nat.pow_dvd_pow_iff_le_right'.mpr ha
+        apply Dvd.dvd.mul_right (Nat.pow_dvd_pow_iff_le_right'.mpr ha)
       rw [ha1, pow_one] at hm
       have hoddm : Odd m := by
         rw [← Nat.not_even_iff_odd, even_iff_two_dvd]
