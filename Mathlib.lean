@@ -5551,6 +5551,7 @@ import Mathlib.RingTheory.TwoSidedIdeal.Instances
 import Mathlib.RingTheory.TwoSidedIdeal.Kernel
 import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
+import Mathlib.RingTheory.TwoSidedIdeal.SpanAsSum
 import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 import Mathlib.RingTheory.UniqueFactorizationDomain.FactorSet
