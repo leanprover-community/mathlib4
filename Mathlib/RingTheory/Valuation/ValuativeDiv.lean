@@ -144,7 +144,7 @@ def ValueGroup.lift {α : Sort*} (f : R → unitSubmonoid R → α)
     (t : ValueGroup R) : α :=
   Quotient.lift (fun (x, y) => f x y) (fun (x, t) (y, s) ⟨h₁, h₂⟩ => hf x y s t h₁ h₂) t
 
-protected
+@[simp] protected
 theorem ValueGroup.lift_mk {α : Sort*} (f : R → unitSubmonoid R → α)
     (hf : ∀ (x y : R) (t s : unitSubmonoid R), x * t ≤ᵥ y * s → y * s ≤ᵥ x * t → f x s = f y t)
     (x : R) (y : unitSubmonoid R) : ValueGroup.lift f hf (.mk x y) = f x y := rfl
@@ -158,7 +158,7 @@ def ValueGroup.lift₂ {α : Sort*} (f : R → unitSubmonoid R → R → unitSub
   Quotient.lift₂ (fun (x, t) (y, s) => f x t y s)
     (fun (x, t) (z, v) (y, s) (w, u) ⟨h₁, h₂⟩ ⟨h₃, h₄⟩ => hf x y z w s t u v h₁ h₂ h₃ h₄) t₁ t₂
 
-protected
+@[simp] protected
 def ValueGroup.lift₂_mk {α : Sort*} (f : R → unitSubmonoid R → R → unitSubmonoid R → α)
     (hf : ∀ (x y z w : R) (t s u v : unitSubmonoid R),
       x * t ≤ᵥ y * s → y * s ≤ᵥ x * t → z * u ≤ᵥ w * v → w * v ≤ᵥ z * u →
@@ -174,6 +174,16 @@ instance : One (ValueGroup R) where
 
 instance : Mul (ValueGroup R) where
   mul := ValueGroup.lift₂ (fun a b c d => .mk (a * c) (b * d)) sorry
+
+instance : LE (ValueGroup R) where
+  le := ValueGroup.lift₂ (fun a s b t => a * t ≤ᵥ b * s) sorry
+
+instance : LinearOrder (ValueGroup R) where
+  le_refl := sorry
+  le_trans := sorry
+  le_antisymm := sorry
+  le_total := sorry
+  toDecidableLE := Classical.decRel LE.le
 
 instance : Bot (ValueGroup R) where
   bot := 0
@@ -193,12 +203,6 @@ instance : LinearOrderedCommGroupWithZero (ValueGroup R) where
   mul_comm := sorry
   zero_mul := sorry
   mul_zero := sorry
-  le := Quotient.lift₂ (fun (a,s) (b,t) => a * t ≤ᵥ b * s) sorry
-  le_refl := sorry
-  le_trans := sorry
-  le_antisymm := sorry
-  le_total := sorry
-  toDecidableLE := inferInstance
   mul_le_mul_left := sorry
   mul_le_mul_right := sorry
   bot_le := sorry
