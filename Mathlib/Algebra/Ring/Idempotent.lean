@@ -7,6 +7,7 @@ import Mathlib.Algebra.GroupWithZero.Idempotent
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Order.Notation
 import Mathlib.Tactic.Convert
+import Mathlib.Algebra.Group.Torsion
 
 /-!
 # Idempotent elements of a ring
@@ -90,5 +91,17 @@ theorem add [NonUnitalNonAssocSemiring R]
     (hab : a * b + b * a = 0) : IsIdempotentElem (a + b) := by
   simp_rw [IsIdempotentElem, mul_add, add_mul, ha.eq, hb.eq, add_add_add_comm, ← add_assoc,
     add_assoc a, hab, zero_add]
+
+/-- If idempotent `p` and element `q` anti-commute, then their product is zero. -/
+theorem mul_eq_zero_of_anticommute {p q : R} [NonUnitalSemiring R] [IsAddTorsionFree R]
+    (hp : IsIdempotentElem p) (hpq : p * q + q * p = 0) : p * q = 0 := by
+  have h : p * q * p + p * q * p = 0 := by
+    have : p * (p * q + q * p) * p = 0 := by rw [hpq, mul_zero, zero_mul]
+    simp_rw [mul_add, add_mul, mul_assoc, hp.eq, ← mul_assoc, hp.eq] at this
+    exact this
+  replace h : p * q * p = 0 := by rwa [← two_nsmul, ← nsmul_zero 2,
+    nsmul_right_inj ((Nat.zero_ne_add_one 1).symm)] at h
+  suffices p * p * q + p * q * p = 0 by rwa [h, add_zero, hp.eq] at this
+  rw [mul_assoc, mul_assoc, ← mul_add, hpq, mul_zero]
 
 end IsIdempotentElem
