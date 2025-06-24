@@ -41,38 +41,38 @@ lemma isGLB_σsInf (hs : s.Countable) : IsGLB s (sInf s) :=
 lemma le_σsSup (hs : s.Countable) (ha : a ∈ s) : a ≤ sSup s :=
   (isLUB_σsSup hs).left ha
 
+lemma σsInf_le (hs : s.Countable) (ha : a ∈ s) : sInf s ≤ a :=
+  le_σsSup (α := αᵒᵈ) hs ha
+
 lemma σsSup_le (hs : s.Countable) (ha : a ∈ upperBounds s) : sSup s ≤ a :=
   (isLUB_σsSup hs).right ha
 
-lemma σsInf_le (hs : s.Countable) (ha : a ∈ s) : sInf s ≤ a :=
-  (isGLB_σsInf hs).left ha
-
 lemma le_σsInf (hs : s.Countable) (ha : a ∈ lowerBounds s) : a ≤ sInf s :=
-  (isGLB_σsInf hs).right ha
+  σsSup_le (α := αᵒᵈ) hs ha
 
 theorem le_σsSup_of_le (hs : s.Countable) (hb : b ∈ s) (h : a ≤ b) : a ≤ sSup s :=
   le_trans h (le_σsSup hs hb)
 
 theorem σsInf_le_of_le (hs : s.Countable) (hb : b ∈ s) (h : b ≤ a) : sInf s ≤ a :=
-  le_trans (σsInf_le hs hb) h
+  le_σsSup_of_le (α := αᵒᵈ) hs hb h
 
 theorem σsSup_le_σsSup (ht : t.Countable) (hs : s.Countable) (h : s ⊆ t) : sSup s ≤ sSup t :=
   σsSup_le hs fun _ ha => le_σsSup ht (h ha)
 
 theorem σsInf_le_σsInf (ht : t.Countable) (hs : s.Countable) (h : s ⊆ t) : sInf t ≤ sInf s :=
-  le_σsInf hs fun _ ha => σsInf_le ht (h ha)
+  σsSup_le_σsSup (α := αᵒᵈ) ht hs h
 
 theorem le_σsSup_iff (hs : s.Countable) : a ≤ sSup s ↔ ∀ b ∈ upperBounds s, a ≤ b :=
   ⟨fun h _ hb => le_trans h (σsSup_le hs hb), fun hb => hb _ fun _ => le_σsSup hs⟩
 
 theorem σsInf_le_iff (hs : s.Countable) : sInf s ≤ a ↔ ∀ b ∈ lowerBounds s, b ≤ a :=
-  ⟨fun h _ hb => le_trans (le_σsInf hs hb) h, fun hb => hb _ fun _ => σsInf_le hs⟩
+  le_σsSup_iff (α := αᵒᵈ) hs
 
 theorem IsLUB.σsSup_eq (h : IsLUB s a) (hs : s.Countable) : sSup s = a :=
   (isLUB_σsSup hs).unique h
 
 theorem IsGLB.σsInf_eq (h : IsGLB s a) (hs : s.Countable) : sInf s = a :=
-  (isGLB_σsInf hs).unique h
+  IsLUB.σsSup_eq (α := αᵒᵈ) h hs
 
 theorem subset_Icc_σsInf_σsSup (hs : s.Countable) : s ⊆ Set.Icc (sInf s) (sSup s) :=
   fun _ hx => ⟨σsInf_le hs hx, le_σsSup hs hx⟩
@@ -81,7 +81,7 @@ theorem σSup_le_iff (hs : s.Countable) : sSup s ≤ a ↔ ∀ b ∈ s, b ≤ a 
   isLUB_le_iff (isLUB_σsSup hs)
 
 theorem le_σsInf_iff (hs : s.Countable) : a ≤ sInf s ↔ ∀ b ∈ s, a ≤ b :=
-  le_isGLB_iff (isGLB_σsInf hs)
+  σSup_le_iff (α := αᵒᵈ) hs
 
 theorem notMem_of_lt_σsInf (h : a < sInf s) (hs : s.Countable) : a ∉ s :=
   fun hx => lt_irrefl _ (h.trans_le (σsInf_le hs hx))
