@@ -20,8 +20,9 @@ import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 Convention for a finite dimensional vector space `V` over a field `F`, is that `G(k, V; F)` should
 parametrise `k`-dimensional subspaces of `V`, but this only works for finite dimensional spaces, and
-over fields. This is why Grothendieck in EGA V.11 (unpublished) and EGA I.9.7.3 (Springer edition
-only) defines the Grassmannians to parametrise locally free rank-`k` quotients instead.
+over fields. This is why Grothendieck in EGA V.11 (unpublished) and
+[Grothendieck, EGA I.9.7.3][grothendieck-1971] (Springer edition only)
+defines the Grassmannians to parametrise locally free rank-`k` quotients instead.
 
 Then the conventional `k`-dimensional subspaces of `V` with dimension `n`, can be recovered by
 `G(n-k, V; F)`.
