@@ -46,7 +46,7 @@ theorem HasFDerivWithinAt.partial_fst
   {s : Set E} {t : Set F}
   {z : E × F} (hz : z ∈ s ×ˢ t)
   (hf : HasFDerivWithinAt f (f' z) (s ×ˢ t) z) :
-      HasFDerivWithinAt (f ∘ (·, z.2)) ((f' z) ∘L (.inl _ _ _)) s z.1 := by
+      HasFDerivWithinAt (f ∘ (·, z.2)) (f' z ∘L .inl ..) s z.1 := by
     have hleft (x:E) := HasFDerivWithinAt.prodMk
       (hasFDerivWithinAt_id (𝕜 := 𝕜) x s)
       (hasFDerivWithinAt_const z.2 x s)
@@ -63,7 +63,7 @@ theorem HasFDerivWithinAt.partial_snd
   {s : Set E} {t : Set F}
   {z : E × F} (hz : z ∈ s ×ˢ t)
   (hf : HasFDerivWithinAt f (f' z) (s ×ˢ t) z) :
-      HasFDerivWithinAt (f ∘ (z.1, ·)) ((f' z) ∘L (.inr _ _ _)) t z.2 := by
+      HasFDerivWithinAt (f ∘ (z.1, ·)) (f' z ∘L .inr ..) t z.2 := by
     have hright (y:F) := HasFDerivWithinAt.prodMk
       (hasFDerivWithinAt_const z.1 y t)
       (hasFDerivWithinAt_id (𝕜 := 𝕜) y t)
