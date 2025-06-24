@@ -32,11 +32,11 @@ section BooleanSigmaAlgebra
 
 variable [BooleanSigmaAlgebra α] [Countable ι] {s t : Set α} {a b : α}
 
-lemma isLUB_σsSup (hs : s.Countable) : IsLUB s (sSup s) := by
-  exact BooleanSigmaAlgebra.isLUB_σsSup s hs
+lemma isLUB_σsSup (hs : s.Countable) : IsLUB s (sSup s) :=
+  BooleanSigmaAlgebra.isLUB_σsSup s hs
 
-lemma isGLB_σsInf (hs : s.Countable) : IsGLB s (sInf s) := by
-  exact BooleanSigmaAlgebra.isGLB_σsInf s hs
+lemma isGLB_σsInf (hs : s.Countable) : IsGLB s (sInf s) :=
+  BooleanSigmaAlgebra.isGLB_σsInf s hs
 
 lemma le_σsSup (hs : s.Countable) (ha : a ∈ s) : a ≤ sSup s :=
   (isLUB_σsSup hs).left ha
