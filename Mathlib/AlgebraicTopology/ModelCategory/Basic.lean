@@ -110,8 +110,7 @@ private lemma mk'.cm3a_aux [CategoryWithFibrations C]  [CategoryWithCofibrations
     { i := Arrow.homMk (h.i.left ≫ hw.i) h.i.right
       r := Arrow.homMk sq.lift h.r.right }
   have h' : trivialFibrations C hw.p :=
-    ⟨hw.hp, by simpa only [← weakEquivalence_iff]
-      using weakEquivalence_of_precomp_of_fac hw.fac⟩
+    ⟨hw.hp, (weakEquivalence_iff _).1 (weakEquivalence_of_precomp_of_fac hw.fac)⟩
   simpa only [weakEquivalence_iff] using (of_retract this h').2
 
 /-- Constructor for `ModelCategory C` which assumes a formulation of axioms
