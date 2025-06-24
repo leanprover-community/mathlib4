@@ -91,50 +91,6 @@ lemma inverse_right_inv [Nonempty H] (h : SliceModel F I I') (z : H') (hz : z �
 
 end SliceModel
 
-section
-
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] [Unique G]
-
-namespace ContinuousLinearEquiv
-
-section prodAssoc -- PRed in #26082
-
-variable (R M₁ M₂ M₃ : Type*) [Semiring R]
-  [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [Module R M₁] [Module R M₂] [Module R M₃]
-  [TopologicalSpace M₁] [TopologicalSpace M₂] [TopologicalSpace M₃]
-
-/-- The product of topological modules is associative up to continuous linear isomorphism.
-This is `LinearEquiv.prodAssoc` prodAssoc as a continuous linear equivalence. -/
-def prodAssoc : ((M₁ × M₂) × M₃) ≃L[R] M₁ × M₂ × M₃ where
-  toLinearEquiv := LinearEquiv.prodAssoc R M₁ M₂ M₃
-  continuous_toFun := (continuous_fst.comp continuous_fst).prodMk
-    ((continuous_snd.comp continuous_fst).prodMk continuous_snd)
-  continuous_invFun := (continuous_fst.prodMk (continuous_fst.comp continuous_snd)).prodMk
-    (continuous_snd.comp continuous_snd)
-
-@[simp]
-lemma prodAssoc_toLinearEquiv :
-  (prodAssoc 𝕜 E E' E'').toLinearEquiv = LinearEquiv.prodAssoc 𝕜 E E' E'' := rfl
-
--- not simp as the combination of existing lemmas. TODO: should this one still be added?
-lemma prodAssoc_toEquiv :
-  (prodAssoc 𝕜 E E' E'').toEquiv = Equiv.prodAssoc E E' E'' := rfl
-
--- TODO: move up to Equiv.prodAssoc or so, then this one is implied...
-@[simp]
-lemma prodAssoc_apply (p₁ : E) (p₂ : E') (p₃ : E'') :
-  (prodAssoc 𝕜 E E' E'') ((p₁, p₂), p₃) = (p₁, (p₂, p₃)) := rfl
-
-@[simp]
-lemma prodAssoc_symm_apply (p₁ : E) (p₂ : E') (p₃ : E'') :
-  (prodAssoc 𝕜 E E' E'').symm (p₁, (p₂, p₃)) = ((p₁, p₂), p₃) := rfl
-
-end prodAssoc
-
-end ContinuousLinearEquiv
-
-end
-
 section instances
 
 /-- Every model with corners is a slice model over itself. -/
