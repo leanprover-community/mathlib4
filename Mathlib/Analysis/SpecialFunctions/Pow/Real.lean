@@ -56,7 +56,6 @@ theorem rpow_intCast (x : ℝ) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
 @[simp, norm_cast]
 theorem rpow_natCast (x : ℝ) (n : ℕ) : x ^ (n : ℝ) = x ^ n := by simpa using rpow_intCast x n
 
--- See library note [no_index around OfNat.ofNat]
 @[simp]
 lemma rpow_ofNat (x : ℝ) (n : ℕ) [n.AtLeastTwo] :
     x ^ (ofNat(n) : ℝ) = x ^ (ofNat(n) : ℕ) :=
