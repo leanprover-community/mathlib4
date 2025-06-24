@@ -10,9 +10,14 @@ import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 /-!
 # The calculus of fractions deduced from an adjunction
 
-If `G ⊣ F` is an adjunction, and `F` is fully faithful,
-then there is a left calculus of fractions for
-the inverse image by `G` of the class of isomorphisms.
+If `G ⊣ F` is an adjunction, `F` is fully faithful,
+and `W` is a class of morphisms that is inverted by `G`
+and such that the morphism `adj.unit.app X` belongs to `W`
+for any object `X`, then `G` is a localization functor
+with respect to `W`. Moreover, if `W` is multiplicative,
+then `W` has a calculus of left fractions. This
+holds in particular if `W` is the inverse image of
+the class of isomorphisms by `G`.
 
 (The dual statement is also obtained.)
 
@@ -43,7 +48,13 @@ lemma isLocalization_leftAdjoint [F.Full] [F.Faithful]
     (Equivalence.mk Φ (F ⋙ W.Q)
     (Localization.liftNatIso W.Q W W.Q (G ⋙ F ⋙ W.Q) _ _
       (W.Q.leftUnitor.symm ≪≫ asIso (whiskerRight adj.unit W.Q) ≪≫ Functor.associator _ _ _))
-      (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e ≪≫ (asIso adj.counit))) e
+      (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e ≪≫ asIso adj.counit)) e
+
+lemma isLocalization_rightAdjoint [F.Full] [F.Faithful]
+    (adj : F ⊣ G) (W : MorphismProperty C₁)
+    (hW : W.IsInvertedBy G) (hW' : (W.functorCategory C₁) adj.counit) :
+    G.IsLocalization W := by
+  simpa using isLocalization_leftAdjoint adj.op W.op hW.op (fun X ↦ hW' X.unop)
 
 lemma hasLeftCalculusOfFractions (adj : G ⊣ F) (W : MorphismProperty C₁)
     [W.IsMultiplicative] (hW : W.IsInvertedBy G) (hW' : (W.functorCategory C₁) adj.unit) :
@@ -72,11 +83,17 @@ lemma hasLeftCalculusOfFractions' [F.Full] [F.Faithful] (adj : G ⊣ F) :
     rw [inverseImage_iff, isomorphisms.iff]
     apply isIso_of_reflects_iso _ F)
 
-lemma hasRightCalculusOfFractions [F.Full] [F.Faithful] (adj : F ⊣ G) :
-    ((isomorphisms C₂).inverseImage G).HasRightCalculusOfFractions := by
-  suffices ((isomorphisms C₂).inverseImage G).op.HasLeftCalculusOfFractions from
-    inferInstanceAs ((isomorphisms C₂).inverseImage G).op.unop.HasRightCalculusOfFractions
-  simpa only [← isomorphisms_op] using adj.op.hasLeftCalculusOfFractions'
+lemma hasRightCalculusOfFractions (adj : F ⊣ G) (W : MorphismProperty C₁)
+    [W.IsMultiplicative] (hW : W.IsInvertedBy G) (hW' : (W.functorCategory _) adj.counit) :
+    W.HasRightCalculusOfFractions :=
+  have := hasLeftCalculusOfFractions adj.op W.op hW.op (fun _ ↦ hW' _)
+  inferInstanceAs W.op.unop.HasRightCalculusOfFractions
+
+lemma hasRightCalculusOfFractions' [F.Full] [F.Faithful] (adj : F ⊣ G) :
+    ((isomorphisms C₂).inverseImage G).HasRightCalculusOfFractions :=
+  hasRightCalculusOfFractions adj _ (fun _ _ _ h ↦ h) (fun X ↦ by
+    rw [inverseImage_iff, isomorphisms.iff]
+    apply isIso_of_reflects_iso _ F)
 
 end Adjunction
 
