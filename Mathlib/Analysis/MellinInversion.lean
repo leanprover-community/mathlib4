@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lawrence Wu
 -/
 import Mathlib.Analysis.Fourier.Inversion
+import Mathlib.Analysis.MellinTransform
 
 /-!
 # Mellin inversion formula
@@ -64,7 +65,7 @@ theorem mellin_eq_fourierIntegral (f : ℝ → E) {s : ℂ} :
       have : 2 * (π : ℂ) ≠ 0 := by norm_num; exact pi_ne_zero
       field_simp
     _ = 𝓕 (fun (u : ℝ) ↦ (Real.exp (-s.re * u) • f (Real.exp (-u)))) (s.im / (2 * π)) := by
-      simp [fourierIntegral_eq']
+      simp [fourierIntegral_eq', mul_comm (_ / _)]
 
 theorem mellinInv_eq_fourierIntegralInv (σ : ℝ) (f : ℂ → E) {x : ℝ} (hx : 0 < x) :
     mellinInv σ f x =
@@ -81,7 +82,7 @@ theorem mellinInv_eq_fourierIntegralInv (σ : ℝ) (f : ℂ → E) {x : ℝ} (hx
     push_cast
     ring_nf
   _ = (x : ℂ) ^ (-σ : ℂ) • 𝓕⁻ (fun (y : ℝ) ↦ f (σ + 2 * π * y * I)) (-Real.log x) := by
-    simp [fourierIntegralInv_eq']
+    simp [fourierIntegralInv_eq', mul_comm (Real.log _)]
 
 variable [CompleteSpace E]
 

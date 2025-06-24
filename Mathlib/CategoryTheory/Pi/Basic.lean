@@ -6,7 +6,6 @@ Authors: Simon Hudon, Kim Morrison
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.Products.Basic
-import Batteries.Data.Sum.Basic
 
 /-!
 # Categories of indexed families of objects.
@@ -30,14 +29,6 @@ instance pi : Category.{max w₀ v₁} (∀ i, C i) where
   id X i := 𝟙 (X i)
   comp f g i := f i ≫ g i
 
-/-- This provides some assistance to typeclass search in a common situation,
-which otherwise fails. (Without this `CategoryTheory.Pi.has_limit_of_has_limit_comp_eval` fails.)
--/
-abbrev pi' {I : Type v₁} (C : I → Type u₁) [∀ i, Category.{v₁} (C i)] : Category.{v₁} (∀ i, C i) :=
-  CategoryTheory.pi C
-
-attribute [instance] pi'
-
 namespace Pi
 
 @[simp]
@@ -49,7 +40,6 @@ theorem comp_apply {X Y Z : ∀ i, C i} (f : X ⟶ Y) (g : Y ⟶ Z) (i) :
     (f ≫ g : ∀ i, X i ⟶ Z i) i = f i ≫ g i :=
   rfl
 
--- Porting note: need to add an additional `ext` lemma.
 @[ext]
 lemma ext {X Y : ∀ i, C i} {f g : X ⟶ Y} (w : ∀ i, f i = g i) : f = g :=
   funext (w ·)
@@ -111,7 +101,7 @@ def comapComp (f : K → J) (g : J → I) : comap C g ⋙ comap (C ∘ g) f ≅ 
 /-- The natural isomorphism between pulling back then evaluating, and just evaluating. -/
 @[simps!]
 def comapEvalIsoEval (h : J → I) (j : J) : comap C h ⋙ eval (C ∘ h) j ≅ eval C (h j) :=
-  NatIso.ofComponents (fun f => Iso.refl _) (by simp only [Iso.refl]; aesop_cat)
+  NatIso.ofComponents (fun _ => Iso.refl _) (by simp only [Iso.refl]; simp)
 
 end
 
@@ -141,7 +131,7 @@ def sum : (∀ i, C i) ⥤ (∀ j, D j) ⥤ ∀ s : I ⊕ J, Sum.elim C D s wher
         match s with
         | .inl i => X i
         | .inr j => Y j
-      map := fun {Y} {Y'} f s =>
+      map := fun {_} {_} f s =>
         match s with
         | .inl i => 𝟙 (X i)
         | .inr j => f j }
@@ -206,7 +196,7 @@ section EqToHom
 
 @[simp]
 theorem eqToHom_proj {x x' : ∀ i, C i} (h : x = x') (i : I) :
-    (eqToHom h : x ⟶ x') i = eqToHom (Function.funext_iff.mp h i) := by
+    (eqToHom h : x ⟶ x') i = eqToHom (funext_iff.mp h i) := by
   subst h
   rfl
 
@@ -232,7 +222,6 @@ theorem pi_ext (f f' : A ⥤ ∀ i, C i) (h : ∀ i, f ⋙ (Pi.eval C i) = f' �
     have := congr_obj h X
     simpa
   · intro X Y g
-    dsimp
     funext i
     specialize h i
     have := congr_hom h g
@@ -348,7 +337,7 @@ def Pi.optionEquivalence (C' : Option J → Type u₁) [∀ i, Category.{v₁} (
     | some i => Prod.snd _ _ ⋙ (Pi.eval _ i))
   unitIso := NatIso.pi' (fun i => match i with
     | none => Iso.refl _
-    | some i => Iso.refl _)
+    | some _ => Iso.refl _)
   counitIso := by exact Iso.refl _
 
 namespace Equivalence

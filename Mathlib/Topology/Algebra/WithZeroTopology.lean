@@ -3,8 +3,10 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
+import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Order.OrderClosed
+import Mathlib.Topology.Separation.Regular
 
 /-!
 # The topology on linearly ordered commutative groups with zero
@@ -42,15 +44,15 @@ scoped instance (priority := 100) topologicalSpace : TopologicalSpace Γ₀ :=
   nhdsAdjoint 0 <| ⨅ γ ≠ 0, 𝓟 (Iio γ)
 
 theorem nhds_eq_update : (𝓝 : Γ₀ → Filter Γ₀) = update pure 0 (⨅ γ ≠ 0, 𝓟 (Iio γ)) := by
-   rw [nhds_nhdsAdjoint, sup_of_le_right]
-   exact le_iInf₂ fun γ hγ ↦ le_principal_iff.2 <| zero_lt_iff.2 hγ
+  rw [nhds_nhdsAdjoint, sup_of_le_right]
+  exact le_iInf₂ fun γ hγ ↦ le_principal_iff.2 <| zero_lt_iff.2 hγ
 
 /-!
 ### Neighbourhoods of zero
 -/
 
 theorem nhds_zero : 𝓝 (0 : Γ₀) = ⨅ γ ≠ 0, 𝓟 (Iio γ) := by
-  rw [nhds_eq_update, update_same]
+  rw [nhds_eq_update, update_self]
 
 /-- In a linearly ordered group with zero element adjoined, `U` is a neighbourhood of `0` if and
 only if there exists a nonzero element `γ₀` such that `Iio γ₀ ⊆ U`. -/
@@ -117,7 +119,7 @@ theorem Iio_mem_nhds (h : γ₁ < γ₂) : Iio γ₂ ∈ 𝓝 γ₁ := by
 
 theorem isOpen_iff {s : Set Γ₀} : IsOpen s ↔ (0 : Γ₀) ∉ s ∨ ∃ γ, γ ≠ 0 ∧ Iio γ ⊆ s := by
   rw [isOpen_iff_mem_nhds, ← and_forall_ne (0 : Γ₀)]
-  simp (config := { contextual := true }) [nhds_of_ne_zero, imp_iff_not_or,
+  simp +contextual [nhds_of_ne_zero, imp_iff_not_or,
     hasBasis_nhds_zero.mem_iff]
 
 theorem isClosed_iff {s : Set Γ₀} : IsClosed s ↔ (0 : Γ₀) ∈ s ∨ ∃ γ, γ ≠ 0 ∧ s ⊆ Ici γ := by
@@ -158,14 +160,14 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
     simp only [continuous_iff_continuousAt, ContinuousAt]
     rintro ⟨x, y⟩
     wlog hle : x ≤ y generalizing x y
-    · have := (this y x (le_of_not_le hle)).comp (continuous_swap.tendsto (x, y))
+    · have := (this y x (le_of_not_ge hle)).comp (continuous_swap.tendsto (x, y))
       simpa only [mul_comm, Function.comp_def, Prod.swap] using this
     rcases eq_or_ne x 0 with (rfl | hx) <;> [rcases eq_or_ne y 0 with (rfl | hy); skip]
     · rw [zero_mul]
       refine ((hasBasis_nhds_zero.prod_nhds hasBasis_nhds_zero).tendsto_iff hasBasis_nhds_zero).2
         fun γ hγ => ⟨(γ, 1), ⟨hγ, one_ne_zero⟩, ?_⟩
       rintro ⟨x, y⟩ ⟨hx : x < γ, hy : y < 1⟩
-      exact (mul_lt_mul₀ hx hy).trans_eq (mul_one γ)
+      exact (mul_lt_mul'' hx hy zero_le' zero_le').trans_eq (mul_one γ)
     · rw [zero_mul, nhds_prod_eq, nhds_of_ne_zero hy, prod_pure, tendsto_map'_iff]
       refine (hasBasis_nhds_zero.tendsto_iff hasBasis_nhds_zero).2 fun γ hγ => ?_
       refine ⟨γ / y, div_ne_zero hγ hy, fun x hx => ?_⟩

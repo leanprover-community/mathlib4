@@ -63,13 +63,14 @@ noncomputable def lookupFinsupp (l : AList fun _x : α => M) : α →₀ M where
     (l.lookup a).getD 0
   mem_support_toFun a := by
     classical
-      simp_rw [@mem_toFinset _ _, List.mem_keys, List.mem_filter, ← mem_lookup_iff]
+      simp_rw [mem_toFinset, List.mem_keys, List.mem_filter, ← mem_lookup_iff]
       cases lookup a l <;> simp
 
 @[simp]
 theorem lookupFinsupp_apply [DecidableEq α] (l : AList fun _x : α => M) (a : α) :
     l.lookupFinsupp a = (l.lookup a).getD 0 := by
-    convert rfl; congr
+  simp only [lookupFinsupp, ne_eq, Finsupp.coe_mk]
+  congr
 
 @[simp]
 theorem lookupFinsupp_support [DecidableEq α] [DecidableEq M] (l : AList fun _x : α => M) :
@@ -80,12 +81,12 @@ theorem lookupFinsupp_support [DecidableEq α] [DecidableEq M] (l : AList fun _x
 theorem lookupFinsupp_eq_iff_of_ne_zero [DecidableEq α] {l : AList fun _x : α => M} {a : α} {x : M}
     (hx : x ≠ 0) : l.lookupFinsupp a = x ↔ x ∈ l.lookup a := by
   rw [lookupFinsupp_apply]
-  cases' lookup a l with m <;> simp [hx.symm]
+  rcases lookup a l with - | m <;> simp [hx.symm]
 
 theorem lookupFinsupp_eq_zero_iff [DecidableEq α] {l : AList fun _x : α => M} {a : α} :
     l.lookupFinsupp a = 0 ↔ a ∉ l ∨ (0 : M) ∈ l.lookup a := by
   rw [lookupFinsupp_apply, ← lookup_eq_none]
-  cases' lookup a l with m <;> simp
+  rcases lookup a l with - | m <;> simp
 
 @[simp]
 theorem empty_lookupFinsupp : lookupFinsupp (∅ : AList fun _x : α => M) = 0 := by
@@ -103,8 +104,7 @@ theorem insert_lookupFinsupp [DecidableEq α] (l : AList fun _x : α => M) (a : 
 theorem singleton_lookupFinsupp (a : α) (m : M) :
     (singleton a m).lookupFinsupp = Finsupp.single a m := by
   classical
-  -- porting note (#10745): was `simp [← AList.insert_empty]` but timeout issues
-  simp only [← AList.insert_empty, insert_lookupFinsupp, empty_lookupFinsupp, Finsupp.zero_update]
+  simp [← AList.insert_empty]
 
 @[simp]
 theorem _root_.Finsupp.toAList_lookupFinsupp (f : α →₀ M) : f.toAList.lookupFinsupp = f := by

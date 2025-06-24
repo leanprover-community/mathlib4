@@ -9,10 +9,10 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 /-!
 # Theorems about invertible elements in a `GroupWithZero`
 
-We intentionally keep imports minimal here as this file is used by `Mathlib.Tactic.NormNum`.
+We intentionally keep imports minimal here as this file is used by `Mathlib/Tactic/NormNum.lean`.
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 universe u
 
@@ -24,8 +24,6 @@ theorem Invertible.ne_zero [MulZeroOneClass α] (a : α) [Nontrivial α] [Invert
     calc
       0 = ⅟ a * a := by simp [ha]
       _ = 1 := invOf_mul_self
-
-@[deprecated (since := "2024-08-15")] alias nonzero_of_invertible := Invertible.ne_zero
 
 instance (priority := 100) Invertible.toNeZero [MulZeroOneClass α] [Nontrivial α] (a : α)
     [Invertible a] : NeZero a :=
@@ -80,7 +78,6 @@ theorem div_self_of_invertible (a : α) [Invertible a] : a / a = 1 :=
 def invertibleDiv (a b : α) [Invertible a] [Invertible b] : Invertible (a / b) :=
   ⟨b / a, by simp [← mul_div_assoc], by simp [← mul_div_assoc]⟩
 
--- Porting note (#10618): removed `simp` attribute as `simp` can prove it
 theorem invOf_div (a b : α) [Invertible a] [Invertible b] [Invertible (a / b)] :
     ⅟ (a / b) = b / a :=
   invOf_eq_right_inv (by simp [← mul_div_assoc])

@@ -15,7 +15,7 @@ An automorphism `φ` of a group `G` is fixed-point-free if `1 : G` is the only f
 
 namespace MonoidHom
 
-variable {G : Type*}
+variable {F G : Type*}
 
 section Definitions
 
@@ -33,9 +33,7 @@ def commutatorMap [Div G] (g : G) := g / φ g
 end Definitions
 
 namespace FixedPointFree
-
--- todo: refactor Mathlib/Algebra/GroupPower/IterateHom to generalize φ to MonoidHomClass
-variable [Group G] {φ : G →* G}
+variable [Group G] [FunLike F G G] [MonoidHomClass F G G] {φ : F}
 
 theorem commutatorMap_injective (hφ : FixedPointFree φ) : Function.Injective (commutatorMap φ) := by
   refine fun x y h ↦ inv_mul_eq_one.mp <| hφ _ ?_
@@ -54,8 +52,8 @@ theorem prod_pow_eq_one (hφ : FixedPointFree φ) {n : ℕ} (hn : φ^[n] = _root
 
 theorem coe_eq_inv_of_sq_eq_one (hφ : FixedPointFree φ) (h2 : φ^[2] = _root_.id) : ⇑φ = (·⁻¹) := by
   ext g
-  have key : 1 * g * φ g = 1 := hφ.prod_pow_eq_one h2 g
-  rwa [one_mul, ← inv_eq_iff_mul_eq_one, eq_comm] at key
+  have key : g * φ g = 1 := by simpa [List.range_succ] using hφ.prod_pow_eq_one h2 g
+  rwa [← inv_eq_iff_mul_eq_one, eq_comm] at key
 
 section Involutive
 

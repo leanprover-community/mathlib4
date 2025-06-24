@@ -21,21 +21,14 @@ derivative
 -/
 
 
-universe u v w
+universe u
 
-open scoped Classical Topology ENNReal
+open scoped Topology
 open Filter Asymptotics Set
 
-open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
+open ContinuousLinearMap (smulRight)
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {f f₀ f₁ g : 𝕜 → F}
-variable {f' f₀' f₁' g' : F}
-variable {x : 𝕜}
-variable {s t : Set 𝕜}
-variable {L : Filter 𝕜}
+variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {x : 𝕜} {s : Set 𝕜}
 
 section Inverse
 
@@ -45,7 +38,7 @@ theorem hasStrictDerivAt_inv (hx : x ≠ 0) : HasStrictDerivAt Inv.inv (-(x ^ 2)
   suffices
     (fun p : 𝕜 × 𝕜 => (p.1 - p.2) * ((x * x)⁻¹ - (p.1 * p.2)⁻¹)) =o[𝓝 (x, x)] fun p =>
       (p.1 - p.2) * 1 by
-    refine this.congr' ?_ (Eventually.of_forall fun _ => mul_one _)
+    refine .of_isLittleO <| this.congr' ?_ (Eventually.of_forall fun _ => mul_one _)
     refine Eventually.mono ((isOpen_ne.prod isOpen_ne).mem_nhds ⟨hx, hx⟩) ?_
     rintro ⟨y, z⟩ ⟨hy, hz⟩
     simp only [mem_setOf_eq] at hy hz
@@ -101,7 +94,7 @@ theorem fderivWithin_inv (x_ne_zero : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s 
   rw [DifferentiableAt.fderivWithin (differentiableAt_inv x_ne_zero) hxs]
   exact fderiv_inv
 
-variable {c : 𝕜 → 𝕜} {h : E → 𝕜} {c' : 𝕜} {z : E} {S : Set E}
+variable {c : 𝕜 → 𝕜} {c' : 𝕜}
 
 theorem HasDerivWithinAt.inv (hc : HasDerivWithinAt c c' s x) (hx : c x ≠ 0) :
     HasDerivWithinAt (fun y => (c y)⁻¹) (-c' / c x ^ 2) s x := by
@@ -113,10 +106,11 @@ theorem HasDerivAt.inv (hc : HasDerivAt c c' x) (hx : c x ≠ 0) :
   rw [← hasDerivWithinAt_univ] at *
   exact hc.inv hx
 
-theorem derivWithin_inv' (hc : DifferentiableWithinAt 𝕜 c s x) (hx : c x ≠ 0)
-    (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    derivWithin (fun x => (c x)⁻¹) s x = -derivWithin c s x / c x ^ 2 :=
-  (hc.hasDerivWithinAt.inv hx).derivWithin hxs
+theorem derivWithin_inv' (hc : DifferentiableWithinAt 𝕜 c s x) (hx : c x ≠ 0) :
+    derivWithin (fun x => (c x)⁻¹) s x = -derivWithin c s x / c x ^ 2 := by
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact (hc.hasDerivWithinAt.inv hx).derivWithin hsx
+  · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
 @[simp]
 theorem deriv_inv'' (hc : DifferentiableAt 𝕜 c x) (hx : c x ≠ 0) :
@@ -170,10 +164,12 @@ theorem Differentiable.div (hc : Differentiable 𝕜 c) (hd : Differentiable �
     Differentiable 𝕜 fun x => c x / d x := fun x => (hc x).div (hd x) (hx x)
 
 theorem derivWithin_div (hc : DifferentiableWithinAt 𝕜 c s x) (hd : DifferentiableWithinAt 𝕜 d s x)
-    (hx : d x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s x) :
+    (hx : d x ≠ 0) :
     derivWithin (fun x => c x / d x) s x =
-      (derivWithin c s x * d x - c x * derivWithin d s x) / d x ^ 2 :=
-  (hc.hasDerivWithinAt.div hd.hasDerivWithinAt hx).derivWithin hxs
+      (derivWithin c s x * d x - c x * derivWithin d s x) / d x ^ 2 := by
+  by_cases hsx : UniqueDiffWithinAt 𝕜 s x
+  · exact (hc.hasDerivWithinAt.div hd.hasDerivWithinAt hx).derivWithin hsx
+  · simp [derivWithin_zero_of_not_uniqueDiffWithinAt hsx]
 
 @[simp]
 theorem deriv_div (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d x) (hx : d x ≠ 0) :

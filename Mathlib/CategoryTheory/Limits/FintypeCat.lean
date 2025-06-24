@@ -6,7 +6,9 @@ Authors: Christian Merten
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Limits.Types.Shapes
+import Mathlib.Data.Finite.Prod
+import Mathlib.Data.Finite.Sigma
 
 /-!
 # (Co)limits in the category of finite types
@@ -49,14 +51,14 @@ instance {J : Type} [SmallCategory J] [FinCategory J] : HasLimitsOfShape J Finty
 instance hasFiniteLimits : HasFiniteLimits FintypeCat.{u} where
   out _ := inferInstance
 
-noncomputable instance inclusionPreservesFiniteLimits :
+noncomputable instance inclusion_preservesFiniteLimits :
     PreservesFiniteLimits FintypeCat.incl.{u} where
   preservesFiniteLimits _ :=
-    preservesLimitOfShapeOfCreatesLimitsOfShapeAndHasLimitsOfShape FintypeCat.incl
+    preservesLimitOfShape_of_createsLimitsOfShape_and_hasLimitsOfShape FintypeCat.incl
 
 /- Help typeclass inference to infer preservation of finite limits for the forgtful functor. -/
 noncomputable instance : PreservesFiniteLimits (forget FintypeCat) :=
-  FintypeCat.inclusionPreservesFiniteLimits
+  FintypeCat.inclusion_preservesFiniteLimits
 
 /-- The categorical product of a finite family in `FintypeCat` is equivalent to the product
 as types. -/
@@ -110,14 +112,14 @@ instance {J : Type} [SmallCategory J] [FinCategory J] : HasColimitsOfShape J Fin
 instance hasFiniteColimits : HasFiniteColimits FintypeCat.{u} where
   out _ := inferInstance
 
-noncomputable instance inclusionPreservesFiniteColimits :
+noncomputable instance inclusion_preservesFiniteColimits :
     PreservesFiniteColimits FintypeCat.incl.{u} where
   preservesFiniteColimits _ :=
-    preservesColimitOfShapeOfCreatesColimitsOfShapeAndHasColimitsOfShape FintypeCat.incl
+    preservesColimitOfShape_of_createsColimitsOfShape_and_hasColimitsOfShape FintypeCat.incl
 
 /- Help typeclass inference to infer preservation of finite colimits for the forgtful functor. -/
 noncomputable instance : PreservesFiniteColimits (forget FintypeCat) :=
-  FintypeCat.inclusionPreservesFiniteColimits
+  FintypeCat.inclusion_preservesFiniteColimits
 
 lemma jointly_surjective {J : Type*} [Category J] [FinCategory J]
     (F : J ⥤ FintypeCat.{u}) (t : Cocone F) (h : IsColimit t) (x : t.pt) :

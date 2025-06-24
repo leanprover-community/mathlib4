@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Topology.Instances.Irrational
 import Mathlib.Topology.Instances.Rat
-import Mathlib.Topology.Compactification.OnePoint
+import Mathlib.Topology.Compactification.OnePoint.Basic
 import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
@@ -36,10 +36,10 @@ local notation "ℚ∞" => OnePoint ℚ
 
 namespace Rat
 
-variable {p q : ℚ} {s t : Set ℚ}
+variable {p : ℚ} {s : Set ℚ}
 
 theorem interior_compact_eq_empty (hs : IsCompact s) : interior s = ∅ :=
-  denseEmbedding_coe_real.toDenseInducing.interior_compact_eq_empty dense_irrational hs
+  isDenseEmbedding_coe_real.isDenseInducing.interior_compact_eq_empty dense_irrational hs
 
 theorem dense_compl_compact (hs : IsCompact s) : Dense sᶜ :=
   interior_eq_empty_iff_dense_compl.1 (interior_compact_eq_empty hs)
@@ -72,11 +72,11 @@ theorem not_secondCountableTopology_opc : ¬SecondCountableTopology ℚ∞ := by
   exact not_firstCountableTopology_opc inferInstance
 
 instance : TotallyDisconnectedSpace ℚ := by
-  clear p q s t
+  clear p s
   refine ⟨fun s hsu hs x hx y hy => ?_⟩; clear hsu
   by_contra! H : x ≠ y
   wlog hlt : x < y
-  · apply this s hs y hy x hx H.symm <| H.lt_or_lt.resolve_left hlt
+  · apply this s hs y hy x hx H.symm <| H.lt_or_gt.resolve_left hlt
   rcases exists_irrational_btwn (Rat.cast_lt.2 hlt) with ⟨z, hz, hxz, hzy⟩
   have := hs.image _ continuous_coe_real.continuousOn
   rw [isPreconnected_iff_ordConnected] at this

@@ -21,7 +21,7 @@ For now, we simplify by insisting both universe levels are the same.
 
 ## Implementation notes
 
-This file essentially mirrors `Mathlib/Algebra/Category/AlgebraCat/Monoidal.lean`.
+This file essentially mirrors `Mathlib/Algebra/Category/AlgCat/Monoidal.lean`.
 -/
 
 suppress_compilation
@@ -82,7 +82,7 @@ theorem forget₂_map_associator_inv (X Y Z : QuadraticModuleCat.{u} R) :
 noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
   Monoidal.induced
     (forget₂ (QuadraticModuleCat R) (ModuleCat R))
-    { μIso := fun X Y => Iso.refl _
+    { μIso := fun _ _ => Iso.refl _
       εIso := Iso.refl _
       leftUnitor_eq := fun X => by
         simp only [forget₂_obj, forget₂_map, Iso.refl_symm, Iso.trans_assoc, Iso.trans_hom,
@@ -106,14 +106,7 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleC
         rw [Category.id_comp, Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id,
           Category.id_comp] }
 
-
-variable (R) in
-/-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` as a monoidal functor. -/
-def toModuleCatMonoidalFunctor : MonoidalFunctor (QuadraticModuleCat.{u} R) (ModuleCat.{u} R) := by
-  unfold instMonoidalCategory
-  exact Monoidal.fromInduced (forget₂ (QuadraticModuleCat R) (ModuleCat R)) _
-
-instance : (toModuleCatMonoidalFunctor R).Faithful :=
-  forget₂_faithful _ _
+/-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` is a monoidal functor. -/
+example : (forget₂ (QuadraticModuleCat R) (ModuleCat R)).Monoidal := inferInstance
 
 end QuadraticModuleCat

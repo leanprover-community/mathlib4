@@ -31,7 +31,9 @@ theorem hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair {C : Type u} [
   let e := equalizer.ι (π₁ ≫ f) (π₂ ≫ g)
   HasLimit.mk
     { cone :=
-        PullbackCone.mk (e ≫ π₁) (e ≫ π₂) <| by rw [Category.assoc, equalizer.condition]; simp
+        PullbackCone.mk (e ≫ π₁) (e ≫ π₂) <| by
+          rw [Category.assoc, equalizer.condition]
+          simp [e]
       isLimit :=
         PullbackCone.IsLimit.mk _ (fun s => equalizer.lift
           (prod.lift (s.π.app WalkingCospan.left) (s.π.app WalkingCospan.right)) <| by
@@ -51,7 +53,7 @@ attribute [local instance] hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallel
     pullbacks. -/
 theorem hasPullbacks_of_hasBinaryProducts_of_hasEqualizers (C : Type u) [Category.{v} C]
     [HasBinaryProducts C] [HasEqualizers C] : HasPullbacks C :=
-  { has_limit := fun F => hasLimitOfIso (diagramIsoCospan F).symm }
+  { has_limit := fun F => hasLimit_of_iso (diagramIsoCospan F).symm }
 
 end
 

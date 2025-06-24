@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Order.Basic
-import Mathlib.Order.Monotone.Basic
+import Mathlib.Order.Monotone.Defs
 
 /-!
 
@@ -328,7 +328,7 @@ theorem Group.mulRightReflectLT_of_mulRightStrictMono [Group N] [LT N]
 
 section Trans
 
-variable [IsTrans N r] (m n : M) {a b c d : N}
+variable [IsTrans N r] (m : M) {a b c : N}
 
 --  Lemmas with 3 elements.
 theorem act_rel_of_rel_of_act_rel (ab : r a b) (rl : r (μ m b) c) : r (μ m a) c :=
@@ -361,7 +361,7 @@ theorem rel_of_act_rel_act (m : M) {a b : N} (ab : r (μ m a) (μ m b)) : r a b 
 
 section Trans
 
-variable [IsTrans N r] (m n : M) {a b c d : N}
+variable [IsTrans N r] (m : M) {a b c : N}
 
 --  Lemmas with 3 elements.
 theorem act_rel_of_act_rel_of_rel_act_rel (ab : r (μ m a) b) (rl : r (μ m b) (μ m c)) :
@@ -440,13 +440,13 @@ theorem contravariant_lt_of_contravariant_le [PartialOrder N] :
 
 theorem covariant_le_iff_contravariant_lt [LinearOrder N] :
     Covariant M N μ (· ≤ ·) ↔ Contravariant M N μ (· < ·) :=
-  ⟨fun h _ _ _ bc ↦ not_le.mp fun k ↦ bc.not_le (h _ k),
-   fun h _ _ _ bc ↦ not_lt.mp fun k ↦ bc.not_lt (h _ k)⟩
+  ⟨fun h _ _ _ bc ↦ not_le.mp fun k ↦ bc.not_ge (h _ k),
+   fun h _ _ _ bc ↦ not_lt.mp fun k ↦ bc.not_gt (h _ k)⟩
 
 theorem covariant_lt_iff_contravariant_le [LinearOrder N] :
     Covariant M N μ (· < ·) ↔ Contravariant M N μ (· ≤ ·) :=
-  ⟨fun h _ _ _ bc ↦ not_lt.mp fun k ↦ bc.not_lt (h _ k),
-   fun h _ _ _ bc ↦ not_le.mp fun k ↦ bc.not_le (h _ k)⟩
+  ⟨fun h _ _ _ bc ↦ not_lt.mp fun k ↦ bc.not_gt (h _ k),
+   fun h _ _ _ bc ↦ not_le.mp fun k ↦ bc.not_ge (h _ k)⟩
 
 variable (mu : N → N → N)
 
@@ -531,28 +531,28 @@ theorem contravariant_le_of_contravariant_eq_and_lt [PartialOrder N]
   then the following four instances (actually eight) can be removed in favor of the above two. -/
 
 @[to_additive]
-instance IsLeftCancelMul.covariant_mul_lt_of_covariant_mul_le [Mul N] [IsLeftCancelMul N]
-    [PartialOrder N] [CovariantClass N N (· * ·) (· ≤ ·)] :
-    CovariantClass N N (· * ·) (· < ·) where
+instance IsLeftCancelMul.mulLeftStrictMono_of_mulLeftMono [Mul N] [IsLeftCancelMul N]
+    [PartialOrder N] [MulLeftMono N] :
+    MulLeftStrictMono N where
   elim a _ _ bc := (CovariantClass.elim a bc.le).lt_of_ne ((mul_ne_mul_right a).mpr bc.ne)
 
 @[to_additive]
-instance IsRightCancelMul.covariant_swap_mul_lt_of_covariant_swap_mul_le
-    [Mul N] [IsRightCancelMul N] [PartialOrder N] [CovariantClass N N (swap (· * ·)) (· ≤ ·)] :
-    CovariantClass N N (swap (· * ·)) (· < ·) where
+instance IsRightCancelMul.mulRightStrictMono_of_mulRightMono
+    [Mul N] [IsRightCancelMul N] [PartialOrder N] [MulRightMono N] :
+    MulRightStrictMono N where
   elim a _ _ bc := (CovariantClass.elim a bc.le).lt_of_ne ((mul_ne_mul_left a).mpr bc.ne)
 
 @[to_additive]
-instance IsLeftCancelMul.contravariant_mul_le_of_contravariant_mul_lt [Mul N] [IsLeftCancelMul N]
-    [PartialOrder N] [ContravariantClass N N (· * ·) (· < ·)] :
-    ContravariantClass N N (· * ·) (· ≤ ·) where
+instance IsLeftCancelMul.mulLeftReflectLE_of_mulLeftReflectLT [Mul N] [IsLeftCancelMul N]
+    [PartialOrder N] [MulLeftReflectLT N] :
+    MulLeftReflectLE N where
   elim := (contravariant_le_iff_contravariant_lt_and_eq N N _).mpr
     ⟨ContravariantClass.elim, fun _ ↦ mul_left_cancel⟩
 
 @[to_additive]
-instance IsRightCancelMul.contravariant_swap_mul_le_of_contravariant_swap_mul_lt
-    [Mul N] [IsRightCancelMul N] [PartialOrder N] [ContravariantClass N N (swap (· * ·)) (· < ·)] :
-    ContravariantClass N N (swap (· * ·)) (· ≤ ·) where
+instance IsRightCancelMul.mulRightReflectLE_of_mulRightReflectLT
+    [Mul N] [IsRightCancelMul N] [PartialOrder N] [MulRightReflectLT N] :
+    MulRightReflectLE N where
   elim := (contravariant_le_iff_contravariant_lt_and_eq N N _).mpr
     ⟨ContravariantClass.elim, fun _ ↦ mul_right_cancel⟩
 

@@ -5,8 +5,8 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.Algebra.Regular.Basic
 import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Algebra.CharP.Defs
 
 /-!
 # Theory of univariate polynomials
@@ -55,12 +55,12 @@ theorem support_smul [SMulZeroClass S R] (r : S) (p : R[X]) :
   simp [hi]
 
 open scoped Pointwise in
-theorem card_support_mul_le : (p * q).support.card ≤ p.support.card * q.support.card := by
-  calc (p * q).support.card
-   _ = (p.toFinsupp * q.toFinsupp).support.card := by rw [← support_toFinsupp, toFinsupp_mul]
-   _ ≤ (p.toFinsupp.support + q.toFinsupp.support).card :=
+theorem card_support_mul_le : #(p * q).support ≤ #p.support * #q.support := by
+  calc #(p * q).support
+   _ = #(p.toFinsupp * q.toFinsupp).support := by rw [← support_toFinsupp, toFinsupp_mul]
+   _ ≤ #(p.toFinsupp.support + q.toFinsupp.support) :=
     Finset.card_le_card (AddMonoidAlgebra.support_mul p.toFinsupp q.toFinsupp)
-   _ ≤ p.support.card * q.support.card := Finset.card_image₂_le ..
+   _ ≤ #p.support * #q.support := Finset.card_image₂_le ..
 
 /-- `Polynomial.sum` as a linear map. -/
 @[simps]
@@ -69,20 +69,15 @@ def lsum {R A M : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [Module R A
   toFun p := p.sum (f · ·)
   map_add' p q := sum_add_index p q _ (fun n => (f n).map_zero) fun n _ _ => (f n).map_add _ _
   map_smul' c p := by
-    -- Porting note: added `dsimp only`; `beta_reduce` alone is not sufficient
-    dsimp only
     rw [sum_eq_of_subset (f · ·) (fun n => (f n).map_zero) (support_smul c p)]
     simp only [sum_def, Finset.smul_sum, coeff_smul, LinearMap.map_smul, RingHom.id_apply]
 
-variable (R)
-
+variable (R) in
 /-- The nth coefficient, as a linear map. -/
 def lcoeff (n : ℕ) : R[X] →ₗ[R] R where
   toFun p := coeff p n
   map_add' p q := coeff_add p q n
   map_smul' r p := coeff_smul r p n
-
-variable {R}
 
 @[simp]
 theorem lcoeff_apply (n : ℕ) (f : R[X]) : lcoeff R n f = coeff f n :=
@@ -101,10 +96,10 @@ lemma coeff_list_sum_map {ι : Type*} (l : List ι) (f : ι → R[X]) (n : ℕ) 
     (l.map f).sum.coeff n = (l.map (fun a => (f a).coeff n)).sum := by
   simp_rw [coeff_list_sum, List.map_map, Function.comp_def, lcoeff_apply]
 
+@[simp]
 theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
     coeff (p.sum f) n = p.sum fun a b => coeff (f a b) n := by
   rcases p with ⟨⟩
-  -- porting note (#10745): was `simp [Polynomial.sum, support, coeff]`.
   simp [Polynomial.sum, support_ofFinsupp, coeff_ofFinsupp]
 
 /-- Decomposes the coefficient of the product `p * q` as a sum
@@ -172,13 +167,11 @@ theorem coeff_mul_C (p : R[X]) (n : ℕ) (a : R) : coeff (p * C a) n = coeff p n
 @[simp] lemma coeff_natCast_mul {a k : ℕ} :
   coeff ((a : R[X]) * p) k = a * coeff p k := coeff_C_mul _
 
--- See note [no_index around OfNat.ofNat]
 @[simp] lemma coeff_mul_ofNat {a k : ℕ} [Nat.AtLeastTwo a] :
-  coeff (p * (no_index (OfNat.ofNat a) : R[X])) k = coeff p k * OfNat.ofNat a := coeff_mul_C _ _ _
+  coeff (p * (ofNat(a) : R[X])) k = coeff p k * ofNat(a) := coeff_mul_C _ _ _
 
--- See note [no_index around OfNat.ofNat]
 @[simp] lemma coeff_ofNat_mul {a k : ℕ} [Nat.AtLeastTwo a] :
-  coeff ((no_index (OfNat.ofNat a) : R[X]) * p) k = OfNat.ofNat a * coeff p k := coeff_C_mul _
+  coeff ((ofNat(a) : R[X]) * p) k = ofNat(a) * coeff p k := coeff_C_mul _
 
 @[simp] lemma coeff_mul_intCast [Ring S] {p : S[X]} {a : ℤ} {k : ℕ} :
   coeff (p * (a : S[X])) k = coeff p k * (↑a : S) := coeff_mul_C _ _ _
@@ -213,15 +206,15 @@ theorem support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} 
     zero_add, Ne, hx, hy, hz, not_false_eq_true, and_true]
 
 theorem card_support_binomial {k m : ℕ} (h : k ≠ m) {x y : R} (hx : x ≠ 0) (hy : y ≠ 0) :
-    card (support (C x * X ^ k + C y * X ^ m)) = 2 := by
-  rw [support_binomial h hx hy, card_insert_of_not_mem (mt mem_singleton.mp h), card_singleton]
+    #(support (C x * X ^ k + C y * X ^ m)) = 2 := by
+  rw [support_binomial h hx hy, card_insert_of_notMem (mt mem_singleton.mp h), card_singleton]
 
 theorem card_support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z : R} (hx : x ≠ 0)
-    (hy : y ≠ 0) (hz : z ≠ 0) : card (support (C x * X ^ k + C y * X ^ m + C z * X ^ n)) = 3 := by
+    (hy : y ≠ 0) (hz : z ≠ 0) : #(support (C x * X ^ k + C y * X ^ m + C z * X ^ n)) = 3 := by
   rw [support_trinomial hkm hmn hx hy hz,
-    card_insert_of_not_mem
+    card_insert_of_notMem
       (mt mem_insert.mp (not_or_intro hkm.ne (mt mem_singleton.mp (hkm.trans hmn).ne))),
-    card_insert_of_not_mem (mt mem_singleton.mp hmn.ne), card_singleton]
+    card_insert_of_notMem (mt mem_singleton.mp hmn.ne), card_singleton]
 
 end Fewnomials
 
@@ -344,10 +337,7 @@ section cast
 theorem natCast_coeff_zero {n : ℕ} {R : Type*} [Semiring R] : (n : R[X]).coeff 0 = n := by
   simp only [coeff_natCast_ite, ite_true]
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_coeff_zero := natCast_coeff_zero
-
-@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem natCast_inj {m n : ℕ} {R : Type*} [Semiring R] [CharZero R] :
     (↑m : R[X]) = ↑n ↔ m = n := by
   constructor
@@ -357,17 +347,11 @@ theorem natCast_inj {m n : ℕ} {R : Type*} [Semiring R] [CharZero R] :
   · rintro rfl
     rfl
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_inj := natCast_inj
-
 @[simp]
 theorem intCast_coeff_zero {i : ℤ} {R : Type*} [Ring R] : (i : R[X]).coeff 0 = i := by
   cases i <;> simp
 
-@[deprecated (since := "2024-04-17")]
-alias int_cast_coeff_zero := intCast_coeff_zero
-
-@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem intCast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X]) = ↑n ↔ m = n := by
   constructor
   · intro h
@@ -376,11 +360,12 @@ theorem intCast_inj {m n : ℤ} {R : Type*} [Ring R] [CharZero R] : (↑m : R[X]
   · rintro rfl
     rfl
 
-@[deprecated (since := "2024-04-17")]
-alias int_cast_inj := intCast_inj
-
 end cast
 
 instance charZero [CharZero R] : CharZero R[X] where cast_injective _x _y := natCast_inj.mp
+
+instance charP {p : ℕ} [CharP R p] : CharP R[X] p where
+  cast_eq_zero_iff n := by
+    rw [← CharP.cast_eq_zero_iff R, ← C_inj (R := R), map_natCast, C_0]
 
 end Polynomial

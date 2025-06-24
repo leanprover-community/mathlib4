@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Defs
 
 /-!
 # Cast of integers into fields
@@ -13,7 +13,7 @@ This file concerns the canonical homomorphism `ℤ → F`, where `F` is a field.
 
 ## Main results
 
- * `Int.cast_div`: if `n` divides `m`, then `↑(m / n) = ↑m / ↑n`
+* `Int.cast_div`: if `n` divides `m`, then `↑(m / n) = ↑m / ↑n`
 -/
 
 

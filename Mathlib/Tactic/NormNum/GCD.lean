@@ -1,8 +1,9 @@
 /-
 Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Kyle Miller
+Authors: Mario Carneiro, Kyle Miller, Eric Wieser
 -/
+import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.Int.GCD
 import Mathlib.Tactic.NormNum
 
@@ -21,11 +22,11 @@ namespace NormNum
 
 theorem int_gcd_helper' {d : ℕ} {x y : ℤ} (a b : ℤ) (h₁ : (d : ℤ) ∣ x) (h₂ : (d : ℤ) ∣ y)
     (h₃ : x * a + y * b = d) : Int.gcd x y = d := by
-  refine Nat.dvd_antisymm ?_ (Int.natCast_dvd_natCast.1 (Int.dvd_gcd h₁ h₂))
+  refine Nat.dvd_antisymm ?_ (Int.natCast_dvd_natCast.1 (Int.dvd_coe_gcd h₁ h₂))
   rw [← Int.natCast_dvd_natCast, ← h₃]
   apply dvd_add
-  · exact Int.gcd_dvd_left.mul_right _
-  · exact Int.gcd_dvd_right.mul_right _
+  · exact (Int.gcd_dvd_left ..).mul_right _
+  · exact (Int.gcd_dvd_right ..).mul_right _
 
 theorem nat_gcd_helper_dvd_left (x y : ℕ) (h : y % x = 0) : Nat.gcd x y = x :=
   Nat.gcd_eq_left (Nat.dvd_of_mod_eq_zero h)
@@ -58,7 +59,7 @@ theorem nat_lcm_helper (x y d m : ℕ) (hd : Nat.gcd x y = d)
     (d0 : Nat.beq d 0 = false)
     (dm : x * y = d * m) : Nat.lcm x y = m :=
   mul_right_injective₀ (Nat.ne_of_beq_eq_false d0) <| by
-    dsimp only -- Porting note: the `dsimp only` was not necessary in Lean3.
+    dsimp only
     rw [← dm, ← hd, Nat.gcd_mul_lcm]
 
 theorem int_gcd_helper {x y : ℤ} {x' y' d : ℕ}
@@ -124,6 +125,7 @@ def proveNatGCD (ex ey : Q(ℕ)) : (ed : Q(ℕ)) × Q(Nat.gcd $ex $ey = $ed) :=
           have pt : Q($ey * $eb' = $ex * $ea' + $ed) := (q(Eq.refl ($ey * $eb')) : Expr)
           ⟨ed, q(nat_gcd_helper_1 $ed $ex $ey $ea' $eb' $pu $pv $pt)⟩
 
+/-- Evaluate the `Nat.gcd` function. -/
 @[norm_num Nat.gcd _ _]
 def evalNatGCD : NormNumExt where eval {u α} e := do
   let .app (.app _ (x : Q(ℕ))) (y : Q(ℕ)) ← Meta.whnfR e | failure
@@ -201,6 +203,48 @@ def evalIntLCM : NormNumExt where eval {u α} e := do
   haveI' : $e =Q Int.lcm $x $y := ⟨⟩
   let ⟨ed, pf⟩ := proveIntLCM ex ey
   return .isNat _ ed q(isInt_lcm $p $q $pf)
+
+theorem isInt_ratNum : ∀ {q : ℚ} {n : ℤ} {n' : ℕ} {d : ℕ},
+    IsRat q n d → n.natAbs = n' → n'.gcd d = 1 → IsInt q.num n
+  | _, n, _, d, ⟨hi, rfl⟩, rfl, h => by
+    constructor
+    have : 0 < d := Nat.pos_iff_ne_zero.mpr <| by simpa using hi.ne_zero
+    simp_rw [Rat.mul_num, Rat.intCast_den, invOf_eq_inv,
+      Rat.inv_natCast_den_of_pos this, Rat.inv_natCast_num_of_pos this,
+      Rat.intCast_num, one_mul, mul_one, h, Nat.cast_one, Int.ediv_one, Int.cast_id]
+
+theorem isNat_ratDen : ∀ {q : ℚ} {n : ℤ} {n' : ℕ} {d : ℕ},
+    IsRat q n d → n.natAbs = n' → n'.gcd d = 1 → IsNat q.den d
+  | _, n, _, d, ⟨hi, rfl⟩, rfl, h => by
+    constructor
+    have : 0 < d := Nat.pos_iff_ne_zero.mpr <| by simpa using hi.ne_zero
+    simp_rw [Rat.mul_den, Rat.intCast_den, invOf_eq_inv,
+      Rat.inv_natCast_den_of_pos this, Rat.inv_natCast_num_of_pos this,
+      Rat.intCast_num, one_mul, mul_one, Nat.cast_id, h, Nat.div_one]
+
+/-- Evaluates the `Rat.num` function. -/
+@[nolint unusedHavesSuffices, norm_num Rat.num _]
+def evalRatNum : NormNumExt where eval {u α} e := do
+  let .proj _ _ (q : Q(ℚ)) ← Meta.whnfR e | failure
+  have : u =QL 0 := ⟨⟩; have : $α =Q ℤ := ⟨⟩; have : $e =Q Rat.num $q := ⟨⟩
+  let ⟨q', n, d, eq⟩ ← deriveRat q (_inst := q(inferInstance))
+  let ⟨n', hn⟩ := rawIntLitNatAbs n
+  -- deriveRat ensures these are coprime, so the gcd will be 1
+  let ⟨gcd, pf⟩ := proveNatGCD q($n') q($d)
+  have : $gcd =Q nat_lit 1 := ⟨⟩
+  return .isInt _ n q'.num q(isInt_ratNum $eq $hn $pf)
+
+/-- Evaluates the `Rat.den` function. -/
+@[nolint unusedHavesSuffices, norm_num Rat.den _]
+def evalRatDen : NormNumExt where eval {u α} e := do
+  let .proj _ _ (q : Q(ℚ)) ← Meta.whnfR e | failure
+  have : u =QL 0 := ⟨⟩; have : $α =Q ℕ := ⟨⟩; have : $e =Q Rat.den $q := ⟨⟩
+  let ⟨q', n, d, eq⟩ ← deriveRat q (_inst := q(inferInstance))
+  let ⟨n', hn⟩ := rawIntLitNatAbs n
+  -- deriveRat ensures these are coprime, so the gcd will be 1
+  let ⟨gcd, pf⟩ := proveNatGCD q($n') q($d)
+  have : $gcd =Q nat_lit 1 := ⟨⟩
+  return .isNat _ d q(isNat_ratDen $eq $hn $pf)
 
 end NormNum
 

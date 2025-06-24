@@ -3,7 +3,8 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import ImportGraph
+import ImportGraph.CurrentModule
+import ImportGraph.Imports
 import Mathlib.Data.String.Defs
 import Mathlib.Util.FormatTable
 import Cli
@@ -33,7 +34,7 @@ def mathlib4RepoId : String := "e7b27246-a3e6-496a-b552-ff4b45c7236e"
 namespace SpeedCenterAPI
 
 def runJson (hash : String) (repoId : String := mathlib4RepoId) : IO String :=
-  runCurl #[s!"http://speed.lean-fro.org/mathlib4/api/run/{repoId}?hash={hash}"]
+  runCurl #[s!"https://speed.lean-lang.org/mathlib4/api/run/{repoId}?hash={hash}"]
 
 def getRunResponse (hash : String) : IO RunResponse := do
   let r ← runJson hash
@@ -43,7 +44,7 @@ def getRunResponse (hash : String) : IO RunResponse := do
     | .ok v => pure v
     | .error e => match fromJson? j with
       | .ok (v : ErrorMessage) =>
-        IO.eprintln s!"http://speed.lean-fro.org says: {v.message}"
+        IO.eprintln s!"https://speed.lean-lang.org says: {v.message}"
         IO.eprintln s!"Try moving to an older commit?"
         IO.Process.exit 1
       | .error _ => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{j}"
@@ -54,7 +55,7 @@ def RunResponse.instructions (response : RunResponse) :
   for m in response.run.result.measurements do
     let n := m.dimension.benchmark
     if n.startsWith "~" then
-      r := r.insert (n.drop 1).toName m.value
+      r := r.insert (n.drop 1).toName (m.value/10^6)
   return r
 
 def instructions (run : String) : IO (NameMap Float) :=
@@ -116,17 +117,34 @@ def Float.toStringDecimals (r : Float) (digits : Nat) : String :=
   | [a, b] => a ++ "." ++ b.take digits
   | _ => r.toString
 
+open System in
+-- Lines of code is obviously a `Nat` not a `Float`,
+-- but we're using it here as a very rough proxy for instruction count.
+def countLOC (modules : List Name) : IO (NameMap Float) := do
+  let mut r := {}
+  for m in modules do
+    if let .some fp ← Lean.SearchPath.findModuleWithExt [s!".{FilePath.pathSeparator}"] "lean" m
+    then
+      let src ← IO.FS.readFile fp
+      r := r.insert m (src.toList.count '\n').toFloat
+  return r
+
 /-- Implementation of the longest pole command line program. -/
 def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
   let to ← match args.flag? "to" with
   | some to => pure <| to.as! ModuleName
   | none => ImportGraph.getCurrentModule -- autodetect the main module from the `lakefile.lean`
   searchPathRef.set compile_time_search_path%
+  -- It may be reasonable to remove this again after https://github.com/leanprover/lean4/pull/6325
+  unsafe enableInitializersExecution
   unsafe withImportModules #[{module := to}] {} (trustLevel := 1024) fun env => do
     let graph := env.importGraph
     let sha ← headSha
     IO.eprintln s!"Analyzing {to} at {sha}"
-    let instructions ← SpeedCenterAPI.instructions (sha)
+    let instructions ← if args.hasFlag "loc" then
+      countLOC (graph.toList.map (·.1))
+    else
+      SpeedCenterAPI.instructions sha
     let cumulative := cumulativeInstructions instructions graph
     let total := totalInstructions instructions graph
     let slowest := slowestParents cumulative graph
@@ -138,10 +156,11 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
       let c := cumulative.find! n'
       let t := total.find! n'
       let r := (t / c).toStringDecimals 2
-      table := table.push #[n.get!.toString, toString (i/10^6 |>.toUInt64), toString (c/10^6 |>.toUInt64), r]
+      table := table.push #[n.get!.toString, toString i.toUInt64, toString c.toUInt64, r]
       n := slowest.find? n'
+    let instructionsHeader := if args.hasFlag "loc" then "LoC" else "instructions"
     IO.println (formatTable
-                  #["file", "instructions", "cumulative", "parallelism"]
+                  #["file", instructionsHeader, "cumulative", "parallelism"]
                   table
                   #[Alignment.left, Alignment.right, Alignment.right, Alignment.center])
   return 0
@@ -157,6 +176,7 @@ def pole : Cmd := `[Cli|
 
   FLAGS:
     to : ModuleName;      "Calculate the longest pole to the specified module."
+    loc;                  "Use lines of code instead of speedcenter instruction counts."
 ]
 
 /-- `lake exe pole` -/

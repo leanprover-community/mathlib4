@@ -6,8 +6,9 @@ Authors: David Loeffler
 import Mathlib.Analysis.Fourier.AddCircle
 import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.PSeries
-import Mathlib.Analysis.Distribution.SchwartzSpace
+import Mathlib.Analysis.Distribution.FourierSchwartz
 import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
+import Mathlib.Topology.ContinuousMap.Periodic
 
 /-!
 # Poisson's summation formula
@@ -17,19 +18,13 @@ Fourier transform of `f`, under the following hypotheses:
 * `f` is a continuous function `ℝ → ℂ`.
 * The sum `∑ (n : ℤ), 𝓕 f n` is convergent.
 * For all compacts `K ⊂ ℝ`, the sum `∑ (n : ℤ), sup { ‖f(x + n)‖ | x ∈ K }` is convergent.
-See `Real.tsum_eq_tsum_fourierIntegral` for this formulation.
+  See `Real.tsum_eq_tsum_fourierIntegral` for this formulation.
 
 These hypotheses are potentially a little awkward to apply, so we also provide the less general but
 easier-to-use result `Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay`, in which we assume `f` and
 `𝓕 f` both decay as `|x| ^ (-b)` for some `b > 1`, and the even more specific result
 `SchwartzMap.tsum_eq_tsum_fourierIntegral`, where we assume that both `f` and `𝓕 f` are Schwartz
 functions.
-
-## TODO
-
-At the moment `SchwartzMap.tsum_eq_tsum_fourierIntegral` requires separate proofs that both `f`
-and `𝓕 f` are Schwartz functions. In fact, `𝓕 f` is automatically Schwartz if `f` is; and once
-we have this lemma in the library, we should adjust the hypotheses here accordingly.
 -/
 
 
@@ -58,7 +53,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
   -- block, but I think it's more legible this way. We start with preliminaries about the integrand.
   let e : C(ℝ, ℂ) := (fourier (-m)).comp ⟨((↑) : ℝ → UnitAddCircle), continuous_quotient_mk'⟩
   have neK : ∀ (K : Compacts ℝ) (g : C(ℝ, ℂ)), ‖(e * g).restrict K‖ = ‖g.restrict K‖ := by
-    have (x : ℝ) : ‖e x‖ = 1 := (AddCircle.toCircle (-m • x)).abs_coe
+    have (x : ℝ) : ‖e x‖ = 1 := (AddCircle.toCircle (-m • x)).norm_coe
     intro K g
     simp_rw [norm_eq_iSup_norm, restrict_apply, mul_apply, norm_mul, this, one_mul]
   have eadd : ∀ (n : ℤ), e.comp (ContinuousMap.addRight n) = e := by
@@ -216,11 +211,11 @@ end RpowDecay
 section Schwartz
 
 /-- **Poisson's summation formula** for Schwartz functions. -/
-theorem SchwartzMap.tsum_eq_tsum_fourierIntegral (f g : SchwartzMap ℝ ℂ) (hfg : 𝓕 ⇑f = ⇑g) (x : ℝ) :
-    ∑' n : ℤ, f (x + n) = (∑' n : ℤ, g n * fourier n (x : UnitAddCircle)) := by
+theorem SchwartzMap.tsum_eq_tsum_fourierIntegral (f : SchwartzMap ℝ ℂ) (x : ℝ) :
+    ∑' n : ℤ, f (x + n) = ∑' n : ℤ, fourierTransformCLM ℝ f n * fourier n (x : UnitAddCircle) := by
   -- We know that Schwartz functions are `O(‖x ^ (-b)‖)` for *every* `b`; for this argument we take
   -- `b = 2` and work with that.
-  simp only [← hfg, Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay f.continuous one_lt_two
-    (f.isBigO_cocompact_rpow (-2)) (hfg ▸ g.isBigO_cocompact_rpow (-2))]
+  apply Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay f.continuous one_lt_two
+    (f.isBigO_cocompact_rpow (-2)) ((fourierTransformCLM ℝ f).isBigO_cocompact_rpow (-2))
 
 end Schwartz

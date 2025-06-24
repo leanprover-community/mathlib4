@@ -178,7 +178,7 @@ theorem uniformCauchySeqOn_ball_of_fderiv {r : ℝ} (hf' : UniformCauchySeqOn f'
   letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
   have : NeBot l := (cauchy_map_iff.1 hfg).1
-  rcases le_or_lt r 0 with (hr | hr)
+  rcases le_or_gt r 0 with (hr | hr)
   · simp only [Metric.ball_eq_empty.2 hr, UniformCauchySeqOn, Set.mem_empty_iff_false,
       IsEmpty.forall_iff, eventually_const, imp_true_iff]
   rw [SeminormedAddGroup.uniformCauchySeqOn_iff_tendstoUniformlyOn_zero] at hf' ⊢
@@ -286,7 +286,7 @@ theorem difference_quotients_converge_uniformly
   refine lt_of_le_of_lt ?_ hqε
   by_cases hyz' : x = y; · simp [hyz', hqpos.le]
   have hyz : 0 < ‖y - x‖ := by rw [norm_pos_iff]; intro hy'; exact hyz' (eq_of_sub_eq_zero hy').symm
-  rw [inv_mul_le_iff hyz, mul_comm, sub_sub_sub_comm]
+  rw [inv_mul_le_iff₀ hyz, mul_comm, sub_sub_sub_comm]
   simp only [Pi.zero_apply, dist_zero_left] at e
   refine
     Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le
@@ -343,7 +343,6 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
         fun a : ι × E => (‖a.2 - x‖⁻¹ : 𝕜) • (f' a.1 x - g' x) (a.2 - x) := by
     ext; simp only [Pi.add_apply]; rw [← smul_add, ← smul_add]; congr
     simp only [map_sub, sub_add_sub_cancel, ContinuousLinearMap.coe_sub', Pi.sub_apply]
-    -- Porting note: added
     abel
   simp_rw [this]
   have : 𝓝 (0 : G) = 𝓝 (0 + 0 + 0) := by simp only [add_zero]
@@ -356,8 +355,8 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     apply ((this ε hε).filter_mono curry_le_prod).mono
     intro n hn
     rw [dist_eq_norm] at hn ⊢
-    rw [← smul_sub] at hn
-    rwa [sub_zero]
+    convert hn using 2
+    module
   · -- (Almost) the definition of the derivatives
     rw [Metric.tendsto_nhds]
     intro ε hε
@@ -379,13 +378,13 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
       rw [Metric.tendsto_nhds] at h1 ⊢
       exact fun ε hε => (h1 ε hε).curry.mono fun n hn => hn.self_of_nhds
     refine squeeze_zero_norm ?_
-      (tendsto_zero_iff_norm_tendsto_zero.mp (tendsto_fst.comp (h2.prod_map tendsto_id)))
+      (tendsto_zero_iff_norm_tendsto_zero.mp (tendsto_fst.comp (h2.prodMap tendsto_id)))
     intro n
     simp_rw [norm_smul, norm_inv, RCLike.norm_coe_norm]
     by_cases hx : x = n.2; · simp [hx]
     have hnx : 0 < ‖n.2 - x‖ := by
       rw [norm_pos_iff]; intro hx'; exact hx (eq_of_sub_eq_zero hx').symm
-    rw [inv_mul_le_iff hnx, mul_comm]
+    rw [inv_mul_le_iff₀ hnx, mul_comm]
     simp only [Function.comp_apply, Prod.map_apply']
     rw [norm_sub_rev]
     exact (f' n.1 x - g' x).le_opNorm (n.2 - x)

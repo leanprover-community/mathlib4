@@ -5,7 +5,8 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 
-/-! Degreewise split exact sequences of cochain complexes
+/-!
+# Degreewise split exact sequences of cochain complexes
 
 The main result of this file is the lemma
 `HomotopyCategory.distinguished_iff_iso_trianglehOfDegreewiseSplit` which asserts
@@ -14,6 +15,8 @@ is distinguished iff it is isomorphic to the triangle attached to a
 degreewise split short exact sequence of cochain complexes.
 
 -/
+
+assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Category Limits Pretriangulated Preadditive
 
@@ -70,7 +73,6 @@ noncomputable abbrev trianglehOfDegreewiseSplit :
 
 variable [HasBinaryBiproducts C]
 
-set_option tactic.skipAssignedInstances false in
 /-- The canonical isomorphism `(mappingCone (homOfDegreewiseSplit S σ)).X p ≅ S.X₂.X q`
 when `p + 1 = q`. -/
 noncomputable def mappingConeHomOfDegreewiseSplitXIso (p q : ℤ) (hpq : p + 1 = q) :
@@ -86,13 +88,15 @@ noncomputable def mappingConeHomOfDegreewiseSplitXIso (p q : ℤ) (hpq : p + 1 =
     have s_g := (σ (p + 1)).s_g
     have f_r := (σ (p + 1)).f_r
     dsimp at s_g f_r ⊢
-    simp? [mappingCone.ext_from_iff _ (p + 1) _ rfl, reassoc_of% f_r, reassoc_of% s_g] says
-      simp only [Cochain.ofHom_v, Int.reduceNeg, id_comp, comp_sub, sub_comp, assoc,
+    -- the following list of lemmas was obtained by doing
+    -- simp? [mappingCone.ext_from_iff _ (p + 1) _ rfl, reassoc_of% f_r, reassoc_of% s_g]
+    -- which may require increasing maximum heart beats
+    simp only [Cochain.ofHom_v, Int.reduceNeg, id_comp, comp_sub, sub_comp, assoc,
         reassoc_of% s_g, ShortComplex.Splitting.s_r_assoc, ShortComplex.map_X₃, eval_obj,
         ShortComplex.map_X₁, zero_comp, comp_zero, reassoc_of% f_r, zero_sub, sub_neg_eq_add,
         mappingCone.ext_from_iff _ (p + 1) _ rfl, comp_add, mappingCone.inl_v_fst_v_assoc,
         mappingCone.inl_v_snd_v_assoc, shiftFunctor_obj_X', sub_zero, add_zero, comp_id,
-        mappingCone.inr_f_fst_v_assoc, mappingCone.inr_f_snd_v_assoc, add_left_eq_self, neg_eq_zero,
+        mappingCone.inr_f_fst_v_assoc, mappingCone.inr_f_snd_v_assoc, add_eq_right, neg_eq_zero,
         true_and]
     rw [← comp_f_assoc, S.zero, zero_f, zero_comp]
   inv_hom_id := by
@@ -104,7 +108,6 @@ noncomputable def mappingConeHomOfDegreewiseSplitXIso (p q : ℤ) (hpq : p + 1 =
       mappingCone.inl_v_snd_v_assoc, mappingCone.inr_f_snd_v_assoc, zero_sub, sub_neg_eq_add, ← h]
     abel
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 /-- The canonical isomorphism `mappingCone (homOfDegreewiseSplit S σ) ≅ S.X₂⟦(1 : ℤ)⟧`. -/
 @[simps!]
 noncomputable def mappingConeHomOfDegreewiseSplitIso :
@@ -113,12 +116,18 @@ noncomputable def mappingConeHomOfDegreewiseSplitIso :
     rintro p _ rfl
     have r_f := (σ (p + 1 + 1)).r_f
     have s_g := (σ (p + 1)).s_g
-    dsimp at r_f s_g
-    set_option tactic.skipAssignedInstances false in
-    simp [mappingConeHomOfDegreewiseSplitXIso, mappingCone.ext_from_iff _ _ _ rfl,
-      mappingCone.inl_v_d_assoc _ (p + 1) _ (p + 1 + 1) (by linarith) (by linarith),
-      cocycleOfDegreewiseSplit, r_f]
-    rw [← S.g.comm_assoc, reassoc_of% s_g]
+    dsimp at r_f s_g ⊢
+    simp only [mappingConeHomOfDegreewiseSplitXIso, mappingCone.ext_from_iff _ _ _ rfl,
+      mappingCone.inl_v_d_assoc _ (p + 1) _ (p + 1 + 1) (by linarith) (by omega),
+      cocycleOfDegreewiseSplit, r_f, Int.reduceNeg, Cochain.ofHom_v, sub_comp, assoc,
+      Hom.comm, comp_sub, mappingCone.inl_v_fst_v_assoc, mappingCone.inl_v_snd_v_assoc,
+      shiftFunctor_obj_X', zero_comp, sub_zero, homOfDegreewiseSplit_f,
+      mappingCone.inr_f_fst_v_assoc, comp_zero, zero_sub, mappingCone.inr_f_snd_v_assoc,
+      neg_neg, mappingCone.inr_f_d_assoc, shiftFunctor_obj_d',
+      Int.negOnePow_one, neg_comp, sub_neg_eq_add, zero_add, and_true,
+      Units.neg_smul, one_smul, comp_neg, ShortComplex.map_X₂, eval_obj, Cocycle.mk_coe,
+      Cochain.mk_v]
+    simp only [← S.g.comm_assoc, reassoc_of% s_g, comp_id]
     abel)
 
 @[reassoc (attr := simp)]
@@ -135,7 +144,10 @@ lemma mappingConeHomOfDegreewiseSplitIso_inv_comp_triangle_mor₃ :
     (mappingConeHomOfDegreewiseSplitIso S σ).inv ≫
       (mappingCone.triangle (homOfDegreewiseSplit S σ)).mor₃ = -S.g⟦(1 : ℤ)⟧' := by
   ext n
-  simp [mappingConeHomOfDegreewiseSplitXIso]
+  dsimp [mappingConeHomOfDegreewiseSplitXIso]
+  simp only [Int.reduceNeg, id_comp, sub_comp, assoc, mappingCone.inl_v_triangle_mor₃_f,
+    shiftFunctor_obj_X, shiftFunctorObjXIso, XIsoOfEq_rfl, Iso.refl_inv, comp_neg, comp_id,
+    mappingCone.inr_f_triangle_mor₃_f, comp_zero, sub_zero]
 
 /-- The canonical isomorphism of triangles
 `(triangleOfDegreewiseSplit S σ).rotate.rotate ≅ mappingCone.triangle (homOfDegreewiseSplit S σ)`
@@ -144,7 +156,11 @@ noncomputable def triangleOfDegreewiseSplitRotateRotateIso :
     (triangleOfDegreewiseSplit S σ).rotate.rotate ≅
       mappingCone.triangle (homOfDegreewiseSplit S σ) :=
   Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (mappingConeHomOfDegreewiseSplitIso S σ).symm
-    (by aesop_cat) (by aesop_cat) (by aesop_cat)
+    (by dsimp; simp only [comp_id, id_comp])
+    (by dsimp; simp only [neg_comp, shift_f_comp_mappingConeHomOfDegreewiseSplitIso_inv,
+      shiftFunctor_obj_X', neg_neg, id_comp])
+    (by dsimp; simp only [CategoryTheory.Functor.map_id, comp_id,
+      mappingConeHomOfDegreewiseSplitIso_inv_comp_triangle_mor₃])
 
 /-- The canonical isomorphism between `(trianglehOfDegreewiseSplit S σ).rotate.rotate` and
 `mappingCone.triangleh (homOfDegreewiseSplit S σ)` when `S` is a degreewise split
@@ -188,7 +204,7 @@ noncomputable def triangleRotateIsoTriangleOfDegreewiseSplit :
     (triangle φ).rotate ≅
       triangleOfDegreewiseSplit _ (triangleRotateShortComplexSplitting φ) :=
   Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
-    (by aesop_cat) (by aesop_cat) (by aesop_cat)
+    (by simp) (by simp) (by ext; simp)
 
 /-- The triangle `(triangleh φ).rotate` is isomorphic to a triangle attached to a
 degreewise split short exact sequence of cochain complexes. -/

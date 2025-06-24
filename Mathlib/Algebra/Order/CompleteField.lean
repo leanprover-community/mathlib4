@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Archimedean.Hom
-import Mathlib.Algebra.Order.Pointwise
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 
 /-!
 # Conditionally complete linear ordered fields
@@ -46,7 +45,7 @@ variable {F α β γ : Type*}
 
 noncomputable section
 
-open Function Rat Real Set
+open Function Rat Set
 
 open scoped Pointwise
 
@@ -54,7 +53,13 @@ open scoped Pointwise
 This axiomatizes the reals. -/
 -- @[protect_proj] -- Porting note: does not exist anymore
 class ConditionallyCompleteLinearOrderedField (α : Type*) extends
-    LinearOrderedField α, ConditionallyCompleteLinearOrder α
+    Field α, ConditionallyCompleteLinearOrder α where
+  -- extends `IsStrictOrderedRing α` produces
+  -- (kernel) declaration has free variables
+  -- 'ConditionallyCompleteLinearOrderedField.toIsStrictOrderedRing'
+  [toIsStrictOrderedRing : IsStrictOrderedRing α]
+
+attribute [instance] ConditionallyCompleteLinearOrderedField.toIsStrictOrderedRing
 
 -- see Note [lower instance priority]
 /-- Any conditionally complete linearly ordered field is archimedean. -/
@@ -64,15 +69,10 @@ instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedea
     (by
       by_contra! h
       obtain ⟨x, h⟩ := h
-      have := csSup_le _ _ (range_nonempty Nat.cast)
+      have := csSup_le (range_nonempty Nat.cast)
         (forall_mem_range.2 fun m =>
-          le_sub_iff_add_le.2 <| le_csSup _ _ ⟨x, forall_mem_range.2 h⟩ ⟨m+1, Nat.cast_succ m⟩)
+          le_sub_iff_add_le.2 <| le_csSup ⟨x, forall_mem_range.2 h⟩ ⟨m+1, Nat.cast_succ m⟩)
       linarith)
-
-/-- The reals are a conditionally complete linearly ordered field. -/
-instance : ConditionallyCompleteLinearOrderedField ℝ :=
-  { (inferInstance : LinearOrderedField ℝ),
-    (inferInstance : ConditionallyCompleteLinearOrder ℝ) with }
 
 namespace LinearOrderedField
 
@@ -87,7 +87,7 @@ the rationals. Hence we define `LinearOrderedField.cutMap β : α → Set β` wh
 
 section CutMap
 
-variable [LinearOrderedField α]
+variable [Field α] [LinearOrder α]
 
 section DivisionRing
 
@@ -105,7 +105,6 @@ variable {β}
 @[simp]
 theorem mem_cutMap_iff : b ∈ cutMap β a ↔ ∃ q : ℚ, (q : α) < a ∧ (q : β) = b := Iff.rfl
 
--- @[simp] -- Porting note: not in simpNF
 theorem coe_mem_cutMap_iff [CharZero β] : (q : β) ∈ cutMap β a ↔ (q : α) < a :=
   Rat.cast_injective.mem_set_image
 
@@ -119,13 +118,15 @@ theorem cutMap_self (a : α) : cutMap α a = Iio a ∩ range (Rat.cast : ℚ →
 
 end DivisionRing
 
-variable (β) [LinearOrderedField β] {a a₁ a₂ : α} {b : β} {q : ℚ}
+variable (β) [IsStrictOrderedRing α] [Field β] [LinearOrder β] [IsStrictOrderedRing β]
+  {a a₁ a₂ : α} {b : β} {q : ℚ}
 
 theorem cutMap_coe (q : ℚ) : cutMap β (q : α) = Rat.cast '' {r : ℚ | (r : β) < q} := by
   simp_rw [cutMap, Rat.cast_lt]
 
 variable [Archimedean α]
 
+omit [LinearOrder β] [IsStrictOrderedRing β] in
 theorem cutMap_nonempty (a : α) : (cutMap β a).Nonempty :=
   Nonempty.image _ <| exists_rat_lt a
 
@@ -142,7 +143,7 @@ theorem cutMap_add (a b : α) : cutMap β (a + b) = cutMap β a + cutMap β b :=
     rw [coe_mem_cutMap_iff]
     exact mod_cast sub_lt_comm.mp hq₁q
   · rintro _ ⟨_, ⟨qa, ha, rfl⟩, _, ⟨qb, hb, rfl⟩, rfl⟩
-    -- After leanprover/lean4#2734, `norm_cast` needs help with beta reduction.
+    -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.
     refine ⟨qa + qb, ?_, by beta_reduce; norm_cast⟩
     rw [mem_setOf_eq, cast_add]
     exact add_lt_add ha hb
@@ -158,8 +159,8 @@ end CutMap
 
 section InducedMap
 
-variable (α β γ) [LinearOrderedField α] [ConditionallyCompleteLinearOrderedField β]
-  [ConditionallyCompleteLinearOrderedField γ]
+variable (α β γ) [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+  [ConditionallyCompleteLinearOrderedField β] [ConditionallyCompleteLinearOrderedField γ]
 
 /-- The induced order preserving function from a linear ordered field to a conditionally complete
 linear ordered field, defined by taking the Sup in the codomain of all the rationals less than the
@@ -202,7 +203,7 @@ theorem coe_lt_inducedMap_iff : (q : β) < inducedMap α β a ↔ (q : α) < a :
     exact mod_cast hq
 
 theorem lt_inducedMap_iff : b < inducedMap α β a ↔ ∃ q : ℚ, b < q ∧ (q : α) < a :=
-  ⟨fun h => (exists_rat_btwn h).imp fun q => And.imp_right coe_lt_inducedMap_iff.1,
+  ⟨fun h => (exists_rat_btwn h).imp fun _ => And.imp_right coe_lt_inducedMap_iff.1,
     fun ⟨q, hbq, hqa⟩ => hbq.trans <| by rwa [coe_lt_inducedMap_iff]⟩
 
 @[simp]
@@ -216,7 +217,6 @@ theorem inducedMap_inducedMap (a : α) : inducedMap β γ (inducedMap α β a) =
   eq_of_forall_rat_lt_iff_lt fun q => by
     rw [coe_lt_inducedMap_iff, coe_lt_inducedMap_iff, Iff.comm, coe_lt_inducedMap_iff]
 
---@[simp] -- Porting note (#10618): simp can prove it
 theorem inducedMap_inv_self (b : β) : inducedMap γ β (inducedMap β γ b) = b := by
   rw [inducedMap_inducedMap, inducedMap_self]
 
@@ -238,12 +238,12 @@ theorem le_inducedMap_mul_self_of_mem_cutMap (ha : 0 < a) (b : β) (hb : b ∈ c
   · rw [pow_two] at hqa ⊢
     exact mul_self_le_mul_self (mod_cast hq'.le)
       (le_csSup (cutMap_bddAbove β a) <|
-        coe_mem_cutMap_iff.2 <| lt_of_mul_self_lt_mul_self ha.le hqa)
+        coe_mem_cutMap_iff.2 <| lt_of_mul_self_lt_mul_self₀ ha.le hqa)
 
 /-- Preparatory lemma for `inducedOrderRingHom`. -/
 theorem exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self (ha : 0 < a) (b : β)
     (hba : b < inducedMap α β a * inducedMap α β a) : ∃ c ∈ cutMap β (a * a), b < c := by
-  obtain hb | hb := lt_or_le b 0
+  obtain hb | hb := lt_or_ge b 0
   · refine ⟨0, ?_, hb⟩
     rw [← Rat.cast_zero, coe_mem_cutMap_iff, Rat.cast_zero]
     exact mul_self_pos.2 ha.ne'
@@ -252,7 +252,7 @@ theorem exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self (ha : 0 < a) (b : �
   refine ⟨(q ^ 2 : ℚ), coe_mem_cutMap_iff.2 ?_, hbq⟩
   rw [pow_two] at hqa ⊢
   push_cast
-  obtain ⟨q', hq', hqa'⟩ := lt_inducedMap_iff.1 (lt_of_mul_self_lt_mul_self
+  obtain ⟨q', hq', hqa'⟩ := lt_inducedMap_iff.1 (lt_of_mul_self_lt_mul_self₀
     (inducedMap_nonneg ha.le) hqa)
   exact mul_self_lt_mul_self (mod_cast hq.le) (hqa'.trans' <| by assumption_mod_cast)
 
@@ -324,16 +324,11 @@ end LinearOrderedField
 
 section Real
 
-variable {R S : Type*} [OrderedRing R] [LinearOrderedRing S]
+variable {R S : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R]
+  [Ring S] [LinearOrder S] [IsStrictOrderedRing S]
 
 theorem ringHom_monotone (hR : ∀ r : R, 0 ≤ r → ∃ s : R, s ^ 2 = r) (f : R →+* S) : Monotone f :=
   (monotone_iff_map_nonneg f).2 fun r h => by
     obtain ⟨s, rfl⟩ := hR r h; rw [map_pow]; apply sq_nonneg
-
-/-- There exists no nontrivial ring homomorphism `ℝ →+* ℝ`. -/
-instance Real.RingHom.unique : Unique (ℝ →+* ℝ) where
-  default := RingHom.id ℝ
-  uniq f := congr_arg OrderRingHom.toRingHom (@Subsingleton.elim (ℝ →+*o ℝ) _
-      ⟨f, ringHom_monotone (fun r hr => ⟨√r, sq_sqrt hr⟩) f⟩ default)
 
 end Real

@@ -35,7 +35,7 @@ theorem tendsto_sum_pi_div_four :
       exact Tendsto.pow ‹_› _
     · rw [eventually_iff_exists_mem]
       use Set.Ioo (-1) 1
-      exact ⟨(by rw [mem_nhdsWithin_Iio_iff_exists_Ioo_subset]; use -1, by simp),
+      exact ⟨Ioo_mem_nhdsLT <| by simp,
         fun _ _ ↦ by rwa [Set.mem_Iio, sq_lt_one_iff_abs_lt_one, abs_lt, ← Set.mem_Ioo]⟩
   replace abel := (abel.comp q).mul m
   rw [mul_one] at abel

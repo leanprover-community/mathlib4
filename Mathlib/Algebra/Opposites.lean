@@ -49,7 +49,7 @@ same way that it is convenient to have `Additive α = α`; this means that we al
 `AddOpposite (Additive α) = MulOpposite α`, which is convenient when working with quotients.
 
 This is a compromise between making `MulOpposite α = AddOpposite α = α` (what we had in Lean 3) and
-having no defeqs within those three types (which we had as of mathlib4#1036). -/
+having no defeqs within those three types (which we had as of https://github.com/leanprover-community/mathlib4/pull/1036). -/
 structure PreOpposite (α : Type*) : Type _ where
   /-- The element of `PreOpposite α` that represents `x : α`. -/ op' ::
   /-- The element of `α` represented by `x : PreOpposite α`. -/ unop' : α
@@ -100,7 +100,7 @@ theorem unop_comp_op : (unop : αᵐᵒᵖ → α) ∘ op = id :=
 protected def rec' {F : αᵐᵒᵖ → Sort*} (h : ∀ X, F (op X)) : ∀ X, F X := fun X ↦ h (unop X)
 
 /-- The canonical bijection between `α` and `αᵐᵒᵖ`. -/
-@[to_additive (attr := simps (config := .asFn) apply symm_apply)
+@[to_additive (attr := simps -fullyApplied apply symm_apply)
   "The canonical bijection between `α` and `αᵃᵒᵖ`."]
 def opEquiv : α ≃ αᵐᵒᵖ :=
   ⟨op, unop, unop_op, op_unop⟩
@@ -137,6 +137,12 @@ theorem unop_inj {x y : αᵐᵒᵖ} : unop x = unop y ↔ x = y :=
   unop_injective.eq_iff
 
 attribute [nolint simpComm] AddOpposite.unop_inj
+
+@[to_additive (attr := simp)] lemma «forall» {p : αᵐᵒᵖ → Prop} : (∀ a, p a) ↔ ∀ a, p (op a) :=
+  op_surjective.forall
+
+@[to_additive (attr := simp)] lemma «exists» {p : αᵐᵒᵖ → Prop} : (∃ a, p a) ↔ ∃ a, p (op a) :=
+  op_surjective.exists
 
 @[to_additive] instance instNontrivial [Nontrivial α] : Nontrivial αᵐᵒᵖ := op_injective.nontrivial
 

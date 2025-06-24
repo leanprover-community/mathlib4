@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Data.Matrix.Notation
-import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Fin.Tuple.Reflection
 
 /-!
@@ -23,7 +22,7 @@ corresponding `*_eq` lemmas to be used in a place where they are definitionally 
 ## Main definitions
 
 * `Matrix.transposeᵣ`
-* `Matrix.dotProductᵣ`
+* `dotProductᵣ`
 * `Matrix.mulᵣ`
 * `Matrix.mulVecᵣ`
 * `Matrix.vecMulᵣ`
@@ -36,14 +35,14 @@ open Matrix
 
 namespace Matrix
 
-variable {l m n : ℕ} {α β : Type*}
+variable {l m n : ℕ} {α : Type*}
 
 /-- `∀` with better defeq for `∀ x : Matrix (Fin m) (Fin n) α, P x`. -/
 def Forall : ∀ {m n} (_ : Matrix (Fin m) (Fin n) α → Prop), Prop
   | 0, _, P => P (of ![])
   | _ + 1, _, P => FinVec.Forall fun r => Forall fun A => P (of (Matrix.vecCons r A))
 
-/-- This can be use to prove
+/-- This can be used to prove
 ```lean
 example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
   (∀ x, P x) ↔ ∀ a b c d e f, P !![a, b, c; d, e, f] :=
@@ -51,7 +50,7 @@ example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
 ```
 -/
 theorem forall_iff : ∀ {m n} (P : Matrix (Fin m) (Fin n) α → Prop), Forall P ↔ ∀ x, P x
-  | 0, n, P => Iff.symm Fin.forall_fin_zero_pi
+  | 0, _, _ => Iff.symm Fin.forall_fin_zero_pi
   | m + 1, n, P => by
     simp only [Forall, FinVec.forall_iff, forall_iff]
     exact Iff.symm Fin.forall_fin_succ_pi
@@ -65,7 +64,7 @@ def Exists : ∀ {m n} (_ : Matrix (Fin m) (Fin n) α → Prop), Prop
   | 0, _, P => P (of ![])
   | _ + 1, _, P => FinVec.Exists fun r => Exists fun A => P (of (Matrix.vecCons r A))
 
-/-- This can be use to prove
+/-- This can be used to prove
 ```lean
 example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
   (∃ x, P x) ↔ ∃ a b c d e f, P !![a, b, c; d, e, f] :=
@@ -73,7 +72,7 @@ example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
 ```
 -/
 theorem exists_iff : ∀ {m n} (P : Matrix (Fin m) (Fin n) α → Prop), Exists P ↔ ∃ x, P x
-  | 0, n, P => Iff.symm Fin.exists_fin_zero_pi
+  | 0, _, _ => Iff.symm Fin.exists_fin_zero_pi
   | m + 1, n, P => by
     simp only [Exists, FinVec.exists_iff, exists_iff]
     exact Iff.symm Fin.exists_fin_succ_pi
@@ -95,7 +94,7 @@ example (a b c d : α) : transpose !![a, b; c, d] = !![a, c; b, d] := (transpose
 -/
 @[simp]
 theorem transposeᵣ_eq : ∀ {m n} (A : Matrix (Fin m) (Fin n) α), transposeᵣ A = transpose A
-  | _, 0, A => Subsingleton.elim _ _
+  | _, 0, _ => Subsingleton.elim _ _
   | m, n + 1, A =>
     Matrix.ext fun i j => by
       simp_rw [transposeᵣ, transposeᵣ_eq]
@@ -108,7 +107,7 @@ theorem transposeᵣ_eq : ∀ {m n} (A : Matrix (Fin m) (Fin n) α), transpose�
 example (a b c d : α) : transpose !![a, b; c, d] = !![a, c; b, d] :=
   (transposeᵣ_eq _).symm
 
-/-- `Matrix.dotProduct` with better defeq for `Fin` -/
+/-- `dotProduct` with better defeq for `Fin` -/
 def dotProductᵣ [Mul α] [Add α] [Zero α] {m} (a b : Fin m → α) : α :=
   FinVec.sum <| FinVec.seq (FinVec.map (· * ·) a) b
 
@@ -121,11 +120,11 @@ example (a b c d : α) [Mul α] [AddCommMonoid α] :
 -/
 @[simp]
 theorem dotProductᵣ_eq [Mul α] [AddCommMonoid α] {m} (a b : Fin m → α) :
-    dotProductᵣ a b = dotProduct a b := by
+    dotProductᵣ a b = a ⬝ᵥ b := by
   simp_rw [dotProductᵣ, dotProduct, FinVec.sum_eq, FinVec.seq_eq, FinVec.map_eq,
       Function.comp_apply]
 
-example (a b c d : α) [Mul α] [AddCommMonoid α] : dotProduct ![a, b] ![c, d] = a * c + b * d :=
+example (a b c d : α) [Mul α] [AddCommMonoid α] : ![a, b] ⬝ᵥ ![c, d] = a * c + b * d :=
   (dotProductᵣ_eq _ _).symm
 
 /-- `Matrix.mul` with better defeq for `Fin` -/
@@ -214,7 +213,7 @@ example (A : Matrix (Fin 2) (Fin 2) α) :
 -/
 theorem etaExpand_eq {m n} (A : Matrix (Fin m) (Fin n) α) : etaExpand A = A := by
   simp_rw [etaExpand, FinVec.etaExpand_eq, Matrix.of]
-  -- This to be in the above `simp_rw` before leanprover/lean4#2644
+  -- This to be in the above `simp_rw` before https://github.com/leanprover/lean4/pull/2644
   erw [Equiv.refl_apply]
 
 example (A : Matrix (Fin 2) (Fin 2) α) : A = !![A 0 0, A 0 1; A 1 0, A 1 1] :=

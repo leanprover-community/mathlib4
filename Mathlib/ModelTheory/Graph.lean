@@ -21,7 +21,7 @@ This file defines first-order languages, structures, and theories in graph theor
   of the theory of simple graphs.
 -/
 
-universe u v
+universe u
 
 namespace FirstOrder
 
@@ -31,7 +31,7 @@ open FirstOrder
 
 open Structure
 
-variable {α : Type u} {V : Type v} {n : ℕ}
+variable {V : Type u} {n : ℕ}
 
 /-! ### Simple Graphs -/
 
@@ -76,8 +76,7 @@ instance simpleGraph_model (G : SimpleGraph V) :
   rw [Theory.simpleGraph_model_iff]
   exact ⟨G.loopless, G.symm⟩
 
-variable (V)
-
+variable (V) in
 /-- Any model of the theory of simple graphs represents a simple graph. -/
 @[simps]
 def simpleGraphOfStructure [Language.graph.Structure V] [V ⊨ Theory.simpleGraph] :
@@ -90,8 +89,6 @@ def simpleGraphOfStructure [Language.graph.Structure V] [V ⊨ Theory.simpleGrap
   loopless :=
     Relations.realize_irreflexive.1
       (Theory.realize_sentence_of_mem Theory.simpleGraph (Set.mem_insert _ _))
-
-variable {V}
 
 @[simp]
 theorem _root_.SimpleGraph.simpleGraphOfStructure (G : SimpleGraph V) :

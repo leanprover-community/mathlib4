@@ -30,8 +30,8 @@ open MeasureTheory Real Set Filter Topology
 lemma lintegral_Iic_eq_lintegral_Iio_add_Icc {y z : ℝ} (f : ℝ → ℝ≥0∞) (hzy : z ≤ y) :
     ∫⁻ x in Iic y, f x = (∫⁻ x in Iio z, f x) + ∫⁻ x in Icc z y, f x := by
   rw [← Iio_union_Icc_eq_Iic hzy, lintegral_union measurableSet_Icc]
-  rw [Set.disjoint_iff]
-  rintro x ⟨h1 : x < _, h2, _⟩
+  simp_rw [Set.disjoint_iff_forall_ne, mem_Iio, mem_Icc]
+  intros
   linarith
 
 namespace ProbabilityTheory
@@ -49,8 +49,9 @@ def gammaPDF (a r x : ℝ) : ℝ≥0∞ :=
   ENNReal.ofReal (gammaPDFReal a r x)
 
 lemma gammaPDF_eq (a r x : ℝ) :
-    gammaPDF a r x = ENNReal.ofReal (if 0 ≤ x then
-    r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x)) else 0) := rfl
+    gammaPDF a r x =
+      ENNReal.ofReal (if 0 ≤ x then r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x)) else 0) :=
+  rfl
 
 lemma gammaPDF_of_neg {a r x : ℝ} (hx : x < 0) : gammaPDF a r x = 0 := by
   simp only [gammaPDF_eq, if_neg (not_le.mpr hx), ENNReal.ofReal_zero]
@@ -64,21 +65,21 @@ lemma lintegral_gammaPDF_of_nonpos {x a r : ℝ} (hx : x ≤ 0) :
     ∫⁻ y in Iio x, gammaPDF a r y = 0 := by
   rw [setLIntegral_congr_fun (g := fun _ ↦ 0) measurableSet_Iio]
   · rw [lintegral_zero, ← ENNReal.ofReal_zero]
-  · simp only [gammaPDF_eq, ENNReal.ofReal_eq_zero]
-    filter_upwards with a (_ : a < _)
+  · intro a (_ : a < _)
+    simp only [gammaPDF_eq, ENNReal.ofReal_eq_zero]
     rw [if_neg (by linarith)]
 
 /-- The gamma pdf is measurable. -/
-@[measurability]
+@[fun_prop, measurability]
 lemma measurable_gammaPDFReal (a r : ℝ) : Measurable (gammaPDFReal a r) :=
   Measurable.ite measurableSet_Ici (((measurable_id'.pow_const _).const_mul _).mul
     (measurable_id'.const_mul _).neg.exp) measurable_const
 
 /-- The gamma pdf is strongly measurable -/
-@[measurability]
- lemma stronglyMeasurable_gammaPDFReal (a r : ℝ) :
-     StronglyMeasurable (gammaPDFReal a r) :=
-   (measurable_gammaPDFReal a r).stronglyMeasurable
+@[fun_prop, measurability]
+lemma stronglyMeasurable_gammaPDFReal (a r : ℝ) :
+    StronglyMeasurable (gammaPDFReal a r) :=
+  (measurable_gammaPDFReal a r).stronglyMeasurable
 
 /-- The gamma pdf is positive for all positive reals -/
 lemma gammaPDFReal_pos {x a r : ℝ} (ha : 0 < a) (hr : 0 < r) (hx : 0 < x) :
@@ -100,14 +101,14 @@ lemma lintegral_gammaPDF_eq_one {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
     ∫⁻ x, gammaPDF a r x = 1 := by
   have leftSide : ∫⁻ x in Iio 0, gammaPDF a r x = 0 := by
     rw [setLIntegral_congr_fun measurableSet_Iio
-      (ae_of_all _ (fun x (hx : x < 0) ↦ gammaPDF_of_neg hx)), lintegral_zero]
+      (fun x (hx : x < 0) ↦ gammaPDF_of_neg hx), lintegral_zero]
   have rightSide : ∫⁻ x in Ici 0, gammaPDF a r x =
       ∫⁻ x in Ici 0, ENNReal.ofReal (r ^ a / Gamma a * x ^ (a - 1) * exp (-(r * x))) :=
-    setLIntegral_congr_fun measurableSet_Ici (ae_of_all _ (fun _ ↦ gammaPDF_of_nonneg))
+    setLIntegral_congr_fun measurableSet_Ici (fun _ ↦ gammaPDF_of_nonneg)
   rw [← ENNReal.toReal_eq_one_iff, ← lintegral_add_compl _ measurableSet_Ici, compl_Ici,
     leftSide, rightSide, add_zero, ← integral_eq_lintegral_of_nonneg_ae]
   · simp_rw [integral_Ici_eq_integral_Ioi, mul_assoc]
-    rw [integral_mul_left, integral_rpow_mul_exp_neg_mul_Ioi ha hr, div_mul_eq_mul_div,
+    rw [integral_const_mul, integral_rpow_mul_exp_neg_mul_Ioi ha hr, div_mul_eq_mul_div,
       ← mul_assoc, mul_div_assoc, div_self (Gamma_pos_of_pos ha).ne', mul_one,
       div_rpow zero_le_one hr.le, one_rpow, mul_one_div, div_self (rpow_pos_of_pos hr _).ne']
   · rw [EventuallyLE, ae_restrict_iff' measurableSet_Ici]
@@ -139,16 +140,17 @@ def gammaCDFReal (a r : ℝ) : StieltjesFunction :=
 lemma gammaCDFReal_eq_integral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
     gammaCDFReal a r x = ∫ x in Iic x, gammaPDFReal a r x := by
   have : IsProbabilityMeasure (gammaMeasure a r) := isProbabilityMeasureGamma ha hr
-  rw [gammaCDFReal, cdf_eq_toReal, gammaMeasure, withDensity_apply _ measurableSet_Iic]
+  rw [gammaCDFReal, cdf_eq_real, gammaMeasure, measureReal_def,
+    withDensity_apply _ measurableSet_Iic]
   refine (integral_eq_lintegral_of_nonneg_ae ?_ ?_).symm
   · exact ae_of_all _ fun b ↦ by simp only [Pi.zero_apply, gammaPDFReal_nonneg ha hr]
-  · exact (measurable_gammaPDFReal a r).aestronglyMeasurable.restrict
+  · fun_prop
 
 lemma gammaCDFReal_eq_lintegral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
     gammaCDFReal a r x = ENNReal.toReal (∫⁻ x in Iic x, gammaPDF a r x) := by
   have : IsProbabilityMeasure (gammaMeasure a r) := isProbabilityMeasureGamma ha hr
-  simp only [gammaPDF, gammaCDFReal, cdf_eq_toReal]
-  simp only [gammaMeasure, measurableSet_Iic, withDensity_apply, gammaPDF]
+  simp only [gammaPDF, gammaCDFReal, cdf_eq_real]
+  simp only [gammaMeasure, measurableSet_Iic, withDensity_apply, gammaPDF, measureReal_def]
 
 end GammaCDF
 

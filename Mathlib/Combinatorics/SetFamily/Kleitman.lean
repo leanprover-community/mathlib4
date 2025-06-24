@@ -34,20 +34,21 @@ variable {ι α : Type*} [Fintype α] [DecidableEq α] [Nonempty α]
 each further intersecting family takes at most half of the sets that are in no previous family. -/
 theorem Finset.card_biUnion_le_of_intersecting (s : Finset ι) (f : ι → Finset (Finset α))
     (hf : ∀ i ∈ s, (f i : Set (Finset α)).Intersecting) :
-    (s.biUnion f).card ≤ 2 ^ Fintype.card α - 2 ^ (Fintype.card α - s.card) := by
+    #(s.biUnion f) ≤ 2 ^ Fintype.card α - 2 ^ (Fintype.card α - #s) := by
   have : DecidableEq ι := by
     classical
     infer_instance
-  obtain hs | hs := le_total (Fintype.card α) s.card
+  obtain hs | hs := le_total (Fintype.card α) #s
   · rw [tsub_eq_zero_of_le hs, pow_zero]
     refine (card_le_card <| biUnion_subset.2 fun i hi a ha ↦
-      mem_compl.2 <| not_mem_singleton.2 <| (hf _ hi).ne_bot ha).trans_eq ?_
+      mem_compl.2 <| notMem_singleton.2 <| (hf _ hi).ne_bot ha).trans_eq ?_
     rw [card_compl, Fintype.card_finset, card_singleton]
-  induction' s using Finset.cons_induction with i s hi ih generalizing f
-  · simp
+  induction s using Finset.cons_induction generalizing f with
+  | empty => simp
+  | cons i s hi ih =>
   set f' : ι → Finset (Finset α) :=
     fun j ↦ if hj : j ∈ cons i s hi then (hf j hj).exists_card_eq.choose else ∅
-  have hf₁ : ∀ j, j ∈ cons i s hi → f j ⊆ f' j ∧ 2 * (f' j).card =
+  have hf₁ : ∀ j, j ∈ cons i s hi → f j ⊆ f' j ∧ 2 * #(f' j) =
       2 ^ Fintype.card α ∧ (f' j : Set (Finset α)).Intersecting := by
     rintro j hj
     simp_rw [f', dif_pos hj, ← Fintype.card_finset]
@@ -79,5 +80,5 @@ theorem Finset.card_biUnion_le_of_intersecting (s : Finset ι) (f : ι → Finse
     (ih _ (fun i hi ↦ (hf₁ _ <| subset_cons _ hi).2.2)
     ((card_le_card <| subset_cons _).trans hs)) _).trans ?_
   rw [mul_tsub, two_mul, ← pow_succ',
-    ← add_tsub_assoc_of_le (pow_le_pow_right' (one_le_two : (1 : ℕ) ≤ 2) tsub_le_self),
+    ← add_tsub_assoc_of_le (pow_right_mono₀ (one_le_two : (1 : ℕ) ≤ 2) tsub_le_self),
     tsub_add_eq_add_tsub hs, card_cons, add_tsub_add_eq_tsub_right]

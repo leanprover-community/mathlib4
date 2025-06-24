@@ -39,8 +39,8 @@ class HasFiniteLimits : Prop where
   and which has `FinType` objects and morphisms -/
   out (J : Type) [𝒥 : SmallCategory J] [@FinCategory J 𝒥] : @HasLimitsOfShape J 𝒥 C _
 
-instance (priority := 100) hasLimitsOfShape_of_hasFiniteLimits (J : Type w) [SmallCategory J]
-    [FinCategory J] [HasFiniteLimits C] : HasLimitsOfShape J C := by
+instance (priority := 100) hasLimitsOfShape_of_hasFiniteLimits [HasFiniteLimits C] (J : Type w)
+    [SmallCategory J] [FinCategory J] : HasLimitsOfShape J C := by
   apply @hasLimitsOfShape_of_equivalence _ _ _ _ _ _ (FinCategory.equivAsType J) ?_
   apply HasFiniteLimits.out
 
@@ -88,8 +88,9 @@ class HasFiniteColimits : Prop where
   and which has `Fintype` objects and morphisms -/
   out (J : Type) [𝒥 : SmallCategory J] [@FinCategory J 𝒥] : @HasColimitsOfShape J 𝒥 C _
 
-instance (priority := 100) hasColimitsOfShape_of_hasFiniteColimits (J : Type w) [SmallCategory J]
-    [FinCategory J] [HasFiniteColimits C] : HasColimitsOfShape J C := by
+-- See note [instance argument order]
+instance (priority := 100) hasColimitsOfShape_of_hasFiniteColimits [HasFiniteColimits C]
+    (J : Type w) [SmallCategory J] [FinCategory J] : HasColimitsOfShape J C := by
   refine @hasColimitsOfShape_of_equivalence _ _ _ _ _ _ (FinCategory.equivAsType J) ?_
   apply HasFiniteColimits.out
 
@@ -167,8 +168,8 @@ instance fintypeObj [Fintype J] : Fintype (WidePullbackShape J) :=
 
 instance fintypeHom (j j' : WidePullbackShape J) : Fintype (j ⟶ j') where
   elems := by
-    cases' j' with j'
-    · cases' j with j
+    obtain - | j' := j'
+    · obtain - | j := j
       · exact {Hom.id none}
       · exact {Hom.term j}
     · by_cases h : some j' = j
@@ -189,8 +190,8 @@ instance fintypeObj [Fintype J] : Fintype (WidePushoutShape J) := by
 
 instance fintypeHom (j j' : WidePushoutShape J) : Fintype (j ⟶ j') where
   elems := by
-    cases' j with j
-    · cases' j' with j'
+    obtain - | j := j
+    · obtain - | j' := j'
       · exact {Hom.id none}
       · exact {Hom.init j'}
     · by_cases h : some j = j'
@@ -216,7 +217,7 @@ instance finCategoryWidePushout [Fintype J] : FinCategory (WidePushoutShape J) w
 for every finite collection of morphisms
 -/
 class HasFiniteWidePullbacks : Prop where
-  /-- `C` has all wide pullbacks any Fintype `J`-/
+  /-- `C` has all wide pullbacks for any Finite `J` -/
   out (J : Type) [Finite J] : HasLimitsOfShape (WidePullbackShape J) C
 
 instance hasLimitsOfShape_widePullbackShape (J : Type) [Finite J] [HasFiniteWidePullbacks C] :
@@ -228,7 +229,7 @@ instance hasLimitsOfShape_widePullbackShape (J : Type) [Finite J] [HasFiniteWide
 for every finite collection of morphisms
 -/
 class HasFiniteWidePushouts : Prop where
-  /-- `C` has all wide pushouts any Fintype `J`-/
+  /-- `C` has all wide pushouts for any Finite `J` -/
   out (J : Type) [Finite J] : HasColimitsOfShape (WidePushoutShape J) C
 
 instance hasColimitsOfShape_widePushoutShape (J : Type) [Finite J] [HasFiniteWidePushouts C] :
@@ -239,13 +240,14 @@ instance hasColimitsOfShape_widePushoutShape (J : Type) [Finite J] [HasFiniteWid
 /-- Finite wide pullbacks are finite limits, so if `C` has all finite limits,
 it also has finite wide pullbacks
 -/
-theorem hasFiniteWidePullbacks_of_hasFiniteLimits [HasFiniteLimits C] : HasFiniteWidePullbacks C :=
+instance (priority := 900) hasFiniteWidePullbacks_of_hasFiniteLimits [HasFiniteLimits C] :
+    HasFiniteWidePullbacks C :=
   ⟨fun J _ => by cases nonempty_fintype J; exact HasFiniteLimits.out _⟩
 
 /-- Finite wide pushouts are finite colimits, so if `C` has all finite colimits,
 it also has finite wide pushouts
 -/
-theorem hasFiniteWidePushouts_of_has_finite_limits [HasFiniteColimits C] :
+instance (priority := 900) hasFiniteWidePushouts_of_has_finite_limits [HasFiniteColimits C] :
     HasFiniteWidePushouts C :=
   ⟨fun J _ => by cases nonempty_fintype J; exact HasFiniteColimits.out _⟩
 

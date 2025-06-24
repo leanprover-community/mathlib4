@@ -18,7 +18,7 @@ For both of these definitions, we also have a class stating that the whole space
 satisfies that property: `TotallyDisconnectedSpace`, `TotallySeparatedSpace`.
 -/
 
-open Set Function
+open Function Set Topology
 
 universe u v
 
@@ -80,22 +80,6 @@ instance [∀ i, TopologicalSpace (π i)] [∀ i, TotallyDisconnectedSpace (π i
   · obtain ⟨a, t, ht, rfl⟩ := Sigma.isConnected_iff.1 ⟨h, hs⟩
     exact ht.isPreconnected.subsingleton.image _
 
--- Porting note: reformulated using `Pairwise`
-/-- Let `X` be a topological space, and suppose that for all distinct `x,y ∈ X`, there
-  is some clopen set `U` such that `x ∈ U` and `y ∉ U`. Then `X` is totally disconnected. -/
-theorem isTotallyDisconnected_of_isClopen_set {X : Type*} [TopologicalSpace X]
-    (hX : Pairwise fun x y => ∃ (U : Set X), IsClopen U ∧ x ∈ U ∧ y ∉ U) :
-    IsTotallyDisconnected (Set.univ : Set X) := by
-  rintro S - hS
-  unfold Set.Subsingleton
-  by_contra! h_contra
-  rcases h_contra with ⟨x, hx, y, hy, hxy⟩
-  obtain ⟨U, hU, hxU, hyU⟩ := hX hxy
-  specialize
-    hS U Uᶜ hU.2 hU.compl.2 (fun a _ => em (a ∈ U)) ⟨x, hx, hxU⟩ ⟨y, hy, hyU⟩
-  rw [inter_compl_self, Set.inter_empty] at hS
-  exact Set.not_nonempty_empty hS
-
 /-- A space is totally disconnected iff its connected components are subsingletons. -/
 theorem totallyDisconnectedSpace_iff_connectedComponent_subsingleton :
     TotallyDisconnectedSpace α ↔ ∀ x : α, (connectedComponent x).Subsingleton := by
@@ -134,6 +118,11 @@ theorem isTotallyDisconnected_of_totallyDisconnectedSpace [TotallyDisconnectedSp
     IsTotallyDisconnected s := fun t _ ht =>
   TotallyDisconnectedSpace.isTotallyDisconnected_univ _ t.subset_univ ht
 
+lemma TotallyDisconnectedSpace.eq_of_continuous [TopologicalSpace β]
+    [PreconnectedSpace α] [TotallyDisconnectedSpace β] (f : α → β) (hf : Continuous f)
+    (i j : α) : f i = f j :=
+  (isPreconnected_univ.image f hf.continuousOn).subsingleton ⟨i, trivial, rfl⟩ ⟨j, trivial, rfl⟩
+
 theorem isTotallyDisconnected_of_image [TopologicalSpace β] {f : α → β} (hf : ContinuousOn f s)
     (hf' : Injective f) (h : IsTotallyDisconnected (f '' s)) : IsTotallyDisconnected s :=
   fun _t hts ht _x x_in _y y_in =>
@@ -141,25 +130,34 @@ theorem isTotallyDisconnected_of_image [TopologicalSpace β] {f : α → β} (hf
     h _ (image_subset f hts) (ht.image f <| hf.mono hts) (mem_image_of_mem f x_in)
       (mem_image_of_mem f y_in)
 
-theorem Embedding.isTotallyDisconnected [TopologicalSpace β] {f : α → β} (hf : Embedding f)
-    {s : Set α} (h : IsTotallyDisconnected (f '' s)) : IsTotallyDisconnected s :=
-  isTotallyDisconnected_of_image hf.continuous.continuousOn hf.inj h
+lemma Topology.IsEmbedding.isTotallyDisconnected [TopologicalSpace β] {f : α → β} {s : Set α}
+    (hf : IsEmbedding f) (h : IsTotallyDisconnected (f '' s)) : IsTotallyDisconnected s :=
+  isTotallyDisconnected_of_image hf.continuous.continuousOn hf.injective h
 
-lemma Embedding.isTotallyDisconnected_image [TopologicalSpace β] {f : α → β} (hf : Embedding f)
-    {s : Set α} : IsTotallyDisconnected (f '' s) ↔ IsTotallyDisconnected s := by
+@[deprecated (since := "2024-10-26")]
+alias Embedding.isTotallyDisconnected := IsEmbedding.isTotallyDisconnected
+
+lemma Topology.IsEmbedding.isTotallyDisconnected_image [TopologicalSpace β] {f : α → β} {s : Set α}
+    (hf : IsEmbedding f) : IsTotallyDisconnected (f '' s) ↔ IsTotallyDisconnected s := by
   refine ⟨hf.isTotallyDisconnected, fun hs u hus hu ↦ ?_⟩
   obtain ⟨v, hvs, rfl⟩ : ∃ v, v ⊆ s ∧ f '' v = u :=
     ⟨f ⁻¹' u ∩ s, inter_subset_right, by rwa [image_preimage_inter, inter_eq_left]⟩
-  rw [hf.toInducing.isPreconnected_image] at hu
+  rw [hf.isInducing.isPreconnected_image] at hu
   exact (hs v hvs hu).image _
 
-lemma Embedding.isTotallyDisconnected_range [TopologicalSpace β] {f : α → β} (hf : Embedding f) :
-    IsTotallyDisconnected (range f) ↔ TotallyDisconnectedSpace α := by
+@[deprecated (since := "2024-10-26")]
+alias Embedding.isTotallyDisconnected_image := IsEmbedding.isTotallyDisconnected_image
+
+lemma Topology.IsEmbedding.isTotallyDisconnected_range [TopologicalSpace β] {f : α → β}
+    (hf : IsEmbedding f) : IsTotallyDisconnected (range f) ↔ TotallyDisconnectedSpace α := by
   rw [totallyDisconnectedSpace_iff, ← image_univ, hf.isTotallyDisconnected_image]
+
+@[deprecated (since := "2024-10-26")]
+alias Embedding.isTotallyDisconnected_range := IsEmbedding.isTotallyDisconnected_range
 
 lemma totallyDisconnectedSpace_subtype_iff {s : Set α} :
     TotallyDisconnectedSpace s ↔ IsTotallyDisconnected s := by
-  rw [← embedding_subtype_val.isTotallyDisconnected_range, Subtype.range_val]
+  rw [← IsEmbedding.subtypeVal.isTotallyDisconnected_range, Subtype.range_val]
 
 instance Subtype.totallyDisconnectedSpace {α : Type*} {p : α → Prop} [TopologicalSpace α]
     [TotallyDisconnectedSpace α] : TotallyDisconnectedSpace (Subtype p) :=
@@ -195,7 +193,7 @@ alias IsTotallySeparated.isTotallyDisconnected := isTotallyDisconnected_of_isTot
 
 /-- A space is totally separated if any two points can be separated by two disjoint open sets
 covering the whole space. -/
-class TotallySeparatedSpace (α : Type u) [TopologicalSpace α] : Prop where
+@[mk_iff] class TotallySeparatedSpace (α : Type u) [TopologicalSpace α] : Prop where
   /-- The universal set `Set.univ` in a totally separated space is totally separated. -/
   isTotallySeparated_univ : IsTotallySeparated (univ : Set α)
 
@@ -210,15 +208,27 @@ instance (priority := 100) TotallySeparatedSpace.of_discrete (α : Type*) [Topol
   ⟨fun _ _ b _ h => ⟨{b}ᶜ, {b}, isOpen_discrete _, isOpen_discrete _, h, rfl,
     (compl_union_self _).symm.subset, disjoint_compl_left⟩⟩
 
+theorem totallySeparatedSpace_iff_exists_isClopen {α : Type*} [TopologicalSpace α] :
+    TotallySeparatedSpace α ↔ Pairwise (∃ U : Set α, IsClopen U ∧ · ∈ U ∧ · ∈ Uᶜ) := by
+  simp only [totallySeparatedSpace_iff, IsTotallySeparated, Set.Pairwise, mem_univ, true_implies]
+  refine forall₃_congr fun x y _ ↦
+    ⟨fun ⟨U, V, hU, hV, Ux, Vy, f, disj⟩ ↦ ?_, fun ⟨U, hU, Ux, Ucy⟩ ↦ ?_⟩
+  · exact ⟨U, isClopen_of_disjoint_cover_open f hU hV disj,
+      Ux, fun Uy ↦ Set.disjoint_iff.mp disj ⟨Uy, Vy⟩⟩
+  · exact ⟨U, Uᶜ, hU.2, hU.compl.2, Ux, Ucy, (Set.union_compl_self U).ge, disjoint_compl_right⟩
+
 theorem exists_isClopen_of_totally_separated {α : Type*} [TopologicalSpace α]
-    [TotallySeparatedSpace α] {x y : α} (hxy : x ≠ y) :
-    ∃ U : Set α, IsClopen U ∧ x ∈ U ∧ y ∈ Uᶜ := by
-  obtain ⟨U, V, hU, hV, Ux, Vy, f, disj⟩ :=
-    TotallySeparatedSpace.isTotallySeparated_univ (Set.mem_univ x) (Set.mem_univ y) hxy
-  have hU := isClopen_inter_of_disjoint_cover_clopen isClopen_univ f hU hV disj
-  rw [univ_inter _] at hU
-  rw [← Set.subset_compl_iff_disjoint_right, subset_compl_comm] at disj
-  exact ⟨U, hU, Ux, disj Vy⟩
+    [TotallySeparatedSpace α] : Pairwise (∃ U : Set α, IsClopen U ∧ · ∈ U ∧ · ∈ Uᶜ) :=
+  totallySeparatedSpace_iff_exists_isClopen.mp ‹_›
+
+/-- Let `X` be a topological space, and suppose that for all distinct `x,y ∈ X`, there
+  is some clopen set `U` such that `x ∈ U` and `y ∉ U`. Then `X` is totally disconnected. -/
+@[deprecated totallySeparatedSpace_iff_exists_isClopen (since := "2025-04-03")]
+theorem isTotallyDisconnected_of_isClopen_set {X : Type*} [TopologicalSpace X]
+    (hX : Pairwise (∃ (U : Set X), IsClopen U ∧ · ∈ U ∧ · ∉ U)) :
+    IsTotallyDisconnected (Set.univ : Set X) :=
+  (totallySeparatedSpace_iff X).mp (totallySeparatedSpace_iff_exists_isClopen.mpr hX)
+    |>.isTotallyDisconnected
 
 end TotallySeparated
 
@@ -260,12 +270,11 @@ theorem Continuous.connectedComponentsLift_unique (h : Continuous f) (g : Connec
     (hg : g ∘ (↑) = f) : g = h.connectedComponentsLift :=
   connectedComponents_lift_unique' <| hg.trans h.connectedComponentsLift_comp_coe.symm
 
-
 instance ConnectedComponents.totallyDisconnectedSpace :
     TotallyDisconnectedSpace (ConnectedComponents α) := by
   rw [totallyDisconnectedSpace_iff_connectedComponent_singleton]
   refine ConnectedComponents.surjective_coe.forall.2 fun x => ?_
-  rw [← ConnectedComponents.quotientMap_coe.image_connectedComponent, ←
+  rw [← ConnectedComponents.isQuotientMap_coe.image_connectedComponent, ←
     connectedComponents_preimage_singleton, image_preimage_eq _ ConnectedComponents.surjective_coe]
   refine ConnectedComponents.surjective_coe.forall.2 fun y => ?_
   rw [connectedComponents_preimage_singleton]

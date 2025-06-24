@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Even and odd functions
@@ -17,8 +17,6 @@ These definitions are `Function.Even` and `Function.Odd`; and they are `protecte
 conflicting with the root-level definitions `Even` and `Odd` (which, for functions, mean that the
 function takes even resp. odd _values_, a wholly different concept).
 -/
-
-open scoped BigOperators
 
 namespace Function
 

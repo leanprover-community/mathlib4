@@ -3,7 +3,7 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.PurelyInseparable
+import Mathlib.FieldTheory.PurelyInseparable.Basic
 import Mathlib.FieldTheory.PerfectClosure
 
 /-!
@@ -60,7 +60,7 @@ perfect ring, perfect closure, purely inseparable
 
 -/
 
-open FiniteDimensional Polynomial IntermediateField Field
+open Module Polynomial IntermediateField Field
 
 noncomputable section
 
@@ -96,7 +96,7 @@ theorem mem_pNilradical {R : Type*} [CommSemiring R] {p : ℕ} {x : R} :
   by_cases hp : 1 < p
   · rw [pNilradical_eq_nilradical hp]
     refine ⟨fun ⟨n, h⟩ ↦ ⟨n, ?_⟩, fun ⟨n, h⟩ ↦ ⟨p ^ n, h⟩⟩
-    rw [← Nat.sub_add_cancel ((Nat.lt_pow_self hp n).le), pow_add, h, mul_zero]
+    rw [← Nat.sub_add_cancel ((n.lt_pow_self hp).le), pow_add, h, mul_zero]
   rw [pNilradical_eq_bot hp, Ideal.mem_bot]
   refine ⟨fun h ↦ ⟨0, by rw [pow_zero, pow_one, h]⟩, fun ⟨n, h⟩ ↦ ?_⟩
   rcases Nat.le_one_iff_eq_zero_or_eq_one.1 (not_lt.1 hp) with hp | hp
@@ -114,12 +114,12 @@ theorem pow_expChar_pow_inj_of_pNilradical_eq_bot (R : Type*) [CommRing R] (p : 
     (h : pNilradical R p = ⊥) (n : ℕ) : Function.Injective fun x : R ↦ x ^ p ^ n := fun _ _ H ↦
   sub_eq_zero.1 <| Ideal.mem_bot.1 <| h ▸ sub_mem_pNilradical_iff_pow_expChar_pow_eq.2 ⟨n, H⟩
 
-theorem pNilradical_eq_bot_of_frobenius_inj (R : Type*) [CommRing R] (p : ℕ) [ExpChar R p]
+theorem pNilradical_eq_bot_of_frobenius_inj (R : Type*) [CommSemiring R] (p : ℕ) [ExpChar R p]
     (h : Function.Injective (frobenius R p)) : pNilradical R p = ⊥ := bot_unique fun x ↦ by
   rw [mem_pNilradical, Ideal.mem_bot]
   exact fun ⟨n, _⟩ ↦ h.iterate n (by rwa [← coe_iterateFrobenius, map_zero])
 
-theorem PerfectRing.pNilradical_eq_bot (R : Type*) [CommRing R] (p : ℕ) [ExpChar R p]
+theorem PerfectRing.pNilradical_eq_bot (R : Type*) [CommSemiring R] (p : ℕ) [ExpChar R p]
     [PerfectRing R p] : pNilradical R p = ⊥ :=
   pNilradical_eq_bot_of_frobenius_inj R p (injective_frobenius R p)
 
@@ -196,7 +196,7 @@ theorem RingHom.pNilradical_le_ker_of_perfectRing [ExpChar L p] [PerfectRing L p
   rwa [map_pow, ← iterateFrobenius_def, ← iterateFrobeniusEquiv_apply, RingEquiv.symm_apply_apply,
     map_zero, map_zero] at h
 
-variable [ExpChar L p] [ExpChar M p] in
+variable [ExpChar L p] in
 theorem IsPerfectClosure.ker_eq [PerfectRing L p] [IsPerfectClosure i p] :
     RingHom.ker i = pNilradical K p :=
   IsPRadical.ker_le'.antisymm (i.pNilradical_le_ker_of_perfectRing p)
@@ -313,7 +313,7 @@ def lift : L →+* M where
   map_mul' x1 x2 := by
     obtain ⟨n1, y1, h1⟩ := IsPRadical.pow_mem i p x1
     obtain ⟨n2, y2, h2⟩ := IsPRadical.pow_mem i p x2
-    simp only; rw [liftAux_apply i j p _ _ _ h1, liftAux_apply i j p _ _ _ h2,
+    rw [liftAux_apply i j p _ _ _ h1, liftAux_apply i j p _ _ _ h2,
       liftAux_apply i j p (x1 * x2) (n1 + n2) (y1 ^ p ^ n2 * y2 ^ p ^ n1) (by rw [map_mul,
         map_pow, map_pow, h1, h2, ← pow_mul, ← pow_add, ← pow_mul, ← pow_add,
         add_comm n2, mul_pow]),
@@ -325,7 +325,7 @@ def lift : L →+* M where
   map_add' x1 x2 := by
     obtain ⟨n1, y1, h1⟩ := IsPRadical.pow_mem i p x1
     obtain ⟨n2, y2, h2⟩ := IsPRadical.pow_mem i p x2
-    simp only; rw [liftAux_apply i j p _ _ _ h1, liftAux_apply i j p _ _ _ h2,
+    rw [liftAux_apply i j p _ _ _ h1, liftAux_apply i j p _ _ _ h2,
       liftAux_apply i j p (x1 + x2) (n1 + n2) (y1 ^ p ^ n2 + y2 ^ p ^ n1) (by rw [map_add,
         map_pow, map_pow, h1, h2, ← pow_mul, ← pow_add, ← pow_mul, ← pow_add,
         add_comm n2, add_pow_expChar_pow]),

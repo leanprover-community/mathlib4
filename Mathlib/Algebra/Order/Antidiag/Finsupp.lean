@@ -5,7 +5,6 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, 
   Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Antidiag.Pi
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Finsupp.Basic
 
 /-!
@@ -39,7 +38,7 @@ variable [DecidableEq ι] [AddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq �
 /-- The finset of functions `ι →₀ μ` with support contained in `s` and sum equal to `n`. -/
 def finsuppAntidiag (s : Finset ι) (n : μ) : Finset (ι →₀ μ) :=
   (piAntidiag s n).attach.map ⟨fun f ↦ ⟨s.filter (f.1 · ≠ 0), f.1, by
-    simpa using (mem_piAntidiag.1 f.2).2⟩, fun f g hfg ↦ Subtype.ext (congr_arg (⇑) hfg)⟩
+    simpa using (mem_piAntidiag.1 f.2).2⟩, fun _ _ hfg ↦ Subtype.ext (congr_arg (⇑) hfg)⟩
 
 @[simp] lemma mem_finsuppAntidiag : f ∈ finsuppAntidiag s n ↔ s.sum f = n ∧ f.support ⊆ s := by
   simp [finsuppAntidiag, ← DFunLike.coe_fn_eq, subset_iff]
@@ -55,7 +54,7 @@ lemma mem_finsuppAntidiag' :
 
 @[simp] lemma finsuppAntidiag_empty_of_ne_zero (hn : n ≠ 0) :
     finsuppAntidiag (∅ : Finset ι) n = ∅ :=
-  eq_empty_of_forall_not_mem (by simp [@eq_comm _ 0, hn.symm])
+  eq_empty_of_forall_notMem (by simp [@eq_comm _ 0, hn.symm])
 
 lemma finsuppAntidiag_empty (n : μ) :
     finsuppAntidiag (∅ : Finset ι) n = if n = 0 then {0} else ∅ := by split_ifs with hn <;> simp [*]
@@ -69,7 +68,7 @@ theorem mem_finsuppAntidiag_insert {a : ι} {s : Finset ι}
   constructor
   · rintro ⟨rfl, hsupp⟩
     refine ⟨_, _, rfl, Finsupp.erase a f, ?_, ?_, ?_⟩
-    · rw [update_erase_eq_update, update_self]
+    · rw [update_erase_eq_update, Finsupp.update_self]
     · apply sum_congr rfl
       intro x hx
       rw [Finsupp.erase_ne (ne_of_mem_of_not_mem hx h)]
@@ -78,10 +77,10 @@ theorem mem_finsuppAntidiag_insert {a : ι} {s : Finset ι}
     refine ⟨?_, (support_update_subset _ _).trans (insert_subset_insert a hgsupp)⟩
     simp only [coe_update]
     apply congr_arg₂
-    · rw [update_same]
+    · rw [Function.update_self]
     · apply sum_congr rfl
       intro x hx
-      rw [update_noteq (ne_of_mem_of_not_mem hx h) n1 ⇑g]
+      rw [update_of_ne (ne_of_mem_of_not_mem hx h) n1 ⇑g]
 
 theorem finsuppAntidiag_insert {a : ι} {s : Finset ι}
     (h : a ∉ s) (n : μ) :
@@ -96,7 +95,7 @@ theorem finsuppAntidiag_insert {a : ι} {s : Finset ι}
           obtain rfl | hx := eq_or_ne x a
           · replace hf := mt (hf.2 ·) h
             replace hg := mt (hg.2 ·) h
-            rw [not_mem_support_iff.mp hf, not_mem_support_iff.mp hg]
+            rw [notMem_support_iff.mp hf, notMem_support_iff.mp hg]
           · simpa only [coe_update, Function.update, dif_neg hx] using hfg x)⟩) := by
   ext f
   rw [mem_finsuppAntidiag_insert h, mem_biUnion]
@@ -114,7 +113,7 @@ lemma mapRange_finsuppAntidiag_subset {e : μ ≃+ μ'} {s : Finset ι} {n : μ}
   simp only [AddEquiv.toEquiv_eq_coe, mapRange.addEquiv_toEquiv, Equiv.coe_toEmbedding,
     mapRange.equiv_apply, EquivLike.coe_coe]
   constructor
-  · rw [sum_mapRange_index (fun _ ↦ rfl), ← hsum, _root_.map_finsupp_sum]
+  · rw [sum_mapRange_index (fun _ ↦ rfl), ← hsum, _root_.map_finsuppSum]
   · exact subset_trans (support_mapRange) hsupp
 
 lemma mapRange_finsuppAntidiag_eq {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
@@ -136,7 +135,8 @@ lemma mapRange_finsuppAntidiag_eq {e : μ ≃+ μ'} {s : Finset ι} {n : μ} :
 end AddCommMonoid
 
 section CanonicallyOrderedAddCommMonoid
-variable [DecidableEq ι] [DecidableEq μ] [CanonicallyOrderedAddCommMonoid μ] [HasAntidiagonal μ]
+variable [DecidableEq ι] [DecidableEq μ] [AddCommMonoid μ] [PartialOrder μ]
+  [CanonicallyOrderedAdd μ] [HasAntidiagonal μ]
 
 @[simp] lemma finsuppAntidiag_zero (s : Finset ι) : finsuppAntidiag s (0 : μ) = {0} := by
   ext f; simp [finsuppAntidiag, ← DFunLike.coe_fn_eq (g := f), -mem_piAntidiag, eq_comm]

@@ -9,11 +9,11 @@ import Mathlib.Algebra.NeZero
 /-!
 # `NeZero 1` in a nontrivial `MulZeroOneClass`.
 
-This file exists to minimize the dependencies of `Mathlib.Algebra.GroupWithZero.Defs`,
+This file exists to minimize the dependencies of `Mathlib/Algebra/GroupWithZero/Defs.lean`,
 which is a part of the algebraic hierarchy used by basic tactics.
 -/
 
-assert_not_exists DenselyOrdered
+assert_not_exists DenselyOrdered Ring
 
 universe u
 
@@ -31,11 +31,13 @@ instance NeZero.one : NeZero (1 : M₀) := ⟨by
     _ = y := by rw [one_mul]⟩
 
 /-- Pullback a `Nontrivial` instance along a function sending `0` to `0` and `1` to `1`. -/
-theorem pullback_nonzero [Zero M₀'] [One M₀'] (f : M₀' → M₀) (zero : f 0 = 0) (one : f 1 = 1) :
+theorem domain_nontrivial [Zero M₀'] [One M₀'] (f : M₀' → M₀) (zero : f 0 = 0) (one : f 1 = 1) :
     Nontrivial M₀' :=
   ⟨⟨0, 1, mt (congr_arg f) <| by
     rw [zero, one]
     exact zero_ne_one⟩⟩
+
+@[deprecated (since := "2024-12-07")] alias pullback_nonzero := domain_nontrivial
 
 section GroupWithZero
 
@@ -46,7 +48,7 @@ theorem inv_ne_zero (h : a ≠ 0) : a⁻¹ ≠ 0 := fun a_eq_0 => by
   have := mul_inv_cancel₀ h
   simp only [a_eq_0, mul_zero, zero_ne_one] at this
 
-@[simp]
+@[simp high] -- should take priority over `IsUnit.inv_mul_cancel`
 theorem inv_mul_cancel₀ (h : a ≠ 0) : a⁻¹ * a = 1 :=
   calc
     a⁻¹ * a = a⁻¹ * a * a⁻¹ * a⁻¹⁻¹ := by simp [inv_ne_zero h]

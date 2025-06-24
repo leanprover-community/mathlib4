@@ -36,20 +36,12 @@ def effectiveEpiStructIsColimitDescOfEffectiveEpiFamily {B : C} {α : Type*} (X 
   uniq e _ m hm := EffectiveEpiFamily.uniq X π (fun a ↦ c.ι.app ⟨a⟩ ≫ e)
       (fun _ _ _ _ hg ↦ (by simp [← hm, reassoc_of% hg])) m (fun _ ↦ (by simp [← hm]))
 
-/--
-Given an `EffectiveEpiFamily X π` such that the coproduct of `X` exists, `Sigma.desc π` is an
-`EffectiveEpi`.
--/
-noncomputable
-def effectiveEpiStructDescOfEffectiveEpiFamily {B : C} {α : Type*} (X : α → C)
-    (π : (a : α) → (X a ⟶ B)) [HasCoproduct X] [EffectiveEpiFamily X π] :
-    EffectiveEpiStruct (Sigma.desc π) := by
-  simpa [coproductIsCoproduct] using
-    effectiveEpiStructIsColimitDescOfEffectiveEpiFamily X _ (coproductIsCoproduct _) π
-
 instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [HasCoproduct X]
-    [EffectiveEpiFamily X π] : EffectiveEpi (Sigma.desc π) :=
-  ⟨⟨effectiveEpiStructDescOfEffectiveEpiFamily X π⟩⟩
+    [EffectiveEpiFamily X π] : EffectiveEpi (Sigma.desc π) := by
+  let e := effectiveEpiStructIsColimitDescOfEffectiveEpiFamily X _ (coproductIsCoproduct _) π
+  simp only [Cofan.mk_pt, coproductIsCoproduct, colimit.cocone_x, IsColimit.ofIsoColimit_desc,
+    Cocones.ext_inv_hom, Iso.refl_inv, colimit.isColimit_desc, Category.id_comp] at e
+  exact ⟨⟨e⟩⟩
 
 example {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π]
     [HasCoproduct X] : Epi (Sigma.desc π) := inferInstance

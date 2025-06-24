@@ -48,7 +48,7 @@ instance [Monad M] [MonadWriter ω M] : MonadWriter ω (StateT σ M) where
 namespace WriterT
 
 @[inline]
-protected def mk {ω : Type u} (cmd :  M (α × ω)) : WriterT ω M α := cmd
+protected def mk {ω : Type u} (cmd : M (α × ω)) : WriterT ω M α := cmd
 @[inline]
 protected def run {ω : Type u} (cmd : WriterT ω M α) : M (α × ω) := cmd
 @[inline]
@@ -57,7 +57,7 @@ protected def runThe (ω : Type u) (cmd : WriterT ω M α) : M (α × ω) := cmd
 @[ext]
 protected theorem ext {ω : Type u} (x x' : WriterT ω M α) (h : x.run = x'.run) : x = x' := h
 
-variable {ω : Type u} {α β : Type u} [Monad M]
+variable [Monad M]
 
 /-- Creates an instance of `Monad`, with explicitly given `empty` and `append` operations.
 

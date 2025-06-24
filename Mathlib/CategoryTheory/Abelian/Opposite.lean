@@ -20,18 +20,12 @@ open CategoryTheory.Limits
 
 variable (C : Type*) [Category C] [Abelian C]
 
--- Porting note: these local instances do not seem to be necessary
---attribute [local instance]
---  hasFiniteLimits_of_hasEqualizers_and_finite_products
---  hasFiniteColimits_of_hasCoequalizers_and_finite_coproducts
---  Abelian.hasFiniteBiproducts
-
 instance : Abelian Cᵒᵖ := by
   -- Porting note: priorities of `Abelian.has_kernels` and `Abelian.has_cokernels` have
   -- been set to 90 in `Abelian.Basic` in order to prevent a timeout here
   exact {
-    normalMonoOfMono := fun f => normalMonoOfNormalEpiUnop _ (normalEpiOfEpi f.unop)
-    normalEpiOfEpi := fun f => normalEpiOfNormalMonoUnop _ (normalMonoOfMono f.unop) }
+    normalMonoOfMono := fun f => ⟨normalMonoOfNormalEpiUnop _ (normalEpiOfEpi f.unop)⟩
+    normalEpiOfEpi := fun f => ⟨normalEpiOfNormalMonoUnop _ (normalMonoOfMono f.unop)⟩ }
 
 section
 
@@ -151,7 +145,7 @@ theorem image_ι_op_comp_imageUnopOp_hom :
     Quiver.Hom.op_unop, cokernelIsoOfEq_hom_comp_desc_assoc, cokernel.π_desc_assoc,
     cokernel.π_desc]
   simp only [eqToHom_refl]
-  erw [IsIso.inv_id, Category.id_comp]
+  rw [IsIso.inv_id, Category.id_comp]
 
 theorem imageUnopOp_hom_comp_image_ι :
     (imageUnopOp g).hom ≫ image.ι g = (factorThruImage g.unop).op := by

@@ -13,8 +13,7 @@ In this file, it is shown that under suitable assumptions,
 limits exist in the category `SheafOfModules R`.
 
 ## TODO
-* do the same for colimits (which requires constructing
-the associated sheaf of modules functor)
+* do the same for colimits (which requires constructing the associated sheaf of modules functor)
 
 -/
 
@@ -111,9 +110,9 @@ noncomputable instance forgetPreservesLimitsOfSize :
 
 noncomputable instance :
      PreservesFiniteLimits (SheafOfModules.toSheaf.{v} R ⋙ sheafToPresheaf _ _) :=
-  compPreservesFiniteLimits (SheafOfModules.forget.{v} R) (PresheafOfModules.toPresheaf R.val)
+  comp_preservesFiniteLimits (SheafOfModules.forget.{v} R) (PresheafOfModules.toPresheaf R.val)
 
 noncomputable instance : PreservesFiniteLimits (SheafOfModules.toSheaf.{v} R) :=
-  preservesFiniteLimitsOfReflectsOfPreserves _ (sheafToPresheaf _ _)
+  preservesFiniteLimits_of_reflects_of_preserves _ (sheafToPresheaf _ _)
 
 end SheafOfModules

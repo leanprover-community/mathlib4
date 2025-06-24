@@ -53,6 +53,8 @@ the colors.
   * develop API for partial colorings, likely as colorings of subgraphs (`H.coe.Coloring α`)
 -/
 
+assert_not_exists Field
+
 open Fintype Function
 
 universe u v
@@ -63,7 +65,7 @@ variable {V : Type u} (G : SimpleGraph V) {n : ℕ}
 /-- An `α`-coloring of a simple graph `G` is a homomorphism of `G` into the complete graph on `α`.
 This is also known as a proper coloring.
 -/
-abbrev Coloring (α : Type v) := G →g (⊤ : SimpleGraph α)
+abbrev Coloring (α : Type v) := G →g completeGraph α
 
 variable {G}
 variable {α β : Type*} (C : G.Coloring α)
@@ -103,8 +105,6 @@ theorem Coloring.colorClasses_finite [Finite α] : C.colorClasses.Finite :=
 theorem Coloring.card_colorClasses_le [Fintype α] [Fintype C.colorClasses] :
     Fintype.card C.colorClasses ≤ Fintype.card α := by
   simp only [colorClasses]
-  -- Porting note: brute force instance declaration `[Fintype (Setoid.classes (Setoid.ker C))]`
-  haveI : Fintype (Setoid.classes (Setoid.ker C)) := by assumption
   convert Setoid.card_classes_ker_le C
 
 theorem Coloring.not_adj_of_mem_colorClass {c : α} {v w : V} (hv : v ∈ C.colorClass c)
@@ -116,7 +116,7 @@ theorem Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.color
 -- TODO make this computable
 noncomputable instance [Fintype V] [Fintype α] : Fintype (Coloring G α) := by
   classical
-  change Fintype (RelHom G.Adj (⊤ : SimpleGraph α).Adj)
+  change Fintype (RelHom G.Adj (completeGraph α).Adj)
   apply Fintype.ofInjective _ RelHom.coe_fn_injective
 
 variable (G)
@@ -136,6 +136,10 @@ theorem isEmpty_of_colorable_zero (h : G.Colorable 0) : IsEmpty V := by
   intro v
   obtain ⟨i, hi⟩ := h.some v
   exact Nat.not_lt_zero _ hi
+
+@[simp]
+lemma colorable_zero_iff : G.Colorable 0 ↔ IsEmpty V :=
+   ⟨G.isEmpty_of_colorable_zero, fun _ ↦ G.colorable_of_isEmpty 0⟩
 
 /-- The "tautological" coloring of a graph, using the vertices of the graph as colors. -/
 def selfColoring : G.Coloring V := Coloring.mk id fun {_ _} => G.ne_of_adj
@@ -226,8 +230,7 @@ theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     let f := Embedding.completeGraph (@Fin.valEmbedding n)
     use f.toHom.comp C
     intro v
-    cases' C with color valid
-    exact Fin.is_lt (color v)
+    exact Fin.is_lt (C.1 v)
   · rintro ⟨C, Cf⟩
     refine ⟨Coloring.mk ?_ ?_⟩
     · exact fun v => ⟨C v, Cf v⟩
@@ -264,10 +267,6 @@ theorem chromaticNumber_le_iff_colorable {n : ℕ} : G.chromaticNumber ≤ n ↔
   have := Nat.sInf_mem (⟨m, hm⟩ : {n' | G.Colorable n'}.Nonempty)
   rw [Set.mem_setOf_eq] at this
   exact this.mono h
-
-@[deprecated Colorable.chromaticNumber_le (since := "2024-03-21")]
-theorem chromaticNumber_le_card [Fintype α] (C : G.Coloring α) :
-    G.chromaticNumber ≤ Fintype.card α := C.colorable.chromaticNumber_le
 
 theorem colorable_chromaticNumber {m : ℕ} (hc : G.Colorable m) :
     G.Colorable (ENat.toNat G.chromaticNumber) := by
@@ -318,7 +317,7 @@ theorem colorable_of_chromaticNumber_ne_top (h : G.chromaticNumber ≠ ⊤) :
 
 theorem Colorable.mono_left {G' : SimpleGraph V} (h : G ≤ G') {n : ℕ} (hc : G'.Colorable n) :
     G.Colorable n :=
-  ⟨hc.some.comp (Hom.mapSpanningSubgraphs h)⟩
+  ⟨hc.some.comp (.ofLE h)⟩
 
 theorem chromaticNumber_le_of_forall_imp {V' : Type*} {G' : SimpleGraph V'}
     (h : ∀ n, G'.Colorable n → G.Colorable n) :
@@ -346,14 +345,14 @@ lemma card_le_chromaticNumber_iff_forall_surjective [Fintype α] :
     by_contra! hi
     let D : G.Coloring {a // a ≠ i} := ⟨fun v ↦ ⟨C v, hi v⟩, (C.valid · <| congr_arg Subtype.val ·)⟩
     classical
-    exact Nat.not_mem_of_lt_sInf ((Nat.sub_one_lt_of_lt <| card_pos_iff.2 ⟨i⟩).trans_le h)
+    exact Nat.notMem_of_lt_sInf ((Nat.sub_one_lt_of_lt <| card_pos_iff.2 ⟨i⟩).trans_le h)
       ⟨G.recolorOfEquiv (equivOfCardEq <| by simp [Nat.pred_eq_sub_one]) D⟩
   · simp only [chromaticNumber, Set.mem_setOf_eq, le_iInf_iff, Nat.cast_le, exists_prop]
     rintro i ⟨C⟩
     contrapose! h
     refine ⟨G.recolorOfCardLE (by simpa using h.le) C, fun hC ↦ ?_⟩
     dsimp at hC
-    simpa [h.not_le] using Fintype.card_le_of_surjective _ hC.of_comp
+    simpa [h.not_ge] using Fintype.card_le_of_surjective _ hC.of_comp
 
 lemma le_chromaticNumber_iff_forall_surjective :
     n ≤ G.chromaticNumber ↔ ∀ C : G.Coloring (Fin n), Surjective C := by
@@ -455,4 +454,45 @@ theorem cliqueFree_of_chromaticNumber_lt {n : ℕ} (hc : G.chromaticNumber < n) 
   rw [← hne] at hc
   simpa using hc
 
+/--
+Given a colouring `α` of `G`, and a clique of size at least the number of colours, the clique
+contains a vertex of each colour.
+-/
+lemma Coloring.surjOn_of_card_le_isClique [Fintype α] {s : Finset V} (h : G.IsClique s)
+    (hc : Fintype.card α ≤ s.card) (C : G.Coloring α) : Set.SurjOn C s Set.univ := by
+  intro _ _
+  obtain ⟨_, hx⟩ := card_le_chromaticNumber_iff_forall_surjective.mp
+                    (by simp_all [isClique_iff_induce_eq]) (C.comp (Embedding.induce s).toHom) _
+  exact ⟨_, Subtype.coe_prop _, hx⟩
+
+namespace completeMultipartiteGraph
+
+variable {ι : Type*} (V : ι → Type*)
+
+/-- The canonical `ι`-coloring of a `completeMultipartiteGraph` with parts indexed by `ι` -/
+def coloring : (completeMultipartiteGraph V).Coloring ι := Coloring.mk (fun v ↦ v.1) (by simp)
+
+lemma colorable [Fintype ι] : (completeMultipartiteGraph V).Colorable (Fintype.card ι) :=
+  (coloring V).colorable
+
+theorem chromaticNumber [Fintype ι] (f : ∀ (i : ι), V i) :
+    (completeMultipartiteGraph V).chromaticNumber = Fintype.card ι := by
+  apply le_antisymm (colorable V).chromaticNumber_le
+  by_contra! h
+  exact not_cliqueFree_of_le_card V f le_rfl <| cliqueFree_of_chromaticNumber_lt h
+
+theorem colorable_of_cliqueFree (f : ∀ (i : ι), V i)
+    (hc : (completeMultipartiteGraph V).CliqueFree n) :
+    (completeMultipartiteGraph V).Colorable (n - 1) := by
+  cases n with
+  | zero => exact absurd hc not_cliqueFree_zero
+  | succ n =>
+  have : Fintype ι := fintypeOfNotInfinite
+    fun hinf ↦ not_cliqueFree_of_infinite V f hc
+  apply (coloring V).colorable.mono
+  have := not_cliqueFree_of_le_card V f le_rfl
+  contrapose! this
+  exact hc.mono this
+
+end completeMultipartiteGraph
 end SimpleGraph

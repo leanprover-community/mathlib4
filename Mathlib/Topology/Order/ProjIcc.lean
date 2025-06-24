@@ -21,7 +21,7 @@ variable {α β γ : Type*} [LinearOrder α] {a b c : α} {h : a ≤ b}
 protected theorem Filter.Tendsto.IccExtend (f : γ → Icc a b → β) {la : Filter α} {lb : Filter β}
     {lc : Filter γ} (hf : Tendsto (↿f) (lc ×ˢ la.map (projIcc a b h)) lb) :
     Tendsto (↿(IccExtend h ∘ f)) (lc ×ˢ la) lb :=
-  hf.comp <| tendsto_id.prod_map tendsto_map
+  hf.comp <| tendsto_id.prodMap tendsto_map
 
 variable [TopologicalSpace α] [OrderTopology α] [TopologicalSpace β] [TopologicalSpace γ]
 
@@ -29,19 +29,22 @@ variable [TopologicalSpace α] [OrderTopology α] [TopologicalSpace β] [Topolog
 theorem continuous_projIcc : Continuous (projIcc a b h) :=
   (continuous_const.max <| continuous_const.min continuous_id).subtype_mk _
 
-theorem quotientMap_projIcc : QuotientMap (projIcc a b h) :=
-  quotientMap_iff.2 ⟨projIcc_surjective h, fun s =>
+theorem isQuotientMap_projIcc : IsQuotientMap (projIcc a b h) :=
+  isQuotientMap_iff.2 ⟨projIcc_surjective h, fun s =>
     ⟨fun hs => hs.preimage continuous_projIcc, fun hs => ⟨_, hs, by ext; simp⟩⟩⟩
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap_projIcc := isQuotientMap_projIcc
 
 @[simp]
 theorem continuous_IccExtend_iff {f : Icc a b → β} : Continuous (IccExtend h f) ↔ Continuous f :=
-  quotientMap_projIcc.continuous_iff.symm
+  isQuotientMap_projIcc.continuous_iff.symm
 
 /-- See Note [continuity lemma statement]. -/
 protected theorem Continuous.IccExtend {f : γ → Icc a b → β} {g : γ → α} (hf : Continuous ↿f)
     (hg : Continuous g) : Continuous fun a => IccExtend h (f a) (g a) :=
   show Continuous (↿f ∘ fun x => (x, projIcc a b h (g x)))
-  from hf.comp <| continuous_id.prod_mk <| continuous_projIcc.comp hg
+  from hf.comp <| continuous_id.prodMk <| continuous_projIcc.comp hg
 
 /-- A useful special case of `Continuous.IccExtend`. -/
 @[continuity]
@@ -53,4 +56,4 @@ theorem ContinuousAt.IccExtend {x : γ} (f : γ → Icc a b → β) {g : γ → 
     (hf : ContinuousAt (↿f) (x, projIcc a b h (g x))) (hg : ContinuousAt g x) :
     ContinuousAt (fun a => IccExtend h (f a) (g a)) x :=
   show ContinuousAt (↿f ∘ fun x => (x, projIcc a b h (g x))) x from
-    ContinuousAt.comp hf <| continuousAt_id.prod <| continuous_projIcc.continuousAt.comp hg
+    ContinuousAt.comp hf <| continuousAt_id.prodMk <| continuous_projIcc.continuousAt.comp hg

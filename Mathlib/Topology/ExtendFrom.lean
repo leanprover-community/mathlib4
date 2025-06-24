@@ -3,7 +3,7 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Anatole Dedecker
 -/
-import Mathlib.Topology.Separation
+import Mathlib.Topology.Separation.Regular
 
 /-!
 # Extending a function from a subset
@@ -12,7 +12,7 @@ The main definition of this file is `extendFrom A f` where `f : X → Y`
 and `A : Set X`. This defines a new function `g : X → Y` which maps any
 `x₀ : X` to the limit of `f` as `x` tends to `x₀`, if such a limit exists.
 
-This is analogous to the way `DenseInducing.extend` "extends" a function
+This is analogous to the way `IsDenseInducing.extend` "extends" a function
 `f : X → Z` to a function `g : Y → Z` along a dense inducing `i : X → Y`.
 
 The main theorem we prove about this definition is `continuousOn_extendFrom`
