@@ -709,6 +709,7 @@ protected noncomputable def equiv : E ≃ₗᵢ[𝕜] E' :=
 @[simp]
 lemma equiv_symm : (b.equiv b' e).symm = b'.equiv b e.symm := rfl
 
+@[simp]
 lemma equiv_apply_basis (i : ι) : b.equiv b' e (b i) = b' (e i) := by
   simp only [OrthonormalBasis.equiv, Orthonormal.equiv, LinearEquiv.coe_isometryOfOrthonormal]
   rw [← b.coe_toBasis, Basis.equiv_apply, b'.coe_toBasis]
