@@ -90,11 +90,8 @@ private lemma maxIncSequencesTo_lt {i j : α} (hij : i < j) (hfij : f i < f j) :
     · refine ⟨?_, ht₁⟩
       intro x hx hxj
       exact (ht₁.monotoneOn hx hti.1 (hti.2 hx)).trans_lt hfij
-    · intro x hx
-      exact (this x hx).le
-  have : j ∉ t := by
-    intro hj
-    exact lt_irrefl _ (this _ hj)
+    · exact fun x hx ↦ (this x hx).le
+  have : j ∉ t := fun hj ↦ lt_irrefl _ (this _ hj)
   simp [this, ht₂]
 
 private lemma maxDecSequencesTo_gt {i j : α} (hij : i < j) (hfij : f j < f i) :
