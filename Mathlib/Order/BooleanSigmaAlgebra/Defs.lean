@@ -34,20 +34,20 @@ infimum.
 To differentiate the statements from the corresponding statements in `CompleteBooleanAlgebra`, we
 prefix `sInf` and `sSup` by a `σ` everywhere. Most statements should hold in both worlds, usually
 with additional assumptions of countability. -/
-class BooleanσAlgebra (α) extends BooleanAlgebra α, SupSet α, InfSet α where
+class BooleanSigmaAlgebra (α) extends BooleanAlgebra α, SupSet α, InfSet α where
   isLUB_σsSup (s : Set α) (hs : s.Countable) : IsLUB s (sSup s)
   isGLB_σsInf (s : Set α) (hs : s.Countable) : IsGLB s (sInf s)
 
 /-- A complete Boolean algebra is a Boolean σ-algebra. -/
-instance (priority := 100) CompleteBooleanAlgebra.toBooleanσAlgebra [CompleteBooleanAlgebra α] :
-    BooleanσAlgebra α where
+instance (priority := 100) CompleteBooleanAlgebra.toBooleanSigmaAlgebra [CompleteBooleanAlgebra α] :
+    BooleanSigmaAlgebra α where
   isLUB_σsSup (s : Set α) _ := isLUB_sSup s
   isGLB_σsInf (s : Set α) _ := isGLB_sInf s
 
-instance OrderDual.instBooleanσAlgebra (α : Type*) [BooleanσAlgebra α] :
-    BooleanσAlgebra αᵒᵈ where
+instance OrderDual.instBooleanSigmaAlgebra (α : Type*) [BooleanSigmaAlgebra α] :
+    BooleanSigmaAlgebra αᵒᵈ where
   toBooleanAlgebra := inferInstance
   toSupSet := inferInstance
   toInfSet := inferInstance
-  isLUB_σsSup (s : Set α) (hs : s.Countable) := IsGLB.dual (BooleanσAlgebra.isGLB_σsInf s hs)
-  isGLB_σsInf (s : Set α) (hs : s.Countable) := IsLUB.dual (BooleanσAlgebra.isLUB_σsSup s hs)
+  isLUB_σsSup (s : Set α) (hs : s.Countable) := IsGLB.dual (BooleanSigmaAlgebra.isGLB_σsInf s hs)
+  isGLB_σsInf (s : Set α) (hs : s.Countable) := IsLUB.dual (BooleanSigmaAlgebra.isLUB_σsSup s hs)

@@ -28,15 +28,15 @@ universe u v w w'
 
 variable {α : Type u} {β : Type v} {ι : Sort w} {κ : ι → Sort w'}
 
-section BooleanσAlgebra
+section BooleanSigmaAlgebra
 
-variable [BooleanσAlgebra α] [Countable ι] {s t : Set α} {a b : α}
+variable [BooleanSigmaAlgebra α] [Countable ι] {s t : Set α} {a b : α}
 
 lemma isLUB_σsSup (hs : s.Countable) : IsLUB s (sSup s) := by
-  exact BooleanσAlgebra.isLUB_σsSup s hs
+  exact BooleanSigmaAlgebra.isLUB_σsSup s hs
 
 lemma isGLB_σsInf (hs : s.Countable) : IsGLB s (sInf s) := by
-  exact BooleanσAlgebra.isGLB_σsInf s hs
+  exact BooleanSigmaAlgebra.isGLB_σsInf s hs
 
 lemma le_σsSup (hs : s.Countable) (ha : a ∈ s) : a ≤ sSup s :=
   (isLUB_σsSup hs).left ha
@@ -89,4 +89,4 @@ theorem notMem_of_lt_σsInf {x : α} {s : Set α} (h : x < sInf s) (hs : s.Count
 theorem notMem_of_σsSup_lt {x : α} {s : Set α} (h : sSup s < x) (hs : s.Countable) : x ∉ s :=
   notMem_of_lt_σsInf (α := αᵒᵈ) h hs
 
-end BooleanσAlgebra
+end BooleanSigmaAlgebra
