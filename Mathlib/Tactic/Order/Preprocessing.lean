@@ -24,11 +24,8 @@ lemma not_lt_of_not_le {α : Type u} [Preorder α] {x y : α} (h : ¬(x ≤ y)) 
   (h ·.le)
 
 lemma le_of_not_lt_le {α : Type u} [Preorder α] {x y : α} (h1 : ¬(x < y)) (h2 : x ≤ y) :
-    y ≤ x := by
-  rw [not_lt_iff_not_le_or_ge] at h1
-  rcases h1 with (h1 | h1)
-  · exact False.elim (h1 h2)
-  · assumption
+    y ≤ x :=
+  not_lt_iff_le_imp_ge.mp h1 h2
 
 end Lemmas
 
