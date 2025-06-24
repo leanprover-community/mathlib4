@@ -282,9 +282,9 @@ example {a b : EReal} (ha : 0 < a) (ha : 0 < b) : 0 < a * b := by positivity
 
 end EReal
 
-/-! ### Exponentiation -/
+/-! ### Powers -/
 
-section Exponentiation
+section Powers
 
 example [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α]
     (a : α) : 0 < a ^ 0 := by positivity
@@ -328,7 +328,7 @@ example {a b : ℤ} (ha : 3 < a) : 0 ≤ min a (b ^ 2) := by positivity
 example {b : ℤ} : 0 ≤ max (-3) (b ^ 2) := by positivity
 example {b : ℤ} : 0 ≤ max (b ^ 2) 0 := by positivity
 
-end Exponentiation
+end Powers
 
 section FloorCeil
 
