@@ -81,7 +81,8 @@ theorem bijective_lift_piRingHom_algebraMap_comp_piEvalRingHom [IsLocalization M
 open Function Ideal
 
 include M in
-lemma surjective_piRingHom_algebraMap_comp_piEvalRingHom_krullDimLE_zero_and_isLocalRing
+variable {R} in
+lemma surjective_piRingHom_algebraMap_comp_piEvalRingHom
     [∀ i, Ring.KrullDimLE 0 (R i)] [∀ i, IsLocalRing (R i)] :
     Surjective (Pi.ringHom (fun i ↦ (algebraMap (R i) (S i)).comp (Pi.evalRingHom R i))) := by
   apply Surjective.piMap (fun i ↦ ?_)
@@ -90,17 +91,18 @@ lemma surjective_piRingHom_algebraMap_comp_piEvalRingHom_krullDimLE_zero_and_isL
     exact surjective_to_subsingleton (algebraMap (R i) (S i))
   · exact (IsLocalization.atUnits _ _ (by simpa)).surjective
 
+variable {R} in
 /-- Let `M` be a submonoid of a direct product of commutative rings `R i`.
 If each `R i` has maximal nilradical then the direct product `∏ R i` surjects onto the
 localization of `∏ R i` at `M`. -/
-lemma algebraMap_pi_surjective_of_nilradical_isMaximal [∀ i, Ring.KrullDimLE 0 (R i)]
+lemma algebraMap_pi_surjective_of_isLocalization [∀ i, Ring.KrullDimLE 0 (R i)]
     [∀ i, IsLocalRing (R i)] [IsLocalization M S']
     [Finite ι] : Surjective (algebraMap (Π i, R i) S') := by
   intro s
   set S := fun (i : ι) => Localization (M.map (Pi.evalRingHom R i))
   obtain ⟨r, hr⟩ :=
-    surjective_piRingHom_algebraMap_comp_piEvalRingHom_krullDimLE_zero_and_isLocalRing
-    R S M ((lift (isUnit_piRingHom_algebraMap_comp_piEvalRingHom R S M)) s)
+    surjective_piRingHom_algebraMap_comp_piEvalRingHom
+    S M ((lift (isUnit_piRingHom_algebraMap_comp_piEvalRingHom R S M)) s)
   refine ⟨r, (bijective_lift_piRingHom_algebraMap_comp_piEvalRingHom R S _ M).injective ?_⟩
   rwa [lift_eq (isUnit_piRingHom_algebraMap_comp_piEvalRingHom R S M) r]
 
