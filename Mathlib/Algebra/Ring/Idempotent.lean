@@ -103,4 +103,12 @@ theorem mul_eq_zero_of_anticommute {a b : R} [NonUnitalSemiring R] [IsAddTorsion
   suffices a * a * b + a * b * a = 0 by rwa [h, add_zero, ha.eq] at this
   rw [mul_assoc, mul_assoc, ← mul_add, hab, mul_zero]
 
+/-- If idempotent `a` and element `b` anti-commute, then they commute.
+So anti-commutativity implies commutativity when one of them is idempotent. -/
+lemma commute_of_anticommute {a b : R} [NonUnitalSemiring R] [IsAddTorsionFree R]
+    (ha : IsIdempotentElem a) (hab : a * b + b * a = 0) : Commute a b := by
+  have := mul_eq_zero_of_anticommute ha hab
+  rw [this, zero_add] at hab
+  rw [Commute, SemiconjBy, hab, this]
+
 end IsIdempotentElem
