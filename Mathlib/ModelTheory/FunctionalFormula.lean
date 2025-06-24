@@ -69,7 +69,7 @@ def FunctionalFormulaSetoid (α : Type w) (β : Type x) [Finite β] :
 
 /-- For a Theory `T`, a `FunctionalFormula T α β` is a formula `φ : L.Formula (α ⊕ β)` such that
 in all Models `M`, the set of elements of `(α ⊕ β) → M` satisfying `φ` is the graph of a function.
-We quotient by semantic equivalence.  -/
+We quotient by semantic equivalence. -/
 structure FunctionalFormula (α : Type w) (β : Type x) [Finite β] : Type _ where
   ofQuotient ::
   /-- The map to the Quotient of a set of formulas -/
@@ -85,14 +85,14 @@ def mk (φ : L.Formula (α ⊕ β)) (h : T ⊨ᵇ Formula.iExsUnique β φ) : Fu
   ofQuotient (Quotient.mk _ ⟨φ, h⟩)
 
 /-- The semantics of a `T.FunctionalFormula α β` as a relation on `α → M` and `β → M`. See
-also `realize` for the semantics as a function.  -/
+also `realize` for the semantics as a function. -/
 def Realize (f : FunctionalFormula T α β) (x : α → M) (y : β → M) : Prop :=
   Quotient.lift (fun φ => φ.1.Realize (Sum.elim x y)) (by
     intro a b hab
     simpa using hab.realize_formula M (v := Sum.elim x y)) f.toQuotient
 
 /-- A `Formula` corresponding to a `FunctionalFormula`. This is non-unique, so we used the
-axiom of choice to select one.  -/
+axiom of choice to select one. -/
 noncomputable def toFormula (f : FunctionalFormula T α β) : L.Formula (α ⊕ β) := f.1.out.1
 
 @[simp]
@@ -466,9 +466,9 @@ noncomputable instance : (FunctionalFormulaLang.theory T).Model M where
     · simp only [LHom.realize_onSentence]
       exact realize_sentence_of_mem T hφ₀
     · simp only [Sentence.Realize, Formula.realize_iAlls, Formula.realize_relabel,
-        Function.comp_def, Sum.elim_inr, Formula.realize_iff, Formula.realize_equal,
-        Term.realize_func, Term.realize_var, instStructure_funMap, LHom.realize_onFormula,
-        realize_toFormula, realize_iff_realize_eq, funext_iff]
+      Function.comp_def, Sum.elim_inr, Formula.realize_iff, Formula.realize_equal,
+      Term.realize_func, Term.realize_var, funMap_def, LHom.realize_onFormula, realize_toFormula,
+      realize_iff_realize_eq, funext_iff]
       intro i
       refine ⟨?_, ?_⟩
       · rintro h ⟨⟩; exact h
@@ -501,8 +501,8 @@ noncomputable def modelTypeEquiv : Theory.ModelType.{_, _, w} T ≃
       intro M
       refine ModelType.casesOn M (fun M {S} _ _ => ?_)
       cases S
-      simp only [instStructure_funMap, ModelType.mk.injEq, realize_ofTerm, Term.realize_func,
-        Term.realize_var, heq_eq_eq, true_and]
+      simp only [funMap_def, ModelType.mk.injEq, realize_ofTerm, Term.realize_func,
+        Term.realize_var, heq_eq_eq, true_and, i1]
       ext
       · simp [Structure.funMap]
       · simp [Structure.RelMap]
@@ -519,10 +519,10 @@ noncomputable def modelTypeEquiv : Theory.ModelType.{_, _, w} T ≃
           simp only [Formula.realize_iAlls, Formula.realize_relabel, Function.comp_def,
             Sum.elim_inr, Formula.realize_iff, Formula.realize_equal, Term.realize_func,
             Term.realize_var, LHom.realize_onFormula, realize_toFormula, realize_iff_realize_eq,
-            funext_iff] at this
+            funext_iff, *] at this
           have := (this (Sum.elim x (fun _ => S.funMap f x))).1 (by simp) ()
           simpa
-        · simp [Structure.RelMap] }
+        · simp only [Structure.RelMap, i1] }
 
 variable {T}
 /-- Proving `FunctionalFormulaLang.theory T ⊨ᵇ φ` by proving it over all models of `T`
