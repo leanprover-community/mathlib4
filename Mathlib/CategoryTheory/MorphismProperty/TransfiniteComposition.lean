@@ -272,7 +272,7 @@ open IsStableUnderTransfiniteCompositionOfShape.of_isStableUnderColimitsOfShape 
 lemma IsStableUnderTransfiniteCompositionOfShape.of_isStableUnderColimitsOfShape
     [W.IsMultiplicative] [W.RespectsIso]
     (hJ : ∀ (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J],
-    W.IsStableUnderColimitsOfShape J) :
+      W.IsStableUnderColimitsOfShape J) :
     W.IsStableUnderTransfiniteCompositionOfShape J where
   le := by
     rintro X Y f ⟨hf⟩
