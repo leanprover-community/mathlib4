@@ -160,6 +160,10 @@ instance [(weakEquivalences C).HasTwoOutOfThreeProperty] :
     (weakEquivalences P.FullSubcategory).HasTwoOutOfThreeProperty :=
   inferInstanceAs ((weakEquivalences C).inverseImage P.ι).HasTwoOutOfThreeProperty
 
+instance [(weakEquivalences C).IsMultiplicative] :
+    (weakEquivalences P.FullSubcategory).IsMultiplicative :=
+  inferInstanceAs ((weakEquivalences C).inverseImage P.ι).IsMultiplicative
+
 lemma weakEquivalence_iff_ι_map {X Y : P.FullSubcategory} (f : X ⟶ Y) :
     WeakEquivalence f ↔ WeakEquivalence (P.ι.map f) := by
   simp only [weakEquivalence_iff]
