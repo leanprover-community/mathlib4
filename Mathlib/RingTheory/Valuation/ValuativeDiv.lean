@@ -65,6 +65,13 @@ variable {R : Type*} [CommRing R] [ValuativeRel R]
 lemma rel_refl (x : R) : x ≤ᵥ x := by
   cases rel_total x x <;> assumption
 
+lemma rel_rfl {x : R} : x ≤ᵥ x :=
+  rel_refl x
+
+protected alias rel.refl := rel_refl
+
+protected alias rel.rfl := rel_rfl
+
 lemma rel_mul_left {x y : R} (z) : x ≤ᵥ y → (z * x) ≤ᵥ (z * y) := by
   rw [mul_comm z x, mul_comm z y]
   apply rel_mul_right
@@ -127,19 +134,63 @@ variable (R) in
 /-- The "canonical" value monoid of a ring with a valuative relation. -/
 def ValueGroup := Quotient (valueSetoid R)
 
+protected
+def ValueGroup.mk (x : R) (y : unitSubmonoid R) : ValueGroup R :=
+  Quotient.mk _ (x, y)
+
+protected
+def ValueGroup.lift {α : Sort*} (f : R → unitSubmonoid R → α)
+    (hf : ∀ (x y : R) (t s : unitSubmonoid R), x * t ≤ᵥ y * s → y * s ≤ᵥ x * t → f x s = f y t)
+    (t : ValueGroup R) : α :=
+  Quotient.lift (fun (x, y) => f x y) (fun (x, t) (y, s) ⟨h₁, h₂⟩ => hf x y s t h₁ h₂) t
+
+protected
+theorem ValueGroup.lift_mk {α : Sort*} (f : R → unitSubmonoid R → α)
+    (hf : ∀ (x y : R) (t s : unitSubmonoid R), x * t ≤ᵥ y * s → y * s ≤ᵥ x * t → f x s = f y t)
+    (x : R) (y : unitSubmonoid R) : ValueGroup.lift f hf (.mk x y) = f x y := rfl
+
+protected
+def ValueGroup.lift₂ {α : Sort*} (f : R → unitSubmonoid R → R → unitSubmonoid R → α)
+    (hf : ∀ (x y z w : R) (t s u v : unitSubmonoid R),
+      x * t ≤ᵥ y * s → y * s ≤ᵥ x * t → z * u ≤ᵥ w * v → w * v ≤ᵥ z * u →
+      f x s z v = f y t w u)
+    (t₁ : ValueGroup R) (t₂ : ValueGroup R) : α :=
+  Quotient.lift₂ (fun (x, t) (y, s) => f x t y s)
+    (fun (x, t) (z, v) (y, s) (w, u) ⟨h₁, h₂⟩ ⟨h₃, h₄⟩ => hf x y z w s t u v h₁ h₂ h₃ h₄) t₁ t₂
+
+protected
+def ValueGroup.lift₂_mk {α : Sort*} (f : R → unitSubmonoid R → R → unitSubmonoid R → α)
+    (hf : ∀ (x y z w : R) (t s u v : unitSubmonoid R),
+      x * t ≤ᵥ y * s → y * s ≤ᵥ x * t → z * u ≤ᵥ w * v → w * v ≤ᵥ z * u →
+      f x s z v = f y t w u)
+    (x y : R) (z w : unitSubmonoid R) :
+    ValueGroup.lift₂ f hf (.mk x z) (.mk y w) = f x z y w := rfl
+
+instance : Zero (ValueGroup R) where
+  zero := .mk 0 1
+
+instance : One (ValueGroup R) where
+  one := .mk 1 1
+
+instance : Mul (ValueGroup R) where
+  mul := ValueGroup.lift₂ (fun a b c d => .mk (a * c) (b * d)) sorry
+
+instance : Bot (ValueGroup R) where
+  bot := 0
+
+@[simp]
+theorem ValueGroup.bot_eq_zero : (⊥ : ValueGroup R) = 0 := rfl
+
 open Classical in
 /-- The value monoid is a linearly ordered commutative monoid with zero. -/
 instance : LinearOrderedCommGroupWithZero (ValueGroup R) where
-  mul := Quotient.lift₂ (fun x y => Quotient.mk _ <| x * y) sorry
   mul_assoc := sorry
-  one := Quotient.mk _ (1,1)
   one_mul := sorry
   mul_one := sorry
   npow := fun n => Quotient.lift (fun x => Quotient.mk _ <| x^n) sorry
   npow_zero := sorry
   npow_succ := sorry
   mul_comm := sorry
-  zero := Quotient.mk _ (0, 1)
   zero_mul := sorry
   mul_zero := sorry
   le := Quotient.lift₂ (fun (a,s) (b,t) => a * t ≤ᵥ b * s) sorry
@@ -150,7 +201,6 @@ instance : LinearOrderedCommGroupWithZero (ValueGroup R) where
   toDecidableLE := inferInstance
   mul_le_mul_left := sorry
   mul_le_mul_right := sorry
-  bot := Quotient.mk _ (0, 1)
   bot_le := sorry
   zero_le_one := sorry
   inv := Quotient.lift
