@@ -42,6 +42,16 @@ given by the 2-commutative square. -/
 -- This only exists to change the explicitness of the binders of the `iso'` field.
 abbrev iso [h : CatCommSq T L R B] : T ⋙ R ≅ L ⋙ B := h.iso'
 
+@[reassoc]
+lemma iso_hom_naturality [h : CatCommSq T L R B] {x y : C₁} (f : x ⟶ y) :
+    R.map (T.map f) ≫ (iso T L R B).hom.app y = (iso T L R B).hom.app x ≫ B.map (L.map f) :=
+  (iso T L R B).hom.naturality f
+
+@[reassoc]
+lemma iso_inv_naturality [h : CatCommSq T L R B] {x y : C₁} (f : x ⟶ y) :
+    B.map (L.map f) ≫ (iso T L R B).inv.app y = (iso T L R B).inv.app x ≫ R.map (T.map f) :=
+  (iso T L R B).inv.naturality f
+
 /-- Horizontal composition of 2-commutative squares -/
 @[simps! iso'_hom_app iso'_inv_app]
 def hComp (T₁ : C₁ ⥤ C₂) (T₂ : C₂ ⥤ C₃) (V₁ : C₁ ⥤ C₄) (V₂ : C₂ ⥤ C₅) (V₃ : C₃ ⥤ C₆)
