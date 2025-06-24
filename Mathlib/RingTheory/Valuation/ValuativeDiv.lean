@@ -49,7 +49,7 @@ variable {R Γ : Type*} [CommRing R] [LinearOrderedCommMonoidWithZero Γ]
 /-- We say that a valuation `v` is `Compatible` if the relation `x ∣ᵥ y`
 is equivalent to `v x ≤ x y`. -/
 class Compatible [ValuativeRel R] where
-  dvd_iff_le (x y : R) : x ≤ᵥ y ↔ v x ≤ v y
+  rel_iff_le (x y : R) : x ≤ᵥ y ↔ v x ≤ v y
 
 end Valuation
 
@@ -88,6 +88,9 @@ lemma rel_mul {x x' y y' : R} : x ≤ᵥ y → x' ≤ᵥ y' → x * x' ≤ᵥ y 
   intro h1 h2
   calc x * x' ≤ᵥ x * y' := rel_mul_left _ h2
     _ ≤ᵥ y * y' := rel_mul_right _ h1
+
+theorem rel_add_cases (x y : R) : x + y ≤ᵥ x ∨ x + y ≤ᵥ y :=
+  (rel_total y x).imp (fun h => rel_add .rfl h) (fun h => rel_add h .rfl)
 
 variable (R) in
 def unitSubmonoid : Submonoid R where
@@ -289,7 +292,6 @@ instance : LE (ValueGroup R) where
           _ ≤ᵥ z * s * (t * w) := rel_mul_right (t * w) h
           _ = w * t * s * z := by ring
       · apply rel_mul_cancel t.prop
-        dsimp at h
         apply rel_mul_cancel hw
         calc x * v * t * w
           _ = x * t * (w * v) := by ring
@@ -387,14 +389,14 @@ instance : LinearOrderedCommGroupWithZero (ValueGroup R) where
 variable (R) in
 /-- The "canonical" valuation associated to a valuative relation. -/
 def valuation : Valuation R (ValueGroup R) where
-  toFun r := Quotient.mk _ (r, 1)
+  toFun r := ValueGroup.mk r 1
   map_zero' := rfl
   map_one' := rfl
-  map_mul' _ _ := sorry
-  map_add_le_max' := by sorry
+  map_mul' _ _ := by simp
+  map_add_le_max' := by simp [rel_add_cases]
 
 instance : (valuation R).Compatible where
-  dvd_iff_le _ _ := sorry
+  rel_iff_le _ _ := by simp [valuation]
 
 /-- Construct a valuative relation on a ring using a valuation. -/
 def ofValuation
@@ -403,12 +405,12 @@ def ofValuation
     [Nontrivial Γ] [NoZeroDivisors Γ]
     (v : Valuation S Γ) : ValuativeRel S where
   rel x y := v x ≤ v y
-  rel_total := sorry
-  rel_trans := sorry
+  rel_total x y := le_total (v x) (v y)
+  rel_trans := le_trans
   rel_add := sorry
   rel_mul_right := sorry
   rel_mul_cancel := sorry
-  not_rel_one_zero := sorry
+  not_rel_one_zero := by simp
 
 lemma isEquiv {Γ₁ Γ₂ : Type*}
     [LinearOrderedCommMonoidWithZero Γ₁]
@@ -418,7 +420,7 @@ lemma isEquiv {Γ₁ Γ₂ : Type*}
     [v₁.Compatible] [v₂.Compatible] :
     v₁.IsEquiv v₂ := by
   intro x y
-  simp_rw [← Valuation.Compatible.dvd_iff_le]
+  simp_rw [← Valuation.Compatible.rel_iff_le]
 
 variable (R) in
 /-- An alias for endowing a ring with a preorder defined as the valuative relation. -/
