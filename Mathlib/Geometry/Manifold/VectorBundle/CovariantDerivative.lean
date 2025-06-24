@@ -143,7 +143,7 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
   [VectorBundle ℝ F V] in
-lemma congr_smoothBumpFunction (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
+lemma congr_σ_smoothBumpFunction (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
     (X : Π x : M, TangentSpace I x) {σ : Π x : M, V x}
     (hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x)
     (f : SmoothBumpFunction I x) :
@@ -174,10 +174,10 @@ lemma congr_σ_of_eventuallyEq (cov : CovariantDerivative I F V) [T2Space M] [Is
     · simp [notMem_support.mp fun a ↦ h (hψ a)]
   -- Then, it's a chain of (dependent) equalities.
   calc cov X σ x
-    _ = cov X ((ψ : M → ℝ) • σ) x := by rw [cov.congr_smoothBumpFunction _ _ _ _ hσ]
+    _ = cov X ((ψ : M → ℝ) • σ) x := by rw [cov.congr_σ_smoothBumpFunction _ _ _ _ hσ]
     _ = cov X ((ψ : M → ℝ) • σ') x := cov.congr_σ _ _ (by simp [this])
     _ = cov X σ' x := by
-      simp [cov.congr_smoothBumpFunction, _root_.mdifferentiableAt_dependent_congr hs hσ hσσ']
+      simp [cov.congr_σ_smoothBumpFunction, _root_.mdifferentiableAt_dependent_congr hs hσ hσσ']
 
 variable {I F V} in
 /-- The difference of two covariant derivatives, as a function `Γ(TM) × Γ(E) → Γ(E)`.
