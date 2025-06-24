@@ -1237,7 +1237,6 @@ theorem integral_target_eq_integral_abs_det_fderiv_smul {f : PartialHomeomorph E
   intro x hx
   exact (hf' x hx).hasFDerivWithinAt
 
-
 section withDensity
 
 lemma _root_.MeasurableEmbedding.withDensity_ofReal_comap_apply_eq_integral_abs_det_fderiv_mul
