@@ -45,7 +45,7 @@ permissions:
 
 jobs:
   build:
-    if: github.repository == 'leanprover-community/mathlib4'
+    if: github.repository == 'leanprover-community/mathlib4' || github.repository == 'leanprover-community/mathlib4-nightly-testing'
     name: Build
     runs-on: pr
     outputs:
@@ -157,6 +157,65 @@ jobs:
           ls .lake/build/bin/cache
           ls .lake/build/bin/check-yaml
           ls .lake/packages/importGraph/.lake/build/bin/graph
+
+      - name: Check for changes to tool source files
+        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
+        id: tool_changes
+        with:
+          working-directory: 'pr-branch'
+          filters: |
+            cache:
+              - 'Cache/**'
+            autolabel:
+              - 'scripts/autolabel.lean'
+            check_yaml:
+              - 'scripts/check-yaml.lean'
+            mk_all:
+              - 'scripts/mk_all.lean'
+            lint_style:
+              - 'scripts/lint-style.lean'
+              - 'Mathlib/Tactic/Linter/TextBased.lean'
+            shake:
+              - 'Shake/**'
+            longest_pole:
+              - 'LongestPole/**'
+            mathlib_test:
+              - 'MathlibTest/**'
+            docs:
+              - 'docs/**'
+
+      - name: build pr-branch tools (test)
+        if: steps.tool_changes.outputs.changes != '[]'
+        # Test building the tools from the PR branch to ensure any modifications work correctly
+        # This runs inside landrun for security
+        run: |
+          cd pr-branch
+          echo "Tool source files have been modified, building affected tools from PR branch..."
+
+          # Define mapping from filter names to tools to build (only for exceptions)
+          declare -A TOOLS_TO_BUILD=(
+            ["check_yaml"]="check-yaml"
+            ["lint_style"]="lint-style"
+            ["longest_pole"]="pole unused"
+            ["mathlib_test"]="mathlib_test_executable"
+          )
+
+          # Parse the changes array and build corresponding tools
+          changes='${{ steps.tool_changes.outputs.changes }}'
+          echo "Changed filters: $changes"
+
+          # Loop through each changed filter
+          for filter in $(echo "$changes" | jq -r '.[]'); do
+            echo "Processing filter: $filter"
+            # Use dictionary value if it exists, otherwise use filter name as tool name
+            if [[ -n "${TOOLS_TO_BUILD[$filter]}" ]]; then
+              tools="${TOOLS_TO_BUILD[$filter]}"
+            else
+              tools="$filter"
+            fi
+            echo "Building $tools..."
+            lake build $tools
+          done
 
       - name: cleanup .cache/mathlib
         # This needs write access to .cache/mathlib, so can't be run inside landrun.
@@ -342,8 +401,8 @@ jobs:
         shell: bash
         run: |
           cd pr-branch
-          ../master-branch/.lake/build/bin/cache put Archive.lean
-          ../master-branch/.lake/build/bin/cache put Counterexamples.lean
+          ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put Archive.lean
+          ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put Counterexamples.lean
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
@@ -430,13 +489,14 @@ jobs:
           COUNTEREXAMPLES_OUTCOME: ${{ steps.counterexamples.outcome }}
           LINT_OUTCOME: ${{ steps.lint.outcome }}
           TEST_OUTCOME: ${{ steps.test.outcome }}
+          NIGHTLY_TESTING_REPO: leanprover-community/mathlib4-nightly-testing
         run: |
           master-branch/scripts/lean-pr-testing-comments.sh lean
           master-branch/scripts/lean-pr-testing-comments.sh batteries
 
   post_steps:
     name: Post-Build Step
-    if: github.repository == 'leanprover-community/mathlib4'
+    if: github.repository == 'leanprover-community/mathlib4' || github.repository == 'leanprover-community/mathlib4-nightly-testing'
     needs: [build]
     runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
     steps:
@@ -520,7 +580,7 @@ jobs:
 
   style_lint:
     name: Lint style
-    if: github.repository == 'leanprover-community/mathlib4'
+    if: github.repository == 'leanprover-community/mathlib4' || github.repository == 'leanprover-community/mathlib4-nightly-testing'
     runs-on: ubuntu-latest
     steps:
       - uses: leanprover-community/lint-style-action@d29fb3b12c1c834450680b3c544f63fe0237a2e2 # 2025-06-20
@@ -531,7 +591,7 @@ jobs:
 
   build_and_lint:
     name: CI Success
-    if: github.repository == 'leanprover-community/mathlib4'
+    if: github.repository == 'leanprover-community/mathlib4' || github.repository == 'leanprover-community/mathlib4-nightly-testing'
     needs: [style_lint, post_steps]
     runs-on: ubuntu-latest
     steps:
@@ -541,7 +601,7 @@ jobs:
 
   final:
     name: Post-CI job
-    if: github.repository == 'leanprover-community/mathlib4'
+    if: github.repository == 'leanprover-community/mathlib4' || github.repository == 'leanprover-community/mathlib4-nightly-testing'
     needs: [style_lint, build, post_steps]
     runs-on: ubuntu-latest
     steps:

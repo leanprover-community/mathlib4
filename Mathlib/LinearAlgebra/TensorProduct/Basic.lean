@@ -346,6 +346,11 @@ theorem tmul_smul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (x 
 theorem smul_tmul_smul (r s : R) (m : M) (n : N) : (r • m) ⊗ₜ[R] (s • n) = (r * s) • m ⊗ₜ[R] n := by
   simp_rw [smul_tmul, tmul_smul, mul_smul]
 
+theorem tsmul_eq_smul_one_tuml {S : Type*} [Semiring S] [Module R S] [SMulCommClass R S S]
+    (s : S) (m : M) : s ⊗ₜ[R] m = s • (1 ⊗ₜ[R] m) := by
+  nth_rw 1 [show s = s • 1 from by simp]
+  rfl
+
 instance leftModule : Module R'' (M ⊗[R] N) :=
   { add_smul := TensorProduct.add_smul
     zero_smul := TensorProduct.zero_smul }
@@ -983,8 +988,7 @@ theorem lTensor_bij_iff_rTensor_bij :
 variable {M} in
 theorem smul_lTensor {S : Type*} [CommSemiring S] [SMul R S] [Module S M] [IsScalarTower R S M]
     [SMulCommClass R S M] (s : S) (m : M ⊗[R] N) : s • (f.lTensor M) m = (f.lTensor M) (s • m) :=
-  have h : s • (LinearMap.lTensor M f) =
-      (f.lTensor M) ∘ₗ ((LinearMap.lsmul S (M ⊗[R] N) s).restrictScalars R) :=
+  have h : s • (f.lTensor M) = f.lTensor M ∘ₗ (LinearMap.lsmul S (M ⊗[R] N) s).restrictScalars R :=
     TensorProduct.ext rfl
   congrFun (congrArg DFunLike.coe h) m
 
