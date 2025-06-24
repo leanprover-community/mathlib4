@@ -136,13 +136,20 @@ instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
 end
 
 open Manifold Metric
+open scoped NNReal
 
 variable [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
 [IsManifold I 1 M]
 [IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace I x)]
 
-lemma foo (x : M) (c : ℝ≥0∞) (hc : 0 < c) :
-    {y : M | riemannianEDist I x y < c} ∈ 𝓝 x := by
+variable (I) in
+lemma bloo (x : M) : ∃ (C : ℝ≥0), 0 < C ∧ ∀ᶠ y in 𝓝[range I] (extChartAt I x x),
+    ‖mfderivWithin 𝓘(ℝ, E) I (extChartAt I x).symm (range I) y‖ < C := sorry
+
+variable (I) in
+lemma blok (x : M) : ∃ (C : ℝ≥0), 0 < C ∧ ∀ᶠ y in 𝓝 x,
+    riemannianEDist I x y ≤ C * edist (extChartAt I x x) (extChartAt I x y) := sorry
+/-
   let γ (y : M) (t : ℝ) : M :=
     (extChartAt I x).symm
     (ContinuousAffineMap.lineMap (extChartAt I x x) (extChartAt I x y) t)
@@ -154,3 +161,18 @@ lemma foo (x : M) (c : ℝ≥0∞) (hc : 0 < c) :
   let f : TangentSpace I x →L[ℝ] E := mfderiv I 𝓘(ℝ, E) (extChartAt I x) x
   have A (v) : ‖f v‖ ≤ ‖f‖ * ‖v‖ := by
     apply ContinuousLinearMap.le_opNorm
+-/
+
+
+lemma foo (x : M) (c : ℝ≥0∞) (hc : 0 < c) :
+    ∀ᶠ y in 𝓝 x, riemannianEDist I x y < c := by
+  rcases blok I x with ⟨C, C_pos, hC⟩
+  let s := {z ∈ range I | edist (extChartAt I x x) z < (c / C)}
+  have : s ∈ 𝓝[range I] (extChartAt I x x) := sorry
+  have : (extChartAt I x) ⁻¹' s ∩ (extChartAt I x).source ∈ 𝓝 x := sorry
+  filter_upwards [this, hC] with y hy h'y
+  apply h'y.trans_lt
+  have : edist (extChartAt I x x) (extChartAt I x y) < (c / C) := hy.1.2
+  rwa [ENNReal.lt_div_iff_mul_lt, mul_comm] at this
+  · exact Or.inl (mod_cast C_pos.ne')
+  · simp
