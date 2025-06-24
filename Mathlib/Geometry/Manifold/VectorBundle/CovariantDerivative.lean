@@ -33,6 +33,7 @@ def Basis.local_frame {ι : Type*}
     [MemTrivializationAtlas e]
     (b : Basis ι 𝕜 F) : ι → (x : M) → V x := sorry
 
+/-- Coefficients of a section `s` of `V` w.r.t. the local frame `b.local_frame e i` -/
 def Basis.local_frame_repr {ι : Type*}
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e]
@@ -47,6 +48,39 @@ lemma Basis.local_frame_repr_spec {ι : Type*} [Fintype ι] {x : M}
     (s : Π x : M,  V x) :
     ∀ᶠ x' in 𝓝 x, s x' = ∑ i, (b.local_frame_repr e s i x') • b.local_frame e i x' :=
   sorry
+
+-- missing: uniqueness of the decomposition; will be used to prove e.g. linearity below
+
+lemma Basis.local_frame_repr_add {ι : Type*} [Fintype ι] {x : M}
+    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
+    [MemTrivializationAtlas e] (hxe : x ∈ e.baseSet)
+    (b : Basis ι 𝕜 F) (s s' : Π x : M,  V x) (i : ι) :
+    b.local_frame_repr e (s + s') i =
+      (b.local_frame_repr e (s + s') i) + (b.local_frame_repr e (s + s') i) := by
+  sorry
+
+-- corollary of this and uniqueness
+
+-- TODO: better name!
+lemma Basis.local_frame_repr_apply_zero_at {ι : Type*} [Fintype ι] {x : M}
+    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
+    [MemTrivializationAtlas e] (hxe : x ∈ e.baseSet)
+    (b : Basis ι 𝕜 F) {s : Π x : M, V x} (hs : s x = 0) (i : ι) :
+    b.local_frame_repr e s i x = 0 := sorry
+
+-- TODO: better name
+lemma Basis.local_frame_repr_apply_zero {ι : Type*} [Fintype ι] {x : M}
+    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
+    [MemTrivializationAtlas e] (hxe : x ∈ e.baseSet)
+    (b : Basis ι 𝕜 F) (i : ι) :
+    b.local_frame_repr e 0 i = 0 := sorry
+
+/-- The representation of `s` in a local frame at `x` only depends on `s` at `x`. -/
+lemma Basis.local_frame_repr_congr {ι : Type*} [Fintype ι] {x : M}
+    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
+    [MemTrivializationAtlas e] (hxe : x ∈ e.baseSet)
+    (b : Basis ι 𝕜 F) (s s' : Π x : M,  V x) (i : ι) (hss' : s x = s' x) :
+    b.local_frame_repr e s i x = b.local_frame_repr e s' i x := sorry
 
 variable {n}
 
@@ -170,7 +204,7 @@ lemma _root_.mdifferentiableAt_dependent_congr {σ σ' : Π x : M, V x} {s : Set
     MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ' x)) x := by
   apply MDifferentiableAt.congr_of_eventuallyEq hσ₁
   -- TODO: split off a lemma?
-  apply  Set.EqOn.eventuallyEq_of_mem _ hs
+  apply Set.EqOn.eventuallyEq_of_mem _ hs
   intro x hx
   simp [hσ₂, hx]
 
@@ -231,7 +265,7 @@ lemma sum_X (cov : CovariantDerivative I F V)
   | insert a s ha h => simp [Finset.sum_insert ha, Finset.sum_insert ha, ← h, cov.addX]
 
 /-- If `X` and `X'` agree in a neighbourhood of `p`, then `∇_X σ` and `∇_X' σ` agree at `p`. -/
-lemma congr_X_of_eventuallyEq (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
+lemma congr_X_of_eventuallyEq (cov : CovariantDerivative I F V)
     {X X' : Π x : M, TangentSpace I x} {σ : Π x : M, V x} {x : M} {s : Set M} (hs : s ∈ nhds x)
     (hσσ' : ∀ x ∈ s, X x = X' x) :
     cov X σ x = cov X' σ x := by
@@ -239,22 +273,22 @@ lemma congr_X_of_eventuallyEq (cov : CovariantDerivative I F V) [T2Space M] [IsM
   · simp [cov.do_not_read X hσ, cov.do_not_read X' hσ]
   sorry
 
-lemma congr_X_at_aux (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
+lemma congr_X_at_aux (cov : CovariantDerivative I F V) [IsManifold I ∞ M]
     (X : Π x : M, TangentSpace I x) {σ : Π x : M, V x} {x : M}
     (hX : X x = 0) : cov X σ x = 0 := by
   -- Consider the local frame {Xⁱ} on TangentSpace I x induced by chartAt H x.
   -- To do so, choose a basis of TangentSpace I x = E.
   let n : ℕ := Module.finrank ℝ E
-  let b : Basis (Fin n) ℝ E := sorry
+  let b : Basis (Fin n) ℝ E := Module.finBasis ℝ E
   let e := trivializationAt E (TangentSpace I) x
   let Xi (i : Fin n) := b.local_frame e i
   -- Write X in coordinates: X = ∑ i, a i • Xi i near `x`.
   let a := b.local_frame_repr e X
   have : x ∈ e.baseSet := FiberBundle.mem_baseSet_trivializationAt' x
   have aux : ∀ᶠ (x' : M) in 𝓝 x, X x' = ∑ i, a i x' • Xi i x' := b.local_frame_repr_spec this X
-  have realAux : ∃ s : Set M, (s ∈ nhds x ∧ ∀ x' ∈ s, X x' = ∑ i, a i x' • Xi i x') := by
-    refine ⟨_, aux, by simp⟩
-  have (i : Fin n) : a i x = 0 := by sorry -- "obvious"
+  -- have realAux : ∃ s : Set M, (s ∈ nhds x ∧ ∀ x' ∈ s, X x' = ∑ i, a i x' • Xi i x') := by
+  --   refine ⟨_, aux, by simp⟩
+  have (i : Fin n) : a i x = 0 := b.local_frame_repr_apply_zero_at this hX i
   calc cov X σ x
     _ = cov (∑ i, a i • Xi i) σ x := cov.congr_X_of_eventuallyEq aux (by simp)
     _ = ∑ i, cov (a i • Xi i) σ x := by rw [cov.sum_X]; simp
@@ -263,12 +297,17 @@ lemma congr_X_at_aux (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I
     _ = 0 := by simp [this]
 
 -- XXX: better name?
+-- golfing welcome!
 /-- `cov X σ x` only depends on `X` via `X x` -/
-lemma congr_X_at (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
+lemma congr_X_at (cov : CovariantDerivative I F V) [IsManifold I ∞ M]
     (X X' : Π x : M, TangentSpace I x) {σ : Π x : M, V x} {x : M} (hXX' : X x = X' x) :
     cov X σ x = cov X' σ x := by
-  have : cov X' σ x = cov X σ x + cov (X' - X) σ x := sorry
-  have h : (X' - X) x = 0 := sorry
+  have : cov X' σ x = cov X σ x + cov (X' - X) σ x := by
+    have : X' = X + (X' - X) := by simp
+    nth_rw 1 [this]
+    rw [cov.addX X (X' - X) σ]
+    simp
+  have h : (X' - X) x = 0 := by simp [hXX']
   simp [this, cov.congr_X_at_aux (X' - X) h]
 
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
