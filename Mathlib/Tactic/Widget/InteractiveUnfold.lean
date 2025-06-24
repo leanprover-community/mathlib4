@@ -134,7 +134,9 @@ namespace InteractiveUnfold
 /-- Return the tactic string that does the unfolding. -/
 def tacticSyntax (e eNew : Expr) (occ : Option Nat) (loc : Option Name) :
     MetaM (TSyntax `tactic) := do
-  let fromRfl ← `(show $(← PrettyPrinter.delab e) = $(← PrettyPrinter.delab eNew) from rfl)
+  let e ← PrettyPrinter.delab e
+  let eNew ← PrettyPrinter.delab eNew
+  let fromRfl ← `(show $e = $eNew from $(mkIdent `rfl))
   mkRewrite occ false fromRfl loc
 
 /-- Render the unfolds of `e` as given by `filteredUnfolds`, with buttons at each suggestion
