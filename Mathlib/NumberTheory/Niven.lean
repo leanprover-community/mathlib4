@@ -16,46 +16,30 @@ theorem niven {θ : ℝ} (hθ : ∃ r : ℚ, θ = r * Real.pi) (hcos_rational : 
     -- Hence, $2 \cos(\theta) \in \{-2, -1, 0, 1, 2\}$.
     obtain ⟨k, hk⟩ : ∃ k : ℤ, 2 * Real.cos θ = k := by
       have h_alg_int : IsIntegral ℤ (2 * Real.cos θ) := by
-        have h_alg_int : IsIntegral ℤ (Complex.exp (θ * .I) + Complex.exp (-θ * .I)) := by
-          -- Since $\theta$ is a rational multiple of $\pi$, $e^{i\theta}$ is a root of unity and
-          -- hence an algebraic integer.
-          rcases hθ with ⟨r, hr⟩
-          have h_root_of_unity : ∃ n, n > 0 ∧ (Complex.exp (θ * .I))^n = 1 := by
-            -- Since $r$ is rational, we can write $r = p / q$ with $p, q \in ℤ$ and $q > 0$.
-            obtain ⟨p, q, hq_pos, hpq_eq⟩ : ∃ p q : ℤ, q > 0 ∧ r = p / q :=
-              ⟨r.num, r.den, Nat.cast_pos.mpr r.pos, r.num_div_den.symm⟩
-            refine ⟨2 * q.natAbs, by positivity, ?_⟩
-            · simp_all [← Complex.exp_nat_mul, Complex.exp_eq_one_iff]
-              exact ⟨p, by simpa [abs_of_pos hq_pos, field_simps, hq_pos.ne']
-                using (by rw [← Int.cast_natCast, ← Int.eq_natAbs_of_nonneg hq_pos.le]; ring_nf)⟩
-          rcases h_root_of_unity with ⟨w, hw₁, hw₂⟩
-          have h_exp_int : IsIntegral ℤ (Complex.exp (θ * .I)) :=
-            ⟨_, Polynomial.monic_X_pow_sub_C 1 hw₁.ne', by simpa [sub_eq_iff_eq_add]⟩
-          -- Since algebraic integers are closed under complex conjugation, and $e^{i\theta}$ is
-          -- an algebraic integer, $e^{-i\theta}$ must also be an algebraic integer.
-          have h_exp_neg_int : IsIntegral ℤ (Complex.exp (-θ * .I)) := by
-            have h_exp_neg_int : IsIntegral ℤ (starRingEnd ℂ (Complex.exp (θ * .I))) := by
-              obtain ⟨P, hP₁, hP₂⟩ := h_exp_int
-              refine ⟨P, hP₁, ?_⟩
-              simpa [ Polynomial.eval₂_eq_sum_range ] using congr_arg Star.star hP₂
-            convert h_exp_neg_int using 1
-            simp [ Complex.ext_iff, Complex.exp_re, Complex.exp_im ]
-          exact h_exp_int.add h_exp_neg_int
-        convert h_alg_int using 1
-        constructor <;> rintro ⟨p, hp⟩ <;> use p
-        <;> norm_num [Complex.ext_iff, Complex.exp_re, Complex.exp_im] at *
-        <;> simp_all [← two_mul, Real.cos]
-        · have hp₂ : p.eval₂ (Int.castRingHom ℂ) (Complex.exp (θ * .I) + Complex.exp (-(θ * .I)))
-            = p.eval₂ (Int.castRingHom ℝ) (2 * Real.cos θ) := by
-            simp [Polynomial.eval₂_eq_sum_range, Complex.cos, ← Complex.exp_add]
-            exact Finset.sum_congr rfl fun _ _ => by ring;
-          norm_cast at *
-          simp [hp₂, hp.right] at *
-        · simp_all [Polynomial.eval₂_eq_sum_range, Complex.exp_re, Complex.exp_im, Complex.cos]
-          convert hp.2.1
-          norm_num [← Complex.exp_nat_mul, Complex.exp_re, Complex.exp_im, Real.cos]
-          rw [← neg_mul, ← Complex.two_cos, mul_pow, mul_pow]
-          norm_cast
+        rcases hθ with ⟨r, hr⟩
+        obtain ⟨p, q, hq_pos, rfl⟩ : ∃ p q : ℤ, q > 0 ∧ r = p / q :=
+          ⟨r.num, r.den, Nat.cast_pos.mpr r.pos, r.num_div_den.symm⟩
+        -- Let $z = e^{i π p / q}$, which is a root of unity.
+        set z : ℂ := Complex.exp (Complex.I * θ)
+        have hz_root : z ^ (2 * q.natAbs) = 1 := by
+          rw [← Complex.exp_nat_mul, Complex.exp_eq_one_iff]
+          use p
+          simpa [*, field_simps, hq_pos.ne'] using by
+            rw [← Int.cast_natCast, ← Int.eq_natAbs_of_nonneg hq_pos.le]
+            ring
+        -- Since z is a root of unity, 2cos⁡(θ)=z+1z is an algebraic integer.
+        have h_alg_int : IsIntegral ℤ (z + z⁻¹) :=
+          -- The element z+z−1 is integral over Z because it is a sum of integral elements.
+          have h_sum_int : IsIntegral ℤ z ∧ IsIntegral ℤ z⁻¹ := by
+            constructor <;> exact
+              ⟨.X ^ (2 * q.natAbs) - 1, Polynomial.monic_X_pow_sub_C _ <| by positivity, by aesop⟩
+          h_sum_int.1.add h_sum_int.2
+        -- Since $z = e^{i π p / q}$, we have $2 cos⁡(π p / q) = z + z^{−1}$.
+        have h_cos_eq : 2 * Real.cos (p / q * Real.pi) = z + z⁻¹ := by
+          simpa +zetaDelta [Complex.cos, Complex.exp_neg, hr] using by ring_nf
+        obtain ⟨f, hf₁, hf₂⟩ := h_alg_int
+        refine ⟨f, hf₁, ?_⟩
+        simp_all [Polynomial.eval₂_eq_sum_range, ← Complex.ofReal_inj]
       -- Since $2 \cos(\theta)$ is an algebraic integer and rational, it must be an integer.
       have h_alg_int_rational : ∀ {x : ℝ}, IsIntegral ℤ x → (∃ q : ℚ, x = q) → ∃ k : ℤ, x = k := by
         rintro x ⟨P, hP₁, hP₂⟩ ⟨q, hq⟩
