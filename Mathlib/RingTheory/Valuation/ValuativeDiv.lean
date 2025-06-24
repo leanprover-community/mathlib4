@@ -26,8 +26,9 @@ noncomputable section
 
 /-- The class `[ValuativeRel R]` class introduces an operator `x ∣ᵥ y : Prop` for `x y : R`
 which is the natural relation arising from an equivalence class of a valuation on `R`.
+More precisely, if v is a valuation on R then the associated relation is `x ∣ᵥ y ↔ v x ≤ v y`.
 Use this class to talk about the case where `R` is equipped with an equivalence class
-of a valuation. -/
+of valuations. -/
 class ValuativeRel (R : Type*) [CommRing R] where
   /-- The relation operator arising from `ValuativeRel`. -/
   rel : R → R → Prop
@@ -37,7 +38,7 @@ class ValuativeRel (R : Type*) [CommRing R] where
   rel_total (x y) : rel x y ∨ rel y x
   rel_zero (x) : rel 0 x
   rel_add_of_rel_of_rel (x y z) : rel x z → rel y z → rel (x + y) z
-  not_rel_mul_of_not_rel_of_not_rel (x y : R) : ¬ rel x 0 → ¬ rel y 0 → ¬ rel (x * y) 0
+  not_rel_zero_cancel (x y z : R) : ¬ rel x 0 → rel (x * y) (x * z) → rel y z
   not_rel_one_zero : ¬ rel 1 0
 
 @[inherit_doc] infix:50  " ∣ᵥ " => ValuativeRel.rel
@@ -68,19 +69,48 @@ def unitSubmonoid : Submonoid R where
   carrier := { x | ¬ x ∣ᵥ 0}
   mul_mem' := by
     intro x y hx hy
-    apply not_rel_mul_of_not_rel_of_not_rel
-    assumption'
+    by_contra c
+    apply hy
+    simp only [Set.mem_setOf_eq, not_not] at c
+    rw [show (0 : R) = x * 0 by simp] at c
+    exact not_rel_zero_cancel _ _ _ hx c
   one_mem' := not_rel_one_zero
+
+@[simp]
+lemma left_cancel_unitSubmonoid (x y : R) (u : unitSubmonoid R) :
+    u * x ∣ᵥ u * y ↔ x ∣ᵥ y := by
+  refine ⟨fun h => not_rel_zero_cancel _ _ _ u.prop h, fun h => ?_⟩
+  exact rel_mul_mul_of_rel_of_rel _ _ _ _ (refl _) h
+
+@[simp]
+lemma right_cancel_unitSubmonoid (x y : R) (u : unitSubmonoid R) :
+    x * u ∣ᵥ y * u ↔ x ∣ᵥ y := by
+  rw [← left_cancel_unitSubmonoid x y u]
+  simp only [mul_comm x, mul_comm y]
 
 variable (R) in
 /-- The setoid used to construct `ValueMonoid R`. -/
 def valueSetoid : Setoid (R × unitSubmonoid R) where
   r := fun (x,s) (y,t) => x * t ∣ᵥ y * s ∧ y * s ∣ᵥ x * t
-  iseqv := by
-    constructor
-    · sorry
-    · sorry
-    · sorry
+  iseqv := {
+    refl ru := ⟨refl _, refl _⟩
+    symm h := ⟨h.2, h.1⟩
+    trans := by
+      rintro ⟨r, u⟩ ⟨s, v⟩ ⟨t, w⟩ ⟨h1, h2⟩ ⟨h3, h4⟩
+      constructor
+      · have := rel_mul_mul_of_rel_of_rel _ _ _ _ h1 (refl ↑w)
+        rw [show s * u * w = s * w * u by ring] at this
+        have := trans this (rel_mul_mul_of_rel_of_rel _ _ _ _ h3 (refl _))
+        rw [show r * v * w = r * w * v by ring] at this
+        rw [show t * v * u = t * u * v by ring] at this
+        simpa using this
+      · have := rel_mul_mul_of_rel_of_rel _ _ _ _ h4 (refl ↑u)
+        rw [show s * w * u = s * u * w by ring] at this
+        have := trans this (rel_mul_mul_of_rel_of_rel _ _ _ _ h2 (refl _))
+        rw [show t * v * u = t * u * v by ring] at this
+        rw [show r * v * w = r * w * v by ring] at this
+        simpa using this
+  }
 
 variable (R) in
 /-- The "canonical" value monoid of a ring with a valuative relation. -/
@@ -152,7 +182,7 @@ def ofValuation
   rel_add_of_rel_of_rel x y z h1 h2 := by
     refine le_trans (v.map_add x y) ?_
     simpa only [sup_le_iff] using ⟨h1, h2⟩
-  not_rel_mul_of_not_rel_of_not_rel := sorry
+  not_rel_zero_cancel := sorry
   not_rel_one_zero := sorry
 
 lemma isEquiv {Γ₁ Γ₂ : Type*}
@@ -188,7 +218,7 @@ instance : ValuativeRel (WithPreorder R) where
   rel_total := rel_total (R := R)
   rel_zero := rel_zero (R := R)
   rel_add_of_rel_of_rel := rel_add_of_rel_of_rel (R := R)
-  not_rel_mul_of_not_rel_of_not_rel := not_rel_mul_of_not_rel_of_not_rel (R := R)
+  not_rel_zero_cancel := not_rel_zero_cancel (R := R)
   not_rel_one_zero := not_rel_one_zero (R := R)
 
 instance : ValuativePreorder (WithPreorder R) where
