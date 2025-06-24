@@ -274,9 +274,7 @@ lemma IsStableUnderTransfiniteCompositionOfShape.of_isStableUnderColimitsOfShape
     (hJ : ∀ (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J],
       W.IsStableUnderColimitsOfShape J) :
     W.IsStableUnderTransfiniteCompositionOfShape J where
-  le := by
-    rintro X Y f ⟨hf⟩
-    exact mem hf hJ
+  le _ _ _ | ⟨hf⟩ => mem hf hJ
 
 instance [W.IsMultiplicative] [W.RespectsIso]
     [MorphismProperty.IsStableUnderFilteredColimits.{w, w} W] :
