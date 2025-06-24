@@ -43,7 +43,7 @@ equivalent to `CatCommSqOver F G X`.
 
 ## TODOs:
 * 2-functoriality of the construction with respect to "transformation of categorical
-cospans".
+  cospans".
 * Full equivalence-invariance of the notion (follows from suitable 2-functoriality).
 * Define a `CatPullbackSquare` typeclass extending `CatCommSq`that encodes the
   fact that a given `CatCommSq` defines an equivalence between the top left
@@ -84,7 +84,6 @@ structure CategoricalPullback where
 
 namespace CategoricalPullback
 
-/-- A notation for the categorical pullback. -/
 scoped notation:max L:max " ⊡ " R:max => CategoricalPullback L R
 
 variable {F G}
@@ -112,7 +111,7 @@ instance : Category (CategoricalPullback F G) where
     { left := f.left ≫ g.left
       right := f.right ≫ g.right }
 
-attribute [reassoc] comp_left comp_right
+attribute [reassoc (attr := simp)] comp_left comp_right
 
 /-- Naturality square for morphisms in the inverse direction. -/
 @[reassoc (attr := simp)]
@@ -156,7 +155,6 @@ lemma catCommSq_iso_inv_app (x : F ⊡ G) :
     (CatCommSq.iso (πₗ F G) (πᵣ F G) F G).inv.app x = x.iso.inv := rfl
 
 variable {F G} in
-/-- A constructor for isomorphisms in `CategoricalPullback F G`. -/
 @[simps!]
 def mkIso {x y : F ⊡ G}
     (eₗ : x.left ≅ y.left) (eᵣ : x.right ≅ y.right)
@@ -189,7 +187,6 @@ abbrev CatCommSqOver :=
 
 namespace CatCommSqOver
 
-/-- Reinterpret a `CatCommSqOver F G X` as a `CatCommSq`. -/
 @[simps!]
 def asSquare (S : CatCommSqOver F G X) : CatCommSq S.left S.right F G where
   iso' := S.iso
