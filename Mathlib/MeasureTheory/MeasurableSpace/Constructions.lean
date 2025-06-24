@@ -403,7 +403,7 @@ theorem Measurable.of_uncurry_right {f : α → β → γ} (hf : Measurable (unc
     Measurable fun x => f x y :=
   hf.comp measurable_prodMk_right
 
-theorem measurable_prod {f : α → β × γ} :
+theorem measurable_fun_prod {f : α → β × γ} :
     Measurable f ↔ (Measurable fun a => (f a).1) ∧ Measurable fun a => (f a).2 :=
   ⟨fun hf => ⟨measurable_fst.comp hf, measurable_snd.comp hf⟩, fun h => Measurable.prod h.1 h.2⟩
 

@@ -175,7 +175,7 @@ lemma iCondIndepSets_iff (π : ι → Set (Set Ω)) (hπ : ∀ i s (_hs : s ∈ 
   · refine ((stronglyMeasurable_condExpKernel ?_).ae_eq_trim_iff hm' ?_).mpr ?_
     · exact .biInter (Finset.countable_toSet _) (fun i hi ↦ hπ i _ (hf i hi))
     · refine Measurable.stronglyMeasurable ?_
-      exact Finset.measurable_prod s (fun i hi ↦ measurable_condExpKernel (hπ i _ (hf i hi)))
+      exact Finset.measurable_fun_prod s (fun i hi ↦ measurable_condExpKernel (hπ i _ (hf i hi)))
     filter_upwards [h_eq s f hf, h_inter_eq s f hf, h] with ω h_eq h_inter_eq h
     have h_ne_top : condExpKernel μ m' ω (⋂ i ∈ s, f i) ≠ ∞ :=
       (measure_ne_top (condExpKernel μ m' ω) _)

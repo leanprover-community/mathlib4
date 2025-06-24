@@ -553,7 +553,7 @@ section Monoid
 variable {M : Type*} [Monoid M] [TopologicalSpace M] [ContinuousMul M] {m : MeasurableSpace α}
 
 @[to_additive (attr := fun_prop, measurability)]
-theorem _root_.List.stronglyMeasurable_fun_prod (l : List (α → M))
+theorem _root_.List.stronglyMeasurable_prod (l : List (α → M))
     (hl : ∀ f ∈ l, StronglyMeasurable f) : StronglyMeasurable l.prod := by
   induction l with
   | nil => exact stronglyMeasurable_one
@@ -565,13 +565,13 @@ theorem _root_.List.stronglyMeasurable_fun_prod (l : List (α → M))
 @[deprecated (since := "2025-05-30")]
 alias _root_.List.stronglyMeasurable_sum' := List.stronglyMeasurable_fun_sum
 @[to_additive existing, deprecated (since := "2025-05-30")]
-alias _root_.List.stronglyMeasurable_prod' := List.stronglyMeasurable_fun_prod
+alias _root_.List.stronglyMeasurable_prod' := List.stronglyMeasurable_prod
 
 @[to_additive (attr := fun_prop, measurability)]
-theorem _root_.List.stronglyMeasurable_prod (l : List (α → M))
+theorem _root_.List.stronglyMeasurable_fun_prod (l : List (α → M))
     (hl : ∀ f ∈ l, StronglyMeasurable f) :
     StronglyMeasurable fun x => (l.map fun f : α → M => f x).prod := by
-  simpa only [← Pi.list_prod_apply] using l.stronglyMeasurable_fun_prod hl
+  simpa only [← Pi.list_prod_apply] using l.stronglyMeasurable_prod hl
 
 end Monoid
 
@@ -581,38 +581,38 @@ variable {M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M] {m : 
 
 
 @[to_additive (attr := fun_prop, measurability)]
-theorem _root_.Multiset.stronglyMeasurable_fun_prod (l : Multiset (α → M))
+theorem _root_.Multiset.stronglyMeasurable_prod (l : Multiset (α → M))
     (hl : ∀ f ∈ l, StronglyMeasurable f) : StronglyMeasurable l.prod := by
   rcases l with ⟨l⟩
-  simpa using l.stronglyMeasurable_fun_prod (by simpa using hl)
+  simpa using l.stronglyMeasurable_prod (by simpa using hl)
 
 @[deprecated (since := "2025-05-30")]
 alias _root_.Multiset.stronglyMeasurable_sum' := Multiset.stronglyMeasurable_fun_sum
 @[to_additive existing, deprecated (since := "2025-05-30")]
-alias _root_.Multiset.stronglyMeasurable_prod' := Multiset.stronglyMeasurable_fun_prod
+alias _root_.Multiset.stronglyMeasurable_prod' := Multiset.stronglyMeasurable_prod
 
 @[to_additive (attr := fun_prop, measurability)]
-theorem _root_.Multiset.stronglyMeasurable_prod (s : Multiset (α → M))
+theorem _root_.Multiset.stronglyMeasurable_fun_prod (s : Multiset (α → M))
     (hs : ∀ f ∈ s, StronglyMeasurable f) :
     StronglyMeasurable fun x => (s.map fun f : α → M => f x).prod := by
-  simpa only [← Pi.multiset_prod_apply] using s.stronglyMeasurable_fun_prod hs
+  simpa only [← Pi.multiset_prod_apply] using s.stronglyMeasurable_prod hs
 
 @[to_additive (attr := measurability, fun_prop)]
-theorem _root_.Finset.stronglyMeasurable_fun_prod {ι : Type*} {f : ι → α → M} (s : Finset ι)
+theorem _root_.Finset.stronglyMeasurable_prod {ι : Type*} {f : ι → α → M} (s : Finset ι)
     (hf : ∀ i ∈ s, StronglyMeasurable (f i)) : StronglyMeasurable (∏ i ∈ s, f i) :=
   Finset.prod_induction _ _ (fun _a _b ha hb => ha.mul hb) (@stronglyMeasurable_one α M _ _ _) hf
 
 @[deprecated (since := "2025-05-30")]
 alias _root_.Finset.stronglyMeasurable_sum' := Finset.stronglyMeasurable_fun_sum
 @[to_additive existing, deprecated (since := "2025-05-30")]
-alias _root_.Finset.stronglyMeasurable_prod' := Finset.stronglyMeasurable_fun_prod
+alias _root_.Finset.stronglyMeasurable_prod' := Finset.stronglyMeasurable_prod
 
 @[to_additive (attr := measurability, fun_prop)]
-theorem _root_.Finset.stronglyMeasurable_prod {ι : Type*} {f : ι → α → M} (s : Finset ι)
+theorem _root_.Finset.stronglyMeasurable_fun_prod {ι : Type*} {f : ι → α → M} (s : Finset ι)
     (hf : ∀ i ∈ s, StronglyMeasurable (f i)) : StronglyMeasurable fun a => ∏ i ∈ s, f i a := by
-  simpa only [← Finset.prod_apply] using s.stronglyMeasurable_fun_prod hf
+  simpa only [← Finset.prod_apply] using s.stronglyMeasurable_prod hf
 
-attribute [local fun_prop] Finset.stronglyMeasurable_prod in
+attribute [local fun_prop] Finset.stronglyMeasurable_fun_prod in
 variable {n : MeasurableSpace β} in
 /-- Compositional version of `Finset.stronglyMeasurable_prod` for use by `fun_prop`. -/
 @[to_additive (attr := measurability, fun_prop)
