@@ -263,16 +263,13 @@ theorem odd_totient_iff_eq_one {n : ℕ} :
 /-- `Nat.totient m` and `Nat.totient n` are coprime iff one of them is 1. -/
 theorem totient_coprime_totient_iff (m n : ℕ) :
     (φ m).Coprime (φ n) ↔ (m = 1 ∨ m = 2) ∨ (n = 1 ∨ n = 2) := by
-  by_cases hm : Odd (φ m)
-  · rw [Nat.odd_totient_iff] at hm
-    simp [hm, Nat.totient_eq_one_iff.mpr hm]
-  by_cases hn : Odd (φ n)
-  · rw [odd_totient_iff] at hn
-    simp [hn, totient_eq_one_iff.mpr hn]
-  · simp only [← Nat.odd_totient_iff, hm, hn]
-    rw [Nat.not_odd_iff_even, even_iff_two_dvd] at hm hn
-    simp only [or_self, iff_false, ne_eq, Prime.not_coprime_iff_dvd]
-    exact ⟨2, prime_two, hm, hn⟩
+  constructor
+  · rw [← not_imp_not]
+    simp_rw [← odd_totient_iff, not_or, not_odd_iff_even, even_iff_two_dvd]
+    exact fun h ↦ Nat.not_coprime_of_dvd_of_dvd one_lt_two h.1 h.2
+  · simp_rw [← totient_eq_one_iff]
+    rintro (h | h) <;> rw [h]
+    exacts [Nat.coprime_one_left _, Nat.coprime_one_right _]
 
 /-! ### Euler's product formula for the totient function
 
