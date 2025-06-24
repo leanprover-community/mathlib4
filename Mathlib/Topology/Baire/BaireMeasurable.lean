@@ -57,7 +57,7 @@ a meager set. This forms a σ-algebra.
 It is equivalent, and a more standard definition, to say that the set differs from
 some *open* set by a meager set. See `BaireMeasurableSet.iff_residualEq_isOpen` -/
 def BaireMeasurableSet (s : Set α) : Prop :=
-  @MeasurableSet _ (EventuallyMeasurableSpace (borel _) (residual _)) s
+  @MeasurableSet _ (eventuallyMeasurableSpace (borel _) (residual _)) s
 
 variable {s t : Set α}
 
