@@ -87,7 +87,7 @@ private lemma maxIncSequencesTo_lt {i j : α} (hij : i < j) (hfij : f i < f j) :
   next =>
     simp only [coe_insert, incSequencesTo, decSequencesTo]
     rw [strictMonoOn_insert_iff_of_forall_le]
-    · refine ⟨ht₁, ?_⟩
+    · refine ⟨?_, ht₁⟩
       intro x hx hxj
       exact (ht₁.monotoneOn hx hti.1 (hti.2 hx)).trans_lt hfij
     · intro x hx
