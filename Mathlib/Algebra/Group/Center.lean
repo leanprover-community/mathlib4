@@ -173,18 +173,19 @@ theorem centralizer_empty : (∅ : Set M).centralizer = ⊤ := by
   simp only [centralizer, mem_empty_iff_false, IsEmpty.forall_iff, implies_true, setOf_true,
     top_eq_univ]
 
-theorem centralizer_prod {N : Type*} [Mul N] (B : Set M) (C : Set N) [Nonempty B] [Nonempty C] :
-    (B ×ˢ C).centralizer = B.centralizer ×ˢ C.centralizer := by
+/-- The centralizer of the product of non-empty sets is equal to the product of the centralizers. -/
+theorem centralizer_prod {N : Type*} [Mul N] (S : Set M) (T : Set N) [Nonempty S] [Nonempty T] :
+    (S ×ˢ T).centralizer = S.centralizer ×ˢ T.centralizer := by
   ext
   simp_rw [mem_prod, mem_centralizer_iff, mem_prod, and_imp, Prod.forall,
     Prod.mul_def, Prod.eq_iff_fst_eq_snd_eq]
-  obtain ⟨b, hb⟩ : ∃ b : M, b ∈ B := nonempty_subtype.mp ‹Nonempty B›
-  obtain ⟨c, hc⟩ : ∃ c : N, c ∈ C := nonempty_subtype.mp ‹Nonempty C›
+  obtain ⟨b, hb⟩ : ∃ b : M, b ∈ S := nonempty_subtype.mp ‹Nonempty S›
+  obtain ⟨c, hc⟩ : ∃ c : N, c ∈ T := nonempty_subtype.mp ‹Nonempty T›
   exact ⟨fun h => ⟨fun y hy => (h y c hy hc).1, fun y hy => (h b y hb hy).2⟩,
     fun h y z hy hz => ⟨h.1 _ hy, h.2 _ hz⟩⟩
 
-theorem prod_centralizer_subset_centralizer_prod {N : Type*} [Mul N] (B : Set M) (C : Set N) :
-    B.centralizer ×ˢ C.centralizer ⊆ (B ×ˢ C).centralizer := by
+theorem prod_centralizer_subset_centralizer_prod {N : Type*} [Mul N] (S : Set M) (T : Set N) :
+    S.centralizer ×ˢ T.centralizer ⊆ (S ×ˢ T).centralizer := by
   rw [subset_def]
   simp only [mem_prod, and_imp, Prod.forall, mem_centralizer_iff, Prod.mk_mul_mk, Prod.mk.injEq]
   exact fun a b ha hb c d hc hd => ⟨ha c hc, hb d hd⟩
