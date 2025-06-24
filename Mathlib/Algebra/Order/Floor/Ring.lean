@@ -471,6 +471,32 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     simp only [m₁]
     rw [sub_eq_add_neg, add_comm (q * ↑n), add_mul_emod_self_right]
 
+theorem floor_nonneg_div_natCast (a : k) (n : ℕ) : ⌊a / n⌋ = ⌊a⌋ / n := by
+  obtain rfl | hn := n.eq_zero_or_pos
+  · simp
+  rw [floor_eq_iff]
+  constructor
+  · calc
+      _ ≤ (⌊a⌋ : k) / (n : k) := by
+        nth_rw 2 [← Int.cast_natCast n]
+        exact cast_div_le (by exact natCast_nonneg n)
+      _ ≤ _ := by
+        gcongr
+        exact floor_le a
+  nth_rw 1 [← Int.cast_natCast n]
+  rw [div_lt_iff₀, add_mul, one_mul, ← cast_mul, ← cast_add, ← floor_lt]
+  · suffices ⌊a⌋ % n < n by linarith [Int.ediv_add_emod' ⌊a⌋ n]
+    exact Int.emod_lt_of_pos _ (by norm_cast)
+  · norm_cast
+
+theorem mul_floor_div_eq_floor {a : k} {n : ℕ} (hn : n ≠ 0) :
+    ⌊n * a⌋ / n = ⌊a⌋ := by
+  convert (floor_nonneg_div_natCast (a * n) n).symm using 3
+  · rw [mul_comm]
+  · rw [mul_div_cancel_right₀]
+    rw [Nat.cast_ne_zero]
+    norm_cast
+
 end LinearOrderedField
 
 end fract
