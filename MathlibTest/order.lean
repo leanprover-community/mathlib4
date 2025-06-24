@@ -1,8 +1,6 @@
 import Mathlib.Data.Matrix.Rank
 import Mathlib.Tactic.Order
 
-universe u
-
 example (a b c : Nat) (h1 : a ≤ b) (h2 : b ≤ c) : a ≤ c := by
   order
 
@@ -16,7 +14,7 @@ example (a b c : Nat) (h1 : a = b) (h2 : b = c) : a = c := by
 example (a b : Int) (h1 : ¬(a < b)) (h2 : ¬(b < a)) : a = b := by
   order
 
-variable {α : Type}
+variable {α : Type*}
 
 example [LinearOrder α] (a b : α) (h1 : ¬(a < b)) (h2 : ¬(b < a)) : a = b := by
   order
