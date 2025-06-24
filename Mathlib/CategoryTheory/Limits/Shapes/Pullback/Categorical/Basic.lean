@@ -9,9 +9,9 @@ import Mathlib.CategoryTheory.Products.Basic
 
 /-! # Categorical pullback squares
 
-This file defines the basic properties of categorical pullback squares
+This file defines the basic properties of categorical pullback squares.
 
-Given a pair of functors `(F : A ⥤ B, G : C ⥤ B)`, We define the category
+Given a pair of functors `(F : A ⥤ B, G : C ⥤ B)`, we define the category
 `CategoricalPullback F G` as the category of triples
 `(a : A, c : C, e : F.obj a ≅ G.obj b)`.
 
@@ -32,7 +32,7 @@ equivalent to `CatCommSqOver F G X`.
 * `CategoricalPullback.catCommSq`: the canonical `CatCommSq (πₗ F G) (πᵣ F G) F G` which exhibits
   `CategoricalPullback F G` as the pullback (in the (2,1)-categorical sense)
   of the cospan of `F` and `G`.
-* `CategoricalPullback.functorEquiv F G X`: the equivalence of categories between functors.
+* `CategoricalPullback.functorEquiv F G X`: the equivalence of categories between functors
   `X ⥤ CategoricalPullback F G` and `CatCommSqOver F G X`, where the latter is an abbrev for
   `CategoricalPullback (whiskeringRight X A B|>.obj F) (whiskeringRight X C B|>.obj G)`.
 
@@ -75,11 +75,11 @@ Morphisms `(a, c, e) ⟶ (a', c', e')` are pairs of morphisms
 isomorphisms. -/
 @[kerodon 032Z]
 structure CategoricalPullback where
-  /-- The left element. -/
+  /-- the left element -/
   left : A
-  /-- The right element. -/
+  /-- the right element -/
   right : C
-  /-- The structural isomorphism `F.obj left ≅ G.obj right`. -/
+  /-- the structural isomorphism `F.obj left ≅ G.obj right` -/
   iso : F.obj left ≅ G.obj right
 
 namespace CategoricalPullback
@@ -91,12 +91,12 @@ variable {F G}
 /-- The Hom types for the categorical pullback are given by pairs of maps compatible with the
 structural isomorphisms. -/
 structure Hom (x y : F ⊡ G) where
-  /-- The left component of `f : Hom x y` is a morphism `x.left ⟶ y.left`. -/
+  /-- the left component of `f : Hom x y` is a morphism `x.left ⟶ y.left` -/
   left : x.left ⟶ y.left
-  /-- The right component of `f : Hom x y` is a morphism `x.right ⟶ y.right`. -/
+  /-- the right component of `f : Hom x y` is a morphism `x.right ⟶ y.right` -/
   right : x.right ⟶ y.right
-  /-- The compatibility condition on `left` and `right` with respect to the structure
-  isompophisms. -/
+  /-- the compatibility condition on `left` and `right` with respect to the structure
+  isompophisms -/
   w : F.map left ≫ y.iso.hom = x.iso.hom ≫ G.map right := by aesop_cat
 
 attribute [reassoc (attr := simp)] Hom.w
@@ -120,7 +120,7 @@ lemma Hom.w' {x y : F ⊡ G} (f : x ⟶ y) :
   rw [Iso.comp_inv_eq, Category.assoc, Eq.comm, Iso.inv_comp_eq, f.w]
 
 attribute [local ext] Hom in
-/-- Extensionnality principle for morphisms in `CategoricalPullback F G` -/
+/-- Extensionnality principle for morphisms in `CategoricalPullback F G`. -/
 @[ext]
 theorem hom_ext {x y : F ⊡ G} {f g : x ⟶ y}
     (hₗ : f.left = g.left) (hᵣ : f.right = g.right) : f = g := by
@@ -223,7 +223,9 @@ end CatCommSqOver
 section functorEquiv
 
 variable (F G)
+
 -- We need to split up the definition of `functorEquiv` to avoid timeouts.
+
 /-- Interpret a functor to the categorical pullback as a `CatCommSqOver`. -/
 @[simps!]
 def toCatCommSqOver : (X ⥤ F ⊡ G) ⥤ CatCommSqOver F G X where
@@ -255,7 +257,7 @@ def CatCommSqOver.toFunctorToCategoricalPullback :
         { left := φ.left.app x
           right := φ.right.app x } }
 
-/-- The unit of `CategoricalPullback.functorEquiv` -/
+/-- The unit of `CategoricalPullback.functorEquiv`. -/
 @[simps!]
 def functorEquivUnitIso :
     𝟭 (X ⥤ F ⊡ G) ≅
@@ -264,7 +266,7 @@ def functorEquivUnitIso :
     (fun _ ↦ NatIso.ofComponents
       (fun _ ↦ CategoricalPullback.mkIso (.refl _) (.refl _)))
 
-/-- The counit of `CategoricalPullback.functorEquiv` -/
+/-- The counit of `CategoricalPullback.functorEquiv`. -/
 @[simps!]
 def functorEquivCounitIso :
     CatCommSqOver.toFunctorToCategoricalPullback F G X ⋙ toCatCommSqOver F G X ≅
