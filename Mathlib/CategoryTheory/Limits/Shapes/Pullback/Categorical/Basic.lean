@@ -82,6 +82,7 @@ structure CategoricalPullback where
 
 namespace CategoricalPullback
 
+/-- A notation for the categorical pullback. -/
 scoped notation:max L:max " ⊡ " R:max => CategoricalPullback L R
 
 variable {F G}
@@ -109,7 +110,7 @@ instance : Category (CategoricalPullback F G) where
     { left := f.left ≫ g.left
       right := f.right ≫ g.right }
 
-attribute [reassoc (attr := simp)] comp_left comp_right
+attribute [reassoc] comp_left comp_right
 
 /-- Naturality square for morphisms in the inverse direction. -/
 @[reassoc (attr := simp)]
@@ -153,6 +154,7 @@ lemma catCommSq_iso_inv_app (x : F ⊡ G) :
     (CatCommSq.iso (πₗ F G) (πᵣ F G) F G).inv.app x = x.iso.inv := rfl
 
 variable {F G} in
+/-- Constructor for isomorphisms in `CategoricalPullback F G`. -/
 @[simps!]
 def mkIso {x y : F ⊡ G}
     (eₗ : x.left ≅ y.left) (eᵣ : x.right ≅ y.right)
