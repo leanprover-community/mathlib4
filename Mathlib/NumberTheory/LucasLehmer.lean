@@ -77,18 +77,12 @@ lemma mersenne_dvd_of_dvd {m n : ℕ} (h : m ∣ n) : (mersenne m) ∣ (mersenne
   rw [hk]
   apply nat_pow_one_sub_dvd_pow_mul_sub_one
 
-/-- If `2^p-1` is prime then `p` is prime. -/
-lemma prime_of_mersenne_prime {p : ℕ} (h: Nat.Prime (mersenne p)) : Nat.Prime p := by
-  have two_le : 2 ≤ p := by
-    apply (Nat.two_le_iff p).mpr
-    constructor <;> intro hp <;> rw [hp, mersenne] at h <;> norm_num at h <;> contradiction
-  contrapose h
-  rcases Nat.exists_dvd_of_not_prime2 two_le h with ⟨d, hd1, hd2, hd3⟩
-  apply Nat.not_prime_of_dvd_of_lt (mersenne_dvd_of_dvd hd1)
-  · apply le_trans _ <| mersenne_le_mersenne.mpr hd2
-    rw [mersenne]
-    norm_num
-  · exact mersenne_lt_mersenne.mpr hd3
+/-- If `2 ^ p - 1` is prime, then `p` is prime. -/
+lemma prime_of_mersenne_prime {p : ℕ} (h : Nat.Prime (mersenne p)) : Nat.Prime p := by
+  rcases lt_or_ge p 2 with lt_two | two_le
+  · revert h; decide +revert
+  exact Nat.prime_def.2 ⟨two_le, fun m hm ↦ ((Nat.dvd_prime h).1 (mersenne_dvd_of_dvd hm)).imp
+    (strictMono_mersenne.injective ·) (strictMono_mersenne.injective ·)⟩
 
 namespace Mathlib.Meta.Positivity
 
@@ -382,47 +376,32 @@ theorem closed_form (i : ℕ) : (s i : X q) = (ω : X q) ^ 2 ^ i + (ωb : X q) ^
         rw [← mul_pow ωb ω, ωb_mul_ω, one_pow, mul_one, add_sub_cancel_right]
       _ = ω ^ 2 ^ (i + 1) + ωb ^ 2 ^ (i + 1) := by rw [← pow_mul, ← pow_mul, _root_.pow_succ]
 
-/-- The element $\alpha = \sqrt 3$ -/
+/-- We define `α = √3`. -/
 def α : X q := (0, 1)
 
-lemma αsq : (α : X q) ^ 2 = 3 := by
-  rw[α, sq]
-  ext <;> simp
+@[simp] lemma α_sq : (α ^ 2 : X q) = 3 := by
+  ext <;> simp [α, sq]
 
-lemma one_add_α_sq : (1 + α : X q) ^ 2 = (2 * ω : X q) := by
-  have : ω = 2 + (α : X q) := by dsimp [α, ω]; ext <;> simp
-  rw[add_sq, αsq, this]
-  ring
+@[simp] lemma one_add_α_sq : ((1 + α) ^ 2 : X q) = 2 * ω := by
+  ext <;> simpa [α, ω, sq] using by norm_num
 
-lemma αpow (i : ℕ) : (α : X q) ^ (2 * i + 1) = 3 ^ i * α := by
-  induction i with
-  | zero =>
-    simp
-  | succ i ih =>
-    rw [(by ring : 2 * (i + 1) + 1 = (2 * i + 1) + 2), pow_add, ih, αsq]
-    ring_nf
+lemma α_pow (i : ℕ) : (α : X q) ^ (2 * i + 1) = 3 ^ i * α := by
+  rw [pow_succ, pow_mul, α_sq]
 
---Characteristic p so we can apply the binomial theorem
-instance : CharP (X q) (q: ℕ) where
-  cast_eq_zero_iff := by
-    intro x
+-- Show that `X p` has characteristic `p`, so that we can apply the binomial theorem.
+instance : CharP (X q) q where
+  cast_eq_zero_iff x := by
     convert ZMod.natCast_zmod_eq_zero_iff_dvd _ _
-    constructor
-    · intro hx
-      exact congr_arg Prod.fst hx
-    · intro hx
-      ext
-      · exact hx
-      · simp
+    exact ⟨congr_arg Prod.fst, fun hx ↦ ext hx (by simp)⟩
 
 instance : Coe (ZMod ↑q) (X q) where
   coe := ZMod.castHom (dvd_refl _) (X q)
 
-lemma coe_mod (n : ℕ) : (n : X q) = (n : ZMod q) := by
-  rw[map_natCast]
+lemma coe_eq_coe (n : ℕ) : (n : X q) = (n : ZMod q) := by
+  rw [map_natCast]
 
-/-- If 3 is not a square mod `q` then $(1+\alpha)^q=1-\alpha$. -/
-lemma pow_q [Fact (Prime q)] (odd : Odd (q : ℕ)) (leg3 : legendreSym q 3 = -1) :
+/-- If `3` is not a square mod `q` then `(1 + α) ^ q = 1 - α` -/
+lemma one_add_α_pow_q [Fact (Prime q)] (odd : Odd (q : ℕ)) (leg3 : legendreSym q 3 = -1) :
     (1 + (α : X q)) ^ (q : ℕ) = 1 - (α : X q) := by
   rcases odd with ⟨k, hk⟩
   have : q / 2 = k := by rw [hk, mul_add_div (by norm_num)]; simp
@@ -434,16 +413,15 @@ lemma pow_q [Fact (Prime q)] (odd : Odd (q : ℕ)) (leg3 : legendreSym q 3 = -1)
   simp
   ring
 
-/-- If 3 is not a square then $(1+\alpha)^{q+1}=-2$. -/
-lemma pow_q_succ [Fact (Prime q)] (odd : Odd (q : ℕ))
+/-- If `3` is not a square then `(1 + α) ^ (q + 1) = -2`. -/
+lemma one_add_α_pow_q_succ [Fact (Prime q)] (odd : Odd (q : ℕ))
     (leg3 : legendreSym q 3 = -1) : (1 + (α : X q)) ^ (q + 1 : ℕ) = -2 := by
-  rw [pow_succ, pow_q odd leg3, mul_add, mul_one, sub_mul,
-    ← sq, αsq]
-  ring
+  rw [pow_succ, one_add_α_pow_q odd leg3, mul_comm, ← _root_.sq_sub_sq, α_sq]
+  norm_num
 
-/-- If 3 is not a square then $(2\omega)^{(q+1)/2}=-2$. -/
-lemma pow_2ω [Fact (Prime q)] (odd : Odd (q : ℕ))
-    (leg3 : legendreSym q 3 = -1) : ( 2 * ω : X q) ^ (((q : ℕ) + 1)/ 2) = -2 := by
+/-- If `3` is not a square then `(2 * ω) ^ ((q + 1) / 2) = -2`. -/
+lemma two_mul_ω_pow [Fact (Prime q)] (odd : Odd (q : ℕ))
+    (leg3 : legendreSym q 3 = -1) : (2 * ω : X q) ^ (((q : ℕ) + 1)/ 2) = -2 := by
   rw [← one_add_α_sq, ← pow_mul]
   have : 2 * (((q : ℕ) + 1) / 2) = q + 1 := by
     apply Nat.mul_div_cancel'
