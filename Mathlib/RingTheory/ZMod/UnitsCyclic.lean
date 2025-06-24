@@ -260,44 +260,29 @@ section Products
 
 theorem isCyclic_units_four_mul_iff (n : ℕ) :
     IsCyclic (ZMod (4 * n))ˣ ↔ n = 0 ∨ n = 1 := by
-  rcases Nat.eq_zero_or_pos n with ⟨rfl⟩ | hn0
+  obtain rfl | hn0 := eq_or_ne n 0
   · simp [isCyclic_units_zero]
-  rcases Nat.eq_or_lt_of_le hn0 with ⟨rfl⟩ | hn1
+  obtain rfl | hn1 := eq_or_ne n 1
   · simp [isCyclic_units_four]
-  have hn2' : 2 ≤ n := by
-    simp only [Nat.succ_eq_add_one, zero_add] at hn1
-    exact Nat.succ_le_of_lt hn1
-  simp only [Nat.ne_zero_of_lt hn0, Ne.symm (Nat.ne_of_lt hn1), or_self, iff_false]
-  intro H
-  set m := n.factorization 2
-  set q := n / (2 ^ n.factorization 2) with hq
-  have hn : n = 2 ^ m * q := (Nat.ordProj_mul_ordCompl_eq_self n 2).symm
-  rw [hn, show 4 = 2 ^ 2 by rfl, ← mul_assoc, ← pow_add] at H
-  have hq0 : q ≠ 0 := fun hq ↦ by simp [hn, hq, mul_zero] at hn1
-  have _ : NeZero q := ⟨hq0⟩
-  have hq2 : (2 ^ (2 + m)).Coprime q := by
-    rw [Nat.coprime_pow_left_iff (Nat.pos_of_neZero _), Nat.prime_two.coprime_iff_not_dvd, hq]
-    apply Nat.not_dvd_ordCompl Nat.prime_two (Nat.ne_zero_of_lt hn0)
-  let f := (Units.mapEquiv (chineseRemainder hq2).toMulEquiv).trans  MulEquiv.prodUnits
-  rw [f.isCyclic, Group.isCyclic_prod_iff, isCyclic_units_two_pow_iff] at H
-  simp only [add_le_iff_nonpos_right, nonpos_iff_eq_zero, Nat.card_eq_fintype_card,
-    card_units_eq_totient] at H
-  let H' := H.2.2
-  simp [H.1, show φ 4 = 2 by rfl, Nat.odd_totient_iff] at H'
-  rcases H' with (hq_eq1 | hq_eq2)
-  · suffices n = 1 by
-      simp [this] at hn2'
-    simp [hn, hq_eq1, H]
-  · rw [hq_eq2, Nat.coprime_two_right, ← Nat.not_even_iff_odd, Nat.even_pow] at hq2
-    apply hq2
-    simp
+  refine iff_of_false ?_ (by simp [hn0, hn1])
+  obtain ⟨n, rfl⟩ | h2n := em (2 ∣ n)
+  · rw [← mul_assoc]
+    have : NeZero n := ⟨by simpa using hn0⟩
+    refine mt (fun _ ↦ ?_) not_isCyclic_units_eight
+    exact isCyclic_of_surjective _ (ZMod.unitsMap_surjective (m := 4 * 2 * n) (dvd_mul_right 8 _))
+  have : Nat.Coprime 4 n := (Nat.prime_two.coprime_iff_not_dvd.mpr h2n).pow_left 2
+  rw [((Units.mapEquiv (chineseRemainder this).toMulEquiv).trans .prodUnits).isCyclic,
+    Group.isCyclic_prod_iff]
+  rintro ⟨-, -, h⟩
+  have : NeZero n := ⟨hn0⟩
+  have : Odd (φ n) := by simpa [show φ 4 = 2 from rfl] using h
+  rw [Nat.odd_totient_iff] at this
+  omega
 
 theorem isCyclic_units_of_two_mul_odd_iff (n : ℕ) (hn : Odd n) :
     IsCyclic (ZMod (2 * n))ˣ ↔ IsCyclic (ZMod n)ˣ := by
-  rw [← Nat.coprime_two_left] at hn
-  let e := (Units.mapEquiv (chineseRemainder hn).toMulEquiv).trans .prodUnits
-  rw [e.isCyclic, Group.isCyclic_prod_iff]
-  simp [isCyclic_units_two]
+  simp [((Units.mapEquiv (chineseRemainder <| Nat.coprime_two_left.mpr hn).toMulEquiv).trans
+    .prodUnits).isCyclic, Group.isCyclic_prod_iff, isCyclic_units_two]
 
 theorem not_isCyclic_units_of_mul_coprime (m n : ℕ)
     (hm : Odd m) (hm1 : m ≠ 1) (hn : Odd n) (hn1 : n ≠ 1) (hmn : m.Coprime n) :
@@ -307,12 +292,12 @@ theorem not_isCyclic_units_of_mul_coprime (m n : ℕ)
   have _ : NeZero n := ⟨Nat.ne_of_odd_add hn⟩
   let e := (Units.mapEquiv (chineseRemainder hmn).toMulEquiv).trans .prodUnits
   rw [e.isCyclic, Group.isCyclic_prod_iff]
-  rintro ⟨_, _, h⟩
-  simp [Nat.card_eq_fintype_card, card_units_eq_totient,
-    Nat.totient_coprime_totient_iff, hm1, hn1] at h
-  rcases h with (h | h)
-  · simp [← Nat.not_even_iff_odd, h] at hm
-  · simp [← Nat.not_even_iff_odd, h] at hn
+  rintro ⟨-, -, h⟩
+  simp_rw [Nat.card_eq_fintype_card, card_units_eq_totient,
+    Nat.totient_coprime_totient_iff, hm1, hn1, false_or] at h
+  rcases h with (rfl | rfl)
+  · simp [← Nat.not_even_iff_odd] at hm
+  · simp [← Nat.not_even_iff_odd] at hn
 
 theorem isCyclic_units_of_odd_iff {n : ℕ} (hn : Odd n) :
     IsCyclic (ZMod n)ˣ ↔ ∃ (p m : ℕ), p.Prime ∧ Odd p ∧ n = p ^ m := by
@@ -328,14 +313,12 @@ theorem isCyclic_units_of_odd_iff {n : ℕ} (hn : Odd n) :
   refine iff_of_false ?_ (mt ?_ hnp)
   · have := n.ordProj_dvd p
     rw [← Nat.mul_div_cancel' this]
-    apply not_isCyclic_units_of_mul_coprime
-    · exact hn.of_dvd_nat this
+    refine not_isCyclic_units_of_mul_coprime _ _ (hn.of_dvd_nat this) ?_
+      (hn.of_dvd_nat (Nat.div_dvd_of_dvd this)) ?_ ((Nat.coprime_ordCompl hp hn0).pow_left ..)
     · simpa only [Ne, pow_eq_one_iff (hp.factorization_pos_of_dvd hn0 dvd).ne'] using hp.ne_one
-    · exact hn.of_dvd_nat (Nat.div_dvd_of_dvd this)
     · contrapose! hnp
       conv_lhs => rw [← Nat.div_mul_cancel this, hnp, one_mul]
-    · apply (Nat.coprime_ordCompl hp hn0).pow_left
-  rintro ⟨q, m, hq, odd, rfl⟩
+  rintro ⟨q, m, hq, -, rfl⟩
   obtain rfl := (Nat.prime_dvd_prime_iff_eq hp hq).mp (hp.dvd_of_dvd_pow dvd)
   simp [hp.factorization_self] at hnp
 
