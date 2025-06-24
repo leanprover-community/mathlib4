@@ -4,11 +4,60 @@ import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 import Mathlib.Geometry.Manifold.BumpFunction
 
-open Bundle Filter Function
+open Bundle Filter Function Topology
 
 open scoped Bundle Manifold ContDiff
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+
+section local_frame
+
+variable {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 0 M]
+
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  -- `F` model fiber
+  (n : WithTop ℕ∞)
+  {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
+  [∀ x, AddCommGroup (V x)] [∀ x, Module 𝕜 (V x)]
+  [∀ x : M, TopologicalSpace (V x)] [∀ x, IsTopologicalAddGroup (V x)]
+  [∀ x, ContinuousSMul 𝕜 (V x)]
+  [FiberBundle F V] [VectorBundle 𝕜 F V] [ContMDiffVectorBundle n F V I]
+  -- `V` vector bundle
+
+set_option linter.style.commandStart false
+
+def Basis.local_frame {ι : Type*}
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
+    [MemTrivializationAtlas e]
+    (b : Basis ι 𝕜 F) : ι → (x : M) → V x := sorry
+
+def Basis.local_frame_repr {ι : Type*}
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
+    [MemTrivializationAtlas e]
+    (b : Basis ι 𝕜 F)
+    (s : Π x : M, V x) :
+    ι → M → 𝕜 := sorry
+
+lemma Basis.local_frame_repr_spec {ι : Type*} [Fintype ι] {x : M}
+    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
+    [MemTrivializationAtlas e] (hxe : x ∈ e.baseSet)
+    (b : Basis ι 𝕜 F)
+    (s : Π x : M,  V x) :
+    ∀ᶠ x' in 𝓝 x, s x' = ∑ i, (b.local_frame_repr e s i x') • b.local_frame e i x' :=
+  sorry
+
+variable {n}
+
+lemma Basis.contMDiffAt_local_frame_repr {ι : Type*} {x : M}
+    {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
+    [MemTrivializationAtlas e] (hxe : x ∈ e.baseSet)
+    (b : Basis ι 𝕜 F)
+    {s : Π x : M,  V x} {k : WithTop ℕ∞} (hk : k ≤ n)
+    (hs : ContMDiffAt I (I.prod 𝓘(𝕜, F)) k (fun x ↦ TotalSpace.mk' F x (s x)) x)
+    (i : ι) : ContMDiffAt I 𝓘(𝕜) n (b.local_frame_repr e s i) x := sorry
+end local_frame
 
 section
 
