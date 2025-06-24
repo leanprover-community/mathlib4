@@ -22,18 +22,22 @@ relations and morphisms for rings and semirings
 ## Main definitions
 
 * `RingCon.ker`: the kernel of a monoid homomorphism as a congruence relation
-* `RingCon.lift`: the homomorphism on the quotient given that the congruence is in the kernel
-* `RingCon.map`: homomorphism from a smaller to a larger quotient
+* `RingCon.lift`, `RingCon.liftₐ`: the homomorphism / the algebra morphism
+  on the quotient given that the congruence is in the kernel
+* `RingCon.map`, `RingCon.mapₐ`: homomorphism / algebra morphism
+  from a smaller to a larger quotient
 
 * `RingCon.quotientKerEquivRangeS`, `RingCon.quotientKerEquivRange`,
-the first isomorphism theorem for semirings (using `RingHom.rangeS`)
-and rings (using `RingHom.range`).
+  `RingCon.quotientKerEquivRangeₐ` :
+  the first isomorphism theorem for semirings (using `RingHom.rangeS`),
+  rings (using `RingHom.range`) and algebras (using `AlgHom.range`).
 * `RingCon.comapQuotientEquivRangeS`, `RingCon.comapQuotientEquivRange`,
-the second isomorphism theorem for semirings (using `RingHom.rangeS`)
-and rings (using `RingHom.range`).
+  `RingCon.comapQuotientEquivRangeₐ` : the second isomorphism theorem
+  for semirings (using `RingHom.rangeS`), rings (using `RingHom.range`)
+  and algebras (using `AlgHom.range`).
 
-* `RingCon.quotientQuotientEquivQuotient`, the third
-isomorphism theorem for semirings and rings
+* `RingCon.quotientQuotientEquivQuotient`, `RingCon.quotientQuotientEquivQuotientₐ` :
+  the third isomorphism theorem for semirings (or rings) and algebras
 
 ## Tags
 
@@ -326,8 +330,6 @@ lemma comapQuotientEquivOfSurj_symm_mk (c : RingCon M) {f : N →+* M} (hf) (x :
     simp [this]
   rw [comapQuotientEquivOfSurj_mk]
 
-example (c : RingCon M) (f : N ≃+* M) : RingCon N :=
-  comap c f
 /-- This version infers the surjectivity of the function from a RingEquiv function -/
 lemma comapQuotientEquivOfSurj_symm_mk' (c : RingCon M) (f : N ≃+* M) (x : N) :
     ((RingEquiv.symm
@@ -399,15 +401,25 @@ end
 
 section
 
-namespace AlgHom
-
 variable {R : Type*} [CommSemiring R]
   [Semiring M] [Algebra R M] [Semiring N] [Algebra R N] [Semiring P] [Algebra R P]
 
-variable {c : RingCon M} {f : M →ₐ[R] P}
+variable {c d : RingCon M} {f : M →ₐ[R] P}
+
+variable (R) in
+/-- Makes an algebra isomorphism of quotients by two ring congruence
+relations, given that the relations are equal. -/
+protected def congrₐ {c d : RingCon M} (h : c = d) :
+    c.Quotient ≃ₐ[R] d.Quotient := {
+  RingCon.congr h with
+  commutes' _ := rfl }
+
+theorem congrₐ_mk {c d : RingCon M} (h : c = d) (a : M) :
+    RingCon.congrₐ R h (a : c.Quotient) = (a : d.Quotient) :=
+  rfl
 
 theorem range_mk'ₐ :
-    AlgHom.range c.mk'ₐ (R := R) = ⊤ :=
+    AlgHom.range (mk'ₐ R c) = ⊤ :=
   (AlgHom.range_eq_top _).mpr (mk'ₐ_surjective _)
 
 def liftₐ (c : RingCon M) (f : M →ₐ[R] P) (H : c ≤ ker f) :
@@ -437,19 +449,20 @@ theorem kerLiftₐ_mk (x : M) : kerLiftₐ f x = f x :=
 theorem kerLiftₐ_injective (f : M →ₐ[R] P) :
     Injective (kerLiftₐ f) := kerLift_injective f.toRingHom
 
-/-- Given ring congruence relations `c, d` on a ring such that `d` contains `c`,
-`d`'s quotient map induces a homomorphism from the quotient by `c` to the
-quotient by `d`. -/
+variable (R) in
+/-- Given ring congruence relations `c, d` on an algebra such that `d`
+contains `c`, `d`'s quotient map induces an algebra homomorphism from
+the quotient by `c` to the quotient by `d`. -/
 def mapₐ (c d : RingCon M) (h : c ≤ d) :
     c.Quotient →ₐ[R] d.Quotient :=
-  (liftₐ c d.mk'ₐ) fun x y hc => show (ker d.mk') x y from (mk'_ker d).symm ▸ h hc
+  (liftₐ c (d.mk'ₐ R)) fun x y hc ↦ show (ker d.mk') x y from (mk'_ker d).symm ▸ h hc
 
 /-- Given ring congruence relations `c, d` on a ring such that `d` contains `c`,
 the definition of the homomorphism from the quotient by `c` to the quotient by
 `d` induced by `d`'s quotient map. -/
 theorem mapₐ_apply {c d : RingCon M} (h : c ≤ d) (x) :
     mapₐ (R := R) c d h x =
-      liftₐ (R := R) c d.mk'ₐ (fun _ _ hc ↦ d.eq.2 <| h hc) x :=
+      liftₐ (R := R) c (d.mk'ₐ R) (fun _ _ hc ↦ d.eq.2 <| h hc) x :=
   rfl
 
 /-- Given a ring homomorphism `f`, the induced homomorphism
@@ -465,19 +478,19 @@ noncomputable def quotientKerEquivRangeₐ (f : M →ₐ[R] P) :
     (ker f).Quotient ≃ₐ[R] f.range := by
   apply AlgEquiv.ofBijective
     (AlgHom.codRestrict (kerLiftₐ f) _ (fun x ↦ by rw [← kerLiftₐ_range_eq]; simp))
+  exact (quotientKerEquivRangeS f.toRingHom).bijective
 
-  constructor
-  · exact AlgHom.injective_codRestrict.mpr (kerLift_injective f)
-  · refine AlgHom.surjective_codRestrict.mpr ?_
-    rw [kerLiftₐ_range_eq]
-    rfl
+/-- The **second isomorphism theorem for algebras**. -/
+noncomputable def comapQuotientEquivRangeₐ (f : N →ₐ[R] M) :
+    (comap c f).Quotient ≃ₐ[R] AlgHom.range ((c.mk'ₐ _).comp f) := by
+  apply (RingCon.congrₐ R comap_eq).trans
+    <| quotientKerEquivRangeₐ ((c.mk'ₐ _).comp f)
 
-/-- The **second isomorphism theorem for semirings**. -/
-noncomputable def comapQuotientEquivRange (f : N →+* M) :
-    (comap c f).Quotient ≃+* RingHom.range (c.mk'.comp f) :=
-  c.comapQuotientEquivRangeS f
-
-
+/-- The **third isomorphism theorem for algebras**. -/
+def quotientQuotientEquivQuotientₐ (c d : RingCon M) (h : c ≤ d) :
+    (RingCon.ker (mapₐ R c d h)).Quotient ≃ₐ[R] d.Quotient :=
+  { quotientQuotientEquivQuotient c d h with
+    commutes' _ := by rfl }
 
 end
 

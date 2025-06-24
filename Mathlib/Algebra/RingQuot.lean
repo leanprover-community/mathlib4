@@ -37,6 +37,7 @@ instance (c : RingCon A) : Algebra S c.Quotient where
   commutes' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.commutes _ _
   smul_def' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.smul_def _ _
 
+variable (S) in
 /-- The algebra morphism from `A` to the quotient by a ring congruence. -/
 def mk'ₐ (c : RingCon A) : A →ₐ[S] c.Quotient := {
   mk' c with commutes' _ := rfl }
