@@ -723,7 +723,7 @@ theorem basisFun_inner (x : EuclideanSpace 𝕜 ι) (i : ι) : ⟪basisFun ι �
   simp [← OrthonormalBasis.repr_apply_apply]
 
 @[simp]
-theorem basisFun_inner_real (x : EuclideanSpace ℝ ι) (i : ι) :
+theorem inner_basisFun_real (x : EuclideanSpace ℝ ι) (i : ι) :
     inner ℝ x (basisFun ι ℝ i) = x i := by
   rw [real_inner_comm, basisFun_inner]
 
