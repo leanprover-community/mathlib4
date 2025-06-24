@@ -187,6 +187,7 @@ abbrev CatCommSqOver :=
 
 namespace CatCommSqOver
 
+/-- Interpret a `CatCommSqOver F G X` as a `CatCommSq`. -/
 @[simps!]
 def asSquare (S : CatCommSqOver F G X) : CatCommSq S.left S.right F G where
   iso' := S.iso
