@@ -599,7 +599,7 @@ end Subgroup
 
 namespace AddSubgroup
 
-/-- An AddSubgroup `H` is normal if whenever `n ∈ H`, then `g + n - g ∈ H` for every `g : G` -/
+/-- An AddSubgroup `H` is normal if whenever `n ∈ H`, then `g + n - g ∈ H` for every `g : A` -/
 structure Normal (H : AddSubgroup A) : Prop where
   /-- `H` is closed under additive conjugation -/
   conj_mem : ∀ n, n ∈ H → ∀ g : A, g + n + -g ∈ H
