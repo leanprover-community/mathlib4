@@ -483,14 +483,6 @@ theorem incl_isIdealMorphism : I.incl.IsIdealMorphism := by
 
 variable {I}
 
-theorem comap_bot_le_of_injective (hf : Function.Injective f) : comap f ⊥ ≤ I := by
-  refine le_trans (fun x hx => ?_) bot_le
-  rw [mem_comap, LieSubmodule.mem_bot, ← f.map_zero] at hx
-  exact Eq.symm (hf hx) ▸ Submodule.zero_mem ⊥
-
-theorem comap_bot_of_injective (hf : Function.Injective f) : comap f ⊥ = ⊥ :=
-  le_bot_iff.mp (comap_bot_le_of_injective f hf)
-
 theorem comap_incl_eq_bot' (h : I₂ ≤ I) : (comap I.incl I₂) = ⊥ ↔ I₂ = ⊥ := by
   constructor
   · intro hI₂
@@ -502,7 +494,7 @@ theorem comap_incl_eq_bot' (h : I₂ ≤ I) : (comap I.incl I₂) = ⊥ ↔ I₂
       Submodule.eq_bot_iff] at hI₂
     exact (LieSubmodule.mk_eq_zero _ _).mp <| hI₂ ⟨x, h hx⟩ hx
   · rintro ⟨_⟩
-    exact comap_bot_of_injective I.incl I.incl_injective
+    exact I.incl.ker_eq_bot.mpr I.incl_injective
 
 theorem comap_incl_eq_bot : (comap I.incl I₂) = ⊥ ↔ Disjoint I I₂ := by sorry
 
