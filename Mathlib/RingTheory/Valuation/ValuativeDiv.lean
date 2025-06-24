@@ -111,17 +111,15 @@ def valueSetoid : Setoid (R × unitSubmonoid R) where
     trans := by
       rintro ⟨r, u⟩ ⟨s, v⟩ ⟨t, w⟩ ⟨h1, h2⟩ ⟨h3, h4⟩
       constructor
-      · have := rel_mul  h1 (rel_refl ↑w)
-        rw [show s * u * w = s * w * u by ring] at this
+      · have := rel_mul h1 (rel_refl ↑w)
+        rw [mul_right_comm s] at this
         have := rel_trans this (rel_mul h3 (rel_refl _))
-        rw [show r * v * w = r * w * v by ring] at this
-        rw [show t * v * u = t * u * v by ring] at this
+        rw [mul_right_comm r, mul_right_comm t] at this
         simpa using this
       · have := rel_mul h4 (rel_refl ↑u)
-        rw [show s * w * u = s * u * w by ring] at this
+        rw [mul_right_comm s] at this
         have := rel_trans this (rel_mul h2 (rel_refl _))
-        rw [show t * v * u = t * u * v by ring] at this
-        rw [show r * v * w = r * w * v by ring] at this
+        rw [mul_right_comm t, mul_right_comm r] at this
         simpa using this
   }
 
