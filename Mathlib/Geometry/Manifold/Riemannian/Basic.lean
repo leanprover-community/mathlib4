@@ -163,16 +163,15 @@ lemma blok (x : M) : ∃ (C : ℝ≥0), 0 < C ∧ ∀ᶠ y in 𝓝 x,
     apply ContinuousLinearMap.le_opNorm
 -/
 
-
-lemma foo (x : M) (c : ℝ≥0∞) (hc : 0 < c) :
-    ∀ᶠ y in 𝓝 x, riemannianEDist I x y < c := by
+lemma foo (x : M) {c : ℝ≥0∞} (hc : 0 < c) : ∀ᶠ y in 𝓝 x, riemannianEDist I x y < c := by
   rcases blok I x with ⟨C, C_pos, hC⟩
-  let s := {z ∈ range I | edist (extChartAt I x x) z < (c / C)}
-  have : s ∈ 𝓝[range I] (extChartAt I x x) := sorry
-  have : (extChartAt I x) ⁻¹' s ∩ (extChartAt I x).source ∈ 𝓝 x := sorry
+  have : (extChartAt I x) ⁻¹' (EMetric.ball (extChartAt I x x) (c / C)) ∈ 𝓝 x := by
+    apply (continuousAt_extChartAt x).preimage_mem_nhds
+    exact EMetric.ball_mem_nhds _ (ENNReal.div_pos hc.ne' (by simp))
   filter_upwards [this, hC] with y hy h'y
   apply h'y.trans_lt
-  have : edist (extChartAt I x x) (extChartAt I x y) < (c / C) := hy.1.2
+  have : edist (extChartAt I x x) (extChartAt I x y) < c / C := by
+    simpa only [mem_preimage, EMetric.mem_ball'] using hy
   rwa [ENNReal.lt_div_iff_mul_lt, mul_comm] at this
   · exact Or.inl (mod_cast C_pos.ne')
   · simp
