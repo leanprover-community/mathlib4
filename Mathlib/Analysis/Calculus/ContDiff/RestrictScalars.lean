@@ -7,7 +7,7 @@ import Mathlib.Analysis.Calculus.ContDiff.Defs
 import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 
 /-!
-### Restricting Scalars in Iterated Derivatives
+### Restricting Scalars in Iterated Fréchet Derivatives
 
 This file establishes standard theorems on restriction of scalars for iterated Fréchet derivatives,
 comparing iterated derivatives with respect to a field `𝕜'` to iterated derivatives with respect to
@@ -65,7 +65,6 @@ If `f` is `n` times continuously differentiable at `x`, then the `n`th iterated 
 with respect to `𝕜` equals scalar restriction of the `n`th iterated Fréchet derivative with respect
 to `𝕜'`.
 -/
-@[simp]
 theorem ContDiffAt.iteratedFDeriv_restrictScalars (h : ContDiffAt 𝕜' n f x) :
     ((restrictScalarsLinear 𝕜) ∘ iteratedFDeriv 𝕜' n f) x = iteratedFDeriv 𝕜 n f x :=
   h.iteratedFDeriv_restrictScalars_eventuallyEq.eq_of_nhds
