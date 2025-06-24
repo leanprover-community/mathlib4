@@ -3,7 +3,6 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-
 import Mathlib.Analysis.Normed.Ring.Lemmas
 import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.Data.ZMod.Units
@@ -89,18 +88,18 @@ end EasyCases
 
 section Divisibility
 
-variable {R : Type*} [CommSemiring R] {u v : R}
-  {p : ℕ}
+variable {R : Type*} [CommSemiring R] {u v : R} {p : ℕ}
 
 /- This lemma is due to Junyan Xu -/
 
-lemma exists_of_one_add_mul_pow_prime_eq
+lemma exists_one_add_mul_pow_prime_eq
     (hp : p.Prime) (hvu : v ∣ u) (hpuv : p * u * v ∣ u ^ p) (x : R) :
     ∃ y, (1 + u * x) ^ p = 1 + p * u * (x + v * y) := by
   rw [add_comm, add_pow]
-  simp [← Finset.add_sum_erase (a := 0) (Finset.range (p + 1)) _ (by simp)]
+  rw [← Finset.add_sum_erase (a := 0) _ _ (by simp)]
+  simp_rw [one_pow, pow_zero, Nat.choose_zero_right, Nat.cast_one, mul_one]
   rw [← Finset.add_sum_erase (a := 1) _ _ (by simp [hp.pos])]
-  rw [← Finset.sum_erase_add (a := p) _ _ (by
+  rw [← Finset.sum_erase_add (a := p) _ _ (by -- aesop works but is slow
       simp only [Finset.mem_erase]
       rw [← and_assoc, and_comm (a := ¬ _), ← Nat.two_le_iff]
       simp [hp.two_le])]
@@ -109,53 +108,48 @@ lemma exists_of_one_add_mul_pow_prime_eq
   use a * x ^ 2 * ∑ i ∈ (((Finset.range (p + 1)).erase 0).erase 1).erase p,
     (u * x) ^ (i - 2) * (p.choose i / p : ℕ) + b * x ^ p
   rw [mul_add]
-  apply congr_arg₂ _ rfl
-  apply congr_arg₂ _ (by simp [Nat.choose_one_right]; ring)
+  congr 2
+  · rw [Nat.choose_one_right]; ring
   simp only [mul_add, Finset.mul_sum]
-  apply congr_arg₂ _
-  · apply Finset.sum_congr rfl
-    intro i hi
+  congr 1
+  · congr! 1 with i hi
     simp only [Finset.mem_erase, ne_eq, Finset.mem_range] at hi
-    have hi' : 2 ≤ i := by simp [Nat.two_le_iff, hi]
+    have hi' : 2 ≤ i := by omega
     calc
       (u * x) ^ i * p.choose i =
         (u * x) ^ (2 + (i - 2)) * p.choose i := by rw [Nat.add_sub_of_le hi']
       _ = u ^ 2 * x ^ 2 * (u * x) ^ (i - 2) * p.choose i := by ring_nf
       _ = u ^ 2 * x ^ 2 * (u * x) ^ (i - 2) * (p * (p.choose i / p) : ℕ) := by
-        congr; symm
-        apply Nat.mul_div_cancel'
-        apply Nat.Prime.dvd_choose_self hp hi.2.2.1
-        refine Nat.lt_of_le_of_ne (Nat.le_of_lt_succ hi.2.2.2) hi.1
+        rw [Nat.mul_div_cancel' (hp.dvd_choose_self hi.2.2.1 <| by omega)]
       _ = u ^ 2 * x ^ 2 * (u * x) ^ (i - 2) * p * (p.choose i / p : ℕ) := by
         simp only [Nat.cast_mul]; ring_nf
       _ = p * u * (v * (a * x ^ 2 * ((u * x) ^ (i - 2) * (p.choose i / p : ℕ)))) := by
-          rw [ha]; ring
+        rw [ha]; ring
   · calc
-     (u * x) ^ p * ↑(p.choose p) = u ^ p * x ^ p := by rw [Nat.choose_self, mul_pow]; simp
+      (u * x) ^ p * (p.choose p) = u ^ p * x ^ p := by simp [Nat.choose_self, mul_pow]
     _ = p * u * v * b * x ^ p := by rw [hb]
     _ = p * u * (v * (b * x ^ p)) := by ring_nf
 
-lemma exists_of_one_add_mul_pow_prime_pow_eq {u v : R}
+lemma exists_one_add_mul_pow_prime_pow_eq {u v : R}
     (hp : p.Prime) (hvu : v ∣ u) (hpuv : p * u * v ∣ u ^ p) (x : R) (m : ℕ) :
     ∃ y, (1 + u * x) ^ (p ^ m) = 1 + p ^ m * u * (x + v * y) :=
   match m with
   | 0 => ⟨0, by simp⟩
   | m + 1 => by
     rw [pow_succ', pow_mul]
-    obtain ⟨y, hy⟩ := exists_of_one_add_mul_pow_prime_eq hp hvu hpuv x
+    obtain ⟨y, hy⟩ := exists_one_add_mul_pow_prime_eq hp hvu hpuv x
     rw [hy]
     obtain ⟨z, hz⟩ :=
-      exists_of_one_add_mul_pow_prime_pow_eq (u := p * u) (v := p * v) hp
+      exists_one_add_mul_pow_prime_pow_eq (u := p * u) (v := p * v) hp
       (mul_dvd_mul_left _ hvu)
       (by
         rw [mul_pow]
-        simp only [← mul_assoc, mul_comm _ ↑p]
-        rw [mul_assoc, mul_assoc, ← mul_assoc u,
-          mul_comm u]
+        simp only [← mul_assoc, mul_comm _ p]
+        rw [mul_assoc, mul_assoc, ← mul_assoc u, mul_comm u]
         apply mul_dvd_mul _ hpuv
         rw [← pow_two]
         exact pow_dvd_pow _ hp.two_le)
-      ((x + v * y)) m
+      (x + v * y) m
     use y + p * z
     rw [hz]
     ring
@@ -164,34 +158,33 @@ end Divisibility
 
 section PrimePow
 
+theorem orderOf_one_add_mul_prime_pow {p : ℕ} (hp : p.Prime) (m : ℕ) (hm0 : m ≠ 0)
+    (hpm : m + 2 ≤ p * m) (a : ℤ) (ha : ¬ (p : ℤ) ∣ a) (n : ℕ) :
+    orderOf (1 + a * p ^ m : ZMod (p ^ (n + m))) = p ^ n := by
+  match n with
+  | 0 => rw [← Nat.cast_pow, zero_add m, ZMod.natCast_self]; simp
+  | n + 1 =>
+    have := Fact.mk hp
+    have := exists_one_add_mul_pow_prime_pow_eq
+      (R := ZMod (p ^ (n + 1 + m))) (u := p ^ m) (v := p) hp (dvd_pow_self _ hm0) ?_ a
+    · apply orderOf_eq_prime_pow
+      · obtain ⟨y, hy⟩ := this n
+        rw [mul_comm, hy, ← pow_add, add_eq_left, mul_add, ← mul_assoc, ← pow_succ]
+        simp_rw [add_right_comm n _ 1, ← Nat.cast_pow, ZMod.natCast_self, zero_mul, add_zero]
+        rwa [← Int.cast_natCast, ← Int.cast_mul, ZMod.intCast_zmod_eq_zero_iff_dvd, add_right_comm,
+          pow_succ, Nat.cast_mul, Int.mul_dvd_mul_iff_left (by simp [hp.ne_zero])]
+      · obtain ⟨y, hy⟩ := this (n + 1)
+        rw [mul_comm, hy, ← pow_add, ← Nat.cast_pow]
+        simp [ZMod.natCast_self]
+    · rw [← pow_succ', ← pow_succ, ← pow_mul, mul_comm]
+      exact pow_dvd_pow _ hpm
+
 theorem orderOf_one_add_mul_prime {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (a : ℤ)
     (ha : ¬ (p : ℤ) ∣ a) (n : ℕ) :
     orderOf (1 + a * p : ZMod (p ^ (n + 1))) = p ^ n := by
-  match n with
-  | 0 => simp [(ZMod.natCast_zmod_eq_zero_iff_dvd p (p ^ 1)).mpr ?_, mul_zero]
-  | n + 1 =>
-    have _ : Fact (p.Prime) := ⟨hp⟩
-    have := exists_of_one_add_mul_pow_prime_pow_eq
-      (R := ZMod (p ^ (n + 1 + 1))) (u := p) (v := p) hp (by simp) ?_ a
-    · apply orderOf_eq_prime_pow
-      · obtain ⟨y, hy⟩ := this n
-        rw [mul_comm, hy, ← pow_succ]
-        simp only [add_eq_left, ne_eq, mul_add, ← mul_assoc, ← pow_succ]
-        simp only [← Nat.cast_pow, ZMod.natCast_self, zero_mul, add_zero]
-        rw [← Int.cast_natCast, ← Int.cast_mul]
-        rw [ZMod.intCast_zmod_eq_zero_iff_dvd, pow_succ]
-        rintro ⟨b, hb⟩
-        apply ha
-        use b
-        apply Or.resolve_right _ hp.ne_zero
-        simpa [mul_assoc] using hb
-      · obtain ⟨y, hy⟩ := this (n + 1)
-        rw [mul_comm, hy, ← pow_succ, ← Nat.cast_pow]
-        simp [ZMod.natCast_self]
-    · rw [← pow_two,← pow_succ]
-      apply pow_dvd_pow
-      rw [Nat.add_one_le_iff, Nat.lt_iff_le_and_ne]
-      exact ⟨hp.two_le, Ne.symm hp2⟩
+  convert orderOf_one_add_mul_prime_pow hp 1 one_ne_zero _ a ha n using 1
+  · rw [pow_one]
+  · have := hp.two_le; omega
 
 theorem orderOf_one_add_prime {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (n : ℕ) :
     orderOf (1 + p : ZMod (p ^ (n + 1))) = p ^ n := by
@@ -205,7 +198,7 @@ theorem orderOf_one_add_prime {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (n : ℕ)
 theorem isCyclic_units_of_prime_pow (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2) (n : ℕ) :
     IsCyclic (ZMod (p ^ n))ˣ := by
   have _ : NeZero (p ^ n) := ⟨pow_ne_zero n hp.ne_zero⟩
-  have _ : Fact (p.Prime) := ⟨hp⟩
+  have := Fact.mk hp
   rcases n with _ | n
   · rw [pow_zero]; infer_instance
   -- We first consider the element `1 + p` of order `p ^ n`
@@ -215,25 +208,20 @@ theorem isCyclic_units_of_prime_pow (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2) (n 
     apply Nat.Coprime.pow_right
     simp only [Nat.coprime_add_self_left, Nat.coprime_one_left_eq_true]
   have ha' : orderOf ha.unit = p ^ n := by
-    simp only [←
-      orderOf_injective _ Units.coeHom_injective ha.unit,
-      Units.coeHom_apply, IsUnit.unit_spec]
-    simp only [ha_def]
+    rw [← orderOf_injective _ Units.coeHom_injective ha.unit, Units.coeHom_apply, IsUnit.unit_spec]
     exact orderOf_one_add_prime hp hp2 n
   -- We lift a primitive root of unity mod `p`, an adequate power of which has order `p - 1`.
   obtain ⟨c, hc⟩ := isCyclic_iff_exists_orderOf_eq_natCard.mp (isCyclic_units_prime hp)
   rw [Nat.card_eq_fintype_card, ZMod.card_units] at hc
   obtain ⟨(b : (ZMod (p ^ (n + 1)))ˣ), rfl⟩ :=
     ZMod.unitsMap_surjective (Dvd.intro_left (p ^ n) rfl) c
-  have : p - 1 ∣ orderOf b := by
-    rw [← hc]
-    exact orderOf_map_dvd _ b
+  have : p - 1 ∣ orderOf b := hc ▸ orderOf_map_dvd _ b
   let k := orderOf b / (p - 1)
   have : orderOf (b ^ k) = p - 1 := orderOf_pow_orderOf_div (orderOf_pos b).ne' this
   rw [isCyclic_iff_exists_orderOf_eq_natCard]
   -- The product of `ha.unit` and `b ^ k` has the required order
   use ha.unit * b ^ k
-  rw [Commute.orderOf_mul_eq_mul_orderOf_of_coprime (Commute.all _ _),
+  rw [(Commute.all ..).orderOf_mul_eq_mul_orderOf_of_coprime,
     this, Nat.card_eq_fintype_card, ZMod.card_units_eq_totient,
     Nat.totient_prime_pow_succ hp, ← ha']
   rw [ha', this]
@@ -251,39 +239,15 @@ theorem isCyclic_units_two_pow_iff (n : ℕ) :
     simp only [Nat.reduceLeDiff, iff_false]
     intro H
     apply not_isCyclic_units_eight
-    have h : 2 ^ 3 ∣ 2 ^ (n + 3) := by
-      rw [pow_add]
-      exact Nat.dvd_mul_left (2 ^ 3) (2 ^ n)
+    have h : 2 ^ 3 ∣ 2 ^ (n + 3) := pow_dvd_pow _ (by omega)
     exact isCyclic_of_surjective _ (unitsMap_surjective h)
 
 lemma orderOf_one_add_four_mul (a : ℤ) (ha : Odd a) (n : ℕ) :
     orderOf (1 + 4 * a : ZMod (2 ^ (n + 2))) = 2 ^ n := by
-  match n with
-  | 0 =>
-    rw [pow_zero, orderOf_eq_one_iff]
-    rw [show (4 : ZMod 4) = (4 : ℕ) by rfl, ZMod.natCast_self]
-    simp
-  | n + 1 =>
-    have h24 : (2 : ZMod (2 ^ (n + 2 + 1))) ^ 2 = 4 := by norm_num
-    have huv : (2 : ZMod (2 ^ (n + 2 + 1))) ∣ 4 := ⟨2, by norm_num⟩
-    have huv' : (2 : ZMod (2 ^ (n + 2 + 1))) * 4 * 2 ∣ 4 ^ 2 := by norm_num
-    have := exists_of_one_add_mul_pow_prime_pow_eq Nat.prime_two huv huv' a
-    apply orderOf_eq_prime_pow
-    · obtain ⟨y, hy⟩ := this n
-      rw [hy, add_eq_left]
-      simp only [Nat.cast_ofNat]
-      rw [← h24, ← pow_add, ← Nat.cast_two (R := ZMod _), ← Nat.cast_pow, mul_add, ← mul_assoc]
-      rw [Nat.cast_pow, ← pow_succ, ← Nat.cast_pow,
-        ← Nat.cast_pow, ZMod.natCast_self, zero_mul, add_zero]
-      rw [← Int.cast_natCast, ← Int.cast_mul, ZMod.intCast_zmod_eq_zero_iff_dvd]
-      rintro ⟨b, hb⟩
-      apply Int.not_even_iff_odd.mpr ha
-      use b
-      simpa [← two_mul, pow_succ _ (n + 2), mul_assoc] using hb
-    · obtain ⟨y, hy⟩ := this (n + 1)
-      simp only [hy, Nat.cast_ofNat, add_eq_left]
-      rw [← h24, ← pow_add, ← Nat.cast_two (R := ZMod _),
-        ← Nat.cast_pow, ZMod.natCast_self, zero_mul]
+  convert orderOf_one_add_mul_prime_pow Nat.prime_two 2 two_ne_zero _ a ?_ n using 1
+  · rw [mul_comm]; norm_num
+  · rfl
+  · rwa [← Int.not_even_iff_odd, even_iff_two_dvd] at ha
 
 theorem orderOf_five (n : ℕ) :
     orderOf (5 : ZMod (2 ^ (n + 2))) = 2 ^ n := by
@@ -295,7 +259,7 @@ end PrimePow
 section Products
 
 theorem isCyclic_units_four_mul_iff (n : ℕ) :
-    IsCyclic ((ZMod (4 * n))ˣ) ↔ n = 0 ∨ n = 1 := by
+    IsCyclic (ZMod (4 * n))ˣ ↔ n = 0 ∨ n = 1 := by
   rcases Nat.eq_zero_or_pos n with ⟨rfl⟩ | hn0
   · simp [isCyclic_units_zero]
   rcases Nat.eq_or_lt_of_le hn0 with ⟨rfl⟩ | hn1
@@ -331,7 +295,7 @@ theorem isCyclic_units_four_mul_iff (n : ℕ) :
 theorem isCyclic_units_of_two_mul_odd_iff (n : ℕ) (hn : Odd n) :
     IsCyclic (ZMod (2 * n))ˣ ↔ IsCyclic (ZMod n)ˣ := by
   rw [← Nat.coprime_two_left] at hn
-  let e := (Units.mapEquiv (chineseRemainder hn).toMulEquiv).trans MulEquiv.prodUnits
+  let e := (Units.mapEquiv (chineseRemainder hn).toMulEquiv).trans .prodUnits
   rw [e.isCyclic, Group.isCyclic_prod_iff]
   simp [isCyclic_units_two]
 
@@ -339,9 +303,9 @@ theorem not_isCyclic_units_of_mul_coprime (m n : ℕ)
     (hm : Odd m) (hm1 : m ≠ 1) (hn : Odd n) (hn1 : n ≠ 1) (hmn : m.Coprime n) :
     ¬ (IsCyclic (ZMod (m * n))ˣ) := by
   classical
-  have _ : NeZero m := ⟨by exact Nat.ne_of_odd_add hm⟩
-  have _ : NeZero n := ⟨by exact Nat.ne_of_odd_add hn⟩
-  let e := (Units.mapEquiv (chineseRemainder hmn).toMulEquiv).trans MulEquiv.prodUnits
+  have _ : NeZero m := ⟨Nat.ne_of_odd_add hm⟩
+  have _ : NeZero n := ⟨Nat.ne_of_odd_add hn⟩
+  let e := (Units.mapEquiv (chineseRemainder hmn).toMulEquiv).trans .prodUnits
   rw [e.isCyclic, Group.isCyclic_prod_iff]
   rintro ⟨_, _, h⟩
   simp [Nat.card_eq_fintype_card, card_units_eq_totient,
@@ -352,70 +316,28 @@ theorem not_isCyclic_units_of_mul_coprime (m n : ℕ)
 
 theorem isCyclic_units_of_odd_iff {n : ℕ} (hn : Odd n) :
     IsCyclic (ZMod n)ˣ ↔ ∃ (p m : ℕ), p.Prime ∧ Odd p ∧ n = p ^ m := by
-  by_cases h1 : n = 1
-  · rw [h1]
-    simp [isCyclic_units_one]
-    refine ⟨3, Nat.prime_three, by simp [Nat.odd_iff], 0, by rw [pow_zero]⟩
-  let p := n.minFac
-  have hp : p.Prime := Nat.minFac_prime h1
-  have hoddp : p ≠ 2 := fun h2 ↦ by
-    apply Odd.not_two_dvd_nat hn
-    rw [← h2]
-    exact Nat.minFac_dvd n
-  set m1 := p ^ (n.factorization p) with hm1
-  have hnp : n.factorization p ≠ 0 := by
-    rw [← Finsupp.mem_support_iff, Nat.support_factorization,
-      Nat.mem_primeFactors]
-    exact ⟨hp, n.minFac_dvd, Nat.ne_of_odd_add hn⟩
-  set m2 := n / m1
-  have hm : n = m1 * m2 := by
-    simp only [m1, Nat.ordCompl_of_not_prime]
-    exact (Nat.ordProj_mul_ordCompl_eq_self n p).symm
-  rw [hm]
-  have hm' : m1.Coprime m2 := by
-    rw [hm1]
-    rw [Nat.coprime_pow_left_iff (Nat.pos_of_ne_zero hnp),
-      hp.coprime_iff_not_dvd]
-    intro hp2
-    obtain ⟨m2', hm2'⟩ := hp2
-    apply Nat.not_succ_le_self (n.factorization p)
-    conv_rhs => rw [hm, hm2', hm1, ← mul_assoc, ← pow_succ]
-    rw [Nat.factorization_mul]
-    · simp [hp.factorization_self]
-    · simp [hp.ne_zero]
-    · intro H
-      apply Nat.not_odd_zero
-      simp only [hm2', H, mul_zero] at hm
-      rwa [← hm]
-  have hm1_ne_one : m1 ≠ 1 := by
-    simp only [hm1, ne_eq, Nat.pow_eq_one, m1, not_or]
-    refine ⟨hp.ne_one, ?_⟩
-    exact hnp
-  by_cases hm2_eq_one : m2 = 1
-  · rw [hm2_eq_one, mul_one]
-    rw [hm1]
-    simp [isCyclic_units_of_prime_pow p hp hoddp (n.factorization p)]
-    refine ⟨p, hp, ?_, n.factorization p, rfl⟩
-    exact Nat.Prime.odd_of_ne_two hp hoddp
-  · simp [hm, Nat.odd_mul] at hn
-    have := not_isCyclic_units_of_mul_coprime m1 m2 hn.1 hm1_ne_one hn.2 hm2_eq_one hm'
-    simp [this]
-    intro l hl hol a ha
-    replace ha : m1 * m2 = 1 * l ^ a := by simp [ha]
-    obtain ⟨i, j, b, c, ha, hbc, hm1i, hm2j⟩ := mul_eq_mul_prime_pow (Nat.prime_iff.mp hl) ha
-    simp only [eq_comm, mul_eq_one] at hbc
-    rw [hbc.1, one_mul] at hm1i
-    rw [hbc.2, one_mul] at hm2j
-    rw [hm1i] at hm1_ne_one
-    rw [hm2j] at hm2_eq_one
-    simp only [ne_eq, Nat.pow_eq_one, not_or] at hm1_ne_one hm2_eq_one
-    simp [hl.ne_one] at hm1_ne_one hm2_eq_one
-    simp only [hm1i, hm2j] at hm'
-    rw [Nat.coprime_pow_left_iff ?_,
-      Nat.coprime_pow_right_iff ?_, Nat.coprime_self] at hm'
-    · exact hl.ne_one hm'
-    · exact Nat.zero_lt_of_ne_zero hm2_eq_one
-    · exact Nat.zero_lt_of_ne_zero hm1_ne_one
+  have hn0 : n ≠ 0 := by rintro rfl; revert hn; decide
+  obtain rfl | h1 := eq_or_ne n 1
+  · simp_rw [isCyclic_units_one, true_iff]
+    exact ⟨3, 0, Nat.prime_three, by simp [Nat.odd_iff], by rw [pow_zero]⟩
+  have ⟨p, hp, dvd⟩ := n.exists_prime_and_dvd h1
+  have odd := hn.of_dvd_nat dvd
+  by_cases hnp : n = p ^ n.factorization p
+  · exact hnp ▸ iff_of_true (isCyclic_units_of_prime_pow p hp (odd.ne_two_of_dvd_nat dvd_rfl) _)
+      ⟨p, _, hp, odd, rfl⟩
+  refine iff_of_false ?_ (mt ?_ hnp)
+  · have := n.ordProj_dvd p
+    rw [← Nat.mul_div_cancel' this]
+    apply not_isCyclic_units_of_mul_coprime
+    · exact hn.of_dvd_nat this
+    · simpa only [Ne, pow_eq_one_iff (hp.factorization_pos_of_dvd hn0 dvd).ne'] using hp.ne_one
+    · exact hn.of_dvd_nat (Nat.div_dvd_of_dvd this)
+    · contrapose! hnp
+      conv_lhs => rw [← Nat.div_mul_cancel this, hnp, one_mul]
+    · apply (Nat.coprime_ordCompl hp hn0).pow_left
+  rintro ⟨q, m, hq, odd, rfl⟩
+  obtain rfl := (Nat.prime_dvd_prime_iff_eq hp hq).mp (hp.dvd_of_dvd_pow dvd)
+  simp [hp.factorization_self] at hnp
 
 end Products
 
@@ -434,7 +356,7 @@ theorem isCyclic_units_iff (n : ℕ) :
   · rw [h2]; simp [isCyclic_units_two]
   by_cases h4 : n = 4
   · rw [h4]; simp [isCyclic_units_four]
-  simp [h0, h1, h2, h4]
+  simp_rw [h0, h1, h2, h4, exists_and_left, false_or]
   rcases (n.even_or_odd).symm with hn | hn
   · simp only [isCyclic_units_of_odd_iff hn]
     apply exists_congr
