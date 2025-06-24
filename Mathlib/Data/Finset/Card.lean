@@ -403,7 +403,7 @@ See `Fintype.card_bijective` for the version where `s` and `t` are `univ`. -/
 lemma card_bijective (e : α → β) (he : e.Bijective) (hst : ∀ i, i ∈ s ↔ e i ∈ t) :
     #s = #t := card_equiv (.ofBijective e he) hst
 
-lemma Set.BijOn.finsetCard_eq (e : α → β) (he : Set.BijOn e s t) : #s = #t :=
+lemma _root_.Set.BijOn.finsetCard_eq (e : α → β) (he : Set.BijOn e s t) : #s = #t :=
   card_nbij e he.mapsTo he.injOn he.surjOn
 
 lemma card_le_card_of_injOn (f : α → β) (hf : Set.MapsTo f s t) (f_inj : (s : Set α).InjOn f) :
