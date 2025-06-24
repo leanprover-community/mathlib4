@@ -353,7 +353,7 @@ lemma differentiableOn_one_add_smoothingFn : DifferentiableOn ℝ (fun z => 1 + 
 lemma deriv_smoothingFn {x : ℝ} (hx : 1 < x) : deriv ε x = -x⁻¹ / (log x ^ 2) := by
   have : log x ≠ 0 := Real.log_ne_zero_of_pos_of_ne_one (by positivity) (ne_of_gt hx)
   show deriv (fun z => 1 / log z) x = -x⁻¹ / (log x ^ 2)
-  rw [deriv_div] <;> aesop
+  rw [deriv_fun_div] <;> aesop
 
 lemma isLittleO_deriv_smoothingFn : deriv ε =o[atTop] fun x => x⁻¹ := calc
   deriv ε =ᶠ[atTop] fun x => -x⁻¹ / (log x ^ 2) := by

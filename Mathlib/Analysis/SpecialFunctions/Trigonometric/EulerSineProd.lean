@@ -92,7 +92,7 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
           ((cos x : ℂ) ^ n - (n - 1) * (sin x : ℂ) ^ 2 * (cos x : ℂ) ^ (n - 2)) x := by
     intro x _
     have c := HasDerivAt.comp (x : ℂ) (hasDerivAt_pow (n - 1) _) (Complex.hasDerivAt_cos x)
-    convert ((Complex.hasDerivAt_sin x).mul c).comp_ofReal using 1
+    convert ((Complex.hasDerivAt_sin x).fun_mul c).comp_ofReal using 1
     · ext1 y; simp only [Complex.ofReal_sin, Complex.ofReal_cos, Function.comp]
     · simp only [Complex.ofReal_cos, Complex.ofReal_sin]
       rw [mul_neg, mul_neg, ← sub_eq_add_neg, Function.comp_apply]
