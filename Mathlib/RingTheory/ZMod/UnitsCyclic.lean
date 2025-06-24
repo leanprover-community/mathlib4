@@ -159,7 +159,7 @@ section PrimePow
 
 theorem orderOf_one_add_mul_prime_pow {p : ℕ} (hp : p.Prime) (m : ℕ) (hm0 : m ≠ 0)
     (hpm : m + 2 ≤ p * m) (a : ℤ) (ha : ¬ (p : ℤ) ∣ a) (n : ℕ) :
-    orderOf (1 + a * p ^ m : ZMod (p ^ (n + m))) = p ^ n := by
+    orderOf (1 + p ^ m * a : ZMod (p ^ (n + m))) = p ^ n := by
   match n with
   | 0 => rw [← Nat.cast_pow, zero_add m, ZMod.natCast_self]; simp
   | n + 1 =>
@@ -168,19 +168,19 @@ theorem orderOf_one_add_mul_prime_pow {p : ℕ} (hp : p.Prime) (m : ℕ) (hm0 : 
       (R := ZMod (p ^ (n + 1 + m))) (u := p ^ m) (v := p) hp (dvd_pow_self _ hm0) ?_ a
     · apply orderOf_eq_prime_pow
       · obtain ⟨y, hy⟩ := this n
-        rw [mul_comm, hy, ← pow_add, add_eq_left, mul_add, ← mul_assoc, ← pow_succ]
+        rw [hy, ← pow_add, add_eq_left, mul_add, ← mul_assoc, ← pow_succ]
         simp_rw [add_right_comm n _ 1, ← Nat.cast_pow, ZMod.natCast_self, zero_mul, add_zero]
         rwa [← Int.cast_natCast, ← Int.cast_mul, ZMod.intCast_zmod_eq_zero_iff_dvd, add_right_comm,
           pow_succ, Nat.cast_mul, Int.mul_dvd_mul_iff_left (by simp [hp.ne_zero])]
       · obtain ⟨y, hy⟩ := this (n + 1)
-        rw [mul_comm, hy, ← pow_add, ← Nat.cast_pow]
+        rw [hy, ← pow_add, ← Nat.cast_pow]
         simp [ZMod.natCast_self]
     · rw [← pow_succ', ← pow_succ, ← pow_mul, mul_comm]
       exact pow_dvd_pow _ hpm
 
 theorem orderOf_one_add_mul_prime {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (a : ℤ)
     (ha : ¬ (p : ℤ) ∣ a) (n : ℕ) :
-    orderOf (1 + a * p : ZMod (p ^ (n + 1))) = p ^ n := by
+    orderOf (1 + p * a : ZMod (p ^ (n + 1))) = p ^ n := by
   convert orderOf_one_add_mul_prime_pow hp 1 one_ne_zero _ a ha n using 1
   · rw [pow_one]
   · have := hp.two_le; omega
@@ -243,9 +243,8 @@ theorem isCyclic_units_two_pow_iff (n : ℕ) :
 
 lemma orderOf_one_add_four_mul (a : ℤ) (ha : Odd a) (n : ℕ) :
     orderOf (1 + 4 * a : ZMod (2 ^ (n + 2))) = 2 ^ n := by
-  convert orderOf_one_add_mul_prime_pow Nat.prime_two 2 two_ne_zero _ a ?_ n using 1
-  · rw [mul_comm]; norm_num
-  · rfl
+  convert orderOf_one_add_mul_prime_pow Nat.prime_two 2 two_ne_zero le_rfl a ?_ n using 1
+  · norm_num
   · rwa [← Int.not_even_iff_odd, even_iff_two_dvd] at ha
 
 theorem orderOf_five (n : ℕ) :
