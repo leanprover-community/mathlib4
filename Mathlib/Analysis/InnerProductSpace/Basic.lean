@@ -801,6 +801,16 @@ theorem inner_eq_neg_one_iff_of_norm_one {x y : E} (hx : ‖x‖ = 1) (hy : ‖y
   simp only [norm_neg, inner_neg_right] at H
   rw [← H hx hy, neg_eq_iff_eq_neg]
 
+/-- The inner product of two unit vectors is less or equal to `1`. -/
+theorem inner_le_one_of_norm_one {x y : F} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) : ⟪x, y⟫_ℝ ≤ 1 := by
+  have H := real_inner_le_norm x y
+  simp_all
+
+/-- The inner product of two unit vectors is equal to `-1` or more. -/
+theorem neg_one_le_inner_of_norm_one {x y : F} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) : -1 ≤ ⟪x, y⟫_ℝ := by
+  have H := neg_le_of_abs_le (abs_real_inner_le_norm x y)
+  simp_all
+
 theorem inner_lt_norm_mul_iff_real {x y : F} : ⟪x, y⟫_ℝ < ‖x‖ * ‖y‖ ↔ ‖y‖ • x ≠ ‖x‖ • y :=
   calc
     ⟪x, y⟫_ℝ < ‖x‖ * ‖y‖ ↔ ⟪x, y⟫_ℝ ≠ ‖x‖ * ‖y‖ :=

@@ -35,7 +35,7 @@ lemma norm_normalized_eq_one_iff {x : V} : ‖normalized x‖ = 1 ↔ x ≠ 0 :=
     simp [normalized, norm_smul, show ‖x‖ ≠ 0 by simp [h]]
 
 @[simp]
-lemma normalized_eq_self_of_norm_eq_one {x : V} (h : ‖x‖ = 1) : normalized x = x := by
+lemma normalized_eq_self_of_norm_one {x : V} (h : ‖x‖ = 1) : normalized x = x := by
   simp [normalized, h]
 
 @[simp]
