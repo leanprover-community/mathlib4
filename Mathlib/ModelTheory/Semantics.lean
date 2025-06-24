@@ -870,6 +870,15 @@ theorem realize_iInf [Finite β] {f : β → L.BoundedFormula α n}
     forall_exists_index, forall_apply_eq_imp_iff]
 
 @[simp]
+theorem _root_.FirstOrder.Language.Formula.realize_iSup [Finite β] {f : β → L.Formula α}
+    {v : α → M} : (Formula.iSup f).Realize v ↔ ∃ b, (f b).Realize v := by
+  simp [Formula.iSup, Formula.Realize]
+
+@[simp]
+theorem _root_.FirstOrder.Language.Formula.realize_iInf [Finite β] {f : β → L.Formula α}
+    {v : α → M} : (Formula.iInf f).Realize v ↔ ∀ b, (f b).Realize v := by
+  simp [Formula.iInf, Formula.Realize]
+
 theorem _root_.FirstOrder.Language.Formula.realize_iExsUnique [Finite γ]
     {φ : L.Formula (α ⊕ γ)} {v : α → M} : (φ.iExsUnique γ).Realize v ↔
       ∃! (i : γ → M), φ.Realize (Sum.elim v i) := by

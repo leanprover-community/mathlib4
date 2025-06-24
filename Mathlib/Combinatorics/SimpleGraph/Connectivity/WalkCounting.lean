@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Algebra.BigOperators.Ring.Nat
-import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Set.Card
 import Mathlib.Data.Set.Finite.Lattice
@@ -70,7 +70,6 @@ def walkLengthTwoEquivCommonNeighbors (u v : V) :
     | ⟨.cons _ (.cons _ .nil), _⟩ => ⟨‹G.Adj u _›, ‹G.Adj _ v›.symm⟩⟩
   invFun w := ⟨w.prop.1.toWalk.concat w.prop.2.symm, rfl⟩
   left_inv | ⟨.cons _ (.cons _ .nil), hp⟩ => by rfl
-  right_inv _ := rfl
 
 section LocallyFinite
 
