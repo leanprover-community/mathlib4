@@ -3,12 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Data.Set.Monotone
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.Finset.Max
-import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Fintype.Powerset
-import Mathlib.Order.Minimal
-import Mathlib
+import Mathlib.Data.Set.Monotone
+import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Erdős–Szekeres theorem
@@ -28,50 +27,16 @@ sequences, increasing, decreasing, Ramsey, Erdos-Szekeres, Erdős–Szekeres, Er
 
 open Function Finset
 
-lemma strictMonoOn_insert_iff_of_mem_upperBounds {α β : Type*} [Preorder α] [Preorder β] (f : α → β)
-    (s : Set α) (a : α) (ha : a ∈ upperBounds s) :
-    StrictMonoOn f (insert a s) ↔ (∀ b ∈ s, b < a → f b < f a) ∧ StrictMonoOn f s := by
-  rw [strictMonoOn_insert_iff]
-  have : ∀ b ∈ s, a < b → f a < f b := by
-    intro b hb hab
-    cases (ha hb).not_gt hab
-  aesop
-
-lemma strictMonoOn_insert_iff_of_mem_lowerBounds {α β : Type*} [Preorder α] [Preorder β] (f : α → β)
-    (s : Set α) (a : α) (ha : a ∈ lowerBounds s) :
-    StrictMonoOn f (insert a s) ↔ (∀ b ∈ s, a < b → f a < f b) ∧ StrictMonoOn f s := by
-  rw [strictMonoOn_insert_iff]
-  have : ∀ b ∈ s, b < a → f b < f a := by
-    intro b hb hab
-    cases (ha hb).not_gt hab
-  aesop
-
-lemma strictAntiOn_insert_iff_of_mem_upperBounds {α β : Type*} [Preorder α] [Preorder β] (f : α → β)
-    (s : Set α) (a : α) (ha : a ∈ upperBounds s) :
-    StrictAntiOn f (insert a s) ↔ (∀ b ∈ s, b < a → f a < f b) ∧ StrictAntiOn f s := by
-  rw [strictAntiOn_insert_iff]
-  have : ∀ b ∈ s, a < b → f b < f a := by
-    intro b hb hab
-    cases (ha hb).not_gt hab
-  aesop
-
-lemma strictAntiOn_insert_iff_of_mem_lowerBounds {α β : Type*} [Preorder α] [Preorder β] (f : α → β)
-    (s : Set α) (a : α) (ha : a ∈ lowerBounds s) :
-    StrictAntiOn f (insert a s) ↔ (∀ b ∈ s, a < b → f b < f a) ∧ StrictAntiOn f s := by
-  rw [strictAntiOn_insert_iff]
-  have : ∀ b ∈ s, b < a → f a < f b := by
-    intro b hb hab
-    cases (ha hb).not_gt hab
-  aesop
-
 namespace Theorems100
 
 variable {α β : Type*} [Fintype α] [LinearOrder α] [LinearOrder β] {f : α → β} {i : α}
 
+/-- The possible lengths of an increasing sequence which ends at `i`. -/
 private noncomputable def incSequencesTo (f : α → β) (i : α) : Finset ℕ :=
   open Classical in
   image card {t : Finset α | IsGreatest t.toSet i ∧ StrictMonoOn f t}
 
+/-- The possible lengths of a decreasing sequence which ends at `i`. -/
 private noncomputable def decSequencesTo (f : α → β) (i : α) : Finset ℕ :=
   open Classical in
   image card {t : Finset α | IsGreatest t.toSet i ∧ StrictAntiOn f t}
@@ -82,9 +47,11 @@ private lemma one_mem_decSequencesTo : 1 ∈ decSequencesTo f i := one_mem_incSe
 private lemma incSequencesTo_nonempty : (incSequencesTo f i).Nonempty := ⟨1, one_mem_incSequencesTo⟩
 private lemma decSequencesTo_nonempty : (decSequencesTo f i).Nonempty := ⟨1, one_mem_decSequencesTo⟩
 
+/-- The maximum length of an increasing sequence which ends at `i`. -/
 private noncomputable def maxIncSequencesTo (f : α → β) (i : α) : ℕ :=
   max' (incSequencesTo f i) incSequencesTo_nonempty
 
+/-- The maximum length of a decreasing sequence which ends at `i`. -/
 private noncomputable def maxDecSequencesTo (f : α → β) (i : α) : ℕ :=
   max' (decSequencesTo f i) decSequencesTo_nonempty
 
@@ -119,11 +86,10 @@ private lemma maxIncSequencesTo_lt {i j : α} (hij : i < j) (hfij : f i < f j) :
     next => rw [max_eq_left hij.le]
   next =>
     simp only [coe_insert, incSequencesTo, decSequencesTo]
-    rw [strictMonoOn_insert_iff_of_mem_upperBounds]
-    · refine ⟨?_, ?_⟩
-      · intro x hx hxj
-        exact (ht₁.monotoneOn hx hti.1 (hti.2 hx)).trans_lt hfij
-      · exact ht₁
+    rw [strictMonoOn_insert_iff_of_forall_le]
+    · refine ⟨ht₁, ?_⟩
+      intro x hx hxj
+      exact (ht₁.monotoneOn hx hti.1 (hti.2 hx)).trans_lt hfij
     · intro x hx
       exact (this x hx).le
   have : j ∉ t := by

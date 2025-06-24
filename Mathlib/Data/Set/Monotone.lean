@@ -146,6 +146,42 @@ lemma strictAntiOn_insert_iff [Preorder α] [Preorder β] {f : α → β} {s : S
        (∀ b ∈ s, b < a → f a < f b) ∧ (∀ b ∈ s, a < b → f b < f a) ∧ StrictAntiOn f s :=
   @strictMonoOn_insert_iff α βᵒᵈ _ _ _ _ _
 
+lemma strictMonoOn_insert_iff_of_forall_le {α β : Type*} [Preorder α] [Preorder β] (f : α → β)
+    (s : Set α) (a : α) (ha : ∀ x ∈ s, x ≤ a) :
+    StrictMonoOn f (insert a s) ↔ StrictMonoOn f s ∧ (∀ b ∈ s, b < a → f b < f a) := by
+  rw [strictMonoOn_insert_iff]
+  have : ∀ b ∈ s, a < b → f a < f b := by
+    intro b hb hab
+    cases (ha _ hb).not_gt hab
+  tauto
+
+lemma strictMonoOn_insert_iff_of_forall_ge {α β : Type*} [Preorder α] [Preorder β] (f : α → β)
+    (s : Set α) (a : α) (ha : ∀ x ∈ s, a ≤ x) :
+    StrictMonoOn f (insert a s) ↔ StrictMonoOn f s ∧ (∀ b ∈ s, a < b → f a < f b) := by
+  rw [strictMonoOn_insert_iff]
+  have : ∀ b ∈ s, b < a → f b < f a := by
+    intro b hb hab
+    cases (ha _ hb).not_gt hab
+  tauto
+
+lemma strictAntiOn_insert_iff_of_forall_le {α β : Type*} [Preorder α] [Preorder β] (f : α → β)
+    (s : Set α) (a : α) (ha : ∀ x ∈ s, x ≤ a) :
+    StrictAntiOn f (insert a s) ↔ StrictAntiOn f s ∧ (∀ b ∈ s, b < a → f a < f b) := by
+  rw [strictAntiOn_insert_iff]
+  have : ∀ b ∈ s, a < b → f b < f a := by
+    intro b hb hab
+    cases (ha _ hb).not_gt hab
+  tauto
+
+lemma strictAntiOn_insert_iff_of_mem_lowerBounds {α β : Type*} [Preorder α] [Preorder β] (f : α → β)
+    (s : Set α) (a : α) (ha : ∀ x ∈ s, a ≤ x) :
+    StrictAntiOn f (insert a s) ↔ StrictAntiOn f s ∧ (∀ b ∈ s, a < b → f b < f a) := by
+  rw [strictAntiOn_insert_iff]
+  have : ∀ b ∈ s, b < a → f a < f b := by
+    intro b hb hab
+    cases (ha _ hb).not_gt hab
+  tauto
+
 end strictMono
 
 namespace Function
