@@ -42,7 +42,7 @@ class IsGaussian {E : Type*} [TopologicalSpace E] [AddCommMonoid E] [Module ℝ 
   map_eq_gaussianReal (L : E →L[ℝ] ℝ) : μ.map L = gaussianReal (μ[L]) (Var[L; μ]).toNNReal
 
 /-- A Gaussian measure is a probability measure. -/
-instance IsGaussian.isProbabilityMeasure {E : Type*} [TopologicalSpace E] [AddCommMonoid E]
+instance IsGaussian.toIsProbabilityMeasure {E : Type*} [TopologicalSpace E] [AddCommMonoid E]
     [Module ℝ E] {mE : MeasurableSpace E} (μ : Measure E) [IsGaussian μ] :
     IsProbabilityMeasure μ where
   measure_univ := by
