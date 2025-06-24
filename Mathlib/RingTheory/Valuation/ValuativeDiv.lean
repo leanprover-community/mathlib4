@@ -401,15 +401,17 @@ instance : (valuation R).Compatible where
 /-- Construct a valuative relation on a ring using a valuation. -/
 def ofValuation
     {S Γ : Type*} [CommRing S]
-    [LinearOrderedCommMonoidWithZero Γ]
-    [Nontrivial Γ] [NoZeroDivisors Γ]
+    [LinearOrderedCommGroupWithZero Γ]
     (v : Valuation S Γ) : ValuativeRel S where
   rel x y := v x ≤ v y
   rel_total x y := le_total (v x) (v y)
   rel_trans := le_trans
-  rel_add := sorry
-  rel_mul_right := sorry
-  rel_mul_cancel := sorry
+  rel_add hab hbc := (map_add_le_max v _ _).trans (sup_le hab hbc)
+  rel_mul_right _ h := by simp only [map_mul, mul_le_mul_right' h]
+  rel_mul_cancel h0 h := by
+    rw [map_zero, le_zero_iff] at h0
+    simp only [map_mul] at h
+    exact le_of_mul_le_mul_right h (lt_of_le_of_ne' zero_le' h0)
   not_rel_one_zero := by simp
 
 lemma isEquiv {Γ₁ Γ₂ : Type*}
@@ -475,9 +477,9 @@ class IsDiscrete where
 
 lemma valuation_surjective (γ : ValueGroup R) :
     ∃ (a : R) (b : unitSubmonoid R), valuation _ a / valuation _ (b : R) = γ := by
-  obtain ⟨a,b⟩ := γ
+  induction γ using ValueGroup.ind with | mk a b
   use a, b
-  sorry
+  simp [valuation, div_eq_mul_inv, ValueGroup.inv_mk (b : R) 1 b.prop]
 
 end ValuativeRel
 
