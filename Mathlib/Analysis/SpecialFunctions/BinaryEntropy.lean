@@ -186,7 +186,7 @@ lemma deriv_binEntropy (p : ℝ) : deriv binEntropy p = log (1 - p) - log p := b
   by_cases hp : p ≠ 0 ∧ p ≠ 1
   · obtain ⟨hp₀, hp₁⟩ := hp
     rw [ne_comm, ← sub_ne_zero] at hp₁
-    rw [binEntropy_eq_negMulLog_add_negMulLog_one_sub', deriv_add, deriv_comp_const_sub,
+    rw [binEntropy_eq_negMulLog_add_negMulLog_one_sub', deriv_fun_add, deriv_comp_const_sub,
       deriv_negMulLog hp₀, deriv_negMulLog hp₁]
     · ring
     all_goals fun_prop (disch := assumption)
@@ -244,7 +244,7 @@ This is due to definition of `Real.log` for negative numbers. -/
 lemma deriv_qaryEntropy (hp₀ : p ≠ 0) (hp₁ : p ≠ 1) :
     deriv (qaryEntropy q) p = log (q - 1) + log (1 - p) - log p := by
   unfold qaryEntropy
-  rw [deriv_add]
+  rw [deriv_fun_add]
   · simp only [Int.cast_sub, Int.cast_natCast, Int.cast_one, differentiableAt_id', deriv_mul_const,
       deriv_id'', one_mul, deriv_binEntropy, add_sub_assoc]
   all_goals fun_prop (disch := assumption)
@@ -331,7 +331,7 @@ lemma deriv2_qaryEntropy :
     suffices ∀ᶠ y in (𝓝 p),
         deriv (fun p ↦ (qaryEntropy q) p) y = log (q - 1) + log (1 - y) - log y by
       refine (Filter.EventuallyEq.deriv_eq this).trans ?_
-      rw [deriv_sub ?_ (differentiableAt_log xne0)]
+      rw [deriv_fun_sub ?_ (differentiableAt_log xne0)]
       · rw [deriv.log differentiableAt_id' xne0]
         simp only [deriv_id'', one_div]
         · have {q : ℝ} (p : ℝ) : DifferentiableAt ℝ (fun p => q - p) p := by fun_prop

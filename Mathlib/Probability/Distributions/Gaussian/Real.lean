@@ -495,7 +495,7 @@ lemma integral_id_gaussianReal : ∫ x, x ∂gaussianReal μ v = μ := by
   rw [← deriv_mgf_zero (by simp), mgf_fun_id_gaussianReal, _root_.deriv_exp (by fun_prop)]
   simp only [mul_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, zero_div,
     add_zero, Real.exp_zero, one_mul]
-  rw [deriv_add (by fun_prop) (by fun_prop), deriv_mul (by fun_prop) (by fun_prop)]
+  rw [deriv_fun_add (by fun_prop) (by fun_prop), deriv_fun_mul (by fun_prop) (by fun_prop)]
   simp
 
 /-- The variance of a real Gaussian distribution `gaussianReal μ v` is

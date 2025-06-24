@@ -48,7 +48,7 @@ theorem antideriv_sin_comp_const_mul (hz : z ≠ 0) (x : ℝ) :
   have a : HasDerivAt (fun y : ℂ => y * (2 * z)) _ x := hasDerivAt_mul_const _
   have b : HasDerivAt (Complex.cos ∘ fun y : ℂ => (y * (2 * z))) _ x :=
     HasDerivAt.comp (x : ℂ) (Complex.hasDerivAt_cos (x * (2 * z))) a
-  have c := (b.comp_ofReal.div_const (2 * z)).neg
+  have c := (b.comp_ofReal.div_const (2 * z)).fun_neg
   field_simp at c; simp only [fun y => mul_comm y (2 * z)] at c
   exact c
 
