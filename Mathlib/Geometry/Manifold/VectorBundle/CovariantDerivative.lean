@@ -280,16 +280,35 @@ lemma sum_X (cov : CovariantDerivative I F V)
   | empty => simp
   | insert a s ha h => simp [Finset.sum_insert ha, Finset.sum_insert ha, ← h, cov.addX]
 
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
+  [VectorBundle ℝ F V] in
 /-- If `X` and `X'` agree in a neighbourhood of `p`, then `∇_X σ` and `∇_X' σ` agree at `p`. -/
-lemma congr_X_of_eventuallyEq (cov : CovariantDerivative I F V)
+lemma congr_X_of_eventuallyEq (cov : CovariantDerivative I F V) [T2Space M]
     {X X' : Π x : M, TangentSpace I x} {σ : Π x : M, V x} {x : M} {s : Set M} (hs : s ∈ nhds x)
     (hσσ' : ∀ x ∈ s, X x = X' x) :
     cov X σ x = cov X' σ x := by
   by_cases hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x; swap
   · simp [cov.do_not_read X hσ, cov.do_not_read X' hσ]
-  sorry
+  -- Choose a smooth bump function ψ with support around `x` contained in `s`
+  obtain ⟨ψ, _, hψ⟩ := (SmoothBumpFunction.nhds_basis_support (I := I) hs).mem_iff.1 hs
+  -- Observe that `ψ • X = ψ • X'` as dependent functions.
+  have (x : M) : ((ψ : M → ℝ) • X) x = ((ψ : M → ℝ) • X') x := by
+    by_cases h : x ∈ s
+    · simp [hσσ' x h]
+    · simp [notMem_support.mp fun a ↦ h (hψ a)]
+  -- Then, it's a chain of (dependent) equalities.
+  calc cov X σ x
+    _ = cov ((ψ : M → ℝ) • X) σ x := by simp [cov.smulX]
+    _ = cov ((ψ : M → ℝ) • X') σ x := by
+      -- XXX: should this be a lemma cov.congr_X?
+      congr 1
+      ext x
+      simp [this]
+    _ = cov X' σ x := by simp [cov.smulX]
 
-lemma congr_X_at_aux (cov : CovariantDerivative I F V) [IsManifold I ∞ M]
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
+  [VectorBundle ℝ F V] in
+lemma congr_X_at_aux (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
     (X : Π x : M, TangentSpace I x) {σ : Π x : M, V x} {x : M}
     (hX : X x = 0) : cov X σ x = 0 := by
   -- Consider the local frame {Xⁱ} on TangentSpace I x induced by chartAt H x.
@@ -314,8 +333,10 @@ lemma congr_X_at_aux (cov : CovariantDerivative I F V) [IsManifold I ∞ M]
 
 -- XXX: better name?
 -- golfing welcome!
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
+  [VectorBundle ℝ F V] in
 /-- `cov X σ x` only depends on `X` via `X x` -/
-lemma congr_X_at (cov : CovariantDerivative I F V) [IsManifold I ∞ M]
+lemma congr_X_at (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
     (X X' : Π x : M, TangentSpace I x) {σ : Π x : M, V x} {x : M} (hXX' : X x = X' x) :
     cov X σ x = cov X' σ x := by
   have : cov X' σ x = cov X σ x + cov (X' - X) σ x := by
@@ -327,7 +348,7 @@ lemma congr_X_at (cov : CovariantDerivative I F V) [IsManifold I ∞ M]
   simp [this, cov.congr_X_at_aux (X' - X) h]
 
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
-     [VectorBundle ℝ F V] in
+  [VectorBundle ℝ F V] in
 lemma congr_σ_of_eventuallyEq
     (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
     (X : Π x : M, TangentSpace I x) {σ σ' : Π x : M, V x} {x : M} {s : Set M} (hs : s ∈ nhds x)
