@@ -198,6 +198,9 @@ lemma mkD_eq_mkD_of_map_zero [Zero X] (f : X → R) (g : C(X, R)₀) (f_zero : f
     rfl
   · rw [mkD_of_not_continuous f_cont, ContinuousMap.mkD_of_not_continuous f_cont]
 
+lemma mkD_eq_self [Zero X] {f g : C(X, R)₀} : mkD f g = f :=
+  mkD_of_continuous f.continuous (map_zero f)
+
 end mkD
 
 section Algebra
