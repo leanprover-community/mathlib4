@@ -64,6 +64,7 @@ lean_lib LongestPole
 
 lean_lib MathlibTest where
   globs := #[.submodules `MathlibTest]
+  leanOptions := #[⟨`linter.unusedSimpArgs, false⟩] -- Temporarily disable this linter while we work on adaptations.
 
 lean_lib Archive where
   leanOptions := mathlibLeanOptions
