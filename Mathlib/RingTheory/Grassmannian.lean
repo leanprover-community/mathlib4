@@ -16,6 +16,16 @@ import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
   is the opposite of some indexing in literature, where this rank would be `n - k` instead, where
   `M = R ^ n`.
 
+## Implementation notes
+
+Convention for a finite dimensional vector space `V` over a field `F`, is that `G(k, V; F)` should
+parametrise `k`-dimensional subspaces of `V`, but this only works for finite dimensional spaces, and
+over fields. This is why Grothendieck in EGA V.11 (unpublished) and EGA I.9.7.3 (Springer edition
+only) defines the Grassmannians to parametrise locally free rank-`k` quotients instead.
+
+Then the conventional `k`-dimensional subspaces of `V` with dimension `n`, can be recovered by
+`G(n-k, V; F)`.
+
 ## TODO
 - Define the functor `Grassmannian.functor R M k` that sends an `R`-algebra `A` to the set
   `G(k, A ⊗[R] M; A)`.
@@ -37,9 +47,12 @@ variable (R : Type u) [CommRing R] (M : Type v) [AddCommGroup M] [Module R M] (k
 submodules of `M` whose quotient is locally free of rank `k`. Note that this indexing is the
 opposite of some indexing in literature, where this rank would be `n - k` instead, where
 `M = R ^ n`. -/
-def Grassmannian : Type v :=
-  { N : Submodule R M // Module.Finite R (M ⧸ N) ∧ Projective R (M ⧸ N) ∧
-    ∀ p, rankAtStalk (R := R) (M ⧸ N) p = k }
+@[stacks 089R] structure Grassmannian extends Submodule R M where
+  finite_quotient : Module.Finite R (M ⧸ toSubmodule)
+  projective_quotient : Projective R (M ⧸ toSubmodule)
+  rankAtStalk_eq : ∀ p, rankAtStalk (R := R) (M ⧸ toSubmodule) p = k
+
+attribute [instance] Grassmannian.finite_quotient Grassmannian.projective_quotient
 
 namespace Grassmannian
 
@@ -47,21 +60,10 @@ namespace Grassmannian
 
 variable {R M k}
 
-/-- The underlying submodule of an element of `G(M; R, k)`. This cannot be a coercion because `k`
-cannot be inferred. -/
-def val (N : G(k, M; R)) : Submodule R M :=
-  Subtype.val N
+instance : CoeOut G(k, M; R) (Submodule R M) :=
+  ⟨toSubmodule⟩
 
-@[simp] lemma val_mk (N : Submodule R M) {h} : val (k := k) ⟨N, h⟩ = N := rfl
-
-@[ext] lemma ext {N₁ N₂ : G(k, M; R)} (h : N₁.val = N₂.val) : N₁ = N₂ := Subtype.ext h
-
-variable (N : G(k, M; R))
-
-instance : Module.Finite R (M ⧸ N.val) := (Subtype.prop N).1
-
-instance : Module.Projective R (M ⧸ N.val) := (Subtype.prop N).2.1
-
-lemma rankAtStalk_eq (p : PrimeSpectrum R) : rankAtStalk (M ⧸ N.val) p = k := (Subtype.prop N).2.2 p
+@[ext] lemma ext {N₁ N₂ : G(k, M; R)} (h : (N₁ : Submodule R M) = N₂) : N₁ = N₂ := by
+  cases N₁; cases N₂; congr 1
 
 end Grassmannian
