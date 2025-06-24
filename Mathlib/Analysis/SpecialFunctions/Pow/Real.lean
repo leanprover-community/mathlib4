@@ -56,10 +56,18 @@ theorem rpow_intCast (x : ℝ) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
 @[simp, norm_cast]
 theorem rpow_natCast (x : ℝ) (n : ℕ) : x ^ (n : ℝ) = x ^ n := by simpa using rpow_intCast x n
 
+@[simp, norm_cast]
+theorem rpow_neg_natCast (x : ℝ) (n : ℕ) : x ^ (-n : ℝ) = x ^ (-n : ℤ) := by
+  rw [← rpow_intCast, Int.cast_neg, Int.cast_natCast]
+
 @[simp]
 lemma rpow_ofNat (x : ℝ) (n : ℕ) [n.AtLeastTwo] :
     x ^ (ofNat(n) : ℝ) = x ^ (ofNat(n) : ℕ) :=
   rpow_natCast x n
+
+@[simp]
+theorem rpow_neg_ofNat (x : ℝ) (n : ℕ) [n.AtLeastTwo] : x ^ (-ofNat(n) : ℝ) = x ^ (-ofNat(n) : ℤ) :=
+  rpow_neg_natCast _ _
 
 @[simp]
 theorem exp_one_rpow (x : ℝ) : exp 1 ^ x = exp x := by rw [← exp_mul, one_mul]
