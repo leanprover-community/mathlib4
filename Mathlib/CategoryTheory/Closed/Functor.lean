@@ -153,7 +153,7 @@ theorem frobeniusMorphism_mate (h : L ⊣ F) (A : C) :
   unfold prodComparison
   have ηlemma : (h.unit.app (F.obj A ⊗ F.obj B) ≫
     lift ((L ⋙ F).map (fst _ _)) ((L ⋙ F).map (snd _ _))) =
-      (h.unit.app (F.obj A)) ⊗ (h.unit.app (F.obj B)) := by
+      (h.unit.app (F.obj A)) ⊗ₘ (h.unit.app (F.obj B)) := by
     ext <;> simp
   slice_lhs 1 2 => rw [ηlemma]
   simp only [Functor.id_obj, Functor.comp_obj, assoc, ← whisker_exchange, ← tensorHom_def']
