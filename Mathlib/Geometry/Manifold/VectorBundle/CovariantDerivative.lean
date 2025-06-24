@@ -236,6 +236,16 @@ lemma _root_.mfderiv_dependent_congr_iff {σ σ' : Π x : M, V x} {s : Set M} (h
   ⟨fun h ↦ _root_.mdifferentiableAt_dependent_congr hs h hσ,
    fun h ↦ _root_.mdifferentiableAt_dependent_congr hs h (fun x hx ↦ (hσ x hx).symm)⟩
 
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
+  [VectorBundle 𝕜 F V] in
+lemma sum_X (cov : CovariantDerivative I F V)
+    {ι : Type*} {s : Finset ι} {X : ι → Π x : M, TangentSpace I x} {σ : Π x : M, V x} :
+    cov (∑ i ∈ s, X i) σ = ∑ i ∈ s, cov (X i) σ := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert a s ha h => simp [Finset.sum_insert ha, Finset.sum_insert ha, ← h, cov.addX]
+
 section real
 
 variable {E : Type*} [NormedAddCommGroup E]
@@ -252,33 +262,6 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   [∀ x, ContinuousSMul ℝ (V x)]
   [FiberBundle F V] [VectorBundle ℝ F V]
   -- `V` vector bundle
-
-omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
-  [VectorBundle ℝ F V] in
-lemma congr_σ_smoothBumpFunction (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
-    (X : Π x : M, TangentSpace I x) {σ : Π x : M, V x}
-    (hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x)
-    (f : SmoothBumpFunction I x) :
-    cov X ((f : M → ℝ) • σ) x = cov X σ x := by
-  rw [cov.leibniz _ _ _ _ hσ]
-  swap; · apply f.contMDiff.mdifferentiable (by norm_num)
-  calc _
-    _ = cov X σ x + 0 := ?_
-    _ = cov X σ x := by rw [add_zero]
-  simp [f.eq_one, f.eventuallyEq_one.mfderiv_eq]
-  rw [show mfderiv I 𝓘(ℝ, ℝ) 1 x = 0 by apply mfderiv_const]
-  left
-  rfl
-
-omit [FiniteDimensional ℝ E] [∀ (x : M), IsTopologicalAddGroup (V x)]
-  [∀ (x : M), ContinuousSMul ℝ (V x)] [VectorBundle ℝ F V] in
-lemma sum_X (cov : CovariantDerivative I F V)
-    {ι : Type*} {s : Finset ι} {X : ι → Π x : M, TangentSpace I x} {σ : Π x : M, V x} :
-    cov (∑ i ∈ s, X i) σ = ∑ i ∈ s, cov (X i) σ := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => simp
-  | insert a s ha h => simp [Finset.sum_insert ha, Finset.sum_insert ha, ← h, cov.addX]
 
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
   [VectorBundle ℝ F V] in
@@ -346,6 +329,23 @@ lemma congr_X_at (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞
     simp
   have h : (X' - X) x = 0 := by simp [hXX']
   simp [this, cov.congr_X_at_aux (X' - X) h]
+
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
+  [VectorBundle ℝ F V] in
+lemma congr_σ_smoothBumpFunction (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
+    (X : Π x : M, TangentSpace I x) {σ : Π x : M, V x}
+    (hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x)
+    (f : SmoothBumpFunction I x) :
+    cov X ((f : M → ℝ) • σ) x = cov X σ x := by
+  rw [cov.leibniz _ _ _ _ hσ]
+  swap; · apply f.contMDiff.mdifferentiable (by norm_num)
+  calc _
+    _ = cov X σ x + 0 := ?_
+    _ = cov X σ x := by rw [add_zero]
+  simp [f.eq_one, f.eventuallyEq_one.mfderiv_eq]
+  rw [show mfderiv I 𝓘(ℝ, ℝ) 1 x = 0 by apply mfderiv_const]
+  left
+  rfl
 
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
   [VectorBundle ℝ F V] in
