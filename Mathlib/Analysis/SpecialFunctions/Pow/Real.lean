@@ -449,10 +449,8 @@ lemma rpow_sub_one' (hx : 0 ≤ x) (h : y - 1 ≠ 0) : x ^ (y - 1) = x ^ y / x :
 lemma rpow_one_sub' (hx : 0 ≤ x) (h : 1 - y ≠ 0) : x ^ (1 - y) = x / x ^ y := by
   rw [rpow_sub' hx h, rpow_one]
 
-@[simp]
 theorem rpow_two (x : ℝ) : x ^ (2 : ℝ) = x ^ 2 := by
-  rw [← rpow_natCast]
-  simp only [Nat.cast_ofNat]
+  simp
 
 theorem rpow_neg_one (x : ℝ) : x ^ (-1 : ℝ) = x⁻¹ := by
   suffices H : x ^ ((-1 : ℤ) : ℝ) = x⁻¹ by rwa [Int.cast_neg, Int.cast_one] at H
