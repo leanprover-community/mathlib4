@@ -545,7 +545,6 @@ alias H2π_comp_H2Map := H2π_comp_map
 
 end H2
 
--- variable [DecidableEq G]
 
 variable (k G) in
 /-- The functor sending a representation to its complex of inhomogeneous cochains. -/
