@@ -12,6 +12,43 @@ namespace Cache.Requests
 open System (FilePath)
 
 /--
+Structure to hold repository information with priority ordering
+-/
+structure RepoInfo where
+  repo : String
+  useFirst : Bool
+  deriving Repr
+
+/--
+Helper function to extract repository name from a git remote URL
+-/
+def extractRepoFromUrl (url : String) : Option String := do
+  let url := url.stripSuffix ".git"
+  let pos ← url.revFind (· == '/')
+  let pos ← url.revFindAux (fun c => c == '/'  || c == ':') pos
+  return url.extract (url.next pos) url.endPos
+
+/--
+Helper function to get repository from a remote name
+-/
+def getRepoFromRemote (mathlibDepPath : FilePath) (remoteName : String) (errorContext : String) : IO String := do
+  let out ← IO.Process.output
+    {cmd := "git", args := #["remote", "get-url", remoteName], cwd := mathlibDepPath}
+  unless out.exitCode == 0 do
+    throw <| IO.userError s!"\
+      Failed to run Git to determine Mathlib's repository from {remoteName} remote (exit code: {out.exitCode}).\n\
+      {errorContext}\n\
+      Stdout:\n{out.stdout.trim}\nStderr:\n{out.stderr.trim}\n"
+
+  if let some repo := extractRepoFromUrl out.stdout.trim then
+    return repo
+  else
+    throw <| IO.userError s!"\
+      Failed to determine Mathlib's repository from {remoteName} remote URL.\n\
+      {errorContext}\n\
+      Detected URL: {out.stdout.trim}"
+
+/--
 Finds the remote name that points to `leanprover-community/mathlib4` repository.
 Returns the remote name and prints warnings if the setup doesn't follow conventions.
 -/
@@ -60,7 +97,7 @@ Attempts to determine the GitHub repository of a version of Mathlib from its Git
 If the current branch is tracking a PR (upstream/pr/NNNN), it will determine the source fork
 of that PR rather than just using the origin remote.
 -/
-def getRemoteRepo (mathlibDepPath : FilePath) : IO String := do
+def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
   -- Find the actual remote name for mathlib4
   let mathlibRemoteName ← findMathlibRemote mathlibDepPath
 
@@ -89,7 +126,7 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO String := do
           | .ok owner =>
             let repo := s!"{owner}/mathlib4"
             IO.println s!"Using cache from PR #{prNumber} source: {repo}"
-            return repo
+            return {repo := repo, useFirst := false}
           | .error _ =>
             -- If that fails, try to get as object and extract login field
             match json.getObjVal? "headRepositoryOwner" with
@@ -98,7 +135,7 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO String := do
               | .ok owner =>
                 let repo := s!"{owner}/mathlib4"
                 IO.println s!"Using cache from PR #{prNumber} source: {repo}"
-                return repo
+                return {repo := repo, useFirst := false}
               | .error _ =>
                 IO.println "Warning: Could not parse PR owner from GitHub CLI response, falling back to origin"
             | .error _ =>
@@ -117,6 +154,21 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO String := do
 
   if currentBranch.exitCode == 0 then
     let branchName := currentBranch.stdout.trim
+    -- Check if we're on a branch that should use nightly-testing remote
+    let shouldUseNightlyTesting := branchName == "nightly-testing" ||
+                                  branchName.startsWith "lean-pr-testing-" ||
+                                  branchName.startsWith "batteries-pr-testing-" ||
+                                  branchName.startsWith "bump/"
+
+    if shouldUseNightlyTesting then
+      -- Try to use nightly-testing remote
+      let repo ← getRepoFromRemote mathlibDepPath "nightly-testing"
+        s!"Branch '{branchName}' should use the nightly-testing remote, but it's not configured.\n\
+          Please add the nightly-testing remote pointing to the nightly testing repository:\n\
+          git remote add nightly-testing https://github.com/leanprover-community/mathlib4-nightly-testing.git"
+      IO.println s!"Using cache from nightly-testing remote: {repo}"
+      return {repo := repo, useFirst := true}
+
     -- Only search for PR refs if we're not on a regular branch like master, bump/*, or nightly-testing*
     let isRegularBranch := branchName == "master" || branchName.startsWith "bump/" ||
                           branchName.startsWith "nightly-testing"
@@ -156,7 +208,7 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO String := do
                     | .ok owner =>
                       let repo := s!"{owner}/mathlib4"
                       IO.println s!"Using cache from PR #{prNumber} source: {repo}"
-                      return repo
+                      return {repo := repo, useFirst := false}
                     | .error _ => continue -- try next ref
                   | .error _ => continue -- try next ref
                 | .error _ => continue -- try next ref
@@ -164,28 +216,10 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO String := do
                 continue -- try next ref
 
   -- Fall back to the original logic using origin remote
-  let out ← IO.Process.output
-    {cmd := "git", args := #["remote", "get-url", "origin"], cwd := mathlibDepPath}
-  unless out.exitCode == 0 do
-    throw <| IO.userError s!"\
-      Failed to run Git to determine Mathlib's repository (exit code: {out.exitCode}).\n\
-      Ensure Git is installed and Mathlib's `origin` remote points to its GitHub repository.\n\
-      Stdout:\n{out.stdout.trim}\nStderr:\n{out.stderr.trim}\n"
-  -- No strong validation is done here because this is simply used as a smart default
-  -- for `lake exe cache get`, which is freely modifiable by any user.
-  let url := out.stdout.trim.stripSuffix ".git"
-  let repo? : Option String := do
-    let pos ← url.revFind (· == '/')
-    let pos ← url.revFindAux (fun c => c == '/'  || c == ':') pos
-    return url.extract (url.next pos) url.endPos
-  if let some repo := repo? then
-    IO.println s!"Using cache from origin: {repo}"
-    return repo
-  else
-    throw <| IO.userError s!"\
-      Failed to determine Mathlib's repository from its remote URL.\n\
-      Ensure Mathlib's `origin` Git remote points to its GitHub repository.\n\
-      Detected URL: {url}"
+  let repo ← getRepoFromRemote mathlibDepPath "origin"
+    "Ensure Git is installed and Mathlib's `origin` remote points to its GitHub repository."
+  IO.println s!"Using cache from origin: {repo}"
+  return {repo := repo, useFirst := false}
 
 -- FRO cache is flaky so disable until we work out the kinks: https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/The.20cache.20doesn't.20work/near/411058849
 def useFROCache : Bool := false
@@ -375,13 +409,24 @@ def getFiles
   let isMathlibRoot ← IO.isMathlibRoot
   unless isMathlibRoot do checkForToolchainMismatch
   getProofWidgets (← read).proofWidgetsBuildDir
+
   if let some repo := repo? then
     downloadFiles repo hashMap forceDownload parallel (warnOnMissing := true)
   else
-    let repo ← getRemoteRepo (← read).mathlibDepPath
-    unless repo == MATHLIBREPO do
-      downloadFiles MATHLIBREPO hashMap forceDownload parallel (warnOnMissing := false)
-    downloadFiles repo hashMap forceDownload parallel (warnOnMissing := true)
+    let repoInfo ← getRemoteRepo (← read).mathlibDepPath
+
+    -- Build list of repositories to download from in order
+    let repos : List String :=
+      if repoInfo.repo == MATHLIBREPO then
+        [repoInfo.repo]
+      else if repoInfo.useFirst then
+        [repoInfo.repo, MATHLIBREPO]
+      else
+        [MATHLIBREPO, repoInfo.repo]
+
+    for h : i in [0:repos.length] do
+      downloadFiles repos[i] hashMap forceDownload parallel (warnOnMissing := i = repos.length - 1)
+
   if decompress then
     IO.unpackCache hashMap forceUnpack
   else

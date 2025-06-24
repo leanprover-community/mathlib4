@@ -105,6 +105,7 @@ jobs:
           )"
           printf 'title<<EOF\n%s\nEOF' "${message}" | tee "$GITHUB_OUTPUT"
         env:
+          AUTHOR: ${{ steps.extract-data.outputs.author }}
           EVENT_NAME: ${{ steps.extract-data.outputs.event_name }}
           PR_NUMBER: ${{ steps.extract-data.outputs.pr_number }}
           PR_URL: ${{ steps.extract-data.outputs.pr_url }}
