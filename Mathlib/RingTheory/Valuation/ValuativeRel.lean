@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz
+Authors: Aaron Liu, Adam Topaz
 -/
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.Topology.Basic
