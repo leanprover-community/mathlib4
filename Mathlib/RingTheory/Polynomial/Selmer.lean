@@ -58,15 +58,15 @@ theorem card_subgroup_eq_finrank_fixedpoints :
     Nat.card H = Module.finrank (FixedPoints.intermediateField H : IntermediateField K L) L :=
   card_eq_finrank H (FixedPoints.intermediateField H) L
 
-instance to_fixingSubgroup :
-    IsGaloisGroup (fixingSubgroup G (F : Set L)) F L where
-  faithful := have := hGKL.faithful; inferInstance
-  commutes := ⟨fun g x y ↦ by
-    simp_rw [Algebra.smul_def, IntermediateField.algebraMap_apply, smul_mul', Subgroup.smul_def, g.2 x]⟩
-  isInvariant := ⟨by
-    intro x h
-    refine ⟨⟨x, ?_⟩, rfl⟩
-  ⟩
+-- instance to_fixingSubgroup :
+--     IsGaloisGroup (fixingSubgroup G (F : Set L)) F L where
+--   faithful := have := hGKL.faithful; inferInstance
+--   commutes := ⟨fun g x y ↦ by
+--     simp_rw [Algebra.smul_def, IntermediateField.algebraMap_apply, smul_mul', Subgroup.smul_def, g.2 x]⟩
+--   isInvariant := ⟨by
+--     intro x h
+--     refine ⟨⟨x, ?_⟩, rfl⟩
+--   ⟩
 
 end IsGaloisGroup
 
@@ -111,18 +111,16 @@ theorem fixedPoints_top :
 
 theorem fixingSubgroup_fixedPoints [Finite G] :
     fixingSubgroup G ((FixedPoints.intermediateField H : IntermediateField K L) : Set L) = H := by
+  have : FiniteDimensional K L := hGKL.finiteDimensional
   refine (Subgroup.eq_of_le_of_card_ge ?_ ?_).symm
   · rw [← le_fixedPoints_iff_le_fixingSubgroup]
   · rw [hGKL.card_subgroup_eq_finrank_fixedpoints, hGKL.card_subgroup_eq_finrank_fixedpoints]
-    -- missing: K ≤ L implies finrank F K ∣ finrank F L and finrank F K ≤ finrank F L.
-    -- missing: K ≤ L implies finrank L E ∣ finrank K E and finrank L E ≤ finrank K E.
-    apply Nat.le_of_dvd sorry
-    rw [← IntermediateField.relfinrank_top_right, ← IntermediateField.relfinrank_top_right]
-    -- but now should be pretty clear
-    sorry
+    apply IntermediateField.finrank_le_of_le_left
+    rw [le_fixedPoints_iff_le_fixingSubgroup]
 
-theorem fixedPoints_fixingSubgroup [Finite G] [FiniteDimensional K L] :
+theorem fixedPoints_fixingSubgroup [Finite G] :
     FixedPoints.intermediateField (fixingSubgroup G (F : Set L)) = F := by
+  have : FiniteDimensional K L := hGKL.finiteDimensional
   refine (IntermediateField.eq_of_le_of_finrank_le' ?_ ?_).symm
   · rw [le_fixedPoints_iff_le_fixingSubgroup]
   · rw [← card_subgroup_eq_finrank_fixedpoints]
