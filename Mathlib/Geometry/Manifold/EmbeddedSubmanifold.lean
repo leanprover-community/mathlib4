@@ -264,28 +264,54 @@ end RealInstances
 
 end instances
 
-open IsManifold
+open Function IsManifold
+
+noncomputable section
+
+variable [Nonempty M]
+
+-- A more refined version of `Function.extend f id`: choose a preimage in the set s, if possible.
+-- The values of localInverseOn outside of f '' s are arbitrary.
+def _root_.Function.localInverseOn (f : M → M') (s : Set M) : M' → M := fun y ↦
+  open scoped Classical in
+  if h : ∃ x ∈ s, f x = y then (Classical.choose h) else (Classical.arbitrary M)
+
+-- This should always hold.
+lemma foo {f : M → M'} {s : Set M} {y : M'} (hy : y ∈ f '' s) : f ((localInverseOn f s) y) = y := by
+  have h : ∃ x ∈ s, f x = y := sorry
+  simp [localInverseOn]
+  -- this is true by definition, right?
+  simp_all
+  sorry
+
+lemma _root_.Function.localInverseOn_invOn_of_injOn {f : M → M'} {s : Set M} (hf : InjOn f s) :
+    InvOn (localInverseOn f s) f s (f '' s) := by
+  refine ⟨fun x hx ↦ ?_, fun x hx ↦ foo hx⟩
+  simp [localInverseOn]
+  have h : ∃ x_1 ∈ s, f x_1 = f x := by use x
+  simp [h]
+  -- now, use injectivity on s, somehow ...
+  sorry
+
+end
 
 namespace PartialHomeomorph
+
+noncomputable section
 
 variable [TopologicalSpace M] [IsManifold I' n M']
 
 variable [Nonempty H] {φ : PartialHomeomorph M' H'} {f : M → M'}
 
--- TODO: use the Function.extend trick again
--- actually, does that work at all? f might not be injective!!!!
-def finverse : M' → M := sorry
-
-lemma finverse_apply (x : M) : finverse (f x) = x := sorry
+-- TODO: remove non-emptiness hypotheses from this definition: if M is empty, have nothing to do
 
 @[simps]
-noncomputable def _root_.PartialEquiv.pullback_sliceModel (φ : PartialEquiv M' H') (f : M → M')
+noncomputable def _root_.PartialEquiv.pullback_sliceModel [Nonempty M] (φ : PartialEquiv M' H') (f : M → M')
     -- TODO: is hfoo the right form to ask for?
     (h : SliceModel F I I') (hfoo : ∀ y, y ∈ range f → φ.target ⊆ range h.map) : PartialEquiv M H
     where
   toFun := h.inverse ∘ φ ∘ f
-  -- TODO: the inverse function may be an issue! perhaps assume f is globally injective...
-  invFun := finverse ∘ φ.symm ∘ h.map
+  invFun := (localInverseOn f (f ⁻¹' φ.source)) ∘ φ.symm ∘ h.map
   source := f ⁻¹' φ.source
   target := h.map ⁻¹' φ.target
   map_source' x hx := by
@@ -296,7 +322,7 @@ noncomputable def _root_.PartialEquiv.pullback_sliceModel (φ : PartialEquiv M' 
   right_inv' := sorry
 
 variable (φ f) in
-noncomputable def pullback_sliceModel (h : SliceModel F I I') (hf : Continuous f)
+noncomputable def pullback_sliceModel [Nonempty M] (h : SliceModel F I I') (hf : Continuous f)
     (hfoo : ∀ y, y ∈ range f → φ.target ⊆ range h.map) : PartialHomeomorph M H where
   toPartialEquiv := φ.toPartialEquiv.pullback_sliceModel f h hfoo
   open_source := hf.isOpen_preimage _ φ.open_source
@@ -308,12 +334,14 @@ noncomputable def pullback_sliceModel (h : SliceModel F I I') (hf : Continuous f
       have : ContinuousOn φ φ.source := φ.continuousOn_toFun
       have : Continuous f := hf
       sorry -- combine the last two refine ContinuousOn.comp ?_ this
-    -- need h.inverse to be continuous on some reasonable set, which includes the domain of continuity of the above
+    -- need h.inverse to be continuous on some reasonable set,
+    -- which includes the domain of continuity of the above
     -- apply ContinuousOn.comp
     -- have : ContinuousOn h.inverse (h.map '' (f ⁻¹' φ.source)) := sorry -- why
     sorry
   continuousOn_invFun := sorry
 
+end
 
 end PartialHomeomorph
 
