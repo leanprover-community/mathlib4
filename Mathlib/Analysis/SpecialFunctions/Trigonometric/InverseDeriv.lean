@@ -81,7 +81,7 @@ theorem differentiableWithinAt_arcsin_Iic {x : ℝ} :
     DifferentiableWithinAt ℝ arcsin (Iic x) x ↔ x ≠ 1 := by
   refine ⟨fun h => ?_, fun h => (hasDerivWithinAt_arcsin_Iic h).differentiableWithinAt⟩
   rw [← neg_neg x, ← image_neg_Ici] at h
-  have := (h.comp (-x) differentiableWithinAt_id.neg (mapsTo_image _ _)).neg
+  have := (h.comp (-x) differentiableWithinAt_id.fun_neg (mapsTo_image _ _)).fun_neg
   simpa [(· ∘ ·), differentiableWithinAt_arcsin_Ici] using this
 
 theorem differentiableAt_arcsin {x : ℝ} : DifferentiableAt ℝ arcsin x ↔ x ≠ -1 ∧ x ≠ 1 :=
