@@ -39,7 +39,7 @@ universe u
 attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_liftAlgebra
   Ideal.Quotient.field
 
-variable (A K : Type*) {B : Type*} {L : Type u} [CommRing A] [Field K] [CommRing B] [Field L]
+variable (A K : Type*) {L : Type u} {B} [CommRing A] [Field K] [CommRing B] [Field L]
 variable [Algebra A K] [Algebra B L] [Algebra A B] [Algebra K L] [Algebra A L]
 variable [IsScalarTower A K L] [IsScalarTower A B L]
 
@@ -296,7 +296,7 @@ variable {A K}
 @[simp]
 lemma dual_eq_zero_iff :
     dual A K I = 0 ↔ I = 0 :=
-  ⟨not_imp_not.mp (dual_ne_zero A K), fun e ↦ e.symm ▸ dual_zero A K B L⟩
+  ⟨not_imp_not.mp (dual_ne_zero A K), fun e ↦ e.symm ▸ dual_zero A K L B⟩
 
 lemma dual_ne_zero_iff :
     dual A K I ≠ 0 ↔ I ≠ 0 := dual_eq_zero_iff.not
@@ -555,7 +555,7 @@ lemma differentialIdeal_le_fractionalIdeal_iff
     {I : FractionalIdeal B⁰ L} (hI : I ≠ 0) :
     differentIdeal A B ≤ I ↔ (((I⁻¹ :) : Submodule B L).restrictScalars A).map
       ((Algebra.trace K L).restrictScalars A) ≤ 1 := by
-  rw [coeIdeal_differentIdeal A K B L, FractionalIdeal.inv_le_comm (by simp) hI,
+  rw [coeIdeal_differentIdeal A K L B, FractionalIdeal.inv_le_comm (by simp) hI,
     ← FractionalIdeal.coe_le_coe, FractionalIdeal.coe_dual_one]
   refine le_traceDual_iff_map_le_one.trans ?_
   simp
@@ -587,7 +587,7 @@ theorem differentIdeal_eq_differentIdeal_mul_differentIdeal (C M : Type*) [CommR
     coeIdeal_differentIdeal B L, ← extended_coeIdeal_eq_map_algebraMap (K := L) M,
     coeIdeal_differentIdeal A K, extended_inv _ (by simp), ← mul_inv, ← inv_eq_iff_eq_inv,
     inv_inv]
-  exact FractionalIdeal.dual_eq_dual_mul_dual A K B L C M
+  exact FractionalIdeal.dual_eq_dual_mul_dual A K L B C M
 
 variable {B L}
 
@@ -645,7 +645,7 @@ lemma conductor_mul_differentIdeal
   haveI := IsIntegralClosure.isFractionRing_of_finite_extension A K L B
   apply FractionalIdeal.coeIdeal_injective (K := L)
   simp only [FractionalIdeal.coeIdeal_mul, FractionalIdeal.coeIdeal_span_singleton]
-  rw [coeIdeal_differentIdeal A K B L, mul_inv_eq_iff_eq_mul₀]
+  rw [coeIdeal_differentIdeal A K L B, mul_inv_eq_iff_eq_mul₀]
   swap
   · exact FractionalIdeal.dual_ne_zero A K one_ne_zero
   apply FractionalIdeal.coeToSubmodule_injective
