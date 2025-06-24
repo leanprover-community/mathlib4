@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Order.Module.Defs
+import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Ordered algebras
