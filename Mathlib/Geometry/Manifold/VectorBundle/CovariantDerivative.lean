@@ -265,15 +265,16 @@ lemma congr_X_at (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞
   have h : (X' - X) x = 0 := sorry
   simp [this, cov.congr_X_at_aux (X' - X) h]
 
-lemma congr_σ_of_eventuallyEq (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
+omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
+     [VectorBundle ℝ F V] in
+lemma congr_σ_of_eventuallyEq
+    (cov : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
     (X : Π x : M, TangentSpace I x) {σ σ' : Π x : M, V x} {x : M} {s : Set M} (hs : s ∈ nhds x)
     (hσ : MDifferentiableAt I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x)
     (hσσ' : ∀ x ∈ s, σ x = σ' x) :
     cov X σ x = cov X σ' x := by
-  -- Choose a smooth bump function ψ with support around `x` contained in `s`: TODO
-  let R : ℝ := sorry
-  let ψ : SmoothBumpFunction I x := sorry
-  have hψ : support ψ ⊆ s := sorry
+  -- Choose a smooth bump function ψ with support around `x` contained in `s`
+  obtain ⟨ψ, _, hψ⟩ := (SmoothBumpFunction.nhds_basis_support (I := I) hs).mem_iff.1 hs
   -- Observe that `ψ • σ = ψ • σ'` as dependent functions.
   have (x : M) : ((ψ : M → ℝ) • σ) x = ((ψ : M → ℝ) • σ') x := by
     by_cases h : x ∈ s
