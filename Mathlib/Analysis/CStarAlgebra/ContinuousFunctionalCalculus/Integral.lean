@@ -26,7 +26,7 @@ that the integral commutes with the continuous functional calculus under appropr
 
 ## Implementation Notes
 
-The lemmas mentionned above are stated under much stricter hypotheses than necessary
+The lemmas mentioned above are stated under much stricter hypotheses than necessary
 (typically, simultaneous continuity of `f` in the parameter and the spectrum element).
 They all come with primed version which only assume what's needed, and may be used together
 with the API developed in `Mathlib.MeasureTheory.SpecificCodomains.ContinuousMap`.
