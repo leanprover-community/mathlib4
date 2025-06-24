@@ -193,10 +193,14 @@ class RiemannianBundle where
   /-- The family of inner products on the fibers -/
   g : RiemannianMetric E
 
+/- The normal priority for an instance which always applies like this one should be 100.
+We use 80 as this is rather specialized, so we want other paths to be tried first typically. -/
 noncomputable instance (priority := 80) [h : RiemannianBundle E] (b : B) :
     NormedAddCommGroup (E b) :=
   (h.g.toCore b).toNormedAddCommGroupOfTopology (h.g.continuousAt b) (h.g.isVonNBounded b)
 
+/- The normal priority for an instance which always applies like this one should be 100.
+We use 80 as this is rather specialized, so we want other paths to be tried first typically. -/
 noncomputable instance (priority := 80) [h : RiemannianBundle E] (b : B) :
     InnerProductSpace ℝ (E b) :=
   .ofCoreOfTopology (h.g.toCore b) (h.g.continuousAt b) (h.g.isVonNBounded b)
@@ -234,6 +238,9 @@ def ContinuousRiemannianMetric.toRiemannianMetric (g : ContinuousRiemannianMetri
     simp only [A]
     fun_prop
 
+/-- If a Riemannian bundle structure is defined using `g.toRiemannianMetric` where `g` is
+a `ContinuousRiemannianMetric`, then we make sure typeclass inference can infer automatically
+that the the bundle is a continuous Riemannian bundle. -/
 instance (g : ContinuousRiemannianMetric F E) :
     letI : RiemannianBundle E := ⟨g.toRiemannianMetric⟩;
     IsContinuousRiemannianBundle F E := by
