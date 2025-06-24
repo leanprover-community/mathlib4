@@ -45,53 +45,6 @@ instance : ToString AtomicFact where
   | .isInf lhs rhs res => s!"{lhs} ⊓ {rhs} = {res}"
   | .isSup lhs rhs res => s!"{lhs} ⊔ {rhs} = {res}"
 
-/-- Checks whether `x` equals `⊤`. -/
-def isTop {u : Level} (type : Q(Type u)) (x : Q($type)) : MetaM Bool := do
-  try
-    let instLe ← synthInstanceQ (q(LE $type))
-    let instTop ← synthInstanceQ (q(OrderTop $type))
-    let top := q((@OrderTop.toTop $type $instLe $instTop).top)
-    return ← isDefEq x top
-  catch _ =>
-    return false
-
-/-- Checks whether `x` equals `⊥`. -/
-def isBot {u : Level} (type : Q(Type u)) (x : Q($type)) : MetaM Bool := do
-  try
-    let instLe ← synthInstanceQ (q(LE $type))
-    let instBot ← synthInstanceQ (q(OrderBot $type))
-    return ← isDefEq x q((@OrderBot.toBot $type $instLe $instBot).bot)
-  catch _ =>
-    return false
-
-/-- Checks whether `x` equals `y ⊔ z` for some `y` and `z`. If so, returns `y` and `z`. -/
-def getSupArgs? {u : Level} (type : Q(Type u)) (x : Q($type)) :
-    MetaM <| Option (Q($type) × Q($type)) := do
-  try
-    let inst ← synthInstanceQ q(SemilatticeSup $type)
-    let a ← mkFreshExprMVarQ type
-    let b ← mkFreshExprMVarQ type
-    if ← isDefEq x q(@SemilatticeSup.sup $type $inst $a $b) then
-      return some (← instantiateMVars a, ← instantiateMVars b)
-    else
-      return none
-  catch _ =>
-    return none
-
-/-- Checks whether `x` equals `y ⊓ z` for some `y` and `z`. If so, returns `y` and `z`. -/
-def getInfArgs? {u : Level} (type : Q(Type u)) (x : Q($type)) :
-    MetaM <| Option (Q($type) × Q($type)) := do
-  try
-    let inst ← synthInstanceQ q(SemilatticeInf $type)
-    let a ← mkFreshExprMVarQ type
-    let b ← mkFreshExprMVarQ type
-    if ← isDefEq x q(@SemilatticeInf.inf $type $inst $a $b) then
-      return some (← instantiateMVars a, ← instantiateMVars b)
-    else
-      return none
-  catch _ =>
-    return none
-
 /-- State for `CollectFactsM`. It contains a map where the key `t` maps to a
 pair `(atomToIdx, facts)`. `atomToIdx` is a `DiscrTree` containing atomic expressions with their
 indices, and `facts` stores `AtomicFact`s about them. -/
@@ -117,18 +70,20 @@ partial def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFacts
     let idx := atomToIdx.size
     let atomToIdx ← atomToIdx.insert x (idx, x)
     modify fun res => res.insert type (atomToIdx, facts)
-    if ← isTop type x then
+    match x with
+    | ~q((@OrderTop.toTop _ $instLE $instTop).top) =>
       addFact type (.isTop idx)
-    if ← isBot type x then
+    | ~q((@OrderBot.toBot _ $instLE $instBot).bot) =>
       addFact type (.isBot idx)
-    if let some (a, b) ← getSupArgs? type x then
+    | ~q((@SemilatticeSup.toMax _ $inst).max $a $b) =>
       let aIdx ← addAtom type a
       let bIdx ← addAtom type b
       addFact type (.isSup aIdx bIdx idx)
-    if let some (a, b) ← getInfArgs? type x then
+    | ~q((@SemilatticeInf.toMin _ $inst).min $a $b) =>
       let aIdx ← addAtom type a
       let bIdx ← addAtom type b
       addFact type (.isInf aIdx bIdx idx)
+    | _ => pure ()
     return idx
 
 set_option linter.unusedVariables false in
