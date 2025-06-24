@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.Cast
+import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.Ring.Int.Defs
 
 /-!
 # Cast of integers into fields

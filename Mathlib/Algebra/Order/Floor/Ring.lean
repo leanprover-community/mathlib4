@@ -471,31 +471,38 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     simp only [m₁]
     rw [sub_eq_add_neg, add_comm (q * ↑n), add_mul_emod_self_right]
 
-theorem floor_nonneg_div_natCast (a : k) (n : ℕ) : ⌊a / n⌋ = ⌊a⌋ / n := by
-  obtain rfl | hn := n.eq_zero_or_pos
-  · simp
+theorem floor_div_nonneg_intCast (a : k) {n : ℤ} (hn : 0 ≤ n) : ⌊a / n⌋ = ⌊a⌋ / n := by
+  by_cases hn_zero : n = 0
+  · simp [hn_zero]
+  replace hn : 0 < n := by omega
   rw [floor_eq_iff]
   constructor
   · calc
       _ ≤ (⌊a⌋ : k) / (n : k) := by
-        nth_rw 2 [← Int.cast_natCast n]
-        exact cast_div_le (by exact natCast_nonneg n)
+        exact cast_div_le hn.le
       _ ≤ _ := by
         gcongr
         exact floor_le a
-  nth_rw 1 [← Int.cast_natCast n]
   rw [div_lt_iff₀, add_mul, one_mul, ← cast_mul, ← cast_add, ← floor_lt]
   · suffices ⌊a⌋ % n < n by linarith [Int.ediv_add_emod' ⌊a⌋ n]
     exact Int.emod_lt_of_pos _ (by norm_cast)
   · norm_cast
 
-theorem mul_floor_div_eq_floor {a : k} {n : ℕ} (hn : n ≠ 0) :
+theorem floor_div_natCast (a : k) (n : ℕ) : ⌊a / n⌋ = ⌊a⌋ / n := by
+  rw [← Int.cast_natCast n]
+  exact floor_div_nonneg_intCast _ (by simp)
+
+theorem mul_floor_div_nonneg_intCast_eq_floor {a : k} {n : ℤ} (hn : 0 < n) :
     ⌊n * a⌋ / n = ⌊a⌋ := by
-  convert (floor_nonneg_div_natCast (a * n) n).symm using 3
+  convert (floor_div_nonneg_intCast (a * n) hn.le).symm using 3
   · rw [mul_comm]
   · rw [mul_div_cancel_right₀]
-    rw [Nat.cast_ne_zero]
-    norm_cast
+    simpa using Int.ne_of_gt hn
+
+theorem mul_floor_div_natCast_eq_floor {a : k} {n : ℕ} (hn : n ≠ 0) :
+    ⌊n * a⌋ / n = ⌊a⌋ := by
+  rw [← Int.cast_natCast n]
+  exact mul_floor_div_nonneg_intCast_eq_floor (by omega)
 
 end LinearOrderedField
 
