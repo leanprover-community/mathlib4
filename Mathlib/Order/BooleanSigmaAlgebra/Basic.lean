@@ -24,13 +24,13 @@ is countable.
 -/
 
 
-universe u v w w'
+universe u
 
-variable {α : Type u} {β : Type v} {ι : Sort w} {κ : ι → Sort w'}
+variable {α : Type u}
 
 section BooleanSigmaAlgebra
 
-variable [BooleanSigmaAlgebra α] [Countable ι] {s t : Set α} {a b : α}
+variable [BooleanSigmaAlgebra α] {s t : Set α} {a b : α}
 
 lemma isLUB_σsSup (hs : s.Countable) : IsLUB s (sSup s) :=
   BooleanSigmaAlgebra.isLUB_σsSup s hs
@@ -83,10 +83,10 @@ theorem σSup_le_iff (hs : s.Countable) : sSup s ≤ a ↔ ∀ b ∈ s, b ≤ a 
 theorem le_σsInf_iff (hs : s.Countable) : a ≤ sInf s ↔ ∀ b ∈ s, a ≤ b :=
   le_isGLB_iff (isGLB_σsInf hs)
 
-theorem notMem_of_lt_σsInf {x : α} {s : Set α} (h : x < sInf s) (hs : s.Countable) : x ∉ s :=
+theorem notMem_of_lt_σsInf (h : a < sInf s) (hs : s.Countable) : a ∉ s :=
   fun hx => lt_irrefl _ (h.trans_le (σsInf_le hs hx))
 
-theorem notMem_of_σsSup_lt {x : α} {s : Set α} (h : sSup s < x) (hs : s.Countable) : x ∉ s :=
+theorem notMem_of_σsSup_lt (h : sSup s < a) (hs : s.Countable) : a ∉ s :=
   notMem_of_lt_σsInf (α := αᵒᵈ) h hs
 
 end BooleanSigmaAlgebra
