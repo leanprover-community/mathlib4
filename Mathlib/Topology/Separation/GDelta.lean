@@ -17,7 +17,7 @@ import Mathlib.Topology.GDelta.Basic
 
 * `PerfectlyNormalSpace`: A perfectly normal space is a normal space such that
   closed sets are Gδ.
-* `T6Space`: A T₆ space is a Perfectly normal T₀ space. T₆ implies T₅.
+* `T6Space`: A T₆ space is a perfectly normal T₀ space. T₆ implies T₅.
 
 Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `T_m → T_n`, but
 occasionally the literature swaps definitions for e.g. T₃ and regular.
