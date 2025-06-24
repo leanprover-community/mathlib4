@@ -339,8 +339,8 @@ jobs:
         shell: bash
         run: |
           cd pr-branch
-          ../master-branch/.lake/build/bin/cache put Archive.lean
-          ../master-branch/.lake/build/bin/cache put Counterexamples.lean
+          ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put Archive.lean
+          ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put Counterexamples.lean
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
