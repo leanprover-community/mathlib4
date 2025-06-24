@@ -15,6 +15,7 @@ variable [Ring α] [LinearOrder α] [IsOrderedRing α]
 variable [AddCommGroup β] [LinearOrder β] [IsOrderedAddMonoid β]
 variable [Module α β] [PosSMulMono α β]
 
+@[simp]
 theorem abs_smul (a : α) (b : β) : |a • b| = |a| • |b| := by
   obtain ha | ha := le_total a 0 <;> obtain hb | hb := le_total b 0 <;>
     simp [*, abs_of_nonneg, abs_of_nonpos, smul_nonneg, smul_nonpos_of_nonneg_of_nonpos,
