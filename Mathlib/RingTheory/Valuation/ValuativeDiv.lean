@@ -233,13 +233,47 @@ instance : CommMonoidWithZero (ValueGroup R) where
 instance : LE (ValueGroup R) where
   le := ValueGroup.lift₂ (fun a s b t => a * t ≤ᵥ b * s) <| by
     intro x y z w t s u v h₁ h₂ h₃ h₄
-    refine propext ⟨fun h => ?_, fun h => ?_⟩
-    · apply rel_mul_right (t * w) at h
-      apply rel_mul_cancel s.prop
-      rw [mul_right_comm y]
-      apply rel_trans (rel_mul_right (u : R) h₂)
-      sorry
-    · sorry
+    by_cases hw : w ≤ᵥ 0 <;> by_cases hz : z ≤ᵥ 0
+    · refine propext ⟨fun h => rel_trans ?_ (zero_rel _), fun h => rel_trans ?_ (zero_rel _)⟩
+      · dsimp at h
+        apply rel_mul_cancel (s * v).prop
+        rw [mul_right_comm, Submonoid.coe_mul, ← mul_assoc]
+        apply rel_trans (rel_mul_right (u : R) (rel_mul_right (v : R) h₂))
+        rw [mul_right_comm x]
+        apply rel_trans (rel_mul_right (u : R) (rel_mul_right (t : R) h))
+        apply rel_trans (rel_mul_right (u : R) (rel_mul_right (t : R) (rel_mul_right (s : R) hz)))
+        simp
+      · apply rel_mul_cancel (t * u).prop
+        rw [mul_right_comm, Submonoid.coe_mul, ← mul_assoc]
+        apply rel_trans (rel_mul_right (v : R) (rel_mul_right (u : R) h₁))
+        rw [mul_right_comm y]
+        apply rel_trans (rel_mul_right (v : R) (rel_mul_right (s : R) h))
+        apply rel_trans (rel_mul_right (v : R) (rel_mul_right (s : R) (rel_mul_right (t : R) hw)))
+        simp
+    · absurd hz
+      apply rel_mul_cancel u.prop
+      simpa using rel_trans h₃ (rel_mul_right (v : R) hw)
+    · absurd hw
+      apply rel_mul_cancel v.prop
+      simpa using rel_trans h₄ (rel_mul_right (u : R) hz)
+    · refine propext ⟨fun h => ?_, fun h => ?_⟩
+      · apply rel_mul_cancel s.prop
+        apply rel_mul_cancel hz
+        calc y * u * s * z
+          _ = y * s * (z * u) := by ring
+          _ ≤ᵥ x * t * (w * v) := rel_mul h₂ h₃
+          _ = x * v * (t * w) := by ring
+          _ ≤ᵥ z * s * (t * w) := rel_mul_right (t * w) h
+          _ = w * t * s * z := by ring
+      · apply rel_mul_cancel t.prop
+        dsimp at h
+        apply rel_mul_cancel hw
+        calc x * v * t * w
+          _ = x * t * (w * v) := by ring
+          _ ≤ᵥ y * s * (z * u) := rel_mul h₁ h₄
+          _ = y * u * (s * z) := by ring
+          _ ≤ᵥ w * t * (s * z) := rel_mul_right (s * z) h
+          _ = z * s * t * w := by ring
 
 @[simp]
 theorem ValueGroup.mk_le_mk (x y : R) (t s : unitSubmonoid R) :
