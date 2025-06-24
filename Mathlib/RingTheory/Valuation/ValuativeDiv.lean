@@ -196,6 +196,10 @@ instance : One (ValueGroup R) where
 theorem ValueGroup.mk_self (x : unitSubmonoid R) : ValueGroup.mk (x : R) x = 1 :=
   ValueGroup.sound (by simp) (by simp)
 
+@[simp]
+theorem ValueGroup.mk_one_one : ValueGroup.mk (1 : R) 1 = 1 :=
+  ValueGroup.sound (by simp) (by simp)
+
 instance : Mul (ValueGroup R) where
   mul := ValueGroup.lift₂ (fun a b c d => .mk (a * c) (b * d)) <| by
     intro x y z w t s u v h₁ h₂ h₃ h₄
@@ -217,8 +221,8 @@ instance : CommMonoidWithZero (ValueGroup R) where
     induction b using ValueGroup.ind
     induction c using ValueGroup.ind
     simp [mul_assoc]
-  one_mul := ValueGroup.ind <| by simp [← ValueGroup.mk_self 1]
-  mul_one := ValueGroup.ind <| by simp [← ValueGroup.mk_self 1]
+  one_mul := ValueGroup.ind <| by simp [← ValueGroup.mk_one_one]
+  mul_one := ValueGroup.ind <| by simp [← ValueGroup.mk_one_one]
   zero_mul := ValueGroup.ind <| fun _ _ => by
     rw [← ValueGroup.mk_zero 1, ValueGroup.mk_mul_mk]
     simp
@@ -229,6 +233,16 @@ instance : CommMonoidWithZero (ValueGroup R) where
     induction a using ValueGroup.ind
     induction b using ValueGroup.ind
     simp [mul_comm]
+  npow n := ValueGroup.lift (fun a b => ValueGroup.mk (a ^ n) (b ^ n)) <| by
+    intro x y t s h₁ h₂
+    induction n with
+    | zero => simp
+    | succ n ih =>
+      simp only [pow_succ, ← ValueGroup.mk_mul_mk, ih]
+      apply congrArg (_ * ·)
+      exact ValueGroup.sound h₁ h₂
+  npow_zero := ValueGroup.ind (by simp)
+  npow_succ n := ValueGroup.ind (by simp [pow_succ])
 
 instance : LE (ValueGroup R) where
   le := ValueGroup.lift₂ (fun a s b t => a * t ≤ᵥ b * s) <| by
@@ -317,9 +331,6 @@ instance : OrderBot (ValueGroup R) where
 open Classical in
 /-- The value monoid is a linearly ordered commutative monoid with zero. -/
 instance : LinearOrderedCommGroupWithZero (ValueGroup R) where
-  npow := fun n => Quotient.lift (fun x => Quotient.mk _ <| x^n) sorry
-  npow_zero := sorry
-  npow_succ := sorry
   mul_le_mul_left := sorry
   mul_le_mul_right := sorry
   bot_le := sorry
