@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2025 ______. All rights reserved.
+Copyright (c) 2025 Alex Meiburg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: _______
+Authors: Alex Meiburg
 -/
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
 import Mathlib.RingTheory.Polynomial.RationalRoot
