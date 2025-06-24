@@ -305,5 +305,4 @@ lemma div_mem_centralizer (ha : a ∈ centralizer S) (hb : b ∈ centralizer S) 
   simpa only [div_eq_mul_inv] using mul_mem_centralizer ha (inv_mem_centralizer hb)
 
 end Group
-
 end Set
