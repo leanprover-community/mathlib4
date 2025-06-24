@@ -288,7 +288,7 @@ lemma _root_.Function.localInverseOn_invOn_of_injOn {f : M → M'} {s : Set M} (
     InvOn (localInverseOn f s) f s (f '' s) := by
   refine ⟨fun x hx ↦ ?_, fun x hx ↦ foo hx⟩
   simp [localInverseOn]
-  have h : ∃ x_1 ∈ s, f x_1 = f x := by use x
+  have h : ∃ x' ∈ s, f x' = f x := by use x
   simp [h]
   -- now, use injectivity on s, somehow ...
   sorry
@@ -306,8 +306,9 @@ variable [Nonempty H] {φ : PartialHomeomorph M' H'} {f : M → M'}
 -- TODO: remove non-emptiness hypotheses from this definition: if M is empty, have nothing to do
 
 @[simps]
-noncomputable def _root_.PartialEquiv.pullback_sliceModel [Nonempty M] (φ : PartialEquiv M' H') (f : M → M')
-    -- TODO: is hfoo the right form to ask for?
+noncomputable def _root_.PartialEquiv.pullback_sliceModel [Nonempty M] (φ : PartialEquiv M' H')
+    {f : M → M'} (hf : InjOn f (f ⁻¹' φ.source))
+    -- TODO: is hfoo the right condition to impose?
     (h : SliceModel F I I') (hfoo : ∀ y, y ∈ range f → φ.target ⊆ range h.map) : PartialEquiv M H
     where
   toFun := h.inverse ∘ φ ∘ f
@@ -318,17 +319,40 @@ noncomputable def _root_.PartialEquiv.pullback_sliceModel [Nonempty M] (φ : Par
     specialize hfoo (f x) (mem_range_self x) (φ.map_source hx)
     simp [h.inverse_right_inv (φ (f x)) hfoo, φ.map_source hx]
   map_target' x hx := sorry -- need to think harder!
-  left_inv' := sorry
-  right_inv' := sorry
+  left_inv' x hx := by
+    have : f x ∈ φ.source := sorry -- easy
+    have h2 : (φ.symm ∘ φ) (f x) = f x := sorry -- use the previous sorry; easy
+    have : (φ ∘ f) x ∈ φ.target := sorry -- easy
+    have h1 : (h.map ∘ h.inverse) (φ (f x)) = (φ ∘ f) x := sorry -- use the previous sorry; easy
+    calc _
+      _ = (localInverseOn f (f ⁻¹' φ.source)) ((φ.symm ∘ h.map ∘ h.inverse ∘ φ) (f x)) := sorry
+      _ = (localInverseOn f (f ⁻¹' φ.source)) (f x) := by
+        congr
+        show φ.symm ((h.map ∘ h.inverse) (φ (f x))) = f x
+        rw [h1]
+        convert h2
+    have H := Function.localInverseOn_invOn_of_injOn hf
+    have : f x ∈ f '' (f ⁻¹' φ.source) := sorry
+    sorry -- apply H to this
+  right_inv' x hx := by
+    have : (φ.symm ∘ h.map) x ∈ φ.source := sorry -- use hx, easy
+    sorry -- similar to left_inv', here's a rough outline
+    -- calc (h.inverse ∘ φ ∘ f) ((localInverseOn f (f ⁻¹' φ.source) ∘ φ.symm ∘ h.map) x)
+    --   _ = (h.inverse ∘ φ) ∘ (f ∘ (localInverseOn f (f ⁻¹' φ.source)) ((φ.symm ∘ h.map) x)) := rfl
+    --   _ = (h.inverse ∘ φ) ∘ ((φ.symm ∘ h.map) x) := sorry
+    --   _ = h.inverse ((φ ∘ φ.symm) (h.map x)) := sorry
+    --   _ = h.inverse (h.map x) := sorry
+    --   _ = x := sorry
 
 variable (φ f) in
 noncomputable def pullback_sliceModel [Nonempty M] (h : SliceModel F I I') (hf : Continuous f)
+    (hf' : InjOn f (f ⁻¹' φ.source))
     (hfoo : ∀ y, y ∈ range f → φ.target ⊆ range h.map) : PartialHomeomorph M H where
-  toPartialEquiv := φ.toPartialEquiv.pullback_sliceModel f h hfoo
+  toPartialEquiv := φ.toPartialEquiv.pullback_sliceModel hf' h hfoo
   open_source := hf.isOpen_preimage _ φ.open_source
   open_target := h.hmap.continuous.isOpen_preimage _ φ.open_target
   continuousOn_toFun := by
-    simp
+    simp only [PartialEquiv.pullback_sliceModel_source]
     change ContinuousOn (h.inverse ∘ φ ∘ f) (f ⁻¹' φ.source) -- add simp lemma!
     have : ContinuousOn (φ ∘ f) (f ⁻¹' φ.source) := by
       have : ContinuousOn φ φ.source := φ.continuousOn_toFun
