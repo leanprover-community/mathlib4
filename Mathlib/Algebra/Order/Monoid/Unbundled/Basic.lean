@@ -9,6 +9,7 @@ import Mathlib.Data.Ordering.Basic
 import Mathlib.Order.MinMax
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Use
+import Mathlib.Algebra.Regular.Basic
 
 /-!
 # Ordered monoids
@@ -1365,6 +1366,11 @@ namespace MulLECancellable
 protected theorem Injective [Mul α] [PartialOrder α] {a : α} (ha : MulLECancellable a) :
     Injective (a * ·) :=
   fun _ _ h => le_antisymm (ha h.le) (ha h.ge)
+
+@[to_additive]
+protected theorem isLeftRegular [Mul α] [PartialOrder α] {a : α}
+    (ha : MulLECancellable a) : IsLeftRegular a :=
+  ha.Injective
 
 @[to_additive]
 protected theorem inj [Mul α] [PartialOrder α] {a b c : α} (ha : MulLECancellable a) :
