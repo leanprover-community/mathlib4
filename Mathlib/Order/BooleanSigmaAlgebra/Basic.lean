@@ -105,4 +105,10 @@ theorem σsInf_eq_of_forall_ge_of_forall_gt_exists_lt (hs : s.Countable) (h₁ :
     (h₂ : ∀ w, b < w → ∃ a ∈ s, a < w) : sInf s = b :=
   σsSup_eq_of_forall_le_of_forall_lt_exists_gt (α := αᵒᵈ) hs h₁ h₂
 
+theorem lt_σsSup_of_lt (hs : s.Countable) (ha : a ∈ s) (h : b < a) : b < sSup s :=
+  lt_of_lt_of_le h (le_σsSup hs ha)
+
+theorem σsInf_lt_of_lt (hs : s.Countable) (ha : a ∈ s) (h : a < b) : sInf s < b :=
+  lt_σsSup_of_lt (α := αᵒᵈ) hs ha h
+
 end BooleanSigmaAlgebra
