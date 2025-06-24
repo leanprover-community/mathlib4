@@ -3,9 +3,9 @@ Copyright (c) 2023 Bhavik Mehta, Rishi Mehta, Linus Sommer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Rishi Mehta, Linus Sommer
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.List.Count
-import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib.Algebra.GroupWithZero.Nat
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 
 /-!
 # Hamiltonian Graphs

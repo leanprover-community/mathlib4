@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Algebra.Algebra.Spectrum
+import Mathlib.Algebra.Algebra.Spectrum.Basic
 import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
@@ -43,8 +43,6 @@ def unitsLift : C(X, Mˣ) ≃ C(X, M)ˣ where
       continuous_toFun := continuous_induced_rng.2 <|
         (f : C(X, M)).continuous.prodMk <|
         MulOpposite.continuous_op.comp (↑f⁻¹ : C(X, M)).continuous }
-  left_inv f := by ext; rfl
-  right_inv f := by ext; rfl
 
 @[to_additive (attr := simp)]
 lemma unitsLift_apply_inv_apply (f : C(X, Mˣ)) (x : X) :

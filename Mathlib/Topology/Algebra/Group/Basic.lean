@@ -4,10 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Algebra.Group.Subgroup.Pointwise
+import Mathlib.Algebra.Group.Submonoid.Units
+import Mathlib.Algebra.Group.Submonoid.MulOpposite
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Order.Filter.Bases.Finite
 import Mathlib.Topology.Algebra.Group.Defs
 import Mathlib.Topology.Algebra.Monoid
+import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Topological groups
@@ -137,7 +140,7 @@ variable [TopologicalSpace G] [Inv G] [ContinuousInv G]
 
 @[to_additive]
 theorem ContinuousInv.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F α β] [Group α]
-    [Group β] [MonoidHomClass F α β] [tβ : TopologicalSpace β] [ContinuousInv β] (f : F) :
+    [DivisionMonoid β] [MonoidHomClass F α β] [tβ : TopologicalSpace β] [ContinuousInv β] (f : F) :
     @ContinuousInv α (tβ.induced f) _ := by
   let _tα := tβ.induced f
   refine ⟨continuous_induced_rng.2 ?_⟩
@@ -437,7 +440,7 @@ end ZPow
 
 section OrderedCommGroup
 
-variable [TopologicalSpace H] [OrderedCommGroup H] [ContinuousInv H]
+variable [TopologicalSpace H] [CommGroup H] [PartialOrder H] [IsOrderedMonoid H] [ContinuousInv H]
 
 @[to_additive]
 theorem tendsto_inv_nhdsGT {a : H} : Tendsto Inv.inv (𝓝[>] a) (𝓝[<] a⁻¹) :=
@@ -459,7 +462,7 @@ alias tendsto_inv_nhdsWithin_Iio := tendsto_inv_nhdsLT
 
 @[to_additive]
 theorem tendsto_inv_nhdsGT_inv {a : H} : Tendsto Inv.inv (𝓝[>] a⁻¹) (𝓝[<] a) := by
-  simpa only [inv_inv] using @tendsto_inv_nhdsGT _ _ _ _ a⁻¹
+  simpa only [inv_inv] using tendsto_inv_nhdsGT (a := a⁻¹)
 
 @[deprecated (since := "2024-12-22")]
 alias tendsto_neg_nhdsWithin_Ioi_neg := tendsto_neg_nhdsGT_neg
@@ -468,7 +471,7 @@ alias tendsto_inv_nhdsWithin_Ioi_inv := tendsto_inv_nhdsGT_inv
 
 @[to_additive]
 theorem tendsto_inv_nhdsLT_inv {a : H} : Tendsto Inv.inv (𝓝[<] a⁻¹) (𝓝[>] a) := by
-  simpa only [inv_inv] using @tendsto_inv_nhdsLT _ _ _ _ a⁻¹
+  simpa only [inv_inv] using tendsto_inv_nhdsLT (a := a⁻¹)
 
 @[deprecated (since := "2024-12-22")]
 alias tendsto_neg_nhdsWithin_Iio_neg := tendsto_neg_nhdsLT_neg
@@ -495,7 +498,7 @@ alias tendsto_inv_nhdsWithin_Iic := tendsto_inv_nhdsLE
 
 @[to_additive]
 theorem tendsto_inv_nhdsGE_inv {a : H} : Tendsto Inv.inv (𝓝[≥] a⁻¹) (𝓝[≤] a) := by
-  simpa only [inv_inv] using @tendsto_inv_nhdsGE _ _ _ _ a⁻¹
+  simpa only [inv_inv] using tendsto_inv_nhdsGE (a := a⁻¹)
 
 @[deprecated (since := "2024-12-22")]
 alias tendsto_neg_nhdsWithin_Ici_neg := tendsto_neg_nhdsGE_neg
@@ -504,7 +507,7 @@ alias tendsto_inv_nhdsWithin_Ici_inv := tendsto_inv_nhdsGE_inv
 
 @[to_additive]
 theorem tendsto_inv_nhdsLE_inv {a : H} : Tendsto Inv.inv (𝓝[≤] a⁻¹) (𝓝[≥] a) := by
-  simpa only [inv_inv] using @tendsto_inv_nhdsLE _ _ _ _ a⁻¹
+  simpa only [inv_inv] using tendsto_inv_nhdsLE (a := a⁻¹)
 
 @[deprecated (since := "2024-12-22")]
 alias tendsto_neg_nhdsWithin_Iic_neg := tendsto_neg_nhdsLE_neg
@@ -649,8 +652,8 @@ theorem mul_mem_connectedComponent_one {G : Type*} [TopologicalSpace G] [MulOneC
   simpa [← connectedComponent_eq hmul] using mem_connectedComponent
 
 @[to_additive]
-theorem inv_mem_connectedComponent_one {G : Type*} [TopologicalSpace G] [Group G]
-    [IsTopologicalGroup G] {g : G} (hg : g ∈ connectedComponent (1 : G)) :
+theorem inv_mem_connectedComponent_one {G : Type*} [TopologicalSpace G] [DivisionMonoid G]
+    [ContinuousInv G] {g : G} (hg : g ∈ connectedComponent (1 : G)) :
     g⁻¹ ∈ connectedComponent (1 : G) := by
   rw [← inv_one]
   exact
@@ -784,7 +787,7 @@ is open iff `φ⁻¹ V` is open). Then `φ` is an open quotient map, and in part
 surjective additive group homomorphism. Assume furthermore that `φ` is a quotient map (i.e., `V ⊆ B`
 is open iff `φ⁻¹ V` is open). Then `φ` is an open quotient map, and in particular an open map."]
 lemma MonoidHom.isOpenQuotientMap_of_isQuotientMap {A : Type*} [Group A]
-    [TopologicalSpace A] [IsTopologicalGroup A] {B : Type*} [Group B] [TopologicalSpace B]
+    [TopologicalSpace A] [ContinuousMul A] {B : Type*} [Group B] [TopologicalSpace B]
     {F : Type*} [FunLike F A B] [MonoidHomClass F A B] {φ : F}
     (hφ : IsQuotientMap φ) : IsOpenQuotientMap φ where
     surjective := hφ.surjective
@@ -944,7 +947,7 @@ section DivInvTopologicalGroup
 variable [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 /-- A version of `Homeomorph.mulLeft a b⁻¹` that is defeq to `a / b`. -/
-@[to_additive (attr := simps! (config := { simpRhs := true }))
+@[to_additive (attr := simps! +simpRhs)
   "A version of `Homeomorph.addLeft a (-b)` that is defeq to `a - b`."]
 def Homeomorph.divLeft (x : G) : G ≃ₜ G :=
   { Equiv.divLeft x with
@@ -960,7 +963,7 @@ theorem isClosedMap_div_left (a : G) : IsClosedMap (a / ·) :=
   (Homeomorph.divLeft _).isClosedMap
 
 /-- A version of `Homeomorph.mulRight a⁻¹ b` that is defeq to `b / a`. -/
-@[to_additive (attr := simps! (config := { simpRhs := true }))
+@[to_additive (attr := simps! +simpRhs)
   "A version of `Homeomorph.addRight (-a) b` that is defeq to `b - a`. "]
 def Homeomorph.divRight (x : G) : G ≃ₜ G :=
   { Equiv.divRight x with
@@ -1215,11 +1218,44 @@ namespace Units
 
 open MulOpposite (continuous_op continuous_unop)
 
+@[to_additive]
+theorem range_embedProduct [Monoid α] :
+    Set.range (embedProduct α) = {p : α × αᵐᵒᵖ | p.1 * unop p.2 = 1 ∧ unop p.2 * p.1 = 1} :=
+  Set.range_eq_iff _ _ |>.mpr
+    ⟨fun a ↦ ⟨a.mul_inv, a.inv_mul⟩, fun p hp ↦ ⟨⟨p.1, unop p.2, hp.1, hp.2⟩, rfl⟩⟩
+
 variable [Monoid α] [TopologicalSpace α] [Monoid β] [TopologicalSpace β]
 
 @[to_additive]
 instance [ContinuousMul α] : IsTopologicalGroup αˣ where
   continuous_inv := Units.continuous_iff.2 <| ⟨continuous_coe_inv, continuous_val⟩
+
+@[to_additive]
+theorem isClosedEmbedding_embedProduct [T1Space α] [ContinuousMul α] :
+    IsClosedEmbedding (embedProduct α) where
+  toIsEmbedding := isEmbedding_embedProduct
+  isClosed_range := by
+    rw [range_embedProduct]
+    refine .inter (isClosed_singleton.preimage ?_) (isClosed_singleton.preimage ?_) <;>
+    fun_prop
+
+@[to_additive]
+instance [T1Space α] [ContinuousMul α] [CompactSpace α] : CompactSpace αˣ :=
+  isClosedEmbedding_embedProduct.compactSpace
+
+@[to_additive]
+instance [T1Space α] [ContinuousMul α] [WeaklyLocallyCompactSpace α] :
+    WeaklyLocallyCompactSpace αˣ :=
+  isClosedEmbedding_embedProduct.weaklyLocallyCompactSpace
+
+@[to_additive]
+instance [T1Space α] [ContinuousMul α] [LocallyCompactSpace α] : LocallyCompactSpace αˣ :=
+  isClosedEmbedding_embedProduct.locallyCompactSpace
+
+lemma _root_.Submonoid.units_isCompact [T1Space α] [ContinuousMul α] {S : Submonoid α}
+    (hS : IsCompact (S : Set α)) : IsCompact (S.units : Set αˣ) := by
+  have : IsCompact (S ×ˢ S.op) := hS.prod (opHomeomorph.isCompact_preimage.mp hS)
+  exact isClosedEmbedding_embedProduct.isCompact_preimage this
 
 /-- The topological group isomorphism between the units of a product of two monoids, and the product
 of the units of each monoid. -/

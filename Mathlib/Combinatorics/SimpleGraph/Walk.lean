@@ -3,7 +3,7 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Maps
+import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
 
 /-!
 
@@ -361,6 +361,16 @@ theorem exists_length_eq_zero_iff {u v : V} : (∃ p : G.Walk u v, p.length = 0)
     exact ⟨nil, rfl⟩
 
 @[simp]
+lemma exists_length_eq_one_iff {u v : V} : (∃ (p : G.Walk u v), p.length = 1) ↔ G.Adj u v := by
+  refine ⟨?_, fun h ↦ ⟨h.toWalk, by simp⟩⟩
+  rintro ⟨p , hp⟩
+  induction p with
+  | nil => simp only [Walk.length_nil, zero_ne_one] at hp
+  | cons h p' =>
+    simp only [Walk.length_cons, add_eq_right] at hp
+    exact (p'.eq_of_length_eq_zero hp) ▸ h
+
+@[simp]
 theorem length_eq_zero_iff {u : V} {p : G.Walk u u} : p.length = 0 ↔ p = nil := by cases p <;> simp
 
 theorem getVert_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) (i : ℕ) :
@@ -380,7 +390,7 @@ theorem getVert_reverse {u v : V} (p : G.Walk u v) (i : ℕ) :
       rw [Nat.succ_sub hi.le]
       simp [getVert]
     next hi =>
-      obtain rfl | hi' := Nat.eq_or_lt_of_not_lt hi
+      obtain rfl | hi' := eq_or_lt_of_not_gt hi
       · simp [getVert]
       · rw [Nat.eq_add_of_sub_eq (Nat.sub_pos_of_lt hi') rfl, Nat.sub_eq_zero_of_le hi']
         simp [getVert]
@@ -564,20 +574,6 @@ theorem subset_support_append_right {V : Type u} {G : SimpleGraph V} {u v w : V}
   intro h
   simp +contextual only [mem_support_append_iff, or_true, imp_true_iff]
 
-lemma getVert_eq_support_get? {u v n} (p : G.Walk u v) (h2 : n ≤ p.length) :
-    p.getVert n = p.support[n]? := by
-  match p with
-  | .nil => simp_all
-  | .cons h q =>
-    simp only [Walk.support_cons]
-    by_cases hn : n = 0
-    · simp only [hn, getVert_zero, List.length_cons, Nat.zero_lt_succ, List.getElem?_eq_getElem,
-      List.getElem_cons_zero]
-    · push_neg at hn
-      nth_rewrite 2 [← Nat.sub_one_add_one hn]
-      rw [Walk.getVert_cons q h hn, List.getElem?_cons_succ]
-      exact getVert_eq_support_get? q (Nat.sub_le_of_le_add (Walk.length_cons _ _ ▸ h2))
-
 theorem coe_support {u v : V} (p : G.Walk u v) :
     (p.support : Multiset V) = {u} + p.support.tail := by cases p <;> rfl
 
@@ -759,12 +755,29 @@ theorem edges_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.N
     simp only [edges_cons, support_cons, List.nodup_cons] at h ⊢
     exact ⟨fun h' => h.1 (fst_mem_support_of_mem_edges p' h'), ih h.2⟩
 
+lemma getVert_eq_support_getElem {u v : V} {n : ℕ} (p : G.Walk u v) (h : n ≤ p.length) :
+    p.getVert n = p.support[n]'(p.length_support ▸ Nat.lt_add_one_of_le h) := by
+  cases p with
+  | nil => simp
+  | cons => cases n with
+    | zero => simp
+    | succ n =>
+      simp_rw [support_cons, getVert_cons _ _ n.zero_ne_add_one.symm, List.getElem_cons]
+      exact getVert_eq_support_getElem _ (Nat.sub_le_of_le_add h)
+
+lemma getVert_eq_support_getElem? {u v : V} {n : ℕ} (p : G.Walk u v) (h : n ≤ p.length) :
+    some (p.getVert n) = p.support[n]? := by
+  rw [getVert_eq_support_getElem p h, ← List.getElem?_eq_getElem]
+
+@[deprecated (since := "2025-06-10")]
+alias getVert_eq_support_get? := getVert_eq_support_getElem?
+
 theorem nodup_tail_support_reverse {u : V} {p : G.Walk u u} :
     p.reverse.support.tail.Nodup ↔ p.support.tail.Nodup := by
   rw [Walk.support_reverse]
   refine List.nodup_tail_reverse p.support ?h
-  rw [← getVert_eq_support_get? _ (by omega), List.getLast?_eq_getElem?,
-    ← getVert_eq_support_get? _ (by rw [Walk.length_support]; omega)]
+  rw [← getVert_eq_support_getElem? _ (by omega), List.getLast?_eq_getElem?,
+    ← getVert_eq_support_getElem? _ (by rw [Walk.length_support]; omega)]
   aesop
 
 theorem edges_injective {u v : V} : Function.Injective (Walk.edges : G.Walk u v → List (Sym2 V))
@@ -779,6 +792,37 @@ theorem edges_injective {u v : V} : Function.Injective (Walk.edges : G.Walk u v 
 
 theorem darts_injective {u v : V} : Function.Injective (Walk.darts : G.Walk u v → List G.Dart) :=
   edges_injective.of_comp
+
+/-- The `Set` of edges of a walk. -/
+def edgeSet {u v : V} (p : G.Walk u v) : Set (Sym2 V) := {e | e ∈ p.edges}
+
+@[simp]
+lemma mem_edgeSet {u v : V} {p : G.Walk u v} {e : Sym2 V} : e ∈ p.edgeSet ↔ e ∈ p.edges := Iff.rfl
+
+@[simp]
+lemma edgeSet_nil (u : V) : (nil : G.Walk u u).edgeSet = ∅ := by ext; simp
+
+@[simp]
+lemma edgeSet_reverse {u v : V} (p : G.Walk u v) : p.reverse.edgeSet = p.edgeSet := by ext; simp
+
+@[simp]
+theorem edgeSet_cons {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
+    (cons h p).edgeSet = insert s(u, v) p.edgeSet := by ext; simp
+
+@[simp]
+theorem edgeSet_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
+    (p.concat h).edgeSet = insert s(v, w) p.edgeSet := by ext; simp [or_comm]
+
+theorem edgeSet_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
+    (p.append q).edgeSet = p.edgeSet ∪ q.edgeSet := by ext; simp
+
+@[simp]
+theorem edgeSet_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
+    (p.copy hu hv).edgeSet = p.edgeSet := by ext; simp
+
+theorem coe_edges_toFinset [DecidableEq V] {u v : V} (p : G.Walk u v) :
+    (p.edges.toFinset : Set (Sym2 V)) = p.edgeSet := by
+  simp [edgeSet]
 
 /-- Predicate for the empty walk.
 
@@ -1122,6 +1166,9 @@ theorem edges_map : (p.map f).edges = p.edges.map (Sym2.map f) := by
     simp only [Walk.map_cons, edges_cons, List.map_cons, Sym2.map_pair_eq, List.cons.injEq,
       true_and, ih]
 
+@[simp]
+theorem edgeSet_map : (p.map f).edgeSet = Sym2.map f '' p.edgeSet := by ext; simp
+
 theorem map_injective_of_injective {f : G →g G'} (hinj : Function.Injective f) (u v : V) :
     Function.Injective (Walk.map f : G.Walk u v → G'.Walk (f u) (f v)) := by
   intro p p' h
@@ -1172,6 +1219,9 @@ theorem edges_transfer (hp) : (p.transfer H hp).edges = p.edges := by
   induction p <;> simp [*]
 
 @[simp]
+theorem edgeSet_transfer (hp) : (p.transfer H hp).edgeSet = p.edgeSet := by ext; simp
+
+@[simp]
 theorem support_transfer (hp) : (p.transfer H hp).support = p.support := by
   induction p <;> simp [*]
 
@@ -1216,7 +1266,7 @@ variable {G}
 /-- Given a walk that avoids a set of edges, produce a walk in the graph
 with those edges deleted. -/
 abbrev toDeleteEdges (s : Set (Sym2 V)) {v w : V} (p : G.Walk v w)
-    (hp : ∀ e, e ∈ p.edges → ¬e ∈ s) : (G.deleteEdges s).Walk v w :=
+    (hp : ∀ e, e ∈ p.edges → e ∉ s) : (G.deleteEdges s).Walk v w :=
   p.transfer _ <| by
     simp only [edgeSet_deleteEdges, Set.mem_diff]
     exact fun e ep => ⟨edges_subset_edgeSet p ep, hp e ep⟩

@@ -262,10 +262,8 @@ instance instMeasurableInv : MeasurableInv ℝ≥0∞ :=
   ⟨continuous_inv.measurable⟩
 
 instance : MeasurableSMul ℝ≥0 ℝ≥0∞ where
-  measurable_const_smul := by
-    simp_rw [ENNReal.smul_def]
-    exact fun _ ↦ MeasurableSMul.measurable_const_smul _
-  measurable_smul_const := fun x ↦ by
+  measurable_const_smul _ := by simp_rw [ENNReal.smul_def]; exact measurable_const_smul _
+  measurable_smul_const _ := by
     simp_rw [ENNReal.smul_def]
     exact measurable_coe_nnreal_ennreal.mul_const _
 
@@ -578,7 +576,7 @@ lemma tendsto_measure_Icc_nhdsWithin_right' (b : ℝ) :
 
 lemma tendsto_measure_Icc_nhdsWithin_right (b : ℝ) :
     Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝[≥] (0 : ℝ)) (𝓝 (μ {b})) := by
-  simp only [← nhdsWithin_right_sup_nhds_singleton, nhdsWithin_singleton, tendsto_sup,
+  simp only [← nhdsGT_sup_nhdsWithin_singleton, nhdsWithin_singleton, tendsto_sup,
     tendsto_measure_Icc_nhdsWithin_right' μ b, true_and, tendsto_pure_left]
   intro s hs
   simpa using mem_of_mem_nhds hs
