@@ -929,6 +929,7 @@ end generator
 
 section prod
 
+-- TODO : The finiteness and commutativity assumptions should be removed.
 /-- The product of two finite groups is cyclic iff
 both of them are cyclic and their orders are coprime. -/
 @[to_additive "The product of two finite additive groups is cyclic iff

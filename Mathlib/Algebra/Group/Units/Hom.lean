@@ -109,7 +109,7 @@ theorem coeHom_apply (x : Mˣ) : coeHom M x = ↑x := rfl
 
 @[to_additive]
 theorem coeHom_injective : Function.Injective (coeHom M) :=
-  fun x y ↦ by simp [← Units.eq_iff]
+  Units.ext
 
 section DivisionMonoid
 

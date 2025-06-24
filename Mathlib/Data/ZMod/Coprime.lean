@@ -22,10 +22,8 @@ namespace ZMod
 
 theorem coe_int_isUnit_iff_isCoprime (n : ℤ) (m : ℕ) :
     IsUnit (n : ZMod m) ↔ IsCoprime (m : ℤ) n := by
-  rw [Int.isCoprime_iff_nat_coprime, Nat.coprime_comm,
-    ← isUnit_iff_coprime, Associated.isUnit_iff]
-  simpa only [eq_intCast, @Int.cast_natCast] using
-    Associated.map (Int.castRingHom _) (Int.associated_natAbs _)
+  rw [Int.isCoprime_iff_nat_coprime, Nat.coprime_comm, ← isUnit_iff_coprime, Associated.isUnit_iff]
+  simpa only [eq_intCast, @Int.cast_natCast] using Associated.map (Int.castRingHom _) (Int.associated_natAbs _)
 
 /-- If `p` is a prime and `a` is an integer, then `a : ZMod p` is zero if and only if
 `gcd a p ≠ 1`. -/

@@ -91,7 +91,6 @@ section Divisibility
 variable {R : Type*} [CommSemiring R] {u v : R} {p : ℕ}
 
 /- This lemma is due to Junyan Xu -/
-
 lemma exists_one_add_mul_pow_prime_eq
     (hp : p.Prime) (hvu : v ∣ u) (hpuv : p * u * v ∣ u ^ p) (x : R) :
     ∃ y, (1 + u * x) ^ p = 1 + p * u * (x + v * y) := by
@@ -221,7 +220,7 @@ theorem isCyclic_units_of_prime_pow (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2) (n 
   rw [isCyclic_iff_exists_orderOf_eq_natCard]
   -- The product of `ha.unit` and `b ^ k` has the required order
   use ha.unit * b ^ k
-  rw [(Commute.all ..).orderOf_mul_eq_mul_orderOf_of_coprime,
+  rw [(Commute.all _ _).orderOf_mul_eq_mul_orderOf_of_coprime,
     this, Nat.card_eq_fintype_card, ZMod.card_units_eq_totient,
     Nat.totient_prime_pow_succ hp, ← ha']
   rw [ha', this]
@@ -286,7 +285,7 @@ theorem isCyclic_units_of_two_mul_odd_iff (n : ℕ) (hn : Odd n) :
 
 theorem not_isCyclic_units_of_mul_coprime (m n : ℕ)
     (hm : Odd m) (hm1 : m ≠ 1) (hn : Odd n) (hn1 : n ≠ 1) (hmn : m.Coprime n) :
-    ¬ (IsCyclic (ZMod (m * n))ˣ) := by
+    ¬ IsCyclic (ZMod (m * n))ˣ := by
   classical
   have _ : NeZero m := ⟨Nat.ne_of_odd_add hm⟩
   have _ : NeZero n := ⟨Nat.ne_of_odd_add hn⟩
@@ -347,10 +346,10 @@ theorem isCyclic_units_iff (n : ℕ) :
     intro p hp ho
     apply exists_congr
     intro m
+    rw [← not_lt, Nat.lt_one_iff]
     constructor
     · intro hnpm
       refine ⟨?_, Or.inl hnpm⟩
-      simp only [← not_lt, Nat.lt_one_iff]
       rintro ⟨rfl⟩
       rw [pow_zero] at hnpm
       exact h1 hnpm
@@ -388,13 +387,10 @@ theorem isCyclic_units_iff (n : ℕ) :
         simp [← H, ← mul_assoc]
     · have ha1 : a = 1 := by
         apply le_antisymm _ (Nat.one_le_iff_ne_zero.mpr ha0)
-        rw [← not_lt]
-        intro (ha: 2 ≤ a)
+        by_contra! ha
         apply hn4
         rw [hm]
-        apply Dvd.dvd.mul_right
-        change 2 ^2 ∣ _
-        exact Nat.pow_dvd_pow_iff_le_right'.mpr ha
+        apply Dvd.dvd.mul_right (Nat.pow_dvd_pow_iff_le_right'.mpr ha)
       rw [ha1, pow_one] at hm
       have hoddm : Odd m := by
         rw [← Nat.not_even_iff_odd, even_iff_two_dvd]
