@@ -248,7 +248,7 @@ lemma mem_map_bot_le {j : J} (g : ⊥ ⟶ j) : W (hf.F.map g) := by
   induction j using SuccOrder.limitRecOn with
   | isMin j hj =>
     obtain rfl := hj.eq_bot
-    simpa only [homOfLE_refl, Functor.map_id] using W.id_mem _
+    simpa using W.id_mem _
   | succ j hj hj' =>
     rw [← homOfLE_comp bot_le (Order.le_succ j), hf.F.map_comp]
     exact W.comp_mem _ _ hj' (hf.map_mem j hj)
