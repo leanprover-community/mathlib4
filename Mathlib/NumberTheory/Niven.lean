@@ -20,7 +20,8 @@ theorem niven : ∀ (θ : ℝ), (∃ r : ℚ, θ = r * Real.pi) → (∃ q : ℚ
             -- Case 1
             · positivity;
             -- Case 2
-            · exact Complex.exp_eq_one_iff.mpr ⟨ p, by simpa [ abs_of_pos hq_pos, field_simps, hq_pos.ne' ] using by ring; sorry ⟩;
+            · exact Complex.exp_eq_one_iff.mpr ⟨ p, by simpa [ abs_of_pos hq_pos, field_simps, hq_pos.ne' ]
+                using (by rw [← Int.cast_natCast, ← Int.eq_natAbs_of_nonneg hq_pos.le]; ring_nf)⟩;
           have h_exp_int : IsIntegral ℤ (Complex.exp (θ * Complex.I)) := by
             exact ⟨ Polynomial.X ^ h_root_of_unity.choose - 1, Polynomial.monic_X_pow_sub_C _ ( by linarith [ h_root_of_unity.choose_spec ] ), by simpa [ sub_eq_iff_eq_add ] using h_root_of_unity.choose_spec.2 ⟩;
           -- Similarly, $e^{-i\theta}$ is also an algebraic integer.
