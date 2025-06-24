@@ -169,6 +169,26 @@ lemma centralizer_centralizer_comm_of_comm (h_comm : ∀ x ∈ S, ∀ y ∈ S, x
     ∀ x ∈ S.centralizer.centralizer, ∀ y ∈ S.centralizer.centralizer, x * y = y * x :=
   fun _ h₁ _ h₂ ↦ h₂ _ fun _ h₃ ↦ h₁ _ fun _ h₄ ↦ h_comm _ h₄ _ h₃
 
+theorem centralizer_empty : (∅ : Set M).centralizer = ⊤ := by
+  simp only [centralizer, mem_empty_iff_false, IsEmpty.forall_iff, implies_true, setOf_true,
+    top_eq_univ]
+
+theorem centralizer_prod {N : Type*} [Mul N] (B : Set M) (C : Set N) [Nonempty B] [Nonempty C] :
+    (B ×ˢ C).centralizer = B.centralizer ×ˢ C.centralizer := by
+  ext
+  simp_rw [mem_prod, mem_centralizer_iff, mem_prod, and_imp, Prod.forall,
+    Prod.mul_def, Prod.eq_iff_fst_eq_snd_eq]
+  obtain ⟨b, hb⟩ : ∃ b : M, b ∈ B := nonempty_subtype.mp ‹Nonempty B›
+  obtain ⟨c, hc⟩ : ∃ c : N, c ∈ C := nonempty_subtype.mp ‹Nonempty C›
+  exact ⟨fun h => ⟨fun y hy => (h y c hy hc).1, fun y hy => (h b y hb hy).2⟩,
+    fun h y z hy hz => ⟨h.1 _ hy, h.2 _ hz⟩⟩
+
+theorem prod_centralizer_subset_centralizer_prod {N : Type*} [Mul N] (B : Set M) (C : Set N) :
+    B.centralizer ×ˢ C.centralizer ⊆ (B ×ˢ C).centralizer := by
+  rw [subset_def]
+  simp only [mem_prod, and_imp, Prod.forall, mem_centralizer_iff, Prod.mk_mul_mk, Prod.mk.injEq]
+  exact fun a b ha hb c d hc hd => ⟨ha c hc, hb d hd⟩
+
 end Mul
 
 section Semigroup
@@ -285,21 +305,5 @@ lemma div_mem_centralizer (ha : a ∈ centralizer S) (hb : b ∈ centralizer S) 
   simpa only [div_eq_mul_inv] using mul_mem_centralizer ha (inv_mem_centralizer hb)
 
 end Group
-
-theorem centralizer_empty {S : Type*} [Mul S] : (∅ : Set S).centralizer = ⊤ := by
-  ext
-  simp only [Set.mem_centralizer_iff, Set.mem_empty_iff_false, IsEmpty.forall_iff, implies_true,
-    Set.top_eq_univ, Set.mem_univ]
-
-theorem centralizer_prod {M N : Type*} [Mul M] [Mul N]
-    (B : Set M) (C : Set N) [Nonempty B] [Nonempty C] :
-    (B ×ˢ C).centralizer = B.centralizer ×ˢ C.centralizer := by
-  ext
-  simp_rw [Set.mem_prod, Set.mem_centralizer_iff, Set.mem_prod, and_imp, Prod.forall,
-    Prod.mul_def, Prod.eq_iff_fst_eq_snd_eq]
-  obtain ⟨b, hb⟩ : ∃ b : M, b ∈ B := by (expose_names; exact nonempty_subtype.mp inst_2)
-  obtain ⟨c, hc⟩ : ∃ c : N, c ∈ C := by (expose_names; exact nonempty_subtype.mp inst_3)
-  exact ⟨fun h => ⟨fun y hy => (h y c hy hc).1, fun y hy => (h b y hb hy).2⟩,
-    fun h y z hy hz => ⟨h.1 _ hy, h.2 _ hz⟩⟩
 
 end Set
