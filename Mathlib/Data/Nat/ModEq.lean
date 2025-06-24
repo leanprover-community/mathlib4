@@ -412,6 +412,11 @@ theorem le_mod_add_mod_of_dvd_add_of_not_dvd {a b c : ℕ} (h : c ∣ a + b) (ha
     have : (a + b) % c = a % c + b % c := add_mod_of_add_mod_lt (lt_of_not_ge hc)
     simp_all [dvd_iff_mod_eq_zero]
 
+lemma mod_sub_of_le {a b n : ℕ} (h : b ≤ a % n) : a % n - b = (a - b) % n := by
+  rcases n.eq_zero_or_pos with rfl | hn; · simp only [mod_zero]
+  nth_rw 2 [← div_add_mod a n]; rw [Nat.add_sub_assoc h, mul_add_mod]
+  exact (mod_eq_of_lt <| (sub_le ..).trans_lt (mod_lt a hn)).symm
+
 theorem odd_mul_odd {n m : ℕ} : n % 2 = 1 → m % 2 = 1 → n * m % 2 = 1 := by
   simpa [Nat.ModEq] using @ModEq.mul 2 n 1 m 1
 
