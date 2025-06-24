@@ -92,16 +92,15 @@ theorem add [NonUnitalNonAssocSemiring R]
   simp_rw [IsIdempotentElem, mul_add, add_mul, ha.eq, hb.eq, add_add_add_comm, ← add_assoc,
     add_assoc a, hab, zero_add]
 
-/-- If idempotent `p` and element `q` anti-commute, then their product is zero. -/
-theorem mul_eq_zero_of_anticommute {p q : R} [NonUnitalSemiring R] [IsAddTorsionFree R]
-    (hp : IsIdempotentElem p) (hpq : p * q + q * p = 0) : p * q = 0 := by
-  have h : p * q * p + p * q * p = 0 := by
-    have : p * (p * q + q * p) * p = 0 := by rw [hpq, mul_zero, zero_mul]
-    simp_rw [mul_add, add_mul, mul_assoc, hp.eq, ← mul_assoc, hp.eq] at this
+/-- If idempotent `a` and element `b` anti-commute, then their product is zero. -/
+theorem mul_eq_zero_of_anticommute {a b : R} [NonUnitalSemiring R] [IsAddTorsionFree R]
+    (ha : IsIdempotentElem a) (hab : a * b + b * a = 0) : a * b = 0 := by
+  have h : a * b * a = 0 := by
+    rw [← nsmul_right_inj ((Nat.zero_ne_add_one 1).symm), nsmul_zero]
+    have : a * (a * b + b * a) * a = 0 := by rw [hab, mul_zero, zero_mul]
+    simp_rw [mul_add, add_mul, mul_assoc, ha.eq, ← mul_assoc, ha.eq, ← two_nsmul] at this
     exact this
-  replace h : p * q * p = 0 := by rwa [← two_nsmul, ← nsmul_zero 2,
-    nsmul_right_inj ((Nat.zero_ne_add_one 1).symm)] at h
-  suffices p * p * q + p * q * p = 0 by rwa [h, add_zero, hp.eq] at this
-  rw [mul_assoc, mul_assoc, ← mul_add, hpq, mul_zero]
+  suffices a * a * b + a * b * a = 0 by rwa [h, add_zero, ha.eq] at this
+  rw [mul_assoc, mul_assoc, ← mul_add, hab, mul_zero]
 
 end IsIdempotentElem
