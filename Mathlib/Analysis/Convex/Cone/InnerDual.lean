@@ -250,7 +250,7 @@ theorem hyperplane_separation (K : ProperCone ℝ H) {f : H →L[ℝ] F} {b : F}
   mp := by
     -- suppose `b ∈ K.map f`
     simp only [mem_map, PointedCone.mem_closure, PointedCone.coe_map, ContinuousLinearMap.coe_coe,
-      mem_closure_iff_seq_limit, mem_image, SetLike.mem_coe, mem_coe, mem_dual,
+      mem_closure_iff_seq_limit, mem_image, SetLike.mem_coe, mem_dual,
       ContinuousLinearMap.adjoint_inner_right, forall_exists_index, and_imp]
     -- there is a sequence `seq : ℕ → F` in the image of `f` that converges to `b`
     rintro seq hmem htends y hinner
@@ -266,7 +266,7 @@ theorem hyperplane_separation (K : ProperCone ℝ H) {f : H →L[ℝ] F} {b : F}
     intro h
     contrapose! h
     -- as `b ∉ K.map f`, there is a hyperplane `y` separating `b` from `K.map f`
-    let C := PointedCone.toConvexCone (𝕜 := ℝ) (E := F) (K.map f)
+    let C := PointedCone.toConvexCone (R := ℝ) (E := F) (K.map f)
     obtain ⟨y, hxy, hyb⟩ :=
       @ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem
       _ _ _ _ C (K.map f).nonempty (K.map f).isClosed b h
