@@ -27,6 +27,15 @@ instance : Congruence (homRel C) where
   compLeft p _ _ h := h.precomp p
   compRight p h := h.postcomp p
 
+lemma compClosure_homRel :
+    Quotient.CompClosure (homRel C) = homRel C := by
+  ext X Y f g
+  refine ⟨?_, Quotient.CompClosure.of _ _ _⟩
+  rintro ⟨i, f', g', p, h⟩
+  exact (h.postcomp p).precomp i
+
+section
+
 variable {C} {X Y : BifibrantObject C} (f g : X ⟶ Y)
 
 lemma homRel_iff_rightHomotopyRel :
@@ -104,7 +113,7 @@ instance : toπ.IsLocalization (weakEquivalences (BifibrantObject C)) :=
   .mk' _ _ (strictUniversalPropertyFixedTargetToπ _)
     (strictUniversalPropertyFixedTargetToπ _)
 
-instance {X Y : BifibrantObject C} (f : X ⟶ Y) [hf : WeakEquivalence f] :
+instance [hf : WeakEquivalence f] :
     IsIso (toπ.map f) :=
   Localization.inverts toπ (weakEquivalences _) f (by rwa [weakEquivalence_iff] at hf)
 
@@ -114,11 +123,9 @@ abbrev ιCofibrantObject : BifibrantObject C ⥤ CofibrantObject C :=
 abbrev ιFibrantObject : BifibrantObject C ⥤ FibrantObject C :=
   ObjectProperty.ιOfLE (bifibrantObjects_le_fibrantObject C)
 
-instance (X : BifibrantObject C) :
-    IsFibrant (BifibrantObject.ιCofibrantObject.obj X).obj := X.2.2
+instance : IsFibrant (BifibrantObject.ιCofibrantObject.obj X).obj := X.2.2
 
-instance (X : BifibrantObject C) :
-    IsCofibrant (BifibrantObject.ιFibrantObject.obj X).obj := X.2.1
+instance : IsCofibrant (BifibrantObject.ιFibrantObject.obj X).obj := X.2.1
 
 protected def π.ιCofibrantObject : π C ⥤ CofibrantObject.π C :=
   CategoryTheory.Quotient.lift _
@@ -138,6 +145,45 @@ protected def π.ιFibrantObject : π C ⥤ FibrantObject.π C :=
 def π.toπCompιFibrantObject :
     toπ (C := C) ⋙ π.ιFibrantObject ≅
       ιFibrantObject ⋙ FibrantObject.toπ := Iso.refl _
+
+end
+
+section
+
+variable {C} {X Y : C} [IsCofibrant X] [IsCofibrant Y] [IsFibrant X] [IsFibrant Y]
+
+def π.homEquivRight :
+    RightHomotopyClass X Y ≃ (toπ.obj (mk X) ⟶ toπ.obj (mk Y)) where
+  toFun := Quot.lift (fun f ↦ toπ.map (homMk f)) (fun _ _ h ↦ by rwa [toπ_map_eq_iff])
+  invFun := Quot.lift (fun f ↦ .mk f) (fun _ _ h ↦ by
+    rw [compClosure_homRel] at h
+    dsimp
+    rwa [RightHomotopyClass.mk_eq_mk_iff])
+  left_inv := by rintro ⟨f⟩; rfl
+  right_inv := by rintro ⟨f⟩; rfl
+
+@[simp]
+lemma π.homEquivRight_apply (f : X ⟶ Y) :
+    π.homEquivRight (.mk f) = toπ.map (homMk f) := rfl
+
+@[simp]
+lemma π.homEquivRight_symm_apply (f : X ⟶ Y) :
+    π.homEquivRight.symm (toπ.map (homMk f)) = .mk f := rfl
+
+def π.homEquivLeft :
+    LeftHomotopyClass X Y ≃ (toπ.obj (mk X) ⟶ toπ.obj (mk Y)) :=
+  leftHomotopyClassEquivRightHomotopyClass.trans π.homEquivRight
+
+@[simp]
+lemma π.homEquivLeft_apply (f : X ⟶ Y) :
+    π.homEquivLeft (.mk f) = toπ.map (homMk f) := by
+  simp [homEquivLeft]
+
+@[simp]
+lemma π.homEquivLeft_symm_apply (f : X ⟶ Y) :
+    π.homEquivRight.symm (toπ.map (homMk f)) = .mk f := rfl
+
+end
 
 end BifibrantObject
 

@@ -394,7 +394,7 @@ lemma leftHomotopyRel_iff_rightHomotopyRel {X Y : C} (f g : X ⟶ Y)
     LeftHomotopyRel f g ↔ RightHomotopyRel f g :=
   ⟨fun h ↦ h.rightHomotopyRel, fun h ↦ h.leftHomotopyRel⟩
 
-variable (X Y : C)
+variable (X Y Z : C)
 
 def LeftHomotopyClass :=
   _root_.Quot (LeftHomotopyRel (X := X) (Y := Y))
@@ -573,5 +573,32 @@ lemma LeftHomotopyClass.exists_homotopy_inverse
     ∃ (g : Y ⟶ X), LeftHomotopyRel (f ≫ g) (𝟙 X) ∧ LeftHomotopyRel (g ≫ f) (𝟙 Y) := by
   simp only [leftHomotopyRel_iff_rightHomotopyRel]
   apply RightHomotopyClass.exists_homotopy_inverse
+
+section
+
+variable [IsCofibrant X] [IsFibrant Y]
+
+def leftHomotopyClassEquivRightHomotopyClass :
+    LeftHomotopyClass X Y ≃ RightHomotopyClass X Y where
+  toFun := Quot.lift (fun f ↦ .mk f) (fun _ _ h ↦ by
+    dsimp
+    rw [RightHomotopyClass.mk_eq_mk_iff]
+    exact h.rightHomotopyRel)
+  invFun := Quot.lift (fun f ↦ .mk f) (fun _ _ h ↦ by
+    dsimp
+    rw [LeftHomotopyClass.mk_eq_mk_iff]
+    exact h.leftHomotopyRel)
+  left_inv := by rintro ⟨f⟩; rfl
+  right_inv := by rintro ⟨f⟩; rfl
+
+@[simp]
+lemma leftHomotopyClassEquivRightHomotopyClass_mk (f : X ⟶ Y) :
+    leftHomotopyClassEquivRightHomotopyClass (.mk f) = .mk f := rfl
+
+@[simp]
+lemma leftHomotopyClassEquivRightHomotopyClass_symm_mk (f : X ⟶ Y) :
+    leftHomotopyClassEquivRightHomotopyClass.symm (.mk f) = .mk f := rfl
+
+end
 
 end HomotopicalAlgebra

@@ -100,6 +100,20 @@ abbrev BifibrantObject.mk (X : C) [IsCofibrant X] [IsFibrant X] :
     BifibrantObject C :=
   ⟨X, by assumption, by assumption⟩
 
+abbrev BifibrantObject.homMk {X Y : C} [IsCofibrant X] [IsCofibrant Y]
+    [IsFibrant X] [IsFibrant Y] (f : X ⟶ Y) :
+    mk X ⟶ mk Y := f
+
+@[simp]
+lemma BifibrantObject.homMk_id (X : C) [IsCofibrant X] [IsFibrant X] :
+    homMk (𝟙 X) = 𝟙 (mk X) := rfl
+
+@[reassoc (attr := simp)]
+lemma BifibrantObject.homMk_homMk {X Y Z : C} [IsCofibrant X] [IsCofibrant Y] [IsCofibrant Z]
+    [IsFibrant X] [IsFibrant Y] [IsFibrant Z]
+    (f : X ⟶ Y) (g : Y ⟶ Z) :
+    homMk f ≫ homMk g = homMk (f ≫ g) := rfl
+
 abbrev BifibrantObject.ι : BifibrantObject C ⥤ C := (bifibrantObjects C).ι
 
 instance (X : BifibrantObject C) : IsCofibrant X.1 := X.2.1
