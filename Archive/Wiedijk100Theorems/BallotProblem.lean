@@ -115,13 +115,14 @@ theorem counted_succ_succ (p q : ℕ) :
     obtain ⟨hl₀, hl₁, hl₂⟩ := hl
     obtain hlast | hlast := hl₂ (l.head hlnil) (List.head_mem hlnil)
     · refine Or.inl ⟨l.tail, ⟨?_, ?_, ?_⟩, ?_⟩
-      · rw [List.count_tail hlnil, hl₀, hlast, beq_self_eq_true, if_pos rfl, Nat.add_sub_cancel]
-      · rw [List.count_tail hlnil, hl₁, hlast, if_neg (by decide), Nat.sub_zero]
+      · rw [List.count_tail, hl₀, List.head?_eq_head, hlast, beq_self_eq_true, if_pos rfl,
+          Nat.add_sub_cancel]
+      · rw [List.count_tail, hl₁, List.head?_eq_head, hlast, if_neg (by decide), Nat.sub_zero]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.head_cons_tail]
     · refine Or.inr ⟨l.tail, ⟨?_, ?_, ?_⟩, ?_⟩
-      · rw [List.count_tail hlnil, hl₀, hlast, if_neg (by decide), Nat.sub_zero]
-      · rw [List.count_tail hlnil, hl₁, hlast, beq_self_eq_true, if_pos rfl,
+      · rw [List.count_tail, hl₀, List.head?_eq_head, hlast, if_neg (by decide), Nat.sub_zero]
+      · rw [List.count_tail, hl₁, List.head?_eq_head, hlast, beq_self_eq_true, if_pos rfl,
           Nat.add_sub_cancel]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.head_cons_tail]
@@ -236,7 +237,7 @@ theorem first_vote_neg (p q : ℕ) (h : 0 < p + q) :
   all_goals simp_all [ENNReal.div_eq_top]
 
 theorem ballot_same (p : ℕ) : uniformOn (countedSequence (p + 1) (p + 1)) staysPositive = 0 := by
-  rw [uniformOn_eq_zero_iff (countedSequence_finite _ _), eq_empty_iff_forall_not_mem]
+  rw [uniformOn_eq_zero_iff (countedSequence_finite _ _), eq_empty_iff_forall_notMem]
   rintro x ⟨hx, t⟩
   apply ne_of_gt (t x _ x.suffix_refl)
   · simpa using sum_of_mem_countedSequence hx

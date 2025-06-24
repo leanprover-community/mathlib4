@@ -438,7 +438,7 @@ variable (R E)
 
 /-- `convexHull` is an additive monoid morphism under pointwise addition. -/
 @[simps]
-def convexHullAddMonoidHom : Set E →+ Set E where
+noncomputable def convexHullAddMonoidHom : Set E →+ Set E where
   toFun := convexHull R
   map_add' := convexHull_add
   map_zero' := convexHull_zero
@@ -509,7 +509,7 @@ theorem AffineBasis.convexHull_eq_nonneg_coord {ι : Type*} (b : AffineBasis ι 
     by_cases hi : i ∈ s
     · rw [b.coord_apply_combination_of_mem hi hw₁]
       exact hw₀ i hi
-    · rw [b.coord_apply_combination_of_not_mem hi hw₁]
+    · rw [b.coord_apply_combination_of_notMem hi hw₁]
   · have hx' : x ∈ affineSpan R (range b) := by
       rw [b.tot]
       exact AffineSubspace.mem_top R E x

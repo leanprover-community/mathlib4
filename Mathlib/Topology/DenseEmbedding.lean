@@ -78,7 +78,7 @@ theorem dense_image (di : IsDenseInducing i) {s : Set α} : Dense (i '' s) ↔ D
 `α` has empty interior. -/
 theorem interior_compact_eq_empty [T2Space β] (di : IsDenseInducing i) (hd : Dense (range i)ᶜ)
     {s : Set α} (hs : IsCompact s) : interior s = ∅ := by
-  refine eq_empty_iff_forall_not_mem.2 fun x hx => ?_
+  refine eq_empty_iff_forall_notMem.2 fun x hx => ?_
   rw [mem_interior_iff_mem_nhds] at hx
   have := di.closure_image_mem_nhds hx
   rw [(hs.image di.continuous).isClosed.closure_eq] at this

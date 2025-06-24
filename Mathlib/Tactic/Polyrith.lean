@@ -102,7 +102,7 @@ instance : Inhabited Poly := ⟨Poly.const 0⟩
 
 instance : Quote ℤ where quote
   | .ofNat n => quote n
-  | .negSucc n => Unhygienic.run `(-$(quote n))
+  | .negSucc n => Unhygienic.run `(-$(quote (n + 1)))
 
 instance : Quote ℚ where
   quote q :=
