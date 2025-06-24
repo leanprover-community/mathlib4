@@ -483,7 +483,7 @@ theorem incl_isIdealMorphism : I.incl.IsIdealMorphism := by
 
 variable {I}
 
-theorem comap_incl_eq_top : (comap I.incl I₂) = ⊤ ↔ I ≤ I₂ := by
+@[simp] theorem comap_incl_eq_top : I₂.comap I.incl = ⊤ ↔ I ≤ I₂ := by
   rw [← LieSubmodule.toSubmodule_inj, LieIdeal.comap_toSubmodule, LieSubmodule.top_toSubmodule,
     incl_coe]
   simp_rw [toLieSubalgebra_toSubmodule]
