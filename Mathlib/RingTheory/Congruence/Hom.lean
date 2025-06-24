@@ -3,10 +3,15 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.RingTheory.Congruence.Basic
 import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.Algebra.Ring.Subring.Basic
+import Mathlib.Algebra.RingQuot
 
 /-!
 # Congruence relations and ring homomorphisms
@@ -389,6 +394,90 @@ noncomputable def quotientKerEquivRange (f : M →+* P) :
 noncomputable def comapQuotientEquivRange (f : N →+* M) :
     (comap c f).Quotient ≃+* RingHom.range (c.mk'.comp f) :=
   c.comapQuotientEquivRangeS f
+
+end
+
+section
+
+namespace AlgHom
+
+variable {R : Type*} [CommSemiring R]
+  [Semiring M] [Algebra R M] [Semiring N] [Algebra R N] [Semiring P] [Algebra R P]
+
+variable {c : RingCon M} {f : M →ₐ[R] P}
+
+theorem range_mk'ₐ :
+    AlgHom.range c.mk'ₐ (R := R) = ⊤ :=
+  (AlgHom.range_eq_top _).mpr (mk'ₐ_surjective _)
+
+def liftₐ (c : RingCon M) (f : M →ₐ[R] P) (H : c ≤ ker f) :
+    c.Quotient →ₐ[R] P := {
+  c.lift f H with
+  commutes' r := AlgHomClass.commutes (↑f) r }
+
+/-- Given a congruence relation `c` on a ring and a homomorphism `f`
+constant on `c`'s equivalence classes, `f` has the same image
+as the homomorphism that `f` induces on the quotient. -/
+theorem liftₐ_range (H : c ≤ ker f) :
+    AlgHom.range (liftₐ c f H) = f.range := by
+  ext p
+  exact Subsemiring.ext_iff.mp (lift_rangeS H) p
+
+variable (f) in
+/-- The homomorphism induced on the quotient of a ring by the kernel of a ring homomorphism. -/
+def kerLiftₐ : (ker f).Quotient →ₐ[R] P :=
+  liftₐ (ker f) f (le_refl _)
+
+/-- The diagram described by the universal property for quotients of rings, when
+the ring congruence relation is the kernel of the homomorphism, commutes. -/
+theorem kerLiftₐ_mk (x : M) : kerLiftₐ f x = f x :=
+  rfl
+
+/-- A ring homomorphism `f` induces an injective homomorphism on the quotient by `f`'s kernel. -/
+theorem kerLiftₐ_injective (f : M →ₐ[R] P) :
+    Injective (kerLiftₐ f) := kerLift_injective f.toRingHom
+
+/-- Given ring congruence relations `c, d` on a ring such that `d` contains `c`,
+`d`'s quotient map induces a homomorphism from the quotient by `c` to the
+quotient by `d`. -/
+def mapₐ (c d : RingCon M) (h : c ≤ d) :
+    c.Quotient →ₐ[R] d.Quotient :=
+  (liftₐ c d.mk'ₐ) fun x y hc => show (ker d.mk') x y from (mk'_ker d).symm ▸ h hc
+
+/-- Given ring congruence relations `c, d` on a ring such that `d` contains `c`,
+the definition of the homomorphism from the quotient by `c` to the quotient by
+`d` induced by `d`'s quotient map. -/
+theorem mapₐ_apply {c d : RingCon M} (h : c ≤ d) (x) :
+    mapₐ (R := R) c d h x =
+      liftₐ (R := R) c d.mk'ₐ (fun _ _ hc ↦ d.eq.2 <| h hc) x :=
+  rfl
+
+/-- Given a ring homomorphism `f`, the induced homomorphism
+on the quotient by `f`'s kernel has the same image as `f`. -/
+theorem kerLiftₐ_range_eq :
+    AlgHom.range (kerLiftₐ f) = AlgHom.range f :=
+  liftₐ_range fun _ _ => id
+
+variable (c)
+
+/-- The **first isomorphism theorem for algebra morphisms**. -/
+noncomputable def quotientKerEquivRangeₐ (f : M →ₐ[R] P) :
+    (ker f).Quotient ≃ₐ[R] f.range := by
+  apply AlgEquiv.ofBijective
+    (AlgHom.codRestrict (kerLiftₐ f) _ (fun x ↦ by rw [← kerLiftₐ_range_eq]; simp))
+
+  constructor
+  · exact AlgHom.injective_codRestrict.mpr (kerLift_injective f)
+  · refine AlgHom.surjective_codRestrict.mpr ?_
+    rw [kerLiftₐ_range_eq]
+    rfl
+
+/-- The **second isomorphism theorem for semirings**. -/
+noncomputable def comapQuotientEquivRange (f : N →+* M) :
+    (comap c f).Quotient ≃+* RingHom.range (c.mk'.comp f) :=
+  c.comapQuotientEquivRangeS f
+
+
 
 end
 
