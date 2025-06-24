@@ -120,7 +120,7 @@ theorem iteratedDerivWithin_comp_const_smul (hf : ContDiffOn 𝕜 n f s) (c : �
       · exact differentiableWithinAt_id'.const_mul _
       · exact hs
     rw [iteratedDerivWithin_succ, derivWithin_congr h₀ (ih hx hf.of_succ),
-      derivWithin_const_smul (c ^ n) h₂, iteratedDerivWithin_succ,
+      derivWithin_fun_const_smul (c ^ n) h₂, iteratedDerivWithin_succ,
       ← Function.comp_def,
       derivWithin.scomp x h₁ (differentiableWithinAt_id'.const_mul _) hs,
       derivWithin_const_mul _ differentiableWithinAt_id', derivWithin_id' _ _ (h _ hx),
@@ -184,7 +184,7 @@ lemma iteratedDeriv_comp_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
   · have ih' : iteratedDeriv n (fun x ↦ f (-x)) = fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f (-x) :=
       funext ih
     rw [iteratedDeriv_succ, iteratedDeriv_succ, ih', pow_succ', neg_mul, one_mul,
-      deriv_comp_neg (f := fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f x), deriv_const_smul',
+      deriv_comp_neg (f := fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f x), deriv_fun_const_smul',
       neg_smul]
 
 open Topology in
