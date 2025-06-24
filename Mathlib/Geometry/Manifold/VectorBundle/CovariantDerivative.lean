@@ -116,12 +116,13 @@ lemma zeroX (cov : CovariantDerivative I F V) (σ : Π x : M, V x) : cov 0 σ = 
   have := cov.addX (0 : (x : M) → TangentSpace I x) (0 : (x : M) → TangentSpace I x) σ
   simpa using this
 
+omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
+     [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
 @[simp]
 lemma zeroσ (cov : CovariantDerivative I F V) (X : Π x : M, TangentSpace I x) : cov X 0 = 0 := by
   ext x
   have : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (0 : V x)) x := by
-    sorry
-    -- apply mdifferentiableAt_const (I := I) (I' := I.prod 𝓘(𝕜, F)) (c := (0 : V x)) (x := x) fails
+    exact (contMDiff_zeroSection 𝕜 V).mdifferentiableAt le_rfl
   have := cov.addσ X (0 : (x : M) → V x) (0 : (x : M) → V x) x this this
   simpa using this
 
@@ -138,7 +139,8 @@ lemma smul_const_σ (cov : CovariantDerivative I F V)
     contrapose! hσ
     simp at hσ
     have : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (a⁻¹ • a • σ x)) x := by
-      sorry -- have := hσ.const_smul a⁻¹ --(E' := H × F) fails to unify
+      -- Needs a version of Bundle.contMDiffAt_totalSpace  for MDifferentiableAt
+      sorry
     apply this.congr_of_eventuallyEq
     filter_upwards with x
     congr
