@@ -466,7 +466,7 @@ characteristic functions if and only if it is a product measure.
 This is `charFunDual_eq_prod_iff` for `WithLp`.
 See `charFun_eq_prod_iff` for the Hilbert space version. -/
 lemma charFunDual_eq_prod_iff' (p : ℝ≥0∞) [Fact (1 ≤ p)] [BorelSpace F]
-    [SecondCountableTopology F]  [CompleteSpace E] [CompleteSpace F] {ξ : Measure (E × F)}
+    [SecondCountableTopology F] [CompleteSpace E] [CompleteSpace F] {ξ : Measure (E × F)}
     [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure ξ] :
     (∀ L, charFunDual (ξ.map (WithLp.equiv p (E × F)).symm) L =
       charFunDual μ (L.comp
