@@ -307,15 +307,16 @@ noncomputable section
 
 variable [TopologicalSpace M] [IsManifold I' n M']
 
-variable {φ : PartialHomeomorph M' H'} {f : M → M'}
+variable [Nonempty H] {φ : PartialHomeomorph M' H'} {f : M → M'}
 
 -- TODO: remove non-emptiness hypotheses from this definition: if M is empty, have nothing to do
 
 @[simps]
-noncomputable def _root_.PartialEquiv.pullback_sliceModel_of_nonempty [Nonempty H] [Nonempty M]
-    (φ : PartialEquiv M' H') {f : M → M'} (hf : InjOn f (f ⁻¹' φ.source))
+noncomputable def _root_.PartialEquiv.pullback_sliceModel [Nonempty M] (φ : PartialEquiv M' H')
+    {f : M → M'} (hf : InjOn f (f ⁻¹' φ.source))
     -- TODO: is hfoo the right condition to impose?
-    (h : SliceModel F I I') (hfoo : φ.target ⊆ range h.map) : PartialEquiv M H where
+    (h : SliceModel F I I') (hfoo : φ.target ⊆ range h.map) : PartialEquiv M H
+    where
   toFun := h.inverse ∘ φ ∘ f
   invFun := (localInverseOn f (f ⁻¹' φ.source)) ∘ φ.symm ∘ h.map
   source := f ⁻¹' φ.source
@@ -349,60 +350,21 @@ noncomputable def _root_.PartialEquiv.pullback_sliceModel_of_nonempty [Nonempty 
     --   _ = h.inverse (h.map x) := sorry
     --   _ = x := sorry
 
-def PartialEquiv.empty (α β : Type*) [IsEmpty α] [IsEmpty β] : PartialEquiv α β where
-  toFun x := (IsEmpty.false x).elim
-  invFun x := (IsEmpty.false x).elim
-  source := univ
-  target := univ
-  map_source' := by simp
-  map_target' := by simp
-  left_inv' := by simp
-  right_inv' := by simp
-
-open scoped Classical in
-noncomputable def _root_.PartialEquiv.pullback_sliceModel [Nonempty H] (φ : PartialEquiv M' H')
-    {f : M → M'} (hf : InjOn f (f ⁻¹' φ.source))
-    -- TODO: is hfoo the right condition to impose?
-    (h : SliceModel F I I') (hfoo : φ.target ⊆ range h.map) : PartialEquiv M H :=
-
-  if hM : Nonempty M then PartialEquiv.pullback_sliceModel_of_nonempty φ hf h hfoo else
-    have : IsEmpty M := not_nonempty_iff.mp hM
-    have : IsEmpty H := sorry -- TODO: need to think, is this automatic?
-    PartialEquiv.empty M H
-
-@[simp]
-lemma pullback_sliceModel_source [Nonempty H] (φ : PartialEquiv M' H') {f : M → M'}
-    (hf : InjOn f (f ⁻¹' φ.source)) (h : SliceModel F I I')
-    (hfoo : φ.target ⊆ range (SliceModel.map F I I')) :
-    (φ.pullback_sliceModel hf h hfoo).source = f ⁻¹' φ.source := by
-  by_cases h : Nonempty M
-  · sorry -- simp fails
-  · sorry -- simp fails
-
-@[simp]
-lemma pullback_sliceModel_target [Nonempty H] (φ : PartialEquiv M' H') {f : M → M'}
-    (hf : InjOn f (f ⁻¹' φ.source)) (h : SliceModel F I I')
-    (hfoo : φ.target ⊆ range (SliceModel.map F I I')) :
-    (φ.pullback_sliceModel hf h hfoo).target = h.map ⁻¹' φ.target := by
-  sorry
-
 variable (φ f) in
-noncomputable def pullback_sliceModel [Nonempty H] (h : SliceModel F I I') (hf : Continuous f)
+noncomputable def pullback_sliceModel [Nonempty M] (h : SliceModel F I I') (hf : Continuous f)
     (hf' : InjOn f (f ⁻¹' φ.source))
     (hfoo : φ.target ⊆ range h.map) : PartialHomeomorph M H where
   toPartialEquiv := φ.toPartialEquiv.pullback_sliceModel hf' h hfoo
-  open_source := by simp [hf.isOpen_preimage _ φ.open_source]
-  open_target := by simp [h.hmap.continuous.isOpen_preimage _ φ.open_target]
+  open_source := hf.isOpen_preimage _ φ.open_source
+  open_target := h.hmap.continuous.isOpen_preimage _ φ.open_target
   continuousOn_toFun := by
-    simp only [pullback_sliceModel_source]
-    by_cases hM : Nonempty M; swap
-    · sorry -- source is empty, nothing to prove
-    sorry /-change ContinuousOn (h.inverse ∘ φ ∘ f) (f ⁻¹' φ.source)
+    simp only [PartialEquiv.pullback_sliceModel_source]
+    change ContinuousOn (h.inverse ∘ φ ∘ f) (f ⁻¹' φ.source)
     have : ContinuousOn (φ ∘ f) (f ⁻¹' φ.source) :=
       φ.continuousOn_toFun.comp hf.continuousOn fun ⦃x⦄ a ↦ a
     apply h.continuousOn_inverse_range.comp this
     intro x hx
-    apply hfoo (by simp_all) -/
+    apply hfoo (by simp_all)
   continuousOn_invFun := sorry -- should be similar
 
 end
@@ -487,9 +449,7 @@ noncomputable def chartedSpace (inst : IsImmersedSubmanifold M M' n (f := f) (h 
     ChartedSpace H M where
   atlas := { inst.chartAt x | x : M }
   chartAt x := inst.chartAt x
-  mem_chart_source x := by
-    simp
-    simp [chartAt, mem_sliceChartAt_source (f x)]
+  mem_chart_source x := by simp [chartAt, mem_sliceChartAt_source (f x)]
   chart_mem_atlas x := by rw [mem_setOf]; use x
 
 -- Cannot make an instance because Lean errors about synthesization order
