@@ -32,10 +32,6 @@ variable {G : Type*} [NormedAddCommGroup G] [NormedSpace K G]
 variable {f : E → F} {x} {s}
 
 @[fun_prop]
-theorem differentiableOn_id' : DifferentiableOn K (fun x : E => x) s :=
-  differentiable_id.differentiableOn
-
-@[fun_prop]
 theorem Differentiable.comp' {g : F → G} (hg : Differentiable K g) (hf : Differentiable K f) :
     Differentiable K (fun x => g (f x)) :=
   fun x => DifferentiableAt.comp x (hg (f x)) (hf x)
