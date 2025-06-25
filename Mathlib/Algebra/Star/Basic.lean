@@ -86,6 +86,10 @@ export InvolutiveStar (star_involutive)
 theorem star_star [InvolutiveStar R] (r : R) : star (star r) = r :=
   star_involutive _
 
+lemma star_mem_iff {S : Type*} [SetLike S R] [InvolutiveStar R] [StarMemClass S R]
+    {s : S} {x : R} : star x ∈ s ↔ x ∈ s :=
+  ⟨fun h => star_star x ▸ star_mem h, fun h => star_mem h⟩
+
 theorem star_injective [InvolutiveStar R] : Function.Injective (star : R → R) :=
   Function.Involutive.injective star_involutive
 
