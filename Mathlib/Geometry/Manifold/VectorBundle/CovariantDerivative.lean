@@ -203,6 +203,13 @@ lemma zeroσ (cov : CovariantDerivative I F V) (X : Π x : M, TangentSpace I x) 
   have := cov.addσ X (0 : (x : M) → V x) (0 : (x : M) → V x) x this this
   simpa using this
 
+lemma _root_.FiberBundle.trivializationAt.baseSet_mem_nhds {B : Type*} (F : Type*)
+    [TopologicalSpace B] [TopologicalSpace F]
+    (E : B → Type*) [TopologicalSpace (TotalSpace F E)] [(b : B) → TopologicalSpace (E b)]
+    [FiberBundle F E] (b : B) : (trivializationAt F E b |>.baseSet) ∈ 𝓝 b :=
+  (trivializationAt F E b).open_baseSet.eventually_mem (FiberBundle.mem_baseSet_trivializationAt' b)
+
+
 omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
      [∀ (x : M), ContinuousSMul 𝕜 (V x)] in
 lemma smul_const_σ (cov : CovariantDerivative I F V)
@@ -216,27 +223,17 @@ lemma smul_const_σ (cov : CovariantDerivative I F V)
     · simp [ha]
     refine cov.do_not_read X ?_
     contrapose! hσ
-    simp at hσ
     have : MDifferentiableAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (a⁻¹ • a • σ x)) x := by
-      rw [← mdifferentiableWithinAt_univ, mdifferentiableWithinAt_totalSpace]
+      rw [← mdifferentiableWithinAt_univ, mdifferentiableWithinAt_totalSpace] at *
       refine ⟨mdifferentiableAt_id, ?_⟩
-      have : (fun x' : M ↦ ((trivializationAt F V x) { proj := x', snd := a⁻¹ • a • σ x'}).2)
-        =ᶠ[𝓝 x]
-        fun x' : M ↦ a⁻¹ • ((trivializationAt F V x) { proj := x', snd := a • σ x'}).2 := by
-        have : ∀ᶠ x' in 𝓝 x, x' ∈ (trivializationAt F V x).baseSet := by
-          exact (trivializationAt F V x).open_baseSet.eventually_mem
-            (FiberBundle.mem_baseSet_trivializationAt' x)
-        apply this.mono
-        intro x' hx'
-        apply (trivializationAt F V x).linear (R := 𝕜) (F := F) hx' |>.map_smul
-      apply MDifferentiableAt.congr_of_eventuallyEq _ this
-      apply MDifferentiableAt.const_smul
-      rw [← mdifferentiableWithinAt_univ, mdifferentiableWithinAt_totalSpace] at hσ
-      simpa [TotalSpace.mk'] using hσ.2
+      have : ∀ᶠ x' in 𝓝 x, ((trivializationAt F V x) ⟨x', a⁻¹ • a • σ x'⟩).2 =
+                           a⁻¹ • ((trivializationAt F V x) ⟨x', a • σ x'⟩).2 := by
+        filter_upwards [FiberBundle.trivializationAt.baseSet_mem_nhds F V x] with x' hx'
+        exact (trivializationAt F V x).linear 𝕜 hx' |>.map_smul a⁻¹ (a • σ x')
+      exact MDifferentiableAt.const_smul hσ.2 a⁻¹ |>.congr_of_eventuallyEq this
     apply this.congr_of_eventuallyEq
     filter_upwards with x
-    congr
-    exact (eq_inv_smul_iff₀ ha).mpr rfl
+    simp [ha]
   simp [cov.do_not_read X hσ, hσ₂]
 
 omit [IsManifold I 0 M] [∀ (x : M), IsTopologicalAddGroup (V x)]
