@@ -104,7 +104,7 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
   -- branches. These should be covered if we ever change how the cache is uploaded from forks
   -- to obviate the need for a PR.
   let currentBranch ← IO.Process.output
-    {cmd := "git", args := #["branch", "--show-current"], cwd := mathlibDepPath}
+    {cmd := "git", args := #["rev-parse", "--abbrev-ref", "HEAD"], cwd := mathlibDepPath}
 
   if currentBranch.exitCode == 0 then
     let branchName := currentBranch.stdout.trim
