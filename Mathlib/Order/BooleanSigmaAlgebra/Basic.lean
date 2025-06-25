@@ -5,6 +5,8 @@ Authors: Pierre Quinton
 -/
 import Mathlib.Order.BooleanSigmaAlgebra.Defs
 import Mathlib.Order.Interval.Set.Defs
+import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Theory of Boolean σ-algebras
@@ -26,7 +28,7 @@ is countable.
 
 universe u
 
-variable {α : Type u}
+variable {α : Type*}
 
 section BooleanSigmaAlgebra
 
