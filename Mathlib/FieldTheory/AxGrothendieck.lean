@@ -113,7 +113,7 @@ theorem realize_genericPolyMapSurjOnOfInjOn
     (K ⊨ genericPolyMapSurjOnOfInjOn φ mons) ↔
       ∀ (v : α → K) (p : { p : ι → MvPolynomial ι K // (∀ i, (p i).support ⊆ mons i) }),
         let f : (ι → K) → (ι → K) := fun v i => eval v (p.1 i)
-        let S : Set (ι → K) := { x | φ.Realize (Sum.elim v x) }
+        let S : Set (ι → K) := {x | φ.Realize (Sum.elim v x)}
         S.MapsTo f S → S.InjOn f → S.SurjOn f S := by
   classical
   /- This line is seperated from the `simp` block below it because it is very important that it
