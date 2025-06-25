@@ -106,6 +106,8 @@ def _root_.Lean.Name.isMetaprogramming (n : Name) : Bool :=
   let components := n.components
   components.head? == some `Lean || (components.any fun n => n == `Tactic || n == `Linter)
 
+/-- Return true if `declName` is automatically generated,
+or otherwise unsuitable as a lemma suggestion. -/
 def blacklistInsertion (env : Environment) (declName : Name) : Bool :=
   declName.isInternalDetail ||
   declName.isMetaprogramming ||
