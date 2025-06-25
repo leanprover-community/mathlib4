@@ -57,6 +57,8 @@ theorem modEq_refl (a : α) : a ≡ a [PMOD p] :=
 theorem modEq_rfl : a ≡ a [PMOD p] :=
   modEq_refl _
 
+alias ModEq.rfl := modEq_rfl
+
 theorem modEq_comm : a ≡ b [PMOD p] ↔ b ≡ a [PMOD p] :=
   (Equiv.neg _).exists_congr_left.trans <| by simp [ModEq, ← neg_eq_iff_eq_neg]
 

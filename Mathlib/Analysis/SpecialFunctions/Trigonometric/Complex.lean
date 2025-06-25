@@ -92,25 +92,25 @@ theorem cos_eq_cos_iff {x y : ℂ} :
 
 
 theorem sin_eq_sin_iff {x y : ℂ} :
-    sin x = sin y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = (2 * k + 1) * π - x := by
-  simp only [← Complex.cos_sub_pi_div_two, cos_eq_cos_iff, sub_eq_iff_eq_add]
-  refine exists_congr fun k => or_congr ?_ ?_ <;> refine Eq.congr rfl ?_ <;> field_simp <;> ring
+    sin x = sin y ↔ x ≡ y [PMOD (2 * π : ℂ)] ∨ x ≡ π - y [PMOD (2 * π : ℂ)] := by
+  simp_rw [← Complex.cos_sub_pi_div_two, cos_eq_cos_iff, AddCommGroup.ModEq.sub_iff_right .rfl,
+    neg_sub, AddCommGroup.sub_modEq_iff_modEq_add]
+  ring_nf
 
-theorem cos_eq_one_iff {x : ℂ} : cos x = 1 ↔ ∃ k : ℤ, k * (2 * π) = x := by
-  rw [← cos_zero, eq_comm, cos_eq_cos_iff]
-  simp [mul_assoc, mul_left_comm, eq_comm]
+theorem cos_eq_one_iff {x : ℂ} : cos x = 1 ↔ x ≡ 0 [PMOD (2 * π : ℂ)] := by
+  rw [← cos_zero, cos_eq_cos_iff, neg_zero, or_self]
 
-theorem cos_eq_neg_one_iff {x : ℂ} : cos x = -1 ↔ ∃ k : ℤ, π + k * (2 * π) = x := by
-  rw [← neg_eq_iff_eq_neg, ← cos_sub_pi, cos_eq_one_iff]
-  simp only [eq_sub_iff_add_eq']
+theorem cos_eq_neg_one_iff {x : ℂ} : cos x = -1 ↔ x ≡ π [PMOD (2 * π : ℂ)] := by
+  rw [← neg_eq_iff_eq_neg, ← cos_sub_pi, cos_eq_one_iff, AddCommGroup.sub_modEq_iff_modEq_add,
+    zero_add]
 
-theorem sin_eq_one_iff {x : ℂ} : sin x = 1 ↔ ∃ k : ℤ, π / 2 + k * (2 * π) = x := by
-  rw [← cos_sub_pi_div_two, cos_eq_one_iff]
-  simp only [eq_sub_iff_add_eq']
+theorem sin_eq_one_iff {x : ℂ} : sin x = 1 ↔ x ≡ π / 2 [PMOD (2 * π : ℂ)] := by
+  rw [← cos_sub_pi_div_two, cos_eq_one_iff, AddCommGroup.sub_modEq_iff_modEq_add,
+    zero_add]
 
-theorem sin_eq_neg_one_iff {x : ℂ} : sin x = -1 ↔ ∃ k : ℤ, -(π / 2) + k * (2 * π) = x := by
-  rw [← neg_eq_iff_eq_neg, ← cos_add_pi_div_two, cos_eq_one_iff]
-  simp only [← sub_eq_neg_add, sub_eq_iff_eq_add]
+theorem sin_eq_neg_one_iff {x : ℂ} : sin x = -1 ↔ x ≡ -(π / 2) [PMOD (2 * π : ℂ)] := by
+  rw [← neg_eq_iff_eq_neg, ← cos_add_pi_div_two, cos_eq_one_iff,
+    ← AddCommGroup.modEq_sub_iff_add_modEq, zero_sub]
 
 theorem tan_add {x y : ℂ}
     (h : ((∀ k : ℤ, x ≠ (2 * k + 1) * π / 2) ∧ ∀ l : ℤ, y ≠ (2 * l + 1) * π / 2) ∨
@@ -204,13 +204,14 @@ namespace Real
 
 open scoped Real
 
-theorem cos_eq_zero_iff {θ : ℝ} : cos θ = 0 ↔ ∃ k : ℤ, θ = (2 * k + 1) * π / 2 :=
+theorem cos_eq_zero_iff {θ : ℝ} : cos θ = 0 ↔ θ ≡ π / 2 [PMOD ↑π] :=
   mod_cast @Complex.cos_eq_zero_iff θ
 
 theorem cos_ne_zero_iff {θ : ℝ} : cos θ ≠ 0 ↔ ∀ k : ℤ, θ ≠ (2 * k + 1) * π / 2 :=
   mod_cast @Complex.cos_ne_zero_iff θ
 
-theorem cos_eq_cos_iff {x y : ℝ} : cos x = cos y ↔ ∃ k : ℤ, y = 2 * k * π + x ∨ y = 2 * k * π - x :=
+theorem cos_eq_cos_iff {x y : ℝ} :
+    cos x = cos y ↔ x ≡ y [PMOD (2 * π)] ∨ x ≡ -y [PMOD (2 * π)]  :=
   mod_cast @Complex.cos_eq_cos_iff x y
 
 theorem sin_eq_sin_iff {x y : ℝ} :

@@ -502,9 +502,6 @@ theorem sin_eq_zero_iff {x : ℝ} : sin x = 0 ↔ x ≡ 0 [PMOD π] := by
         (sub_nonneg.1 (Int.sub_floor_div_mul_nonneg _ pi_pos))⟩
   · exact sin_int_mul_pi _
 
-theorem cos_eq_zero_iff {x : ℝ} : cos x = 0 ↔ x ≡ π / 2 [PMOD π] := by
-  rw [← sin_pi_div_two_sub, sin_eq_zero_iff, AddCommGroup.sub_modEq_zero, AddCommGroup.modEq_comm]
-
 theorem sin_ne_zero_iff {x : ℝ} : sin x ≠ 0 ↔ ∀ n : ℤ, (n : ℝ) * π ≠ x := by
   simp_rw [ne_eq, sin_eq_zero_iff, AddCommGroup.modEq_zero_left_iff_eq_zsmul, not_exists,
     zsmul_eq_mul, eq_comm]
@@ -531,28 +528,6 @@ theorem cos_eq_one_iff (x : ℝ) : cos x = 1 ↔ x ≡ 0 [PMOD (2 * π)] := by
           rw [hn, cos_int_mul_two_pi_add_pi] at h
           exact absurd h (by norm_num)⟩,
       fun ⟨_, hn⟩ => hn ▸ cos_int_mul_two_pi _⟩
-
-theorem sin_eq_one_iff {x : ℝ} : sin x = 1 ↔ x ≡ π / 2 [PMOD (2 * π)] := by
-  rw [← cos_pi_div_two_sub, cos_eq_one_iff, AddCommGroup.sub_modEq_zero, AddCommGroup.modEq_comm]
-
-theorem cos_eq_neg_one_iff (x : ℝ) : cos x = -1 ↔ x ≡ π [PMOD (2 * π)] := by
-  rw [← neg_eq_iff_eq_neg, ← cos_sub_pi, cos_eq_one_iff, AddCommGroup.sub_modEq_zero]
-
-theorem sin_eq_neg_one_iff (x : ℝ) : sin x = -1 ↔ x ≡ 3 * π / 2 [PMOD (2 * π)] := by
-  rw [← cos_sub_pi_div_two, cos_eq_neg_one_iff, AddCommGroup.sub_modEq_iff_modEq_add,
-    add_div' _ _ _ two_ne_zero]
-  ring_nf
-
-theorem cos_eq_cos_iff {θ ψ : ℝ} :
-    cos θ = cos ψ ↔ θ ≡ ψ [PMOD (2 * π)] ∨ θ ≡ -ψ [PMOD (2 * π)] := by
-  rw [← sub_eq_zero, cos_sub_cos, mul_eq_zero, mul_eq_zero, neg_eq_zero,
-    eq_false (two_ne_zero' ℝ), false_or, sin_eq_zero_iff, sin_eq_zero_iff]
-  conv_lhs =>
-    conv => enter [1]; rw [← AddCommGroup.nsmul_modEq_nsmul two_ne_zero]
-    conv => enter [2]; rw [← AddCommGroup.nsmul_modEq_nsmul two_ne_zero]
-  simp_rw [smul_zero, nsmul_eq_mul, Nat.cast_ofNat, mul_div_cancel₀ _ (two_ne_zero' ℝ),
-    AddCommGroup.sub_modEq_iff_modEq_add, zero_add, ← AddCommGroup.add_modEq_zero_iff_modEq_neg,
-    or_comm]
 
 -- TODO: this is really a statement about `PMOD` when things are bounded
 theorem cos_eq_one_iff_of_lt_of_lt {x : ℝ} (hx₁ : -(2 * π) < x) (hx₂ : x < 2 * π) :
