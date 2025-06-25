@@ -303,6 +303,10 @@ theorem between_isBipartiteWith (h : Disjoint s t) : (G.between s t).IsBipartite
     rw [between_adj]
     tauto
 
+/-- `G.between s t` is bipartite if the sets `s` and `t` are disjoint. -/
+theorem between_isBipartite (h : Disjoint s t) : (G.between s t).IsBipartite :=
+  (between_isBipartiteWith h).isBipartite
+
 /-- The neighbor set of `v ∈ s` in `G.between s sᶜ` excludes the vertices in `s` adjacent to `v`
 in `G`. -/
 lemma neighborSet_subset_between_union (hv : v ∈ s) :
