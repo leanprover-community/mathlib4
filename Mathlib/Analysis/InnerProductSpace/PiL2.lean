@@ -703,16 +703,22 @@ variable {E' : Type*} [Fintype ι'] [NormedAddCommGroup E'] [InnerProductSpace �
 
 /-- The `LinearIsometryEquiv` which maps an orthonormal basis to another. This is a convenience
 wrapper around `Orthonormal.equiv`. -/
-protected noncomputable def equiv : E ≃ₗᵢ[𝕜] E' :=
-  Orthonormal.equiv (v := b.toBasis) (v' := b'.toBasis) b.orthonormal b'.orthonormal e
+protected def equiv : E ≃ₗᵢ[𝕜] E' :=
+  b.repr.trans <| .trans (.piLpCongrLeft _ _ _ e) b'.repr.symm
 
 @[simp]
-lemma equiv_symm : (b.equiv b' e).symm = b'.equiv b e.symm := rfl
+lemma equiv_symm : (b.equiv b' e).symm = b'.equiv b e.symm := by
+  apply b'.toBasis.ext_linearIsometryEquiv
+  simp [OrthonormalBasis.equiv]
 
 @[simp]
 lemma equiv_apply_basis (i : ι) : b.equiv b' e (b i) = b' (e i) := by
-  simp only [OrthonormalBasis.equiv, Orthonormal.equiv, LinearEquiv.coe_isometryOfOrthonormal]
-  rw [← b.coe_toBasis, Basis.equiv_apply, b'.coe_toBasis]
+  classical
+  simp only [OrthonormalBasis.equiv, LinearIsometryEquiv.trans_apply, OrthonormalBasis.repr_self,
+    LinearIsometryEquiv.piLpCongrLeft_apply]
+  refine DFunLike.congr rfl ?_
+  ext j
+  simp [Equiv.symm_apply_eq]
 
 lemma equiv_apply (x : E) : b.equiv b' e x = ∑ i, b.repr x i • b' (e i) := by
   nth_rw 1 [← b.sum_repr x, map_sum]
