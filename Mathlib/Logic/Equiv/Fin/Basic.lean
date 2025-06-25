@@ -247,6 +247,8 @@ theorem finSumFinEquiv_symm_apply_natAdd (x : Fin n) :
 theorem finSumFinEquiv_symm_last : finSumFinEquiv.symm (Fin.last n) = Sum.inr 0 :=
   finSumFinEquiv_symm_apply_natAdd 0
 
+/-- Equivalence between `Fin n ⊕ ℕ` and `ℕ` that sends `inl (a : Fin n)` to
+  `(a : ℕ)` and `inr a` to `a + n`. -/
 def finSumNatEquiv (n : ℕ) : Fin n ⊕ ℕ ≃ ℕ where
   toFun := Sum.elim Fin.val (· + n)
   invFun i := if hi : i < n then Sum.inl ⟨i, hi⟩ else Sum.inr (i - n)
