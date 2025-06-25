@@ -326,9 +326,13 @@ def filterRewrites {α} (e : Expr) (rewrites : Array α) (replacement : α → E
     -- exclude rewrites that introduce new metavariables into the expression
     if makesNewMVars rw then continue
     -- exclude a reflexive rewrite
-    if ← isExplicitEq (replacement rw) e then continue
+    if ← isExplicitEq (replacement rw) e then
+      trace[rw??] "discarded reflexive rewrite {replacement rw}"
+      continue
     -- exclude two identical looking rewrites
-    if ← filtered.anyM (isExplicitEq (replacement rw) <| replacement ·) then continue
+    if ← filtered.anyM (isExplicitEq (replacement rw) <| replacement ·) then
+      trace[rw??] "discarded duplicate rewrite {replacement rw}"
+      continue
     filtered := filtered.push rw
   return filtered
 
