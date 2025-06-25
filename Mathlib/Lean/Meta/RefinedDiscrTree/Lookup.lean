@@ -114,7 +114,8 @@ def MatchResult.toArray (mr : MatchResult α) : Array α :=
 
 /--
 Convert a `MatchResult` into an `Array` of `Array`s. Each `Array` corresponds to one pattern.
-The better matching patterns are at the start of the array.
+The better matching patterns are at the start of the outer array.
+For each inner array, the entries are ordered in the order they were inserted.
 -/
 def MatchResult.flatten (mr : MatchResult α) : Array (Array α) :=
   mr.elts.foldr (init := #[]) (fun _ arr cand => cand ++ arr)
