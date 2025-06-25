@@ -263,6 +263,20 @@ instance isIso_whiskerRight {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) [IsIso 
     IsIso (whiskerRight α F) :=
   (isoWhiskerRight (asIso α) F).isIso_hom
 
+@[simp]
+theorem inv_whiskerRight {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) [IsIso α] :
+    inv (whiskerRight α F) = whiskerRight (inv α) F := by
+  symm
+  apply IsIso.eq_inv_of_inv_hom_id
+  simp [← whiskerRight_comp]
+
+@[simp]
+theorem inv_whiskerLeft (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) [IsIso α] :
+    inv (whiskerLeft F α) = whiskerLeft F (inv α) := by
+  symm
+  apply IsIso.eq_inv_of_inv_hom_id
+  simp [← whiskerLeft_comp]
+
 @[simp, reassoc]
 theorem isoWhiskerLeft_trans (F : C ⥤ D) {G H K : D ⥤ E} (α : G ≅ H) (β : H ≅ K) :
     isoWhiskerLeft F (α ≪≫ β) = isoWhiskerLeft F α ≪≫ isoWhiskerLeft F β :=
