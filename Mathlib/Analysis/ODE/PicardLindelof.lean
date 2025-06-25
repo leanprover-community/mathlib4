@@ -390,7 +390,7 @@ section
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   {f : ℝ → E → E} {α : ℝ → E} {s : Set ℝ} {u : Set E} {t₀ tmin tmax : ℝ}
 
--- also works for open sets and `Ici` and `Iic`; generalise?
+-- TODO: generalise to open sets and `Ici` and `Iic`
 /-- If the time-dependent vector field `f` and the curve `α` are continuous, then `f t (α t)` is the
 derivative of `picard f t₀ x₀ α`. -/
 lemma hasDerivWithinAt_picard_Icc
@@ -488,9 +488,9 @@ open ODE
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   {f : ℝ → E → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ x : E} {a r L K : ℝ≥0}
 
-/-- Picard-Lindelöf (Cauchy-Lipschitz) theorem, integral form. This version shows the existence of a
-local solution whose initial point `x` may be be different from the centre `x₀` of the closed ball
-within which the properties of the vector field hold. -/
+/-- **Picard-Lindelöf (Cauchy-Lipschitz) theorem**, integral form. This version shows the existence
+of a local solution whose initial point `x` may be be different from the centre `x₀` of the closed
+ball within which the properties of the vector field hold. -/
 theorem exists_eq_forall_mem_Icc_eq_picard
     (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r) :
     ∃ α : ℝ → E, α t₀ = x ∧ ∀ t ∈ Icc tmin tmax, α t = ODE.picard f t₀ x α t := by
@@ -498,9 +498,9 @@ theorem exists_eq_forall_mem_Icc_eq_picard
   refine ⟨(FunSpace.next hf hx α).compProj, by simp, fun t ht ↦ ?_⟩
   rw [FunSpace.compProj_apply, FunSpace.next_apply, hα, projIcc_of_mem _ ht]
 
-/-- Picard-Lindelöf (Cauchy-Lipschitz) theorem, differential form. This version shows the existence
-of a local solution whose initial point `x` may be be different from the centre `x₀` of the closed
-ball within which the properties of the vector field hold. -/
+/-- **Picard-Lindelöf (Cauchy-Lipschitz) theorem**, differential form. This version shows the
+existence of a local solution whose initial point `x` may be be different from the centre `x₀` of
+the closed ball within which the properties of the vector field hold. -/
 theorem exists_eq_forall_mem_Icc_hasDerivWithinAt
     (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r) :
     ∃ α : ℝ → E, α t₀ = x ∧
@@ -514,7 +514,7 @@ theorem exists_eq_forall_mem_Icc_hasDerivWithinAt
   nth_rw 1 [← hα]
   rw [FunSpace.compProj_of_mem ht', FunSpace.next_apply]
 
-/-- Picard-Lindelöf (Cauchy-Lipschitz) theorem, differential form. -/
+/-- **Picard-Lindelöf (Cauchy-Lipschitz) theorem**, differential form. -/
 theorem exists_eq_forall_mem_Icc_hasDerivWithinAt₀
     (hf : IsPicardLindelof f t₀ x₀ a 0 L K) :
     ∃ α : ℝ → E, α t₀ = x₀ ∧
@@ -525,8 +525,8 @@ theorem exists_eq_forall_mem_Icc_hasDerivWithinAt₀
   exists_eq_forall_mem_Icc_hasDerivWithinAt₀
 
 open Classical in
-/-- Picard-Lindelöf (Cauchy-Lipschitz) theorem, differential form. This version shows the existence
-of a local flow. -/
+/-- **Picard-Lindelöf (Cauchy-Lipschitz) theorem**, differential form. This version shows the
+existence of a local flow. -/
 theorem exists_forall_mem_closedBall_eq_forall_mem_Icc_hasDerivWithinAt
     (hf : IsPicardLindelof f t₀ x₀ a r L K) :
     ∃ α : E → ℝ → E, ∀ x ∈ closedBall x₀ r, α x t₀ = x ∧
