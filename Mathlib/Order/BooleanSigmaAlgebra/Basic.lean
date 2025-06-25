@@ -27,15 +27,15 @@ is countable.
 
 variable {α : Type*}
 
-section BooleanSigmaAlgebra
+section SigmaCompleteLattice
 
-variable [BooleanSigmaAlgebra α] {s t : Set α} {a b : α}
+variable [SigmaCompleteLattice α] {s t : Set α} {a b : α}
 
 lemma isLUB_σsSup (hs : s.Countable) : IsLUB s (sSup s) :=
-  BooleanSigmaAlgebra.isLUB_σsSup s hs
+  SigmaCompleteLattice.isLUB_σsSup s hs
 
 lemma isGLB_σsInf (hs : s.Countable) : IsGLB s (sInf s) :=
-  BooleanSigmaAlgebra.isGLB_σsInf s hs
+  SigmaCompleteLattice.isGLB_σsInf s hs
 
 lemma le_σsSup (hs : s.Countable) (ha : a ∈ s) : a ≤ sSup s :=
   (isLUB_σsSup hs).left ha
@@ -118,4 +118,4 @@ theorem σsSup_singleton : sSup {a} = a :=
 theorem σsInf_singleton : sInf {a} = a :=
   σsSup_singleton (α := αᵒᵈ)
 
-end BooleanSigmaAlgebra
+end SigmaCompleteLattice
