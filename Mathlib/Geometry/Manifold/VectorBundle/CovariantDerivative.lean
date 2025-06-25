@@ -29,36 +29,77 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 set_option linter.style.commandStart false
 
-def Basis.local_frame {ι : Type*}
+namespace Basis
+
+noncomputable def local_frame_toBasis_at {ι : Type*}
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e]
-    (b : Basis ι 𝕜 F) : ι → (x : M) → V x := sorry
+    (b : Basis ι 𝕜 F) {x : M} (hx : x ∈ e.baseSet) : Basis ι 𝕜 (V x) :=
+  b.map (e.linearEquivAt (R := 𝕜) x hx).symm
 
+open scoped Classical in
+-- If x is outside of `e.baseSet`, this returns the junk value 0.
+noncomputable def local_frame {ι : Type*}
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
+    [MemTrivializationAtlas e]
+    (b : Basis ι 𝕜 F) : ι → (x : M) → V x := fun i x ↦
+  -- idea: take the vector b i and apply the trivialisation e to it.
+  if hx : x ∈ e.baseSet then b.local_frame_toBasis_at e hx i else 0
+
+lemma local_frame_toBasis_at_coe {ι : Type*}
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
+    [MemTrivializationAtlas e]
+    (b : Basis ι 𝕜 F) {x : M} (i : ι) (hx : x ∈ e.baseSet) :
+    b.local_frame_toBasis_at e hx i = b.local_frame e i x := by
+  simp [local_frame_toBasis_at, local_frame, hx]
+
+-- XXX: is this result actually needed now? perhaps not, because of the toBasis definition?
+/-- At each point `x ∈ M`, the sections `{sⁱ(x)}` of a local frame form a basis for `V x`. -/
+def isBasis_local_frame {ι : Type*}
+    (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
+    [MemTrivializationAtlas e]
+    (b : Basis ι 𝕜 F) : sorry := by
+  -- the b i form a basis of F,
+  -- and the trivialisation e is a linear equivalence (thus preserves bases)
+  sorry
+
+open scoped Classical in
 /-- Coefficients of a section `s` of `V` w.r.t. the local frame `b.local_frame e i` -/
-def Basis.local_frame_repr {ι : Type*}
+-- If x is outside of `e.baseSet`, this returns the junk value 0.
+noncomputable def local_frame_repr {ι : Type*}
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M))
     [MemTrivializationAtlas e]
-    (b : Basis ι 𝕜 F)
-    (s : Π x : M, V x) :
-    ι → M → 𝕜 := sorry
+    (b : Basis ι 𝕜 F) (s : Π x : M, V x) : ι → M → 𝕜 :=
+  fun i x ↦ if hx : x ∈ e.baseSet then (b.local_frame_toBasis_at e hx).repr (s x) i else 0
 
-lemma Basis.local_frame_repr_spec {ι : Type*} [Fintype ι] {x : M}
+-- uniqueness of the decomposition: will follow from the IsBasis property above
+
+lemma local_frame_repr_spec {ι : Type*} [Fintype ι] {x : M}
     {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
     [MemTrivializationAtlas e] (hxe : x ∈ e.baseSet)
     (b : Basis ι 𝕜 F)
     (s : Π x : M,  V x) :
-    ∀ᶠ x' in 𝓝 x, s x' = ∑ i, (b.local_frame_repr e s i x') • b.local_frame e i x' :=
-  sorry
+    ∀ᶠ x' in 𝓝 x, s x' = ∑ i, (b.local_frame_repr e s i x') • b.local_frame e i x' := by
+  have {x'} (hx : x' ∈ e.baseSet) :
+      s x' = (∑ i, (b.local_frame_repr e s i x') • b.local_frame e i x') := by
+    simp [Basis.local_frame_repr, local_frame, local_frame_toBasis_at, hx]
+    sorry -- some simp'ing and a property of bases
+  exact eventually_nhds_iff.mpr ⟨e.baseSet, fun y a ↦ this a, e.open_baseSet, hxe⟩
 
--- missing: uniqueness of the decomposition; will be used to prove e.g. linearity below
-
+-- uniqueness implies this, but it also follows from our definition
 lemma Basis.local_frame_repr_add {ι : Type*} [Fintype ι] {x : M}
     {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
     [MemTrivializationAtlas e] (hxe : x ∈ e.baseSet)
     (b : Basis ι 𝕜 F) (s s' : Π x : M,  V x) (i : ι) :
     b.local_frame_repr e (s + s') i =
       (b.local_frame_repr e (s + s') i) + (b.local_frame_repr e (s + s') i) := by
-  sorry
+  by_cases hx : x ∈ e.baseSet; swap
+  · exact False.elim (hx hxe)
+  simp-- [local_frame_repr]
+  unfold local_frame_repr
+  sorry -- need some _apply simp lemmas... simp [hx]
+
+end Basis
 
 -- corollary of this and uniqueness
 
