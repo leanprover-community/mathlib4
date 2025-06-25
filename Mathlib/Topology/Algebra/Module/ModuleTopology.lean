@@ -134,6 +134,14 @@ theorem eq_moduleTopology [τA : TopologicalSpace A] [IsModuleTopology R A] :
     τA = moduleTopology R A :=
   IsModuleTopology.eq_moduleTopology' (R := R) (A := A)
 
+/--
+Note that the topology isn't part of the discrimination key so this gets tried on every
+`IsModuleTopology` goal and hence the low priority.
+-/
+instance (priority := low) {R : Type*} [TopologicalSpace R] {A : Type*} [Add A] [SMul R A] :
+    letI := moduleTopology R A; IsModuleTopology R A :=
+  letI := moduleTopology R A; ⟨rfl⟩
+
 /-- Scalar multiplication `• : R × A → A` is continuous if `R` is a topological
 ring, and `A` is an `R` module with the module topology. -/
 theorem ModuleTopology.continuousSMul : @ContinuousSMul R A _ _ (moduleTopology R A) :=

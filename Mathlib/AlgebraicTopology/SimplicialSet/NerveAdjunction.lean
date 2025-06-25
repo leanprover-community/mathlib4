@@ -25,7 +25,7 @@ exists because nerves of categories are 2-coskeletal.
 
 We also prove that `nerveFunctor` is fully faithful, demonstrating that `nerveAdjunction` is
 reflective. Since the category of simplicial sets is cocomplete, we conclude in
-`Mathlib.CategoryTheory.Category.Cat.Colimit` that the category of categories has colimits.
+`Mathlib/CategoryTheory/Category/Cat/Colimit.lean` that the category of categories has colimits.
 
 -/
 
@@ -453,7 +453,6 @@ instance nerveFunctor₂.full : nerveFunctor₂.{u, u}.Full where
         simp only [Nat.reduceAdd, id_eq, Int.reduceNeg, Int.cast_ofNat_Int, Int.reduceSub,
           Int.reduceAdd, Nat.cast_ofNat, Fin.zero_eta, Fin.isValue, Fin.mk_one,
           ComposableArrows.map', homOfLE_leOfHom, Fk, uF, Fh, uF']
-        dsimp
         simp [uF', nerveFunctor₂, SSet.truncation, forget₂, HasForget₂.forget₂,
           ReflQuiv.comp_eq_comp, OneTruncation₂.nerveHomEquiv, Fk, uF, ComposableArrows.hom, Fhk']
       rw [Fhk.map'_comp 0 1 2] at lem1

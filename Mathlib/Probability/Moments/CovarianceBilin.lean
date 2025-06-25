@@ -5,13 +5,13 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
-import Mathlib.Probability.Variance
+import Mathlib.Probability.Moments.Variance
 
 /-!
 # Covariance in Banach spaces
 
 We define the covariance of a finite measure in a Banach space `E`,
-as a continous bilinear form on `Dual ℝ E`.
+as a continuous bilinear form on `Dual ℝ E`.
 
 ## Main definitions
 

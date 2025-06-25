@@ -184,7 +184,6 @@ def lift : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ } 
       rintro _ _ ⟨⟩
       exacts [rfl, f.prop _ _]
   invFun F := ⟨curry (F ∘ Sym2.mk), fun _ _ => congr_arg F eq_swap⟩
-  left_inv _ := Subtype.ext rfl
   right_inv _ := funext <| Sym2.ind fun _ _ => rfl
 
 @[simp]
@@ -212,7 +211,6 @@ def lift₂ :
     ⟨fun a₁ a₂ b₁ b₂ => F s(a₁, a₂) s(b₁, b₂), fun a₁ a₂ b₁ b₂ => by
       constructor
       exacts [congr_arg₂ F eq_swap rfl, congr_arg₂ F rfl eq_swap]⟩
-  left_inv _ := Subtype.ext rfl
   right_inv _ := funext₂ fun a b => Sym2.inductionOn₂ a b fun _ _ _ _ => rfl
 
 @[simp]
@@ -351,8 +349,8 @@ noncomputable def Mem.other {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
   Classical.choose h
 
 @[simp]
-theorem other_spec {a : α} {z : Sym2 α} (h : a ∈ z) : s(a, Mem.other h) = z := by
-  erw [← Classical.choose_spec h]
+theorem other_spec {a : α} {z : Sym2 α} (h : a ∈ z) : s(a, Mem.other h) = z :=
+  (Classical.choose_spec h).symm
 
 theorem other_mem {a : α} {z : Sym2 α} (h : a ∈ z) : Mem.other h ∈ z := by
   convert mem_mk_right a <| Mem.other h
@@ -539,7 +537,7 @@ theorem fromRel_prop {sym : Symmetric r} {a b : α} : s(a, b) ∈ fromRel sym �
   Iff.rfl
 
 theorem fromRel_bot : fromRel (fun (_ _ : α) z => z : Symmetric ⊥) = ∅ := by
-  apply Set.eq_empty_of_forall_not_mem fun e => _
+  apply Set.eq_empty_of_forall_notMem fun e => _
   apply Sym2.ind
   simp [-Set.bot_eq_empty, Prop.bot_eq_false]
 

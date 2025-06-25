@@ -72,7 +72,7 @@ theorem Integrable.aemeasurable [MeasurableSpace ε] [BorelSpace ε] [PseudoMetr
 theorem Integrable.hasFiniteIntegral {f : α → ε} (hf : Integrable f μ) : HasFiniteIntegral f μ :=
   hf.2
 
-theorem Integrable.mono_enorm {f : α → ε} {g : α → ε} (hg : Integrable g μ)
+theorem Integrable.mono_enorm {f : α → ε} {g : α → ε'} (hg : Integrable g μ)
     (hf : AEStronglyMeasurable f μ) (h : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ ‖g a‖ₑ) : Integrable f μ :=
   ⟨hf, hg.hasFiniteIntegral.mono_enorm h⟩
 
@@ -156,6 +156,11 @@ lemma Integrable.of_finite [Finite α] [MeasurableSingletonClass α] [IsFiniteMe
 
 /-- This lemma is a special case of `Integrable.of_finite`. -/
 lemma Integrable.of_isEmpty [IsEmpty α] {f : α → β} : Integrable f μ := .of_finite
+
+/-- This lemma is a special case of `Integrable.of_finite`. -/
+lemma Integrable.of_subsingleton [Subsingleton α] [IsFiniteMeasure μ] {f : α → β} :
+    Integrable f μ :=
+  .of_finite
 
 theorem MemLp.integrable_enorm_rpow {f : α → ε} {p : ℝ≥0∞} (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) : Integrable (fun x : α => ‖f x‖ₑ ^ p.toReal) μ := by
@@ -383,6 +388,11 @@ theorem Integrable.add [ContinuousAdd ε']
 theorem Integrable.add'' [ContinuousAdd ε']
     {f g : α → ε'} (hf : Integrable f μ) (hg : Integrable g μ) :
     Integrable (fun x ↦ f x + g x) μ := hf.add hg
+
+@[simp]
+lemma Integrable.of_subsingleton_codomain [Subsingleton ε'] {f : α → ε'} :
+    Integrable f μ :=
+  integrable_zero _ _ _ |>.congr <| .of_forall fun _ ↦ Subsingleton.elim _ _
 
 end ENormedAddMonoid
 
@@ -634,9 +644,9 @@ theorem MemLp.integrable {q : ℝ≥0∞} (hq1 : 1 ≤ q) {f : α → ε} [IsFin
   memLp_one_iff_integrable.mp (hfq.mono_exponent hq1)
 
 /-- A non-quantitative version of Markov inequality for integrable functions: the measure of points
-where `‖f x‖ ≥ ε` is finite for all positive `ε`. -/
-theorem Integrable.measure_enorm_ge_lt_top
-    {f : α → ε} (hf : Integrable f μ) {ε : ℝ≥0∞} (hε : 0 < ε) (hε' : ε ≠ ∞):
+where `‖f x‖ₑ ≥ ε` is finite for all positive `ε`. -/
+theorem Integrable.measure_enorm_ge_lt_top {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
+    {f : α → E} (hf : Integrable f μ) {ε : ℝ≥0∞} (hε : 0 < ε) (hε' : ε ≠ ∞) :
     μ { x | ε ≤ ‖f x‖ₑ } < ∞ := by
   refine meas_ge_le_mul_pow_eLpNorm_enorm μ one_ne_zero one_ne_top hf.1 hε.ne' (by simp [hε'])
     |>.trans_lt ?_
@@ -655,8 +665,8 @@ theorem Integrable.measure_norm_ge_lt_top {f : α → β} (hf : Integrable f μ)
 
 /-- A non-quantitative version of Markov inequality for integrable functions: the measure of points
 where `‖f x‖ₑ > ε` is finite for all positive `ε`. -/
-lemma Integrable.measure_norm_gt_lt_top_enorm {f : α → ε} (hf : Integrable f μ)
-    {ε : ℝ≥0∞} (hε : 0 < ε) : μ {x | ε < ‖f x‖ₑ} < ∞ := by
+lemma Integrable.measure_norm_gt_lt_top_enorm  {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
+    {f : α → E} (hf : Integrable f μ) {ε : ℝ≥0∞} (hε : 0 < ε) : μ {x | ε < ‖f x‖ₑ} < ∞ := by
   by_cases hε' : ε = ∞
   · simp [hε']
   exact lt_of_le_of_lt (measure_mono (fun _ h ↦ (Set.mem_setOf_eq ▸ h).le))

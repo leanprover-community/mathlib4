@@ -81,47 +81,47 @@ lemma mdifferentiable_iff {f : ℍ → ℂ} :
     fun h ⟨z, hz⟩ ↦ mdifferentiableAt_iff.mpr <| (h z hz).differentiableAt
       <| (Complex.continuous_im.isOpen_preimage _ isOpen_Ioi).mem_nhds hz⟩
 
-lemma contMDiff_num (g : GL(2, ℝ)⁺) : ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (num g) :=
+lemma contMDiff_num (g : GL (Fin 2) ℝ) : ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (fun τ : ℍ ↦ num g τ) :=
   (contMDiff_const.smul contMDiff_coe).add contMDiff_const
 
-lemma contMDiff_denom (g : GL(2, ℝ)⁺) : ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (denom g) :=
+lemma contMDiff_denom (g : GL (Fin 2) ℝ) : ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (fun τ : ℍ ↦ denom g τ) :=
   (contMDiff_const.smul contMDiff_coe).add contMDiff_const
 
-lemma contMDiff_denom_zpow (g : GL(2, ℝ)⁺) (k : ℤ) :
-    ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (denom g · ^ k) := fun τ ↦ by
+lemma contMDiff_denom_zpow (g : GL (Fin 2) ℝ) (k : ℤ) :
+    ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (denom g · ^ k : ℍ → ℂ) := fun τ ↦ by
   have : AnalyticAt ℂ (· ^ k) (denom g τ) := (differentiableOn_zpow k _ (by tauto)).analyticOnNhd
     isOpen_compl_singleton _ (denom_ne_zero g τ)
   exact this.contDiffAt.contMDiffAt.comp τ (contMDiff_denom g τ)
 
-lemma contMDiff_inv_denom (g : GL(2, ℝ)⁺) : ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (fun τ ↦ (denom g τ)⁻¹) := by
+lemma contMDiff_inv_denom (g : GL (Fin 2) ℝ) :
+    ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (fun τ : ℍ ↦ (denom g τ)⁻¹) := by
   simpa using contMDiff_denom_zpow g (-1)
 
 /-- Each element of `GL(2, ℝ)⁺` defines a map of `C ^ n` manifolds `ℍ → ℍ`. -/
-lemma contMDiff_smul (g : GL(2, ℝ)⁺) :
+lemma contMDiff_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) :
     ContMDiff 𝓘(ℂ) 𝓘(ℂ) n (fun τ : ℍ ↦ g • τ) := fun τ ↦ by
   refine contMDiffAt_iff_target.mpr ⟨(continuous_const_smul g).continuousAt, ?_⟩
-  simpa [smulAux, Function.comp_def] using (contMDiff_num g τ).mul (contMDiff_inv_denom g τ)
+  simpa [glPos_smul_def hg] using (contMDiff_num g τ).mul (contMDiff_inv_denom g τ)
 
-lemma mdifferentiable_num (g : GL(2, ℝ)⁺) :
-    MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (num g) :=
+lemma mdifferentiable_num (g : GL (Fin 2) ℝ) :
+    MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (fun τ : ℍ ↦ num g τ) :=
   (contMDiff_num g).mdifferentiable le_top
 
-lemma mdifferentiable_denom (g : GL(2, ℝ)⁺) :
-    MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (denom g) :=
+lemma mdifferentiable_denom (g : GL (Fin 2) ℝ) :
+    MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (fun τ : ℍ ↦ denom g τ) :=
   (contMDiff_denom g).mdifferentiable le_top
 
-lemma mdifferentiable_denom_zpow (g : GL(2, ℝ)⁺) (k : ℤ) :
-    MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (denom g · ^ k) :=
+lemma mdifferentiable_denom_zpow (g : GL (Fin 2) ℝ) (k : ℤ) :
+    MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (denom g · ^ k : ℍ → ℂ) :=
   (contMDiff_denom_zpow g k).mdifferentiable le_top
 
-lemma mdifferentiable_inv_denom (g : GL(2, ℝ)⁺) :
-    MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (fun τ ↦ (denom g τ)⁻¹) :=
+lemma mdifferentiable_inv_denom (g : GL (Fin 2) ℝ) :
+    MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (fun τ : ℍ ↦ (denom g τ)⁻¹) :=
   (contMDiff_inv_denom g).mdifferentiable le_top
 
 /-- Each element of `GL(2, ℝ)⁺` defines a complex-differentiable map `ℍ → ℍ`. -/
-lemma mdifferentiable_smul (g : GL(2, ℝ)⁺) :
+lemma mdifferentiable_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) :
     MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (fun τ : ℍ ↦ g • τ) :=
-  (contMDiff_smul g).mdifferentiable le_top
-
+  (contMDiff_smul hg).mdifferentiable le_top
 
 end UpperHalfPlane
