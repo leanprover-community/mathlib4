@@ -5,6 +5,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin
 -/
 import Mathlib.Algebra.Field.NegOnePow
 import Mathlib.Algebra.Field.Periodic
+import Mathlib.Algebra.ModEq
 import Mathlib.Algebra.QuadraticDiscriminant
 import Mathlib.Analysis.SpecialFunctions.Exp
 
@@ -489,37 +490,55 @@ theorem sin_eq_zero_iff_of_lt_of_lt {x : ℝ} (hx₁ : -π < x) (hx₂ : x < π)
     | inr h0 => exact (sin_pos_of_pos_of_lt_pi h0 hx₂).ne',
   fun h => by simp [h]⟩
 
-theorem sin_eq_zero_iff {x : ℝ} : sin x = 0 ↔ ∃ n : ℤ, (n : ℝ) * π = x :=
-  ⟨fun h =>
-    ⟨⌊x / π⌋,
-      le_antisymm (sub_nonneg.1 (Int.sub_floor_div_mul_nonneg _ pi_pos))
+theorem sin_eq_zero_iff {x : ℝ} : sin x = 0 ↔ x ≡ 0 [PMOD π] := by
+  simp_rw [AddCommGroup.modEq_zero_left_iff_eq_zsmul, zsmul_eq_mul]
+  refine ⟨fun h => ?_, fun ⟨_, hn⟩ => hn ▸ ?_⟩
+  · exact ⟨⌊x / π⌋,
+      le_antisymm
         (sub_nonpos.1 <|
           le_of_not_gt fun h₃ =>
             (sin_pos_of_pos_of_lt_pi h₃ (Int.sub_floor_div_mul_lt _ pi_pos)).ne
-              (by simp [sub_eq_add_neg, sin_add, h, sin_int_mul_pi]))⟩,
-    fun ⟨_, hn⟩ => hn ▸ sin_int_mul_pi _⟩
+              (by simp [sub_eq_add_neg, sin_add, h, sin_int_mul_pi]))
+        (sub_nonneg.1 (Int.sub_floor_div_mul_nonneg _ pi_pos))⟩
+  · exact sin_int_mul_pi _
 
 theorem sin_ne_zero_iff {x : ℝ} : sin x ≠ 0 ↔ ∀ n : ℤ, (n : ℝ) * π ≠ x := by
-  rw [← not_exists, not_iff_not, sin_eq_zero_iff]
+  simp_rw [ne_eq, sin_eq_zero_iff, AddCommGroup.modEq_zero_left_iff_eq_zsmul, not_exists,
+    zsmul_eq_mul, eq_comm]
 
 theorem sin_eq_zero_iff_cos_eq {x : ℝ} : sin x = 0 ↔ cos x = 1 ∨ cos x = -1 := by
   rw [← mul_self_eq_one_iff, ← sin_sq_add_cos_sq x, sq, sq, ← sub_eq_iff_eq_add, sub_self]
   exact ⟨fun h => by rw [h, mul_zero], eq_zero_of_mul_self_eq_zero ∘ Eq.symm⟩
 
-theorem cos_eq_one_iff (x : ℝ) : cos x = 1 ↔ ∃ n : ℤ, (n : ℝ) * (2 * π) = x :=
-  ⟨fun h =>
-    let ⟨n, hn⟩ := sin_eq_zero_iff.1 (sin_eq_zero_iff_cos_eq.2 (Or.inl h))
-    ⟨n / 2,
-      (Int.emod_two_eq_zero_or_one n).elim
-        (fun hn0 => by
-          rwa [← mul_assoc, ← @Int.cast_two ℝ, ← Int.cast_mul,
-            Int.ediv_mul_cancel (Int.dvd_iff_emod_eq_zero.2 hn0)])
-        fun hn1 => by
-        rw [← Int.emod_add_ediv n 2, hn1, Int.cast_add, Int.cast_one, add_mul, one_mul, add_comm,
-              mul_comm (2 : ℤ), Int.cast_mul, mul_assoc, Int.cast_two] at hn
-        rw [← hn, cos_int_mul_two_pi_add_pi] at h
-        exact absurd h (by norm_num)⟩,
-    fun ⟨_, hn⟩ => hn ▸ cos_int_mul_two_pi _⟩
+theorem cos_eq_one_iff (x : ℝ) : cos x = 1 ↔ x ≡ 0 [PMOD (2 * π)] := by
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · let h := sin_eq_zero_iff.1 (sin_eq_zero_iff_cos_eq.2 (Or.inl h))
+    obtain hn0 | hn1 := Int.emod_two_eq_zero_or_one n
+    
+
+  rw [AddCommGroup.modEq_comm, AddCommGroup.ModEq, sub_zero]
+  simp_rw [zsmul_eq_mul]
+  .trans
+    ⟨fun h =>
+      let ⟨n, hn⟩ := sin_eq_zero_iff.1 (sin_eq_zero_iff_cos_eq.2 (Or.inl h))
+      ⟨n / 2,
+        (Int.emod_two_eq_zero_or_one n).elim
+          (fun hn0 => by
+            rwa [sub_zero, zsmul_eq_mul, ← mul_assoc, ← @Int.cast_two ℝ, ← Int.cast_mul,
+              Int.ediv_mul_cancel (Int.dvd_iff_emod_eq_zero.2 hn0), eq_comm])
+          fun hn1 => by
+          rw [← Int.emod_add_ediv n 2, hn1, Int.cast_add, Int.cast_one, add_mul, one_mul, add_comm,
+                mul_comm (2 : ℤ), Int.cast_mul, mul_assoc, Int.cast_two] at hn
+          rw [← hn, cos_int_mul_two_pi_add_pi] at h
+          exact absurd h (by norm_num)⟩,
+      fun ⟨_, hn⟩ => by
+        rw [sub_zero] at hn
+        exact hn ▸ cos_int_mul_two_pi _⟩
+    AddCommGroup.modEq_comm
+
+theorem cos_eq_neg_one_iff (x : ℝ) : cos x = -1 ↔ ∃ n : ℤ, π + (n : ℝ) * (2 * π) = x := by
+  rw [← neg_eq_iff_eq_neg, ← cos_sub_pi, cos_eq_one_iff]
+  simp_rw [eq_sub_iff_add_eq, add_comm]
 
 theorem cos_eq_one_iff_of_lt_of_lt {x : ℝ} (hx₁ : -(2 * π) < x) (hx₂ : x < 2 * π) :
     cos x = 1 ↔ x = 0 :=

@@ -231,6 +231,10 @@ theorem add_modEq_right : a + b ≡ b [PMOD p] ↔ a ≡ 0 [PMOD p] := by simp [
 theorem modEq_iff_eq_add_zsmul : a ≡ b [PMOD p] ↔ ∃ z : ℤ, b = a + z • p := by
   simp_rw [ModEq, sub_eq_iff_eq_add']
 
+theorem modEq_zero_left_iff_eq_zsmul : a ≡ 0 [PMOD p] ↔ ∃ z : ℤ, a = z • p := by
+  rw [modEq_comm, modEq_iff_eq_add_zsmul]
+  simp_rw [zero_add]
+
 theorem not_modEq_iff_ne_add_zsmul : ¬a ≡ b [PMOD p] ↔ ∀ z : ℤ, b ≠ a + z • p := by
   rw [modEq_iff_eq_add_zsmul, not_exists]
 
