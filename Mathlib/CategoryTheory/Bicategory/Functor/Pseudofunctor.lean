@@ -5,6 +5,7 @@ Authors: Yuma Mizuno, Calle Sönne
 -/
 import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 import Mathlib.CategoryTheory.Bicategory.Functor.Lax
+import Mathlib.Tactic.CategoryTheory.ToApp
 
 /-!
 # Pseudofunctors
@@ -239,6 +240,27 @@ lemma whiskerLeft_mapId_hom (f : a ⟶ b) : F.map f ◁ (F.mapId b).hom =
 lemma whiskerLeft_mapId_inv (f : a ⟶ b) : F.map f ◁ (F.mapId b).inv =
     (ρ_ (F.map f)).hom ≫ F.map₂ (ρ_ f).inv ≫ (F.mapComp f (𝟙 b)).hom := by
   simpa using congrArg (·.inv) (F.whiskerLeftIso_mapId f)
+
+/-- More flexible variant of `mapId`. (See the file `Bicategory.Functor.Strict`
+for applications to strict bicategories.) -/
+def mapId' {b : B} (f : b ⟶ b) (hf : f = 𝟙 b := by aesop_cat) :
+    F.map f ≅ 𝟙 (F.obj b) :=
+  F.map₂Iso (eqToIso (by rw [hf])) ≪≫ F.mapId _
+
+lemma mapId'_eq_mapId (b : B) :
+    F.mapId' (𝟙 b) rfl = F.mapId b := by
+  simp [mapId']
+
+/-- More flexible variant of `mapComp`. (See `Bicategory.Functor.Strict`
+for applications to strict bicategories.) -/
+def mapComp' {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) (fg : b₀ ⟶ b₂)
+    (h : f ≫ g = fg := by aesop_cat) :
+    F.map fg ≅ F.map f ≫ F.map g :=
+  F.map₂Iso (eqToIso (by rw [h])) ≪≫ F.mapComp f g
+
+lemma mapComp'_eq_mapComp {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶ b₂) :
+    F.mapComp' f g _ rfl = F.mapComp f g := by
+  simp [mapComp']
 
 end
 

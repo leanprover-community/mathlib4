@@ -713,6 +713,8 @@ end HolderOnWith
 
 namespace LipschitzOnWith
 
+open Submodule
+
 variable {K : ℝ≥0} {f : X → Y} {s : Set X}
 
 /-- If `f : X → Y` is `K`-Lipschitz on `s`, then `μH[d] (f '' s) ≤ K ^ d * μH[d] s`. -/
@@ -1092,6 +1094,18 @@ end RealAffine
 theorem hausdorffMeasure_segment {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [MeasurableSpace E] [BorelSpace E] (x y : E) : μH[1] (segment ℝ x y) = edist x y := by
   rw [← affineSegment_eq_segment, hausdorffMeasure_affineSegment]
+
+/--
+Let `s` be a subset of `𝕜`-inner product space, and `K` a subspace. Then the `d`-dimensional
+Hausdorff measure of the orthogonal projection of `s` onto `K` is less than or equal to the
+`d`-dimensional Hausdorff measure of `s`.
+-/
+theorem hausdorffMeasure_orthogonalProjection_le [RCLike 𝕜]
+    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E]
+    (K : Submodule 𝕜 E) [K.HasOrthogonalProjection]
+    (d : ℝ) (s : Set E) (hs : 0 ≤ d) :
+    μH[d] (K.orthogonalProjection '' s) ≤ μH[d] s := by
+  simpa using K.lipschitzWith_orthogonalProjection.hausdorffMeasure_image_le hs s
 
 end Geometric
 

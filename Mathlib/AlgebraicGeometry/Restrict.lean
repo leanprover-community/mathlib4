@@ -269,6 +269,15 @@ instance (X : Scheme.{u}) {U V : X.Opens} (e : U ≤ V) : IsOpenImmersion (X.hom
   delta Scheme.homOfLE
   infer_instance
 
+/-- The open cover of `⋃ Vᵢ` by `Vᵢ`. -/
+def Scheme.Opens.iSupOpenCover {J : Type*} {X : Scheme} (U : J → X.Opens) :
+    (⨆ i, U i).toScheme.OpenCover where
+  J := J
+  obj i := U i
+  map j := X.homOfLE (le_iSup _ _)
+  f x := (TopologicalSpace.Opens.mem_iSup.mp x.2).choose
+  covers x := ⟨⟨x.1, (TopologicalSpace.Opens.mem_iSup.mp x.2).choose_spec⟩, Subtype.ext (by simp)⟩
+
 variable (X) in
 /-- The functor taking open subsets of `X` to open subschemes of `X`. -/
 @[simps! obj_left obj_hom map_left]

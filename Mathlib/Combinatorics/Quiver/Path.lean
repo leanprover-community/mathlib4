@@ -217,7 +217,7 @@ def decidableEqBddPathsZero (v w : V) : DecidableEq (BoundedPaths v w 0) :=
 /-- Given decidable equality on paths of length up to `n`, we can construct
 decidable equality on paths of length up to `n + 1`. -/
 def decidableEqBddPathsOfDecidableEq (n : ℕ) (h₁ : DecidableEq V)
-    (h₂ : ∀ (v w : V), DecidableEq (v ⟶  w)) (h₃ : ∀ (v w : V), DecidableEq (BoundedPaths v w n))
+    (h₂ : ∀ (v w : V), DecidableEq (v ⟶ w)) (h₃ : ∀ (v w : V), DecidableEq (BoundedPaths v w n))
     (v w : V) : DecidableEq (BoundedPaths v w (n + 1)) :=
   fun ⟨p, hp⟩ ⟨q, hq⟩ =>
     match v, w, p, q with

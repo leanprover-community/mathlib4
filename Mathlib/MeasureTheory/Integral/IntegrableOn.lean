@@ -102,6 +102,9 @@ theorem integrableOn_univ : IntegrableOn f univ μ ↔ Integrable f μ := by
 theorem integrableOn_zero : IntegrableOn (fun _ => (0 : ε')) s μ :=
   integrable_zero _ _ _
 
+theorem IntegrableOn.of_measure_zero (hs : μ s = 0) : IntegrableOn f s μ := by
+  simp [IntegrableOn, Measure.restrict_eq_zero.2 hs]
+
 @[simp]
 theorem integrableOn_const_iff {C : ε'} (hC : ‖C‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn (fun _ ↦ C) s μ ↔ C = 0 ∨ μ s < ∞ := by
@@ -127,6 +130,9 @@ theorem IntegrableOn.mono_set_ae (h : IntegrableOn f t μ) (hst : s ≤ᵐ[μ] t
 theorem IntegrableOn.congr_set_ae (h : IntegrableOn f t μ) (hst : s =ᵐ[μ] t) : IntegrableOn f s μ :=
   h.mono_set_ae hst.le
 
+theorem integrableOn_congr_set_ae (hst : s =ᵐ[μ] t) : IntegrableOn f s μ ↔ IntegrableOn f t μ :=
+  ⟨fun h ↦ h.congr_set_ae hst.symm, fun h ↦ h.congr_set_ae hst⟩
+
 theorem IntegrableOn.congr_fun_ae (h : IntegrableOn f s μ) (hst : f =ᵐ[μ.restrict s] g) :
     IntegrableOn g s μ :=
   Integrable.congr h hst
@@ -144,6 +150,11 @@ theorem integrableOn_congr_fun (hst : EqOn f g s) (hs : MeasurableSet s) :
   ⟨fun h => h.congr_fun hst hs, fun h => h.congr_fun hst.symm hs⟩
 
 theorem Integrable.integrableOn (h : Integrable f μ) : IntegrableOn f s μ := h.restrict
+
+@[simp]
+lemma IntegrableOn.of_subsingleton_codomain [Subsingleton ε'] {f : α → ε'} :
+    IntegrableOn f s μ :=
+  Integrable.of_subsingleton_codomain
 
 theorem IntegrableOn.restrict (h : IntegrableOn f s μ) : IntegrableOn f s (μ.restrict t) := by
   dsimp only [IntegrableOn] at h ⊢
@@ -221,6 +232,11 @@ lemma IntegrableOn.finset [MeasurableSingletonClass α] {μ : Measure α} [IsFin
 lemma IntegrableOn.of_finite [MeasurableSingletonClass α] {μ : Measure α} [IsFiniteMeasure μ]
     {s : Set α} (hs : s.Finite) {f : α → E} : IntegrableOn f s μ := by
   simpa using IntegrableOn.finset (s := hs.toFinset)
+
+lemma IntegrableOn.of_subsingleton [MeasurableSingletonClass α] {μ : Measure α} [IsFiniteMeasure μ]
+    {s : Set α} (hs : s.Subsingleton) {f : α → E} :
+    IntegrableOn f s μ :=
+  .of_finite hs.finite
 
 theorem IntegrableOn.add_measure [PseudoMetrizableSpace ε]
     (hμ : IntegrableOn f s μ) (hν : IntegrableOn f s ν) :
@@ -589,6 +605,13 @@ theorem ContinuousOn.aemeasurable [TopologicalSpace α] [OpensMeasurableSpace α
     _root_.continuousOn_iff'.1 hf t ht
   rw [piecewise_preimage, Set.ite, hu]
   exact (u_open.measurableSet.inter hs).union ((measurable_const ht.measurableSet).diff hs)
+
+theorem ContinuousOn.aemeasurable₀ [TopologicalSpace α] [OpensMeasurableSpace α] [MeasurableSpace β]
+    [TopologicalSpace β] [BorelSpace β] {f : α → β} {s : Set α} {μ : Measure α}
+    (hf : ContinuousOn f s) (hs : NullMeasurableSet s μ) : AEMeasurable f (μ.restrict s) := by
+  rcases hs.exists_measurable_subset_ae_eq with ⟨t, ts, ht, t_eq_s⟩
+  rw [← Measure.restrict_congr_set t_eq_s]
+  exact ContinuousOn.aemeasurable (hf.mono ts) ht
 
 /-- A function which is continuous on a separable set `s` is almost everywhere strongly measurable
 with respect to `μ.restrict s`. -/

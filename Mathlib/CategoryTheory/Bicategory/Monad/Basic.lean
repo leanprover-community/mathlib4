@@ -47,7 +47,7 @@ abbrev Comonad.comul {a : B} {t : a ⟶ a} [Comonad t] : t ⟶ t ≫ t := Comon_
 
 namespace Comonad
 
-variable {a: B}
+variable {a : B}
 
 /- Comonad laws -/
 section
@@ -77,16 +77,16 @@ def ofOplaxFromUnit (F : OplaxFunctor (LocallyDiscrete (Discrete Unit)) B) :
     Comonad (F.map (𝟙 ⟨⟨Unit.unit⟩⟩)) where
   comul := F.map₂ (ρ_ _).inv ≫ F.mapComp _ _
   counit := F.mapId _
-  comul_assoc' := by
+  comul_assoc := by
     simp only [tensorObj_def, MonoidalCategory.whiskerLeft_comp, whiskerLeft_def, Category.assoc,
       MonoidalCategory.comp_whiskerRight, whiskerRight_def, associator_def]
     rw [← F.mapComp_naturality_left_assoc, ← F.mapComp_naturality_right_assoc]
     simp only [whiskerLeft_rightUnitor_inv, PrelaxFunctor.map₂_comp, Category.assoc,
       OplaxFunctor.map₂_associator, whiskerRight_id, Iso.hom_inv_id_assoc]
-  counit_comul' := by
+  counit_comul := by
     simp only [tensorUnit_def, tensorObj_def, whiskerRight_def, Category.assoc, leftUnitor_def]
     rw [F.mapComp_id_left, unitors_equal, F.map₂_inv_hom_assoc]
-  comul_counit' := by
+  comul_counit := by
     simp only [tensorUnit_def, tensorObj_def, whiskerLeft_def, rightUnitor_def]
     rw [Category.assoc, F.mapComp_id_right, F.map₂_inv_hom_assoc]
 

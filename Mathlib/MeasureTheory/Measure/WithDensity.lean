@@ -145,6 +145,16 @@ theorem withDensity_absolutelyContinuous {m : MeasurableSpace α} (μ : Measure 
   rw [withDensity_apply _ hs₁]
   exact setLIntegral_measure_zero _ _ hs₂
 
+theorem withDensity_apply₀ (f : α → ℝ≥0∞) {s : Set α} (hs : NullMeasurableSet s μ) :
+    μ.withDensity f s = ∫⁻ a in s, f a ∂μ := by
+  let t := toMeasurable μ s
+  have A : ∫⁻ a in t, f a ∂μ = ∫⁻ a in s, f a ∂μ :=
+    setLIntegral_congr hs.toMeasurable_ae_eq
+  have B : μ.withDensity f t = μ.withDensity f s :=
+    measure_congr (withDensity_absolutelyContinuous μ f hs.toMeasurable_ae_eq)
+  rw [← A, ← B]
+  exact withDensity_apply _ (measurableSet_toMeasurable μ s)
+
 instance noAtoms_withDensity [NoAtoms μ] (f : α → ℝ≥0∞) : NoAtoms (μ.withDensity f) where
   measure_singleton _ := withDensity_absolutelyContinuous μ f (measure_singleton _)
 

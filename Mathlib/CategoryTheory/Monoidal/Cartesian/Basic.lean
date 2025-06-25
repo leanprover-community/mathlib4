@@ -274,19 +274,19 @@ lemma whiskerRight_snd {X Y : C} (f : X ⟶ Y) (Z : C) : f ▷ Z ≫ snd _ _ = s
 
 @[reassoc (attr := simp)]
 lemma tensorHom_fst {X₁ X₂ Y₁ Y₂ : C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) :
-    (f ⊗ g) ≫ fst _ _ = fst _ _ ≫ f := by simp [tensorHom_def]
+    (f ⊗ₘ g) ≫ fst _ _ = fst _ _ ≫ f := by simp [tensorHom_def]
 
 @[reassoc (attr := simp)]
 lemma tensorHom_snd {X₁ X₂ Y₁ Y₂ : C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) :
-    (f ⊗ g) ≫ snd _ _ = snd _ _ ≫ g := by simp [tensorHom_def]
+    (f ⊗ₘ g) ≫ snd _ _ = snd _ _ ≫ g := by simp [tensorHom_def]
 
 @[reassoc (attr := simp)]
 lemma lift_map {V W X Y Z : C} (f : V ⟶ W) (g : V ⟶ X) (h : W ⟶ Y) (k : X ⟶ Z) :
-    lift f g ≫ (h ⊗ k) = lift (f ≫ h) (g ≫ k) := by ext <;> simp
+    lift f g ≫ (h ⊗ₘ k) = lift (f ≫ h) (g ≫ k) := by ext <;> simp
 
 @[simp]
 lemma lift_fst_comp_snd_comp {W X Y Z : C} (g : W ⟶ X) (g' : Y ⟶ Z) :
-    lift (fst _ _ ≫ g) (snd _ _ ≫ g') = g ⊗ g' := by ext <;> simp
+    lift (fst _ _ ≫ g) (snd _ _ ≫ g') = g ⊗ₘ g' := by ext <;> simp
 
 @[reassoc (attr := simp)]
 lemma lift_whiskerRight {X Y Z W : C} (f : X ⟶ Y) (g : X ⟶ Z) (h : Y ⟶ W) :
@@ -408,7 +408,7 @@ theorem lift_snd_fst {X Y : C} : lift (snd X Y) (fst X Y) = (β_ X Y).hom := by 
 
 @[simp, reassoc]
 lemma lift_snd_comp_fst_comp {W X Y Z : C} (g : W ⟶ X) (g' : Y ⟶ Z) :
-    lift (snd _ _ ≫ g') (fst _ _ ≫ g) = (β_ _ _).hom ≫ (g' ⊗ g) := by aesop_cat
+    lift (snd _ _ ≫ g') (fst _ _ ≫ g) = (β_ _ _).hom ≫ (g' ⊗ₘ g) := by aesop_cat
 
 @[reassoc (attr := simp)]
 lemma lift_braiding_hom {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) :
@@ -542,8 +542,8 @@ variable {A B} {A' B' : C}
 /-- Naturality of the `prodComparison` morphism in both arguments. -/
 @[reassoc]
 theorem prodComparison_natural (f : A ⟶ A') (g : B ⟶ B') :
-    F.map (f ⊗ g) ≫ prodComparison F A' B' =
-      prodComparison F A B ≫ (F.map f ⊗ F.map g) := by
+    F.map (f ⊗ₘ g) ≫ prodComparison F A' B' =
+      prodComparison F A B ≫ (F.map f ⊗ₘ F.map g) := by
   apply hom_ext <;>
   simp only [Category.assoc, prodComparison_fst, tensorHom_fst, prodComparison_fst_assoc,
     prodComparison_snd, tensorHom_snd, prodComparison_snd_assoc, ← F.map_comp]
@@ -568,8 +568,8 @@ variable [IsIso (prodComparison F A B)]
 /-- If the product comparison morphism is an iso, its inverse is natural in both argument. -/
 @[reassoc]
 theorem prodComparison_inv_natural (f : A ⟶ A') (g : B ⟶ B') [IsIso (prodComparison F A' B')] :
-    inv (prodComparison F A B) ≫ F.map (f ⊗ g) =
-      (F.map f ⊗ F.map g) ≫ inv (prodComparison F A' B') := by
+    inv (prodComparison F A B) ≫ F.map (f ⊗ₘ g) =
+      (F.map f ⊗ₘ F.map g) ≫ inv (prodComparison F A' B') := by
   rw [IsIso.eq_comp_inv, Category.assoc, IsIso.inv_comp_eq, prodComparison_natural]
 
 /-- If the product comparison morphism is an iso, its inverse is natural in the right argument. -/
@@ -814,13 +814,13 @@ omit [F.OplaxMonoidal] in
 This is not made an instance because it would create a diamond for the oplax monoidal structure on
 the identity and composition of functors. -/
 def ofChosenFiniteProducts (F : C ⥤ D) : F.OplaxMonoidal where
-  η' := terminalComparison F
-  δ' X Y := prodComparison F X Y
-  δ'_natural_left f X' := by ext <;> simp [← Functor.map_comp]
-  δ'_natural_right X g := by ext <;> simp [← Functor.map_comp]
-  oplax_associativity' _ _ _ := by ext <;> simp [← Functor.map_comp]
-  oplax_left_unitality' _ := by ext; simp [← Functor.map_comp]
-  oplax_right_unitality' _ := by ext; simp [← Functor.map_comp]
+  η := terminalComparison F
+  δ X Y := prodComparison F X Y
+  δ_natural_left f X := by ext <;> simp [← Functor.map_comp]
+  δ_natural_right X g := by ext <;> simp [← Functor.map_comp]
+  oplax_associativity _ _ _ := by ext <;> simp [← Functor.map_comp]
+  oplax_left_unitality _ := by ext; simp [← Functor.map_comp]
+  oplax_right_unitality _ := by ext; simp [← Functor.map_comp]
 
 omit [F.OplaxMonoidal] in
 /-- Any functor between cartesian-monoidal categories is oplax monoidal in a unique way. -/
@@ -828,7 +828,7 @@ instance : Subsingleton F.OplaxMonoidal where
   allEq a b := by
     ext1
     · exact toUnit_unique _ _
-    · ext1; ext1; rw [← δ, ← δ, δ_of_cartesianMonoidalCategory, δ_of_cartesianMonoidalCategory]
+    · ext1; ext1; rw [δ_of_cartesianMonoidalCategory, δ_of_cartesianMonoidalCategory]
 
 end OplaxMonoidal
 

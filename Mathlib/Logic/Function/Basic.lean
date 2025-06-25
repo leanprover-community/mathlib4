@@ -645,6 +645,26 @@ theorem update_idem {α} [DecidableEq α] {β : α → Sort*} {a : α} (v w : β
   funext b
   by_cases h : b = a <;> simp [update, h]
 
+@[simp]
+theorem _root_.Pi.map_update {ι : Sort*} [DecidableEq ι] {α β : ι → Sort*}
+    {f : ∀ i, α i → β i}
+    (g : ∀ i, α i) (i : ι) (a : α i) :
+    Pi.map f (Function.update g i a) = Function.update (Pi.map f g) i (f i a) := by
+  ext j
+  obtain rfl | hij := eq_or_ne j i <;> simp [*]
+
+@[simp]
+theorem _root_.Pi.map_injective
+    {ι : Sort*} {α β : ι → Sort*} [∀ i, Nonempty (α i)] {f : ∀ i, α i → β i} :
+    Injective (Pi.map f) ↔ ∀ i, Injective (f i) where
+  mp h i x y hxy := by
+    classical
+    have : Inhabited (∀ i, α i) := ⟨fun _ => Classical.choice inferInstance⟩
+    replace h := @h (Function.update default i x) (Function.update default i y) ?_
+    · simpa using congrFun h i
+    rw [Pi.map_update, Pi.map_update, hxy]
+  mpr := .piMap
+
 end Update
 
 noncomputable section Extend

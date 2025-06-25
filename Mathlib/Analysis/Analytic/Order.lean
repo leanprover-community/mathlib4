@@ -339,7 +339,7 @@ namespace AnalyticOnNhd
 variable {U : Set 𝕜} {f : 𝕜 → E}
 
 /-- The set where an analytic function has infinite order is clopen in its domain of analyticity. -/
-theorem isClopen_setOf_analyticOrderAt_eq_top  (hf : AnalyticOnNhd 𝕜 f U) :
+theorem isClopen_setOf_analyticOrderAt_eq_top (hf : AnalyticOnNhd 𝕜 f U) :
     IsClopen {u : U | analyticOrderAt f u = ⊤} := by
   constructor
   · rw [← isOpen_compl_iff, isOpen_iff_forall_mem_open]

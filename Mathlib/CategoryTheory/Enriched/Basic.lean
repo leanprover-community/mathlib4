@@ -254,7 +254,7 @@ theorem forgetEnrichment_id' (X : C) :
 @[simp]
 theorem forgetEnrichment_comp {X Y Z : ForgetEnrichment W C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     ForgetEnrichment.homTo W (f ≫ g) =
-      ((λ_ (𝟙_ W)).inv ≫ (ForgetEnrichment.homTo W f ⊗ ForgetEnrichment.homTo W g)) ≫
+      ((λ_ (𝟙_ W)).inv ≫ (ForgetEnrichment.homTo W f ⊗ₘ ForgetEnrichment.homTo W g)) ≫
         eComp W _ _ _ :=
   rfl
 
@@ -273,7 +273,7 @@ structure EnrichedFunctor (C : Type u₁) [EnrichedCategory V C] (D : Type u₂)
   map_id : ∀ X : C, eId V X ≫ map X X = eId V (obj X) := by aesop_cat
   map_comp :
     ∀ X Y Z : C,
-      eComp V X Y Z ≫ map X Z = (map X Y ⊗ map Y Z) ≫ eComp V (obj X) (obj Y) (obj Z) := by
+      eComp V X Y Z ≫ map X Z = (map X Y ⊗ₘ map Y Z) ≫ eComp V (obj X) (obj Y) (obj Z) := by
     aesop_cat
 
 attribute [reassoc (attr := simp)] EnrichedFunctor.map_id
@@ -390,8 +390,8 @@ structure GradedNatTrans (A : Center V) (F G : EnrichedFunctor V C D) where
   /-- `app` is a natural transformation. -/
   naturality :
     ∀ X Y : C,
-      (A.2.β (X ⟶[V] Y)).hom ≫ (F.map X Y ⊗ app Y) ≫ eComp V _ _ _ =
-        (app X ⊗ G.map X Y) ≫ eComp V _ _ _
+      (A.2.β (X ⟶[V] Y)).hom ≫ (F.map X Y ⊗ₘ app Y) ≫ eComp V _ _ _ =
+        (app X ⊗ₘ G.map X Y) ≫ eComp V _ _ _
 
 variable [BraidedCategory V]
 

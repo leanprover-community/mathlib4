@@ -434,6 +434,21 @@ end Aux
 
 /-! ### Instances on finite `L^p` products -/
 
+instance topologicalSpace [∀ i, TopologicalSpace (β i)] : TopologicalSpace (PiLp p β) :=
+  inferInstanceAs <| TopologicalSpace (Π i, β i)
+
+@[fun_prop, continuity]
+theorem continuous_equiv [∀ i, TopologicalSpace (β i)] : Continuous (WithLp.equiv p (Π i, β i)) :=
+  continuous_id
+
+@[fun_prop, continuity]
+theorem continuous_equiv_symm [∀ i, TopologicalSpace (β i)] :
+    Continuous (WithLp.equiv p (Π i, β i)).symm :=
+  continuous_id
+
+instance secondCountableTopology [Countable ι] [∀ i, TopologicalSpace (β i)]
+    [∀ i, SecondCountableTopology (β i)] : SecondCountableTopology (PiLp p β) :=
+  inferInstanceAs <| SecondCountableTopology (Π i, β i)
 
 instance uniformSpace [∀ i, UniformSpace (β i)] : UniformSpace (PiLp p β) :=
   Pi.uniformSpace _
@@ -446,14 +461,9 @@ theorem uniformContinuous_equiv_symm [∀ i, UniformSpace (β i)] :
     UniformContinuous (WithLp.equiv p (∀ i, β i)).symm :=
   uniformContinuous_id
 
-@[continuity]
-theorem continuous_equiv [∀ i, UniformSpace (β i)] : Continuous (WithLp.equiv p (∀ i, β i)) :=
-  continuous_id
-
-@[continuity]
-theorem continuous_equiv_symm [∀ i, UniformSpace (β i)] :
-    Continuous (WithLp.equiv p (∀ i, β i)).symm :=
-  continuous_id
+instance completeSpace [∀ i, UniformSpace (β i)] [∀ i, CompleteSpace (β i)] :
+    CompleteSpace (PiLp p β) :=
+  inferInstanceAs <| CompleteSpace (Π i, β i)
 
 instance bornology [∀ i, Bornology (β i)] : Bornology (PiLp p β) :=
   Pi.instBornology

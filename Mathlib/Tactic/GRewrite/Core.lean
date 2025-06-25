@@ -39,11 +39,11 @@ def GRewrite.dischargeMain (hrel : Expr) (goal : MVarId) : MetaM Unit := do
 /-- The result returned by `Lean.MVarId.grewrite`. -/
 structure GRewriteResult where
   /-- The rewritten expression -/
-  eNew     : Expr
+  eNew : Expr
   /-- The proof of the implication. The direction depends on the argument `forwardImp`. -/
   impProof : Expr
   /-- The new side goals -/
-  mvarIds  : List MVarId -- new goals
+  mvarIds : List MVarId -- new goals
 
 /-- Configures the behavior of the `rewrite` and `rw` tactics. -/
 structure GRewrite.Config extends Rewrite.Config where

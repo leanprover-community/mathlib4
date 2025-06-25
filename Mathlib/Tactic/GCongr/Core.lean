@@ -6,8 +6,8 @@ Authors: Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 import Lean
 import Batteries.Lean.Except
 import Batteries.Tactic.Exact
+import Mathlib.Lean.Elab.Term
 import Mathlib.Tactic.GCongr.ForwardAttr
-import Mathlib.Order.Defs.PartialOrder
 import Mathlib.Order.Defs.Unbundled
 
 /-!
@@ -307,10 +307,6 @@ open Elab Tactic
     goal.assignIfDefEq (← mkAppOptM ``Eq.subst #[h, m])
     goal.applyRfl
 
-/-- See if the term is `a < b` and the goal is `a ≤ b`. -/
-@[gcongr_forward] def exactLeOfLt : ForwardExt where
-  eval h goal := do goal.assignIfDefEq (← mkAppM ``le_of_lt #[h])
-
 /-- See if the term is `a ∼ b` with `∼` symmetric and the goal is `b ∼ a`. -/
 @[gcongr_forward] def symmExact : ForwardExt where
   eval h goal := do (← goal.applySymm).assignIfDefEq h
@@ -579,7 +575,16 @@ using the generalized congruence lemmas `add_le_add` and `mul_le_mul_of_nonneg_l
 The tactic attempts to discharge side goals to these "generalized congruence" lemmas (such as the
 side goal `0 ≤ x ^ 2` in the above application of `mul_le_mul_of_nonneg_left`) using the tactic
 `gcongr_discharger`, which wraps `positivity` but can also be extended. Side goals not discharged
-in this way are left for the user. -/
+in this way are left for the user.
+
+`gcongr` will descend into binders (for example sums or suprema). To name the bound variables,
+use `with`:
+```
+example {f g : ℕ → ℝ≥0∞} (h : ∀ n, f n ≤ g n) : ⨆ n, f n ≤ ⨆ n, g n := by
+  gcongr with i
+  exact h i
+```
+-/
 elab "gcongr" template:(colGt term)?
     withArg:((" with" (ppSpace colGt binderIdent)+)?) : tactic => do
   let g ← getMainGoal
@@ -588,7 +593,7 @@ elab "gcongr" template:(colGt term)?
     | throwError "gcongr failed, not a relation"
   -- Elaborate the template (e.g. `x * ?_ + _`), if the user gave one
   let template ← template.mapM fun e => do
-    let template ← Term.elabTerm e (← inferType lhs)
+    let template ← Term.elabPattern e (← inferType lhs)
     unless ← containsHole template do
       throwError "invalid template {template}, it doesn't contain any `?_`"
     pure template

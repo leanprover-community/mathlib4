@@ -127,8 +127,8 @@ theorem mabs_div_le_of_one_le_of_le {a b n : G} (one_le_a : 1 ≤ a) (a_le_n : a
   rw [mabs_div_le_iff, div_le_iff_le_mul, div_le_iff_le_mul]
   exact ⟨le_mul_of_le_of_one_le a_le_n one_le_b, le_mul_of_le_of_one_le b_le_n one_le_a⟩
 
-/-- `|a - b| < n` if `0 ≤ a < n` and `0 ≤ b < n`. -/
-@[to_additive "`|a / b|ₘ < n` if `1 ≤ a < n` and `1 ≤ b < n`."]
+/-- `|a / b|ₘ < n` if `1 ≤ a < n` and `1 ≤ b < n`. -/
+@[to_additive "`|a - b| < n` if `0 ≤ a < n` and `0 ≤ b < n`."]
 theorem mabs_div_lt_of_one_le_of_lt {a b n : G} (one_le_a : 1 ≤ a) (a_lt_n : a < n)
     (one_le_b : 1 ≤ b) (b_lt_n : b < n) : |a / b|ₘ < n := by
   rw [mabs_div_lt_iff, div_lt_iff_lt_mul, div_lt_iff_lt_mul]

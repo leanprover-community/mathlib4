@@ -118,12 +118,14 @@ for message in messages:
 
         # The maintainer merge label is different from the others, as it is not mutually exclusive
         # with them: just add or remove it manually and leave the other emojis alone.
-        if LABEL_NAME == "maintainer-merge":
+        if LABEL_NAME == "maintainer-merge" and message['display_recipient'] != 'mathlib reviewers':
             if ACTION == "labeled":
                 add_reaction('maintainer-merge', 'hammer')
             elif ACTION == "unlabeled":
                 remove_reaction('maintainer-merge', 'hammer')
             continue
+
+        # We should never remove any "this PR was migrated from a fork" reaction.
 
         # Otherwise, remove all previous mutually exclusive emoji reactions.
         # If the emoji is a custom emoji, add the fields `emoji_code` and `reaction_type` as well.
@@ -150,6 +152,8 @@ for message in messages:
             case 'labeled':
                 if LABEL_NAME == 'awaiting-author':
                     add_reaction('awaiting-author', 'writing')
+                elif LABEL_NAME == 'migrated-from-branch':
+                    add_reaction('migrated-from-branch', 'skip_forward')
             case 'unlabeled':
                 if LABEL_NAME == 'awaiting-author':
                     print('awaiting-author removed')

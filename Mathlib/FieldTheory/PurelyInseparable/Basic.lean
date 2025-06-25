@@ -3,6 +3,7 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
+import Mathlib.Algebra.CharP.IntermediateField
 import Mathlib.FieldTheory.SeparableClosure
 
 /-!
@@ -313,6 +314,31 @@ theorem IsPurelyInseparable.minpoly_eq_X_sub_C_pow (q : ℕ) [ExpChar F q] [IsPu
     (x : E) : ∃ n : ℕ, (minpoly F x).map (algebraMap F E) = (X - C x) ^ q ^ n :=
   (isPurelyInseparable_iff_minpoly_eq_X_sub_C_pow F q).1 ‹_› x
 
+variable (E) in
+lemma IsPurelyInseparable.finrank_eq_pow
+    (q : ℕ) [ExpChar F q] [IsPurelyInseparable F E] [FiniteDimensional F E] :
+    ∃ n, finrank F E = q ^ n := by
+  suffices ∀ (F E : Type v) [Field F] [Field E] [Algebra F E] (q : ℕ) [ExpChar F q]
+      [IsPurelyInseparable F E] [FiniteDimensional F E], ∃ n, finrank F E = q ^ n by
+    simpa using this (⊥ : IntermediateField F E) E q
+  intros F E _ _ _ q _ _ _
+  generalize hd : finrank F E = d
+  induction d using Nat.strongRecOn generalizing F with
+  | ind d IH =>
+    by_cases h : (⊥ : IntermediateField F E) = ⊤
+    · rw [← finrank_top', ← h, IntermediateField.finrank_bot] at hd
+      exact ⟨0, ((pow_zero q).trans hd).symm⟩
+    obtain ⟨x, -, hx⟩ := SetLike.exists_of_lt (lt_of_le_of_ne bot_le h:)
+    obtain ⟨m, y, e⟩ := IsPurelyInseparable.minpoly_eq_X_pow_sub_C F q x
+    have : finrank F F⟮x⟯ = q ^ m := by
+      rw [adjoin.finrank (Algebra.IsIntegral.isIntegral x), e, natDegree_sub_C, natDegree_X_pow]
+    obtain ⟨n, hn⟩ := IH _ (by
+      rw [← hd, ← finrank_mul_finrank F F⟮x⟯, Nat.lt_mul_iff_one_lt_left finrank_pos, this]
+      by_contra! H
+      refine hx (finrank_adjoin_simple_eq_one_iff.mp (le_antisymm (this ▸ H) ?_))
+      exact Nat.one_le_iff_ne_zero.mpr Module.finrank_pos.ne') (F⟮x⟯) rfl
+    exact ⟨m + n, by rw [← hd, ← finrank_mul_finrank F F⟮x⟯, hn, pow_add, this]⟩
+
 variable (E)
 
 variable {F E} in
@@ -456,6 +482,10 @@ theorem Field.Emb.cardinal_separableClosure [Algebra.IsAlgebraic F E] :
     #(Field.Emb F <| separableClosure F E) = #(Field.Emb F E) := by
   rw [← (embProdEmbOfIsAlgebraic F (separableClosure F E) E).cardinal_eq,
     mk_prod, mk_eq_one (Emb _ E), lift_one, mul_one, lift_id]
+
+lemma finInsepDegree_eq_pow (q : ℕ) [ExpChar F q] [FiniteDimensional F E] :
+    ∃ n, finInsepDegree F E = q ^ n :=
+  IsPurelyInseparable.finrank_eq_pow ..
 
 /-- An intermediate field of `E / F` contains the separable closure of `F` in `E`
 if `E` is purely inseparable over it. -/

@@ -32,26 +32,16 @@ A Hopf monoid in a braided category `C` is a bimonoid object in `C` equipped wit
 class Hopf_Class (X : C) extends Bimon_Class X where
   /-- The antipode is an endomorphism of the underlying object of the Hopf monoid. -/
   antipode : X ⟶ X
-  /- For the names of the conditions below, the unprimed names are reserved for the version where
-  the argument `X` is explicit. -/
-  antipode_left' : Δ ≫ antipode ▷ X ≫ μ = ε ≫ η := by aesop_cat
-  antipode_right' : Δ ≫ X ◁ antipode ≫ μ = ε ≫ η := by aesop_cat
+  antipode_left (X) : Δ ≫ antipode ▷ X ≫ μ = ε ≫ η := by aesop_cat
+  antipode_right (X) : Δ ≫ X ◁ antipode ≫ μ = ε ≫ η := by aesop_cat
 
 namespace Hopf_Class
 
 @[inherit_doc] scoped notation "𝒮" => Hopf_Class.antipode
 @[inherit_doc] scoped notation "𝒮["M"]" => Hopf_Class.antipode (X := M)
 
-/- The simp attribute is reserved for the unprimed versions. -/
-attribute [reassoc] antipode_left' antipode_right'
+attribute [reassoc (attr := simp)] antipode_left antipode_right
 
-/-- The object is provided as an explicit argument. -/
-@[reassoc (attr := simp)]
-theorem antipode_left (X : C) [Hopf_Class X] : Δ ≫ 𝒮 ▷ X ≫ μ = ε ≫ η := antipode_left'
-
-/-- The object is provided as an explicit argument. -/
-@[reassoc (attr := simp)]
-theorem antipode_right (X : C) [Hopf_Class X] : Δ ≫ X ◁ 𝒮 ≫ μ = ε ≫ η := antipode_right'
 
 end Hopf_Class
 
@@ -155,8 +145,8 @@ theorem antipode_comul₁ (A : C) [Hopf_Class A] :
       A ◁ (β_ A A).hom ▷ A ≫
       A ◁ (α_ A A A).hom ≫
       (α_ A A (A ⊗ A)).inv ≫
-      (μ[A] ⊗ μ[A]) =
-    ε[A] ≫ (λ_ (𝟙_ C)).inv ≫ (η[A] ⊗ η[A]) := by
+      (μ[A] ⊗ₘ μ[A]) =
+    ε[A] ≫ (λ_ (𝟙_ C)).inv ≫ (η[A] ⊗ₘ η[A]) := by
   slice_lhs 3 5 =>
     rw [← associator_naturality_right, ← Category.assoc, ← tensorHom_def]
   slice_lhs 3 9 =>
@@ -198,13 +188,13 @@ theorem antipode_comul₂ (A : C) [Hopf_Class A] :
       (α_ A A A).hom ≫
       A ◁ A ◁ Δ[A] ≫
       A ◁ A ◁ (β_ A A).hom ≫
-      A ◁ A ◁ (𝒮[A] ⊗ 𝒮[A]) ≫
+      A ◁ A ◁ (𝒮[A] ⊗ₘ 𝒮[A]) ≫
       A ◁ (α_ A A A).inv ≫
       A ◁ (β_ A A).hom ▷ A ≫
       A ◁ (α_ A A A).hom ≫
       (α_ A A (A ⊗ A)).inv ≫
-      (μ[A] ⊗ μ[A]) =
-    ε[A] ≫ (λ_ (𝟙_ C)).inv ≫ (η[A] ⊗ η[A]) := by
+      (μ[A] ⊗ₘ μ[A]) =
+    ε[A] ≫ (λ_ (𝟙_ C)).inv ≫ (η[A] ⊗ₘ η[A]) := by
   -- We should write a version of `slice_lhs` that zooms through whiskerings.
   slice_lhs 6 6 =>
     simp only [tensorHom_def', MonoidalCategory.whiskerLeft_comp]
@@ -267,7 +257,7 @@ theorem antipode_comul₂ (A : C) [Hopf_Class A] :
   monoidal
 
 theorem antipode_comul (A : C) [Hopf_Class A] :
-    𝒮[A] ≫ Δ[A] = Δ[A] ≫ (β_ _ _).hom ≫ (𝒮[A] ⊗ 𝒮[A]) := by
+    𝒮[A] ≫ Δ[A] = Δ[A] ≫ (β_ _ _).hom ≫ (𝒮[A] ⊗ₘ 𝒮[A]) := by
   -- Again, it is a "left inverse equals right inverse" argument in the convolution monoid.
   apply left_inv_eq_right_inv
     (M := Conv A (A ⊗ A))
@@ -286,7 +276,7 @@ theorem antipode_comul (A : C) [Hopf_Class A] :
     exact antipode_comul₂ A
 
 theorem mul_antipode₁ (A : C) [Hopf_Class A] :
-    (Δ[A] ⊗ Δ[A]) ≫
+    (Δ[A] ⊗ₘ Δ[A]) ≫
       (α_ A A (A ⊗ A)).hom ≫
       A ◁ (α_ A A A).inv ≫
       A ◁ (β_ A A).hom ▷ A ≫
@@ -297,7 +287,7 @@ theorem mul_antipode₁ (A : C) [Hopf_Class A] :
       (α_ A A A).hom ≫
       A ◁ μ[A] ≫
       μ[A] =
-    (ε[A] ⊗ ε[A]) ≫ (λ_ (𝟙_ C)).hom ≫ η[A] := by
+    (ε[A] ⊗ₘ ε[A]) ≫ (λ_ (𝟙_ C)).hom ≫ η[A] := by
   slice_lhs 8 9 =>
     rw [associator_naturality_left]
   slice_lhs 9 10 =>
@@ -339,7 +329,7 @@ We then move the rightmost comultiplication under the strand,
 and simplify using `antipode_right`.
 -/
 theorem mul_antipode₂ (A : C) [Hopf_Class A] :
-    (Δ[A] ⊗ Δ[A]) ≫
+    (Δ[A] ⊗ₘ Δ[A]) ≫
       (α_ A A (A ⊗ A)).hom ≫
       A ◁ (α_ A A A).inv ≫
       A ◁ (β_ A A).hom ▷ A ≫
@@ -348,9 +338,9 @@ theorem mul_antipode₂ (A : C) [Hopf_Class A] :
       μ[A] ▷ A ▷ A ≫
       (α_ A A A).hom ≫
       A ◁ (β_ A A).hom ≫
-      A ◁ (𝒮[A] ⊗ 𝒮[A]) ≫
+      A ◁ (𝒮[A] ⊗ₘ 𝒮[A]) ≫
       A ◁ μ[A] ≫ μ[A] =
-    (ε[A] ⊗ ε[A]) ≫ (λ_ (𝟙_ C)).hom ≫ η[A] := by
+    (ε[A] ⊗ₘ ε[A]) ≫ (λ_ (𝟙_ C)).hom ≫ η[A] := by
   slice_lhs 7 8 =>
     rw [associator_naturality_left]
   slice_lhs 8 9 =>
@@ -436,7 +426,7 @@ theorem mul_antipode₂ (A : C) [Hopf_Class A] :
   monoidal
 
 theorem mul_antipode (A : C) [Hopf_Class A] :
-    μ[A] ≫ 𝒮[A] = (𝒮[A] ⊗ 𝒮[A]) ≫ (β_ _ _).hom ≫ μ[A] := by
+    μ[A] ≫ 𝒮[A] = (𝒮[A] ⊗ₘ 𝒮[A]) ≫ (β_ _ _).hom ≫ μ[A] := by
   -- Again, it is a "left inverse equals right inverse" argument in the convolution monoid.
   apply left_inv_eq_right_inv
     (M := Conv (A ⊗ A) A)
