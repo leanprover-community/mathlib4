@@ -25,9 +25,6 @@ while `σsInf_le` is the same statement in Boolean σ-algebras with an additiona
 is countable.
 -/
 
-
-universe u
-
 variable {α : Type*}
 
 section BooleanSigmaAlgebra
