@@ -90,6 +90,12 @@ lemma inverse_right_inv [Nonempty H] (h : SliceModel F I I') (z : H') (hz : z �
   choose x hx using hz
   rw [← hx, h.inverse_left_inv]
 
+lemma continuousOn_inverse_range [Nonempty H] (h : SliceModel F I I') :
+    ContinuousOn h.inverse (range h.map) := by
+  rw [h.hmap.continuousOn_iff]
+  apply continuousOn_id.congr
+  exact fun x hx ↦ by simp [inverse_right_inv h x hx]
+
 end SliceModel
 
 namespace ContinuousLinearEquiv -- PRed in #26082
@@ -309,14 +315,14 @@ variable [Nonempty H] {φ : PartialHomeomorph M' H'} {f : M → M'}
 noncomputable def _root_.PartialEquiv.pullback_sliceModel [Nonempty M] (φ : PartialEquiv M' H')
     {f : M → M'} (hf : InjOn f (f ⁻¹' φ.source))
     -- TODO: is hfoo the right condition to impose?
-    (h : SliceModel F I I') (hfoo : ∀ y, y ∈ range f → φ.target ⊆ range h.map) : PartialEquiv M H
+    (h : SliceModel F I I') (hfoo : φ.target ⊆ range h.map) : PartialEquiv M H
     where
   toFun := h.inverse ∘ φ ∘ f
   invFun := (localInverseOn f (f ⁻¹' φ.source)) ∘ φ.symm ∘ h.map
   source := f ⁻¹' φ.source
   target := h.map ⁻¹' φ.target
   map_source' x hx := by
-    specialize hfoo (f x) (mem_range_self x) (φ.map_source hx)
+    specialize hfoo (φ.map_source hx)
     simp [h.inverse_right_inv (φ (f x)) hfoo, φ.map_source hx]
   map_target' x hx := sorry -- need to think harder!
   left_inv' x hx := by
@@ -347,23 +353,19 @@ noncomputable def _root_.PartialEquiv.pullback_sliceModel [Nonempty M] (φ : Par
 variable (φ f) in
 noncomputable def pullback_sliceModel [Nonempty M] (h : SliceModel F I I') (hf : Continuous f)
     (hf' : InjOn f (f ⁻¹' φ.source))
-    (hfoo : ∀ y, y ∈ range f → φ.target ⊆ range h.map) : PartialHomeomorph M H where
+    (hfoo : φ.target ⊆ range h.map) : PartialHomeomorph M H where
   toPartialEquiv := φ.toPartialEquiv.pullback_sliceModel hf' h hfoo
   open_source := hf.isOpen_preimage _ φ.open_source
   open_target := h.hmap.continuous.isOpen_preimage _ φ.open_target
   continuousOn_toFun := by
     simp only [PartialEquiv.pullback_sliceModel_source]
-    change ContinuousOn (h.inverse ∘ φ ∘ f) (f ⁻¹' φ.source) -- add simp lemma!
-    have : ContinuousOn (φ ∘ f) (f ⁻¹' φ.source) := by
-      have : ContinuousOn φ φ.source := φ.continuousOn_toFun
-      have : Continuous f := hf
-      sorry -- combine the last two refine ContinuousOn.comp ?_ this
-    -- need h.inverse to be continuous on some reasonable set,
-    -- which includes the domain of continuity of the above
-    -- apply ContinuousOn.comp
-    -- have : ContinuousOn h.inverse (h.map '' (f ⁻¹' φ.source)) := sorry -- why
-    sorry
-  continuousOn_invFun := sorry
+    change ContinuousOn (h.inverse ∘ φ ∘ f) (f ⁻¹' φ.source)
+    have : ContinuousOn (φ ∘ f) (f ⁻¹' φ.source) :=
+      φ.continuousOn_toFun.comp hf.continuousOn fun ⦃x⦄ a ↦ a
+    apply h.continuousOn_inverse_range.comp this
+    intro x hx
+    apply hfoo (by simp_all)
+  continuousOn_invFun := sorry -- should be similar
 
 end
 
