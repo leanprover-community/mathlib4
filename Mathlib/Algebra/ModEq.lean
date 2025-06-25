@@ -222,6 +222,9 @@ theorem sub_modEq_iff_modEq_add : a - b ≡ c [PMOD p] ↔ a ≡ c + b [PMOD p] 
 @[simp]
 theorem sub_modEq_zero : a - b ≡ 0 [PMOD p] ↔ a ≡ b [PMOD p] := by simp [sub_modEq_iff_modEq_add]
 
+theorem add_modEq_zero_iff_modEq_neg : a + b ≡ 0 [PMOD p] ↔ a ≡ -b [PMOD p] := by
+  rw [← zero_sub, modEq_comm, ← sub_modEq_iff_modEq_add, modEq_comm]
+
 @[simp]
 theorem add_modEq_left : a + b ≡ a [PMOD p] ↔ b ≡ 0 [PMOD p] := by simp [← modEq_sub_iff_add_modEq']
 

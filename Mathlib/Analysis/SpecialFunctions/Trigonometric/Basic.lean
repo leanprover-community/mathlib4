@@ -543,6 +543,17 @@ theorem sin_eq_neg_one_iff (x : ℝ) : sin x = -1 ↔ x ≡ 3 * π / 2 [PMOD (2 
     add_div' _ _ _ two_ne_zero]
   ring_nf
 
+theorem cos_eq_cos_iff {θ ψ : ℝ} :
+    cos θ = cos ψ ↔ θ ≡ ψ [PMOD (2 * π)] ∨ θ ≡ -ψ [PMOD (2 * π)] := by
+  rw [← sub_eq_zero, cos_sub_cos, mul_eq_zero, mul_eq_zero, neg_eq_zero,
+    eq_false (two_ne_zero' ℝ), false_or, sin_eq_zero_iff, sin_eq_zero_iff]
+  conv_lhs =>
+    conv => enter [1]; rw [← AddCommGroup.nsmul_modEq_nsmul two_ne_zero]
+    conv => enter [2]; rw [← AddCommGroup.nsmul_modEq_nsmul two_ne_zero]
+  simp_rw [smul_zero, nsmul_eq_mul, Nat.cast_ofNat, mul_div_cancel₀ _ (two_ne_zero' ℝ),
+    AddCommGroup.sub_modEq_iff_modEq_add, zero_add, ← AddCommGroup.add_modEq_zero_iff_modEq_neg,
+    or_comm]
+
 -- TODO: this is really a statement about `PMOD` when things are bounded
 theorem cos_eq_one_iff_of_lt_of_lt {x : ℝ} (hx₁ : -(2 * π) < x) (hx₂ : x < 2 * π) :
     cos x = 1 ↔ x = 0 :=
