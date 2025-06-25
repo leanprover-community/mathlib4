@@ -223,15 +223,7 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
         simp only [testBit_bit_succ] at hn hm
         have := hn' _ hn hm fun j hj => by
           convert hnm j.succ (succ_lt_succ hj) using 1 <;> rw [testBit_bit_succ]
-        have this' : 2 * n < 2 * m := Nat.mul_lt_mul_of_le_of_lt (le_refl _) this Nat.two_pos
-        cases b <;> cases b'
-        <;> simp only [bit_false, bit_true]
-        · exact this'
-        · exact Nat.lt_add_right 1 this'
-        · calc
-            2 * n + 1 < 2 * n + 2 := lt.base _
-            _ ≤ 2 * m := mul_le_mul_left 2 this
-        · exact Nat.succ_lt_succ this'
+        exact bit_lt_bit b b' this
 
 theorem bitwise_swap {f : Bool → Bool → Bool} :
     bitwise (Function.swap f) = Function.swap (bitwise f) := by

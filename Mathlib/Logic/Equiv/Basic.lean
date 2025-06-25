@@ -998,12 +998,8 @@ end Equiv
 
 theorem Function.Injective.swap_apply
     [DecidableEq α] [DecidableEq β] {f : α → β} (hf : Function.Injective f) (x y z : α) :
-    Equiv.swap (f x) (f y) (f z) = f (Equiv.swap x y z) := by
-  by_cases hx : z = x
-  · simp [hx]
-  by_cases hy : z = y
-  · simp [hy]
-  rw [Equiv.swap_apply_of_ne_of_ne hx hy, Equiv.swap_apply_of_ne_of_ne (hf.ne hx) (hf.ne hy)]
+    Equiv.swap (f x) (f y) (f z) = f (Equiv.swap x y z) :=
+  Eq.symm (map_swap hf x y z)
 
 theorem Function.Injective.swap_comp
     [DecidableEq α] [DecidableEq β] {f : α → β} (hf : Function.Injective f) (x y : α) :

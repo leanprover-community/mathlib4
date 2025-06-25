@@ -248,14 +248,7 @@ theorem realize_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) 
     rw [realize_ex]
     refine _root_.trans (exists_congr fun _ => ih hψ.liftAt) ?_
     simp only [realize_imp, realize_liftAt_one_self, snoc_comp_castSucc, realize_all]
-    refine ⟨?_, fun h' => ?_⟩
-    · rintro ⟨a, ha⟩ h
-      exact ha (h a)
-    · by_cases h : ψ.Realize v xs
-      · inhabit M
-        exact ⟨default, fun _h'' => h⟩
-      · obtain ⟨a, ha⟩ := not_forall.1 (h ∘ h')
-        exact ⟨a, fun h => (ha h).elim⟩
+    exact Iff.symm forall_imp_iff_exists_imp
   | ex _ ih =>
     intro ψ hψ
     refine _root_.trans (forall_congr' fun _ => ih hψ.liftAt) ?_
