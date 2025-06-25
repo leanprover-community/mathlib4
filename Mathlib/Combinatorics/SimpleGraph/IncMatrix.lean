@@ -53,7 +53,7 @@ variable (R : Type*) {α : Type*} (G : SimpleGraph α)
 `a` and `0` otherwise. -/
 def incMatrix [Zero R] [One R] [DecidableEq α] [DecidableRel G.Adj] : Matrix α (Sym2 α) R :=
   .of fun a e =>
-    if e ∈ (G.incidenceSet a) then 1 else 0
+    if e ∈ G.incidenceSet a then 1 else 0
 
 variable {R}
 
