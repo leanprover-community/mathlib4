@@ -22,16 +22,6 @@ namespace SimpleGraph
 
 variable {V : Type*} {G : SimpleGraph V}
 
-lemma Walk.getVert_eq_support_getElem {u v : V} {n : ℕ} (p : G.Walk u v) (h : n ≤ p.length) :
-    p.getVert n = p.support[n]'(p.length_support ▸ Nat.lt_add_one_of_le h) := by
-  cases p with
-  | nil => simp
-  | cons => cases n with
-    | zero => simp
-    | succ n =>
-      simp_rw [support_cons, getVert_cons _ _ n.zero_ne_add_one.symm, List.getElem_cons]
-      exact getVert_eq_support_getElem _ (Nat.sub_le_of_le_add h)
-
 @[simp]
 lemma Walk.drop_length {u v : V} (p : G.Walk u v) (n : ℕ) : (p.drop n).length = p.length - n := by
   induction p generalizing n with
@@ -285,7 +275,7 @@ lemma Walk.ext_getVert_le_length {u v} {p q : G.Walk u v} (hl : p.length = q.len
   intro k
   cases le_or_gt k p.length with
   | inl hk =>
-    rw [← getVert_eq_support_get? p hk, ← getVert_eq_support_get? q (hl ▸ hk)]
+    rw [← getVert_eq_support_getElem? p hk, ← getVert_eq_support_getElem? q (hl ▸ hk)]
     exact congrArg some (h k hk)
   | inr hk =>
     replace hk : p.length + 1 ≤ k := hk
@@ -380,8 +370,8 @@ lemma isAcyclic_of_subsingleton [Subsingleton V] :
   intro v w
   by_contra h
   have heq := subsingleton_iff.mp ‹_›
-  have h₁ := w.tail.getVert_eq_support_get? <| Nat.zero_le _
-  have h₂ := Walk.tail_length _ ▸ w.tail.getVert_eq_support_get? rfl.le
+  have h₁ := w.tail.getVert_eq_support_getElem? <| Nat.zero_le _
+  have h₂ := Walk.tail_length _ ▸ w.tail.getVert_eq_support_getElem? rfl.le
   suffices w.tail.support[0]? = w.tail.support[w.length - 1]? by
     rw [Walk.support_tail_of_not_nil _ h.not_nil] at this
     apply List.getElem?_inj (by
