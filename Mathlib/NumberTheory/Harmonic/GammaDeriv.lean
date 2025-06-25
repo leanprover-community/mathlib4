@@ -104,7 +104,7 @@ lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (
   -- the derivative of Gamma at 1.
   calc deriv Gamma (1 / 2)
   _ = (deriv (fun s ↦ Gamma s * Gamma (s + 1 / 2)) (1 / 2)) + √π * γ := by
-    rw [deriv_mul, Gamma_one_half_eq,
+    rw [deriv_fun_mul, Gamma_one_half_eq,
       add_assoc, ← mul_add, deriv_comp_add_const,
       (by norm_num : 1/2 + 1/2 = (1 : ℝ)), Gamma_one, mul_one,
       eulerMascheroniConstant_eq_neg_deriv, add_neg_cancel, mul_zero, add_zero]
@@ -121,7 +121,7 @@ lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (
   _ = √π * (deriv (fun s ↦ Gamma (2 * s)) (1 / 2) +
               deriv (fun s : ℝ ↦ 2 ^ (1 - 2 * s)) (1 / 2) + γ) := by
     congr 2
-    rw [deriv_mul]
+    rw [deriv_fun_mul]
     · congr 1 <;> norm_num
     · exact h_diff' one_half_pos
     · exact DifferentiableAt.rpow (by fun_prop) (by fun_prop) two_ne_zero
@@ -158,17 +158,20 @@ private lemma HasDerivAt.complex_of_real {f : ℂ → ℂ} {g : ℝ → ℝ} {g'
   rw [← (funext hfg ▸ hf.hasDerivAt.comp_ofReal.deriv :)]
   exact hg.ofReal_comp.deriv
 
-lemma differentiable_at_Gamma_nat_add_one (n : ℕ) :
+lemma differentiableAt_Gamma_nat_add_one (n : ℕ) :
     DifferentiableAt ℂ Gamma (n + 1) := by
   refine differentiableAt_Gamma _ (fun m ↦ ?_)
   simp only [Ne, ← ofReal_natCast, ← ofReal_one, ← ofReal_add, ← ofReal_neg, ofReal_inj,
     eq_neg_iff_add_eq_zero]
   positivity
 
+@[deprecated (since := "2025-06-06")] alias differentiable_at_Gamma_nat_add_one :=
+  differentiableAt_Gamma_nat_add_one
+
 lemma hasDerivAt_Gamma_nat (n : ℕ) :
     HasDerivAt Gamma (n ! * (-γ + harmonic n)) (n + 1) := by
   exact_mod_cast HasDerivAt.complex_of_real
-    (by exact_mod_cast differentiable_at_Gamma_nat_add_one n)
+    (by exact_mod_cast differentiableAt_Gamma_nat_add_one n)
     (Real.hasDerivAt_Gamma_nat n) Gamma_ofReal
 
 /-- Explicit formula for the derivative of the complex Gamma function at positive integers, in

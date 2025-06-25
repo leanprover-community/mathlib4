@@ -89,7 +89,7 @@ instance [h : DivInvMonoid α] : DivInvMonoid αᵒᵈ := h
 @[to_additive]
 instance [h : DivisionMonoid α] : DivisionMonoid αᵒᵈ := h
 
-@[to_additive OrderDual.subtractionCommMonoid]
+@[to_additive]
 instance [h : DivisionCommMonoid α] : DivisionCommMonoid αᵒᵈ := h
 
 @[to_additive]
@@ -209,7 +209,7 @@ instance [h : DivInvMonoid α] : DivInvMonoid (Lex α) := h
 @[to_additive]
 instance [h : DivisionMonoid α] : DivisionMonoid (Lex α) := h
 
-@[to_additive existing OrderDual.subtractionCommMonoid]
+@[to_additive]
 instance [h : DivisionCommMonoid α] : DivisionCommMonoid (Lex α) := h
 
 @[to_additive]

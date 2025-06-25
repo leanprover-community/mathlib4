@@ -134,7 +134,7 @@ attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 
 /-- The natural transformation between two functors out of the
- walking pair, specified by its components. -/
+walking pair, specified by its components. -/
 def mapPair : F ⟶ G where
   app
     | ⟨left⟩ => f
@@ -1229,13 +1229,13 @@ noncomputable def Over.coprod [HasBinaryCoproducts C] {A : C} : Over A ⥤ Over 
         dsimp; rw [coprod.map_desc, Category.id_comp, Over.w k])
       naturality := fun f g k => by
         ext
-        dsimp; simp }
+        simp }
   map_id X := by
     ext
-    dsimp; simp
+    simp
   map_comp f g := by
     ext
-    dsimp; simp
+    simp
 
 end CategoryTheory
 
