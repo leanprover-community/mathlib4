@@ -13,24 +13,8 @@ import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 
-
 import Mathlib.Tactic.FunProp
 
-/-!
-## `funProp` minimal setup for Differentiable(At/On)
--/
-
-
-section Missing
-
-section lambda_rules
-
-variable {K : Type*} [NontriviallyNormedField K]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace K G]
-variable {f : E → F} {x} {s}
-
-end lambda_rules
-
-end Missing
+deprecated_module
+  "fun_prop knows about Differentiable(At/On) directly; no need to import this file any more"
+  (since := "2025-06-25")
