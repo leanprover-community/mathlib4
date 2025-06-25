@@ -36,10 +36,6 @@ variable {𝕜 E F : Type*}
 variable [LocallyCompactSpace E]
 variable (L μ ν)
 
--- Instances with keys using `Submodule`
-instance (T : Submodule 𝕜 E) : BorelSpace T := Subtype.borelSpace _
-instance (T : Submodule 𝕜 E) : OpensMeasurableSpace T := Subtype.opensMeasurableSpace _
-
 /-- The image of an additive Haar measure under a surjective linear map is proportional to a given
 additive Haar measure. The proportionality factor will be infinite if the linear map has a
 nontrivial kernel. -/
