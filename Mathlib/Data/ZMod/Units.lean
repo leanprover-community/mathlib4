@@ -114,7 +114,7 @@ lemma eq_unit_mul_divisor {N : ℕ} (a : ZMod N) :
 theorem coe_int_mul_inv_eq_one {n : ℕ} (x : ℤ) (h : IsCoprime x n) :
     (x : ZMod n) * (x : ZMod n)⁻¹ = 1 := by
   by_cases hn : n = 0
-  · simp only [hn, CharP.cast_eq_zero, isCoprime_zero_right] at h
+  · simp only [hn, Nat.cast_zero, isCoprime_zero_right] at h
     rcases Int.isUnit_eq_one_or h with h | h <;> simp [h]
   haveI : NeZero n := ⟨hn⟩
   rw [← natCast_zmod_val x]

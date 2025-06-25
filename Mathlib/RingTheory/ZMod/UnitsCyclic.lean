@@ -220,9 +220,8 @@ theorem isCyclic_units_of_prime_pow (p : ℕ) (hp : p.Prime) (hp2 : p ≠ 2) (n 
   rw [isCyclic_iff_exists_orderOf_eq_natCard]
   -- The product of `ha.unit` and `b ^ k` has the required order
   use ha.unit * b ^ k
-  rw [(Commute.all _ _).orderOf_mul_eq_mul_orderOf_of_coprime,
-    this, Nat.card_eq_fintype_card, ZMod.card_units_eq_totient,
-    Nat.totient_prime_pow_succ hp, ← ha']
+  rw [(Commute.all _ _).orderOf_mul_eq_mul_orderOf_of_coprime, this, Nat.card_eq_fintype_card,
+    ZMod.card_units_eq_totient, Nat.totient_prime_pow_succ hp, ← ha']
   rw [ha', this]
   apply Nat.Coprime.pow_left
   rw [Nat.coprime_self_sub_right hp.pos]
