@@ -13,10 +13,12 @@ import ProofWidgets.Component.FilterDetails
 This file defines `rw??`, an interactive tactic that suggests rewrites for any expression selected
 by the user.
 
-We use a (lazy) `RefinedDiscrTree` to lookup a list of candidate rewrite lemmas.
-We exclude lemmas from blacklisted imports, as these lemmas aren't supposed to be used directly.
-
-After this, each lemma is checked one by one to see whether it is applicable.
+`rw??` uses a (lazy) `RefinedDiscrTree` to lookup a list of candidate rewrite lemmas.
+It excludes lemmas that are automatically generated.
+Each lemma is then checked one by one to see whether it is applicable.
+For each lemma that works, the corresponding rewrite tactic is constructed
+and converted into a `String` that fits inside mathlib's 100 column limit,
+so that it can be pasted into the editor when selected by the user.
 
 The `RefinedDiscrTree` lookup groups the results by match pattern and gives a score to each pattern.
 This is used to display the results in sections. The sections are ordered by this score.
@@ -35,6 +37,11 @@ When a rewrite lemma introduces new goals, these are shown after a `⊢`.
 ## TODO
 
 Ways to improve `rw??`:
+- Improve the logic around `nth_rw` and occurrences,
+  and about when to pass explicit arguments to the rewrite lemma.
+  For example, we could only pass explicit arguments if that avoids using `nth_rw`.
+  Performance may be a limiting factor for this.
+  Currently, the occurrence is computed by `viewKAbstractSubExpr`.
 - Modify the interface to allow creating a whole `rw [.., ..]` chain, without having to go into
   the editor in between. For this to work, we will need a more general syntax,
   something like `rw [..]??`, which would be pasted into the editor.
@@ -506,14 +513,14 @@ def LibraryRewriteComponent : Component SelectInsertParams :=
   mk_rpc_widget% LibraryRewrite.rpc
 
 /--
-`rw??` is an interactive library rewrite tactic. To use it, shift-click the expression in the
-tactic state that you want to rewrite. Then click on one of the rewrite suggestions. This will
-paste the relevant rewrite tactic into the editor.
+`rw??` is an interactive tactic that suggests rewrites for any expression selected by the user.
+To use it, shift-click an expression in the goal or a hypothesis that you want to rewrite.
+Clicking on one of the rewrite suggestions will paste the relevant rewrite tactic into the editor.
 
-The suggestions are sorted by the match pattern of the rewrite lemmas.
-The results are also filtered: reflexive and duplicate rewrites, and rewrites that leave
-metavariables in the replacement expression are all filtered out. To see all suggestions,
-click on the filter button (▼) in the top right.
+The rewrite suggestions are grouped and sorted by the pattern that the rewrite lemmas match with.
+Reflexive and duplicate rewrites are filtered out,
+as well as rewrites that have new metavariables in the replacement expression.
+To see all suggestions, click on the filter button (▼) in the top right.
 -/
 elab stx:"rw??" : tactic => do
   let some range := (← getFileMap).rangeOfStx? stx | return
@@ -540,8 +547,7 @@ def SectionToMessageData (sec : Array (Rewrite × Name) × Bool) : MetaM (Option
   let head ← pattern (← getConstInfo name).type rw.symm (addMessageContext m! "{·}")
   return some <| "Pattern " ++ head ++ "\n" ++ rewrites
 
-/-- `#rw?? e` gives all possible rewrites of `e`.
-In tactic mode, use `rw??` instead. -/
+/-- `#rw?? e` gives all possible rewrites of `e`. It is a testing command for the `rw??` tactic -/
 syntax (name := rw??Command) "#rw??" ("all")? term : command
 
 open Elab
@@ -573,7 +579,3 @@ def elabrw??Command : Command.CommandElab := fun stx =>
     logInfo (.joinSep sections.toList "\n\n")
 
 end Mathlib.Tactic.LibraryRewrite
-
-
--- example (n m : Nat) : n + m + 0 = m + n := by
---   rw??
