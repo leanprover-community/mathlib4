@@ -346,6 +346,9 @@ theorem cast_natCast (h : m ∣ n) (k : ℕ) : (cast (k : ZMod n) : R) = k :=
 theorem cast_intCast (h : m ∣ n) (k : ℤ) : (cast (k : ZMod n) : R) = k :=
   map_intCast (castHom h R) k
 
+theorem castHom_surjective (h : m ∣ n) : Function.Surjective (castHom h (ZMod m)) :=
+  fun a ↦ by obtain ⟨a, rfl⟩ := intCast_surjective a; exact ⟨a, map_intCast ..⟩
+
 end CharDvd
 
 section CharEq
