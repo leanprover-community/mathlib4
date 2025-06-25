@@ -173,7 +173,6 @@ disk to itself, then for any point `z` of this disk we have `dist (f z) c ≤ di
 theorem dist_le_dist_of_mapsTo_ball_self (hd : DifferentiableOn ℂ f (ball c R))
     (h_maps : MapsTo f (ball c R) (ball c R)) (hc : f c = c) (hz : z ∈ ball c R) :
     dist (f z) c ≤ dist z c := by
-  -- Porting note: `simp` was failing to use `div_self`
   have := dist_le_div_mul_dist_of_mapsTo_ball hd (by rwa [hc]) hz
   rwa [hc, div_self, one_mul] at this
   exact (nonempty_ball.1 ⟨z, hz⟩).ne'

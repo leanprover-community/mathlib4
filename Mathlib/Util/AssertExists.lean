@@ -77,6 +77,22 @@ elab "assert_exists " n:ident : command => do
   -- something that doesn't exist, otherwise succeeds
   let _ ← liftCoreM <| realizeGlobalConstNoOverloadWithInfo n
 
+/-- `importPathMessage env idx` produces a message laying out an import chain from `idx` to the
+current module.  The output is of the form
+```
+Mathlib.Init,
+  which is imported by Mathlib.Util.AssertExistsExt,
+  which is imported by Mathlib.Util.AssertExists,
+  which is imported by this file.
+```
+if `env` is an `Environment` and `idx` is the module index of `Mathlib.Init`.
+-/
+def importPathMessage (env : Environment) (idx : ModuleIdx) : MessageData :=
+  let modNames := env.header.moduleNames
+  let msg := (env.importPath modNames[idx]!).foldl (init := m!"{modNames[idx]!},")
+    (· ++ m!"\n  which is imported by {·},")
+  msg ++ m!"\n  which is imported by this file."
+
 /--
 `assert_not_exists d₁ d₂ ... dₙ` is a user command that asserts that the declarations named
 `d₁ d₂ ... dₙ` *do not exist* in the current import scope.
@@ -97,9 +113,6 @@ You should *not* delete the `assert_not_exists` statement without careful discus
 -/
 elab "assert_not_exists " ns:ident+ : command => do
   let env ← getEnv
-  let modNames := env.header.moduleNames
-  let modData := env.header.moduleData
-  let modDataSize := modData.size
   for n in ns do
     let decl ←
       try liftCoreM <| realizeGlobalConstNoOverloadWithInfo n
@@ -110,13 +123,8 @@ elab "assert_not_exists " ns:ident+ : command => do
     let msg ← (do
       let mut some idx := env.getModuleIdxFor? decl
         | pure m!"Declaration {c} is defined in this file."
-      let mut msg := m!"Declaration {c} is not allowed to be imported by this file.\n\
-        It is defined in {modNames[idx.toNat]!},"
-      for i in [idx.toNat+1:modDataSize] do
-        if modData[i]!.imports.any (·.module == modNames[idx.toNat]!) then
-          idx := i
-          msg := msg ++ m!"\n  which is imported by {modNames[i]!},"
-      pure <| msg ++ m!"\n  which is imported by this file.")
+      pure m!"Declaration {c} is not allowed to be imported by this file.\n\
+        It is defined in {importPathMessage env idx}")
     logErrorAt n m!"{msg}\n\n\
       These invariants are maintained by `assert_not_exists` statements, \
       and exist in order to ensure that \"complicated\" parts of the library \
@@ -129,10 +137,11 @@ The command does not currently check whether the modules `m₁ m₂ ... mₙ` ac
 -/
 -- TODO: make sure that each one of `m₁ m₂ ... mₙ` is the name of an actually existing module!
 elab "assert_not_imported " ids:ident+ : command => do
-  let mods := (← getEnv).allImportedModuleNames
+  let env ← getEnv
   for id in ids do
-    if mods.contains id.getId then
-      logWarningAt id m!"the module '{id}' is (transitively) imported"
+    if let some idx := env.getModuleIdx? id.getId then
+      logWarningAt id
+        m!"the module '{id}' is (transitively) imported via\n{importPathMessage env idx}"
     else
       Mathlib.AssertNotExist.addDeclEntry false id.getId (← getMainModule)
 

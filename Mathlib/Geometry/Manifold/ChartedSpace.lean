@@ -766,7 +766,7 @@ We keep this as a definition (not an instance) to avoid instance search trying t
 `DiscreteTopology` or `Unique` instances.
 -/
 def ChartedSpace.of_discreteTopology [TopologicalSpace M] [TopologicalSpace H]
-    [DiscreteTopology M] [h: Unique H] : ChartedSpace H M where
+    [DiscreteTopology M] [h : Unique H] : ChartedSpace H M where
   atlas :=
     letI f := fun x : M ↦ PartialHomeomorph.const
       (isOpen_discrete {x}) (isOpen_discrete {h.default})
@@ -779,8 +779,9 @@ def ChartedSpace.of_discreteTopology [TopologicalSpace M] [TopologicalSpace H]
 @[simp, mfld_simps]
 lemma chartedSpace_of_discreteTopology_chartAt [TopologicalSpace M] [TopologicalSpace H]
     [DiscreteTopology M] [h : Unique H] {x : M} :
-    haveI := ChartedSpace.of_discreteTopology (M := M) (H := H);
-    chartAt H x = PartialHomeomorph.const (isOpen_discrete {x}) (isOpen_discrete {h.default}) := rfl
+    haveI := ChartedSpace.of_discreteTopology (M := M) (H := H)
+    chartAt H x = PartialHomeomorph.const (isOpen_discrete {x}) (isOpen_discrete {h.default}) :=
+  rfl
 
 section Products
 

@@ -123,7 +123,7 @@ open Function hiding Commute
 -/
 
 /-- A lift of a monotone degree one map `S¹ → S¹`. -/
-structure CircleDeg1Lift extends ℝ →o ℝ : Type where
+structure CircleDeg1Lift : Type extends ℝ →o ℝ where
   map_add_one' : ∀ x, toFun (x + 1) = toFun x + 1
 
 namespace CircleDeg1Lift
@@ -408,12 +408,12 @@ theorem map_map_zero_le : f (g 0) ≤ f 0 + ⌈g 0⌉ :=
 theorem floor_map_map_zero_le : ⌊f (g 0)⌋ ≤ ⌊f 0⌋ + ⌈g 0⌉ :=
   calc
     ⌊f (g 0)⌋ ≤ ⌊f 0 + ⌈g 0⌉⌋ := floor_mono <| f.map_map_zero_le g
-    _ = ⌊f 0⌋ + ⌈g 0⌉ := floor_add_int _ _
+    _ = ⌊f 0⌋ + ⌈g 0⌉ := floor_add_intCast _ _
 
 theorem ceil_map_map_zero_le : ⌈f (g 0)⌉ ≤ ⌈f 0⌉ + ⌈g 0⌉ :=
   calc
     ⌈f (g 0)⌉ ≤ ⌈f 0 + ⌈g 0⌉⌉ := ceil_mono <| f.map_map_zero_le g
-    _ = ⌈f 0⌉ + ⌈g 0⌉ := ceil_add_int _ _
+    _ = ⌈f 0⌉ + ⌈g 0⌉ := ceil_add_intCast _ _
 
 theorem map_map_zero_lt : f (g 0) < f 0 + g 0 + 1 :=
   calc
@@ -431,12 +431,12 @@ theorem le_map_map_zero : f 0 + ⌊g 0⌋ ≤ f (g 0) :=
 
 theorem le_floor_map_map_zero : ⌊f 0⌋ + ⌊g 0⌋ ≤ ⌊f (g 0)⌋ :=
   calc
-    ⌊f 0⌋ + ⌊g 0⌋ = ⌊f 0 + ⌊g 0⌋⌋ := (floor_add_int _ _).symm
+    ⌊f 0⌋ + ⌊g 0⌋ = ⌊f 0 + ⌊g 0⌋⌋ := (floor_add_intCast _ _).symm
     _ ≤ ⌊f (g 0)⌋ := floor_mono <| f.le_map_map_zero g
 
 theorem le_ceil_map_map_zero : ⌈f 0⌉ + ⌊g 0⌋ ≤ ⌈(f * g) 0⌉ :=
   calc
-    ⌈f 0⌉ + ⌊g 0⌋ = ⌈f 0 + ⌊g 0⌋⌉ := (ceil_add_int _ _).symm
+    ⌈f 0⌉ + ⌊g 0⌋ = ⌈f 0 + ⌊g 0⌋⌉ := (ceil_add_intCast _ _).symm
     _ ≤ ⌈f (g 0)⌉ := ceil_mono <| f.le_map_map_zero g
 
 theorem lt_map_map_zero : f 0 + g 0 - 1 < f (g 0) :=

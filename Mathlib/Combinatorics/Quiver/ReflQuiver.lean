@@ -24,7 +24,7 @@ universe v v₁ v₂ u u₁ u₂
 type of objects. We denote these arrows by `id` since categories can be understood as an extension
 of refl quivers.
 -/
-class ReflQuiver (obj : Type u) extends Quiver.{v} obj : Type max u v where
+class ReflQuiver (obj : Type u) : Type max u v extends Quiver.{v} obj where
   /-- The identity morphism on an object. -/
   id : ∀ X : obj, Hom X X
 
@@ -127,6 +127,10 @@ end ReflPrefunctor
 
 /-- A functor has an underlying refl prefunctor. -/
 def Functor.toReflPrefunctor {C D} [Category C] [Category D] (F : C ⥤ D) : C ⥤rq D := { F with }
+
+theorem Functor.toReflPrefunctor.map_comp {C D E} [Category C] [Category D] [Category E]
+    (F : C ⥤ D) (G : D ⥤ E) :
+    toReflPrefunctor (F ⋙ G) = toReflPrefunctor F ⋙rq toReflPrefunctor G := rfl
 
 @[simp]
 theorem Functor.toReflPrefunctor_toPrefunctor {C D : Cat} (F : C ⥤ D) :

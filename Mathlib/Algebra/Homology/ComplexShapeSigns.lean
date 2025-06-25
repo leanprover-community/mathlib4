@@ -297,8 +297,6 @@ def symmetryEquiv (j : I₁₂) :
     (π c₂ c₁ c₁₂ ⁻¹' {j}) ≃ (π c₁ c₂ c₁₂ ⁻¹' {j}) where
   toFun := fun ⟨⟨i₂, i₁⟩, h⟩ => ⟨⟨i₁, i₂⟩, by simpa [π_symm] using h⟩
   invFun := fun ⟨⟨i₁, i₂⟩, h⟩ => ⟨⟨i₂, i₁⟩, by simpa [π_symm] using h⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 variable {c₁}
 
@@ -336,14 +334,12 @@ def TotalComplexShapeSymmetry.symmetry [TotalComplexShape c₁ c₂ c₁₂]
   symm i₂ i₁ := (ComplexShape.π_symm c₁ c₂ c₁₂ i₁ i₂).symm
   σ i₂ i₁ := ComplexShape.σ c₁ c₂ c₁₂ i₁ i₂
   σ_ε₁ {i₂ i₂'} h₂ i₁ := by
-    dsimp
     apply mul_right_cancel (b := ComplexShape.ε₂ c₁ c₂ c₁₂ (i₁, i₂))
     rw [mul_assoc]
     nth_rw 2 [mul_comm]
     rw [← mul_assoc, ComplexShape.σ_ε₂ c₁ c₁₂ i₁ h₂, mul_comm, ← mul_assoc,
       Int.units_mul_self, one_mul, mul_comm, ← mul_assoc, Int.units_mul_self, one_mul]
   σ_ε₂ i₂ i₁ i₁' h₁ := by
-    dsimp
     apply mul_right_cancel (b := ComplexShape.ε₁ c₁ c₂ c₁₂ (i₁, i₂))
     rw [mul_assoc]
     nth_rw 2 [mul_comm]

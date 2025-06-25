@@ -146,7 +146,7 @@ variable {S : ι → Set α} {f : ∀ i, S i → β}
   {hS : iUnion S = univ}
 
 /-- Glue together functions defined on each of a collection `S` of sets that cover a type. See
-  also `Set.iUnionLift`.   -/
+also `Set.iUnionLift`. -/
 noncomputable def liftCover (S : ι → Set α) (f : ∀ i, S i → β)
     (hf : ∀ (i j) (x : α) (hxi : x ∈ S i) (hxj : x ∈ S j), f i ⟨x, hxi⟩ = f j ⟨x, hxj⟩)
     (hS : iUnion S = univ) (a : α) : β :=

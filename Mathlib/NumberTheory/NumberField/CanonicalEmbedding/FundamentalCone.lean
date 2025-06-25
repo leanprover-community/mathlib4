@@ -20,17 +20,17 @@ mixed space that is a fundamental domain for the action of `(𝓞 K)ˣ` modulo t
 `u : (𝓞 K)ˣ`, by multiplication component by component with `mixedEmbedding K u`.
 
 * `NumberField.mixedEmbedding.fundamentalCone`: a cone in the mixed space, ie. a subset stable
-by multiplication by a nonzero real number, see `smul_mem_of_mem`, that is also a fundamental
-domain for the action of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_mem` and
-`torsion_unit_smul_mem_of_mem`.
+  by multiplication by a nonzero real number, see `smul_mem_of_mem`, that is also a fundamental
+  domain for the action of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_mem` and
+  `torsion_unit_smul_mem_of_mem`.
 
 * `NumberField.mixedEmbedding.fundamentalCone.idealSet`: for `J` an integral ideal, the intersection
-between the fundamental cone and the `idealLattice` defined by the image of `J`.
+  between the fundamental cone and the `idealLattice` defined by the image of `J`.
 
 * `NumberField.mixedEmbedding.fundamentalCone.idealSetEquivNorm`: for `J` an integral ideal and `n`
-a natural integer, the equivalence between the elements of `idealSet K` of norm `n` and the
-product of the set of nonzero principal ideals of `K` divisible by `J` of norm `n` and the
-torsion of `K`.
+  a natural integer, the equivalence between the elements of `idealSet K` of norm `n` and the
+  product of the set of nonzero principal ideals of `K` divisible by `J` of norm `n` and the
+  torsion of `K`.
 
 ## Tags
 
@@ -90,11 +90,10 @@ open NumberField.Units NumberField.Units.dirichletUnitTheorem Module
 variable [NumberField K] {K}
 
 open Classical in
-/-- The map from the mixed space to `{w : InfinitePlace K // w ≠ w₀} → ℝ` (with `w₀` the fixed
-place from the proof of Dirichlet Unit Theorem) defined in such way that: 1) it factors the map
+/-- The map from the mixed space to `logSpace K` defined in such way that: 1) it factors the map
 `logEmbedding`, see `logMap_eq_logEmbedding`; 2) it is constant on the sets
 `{c • x | c ∈ ℝ, c ≠ 0}` if `norm x ≠ 0`, see `logMap_real_smul`. -/
-def logMap (x : mixedSpace K) : {w : InfinitePlace K // w ≠ w₀} → ℝ := fun w ↦
+def logMap (x : mixedSpace K) : logSpace K := fun w ↦
   mult w.val * (Real.log (normAtPlace w.val x) -
     Real.log (mixedEmbedding.norm x) * (finrank ℚ K : ℝ)⁻¹)
 
@@ -177,6 +176,17 @@ of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_mem` and `torsion_smul_mem
 def fundamentalCone : Set (mixedSpace K) :=
   logMap⁻¹' (ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ _)) \
       {x | mixedEmbedding.norm x = 0}
+
+theorem measurableSet_fundamentalCone :
+    MeasurableSet (fundamentalCone K) := by
+  classical
+  refine MeasurableSet.diff ?_ ?_
+  · unfold logMap
+    refine MeasurableSet.preimage (ZSpan.fundamentalDomain_measurableSet _) <|
+      measurable_pi_iff.mpr fun w ↦ measurable_const.mul ?_
+    exact (continuous_normAtPlace _).measurable.log.sub <|
+      (mixedEmbedding.continuous_norm _).measurable.log.mul measurable_const
+  · exact measurableSet_eq_fun (mixedEmbedding.continuous_norm K).measurable measurable_const
 
 namespace fundamentalCone
 
@@ -448,9 +458,9 @@ theorem integerSetEquivNorm_apply_fst {n : ℕ}
     (a : {a : integerSet K // mixedEmbedding.norm (a : mixedSpace K) = n}) :
     ((integerSetEquivNorm K n a).1 : Ideal (𝓞 K)) =
       span {(preimageOfMemIntegerSet a.val : 𝓞 K)} := by
- simp_rw [integerSetEquivNorm, Equiv.prodSubtypeFstEquivSubtypeProd, Equiv.instTrans_trans,
-   Equiv.prodCongrLeft, Equiv.trans_apply, Equiv.subtypeEquiv_apply, Equiv.coe_fn_mk,
-   Equiv.subtypeSubtypeEquivSubtypeInter_apply_coe, integerSetEquiv_apply_fst]
+  simp_rw [integerSetEquivNorm, Equiv.prodSubtypeFstEquivSubtypeProd, Equiv.trans_def,
+    Equiv.prodCongrLeft, Equiv.trans_apply, Equiv.subtypeEquiv_apply, Equiv.coe_fn_mk,
+    Equiv.subtypeSubtypeEquivSubtypeInter_apply_coe, integerSetEquiv_apply_fst]
 
 variable (K)
 
@@ -460,7 +470,7 @@ theorem card_isPrincipal_norm_eq_mul_torsion (n : ℕ) :
     Nat.card {I : (Ideal (𝓞 K))⁰ | IsPrincipal (I : Ideal (𝓞 K)) ∧
       absNorm (I : Ideal (𝓞 K)) = n} * torsionOrder K =
         Nat.card {a : integerSet K | mixedEmbedding.norm (a : mixedSpace K) = n} := by
-  rw [torsionOrder, PNat.mk_coe, ← Nat.card_eq_fintype_card, ← Nat.card_prod]
+  rw [torsionOrder, ← Nat.card_eq_fintype_card, ← Nat.card_prod]
   exact Nat.card_congr (integerSetEquivNorm K n).symm
 
 variable (J : (Ideal (𝓞 K))⁰)
@@ -503,7 +513,7 @@ def idealSetEquiv : idealSet K J ≃
     ⟨fun _ _ h ↦ (by
         simp_rw [Subtype.ext_iff_val, idealSetMap_apply] at h
         rwa [Subtype.ext_iff_val]),
-    fun ⟨a, ha₂⟩ ↦ ⟨⟨a.val,  mem_idealSet.mpr ⟨a.prop.1,
+    fun ⟨a, ha₂⟩ ↦ ⟨⟨a.val, mem_idealSet.mpr ⟨a.prop.1,
         ⟨preimageOfMemIntegerSet a, ha₂, mixedEmbedding_preimageOfMemIntegerSet a⟩⟩⟩, rfl⟩⟩
 
 variable {K J}
@@ -567,7 +577,7 @@ theorem card_isPrincipal_dvd_norm_le (s : ℝ) :
         Nat.card {a : idealSet K J // mixedEmbedding.norm (a : mixedSpace K) ≤ s} := by
   obtain hs | hs := le_or_gt 0 s
   · simp_rw [← intNorm_idealSetEquiv_apply, ← Nat.le_floor_iff hs]
-    rw [torsionOrder, PNat.mk_coe, ← Nat.card_eq_fintype_card, ← Nat.card_prod]
+    rw [torsionOrder, ← Nat.card_eq_fintype_card, ← Nat.card_prod]
     refine Nat.card_congr <| @Equiv.ofFiberEquiv _ (γ := Finset.Iic ⌊s⌋₊) _
       (fun I ↦ ⟨absNorm I.1.val.1, Finset.mem_Iic.mpr I.1.prop.2.2⟩)
       (fun a ↦ ⟨intNorm (idealSetEquiv K J a.1).1, Finset.mem_Iic.mpr a.prop⟩) fun ⟨i, hi⟩ ↦ ?_
@@ -588,7 +598,7 @@ theorem card_isPrincipal_dvd_norm_le (s : ℝ) :
       _   ≃ {b : {a : idealSet K J // intNorm (idealSetEquiv K J a).1 ≤ ⌊s⌋₊} //
             intNorm (idealSetEquiv K J b).1 = i} :=
         (Equiv.subtypeSubtypeEquivSubtype fun h ↦ Finset.mem_Iic.mp (h ▸ hi)).symm
-  · simp_rw [lt_iff_not_le.mp (lt_of_lt_of_le hs (Nat.cast_nonneg _)), lt_iff_not_le.mp
+  · simp_rw [lt_iff_not_ge.mp (lt_of_lt_of_le hs (Nat.cast_nonneg _)), lt_iff_not_ge.mp
       (lt_of_lt_of_le hs (mixedEmbedding.norm_nonneg _)), and_false, Nat.card_of_isEmpty,
       zero_mul]
 

@@ -27,8 +27,7 @@ open List
 
 namespace Multiset
 
-/--  Given a `m : Multiset α`, we form the `Multiset` of `l : List α` with the property `⟦l⟧ = m`.
--/
+/-- Given a `m : Multiset α`, we form the `Multiset` of `l : List α` with the property `⟦l⟧ = m`. -/
 def lists : Multiset α → Multiset (List α) := fun s =>
   Quotient.liftOn s (fun l => l.permutations) fun l l' (h : l ~ l') => by
     simp only [mem_permutations, List.mem_toFinset]
@@ -101,7 +100,7 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
     constructor
     · intro h
       rcases h with ⟨f, hf⟩
-      convert  Set.mem_def.mpr f.nodup
+      convert f.nodup
       rw [hf]
       rfl
     · intro h

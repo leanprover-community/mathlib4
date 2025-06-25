@@ -33,7 +33,7 @@ properties.
 ## Implementation notes
 
 One might be tempted to introduce another universe parameter and consider being a `w`-ind-object
-as a property of presheaves `C ⥤ TypeMax.{v, w}`. This comes with significant technical hurdles.
+as a property of presheaves `C ⥤ Type max v w`. This comes with significant technical hurdles.
 The recommended alternative is to consider ind-objects over `ULiftHom.{w} C` instead.
 
 ## References

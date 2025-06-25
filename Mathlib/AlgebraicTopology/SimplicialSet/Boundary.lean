@@ -30,18 +30,21 @@ namespace SSet
 /-- The boundary `∂Δ[n]` of the `n`-th standard simplex consists of
 all `m`-simplices of `stdSimplex n` that are not surjective
 (when viewed as monotone function `m → n`). -/
-def boundary (n : ℕ) : SSet.{u} where
-  obj m := { α : Δ[n].obj m // ¬Function.Surjective (asOrderHom α) }
-  map {m₁ m₂} f α :=
-    ⟨Δ[n].map f α.1, by
-      intro h
-      apply α.property
-      exact Function.Surjective.of_comp h⟩
+def boundary (n : ℕ) : (Δ[n] : SSet.{u}).Subcomplex where
+  obj _ := setOf (fun s ↦ ¬Function.Surjective (stdSimplex.asOrderHom s))
+  map _ _ hs h := hs (Function.Surjective.of_comp h)
 
 /-- The boundary `∂Δ[n]` of the `n`-th standard simplex -/
 scoped[Simplicial] notation3 "∂Δ[" n "]" => SSet.boundary n
 
+lemma boundary_eq_iSup (n : ℕ) :
+    boundary.{u} n = ⨆ (i : Fin (n + 1)), stdSimplex.face {i}ᶜ := by
+  ext
+  simp [stdSimplex.face_obj, boundary, Function.Surjective]
+  tauto
+
 /-- The inclusion of the boundary of the `n`-th standard simplex into that standard simplex. -/
-def boundaryInclusion (n : ℕ) : ∂Δ[n] ⟶ Δ[n] where app m (α : { α : Δ[n].obj m // _ }) := α
+@[deprecated boundary (since := "2025-01-26")]
+abbrev boundaryInclusion (n : ℕ) : (∂Δ[n] : SSet.{u}) ⟶ Δ[n] := ∂Δ[n].ι
 
 end SSet

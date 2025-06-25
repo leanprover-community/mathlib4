@@ -3,15 +3,13 @@ Copyright (c) 2022 Mantas Bakšys. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.Data.Prod.Lex
-import Mathlib.Data.Set.Image
+import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Data.Finset.Max
+import Mathlib.Data.Prod.Lex
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Order.Monotone.Monovary
-import Mathlib.Tactic.Abel
 
 /-!
 # Rearrangement inequality
@@ -51,8 +49,8 @@ If `Monovary f g`, `Injective g` and `σ` is a permutation, then `Monovary f (g 
 
 open Equiv Equiv.Perm Finset Function OrderDual
 
-variable {ι α β : Type*} [LinearOrderedSemiring α] [ExistsAddOfLE α]
-  [LinearOrderedCancelAddCommMonoid β] [Module α β]
+variable {ι α β : Type*} [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
+  [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β] [Module α β]
 
 /-! ### Scalar multiplication versions -/
 

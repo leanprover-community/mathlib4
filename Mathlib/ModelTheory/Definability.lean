@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Data.SetLike.Basic
-import Mathlib.Data.Finset.Preimage
 import Mathlib.ModelTheory.Semantics
 
 /-!
@@ -323,8 +322,10 @@ theorem mem_top : x ∈ (⊤ : L.DefinableSet A α) :=
   mem_univ x
 
 @[simp]
-theorem not_mem_bot {x : α → M} : ¬x ∈ (⊥ : L.DefinableSet A α) :=
-  not_mem_empty x
+theorem notMem_bot {x : α → M} : x ∉ (⊥ : L.DefinableSet A α) :=
+  notMem_empty x
+
+@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 @[simp]
 theorem mem_sup : x ∈ s ⊔ t ↔ x ∈ s ∨ x ∈ t :=
@@ -335,11 +336,11 @@ theorem mem_inf : x ∈ s ⊓ t ↔ x ∈ s ∧ x ∈ t :=
   Iff.rfl
 
 @[simp]
-theorem mem_compl : x ∈ sᶜ ↔ ¬x ∈ s :=
+theorem mem_compl : x ∈ sᶜ ↔ x ∉ s :=
   Iff.rfl
 
 @[simp]
-theorem mem_sdiff : x ∈ s \ t ↔ x ∈ s ∧ ¬x ∈ t :=
+theorem mem_sdiff : x ∈ s \ t ↔ x ∈ s ∧ x ∉ t :=
   Iff.rfl
 
 @[simp, norm_cast]
