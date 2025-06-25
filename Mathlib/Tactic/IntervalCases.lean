@@ -25,7 +25,7 @@ where the hypotheses should be of the form `hl : a ≤ n` and `hu : n < b`. In t
 
 namespace Mathlib.Tactic
 
-open Lean Meta Elab Tactic Term Qq Int
+open Lean Meta Elab Term Qq Int
 
 namespace IntervalCases
 
@@ -121,14 +121,14 @@ structure Methods where
 
 variable {α : Type*} {a b a' b' : α}
 
-theorem of_not_lt_left [LinearOrder α] (h : ¬(a:α) < b) (eq : a = a') : b ≤ a' := eq ▸ not_lt.1 h
-theorem of_not_lt_right [LinearOrder α] (h : ¬(a:α) < b) (eq : b = b') : b' ≤ a := eq ▸ not_lt.1 h
-theorem of_not_le_left [LE α] (h : ¬(a:α) ≤ b) (eq : a = a') : ¬a' ≤ b := eq ▸ h
-theorem of_not_le_right [LE α] (h : ¬(a:α) ≤ b) (eq : b = b') : ¬a ≤ b' := eq ▸ h
-theorem of_lt_left [LinearOrder α] (h : (a:α) < b) (eq : a = a') : ¬b ≤ a' := eq ▸ not_le.2 h
-theorem of_lt_right [LinearOrder α] (h : (a:α) < b) (eq : b = b') : ¬b' ≤ a := eq ▸ not_le.2 h
-theorem of_le_left [LE α] (h : (a:α) ≤ b) (eq : a = a') : a' ≤ b := eq ▸ h
-theorem of_le_right [LE α] (h : (a:α) ≤ b) (eq : b = b') : a ≤ b' := eq ▸ h
+theorem of_not_lt_left [LinearOrder α] (h : ¬(a : α) < b) (eq : a = a') : b ≤ a' := eq ▸ not_lt.1 h
+theorem of_not_lt_right [LinearOrder α] (h : ¬(a : α) < b) (eq : b = b') : b' ≤ a := eq ▸ not_lt.1 h
+theorem of_not_le_left [LE α] (h : ¬(a : α) ≤ b) (eq : a = a') : ¬a' ≤ b := eq ▸ h
+theorem of_not_le_right [LE α] (h : ¬(a : α) ≤ b) (eq : b = b') : ¬a ≤ b' := eq ▸ h
+theorem of_lt_left [LinearOrder α] (h : (a : α) < b) (eq : a = a') : ¬b ≤ a' := eq ▸ not_le.2 h
+theorem of_lt_right [LinearOrder α] (h : (a : α) < b) (eq : b = b') : ¬b' ≤ a := eq ▸ not_le.2 h
+theorem of_le_left [LE α] (h : (a : α) ≤ b) (eq : a = a') : a' ≤ b := eq ▸ h
+theorem of_le_right [LE α] (h : (a : α) ≤ b) (eq : b = b') : a ≤ b' := eq ▸ h
 
 /--
 Given a proof `pf`, attempts to parse it as an upper (`lb = false`) or lower (`lb = true`)
@@ -159,7 +159,7 @@ def Methods.getBound (m : Methods) (e : Expr) (pf : Expr) (lb : Bool) :
 
 theorem le_of_not_le_of_le {hi n lo : α} [LinearOrder α] (h1 : ¬hi ≤ n) (h2 : hi ≤ lo) :
     (n:α) ≤ lo :=
-  le_trans (le_of_not_le h1) h2
+  le_trans (le_of_not_ge h1) h2
 
 /--
 Given `(z1, e1, p1)` a lower bound on `e` and `(z2, e2, p2)` an upper bound on `e`,
@@ -215,8 +215,8 @@ This tells `interval_cases` how to work on natural numbers. -/
 def natMethods : Methods where
   initLB (e : Q(ℕ)) :=
     pure (.le 0, q(0), q(Nat.zero_le $e))
-  eval e := do
-    let ⟨z, e, p⟩ := (← NormNum.derive (α := (q(ℕ) : Q(Type))) e).toRawIntEq.get!
+  eval (e : Q(ℕ)) := do
+    let ⟨z, e, p⟩ := (← NormNum.derive q($e)).toRawIntEq.get!
     pure (z, e, p)
   proveLE (lhs rhs : Q(ℕ)) := mkDecideProofQ q($lhs ≤ $rhs)
   proveLT (lhs rhs : Q(ℕ)) := mkDecideProofQ q(¬$rhs ≤ $lhs)
@@ -234,8 +234,8 @@ theorem _root_.Int.le_sub_one_of_not_le {a b : ℤ} (h : ¬b ≤ a) : a ≤ b - 
 /-- A `Methods` implementation for `ℤ`.
 This tells `interval_cases` how to work on integers. -/
 def intMethods : Methods where
-  eval e := do
-    let ⟨z, e, p⟩ := (← NormNum.derive (α := (q(ℤ) : Q(Type))) e).toRawIntEq.get!
+  eval (e : Q(ℤ)) := do
+    let ⟨z, e, p⟩ := (← NormNum.derive q($e)).toRawIntEq.get!
     pure (z, e, p)
   proveLE (lhs rhs : Q(ℤ)) := mkDecideProofQ q($lhs ≤ $rhs)
   proveLT (lhs rhs : Q(ℤ)) := mkDecideProofQ q(¬$rhs ≤ $lhs)
@@ -317,7 +317,7 @@ def intervalCases (g : MVarId) (e e' : Expr) (lbs ubs : Array Expr) (mustUseBoun
 
 end IntervalCases
 
-open IntervalCases
+open IntervalCases Tactic
 
 /--
 `interval_cases n` searches for upper and lower bounds on a variable `n`,

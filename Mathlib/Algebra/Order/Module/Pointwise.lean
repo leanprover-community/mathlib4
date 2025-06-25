@@ -3,9 +3,10 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Algebra.Order.Module.Defs
+import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+import Mathlib.Algebra.Order.Module.Field
 import Mathlib.Order.Bounds.OrderIso
+import Mathlib.Order.GaloisConnection.Basic
 
 /-!
 # Bounds on scalar multiplication of set
@@ -57,7 +58,9 @@ end
 
 section OrderedRing
 
-variable [OrderedRing α] [OrderedAddCommGroup β] [Module α β] [PosSMulMono α β] {s : Set β} {a : α}
+variable [Ring α] [PartialOrder α] [IsOrderedRing α]
+  [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
+  [Module α β] [PosSMulMono α β] {s : Set β} {a : α}
 
 lemma smul_lowerBounds_subset_upperBounds_smul (ha : a ≤ 0) :
     a • lowerBounds s ⊆ upperBounds (a • s) :=
@@ -76,7 +79,9 @@ lemma BddAbove.smul_of_nonpos (ha : a ≤ 0) (hs : BddAbove s) : BddBelow (a •
 end OrderedRing
 
 section LinearOrderedField
-variable [LinearOrderedField α] [OrderedAddCommGroup β] [Module α β] [PosSMulMono α β] {s : Set β}
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+  [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
+  [Module α β] [PosSMulMono α β] {s : Set β}
   {a : α}
 
 @[simp] lemma lowerBounds_smul_of_neg (ha : a < 0) : lowerBounds (a • s) = a • upperBounds s :=

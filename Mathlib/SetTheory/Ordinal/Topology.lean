@@ -132,24 +132,10 @@ theorem mem_closure_iff_iSup :
   apply ((mem_closure_tfae a s).out 0 5).trans
   simp_rw [exists_prop]
 
-set_option linter.deprecated false in
-@[deprecated mem_closure_iff_iSup (since := "2024-08-27")]
-theorem mem_closure_iff_sup :
-    a ∈ closure s ↔
-      ∃ (ι : Type u) (_ : Nonempty ι) (f : ι → Ordinal), (∀ i, f i ∈ s) ∧ sup f = a :=
-  mem_closure_iff_iSup
-
 theorem mem_iff_iSup_of_isClosed (hs : IsClosed s) :
     a ∈ s ↔ ∃ (ι : Type u) (_hι : Nonempty ι) (f : ι → Ordinal),
       (∀ i, f i ∈ s) ∧ ⨆ i, f i = a := by
   rw [← mem_closure_iff_iSup, hs.closure_eq]
-
-set_option linter.deprecated false in
-@[deprecated mem_iff_iSup_of_isClosed (since := "2024-08-27")]
-theorem mem_closed_iff_sup (hs : IsClosed s) :
-    a ∈ s ↔ ∃ (ι : Type u) (_hι : Nonempty ι) (f : ι → Ordinal),
-      (∀ i, f i ∈ s) ∧ sup f = a :=
-  mem_iff_iSup_of_isClosed hs
 
 theorem mem_closure_iff_bsup :
     a ∈ closure s ↔
@@ -171,17 +157,6 @@ theorem isClosed_iff_iSup :
   rw [← closure_subset_iff_isClosed]
   intro h x hx
   rcases mem_closure_iff_iSup.1 hx with ⟨ι, hι, f, hf, rfl⟩
-  exact h hι f hf
-
-set_option linter.deprecated false in
-@[deprecated mem_iff_iSup_of_isClosed (since := "2024-08-27")]
-theorem isClosed_iff_sup :
-    IsClosed s ↔
-      ∀ {ι : Type u}, Nonempty ι → ∀ f : ι → Ordinal, (∀ i, f i ∈ s) → ⨆ i, f i ∈ s := by
-  use fun hs ι hι f hf => (mem_closed_iff_sup hs).2 ⟨ι, hι, f, hf, rfl⟩
-  rw [← closure_subset_iff_isClosed]
-  intro h x hx
-  rcases mem_closure_iff_sup.1 hx with ⟨ι, hι, f, hf, rfl⟩
   exact h hι f hf
 
 theorem isClosed_iff_bsup :
@@ -250,7 +225,7 @@ theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
     rw [← hb]
     apply Hs.monotone
     by_contra! hba
-    apply (Hs (lt_succ b)).not_le
+    apply (Hs (lt_succ b)).not_ge
     rw [hb]
     exact le_bsup.{u, u} _ _ (ha.succ_lt hba)
 
@@ -299,7 +274,7 @@ theorem IsAcc.isLimit {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) : IsLimit 
   rw [isAcc_iff] at h
   refine isLimit_of_not_succ_of_ne_zero (fun ⟨x, hx⟩ ↦ ?_) h.1
   rcases h.2 x (lt_of_lt_of_le (lt_succ x) hx.symm.le) with ⟨p, hp⟩
-  exact (hx.symm ▸ (succ_le_iff.mpr hp.2.1)).not_lt hp.2.2
+  exact (hx.symm ▸ (succ_le_iff.mpr hp.2.1)).not_gt hp.2.2
 
 theorem IsAcc.mono {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc S) :
     o.IsAcc T := by
@@ -348,8 +323,8 @@ theorem accPt_subtype {p o : Ordinal} (S : Set Ordinal) (hpo : p < o) :
       obtain ⟨x, hx⟩ := h (Ioo ⟨l, hl.1.trans hpo⟩ ⟨p + 1, ho⟩) (Ioo_mem_nhds hl.1 (lt_add_one p))
       use x
       exact ⟨⟨hl.2 ⟨hx.1.1.1, lt_succ_iff.mp hx.1.1.2⟩, hx.1.2⟩, fun h ↦ hx.2 (SetCoe.ext h)⟩
-    have hp : o = p + 1 := (le_succ_iff_eq_or_le.mp (le_of_not_lt ho)).resolve_right
-      (not_le_of_lt hpo)
+    have hp : o = p + 1 := (le_succ_iff_eq_or_le.mp (le_of_not_gt ho)).resolve_right
+      (not_le_of_gt hpo)
     have ppos : p ≠ 0 := by
       rintro rfl
       obtain ⟨x, hx⟩ := h Set.univ univ_mem

@@ -174,6 +174,7 @@ noncomputable
 def ofFromSpecStalk [IrreducibleSpace X] [LocallyOfFiniteType sY] {x : X} [X.IsGermInjectiveAt x]
     (φ : Spec (X.presheaf.stalk x) ⟶ Y) (h : φ ≫ sY = X.fromSpecStalk x ≫ sX) : X.PartialMap Y where
   hom := (spread_out_of_isGermInjective' sX sY φ h).choose_spec.choose_spec.choose
+  domain := (spread_out_of_isGermInjective' sX sY φ h).choose
   dense_domain := (spread_out_of_isGermInjective' sX sY φ h).choose.2.dense
     ⟨_, (spread_out_of_isGermInjective' sX sY φ h).choose_spec.choose⟩
 
@@ -310,7 +311,7 @@ lemma equiv_toPartialMap_iff_of_isSeparated [X.Over S] [Y.Over S] [IsReduced X]
 end PartialMap
 
 /-- A rational map from `X` to `Y` (`X ⤏ Y`) is an equivalence class of partial maps,
-where two partial maps are equivalent if they are equal on a dense open subscheme.  -/
+where two partial maps are equivalent if they are equal on a dense open subscheme. -/
 def RationalMap (X Y : Scheme.{u}) : Type u :=
   @Quotient (X.PartialMap Y) inferInstance
 

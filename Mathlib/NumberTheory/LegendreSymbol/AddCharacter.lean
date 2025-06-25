@@ -143,7 +143,7 @@ theorem zmodChar_apply {n : ℕ} [NeZero n] {ζ : C} (hζ : ζ ^ n = 1) (a : ZMo
 
 theorem zmodChar_apply' {n : ℕ} [NeZero n] {ζ : C} (hζ : ζ ^ n = 1) (a : ℕ) :
     zmodChar n hζ a = ζ ^ a := by
-  rw [pow_eq_pow_mod a hζ, zmodChar_apply, ZMod.val_natCast a]
+  rw [pow_eq_pow_mod a hζ, zmodChar_apply, ZMod.val_natCast]
 
 end ZModCharDef
 
@@ -293,16 +293,17 @@ variable (F : Type*) [Field F] [Finite F]
 private lemma ringChar_ne : ringChar ℂ ≠ ringChar F := by
   simpa only [ringChar.eq_zero] using (CharP.ringChar_ne_zero_of_finite F).symm
 
-/--  A primitive additive character on the finite field `F` with values in `ℂ`. -/
+/-- A primitive additive character on the finite field `F` with values in `ℂ`. -/
 noncomputable def FiniteField.primitiveChar_to_Complex : AddChar F ℂ := by
-  refine MonoidHom.compAddChar ?_ (primitiveChar F ℂ <| ringChar_ne F).char
-  exact (IsCyclotomicExtension.algEquiv ?n ℂ (CyclotomicField ?n ℂ) ℂ : CyclotomicField ?n ℂ →* ℂ)
+  letI ch := primitiveChar F ℂ <| ringChar_ne F
+  refine MonoidHom.compAddChar ?_ ch.char
+  exact (IsCyclotomicExtension.algEquiv {(ch.n : ℕ)} ℂ (CyclotomicField ch.n ℂ) ℂ).toMonoidHom
 
 lemma FiniteField.primitiveChar_to_Complex_isPrimitive :
     (primitiveChar_to_Complex F).IsPrimitive := by
   refine IsPrimitive.compMulHom_of_isPrimitive (PrimitiveAddChar.prim _) ?_
   let nn := (primitiveChar F ℂ <| ringChar_ne F).n
-  exact (IsCyclotomicExtension.algEquiv nn ℂ (CyclotomicField nn ℂ) ℂ).injective
+  exact (IsCyclotomicExtension.algEquiv {(nn : ℕ)} ℂ (CyclotomicField nn ℂ) ℂ).injective
 
 end Field
 

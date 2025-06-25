@@ -20,11 +20,6 @@ with no infinite antichains.
 * `WellQuasiOrdered`: a predicate for WQO unbundled relations
 * `WellQuasiOrderedLE`: a typeclass for a bundled WQO `≤` relation
 
-## TODO
-
-* Define `Set.PartiallyWellOrderedOn` and `Set.IsPWO` in terms of these predicates, and rename them
-  to match.
-
 ## Tags
 
 wqo, pwo, well quasi-order, partial well order, dickson order
@@ -104,7 +99,7 @@ instance (priority := 100) WellQuasiOrderedLE.to_wellFoundedLT [WellQuasiOrdered
   rw [WellFoundedLT, isWellFounded_iff, RelEmbedding.wellFounded_iff_no_descending_seq]
   refine ⟨fun f ↦ ?_⟩
   obtain ⟨a, b, h, hf⟩ := wellQuasiOrdered_le f
-  exact (f.map_rel_iff.2 h).not_le hf
+  exact (f.map_rel_iff.2 h).not_ge hf
 
 theorem WellQuasiOrdered.wellFounded {α : Type*} {r : α → α → Prop} [IsPreorder α r]
     (h : WellQuasiOrdered r) : WellFounded fun a b ↦ r a b ∧ ¬ r b a := by
@@ -134,7 +129,7 @@ theorem wellQuasiOrderedLE_iff :
       obtain h | rfl | h := lt_trichotomy m n
       · exact hc _ _ (g.strictMono h) hf
       · contradiction
-      · exact h2 _ _ h (lt_of_le_not_le hf (hc _ _ (g.strictMono h)))
+      · exact h2 _ _ h (lt_of_le_not_ge hf (hc _ _ (g.strictMono h)))
     · refine Set.infinite_range_of_injective fun m n (hf : f (g m) = f (g n)) ↦ ?_
       obtain h | rfl | h := lt_trichotomy m n <;>
         (first | rfl | cases (hf ▸ hc _ _ (g.strictMono h)) le_rfl)

@@ -16,6 +16,7 @@ We introduce the bundled categories:
 * `RingCat`
 * `CommSemiRingCat`
 * `CommRingCat`
+
 along with the relevant forgetful functors between them.
 -/
 
@@ -679,23 +680,6 @@ def commRingCatIsoToRingEquiv {R S : CommRingCat.{u}} (e : R ≅ S) : R ≃+* S 
   (e.commRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
 
 end CategoryTheory.Iso
-
--- Porting note: typemax hacks to fix universe complaints
-/-- An alias for `SemiringCat.{max u v}`, to deal around unification issues. -/
-@[nolint checkUnivs]
-abbrev SemiRingCatMax.{u1, u2} := SemiRingCat.{max u1 u2}
-
-/-- An alias for `RingCat.{max u v}`, to deal around unification issues. -/
-@[nolint checkUnivs]
-abbrev RingCatMax.{u1, u2} := RingCat.{max u1 u2}
-
-/-- An alias for `CommSemiRingCat.{max u v}`, to deal around unification issues. -/
-@[nolint checkUnivs]
-abbrev CommSemiRingCatMax.{u1, u2} := CommSemiRingCat.{max u1 u2}
-
-/-- An alias for `CommRingCat.{max u v}`, to deal around unification issues. -/
-@[nolint checkUnivs]
-abbrev CommRingCatMax.{u1, u2} := CommRingCat.{max u1 u2}
 
 lemma RingCat.forget_map_apply {R S : RingCat} (f : R ⟶ S)
     (x : (CategoryTheory.forget RingCat).obj R) :
