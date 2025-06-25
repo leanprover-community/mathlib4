@@ -562,6 +562,8 @@ lemma row2_mem_monsterCells_monsterData12 (hN : 2 ≤ N) {c₁ c₂ : Fin (N + 1
   exact (monsterData12_apply_row2 hN h).symm
 
 lemma Strategy.not_forcesWinIn_two (s : Strategy N) (hN : 2 ≤ N) : ¬ s.ForcesWinIn 2 := by
+  have : NeZero N := ⟨by omega⟩
+  have : 0 < N := by omega
   simp only [ForcesWinIn, WinsIn, Set.mem_range, not_forall, not_exists, Option.ne_none_iff_isSome]
   let m1 : Cell N := (s Fin.elim0).findFstEq 1
   let m2 : Cell N := (s ![m1]).findFstEq 2
@@ -570,7 +572,6 @@ lemma Strategy.not_forcesWinIn_two (s : Strategy N) (hN : 2 ≤ N) : ¬ s.Forces
   have h2r : m2.1 = 2 := Path.findFstEq_fst _ _
   have h1 : m1 ∈ m.monsterCells := by
     convert row1_mem_monsterCells_monsterData12 hN m1.2 m2.2
-  have h2 : ((2 : Fin (N + 2)) : ℕ) = 2 := Nat.mod_eq_of_lt (by omega : 2 < N + 2)
   refine ⟨m, fun i ↦ ?_⟩
   fin_cases i
   · simp only [Strategy.play_zero, Path.firstMonster_eq_of_findFstEq_mem h1, Option.isSome_some]
@@ -582,15 +583,13 @@ lemma Strategy.not_forcesWinIn_two (s : Strategy N) (hN : 2 ≤ N) : ¬ s.Forces
     · rw [Path.firstMonster_isSome]
       refine ⟨m1, ?_, h1⟩
       have h' : m1 = (⟨(((2 : Fin (N + 2)) : ℕ) - 1 : ℕ), by omega⟩, m2.2) := by
-        simp [h2, Prod.ext_iff, h1r, h2r, h]
+        simpa [Prod.ext_iff, h1r, h2r, h]
       nth_rw 2 [h']
-      refine Path.findFstEq_fst_sub_one_mem _ ?_
-      rw [ne_eq, Fin.ext_iff, h2]
-      norm_num
+      exact Path.findFstEq_fst_sub_one_mem _ two_ne_zero
     · rw [Path.firstMonster_isSome]
       refine ⟨m2, Path.findFstEq_mem_cells _ _, ?_⟩
       convert row2_mem_monsterCells_monsterData12 hN h using 1
-      simp [Prod.ext_iff, h2r, Fin.ext_iff, h2]
+      simpa [Prod.ext_iff, h2r, Fin.ext_iff]
 
 lemma Strategy.ForcesWinIn.three_le {s : Strategy N} {k : ℕ} (hf : s.ForcesWinIn k)
     (hN : 2 ≤ N) : 3 ≤ k := by
