@@ -42,6 +42,16 @@ given by the 2-commutative square. -/
 -- This only exists to change the explicitness of the binders of the `iso'` field.
 abbrev iso [h : CatCommSq T L R B] : T ⋙ R ≅ L ⋙ B := h.iso'
 
+/-- The vertical identity `CatCommSq` -/
+@[simps!]
+def vId : CatCommSq T (𝟭 C₁) (𝟭 C₂) T where
+  iso' := (Functor.leftUnitor _) ≪≫ (Functor.rightUnitor _).symm
+
+/-- The horizontal identity `CatCommSq` -/
+@[simps!]
+def hId : CatCommSq (𝟭 C₁) L L (𝟭 C₃) where
+  iso' := (Functor.rightUnitor _) ≪≫ (Functor.leftUnitor _).symm
+
 @[reassoc]
 lemma iso_hom_naturality [h : CatCommSq T L R B] {x y : C₁} (f : x ⟶ y) :
     R.map (T.map f) ≫ (iso T L R B).hom.app y = (iso T L R B).hom.app x ≫ B.map (L.map f) :=
@@ -61,6 +71,14 @@ def hComp (T₁ : C₁ ⥤ C₂) (T₂ : C₂ ⥤ C₃) (V₁ : C₁ ⥤ C₄) (
     (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (iso T₁ V₁ V₂ B₁) B₂ ≪≫
     Functor.associator _ _ _
 
+/-- A variant of `hComp` where both squares can be explicitly provided. -/
+abbrev hComp' {T₁ : C₁ ⥤ C₂} {T₂ : C₂ ⥤ C₃} {V₁ : C₁ ⥤ C₄} {V₂ : C₂ ⥤ C₅} {V₃ : C₃ ⥤ C₆}
+    {B₁ : C₄ ⥤ C₅} {B₂ : C₅ ⥤ C₆} (S₁ : CatCommSq T₁ V₁ V₂ B₁) (S₂ : CatCommSq T₂ V₂ V₃ B₂) :
+    CatCommSq (T₁ ⋙ T₂) V₁ V₃ (B₁ ⋙ B₂) :=
+  letI := S₁
+  letI := S₂
+  hComp _ _ _ V₂ _ _ _
+
 /-- Vertical composition of 2-commutative squares -/
 @[simps! iso'_hom_app iso'_inv_app]
 def vComp (L₁ : C₁ ⥤ C₂) (L₂ : C₂ ⥤ C₃) (H₁ : C₁ ⥤ C₄) (H₂ : C₂ ⥤ C₅) (H₃ : C₃ ⥤ C₆)
@@ -69,6 +87,14 @@ def vComp (L₁ : C₁ ⥤ C₂) (L₂ : C₂ ⥤ C₃) (H₁ : C₁ ⥤ C₄) (
   iso' := (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (iso H₁ L₁ R₁ H₂) R₂ ≪≫
       Functor.associator _ _ _ ≪≫ isoWhiskerLeft L₁ (iso H₂ L₂ R₂ H₃) ≪≫
       (Functor.associator _ _ _).symm
+
+/-- A variant of `hComp` where both squares can be explicitly provided. -/
+abbrev vComp' {L₁ : C₁ ⥤ C₂} {L₂ : C₂ ⥤ C₃} {H₁ : C₁ ⥤ C₄} {H₂ : C₂ ⥤ C₅} {H₃ : C₃ ⥤ C₆}
+    {R₁ : C₄ ⥤ C₅} {R₂ : C₅ ⥤ C₆} (S₁ : CatCommSq H₁ L₁ R₁ H₂) (S₂ : CatCommSq H₂ L₂ R₂ H₃) :
+    CatCommSq H₁ (L₁ ⋙ L₂) (R₁ ⋙ R₂) H₃ :=
+  letI := S₁
+  letI := S₂
+  vComp _ _ _ H₂ _ _ _
 
 section
 
