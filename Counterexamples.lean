@@ -13,6 +13,7 @@ import Counterexamples.LinearOrderWithPosMulPosEqZero
 import Counterexamples.MapFloor
 import Counterexamples.MonicNonRegular
 import Counterexamples.OrderedCancelAddCommMonoidWithBounds
+import Counterexamples.PeanoCurve
 import Counterexamples.Phillips
 import Counterexamples.Pseudoelement
 import Counterexamples.QuadraticForm
