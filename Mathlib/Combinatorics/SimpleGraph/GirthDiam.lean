@@ -35,38 +35,27 @@ lemma Walk.drop_zero {u v} (p : G.Walk u v) :
 lemma take_support_sublist_succ {u v} (p : G.Walk u v) (n : ℕ) :
     (p.take n).support.Sublist (p.take (n + 1)).support := by
   induction n generalizing p u with
-  | zero =>
-    cases p <;> simp [Walk.take]
-  | succ k ih =>
-    cases p
-    · simp [Walk.take]
-    simp only [Walk.getVert_cons_succ, Walk.take, Walk.support_cons, List.cons_sublist_cons]
-    exact ih _
+  | zero => cases p <;> simp [Walk.take]
+  | succ _ ih => cases p <;> simp [Walk.take, ih]
 
 lemma drop_support_sublist_succ {u v} (p : G.Walk u v) (n : ℕ) :
     (p.drop (n + 1)).support.Sublist (p.drop n).support := by
   induction n generalizing p u with
   | zero =>
-    rw [Walk.drop_zero, show (p.drop 1).support = p.tail.support by rfl]
+    rw [Walk.drop_zero, ← Walk.tail]
     cases p <;> simp
-  | succ k ih =>
-    cases p
-    · simp [Walk.drop]
-    simp only [Walk.getVert_cons_succ, Walk.take, Walk.support_cons, List.cons_sublist_cons]
-    exact ih _
+  | succ _ ih => cases p <;> simp [Walk.drop, ih]
 
 lemma take_support_sublist_le {u v n k} (p : G.Walk u v) (h : n ≤ k) :
     (p.take n).support.Sublist (p.take k).support := by
-  obtain ⟨t, h⟩ := Nat.exists_eq_add_of_le h
-  subst h
+  obtain ⟨t, rfl⟩ := Nat.exists_eq_add_of_le h
   induction t with
   | zero => rfl
   | succ t ih => exact (ih (n.le_add_right t)).trans <| take_support_sublist_succ p (n + t)
 
 lemma drop_support_sublist_le {u v n k} (p : G.Walk u v) (h : n ≤ k) :
     (p.drop k).support.Sublist (p.drop n).support := by
-  obtain ⟨t, h⟩ := Nat.exists_eq_add_of_le h
-  subst h
+  obtain ⟨t, rfl⟩ := Nat.exists_eq_add_of_le h
   induction t with
   | zero => rfl
   | succ t ih => exact (drop_support_sublist_succ p (n + t)).trans <| ih (n.le_add_right t)
@@ -74,26 +63,22 @@ lemma drop_support_sublist_le {u v n k} (p : G.Walk u v) (h : n ≤ k) :
 lemma take_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
     p.take n = p.copy rfl (p.getVert_of_length_le h).symm := by
   induction n generalizing p u with
-  | zero =>
-    cases p <;> simp [Walk.take] at h ⊢
+  | zero => cases p <;> simp [Walk.take] at h ⊢
   | succ n ih =>
     cases p
     · simp [Walk.take]
-    simp only [Walk.getVert_cons_succ, Walk.take]
     rw [Walk.length_cons, add_le_add_iff_right] at h
-    simp [ih h]
+    simp [Walk.take, ih h]
 
 lemma drop_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
     p.drop n = Walk.nil.copy (p.getVert_of_length_le h).symm rfl := by
   induction n generalizing p u with
-  | zero =>
-    cases p <;> simp [Walk.drop] at h ⊢
+  | zero => cases p <;> simp [Walk.drop] at h ⊢
   | succ n ih =>
     cases p
     · simp [Walk.drop]
-    simp only [Walk.getVert_cons_succ, Walk.drop]
     rw [Walk.length_cons, add_le_add_iff_right] at h
-    simp [ih h]
+    simp [Walk.drop, ih h]
 
 lemma take_support_sublist {u v n} (p : G.Walk u v) :
     (p.take n).support.Sublist p.support := by
@@ -106,8 +91,7 @@ lemma drop_support_sublist {u v n} (p : G.Walk u v) :
     (p.drop n).support.Sublist p.support := by
   by_cases h : n ≤ p.length
   · have : p.support = (p.drop 0).support := by cases p <;> simp [Walk.drop]
-    rw [this]
-    exact drop_support_sublist_le p n.zero_le
+    exact this ▸ drop_support_sublist_le p n.zero_le
   simp [drop_length_le (not_le.mp h).le]
 
 lemma Walk.IsPath.take_isPath_le {u v n k} {p : G.Walk u v} (h : (p.take k).IsPath) (hle : n ≤ k) :
@@ -145,52 +129,11 @@ lemma Walk.dropLast_support_concat_eq_support {u v} {p : G.Walk u v} (h : ¬ p.N
   · simp_rw [← this]
   assumption
 
-lemma Walk.cons_tail_support_eq_support {u v} {p : G.Walk u v} (h : ¬ p.Nil) :
-    u :: p.tail.support = p.support :=
-  congrArg support (p.cons_tail_eq h)
-
-lemma List.cons_nodup_iff_concat_nodup {α} (L : List α)  (a : α) :
-    (a :: L).Nodup ↔ (L.concat a).Nodup :=
-  ⟨(L.concat_perm a).symm.nodup, (L.concat_perm a).nodup⟩
-
-example {u v u' v'} {p : G.Walk u v} (hu : u = u') (hv : v = v') (h : p.Nil) :
-    (p.copy hu hv).Nil := by
-  rwa [Walk.nil_copy]
-
-lemma Walk.penultimate_nil' {u v} {p : G.Walk u v} (h : p.Nil) :
-    p.penultimate = u := by
-  rw [nil_iff_support_eq] at h
-  have : p.penultimate ∈ [u] := h ▸ getVert_mem_support p (p.length - 1)
-  simpa
-
-lemma Walk.dropLast_nil' {u v} {p : G.Walk u v} (h : p.Nil) :
-    p.dropLast.support = [u] := by
-  suffices p.dropLast.support.Sublist [u] by simpa
-  rw [← nil_iff_support_eq.mp h, dropLast]
-  exact take_support_sublist p
-
-lemma Walk.dropLast_cons_nil' {u v w} {p : G.Walk u v} (hadj : G.Adj w u) (h : p.Nil) :
-    (cons hadj p).dropLast.support = [w] := by
-  have := h.eq
-  subst this
-  have : p = nil.copy rfl h.eq := by rwa [copy_rfl_rfl, ← nil_iff_eq_nil]
-  rw [this]
-  simp
-
-lemma Walk.copy_dropLast {u u' v v'} {p : G.Walk u v} (hu : u = u') (hv : v = v') :
-    (p.copy hu hv).dropLast.support = p.dropLast.support := by
-  aesop
-
 lemma Walk.tail_length {u v} (p : G.Walk u v) :
     p.tail.length = p.length - 1 := by
   induction p with
   | nil => rfl
   | cons ha p ih => simp
-
-lemma Walk.tail_penultimate_of_not_nil {u v} {p : G.Walk u v} (h : 2 ≤ p.length) :
-    p.tail.penultimate = p.penultimate := by
-  rw [penultimate, penultimate, getVert_tail, Walk.tail_length, Nat.sub_add_cancel]
-  exact Nat.le_sub_one_of_lt h
 
 lemma IsCycle.tail_not_nil {u} {p : G.Walk u u} (h : p.IsCycle) :
     ¬ p.tail.Nil := by
@@ -243,11 +186,9 @@ lemma Walk.take_le_length {u v} {p : G.Walk u v} (n : ℕ) (hl : n ≤ p.length)
       simp [take, ih n hl]
 
 lemma Walk.take_length {u v} {p : G.Walk u v} (n : ℕ) :
-    (p.take n).length = min n p.length := by
+    (p.take n).length = n ⊓ p.length := by
   cases lt_or_ge n p.length with
-  | inl hl =>
-    rw [min_eq_left_of_lt hl, take_le_length]
-    exact hl.le
+  | inl hl => rw [min_eq_left_of_lt hl, take_le_length n hl.le]
   | inr hl => rwa [take_length_le hl, Walk.length_copy, right_eq_inf]
 
 lemma Walk.ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) :
