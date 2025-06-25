@@ -198,21 +198,17 @@ def equivFunctor : (X →o Y) ≃ (X ⥤ Y) where
   toFun := toFunctor
   invFun := ofFunctor
 
-namespace Functor
-
 /-- The functor from the category of monotone functions `X →o Y` to the category of functors
 `X ⥤ Y` where `X` and `Y` are preorder categories. -/
-def toFunctor : (X →o Y) ⥤ (X ⥤ Y) where
+def Functor.toFunctor : (X →o Y) ⥤ (X ⥤ Y) where
   obj := OrderHom.toFunctor
   map f := { app a := f.down.down a |>.hom }
 
 /-- The functor from the category of functors `X ⥤ Y` where `X` and `Y` are preorder categories to
 the category of monotone functions `X →o Y`. -/
-def ofFunctor : (X ⥤ Y) ⥤ (X →o Y) where
+def Functor.ofFunctor : (X ⥤ Y) ⥤ (X →o Y) where
   obj := OrderHom.ofFunctor
   map f := ⟨⟨fun i ↦ f.app i |>.down.down⟩⟩
-
-end Functor
 
 /-- The categorical equivalence beween the category of monotone functions `X →o Y` and the category
 of functors `X ⥤ Y` where `X` and `Y` are preorder categories. -/
