@@ -7,6 +7,7 @@ import Mathlib.Data.Fintype.Card
 
 /-!
 # Pigeonhole-like results for Fin
+
 This adapts Pigeonhole-like results from `Mathlib.Data.Fintype.Card` to the setting where the map
 has the type `f : Fin m → Fin n`.
 -/
