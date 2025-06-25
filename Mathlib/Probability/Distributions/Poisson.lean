@@ -63,10 +63,10 @@ def poissonPMF (r : ℝ≥0) : PMF ℕ := by
   exact (poissonPMFRealSum r).toNNReal (fun n ↦ poissonPMFReal_nonneg)
 
 /-- The Poisson pmf is measurable. -/
-@[measurability]
-lemma measurable_poissonPMFReal (r : ℝ≥0) : Measurable (poissonPMFReal r) := by measurability
+@[fun_prop, measurability]
+lemma measurable_poissonPMFReal (r : ℝ≥0) : Measurable (poissonPMFReal r) := by fun_prop
 
-@[measurability]
+@[fun_prop, measurability]
 lemma stronglyMeasurable_poissonPMFReal (r : ℝ≥0) : StronglyMeasurable (poissonPMFReal r) :=
   stronglyMeasurable_iff_measurable.mpr (measurable_poissonPMFReal r)
 

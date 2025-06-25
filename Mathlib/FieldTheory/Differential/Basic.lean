@@ -114,7 +114,7 @@ noncomputable instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
       · intro nh
         simp [natDegree_eq_zero_of_derivative_eq_zero nh] at this
       apply natDegree_derivative_lt
-      exact Nat.not_eq_zero_of_lt this)
+      exact Nat.ne_zero_of_lt this)
 
 instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
     DifferentialAlgebra F (AdjoinRoot p) where
@@ -126,7 +126,6 @@ instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
 variable {K : Type*} [Field K] [Algebra F K]
 
 variable (F K) in
-
 /--
 If `K` is a finite field extension of `F` then we can define a differential algebra on `K`, by
 choosing a primitive element of `K`, `k` and then using the equivalence to `AdjoinRoot (minpoly k)`.
@@ -175,7 +174,7 @@ noncomputable def uniqueDifferentialAlgebraFiniteDimensional [FiniteDimensional 
     · intro nh
       simp [natDegree_eq_zero_of_derivative_eq_zero nh] at this
     apply natDegree_derivative_lt
-    exact Nat.not_eq_zero_of_lt this
+    exact Nat.ne_zero_of_lt this
 
 noncomputable instance (B : IntermediateField F K) [FiniteDimensional F B] : Differential B :=
   differentialFiniteDimensional F B

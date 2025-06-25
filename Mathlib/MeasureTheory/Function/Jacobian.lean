@@ -3,13 +3,14 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.Analysis.Calculus.FDeriv.Congr
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.MeasureTheory.Constructions.Polish.Basic
 import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
+import Mathlib.Topology.Algebra.Module.Determinant
 
 /-!
 # Change of variables in higher-dimensional integrals
@@ -22,6 +23,9 @@ is almost everywhere measurable, but not Borel-measurable in general). This form
 `lintegral_abs_det_fderiv_eq_addHaar_image`. We deduce the change of variables
 formula for the Lebesgue and Bochner integrals, in `lintegral_image_eq_lintegral_abs_det_fderiv_mul`
 and `integral_image_eq_integral_abs_det_fderiv_smul` respectively.
+
+Specialized versions in one dimension (using the derivative instead of the determinant of the
+Fréchet derivative) can be found in the file `MeasureTheory.Function.JacobianOneDim.lean`.
 
 ## Main results
 
@@ -237,7 +241,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
   obtain ⟨q, hq⟩ : ∃ q, F q = (n, z, p) := hF _
   -- then `x` belongs to `t q`.
   apply mem_iUnion.2 ⟨q, _⟩
-  simp (config := { zeta := false }) only [K, hq, mem_inter_iff, hp, and_true]
+  simp -zeta only [K, hq, mem_inter_iff, hp, and_true]
   exact subset_closure hnz
 
 variable [MeasurableSpace E] [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ]
@@ -337,9 +341,8 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
       A '' closedBall 0 r + closedBall (f x) (ε * r) =
         {f x} + r • (A '' closedBall 0 1 + closedBall 0 ε) := by
       rw [smul_add, ← add_assoc, add_comm {f x}, add_assoc, smul_closedBall _ _ εpos.le, smul_zero,
-        singleton_add_closedBall_zero, ← image_smul_set ℝ E E A,
-        _root_.smul_closedBall _ _ zero_le_one, smul_zero, Real.norm_eq_abs, abs_of_nonneg r0,
-        mul_one, mul_comm]
+        singleton_add_closedBall_zero, ← image_smul_set, _root_.smul_closedBall _ _ zero_le_one,
+        smul_zero, Real.norm_eq_abs, abs_of_nonneg r0, mul_one, mul_comm]
     rw [this] at K
     calc
       μ (f '' (s ∩ closedBall x r)) ≤ μ ({f x} + r • (A '' closedBall 0 1 + closedBall 0 ε)) :=
@@ -508,7 +511,7 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
     exact ⟨a, az, by simp only [ha, add_neg_cancel_left]⟩
   have norm_a : ‖a‖ ≤ ‖z‖ + ε :=
     calc
-      ‖a‖ = ‖z + (a - z)‖ := by simp only [_root_.add_sub_cancel]
+      ‖a‖ = ‖z + (a - z)‖ := by simp only [add_sub_cancel]
       _ ≤ ‖z‖ + ‖a - z‖ := norm_add_le _ _
       _ ≤ ‖z‖ + ε := add_le_add_left (mem_closedBall_iff_norm.1 az) _
   -- use the approximation properties to control `(f' x - A) a`, and then `(f' x - A) z` as `z` is
@@ -1180,39 +1183,6 @@ theorem integral_image_eq_integral_abs_det_fderiv_smul (hs : MeasurableSet s)
   congr with x
   rw [NNReal.smul_def, Real.coe_toNNReal _ (abs_nonneg (f' x).det)]
 
--- Porting note: move this to `Topology.Algebra.Module.Basic` when port is over
-theorem det_one_smulRight {𝕜 : Type*} [CommRing 𝕜] [TopologicalSpace 𝕜] [ContinuousMul 𝕜] (v : 𝕜) :
-    ((1 : 𝕜 →L[𝕜] 𝕜).smulRight v).det = v := by
-  nontriviality 𝕜
-  have : (1 : 𝕜 →L[𝕜] 𝕜).smulRight v = v • (1 : 𝕜 →L[𝕜] 𝕜) := by
-    ext1
-    simp only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply,
-      Algebra.id.smul_eq_mul, one_mul, ContinuousLinearMap.coe_smul', Pi.smul_apply, mul_one]
-  rw [this, ContinuousLinearMap.det, ContinuousLinearMap.coe_smul,
-    ContinuousLinearMap.one_def, ContinuousLinearMap.coe_id, LinearMap.det_smul,
-    Module.finrank_self, LinearMap.det_id, pow_one, mul_one]
-
-/-- Integrability in the change of variable formula for differentiable functions (one-variable
-version): if a function `f` is injective and differentiable on a measurable set `s ⊆ ℝ`, then a
-function `g : ℝ → F` is integrable on `f '' s` if and only if `|(f' x)| • g ∘ f` is integrable on
-`s`. -/
-theorem integrableOn_image_iff_integrableOn_abs_deriv_smul {s : Set ℝ} {f : ℝ → ℝ} {f' : ℝ → ℝ}
-    (hs : MeasurableSet s) (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) (hf : InjOn f s)
-    (g : ℝ → F) : IntegrableOn g (f '' s) ↔ IntegrableOn (fun x => |f' x| • g (f x)) s := by
-  simpa only [det_one_smulRight] using
-    integrableOn_image_iff_integrableOn_abs_det_fderiv_smul volume hs
-      (fun x hx => (hf' x hx).hasFDerivWithinAt) hf g
-
-/-- Change of variable formula for differentiable functions (one-variable version): if a function
-`f` is injective and differentiable on a measurable set `s ⊆ ℝ`, then the Bochner integral of a
-function `g : ℝ → F` on `f '' s` coincides with the integral of `|(f' x)| • g ∘ f` on `s`. -/
-theorem integral_image_eq_integral_abs_deriv_smul {s : Set ℝ} {f : ℝ → ℝ} {f' : ℝ → ℝ}
-    (hs : MeasurableSet s) (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x)
-    (hf : InjOn f s) (g : ℝ → F) : ∫ x in f '' s, g x = ∫ x in s, |f' x| • g (f x) := by
-  simpa only [det_one_smulRight] using
-    integral_image_eq_integral_abs_det_fderiv_smul volume hs
-      (fun x hx => (hf' x hx).hasFDerivWithinAt) hf g
-
 theorem integral_target_eq_integral_abs_det_fderiv_smul {f : PartialHomeomorph E E}
     (hf' : ∀ x ∈ f.source, HasFDerivAt f (f' x) x) (g : E → F) :
     ∫ x in f.target, g x ∂μ = ∫ x in f.source, |(f' x).det| • g (f x) ∂μ := by
@@ -1246,47 +1216,6 @@ lemma _root_.MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_d
   rw [MeasurableEquiv.map_symm,
     MeasurableEmbedding.withDensity_ofReal_comap_apply_eq_integral_abs_det_fderiv_mul μ hs
       f.measurableEmbedding hg hg_int hf']
-
-lemma _root_.MeasurableEmbedding.withDensity_ofReal_comap_apply_eq_integral_abs_deriv_mul
-    {f : ℝ → ℝ} (hf : MeasurableEmbedding f) {s : Set ℝ} (hs : MeasurableSet s)
-    {g : ℝ → ℝ} (hg : ∀ᵐ x, x ∈ f '' s → 0 ≤ g x) (hg_int : IntegrableOn g (f '' s))
-    {f' : ℝ → ℝ} (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) :
-    (volume.withDensity (fun x ↦ ENNReal.ofReal (g x))).comap f s
-      = ENNReal.ofReal (∫ x in s, |f' x| * g (f x)) := by
-  rw [hf.withDensity_ofReal_comap_apply_eq_integral_abs_det_fderiv_mul volume hs
-    hg hg_int hf']
-  simp only [det_one_smulRight]
-
-lemma _root_.MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_deriv_mul
-    (f : ℝ ≃ᵐ ℝ) {s : Set ℝ} (hs : MeasurableSet s)
-    {g : ℝ → ℝ} (hg : ∀ᵐ x, x ∈ f '' s → 0 ≤ g x) (hg_int : IntegrableOn g (f '' s))
-    {f' : ℝ → ℝ} (hf' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) :
-    (volume.withDensity (fun x ↦ ENNReal.ofReal (g x))).map f.symm s
-      = ENNReal.ofReal (∫ x in s, |f' x| * g (f x)) := by
-  rw [MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_det_fderiv_mul volume hs
-      f hg hg_int hf']
-  simp only [det_one_smulRight]
-
-lemma _root_.MeasurableEmbedding.withDensity_ofReal_comap_apply_eq_integral_abs_deriv_mul'
-    {f : ℝ → ℝ} (hf : MeasurableEmbedding f) {s : Set ℝ} (hs : MeasurableSet s)
-    {f' : ℝ → ℝ} (hf' : ∀ x, HasDerivAt f (f' x) x)
-    {g : ℝ → ℝ} (hg : 0 ≤ᵐ[volume] g) (hg_int : Integrable g) :
-    (volume.withDensity (fun x ↦ ENNReal.ofReal (g x))).comap f s
-      = ENNReal.ofReal (∫ x in s, |f' x| * g (f x)) :=
-  hf.withDensity_ofReal_comap_apply_eq_integral_abs_deriv_mul hs
-    (by filter_upwards [hg] with x hx using fun _ ↦ hx) hg_int.integrableOn
-    (fun x _ => (hf' x).hasDerivWithinAt)
-
-lemma _root_.MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_deriv_mul'
-    (f : ℝ ≃ᵐ ℝ) {s : Set ℝ} (hs : MeasurableSet s)
-    {f' : ℝ → ℝ} (hf' : ∀ x, HasDerivAt f (f' x) x)
-    {g : ℝ → ℝ} (hg : 0 ≤ᵐ[volume] g) (hg_int : Integrable g) :
-    (volume.withDensity (fun x ↦ ENNReal.ofReal (g x))).map f.symm s
-      = ENNReal.ofReal (∫ x in s, |f' x| * g (f x)) := by
-  rw [MeasurableEquiv.withDensity_ofReal_map_symm_apply_eq_integral_abs_det_fderiv_mul volume hs
-      f (by filter_upwards [hg] with x hx using fun _ ↦ hx) hg_int.integrableOn
-      (fun x _ => (hf' x).hasDerivWithinAt)]
-  simp only [det_one_smulRight]
 
 end withDensity
 

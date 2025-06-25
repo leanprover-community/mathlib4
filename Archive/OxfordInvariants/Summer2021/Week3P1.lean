@@ -68,7 +68,7 @@ natural.
     `aₙ₊₁ * ((aₙ + aₙ₊₂)/aₙ₊₁ * b - (aₙ * b - a₀)/aₙ₊₁) - a₀ = aₙ₊₁aₙ₊₂b` is divisible by `aₙ₊₂`.
 -/
 
-variable {α : Type*} [LinearOrderedField α]
+variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 
 theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ n, 0 < a i)
     (ha : ∀ i, i + 2 ≤ n → a (i + 1) ∣ a i + a (i + 2)) :
@@ -89,10 +89,11 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
   simp_rw [← @Nat.cast_pos α] at a_pos
   /- Declare the induction
     `ih` will be the induction hypothesis -/
-  induction' n with n ih
+  induction n with
+  | zero =>
   /- Base case
-    Claim that the sum equals `1`-/
-  · refine ⟨1, ?_, ?_⟩
+    Claim that the sum equals `1` -/
+    refine ⟨1, ?_, ?_⟩
     -- Check that this indeed equals the sum
     · rw [Nat.cast_one, Finset.sum_range_one]
       norm_num
@@ -101,6 +102,7 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
     -- Check the divisibility condition
     · rw [mul_one, tsub_self]
       exact dvd_zero _
+  | succ n ih =>
   /- Induction step
     `b` is the value of the previous sum as a natural, `hb` is the proof that it is indeed the
     value, and `han` is the divisibility condition -/

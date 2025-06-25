@@ -15,7 +15,7 @@ Banach-Steinhaus theorem for maps from a barrelled space to a space equipped wit
 of seminorms generating the topology (i.e `WithSeminorms q` for some family of seminorms `q`).
 
 The more standard Banach-Steinhaus theorem for normed spaces is then deduced from that in
-`Mathlib.Analysis.Normed.Operator.BanachSteinhaus`.
+`Mathlib/Analysis/Normed/Operator/BanachSteinhaus.lean`.
 
 ## Main definitions
 
@@ -91,7 +91,7 @@ theorem Seminorm.continuous_of_lowerSemicontinuous {𝕜 E : Type*} [AddGroup E]
   BarrelledSpace.continuous_of_lowerSemicontinuous p hp
 
 theorem Seminorm.continuous_iSup
-    {ι : Sort*} {𝕜 E : Type*} [NormedField 𝕜]  [AddCommGroup E] [Module 𝕜 E]
+    {ι : Sort*} {𝕜 E : Type*} [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
     [TopologicalSpace E] [BarrelledSpace 𝕜 E] (p : ι → Seminorm 𝕜 E)
     (hp : ∀ i, Continuous (p i)) (bdd : BddAbove (range p)) :
     Continuous (⨆ i, p i) := by
@@ -145,7 +145,7 @@ instance BaireSpace.instBarrelledSpace [TopologicalSpace E] [IsTopologicalAddGro
 
 namespace WithSeminorms
 
-variable [UniformSpace E] [UniformSpace F] [UniformAddGroup E] [UniformAddGroup F]
+variable [UniformSpace E] [UniformSpace F] [IsUniformAddGroup E] [IsUniformAddGroup F]
     [ContinuousSMul 𝕜₁ E] [BarrelledSpace 𝕜₁ E] {𝓕 : ι → E →SL[σ₁₂] F}
     {q : SeminormFamily 𝕜₂ F κ} (hq : WithSeminorms q)
 include hq

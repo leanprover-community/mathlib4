@@ -14,10 +14,10 @@ given by `x - ⊤ = ⊥` and `⊤ - x = ⊤`. This will be instantiated mostly f
 the bottom element is zero.
 
 Note that there is another subtraction on objects of the form `WithTop α` in the file
-`Mathlib.Algebra.Order.Group.WithTop`, setting `-⊤ = ⊤` as this corresponds to the additivization
-of the usual convention `0⁻¹ = 0` and is relevant in valuation theory. Since this other instance
-is only registered for `LinearOrderedAddCommGroup α` (which doesn't have a bottom element, unless
-the group is trivial), this shouldn't create diamonds.
+`Mathlib/Algebra/Order/Group/WithTop.lean`, setting `-⊤ = ⊤` as this corresponds to the
+additivization of the usual convention `0⁻¹ = 0` and is relevant in valuation theory. Since this
+other instance is only registered for `LinearOrderedAddCommGroup α` (which doesn't have a bottom
+element, unless the group is trivial), this shouldn't create diamonds.
 -/
 
 variable {α β : Type*}
@@ -56,6 +56,7 @@ theorem sub_top {a : WithTop α} : a - ⊤ = (⊥ : α) := by cases a <;> rfl
 
 lemma sub_ne_top_iff {a b : WithTop α} : a - b ≠ ⊤ ↔ a ≠ ⊤ ∨ b = ⊤ := by simp [or_iff_not_imp_left]
 
+protected
 theorem map_sub [Sub β] [Bot β] {f : α → β} (h : ∀ x y, f (x - y) = f x - f y) (h₀ : f ⊥ = ⊥) :
     ∀ x y : WithTop α, (x - y).map f = x.map f - y.map f
   | _, ⊤ => by simp only [sub_top, map_coe, h₀, map_top]

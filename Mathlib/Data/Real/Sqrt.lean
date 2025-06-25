@@ -38,7 +38,7 @@ namespace NNReal
 variable {x y : ℝ≥0}
 
 /-- Square root of a nonnegative real number. -/
--- Porting note (kmill): `pp_nodot` has no affect here
+-- Porting note (kmill): `pp_nodot` has no effect here
 -- unless RFC https://github.com/leanprover/lean4/issues/6178 leads to dot notation pp for CoeFun
 @[pp_nodot]
 noncomputable def sqrt : ℝ≥0 ≃o ℝ≥0 :=
@@ -135,7 +135,7 @@ theorem sqrt_mul_self (h : 0 ≤ x) : √(x * x) = x :=
 theorem sqrt_eq_cases : √x = y ↔ y * y = x ∧ 0 ≤ y ∨ x < 0 ∧ y = 0 := by
   constructor
   · rintro rfl
-    rcases le_or_lt 0 x with hle | hlt
+    rcases le_or_gt 0 x with hle | hlt
     · exact Or.inl ⟨mul_self_sqrt hle, sqrt_nonneg x⟩
     · exact Or.inr ⟨hlt, sqrt_eq_zero_of_nonpos hlt.le⟩
   · rintro (⟨rfl, hy⟩ | ⟨hx, rfl⟩)
@@ -143,10 +143,6 @@ theorem sqrt_eq_cases : √x = y ↔ y * y = x ∧ 0 ≤ y ∨ x < 0 ∧ y = 0 :
 
 theorem sqrt_eq_iff_mul_self_eq (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = y ↔ x = y * y :=
   ⟨fun h => by rw [← h, mul_self_sqrt hx], fun h => by rw [h, sqrt_mul_self hy]⟩
-
-@[deprecated sqrt_eq_iff_mul_self_eq (since := "2024-08-25")]
-theorem sqrt_eq_iff_eq_mul_self (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = y ↔ y * y = x := by
-  rw [sqrt_eq_iff_mul_self_eq hx hy, eq_comm]
 
 theorem sqrt_eq_iff_mul_self_eq_of_pos (h : 0 < y) : √x = y ↔ y * y = x := by
   simp [sqrt_eq_cases, h.ne', h.le]
@@ -165,10 +161,6 @@ theorem sqrt_sq (h : 0 ≤ x) : √(x ^ 2) = x := by rw [sq, sqrt_mul_self h]
 
 theorem sqrt_eq_iff_eq_sq (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = y ↔ x = y ^ 2 := by
   rw [sq, sqrt_eq_iff_mul_self_eq hx hy]
-
-@[deprecated sqrt_eq_iff_eq_sq (since := "2024-08-25")]
-theorem sqrt_eq_iff_sq_eq (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = y ↔ y ^ 2 = x := by
-  rw [sqrt_eq_iff_eq_sq hx hy, eq_comm]
 
 theorem sqrt_mul_self_eq_abs (x : ℝ) : √(x * x) = |x| := by
   rw [← abs_mul_abs_self x, sqrt_mul_self (abs_nonneg _)]
@@ -260,8 +252,8 @@ alias ⟨_, sqrt_pos_of_pos⟩ := sqrt_pos
 
 lemma sqrt_le_sqrt_iff' (hx : 0 < x) : √x ≤ √y ↔ x ≤ y := by
   obtain hy | hy := le_total y 0
-  · exact iff_of_false ((sqrt_eq_zero_of_nonpos hy).trans_lt <| sqrt_pos.2 hx).not_le
-      (hy.trans_lt hx).not_le
+  · exact iff_of_false ((sqrt_eq_zero_of_nonpos hy).trans_lt <| sqrt_pos.2 hx).not_ge
+      (hy.trans_lt hx).not_ge
   · exact sqrt_le_sqrt_iff hy
 
 @[simp] lemma one_le_sqrt : 1 ≤ √x ↔ 1 ≤ x := by
@@ -291,7 +283,7 @@ def evalNNRealSqrt : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: a square root is nonnegative, and is strictly positive if
 its input is. -/
-@[positivity √ _]
+@[positivity √_]
 def evalSqrt : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(√$a) =>
@@ -330,7 +322,7 @@ variable {x y : ℝ}
 
 @[simp]
 theorem div_sqrt : x / √x = √x := by
-  rcases le_or_lt x 0 with h | h
+  rcases le_or_gt x 0 with h | h
   · rw [sqrt_eq_zero'.mpr h, div_zero]
   · rw [div_eq_iff (sqrt_ne_zero'.mpr h), mul_self_sqrt h.le]
 

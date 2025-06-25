@@ -52,6 +52,8 @@ instance instCommMonoid : CommMonoid ℕ where
 These also prevent non-computable instances being used to construct these instances non-computably.
 -/
 
+set_option linter.style.commandStart false
+
 instance instAddCommMonoid    : AddCommMonoid ℕ    := by infer_instance
 instance instAddMonoid        : AddMonoid ℕ        := by infer_instance
 instance instMonoid           : Monoid ℕ           := by infer_instance
@@ -59,6 +61,9 @@ instance instCommSemigroup    : CommSemigroup ℕ    := by infer_instance
 instance instSemigroup        : Semigroup ℕ        := by infer_instance
 instance instAddCommSemigroup : AddCommSemigroup ℕ := by infer_instance
 instance instAddSemigroup     : AddSemigroup ℕ     := by infer_instance
+instance instOne : One ℕ := inferInstance
+
+set_option linter.style.commandStart true
 
 /-! ### Miscellaneous lemmas -/
 
