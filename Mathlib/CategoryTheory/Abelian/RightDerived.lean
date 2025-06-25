@@ -38,11 +38,11 @@ and show how to compute the components.
 ## TODO
 
 * refactor `Functor.rightDerived` (and `Functor.leftDerived`) when the necessary
-material enters mathlib: derived categories, injective/projective derivability
-structures, existence of derived functors from derivability structures.
-Eventually, we shall get a right derived functor
-`F.rightDerivedFunctorPlus : DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`,
-and `F.rightDerived` shall be redefined using `F.rightDerivedFunctorPlus`.
+  material enters mathlib: derived categories, injective/projective derivability
+  structures, existence of derived functors from derivability structures.
+  Eventually, we shall get a right derived functor
+  `F.rightDerivedFunctorPlus : DerivedCategory.Plus C ⥤ DerivedCategory.Plus D`,
+  and `F.rightDerived` shall be redefined using `F.rightDerivedFunctorPlus`.
 
 -/
 

@@ -151,6 +151,12 @@ theorem compactSpace_iff_quasiCompact (X : Scheme) :
     CompactSpace X ↔ QuasiCompact (terminal.from X) := by
   rw [HasAffineProperty.iff_of_isAffine (P := @QuasiCompact)]
 
+lemma QuasiCompact.compactSpace_of_compactSpace {X Y : Scheme.{u}} (f : X ⟶ Y) [QuasiCompact f]
+    [CompactSpace Y] : CompactSpace X := by
+  constructor
+  rw [← Set.preimage_univ (f := f.base)]
+  exact QuasiCompact.isCompact_preimage _ isOpen_univ CompactSpace.isCompact_univ
+
 instance quasiCompact_isStableUnderComposition :
     MorphismProperty.IsStableUnderComposition @QuasiCompact where
   comp_mem _ _ _ _ := inferInstance
@@ -253,7 +259,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen (X : Sch
   `(hU.isLocalization_basicOpen f).exists_of_eq H`
   This is no longer possible;
   likely changing the signature of `IsLocalization.Away.exists_of_eq` is in order.
-  -/
+-/
   obtain ⟨n, e⟩ :=
     @IsLocalization.Away.exists_of_eq _ _ _ _ _ _ (hU.isLocalization_basicOpen f) _ _ H
   exact ⟨n, by simpa [mul_comm x] using e⟩
@@ -331,17 +337,25 @@ lemma Scheme.isNilpotent_iff_basicOpen_eq_bot {X : Scheme.{u}}
 
 /-- The zero locus of a set of sections over a compact open of a scheme is `X` if and only if
 `s` is contained in the nilradical of `Γ(X, U)`. -/
-lemma Scheme.zeroLocus_eq_top_iff_subset_nilradical_of_isCompact {X : Scheme.{u}} {U : X.Opens}
+lemma Scheme.zeroLocus_eq_univ_iff_subset_nilradical_of_isCompact {X : Scheme.{u}} {U : X.Opens}
     (hU : IsCompact (U : Set X)) (s : Set Γ(X, U)) :
-    X.zeroLocus s = ⊤ ↔ s ⊆ nilradical Γ(X, U) := by
+    X.zeroLocus s = Set.univ ↔ s ⊆ nilradical Γ(X, U) := by
   simp [Scheme.zeroLocus_def, ← Scheme.isNilpotent_iff_basicOpen_eq_bot_of_isCompact hU,
     ← mem_nilradical, Set.subset_def]
 
 /-- The zero locus of a set of sections over a compact open of a scheme is `X` if and only if
 `s` is contained in the nilradical of `Γ(X, U)`. -/
-lemma Scheme.zeroLocus_eq_top_iff_subset_nilradical {X : Scheme.{u}}
+lemma Scheme.zeroLocus_eq_univ_iff_subset_nilradical {X : Scheme.{u}}
     [CompactSpace X] (s : Set Γ(X, ⊤)) :
-    X.zeroLocus s = ⊤ ↔ s ⊆ nilradical Γ(X, ⊤) :=
-  zeroLocus_eq_top_iff_subset_nilradical_of_isCompact (U := ⊤) (CompactSpace.isCompact_univ) s
+    X.zeroLocus s = Set.univ ↔ s ⊆ nilradical Γ(X, ⊤) :=
+  zeroLocus_eq_univ_iff_subset_nilradical_of_isCompact (U := ⊤) (CompactSpace.isCompact_univ) s
+
+@[deprecated (since := "2025-04-05")]
+alias Scheme.zeroLocus_eq_top_iff_subset_nilradical_of_isCompact :=
+  Scheme.zeroLocus_eq_univ_iff_subset_nilradical_of_isCompact
+
+@[deprecated (since := "2025-04-05")]
+alias Scheme.zeroLocus_eq_top_iff_subset_nilradical :=
+  Scheme.zeroLocus_eq_univ_iff_subset_nilradical
 
 end AlgebraicGeometry

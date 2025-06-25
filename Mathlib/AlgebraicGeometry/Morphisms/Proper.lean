@@ -35,7 +35,7 @@ variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 /-- A morphism is proper if it is separated, universally closed and locally of finite type. -/
 @[mk_iff]
-class IsProper extends IsSeparated f, UniversallyClosed f, LocallyOfFiniteType f : Prop where
+class IsProper : Prop extends IsSeparated f, UniversallyClosed f, LocallyOfFiniteType f where
 
 lemma isProper_eq : @IsProper =
     (@IsSeparated ⊓ @UniversallyClosed : MorphismProperty Scheme) ⊓ @LocallyOfFiniteType := by
@@ -114,12 +114,6 @@ theorem isIntegral_appTop_of_universallyClosed (f : X ⟶ Y) [UniversallyClosed 
     rwa [← Scheme.toSpecΓ_naturality,
       MorphismProperty.cancel_right_of_respectsIso (P := @UniversallyClosed)]
   have : UniversallyClosed X.toSpecΓ := .of_comp_of_isSeparated _ (Spec.map f.appTop)
-  have : Surjective X.toSpecΓ := by
-    constructor
-    apply surjective_of_isClosed_range_of_injective
-    · exact X.toSpecΓ.isClosedMap.isClosed_range
-    · simp only [Scheme.toSpecΓ_appTop]
-      exact (ConcreteCategory.bijective_of_isIso (Scheme.ΓSpecIso Γ(X, ⊤)).hom).1
   rw [← IsIntegralHom.SpecMap_iff, IsIntegralHom.iff_universallyClosed_and_isAffineHom]
   exact ⟨.of_comp_surjective X.toSpecΓ _, inferInstance⟩
 

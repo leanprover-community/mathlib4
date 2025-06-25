@@ -127,7 +127,7 @@ end SeminormedAddCommGroup
 
 section SeminormedBounded
 variable [SeminormedRing 𝕜] [Ring 𝕜₂] [SeminormedAddCommGroup E]
-variable [Module 𝕜 E] [BoundedSMul 𝕜 E]
+variable [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 /-- Reinterpret a linear map `𝕜 →ₗ[𝕜] E` as a continuous linear map. This construction
 is generalized to the case of any finite dimensional domain
@@ -157,10 +157,6 @@ variable {σ : 𝕜 →+* 𝕜₂} (f g : E →SL[σ] F) (x y z : E)
 theorem ContinuousLinearMap.isUniformEmbedding_of_bound {K : ℝ≥0} (hf : ∀ x, ‖x‖ ≤ K * ‖f x‖) :
     IsUniformEmbedding f :=
   (AddMonoidHomClass.antilipschitz_of_bound f hf).isUniformEmbedding f.uniformContinuous
-
-@[deprecated (since := "2024-10-01")]
-alias ContinuousLinearMap.uniformEmbedding_of_bound :=
-  ContinuousLinearMap.isUniformEmbedding_of_bound
 
 end Normed
 

@@ -37,7 +37,7 @@ theorem exp_arg (z : Circle) : exp (arg z) = z :=
 
 /-- `Complex.arg ∘ (↑)` and `expMapCircle` define a partial equivalence between `circle` and `ℝ`
 with `source = Set.univ` and `target = Set.Ioc (-π) π`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 noncomputable def argPartialEquiv : PartialEquiv Circle ℝ where
   toFun := arg ∘ (↑)
   invFun := exp
@@ -49,7 +49,7 @@ noncomputable def argPartialEquiv : PartialEquiv Circle ℝ where
   right_inv' _ hx := arg_exp hx.1 hx.2
 
 /-- `Complex.arg` and `expMapCircle` define an equivalence between `circle` and `(-π, π]`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 noncomputable def argEquiv : Circle ≃ Ioc (-π) π where
   toFun z := ⟨arg z, neg_pi_lt_arg _, arg_le_pi _⟩
   invFun := exp ∘ (↑)
