@@ -81,7 +81,7 @@ instance NullMeasurableSpace.instSubsingleton [h : Subsingleton α] :
   h
 
 instance NullMeasurableSpace.instMeasurableSpace : MeasurableSpace (NullMeasurableSpace α μ) :=
-  @EventuallyMeasurableSpace α inferInstance (ae μ) _
+  @eventuallyMeasurableSpace α inferInstance (ae μ) _
 
 /-- A set is called `NullMeasurableSet` if it can be approximated by a measurable set up to
 a set of null measure. -/
@@ -182,7 +182,7 @@ protected theorem const (p : Prop) : NullMeasurableSet { _a : α | p } μ :=
 
 instance instMeasurableSingletonClass [MeasurableSingletonClass α] :
     MeasurableSingletonClass (NullMeasurableSpace α μ) :=
-  EventuallyMeasurableSpace.measurableSingleton (m := m0)
+  eventuallyMeasurableSingleton (m := m0)
 
 protected theorem insert [MeasurableSingletonClass (NullMeasurableSpace α μ)]
     (hs : NullMeasurableSet s μ) (a : α) : NullMeasurableSet (insert a s) μ :=

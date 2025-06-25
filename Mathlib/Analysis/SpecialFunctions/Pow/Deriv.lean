@@ -329,7 +329,7 @@ theorem hasStrictFDerivAt_rpow_of_pos (p : ℝ × ℝ) (hp : 0 < p.1) :
   have : (fun x : ℝ × ℝ => x.1 ^ x.2) =ᶠ[𝓝 p] fun x => exp (log x.1 * x.2) :=
     (continuousAt_fst.eventually (lt_mem_nhds hp)).mono fun p hp => rpow_def_of_pos hp _
   refine HasStrictFDerivAt.congr_of_eventuallyEq ?_ this.symm
-  convert ((hasStrictFDerivAt_fst.log hp.ne').mul hasStrictFDerivAt_snd).exp using 1
+  convert ((hasStrictFDerivAt_fst.log hp.ne').fun_mul hasStrictFDerivAt_snd).exp using 1
   rw [rpow_sub_one hp.ne', ← rpow_def_of_pos hp, smul_add, smul_smul, mul_div_left_comm,
     div_eq_mul_inv, smul_smul, smul_smul, mul_assoc, add_comm]
 
@@ -342,7 +342,7 @@ theorem hasStrictFDerivAt_rpow_of_neg (p : ℝ × ℝ) (hp : p.1 < 0) :
   have : (fun x : ℝ × ℝ => x.1 ^ x.2) =ᶠ[𝓝 p] fun x => exp (log x.1 * x.2) * cos (x.2 * π) :=
     (continuousAt_fst.eventually (gt_mem_nhds hp)).mono fun p hp => rpow_def_of_neg hp _
   refine HasStrictFDerivAt.congr_of_eventuallyEq ?_ this.symm
-  convert ((hasStrictFDerivAt_fst.log hp.ne).mul hasStrictFDerivAt_snd).exp.mul
+  convert ((hasStrictFDerivAt_fst.log hp.ne).fun_mul hasStrictFDerivAt_snd).exp.fun_mul
     (hasStrictFDerivAt_snd.mul_const π).cos using 1
   simp_rw [rpow_sub_one hp.ne, smul_add, ← add_assoc, smul_smul, ← add_smul, ← mul_assoc,
     mul_comm (cos _), ← rpow_def_of_neg hp]

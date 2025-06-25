@@ -173,8 +173,9 @@ noncomputable def taylorEquiv (r : R) : R[X] ≃ₐ[R] R[X] where
   right_inv P := by simp [taylor, comp_assoc]
   __ := taylorAlgHom r
 
-@[simp, norm_cast] lemma coe_taylorEquiv : taylorEquiv r = taylorAlgHom r :=
-  rfl
+@[simp, norm_cast] lemma toAlgHom_taylorEquiv : taylorEquiv r = taylorAlgHom r := rfl
+
+@[simp, norm_cast] lemma coe_taylorEquiv : taylorEquiv r = taylor r := rfl
 
 @[simp] lemma taylorEquiv_symm : (taylorEquiv r).symm = taylorEquiv (-r) :=
   AlgEquiv.ext fun _ ↦ rfl

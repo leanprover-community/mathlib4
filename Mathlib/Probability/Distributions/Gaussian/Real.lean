@@ -6,6 +6,7 @@ Authors: Lorenzo Luccioli, Rémy Degenne, Alexander Bentkamp
 import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
 import Mathlib.MeasureTheory.Group.Convolution
 import Mathlib.Probability.Moments.MGFAnalytic
+import Mathlib.Probability.Independence.Basic
 
 /-!
 # Gaussian distributions over ℝ
@@ -494,7 +495,7 @@ lemma integral_id_gaussianReal : ∫ x, x ∂gaussianReal μ v = μ := by
   rw [← deriv_mgf_zero (by simp), mgf_fun_id_gaussianReal, _root_.deriv_exp (by fun_prop)]
   simp only [mul_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, zero_div,
     add_zero, Real.exp_zero, one_mul]
-  rw [deriv_add (by fun_prop) (by fun_prop), deriv_mul (by fun_prop) (by fun_prop)]
+  rw [deriv_fun_add (by fun_prop) (by fun_prop), deriv_fun_mul (by fun_prop) (by fun_prop)]
   simp
 
 /-- The variance of a real Gaussian distribution `gaussianReal μ v` is
@@ -515,11 +516,11 @@ lemma variance_fun_id_gaussianReal : Var[fun x ↦ x; gaussianReal μ v] = v := 
     have : deriv (fun t ↦ rexp (v * t ^ 2 / 2)) = fun t ↦ v * t * rexp (v * t ^ 2 / 2) := by
       ext t
       rw [_root_.deriv_exp (by fun_prop)]
-      simp only [deriv_div_const, differentiableAt_const, differentiableAt_id',
-        DifferentiableAt.pow, deriv_mul, deriv_const', zero_mul, deriv_pow'', Nat.cast_ofNat,
+      simp only [deriv_div_const, differentiableAt_const, differentiableAt_fun_id, Nat.cast_ofNat,
+        DifferentiableAt.fun_pow, deriv_fun_mul, deriv_const', zero_mul, deriv_fun_pow'',
         Nat.add_one_sub_one, pow_one, deriv_id'', mul_one, zero_add]
       ring
-    rw [this, deriv_mul (by fun_prop) (by fun_prop), deriv_mul (by fun_prop) (by fun_prop)]
+    rw [this, deriv_fun_mul (by fun_prop) (by fun_prop), deriv_fun_mul (by fun_prop) (by fun_prop)]
     simp
 
 /-- The variance of a real Gaussian distribution `gaussianReal μ v` is
@@ -595,6 +596,18 @@ lemma gaussianReal_conv_gaussianReal {m₁ m₂ : ℝ} {v₁ v₂ : ℝ≥0} :
   rw [← Complex.exp_add]
   simp only [Complex.ofReal_add, NNReal.coe_add]
   ring_nf
+
+/- The sum of two real Gaussian variables with means `m₁, m₂` and variances `v₁, v₂` is a real
+Gaussian distribution with mean `m₁ + m₂` and variance `v_1 + v_2`. -/
+lemma gaussianReal_add_gaussianReal_of_indepFun {Ω} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
+    {m₁ m₂ : ℝ} {v₁ v₂ : ℝ≥0} {X Y : Ω → ℝ} (hXY : IndepFun X Y P)
+    (hX : P.map X = gaussianReal m₁ v₁) (hY : P.map Y = gaussianReal m₂ v₂) :
+    P.map (X + Y) = gaussianReal (m₁ + m₂) (v₁ + v₂) := by
+  rw [hXY.map_add_eq_map_conv_map₀', hX, hY, gaussianReal_conv_gaussianReal]
+  · apply AEMeasurable.of_map_ne_zero; simp [NeZero.ne, hX]
+  · apply AEMeasurable.of_map_ne_zero; simp [NeZero.ne, hY]
+  · rw [hX]; apply IsFiniteMeasure.toSigmaFinite
+  · rw [hY]; apply IsFiniteMeasure.toSigmaFinite
 
 end GaussianReal
 
