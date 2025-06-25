@@ -16,6 +16,10 @@ namespace Fin
 
 variable {m n : ℕ}
 
+/--
+If we have an injective map from `Fin m` to `Fin n`, we must have that `m ≤ n`. See also
+`Fintype.card_le_of_injective` for the generalisation to arbitrary finite types.
+-/
 theorem le_of_injective (f : Fin m → Fin n) (hf : f.Injective) : m ≤ n :=
   Fintype.card_fin m ▸ Fintype.card_fin n ▸ Fintype.card_le_of_injective f hf
 
