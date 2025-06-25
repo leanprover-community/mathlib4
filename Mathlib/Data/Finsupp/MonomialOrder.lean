@@ -92,6 +92,12 @@ theorem bot_eq_zero : (⊥ : m.syn) = 0 := rfl
 
 theorem eq_zero_iff {a : m.syn} : a = 0 ↔ a ≤ 0 := eq_bot_iff
 
+lemma toSyn_eq_zero_iff (a : σ →₀ ℕ) :
+    m.toSyn a = 0 ↔ a = 0 := AddEquiv.map_eq_zero_iff m.toSyn
+
+lemma toSyn_lt_iff_ne_zero {a : m.syn} :
+    0 < a ↔ a ≠ 0 := bot_lt_iff_ne_bot
+
 lemma toSyn_strictMono : StrictMono (m.toSyn) := by
   apply m.toSyn_monotone.strictMono_of_injective m.toSyn.injective
 

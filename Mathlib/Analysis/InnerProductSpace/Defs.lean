@@ -527,7 +527,7 @@ lemma topology_eq
 
 /-- Normed space structure constructed from an `InnerProductSpace.Core` structure, adjusting the
 topology to make sure it is defeq to an already existing topology. -/
-def toNormedAddCommGroupOfTopology
+@[reducible] def toNormedAddCommGroupOfTopology
     [tF : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
@@ -536,7 +536,7 @@ def toNormedAddCommGroupOfTopology
 
 /-- Normed space structure constructed from an `InnerProductSpace.Core` structure, adjusting the
 topology to make sure it is defeq to an already existing topology. -/
-def toNormedSpaceOfTopology
+@[reducible] def toNormedSpaceOfTopology
     [tF : TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :

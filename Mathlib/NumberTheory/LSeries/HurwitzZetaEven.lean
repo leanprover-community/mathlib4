@@ -651,7 +651,7 @@ lemma differentiable_hurwitzZetaEven_sub_hurwitzZetaEven (a b : UnitAddCircle) :
   intro z
   rcases ne_or_eq z 1 with hz | rfl
   · exact (differentiableAt_hurwitzZetaEven a hz).sub (differentiableAt_hurwitzZetaEven b hz)
-  · convert (differentiableAt_hurwitzZetaEven_sub_one_div a).sub
+  · convert (differentiableAt_hurwitzZetaEven_sub_one_div a).fun_sub
       (differentiableAt_hurwitzZetaEven_sub_one_div b) using 2 with s
     abel
 
@@ -713,7 +713,7 @@ lemma differentiableAt_cosZeta (a : UnitAddCircle) {s : ℂ} (hs' : s ≠ 1 ∨ 
   rcases ne_or_eq s 1 with hs' | rfl
   · exact differentiableAt_update_of_residue (fun _ ht ht' ↦
       differentiableAt_completedCosZeta a ht (Or.inl ht')) (completedCosZeta_residue_zero a) s hs'
-  · apply ((differentiableAt_completedCosZeta a one_ne_zero hs').mul
+  · apply ((differentiableAt_completedCosZeta a one_ne_zero hs').fun_mul
       (differentiable_Gammaℝ_inv.differentiableAt)).congr_of_eventuallyEq
     filter_upwards [isOpen_compl_singleton.mem_nhds one_ne_zero] with x hx
     rw [cosZeta, Function.update_of_ne hx, div_eq_mul_inv]
