@@ -80,7 +80,7 @@ namespace FunctionalFormula
 variable {T}
 
 /-- The constructor for a `FunctionalFormula`. To make a `FunctionalFormula`, we need a formula,
-and a proof that it is the graph of a function in all models, stated using `ExistsUnique` -/
+and a proof that it is the graph of a function in all models, stated using `ExistsUnique`. -/
 def mk (φ : L.Formula (α ⊕ β)) (h : T ⊨ᵇ Formula.iExsUnique β φ) : FunctionalFormula T α β :=
   ofQuotient (Quotient.mk _ ⟨φ, h⟩)
 
