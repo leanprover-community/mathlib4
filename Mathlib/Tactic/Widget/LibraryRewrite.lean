@@ -107,17 +107,9 @@ where
   | some (_, lhs, rhs) => some (lhs, rhs)
   | none => e.iff?
 
--- TODO: remove this function when bumping to v4.22.0
-/-- Return true if the name is in a namespace associated to metaprogramming. -/
-def _root_.Lean.Name.isMetaprogramming (n : Name) : Bool :=
-  let components := n.components
-  components.head? == some `Lean || (components.any fun n => n == `Tactic || n == `Linter)
-
 /-- Try adding the lemma to the `RefinedDiscrTree`. -/
 def addRewriteEntry (name : Name) (cinfo : ConstantInfo) :
     MetaM (List (RewriteLemma × List (Key × LazyEntry))) := do
-  if name matches .str _ "injEq" | .str _ "sizeOf_spec" then return [] else
-  if name.isMetaprogramming then return [] else
   -- we start with a fast-failing check to see if the lemma has the right shape
   let .const head _ := cinfo.type.getForallBody.getAppFn | return []
   unless head == ``Eq || head == ``Iff do return []
