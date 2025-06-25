@@ -1120,7 +1120,7 @@ lemma ext_getVert_le_length {u v} {p q : G.Walk u v} (hl : p.length = q.length)
   intro k
   cases le_or_gt k p.length with
   | inl hk =>
-    rw [← getVert_eq_support_get? p hk, ← getVert_eq_support_get? q (hl ▸ hk)]
+    rw [← getVert_eq_support_getElem? p hk, ← getVert_eq_support_getElem? q (hl ▸ hk)]
     exact congrArg some (h k hk)
   | inr hk =>
     replace hk : p.length + 1 ≤ k := hk
