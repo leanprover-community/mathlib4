@@ -63,7 +63,7 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt [CompleteSpace E]
   obtain ⟨_, hv⟩ := hv
   -- use Picard-Lindelöf theorem to extract a solution to the ODE in the local chart
   obtain ⟨f, hf1, hf2⟩ := hv.contDiffAt (range_mem_nhds_isInteriorPoint hx)
-    |>.snd.exists_eq_hasDerivAt_Ioo_of_contDiffAt₀ t₀
+    |>.snd.exists_forall_mem_closedBall_exists_eq_forall_mem_Ioo_hasDerivAt₀ t₀
   simp_rw [← Real.ball_eq_Ioo, ← Metric.eventually_nhds_iff_ball] at hf2
   -- use continuity of `f` so that `f t` remains inside `interior (extChartAt I x₀).target`
   have ⟨a, ha, hf2'⟩ := Metric.eventually_nhds_iff_ball.mp hf2
