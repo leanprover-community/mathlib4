@@ -371,6 +371,31 @@ end
 
 end PartialHomeomorph
 
+-- section
+
+-- variable [TopologicalSpace M] [Nonempty M] (h : SliceModel F I I')
+--     {f : M → M'} (hf : Continuous f)
+--     (hf' : InjOn f (f ⁻¹' φ.source))
+--     (hfoo : φ.target ⊆ range h.map)
+
+-- variable [TopologicalSpace M] [IsManifold I' n M'] [h: SliceModel F I I'] [Nonempty H] [Nonempty M]
+
+-- noncomputable def myChart (inst : IsImmersedSubmanifold F M M' n h) (x : M) :
+--     PartialHomeomorph M H :=
+--   (chartAt H' (inst.emb x)).pullback_sliceModel h inst.hemb (hcharts_source (mem_range_self x))
+--     (hcharts_target (mem_range_self x))
+
+-- -- XXX: making this an instance makes Lean complain about synthesization order
+-- noncomputable def chartedSpace (inst : IsImmersedSubmanifold F M M' n h) :
+--     ChartedSpace H M where
+--   atlas := { inst.myChart x | x : M }
+--   chartAt x := inst.myChart x
+--   mem_chart_source x := by simp [myChart]
+--   chart_mem_atlas x := by rw [mem_setOf]; use x
+
+
+-- end
+
 -- XXX: should h and f be part of the underlying data? well, I may want a SliceModel class to be
 -- inferred first, right? at least, otherwise they should be explicit...
 variable (M M' n) in
@@ -384,29 +409,55 @@ compiles
 class IsImmersedSubmanifold [TopologicalSpace M] {f : M → M'} [h : SliceModel F I I'] where
     hf : Continuous f
     sliceChartAt : M' → PartialHomeomorph M' H'
+    mem_sliceChartAt_source : ∀ x, x ∈ (sliceChartAt x).source
     sliceChartAt_mem_maximalAtlas : ∀ y, y ∈ range f → (sliceChartAt y) ∈ maximalAtlas I' n M'
     hf' : ∀ y, y ∈ range f → InjOn f (f ⁻¹' (sliceChartAt y).source)
     -- Is this too strong? At least it's not obviously nonsense (and it should be satisfied)
     -- if this is coming from an immersion, right?
     hfoo : ∀ y, y ∈ range f → (sliceChartAt y).target ⊆ range h.map
-    -- TODO: formalise enough so I can state this!
-    -- hcharts : ∀ x, pullback (sliceChartAt f x) ∈ maximalAtlas I n M
+    -- TODO: do I want to require this? perhaps actually not
+    -- hcharts : ∀ y, (hy: y ∈ range f) →
+    --   (sliceChartAt y).pullback_sliceModel f h hf (hf' _ hy) (hfoo _ hy) ∈ maximalAtlas I n M
 
-variable {f : M → M'} [h : SliceModel F I I']
+namespace IsImmersedSubmanifold
 
+variable (M M' n) in
 -- If `f` is injective, we can simplify the construction slightly.
-def IsImmersedSubmanifold.mk_of_injective [TopologicalSpace M]
+def mk_of_injective [TopologicalSpace M] {f : M → M'} [h : SliceModel F I I']
   (sliceChartAt : M' → PartialHomeomorph M' H')
+  (mem_sliceChartAt_source : ∀ x, x ∈ (sliceChartAt x).source)
   (sliceChartAt_mem_maximalAtlas : ∀ y, y ∈ range f → (sliceChartAt y) ∈ maximalAtlas I' n M')
   (hfoo : ∀ y, y ∈ range f → (sliceChartAt y).target ⊆ range h.map)
   (hf : Continuous f) (hf' : Injective f) : IsImmersedSubmanifold M M' (h := h) (f := f) n where
   sliceChartAt := sliceChartAt
+  mem_sliceChartAt_source := mem_sliceChartAt_source
   sliceChartAt_mem_maximalAtlas := sliceChartAt_mem_maximalAtlas
   hf := hf
   hf' _y _hy := hf'.injOn
   hfoo := hfoo
 
-#exit
+-- TODO: remove non-emptiness hypotheses by beefing up pullback_sliceModel
+variable {f : M → M'} [h : SliceModel F I I'] [TopologicalSpace M] [Nonempty H] [Nonempty M]
+
+private noncomputable def chartAt (inst : IsImmersedSubmanifold M M' n (f := f) (h := h)) (x : M) :
+    PartialHomeomorph M H :=
+  letI hyp := inst.hf' (f x) (mem_range_self x)
+  (inst.sliceChartAt (f x)).pullback_sliceModel f h inst.hf hyp (inst.hfoo _ (mem_range_self x))
+
+-- XXX: making this an instance makes Lean complain about synthesization order
+noncomputable def chartedSpace (inst : IsImmersedSubmanifold M M' n (f := f) (h := h)) :
+    ChartedSpace H M where
+  atlas := { inst.chartAt x | x : M }
+  chartAt x := inst.chartAt x
+  mem_chart_source x := by simp [chartAt, mem_sliceChartAt_source (f x)]
+  chart_mem_atlas x := by rw [mem_setOf]; use x
+
+-- Cannot make an instance because Lean errors about synthesization order
+-- noncomputable def isManifold (inst : IsImmersedSubmanifold M M' n (f := f) (h := h)) :
+--     haveI : ChartedSpace H M := inst.chartedSpace; IsManifold I n M where
+--   compatible := sorry
+
+end IsImmersedSubmanifold
 
 -- TODO: prove that:
 -- IsImmersedSubmanifold M N n h f implies IsImmersion f n I I'
