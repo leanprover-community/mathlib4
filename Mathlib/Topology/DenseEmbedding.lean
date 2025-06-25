@@ -31,8 +31,8 @@ variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 /-- `i : α → β` is "dense inducing" if it has dense range and the topology on `α`
   is the one induced by `i` from the topology on `β`. -/
-structure IsDenseInducing [TopologicalSpace α] [TopologicalSpace β] (i : α → β)
-    extends IsInducing i : Prop where
+structure IsDenseInducing [TopologicalSpace α] [TopologicalSpace β] (i : α → β) : Prop
+    extends IsInducing i where
   /-- The range of a dense inducing map is a dense set. -/
   protected dense : DenseRange i
 
@@ -78,7 +78,7 @@ theorem dense_image (di : IsDenseInducing i) {s : Set α} : Dense (i '' s) ↔ D
 `α` has empty interior. -/
 theorem interior_compact_eq_empty [T2Space β] (di : IsDenseInducing i) (hd : Dense (range i)ᶜ)
     {s : Set α} (hs : IsCompact s) : interior s = ∅ := by
-  refine eq_empty_iff_forall_not_mem.2 fun x hx => ?_
+  refine eq_empty_iff_forall_notMem.2 fun x hx => ?_
   rw [mem_interior_iff_mem_nhds] at hx
   have := di.closure_image_mem_nhds hx
   rw [(hs.image di.continuous).isClosed.closure_eq] at this
@@ -91,9 +91,6 @@ protected theorem prodMap [TopologicalSpace γ] [TopologicalSpace δ] {e₁ : α
     IsDenseInducing (Prod.map e₁ e₂) where
   toIsInducing := de₁.isInducing.prodMap de₂.isInducing
   dense := de₁.dense.prodMap de₂.dense
-
-@[deprecated (since := "2024-10-06")]
-protected alias prod := IsDenseInducing.prodMap
 
 open TopologicalSpace
 
@@ -255,8 +252,8 @@ theorem continuous_extend [T3Space β] (hs : Dense s)
 end Dense
 
 /-- A dense embedding is an embedding with dense image. -/
-structure IsDenseEmbedding [TopologicalSpace α] [TopologicalSpace β] (e : α → β) extends
-  IsDenseInducing e : Prop where
+structure IsDenseEmbedding [TopologicalSpace α] [TopologicalSpace β] (e : α → β) : Prop
+    extends IsDenseInducing e where
   /-- A dense embedding is injective. -/
   injective : Function.Injective e
 
@@ -264,9 +261,6 @@ lemma IsDenseEmbedding.mk' [TopologicalSpace α] [TopologicalSpace β] (e : α �
     (dense : DenseRange e) (injective : Function.Injective e)
     (H : ∀ (a : α), ∀ s ∈ 𝓝 a, ∃ t ∈ 𝓝 (e a), ∀ b, e b ∈ t → b ∈ s) : IsDenseEmbedding e :=
   { IsDenseInducing.mk' e c dense H with injective }
-
-@[deprecated (since := "2024-09-30")]
-alias DenseEmbedding.mk' := IsDenseEmbedding.mk'
 
 namespace IsDenseEmbedding
 
@@ -295,8 +289,6 @@ protected theorem prodMap {e₁ : α → β} {e₂ : γ → δ} (de₁ : IsDense
   toIsDenseInducing := de₁.isDenseInducing.prodMap de₂.isDenseInducing
   injective := de₁.injective.prodMap de₂.injective
 
-@[deprecated (since := "2024-10-06")] protected alias prod := IsDenseEmbedding.prodMap
-
 /-- The dense embedding of a subtype inside its closure. -/
 @[simps]
 def subtypeEmb {α : Type*} (p : α → Prop) (e : α → β) (x : { x // p x }) :
@@ -324,15 +316,9 @@ protected lemma id {α : Type*} [TopologicalSpace α] : IsDenseEmbedding (id : �
 
 end IsDenseEmbedding
 
-@[deprecated (since := "2024-09-30")]
-alias denseEmbedding_id := IsDenseEmbedding.id
-
 theorem Dense.isDenseEmbedding_val [TopologicalSpace α] {s : Set α} (hs : Dense s) :
     IsDenseEmbedding ((↑) : s → α) :=
   { IsEmbedding.subtypeVal with dense := hs.denseRange_val }
-
-@[deprecated (since := "2024-09-30")]
-alias Dense.denseEmbedding_val := Dense.isDenseEmbedding_val
 
 theorem isClosed_property [TopologicalSpace β] {e : α → β} {p : β → Prop} (he : DenseRange e)
     (hp : IsClosed { x | p x }) (h : ∀ a, p (e a)) : ∀ b, p b := by
@@ -384,9 +370,9 @@ theorem DenseRange.equalizer (hfd : DenseRange f) {g h : β → γ} (hg : Contin
 
 end
 
--- Bourbaki GT III §3 no.4 Proposition 7 (generalised to any dense-inducing map to a T₃ space)
+-- Bourbaki GT III §3 no.4 Proposition 7 (generalised to any dense-inducing map to a regular space)
 theorem Filter.HasBasis.hasBasis_of_isDenseInducing [TopologicalSpace α] [TopologicalSpace β]
-    [T3Space β] {ι : Type*} {s : ι → Set α} {p : ι → Prop} {x : α} (h : (𝓝 x).HasBasis p s)
+    [RegularSpace β] {ι : Type*} {s : ι → Set α} {p : ι → Prop} {x : α} (h : (𝓝 x).HasBasis p s)
     {f : α → β} (hf : IsDenseInducing f) : (𝓝 (f x)).HasBasis p fun i => closure <| f '' s i := by
   rw [Filter.hasBasis_iff] at h ⊢
   intro T

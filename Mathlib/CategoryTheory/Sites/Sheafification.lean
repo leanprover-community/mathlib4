@@ -15,7 +15,7 @@ Given a site `(C, J)` we define a typeclass `HasSheafify J A` saying that the in
 `A`-valued sheaves on `C` to presheaves admits a left exact left adjoint (sheafification).
 
 Note: to access the `HasSheafify` instance for suitable concrete categories, import the file
-`Mathlib.CategoryTheory.Sites.LeftExact`.
+`Mathlib/CategoryTheory/Sites/LeftExact.lean`.
 -/
 
 universe v₁ v₂ u₁ u₂
@@ -73,6 +73,7 @@ instance [HasWeakSheafify J A] : (presheafToSheaf J A).IsLeftAdjoint :=
   ⟨_, ⟨sheafificationAdjunction J A⟩⟩
 
 instance [HasWeakSheafify J A] : Reflective (sheafToPresheaf J A) where
+  L := presheafToSheaf J A
   adj := sheafificationAdjunction _ _
 
 instance [HasSheafify J A] :  PreservesFiniteLimits (reflector (sheafToPresheaf J A)) :=

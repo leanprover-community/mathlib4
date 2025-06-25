@@ -45,7 +45,6 @@ open ContinuousMap
 class ContractibleSpace (X : Type*) [TopologicalSpace X] : Prop where
   hequiv_unit' : Nonempty (X ≃ₕ Unit)
 
--- Porting note: added to work around lack of infer kinds
 theorem ContractibleSpace.hequiv_unit (X : Type*) [TopologicalSpace X] [ContractibleSpace X] :
     Nonempty (X ≃ₕ Unit) :=
   ContractibleSpace.hequiv_unit'

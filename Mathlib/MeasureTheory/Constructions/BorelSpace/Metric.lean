@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Analysis.Normed.Group.Continuity
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.Topology.MetricSpace.Thickening
 
 /-!
@@ -12,8 +12,8 @@ import Mathlib.Topology.MetricSpace.Thickening
 
 ## Main statements
 
-* `measurable_dist`, `measurable_infEdist`, `measurable_norm`,
-  `Measurable.dist`, `Measurable.infEdist`, `Measurable.norm`:
+* `measurable_dist`, `measurable_infEdist`, `measurable_norm`, `measurable_enorm`,
+  `Measurable.dist`, `Measurable.infEdist`, `Measurable.norm`, `Measurable.enorm`:
   measurability of various metric-related notions;
 * `tendsto_measure_thickening_of_isClosed`:
   the measure of a closed set is the limit of the measure of its ε-thickenings as ε → 0.
@@ -210,6 +210,30 @@ theorem exists_opensMeasurableSpace_of_countablySeparated (α : Type*)
   rcases exists_borelSpace_of_countablyGenerated_of_separatesPoints (m := m') with ⟨τ, _, _, τm'⟩
   exact ⟨τ, ‹_›, ‹_›, @OpensMeasurableSpace.mk _ _ m (τm'.measurable_eq.symm.le.trans m'le)⟩
 
+
+section ContinuousENorm
+
+variable {ε : Type*} [MeasurableSpace ε] [TopologicalSpace ε] [ContinuousENorm ε]
+  [OpensMeasurableSpace ε] [MeasurableSpace β]
+
+@[measurability, fun_prop]
+lemma measurable_enorm : Measurable (enorm : ε → ℝ≥0∞) := continuous_enorm.measurable
+
+@[measurability, fun_prop]
+protected lemma Measurable.enorm {f : β → ε} (hf : Measurable f) : Measurable (‖f ·‖ₑ) :=
+  measurable_enorm.comp hf
+
+@[measurability, fun_prop]
+protected lemma AEMeasurable.enorm {f : β → ε} {μ : Measure β} (hf : AEMeasurable f μ) :
+    AEMeasurable (‖f ·‖ₑ) μ :=
+  measurable_enorm.comp_aemeasurable hf
+
+@[deprecated (since := "2025-01-21")] alias measurable_ennnorm := measurable_enorm
+@[deprecated (since := "2025-01-21")] alias Measurable.ennnorm := Measurable.enorm
+@[deprecated (since := "2025-01-21")] alias AEMeasurable.ennnorm := AEMeasurable.enorm
+
+end ContinuousENorm
+
 section NormedAddCommGroup
 
 variable [MeasurableSpace α] [NormedAddCommGroup α] [OpensMeasurableSpace α] [MeasurableSpace β]
@@ -239,21 +263,5 @@ protected theorem Measurable.nnnorm {f : β → α} (hf : Measurable f) : Measur
 protected lemma AEMeasurable.nnnorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
     AEMeasurable (fun a => ‖f a‖₊) μ :=
   measurable_nnnorm.comp_aemeasurable hf
-
-@[measurability]
-lemma measurable_enorm : Measurable (enorm : α → ℝ≥0∞) := continuous_enorm.measurable
-
-@[measurability, fun_prop]
-protected lemma Measurable.enorm {f : β → α} (hf : Measurable f) : Measurable (‖f ·‖ₑ) :=
-  hf.nnnorm.coe_nnreal_ennreal
-
-@[measurability, fun_prop]
-protected lemma AEMeasurable.enorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
-    AEMeasurable (‖f ·‖ₑ) μ :=
-  measurable_enorm.comp_aemeasurable hf
-
-@[deprecated (since := "2025-01-21")] alias measurable_ennnorm := measurable_enorm
-@[deprecated (since := "2025-01-21")] alias Measurable.ennnorm := Measurable.enorm
-@[deprecated (since := "2025-01-21")] alias AEMeasurable.ennnorm := AEMeasurable.enorm
 
 end NormedAddCommGroup

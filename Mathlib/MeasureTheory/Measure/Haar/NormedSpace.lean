@@ -5,7 +5,7 @@ Authors: Floris van Doorn, Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 /-!
 # Basic properties of Haar measures on real vector spaces
@@ -96,8 +96,7 @@ theorem integral_comp_smul (f : E → F) (R : ℝ) :
       conv_rhs => rw [this]
       simp only [hE, pow_zero, inv_one, abs_one, one_smul, integral_const]
     · have : Nontrivial E := finrank_pos_iff.1 hE
-      simp only [zero_pow hE.ne', measure_univ_of_isAddLeftInvariant, ENNReal.top_toReal, zero_smul,
-        inv_zero, abs_zero]
+      simp [zero_pow hE.ne', measure_univ_of_isAddLeftInvariant, measureReal_def]
   · calc
       (∫ x, f (R • x) ∂μ) = ∫ y, f y ∂Measure.map (fun x => R • x) μ :=
         (integral_map_equiv (Homeomorph.smul (isUnit_iff_ne_zero.2 hR).unit).toMeasurableEquiv
@@ -225,10 +224,10 @@ variable (f : E' ≃ₗᵢ[ℝ] F')
 variable [NormedAddCommGroup A]
 
 theorem integrable_comp (g : F' → A) : Integrable (g ∘ f) ↔ Integrable g :=
-  f.measurePreserving.integrable_comp_emb f.toMeasureEquiv.measurableEmbedding
+  f.measurePreserving.integrable_comp_emb f.toMeasurableEquiv.measurableEmbedding
 
 theorem integral_comp [NormedSpace ℝ A] (g : F' → A) : ∫ (x : E'), g (f x) = ∫ (y : F'), g y :=
-  f.measurePreserving.integral_comp' (f := f.toMeasureEquiv) g
+  f.measurePreserving.integral_comp' (f := f.toMeasurableEquiv) g
 
 end InnerProductSpace
 

@@ -87,11 +87,11 @@ instance [Countable α] [Countable β] : Countable (α × β) := by
 
 instance [Uncountable α] [Nonempty β] : Uncountable (α × β) := by
   inhabit β
-  exact (Prod.mk.inj_right default).uncountable
+  exact (Prod.mk_left_injective default).uncountable
 
 instance [Nonempty α] [Uncountable β] : Uncountable (α × β) := by
   inhabit α
-  exact (Prod.mk.inj_left default).uncountable
+  exact (Prod.mk_right_injective default).uncountable
 
 lemma countable_left_of_prod_of_nonempty [Nonempty β] (h : Countable (α × β)) : Countable α := by
   contrapose h

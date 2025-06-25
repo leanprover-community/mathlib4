@@ -6,6 +6,7 @@ Authors: Anne Baanen
 
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Field.Subfield.Defs
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.RingTheory.SimpleRing.Basic
 
@@ -297,8 +298,10 @@ theorem subset_closure {s : Set K} : s ⊆ closure s := fun _ hx => mem_closure.
 theorem subring_closure_le (s : Set K) : Subring.closure s ≤ (closure s).toSubring :=
   Subring.closure_le.mpr subset_closure
 
-theorem not_mem_of_not_mem_closure {s : Set K} {P : K} (hP : P ∉ closure s) : P ∉ s := fun h =>
+theorem notMem_of_notMem_closure {s : Set K} {P : K} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
+
+@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 /-- A subfield `t` includes `closure s` if and only if it includes `s`. -/
 @[simp]
@@ -336,16 +339,13 @@ theorem closure_induction {s : Set K} {p : ∀ x ∈ closure s, Prop}
       inv_mem' := by rintro _ ⟨_, hx⟩; exact ⟨_, inv _ _ hx⟩ }
   ((closure_le (t := this)).2 (fun x hx ↦ ⟨_, mem x hx⟩) h).2
 
-variable (K)
-
+variable (K) in
 /-- `closure` forms a Galois insertion with the coercion to set. -/
 protected def gi : GaloisInsertion (@closure K _) (↑) where
   choice s _ := closure s
   gc _ _ := closure_le
   le_l_u _ := subset_closure
   choice_eq _ _ := rfl
-
-variable {K}
 
 /-- Closure of a subfield `S` equals `S`. -/
 @[simp]
@@ -440,6 +440,9 @@ def rangeRestrictField (f : K →+* L) : K →+* f.fieldRange :=
 @[simp]
 theorem coe_rangeRestrictField (f : K →+* L) (x : K) : (f.rangeRestrictField x : L) = f x :=
   rfl
+
+theorem rangeRestrictField_bijective (f : K →+* L) : Function.Bijective (rangeRestrictField f) :=
+  (Equiv.ofInjective f f.injective).bijective
 
 section eqLocus
 

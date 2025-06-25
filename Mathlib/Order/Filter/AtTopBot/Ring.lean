@@ -16,7 +16,7 @@ namespace Filter
 
 section OrderedSemiring
 
-variable [OrderedSemiring α] {l : Filter β} {f g : β → α}
+variable [Semiring α] [PartialOrder α] [IsOrderedRing α] {l : Filter β} {f g : β → α}
 
 theorem Tendsto.atTop_mul_atTop₀ (hf : Tendsto f l atTop) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x * g x) l atTop := by
@@ -40,7 +40,7 @@ theorem zero_pow_eventuallyEq [MonoidWithZero α] :
 
 section OrderedRing
 
-variable [OrderedRing α] {l : Filter β} {f g : β → α}
+variable [Ring α] [PartialOrder α] [IsOrderedRing α] {l : Filter β} {f g : β → α}
 
 theorem Tendsto.atTop_mul_atBot₀ (hf : Tendsto f l atTop) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x * g x) l atBot := by
@@ -71,7 +71,7 @@ end OrderedRing
 
 section LinearOrderedSemiring
 
-variable [LinearOrderedSemiring α] {l : Filter β} {f : β → α}
+variable [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] {l : Filter β} {f : β → α}
 
 theorem Tendsto.atTop_of_const_mul₀ {c : α} (hc : 0 < c) (hf : Tendsto (fun x => c * f x) l atTop) :
     Tendsto f l atTop :=
@@ -89,7 +89,7 @@ theorem tendsto_pow_atTop_iff {n : ℕ} : Tendsto (fun x : α => x ^ n) atTop at
 
 end LinearOrderedSemiring
 
-theorem not_tendsto_pow_atTop_atBot [LinearOrderedRing α] :
+theorem not_tendsto_pow_atTop_atBot [Ring α] [LinearOrder α] [IsStrictOrderedRing α] :
     ∀ {n : ℕ}, ¬Tendsto (fun x : α => x ^ n) atTop atBot
   | 0 => by simp [not_tendsto_const_atBot]
   | n + 1 => (tendsto_pow_atTop n.succ_ne_zero).not_tendsto disjoint_atTop_atBot
@@ -98,7 +98,7 @@ end Filter
 
 open Filter
 
-variable {R : Type*} [LinearOrderedSemiring R]
+variable {R : Type*} [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
 
 theorem exists_lt_mul_self (a : R) : ∃ x ≥ 0, a < x * x :=
   ((eventually_ge_atTop 0).and (tendsto_mul_self_atTop.eventually (eventually_gt_atTop a))).exists
