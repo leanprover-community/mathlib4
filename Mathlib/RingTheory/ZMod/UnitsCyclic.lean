@@ -67,7 +67,7 @@ theorem isCyclic_units_four :
     IsCyclic (ZMod 4)ˣ := by
   apply isCyclic_of_prime_card (p := 2)
   simp only [Nat.card_eq_fintype_card, card_units_eq_totient]
-  rfl
+  norm_num
 
 /- The multiplicative group of `ZMod p` is cyclic. -/
 theorem isCyclic_units_prime {p : ℕ} (hp : p.Prime) :
