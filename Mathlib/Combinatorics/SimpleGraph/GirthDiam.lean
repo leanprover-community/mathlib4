@@ -116,23 +116,15 @@ lemma Walk.IsPath.drop_isPath {u v} {p : G.Walk u v} (h : p.IsPath) (n : ℕ) :
   have : (p.drop 0).IsPath := by rwa [Walk.drop_zero, isPath_copy]
   exact this.drop_isPath_le n.zero_le
 
-lemma IsCycle.head_eq_getLast {u} {p : G.Walk u u} (h : p.support ≠ []) :
-    p.support.head h = p.support.getLast h := by
-  rw [p.head_support, p.getLast_support]
-
 lemma Walk.dropLast_support_concat_eq_support {u v} {p : G.Walk u v} (h : ¬ p.Nil) :
     p.dropLast.support.concat v = p.support := by
-  have := Walk.adj_penultimate h
-  apply Walk.concat_dropLast at this
-  rw [← Walk.support_concat]
-  · simp_rw [← this]
-  assumption
+  simp_rw [← support_concat _ (adj_penultimate h), ← p.concat_dropLast (adj_penultimate h)]
 
 lemma Walk.tail_length {u v} (p : G.Walk u v) :
     p.tail.length = p.length - 1 := by
   induction p with
   | nil => rfl
-  | cons ha p ih => simp
+  | cons => simp
 
 lemma IsCycle.tail_not_nil {u} {p : G.Walk u u} (h : p.IsCycle) :
     ¬ p.tail.Nil := by
