@@ -159,7 +159,7 @@ def renderUnfolds (e : Expr) (occ : Option Nat) (loc : Option Name) (range : Lsp
       } </li>
   return <details «open»={true}>
     <summary className="mv2 pointer">
-      {.text "Unfolds:"}
+      {.text "Definitional rewrites:"}
     </summary>
     {.element "ul" #[("style", json% { "padding-left" : "30px"})] core}
   </details>
