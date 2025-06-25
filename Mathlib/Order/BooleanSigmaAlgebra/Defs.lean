@@ -33,9 +33,7 @@ is countable.
   countable suprema and infima.
 -/
 
-universe u
-
-variable {α : Type u}
+variable {α : Type*}
 
 /-- A σ-complete lattice is a `Lattice` in which every countable subset has a supremum and an
 infimum.
