@@ -36,6 +36,8 @@ open Function ZMod
 
 namespace ZMod
 
+instance : IsDomain (ZMod 0) := inferInstanceAs (IsDomain ℤ)
+
 /-- For non-zero `n : ℕ`, the ring `Fin n` is equivalent to `ZMod n`. -/
 def finEquiv : ∀ (n : ℕ) [NeZero n], Fin n ≃+* ZMod n
   | 0, h => (h.ne _ rfl).elim

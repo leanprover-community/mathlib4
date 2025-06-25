@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir
+Authors: Antoine Chambert-Loir, Junyan Xu
 -/
 import Mathlib.Analysis.Normed.Ring.Lemmas
 import Mathlib.Data.Nat.Choose.Dvd
@@ -42,10 +42,9 @@ modulo `p ^ (n + 1)` is `p ^ n` when `p` does not divide `a`.
 
 * `ZMod.isCyclic_units_two_pow_iff` : `(ZMod (2 ^ n))ˣ` is cyclic iff `n ≤ 2`.
 
-The proofs follow [Ireland and Rosen,
+The proofs mostyly follow [Ireland and Rosen,
   *A classical introduction to modern number theory*, chapter 4]
-  [IrelandRosen1990]
-but build on a general induction divisibility lemma suggested by Junyan Xu.
+  [IrelandRosen1990].
 
 -/
 
@@ -89,7 +88,6 @@ section Divisibility
 
 variable {R : Type*} [CommSemiring R] {u v : R} {p : ℕ}
 
-/- This lemma is due to Junyan Xu -/
 lemma exists_one_add_mul_pow_prime_eq
     (hp : p.Prime) (hvu : v ∣ u) (hpuv : p * u * v ∣ u ^ p) (x : R) :
     ∃ y, (1 + u * x) ^ p = 1 + p * u * (x + v * y) := by
