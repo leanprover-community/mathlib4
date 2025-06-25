@@ -4,9 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre Quinton
 -/
 import Mathlib.Order.BooleanSigmaAlgebra.Defs
-import Mathlib.Order.Interval.Set.Defs
-import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Theory of Boolean σ-algebras
