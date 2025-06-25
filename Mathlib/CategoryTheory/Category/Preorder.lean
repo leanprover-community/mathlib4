@@ -57,8 +57,7 @@ open Opposite
 
 variable {X : Type u} [Preorder X]
 
-/-- Express an inequality as a morphism in the corresponding preorder category.
--/
+/-- Express an inequality as a morphism in the corresponding preorder category. -/
 def homOfLE {x y : X} (h : x ≤ y) : x ⟶ y :=
   ULift.up (PLift.up h)
 
@@ -74,8 +73,7 @@ theorem homOfLE_comp {x y z : X} (h : x ≤ y) (k : y ≤ z) :
     homOfLE h ≫ homOfLE k = homOfLE (h.trans k) :=
   rfl
 
-/-- Extract the underlying inequality from a morphism in a preorder category.
--/
+/-- Extract the underlying inequality from a morphism in a preorder category. -/
 theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
   h.down.down
 
@@ -147,8 +145,7 @@ open CategoryTheory
 
 variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 
-/-- A monotone function between preorders induces a functor between the associated categories.
--/
+/-- A monotone function between preorders induces a functor between the associated categories. -/
 def Monotone.functor {f : X → Y} (h : Monotone f) : X ⥤ Y where
   obj := f
   map g := CategoryTheory.homOfLE (h g.le)
@@ -238,8 +235,7 @@ variable {X : Type u} {Y : Type v} [PartialOrder X] [PartialOrder Y]
 theorem Iso.to_eq {x y : X} (f : x ≅ y) : x = y :=
   le_antisymm f.hom.le f.inv.le
 
-/-- A categorical equivalence between partial orders is just an order isomorphism.
--/
+/-- A categorical equivalence between partial orders is just an order isomorphism. -/
 def Equivalence.toOrderIso (e : X ≌ Y) : X ≃o Y where
   toFun := e.functor.obj
   invFun := e.inverse.obj
