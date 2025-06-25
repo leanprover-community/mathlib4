@@ -22,7 +22,8 @@ for some group actions (Wielandt, 13.1)
 for a preprimitive action: the hypothesis is the preprimitivity
 of the sub_mul_action of `fixing_subgroup s` (Wielandt, 13.2)
 
-- `jordan_swap` proves that a primitive subgroup of a permutation group that contains a
+- `Equiv.Perm.eq_top_of_isSwap_mem` proves that a
+primitive subgroup of a permutation group that contains a
 swapis equal to the full permutation group (Wielandt, 13.3)
 
 - `jordan_three_cycle` proves that a primitive subgroup of a permutation group that contains a
@@ -84,8 +85,8 @@ theorem ncard_pigeonhole_compl
   rw [← ncard_inter_add_ncard_union, H, ncard_univ]
   exact Nat.le_add_left (Nat.card α) (s ∩ t).ncard
 
-  theorem ncard_pigeonhole_compl'
-    (h : s.ncard + t.ncard < Nat.card α) : s ∪ t ≠ ⊤ := by
+theorem ncard_pigeonhole_compl' (h : s.ncard + t.ncard < Nat.card α) :
+    s ∪ t ≠ ⊤ := by
   intro h'
   apply not_le.mpr h
   rw [← ncard_univ, ← top_eq_univ, ← h']
@@ -749,7 +750,7 @@ theorem Equiv.Perm.IsSwap.orderOf [DecidableEq α] {σ : Equiv.Perm α} (h : σ.
   rw [← Equiv.Perm.lcm_cycleType, h.cycleType, Multiset.lcm_singleton, normalize_eq]
 
 /-- A primitive permutation group that contains a swap is the full permutation group (Jordan) -/
-theorem jordan_swap [DecidableEq α] (hG : IsPreprimitive G α) (g : Equiv.Perm α)
+theorem Equiv.Perm.eq_top_of_isSwap_mem [DecidableEq α] (hG : IsPreprimitive G α) (g : Equiv.Perm α)
     (h2g : Equiv.Perm.IsSwap g) (hg : g ∈ G) : G = ⊤ := by
   classical
   rcases Nat.lt_or_ge (Nat.card α) 3 with hα3 | hα3
