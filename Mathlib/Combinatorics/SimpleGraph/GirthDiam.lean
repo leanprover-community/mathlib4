@@ -182,49 +182,6 @@ lemma Walk.take_length {u v} {p : G.Walk u v} (n : ℕ) :
   | inl hl => rw [min_eq_left_of_lt hl, take_le_length n hl.le]
   | inr hl => rwa [take_length_le hl, Walk.length_copy, right_eq_inf]
 
-lemma Walk.ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) :
-    p = q := by
-  induction q with
-  | nil =>
-    rw [← nil_iff_eq_nil, nil_iff_support_eq]
-    exact support_nil ▸ h
-  | @cons _ u _ ha q ih =>
-    cases p with
-    | nil => simp at h
-    | @cons _ v _ _ p =>
-      simp only [support_cons, List.cons.injEq, true_and] at h
-      apply List.getElem_of_eq at h
-      specialize h (i := 0) (by simp)
-      rw [List.getElem_zero, List.getElem_zero, p.head_support, q.head_support] at h
-      have : (p.copy h rfl).support = q.support := by simpa
-      simp [← ih this]
-
-lemma Walk.ext_getVert_le_length {u v} {p q : G.Walk u v} (hl : p.length = q.length)
-    (h : ∀ k ≤ p.length, p.getVert k = q.getVert k) :
-    p = q := by
-  suffices ∀ k : ℕ, p.support[k]? = q.support[k]? by
-    exact ext_support <| List.ext_getElem?_iff.mpr this
-  intro k
-  cases le_or_gt k p.length with
-  | inl hk =>
-    rw [← getVert_eq_support_getElem? p hk, ← getVert_eq_support_getElem? q (hl ▸ hk)]
-    exact congrArg some (h k hk)
-  | inr hk =>
-    replace hk : p.length + 1 ≤ k := hk
-    have ht : q.length + 1 ≤ k := hl ▸ hk
-    rw [← length_support, ← p.support.getElem?_eq_none_iff] at hk
-    rw [← length_support, ← q.support.getElem?_eq_none_iff] at ht
-    rw [hk, ht]
-
-lemma Walk.ext_getVert {u v} {p q : G.Walk u v} (h : ∀ k, p.getVert k = q.getVert k) :
-    p = q := by
-  wlog hpq : p.length ≤ q.length generalizing p q
-  · exact (this (fun k ↦ (h k).symm) (le_of_not_ge hpq)).symm
-  have : q.length ≤ p.length := by
-    by_contra!
-    exact (q.adj_getVert_succ this).ne (by simp [← h, getVert_of_length_le])
-  exact ext_getVert_le_length (hpq.antisymm this) fun k _ ↦ h k
-
 lemma Walk.exists_getVert_ne_of_ne {u v} {p q : G.Walk u v} (h : p ≠ q) :
     ∃ k, p.getVert k ≠ q.getVert k := by
   contrapose! h
