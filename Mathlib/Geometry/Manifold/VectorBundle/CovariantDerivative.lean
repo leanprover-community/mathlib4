@@ -316,6 +316,21 @@ lemma sum_X (cov : CovariantDerivative I F V)
   | empty => simp
   | insert a s ha h => simp [Finset.sum_insert ha, Finset.sum_insert ha, ← h, cov.addX]
 
+/-- A convex combination of covariant derivatives is a covariant derivative. -/
+@[simps]
+def convexCombination (cov cov' : CovariantDerivative I F V) (t : 𝕜) :
+    CovariantDerivative I F V where
+  toFun X s := (t • (cov X s)) + (1 - t) • (cov' X s)
+  addX X X' σ := by simp only [cov.addX, cov'.addX]; module
+  smulX X σ f := by simp only [cov.smulX, cov'.smulX]; module
+  addσ X σ σ' x hσ hσ' := by
+    simp [cov.addσ X σ σ' x hσ hσ', cov'.addσ X σ σ' x hσ hσ']
+    module
+  leibniz X σ f x hσ hf := by
+    simp [cov.leibniz X σ f x hσ hf, cov'.leibniz X σ f x hσ hf]
+    module
+  do_not_read X {σ} {x} hσ := by simp [cov.do_not_read X hσ, cov'.do_not_read X hσ]
+
 section real
 
 variable {E : Type*} [NormedAddCommGroup E]
@@ -435,19 +450,21 @@ lemma congr_σ_of_eventuallyEq
     _ = cov X σ' x := by
       simp [cov.congr_σ_smoothBumpFunction, _root_.mdifferentiableAt_dependent_congr hs hσ hσσ']
 
+-- TODO: prove that `cov X σ x` depends on σ only via σ(X) and the 1-jet of σ at x
+
 /-- The difference of two covariant derivatives, as a function `Γ(TM) × Γ(E) → Γ(E)`.
 Future lemmas will upgrade this to a map `TM ⊕ E → E`. -/
-def difference_aux (cov cov' : CovariantDerivative I F V) :
+def differenceAux (cov cov' : CovariantDerivative I F V) :
     (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x) :=
   fun X σ ↦ cov X σ - cov' X σ
 
 omit [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
   [VectorBundle ℝ F V] [FiniteDimensional ℝ E] in
-lemma difference_aux_smul_eq (cov cov' : CovariantDerivative I F V)
+lemma differenceAux_smul_eq (cov cov' : CovariantDerivative I F V)
     (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (f : M → ℝ)
     (hσ : MDifferentiable I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)))
     (hf : MDifferentiable I 𝓘(ℝ) f) :
-    difference_aux cov cov' X ((f : M → ℝ) • σ) = (f : M → ℝ) • (difference_aux cov cov' X σ) :=
+    differenceAux cov cov' X ((f : M → ℝ) • σ) = (f : M → ℝ) • (differenceAux cov cov' X σ) :=
   calc _
     _ = cov X ((f : M → ℝ) • σ) - cov' X ((f : M → ℝ) • σ) := rfl
     _ = (f • cov X σ +  (fun x ↦ bar _ <| mfderiv I 𝓘(ℝ) f x (X x)) • σ)
@@ -460,37 +477,42 @@ lemma difference_aux_smul_eq (cov cov' : CovariantDerivative I F V)
 
 omit [FiniteDimensional ℝ E] [∀ (x : M), IsTopologicalAddGroup (V x)]
     [∀ (x : M), ContinuousSMul ℝ (V x)] [VectorBundle ℝ F V] in
-lemma difference_aux_smul_eq' (cov cov' : CovariantDerivative I F V)
+lemma differenceAux_smul_eq' (cov cov' : CovariantDerivative I F V)
     (X : Π x : M, TangentSpace I x) (σ : Π x : M, V x) (f : M → ℝ) :
-    difference_aux cov cov' (f • X) σ = (f : M → ℝ) • difference_aux cov cov' X σ := by
-  simp [difference_aux, cov.smulX, cov'.smulX, smul_sub]
+    differenceAux cov cov' (f • X) σ = (f : M → ℝ) • differenceAux cov cov' X σ := by
+  simp [differenceAux, cov.smulX, cov'.smulX, smul_sub]
 
--- The value of `differenceAux cov cov' X σ` at `x₀` depends only on `X x₀` and `σ x₀`.
+/-- The value of `differenceAux cov cov' X σ` at `x₀` depends only on `X x₀` and `σ x₀`. -/
 lemma foo (cov cov' : CovariantDerivative I F V) [T2Space M] [IsManifold I ∞ M]
     (X X' : Π x : M, TangentSpace I x) (σ σ' : Π x : M, V x) (x₀ : M)
     (hσ : MDifferentiable I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ x)))
     (hσ' : MDifferentiable I (I.prod 𝓘(ℝ, F)) (fun x ↦ TotalSpace.mk' F x (σ' x))) :
-    difference_aux cov cov' X σ x₀ = difference_aux cov cov' X' σ' x₀ := by
-  sorry -- use the previous two lemmas
+    differenceAux cov cov' X σ x₀ = differenceAux cov cov' X' σ' x₀ := by
+  -- use the previous two lemmas: they prove that differenceAux is tensorial
+  sorry
 
--- TODO: prove that `cov X σ x` depends on σ only via σ(X) and the 1-jet of σ at x
+-- TODO: generalise this to any section in a vector bundle
+
+/-- Extend a tangent vector `X₀` at `x₀ ∈ M` to *some* vector field `X` on `M` with `X x = X₀`. -/
+def extend {x : M} (X₀ : TangentSpace I x) : (x : M) → TangentSpace I x :=
+  -- idea: choose a local frame, and choose X to have constant coefficients in that frame
+  -- cap with a smooth bump function, to make it smooth everywhere
+  sorry
+
+@[simp]
+lemma extend_apply {x : M} (X₀ : TangentSpace I x) : (extend X₀) x = X₀ := sorry
+
+/-lemma-/ def contMDiff_extend  {x : M} (X₀ : TangentSpace I x) :
+  sorry /- ContMDiff I I.tangent 2 (extend X₀) doesn't type-check -/ := sorry
+
+-- The difference of two covariant derivatives, as a tensorial map
+def difference (cov cov' : CovariantDerivative I F V) :
+    Π x : M, TangentSpace I x → V x → V x :=
+  fun x X₀ σ₀ ↦
+  let σ : (x : M) → V x := sorry -- `extend σ₀` once generalized
+  differenceAux cov cov' (extend X₀) σ x
 
 end real
-
-/-- A convex combination of covariant derivatives is a covariant derivative. -/
-@[simps]
-def convexCombination (cov cov' : CovariantDerivative I F V) (t : 𝕜) :
-    CovariantDerivative I F V where
-  toFun X s := (t • (cov X s)) + (1 - t) • (cov' X s)
-  addX X X' σ := by simp only [cov.addX, cov'.addX]; module
-  smulX X σ f := by simp only [cov.smulX, cov'.smulX]; module
-  addσ X σ σ' x hσ hσ' := by
-    simp [cov.addσ X σ σ' x hσ hσ', cov'.addσ X σ σ' x hσ hσ']
-    module
-  leibniz X σ f x hσ hf := by
-    simp [cov.leibniz X σ f x hσ hf, cov'.leibniz X σ f x hσ hf]
-    module
-  do_not_read X {σ} {x} hσ := by simp [cov.do_not_read X hσ, cov'.do_not_read X hσ]
 
 end CovariantDerivative
 
