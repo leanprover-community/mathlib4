@@ -100,10 +100,7 @@ lemma localFrame_repr_apply_of_notMem_baseSet {x : M}
     (hx : x ∉ e.baseSet) (s : Π x : M, V x) (i : ι) : b.localFrame_repr e s i x = 0 := by
   simpa [localFrame_repr] using fun hx' ↦ (hx hx').elim
 
-#exit
 -- uniqueness of the decomposition: will follow from the IsBasis property above
-
-
 
 variable (b) in
 lemma localFrame_repr_spec [Fintype ι] {x : M} (hxe : x ∈ e.baseSet) (s : Π x : M,  V x) :
@@ -117,18 +114,15 @@ lemma localFrame_repr_spec [Fintype ι] {x : M} (hxe : x ∈ e.baseSet) (s : Π 
 -- uniqueness implies this, but it also follows from our definition
 lemma Basis.localFrame_repr_add [Fintype ι] {x : M} (hxe : x ∈ e.baseSet)
     (s s' : Π x : M,  V x) (i : ι) :
-    b.localFrame_repr e (s + s') i =
-      (b.localFrame_repr e (s + s') i) + (b.localFrame_repr e (s + s') i) := by
+    b.localFrame_repr e (s + s') i x =
+      (b.localFrame_repr e s i x) + (b.localFrame_repr e s' i x) := by
   by_cases hx : x ∈ e.baseSet; swap
   · exact False.elim (hx hxe)
-  simp-- [localFrame_repr]
-  unfold localFrame_repr
-  sorry -- need some _apply simp lemmas... simp [hx]
+  · simp [localFrame_repr, hx]
 
 end Basis
 
--- corollary of this and uniqueness
-
+-- corollary of linearity and uniqueness, or follows directly
 -- TODO: better name!
 lemma Basis.localFrame_repr_apply_zero_at {ι : Type*} [Fintype ι] {x : M}
     {e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F V → M)}
