@@ -40,17 +40,40 @@ private lemma fderivWithin_restrictScalarsLinear_comp
   ext a b
   simp [h.fderivWithin_restrictScalars 𝕜 hs]
 
-/--
-If a predicate is true in a neighbourhood of `x` within `s`, then for `y ∈ s` sufficiently close to
-`x` this predicate is true in a neighbourhood of `y` within `s`.
--/
-theorem Filter.Eventually.eventually_nhdsWithin
-    {X : Type*} [inst : TopologicalSpace X] {x : X} {s : Set X} {p : X → Prop}
-    (h : ∀ᶠ y in 𝓝[s] x, p y) :
-    ∀ᶠ y in 𝓝[s] x, ∀ᶠ x in 𝓝[s] y, p x := by
-  rw [eventually_nhdsWithin_iff] at *
-  filter_upwards [h.eventually_nhds] with a ha h₂a
-  simpa [eventually_nhdsWithin_iff]
+theorem UniqueDiffWithinAt.mono_field (h₂s : UniqueDiffWithinAt 𝕜 s x) :
+    UniqueDiffWithinAt 𝕜' s x := by
+  rw [uniqueDiffWithinAt_iff] at *
+  simp_all only [and_true]
+  apply Dense.mono _ h₂s.1
+  trans ↑(Submodule.span 𝕜 (tangentConeAt 𝕜' s x))
+  · apply Submodule.span_mono
+    intro α hα
+    simp [tangentConeAt] at hα ⊢
+    obtain ⟨c, d, ⟨a, h₁a⟩, h₁, h₂⟩ := hα
+    use (Algebra.algebraMap ∘ c), d
+    constructor
+    · use a
+    · constructor
+      · intro β hβ
+        apply Filter.mem_map.mpr
+        apply Filter.mem_atTop_sets.mpr
+        let γ : Set 𝕜 := (Algebra.algebraMap)⁻¹' β
+        have hγ :  γ ∈ Bornology.cobounded 𝕜 := by
+          rw [← Bornology.isCobounded_def, Metric.isCobounded_iff_closedBall_compl_subset 0]
+          sorry
+        have h₂γ := h₁ hγ
+        rw [Filter.mem_map, Filter.mem_atTop_sets] at h₂γ
+        obtain ⟨n, hn⟩ := h₂γ
+        use n
+        intro b hb
+        simp_all
+        have := hn b hb
+        tauto
+      · sorry
+  · sorry
+
+theorem xx (h₂s : UniqueDiffOn 𝕜' s) : UniqueDiffOn 𝕜 s := by
+  sorry
 
 theorem ContDiffWithinAt.iteratedFDeriv_restrictScalars_eventuallyEq
     (h : ContDiffWithinAt 𝕜' n f s x) (hs : UniqueDiffOn 𝕜 s) (h₂s : UniqueDiffOn 𝕜' s)
@@ -63,19 +86,10 @@ theorem ContDiffWithinAt.iteratedFDeriv_restrictScalars_eventuallyEq
     ext m
     simp [iteratedFDeriv_zero_apply m]
   | succ n hn =>
-    have t₀ :
-        ContDiffWithinAt 𝕜' (↑n) f s x :=
-      h.of_le (Nat.cast_le.mpr (n.le_add_right 1))
-    have t₁ :
-        ∀ᶠ (y : E) in 𝓝[s] x, ∀ᶠ (x : E) in 𝓝[s] y,
-        (⇑(restrictScalarsLinear 𝕜) ∘ iteratedFDerivWithin 𝕜' n f s) x
-          = iteratedFDerivWithin 𝕜 n f s x :=
-      (hn t₀).eventually_nhdsWithin
-    have t₃ :
-        ∀ᶠ (x : E) in 𝓝[s] x, x ∈ s :=
-      eventually_mem_nhdsWithin (a := x) (s := s)
-    have t₄ :
-        ∀ᶠ (y : E) in 𝓝[s] x, ContDiffWithinAt 𝕜' (↑(n + 1)) f s y := by
+    have t₀ := h.of_le (Nat.cast_le.mpr (n.le_add_right 1))
+    have t₁ := eventually_eventually_nhdsWithin.2 (hn t₀)
+    have t₃ := eventually_mem_nhdsWithin (a := x) (s := s)
+    have t₄ : ∀ᶠ (y : E) in 𝓝[s] x, ContDiffWithinAt 𝕜' (↑(n + 1)) f s y := by
       nth_rw 2 [← s.insert_eq_of_mem hx]
       apply h.eventually (by simp)
     filter_upwards [t₁, t₄, t₃] with a h₁a h₃a h₄a
