@@ -247,6 +247,47 @@ theorem finSumFinEquiv_symm_apply_natAdd (x : Fin n) :
 theorem finSumFinEquiv_symm_last : finSumFinEquiv.symm (Fin.last n) = Sum.inr 0 :=
   finSumFinEquiv_symm_apply_natAdd 0
 
+def finSumNatEquiv (n : ℕ) : Fin n ⊕ ℕ ≃ ℕ where
+  toFun := Sum.elim Fin.val (· + n)
+  invFun i := if hi : i < n then Sum.inl ⟨i, hi⟩ else Sum.inr (i - n)
+  left_inv i := i.casesOn
+    (fun _ => dif_pos (Fin.is_lt _))
+    (fun _ => (dif_neg (n.le_add_left _).not_gt).trans <| congrArg _ <| Nat.add_sub_cancel _ _)
+  right_inv i := (apply_dite _ _ _ _).trans <| (i.lt_or_ge n).by_cases
+    (fun hi => dif_pos hi)
+    (fun hi => (dif_neg hi.not_gt).trans <| Nat.sub_add_cancel hi)
+
+@[simp] theorem finSumNatEquiv_apply_left (i : Fin n) :
+    (finSumNatEquiv n) (Sum.inl i) = i := rfl
+
+@[simp] theorem finSumNatEquiv_apply_right (i : ℕ) :
+    (finSumNatEquiv n) (Sum.inr i) = i + n := rfl
+
+@[simp] theorem finSumNatEquiv_symm_apply_of_lt {i : ℕ} (hi : i < n) :
+    (finSumNatEquiv n).symm i = Sum.inl ⟨i, hi⟩ := dif_pos hi
+
+@[simp] theorem finSumNatEquiv_symm_apply_of_ge {i : ℕ} (hi : n ≤ i) :
+    (finSumNatEquiv n).symm i = Sum.inr (i - n) := dif_neg (Nat.not_lt_of_ge hi)
+
+theorem finSumNatEquiv_symm_apply_fin (i : Fin n) :
+    (finSumNatEquiv n).symm i = Sum.inl i := by simp
+
+theorem finSumNatEquiv_symm_apply_add_left (i : ℕ) :
+    (finSumNatEquiv n).symm (i + n) = Sum.inr i := by simp
+
+theorem finSumNatEquiv_symm_apply_add_right (i : ℕ) :
+    (finSumNatEquiv n).symm (n + i) = Sum.inr i := by simp
+
+theorem isLeft_finSumNatEquiv_symm_apply (i : ℕ) :
+    ((finSumNatEquiv n).symm i).isLeft ↔ i < n :=
+  ⟨(fun hi => finSumNatEquiv_symm_apply_of_ge
+    (Nat.ge_of_not_lt hi) ▸ Bool.noConfusion).mtr,
+    fun h => finSumNatEquiv_symm_apply_of_lt h ▸ rfl⟩
+
+theorem isRight_finSumNatEquiv_symm_apply (i : ℕ) :
+    ((finSumNatEquiv n).symm i).isRight ↔ n ≤ i := by
+  simp_rw [← not_lt, ← isLeft_finSumNatEquiv_symm_apply, Sum.not_isLeft]
+
 /-- The equivalence between `Fin (m + n)` and `Fin (n + m)` which rotates by `n`. -/
 def finAddFlip : Fin (m + n) ≃ Fin (n + m) :=
   (finSumFinEquiv.symm.trans (Equiv.sumComm _ _)).trans finSumFinEquiv
