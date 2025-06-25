@@ -125,6 +125,13 @@ theorem ContMDiffAt.comp_contMDiffWithinAt {g : M' → M''} (x : M)
 @[deprecated (since := "2024-11-20")]
 alias SmoothAt.comp_smoothWithinAt := ContMDiffAt.comp_contMDiffWithinAt
 
+/-- `g ∘ f` is `C^n` within `s` at `x` if `g` is `C^n` at `f x` and
+`f` is `C^n` within `s` at `x`. -/
+theorem ContMDiffAt.comp_contMDiffWithinAt_of_eq {g : M' → M''} {x : M} {y : M'}
+    (hg : ContMDiffAt I' I'' n g y) (hf : ContMDiffWithinAt I I' n f s x) (hx : f x = y) :
+    ContMDiffWithinAt I I'' n (g ∘ f) s x := by
+  subst hx; exact hg.comp_contMDiffWithinAt x hf
+
 /-- The composition of `C^n` functions at points is `C^n`. -/
 nonrec theorem ContMDiffAt.comp {g : M' → M''} (x : M) (hg : ContMDiffAt I' I'' n g (f x))
     (hf : ContMDiffAt I I' n f x) : ContMDiffAt I I'' n (g ∘ f) x :=
@@ -272,20 +279,32 @@ theorem contMDiff_of_mulTSupport [One M'] {f : M → M'}
   by_cases hx : x ∈ mulTSupport f
   · exact hf x hx
   · exact ContMDiffAt.congr_of_eventuallyEq contMDiffAt_const
-      (not_mem_mulTSupport_iff_eventuallyEq.1 hx)
+      (notMem_mulTSupport_iff_eventuallyEq.1 hx)
 
-@[to_additive contMDiffWithinAt_of_not_mem]
-theorem contMDiffWithinAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M}
+@[to_additive contMDiffWithinAt_of_notMem]
+theorem contMDiffWithinAt_of_notMem_mulTSupport {f : M → M'} [One M'] {x : M}
     (hx : x ∉ mulTSupport f) (n : WithTop ℕ∞) (s : Set M) : ContMDiffWithinAt I I' n f s x := by
   apply contMDiffWithinAt_const.congr_of_eventuallyEq
-    (eventually_nhdsWithin_of_eventually_nhds <| not_mem_mulTSupport_iff_eventuallyEq.mp hx)
-    (image_eq_one_of_nmem_mulTSupport hx)
+    (eventually_nhdsWithin_of_eventually_nhds <| notMem_mulTSupport_iff_eventuallyEq.mp hx)
+    (image_eq_one_of_notMem_mulTSupport hx)
+
+@[deprecated (since := "2025-05-23")]
+alias contMDiffWithinAt_of_not_mem := contMDiffWithinAt_of_notMem
+
+@[to_additive existing contMDiffWithinAt_of_not_mem, deprecated (since := "2025-05-23")]
+alias contMDiffWithinAt_of_not_mem_mulTSupport := contMDiffWithinAt_of_notMem_mulTSupport
 
 /-- `f` is continuously differentiable at each point outside of its `mulTSupport`. -/
-@[to_additive contMDiffAt_of_not_mem]
-theorem contMDiffAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M}
+@[to_additive contMDiffAt_of_notMem]
+theorem contMDiffAt_of_notMem_mulTSupport {f : M → M'} [One M'] {x : M}
     (hx : x ∉ mulTSupport f) (n : WithTop ℕ∞) : ContMDiffAt I I' n f x :=
-  contMDiffWithinAt_of_not_mem_mulTSupport hx n univ
+  contMDiffWithinAt_of_notMem_mulTSupport hx n univ
+
+@[deprecated (since := "2025-05-23")]
+alias contMDiffAt_of_not_mem := contMDiffAt_of_notMem
+
+@[to_additive existing contMDiffAt_of_not_mem, deprecated (since := "2025-05-23")]
+alias contMDiffAt_of_not_mem_mulTSupport := contMDiffAt_of_notMem_mulTSupport
 
 
 /-! ### The inclusion map from one open set to another is `C^n` -/

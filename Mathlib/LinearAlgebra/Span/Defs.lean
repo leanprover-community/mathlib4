@@ -61,6 +61,9 @@ theorem mem_span : x ∈ span R s ↔ ∀ p : Submodule R M, s ⊆ p → x ∈ p
 @[aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_span : s ⊆ span R s := fun _ h => mem_span.2 fun _ hp => hp h
 
+@[aesop 80% (rule_sets := [SetLike])]
+theorem mem_span_of_mem {s : Set M} {x : M} (hx : x ∈ s) : x ∈ span R s := subset_span hx
+
 theorem span_le {p} : span R s ≤ p ↔ s ⊆ p :=
   ⟨Subset.trans subset_span, fun ss _ h => mem_span.1 h _ ss⟩
 
@@ -496,7 +499,9 @@ theorem submodule_eq_sSup_le_nonzero_spans (p : Submodule R M) :
     rintro S ⟨_, ⟨_, ⟨_, rfl⟩⟩⟩
     rwa [span_singleton_le_iff_mem]
 
-theorem lt_sup_iff_not_mem {I : Submodule R M} {a : M} : (I < I ⊔ R ∙ a) ↔ a ∉ I := by simp
+theorem lt_sup_iff_notMem {I : Submodule R M} {a : M} : (I < I ⊔ R ∙ a) ↔ a ∉ I := by simp
+
+@[deprecated (since := "2025-05-23")] alias lt_sup_iff_not_mem := lt_sup_iff_notMem
 
 theorem mem_iSup {ι : Sort*} (p : ι → Submodule R M) {m : M} :
     (m ∈ ⨆ i, p i) ↔ ∀ N, (∀ i, p i ≤ N) → m ∈ N := by

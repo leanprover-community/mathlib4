@@ -155,7 +155,7 @@ theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type*} [Fintyp
       _ = (g i)⁻¹ • (0 : V) := congr_arg _ ?_
       _ = 0 := smul_zero _
     -- And then it's just a bit of manipulation with finite sums.
-    rwa [← Finset.insert_erase i_mem_s, Finset.sum_insert (Finset.not_mem_erase _ _)] at dependent
+    rwa [← Finset.insert_erase i_mem_s, Finset.sum_insert (Finset.notMem_erase _ _)] at dependent
 
 /-- A finite family of vectors is linearly independent if and only if
 its cardinality equals the dimension of its span. -/

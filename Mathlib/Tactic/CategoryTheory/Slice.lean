@@ -21,7 +21,6 @@ open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
 /- Porting note: moved `repeat_with_results` to `repeat_count` to `Mathlib/Tactic/Core.lean` -/
 
-open Tactic
 open Parser.Tactic.Conv
 
 /--
