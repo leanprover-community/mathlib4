@@ -31,6 +31,15 @@ private lemma fderiv_restrictScalarsLinear_comp
   ext a b
   simp [h.fderiv_restrictScalars 𝕜]
 
+private lemma fderivWithin_restrictScalarsLinear_comp
+    {φ : E → (ContinuousMultilinearMap 𝕜' (fun _ : Fin n ↦ E) F)}
+    (h : DifferentiableWithinAt 𝕜' φ s x) (hs : UniqueDiffWithinAt 𝕜 s x) :
+    fderivWithin 𝕜 ((restrictScalarsLinear 𝕜) ∘ φ) s x
+      = (restrictScalars 𝕜) ∘ ((fderivWithin 𝕜' φ s x).restrictScalars 𝕜) := by
+  rw [fderiv_comp_fderivWithin _ (by fun_prop) (h.restrictScalars 𝕜) hs, ContinuousLinearMap.fderiv]
+  ext a b
+  simp [h.fderivWithin_restrictScalars 𝕜 hs]
+
 /--
 If a predicate is true in a neighbourhood of `x` within `s`, then for `y ∈ s` sufficiently close to
 `x` this predicate is true in a neighbourhood of `y` within `s`.
@@ -44,32 +53,44 @@ theorem Filter.Eventually.eventually_nhdsWithin
   simpa [eventually_nhdsWithin_iff]
 
 theorem ContDiffWithinAt.iteratedFDeriv_restrictScalars_eventuallyEq
-    (h : ContDiffWithinAt 𝕜' n f s x) :
+    (h : ContDiffWithinAt 𝕜' n f s x) (hs : UniqueDiffOn 𝕜 s) (h₂s : UniqueDiffOn 𝕜' s)
+    (hx : x ∈ s) :
     (restrictScalarsLinear 𝕜) ∘ (iteratedFDerivWithin 𝕜' n f s)
-      =ᶠ[𝓝[insert x s] x] (iteratedFDerivWithin 𝕜 n f s) := by
+      =ᶠ[𝓝[s] x] (iteratedFDerivWithin 𝕜 n f s) := by
   induction n with
   | zero =>
     filter_upwards with a
     ext m
     simp [iteratedFDeriv_zero_apply m]
   | succ n hn =>
-    have : ContDiffWithinAt 𝕜' n f s x := h.of_le (Nat.cast_le.mpr (n.le_add_right 1))
-    have t₀ := hn this
-    have t₁ := this.eventually
-    simp only [ne_eq, ENat.natCast_ne_coe_top, not_false_eq_true, forall_const] at t₁
-    have := t₀.eventually_nhdsWithin
-    filter_upwards [t₀.eventually_nhdsWithin, t₁.eventually_nhdsWithin,
-      h.eventually (by simp)] with a h₁a h₂a h₃a
+    have t₀ :
+        ContDiffWithinAt 𝕜' (↑n) f s x :=
+      h.of_le (Nat.cast_le.mpr (n.le_add_right 1))
+    have t₁ :
+        ∀ᶠ (y : E) in 𝓝[s] x, ∀ᶠ (x : E) in 𝓝[s] y,
+        (⇑(restrictScalarsLinear 𝕜) ∘ iteratedFDerivWithin 𝕜' n f s) x
+          = iteratedFDerivWithin 𝕜 n f s x :=
+      (hn t₀).eventually_nhdsWithin
+    have t₃ :
+        ∀ᶠ (x : E) in 𝓝[s] x, x ∈ s :=
+      eventually_mem_nhdsWithin (a := x) (s := s)
+    have t₄ :
+        ∀ᶠ (y : E) in 𝓝[s] x, ContDiffWithinAt 𝕜' (↑(n + 1)) f s y := by
+      nth_rw 2 [← s.insert_eq_of_mem hx]
+      apply h.eventually (by simp)
+    filter_upwards [t₁, t₄, t₃] with a h₁a h₃a h₄a
     rw [← Filter.EventuallyEq] at h₁a
     ext m
     simp only [restrictScalarsLinear_apply, Function.comp_apply, coe_restrictScalars,
       iteratedFDerivWithin_succ_apply_left]
-    have := h₁a.fderivWithin_eq_of_insert (s := s) (𝕜 := 𝕜) (F := ContinuousMultilinearMap 𝕜 (fun i ↦ E) F)
-    rw [← h₁a.fderivWithin_eq_of_insert, fderiv_restrictScalarsLinear_comp]
+    rw [← (h₁a.fderivWithin' (by tauto)).eq_of_nhdsWithin h₄a,
+      fderivWithin_restrictScalarsLinear_comp]
     · simp
-    · apply h₃a.differentiableAt_iteratedFDeriv
-      rw [Nat.cast_lt]
-      simp
+    · apply h₃a.differentiableWithinAt_iteratedFDerivWithin
+      · rw [Nat.cast_lt]
+        simp
+      · simpa [s.insert_eq_of_mem h₄a]
+    apply hs a h₄a
 
 /--
 If `f` is `n` times continuously differentiable at `x`, then the `n`th iterated Fréchet derivative
