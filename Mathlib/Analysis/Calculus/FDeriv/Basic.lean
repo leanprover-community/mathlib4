@@ -696,7 +696,7 @@ theorem differentiableAt_id : DifferentiableAt 𝕜 id x :=
 theorem differentiableAt_fun_id : DifferentiableAt 𝕜 (fun x => x) x :=
   (hasFDerivAt_id x).differentiableAt
 
-@[deprecated (since := "2025-06-25")] alias differentiableAr_id' := differentiableAt_fun_id
+@[deprecated (since := "2025-06-25")] alias differentiableAt_id' := differentiableAt_fun_id
 
 @[fun_prop]
 theorem differentiableWithinAt_id : DifferentiableWithinAt 𝕜 id s x :=

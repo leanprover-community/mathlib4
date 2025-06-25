@@ -45,7 +45,7 @@ lemma Continuous.mul_log {α : Type*} [TopologicalSpace α] {f : α → ℝ} (hf
     Continuous fun a ↦ f a * log (f a) := continuous_mul_log.comp hf
 
 lemma differentiableOn_mul_log : DifferentiableOn ℝ (fun x ↦ x * log x) {0}ᶜ :=
-  differentiable_id'.differentiableOn.mul differentiableOn_log
+  differentiable_id.differentiableOn.mul differentiableOn_log
 
 lemma deriv_mul_log {x : ℝ} (hx : x ≠ 0) : deriv (fun x ↦ x * log x) x = log x + 1 := by
   simp [hx]
@@ -192,7 +192,7 @@ lemma deriv2_negMulLog (x : ℝ) : deriv^[2] negMulLog x = - x⁻¹ := by
   rw [negMulLog_eq_neg]
   have h := deriv2_mul_log
   simp only [Function.iterate_succ, Function.iterate_zero, Function.id_comp, deriv.fun_neg',
-    Function.comp_apply, differentiableAt_id', differentiableAt_log_iff, ne_eq] at h ⊢
+    Function.comp_apply, differentiableAt_fun_id, differentiableAt_log_iff, ne_eq] at h ⊢
   rw [h]
 
 lemma strictConcaveOn_negMulLog : StrictConcaveOn ℝ (Set.Ici (0 : ℝ)) negMulLog := by
