@@ -19,7 +19,7 @@ is zero on the set of non-injectivity, which means that it can be discarded.
 
 See also `Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts` for versions of the
 change of variables formula in dimension 1 for non-monotone functions, formulated with
-the interval integral and with the stronger requirements on the integrand.
+the interval integral and with stronger requirements on the integrand.
 -/
 
 
