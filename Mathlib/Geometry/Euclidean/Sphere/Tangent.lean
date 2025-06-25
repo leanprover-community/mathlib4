@@ -218,11 +218,18 @@ lemma dist_orthogonalProjection_eq_radius_iff_isTangent {s : Sphere P} {as : Aff
   refine ⟨fun h ↦ (dist_orthogonalProjection_eq_radius_iff_isTangentAt.1 h).isTangent, fun h ↦ ?_⟩
   rw [dist_orthogonalProjection_eq_infDist, h.infDist_eq_radius]
 
+lemma infDist_eq_radius_iff_isTangent {s : Sphere P} {as : AffineSubspace ℝ P}
+    [Nonempty as] [as.direction.HasOrthogonalProjection] :
+    Metric.infDist s.center as = s.radius ↔ s.IsTangent as := by
+  rw [← dist_orthogonalProjection_eq_infDist, dist_orthogonalProjection_eq_radius_iff_isTangent]
+
 lemma isTangent_iff_isTangentAt_orthogonalProjection {s : Sphere P} {as : AffineSubspace ℝ P}
     [Nonempty as] [as.direction.HasOrthogonalProjection] :
     s.IsTangent as ↔ s.IsTangentAt (orthogonalProjection as s.center) as := by
   rw [← dist_orthogonalProjection_eq_radius_iff_isTangent,
     dist_orthogonalProjection_eq_radius_iff_isTangentAt]
+
+alias ⟨IsTangent.isTangentAt, _⟩ := isTangent_iff_isTangentAt_orthogonalProjection
 
 lemma IsTangentAt.eq_orthogonalProjection {s : Sphere P} {p : P} {as : AffineSubspace ℝ P}
     [Nonempty as] [as.direction.HasOrthogonalProjection] (h : s.IsTangentAt p as) :
