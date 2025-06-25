@@ -171,20 +171,67 @@ def OrderIso.equivalence (e : X ≃o Y) : X ≌ Y where
 
 end
 
-namespace CategoryTheory
-
 section Preorder
 
 variable {X : Type u} {Y : Type v} [Preorder X] [Preorder Y]
 
-/-- A functor between preorder categories is monotone.
--/
+namespace CategoryTheory
+
+/-- A functor between preorder categories is monotone. -/
 @[mono]
 theorem Functor.monotone (f : X ⥤ Y) : Monotone f.obj := fun _ _ hxy => (f.map hxy.hom).le
+
+end CategoryTheory
+
+namespace OrderHom
+
+open CategoryTheory
+
+/-- An `OrderHom` as a functor `X ⥤ Y` between preorder categories. -/
+def toFunctor (f : X →o Y) : X ⥤ Y := f.monotone.functor
+
+/-- A functor `X ⥤ Y` between preorder categories as an `OrderHom`. -/
+def ofFunctor (F : X ⥤ Y) : (X →o Y) where
+  toFun := F.obj
+  monotone' := F.monotone
+
+/-- The equivalence between `X →o Y` and the type of functors `X ⥤ Y` between preorder categories
+`X` and `Y`. -/
+def equivFunctor : (X →o Y) ≃ (X ⥤ Y) where
+  toFun := toFunctor
+  invFun := ofFunctor
+
+namespace Functor
+
+/-- The functor from the category of monotone functions `X →o Y` to the category of functors
+`X ⥤ Y` where `X` and `Y` are preorder categories. -/
+def toFunctor : (X →o Y) ⥤ (X ⥤ Y) where
+  obj := OrderHom.toFunctor
+  map f := { app a := f.down.down a |>.hom }
+
+/-- The functor from the category of functors `X ⥤ Y` where `X` and `Y` are preorder categories to
+the category of monotone functions `X →o Y`. -/
+def ofFunctor : (X ⥤ Y) ⥤ (X →o Y) where
+  obj := OrderHom.ofFunctor
+  map f := ⟨⟨fun i ↦ f.app i |>.down.down⟩⟩
+
+end Functor
+
+/-- The categorical equivalence beween the category of monotone functions `X →o Y` and the category
+of functors `X ⥤ Y` where `X` and `Y` are preorder categories. -/
+def equivalence : (X →o Y) ≌ (X ⥤ Y) where
+  functor := Functor.toFunctor
+  inverse := Functor.ofFunctor
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
+
+end OrderHom
 
 end Preorder
 
 section PartialOrder
+
+namespace CategoryTheory
 
 variable {X : Type u} {Y : Type v} [PartialOrder X] [PartialOrder Y]
 
@@ -214,9 +261,9 @@ theorem Equivalence.toOrderIso_symm_apply (e : X ≌ Y) (y : Y) :
     e.toOrderIso.symm y = e.inverse.obj y :=
   rfl
 
-end PartialOrder
-
 end CategoryTheory
+
+end PartialOrder
 
 open CategoryTheory
 
