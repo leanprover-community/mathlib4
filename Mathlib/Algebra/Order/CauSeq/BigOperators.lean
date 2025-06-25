@@ -5,6 +5,7 @@ Authors: Chris Hughes, Yaël Dillies
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.CauSeq.Basic
 
 /-!
