@@ -9,7 +9,6 @@ import Mathlib.Data.Nat.Choose.Dvd
 import Mathlib.Data.ZMod.Units
 import Mathlib.Data.ZMod.Zero
 import Mathlib.GroupTheory.SpecificGroups.ZGroup
-import Mathlib.RingTheory.Prime
 import Mathlib.Algebra.Order.Star.Basic
 
 /-! # Cyclicity of the units of `ZMod n`
