@@ -516,8 +516,8 @@ lemma variance_fun_id_gaussianReal : Var[fun x ↦ x; gaussianReal μ v] = v := 
     have : deriv (fun t ↦ rexp (v * t ^ 2 / 2)) = fun t ↦ v * t * rexp (v * t ^ 2 / 2) := by
       ext t
       rw [_root_.deriv_exp (by fun_prop)]
-      simp only [deriv_div_const, differentiableAt_const, differentiableAt_id', Nat.cast_ofNat,
-        DifferentiableAt.pow, deriv_fun_mul, deriv_const', zero_mul, deriv_fun_pow'',
+      simp only [deriv_div_const, differentiableAt_const, differentiableAt_fun_id, Nat.cast_ofNat,
+        DifferentiableAt.fun_pow, deriv_fun_mul, deriv_const', zero_mul, deriv_fun_pow'',
         Nat.add_one_sub_one, pow_one, deriv_id'', mul_one, zero_add]
       ring
     rw [this, deriv_fun_mul (by fun_prop) (by fun_prop), deriv_fun_mul (by fun_prop) (by fun_prop)]
