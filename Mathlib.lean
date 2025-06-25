@@ -2091,6 +2091,7 @@ import Mathlib.CategoryTheory.Functor.Hom
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
+import Mathlib.CategoryTheory.Functor.KanExtension.Preserves
 import Mathlib.CategoryTheory.Functor.OfSequence
 import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
@@ -2149,6 +2150,7 @@ import Mathlib.CategoryTheory.IsomorphismClasses
 import Mathlib.CategoryTheory.Join.Basic
 import Mathlib.CategoryTheory.Join.Final
 import Mathlib.CategoryTheory.Join.Opposites
+import Mathlib.CategoryTheory.Join.Pseudofunctor
 import Mathlib.CategoryTheory.Join.Sum
 import Mathlib.CategoryTheory.LiftingProperties.Adjunction
 import Mathlib.CategoryTheory.LiftingProperties.Basic
@@ -2716,6 +2718,7 @@ import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 import Mathlib.Combinatorics.SimpleGraph.ConcreteColorings
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.Represents
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
@@ -2745,6 +2748,7 @@ import Mathlib.Combinatorics.SimpleGraph.Metric
 import Mathlib.Combinatorics.SimpleGraph.Operations
 import Mathlib.Combinatorics.SimpleGraph.Partition
 import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib.Combinatorics.SimpleGraph.Paths
 import Mathlib.Combinatorics.SimpleGraph.Prod
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Bound
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Chunk
@@ -4686,6 +4690,8 @@ import Mathlib.Order.Atoms.Finite
 import Mathlib.Order.Basic
 import Mathlib.Order.Birkhoff
 import Mathlib.Order.BooleanAlgebra
+import Mathlib.Order.BooleanAlgebra.Basic
+import Mathlib.Order.BooleanAlgebra.Defs
 import Mathlib.Order.BooleanGenerators
 import Mathlib.Order.BooleanSubalgebra
 import Mathlib.Order.Booleanisation
