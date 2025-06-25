@@ -115,8 +115,7 @@ variable (K : LieSubalgebra R L)
 theorem exists_lieIdeal_coe_eq_iff :
     (∃ I : LieIdeal R L, ↑I = K) ↔ ∀ x y : L, y ∈ K → ⁅x, y⁆ ∈ K := by
   simp only [← toSubmodule_inj, LieIdeal.toLieSubalgebra_toSubmodule,
-    Submodule.exists_lieSubmodule_coe_eq_iff L]
-  exact Iff.rfl
+    Submodule.exists_lieSubmodule_coe_eq_iff L, mem_toSubmodule]
 
 theorem exists_nested_lieIdeal_coe_eq_iff {K' : LieSubalgebra R L} (h : K ≤ K') :
     (∃ I : LieIdeal R K', ↑I = ofLe h) ↔ ∀ x y : L, x ∈ K' → y ∈ K → ⁅x, y⁆ ∈ K := by
@@ -277,7 +276,6 @@ theorem idealRange_eq_map : f.idealRange = LieIdeal.map f ⊤ := by
 def IsIdealMorphism : Prop :=
   (f.idealRange : LieSubalgebra R L') = f.range
 
-@[simp]
 theorem isIdealMorphism_def : f.IsIdealMorphism ↔ (f.idealRange : LieSubalgebra R L') = f.range :=
   Iff.rfl
 
@@ -362,7 +360,7 @@ end LieHom
 
 namespace LieIdeal
 variable [LieAlgebra R L] [LieModule R L M] [LieModule R L M']
-variable {f : L →ₗ⁅R⁆ L'} {I : LieIdeal R L} {J : LieIdeal R L'}
+variable {f : L →ₗ⁅R⁆ L'} {I I₂ : LieIdeal R L} {J : LieIdeal R L'}
 
 @[simp]
 theorem map_eq_bot_iff : I.map f = ⊥ ↔ I ≤ f.ker := by
@@ -482,6 +480,21 @@ theorem incl_idealRange : I.incl.idealRange = I := by
 theorem incl_isIdealMorphism : I.incl.IsIdealMorphism := by
   rw [I.incl.isIdealMorphism_def, incl_idealRange]
   exact (I : LieSubalgebra R L).incl_range.symm
+
+variable {I}
+
+@[simp] theorem comap_incl_eq_top : I₂.comap I.incl = ⊤ ↔ I ≤ I₂ := by
+  rw [← LieSubmodule.toSubmodule_inj, LieIdeal.comap_toSubmodule, LieSubmodule.top_toSubmodule,
+    incl_coe]
+  simp_rw [toLieSubalgebra_toSubmodule]
+  rw [Submodule.comap_subtype_eq_top, LieSubmodule.toSubmodule_le_toSubmodule]
+
+@[simp] theorem comap_incl_eq_bot : I₂.comap I.incl = ⊥ ↔ Disjoint I I₂ := by
+  rw [disjoint_iff, ←LieSubmodule.toSubmodule_inj, LieIdeal.comap_toSubmodule,
+    LieSubmodule.bot_toSubmodule, ← LieSubmodule.toSubmodule_inj, LieSubmodule.inf_toSubmodule,
+    LieSubmodule.bot_toSubmodule, incl_coe]
+  simp_rw [toLieSubalgebra_toSubmodule]
+  rw [← Submodule.disjoint_iff_comap_eq_bot, disjoint_iff]
 
 end LieIdeal
 

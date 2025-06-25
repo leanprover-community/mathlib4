@@ -156,7 +156,7 @@ lemma Module.length_eq_add_of_exact :
         t.map ⟨Submodule.map f, Submodule.map_covBy_of_injective hf⟩
       have hfg : Submodule.map f ⊤ = Submodule.comap g ⊥ := by
         rw [Submodule.map_top, Submodule.comap_bot, LinearMap.exact_iff.mp H]
-      let r := t'.smash s' (by simpa [s', t', hs₁, ht₂])
+      let r := t'.smash s' (by simpa [s', t', hs₁, ht₂] using hfg)
       rw [← Module.length_compositionSeries s hs₁ hs₂,
         ← Module.length_compositionSeries t ht₁ ht₂,
         ← Module.length_compositionSeries r

@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Analysis.Calculus.FDeriv.Linear
 import Mathlib.Analysis.Calculus.FDeriv.Comp
+import Mathlib.Analysis.Calculus.FDeriv.Const
+import Mathlib.Analysis.Calculus.FDeriv.Linear
 
 /-!
 # The derivative of a linear equivalence
@@ -512,11 +513,13 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {s : Set E}
   {f' : E →L[𝕜] F} {x : E}
 
-theorem fderivWithin_const_smul_field (c : 𝕜) (hs : UniqueDiffWithinAt 𝕜 s x) :
+theorem fderivWithin_const_smul_field {R : Type*} [DivisionRing R] [Module R F]
+    [SMulCommClass 𝕜 R F] [ContinuousConstSMul R F] (c : R) (hs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (c • f) s x = c • fderivWithin 𝕜 f s x := by
   rcases eq_or_ne c 0 with rfl | hc
   · simp
-  · lift c to 𝕜ˣ using IsUnit.mk0 _ hc
+  · lift c to Rˣ using IsUnit.mk0 _ hc
+    have : SMulCommClass Rˣ 𝕜 F := .symm _ _ _
     exact (ContinuousLinearEquiv.smulLeft c).comp_fderivWithin hs
 
 theorem hasFDerivWithinAt_comp_smul_smul_iff {c : 𝕜} :
@@ -550,6 +553,8 @@ theorem fderivWithin_comp_smul (c : 𝕜) (hs : UniqueDiffWithinAt 𝕜 s x) :
   · rw [fderivWithin_comp_smul_eq_fderivWithin_smul, fderivWithin_const_smul_field]
     exact hs.smul hc
 
+theorem fderiv_comp_smul (c : 𝕜) : fderiv 𝕜 (f <| c • ·) x = c • fderiv 𝕜 f (c • x) := by
+  rw [← fderivWithin_univ, fderivWithin_comp_smul _ uniqueDiffWithinAt_univ]
+  rcases eq_or_ne c 0 with rfl | hc <;> simp [smul_set_univ₀, *]
+
 end SMulLeft
-
-
