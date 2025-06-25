@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Bryan Gin-ge Chen
 -/
 import Mathlib.Logic.Relation
-import Mathlib.Order.GaloisConnection
+import Mathlib.Order.CompleteLattice.Basic
+import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Equivalence relations
@@ -29,42 +30,15 @@ reason about them using the existing `Setoid` and its infrastructure.
 setoid, equivalence, iseqv, relation, equivalence relation
 -/
 
-attribute [refl] Setoid.refl
+attribute [refl, simp] Setoid.refl
 attribute [symm] Setoid.symm
 attribute [trans] Setoid.trans
 
 variable {α : Type*} {β : Type*}
 
-/-- A version of `Setoid.r` that takes the equivalence relation as an explicit argument. -/
-@[deprecated "No deprecation message was provided."  (since := "2024-08-29")]
-def Setoid.Rel (r : Setoid α) : α → α → Prop :=
-  @Setoid.r _ r
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided."  (since := "2024-10-09")]
-instance Setoid.decidableRel (r : Setoid α) [h : DecidableRel r.r] : DecidableRel r.Rel :=
-  h
-
-set_option linter.deprecated false in
-/-- A version of `Quotient.eq'` compatible with `Setoid.Rel`, to make rewriting possible. -/
-@[deprecated Quotient.eq' (since := "2024-10-09")]
-theorem Quotient.eq_rel {r : Setoid α} {x y} :
-    (Quotient.mk' x : Quotient r) = Quotient.mk' y ↔ r.Rel x y :=
-  Quotient.eq
-
 namespace Setoid
 
 attribute [ext] ext
-
-set_option linter.deprecated false in
-@[deprecated Setoid.ext (since := "2024-10-09")]
-theorem ext' {r s : Setoid α} (H : ∀ a b, r.Rel a b ↔ s.Rel a b) : r = s :=
-  ext H
-
-set_option linter.deprecated false in
-@[deprecated Setoid.ext_iff (since := "2024-10-09")]
-theorem ext'_iff {r s : Setoid α} : r = s ↔ ∀ a b, r.Rel a b ↔ s.Rel a b :=
-  ⟨fun h _ _ => h ▸ Iff.rfl, ext'⟩
 
 /-- Two equivalence relations are equal iff their underlying binary operations are equal. -/
 theorem eq_iff_rel_eq {r₁ r₂ : Setoid α} : r₁ = r₂ ↔ ⇑r₁ = ⇑r₂ :=
@@ -89,6 +63,8 @@ theorem trans' (r : Setoid α) : ∀ {x y z}, r x y → r y z → r x z := r.ise
 theorem comm' (s : Setoid α) {x y} : s x y ↔ s y x :=
   ⟨s.symm', s.symm'⟩
 
+open scoped Function -- required for scoped `on` notation
+
 /-- The kernel of a function is an equivalence relation. -/
 def ker (f : α → β) : Setoid α :=
   ⟨(· = ·) on f, eq_equivalence.comap f⟩
@@ -100,12 +76,6 @@ theorem ker_mk_eq (r : Setoid α) : ker (@Quotient.mk'' _ r) = r :=
 
 theorem ker_apply_mk_out {f : α → β} (a : α) : f (⟦a⟧ : Quotient (Setoid.ker f)).out = f a :=
   @Quotient.mk_out _ (Setoid.ker f) a
-
-set_option linter.deprecated false in
-@[deprecated ker_apply_mk_out (since := "2024-10-19")]
-theorem ker_apply_mk_out' {f : α → β} (a : α) :
-    f (Quotient.mk _ a : Quotient <| Setoid.ker f).out' = f a :=
-  @Quotient.mk_out' _ (Setoid.ker f) a
 
 theorem ker_def {f : α → β} {x y : α} : ker f x y ↔ f x = f y :=
   Iff.rfl
@@ -133,13 +103,13 @@ equivalence relations. -/
 @[simps]
 def prodQuotientEquiv (r : Setoid α) (s : Setoid β) :
     Quotient r × Quotient s ≃ Quotient (r.prod s) where
-  toFun := fun (x, y) ↦ Quotient.map₂ Prod.mk (fun _ _ hx _ _ hy ↦ ⟨hx, hy⟩) x y
-  invFun := fun q ↦ Quotient.liftOn' q (fun xy ↦ (Quotient.mk'' xy.1, Quotient.mk'' xy.2))
+  toFun | (x, y) => Quotient.map₂ Prod.mk (fun _ _ hx _ _ hy ↦ ⟨hx, hy⟩) x y
+  invFun q := Quotient.liftOn' q (fun xy ↦ (Quotient.mk'' xy.1, Quotient.mk'' xy.2))
     fun x y hxy ↦ Prod.ext (by simpa using hxy.1) (by simpa using hxy.2)
-  left_inv := fun q ↦ by
+  left_inv q := by
     rcases q with ⟨qa, qb⟩
     exact Quotient.inductionOn₂' qa qb fun _ _ ↦ rfl
-  right_inv := fun q ↦ by
+  right_inv q := by
     simp only
     refine Quotient.inductionOn' q fun _ ↦ rfl
 
@@ -148,14 +118,14 @@ equivalence relations. -/
 @[simps]
 noncomputable def piQuotientEquiv {ι : Sort*} {α : ι → Sort*} (r : ∀ i, Setoid (α i)) :
     (∀ i, Quotient (r i)) ≃ Quotient (@piSetoid _ _ r) where
-  toFun := fun x ↦ Quotient.mk'' fun i ↦ (x i).out
-  invFun := fun q ↦ Quotient.liftOn' q (fun x i ↦ Quotient.mk'' (x i)) fun x y hxy ↦ by
+  toFun x := Quotient.mk'' fun i ↦ (x i).out
+  invFun q := Quotient.liftOn' q (fun x i ↦ Quotient.mk'' (x i)) fun x y hxy ↦ by
     ext i
     simpa using hxy i
-  left_inv := fun q ↦ by
+  left_inv q := by
     ext i
     simp
-  right_inv := fun q ↦ by
+  right_inv q := by
     refine Quotient.inductionOn' q fun _ ↦ ?_
     simp only [Quotient.liftOn'_mk'', Quotient.eq'']
     intro i
@@ -197,7 +167,7 @@ instance : PartialOrder (Setoid α) where
   lt r s := r ≤ s ∧ ¬s ≤ r
   le_refl _ _ _ := id
   le_trans _ _ _ hr hs _ _ h := hs <| hr h
-  lt_iff_le_not_le _ _ := Iff.rfl
+  lt_iff_le_not_ge _ _ := Iff.rfl
   le_antisymm _ _ h1 h2 := Setoid.ext fun _ _ => ⟨fun h => h1 h, fun h => h2 h⟩
 
 /-- The complete lattice of equivalence relations on a type, with bottom element `=`
@@ -336,15 +306,13 @@ theorem ker_iff_mem_preimage {f : α → β} {x y} : ker f x y ↔ x ∈ f ⁻¹
 def liftEquiv (r : Setoid α) : { f : α → β // r ≤ ker f } ≃ (Quotient r → β) where
   toFun f := Quotient.lift (f : α → β) f.2
   invFun f := ⟨f ∘ Quotient.mk'', fun x y h => by simp [ker_def, Quotient.sound' h]⟩
-  left_inv := fun ⟨_, _⟩ => Subtype.eq <| funext fun _ => rfl
   right_inv _ := funext fun x => Quotient.inductionOn' x fun _ => rfl
 
 /-- The uniqueness part of the universal property for quotients of an arbitrary type. -/
 theorem lift_unique {r : Setoid α} {f : α → β} (H : r ≤ ker f) (g : Quotient r → β)
     (Hg : f = g ∘ Quotient.mk'') : Quotient.lift f H = g := by
   ext ⟨x⟩
-  erw [Quotient.lift_mk f H, Hg]
-  rfl
+  rw [← Quotient.mk, Quotient.lift_mk f H, Hg, Function.comp_apply, Quotient.mk''_eq_mk]
 
 /-- Given a map f from α to β, the natural map from the quotient of α by the kernel of f is
     injective. -/
@@ -395,19 +363,13 @@ variable {r f}
     closure of the relation on `f`'s image defined by '`x ≈ y` iff the elements of `f⁻¹(x)` are
     related to the elements of `f⁻¹(y)` by `r`.' -/
 def map (r : Setoid α) (f : α → β) : Setoid β :=
-  Relation.EqvGen.setoid fun x y => ∃ a b, f a = x ∧ f b = y ∧ r a b
+  Relation.EqvGen.setoid (Relation.Map r f f)
 
 /-- Given a surjective function f whose kernel is contained in an equivalence relation r, the
     equivalence relation on f's codomain defined by x ≈ y ↔ the elements of f⁻¹(x) are related to
     the elements of f⁻¹(y) by r. -/
-def mapOfSurjective (r) (f : α → β) (h : ker f ≤ r) (hf : Surjective f) : Setoid β :=
-  ⟨fun x y => ∃ a b, f a = x ∧ f b = y ∧ r a b,
-    ⟨fun x =>
-      let ⟨y, hy⟩ := hf x
-      ⟨y, y, hy, hy, r.refl' y⟩,
-      fun ⟨x, y, hx, hy, h⟩ => ⟨y, x, hy, hx, r.symm' h⟩,
-      fun ⟨x, y, hx, hy, h₁⟩ ⟨y', z, hy', hz, h₂⟩ =>
-      ⟨x, z, hx, hz, r.trans' h₁ <| r.trans' (h <| by rwa [← hy'] at hy) h₂⟩⟩⟩
+def mapOfSurjective (r : Setoid α) (f : α → β) (h : ker f ≤ r) (hf : Surjective f) : Setoid β :=
+  ⟨Relation.Map r f f, Relation.map_equivalence r.iseqv f hf h⟩
 
 /-- A special case of the equivalence closure of an equivalence relation r equalling r. -/
 theorem mapOfSurjective_eq_map (h : ker f ≤ r) (hf : Surjective f) :
@@ -461,10 +423,9 @@ def correspondence (r : Setoid α) : { s // r ≤ s } ≃o Setoid (Quotient r) w
   toFun s := ⟨Quotient.lift₂ s.1.1 fun _ _ _ _ h₁ h₂ ↦ Eq.propIntro
       (fun h ↦ s.1.trans' (s.1.trans' (s.1.symm' (s.2 h₁)) h) (s.2 h₂))
       (fun h ↦ s.1.trans' (s.1.trans' (s.2 h₁) h) (s.1.symm' (s.2 h₂))),
-    ⟨Quotient.ind s.1.2.1, @fun x y ↦ Quotient.inductionOn₂ x y fun _ _ ↦ s.1.2.2,
-      @fun x y z ↦ Quotient.inductionOn₃ x y z fun _ _ _ ↦ s.1.2.3⟩⟩
+    ⟨Quotient.ind s.1.2.1, fun {x y} ↦ Quotient.inductionOn₂ x y fun _ _ ↦ s.1.2.2,
+      fun {x y z} ↦ Quotient.inductionOn₃ x y z fun _ _ _ ↦ s.1.2.3⟩⟩
   invFun s := ⟨comap Quotient.mk' s, fun x y h => by rw [comap_rel, Quotient.eq'.2 h]⟩
-  left_inv _ := rfl
   right_inv _ := ext fun x y ↦ Quotient.inductionOn₂ x y fun _ _ ↦ Iff.rfl
   map_rel_iff' :=
     ⟨fun h x y hs ↦ @h ⟦x⟧ ⟦y⟧ hs, fun h x y ↦ Quotient.inductionOn₂ x y fun _ _ hs ↦ h hs⟩

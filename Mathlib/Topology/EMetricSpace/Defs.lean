@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
 import Mathlib.Data.ENNReal.Inv
+import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Topology.UniformSpace.OfFun
-import Mathlib.Topology.Bases
 
 /-!
 # Extended metric spaces
@@ -25,9 +25,8 @@ theory of `PseudoEMetricSpace`, where we don't require `edist x y = 0 → x = y`
 to `EMetricSpace` at the end.
 -/
 
-assert_not_exists Nat.instLocallyFiniteOrder
-assert_not_exists IsUniformEmbedding
-assert_not_exists TendstoUniformlyOnFilter
+
+assert_not_exists Nat.instLocallyFiniteOrder IsUniformEmbedding TendstoUniformlyOnFilter
 
 open Filter Set Topology
 
@@ -37,7 +36,7 @@ variable {α : Type u} {β : Type v} {X : Type*}
 
 /-- Characterizing uniformities associated to a (generalized) distance function `D`
 in terms of the elements of the uniformity. -/
-theorem uniformity_dist_of_mem_uniformity [LinearOrder β] {U : Filter (α × α)} (z : β)
+theorem uniformity_dist_of_mem_uniformity [LT β] {U : Filter (α × α)} (z : β)
     (D : α → α → β) (H : ∀ s, s ∈ U ↔ ∃ ε > z, ∀ {a b : α}, D a b < ε → (a, b) ∈ s) :
     U = ⨅ ε > z, 𝓟 { p : α × α | D p.1 p.2 < ε } :=
   HasBasis.eq_biInf ⟨fun s => by simp only [H, subset_def, Prod.forall, mem_setOf]⟩
@@ -47,6 +46,7 @@ open scoped Uniformity Topology Filter NNReal ENNReal Pointwise
 /-- `EDist α` means that `α` is equipped with an extended distance. -/
 @[ext]
 class EDist (α : Type*) where
+  /-- Extended distance between two points -/
   edist : α → α → ℝ≥0∞
 
 export EDist (edist)
@@ -59,22 +59,23 @@ def uniformSpaceOfEDist (edist : α → α → ℝ≥0∞) (edist_self : ∀ x :
     ⟨ε / 2, ENNReal.half_pos ε0.ne', fun _ h₁ _ h₂ =>
       (ENNReal.add_lt_add h₁ h₂).trans_eq (ENNReal.add_halves _)⟩
 
--- the uniform structure is embedded in the emetric space structure
--- to avoid instance diamond issues. See Note [forgetful inheritance].
-/-- Extended (pseudo) metric spaces, with an extended distance `edist` possibly taking the
-value ∞
+/-- A pseudo extended metric space is a type endowed with a `ℝ≥0∞`-valued distance `edist`
+satisfying reflexivity `edist x x = 0`, commutativity `edist x y = edist y x`, and the triangle
+inequality `edist x z ≤ edist x y + edist y z`.
 
-Each pseudo_emetric space induces a canonical `UniformSpace` and hence a canonical
-`TopologicalSpace`.
-This is enforced in the type class definition, by extending the `UniformSpace` structure. When
-instantiating a `PseudoEMetricSpace` structure, the uniformity fields are not necessary, they
-will be filled in by default. There is a default value for the uniformity, that can be substituted
-in cases of interest, for instance when instantiating a `PseudoEMetricSpace` structure
-on a product.
+Note that we do not require `edist x y = 0 → x = y`. See extended metric spaces (`EMetricSpace`) for
+the similar class with that stronger assumption.
 
-Continuity of `edist` is proved in `Topology.Instances.ENNReal`
--/
-class PseudoEMetricSpace (α : Type u) extends EDist α : Type u where
+Any pseudo extended metric space is a topological space and a uniform space (see `TopologicalSpace`,
+`UniformSpace`), where the topology and uniformity come from the metric.
+Note that a T1 pseudo extended metric space is just an extended metric space.
+
+We make the uniformity/topology part of the data instead of deriving it from the metric. This eg
+ensures that we do not get a diamond when doing
+`[PseudoEMetricSpace α] [PseudoEMetricSpace β] : TopologicalSpace (α × β)`:
+The product metric and product topology agree, but not definitionally so.
+See Note [forgetful inheritance]. -/
+class PseudoEMetricSpace (α : Type u) : Type u extends EDist α  where
   edist_self : ∀ x : α, edist x x = 0
   edist_comm : ∀ x y : α, edist x y = edist y x
   edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z
@@ -90,8 +91,8 @@ namespace, while notions associated to metric spaces are mostly in the root name
 @[ext]
 protected theorem PseudoEMetricSpace.ext {α : Type*} {m m' : PseudoEMetricSpace α}
     (h : m.toEDist = m'.toEDist) : m = m' := by
-  cases' m with ed  _ _ _ U hU
-  cases' m' with ed' _ _ _ U' hU'
+  obtain ⟨_, _, _, U, hU⟩ := m; rename EDist α => ed
+  obtain ⟨_, _, _, U', hU'⟩ := m'; rename EDist α => ed'
   congr 1
   exact UniformSpace.ext (((show ed = ed' from h) ▸ hU).trans hU'.symm)
 
@@ -214,8 +215,8 @@ theorem uniformity_basis_edist_inv_nat :
 
 theorem uniformity_basis_edist_inv_two_pow :
     (𝓤 α).HasBasis (fun _ => True) fun n : ℕ => { p : α × α | edist p.1 p.2 < 2⁻¹ ^ n } :=
-  EMetric.mk_uniformity_basis (fun _ _ => ENNReal.pow_pos (ENNReal.inv_pos.2 ENNReal.two_ne_top) _)
-    fun _ε ε₀ =>
+  EMetric.mk_uniformity_basis (fun _ _ ↦ ENNReal.pow_pos (ENNReal.inv_pos.2 ENNReal.ofNat_ne_top) _)
+    fun _ε ε₀ ↦
     let ⟨n, hn⟩ := ENNReal.exists_inv_two_pow_lt (ne_of_gt ε₀)
     ⟨n, trivial, le_of_lt hn⟩
 
@@ -228,7 +229,6 @@ namespace EMetric
 instance (priority := 900) instIsCountablyGeneratedUniformity : IsCountablyGenerated (𝓤 α) :=
   isCountablyGenerated_of_seq ⟨_, uniformity_basis_edist_inv_nat.eq_iInf⟩
 
--- Porting note: changed explicit/implicit
 /-- ε-δ characterization of uniform continuity on a set for pseudoemetric spaces -/
 theorem uniformContinuousOn_iff [PseudoEMetricSpace β] {f : α → β} {s : Set α} :
     UniformContinuousOn f s ↔
@@ -276,8 +276,15 @@ instance {α : Type*} {p : α → Prop} [PseudoEMetricSpace α] : PseudoEMetricS
   PseudoEMetricSpace.induced Subtype.val ‹_›
 
 /-- The extended pseudodistance on a subset of a pseudoemetric space is the restriction of
-the original pseudodistance, by definition -/
+the original pseudodistance, by definition. -/
 theorem Subtype.edist_eq {p : α → Prop} (x y : Subtype p) : edist x y = edist (x : α) y := rfl
+
+/-- The extended pseudodistance on a subtype of a pseudoemetric space is the restriction of
+the original pseudodistance, by definition. -/
+@[simp]
+theorem Subtype.edist_mk_mk {p : α → Prop} {x y : α} (hx : p x) (hy : p y) :
+    edist (⟨x, hx⟩ : Subtype p) ⟨y, hy⟩ = edist x y :=
+  rfl
 
 namespace MulOpposite
 
@@ -374,7 +381,7 @@ theorem closedBall_subset_closedBall (h : ε₁ ≤ ε₂) : closedBall x ε₁ 
 
 theorem ball_disjoint (h : ε₁ + ε₂ ≤ edist x y) : Disjoint (ball x ε₁) (ball y ε₂) :=
   Set.disjoint_left.mpr fun z h₁ h₂ =>
-    (edist_triangle_left x y z).not_lt <| (ENNReal.add_lt_add h₁ h₂).trans_le h
+    (edist_triangle_left x y z).not_gt <| (ENNReal.add_lt_add h₁ h₂).trans_le h
 
 theorem ball_subset (h : edist x y + ε₁ ≤ ε₂) (h' : edist x y ≠ ∞) : ball x ε₁ ⊆ ball y ε₂ :=
   fun z zx =>
@@ -390,9 +397,9 @@ theorem exists_ball_subset_ball (h : y ∈ ball x ε) : ∃ ε' > 0, ball y ε' 
   exact (add_tsub_cancel_of_le (mem_ball.mp h).le).le
 
 theorem ball_eq_empty_iff : ball x ε = ∅ ↔ ε = 0 :=
-  eq_empty_iff_forall_not_mem.trans
+  eq_empty_iff_forall_notMem.trans
     ⟨fun h => le_bot_iff.1 (le_of_not_gt fun ε0 => h _ (mem_ball_self ε0)), fun ε0 _ h =>
-      not_lt_of_le (le_of_eq ε0) (pos_of_mem_ball h)⟩
+      not_lt_of_ge (le_of_eq ε0) (pos_of_mem_ball h)⟩
 
 theorem ordConnected_setOf_closedBall_subset (x : α) (s : Set α) :
     OrdConnected { r | closedBall x r ⊆ s } :=
@@ -460,7 +467,7 @@ end
 theorem isOpen_iff : IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, ball x ε ⊆ s := by
   simp [isOpen_iff_nhds, mem_nhds_iff]
 
-theorem isOpen_ball : IsOpen (ball x ε) :=
+@[simp] theorem isOpen_ball : IsOpen (ball x ε) :=
   isOpen_iff.2 fun _ => exists_ball_subset_ball
 
 theorem isClosed_ball_top : IsClosed (ball x ⊤) :=
@@ -497,7 +504,7 @@ theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {u : β → α} {a : α}
 
 section Compact
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to a uniform space with metrizable uniformity
+-- TODO: generalize to a uniform space with metrizable uniformity
 /-- For a set `s` in a pseudo emetric space, if for every `ε > 0` there exists a countable
 set that is `ε`-dense in `s`, then there exists a countable subset `t ⊆ s` that is dense in `s`. -/
 theorem subset_countable_closure_of_almost_dense_set (s : Set α)
@@ -528,37 +535,26 @@ theorem subset_countable_closure_of_almost_dense_set (s : Set α)
     edist x (f n⁻¹ y) ≤ (n : ℝ≥0∞)⁻¹ * 2 := hf _ _ ⟨hyx, hx⟩
     _ < ε := ENNReal.mul_lt_of_lt_div hn
 
-open TopologicalSpace in
-/-- If a set `s` is separable in a (pseudo extended) metric space, then it admits a countable dense
-subset. This is not obvious, as the countable set whose closure covers `s` given by the definition
-of separability does not need in general to be contained in `s`. -/
-theorem _root_.TopologicalSpace.IsSeparable.exists_countable_dense_subset
-    {s : Set α} (hs : IsSeparable s) : ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
-  have : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ s ⊆ ⋃ x ∈ t, closedBall x ε := fun ε ε0 => by
-    rcases hs with ⟨t, htc, hst⟩
-    refine ⟨t, htc, hst.trans fun x hx => ?_⟩
-    rcases mem_closure_iff.1 hx ε ε0 with ⟨y, hyt, hxy⟩
-    exact mem_iUnion₂.2 ⟨y, hyt, mem_closedBall.2 hxy.le⟩
-  exact subset_countable_closure_of_almost_dense_set _ this
-
-open TopologicalSpace in
-/-- If a set `s` is separable, then the corresponding subtype is separable in a (pseudo extended)
-metric space.  This is not obvious, as the countable set whose closure covers `s` does not need in
-general to be contained in `s`. -/
-theorem _root_.TopologicalSpace.IsSeparable.separableSpace {s : Set α} (hs : IsSeparable s) :
-    SeparableSpace s := by
-  rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, hst⟩
-  lift t to Set s using hts
-  refine ⟨⟨t, countable_of_injective_of_countable_image Subtype.coe_injective.injOn htc, ?_⟩⟩
-  rwa [IsInducing.subtypeVal.dense_iff, Subtype.forall]
-
 end Compact
 
 end EMetric
 
---namespace
-/-- We now define `EMetricSpace`, extending `PseudoEMetricSpace`. -/
-class EMetricSpace (α : Type u) extends PseudoEMetricSpace α : Type u where
+/-- An extended metric space is a type endowed with a `ℝ≥0∞`-valued distance `edist` satisfying
+`edist x y = 0 ↔ x = y`, commutativity `edist x y = edist y x`, and the triangle inequality
+`edist x z ≤ edist x y + edist y z`.
+
+See pseudo extended metric spaces (`PseudoEMetricSpace`) for the similar class with the
+`edist x y = 0 ↔ x = y` assumption weakened to `edist x x = 0`.
+
+Any extended metric space is a T1 topological space and a uniform space (see `TopologicalSpace`,
+`T1Space`, `UniformSpace`), where the topology and uniformity come from the metric.
+
+We make the uniformity/topology part of the data instead of deriving it from the metric.
+This eg ensures that we do not get a diamond when doing
+`[EMetricSpace α] [EMetricSpace β] : TopologicalSpace (α × β)`:
+The product metric and product topology agree, but not definitionally so.
+See Note [forgetful inheritance]. -/
+class EMetricSpace (α : Type u) : Type u extends PseudoEMetricSpace α where
   eq_of_edist_eq_zero : ∀ {x y : α}, edist x y = 0 → x = y
 
 @[ext]
@@ -588,9 +584,11 @@ theorem edist_le_zero {x y : γ} : edist x y ≤ 0 ↔ x = y :=
 @[simp]
 theorem edist_pos {x y : γ} : 0 < edist x y ↔ x ≠ y := by simp [← not_le]
 
+@[simp] lemma EMetric.closedBall_zero (x : γ) : closedBall x 0 = {x} := by ext; simp
+
 /-- Two points coincide if their distance is `< ε` for all positive ε -/
 theorem eq_of_forall_edist_le {x y : γ} (h : ∀ ε > 0, edist x y ≤ ε) : x = y :=
-  eq_of_edist_eq_zero (eq_of_le_of_forall_le_of_dense bot_le h)
+  eq_of_edist_eq_zero (eq_of_le_of_forall_lt_imp_le_of_dense bot_le h)
 
 /-- Auxiliary function to replace the uniformity on an emetric space with
 a uniformity which is equal to the original one, but maybe not defeq.

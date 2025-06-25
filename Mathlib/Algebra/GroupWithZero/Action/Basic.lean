@@ -3,12 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Action.Prod
-import Mathlib.Algebra.Group.Aut
+import Mathlib.Algebra.Group.Action.End
 import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.GroupWithZero.Prod
-import Mathlib.Algebra.SMulWithZero
 
 /-!
 # Definitions of group actions
@@ -46,8 +44,7 @@ More sophisticated lemmas belong in `GroupTheory.GroupAction`.
 group action
 -/
 
--- TODO:
--- assert_not_exists Ring
+assert_not_exists Ring
 
 open Function
 
@@ -74,7 +71,7 @@ variable (A)
 /-- Each element of the group defines an additive monoid isomorphism.
 
 This is a stronger version of `MulAction.toPerm`. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def DistribMulAction.toAddEquiv [DistribMulAction G A] (x : G) : A ≃+ A where
   __ := toAddMonoidHom A x
   __ := MulAction.toPermHom G A x
@@ -98,45 +95,6 @@ def smulMonoidWithZeroHom [MonoidWithZero M₀] [MulZeroOneClass N₀] [MulActio
     [IsScalarTower M₀ N₀ N₀] [SMulCommClass M₀ N₀ N₀] : M₀ × N₀ →*₀ N₀ :=
   { smulMonoidHom with map_zero' := smul_zero _ }
 
-section MulDistribMulAction
-variable [Group G] [Monoid M] [MulDistribMulAction G M]
-variable (M)
-
-/-- Each element of the group defines a multiplicative monoid isomorphism.
-
-This is a stronger version of `MulAction.toPerm`. -/
-@[simps (config := { simpRhs := true })]
-def MulDistribMulAction.toMulEquiv (x : G) : M ≃* M :=
-  { MulDistribMulAction.toMonoidHom M x, MulAction.toPermHom G M x with }
-
-variable (G)
-
-/-- Each element of the group defines a multiplicative monoid isomorphism.
-
-This is a stronger version of `MulAction.toPermHom`. -/
-@[simps]
-def MulDistribMulAction.toMulAut : G →* MulAut M where
-  toFun := MulDistribMulAction.toMulEquiv M
-  map_one' := MulEquiv.ext (one_smul _)
-  map_mul' _ _ := MulEquiv.ext (mul_smul _ _)
-
-end MulDistribMulAction
-
-
-namespace MulAut
-
-/-- The tautological action by `MulAut M` on `M`.
-
-This generalizes `Function.End.applyMulAction`. -/
-instance applyMulDistribMulAction [Monoid M] : MulDistribMulAction (MulAut M) M where
-  smul := (· <| ·)
-  one_smul _ := rfl
-  mul_smul _ _ _ := rfl
-  smul_one := map_one
-  smul_mul := map_mul
-
-end MulAut
-
 namespace AddAut
 
 /-- The tautological action by `AddAut A` on `A`.
@@ -150,24 +108,6 @@ instance applyDistribMulAction [AddMonoid A] : DistribMulAction (AddAut A) A whe
   mul_smul _ _ _ := rfl
 
 end AddAut
-
-section Arrow
-variable [Group G] [MulAction G A] [Monoid M]
-
-attribute [local instance] arrowAction
-
-/-- When `M` is a monoid, `ArrowAction` is additionally a `MulDistribMulAction`. -/
-def arrowMulDistribMulAction : MulDistribMulAction G (A → M) where
-  smul_one _ := rfl
-  smul_mul _ _ _ := rfl
-
-attribute [local instance] arrowMulDistribMulAction
-
-/-- Given groups `G H` with `G` acting on `A`, `G` acts by
-multiplicative automorphisms on `A → H`. -/
-@[simps!] def mulAutArrow : G →* MulAut (A → M) := MulDistribMulAction.toMulAut _ _
-
-end Arrow
 
 lemma IsUnit.smul_sub_iff_sub_inv_smul [Group G] [Monoid R] [AddGroup R] [DistribMulAction G R]
     [IsScalarTower G R R] [SMulCommClass G R R] (r : G) (a : R) :

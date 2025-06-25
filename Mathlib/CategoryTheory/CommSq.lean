@@ -153,15 +153,14 @@ variable {A B X Y : C} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
 
 The datum of a lift in a commutative square, i.e. an up-right-diagonal
 morphism which makes both triangles commute. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 @[ext]
 structure LiftStruct (sq : CommSq f i p g) where
   /-- The lift. -/
   l : B ⟶ X
   /-- The upper left triangle commutes. -/
-  fac_left : i ≫ l = f
+  fac_left : i ≫ l = f := by aesop_cat
   /-- The lower right triangle commutes. -/
-  fac_right : l ≫ p = g
+  fac_right : l ≫ p = g := by aesop_cat
 
 namespace LiftStruct
 
@@ -226,12 +225,9 @@ class HasLift : Prop where
 
 namespace HasLift
 
-variable {sq}
-
+variable {sq} in
 theorem mk' (l : sq.LiftStruct) : HasLift sq :=
   ⟨Nonempty.intro l⟩
-
-variable (sq)
 
 theorem iff : HasLift sq ↔ Nonempty sq.LiftStruct := by
   constructor

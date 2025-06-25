@@ -203,7 +203,7 @@ abbrev Hom :=
   RelHom G.Adj G'.Adj
 
 /-- A graph embedding is an embedding `f` such that for vertices `v w : V`,
-`G.Adj (f v) (f w) ↔ G.Adj v w`. Its image is an induced subgraph of G'.
+`G'.Adj (f v) (f w) ↔ G.Adj v w`. Its image is an induced subgraph of G'.
 
 The notation `G ↪g G'` represents the type of graph embeddings. -/
 abbrev Embedding :=
@@ -266,11 +266,27 @@ def mapDart (d : G.Dart) : G'.Dart :=
 theorem mapDart_apply (d : G.Dart) : f.mapDart d = ⟨d.1.map f f, f.map_adj d.2⟩ :=
   rfl
 
+/-- The graph homomorphism from a smaller graph to a bigger one. -/
+def ofLE (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩
+
+@[simp, norm_cast] lemma coe_ofLE (h : G₁ ≤ G₂) : ⇑(ofLE h) = id := rfl
+
+lemma ofLE_apply (h : G₁ ≤ G₂) (v : V) : ofLE h v = v := rfl
+
 /-- The induced map for spanning subgraphs, which is the identity on vertices. -/
-@[simps]
+@[deprecated ofLE (since := "2025-03-17")]
 def mapSpanningSubgraphs {G G' : SimpleGraph V} (h : G ≤ G') : G →g G' where
   toFun x := x
   map_rel' ha := h ha
+
+@[deprecated "This is true by simp" (since := "2025-03-17")]
+lemma mapSpanningSubgraphs_inj {G G' : SimpleGraph V} {v w : V} (h : G ≤ G') :
+    ofLE h v = ofLE h w ↔ v = w := by simp
+
+@[deprecated "This is true by simp" (since := "2025-03-17")]
+lemma mapSpanningSubgraphs_injective {G G' : SimpleGraph V} (h : G ≤ G') :
+    Injective (ofLE h) :=
+  fun v w hvw ↦ by simpa using hvw
 
 theorem mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective f.mapEdgeSet := by
   rintro ⟨e₁, h₁⟩ ⟨e₂, h₂⟩
@@ -300,11 +316,6 @@ abbrev comp (f' : G' →g G'') (f : G →g G') : G →g G'' :=
 @[simp]
 theorem coe_comp (f' : G' →g G'') (f : G →g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
-
-/-- The graph homomorphism from a smaller graph to a bigger one. -/
-def ofLE (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩
-
-@[simp, norm_cast] lemma coe_ofLE (h : G₁ ≤ G₂) : ⇑(ofLE h) = id := rfl
 
 end Hom
 
@@ -379,8 +390,7 @@ protected abbrev spanningCoe {s : Set V} (G : SimpleGraph s) : G ↪g G.spanning
   SimpleGraph.Embedding.map (Function.Embedding.subtype _) G
 
 /-- Embeddings of types induce embeddings of complete graphs on those types. -/
-protected def completeGraph {α β : Type*} (f : α ↪ β) :
-    (⊤ : SimpleGraph α) ↪g (⊤ : SimpleGraph β) :=
+protected def completeGraph {α β : Type*} (f : α ↪ β) : completeGraph α ↪g completeGraph β :=
   { f with map_rel_iff' := by simp }
 
 @[simp] lemma coe_completeGraph {α β : Type*} (f : α ↪ β) : ⇑(Embedding.completeGraph f) = f := rfl
@@ -394,6 +404,14 @@ abbrev comp (f' : G' ↪g G'') (f : G ↪g G') : G ↪g G'' :=
 @[simp]
 theorem coe_comp (f' : G' ↪g G'') (f : G ↪g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
+
+/-- Graph embeddings from `G` to `H` are the same thing as graph embeddings from `Gᶜ` to `Hᶜ`. -/
+def complEquiv : G ↪g H ≃ Gᶜ ↪g Hᶜ where
+  toFun f := ⟨f.toEmbedding, by simp⟩
+  invFun f := ⟨f.toEmbedding, fun {v w} ↦ by
+    obtain rfl | hvw := eq_or_ne v w
+    · simp
+    · simpa [hvw, not_iff_not] using f.map_adj_iff (v := v) (w := w)⟩
 
 end Embedding
 
@@ -422,7 +440,7 @@ def induceHom : G.induce s →g G'.induce t where
 
 lemma induceHom_injective (hi : Set.InjOn φ s) :
     Function.Injective (induceHom φ φst) := by
-  erw [Set.MapsTo.restrict_inj] <;> assumption
+  simpa [Set.MapsTo.restrict_inj]
 
 end induceHom
 
@@ -549,8 +567,7 @@ lemma map_symm_apply (f : V ≃ W) (G : SimpleGraph V) (w : W) :
     (SimpleGraph.Iso.map f G).symm w = f.symm w := rfl
 
 /-- Equivalences of types induce isomorphisms of complete graphs on those types. -/
-protected def completeGraph {α β : Type*} (f : α ≃ β) :
-    (⊤ : SimpleGraph α) ≃g (⊤ : SimpleGraph β) :=
+protected def completeGraph {α β : Type*} (f : α ≃ β) : completeGraph α ≃g completeGraph β :=
   { f with map_rel_iff' := by simp }
 
 theorem toEmbedding_completeGraph {α β : Type*} (f : α ≃ β) :

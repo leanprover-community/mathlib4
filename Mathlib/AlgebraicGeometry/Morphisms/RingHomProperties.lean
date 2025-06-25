@@ -83,7 +83,7 @@ theorem IsStableUnderBaseChange.pullback_fst_appTop
     Functor.op_map, Quiver.Hom.unop_op, AffineScheme.forgetToScheme_map, Scheme.Γ_map] at this
   rw [← this, CommRingCat.hom_comp, hP'.cancel_right_isIso, ← pushoutIsoUnopPullback_inl_hom,
     CommRingCat.hom_comp, hP'.cancel_right_isIso]
-  exact hP.pushout_inl _ hP' _ _ H
+  exact hP.pushout_inl hP' _ _ H
 
 @[deprecated (since := "2024-11-23")]
 alias IsStableUnderBaseChange.pullback_fst_app_top :=
@@ -158,7 +158,7 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso P)
       simpa using hU
     rw [← f.appLE_congr _ rfl this (fun f => P f.hom),
       IsAffineOpen.appLE_eq_away_map f (isAffineOpen_top Y) U.2 _ r]
-    simp only
+    simp only [CommRingCat.hom_ofHom]
     apply (config := { allowSynthFailures := true }) h₂
     exact H U
   · introv hs hs' U
@@ -167,12 +167,19 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso P)
     simp_rw [sourceAffineLocally_morphismRestrict] at hs'
     have := hs' r ⟨X.basicOpen (f.appLE ⊤ U le_top r.1), U.2.basicOpen (f.appLE ⊤ U le_top r.1)⟩
       (by simp [Scheme.Hom.appLE])
-    rwa [IsAffineOpen.appLE_eq_away_map f (isAffineOpen_top Y) U.2,
-      ← h₁.is_localization_away_iff] at this
+    rwa [IsAffineOpen.appLE_eq_away_map f (isAffineOpen_top Y) U.2, CommRingCat.hom_ofHom,
+      ← h₁.isLocalization_away_iff] at this
+
+variable {P}
+
+lemma affineLocally_le {Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+    (hPQ : ∀ {R S : Type u} [CommRing R] [CommRing S] {f : R →+* S}, P f → Q f) :
+    affineLocally P ≤ affineLocally Q :=
+  fun _ _ _ hf U V ↦ hPQ (hf U V)
 
 open RingHom
 
-variable {P} {X Y : Scheme.{u}} {f : X ⟶ Y}
+variable {X Y : Scheme.{u}} {f : X ⟶ Y}
 
 /-- If `P` holds for `f` over affine opens `U₂` of `Y` and `V₂` of `X` and `U₁` (resp. `V₁`) are
 open affine neighborhoods of `x` (resp. `f.base x`), then `P` also holds for `f`
@@ -383,12 +390,12 @@ lemma isLocal_ringHomProperty_of_isLocalAtSource_of_isLocalAtTarget
       (inferInstanceAs (P.inverseImage Scheme.Spec).unop.RespectsIso)
   constructor
   · intro R S _ _ f r R' S' _ _ _ _ _ _ H
-    refine (RingHom.RespectsIso.is_localization_away_iff hP ..).mp ?_
+    refine (RingHom.RespectsIso.isLocalization_away_iff hP ..).mp ?_
     exact (MorphismProperty.arrow_mk_iso_iff P (SpecMapRestrictBasicOpenIso
       (CommRingCat.ofHom f) r)).mp (IsLocalAtTarget.restrict H (basicOpen r))
   · intros R S _ _ f s hs H
     apply IsLocalAtSource.of_openCover (Scheme.affineOpenCoverOfSpanRangeEqTop
-      (R := CommRingCat.of S) (ι := s) (fun i : s ↦ (i : S)) (by simpa)).openCover
+      (fun i : s ↦ (i : S)) (by simpa)).openCover
     intro i
     simp only [CommRingCat.coe_of, Set.setOf_mem_eq, id_eq, eq_mpr_eq_cast,
       Scheme.AffineOpenCover.openCover_obj, Scheme.affineOpenCoverOfSpanRangeEqTop_obj_carrier,
@@ -530,7 +537,8 @@ private lemma respects_isOpenImmersion_aux
       let f' : (V s).toScheme ⟶ U.ι ⁻¹ᵁ s := f ∣_ U.ι ⁻¹ᵁ s
       have hf' : P f' := IsLocalAtTarget.restrict hf _
       let e : (U.ι ⁻¹ᵁ s).toScheme ≅ s := IsOpenImmersion.isoOfRangeEq ((U.ι ⁻¹ᵁ s).ι ≫ U.ι) s.1.ι
-        (by simpa [Set.range_comp, Set.image_preimage_eq_iff, heq] using le_sSup s.2)
+        (by simpa only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp, Scheme.Opens.range_ι,
+          Opens.map_coe, Set.image_preimage_eq_iff, heq, Opens.coe_sSup] using le_sSup s.2)
       have heq : (V s).ι ≫ f ≫ U.ι = f' ≫ e.hom ≫ s.1.ι := by
         simp only [V, IsOpenImmersion.isoOfRangeEq_hom_fac, f', e, morphismRestrict_ι_assoc]
       rw [heq, ← Category.assoc]
@@ -632,6 +640,69 @@ lemma locally_of_iff (hQl : LocalizationAwayPreserves Q)
       ⟨locally_propertyIsLocal hQl hQa, rfl⟩
     ext X Y f
     rw [h, iff_exists_appLE_locally (P := affineLocally (Locally Q)) hQa.left hQa.respectsIso]
+
+/-- If `Q` is a property of ring maps that can be checked on prime ideals, the
+associated property of scheme morphisms can be checked on stalks. -/
+lemma of_stalkMap (hQ : OfLocalizationPrime Q) (H : ∀ x, Q (f.stalkMap x).hom) : P f := by
+  have hQi := (HasRingHomProperty.isLocal_ringHomProperty P).respectsIso
+  wlog hY : IsAffine Y generalizing X Y f
+  · rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
+    intro U
+    refine this (fun x ↦ ?_) U.2
+    exact (hQi.arrow_mk_iso_iff (AlgebraicGeometry.morphismRestrictStalkMap f U x)).mpr (H x.val)
+  wlog hX : IsAffine X generalizing X f
+  · rw [IsLocalAtSource.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
+    intro U
+    refine this ?_ U.2
+    intro x
+    rw [Scheme.stalkMap_comp, CommRingCat.hom_comp, hQi.cancel_right_isIso]
+    exact H x.val
+  wlog hXY : ∃ R S, Y = Spec R ∧ X = Spec S generalizing X Y
+  · rw [← P.cancel_right_of_respectsIso (g := Y.isoSpec.hom)]
+    rw [← P.cancel_left_of_respectsIso (f := X.isoSpec.inv)]
+    refine this inferInstance (fun x ↦ ?_) inferInstance ?_
+    · rw [Scheme.stalkMap_comp, Scheme.stalkMap_comp, CommRingCat.hom_comp,
+        hQi.cancel_right_isIso, CommRingCat.hom_comp, hQi.cancel_left_isIso]
+      apply H
+    · use Γ(Y, ⊤), Γ(X, ⊤)
+  obtain ⟨R, S, rfl, rfl⟩ := hXY
+  obtain ⟨φ, rfl⟩ := Spec.map_surjective f
+  rw [Spec_iff (P := P)]
+  apply hQ
+  intro P hP
+  specialize H ⟨P, hP⟩
+  rwa [hQi.arrow_mk_iso_iff (Scheme.arrowStalkMapSpecIso φ _)] at H
+
+/-- Let `Q` be a property of ring maps that is stable under localization.
+Then if the associated property of scheme morphisms holds for `f`, `Q` holds on all stalks. -/
+lemma stalkMap
+    (hQ : ∀ {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (_ : Q f)
+      (J : Ideal S) (_ : J.IsPrime), Q (Localization.localRingHom _ J f rfl))
+    (hf : P f) (x : X) : Q (f.stalkMap x).hom := by
+  have hQi := (HasRingHomProperty.isLocal_ringHomProperty P).respectsIso
+  wlog h : IsAffine X ∧ IsAffine Y generalizing X Y f
+  · obtain ⟨U, hU, hfx, _⟩ := Opens.isBasis_iff_nbhd.mp (isBasis_affine_open Y)
+      (Opens.mem_top <| f.base x)
+    obtain ⟨V, hV, hx, e⟩ := Opens.isBasis_iff_nbhd.mp (isBasis_affine_open X)
+      (show x ∈ f ⁻¹ᵁ U from hfx)
+    rw [← hQi.arrow_mk_iso_iff (Scheme.Hom.resLEStalkMap f e ⟨x, hx⟩)]
+    exact this (IsLocalAtSource.resLE _ hf) _ ⟨hV, hU⟩
+  obtain ⟨hX, hY⟩ := h
+  wlog hXY : ∃ R S, Y = Spec R ∧ X = Spec S generalizing X Y
+  · have : Q ((X.isoSpec.inv ≫ f ≫ Y.isoSpec.hom).stalkMap (X.isoSpec.hom.base x)).hom := by
+      refine this ?_ (X.isoSpec.hom.base x) inferInstance inferInstance ?_
+      · rwa [P.cancel_left_of_respectsIso, P.cancel_right_of_respectsIso]
+      · use Γ(Y, ⊤), Γ(X, ⊤)
+    rw [Scheme.stalkMap_comp, Scheme.stalkMap_comp, CommRingCat.hom_comp,
+      hQi.cancel_right_isIso, CommRingCat.hom_comp, hQi.cancel_left_isIso] at this
+    have heq : (X.isoSpec.inv.base (X.isoSpec.hom.base x)) = x := by simp
+    rwa [hQi.arrow_mk_iso_iff
+      (Scheme.arrowStalkMapIsoOfEq f heq)] at this
+  obtain ⟨R, S, rfl, rfl⟩ := hXY
+  obtain ⟨φ, rfl⟩ := Spec.map_surjective f
+  rw [hQi.arrow_mk_iso_iff (Scheme.arrowStalkMapSpecIso φ _)]
+  rw [Spec_iff (P := P)] at hf
+  apply hQ _ hf
 
 end HasRingHomProperty
 

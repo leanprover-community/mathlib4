@@ -14,10 +14,12 @@ the associated distinguished triangle in the derived category:
 
 ## TODO
 * when the canonical t-structure on the derived category is formalized, refactor
-this definition to make it a particular case of the triangle induced by a short
-exact sequence in the heart of a t-structure
+  this definition to make it a particular case of the triangle induced by a short
+  exact sequence in the heart of a t-structure
 
 -/
+
+assert_not_exists TwoSidedIdeal
 
 universe w v u
 
@@ -64,7 +66,8 @@ noncomputable def singleTriangleIso :
   · aesop_cat
   · dsimp [singleδ, e]
     rw [Category.assoc, Category.assoc, ← Functor.map_comp, SingleFunctors.inv_hom_id_hom_app]
-    erw [Functor.map_id, comp_id]
+    erw [Functor.map_id]
+    rw [comp_id]
 
 /-- The distinguished triangle in the derived category of `C` given by a
 short exact short complex in `C`. -/

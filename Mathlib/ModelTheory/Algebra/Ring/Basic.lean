@@ -43,8 +43,6 @@ variable {α : Type*}
 
 namespace FirstOrder
 
-open FirstOrder
-
 /-- The type of Ring functions, to be used in the definition of the language of rings.
 It contains the operations (+,*,-,0,1) -/
 inductive ringFunc : ℕ → Type
@@ -140,14 +138,14 @@ theorem card_ring : card Language.ring = 5 := by
   have : Fintype.card Language.ring.Symbols = 5 := rfl
   simp [Language.card, this]
 
-open Language Structure
+open Structure
 
 /-- A Type `R` is a `CompatibleRing` if it is a structure for the language of rings and this
 structure is the same as the structure already given on `R` by the classes `Add`, `Mul` etc.
 
 It is recommended to use this type class as a hypothesis to any theorem whose statement
 requires a type to have be both a `Ring` (or `Field` etc.) and a
-`Language.ring.Structure`  -/
+`Language.ring.Structure` -/
 /- This class does not extend `Add` etc, because this way it can be used in
 combination with a `Ring`, or `Field` instance without having multiple different
 `Add` structures on the Type. -/
@@ -237,7 +235,7 @@ def languageEquivEquivRingEquiv {R S : Type*}
     [NonAssocRing R] [NonAssocRing S]
     [CompatibleRing R] [CompatibleRing S] :
     (Language.ring.Equiv R S) ≃ (R ≃+* S) :=
-  { toFun := fun f =>
+  { toFun f :=
     { f with
       map_add' := by
         intro x y
@@ -245,13 +243,11 @@ def languageEquivEquivRingEquiv {R S : Type*}
       map_mul' := by
         intro x y
         simpa using f.map_fun mulFunc ![x, y] }
-    invFun := fun f =>
+    invFun f :=
     { f with
       map_fun' := fun {n} f => by
         cases f <;> simp
-      map_rel' := fun {n} f => by cases f },
-    left_inv := fun f => by ext; rfl
-    right_inv := fun f => by ext; rfl }
+      map_rel' := fun {n} f => by cases f } }
 
 variable (R : Type*) [Language.ring.Structure R]
 

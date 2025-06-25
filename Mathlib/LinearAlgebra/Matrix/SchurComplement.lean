@@ -13,20 +13,20 @@ This file proves properties of 2×2 block matrices `[A B; C D]` that relate to t
 `D - C*A⁻¹*B`.
 
 Some of the results here generalize to 2×2 matrices in a category, rather than just a ring. A few
-results in this direction can be found in the file `CateogryTheory.Preadditive.Biproducts`,
+results in this direction can be found in `Mathlib/CategoryTheory/Preadditive/Biproducts.lean`,
 especially the declarations `CategoryTheory.Biprod.gaussian` and `CategoryTheory.Biprod.isoElim`.
 Compare with `Matrix.invertibleOfFromBlocks₁₁Invertible`.
 
 ## Main results
 
- * `Matrix.det_fromBlocks₁₁`, `Matrix.det_fromBlocks₂₂`: determinant of a block matrix in terms of
-   the Schur complement.
- * `Matrix.invOf_fromBlocks_zero₂₁_eq`, `Matrix.invOf_fromBlocks_zero₁₂_eq`: the inverse of a
-   block triangular matrix.
- * `Matrix.isUnit_fromBlocks_zero₂₁`, `Matrix.isUnit_fromBlocks_zero₁₂`: invertibility of a
-   block triangular matrix.
- * `Matrix.det_one_add_mul_comm`: the **Weinstein–Aronszajn identity**.
- * `Matrix.PosSemidef.fromBlocks₁₁` and `Matrix.PosSemidef.fromBlocks₂₂`: If a matrix `A` is
+* `Matrix.det_fromBlocks₁₁`, `Matrix.det_fromBlocks₂₂`: determinant of a block matrix in terms of
+  the Schur complement.
+* `Matrix.invOf_fromBlocks_zero₂₁_eq`, `Matrix.invOf_fromBlocks_zero₁₂_eq`: the inverse of a
+  block triangular matrix.
+* `Matrix.isUnit_fromBlocks_zero₂₁`, `Matrix.isUnit_fromBlocks_zero₁₂`: invertibility of a
+  block triangular matrix.
+* `Matrix.det_one_add_mul_comm`: the **Weinstein–Aronszajn identity**.
+* `Matrix.PosSemidef.fromBlocks₁₁` and `Matrix.PosSemidef.fromBlocks₂₂`: If a matrix `A` is
   positive definite, then `[A B; Bᴴ D]` is positive semidefinite if and only if `D - Bᴴ A⁻¹ B` is
   positive semidefinite.
 
@@ -197,7 +197,7 @@ theorem inv_fromBlocks_zero₂₁_of_isUnit_iff (A : Matrix m m α) (B : Matrix 
   · have hD := hAD.not.mp hA
     have : ¬IsUnit (fromBlocks A B 0 D) :=
       isUnit_fromBlocks_zero₂₁.not.mpr (not_and'.mpr fun _ => hA)
-    simp_rw [nonsing_inv_eq_ring_inverse, Ring.inverse_non_unit _ hA, Ring.inverse_non_unit _ hD,
+    simp_rw [nonsing_inv_eq_ringInverse, Ring.inverse_non_unit _ hA, Ring.inverse_non_unit _ hD,
       Ring.inverse_non_unit _ this, Matrix.zero_mul, neg_zero, fromBlocks_zero]
 
 /-- An expression for the inverse of a lower block-triangular matrix, when either both elements of
@@ -214,7 +214,7 @@ theorem inv_fromBlocks_zero₁₂_of_isUnit_iff (A : Matrix m m α) (C : Matrix 
   · have hD := hAD.not.mp hA
     have : ¬IsUnit (fromBlocks A 0 C D) :=
       isUnit_fromBlocks_zero₁₂.not.mpr (not_and'.mpr fun _ => hA)
-    simp_rw [nonsing_inv_eq_ring_inverse, Ring.inverse_non_unit _ hA, Ring.inverse_non_unit _ hD,
+    simp_rw [nonsing_inv_eq_ringInverse, Ring.inverse_non_unit _ hA, Ring.inverse_non_unit _ hD,
       Ring.inverse_non_unit _ this, Matrix.zero_mul, neg_zero, fromBlocks_zero]
 
 end Triangular
@@ -408,23 +408,30 @@ theorem det_one_sub_mul_comm (A : Matrix m n α) (B : Matrix n m α) :
   rw [sub_eq_add_neg, ← Matrix.neg_mul, det_one_add_mul_comm, Matrix.mul_neg, ← sub_eq_add_neg]
 
 /-- A special case of the **Matrix determinant lemma** for when `A = I`. -/
-theorem det_one_add_col_mul_row {ι : Type*} [Unique ι] (u v : m → α) :
-    det (1 + col ι u * row ι v) = 1 + v ⬝ᵥ u := by
+theorem det_one_add_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] (u v : m → α) :
+    det (1 + replicateCol ι u * replicateRow ι v) = 1 + v ⬝ᵥ u := by
   rw [det_one_add_mul_comm, det_unique, Pi.add_apply, Pi.add_apply, Matrix.one_apply_eq,
-    Matrix.row_mul_col_apply]
+    Matrix.replicateRow_mul_replicateCol_apply]
+
+@[deprecated (since := "2025-03-20")] alias
+  det_one_add_col_mul_row := det_one_add_replicateCol_mul_replicateRow
+
 
 /-- The **Matrix determinant lemma**
 
 TODO: show the more general version without `hA : IsUnit A.det` as
-`(A + col u * row v).det = A.det + v ⬝ᵥ (adjugate A) *ᵥ u`.
+`(A + replicateCol u * replicateRow v).det = A.det + v ⬝ᵥ (adjugate A) *ᵥ u`.
 -/
-theorem det_add_col_mul_row {ι : Type*} [Unique ι]
+theorem det_add_replicateCol_mul_replicateRow {ι : Type*} [Unique ι]
     {A : Matrix m m α} (hA : IsUnit A.det) (u v : m → α) :
-    (A + col ι u * row ι v).det = A.det * (1 + row ι v * A⁻¹ * col ι u).det := by
+    (A + replicateCol ι u * replicateRow ι v).det =
+    A.det * (1 + replicateRow ι v * A⁻¹ * replicateCol ι u).det := by
   nth_rewrite 1 [← Matrix.mul_one A]
-  rwa [← Matrix.mul_nonsing_inv_cancel_left A (col ι u * row ι v),
-    ← Matrix.mul_add, det_mul, ← Matrix.mul_assoc, det_one_add_mul_comm,
-    ← Matrix.mul_assoc]
+  rwa [← Matrix.mul_nonsing_inv_cancel_left A (replicateCol ι u * replicateRow ι v),
+    ← Matrix.mul_add, det_mul, ← Matrix.mul_assoc, det_one_add_mul_comm, ← Matrix.mul_assoc]
+
+@[deprecated (since := "2025-03-20")] alias
+  det_add_col_mul_row := det_add_replicateCol_mul_replicateRow
 
 /-- A generalization of the **Matrix determinant lemma** -/
 theorem det_add_mul {A : Matrix m m α} (U : Matrix m n α)
@@ -445,6 +452,7 @@ section StarOrderedRing
 
 variable {𝕜 : Type*} [CommRing 𝕜] [StarRing 𝕜]
 
+/-- Notation for `Sum.elim`, scoped within the `Matrix` namespace. -/
 scoped infixl:65 " ⊕ᵥ " => Sum.elim
 
 theorem schur_complement_eq₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A : Matrix m m 𝕜}
@@ -453,7 +461,7 @@ theorem schur_complement_eq₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A : M
     (star (x ⊕ᵥ y)) ᵥ* (fromBlocks A B Bᴴ D) ⬝ᵥ (x ⊕ᵥ y) =
       (star (x + (A⁻¹ * B) *ᵥ y)) ᵥ* A ⬝ᵥ (x + (A⁻¹ * B) *ᵥ y) +
         (star y) ᵥ* (D - Bᴴ * A⁻¹ * B) ⬝ᵥ y := by
-  simp [Function.star_sum_elim, fromBlocks_mulVec, vecMul_fromBlocks, add_vecMul,
+  simp [Function.star_sumElim, fromBlocks_mulVec, vecMul_fromBlocks, add_vecMul,
     dotProduct_mulVec, vecMul_sub, Matrix.mul_assoc, vecMul_mulVec, hA.eq,
     conjTranspose_nonsing_inv, star_mulVec]
   abel
@@ -464,7 +472,7 @@ theorem schur_complement_eq₂₂ [Fintype m] [Fintype n] [DecidableEq n] (A : M
     (star (x ⊕ᵥ y)) ᵥ* (fromBlocks A B Bᴴ D) ⬝ᵥ (x ⊕ᵥ y) =
       (star ((D⁻¹ * Bᴴ) *ᵥ x + y)) ᵥ* D ⬝ᵥ ((D⁻¹ * Bᴴ) *ᵥ x + y) +
         (star x) ᵥ* (A - B * D⁻¹ * Bᴴ) ⬝ᵥ x := by
-  simp [Function.star_sum_elim, fromBlocks_mulVec, vecMul_fromBlocks, add_vecMul,
+  simp [Function.star_sumElim, fromBlocks_mulVec, vecMul_fromBlocks, add_vecMul,
     dotProduct_mulVec, vecMul_sub, Matrix.mul_assoc, vecMul_mulVec, hD.eq,
     conjTranspose_nonsing_inv, star_mulVec]
   abel

@@ -44,12 +44,11 @@ namespace WittVector
 
 open MvPolynomial
 
-open scoped Classical
-
 noncomputable section
 
 section
 
+open scoped Classical in
 /-- `WittVector.select P x`, for a predicate `P : ℕ → Prop` is the Witt vector
 whose `n`-th coefficient is `x.coeff n` if `P n` is true, and `0` otherwise.
 -/
@@ -60,6 +59,7 @@ section Select
 
 variable (P : ℕ → Prop)
 
+open scoped Classical in
 /-- The polynomial that witnesses that `WittVector.select` is a polynomial function.
 `selectPoly n` is `X n` if `P n` holds, and `0` otherwise. -/
 def selectPoly (n : ℕ) : MvPolynomial ℕ ℤ :=
@@ -68,11 +68,8 @@ def selectPoly (n : ℕ) : MvPolynomial ℕ ℤ :=
 theorem coeff_select (x : 𝕎 R) (n : ℕ) :
     (select P x).coeff n = aeval x.coeff (selectPoly P n) := by
   dsimp [select, selectPoly]
-  split_ifs with hi
-  · rw [aeval_X, mk]; simp only [hi, if_true]
-  · rw [map_zero, mk]; simp only [hi, if_false]
+  split_ifs with hi <;> simp
 
--- Porting note: replaced `@[is_poly]` with `instance`. Made the argument `P` implicit in doing so.
 instance select_isPoly {P : ℕ → Prop} : IsPoly p fun _ _ x => select P x := by
   use selectPoly P
   rintro R _Rcr x
@@ -181,14 +178,9 @@ elab_rules : tactic
         hk, if_true]
     ))
 
--- Porting note: `by init_ring` should suffice; this patches over an issue with `split_ifs`.
--- See zulip: [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.60split_ifs.60.20boxes.20itself.20into.20a.20corner]
 @[simp]
 theorem init_init (x : 𝕎 R) (n : ℕ) : init n (init n x) = init n x := by
-  rw [WittVector.ext_iff]
-  intro i
-  simp only [WittVector.init, WittVector.select, WittVector.coeff_mk]
-  by_cases hi : i < n <;> simp [hi]
+  init_ring
 
 section
 variable [Fact p.Prime]

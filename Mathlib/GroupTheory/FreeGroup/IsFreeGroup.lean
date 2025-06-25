@@ -33,7 +33,7 @@ For the explicit construction of free groups, see `GroupTheory/FreeGroup`.
 * `IsFreeGroup.toFreeGroup`: any free group with generators `A` is equivalent to `FreeGroup A`.
 * `IsFreeGroup.unique_lift`: the universal property of a free group.
 * `FreeGroupBasis.ofUniqueLift`: a group satisfying the universal property of a free group admits
- a free group basis.
+  a free group basis.
 
 -/
 

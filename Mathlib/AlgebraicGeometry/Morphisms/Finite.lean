@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Christian Merten
+Authors: Christian Merten, Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.Integral
 import Mathlib.Algebra.Category.Ring.Epi
@@ -16,9 +16,8 @@ of an arbitrary affine open subset of `Y` is affine and the induced ring map is 
 It is equivalent to ask only that `Y` is covered by affine opens whose preimage is affine
 and the induced ring map is finite.
 
-## TODO
-
-- Show finite morphisms are proper
+Also see `AlgebraicGeometry.IsFinite.finite_preimage_singleton` in
+`Mathlib/AlgebraicGeometry/Fiber.lean` for the fact that finite morphisms have finite fibers.
 
 -/
 
@@ -32,7 +31,7 @@ namespace AlgebraicGeometry
 the preimage of any affine open subset of `Y` is affine and the induced ring
 hom is finite. -/
 @[mk_iff]
-class IsFinite {X Y : Scheme} (f : X ⟶ Y) extends IsAffineHom f : Prop where
+class IsFinite {X Y : Scheme} (f : X ⟶ Y) : Prop extends IsAffineHom f where
   finite_app (U : Y.Opens) (hU : IsAffineOpen U) : (f.app U).hom.Finite
 
 namespace IsFinite
@@ -41,7 +40,7 @@ instance : HasAffineProperty @IsFinite
     (fun X _ f _ ↦ IsAffine X ∧ RingHom.Finite (f.appTop).hom) := by
   show HasAffineProperty @IsFinite (affineAnd RingHom.Finite)
   rw [HasAffineProperty.affineAnd_iff _ RingHom.finite_respectsIso
-    RingHom.finite_localizationPreserves RingHom.finite_ofLocalizationSpan]
+    RingHom.finite_localizationPreserves.away RingHom.finite_ofLocalizationSpan]
   simp [isFinite_iff]
 
 instance : IsStableUnderComposition @IsFinite :=
@@ -57,6 +56,11 @@ instance : ContainsIdentities @IsFinite :=
     RingHom.finite_respectsIso RingHom.finite_containsIdentities
 
 instance : IsMultiplicative @IsFinite where
+
+lemma SpecMap_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
+    IsFinite (Spec.map f) ↔ f.hom.Finite := by
+  rw [HasAffineProperty.iff_of_isAffine (P := @IsFinite), and_iff_right (by infer_instance),
+    RingHom.finite_respectsIso.arrow_mk_iso_iff (arrowIsoΓSpecOfIsAffine f)]
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
@@ -113,5 +117,58 @@ instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : 
   ((IsClosedImmersion.iff_isFinite_and_mono f).mp ‹_›).1
 
 end IsFinite
+
+/-- If `X` is a jacobson scheme and `k` is a field,
+`Spec(k) ⟶ X` is finite iff it is (locally) of finite type.
+(The statement is more general to allow the empty scheme as well) -/
+lemma isFinite_iff_locallyOfFiniteType_of_jacobsonSpace
+    {X Y : Scheme.{u}} {f : X ⟶ Y} [Subsingleton X] [IsReduced X] [JacobsonSpace Y] :
+    IsFinite f ↔ LocallyOfFiniteType f := by
+  wlog hY : ∃ S, Y = Spec S generalizing X Y
+  · rw [IsLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
+      IsLocalAtTarget.iff_of_openCover (P := @LocallyOfFiniteType) Y.affineCover]
+    have inst (i) := ((Y.affineCover.pullbackCover f).map i).isOpenEmbedding.injective.subsingleton
+    have inst (i) := isReduced_of_isOpenImmersion ((Y.affineCover.pullbackCover f).map i)
+    have inst (i) := JacobsonSpace.of_isOpenEmbedding (Y.affineCover.map i).isOpenEmbedding
+    exact forall_congr' fun i ↦ this ⟨_, rfl⟩
+  obtain ⟨S, rfl⟩ := hY
+  wlog hX : ∃ R, X = Spec R generalizing X
+  · rw [← MorphismProperty.cancel_left_of_respectsIso (P := @IsFinite) X.isoSpec.inv,
+      ← MorphismProperty.cancel_left_of_respectsIso (P := @LocallyOfFiniteType) X.isoSpec.inv]
+    have inst := X.isoSpec.inv.isOpenEmbedding.injective.subsingleton
+    refine this ⟨_, rfl⟩
+  cases isEmpty_or_nonempty X
+  · exact ⟨inferInstance, inferInstance⟩
+  have : IrreducibleSpace X := ⟨‹_›⟩
+  obtain ⟨R, rfl⟩ := hX
+  have : IsDomain R := (affine_isIntegral_iff R).mp (isIntegral_of_irreducibleSpace_of_isReduced _)
+  obtain ⟨φ, rfl⟩ := Spec.map_surjective f
+  rw [IsFinite.SpecMap_iff, HasRingHomProperty.Spec_iff (P := @LocallyOfFiniteType)]
+  have := (PrimeSpectrum.t1Space_iff_isField (R := R)).mp (show T1Space (Spec R) by infer_instance)
+  letI := this.toField
+  letI := φ.hom.toAlgebra
+  have := PrimeSpectrum.isJacobsonRing_iff_jacobsonSpace.mpr ‹_›
+  show Module.Finite _ _ ↔ Algebra.FiniteType _ _
+  exact ⟨fun _ ↦ inferInstance, fun _ ↦ finite_of_finite_type_of_isJacobsonRing _ _⟩
+
+@[stacks 01TB "(1) => (3)"]
+lemma Scheme.Hom.closePoints_subset_preimage_closedPoints
+    {X Y : Scheme.{u}} (f : X ⟶ Y) [JacobsonSpace Y] [LocallyOfFiniteType f] :
+    closedPoints X ⊆ f.base ⁻¹' closedPoints Y := by
+  intro x hx
+  have := isClosed_singleton_iff_isClosedImmersion.mp hx
+  have := (isFinite_iff_locallyOfFiniteType_of_jacobsonSpace
+    (f := X.fromSpecResidueField x ≫ f)).mpr inferInstance
+  simpa [Set.range_comp, Scheme.range_fromSpecResidueField] using
+    (X.fromSpecResidueField x ≫ f).isClosedMap.isClosed_range
+
+@[stacks 01TB "(1) => (2)"]
+lemma isClosed_singleton_iff_locallyOfFiniteType {X : Scheme.{u}} [JacobsonSpace X] {x : X} :
+    IsClosed ({x} : Set X) ↔ LocallyOfFiniteType (X.fromSpecResidueField x) := by
+  constructor
+  · exact fun H ↦ have := isClosed_singleton_iff_isClosedImmersion.mp H; inferInstance
+  · intro H
+    simpa using (X.fromSpecResidueField x).closePoints_subset_preimage_closedPoints
+      (IsLocalRing.isClosed_singleton_closedPoint _)
 
 end AlgebraicGeometry

@@ -122,6 +122,12 @@ lemma locally_of (hP : RespectsIso P) (f : R →+* S) (hf : P f) : Locally P f :
   simp only [Set.mem_singleton_iff, forall_eq, Ideal.span_singleton_one, exists_const]
   exact hP.left f e hf
 
+lemma locally_of_locally {Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+    (hPQ : ∀ {R S : Type u} [CommRing R] [CommRing S] {f : R →+* S}, P f → Q f)
+    {R S : Type u} [CommRing R] [CommRing S] {f : R →+* S} (hf : Locally P f) : Locally Q f := by
+  obtain ⟨s, hsone, hs⟩ := hf
+  exact ⟨s, hsone, fun t ht ↦ hPQ (hs t ht)⟩
+
 /-- If `P` is local on the target, then `Locally P` coincides with `P`. -/
 lemma locally_iff_of_localizationSpanTarget (hPi : RespectsIso P)
     (hPs : OfLocalizationSpanTarget P) {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) :
@@ -202,7 +208,7 @@ lemma locally_stableUnderComposition (hPi : RespectsIso P) (hPl : LocalizationPr
   · rw [eq_top_iff, ← hsgone, Ideal.span_le]
     intro t ht
     have : 1 ∈ Ideal.span (Set.range <| fun a : sf ↦ a.val) := by simp [hsfone]
-    simp only [mem_ideal_span_range_iff_exists_fun, SetLike.mem_coe] at this ⊢
+    simp only [Ideal.mem_span_range_iff_exists_fun, SetLike.mem_coe] at this ⊢
     obtain ⟨cf, hcf⟩ := this
     let cg : sg → T := Pi.single ⟨t, ht⟩ 1
     use fun (a, b) ↦ g (cf a) * cg b
@@ -266,7 +272,7 @@ attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- If `P` is stable under base change, then so is `Locally P`. -/
 lemma locally_isStableUnderBaseChange (hPi : RespectsIso P) (hPb : IsStableUnderBaseChange P) :
     IsStableUnderBaseChange (Locally P) := by
-  apply IsStableUnderBaseChange.mk _ (locally_respectsIso hPi)
+  apply IsStableUnderBaseChange.mk (locally_respectsIso hPi)
   introv hf
   obtain ⟨s, hsone, hs⟩ := hf
   rw [locally_iff_exists hPi]
@@ -284,7 +290,7 @@ lemma locally_isStableUnderBaseChange (hPi : RespectsIso P) (hPb : IsStableUnder
     simp [RingHom.algebraMap_toAlgebra]
   haveI (a : s) : Algebra.IsPushout T (Localization.Away a.val) (S ⊗[R] T)
       (S ⊗[R] Localization.Away a.val) := by
-    rw [← Algebra.IsPushout.comp_iff (R := R) (R' := S)]
+    rw [← Algebra.IsPushout.comp_iff R _ S]
     infer_instance
   refine ⟨s, fun a ↦ Algebra.TensorProduct.includeRight a.val, ?_,
       fun a ↦ (S ⊗[R] Localization.Away a.val), inferInstance, inferInstance, ?_, ?_⟩

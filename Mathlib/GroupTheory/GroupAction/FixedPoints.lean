@@ -3,16 +3,16 @@ Copyright (c) 2024 Emilie Burgun. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Burgun
 -/
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Commute.Basic
-import Mathlib.Data.Set.Pointwise.SMul
-import Mathlib.Dynamics.PeriodicPts
+import Mathlib.Dynamics.PeriodicPts.Defs
 import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # Properties of `fixedPoints` and `fixedBy`
 
 This module contains some useful properties of `MulAction.fixedPoints` and `MulAction.fixedBy`
-that don't directly belong to `Mathlib.GroupTheory.GroupAction.Basic`.
+that don't directly belong to `Mathlib/GroupTheory/GroupAction/Basic.lean`.
 
 ## Main theorems
 
@@ -83,7 +83,7 @@ theorem fixedBy_subset_fixedBy_zpow (g : G) (j : ℤ) :
     fixedBy α g ⊆ fixedBy α (g ^ j) := by
   intro a a_in_fixedBy
   rw [mem_fixedBy, zpow_smul_eq_iff_minimalPeriod_dvd,
-    minimalPeriod_eq_one_iff_fixedBy.mpr a_in_fixedBy, Nat.cast_one]
+    minimalPeriod_eq_one_iff_fixedBy.mpr a_in_fixedBy, Int.natCast_one]
   exact one_dvd j
 
 variable (M α) in
@@ -125,6 +125,7 @@ theorem set_mem_fixedBy_iff (s : Set α) (g : G) :
     s ∈ fixedBy (Set α) g ↔ ∀ x, g • x ∈ s ↔ x ∈ s := by
   simp_rw [mem_fixedBy, ← eq_inv_smul_iff, Set.ext_iff, Set.mem_inv_smul_set_iff, Iff.comm]
 
+@[to_additive]
 theorem smul_mem_of_set_mem_fixedBy {s : Set α} {g : G} (s_in_fixedBy : s ∈ fixedBy (Set α) g)
     {x : α} : g • x ∈ s ↔ x ∈ s := (set_mem_fixedBy_iff s g).mp s_in_fixedBy x
 
@@ -149,7 +150,7 @@ theorem set_mem_fixedBy_of_subset_fixedBy {s : Set α} {g : G} (s_ss_fixedBy : s
 
 theorem smul_subset_of_set_mem_fixedBy {s t : Set α} {g : G} (t_ss_s : t ⊆ s)
     (s_in_fixedBy : s ∈ fixedBy (Set α) g) : g • t ⊆ s :=
-  (Set.set_smul_subset_set_smul_iff.mpr t_ss_s).trans s_in_fixedBy.subset
+  (Set.smul_set_subset_smul_set_iff.mpr t_ss_s).trans s_in_fixedBy.subset
 
 /-!
 If a set `s : Set α` is a superset of `(MulAction.fixedBy α g)ᶜ` (resp. `(AddAction.fixedBy α g)ᶜ`),

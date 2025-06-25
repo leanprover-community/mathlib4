@@ -149,16 +149,17 @@ instance instSemiring : Semiring (⨂[R] i, A i) where
 
 instance instAlgebra : Algebra R' (⨂[R] i, A i) where
   __ := hasSMul'
-  toFun := (· • 1)
-  map_one' := by simp
-  map_mul' r s := show (r * s) • 1 = mul (r • 1) (s • 1)  by
-    rw [LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower, LinearMap.smul_apply, mul_comm,
-      mul_smul]
-    congr
-    show (1 : ⨂[R] i, A i) = 1 * 1
-    rw [mul_one]
-  map_zero' := by simp
-  map_add' := by simp [add_smul]
+  algebraMap :=
+  { toFun := (· • 1)
+    map_one' := by simp
+    map_mul' r s := show (r * s) • 1 = mul (r • 1) (s • 1)  by
+      rw [LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower, LinearMap.smul_apply, mul_comm,
+        mul_smul]
+      congr
+      show (1 : ⨂[R] i, A i) = 1 * 1
+      rw [mul_one]
+    map_zero' := by simp
+    map_add' := by simp [add_smul] }
   commutes' r x := by
     simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
     change mul _ _ = mul _ _
@@ -186,13 +187,13 @@ The map `Aᵢ ⟶ ⨂ᵢ Aᵢ` given by `a ↦ 1 ⊗ ... ⊗ a ⊗ 1 ⊗ ...`
 @[simps]
 def singleAlgHom [DecidableEq ι] (i : ι) : A i →ₐ[R] ⨂[R] i, A i where
   toFun a := tprod R (MonoidHom.mulSingle _ i a)
-  map_one' := by simp only [_root_.map_one]; rfl
-  map_mul' a a' := by simp [_root_.map_mul]
+  map_one' := by simp only [map_one]; rfl
+  map_mul' a a' := by simp [map_mul]
   map_zero' := MultilinearMap.map_update_zero _ _ _
   map_add' _ _ := MultilinearMap.map_update_add _ _ _ _ _
   commutes' r := show tprodCoeff R _ _ = r • tprodCoeff R _ _ by
-    rw [Algebra.algebraMap_eq_smul_one]
-    erw [smul_tprodCoeff]
+    rw [Algebra.algebraMap_eq_smul_one, ← Pi.one_apply, MonoidHom.mulSingle_apply, Pi.mulSingle,
+      smul_tprodCoeff]
     rfl
 
 /--
@@ -255,8 +256,6 @@ instance instCommSemiring : CommSemiring (⨂[R] i, A i) where
 
 section
 
-open Function
-
 variable [Fintype ι]
 
 variable (R ι)
@@ -278,8 +277,8 @@ noncomputable def constantBaseRingEquiv : (⨂[R] _ : ι, R) ≃ₐ[R] R :=
         letI : SMulCommClass R (⨂[R] x : ι, R) (⨂[R] x : ι, R) :=
           Algebra.to_smulCommClass (R := R) (A := ⨂[R] x : ι, R)
         rw [LinearMap.map_mul_iff]
-        ext x y
-        show toFun (tprod R x * tprod R y) = toFun (tprod R x) * toFun (tprod R y)
+        ext
+        show toFun (tprod R _ * tprod R _) = toFun (tprod R _) * toFun (tprod R _)
         simp_rw [tprod_mul_tprod, toFun, lift.tprod, MultilinearMap.mkPiAlgebra_apply,
           Pi.mul_apply, Finset.prod_mul_distrib]))
     (Algebra.ofId _ _)

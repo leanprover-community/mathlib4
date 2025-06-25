@@ -3,7 +3,7 @@ Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Data.Real.Irrational
 import Mathlib.Topology.Algebra.Order.Floor
 
@@ -214,7 +214,7 @@ private lemma is_integer {p : ℤ[X]} (a b : ℤ) {k : ℕ} (hp : p.natDegree �
   · rcases k.eq_zero_or_pos with rfl | hk
     · exact ⟨p.coeff 0, by simp⟩
     exact ⟨0, by simp [hk.ne']⟩
-  refine ⟨∑ i in p.support, p.coeff i * a ^ i * b ^ (k - i), ?_⟩
+  refine ⟨∑ i ∈ p.support, p.coeff i * a ^ i * b ^ (k - i), ?_⟩
   conv => lhs; rw [← sum_monomial_eq p]
   rw [eval₂_sum, sum, Finset.sum_mul, Int.cast_sum]
   simp only [eval₂_monomial, eq_intCast, div_pow, Int.cast_mul, Int.cast_pow]
@@ -233,7 +233,7 @@ The integrand in the definition of `I` is nonnegative and takes a positive value
 so the integral is positive.
 -/
 private lemma I_pos : 0 < I n (π / 2) := by
-  refine integral_pos (by norm_num) (Continuous.continuousOn (by continuity)) ?_ ⟨0, by simp⟩
+  refine integral_pos (by norm_num) (by fun_prop) ?_ ⟨0, by simp⟩
   refine fun x hx => mul_nonneg (pow_nonneg ?_ _) ?_
   · rw [sub_nonneg, sq_le_one_iff_abs_le_one, abs_le]
     exact ⟨hx.1.le, hx.2⟩
@@ -274,7 +274,7 @@ private lemma not_irrational_exists_rep {x : ℝ} :
   exact ⟨q.num, q.den, q.pos, by exact_mod_cast (Rat.num_div_den _).symm⟩
 
 @[simp] theorem irrational_pi : Irrational π := by
-  apply Irrational.of_div_nat 2
+  apply Irrational.of_div_natCast 2
   rw [Nat.cast_two]
   by_contra h'
   obtain ⟨a, b, hb, h⟩ := not_irrational_exists_rep h'

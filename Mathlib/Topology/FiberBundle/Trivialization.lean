@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Data.Bundle
 import Mathlib.Data.Set.Image
+import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.PartialHomeomorph
 import Mathlib.Topology.Order.Basic
 
@@ -84,7 +85,7 @@ lemma ext' (e e' : Pretrivialization F proj) (h₁ : e.toPartialEquiv = e'.toPar
     (h₂ : e.baseSet = e'.baseSet) : e = e' := by
   cases e; cases e'; congr
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: move `ext` here?
+-- TODO: move `ext` here?
 lemma ext {e e' : Pretrivialization F proj} (h₁ : ∀ x, e x = e' x)
     (h₂ : ∀ x, e.toPartialEquiv.symm x = e'.toPartialEquiv.symm x) (h₃ : e.baseSet = e'.baseSet) :
     e = e' := by
@@ -168,7 +169,7 @@ theorem preimage_symm_proj_inter (s : Set B) :
     e.toPartialEquiv.symm ⁻¹' (proj ⁻¹' s) ∩ e.baseSet ×ˢ univ = (s ∩ e.baseSet) ×ˢ univ := by
   ext ⟨x, y⟩
   suffices x ∈ e.baseSet → (proj (e.toPartialEquiv.symm (x, y)) ∈ s ↔ x ∈ s) by
-    simpa only [prod_mk_mem_set_prod_eq, mem_inter_iff, and_true, mem_univ, and_congr_left_iff]
+    simpa only [prodMk_mem_set_prod_eq, mem_inter_iff, and_true, mem_univ, and_congr_left_iff]
   intro h
   rw [e.proj_symm_apply' h]
 
@@ -200,9 +201,9 @@ variable (e' : Pretrivialization F (π F E)) {b : B} {y : E b}
 theorem coe_mem_source : ↑y ∈ e'.source ↔ b ∈ e'.baseSet :=
   e'.mem_source
 
-@[simp, mfld_simps]
-theorem coe_coe_fst (hb : b ∈ e'.baseSet) : (e' y).1 = b :=
-  e'.coe_fst (e'.mem_source.2 hb)
+@[mfld_simps]
+theorem coe_coe_fst (hb : b ∈ e'.baseSet) : (e' y).1 = b := by
+  simp [hb]
 
 theorem mk_mem_target {x : B} {y : F} : (x, y) ∈ e'.target ↔ x ∈ e'.baseSet :=
   e'.mem_target
@@ -227,13 +228,17 @@ theorem symm_apply (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.base
     e.symm b y = cast (congr_arg E (e.symm_coe_proj hb)) (e.toPartialEquiv.symm (b, y)).2 :=
   dif_pos hb
 
-theorem symm_apply_of_not_mem (e : Pretrivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet)
+theorem symm_apply_of_notMem (e : Pretrivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet)
     (y : F) : e.symm b y = 0 :=
   dif_neg hb
 
-theorem coe_symm_of_not_mem (e : Pretrivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet) :
+@[deprecated (since := "2025-05-23")] alias symm_apply_of_not_mem := symm_apply_of_notMem
+
+theorem coe_symm_of_notMem (e : Pretrivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet) :
     (e.symm b : F → E b) = 0 :=
   funext fun _ => dif_neg hb
+
+@[deprecated (since := "2025-05-23")] alias coe_symm_of_not_mem := coe_symm_of_notMem
 
 theorem mk_symm (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     TotalSpace.mk b (e.symm b y) = e.toPartialEquiv.symm (b, y) := by
@@ -261,7 +266,6 @@ variable [TopologicalSpace Z] [TopologicalSpace (TotalSpace F E)]
 `proj : Z → B` with fiber `F`, as a partial homeomorphism between `Z` and `B × F` defined between
 two sets of the form `proj ⁻¹' baseSet` and `baseSet × F`, acting trivially on the first coordinate.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 structure Trivialization (proj : Z → B) extends PartialHomeomorph Z (B × F) where
   baseSet : Set B
   open_baseSet : IsOpen baseSet
@@ -293,6 +297,15 @@ instance : CoeFun (Trivialization F proj) fun _ => Z → B × F := ⟨toFun'⟩
 
 instance : Coe (Trivialization F proj) (Pretrivialization F proj) :=
   ⟨toPretrivialization⟩
+
+/-- See Note [custom simps projection] -/
+def Simps.apply (proj : Z → B) (e : Trivialization F proj) : Z → B × F := e
+
+/-- See Note [custom simps projection] -/
+noncomputable def Simps.symm_apply (proj : Z → B) (e : Trivialization F proj) : B × F → Z :=
+  e.toPartialHomeomorph.symm
+
+initialize_simps_projections Trivialization (toFun → apply, invFun → symm_apply)
 
 theorem toPretrivialization_injective :
     Function.Injective fun e : Trivialization F proj => e.toPretrivialization := fun e e' h => by
@@ -539,9 +552,11 @@ theorem symm_apply (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet
     e.symm b y = cast (congr_arg E (e.symm_coe_proj hb)) (e.toPartialHomeomorph.symm (b, y)).2 :=
   dif_pos hb
 
-theorem symm_apply_of_not_mem (e : Trivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet) (y : F) :
+theorem symm_apply_of_notMem (e : Trivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet) (y : F) :
     e.symm b y = 0 :=
   dif_neg hb
+
+@[deprecated (since := "2025-05-23")] alias symm_apply_of_not_mem := symm_apply_of_notMem
 
 theorem mk_symm (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     TotalSpace.mk b (e.symm b y) = e.toPartialHomeomorph.symm (b, y) :=
@@ -622,7 +637,7 @@ theorem continuous_coordChange (e₁ e₂ : Trivialization F proj) {b : B} (h₁
     (h₂ : b ∈ e₂.baseSet) : Continuous (e₁.coordChange e₂ b) := by
   refine continuous_snd.comp (e₂.toPartialHomeomorph.continuousOn.comp_continuous
     (e₁.toPartialHomeomorph.continuousOn_symm.comp_continuous ?_ ?_) ?_)
-  · exact continuous_const.prod_mk continuous_id
+  · fun_prop
   · exact fun x => e₁.mem_target.2 h₁
   · intro x
     rwa [e₂.mem_source, e₁.proj_symm_apply' h₁]
@@ -736,10 +751,56 @@ noncomputable def disjointUnion (e e' : Trivialization F proj) (H : Disjoint e.b
     · show (e.source.piecewise e e' p).1 = proj p
       rw [piecewise_eq_of_mem, e.coe_fst] <;> exact hp
     · show (e.source.piecewise e e' p).1 = proj p
-      rw [piecewise_eq_of_not_mem, e'.coe_fst hp']
+      rw [piecewise_eq_of_notMem, e'.coe_fst hp']
       simp only [source_eq] at hp' ⊢
       exact fun h => H.le_bot ⟨h, hp'⟩
 
 end Piecewise
+
+section Lift
+
+/-- The local lifting through a Trivialization `T` from the base to the leaf containing `z`. -/
+def lift (T : Trivialization F proj) (z : Z) (b : B) : Z := T.invFun (b, (T z).2)
+
+variable {T : Trivialization F proj} {z : Z} {b : B}
+
+@[simp]
+theorem lift_self (he : proj z ∈ T.baseSet) : T.lift z (proj z) = z :=
+  symm_apply_mk_proj _ <| T.mem_source.2 he
+
+theorem proj_lift (hx : b ∈ T.baseSet) : proj (T.lift z b) = b :=
+  T.proj_symm_apply <| T.mem_target.2 hx
+
+/-- The restriction of `lift` to the source and base set of `T`, as a bundled continuous map. -/
+def liftCM (T : Trivialization F proj) : C(T.source × T.baseSet, T.source) where
+  toFun ex := ⟨T.lift ex.1 ex.2, T.map_target (by simp [mem_target])⟩
+  continuous_toFun := by
+    apply Continuous.subtype_mk
+    refine T.continuousOn_invFun.comp_continuous ?_ (by simp [mem_target])
+    refine .prodMk (by fun_prop) (.snd ?_)
+    exact T.continuousOn_toFun.comp_continuous (by fun_prop) (by simp)
+
+variable {ι : Type*} [TopologicalSpace ι] [LocallyCompactPair ι T.baseSet]
+  {γ : C(ι, T.baseSet)} {i : ι} {e : T.source}
+
+/-- Extension of `liftCM` to continuous maps taking values in `T.baseSet` (local version of
+homotopy lifting) -/
+def clift (T : Trivialization F proj) [LocallyCompactPair ι T.baseSet] :
+    C(T.source × C(ι, T.baseSet), C(ι, T.source)) := by
+  let Ψ : C((T.source × C(ι, T.baseSet)) × ι, C(ι, T.baseSet) × ι) :=
+    ⟨fun eγt => (eγt.1.2, eγt.2), by fun_prop⟩
+  refine ContinuousMap.curry <| T.liftCM.comp <| ⟨fun eγt => ⟨eγt.1.1, eγt.1.2 eγt.2⟩, ?_⟩
+  simpa using ⟨by fun_prop, ContinuousEval.continuous_eval.comp Ψ.continuous⟩
+
+@[simp]
+theorem clift_self (h : proj e.1 = γ i) :
+    T.clift (e, γ) i = e := by
+  have : proj e ∈ T.baseSet := by simp [h]
+  simp [clift, liftCM, ← h, lift_self, this]
+
+theorem proj_clift : proj (T.clift (e, γ) i) = γ i := by
+  simp [clift, liftCM, proj_lift]
+
+end Lift
 
 end Trivialization

@@ -3,10 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
+import Mathlib.Algebra.Field.NegOnePow
+import Mathlib.Algebra.Field.Periodic
 import Mathlib.Algebra.QuadraticDiscriminant
 import Mathlib.Analysis.SpecialFunctions.Exp
-import Mathlib.Tactic.Positivity.Core
-import Mathlib.Algebra.Ring.NegOnePow
 
 /-!
 # Trigonometric functions
@@ -44,7 +44,6 @@ sin, cos, tan, angle
 
 noncomputable section
 
-open scoped Classical
 open Topology Filter Set
 
 namespace Complex
@@ -52,7 +51,7 @@ namespace Complex
 @[continuity, fun_prop]
 theorem continuous_sin : Continuous sin := by
   change Continuous fun z => (exp (-z * I) - exp (z * I)) * I / 2
-  continuity
+  fun_prop
 
 @[fun_prop]
 theorem continuousOn_sin {s : Set ℂ} : ContinuousOn sin s :=
@@ -61,7 +60,7 @@ theorem continuousOn_sin {s : Set ℂ} : ContinuousOn sin s :=
 @[continuity, fun_prop]
 theorem continuous_cos : Continuous cos := by
   change Continuous fun z => (exp (z * I) + exp (-z * I)) / 2
-  continuity
+  fun_prop
 
 @[fun_prop]
 theorem continuousOn_cos {s : Set ℂ} : ContinuousOn cos s :=
@@ -70,12 +69,12 @@ theorem continuousOn_cos {s : Set ℂ} : ContinuousOn cos s :=
 @[continuity, fun_prop]
 theorem continuous_sinh : Continuous sinh := by
   change Continuous fun z => (exp z - exp (-z)) / 2
-  continuity
+  fun_prop
 
 @[continuity, fun_prop]
 theorem continuous_cosh : Continuous cosh := by
   change Continuous fun z => (exp z + exp (-z)) / 2
-  continuity
+  fun_prop
 
 end Complex
 
@@ -116,7 +115,9 @@ theorem exists_cos_eq_zero : 0 ∈ cos '' Icc (1 : ℝ) 2 :=
     ⟨le_of_lt cos_two_neg, le_of_lt cos_one_pos⟩
 
 /-- The number π = 3.14159265... Defined here using choice as twice a zero of cos in [1,2], from
-which one can derive all its properties. For explicit bounds on π, see `Data.Real.Pi.Bounds`. -/
+which one can derive all its properties. For explicit bounds on π, see `Data.Real.Pi.Bounds`.
+
+Denoted `π`, once the `Real` namespace is opened. -/
 protected noncomputable def pi : ℝ :=
   2 * Classical.choose exists_cos_eq_zero
 
@@ -463,27 +464,27 @@ theorem cos_eq_sqrt_one_sub_sin_sq {x : ℝ} (hl : -(π / 2) ≤ x) (hu : x ≤ 
     cos x = √(1 - sin x ^ 2) := by
   rw [← abs_cos_eq_sqrt_one_sub_sin_sq, abs_of_nonneg (cos_nonneg_of_mem_Icc ⟨hl, hu⟩)]
 
-lemma cos_half {x : ℝ} (hl : -π ≤ x) (hr : x ≤ π) : cos (x / 2) = sqrt ((1 + cos x) / 2) := by
+lemma cos_half {x : ℝ} (hl : -π ≤ x) (hr : x ≤ π) : cos (x / 2) = √((1 + cos x) / 2) := by
   have : 0 ≤ cos (x / 2) := cos_nonneg_of_mem_Icc <| by constructor <;> linarith
   rw [← sqrt_sq this, cos_sq, add_div, two_mul, add_halves]
 
-lemma abs_sin_half (x : ℝ) : |sin (x / 2)| = sqrt ((1 - cos x) / 2) := by
+lemma abs_sin_half (x : ℝ) : |sin (x / 2)| = √((1 - cos x) / 2) := by
   rw [← sqrt_sq_eq_abs, sin_sq_eq_half_sub, two_mul, add_halves, sub_div]
 
 lemma sin_half_eq_sqrt {x : ℝ} (hl : 0 ≤ x) (hr : x ≤ 2 * π) :
-    sin (x / 2) = sqrt ((1 - cos x) / 2) := by
+    sin (x / 2) = √((1 - cos x) / 2) := by
   rw [← abs_sin_half, abs_of_nonneg]
   apply sin_nonneg_of_nonneg_of_le_pi <;> linarith
 
 lemma sin_half_eq_neg_sqrt {x : ℝ} (hl : -(2 * π) ≤ x) (hr : x ≤ 0) :
-    sin (x / 2) = -sqrt ((1 - cos x) / 2) := by
+    sin (x / 2) = -√((1 - cos x) / 2) := by
   rw [← abs_sin_half, abs_of_nonpos, neg_neg]
   apply sin_nonpos_of_nonnpos_of_neg_pi_le <;> linarith
 
 theorem sin_eq_zero_iff_of_lt_of_lt {x : ℝ} (hx₁ : -π < x) (hx₂ : x < π) : sin x = 0 ↔ x = 0 :=
   ⟨fun h => by
     contrapose! h
-    cases h.lt_or_lt with
+    cases h.lt_or_gt with
     | inl h0 => exact (sin_neg_of_neg_of_neg_pi_lt h0 hx₁).ne
     | inr h0 => exact (sin_pos_of_pos_of_lt_pi h0 hx₂).ne',
   fun h => by simp [h]⟩
@@ -752,7 +753,7 @@ theorem cos_pi_div_three : cos (π / 3) = 1 / 2 := by
       congr 1
       ring
     linarith [cos_pi, cos_three_mul (π / 3)]
-  cases' mul_eq_zero.mp h₁ with h h
+  rcases mul_eq_zero.mp h₁ with h | h
   · linarith [pow_eq_zero h]
   · have : cos π < cos (π / 3) := by
       refine cos_lt_cos_of_nonneg_of_le_pi ?_ le_rfl ?_ <;> linarith [pi_pos]
@@ -802,7 +803,7 @@ theorem quadratic_root_cos_pi_div_five :
     push_neg
     intro n hn
     replace hn : n * 5 = 1 := by field_simp [mul_comm _ π, mul_assoc] at hn; norm_cast at hn
-    rcases Int.mul_eq_one_iff_eq_one_or_neg_one.mp hn with ⟨_, h⟩ | ⟨_, h⟩ <;> norm_num at h
+    omega
   suffices s * (2 * c) = s * (4 * c ^ 2 - 1) from mul_left_cancel₀ hs this
   calc s * (2 * c) = 2 * s * c := by rw [← mul_assoc, mul_comm 2]
                  _ = sin (2 * θ) := by rw [sin_two_mul]
@@ -856,12 +857,12 @@ theorem tan_pi_div_four : tan (π / 4) = 1 := by
 theorem tan_pi_div_two : tan (π / 2) = 0 := by simp [tan_eq_sin_div_cos]
 
 @[simp]
-theorem tan_pi_div_six : tan (π / 6) = 1 / sqrt 3 := by
+theorem tan_pi_div_six : tan (π / 6) = 1 / √3 := by
   rw [tan_eq_sin_div_cos, sin_pi_div_six, cos_pi_div_six]
   ring
 
 @[simp]
-theorem tan_pi_div_three : tan (π / 3) = sqrt 3 := by
+theorem tan_pi_div_three : tan (π / 3) = √3 := by
   rw [tan_eq_sin_div_cos, sin_pi_div_three, cos_pi_div_three]
   ring
 
@@ -953,12 +954,12 @@ theorem tendsto_cos_pi_div_two : Tendsto cos (𝓝[<] (π / 2)) (𝓝[>] 0) := b
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
   · convert continuous_cos.continuousWithinAt.tendsto
     simp
-  · filter_upwards [Ioo_mem_nhdsWithin_Iio
-        (right_mem_Ioc.mpr (neg_lt_self pi_div_two_pos))] with x hx using cos_pos_of_mem_Ioo hx
+  · filter_upwards [Ioo_mem_nhdsLT (neg_lt_self pi_div_two_pos)] with x hx
+    exact cos_pos_of_mem_Ioo hx
 
 theorem tendsto_tan_pi_div_two : Tendsto tan (𝓝[<] (π / 2)) atTop := by
-  convert tendsto_cos_pi_div_two.inv_tendsto_zero.atTop_mul zero_lt_one tendsto_sin_pi_div_two
-    using 1
+  convert tendsto_cos_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul_pos zero_lt_one
+    tendsto_sin_pi_div_two using 1
   simp only [Pi.inv_apply, ← div_eq_inv_mul, ← tan_eq_sin_div_cos]
 
 theorem tendsto_sin_neg_pi_div_two : Tendsto sin (𝓝[>] (-(π / 2))) (𝓝 (-1)) := by
@@ -969,11 +970,11 @@ theorem tendsto_cos_neg_pi_div_two : Tendsto cos (𝓝[>] (-(π / 2))) (𝓝[>] 
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
   · convert continuous_cos.continuousWithinAt.tendsto
     simp
-  · filter_upwards [Ioo_mem_nhdsWithin_Ioi
-        (left_mem_Ico.mpr (neg_lt_self pi_div_two_pos))] with x hx using cos_pos_of_mem_Ioo hx
+  · filter_upwards [Ioo_mem_nhdsGT (neg_lt_self pi_div_two_pos)] with x hx
+    exact cos_pos_of_mem_Ioo hx
 
 theorem tendsto_tan_neg_pi_div_two : Tendsto tan (𝓝[>] (-(π / 2))) atBot := by
-  convert tendsto_cos_neg_pi_div_two.inv_tendsto_zero.atTop_mul_neg (by norm_num)
+  convert tendsto_cos_neg_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul_neg (by norm_num)
       tendsto_sin_neg_pi_div_two using 1
   simp only [Pi.inv_apply, ← div_eq_inv_mul, ← tan_eq_sin_div_cos]
 
@@ -1189,6 +1190,15 @@ theorem exp_two_pi_mul_I : exp (2 * π * I) = 1 :=
   exp_periodic.eq.trans exp_zero
 
 @[simp]
+lemma exp_pi_div_two_mul_I : exp (π / 2 * I) = I := by
+  rw [← cos_add_sin_I, cos_pi_div_two, sin_pi_div_two, one_mul, zero_add]
+
+@[simp]
+lemma exp_neg_pi_div_two_mul_I : exp (-π / 2 * I) = -I := by
+  rw [← cos_add_sin_I, neg_div, cos_neg, cos_pi_div_two, sin_neg, sin_pi_div_two, zero_add, neg_mul,
+    one_mul]
+
+@[simp]
 theorem exp_nat_mul_two_pi_mul_I (n : ℕ) : exp (n * (2 * π * I)) = 1 :=
   (exp_periodic.nat_mul_eq n).trans exp_zero
 
@@ -1208,10 +1218,10 @@ theorem exp_sub_pi_mul_I (z : ℂ) : exp (z - π * I) = -exp z :=
 belongs to a horizontal strip `|Complex.im z| ≤ b`, `b ≤ π / 2`, and `a ≤ 0`, then
 $$\left|exp^{a\left(e^{z}+e^{-z}\right)}\right| \le e^{a\cos b \exp^{|re z|}}.$$
 -/
-theorem abs_exp_mul_exp_add_exp_neg_le_of_abs_im_le {a b : ℝ} (ha : a ≤ 0) {z : ℂ} (hz : |z.im| ≤ b)
-    (hb : b ≤ π / 2) :
-    abs (exp (a * (exp z + exp (-z)))) ≤ Real.exp (a * Real.cos b * Real.exp |z.re|) := by
-  simp only [abs_exp, Real.exp_le_exp, re_ofReal_mul, add_re, exp_re, neg_im, Real.cos_neg, ←
+theorem norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le {a b : ℝ} (ha : a ≤ 0) {z : ℂ}
+    (hz : |z.im| ≤ b) (hb : b ≤ π / 2) :
+    ‖exp (a * (exp z + exp (-z)))‖ ≤ Real.exp (a * Real.cos b * Real.exp |z.re|) := by
+  simp only [norm_exp, Real.exp_le_exp, re_ofReal_mul, add_re, exp_re, neg_im, Real.cos_neg, ←
     add_mul, mul_assoc, mul_comm (Real.cos b), neg_re, ← Real.cos_abs z.im]
   have : Real.exp |z.re| ≤ Real.exp z.re + Real.exp (-z.re) :=
     apply_abs_le_add_of_nonneg (fun x => (Real.exp_pos x).le) z.re
@@ -1221,5 +1231,8 @@ theorem abs_exp_mul_exp_add_exp_neg_le_of_abs_im_le {a b : ℝ} (ha : a ≤ 0) {
         (hb.trans <| half_le_self <| Real.pi_pos.le) hz
   · refine Real.cos_nonneg_of_mem_Icc ⟨?_, hb⟩
     exact (neg_nonpos.2 <| Real.pi_div_two_pos.le).trans ((_root_.abs_nonneg _).trans hz)
+
+@[deprecated (since := "2025-02-16")] alias abs_exp_mul_exp_add_exp_neg_le_of_abs_im_le :=
+  norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le
 
 end Complex

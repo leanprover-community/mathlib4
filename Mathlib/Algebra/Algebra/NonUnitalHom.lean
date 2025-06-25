@@ -10,10 +10,10 @@ import Mathlib.Algebra.GroupWithZero.Action.Prod
 # Morphisms of non-unital algebras
 
 This file defines morphisms between two types, each of which carries:
- * an addition,
- * an additive zero,
- * a multiplication,
- * a scalar action.
+* an addition,
+* an additive zero,
+* a multiplication,
+* a scalar action.
 
 The multiplications are not assumed to be associative or unital, or even to be compatible with the
 scalar actions. In a typical application, the operations will satisfy compatibility conditions
@@ -46,8 +46,10 @@ universe u u₁ v w w₁ w₂ w₃
 
 variable {R : Type u} {S : Type u₁}
 
-/-- A morphism respecting addition, multiplication, and scalar multiplication. When these arise from
-algebra structures, this is the same as a not-necessarily-unital morphism of algebras. -/
+/-- A morphism respecting addition, multiplication, and scalar multiplication
+(denoted as `A →ₛₙₐ[φ] B`, or `A →ₙₐ[R] B` when `φ` is the identity on `R`).
+When these arise from algebra structures, this is the same
+as a not-necessarily-unital morphism of algebras. -/
 structure NonUnitalAlgHom [Monoid R] [Monoid S] (φ : R →* S) (A : Type v) (B : Type w)
     [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
     [NonUnitalNonAssocSemiring B] [DistribMulAction S B] extends A →ₑ+[φ] B, A →ₙ* B
@@ -68,8 +70,8 @@ from `A` to `B` which are equivariant with respect to `φ`. -/
 class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam Type*} [Monoid R] [Monoid S]
     (φ : outParam (R →* S)) (A B : outParam Type*)
     [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
-    [DistribMulAction R A] [DistribMulAction S B] [FunLike F A B]
-    extends DistribMulActionSemiHomClass F φ A B, MulHomClass F A B : Prop
+    [DistribMulAction R A] [DistribMulAction S B] [FunLike F A B] : Prop
+    extends DistribMulActionSemiHomClass F φ A B, MulHomClass F A B
 
 /-- `NonUnitalAlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B` which are `R`-linear.
@@ -200,6 +202,8 @@ theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄) : ⇑(⟨⟨⟨f, h₁⟩, h�
 theorem mk_coe (f : A →ₛₙₐ[φ] B) (h₁ h₂ h₃ h₄) : (⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩ : A →ₛₙₐ[φ] B) = f := by
   rfl
 
+@[simp] lemma addHomMk_coe (f : A →ₛₙₐ[φ] B) : AddHom.mk f (map_add f) = f := rfl
+
 @[simp]
 theorem toDistribMulActionHom_eq_coe (f : A →ₛₙₐ[φ] B) : f.toDistribMulActionHom = ↑f :=
   rfl
@@ -255,7 +259,7 @@ protected def id (R A : Type*) [Monoid R] [NonUnitalNonAssocSemiring A]
     toFun := id
     map_smul' := fun _ _ => rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(NonUnitalAlgHom.id R A) = id :=
   rfl
 
@@ -338,9 +342,9 @@ Note that much of this is copied from [`LinearAlgebra/Prod`](../../LinearAlgebra
 section Prod
 
 variable (R A B)
-variable  [DistribMulAction R B]
+variable [DistribMulAction R B]
 
-/-- The first projection of a product is a non-unital alg_hom. -/
+/-- The first projection of a product is a non-unital algebra homomorphism. -/
 @[simps]
 def fst : A × B →ₙₐ[R] A where
   toFun := Prod.fst
@@ -349,7 +353,7 @@ def fst : A × B →ₙₐ[R] A where
   map_smul' _ _ := rfl
   map_mul' _ _ := rfl
 
-/-- The second projection of a product is a non-unital alg_hom. -/
+/-- The second projection of a product is a non-unital algebra homomorphism. -/
 @[simps]
 def snd : A × B →ₙₐ[R] B where
   toFun := Prod.snd
@@ -391,8 +395,6 @@ their codomains. -/
 def prodEquiv : (A →ₙₐ[R] B) × (A →ₙₐ[R] C) ≃ (A →ₙₐ[R] B × C) where
   toFun f := f.1.prod f.2
   invFun f := ((fst _ _ _).comp f, (snd _ _ _).comp f)
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 variable (R A B)
 
@@ -474,7 +476,7 @@ lemma coe_restrictScalars' (f : A →ₙₐ[S] B) : (f.restrictScalars R : A →
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (A →ₙₐ[S] B) → A →ₙₐ[R] B) :=
-  fun _ _ h ↦ ext (congr_fun h : _)
+  fun _ _ h ↦ ext (congr_fun h :)
 
 end NonUnitalAlgHom
 

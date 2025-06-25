@@ -21,7 +21,7 @@ For constructions of the invertible element given a characteristic, see
 
 ## Notation
 
- * `⅟a` is `Invertible.invOf a`, the inverse of `a`
+* `⅟a` is `Invertible.invOf a`, the inverse of `a`
 
 ## Implementation notes
 
@@ -73,8 +73,7 @@ invertible, inverse element, invOf, a half, one half, a third, one third, ½, �
 
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 universe u
 
@@ -91,7 +90,7 @@ class Invertible [Mul α] [One α] (a : α) : Type u where
 
 /-- The inverse of an `Invertible` element -/
 -- This notation has the same precedence as `Inv.inv`.
-prefix:max "⅟" => Invertible.invOf
+prefix:max "⅟ " => Invertible.invOf
 
 @[simp]
 theorem invOf_mul_self' [Mul α] [One α] (a : α) {_ : Invertible a} : ⅟ a * a = 1 :=
@@ -113,9 +112,6 @@ example {G} [Group G] (a b : G) : a⁻¹ * (a * b) = b := inv_mul_cancel_left a 
 theorem invOf_mul_cancel_left [Monoid α] (a b : α) [Invertible a] : ⅟ a * (a * b) = b :=
   invOf_mul_cancel_left' _ _
 
-@[deprecated (since := "2024-09-07")] alias invOf_mul_self_assoc' := invOf_mul_cancel_left'
-@[deprecated (since := "2024-09-07")] alias invOf_mul_self_assoc := invOf_mul_cancel_left
-
 @[simp]
 theorem mul_invOf_cancel_left' [Monoid α] (a b : α) {_ : Invertible a} : a * (⅟ a * b) = b := by
   rw [← mul_assoc, mul_invOf_self, one_mul]
@@ -123,9 +119,6 @@ example {G} [Group G] (a b : G) : a * (a⁻¹ * b) = b := mul_inv_cancel_left a 
 
 theorem mul_invOf_cancel_left [Monoid α] (a b : α) [Invertible a] : a * (⅟ a * b) = b :=
   mul_invOf_cancel_left' a b
-
-@[deprecated (since := "2024-09-07")] alias mul_invOf_self_assoc' := mul_invOf_cancel_left'
-@[deprecated (since := "2024-09-07")] alias mul_invOf_self_assoc := mul_invOf_cancel_left
 
 @[simp]
 theorem invOf_mul_cancel_right' [Monoid α] (a b : α) {_ : Invertible b} : a * ⅟ b * b = a := by
@@ -135,9 +128,6 @@ example {G} [Group G] (a b : G) : a * b⁻¹ * b = a := inv_mul_cancel_right a b
 theorem invOf_mul_cancel_right [Monoid α] (a b : α) [Invertible b] : a * ⅟ b * b = a :=
   invOf_mul_cancel_right' _ _
 
-@[deprecated (since := "2024-09-07")] alias mul_invOf_mul_self_cancel' := invOf_mul_cancel_right'
-@[deprecated (since := "2024-09-07")] alias mul_invOf_mul_self_cancel := invOf_mul_cancel_right
-
 @[simp]
 theorem mul_invOf_cancel_right' [Monoid α] (a b : α) {_ : Invertible b} : a * b * ⅟ b = a := by
   simp [mul_assoc]
@@ -145,9 +135,6 @@ example {G} [Group G] (a b : G) : a * b * b⁻¹ = a := mul_inv_cancel_right a b
 
 theorem mul_invOf_cancel_right [Monoid α] (a b : α) [Invertible b] : a * b * ⅟ b = a :=
   mul_invOf_cancel_right' _ _
-
-@[deprecated (since := "2024-09-07")] alias mul_mul_invOf_self_cancel' := mul_invOf_cancel_right'
-@[deprecated (since := "2024-09-07")] alias mul_mul_invOf_self_cancel := mul_invOf_cancel_right
 
 theorem invOf_eq_right_inv [Monoid α] {a b : α} [Invertible a] (hac : a * b = 1) : ⅟ a = b :=
   left_inv_eq_right_inv (invOf_mul_self _) hac

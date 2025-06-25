@@ -184,6 +184,36 @@ theorem rpow_add_le_add_rpow {p : ℝ} (a b : ℝ≥0) (hp : 0 ≤ p) (hp1 : p �
 
 end NNReal
 
+namespace Real
+
+lemma add_rpow_le_rpow_add {p : ℝ} {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hp1 : 1 ≤ p) :
+     a ^ p + b ^ p ≤ (a + b) ^ p := by
+  lift a to NNReal using ha
+  lift b to NNReal using hb
+  exact_mod_cast NNReal.add_rpow_le_rpow_add a b hp1
+
+lemma rpow_add_rpow_le_add {p : ℝ} {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hp1 : 1 ≤ p) :
+    (a ^ p + b ^ p) ^ (1 / p) ≤ a + b := by
+  lift a to NNReal using ha
+  lift b to NNReal using hb
+  exact_mod_cast NNReal.rpow_add_rpow_le_add a b hp1
+
+lemma rpow_add_rpow_le {p q : ℝ} {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hp_pos : 0 < p)
+    (hpq : p ≤ q) :
+    (a ^ q + b ^ q) ^ (1 / q) ≤ (a ^ p + b ^ p) ^ (1 / p) := by
+  lift a to NNReal using ha
+  lift b to NNReal using hb
+  exact_mod_cast NNReal.rpow_add_rpow_le a b hp_pos hpq
+
+lemma rpow_add_le_add_rpow {p : ℝ} {a b : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hp : 0 ≤ p)
+    (hp1 : p ≤ 1) :
+    (a + b) ^ p ≤ a ^ p + b ^ p := by
+  lift a to NNReal using ha
+  lift b to NNReal using hb
+  exact_mod_cast NNReal.rpow_add_le_add_rpow a b hp hp1
+
+end Real
+
 namespace ENNReal
 
 /-- Weighted generalized mean inequality, version for sums over finite sets, with `ℝ≥0∞`-valued
@@ -246,8 +276,8 @@ theorem rpow_add_le_mul_rpow_add_rpow (z₁ z₂ : ℝ≥0∞) {p : ℝ} (hp : 1
     (z₁ + z₂) ^ p ≤ (2 : ℝ≥0∞) ^ (p - 1) * (z₁ ^ p + z₂ ^ p) := by
   convert rpow_arith_mean_le_arith_mean2_rpow (1 / 2) (1 / 2) (2 * z₁) (2 * z₂)
       (ENNReal.add_halves 1) hp using 1
-  · simp [← mul_assoc, ENNReal.inv_mul_cancel two_ne_zero two_ne_top]
-  · simp only [mul_rpow_of_nonneg _ _ (zero_le_one.trans hp), rpow_sub _ _ two_ne_zero two_ne_top,
+  · simp [← mul_assoc, ENNReal.inv_mul_cancel two_ne_zero ofNat_ne_top]
+  · simp only [mul_rpow_of_nonneg _ _ (zero_le_one.trans hp), rpow_sub _ _ two_ne_zero ofNat_ne_top,
       ENNReal.div_eq_inv_mul, rpow_one, mul_one]
     ring
 

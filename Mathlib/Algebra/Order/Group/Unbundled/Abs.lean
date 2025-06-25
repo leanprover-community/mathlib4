@@ -28,8 +28,9 @@ variable [Lattice α]
 section Group
 variable [Group α] {a b : α}
 
-/-- `mabs a` is the absolute value of `a`. -/
-@[to_additive "`abs a` is the absolute value of `a`"] def mabs (a : α) : α := a ⊔ a⁻¹
+/-- `mabs a`, denoted `|a|ₘ`, is the absolute value of `a`. -/
+@[to_additive "`abs a`, denoted `|a|`, is the absolute value of `a`"]
+def mabs (a : α) : α := a ⊔ a⁻¹
 
 @[inherit_doc mabs]
 macro:max atomic("|" noWs) a:term noWs "|ₘ" : term => `(mabs $a)
@@ -38,7 +39,7 @@ macro:max atomic("|" noWs) a:term noWs "|ₘ" : term => `(mabs $a)
 macro:max atomic("|" noWs) a:term noWs "|" : term => `(abs $a)
 
 /-- Unexpander for the notation `|a|ₘ` for `mabs a`.
-Tries to add discretionary parentheses in unparseable cases. -/
+Tries to add discretionary parentheses in unparsable cases. -/
 @[app_unexpander abs]
 def mabs.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $a) =>
@@ -48,7 +49,7 @@ def mabs.unexpander : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 /-- Unexpander for the notation `|a|` for `abs a`.
-Tries to add discretionary parentheses in unparseable cases. -/
+Tries to add discretionary parentheses in unparsable cases. -/
 @[app_unexpander abs]
 def abs.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $a) =>
@@ -69,6 +70,14 @@ def abs.unexpander : Lean.PrettyPrinter.Unexpander
 @[to_additive (attr := simp)] lemma mabs_inv (a : α) : |a⁻¹|ₘ = |a|ₘ := by simp [mabs, sup_comm]
 
 @[to_additive] lemma mabs_div_comm (a b : α) : |a / b|ₘ = |b / a|ₘ := by rw [← mabs_inv, inv_div]
+
+@[to_additive] lemma mabs_ite (p : Prop) [Decidable p] :
+    |if p then a else b|ₘ = if p then |a|ₘ else |b|ₘ :=
+  apply_ite _ _ _ _
+
+@[to_additive] lemma mabs_dite (p : Prop) [Decidable p] (a : p → α) (b : ¬p → α) :
+    |if h : p then a h else b h|ₘ = if h : p then |a h|ₘ else |b h|ₘ :=
+  apply_dite _ _ _ _
 
 variable [MulLeftMono α]
 
@@ -93,7 +102,7 @@ variable [MulRightMono α]
 
 @[to_additive (attr := simp) abs_nonneg] lemma one_le_mabs (a : α) : 1 ≤ |a|ₘ := by
   apply pow_two_semiclosed _
-  rw [mabs, pow_two, mul_sup,  sup_mul, ← pow_two, inv_mul_cancel, sup_comm, ← sup_assoc]
+  rw [mabs, pow_two, mul_sup, sup_mul, ← pow_two, inv_mul_cancel, sup_comm, ← sup_assoc]
   apply le_sup_right
 
 @[to_additive (attr := simp)] lemma mabs_mabs (a : α) : |(|a|ₘ)|ₘ = |a|ₘ :=
@@ -203,6 +212,11 @@ variable [Group α] [LinearOrder α] {a b : α}
   mabs_by_cases (IsSquare · ↔ _) Iff.rfl isSquare_inv
 
 @[to_additive] lemma lt_of_mabs_lt : |a|ₘ < b → a < b := (le_mabs_self _).trans_lt
+
+@[to_additive (attr := simp)] lemma map_mabs {β F : Type*} [Group β] [LinearOrder β] [FunLike F α β]
+    [OrderHomClass F α β] [MonoidHomClass F α β] (f : F) (a : α) :
+    f |a|ₘ = |f a|ₘ := by
+  rw [mabs, mabs, (OrderHomClass.mono f).map_max, map_inv]
 
 variable [MulLeftMono α] {a b : α}
 

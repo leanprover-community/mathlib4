@@ -31,10 +31,7 @@ As corollaries, we get:
 -/
 
 
-open Finset LinearMap Set
-
-open scoped Classical
-open Convex Pointwise
+open Finset LinearMap Set Convex Pointwise
 
 variable {𝕜 E F β ι : Type*}
 
@@ -43,7 +40,8 @@ variable {𝕜 E F β ι : Type*}
 
 section Jensen
 
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [OrderedAddCommGroup β] [Module 𝕜 E] [Module 𝕜 β]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E]
+  [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β] [Module 𝕜 E] [Module 𝕜 β]
   [OrderedSMul 𝕜 β] {s : Set E} {f : E → β} {t : Finset ι} {w : ι → 𝕜} {p : ι → E} {v : 𝕜} {q : E}
 
 /-- Convex **Jensen's inequality**, `Finset.centerMass` version. -/
@@ -158,7 +156,7 @@ lemma StrictConvexOn.eq_of_le_map_sum (hf : StrictConvexOn 𝕜 s f) (h₀ : ∀
     (h₁ : ∑ i ∈ t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s)
     (h_eq : ∑ i ∈ t, w i • f (p i) ≤ f (∑ i ∈ t, w i • p i)) :
     ∀ ⦃j⦄, j ∈ t → ∀ ⦃k⦄, k ∈ t → p j = p k := by
-  by_contra!; exact h_eq.not_lt <| hf.map_sum_lt h₀ h₁ hmem this
+  by_contra!; exact h_eq.not_gt <| hf.map_sum_lt h₀ h₁ hmem this
 
 /-- A form of the **equality case of Jensen's equality**.
 
@@ -170,7 +168,7 @@ lemma StrictConcaveOn.eq_of_map_sum_eq (hf : StrictConcaveOn 𝕜 s f) (h₀ : �
     (h₁ : ∑ i ∈ t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s)
     (h_eq : f (∑ i ∈ t, w i • p i) ≤ ∑ i ∈ t, w i • f (p i)) :
     ∀ ⦃j⦄, j ∈ t → ∀ ⦃k⦄, k ∈ t → p j = p k := by
-  by_contra!; exact h_eq.not_lt <| hf.lt_map_sum h₀ h₁ hmem this
+  by_contra!; exact h_eq.not_gt <| hf.lt_map_sum h₀ h₁ hmem this
 
 /-- Canonical form of the **equality case of Jensen's equality**.
 
@@ -242,7 +240,8 @@ end Jensen
 
 section MaximumPrinciple
 
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [LinearOrderedAddCommGroup β] [Module 𝕜 E]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E]
+  [AddCommGroup β] [LinearOrder β] [IsOrderedAddMonoid β] [Module 𝕜 E]
   [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f : E → β} {w : ι → 𝕜} {p : ι → E}
   {x y z : E}
 
@@ -257,12 +256,6 @@ theorem ConvexOn.inf_le_of_mem_convexHull {t : Finset E} (hf : ConcaveOn 𝕜 s 
     (hx : x ∈ convexHull 𝕜 (t : Set E)) :
     t.inf' (coe_nonempty.1 <| convexHull_nonempty_iff.1 ⟨x, hx⟩) f ≤ f x :=
   hf.dual.le_sup_of_mem_convexHull hts hx
-
-@[deprecated (since := "2024-08-25")]
-alias le_sup_of_mem_convexHull := ConvexOn.le_sup_of_mem_convexHull
-
-@[deprecated (since := "2024-08-25")]
-alias inf_le_of_mem_convexHull := ConvexOn.inf_le_of_mem_convexHull
 
 /-- If a function `f` is convex on `s`, then the value it takes at some center of mass of points of
 `s` is less than the value it takes on one of those points. -/

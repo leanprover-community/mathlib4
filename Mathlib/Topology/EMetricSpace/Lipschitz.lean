@@ -1,11 +1,11 @@
 /-
 Copyright (c) 2018 Rohan Mitta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov
+Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov, Winston Yin
 -/
-import Mathlib.Logic.Function.Iterate
+import Mathlib.Algebra.Group.End
+import Mathlib.Tactic.Finiteness
 import Mathlib.Topology.EMetricSpace.Diam
-import Mathlib.Tactic.GCongr
 
 /-!
 # Lipschitz continuous functions
@@ -84,8 +84,6 @@ lemma LocallyLipschitzOn.mono (hf : LocallyLipschitzOn t f) (h : s ⊆ t) : Loca
 @[simp] lemma lipschitzOnWith_univ : LipschitzOnWith K f univ ↔ LipschitzWith K f := by
   simp [LipschitzOnWith, LipschitzWith]
 
-@[deprecated (since := "2024-07-17")] alias lipschitzOn_univ := lipschitzOnWith_univ
-
 @[simp] lemma locallyLipschitzOn_univ : LocallyLipschitzOn univ f ↔ LocallyLipschitz f := by
   simp [LocallyLipschitzOn, LocallyLipschitz]
 
@@ -93,17 +91,17 @@ protected lemma LocallyLipschitz.locallyLipschitzOn (h : LocallyLipschitz f) :
     LocallyLipschitzOn s f := (locallyLipschitzOn_univ.2 h).mono s.subset_univ
 
 theorem lipschitzOnWith_iff_restrict : LipschitzOnWith K f s ↔ LipschitzWith K (s.restrict f) := by
-  simp only [LipschitzOnWith, LipschitzWith, SetCoe.forall', restrict, Subtype.edist_eq]
+  simp [LipschitzOnWith, LipschitzWith]
 
 lemma lipschitzOnWith_restrict {t : Set s} :
     LipschitzOnWith K (s.restrict f) t ↔ LipschitzOnWith K f (s ∩ Subtype.val '' t) := by
-  simp only [LipschitzOnWith, LipschitzWith, Subtype.forall, restrict, Subtype.edist_eq]; aesop
+  simp [LipschitzOnWith, LipschitzWith]
 
 lemma locallyLipschitzOn_iff_restrict :
     LocallyLipschitzOn s f ↔ LocallyLipschitz (s.restrict f) := by
-  simp only [LocallyLipschitzOn, LocallyLipschitz, SetCoe.forall', restrict, Subtype.edist_eq,
-    ← lipschitzOnWith_iff_restrict, lipschitzOnWith_restrict, nhds_subtype_eq_comap_nhdsWithin,
-    mem_comap]
+  simp only [LocallyLipschitzOn, LocallyLipschitz, SetCoe.forall', restrict_apply,
+    Subtype.edist_mk_mk, ← lipschitzOnWith_iff_restrict, lipschitzOnWith_restrict,
+    nhds_subtype_eq_comap_nhdsWithin, mem_comap]
   congr! with x K
   constructor
   · rintro ⟨t, ht, hft⟩
@@ -152,7 +150,7 @@ theorem mapsTo_emetric_ball (h : LipschitzWith K f) (hK : K ≠ 0) (x : α) (r :
 
 theorem edist_lt_top (hf : LipschitzWith K f) {x y : α} (h : edist x y ≠ ⊤) :
     edist (f x) (f y) < ⊤ :=
-  (hf x y).trans_lt <| ENNReal.mul_lt_top ENNReal.coe_lt_top h.lt_top
+  (hf x y).trans_lt (by finiteness)
 
 theorem mul_edist_le (h : LipschitzWith K f) (x y : α) :
     (K⁻¹ : ℝ≥0∞) * edist (f x) (f y) ≤ edist x y := by
@@ -232,17 +230,26 @@ protected theorem prod_snd : LipschitzWith 1 (@Prod.snd α β) :=
   LipschitzWith.of_edist_le fun _ _ => le_max_right _ _
 
 /-- If `f` and `g` are Lipschitz functions, so is the induced map `f × g` to the product type. -/
-protected theorem prod {f : α → β} {Kf : ℝ≥0} (hf : LipschitzWith Kf f) {g : α → γ} {Kg : ℝ≥0}
+protected theorem prodMk {f : α → β} {Kf : ℝ≥0} (hf : LipschitzWith Kf f) {g : α → γ} {Kg : ℝ≥0}
     (hg : LipschitzWith Kg g) : LipschitzWith (max Kf Kg) fun x => (f x, g x) := by
   intro x y
   rw [ENNReal.coe_mono.map_max, Prod.edist_eq, max_mul]
   exact max_le_max (hf x y) (hg x y)
 
-protected theorem prod_mk_left (a : α) : LipschitzWith 1 (Prod.mk a : β → α × β) := by
-  simpa only [max_eq_right zero_le_one] using (LipschitzWith.const a).prod LipschitzWith.id
+@[deprecated (since := "2025-03-10")]
+protected alias prod := LipschitzWith.prodMk
 
-protected theorem prod_mk_right (b : β) : LipschitzWith 1 fun a : α => (a, b) := by
-  simpa only [max_eq_left zero_le_one] using LipschitzWith.id.prod (LipschitzWith.const b)
+protected theorem prodMk_left (a : α) : LipschitzWith 1 (Prod.mk a : β → α × β) := by
+  simpa only [max_eq_right zero_le_one] using (LipschitzWith.const a).prodMk LipschitzWith.id
+
+@[deprecated (since := "2025-03-10")]
+protected alias prod_mk_left := LipschitzWith.prodMk_left
+
+protected theorem prodMk_right (b : β) : LipschitzWith 1 fun a : α => (a, b) := by
+  simpa only [max_eq_left zero_le_one] using LipschitzWith.id.prodMk (LipschitzWith.const b)
+
+@[deprecated (since := "2025-03-10")]
+protected alias prod_mk_right := LipschitzWith.prodMk_right
 
 protected theorem uncurry {f : α → β → γ} {Kα Kβ : ℝ≥0} (hα : ∀ b, LipschitzWith Kα fun a => f a b)
     (hβ : ∀ a, LipschitzWith Kβ (f a)) : LipschitzWith (Kα + Kβ) (Function.uncurry f) := by
@@ -311,11 +318,14 @@ protected theorem comp {g : β → γ} {t : Set β} {Kg : ℝ≥0} (hg : Lipschi
   lipschitzOnWith_iff_restrict.mpr <| hg.to_restrict.comp (hf.to_restrict_mapsTo hmaps)
 
 /-- If `f` and `g` are Lipschitz on `s`, so is the induced map `f × g` to the product type. -/
-protected theorem prod {g : α → γ} {Kf Kg : ℝ≥0} (hf : LipschitzOnWith Kf f s)
+protected theorem prodMk {g : α → γ} {Kf Kg : ℝ≥0} (hf : LipschitzOnWith Kf f s)
     (hg : LipschitzOnWith Kg g s) : LipschitzOnWith (max Kf Kg) (fun x => (f x, g x)) s := by
   intro _ hx _ hy
   rw [ENNReal.coe_mono.map_max, Prod.edist_eq, max_mul]
   exact max_le_max (hf hx hy) (hg hx hy)
+
+@[deprecated (since := "2025-03-10")]
+protected alias prod := LipschitzOnWith.prodMk
 
 theorem ediam_image2_le (f : α → β → γ) {K₁ K₂ : ℝ≥0} (s : Set α) (t : Set β)
     (hf₁ : ∀ b ∈ t, LipschitzOnWith K₁ (f · b) s) (hf₂ : ∀ a ∈ s, LipschitzOnWith K₂ (f a) t) :
@@ -353,7 +363,7 @@ protected theorem continuous {f : α → β} (hf : LocallyLipschitz f) : Continu
   rcases (hf x) with ⟨K, t, ht, hK⟩
   exact (hK.continuousOn).continuousAt ht
 
-/-- The composition of locally Lipschitz functions is locally Lipschitz. --/
+/-- The composition of locally Lipschitz functions is locally Lipschitz. -/
 protected lemma comp  {f : β → γ} {g : α → β}
     (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) : LocallyLipschitz (f ∘ g) := by
   intro x
@@ -365,19 +375,28 @@ protected lemma comp  {f : β → γ} {g : α → β}
     ((mapsTo_preimage g u).mono_left inter_subset_right)
 
 /-- If `f` and `g` are locally Lipschitz, so is the induced map `f × g` to the product type. -/
-protected lemma prod {f : α → β} (hf : LocallyLipschitz f) {g : α → γ} (hg : LocallyLipschitz g) :
+protected lemma prodMk {f : α → β} (hf : LocallyLipschitz f) {g : α → γ} (hg : LocallyLipschitz g) :
     LocallyLipschitz fun x => (f x, g x) := by
   intro x
   rcases hf x with ⟨Kf, t₁, h₁t, hfL⟩
   rcases hg x with ⟨Kg, t₂, h₂t, hgL⟩
   refine ⟨max Kf Kg, t₁ ∩ t₂, Filter.inter_mem h₁t h₂t, ?_⟩
-  exact (hfL.mono inter_subset_left).prod (hgL.mono inter_subset_right)
+  exact (hfL.mono inter_subset_left).prodMk (hgL.mono inter_subset_right)
 
-protected theorem prod_mk_left (a : α) : LocallyLipschitz (Prod.mk a : β → α × β) :=
-  (LipschitzWith.prod_mk_left a).locallyLipschitz
+@[deprecated (since := "2025-03-10")]
+protected alias prod := LocallyLipschitz.prodMk
 
-protected theorem prod_mk_right (b : β) : LocallyLipschitz (fun a : α => (a, b)) :=
-  (LipschitzWith.prod_mk_right b).locallyLipschitz
+protected theorem prodMk_left (a : α) : LocallyLipschitz (Prod.mk a : β → α × β) :=
+  (LipschitzWith.prodMk_left a).locallyLipschitz
+
+@[deprecated (since := "2025-03-10")]
+protected alias prod_mk_left := LocallyLipschitz.prodMk_left
+
+protected theorem prodMk_right (b : β) : LocallyLipschitz (fun a : α => (a, b)) :=
+  (LipschitzWith.prodMk_right b).locallyLipschitz
+
+@[deprecated (since := "2025-03-10")]
+protected alias prod_mk_right := LocallyLipschitz.prodMk_right
 
 protected theorem iterate {f : α → α} (hf : LocallyLipschitz f) : ∀ n, LocallyLipschitz f^[n]
   | 0 => by simpa only [pow_zero] using LocallyLipschitz.id
@@ -478,3 +497,35 @@ theorem continuous_prod_of_continuous_lipschitzWith [PseudoEMetricSpace α] [Top
     [PseudoEMetricSpace γ] (f : α × β → γ) (K : ℝ≥0) (ha : ∀ a, Continuous fun y => f (a, y))
     (hb : ∀ b, LipschitzWith K fun x => f (x, b)) : Continuous f :=
   continuous_prod_of_dense_continuous_lipschitzWith f K dense_univ (fun _ _ ↦ ha _) hb
+
+theorem continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith' [TopologicalSpace α]
+    [PseudoEMetricSpace β] [PseudoEMetricSpace γ] (f : α × β → γ) {s : Set α} {t t' : Set β}
+    (ht' : t' ⊆ t) (htt' : t ⊆ closure t') (K : ℝ≥0)
+    (ha : ∀ a ∈ s, LipschitzOnWith K (fun y => f (a, y)) t)
+    (hb : ∀ b ∈ t', ContinuousOn (fun x => f (x, b)) s) : ContinuousOn f (s ×ˢ t) :=
+  have : ContinuousOn (f ∘ Prod.swap) (t ×ˢ s) :=
+    continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith _ ht' htt' K hb ha
+  this.comp continuous_swap.continuousOn (mapsTo_swap_prod _ _)
+
+theorem continuousOn_prod_of_continuousOn_lipschitzOnWith' [TopologicalSpace α]
+    [PseudoEMetricSpace β] [PseudoEMetricSpace γ] (f : α × β → γ) {s : Set α} {t : Set β} (K : ℝ≥0)
+    (ha : ∀ a ∈ s, LipschitzOnWith K (fun y => f (a, y)) t)
+    (hb : ∀ b ∈ t, ContinuousOn (fun x => f (x, b)) s) : ContinuousOn f (s ×ˢ t) :=
+  have : ContinuousOn (f ∘ Prod.swap) (t ×ˢ s) :=
+    continuousOn_prod_of_continuousOn_lipschitzOnWith _ K hb ha
+  this.comp continuous_swap.continuousOn (mapsTo_swap_prod _ _)
+
+theorem continuous_prod_of_dense_continuous_lipschitzWith' [TopologicalSpace α]
+    [PseudoEMetricSpace β] [PseudoEMetricSpace γ] (f : α × β → γ) (K : ℝ≥0) {t : Set β}
+    (ht : Dense t) (ha : ∀ a, LipschitzWith K fun y => f (a, y))
+    (hb : ∀ b ∈ t, Continuous fun x => f (x, b)) : Continuous f :=
+  have : Continuous (f ∘ Prod.swap) :=
+    continuous_prod_of_dense_continuous_lipschitzWith _ K ht hb ha
+  this.comp continuous_swap
+
+theorem continuous_prod_of_continuous_lipschitzWith' [TopologicalSpace α] [PseudoEMetricSpace β]
+    [PseudoEMetricSpace γ] (f : α × β → γ) (K : ℝ≥0) (ha : ∀ a, LipschitzWith K fun y => f (a, y))
+    (hb : ∀ b, Continuous fun x => f (x, b)) : Continuous f :=
+  have : Continuous (f ∘ Prod.swap) :=
+    continuous_prod_of_continuous_lipschitzWith _ K hb ha
+  this.comp continuous_swap

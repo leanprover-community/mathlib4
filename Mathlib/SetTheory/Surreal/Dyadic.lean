@@ -63,13 +63,13 @@ theorem powHalf_succ_moveRight (n i) : (powHalf (n + 1)).moveRight i = powHalf n
   rfl
 
 instance uniquePowHalfLeftMoves (n) : Unique (powHalf n).LeftMoves := by
-  cases n <;> exact PUnit.unique
+  cases n <;> exact PUnit.instUnique
 
 instance isEmpty_powHalf_zero_rightMoves : IsEmpty (powHalf 0).RightMoves :=
   inferInstanceAs (IsEmpty PEmpty)
 
 instance uniquePowHalfSuccRightMoves (n) : Unique (powHalf (n + 1)).RightMoves :=
-  PUnit.unique
+  PUnit.instUnique
 
 @[simp]
 theorem birthday_half : birthday (powHalf 1) = 2 := by
@@ -105,7 +105,7 @@ theorem zero_le_powHalf (n : ℕ) : 0 ≤ powHalf n :=
   (powHalf_pos n).le
 
 theorem add_powHalf_succ_self_eq_powHalf (n) : powHalf (n + 1) + powHalf (n + 1) ≈ powHalf n := by
-  induction' n using Nat.strong_induction_on with n hn
+  induction n using Nat.strong_induction_on with | _ n hn
   constructor <;> rw [le_iff_forall_lf] <;> constructor
   · rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> apply lf_of_lt
     · calc
@@ -114,7 +114,7 @@ theorem add_powHalf_succ_self_eq_powHalf (n) : powHalf (n + 1) + powHalf (n + 1)
     · calc
         powHalf n.succ + 0 ≈ powHalf n.succ := add_zero_equiv _
         _ < powHalf n := powHalf_succ_lt_powHalf n
-  · cases' n with n
+  · rcases n with - | n
     · rintro ⟨⟩
     rintro ⟨⟩
     apply lf_of_moveRight_le
@@ -163,17 +163,19 @@ theorem double_powHalf_succ_eq_powHalf (n : ℕ) : 2 * powHalf (n + 1) = powHalf
 
 @[simp]
 theorem nsmul_pow_two_powHalf (n : ℕ) : 2 ^ n * powHalf n = 1 := by
-  induction' n with n hn
-  · simp only [pow_zero, powHalf_zero, mul_one]
-  · rw [← hn, ← double_powHalf_succ_eq_powHalf n, ← mul_assoc (2 ^ n) 2 (powHalf (n + 1)),
+  induction n with
+  | zero => simp only [pow_zero, powHalf_zero, mul_one]
+  | succ n hn =>
+    rw [← hn, ← double_powHalf_succ_eq_powHalf n, ← mul_assoc (2 ^ n) 2 (powHalf (n + 1)),
       pow_succ', mul_comm 2 (2 ^ n)]
 
 @[simp]
 theorem nsmul_pow_two_powHalf' (n k : ℕ) : 2 ^ n * powHalf (n + k) = powHalf k := by
-  induction' k with k hk
-  · simp only [add_zero, Surreal.nsmul_pow_two_powHalf, eq_self_iff_true,
-      Surreal.powHalf_zero]
-  · rw [← double_powHalf_succ_eq_powHalf (n + k), ← double_powHalf_succ_eq_powHalf k,
+  induction k with
+  | zero =>
+    simp only [add_zero, Surreal.nsmul_pow_two_powHalf, eq_self_iff_true, Surreal.powHalf_zero]
+  | succ k hk =>
+    rw [← double_powHalf_succ_eq_powHalf (n + k), ← double_powHalf_succ_eq_powHalf k,
       ← mul_assoc, mul_comm (2 ^ n) 2, mul_assoc] at hk
     rw [← zsmul_eq_zsmul_iff' two_ne_zero]
     simpa only [zsmul_eq_mul, Int.cast_ofNat]
@@ -188,11 +190,11 @@ theorem dyadic_aux {m₁ m₂ : ℤ} {y₁ y₂ : ℕ} (h₂ : m₁ * 2 ^ y₁ =
     m₁ * powHalf y₂ = m₂ * powHalf y₁ := by
   revert m₁ m₂
   wlog h : y₁ ≤ y₂
-  · intro m₁ m₂ aux; exact (this (le_of_not_le h) aux.symm).symm
+  · intro m₁ m₂ aux; exact (this (le_of_not_ge h) aux.symm).symm
   intro m₁ m₂ h₂
   obtain ⟨c, rfl⟩ := le_iff_exists_add.mp h
   rw [add_comm, pow_add, ← mul_assoc, mul_eq_mul_right_iff] at h₂
-  cases' h₂ with h₂ h₂
+  rcases h₂ with h₂ | h₂
   · rw [h₂, add_comm]
     simp_rw [Int.cast_mul, Int.cast_pow, Int.cast_ofNat, zsmul_pow_two_powHalf m₂ c y₁]
   · have := Nat.one_le_pow y₁ 2 Nat.succ_pos'
@@ -240,7 +242,6 @@ theorem dyadicMap_apply (m : ℤ) (p : Submonoid.powers (2 : ℤ)) :
       m * powHalf (Submonoid.log p) := by
   rw [← Localization.mk_eq_mk']; rfl
 
--- @[simp] -- Porting note: simp normal form is `dyadicMap_apply_pow'`
 theorem dyadicMap_apply_pow (m : ℤ) (n : ℕ) :
     dyadicMap (IsLocalization.mk' (Localization (Submonoid.powers 2)) m (Submonoid.pow 2 n)) =
       m • powHalf n := by

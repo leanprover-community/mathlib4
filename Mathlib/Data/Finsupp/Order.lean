@@ -6,7 +6,9 @@ Authors: Johan Commelin, Aaron Anderson
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Pi
+import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Data.Finsupp.Basic
+import Mathlib.Data.Finsupp.SMulWithZero
 
 /-!
 # Pointwise order on finitely supported functions
@@ -35,7 +37,7 @@ section Zero
 variable [Zero α]
 
 section OrderedAddCommMonoid
-variable [OrderedAddCommMonoid β] {f : ι →₀ α} {h₁ h₂ : ι → α → β}
+variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β] {f : ι →₀ α} {h₁ h₂ : ι → α → β}
 
 @[gcongr]
 lemma sum_le_sum (h : ∀ i ∈ f.support, h₁ i (f i) ≤ h₂ i (f i)) : f.sum h₁ ≤ f.sum h₂ :=
@@ -93,7 +95,7 @@ lemma single_mono : Monotone (single i : α → ι →₀ α) := fun _ _ ↦ sin
 @[simp] lemma single_nonneg : 0 ≤ single i a ↔ 0 ≤ a := by classical exact Pi.single_nonneg
 @[simp] lemma single_nonpos : single i a ≤ 0 ↔ a ≤ 0 := by classical exact Pi.single_nonpos
 
-variable [OrderedAddCommMonoid β]
+variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
 
 lemma sum_le_sum_index [DecidableEq ι] {f₁ f₂ : ι →₀ α} {h : ι → α → β} (hf : f₁ ≤ f₂)
     (hh : ∀ i ∈ f₁.support ∪ f₂.support, Monotone (h i))
@@ -149,11 +151,11 @@ end Zero
 /-! ### Algebraic order structures -/
 
 section OrderedAddCommMonoid
-variable [OrderedAddCommMonoid α] {i : ι} {f : ι → κ} {g g₁ g₂ : ι →₀ α}
+variable [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α]
+  {i : ι} {f : ι → κ} {g g₁ g₂ : ι →₀ α}
 
-instance orderedAddCommMonoid : OrderedAddCommMonoid (ι →₀ α) :=
-  { Finsupp.instAddCommMonoid, Finsupp.partialorder with
-    add_le_add_left := fun _a _b h c s => add_le_add_left (h s) (c s) }
+instance isOrderedAddMonoid : IsOrderedAddMonoid (ι →₀ α) :=
+  { add_le_add_left := fun _a _b h c s => add_le_add_left (h s) (c s) }
 
 lemma mapDomain_mono : Monotone (mapDomain f : (ι →₀ α) → (κ →₀ α)) := by
   classical exact fun g₁ g₂ h ↦ sum_le_sum_index h (fun _ _ ↦ single_mono) (by simp)
@@ -166,12 +168,11 @@ lemma mapDomain_nonpos (hg : g ≤ 0) : g.mapDomain f ≤ 0 := by simpa using ma
 
 end OrderedAddCommMonoid
 
-instance orderedCancelAddCommMonoid [OrderedCancelAddCommMonoid α] :
-    OrderedCancelAddCommMonoid (ι →₀ α) :=
-  { Finsupp.orderedAddCommMonoid with
-    le_of_add_le_add_left := fun _f _g _i h s => le_of_add_le_add_left (h s) }
+instance isOrderedCancelAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] :
+    IsOrderedCancelAddMonoid (ι →₀ α) :=
+  { le_of_add_le_add_left := fun _f _g _i h s => le_of_add_le_add_left (h s) }
 
-instance addLeftReflectLE [OrderedAddCommMonoid α] [AddLeftReflectLE α] :
+instance addLeftReflectLE [AddCommMonoid α] [PartialOrder α] [AddLeftReflectLE α] :
     AddLeftReflectLE (ι →₀ α) :=
   ⟨fun _f _g _h H x => le_of_add_le_add_left <| H x⟩
 
@@ -208,9 +209,9 @@ instance instSMulPosReflectLT [SMulPosReflectLT α β] : SMulPosReflectLT α (ι
 
 end SMulWithZero
 
-section CanonicallyOrderedAddCommMonoid
+section PartialOrder
 
-variable [CanonicallyOrderedAddCommMonoid α] {f g : ι →₀ α}
+variable [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] {f g : ι →₀ α}
 
 instance orderBot : OrderBot (ι →₀ α) where
   bot := 0
@@ -226,7 +227,7 @@ theorem add_eq_zero_iff (f g : ι →₀ α) : f + g = 0 ↔ f = 0 ∧ g = 0 := 
 theorem le_iff' (f g : ι →₀ α) {s : Finset ι} (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
   ⟨fun h s _hs => h s, fun h s => by
     classical exact
-        if H : s ∈ f.support then h s (hf H) else (not_mem_support_iff.1 H).symm ▸ zero_le (g s)⟩
+        if H : s ∈ f.support then h s (hf H) else (notMem_support_iff.1 H).symm ▸ zero_le (g s)⟩
 
 theorem le_iff (f g : ι →₀ α) : f ≤ g ↔ ∀ i ∈ f.support, f i ≤ g i :=
   le_iff' f g <| Subset.refl _
@@ -236,10 +237,10 @@ lemma support_monotone : Monotone (support (α := ι) (M := α)) :=
 
 lemma support_mono (hfg : f ≤ g) : f.support ⊆ g.support := support_monotone hfg
 
-instance decidableLE [DecidableRel (@LE.le α _)] : DecidableRel (@LE.le (ι →₀ α) _) := fun f g =>
+instance decidableLE [DecidableLE α] : DecidableLE (ι →₀ α) := fun f g =>
   decidable_of_iff _ (le_iff f g).symm
 
-instance decidableLT [DecidableRel (@LE.le α _)] : DecidableRel (@LT.lt (ι →₀ α) _) :=
+instance decidableLT [DecidableLE α] : DecidableLT (ι →₀ α) :=
   decidableLTOfDecidableLE
 
 @[simp]
@@ -256,11 +257,9 @@ instance tsub : Sub (ι →₀ α) :=
 instance orderedSub : OrderedSub (ι →₀ α) :=
   ⟨fun _n _m _k => forall_congr' fun _x => tsub_le_iff_right⟩
 
-instance : CanonicallyOrderedAddCommMonoid (ι →₀ α) :=
-  { Finsupp.orderBot,
-    Finsupp.orderedAddCommMonoid with
-    exists_add_of_le := fun {f g} h => ⟨g - f, ext fun x => (add_tsub_cancel_of_le <| h x).symm⟩
-    le_self_add := fun _f _g _x => le_self_add }
+instance [CovariantClass α α (· + ·) (· ≤ ·)] : CanonicallyOrderedAdd (ι →₀ α) where
+  exists_add_of_le := fun {f g} h => ⟨g - f, ext fun x => (add_tsub_cancel_of_le <| h x).symm⟩
+  le_self_add := fun _f _g _x => le_self_add
 
 @[simp, norm_cast] lemma coe_tsub (f g : ι →₀ α) : ⇑(f - g) = f - g := rfl
 
@@ -282,11 +281,11 @@ theorem subset_support_tsub [DecidableEq ι] {f1 f2 : ι →₀ α} :
     f1.support \ f2.support ⊆ (f1 - f2).support := by
   simp +contextual [subset_iff]
 
-end CanonicallyOrderedAddCommMonoid
+end PartialOrder
 
-section CanonicallyLinearOrderedAddCommMonoid
+section LinearOrder
 
-variable [CanonicallyLinearOrderedAddCommMonoid α]
+variable [AddCommMonoid α] [LinearOrder α] [CanonicallyOrderedAdd α]
 
 @[simp]
 theorem support_inf [DecidableEq ι] (f g : ι →₀ α) : (f ⊓ g).support = f.support ∩ g.support := by
@@ -298,8 +297,8 @@ theorem support_inf [DecidableEq ι] (f g : ι →₀ α) : (f ⊓ g).support = 
 @[simp]
 theorem support_sup [DecidableEq ι] (f g : ι →₀ α) : (f ⊔ g).support = f.support ∪ g.support := by
   ext
-  simp only [Finset.mem_union, mem_support_iff, sup_apply, Ne, ← bot_eq_zero]
-  rw [_root_.sup_eq_bot_iff, not_and_or]
+  simp only [mem_support_iff, Ne, sup_apply, ← nonpos_iff_eq_zero, sup_le_iff, mem_union,
+    not_and_or]
 
 nonrec theorem disjoint_iff {f g : ι →₀ α} : Disjoint f g ↔ Disjoint f.support g.support := by
   classical
@@ -307,7 +306,7 @@ nonrec theorem disjoint_iff {f g : ι →₀ α} : Disjoint f g ↔ Disjoint f.s
       Finsupp.support_inf]
     rfl
 
-end CanonicallyLinearOrderedAddCommMonoid
+end LinearOrder
 
 /-! ### Some lemmas about `ℕ` -/
 

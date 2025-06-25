@@ -17,10 +17,12 @@ also contains unrelated results about `Units` that depend on `MonoidHom`.
 * `Units.map`: Turn a homomorphism from `α` to `β` monoids into a homomorphism from `αˣ` to `βˣ`.
 * `MonoidHom.toHomUnits`: Turn a homomorphism from a group `α` to `β` into a homomorphism from
   `α` to `βˣ`.
-* `IsLocalHom`: A predicate on monoid maps, requiring that it maps nonunits
-  to nonunits. For local rings, this means that the image of the unique maximal ideal is again
-  contained in the unique maximal ideal. This is developed earlier, and in the generality of
-  monoids, as it allows its use in non-local-ring related contexts, but it does have the
+* `IsLocalHom`: A predicate on monoid maps, requiring that it maps
+  nonunits to nonunits. For the local rings, that is, applied to their
+  multiplicative monoids, this means that the image of the unique
+  maximal ideal is again contained in the unique maximal ideal. This
+  is developed earlier, and in the generality of monoids, as it allows
+  its use in non-local-ring related contexts, but it does have the
   strange consequence that it does not require local rings, or even rings.
 
 ## TODO
@@ -31,8 +33,7 @@ used to golf the basic `Group` lemmas.
 Add a `@[to_additive]` version of `IsLocalHom`.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 open Function
 
@@ -219,18 +220,14 @@ variable {G R S T F : Type*}
 
 variable [Monoid R] [Monoid S] [Monoid T] [FunLike F R S]
 
-/-- A local ring homomorphism is a map `f` between monoids such that `a` in the domain
-  is a unit if `f a` is a unit for any `a`. See `IsLocalRing.local_hom_TFAE` for other equivalent
+/-- A map `f` between monoids is *local* if any `a` in the domain is a unit
+  whenever `f a` is a unit. See `IsLocalRing.local_hom_TFAE` for other equivalent
   definitions in the local ring case - from where this concept originates, but it is useful in
   other contexts, so we allow this generalisation in mathlib. -/
 class IsLocalHom (f : F) : Prop where
   /-- A local homomorphism `f : R ⟶ S` will send nonunits of `R` to nonunits of `S`. -/
   map_nonunit : ∀ a, IsUnit (f a) → IsUnit a
 
-@[deprecated (since := "2024-10-10")]
-alias IsLocalRingHom := IsLocalHom
-
-@[simp]
 theorem IsUnit.of_map (f : F) [IsLocalHom f] (a : R) (h : IsUnit (f a)) : IsUnit a :=
   IsLocalHom.map_nonunit a h
 
@@ -247,16 +244,10 @@ theorem isLocalHom_of_leftInverse [FunLike G S R] [MonoidHomClass G S R]
     {f : F} (g : G) (hfg : Function.LeftInverse g f) : IsLocalHom f where
   map_nonunit a ha := by rwa [isUnit_map_of_leftInverse g hfg] at ha
 
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_of_leftInverse := isLocalHom_of_leftInverse
-
 @[instance]
 theorem MonoidHom.isLocalHom_comp (g : S →* T) (f : R →* S) [IsLocalHom g]
     [IsLocalHom f] : IsLocalHom (g.comp f) where
   map_nonunit a := IsLocalHom.map_nonunit a ∘ IsLocalHom.map_nonunit (f := g) (f a)
-
-@[deprecated (since := "2024-10-10")]
-alias MonoidHom.isLocalRingHom_comp := MonoidHom.isLocalHom_comp
 
 -- see note [lower instance priority]
 @[instance 100]
@@ -264,14 +255,8 @@ theorem isLocalHom_toMonoidHom (f : F) [IsLocalHom f] :
     IsLocalHom (f : R →* S) :=
   ⟨IsLocalHom.map_nonunit (f := f)⟩
 
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_toMonoidHom := isLocalHom_toMonoidHom
-
 theorem MonoidHom.isLocalHom_of_comp (f : R →* S) (g : S →* T) [IsLocalHom (g.comp f)] :
     IsLocalHom f :=
   ⟨fun _ ha => (isUnit_map_iff (g.comp f) _).mp (ha.map g)⟩
-
-@[deprecated (since := "2024-10-10")]
-alias MonoidHom.isLocalRingHom_of_comp := MonoidHom.isLocalHom_of_comp
 
 end IsLocalHom

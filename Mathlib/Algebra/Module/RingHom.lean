@@ -12,19 +12,15 @@ import Mathlib.Algebra.Ring.Hom.Defs
 
 ## Main definitions
 
- * `Module.compHom`: compose a `Module` with a `RingHom`, with action `f s • m`.
- * `RingHom.toModule`: a `RingHom` defines a module structure by `r • x = f r * x`.
+* `Module.compHom`: compose a `Module` with a `RingHom`, with action `f s • m`.
+* `RingHom.toModule`: a `RingHom` defines a module structure by `r • x = f r * x`.
 
 ## Tags
 
 semimodule, module, vector space
 -/
 
-assert_not_exists Field
-assert_not_exists Invertible
-assert_not_exists Multiset
-assert_not_exists Pi.single_smul₀
-assert_not_exists Set.indicator
+assert_not_exists Field Invertible Multiset Pi.single_smul₀ Set.indicator
 
 open Function Set
 
@@ -60,14 +56,16 @@ abbrev Module.compHom [Semiring S] (f : S →+* R) : Module S M :=
     -- Somehow, now that `SMul` is heterogeneous, it can't unfold earlier fields of a definition for
     -- use in later fields.  See
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Heterogeneous.20scalar.20multiplication
+    -- TODO(jmc): there should be a rw-lemma `smul_comp` close to `SMulZeroClass.compFun`
     add_smul := fun r s x => show f (r + s) • x = f r • x + f s • x by simp [add_smul] }
 
 variable {M}
 
 end AddCommMonoid
 
-/-- A ring homomorphism `f : R →+* M` defines a module structure by `r • x = f r * x`. -/
-def RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
+/-- A ring homomorphism `f : R →+* M` defines a module structure by `r • x = f r * x`.
+See note [reducible non-instances]. -/
+abbrev RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
   Module.compHom S f
 
 /-- If the module action of `R` on `S` is compatible with multiplication on `S`, then

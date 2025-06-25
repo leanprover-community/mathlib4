@@ -34,8 +34,6 @@ Note that `rootsOfUnity 0 M` is the top subgroup of `Mˣ` (as the condition `ζ^
 satisfied for all units).
 -/
 
-open scoped Classical
-
 noncomputable section
 
 open Polynomial
@@ -60,7 +58,7 @@ def rootsOfUnity (k : ℕ) (M : Type*) [CommMonoid M] : Subgroup Mˣ where
 theorem mem_rootsOfUnity (k : ℕ) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ ζ ^ k = 1 :=
   Iff.rfl
 
-/-- A variant of `mem_rootsOfUnity` using `ζ : M`. -/
+/-- A variant of `mem_rootsOfUnity` using `ζ : Mˣ`. -/
 theorem mem_rootsOfUnity' (k : ℕ) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ (ζ : M) ^ k = 1 := by
   rw [mem_rootsOfUnity]; norm_cast
 
@@ -180,8 +178,6 @@ def rootsOfUnityEquivNthRoots : rootsOfUnity k R ≃ { x // x ∈ nthRoots k (1 
       rcases x with ⟨x, hx⟩; rw [mem_nthRoots <| NeZero.pos k] at hx
       simp only [← pow_succ, ← pow_succ', hx, tsub_add_cancel_of_le NeZero.one_le]
     simp only [mem_rootsOfUnity, Units.ext_iff, Units.val_pow_eq_pow_val, hx, Units.val_one]
-  left_inv := by rintro ⟨x, hx⟩; ext; rfl
-  right_inv := by rintro ⟨x, hx⟩; ext; rfl
 
 variable {k R}
 
@@ -197,13 +193,15 @@ theorem rootsOfUnityEquivNthRoots_symm_apply (x : { x // x ∈ nthRoots k (1 : R
 
 variable (k R)
 
-instance rootsOfUnity.fintype : Fintype (rootsOfUnity k R) :=
-  Fintype.ofEquiv { x // x ∈ nthRoots k (1 : R) } (rootsOfUnityEquivNthRoots R k).symm
+instance rootsOfUnity.fintype : Fintype (rootsOfUnity k R) := by
+  classical
+  exact Fintype.ofEquiv { x // x ∈ nthRoots k (1 : R) } (rootsOfUnityEquivNthRoots R k).symm
 
 instance rootsOfUnity.isCyclic : IsCyclic (rootsOfUnity k R) :=
   isCyclic_of_subgroup_isDomain ((Units.coeHom R).comp (rootsOfUnity k R).subtype) coe_injective
 
-theorem card_rootsOfUnity : Fintype.card (rootsOfUnity k R) ≤ k :=
+theorem card_rootsOfUnity : Fintype.card (rootsOfUnity k R) ≤ k := by
+  classical
   calc
     Fintype.card (rootsOfUnity k R) = Fintype.card { x // x ∈ nthRoots k (1 : R) } :=
       Fintype.card_congr (rootsOfUnityEquivNthRoots R k)
@@ -213,7 +211,7 @@ theorem card_rootsOfUnity : Fintype.card (rootsOfUnity k R) ≤ k :=
 
 variable {k R}
 
-theorem map_rootsOfUnity_eq_pow_self [FunLike F R R] [RingHomClass F R R] (σ : F)
+theorem map_rootsOfUnity_eq_pow_self [FunLike F R R] [MonoidHomClass F R R] (σ : F)
     (ζ : rootsOfUnity k R) :
     ∃ m : ℕ, σ (ζ : Rˣ) = ((ζ : Rˣ) : R) ^ m := by
   obtain ⟨m, hm⟩ := MonoidHom.map_cyclic (restrictRootsOfUnity σ k)
@@ -233,7 +231,7 @@ theorem mem_rootsOfUnity_prime_pow_mul_iff (p k : ℕ) (m : ℕ) [ExpChar R p] {
     ζ ∈ rootsOfUnity (p ^ k * m) R ↔ ζ ∈ rootsOfUnity m R := by
   simp only [mem_rootsOfUnity', ExpChar.pow_prime_pow_mul_eq_one_iff]
 
-/-- A variant of `mem_rootsOfUnity_prime_pow_mul_iff` in terms of `ζ ^ _`.-/
+/-- A variant of `mem_rootsOfUnity_prime_pow_mul_iff` in terms of `ζ ^ _` -/
 @[simp]
 theorem mem_rootsOfUnity_prime_pow_mul_iff' (p k : ℕ) (m : ℕ) [ExpChar R p] {ζ : Rˣ} :
     ζ ^ (p ^ k * m) = 1 ↔ ζ ∈ rootsOfUnity m R := by

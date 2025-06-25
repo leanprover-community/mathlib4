@@ -3,13 +3,14 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Algebra.Module.Torsion
-import Mathlib.Algebra.Ring.Idempotents
+import Mathlib.Algebra.Ring.Idempotent
+import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.Filtration
+import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.Nakayama
 
 /-!
@@ -32,9 +33,11 @@ universe u v w
 variable {R : Type u} {S : Type v} {S' : Type w} [CommRing R] [CommSemiring S] [Algebra S R]
 variable [CommSemiring S'] [Algebra S' R] [Algebra S S'] [IsScalarTower S S' R] (I : Ideal R)
 
--- Porting note: instances that were derived automatically need to be proved by hand (see below)
 /-- `I ⧸ I ^ 2` as a quotient of `I`. -/
 def Cotangent : Type _ := I ⧸ (I • ⊤ : Submodule R I)
+-- The `AddCommGroup, Module (R ⧸ I), Inhabited, Module S, IsScalarTower, IsNoetherian` instances
+-- should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 instance : AddCommGroup I.Cotangent := by delta Cotangent; infer_instance
 
@@ -52,10 +55,10 @@ instance [IsNoetherian R I] : IsNoetherian R I.Cotangent :=
   inferInstanceAs (IsNoetherian R (I ⧸ (I • ⊤ : Submodule R I)))
 
 /-- The quotient map from `I` to `I ⧸ I ^ 2`. -/
-@[simps! (config := .lemmasOnly) apply]
+@[simps! -isSimp apply]
 def toCotangent : I →ₗ[R] I.Cotangent := Submodule.mkQ _
 
-theorem map_toCotangent_ker : I.toCotangent.ker.map I.subtype = I ^ 2 := by
+theorem map_toCotangent_ker : (LinearMap.ker I.toCotangent).map I.subtype = I ^ 2 := by
   rw [Ideal.toCotangent, Submodule.ker_mkQ, pow_two, Submodule.map_smul'' I ⊤ (Submodule.subtype I),
     Algebra.id.smul_eq_mul, Submodule.map_subtype_top]
 
@@ -120,18 +123,31 @@ theorem cotangentIdeal_square (I : Ideal R) : I.cotangentIdeal ^ 2 = ⊥ := by
     rw [sub_zero, pow_two]; exact Ideal.mul_mem_mul hx hy
   · intro x y hx hy; exact add_mem hx hy
 
-theorem to_quotient_square_range :
+lemma mk_mem_cotangentIdeal {I : Ideal R} {x : R} :
+    Quotient.mk (I ^ 2) x ∈ I.cotangentIdeal ↔ x ∈ I := by
+  refine ⟨fun ⟨y, hy, e⟩ ↦ ?_, fun h ↦ ⟨x, h, rfl⟩⟩
+  simpa using sub_mem hy (Ideal.pow_le_self two_ne_zero
+    ((Ideal.Quotient.mk_eq_mk_iff_sub_mem _ _).mp e))
+
+lemma comap_cotangentIdeal (I : Ideal R) :
+    I.cotangentIdeal.comap (Quotient.mk (I ^ 2)) = I :=
+  Ideal.ext fun _ ↦ mk_mem_cotangentIdeal
+
+theorem range_cotangentToQuotientSquare :
     LinearMap.range I.cotangentToQuotientSquare = I.cotangentIdeal.restrictScalars R := by
   trans LinearMap.range (I.cotangentToQuotientSquare.comp I.toCotangent)
   · rw [LinearMap.range_comp, I.toCotangent_range, Submodule.map_top]
   · rw [to_quotient_square_comp_toCotangent, LinearMap.range_comp, I.range_subtype]; ext; rfl
+
+@[deprecated (since := "2025-01-04")]
+alias to_quotient_square_range := range_cotangentToQuotientSquare
 
 /-- The equivalence of the two definitions of `I / I ^ 2`, either as the quotient of `I` or the
 ideal of `R / I ^ 2`. -/
 noncomputable def cotangentEquivIdeal : I.Cotangent ≃ₗ[R] I.cotangentIdeal := by
   refine
   { LinearMap.codRestrict (I.cotangentIdeal.restrictScalars R) I.cotangentToQuotientSquare
-      fun x => by { rw [← to_quotient_square_range]; exact LinearMap.mem_range_self _ _ },
+      fun x => by rw [← range_cotangentToQuotientSquare]; exact LinearMap.mem_range_self _ _,
     Equiv.ofBijective _ ⟨?_, ?_⟩ with }
   · rintro x y e
     replace e := congr_arg Subtype.val e
@@ -170,7 +186,7 @@ def _root_.AlgHom.kerSquareLift (f : A →ₐ[R] B) : A ⧸ RingHom.ker f.toRing
     exact f.map_algebraMap r
 
 theorem _root_.AlgHom.ker_kerSquareLift (f : A →ₐ[R] B) :
-    RingHom.ker f.kerSquareLift.toRingHom = f.toRingHom.ker.cotangentIdeal := by
+    RingHom.ker f.kerSquareLift.toRingHom = (RingHom.ker f.toRingHom).cotangentIdeal := by
   apply le_antisymm
   · intro x hx; obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x; exact ⟨x, hx, rfl⟩
   · rintro _ ⟨x, hx, rfl⟩; exact hx
@@ -203,7 +219,7 @@ def mapCotangent (I₁ : Ideal A) (I₂ : Ideal B) (f : A →ₐ[R] B) (h : I₁
     convert (Submodule.smul_mem_smul (M := I₂) (r := f a)
       (n := ⟨f b, h hb⟩) (h ha) (Submodule.mem_top)) using 1
     ext
-    exact _root_.map_mul f a b
+    exact map_mul f a b
 
 @[simp]
 lemma mapCotangent_toCotangent

@@ -3,8 +3,8 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Hom.Lattice
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Order.Hom.BoundedLattice
 
 /-!
 # Complete lattice homomorphisms
@@ -36,13 +36,12 @@ be satisfied by itself and all stricter types.
 
 Frame homs are Heyting homs.
 -/
-
+assert_not_exists Monoid
 
 open Function OrderDual Set
 
 variable {F α β γ δ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
--- Porting note: mathport made this & sInfHom into "SupHomCat" and "InfHomCat".
 /-- The type of `⨆`-preserving functions from `α` to `β`. -/
 structure sSupHom (α β : Type*) [SupSet α] [SupSet β] where
   /-- The underlying function of a sSupHom. -/
@@ -73,7 +72,6 @@ structure CompleteLatticeHom (α β : Type*) [CompleteLattice α] [CompleteLatti
 
 section
 
--- Porting note: mathport made this & InfHomClass into "SupHomClassCat" and "InfHomClassCat".
 /-- `sSupHomClass F α β` states that `F` is a type of `⨆`-preserving morphisms.
 
 You should extend this class when you extend `sSupHom`. -/
@@ -91,8 +89,8 @@ class sInfHomClass (F α β : Type*) [InfSet α] [InfSet β] [FunLike F α β] :
 /-- `FrameHomClass F α β` states that `F` is a type of frame morphisms. They preserve `⊓` and `⨆`.
 
 You should extend this class when you extend `FrameHom`. -/
-class FrameHomClass (F α β : Type*) [CompleteLattice α] [CompleteLattice β] [FunLike F α β]
-  extends InfTopHomClass F α β : Prop where
+class FrameHomClass (F α β : Type*) [CompleteLattice α] [CompleteLattice β] [FunLike F α β] : Prop
+  extends InfTopHomClass F α β where
   /-- The proposition that members of `FrameHomClass` commute with arbitrary suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)
 
@@ -100,7 +98,8 @@ class FrameHomClass (F α β : Type*) [CompleteLattice α] [CompleteLattice β] 
 
 You should extend this class when you extend `CompleteLatticeHom`. -/
 class CompleteLatticeHomClass (F α β : Type*) [CompleteLattice α] [CompleteLattice β]
-  [FunLike F α β] extends sInfHomClass F α β : Prop where
+    [FunLike F α β] : Prop
+  extends sInfHomClass F α β where
   /-- The proposition that members of `CompleteLatticeHomClass` commute with arbitrary
   suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)
@@ -194,9 +193,6 @@ instance (priority := 100) OrderIsoClass.tosInfHomClass [CompleteLattice α]
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toCompleteLatticeHomClass [CompleteLattice α]
     [CompleteLattice β] [OrderIsoClass F α β] : CompleteLatticeHomClass F α β :=
-  -- Porting note: Used to be:
-    -- { OrderIsoClass.tosSupHomClass, OrderIsoClass.toLatticeHomClass,
-    -- show sInfHomClass F α β from inferInstance with }
   { OrderIsoClass.tosSupHomClass, OrderIsoClass.tosInfHomClass with }
 
 end Equiv
@@ -271,7 +267,7 @@ protected def id : sSupHom α α :=
 instance : Inhabited (sSupHom α α) :=
   ⟨sSupHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(sSupHom.id α) = id :=
   rfl
 
@@ -392,7 +388,7 @@ protected def id : sInfHom α α :=
 instance : Inhabited (sInfHom α α) :=
   ⟨sInfHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(sInfHom.id α) = id :=
   rfl
 
@@ -519,7 +515,7 @@ protected def id : FrameHom α α :=
 instance : Inhabited (FrameHom α α) :=
   ⟨FrameHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(FrameHom.id α) = id :=
   rfl
 
@@ -626,7 +622,7 @@ protected def id : CompleteLatticeHom α α :=
 instance : Inhabited (CompleteLatticeHom α α) :=
   ⟨CompleteLatticeHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(CompleteLatticeHom.id α) = id :=
   rfl
 
@@ -685,8 +681,6 @@ variable [SupSet α] [SupSet β] [SupSet γ]
 protected def dual : sSupHom α β ≃ sInfHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨toDual ∘ f ∘ ofDual, f.map_sSup'⟩
   invFun f := ⟨ofDual ∘ f ∘ toDual, f.map_sInf'⟩
-  left_inv _ := sSupHom.ext fun _ => rfl
-  right_inv _ := sInfHom.ext fun _ => rfl
 
 @[simp]
 theorem dual_id : sSupHom.dual (sSupHom.id α) = sInfHom.id _ :=
@@ -721,8 +715,6 @@ protected def dual : sInfHom α β ≃ sSupHom αᵒᵈ βᵒᵈ where
   invFun f :=
     { toFun := ofDual ∘ f ∘ toDual
       map_sInf' := fun _ => congr_arg ofDual (map_sSup f _) }
-  left_inv _ := sInfHom.ext fun _ => rfl
-  right_inv _ := sSupHom.ext fun _ => rfl
 
 @[simp]
 theorem dual_id : sInfHom.dual (sInfHom.id α) = sSupHom.id _ :=
@@ -754,8 +746,6 @@ lattices. -/
 protected def dual : CompleteLatticeHom α β ≃ CompleteLatticeHom αᵒᵈ βᵒᵈ where
   toFun f := ⟨sSupHom.dual f.tosSupHom, fun s ↦ f.map_sInf' s⟩
   invFun f := ⟨sSupHom.dual f.tosSupHom, fun s ↦ f.map_sInf' s⟩
-  left_inv _ := ext fun _ => rfl
-  right_inv _ := ext fun _ => rfl
 
 @[simp]
 theorem dual_id : CompleteLatticeHom.dual (CompleteLatticeHom.id α) = CompleteLatticeHom.id _ :=

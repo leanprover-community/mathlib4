@@ -35,20 +35,14 @@ theorem one_le_pow_of_le (ha : 1 ≤ a) : ∀ n : ℕ, 1 ≤ a ^ n
     rw [pow_succ]
     exact one_le_mul (one_le_pow_of_le ha k) ha
 
-@[deprecated (since := "2024-09-21")] alias pow_nonneg := nsmul_nonneg
-
 @[to_additive nsmul_nonpos]
 theorem pow_le_one_of_le (ha : a ≤ 1) (n : ℕ) : a ^ n ≤ 1 := one_le_pow_of_le (M := Mᵒᵈ) ha n
-
-@[deprecated (since := "2024-09-21")] alias pow_nonpos := nsmul_nonpos
 
 @[to_additive nsmul_neg]
 theorem pow_lt_one_of_lt {a : M} {n : ℕ} (h : a < 1) (hn : n ≠ 0) : a ^ n < 1 := by
   rcases Nat.exists_eq_succ_of_ne_zero hn with ⟨k, rfl⟩
   rw [pow_succ']
   exact mul_lt_one_of_lt_of_le h (pow_le_one_of_le h.le _)
-
-@[deprecated (since := "2024-09-21")] alias pow_neg := nsmul_neg
 
 end Left
 
@@ -58,23 +52,27 @@ end Left
 
 section Left
 
-variable [MulLeftMono M]
+variable [MulLeftMono M] {a : M} {n : ℕ}
 
 @[to_additive nsmul_left_monotone]
-theorem pow_right_monotone {a : M} (ha : 1 ≤ a) : Monotone fun n : ℕ ↦ a ^ n :=
+theorem pow_right_monotone (ha : 1 ≤ a) : Monotone fun n : ℕ ↦ a ^ n :=
   monotone_nat_of_le_succ fun n ↦ by rw [pow_succ]; exact le_mul_of_one_le_right' ha
 
 @[to_additive (attr := gcongr) nsmul_le_nsmul_left]
-theorem pow_le_pow_right' {a : M} {n m : ℕ} (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m :=
+theorem pow_le_pow_right' {n m : ℕ} (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m :=
   pow_right_monotone ha h
 
 @[to_additive nsmul_le_nsmul_left_of_nonpos]
-theorem pow_le_pow_right_of_le_one' {a : M} {n m : ℕ} (ha : a ≤ 1) (h : n ≤ m) : a ^ m ≤ a ^ n :=
+theorem pow_le_pow_right_of_le_one' {n m : ℕ} (ha : a ≤ 1) (h : n ≤ m) : a ^ m ≤ a ^ n :=
   pow_le_pow_right' (M := Mᵒᵈ) ha h
 
 @[to_additive nsmul_pos]
-theorem one_lt_pow' {a : M} (ha : 1 < a) {k : ℕ} (hk : k ≠ 0) : 1 < a ^ k :=
+theorem one_lt_pow' (ha : 1 < a) {k : ℕ} (hk : k ≠ 0) : 1 < a ^ k :=
   pow_lt_one' (M := Mᵒᵈ) ha hk
+
+@[to_additive]
+lemma le_self_pow (ha : 1 ≤ a) (hn : n ≠ 0) : a ≤ a ^ n := by
+  simpa using pow_le_pow_right' ha (Nat.one_le_iff_ne_zero.2 hn)
 
 end Left
 
@@ -103,21 +101,15 @@ theorem Right.one_le_pow_of_le (hx : 1 ≤ x) : ∀ {n : ℕ}, 1 ≤ x ^ n
     rw [pow_succ]
     exact Right.one_le_mul (Right.one_le_pow_of_le hx) hx
 
-@[deprecated (since := "2024-09-21")] alias Right.pow_nonneg := Right.nsmul_nonneg
-
 @[to_additive Right.nsmul_nonpos]
 theorem Right.pow_le_one_of_le (hx : x ≤ 1) {n : ℕ} : x ^ n ≤ 1 :=
   Right.one_le_pow_of_le (M := Mᵒᵈ) hx
-
-@[deprecated (since := "2024-09-21")] alias Right.pow_nonpos := Right.nsmul_nonpos
 
 @[to_additive Right.nsmul_neg]
 theorem Right.pow_lt_one_of_lt {n : ℕ} {x : M} (hn : 0 < n) (h : x < 1) : x ^ n < 1 := by
   rcases Nat.exists_eq_succ_of_ne_zero hn.ne' with ⟨k, rfl⟩
   rw [pow_succ]
   exact mul_lt_one_of_le_of_lt (pow_le_one_of_le h.le) h
-
-@[deprecated (since := "2024-09-21")] alias Right.pow_neg := Right.nsmul_neg
 
 /-- This lemma is useful in non-cancellative monoids, like sets under pointwise operations. -/
 @[to_additive
@@ -147,7 +139,7 @@ theorem StrictMono.pow_const (hf : StrictMono f) : ∀ {n : ℕ}, n ≠ 0 → St
     simpa only [pow_succ] using (hf.pow_const n.succ_ne_zero).mul' hf
 
 /-- See also `pow_left_strictMonoOn₀`. -/
-@[to_additive nsmul_right_strictMono]  -- Porting note: nolint to_additive_doc
+@[to_additive nsmul_right_strictMono]
 theorem pow_left_strictMono (hn : n ≠ 0) : StrictMono (· ^ n : M → M) := strictMono_id.pow_const hn
 
 @[to_additive (attr := mono, gcongr) nsmul_lt_nsmul_right]
@@ -184,6 +176,22 @@ lemma pow_le_pow {a b : M} (hab : a ≤ b) (ht : 1 ≤ b) {m n : ℕ} (hmn : m �
 end CovariantLESwap
 
 end Preorder
+
+section SemilatticeSup
+variable [SemilatticeSup M] [MulLeftMono M] [MulRightMono M] {a b : M} {n : ℕ}
+
+lemma le_pow_sup : a ^ n ⊔ b ^ n ≤ (a ⊔ b) ^ n :=
+  sup_le (pow_le_pow_left' le_sup_left _) (pow_le_pow_left' le_sup_right _)
+
+end SemilatticeSup
+
+section SemilatticeInf
+variable [SemilatticeInf M] [MulLeftMono M] [MulRightMono M] {a b : M} {n : ℕ}
+
+lemma pow_inf_le : (a ⊓ b) ^ n ≤ a ^ n ⊓ b ^ n :=
+  le_inf (pow_le_pow_left' inf_le_left _) (pow_le_pow_left' inf_le_right _)
+
+end SemilatticeInf
 
 section LinearOrder
 
@@ -280,7 +288,7 @@ theorem Left.pow_lt_one_iff [MulLeftStrictMono M] {n : ℕ} {x : M} (hn : 0 < n)
 theorem Right.pow_lt_one_iff [MulRightStrictMono M] {n : ℕ} {x : M}
     (hn : 0 < n) : x ^ n < 1 ↔ x < 1 :=
   haveI := mulRightMono_of_mulRightStrictMono M
-  ⟨fun H => not_le.mp fun k => H.not_le <| Right.one_le_pow_of_le k, Right.pow_lt_one_of_lt hn⟩
+  ⟨fun H => not_le.mp fun k => H.not_ge <| Right.one_le_pow_of_le k, Right.pow_lt_one_of_lt hn⟩
 
 end LinearOrder
 

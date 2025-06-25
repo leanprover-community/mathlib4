@@ -5,7 +5,7 @@ Authors: Joachim Breitner
 -/
 import Mathlib.Probability.ProbabilityMassFunction.Basic
 import Mathlib.Probability.ProbabilityMassFunction.Constructions
-import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-!
 # Integrals with a measure derived from probability mass functions.
@@ -43,7 +43,9 @@ theorem integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeas
 theorem integral_eq_sum [Fintype α] (p : PMF α) (f : α → E) :
     ∫ a, f a ∂(p.toMeasure) = ∑ a, (p a).toReal • f a := by
   rw [integral_fintype _ .of_finite]
-  congr with x; congr 2
+  congr with x
+  rw [measureReal_def]
+  congr 2
   exact PMF.toMeasure_apply_singleton p x (MeasurableSet.singleton _)
 
 end General

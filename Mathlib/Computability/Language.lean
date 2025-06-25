@@ -5,7 +5,6 @@ Authors: Fox Thomson, Martin Dvorak
 -/
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Data.List.Flatten
 import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.DeriveFintype
 
@@ -14,10 +13,36 @@ import Mathlib.Tactic.DeriveFintype
 
 This file contains the definition and operations on formal languages over an alphabet.
 Note that "strings" are implemented as lists over the alphabet.
+
 Union and concatenation define a [Kleene algebra](https://en.wikipedia.org/wiki/Kleene_algebra)
 over the languages.
+
 In addition to that, we define a reversal of a language and prove that it behaves well
 with respect to other language operations.
+
+## Notation
+
+* `l + m`: union of languages `l` and `m`
+* `l * m`: language of strings `x ++ y` such that `x ∈ l` and `y ∈ m`
+* `l ^ n`: language of strings consisting of `n` members of `l` concatenated together
+* `1`: language consisting of only the empty string.
+  This is because it is the unit of the `*` operator.
+* `l∗`: Kleene's star – language of strings consisting of arbitrarily many
+  members of `l` concatenated together
+  (Note that this is the Unicode asterisk `∗`, and not the more common star `*`)
+
+## Main definitions
+
+* `Language α`: a set of strings over the alphabet `α`
+* `l.map f`: transform a language `l` over `α` into a language over `β`
+  by translating through `f : α → β`
+
+## Main theorems
+
+* `Language.self_eq_mul_add_iff`: Arden's lemma – if a language `l` satisfies the equation
+  `l = m * l + n`, and `m` doesn't contain the empty string,
+  then `l` is the language `m∗ * n`
+
 -/
 
 
@@ -31,17 +56,15 @@ variable {α β γ : Type*}
 def Language (α) :=
   Set (List α)
 
+namespace Language
+
 instance : Membership (List α) (Language α) := ⟨Set.Mem⟩
 instance : Singleton (List α) (Language α) := ⟨Set.singleton⟩
 instance : Insert (List α) (Language α) := ⟨Set.insert⟩
-instance : CompleteAtomicBooleanAlgebra (Language α) := Set.completeAtomicBooleanAlgebra
-
-namespace Language
+instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Language α) :=
+  Set.instCompleteAtomicBooleanAlgebra
 
 variable {l m : Language α} {a b x : List α}
-
--- Porting note: `reducible` attribute cannot be local.
--- attribute [local reducible] Language
 
 /-- Zero language has no elements. -/
 instance : Zero (Language α) :=
@@ -81,15 +104,15 @@ instance : KStar (Language α) := ⟨fun l ↦ {x | ∃ L : List (List α), x = 
 lemma kstar_def (l : Language α) : l∗ = {x | ∃ L : List (List α), x = L.flatten ∧ ∀ y ∈ L, y ∈ l} :=
   rfl
 
--- Porting note: `reducible` attribute cannot be local,
---               so this new theorem is required in place of `Set.ext`.
 @[ext]
 theorem ext {l m : Language α} (h : ∀ (x : List α), x ∈ l ↔ x ∈ m) : l = m :=
   Set.ext h
 
 @[simp]
-theorem not_mem_zero (x : List α) : x ∉ (0 : Language α) :=
+theorem notMem_zero (x : List α) : x ∉ (0 : Language α) :=
   id
+
+@[deprecated (since := "2025-05-23")] alias not_mem_zero := notMem_zero
 
 @[simp]
 theorem mem_one (x : List α) : x ∈ (1 : Language α) ↔ x = [] := by rfl
@@ -146,7 +169,7 @@ def map (f : α → β) : Language α →+* Language β where
   map_zero' := image_empty _
   map_one' := image_singleton
   map_add' := image_union _
-  map_mul' _ _ := image_image2_distrib <| map_append _
+  map_mul' _ _ := image_image2_distrib <| fun _ _ => map_append
 
 @[simp]
 theorem map_id (l : Language α) : map id l = l := by simp [map]
@@ -161,9 +184,7 @@ lemma mem_kstar_iff_exists_nonempty {x : List α} :
   · rintro ⟨S, rfl, h⟩
     refine ⟨S.filter fun l ↦ !List.isEmpty l,
       by simp [List.flatten_filter_not_isEmpty], fun y hy ↦ ?_⟩
-    -- Porting note: The previous code was:
-    -- rw [mem_filter, empty_iff_eq_nil] at hy
-    rw [mem_filter, Bool.not_eq_true', ← Bool.bool_iff_false, List.isEmpty_iff] at hy
+    simp only [mem_filter, Bool.not_eq_eq_eq_not, Bool.not_true, isEmpty_eq_false_iff, ne_eq] at hy
     exact ⟨h y hy.1, hy.2⟩
   · rintro ⟨S, hx, h⟩
     exact ⟨S, hx, fun y hy ↦ (h y hy).1⟩
@@ -204,14 +225,16 @@ theorem add_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Langu
 
 theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     x ∈ l ^ n ↔ ∃ S : List (List α), x = S.flatten ∧ S.length = n ∧ ∀ y ∈ S, y ∈ l := by
-  induction' n with n ihn generalizing x
-  · simp only [mem_one, pow_zero, length_eq_zero]
+  induction n generalizing x with
+  | zero =>
+    simp only [mem_one, pow_zero, length_eq_zero_iff]
     constructor
     · rintro rfl
       exact ⟨[], rfl, rfl, fun _ h ↦ by contradiction⟩
     · rintro ⟨_, rfl, rfl, _⟩
       rfl
-  · simp only [pow_succ', mem_mul, ihn]
+  | succ n ihn =>
+    simp only [pow_succ', mem_mul, ihn]
     constructor
     · rintro ⟨a, ha, b, ⟨S, rfl, rfl, hS⟩, rfl⟩
       exact ⟨a :: S, rfl, rfl, forall_mem_cons.2 ⟨ha, hS⟩⟩
@@ -247,7 +270,7 @@ theorem one_add_kstar_mul_self_eq_kstar (l : Language α) : 1 + l∗ * l = l∗ 
   rw [mul_self_kstar_comm, one_add_self_mul_kstar_eq_kstar]
 
 instance : KleeneAlgebra (Language α) :=
-  { Language.instSemiring, Set.completeAtomicBooleanAlgebra with
+  { instSemiring, instCompleteAtomicBooleanAlgebra with
     kstar := fun L ↦ L∗,
     one_le_kstar := fun a _ hl ↦ ⟨[], hl, by simp⟩,
     mul_kstar_le_kstar := fun a ↦ (one_add_self_mul_kstar_eq_kstar a).le.trans' le_sup_right,
@@ -255,10 +278,11 @@ instance : KleeneAlgebra (Language α) :=
     kstar_mul_le_self := fun l m h ↦ by
       rw [kstar_eq_iSup_pow, iSup_mul]
       refine iSup_le (fun n ↦ ?_)
-      induction' n with n ih
-      · simp
-      rw [pow_succ, mul_assoc (l^n) l m]
-      exact le_trans (le_mul_congr le_rfl h) ih,
+      induction n with
+      | zero => simp
+      | succ n ih =>
+        rw [pow_succ, mul_assoc (l^n) l m]
+        exact le_trans (le_mul_congr le_rfl h) ih,
     mul_kstar_le_self := fun l m h ↦ by
       rw [kstar_eq_iSup_pow, mul_iSup]
       refine iSup_le (fun n ↦ ?_)
@@ -267,6 +291,34 @@ instance : KleeneAlgebra (Language α) :=
       | succ n ih =>
         rw [pow_succ, ← mul_assoc m (l^n) l]
         exact le_trans (le_mul_congr ih le_rfl) h }
+
+/-- **Arden's lemma** -/
+theorem self_eq_mul_add_iff {l m n : Language α} (hm : [] ∉ m) : l = m * l + n ↔ l = m∗ * n where
+  mp h := by
+    apply le_antisymm
+    · intro x hx
+      induction hlen : x.length using Nat.strong_induction_on generalizing x with | _ _ ih
+      subst hlen
+      rw [h] at hx
+      obtain hx | hx := hx
+      · obtain ⟨a, ha, b, hb, rfl⟩ := mem_mul.mp hx
+        rw [length_append] at ih
+        have hal : 0 < a.length := length_pos_iff.mpr <| ne_of_mem_of_not_mem ha hm
+        specialize ih b.length (Nat.lt_add_left_iff_pos.mpr hal) hb rfl
+        rw [← one_add_self_mul_kstar_eq_kstar, one_add_mul, mul_assoc]
+        right
+        exact ⟨_, ha, _, ih, rfl⟩
+      · exact ⟨[], nil_mem_kstar _, _, ⟨hx, nil_append _⟩⟩
+    · rw [kstar_eq_iSup_pow, iSup_mul, iSup_le_iff]
+      intro i
+      induction i with rw [h]
+      | zero =>
+        rw [pow_zero, one_mul, add_comm]
+        exact le_self_add
+      | succ _ ih =>
+        rw [add_comm, pow_add, pow_one, mul_assoc]
+        exact le_add_right (mul_le_mul_left' ih _)
+  mpr h := by rw [h, add_comm, ← mul_assoc, ← one_add_mul, one_add_self_mul_kstar_eq_kstar]
 
 /-- Language `l.reverse` is defined as the set of words from `l` backwards. -/
 def reverse (l : Language α) : Language α := { w : List α | w.reverse ∈ l }
@@ -343,8 +395,8 @@ end Language
 /-- Symbols for use by all kinds of grammars. -/
 inductive Symbol (T N : Type*)
   /-- Terminal symbols (of the same type as the language) -/
-  | terminal    (t : T) : Symbol T N
-  /-- Nonterminal symbols (must not be present at the end of word being generated) -/
+  | terminal (t : T) : Symbol T N
+  /-- Nonterminal symbols (must not be present when the word being generated is finalized) -/
   | nonterminal (n : N) : Symbol T N
 deriving
   DecidableEq, Repr, Fintype

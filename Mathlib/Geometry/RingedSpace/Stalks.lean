@@ -48,9 +48,6 @@ theorem stalkMap_germ {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (U : Op
       X.presheaf.germ ((Opens.map α.base).obj U) x hx := by
   rw [Hom.stalkMap, stalkFunctor_map_germ_assoc, stalkPushforward_germ]
 
-@[deprecated (since := "2024-07-30")] alias stalkMap_germ' := stalkMap_germ
-@[deprecated (since := "2024-07-30")] alias stalkMap_germ'_assoc := stalkMap_germ
-
 section Restrict
 
 /-- For an open embedding `f : U ⟶ X` and a point `x : U`, we get an isomorphism between the stalk
@@ -88,7 +85,7 @@ theorem restrictStalkIso_inv_eq_ofRestrict {U : TopCat} (X : PresheafedSpace.{_,
     (X.restrictStalkIso h x).inv = (X.ofRestrict h).stalkMap x := by
   -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159
   refine colimit.hom_ext fun V => ?_
-  induction V with | h V => ?_
+  induction V with | op V => ?_
   let i : (h.isOpenMap.functorNhds x).obj ((OpenNhds.map f x).obj V) ⟶ V :=
     homOfLE (Set.image_preimage_subset f _)
   erw [Iso.comp_inv_eq, colimit.ι_map_assoc, colimit.ι_map_assoc, colimit.ι_pre]
@@ -169,7 +166,7 @@ instance isIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) [IsIso α] (x 
     -- `X.stalk x ⟶ X.stalk ((α ≫ β).base x)`.
     refine
       ⟨eqToHom (show X.presheaf.stalk x = X.presheaf.stalk ((α ≫ β).base x) by rw [h_eq]) ≫
-          (β.stalkMap (α.base x) : _),
+          (β.stalkMap (α.base x) :),
         ?_, ?_⟩
     · rw [← Category.assoc, congr_point α x ((α ≫ β).base x) h_eq.symm, Category.assoc]
       erw [← stalkMap.comp β α (α.base x)]
@@ -184,18 +181,17 @@ def stalkIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ≅ Y) (x : X) :
     Y.presheaf.stalk (α.hom.base x) ≅ X.presheaf.stalk x :=
   asIso (α.hom.stalkMap x)
 
--- See https://github.com/leanprover-community/batteries/issues/365 for the simpNF issue.
-@[reassoc, elementwise, simp, nolint simpNF]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
     (f : X ⟶ Y) {x y : X} (h : x ⤳ y) :
-    Y.presheaf.stalkSpecializes (f.base.map_specializes h) ≫ f.stalkMap x =
+    Y.presheaf.stalkSpecializes (f.base.hom.map_specializes h) ≫ f.stalkMap x =
       f.stalkMap y ≫ X.presheaf.stalkSpecializes h := by
   -- Porting note: the original one liner `dsimp [stalkMap]; simp [stalkMap]` doesn't work,
   -- I had to uglify this
   dsimp [stalkSpecializes, Hom.stalkMap, stalkFunctor, stalkPushforward]
   -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159
   refine colimit.hom_ext fun j => ?_
-  induction j with | h j => ?_
+  induction j with | op j => ?_
   dsimp
   simp only [colimit.ι_desc_assoc, ι_colimMap_assoc, whiskerLeft_app,
     whiskerRight_app, NatTrans.id_app, map_id, colimit.ι_pre, id_comp, assoc,

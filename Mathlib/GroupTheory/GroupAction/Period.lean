@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Burgun
 -/
 
-import Mathlib.Dynamics.PeriodicPts
+import Mathlib.Dynamics.PeriodicPts.Lemmas
 import Mathlib.GroupTheory.Exponent
 import Mathlib.GroupTheory.GroupAction.Basic
 

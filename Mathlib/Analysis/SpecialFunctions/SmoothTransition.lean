@@ -72,9 +72,9 @@ theorem tendsto_polynomial_inv_mul_zero (p : ℝ[X]) :
   refine tendsto_const_nhds.if ?_
   simp only [not_le]
   have : Tendsto (fun x ↦ p.eval x⁻¹ / exp x⁻¹) (𝓝[>] 0) (𝓝 0) :=
-    p.tendsto_div_exp_atTop.comp tendsto_inv_zero_atTop
+    p.tendsto_div_exp_atTop.comp tendsto_inv_nhdsGT_zero
   refine this.congr' <| mem_of_superset self_mem_nhdsWithin fun x hx ↦ ?_
-  simp [expNegInvGlue, hx.out.not_le, exp_neg, div_eq_mul_inv]
+  simp [expNegInvGlue, hx.out.not_ge, exp_neg, div_eq_mul_inv]
 
 theorem hasDerivAt_polynomial_eval_inv_mul (p : ℝ[X]) (x : ℝ) :
     HasDerivAt (fun x ↦ p.eval x⁻¹ * expNegInvGlue x)
@@ -89,10 +89,10 @@ theorem hasDerivAt_polynomial_eval_inv_mul (p : ℝ[X]) (x : ℝ) :
     simp [slope_def_field, div_eq_mul_inv, mul_right_comm]
   · have := ((p.hasDerivAt x⁻¹).mul (hasDerivAt_neg _).exp).comp x (hasDerivAt_inv hx.ne')
     convert this.congr_of_eventuallyEq _ using 1
-    · simp [expNegInvGlue, hx.not_le]
+    · simp [expNegInvGlue, hx.not_ge]
       ring
     · filter_upwards [lt_mem_nhds hx] with y hy
-      simp [expNegInvGlue, hy.not_le]
+      simp [expNegInvGlue, hy.not_ge]
 
 theorem differentiable_polynomial_eval_inv_mul (p : ℝ[X]) :
     Differentiable ℝ (fun x ↦ p.eval x⁻¹ * expNegInvGlue x) := fun x ↦
@@ -114,6 +114,7 @@ theorem contDiff_polynomial_eval_inv_mul {n : ℕ∞} (p : ℝ[X]) :
     exact (hasDerivAt_polynomial_eval_inv_mul p _).deriv
 
 /-- The function `expNegInvGlue` is smooth. -/
+@[fun_prop]
 protected theorem contDiff {n : ℕ∞} : ContDiff ℝ n expNegInvGlue := by
   simpa using contDiff_polynomial_eval_inv_mul 1
 
@@ -133,7 +134,7 @@ variable {x : ℝ}
 open expNegInvGlue
 
 theorem pos_denom (x) : 0 < expNegInvGlue x + expNegInvGlue (1 - x) :=
-  (zero_lt_one.lt_or_lt x).elim (fun hx => add_pos_of_pos_of_nonneg (pos_of_pos hx) (nonneg _))
+  (zero_lt_one.gt_or_lt x).elim (fun hx => add_pos_of_pos_of_nonneg (pos_of_pos hx) (nonneg _))
     fun hx => add_pos_of_nonneg_of_pos (nonneg _) (pos_of_pos <| sub_pos.2 hx)
 
 theorem one_of_one_le (h : 1 ≤ x) : smoothTransition x = 1 :=
@@ -175,17 +176,21 @@ theorem lt_one_of_lt_one (h : x < 1) : smoothTransition x < 1 :=
 theorem pos_of_pos (h : 0 < x) : 0 < smoothTransition x :=
   div_pos (expNegInvGlue.pos_of_pos h) (pos_denom x)
 
+@[fun_prop]
 protected theorem contDiff {n : ℕ∞} : ContDiff ℝ n smoothTransition :=
   expNegInvGlue.contDiff.div
     (expNegInvGlue.contDiff.add <| expNegInvGlue.contDiff.comp <| contDiff_const.sub contDiff_id)
     fun x => (pos_denom x).ne'
 
+@[fun_prop]
 protected theorem contDiffAt {x : ℝ} {n : ℕ∞} : ContDiffAt ℝ n smoothTransition x :=
   smoothTransition.contDiff.contDiffAt
 
+@[fun_prop]
 protected theorem continuous : Continuous smoothTransition :=
   (@smoothTransition.contDiff 0).continuous
 
+@[fun_prop]
 protected theorem continuousAt : ContinuousAt smoothTransition x :=
   smoothTransition.continuous.continuousAt
 

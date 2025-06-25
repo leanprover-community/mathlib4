@@ -3,12 +3,12 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Pi
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.CategoryTheory.FintypeCat
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.CategoryTheory.Preadditive.SingleObj
@@ -51,8 +51,6 @@ Ideally this would conveniently interact with both `Mat_` and `Matrix`.
 
 open CategoryTheory CategoryTheory.Preadditive
 
-open scoped Classical
-
 noncomputable section
 
 namespace CategoryTheory
@@ -64,8 +62,10 @@ variable (C : Type u₁) [Category.{v₁} C] [Preadditive C]
 /-- An object in `Mat_ C` is a finite tuple of objects in `C`.
 -/
 structure Mat_ where
+  /-- The index type `ι` -/
   ι : Type
   [fintype : Fintype ι]
+  /-- The map from `ι` to objects in `C` -/
   X : ι → C
 
 attribute [instance] Mat_.fintype
@@ -74,13 +74,13 @@ namespace Mat_
 
 variable {C}
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- A morphism in `Mat_ C` is a dependently typed matrix of morphisms. -/
 def Hom (M N : Mat_ C) : Type v₁ :=
   DMatrix M.ι N.ι fun i j => M.X i ⟶ N.X j
 
 namespace Hom
 
+open scoped Classical in
 /-- The identity matrix consists of identity morphisms on the diagonal, and zeros elsewhere. -/
 def id (M : Mat_ C) : Hom M M := fun i j => if h : i = j then eqToHom (congr_arg M.X h) else 0
 
@@ -98,8 +98,12 @@ instance : Category.{v₁} (Mat_ C) where
   Hom := Hom
   id := Hom.id
   comp f g := f.comp g
-  id_comp f := by simp (config := { unfoldPartialApp := true }) [dite_comp]
-  comp_id f := by simp (config := { unfoldPartialApp := true }) [comp_dite]
+  id_comp f := by
+    classical
+    simp +unfoldPartialApp [dite_comp]
+  comp_id f := by
+    classical
+    simp +unfoldPartialApp [comp_dite]
   assoc f g h := by
     apply DMatrix.ext
     intros
@@ -110,10 +114,12 @@ instance : Category.{v₁} (Mat_ C) where
 theorem hom_ext {M N : Mat_ C} (f g : M ⟶ N) (H : ∀ i j, f i j = g i j) : f = g :=
   DMatrix.ext_iff.mp H
 
+open scoped Classical in
 theorem id_def (M : Mat_ C) :
     (𝟙 M : Hom M M) = fun i j => if h : i = j then eqToHom (congr_arg M.X h) else 0 :=
   rfl
 
+open scoped Classical in
 theorem id_apply (M : Mat_ C) (i j : M.ι) :
     (𝟙 M : Hom M M) i j = if h : i = j then eqToHom (congr_arg M.X h) else 0 :=
   rfl
@@ -155,6 +161,7 @@ instance : Preadditive (Mat_ C) where
 
 open CategoryTheory.Limits
 
+open scoped Classical in
 /-- We now prove that `Mat_ C` has finite biproducts.
 
 Be warned, however, that `Mat_ C` is not necessarily Krull-Schmidt,
@@ -249,6 +256,7 @@ def mapMat_ (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ Mat_ D where
 @[simps!]
 def mapMatId : (𝟭 C).mapMat_ ≅ 𝟭 (Mat_ C) :=
   NatIso.ofComponents (fun M => eqToIso (by cases M; rfl)) fun {M N} f => by
+    classical
     ext
     cases M; cases N
     simp [comp_dite, dite_comp]
@@ -259,6 +267,7 @@ def mapMatId : (𝟭 C).mapMat_ ≅ 𝟭 (Mat_ C) :=
 def mapMatComp {E : Type*} [Category.{v₁} E] [Preadditive E] (F : C ⥤ D) [Functor.Additive F]
     (G : D ⥤ E) [Functor.Additive G] : (F ⋙ G).mapMat_ ≅ F.mapMat_ ⋙ G.mapMat_ :=
   NatIso.ofComponents (fun M => eqToIso (by cases M; rfl)) fun {M N} f => by
+    classical
     ext
     cases M; cases N
     simp [comp_dite, dite_comp]
@@ -294,6 +303,7 @@ open CategoryTheory.Limits
 
 variable {C}
 
+open scoped Classical in
 /-- Every object in `Mat_ C` is isomorphic to the biproduct of its summands.
 -/
 @[simps]
@@ -365,6 +375,7 @@ theorem additiveObjIsoBiproduct_naturality (F : Mat_ C ⥤ D) [Functor.Additive 
     F.map f ≫ (additiveObjIsoBiproduct F N).hom =
       (additiveObjIsoBiproduct F M).hom ≫
         biproduct.matrix fun i j => F.map ((embedding C).map (f i j)) := by
+  classical
   ext i : 1
   simp only [Category.assoc, additiveObjIsoBiproduct_hom_π, isoBiproductEmbedding_hom,
     embedding_obj_ι, embedding_obj_X, biproduct.lift_π, biproduct.matrix_π,
@@ -380,7 +391,7 @@ theorem additiveObjIsoBiproduct_naturality (F : Mat_ C ⥤ D) [Functor.Additive 
 theorem additiveObjIsoBiproduct_naturality' (F : Mat_ C ⥤ D) [Functor.Additive F] {M N : Mat_ C}
     (f : M ⟶ N) :
     (additiveObjIsoBiproduct F M).inv ≫ F.map f =
-      biproduct.matrix (fun i j => F.map ((embedding C).map (f i j)) : _) ≫
+      biproduct.matrix (fun i j => F.map ((embedding C).map (f i j)) :) ≫
         (additiveObjIsoBiproduct F N).inv := by
   rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, additiveObjIsoBiproduct_naturality]
 
@@ -393,7 +404,6 @@ def lift (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ D where
   obj X := ⨁ fun i => F.obj (X.X i)
   map f := biproduct.matrix fun i j => F.map (f i j)
   map_id X := by
-    dsimp
     ext i j
     by_cases h : j = i
     · subst h; simp
@@ -488,10 +498,11 @@ instance (R : Type u) : Inhabited (Mat R) := by
   infer_instance
 
 instance (R : Type u) : CoeSort (Mat R) (Type u) :=
-  Bundled.coeSort
+  FintypeCat.instCoeSort
 
 open Matrix
 
+open scoped Classical in
 instance (R : Type u) [Semiring R] : Category (Mat R) where
   Hom X Y := Matrix X Y R
   id X := (1 : Matrix X X R)
@@ -510,9 +521,11 @@ theorem hom_ext {X Y : Mat R} (f g : X ⟶ Y) (h : ∀ i j, f i j = g i j) : f =
 
 variable (R)
 
+open scoped Classical in
 theorem id_def (M : Mat R) : 𝟙 M = fun i j => if i = j then 1 else 0 :=
   rfl
 
+open scoped Classical in
 theorem id_apply (M : Mat R) (i j : M) : (𝟙 M : Matrix M M R) i j = if i = j then 1 else 0 :=
   rfl
 
@@ -568,7 +581,7 @@ instance : (equivalenceSingleObjInverse R).Full where
 instance : (equivalenceSingleObjInverse R).EssSurj where
   mem_essImage X :=
     ⟨{  ι := X
-        X := fun _ => PUnit.unit }, ⟨eqToIso (by dsimp; cases X; congr)⟩⟩
+        X := fun _ => PUnit.unit }, ⟨eqToIso (by cases X; congr)⟩⟩
 
 instance : (equivalenceSingleObjInverse R).IsEquivalence where
 

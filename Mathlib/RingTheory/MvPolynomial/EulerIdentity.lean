@@ -9,7 +9,7 @@ import Mathlib.RingTheory.MvPolynomial.Homogeneous
 /-!
 # Euler's homogeneous identity
 
-## Main resutls
+## Main results
 
 * `IsHomogeneous.sum_X_mul_pderiv`: Euler's identity for homogeneous polynomials:
   for a multivariate homogeneous polynomial,

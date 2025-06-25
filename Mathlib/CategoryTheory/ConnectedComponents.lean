@@ -6,7 +6,7 @@ Authors: Bhavik Mehta
 import Mathlib.Data.List.Chain
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Sigma.Basic
-import Mathlib.CategoryTheory.FullSubcategory
+import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
 /-!
 # Connected components of a category
@@ -50,61 +50,61 @@ instance [Inhabited J] : Inhabited (ConnectedComponents J) :=
   ⟨Quotient.mk'' default⟩
 
 /-- Every function from connected components of a category gives a functor to discrete category -/
-def ConnectedComponents.functorToDiscrete   (X : Type*)
+def ConnectedComponents.functorToDiscrete (X : Type*)
     (f : ConnectedComponents J → X) : J ⥤ Discrete X where
-  obj Y :=  Discrete.mk (f (Quotient.mk (Zigzag.setoid _) Y))
+  obj Y := Discrete.mk (f (Quotient.mk (Zigzag.setoid _) Y))
   map g := Discrete.eqToHom (congrArg f (Quotient.sound (Zigzag.of_hom g)))
 
 /-- Every functor to a discrete category gives a function from connected components -/
-def ConnectedComponents.liftFunctor (J) [Category J] {X : Type*} (F :J ⥤ Discrete X) :
+def ConnectedComponents.liftFunctor (J) [Category J] {X : Type*} (F : J ⥤ Discrete X) :
     (ConnectedComponents J → X) :=
   Quotient.lift (fun c => (F.obj c).as)
     (fun _ _ h => eq_of_zigzag X (zigzag_obj_of_zigzag F h))
 
 /-- Functions from connected components and functors to discrete category are in bijection -/
 def ConnectedComponents.typeToCatHomEquiv (J) [Category J] (X : Type*) :
-    (ConnectedComponents J → X) ≃ (J ⥤ Discrete X)   where
+    (ConnectedComponents J → X) ≃ (J ⥤ Discrete X) where
   toFun := ConnectedComponents.functorToDiscrete _
   invFun := ConnectedComponents.liftFunctor _
-  left_inv := fun f ↦ funext fun x ↦ by
+  left_inv f := funext fun x ↦ by
     obtain ⟨x, h⟩ := Quotient.exists_rep x
     rw [← h]
     rfl
-  right_inv  := fun fctr ↦
+  right_inv fctr :=
     Functor.hext (fun _ ↦ rfl) (fun c d f ↦
       have : Subsingleton (fctr.obj c ⟶ fctr.obj d) := Discrete.instSubsingletonDiscreteHom _ _
       (Subsingleton.elim (fctr.map f) _).symm.heq)
 
+/-- Given an index for a connected component, this is the property of the
+objects which belong to this component. -/
+def ConnectedComponents.objectProperty (j : ConnectedComponents J) :
+    ObjectProperty J := fun k => Quotient.mk'' k = j
+
 /-- Given an index for a connected component, produce the actual component as a full subcategory. -/
-def Component (j : ConnectedComponents J) : Type u₁ :=
-  FullSubcategory fun k => Quotient.mk'' k = j
+abbrev ConnectedComponents.Component (j : ConnectedComponents J) : Type u₁ :=
+  j.objectProperty.FullSubcategory
 
-instance {j : ConnectedComponents J} : Category (Component j) :=
-  FullSubcategory.category _
-
--- Porting note: it was originally @[simps (config := { rhsMd := semireducible })]
 /-- The inclusion functor from a connected component to the whole category. -/
-@[simps!]
-def Component.ι (j : ConnectedComponents J) : Component j ⥤ J :=
-  fullSubcategoryInclusion _
+abbrev ConnectedComponents.ι (j : ConnectedComponents J) : j.Component ⥤ J := j.objectProperty.ι
 
-instance {j : ConnectedComponents J} : Functor.Full (Component.ι j) :=
-  FullSubcategory.full _
+/-- The connected component of an object in a category. -/
+abbrev ConnectedComponents.mk (j : J) : ConnectedComponents J :=
+  Quotient.mk'' j
 
-instance {j : ConnectedComponents J} : Functor.Faithful (Component.ι j) :=
-  FullSubcategory.faithful _
+@[deprecated (since := "2025-03-04")] alias Component := ConnectedComponents.Component
+@[deprecated (since := "2025-03-04")] alias Component.ι := ConnectedComponents.ι
 
 /-- Each connected component of the category is nonempty. -/
-instance (j : ConnectedComponents J) : Nonempty (Component j) := by
+instance (j : ConnectedComponents J) : Nonempty j.Component := by
   induction j using Quotient.inductionOn'
   exact ⟨⟨_, rfl⟩⟩
 
-instance (j : ConnectedComponents J) : Inhabited (Component j) :=
+instance (j : ConnectedComponents J) : Inhabited j.Component :=
   Classical.inhabited_of_nonempty'
 
 /-- Each connected component of the category is connected. -/
-instance (j : ConnectedComponents J) : IsConnected (Component j) := by
-  -- Show it's connected by constructing a zigzag (in `Component j`) between any two objects
+instance (j : ConnectedComponents J) : IsConnected j.Component := by
+  -- Show it's connected by constructing a zigzag (in `j.Component`) between any two objects
   apply isConnected_of_zigzag
   rintro ⟨j₁, hj₁⟩ ⟨j₂, rfl⟩
   -- We know that the underlying objects j₁ j₂ have some zigzag between them in `J`
@@ -112,7 +112,8 @@ instance (j : ConnectedComponents J) : IsConnected (Component j) := by
   -- Get an explicit zigzag as a list
   rcases List.exists_chain_of_relationReflTransGen h₁₂ with ⟨l, hl₁, hl₂⟩
   -- Everything which has a zigzag to j₂ can be lifted to the same component as `j₂`.
-  let f : ∀ x, Zigzag x j₂ → Component (Quotient.mk'' j₂) := fun x h => ⟨x, Quotient.sound' h⟩
+  let f : ∀ x, Zigzag x j₂ → (ConnectedComponents.mk j₂).Component :=
+    fun x h => ⟨x, Quotient.sound' h⟩
   -- Everything in our chosen zigzag from `j₁` to `j₂` has a zigzag to `j₂`.
   have hf : ∀ a : J, a ∈ l → Zigzag a j₂ := by
     intro i hi
@@ -120,37 +121,39 @@ instance (j : ConnectedComponents J) : IsConnected (Component j) := by
     · intro j k
       apply Relation.ReflTransGen.head
     · apply Relation.ReflTransGen.refl
-  -- Now lift the zigzag from `j₁` to `j₂` in `J` to the same thing in `component j`.
+  -- Now lift the zigzag from `j₁` to `j₂` in `J` to the same thing in `j.Component`.
   refine ⟨l.pmap f hf, ?_, ?_⟩
   · refine @List.chain_pmap_of_chain _ _ _ _ _ f (fun x y _ _ h => ?_) _ _ hl₁ h₁₂ _
-    exact zag_of_zag_obj (Component.ι _) h
-  · erw [List.getLast_pmap f (j₁ :: l) (by simpa [h₁₂] using hf) (List.cons_ne_nil _ _)]
-    exact FullSubcategory.ext hl₂
+    exact zag_of_zag_obj (ConnectedComponents.ι _) h
+  · have := List.getLast_pmap (f := f) (xs := j₁ :: l) (by simpa [h₁₂] using hf)
+      (List.cons_ne_nil _ _)
+    simp only [List.pmap_cons] at this
+    rw [this]
+    exact ObjectProperty.FullSubcategory.ext hl₂
 
 /-- The disjoint union of `J`s connected components, written explicitly as a sigma-type with the
 category structure.
 This category is equivalent to `J`.
 -/
 abbrev Decomposed (J : Type u₁) [Category.{v₁} J] :=
-  Σj : ConnectedComponents J, Component j
+  Σj : ConnectedComponents J, j.Component
 
 -- This name may cause clashes further down the road, and so might need to be changed.
 /--
 The inclusion of each component into the decomposed category. This is just `sigma.incl` but having
 this abbreviation helps guide typeclass search to get the right category instance on `decomposed J`.
 -/
-abbrev inclusion (j : ConnectedComponents J) : Component j ⥤ Decomposed J :=
+abbrev inclusion (j : ConnectedComponents J) : j.Component ⥤ Decomposed J :=
   Sigma.incl _
 
--- Porting note: it was originally @[simps (config := { rhsMd := semireducible })]
 /-- The forward direction of the equivalence between the decomposed category and the original. -/
 @[simps!]
 def decomposedTo (J : Type u₁) [Category.{v₁} J] : Decomposed J ⥤ J :=
-  Sigma.desc Component.ι
+  Sigma.desc ConnectedComponents.ι
 
 @[simp]
 theorem inclusion_comp_decomposedTo (j : ConnectedComponents J) :
-    inclusion j ⋙ decomposedTo J = Component.ι j :=
+    inclusion j ⋙ decomposedTo J = ConnectedComponents.ι j :=
   rfl
 
 instance : (decomposedTo J).Full where
@@ -172,7 +175,6 @@ instance : (decomposedTo J).EssSurj where mem_essImage j := ⟨⟨_, j, rfl⟩, 
 
 instance : (decomposedTo J).IsEquivalence where
 
--- Porting note: it was originally @[simps (config := { rhsMd := semireducible }) Functor]
 /-- This gives that any category is equivalent to a disjoint union of connected categories. -/
 @[simps! functor]
 def decomposedEquiv : Decomposed J ≌ J :=

@@ -1,4 +1,4 @@
-import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.Instances.Real.Lemmas
 import Mathlib.Topology.Order.Compact
 
 -- TODO: uses sorry, but is hidden behind the `apply?`

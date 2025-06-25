@@ -39,13 +39,13 @@ section
 def reflTransSymmAux (x : I × I) : ℝ :=
   if (x.2 : ℝ) ≤ 1 / 2 then x.1 * 2 * x.2 else x.1 * (2 - 2 * x.2)
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_reflTransSymmAux : Continuous reflTransSymmAux := by
   refine continuous_if_le ?_ ?_ (Continuous.continuousOn ?_) (Continuous.continuousOn ?_) ?_
-  · continuity
-  · continuity
-  · continuity
-  · continuity
+  · fun_prop
+  · fun_prop
+  · fun_prop
+  · fun_prop
   intro x hx
   norm_num [hx, mul_assoc]
 
@@ -78,31 +78,18 @@ theorem reflTransSymmAux_mem_I (x : I × I) : reflTransSymmAux x ∈ I := by
   `p.trans p.symm`. -/
 def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.symm) where
   toFun x := p ⟨reflTransSymmAux x, reflTransSymmAux_mem_I x⟩
-  continuous_toFun := by continuity
+  continuous_toFun := by fun_prop
   map_zero_left := by simp [reflTransSymmAux]
   map_one_left x := by
-    dsimp only [reflTransSymmAux, Path.coe_toContinuousMap, Path.trans]
-    change _ = ite _ _ _
-    split_ifs with h
-    · rw [Path.extend, Set.IccExtend_of_mem]
-      · norm_num
-      · rw [unitInterval.mul_pos_mem_iff zero_lt_two]
-        exact ⟨unitInterval.nonneg x, h⟩
-    · rw [Path.symm, Path.extend, Set.IccExtend_of_mem]
-      · simp only [Set.Icc.coe_one, one_mul, coe_mk_mk, Function.comp_apply]
-        congr 1
-        ext
-        norm_num [sub_sub_eq_add_sub]
-      · rw [unitInterval.two_mul_sub_one_mem_iff]
-        exact ⟨(not_le.1 h).le, unitInterval.le_one x⟩
-  prop' t x hx := by
-    simp only [Set.mem_singleton_iff, Set.mem_insert_iff] at hx
-    simp only [ContinuousMap.coe_mk, coe_toContinuousMap, Path.refl_apply]
-    cases hx with
-    | inl hx
+    simp only [reflTransSymmAux, Path.coe_toContinuousMap, Path.trans]
+    cases le_or_gt (x : ℝ) 2⁻¹ with
+    | inl hx => simp [hx, ← extend_extends]
     | inr hx =>
-      rw [hx]
-      norm_num [reflTransSymmAux]
+      simp? [hx.not_le, ← extend_extends] says
+        simp only [one_div, hx.not_ge, ↓reduceIte, Set.Icc.coe_one, one_mul, ← extend_extends,
+          extend_symm, ContinuousMap.coe_mk, Function.comp_apply]
+      ring_nf
+  prop' t := by norm_num [reflTransSymmAux]
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₁` to
   `p.symm.trans p`. -/
@@ -117,10 +104,10 @@ section TransRefl
 def transReflReparamAux (t : I) : ℝ :=
   if (t : ℝ) ≤ 1 / 2 then 2 * t else 1
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_transReflReparamAux : Continuous transReflReparamAux := by
   refine continuous_if_le ?_ ?_ (Continuous.continuousOn ?_) (Continuous.continuousOn ?_) ?_ <;>
-    [continuity; continuity; continuity; continuity; skip]
+    [fun_prop; fun_prop; fun_prop; fun_prop; skip]
   intro x hx
   simp [hx]
 
@@ -136,7 +123,7 @@ theorem transReflReparamAux_one : transReflReparamAux 1 = 1 := by
 
 theorem trans_refl_reparam (p : Path x₀ x₁) :
     p.trans (Path.refl x₁) =
-      p.reparam (fun t => ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩) (by continuity)
+      p.reparam (fun t => ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩) (by fun_prop)
         (Subtype.ext transReflReparamAux_zero) (Subtype.ext transReflReparamAux_one) := by
   ext
   unfold transReflReparamAux
@@ -150,7 +137,7 @@ theorem trans_refl_reparam (p : Path x₀ x₁) :
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from `p.trans (Path.refl x₁)` to `p`. -/
 def transRefl (p : Path x₀ x₁) : Homotopy (p.trans (Path.refl x₁)) p :=
   ((Homotopy.reparam p (fun t => ⟨transReflReparamAux t, transReflReparamAux_mem_I t⟩)
-          (by continuity) (Subtype.ext transReflReparamAux_zero)
+          (by fun_prop) (Subtype.ext transReflReparamAux_zero)
           (Subtype.ext transReflReparamAux_one)).cast
       rfl (trans_refl_reparam p).symm).symm
 
@@ -166,13 +153,13 @@ section Assoc
 def transAssocReparamAux (t : I) : ℝ :=
   if (t : ℝ) ≤ 1 / 4 then 2 * t else if (t : ℝ) ≤ 1 / 2 then t + 1 / 4 else 1 / 2 * (t + 1)
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_transAssocReparamAux : Continuous transAssocReparamAux := by
   refine continuous_if_le ?_ ?_ (Continuous.continuousOn ?_)
     (continuous_if_le ?_ ?_
       (Continuous.continuousOn ?_) (Continuous.continuousOn ?_) ?_).continuousOn
       ?_ <;>
-    [continuity; continuity; continuity; continuity; continuity; continuity; continuity; skip;
+    [fun_prop; fun_prop; fun_prop; fun_prop; fun_prop; fun_prop; fun_prop; skip;
       skip] <;>
     · intro x hx
       norm_num [hx]
@@ -190,7 +177,7 @@ theorem transAssocReparamAux_one : transAssocReparamAux 1 = 1 := by
 theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x₁ x₂) (r : Path x₂ x₃) :
     (p.trans q).trans r =
       (p.trans (q.trans r)).reparam
-        (fun t => ⟨transAssocReparamAux t, transAssocReparamAux_mem_I t⟩) (by continuity)
+        (fun t => ⟨transAssocReparamAux t, transAssocReparamAux_mem_I t⟩) (by fun_prop)
         (Subtype.ext transAssocReparamAux_zero) (Subtype.ext transAssocReparamAux_one) := by
   ext x
   simp only [transAssocReparamAux, Path.trans_apply, mul_inv_cancel_left₀, not_le,
@@ -199,32 +186,10 @@ theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : 
   -- TODO: why does split_ifs not reduce the ifs??????
   split_ifs with h₁ h₂ h₃ h₄ h₅
   · rfl
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
+  iterate 6 exfalso; linarith
   · have h : 2 * (2 * (x : ℝ)) - 1 = 2 * (2 * (↑x + 1 / 4) - 1) := by linarith
     simp [h₂, h₁, h, dif_neg (show ¬False from id), dif_pos True.intro, if_false, if_true]
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
-  · exfalso
-    linarith
+  iterate 6 exfalso; linarith
   · congr
     ring
 
@@ -232,7 +197,7 @@ theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : 
 def transAssoc {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x₁ x₂) (r : Path x₂ x₃) :
     Homotopy ((p.trans q).trans r) (p.trans (q.trans r)) :=
   ((Homotopy.reparam (p.trans (q.trans r))
-          (fun t => ⟨transAssocReparamAux t, transAssocReparamAux_mem_I t⟩) (by continuity)
+          (fun t => ⟨transAssocReparamAux t, transAssocReparamAux_mem_I t⟩) (by fun_prop)
           (Subtype.ext transAssocReparamAux_zero) (Subtype.ext transAssocReparamAux_one)).cast
       rfl (trans_assoc_reparam p q r).symm).symm
 
@@ -258,8 +223,6 @@ namespace FundamentalGroupoid
 def equiv (X : Type*) : FundamentalGroupoid X ≃ X where
   toFun x := x.as
   invFun x := .mk x
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp]
 lemma isEmpty_iff (X : Type*) :
@@ -336,7 +299,7 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
   obj X := { α := FundamentalGroupoid X }
   map f :=
     { obj := fun x => ⟨f x.as⟩
-      map := fun {X Y} p => by exact Path.Homotopic.Quotient.mapFn p f
+      map := fun {X Y} p => by exact Path.Homotopic.Quotient.mapFn p f.hom
       map_id := fun _ => rfl
       map_comp := fun {x y z} p q => by
         refine Quotient.inductionOn₂ p q fun a b => ?_
@@ -367,7 +330,7 @@ scoped notation "πₓ" => FundamentalGroupoid.fundamentalGroupoidFunctor.obj
 scoped notation "πₘ" => FundamentalGroupoid.fundamentalGroupoidFunctor.map
 
 theorem map_eq {X Y : TopCat} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.Quotient x₀ x₁) :
-    (πₘ f).map p = p.mapFn f := rfl
+    (πₘ (TopCat.ofHom f)).map p = p.mapFn f := rfl
 
 /-- Help the typechecker by converting a point in a groupoid back to a point in
 the underlying topological space. -/
@@ -379,9 +342,8 @@ abbrev fromTop {X : TopCat} (x : X) : πₓ X := ⟨x⟩
 
 /-- Help the typechecker by converting an arrow in the fundamental groupoid of
 a topological space back to a path in that space (i.e., `Path.Homotopic.Quotient`). -/
--- Porting note: Added `(X := X)` to the type.
 abbrev toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) :
-    Path.Homotopic.Quotient (X := X) x₀.as x₁.as :=
+    Path.Homotopic.Quotient x₀.as x₁.as :=
   p
 
 /-- Help the typechecker by converting a path in a topological space to an arrow in the

@@ -33,22 +33,21 @@ Euler-Mascheroni constant will follow in a subsequent PR.
   functional equation relating values at `s` and `1 - s`
 
 For special-value formulae expressing `ζ (2 * k)` and `ζ (1 - 2 * k)` in terms of Bernoulli numbers
-see `Mathlib.NumberTheory.LSeries.HurwitzZetaValues`. For computation of the constant term as
-`s → 1`, see `Mathlib.NumberTheory.Harmonic.ZetaAsymp`.
+see `Mathlib/NumberTheory/LSeries/HurwitzZetaValues.lean`. For computation of the constant term as
+`s → 1`, see `Mathlib/NumberTheory/Harmonic/ZetaAsymp.lean`.
 
 ## Outline of proofs:
 
 These results are mostly special cases of more general results for even Hurwitz zeta functions
-proved in `Mathlib.NumberTheory.LSeries.HurwitzZetaEven`.
+proved in `Mathlib/NumberTheory/LSeries/HurwitzZetaEven.lean`.
 -/
 
 
-open CharZero MeasureTheory Set Filter Asymptotics TopologicalSpace Real Asymptotics
-  Classical HurwitzZeta
+open CharZero Set Filter HurwitzZeta
 
-open Complex hiding exp norm_eq_abs abs_of_nonneg abs_two continuous_exp
+open Complex hiding exp continuous_exp
 
-open scoped Topology Real Nat
+open scoped Topology Real
 
 noncomputable section
 
@@ -127,7 +126,7 @@ lemma HurwitzZeta.hurwitzZeta_zero : hurwitzZeta 0 = riemannZeta := by
 
 lemma HurwitzZeta.expZeta_zero : expZeta 0 = riemannZeta := by
   ext1 s
-  rw [expZeta, cosZeta_zero, add_right_eq_self, mul_eq_zero, eq_false_intro I_ne_zero, false_or,
+  rw [expZeta, cosZeta_zero, add_eq_left, mul_eq_zero, eq_false_intro I_ne_zero, false_or,
     ← eq_neg_self_iff, ← sinZeta_neg, neg_zero]
 
 /-- The Riemann zeta function is differentiable away from `s = 1`. -/
@@ -136,11 +135,11 @@ theorem differentiableAt_riemannZeta {s : ℂ} (hs' : s ≠ 1) : DifferentiableA
 
 /-- We have `ζ(0) = -1 / 2`. -/
 theorem riemannZeta_zero : riemannZeta 0 = -1 / 2 := by
-  simp_rw [riemannZeta, hurwitzZetaEven, Function.update_same, if_true]
+  simp_rw [riemannZeta, hurwitzZetaEven, Function.update_self, if_true]
 
 lemma riemannZeta_def_of_ne_zero {s : ℂ} (hs : s ≠ 0) :
     riemannZeta s = completedRiemannZeta s / Gammaℝ s := by
-  rw [riemannZeta, hurwitzZetaEven, Function.update_noteq hs, completedHurwitzZetaEven_zero]
+  rw [riemannZeta, hurwitzZetaEven, Function.update_of_ne hs, completedHurwitzZetaEven_zero]
 
 /-- The trivial zeroes of the zeta function. -/
 theorem riemannZeta_neg_two_mul_nat_add_one (n : ℕ) : riemannZeta (-2 * (n + 1)) = 0 :=
@@ -186,7 +185,7 @@ on mathlib's conventions for `0 ^ s`). -/
 theorem zeta_eq_tsum_one_div_nat_add_one_cpow {s : ℂ} (hs : 1 < re s) :
     riemannZeta s = ∑' n : ℕ, 1 / (n + 1 : ℂ) ^ s := by
   have := zeta_eq_tsum_one_div_nat_cpow hs
-  rw [tsum_eq_zero_add] at this
+  rw [Summable.tsum_eq_zero_add] at this
   · simpa [zero_cpow (Complex.ne_zero_of_one_lt_re hs)]
   · rwa [Complex.summable_one_div_nat_cpow]
 
@@ -220,24 +219,3 @@ theorem tendsto_sub_mul_tsum_nat_rpow :
   apply (tendsto_sub_mul_tsum_nat_cpow.comp this).congr fun s ↦ ?_
   simp only [one_div, Function.comp_apply, ofReal_mul, ofReal_sub, ofReal_one, ofReal_tsum,
     ofReal_inv, ofReal_cpow (Nat.cast_nonneg _), ofReal_natCast]
-
-/- naming scheme was changed from `riemannCompletedZeta` to `completedRiemannZeta`; add
-aliases for the old names -/
-section aliases
-
-@[deprecated (since := "2024-05-27")]
-noncomputable alias riemannCompletedZeta₀ := completedRiemannZeta₀
-
-@[deprecated (since := "2024-05-27")]
-noncomputable alias riemannCompletedZeta := completedRiemannZeta
-
-@[deprecated (since := "2024-05-27")]
-alias riemannCompletedZeta₀_one_sub := completedRiemannZeta₀_one_sub
-
-@[deprecated (since := "2024-05-27")]
-alias riemannCompletedZeta_one_sub := completedRiemannZeta_one_sub
-
-@[deprecated (since := "2024-05-27")]
-alias riemannCompletedZeta_residue_one := completedRiemannZeta_residue_one
-
-end aliases
