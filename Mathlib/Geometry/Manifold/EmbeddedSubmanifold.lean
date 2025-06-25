@@ -350,7 +350,7 @@ noncomputable def _root_.PartialEquiv.pullback_sliceModel [Nonempty M] (φ : Par
     --   _ = h.inverse (h.map x) := sorry
     --   _ = x := sorry
 
-variable (φ f) in
+variable (φ) in
 noncomputable def pullback_sliceModel [Nonempty M] (h : SliceModel F I I') (hf : Continuous f)
     (hf' : InjOn f (f ⁻¹' φ.source))
     (hfoo : φ.target ⊆ range h.map) : PartialHomeomorph M H where
@@ -366,6 +366,19 @@ noncomputable def pullback_sliceModel [Nonempty M] (h : SliceModel F I I') (hf :
     intro x hx
     apply hfoo (by simp_all)
   continuousOn_invFun := sorry -- should be similar
+
+omit [ChartedSpace H' M'] in
+@[simp]
+lemma pull_sliceModel_source [Nonempty M] (h : SliceModel F I I') (hf : Continuous f)
+    (hf' : InjOn f (f ⁻¹' φ.source)) (hfoo : φ.target ⊆ range h.map) :
+    (φ.pullback_sliceModel h hf hf' hfoo).source = f ⁻¹' φ.source := rfl
+
+omit [ChartedSpace H' M'] in
+@[simp]
+lemma pull_sliceModel_target [Nonempty M] (h : SliceModel F I I') (hf : Continuous f)
+    (hf' : InjOn f (f ⁻¹' φ.source))
+    (hfoo : φ.target ⊆ range h.map) :
+    (φ.pullback_sliceModel h hf hf' hfoo).target = h.map ⁻¹' φ.target := rfl
 
 end
 
@@ -436,21 +449,28 @@ def mk_of_injective [TopologicalSpace M] {f : M → M'} [h : SliceModel F I I']
   hf' _y _hy := hf'.injOn
   hfoo := hfoo
 
--- TODO: remove non-emptiness hypotheses by beefing up pullback_sliceModel
-variable {f : M → M'} [h : SliceModel F I I'] [TopologicalSpace M] [Nonempty H] [Nonempty M]
+variable {f : M → M'} [h : SliceModel F I I'] [TopologicalSpace M]
 
-private noncomputable def chartAt (inst : IsImmersedSubmanifold M M' n (f := f) (h := h)) (x : M) :
-    PartialHomeomorph M H :=
+private noncomputable def chartAt_of_nonempty [Nonempty H] [Nonempty M]
+    (inst : IsImmersedSubmanifold M M' n (f := f) (h := h)) (x : M) : PartialHomeomorph M H :=
   letI hyp := inst.hf' (f x) (mem_range_self x)
-  (inst.sliceChartAt (f x)).pullback_sliceModel f h inst.hf hyp (inst.hfoo _ (mem_range_self x))
+  (inst.sliceChartAt (f x)).pullback_sliceModel h inst.hf hyp (inst.hfoo _ (mem_range_self x))
+
+noncomputable def chartedSpace_of_nonempty [Nonempty H] [Nonempty M]
+    (inst : IsImmersedSubmanifold M M' n (f := f) (h := h)) : ChartedSpace H M where
+  atlas := { inst.chartAt_of_nonempty x | x : M }
+  chartAt x := inst.chartAt_of_nonempty x
+  mem_chart_source x := by simp [chartAt_of_nonempty, mem_sliceChartAt_source (f x)]
+  chart_mem_atlas x := by rw [mem_setOf]; use x
 
 -- XXX: making this an instance makes Lean complain about synthesization order
-noncomputable def chartedSpace (inst : IsImmersedSubmanifold M M' n (f := f) (h := h)) :
-    ChartedSpace H M where
-  atlas := { inst.chartAt x | x : M }
-  chartAt x := inst.chartAt x
-  mem_chart_source x := by simp [chartAt, mem_sliceChartAt_source (f x)]
-  chart_mem_atlas x := by rw [mem_setOf]; use x
+open scoped Classical in
+noncomputable def chartedSpace
+    (inst : IsImmersedSubmanifold M M' n (f := f) (h := h)) : ChartedSpace H M :=
+  if h: IsEmpty M then ChartedSpace.empty H M else
+    have : Nonempty M := not_isEmpty_iff.mp h
+    have : Nonempty H := sorry -- issue, need to ensure this somehow!
+    inst.chartedSpace_of_nonempty
 
 -- Cannot make an instance because Lean errors about synthesization order
 -- noncomputable def isManifold (inst : IsImmersedSubmanifold M M' n (f := f) (h := h)) :
