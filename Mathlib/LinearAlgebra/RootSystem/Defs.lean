@@ -142,8 +142,6 @@ variable (ι R M N) in
 @[simps] def flipEquiv : RootPairing ι R N M ≃ RootPairing ι R M N where
   toFun P := P.flip
   invFun P := P.flip
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- If we interchange the roles of `M` and `N`, we still have a root system. -/
 protected def _root_.RootSystem.flip (P : RootSystem ι R M N) : RootSystem ι R N M :=
@@ -161,8 +159,6 @@ variable (ι R M N) in
 @[simps] def _root_.RootSystem.flipEquiv : RootSystem ι R N M ≃ RootSystem ι R M N where
   toFun P := P.flip
   invFun P := P.flip
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 lemma ne_zero [NeZero (2 : R)] : (P.root i : M) ≠ 0 :=
   fun h ↦ NeZero.ne' (2 : R) <| by simpa [h] using P.root_coroot_two i
@@ -222,6 +218,11 @@ lemma coroot_root_eq_pairing : P.toLinearMap.flip (P.coroot i) (P.root j) = P.pa
 
 @[simp]
 lemma pairing_same : P.pairing i i = 2 := P.root_coroot_two i
+
+variable {P} in
+lemma pairing_eq_add_of_root_eq_add {i j k l : ι} (h : P.root k = P.root i + P.root j) :
+    P.pairing k l = P.pairing i l + P.pairing j l := by
+  simp only [← root_coroot_eq_pairing, h, map_add, LinearMap.add_apply]
 
 lemma coroot_root_two :
     P.toLinearMap.flip (P.coroot i) (P.root i) = 2 := by
@@ -442,6 +443,14 @@ of a root / coroot. -/
       coreflection_apply_self, LinearMap.sub_apply, map_neg, LinearMap.smul_apply, smul_eq_mul,
       mul_neg, sub_neg_eq_add]
     module
+
+lemma ne_neg [NeZero (2 : R)] [IsDomain R] :
+    letI := P.indexNeg
+    i ≠ -i := by
+  have := P.reflexive_left
+  intro contra
+  replace contra : P.root i = -P.root i := by simpa using congr_arg P.root contra
+  simp [eq_neg_iff_add_eq_zero, ← two_smul R, NeZero.out, P.ne_zero i] at contra
 
 variable {i j} in
 @[simp]

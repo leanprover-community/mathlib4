@@ -106,8 +106,6 @@ theorem Fintype.prod_eq_mul_prod_subtype_ne [DecidableEq α] (f : α → M) (a :
 
 end
 
-open Finset
-
 section Pi
 variable {ι κ : Type*} {α : ι → Type*} [DecidableEq ι] [DecidableEq κ]
 
@@ -236,14 +234,12 @@ nonrec theorem Fintype.prod_dite [Fintype α] {p : α → Prop} [DecidablePred p
 
 section
 
-open Finset
-
 variable {α₁ : Type*} {α₂ : Type*} {M : Type*} [Fintype α₁] [Fintype α₂] [CommMonoid M]
 
 @[to_additive]
 theorem Fintype.prod_sumElim (f : α₁ → M) (g : α₂ → M) :
     ∏ x, Sum.elim f g x = (∏ a₁, f a₁) * ∏ a₂, g a₂ :=
-  prod_disj_sum _ _ _
+  prod_disjSum _ _ _
 
 @[deprecated (since := "2025-02-20")] alias prod_sum_elim := prod_sumElim
 @[deprecated (since := "2025-02-20")] alias sum_sum_elim := sum_sumElim
@@ -251,7 +247,7 @@ theorem Fintype.prod_sumElim (f : α₁ → M) (g : α₂ → M) :
 @[to_additive (attr := simp)]
 theorem Fintype.prod_sum_type (f : α₁ ⊕ α₂ → M) :
     ∏ x, f x = (∏ a₁, f (Sum.inl a₁)) * ∏ a₂, f (Sum.inr a₂) :=
-  prod_disj_sum _ _ _
+  prod_disjSum _ _ _
 
 /-- The product over a product type equals the product of the fiberwise products. For rewriting
 in the reverse direction, use `Fintype.prod_prod_type'`. -/

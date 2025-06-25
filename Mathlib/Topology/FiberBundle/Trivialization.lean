@@ -201,9 +201,9 @@ variable (e' : Pretrivialization F (π F E)) {b : B} {y : E b}
 theorem coe_mem_source : ↑y ∈ e'.source ↔ b ∈ e'.baseSet :=
   e'.mem_source
 
-@[simp, mfld_simps]
-theorem coe_coe_fst (hb : b ∈ e'.baseSet) : (e' y).1 = b :=
-  e'.coe_fst (e'.mem_source.2 hb)
+@[mfld_simps]
+theorem coe_coe_fst (hb : b ∈ e'.baseSet) : (e' y).1 = b := by
+  simp [hb]
 
 theorem mk_mem_target {x : B} {y : F} : (x, y) ∈ e'.target ↔ x ∈ e'.baseSet :=
   e'.mem_target
@@ -297,6 +297,15 @@ instance : CoeFun (Trivialization F proj) fun _ => Z → B × F := ⟨toFun'⟩
 
 instance : Coe (Trivialization F proj) (Pretrivialization F proj) :=
   ⟨toPretrivialization⟩
+
+/-- See Note [custom simps projection] -/
+def Simps.apply (proj : Z → B) (e : Trivialization F proj) : Z → B × F := e
+
+/-- See Note [custom simps projection] -/
+noncomputable def Simps.symm_apply (proj : Z → B) (e : Trivialization F proj) : B × F → Z :=
+  e.toPartialHomeomorph.symm
+
+initialize_simps_projections Trivialization (toFun → apply, invFun → symm_apply)
 
 theorem toPretrivialization_injective :
     Function.Injective fun e : Trivialization F proj => e.toPretrivialization := fun e e' h => by

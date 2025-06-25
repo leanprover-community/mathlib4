@@ -109,7 +109,7 @@ open Lean Meta Elab Term Macro TSyntax PrettyPrinter.Delaborator SubExpr
 open Mathlib.Tactic (subscriptTerm)
 
 /-- Notation for vectors in Lp space. `!₂[x, y, ...]` is a shorthand for
-`(WithLp.equiv 2 _ _).symm ![x, y, ...]`, of type `EuclideanSpace _ (Fin _)`.
+`(WithLp.equiv 2 _).symm ![x, y, ...]`, of type `EuclideanSpace _ (Fin _)`.
 
 This also works for other subscripts. -/
 syntax (name := PiLp.vecNotation) "!" noWs subscriptTerm noWs "[" term,* "]" : term
@@ -264,6 +264,10 @@ theorem EuclideanSpace.single_apply (i : ι) (a : 𝕜) (j : ι) :
     (EuclideanSpace.single i a) j = ite (j = i) a 0 := by
   rw [EuclideanSpace.single, WithLp.equiv_symm_pi_apply, ← Pi.single_apply i a j]
 
+@[simp]
+theorem EuclideanSpace.single_eq_zero_iff {i : ι} {a : 𝕜} :
+    EuclideanSpace.single i a = 0 ↔ a = 0 := Pi.single_eq_zero_iff
+
 variable [Fintype ι]
 
 theorem EuclideanSpace.inner_single_left (i : ι) (a : 𝕜) (v : EuclideanSpace 𝕜 ι) :
@@ -313,6 +317,27 @@ theorem EuclideanSpace.piLpCongrLeft_single
 
 end DecEq
 
+section finAddEquivProd
+
+/-- The canonical linear homeomorphism between `EuclideanSpace 𝕜 (ι ⊕ κ)` and
+`EuclideanSpace 𝕜 ι × EuclideanSpace 𝕜 κ`.
+
+See `PiLp.sumPiLpEquivProdLpPiLp` for the isometry version,
+where the RHS is equipped with the euclidean norm rather than the supremum norm. -/
+abbrev EuclideanSpace.sumEquivProd {𝕜 : Type*} [RCLike 𝕜] {ι κ : Type*} [Fintype ι] [Fintype κ] :
+    EuclideanSpace 𝕜 (ι ⊕ κ) ≃L[𝕜] EuclideanSpace 𝕜 ι × EuclideanSpace 𝕜 κ :=
+  (PiLp.sumPiLpEquivProdLpPiLp 2 _).toContinuousLinearEquiv.trans <|
+    WithLp.prodContinuousLinearEquiv _ _ _ _
+
+/-- The canonical linear homeomorphism between `EuclideanSpace 𝕜 (Fin (n + m))` and
+`EuclideanSpace 𝕜 (Fin n) × EuclideanSpace 𝕜 (Fin m)`. -/
+abbrev EuclideanSpace.finAddEquivProd {𝕜 : Type*} [RCLike 𝕜] {n m : ℕ} :
+    EuclideanSpace 𝕜 (Fin (n + m)) ≃L[𝕜] EuclideanSpace 𝕜 (Fin n) × EuclideanSpace 𝕜 (Fin m) :=
+  (LinearIsometryEquiv.piLpCongrLeft 2 𝕜 𝕜 finSumFinEquiv.symm).toContinuousLinearEquiv.trans
+    sumEquivProd
+
+end finAddEquivProd
+
 variable (ι 𝕜 E)
 variable [Fintype ι]
 
@@ -346,7 +371,7 @@ instance instFunLike : FunLike (OrthonormalBasis ι 𝕜 E) ι E where
         replace h := congr_fun h i
         simp only [LinearEquiv.comp_coe, map_smul, LinearEquiv.coe_coe,
           LinearEquiv.trans_apply, WithLp.linearEquiv_symm_apply, WithLp.equiv_symm_single,
-          LinearIsometryEquiv.coe_toLinearEquiv] at h ⊢
+          LinearIsometryEquiv.coe_symm_toLinearEquiv] at h ⊢
         rw [h]
 
 @[simp]
@@ -397,6 +422,14 @@ lemma enorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
 lemma inner_eq_zero (b : OrthonormalBasis ι 𝕜 E) {i j : ι} (hij : i ≠ j) :
     ⟪b i, b j⟫ = 0 := b.orthonormal.inner_eq_zero hij
 
+@[simp]
+lemma inner_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) : ⟪b i, b i⟫ = 1 := by
+  simp [inner_self_eq_norm_sq_to_K]
+
+lemma inner_eq_ite [DecidableEq ι] (b : OrthonormalBasis ι 𝕜 E) (i j : ι) :
+    ⟪b i, b j⟫ = if i = j then 1 else 0 := by
+  by_cases h : i = j <;> simp [h]
+
 /-- The `Basis ι 𝕜 E` underlying the `OrthonormalBasis` -/
 protected def toBasis (b : OrthonormalBasis ι 𝕜 E) : Basis ι 𝕜 E :=
   Basis.ofEquivFun b.repr.toLinearEquiv
@@ -436,7 +469,7 @@ protected theorem sum_inner_mul_inner (b : OrthonormalBasis ι 𝕜 E) (x y : E)
   rw [map_smul, b.repr_apply_apply, mul_comm]
   simp
 
-lemma sum_sq_norm_inner (b : OrthonormalBasis ι 𝕜 E) (x : E) :
+lemma sum_sq_norm_inner_right (b : OrthonormalBasis ι 𝕜 E) (x : E) :
     ∑ i, ‖⟪b i, x⟫‖ ^ 2 = ‖x‖ ^ 2 := by
   rw [@norm_eq_sqrt_re_inner 𝕜, ← OrthonormalBasis.sum_inner_mul_inner b x x, map_sum]
   simp_rw [inner_mul_symm_re_eq_norm, norm_mul, ← inner_conj_symm x, starRingEnd_apply,
@@ -444,10 +477,30 @@ lemma sum_sq_norm_inner (b : OrthonormalBasis ι 𝕜 E) (x : E) :
   rw [Real.sq_sqrt]
   exact Fintype.sum_nonneg fun _ ↦ by positivity
 
+@[deprecated (since := "2025-06-23")] alias sum_sq_norm_inner := sum_sq_norm_inner_right
+
+lemma sum_sq_norm_inner_left (b : OrthonormalBasis ι 𝕜 E) (x : E) :
+    ∑ i, ‖⟪x, b i⟫‖ ^ 2 = ‖x‖ ^ 2 := by
+  convert sum_sq_norm_inner_right b x using 2 with i -
+  rw [← inner_conj_symm, RCLike.norm_conj]
+
+open scoped RealInnerProductSpace in
+theorem sum_sq_inner_right {E : Type*} [NormedAddCommGroup E]
+    [InnerProductSpace ℝ E] (b : OrthonormalBasis ι ℝ E) (x : E) :
+    ∑ i : ι, ⟪b i, x⟫ ^ 2 = ‖x‖ ^ 2 := by
+  rw [← b.sum_sq_norm_inner_right]
+  simp
+
+open scoped RealInnerProductSpace in
+theorem sum_sq_inner_left {ι E : Type*} [NormedAddCommGroup E]
+    [InnerProductSpace ℝ E] [Fintype ι] (b : OrthonormalBasis ι ℝ E) (x : E) :
+    ∑ i : ι, ⟪x, b i⟫ ^ 2 = ‖x‖ ^ 2 := by
+  simp_rw [← b.sum_sq_inner_right, real_inner_comm]
+
 lemma norm_le_card_mul_iSup_norm_inner (b : OrthonormalBasis ι 𝕜 E) (x : E) :
     ‖x‖ ≤ √(Fintype.card ι) * ⨆ i, ‖⟪b i, x⟫‖ := by
   calc ‖x‖
-  _ = √(∑ i, ‖⟪b i, x⟫‖ ^ 2) := by rw [sum_sq_norm_inner, Real.sqrt_sq (by positivity)]
+  _ = √(∑ i, ‖⟪b i, x⟫‖ ^ 2) := by rw [sum_sq_norm_inner_right, Real.sqrt_sq (by positivity)]
   _ ≤ √(∑ _ : ι, (⨆ j, ‖⟪b j, x⟫‖) ^ 2) := by
     gcongr with i
     exact le_ciSup (f := fun j ↦ ‖⟪b j, x⟫‖) (by simp) i

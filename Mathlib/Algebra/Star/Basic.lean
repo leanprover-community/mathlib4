@@ -86,6 +86,10 @@ export InvolutiveStar (star_involutive)
 theorem star_star [InvolutiveStar R] (r : R) : star (star r) = r :=
   star_involutive _
 
+lemma star_mem_iff {S : Type*} [SetLike S R] [InvolutiveStar R] [StarMemClass S R]
+    {s : S} {x : R} : star x ∈ s ↔ x ∈ s :=
+  ⟨fun h => star_star x ▸ star_mem h, fun h => star_mem h⟩
+
 theorem star_injective [InvolutiveStar R] : Function.Injective (star : R → R) :=
   Function.Involutive.injective star_involutive
 
@@ -396,7 +400,6 @@ the statement only requires `[Star R] [Star A] [SMul R A]`.
 If used as `[CommRing R] [StarRing R] [Semiring A] [StarRing A] [Algebra R A]`, this represents a
 star algebra.
 -/
-
 class StarModule (R : Type u) (A : Type v) [Star R] [Star A] [SMul R A] : Prop where
   /-- `star` commutes with scalar multiplication -/
   star_smul : ∀ (r : R) (a : A), star (r • a) = star r • star a
