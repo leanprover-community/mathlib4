@@ -287,7 +287,7 @@ theorem inv_ofNat_den (a : ℕ) [a.AtLeastTwo] :
     (ofNat(a) : ℚ)⁻¹.den = OfNat.ofNat a :=
   inv_natCast_den_of_pos (Nat.pos_of_neZero a)
 
-theorem den_inv_of_ne_zero (q : ℚ) (hq : q ≠ 0) : (q⁻¹).den = q.num.natAbs := by
+theorem den_inv_of_ne_zero {q : ℚ} (hq : q ≠ 0) : (q⁻¹).den = q.num.natAbs := by
   have hq' : q.num ≠ 0 := by simpa using hq
   rw [inv_def', divInt_eq_div, div_eq_mul_inv, mul_den, inv_intCast_den, if_neg hq']
   norm_cast
