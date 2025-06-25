@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Kim Morrison, Bolton Bailey
+Authors: Kim Morrison
 -/
 import Mathlib.Data.Finsupp.Basic
 import Mathlib.Algebra.Module.Defs
