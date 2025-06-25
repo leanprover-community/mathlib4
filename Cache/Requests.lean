@@ -98,59 +98,13 @@ If the current branch is tracking a PR (upstream/pr/NNNN), it will determine the
 of that PR rather than just using the origin remote.
 -/
 def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
-  -- Find the actual remote name for mathlib4
-  let mathlibRemoteName ← findMathlibRemote mathlibDepPath
 
-  -- Check if current branch is tracking {remoteName}/pr/NNNN
-  let trackingInfo ← IO.Process.output
-    {cmd := "git", args := #["rev-parse", "--symbolic-full-name", "@{upstream}"], cwd := mathlibDepPath}
-
-  if trackingInfo.exitCode == 0 then
-    let upstream := trackingInfo.stdout.trim
-    -- Check if tracking {remoteName}/pr/NNNN pattern
-    let prPattern := s!"refs/remotes/{mathlibRemoteName}/pr/"
-    if upstream.startsWith prPattern then
-      let prNumberStart := prPattern.length
-      let prNumber := upstream.drop prNumberStart
-
-      -- Use GitHub CLI to get the PR's source repository
-      let prInfo ← IO.Process.output
-        {cmd := "gh", args := #["pr", "view", prNumber, "--json", "headRepositoryOwner"], cwd := mathlibDepPath}
-
-      if prInfo.exitCode == 0 then
-        -- Parse JSON to extract the repository owner
-        match Lean.Json.parse prInfo.stdout.trim with
-        | .ok json =>
-          -- Try to get owner directly as string first
-          match json.getObjValAs? String "headRepositoryOwner" with
-          | .ok owner =>
-            let repo := s!"{owner}/mathlib4"
-            IO.println s!"Using cache from PR #{prNumber} source: {repo}"
-            return {repo := repo, useFirst := false}
-          | .error _ =>
-            -- If that fails, try to get as object and extract login field
-            match json.getObjVal? "headRepositoryOwner" with
-            | .ok ownerObj =>
-              match ownerObj.getObjValAs? String "login" with
-              | .ok owner =>
-                let repo := s!"{owner}/mathlib4"
-                IO.println s!"Using cache from PR #{prNumber} source: {repo}"
-                return {repo := repo, useFirst := false}
-              | .error _ =>
-                IO.println "Warning: Could not parse PR owner from GitHub CLI response, falling back to origin"
-            | .error _ =>
-              IO.println "Warning: Could not parse GitHub CLI response, falling back to origin"
-        | .error _ =>
-          IO.println "Warning: Could not parse GitHub CLI JSON response, falling back to origin"
-      else
-        -- This is unlikely to happen, because we're tracking a PR ref
-        IO.println s!"Warning: GitHub CLI failed (exit code: {prInfo.exitCode}), falling back to origin"
-        IO.println s!"Make sure 'gh' is installed and authenticated. Stderr: {prInfo.stderr.trim}"
-
-  -- Alternative approach: check if current commit has {remoteName}/pr/NNNN refs pointing to it
-  -- But only do this if we're likely on a PR branch (not on regular branches like master)
+  -- Since currently we need to push a PR to `leanprover-community/mathlib` build a user cache,
+  -- we check if we are a special branch or a branch with PR. This leaves out non-PRed fork
+  -- branches. These should be covered if we ever change how the cache is uploaded from forks
+  -- to obviate the need for a PR.
   let currentBranch ← IO.Process.output
-    {cmd := "git", args := #["branch", "--show-current"], cwd := mathlibDepPath}
+    {cmd := "git", args := #["rev-parse", "--abbrev-ref", "HEAD"], cwd := mathlibDepPath}
 
   if currentBranch.exitCode == 0 then
     let branchName := currentBranch.stdout.trim
@@ -170,50 +124,23 @@ def getRemoteRepo (mathlibDepPath : FilePath) : IO RepoInfo := do
       return {repo := repo, useFirst := true}
 
     -- Only search for PR refs if we're not on a regular branch like master, bump/*, or nightly-testing*
-    let isRegularBranch := branchName == "master" || branchName.startsWith "bump/" ||
+    let isSpecialBranch := branchName == "master" || branchName.startsWith "bump/" ||
                           branchName.startsWith "nightly-testing"
 
-    if !isRegularBranch then
-      let currentCommit ← IO.Process.output
-        {cmd := "git", args := #["rev-parse", "HEAD"], cwd := mathlibDepPath}
-
-      if currentCommit.exitCode == 0 then
-        let commit := currentCommit.stdout.trim
-        -- Get all PR refs that contain this commit
-        let prRefPattern := s!"refs/remotes/{mathlibRemoteName}/pr/*"
-        let refsInfo ← IO.Process.output
-          {cmd := "git", args := #["for-each-ref", "--contains", commit, prRefPattern, "--format=%(refname)"], cwd := mathlibDepPath}
-
-        if refsInfo.exitCode == 0 then
-          let refs := refsInfo.stdout.split (· == '\n')
-          for ref in refs do
-            let refName := ref.trim
-            let prRefPrefix := s!"refs/remotes/{mathlibRemoteName}/pr/"
-            if refName.startsWith prRefPrefix && !refName.isEmpty then
-              let prNumberStart := prRefPrefix.length
-              let prNumber := refName.drop prNumberStart
-
-              -- Use GitHub CLI to get the PR's source repository
-              let prInfo ← IO.Process.output
-                {cmd := "gh", args := #["pr", "view", prNumber, "--json", "headRepositoryOwner"], cwd := mathlibDepPath}
-
-              if prInfo.exitCode == 0 then
-                -- Parse JSON to extract the repository owner
-                match Lean.Json.parse prInfo.stdout.trim with
-                | .ok json =>
-                  -- Try to get owner as object and extract login field
-                  match json.getObjVal? "headRepositoryOwner" with
-                  | .ok ownerObj =>
-                    match ownerObj.getObjValAs? String "login" with
-                    | .ok owner =>
-                      let repo := s!"{owner}/mathlib4"
-                      IO.println s!"Using cache from PR #{prNumber} source: {repo}"
-                      return {repo := repo, useFirst := false}
-                    | .error _ => continue -- try next ref
-                  | .error _ => continue -- try next ref
-                | .error _ => continue -- try next ref
-              else
-                continue -- try next ref
+    -- Check if the current branch is tracking a PR
+    if !isSpecialBranch then
+      let prInfo ← IO.Process.output
+        {cmd := "gh", args := #["pr", "view", "--json", "headRefName,headRepositoryOwner,number"], cwd := mathlibDepPath}
+      unless prInfo.exitCode != 0 do
+        if let .ok json := Lean.Json.parse prInfo.stdout.trim then
+          if let .ok owner := json.getObjValAs? Lean.Json "headRepositoryOwner" then
+            if let .ok login := owner.getObjValAs? String "login" then
+              if let .ok repoName := json.getObjValAs? String "headRefName" then
+                if let .ok prNumber := json.getObjValAs? Nat "number" then
+                  let repo := s!"{login}/mathlib4"
+                  IO.println s!"Using cache from PR #{prNumber} source: {login}/{repoName}"
+                  let useFirst := if owner == "leanprover-community" then false else true
+                  return {repo := repo, useFirst := useFirst}
 
   -- Fall back to the original logic using origin remote
   let repo ← getRepoFromRemote mathlibDepPath "origin"
