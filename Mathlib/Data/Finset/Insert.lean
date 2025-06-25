@@ -219,11 +219,11 @@ instance (i : α) : Unique ({i} : Finset α) where
 @[simp]
 lemma default_singleton (i : α) : ((default : ({i} : Finset α)) : α) = i := rfl
 
-/-
-We don't use `Finset.one_lt_card_iff_nontrivial`
-because `Finset.card` is defined in a different file.
--/
 instance Nontrivial.instDecidablePred : DecidablePred (Finset.Nontrivial (α := α)) := fun s =>
+  /-
+  We don't use `Finset.one_lt_card_iff_nontrivial`
+  because `Finset.card` is defined in a different file.
+  -/
   Quotient.recOnSubsingleton (motive := fun (s : Multiset α) =>
       (h : s.Nodup) → Decidable (Finset.Nontrivial ⟨s, h⟩))
     s.val (fun l h => match l with
