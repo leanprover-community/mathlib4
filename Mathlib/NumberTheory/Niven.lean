@@ -55,14 +55,22 @@ theorem niven (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos θ = q) 
       have hz_root : z ^ (2 * q.natAbs) = 1 := by
         rw [← Complex.exp_nat_mul, Complex.exp_eq_one_iff]
         use p
-        simpa [*, field_simps, hq_pos.ne'] using by
-          rw [← Int.cast_natCast, ← Int.eq_natAbs_of_nonneg hq_pos.le]
-          ring
-      -- Since z is a root of unity, `2 cos⁡ θ = z` and `z⁻¹` are algebraic integers.
-      rcases have h_sum_int : IsIntegral ℤ z ∧ IsIntegral ℤ z⁻¹ := by constructor <;> exact
-          ⟨.X ^ (2 * q.natAbs) - 1, Polynomial.monic_X_pow_sub_C _ <| by positivity, by aesop⟩
-        h_sum_int.1.add h_sum_int.2 with ⟨f, hf₁, hf₂⟩
-      refine ⟨f, hf₁, ?_⟩
+        rw [Nat.cast_mul, ← Int.cast_natCast q.natAbs, ← Int.eq_natAbs_of_nonneg hq_pos.le]
+        field_simp [hr, hq_pos.ne']
+        group
+      -- Since z is a root of unity, `2 cos⁡ θ = z` and `z⁻¹` are algebraic integers, and their sum.
+      obtain ⟨f, hf₁, hf₂⟩ : IsIntegral ℤ (z + z⁻¹) := by
+        have hz : IsIntegral ℤ z ∧ IsIntegral ℤ z⁻¹ := by
+          constructor
+          all_goals (
+            use .X ^ (2 * q.natAbs) - 1
+            constructor
+            · apply Polynomial.monic_X_pow_sub_C
+              positivity
+            · simp [hr, hz_root]
+          )
+        exact hz.left.add hz.right
+      use f, hf₁
       have h_cos_eq : 2 * cos (p / q * π) = z + z⁻¹ := by
         simpa [Complex.cos, Complex.exp_neg, hr, z] using by ring_nf
       simp_all [Polynomial.eval₂_eq_sum_range, ← Complex.ofReal_inj]
@@ -84,9 +92,9 @@ theorem niven (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos θ = q) 
 /-- Niven's theorem, but stated for `sin` instead of `cos`. -/
 theorem niven_sin (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, sin θ = q) :
     sin θ ∈ ({-1, -1 / 2, 0, 1 / 2, 1} : Set ℝ) := by
-  convert niven (θ := θ - π/2) ?_ ?_ using 1
-  · exact (cos_sub_pi_div_two θ).symm
-  · exact hθ.rec (fun w h ↦ ⟨w - 1/2, by push_cast; linarith⟩)
+  convert ← niven (θ := θ - π/2) ?_ ?_ using 1
+  · exact cos_sub_pi_div_two θ
+  · exact hθ.imp' (· - 1 / 2) (by intros; push_cast; linarith)
   · simpa [cos_sub_pi_div_two]
 
 /-- Niven's theorem, giving the possible angles for `θ` in the range `0 .. π`. -/
@@ -94,16 +102,14 @@ theorem niven_theta_eq (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos
     (h_bnd : θ ∈ Set.Icc 0 π) : θ ∈ ({0, π / 3, π / 2, π * (2 / 3), π} : Set ℝ) := by
   have h := niven hθ hcos
   simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at h ⊢
-  clear hθ hcos
-  have h₂ : cos (π * (2 / 3)) = -1 / 2 := by
-    have := cos_pi_sub (π / 3)
-    have := cos_pi_div_three
-    ring_nf at *
-    linarith
   rcases h with (h | h | h | h | h) <;> [
     have h₂ := cos_pi;
-    skip;
+    have h₂ : cos (π * (2 / 3)) = -1 / 2 := by
+      have := cos_pi_sub (π / 3)
+      have := cos_pi_div_three
+      ring_nf at *
+      linarith;;
     have h₂ := cos_pi_div_two;
     have h₂ := cos_pi_div_three;
     have h₂ := cos_zero
-  ] <;> simp [injOn_cos h_bnd ⟨by positivity, by linarith [pi_nonneg]⟩ (h.trans h₂.symm)]
+  ] <;> simp [injOn_cos h_bnd ⟨by positivity, by linarith [pi_nonneg]⟩ (h₂ ▸ h)]
