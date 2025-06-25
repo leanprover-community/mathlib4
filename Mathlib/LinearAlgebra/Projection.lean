@@ -503,31 +503,4 @@ theorem commutes_of_isIdempotentElem_sub [NoZeroSMulDivisors ℕ E] {p q : E →
     noZeroSMulDivisors_nat_iff_isAddTorsionFree.mp instNoZeroSMulDivisors
   hp.commutes_of_isIdempotentElem_sub hq hqp
 
-/-- Given any idempotent operator `T`, then `IsCompl T.range T.ker`,
- in other words, there exists unique `v ∈ range(T)` and `w ∈ ker(T)` such that `x = v + w`. -/
-theorem IsIdempotentElem.isCompl_range_ker {T : E →ₗ[R] E} (h : IsIdempotentElem T) :
-    IsCompl (range T) (ker T) := by
-  symm
-  constructor
-  · rw [disjoint_iff]
-    ext x
-    simp only [mem_bot, mem_inf, mem_ker, mem_range]
-    constructor <;> intro h'
-    · rcases h'.2 with ⟨y, rfl⟩
-      rw [← IsIdempotentElem.eq h, Module.End.mul_apply]
-      exact h'.1
-    · rw [h', map_zero, eq_self_iff_true, true_and]
-      use x
-      simp only [h', map_zero, eq_self_iff_true]
-  · suffices ∀ x : E, ∃ v : ker T, ∃ w : range T, x = v + w by
-      rw [codisjoint_iff]
-      ext x
-      rcases this x with ⟨v, w, rfl⟩
-      simp only [mem_top, iff_true]
-      exact add_mem_sup (SetLike.coe_mem v) (SetLike.coe_mem w)
-    refine fun x => ⟨⟨x - T x, ?_⟩, ⟨T x, ?_⟩, ?_⟩
-    · rw [mem_ker, map_sub, ← Module.End.mul_apply, IsIdempotentElem.eq h, sub_self]
-    · simp only [mem_range, exists_apply_eq_apply]
-    · simp only [Submodule.coe_mk, sub_add_cancel]
-
 end LinearMap
