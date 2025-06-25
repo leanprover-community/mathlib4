@@ -2916,6 +2916,7 @@ import Mathlib.Data.EReal.Operations
 import Mathlib.Data.Erased
 import Mathlib.Data.FP.Basic
 import Mathlib.Data.Fin.Basic
+import Mathlib.Data.Fin.Embedding
 import Mathlib.Data.Fin.Fin2
 import Mathlib.Data.Fin.FlagRange
 import Mathlib.Data.Fin.Parity
