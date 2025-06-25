@@ -21,7 +21,7 @@ instance : MulAction (PermLT n) ℕ where
   one_smul k := by
     simp_rw [smul_eq_iff, getElem_one, implies_true, and_self]
   mul_smul a b k := by
-    rcases lt_or_le k n with hkn | hkn
+    rcases lt_or_ge k n with hkn | hkn
     · simp_rw [smul_of_lt hkn, smul_getElem, getElem_mul]
     · simp_rw [smul_of_ge hkn]
 
