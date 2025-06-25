@@ -228,21 +228,14 @@ def productIsProduct (f : β → C) [HasProduct f] : IsLimit (Fan.mk _ (Pi.π f)
 def coproductIsCoproduct (f : β → C) [HasCoproduct f] : IsColimit (Cofan.mk _ (Sigma.ι f)) :=
   IsColimit.ofIsoColimit (colimit.isColimit (Discrete.functor f)) (Cocones.ext (Iso.refl _))
 
--- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
--- It seems the side condition `w` is not applied by `simpNF`.
--- https://github.com/leanprover-community/mathlib4/issues/5049
--- They are used by `simp` in `Pi.whiskerEquiv` below.
-@[reassoc (attr := simp, nolint simpNF)]
+-- TODO?: simp can prove this using `eqToHom_naturality`
+-- but `eqToHom_naturality` applies less easily than this lemma
+@[reassoc]
 theorem Pi.π_comp_eqToHom {J : Type*} (f : J → C) [HasProduct f] {j j' : J} (w : j = j') :
     Pi.π f j ≫ eqToHom (by simp [w]) = Pi.π f j' := by
-  cases w
-  simp
+  simp [*]
 
--- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
--- It seems the side condition `w` is not applied by `simpNF`.
--- https://github.com/leanprover-community/mathlib4/issues/5049
--- They are used by `simp` in `Sigma.whiskerEquiv` below.
-@[reassoc (attr := simp, nolint simpNF)]
+@[reassoc (attr := simp)]
 theorem Sigma.eqToHom_comp_ι {J : Type*} (f : J → C) [HasCoproduct f] {j j' : J} (w : j = j') :
     eqToHom (by simp [w]) ≫ Sigma.ι f j' = Sigma.ι f j := by
   cases w
@@ -684,6 +677,14 @@ theorem hasProducts_of_limit_fans (lf : ∀ {J : Type w} (f : J → C), Fan f)
         ⟨(Cones.postcompose Discrete.natIsoFunctor.inv).obj (lf fun j => F.obj ⟨j⟩),
           (IsLimit.postcomposeInvEquiv _ _).symm (lf_isLimit _)⟩ }
 
+theorem hasCoproducts_of_colimit_cofans (cf : ∀ {J : Type w} (f : J → C), Cofan f)
+    (cf_isColimit : ∀ {J : Type w} (f : J → C), IsColimit (cf f)) : HasCoproducts.{w} C :=
+  fun _ : Type w =>
+  { has_colimit := fun F =>
+      HasColimit.mk
+        ⟨(Cocones.precompose Discrete.natIsoFunctor.hom).obj (cf fun j => F.obj ⟨j⟩),
+          (IsColimit.precomposeHomEquiv _ _).symm (cf_isColimit _)⟩ }
+
 instance (priority := 100) hasProductsOfShape_of_hasProducts [HasProducts.{w} C] (J : Type w) :
     HasProductsOfShape J C := inferInstance
 
@@ -837,5 +838,31 @@ theorem Sigma.ι_reindex_inv (b : β) :
 end
 
 end Reindex
+
+section Fubini
+
+variable {ι ι' : Type*} {X : ι → ι' → C}
+
+/-- A product over products is a product indexed by a product. -/
+def Fan.IsLimit.prod (c : ∀ i : ι, Fan (fun j : ι' ↦ X i j)) (hc : ∀ i : ι, IsLimit (c i))
+    (c' : Fan (fun i : ι ↦ (c i).pt)) (hc' : IsLimit c') :
+    (IsLimit <| Fan.mk c'.pt fun p : ι × ι' ↦ c'.proj _ ≫ (c p.1).proj p.2) := by
+  refine mkFanLimit _ (fun t ↦ ?_) ?_ fun t m hm ↦ ?_
+  · exact Fan.IsLimit.desc hc' fun i ↦ Fan.IsLimit.desc (hc i) fun j ↦ t.proj (i, j)
+  · simp
+  · refine Fan.IsLimit.hom_ext hc' _ _ fun i ↦ ?_
+    exact Fan.IsLimit.hom_ext (hc i) _ _ fun j ↦ (by simpa using hm (i, j))
+
+/-- A coproduct over coproducts is a coproduct indexed by a product. -/
+def Cofan.IsColimit.prod (c : ∀ i : ι, Cofan (fun j : ι' ↦ X i j)) (hc : ∀ i : ι, IsColimit (c i))
+    (c' : Cofan (fun i : ι ↦ (c i).pt)) (hc' : IsColimit c') :
+    (IsColimit <| Cofan.mk c'.pt fun p : ι × ι' ↦ (c p.1).inj p.2 ≫ c'.inj _) := by
+  refine mkCofanColimit _ (fun t ↦ ?_) ?_ fun t m hm ↦ ?_
+  · exact Cofan.IsColimit.desc hc' fun i ↦ Cofan.IsColimit.desc (hc i) fun j ↦ t.inj (i, j)
+  · simp
+  · refine Cofan.IsColimit.hom_ext hc' _ _ fun i ↦ ?_
+    exact Cofan.IsColimit.hom_ext (hc i) _ _ fun j ↦ (by simpa using hm (i, j))
+
+end Fubini
 
 end CategoryTheory.Limits
